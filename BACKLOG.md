@@ -28,7 +28,10 @@
    sv-SE TTS m. ducking, permission-flöde, 2,2 MB APK som CI-artefakt varje push).
    Kvar till Fas 2-vägtestet: autostart (AR+Bluetooth), engine.updateHazards (state över
    datauppdatering), Davids enhetstest. *Verify kvarstår: PLAN §4 Phase 2 road-test checklist.*
-8. **engine.updateHazards** i TS+Kotlin + delad vektor (state överlever snapshotbyte) — krävs före beta.
+8. **Emulator-smoketest i CI** (DECISIONS #16): boota appen i Actions-emulator, mata
+   mock-location-replay av Skånefixturen, assert:a TTS-anrop + notisuppdatering.
+   *Verify: android.yml kör emulatorjobb grönt; varningslogg ur emulatorn matchar vektorfacit.*
+9. **engine.updateHazards** i TS+Kotlin + delad vektor (state överlever snapshotbyte) — krävs före beta.
 
 ## Questions for David
 All seven answered 2026-08-24 → DECISIONS.md #8–11. No open questions.

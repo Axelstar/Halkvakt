@@ -64,3 +64,20 @@ Formatet är motorns vokabulär (inte GeoJSON); engine/src/snapshot.ts är Kotli
   + delad vektor, så tillstånd överlever datauppdatering.
 - Kotlin-motorn bevisad identisk med TS via delade vektorer i CI vid varje push (android.yml).
 
+## 16. Grundaren har iPhone (2026-08-25, Claude — köpbeslut hos David)
+Fakta: Davids enda telefon är en iPhone; Android-appen kan inte köras på den. Konsekvenser:
+- **Android-först står fast** (beslut #3-skälen gäller oberoende av grundarens telefon:
+  bakgrundstjänster, kostnad, sideload-beta utan granskningsgrind).
+- **Rekommendation till David: begagnad Samsung Galaxy A-serie ~800–1 500 kr**
+  (Blocket/Tradera/Webhallen outlet) som testenhet. SIM-kort behövs INTE: GPS är
+  fristående, TTS är lokal, snapshots cacheas + iPhone-hotspot i bilen räcker.
+  Samsung specifikt: Sveriges vanligaste Android + värsta batteridödar-OEM:en =
+  exakt den hårdvara betan möter. Pengafråga → Davids beslut.
+- **Claude bygger emulatortest i CI** (ny BACKLOG-punkt): appen bootas och matas med
+  mock-GPS-replay i Actions — kedjan GPS→motor→TTS-anrop verifieras utan människa.
+  Davids enhet behövs då bara för det riktiga: Bluetooth-ljud, batteri, OEM-beteende.
+- **iOS-prioritet omprövas vid Fas 3-grinden** (tidigare än plan): Sverige är ~60 % iOS
+  och grundaren kan inte dogfooda sin egen produkt förrän Swift-porten finns.
+  Motorvektorerna är plattformsfria by design — porten är förberedd.
+- Play-kontot imorgon påverkas INTE (det är för publicering, inte Davids enhet).
+
