@@ -55,6 +55,15 @@ write("kameror.geojson", fc(kameror.rows.map(r => ({
   type: "Feature", geometry: r.g,
   properties: { name: r.name, road: r.road_number, bearing: r.bearing } }))));
 
+// Wildlife: county-level stats ONLY (polisen GPS = länscentrum, DECISIONS #13 — no fake points)
+const vilt = await pool.query(`
+  SELECT count(*) FILTER (WHERE datetime > now() - interval '24 hours') AS dygn,
+         count(*) FILTER (WHERE datetime > now() - interval '7 days') AS vecka,
+         (SELECT species FROM polisen_events
+          WHERE datetime > now() - interval '7 days' AND species IS NOT NULL
+          GROUP BY species ORDER BY count(*) DESC LIMIT 1) AS vanligast
+  FROM polisen_events`);
+
 // Halka stats for the VMS ticker
 const stats = {
   generated_at: new Date().toISOString(),
@@ -64,6 +73,9 @@ const stats = {
   kalla_stationer: vader.rows.filter(r => r.surface_temp_c !== null && Number(r.surface_temp_c) <= 0).length,
   olyckor: olyckor.rows.length,
   kameror: kameror.rows.length,
+  vilt_dygn: Number(vilt.rows[0]?.dygn ?? 0),
+  vilt_vecka: Number(vilt.rows[0]?.vecka ?? 0),
+  vilt_vanligast: vilt.rows[0]?.vanligast ?? null,
 };
 write("meta.json", stats);
 await pool.end();

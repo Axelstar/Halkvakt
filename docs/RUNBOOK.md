@@ -33,3 +33,10 @@ Claude the new password — or edit DATABASE_URL yourself (percent-encode specia
   only everywhere, ignores the permission list. (3) Nothing applies until Update
   is clicked. The active token covers both repos: Contents/Actions/Secrets/
   Workflows/Pages RW. Second (read-only) PAT from same date should be revoked.
+
+## Polisen events-API — kända egenheter
+- `?type=Trafikolycka%2C%20vilt` returnerar IBLAND ofiltrerad feed (cache-nyck hos polisen).
+  `parseEvents` filtrerar defensivt på type klientsidan; enstaka ofiltrerade svar minskar
+  bara pollnings-djupet, arkivet ackumulerar ändå komplett över tid (poll var 30:e min).
+- Tider har ENSIFFRIGA timmar ("9:43:26") — parsern nollutfyller. Rör ej utan test.
+- GPS = länscentrum. Får ALDRIG bli punktvarningar eller kartpunkter (DECISIONS #13).

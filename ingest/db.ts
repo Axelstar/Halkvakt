@@ -36,8 +36,9 @@ export async function writeAll(data: {
   conditions: TvResult<RoadConditionSeg>;
   cameras: TvResult<CameraSite>;
   deviations: TvResult<Deviation>;
+  wildlife?: { items: import("./sources/polisen.ts").WildlifeEvent[] };
 }): Promise<Record<string, number>> {
-  const counts: Record<string, number> = { cameras: 0, road_conditions: 0, history: 0, weather: 0, deviations: 0 };
+  const counts: Record<string, number> = { cameras: 0, road_conditions: 0, history: 0, weather: 0, deviations: 0, wildlife: 0 };
   const pool = makePool();
   const client = await pool.connect();
   try {
@@ -161,6 +162,21 @@ export async function writeAll(data: {
          col(c, x => x.lon), col(c, x => x.lat), col(c, x => x.wgs84Line), col(c, x => x.startTime),
          col(c, x => x.endTime), col(c, x => x.iconId), col(c, x => x.modifiedTime), col(c, x => x.deleted)]);
       counts.deviations += c.length;
+    }
+
+    for (const c of chunks(data.wildlife?.items ?? [])) {
+      await client.query(
+        `INSERT INTO polisen_events (event_id, datetime, county_name, geom, summary, url, road_number, species, place_hint)
+         SELECT u.event_id, u.datetime, u.county_name, ST_SetSRID(ST_MakePoint(u.lon, u.lat), 4326),
+                u.summary, u.url, u.road_number, u.species, u.place_hint
+         FROM UNNEST($1::bigint[],$2::timestamptz[],$3::text[],$4::float8[],$5::float8[],
+                     $6::text[],$7::text[],$8::text[],$9::text[],$10::text[])
+              AS u(event_id, datetime, county_name, lon, lat, summary, url, road_number, species, place_hint)
+         ON CONFLICT (event_id) DO NOTHING`,
+        [col(c, x => x.eventId), col(c, x => x.datetime), col(c, x => x.countyName),
+         col(c, x => x.lon), col(c, x => x.lat), col(c, x => x.summary), col(c, x => x.url),
+         col(c, x => x.roadNumber), col(c, x => x.species), col(c, x => x.placeHint)]);
+      counts.wildlife += c.length;
     }
 
     for (const [source, id] of [

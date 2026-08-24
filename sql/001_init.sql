@@ -112,3 +112,19 @@ ALTER TABLE waitlist ENABLE ROW LEVEL SECURITY;
 DO $$ BEGIN
   CREATE POLICY waitlist_anon_insert ON waitlist FOR INSERT TO anon WITH CHECK (true);
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+-- Polisen viltolyckor. GPS = LÄNSCENTRUM (se DECISIONS #13) — aldrig punktvarningar.
+-- Arkiveras för hotspot-utvinning ur fritext (road_number/species/place_hint).
+CREATE TABLE IF NOT EXISTS polisen_events (
+  event_id bigint PRIMARY KEY,
+  datetime timestamptz NOT NULL,
+  county_name text NOT NULL,
+  geom geometry(Point, 4326) NOT NULL,
+  summary text NOT NULL,
+  url text NOT NULL,
+  road_number text,
+  species text,
+  place_hint text,
+  ingested_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS polisen_events_dt_idx ON polisen_events (datetime DESC);
