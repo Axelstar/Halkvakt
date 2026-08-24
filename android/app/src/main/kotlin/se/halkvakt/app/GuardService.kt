@@ -57,6 +57,7 @@ class GuardService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startForeground(NOTIF_ID, buildNotification("Halkvakt aktiv — inga varningar just nu"))
+        running = true
         loadSnapshotAsync()
         startLocationUpdates()
         AlertBus.post("Tjänsten startad. Laddar vägdata …")
@@ -147,6 +148,7 @@ class GuardService : Service() {
     }
 
     override fun onDestroy() {
+        running = false
         fused.removeLocationUpdates(callback)
         tts?.shutdown()
         AlertBus.post("Tjänsten stoppad.")
@@ -155,6 +157,8 @@ class GuardService : Service() {
 
     companion object {
         private const val NOTIF_ID = 1
+        /** Read by autostart glue: idempotent starts, BT learning. Set on the main thread. */
+        @Volatile var running = false
         fun start(ctx: Context) = ctx.startForegroundService(Intent(ctx, GuardService::class.java))
         fun stop(ctx: Context) = ctx.stopService(Intent(ctx, GuardService::class.java))
     }
