@@ -1,7 +1,7 @@
 name: publish-map
 on:
   schedule:
-    - cron: "12,42 * * * *"   # 12 min after each ingest tick
+    - cron: "12,42 * * * *"
   workflow_dispatch: {}
 jobs:
   publish:
@@ -15,11 +15,17 @@ jobs:
       - run: npm ci
       - run: node --experimental-strip-types publish/build-map-data.ts out
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
-      - name: Push data to public map repo
+      - name: Diagnose token (temporary)
+        env: { T: "${{ secrets.PUBLISH_TOKEN }}" }
         run: |
-          git clone --depth 1 "https://x-access-token:${{ secrets.PUBLISH_TOKEN }}@github.com/Axelstar/halkvakt-karta.git" karta
-          mkdir -p karta/data && cp out/* karta/data/
-          cd karta && git add data
+          echo "token length: ${#T}"
+          curl -s -o /dev/null -w "api repo probe: %{http_code}\n" -H "Authorization: Bearer $T" https://api.github.com/repos/Axelstar/halkvakt-karta
+      - name: Push data to public map repo
+        env: { T: "${{ secrets.PUBLISH_TOKEN }}" }
+        run: |
+          git clone --depth 1 "https://oauth2:${T}@github.com/Axelstar/halkvakt-karta.git" /tmp/karta
+          mkdir -p /tmp/karta/data && cp out/* /tmp/karta/data/
+          cd /tmp/karta && git add data
           if git diff --cached --quiet; then echo "no changes"; exit 0; fi
           git -c user.name="halkvakt-bot" -c user.email="bot@halkvakt.dev" commit -qm "data: $(date -u +%FT%TZ)"
-          git push -q
+          git push -q "https://oauth2:${T}@github.com/Axelstar/halkvakt-karta.git" HEAD:main
