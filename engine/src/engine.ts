@@ -21,7 +21,10 @@ interface FiredState { t: number; odometerM: number; }
 
 interface Candidate { hazard: Hazard; kind: HazardKind; distM: number; }
 
-const SLIPPERY_INFO = /is|snö|halka|frost|mycket besvärligt/i;
+// Swedish word-start boundary: "Isfläckar"/"Svår halka" match; "fläckvis Våt" must NOT
+// (the substring 'is' inside "fläckvis" produced 8 false halka-segments on real August
+// data — see test "fläckvis is not halka").
+const SLIPPERY_INFO = /(?<![a-zåäö])(is|snö|halka|frost|mycket besvärligt)/i;
 
 export class AlertEngine {
   private readonly cfg: EngineConfig;

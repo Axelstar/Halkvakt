@@ -94,3 +94,19 @@ test("determinism: identical input ⇒ byte-identical alert log", () => {
     assert.equal(a, b);
   }
 });
+
+test("fläckvis is not halka — Swedish word boundaries in slippery matching", () => {
+  const trace: Fix[] = Array.from({ length: 121 }, (_, t) => ({
+    t, lon: 15.0, lat: 58.0 + (t * 22.222) / 111320, speedKmh: 80,
+  }));
+  const seg = (info: string[]): Hazard => ({
+    id: "s", kind: "slippery_segment",
+    line: [[14.99, 58.018], [15.01, 58.018]], meta: { code: 1, info },
+  });
+  // Real August data that fooled the substring regex:
+  assert.equal(new AlertEngine([seg(["fläckvis Våt", "fläckvis Torrt"])]).run(trace).length, 0);
+  // Genuine winter vocabulary must still fire:
+  for (const info of [["Isfläckar"], ["Svår halka"], ["Packad snö"], ["Risk för halka"]]) {
+    assert.equal(new AlertEngine([seg(info)]).run(trace).length, 1, info.join());
+  }
+});

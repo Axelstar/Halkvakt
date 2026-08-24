@@ -49,7 +49,7 @@ const segs = await pool.query(`
   FROM road_conditions
   WHERE NOT deleted AND geom IS NOT NULL
     AND (condition_code >= 2 OR EXISTS (
-      SELECT 1 FROM unnest(condition_info) i WHERE i ~* 'is|snö|halka|frost'))`);
+      SELECT 1 FROM unnest(condition_info) i WHERE i ~* '(^|[^a-zåäö])(is|snö|halka|frost)'))`);
 const wx = await pool.query(`
   SELECT station_id, surface_temp_c, rain, snow, precipitation,
          ST_X(geom) AS lon, ST_Y(geom) AS lat
@@ -91,7 +91,7 @@ function emit(name: string, doc: unknown) {
   const json = JSON.stringify(doc);
   writeFileSync(join(outDir, name), json);
   const gz = gzipSync(Buffer.from(json)).length;
-  return { path: `app/v1/${name}`, sha256: createHash("sha256").update(json).digest("hex"), bytes: json.length, gz_bytes: gz };
+  return { path: `app/v1/${name}`, sha256: createHash("sha256").update(json).digest("hex"), bytes: Buffer.byteLength(json), gz_bytes: gz };
 }
 const fStatic = emit("static.json", staticDoc);
 const fLive = emit("live.json", liveDoc);

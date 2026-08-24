@@ -117,6 +117,7 @@ const scenarios: Scenario[] = [
       { id: "cam_side", kind: "camera", lon: eastOf(3000), lat: northOf(1000), bearing: 0 },
       { id: "wx_warm", kind: "icing_point", lon: LON0, lat: northOf(800), meta: { surfaceTempC: 12, moisture: false } },
       { id: "seg_normal", kind: "slippery_segment", line: [[LON0 - 0.01, northOf(600)], [LON0 + 0.01, northOf(600)]], meta: { code: 1, info: ["Våt"] } },
+      { id: "seg_flackvis", kind: "slippery_segment", line: [[LON0 - 0.01, northOf(900)], [LON0 + 0.01, northOf(900)]], meta: { code: 1, info: ["fläckvis Våt", "fläckvis Torrt"] } },
     ],
     trace: northTrace(120, 80),
   },

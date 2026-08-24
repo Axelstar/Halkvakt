@@ -51,6 +51,27 @@
      "Våt"
     ]
    }
+  },
+  {
+   "id": "seg_flackvis",
+   "kind": "slippery_segment",
+   "line": [
+    [
+     14.99,
+     58.00808480057492
+    ],
+    [
+     15.01,
+     58.00808480057492
+    ]
+   ],
+   "meta": {
+    "code": 1,
+    "info": [
+     "fläckvis Våt",
+     "fläckvis Torrt"
+    ]
+   }
   }
  ],
  "trace": [
