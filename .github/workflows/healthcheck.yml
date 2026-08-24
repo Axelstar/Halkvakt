@@ -5,6 +5,7 @@ on:
   workflow_dispatch: {}
 permissions:
   issues: write
+  contents: read
 jobs:
   check:
     runs-on: ubuntu-latest
