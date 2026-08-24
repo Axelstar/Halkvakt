@@ -112,3 +112,10 @@
 - Behörighetstrappan slutar i "Tillåt hela tiden"; Play-dossiern för den utkastad (docs/)
 - Kvar före beta: betaputs (larmljudnivå, batterisnålhet), rekryteringsmaterial
 
+## 2026-08-25 — Betaputs I: batteri, ljudkanal, ikon (S6)
+- GPS-takt styrs av avstånd till närmaste fara: 1 s inom 5 km, 5 s inom 20 km, 15 s bortom
+  — säkerhetsmarginalerna vid 140 km/h ligger som körbara prov (CadencePolicyTest)
+- Rösten går nu på navigationskanalen: rätt volymratt, korrekt routing över bil-Bluetooth
+- Adaptiv vektorikon: gul varningstriangel, utropstecken med snöflinga som prick
+- Kvar i betaputsen: rekryteringsmaterial (FB-inlägg + testarguide) — sist före betan
+

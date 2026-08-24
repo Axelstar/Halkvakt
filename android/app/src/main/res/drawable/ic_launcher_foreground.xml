@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Varningstriangel med utropstecken + snöflingeprick: halka + varning i en glyf. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <!-- Gul triangel med rundade hörn -->
+    <path android:fillColor="#FFC400"
+        android:pathData="M54,26 C56.5,26 58.8,27.4 60,29.6 L82.5,69.4 C84.9,73.6 81.9,78.8 77,78.8 L31,78.8 C26.1,78.8 23.1,73.6 25.5,69.4 L48,29.6 C49.2,27.4 51.5,26 54,26 Z"/>
+    <!-- Mörk innertriangel -->
+    <path android:fillColor="#0E1B25"
+        android:pathData="M54,33.5 L76.2,72.8 L31.8,72.8 Z"/>
+    <!-- Utropstecknets stapel (gul) -->
+    <path android:fillColor="#FFC400"
+        android:pathData="M51.6,45 L56.4,45 L55.6,60 L52.4,60 Z"/>
+    <!-- Snöflinge-asterisk som utropsteckenets prick -->
+    <path android:strokeColor="#7EC8E3" android:strokeWidth="2.2" android:strokeLineCap="round"
+        android:pathData="M54,62.6 L54,69.4 M51,64.3 L57,67.7 M57,64.3 L51,67.7"/>
+</vector>

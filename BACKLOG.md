@@ -43,5 +43,11 @@
     HalkvaktEngine — CoreLocation bakgrundsläge, AVSpeechSynthesizer sv-SE m. ducking,
     snapshot-synk (spegla SnapshotRepo), 2.5.4-dossier. *Verify: TestFlight-build + replay på simulator.*
 
+11. ~~Betaputs I~~ (S6: klart). Batteri: CadencePolicy — GPS 1 s/5 s/15 s efter avstånd
+    till närmaste fara (marginalbevis vid 140 km/h som körbart test); ljud: TTS på
+    navigationskanalen (USAGE_ASSISTANCE_NAVIGATION_GUIDANCE — rätt volym i bil-BT);
+    adaptiv appikon (triangel + snöflinga, vektor).
+    *Verified: 11/11 JVM-prov; APK bygger med ikon; emulator-CI grönt.*
+
 ## Questions for David
 All seven answered 2026-08-24 → DECISIONS.md #8–11. No open questions.

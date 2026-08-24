@@ -45,6 +45,13 @@ class GuardService : Service() {
         tts = TextToSpeech(this) { status ->
             if (status == TextToSpeech.SUCCESS) {
                 tts?.language = Locale("sv", "SE")
+                // Navigation-guidance stream: routes correctly over car Bluetooth and
+                // follows the navigation volume the driver already trusts, not media.
+                tts?.setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                        .build())
                 ttsReady = true
             }
         }
@@ -93,17 +100,31 @@ class GuardService : Service() {
                 headingDeg = if (loc.hasBearing()) bearingToDouble(loc.bearing) else null,
             )
             guard?.onLocation(fix)
+            retuneCadence(fix.lon, fix.lat)
         }
     }
 
     private fun bearingToDouble(b: Float): Double = ((b.toDouble()) % 360.0 + 360.0) % 360.0
 
+    private var currentIntervalMs = 0L
+
     @Suppress("MissingPermission") // MainActivity gates start on granted permission
-    private fun startLocationUpdates() {
-        val req = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000L)
-            .setMinUpdateIntervalMillis(1000L)
+    private fun startLocationUpdates(intervalMs: Long = CadencePolicy.NEAR_MS) {
+        currentIntervalMs = intervalMs
+        val req = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, intervalMs)
+            .setMinUpdateIntervalMillis(intervalMs)
             .build()
         fused.requestLocationUpdates(req, callback, Looper.getMainLooper())
+    }
+
+    /** Battery: far from every hazard → sparse GPS; near → full 1 Hz. Tiers proven in CadencePolicyTest. */
+    @Suppress("MissingPermission")
+    private fun retuneCadence(lon: Double, lat: Double) {
+        val wanted = CadencePolicy.intervalMs(guard?.nearestHazardM(lon, lat))
+        if (wanted != currentIntervalMs) {
+            fused.removeLocationUpdates(callback)
+            startLocationUpdates(wanted)
+        }
     }
 
     private fun speak(text: String) {
