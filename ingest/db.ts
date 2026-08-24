@@ -8,17 +8,25 @@ import { type RoadConditionSeg } from "./sources/roadcondition.ts";
 import { type CameraSite } from "./sources/cameras.ts";
 import { type Deviation } from "./sources/situations.ts";
 
+async function migrate(client: pg.PoolClient): Promise<void> {
+  const { readFileSync } = await import("node:fs");
+  const sql = readFileSync(new URL("../sql/001_init.sql", import.meta.url), "utf8");
+  await client.query(sql); // fully idempotent: CREATE ... IF NOT EXISTS throughout
+}
+
 export async function writeAll(data: {
   weather: TvResult<WeatherObs>;
   conditions: TvResult<RoadConditionSeg>;
   cameras: TvResult<CameraSite>;
   deviations: TvResult<Deviation>;
-}): Promise<void> {
+}): Promise<Record<string, number>> {
+  const counts: Record<string, number> = { cameras: 0, road_conditions: 0, history: 0, weather: 0, deviations: 0 };
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error("DATABASE_URL not set (use --dry-run without a database)");
   const pool = new pg.Pool({ connectionString: url, max: 3 });
   const client = await pool.connect();
   try {
+    await migrate(client);
     await client.query("BEGIN");
     // cameras: upsert current state
     for (const c of data.cameras.items) {
@@ -28,6 +36,7 @@ export async function writeAll(data: {
          ON CONFLICT (camera_id) DO UPDATE SET name=$2, road_number=$3, bearing=$4,
            geom=ST_SetSRID(ST_MakePoint($5,$6),4326), modified_time=$7, deleted=$8`,
         [c.cameraId, c.name, c.roadNumber, c.bearing, c.lon, c.lat, c.modifiedTime, c.deleted]);
+      counts.cameras++;
     }
     // road conditions: upsert current + append history row on change
     for (const r of data.conditions.items) {
@@ -41,11 +50,13 @@ export async function writeAll(data: {
            start_time=$8, end_time=$9, modified_time=$10, deleted=$11`,
         [r.segmentId, r.conditionCode, r.conditionText, r.conditionInfo, r.countyNos,
          r.roadNumber, r.wgs84Line, r.startTime, r.endTime, r.modifiedTime, r.deleted]);
+      counts.road_conditions++;
       await client.query(
         `INSERT INTO road_condition_history (segment_id, condition_code, condition_text,
            condition_info, modified_time, deleted)
          VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (segment_id, modified_time) DO NOTHING`,
         [r.segmentId, r.conditionCode, r.conditionText, r.conditionInfo, r.modifiedTime, r.deleted]);
+      counts.history++;
     }
     // weather: archive-policy filtered append
     for (const w of data.weather.items) {
@@ -61,6 +72,7 @@ export async function writeAll(data: {
          ON CONFLICT (station_id, sample_time) DO NOTHING`,
         [w.stationId, w.name, w.lon, w.lat, w.sampleTime, w.surfaceTempC, w.airTempC,
          w.dewpointC, w.humidityPct, w.precipitation, w.rain, w.snow]);
+      counts.weather++;
     }
     // deviations: upsert current
     for (const d of data.deviations.items) {
@@ -76,6 +88,7 @@ export async function writeAll(data: {
         [d.deviationId, d.situationId, d.messageType, d.messageTypeValue, d.message,
          d.severityCode, d.severityText, d.roadNumber, d.countyNos, d.lon, d.lat,
          d.wgs84Line, d.startTime, d.endTime, d.iconId, d.modifiedTime, d.deleted]);
+      counts.deviations++;
     }
     // persist changeids for delta sync next run
     for (const [source, id] of [
@@ -87,6 +100,7 @@ export async function writeAll(data: {
          ON CONFLICT (source) DO UPDATE SET last_change_id=$2, synced_at=now()`, [source, id]);
     }
     await client.query("COMMIT");
+    return counts;
   } catch (e) {
     await client.query("ROLLBACK");
     throw e;

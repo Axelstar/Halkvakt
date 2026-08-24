@@ -38,4 +38,5 @@ if (!process.env.DATABASE_URL) {
   process.exit(0);
 }
 const { writeAll } = await import("./db.ts");
-await writeAll({ weather, conditions, cameras, deviations });
+const counts = await writeAll({ weather, conditions, cameras, deviations });
+console.log("DB WRITE OK:", JSON.stringify(counts));
