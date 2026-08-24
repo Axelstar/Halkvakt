@@ -3,7 +3,7 @@
 1. ~~Self-steering layer~~ (this commit): CI integration tests vs throwaway PostGIS,
    hourly health check → auto GitHub Issue, docs, session protocol.
    *Verify: ci.yml green; healthcheck dispatch green; issue created on simulated failure.*
-2. **Public map** (marketing engine, PLAN §8.1): new PUBLIC repo `halkvakt-karta`
+2. ~~Public map~~ (S2: shipped; residual = Pages toggle + anon key for waitlist form) — (marketing engine, PLAN §8.1): new PUBLIC repo `halkvakt-karta`
    (GitHub Pages is free only on public repos; main repo stays private). MapLibre +
    OSM, layers from a small read-only JSON published by a new `publish-map-data`
    workflow (writes latest state to the public repo every 30 min; service-role key

@@ -27,3 +27,9 @@ Claude the new password — or edit DATABASE_URL yourself (percent-encode specia
   fine-grained PAT that the REST API accepts (200) on the same runner. Unsolved;
   publish/push-data.ts therefore commits via the Git Data API instead. Do not
   "simplify" it back to git push without testing from a runner.
+- Fine-grained PAT lessons (learned 2026-08-24, three times): (1) GET /repos
+  "permissions" shows the USER's rights, not the token's — never use it to verify
+  a token; test with a real write. (2) "Public repositories" access mode = read-
+  only everywhere, ignores the permission list. (3) Nothing applies until Update
+  is clicked. The active token covers both repos: Contents/Actions/Secrets/
+  Workflows/Pages RW. Second (read-only) PAT from same date should be revoked.

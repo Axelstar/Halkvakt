@@ -11,16 +11,23 @@
 
 ## Phase 0 exit criteria
 - [ ] Ingest green 7 consecutive days (started 2026-08-24 → check 2026-08-31)
-- [ ] Public map live (BACKLOG #2)
+- [~] Public map: site + data pipeline DONE (5 GeoJSON files auto-published every 30 min); awaiting Pages toggle
 - [ ] Replay harness produces deterministic alert logs (BACKLOG #3)
 - [ ] Kill-criterion verdict on first real ice events (Sep/Oct, Norrland)
 
 ## Waiting on David
-- Create PUBLIC repo `halkvakt-karta` (empty) and edit the PAT: add the new repo
-  to Repository access + add permission "Pages: Read and write" → unblocks BACKLOG #2
+- Enable Pages on halkvakt-karta (Settings → Pages → Branch: main → Save) — API
+  create 403s even with Pages permission; one-time manual toggle
+- Revoke the unused second PAT (public-read-only one from 2026-08-24)
 - Google Play account, privatperson (~w40; see DECISIONS #9)
 
 ## Session log
+- **S2 2026-08-25**: Public map shipped end-to-end. weather_latest table (map
+  needs current state; archive stays event-filtered). Map site (MapLibre,
+  VMS-ticker, waitlist vs Supabase RLS). Publisher commits via Git Data API
+  (git-over-HTTPS 403s with fine-grained PATs in ways REST does not — three
+  token lessons in RUNBOOK). Waitlist table live, needs anon key in
+  data/config.json to activate the form.
 - **S1 2026-08-24**: Plan, repo, ingesters for 4 sources (Situation needed
   ns=road.trafficinfo + schema 1.6), batched writes (run #2 timeout → 5 s),
   delta sync wired (was written-not-read), Supabase live (eu-north-1 pooler;
