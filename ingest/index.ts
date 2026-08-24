@@ -5,6 +5,7 @@ import { fetchRoadConditions } from "./sources/roadcondition.ts";
 import { fetchCameras } from "./sources/cameras.ts";
 import { fetchDeviations } from "./sources/situations.ts";
 import { fetchWildlifeEvents } from "./sources/polisen.ts";
+import { fetchSmhiWarnings, isWinterRelevant } from "./sources/smhi.ts";
 
 const apiKey = process.env.TRAFIKVERKET_API_KEY;
 if (!apiKey) { console.error("TRAFIKVERKET_API_KEY not set"); process.exit(1); }
@@ -20,12 +21,13 @@ if (!dryRun && hasDb) {
 }
 
 const t0 = Date.now();
-const [weather, conditions, cameras, deviations, wildlife] = await Promise.all([
+const [weather, conditions, cameras, deviations, wildlife, smhi] = await Promise.all([
   fetchWeather(apiKey, since.weather ?? "0"),
   fetchRoadConditions(apiKey, since.road_conditions ?? "0"),
   fetchCameras(apiKey, since.cameras ?? "0"),
   fetchDeviations(apiKey, since.deviations ?? "0"),
   fetchWildlifeEvents().catch((e) => { console.warn("polisen.se skipped:", e.message); return { items: [] }; }),
+  fetchSmhiWarnings().catch((e) => { console.warn("SMHI skipped:", e.message); return { items: [] }; }),
 ]);
 
 const coldStations = weather.items.filter(w => w.surfaceTempC !== null && w.surfaceTempC <= 5);
@@ -38,6 +40,7 @@ console.log(`live deviations kept: ${deviations.items.filter(d => !d.deleted).le
 const wl = wildlife.items;
 const wlRoads = wl.filter(w => w.roadNumber).length;
 console.log(`wildlife events:      ${wl.length} (road extracted: ${wlRoads}, species: ${wl.filter(w => w.species).length})`);
+console.log(`smhi warning areas:   ${smhi.items.length} (winter-relevant: ${smhi.items.filter(x => isWinterRelevant(x.eventCode)).length})`);
 for (const d of deviations.items.filter(d => !d.deleted).slice(0, 5)) {
   console.log(`  [${d.messageType}/${d.severityText ?? "-"}] ${d.roadNumber ?? "?"}: ${d.message.slice(0, 90)}`);
 }
@@ -49,5 +52,5 @@ if (!hasDb) {
 }
 const { writeAll } = await import("./db.ts");
 const t1 = Date.now();
-const counts = await writeAll({ weather, conditions, cameras, deviations, wildlife });
+const counts = await writeAll({ weather, conditions, cameras, deviations, wildlife, smhi });
 console.log(`DB WRITE OK in ${Date.now() - t1} ms:`, JSON.stringify(counts));

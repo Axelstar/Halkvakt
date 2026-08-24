@@ -37,8 +37,9 @@ export async function writeAll(data: {
   cameras: TvResult<CameraSite>;
   deviations: TvResult<Deviation>;
   wildlife?: { items: import("./sources/polisen.ts").WildlifeEvent[] };
+  smhi?: { items: import("./sources/smhi.ts").SmhiWarningArea[] };
 }): Promise<Record<string, number>> {
-  const counts: Record<string, number> = { cameras: 0, road_conditions: 0, history: 0, weather: 0, deviations: 0, wildlife: 0 };
+  const counts: Record<string, number> = { cameras: 0, road_conditions: 0, history: 0, weather: 0, deviations: 0, wildlife: 0, smhi: 0 };
   const pool = makePool();
   const client = await pool.connect();
   try {
@@ -177,6 +178,35 @@ export async function writeAll(data: {
          col(c, x => x.lon), col(c, x => x.lat), col(c, x => x.summary), col(c, x => x.url),
          col(c, x => x.roadNumber), col(c, x => x.species), col(c, x => x.placeHint)]);
       counts.wildlife += c.length;
+    }
+
+    if (data.smhi) {
+      await client.query(`DELETE FROM smhi_warnings`); // replace-all: feed IS the current truth
+      for (const c of chunks(data.smhi.items)) {
+        const params = [col(c, x => x.areaId), col(c, x => x.warningId), col(c, x => x.eventCode),
+          col(c, x => x.eventSv), col(c, x => x.levelCode), col(c, x => x.levelSv),
+          col(c, x => x.descriptionSv), col(c, x => x.areaName),
+          col(c, x => JSON.stringify(x.affectedAreas)),
+          col(c, x => x.geometry ? JSON.stringify(x.geometry) : null),
+          col(c, x => x.approximateStart), col(c, x => x.approximateEnd), col(c, x => x.published)];
+        await client.query(
+          `INSERT INTO smhi_warnings (area_id, warning_id, event_code, event_sv, level_code, level_sv,
+             description_sv, area_name, affected_areas, geom, approx_start, approx_end, published)
+           SELECT u.area_id, u.warning_id, u.event_code, u.event_sv, u.level_code, u.level_sv,
+                  u.description_sv, u.area_name, u.affected_areas::jsonb,
+                  CASE WHEN u.geom_json IS NULL THEN NULL ELSE ST_SetSRID(ST_GeomFromGeoJSON(u.geom_json), 4326) END,
+                  u.approx_start, u.approx_end, u.published
+           FROM UNNEST($1::bigint[],$2::bigint[],$3::text[],$4::text[],$5::text[],$6::text[],
+                       $7::text[],$8::text[],$9::text[],$10::text[],$11::timestamptz[],$12::timestamptz[],$13::timestamptz[])
+                AS u(area_id, warning_id, event_code, event_sv, level_code, level_sv,
+                     description_sv, area_name, affected_areas, geom_json, approx_start, approx_end, published)`, params);
+        await client.query(
+          `INSERT INTO smhi_warnings_history (area_id, published, warning_id, event_code, level_code, area_name, geom)
+           SELECT area_id, published, warning_id, event_code, level_code, area_name, geom
+           FROM smhi_warnings WHERE area_id = ANY($1::bigint[])
+           ON CONFLICT (area_id, published) DO NOTHING`, [col(c, x => x.areaId)]);
+        counts.smhi += c.length;
+      }
     }
 
     for (const [source, id] of [

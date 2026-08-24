@@ -128,3 +128,31 @@ CREATE TABLE IF NOT EXISTS polisen_events (
   ingested_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS polisen_events_dt_idx ON polisen_events (datetime DESC);
+
+-- SMHI-varningar: aktuell bild (byts helt varje synk) + append-only historik (arkiv).
+CREATE TABLE IF NOT EXISTS smhi_warnings (
+  area_id bigint PRIMARY KEY,
+  warning_id bigint NOT NULL,
+  event_code text NOT NULL,
+  event_sv text NOT NULL,
+  level_code text NOT NULL,
+  level_sv text NOT NULL,
+  description_sv text,
+  area_name text,
+  affected_areas jsonb NOT NULL DEFAULT '[]',
+  geom geometry(Geometry, 4326),
+  approx_start timestamptz,
+  approx_end timestamptz,
+  published timestamptz NOT NULL
+);
+CREATE TABLE IF NOT EXISTS smhi_warnings_history (
+  area_id bigint NOT NULL,
+  published timestamptz NOT NULL,
+  warning_id bigint NOT NULL,
+  event_code text NOT NULL,
+  level_code text NOT NULL,
+  area_name text,
+  geom geometry(Geometry, 4326),
+  archived_at timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY (area_id, published)
+);

@@ -64,6 +64,13 @@ const vilt = await pool.query(`
           GROUP BY species ORDER BY count(*) DESC LIMIT 1) AS vanligast
   FROM polisen_events`);
 
+// SMHI: winter-relevant warnings for the ticker (highest level first)
+const smhiW = await pool.query(`
+  SELECT event_sv, level_sv, level_code, area_name
+  FROM smhi_warnings
+  WHERE event_code ~* 'SNOW|ICE|ICING|COLD|WIND'
+  ORDER BY array_position(ARRAY['RED','ORANGE','YELLOW','MESSAGE'], level_code) LIMIT 3`);
+
 // Halka stats for the VMS ticker
 const stats = {
   generated_at: new Date().toISOString(),
@@ -76,6 +83,7 @@ const stats = {
   vilt_dygn: Number(vilt.rows[0]?.dygn ?? 0),
   vilt_vecka: Number(vilt.rows[0]?.vecka ?? 0),
   vilt_vanligast: vilt.rows[0]?.vanligast ?? null,
+  smhi_vinter: smhiW.rows.map(r => ({ event: r.event_sv, niva: r.level_sv, niva_kod: r.level_code, omrade: r.area_name })),
 };
 write("meta.json", stats);
 await pool.end();
