@@ -1,0 +1,44 @@
+name: healthcheck
+on:
+  schedule:
+    - cron: "17 * * * *"   # hourly, offset from ingest
+  workflow_dispatch: {}
+permissions:
+  issues: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - id: hc
+        run: npm run healthcheck 2>&1 | tee hc.log
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+      - name: File incident issue on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const log = fs.existsSync('hc.log') ? fs.readFileSync('hc.log','utf8').slice(-1500) : '(no log)';
+            const open = await github.rest.issues.listForRepo({ ...context.repo, state: 'open', labels: 'incident' });
+            const body = `Health check failed at ${new Date().toISOString()}\n\n\`\`\`\n${log}\n\`\`\`\nSee docs/RUNBOOK.md.`;
+            if (open.data.length) {
+              await github.rest.issues.createComment({ ...context.repo, issue_number: open.data[0].number, body });
+            } else {
+              await github.rest.issues.create({ ...context.repo, title: '🚨 Data pipeline unhealthy',
+                labels: ['incident'], body });
+            }
+      - name: Auto-close incident when healthy
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const open = await github.rest.issues.listForRepo({ ...context.repo, state: 'open', labels: 'incident' });
+            for (const i of open.data) {
+              await github.rest.issues.createComment({ ...context.repo, issue_number: i.number, body: '✅ Healthy again — auto-closing.' });
+              await github.rest.issues.update({ ...context.repo, issue_number: i.number, state: 'closed' });
+            }

@@ -6,7 +6,8 @@
   "scripts": {
     "ingest": "node --experimental-strip-types ingest/index.ts",
     "ingest:dry": "node --experimental-strip-types ingest/index.ts --dry-run",
-    "test": "node --experimental-strip-types --test test/*.test.ts"
+    "test": "node --experimental-strip-types --test test/*.test.ts",
+    "healthcheck": "node --experimental-strip-types ingest/healthcheck.ts"
   },
   "dependencies": {
     "pg": "^8.13.0"

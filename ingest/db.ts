@@ -18,7 +18,8 @@ function col<T, K>(rows: T[], f: (r: T) => K): K[] { return rows.map(f); }
 function makePool(): pg.Pool {
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error("DATABASE_URL not set (use --dry-run without a database)");
-  return new pg.Pool({ connectionString: url, max: 1, ssl: { rejectUnauthorized: false } });
+  const ssl = url.includes("localhost") ? undefined : { rejectUnauthorized: false };
+  return new pg.Pool({ connectionString: url, max: 1, ssl });
 }
 
 export async function readSyncState(): Promise<Record<string, string>> {

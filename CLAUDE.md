@@ -55,3 +55,13 @@ Define success criteria. Loop until verified.
 
 **Language:** code + comments in English; all user-facing strings in `strings/sv.xml`
 first, English second.
+
+## Session protocol (self-steering)
+Every session, in order:
+1. Read STATUS.md, BACKLOG.md, DECISIONS.md, latest CI runs.
+2. Take the top unblocked BACKLOG item. Build against its *Verify* line.
+3. Prove it: tests/CI/logs — never claim done without evidence.
+4. Commit with a message explaining what + why. Update STATUS.md (state + session
+   log) and BACKLOG.md. Log decisions in DECISIONS.md.
+5. End by telling David: what shipped, what's next, and ONLY the questions that
+   block progress. Batch questions; never drip them.
