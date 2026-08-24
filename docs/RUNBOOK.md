@@ -21,3 +21,9 @@ Claude the new password — or edit DATABASE_URL yourself (percent-encode specia
   TrafficSafetyCamera 1. Delta via changeid; LASTCHANGEID in every response.
 - Supabase: use the POOLER url (aws-0-eu-north-1...:6543). Direct db.*:5432 is
   IPv6-only → fails from GitHub Actions and most sandboxes.
+
+## Known weirdness
+- Git-over-HTTPS from Actions runners returns 403 against halkvakt-karta with a
+  fine-grained PAT that the REST API accepts (200) on the same runner. Unsolved;
+  publish/push-data.ts therefore commits via the Git Data API instead. Do not
+  "simplify" it back to git push without testing from a runner.

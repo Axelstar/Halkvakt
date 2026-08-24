@@ -15,17 +15,5 @@ jobs:
       - run: npm ci
       - run: node --experimental-strip-types publish/build-map-data.ts out
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
-      - name: Diagnose token (temporary)
-        env: { T: "${{ secrets.PUBLISH_TOKEN }}" }
-        run: |
-          echo "token length: ${#T}"
-          curl -s -o /dev/null -w "api repo probe: %{http_code}\n" -H "Authorization: Bearer $T" https://api.github.com/repos/Axelstar/halkvakt-karta
-      - name: Push data to public map repo
-        env: { T: "${{ secrets.PUBLISH_TOKEN }}" }
-        run: |
-          git clone --depth 1 "https://oauth2:${T}@github.com/Axelstar/halkvakt-karta.git" /tmp/karta
-          mkdir -p /tmp/karta/data && cp out/* /tmp/karta/data/
-          cd /tmp/karta && git add data
-          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
-          git -c user.name="halkvakt-bot" -c user.email="bot@halkvakt.dev" commit -qm "data: $(date -u +%FT%TZ)"
-          git push -q "https://oauth2:${T}@github.com/Axelstar/halkvakt-karta.git" HEAD:main
+      - run: node --experimental-strip-types publish/push-data.ts out
+        env: { PUBLISH_TOKEN: "${{ secrets.PUBLISH_TOKEN }}" }
