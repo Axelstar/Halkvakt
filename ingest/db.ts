@@ -93,10 +93,10 @@ export async function writeAll(data: {
         `INSERT INTO road_condition_history (segment_id, condition_code, condition_text, condition_info, modified_time, deleted)
          SELECT u.segment_id, u.condition_code, u.condition_text,
                 ARRAY(SELECT jsonb_array_elements_text(u.condition_info::jsonb)), u.modified_time, u.deleted
-         FROM UNNEST($1::text[],$2::int[],$3::text[],$4::text[],$10::timestamptz[],$11::bool[])
+         FROM UNNEST($1::text[],$2::int[],$3::text[],$4::text[],$5::timestamptz[],$6::bool[])
               AS u(segment_id, condition_code, condition_text, condition_info, modified_time, deleted)
          ON CONFLICT (segment_id, modified_time) DO NOTHING`,
-        [args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10]]);
+        [args[0], args[1], args[2], args[3], args[9], args[10]]);
       counts.road_conditions += c.length;
       counts.history += c.length;
     }
