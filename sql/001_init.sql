@@ -103,6 +103,11 @@ CREATE TABLE IF NOT EXISTS waitlist (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE UNIQUE INDEX IF NOT EXISTS waitlist_email_idx ON waitlist (lower(email));
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'anon') THEN
+    CREATE ROLE anon NOLOGIN;  -- exists on Supabase; created here for CI's vanilla PostGIS
+  END IF;
+END $$;
 ALTER TABLE waitlist ENABLE ROW LEVEL SECURITY;
 DO $$ BEGIN
   CREATE POLICY waitlist_anon_insert ON waitlist FOR INSERT TO anon WITH CHECK (true);
