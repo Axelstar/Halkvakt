@@ -28,3 +28,19 @@ Beslut vid implementation av PLAN §1, låsta som testvektorer (engine/vectors/)
   låst av invarianttest (inte bara vektorfacit).
 - Vektorerna är kontraktet för Kotlin/Swift-portarna: samma JSON in, samma logg ut, byte-identiskt.
 
+## 13. Viltlagret: ärlighet före funktion (2026-08-25, Claude)
+Verifierat mot levande data: polisens händelse-API ger LÄNSCENTRUM som koordinat (Jämtlands
+alla viltolyckor "ligger" på samma punkt), och flödet är en kurerad rännil (~85 händelser
+på ett halvår; Sverige har ~60 000 viltolyckor/år — merparten rapporteras till NVR, inte
+polisens flöde). Viltolycka.se är botlåst (403), ingen öppen maskindata funnen.
+Beslut:
+- **Röstvarning A4 vilande** tills segmentkvalitativ hotspot-data finns. Disciplinregeln
+  "säg bara vad datan bär" förbjuder "vanlig olycksplats" på länsnivå. Motor + vektor (v13)
+  står redo att slås på.
+- **Arkivera polisen-händelser från idag** med väg/art/plats extraherat ur fritexten
+  (träff: 67 % väg, 95 % art på riktig data) — månader av detta = egen hotspot-grund.
+- **Kartan visar statistik, inte punkter**: ticker på länsnivå ("4 VILTOLYCKOR SENASTE
+  VECKAN — MEST REN"). Inga låtsasprickar på länscentrum.
+- Framtida A4-väg: eget arkiv + ev. NVDB/Lastkajen (viltstängsel-lager) + NVR-kontakt
+  (partnerpitch finns redan i PLAN §8.6 — datadelning kan ingå).
+

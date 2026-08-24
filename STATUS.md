@@ -49,3 +49,10 @@
 - 21/21 tester gröna lokalt; determinism byte-verifierad
 - Nästa: BACKLOG #4 viltlagret (polisen.se + NVR-hotspots)
 
+## 2026-08-25 — Viltlager del 1 KLAR (BACKLOG #4)
+- ingest/sources/polisen.ts: viltolyckor arkiveras var 30:e min; väg/art/plats ur fritext
+- polisen_events i DB; ticker visar länsstatistik ("4 VILTOLYCKOR SENASTE VECKAN — MEST REN")
+- A4-röstvarning medvetet VILANDE (DECISIONS #13) — datan bär inte punktpåståenden än
+- 24/24 tester gröna (nytt: polisen-parser mot riktig fixture + kantfall)
+- Nästa: BACKLOG #5 SMHI-varningar
+

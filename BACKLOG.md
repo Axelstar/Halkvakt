@@ -13,9 +13,10 @@
 3. ~~Alert engine v0 + replay harness~~ (S3: shipped): engine/src/, 13 vectors +
    real-data fixture (skane_vag108), replay CLI, determinism + invariant tests.
    *Verified: 13 vectors green; real Skåne snapshot ⇒ only camera alerts, throttle live; byte-identical reruns.*
-4. **Wildlife layer**: polisen.se events ingester (Viltolycka) + NVR historical
-   hotspot model (static seasonal/hourly risk scores).
-   *Verify: polisen events land in DB with geometry; risk table covers top roads; vectors for A4 timing.*
+4. ~~Wildlife layer, del 1~~ (S3: polisen-ingester + arkiv + kartstatistik klart; A4-röst
+   VILANDE per DECISIONS #13 — hotspot-modellen kräver data vi bygger själva över tid).
+   *Verified: events i DB (4 st senaste veckan = källan exakt), extraktion 67/95 %, ticker live.*
+   Restpunkt (låst, väntar på arkivmognad ~dec): hotspot-modell ur eget arkiv + NVDB viltstängsel.
 5. **SMHI warnings ingester** (county-level halka warnings). *Verify: fixture test + rows in DB.*
 6. **Snapshot builder**: per-län gzipped JSON (static + live), manifest w/ checksums,
    published via workflow. *Verify: <3 MB/län gzipped; freshness ≤6 min; checksum validation test.*
