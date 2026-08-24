@@ -17,7 +17,6 @@ import android.os.Looper
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import com.google.android.gms.location.*
-import se.halkvakt.engine.AlertEngine
 import se.halkvakt.engine.Fix
 import java.util.Locale
 import kotlin.concurrent.thread
@@ -29,7 +28,7 @@ object AlertBus {
 
 class GuardService : Service() {
 
-    private var engine: AlertEngine? = null
+    private var guard: Guard? = null
     private lateinit var fused: FusedLocationProviderClient
     private var tts: TextToSpeech? = null
     private var ttsReady = false
@@ -67,7 +66,7 @@ class GuardService : Service() {
     private fun loadSnapshotAsync() = thread {
         try {
             val hazards = SnapshotRepo.loadHazards(this)
-            engine = AlertEngine(hazards)
+            guard = Guard(hazards, speak = ::speak, notify = ::updateNotification, onEvent = AlertBus::post)
             lastSnapshotLoad = System.currentTimeMillis()
             AlertBus.post("Vägdata laddad: ${hazards.size} faror i landet. Kör försiktigt.")
         } catch (e: Exception) {
@@ -85,10 +84,7 @@ class GuardService : Service() {
                 speedKmh = if (loc.hasSpeed()) loc.speed * 3.6 else null,
                 headingDeg = if (loc.hasBearing()) bearingToDouble(loc.bearing) else null,
             )
-            val alert = engine?.step(fix) ?: return
-            speak(alert.text)
-            AlertBus.post("🔊 ${alert.text} (${alert.distanceM} m)")
-            updateNotification(alert.text)
+            guard?.onLocation(fix)
         }
     }
 
