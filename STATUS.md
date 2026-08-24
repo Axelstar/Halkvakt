@@ -38,3 +38,14 @@
 - Skarpt verifierat med anon-nyckeln: INSERT 201 ✓, SELECT ger tom lista (RLS) ✓, DELETE påverkar 0 rader (bevisat via 409 på dubblett EFTER raderingsförsök) ✓, dubblettskydd 409 ✓, CORS från axelstar.github.io ✓
 - Testrader i waitlist: pipeline-test@halkvakt.dev, browser-test@halkvakt.dev (kan rensas via Table Editor)
 - Nästa: BACKLOG #3 varningsmotor v0 + replay-harness
+
+## 2026-08-25 — Varningsmotor v0 KLAR (BACKLOG #3)
+- engine/src/{types,geo,texts,engine}.ts — ren, deterministisk, noll beroenden, inga klockor
+- 13 testvektorer (engine/vectors/) täcker: korridor, prioritet-med-släpp, 45 s-spärr,
+  10 min/5 km-repris, fartspärr, tystnadskörning, segment- vs punkt-frasering
+- Verklig-data-fixture: dagens Skånekameror/väglag/väder + rutt väg 108 → 3 kameravarningar,
+  2 korrekt tystade av 45 s-regeln, 0 falsklarm från Normalt-segment/varma ytor
+- replay-CLI: node --experimental-strip-types engine/replay.ts <fil>
+- 21/21 tester gröna lokalt; determinism byte-verifierad
+- Nästa: BACKLOG #4 viltlagret (polisen.se + NVR-hotspots)
+

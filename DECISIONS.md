@@ -13,3 +13,18 @@
 | 9 | 2026-08-24 | Google Play: start as **privatperson**. Personal accounts (created after Nov 2023) need a closed test with ≥12 testers opted in 14 consecutive days before production — our planned Oct–Nov beta satisfies this by design. Cannot convert personal→org later, but CAN transfer the app to a new org account (needs org.nr + D-U-N-S, takes weeks) when B2B makes it worthwhile | Org account now | Org route = 4–8 weeks D-U-N-S paperwork for zero current benefit. |
 | 10 | 2026-08-24 | Waitlist stored in **our own Supabase** (insert-only table, RLS: anon may INSERT, never SELECT). No third-party form service | Tally/Formspree | Zero new accounts, GDPR-cleaner, emails become our beta pipeline directly. |
 | 11 | 2026-08-24 | Domain deferred until product warrants it (David). Standing mandate confirmed: Claude decides+logs all non-money/law/brand. Beta distribution stays human (David posts, Claude drafts) — auto-posting to FB groups is spam and gets accounts banned; capture+onboarding automated instead | Full automation | Authenticity + platform ToS. |
+
+## 12. Alert engine v0 semantics (2026-08-25, Claude)
+Beslut vid implementation av PLAN §1, låsta som testvektorer (engine/vectors/):
+- **45 s-regeln är hård, utan undantag** — även en olycka väntar inte in i fönstret utan SLÄPPS.
+  Enklast möjliga tolkning av spec; omprövas endast på betabevis (t.ex. "olycka bör få bryta efter 15 s").
+- **Repris-regeln tolkas som OCH**: samma fara tiger tills BÅDE 10 min gått OCH 5 km körts.
+  Strängaste läsningen = minst tjat.
+- **Fartspärr 15 km/h** + kontrakt: appen skickar alltid med telefonens dopplerfart när den finns
+  (härledd fart ur parkerings-jitter kan se ut som 20 km/h — v12 bevisar fällan).
+- **Kamerors riktningsfilter**: varna endast när färdriktning ligger inom 100° från kamerans
+  bevakningsriktning (bearing i data); kameror utan bearing varnar åt båda håll.
+- Segmentkälla får säga "på vägen framför dig", punktkälla endast "framöver" — kodat i texts.ts,
+  låst av invarianttest (inte bara vektorfacit).
+- Vektorerna är kontraktet för Kotlin/Swift-portarna: samma JSON in, samma logg ut, byte-identiskt.
+

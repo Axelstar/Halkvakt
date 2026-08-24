@@ -10,9 +10,9 @@
    NOT exposed — static JSON only). Swedish UI, "Appen kommer i november" banner.
    *Verify: page loads on phone; all 4 layers render; data ≤ 35 min old; no secrets in public repo.*
    *Unblocked when David creates public repo `halkvakt-karta` + extends token scope (see STATUS). Waitlist per DECISIONS #10 included.*
-3. **Alert engine v0 + replay harness**: pure TS module, corridor matching,
-   discipline rules (PLAN §1) as JSON test vectors in engine/vectors/.
-   *Verify: replay of synthetic + recorded traces gives byte-identical alert logs on rerun; all vectors green.*
+3. ~~Alert engine v0 + replay harness~~ (S3: shipped): engine/src/, 13 vectors +
+   real-data fixture (skane_vag108), replay CLI, determinism + invariant tests.
+   *Verified: 13 vectors green; real Skåne snapshot ⇒ only camera alerts, throttle live; byte-identical reruns.*
 4. **Wildlife layer**: polisen.se events ingester (Viltolycka) + NVR historical
    hotspot model (static seasonal/hourly risk scores).
    *Verify: polisen events land in DB with geometry; risk table covers top roads; vectors for A4 timing.*
