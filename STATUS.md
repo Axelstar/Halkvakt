@@ -81,3 +81,10 @@
 - CI fångade eftersläpande integrationstest (counts-objektet) — utökat med wildlife/smhi-täckning
 - Allt grönt: ci ✓ android ✓ ingest ✓ publish ✓
 
+## 2026-08-25 — Emulatortest i CI KLART (BACKLOG #8)
+- Virtuell Android bootas i Actions vid varje push: APK installeras, MainActivity startar,
+  Skånefixturen replayas genom appens Guard-pipeline på riktiga Android-runtimen
+- TRE runtimes bevisat identiska på samma frysta facit: TypeScript, Kotlin/JVM, Kotlin/ART
+- Davids enhetstest krymper till det bara verkligheten kan ge: Bluetooth-ljud, batteri, OEM
+- Nästa: #9 engine.updateHazards, därefter autostart (AR + Bluetooth)
+
