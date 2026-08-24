@@ -16,8 +16,9 @@
 - [ ] Kill-criterion verdict on first real ice events (Sep/Oct, Norrland)
 
 ## Waiting on David
-- Answers to the open questions in BACKLOG.md §Questions
-- Google Play account (~w40)
+- Create PUBLIC repo `halkvakt-karta` (empty) and edit the PAT: add the new repo
+  to Repository access + add permission "Pages: Read and write" → unblocks BACKLOG #2
+- Google Play account, privatperson (~w40; see DECISIONS #9)
 
 ## Session log
 - **S1 2026-08-24**: Plan, repo, ingesters for 4 sources (Situation needed
