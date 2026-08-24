@@ -1,12 +1,12 @@
 {
  "name": "Isrisk vid mätstation (A2)",
- "description": "Station 2 km fram: yttemp 0.4 °C + fukt. Varnar med punkt-frasen 'framöver'.",
+ "description": "Station 1,9 km fram: yttemp 0.4 °C + fukt. Varnar med punkt-frasen 'framöver'. (1900 m, inte 2000: designregeln — gränsen får inte tangera en fixposition.)",
  "hazards": [
   {
    "id": "wx1",
    "kind": "icing_point",
    "lon": 15,
-   "lat": 58.01796622349982,
+   "lat": 58.017067912324826,
    "meta": {
     "surfaceTempC": 0.4,
     "moisture": true
@@ -622,10 +622,10 @@
  ],
  "expected": [
   {
-   "t": 61,
+   "t": 56,
    "hazardId": "wx1",
    "kind": "icing_point",
-   "distanceM": 644,
+   "distanceM": 655,
    "text": "Isrisk framöver — vägbanan nära noll grader."
   }
  ]

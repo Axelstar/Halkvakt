@@ -88,3 +88,11 @@
 - Davids enhetstest krymper till det bara verkligheten kan ge: Bluetooth-ljud, batteri, OEM
 - Nästa: #9 engine.updateHazards, därefter autostart (AR + Bluetooth)
 
+## 2026-08-25 — SWIFT-MOTORN KLAR: iOS-åtagande verkställt (DECISIONS #17)
+- ios/HalkvaktEngine: komplett port; alla delade vektorer + Skånefixtur identiska — TRE
+  runtimes (Node/JVM/Swift-Linux) mot samma frysta facit, alla gröna ikväll
+- ios-engine.yml vaktar kontraktet vid varje push (Linux = gratis minuter)
+- Vektordesignregel tillagd efter knivseggs-fynd i v08 (2 cm-marginal → libm avgjorde);
+  v08 flyttad till robust marginal, alla sviter omkörda
+- iOS-appen startas vid Fas 3-grinden; Davids Apple-konto (~1 050 kr/år) behövs i okt
+

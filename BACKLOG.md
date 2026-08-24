@@ -31,7 +31,10 @@
 8. ~~Emulator-smoketest i CI~~ (S4: klart). Guard-klass utbruten ur tjänsten; instrumenterade
    tester: MainActivity-boot + Skånereplay genom appens pipeline på ART med fejk-TTS/notis.
    *Verified: emulatorjobb grönt i android.yml; tre runtimes (Node/JVM/ART) ger identisk logg.*
-9. **engine.updateHazards** i TS+Kotlin + delad vektor (state överlever snapshotbyte) — krävs före beta.
+9. **engine.updateHazards** i TS+Kotlin+Swift + delad vektor (state överlever snapshotbyte) — krävs före beta.
+10. **iOS-app-skelett** (LÅST till Fas 3-grinden, DECISIONS #17): SwiftUI-skal runt
+    HalkvaktEngine — CoreLocation bakgrundsläge, AVSpeechSynthesizer sv-SE m. ducking,
+    snapshot-synk (spegla SnapshotRepo), 2.5.4-dossier. *Verify: TestFlight-build + replay på simulator.*
 
 ## Questions for David
 All seven answered 2026-08-24 → DECISIONS.md #8–11. No open questions.

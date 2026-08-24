@@ -81,3 +81,17 @@ Fakta: Davids enda telefon är en iPhone; Android-appen kan inte köras på den.
   Motorvektorerna är plattformsfria by design — porten är förberedd.
 - Play-kontot imorgon påverkas INTE (det är för publicering, inte Davids enhet).
 
+## 17. iOS lyfts från "Fas 5 kanske" till åtagande (2026-08-25, David + Claude)
+David: "iOS är något vi måste ha support för." Verkställt samma kväll:
+- **Swift-motorn FINNS och är bevisad**: ios/HalkvaktEngine klarar alla delade vektorer +
+  Skånefixturen identiskt med TS och Kotlin. Tre runtimes, ett fruset facit, CI-vaktat
+  (ios-engine.yml — körs på Linux, gratis; macOS-minuter behövs först för själva appen).
+- **Sekvens**: Android-betan (okt) förblir först — Fas 0-domen måste falla innan två appar
+  underhålls. iOS-APPEN startas vid Fas 3-grinden om betasignalen är god: TestFlight-beta
+  nov, publik iOS-lansering i eller strax efter Android-fönstret (dec/jan).
+- **Davids pengagrind i okt**: Apple Developer Program 99 USD/år (~1 050 kr).
+- Kartan/butiken visar "iOS kommer" från dag ett; väntelistan fångar iPhone-användare.
+- Vektordesignregel ur porten: eligibility-gränser får aldrig ligga <~1 m från en
+  fixposition (v08 låg 2 cm från en — avgjordes av plattformarnas libm-avrundning,
+  inte av semantik; flyttad till robust marginal, alla tre sviter omkörda gröna).
+

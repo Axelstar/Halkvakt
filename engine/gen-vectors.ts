@@ -3,6 +3,9 @@
 //   1. Scenarios are constructed from first principles (positions, speeds, geometry).
 //   2. The engine computes the alert log; this script prints an audit table.
 //   3. A human (Claude) checks the numbers against hand calculation, THEN freezes.
+//   DESIGN RULE (learned from the Swift port): never place an eligibility boundary
+//   within ~1 m of an integer-second fix position — sub-cm margins are decided by
+//   platform libm rounding, not by engine semantics. Keep margins ≥ 5 m.
 //   4. test/engine.test.ts locks the frozen logs + independent invariants forever.
 // Regenerate only on a deliberate spec change: node --experimental-strip-types engine/gen-vectors.ts
 
@@ -92,8 +95,8 @@ const scenarios: Scenario[] = [
   },
   {
     file: "v08_icing_point", name: "Isrisk vid mätstation (A2)",
-    description: "Station 2 km fram: yttemp 0.4 °C + fukt. Varnar med punkt-frasen 'framöver'.",
-    hazards: [{ id: "wx1", kind: "icing_point", lon: LON0, lat: northOf(2000), meta: { surfaceTempC: 0.4, moisture: true } }],
+    description: "Station 1,9 km fram: yttemp 0.4 °C + fukt. Varnar med punkt-frasen 'framöver'. (1900 m, inte 2000: designregeln — gränsen får inte tangera en fixposition.)",
+    hazards: [{ id: "wx1", kind: "icing_point", lon: LON0, lat: northOf(1900), meta: { surfaceTempC: 0.4, moisture: true } }],
     trace: northTrace(120, 80),
   },
   {

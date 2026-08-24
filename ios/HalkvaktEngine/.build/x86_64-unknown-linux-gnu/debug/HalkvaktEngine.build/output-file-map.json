@@ -1,0 +1,11 @@
+{
+  "": {
+    "swift-dependencies": "/tmp/hv/ios/HalkvaktEngine/.build/x86_64-unknown-linux-gnu/debug/HalkvaktEngine.build/master.swiftdeps"
+  },
+  "/tmp/hv/ios/HalkvaktEngine/Sources/HalkvaktEngine/Engine.swift": {
+    "dependencies": "/tmp/hv/ios/HalkvaktEngine/.build/x86_64-unknown-linux-gnu/debug/HalkvaktEngine.build/Engine.d",
+    "object": "/tmp/hv/ios/HalkvaktEngine/.build/x86_64-unknown-linux-gnu/debug/HalkvaktEngine.build/Engine.swift.o",
+    "swiftmodule": "/tmp/hv/ios/HalkvaktEngine/.build/x86_64-unknown-linux-gnu/debug/HalkvaktEngine.build/Engine~partial.swiftmodule",
+    "swift-dependencies": "/tmp/hv/ios/HalkvaktEngine/.build/x86_64-unknown-linux-gnu/debug/HalkvaktEngine.build/Engine.swiftdeps"
+  }
+}
