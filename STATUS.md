@@ -119,3 +119,12 @@
 - Adaptiv vektorikon: gul varningstriangel, utropstecken med snöflinga som prick
 - Kvar i betaputsen: rekryteringsmaterial (FB-inlägg + testarguide) — sist före betan
 
+## 2026-08-25 — Hemsida, SEO-grund & rekryteringsmaterial (S7)
+- halkvakt-karta är nu en riktig sajt: landningssida (hero, live-ticker, FAQ, betakö),
+  kartan på /karta.html, testarguide på /beta.html, sitemap+robots+JSON-LD
+- Väntelistan tar emot från tre källor: karta, landing, beta (alla skarptestade 201)
+- Två färdiga FB-inlägg + postningsplan i docs/REKRYTERING.md — inlägg A kan postas IDAG
+- halkvakt.se + .nu saknar DNS → ser lediga ut; Davids köp (~150 kr/år) låser upp #13–14
+- SEO-logik: innehåll publicerat nu hinner ranka till december; läns-sidorna blir vårt
+  unika innehåll (livedata ingen kan kopiera)
+

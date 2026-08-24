@@ -49,5 +49,16 @@
     adaptiv appikon (triangel + snöflinga, vektor).
     *Verified: 11/11 JVM-prov; APK bygger med ikon; emulator-CI grönt.*
 
+12. ~~Hemsida + SEO-grund + rekryteringsmaterial~~ (S7: klart). Landningssida på roten
+    (kartan flyttad till karta.html), beta.html-testarguide, sitemap/robots, JSON-LD
+    (FAQPage + MobileApplication), live-ticker på landningen; två FB-inlägg + postnings-
+    plan i docs/REKRYTERING.md. *Verified: alla sidor 200 live; väntelista 201 från båda
+    nya källorna (landing/beta); kartan intakt på nya adressen.*
+13. **Läns-sidor för SEO** ("Halka i Skåne just nu" ×21): statiska sidor genererade i
+    publiceringssteget ur livedatan — innehåll ingen konkurrent kan kopiera. Görs när
+    domänen finns så länkkraften hamnar rätt. *Verify: 21 sidor live m. färsk data + i sitemap.*
+14. **Domänflytt halkvakt.se** (väntar på Davids köp): CNAME-fil, Pages-config via API,
+    canonical/OG/sitemap-byte, 301-tänk. *Verify: https://halkvakt.se serverar sajten grönt cert.*
+
 ## Questions for David
 All seven answered 2026-08-24 → DECISIONS.md #8–11. No open questions.
