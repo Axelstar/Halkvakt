@@ -12,6 +12,7 @@ import { DEFAULT_CONFIG, PRIORITY, type Alert, type Fix, type Hazard } from "../
 
 interface VectorFile {
   name: string; hazards: Hazard[]; trace: Fix[]; expected: Alert[];
+  updates?: { atT: number; hazards: Hazard[] }[];
   config?: Record<string, number>;
 }
 
@@ -61,7 +62,15 @@ function assertInvariants(alerts: Alert[], trace: Fix[], label: string): void {
 for (const f of vectorFiles) {
   test(`vector ${f}`, () => {
     const v = loadVector(f);
-    const got = new AlertEngine(v.hazards, v.config ?? {}).run(v.trace);
+    const engine = new AlertEngine(v.hazards, v.config ?? {});
+    const updates: { atT: number; hazards: Hazard[] }[] = v.updates ?? [];
+    let u = 0;
+    const got: Alert[] = [];
+    for (const fix of v.trace) {
+      while (u < updates.length && fix.t >= updates[u].atT) engine.updateHazards(updates[u++].hazards);
+      const a = engine.step(fix);
+      if (a) got.push(a);
+    }
     assert.deepStrictEqual(got, v.expected, `${v.name}: alert log drifted from frozen vector`);
     assertInvariants(got, v.trace, f);
   });

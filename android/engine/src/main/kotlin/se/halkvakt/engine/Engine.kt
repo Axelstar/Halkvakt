@@ -4,9 +4,24 @@ package se.halkvakt.engine
 
 class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineConfig()) {
 
-    private val points = hazards.filterIsInstance<PointHazard>()
-    private val segments = hazards.filterIsInstance<SegmentHazard>()
-        .map { it to Geo.samplePolyline(it.line, cfg.segmentSampleM) }
+    private var points: List<PointHazard> = emptyList()
+    private var segments: List<Pair<SegmentHazard, List<DoubleArray>>> = emptyList()
+
+    init { ingest(hazards) }
+
+    private fun ingest(hazards: List<Hazard>) {
+        points = hazards.filterIsInstance<PointHazard>()
+        segments = hazards.filterIsInstance<SegmentHazard>()
+            .map { it to Geo.samplePolyline(it.line, cfg.segmentSampleM) }
+    }
+
+    /**
+     * Swap the hazard set mid-drive (fresh snapshot) WITHOUT losing memory: odometer,
+     * heading, cooldown clock and the fired-map survive, so the guard never re-announces
+     * something it just said. Ids are stable across snapshots; entries for vanished ids
+     * are kept on purpose (flicker-out/in must still obey the repeat rules).
+     */
+    fun updateHazards(hazards: List<Hazard>) = ingest(hazards)
 
     private var prevFix: Fix? = null
     private var lastHeadingDeg: Double? = null

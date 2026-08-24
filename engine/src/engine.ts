@@ -28,8 +28,8 @@ const SLIPPERY_INFO = /(?<![a-zåäö])(is|snö|halka|frost|mycket besvärligt)/
 
 export class AlertEngine {
   private readonly cfg: EngineConfig;
-  private readonly points: PointHazard[] = [];
-  private readonly segments: { h: SegmentHazard; samples: LonLat[] }[] = [];
+  private points: PointHazard[] = [];
+  private segments: { h: SegmentHazard; samples: LonLat[] }[] = [];
 
   private prevFix: Fix | null = null;
   private lastHeadingDeg: number | null = null;
@@ -39,6 +39,12 @@ export class AlertEngine {
 
   constructor(hazards: Hazard[], cfg: Partial<EngineConfig> = {}) {
     this.cfg = { ...DEFAULT_CONFIG, ...cfg };
+    this.ingest(hazards);
+  }
+
+  private ingest(hazards: Hazard[]): void {
+    this.points = [];
+    this.segments = [];
     for (const h of hazards) {
       if (h.kind === "slippery_segment") {
         this.segments.push({ h, samples: samplePolyline(h.line, this.cfg.segmentSampleM) });
@@ -46,6 +52,18 @@ export class AlertEngine {
         this.points.push(h);
       }
     }
+  }
+
+  /**
+   * Swap the hazard set mid-drive (fresh snapshot arrived) WITHOUT losing memory:
+   * odometer, heading, cooldown clock and the per-hazard fired-map survive, so the
+   * guard never re-announces something it just said. Hazard ids are stable across
+   * snapshots (source ids), which is what makes the fired-map carry over meaningful.
+   * Entries for ids no longer present are kept on purpose: a hazard that flickers
+   * out of one snapshot and back into the next must still obey the repeat rules.
+   */
+  updateHazards(hazards: Hazard[]): void {
+    this.ingest(hazards);
   }
 
   /** Feed one GPS fix. Returns the spoken alert, or null (the normal case: silence). */

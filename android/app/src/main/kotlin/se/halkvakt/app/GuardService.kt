@@ -66,9 +66,16 @@ class GuardService : Service() {
     private fun loadSnapshotAsync() = thread {
         try {
             val hazards = SnapshotRepo.loadHazards(this)
-            guard = Guard(hazards, speak = ::speak, notify = ::updateNotification, onEvent = AlertBus::post)
+            val g = guard
+            if (g == null) {
+                guard = Guard(hazards, speak = ::speak, notify = ::updateNotification, onEvent = AlertBus::post)
+                AlertBus.post("Vägdata laddad: ${hazards.size} faror i landet. Kör försiktigt.")
+            } else {
+                // Mid-drive refresh: swap data, keep memory (never re-announce; v14 guards this).
+                g.updateHazards(hazards)
+                AlertBus.post("Vägdata uppdaterad: ${hazards.size} faror.")
+            }
             lastSnapshotLoad = System.currentTimeMillis()
-            AlertBus.post("Vägdata laddad: ${hazards.size} faror i landet. Kör försiktigt.")
         } catch (e: Exception) {
             AlertBus.post("Kunde inte ladda vägdata: ${e.message}")
         }

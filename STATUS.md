@@ -96,3 +96,11 @@
   v08 flyttad till robust marginal, alla sviter omkörda
 - iOS-appen startas vid Fas 3-grinden; Davids Apple-konto (~1 050 kr/år) behövs i okt
 
+## 2026-08-25 — Vaktens minne överlever databyte (BACKLOG #9)
+- updateHazards i TS+Kotlin+Swift: farorna byts, minnet (odometer, kylklocka, fired-karta)
+  behålls; försvunna id:n behålls avsiktligt (flimmer ut/in ska ändå lyda repris-reglerna)
+- Ny delad vektor v14_snapshot_swap: databyte vid t=20 mitt i körning — en ombyggd motor
+  fyrar om cam1 vid t=20, en korrekt motor är tyst till cam2 vid t=91; alla tre sviter gröna
+- GuardService: "Vägdata uppdaterad" mitt i körning istället för omstart av motorn
+- Nästa (#10 är låst till Fas 3): autostart — Activity Recognition + Bluetooth ACL
+

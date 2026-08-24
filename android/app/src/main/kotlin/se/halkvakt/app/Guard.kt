@@ -16,6 +16,9 @@ class Guard(
 ) {
     private val engine = AlertEngine(hazards)
 
+    /** Fresh snapshot mid-drive: swap hazards, KEEP the engine's memory (BACKLOG #9, v14). */
+    fun updateHazards(hazards: List<Hazard>) = engine.updateHazards(hazards)
+
     fun onLocation(fix: Fix): Alert? {
         val alert = engine.step(fix) ?: return null
         speak(alert.text)

@@ -31,7 +31,9 @@
 8. ~~Emulator-smoketest i CI~~ (S4: klart). Guard-klass utbruten ur tjänsten; instrumenterade
    tester: MainActivity-boot + Skånereplay genom appens pipeline på ART med fejk-TTS/notis.
    *Verified: emulatorjobb grönt i android.yml; tre runtimes (Node/JVM/ART) ger identisk logg.*
-9. **engine.updateHazards** i TS+Kotlin+Swift + delad vektor (state överlever snapshotbyte) — krävs före beta.
+9. ~~engine.updateHazards~~ (S4: klart i ALLA TRE motorerna + delad vektor v14_snapshot_swap
+   som dödar ombyggnadsbuggen; GuardService byter nu data mitt i körning utan minnesförlust).
+   *Verified: TS 29/29, Kotlin 3/3, Swift 3/3 gröna med v14; app bygger.*
 10. **iOS-app-skelett** (LÅST till Fas 3-grinden, DECISIONS #17): SwiftUI-skal runt
     HalkvaktEngine — CoreLocation bakgrundsläge, AVSpeechSynthesizer sv-SE m. ducking,
     snapshot-synk (spegla SnapshotRepo), 2.5.4-dossier. *Verify: TestFlight-build + replay på simulator.*

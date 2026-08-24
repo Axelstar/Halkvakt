@@ -32,6 +32,7 @@ const eastOf = (m: number) => LON0 + m / (M_PER_DEG_LAT * Math.cos((LAT0 * Math.
 interface Scenario {
   file: string; name: string; description: string;
   hazards: Hazard[]; trace: Fix[];
+  updates?: { atT: number; hazards: Hazard[] }[];
 }
 
 const scenarios: Scenario[] = [
@@ -142,14 +143,48 @@ const scenarios: Scenario[] = [
     ],
     trace: northTrace(120, 80),
   },
+  {
+    file: "v14_snapshot_swap", name: "Databyte mitt i körning — minnet överlever (#9)",
+    description:
+      "cam1 500 m fram fyrar t=1. Vid t=20 byts snapshoten (samma cam1 + ny cam2 2511 m fram). " +
+      "Minnet MÅSTE överleva bytet: cam1 får inte upprepas (repris-reglerna gäller via fired-kartan), " +
+      "cam2 fyrar först inom 500 m vid t=91. En motor som byggs om vid bytet fyrar cam1 igen vid t=20 — " +
+      "exakt det felet den här vektorn dödar. (2511, inte 2500: designregeln om gränsmarginal.)",
+    hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(500), bearing: 0 }],
+    updates: [{
+      atT: 20,
+      hazards: [
+        { id: "cam1", kind: "camera", lon: LON0, lat: northOf(500), bearing: 0 },
+        { id: "cam2", kind: "camera", lon: LON0, lat: northOf(2511), bearing: 0 },
+      ],
+    }],
+    trace: northTrace(120, 80),
+  },
 ];
+
+/** Canonical replay-with-updates — the reference all three test runners mirror. */
+function runWithUpdates(s: (typeof scenarios)[number]): Alert[] {
+  const engine = new AlertEngine(s.hazards);
+  const updates = s.updates ?? [];
+  let u = 0;
+  const alerts: Alert[] = [];
+  for (const fix of s.trace) {
+    while (u < updates.length && fix.t >= updates[u].atT) {
+      engine.updateHazards(updates[u].hazards);
+      u++;
+    }
+    const a = engine.step(fix);
+    if (a) alerts.push(a);
+  }
+  return alerts;
+}
 
 mkdirSync(new URL("./vectors/", import.meta.url), { recursive: true });
 for (const s of scenarios) {
-  const alerts = new AlertEngine(s.hazards).run(s.trace);
+  const alerts = runWithUpdates(s);
   const out = {
     name: s.name, description: s.description,
-    hazards: s.hazards, trace: s.trace, expected: alerts,
+    hazards: s.hazards, ...(s.updates ? { updates: s.updates } : {}), trace: s.trace, expected: alerts,
   };
   writeFileSync(new URL(`./vectors/${s.file}.json`, import.meta.url), JSON.stringify(out, null, 1) + "\n");
   console.log(`\n=== ${s.file}: ${s.name} ===`);

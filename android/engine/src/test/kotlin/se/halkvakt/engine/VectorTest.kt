@@ -63,7 +63,20 @@ class VectorTest {
         val doc = JSONObject(f.readText())
         val hazards = doc.getJSONArray("hazards").let { a -> (0 until a.length()).map { parseHazard(a.getJSONObject(it)) } }
         val trace = doc.getJSONArray("trace").let { a -> (0 until a.length()).map { parseFix(a.getJSONObject(it)) } }
-        return AlertEngine(hazards).run(trace) to doc.getJSONArray("expected")
+        val updates = doc.optJSONArray("updates")?.let { a ->
+            (0 until a.length()).map { i ->
+                val o = a.getJSONObject(i)
+                o.getDouble("atT") to o.getJSONArray("hazards").let { h -> (0 until h.length()).map { parseHazard(h.getJSONObject(it)) } }
+            }
+        } ?: emptyList()
+        val engine = AlertEngine(hazards)
+        var u = 0
+        val got = ArrayList<Alert>()
+        for (fix in trace) {
+            while (u < updates.size && fix.t >= updates[u].first) engine.updateHazards(updates[u++].second)
+            engine.step(fix)?.let { got.add(it) }
+        }
+        return got to doc.getJSONArray("expected")
     }
 
     private fun assertLogEquals(name: String, got: List<Alert>, expected: JSONArray) {

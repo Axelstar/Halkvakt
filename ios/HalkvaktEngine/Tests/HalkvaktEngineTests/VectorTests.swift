@@ -51,7 +51,17 @@ final class VectorTests: XCTestCase {
                 speedKmh: (f["speedKmh"] as? NSNumber)?.doubleValue,
                 headingDeg: (f["headingDeg"] as? NSNumber)?.doubleValue)
         }
-        return (AlertEngine(hazards).run(trace), doc["expected"] as! [[String: Any]])
+        let updates: [(Double, [Hazard])] = (doc["updates"] as? [[String: Any]] ?? []).map { o in
+            ((o["atT"] as! NSNumber).doubleValue, (o["hazards"] as! [[String: Any]]).map(parseHazard))
+        }
+        let engine = AlertEngine(hazards)
+        var u = 0
+        var got: [Alert] = []
+        for fix in trace {
+            while u < updates.count, fix.t >= updates[u].0 { engine.updateHazards(updates[u].1); u += 1 }
+            if let a = engine.step(fix) { got.append(a) }
+        }
+        return (got, doc["expected"] as! [[String: Any]])
     }
 
     func assertLogEquals(_ name: String, _ got: [Alert], _ expected: [[String: Any]]) {

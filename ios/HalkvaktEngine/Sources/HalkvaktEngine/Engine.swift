@@ -158,6 +158,12 @@ public final class AlertEngine {
 
     public init(_ hazards: [Hazard], _ cfg: EngineConfig = EngineConfig()) {
         self.cfg = cfg
+        ingest(hazards)
+    }
+
+    private func ingest(_ hazards: [Hazard]) {
+        points = []
+        segments = []
         for h in hazards {
             switch h {
             case .point(let id, let kind, let lon, let lat, let bearing, let meta):
@@ -167,6 +173,12 @@ public final class AlertEngine {
             }
         }
     }
+
+    /// Swap the hazard set mid-drive (fresh snapshot) WITHOUT losing memory: odometer,
+    /// heading, cooldown clock and the fired-map survive, so the guard never re-announces
+    /// something it just said. Ids are stable across snapshots; entries for vanished ids
+    /// are kept on purpose (flicker-out/in must still obey the repeat rules).
+    public func updateHazards(_ hazards: [Hazard]) { ingest(hazards) }
 
     public func step(_ fix: Fix) -> Alert? {
         let (speedKmhOpt, headingOpt) = kinematics(fix)
