@@ -1,0 +1,20 @@
+name: ingest
+on:
+  schedule:
+    - cron: "*/30 * * * *"  # 30 min while on GitHub cron (private-repo minute budget,
+                            # DECISIONS.md #7). Moves to 5-min Supabase pg_cron later.
+  workflow_dispatch: {}
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm test
+      - run: npm run ingest
+        env:
+          TRAFIKVERKET_API_KEY: ${{ secrets.TRAFIKVERKET_API_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
