@@ -32,3 +32,9 @@
   ns=road.trafficinfo + schema 1.6), batched writes (run #2 timeout → 5 s),
   delta sync wired (was written-not-read), Supabase live (eu-north-1 pooler;
   direct 5432 is IPv6-only — unusable from CI). Self-steering layer added.
+
+## 2026-08-25 — Väntelistan LIVE
+- config.json publicerad till halkvakt-karta; formuläret aktivt på https://axelstar.github.io/halkvakt-karta/
+- Skarpt verifierat med anon-nyckeln: INSERT 201 ✓, SELECT ger tom lista (RLS) ✓, DELETE påverkar 0 rader (bevisat via 409 på dubblett EFTER raderingsförsök) ✓, dubblettskydd 409 ✓, CORS från axelstar.github.io ✓
+- Testrader i waitlist: pipeline-test@halkvakt.dev, browser-test@halkvakt.dev (kan rensas via Table Editor)
+- Nästa: BACKLOG #3 varningsmotor v0 + replay-harness
