@@ -2,7 +2,7 @@
 // Exists because git-over-HTTPS from Actions runners 403s with a token the REST
 // API accepts (see docs/RUNBOOK.md "known weirdness"). API works; we use the API.
 import { readFileSync, readdirSync } from "node:fs";
-import { join } from "node:path";
+import { join, relative } from "node:path";
 
 const token = process.env.PUBLISH_TOKEN;
 if (!token) { console.error("PUBLISH_TOKEN not set"); process.exit(1); }
@@ -23,12 +23,14 @@ const branch = await gh("/branches/main");
 const baseCommit = branch.commit.sha;
 const baseTree = branch.commit.commit.tree.sha;
 
-const files = readdirSync(dir);
+const files = readdirSync(dir, { recursive: true, withFileTypes: true })
+  .filter((d) => d.isFile())
+  .map((d) => relative(dir, join(d.parentPath, d.name)));
 const entries = [];
 for (const f of files) {
   const blob = await gh("/git/blobs", "POST", {
     content: readFileSync(join(dir, f)).toString("base64"), encoding: "base64" });
-  entries.push({ path: `data/${f}`, mode: "100644", type: "blob", sha: blob.sha });
+  entries.push({ path: `data/${f.split("\\").join("/")}`, mode: "100644", type: "blob", sha: blob.sha });
 }
 const tree = await gh("/git/trees", "POST", { base_tree: baseTree, tree: entries });
 if (tree.sha === baseTree) { console.log("no changes"); process.exit(0); }
