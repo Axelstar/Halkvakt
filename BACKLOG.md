@@ -17,7 +17,9 @@
    VILANDE per DECISIONS #13 — hotspot-modellen kräver data vi bygger själva över tid).
    *Verified: events i DB (4 st senaste veckan = källan exakt), extraktion 67/95 %, ticker live.*
    Restpunkt (låst, väntar på arkivmognad ~dec): hotspot-modell ur eget arkiv + NVDB viltstängsel.
-5. **SMHI warnings ingester** (county-level halka warnings). *Verify: fixture test + rows in DB.*
+5. ~~SMHI warnings ingester~~ (S3: klart). Aktuell+historik-tabell, vinterrelevans-flagga,
+   ticker visar högsta vintervarningen. *Verified: 17 areor i DB (skarp körlogg), fixture-test grönt,
+   smhi_vinter i live-meta (tomt i augusti = korrekt), tickerkod live på sajten.*
 6. **Snapshot builder**: per-län gzipped JSON (static + live), manifest w/ checksums,
    published via workflow. *Verify: <3 MB/län gzipped; freshness ≤6 min; checksum validation test.*
 7. **Android app skeleton** (needs Play account ~w40): foreground service, auto

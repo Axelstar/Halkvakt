@@ -56,3 +56,10 @@
 - 24/24 tester gröna (nytt: polisen-parser mot riktig fixture + kantfall)
 - Nästa: BACKLOG #5 SMHI-varningar
 
+## 2026-08-25 — SMHI-varningar KLAR (BACKLOG #5)
+- ingest/sources/smhi.ts: impact-based warnings, alla lagras, vinterrelevans flaggas
+- smhi_warnings (replace-all = aktuell sanning) + smhi_warnings_history (arkiv)
+- Skarpt verifierat: DB WRITE smhi:17; live-meta har smhi_vinter; ticker redo för första snön
+- 26/26 tester gröna. Kvar före Android: #6 snapshot-byggaren (blockerar ingen)
+- David skapar Play-konto ~2026-08-26 (före plan v40 — bra: Googles ID-verifiering kan ta dagar)
+
