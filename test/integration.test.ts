@@ -21,6 +21,18 @@ test("writeAll: migrate, insert, idempotent re-run", { skip: !url }, async () =>
       { stationId: "W1", name: "Teststation", lon: 17.0, lat: 62.4, sampleTime: "2026-08-24T10:00:00Z",
         surfaceTempC: -1.2, airTempC: 0.5, dewpointC: -2, humidityPct: 90, precipitation: "snow", rain: false, snow: true, modifiedTime: "2026-08-24T10:00:00Z" },
     ], lastChangeId: "wx-1" },
+    wildlife: { items: [
+      { eventId: 999001, datetime: "2026-08-23T09:43:26+02:00", countyName: "Jämtlands län",
+        lon: 14.95918, lat: 63.171192, summary: "Testolycka med en älg på E45, Sänna.",
+        url: "https://polisen.se/x", roadNumber: "E45", species: "älg", placeHint: "Sänna" },
+    ] },
+    smhi: { items: [
+      { areaId: 888001, warningId: 777, eventCode: "SNOW_ICE", eventSv: "Snöfall och ishalka",
+        levelCode: "YELLOW", levelSv: "Gul", descriptionSv: "Test", areaName: "Norrbottens län",
+        affectedAreas: [{ id: 25, sv: "Norrbottens län" }],
+        geometry: { type: "Polygon", coordinates: [[[20,66],[21,66],[21,67],[20,66]]] },
+        approximateStart: null, approximateEnd: null, published: "2026-08-24T10:00:00Z" },
+    ] },
     deviations: { items: [
       { deviationId: "D1", situationId: "SIT1", messageType: "Olycka", messageTypeValue: "Accident", message: "Testolycka",
         severityCode: 4, severityText: "Stor påverkan", roadNumber: "E4", countyNos: [1], lon: 18.1, lat: 59.4,
@@ -28,12 +40,13 @@ test("writeAll: migrate, insert, idempotent re-run", { skip: !url }, async () =>
     ], lastChangeId: "dev-1" },
   } as any;
 
+  const expected = { cameras: 2, road_conditions: 1, history: 1, weather: 1, deviations: 1, wildlife: 1, smhi: 1 };
   const c1 = await writeAll(data);
-  assert.deepEqual(c1, { cameras: 2, road_conditions: 1, history: 1, weather: 1, deviations: 1 });
+  assert.deepEqual(c1, expected);
 
   // Idempotency: same input again must not duplicate anything.
   const c2 = await writeAll(data);
-  assert.deepEqual(c2, { cameras: 2, road_conditions: 1, history: 1, weather: 1, deviations: 1 });
+  assert.deepEqual(c2, expected);
 
   const pg = (await import("pg")).default;
   const pool = new pg.Pool({ connectionString: url, max: 1 });
@@ -43,6 +56,12 @@ test("writeAll: migrate, insert, idempotent re-run", { skip: !url }, async () =>
   assert.equal(await n("SELECT count(*) FROM road_condition_history"), 1);
   assert.equal(await n("SELECT count(*) FROM weather_observations"), 1);
   assert.equal(await n("SELECT count(*) FROM deviations"), 1);
+  assert.equal(await n("SELECT count(*) FROM polisen_events"), 1);
+  assert.equal(await n("SELECT count(*) FROM smhi_warnings"), 1);
+  assert.equal(await n("SELECT count(*) FROM smhi_warnings_history"), 1);
+  const wv = await pool.query("SELECT road_number, species FROM polisen_events WHERE event_id=999001");
+  assert.equal(wv.rows[0].road_number, "E45");
+  assert.equal(wv.rows[0].species, "älg");
   // PostGIS geometry actually parsed
   const g = await pool.query("SELECT ST_NPoints(geom) AS np FROM road_conditions WHERE segment_id='S1'");
   assert.equal(Number(g.rows[0].np), 2);
