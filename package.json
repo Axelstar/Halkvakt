@@ -7,7 +7,8 @@
     "ingest": "node --experimental-strip-types ingest/index.ts",
     "ingest:dry": "node --experimental-strip-types ingest/index.ts --dry-run",
     "test": "node --experimental-strip-types --test test/*.test.ts",
-    "healthcheck": "node --experimental-strip-types ingest/healthcheck.ts"
+    "healthcheck": "node --experimental-strip-types ingest/healthcheck.ts",
+    "publish:map": "node --experimental-strip-types publish/build-map-data.ts out"
   },
   "dependencies": {
     "pg": "^8.13.0"

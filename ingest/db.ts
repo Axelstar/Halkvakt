@@ -102,6 +102,22 @@ export async function writeAll(data: {
       counts.history += c.length;
     }
 
+    for (const c of chunks(data.weather.items)) {
+      await client.query(
+        `INSERT INTO weather_latest (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, precipitation, rain, snow)
+         SELECT u.station_id, u.name, ST_SetSRID(ST_MakePoint(u.lon, u.lat), 4326), u.sample_time,
+                u.surface_temp_c, u.air_temp_c, u.precipitation, u.rain, u.snow
+         FROM UNNEST($1::text[],$2::text[],$3::float8[],$4::float8[],$5::timestamptz[],$6::numeric[],$7::numeric[],$8::text[],$9::bool[],$10::bool[])
+              AS u(station_id, name, lon, lat, sample_time, surface_temp_c, air_temp_c, precipitation, rain, snow)
+         ON CONFLICT (station_id) DO UPDATE SET name=EXCLUDED.name, geom=EXCLUDED.geom,
+           sample_time=EXCLUDED.sample_time, surface_temp_c=EXCLUDED.surface_temp_c,
+           air_temp_c=EXCLUDED.air_temp_c, precipitation=EXCLUDED.precipitation,
+           rain=EXCLUDED.rain, snow=EXCLUDED.snow`,
+        [col(c, x => x.stationId), col(c, x => x.name), col(c, x => x.lon), col(c, x => x.lat),
+         col(c, x => x.sampleTime), col(c, x => x.surfaceTempC), col(c, x => x.airTempC),
+         col(c, x => x.precipitation), col(c, x => x.rain), col(c, x => x.snow)]);
+    }
+
     for (const c of chunks(keepWeather)) {
       await client.query(
         `INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c,

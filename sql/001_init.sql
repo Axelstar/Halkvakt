@@ -80,3 +80,30 @@ CREATE TABLE IF NOT EXISTS sync_state (
   last_change_id text NOT NULL,
   synced_at timestamptz NOT NULL
 );
+
+-- Current state per station (always upserted) — the map reads this.
+-- weather_observations remains the event-filtered archive.
+CREATE TABLE IF NOT EXISTS weather_latest (
+  station_id text PRIMARY KEY,
+  name text NOT NULL,
+  geom geometry(Point, 4326) NOT NULL,
+  sample_time timestamptz NOT NULL,
+  surface_temp_c numeric,
+  air_temp_c numeric,
+  precipitation text,
+  rain boolean NOT NULL DEFAULT false,
+  snow boolean NOT NULL DEFAULT false
+);
+
+-- App waitlist. Anon may INSERT via Supabase REST; never SELECT (RLS).
+CREATE TABLE IF NOT EXISTS waitlist (
+  id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  email text NOT NULL,
+  source text,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE UNIQUE INDEX IF NOT EXISTS waitlist_email_idx ON waitlist (lower(email));
+ALTER TABLE waitlist ENABLE ROW LEVEL SECURITY;
+DO $$ BEGIN
+  CREATE POLICY waitlist_anon_insert ON waitlist FOR INSERT TO anon WITH CHECK (true);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
