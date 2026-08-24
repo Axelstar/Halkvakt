@@ -104,3 +104,11 @@
 - GuardService: "Vägdata uppdaterad" mitt i körning istället för omstart av motorn
 - Nästa (#10 är låst till Fas 3): autostart — Activity Recognition + Bluetooth ACL
 
+## 2026-08-25 — AUTOSTART KLAR: "installera en gång, glöm den" (S5)
+- Vakten vaknar själv: rörelseigenkänning (IN_VEHICLE) + inlärd bil-Bluetooth som turbo;
+  slutar själv när körningen är slut; manuellt startad vakt dödas ALDRIG av automatiken
+- Beslutslogiken är en ren, JVM-testad klass (8 regler = 8 prov) — Android-limmet tunt
+- Reservväg där OEM blockerar bakgrundsstart: högprio-notis "Kör du? Tryck för att starta"
+- Behörighetstrappan slutar i "Tillåt hela tiden"; Play-dossiern för den utkastad (docs/)
+- Kvar före beta: betaputs (larmljudnivå, batterisnålhet), rekryteringsmaterial
+

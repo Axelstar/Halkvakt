@@ -34,6 +34,11 @@
 9. ~~engine.updateHazards~~ (S4: klart i ALLA TRE motorerna + delad vektor v14_snapshot_swap
    som dödar ombyggnadsbuggen; GuardService byter nu data mitt i körning utan minnesförlust).
    *Verified: TS 29/29, Kotlin 3/3, Swift 3/3 gröna med v14; app bygger.*
+9b. ~~Autostart~~ (S5: klart). Ren AutostartController (8 JVM-prov) + tunt lim:
+    IN_VEHICLE enter/exit via Activity Recognition (undantagen bakgrundsstart),
+    Bluetooth-turbo med självlärning av bilens enhet, tryck-för-start-notis som
+    reservväg, boot-omarmering, behörighetstrappa i UI, Play-dossier utkastad.
+    *Verified: 8/8 JVM-test gröna; CI (bygge+emulator) grönt; dossier i docs/.*
 10. **iOS-app-skelett** (LÅST till Fas 3-grinden, DECISIONS #17): SwiftUI-skal runt
     HalkvaktEngine — CoreLocation bakgrundsläge, AVSpeechSynthesizer sv-SE m. ducking,
     snapshot-synk (spegla SnapshotRepo), 2.5.4-dossier. *Verify: TestFlight-build + replay på simulator.*
