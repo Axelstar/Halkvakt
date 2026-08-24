@@ -53,3 +53,14 @@ publicering: live.json gzip > 1,5 MB två körningar i rad → implementera per-
 (gränser via PostGIS-länstabell). Freshness ärver 30-min-kadensen (beslut #7).
 Formatet är motorns vokabulär (inte GeoJSON); engine/src/snapshot.ts är Kotlin-referensen.
 
+## 15. Android-skelettets avgränsningar (2026-08-25, Claude)
+- **Manuell start/stopp i v0** — autostart (Activity Recognition/Bluetooth) kommer i Fas 2-
+  iterationen; skelettets jobb är att bevisa kedjan GPS→motor→röst på riktig enhet.
+- **Endast while-in-use-platsbehörighet**: tjänsten startas i förgrunden av användaren, så
+  ACCESS_BACKGROUND_LOCATION behövs inte ännu → Googles granskningsdossier för bakgrunds-
+  plats skjuts till autostart-steget (mindre risk vid första Play-inskick).
+- **Snapshotuppdatering var 30:e min bygger om motorn** = cooldown-state nollställs.
+  Accepterat i skelett; BACKLOG-punkt: engine.updateHazards() i BÅDA implementationerna
+  + delad vektor, så tillstånd överlever datauppdatering.
+- Kotlin-motorn bevisad identisk med TS via delade vektorer i CI vid varje push (android.yml).
+

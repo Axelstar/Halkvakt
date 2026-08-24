@@ -23,8 +23,12 @@
 6. ~~Snapshot builder~~ (S4: klart, nationellt per DECISIONS #14). data/app/v1/ live på CDN.
    *Verified från live-CDN: sha256+bytes OK båda filer; 65 kB gz statiskt / ~0 kB live (budget
    krossad); adapterkedja snapshot→motor→varning testlåst; fläckvis-buggen fångad+regressad.*
-7. **Android app skeleton** (needs Play account ~w40): foreground service, auto
-   start/stop, TTS, engine integration. *Verify: PLAN §4 Phase 2 road-test checklist.*
+7. **Android-app** — SKELETT KLART S4 (android/: Kotlin-motorport BEVISAD identisk med TS
+   via delade vektorer i CI; foreground-tjänst, snapshot-synk m. sha256+offline-cache,
+   sv-SE TTS m. ducking, permission-flöde, 2,2 MB APK som CI-artefakt varje push).
+   Kvar till Fas 2-vägtestet: autostart (AR+Bluetooth), engine.updateHazards (state över
+   datauppdatering), Davids enhetstest. *Verify kvarstår: PLAN §4 Phase 2 road-test checklist.*
+8. **engine.updateHazards** i TS+Kotlin + delad vektor (state överlever snapshotbyte) — krävs före beta.
 
 ## Questions for David
 All seven answered 2026-08-24 → DECISIONS.md #8–11. No open questions.

@@ -72,3 +72,12 @@
 - 28/28 tester gröna. Nästa: #7 Android-skelett — byggs och CI-kompileras UTAN Play-konto,
   sideload-APK till David som mål. Play-kontot blockerar först butiksuppladdningen.
 
+## 2026-08-25 — ANDROID-SKELETTET BYGGER: APK i CI (BACKLOG #7 milstolpe)
+- android/: Kotlin-motor som klarar ALLA delade vektorer + Skånefixturen fält-för-fält
+  (plattformskontraktet håller — TS och Kotlin bevisat beteendeidentiska)
+- App: GuardService (foreground location, 1 Hz), SnapshotRepo (CDN+sha256+offline-cache),
+  sv-SE TTS med audio-ducking, MainActivity med behörighetsgrind
+- android.yml: vektortest + assembleDebug varje push; APK-artefakt (2,2 MB, 30 dagars retention)
+- CI fångade eftersläpande integrationstest (counts-objektet) — utökat med wildlife/smhi-täckning
+- Allt grönt: ci ✓ android ✓ ingest ✓ publish ✓
+
