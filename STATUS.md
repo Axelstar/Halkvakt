@@ -63,3 +63,12 @@
 - 26/26 tester gröna. Kvar före Android: #6 snapshot-byggaren (blockerar ingen)
 - David skapar Play-konto ~2026-08-26 (före plan v40 — bra: Googles ID-verifiering kan ta dagar)
 
+## 2026-08-25 — Snapshot-byggare KLAR (BACKLOG #6) + falsklarmsbugg fixad
+- data/app/v1/{manifest,static,live}.json publiceras var 30:e min; sha256-verifierat från CDN
+- Nationellt-först (DECISIONS #14): 65 kB gz för hela Sveriges kameror; splitkriterium mäts varje körning
+- BUGG FÅNGAD AV RIKTIG DATA: substrängen 'is' i "fläckvis" gav 8 falska halksegment — samma
+  regex satt i MOTORN och hade gett falska röstvarningar i vinter. Ordgränser + regressionstest
+  i båda lagren; v11-tystnadsvektorn härdad med fällan.
+- 28/28 tester gröna. Nästa: #7 Android-skelett — byggs och CI-kompileras UTAN Play-konto,
+  sideload-APK till David som mål. Play-kontot blockerar först butiksuppladdningen.
+

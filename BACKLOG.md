@@ -20,8 +20,9 @@
 5. ~~SMHI warnings ingester~~ (S3: klart). Aktuell+historik-tabell, vinterrelevans-flagga,
    ticker visar högsta vintervarningen. *Verified: 17 areor i DB (skarp körlogg), fixture-test grönt,
    smhi_vinter i live-meta (tomt i augusti = korrekt), tickerkod live på sajten.*
-6. **Snapshot builder**: per-län gzipped JSON (static + live), manifest w/ checksums,
-   published via workflow. *Verify: <3 MB/län gzipped; freshness ≤6 min; checksum validation test.*
+6. ~~Snapshot builder~~ (S4: klart, nationellt per DECISIONS #14). data/app/v1/ live på CDN.
+   *Verified från live-CDN: sha256+bytes OK båda filer; 65 kB gz statiskt / ~0 kB live (budget
+   krossad); adapterkedja snapshot→motor→varning testlåst; fläckvis-buggen fångad+regressad.*
 7. **Android app skeleton** (needs Play account ~w40): foreground service, auto
    start/stop, TTS, engine integration. *Verify: PLAN §4 Phase 2 road-test checklist.*
 

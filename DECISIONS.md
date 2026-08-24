@@ -44,3 +44,12 @@ Beslut:
 - Framtida A4-väg: eget arkiv + ev. NVDB/Lastkajen (viltstängsel-lager) + NVR-kontakt
   (partnerpitch finns redan i PLAN §8.6 — datadelning kan ingå).
 
+## 14. Snapshots: nationellt först, län-split vilande bakom mätkriterium (2026-08-25, Claude)
+PLAN §2 antog per-län-filer (<3 MB gzip/län). Uppmätt verklighet: HELA landet = 65 kB gzip
+statiskt (2 771 kameror) + ~0-200 kB live. Länsdelningen löser ett storleksproblem som inte
+finns — och hade krävt länspolygoner (ny databeroende). Beslut: nationella filer i v1
+(data/app/v1/{manifest,static,live}.json, sha256-manifest). Splitkriterium, mäts varje
+publicering: live.json gzip > 1,5 MB två körningar i rad → implementera per-län
+(gränser via PostGIS-länstabell). Freshness ärver 30-min-kadensen (beslut #7).
+Formatet är motorns vokabulär (inte GeoJSON); engine/src/snapshot.ts är Kotlin-referensen.
+
