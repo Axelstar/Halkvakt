@@ -10,7 +10,7 @@ try {
   if (sync.rows.length < 4) problems.push(`sync_state has ${sync.rows.length}/4 sources`);
   // situations+roadcondition ägs av LIVEMOTORN (pg_cron, 1 min) — hård tröskel.
   // Övriga källor ägs av GitHub-flödet (numera 1 h) — mjuk tröskel.
-  const LIMITS: Record<string, number> = { situations: 15, roadcondition: 15 };
+  const LIMITS: Record<string, number> = { deviations: 15, road_conditions: 15 };
   for (const r of sync.rows) {
     const ageMin = (Date.now() - new Date(r.synced_at).getTime()) / 60000;
     const limit = LIMITS[r.source] ?? 150;
