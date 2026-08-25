@@ -81,7 +81,12 @@ async function roadconditions() {
   return n;
 }
 
-Deno.serve(async () => {
+Deno.serve(async (req) => {
+  // Fail-closed: kräver delad hemlighet (sätts som secret INGEST_KEY; cron skickar headern).
+  const k = Deno.env.get("INGEST_KEY");
+  if (!k || req.headers.get("x-halkvakt-key") !== k) {
+    return new Response("forbidden", { status: 403 });
+  }
   try {
     const [s, r] = await Promise.all([situations(), roadconditions()]);
     return new Response(JSON.stringify({ ok: true, situations: s, roadconditions: r }), {
