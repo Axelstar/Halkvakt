@@ -18,16 +18,16 @@ function write(name: string, obj: unknown): number {
 }
 
 const vaglag = await pool.query(`
-  SELECT segment_id, condition_code, condition_text, condition_info, road_number, modified_time,
+  SELECT segment_id, condition_code, condition_text, condition_info, road_number, modified_time, county_nos[1] AS lan,
          ST_AsGeoJSON(ST_SimplifyPreserveTopology(geom, 0.001))::json AS g
   FROM road_conditions WHERE NOT deleted AND geom IS NOT NULL`);
 const vaglagSize = write("vaglag.geojson", fc(vaglag.rows.map(r => ({
   type: "Feature", geometry: r.g,
   properties: { code: r.condition_code, text: r.condition_text, info: r.condition_info,
-                road: r.road_number, updated: r.modified_time } }))));
+                road: r.road_number, updated: r.modified_time, lan: r.lan } }))));
 
 const vader = await pool.query(`
-  SELECT station_id, name, sample_time, surface_temp_c, air_temp_c, precipitation, rain, snow,
+  SELECT station_id, name, sample_time, surface_temp_c, air_temp_c, precipitation, rain, snow, county_nos[1] AS lan,
          ST_AsGeoJSON(geom)::json AS g
   FROM weather_latest`);
 write("vader.geojson", fc(vader.rows.map(r => ({
@@ -35,7 +35,7 @@ write("vader.geojson", fc(vader.rows.map(r => ({
   properties: { name: r.name, t: r.sample_time,
                 yta: r.surface_temp_c === null ? null : Number(r.surface_temp_c),
                 luft: r.air_temp_c === null ? null : Number(r.air_temp_c),
-                nbd: r.precipitation, sno: r.snow } }))));
+                nbd: r.precipitation, sno: r.snow, lan: r.lan } }))));
 
 const olyckor = await pool.query(`
   SELECT deviation_id, message_type, message, severity_text, road_number, start_time,

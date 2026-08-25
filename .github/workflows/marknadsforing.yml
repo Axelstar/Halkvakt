@@ -1,0 +1,57 @@
+name: marknadsforing
+on:
+  schedule:
+    - cron: "45 4 * * *"   # varje morgon 05:45/06:45 svensk tid — före pendlingen
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  motorn:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+
+      - name: Generera dagens utkast + larm
+        run: node marknadsforing/generator.mjs
+
+      - name: Committa utkast och minne
+        run: |
+          git config user.name "Marknadsmotorn"
+          git config user.email "motor@halkvakt.dev"
+          git add marknadsforing/utkast marknadsforing/state.json
+          git diff --cached --quiet || git commit -m "Halkläget $(date +%F) [skip ci]"
+          git pull --rebase origin main && git push origin main
+
+      - name: SNÖLARM → ärende per län
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          gh label create snolarm --color FFC400 --description "Säsongens första halka i ett län" -R "$GITHUB_REPOSITORY" 2>/dev/null || true
+          node -e '
+            const larm = require("./marknadsforing/larm.json");
+            const fs = require("fs");
+            for (const l of larm) fs.writeFileSync(`/tmp/larm-${l.lan}.md`, l.text);
+            fs.writeFileSync("/tmp/larmlist", larm.map(l => `${l.lan}\t${l.namn}`).join("\n"));'
+          while IFS=$'\t' read -r nr namn; do
+            [ -z "$nr" ] && continue
+            gh issue create -R "$GITHUB_REPOSITORY" --label snolarm \
+              --title "🚨 SNÖLARM: $namn — posta nu" --body-file "/tmp/larm-$nr.md"
+          done < /tmp/larmlist
+
+      - name: Måndag → veckorapport
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          node -e '
+            const r = require("./marknadsforing/rapport.json");
+            if (!r) { console.log("ingen rapport idag"); process.exit(0); }
+            require("fs").writeFileSync("/tmp/rapport.md", r.body);
+            require("fs").writeFileSync("/tmp/rapport-titel", r.title);'
+          if [ -f /tmp/rapport.md ]; then
+            gh label create rapport --color 7EC8E3 -R "$GITHUB_REPOSITORY" 2>/dev/null || true
+            gh issue create -R "$GITHUB_REPOSITORY" --label rapport \
+              --title "$(cat /tmp/rapport-titel)" --body-file /tmp/rapport.md
+          fi

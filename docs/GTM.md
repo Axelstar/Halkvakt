@@ -66,3 +66,35 @@ Målgrupper som kör dagligen och bryr sig om trafiksäkerhet:
 3. Flashback/Reddit-postning: tekniskt anonymt — men NÅGON måste klistra in. Davids
    val: han gör det (5 min, inget kopplat till hans person) eller väntar till betan
    då annonserna bär rekryteringen ensamma (500 kr räcker).
+
+---
+
+## v3 · Marknadsmotorn (2026-08-25) — automatiserad, matchar scrollvärlden
+
+**Filosofin:** Halkvakt äger sin egen timing. Pipelinen ser första halkan i varje län före
+alla andra — alltså postar vi exakt då, i exakt det länet, med exakta siffror. Ingen
+innehållskalender; vädret ÄR kalendern. Tonen överallt = sajtens: "Kl 06:50. Minus två."
+
+### Tre motorer (kör själva, varje morgon 05:45)
+1. **Halkläget** — `marknadsforing/utkast/halklaget-DATUM.md`: färdiga texter för FB-sidan,
+   Flashback, Reddit och press, fyllda med dagens riktiga siffror. David kopierar, klistrar, klart.
+2. **SNÖLARMET** — när ett län får säsongens första halksträckor öppnas ett ärende
+   (🚨-mejl till David) med färdig FB-post, annonsinstruktion (geo/budget/målgrupp) och
+   15-minuters-checklista. Larmar en gång per län och säsong. DETTA är kampanjstarten —
+   inte ett datum i en plan, utan verkligheten.
+3. **Veckorapporten** — måndagar: väntelistans kurva + halkläget som ärende. Marknadsföringens
+   mätning sköter sig själv.
+
+### Davids manuella 15-minuters-moment (kan inte automatiseras utan risk)
+- Skapa FB-sidan + annonskonto (engångs, ~30 min) — före oktober.
+- Vid 🚨-mejl: kopiera texten ur ärendet → posta → boosta enligt instruktionen.
+- Flashback/Reddit: posta trådarna ur REKRYTERING/GTM när betan öppnar (anonymt/projektkonto).
+
+### Nästa utbyggnadssteg (aktiveras av händelser, inte datum)
+- **Play-länk finns** → badges + alla utkast byter mål från väntelistan till butiken (en rad).
+- **Domän köpt** → hej@halkvakt.se (Cloudflare Email Routing) + Resend-konto → automatiskt
+  välkomstmejl till väntelistan och massutskick "betan är här" på launchdagen.
+- **Länssidor (#13)** → snölarmets text länkar till "Halka i {län} just nu"-sidan; delnings-
+  kort per län genereras i samma pipeline.
+- **utm/source** → formuläret taggar redan källa per sida; utökas med ?src= per kanal så
+  veckorapporten visar vilken kanal som faktiskt konverterar.
