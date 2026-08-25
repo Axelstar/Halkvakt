@@ -107,3 +107,7 @@ Sajten uppgraderad samtidigt: röstdemo-knapp (produkten PÅ sidan), og.png
 (delningskort — kritiskt för forumspridning), favicon, kö-räknare (visas ≥25,
 publiceras ur DB var 30:e min), kartpanelens "november" rättad till oktober-beta.
 
+
+## Beslut #20 · Kvittot: scrollytelling-final + betaspråket rivs (2026-08-25)
+**Beslut (David):** Sista skärmen görs i samma scrollspråk som världen: skärmen fastnar, fyra rader (Halka/Vilt/Olyckor/Fartkameror) landar en i taget, sist stiger Google Play- och App Store-knappar upp ("Släpps i vinter") med live-läget under (olyckor/vilt/halka/klockslag ur egen data). Allt beta-testarspråk bort från sajten — iOS och Android släpps tillsammans. Mejlfångst kvar som diskret "mejl på släppdagen"-rad i sidfoten (source: release).
+**Teknisk läxa:** `overflow-x:hidden` på html/body (motorns) gör dem till scrollcontainers → `position:sticky` dör tyst. Kur: `overflow-x:clip` + gemensamt bakgrundsbälte i stället för inset:-100vw-hack. Playwright-mätning i wrappade element: använd getBoundingClientRect().top+scrollY, aldrig offsetTop (räknas mot närmsta position:relative-förälder).
