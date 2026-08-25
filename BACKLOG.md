@@ -63,6 +63,10 @@
     kanaltexter befriade från betaspråk; pressnotisen länkar presskitet.
     *Verified: 200 live, livesiffror renderar (844), 0 beta-träffar i provgenererat utkast.*
     Rest (låst till domän): riktig pressmejladress på sidan.
+12d. ~~Skills inför appbygget~~ (S-2026-08-25natt: klart, Davids initiativ via Paul Solt-tråden).
+    6 skills i `skills/`: twostraws×3 (iOS), chrisbanes×2 (Kotlin/Compose), egen
+    halkvakt-android (bakgrundsplats/doze/TTS/Play/motor-kontrakt). Katalog docs/SKILLS.md,
+    CLAUDE.md kräver läsning före app-kod. *Verified: frontmatter ok i alla 6, licenser medföljer.*
 13. **Läns-sidor för SEO** ("Halka i Skåne just nu" ×21): statiska sidor genererade i
     publiceringssteget ur livedatan — innehåll ingen konkurrent kan kopiera. Görs när
     domänen finns så länkkraften hamnar rätt. *Verify: 21 sidor live m. färsk data + i sitemap.*

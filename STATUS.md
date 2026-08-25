@@ -55,6 +55,10 @@
   (canplaythrough/timeupdate utöver seeked), ?vdebug-överlägg för fjärrdiagnos.
   Robot-bevisat: alla 4 klipp loading direkt + postrar målas. David omtestar på iPhone
   (vid strul: skärmdump MED ?vdebug).
+- **S-2026-08-25natt (skills):** 6 agentskills installerade i `skills/` inför appbygget
+  (twostraws SwiftUI/Concurrency/Testing · chrisbanes kotlin-flow/compose-state · egen
+  halkvakt-android). docs/SKILLS.md = katalog + skippade med motivering. CLAUDE.md:
+  obligatorisk läsning före app-kod; nya läxor förs in i halkvakt-android §5.
 - **S2 2026-08-25**: Public map shipped end-to-end. weather_latest table (map
   needs current state; archive stays event-filtered). Map site (MapLibre,
   VMS-ticker, waitlist vs Supabase RLS). Publisher commits via Git Data API
