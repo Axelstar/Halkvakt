@@ -54,6 +54,9 @@
     (FAQPage + MobileApplication), live-ticker på landningen; två FB-inlägg + postnings-
     plan i docs/REKRYTERING.md. *Verified: alla sidor 200 live; väntelista 201 från båda
     nya källorna (landing/beta); kartan intakt på nya adressen.*
+12b. ~~Minutdiet + livemotor-vakthund~~ (S-2026-08-25em: klart, beslut #22). Ingest timvis,
+    publish egen 30-min-klocka, healthcheck 2 h m. per-käll-trösklar + pg_cron-puls.
+    *Verified: skarp dispatch mot prod — "limit 15"-rader, cron-puls succeeded, HEALTHY; ~3 600→~1 750 min/mån.*
 13. **Läns-sidor för SEO** ("Halka i Skåne just nu" ×21): statiska sidor genererade i
     publiceringssteget ur livedatan — innehåll ingen konkurrent kan kopiera. Görs när
     domänen finns så länkkraften hamnar rätt. *Verify: 21 sidor live m. färsk data + i sitemap.*

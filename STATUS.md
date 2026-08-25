@@ -34,6 +34,9 @@
   halshuggits vid morgonens SEO-flytt → rå JSON syntes som sidtext; återställda och
   JSON-validerade. Filmpaneler/FAQ/footer rivna på Davids order — sidan slutar på
   svart final (logo + butiksknappar + ticker).
+- **S-2026-08-25kväll:** Beslut #22 — minutdiet (Actions ~3 600→~1 750 min/mån, under
+  gratistaket) + vakthund för livemotorn i hälsokollen (15-min-trösklar på
+  deviations/road_conditions + pg_cron-puls). Skarpverifierad mot prod, HEALTHY.
 - **S2 2026-08-25**: Public map shipped end-to-end. weather_latest table (map
   needs current state; archive stays event-filtered). Map site (MapLibre,
   VMS-ticker, waitlist vs Supabase RLS). Publisher commits via Git Data API
