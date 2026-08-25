@@ -71,6 +71,9 @@ const smhiW = await pool.query(`
   WHERE event_code ~* 'SNOW|ICE|ICING|COLD|WIND'
   ORDER BY array_position(ARRAY['RED','ORANGE','YELLOW','MESSAGE'], level_code) LIMIT 3`);
 
+// Waitlist size — published as social proof on the landing page (shown from 25+)
+const wl = await pool.query(`SELECT count(*)::int AS n FROM waitlist`);
+
 // Halka stats for the VMS ticker
 const stats = {
   generated_at: new Date().toISOString(),
@@ -84,6 +87,7 @@ const stats = {
   vilt_vecka: Number(vilt.rows[0]?.vecka ?? 0),
   vilt_vanligast: vilt.rows[0]?.vanligast ?? null,
   smhi_vinter: smhiW.rows.map(r => ({ event: r.event_sv, niva: r.level_sv, niva_kod: r.level_code, omrade: r.area_name })),
+  waitlist_count: Number(wl.rows[0]?.n ?? 0),
 };
 write("meta.json", stats);
 await pool.end();

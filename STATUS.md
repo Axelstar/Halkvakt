@@ -128,3 +128,11 @@
 - SEO-logik: innehåll publicerat nu hinner ranka till december; läns-sidorna blir vårt
   unika innehåll (livedata ingen kan kopiera)
 
+## 2026-08-25 — GTM v2 (utan privata kanaler) + sajt-uppgradering (S8)
+- docs/GTM.md: Flashback/Reddit (anonymt), varumärkessida + 500 kr/3–5 tkr annons,
+  yrkesutskick (väntar domänmejl), press vid beta + första snön; DECISIONS #18
+- Sajten: 🔊 "Hör hur rösten låter"-knapp (talar appens riktiga fraser), og.png +
+  favicon, kö-räknare i publiceringspipen (waitlist_count i meta.json, visas ≥25),
+  kartpanel synkad (oktober), hemlänk från kartan
+- Davids öppna val (deadline okt): press med namn eller anonymt; Flashback själv eller ej
+

@@ -95,3 +95,15 @@ David: "iOS är något vi måste ha support för." Verkställt samma kväll:
   fixposition (v08 låg 2 cm från en — avgjordes av plattformarnas libm-avrundning,
   inte av semantik; flyttad till robust marginal, alla tre sviter omkörda gröna).
 
+## 18. GTM utan grundarens privata kanaler (2026-08-25, David + Claude)
+David vill inte posta från egna sociala konton. Planen byggs om (docs/GTM.md):
+1) Flashback/Reddit via anonymt projektkonto, 2) Halkvakt-varumärkessida + liten
+betald budget (500 kr beta, 3–5 tkr vid första snön — geo-styrd av VÅR snödata),
+3) direktutskick till trafikskolor/åkerier (väntar på halkvakt.se-mejl),
+4) press som huvudkanon vid betaöppning + första snökaoset. REKRYTERING.md:s
+gruppinlägg degraderas till reserv. Öppet Davids-val till okt: namn i press eller
+"teamet bakom"; Flashback-postning själv (anonym) eller lita helt på annonser.
+Sajten uppgraderad samtidigt: röstdemo-knapp (produkten PÅ sidan), og.png
+(delningskort — kritiskt för forumspridning), favicon, kö-räknare (visas ≥25,
+publiceras ur DB var 30:e min), kartpanelens "november" rättad till oktober-beta.
+
