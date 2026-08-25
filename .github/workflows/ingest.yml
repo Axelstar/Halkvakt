@@ -1,8 +1,9 @@
 name: ingest
 on:
   schedule:
-    - cron: "*/30 * * * *"   # KNAPP: byt till "*/15" när David gett klartecken om minutbudgeten  # 30 min while on GitHub cron (private-repo minute budget,
-                            # DECISIONS.md #7). Moves to 5-min Supabase pg_cron later.
+    - cron: "11 * * * *"     # timvis: livemotorn (pg_cron) äger nu minutfärskheten för
+                             # situations/roadcondition — GitHub-flödet sköter väder/kameror/
+                             # polisen/smhi + fungerar som reserv. Beslut #22 (minutdiet).
   workflow_dispatch: {}
 jobs:
   ingest:

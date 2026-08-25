@@ -1,7 +1,7 @@
 name: healthcheck
 on:
   schedule:
-    - cron: "17 * * * *"   # hourly, offset from ingest
+    - cron: "23 */2 * * *" # varannan timme (minutdiet, beslut #22); vakthunden i skriptet larmar ändå inom 2 h
   workflow_dispatch: {}
 permissions:
   issues: write

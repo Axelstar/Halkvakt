@@ -4,8 +4,12 @@ on:
     workflows: [ingest]        # kedjad: publicerar direkt när färsk data landat
     types: [completed]
   schedule:
-    - cron: "7 * * * *"        # gles reserv ifall kedjan missar
+    - cron: "*/30 * * * *"     # egen klocka: DB är minutfärsk via livemotorn, så webben
+                               # hålls ≤ ~35 min gammal oavsett ingest-kedjan. Beslut #22.
   workflow_dispatch: {}
+concurrency:
+  group: publish-map
+  cancel-in-progress: false
 jobs:
   publish:
     if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
