@@ -1,5 +1,18 @@
 # Rekryteringsmaterial — Facebook-inlägg
 
+## Googles skarpa krav (verifierat 2026-08-25) — dimensionerar hela rekryteringen
+- Sluten test: **minst 12 testare, anmälda oavbrutet i 14 dagar** innan produktionsansökan
+  (nya privatkonton efter nov 2023). Klockan startar först när testreleasen är GODKÄND
+  (~1–3 dgr granskning) och 12:e testaren anmäld.
+- **2026-skärpning: Google mäter äkta användning** — installera-och-glöm ger avslag.
+  Vår vägtest-design är perfekt matchning: testarna KÖR med appen under höstrusket.
+- En som formellt opt:ar ut under fönstret kan nollställa klockan ⇒ **mål: 20 anmälda**
+  (buffert över minimum 12). Avanmälan sker bara via testlänken — ren avinstallation
+  räknas inte som avhopp.
+- Konsekvens för tidslinjen: kontot skapas/verifieras i september, testarna in i oktober,
+  produktionsaccess före första halkan.
+
+
 Två färdiga inlägg. David kopierar rakt av (eller justerar tonen fritt — det här är
 utgångslägen, skrivna för grupper som "Vi som kör E4an", lokala pendlargrupper,
 bygde- och köpa/sälja-grupper. Personligt > poletat. **Posta ALDRIG samma text i
