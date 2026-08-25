@@ -69,7 +69,7 @@ for (const [nr, s] of Object.entries(st)) {
       `👉 halkvakt: ${BASE}/`, ``,
       `## Flashback/Reddit (svar i väder-/vintertrådar, rak ton)`,
       `Första halkan i ${namn} enligt Trafikverkets stationsdata (${s.halka} sträckor just nu). ` +
-      `Byggde en gratisapp som läser samma data och röstvarnar när något ligger på ens väg — länk i profilen om någon vill testa betan.`, ``,
+      `Byggde en gratisapp som läser samma data och röstvarnar när något ligger på ens väg — länk i profilen — appen släpps gratis i vinter.`, ``,
       `## Checklista (15 min)`,
       `- [ ] Posta FB-texten på Halkvakt-sidan`,
       `- [ ] Boosta med geo ${namn}`,
@@ -98,7 +98,7 @@ ${vinter
 ? `❄️ Läget på vägarna just nu: ${halkaTot} sträckor med halt väglag${topp ? `. Värst: ${topp}` : ""}.
 Halkvakt läser Trafikverkets livedata och varnar med rösten innan du är framme. Gratis. ${BASE}/`
 : `Vägen ser torr ut i hela landet just nu — men ${meta.stationer} mätstationer står redo för första frysnatten.
-När den kommer säger Halkvakt till innan du är där. Ställ dig i betakön: ${BASE}/`}
+När den kommer säger Halkvakt till innan du är där. Den släpps i vinter — mer på ${BASE}/`}
 
 ## Flashback (uppdatering i egen tråd — bara vid nyhetsvärde)
 ${vinter
@@ -107,12 +107,12 @@ ${vinter
 
 ## Reddit r/sweden / r/Gothenburg m.fl. (kommentar när vädret diskuteras)
 ${vinter
-? `Om någon undrar var det är halt på riktigt: Trafikverkets stationer visar ${halkaTot} sträckor just nu (${topp || "spritt"}). Byggde en gratis röstvarnar-app på samma data — beta i oktober.`
+? `Om någon undrar var det är halt på riktigt: Trafikverkets stationer visar ${halkaTot} sträckor just nu (${topp || "spritt"}). Byggde en gratis röstvarnar-app på samma data — släpps i vinter.`
 : `(spara till vintern)`}
 
 ## Pressnotis-stycke (klistras i mejl till lokalpress vid larm)
 ${vinter
-? `Enligt Trafikverkets vägväderstationer rådde på ${iso.slice(8)}/${Number(iso.slice(5,7))} halt väglag på ${halkaTot} vägsträckor${topp ? `, flest i ${topp}` : ""}. Svenska appen Halkvakt läser samma data i realtid och varnar bilister med röst — gratis, byggd på öppna data.`
+? `Enligt Trafikverkets vägväderstationer rådde på ${iso.slice(8)}/${Number(iso.slice(5,7))} halt väglag på ${halkaTot} vägsträckor${topp ? `, flest i ${topp}` : ""}. Svenska appen Halkvakt läser samma data i realtid och varnar bilister med röst — gratis, byggd på öppna data. Pressmaterial, logotyp och aktuella siffror: ${BASE}/press.html`
 : `(aktiveras vid första larmet)`}
 `;
 
