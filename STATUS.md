@@ -40,6 +40,11 @@
 - **S-2026-08-25kväll (forts):** press.html live (presskit m. live-siffror, boilerplate,
   logotyppaket); marknadsmotorns texter sanerade från betaspråk + pressnotis
   länkar kitet. Provkört: 0 beta-träffar i utkast.
+- **S-2026-08-25natt:** Livemotorn HÄRDAD — fail-closed INGEST_KEY + cron-header
+  (utan nyckel 403 / med nyckel ok / cron succeeded, allt produktionsbevisat).
+  RUNBOOK: nytt kapitel "Livemotorn" (felsökningstrappa, rotation utan nertid,
+  kadens-tabell, token-förnyelseklocka ~nov). Kvällsrond: alla 5 sidor 200,
+  meta.json färsk.
 - **S2 2026-08-25**: Public map shipped end-to-end. weather_latest table (map
   needs current state; archive stays event-filtered). Map site (MapLibre,
   VMS-ticker, waitlist vs Supabase RLS). Publisher commits via Git Data API
