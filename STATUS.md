@@ -43,8 +43,11 @@
 - **S-2026-08-25natt:** Livemotorn HÄRDAD — fail-closed INGEST_KEY + cron-header
   (utan nyckel 403 / med nyckel ok / cron succeeded, allt produktionsbevisat).
   RUNBOOK: nytt kapitel "Livemotorn" (felsökningstrappa, rotation utan nertid,
-  kadens-tabell, token-förnyelseklocka ~nov). Kvällsrond: alla 5 sidor 200,
-  meta.json färsk.
+  kadens-tabell, token-förnyelseklocka ~nov). Kvällsrond: alla 5 sidor 200.
+  Vakthunden bevakar nu även WEBBENS ålder (meta.json >90 min ⇒ incident; skarpkvitto
+  "50 min, limit 90, HEALTHY"). OBS: publish-*/30-schemats första tick släpade (GitHub-
+  cron-skew) — manuellt publicerad som brygga; om webbvakten larmar i morgon: kolla att
+  schedule-körningar rullar i Actions.
 - **S2 2026-08-25**: Public map shipped end-to-end. weather_latest table (map
   needs current state; archive stays event-filtered). Map site (MapLibre,
   VMS-ticker, waitlist vs Supabase RLS). Publisher commits via Git Data API
