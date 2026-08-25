@@ -64,6 +64,8 @@
   filter via DataStore-Flow), persistent varningshistorik, testa-rösten, autostart-
   switch. Skills styrde arkitekturen (en state-ägare; explicit coroutine-ägare i
   tjänsten). Trappan orörd. v0.2.0. Lokalt: JVM-prov + APK gröna; CI-emulatorn dömer.
+- **S-2026-08-25natt (foto):** CI-emulatorn plåtar nu appens tre flikar vid varje push
+  (artefakt app-screenshots) — Davids första titt levererad. Två runner-läxor in i skillen.
 - **S2 2026-08-25**: Public map shipped end-to-end. weather_latest table (map
   needs current state; archive stays event-filtered). Map site (MapLibre,
   VMS-ticker, waitlist vs Supabase RLS). Publisher commits via Git Data API

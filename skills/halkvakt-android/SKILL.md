@@ -56,6 +56,10 @@ Allt nedan är destillat av projektets beslut (DECISIONS.md) och Play-dossiern.
   omhämtning; `includedeletedobjects=true` krävs för att zoner ska släckas.
 - WKT-geometri är `lon lat`-ordning (WGS84). Blandas ordningen hamnar varningarna i
   Norska havet.
+- android-emulator-runner (CI): kör VARJE script-rad i eget skal — `cd` och variabler
+  överlever inte radbyten; kedja med `&&`/`;` eller använd fulla sökvägar. `profile:
+  pixel_5` bootar inte alls med default-imagen — standard-AVD + UI-knack i PROCENT av
+  `wm size` är det stabila mönstret för skärmdumpar.
 
 ## 6 · Innan du kodar
 1. Läs `STATUS.md` + relevant BACKLOG-punkt.
