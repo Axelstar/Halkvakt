@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import androidx.activity.ComponentActivity
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.compose.setContent
 import kotlinx.coroutines.flow.MutableStateFlow
 import se.halkvakt.app.ui.HalkvaktApp
@@ -30,6 +31,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         AlertBus.onEvent = AppEvents::post
         autostartOn.value = AutostartManager.isEnabled(this)
         setContent { HalkvaktApp(this) }

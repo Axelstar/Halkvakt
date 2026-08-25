@@ -4,7 +4,10 @@
 //  - Behörighetstrappan bor kvar i MainActivity (Play-granskad logik) — UI:t ringer bara.
 package se.halkvakt.app.ui
 
+import android.graphics.Typeface
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -37,8 +40,10 @@ private val Natt = Color(0xFF06090D)
 private val Panel = Color(0xFF0E1B25)
 private val Text = Color(0xFFF3F6F9)
 private val Dis = Color(0xFF9FB3C8)
-private val Gron = Color(0xFF1E7A46)
-private val Rod = Color(0xFF8A2B2B)
+private val Rod = Color(0xFFB3453C)
+private val Yta = Color(0xFF0E1720)
+private val Kant = Color(0xFF1B2530)
+private val Cond = FontFamily(Typeface.create("sans-serif-condensed", Typeface.BOLD))
 
 private val Scheme = darkColorScheme(
     primary = Gul, onPrimary = Natt,
@@ -63,14 +68,18 @@ fun HalkvaktApp(activity: MainActivity) {
         Scaffold(
             containerColor = Natt,
             bottomBar = {
-                NavigationBar(containerColor = Panel) {
-                    NavigationBarItem(tab == 0, { tab = 0 }, { Icon(Icons.Filled.Warning, null) }, label = { Text("Vakten") })
-                    NavigationBarItem(tab == 1, { tab = 1 }, { Icon(Icons.Filled.Settings, null) }, label = { Text("Inställningar") })
-                    NavigationBarItem(tab == 2, { tab = 2 }, { Icon(Icons.Filled.Info, null) }, label = { Text("Om") })
+                NavigationBar(containerColor = Color(0xFF0A0F15)) {
+                    val c = NavigationBarItemDefaults.colors(
+                        selectedIconColor = Gul, selectedTextColor = Gul,
+                        unselectedIconColor = Dis, unselectedTextColor = Dis,
+                        indicatorColor = Gul.copy(alpha = .14f))
+                    NavigationBarItem(tab == 0, { tab = 0 }, { Icon(Icons.Filled.Warning, null) }, label = { Text("Vakten") }, colors = c)
+                    NavigationBarItem(tab == 1, { tab = 1 }, { Icon(Icons.Filled.Settings, null) }, label = { Text("Inställningar") }, colors = c)
+                    NavigationBarItem(tab == 2, { tab = 2 }, { Icon(Icons.Filled.Info, null) }, label = { Text("Om") }, colors = c)
                 }
             }
         ) { pad ->
-            Box(Modifier.padding(pad)) {
+            Box(Modifier.padding(pad).statusBarsPadding()) {
                 when (tab) {
                     0 -> VaktScreen(activity)
                     1 -> SettingsScreen(activity)
@@ -92,9 +101,11 @@ private fun VaktScreen(activity: MainActivity) {
 
     Column(Modifier.fillMaxSize().padding(horizontal = 20.dp)) {
         Spacer(Modifier.height(20.dp))
-        Text("⚠ HALKVAKT", color = Gul, fontSize = 26.sp,
-            fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.CenterHorizontally))
+        Row(Modifier.align(Alignment.CenterHorizontally), verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Filled.Warning, null, tint = Gul, modifier = Modifier.size(26.dp))
+            Spacer(Modifier.width(9.dp))
+            Text("HALKVAKT", color = Text, fontSize = 30.sp, fontFamily = Cond, letterSpacing = 3.sp)
+        }
         Spacer(Modifier.height(6.dp))
         Text(
             if (running) "Vakten är på. Lägg undan telefonen och kör."
@@ -104,13 +115,15 @@ private fun VaktScreen(activity: MainActivity) {
 
         Button(
             onClick = { activity.onToggle() },
+            shape = RoundedCornerShape(50),
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (running) Rod else Gron, contentColor = Color.White),
-            modifier = Modifier.fillMaxWidth().height(84.dp)
-        ) { Text(if (running) "STOPPA VAKTEN" else "STARTA VAKTEN", fontSize = 20.sp, fontWeight = FontWeight.Bold) }
+                containerColor = if (running) Rod else Gul,
+                contentColor = if (running) Color.White else Natt),
+            modifier = Modifier.fillMaxWidth().height(92.dp)
+        ) { Text(if (running) "STOPPA VAKTEN" else "STARTA VAKTEN", fontSize = 22.sp, fontFamily = Cond, letterSpacing = 1.5.sp) }
 
         Spacer(Modifier.height(10.dp))
-        Surface(shape = MaterialTheme.shapes.medium, color = Panel, modifier = Modifier.fillMaxWidth()) {
+        Surface(shape = RoundedCornerShape(18.dp), color = Yta, border = BorderStroke(1.dp, Kant), modifier = Modifier.fillMaxWidth()) {
             Row(Modifier.padding(horizontal = 14.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text("Autostart", color = Text)
@@ -174,8 +187,9 @@ private fun SettingsScreen(activity: MainActivity) {
         Spacer(Modifier.height(20.dp))
         Rubrik("RÖSTEN")
         Spacer(Modifier.height(8.dp))
-        OutlinedButton(onClick = { activity.testVoice() }, modifier = Modifier.fillMaxWidth()) {
-            Text("Testa rösten", color = Gul)
+        OutlinedButton(onClick = { activity.testVoice() }, shape = RoundedCornerShape(50),
+            border = BorderStroke(1.dp, Gul), modifier = Modifier.fillMaxWidth().height(52.dp)) {
+            Text("Testa rösten", color = Gul, fontFamily = Cond, fontSize = 16.sp, letterSpacing = 1.sp)
         }
         Text("Spelar en provvarning i samma kanal som riktiga varningar — bra för att ställa volymen i bilen.",
             color = Dis, fontSize = 12.sp, modifier = Modifier.padding(top = 6.dp))
@@ -194,7 +208,7 @@ private fun OmScreen() {
         Spacer(Modifier.height(10.dp))
         Text("Halkvakt varnar dig med rösten — som en passagerare som läst allt Trafikverket vet om vägen framför dig.", color = Text)
         Spacer(Modifier.height(14.dp))
-        Surface(shape = MaterialTheme.shapes.medium, color = Panel, modifier = Modifier.fillMaxWidth()) {
+        Surface(shape = RoundedCornerShape(18.dp), color = Yta, border = BorderStroke(1.dp, Kant), modifier = Modifier.fillMaxWidth()) {
             Column(Modifier.padding(14.dp)) {
                 Text("Din position lämnar aldrig telefonen.", color = Gul, fontWeight = FontWeight.Bold)
                 Text("All matchning mot vägdata sker lokalt i appen. Inget konto, ingen spårning.",
