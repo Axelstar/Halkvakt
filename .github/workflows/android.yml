@@ -41,5 +41,22 @@ jobs:
           api-level: 30
           arch: x86_64
           target: default
+          profile: pixel_5
           disable-animations: true
-          script: cd android && ./gradlew --no-daemon :app:connectedDebugAndroidTest
+          script: |
+            cd android && ./gradlew --no-daemon :app:connectedDebugAndroidTest
+            adb install -r app/build/outputs/apk/debug/app-debug.apk
+            adb shell am start -n se.halkvakt.app/.MainActivity
+            sleep 7
+            adb exec-out screencap -p > /tmp/shot-1-vakten.png
+            adb shell input tap 540 2230 && sleep 3
+            adb exec-out screencap -p > /tmp/shot-2-installningar.png
+            adb shell input tap 900 2230 && sleep 3
+            adb exec-out screencap -p > /tmp/shot-3-om.png
+      - name: Upload app screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-screenshots
+          path: /tmp/shot-*.png
+          retention-days: 14
