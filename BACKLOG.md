@@ -57,6 +57,18 @@
 12b. ~~Minutdiet + livemotor-vakthund~~ (S-2026-08-25em: klart, beslut #22). Ingest timvis,
     publish egen 30-min-klocka, healthcheck 2 h m. per-käll-trösklar + pg_cron-puls.
     *Verified: skarp dispatch mot prod — "limit 15"-rader, cron-puls succeeded, HEALTHY; ~3 600→~1 750 min/mån.*
+11b. ~~Betaputs II — riktig app~~ (S-2026-08-25natt: klart). Compose-UI i varumärkets
+    mörka tema, tre flikar: VAKTEN (stor start/stopp, autostart-switch, datafärskhet,
+    livehändelser + persistent varningshistorik), INSTÄLLNINGAR (kategori-val per
+    HazardKind + "Testa rösten" i riktiga TTS-kanalen), OM (integritetslöftet, länkar,
+    version). Nya lager: AlertHistory (ren, 4 JVM-prov) + Prefs (DataStore→Flow, en
+    ägare per state enligt skill) + Guard-krokar isEnabled/onAlert (tystad kategori
+    behåller motorminnet — ingen dubbelvarning vid återaktivering). Tjänsten fick
+    explicit CoroutineScope (skill-regel) + runningFlow/snapshotInfo. Behörighets-
+    trappan porterad ORDAGRANT (Play-logik). v0.2.0.
+    *Verified: JVM-prov gröna, APK bygger lokalt; emulator-CI = domare på push.*
+    Kvar till släppkandidat (Betaputs III): release-bygge m. R8+signering,
+    integritetspolicy-URL (Play-krav), butiksmaterial (låst till kontot).
 12c. ~~Presskit + generator-sanering~~ (S-2026-08-25kväll: klart). press.html live
     (live-siffror ur meta.json, snabbfakta, fri boilerplate, logotyp-paket 512-PNG+SVG,
     presskontakt-platshållare tills halkvakt.se); i sitemap + om-footern. Marknadsmotorns

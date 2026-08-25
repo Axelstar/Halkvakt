@@ -5,6 +5,7 @@ package se.halkvakt.app
 
 import se.halkvakt.engine.Alert
 import se.halkvakt.engine.AlertEngine
+import se.halkvakt.engine.HazardKind
 import se.halkvakt.engine.Fix
 import se.halkvakt.engine.Geo
 import se.halkvakt.engine.Hazard
@@ -16,6 +17,10 @@ class Guard(
     private val speak: (String) -> Unit,
     private val notify: (String) -> Unit,
     private val onEvent: (String) -> Unit = {},
+    /** Förarens kategorival — avstängd kategori tystas (motorns minne räknar ändå: ingen dubbelvarning vid återaktivering). */
+    private val isEnabled: (HazardKind) -> Boolean = { true },
+    /** Krok för persistent historik — anropas ENDAST för faktiskt upplästa varningar. */
+    private val onAlert: (Alert) -> Unit = {},
 ) {
     private val engine = AlertEngine(hazards)
     private var coords: List<DoubleArray> = flatten(hazards)
@@ -43,9 +48,14 @@ class Guard(
 
     fun onLocation(fix: Fix): Alert? {
         val alert = engine.step(fix) ?: return null
+        if (!isEnabled(alert.kind)) {
+            onEvent("🔇 tystad (${alert.kind.wire}): ${alert.text}")
+            return alert
+        }
         speak(alert.text)
         notify(alert.text)
         onEvent("🔊 ${alert.text} (${alert.distanceM} m)")
+        onAlert(alert)
         return alert
     }
 }

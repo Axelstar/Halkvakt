@@ -17,7 +17,14 @@ import android.os.Looper
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import com.google.android.gms.location.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import se.halkvakt.engine.Fix
+import se.halkvakt.engine.HazardKind
 import java.util.Locale
 import kotlin.concurrent.thread
 
@@ -28,6 +35,9 @@ object AlertBus {
 
 class GuardService : Service() {
 
+    /** Skill-regel: asynkront arbete har en explicit ägare och livstid = tjänstens. */
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    @Volatile private var disabledKinds: Set<HazardKind> = emptySet()
     private var guard: Guard? = null
     private lateinit var fused: FusedLocationProviderClient
     private var tts: TextToSpeech? = null
@@ -42,6 +52,7 @@ class GuardService : Service() {
         super.onCreate()
         audio = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         fused = LocationServices.getFusedLocationProviderClient(this)
+        scope.launch { Prefs.disabledKinds(this@GuardService).collect { disabledKinds = it } }
         tts = TextToSpeech(this) { status ->
             if (status == TextToSpeech.SUCCESS) {
                 tts?.language = Locale("sv", "SE")
@@ -76,12 +87,17 @@ class GuardService : Service() {
             val hazards = SnapshotRepo.loadHazards(this)
             val g = guard
             if (g == null) {
-                guard = Guard(hazards, speak = ::speak, notify = ::updateNotification, onEvent = AlertBus::post)
+                guard = Guard(hazards, speak = ::speak, notify = ::updateNotification, onEvent = AlertBus::post,
+                    isEnabled = { it !in disabledKinds },
+                    onAlert = { a -> scope.launch {
+                        Prefs.appendAlert(this@GuardService, AlertEntry((a.t * 1000).toLong(), a.kind.wire, a.text)) } })
                 AlertBus.post("Vägdata laddad: ${hazards.size} faror i landet. Kör försiktigt.")
+                snapshotInfo.value = "${hazards.size} faror · hämtat ${android.text.format.DateFormat.format("HH:mm", System.currentTimeMillis())}"
             } else {
                 // Mid-drive refresh: swap data, keep memory (never re-announce; v14 guards this).
                 g.updateHazards(hazards)
                 AlertBus.post("Vägdata uppdaterad: ${hazards.size} faror.")
+                snapshotInfo.value = "${hazards.size} faror · hämtat ${android.text.format.DateFormat.format("HH:mm", System.currentTimeMillis())}"
             }
             lastSnapshotLoad = System.currentTimeMillis()
         } catch (e: Exception) {
@@ -169,6 +185,7 @@ class GuardService : Service() {
     }
 
     override fun onDestroy() {
+        scope.cancel()
         running = false
         fused.removeLocationUpdates(callback)
         tts?.shutdown()
@@ -178,8 +195,12 @@ class GuardService : Service() {
 
     companion object {
         private const val NOTIF_ID = 1
-        /** Read by autostart glue: idempotent starts, BT learning. Set on the main thread. */
-        @Volatile var running = false
+        /** UI observerar; autostart-limmet läser var-formen. Flow är sanningen. */
+        val runningFlow = MutableStateFlow(false)
+        val snapshotInfo = MutableStateFlow<String?>(null)
+        var running: Boolean
+            get() = runningFlow.value
+            set(v) { runningFlow.value = v }
         fun start(ctx: Context) = ctx.startForegroundService(Intent(ctx, GuardService::class.java))
         fun stop(ctx: Context) = ctx.stopService(Intent(ctx, GuardService::class.java))
     }

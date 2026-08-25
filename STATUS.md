@@ -59,6 +59,11 @@
   (twostraws SwiftUI/Concurrency/Testing · chrisbanes kotlin-flow/compose-state · egen
   halkvakt-android). docs/SKILLS.md = katalog + skippade med motivering. CLAUDE.md:
   obligatorisk läsning före app-kod; nya läxor förs in i halkvakt-android §5.
+- **S-2026-08-25natt (Betaputs II):** Appbygget igång på Davids "kör". Skelettet →
+  riktig app: Compose-UI (3 flikar, mörkt varumärkestema), inställningar (kategori-
+  filter via DataStore-Flow), persistent varningshistorik, testa-rösten, autostart-
+  switch. Skills styrde arkitekturen (en state-ägare; explicit coroutine-ägare i
+  tjänsten). Trappan orörd. v0.2.0. Lokalt: JVM-prov + APK gröna; CI-emulatorn dömer.
 - **S2 2026-08-25**: Public map shipped end-to-end. weather_latest table (map
   needs current state; archive stays event-filtered). Map site (MapLibre,
   VMS-ticker, waitlist vs Supabase RLS). Publisher commits via Git Data API
