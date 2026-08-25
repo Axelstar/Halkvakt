@@ -62,3 +62,10 @@
 
 ## Questions for David
 All seven answered 2026-08-24 → DECISIONS.md #8–11. No open questions.
+
+## S10 · Livemotorn (Supabase, minutfärsk data) — VÄNTAR PÅ: Davids access-token
+Klart: edge function ingest-live (Situation+RoadCondition, changeid-delta, upserts), delta-
+mekanik bevisad live (4105→1 objekt), migration live_cursors. Återstår när token finns:
+kör migration + deploy + secrets + pg_cron varje minut (via Management API) + verifiera
+kursorer rullar + GitHub-ingest till reservläge för dessa två flöden. Kartan fortsatt ~16 min;
+appen läser direkt från Supabase i oktober (då märks minutfärskheten på riktigt).
