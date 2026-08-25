@@ -27,6 +27,13 @@
   "släpps i vinter", släppmejl-rad i footern (source: release). Livemotorn (beslut
   #19) i drift: minutfärsk ingest via edge function + pg_cron. Sticky-läxan
   (overflow-x:clip) i DECISIONS #20. David iPhone-testar filmer + kvitto.
+- **S-2026-08-25em (forts):** Varumärkessvep alla sidor: Skylten i header på karta+om,
+  favicon-länk + og-taggar på index+karta (saknades!), ny og.png (1200×630, Skylten),
+  betaspråk utrensat överallt, beta.html → redirect, sitemap städad, kartpanelens
+  kö-formulär → släppdagsspråk. Bugg lagad: om.html:s JSON-LD-öppningstaggar hade
+  halshuggits vid morgonens SEO-flytt → rå JSON syntes som sidtext; återställda och
+  JSON-validerade. Filmpaneler/FAQ/footer rivna på Davids order — sidan slutar på
+  svart final (logo + butiksknappar + ticker).
 - **S2 2026-08-25**: Public map shipped end-to-end. weather_latest table (map
   needs current state; archive stays event-filtered). Map site (MapLibre,
   VMS-ticker, waitlist vs Supabase RLS). Publisher commits via Git Data API
