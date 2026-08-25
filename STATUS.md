@@ -48,6 +48,13 @@
   "50 min, limit 90, HEALTHY"). OBS: publish-*/30-schemats första tick släpade (GitHub-
   cron-skew) — manuellt publicerad som brygga; om webbvakten larmar i morgon: kolla att
   schedule-körningar rullar i Actions.
+- **S-2026-08-25sen kväll:** Mobilfilm-fix efter Davids iPhone-dumpar (scen 2 grå/4 svart):
+  rotorsak = SVG-gradient-"postrar" + lat klipphämtning som förlorar mot tummen på 4G.
+  Åtgärd: riktiga posterbildrutor ur klippen (~105 KB, syns direkt oavsett nät),
+  ivrig staggrad förladdning av alla klipp från start, robustare frame-reveal
+  (canplaythrough/timeupdate utöver seeked), ?vdebug-överlägg för fjärrdiagnos.
+  Robot-bevisat: alla 4 klipp loading direkt + postrar målas. David omtestar på iPhone
+  (vid strul: skärmdump MED ?vdebug).
 - **S2 2026-08-25**: Public map shipped end-to-end. weather_latest table (map
   needs current state; archive stays event-filtered). Map site (MapLibre,
   VMS-ticker, waitlist vs Supabase RLS). Publisher commits via Git Data API
