@@ -7,6 +7,8 @@ package se.halkvakt.app.ui
 import android.graphics.Typeface
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -169,7 +171,7 @@ private fun SettingsScreen(activity: MainActivity) {
     val scope = rememberCoroutineScope()
     val disabled by remember { Prefs.disabledKinds(ctx) }.collectAsStateWithLifecycle(initialValue = emptySet())
 
-    Column(Modifier.fillMaxSize().padding(20.dp)) {
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp)) {
         Rubrik("VARNA FÖR")
         Spacer(Modifier.height(6.dp))
         HazardKind.entries.forEach { kind ->
@@ -203,7 +205,7 @@ private fun OmScreen() {
     val version = remember {
         runCatching { ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName }.getOrNull() ?: "?"
     }
-    Column(Modifier.fillMaxSize().padding(20.dp)) {
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp)) {
         Rubrik("OM HALKVAKT")
         Spacer(Modifier.height(10.dp))
         Text("Halkvakt varnar dig med rösten — som en passagerare som läst allt Trafikverket vet om vägen framför dig.", color = Text)
@@ -219,7 +221,7 @@ private fun OmScreen() {
         LinkRow("Livekartan — läget just nu") { uri.openUri("https://axelstar.github.io/halkvakt-karta/karta.html") }
         LinkRow("Om appen & vanliga frågor") { uri.openUri("https://axelstar.github.io/halkvakt-karta/om.html") }
         LinkRow("Press & material") { uri.openUri("https://axelstar.github.io/halkvakt-karta/press.html") }
-        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.height(24.dp))
         Text("Version $version · Öppna data från Trafikverket (CC0) och Polisen",
             color = Dis, fontSize = 12.sp, fontFamily = FontFamily.Monospace)
         Spacer(Modifier.height(8.dp))
