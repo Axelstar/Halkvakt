@@ -65,3 +65,9 @@ Every session, in order:
    log) and BACKLOG.md. Log decisions in DECISIONS.md.
 5. End by telling David: what shipped, what's next, and ONLY the questions that
    block progress. Batch questions; never drip them.
+
+## Skills (obligatoriskt före app-kod)
+Före kod i `android/` eller `ios/`: läs relevant `skills/<namn>/SKILL.md` enligt
+katalogen i `docs/SKILLS.md`. Minimum: `halkvakt-android` för allt Android-arbete,
+`swiftui-pro`+`swift-concurrency-pro` för iOS. Nya hårt vunna läxor förs in i
+`skills/halkvakt-android/SKILL.md` §5 i samma commit som de lärs.
