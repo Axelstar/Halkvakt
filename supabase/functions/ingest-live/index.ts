@@ -27,20 +27,20 @@ const pt = (w?: string) => { const m = w?.match(/POINT \(([-\d.]+) ([-\d.]+)\)/)
 const KEEP = new Set(["Accident", "Obstruction", "AbnormalTraffic", "Incident"]);
 
 async function cursor(name: string): Promise<string> {
-  const r = await sql`SELECT changeid FROM live_cursors WHERE feed = ${name}`;
-  return r[0]?.changeid ?? "0";
+  const r = await sql`SELECT last_change_id FROM sync_state WHERE source = ${name}`;
+  return r[0]?.last_change_id ?? "0";
 }
 const saveCursor = (name: string, id: string) =>
-  sql`INSERT INTO live_cursors (feed, changeid, updated_at) VALUES (${name}, ${id}, now())
-      ON CONFLICT (feed) DO UPDATE SET changeid = ${id}, updated_at = now()`;
+  sql`INSERT INTO sync_state (source, last_change_id, synced_at) VALUES (${name}, ${id}, now())
+      ON CONFLICT (source) DO UPDATE SET last_change_id = ${id}, synced_at = now()`;
 
 async function situations() {
-  const { items, lastChangeId } = await tv("Situation", "1.6", await cursor("situation"), "road.trafficinfo");
+  const { items, lastChangeId } = await tv("Situation", "1.6", await cursor("deviations"), "road.trafficinfo");
   let n = 0;
   for (const s of items) for (const d of s.Deviation ?? []) {
     if (!KEEP.has(d.MessageTypeValue) && !s.Deleted) continue;
     const p = pt(d?.Geometry?.Point?.WGS84 ?? d?.Geometry?.WGS84);
-    await sql`INSERT INTO situations (deviation_id, situation_id, message_type, message_type_value, message,
+    await sql`INSERT INTO deviations (deviation_id, situation_id, message_type, message_type_value, message,
         severity_code, severity_text, road_number, county_nos, geom, start_time, end_time, icon_id, modified_time, deleted)
       VALUES (${String(d.Id ?? s.Id)}, ${String(s.Id ?? d.Id)}, ${d.MessageType ?? ""}, ${d.MessageTypeValue ?? ""},
         ${d.Message ?? ""}, ${d.SeverityCode ?? null}, ${d.SeverityText ?? null}, ${d.RoadNumber ?? null},
@@ -50,17 +50,17 @@ async function situations() {
         message_type_value = EXCLUDED.message_type_value, message = EXCLUDED.message,
         severity_code = EXCLUDED.severity_code, severity_text = EXCLUDED.severity_text,
         road_number = EXCLUDED.road_number, county_nos = EXCLUDED.county_nos,
-        geom = COALESCE(EXCLUDED.geom, situations.geom), start_time = EXCLUDED.start_time,
+        geom = COALESCE(EXCLUDED.geom, deviations.geom), start_time = EXCLUDED.start_time,
         end_time = EXCLUDED.end_time, icon_id = EXCLUDED.icon_id,
         modified_time = EXCLUDED.modified_time, deleted = EXCLUDED.deleted`;
     n++;
   }
-  await saveCursor("situation", lastChangeId);
+  await saveCursor("deviations", lastChangeId);
   return n;
 }
 
 async function roadconditions() {
-  const { items, lastChangeId } = await tv("RoadCondition", "1.2", await cursor("roadcondition"));
+  const { items, lastChangeId } = await tv("RoadCondition", "1.2", await cursor("road_conditions"));
   let n = 0;
   for (const rc of items) {
     const line = rc?.Geometry?.Line?.WGS84 ?? null;
@@ -77,7 +77,7 @@ async function roadconditions() {
         end_time = EXCLUDED.end_time, modified_time = EXCLUDED.modified_time, deleted = EXCLUDED.deleted`;
     n++;
   }
-  await saveCursor("roadcondition", lastChangeId);
+  await saveCursor("road_conditions", lastChangeId);
   return n;
 }
 
