@@ -136,3 +136,12 @@
   kartpanel synkad (oktober), hemlänk från kartan
 - Davids öppna val (deadline okt): press med namn eller anonymt; Flashback själv eller ej
 
+## 2026-08-25 — Mobilfixar + visuell hero efter konkurrentresearch (S9)
+- Mobilbuggar (Davids skärmdump): OM APPEN-krocken fixad (länken bor nu i panelen),
+  tickern rullar som riktig VMS-skylt vid överflöd (båda sidorna), hero-CTA:er staplas
+- Research (Flitsmeister m.fl.) → docs/SITE-INSPIRATION.md; genrens mönster: telefon i
+  heron, nyttorubrik, sifferbevis, badges, demovideo, citat
+- BYGGT: animerad CSS-telefonmockup (varningskort glider in i loop, puls-position,
+  snöflinga på vägen) + statrad (844 / 30 min / 0 kr / 0 spårning)
+- Väntar på David: fundering kring nästa visuella steg (video okt, skärmdumpar, badges)
+
