@@ -16,12 +16,17 @@
 - [ ] Kill-criterion verdict on first real ice events (Sep/Oct, Norrland)
 
 ## Waiting on David
-- Enable Pages on halkvakt-karta (Settings → Pages → Branch: main → Save) — API
-  create 403s even with Pages permission; one-time manual toggle
 - Revoke the unused second PAT (public-read-only one from 2026-08-24)
 - Google Play account, privatperson (~w40; see DECISIONS #9)
 
 ## Session log
+- **S-2026-08-25em**: Startsidan = scrollvärlden (4 filmscener). Kvittot v2 "Filmremsan":
+  4 nya filmpaneler (3316/10076/17376/64) tänds i snabb takt efter världen; final =
+  hård klippning till SVART med logotyp + Google Play/App Store centrerat och
+  live-tickern som eftertext (Davids regi). Betaspråket rivet sajten runt —
+  "släpps i vinter", släppmejl-rad i footern (source: release). Livemotorn (beslut
+  #19) i drift: minutfärsk ingest via edge function + pg_cron. Sticky-läxan
+  (overflow-x:clip) i DECISIONS #20. David iPhone-testar filmer + kvitto.
 - **S2 2026-08-25**: Public map shipped end-to-end. weather_latest table (map
   needs current state; archive stays event-filtered). Map site (MapLibre,
   VMS-ticker, waitlist vs Supabase RLS). Publisher commits via Git Data API
