@@ -37,6 +37,9 @@
 - **S-2026-08-25kväll:** Beslut #22 — minutdiet (Actions ~3 600→~1 750 min/mån, under
   gratistaket) + vakthund för livemotorn i hälsokollen (15-min-trösklar på
   deviations/road_conditions + pg_cron-puls). Skarpverifierad mot prod, HEALTHY.
+- **S-2026-08-25kväll (forts):** press.html live (presskit m. live-siffror, boilerplate,
+  logotyppaket); marknadsmotorns texter sanerade från betaspråk + pressnotis
+  länkar kitet. Provkört: 0 beta-träffar i utkast.
 - **S2 2026-08-25**: Public map shipped end-to-end. weather_latest table (map
   needs current state; archive stays event-filtered). Map site (MapLibre,
   VMS-ticker, waitlist vs Supabase RLS). Publisher commits via Git Data API

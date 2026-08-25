@@ -57,6 +57,12 @@
 12b. ~~Minutdiet + livemotor-vakthund~~ (S-2026-08-25em: klart, beslut #22). Ingest timvis,
     publish egen 30-min-klocka, healthcheck 2 h m. per-käll-trösklar + pg_cron-puls.
     *Verified: skarp dispatch mot prod — "limit 15"-rader, cron-puls succeeded, HEALTHY; ~3 600→~1 750 min/mån.*
+12c. ~~Presskit + generator-sanering~~ (S-2026-08-25kväll: klart). press.html live
+    (live-siffror ur meta.json, snabbfakta, fri boilerplate, logotyp-paket 512-PNG+SVG,
+    presskontakt-platshållare tills halkvakt.se); i sitemap + om-footern. Marknadsmotorns
+    kanaltexter befriade från betaspråk; pressnotisen länkar presskitet.
+    *Verified: 200 live, livesiffror renderar (844), 0 beta-träffar i provgenererat utkast.*
+    Rest (låst till domän): riktig pressmejladress på sidan.
 13. **Läns-sidor för SEO** ("Halka i Skåne just nu" ×21): statiska sidor genererade i
     publiceringssteget ur livedatan — innehåll ingen konkurrent kan kopiera. Görs när
     domänen finns så länkkraften hamnar rätt. *Verify: 21 sidor live m. färsk data + i sitemap.*
