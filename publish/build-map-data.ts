@@ -27,7 +27,7 @@ const vaglagSize = write("vaglag.geojson", fc(vaglag.rows.map(r => ({
                 road: r.road_number, updated: r.modified_time, lan: r.lan } }))));
 
 const vader = await pool.query(`
-  SELECT station_id, name, sample_time, surface_temp_c, air_temp_c, precipitation, rain, snow, county_nos[1] AS lan,
+  SELECT station_id, name, sample_time, surface_temp_c, air_temp_c, precipitation, rain, snow,
          ST_AsGeoJSON(geom)::json AS g
   FROM weather_latest`);
 write("vader.geojson", fc(vader.rows.map(r => ({
@@ -35,7 +35,7 @@ write("vader.geojson", fc(vader.rows.map(r => ({
   properties: { name: r.name, t: r.sample_time,
                 yta: r.surface_temp_c === null ? null : Number(r.surface_temp_c),
                 luft: r.air_temp_c === null ? null : Number(r.air_temp_c),
-                nbd: r.precipitation, sno: r.snow, lan: r.lan } }))));
+                nbd: r.precipitation, sno: r.snow } }))));
 
 const olyckor = await pool.query(`
   SELECT deviation_id, message_type, message, severity_text, road_number, start_time,
