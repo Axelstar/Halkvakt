@@ -145,3 +145,7 @@
   snöflinga på vägen) + statrad (844 / 30 min / 0 kr / 0 spårning)
 - Väntar på David: fundering kring nästa visuella steg (video okt, skärmdumpar, badges)
 
+
+## 2026-08-25 · Scrollvärlden live
+- varlden.html deployad på halkvakt-karta (Davids godkännande: "fix this up and then we deploy"): scroll-scrubbad körning i 4 scener (scroll-world-motorn MIT, Mixkit-film fri licens, klipp 24946/3317/36024/26253 kurerade via ffmpeg-bildrutor). Badges Google Play/App Store/Betakön i toppraden → väntelistan tills Play-länk finns (byts i okt). Länk från hero på index + sitemap. Landningssidans SEO/formulär orörda.
+- Kvar: ev. promota till startsida efter Davids beslut; riktiga app-skärmdumpar in i scenerna i okt; ev. betald AI-sömlös kamerafärd (~300 kr) om David vill.
