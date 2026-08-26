@@ -45,8 +45,10 @@ jobs:
           script: |
             cd android && ./gradlew --no-daemon :app:connectedDebugAndroidTest
             adb install -r android/app/build/outputs/apk/debug/app-debug.apk
+            adb shell pm grant se.halkvakt.app android.permission.ACCESS_FINE_LOCATION
+            adb emu geo fix 18.063 59.334
             adb shell am start -n se.halkvakt.app/.MainActivity
-            sleep 7
+            sleep 12
             SZ=$(adb shell wm size | tr -d '\r' | awk '{print $NF}'); W=${SZ%x*}; H=${SZ#*x}; Y=$((H*95/100)); echo "skärm ${W}x${H} y=$Y"; adb exec-out screencap -p > /tmp/shot-1-vakten.png; adb shell input tap $((W/2)) $Y; sleep 3; adb exec-out screencap -p > /tmp/shot-2-installningar.png; adb shell input tap $((W*5/6)) $Y; sleep 3; adb exec-out screencap -p > /tmp/shot-3-om.png
       - name: Upload app screenshots
         if: always()

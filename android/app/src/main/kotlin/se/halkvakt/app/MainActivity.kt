@@ -45,7 +45,11 @@ class MainActivity : ComponentActivity() {
         setContent { HalkvaktApp(this) }
         lifecycleScope.launch(Dispatchers.IO) {
             runCatching { SnapshotRepo.loadHazards(this@MainActivity) }
-                .onSuccess { hazards.value = it }
+                .onSuccess {
+                    hazards.value = it
+                    // Tänder LIVEDATA-pillen + "hämtat HH:mm" även utan att tjänsten körts.
+                    GuardService.snapshotInfo.value = "${it.size} faror · hämtat ${android.text.format.DateFormat.format("HH:mm", System.currentTimeMillis())}"
+                }
         }
         if (intent?.getBooleanExtra("auto_start", false) == true && hasPermissions() && !GuardService.running) onToggle()
     }
