@@ -98,6 +98,17 @@
     6 skills i `skills/`: twostraws×3 (iOS), chrisbanes×2 (Kotlin/Compose), egen
     halkvakt-android (bakgrundsplats/doze/TTS/Play/motor-kontrakt). Katalog docs/SKILLS.md,
     CLAUDE.md kräver läsning före app-kod. *Verified: frontmatter ok i alla 6, licenser medföljer.*
+15. **KÖSLUT-varning (TrafficFlow)** — idé från Davids pappa, faktatestad 2026-08-26:
+    vår befintliga nyckel öppnar TrafficFlow; mätdata 43 s färsk (hastighet+flöde per
+    körfält, schemaversion 1.4). Möjliggör uppmätta kö-slut i Sthlm/Gbg — "Kö framför
+    dig, bromsa lugnt". Slår Waze-modellen vid låg användarbas (slingor kräver ingen
+    crowd). Kräver: ny HazardKind (motorkontrakt ⇒ vektorer utökas), kö-slutslogik
+    (slinga N långsam + N−1 snabb), falsklarmsskydd (vägarbete/väder). EFTER release.
+    Stängda dörrar (bygg ALDRIG mot): friktionsdata (säljs via biltillverkare→entrepre-
+    nörer), plogåtgärder, Öresundsbrons driftstatus (inget API). SMHI-generationsskiftet
+    (Mesan2gv3/SNOW1gv1) träffar oss inte — vi kör varnings-API:t (ibww), frysrisk via
+    Trafikverkets stationer; väljs rätt generation den dag prognoslager byggs (MET Norge
+    CC BY är då kandidat).
 13. **Läns-sidor för SEO** ("Halka i Skåne just nu" ×21): statiska sidor genererade i
     publiceringssteget ur livedatan — innehåll ingen konkurrent kan kopiera. Görs när
     domänen finns så länkkraften hamnar rätt. *Verify: 21 sidor live m. färsk data + i sitemap.*
