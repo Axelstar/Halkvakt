@@ -134,8 +134,13 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         autostartOn.value = AutostartManager.isEnabled(this)
         if (hasPermissions()) {
-            LocationServices.getFusedLocationProviderClient(this).lastLocation
-                .addOnSuccessListener { l -> l?.let { lastLoc.value = it.longitude to it.latitude } }
+            val fused = LocationServices.getFusedLocationProviderClient(this)
+            fused.lastLocation.addOnSuccessListener { l ->
+                if (l != null) lastLoc.value = l.longitude to l.latitude
+                else fused.getCurrentLocation(com.google.android.gms.location.Priority.PRIORITY_BALANCED_POWER_ACCURACY,
+                        com.google.android.gms.tasks.CancellationTokenSource().token)
+                    .addOnSuccessListener { c -> c?.let { lastLoc.value = it.longitude to it.latitude } }
+            }
         }
     }
 
