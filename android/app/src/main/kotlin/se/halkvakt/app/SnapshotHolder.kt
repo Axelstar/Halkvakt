@@ -14,11 +14,17 @@ object SnapshotHolder {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     val hazards = MutableStateFlow<List<Hazard>>(emptyList())
     val loaded = MutableStateFlow(false)
+    val loadedAt = MutableStateFlow<Long?>(null)
 
     fun refresh(ctx: Context) {
         val app = ctx.applicationContext
         scope.launch {
-            try { hazards.value = SnapshotRepo.loadHazards(app); loaded.value = true }
+            try {
+                val list = SnapshotRepo.loadHazards(app)
+                hazards.value = list; loaded.value = true; loadedAt.value = System.currentTimeMillis()
+                // Samma flöde som tjänsten: tänder LIVEDATA-pillen + "hämtat HH:mm" även parkerad.
+                GuardService.snapshotInfo.value = "${list.size} faror · hämtat ${android.text.format.DateFormat.format("HH:mm", System.currentTimeMillis())}"
+            }
             catch (_: Exception) { /* behåll ev. tidigare lista; nästa refresh försöker igen */ }
         }
     }
