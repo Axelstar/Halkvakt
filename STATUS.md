@@ -66,6 +66,10 @@
   tjänsten). Trappan orörd. v0.2.0. Lokalt: JVM-prov + APK gröna; CI-emulatorn dömer.
 - **S-2026-08-25natt (foto):** CI-emulatorn plåtar nu appens tre flikar vid varje push
   (artefakt app-screenshots) — Davids första titt levererad. Två runner-läxor in i skillen.
+- **S-2026-08-26fm (UI v2):** David valde design i Claude Design — porterad rakt av:
+  statuskort, I NÄRHETEN m. riktig närhetsdata, körläget "Passageraren är vaken",
+  Inställningar v2 m. avståndsreglage (motor-configvägen, kontraktssäkert). CI grön,
+  nya flikbilder plåtade.
 - **S2 2026-08-25**: Public map shipped end-to-end. weather_latest table (map
   needs current state; archive stays event-filtered). Map site (MapLibre,
   VMS-ticker, waitlist vs Supabase RLS). Publisher commits via Git Data API

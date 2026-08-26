@@ -69,6 +69,17 @@
     *Verified: JVM-prov gröna, APK bygger lokalt; emulator-CI = domare på push.*
     Kvar till släppkandidat (Betaputs III): release-bygge m. R8+signering,
     integritetspolicy-URL (Play-krav), butiksmaterial (låst till kontot).
+11c. ~~UI v2 — Claude Design-porten~~ (S-2026-08-26fm: klart, Davids designval).
+    Mockupen porterad: statuskort ("Redo att köra", grön ▶-start, autostart-i-kortet),
+    I NÄRHETEN (Nearby.kt: ren närhetslogik + 5 JVM-prov; sekundärer ur metan —
+    frystemp/vått, km/h, väglagstext; ärliga tomlägen), körläge AKTIV ("Passageraren
+    är vaken" tid·km·räknare via Session-flow i tjänsten, SENAST SAGT, PÅ DIN VÄG,
+    Avsluta), Inställningar v2 (grupperade kort, röstrad, "Varna på avstånd"-reglage
+    → EngineConfig.leadMaxM — kontraktssäkert, vektorerna kör default), statuspiller
+    LIVEDATA/VAKTEN PÅ. Färgsemantik: grönt=kör, gult=varningsdata.
+    *Verified: 9 JVM-prov gröna, CI-emulator success, tre flikar plåtade.*
+    Känt datagap: snapshotten saknar vägnamn → närhetstitlar är kategoribaserade;
+    vägnamn = framtida pipeline-punkt.
 12c. ~~Presskit + generator-sanering~~ (S-2026-08-25kväll: klart). press.html live
     (live-siffror ur meta.json, snabbfakta, fri boilerplate, logotyp-paket 512-PNG+SVG,
     presskontakt-platshållare tills halkvakt.se); i sitemap + om-footern. Marknadsmotorns
