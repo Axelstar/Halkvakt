@@ -22,6 +22,20 @@ jobs:
           name: halkvakt-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 30
+      - name: Bygg signerad release-AAB
+        env:
+          HV_KEYSTORE_B64: ${{ secrets.HV_KEYSTORE_B64 }}
+          HV_KEYSTORE_PASS: ${{ secrets.HV_KEYSTORE_PASS }}
+        run: |
+          echo "$HV_KEYSTORE_B64" | base64 -d > /tmp/upload.jks
+          export HV_KEYSTORE_PATH=/tmp/upload.jks
+          cd android && ./gradlew --no-daemon :app:bundleRelease
+      - name: Ladda upp release-AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: halkvakt-release-aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 30
   emulator:
     runs-on: ubuntu-latest
     timeout-minutes: 25
