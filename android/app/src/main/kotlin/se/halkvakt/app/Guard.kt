@@ -5,6 +5,7 @@ package se.halkvakt.app
 
 import se.halkvakt.engine.Alert
 import se.halkvakt.engine.AlertEngine
+import se.halkvakt.engine.EngineConfig
 import se.halkvakt.engine.HazardKind
 import se.halkvakt.engine.Fix
 import se.halkvakt.engine.Geo
@@ -14,6 +15,7 @@ import se.halkvakt.engine.SegmentHazard
 
 class Guard(
     hazards: List<Hazard>,
+    cfg: EngineConfig = EngineConfig(),
     private val speak: (String) -> Unit,
     private val notify: (String) -> Unit,
     private val onEvent: (String) -> Unit = {},
@@ -22,7 +24,7 @@ class Guard(
     /** Krok för persistent historik — anropas ENDAST för faktiskt upplästa varningar. */
     private val onAlert: (Alert) -> Unit = {},
 ) {
-    private val engine = AlertEngine(hazards)
+    private val engine = AlertEngine(hazards, cfg)
     private var coords: List<DoubleArray> = flatten(hazards)
 
     /** Fresh snapshot mid-drive: swap hazards, KEEP the engine's memory (BACKLOG #9, v14). */

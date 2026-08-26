@@ -1,19 +1,20 @@
-// Halkvakts UI — Compose, tre flikar. Skill-regler som styr formen:
-//  - EN lägsta ansvarig ägare per state: DataStore/tjänstens StateFlows äger allt,
-//    composables KONSUMERAR via collectAsStateWithLifecycle. Ingen kopia i UI-lager.
-//  - Behörighetstrappan bor kvar i MainActivity (Play-granskad logik) — UI:t ringer bara.
+// Halkvakts UI v2 — porterad från Claude Design-mockupen David valde.
+// Färgsemantik: GRÖNT = kör/livedata, GULT = varningsdata (chips, vippor, vald flik).
+// Skill-regler: en lägsta ansvarig ägare per state (DataStore/tjänstens StateFlows),
+// composables konsumerar; trappan bor orörd i MainActivity.
 package se.halkvakt.app.ui
 
 import android.graphics.Typeface
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
@@ -25,43 +26,60 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import se.halkvakt.app.AlertEntry
 import se.halkvakt.app.AppEvents
 import se.halkvakt.app.GuardService
 import se.halkvakt.app.MainActivity
+import se.halkvakt.app.Nearby
+import se.halkvakt.app.NearbyItem
 import se.halkvakt.app.Prefs
 import se.halkvakt.engine.HazardKind
 
 private val Gul = Color(0xFFFFC400)
 private val Natt = Color(0xFF06090D)
-private val Panel = Color(0xFF0E1B25)
 private val Text = Color(0xFFF3F6F9)
 private val Dis = Color(0xFF9FB3C8)
-private val Rod = Color(0xFFB3453C)
 private val Yta = Color(0xFF0E1720)
 private val Kant = Color(0xFF1B2530)
+private val Gron = Color(0xFF34A853)
+private val GronLjus = Color(0xFF7ADCA1)
+private val GronMork = Color(0xFF0E1F16)
+private val GronKant = Color(0xFF1C3327)
+private val Teal = Color(0xFF7EC8E3)
 private val Cond = FontFamily(Typeface.create("sans-serif-condensed", Typeface.BOLD))
 
 private val Scheme = darkColorScheme(
-    primary = Gul, onPrimary = Natt,
-    background = Natt, onBackground = Text,
-    surface = Panel, onSurface = Text,
-    surfaceVariant = Color(0xFF14344A), onSurfaceVariant = Dis,
-    secondary = Color(0xFF7EC8E3),
+    primary = Gul, onPrimary = Natt, background = Natt, onBackground = Text,
+    surface = Yta, onSurface = Text, surfaceVariant = Kant, onSurfaceVariant = Dis,
+    secondary = Teal,
 )
 
-private val KIND_LABEL = mapOf(
-    HazardKind.ACCIDENT to ("Olyckor & hinder" to "Trafikverkets pågående lägen"),
-    HazardKind.SLIPPERY_SEGMENT to ("Halt väglag" to "Rapporterade hala vägsträckor"),
-    HazardKind.ICING_POINT to ("Frysrisk" to "Vägväderstationer nära noll och vått"),
-    HazardKind.WILDLIFE to ("Vilt" to "Polisens viltolyckor senaste dygnen"),
-    HazardKind.CAMERA to ("Fartkameror" to "Fasta kameror på din väg"),
-)
+private fun kindColor(k: HazardKind) = if (k == HazardKind.ICING_POINT) Teal else Gul
+private fun kindChip(k: HazardKind) = when (k) {
+    HazardKind.ACCIDENT -> "OLYCKA"; HazardKind.SLIPPERY_SEGMENT -> "HALT VÄGLAG"
+    HazardKind.ICING_POINT -> "FRYSRISK"; HazardKind.WILDLIFE -> "VILT"; HazardKind.CAMERA -> "FARTKAMERA"
+}
+private fun kindTitle(k: HazardKind) = when (k) {
+    HazardKind.ACCIDENT -> "Olycka eller hinder på vägen"
+    HazardKind.SLIPPERY_SEGMENT -> "Halt väglag rapporterat"
+    HazardKind.ICING_POINT -> "Frysrisk vid vägväderstation"
+    HazardKind.WILDLIFE -> "Vilt rapporterat i området"
+    HazardKind.CAMERA -> "Fartkamera"
+}
+private fun kindSource(k: HazardKind) = when (k) {
+    HazardKind.ACCIDENT -> "Trafikverket · läget nu"
+    HazardKind.SLIPPERY_SEGMENT -> "Trafikverket väglag"
+    HazardKind.ICING_POINT -> "Vägväderstation"
+    HazardKind.WILDLIFE -> "Polisen"
+    HazardKind.CAMERA -> "Trafikverket kameror"
+}
 
 @Composable
 fun HalkvaktApp(activity: MainActivity) {
@@ -81,7 +99,8 @@ fun HalkvaktApp(activity: MainActivity) {
                 }
             }
         ) { pad ->
-            Box(Modifier.padding(pad).statusBarsPadding()) {
+            Column(Modifier.padding(pad).statusBarsPadding()) {
+                TopBar()
                 when (tab) {
                     0 -> VaktScreen(activity)
                     1 -> SettingsScreen(activity)
@@ -93,110 +112,301 @@ fun HalkvaktApp(activity: MainActivity) {
 }
 
 @Composable
-private fun VaktScreen(activity: MainActivity) {
+private fun TopBar() {
     val running by GuardService.runningFlow.collectAsStateWithLifecycle()
     val snapshot by GuardService.snapshotInfo.collectAsStateWithLifecycle()
+    Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+        Icon(Icons.Filled.Warning, null, tint = Gul, modifier = Modifier.size(22.dp))
+        Spacer(Modifier.width(8.dp))
+        Text("Halkvakt", color = Text, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+        Spacer(Modifier.weight(1f))
+        when {
+            running -> StatusPill("VAKTEN PÅ", Gul)
+            snapshot != null -> StatusPill("LIVEDATA", GronLjus)
+        }
+    }
+}
+
+@Composable
+private fun StatusPill(text: String, color: Color) {
+    Surface(shape = RoundedCornerShape(50), color = color.copy(alpha = .12f),
+        border = BorderStroke(1.dp, color.copy(alpha = .4f))) {
+        Text("● $text", color = color, fontSize = 11.sp, fontFamily = FontFamily.Monospace,
+            letterSpacing = 1.sp, modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp))
+    }
+}
+
+@Composable
+private fun VaktScreen(activity: MainActivity) {
+    val running by GuardService.runningFlow.collectAsStateWithLifecycle()
+    if (running) AktivContent(activity) else RedoContent(activity)
+}
+
+/* ---------- REDO ---------- */
+
+@Composable
+private fun RedoContent(activity: MainActivity) {
     val autostart by activity.autostartOn.collectAsStateWithLifecycle()
-    val events by AppEvents.events.collectAsStateWithLifecycle()
-    val ctx = LocalContext.current
-    val history by remember { Prefs.history(ctx) }.collectAsStateWithLifecycle(initialValue = emptyList())
+    val hazards by activity.hazards.collectAsStateWithLifecycle()
+    val loc by activity.lastLoc.collectAsStateWithLifecycle()
+    val snapshot by GuardService.snapshotInfo.collectAsStateWithLifecycle()
+    val nearby = remember(hazards, loc) {
+        loc?.let { (lon, lat) -> Nearby.nearest(hazards, lon, lat) } ?: emptyList()
+    }
 
-    Column(Modifier.fillMaxSize().padding(horizontal = 20.dp)) {
-        Spacer(Modifier.height(20.dp))
-        Row(Modifier.align(Alignment.CenterHorizontally), verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Filled.Warning, null, tint = Gul, modifier = Modifier.size(26.dp))
-            Spacer(Modifier.width(9.dp))
-            Text("HALKVAKT", color = Text, fontSize = 30.sp, fontFamily = Cond, letterSpacing = 3.sp)
-        }
-        Spacer(Modifier.height(6.dp))
-        Text(
-            if (running) "Vakten är på. Lägg undan telefonen och kör."
-            else "Redo. Tryck start när du sätter dig i bilen.",
-            color = Dis, modifier = Modifier.align(Alignment.CenterHorizontally))
-        Spacer(Modifier.height(18.dp))
-
-        Button(
-            onClick = { activity.onToggle() },
-            shape = RoundedCornerShape(50),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (running) Rod else Gul,
-                contentColor = if (running) Color.White else Natt),
-            modifier = Modifier.fillMaxWidth().height(92.dp)
-        ) { Text(if (running) "STOPPA VAKTEN" else "STARTA VAKTEN", fontSize = 22.sp, fontFamily = Cond, letterSpacing = 1.5.sp) }
-
-        Spacer(Modifier.height(10.dp))
-        Surface(shape = RoundedCornerShape(18.dp), color = Yta, border = BorderStroke(1.dp, Kant), modifier = Modifier.fillMaxWidth()) {
-            Row(Modifier.padding(horizontal = 14.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                Column(Modifier.weight(1f)) {
-                    Text("Autostart", color = Text)
-                    Text(if (autostart) "Vakten vaknar själv när du kör" else "Av — starta manuellt varje gång",
-                        color = Dis, fontSize = 12.sp)
+    LazyColumn(Modifier.fillMaxSize().padding(horizontal = 20.dp)) {
+        item {
+            Surface(shape = RoundedCornerShape(20.dp), color = Yta,
+                border = BorderStroke(1.dp, Kant), modifier = Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(18.dp)) {
+                    Rubrik("STATUS")
+                    Text("Redo att köra", color = Text, fontSize = 30.sp, fontFamily = Cond)
+                    Text("Vakten lyssnar på vägen framför dig så fort du startar.",
+                        color = Dis, fontSize = 14.sp, modifier = Modifier.padding(top = 4.dp))
+                    Spacer(Modifier.height(16.dp))
+                    Button(onClick = { activity.onToggle() }, shape = RoundedCornerShape(50),
+                        colors = ButtonDefaults.buttonColors(containerColor = Gron, contentColor = Color.White),
+                        modifier = Modifier.fillMaxWidth().height(60.dp)) {
+                        Icon(Icons.Filled.PlayArrow, null)
+                        Spacer(Modifier.width(6.dp))
+                        Text("Starta vakten", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    }
+                    Spacer(Modifier.height(14.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Column(Modifier.weight(1f)) {
+                            Text("Autostart", color = Text, fontSize = 15.sp)
+                            Text("Startar när bilens Bluetooth kopplas", color = Dis, fontSize = 12.sp)
+                        }
+                        Switch(checked = autostart, onCheckedChange = { activity.onAutostartToggle() },
+                            colors = SwitchDefaults.colors(checkedTrackColor = Gul, checkedThumbColor = Natt))
+                    }
                 }
-                Switch(checked = autostart, onCheckedChange = { activity.onAutostartToggle() },
-                    colors = SwitchDefaults.colors(checkedTrackColor = Gul, checkedThumbColor = Natt))
             }
-        }
-        snapshot?.let {
+            Spacer(Modifier.height(20.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Rubrik("I NÄRHETEN")
+                Spacer(Modifier.weight(1f))
+                snapshot?.let { Text(it.substringAfter("· "), color = Dis, fontSize = 11.sp) }
+            }
             Spacer(Modifier.height(8.dp))
-            Text("Vägdata: $it", color = Dis, fontSize = 12.sp, fontFamily = FontFamily.Monospace)
         }
+        if (nearby.isEmpty()) item {
+            Text(
+                if (loc == null) "Ger dig läget omkring dig så fort platsen är på — tryck start en första gång."
+                else "Inget rapporterat inom sex mil just nu. Bra läge att köra.",
+                color = Dis, fontSize = 13.sp)
+        }
+        items(nearby) { n -> NearbyCard(n); Spacer(Modifier.height(8.dp)) }
+        item { Spacer(Modifier.height(12.dp)) }
+    }
+}
 
-        Spacer(Modifier.height(16.dp))
-        LazyColumn(Modifier.weight(1f)) {
-            item { Rubrik("HÄNDELSER") }
-            items(events.asReversed()) { Text(it, color = Dis, fontSize = 12.sp, fontFamily = FontFamily.Monospace, modifier = Modifier.padding(vertical = 2.dp)) }
-            if (history.isNotEmpty()) {
-                item { Spacer(Modifier.height(12.dp)); Rubrik("TIDIGARE VARNINGAR") }
-                items(history.asReversed().take(20)) { e -> HistoryRow(e) }
+@Composable
+private fun NearbyCard(n: NearbyItem) {
+    Surface(shape = RoundedCornerShape(16.dp), color = Yta,
+        border = BorderStroke(1.dp, Kant), modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(14.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                KindChip(n.kind)
+                Spacer(Modifier.weight(1f))
+                Text(Nearby.distText(n.distM), color = kindColor(n.kind),
+                    fontSize = 15.sp, fontWeight = FontWeight.Bold)
             }
+            Spacer(Modifier.height(6.dp))
+            Text(kindTitle(n.kind), color = Text, fontSize = 15.sp)
+            Text(listOfNotNull(n.secondary, kindSource(n.kind)).joinToString(" · "),
+                color = Dis, fontSize = 12.sp, modifier = Modifier.padding(top = 2.dp))
+        }
+    }
+}
+
+@Composable
+private fun KindChip(k: HazardKind) {
+    val c = kindColor(k)
+    Surface(shape = RoundedCornerShape(7.dp), color = c.copy(alpha = .13f)) {
+        Text(kindChip(k), color = c, fontSize = 10.sp, fontFamily = FontFamily.Monospace,
+            letterSpacing = 1.5.sp, modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp))
+    }
+}
+
+/* ---------- AKTIV (körläge) ---------- */
+
+@Composable
+private fun AktivContent(activity: MainActivity) {
+    val session by GuardService.session.collectAsStateWithLifecycle()
+    val hazards by activity.hazards.collectAsStateWithLifecycle()
+    val ctx = LocalContext.current
+    val warnM by remember { Prefs.warnDistanceM(ctx) }.collectAsStateWithLifecycle(initialValue = 3000f)
+    var now by remember { mutableStateOf(System.currentTimeMillis()) }
+    LaunchedEffect(Unit) { while (true) { delay(1000); now = System.currentTimeMillis() } }
+
+    val minutes = ((now - session.startedAt) / 60000).coerceAtLeast(0)
+    val nearby = remember(hazards, session.lon, session.lat) {
+        session.lon?.let { lon -> session.lat?.let { lat -> Nearby.nearest(hazards, lon, lat) } } ?: emptyList()
+    }
+
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp)) {
+        Surface(shape = RoundedCornerShape(20.dp), color = GronMork,
+            border = BorderStroke(1.dp, GronKant), modifier = Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(18.dp)) {
+                Text("PASSAGERAREN ÄR VAKEN", color = GronLjus, fontSize = 11.sp,
+                    fontFamily = FontFamily.Monospace, letterSpacing = 2.sp)
+                Text("$minutes min · ${"%.0f".format(session.km)} km",
+                    color = Text, fontSize = 34.sp, fontFamily = Cond,
+                    modifier = Modifier.padding(top = 4.dp))
+                Text("Rösten talar när något dyker upp inom ${"%.1f".format(warnM / 1000).replace('.', ',')} km framför dig.",
+                    color = Dis, fontSize = 13.sp, modifier = Modifier.padding(top = 2.dp))
+                Spacer(Modifier.height(12.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    StatBox(session.counts.values.sum(), "Varningar", Modifier.weight(1f))
+                    StatBox(session.counts[HazardKind.SLIPPERY_SEGMENT] ?: 0, "Halka", Modifier.weight(1f))
+                    StatBox(session.counts[HazardKind.WILDLIFE] ?: 0, "Vilt", Modifier.weight(1f))
+                }
+            }
+        }
+        Spacer(Modifier.height(12.dp))
+        Surface(shape = RoundedCornerShape(16.dp), color = Yta,
+            border = BorderStroke(1.dp, Gul.copy(alpha = .25f)), modifier = Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(14.dp)) {
+                Row {
+                    Rubrik("SENAST SAGT")
+                    Spacer(Modifier.weight(1f))
+                    session.lastSaid?.let {
+                        Text(android.text.format.DateFormat.format("HH:mm", it.second).toString(),
+                            color = Dis, fontSize = 11.sp)
+                    }
+                }
+                Spacer(Modifier.height(4.dp))
+                Text(session.lastSaid?.let { "”${it.first}”" }
+                    ?: "Rösten säger till när något dyker upp — annars är den tyst.",
+                    color = if (session.lastSaid != null) Text else Dis,
+                    fontSize = 15.sp, fontStyle = FontStyle.Italic)
+            }
+        }
+        Spacer(Modifier.height(18.dp))
+        Rubrik("PÅ DIN VÄG")
+        Spacer(Modifier.height(6.dp))
+        if (nearby.isEmpty())
+            Text("Fri väg så långt datat ser.", color = Dis, fontSize = 13.sp)
+        nearby.forEach { n ->
+            Row(Modifier.fillMaxWidth().padding(vertical = 7.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text(Nearby.distText(n.distM), color = kindColor(n.kind), fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp, modifier = Modifier.width(64.dp))
+                Column {
+                    Text(kindTitle(n.kind), color = Text, fontSize = 14.sp)
+                    n.secondary?.let { Text(it, color = Dis, fontSize = 12.sp) }
+                }
+            }
+        }
+        Spacer(Modifier.height(20.dp))
+        OutlinedButton(onClick = { activity.onToggle() }, shape = RoundedCornerShape(50),
+            border = BorderStroke(1.dp, Color(0xFF33424F)),
+            modifier = Modifier.fillMaxWidth().height(56.dp)) {
+            Text("Avsluta vakten", color = Text, fontSize = 16.sp)
+        }
+        Spacer(Modifier.height(16.dp))
+    }
+}
+
+@Composable
+private fun StatBox(n: Int, label: String, modifier: Modifier = Modifier) {
+    Surface(shape = RoundedCornerShape(12.dp), color = Color(0xFF10241A), modifier = modifier) {
+        Column(Modifier.padding(vertical = 10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Text("$n", color = Text, fontSize = 22.sp, fontFamily = Cond)
+            Text(label, color = Dis, fontSize = 11.sp)
         }
     }
 }
 
 @Composable private fun Rubrik(s: String) =
-    Text(s, color = Gul, fontSize = 12.sp, fontFamily = FontFamily.Monospace, letterSpacing = 2.sp)
+    Text(s, color = Gul, fontSize = 11.sp, fontFamily = FontFamily.Monospace, letterSpacing = 2.sp)
 
-@Composable private fun HistoryRow(e: AlertEntry) {
-    val tid = android.text.format.DateFormat.format("d/M HH:mm", e.t).toString()
-    Row(Modifier.padding(vertical = 3.dp)) {
-        Text(tid, color = Dis.copy(alpha = .7f), fontSize = 12.sp, fontFamily = FontFamily.Monospace)
-        Spacer(Modifier.width(8.dp))
-        Text(e.text, color = Text, fontSize = 13.sp)
-    }
-}
+/* ---------- INSTÄLLNINGAR ---------- */
+
+private val KIND_LABEL = mapOf(
+    HazardKind.ACCIDENT to ("Olyckor & hinder" to "Trafikverkets pågående lägen"),
+    HazardKind.SLIPPERY_SEGMENT to ("Halt väglag" to "Rapporterade hala vägsträckor"),
+    HazardKind.ICING_POINT to ("Frysrisk" to "Vägväderstationer nära noll och vått"),
+    HazardKind.WILDLIFE to ("Vilt" to "Polisens viltolyckor senaste dygnen"),
+    HazardKind.CAMERA to ("Fartkameror" to "Fasta kameror på din väg"),
+)
 
 @Composable
 private fun SettingsScreen(activity: MainActivity) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
     val disabled by remember { Prefs.disabledKinds(ctx) }.collectAsStateWithLifecycle(initialValue = emptySet())
+    val warnPref by remember { Prefs.warnDistanceM(ctx) }.collectAsStateWithLifecycle(initialValue = 3000f)
+    var slider by remember(warnPref) { mutableStateOf(warnPref) }
 
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp)) {
+        Text("Inställningar", color = Text, fontSize = 30.sp, fontFamily = Cond)
+        Text("Fem källor. Slå av det du inte vill höra.", color = Dis, fontSize = 13.sp)
+        Spacer(Modifier.height(18.dp))
         Rubrik("VARNA FÖR")
-        Spacer(Modifier.height(6.dp))
-        HazardKind.entries.forEach { kind ->
-            val (label, desc) = KIND_LABEL[kind] ?: (kind.wire to "")
-            Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                Column(Modifier.weight(1f)) {
-                    Text(label, color = Text)
-                    Text(desc, color = Dis, fontSize = 12.sp)
+        Spacer(Modifier.height(8.dp))
+        Surface(shape = RoundedCornerShape(18.dp), color = Yta,
+            border = BorderStroke(1.dp, Kant), modifier = Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(horizontal = 14.dp, vertical = 4.dp)) {
+                HazardKind.entries.forEachIndexed { i, kind ->
+                    if (i > 0) HorizontalDivider(color = Kant)
+                    val (label, desc) = KIND_LABEL[kind] ?: (kind.wire to "")
+                    Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Column(Modifier.weight(1f)) {
+                            Text(label, color = Text, fontSize = 15.sp)
+                            Text(desc, color = Dis, fontSize = 12.sp)
+                        }
+                        Switch(checked = kind !in disabled,
+                            onCheckedChange = { on -> scope.launch { Prefs.setKindEnabled(ctx, kind, on) } },
+                            colors = SwitchDefaults.colors(checkedTrackColor = Gul, checkedThumbColor = Natt))
+                    }
                 }
-                Switch(checked = kind !in disabled,
-                    onCheckedChange = { on -> scope.launch { Prefs.setKindEnabled(ctx, kind, on) } },
-                    colors = SwitchDefaults.colors(checkedTrackColor = Gul, checkedThumbColor = Natt))
             }
         }
         Spacer(Modifier.height(20.dp))
         Rubrik("RÖSTEN")
         Spacer(Modifier.height(8.dp))
+        Surface(shape = RoundedCornerShape(18.dp), color = Yta,
+            border = BorderStroke(1.dp, Kant), modifier = Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(14.dp)) {
+                Row {
+                    Text("Röst", color = Text, fontSize = 15.sp)
+                    Spacer(Modifier.weight(1f))
+                    Text("Svenska · systemets röst", color = Dis, fontSize = 13.sp)
+                }
+                HorizontalDivider(color = Kant, modifier = Modifier.padding(vertical = 10.dp))
+                Row {
+                    Text("Varna på avstånd", color = Text, fontSize = 15.sp)
+                    Spacer(Modifier.weight(1f))
+                    Text("${"%.1f".format(slider / 1000).replace('.', ',')} km",
+                        color = Gul, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                }
+                Slider(value = slider, onValueChange = { slider = it },
+                    onValueChangeFinished = { scope.launch { Prefs.setWarnDistanceM(ctx, slider) } },
+                    valueRange = 500f..5000f,
+                    colors = SliderDefaults.colors(thumbColor = Gul, activeTrackColor = Gul, inactiveTrackColor = Kant))
+                Row {
+                    Text("Sent — 500 m", color = Dis, fontSize = 11.sp)
+                    Spacer(Modifier.weight(1f))
+                    Text("Tidigt — 5 km", color = Dis, fontSize = 11.sp)
+                }
+                Text("Gäller från nästa start av vakten.", color = Dis, fontSize = 11.sp,
+                    modifier = Modifier.padding(top = 4.dp))
+            }
+        }
+        Spacer(Modifier.height(16.dp))
         OutlinedButton(onClick = { activity.testVoice() }, shape = RoundedCornerShape(50),
             border = BorderStroke(1.dp, Gul), modifier = Modifier.fillMaxWidth().height(52.dp)) {
             Text("Testa rösten", color = Gul, fontFamily = Cond, fontSize = 16.sp, letterSpacing = 1.sp)
         }
         Text("Spelar en provvarning i samma kanal som riktiga varningar — bra för att ställa volymen i bilen.",
             color = Dis, fontSize = 12.sp, modifier = Modifier.padding(top = 6.dp))
+        Spacer(Modifier.height(16.dp))
     }
 }
+
+/* ---------- OM ---------- */
 
 @Composable
 private fun OmScreen() {
@@ -210,7 +420,8 @@ private fun OmScreen() {
         Spacer(Modifier.height(10.dp))
         Text("Halkvakt varnar dig med rösten — som en passagerare som läst allt Trafikverket vet om vägen framför dig.", color = Text)
         Spacer(Modifier.height(14.dp))
-        Surface(shape = RoundedCornerShape(18.dp), color = Yta, border = BorderStroke(1.dp, Kant), modifier = Modifier.fillMaxWidth()) {
+        Surface(shape = RoundedCornerShape(18.dp), color = Yta,
+            border = BorderStroke(1.dp, Kant), modifier = Modifier.fillMaxWidth()) {
             Column(Modifier.padding(14.dp)) {
                 Text("Din position lämnar aldrig telefonen.", color = Gul, fontWeight = FontWeight.Bold)
                 Text("All matchning mot vägdata sker lokalt i appen. Inget konto, ingen spårning.",
@@ -230,6 +441,6 @@ private fun OmScreen() {
 
 @Composable private fun LinkRow(label: String, onClick: () -> Unit) {
     TextButton(onClick = onClick, contentPadding = PaddingValues(0.dp)) {
-        Text("→ $label", color = Color(0xFF7EC8E3))
+        Text("→ $label", color = Teal)
     }
 }

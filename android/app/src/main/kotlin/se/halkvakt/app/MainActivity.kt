@@ -10,6 +10,11 @@ import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
+import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import se.halkvakt.engine.Hazard
 import androidx.activity.compose.setContent
 import kotlinx.coroutines.flow.MutableStateFlow
 import se.halkvakt.app.ui.HalkvaktApp
@@ -27,6 +32,9 @@ object AppEvents {
 class MainActivity : ComponentActivity() {
 
     val autostartOn = MutableStateFlow(false)
+    /** Snapshotten för "I närheten" — UI-läsning, tjänsten har sin egen kopia. */
+    val hazards = MutableStateFlow<List<Hazard>>(emptyList())
+    val lastLoc = MutableStateFlow<Pair<Double, Double>?>(null)
     private var testTts: TextToSpeech? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,6 +43,10 @@ class MainActivity : ComponentActivity() {
         AlertBus.onEvent = AppEvents::post
         autostartOn.value = AutostartManager.isEnabled(this)
         setContent { HalkvaktApp(this) }
+        lifecycleScope.launch(Dispatchers.IO) {
+            runCatching { SnapshotRepo.loadHazards(this@MainActivity) }
+                .onSuccess { hazards.value = it }
+        }
         if (intent?.getBooleanExtra("auto_start", false) == true && hasPermissions() && !GuardService.running) onToggle()
     }
 
@@ -117,6 +129,10 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         autostartOn.value = AutostartManager.isEnabled(this)
+        if (hasPermissions()) {
+            LocationServices.getFusedLocationProviderClient(this).lastLocation
+                .addOnSuccessListener { l -> l?.let { lastLoc.value = it.longitude to it.latitude } }
+        }
     }
 
     override fun onDestroy() {

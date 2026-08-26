@@ -4,6 +4,7 @@ package se.halkvakt.app
 
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -15,6 +16,7 @@ private val Context.dataStore by preferencesDataStore("halkvakt")
 
 object Prefs {
     private val KEY_HISTORY = stringPreferencesKey("alert_history")
+    private val KEY_WARN_DIST = floatPreferencesKey("warn_distance_m")
     private fun kindKey(k: HazardKind) = booleanPreferencesKey("warn_${k.wire}")
 
     /** Kategorier föraren stängt av (default: allt PÅ). */
@@ -23,6 +25,14 @@ object Prefs {
 
     suspend fun setKindEnabled(ctx: Context, k: HazardKind, on: Boolean) {
         ctx.dataStore.edit { it[kindKey(k)] = on }
+    }
+
+    /** Hur tidigt rösten får tala (motorns leadMaxM). 500–5000 m, default = motorns 3000. */
+    fun warnDistanceM(ctx: Context): Flow<Float> =
+        ctx.dataStore.data.map { it[KEY_WARN_DIST] ?: 3000f }
+
+    suspend fun setWarnDistanceM(ctx: Context, m: Float) {
+        ctx.dataStore.edit { it[KEY_WARN_DIST] = m.coerceIn(500f, 5000f) }
     }
 
     fun history(ctx: Context): Flow<List<AlertEntry>> =

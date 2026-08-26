@@ -22,8 +22,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import se.halkvakt.engine.Fix
+import se.halkvakt.engine.EngineConfig
+import se.halkvakt.engine.Geo
 import se.halkvakt.engine.HazardKind
 import java.util.Locale
 import kotlin.concurrent.thread
@@ -33,11 +36,21 @@ object AlertBus {
     fun post(msg: String) { onEvent?.invoke(msg) }
 }
 
+/** Körpassets bokföring — UI:t läser, tjänsten skriver. Nollställs per pass. */
+data class Session(
+    val startedAt: Long = 0L,
+    val km: Double = 0.0,
+    val counts: Map<HazardKind, Int> = emptyMap(),
+    val lastSaid: Pair<String, Long>? = null,
+    val lon: Double? = null, val lat: Double? = null,
+)
+
 class GuardService : Service() {
 
     /** Skill-regel: asynkront arbete har en explicit ägare och livstid = tjänstens. */
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     @Volatile private var disabledKinds: Set<HazardKind> = emptySet()
+    private var prevLon = Double.NaN; private var prevLat = Double.NaN
     private var guard: Guard? = null
     private lateinit var fused: FusedLocationProviderClient
     private var tts: TextToSpeech? = null
@@ -76,6 +89,8 @@ class GuardService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startForeground(NOTIF_ID, buildNotification("Halkvakt aktiv — inga varningar just nu"))
         running = true
+        prevLon = Double.NaN; prevLat = Double.NaN
+        session.value = Session(startedAt = System.currentTimeMillis())
         loadSnapshotAsync()
         startLocationUpdates()
         AlertBus.post("Tjänsten startad. Laddar vägdata …")
@@ -87,10 +102,15 @@ class GuardService : Service() {
             val hazards = SnapshotRepo.loadHazards(this)
             val g = guard
             if (g == null) {
-                guard = Guard(hazards, speak = ::speak, notify = ::updateNotification, onEvent = AlertBus::post,
+                val warnM = kotlinx.coroutines.runBlocking { Prefs.warnDistanceM(this@GuardService).first() }.toDouble()
+                guard = Guard(hazards, cfg = EngineConfig(leadMaxM = warnM), speak = ::speak, notify = ::updateNotification, onEvent = AlertBus::post,
                     isEnabled = { it !in disabledKinds },
-                    onAlert = { a -> scope.launch {
-                        Prefs.appendAlert(this@GuardService, AlertEntry((a.t * 1000).toLong(), a.kind.wire, a.text)) } })
+                    onAlert = { a ->
+                        session.value = session.value.let { s -> s.copy(
+                            counts = s.counts + (a.kind to (s.counts[a.kind] ?: 0) + 1),
+                            lastSaid = a.text to System.currentTimeMillis()) }
+                        scope.launch {
+                            Prefs.appendAlert(this@GuardService, AlertEntry((a.t * 1000).toLong(), a.kind.wire, a.text)) } })
                 AlertBus.post("Vägdata laddad: ${hazards.size} faror i landet. Kör försiktigt.")
                 snapshotInfo.value = "${hazards.size} faror · hämtat ${android.text.format.DateFormat.format("HH:mm", System.currentTimeMillis())}"
             } else {
@@ -108,6 +128,13 @@ class GuardService : Service() {
     private val callback = object : LocationCallback() {
         override fun onLocationResult(result: LocationResult) {
             val loc = result.lastLocation ?: return
+            if (!prevLon.isNaN()) {
+                val d = Geo.haversineM(prevLon, prevLat, loc.longitude, loc.latitude)
+                if (d < 500) session.value = session.value.let { it.copy(
+                    km = it.km + d / 1000.0, lon = loc.longitude, lat = loc.latitude) }
+                else session.value = session.value.copy(lon = loc.longitude, lat = loc.latitude)
+            } else session.value = session.value.copy(lon = loc.longitude, lat = loc.latitude)
+            prevLon = loc.longitude; prevLat = loc.latitude
             if (System.currentTimeMillis() - lastSnapshotLoad > 30 * 60 * 1000L) loadSnapshotAsync()
             val fix = Fix(
                 t = loc.time / 1000.0,
@@ -198,6 +225,7 @@ class GuardService : Service() {
         /** UI observerar; autostart-limmet läser var-formen. Flow är sanningen. */
         val runningFlow = MutableStateFlow(false)
         val snapshotInfo = MutableStateFlow<String?>(null)
+        val session = MutableStateFlow(Session())
         var running: Boolean
             get() = runningFlow.value
             set(v) { runningFlow.value = v }
