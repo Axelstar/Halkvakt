@@ -67,6 +67,10 @@
 - **S-2026-08-26 (Design v2):** Claude Design-guiden granskad (1a+1b in, 1c struken) och
   implementerad: levande hemskärm, körläge m skärm-vaken, helskärmsvarning "Uppfattat",
   avståndsslider, röstvalsrad. Nearby-hjälpen ren + provad.
+- **S-2026-08-26 (Betaputs III):** Release-rustning klar — SDK 35, R8 (2,59 MB AAB),
+  upload-nyckel i GitHub-secrets + Davids kopia, CI-byggd signerad AAB per push,
+  integritetspolicy live. Appen är tekniskt släppfärdig; återstår butiksmaterial vid
+  "kontot är godkänt". Beslut: kö-slutsvarning (TrafficFlow) = uppdatering 1 efter release.
 - **S-2026-08-25natt (foto):** CI-emulatorn plåtar nu appens tre flikar vid varje push
   (artefakt app-screenshots) — Davids första titt levererad. Två runner-läxor in i skillen.
 - **S-2026-08-26fm (UI v2):** David valde design i Claude Design — porterad rakt av:

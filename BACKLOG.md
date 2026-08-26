@@ -57,6 +57,13 @@
 12b. ~~Minutdiet + livemotor-vakthund~~ (S-2026-08-25em: klart, beslut #22). Ingest timvis,
     publish egen 30-min-klocka, healthcheck 2 h m. per-käll-trösklar + pg_cron-puls.
     *Verified: skarp dispatch mot prod — "limit 15"-rader, cron-puls succeeded, HEALTHY; ~3 600→~1 750 min/mån.*
+11d. ~~Betaputs III — release-rustning~~ (S-2026-08-26: klart). targetSdk/compileSdk 35
+    (Googles krav för nya appar aug-26), R8+resurskrympning (9,4 MB debug → 2,59 MB AAB),
+    upload-nyckel RSA-4096 giltig till 2052 (GitHub-secrets HV_KEYSTORE_B64/_PASS; Davids
+    kopia levererad — FÅR EJ TAPPAS), CI bygger signerad release-AAB som artefakt vid
+    varje push, integritetspolicy live (Play-krav) + länkad i app/om/sitemap. v0.3.0.
+    *Verified: AAB signerad lokalt (cert till 2052), integritet.html 200, CI-artefakt.*
+    Kvar till Play-inlämning: butiksmaterial + Data safety-formulär (låst till kontot).
 11c. ~~Design v2 (Claude Design-guiden)~~ (S-2026-08-26: klart). Guiden granskad m David:
     1a stomme + 1b-principer, 1c (karta i mitten) STRUKEN — rösten är appen, kartan är
     fönstret (webben). Implementerat: levande hemskärm ("I NÄRHETEN" ur snapshot, sex mil,
