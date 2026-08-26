@@ -478,6 +478,7 @@ private fun OmScreen() {
         LinkRow("Livekartan — läget just nu") { uri.openUri("https://axelstar.github.io/halkvakt-karta/karta.html") }
         LinkRow("Om appen & vanliga frågor") { uri.openUri("https://axelstar.github.io/halkvakt-karta/om.html") }
         LinkRow("Press & material") { uri.openUri("https://axelstar.github.io/halkvakt-karta/press.html") }
+        LinkRow("Integritetspolicy") { uri.openUri("https://axelstar.github.io/halkvakt-karta/integritet.html") }
         Spacer(Modifier.height(24.dp))
         Text("Version $version · Öppna data från Trafikverket (CC0) och Polisen",
             color = Dis, fontSize = 12.sp, fontFamily = FontFamily.Monospace)

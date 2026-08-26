@@ -1,11 +1,11 @@
 plugins { id("com.android.application"); id("org.jetbrains.kotlin.android") }
 android {
     namespace = "se.halkvakt.app"
-    compileSdk = 34
+    compileSdk = 35
     defaultConfig {
         applicationId = "se.halkvakt.app"
-        minSdk = 26; targetSdk = 34
-        versionCode = 2; versionName = "0.2.0"
+        minSdk = 26; targetSdk = 35
+        versionCode = 3; versionName = "0.3.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     sourceSets.getByName("androidTest") {
@@ -15,6 +15,25 @@ android {
     }
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
     kotlinOptions { jvmTarget = "17" }
+    signingConfigs {
+        create("upload") {
+            val ksPath = System.getenv("HV_KEYSTORE_PATH")
+            if (ksPath != null) {
+                storeFile = file(ksPath)
+                storePassword = System.getenv("HV_KEYSTORE_PASS")
+                keyAlias = "halkvakt"
+                keyPassword = System.getenv("HV_KEYSTORE_PASS")
+            }
+        }
+    }
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            if (System.getenv("HV_KEYSTORE_PATH") != null) signingConfig = signingConfigs.getByName("upload")
+        }
+    }
     buildFeatures { compose = true }
     composeOptions { kotlinCompilerExtensionVersion = "1.5.14" }
 }
