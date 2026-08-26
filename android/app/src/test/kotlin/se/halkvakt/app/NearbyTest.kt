@@ -1,38 +1,38 @@
 package se.halkvakt.app
 
-import se.halkvakt.engine.*
+import se.halkvakt.engine.HazardKind
+import se.halkvakt.engine.PointHazard
+import se.halkvakt.engine.PointMeta
+import se.halkvakt.engine.SegmentHazard
+import se.halkvakt.engine.SegmentMeta
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class NearbyTest {
-    private val here = 18.06 to 59.33 // Sthlm
-    private fun cam(lon: Double, limit: Int? = 80) =
-        PointHazard("c$lon", HazardKind.CAMERA, lon, 59.33, meta = PointMeta(speedLimitKmh = limit))
+    private val cam = PointHazard("c1", HazardKind.CAMERA, 18.06, 59.33, meta = PointMeta(speedLimitKmh = 80))
+    private val ice = PointHazard("i1", HazardKind.ICING_POINT, 18.10, 59.36, meta = PointMeta(surfaceTempC = 0.4, moisture = true))
+    private val seg = SegmentHazard("s1", listOf(doubleArrayOf(17.9, 59.5), doubleArrayOf(17.95, 59.52)),
+        meta = SegmentMeta(info = listOf("Risk för frost och is")))
+    private val far = PointHazard("f1", HazardKind.CAMERA, 12.0, 57.7) // Göteborg — utanför sex mil
 
-    @Test fun sortsByDistanceAndCaps() {
-        val h = listOf(cam(18.20), cam(18.08), cam(18.50), cam(19.20), cam(25.0))
-        val r = Nearby.nearest(h, here.first, here.second, n = 3, maxKm = 60.0)
-        assertEquals(3, r.size)
-        assert(r[0].distM < r[1].distM && r[1].distM < r[2].distM)
-        assertEquals("80 km/h", r[0].secondary)
+    @Test fun sortsByDistanceAndCapsAtSixtyKm() {
+        val l = Nearby.nearest(listOf(seg, far, ice, cam), lon = 18.06, lat = 59.33)
+        assertEquals(3, l.size) // Göteborg utsållad
+        assertEquals(HazardKind.CAMERA, l[0].kind)
+        assertTrue(l[0].distM < 100.0)
+        assertEquals(HazardKind.ICING_POINT, l[1].kind)
     }
-    @Test fun icingSecondaryFromMeta() {
-        val p = PointHazard("i", HazardKind.ICING_POINT, 18.07, 59.33,
-            meta = PointMeta(surfaceTempC = 0.4, moisture = true))
-        assertEquals("+0,4° och vått", Nearby.nearest(listOf(p), here.first, here.second)[0].secondary)
+    @Test fun humanSecondaries() {
+        assertEquals("+0,4° och vått", Nearby.secondary(ice))
+        assertEquals("80 km/h", Nearby.secondary(cam))
+        assertEquals("Risk för frost och is", Nearby.secondary(seg))
+        assertNull(Nearby.secondary(PointHazard("w", HazardKind.WILDLIFE, 18.0, 59.0)))
     }
-    @Test fun segmentUsesInfoStrings() {
-        val s = SegmentHazard("s", listOf(doubleArrayOf(18.07, 59.33)), SegmentMeta(info = listOf("is", "snö", "x")))
-        assertEquals("is · snö", Nearby.nearest(listOf(s), here.first, here.second)[0].secondary)
-        assertEquals(HazardKind.SLIPPERY_SEGMENT, Nearby.nearest(listOf(s), here.first, here.second)[0].kind)
-    }
-    @Test fun emptySecondaryBecomesNull() {
-        val p = PointHazard("w", HazardKind.WILDLIFE, 18.07, 59.33)
-        assertNull(Nearby.nearest(listOf(p), here.first, here.second)[0].secondary)
-    }
-    @Test fun distTextRounding() {
-        assertEquals("450 m", Nearby.distText(447.0))
+    @Test fun distanceFormatting() {
+        assertEquals("50 m", Nearby.distText(10.0))
+        assertEquals("800 m", Nearby.distText(812.0))
         assertEquals("1,2 km", Nearby.distText(1234.0))
     }
 }

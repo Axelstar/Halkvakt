@@ -85,6 +85,8 @@ private fun kindSource(k: HazardKind) = when (k) {
 fun HalkvaktApp(activity: MainActivity) {
     MaterialTheme(colorScheme = Scheme) {
         var tab by rememberSaveable { mutableStateOf(0) }
+        val warning by GuardService.currentWarning.collectAsStateWithLifecycle()
+        Box {
         Scaffold(
             containerColor = Natt,
             bottomBar = {
@@ -107,6 +109,36 @@ fun HalkvaktApp(activity: MainActivity) {
                     else -> OmScreen()
                 }
             }
+        }
+        warning?.let { w -> WarningOverlay(w) { GuardService.currentWarning.value = null } }
+        }
+    }
+}
+
+/** 1b:s signatur: helskärm i bärnstensgult — läsbar i periferin, en enda handling. */
+@Composable
+private fun WarningOverlay(w: se.halkvakt.engine.Alert, onAck: () -> Unit) {
+    Surface(color = Gul, modifier = Modifier.fillMaxSize()) {
+        Column(Modifier.fillMaxSize().padding(28.dp).statusBarsPadding(),
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            Spacer(Modifier.height(8.dp))
+            Text("HALKVAKT VARNAR", color = Natt, fontSize = 13.sp,
+                fontFamily = FontFamily.Monospace, letterSpacing = 3.sp)
+            Spacer(Modifier.weight(.8f))
+            Text(kindTitle(w.kind), color = Natt, fontFamily = Cond,
+                fontSize = 46.sp, lineHeight = 50.sp)
+            Text(Nearby.distText(w.distanceM.toDouble()), color = Natt, fontFamily = Cond,
+                fontSize = 84.sp, lineHeight = 88.sp)
+            Spacer(Modifier.height(14.dp))
+            Text("”${w.text}”", color = Natt.copy(alpha = .78f), fontSize = 17.sp,
+                lineHeight = 24.sp, modifier = Modifier.padding(horizontal = 8.dp))
+            Spacer(Modifier.weight(1f))
+            Button(onClick = onAck, shape = RoundedCornerShape(50),
+                colors = ButtonDefaults.buttonColors(containerColor = Natt, contentColor = Gul),
+                modifier = Modifier.fillMaxWidth().height(64.dp)) {
+                Text("Uppfattat", fontFamily = Cond, fontSize = 19.sp, letterSpacing = 1.sp)
+            }
+            Spacer(Modifier.height(10.dp))
         }
     }
 }
@@ -140,6 +172,11 @@ private fun StatusPill(text: String, color: Color) {
 @Composable
 private fun VaktScreen(activity: MainActivity) {
     val running by GuardService.runningFlow.collectAsStateWithLifecycle()
+    DisposableEffect(running) {
+        val w = activity.window
+        if (running) w.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        onDispose { w.clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) }
+    }
     if (running) AktivContent(activity) else RedoContent(activity)
 }
 
@@ -366,6 +403,15 @@ private fun SettingsScreen(activity: MainActivity) {
         }
         Spacer(Modifier.height(20.dp))
         Rubrik("RÖSTEN")
+        run {
+            val ctx2 = LocalContext.current
+            TextButton(onClick = {
+                runCatching { ctx2.startActivity(android.content.Intent("com.android.settings.TTS_SETTINGS")
+                    .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)) }
+            }, contentPadding = PaddingValues(vertical = 2.dp)) {
+                Text("Röst · systemets svenska  ›", color = Color(0xFF7EC8E3), fontSize = 15.sp)
+            }
+        }
         Spacer(Modifier.height(8.dp))
         Surface(shape = RoundedCornerShape(18.dp), color = Yta,
             border = BorderStroke(1.dp, Kant), modifier = Modifier.fillMaxWidth()) {

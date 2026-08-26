@@ -57,6 +57,14 @@
 12b. ~~Minutdiet + livemotor-vakthund~~ (S-2026-08-25em: klart, beslut #22). Ingest timvis,
     publish egen 30-min-klocka, healthcheck 2 h m. per-käll-trösklar + pg_cron-puls.
     *Verified: skarp dispatch mot prod — "limit 15"-rader, cron-puls succeeded, HEALTHY; ~3 600→~1 750 min/mån.*
+11c. ~~Design v2 (Claude Design-guiden)~~ (S-2026-08-26: klart). Guiden granskad m David:
+    1a stomme + 1b-principer, 1c (karta i mitten) STRUKEN — rösten är appen, kartan är
+    fönstret (webben). Implementerat: levande hemskärm ("I NÄRHETEN" ur snapshot, sex mil,
+    människorader: "+0,4° och vått"/"80 km/h"/TrV-infotext; Nearby ren + 3 JVM-prov),
+    körläge (PASSAGERAREN ÄR VAKEN, tid/km/räknare, SENAST SAGT, PÅ DIN VÄG, avsluta lågt,
+    skärmen hålls vaken), HELSKÄRMSVARNING i bärnstensgult m "Uppfattat" (8s auto-släck),
+    avståndsslider (EngineConfig.leadMaxM — ej kontraktsbrott), röstvalsrad → systemets TTS.
+    *Verified: JVM-prov gröna, APK lokalt, CI-emulator+foto på push.*
 11b. ~~Betaputs II — riktig app~~ (S-2026-08-25natt: klart). Compose-UI i varumärkets
     mörka tema, tre flikar: VAKTEN (stor start/stopp, autostart-switch, datafärskhet,
     livehändelser + persistent varningshistorik), INSTÄLLNINGAR (kategori-val per

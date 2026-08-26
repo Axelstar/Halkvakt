@@ -106,6 +106,9 @@ class GuardService : Service() {
                 guard = Guard(hazards, cfg = EngineConfig(leadMaxM = warnM), speak = ::speak, notify = ::updateNotification, onEvent = AlertBus::post,
                     isEnabled = { it !in disabledKinds },
                     onAlert = { a ->
+                        currentWarning.value = a
+                        scope.launch { kotlinx.coroutines.delay(8000)
+                            if (currentWarning.value === a) currentWarning.value = null }
                         session.value = session.value.let { s -> s.copy(
                             counts = s.counts + (a.kind to (s.counts[a.kind] ?: 0) + 1),
                             lastSaid = a.text to System.currentTimeMillis()) }
@@ -226,6 +229,8 @@ class GuardService : Service() {
         val runningFlow = MutableStateFlow(false)
         val snapshotInfo = MutableStateFlow<String?>(null)
         val session = MutableStateFlow(Session())
+        /** Helskärmskortet (1b): sätts vid uppläst varning, släcks efter 8 s eller "Uppfattat". */
+        val currentWarning = MutableStateFlow<se.halkvakt.engine.Alert?>(null)
         var running: Boolean
             get() = runningFlow.value
             set(v) { runningFlow.value = v }

@@ -64,6 +64,9 @@
   filter via DataStore-Flow), persistent varningshistorik, testa-rösten, autostart-
   switch. Skills styrde arkitekturen (en state-ägare; explicit coroutine-ägare i
   tjänsten). Trappan orörd. v0.2.0. Lokalt: JVM-prov + APK gröna; CI-emulatorn dömer.
+- **S-2026-08-26 (Design v2):** Claude Design-guiden granskad (1a+1b in, 1c struken) och
+  implementerad: levande hemskärm, körläge m skärm-vaken, helskärmsvarning "Uppfattat",
+  avståndsslider, röstvalsrad. Nearby-hjälpen ren + provad.
 - **S-2026-08-25natt (foto):** CI-emulatorn plåtar nu appens tre flikar vid varje push
   (artefakt app-screenshots) — Davids första titt levererad. Två runner-läxor in i skillen.
 - **S-2026-08-26fm (UI v2):** David valde design i Claude Design — porterad rakt av:
