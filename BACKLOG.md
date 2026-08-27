@@ -105,6 +105,9 @@
     6 skills i `skills/`: twostraws×3 (iOS), chrisbanes×2 (Kotlin/Compose), egen
     halkvakt-android (bakgrundsplats/doze/TTS/Play/motor-kontrakt). Katalog docs/SKILLS.md,
     CLAUDE.md kräver läsning före app-kod. *Verified: frontmatter ok i alla 6, licenser medföljer.*
+16. **Blixthalke-prognos (uppdatering 2-kandidat)** — ur Bengts Trafikriskkarta
+    (docs/RISKKARTA-BENGT.md): yttemp/daggpunkt + MET Nowcast 2 h. Kommuniceras
+    som RISK, aldrig mätning. Kräver Nowcast-proxy (MET-villkor). Efter kö-slut.
 15. **KÖSLUT-varning (TrafficFlow)** — idé från Davids pappa, faktatestad 2026-08-26:
     vår befintliga nyckel öppnar TrafficFlow; mätdata 43 s färsk (hastighet+flöde per
     körfält, schemaversion 1.4). Möjliggör uppmätta kö-slut i Sthlm/Gbg — "Kö framför
