@@ -5,9 +5,19 @@ Din Mac är byggmaskinen; den här guiden är hela receptet. Ingen kodkunskap kr
 
 ## REDAN I DAG (medan du väntar på lönen)
 
-**Ladda ner Xcode nu — det tar timmar.** Öppna App Store på Macen → sök "Xcode"
-→ Hämta (ca 12–15 GB). Låt den stå. Öppna Xcode en gång när den är klar och
-godkänn licensen + låt den installera "iOS components" när den frågar.
+**Davids Mac (verifierad 27/8): MacBook Air M1, macOS Sequoia 15.0.**
+App Stores Xcode kräver nyare macOS ⇒ välj väg:
+
+**Väg A (rekommenderad): uppdatera macOS först.**  → Systeminställningar →
+Allmänt → Programuppdatering → installera stora uppdateringen (timmar; kör
+över natten). KOLLA FÖRST: ~50 GB ledig disk (Om den här datorn → Mer info →
+Lagring). Därefter: App Store → Xcode → Hämta (12–15 GB). Öppna Xcode en gång,
+godkänn licensen, låt den installera "iOS components".
+
+**Väg B (om A strular/trång disk): Xcode 16.2 på befintlig 15.0.**
+developer.apple.com/download/all (vanligt Apple-ID) → "Xcode 16.2" → hämta
+.xip → dubbelklicka (packar upp länge) → dra Xcode till Program → öppna en
+gång, godkänn licens + iOS components. 16.2 bygger vår iOS 17-app utmärkt.
 
 ## MÅNDAG — steg för steg
 
