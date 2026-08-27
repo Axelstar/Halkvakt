@@ -6,18 +6,20 @@ Din Mac är byggmaskinen; den här guiden är hela receptet. Ingen kodkunskap kr
 ## REDAN I DAG (medan du väntar på lönen)
 
 **Davids Mac (verifierad 27/8): MacBook Air M1, macOS Sequoia 15.0.**
-App Stores Xcode kräver nyare macOS ⇒ välj väg:
+**Apple-krav sedan 28 april 2026:** App Store/TestFlight tar ENDAST emot appar
+byggda med iOS 26-SDK (Xcode 26+). Äldre Xcode (16.x) bygger men stoppas vid
+uppladdning (ITMS-90725). Xcode 26 kräver macOS Sequoia 15.6+.
 
-**Väg A (rekommenderad): uppdatera macOS först.**  → Systeminställningar →
-Allmänt → Programuppdatering → installera stora uppdateringen (timmar; kör
-över natten). KOLLA FÖRST: ~50 GB ledig disk (Om den här datorn → Mer info →
-Lagring). Därefter: App Store → Xcode → Hämta (12–15 GB). Öppna Xcode en gång,
-godkänn licensen, låt den installera "iOS components".
+**VALD VÄG (Davids beslut 27/8): stanna på Sequoia, ta Xcode 26 manuellt.**
+1. Programuppdatering → installera LILLA Sequoia-uppdateringen (15.0 → 15.7.x).
+   Välj INTE "Uppgradera till macOS 26" om båda visas. (~30–60 min)
+2. developer.apple.com/download/all (vanligt Apple-ID) → hämta **Xcode 26.1**
+   (.xip) → dubbelklicka i Hämtade (packar upp länge) → dra Xcode till Program.
+   Diskbehov under uppackning: ~40 GB ledigt.
+3. Öppna Xcode en gång: godkänn licens, låt den hämta "iOS components".
 
-**Väg B (om A strular/trång disk): Xcode 16.2 på befintlig 15.0.**
-developer.apple.com/download/all (vanligt Apple-ID) → "Xcode 16.2" → hämta
-.xip → dubbelklicka (packar upp länge) → dra Xcode till Program → öppna en
-gång, godkänn licens + iOS components. 16.2 bygger vår iOS 17-app utmärkt.
+(Alternativ som också funkar: uppgradera hela vägen till macOS 26 och ta
+Xcode från App Store — mer förändring, samma slutresultat.)
 
 ## MÅNDAG — steg för steg
 
