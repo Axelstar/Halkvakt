@@ -1,0 +1,38 @@
+# Halkvakt iOS — XcodeGen-definition. `xcodegen` här ⇒ Halkvakt.xcodeproj.
+# Se ios/MAC-GUIDE.md för Davids exakta steg.
+name: Halkvakt
+options:
+  bundleIdPrefix: se.halkvakt
+  deploymentTarget:
+    iOS: "17.0"
+packages:
+  HalkvaktEngine:
+    path: ../HalkvaktEngine
+targets:
+  Halkvakt:
+    type: application
+    platform: iOS
+    sources: [Sources]
+    dependencies:
+      - package: HalkvaktEngine
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: se.halkvakt.app
+        MARKETING_VERSION: 0.3.0
+        CURRENT_PROJECT_VERSION: 3
+        SWIFT_VERSION: "5.0"
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Halkvakt
+        DEVELOPMENT_TEAM: ""   # sätts i Xcode: Signing & Capabilities → ditt team
+    info:
+      path: Sources/Info.plist
+      properties:
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        UIBackgroundModes: [location, audio]
+        NSLocationWhenInUseUsageDescription: >-
+          Halkvakt jämför din position med vägfaror lokalt i telefonen för att
+          kunna varna med rösten. Positionen lämnar aldrig enheten.
+        NSLocationAlwaysAndWhenInUseUsageDescription: >-
+          Med "Alltid" kan vakten varna även när skärmen är släckt under körning.
+          All matchning sker lokalt — positionen lämnar aldrig enheten.
+        ITSAppUsesNonExemptEncryption: false

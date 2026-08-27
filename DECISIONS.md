@@ -130,3 +130,17 @@ hemlighet: secret `INGEST_KEY` + header `x-halkvakt-key` i cron-jobbet (cron.alt
 Verifierat i produktion: anrop utan nyckel → 403, med nyckel → ok, cron-pulsen fortsatt
 succeeded med färska kursorer (0,7 min). Felsökning + rotation dokumenterad i RUNBOOK
 ("Livemotorn"). Nyckelvärdet finns ENDAST i Supabase (secret + cron-kommando) — aldrig i repo.
+
+
+## #23 — Samtidig lansering iOS + Android (2026-08-27)
+DAVIDS BESLUT (produkt/strategi = hans nyckel): båda plattformarna lanseras
+tillsammans; Play- och Apple-konton öppnas måndag (lön). Claudes tidigare råd
+(Android först) gavs och hördes; beslutet respekteras utan omprövning.
+Taktisk konsekvens: Apple saknar 14-dagarskarantän ⇒ lanseringsdatum styrs
+fortfarande av Googles klocka; iOS-spåret kostar inte datumet så länge
+Play-processen startar måndag. Macen blir kritisk byggresurs (ios/MAC-GUIDE.md).
+SwiftUI-appen skriven i dag som spegel av Android v0.3.0 (samma flikar, samma
+svenska, samma motorkontrakt); FÖRSTA BYGGET sker på Davids Mac — koden är
+oprövad tills dess och förväntas behöva ett justeringsvarv med skärmbilder.
+Samsung struken ur Davids nycklar (finns ej); fysisk Android-testenhet =
+öppen fråga (pappa? begagnad?).

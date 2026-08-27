@@ -71,6 +71,11 @@
   upload-nyckel i GitHub-secrets + Davids kopia, CI-byggd signerad AAB per push,
   integritetspolicy live. Appen är tekniskt släppfärdig; återstår butiksmaterial vid
   "kontot är godkänt". Beslut: kö-slutsvarning (TrafficFlow) = uppdatering 1 efter release.
+- **S-2026-08-27 (iOS-start, DECISIONS #23):** David beslutade samtidig lansering.
+  SwiftUI-appen skriven (spegel av Android: 3 flikar, körläge, varningskort, Nearby,
+  snapshot m. sha-verifiering + offlinecache). Byggs första gången på Davids Mac
+  (MAC-GUIDE.md). Fynd: vilt saknas i snapshoten = backlog #17 FÖRE release.
+  Måndag: Play- + Apple-konton (Davids lön).
 - **S-2026-08-25natt (foto):** CI-emulatorn plåtar nu appens tre flikar vid varje push
   (artefakt app-screenshots) — Davids första titt levererad. Två runner-läxor in i skillen.
 - **S-2026-08-26fm (UI v2):** David valde design i Claude Design — porterad rakt av:

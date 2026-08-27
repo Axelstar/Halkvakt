@@ -105,6 +105,13 @@
     6 skills i `skills/`: twostraws×3 (iOS), chrisbanes×2 (Kotlin/Compose), egen
     halkvakt-android (bakgrundsplats/doze/TTS/Play/motor-kontrakt). Katalog docs/SKILLS.md,
     CLAUDE.md kräver läsning före app-kod. *Verified: frontmatter ok i alla 6, licenser medföljer.*
+17. **Vilt in i snapshoten (FÖRE release, båda plattformar)** — upptäckt 2026-08-27:
+    live.json saknar wildlife-array; apparnas vilt-switch har inget data. Åtgärd i ETT
+    varv: snapshot-builder skriver wildlife[] ur polisen-arkivet + Android- och
+    Swift-parsern läser den + replay-vektor. Även: oanvänd smhi-array i live.json
+    (karta-bruk? verifiera eller rensa).
+18. **iOS-app första bygget** — koden skriven (ios/HalkvaktApp, XcodeGen), byggs och
+    felrättas på Davids Mac per MAC-GUIDE.md. Sedan: TestFlight vid Apple-konto.
 16. **Blixthalke-prognos (uppdatering 2-kandidat)** — ur Bengts Trafikriskkarta
     (docs/RISKKARTA-BENGT.md): yttemp/daggpunkt + MET Nowcast 2 h. Kommuniceras
     som RISK, aldrig mätning. Kräver Nowcast-proxy (MET-villkor). Efter kö-slut.
