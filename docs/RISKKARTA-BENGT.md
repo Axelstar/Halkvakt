@@ -56,3 +56,19 @@ därmed inte höstplanens hårda regel. Davids och Bengts beslut.
 Kräver: Nowcast-ingest med cachingproxy (MET:s villkor: User-Agent, ≤20 req/s,
 ingen bakgrundspolling), eventuell severity-höjning i befintlig FRYSRISK-kind
 (ej nödvändigtvis ny HazardKind). EFTER release, efter kö-slut.
+
+
+## Tillägg 2026-08-28: Bengts synergianalys (uppladdad direkt i repot)
+
+`docs/synergianalys-kallkartlaggning-x-fordonsdata-2026-08-27.md` — korsning av
+källkartläggningen och fordonsdata-kartläggningen. Tes: telefonsensor-crowd som
+egen datamängd förvandlar projektet från kopierbar aggregator till försvarbar
+plattform; femstegstrappa MVP → sensorer → Volvo-kalibrering → DFRS-reciprocitet
+→ analysleverantör inför TrV-upphandling 2027.
+
+**Olöst spänning (Davids+Bengts beslut, inget kodarbete förrän avgjort):**
+analysens rekommendation "sensorinsamling i MVP:n" kolliderar med det publicerade
+integritetslöftet ("vi samlar in: ingenting") som bär v1:s varumärke, policy,
+butikstext och Data safety-svar. Claudes råd: lansera v1 på rena löftet;
+sensorspåret som eget designat beslut (opt-in) tidigast våren 2027 — trappan
+överlever den ordningen. Gratis när som helst: Volvo-utvecklarkonto (Davids nyckel).
