@@ -22,6 +22,7 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 - [ ] **Första iOS-bygget** på Macen med Claude — recept: `ios/MAC-GUIDE.md`
 
 ### Axel — beslut att ta
+- [ ] **Skyltfonden-paketet (före 1/10):** (a) klartecken till pappas ringrunda (startar v.36!), (b) sökande: pappa privat eller ideell förening?, (c) rollfördelningen — allt hänger ihop. Underlag: `docs/FINANSIERING.md`
 - [ ] **Rollfördelningen**: efterfrågan/affärsmodell/B2B = Bengts ansvar? (hans förslag; vid ja uppdateras PLAN)
 - [ ] **#21 Anonym puls + feedback-knapp** — rör "samlar in: ingenting"-löftet; Claudes råd: paketera med sensorbeslutet våren 2027
 
@@ -33,6 +34,7 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 ### Bengt
 - [ ] Läsa SYSTEM.md mot koden månadsvis (första: september)
 - [ ] Samtal med Axel: sensortrappan — tidsättning av steg 2 (våren 2027?)
+- [ ] 📞 **Skyltfondsrundan** (efter Axels klartecken): fonden + trafikövningsplats v.36 → avsiktsförklaringar 25/9 → SKICKA 28/9
 
 ### Claude — olåst
 
