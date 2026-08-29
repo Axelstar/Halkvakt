@@ -181,3 +181,16 @@ d) **Anonym puls + feedback-knapp = VILANDE AXEL-BESLUT** (backlog #21): även
    beslutet våren 2027; v1 mäter via Play-statistik + skuggmotor.
 e) **Rollfördelning** (Bengts förslag: efterfrågan/affärsmodell/B2B = hans):
    AXELS BESLUT — kort på tavlan; PLAN uppdateras när Axel bekräftat.
+
+
+## #26 — Pulsklockan + healthcheckens klippta koppel (2026-08-29)
+Fynd vid verifiering: publiceringen stod stilla i 5 h — GitHubs schemaläggare
+svälter cron (ingest-hål på 13 h uppmätta). Healthchecken UPPTÄCKTE stoppet
+("UNHEALTHY ... publish-map står stilla?") men jobbet blev grönt: `| tee` utan
+pipefail åt upp exit-koden. Bengts mening bokstavligen: vakthunden ser, signalen
+når inte fram.
+BESLUT: (a) taktpinnen flyttad till Supabase pg_cron (bevisat pålitlig) som
+trycker på GitHubs workflow_dispatch — publish */30, ingest timvis; GitHub-cron
+kvar som hängslen. (b) `shell: bash` i healthcheck (pipefail) — rött jobb ⇒
+mejlnotis. LÄXA (järnlag): en vakt är inte en vakt förrän dess LARMVÄG är
+provad — testa alltid felfallet, inte bara koden.

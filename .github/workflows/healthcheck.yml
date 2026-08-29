@@ -16,6 +16,7 @@ jobs:
         with: { node-version: 22, cache: npm }
       - run: npm ci
       - id: hc
+        shell: bash
         run: npm run healthcheck 2>&1 | tee hc.log
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
       - name: File incident issue on failure

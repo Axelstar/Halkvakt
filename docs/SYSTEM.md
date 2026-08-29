@@ -68,7 +68,11 @@ den mot koden en gång i månaden.
   vecka, varje miss utskriven med källtext för mänsklig revision. Verifierad
   körning: tomt i augusti, laddad för första halkdagen.
 - **Driftvakter:** healthcheck varannan timme (API:er + webbens dataålder >90 min
-  larmar), CI-replay av vektorerna vid varje push.
+  ⇒ rött jobb ⇒ mejl till Axel), CI-replay av vektorerna vid varje push.
+- **Pulsklockan** (29/8): GitHubs schemaläggare visade sig svälta cron-jobb i
+  6–13-timmarshål; därför trycker Supabase pg_cron (bevisat minutpålitlig) på
+  GitHubs dispatch-knappar — publish var 30:e min, ingest varje timme. GitHub-
+  schemana står kvar som hängslen; concurrency-gruppen dedupar.
 
 ## 6 · Vägar framåt (en rad per spår)
 - #15 Kö-slut (TrafficFlow, verifierad 43 s färsk) — uppdatering 1.
