@@ -120,3 +120,12 @@ listan: [SYSTEM.md §4](SYSTEM.md).
 Samma app, samma röst, samma löfte — skriven och väntar på sitt första bygge
 på Axels Mac (måndag). Produktboken gäller båda; skiljer sig något kommer det
 stå här.
+
+
+## iOS-utgåvan (byggd 29/8 2026)
+
+Samma tre flikar, samma texter, samma motor — skillnaderna är plattformens:
+flikraden är iOS 26:s svävande "glaspill" i stället för Androids fasta rad,
+och överst på varje flik sitter varumärkesraden **⚠ HALKVAKT** med en liten
+statuspill till höger på Vakten-fliken (LIVEDATA i vila, VAKTEN PÅ under
+körning). Skärmbilder tas från Axels iPhone (CI:n kan bara fota Android).
