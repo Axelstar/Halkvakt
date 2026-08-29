@@ -23,10 +23,11 @@ targets:
         SWIFT_VERSION: "5.0"
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_CFBundleDisplayName: Halkvakt
-        DEVELOPMENT_TEAM: ""   # sätts i Xcode: Signing & Capabilities → ditt team
+        DEVELOPMENT_TEAM: 6Y3377BFR3   # Axels Personal Team (ur Lita på-rutan 29/8)
     info:
       path: Sources/Info.plist
       properties:
+        UILaunchScreen: {}   # kräver fullskärm — utan denna letterboxar iOS appen med svarta band
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         UIBackgroundModes: [location, audio]
         NSLocationWhenInUseUsageDescription: >-
