@@ -18,6 +18,10 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 - [ ] **Apple Developer** — developer.apple.com, 99 USD/år (ID-koll 1–2 dygn)
 - [ ] **Första iOS-bygget** på Macen med Claude — recept: `ios/MAC-GUIDE.md`
 
+### Axel — beslut att ta
+- [ ] **Rollfördelningen**: efterfrågan/affärsmodell/B2B = Bengts ansvar? (hans förslag; vid ja uppdateras PLAN)
+- [ ] **#21 Anonym puls + feedback-knapp** — rör "samlar in: ingenting"-löftet; Claudes råd: paketera med sensorbeslutet våren 2027
+
 ### Axel — därefter
 - [ ] Rekrytera 20 testare (mål; minst 12 × 14 dagar — `docs/REKRYTERING.md`)
 - [ ] Domänen halkvakt.se (vilande beslut)
@@ -30,6 +34,7 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 ### Claude — olåst
 - [ ] **#17 Vilt in i snapshoten** (FÖRE release, båda plattformar + replay-vektor)
 - [ ] **#19 Missmätningsskriptet** (Bengts design — byggs på augustidata)
+- [ ] **#20 Skuggmotor + kamerafacit** (server-side — FÖRE FÖRSTA FROSTEN)
 
 ### Claude — låst (väntar på nyckel)
 - [ ] Butiksuppladdning + Data safety-inklistring *(låst: "kontot är godkänt")*
@@ -48,6 +53,8 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] **Bengts granskning II bokförd** — arkivlagret = repots styrka; prognosfrihet nu dokumenterat val (#25); kamerafacit+skuggmotor = #20; retention löses löftesrent via Play-statistiken
+- [x] **Tavelregeln** inristad i CLAUDE.md — varje varv slutar med tavelsynk
 - [x] **Bengt fullt ombord** — konto `895845` bekräftat i praktiken: committar dokument, granskar kod på radnivå (åldersvakts-fyndet!)
 - [x] **Åldersvakten** (Bengts granskning): appen läser generated_at, filtrerar gammalt väglag, säger till EN gång — Android + iOS + prov
 - [x] **docs/SYSTEM.md** — systembeskrivningen med "vad systemet inte gör" + månadsdisciplin

@@ -105,6 +105,15 @@
     6 skills i `skills/`: twostraws×3 (iOS), chrisbanes×2 (Kotlin/Compose), egen
     halkvakt-android (bakgrundsplats/doze/TTS/Play/motor-kontrakt). Katalog docs/SKILLS.md,
     CLAUDE.md kräver läsning före app-kod. *Verified: frontmatter ok i alla 6, licenser medföljer.*
+20. **Skuggmotor + kamerafacit** (Bengt granskning II; server-side, FÖRE FÖRSTA
+    FROSTEN): (a) cron kör motorn mot arkivet på referensrutterna (E22, väg 23,
+    väg 19) var 30:e min → varningslogg med indata, oavsett användarantal;
+    (b) vid skugg-varning arkiveras närmaste väglagskamerabild (Supabase storage;
+    dedupe per station/3 h, gallring >90 dgr, budgetvakt mot 1 GB-taket).
+    Ger falsklarmssidan; missarsidan = #19. Tillsammans = marsens facit.
+21. **VILANDE (Axels beslut): anonym puls + feedback-knapp** — bryter "samlar
+    in: ingenting"-formuleringen även som opt-in ⇒ policy/butik/Data safety
+    skrivs om. Rekommenderas paketerat med sensorbeslutet våren 2027.
 19. **Missmätningsskriptet** (Bengt 28/8): jämför arkivets halkhändelser
     (smhi_warnings_history + Situation-halka) mot motorkörning på referensrutterna
     → händelser/träffar/missar per vecka. Byggs på augustidata (tomt ok), skarpt

@@ -71,3 +71,15 @@ Före kod i `android/` eller `ios/`: läs relevant `skills/<namn>/SKILL.md` enli
 katalogen i `docs/SKILLS.md`. Minimum: `halkvakt-android` för allt Android-arbete,
 `swiftui-pro`+`swift-concurrency-pro` för iOS. Nya hårt vunna läxor förs in i
 `skills/halkvakt-android/SKILL.md` §5 i samma commit som de lärs.
+
+
+## TAVELREGELN (Axels order 2026-08-28 — järnlag)
+Varje arbetsvarv AVSLUTAS med att TAVLA.md synkas mot verkligheten:
+1. Byggt klart något → kortet till 🟢 KLART (med en rads bevis).
+2. Nytt arbete upptäckt/beställt → NYTT KORT direkt, i rätt sektion
+   (Axel/Bengt/Claude olåst/Claude låst — låsta kort anger sin nyckel).
+3. Verkligheten bevisar något (commit, kvitto, skärmbild) → kortet flyttas
+   utan att fråga.
+4. Finns det inte på tavlan finns det inte. Idéer utan kort = tappade idéer.
+Tavlan är människolagret; BACKLOG/STATUS/DECISIONS är djuplagren. Alla fyra
+i samma commit när de överlappar.

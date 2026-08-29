@@ -160,3 +160,24 @@ APPTEXT: "Varnar vid Trafikverkets mätstationer och rapporterade väglag" in i
 OM-fliken — löftet följer källans täckning.
 Bokfört även: #19 missmätningsskriptet (Bengts design: SMHI+Situation-händelser
 × referensrutter → träffar/missar per vecka).
+
+
+## #25 — Bengts repogranskning II: facit & mätning (2026-08-28)
+Bengt gick igenom hela repot (88 commits) med marsfrågan i fokus: fångar vi
+datan som behövs när vintern ska utvärderas? Hans dom: arkivlagret är repots
+viktigaste egenskap ("vad visade VViS i Hörby 06:10 14 jan" går att svara på).
+BESLUT ur granskningen:
+a) **Prognosfriheten är ett MEDVETET val** (härmed bokfört, Bengts punkt 2):
+   motorn varnar på uppmätt läge, inte prognos — få falsklarm, ärligt. MESAN/
+   Nowcast-lagret = backlog #16, efter release.
+b) **Kamerafacit + skuggmotor byggs** (server-side, rör ej apparna/löftet):
+   backlog #20, deadline FÖRE FÖRSTA FROSTEN. Väglagskamerabilder är det
+   billigaste facit och dagens enda oåterkalleliga dataförlust.
+c) **Retention mäts löftesrent via Play Console-statistiken** (Googles egna
+   aggregat: installationer/aktiva enheter — kräver noll telemetri från oss).
+d) **Anonym puls + feedback-knapp = VILANDE AXEL-BESLUT** (backlog #21): även
+   opt-in-aggregat bryter formuleringen "vi samlar in: ingenting" och kräver
+   omskriven policy/butikstext/Data safety. Claudes råd: paketera med sensor-
+   beslutet våren 2027; v1 mäter via Play-statistik + skuggmotor.
+e) **Rollfördelning** (Bengts förslag: efterfrågan/affärsmodell/B2B = hans):
+   AXELS BESLUT — kort på tavlan; PLAN uppdateras när Axel bekräftat.
