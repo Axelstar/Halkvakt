@@ -50,3 +50,18 @@ back-instinkt i löfteskompatibel form.
 Axels viljeinriktning 29/8: intäkter SKA in. Ordning: B2B-morgonöversikt
 (pilot→avtal våren 2027) → skolmoment per elev → ev. Halkvakt+ (kandidat #15,
 EJ fondfinansierade #16 under projektet). Basvarning gratis genom vintern.
+
+## Realistiska intäktsscenarier (Claudes bedömning 29/8, underlag till Bengt)
+Antaganden: flott-SaaS 500–1500 kr/mån/verksamhet; skolmoment 20–50 kr/elev
+(~1000 trafikskolor, ~600 STR, ~100k nya B-körkort/år); freemium 2–5 % konv.
+à ~250 kr/år; kostnadssida ≈ 0 (Supabase fri nivå + ~1500 kr/år konton).
+
+| Spår | 2027 (bra utfall) | 2028 (bra utfall) |
+|---|---|---|
+| B2B-morgonöversikt | 5–15 verks. = 50–200 tkr | 30–80 verks. = 300 tkr–1 mkr |
+| Skolmoment | 20 skolor ≈ 120 tkr | STR-avtal: 0,5–1,5 mkr |
+| Konsument-premium | 40–150 tkr | växer med basen |
+| **Totalt** | **150–500 tkr** (+ ev. fond 400 tkr) | **0,7–2,5 mkr** |
+
+Skiljelinjen hobby↔verksamhet = två säljhändelser: pilotkonvertering våren
+2027 och STR-centralavtalet. Bägge = B2B-spåret.
