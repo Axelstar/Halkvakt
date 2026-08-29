@@ -1,16 +1,16 @@
-# MAC-GUIDEN — bygga Halkvakt för iPhone (Davids klicksteg)
+# MAC-GUIDEN — bygga Halkvakt för iPhone (Axels klicksteg)
 
 Claude skriver all Swift-kod i Linux men bara en Mac kan BYGGA iOS-appar.
 Din Mac är byggmaskinen; den här guiden är hela receptet. Ingen kodkunskap krävs.
 
 ## REDAN I DAG (medan du väntar på lönen)
 
-**Davids Mac (verifierad 27/8): MacBook Air M1, macOS Sequoia 15.0.**
+**Axels Mac (verifierad 27/8): MacBook Air M1, macOS Sequoia 15.0.**
 **Apple-krav sedan 28 april 2026:** App Store/TestFlight tar ENDAST emot appar
 byggda med iOS 26-SDK (Xcode 26+). Äldre Xcode (16.x) bygger men stoppas vid
 uppladdning (ITMS-90725). Xcode 26 kräver macOS Sequoia 15.6+.
 
-**VALD VÄG (Davids beslut 27/8): stanna på Sequoia, ta Xcode 26 manuellt.**
+**VALD VÄG (Axels beslut 27/8): stanna på Sequoia, ta Xcode 26 manuellt.**
 1. Programuppdatering → installera LILLA Sequoia-uppdateringen (15.0 → 15.7.x).
    Välj INTE "Uppgradera till macOS 26" om båda visas. (~30–60 min)
 2. developer.apple.com/download/all (vanligt Apple-ID) → hämta **Xcode 26.1**

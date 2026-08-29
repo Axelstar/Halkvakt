@@ -46,7 +46,7 @@ Define success criteria. Loop until verified.
 - Snapshot files are versioned + checksummed via `manifest.json`; the app must reject a
   snapshot with a bad checksum and keep the previous one.
 - Free tier is a constraint, not a suggestion: no service or dependency that requires a
-  paid plan without an entry in DECISIONS.md approved by David.
+  paid plan without an entry in DECISIONS.md approved by Axel.
 - Battery budget on device: < 8 %/h screen-off while active. Treat regressions as
   release blockers.
 - Secrets (Trafikverket key etc.) live in GitHub Actions secrets / local `.env`; never
@@ -63,7 +63,7 @@ Every session, in order:
 3. Prove it: tests/CI/logs — never claim done without evidence.
 4. Commit with a message explaining what + why. Update STATUS.md (state + session
    log) and BACKLOG.md. Log decisions in DECISIONS.md.
-5. End by telling David: what shipped, what's next, and ONLY the questions that
+5. End by telling Axel: what shipped, what's next, and ONLY the questions that
    block progress. Batch questions; never drip them.
 
 ## Skills (obligatoriskt före app-kod)

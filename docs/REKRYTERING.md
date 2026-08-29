@@ -13,7 +13,7 @@
   produktionsaccess före första halkan.
 
 
-Två färdiga inlägg. David kopierar rakt av (eller justerar tonen fritt — det här är
+Två färdiga inlägg. Axel kopierar rakt av (eller justerar tonen fritt — det här är
 utgångslägen, skrivna för grupper som "Vi som kör E4an", lokala pendlargrupper,
 bygde- och köpa/sälja-grupper. Personligt > poletat. **Posta ALDRIG samma text i
 många grupper samma dag** — Facebook straffar det som spam; sprid över dagar och

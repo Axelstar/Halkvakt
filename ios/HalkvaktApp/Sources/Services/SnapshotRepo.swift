@@ -10,11 +10,15 @@ enum SnapshotError: Error { case checksum(String), http(Int) }
 enum SnapshotRepo {
     static let base = "https://axelstar.github.io/halkvakt-karta/data/app/v1/"
 
-    static func loadHazards() async throws -> [Hazard] {
+    struct Snapshot { let hazards: [Hazard]; let generatedAt: Date }
+
+    static func loadSnapshot() async throws -> Snapshot {
         let manifest = try await fetchJSON("manifest.json")
         let files = manifest["files"] as? [String: Any] ?? [:]
         let staticDoc = try await fetchVerified("static.json", manifestFiles: files)
         let liveDoc = try await fetchVerified("live.json", manifestFiles: files)
+        let gen = (liveDoc["generated_at"] as? String)
+            .flatMap { ISO8601DateFormatter.withFraction.date(from: $0) } ?? .distantPast
 
         var out: [Hazard] = []
 
@@ -43,7 +47,7 @@ enum SnapshotRepo {
                               lon: dbl(d, "lon"), lat: dbl(d, "lat"), bearing: nil,
                               meta: PointMeta()))
         }
-        return out
+        return Snapshot(hazards: out, generatedAt: gen)
     }
 
     // MARK: - Hämtning med verifiering + cache
@@ -94,4 +98,14 @@ enum SnapshotRepo {
     private static func dbl(_ d: [String: Any], _ k: String) -> Double { (d[k] as? NSNumber)?.doubleValue ?? 0 }
     private static func optDbl(_ d: [String: Any], _ k: String) -> Double? { (d[k] as? NSNumber)?.doubleValue }
     private static func optInt(_ d: [String: Any], _ k: String) -> Int? { (d[k] as? NSNumber)?.intValue }
+}
+
+
+extension ISO8601DateFormatter {
+    /// live.json:s generated_at har millisekunder ("…T10:58:01.993Z").
+    static let withFraction: ISO8601DateFormatter = {
+        let f = ISO8601DateFormatter()
+        f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return f
+    }()
 }

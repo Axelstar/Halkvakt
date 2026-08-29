@@ -1,6 +1,6 @@
 # Bengts Trafikriskkarta — källbokföring och konvergens (2026-08-27)
 
-Bengt (Davids pappa, driver systerprojektet TågRätt med David) har levererat en
+Bengt (Axels pappa, driver systerprojektet TågRätt med Axel) har levererat en
 dokumentsvit i Google Drive (mapp 158ONWCyXJI7fZCl1o-c76ktHcx01XaaU): källkartor
 v1–v3, Trafikriskkartan v1 (15 risker, enhetlig mall), riskkatalog, affärsmodell-
 skiss, höstplan och fordonsdata-kartläggning. Arbetsprincip: "ingen uppgift utan
@@ -46,8 +46,8 @@ Vejdirektoratets vägdata (Öresund — outredd), telefonen-som-sensor (spår 3)
 Höstplanen lägger butikspubliceringsstart i november. Googles 2026-krav
 (12 testare × 14 dagar + äkta användning + granskningar) kräver start i
 SEPTEMBER för lansering före första halkan — dokumenterat i REKRYTERING.md.
-Detta är Davids kalendertid (konto/testare), inte Axel-kodtimmar, och bryter
-därmed inte höstplanens hårda regel. Davids och Bengts beslut.
+Detta är Axels kalendertid (konto/testare), inte Axel-kodtimmar, och bryter
+därmed inte höstplanens hårda regel. Axels och Bengts beslut.
 
 ## Ny backlogkandidat ur kartan
 
@@ -66,9 +66,9 @@ egen datamängd förvandlar projektet från kopierbar aggregator till försvarba
 plattform; femstegstrappa MVP → sensorer → Volvo-kalibrering → DFRS-reciprocitet
 → analysleverantör inför TrV-upphandling 2027.
 
-**Olöst spänning (Davids+Bengts beslut, inget kodarbete förrän avgjort):**
+**Olöst spänning (Axels+Bengts beslut, inget kodarbete förrän avgjort):**
 analysens rekommendation "sensorinsamling i MVP:n" kolliderar med det publicerade
 integritetslöftet ("vi samlar in: ingenting") som bär v1:s varumärke, policy,
 butikstext och Data safety-svar. Claudes råd: lansera v1 på rena löftet;
 sensorspåret som eget designat beslut (opt-in) tidigast våren 2027 — trappan
-överlever den ordningen. Gratis när som helst: Volvo-utvecklarkonto (Davids nyckel).
+överlever den ordningen. Gratis när som helst: Volvo-utvecklarkonto (Axels nyckel).

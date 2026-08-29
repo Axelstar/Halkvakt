@@ -9,14 +9,14 @@ Radarbot, Waze + branschens landningssidesmönster.
 3. **Siffror som bevis** — användarantal, datapunkter. Vi saknar användare → använder datan: 844 stationer, 30-min-takt, 0 kr, 0 spårning. ✅ BYGGT (statrad)
 4. **Butiksmärken** (Play/App Store-badges) = legitimitet. ⏳ Vid betan (opt-in-länk) resp. lansering.
 5. **CTA över vecket + upprepad**. ✅
-6. **Kort demo/video** (15–30 s skärminspelning). ⏳ Spelas in på Davids testmobil i okt — även till pressen och annonserna (samma klipp, tre kanaler).
+6. **Kort demo/video** (15–30 s skärminspelning). ⏳ Spelas in på Axels testmobil i okt — även till pressen och annonserna (samma klipp, tre kanaler).
 7. **Social proof-citat** från användare. ⏳ Skördas ur betan (fråga testarna om lov).
 
 ## Unikt för OSS som ingen av dem har
 - Rösten på sidan (🔊-knappen) — deras produkt är en skärm, vår är ett ljud.
 - Livedata-tickern + kommande länssidor ("Halka i X just nu").
 
-## Nästa visuella steg (Davids reflektion — inget beslut krävs nu)
+## Nästa visuella steg (Axels reflektion — inget beslut krävs nu)
 A) Riktiga app-skärmdumpar i mockupen (kräver UI-puts först — planerad ändå)
 B) 15-sek demovideo i heron (okt, testmobilen)
 C) Butiksbadge vid betaöppning

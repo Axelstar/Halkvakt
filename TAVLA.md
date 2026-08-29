@@ -1,6 +1,6 @@
 # 📋 TAVLAN — allt på ett ställe
 
-Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; David och Bengt
+Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
@@ -10,24 +10,24 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 
 ## 🔴 ATT GÖRA
 
-### David — helgen
+### Axel — helgen
 - [ ] Ladda ner **Xcode 26.1** (developer.apple.com/download/all) när 15.7.9 är klar; dra till Program, öppna en gång, säg ja till licens + iOS components
 - [ ] Bekräfta med pappa att GitHub-kontot `895845` är hans
 - [ ] Pappas Claude-test: *"Öppna Axelstar/Halkvakt och läs docs/VALKOMMEN-BENGT.md"*
 
-### David — måndag (lönen)
+### Axel — måndag (lönen)
 - [ ] **Play-kontot** — play.google.com/console, 25 USD ⚠️ KRITISKA LINJEN (startar Googles klocka)
 - [ ] **Apple Developer** — developer.apple.com, 99 USD/år (ID-koll 1–2 dygn)
 - [ ] **Första iOS-bygget** på Macen med Claude — recept: `ios/MAC-GUIDE.md`
 
-### David — därefter
+### Axel — därefter
 - [ ] Rekrytera 20 testare (mål; minst 12 × 14 dagar — `docs/REKRYTERING.md`)
 - [ ] Domänen halkvakt.se (vilande beslut)
 - [ ] Fysisk Android-testenhet (pappas telefon? begagnad?)
 
 ### Bengt
 - [ ] Läsa `docs/VALKOMMEN-BENGT.md` + testa prata med koden via sin Claude
-- [ ] Samtal med David: sensortrappan — tidsättning av steg 2 (våren 2027?)
+- [ ] Samtal med Axel: sensortrappan — tidsättning av steg 2 (våren 2027?)
 
 ### Claude — olåst
 - [ ] **#17 Vilt in i snapshoten** (FÖRE release, båda plattformar + replay-vektor)
@@ -43,7 +43,7 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 
 ## 🟡 GÖRA (pågår just nu)
 
-- [ ] macOS Sequoia **15.7.9** installeras på Davids MacBook Air
+- [ ] macOS Sequoia **15.7.9** installeras på Axels MacBook Air
 - [ ] Bengts onboarding: collaborator ✓, Claude-koppling återstår att verifiera
 
 ---
@@ -55,9 +55,9 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 - [x] Butiksmaterial klart: texter, feature graphic, ikon, skärmdumpar (fotostudion)
 - [x] Data safety-svaren förskrivna (`docs/PLAY-DATASAFETY.md`)
 - [x] Integritetspolicyn live + länkad överallt
-- [x] Signeringsnyckeln skapad, krypterad i CI + Davids kopia levererad
+- [x] Signeringsnyckeln skapad, krypterad i CI + Axels kopia levererad
 - [x] Pappa collaborator med Write + välkomstdokument
-- [x] Pappas synergianalys bokförd + **beslut: v1 lanseras utan datainsamling** — sensortrappan = strategi, inte MVP (David 28/8)
+- [x] Pappas synergianalys bokförd + **beslut: v1 lanseras utan datainsamling** — sensortrappan = strategi, inte MVP (Axel 28/8)
 - [x] Kö-slut beslutad som uppdatering 1 (TrafficFlow verifierad 43 s färsk)
 - [x] Mobilvideo 720p-fixen på sajten
 - [x] Presskit + livemotor härdad + webbåldersvakt

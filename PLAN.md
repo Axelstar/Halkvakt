@@ -1,6 +1,6 @@
 # Project Plan — Nordic Winter Driving Safety App
 **Working title: "Halkvakt" (see Naming, §10). Codename used below: HV.**
-**Version 1.0 — 2026-08-24. Owner of execution: Claude. Overseer: David.**
+**Version 1.0 — 2026-08-24. Owner of execution: Claude. Overseer: Axel.**
 
 ---
 
@@ -107,7 +107,7 @@ Key implementation points:
 
 | Source | What we take | Cadence | Licence / access |
 |---|---|---|---|
-| Trafikverket open API v2 | RoadCondition, WeatherMeasurepoint, Situation, TrafficSafetyCamera, Camera | changeid delta, 5 min | Free key (David registers); camera & weather data CC0 |
+| Trafikverket open API v2 | RoadCondition, WeatherMeasurepoint, Situation, TrafficSafetyCamera, Camera | changeid delta, 5 min | Free key (Axel registers); camera & weather data CC0 |
 | Polisen öppna data (polisen.se events API) | Events typed "Viltolycka", "Trafikolycka" | 10 min poll | Open, no key |
 | Nationella Viltolycksrådet (viltolycka.se) | Historical wildlife-collision statistics → static risk model | One-time + yearly refresh | Public statistics |
 | SMHI open data API | County-level warnings (incl. halka/ice) | 15 min | CC-licensed, no key |
@@ -153,7 +153,7 @@ Verify: end-to-end freshness ≤ 6 min from Trafikverket change to CDN; fixture 
 ### Phase 2 — Android app (W37–41)
 Service, auto-start, matcher, TTS, three screens (status / settings / attribution),
 Play-policy permission flow, crash reporting (Sentry free tier).
-Verify — **the road test (David drives, checklist provided):** 2 h mixed drive, app
+Verify — **the road test (Axel drives, checklist provided):** 2 h mixed drive, app
 backgrounded under Google Maps + Spotify: survives the whole drive incl. Doze; < 8 %/h
 battery; A5 fires at 500 m ± 50 m at speed; audio ducks and restores; no duplicate alerts.
 Bench-verify the rest with mock-location replays (I can run those without a car).
@@ -197,13 +197,13 @@ Pre-approved contingency (only if a verified test fails): commercial background-
 | OEM battery killers (Samsung/Xiaomi) silently stop service | H×M | Foreground service + vendor-specific onboarding tips (dontkillmyapp playbook); beta covers device spread |
 | Play rejects background location | M×M | Prominent disclosure + demo video prepared before submission |
 | Alert fatigue → uninstall | M×H | Discipline rules §1 are tested requirements, not aspirations |
-| Liability ("app didn't warn me") | L×H | ToS: supplement not substitute; never claim absence of danger; David reviews wording |
+| Liability ("app didn't warn me") | L×H | ToS: supplement not substitute; never claim absence of danger; Axel reviews wording |
 | A competitor copies it | M×M | Moats: our growing historical archive, Swedish-first brand, being free at the base layer |
 
 ## 7. Working protocol (autonomy)
 
 - Claude owns: all code, infra, content drafts, this plan's upkeep, DECISIONS.md log.
-- David owns: the 6-item list in §9, plus sign-offs (store listing, privacy policy, ToS)
+- Axel owns: the 6-item list in §9, plus sign-offs (store listing, privacy policy, ToS)
   and anything legal/financial.
 - Cadence: I post a written status (done / next / blocked / decisions-needed) at each
   phase gate and weekly during beta. I escalate only: money, law, brand, kill-criterion
@@ -211,7 +211,7 @@ Pre-approved contingency (only if a verified test fails): commercial background-
 
 ## 8. Marketing plan — "get downloads"
 
-**Strategy: the data pipeline IS the marketing engine. Everything below costs 0 kr except David's time.**
+**Strategy: the data pipeline IS the marketing engine. Everything below costs 0 kr except Axel's time.**
 
 1. **The free live halka-map (launches ~W37, months before the app).**
    The Phase-0 validation map, polished and published: "Sveriges väglag just nu — halka,
@@ -228,7 +228,7 @@ Pre-approved contingency (only if a verified test fails): commercial background-
    halka med Trafikverkets egna data — och skickar aldrig din position någonstans."
    Targets: Vi Bilägare, Teknikens Värld, M Sverige/Motor, Ny Teknik, SVT/TV4 regional
    (Norrland first — their winter starts earlier), P4-stationer (trafikredaktioner).
-   David fronts interviews; I draft everything.
+   Axel fronts interviews; I draft everything.
 4. **Beta recruitment = community seeding.** Regional pendlar- and trafik-Facebook-groups
    (Norrland, inland), r/sweden + city subs, Garaget/forums, MC-clubs (spring angle).
    Post as founder-with-a-map, not as an ad: lead with the free map, invite testers.
@@ -238,17 +238,17 @@ Pre-approved contingency (only if a verified test fails): commercial background-
    inatt" — genuinely useful, inherently shareable, and a screenshot machine.
 6. **Trafikskolor (driving schools) as a channel.** ~900 schools; new drivers are the most
    ice-anxious segment and take instructor recommendations. I draft the one-pager +
-   email sequence; David sends. Also: NTF and M Sverige partnership pitches (their
+   email sequence; Axel sends. Also: NTF and M Sverige partnership pitches (their
    mission is literally this app).
 7. **Launch timing.** Public launch the week of the winter-tire deadline; every asset
    above converges that week. ASO: Swedish-first listing, keywords halka/varning/
    fartkamera/vilt; screenshots show the map + a phone on a dashboard mid-warning.
 8. **Targets:** 5 000 map monthly users pre-launch; 10 000 installs by New Year;
    30-day retention ≥ 35 %; press: ≥ 3 national/regional pieces in launch month.
-   B2B fleet (hemtjänst, taxi, delivery — rural km every day) stays David's lane;
+   B2B fleet (hemtjänst, taxi, delivery — rural km every day) stays Axel's lane;
    I supply the deck when consumer traction gives it proof.
 
-## 9. David's complete task list (everything blocking me)
+## 9. Axel's complete task list (everything blocking me)
 
 1. Register Trafikverket API key → https://api.trafikinfo.trafikverket.se/Account/Register (10 min) — **blocks Phase 0, do first**
 2. Create GitHub org/repo (or hand me a repo) (10 min)
@@ -259,7 +259,7 @@ Pre-approved contingency (only if a verified test fails): commercial background-
 
 Total: roughly one working day of your time between now and launch.
 
-## 10. Naming shortlist (David picks; verify domain + Play availability + trademark)
+## 10. Naming shortlist (Axel picks; verify domain + Play availability + trademark)
 
 - **Halkvakt** — "ice guard"; instantly understood by every Swedish driver; my recommendation
 - **Svartis** — "black ice"; shortest, most brandable; slightly ominous (maybe good)

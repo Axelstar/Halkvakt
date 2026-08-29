@@ -9,7 +9,7 @@
    workflow (writes latest state to the public repo every 30 min; service-role key
    NOT exposed — static JSON only). Swedish UI, "Appen kommer i november" banner.
    *Verify: page loads on phone; all 4 layers render; data ≤ 35 min old; no secrets in public repo.*
-   *Unblocked when David creates public repo `halkvakt-karta` + extends token scope (see STATUS). Waitlist per DECISIONS #10 included.*
+   *Unblocked when Axel creates public repo `halkvakt-karta` + extends token scope (see STATUS). Waitlist per DECISIONS #10 included.*
 3. ~~Alert engine v0 + replay harness~~ (S3: shipped): engine/src/, 13 vectors +
    real-data fixture (skane_vag108), replay CLI, determinism + invariant tests.
    *Verified: 13 vectors green; real Skåne snapshot ⇒ only camera alerts, throttle live; byte-identical reruns.*
@@ -27,7 +27,7 @@
    via delade vektorer i CI; foreground-tjänst, snapshot-synk m. sha256+offline-cache,
    sv-SE TTS m. ducking, permission-flöde, 2,2 MB APK som CI-artefakt varje push).
    Kvar till Fas 2-vägtestet: autostart (AR+Bluetooth), engine.updateHazards (state över
-   datauppdatering), Davids enhetstest. *Verify kvarstår: PLAN §4 Phase 2 road-test checklist.*
+   datauppdatering), Axels enhetstest. *Verify kvarstår: PLAN §4 Phase 2 road-test checklist.*
 8. ~~Emulator-smoketest i CI~~ (S4: klart). Guard-klass utbruten ur tjänsten; instrumenterade
    tester: MainActivity-boot + Skånereplay genom appens pipeline på ART med fejk-TTS/notis.
    *Verified: emulatorjobb grönt i android.yml; tre runtimes (Node/JVM/ART) ger identisk logg.*
@@ -59,12 +59,12 @@
     *Verified: skarp dispatch mot prod — "limit 15"-rader, cron-puls succeeded, HEALTHY; ~3 600→~1 750 min/mån.*
 11d. ~~Betaputs III — release-rustning~~ (S-2026-08-26: klart). targetSdk/compileSdk 35
     (Googles krav för nya appar aug-26), R8+resurskrympning (9,4 MB debug → 2,59 MB AAB),
-    upload-nyckel RSA-4096 giltig till 2052 (GitHub-secrets HV_KEYSTORE_B64/_PASS; Davids
+    upload-nyckel RSA-4096 giltig till 2052 (GitHub-secrets HV_KEYSTORE_B64/_PASS; Axels
     kopia levererad — FÅR EJ TAPPAS), CI bygger signerad release-AAB som artefakt vid
     varje push, integritetspolicy live (Play-krav) + länkad i app/om/sitemap. v0.3.0.
     *Verified: AAB signerad lokalt (cert till 2052), integritet.html 200, CI-artefakt.*
     Kvar till Play-inlämning: butiksmaterial + Data safety-formulär (låst till kontot).
-11c. ~~Design v2 (Claude Design-guiden)~~ (S-2026-08-26: klart). Guiden granskad m David:
+11c. ~~Design v2 (Claude Design-guiden)~~ (S-2026-08-26: klart). Guiden granskad m Axel:
     1a stomme + 1b-principer, 1c (karta i mitten) STRUKEN — rösten är appen, kartan är
     fönstret (webben). Implementerat: levande hemskärm ("I NÄRHETEN" ur snapshot, sex mil,
     människorader: "+0,4° och vått"/"80 km/h"/TrV-infotext; Nearby ren + 3 JVM-prov),
@@ -84,7 +84,7 @@
     *Verified: JVM-prov gröna, APK bygger lokalt; emulator-CI = domare på push.*
     Kvar till släppkandidat (Betaputs III): release-bygge m. R8+signering,
     integritetspolicy-URL (Play-krav), butiksmaterial (låst till kontot).
-11c. ~~UI v2 — Claude Design-porten~~ (S-2026-08-26fm: klart, Davids designval).
+11c. ~~UI v2 — Claude Design-porten~~ (S-2026-08-26fm: klart, Axels designval).
     Mockupen porterad: statuskort ("Redo att köra", grön ▶-start, autostart-i-kortet),
     I NÄRHETEN (Nearby.kt: ren närhetslogik + 5 JVM-prov; sekundärer ur metan —
     frystemp/vått, km/h, väglagstext; ärliga tomlägen), körläge AKTIV ("Passageraren
@@ -101,21 +101,25 @@
     kanaltexter befriade från betaspråk; pressnotisen länkar presskitet.
     *Verified: 200 live, livesiffror renderar (844), 0 beta-träffar i provgenererat utkast.*
     Rest (låst till domän): riktig pressmejladress på sidan.
-12d. ~~Skills inför appbygget~~ (S-2026-08-25natt: klart, Davids initiativ via Paul Solt-tråden).
+12d. ~~Skills inför appbygget~~ (S-2026-08-25natt: klart, Axels initiativ via Paul Solt-tråden).
     6 skills i `skills/`: twostraws×3 (iOS), chrisbanes×2 (Kotlin/Compose), egen
     halkvakt-android (bakgrundsplats/doze/TTS/Play/motor-kontrakt). Katalog docs/SKILLS.md,
     CLAUDE.md kräver läsning före app-kod. *Verified: frontmatter ok i alla 6, licenser medföljer.*
+19. **Missmätningsskriptet** (Bengt 28/8): jämför arkivets halkhändelser
+    (smhi_warnings_history + Situation-halka) mot motorkörning på referensrutterna
+    → händelser/träffar/missar per vecka. Byggs på augustidata (tomt ok), skarpt
+    från första halkdagen. Missandelen avgör tystnadsdesignen.
 17. **Vilt in i snapshoten (FÖRE release, båda plattformar)** — upptäckt 2026-08-27:
     live.json saknar wildlife-array; apparnas vilt-switch har inget data. Åtgärd i ETT
     varv: snapshot-builder skriver wildlife[] ur polisen-arkivet + Android- och
     Swift-parsern läser den + replay-vektor. Även: oanvänd smhi-array i live.json
     (karta-bruk? verifiera eller rensa).
 18. **iOS-app första bygget** — koden skriven (ios/HalkvaktApp, XcodeGen), byggs och
-    felrättas på Davids Mac per MAC-GUIDE.md. Sedan: TestFlight vid Apple-konto.
+    felrättas på Axels Mac per MAC-GUIDE.md. Sedan: TestFlight vid Apple-konto.
 16. **Blixthalke-prognos (uppdatering 2-kandidat)** — ur Bengts Trafikriskkarta
     (docs/RISKKARTA-BENGT.md): yttemp/daggpunkt + MET Nowcast 2 h. Kommuniceras
     som RISK, aldrig mätning. Kräver Nowcast-proxy (MET-villkor). Efter kö-slut.
-15. **KÖSLUT-varning (TrafficFlow)** — idé från Davids pappa, faktatestad 2026-08-26:
+15. **KÖSLUT-varning (TrafficFlow)** — idé från Axels pappa, faktatestad 2026-08-26:
     vår befintliga nyckel öppnar TrafficFlow; mätdata 43 s färsk (hastighet+flöde per
     körfält, schemaversion 1.4). Möjliggör uppmätta kö-slut i Sthlm/Gbg — "Kö framför
     dig, bromsa lugnt". Slår Waze-modellen vid låg användarbas (slingor kräver ingen
@@ -129,13 +133,13 @@
 13. **Läns-sidor för SEO** ("Halka i Skåne just nu" ×21): statiska sidor genererade i
     publiceringssteget ur livedatan — innehåll ingen konkurrent kan kopiera. Görs när
     domänen finns så länkkraften hamnar rätt. *Verify: 21 sidor live m. färsk data + i sitemap.*
-14. **Domänflytt halkvakt.se** (väntar på Davids köp): CNAME-fil, Pages-config via API,
+14. **Domänflytt halkvakt.se** (väntar på Axels köp): CNAME-fil, Pages-config via API,
     canonical/OG/sitemap-byte, 301-tänk. *Verify: https://halkvakt.se serverar sajten grönt cert.*
 
-## Questions for David
+## Questions for Axel
 All seven answered 2026-08-24 → DECISIONS.md #8–11. No open questions.
 
-## S10 · Livemotorn (Supabase, minutfärsk data) — VÄNTAR PÅ: Davids access-token
+## S10 · Livemotorn (Supabase, minutfärsk data) — VÄNTAR PÅ: Axels access-token
 Klart: edge function ingest-live (Situation+RoadCondition, changeid-delta, upserts), delta-
 mekanik bevisad live (4105→1 objekt), migration live_cursors. Återstår när token finns:
 kör migration + deploy + secrets + pg_cron varje minut (via Management API) + verifiera

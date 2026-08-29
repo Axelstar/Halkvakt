@@ -42,13 +42,21 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
 
     // MARK: - Snapshot
 
+    private var staleAnnounced = false
+
     func refreshSnapshot() async {
         do {
-            let loaded = try await SnapshotRepo.loadHazards()
-            hazards = loaded
-            engine = AlertEngine(loaded, EngineConfig.withPrefs())
+            let snap = try await SnapshotRepo.loadSnapshot()
+            let gate = AgeGate.filter(snap.hazards, generatedAt: snap.generatedAt, now: .now)
+            hazards = gate.hazards
+            engine = AlertEngine(gate.hazards, EngineConfig.withPrefs())
+            if gate.stale && running && !staleAnnounced {
+                staleAnnounced = true
+                SpeechService.shared.speak(AgeGate.staleLine)
+            }
             let df = DateFormatter(); df.dateFormat = "HH:mm"
-            snapshotInfo = "\(loaded.count) faror · hämtat \(df.string(from: .now))"
+            let tid = snap.generatedAt > .distantPast ? df.string(from: snap.generatedAt) : "okänd tid"
+            snapshotInfo = "\(gate.hazards.count) faror · väglag \(tid)"
             recomputeNearby()
         } catch {
             // Behåll förra snapshoten; UI visar gammal info-rad tills nästa lyckade.
@@ -77,6 +85,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         running = true
         startedAt = .now
         distanceKm = 0; alertCount = 0; lastSaid = nil
+        staleAnnounced = false
         prevLoc = nil
         manager.allowsBackgroundLocationUpdates = manager.authorizationStatus == .authorizedAlways
         manager.startUpdatingLocation()

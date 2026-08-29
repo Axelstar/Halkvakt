@@ -15,7 +15,7 @@
 - [ ] Replay harness produces deterministic alert logs (BACKLOG #3)
 - [ ] Kill-criterion verdict on first real ice events (Sep/Oct, Norrland)
 
-## Waiting on David
+## Waiting on Axel
 - Revoke the unused second PAT (public-read-only one from 2026-08-24)
 - Google Play account, privatperson (~w40; see DECISIONS #9)
 
@@ -23,16 +23,16 @@
 - **S-2026-08-25em**: Startsidan = scrollvärlden (4 filmscener). Kvittot v2 "Filmremsan":
   4 nya filmpaneler (3316/10076/17376/64) tänds i snabb takt efter världen; final =
   hård klippning till SVART med logotyp + Google Play/App Store centrerat och
-  live-tickern som eftertext (Davids regi). Betaspråket rivet sajten runt —
+  live-tickern som eftertext (Axels regi). Betaspråket rivet sajten runt —
   "släpps i vinter", släppmejl-rad i footern (source: release). Livemotorn (beslut
   #19) i drift: minutfärsk ingest via edge function + pg_cron. Sticky-läxan
-  (overflow-x:clip) i DECISIONS #20. David iPhone-testar filmer + kvitto.
+  (overflow-x:clip) i DECISIONS #20. Axel iPhone-testar filmer + kvitto.
 - **S-2026-08-25em (forts):** Varumärkessvep alla sidor: Skylten i header på karta+om,
   favicon-länk + og-taggar på index+karta (saknades!), ny og.png (1200×630, Skylten),
   betaspråk utrensat överallt, beta.html → redirect, sitemap städad, kartpanelens
   kö-formulär → släppdagsspråk. Bugg lagad: om.html:s JSON-LD-öppningstaggar hade
   halshuggits vid morgonens SEO-flytt → rå JSON syntes som sidtext; återställda och
-  JSON-validerade. Filmpaneler/FAQ/footer rivna på Davids order — sidan slutar på
+  JSON-validerade. Filmpaneler/FAQ/footer rivna på Axels order — sidan slutar på
   svart final (logo + butiksknappar + ticker).
 - **S-2026-08-25kväll:** Beslut #22 — minutdiet (Actions ~3 600→~1 750 min/mån, under
   gratistaket) + vakthund för livemotorn i hälsokollen (15-min-trösklar på
@@ -48,18 +48,18 @@
   "50 min, limit 90, HEALTHY"). OBS: publish-*/30-schemats första tick släpade (GitHub-
   cron-skew) — manuellt publicerad som brygga; om webbvakten larmar i morgon: kolla att
   schedule-körningar rullar i Actions.
-- **S-2026-08-25sen kväll:** Mobilfilm-fix efter Davids iPhone-dumpar (scen 2 grå/4 svart):
+- **S-2026-08-25sen kväll:** Mobilfilm-fix efter Axels iPhone-dumpar (scen 2 grå/4 svart):
   rotorsak = SVG-gradient-"postrar" + lat klipphämtning som förlorar mot tummen på 4G.
   Åtgärd: riktiga posterbildrutor ur klippen (~105 KB, syns direkt oavsett nät),
   ivrig staggrad förladdning av alla klipp från start, robustare frame-reveal
   (canplaythrough/timeupdate utöver seeked), ?vdebug-överlägg för fjärrdiagnos.
-  Robot-bevisat: alla 4 klipp loading direkt + postrar målas. David omtestar på iPhone
+  Robot-bevisat: alla 4 klipp loading direkt + postrar målas. Axel omtestar på iPhone
   (vid strul: skärmdump MED ?vdebug).
 - **S-2026-08-25natt (skills):** 6 agentskills installerade i `skills/` inför appbygget
   (twostraws SwiftUI/Concurrency/Testing · chrisbanes kotlin-flow/compose-state · egen
   halkvakt-android). docs/SKILLS.md = katalog + skippade med motivering. CLAUDE.md:
   obligatorisk läsning före app-kod; nya läxor förs in i halkvakt-android §5.
-- **S-2026-08-25natt (Betaputs II):** Appbygget igång på Davids "kör". Skelettet →
+- **S-2026-08-25natt (Betaputs II):** Appbygget igång på Axels "kör". Skelettet →
   riktig app: Compose-UI (3 flikar, mörkt varumärkestema), inställningar (kategori-
   filter via DataStore-Flow), persistent varningshistorik, testa-rösten, autostart-
   switch. Skills styrde arkitekturen (en state-ägare; explicit coroutine-ägare i
@@ -68,17 +68,17 @@
   implementerad: levande hemskärm, körläge m skärm-vaken, helskärmsvarning "Uppfattat",
   avståndsslider, röstvalsrad. Nearby-hjälpen ren + provad.
 - **S-2026-08-26 (Betaputs III):** Release-rustning klar — SDK 35, R8 (2,59 MB AAB),
-  upload-nyckel i GitHub-secrets + Davids kopia, CI-byggd signerad AAB per push,
+  upload-nyckel i GitHub-secrets + Axels kopia, CI-byggd signerad AAB per push,
   integritetspolicy live. Appen är tekniskt släppfärdig; återstår butiksmaterial vid
   "kontot är godkänt". Beslut: kö-slutsvarning (TrafficFlow) = uppdatering 1 efter release.
-- **S-2026-08-27 (iOS-start, DECISIONS #23):** David beslutade samtidig lansering.
+- **S-2026-08-27 (iOS-start, DECISIONS #23):** Axel beslutade samtidig lansering.
   SwiftUI-appen skriven (spegel av Android: 3 flikar, körläge, varningskort, Nearby,
-  snapshot m. sha-verifiering + offlinecache). Byggs första gången på Davids Mac
+  snapshot m. sha-verifiering + offlinecache). Byggs första gången på Axels Mac
   (MAC-GUIDE.md). Fynd: vilt saknas i snapshoten = backlog #17 FÖRE release.
-  Måndag: Play- + Apple-konton (Davids lön).
+  Måndag: Play- + Apple-konton (Axels lön).
 - **S-2026-08-25natt (foto):** CI-emulatorn plåtar nu appens tre flikar vid varje push
-  (artefakt app-screenshots) — Davids första titt levererad. Två runner-läxor in i skillen.
-- **S-2026-08-26fm (UI v2):** David valde design i Claude Design — porterad rakt av:
+  (artefakt app-screenshots) — Axels första titt levererad. Två runner-läxor in i skillen.
+- **S-2026-08-26fm (UI v2):** Axel valde design i Claude Design — porterad rakt av:
   statuskort, I NÄRHETEN m. riktig närhetsdata, körläget "Passageraren är vaken",
   Inställningar v2 m. avståndsreglage (motor-configvägen, kontraktssäkert). CI grön,
   nya flikbilder plåtade.
@@ -121,7 +121,7 @@
 - smhi_warnings (replace-all = aktuell sanning) + smhi_warnings_history (arkiv)
 - Skarpt verifierat: DB WRITE smhi:17; live-meta har smhi_vinter; ticker redo för första snön
 - 26/26 tester gröna. Kvar före Android: #6 snapshot-byggaren (blockerar ingen)
-- David skapar Play-konto ~2026-08-26 (före plan v40 — bra: Googles ID-verifiering kan ta dagar)
+- Axel skapar Play-konto ~2026-08-26 (före plan v40 — bra: Googles ID-verifiering kan ta dagar)
 
 ## 2026-08-25 — Snapshot-byggare KLAR (BACKLOG #6) + falsklarmsbugg fixad
 - data/app/v1/{manifest,static,live}.json publiceras var 30:e min; sha256-verifierat från CDN
@@ -130,7 +130,7 @@
   regex satt i MOTORN och hade gett falska röstvarningar i vinter. Ordgränser + regressionstest
   i båda lagren; v11-tystnadsvektorn härdad med fällan.
 - 28/28 tester gröna. Nästa: #7 Android-skelett — byggs och CI-kompileras UTAN Play-konto,
-  sideload-APK till David som mål. Play-kontot blockerar först butiksuppladdningen.
+  sideload-APK till Axel som mål. Play-kontot blockerar först butiksuppladdningen.
 
 ## 2026-08-25 — ANDROID-SKELETTET BYGGER: APK i CI (BACKLOG #7 milstolpe)
 - android/: Kotlin-motor som klarar ALLA delade vektorer + Skånefixturen fält-för-fält
@@ -145,7 +145,7 @@
 - Virtuell Android bootas i Actions vid varje push: APK installeras, MainActivity startar,
   Skånefixturen replayas genom appens Guard-pipeline på riktiga Android-runtimen
 - TRE runtimes bevisat identiska på samma frysta facit: TypeScript, Kotlin/JVM, Kotlin/ART
-- Davids enhetstest krymper till det bara verkligheten kan ge: Bluetooth-ljud, batteri, OEM
+- Axels enhetstest krymper till det bara verkligheten kan ge: Bluetooth-ljud, batteri, OEM
 - Nästa: #9 engine.updateHazards, därefter autostart (AR + Bluetooth)
 
 ## 2026-08-25 — SWIFT-MOTORN KLAR: iOS-åtagande verkställt (DECISIONS #17)
@@ -154,7 +154,7 @@
 - ios-engine.yml vaktar kontraktet vid varje push (Linux = gratis minuter)
 - Vektordesignregel tillagd efter knivseggs-fynd i v08 (2 cm-marginal → libm avgjorde);
   v08 flyttad till robust marginal, alla sviter omkörda
-- iOS-appen startas vid Fas 3-grinden; Davids Apple-konto (~1 050 kr/år) behövs i okt
+- iOS-appen startas vid Fas 3-grinden; Axels Apple-konto (~1 050 kr/år) behövs i okt
 
 ## 2026-08-25 — Vaktens minne överlever databyte (BACKLOG #9)
 - updateHazards i TS+Kotlin+Swift: farorna byts, minnet (odometer, kylklocka, fired-karta)
@@ -184,7 +184,7 @@
   kartan på /karta.html, testarguide på /beta.html, sitemap+robots+JSON-LD
 - Väntelistan tar emot från tre källor: karta, landing, beta (alla skarptestade 201)
 - Två färdiga FB-inlägg + postningsplan i docs/REKRYTERING.md — inlägg A kan postas IDAG
-- halkvakt.se + .nu saknar DNS → ser lediga ut; Davids köp (~150 kr/år) låser upp #13–14
+- halkvakt.se + .nu saknar DNS → ser lediga ut; Axels köp (~150 kr/år) låser upp #13–14
 - SEO-logik: innehåll publicerat nu hinner ranka till december; läns-sidorna blir vårt
   unika innehåll (livedata ingen kan kopiera)
 
@@ -194,25 +194,25 @@
 - Sajten: 🔊 "Hör hur rösten låter"-knapp (talar appens riktiga fraser), og.png +
   favicon, kö-räknare i publiceringspipen (waitlist_count i meta.json, visas ≥25),
   kartpanel synkad (oktober), hemlänk från kartan
-- Davids öppna val (deadline okt): press med namn eller anonymt; Flashback själv eller ej
+- Axels öppna val (deadline okt): press med namn eller anonymt; Flashback själv eller ej
 
 ## 2026-08-25 — Mobilfixar + visuell hero efter konkurrentresearch (S9)
-- Mobilbuggar (Davids skärmdump): OM APPEN-krocken fixad (länken bor nu i panelen),
+- Mobilbuggar (Axels skärmdump): OM APPEN-krocken fixad (länken bor nu i panelen),
   tickern rullar som riktig VMS-skylt vid överflöd (båda sidorna), hero-CTA:er staplas
 - Research (Flitsmeister m.fl.) → docs/SITE-INSPIRATION.md; genrens mönster: telefon i
   heron, nyttorubrik, sifferbevis, badges, demovideo, citat
 - BYGGT: animerad CSS-telefonmockup (varningskort glider in i loop, puls-position,
   snöflinga på vägen) + statrad (844 / 30 min / 0 kr / 0 spårning)
-- Väntar på David: fundering kring nästa visuella steg (video okt, skärmdumpar, badges)
+- Väntar på Axel: fundering kring nästa visuella steg (video okt, skärmdumpar, badges)
 
 
 ## 2026-08-25 · Scrollvärlden live
-- varlden.html deployad på halkvakt-karta (Davids godkännande: "fix this up and then we deploy"): scroll-scrubbad körning i 4 scener (scroll-world-motorn MIT, Mixkit-film fri licens, klipp 24946/3317/36024/26253 kurerade via ffmpeg-bildrutor). Badges Google Play/App Store/Betakön i toppraden → väntelistan tills Play-länk finns (byts i okt). Länk från hero på index + sitemap. Landningssidans SEO/formulär orörda.
-- Kvar: ev. promota till startsida efter Davids beslut; riktiga app-skärmdumpar in i scenerna i okt; ev. betald AI-sömlös kamerafärd (~300 kr) om David vill.
+- varlden.html deployad på halkvakt-karta (Axels godkännande: "fix this up and then we deploy"): scroll-scrubbad körning i 4 scener (scroll-world-motorn MIT, Mixkit-film fri licens, klipp 24946/3317/36024/26253 kurerade via ffmpeg-bildrutor). Badges Google Play/App Store/Betakön i toppraden → väntelistan tills Play-länk finns (byts i okt). Länk från hero på index + sitemap. Landningssidans SEO/formulär orörda.
+- Kvar: ev. promota till startsida efter Axels beslut; riktiga app-skärmdumpar in i scenerna i okt; ev. betald AI-sömlös kamerafärd (~300 kr) om Axel vill.
 
 ## 2026-08-25 · Livemotorn I DRIFT
 - Databasen minutfärsk på olyckor+halka (beslut #19). Snölarmet ser första halkan inom en minut. Kartan ~16 min (kedjad publicering + cache-bust, tidigare idag). Token claude-halkvakt går ut ~nov — förnya före betan.
 
 ## 2026-08-25 · Scrollvärlden ÄR startsidan
 - index.html = scrollvärlden + inbyggd betakö-anmälan (source: varlden) + FAQ + footer efter världen (z-lagerfix: sektioner z45 över motorns fasta lager). Gamla landningssidan → om.html (röstdemo, detaljer). varlden.html → redirect. SEO (FAQ JSON-LD, description) flyttat till nya index. Kartpanelens länk → Betakön-ankaret. Mobil-QA:ad med skärmdumpar.
-- Beslut m David: app-skärmdumpar STRYKS ur sajtjobbet — behövs endast som Play-butiksmaterial (Googles krav, min 2 st) i oktober.
+- Beslut m Axel: app-skärmdumpar STRYKS ur sajtjobbet — behövs endast som Play-butiksmaterial (Googles krav, min 2 st) i oktober.

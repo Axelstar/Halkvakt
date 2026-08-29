@@ -58,6 +58,7 @@ class GuardService : Service() {
     private lateinit var audio: AudioManager
     private var focusRequest: AudioFocusRequest? = null
     private var lastSnapshotLoad = 0L
+    private var staleAnnounced = false
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -99,10 +100,16 @@ class GuardService : Service() {
 
     private fun loadSnapshotAsync() = thread {
         try {
-            val hazards = SnapshotRepo.loadHazards(this)
+            val snap = SnapshotRepo.loadSnapshot(this)
+            val gate = AgeGate.filter(snap.hazards, snap.generatedAtMs, System.currentTimeMillis())
+            val hazards = gate.hazards
+            if (gate.stale && !staleAnnounced) { staleAnnounced = true; speak(AgeGate.STALE_LINE) }
+            val dataTid = if (snap.generatedAtMs > 0)
+                android.text.format.DateFormat.format("HH:mm", snap.generatedAtMs) else "okänd tid"
             val g = guard
             if (g == null) {
                 val warnM = kotlinx.coroutines.runBlocking { Prefs.warnDistanceM(this@GuardService).first() }.toDouble()
+                staleAnnounced = staleAnnounced && g != null  // ny session ⇒ nollställ
                 guard = Guard(hazards, cfg = EngineConfig(leadMaxM = warnM), speak = ::speak, notify = ::updateNotification, onEvent = AlertBus::post,
                     isEnabled = { it !in disabledKinds },
                     onAlert = { a ->
@@ -115,12 +122,12 @@ class GuardService : Service() {
                         scope.launch {
                             Prefs.appendAlert(this@GuardService, AlertEntry((a.t * 1000).toLong(), a.kind.wire, a.text)) } })
                 AlertBus.post("Vägdata laddad: ${hazards.size} faror i landet. Kör försiktigt.")
-                snapshotInfo.value = "${hazards.size} faror · hämtat ${android.text.format.DateFormat.format("HH:mm", System.currentTimeMillis())}"
+                snapshotInfo.value = "${hazards.size} faror · väglag $dataTid"
             } else {
                 // Mid-drive refresh: swap data, keep memory (never re-announce; v14 guards this).
                 g.updateHazards(hazards)
                 AlertBus.post("Vägdata uppdaterad: ${hazards.size} faror.")
-                snapshotInfo.value = "${hazards.size} faror · hämtat ${android.text.format.DateFormat.format("HH:mm", System.currentTimeMillis())}"
+                snapshotInfo.value = "${hazards.size} faror · väglag $dataTid"
             }
             lastSnapshotLoad = System.currentTimeMillis()
         } catch (e: Exception) {

@@ -44,11 +44,14 @@ class MainActivity : ComponentActivity() {
         autostartOn.value = AutostartManager.isEnabled(this)
         setContent { HalkvaktApp(this) }
         lifecycleScope.launch(Dispatchers.IO) {
-            runCatching { SnapshotRepo.loadHazards(this@MainActivity) }
-                .onSuccess {
-                    hazards.value = it
-                    // Tänder LIVEDATA-pillen + "hämtat HH:mm" även utan att tjänsten körts.
-                    GuardService.snapshotInfo.value = "${it.size} faror · hämtat ${android.text.format.DateFormat.format("HH:mm", System.currentTimeMillis())}"
+            runCatching { SnapshotRepo.loadSnapshot(this@MainActivity) }
+                .onSuccess { snap ->
+                    val gate = AgeGate.filter(snap.hazards, snap.generatedAtMs, System.currentTimeMillis())
+                    hazards.value = gate.hazards
+                    // Datans tid (generated_at) — inte nedladdningens (Bengts granskning).
+                    val tid = if (snap.generatedAtMs > 0)
+                        android.text.format.DateFormat.format("HH:mm", snap.generatedAtMs) else "okänd tid"
+                    GuardService.snapshotInfo.value = "${gate.hazards.size} faror · väglag $tid"
                 }
         }
         if (intent?.getBooleanExtra("auto_start", false) == true && hasPermissions() && !GuardService.running) onToggle()
