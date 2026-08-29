@@ -34,3 +34,13 @@ förblir gratis för alla. Kanal i skala: STR centralt/deras elevplattform;
 kedjor (t.ex. trafikskolan.com) som pilotkunder. TIDPUNKT: våren 2027 MED
 halkbanedatan som säljargument. Septembersamtalen hålls strikt icke-
 kommersiella (avsiktsförklaringarna säger "utan kostnad"). Ägare: Bengt (B2B).
+
+Förfining (Axel, samma dag): (a) KÖRSKOLEBILARNA som kanal — rullar dagligen i
+alla väder med trovärdigaste rekommendatören bredvid; appen i skolbilarna =
+användare + vittnesmål + (vid sensorsteg 2027) datakälla. (b) Eleven får appen
+vid klarat körkort = rätt ögonblick (första solovinterresan). (c) Ersättnings-
+modellen: INTE kickback per användare (användare genererar 0 kr i dag) — skolan
+betalar för momentet och tar sin marginal i paketpriset, som med böcker. OM
+premiumlager byggs (öppet beslut, tidigast efter vintern) blir skolorna åter-
+försäljare av premiumkoder i paketen ("3 mån Halkvakt+ ingår") — Axels kick-
+back-instinkt i löfteskompatibel form.
