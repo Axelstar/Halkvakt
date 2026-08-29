@@ -29,8 +29,12 @@ enum SnapshotRepo {
                               meta: PointMeta(speedLimitKmh: optInt(c, "limit"))))
         }
         for s in arr(liveDoc, "segments") {
-            let line = (s["line"] as? [[Any]] ?? []).map { p in
-                [(p[0] as? NSNumber)?.doubleValue ?? 0, (p[1] as? NSNumber)?.doubleValue ?? 0]
+            let rawLine = s["line"] as? [[Any]] ?? []
+            var line: [[Double]] = []
+            for p in rawLine where p.count >= 2 {
+                let lon = (p[0] as? NSNumber)?.doubleValue ?? 0
+                let lat = (p[1] as? NSNumber)?.doubleValue ?? 0
+                line.append([lon, lat])
             }
             let info = s["info"] as? [String] ?? []
             out.append(.segment(id: "seg:\(str(s, "id"))", line: line,
