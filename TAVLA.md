@@ -14,7 +14,7 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 - [ ] **Säkra kronjuvelerna:** filerna `halkvakt-upload-nyckel.jks` + `losenord.txt` (levererade i chatten) sparas i lösenordshanterare/säker molnmapp — ALDRIG delas, aldrig bara i Hämtade filer. Det är nyckeln varje framtida Halkvakt-version signeras med; krypterad kopia finns i GitHub men din nedladdning är originalet. Bocka av här när de ligger säkert.
 
 ### Axel — helgen
-- [ ] Ladda ner **Xcode 26.1** (developer.apple.com/download/all) när 15.7.9 är klar; dra till Program, öppna en gång, säg ja till licens + iOS components
+- [ ] Ladda ner **Xcode 26.1** — ⚠️ INTE App Store (den erbjuder bara 26.2 som kräver macOS 26 → "kunde inte slutföra ditt inköp"). Rätt väg: **developer.apple.com/download/all**, logga in med vanliga Apple-ID:t, sök "Xcode 26.1", hämta .xip → dubbelklicka → dra till Program → öppna en gång, ja till licens + iOS components
 
 ### Axel — måndag (lönen)
 - [ ] **Play-kontot** — play.google.com/console, 25 USD ⚠️ KRITISKA LINJEN (startar Googles klocka)
