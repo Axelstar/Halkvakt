@@ -40,6 +40,9 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 - [ ] Butiksuppladdning + Data safety-inklistring *(låst: "kontot är godkänt")*
 - [ ] TestFlight-uppladdning + testarinbjudningar *(låst: Apple-kontot)*
 - [ ] Skarp support vid första Mac-bygget *(låst: måndag)*
+- [ ] **#22 Bluetooth-autostart** *(låst: efter release — ur Axels design)*
+- [ ] **#23 Heads-up över Google Maps + Testa rösten-knapp** *(låst: efter release)*
+- [ ] **#24 Designlyftet (Claude Design-skinnet)** *(låst: uppdatering 2-3)*
 - [ ] **#15 Kö-slutsmotorn** (TrafficFlow) *(låst: efter release — uppdatering 1)*
 - [ ] **#16 Blixthalke-prognos** (MET Nowcast) *(låst: efter kö-slut — uppdatering 2)*
 

@@ -1,3 +1,14 @@
+22. **Bluetooth-autostart** (ur Axels Claude Design 29/8): vakten startar själv
+    när bilens Bluetooth kopplar upp. Fulländar "lägg undan telefonen". Android
+    först; iOS-bakgrundsstart utreds. Efter release.
+23. **Heads-up-varning över kartappar** (Axels önskan, löftesvänlig form): hög-
+    prioritetsnotis som lägger sig över Google/Apple Maps vid varning och
+    försvinner själv — ingen extra behörighet, ingen knapp, iOS-kompatibel
+    (banner). + "Testa rösten"-knapp i Inställningar. Efter release.
+24. **Designlyftet** (Claude Design-skinnet: hemskärmens farokort, "senast
+    sagt", typografin): uppdatering 2-3, EJ före release — appen är fotograferad
+    och signerad. Helskärms-"Uppfattat"-varianten adopteras INTE (kräver blick+
+    tryck i fart; strider mot röst-tesen).
 # BACKLOG — ordered. Any session: take the top unblocked item, build, verify, commit, update STATUS.md.
 
 1. ~~Self-steering layer~~ (this commit): CI integration tests vs throwaway PostGIS,
