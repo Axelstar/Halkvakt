@@ -92,6 +92,15 @@ object SnapshotRepo {
                 ),
             ))
         }
+        liveDoc.optJSONArray("wildlife")?.let { vs ->
+            for (i in 0 until vs.length()) {
+                val v = vs.getJSONObject(i)
+                out.add(PointHazard(
+                    id = "vilt:${v.getString("id")}", kind = HazardKind.WILDLIFE,
+                    lon = v.getDouble("lon"), lat = v.getDouble("lat"),
+                ))
+            }
+        }
         val devs = liveDoc.getJSONArray("deviations")
         for (i in 0 until devs.length()) {
             val d = devs.getJSONObject(i)

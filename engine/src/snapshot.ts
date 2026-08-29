@@ -15,6 +15,7 @@ export interface LiveDoc {
   weather: { id: string; lon: number; lat: number; yta: number | null; fukt: boolean }[];
   deviations: { id: string; lon: number; lat: number; typ: string | null; road: string | null }[];
   smhi: unknown[]; // not consumed by the engine v1 (map/UI layer)
+  wildlife?: { id: string; lon: number; lat: number; art: string | null }[];
 }
 
 export function snapshotToHazards(staticDoc: StaticDoc, liveDoc: LiveDoc): Hazard[] {
@@ -30,6 +31,9 @@ export function snapshotToHazards(staticDoc: StaticDoc, liveDoc: LiveDoc): Hazar
   }
   for (const d of liveDoc.deviations) {
     out.push({ id: `dev:${d.id}`, kind: "accident", lon: d.lon, lat: d.lat });
+  }
+  for (const v of liveDoc.wildlife ?? []) {
+    out.push({ id: `vilt:${v.id}`, kind: "wildlife", lon: v.lon, lat: v.lat });
   }
   return out;
 }

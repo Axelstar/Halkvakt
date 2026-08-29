@@ -44,3 +44,13 @@ test("snapshot chain: files → hazards → disciplined alerts", () => {
   const rerun = new AlertEngine(snapshotToHazards(staticDoc, liveDoc)).run(northTrace(420, 80));
   assert.equal(JSON.stringify(rerun), JSON.stringify(alerts));
 });
+
+
+test("wildlife-array mappas till vilt-punkter (och tål att saknas)", () => {
+  const withVilt: LiveDoc = { ...liveDoc, wildlife: [{ id: "e1", lon: 13.5, lat: 55.9, art: "Rådjur" }] };
+  const hz = snapshotToHazards(staticDoc, withVilt);
+  const v = hz.find((h) => h.id === "vilt:e1");
+  assert.ok(v && v.kind === "wildlife");
+  // Bakåtkompatibilitet: gammal snapshot utan fältet
+  assert.ok(!snapshotToHazards(staticDoc, liveDoc).some((h) => h.kind === "wildlife"));
+});

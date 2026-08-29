@@ -32,7 +32,6 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 - [ ] Samtal med Axel: sensortrappan — tidsättning av steg 2 (våren 2027?)
 
 ### Claude — olåst
-- [ ] **#17 Vilt in i snapshoten** (FÖRE release, båda plattformar + replay-vektor)
 - [ ] **#19 Missmätningsskriptet** (Bengts design — byggs på augustidata)
 - [ ] **#20 Skuggmotor + kamerafacit** (server-side — FÖRE FÖRSTA FROSTEN)
 
@@ -53,6 +52,7 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] **#17 Vilt in i snapshoten** — polisen_events (48 h, med position) → wildlife-array → alla tre parsrar; TS-prov + bakåtkompatibilitet; motorbeteendet var redan vektorbevisat (v13)
 - [x] **Bengts granskning II bokförd** — arkivlagret = repots styrka; prognosfrihet nu dokumenterat val (#25); kamerafacit+skuggmotor = #20; retention löses löftesrent via Play-statistiken
 - [x] **Tavelregeln** inristad i CLAUDE.md — varje varv slutar med tavelsynk
 - [x] **Bengt fullt ombord** — konto `895845` bekräftat i praktiken: committar dokument, granskar kod på radnivå (åldersvakts-fyndet!)

@@ -118,7 +118,7 @@
     (smhi_warnings_history + Situation-halka) mot motorkörning på referensrutterna
     → händelser/träffar/missar per vecka. Byggs på augustidata (tomt ok), skarpt
     från första halkdagen. Missandelen avgör tystnadsdesignen.
-17. **Vilt in i snapshoten (FÖRE release, båda plattformar)** — upptäckt 2026-08-27:
+17. ~~Vilt in i snapshoten~~ (S-2026-08-29: klart — byggare + TS/Kotlin/Swift-parsrar + prov) — upptäckt 2026-08-27:
     live.json saknar wildlife-array; apparnas vilt-switch har inget data. Åtgärd i ETT
     varv: snapshot-builder skriver wildlife[] ur polisen-arkivet + Android- och
     Swift-parsern läser den + replay-vektor. Även: oanvänd smhi-array i live.json

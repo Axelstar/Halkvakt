@@ -42,6 +42,11 @@ enum SnapshotRepo {
                               meta: PointMeta(surfaceTempC: optDbl(w, "yta"),
                                               moisture: (w["fukt"] as? Bool) ?? false)))
         }
+        for v in arr(liveDoc, "wildlife") {
+            out.append(.point(id: "vilt:\(str(v, "id"))", kind: .wildlife,
+                              lon: dbl(v, "lon"), lat: dbl(v, "lat"), bearing: nil,
+                              meta: PointMeta()))
+        }
         for d in arr(liveDoc, "deviations") {
             out.append(.point(id: "dev:\(str(d, "id"))", kind: .accident,
                               lon: dbl(d, "lon"), lat: dbl(d, "lat"), bearing: nil,

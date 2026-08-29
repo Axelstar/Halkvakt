@@ -6,7 +6,8 @@ den mot koden en gång i månaden.
 
 ## 1 · Källor in
 - **Timvis** (GitHub Actions `ingest`): Trafikverket deviations + road conditions
-  + väderstationer + fartkameror (metadata, ALDRIG bilder); Polisens viltolyckor;
+  + väderstationer + fartkameror (metadata, ALDRIG bilder); Polisens viltolyckor
+  (→ snapshotens wildlife-array, 48 h-fönster, endast händelser med position);
   SMHI vädervarningar (ibww v1). Arkiveras i Supabase (deviations,
   road_conditions, smhi_warnings_history, vilt) med vinterrelevansfilter.
 - **Minutvis** (Supabase `ingest-live`, fail-closed INGEST_KEY): färska lägen.
@@ -39,8 +40,9 @@ den mot koden en gång i månaden.
 - **Ingen prognos.** Endast nu-läge. Blixthalka-prognos = backlog #16, finns inte.
 - **Tyst mellan mätpunkterna.** VViS-stationer sitter 12–13 mil isär på statligt
   vägnät; däremellan ser motorn ingenting. Löftet följer källans täckning.
-- **Vilt saknas i app-snapshoten** (#17, åtgärdas före release). Switchen finns,
-  datat når ännu inte apparna.
+- **Viltpunkternas precision är Polisens.** Vilt (48 h-fönster) kan ha kommun-
+  grov position i källan; varningen pekar på trakten, inte metern. Kalibreras
+  mot vintern.
 - **Ingen ködetektion** (#15, uppdatering 1). Ingen vattenplaning, solbländning,
   snödrev, dimma.
 - **Läser inte** fordonsfriktionsdata, plogdata eller Öresundsbrons status
@@ -65,7 +67,6 @@ den mot koden en gång i månaden.
 ## 6 · Vägar framåt (en rad per spår)
 - #15 Kö-slut (TrafficFlow, verifierad 43 s färsk) — uppdatering 1.
 - #16 Blixthalke-prognos (MET Nowcast) — uppdatering 2.
-- #17 Vilt in i snapshoten — FÖRE release.
 - #18 Första iOS-bygget på Axels Mac — måndag.
 - #19 Missmätningsskriptet — byggs nu, skördar i vinter.
 - Sensortrappan (Bengts synergianalys) — strategi, EJ i MVP (beslut 2026-08-28).

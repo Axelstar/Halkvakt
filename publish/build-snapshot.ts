@@ -62,6 +62,11 @@ const devs = await pool.query(`
   FROM deviations
   WHERE NOT deleted AND (geom IS NOT NULL OR line_geom IS NOT NULL)
     AND (end_time IS NULL OR end_time > now())`);
+const vilt = await pool.query(`
+  SELECT event_id, ST_X(geom::geometry) lon, ST_Y(geom::geometry) lat, species, datetime
+  FROM polisen_events
+  WHERE geom IS NOT NULL AND datetime > now() - interval '48 hours'
+  ORDER BY datetime DESC`);
 const smhi = await pool.query(`
   SELECT area_id, event_sv, level_code,
          ST_AsGeoJSON(ST_SimplifyPreserveTopology(geom, 0.01))::json AS g
@@ -84,6 +89,7 @@ const liveDoc = {
     id: r.deviation_id, lon: r.lon, lat: r.lat, typ: r.message_type, road: r.road_number,
   })),
   smhi: smhi.rows.map((r) => ({ id: Number(r.area_id), event: r.event_sv, niva: r.level_code, geom: r.g })),
+  wildlife: vilt.rows.map((r) => ({ id: String(r.event_id), lon: Number(r.lon), lat: Number(r.lat), art: r.species ?? null })),
 };
 
 // ---- write + manifest with integrity ----
@@ -100,6 +106,6 @@ writeFileSync(join(outDir, "manifest.json"), JSON.stringify(manifest));
 
 const kb = (b: number) => `${(b / 1024).toFixed(0)} kB`;
 console.log(`snapshot built: static ${kb(fStatic.bytes)} (gz ${kb(fStatic.gz_bytes)}, ${staticDoc.cameras.length} cameras), ` +
-  `live ${kb(fLive.bytes)} (gz ${kb(fLive.gz_bytes)}; segs ${liveDoc.segments.length}, wx ${liveDoc.weather.length}, dev ${liveDoc.deviations.length}, smhi ${liveDoc.smhi.length})`);
+  `live ${kb(fLive.bytes)} (gz ${kb(fLive.gz_bytes)}; segs ${liveDoc.segments.length}, wx ${liveDoc.weather.length}, dev ${liveDoc.deviations.length}, vilt ${liveDoc.wildlife.length}, smhi ${liveDoc.smhi.length})`);
 if (fLive.gz_bytes > 1_500_000) console.warn("SPLIT CRITERION HIT (DECISIONS #14): live gz > 1.5 MB — time for per-län files");
 await pool.end();
