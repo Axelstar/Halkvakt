@@ -12,8 +12,6 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 
 ### Axel — helgen
 - [ ] Ladda ner **Xcode 26.1** (developer.apple.com/download/all) när 15.7.9 är klar; dra till Program, öppna en gång, säg ja till licens + iOS components
-- [ ] Bekräfta med pappa att GitHub-kontot `895845` är hans
-- [ ] Pappas Claude-test: *"Öppna Axelstar/Halkvakt och läs docs/VALKOMMEN-BENGT.md"*
 
 ### Axel — måndag (lönen)
 - [ ] **Play-kontot** — play.google.com/console, 25 USD ⚠️ KRITISKA LINJEN (startar Googles klocka)
@@ -26,7 +24,6 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 - [ ] Fysisk Android-testenhet (pappas telefon? begagnad?)
 
 ### Bengt
-- [ ] Läsa `docs/VALKOMMEN-BENGT.md` + testa prata med koden via sin Claude
 - [ ] Läsa SYSTEM.md mot koden månadsvis (första: september)
 - [ ] Samtal med Axel: sensortrappan — tidsättning av steg 2 (våren 2027?)
 
@@ -46,12 +43,12 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 ## 🟡 GÖRA (pågår just nu)
 
 - [ ] macOS Sequoia **15.7.9** installeras på Axels MacBook Air
-- [ ] Bengts onboarding: collaborator ✓, Claude-koppling återstår att verifiera
 
 ---
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] **Bengt fullt ombord** — konto `895845` bekräftat i praktiken: committar dokument, granskar kod på radnivå (åldersvakts-fyndet!)
 - [x] **Åldersvakten** (Bengts granskning): appen läser generated_at, filtrerar gammalt väglag, säger till EN gång — Android + iOS + prov
 - [x] **docs/SYSTEM.md** — systembeskrivningen med "vad systemet inte gör" + månadsdisciplin
 
