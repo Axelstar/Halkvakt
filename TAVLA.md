@@ -19,7 +19,6 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 ### Axel — måndag (lönen)
 - [ ] **Play-kontot** — play.google.com/console, 25 USD ⚠️ KRITISKA LINJEN (startar Googles klocka)
 - [ ] **Apple Developer** — developer.apple.com, 99 USD/år (ID-koll 1–2 dygn)
-- [ ] **Första iOS-bygget** på Macen med Claude — recept: `ios/MAC-GUIDE.md`
 
 ### Axel — beslut att ta
 - [ ] **Helgsamtalet med pappa — nu fyra punkter:** roller (B2B=Bengt?), föreningen, klartecken ringrundan, OCH intäktsmodellen (#27: din viljeinriktning → hans utformning)
@@ -63,6 +62,7 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] 🏆 **HALKVAKT KÖR PÅ iOS** — första Mac-bygget genomfört lördag 29/8 18:04, två dygn före schemat: Xcode 26.1-verkstad från noll, EN byggfix (Swift-typning), appen live på Axels iPhone med färsk snapshot ("väglag 17:37" = åldersvakten + pulsklockan i drift). Kvar till måndag: bara konton + TestFlight
 - [x] **macOS 15.7.9 installerat** på Axels MacBook Air (skärmbildskvitto 29/8 17:00) — Xcode 26.1-vägen öppen
 - [x] **Pipelinen räddad** — GitHub-cron svälte publiceringen (5 h-stopp, 13 h-hål uppmätta); Supabase-pulsklockan trycker nu på dispatch-knapparna (*/30 + timvis). Vilt VERIFIERAT live på CDN (2 st i wildlife-arrayen)
 - [x] **Healthcheckens koppel lagat** — larmade rätt men `| tee` åt exit-koden; pipefail på ⇒ rött jobb ⇒ mejl. Läxa: prova larmvägen, inte bara vakten
