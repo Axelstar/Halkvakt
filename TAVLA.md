@@ -41,6 +41,7 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 ### Claude — olåst
 
 ### Claude — låst (väntar på nyckel)
+- [ ] **#27 asc-CLI:t** — enkommandos-TestFlight + CI-hämtad testarfeedback *(låst: Apple-kontot, Axels fynd)*
 - [ ] Butiksuppladdning + Data safety-inklistring *(låst: "kontot är godkänt")*
 - [ ] TestFlight-uppladdning + testarinbjudningar *(låst: Apple-kontot)*
 - [ ] Skarp support vid första Mac-bygget *(låst: måndag)*

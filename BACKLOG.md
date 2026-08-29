@@ -1,3 +1,8 @@
+27. **asc-CLI:t** (rorkai/App-Store-Connect-CLI, Axels fynd 29/8 — 6,3k★, MIT,
+    brew install asc): (a) TestFlight-uppladdning som ETT kommando åt Axel;
+    (b) kör på Linux ⇒ CI kan hämta TestFlight-feedback/krascher till repot
+    automatiskt. LÅST: Apple-kontot + ASC API-nyckel (skapas måndag). Telemetri
+    stängs av vid install; deras skills-paket hoppas.
 25. **Halkbaneläget** (försöksläge i appen): manuellt konfigurerad fara +
     geofence på övningsplatsens område, fast fras ("halka om 300 meter, sänk
     farten"), slumpad på/av per elev, instruktörsprotokoll. LÅST: påskriven
