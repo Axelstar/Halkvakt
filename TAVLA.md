@@ -92,3 +92,5 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 
 *Djupare detaljer: BACKLOG.md (teknisk kö) · STATUS.md (varvlogg) · DECISIONS.md (vägval).
 Tavlan är människornas lager ovanpå dem.*
+
+- [ ] Grekland-genvägen: förregistrera Apple+Google-kontona i helgen (mobilen räcker)
