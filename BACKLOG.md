@@ -1,3 +1,11 @@
+25. **Halkbaneläget** (försöksläge i appen): manuellt konfigurerad fara +
+    geofence på övningsplatsens område, fast fras ("halka om 300 meter, sänk
+    farten"), slumpad på/av per elev, instruktörsprotokoll. LÅST: påskriven
+    avsiktsförklaring från trafikövningsplats.
+26. **Skolpaketet**: QR-blad (tryck-PDF), femminutersmanus för handledarkursen,
+    landningssida, "Handledarens checklista vinterkörning", samtyckesblankett.
+    LÅST: påskriven avsiktsförklaring från trafikskola. (QR-bladet kan tidigare-
+    läggas som testarrekrytering.)
 22. **Bluetooth-autostart** (ur Axels Claude Design 29/8): vakten startar själv
     när bilens Bluetooth kopplar upp. Fulländar "lägg undan telefonen". Android
     först; iOS-bakgrundsstart utreds.  BYGGS UNDER TESTPERIODEN → v0.3.1 till testarna.

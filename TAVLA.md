@@ -46,6 +46,8 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
   - [ ] **#24 Skinnet** (Claude Design: hemskärmens farokort, "senast sagt", typografin)
   - [ ] **#22 Bluetooth-autostart** (vakten startar när bilen kopplar)
   - [ ] **#23 Heads-up över Google Maps + "Testa rösten"** *(nyckel: releasen inskickad)*
+- [ ] **#25 Halkbaneläget** *(låst: halkbanans avsiktsförklaring)*
+- [ ] **#26 Skolpaketet** (QR-blad, manus, checklista) *(låst: trafikskolans avsiktsförklaring)*
 - [ ] **#15 Kö-slutsmotorn** (TrafficFlow) *(låst: efter release — uppdatering 1)*
 - [ ] **#16 Blixthalke-prognos** (MET Nowcast) *(låst: efter kö-slut — uppdatering 2)*
 
