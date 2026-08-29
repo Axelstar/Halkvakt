@@ -10,6 +10,9 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 
 ## 🔴 ATT GÖRA
 
+### Axel — IDAG ⚠️
+- [ ] **Säkra kronjuvelerna:** filerna `halkvakt-upload-nyckel.jks` + `losenord.txt` (levererade i chatten) sparas i lösenordshanterare/säker molnmapp — ALDRIG delas, aldrig bara i Hämtade filer. Det är nyckeln varje framtida Halkvakt-version signeras med; krypterad kopia finns i GitHub men din nedladdning är originalet. Bocka av här när de ligger säkert.
+
 ### Axel — helgen
 - [ ] Ladda ner **Xcode 26.1** (developer.apple.com/download/all) när 15.7.9 är klar; dra till Program, öppna en gång, säg ja till licens + iOS components
 
