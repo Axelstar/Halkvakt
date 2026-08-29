@@ -23,7 +23,7 @@ targets:
         SWIFT_VERSION: "5.0"
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_CFBundleDisplayName: Halkvakt
-        DEVELOPMENT_TEAM: 6Y3377BFR3   # Axels Personal Team (ur Lita på-rutan 29/8)
+        DEVELOPMENT_TEAM: ""   # OBS: väljs manuellt i Xcode efter VARJE xcodegen (Signing & Capabilities → Team). Koden i Lita på-rutan är CERTIFIKATETS id, inte teamets — läxa 29/8
     info:
       path: Sources/Info.plist
       properties:

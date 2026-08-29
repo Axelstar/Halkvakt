@@ -79,3 +79,10 @@ provlyssna rösten under Inställningar.
 Ta en skärmbild på felet och klistra in i chatten med Claude — exakta
 felmeddelanden är guld. Vanligast: glömt välja Team (steg 4), eller iPhonen
 litar inte på utvecklaren än (steg 5).
+
+
+## ⚠️ Efter varje `xcodegen`: välj Team igen
+xcodegen bygger om projektfilen från receptet — då nollställs signeringen.
+Rutin: projektroten → Signing & Capabilities → Team → "axel Lagerlof
+(Personal Team)". Två klick, sen ▶. (Felbilden är "No Account for Team" +
+"No profiles for se.halkvakt.app".)
