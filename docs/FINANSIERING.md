@@ -11,6 +11,13 @@ deadline 1/10 · besked senast 15/12 · projektstart 2027-01-11.
 missknappen (#19/#20, LIVE); prognoslagret = #16 (blir finansierat); yrkes-
 piloten = B2B-fröet; halkbaneförsöket = kontrollgrupp, unikt.
 
+**Ringlistan (kontaktplanen v3):** 0 Skyltfonden förhandssamtal (v.36 först) ·
+1 Trafikövningsplats/halkbanan (v.36, KRITISK — utan den stryks försöket) ·
+2 STR-trafikskola via HANDLEDARKURSEN (QR-blad till föräldrar = distribution) ·
+3 Skolskjuts (v.37, kommunerna längs referensrutterna) · 4 Privat hemtjänst
+(v.37) · 5 NTF Skåne sist (kan då räkna upp partnerlistan) · 6 Åkeri om lätt.
+Regel: ej underskrift 25/9 = struken; "två räcker, fem är utmärkt".
+
 **Öppet beslut (Axel):** sökande = Bengt privat eller ideell förening (bildas
 på en vecka, 3 i styrelsen; lagar svagheten "ingen organisation"). Kopplat till
 rollfördelningskortet.
