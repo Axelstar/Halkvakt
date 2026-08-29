@@ -81,5 +81,10 @@ Varje arbetsvarv AVSLUTAS med att TAVLA.md synkas mot verkligheten:
 3. Verkligheten bevisar något (commit, kvitto, skärmbild) → kortet flyttas
    utan att fråga.
 4. Finns det inte på tavlan finns det inte. Idéer utan kort = tappade idéer.
-Tavlan är människolagret; BACKLOG/STATUS/DECISIONS är djuplagren. Alla fyra
+Tavlan är människolagret; BACKLOG/STATUS/DECISIONS är djuplagren.
+
+## PRODUKTBOKSREGELN (Axels order 2026-08-29)
+Ändras något användaren SER, HÖR eller GÖR (skärm, rösttext, flöde, behörighet)
+⇒ docs/PRODUKTBOK.md uppdateras i samma varv, med färska skärmbilder ur
+fotostudions senaste artefakt (app-screenshots) committade till docs/produktbok/. Alla fyra
 i samma commit när de överlappar.
