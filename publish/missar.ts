@@ -84,6 +84,7 @@ const events = await pool.query(`
   SELECT 'smhi:' || warning_id AS id, archived_at AS t,
     ST_X(ST_Centroid(geom::geometry)) lon, ST_Y(ST_Centroid(geom::geometry)) lat, event_code AS what
   FROM smhi_warnings_history WHERE geom IS NOT NULL AND archived_at > now() - $1 * interval '1 day'
+    AND event_code ~* 'ice|icing|snow|glaze|frost|slip'
   UNION ALL
   SELECT 'dev:' || deviation_id, COALESCE(start_time, modified_time),
     ST_X(geom::geometry), ST_Y(geom::geometry), message
