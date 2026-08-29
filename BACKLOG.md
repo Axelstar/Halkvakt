@@ -105,7 +105,7 @@
     6 skills i `skills/`: twostraws×3 (iOS), chrisbanes×2 (Kotlin/Compose), egen
     halkvakt-android (bakgrundsplats/doze/TTS/Play/motor-kontrakt). Katalog docs/SKILLS.md,
     CLAUDE.md kräver läsning före app-kod. *Verified: frontmatter ok i alla 6, licenser medföljer.*
-20. **Skuggmotor + kamerafacit** (Bengt granskning II; server-side, FÖRE FÖRSTA
+20. ~~Skuggmotor + kamerafacit~~ (S-2026-08-29: LIVE — cron */30, shadow_log + facit-hink) (Bengt granskning II; server-side, FÖRE FÖRSTA
     FROSTEN): (a) cron kör motorn mot arkivet på referensrutterna (E22, väg 23,
     väg 19) var 30:e min → varningslogg med indata, oavsett användarantal;
     (b) vid skugg-varning arkiveras närmaste väglagskamerabild (Supabase storage;

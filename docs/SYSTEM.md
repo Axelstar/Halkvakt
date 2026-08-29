@@ -56,7 +56,11 @@ den mot koden en gång i månaden.
 - **iOS-appen är skriven men obyggd** tills första Mac-bygget (#18).
 
 ## 5 · Mätning
-- **Skuggmotorn** loggar vad motorn SA på referensrutterna → falsklarmsandel.
+- **Skuggmotorn** (LIVE sedan 29/8, Supabase cron var 30:e min): kör motorn mot
+  färska snapshoten på tre fasta referensrutter (E22 Malmö→Kristianstad, väg 23
+  Höör→Osby, väg 19 Ystad→Kristianstad; grova men FASTA polylinjer, 80 km/h) →
+  shadow_log med indata. Vid varning arkiveras närmaste väglagskamerabild i
+  facit-hinken (dedupe station×3 h). Falsklarmsandelen får därmed logg + bildfacit.
 - **Missandelen** (#19, jämförelseskript): SMHI-halkvarningar + Situation-halka
   ur arkivet × referensrutterna → händelser/träffar/missar per vecka. Byggs på
   augustidata (tomt är ok), körs skarpt från första halkdagen. Missandelen
