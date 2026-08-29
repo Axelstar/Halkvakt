@@ -55,11 +55,12 @@ async function hazardsAt(t: Date): Promise<Hazard[]> {
   const out: Hazard[] = [];
   const wx = await pool.query(`
     SELECT DISTINCT ON (station_id) station_id,
-      ST_X(geom::geometry) lon, ST_Y(geom::geometry) lat, surface_temp_c, moisture
+      ST_X(geom::geometry) lon, ST_Y(geom::geometry) lat, surface_temp_c,
+      (rain OR snow OR precipitation IS NOT NULL AND precipitation > 0) AS moisture
     FROM weather_observations
-    WHERE observed_at BETWEEN $1::timestamptz - interval '45 min' AND $1::timestamptz
+    WHERE sample_time BETWEEN $1::timestamptz - interval '45 min' AND $1::timestamptz
       AND geom IS NOT NULL
-    ORDER BY station_id, observed_at DESC`, [t]);
+    ORDER BY station_id, sample_time DESC`, [t]);
   for (const r of wx.rows)
     out.push({ id: `wx:${r.station_id}`, kind: "icing_point", lon: +r.lon, lat: +r.lat,
       meta: { surfaceTempC: r.surface_temp_c === null ? null : +r.surface_temp_c, moisture: !!r.moisture } });
