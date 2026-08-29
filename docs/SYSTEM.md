@@ -61,10 +61,12 @@ den mot koden en gång i månaden.
   Höör→Osby, väg 19 Ystad→Kristianstad; grova men FASTA polylinjer, 80 km/h) →
   shadow_log med indata. Vid varning arkiveras närmaste väglagskamerabild i
   facit-hinken (dedupe station×3 h). Falsklarmsandelen får därmed logg + bildfacit.
-- **Missandelen** (#19, jämförelseskript): SMHI-halkvarningar + Situation-halka
-  ur arkivet × referensrutterna → händelser/träffar/missar per vecka. Byggs på
-  augustidata (tomt är ok), körs skarpt från första halkdagen. Missandelen
-  avgör om tystnadsdesignen är rätt.
+- **Missandelen** (#19, KLART 29/8 — knappen "missar" under Actions): arkivets
+  halkhändelser (SMHI-vinterkoder + Situation-halka, ordgränsfilter) nära
+  referensrutterna; hazards REKONSTRUERAS vid händelsetiden (väderobservationer
+  45 min + väglagshistorik 12 h) och riktiga motorn körs → träffar/missar per
+  vecka, varje miss utskriven med källtext för mänsklig revision. Verifierad
+  körning: tomt i augusti, laddad för första halkdagen.
 - **Driftvakter:** healthcheck varannan timme (API:er + webbens dataålder >90 min
   larmar), CI-replay av vektorerna vid varje push.
 
@@ -72,5 +74,5 @@ den mot koden en gång i månaden.
 - #15 Kö-slut (TrafficFlow, verifierad 43 s färsk) — uppdatering 1.
 - #16 Blixthalke-prognos (MET Nowcast) — uppdatering 2.
 - #18 Första iOS-bygget på Axels Mac — måndag.
-- #19 Missmätningsskriptet — byggs nu, skördar i vinter.
+- #19 Missmätningsskriptet — LADDAT (Actions-knappen "missar"); skördar i vinter.
 - Sensortrappan (Bengts synergianalys) — strategi, EJ i MVP (beslut 2026-08-28).

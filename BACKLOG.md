@@ -114,7 +114,7 @@
 21. **VILANDE (Axels beslut): anonym puls + feedback-knapp** — bryter "samlar
     in: ingenting"-formuleringen även som opt-in ⇒ policy/butik/Data safety
     skrivs om. Rekommenderas paketerat med sensorbeslutet våren 2027.
-19. **Missmätningsskriptet** (Bengt 28/8): jämför arkivets halkhändelser
+19. ~~Missmätningsskriptet~~ (S-2026-08-29: klart — missar.yml, verifierat tomt augusti) (Bengt 28/8): jämför arkivets halkhändelser
     (smhi_warnings_history + Situation-halka) mot motorkörning på referensrutterna
     → händelser/träffar/missar per vecka. Byggs på augustidata (tomt ok), skarpt
     från första halkdagen. Missandelen avgör tystnadsdesignen.
