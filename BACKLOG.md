@@ -15,8 +15,8 @@
     när bilens Bluetooth kopplar upp. Fulländar "lägg undan telefonen". Android
     först; iOS-bakgrundsstart utreds.  BYGGS UNDER TESTPERIODEN → v0.3.1 till testarna.
     iOS-vägen (Apples lås: appar får ej självstarta på BT): (a) NU/lansering —
-    Genvägar-automation "Bluetooth ansluten → Öppna Halkvakt" utan bekräftelse,
-    skeppas som guide i appen; (b) framtid — CarPlay-scen. Android: riktig
+    Genvägar-automation kör ett "Starta vakten"-App Intent (bättre än bara öppna
+    appen — vakten STARTAR, inte bara visas), engångsguide skeppas i appen; (b) framtid — CarPlay-scen. Android: riktig
     autostart via BT-receiver + foreground service. (Axels fråga 29/8.)
 23. **Heads-up-varning över kartappar** (Axels önskan, löftesvänlig form): hög-
     prioritetsnotis som lägger sig över Google/Apple Maps vid varning och
