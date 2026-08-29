@@ -194,3 +194,14 @@ trycker på GitHubs workflow_dispatch — publish */30, ingest timvis; GitHub-cr
 kvar som hängslen. (b) `shell: bash` i healthcheck (pipefail) — rött jobb ⇒
 mejlnotis. LÄXA (järnlag): en vakt är inte en vakt förrän dess LARMVÄG är
 provad — testa alltid felfallet, inte bara koden.
+
+## #27 — Viljeinriktning: Halkvakt ska generera intäkter (Axel 2026-08-29)
+Ägarbeslut: projektet ska bli en betalande verksamhet. RAMAR (Claudes råd,
+Axel informerad): grundvarningen för konsument förblir GRATIS genom vintern
+(Skyltfondsansökans beskrivning, kallstarten, varumärket). Intäktsordning:
+(1) B2B-morgonöversikten — piloterna konverteras till betalavtal våren 2027;
+(2) skolmomentet per elev; (3) ev. konsument-premium där #15 kö-slut (egen-
+finansierad) är kandidat men #16 prognoslagret (fondfinansierat) hålls öppet
+projektperioden ut. Modellens utformning = B2B-spåret (Bengt, vid Axels ja
+på rollfördelningen). Bolagsform följer intäkterna (AB när avtal tecknas),
+inte tvärtom.

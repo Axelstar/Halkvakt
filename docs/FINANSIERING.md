@@ -44,3 +44,9 @@ betalar för momentet och tar sin marginal i paketpriset, som med böcker. OM
 premiumlager byggs (öppet beslut, tidigast efter vintern) blir skolorna åter-
 försäljare av premiumkoder i paketen ("3 mån Halkvakt+ ingår") — Axels kick-
 back-instinkt i löfteskompatibel form.
+
+
+## Intäktsbeslutet (#27): gratis vinter → betalande vår
+Axels viljeinriktning 29/8: intäkter SKA in. Ordning: B2B-morgonöversikt
+(pilot→avtal våren 2027) → skolmoment per elev → ev. Halkvakt+ (kandidat #15,
+EJ fondfinansierade #16 under projektet). Basvarning gratis genom vintern.
