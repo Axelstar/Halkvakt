@@ -7,8 +7,11 @@ struct InstallningarView: View {
     @State private var prefs = Prefs.shared
 
     var body: some View {
-        ScrollView {
+        ZStack {
+            Brand.bg.ignoresSafeArea()
+            ScrollView {
             VStack(alignment: .leading, spacing: 20) {
+                BrandHeader()
                 Text("Inställningar").font(.system(size: 30, weight: .heavy)).foregroundStyle(Brand.text)
                 Text("Fem källor. Slå av det du inte vill höra.").foregroundStyle(Brand.dim)
 
@@ -44,6 +47,9 @@ struct InstallningarView: View {
                 }
             }
             .padding(18)
+            .padding(.bottom, 96)
+            }
+            .scrollIndicators(.hidden)
         }
         .background(Brand.bg)
     }
@@ -67,8 +73,11 @@ private struct ToggleRow: View {
 
 struct OmView: View {
     var body: some View {
-        ScrollView {
+        ZStack {
+            Brand.bg.ignoresSafeArea()
+            ScrollView {
             VStack(alignment: .leading, spacing: 20) {
+                BrandHeader()
                 SectionHeader(text: "Om Halkvakt")
                 Text("Halkvakt varnar dig med rösten — som en passagerare som läst allt Trafikverket vet om vägen framför dig.")
                     .foregroundStyle(Brand.text)
@@ -91,6 +100,9 @@ struct OmView: View {
                     .font(.system(size: 13)).foregroundStyle(Brand.faint)
             }
             .padding(18)
+            .padding(.bottom, 96)
+            }
+            .scrollIndicators(.hidden)
         }
         .background(Brand.bg)
     }

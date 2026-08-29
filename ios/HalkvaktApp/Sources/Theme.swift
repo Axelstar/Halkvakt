@@ -68,3 +68,33 @@ struct LinkRow: View {
         .padding(.vertical, 6)
     }
 }
+
+
+/// Varumärkesraden överst på varje flik — dödar det tomma svarta hålet och
+/// speglar Androids topprad. `trailing` = liten statuspill till höger.
+struct BrandHeader: View {
+    var trailing: String? = nil
+    var trailingColor: Color = Brand.green
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 14, weight: .black))
+                .foregroundStyle(Brand.yellow)
+            Text("HALKVAKT")
+                .font(.system(size: 14, weight: .black))
+                .tracking(3.5)
+                .foregroundStyle(Brand.text)
+            Spacer()
+            if let t = trailing {
+                Text(t)
+                    .font(.system(size: 10, weight: .heavy))
+                    .tracking(1.2)
+                    .padding(.horizontal, 10).padding(.vertical, 5)
+                    .background(Capsule().fill(Brand.panel))
+                    .overlay(Capsule().stroke(Brand.stroke, lineWidth: 1))
+                    .foregroundStyle(trailingColor)
+            }
+        }
+        .padding(.bottom, 2)
+    }
+}

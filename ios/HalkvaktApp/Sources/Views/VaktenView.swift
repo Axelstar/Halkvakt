@@ -7,8 +7,12 @@ struct VaktenView: View {
     @State private var guardM = GuardManager.shared
 
     var body: some View {
-        ScrollView {
+        ZStack {
+            Brand.bg.ignoresSafeArea()
+            ScrollView {
             VStack(alignment: .leading, spacing: 20) {
+                BrandHeader(trailing: guardM.running ? "VAKTEN PÅ" : "LIVEDATA",
+                            trailingColor: Brand.green)
                 Panel {
                     SectionHeader(text: "Status")
                     Text(guardM.running ? "Vakten kör" : "Redo att köra")
@@ -45,6 +49,9 @@ struct VaktenView: View {
                 }
             }
             .padding(18)
+            .padding(.bottom, 96)
+            }
+            .scrollIndicators(.hidden)
         }
         .background(Brand.bg)
         .fullScreenCover(isPresented: $guardM.running) {
