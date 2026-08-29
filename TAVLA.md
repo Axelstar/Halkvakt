@@ -34,6 +34,7 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 ### Bengt
 - [ ] Läsa SYSTEM.md mot koden månadsvis (första: september)
 - [ ] Samtal med Axel: sensortrappan — tidsättning av steg 2 (våren 2027?)
+- [ ] 💼 **B2B: skolpaketet som produkt** — per-elev-moment i körkortspaketen; STR som skalkanal; säljs våren 2027 med halkbanedata *(Axels idé, Bengts spår)*
 - [ ] 📞 **Skyltfondsrundan** (efter Axels klartecken): fonden + trafikövningsplats v.36 → avsiktsförklaringar 25/9 → SKICKA 28/9
 
 ### Claude — olåst

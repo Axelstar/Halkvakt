@@ -24,3 +24,13 @@ rollfördelningskortet.
 
 Övriga: Länsförsäkringar Skåne okt (kräver glasklart integritetslöfte — KLART
 i appen ✓), Vinnova mars 2027 (kräver AB + vintersiffror), föreningsbidrag TrV.
+
+
+## B2B-idé (Axel 2026-08-29): skolpaketet som produkt
+Trafikskolor säljer allt som paket och betalar redan per elev för innehåll
+(digitala teoritjänster m.m.). Säljbart: UTBILDNINGSMOMENTET (handledarmodul,
+elevens vintermaterial, halkbaneläge + ev. "vinterintyg") per elev — appen
+förblir gratis för alla. Kanal i skala: STR centralt/deras elevplattform;
+kedjor (t.ex. trafikskolan.com) som pilotkunder. TIDPUNKT: våren 2027 MED
+halkbanedatan som säljargument. Septembersamtalen hålls strikt icke-
+kommersiella (avsiktsförklaringarna säger "utan kostnad"). Ägare: Bengt (B2B).
