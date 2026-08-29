@@ -65,10 +65,13 @@ async function hazardsAt(t: Date): Promise<Hazard[]> {
     out.push({ id: `wx:${r.station_id}`, kind: "icing_point", lon: +r.lon, lat: +r.lat,
       meta: { surfaceTempC: r.surface_temp_c === null ? null : +r.surface_temp_c, moisture: !!r.moisture } });
   const seg = await pool.query(`
-    SELECT segment_id, condition_code, condition_info, ST_AsGeoJSON(geom::geometry) gj
-    FROM road_condition_history
-    WHERE start_time <= $1 AND COALESCE(end_time, $1) >= $1 AND geom IS NOT NULL`, [t]);
-  for (const r of seg.rows) {
+    SELECT DISTINCT ON (h.segment_id) h.segment_id, h.condition_code, h.condition_info,
+      ST_AsGeoJSON(c.geom::geometry) gj
+    FROM road_condition_history h
+    JOIN road_conditions c USING (segment_id)
+    WHERE h.modified_time <= $1 AND h.modified_time > $1::timestamptz - interval '12 hours'
+      AND NOT h.deleted AND c.geom IS NOT NULL
+    ORDER BY h.segment_id, h.modified_time DESC`, [t]);  for (const r of seg.rows) {
     const line = JSON.parse(r.gj)?.coordinates as [number, number][] | undefined;
     if (line?.length) out.push({ id: `seg:${r.segment_id}`, kind: "slippery_segment", line,
       meta: { code: r.condition_code, info: r.condition_info ?? [] } });
