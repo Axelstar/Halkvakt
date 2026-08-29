@@ -89,7 +89,7 @@ const events = await pool.query(`
     ST_X(geom::geometry), ST_Y(geom::geometry), message
   FROM deviations
   WHERE geom IS NOT NULL AND COALESCE(start_time, modified_time) > now() - $1 * interval '1 day'
-    AND (message ~* 'halk|hal[ta]|is|ishalka|snö' OR icon_id ~* 'ice|slip')`, [DAYS]);
+    AND (message ~* 'halk|ishalka|\\mis\\M|\\misig\\M|\\msnö|snöfall|glatt|\\mhalt\\M' OR icon_id ~* 'ice|slip')`, [DAYS]);
 
 type Row = { week: string; route: string; hit: boolean; id: string };
 const rows: Row[] = [];
@@ -101,6 +101,7 @@ for (const e of events.rows) {
   const hit = alerts.some((a) => a.kind === "icing_point" || a.kind === "slippery_segment");
   const wk = new Date(e.t); const week = `${wk.getUTCFullYear()}-v${String(Math.ceil(((+wk - +new Date(Date.UTC(wk.getUTCFullYear(),0,1))) / 86400000 + 1) / 7)).padStart(2,"0")}`;
   rows.push({ week, route, hit, id: e.id });
+  if (!hit) console.log(`  MISS ${e.id} @ ${route} (${new Date(e.t).toISOString().slice(0,16)}) — "${String(e.what).slice(0,70)}"`);
 }
 
 const weeks = new Map<string, { n: number; hits: number }>();
