@@ -1,6 +1,6 @@
 22. **Bluetooth-autostart** (ur Axels Claude Design 29/8): vakten startar själv
     när bilens Bluetooth kopplar upp. Fulländar "lägg undan telefonen". Android
-    först; iOS-bakgrundsstart utreds. Efter release.
+    först; iOS-bakgrundsstart utreds.  BYGGS UNDER TESTPERIODEN → v0.3.1 till testarna.
 23. **Heads-up-varning över kartappar** (Axels önskan, löftesvänlig form): hög-
     prioritetsnotis som lägger sig över Google/Apple Maps vid varning och
     försvinner själv — ingen extra behörighet, ingen knapp, iOS-kompatibel

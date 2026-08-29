@@ -40,9 +40,10 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 - [ ] Butiksuppladdning + Data safety-inklistring *(låst: "kontot är godkänt")*
 - [ ] TestFlight-uppladdning + testarinbjudningar *(låst: Apple-kontot)*
 - [ ] Skarp support vid första Mac-bygget *(låst: måndag)*
-- [ ] **#22 Bluetooth-autostart** *(låst: efter release — ur Axels design)*
-- [ ] **#23 Heads-up över Google Maps + Testa rösten-knapp** *(låst: efter release)*
-- [ ] **#24 Designlyftet (Claude Design-skinnet)** *(låst: uppdatering 2-3)*
+- [ ] 🎨 **DESIGNLYFTET** — startar samma dag releasen är inne; byggs under 14-dagarstestet, rullas till testarna som v0.3.1:
+  - [ ] **#24 Skinnet** (Claude Design: hemskärmens farokort, "senast sagt", typografin)
+  - [ ] **#22 Bluetooth-autostart** (vakten startar när bilen kopplar)
+  - [ ] **#23 Heads-up över Google Maps + "Testa rösten"** *(nyckel: releasen inskickad)*
 - [ ] **#15 Kö-slutsmotorn** (TrafficFlow) *(låst: efter release — uppdatering 1)*
 - [ ] **#16 Blixthalke-prognos** (MET Nowcast) *(låst: efter kö-slut — uppdatering 2)*
 
