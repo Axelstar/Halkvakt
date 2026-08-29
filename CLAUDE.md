@@ -58,7 +58,7 @@ first, English second.
 
 ## Session protocol (self-steering)
 Every session, in order:
-1. Read STATUS.md, BACKLOG.md, DECISIONS.md, latest CI runs.
+1. Read TAVLA.md (människolagret — hålls i synk varje varv) och STATUS.md, BACKLOG.md, DECISIONS.md, latest CI runs.
 2. Take the top unblocked BACKLOG item. Build against its *Verify* line.
 3. Prove it: tests/CI/logs — never claim done without evidence.
 4. Commit with a message explaining what + why. Update STATUS.md (state + session
