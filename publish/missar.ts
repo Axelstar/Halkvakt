@@ -56,7 +56,7 @@ async function hazardsAt(t: Date): Promise<Hazard[]> {
   const wx = await pool.query(`
     SELECT DISTINCT ON (station_id) station_id,
       ST_X(geom::geometry) lon, ST_Y(geom::geometry) lat, surface_temp_c,
-      (rain OR snow OR precipitation IS NOT NULL AND precipitation > 0) AS moisture
+      (rain OR snow OR COALESCE(precipitation,'') <> '') AS moisture
     FROM weather_observations
     WHERE sample_time BETWEEN $1::timestamptz - interval '45 min' AND $1::timestamptz
       AND geom IS NOT NULL
