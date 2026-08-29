@@ -29,7 +29,9 @@ in: ingenting.
 Halkvakt är gratis och byggd på öppna svenska data. Vägen är redan betald med
 dina skattepengar — vi ser bara till att den får tala.
 
-Datakällor: Trafikverket (CC0), Polisen, SMHI. Halkvakt är fristående och har
+Halkvakt varnar vid Trafikverkets mätstationer och rapporterade väglag — mellan
+stationerna är vägen oövervakad. Datakällor: Trafikverket (CC0), Polisen, SMHI.
+Halkvakt är fristående och har
 ingen koppling till myndigheterna.
 
 ## Anteckningar

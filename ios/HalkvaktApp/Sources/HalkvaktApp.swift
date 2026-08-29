@@ -87,7 +87,7 @@ struct OmView: View {
                     LinkRow(title: "Integritetspolicy", url: "https://axelstar.github.io/halkvakt-karta/integritet.html")
                 }
 
-                Text("Datakällor: Trafikverket (CC0), Polisen, SMHI. Halkvakt är fristående och har ingen koppling till myndigheterna.")
+                Text("Varnar vid Trafikverkets mätstationer och rapporterade väglag — mellan stationerna är vägen oövervakad. Datakällor: Trafikverket (CC0), Polisen, SMHI. Halkvakt är fristående och har ingen koppling till myndigheterna.")
                     .font(.system(size: 13)).foregroundStyle(Brand.faint)
             }
             .padding(18)

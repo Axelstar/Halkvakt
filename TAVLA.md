@@ -27,10 +27,12 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 
 ### Bengt
 - [ ] Läsa `docs/VALKOMMEN-BENGT.md` + testa prata med koden via sin Claude
+- [ ] Läsa SYSTEM.md mot koden månadsvis (första: september)
 - [ ] Samtal med Axel: sensortrappan — tidsättning av steg 2 (våren 2027?)
 
 ### Claude — olåst
 - [ ] **#17 Vilt in i snapshoten** (FÖRE release, båda plattformar + replay-vektor)
+- [ ] **#19 Missmätningsskriptet** (Bengts design — byggs på augustidata)
 
 ### Claude — låst (väntar på nyckel)
 - [ ] Butiksuppladdning + Data safety-inklistring *(låst: "kontot är godkänt")*
@@ -49,6 +51,9 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 ---
 
 ## 🟢 KLART (senaste vinsterna)
+
+- [x] **Åldersvakten** (Bengts granskning): appen läser generated_at, filtrerar gammalt väglag, säger till EN gång — Android + iOS + prov
+- [x] **docs/SYSTEM.md** — systembeskrivningen med "vad systemet inte gör" + månadsdisciplin
 
 - [x] **Android-appen tekniskt släppfärdig** — v0.3.0, signerad AAB 2,55 MB byggs i CI varje push
 - [x] **iOS-appen skriven** — SwiftUI-spegel av Android, väntar på första Mac-bygget
