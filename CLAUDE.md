@@ -88,3 +88,5 @@ Tavlan är människolagret; BACKLOG/STATUS/DECISIONS är djuplagren.
 ⇒ docs/PRODUKTBOK.md uppdateras i samma varv, med färska skärmbilder ur
 fotostudions senaste artefakt (app-screenshots) committade till docs/produktbok/. Alla fyra
 i samma commit när de överlappar.
+- Supabase-gatewayen TVÅNGSSTÄMPLAR funktions-HTML till text/plain + nosniff på GET (HEAD ljuger och visar text/html — verifiera alltid med GET!). Regel: funktioner serverar JSON-API, människosidor bor på Pages (karta-repot).
+- /tmp/karta kan sakna git-identitet i färsk container: git config user.email/name lokalt före commit.

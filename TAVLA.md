@@ -65,7 +65,7 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 - [x] **SKUGGFLOTTAN 20 BILAR + RAPPORTSIDAN** (Axels idé 29/8): skuggmotorn utökad 3→20 rutter
   över hela Sverige (E4 i sex etapper, E6, E10 Kiruna, E14 fjället, E18, Rv40, Rv70), rotation
   3 rutter/varv (CPU-taket), fotobudget 5/varv. Publik rapportsida visar allt bilarna "hört":
-  https://xmpfztykhyvhmrzsnjrc.supabase.co/functions/v1/skuggrapport — Norrlandsbilen larmade
+  https://axelstar.github.io/halkvakt-karta/testbilarna.html — Norrlandsbilen larmade
   på första varvet (E4 Umeå→Luleå, 2 varningar)
 - [x] 🏆 **HALKVAKT KÖR PÅ iOS** — första Mac-bygget genomfört lördag 29/8 18:04, två dygn före schemat: Xcode 26.1-verkstad från noll, EN byggfix (Swift-typning), appen live på Axels iPhone med färsk snapshot ("väglag 17:37" = åldersvakten + pulsklockan i drift). Kvar till måndag: bara konton + TestFlight
 - [x] **macOS 15.7.9 installerat** på Axels MacBook Air (skärmbildskvitto 29/8 17:00) — Xcode 26.1-vägen öppen
