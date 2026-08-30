@@ -80,3 +80,6 @@ den mot koden en gång i månaden.
 - #18 Första iOS-bygget på Axels Mac — måndag.
 - #19 Missmätningsskriptet — LADDAT (Actions-knappen "missar"); skördar i vinter.
 - Sensortrappan (Bengts synergianalys) — strategi, EJ i MVP (beslut 2026-08-28).
+
+
+**Skuggflottan (29/8):** 20 rutter, rotation 3/varv, fotobudget 5, rapportsida skuggrapport.
