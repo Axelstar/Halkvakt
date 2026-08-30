@@ -86,3 +86,15 @@ xcodegen bygger om projektfilen från receptet — då nollställs signeringen.
 Rutin: projektroten → Signing & Capabilities → Team → "axel Lagerlof
 (Personal Team)". Två klick, sen ▶. (Felbilden är "No Account for Team" +
 "No profiles for se.halkvakt.app".)
+
+
+## Testkörning från soffan (GPX-rutten)
+Appen kan "köra bil" utan bil: `Sources/TestkorningE22.gpx` är en simulerad
+färd Malmö→Kristianstad i 80 km/h som passerar riktiga fartkameror.
+1. Kör appen i **simulatorn** (välj en iPhone-simulator i stället för din
+   telefon uppe i toppraden) eller på din iPhone via Xcode.
+2. Tryck **Starta vakten** i appen.
+3. I Xcodes nedre felsökningsrad: klicka **platspilen** (📍) →
+   välj **TestkorningE22**.
+4. Skruva upp ljudet. Vakten börjar tala när första kameran närmar sig.
+Xcode spelar upp rutten i verklig hastighet — luta dig tillbaka och lyssna.
