@@ -69,13 +69,15 @@ jobs:
             adb shell am start -n se.halkvakt.app/.MainActivity
             sleep 8
             SZ=$(adb shell wm size | tr -d '\r' | awk '{print $NF}'); W=${SZ%x*}; H=${SZ#*x}; Y=$((H*95/100)); echo "skärm ${W}x${H} y=$Y"; adb exec-out screencap -p > /tmp/shot-1-vakten.png; adb shell input tap $((W/2)) $Y; sleep 3; adb exec-out screencap -p > /tmp/shot-2-installningar.png; adb shell input tap $((W*5/6)) $Y; sleep 3; adb exec-out screencap -p > /tmp/shot-3-om.png
-            # Fotostudion 3→5 (kort: produktbokens lucka): Nära dig + körläget
+            # Fotostudion 3→5, tag 2 (läxa: flikbytestryck opålitligt — omstart landar alltid på Vakten)
             CAM=$(curl -s https://axelstar.github.io/halkvakt-karta/data/app/v1/static.json | python3 -c "import sys,json; c=json.load(sys.stdin)['cameras'][0]; print(c['lon'], c['lat'])")
             echo "ställer emulatorn vid fartkamera: $CAM"
-            adb shell input tap $((W/6)) $Y; sleep 2
-            adb emu geo fix $CAM; sleep 8
+            adb shell am force-stop se.halkvakt.app; sleep 2
+            adb shell monkey -p se.halkvakt.app 1; sleep 7
+            adb emu geo fix $CAM; sleep 10
             adb exec-out screencap -p > /tmp/shot-4-nara-dig.png
-            adb shell input tap $((W/2)) $((H*37/100)); sleep 5
+            adb shell input tap $((W/2)) $((H*38/100)); sleep 2
+            adb shell input tap $((W/2)) $((H*43/100)); sleep 5
             adb exec-out screencap -p > /tmp/shot-5-korlaget.png
       - name: Upload app screenshots
         if: always()
