@@ -109,6 +109,7 @@ Tre snabba frågor mot verkligheten slår tre antaganden.
 
 När ägaren har gett dig det här dokumentet plus en beskrivning av projektet:
 
+0. **Säkra händerna först** — utan §9 (git-åtkomsten) kan inget varv committas.
 1. **Intervjua kort** (max 5 frågor): Vad är projektet? Vem är det för? Vad finns
    redan (repo? konton? kod?)? Vad är närmaste milstolpen? Vilka beslut är redan
    fattade?
@@ -120,6 +121,44 @@ När ägaren har gett dig det här dokumentet plus en beskrivning av projektet:
    så att ägaren ser loopen fungera dag ett.
 5. **Avsluta med tavlan** och en rapport: vad som finns, vad som är nästa, vad
    som väntar på ägaren.
+
+## 9. Bootstrap: ge Claude händer (git-åtkomsten)
+
+Claude kan bara hålla protokollet om den kan committa och pusha själv. Engångs­
+uppsättning, ägarens fem minuter:
+
+1. **Repo**: ägaren skapar ett privat repo på GitHub (eller ber Claude göra det
+   när nyckeln finns).
+2. **Nyckeln (PAT)**: GitHub → Settings → Developer settings → *Fine-grained
+   personal access tokens* → New token. Räckvidd: bara det aktuella repot.
+   Rättigheter: **Contents: Read & write**, **Actions: Read & write**,
+   **Workflows: Read & write**. Giltighet ~90 dagar.
+3. **Överlämning**: ägaren klistrar in nyckeln EN gång i chatten och sparar
+   originalet i sin lösenordshanterare. (Ärlig avvägning: en nyckel i en privat
+   chatt är acceptabel risk för ett eget projekt — den är avgränsad till ett
+   repo och kan spärras/roteras på en minut om något känns fel.)
+4. **Förnyelsekortet**: utgångsdatumet skrivs OMEDELBART som kort på tavlan
+   under 🔵 ÄGAREN — en utgången nyckel mitt i ett bygge är ett självmål.
+
+**Claudes rutin varje ny session/container** (miljön är ofta färsk):
+```
+git clone https://ANVÄNDARNAMN:NYCKELN@github.com/ANVÄNDARNAMN/REPOT.git
+cd REPOT
+git config user.email "claude@PROJEKTET.se"
+git config user.name  "Claude (PROJEKTET)"
+```
+— identiteten är lokal och måste sättas i varje ny miljö (klassisk fälla:
+"Author identity unknown" mitt i första committen). Nyckeln lever bara i
+miljöns fjärradress — **aldrig i committade filer**, aldrig i dokument.
+
+**Bootstrapbeviset**: första handlingen efter uppsättning är en riktig commit
++ push (t.ex. CLAUDE.md:s första rad) och en verifiering att den syns på
+GitHub. Åtkomst som inte bevisats är inte åtkomst.
+
+Två specialfall värda att känna till i förväg: repo-**secrets** via API kräver
+särskild kryptering (enklast: ägaren klistrar in dem via GitHubs webbgränssnitt,
+Settings → Secrets); och ändringar i `.github/workflows/` kräver att nyckeln
+fick Workflows-rättigheten i steg 2.
 
 *Metoden är enkel att beskriva och kräver disciplin att följa. Det som gör den
 stark är inte reglerna utan vanan: varje varv slutar i verkligheten — bevisat,
