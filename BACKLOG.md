@@ -1,3 +1,16 @@
+28. **Olyckslyftet** (Axels fråga 30/8: "vad säger vi, när, och omväg?"):
+    Trafikverkets SeverityText + EndTime ingestas redan men når inte rösten.
+    (a) Gradera repliken: allvarlig ("stor påverkan"/totalstopp) ⇒
+    "Allvarlig olycka N kilometer framför dig — stor påverkan på trafiken.
+    Överväg annan väg." + "Beräknas röjd vid HH:MM" när tiden finns; lindrig ⇒
+    dagens replik. (b) Tvåstegsvarning för allvarliga: första ropet tidigt
+    (10 km — där valet av avfart ännu finns), påminnelse vid 2 km ("Sakta ner
+    — olycksplats strax framför dig"). Kräver: severity/endtime i snapshoten
+    (publish + 3 parsrar), stegmedvetna varnings-id i motorn, nya texter+tester.
+    PRINCIP (beslut): vi bygger ALDRIG egen navigering — Google/Waze räknar
+    omvägen; vi levererar beslutet före sista avfarten. Inga knappar i farten.
+    Byggs i Designlyftet-batchen (v0.3.1 under testfönstret) — motorn fryst
+    till TestFlight är ute.
 27. **asc-CLI:t** (rorkai/App-Store-Connect-CLI, Axels fynd 29/8 — 6,3k★, MIT,
     brew install asc): (a) TestFlight-uppladdning som ETT kommando åt Axel;
     (b) kör på Linux ⇒ CI kan hämta TestFlight-feedback/krascher till repot

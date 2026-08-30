@@ -205,3 +205,9 @@ finansierad) är kandidat men #16 prognoslagret (fondfinansierat) hålls öppet
 projektperioden ut. Modellens utformning = B2B-spåret (Bengt, vid Axels ja
 på rollfördelningen). Bolagsform följer intäkterna (AB när avtal tecknas),
 inte tvärtom.
+## #28 (30/8 2026) Olycksprincipen — rösten före kartan
+Halkvakt bygger aldrig egen navigering/omvägsberäkning. Vår fördel är
+Trafikverkets officiella rapport FÖRE köbildning: därför graderas olycksrepliker
+efter allvarlighet och det allvarliga sägs TIDIGT (10 km, medan avfarter
+återstår) med "överväg annan väg" — förarens kartapp exekverar omvägen.
+Inga skärmknappar under körning (heads-down-principen, jfr #23).
