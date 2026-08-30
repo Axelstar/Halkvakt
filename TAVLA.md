@@ -62,6 +62,10 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] **BENGT UPPKOPPLAD** (30/8, live under pappasamtalet): Claude-appen installerad på
+  Axelstar-kontot (All repositories ⇒ täcker även framtida repon), Bengts GitHub-koppling
+  omkopplad, läs-testet mot docs/VALKOMMEN-BENGT.md godkänt. 404-gåtan stängd —
+  projektet har nu två uppkopplade Lagerlöfar.
 - [x] **SKUGGFLOTTAN 20 BILAR + RAPPORTSIDAN** (Axels idé 29/8): skuggmotorn utökad 3→20 rutter
   över hela Sverige (E4 i sex etapper, E6, E10 Kiruna, E14 fjället, E18, Rv40, Rv70), rotation
   3 rutter/varv (CPU-taket), fotobudget 5/varv. Publik rapportsida visar allt bilarna "hört":
