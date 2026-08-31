@@ -466,3 +466,10 @@ surface_temp_c, märkt 'grass'. Danska VÄGYTESTATIONERNA ligger i VejVejr bakom
 eller ska Bengt ringa Vejdirektoratet om VejVejr? Arkivet är ärligt oavsett; rösten väntar.
 Uppmätt: 23 DMI-stationer rapporterar grästemp (tunt men riktigt), 41 händelser varav 8
 olyckor och 4 halkrapporter — i augusti. Första varvet: 3 rutter, 0 larm, korrekt.
+
+## #46 (31/8 2026) Kvitto för självväckningen (Axel: "hur vet vi om den startade automatiskt?")
+Hålet: en självväckning som lyckas TYST lämnar inget spår — "Senast sagt" fylls bara om
+rösten talade, och knappen visar bara nuläget. Bengt kan ha en perfekt vakt utan bevis.
+Byggt till 0.3.3 (6): Prefs.lastAutoWakeAt + lastAutoWakeMinutes stämplas vid självstart
+och självstopp; hemskärmens kort visar "Vaknade själv 18:42 · körde 23 min". Ikväll (0.3.2)
+är beviset: rösten förbi en kamera, eller öppna appen före kvarten och läsa knappen.

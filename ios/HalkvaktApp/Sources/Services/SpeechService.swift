@@ -44,6 +44,9 @@ final class Prefs {
     /// Senaste gången vakten startades av intentet (automation eller Siri) — guidens kvitto.
     var lastIntentStartAt: Date? { didSet { d.set(lastIntentStartAt, forKey: "k.lastIntentStartAt") } }
     /// Vakna själv vid körning (kräver Alltid). Standard på. DECISIONS #40.
+    /// Kvitto för självväckningen (DECISIONS #46): när vaknade vakten själv senast, och hur länge körde den.
+    var lastAutoWakeAt: Date? { didSet { d.set(lastAutoWakeAt, forKey: "k.lastAutoWakeAt") } }
+    var lastAutoWakeMinutes: Int { didSet { d.set(lastAutoWakeMinutes, forKey: "k.lastAutoWakeMinutes") } }
     var autoWake: Bool {
         didSet {
             d.set(autoWake, forKey: "k.autoWake")
@@ -64,6 +67,8 @@ final class Prefs {
         carSetup = d.string(forKey: "k.carSetup").flatMap(CarSetup.init(rawValue:))
         lastIntentStartAt = d.object(forKey: "k.lastIntentStartAt") as? Date
         autoWake = d.object(forKey: "k.autoWake") as? Bool ?? true
+        lastAutoWakeAt = d.object(forKey: "k.lastAutoWakeAt") as? Date
+        lastAutoWakeMinutes = d.integer(forKey: "k.lastAutoWakeMinutes")
     }
 
     /// Tystad kategori: motorn minns, munnen tiger — samma princip som Android.

@@ -28,6 +28,13 @@ märker det. Kör du förbi en fartkamera ska rösten säga "Fartkamera om 500 m
 släckt skärm, genom bilens högtalare om CarPlay/Bluetooth är kopplat. Har du kartan framme
 på skärmen ska en kort banner synas högst upp samtidigt.
 
+## Viktigt: så vet vi om den vaknade själv
+
+Vakten lämnar inget spår om vägen var lugn. Två sätt att få bevis ikväll:
+- **Kör förbi en fartkamera** om det går. Då talar rösten, och repliken hamnar under "Senast sagt".
+- **Öppna appen direkt när du parkerat**, innan det gått en kvart. Står det **Stoppa vakten**
+  vaknade den själv. Står det **Starta vakten** gjorde den det inte — skriv det.
+
 ## Efter bilturen
 
 Öppna Halkvakt och titta på hemskärmen. Skriv ner:

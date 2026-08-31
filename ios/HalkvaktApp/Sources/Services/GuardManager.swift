@@ -53,6 +53,8 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     private static let probeStartKmh = 15.0
     private var probing = false
     private var probeStartedAt: Date?
+    /// Den här körningen startades av självväckningen (för kvittots körtid).
+    private var autoWoke = false
     /// Vila efter misslyckat prov — annars kan en sen positionsleverans starta nästa direkt.
     private var lastProbeFailedAt: Date?
     private static let probeCooldownS: TimeInterval = 5 * 60
@@ -166,6 +168,9 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         probeStartedAt = nil
         if startGuard {
             print("[Vakten] bilfart — startar själv")
+            Prefs.shared.lastAutoWakeAt = .now      // kvittot: vaknade själv
+            Prefs.shared.lastAutoWakeMinutes = 0
+            autoWoke = true
             startRequested = true
             start()
         } else {
@@ -215,6 +220,10 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     }
 
     func stop() {
+        if running, autoWoke, let t0 = startedAt {
+            Prefs.shared.lastAutoWakeMinutes = max(1, Int(Date.now.timeIntervalSince(t0) / 60))
+        }
+        autoWoke = false
         if running { manualStoppedAt = .now }
         running = false
         startRequested = false

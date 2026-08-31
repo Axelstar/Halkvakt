@@ -17,6 +17,13 @@ struct LastSaidCard: View {
                         .foregroundStyle(Brand.faint)
                 }
             }
+            if let at = prefs.lastAutoWakeAt {
+                Label {
+                    Text("Vaknade själv \(at.formatted(.dateTime.day().month(.abbreviated).hour().minute()))" +
+                         (prefs.lastAutoWakeMinutes > 0 ? " · körde \(prefs.lastAutoWakeMinutes) min" : ""))
+                        .font(.system(size: 13)).foregroundStyle(Brand.green)
+                } icon: { Image(systemName: "car.fill").foregroundStyle(Brand.green) }
+            }
             if let text = prefs.lastSaidText {
                 Text("”\(text)”")
                     .font(.system(size: 15).italic())
