@@ -49,7 +49,9 @@ med släckt skärm, vakten stannar när du stänger av.
 - [ ] Introduktionen på Android (spegel av iOS, DECISIONS #36) — efter att iOS-varianten testats
 - [ ] #31 Trafikverksbevakningen (litet, olåst, kan bevisas härifrån)
 
-- [x] ~~Testinstruktion till Bengt~~ ✅ docs/TEST-BENGT-0.3.2.md (31/8) — skicka länken ikväll
+- [x] ~~Testinstruktion till Bengt~~ ✅ docs/TEST-BENGT-0.3.2.md (31/8)
+- [ ] **Bodenresan 1/9** — docs/TEST-BENGT-BODEN.md: E4 hela vägen = skuggflottans väg.
+  Efteråt: Bengts logg bredvid testbilarnas rapport för samma dag = första riktiga facit.
 - [ ] Välkomsttext + testinstruktion till kompisarna
 - [ ] Play: uppladdningsguide för den CI-signerade AAB:n så fort hemligheten är satt
 - [ ] Fotostudion tag 2 — facit ur CI + produktboken
