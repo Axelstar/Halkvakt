@@ -1,3 +1,9 @@
+34. **Finskt skuggarkiv före produkten** (Axel 31/8: "vi bör täcka Skandinavien snart"):
+    det som tar tid i ett nytt land är facit, inte kod. Fintraffic (Digitraffic) är öppet
+    och bäst i Norden. Bygg ingest för väglag/väderstationer/kameror + 3 skuggrutter
+    (E18 Åbo–Helsingfors, E75 Helsingfors–Lahtis, Rv8 Vasa–Uleåborg) i samma tabeller
+    med landskod. Ingen app, ingen röst. I mars 2027 har Finland en vinter av facit.
+    Kolla Vegvesen Datex II för Norge i samma varv. Olåst; efter Bengts resultat.
 32. **Hindren in i rösten — kräver ny HazardKind** (fyndet 31/8): KEEP-filtret var skrivet
     för "Obstruction"/"Incident", ord Trafikverket aldrig använder, så vi har i praktiken
     ALDRIG skeppat annat än olyckor — trots att DECISIONS #5 sade "olyckor + hinder".
