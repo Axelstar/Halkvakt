@@ -143,3 +143,41 @@ Bevisas i bilen, inte i CI. Fyra kontroller, i ordning:
 
 Om steg 4 startar men rösten tystnar när skärmen släcks: platsbehörigheten är "Vid
 användning". Inställningar → Halkvakt → Plats → *Alltid*.
+
+## Genvägarna ska fungera perfekt — testprotokoll (#22)
+
+Kör dem i ordning på telefonen. Varje rad har ett väntat utfall och vad det betyder om
+det inte händer. Genvägar visar intentets svarstext som en liten banner högst upp
+("Halkvakt vaktar.") — det är kvittot på att intentet faktiskt kördes.
+
+**T1 · Intentet syns.** Genvägar → + → sök "Halkvakt". Väntat: *Starta vakten* och
+*Stoppa vakten* i listan, utan att appen behöver öppnas. Om inte: intents registreras
+vid installation — radera appen, installera igen, sök igen.
+
+**T2 · Siri.** "Starta Halkvakt". Väntat: bannern "Halkvakt vaktar." + appen visar
+VAKTEN PÅ. Säg det igen: "Vakten är redan igång." Om Siri inte hittar frasen: kolla att
+appnamnet är exakt "Halkvakt" i telefonen (Inställningar → Allmänt → iPhone-lagring).
+
+**T3 · Kör direkt.** Bygg automationen enligt guiden. Utlös den (koppla Bluetooth /
+sätt Fokus Kör på manuellt / öppna Maps). Väntat: vakten startar UTAN att iOS frågar.
+Om iOS frågar "Kör Starta vakten?": automationen står på *Fråga innan* — öppna den och
+byt till *Kör direkt*. Det är det vanligaste felet, och det dödar hela poängen.
+
+**T4 · Tyst start.** Ge Halkvakt platsen *Alltid* (Inställningar → Halkvakt → Plats).
+Öppna Maps, låt automationen utlösa. Väntat: Maps ligger kvar på skärmen, bannern
+"Halkvakt vaktar." blinkar till, rösten finns. Om Halkvakt tar över skärmen: platsen
+är fortfarande *Vid användning* — det är väntat beteende där, men byt till Alltid.
+
+**T5 · Låst telefon.** Lås telefonen, utlös automationen (Bluetooth/CarPlay/Fokus).
+Väntat med Alltid: vakten startar utan att skärmen tänds. Med *Vid användning*: iOS
+kan inte visa appen bakom låset ⇒ start uteblir eller iOS frågar. Det är Apples gräns,
+inte vår — därför är Alltid rekommendationen i guiden.
+
+**T6 · Stopp.** Kör automationen för Stoppa vakten (eller vänta en kvart stillastående).
+Väntat: "Halkvakt vilar." och VAKTEN AV. Stoppet ska INTE tända appen.
+
+**T7 · I bilen, på riktigt.** Telefonen i facket, bilen startar. Kör förbi en fartkamera.
+Väntat: rösten talar med släckt skärm. Stäng av bilen, vänta en kvart: vakten av.
+
+Fallerar T3 eller T4 är det inställningen, inte koden. Fallerar T1 eller T2 är det koden
+— skicka skärmbild + Xcode-loggen, så rättar jag.
