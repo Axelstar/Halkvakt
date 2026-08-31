@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-08-28 av Claude*
+*Uppdaterad: 2026-08-31 av Claude (STATUS-varv, allt bevisat mot live)*
 
 ---
 
@@ -12,7 +12,8 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 
 ### IDAG (mån 31/8 — uppskjutningsdagen)
 **Axel:**
-- [ ] Svara pappa på höstplanen (DECISIONS: öppet ägarbeslut) — och ge GitHub-nyckeln Issues-rättighet så Claude kan läsa hans issues
+- [ ] Svara pappa på höstplanen (DECISIONS: öppet ägarbeslut — JA/NEJ/ändrat på tidsregeln)
+- [x] ~~GitHub-nyckeln Issues-rättighet~~ ✅ KLART — Claude läste issue #2 och #3 direkt 31/8 10:17
 - [ ] TestFlight intern: dig själv + Bengt i gruppen Lagerlöf Labs → TestFlight-appen på båda telefonerna
 - [ ] TestFlight extern: Kompisarna — Test Information (utan inloggning!) → **Submit for Review**
 - [ ] **Google Play Console** (25 USD) — Android-spåret väntar, 14-dagarsklockan startar vid betalning
@@ -24,15 +25,8 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 - [ ] Play: uppladdningsguide för den CI-signerade AAB:n så fort kontot finns
 - [ ] FRYSEN SLÄPPER vid betagodkännande ⇒ v0.3.1-batchen: #22 autostart, #23 heads-up, #24 skinnet, #28 olyckslyftet
 
-### Axel — IDAG ⚠️
-- [ ] **Säkra kronjuvelerna:** filerna `halkvakt-upload-nyckel.jks` + `losenord.txt` (levererade i chatten) sparas i lösenordshanterare/säker molnmapp — ALDRIG delas, aldrig bara i Hämtade filer. Det är nyckeln varje framtida Halkvakt-version signeras med; krypterad kopia finns i GitHub men din nedladdning är originalet. Bocka av här när de ligger säkert.
-
-### Axel — helgen
-- [ ] Ladda ner **Xcode 26.1** — ⚠️ INTE App Store (den erbjuder bara 26.2 som kräver macOS 26 → "kunde inte slutföra ditt inköp"). Rätt väg: **developer.apple.com/download/all**, logga in med vanliga Apple-ID:t, sök "Xcode 26.1", hämta .xip → dubbelklicka → dra till Program → öppna en gång, ja till licens + iOS components
-
-### Axel — måndag (lönen)
-- [ ] **Play-kontot** — play.google.com/console, 25 USD ⚠️ KRITISKA LINJEN (startar Googles klocka)
-- [ ] **Apple Developer** — developer.apple.com, 99 USD/år (ID-koll 1–2 dygn)
+*(Kronjuvelerna, Xcode 26.1 och Apple Developer är avklarade och flyttade till KLART.
+Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som återstår.)*
 
 ### Axel — beslut att ta
 - [ ] **Helgsamtalet med pappa — nu fyra punkter:** roller (B2B=Bengt?), föreningen, klartecken ringrundan, OCH intäktsmodellen (#27: din viljeinriktning → hans utformning)
@@ -41,7 +35,11 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 - [ ] **#21 Anonym puls + feedback-knapp** — rör "samlar in: ingenting"-löftet; Claudes råd: paketera med sensorbeslutet våren 2027
 
 ### Axel — därefter
-- [ ] Rekrytera 20 testare (mål; minst 12 × 14 dagar — `docs/REKRYTERING.md`)
+- [ ] ⚠️ **Rekrytera testare — mätt läge 31/8: väntelistan har 4 namn.** Google Play kräver
+  minst 12 testare som är med i 14 SAMMANHÄNGANDE dygn innan produktion (DECISIONS #9), och
+  klockan startar när Play-kontot betalas. Fyra räcker inte. Mål 20 (`docs/REKRYTERING.md`).
+  Detta är den enda punkten på tavlan som kan skjuta lanseringen framåt utan att något går
+  sönder tekniskt — inlägg A ligger färdigt att posta.
 - [ ] Domänen halkvakt.se (vilande beslut)
 - [ ] Fysisk Android-testenhet (pappas telefon? begagnad?)
 
@@ -52,12 +50,29 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 - [ ] 📞 **Skyltfondsrundan** (efter Axels klartecken): fonden + trafikövningsplats v.36 → avsiktsförklaringar 25/9 → SKICKA 28/9
 
 ### Claude — olåst
+- [ ] **#30 RLS-kontroll på alla arkivtabeller** (Bengts issue #3, 30/8) — anon-nyckeln
+  är publik via halkvakt-karta; verifiera att den varken kan läsa eller skriva rått i
+  weather_observations, road_conditions, road_condition_history, polisen_events,
+  shadow_log. *Bevis: SQL mot pg_policies + curl med anon-nyckeln.* **Högst prioriterad
+  olåst punkt — säkerhet före funktion.**
+- [ ] **#31 Bevakning av Trafikverkets nyheter** (Bengts issue #2, 29/8) — API-ändringar
+  och avvecklingar ska fångas innan de bryter ingest. Litet jobb: RSS/changelog-koll i
+  healthchecken eller veckojobb som mejlar.
+- [ ] **Varvloggen ikapp:** STATUS.md:s sessionslogg slutar 2026-08-25 och "Current state"
+  står kvar på 2026-08-24 — sex dygns arbete (Android-release, iOS-bygget, skuggflottan,
+  Apple-kontot, uppladdningen) är bokfört i commits och på tavlan men inte i djuplagret.
+  Bryter dokumentationsregeln. *(Delvis åtgärdad i detta varv — resten nästa.)*
 
 ### Claude — låst (väntar på nyckel)
-- [ ] **#27 asc-CLI:t** — enkommandos-TestFlight + CI-hämtad testarfeedback *(låst: Apple-kontot, Axels fynd)*
-- [ ] Butiksuppladdning + Data safety-inklistring *(låst: "kontot är godkänt")*
-- [ ] TestFlight-uppladdning + testarinbjudningar *(låst: Apple-kontot)*
-- [ ] Skarp support vid första Mac-bygget *(låst: måndag)*
+- [ ] **#27 asc-CLI:t** — enkommandos-TestFlight + CI-hämtad testarfeedback.
+  🔓 **Halvöppnad 31/8:** Apple-kontot finns. Kvarvarande nyckel = en ASC API-nyckel
+  som Axel skapar i App Store Connect → Users and Access → Integrations. Säg till så
+  skriver jag stegen.
+- [ ] Butiksuppladdning + Data safety-inklistring *(låst: Play-kontot)*
+- [x] ~~TestFlight-UPPLADDNING~~ ✅ KLART 31/8 — 0.3.0 (3) inne hos Apple.
+  Kvar (Axels hand, inte låst): testarinbjudningarna, internt + externt
+- [x] ~~Skarp support vid första Mac-bygget~~ ✅ KLART 29/8 — appen körde på Axels iPhone
+  två dygn före schemat
 - [ ] 🎨 **DESIGNLYFTET** — startar samma dag releasen är inne; byggs under 14-dagarstestet, rullas till testarna som v0.3.1:
   - [ ] **#24 Skinnet** (Claude Design: hemskärmens farokort, "senast sagt", typografin)
   - [ ] **#22 Bluetooth-autostart** (vakten startar när bilen kopplar)
@@ -124,4 +139,3 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 *Djupare detaljer: BACKLOG.md (teknisk kö) · STATUS.md (varvlogg) · DECISIONS.md (vägval).
 Tavlan är människornas lager ovanpå dem.*
 
-- [ ] Grekland-genvägen: förregistrera Apple+Google-kontona i helgen (mobilen räcker)

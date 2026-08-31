@@ -1,23 +1,38 @@
 # STATUS — Halkvakt
 *Updated by Claude at the end of every session. Read this first.*
 
-## Current state (2026-08-24)
-- **Phase 0 in progress.** Data pipeline LIVE and autonomous: GitHub Actions cron
-  every 30 min → delta-syncs 4 Trafikverket sources → Supabase PostGIS.
-- Archive accumulating since 2026-08-24. First full sync: 2 771 cameras,
-  818 road-condition segments, 844 weather stations, 654 deviations.
-- CI: unit tests (5) + PostGIS integration tests on every push.
-- Self-monitoring: hourly health check opens a GitHub Issue if data goes stale.
+## Current state (2026-08-31, verifierat live i STATUS-varvet)
+- **Fas 0 avslutad i praktiken — vi är i TestFlight-fönstret.** iOS 0.3.0 (3) uppladdat
+  till App Store Connect 31/8 ~10:10, 90 min efter kontoköpet. Android 0.3.0 är
+  släppfärdig (signerad AAB byggs i CI vid varje push); Play-kontot ännu inte köpt.
+- Datapipen lever och är färsk: `meta.json` och appens `manifest.json` genererade
+  08:11:42Z, hämtade 08:17Z — 6 minuter gamla. 2 776 kameror, 818 väglagssegment,
+  845 stationer, 1 avvikelse, 5 viltolyckor senaste veckan (vanligast älg).
+- CI helgrönt: senaste 40 körningarna över `ci`, `ingest`, `publish-map`, `ios-engine`
+  är 40/40 success. `android`, `missar`, `marknadsforing` gröna vid senaste körning.
+- Skuggflottan i drift: 138 provkörningar, 99 röstvarningar, senaste 08:00 idag.
+  9 rutter har talat, 11 är tysta (korrekt — augusti).
+- Väntelistan: **4 anmälda.** Play kräver 12 i 14 sammanhängande dygn (se tavlan).
 
-## Phase 0 exit criteria
-- [ ] Ingest green 7 consecutive days (started 2026-08-24 → check 2026-08-31)
-- [~] Public map: site + data pipeline DONE (5 GeoJSON files auto-published every 30 min); awaiting Pages toggle
-- [ ] Replay harness produces deterministic alert logs (BACKLOG #3)
-- [ ] Kill-criterion verdict on first real ice events (Sep/Oct, Norrland)
+## Phase 0 exit criteria — DOM FÄLLD 2026-08-31 (checkdatumet)
+- [✗→~] **Ingest grön 7 dygn i rad: UNDERKÄNT på kontinuitet, godkänt på kod.**
+  Ärligt: 27/8 och 28/8 körde ingest 2 gånger per dygn i stället för 24 — GitHub-cron
+  svalt (13 h-hål uppmätta). Enda röda körningen i perioden (29/8 19:11) var en manuell
+  `workflow_dispatch`, inga schemalagda körningar har fallerat. Rotorsaken är åtgärdad:
+  Supabase-pulsklockan trycker sedan 29/8 på dispatch-knapparna. **Ny klocka startad
+  2026-08-29 → nytt checkdatum 2026-09-05.** Mätning sedan dess: 17/30/10 körningar per
+  dygn, alla gröna.
+- [✓] **Publik karta: KLART.** Pages-växeln är på — index/karta/testbilarna/integritet
+  svarar 200 live 31/8.
+- [✓] **Replay-riggen: KLART** (BACKLOG #3, S3) — 13 vektorer gröna, deterministiska
+  omkörningar byte-identiska, Skåne-fixturen med.
+- [ ] **Kill-kriteriet: ÖPPET** — kräver riktig halka (sep/okt, Norrland). Faller inte
+  förrän vädret levererar. Skuggflottan + missmätningsskriptet står redo som domare.
 
 ## Waiting on Axel
-- Revoke the unused second PAT (public-read-only one from 2026-08-24)
-- Google Play account, privatperson (~w40; see DECISIONS #9)
+- **Google Play-kontot** (25 USD) — enda återstående köp; 14-dagarsklockan startar där
+- **Testare**: 4 på väntelistan, 12 krävs (se TAVLA)
+- Revoke the unused second PAT (public-read-only one from 2026-08-24) — ej verifierad
 
 ## Session log
 - **S-2026-08-25em**: Startsidan = scrollvärlden (4 filmscener). Kvittot v2 "Filmremsan":
@@ -216,3 +231,34 @@
 ## 2026-08-25 · Scrollvärlden ÄR startsidan
 - index.html = scrollvärlden + inbyggd betakö-anmälan (source: varlden) + FAQ + footer efter världen (z-lagerfix: sektioner z45 över motorns fasta lager). Gamla landningssidan → om.html (röstdemo, detaljer). varlden.html → redirect. SEO (FAQ JSON-LD, description) flyttat till nya index. Kartpanelens länk → Betakön-ankaret. Mobil-QA:ad med skärmdumpar.
 - Beslut m Axel: app-skärmdumpar STRYKS ur sajtjobbet — behövs endast som Play-butiksmaterial (Googles krav, min 2 st) i oktober.
+
+## 2026-08-31 — STATUS-varv (Claude, chattsession från Grekland)
+Inget byggt denna gång; hela varvet gick åt till att mäta verkligheten mot tavlan
+efter sex dygn där arbetet bokförts i commits men inte i djuplagret.
+
+**Verifierat live (allt med kvitto, inget påstått):**
+- CI: 40/40 senaste körningarna gröna över fyra workflows. `android`/`missar`/
+  `marknadsforing` gröna vid senaste körning (30/8, 29/8, 30/8).
+- Datafärskhet: `meta.json` + appens `manifest.json` genererade 08:11:42Z, hämtade
+  08:17Z. Statisk snapshot 250 kB / 66,8 kB gzip, live 233 B. Checksummor på plats.
+- Publika sidor: index, karta, testbilarna, integritet — alla HTTP 200.
+- Skuggrapporten: 138 provkörningar, 99 röstvarningar, 2 777 bevakade objekt.
+- Bengts två issues (#2, #3) lästa med Axels nya Issues-rättighet — den fungerar.
+
+**Fynd som ändrade bilden:**
+1. **Fas 0:s 7-dagarsstreck höll inte** — cron-svälten 27–28/8 slog hål i kedjan.
+   Koden är oskyldig, GitHub-cron var boven, pulsklockan är lagningen. Ny klocka
+   från 29/8, ny dom 5/9. Bokfört ovan i stället för att tyst bockas av.
+2. **Claudes olåsta kolumn stod tom medan två olåsta kort fanns i BACKLOG** — #30
+   RLS-kontrollen och #31 TrV-bevakningen. Båda är nu kort på tavlan. #30 är
+   säkerhetsarbete och går före allt annat olåst.
+3. **Väntelistan har 4 namn.** Play kräver 12 i 14 sammanhängande dygn. Detta är
+   projektets enda icke-tekniska lanseringsrisk just nu och den syns inte i någon
+   grön CI-ikon.
+4. **Skuggflottan säger redan olycksrepliken** — "Olycka rapporterad 10 kilometer
+   framför dig", 7 gånger idag över tre rutter, helt ograderad. Det är exakt den
+   replik kort #28 (Olyckslyftet) ska gradera efter SeverityText. Bygget har alltså
+   levande testdata att mäta mot i samma sekund frysen släpper.
+
+**Städat på tavlan:** kronjuvelerna, Xcode 26.1 och Apple Developer låg kvar som
+öppna kort trots att de var klara och bevisade; Grekland-genvägen var överspelad.
