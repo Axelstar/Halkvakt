@@ -31,6 +31,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     private var hazards: [Hazard] = []
     private var prevLoc: CLLocation?
     private var dismissTask: Task<Void, Never>?
+    private var headsUpTask: Task<Void, Never>?
 
     override private init() {
         super.init()
@@ -89,11 +90,15 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         prevLoc = nil
         manager.allowsBackgroundLocationUpdates = manager.authorizationStatus == .authorizedAlways
         manager.startUpdatingLocation()
-        Task { await refreshSnapshot() }
+        Task {
+            await HeadsUpService.shared.requestAuthorizationIfNeeded()   // #23, en gång
+            await refreshSnapshot()
+        }
     }
 
     func stop() {
         running = false
+        headsUpTask?.cancel()
         manager.stopUpdatingLocation()
         dismissTask?.cancel()
         currentWarning = nil
@@ -135,9 +140,13 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
 
         alertCount += 1
         lastSaid = alert.text
+        Prefs.shared.lastSaidText = alert.text   // #24: överlever omstart
+        Prefs.shared.lastSaidAt = .now
         history.insert(alert, at: 0)
         if history.count > 50 { history.removeLast() }
         SpeechService.shared.speak(alert.text)
+        headsUpTask?.cancel()
+        headsUpTask = Task { await HeadsUpService.shared.show(alert) }   // #23
 
         currentWarning = alert
         dismissTask?.cancel()

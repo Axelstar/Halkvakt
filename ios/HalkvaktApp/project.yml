@@ -26,6 +26,10 @@ targets:
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_CFBundleDisplayName: Halkvakt
         DEVELOPMENT_TEAM: ""   # OBS: väljs manuellt i Xcode efter VARJE xcodegen (Signing & Capabilities → Team). Koden i Lita på-rutan är CERTIFIKATETS id, inte teamets — läxa 29/8
+    entitlements:
+      path: Halkvakt.entitlements
+      properties:
+        com.apple.developer.usernotifications.time-sensitive: true   # #23 heads-up bryter Fokus "Kör"
     info:
       path: Sources/Info.plist
       properties:

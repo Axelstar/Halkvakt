@@ -62,14 +62,21 @@
     → bilen startar vakten med låst telefon, rösten talar med släckt skärm, stannar vid
     frånkoppling.* OBS: app-målet kompileras inte i CI (bara motorn) — första bygget på
     Macen är också första kompileringen av de fyra nya filerna.
-23. **Heads-up-varning över kartappar** (Axels önskan, löftesvänlig form): hög-
-    prioritetsnotis som lägger sig över Google/Apple Maps vid varning och
-    försvinner själv — ingen extra behörighet, ingen knapp, iOS-kompatibel
-    (banner). + "Testa rösten"-knapp i Inställningar. Efter release.
-24. **Designlyftet** (Claude Design-skinnet: hemskärmens farokort, "senast
-    sagt", typografin): uppdatering 2-3, EJ före release — appen är fotograferad
-    och signerad. Helskärms-"Uppfattat"-varianten adopteras INTE (kräver blick+
-    tryck i fart; strider mot röst-tesen).
+23. **Heads-up-varning över kartappar** — KOD SKRIVEN 31/8, BEVISAS PÅ SKÄRM.
+    Android: egen kanal "Varning under körning" IMPORTANCE_HIGH, tyst, utan vibration,
+    CATEGORY_NAVIGATION, autoCancel + timeout 8 s (samma som helskärmskortet). Ingen ny
+    behörighet — POST_NOTIFICATIONS fanns för förgrundstjänsten. Bara riktiga larm når den.
+    iOS: HeadsUpService (UNUserNotificationCenter, .timeSensitive, tyst, tas bort efter 8 s),
+    entitlement time-sensitive i project.yml, tillstånd frågas en gång vid första start.
+    Förgrund täcks av varningskortet, bakgrund av bannern — ingen delegate behövs.
+    "Testa rösten" fanns redan på båda. *Verify: kör med Maps framme förbi en fartkamera —
+    bannern ska synas i 8 s och försvinna; på iPhone även med Fokus "Kör" på.*
+24. **Designlyftet** — DELVIS 31/8: "Senast sagt" på hemskärmen, persisterat, båda
+    plattformarna (Android ur befintlig alert_history; iOS ny Prefs.lastSaidText/At).
+    KVAR, låst bakom designunderlag: farokortens utseende och typografin. Repot har
+    ingen Claude Design-export för skinnet — det byggs inte på gissning. Axel exporterar
+    designen till docs/design/ ⇒ kortet öppnas. Helskärms-"Uppfattat" adopteras INTE
+    (kräver blick+tryck i fart; strider mot röst-tesen).
 # BACKLOG — ordered. Any session: take the top unblocked item, build, verify, commit, update STATUS.md.
 
 1. ~~Self-steering layer~~ (this commit): CI integration tests vs throwaway PostGIS,

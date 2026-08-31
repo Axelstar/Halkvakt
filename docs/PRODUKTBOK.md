@@ -169,3 +169,19 @@ den fortsätter vakta med släckt skärm. Det fungerar också med Siri: *"Starta
 *Varför tänds appen?* Positionstjänsten får bara startas när appen syns om du gett
 tillstånd "Vid användning". Med "Alltid" fungerar det likadant, bara tystare. Appen
 lämnar aldrig din position ifrån sig — det gäller precis lika vid autostart.
+
+## Bannern över kartappen
+
+Kör du med Google Maps eller Apple Kartor framme ligger Halkvakt i bakgrunden. När
+rösten varnar visas då en kort banner högst upp — samma ord som rösten säger — i åtta
+sekunder, sedan försvinner den själv. Ingen knapp, inget att trycka på, inget ljud
+utöver rösten. Bannern är ögats kvitto; rösten är budskapet.
+
+Har du Halkvakt framme visas i stället varningskortet i appen. På iPhone bryter bannern
+igenom Fokus-läget "Kör". Första gången vakten startar frågar telefonen om notiser får
+visas — säg ja, annars uteblir bannern (rösten talar ändå).
+
+## Senast sagt
+
+Hemskärmen visar förra körningens sista replik med datum och tid, även när vakten är av.
+Har rösten aldrig behövt säga något står det så — tystnad är en funktion.

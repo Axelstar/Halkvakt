@@ -37,7 +37,10 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 - [ ] **#22 autostart** — KOD SKRIVEN 31/8 (iOS: App Intents + Genvägar-guide; Android var
   redan klart). 🔑 Bevisas av Axel i bilen: xcodegen → Team → bygg → fyra kontroller i
   MAC-GUIDE. Första bygget är också första kompileringen — räkna med ett varv.
-- [ ] v0.3.1 kvar: **#23 heads-up**, **#24 skinnet**
+- [ ] **#23 heads-up** — KOD SKRIVEN 31/8 båda plattformarna. 🔑 Bevisas på skärm: Maps
+  framme, förbi en fartkamera, bannern i 8 s.
+- [ ] **#24 skinnet** — DELVIS: "Senast sagt" på hemskärmen, båda. 🔑 Resten (farokort,
+  typografi) väntar på att Axel exporterar Claude Design-skinnet till docs/design/.
 
 *(Kronjuvelerna, Xcode 26.1 och Apple Developer är avklarade och flyttade till KLART.
 Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som återstår.)*

@@ -34,6 +34,9 @@ final class Prefs {
     var camera: Bool { didSet { d.set(camera, forKey: "k.camera") } }
     /// Längsta förvarning i meter (motorns leadMaxM).
     var leadMaxM: Double { didSet { d.set(leadMaxM, forKey: "k.leadMaxM") } }
+    /// #24: senaste repliken, överlever omstart — hemskärmens "Senast sagt".
+    var lastSaidText: String? { didSet { d.set(lastSaidText, forKey: "k.lastSaidText") } }
+    var lastSaidAt: Date? { didSet { d.set(lastSaidAt, forKey: "k.lastSaidAt") } }
 
     private init() {
         accident = d.object(forKey: "k.accident") as? Bool ?? true
@@ -42,6 +45,8 @@ final class Prefs {
         wildlife = d.object(forKey: "k.wildlife") as? Bool ?? true
         camera = d.object(forKey: "k.camera") as? Bool ?? true
         leadMaxM = d.object(forKey: "k.leadMaxM") as? Double ?? 3000
+        lastSaidText = d.string(forKey: "k.lastSaidText")
+        lastSaidAt = d.object(forKey: "k.lastSaidAt") as? Date
     }
 
     /// Tystad kategori: motorn minns, munnen tiger — samma princip som Android.

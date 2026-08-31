@@ -29,6 +29,10 @@ struct VaktenView: View {
                     }
                 }
 
+                if !guardM.running {
+                    LastSaidCard()   // #24: förra körningens sista replik, även när vakten är av
+                }
+
                 HStack {
                     SectionHeader(text: "I närheten")
                     if let info = guardM.snapshotInfo {

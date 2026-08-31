@@ -217,8 +217,39 @@ class GuardService : Service() {
     }
 
     private fun updateNotification(text: String) {
-        (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
-            .notify(NOTIF_ID, buildNotification(text))
+        val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        nm.notify(NOTIF_ID, buildNotification(text))
+        headsUp(nm, text)
+    }
+
+    // #23: heads-up-varningen. Egen kanal med IMPORTANCE_HIGH så bannern lägger sig ÖVER
+    // Google Maps/Waze i några sekunder och försvinner själv. Löftesvänlig form: ingen
+    // ny behörighet (POST_NOTIFICATIONS finns redan för förgrundstjänsten), ingen knapp,
+    // inget att trycka på — rösten är budskapet, bannern är bara ögats kvitto.
+    // Kanalen är tyst (ljud null): rösten talar redan, ett plingsljud ovanpå vore tjat.
+    private fun headsUp(nm: NotificationManager, text: String) {
+        if (Build.VERSION.SDK_INT >= 26 && nm.getNotificationChannel(HEADS_UP_CH) == null) {
+            nm.createNotificationChannel(
+                NotificationChannel(HEADS_UP_CH, "Varning under körning", NotificationManager.IMPORTANCE_HIGH).apply {
+                    description = "Kort banner över kartappen när rösten varnar. Försvinner själv."
+                    setSound(null, null)
+                    enableVibration(false)
+                }
+            )
+        }
+        val pi = PendingIntent.getActivity(this, 1, Intent(this, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
+        nm.notify(
+            HEADS_UP_ID,
+            Notification.Builder(this, HEADS_UP_CH)
+                .setContentTitle("Halkvakt")
+                .setContentText(text)
+                .setSmallIcon(android.R.drawable.ic_dialog_alert)
+                .setCategory(Notification.CATEGORY_NAVIGATION)
+                .setContentIntent(pi)
+                .setAutoCancel(true)
+                .setTimeoutAfter(HEADS_UP_MS)
+                .build()
+        )
     }
 
     override fun onDestroy() {
@@ -232,6 +263,9 @@ class GuardService : Service() {
 
     companion object {
         private const val NOTIF_ID = 1
+        private const val HEADS_UP_CH = "heads_up"
+        private const val HEADS_UP_ID = 2
+        private const val HEADS_UP_MS = 8_000L  // samma 8 s som helskärmskortet
         /** UI observerar; autostart-limmet läser var-formen. Flow är sanningen. */
         val runningFlow = MutableStateFlow(false)
         val snapshotInfo = MutableStateFlow<String?>(null)

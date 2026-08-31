@@ -378,3 +378,11 @@ CoreLocation får bara starta i förgrunden med "Vid användning", så appen tä
 startar, bakgrundsläget tar över. Stopp kör i bakgrunden. Skills lästa (swiftui-pro,
 swift-concurrency-pro): en typ per fil, @MainActor på perform, inga tredjepartsramverk.
 INTE BEVISAT: app-målet kompileras inte i CI. Bevis = Axels fyra kontroller i MAC-GUIDE.
+
+## 2026-08-31 — #23 + #24 (del) skrivna: hela v0.3.1 kan testas i ett Mac-varv
+**#23 heads-up, båda:** Android egen HIGH-kanal, tyst, 8 s timeout, bara riktiga larm.
+iOS HeadsUpService (.timeSensitive, entitlement i project.yml), tillstånd vid första start.
+Förgrund = varningskortet, bakgrund = bannern. **#24:** "Senast sagt" på hemskärmen,
+persisterat, båda plattformarna. Resten av skinnet låst bakom designexport — ingen
+gissning. Skills lästa. INTE KOMPILERAT: app-målen byggs inte i CI. v0.3.1-batchen
+(#22, #23, #24-del) väntar nu på ett enda Mac-varv + bilen.

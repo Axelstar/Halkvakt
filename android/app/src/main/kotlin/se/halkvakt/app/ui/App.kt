@@ -185,6 +185,8 @@ private fun VaktScreen(activity: MainActivity) {
 @Composable
 private fun RedoContent(activity: MainActivity) {
     val autostart by activity.autostartOn.collectAsStateWithLifecycle()
+    val ctx = LocalContext.current
+    val lastSaid by Prefs.history(ctx).collectAsStateWithLifecycle(initialValue = emptyList())   // #24
     val hazards by activity.hazards.collectAsStateWithLifecycle()
     val loc by activity.lastLoc.collectAsStateWithLifecycle()
     val snapshot by GuardService.snapshotInfo.collectAsStateWithLifecycle()
@@ -220,6 +222,10 @@ private fun RedoContent(activity: MainActivity) {
                     }
                 }
             }
+            Spacer(Modifier.height(12.dp))
+            // #24: senast sagt — även när vakten är av. Förra körningens sista replik med
+            // tid, ur den persisterade historiken. Tomt läge säger vad tystnaden betyder.
+            LastSaidCard(lastSaid.firstOrNull())
             Spacer(Modifier.height(20.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Rubrik("I NÄRHETEN")
@@ -236,6 +242,26 @@ private fun RedoContent(activity: MainActivity) {
         }
         items(nearby) { n -> NearbyCard(n); Spacer(Modifier.height(8.dp)) }
         item { Spacer(Modifier.height(12.dp)) }
+    }
+}
+
+@Composable
+private fun LastSaidCard(e: AlertEntry?) {
+    Surface(shape = RoundedCornerShape(16.dp), color = Yta,
+        border = BorderStroke(1.dp, Gul.copy(alpha = .25f)), modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(14.dp)) {
+            Row {
+                Rubrik("SENAST SAGT")
+                Spacer(Modifier.weight(1f))
+                e?.let {
+                    Text(android.text.format.DateFormat.format("d MMM HH:mm", it.t).toString(),
+                        color = Dis, fontSize = 11.sp)
+                }
+            }
+            Spacer(Modifier.height(4.dp))
+            Text(e?.let { "”${it.text}”" } ?: "Rösten har inte behövt säga något än.",
+                color = if (e != null) Text else Dis, fontSize = 15.sp, fontStyle = FontStyle.Italic)
+        }
     }
 }
 
