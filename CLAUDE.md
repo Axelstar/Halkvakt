@@ -92,3 +92,4 @@ i samma commit när de överlappar.
 - /tmp/karta kan sakna git-identitet i färsk container: git config user.email/name lokalt före commit.
 - Apple Developer-inskrivning: Developer-APPEN kan låsa ID-steget till körkort; WEBBEN (developer.apple.com/enroll) gick igenom utan ID-fråga och gav omedelbar beställning (31/8 2026, Sverige). Individual visar juridiskt namn som säljare; migrering till organisation möjlig senare.
 - iOS-uppladdning kräver AppIcon i Assets.xcassets (1024 px universal räcker sedan Xcode 14) + ASSETCATALOG_COMPILER_APPICON_NAME — utan ikon vägrar App Store Connect bygget.
+- xcodegen-genererad Info.plist får 1.0 (1) som standard — koppla CFBundleShortVersionString/CFBundleVersion till $(MARKETING_VERSION)/$(CURRENT_PROJECT_VERSION) i info.properties, ANNARS låser första uppladdningen versionsspåret (Apple tillåter aldrig lägre version än uppladdad). Fångat i Organizer 31/8 sekunder före upload.

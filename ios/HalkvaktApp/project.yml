@@ -28,6 +28,8 @@ targets:
     info:
       path: Sources/Info.plist
       properties:
+        CFBundleShortVersionString: $(MARKETING_VERSION)     # annars sätter xcodegen 1.0 — Apple tillåter aldrig nedräkning
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         UILaunchScreen: {}   # kräver fullskärm — utan denna letterboxar iOS appen med svarta band
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         UIBackgroundModes: [location, audio]
