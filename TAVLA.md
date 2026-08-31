@@ -4,43 +4,53 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-08-31 av Claude (STATUS-varv, allt bevisat mot live)*
+*Uppdaterad: 2026-08-31 kväll av Claude — 14 commits idag; toppen omskriven som Axels checklista*
 
 ---
 
 ## 🔴 ATT GÖRA
 
-### IDAG (mån 31/8 — uppskjutningsdagen)
-**Axel:**
-- [ ] 🔴 **CI kan inte signera Android-bygget — lösenordet matchar inte nyckeln.**
-  Felet: `Failed to read key halkvakt from store: keystore password was incorrect`.
-  Sista gröna Android-bygget var 30/8 15:07; nyckelrotationen skedde 31/8 08:00 och
-  bygget har inte kört mellan dess — det gick sönder vid rotationen, inte av kod.
-  Åtgärd: sätt om **HV_KEYSTORE_PASS** (och/eller HV_KEYSTORE_B64) i GitHub →
-  Settings → Secrets and variables → Actions, så de kommer från SAMMA jks som
-  ligger i iCloud. Kortet "Kronjuvelerna säkrade" stod som klart medan CI inte
-  kunde signera — halva rotationen var alltså inte verifierad.
-  ⚠️ Blockerar Play-uppladdningen: det finns ingen signerad AAB att ladda upp.
-- [ ] Svara pappa på höstplanen (DECISIONS: öppet ägarbeslut — JA/NEJ/ändrat på tidsregeln)
-- [x] ~~GitHub-nyckeln Issues-rättighet~~ ✅ KLART — Claude läste issue #2 och #3 direkt 31/8 10:17
-- [ ] TestFlight intern: dig själv + Bengt i gruppen Lagerlöf Labs → TestFlight-appen på båda telefonerna
-- [ ] TestFlight extern: Kompisarna — Test Information (utan inloggning!) → **Submit for Review**
-- [ ] **Google Play Console** (25 USD) — Android-spåret väntar, 14-dagarsklockan startar vid betalning
-- [ ] När Apple godkänt betan: publika länken till kompisarna (välkomsttext från Claude)
+### AXELS NÄSTA STEG — i den här ordningen
 
-**Claude:**
-- [ ] Fotostudion tag 2 — facit ur CI + produktboken
+**1. Fem minuter, var som helst: signeringshemligheten** 🔴
+CI kan inte signera Android-bygget: `keystore password was incorrect`. Gick sönder vid
+nyckelrotationen 08:00 (sista gröna bygget 30/8 15:07), inte av kod. GitHub → Settings →
+Secrets and variables → Actions → sätt om **HV_KEYSTORE_PASS** (och HV_KEYSTORE_B64) från
+SAMMA jks som ligger i iCloud. Blockerar all Play-uppladdning tills det är gjort.
+
+**2. Vid Macen: v0.3.1 (4) till TestFlight**
+Terminal: `cd ~/Halkvakt && git pull && cd ios/HalkvaktApp && xcodegen && open Halkvakt.xcodeproj`
+Xcode: välj Team (varje gång) → bygg till telefonen. Dagens Swift har aldrig kompilerats —
+klistra in ev. fel till Claude, räkna med ett varv. Sedan Product → Archive → App Store
+Connect, precis som i morse. Versionen 0.3.1 (4) är redan satt i repot.
+
+**3. På telefonen (efter bygget): fyra kontroller i `ios/MAC-GUIDE.md`**
+Genvägar hittar "Starta vakten" · Siri "Starta Halkvakt" · automationen med Kör direkt ·
+"Senast sagt" står kvar dagen efter. Ge Halkvakt platsen **Alltid** — annars blinkar appen
+förbi vid varje autostart.
+
+**4. I bilen:** Fokus Kör + kartappen som utlösare (du har ingen CarPlay — se PRODUKTBOK
+"Autostart i bilen"). Kör förbi en fartkamera med Maps framme: bannern i 8 s, rösten talar
+med släckt skärm, vakten stannar när du stänger av.
+
+**5. Beslut som väntar på dig** (rekommendationer i chatten 31/8, DECISIONS #30–#34)
+- [ ] Svara pappa på höstplanen — ja till TågRätt-företräde för DIN tid, ~1 h/vecka till Halkvakt
+- [ ] Rollfördelningen: B2B = Bengt (ja) · Skyltfondsrundan: klartecken (v.36 börjar onsdag)
+- [ ] Exportera Claude Design-skinnet till `docs/design/` ⇒ resten av #24 öppnas
+- [ ] TestFlight intern (Bengt) + extern (kompisarna, Test Information → Submit for Review)
+- [ ] Google Play Console — VÄNTA tills 12 står på väntelistan (4 idag); klockan startar vid köp
+
+**Claude — i väntan på Macen:**
+- [ ] #31 Trafikverksbevakningen (litet, olåst, kan bevisas härifrån)
 - [ ] Välkomsttext + testinstruktion till kompisarna
-- [ ] Play: uppladdningsguide för den CI-signerade AAB:n så fort kontot finns
-- [x] ~~**#28 Olyckslyftet**~~ ✅ BYGGT 31/8 — graderade olycksrepliker, tidigt rop vid
-  10 km + påminnelse vid 2 km, röjningstid uppläst. Motor + tre parsrar + tre nya vektorer.
-- [ ] **#22 autostart** — KOD SKRIVEN 31/8 (iOS: App Intents + Genvägar-guide; Android var
-  redan klart). 🔑 Bevisas av Axel i bilen: xcodegen → Team → bygg → fyra kontroller i
-  MAC-GUIDE. Första bygget är också första kompileringen — räkna med ett varv.
-- [ ] **#23 heads-up** — KOD SKRIVEN 31/8 båda plattformarna. 🔑 Bevisas på skärm: Maps
-  framme, förbi en fartkamera, bannern i 8 s.
-- [ ] **#24 skinnet** — DELVIS: "Senast sagt" på hemskärmen, båda. 🔑 Resten (farokort,
-  typografi) väntar på att Axel exporterar Claude Design-skinnet till docs/design/.
+- [ ] Play: uppladdningsguide för den CI-signerade AAB:n så fort hemligheten är satt
+- [ ] Fotostudion tag 2 — facit ur CI + produktboken
+- [ ] Vid kompilatorfel från Macen: rätta → push → nytt varv
+
+**Skrivet idag, väntar på bevis i din hand:**
+- [ ] **#22 autostart** — iOS App Intents (fyra utlösare, tyst start med Alltid), Android fanns
+- [ ] **#23 heads-up** — bannern över kartappen, båda plattformarna
+- [ ] **#24 skinnet** — DELVIS: "Senast sagt" på hemskärmen, båda. Resten bakom designexport.
 
 *(Kronjuvelerna, Xcode 26.1 och Apple Developer är avklarade och flyttade till KLART.
 Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som återstår.)*
