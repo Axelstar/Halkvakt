@@ -20,7 +20,9 @@ struct KorlageView: View {
                 Panel {
                     VStack(alignment: .leading, spacing: 5) {
                         SectionHeader(text: "På vakt", color: Brand.greenText)
-                            .onLongPressGesture(minimumDuration: 0.8) {
+                            .frame(height: 28)
+                            .contentShape(Rectangle())   // hela raden tryckbar, inte bara bokstäverna
+                            .onLongPressGesture(minimumDuration: 0.5, maximumDistance: 30) {
                                 demoWarning = HalkvaktEngine.Alert(t: 0, hazardId: "demo", kind: .slippery_segment,
                                     distanceM: 2000, text: "Halt väglag om två kilometer.")
                                 Task { try? await Task.sleep(for: .seconds(8)); demoWarning = nil }
