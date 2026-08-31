@@ -7,6 +7,8 @@ import HalkvaktEngine
 struct KorlageView: View {
     @State private var guardM = GuardManager.shared
     @State private var now = Date.now
+    /// Granskningsläge: håll på "PÅ VAKT" ⇒ kortet med en låtsasvarning, utan röst.
+    @State private var demoWarning: HalkvaktEngine.Alert?
     private let clock = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     var body: some View {
@@ -18,6 +20,11 @@ struct KorlageView: View {
                 Panel {
                     VStack(alignment: .leading, spacing: 5) {
                         SectionHeader(text: "På vakt", color: Brand.greenText)
+                            .onLongPressGesture(minimumDuration: 0.8) {
+                                demoWarning = HalkvaktEngine.Alert(t: 0, hazardId: "demo", kind: .slippery_segment,
+                                    distanceM: 2000, text: "Halt väglag om två kilometer.")
+                                Task { try? await Task.sleep(for: .seconds(8)); demoWarning = nil }
+                            }
                         Text("\(elapsedMin) min · \(distKm) km")
                             .font(Typo.sans(34, .semibold)).tracking(-1)
                             .foregroundStyle(Brand.text)
@@ -62,7 +69,7 @@ struct KorlageView: View {
             }
             .padding(.horizontal, 20).padding(.top, 10).padding(.bottom, 18)
 
-            if let w = guardM.currentWarning {
+            if let w = guardM.currentWarning ?? demoWarning {
                 WarningOverlayView(alert: w).transition(.opacity)
             }
         }

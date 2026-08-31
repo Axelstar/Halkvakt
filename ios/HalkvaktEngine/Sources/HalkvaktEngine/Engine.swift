@@ -61,6 +61,9 @@ public struct Alert: Equatable {
     public let kind: HazardKind
     public let distanceM: Int
     public let text: String
+    public init(t: Double, hazardId: String, kind: HazardKind, distanceM: Int, text: String) {
+        self.t = t; self.hazardId = hazardId; self.kind = kind; self.distanceM = distanceM; self.text = text
+    }
 }
 
 public struct EngineConfig {
