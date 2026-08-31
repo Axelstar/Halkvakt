@@ -86,11 +86,8 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   Gör i samma svep som PRV + domänen.
 
 ### Axel — därefter
-- [ ] ⚠️ **Rekrytera testare — mätt läge 31/8: väntelistan har 4 namn.** Google Play kräver
-  minst 12 testare som är med i 14 SAMMANHÄNGANDE dygn innan produktion (DECISIONS #9), och
-  klockan startar när Play-kontot betalas. Fyra räcker inte. Mål 20 (`docs/REKRYTERING.md`).
-  Detta är den enda punkten på tavlan som kan skjuta lanseringen framåt utan att något går
-  sönder tekniskt — inlägg A ligger färdigt att posta.
+- [ ] **Tolv testare till Play-perioden** — Axels åtagande 31/8: "hittar dem utan problem".
+  Väntelisterutan på kartan borttagen på hans beslut. Kvar i `docs/REKRYTERING.md` om det behövs.
 - [ ] Domänen halkvakt.se (vilande beslut)
 - [ ] Fysisk Android-testenhet (pappas telefon? begagnad?)
 
