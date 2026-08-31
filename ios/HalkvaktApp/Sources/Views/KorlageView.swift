@@ -118,10 +118,14 @@ struct WarningOverlayView: View {
 
                 Image(systemName: "triangle.fill").font(.system(size: 44)).foregroundStyle(Brand.onAmber)
 
-                Text(Prefs.shared.label(alert.kind))
-                    .font(Typo.sans(64, .bold)).tracking(-2.5).lineSpacing(-6)
-                    .foregroundStyle(Brand.onAmber)
-                    .fixedSize(horizontal: false, vertical: true)
+                // Ikonen intill namnet — aldrig i triangelns plats (designens notering).
+                HStack(alignment: .top, spacing: 14) {
+                    HazardIcon(kind: alert.kind, size: 48).foregroundStyle(Brand.onAmber).padding(.top, 10)
+                    Text(Prefs.shared.label(alert.kind))
+                        .font(Typo.sans(64, .bold)).tracking(-2.5).lineSpacing(-6)
+                        .foregroundStyle(Brand.onAmber)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
 
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Text("\(alert.distanceM)").font(Typo.mono(44, .semibold))

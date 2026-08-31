@@ -494,3 +494,12 @@ INTE KOMPILERAT — Axels Mac i morgon. Android får samma skinn i nästa varv.
 Innehållet behövs (löftet, källor med Fintraffics obligatoriska attribution, integritets-
 policy för App Store). Fliken behövs inte — man läser det en gång. Två flikar: Vakten och
 Inställningar. "Om Halkvakt" är sista avsnittet i Inställningar. Skinnets egen notering i v2.
+
+## #49 (31/8 2026) Ikonsetet — fem faror, en linje, triangeln är märket
+Axel: "olika ikoner vid olika fara?" Ja — kortet läses i ögonvrån; former känns igen utan
+blick. Claude Design ritade fem i samma linjetjocklek: Halt väglag = bilen tappar greppet,
+vågspåren gjorda (ÄR halt); Frysrisk = termometer + iskristall (KAN BLI); Olycka = samma
+bilkropp + islagsstjärna; Vilt = hjorthuvud framifrån, hornen bär igenkänningen; Fartkamera
+= låda på stolpe, den enda på stolpe. Triangeln är varumärket, inte olyckans ikon — står
+kvar överst på kortet; ikonen sitter intill namnet. SVG i Assets.xcassets (template),
+källa docs/design/icons/. Samma fem till Android och Live Activity.

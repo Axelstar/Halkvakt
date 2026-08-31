@@ -94,10 +94,11 @@ struct NearbyRow: View {
     let item: NearbyItem
     var body: some View {
         HStack(spacing: 14) {
+            HazardIcon(kind: item.kind, size: 24).foregroundStyle(Brand.yellow)
             Text(Nearby.distText(item.distM))
                 .font(Typo.mono(14, .semibold))
                 .foregroundStyle(Brand.yellow)
-                .frame(width: 64, alignment: .leading)
+                .frame(width: 60, alignment: .leading)
             VStack(alignment: .leading, spacing: 2) {
                 Text(Prefs.shared.label(item.kind)).font(Typo.sans(15, .semibold)).foregroundStyle(Brand.text)
                 if let s = item.secondary { Text(s).font(Typo.sans(12)).foregroundStyle(Brand.dim) }
