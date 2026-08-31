@@ -33,6 +33,15 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     private var dismissTask: Task<Void, Never>?
     private var headsUpTask: Task<Void, Never>?
 
+    // Självstopp (DECISIONS #35): en vakt som startade automatiskt ska sluta automatiskt.
+    // Står bilen still i en kvart är resan slut — vakten stoppar sig själv, tyst, så att
+    // en start-automation räcker och ingen stopp-automation behövs. Samma tanke som
+    // Androids onVehicleExit, men mätt i tid i stället för i rörelseigenkänning: iOS har
+    // ingen motsvarande signal utan extra behörighet, och tid kräver ingenting.
+    private static let idleStopAfter: TimeInterval = 15 * 60
+    private static let movingKmh = 5.0
+    private var lastMovedAt: Date?
+
     override private init() {
         super.init()
         manager.delegate = self
@@ -85,6 +94,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         guard !running else { return }
         running = true
         startedAt = .now
+        lastMovedAt = .now
         distanceKm = 0; alertCount = 0; lastSaid = nil
         staleAnnounced = false
         prevLoc = nil
@@ -129,6 +139,14 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         prevLoc = loc
         recomputeNearby()
         guard running, let engine else { return }
+
+        // Självstopp: räkna rörelse, stoppa efter en kvarts stillastående.
+        let kmh = loc.speed >= 0 ? loc.speed * 3.6 : 0
+        if kmh >= Self.movingKmh { lastMovedAt = loc.timestamp }
+        if let moved = lastMovedAt, loc.timestamp.timeIntervalSince(moved) >= Self.idleStopAfter {
+            stop()
+            return
+        }
 
         let fix = Fix(t: loc.timestamp.timeIntervalSince1970,
                       lon: loc.coordinate.longitude,

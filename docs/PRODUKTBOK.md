@@ -155,14 +155,20 @@ utan att du gör något, och stannar när bilen kopplas från. Rörelseigenkänn
 Genvägar som du bygger en gång — guiden finns i Inställningar → *Autostart i bilen*.
 Du väljer själv vad som ska utlösa den:
 
-- **Bluetooth** — bilen har handsfree eller CarPlay. Parkoppla, välj bilen → *Är ansluten*.
-- **Fokus Kör** — ingen Bluetooth. Slå på Fokus Kör → *Aktivera automatiskt* → *När du
+- **Bluetooth — bäst om bilen har det.** Parkoppla, välj bilen → *Är ansluten*. Startar
+  i samma sekund bilen vaknar, och bara i din bil — aldrig på bussen.
+- **Fokus Kör — annars.** Inställningar → Fokus → Kör → *Aktivera automatiskt* → *När du
   kör*; telefonen känner av körningen med rörelsesensorerna. Utlösare: *Kör slås på*.
-- **Kartappen** — kör du med Google Maps eller Apple Kartor framme: *App → öppnas*.
-- **Laddaren** — laddar du i bilen: *Laddare → ansluts*.
+  Fångar även pendlingen utan karta. Behöver några minuters körning innan den är säker.
+- **Kartappen — som komplement.** *App → Google Maps eller Kartor → öppnas*. Enklast att
+  förstå, men skyddar bara resor där du öppnar kartan — och det gör man sällan på vägen
+  man känner, där halkan överraskar.
+- **Laddaren.** Laddar du i bilen: *Laddare → ansluts*.
 
-Sedan: *Kör direkt* (inte *Fråga innan*) → sök "Halkvakt" → *Starta vakten*. Gör om
-det för motsatsen (frånkopplad / Kör stängs av / appen stängs) → *Stoppa vakten*.
+Sedan: *Kör direkt* (inte *Fråga innan*) → sök "Halkvakt" → *Starta vakten*. **Det räcker.**
+Vakten stoppar sig själv när bilen stått still i en kvart, så ingen stopp-automation
+behövs. Vill du ändå ha ett direkt stopp finns *Stoppa vakten* att koppla till
+motsatsen (frånkopplad, Kör stängs av).
 
 Ge Halkvakt platsen **"Alltid"** så startar vakten tyst i bakgrunden och kartan stannar
 kvar på skärmen. Med "Vid användning" visas Halkvakt en kort stund vid starten och du

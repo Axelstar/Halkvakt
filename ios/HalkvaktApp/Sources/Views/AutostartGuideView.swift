@@ -13,10 +13,10 @@ struct AutostartGuideView: View {
                 .foregroundStyle(Brand.text)
 
             VStack(alignment: .leading, spacing: 6) {
-                TriggerRow(title: "Bluetooth", sub: "Bilen har handsfree eller CarPlay: parkoppla, välj bilen → Är ansluten")
-                TriggerRow(title: "Fokus Kör", sub: "Ingen Bluetooth: slå på Fokus Kör → Aktivera automatiskt → När du kör. Utlösare: Kör slås på")
-                TriggerRow(title: "Kartappen", sub: "Kör du med Google Maps eller Kartor framme: utlösare App → öppnas")
-                TriggerRow(title: "Laddaren", sub: "Laddar du i bilen: utlösare Laddare → ansluts")
+                TriggerRow(title: "Bluetooth — bäst om bilen har det", sub: "Parkoppla, välj bilen → Är ansluten. Startar när bilen vaknar, bara i din bil.")
+                TriggerRow(title: "Fokus Kör — annars", sub: "Inställningar → Fokus → Kör → Aktivera automatiskt → När du kör. Utlösare: Kör slås på. Fångar även resor utan karta.")
+                TriggerRow(title: "Kartappen — som komplement", sub: "App → Google Maps eller Kartor → öppnas. Missar resor där du inte öppnar kartan.")
+                TriggerRow(title: "Laddaren", sub: "Laddar du i bilen: Laddare → ansluts")
             }
 
             VStack(alignment: .leading, spacing: 8) {
@@ -24,8 +24,10 @@ struct AutostartGuideView: View {
                 GuideStep(n: 2, text: "Välj din utlösare ovan")
                 GuideStep(n: 3, text: "Välj Kör direkt (inte Fråga innan) → Nästa")
                 GuideStep(n: 4, text: "Sök \"Halkvakt\" → välj Starta vakten → Klar")
-                GuideStep(n: 5, text: "Gör om det för motsatsen → Stoppa vakten")
             }
+
+            Text("Det räcker. Vakten stoppar sig själv när bilen stått still i en kvart — ingen stopp-automation behövs.")
+                .font(.system(size: 13)).foregroundStyle(Brand.dim)
 
             Text("Ge Halkvakt platsen \"Alltid\" så startar vakten tyst i bakgrunden och kartan stannar på skärmen. Med \"Vid användning\" visas Halkvakt en kort stund vid starten.")
                 .font(.system(size: 13)).foregroundStyle(Brand.dim)

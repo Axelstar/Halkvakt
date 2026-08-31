@@ -345,3 +345,15 @@ openAppWhenRun till ForegroundContinuableIntent (iOS 17): med "Alltid" startar v
 bakgrunden och kartan stannar på skärmen; med "Vid användning" tas appen fram bara
 den stund som krävs. Det gör "när kartappen öppnas" till en ren upplevelse i stället
 för att Halkvakt lägger sig över kartan man just öppnade.
+
+## #35 (31/8 2026) Självstopp: en vakt som startade själv ska sluta själv (Axels fråga)
+Axel: "vad är enklast för användaren?" Svaret var att alla fyra utlösarna krävde TVÅ
+automationer — start och stopp — och att kartappens stopp ("App stängs") triggar när
+appen lämnar förgrunden, alltså även när man sveper till ett meddelande mitt i
+körningen. Farligt. Beslut: iOS-vakten stoppar sig själv efter 15 min stillastående
+(< 5 km/h), tyst. Då räcker EN automation, vilken utlösare som helst. Spegel av Androids
+onVehicleExit, men tidsbaserad — iOS saknar rörelsesignalen utan extra behörighet.
+Guidens rekommendationsordning: Bluetooth om bilen har det (precisast, bara din bil),
+annars Fokus Kör (automatisk, fångar pendlingen), kartappen som komplement (missar
+resor utan karta — pendlingen, där halkan överraskar). En kvart valdes för att
+överleva en macka på macken; omprövas på betabevis.
