@@ -22,7 +22,7 @@ struct OnboardingView: View {
                     welcome.tag(0)
                     location.tag(1)
                     banner.tag(2)
-                    autostart.tag(3)
+                    ready.tag(3)
                 }
                 .tabViewStyle(.page(indexDisplayMode: .always))
                 .indexViewStyle(.page(backgroundDisplayMode: .always))
@@ -92,13 +92,22 @@ struct OnboardingView: View {
         }
     }
 
-    private var autostart: some View {
+    private var ready: some View {
         OnboardingPage(
-            icon: "car.fill",
-            title: "Starta av sig själv — en gång, sedan aldrig mer",
-            text: "Apple låter inte appar starta sig själva i bilen, så du bygger en automation i Genvägar. Svara på en fråga så får du bara de steg som gäller dig."
+            icon: "checkmark.circle.fill",
+            title: "Du är klar",
+            text: "Två sätt att starta vakten. Inget mer att ställa in."
         ) {
-            AutostartGuideView()
+            Panel {
+                Label("Tryck på Starta vakten i appen", systemImage: "play.fill")
+                    .foregroundStyle(Brand.text)
+                Label("Eller säg: \"Hej Siri, starta Halkvakt\"", systemImage: "mic.fill")
+                    .foregroundStyle(Brand.text)
+                Text("Siri fungerar med telefonen i facket, utan att du rör den. Vakten stoppar sig själv när bilen stått still en kvart.")
+                    .font(.system(size: 13)).foregroundStyle(Brand.dim)
+            }
+            Text("Vill du att vakten startar helt av sig själv när bilen startar? Det går, via en automation i Genvägar — guiden finns under Inställningar → Autostart i bilen. Valfritt.")
+                .font(.system(size: 13)).foregroundStyle(Brand.dim)
         }
     }
 }

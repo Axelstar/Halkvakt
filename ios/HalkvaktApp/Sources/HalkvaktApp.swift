@@ -34,7 +34,11 @@ struct InstallningarView: View {
                         .font(.system(size: 13)).foregroundStyle(Brand.dim)
                 }
 
-                SectionHeader(text: "Autostart i bilen")
+                SectionHeader(text: "Autostart i bilen (valfritt)")
+                Panel {
+                    Text("Vakten startar med knappen eller med \"Hej Siri, starta Halkvakt\". Vill du att den startar helt av sig själv när bilen startar krävs en automation i Genvägar — en minut, en gång.")
+                        .font(.system(size: 14)).foregroundStyle(Brand.dim)
+                }
                 AutostartGuideView()
 
                 SectionHeader(text: "Rösten")

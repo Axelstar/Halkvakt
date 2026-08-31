@@ -36,8 +36,10 @@ den kan visas igen från Inställningar.
 2. **Platsen** — *Tillåt plats* ("Vid användning"). Nästa gång du kör frågar iOS om
    "Alltid", som behövs för att rösten ska tala med släckt skärm.
 3. **Bannern** — *Tillåt notiser*, så att varningen syns över kartappen.
-4. **Autostart** — bygg automationen i Genvägar (guiden med utlösarna finns här).
-   En gång, sedan aldrig mer. Vakten stoppar sig själv när bilen stått still en kvart.
+4. **Du är klar** — två sätt att starta: knappen i appen, eller *"Hej Siri, starta
+   Halkvakt"* med telefonen i facket. Inget mer att ställa in. Vakten stoppar sig själv
+   när bilen stått still en kvart. Helautomatisk start i bilen är valfritt och finns
+   under Inställningar → Autostart i bilen.
 
 Klar. Inga konton, ingen e-post, inga fler frågor.
 

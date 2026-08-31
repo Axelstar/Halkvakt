@@ -40,6 +40,11 @@ med släckt skärm, vakten stannar när du stänger av.
 - [ ] TestFlight intern (Bengt) + extern (kompisarna, Test Information → Submit for Review)
 - [ ] Google Play Console — VÄNTA tills 12 står på väntelistan (4 idag); klockan startar vid köp
 
+**Claude — nästa förenkling (DECISIONS #38):**
+- [ ] **Startknapp på låsskärmen + i Kontrollcenter** — widget (iOS 17) och Control (iOS 18)
+  på samma StartGuardIntent. Ett tryck, ingen upplåsning, ingen Genvägar. Det gör
+  autostart-guiden till en fotnot.
+
 **Claude — i väntan på Macen:**
 - [ ] Introduktionen på Android (spegel av iOS, DECISIONS #36) — efter att iOS-varianten testats
 - [ ] #31 Trafikverksbevakningen (litet, olåst, kan bevisas härifrån)

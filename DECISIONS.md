@@ -374,3 +374,15 @@ precisare än Bluetooth: startar när bilens skärm tänds). Bluetooth ⇒ "Är 
 Inte alls ⇒ Fokus Kör, med kartappen som frivillig andra automation. Svaret sparas
 (Prefs.carSetup) så Inställningar visar samma guide, bytbart. Bengt ska aldrig läsa
 om Fokus Kör; Axel aldrig om CarPlay.
+
+## #38 (31/8 2026) Förenklingen: Siri är autostarten, Genvägar är valfritt (Axel: "vi måste förenkla detta mycket")
+Axel byggde automationen själv, med guide, deeplink och mig i chatten — och sa ändå att
+det var för svårt. Då är det för svårt. Insikten: det finns redan en start som kräver
+NOLL inställningar. "Hej Siri, starta Halkvakt" fungerar direkt efter installation
+eftersom App Shortcuts registreras vid install, handsfree, med telefonen i facket.
+BESLUT: introduktionens sida fyra blir "Du är klar" med två sätt att starta — knappen
+och Siri. Genvägar-guiden flyttas till Inställningar, märkt valfritt, med engelska
+termer i parentes (Axels telefon är engelsk; alla testare är inte svenskspråkiga i
+systemet). Självstoppet gör att en start räcker. NÄSTA STEG (kort): en startknapp på
+låsskärmen (widget, iOS 17) och i Kontrollcenter (iOS 18) — ett tryck utan att låsa upp,
+byggt på samma intent. Det är den riktiga förenklingen på sikt; Siri är den idag.
