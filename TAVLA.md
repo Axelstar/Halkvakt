@@ -84,9 +84,9 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   VEGVESEN_PASS i GitHub Secrets ⇒ Claude skriver parsern och Norge kör. Allt annat är
   förberett (#35). Kräver de fast IP: proxy-beslut till Axel.
   Gör i samma svep som PRV + domänen.
-- [ ] **Danmark — BESLUT:** arkivet KÖR (31/8 kväll, DECISIONS #45). Frysrisken bygger på
-  DMI:s grästemperatur (23 stationer), inte vägyta. Räcker det för rösten, eller ska Bengt
-  ringa Vejdirektoratet om VejVejr-avtal (riktiga vägytestationer)? Ditt beslut.
+- [ ] **Danmark — mejl till Vejdirektoratet** (vd@vd.dk, cc Bengt) om VejVejr/vägytestationer.
+  Utkast klart i chatten 31/8. Bocka av med datum när det är skickat. Tills svar: grästemp
+  i arkivet, rösten tyst om frysrisk i DK (DECISIONS #45).
 - [ ] **Danmark — NAP-nyckel** (gratis registrering) före produktion: trafikkort-flödet vi
   läser nu är publikt men odokumenterat.
 
