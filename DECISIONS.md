@@ -489,3 +489,8 @@ text #E9EFF2/#C7D3D9/#8FA0A9/#6C7B84. Typsnitt Instrument Sans + IBM Plex Mono (
 buntade. Trettio typstorlekar blev Typo.sans/mono med designens skala. Röstväljaren
 ersatt av "Halkvakt talar med iOS-rösten du valt i systemet". Genvägar-guiden fällbar.
 INTE KOMPILERAT — Axels Mac i morgon. Android får samma skinn i nästa varv.
+
+## #48 (31/8 2026) Om-fliken bort — innehållet till Inställningar (Axel: "behövs det?")
+Innehållet behövs (löftet, källor med Fintraffics obligatoriska attribution, integritets-
+policy för App Store). Fliken behövs inte — man läser det en gång. Två flikar: Vakten och
+Inställningar. "Om Halkvakt" är sista avsnittet i Inställningar. Skinnets egen notering i v2.

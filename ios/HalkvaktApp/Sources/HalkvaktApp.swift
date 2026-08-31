@@ -94,9 +94,22 @@ struct InstallningarView: View {
                             .font(Typo.sans(14)).foregroundStyle(Brand.dim)
                     }
 
-                    Text("Ingen inloggning, ingen spårning. Din position stannar i telefonen och matchas mot vägdata lokalt.")
-                        .font(Typo.sans(12)).foregroundStyle(Brand.faint)
-                        .padding(.top, 4)
+                    VStack(alignment: .leading, spacing: 10) {
+                        SectionHeader(text: "Om Halkvakt", color: Brand.dim)
+                        Panel {
+                            Text("Din position lämnar aldrig telefonen.")
+                                .font(Typo.sans(17, .semibold)).foregroundStyle(Brand.yellow)
+                            Text("All matchning mot vägdata sker lokalt i appen. Inget konto, ingen spårning.")
+                                .font(Typo.sans(14)).foregroundStyle(Brand.dim)
+                        }
+                        LinkRow(title: "Livekartan — läget just nu", url: "https://axelstar.github.io/halkvakt-karta/karta.html")
+                        LinkRow(title: "Om appen & vanliga frågor", url: "https://axelstar.github.io/halkvakt-karta/om.html")
+                        LinkRow(title: "Press & material", url: "https://axelstar.github.io/halkvakt-karta/press.html")
+                        LinkRow(title: "Integritetspolicy", url: "https://axelstar.github.io/halkvakt-karta/integritet.html")
+                        Text("Varnar vid Trafikverkets mätstationer och rapporterade väglag — mellan stationerna är vägen oövervakad. Data: Trafikverket (CC0), Polisen, SMHI, Fintraffic (CC BY 4.0). Halkvakt är fristående och har ingen koppling till myndigheterna.")
+                            .font(Typo.sans(12)).foregroundStyle(Brand.faint)
+                    }
+                    .padding(.top, 8)
                 }
                 .padding(.horizontal, 20).padding(.top, 10)
                 .padding(.bottom, 96)
@@ -128,43 +141,6 @@ private struct ToggleRow: View {
     }
 }
 
-struct OmView: View {
-    var body: some View {
-        ZStack {
-            Brand.bg.ignoresSafeArea()
-            ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                BrandHeader()
-                SectionHeader(text: "Om Halkvakt")
-                Text("Halkvakt varnar dig med rösten — som en passagerare som läst allt Trafikverket vet om vägen framför dig.")
-                    .foregroundStyle(Brand.text)
-
-                Panel {
-                    Text("Din position lämnar aldrig telefonen.")
-                        .foregroundStyle(Brand.yellow).bold()
-                    Text("All matchning mot vägdata sker lokalt i appen. Inget konto, ingen spårning.")
-                        .foregroundStyle(Brand.dim)
-                }
-
-                VStack(alignment: .leading, spacing: 2) {
-                    LinkRow(title: "Livekartan — läget just nu", url: "https://axelstar.github.io/halkvakt-karta/karta.html")
-                    LinkRow(title: "Om appen & vanliga frågor", url: "https://axelstar.github.io/halkvakt-karta/om.html")
-                    LinkRow(title: "Press & material", url: "https://axelstar.github.io/halkvakt-karta/press.html")
-                    LinkRow(title: "Integritetspolicy", url: "https://axelstar.github.io/halkvakt-karta/integritet.html")
-                }
-
-                Text("Varnar vid Trafikverkets mätstationer och rapporterade väglag — mellan stationerna är vägen oövervakad. Datakällor: Trafikverket (CC0), Polisen, SMHI. Halkvakt är fristående och har ingen koppling till myndigheterna.")
-                    .font(Typo.sans(13)).foregroundStyle(Brand.faint)
-            }
-            .padding(18)
-            .padding(.bottom, 96)
-            }
-            .scrollIndicators(.hidden)
-        }
-        .background(Brand.bg)
-    }
-}
-
 @main
 struct HalkvaktApp: App {
     @State private var prefs = Prefs.shared
@@ -182,8 +158,6 @@ struct HalkvaktApp: App {
                     .tabItem { Label("Vakten", systemImage: "exclamationmark.triangle.fill") }
                 InstallningarView()
                     .tabItem { Label("Inställningar", systemImage: "gearshape.fill") }
-                OmView()
-                    .tabItem { Label("Om", systemImage: "info.circle.fill") }
             }
             .tint(Brand.yellow)
             .preferredColorScheme(.dark)
