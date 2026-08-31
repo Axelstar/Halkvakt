@@ -34,8 +34,10 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 - [ ] Play: uppladdningsguide för den CI-signerade AAB:n så fort kontot finns
 - [x] ~~**#28 Olyckslyftet**~~ ✅ BYGGT 31/8 — graderade olycksrepliker, tidigt rop vid
   10 km + påminnelse vid 2 km, röjningstid uppläst. Motor + tre parsrar + tre nya vektorer.
-- [ ] v0.3.1-batchen som återstår: **#24 skinnet**, **#23 heads-up**, **#22 autostart**
-  (alla tre är app-UI ⇒ kräver Mac/emulator för bevis, inte bara CI)
+- [ ] **#22 autostart** — KOD SKRIVEN 31/8 (iOS: App Intents + Genvägar-guide; Android var
+  redan klart). 🔑 Bevisas av Axel i bilen: xcodegen → Team → bygg → fyra kontroller i
+  MAC-GUIDE. Första bygget är också första kompileringen — räkna med ett varv.
+- [ ] v0.3.1 kvar: **#23 heads-up**, **#24 skinnet**
 
 *(Kronjuvelerna, Xcode 26.1 och Apple Developer är avklarade och flyttade till KLART.
 Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som återstår.)*

@@ -126,3 +126,20 @@ och `git pull` + `xcodegen` + Team-valet är gjort (Team heter nu "axel Lagerlof
 3. ▶ mot telefonen
 4. **Biverkan:** radering nollställer "Lita på" — gör Inställningar → Allmänt →
    VPN & enhetshantering → Lita på igen innan du öppnar appen. (Läxa 31/8.)
+
+## Testa #22 Autostart (efter xcodegen + Team + bygge till telefonen)
+
+Bevisas i bilen, inte i CI. Fyra kontroller, i ordning:
+
+1. **Intentet finns.** Öppna Genvägar → + → sök "Halkvakt". Du ska se *Starta vakten* och
+   *Stoppa vakten*. Saknas de: appen behöver ha startats en gång efter installation
+   (iOS registrerar intents vid första körning) — öppna Halkvakt, stäng, sök igen.
+2. **Siri.** Säg "Starta Halkvakt". Appen ska tändas och statusen bli VAKTEN PÅ.
+3. **Automationen.** Följ guiden i Inställningar → Autostart i bilen. Viktigt: *Kör direkt*
+   i steg 3 — annars frågar iOS varje gång och hela poängen faller.
+4. **I bilen.** Lås telefonen, starta bilen. Inom några sekunder: Halkvakt tänds, vakten
+   startar. Lägg telefonen i facket. Kör förbi en fartkamera — rösten ska tala med släckt
+   skärm. Stäng av bilen: vakten ska stanna (automation 2).
+
+Om steg 4 startar men rösten tystnar när skärmen släcks: platsbehörigheten är "Vid
+användning". Inställningar → Halkvakt → Plats → *Alltid*.

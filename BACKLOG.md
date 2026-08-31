@@ -51,13 +51,17 @@
     landningssida, "Handledarens checklista vinterkörning", samtyckesblankett.
     LÅST: påskriven avsiktsförklaring från trafikskola. (QR-bladet kan tidigare-
     läggas som testarrekrytering.)
-22. **Bluetooth-autostart** (ur Axels Claude Design 29/8): vakten startar själv
-    när bilens Bluetooth kopplar upp. Fulländar "lägg undan telefonen". Android
-    först; iOS-bakgrundsstart utreds.  BYGGS UNDER TESTPERIODEN → v0.3.1 till testarna.
-    iOS-vägen (Apples lås: appar får ej självstarta på BT): (a) NU/lansering —
-    Genvägar-automation kör ett "Starta vakten"-App Intent (bättre än bara öppna
-    appen — vakten STARTAR, inte bara visas), engångsguide skeppas i appen; (b) framtid — CarPlay-scen. Android: riktig
-    autostart via BT-receiver + foreground service. (Axels fråga 29/8.)
+22. **Bluetooth-autostart** — KOD SKRIVEN 31/8, BEVISAS I BILEN.
+    Android: klart sedan 9b (BT-mottagare + självlärning + rörelseigenkänning för första
+    körningen). Orört — testat, fungerar.
+    iOS (Apples lås: appar får ej självstarta på BT): StartGuardIntent/StopGuardIntent
+    (AppIntents, openAppWhenRun för att CoreLocation ska få starta med "Vid användning"),
+    HalkvaktShortcuts (Siri: "Starta Halkvakt"), AutostartGuideView i Inställningar med
+    fem steg + "Öppna Genvägar". PRODUKTBOK + MAC-GUIDE (fyra kontroller i bilen).
+    *Verify (Axel, hemma): Genvägar hittar intenten → Siri startar → automation Kör direkt
+    → bilen startar vakten med låst telefon, rösten talar med släckt skärm, stannar vid
+    frånkoppling.* OBS: app-målet kompileras inte i CI (bara motorn) — första bygget på
+    Macen är också första kompileringen av de fyra nya filerna.
 23. **Heads-up-varning över kartappar** (Axels önskan, löftesvänlig form): hög-
     prioritetsnotis som lägger sig över Google/Apple Maps vid varning och
     försvinner själv — ingen extra behörighet, ingen knapp, iOS-kompatibel

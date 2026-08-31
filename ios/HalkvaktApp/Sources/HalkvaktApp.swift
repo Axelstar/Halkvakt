@@ -34,6 +34,9 @@ struct InstallningarView: View {
                         .font(.system(size: 13)).foregroundStyle(Brand.dim)
                 }
 
+                SectionHeader(text: "Autostart i bilen")
+                AutostartGuideView()
+
                 SectionHeader(text: "Rösten")
                 Panel {
                     Button {

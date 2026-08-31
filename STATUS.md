@@ -369,3 +369,12 @@ läser arkivet, icon_id bevarad som signal. Fött låst. Bevis: 36 prov, integra
 räknar archive:1, första hindret in 09:04 med position, anon 401, ingest grön.
 Två CI-varv: (1) REVOKE mot roller som CI:s PostGIS saknar — nu vaktad med pg_roles;
 (2) writeAll:s nya archive-räknare saknades i kontraktet. Båda läxor/bokförda.
+
+## 2026-08-31 — #22 Autostart: iOS-koden skriven, Android redan klar
+Android: BT-mottagare, självlärning, rörelseigenkänning — allt sedan 9b, manifest verifierat.
+Orört. iOS: fyra nya filer (StartGuardIntent, StopGuardIntent, HalkvaktShortcuts,
+AutostartGuideView) + panel i Inställningar. Designval: openAppWhenRun=true på start —
+CoreLocation får bara starta i förgrunden med "Vid användning", så appen tänds, vakten
+startar, bakgrundsläget tar över. Stopp kör i bakgrunden. Skills lästa (swiftui-pro,
+swift-concurrency-pro): en typ per fil, @MainActor på perform, inga tredjepartsramverk.
+INTE BEVISAT: app-målet kompileras inte i CI. Bevis = Axels fyra kontroller i MAC-GUIDE.

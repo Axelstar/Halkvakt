@@ -143,3 +143,29 @@ flikraden är iOS 26:s svävande "glaspill" i stället för Androids fasta rad,
 och överst på varje flik sitter varumärkesraden **⚠ HALKVAKT** med en liten
 statuspill till höger på Vakten-fliken (LIVEDATA i vila, VAKTEN PÅ under
 körning). Skärmbilder tas från Axels iPhone (CI:n kan bara fota Android).
+
+## Autostart i bilen
+
+**Android:** vakten startar själv. Första gången du kör med Halkvakt igång lär sig
+appen vilken Bluetooth-enhet som är bilen; nästa gång bilen kopplar upp startar vakten
+utan att du gör något, och stannar när bilen kopplas från. Rörelseigenkänning täcker
+även bilar utan Bluetooth. Inget att ställa in.
+
+**iPhone:** Apple låter inte appar starta sig själva när bilen kopplar. Vägen runt är
+en automation i Genvägar som du bygger en gång — guiden finns i Inställningar →
+*Autostart i bilen*, med knappen *Öppna Genvägar*:
+
+1. Genvägar → Automation → +
+2. Bluetooth → din bil → *Är ansluten*
+3. *Kör direkt* (inte *Fråga innan*) → Nästa
+4. Sök "Halkvakt" → *Starta vakten* → Klar
+5. Samma sak med *Är frånkopplad* → *Stoppa vakten*
+
+Har bilen CarPlay väljer du CarPlay i stället för Bluetooth i steg 2.
+
+När bilen kopplar tänds Halkvakt, vakten startar, och du lägger undan telefonen —
+den fortsätter vakta med släckt skärm. Det fungerar också med Siri: *"Starta Halkvakt"*.
+
+*Varför tänds appen?* Positionstjänsten får bara startas när appen syns om du gett
+tillstånd "Vid användning". Med "Alltid" fungerar det likadant, bara tystare. Appen
+lämnar aldrig din position ifrån sig — det gäller precis lika vid autostart.
