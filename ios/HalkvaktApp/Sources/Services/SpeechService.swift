@@ -41,6 +41,8 @@ final class Prefs {
     var onboardingDone: Bool { didSet { d.set(onboardingDone, forKey: "k.onboardingDone") } }
     /// Hur telefonen kopplas till bilen — styr vilka autostart-steg som visas (DECISIONS #37).
     var carSetup: CarSetup? { didSet { d.set(carSetup?.rawValue, forKey: "k.carSetup") } }
+    /// Senaste gången vakten startades av intentet (automation eller Siri) — guidens kvitto.
+    var lastIntentStartAt: Date? { didSet { d.set(lastIntentStartAt, forKey: "k.lastIntentStartAt") } }
 
     private init() {
         accident = d.object(forKey: "k.accident") as? Bool ?? true
@@ -53,6 +55,7 @@ final class Prefs {
         lastSaidAt = d.object(forKey: "k.lastSaidAt") as? Date
         onboardingDone = d.bool(forKey: "k.onboardingDone")
         carSetup = d.string(forKey: "k.carSetup").flatMap(CarSetup.init(rawValue:))
+        lastIntentStartAt = d.object(forKey: "k.lastIntentStartAt") as? Date
     }
 
     /// Tystad kategori: motorn minns, munnen tiger — samma princip som Android.

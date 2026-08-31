@@ -13,6 +13,7 @@ struct AutostartGuideView: View {
     var body: some View {
         Panel {
             if let setup = prefs.carSetup {
+                receipt
                 steps(for: setup)
                 Button {
                     prefs.carSetup = nil
@@ -25,6 +26,28 @@ struct AutostartGuideView: View {
             } else {
                 question
             }
+        }
+    }
+
+    // MARK: - Kvittot
+
+    @ViewBuilder
+    private var receipt: some View {
+        if let at = prefs.lastIntentStartAt {
+            Label {
+                Text("Fungerar — vakten startades utifrån senast \(at.formatted(.dateTime.day().month(.abbreviated).hour().minute())). Automation eller Siri.")
+                    .font(.system(size: 14))
+                    .foregroundStyle(Brand.text)
+            } icon: {
+                Image(systemName: "checkmark.circle.fill").foregroundStyle(Brand.green)
+            }
+            .padding(10)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Brand.green.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
+        } else {
+            Label("Inte bekräftad än. När automationen eller Siri startar vakten första gången visas det här.", systemImage: "circle.dashed")
+                .font(.system(size: 13))
+                .foregroundStyle(Brand.dim)
         }
     }
 

@@ -22,6 +22,9 @@ struct StartGuardIntent: ForegroundContinuableIntent {
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
         let guardManager = GuardManager.shared
+        // Kvittot (DECISIONS #39): guiden kan visa "automationen fungerar — startade HH:mm".
+        // Apple låter oss inte läsa om automationen finns, men vi vet när den TRYCKT på oss.
+        Prefs.shared.lastIntentStartAt = .now
         if guardManager.running {
             return .result(dialog: "Vakten är redan igång.")
         }

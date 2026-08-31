@@ -386,3 +386,18 @@ termer i parentes (Axels telefon är engelsk; alla testare är inte svenskspråk
 systemet). Självstoppet gör att en start räcker. NÄSTA STEG (kort): en startknapp på
 låsskärmen (widget, iOS 17) och i Kontrollcenter (iOS 18) — ett tryck utan att låsa upp,
 byggt på samma intent. Det är den riktiga förenklingen på sikt; Siri är den idag.
+
+## #39 (31/8 2026) Automationer kan inte scriptas — kvitto, bilder, film, och fysiska knappar
+Axel: "kan man skriva ett script som de kan pasta in?" Nej. Apple tillåter varken att
+appar skapar personliga automationer eller att automationer delas/importeras. Åtgärden
+kan delas, utlösaren måste varje användare bygga själv. Beslut i tre lager:
+(1) KVITTO — byggt: StartGuardIntent stämplar lastIntentStartAt; guiden visar
+"Fungerar — startades utifrån HH:mm". Användaren slipper vänta till bilen för att veta.
+(2) BILDER + FILM — kort: skärmbild per steg med ringad knapp, inbakade offline; 15 s
+skärminspelning per spår på kartsajten med "Se hur det görs". Axels inspelningar 31/8
+är råmaterial för Inte alls-spåret; Bengt tar CarPlay.
+(3) EN-INSTÄLLNINGS-STARTER i stället för automation — kort: låsskärmswidget,
+Kontrollcenter-kontroll (iOS 18), och ÅTGÄRDSKNAPPEN (iPhone 15 Pro+): Inställningar →
+Åtgärdsknapp → Genväg → Starta vakten. Fysisk knapp, ett tryck. De flesta kommer aldrig
+bygga en automation hur bra guiden än blir; Siri och knappar är produkten, automationen
+är för entusiasten.
