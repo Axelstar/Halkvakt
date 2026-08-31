@@ -219,3 +219,12 @@ behåller `se.halkvakt.app`); domäner lagerloflabs.com/.app/.se lediga 31/8 —
 köps vid behov; App Store visar juridiskt namn tills organisation finns, då byts
 säljarnamnet till Lagerlöf Labs (AB/förening). Namnet används redan nu i
 butikstexter, webb och e-postsignaturer där varumärke efterfrågas.
+
+## ÖPPET ÄGARBESLUT (31/8): Bengts höstplan — tidsfördelning TågRätt/Halkvakt
+Bengts plan (25/8, Drive "Halkvakt mm"): TågRätt lanseras 1 jan 2027 och har
+företräde i Axels 8–10 h/vecka; "september helt utan Halkvakt"; Halkvakt-MVP i
+november. Planen skrevs före veckans sprint — Halkvakt är nu i TestFlight, MVP:t
+finns. Kvar att besluta: tidsregeln (TågRätt vinner konflikter?) och vad "resttid"
+betyder när Claude bär byggandet. Bengts svar väntar: JA/NEJ/ändrat.
+Bengts öppna granskningsfrågor — SVAR: ålderströskeln för live.json ÄR byggd
+(åldersvakten, "väglag HH:mm", DECISIONS #26); docs/SYSTEM.md FINNS; RLS = kort #30.

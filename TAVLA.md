@@ -12,6 +12,7 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 
 ### IDAG (mån 31/8 — uppskjutningsdagen)
 **Axel:**
+- [ ] Svara pappa på höstplanen (DECISIONS: öppet ägarbeslut) — och ge GitHub-nyckeln Issues-rättighet så Claude kan läsa hans issues
 - [ ] TestFlight intern: dig själv + Bengt i gruppen Lagerlöf Labs → TestFlight-appen på båda telefonerna
 - [ ] TestFlight extern: Kompisarna — Test Information (utan inloggning!) → **Submit for Review**
 - [ ] **Google Play Console** (25 USD) — Android-spåret väntar, 14-dagarsklockan startar vid betalning
