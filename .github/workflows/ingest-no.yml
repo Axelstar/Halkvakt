@@ -1,0 +1,21 @@
+name: ingest-no
+on:
+  schedule:
+    - cron: "17,47 * * * *"
+  workflow_dispatch:
+concurrency: { group: ingest-no, cancel-in-progress: false }
+jobs:
+  no:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm ci
+      - name: Vegvesen DATEX → no.* (skuggarkiv; hoppar över tills kontot finns)
+        env:
+          DATABASE_URL: "${{ secrets.DATABASE_URL }}"
+          VEGVESEN_USER: "${{ secrets.VEGVESEN_USER }}"
+          VEGVESEN_PASS: "${{ secrets.VEGVESEN_PASS }}"
+        run: node --experimental-strip-types ingest/no.ts

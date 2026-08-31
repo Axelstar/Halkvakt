@@ -1,3 +1,12 @@
+35. **Norskt skuggarkiv** (Axel 31/8: "vi börjar med Norge nu"): DATEX-konto begärt hos
+    Vegvesen 15:43 (Lagerlöf Labs, Axel). FÖRBERETT samma kväll: schema no (fött låst),
+    ingest/no.ts som rekognoserar XML:et första gången, ingest-no.yml (hoppar över tills
+    VEGVESEN_USER/PASS finns), 20 norska rutter i skuggmotorn (E6 i sju etapper Oslo–
+    Kirkenes, E18, E39 kusten, E16/Rv7/E134 över fjället, E10 Lofoten, E8 mot Kilpisjärvi,
+    E14 mot Storlien), Norge-knapp på testbilarna. KVAR NÄR KONTOT KOMMER: parsern mot
+    riktigt XML, build-snapshot-no.ts, cron. Risk: formuläret krävde "fast IP" — vi svarade
+    ärligt att vi saknar en; om Vegvesen kräver IP-låsning behövs en proxy med fast adress
+    (kostar, Axels beslut per gratisregeln).
 34. **Finskt skuggarkiv före produkten** (Axel 31/8: "vi bör täcka Skandinavien snart"):
     det som tar tid i ett nytt land är facit, inte kod. Fintraffic (Digitraffic) är öppet
     och bäst i Norden. Bygg ingest för väglag/väderstationer/kameror + 3 skuggrutter

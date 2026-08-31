@@ -80,8 +80,9 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   per säsong är kandidatmodellen; B2B (hemtjänst, försäkring, åkerier) är taket.
 - [ ] **Norden efter facit:** Finland LIVE i arkivet (31/8). Norge sedan, Danmark sist.
   Tidigast vintern 2027/28 som produkt. Nordiskt namn vid det laget (Nordic RoadSafe, #1).
-- [ ] **Registrera Vegvesen DATEX-konto** (gratis, personligt: namn + e-post) → användarnamn/
-  lösenord till GitHub Secrets ⇒ Claude bygger det norska skuggarkivet som det finska.
+- [ ] **Vegvesen DATEX-konto** — BEGÄRT 31/8 15:43. När svaret kommer: VEGVESEN_USER +
+  VEGVESEN_PASS i GitHub Secrets ⇒ Claude skriver parsern och Norge kör. Allt annat är
+  förberett (#35). Kräver de fast IP: proxy-beslut till Axel.
   Gör i samma svep som PRV + domänen.
 - [ ] **Danmark** (Axel 31/8: brutal vinter 2025/26 ⇒ upp i prio): trafikhändelser nyckelfritt
   via Dataudveksleren — kan gå in som Finland. Halkstationerna ligger i VejVejr som kräver
