@@ -83,3 +83,18 @@ den mot koden en gång i månaden.
 
 
 **Skuggflottan (29/8):** 20 rutter, rotation 3/varv, fotobudget 5, rapportsida skuggrapport.
+
+## Datakällor per land (31/8 2026, DECISIONS #42–#45)
+
+Principen: officiella öppna källor först. Odokumenterade flöden bara för skuggarkivet,
+aldrig för något en användare hör. Alla länder mappas till samma fem faror i motorn.
+
+| Land | Källa | Status | Vägyta | Väglag (operatör) | Olyckor/händelser | Kameror | Saknas |
+|---|---|---|---|---|---|---|---|
+| 🇸🇪 Sverige | Trafikverket (nyckel), Polisen, SMHI | **Produktion** | 845 stationer | Ja, per sträcka | Ja, m. allvarlighet | Fart + väglag | — |
+| 🇫🇮 Finland | Fintraffic/Digitraffic (header, CC BY 4.0) | Skugga, live | 526 stationer + väglagskod | Via stationskod | Ja, m. geometri | Väderkameror | Fartkameror, sträckvis väglag |
+| 🇳🇴 Norge | Vegvesen DATEX 3.1 (konto begärt 31/8, NLOD) | Förberett | Ja, var 10:e min | Ja (Situation) | Ja | Ja | Kontot; ev. fast IP |
+| 🇩🇰 Danmark | DMI (öppet) + trafikkort-flöde (odok.) → NAP (gratisnyckel) | Skugga, live | **Nej** — grästemp 23 st (proxy) | "Glat føre" i händelseflödet | Ja, DATEX-klassade | — | Vägyta (VejVejr, avtal), NAP-registrering |
+
+Öppna beslut: Danmark — räcker grästemperatur för rösten, eller VejVejr-avtal via Bengt?
+Norge — fast IP om Vegvesen kräver det. Båda hos Axel.
