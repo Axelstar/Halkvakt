@@ -248,3 +248,13 @@ mekanik bevisad live (4105→1 objekt), migration live_cursors. Återstår när 
 kör migration + deploy + secrets + pg_cron varje minut (via Management API) + verifiera
 kursorer rullar + GitHub-ingest till reservläge för dessa två flöden. Kartan fortsatt ~16 min;
 appen läser direkt från Supabase i oktober (då märks minutfärskheten på riktigt).
+
+37. **Live Activity — varningen utanför appen** (design 31/8, docs/design/Halkvakt-Live-Activity.dc.html):
+    Tre lägen. (1) Dynamic Island kompakt: triangel + namn i gult, avstånd i vitt med tabulära
+    siffror. Minimal när annan aktivitet äger ön: bara triangeln. (2) Expanderad: "Halt väglag",
+    väg, avstånd i meter, stapel som krymper när man närmar sig. (3) Låsskärm: gul rad HALKVAKT
+    · nu. PRINCIPER (designens egna ord): gult bara vid fara — ingen aktivitet när vakten bara är
+    på; avståndet är det levande, namnet står still; inga knappar — aktiviteten avslutas själv
+    när faran passerats. Bygg: ActivityKit + WidgetKit-extension (nytt target i project.yml),
+    start vid larm, uppdatera avstånd per fix, end vid passage/8 s. iPhone 14 Pro+ för ön;
+    låsskärmen alla iOS 16.1+. Färger: #FFC02E (aktivitetsgul), #140F00 text, #05080A bakgrund.
