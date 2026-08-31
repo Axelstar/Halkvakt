@@ -8,6 +8,7 @@ const CDN_BY_LAND: Record<string, string> = {
   se: "https://axelstar.github.io/halkvakt-karta/data/app/v1/",
   fi: "https://axelstar.github.io/halkvakt-karta/data/app/fi/v1/",
   no: "https://axelstar.github.io/halkvakt-karta/data/app/no/v1/",   // #35, publiceras när Vegvesen-kontot finns
+  dk: "https://axelstar.github.io/halkvakt-karta/data/app/dk/v1/",   // #36
 };
 const SB = Deno.env.get("SUPABASE_URL")!;
 const SRK = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -63,6 +64,30 @@ const ROUTES_NO: Record<string, [number, number][]> = {
   "E10 Narvik→Å i Lofoten":     [[17.43,68.44],[16.70,68.50],[15.90,68.60],[15.00,68.55],[14.20,68.30],[13.60,68.15],[13.00,67.95]],
   "E8 Skibotn→Kilpisjärvi":     [[20.28,69.39],[20.50,69.20],[20.60,69.10],[20.79,69.05]],
   "Rv15 Otta→Stryn":            [[9.53,61.77],[8.90,61.90],[8.20,62.00],[7.60,62.00],[6.72,61.91]],
+};
+
+// Danmark (#36): tjugo referenslinjer — motorvägsnätet + Limfjorden, Bornholm, öarna.
+const ROUTES_DK: Record<string, [number, number][]> = {
+  "E45 Padborg→Kolding":          [[9.36,54.82],[9.42,55.04],[9.50,55.25],[9.47,55.49]],
+  "E45 Kolding→Aarhus":           [[9.47,55.49],[9.75,55.57],[9.54,55.71],[9.85,55.86],[10.05,56.00],[10.20,56.16]],
+  "E45 Aarhus→Aalborg":           [[10.20,56.16],[10.04,56.46],[9.85,56.65],[9.73,56.90],[9.92,57.05]],
+  "E45 Aalborg→Frederikshavn":    [[9.92,57.05],[10.10,57.20],[10.30,57.35],[10.54,57.44]],
+  "E39 Aalborg→Hirtshals":        [[9.92,57.05],[9.90,57.30],[9.96,57.59]],
+  "E20 Esbjerg→Kolding":          [[8.45,55.47],[8.90,55.50],[9.20,55.50],[9.47,55.49]],
+  "E20 Kolding→Odense":           [[9.47,55.49],[9.75,55.57],[10.05,55.48],[10.39,55.40]],
+  "E20 Odense→Storebælt→Slagelse":[[10.39,55.40],[10.79,55.31],[11.00,55.33],[11.14,55.33],[11.35,55.40]],
+  "E20 Slagelse→København":       [[11.35,55.40],[11.75,55.45],[12.08,55.55],[12.45,55.63],[12.57,55.68]],
+  "E47 København→Rødby":          [[12.57,55.68],[12.18,55.46],[11.98,55.25],[11.87,54.77],[11.39,54.66]],
+  "E47 København→Helsingør":      [[12.57,55.68],[12.50,55.80],[12.55,55.92],[12.61,56.03]],
+  "Rv21 København→Kalundborg":    [[12.57,55.68],[12.08,55.64],[11.70,55.65],[11.40,55.68],[11.09,55.68]],
+  "Rv16 København→Hillerød":      [[12.57,55.68],[12.45,55.78],[12.31,55.93]],
+  "Rv15 Aarhus→Grenaa":           [[10.20,56.16],[10.45,56.25],[10.70,56.35],[10.88,56.41]],
+  "Rv15 Aarhus→Herning":          [[10.20,56.16],[9.85,56.15],[9.55,56.17],[8.98,56.14]],
+  "Rv13 Vejle→Viborg":            [[9.54,55.71],[9.50,56.00],[9.40,56.25],[9.40,56.45]],
+  "Rv26 Aarhus→Viborg→Skive":     [[10.20,56.16],[9.80,56.30],[9.40,56.45],[9.03,56.57]],
+  "Rv11 Holstebro→Thisted":       [[8.62,56.36],[8.55,56.65],[8.62,56.85],[8.69,56.95]],
+  "E20 Esbjerg→Ribe→Padborg":     [[8.45,55.47],[8.77,55.33],[9.10,55.10],[9.36,54.82]],
+  "Rv38 Rønne→Nexø (Bornholm)":   [[14.70,55.10],[14.85,55.10],[15.00,55.08],[15.13,55.06]],
 };
 
 const ROUTES: Record<string, [number, number][]> = {
@@ -152,7 +177,7 @@ Deno.serve(async (req) => {
   try {
     const land = (new URL(req.url).searchParams.get("land") ?? "se").toLowerCase();
     const CDN = CDN_BY_LAND[land]; if (!CDN) return new Response("okänt land", { status: 400 });
-    const routes = land === "fi" ? ROUTES_FI : land === "no" ? ROUTES_NO : ROUTES;
+    const routes = land === "fi" ? ROUTES_FI : land === "no" ? ROUTES_NO : land === "dk" ? ROUTES_DK : ROUTES;
     const bust = `?t=${Date.now()}`;
     const [st, lv] = await Promise.all([
       fetch(CDN + "static.json" + bust).then((r) => r.json()),

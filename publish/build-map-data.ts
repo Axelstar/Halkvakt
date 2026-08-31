@@ -34,7 +34,11 @@ const vader = await pool.query(`
   UNION ALL
   SELECT 'FI', station_id, name, sample_time, surface_temp_c, air_temp_c, precipitation, rain, snow,
          ST_AsGeoJSON(geom)::json
-  FROM fi.weather_latest WHERE surface_temp_c IS NOT NULL`);
+  FROM fi.weather_latest WHERE surface_temp_c IS NOT NULL
+  UNION ALL
+  SELECT 'DK', station_id, name, sample_time, surface_temp_c, air_temp_c, precipitation, rain, snow,
+         ST_AsGeoJSON(geom)::json
+  FROM dk.weather_latest WHERE surface_temp_c IS NOT NULL`);
 write("vader.geojson", fc(vader.rows.map(r => ({
   type: "Feature", geometry: r.g,
   properties: { land: r.land, name: r.name, t: r.sample_time,
@@ -52,6 +56,12 @@ const olyckor = await pool.query(`
   SELECT 'FI', deviation_id, message_type, message, severity_text, road_number, start_time,
          ST_AsGeoJSON(geom)::json
   FROM fi.deviations
+  WHERE NOT deleted AND geom IS NOT NULL AND (end_time IS NULL OR end_time > now())
+    AND message_type_value = 'Accident'
+  UNION ALL
+  SELECT 'DK', deviation_id, message_type, message, severity_text, road_number, start_time,
+         ST_AsGeoJSON(geom)::json
+  FROM dk.deviations
   WHERE NOT deleted AND geom IS NOT NULL AND (end_time IS NULL OR end_time > now())
     AND message_type_value = 'Accident'`);
 write("olyckor.geojson", fc(olyckor.rows.map(r => ({
