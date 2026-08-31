@@ -211,3 +211,11 @@ Trafikverkets officiella rapport FÖRE köbildning: därför graderas olycksrepl
 efter allvarlighet och det allvarliga sägs TIDIGT (10 km, medan avfarter
 återstår) med "överväg annan väg" — förarens kartapp exekverar omvägen.
 Inga skärmknappar under körning (heads-down-principen, jfr #23).
+
+## #29 (31/8 2026) Utgivarnamnet: Lagerlöf Labs
+Ägarbeslut (Axel). Gemensamt utgivarvarumärke för alla appar från Axel & Bengt.
+Konsekvenser: bundle-ID-mönster `se.lagerloflabs.<app>` för nya appar (Halkvakt
+behåller `se.halkvakt.app`); domäner lagerloflabs.com/.app/.se lediga 31/8 —
+köps vid behov; App Store visar juridiskt namn tills organisation finns, då byts
+säljarnamnet till Lagerlöf Labs (AB/förening). Namnet används redan nu i
+butikstexter, webb och e-postsignaturer där varumärke efterfrågas.
