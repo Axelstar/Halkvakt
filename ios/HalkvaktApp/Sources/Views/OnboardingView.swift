@@ -95,7 +95,7 @@ struct OnboardingView: View {
         OnboardingPage(
             icon: "car.fill",
             title: "Starta av sig själv — en gång, sedan aldrig mer",
-            text: "Apple låter inte appar starta sig själva i bilen, så du bygger en automation i Genvägar. Det tar en minut. Vakten stoppar sig själv när bilen stått still en kvart."
+            text: "Apple låter inte appar starta sig själva i bilen, så du bygger en automation i Genvägar. Svara på en fråga så får du bara de steg som gäller dig."
         ) {
             AutostartGuideView()
         }

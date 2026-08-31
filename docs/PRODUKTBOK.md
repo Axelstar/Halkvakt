@@ -162,23 +162,21 @@ utan att du gör något, och stannar när bilen kopplas från. Rörelseigenkänn
 även bilar utan Bluetooth. Inget att ställa in.
 
 **iPhone:** Apple låter inte appar starta sig själva. Vägen runt är en automation i
-Genvägar som du bygger en gång — guiden finns i Inställningar → *Autostart i bilen*.
-Du väljer själv vad som ska utlösa den:
+Genvägar som du bygger en gång. Guiden — i introduktionen och under Inställningar →
+*Autostart i bilen* — ställer först **en fråga: hur kopplar du telefonen i bilen?** och
+visar sedan bara de steg som gäller dig:
 
-- **Bluetooth — bäst om bilen har det.** Parkoppla, välj bilen → *Är ansluten*. Startar
-  i samma sekund bilen vaknar, och bara i din bil — aldrig på bussen.
-- **Fokus Kör — annars.** Inställningar → Fokus → Kör → *Aktivera automatiskt* → *När du
-  kör*; telefonen känner av körningen med rörelsesensorerna. Utlösare: *Kör slås på*.
-  Fångar även pendlingen utan karta. Behöver några minuters körning innan den är säker.
-- **Kartappen — som komplement.** *App → Google Maps eller Kartor → öppnas*. Enklast att
-  förstå, men skyddar bara resor där du öppnar kartan — och det gör man sällan på vägen
-  man känner, där halkan överraskar.
-- **Laddaren.** Laddar du i bilen: *Laddare → ansluts*.
+- **CarPlay** → Genvägar: *CarPlay → Ansluts* → Starta vakten. Startar när bilens skärm
+  tänds. Fyra steg.
+- **Bluetooth** (handsfree/musik, ingen CarPlay) → Genvägar: *Bluetooth → din bil → Är
+  ansluten* → Starta vakten. Startar när bilen vaknar, bara i din bil. Fyra steg.
+- **Inte alls** (kartan på mobilen) → Inställningar → Fokus → Kör → *Aktivera automatiskt*
+  → *När du kör*; sedan Genvägar: *Fokus → Kör → Slås på* → Starta vakten. Telefonen
+  känner av körningen själv. Fem steg. Kör du oftast med kartan framme: lägg till
+  *App → Google Maps → Öppnas* som en andra automation, så hinner vakten före Fokus.
 
-Sedan: *Kör direkt* (inte *Fråga innan*) → sök "Halkvakt" → *Starta vakten*. **Det räcker.**
-Vakten stoppar sig själv när bilen stått still i en kvart, så ingen stopp-automation
-behövs. Vill du ändå ha ett direkt stopp finns *Stoppa vakten* att koppla till
-motsatsen (frånkopplad, Kör stängs av).
+I alla tre: välj *Kör direkt* (inte *Fråga innan*). **Det räcker.** Vakten stoppar sig
+själv när bilen stått still i en kvart. Svaret går att byta i Inställningar.
 
 Ge Halkvakt platsen **"Alltid"** så startar vakten tyst i bakgrunden och kartan stannar
 kvar på skärmen. Med "Vid användning" visas Halkvakt en kort stund vid starten och du

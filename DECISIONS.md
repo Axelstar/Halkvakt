@@ -366,3 +366,11 @@ hoppbart, allt ändringsbart, visas igen från Inställningar. Platsen begärs d
 vakten startar (ny requestLocationPermission + startRequested-vakt i delegaten: tidigare
 startade vakten i soffan i samma sekund tillståndet gavs). Android får samma intro i
 nästa varv — inte nu, iOS är testplattformen.
+
+## #37 (31/8 2026) En fråga före stegen (Axels fråga: "min setup är olik pappas")
+Autostart-guiden ställer EN fråga — hur kopplas telefonen i bilen? — och visar bara
+de steg som gäller svaret. CarPlay ⇒ utlösaren "CarPlay → Ansluts" (finns i Genvägar,
+precisare än Bluetooth: startar när bilens skärm tänds). Bluetooth ⇒ "Är ansluten".
+Inte alls ⇒ Fokus Kör, med kartappen som frivillig andra automation. Svaret sparas
+(Prefs.carSetup) så Inställningar visar samma guide, bytbart. Bengt ska aldrig läsa
+om Fokus Kör; Axel aldrig om CarPlay.

@@ -1,56 +1,115 @@
-// Engångsguiden för #22: hur man bygger Bluetooth-automationen i Genvägar.
-// Visas som en panel i Inställningar. Ingen egen state — Genvägar äger automationen,
-// vi kan varken läsa eller skapa den åt användaren (Apples lås). Vi kan bara förklara
-// och öppna rätt app.
+// Autostart-guiden (#22, DECISIONS #34/#37). Först EN fråga — hur kopplas telefonen i
+// bilen? — sedan bara de steg som gäller det svaret. Bengt med CarPlay ska inte läsa om
+// Fokus Kör; Axel utan CarPlay ska inte läsa om CarPlay. Svaret sparas så Inställningar
+// visar samma guide, med möjlighet att byta.
+// Genvägar äger automationen; vi kan varken läsa eller skapa den (Apples lås). Vi förklarar
+// och öppnar rätt app. Vakten stoppar sig själv (DECISIONS #35), så en automation räcker.
 import SwiftUI
 
 struct AutostartGuideView: View {
     @Environment(\.openURL) private var openURL
+    @State private var prefs = Prefs.shared
 
     var body: some View {
         Panel {
-            Text("Vakten kan starta av sig själv — via en automation i Genvägar. Det tar en minut, en gång. Välj den utlösare som passar din bil:")
-                .foregroundStyle(Brand.text)
-
-            VStack(alignment: .leading, spacing: 6) {
-                TriggerRow(title: "Bluetooth — bäst om bilen har det", sub: "Parkoppla, välj bilen → Är ansluten. Startar när bilen vaknar, bara i din bil.")
-                TriggerRow(title: "Fokus Kör — annars", sub: "Inställningar → Fokus → Kör → Aktivera automatiskt → När du kör. Utlösare: Kör slås på. Fångar även resor utan karta.")
-                TriggerRow(title: "Kartappen — som komplement", sub: "App → Google Maps eller Kartor → öppnas. Missar resor där du inte öppnar kartan.")
-                TriggerRow(title: "Laddaren", sub: "Laddar du i bilen: Laddare → ansluts")
+            if let setup = prefs.carSetup {
+                steps(for: setup)
+                Button("Byt bilkoppling") { prefs.carSetup = nil }
+                    .font(.system(size: 13)).foregroundStyle(Brand.dim)
+            } else {
+                question
             }
+        }
+    }
 
-            VStack(alignment: .leading, spacing: 8) {
-                GuideStep(n: 1, text: "Öppna Genvägar → fliken Automation → +")
-                GuideStep(n: 2, text: "Välj din utlösare ovan")
-                GuideStep(n: 3, text: "Välj Kör direkt (inte Fråga innan) → Nästa")
-                GuideStep(n: 4, text: "Sök \"Halkvakt\" → välj Starta vakten → Klar")
-            }
+    // MARK: - Frågan
 
-            Text("Det räcker. Vakten stoppar sig själv när bilen stått still i en kvart — ingen stopp-automation behövs.")
+    private var question: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Hur kopplar du telefonen i bilen?")
+                .font(.system(size: 17, weight: .semibold)).foregroundStyle(Brand.text)
+            ChoiceButton(title: "CarPlay", sub: "Bilens skärm visar telefonen") { prefs.carSetup = .carplay }
+            ChoiceButton(title: "Bluetooth", sub: "Handsfree eller musik, men ingen CarPlay") { prefs.carSetup = .bluetooth }
+            ChoiceButton(title: "Inte alls", sub: "Kartan på mobilen, telefonen i facket") { prefs.carSetup = .none }
+        }
+    }
+
+    // MARK: - Stegen per svar
+
+    @ViewBuilder
+    private func steps(for setup: CarSetup) -> some View {
+        switch setup {
+        case .carplay:
+            Intro("Vakten startar när bilens skärm tänds. En automation i Genvägar, en gång.")
+            GuideStep(n: 1, text: "Öppna Genvägar → fliken Automation → +")
+            GuideStep(n: 2, text: "Välj CarPlay → Ansluts")
+            GuideStep(n: 3, text: "Välj Kör direkt (inte Fråga innan) → Nästa")
+            GuideStep(n: 4, text: "Sök \"Halkvakt\" → välj Starta vakten → Klar")
+            openShortcuts
+        case .bluetooth:
+            Intro("Vakten startar när bilen kopplar upp. Parkoppla telefonen med bilen först om du inte redan gjort det.")
+            GuideStep(n: 1, text: "Öppna Genvägar → fliken Automation → +")
+            GuideStep(n: 2, text: "Välj Bluetooth → välj din bil → Är ansluten")
+            GuideStep(n: 3, text: "Välj Kör direkt (inte Fråga innan) → Nästa")
+            GuideStep(n: 4, text: "Sök \"Halkvakt\" → välj Starta vakten → Klar")
+            openShortcuts
+        case .none:
+            Intro("Telefonen känner själv av när du kör, med rörelsesensorerna. Två inställningar, en gång.")
+            GuideStep(n: 1, text: "Inställningar → Fokus → Kör → Aktivera automatiskt → När du kör")
+            GuideStep(n: 2, text: "Öppna Genvägar → fliken Automation → +")
+            GuideStep(n: 3, text: "Välj Fokus → Kör → Slås på")
+            GuideStep(n: 4, text: "Välj Kör direkt (inte Fråga innan) → Nästa")
+            GuideStep(n: 5, text: "Sök \"Halkvakt\" → välj Starta vakten → Klar")
+            Text("Kör du oftast med kartan framme kan du lägga till en automation till: App → Google Maps eller Kartor → Öppnas → Starta vakten. Då hinner vakten före Fokus.")
                 .font(.system(size: 13)).foregroundStyle(Brand.dim)
-
-            Text("Ge Halkvakt platsen \"Alltid\" så startar vakten tyst i bakgrunden och kartan stannar på skärmen. Med \"Vid användning\" visas Halkvakt en kort stund vid starten.")
-                .font(.system(size: 13)).foregroundStyle(Brand.dim)
-
             Button {
-                if let url = URL(string: "shortcuts://") { openURL(url) }
+                if let url = URL(string: "App-prefs:") { openURL(url) }
             } label: {
-                Label("Öppna Genvägar", systemImage: "arrow.up.forward.app")
+                Label("Öppna Inställningar", systemImage: "gearshape")
                     .foregroundStyle(Brand.yellow)
             }
-            .accessibilityHint("Öppnar appen Genvägar där automationen skapas")
+            .accessibilityHint("Öppnar telefonens inställningar, där Fokus finns")
+            openShortcuts
         }
+        Text("Det räcker. Vakten stoppar sig själv när bilen stått still i en kvart. Ge Halkvakt platsen \"Alltid\" så startar den tyst i bakgrunden.")
+            .font(.system(size: 13)).foregroundStyle(Brand.dim)
+    }
+
+    private var openShortcuts: some View {
+        Button {
+            if let url = URL(string: "shortcuts://") { openURL(url) }
+        } label: {
+            Label("Öppna Genvägar", systemImage: "arrow.up.forward.app")
+                .foregroundStyle(Brand.yellow)
+        }
+        .accessibilityHint("Öppnar appen Genvägar där automationen skapas")
     }
 }
 
-private struct TriggerRow: View {
+private struct Intro: View {
+    let text: String
+    init(_ text: String) { self.text = text }
+    var body: some View { Text(text).foregroundStyle(Brand.text) }
+}
+
+private struct ChoiceButton: View {
     let title: String
     let sub: String
+    let action: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(title).font(.system(size: 15, weight: .semibold)).foregroundStyle(Brand.text)
-            Text(sub).font(.system(size: 13)).foregroundStyle(Brand.dim)
+        Button(action: action) {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title).font(.system(size: 15, weight: .semibold)).foregroundStyle(Brand.text)
+                    Text(sub).font(.system(size: 13)).foregroundStyle(Brand.dim)
+                }
+                Spacer()
+                Image(systemName: "chevron.right").foregroundStyle(Brand.yellow)
+                    .accessibilityHidden(true)
+            }
+            .padding(12)
+            .background(Brand.bg, in: RoundedRectangle(cornerRadius: 12))
         }
         .accessibilityElement(children: .combine)
     }

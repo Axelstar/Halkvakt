@@ -39,6 +39,8 @@ final class Prefs {
     var lastSaidAt: Date? { didSet { d.set(lastSaidAt, forKey: "k.lastSaidAt") } }
     /// Introduktionen visad? (DECISIONS #36) Kan nollställas från Inställningar.
     var onboardingDone: Bool { didSet { d.set(onboardingDone, forKey: "k.onboardingDone") } }
+    /// Hur telefonen kopplas till bilen — styr vilka autostart-steg som visas (DECISIONS #37).
+    var carSetup: CarSetup? { didSet { d.set(carSetup?.rawValue, forKey: "k.carSetup") } }
 
     private init() {
         accident = d.object(forKey: "k.accident") as? Bool ?? true
@@ -50,6 +52,7 @@ final class Prefs {
         lastSaidText = d.string(forKey: "k.lastSaidText")
         lastSaidAt = d.object(forKey: "k.lastSaidAt") as? Date
         onboardingDone = d.bool(forKey: "k.onboardingDone")
+        carSetup = d.string(forKey: "k.carSetup").flatMap(CarSetup.init(rawValue:))
     }
 
     /// Tystad kategori: motorn minns, munnen tiger — samma princip som Android.
@@ -72,4 +75,11 @@ final class Prefs {
         case .camera: return "Fartkamera"
         }
     }
+}
+
+/// Tre svar på en fråga: "Hur kopplar du telefonen i bilen?" Var och en har sin egen
+/// bästa utlösare. Frågan ställs i introduktionen; svaret styr guiden.
+enum CarSetup: String, CaseIterable, Identifiable {
+    case carplay, bluetooth, none
+    var id: String { rawValue }
 }
