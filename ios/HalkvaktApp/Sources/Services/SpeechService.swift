@@ -80,6 +80,9 @@ final class Prefs {
 /// Tre svar på en fråga: "Hur kopplar du telefonen i bilen?" Var och en har sin egen
 /// bästa utlösare. Frågan ställs i introduktionen; svaret styr guiden.
 enum CarSetup: String, CaseIterable, Identifiable {
-    case carplay, bluetooth, none
+    // OBS: heter INTE `none`. På en optional CarSetup? tolkar Swift `.none` som
+    // Optional.none (= nil), inte som vårt fall — knappen "Inte alls" sparade ingenting.
+    // Fångat på Axels telefon 31/8.
+    case carplay, bluetooth, noConnection
     var id: String { rawValue }
 }

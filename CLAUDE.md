@@ -143,3 +143,7 @@ i samma commit när de överlappar.
   som en scrollbar lista — inte sökbara bland åtgärder. Axel gick rakt i fällan 31/8 trots
   att guiden sa "fliken Automation". Deeplink shortcuts://create-automation (odokumenterad,
   Vox Silva) landar rätt; steg 1 måste ändå namnge fel-plusset uttryckligen.
+- Döp aldrig ett enum-fall till `none` om typen någonsin används som optional: `x = .none`
+  på `Enum?` blir `Optional.none` (nil), tyst, utan varning. CarSetup.none → "Inte alls"
+  sparade ingenting (Axels telefon 31/8). Använd `noConnection`, `off`, `manual` — vad som
+  helst utom `none`.

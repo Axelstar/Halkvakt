@@ -27,20 +27,21 @@ struct OnboardingView: View {
                 .tabViewStyle(.page(indexDisplayMode: .always))
                 .indexViewStyle(.page(backgroundDisplayMode: .always))
 
-                HStack {
-                    if page < pages - 1 {
-                        Button("Hoppa över") { dismiss() }
-                            .foregroundStyle(Brand.dim)
-                    }
-                    Spacer()
+                HStack(spacing: 16) {
+                    Button("Hoppa över") { dismiss() }
+                        .font(.system(size: 16))
+                        .foregroundStyle(Brand.dim)
+                        .opacity(page < pages - 1 ? 1 : 0)   // håller platsen så Nästa/Klar inte hoppar
+                        .frame(minWidth: 96, alignment: .leading)
                     PillButton(title: page < pages - 1 ? "Nästa" : "Klar",
                                icon: page < pages - 1 ? "chevron.right" : "checkmark",
                                color: Brand.green) {
                         if page < pages - 1 { withAnimation { page += 1 } } else { dismiss() }
                     }
-                    .frame(maxWidth: 200)
                 }
-                .padding(18)
+                .padding(.horizontal, 18)
+                .padding(.top, 8)
+                .padding(.bottom, 12)
             }
         }
         .preferredColorScheme(.dark)

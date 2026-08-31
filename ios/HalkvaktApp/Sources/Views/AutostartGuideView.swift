@@ -31,12 +31,13 @@ struct AutostartGuideView: View {
     // MARK: - Frågan
 
     private var question: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 8) {
             Text("Hur kopplar du telefonen i bilen?")
                 .font(.system(size: 17, weight: .semibold)).foregroundStyle(Brand.text)
+                .padding(.bottom, 4)
             ChoiceButton(title: "CarPlay", sub: "Bilens skärm visar telefonen") { prefs.carSetup = .carplay }
             ChoiceButton(title: "Bluetooth", sub: "Handsfree eller musik, men ingen CarPlay") { prefs.carSetup = .bluetooth }
-            ChoiceButton(title: "Inte alls", sub: "Kartan på mobilen, telefonen i facket") { prefs.carSetup = .none }
+            ChoiceButton(title: "Inte alls", sub: "Kartan på mobilen, telefonen i facket") { prefs.carSetup = .noConnection }
         }
     }
 
@@ -59,7 +60,7 @@ struct AutostartGuideView: View {
             GuideStep(n: 3, text: "Välj Kör direkt (inte Fråga innan) → Nästa")
             GuideStep(n: 4, text: "Sök \"Halkvakt\" → välj Starta vakten → Klar")
             openShortcuts
-        case .none:
+        case .noConnection:
             Intro("Telefonen känner själv av när du kör, med rörelsesensorerna. Två inställningar, en gång.")
             GuideStep(n: 1, text: "Inställningar → Fokus → Kör → Aktivera automatiskt → När du kör")
             GuideStep(n: 2, text: "I Genvägar: fliken Automation LÄNGST NER i mitten → Ny automation. (Inte + uppe till höger — det gör en genväg, inte en automation.)")
@@ -122,9 +123,13 @@ private struct ChoiceButton: View {
                 Image(systemName: "chevron.right").foregroundStyle(Brand.yellow)
                     .accessibilityHidden(true)
             }
-            .padding(12)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 12)
+            .frame(maxWidth: .infinity)
             .background(Brand.bg, in: RoundedRectangle(cornerRadius: 12))
+            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Brand.yellow.opacity(0.25), lineWidth: 1))
         }
+        .buttonStyle(.plain)
         .accessibilityElement(children: .combine)
     }
 }
