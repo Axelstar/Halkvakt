@@ -68,7 +68,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     // börjar där förra slutade: hemma, jobbet, affären. Betydande förflyttning är kvar
     // som reserv för första resan efter installation, när ingen parkering är känd.
     private static let parkingRadiusM: CLLocationDistance = 150
-    private static let parkingRegionId = "halkvakt.parkering"
+    nonisolated private static let parkingRegionId = "halkvakt.parkering"   // läses från CoreLocations tråd
 
     override private init() {
         super.init()
