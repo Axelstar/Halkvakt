@@ -15,7 +15,6 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 - [ ] TestFlight intern: dig själv + Bengt i gruppen Lagerlöf Labs → TestFlight-appen på båda telefonerna
 - [ ] TestFlight extern: Kompisarna — Test Information (utan inloggning!) → **Submit for Review**
 - [ ] **Google Play Console** (25 USD) — Android-spåret väntar, 14-dagarsklockan startar vid betalning
-- [ ] Kronjuvelerna: upload-nyckel + lösenord in i lösenordshanteraren (öppet sedan helgen)
 - [ ] När Apple godkänt betan: publika länken till kompisarna (välkomsttext från Claude)
 
 **Claude:**
@@ -76,6 +75,7 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] **Kronjuvelerna säkrade** (31/8): ny upload-nyckel i Lagerlöf Labs namn, lösenord i Apples Lösenord-app, jks i iCloud Drive/Halkvakt-nycklar, CI-secrets roterade
 - [x] 🚀 **HALKVAKT 0.3.0 (3) UPPLADDAT TILL APP STORE CONNECT** (mån 31/8 ~10:10) — 90 min från
   kontoköp till inlämnat bygge. Varv som krävdes: team-cache (omstart), version 1.0→0.3.0
   (plist-koppling), iPad-orienteringar (iPhone-only). Nästa: Apples behandling → TestFlight.
