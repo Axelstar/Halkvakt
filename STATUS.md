@@ -411,3 +411,9 @@ Axel: "vi bör täcka Skandinavien snart" → arkivet börjar före produkten. s
 fött låst), ingest/fi.ts, ingest-fi.yml var 30:e min. Första körningen grön: 526 stationer,
 526 arkiverade, 10 händelser, 0 läckta rader till Sverige. Sensorfel-filter inlagt efter
 fyndet i Rovaniemi. Kvar: tre finska skuggrutter i skuggmotorn.
+
+## 2026-08-31 sen kväll — 🇫🇮 Finska testbilarna kör + skuggmotorn buntad (DECISIONS #43)
+Skuggmotorn hade handklistrad motor från igår ⇒ körde utan olyckslyftet hela dagen. Nu
+genererad ur engine/src, CI-vaktad, deployad. ?land=fi: tre finska rutter, egen snapshot,
+land-kolumn i shadow_log, cron 15,45, rapport + sida med växel. Bevisat skarpt: 4 814
+fixar, 0 larm, SE orörd (131 körningar). Sidan: testbilarna.html → 🇫🇮 Finland.

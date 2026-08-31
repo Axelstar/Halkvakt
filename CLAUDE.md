@@ -153,3 +153,7 @@ i samma commit när de överlappar.
   "Aktivera med CarPlay" — EN automation ("Kör slås på → Starta vakten") skulle kunna täcka
   alla tre bilkopplingarna. Genvägars direkta CarPlay/Bluetooth-utlösare är färre steg, så
   guiden behåller tre spår; men det är ett kandidatsätt att förenkla till ett spår.
+- Klistra ALDRIG motorkod in i en edge function. Skuggmotorn körde ett dygn på gammal motor
+  efter #28 utan att någon märkte det — rapportsidan såg levande ut. Regel: index.ts är
+  genererad (scripts/bundle-skuggmotor.ts), källan är engine/src, CI kör --check.
+  Efter varje motorändring: bunta + deploya skuggmotor i samma varv som testerna.

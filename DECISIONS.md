@@ -435,3 +435,13 @@ Vägarbeten ("tietyö") stängs ute som i #5. Första körningen: 526 stationer,
 NÄSTA VARV: tre finska skuggrutter i skuggmotorn (E18 Åbo–Helsingfors, vt4/E75
 Helsingfors–Lahtis, vt8 Vasa–Uleåborg) så "fejkresorna" kör. Inga användare, ingen röst —
 Finland får en vinter av facit i mars 2027 utan att en enda finne märker något.
+
+## #43 (31/8 2026) Skuggmotorn buntas, inte klistras — och Finland kör (Axel: "visa de finska bilarna också")
+FYND: supabase/functions/skuggmotor/index.ts bar en HANDKLISTRAD kopia av engine/src från
+före dagens arbete. Skuggflottan körde alltså hela 31/8 utan olyckslyftet — de tre
+olycksreplikerna på rapportsidan var den gamla texten, och "levande testdata för #28"
+var sant för snapshoten men inte för motorn. Beslut: index.ts är nu GENERERAD av
+scripts/bundle-skuggmotor.ts ur engine/src + main.ts; CI fallerar om den driver.
+FINLAND: ?land=fi kör tre rutter mot data/app/fi/v1 (build-snapshot-fi.ts i publiceringen),
+loggar med land='FI' i shadow_log, cron 15,45. Rapporten tar ?land, sidan har SE/FI-växel.
+Bevisat: 4 814 fixar, 0 larm (augusti), Sverige orörd. Facit-bilder bara i Sverige.

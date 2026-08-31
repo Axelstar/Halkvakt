@@ -48,8 +48,7 @@ med släckt skärm, vakten stannar när du stänger av.
 **Claude — i väntan på Macen:**
 - [ ] Introduktionen på Android (spegel av iOS, DECISIONS #36) — efter att iOS-varianten testats
 - [ ] #31 Trafikverksbevakningen (litet, olåst, kan bevisas härifrån)
-- [ ] **#34 Finska skuggrutter** — arkivet är LIVE (31/8 kväll, 526 stationer var 30:e min).
-  Kvar: tre rutter i skuggmotorn så fejkresorna kör, + Vegvesen-koll för Norge.
+
 - [x] ~~Testinstruktion till Bengt~~ ✅ docs/TEST-BENGT-0.3.2.md (31/8) — skicka länken ikväll
 - [ ] Välkomsttext + testinstruktion till kompisarna
 - [ ] Play: uppladdningsguide för den CI-signerade AAB:n så fort hemligheten är satt
@@ -142,6 +141,9 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] 🇫🇮 **FINSKA TESTBILARNA KÖR** (31/8 kväll): tre rutter var 30:e min mot finsk snapshot,
+  SE/FI-växel på testbilarna.html. Bonusfynd: skuggmotorn körde gammal motor — nu buntad
+  ur engine/src med CI-vakt (DECISIONS #43).
 - [x] 🇫🇮 **FINSKT SKUGGARKIV LIVE** (31/8 kväll): schema fi, Fintraffic var 30:e min, 526
   stationer + trafikmeddelanden, isolerat från Sverige. Facit börjar tickas innan produkten finns.
 - [x] 🚀 **0.3.2 (5) UPPLADDAT** (31/8 ~14:50) — hela dagens batch: olyckslyftet, heads-up,
