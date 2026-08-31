@@ -10,6 +10,20 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 
 ## 🔴 ATT GÖRA
 
+### IDAG (mån 31/8 — uppskjutningsdagen)
+**Axel:**
+- [ ] TestFlight intern: dig själv + Bengt i gruppen Lagerlöf Labs → TestFlight-appen på båda telefonerna
+- [ ] TestFlight extern: Kompisarna — Test Information (utan inloggning!) → **Submit for Review**
+- [ ] **Google Play Console** (25 USD) — Android-spåret väntar, 14-dagarsklockan startar vid betalning
+- [ ] Kronjuvelerna: upload-nyckel + lösenord in i lösenordshanteraren (öppet sedan helgen)
+- [ ] När Apple godkänt betan: publika länken till kompisarna (välkomsttext från Claude)
+
+**Claude:**
+- [ ] Fotostudion tag 2 — facit ur CI + produktboken
+- [ ] Välkomsttext + testinstruktion till kompisarna
+- [ ] Play: uppladdningsguide för den CI-signerade AAB:n så fort kontot finns
+- [ ] FRYSEN SLÄPPER vid betagodkännande ⇒ v0.3.1-batchen: #22 autostart, #23 heads-up, #24 skinnet, #28 olyckslyftet
+
 ### Axel — IDAG ⚠️
 - [ ] **Säkra kronjuvelerna:** filerna `halkvakt-upload-nyckel.jks` + `losenord.txt` (levererade i chatten) sparas i lösenordshanterare/säker molnmapp — ALDRIG delas, aldrig bara i Hämtade filer. Det är nyckeln varje framtida Halkvakt-version signeras med; krypterad kopia finns i GitHub men din nedladdning är originalet. Bocka av här när de ligger säkert.
 
