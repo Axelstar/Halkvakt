@@ -19,6 +19,8 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     var lastLoc: (lon: Double, lat: Double)?
     var currentWarning: Alert?
     var history: [Alert] = []
+    /// Platsen är avslagen (Aldrig/begränsad) — knappen kan inte starta; UI ska säga varför.
+    var locationDenied = false
 
     // Körlägesstatistik
     var startedAt: Date?
@@ -87,7 +89,9 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
 
     func requestPermissionAndStart() {
         startRequested = true
-        switch manager.authorizationStatus {
+        let status = manager.authorizationStatus
+        print("[Vakten] start begärd, platstillstånd = \(status.rawValue)")
+        switch status {
         case .notDetermined:
             manager.requestWhenInUseAuthorization()
         case .authorizedWhenInUse:
@@ -97,12 +101,15 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         case .authorizedAlways:
             start()
         default:
-            break
+            // Aldrig/begränsad. En knapp får inte svälja trycket tyst (Axel 31/8):
+            // UI visar en rad med vägen till Inställningar.
+            locationDenied = true
         }
     }
 
     private func start() {
         guard !running else { return }
+        print("[Vakten] startar")
         running = true
         startedAt = .now
         lastMovedAt = .now
@@ -133,6 +140,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         Task { @MainActor in
             self.authStatus = status
             if status == .authorizedWhenInUse || status == .authorizedAlways {
+                self.locationDenied = false
                 if !self.running && self.startRequested { self.requestPermissionAndStart() }
                 else { self.manager.allowsBackgroundLocationUpdates = status == .authorizedAlways }
             }

@@ -27,6 +27,9 @@ struct VaktenView: View {
                                color: guardM.running ? Brand.yellow : Brand.green) {
                         guardM.running ? guardM.stop() : guardM.requestPermissionAndStart()
                     }
+                    if guardM.locationDenied {
+                        LocationDeniedRow()
+                    }
                 }
 
                 if !guardM.running {
