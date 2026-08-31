@@ -46,3 +46,8 @@ targets:
           Med "Alltid" kan vakten varna även när skärmen är släckt under körning.
           All matchning sker lokalt — positionen lämnar aldrig enheten.
         ITSAppUsesNonExemptEncryption: false
+        UIAppFonts:   # skinnet v3 — Instrument Sans + IBM Plex Mono (OFL), Sources/Fonts
+          - InstrumentSans.ttf
+          - IBMPlexMono-Regular.ttf
+          - IBMPlexMono-Medium.ttf
+          - IBMPlexMono-SemiBold.ttf

@@ -477,3 +477,15 @@ och självstopp; hemskärmens kort visar "Vaknade själv 18:42 · körde 23 min"
 ## #40 — BEVISAT 31/8 16:00
 Bengt, CarPlay, färsk installation, Alltid: vakten startade själv på första körningen.
 Ingen parkering känd ⇒ betydande förflyttning-vägen. Skärmbild: körläge 6:03 / 4,3 km.
+
+## #47 (31/8 2026 kväll) Skinnet v3 portat — 1a som stomme, 1b:s hemskärm och varningskort, 1c bort
+Axel ritade i Claude Design mot DESIGN-BRIEF.md; tre riktningar kom tillbaka. Beslut:
+1c (kartan i mitten) BORT — strider mot #28, skärmen är sekundär. 1b:s "Redo." med ett
+ord och en knapp blir hemskärm; 1b:s helgula varningskort tar över, UTAN "Uppfattat"
+(kortet försvinner själv — regeln om inga knappar under körning). 1a:s körläge och
+inställningar behålls. Exporten docs/design/Halkvakt-App-v3.dc.html är källan;
+tokens i Theme.swift är designens: bg #080B0D, panel #0F1518, gul #FFC94A, grön #1FB25A,
+text #E9EFF2/#C7D3D9/#8FA0A9/#6C7B84. Typsnitt Instrument Sans + IBM Plex Mono (OFL),
+buntade. Trettio typstorlekar blev Typo.sans/mono med designens skala. Röstväljaren
+ersatt av "Halkvakt talar med iOS-rösten du valt i systemet". Genvägar-guiden fällbar.
+INTE KOMPILERAT — Axels Mac i morgon. Android får samma skinn i nästa varv.

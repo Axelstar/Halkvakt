@@ -29,7 +29,7 @@ struct OnboardingView: View {
 
                 HStack(spacing: 16) {
                     Button("Hoppa över") { dismiss() }
-                        .font(.system(size: 16))
+                        .font(Typo.sans(16))
                         .foregroundStyle(Brand.dim)
                         .opacity(page < pages - 1 ? 1 : 0)   // håller platsen så Nästa/Klar inte hoppar
                         .frame(minWidth: 96, alignment: .leading)
@@ -57,7 +57,7 @@ struct OnboardingView: View {
         ) {
             Panel {
                 Text("Din position lämnar aldrig telefonen. Vi samlar in: ingenting.")
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(Typo.sans(15, .semibold))
                     .foregroundStyle(Brand.text)
             }
         }
@@ -81,7 +81,7 @@ struct OnboardingView: View {
                     guardM.requestAlwaysUpgrade()
                 }
                 Text("Kommer ingen fråga: Inställningar → Halkvakt → Plats → Alltid.")
-                    .font(.system(size: 13)).foregroundStyle(Brand.dim)
+                    .font(Typo.sans(13)).foregroundStyle(Brand.dim)
             case .authorizedAlways:
                 Label("Alltid — vakten vaknar själv när du kör", systemImage: "checkmark.circle.fill")
                     .foregroundStyle(Brand.green)
@@ -115,7 +115,7 @@ struct OnboardingView: View {
                 Label("Vill du starta direkt: tryck på knappen, eller säg \"Hej Siri, starta Halkvakt\"", systemImage: "mic.fill")
                     .foregroundStyle(Brand.text)
                 Text("Vakten stoppar sig själv när bilen stått still en kvart.")
-                    .font(.system(size: 13)).foregroundStyle(Brand.dim)
+                    .font(Typo.sans(13)).foregroundStyle(Brand.dim)
             }
         }
     }
@@ -132,11 +132,11 @@ private struct OnboardingPage<Content: View>: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 Image(systemName: icon)
-                    .font(.system(size: 44))
+                    .font(Typo.sans(44))
                     .foregroundStyle(Brand.yellow)
                     .accessibilityHidden(true)
                 Text(title)
-                    .font(.system(size: 28, weight: .heavy))
+                    .font(Typo.sans(28, .bold))
                     .foregroundStyle(Brand.text)
                 Text(text)
                     .foregroundStyle(Brand.dim)

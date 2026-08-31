@@ -19,7 +19,7 @@ struct AutostartGuideView: View {
                     prefs.carSetup = nil
                 } label: {
                     Label("Byt bilkoppling", systemImage: "arrow.left")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(Typo.sans(14, .semibold))
                         .foregroundStyle(Brand.yellow)
                 }
                 .padding(.top, 4)
@@ -36,7 +36,7 @@ struct AutostartGuideView: View {
         if let at = prefs.lastIntentStartAt {
             Label {
                 Text("Fungerar — vakten startades utifrån senast \(at.formatted(.dateTime.day().month(.abbreviated).hour().minute())). Automation eller Siri.")
-                    .font(.system(size: 14))
+                    .font(Typo.sans(14))
                     .foregroundStyle(Brand.text)
             } icon: {
                 Image(systemName: "checkmark.circle.fill").foregroundStyle(Brand.green)
@@ -46,7 +46,7 @@ struct AutostartGuideView: View {
             .background(Brand.green.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
         } else {
             Label("Inte bekräftad än. När automationen eller Siri startar vakten första gången visas det här.", systemImage: "circle.dashed")
-                .font(.system(size: 13))
+                .font(Typo.sans(13))
                 .foregroundStyle(Brand.dim)
         }
     }
@@ -56,7 +56,7 @@ struct AutostartGuideView: View {
     private var question: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Hur kopplar du telefonen i bilen?")
-                .font(.system(size: 17, weight: .semibold)).foregroundStyle(Brand.text)
+                .font(Typo.sans(17, .semibold)).foregroundStyle(Brand.text)
                 .padding(.bottom, 4)
             ChoiceButton(title: "CarPlay", sub: "Bilens skärm visar telefonen") { prefs.carSetup = .carplay }
             ChoiceButton(title: "Bluetooth", sub: "Handsfree eller musik, men ingen CarPlay") { prefs.carSetup = .bluetooth }
@@ -75,7 +75,7 @@ struct AutostartGuideView: View {
         case .carplay:
             Intro("Vakten startar när bilens skärm tänds. En minut, en gång.")
             openShortcuts
-            Text("Där gör du så här:").font(.system(size: 13)).foregroundStyle(Brand.dim)
+            Text("Där gör du så här:").font(Typo.sans(13)).foregroundStyle(Brand.dim)
             GuideStep(n: 1, text: "Tryck **CarPlay** i listan")
             GuideStep(n: 2, text: "Bocka **Ansluts** → Nästa")
             GuideStep(n: 3, text: "Välj **Kör direkt** → Nästa (Run Immediately)")
@@ -84,17 +84,17 @@ struct AutostartGuideView: View {
         case .bluetooth:
             Intro("Vakten startar när bilen kopplar upp. En minut, en gång.")
             openShortcuts
-            Text("Där gör du så här:").font(.system(size: 13)).foregroundStyle(Brand.dim)
+            Text("Där gör du så här:").font(Typo.sans(13)).foregroundStyle(Brand.dim)
             GuideStep(n: 1, text: "Tryck **Bluetooth** i listan")
             GuideStep(n: 2, text: "Välj din bil, bocka **Är ansluten** → Nästa")
             GuideStep(n: 3, text: "Välj **Kör direkt** → Nästa (Run Immediately)")
             GuideStep(n: 4, text: "Skriv **Halkvakt** i sökrutan → tryck **Starta vakten**")
             GuideStep(n: 5, text: "Tryck **Klar** (Done)")
             Text("Har du inte parkopplat telefonen med bilen än: gör det först, i bilen, via Inställningar → Bluetooth.")
-                .font(.system(size: 13)).foregroundStyle(Brand.dim)
+                .font(Typo.sans(13)).foregroundStyle(Brand.dim)
         case .noConnection:
             Intro("Telefonen känner själv av när du kör. Två korta delar, en gång.")
-            Text("Del 1 — slå på Fokus Kör").font(.system(size: 15, weight: .semibold)).foregroundStyle(Brand.text)
+            Text("Del 1 — slå på Fokus Kör").font(Typo.sans(15, .semibold)).foregroundStyle(Brand.text)
             Button {
                 if let url = URL(string: "App-prefs:") { openURL(url) }
             } label: {
@@ -104,17 +104,17 @@ struct AutostartGuideView: View {
             .accessibilityHint("Öppnar telefonens inställningar")
             GuideStep(n: 1, text: "Tryck **Fokus** (Focus). Finns **Kör** (Driving) i listan: tryck på den. Annars: **+** uppe till höger → **Kör** → **Anpassa fokus**")
             GuideStep(n: 2, text: "Scrolla ner till **Aktivera automatiskt** → **När du kör** → välj **Automatiskt** (Turn On Automatically → While Driving → Automatically)")
-            Text("Del 2 — automationen").font(.system(size: 15, weight: .semibold)).foregroundStyle(Brand.text).padding(.top, 6)
+            Text("Del 2 — automationen").font(Typo.sans(15, .semibold)).foregroundStyle(Brand.text).padding(.top, 6)
             openShortcuts
             GuideStep(n: 3, text: "Tryck **Fokus** i listan → välj **Kör** (Driving)")
             GuideStep(n: 4, text: "Bocka **Slås på** → Nästa (Is turned on → Next)")
             GuideStep(n: 5, text: "Välj **Kör direkt** → Nästa (Run Immediately)")
             GuideStep(n: 6, text: "Skriv **Halkvakt** i sökrutan → tryck **Starta vakten** → Klar")
             Text("Kör du oftast med kartan framme kan du göra automationen en gång till med **App → Google Maps → Öppnas**. Då hinner vakten före Fokus.")
-                .font(.system(size: 13)).foregroundStyle(Brand.dim)
+                .font(Typo.sans(13)).foregroundStyle(Brand.dim)
         }
         Text("Det räcker. Vakten stoppar sig själv när bilen stått still i en kvart. Ge Halkvakt platsen **Alltid** så startar den tyst i bakgrunden.")
-            .font(.system(size: 13)).foregroundStyle(Brand.dim)
+            .font(Typo.sans(13)).foregroundStyle(Brand.dim)
             .padding(.top, 4)
     }
 
@@ -147,8 +147,8 @@ private struct ChoiceButton: View {
         Button(action: action) {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(title).font(.system(size: 15, weight: .semibold)).foregroundStyle(Brand.text)
-                    Text(sub).font(.system(size: 13)).foregroundStyle(Brand.dim)
+                    Text(title).font(Typo.sans(15, .semibold)).foregroundStyle(Brand.text)
+                    Text(sub).font(Typo.sans(13)).foregroundStyle(Brand.dim)
                 }
                 Spacer()
                 Image(systemName: "chevron.right").foregroundStyle(Brand.yellow)
@@ -172,7 +172,7 @@ private struct GuideStep: View {
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
             Text("\(n)")
-                .font(.system(size: 13, weight: .bold, design: .monospaced))
+                .font(Typo.mono(13, .semibold))
                 .foregroundStyle(Brand.bg)
                 .frame(width: 22, height: 22)
                 .background(Brand.yellow, in: Circle())

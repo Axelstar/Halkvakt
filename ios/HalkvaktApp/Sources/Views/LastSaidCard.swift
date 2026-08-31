@@ -13,7 +13,7 @@ struct LastSaidCard: View {
                 Spacer()
                 if let at = prefs.lastSaidAt {
                     Text(at.formatted(.dateTime.day().month(.abbreviated).hour().minute()))
-                        .font(.system(size: 12))
+                        .font(Typo.sans(12))
                         .foregroundStyle(Brand.faint)
                 }
             }
@@ -21,16 +21,16 @@ struct LastSaidCard: View {
                 Label {
                     Text("Vaknade själv \(at.formatted(.dateTime.day().month(.abbreviated).hour().minute()))" +
                          (prefs.lastAutoWakeMinutes > 0 ? " · körde \(prefs.lastAutoWakeMinutes) min" : ""))
-                        .font(.system(size: 13)).foregroundStyle(Brand.green)
+                        .font(Typo.sans(13)).foregroundStyle(Brand.green)
                 } icon: { Image(systemName: "car.fill").foregroundStyle(Brand.green) }
             }
             if let text = prefs.lastSaidText {
                 Text("”\(text)”")
-                    .font(.system(size: 15).italic())
+                    .font(Typo.sans(15).italic())
                     .foregroundStyle(Brand.text)
             } else {
                 Text("Rösten har inte behövt säga något än.")
-                    .font(.system(size: 15).italic())
+                    .font(Typo.sans(15).italic())
                     .foregroundStyle(Brand.dim)
             }
         }

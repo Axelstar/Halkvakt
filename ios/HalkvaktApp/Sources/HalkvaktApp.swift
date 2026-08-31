@@ -5,77 +5,110 @@ import HalkvaktEngine
 
 struct InstallningarView: View {
     @State private var prefs = Prefs.shared
+    @State private var guardM = GuardManager.shared
+    @State private var showStartDirect = false
 
     var body: some View {
         ZStack {
             Brand.bg.ignoresSafeArea()
             ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                BrandHeader()
-                Text("Inställningar").font(.system(size: 30, weight: .heavy)).foregroundStyle(Brand.text)
-                Text("Fem källor. Slå av det du inte vill höra.").foregroundStyle(Brand.dim)
-
-                SectionHeader(text: "Varna för")
-                Panel {
-                    ToggleRow(title: "Olyckor & hinder", sub: "Trafikverkets pågående lägen", isOn: $prefs.accident)
-                    ToggleRow(title: "Halt väglag", sub: "Rapporterade hala vägsträckor", isOn: $prefs.slippery)
-                    ToggleRow(title: "Frysrisk", sub: "Vägväderstationer nära noll och vått", isOn: $prefs.icing)
-                    ToggleRow(title: "Vilt", sub: "Polisens viltolyckor senaste dygnen", isOn: $prefs.wildlife)
-                    ToggleRow(title: "Fartkameror", sub: "Fasta kameror på din väg", isOn: $prefs.camera)
-                }
-
-                SectionHeader(text: "Förvarning")
-                Panel {
-                    Text("Längsta avstånd för en varning: \(Int(prefs.leadMaxM)) m")
-                        .foregroundStyle(Brand.text)
-                    Slider(value: $prefs.leadMaxM, in: 400...3000, step: 100)
-                        .tint(Brand.yellow)
-                    Text("I hög fart varnar vakten tidigare inom denna gräns.")
-                        .font(.system(size: 13)).foregroundStyle(Brand.dim)
-                }
-
-                SectionHeader(text: "Vakna själv när du kör")
-                Panel {
-                    ToggleRow(title: "Starta av sig själv", sub: "Kräver platsen Alltid. Vakten vaknar några minuter in i resan.", isOn: $prefs.autoWake)
-                    if GuardManager.shared.authStatus != .authorizedAlways {
-                        Text("Platsen är inte Alltid än — Inställningar → Halkvakt → Plats → Alltid.")
-                            .font(.system(size: 13)).foregroundStyle(Brand.yellow)
+                VStack(alignment: .leading, spacing: 22) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Inställningar").font(Typo.sans(34, .semibold)).tracking(-1).foregroundStyle(Brand.text)
+                        Text("Fem källor. Slå av det du inte vill höra.").font(Typo.sans(15)).foregroundStyle(Brand.dim)
                     }
-                }
 
-                SectionHeader(text: "Starta direkt (valfritt)")
-                Panel {
-                    Text("Vill du att vakten startar i första metern, inte några minuter in: säg \"Hej Siri, starta Halkvakt\", eller bygg en automation i Genvägar — en minut, en gång.")
-                        .font(.system(size: 14)).foregroundStyle(Brand.dim)
-                }
-                AutostartGuideView()
-
-                SectionHeader(text: "Rösten")
-                Panel {
-                    Button {
-                        SpeechService.shared.speak("Halka rapporterad om åttahundra meter. Sänk farten.")
-                    } label: {
-                        Label("Provlyssna rösten", systemImage: "speaker.wave.2.fill")
-                            .foregroundStyle(Brand.yellow)
+                    VStack(alignment: .leading, spacing: 10) {
+                        SectionHeader(text: "Varna för")
+                        Panel {
+                            ToggleRow(title: "Olyckor & hinder", sub: "Trafikverkets pågående lägen", isOn: $prefs.accident)
+                            Divider().overlay(Brand.stroke)
+                            ToggleRow(title: "Halt väglag", sub: "Rapporterade hala vägsträckor", isOn: $prefs.slippery)
+                            Divider().overlay(Brand.stroke)
+                            ToggleRow(title: "Frysrisk", sub: "Vägväderstationer nära noll och vått", isOn: $prefs.icing)
+                            Divider().overlay(Brand.stroke)
+                            ToggleRow(title: "Vilt", sub: "Polisens viltolyckor senaste dygnen", isOn: $prefs.wildlife)
+                            Divider().overlay(Brand.stroke)
+                            ToggleRow(title: "Fartkameror", sub: "Fasta kameror på din väg", isOn: $prefs.camera)
+                        }
                     }
-                    Text("Byt svensk röst i Inställningar → Tillgänglighet → Talat innehåll → Röster.")
-                        .font(.system(size: 13)).foregroundStyle(Brand.dim)
-                }
 
-                Button {
-                    prefs.onboardingDone = false
-                } label: {
-                    Label("Visa introduktionen igen", systemImage: "arrow.counterclockwise")
-                        .foregroundStyle(Brand.dim)
+                    VStack(alignment: .leading, spacing: 10) {
+                        SectionHeader(text: "Vakten")
+                        Panel {
+                            ToggleRow(title: "Vaknar själv när du kör", sub: "Startar av rörelsemönstret — inget att trycka på", isOn: $prefs.autoWake)
+                            if guardM.authStatus != .authorizedAlways {
+                                Text("Kräver platsen Alltid: Inställningar → Halkvakt → Plats → Alltid.")
+                                    .font(Typo.sans(13)).foregroundStyle(Brand.yellow)
+                            }
+                            Divider().overlay(Brand.stroke)
+                            HStack {
+                                Text("Varna på avstånd").font(Typo.sans(15, .semibold)).foregroundStyle(Brand.text2)
+                                Spacer()
+                                Text(leadText).font(Typo.mono(13, .medium)).foregroundStyle(Brand.yellow)
+                            }
+                            Slider(value: $prefs.leadMaxM, in: 400...3000, step: 100).tint(Brand.yellow)
+                            HStack {
+                                Text("Sent — 400 m"); Spacer(); Text("Tidigt — 3 km")
+                            }
+                            .font(Typo.sans(12)).foregroundStyle(Brand.faint)
+                        }
+                    }
+
+                    VStack(alignment: .leading, spacing: 10) {
+                        SectionHeader(text: "Rösten")
+                        Panel {
+                            HStack(alignment: .top) {
+                                Text("Halkvakt talar med iOS-rösten du valt i systemet.")
+                                    .font(Typo.sans(13)).foregroundStyle(Brand.dim)
+                                Spacer()
+                                Text("iOS").font(Typo.sans(13, .semibold)).foregroundStyle(Brand.blue)
+                            }
+                            Text("Byt röst: Inställningar → Tillgänglighet → Talat innehåll → Röster.")
+                                .font(Typo.sans(12)).foregroundStyle(Brand.faint)
+                            OutlineButton(title: "Testa rösten", icon: "waveform", color: Brand.yellow) {
+                                SpeechService.shared.speak("Halka rapporterad om åttahundra meter. Sänk farten.")
+                            }
+                        }
+                    }
+
+                    VStack(alignment: .leading, spacing: 10) {
+                        Button { withAnimation { showStartDirect.toggle() } } label: {
+                            HStack {
+                                SectionHeader(text: "Starta direkt (valfritt)", color: Brand.dim)
+                                Image(systemName: showStartDirect ? "chevron.up" : "chevron.down")
+                                    .font(Typo.sans(12)).foregroundStyle(Brand.dim)
+                            }
+                        }
+                        if showStartDirect {
+                            Panel {
+                                Text("Vakten vaknar själv några hundra meter in. Vill du ha första metern: säg \"Hej Siri, starta Halkvakt\", eller bygg en automation i Genvägar — en minut, en gång.")
+                                    .font(Typo.sans(13)).foregroundStyle(Brand.dim)
+                            }
+                            AutostartGuideView()
+                        }
+                    }
+
+                    Button { prefs.onboardingDone = false } label: {
+                        Label("Visa introduktionen igen", systemImage: "arrow.counterclockwise")
+                            .font(Typo.sans(14)).foregroundStyle(Brand.dim)
+                    }
+
+                    Text("Ingen inloggning, ingen spårning. Din position stannar i telefonen och matchas mot vägdata lokalt.")
+                        .font(Typo.sans(12)).foregroundStyle(Brand.faint)
+                        .padding(.top, 4)
                 }
-                .padding(.top, 4)
-            }
-            .padding(18)
-            .padding(.bottom, 96)
+                .padding(.horizontal, 20).padding(.top, 10)
+                .padding(.bottom, 96)
             }
             .scrollIndicators(.hidden)
         }
         .background(Brand.bg)
+    }
+
+    private var leadText: String {
+        let m = Int(prefs.leadMaxM)
+        return m >= 1000 ? String(format: "%.1f km", Double(m) / 1000).replacingOccurrences(of: ".", with: ",") : "\(m) m"
     }
 }
 
@@ -85,13 +118,13 @@ private struct ToggleRow: View {
     @Binding var isOn: Bool
     var body: some View {
         Toggle(isOn: $isOn) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title).foregroundStyle(Brand.text).bold()
-                Text(sub).font(.system(size: 13)).foregroundStyle(Brand.dim)
+            VStack(alignment: .leading, spacing: 3) {
+                Text(title).font(Typo.sans(15, .semibold)).foregroundStyle(Brand.text)
+                Text(sub).font(Typo.sans(12)).foregroundStyle(Brand.dim)
             }
         }
         .tint(Brand.yellow)
-        .padding(.vertical, 4)
+        .padding(.vertical, 6)
     }
 }
 
@@ -121,7 +154,7 @@ struct OmView: View {
                 }
 
                 Text("Varnar vid Trafikverkets mätstationer och rapporterade väglag — mellan stationerna är vägen oövervakad. Datakällor: Trafikverket (CC0), Polisen, SMHI. Halkvakt är fristående och har ingen koppling till myndigheterna.")
-                    .font(.system(size: 13)).foregroundStyle(Brand.faint)
+                    .font(Typo.sans(13)).foregroundStyle(Brand.faint)
             }
             .padding(18)
             .padding(.bottom, 96)
