@@ -143,6 +143,9 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **SJÄLVVÄCKNINGEN FUNGERAR I FÄLT** (31/8 15:51, Bengts telefon, första försöket):
+  0.3.2 startade vakten själv utan att han rörde telefonen. DECISIONS #40 bevisat samma dag
+  det byggdes. Kvar i morgon: rösten i CarPlay, bannern, självstoppet.
 - [x] 🇩🇰 **DANSKA TESTBILARNA KÖR** (31/8 kväll): DMI + trafikkort, 20 rutter, cron, kartan.
   Grästemp som frysproxy — beslut till Axel (#45). Norge förberett, väntar på Vegvesen.
 - [x] 🇫🇮 **FINSKA TESTBILARNA KÖR** (31/8 kväll): tre rutter var 30:e min mot finsk snapshot,

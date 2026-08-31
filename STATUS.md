@@ -423,3 +423,11 @@ Danmark: schema dk, DMI grästemp (23 st) + trafikkort-händelser (41, 8 olyckor
 20 rutter, cron, kartan, rapport-knapp. Första varvet 0 larm. Norge: schema, rekognoserings-
 ingest, workflow, 20 rutter, knapp — allt utom parsern, som väntar på Vegvesens konto
 (begärt 15:43). Norden på rapportsidan: fyra flaggor. Sverige orörd genom allt.
+
+## 2026-08-31 ~16:00 — ✅ SJÄLVVÄCKNINGEN BEVISAD på Bengts telefon (0.3.2, CarPlay)
+Bengt installerade 0.3.2, gav Alltid, rörde inte telefonen. Vakten STARTADE SJÄLV —
+skärmbild 15:51: körläge, 6:03 min, 4,3 km, 4 fartkameror 6–7 km fram, 0 varningar.
+Korrekt tyst: han svängde av E65 vid Skabersjö innan kamerorna. Första riktiga körning
+med DECISIONS #40 i fält, tre timmar efter att koden skrevs. KVAR i morgon: rösten i
+CarPlay förbi kamerorna på E65, bannern, självstoppet. Notering: han satt i samtal
+(telefonikon) — röst under pågående samtal är ett eget testfall.

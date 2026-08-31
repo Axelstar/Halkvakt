@@ -473,3 +473,7 @@ rösten talade, och knappen visar bara nuläget. Bengt kan ha en perfekt vakt ut
 Byggt till 0.3.3 (6): Prefs.lastAutoWakeAt + lastAutoWakeMinutes stämplas vid självstart
 och självstopp; hemskärmens kort visar "Vaknade själv 18:42 · körde 23 min". Ikväll (0.3.2)
 är beviset: rösten förbi en kamera, eller öppna appen före kvarten och läsa knappen.
+
+## #40 — BEVISAT 31/8 16:00
+Bengt, CarPlay, färsk installation, Alltid: vakten startade själv på första körningen.
+Ingen parkering känd ⇒ betydande förflyttning-vägen. Skärmbild: körläge 6:03 / 4,3 km.
