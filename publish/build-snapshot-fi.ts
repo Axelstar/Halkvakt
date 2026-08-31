@@ -20,7 +20,8 @@ const devs = await pool.query(`
   SELECT deviation_id, message_type, message_type_value, road_number, severity_code, end_time,
          ST_X(geom) AS lon, ST_Y(geom) AS lat
   FROM fi.deviations
-  WHERE NOT deleted AND geom IS NOT NULL AND (end_time IS NULL OR end_time > now())`);
+  WHERE NOT deleted AND geom IS NOT NULL AND (end_time IS NULL OR end_time > now())
+    AND message_type_value = 'Accident'`);   // samma regel som Sverige: rösten säger "olycka" bara om det ÄR en (KEEP/#32)
 await pool.end();
 
 const staticDoc = { schema: 1, cameras: [] as unknown[] };

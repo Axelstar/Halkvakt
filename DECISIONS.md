@@ -445,3 +445,12 @@ scripts/bundle-skuggmotor.ts ur engine/src + main.ts; CI fallerar om den driver.
 FINLAND: ?land=fi kör tre rutter mot data/app/fi/v1 (build-snapshot-fi.ts i publiceringen),
 loggar med land='FI' i shadow_log, cron 15,45. Rapporten tar ?land, sidan har SE/FI-växel.
 Bevisat: 4 814 fixar, 0 larm (augusti), Sverige orörd. Facit-bilder bara i Sverige.
+
+## #44 (31/8 2026) Tjugo finska testbilar — och samma olycksregel som Sverige
+Axel: "kan vi köra 20 bilar här med?" Ja: E18-stråket Åbo–Helsingfors–Kotka–Vaalimaa,
+vt2, vt3, vt4/E75 hela vägen Helsingfors–Rovaniemi, vt5, vt6, vt8 hela kusten, vt9,
+vt20 Uleåborg–Kuusamo, E8 Torneå–Kilpisjärvi. Samma rotation som Sverige (3 per varv).
+Första varvet talade E18 Helsingfors–Kotka "Olycka rapporterad" om något som troligen
+var en avstängning — min finska snapshot släppte igenom ALLA trafikmeddelanden till
+olycksfacket. Rättat: bara message_type_value='Accident' når rösten, som i Sverige.
+Hinder får egen röst först med #32, i båda länderna samtidigt.
