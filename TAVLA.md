@@ -11,8 +11,11 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 ## 🔴 ATT GÖRA
 
 ### Beslutsgången
-Roller, ägarskap och genomgången varannan söndag: `docs/BESLUTSGANGEN.md` (31/8).
-Tavlan är sanningen — en plan som inte står här finns inte.
+Roller och ägarskap: `docs/BESLUTSGANGEN.md` (31/8). Tavlan är sanningen — en plan som inte
+står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett kort direkt.
+- [ ] **Ge Bengt egna händer i koden** — `docs/BENGT-CLAUDE-KODEN.md`: Claude Pro + Claude
+  Desktop mot Halkvakt-mappen, ingen terminal. Axel: skrivrättigheter till repot.
+  Löser roten till 31/8 — han kan köra sina egna analyser i stället för att beskriva dem.
 
 ### AXELS NÄSTA STEG — i den här ordningen
 

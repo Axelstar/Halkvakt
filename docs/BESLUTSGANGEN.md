@@ -31,19 +31,31 @@ En plan i ett dokument som inte finns på tavlan finns inte.
 - Claude gör utbrytningen när Bengt levererar — Bengt ska inte behöva lära sig git-format.
 - Beslut som fattas i en chatt hamnar i DECISIONS.md samma varv. Utan undantag.
 
-## 3. Genomgången — varannan söndag, 30 minuter
+## 3. Kortregeln — i stället för möten
 
-Bengt har redan en söndagsrutin. Den blir mötet. Tre punkter, i ordning:
+Axel och Bengt pratar dagligen. Problemet var aldrig hur ofta, utan **var besluten hamnar**.
+Så: inget nytt möte. En regel i stället.
 
-1. **Vad blev byggt sedan sist?** Claude skriver en varvlogg i STATUS.md; Axel läser upp
-   rubrikerna. Två minuter.
-2. **Vad är bevisat, vad är bara byggt?** Skillnaden är hela poängen. Ett bygge utan bevis
-   räknas inte som klart, oavsett hur snyggt det är.
-3. **Vad byggs härnäst — och vad trängs undan?** Här fattas prioriteringsbeslutet, av Axel,
-   högt, med Bengt närvarande. Det som väljs bort skrivs ner som bortvalt, inte glömt.
+**Allt som ska göras blir ett kort på tavlan när det bestäms** — oavsett var samtalet ägde
+rum, telefon, mejl eller chatt. Claude skriver kortet; den som bestämde behöver bara säga
+till. Ett kort har ägare och en 🔑-rad om vad som krävs för att räknas som bevisat.
 
-Mellan genomgångarna: **inga nya planer utan kort på tavlan.** Har Bengt en idé mitt i
-veckan blir den ett kort med etiketten "att ta upp", inte ett dokument som konkurrerar.
+Tre saker följer av det:
+- En idé som inte blivit ett kort är inte bortglömd — den är inte beslutad än. Det är okej.
+- Ett bygge räknas som klart först när 🔑-raden är avbockad. "Byggt" ≠ "bevisat".
+- Väljs något bort skrivs det ner som bortvalt, inte glömt, så det inte kommer tillbaka
+  som en ny idé om tre veckor.
+
+Bengts söndagsrutin fortsätter som granskning — men den är inte platsen där beslut fattas.
+Beslut fattas när de fattas, och skrivs ner då.
+
+## 3b. Bengt pratar med koden själv
+
+Roten till 31 augusti var inte oenighet — det var att Bengt inte kan fråga repot. Han
+skriver planer om ankarklippning till någon som ska räkna åt honom, och skriver tre
+versioner på en kväll för att kompensera. Lösningen finns i `docs/BENGT-CLAUDE-KODEN.md`:
+Claude Desktop mot Halkvakt-mappen, ingen terminal, svenska frågor. Då kan han köra sin
+egen offsetbacktest i stället för att beskriva den.
 
 ## 4. Byggplanen — rullande, inte fastlagd
 
