@@ -166,14 +166,16 @@ Genvägar som du bygger en gång. Guiden — i introduktionen och under Inställ
 *Autostart i bilen* — ställer först **en fråga: hur kopplar du telefonen i bilen?** och
 visar sedan bara de steg som gäller dig:
 
-- **CarPlay** → Genvägar: *CarPlay → Ansluts* → Starta vakten. Startar när bilens skärm
-  tänds. Fyra steg.
-- **Bluetooth** (handsfree/musik, ingen CarPlay) → Genvägar: *Bluetooth → din bil → Är
-  ansluten* → Starta vakten. Startar när bilen vaknar, bara i din bil. Fyra steg.
-- **Inte alls** (kartan på mobilen) → Inställningar → Fokus → Kör → *Aktivera automatiskt*
-  → *När du kör*; sedan Genvägar: *Fokus → Kör → Slås på* → Starta vakten. Telefonen
-  känner av körningen själv. Fem steg. Kör du oftast med kartan framme: lägg till
-  *App → Google Maps → Öppnas* som en andra automation, så hinner vakten före Fokus.
+Knappen *Öppna Genvägar på Ny automation* kommer först och landar på listan över
+utlösare. Sedan ett steg per skärm, med det du trycker på i fetstil:
+
+- **CarPlay:** tryck *CarPlay* → bocka *Ansluts* → *Kör direkt* → skriv Halkvakt → *Starta
+  vakten* → Klar. Startar när bilens skärm tänds.
+- **Bluetooth:** tryck *Bluetooth* → din bil, *Är ansluten* → *Kör direkt* → skriv Halkvakt →
+  *Starta vakten* → Klar. Startar när bilen vaknar, bara i din bil.
+- **Inte alls:** två delar. Del 1 i Inställningar: *Fokus → Kör → Aktivera automatiskt → När
+  du kör*. Del 2 i Genvägar: tryck *Fokus → Kör* → bocka *Slås på* → *Kör direkt* → skriv
+  Halkvakt → *Starta vakten* → Klar. Telefonen känner av körningen själv.
 
 Knappen *Öppna Genvägar på Ny automation* i guiden landar direkt på rätt skärm. Går du
 in i Genvägar själv: det är fliken **Automation längst ner i mitten** — inte + uppe till

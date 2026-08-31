@@ -42,51 +42,59 @@ struct AutostartGuideView: View {
     }
 
     // MARK: - Stegen per svar
+    // Knappen först, sedan ett steg per skärm i den ordning användaren SER dem efter
+    // knapptrycket. Axel 31/8: "svårt att förstå vad jag ska göra" — stegen beskrev
+    // Genvägar i stället för att följa skärmarna. Fetstil = det man trycker på.
 
     @ViewBuilder
     private func steps(for setup: CarSetup) -> some View {
         switch setup {
         case .carplay:
-            Intro("Vakten startar när bilens skärm tänds. En automation i Genvägar, en gång.")
-            GuideStep(n: 1, text: "I Genvägar: fliken Automation LÄNGST NER i mitten → Ny automation. (Inte + uppe till höger — det gör en genväg, inte en automation.)")
-            GuideStep(n: 2, text: "Scrolla i listan över utlösare till CarPlay → Ansluts. Sök inte — utlösarna är en lista.")
-            GuideStep(n: 3, text: "Välj Kör direkt (inte Fråga innan) → Nästa")
-            GuideStep(n: 4, text: "Sök \"Halkvakt\" → välj Starta vakten → Klar")
+            Intro("Vakten startar när bilens skärm tänds. En minut, en gång.")
             openShortcuts
+            Text("Där gör du så här:").font(.system(size: 13)).foregroundStyle(Brand.dim)
+            GuideStep(n: 1, text: "Tryck **CarPlay** i listan")
+            GuideStep(n: 2, text: "Bocka **Ansluts** → Nästa")
+            GuideStep(n: 3, text: "Välj **Kör direkt** → Nästa")
+            GuideStep(n: 4, text: "Skriv **Halkvakt** i sökrutan → tryck **Starta vakten**")
+            GuideStep(n: 5, text: "Tryck **Klar**")
         case .bluetooth:
-            Intro("Vakten startar när bilen kopplar upp. Parkoppla telefonen med bilen först om du inte redan gjort det.")
-            GuideStep(n: 1, text: "I Genvägar: fliken Automation LÄNGST NER i mitten → Ny automation. (Inte + uppe till höger — det gör en genväg, inte en automation.)")
-            GuideStep(n: 2, text: "Scrolla i listan över utlösare till Bluetooth → välj din bil → Är ansluten. Sök inte — utlösarna är en lista.")
-            GuideStep(n: 3, text: "Välj Kör direkt (inte Fråga innan) → Nästa")
-            GuideStep(n: 4, text: "Sök \"Halkvakt\" → välj Starta vakten → Klar")
+            Intro("Vakten startar när bilen kopplar upp. En minut, en gång.")
             openShortcuts
-        case .noConnection:
-            Intro("Telefonen känner själv av när du kör, med rörelsesensorerna. Två inställningar, en gång.")
-            GuideStep(n: 1, text: "Inställningar → Fokus → Kör → Aktivera automatiskt → När du kör")
-            GuideStep(n: 2, text: "I Genvägar: fliken Automation LÄNGST NER i mitten → Ny automation. (Inte + uppe till höger — det gör en genväg, inte en automation.)")
-            GuideStep(n: 3, text: "Scrolla i listan över utlösare till Fokus → Kör → Slås på. Sök inte — utlösarna är en lista.")
-            GuideStep(n: 4, text: "Välj Kör direkt (inte Fråga innan) → Nästa")
-            GuideStep(n: 5, text: "Sök \"Halkvakt\" → välj Starta vakten → Klar")
-            Text("Kör du oftast med kartan framme kan du lägga till en automation till: App → Google Maps eller Kartor → Öppnas → Starta vakten. Då hinner vakten före Fokus.")
+            Text("Där gör du så här:").font(.system(size: 13)).foregroundStyle(Brand.dim)
+            GuideStep(n: 1, text: "Tryck **Bluetooth** i listan")
+            GuideStep(n: 2, text: "Välj din bil, bocka **Är ansluten** → Nästa")
+            GuideStep(n: 3, text: "Välj **Kör direkt** → Nästa")
+            GuideStep(n: 4, text: "Skriv **Halkvakt** i sökrutan → tryck **Starta vakten**")
+            GuideStep(n: 5, text: "Tryck **Klar**")
+            Text("Har du inte parkopplat telefonen med bilen än: gör det först, i bilen, via Inställningar → Bluetooth.")
                 .font(.system(size: 13)).foregroundStyle(Brand.dim)
+        case .noConnection:
+            Intro("Telefonen känner själv av när du kör. Två korta delar, en gång.")
+            Text("Del 1 — slå på Fokus Kör").font(.system(size: 15, weight: .semibold)).foregroundStyle(Brand.text)
             Button {
                 if let url = URL(string: "App-prefs:") { openURL(url) }
             } label: {
                 Label("Öppna Inställningar", systemImage: "gearshape")
                     .foregroundStyle(Brand.yellow)
             }
-            .accessibilityHint("Öppnar telefonens inställningar, där Fokus finns")
+            .accessibilityHint("Öppnar telefonens inställningar")
+            GuideStep(n: 1, text: "Tryck **Fokus** → **Kör**")
+            GuideStep(n: 2, text: "Under Aktivera automatiskt: välj **När du kör**")
+            Text("Del 2 — automationen").font(.system(size: 15, weight: .semibold)).foregroundStyle(Brand.text).padding(.top, 6)
             openShortcuts
+            GuideStep(n: 3, text: "Tryck **Fokus** i listan → välj **Kör**")
+            GuideStep(n: 4, text: "Bocka **Slås på** → Nästa")
+            GuideStep(n: 5, text: "Välj **Kör direkt** → Nästa")
+            GuideStep(n: 6, text: "Skriv **Halkvakt** i sökrutan → tryck **Starta vakten** → Klar")
+            Text("Kör du oftast med kartan framme kan du göra automationen en gång till med **App → Google Maps → Öppnas**. Då hinner vakten före Fokus.")
+                .font(.system(size: 13)).foregroundStyle(Brand.dim)
         }
-        Text("Det räcker. Vakten stoppar sig själv när bilen stått still i en kvart. Ge Halkvakt platsen \"Alltid\" så startar den tyst i bakgrunden.")
+        Text("Det räcker. Vakten stoppar sig själv när bilen stått still i en kvart. Ge Halkvakt platsen **Alltid** så startar den tyst i bakgrunden.")
             .font(.system(size: 13)).foregroundStyle(Brand.dim)
+            .padding(.top, 4)
     }
 
-    // Öppnar Genvägar direkt på "Ny automation" (odokumenterad men fungerande deeplink,
-    // Vox Silva 2023: shortcuts://create-automation). Axel visade 31/8 exakt vad som
-    // annars händer: appen landar på Genvägar-fliken, vars + skapar en GENVÄG, och man
-    // söker utlösaren bland åtgärder där den inte finns. Faller Apple tillbaka på
-    // vanliga shortcuts:// står steg 1 kvar som skyddsräcke.
     private var openShortcuts: some View {
         Button {
             guard let deep = URL(string: "shortcuts://create-automation") else { return }
@@ -145,7 +153,7 @@ private struct GuideStep: View {
                 .foregroundStyle(Brand.bg)
                 .frame(width: 22, height: 22)
                 .background(Brand.yellow, in: Circle())
-            Text(text).foregroundStyle(Brand.text)
+            Text(LocalizedStringKey(text)).foregroundStyle(Brand.text)   // **fet** tolkas
         }
         .accessibilityElement(children: .combine)
     }
