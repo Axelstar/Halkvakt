@@ -18,10 +18,10 @@
     WeatherRelatedRoadConditions bära halktext, och då vill missmätningen ha dem. Rätt
     struktur är ett separat arkivbord för hela flödet, inte att smutsa ner livetabellen.
     Litet. Bör göras före första frosten.
-30. **RLS-kontroll på alla tabeller** (Bengts granskning 29–30/8, GitHub issue #3): verifiera
-    row-level security på arkivtabellerna (weather_observations, road_conditions,
-    road_condition_history, polisen_events, shadow_log, …) — anon-nyckeln får inte
-    kunna läsa/skriva rått. Olåst. Bevis: SQL mot pg_policies + curl med anon-nyckel.
+30. ~~**RLS-kontroll på alla tabeller**~~ (S-2026-08-31: LÅST — DECISIONS #32). Anon-nyckeln
+    kunde läsa 8 arkivtabeller och hade skrivrättighet (PATCH 204). Nu RLS + REVOKE på alla
+    elva, INSERT-only-grant på waitlist, default privileges smalnade. Bevisat med anon-nyckeln:
+    401 överallt, väntelistan 201, CI-ingest grön efter låset. sql/002_rls_lockdown.sql.
 31. **Bevakning av Trafikverkets nyheter** (Bengts issue #2): API-ändringar/avvecklingar
     (t.ex. TrafficFlow 1.4-namespace) ska fångas innan de bryter ingest — RSS/changelog-
     koll i healthchecken eller veckojobb som mejlar. Olåst, litet.

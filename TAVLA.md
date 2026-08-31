@@ -41,10 +41,6 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som återstår.)*
 
 ### Axel — beslut att ta
-- [ ] **#28: ska allvarlighetströskeln stå kvar på 4?** Uppmätt: 206 av 307 arkiverade
-  olyckor är klassade 4–5, alltså två tredjedelar. Vid 4 blir tvåstegsvarningen normalfallet;
-  vid 5 ungefär en tredjedel. Din spec sade "stor påverkan" = 4 och så är det byggt.
-  Det är ett reglage — svara med en siffra, inte ett ombygge. (DECISIONS #30a)
 - [ ] **Helgsamtalet med pappa — nu fyra punkter:** roller (B2B=Bengt?), föreningen, klartecken ringrundan, OCH intäktsmodellen (#27: din viljeinriktning → hans utformning)
 - [ ] **Skyltfonden-paketet (före 1/10):** (a) klartecken till pappas ringrunda (startar v.36!), (b) sökande: pappa privat eller ideell förening?, (c) rollfördelningen — allt hänger ihop. Underlag: `docs/FINANSIERING.md`
 - [ ] **Rollfördelningen**: efterfrågan/affärsmodell/B2B = Bengts ansvar? (hans förslag; vid ja uppdateras PLAN)
@@ -72,11 +68,6 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   RIKTIG position — vida bättre än polisens länscentrum som vi underkände i #13).
 - [ ] **#33 Eget arkivbord för hela Situation-flödet** — så missmätningen (#19) har facit
   i vinter. Litet, bör göras före första frosten.
-- [ ] **#30 RLS-kontroll på alla arkivtabeller** (Bengts issue #3, 30/8) — anon-nyckeln
-  är publik via halkvakt-karta; verifiera att den varken kan läsa eller skriva rått i
-  weather_observations, road_conditions, road_condition_history, polisen_events,
-  shadow_log. *Bevis: SQL mot pg_policies + curl med anon-nyckeln.* **Högst prioriterad
-  olåst punkt — säkerhet före funktion.**
 - [ ] **#31 Bevakning av Trafikverkets nyheter** (Bengts issue #2, 29/8) — API-ändringar
   och avvecklingar ska fångas innan de bryter ingest. Litet jobb: RSS/changelog-koll i
   healthchecken eller veckojobb som mejlar.
@@ -112,6 +103,15 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
 ---
 
 ## 🟢 KLART (senaste vinsterna)
+
+- [x] 🔒 **#30 RLS-LÅSET** (31/8, Bengts issue #3): anon-nyckeln kunde läsa 8 arkivtabeller
+  och SKRIVA i dem (PATCH 204). Nu dubbellåst — RLS + REVOKE — på alla elva. Bevisat: 401
+  överallt, väntelistan 201, pipelinen grön. DECISIONS #32.
+- [x] **Gravstensläckan tätad + städad** (31/8): raderingar är UPDATE, aldrig INSERT, i båda
+  ingestvägarna; edge-funktionen deployad; 4 587 gravstenar exporterade och raderade.
+  Tabellen: 308 rader, alla olyckor.
+- [x] **#28 tröskeln avgjord: 5** (31/8) — tvåsteget bara vid "Mycket stor påverkan".
+  v17 bevisar att 4 är lindrig. DECISIONS #30a.
 
 - [x] **Kronjuvelerna säkrade** (31/8): ny upload-nyckel i Lagerlöf Labs namn, lösenord i Apples Lösenord-app, jks i iCloud Drive/Halkvakt-nycklar, CI-secrets roterade
 - [x] 🚀 **HALKVAKT 0.3.0 (3) UPPLADDAT TILL APP STORE CONNECT** (mån 31/8 ~10:10) — 90 min från

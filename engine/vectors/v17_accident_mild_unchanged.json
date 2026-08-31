@@ -1,6 +1,6 @@
 {
- "name": "Lindrig olycka: oförändrad, talar EN gång",
- "description": "Samma geometri som v15 men severity 2 (Liten påverkan). Graderingen får inte ändra beteendet för lindriga olyckor: en enda replik med gamla texten, ingen påminnelse.",
+ "name": "Olycka under tröskeln: oförändrad, talar EN gång",
+ "description": "Samma geometri som v15 men severity 4 (Stor påverkan) — precis UNDER tröskeln 5. Tröskeln är ett ägarbeslut (DECISIONS #30a): vid 4 blev tvåsteget normalfallet för två tredjedelar av alla olyckor. Den här vektorn låser att 4 ger gamla repliken, en gång.",
  "hazards": [
   {
    "id": "acc1",
@@ -8,7 +8,7 @@
    "lon": 15,
    "lat": 58.09898490837226,
    "meta": {
-    "severityCode": 2
+    "severityCode": 4
    }
   }
  ],

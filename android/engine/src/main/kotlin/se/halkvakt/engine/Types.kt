@@ -62,7 +62,7 @@ data class EngineConfig(
     val repeatMinM: Double = 5000.0,
     val cameraTriggerM: Double = 500.0,
     val accidentMaxAheadM: Double = 10_000.0,
-    val accidentSeriousMinSeverity: Int = 4,
+    val accidentSeriousMinSeverity: Int = 5,
     val accidentNearM: Double = 2_000.0,
     val warnLeadS: Double = 30.0,
     val leadMinM: Double = 400.0,

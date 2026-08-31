@@ -105,7 +105,7 @@ export const DEFAULT_CONFIG: EngineConfig = {
   repeatMinM: 5000,  // ... / 5 km (PLAN §1)
   cameraTriggerM: 500,
   accidentMaxAheadM: 10_000,
-  accidentSeriousMinSeverity: 4, // "Stor påverkan" and above
+  accidentSeriousMinSeverity: 5, // "Mycket stor påverkan" only (Axel 31/8, DECISIONS #30a: 4 made two-step the norm)
   accidentNearM: 2_000,
   warnLeadS: 30,
   leadMinM: 400,

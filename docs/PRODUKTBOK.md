@@ -72,7 +72,8 @@ mätstationer och rapporterade väglag — mellan stationerna är vägen oöverv
 | Väglagsdatat är gammalt (en gång per körning) | "Ingen färsk väglagsdata – kör som om det kan vara halt." |
 
 **Allvarlig olycka — varför två gånger?** Trafikverket klassar varje olycka efter
-hur mycket den påverkar trafiken. Är påverkan stor säger Halkvakt till *tidigt*,
+hur mycket den påverkar trafiken. Är påverkan *mycket* stor — riktigt stopp — säger
+Halkvakt till *tidigt*,
 runt en mil innan, medan det fortfarande finns avfarter kvar att välja. Det är
 hela poängen: du ska hinna bestämma dig innan du sitter fast. Sedan kommer en
 kort påminnelse strax innan olycksplatsen, som bara handlar om farten.

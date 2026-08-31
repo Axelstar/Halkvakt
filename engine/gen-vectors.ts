@@ -167,12 +167,12 @@ const scenarios: Scenario[] = [
     file: "v15_accident_serious_twostep",
     name: "Allvarlig olycka: tidigt rop + påminnelse",
     description:
-      "90 km/h norrut, allvarlig olycka (severity 4) 11 019 m fram med röjningstid 14:20. " +
+      "90 km/h norrut, allvarlig olycka (severity 5, Mycket stor påverkan) 11 019 m fram med röjningstid 14:20. " +
       "Två repliker: det tidiga ropet när 10 km-horisonten passeras (bär omvägsbeslutet) " +
       "och påminnelsen innanför 2 km (bär bara farten). Samma hazardId, två varningsplatser.",
     hazards: [{
       id: "acc1", kind: "accident", lon: LON0, lat: northOf(11_019),
-      meta: { severityCode: 4, endTimeLocal: "14:20" },
+      meta: { severityCode: 5, endTimeLocal: "14:20" },
     }],
     trace: northTrace(380, 90),
   },
@@ -191,13 +191,14 @@ const scenarios: Scenario[] = [
   },
   {
     file: "v17_accident_mild_unchanged",
-    name: "Lindrig olycka: oförändrad, talar EN gång",
+    name: "Olycka under tröskeln: oförändrad, talar EN gång",
     description:
-      "Samma geometri som v15 men severity 2 (Liten påverkan). Graderingen får inte ändra " +
-      "beteendet för lindriga olyckor: en enda replik med gamla texten, ingen påminnelse.",
+      "Samma geometri som v15 men severity 4 (Stor påverkan) — precis UNDER tröskeln 5. " +
+      "Tröskeln är ett ägarbeslut (DECISIONS #30a): vid 4 blev tvåsteget normalfallet för " +
+      "två tredjedelar av alla olyckor. Den här vektorn låser att 4 ger gamla repliken, en gång.",
     hazards: [{
       id: "acc1", kind: "accident", lon: LON0, lat: northOf(11_019),
-      meta: { severityCode: 2 },
+      meta: { severityCode: 4 },
     }],
     trace: northTrace(380, 90),
   },

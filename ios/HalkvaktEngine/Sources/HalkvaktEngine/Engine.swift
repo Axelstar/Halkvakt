@@ -71,7 +71,7 @@ public struct EngineConfig {
     public var repeatMinM = 5000.0
     public var cameraTriggerM = 500.0
     public var accidentMaxAheadM = 10_000.0
-    public var accidentSeriousMinSeverity = 4
+    public var accidentSeriousMinSeverity = 5
     public var accidentNearM = 2_000.0
     public var warnLeadS = 30.0
     public var leadMinM = 400.0

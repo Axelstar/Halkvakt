@@ -121,3 +121,12 @@ i samma commit när de överlappar.
   android.yml kördes nästa gång ("keystore password was incorrect"). Läxa: efter varje
   rotation, TRIGGA bygget direkt och läs domen. Ett grönt kort på tavlan är inte bevis;
   en grön körning är.
+- En ändrad fil under supabase/functions/ är INTE en deploy. Livemotorn kör ur Supabase,
+  inte ur repot. Gravstensläckan "tätades" 08:45 i git och läckte vidare till 08:53 när
+  funktionen faktiskt deployades. Regel: varje commit som rör supabase/functions/ följs av
+  `supabase functions deploy` i samma varv, och beviset är en mätning EFTER deployen
+  (räknare som står still / kursor som rullar), inte commit-hashen.
+- "RLS på" i panelen bevisar ingenting. Bevisa med anon-nyckeln: PATCH mot ett påhittat id
+  ger 204 om rättigheten finns (0 rader matchade men anropet var tillåtet) och 401 om den
+  saknas. Ett DELETE som faller på kolumnnamn (400) har PASSERAT rättighetskontrollen.
+  Lås alltid dubbelt: RLS utan policy + REVOKE, så en klickruta inte kan öppna arkivet igen.

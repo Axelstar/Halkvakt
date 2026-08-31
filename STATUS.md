@@ -345,3 +345,20 @@ Inte orsakat av vår kod. Sista gröna Android-bygget: 30/8 15:07. Nyckelrotatio
 Vår commit 08:35 var helt enkelt den första körningen EFTER rotationen — den avslöjade felet,
 den orsakade det inte. HV_KEYSTORE_PASS och HV_KEYSTORE_B64 kommer inte från samma jks.
 Axel måste sätta om dem. Blockerar Play-uppladdningen: ingen signerad AAB finns.
+
+## 2026-08-31 — #30 RLS LÅST, tröskeln 5, gravstenarna borta ("kör på det du tycker")
+**#30, uppmätt före:** RLS av på 11/13 tabeller. Anon-nyckeln ur kartans config.json
+läste 8 arkivtabeller rått och hade skrivrättighet — PATCH mot påhittat id gav 204.
+Snapshoten apparna talar ur byggs ur de tabellerna. **Efter:** sql/002_rls_lockdown.sql,
+dubbellås (RLS + REVOKE), 401 på allt, väntelistan 201, edge-funktion + CI-ingest gröna.
+DECISIONS #32. Bengts issue #3 besvarad.
+
+**Tröskeln → 5** i tre körtider. v15 kör nu på severity 5, v17 låser att 4 är lindrig.
+35 prov gröna. DECISIONS #30a.
+
+**Gravstenarna:** upptäckte att läckan fortsatte 20 min efter pushen — edge-funktionen
+var aldrig deployad. Deployad 08:53, verifierad. Sedan 4 587 rader exporterade
+(sql/arkiv/, 239 kB gz) och raderade. Kvar: 308, alla olyckor. Två läxor i CLAUDE.md.
+
+**Kvar för Axel:** signeringshemligheten (blockerar Android-AAB). Allt annat på min
+lista från förmiddagen är gjort.

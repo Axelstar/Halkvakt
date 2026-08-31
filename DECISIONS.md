@@ -286,3 +286,39 @@ ett eget arkivbord i stället för att smutsa ner livetabellen.
 
 EJ GJORT: de 4 584 befintliga gravstenarna ligger kvar. Läckan är tätad så de slutar växa.
 Städning är irreversibel och väntar på Axels ja.
+
+## #32 (31/8 2026) RLS-låset — anon-nyckeln kunde skriva i arkivet (Claude, Bengts issue #3)
+UPPMÄTT FÖRE: RLS av på 11 av 13 tabeller, en enda policy i hela databasen. Anon-nyckeln
+(publicerad i halkvakt-karta/data/config.json för väntelistan — det är meningen) kunde
+SELECT:a åtta arkivtabeller rått, och PATCH mot ett påhittat id gav 204: skrivrättighet
+fanns. Vem som helst med kartans config kunde alltså lägga in en falsk olycka eller radera
+riktiga väglag — och snapshoten som apparna talar ur byggs ur exakt de tabellerna.
+
+BESLUT: två oberoende lås (hängslen och livrem). (1) RLS på utan policy för anon/
+authenticated ⇒ nekat som standard. (2) Rättigheterna REVOKE:ade från samma roller ⇒ nekat
+även om någon klickar av RLS i framtiden. Default privileges smalnade så nya tabeller inte
+föds öppna. waitlist behåller sin INSERT-policy (DECISIONS #10) och får nu en GRANT som
+matchar exakt: INSERT, inget annat.
+
+UPPMÄTT EFTER: 401 permission denied på alla läs- och skrivförsök med anon-nyckeln;
+väntelistan svarar 201 på insert; edge-funktionen läser shadow_log; CI-ingest grön efter
+låset. Pipelinen är orörd eftersom allt kopplar som postgres-rollen via DATABASE_URL, som
+kringgår RLS. Migration: sql/002_rls_lockdown.sql, idempotent.
+
+VARFÖR INTE BARA RLS: RLS-flaggan är en klickruta i Supabase-panelen. Ett REVOKE överlever
+klicket. Och tvärtom — ett GRANT kan smyga in via default privileges. Därför båda.
+
+## #30a — TRÖSKELN AVGJORD: 5 (Axel 31/8, "kör på det du tycker")
+Uppmätt: tröskel 4 gav tvåsteget för 206 av 307 olyckor. "Överväg annan väg" som sägs
+i två tredjedelar av fallen förlorar sin tyngd. Tystnad är en funktion. Vid 5 ("Mycket
+stor påverkan") sägs det när det är stopp på riktigt; severity 4 får fortfarande den
+lindriga repliken. Låst i tre körtider och i v17, som nu bevisar att 4 är lindrig.
+Omprövas på betabevis — det är en siffra.
+
+## #31 — TILLÄGG: gravstenarna raderade + läckan var INTE tätad förrän deploy
+Två saker hände efter första commiten. (a) Gravstenar fortsatte komma in i 20 minuter
+efter pushen: edge-funktionen ingest-live kör ur Supabase, inte ur repot — en ändrad
+fil är ingen deploy. Deployad 08:53, verifierad stillastående räknare + rullande kursor.
+Läxa i CLAUDE.md. (b) De 4 587 befintliga gravstenarna exporterade till
+sql/arkiv/gravstenar_2026-08-31.json.gz (239 kB) och raderade. Kvar: 308 rader, alla
+olyckor. Reversibelt via exporten.
