@@ -37,6 +37,8 @@ final class Prefs {
     /// #24: senaste repliken, överlever omstart — hemskärmens "Senast sagt".
     var lastSaidText: String? { didSet { d.set(lastSaidText, forKey: "k.lastSaidText") } }
     var lastSaidAt: Date? { didSet { d.set(lastSaidAt, forKey: "k.lastSaidAt") } }
+    /// Introduktionen visad? (DECISIONS #36) Kan nollställas från Inställningar.
+    var onboardingDone: Bool { didSet { d.set(onboardingDone, forKey: "k.onboardingDone") } }
 
     private init() {
         accident = d.object(forKey: "k.accident") as? Bool ?? true
@@ -47,6 +49,7 @@ final class Prefs {
         leadMaxM = d.object(forKey: "k.leadMaxM") as? Double ?? 3000
         lastSaidText = d.string(forKey: "k.lastSaidText")
         lastSaidAt = d.object(forKey: "k.lastSaidAt") as? Date
+        onboardingDone = d.bool(forKey: "k.onboardingDone")
     }
 
     /// Tystad kategori: motorn minns, munnen tiger — samma princip som Android.

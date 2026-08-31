@@ -357,3 +357,12 @@ Guidens rekommendationsordning: Bluetooth om bilen har det (precisast, bara din 
 annars Fokus Kör (automatisk, fångar pendlingen), kartappen som komplement (missar
 resor utan karta — pendlingen, där halkan överraskar). En kvart valdes för att
 överleva en macka på macken; omprövas på betabevis.
+
+## #36 (31/8 2026) Introduktionen först (Axels fråga)
+Utlösaren för autostart sätts en gång och sedan aldrig mer — då ska det vara det första
+man gör, inte något man hittar under Inställningar en vecka senare. iOS: fullscreen-intro
+vid första start, fyra sidor i ordning — löftet, platsen, bannern, autostarten — allt
+hoppbart, allt ändringsbart, visas igen från Inställningar. Platsen begärs där UTAN att
+vakten startar (ny requestLocationPermission + startRequested-vakt i delegaten: tidigare
+startade vakten i soffan i samma sekund tillståndet gavs). Android får samma intro i
+nästa varv — inte nu, iOS är testplattformen.

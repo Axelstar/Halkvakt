@@ -29,10 +29,20 @@ utbyggnad av fotostudion.)*
 
 ## Första gången (2 minuter)
 
-1. **Åldersfrågan** — appen är för den som kör bil.
-2. **Platsbehörighet** — "Tillåt alltid" krävs för att vakten ska fungera med
-   släckt skärm. Positionen används bara lokalt i telefonen.
-3. Klart. Inga konton, ingen e-post, inga fler frågor.
+Introduktionen visas en gång, fyra sidor. Allt går att hoppa över och ändra senare;
+den kan visas igen från Inställningar.
+
+1. **Löftet** — vad Halkvakt gör, och att positionen aldrig lämnar telefonen.
+2. **Platsen** — *Tillåt plats* ("Vid användning"). Nästa gång du kör frågar iOS om
+   "Alltid", som behövs för att rösten ska tala med släckt skärm.
+3. **Bannern** — *Tillåt notiser*, så att varningen syns över kartappen.
+4. **Autostart** — bygg automationen i Genvägar (guiden med utlösarna finns här).
+   En gång, sedan aldrig mer. Vakten stoppar sig själv när bilen stått still en kvart.
+
+Klar. Inga konton, ingen e-post, inga fler frågor.
+
+*(Android: behörigheterna frågas i trappa första gången man trycker Starta; autostarten
+lär sig bilen själv. Samma introduktion byggs där i nästa varv.)*
 
 ## De tre flikarna
 

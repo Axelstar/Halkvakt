@@ -75,7 +75,18 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
 
     // MARK: - Start/stopp
 
+    /// Introduktionen ber om platsen utan att starta vakten. Delegaten startar bara
+    /// när ett start faktiskt begärts (startRequested) — annars skulle vakten dra igång
+    /// i soffan i samma sekund tillståndet ges.
+    private var startRequested = false
+
+    func requestLocationPermission() {
+        guard manager.authorizationStatus == .notDetermined else { return }
+        manager.requestWhenInUseAuthorization()
+    }
+
     func requestPermissionAndStart() {
+        startRequested = true
         switch manager.authorizationStatus {
         case .notDetermined:
             manager.requestWhenInUseAuthorization()
@@ -108,6 +119,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
 
     func stop() {
         running = false
+        startRequested = false
         headsUpTask?.cancel()
         manager.stopUpdatingLocation()
         dismissTask?.cancel()
@@ -121,7 +133,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         Task { @MainActor in
             self.authStatus = status
             if status == .authorizedWhenInUse || status == .authorizedAlways {
-                if !self.running { self.requestPermissionAndStart() }
+                if !self.running && self.startRequested { self.requestPermissionAndStart() }
                 else { self.manager.allowsBackgroundLocationUpdates = status == .authorizedAlways }
             }
         }

@@ -48,6 +48,14 @@ struct InstallningarView: View {
                     Text("Byt svensk röst i Inställningar → Tillgänglighet → Talat innehåll → Röster.")
                         .font(.system(size: 13)).foregroundStyle(Brand.dim)
                 }
+
+                Button {
+                    prefs.onboardingDone = false
+                } label: {
+                    Label("Visa introduktionen igen", systemImage: "arrow.counterclockwise")
+                        .foregroundStyle(Brand.dim)
+                }
+                .padding(.top, 4)
             }
             .padding(18)
             .padding(.bottom, 96)
@@ -113,6 +121,8 @@ struct OmView: View {
 
 @main
 struct HalkvaktApp: App {
+    @State private var prefs = Prefs.shared
+
     var body: some Scene {
         WindowGroup {
             TabView {
@@ -125,6 +135,13 @@ struct HalkvaktApp: App {
             }
             .tint(Brand.yellow)
             .preferredColorScheme(.dark)
+            // DECISIONS #36: introduktionen är det första man ser, en gång.
+            .fullScreenCover(isPresented: Binding(
+                get: { !prefs.onboardingDone },
+                set: { if !$0 { prefs.onboardingDone = true } }
+            )) {
+                OnboardingView()
+            }
         }
     }
 }

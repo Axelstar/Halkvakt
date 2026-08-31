@@ -41,6 +41,7 @@ med släckt skärm, vakten stannar när du stänger av.
 - [ ] Google Play Console — VÄNTA tills 12 står på väntelistan (4 idag); klockan startar vid köp
 
 **Claude — i väntan på Macen:**
+- [ ] Introduktionen på Android (spegel av iOS, DECISIONS #36) — efter att iOS-varianten testats
 - [ ] #31 Trafikverksbevakningen (litet, olåst, kan bevisas härifrån)
 - [ ] Välkomsttext + testinstruktion till kompisarna
 - [ ] Play: uppladdningsguide för den CI-signerade AAB:n så fort hemligheten är satt
@@ -51,6 +52,8 @@ med släckt skärm, vakten stannar när du stänger av.
 - [ ] **#22 autostart** — iOS App Intents (fyra utlösare, tyst start med Alltid), Android fanns
 - [ ] **#23 heads-up** — bannern över kartappen, båda plattformarna
 - [ ] **#24 skinnet** — DELVIS: "Senast sagt" på hemskärmen, båda. Resten bakom designexport.
+- [ ] **Introduktionen** (iOS) — fyra sidor vid första start: löftet, platsen, bannern, autostart.
+  Kontroll: radera appen → installera → intron ska komma först; "Visa igen" i Inställningar.
 
 *(Kronjuvelerna, Xcode 26.1 och Apple Developer är avklarade och flyttade till KLART.
 Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som återstår.)*
