@@ -263,8 +263,6 @@ export function alertText(
 //      (enforced in texts.ts).
 //   4. Silence is the default. No hazard in corridor ⇒ no sound. Ever.
 
-  Alert, EngineConfig, Fix, Hazard, HazardKind, PointHazard, SegmentHazard,
-} from "./types.ts";
 
 interface FiredState { t: number; odometerM: number; }
 

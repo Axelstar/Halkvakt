@@ -10,8 +10,10 @@ const ORDER = ["types", "geo", "texts", "engine", "snapshot"];
 let out = `// ═══ GENERERAD av scripts/bundle-skuggmotor.ts — ÄNDRA INTE HÄR ═══\n` +
           `// Källor: engine/src/{${ORDER.join(",")}}.ts + supabase/functions/skuggmotor/main.ts\n\n`;
 for (const f of ORDER) {
+  // Strippar import-satser, även FLERRADIGA (engine.ts har en) — första utkastet
+  // strök bara enradiga och Deno fick "} from './types.ts'" på lösa boliner.
   const src = readFileSync(new URL(`../engine/src/${f}.ts`, import.meta.url), "utf8")
-    .split("\n").filter((l) => !/^import\b/.test(l)).join("\n");
+    .replace(/^import\b[\s\S]*?from\s+"[^"]+";[ \t]*\n/gm, "");
   out += `// ═══ engine/src/${f}.ts ═══\n${src}\n\n`;
 }
 out += `// ═══ supabase/functions/skuggmotor/main.ts ═══\n` +
