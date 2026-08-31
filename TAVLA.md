@@ -10,6 +10,10 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 
 ## 🔴 ATT GÖRA
 
+### Beslutsgången
+Roller, ägarskap och genomgången varannan söndag: `docs/BESLUTSGANGEN.md` (31/8).
+Tavlan är sanningen — en plan som inte står här finns inte.
+
 ### AXELS NÄSTA STEG — i den här ordningen
 
 **1. Fem minuter, var som helst: signeringshemligheten** 🔴
