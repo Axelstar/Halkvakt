@@ -417,3 +417,9 @@ Skuggmotorn hade handklistrad motor från igår ⇒ körde utan olyckslyftet hel
 genererad ur engine/src, CI-vaktad, deployad. ?land=fi: tre finska rutter, egen snapshot,
 land-kolumn i shadow_log, cron 15,45, rapport + sida med växel. Bevisat skarpt: 4 814
 fixar, 0 larm, SE orörd (131 körningar). Sidan: testbilarna.html → 🇫🇮 Finland.
+
+## 2026-08-31 sen kväll — 🇩🇰 Danmark kör, 🇳🇴 Norge förberett (DECISIONS #45, #35)
+Danmark: schema dk, DMI grästemp (23 st) + trafikkort-händelser (41, 8 olyckor, 4 halka),
+20 rutter, cron, kartan, rapport-knapp. Första varvet 0 larm. Norge: schema, rekognoserings-
+ingest, workflow, 20 rutter, knapp — allt utom parsern, som väntar på Vegvesens konto
+(begärt 15:43). Norden på rapportsidan: fyra flaggor. Sverige orörd genom allt.

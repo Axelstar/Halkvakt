@@ -454,3 +454,15 @@ Första varvet talade E18 Helsingfors–Kotka "Olycka rapporterad" om något som
 var en avstängning — min finska snapshot släppte igenom ALLA trafikmeddelanden till
 olycksfacket. Rättat: bara message_type_value='Accident' når rösten, som i Sverige.
 Hinder får egen röst först med #32, i båda länderna samtidigt.
+
+## #45 (31/8 2026) Danmark i skuggan — grästemperatur som frysproxy, öppet flöde som händelsekälla
+Axel: Danmark hade en brutal vinter 2025/26 ⇒ upp i prio, "kör vidare". BYGGT: schema dk,
+ingest/dk.ts, ingest-dk.yml var 30:e min, 20 danska rutter, cron 20,50, kartan + rapporten.
+Händelser: Vejdirektoratets publika trafikkort-flöde (odokumenterat, stabilt sedan 2020,
+DATEX-klassade — Accident/AbnormalTraffic/WeatherRelatedRoadConditions m.fl.). Byt till
+NAP-flödet med gratisnyckel före produktion. Frysrisk: DMI:s GRÄSTEMPERATUR (temp_grass) i
+surface_temp_c, märkt 'grass'. Danska VÄGYTESTATIONERNA ligger i VejVejr bakom avtal.
+ÖPPET FÖR AXEL: räcker grästemperatur som grund för att rösten säger "frysrisk" i Danmark,
+eller ska Bengt ringa Vejdirektoratet om VejVejr? Arkivet är ärligt oavsett; rösten väntar.
+Uppmätt: 23 DMI-stationer rapporterar grästemp (tunt men riktigt), 41 händelser varav 8
+olyckor och 4 halkrapporter — i augusti. Första varvet: 3 rutter, 0 larm, korrekt.

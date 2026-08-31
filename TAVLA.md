@@ -84,10 +84,11 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   VEGVESEN_PASS i GitHub Secrets ⇒ Claude skriver parsern och Norge kör. Allt annat är
   förberett (#35). Kräver de fast IP: proxy-beslut till Axel.
   Gör i samma svep som PRV + domänen.
-- [ ] **Danmark** (Axel 31/8: brutal vinter 2025/26 ⇒ upp i prio): trafikhändelser nyckelfritt
-  via Dataudveksleren — kan gå in som Finland. Halkstationerna ligger i VejVejr som kräver
-  AVTAL med Vejdirektoratet (Bengt-samtal), alternativt DMI:s öppna API (gratis nyckel) om
-  mätstationerna finns där — Claude verifierar. Tätast trafik per km i Norden.
+- [ ] **Danmark — BESLUT:** arkivet KÖR (31/8 kväll, DECISIONS #45). Frysrisken bygger på
+  DMI:s grästemperatur (23 stationer), inte vägyta. Räcker det för rösten, eller ska Bengt
+  ringa Vejdirektoratet om VejVejr-avtal (riktiga vägytestationer)? Ditt beslut.
+- [ ] **Danmark — NAP-nyckel** (gratis registrering) före produktion: trafikkort-flödet vi
+  läser nu är publikt men odokumenterat.
 
 ### Axel — därefter
 - [ ] **Tolv testare till Play-perioden** — Axels åtagande 31/8: "hittar dem utan problem".
@@ -142,6 +143,8 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] 🇩🇰 **DANSKA TESTBILARNA KÖR** (31/8 kväll): DMI + trafikkort, 20 rutter, cron, kartan.
+  Grästemp som frysproxy — beslut till Axel (#45). Norge förberett, väntar på Vegvesen.
 - [x] 🇫🇮 **FINSKA TESTBILARNA KÖR** (31/8 kväll): tre rutter var 30:e min mot finsk snapshot,
   SE/FI-växel på testbilarna.html. Bonusfynd: skuggmotorn körde gammal motor — nu buntad
   ur engine/src med CI-vakt (DECISIONS #43).
