@@ -98,3 +98,24 @@ färd Malmö→Kristianstad i 80 km/h som passerar riktiga fartkameror.
    välj **TestkorningE22**.
 4. Skruva upp ljudet. Vakten börjar tala när första kameran närmar sig.
 Xcode spelar upp rutten i verklig hastighet — luta dig tillbaka och lyssna.
+
+## TestFlight — från Archive till kompisarnas fickor
+Förutsättning: aktiveringsmejlet "Welcome to the Apple Developer Program" har kommit
+och `git pull` + `xcodegen` + Team-valet är gjort (Team heter nu "axel Lagerlof" utan
+"(Personal Team)").
+
+1. **Bundle-ID + apposten (engångs):** appstoreconnect.apple.com → My Apps → **+** →
+   New App → iOS, namn *Halkvakt*, primärt språk *Svenska*, Bundle ID *se.halkvakt.app*
+   (Xcode registrerar det automatiskt vid första arkiveringen om det saknas i listan —
+   arkivera då först, kom tillbaka hit sen), SKU *halkvakt-ios*.
+2. **Arkivera:** i Xcode välj mål **"Any iOS Device (arm64)"** i toppraden (inte din
+   telefon) → meny **Product → Archive**. Tar några minuter. Organizer-fönstret öppnas.
+3. **Ladda upp:** i Organizer: **Distribute App → App Store Connect → Upload** →
+   nästa, nästa (behåll standardval: automatisk signering) → **Upload**.
+4. **Vänta 5–15 min** på mejlet "Halkvakt has completed processing".
+5. **TestFlight-fliken** i App Store Connect → bygget syns → **External Testing →
+   + (ny grupp) "Kompisarna"** → lägg till testarnas e-post → välj bygget → svara på
+   frågorna (exportregler: "No" — vi har ITSAppUsesNonExemptEncryption=false) →
+   *Submit for review*. Första bygget granskas av Apple (typiskt < 1 dygn).
+6. Testarna får mejl → laddar ner **TestFlight-appen** → Halkvakt installeras.
+   Bygget lever i 90 dagar. Nya byggen = steg 2–3 igen, testarna uppdateras automatiskt.
