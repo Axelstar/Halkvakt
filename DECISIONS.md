@@ -322,3 +322,16 @@ fil är ingen deploy. Deployad 08:53, verifierad stillastående räknare + rulla
 Läxa i CLAUDE.md. (b) De 4 587 befintliga gravstenarna exporterade till
 sql/arkiv/gravstenar_2026-08-31.json.gz (239 kB) och raderade. Kvar: 308 rader, alla
 olyckor. Reversibelt via exporten.
+
+## #33 (31/8 2026) Två tabeller, två sanningar: live och arkiv (Claude)
+`deviations` svarar på "vad får appen varna för NU" — bara olyckor, raderas när Trafikverket
+röjer. `situation_archive` svarar på "vad HÄNDE" — tio allow-listade typer, insert vid
+första syn, uppdateras vid återsyn, raderas aldrig av ingest. Gravstenarna var de två
+sanningarna hoprörda i en tabell; nu har varje fråga sin egen.
+
+Allow-listan (uppmätt volym 7 dygn): Accident, WeatherRelatedRoadConditions,
+NonWeatherRelatedRoadConditions, PoorEnvironmentConditions, EnvironmentalObstruction,
+AnimalPresenceObstruction, VehicleObstruction, GeneralObstruction, AbnormalTraffic,
+AffectedCarriagewayAndLanes. Utestängt: MaintenanceWorks + RoadOrCarriagewayOrLaneManagement
+= 62 % av flödet, chronic noise per DECISIONS #5. Kvar ~210 rader/dygn, ~77 000/år, små
+rader — långt under gratistaket. Omprövas om en utestängd typ visar sig bära halkfacit.

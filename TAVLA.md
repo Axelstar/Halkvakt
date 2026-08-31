@@ -66,8 +66,6 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   DECISIONS #5 sade "olyckor + hinder". Kräver ny HazardKind + egen röstfras + Axels
   beslut om vad rösten säger. Bäst kandidat: **djur på vägbanan** (173 på en vecka, med
   RIKTIG position — vida bättre än polisens länscentrum som vi underkände i #13).
-- [ ] **#33 Eget arkivbord för hela Situation-flödet** — så missmätningen (#19) har facit
-  i vinter. Litet, bör göras före första frosten.
 - [ ] **#31 Bevakning av Trafikverkets nyheter** (Bengts issue #2, 29/8) — API-ändringar
   och avvecklingar ska fångas innan de bryter ingest. Litet jobb: RSS/changelog-koll i
   healthchecken eller veckojobb som mejlar.
@@ -103,6 +101,10 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
 ---
 
 ## 🟢 KLART (senaste vinsterna)
+
+- [x] **#33 Arkivbordet LIVE** (31/8): situation_archive tar emot vinterfacit från båda
+  ingestvägarna, missmätningen läser det, bruset utestängt, fött låst. Djur på vägbanan och
+  stoppade fordon sparas från idag — #32 får underlag innan beslutet.
 
 - [x] 🔒 **#30 RLS-LÅSET** (31/8, Bengts issue #3): anon-nyckeln kunde läsa 8 arkivtabeller
   och SKRIVA i dem (PATCH 204). Nu dubbellåst — RLS + REVOKE — på alla elva. Bevisat: 401

@@ -11,13 +11,14 @@
     (LEVANDE djur på vägbanan med riktig position — kvalitativt MYCKET bättre än polisens
     länscentrum-flöde som DECISIONS #13 underkände). Olåst, men börjar med Axels beslut om
     vad rösten ska säga.
-33. **Eget arkivbord för hela Situation-flödet** (avvägning som blottades 31/8): missar.ts
-    (#19) läser `deviations` UTAN att filtrera raderade, och använde alltså gravstenarna
-    som facit-underlag. Efter läckfixen kommer bara olyckor in. Uppmätt förlust just nu:
-    NOLL — inga av 4 892 rader träffar halk-regexet i augusti. Men i vinter kan
-    WeatherRelatedRoadConditions bära halktext, och då vill missmätningen ha dem. Rätt
-    struktur är ett separat arkivbord för hela flödet, inte att smutsa ner livetabellen.
-    Litet. Bör göras före första frosten.
+33. ~~**Eget arkivbord för hela Situation-flödet**~~ (S-2026-08-31: LIVE — situation_archive).
+    deviations är LIVE (olyckor), situation_archive är ARKIVET: tio allow-listade typer,
+    insert-vid-första-syn, refresh-vid-återsyn, raderas aldrig av ingest. Bruset
+    (MaintenanceWorks + körfältsomläggning, 62 %) stängs ute ⇒ ~210 rader/dygn. Båda
+    ingestvägarna skriver; missar.ts läser arkivet. Född låst. sql/003.
+    *Verified: 36 prov + integrationstestet räknar archive:1; första hindret in 09:04 med
+    position; livetabellen orörd; anon 401. Två CI-varv för att få migrationen portabel.*
+    BONUS: AnimalPresenceObstruction + VehicleObstruction sparas från idag ⇒ #32 får underlag.
 30. ~~**RLS-kontroll på alla tabeller**~~ (S-2026-08-31: LÅST — DECISIONS #32). Anon-nyckeln
     kunde läsa 8 arkivtabeller och hade skrivrättighet (PATCH 204). Nu RLS + REVOKE på alla
     elva, INSERT-only-grant på waitlist, default privileges smalnade. Bevisat med anon-nyckeln:

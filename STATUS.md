@@ -362,3 +362,10 @@ var aldrig deployad. Deployad 08:53, verifierad. Sedan 4 587 rader exporterade
 
 **Kvar för Axel:** signeringshemligheten (blockerar Android-AAB). Allt annat på min
 lista från förmiddagen är gjort.
+
+## 2026-08-31 — #33 situation_archive LIVE
+Livetabell och arkiv separerade (DECISIONS #33). Båda ingestvägarna skriver, missar.ts
+läser arkivet, icon_id bevarad som signal. Fött låst. Bevis: 36 prov, integrationstestet
+räknar archive:1, första hindret in 09:04 med position, anon 401, ingest grön.
+Två CI-varv: (1) REVOKE mot roller som CI:s PostGIS saknar — nu vaktad med pg_roles;
+(2) writeAll:s nya archive-räknare saknades i kontraktet. Båda läxor/bokförda.
