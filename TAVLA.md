@@ -71,6 +71,16 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
 - [ ] **Rollfördelningen**: efterfrågan/affärsmodell/B2B = Bengts ansvar? (hans förslag; vid ja uppdateras PLAN)
 - [ ] **#21 Anonym puls + feedback-knapp** — rör "samlar in: ingenting"-löftet; Claudes råd: paketera med sensorbeslutet våren 2027
 
+### Axel — hösten (brainstorm 31/8)
+- [ ] **Skydda namnet:** varumärket Halkvakt hos PRV + domänen halkvakt.se. Enda juridiska
+  muren som finns i branschen; arkivet och relationerna är resten av försvaret.
+- [ ] **Betalvilja mäts i mars, inte gissas i augusti:** en fråga i appen ("N varningar i
+  vinter — skulle du betala X för nästa?"). Ja/nej, inget insamlat utom räkningen. Vinterpass
+  per säsong är kandidatmodellen; B2B (hemtjänst, försäkring, åkerier) är taket.
+- [ ] **Norden efter facit:** Finland först (Fintraffic, finlandssvenska rösten fungerar direkt),
+  Norge sedan, Danmark sist. Tidigast vintern 2027/28. Motorn är landsoberoende — ett land =
+  en ingest + en röst. Nordiskt namn vid det laget (Nordic RoadSafe, DECISIONS #1).
+
 ### Axel — därefter
 - [ ] ⚠️ **Rekrytera testare — mätt läge 31/8: väntelistan har 4 namn.** Google Play kräver
   minst 12 testare som är med i 14 SAMMANHÄNGANDE dygn innan produktion (DECISIONS #9), och
