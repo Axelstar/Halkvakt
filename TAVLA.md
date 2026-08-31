@@ -79,9 +79,12 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
 - [ ] **Betalvilja mäts i mars, inte gissas i augusti:** en fråga i appen ("N varningar i
   vinter — skulle du betala X för nästa?"). Ja/nej, inget insamlat utom räkningen. Vinterpass
   per säsong är kandidatmodellen; B2B (hemtjänst, försäkring, åkerier) är taket.
-- [ ] **Norden efter facit:** Finland först (Fintraffic, finlandssvenska rösten fungerar direkt),
-  Norge sedan, Danmark sist. Tidigast vintern 2027/28. Motorn är landsoberoende — ett land =
-  en ingest + en röst. Nordiskt namn vid det laget (Nordic RoadSafe, DECISIONS #1).
+- [ ] **Norden efter facit:** Finland LIVE i arkivet (31/8). Norge sedan, Danmark sist.
+  Tidigast vintern 2027/28 som produkt. Nordiskt namn vid det laget (Nordic RoadSafe, #1).
+- [ ] **Registrera Vegvesen DATEX-konto** (gratis, personligt: namn + e-post) → användarnamn/
+  lösenord till GitHub Secrets ⇒ Claude bygger det norska skuggarkivet som det finska.
+  Danmark: Vejdirektoratet delvis nyckelfritt, API-nyckel gratis — väntar, svagast vintervärde.
+  Gör i samma svep som PRV + domänen.
 
 ### Axel — därefter
 - [ ] ⚠️ **Rekrytera testare — mätt läge 31/8: väntelistan har 4 namn.** Google Play kräver
