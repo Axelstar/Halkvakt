@@ -12,6 +12,8 @@ public enum HazardKind: String, CaseIterable {
 public struct PointMeta {
     public var surfaceTempC: Double? = nil
     public var moisture: Bool = false
+    /// icing_point — punkten är en BRO (#38): temp/fukt från närmaste station, tröskel +3.
+    public var bridge: Bool = false
     public var active: Bool = true
     public var speedLimitKmh: Int? = nil
     /// accident — Trafikverket SeverityCode (1 Ingen, 2 Liten, 4 Stor, 5 Mycket stor påverkan).
@@ -20,9 +22,11 @@ public struct PointMeta {
     /// The engine reads no clocks and knows no timezones; the string arrives ready to speak.
     public var endTimeLocal: String? = nil
     public init(surfaceTempC: Double? = nil, moisture: Bool = false, active: Bool = true,
-                speedLimitKmh: Int? = nil, severityCode: Int? = nil, endTimeLocal: String? = nil) {
+                speedLimitKmh: Int? = nil, severityCode: Int? = nil, endTimeLocal: String? = nil,
+                bridge: Bool = false) {
         self.surfaceTempC = surfaceTempC; self.moisture = moisture; self.active = active
         self.speedLimitKmh = speedLimitKmh; self.severityCode = severityCode; self.endTimeLocal = endTimeLocal
+        self.bridge = bridge
     }
 }
 
@@ -135,7 +139,8 @@ enum Geo {
 
 enum Texts {
     static func alertText(_ kind: HazardKind, _ distanceM: Double, _ speedLimitKmh: Int?,
-                          _ step: AccidentStep? = nil, _ endTimeLocal: String? = nil) -> String {
+                          _ step: AccidentStep? = nil, _ endTimeLocal: String? = nil,
+                          _ bridge: Bool = false) -> String {
         switch kind {
         case .accident:
             let km = max(1, Int((distanceM / 1000).rounded()))
@@ -155,6 +160,11 @@ enum Texts {
         case .slippery_segment:
             return "Varning: halka rapporterad på vägen framför dig."
         case .icing_point:
+            if bridge {
+                // Bro (#38): säg VAD och ungefär VAR — föraren letar efter bron.
+                let m = max(100, Int((distanceM / 100).rounded()) * 100)
+                return "Frysrisk framöver — bro om \(m) meter."
+            }
             return "Isrisk framöver — vägbanan nära noll grader."
         case .wildlife:
             return "Viltrisk — vanlig olycksplats för älg den här tiden."
@@ -227,6 +237,7 @@ public final class AlertEngine {
         struct Candidate {
             let id: String; let kind: HazardKind; let distM: Double; let limit: Int?
             var alertKey: String; var step: AccidentStep? = nil; var endTimeLocal: String? = nil
+            var bridge: Bool = false
         }
         var candidates: [Candidate] = []
 
@@ -263,8 +274,10 @@ public final class AlertEngine {
                     }
                 }
             case .icing_point:
-                if let t = p.meta.surfaceTempC, t <= 1, p.meta.moisture, distM <= leadM {
-                    candidates.append(Candidate(id: p.id, kind: p.kind, distM: distM, limit: nil, alertKey: p.id))
+                // Broar (#38): brobanan fryser först — närmaste station på +3 räcker.
+                if let t = p.meta.surfaceTempC, t <= (p.meta.bridge ? 3 : 1), p.meta.moisture, distM <= leadM {
+                    candidates.append(Candidate(id: p.id, kind: p.kind, distM: distM, limit: nil, alertKey: p.id,
+                                                bridge: p.meta.bridge))
                 }
             case .wildlife:
                 if p.meta.active, distM <= leadM {
@@ -309,7 +322,7 @@ public final class AlertEngine {
         return Alert(
             t: fix.t, hazardId: win.id, kind: win.kind,
             distanceM: Int(win.distM.rounded()),
-            text: Texts.alertText(win.kind, win.distM, win.limit, win.step, win.endTimeLocal))
+            text: Texts.alertText(win.kind, win.distM, win.limit, win.step, win.endTimeLocal, win.bridge))
     }
 
     public func run(_ trace: [Fix]) -> [Alert] { trace.compactMap { step($0) } }

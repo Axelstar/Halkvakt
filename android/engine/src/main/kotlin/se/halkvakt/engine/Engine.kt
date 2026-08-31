@@ -118,7 +118,9 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
             HazardKind.ACCIDENT -> evaluateAccident(p, distM)
             HazardKind.ICING_POINT -> {
                 val t = p.meta.surfaceTempC
-                val icy = t != null && t <= 1.0 && p.meta.moisture
+                // Broar (#38): brobanan fryser först — närmaste station på +3 räcker.
+                val threshold = if (p.meta.bridge) 3.0 else 1.0
+                val icy = t != null && t <= threshold && p.meta.moisture
                 if (icy && distM <= leadM) Candidate(p, p.kind, distM, p.id) else null
             }
             HazardKind.WILDLIFE ->

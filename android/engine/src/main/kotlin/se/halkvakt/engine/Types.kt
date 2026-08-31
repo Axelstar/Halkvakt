@@ -25,6 +25,8 @@ data class PointMeta(
     val severityCode: Int? = null,
     /** accident — EndTime pre-formatted "HH:MM" Europe/Stockholm by the publisher. */
     val endTimeLocal: String? = null,
+    /** icing_point — punkten är en BRO (#38): temp/fukt från närmaste station, tröskel +3. */
+    val bridge: Boolean = false,
 )
 
 /** Which utterance of a serious accident this is (DECISIONS #28). Mirrors AccidentStep in texts.ts. */
@@ -137,7 +139,12 @@ object Texts {
             }
         }
         HazardKind.SLIPPERY_SEGMENT -> "Varning: halka rapporterad på vägen framför dig."
-        HazardKind.ICING_POINT -> "Isrisk framöver — vägbanan nära noll grader."
+        HazardKind.ICING_POINT ->
+            if (hazard?.meta?.bridge == true) {
+                // Bro (#38): säg VAD och ungefär VAR — föraren letar efter bron.
+                val m = max(100L, Math.round(distanceM / 100.0) * 100)
+                "Frysrisk framöver — bro om $m meter."
+            } else "Isrisk framöver — vägbanan nära noll grader."
         HazardKind.WILDLIFE -> "Viltrisk — vanlig olycksplats för älg den här tiden."
         HazardKind.CAMERA -> hazard?.meta?.speedLimitKmh?.let { "Fartkamera om 500 meter. Gränsen är $it." }
             ?: "Fartkamera om 500 meter."

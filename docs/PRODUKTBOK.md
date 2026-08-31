@@ -100,6 +100,14 @@ vinner den allvarligaste (olycka > halka > frysrisk > vilt > kamera) och den
 andra **droppas** — köas aldrig upp till tjat. Under 15 km/h: tyst (du står
 still eller kör på parkering).
 
+## Broarna (0.3.3)
+
+Broar fryser före vägen. Halkvakt känner till varje bro på riks- och europavägarna (ur
+OpenStreetMap) och säger till när närmaste vägväderstation ligger nära noll och det är
+vått: *"Frysrisk framöver — bro om sjuhundra meter."* Tröskeln för bron är +3 grader,
+högre än vägens +1, för att brobanan kyls från två håll. Det är en mätning plus ett
+faktum — ingen prognos. Är stationen varmare än tre grader tiger vakten om bron.
+
 ## Flöde 1 — en körning
 
 ```mermaid

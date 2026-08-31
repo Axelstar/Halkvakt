@@ -33,6 +33,9 @@ export interface PointHazard {
     /** icing_point */
     surfaceTempC?: number | null;
     moisture?: boolean; // rain/snow/wet surface at the station
+    /** icing_point — this point is a BRIDGE (#38): surfaceTempC/moisture come from the
+     *  nearest road weather station; bridges freeze first, so the threshold is +3 °C. */
+    bridge?: boolean;
     /** wildlife */
     active?: boolean;   // precomputed by data layer (season × hour); default true
     /** camera */
@@ -233,6 +236,11 @@ export function alertText(
     case "slippery_segment":
       return "Varning: halka rapporterad på vägen framför dig.";
     case "icing_point":
+      if (hazard?.meta?.bridge) {
+        // Bridge (#38): say WHAT and roughly WHERE — the driver looks for the bridge.
+        const m = Math.max(100, Math.round(distanceM / 100) * 100);
+        return `Frysrisk framöver — bro om ${m} meter.`;
+      }
       return "Isrisk framöver — vägbanan nära noll grader.";
     case "wildlife":
       return "Viltrisk — vanlig olycksplats för älg den här tiden.";
@@ -426,7 +434,9 @@ export class AlertEngine {
         return this.evaluateAccident(p, distM);
       case "icing_point": {
         const t = p.meta?.surfaceTempC;
-        const icy = t != null && t <= 1 && p.meta?.moisture === true;
+        // Bridges (#38): the deck freezes before the road — nearest station at +3 is enough.
+        const threshold = p.meta?.bridge ? 3 : 1;
+        const icy = t != null && t <= threshold && p.meta?.moisture === true;
         return icy && distM <= leadM ? { hazard: p, kind: p.kind, distM, alertKey: p.id } : null;
       }
       case "wildlife": {
@@ -510,6 +520,8 @@ export interface LiveDoc {
   }[];
   smhi: unknown[]; // not consumed by the engine v1 (map/UI layer)
   wildlife?: { id: string; lon: number; lat: number; art: string | null }[];
+  /** #38 — bridges whose nearest station is near freezing. Publisher pre-filters; engine re-checks. */
+  bridges?: { id: string; lon: number; lat: number; road: string | null; yta: number | null; fukt: boolean }[];
 }
 
 export function snapshotToHazards(staticDoc: StaticDoc, liveDoc: LiveDoc): Hazard[] {
@@ -531,6 +543,10 @@ export function snapshotToHazards(staticDoc: StaticDoc, liveDoc: LiveDoc): Hazar
   }
   for (const v of liveDoc.wildlife ?? []) {
     out.push({ id: `vilt:${v.id}`, kind: "wildlife", lon: v.lon, lat: v.lat });
+  }
+  for (const b of liveDoc.bridges ?? []) {
+    out.push({ id: `bro:${b.id}`, kind: "icing_point", lon: b.lon, lat: b.lat,
+               meta: { surfaceTempC: b.yta, moisture: b.fukt, bridge: true } });
   }
   return out;
 }

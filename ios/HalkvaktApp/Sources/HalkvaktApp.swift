@@ -106,7 +106,7 @@ struct InstallningarView: View {
                         LinkRow(title: "Om appen & vanliga frågor", url: "https://axelstar.github.io/halkvakt-karta/om.html")
                         LinkRow(title: "Press & material", url: "https://axelstar.github.io/halkvakt-karta/press.html")
                         LinkRow(title: "Integritetspolicy", url: "https://axelstar.github.io/halkvakt-karta/integritet.html")
-                        Text("Varnar vid Trafikverkets mätstationer och rapporterade väglag — mellan stationerna är vägen oövervakad. Data: Trafikverket (CC0), Polisen, SMHI, Fintraffic (CC BY 4.0). Halkvakt är fristående och har ingen koppling till myndigheterna.")
+                        Text("Varnar vid Trafikverkets mätstationer och rapporterade väglag — mellan stationerna är vägen oövervakad. Data: Trafikverket (CC0), Polisen, SMHI, Fintraffic (CC BY 4.0), broar © OpenStreetMap-bidragsgivare (ODbL). Halkvakt är fristående och har ingen koppling till myndigheterna.")
                             .font(Typo.sans(12)).foregroundStyle(Brand.faint)
                     }
                     .padding(.top, 8)

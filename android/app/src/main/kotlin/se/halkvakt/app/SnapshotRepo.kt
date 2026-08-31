@@ -92,6 +92,20 @@ object SnapshotRepo {
                 ),
             ))
         }
+        liveDoc.optJSONArray("bridges")?.let { bs ->   // #38 — broar nära frysande station
+            for (i in 0 until bs.length()) {
+                val b = bs.getJSONObject(i)
+                out.add(PointHazard(
+                    id = "bro:${b.getString("id")}", kind = HazardKind.ICING_POINT,
+                    lon = b.getDouble("lon"), lat = b.getDouble("lat"),
+                    meta = PointMeta(
+                        surfaceTempC = if (b.isNull("yta")) null else b.getDouble("yta"),
+                        moisture = b.optBoolean("fukt", false),
+                        bridge = true,
+                    ),
+                ))
+            }
+        }
         liveDoc.optJSONArray("wildlife")?.let { vs ->
             for (i in 0 until vs.length()) {
                 val v = vs.getJSONObject(i)

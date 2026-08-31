@@ -29,6 +29,9 @@ export interface PointHazard {
     /** icing_point */
     surfaceTempC?: number | null;
     moisture?: boolean; // rain/snow/wet surface at the station
+    /** icing_point — this point is a BRIDGE (#38): surfaceTempC/moisture come from the
+     *  nearest road weather station; bridges freeze first, so the threshold is +3 °C. */
+    bridge?: boolean;
     /** wildlife */
     active?: boolean;   // precomputed by data layer (season × hour); default true
     /** camera */

@@ -22,6 +22,8 @@ export interface LiveDoc {
   }[];
   smhi: unknown[]; // not consumed by the engine v1 (map/UI layer)
   wildlife?: { id: string; lon: number; lat: number; art: string | null }[];
+  /** #38 — bridges whose nearest station is near freezing. Publisher pre-filters; engine re-checks. */
+  bridges?: { id: string; lon: number; lat: number; road: string | null; yta: number | null; fukt: boolean }[];
 }
 
 export function snapshotToHazards(staticDoc: StaticDoc, liveDoc: LiveDoc): Hazard[] {
@@ -43,6 +45,10 @@ export function snapshotToHazards(staticDoc: StaticDoc, liveDoc: LiveDoc): Hazar
   }
   for (const v of liveDoc.wildlife ?? []) {
     out.push({ id: `vilt:${v.id}`, kind: "wildlife", lon: v.lon, lat: v.lat });
+  }
+  for (const b of liveDoc.bridges ?? []) {
+    out.push({ id: `bro:${b.id}`, kind: "icing_point", lon: b.lon, lat: b.lat,
+               meta: { surfaceTempC: b.yta, moisture: b.fukt, bridge: true } });
   }
   return out;
 }

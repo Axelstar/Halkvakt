@@ -44,6 +44,11 @@ export function alertText(
     case "slippery_segment":
       return "Varning: halka rapporterad på vägen framför dig.";
     case "icing_point":
+      if (hazard?.meta?.bridge) {
+        // Bridge (#38): say WHAT and roughly WHERE — the driver looks for the bridge.
+        const m = Math.max(100, Math.round(distanceM / 100) * 100);
+        return `Frysrisk framöver — bro om ${m} meter.`;
+      }
       return "Isrisk framöver — vägbanan nära noll grader.";
     case "wildlife":
       return "Viltrisk — vanlig olycksplats för älg den här tiden.";

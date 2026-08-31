@@ -42,6 +42,31 @@ const staticDoc = {
   })),
 };
 
+// ---- #38 Broarna: OSM-broar vars närmaste vägväderstation (≤ 15 km) är nära frysande ----
+// Motorn kollar samma regel igen (tröskel +3 för bro), publiceringen förfiltrerar för
+// att inte skicka 3 000 broar till varje telefon i juli. Saknas data/bridges.geojson
+// (Overpass nere) ⇒ tom lista, inget annat påverkas.
+import { existsSync, readFileSync } from "node:fs";
+const allWx = await pool.query(`
+  SELECT station_id, surface_temp_c, rain, snow, precipitation, ST_X(geom) AS lon, ST_Y(geom) AS lat
+  FROM weather_latest WHERE surface_temp_c IS NOT NULL AND sample_time > now() - interval '3 hours'`);
+const bridgesFile = new URL("../data/bridges.geojson", import.meta.url);
+const bridges: { id: string; lon: number; lat: number; road: string | null; yta: number | null; fukt: boolean }[] = [];
+if (existsSync(bridgesFile)) {
+  const fc = JSON.parse(readFileSync(bridgesFile, "utf8"));
+  const cold = allWx.rows.map((r) => ({ lon: Number(r.lon), lat: Number(r.lat), yta: Number(r.surface_temp_c),
+    fukt: Boolean(r.rain || r.snow || r.precipitation) })).filter((w) => w.yta <= 3 && w.fukt);
+  for (const f of fc.features) {
+    const [lon, lat] = f.geometry.coordinates;
+    let best: typeof cold[number] | null = null, bestD = Infinity;
+    for (const w of cold) {
+      const d = Math.hypot((w.lon - lon) * 111_320 * Math.cos(lat * Math.PI / 180), (w.lat - lat) * 111_000);
+      if (d < bestD) { bestD = d; best = w; }
+    }
+    if (best && bestD <= 15_000) bridges.push({ id: f.properties.id, lon, lat, road: f.properties.road ?? null, yta: best.yta, fukt: true });
+  }
+}
+
 // ---- live: everything the engine alerts on ----
 const segs = await pool.query(`
   SELECT segment_id, condition_code, condition_info, road_number,
@@ -102,6 +127,7 @@ const liveDoc = {
   })),
   smhi: smhi.rows.map((r) => ({ id: Number(r.area_id), event: r.event_sv, niva: r.level_code, geom: r.g })),
   wildlife: vilt.rows.map((r) => ({ id: String(r.event_id), lon: Number(r.lon), lat: Number(r.lat), art: r.species ?? null })),
+  bridges,
 };
 
 /** Absolute instant → "HH:MM" in Swedish wall-clock time, or null. */
@@ -128,6 +154,6 @@ writeFileSync(join(outDir, "manifest.json"), JSON.stringify(manifest));
 
 const kb = (b: number) => `${(b / 1024).toFixed(0)} kB`;
 console.log(`snapshot built: static ${kb(fStatic.bytes)} (gz ${kb(fStatic.gz_bytes)}, ${staticDoc.cameras.length} cameras), ` +
-  `live ${kb(fLive.bytes)} (gz ${kb(fLive.gz_bytes)}; segs ${liveDoc.segments.length}, wx ${liveDoc.weather.length}, dev ${liveDoc.deviations.length}, vilt ${liveDoc.wildlife.length}, smhi ${liveDoc.smhi.length})`);
+  `live ${kb(fLive.bytes)} (gz ${kb(fLive.gz_bytes)}; segs ${liveDoc.segments.length}, wx ${liveDoc.weather.length}, dev ${liveDoc.deviations.length}, vilt ${liveDoc.wildlife.length}, broar ${liveDoc.bridges.length}, smhi ${liveDoc.smhi.length})`);
 if (fLive.gz_bytes > 1_500_000) console.warn("SPLIT CRITERION HIT (DECISIONS #14): live gz > 1.5 MB — time for per-län files");
 await pool.end();

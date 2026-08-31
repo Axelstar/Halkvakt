@@ -503,3 +503,14 @@ bilkropp + islagsstjärna; Vilt = hjorthuvud framifrån, hornen bär igenkännin
 = låda på stolpe, den enda på stolpe. Triangeln är varumärket, inte olyckans ikon — står
 kvar överst på kortet; ikonen sitter intill namnet. SVG i Assets.xcassets (template),
 källa docs/design/icons/. Samma fem till Android och Live Activity.
+
+## #50 (31/8 2026 kväll) Broarna — frysrisk mellan stationerna utan prognos (#38a, Bengts fråga)
+Byggt i tre motorer + vektorer v18/v19 + publicering + OSM-hämtare med återförsök.
+Regel: icing_point med meta.bridge ⇒ tröskel +3 °C (vägen +1) + fukt från NÄRMASTE station
+≤ 15 km. Text: "Frysrisk framöver — bro om N meter." — invarianten stoppade första
+utkastet ("Bro om N meter — frysrisk."): punktkällor säger "framöver", bara sträckor får
+säga "på vägen framför dig". Bron är en punkt vars temperatur kommer från en station
+någon annanstans; regeln har rätt. Publiceringen förfiltrerar (inga 3 000 broar i juli),
+motorn kollar om. Data: OSM bridge=yes på motorway/trunk/primary i Sverige, ODbL,
+attribution i appen; motorvägens två banor slås ihop inom 60 m. Overpass var nere hela
+kvällen — bridges.yml försöker var 6:e timme tills filen finns. Stråket (#38b) väntar.

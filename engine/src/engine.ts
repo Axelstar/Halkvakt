@@ -183,7 +183,9 @@ export class AlertEngine {
         return this.evaluateAccident(p, distM);
       case "icing_point": {
         const t = p.meta?.surfaceTempC;
-        const icy = t != null && t <= 1 && p.meta?.moisture === true;
+        // Bridges (#38): the deck freezes before the road — nearest station at +3 is enough.
+        const threshold = p.meta?.bridge ? 3 : 1;
+        const icy = t != null && t <= threshold && p.meta?.moisture === true;
         return icy && distM <= leadM ? { hazard: p, kind: p.kind, distM, alertKey: p.id } : null;
       }
       case "wildlife": {
