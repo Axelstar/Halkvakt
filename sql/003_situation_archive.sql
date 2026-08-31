@@ -34,5 +34,14 @@ CREATE INDEX IF NOT EXISTS situation_archive_start_idx ON situation_archive (sta
 CREATE INDEX IF NOT EXISTS situation_archive_type_idx  ON situation_archive (message_type_value);
 
 -- Born locked (DECISIONS #32): the pipeline writes as postgres, nobody reads via anon.
+-- The roles are Supabase-specific; CI's throwaway PostGIS has none, so guard the REVOKE.
 ALTER TABLE situation_archive ENABLE ROW LEVEL SECURITY;
-REVOKE ALL ON TABLE situation_archive FROM anon, authenticated;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'anon') THEN
+    REVOKE ALL ON TABLE situation_archive FROM anon;
+  END IF;
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticated') THEN
+    REVOKE ALL ON TABLE situation_archive FROM authenticated;
+  END IF;
+END $$;

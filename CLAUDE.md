@@ -130,3 +130,8 @@ i samma commit när de överlappar.
   ger 204 om rättigheten finns (0 rader matchade men anropet var tillåtet) och 401 om den
   saknas. Ett DELETE som faller på kolumnnamn (400) har PASSERAT rättighetskontrollen.
   Lås alltid dubbelt: RLS utan policy + REVOKE, så en klickruta inte kan öppna arkivet igen.
+- Migrationer som rör Supabase-rollerna (anon/authenticated) måste vakta med
+  `IF EXISTS (SELECT 1 FROM pg_roles ...)`. CI:s slit-och-släng-PostGIS har inga sådana
+  roller, och en naken REVOKE fäller integrationstestet (003, 31/8). 002 kördes bara via
+  Management API och gick därför oupptäckt förbi — hade den legat i auto-migrationen hade
+  samma sak hänt.
