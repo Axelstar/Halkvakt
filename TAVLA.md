@@ -51,6 +51,7 @@ med släckt skärm, vakten stannar när du stänger av.
 **Claude — i väntan på Macen:**
 - [ ] Introduktionen på Android (spegel av iOS, DECISIONS #36) — efter att iOS-varianten testats
 - [ ] #31 Trafikverksbevakningen (litet, olåst, kan bevisas härifrån)
+- [x] ~~Testinstruktion till Bengt~~ ✅ docs/TEST-BENGT-0.3.2.md (31/8) — skicka länken ikväll
 - [ ] Välkomsttext + testinstruktion till kompisarna
 - [ ] Play: uppladdningsguide för den CI-signerade AAB:n så fort hemligheten är satt
 - [ ] Fotostudion tag 2 — facit ur CI + produktboken
