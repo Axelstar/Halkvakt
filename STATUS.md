@@ -438,3 +438,10 @@ Inställningar med Om som sista avsnitt, intro med kvitton. Axel: "ser riktigt s
 Fynd på vägen: notissidan saknade kvitto (fixat); halvinstallerad app efter Xcode-attach-fel
 (läxa i CLAUDE.md). INTE skickat till Bengt — han kör 0.3.2 till Boden i morgon (#40-testet).
 0.3.3 = skinnet + kvittot för självväckning, efter Boden. Android: samma skinn, nästa varv.
+
+## 2026-08-31 ~20:00 — #38a Broarna byggt i tre motorer (DECISIONS #50)
+Bengts fråga "halka mellan kameror?" → beslut: mätning + faktum, ingen prognos. Broar ur OSM,
+tröskel +3 vid närmaste station ≤ 15 km, text "Frysrisk framöver — bro om N meter." (invarianten
+tvingade fram "framöver"). TS 38/38, Swift-CI grön efter argumentordning, Kotlin-tester gröna
+(AAB-signeringen är Axels hemlighet). Skuggmotorn buntad + deployad. Overpass nere hela kvällen:
+bridges.yml hämtar var 6:e timme tills filen finns — då börjar broarna synas i live.json.

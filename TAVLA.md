@@ -54,9 +54,11 @@ med släckt skärm, vakten stannar när du stänger av.
 
 **Claude — i väntan på Macen:**
 - [ ] Introduktionen på Android (spegel av iOS, DECISIONS #36) — efter att iOS-varianten testats
-- [ ] **#38 Stråket** — (a) broarna först: OSM-broar + närmaste station ≤ +3 °C ⇒ "Bro om
-  femhundra meter — frysrisk". (b) stråket: två stationer båda is ⇒ sträckan. Bengts fråga.
-  Efter Boden. Nästa motorvarv om Axel säger ja.
+- [x] ~~#38a Broarna~~ ✅ BYGGT 31/8 kväll (DECISIONS #50): tre motorer, v18/v19, publicering,
+  OSM-hämtare. "Frysrisk framöver — bro om N meter." VÄNTAR PÅ DATA: Overpass nere, bridges.yml
+  försöker var 6:e timme. Rösten säger inget om broar förrän filen finns. Appen: 0.3.3.
+- [ ] **#38b Stråket** — två stationer båda is ⇒ sträckan mellan dem längs vägnätet. Kräver
+  OSM-vägnät. Efter Boden + broarna i fält.
 - [ ] #31 Trafikverksbevakningen (litet, olåst, kan bevisas härifrån)
 
 - [x] ~~Testinstruktion till Bengt~~ ✅ docs/TEST-BENGT-0.3.2.md (31/8)
