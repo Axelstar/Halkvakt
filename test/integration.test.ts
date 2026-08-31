@@ -2,7 +2,7 @@
 // Skips cleanly when TEST_DATABASE_URL is absent (local runs without Docker).
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { ingestAction } from "../ingest/sources/situations.ts";
+import { ingestAction, shouldArchive } from "../ingest/sources/situations.ts";
 
 const url = process.env.TEST_DATABASE_URL;
 
@@ -85,4 +85,19 @@ test("gravstensläckan: en raderad avvikelse av otrackad typ får ALDRIG skapa e
   // Och de generiska orden som aldrig fanns i Trafikverkets vokabulär:
   assert.equal(ingestAction("Obstruction", false), "skip");
   assert.equal(ingestAction("Incident", false), "skip");
+});
+
+test("#33 arkivlistan: bruset stängs ute, vinterfacit + olyckor tas med", () => {
+  // 62 % av flödet är MaintenanceWorks + körfältsomläggning — chronic noise (DECISIONS #5).
+  assert.equal(shouldArchive("MaintenanceWorks"), false);
+  assert.equal(shouldArchive("RoadOrCarriagewayOrLaneManagement"), false);
+  // Det missmätningen (#19) faktiskt behöver i vinter:
+  assert.equal(shouldArchive("WeatherRelatedRoadConditions"), true);
+  assert.equal(shouldArchive("NonWeatherRelatedRoadConditions"), true);
+  assert.equal(shouldArchive("Accident"), true);
+  // Och kandidaterna för #32 (djur på vägbanan, stoppade fordon) sparas nu från dag ett:
+  assert.equal(shouldArchive("AnimalPresenceObstruction"), true);
+  assert.equal(shouldArchive("VehicleObstruction"), true);
+  // Arkivering är oberoende av livetabellen: ett hinder arkiveras men lagras aldrig live.
+  assert.equal(ingestAction("VehicleObstruction", false), "skip");
 });

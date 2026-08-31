@@ -28,6 +28,13 @@ const pt = (w?: string) => { const m = w?.match(/POINT \(([-\d.]+) ([-\d.]+)\)/)
 // MessageTypeValue vocabulary has no "Obstruction"/"Incident"; the old set matched only
 // "Accident" in practice. Widening = product decision, see BACKLOG #32.
 const KEEP = new Set(["Accident"]);
+// MIRROR of ARCHIVE in ingest/sources/situations.ts (#33). Live obstructions etc. go to
+// situation_archive — never to the live table, never deleted by ingest.
+const ARCHIVE = new Set([
+  "Accident", "WeatherRelatedRoadConditions", "NonWeatherRelatedRoadConditions",
+  "PoorEnvironmentConditions", "EnvironmentalObstruction", "AnimalPresenceObstruction",
+  "VehicleObstruction", "GeneralObstruction", "AbnormalTraffic", "AffectedCarriagewayAndLanes",
+]);
 
 async function cursor(name: string): Promise<string> {
   const r = await sql`SELECT last_change_id FROM sync_state WHERE source = ${name}`;
@@ -50,8 +57,19 @@ async function situations() {
       n++;
       continue;
     }
-    if (!KEEP.has(d.MessageTypeValue)) continue;
     const p = pt(d?.Geometry?.Point?.WGS84 ?? d?.Geometry?.WGS84);
+    if (ARCHIVE.has(d.MessageTypeValue)) {
+      await sql`INSERT INTO situation_archive (deviation_id, message_type_value, message_type, message,
+                  severity_code, road_number, icon_id, geom, start_time, end_time)
+                VALUES (${String(d.Id ?? s.Id)}, ${d.MessageTypeValue}, ${d.MessageType ?? null}, ${d.Message ?? ""},
+                  ${d.SeverityCode ?? null}, ${d.RoadNumber ?? null}, ${d.IconId ?? null},
+                  ${p ? sql`ST_SetSRID(ST_MakePoint(${p[0]}, ${p[1]}), 4326)` : null},
+                  ${d.StartTime ?? null}, ${d.EndTime ?? null})
+                ON CONFLICT (deviation_id) DO UPDATE SET message = EXCLUDED.message,
+                  severity_code = EXCLUDED.severity_code, end_time = EXCLUDED.end_time,
+                  geom = COALESCE(EXCLUDED.geom, situation_archive.geom), last_seen = now()`;
+    }
+    if (!KEEP.has(d.MessageTypeValue)) continue;
     await sql`INSERT INTO deviations (deviation_id, situation_id, message_type, message_type_value, message,
         severity_code, severity_text, road_number, county_nos, geom, start_time, end_time, icon_id, modified_time, deleted)
       VALUES (${String(d.Id ?? s.Id)}, ${String(s.Id ?? d.Id)}, ${d.MessageType ?? ""}, ${d.MessageTypeValue ?? ""},

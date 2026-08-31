@@ -36,6 +36,26 @@ export interface Deviation {
 // See BACKLOG #32 for that card. DECISIONS #5's original intent is preserved there.
 const KEEP = new Set(["Accident"]);
 
+/**
+ * Types that go to `situation_archive` (BACKLOG #33) — the durable record the miss-
+ * measurement (#19) judges the engine against once real ice arrives. Allow-listed on
+ * purpose: MaintenanceWorks and RoadOrCarriagewayOrLaneManagement are chronic noise and
+ * 62 % of the feed (measured 2026-08-31); they never enter. What remains is ~210 rows/day.
+ * Accidents are archived too, so the archive is the single place to ask "what happened".
+ */
+const ARCHIVE = new Set([
+  "Accident",
+  "WeatherRelatedRoadConditions", "NonWeatherRelatedRoadConditions",
+  "PoorEnvironmentConditions", "EnvironmentalObstruction",
+  "AnimalPresenceObstruction", "VehicleObstruction", "GeneralObstruction",
+  "AbnormalTraffic", "AffectedCarriagewayAndLanes",
+]);
+
+/** Pure: does a LIVE (non-deleted) deviation of this type belong in the archive? */
+export function shouldArchive(messageTypeValue: string): boolean {
+  return ARCHIVE.has(messageTypeValue);
+}
+
 /** What to do with one Deviation from the feed. Pure, so it can be tested directly. */
 export type IngestAction = "store" | "mark-deleted" | "skip";
 
@@ -65,7 +85,10 @@ export async function fetchDeviations(apiKey: string, changeid = "0"): Promise<T
   const out: Deviation[] = [];
   for (const s of items) {
     for (const d of s.Deviation ?? []) {
-      if (ingestAction(d.MessageTypeValue ?? "", Boolean(s.Deleted)) === "skip") continue;
+      const mtv = d.MessageTypeValue ?? "";
+      const action = ingestAction(mtv, Boolean(s.Deleted));
+      // "skip" for the live table may still be an archive row (a live obstruction).
+      if (action === "skip" && !shouldArchive(mtv)) continue;
       const p = parseWgs84Point(d?.Geometry?.Point?.WGS84 ?? d?.Geometry?.WGS84);
       out.push({
         deviationId: String(d.Id ?? s.Id),

@@ -3,6 +3,7 @@
 // Auto-migrates on start (sql/001_init.sql is fully idempotent).
 import pg from "pg";
 import { readFileSync } from "node:fs";
+import { ingestAction, shouldArchive } from "./sources/situations.ts";
 import { type TvResult } from "./trafikverket.ts";
 import { type WeatherObs, isInteresting } from "./sources/weather.ts";
 import { type RoadConditionSeg } from "./sources/roadcondition.ts";
@@ -44,6 +45,7 @@ export async function writeAll(data: {
   const client = await pool.connect();
   try {
     await client.query(readFileSync(new URL("../sql/001_init.sql", import.meta.url), "utf8"));
+    await client.query(readFileSync(new URL("../sql/003_situation_archive.sql", import.meta.url), "utf8"));
 
     // Weather archive policy needs last stored temp per station — ONE query, not N.
     const lastTemps = new Map<string, number | null>();
@@ -145,7 +147,29 @@ export async function writeAll(data: {
     // other types we deliberately do not ship. UPDATE touches 0 rows when we never
     // held it, which is exactly the wanted behaviour.
     const dying = data.deviations.items.filter((d) => d.deleted);
-    const living = data.deviations.items.filter((d) => !d.deleted);
+    const living = data.deviations.items.filter((d) => !d.deleted && ingestAction(d.messageTypeValue, false) === "store");
+    // #33: the durable archive. Insert on first sight, refresh on resight, never delete.
+    const archive = data.deviations.items.filter((d) => !d.deleted && shouldArchive(d.messageTypeValue));
+    for (const c of chunks(archive)) {
+      await client.query(
+        `INSERT INTO situation_archive (deviation_id, message_type_value, message_type, message,
+           severity_code, road_number, icon_id, geom, start_time, end_time)
+         SELECT u.deviation_id, u.message_type_value, u.message_type, u.message, u.severity_code,
+                u.road_number, u.icon_id,
+                CASE WHEN u.lon IS NULL THEN NULL ELSE ST_SetSRID(ST_MakePoint(u.lon, u.lat), 4326) END,
+                u.start_time, u.end_time
+         FROM UNNEST($1::text[],$2::text[],$3::text[],$4::text[],$5::int[],$6::text[],$7::text[],
+                     $8::float8[],$9::float8[],$10::timestamptz[],$11::timestamptz[])
+              AS u(deviation_id, message_type_value, message_type, message, severity_code,
+                   road_number, icon_id, lon, lat, start_time, end_time)
+         ON CONFLICT (deviation_id) DO UPDATE SET message = EXCLUDED.message,
+           severity_code = EXCLUDED.severity_code, end_time = EXCLUDED.end_time,
+           geom = COALESCE(EXCLUDED.geom, situation_archive.geom), last_seen = now()`,
+        [col(c, x => x.deviationId), col(c, x => x.messageTypeValue), col(c, x => x.messageType),
+         col(c, x => x.message), col(c, x => x.severityCode), col(c, x => x.roadNumber), col(c, x => x.iconId),
+         col(c, x => x.lon), col(c, x => x.lat), col(c, x => x.startTime), col(c, x => x.endTime)]);
+      counts.archive = (counts.archive ?? 0) + c.length;
+    }
     for (const c of chunks(dying)) {
       const r = await client.query(
         `UPDATE deviations SET deleted = TRUE, modified_time = u.modified_time

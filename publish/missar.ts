@@ -86,10 +86,10 @@ const events = await pool.query(`
   FROM smhi_warnings_history WHERE geom IS NOT NULL AND archived_at > now() - $1 * interval '1 day'
     AND event_code ~* 'ice|icing|snow|glaze|frost|slip'
   UNION ALL
-  SELECT 'dev:' || deviation_id, COALESCE(start_time, modified_time),
+  SELECT 'dev:' || deviation_id, COALESCE(start_time, first_seen),
     ST_X(geom::geometry), ST_Y(geom::geometry), message
-  FROM deviations
-  WHERE geom IS NOT NULL AND COALESCE(start_time, modified_time) > now() - $1 * interval '1 day'
+  FROM situation_archive
+  WHERE geom IS NOT NULL AND COALESCE(start_time, first_seen) > now() - $1 * interval '1 day'
     AND (message ~* 'halk|ishalka|\\mis\\M|\\misig\\M|\\msnö|snöfall|glatt|\\mhalt\\M' OR icon_id ~* 'ice|slip')`, [DAYS]);
 
 type Row = { week: string; route: string; hit: boolean; id: string };
