@@ -14,8 +14,14 @@ struct AutostartGuideView: View {
         Panel {
             if let setup = prefs.carSetup {
                 steps(for: setup)
-                Button("Byt bilkoppling") { prefs.carSetup = nil }
-                    .font(.system(size: 13)).foregroundStyle(Brand.dim)
+                Button {
+                    prefs.carSetup = nil
+                } label: {
+                    Label("Byt bilkoppling", systemImage: "arrow.left")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(Brand.yellow)
+                }
+                .padding(.top, 4)
             } else {
                 question
             }

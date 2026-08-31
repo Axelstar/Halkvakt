@@ -135,3 +135,6 @@ i samma commit när de överlappar.
   roller, och en naken REVOKE fäller integrationstestet (003, 31/8). 002 kördes bara via
   Management API och gick därför oupptäckt förbi — hade den legat i auto-migrationen hade
   samma sak hänt.
+- SwiftUI TabView(.page) lägger sidprickarna OVANPÅ innehållet, inte under det. Sista
+  elementet på varje sida måste ha ≥ 56 pt fri höjd under sig, annars täcks knappar.
+  Fångat på Axels telefon 31/8: "Byt bilkoppling" låg under prickarna och gick inte att träffa.

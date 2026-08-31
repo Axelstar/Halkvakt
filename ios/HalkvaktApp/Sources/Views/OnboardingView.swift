@@ -122,7 +122,7 @@ private struct OnboardingPage<Content: View>: View {
                 Text(text)
                     .foregroundStyle(Brand.dim)
                 content
-                Spacer(minLength: 24)
+                Spacer(minLength: 56)   // fri höjd under innehållet så sidprickarna inte täcker något
             }
             .padding(18)
         }
