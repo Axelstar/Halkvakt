@@ -291,3 +291,43 @@ i stället för försvagad repris-regel, och steget internt så kontraktet inte 
 använder. Släpper i praktiken bara igenom "Accident". Läxa skriven, eget kort krävs.
 
 **Ej gjort:** #24, #23, #22 — app-UI och autostart, kräver Mac/emulator för bevis.
+
+## 2026-08-31 — Gravstensläckan tätad (Axels order: "det som måste fixas")
+Fyndet från #28 visade sig vara större än en stavfelsbugg.
+
+**Mätt:** 4 890 av 4 892 rader i `deviations` var raderade. 4 584 tillhörde typer vi
+aldrig lagrat levande — vägarbeten, körfältsomläggningar, fordonshinder. De växte med
+ca 650/dygn. Orsak: `if (!KEEP.has(x) && !s.Deleted) continue;` har två effekter, och
+den andra var osynlig.
+
+**Inte det uppenbara fixet.** `&& !s.Deleted` fanns av god anledning: en röjd olycka
+måste kunna släckas i appen. Att bara ta bort villkoret hade riskerat att gamla olyckor
+låg kvar och varnades för — värre än gravstenarna. Fixen är i stället att skilja
+"vad vi lagrar" från "vad som får radera": raderingar är nu UPDATE, aldrig INSERT.
+De städar allt vi trackar och skapar aldrig något vi inte skeppar.
+
+**Båda ingestvägarna var drabbade** — GitHub-jobbet och livemotorns edge function hade
+identisk kod. Båda lagade.
+
+**KEEP smalnad till {"Accident"}** — vilket är vad vi faktiskt skeppat hela tiden.
+"Obstruction" och "Incident" finns inte i Trafikverkets vokabulär; de riktiga värdena
+är VehicleObstruction, GeneralObstruction, AnimalPresenceObstruction m.fl. Koden slutar
+alltså påstå en räckvidd den aldrig haft. Vidgningen är kort #32, som produktbeslut.
+
+**Bevis:** 35 TS-prov gröna, varav ett nytt regressionsprov som låser båda riktningarna:
+otrackad typ får aldrig skapa en rad, trackad typ måste fortfarande kunna raderas.
+
+**Avvägning bokförd (DECISIONS #31):** missar.ts läste gravstenarna som facit. Förlust
+idag = noll (0 av 4 892 rader träffar halk-regexet i augusti); i vinter kan det ändras.
+Kort #33 löser det med ett eget arkivbord.
+
+**Ej gjort:** de 4 584 befintliga gravstenarna ligger kvar. Läckan är tätad så de slutar
+växa; städning är irreversibel och väntar på Axels ja.
+
+**Skarpt kvitto på #28 samma varv:** publish-map körde den nya snapshot-byggaren i
+produktion. live.json bär nu `sev` och `slut`. Motorn körd mot den skarpa filen gav
+mot en verklig severity-5-olycka på Väg 32:
+  t=160s  9989 m  "Allvarlig olycka 10 kilometer framför dig — stor påverkan på
+                   trafiken. Överväg annan väg. Beräknas röjd vid 11:15."
+  t=480s  1998 m  "Sakta ner — olycksplats strax framför dig."
+CI: ci ✅, ios-engine ✅ (Swift-porten klarar v15–v17), android kördes vid pushtillfället.

@@ -138,7 +138,24 @@ export async function writeAll(data: {
       counts.weather += c.length;
     }
 
-    for (const c of chunks(data.deviations.items)) {
+    // Deletes are applied as an UPDATE, never an INSERT (see ingestAction in
+    // sources/situations.ts). A delete must always be able to clear a hazard we are
+    // warning about, but it must NOT be able to create a row for something we never
+    // stored — that is what filled the table with 4 584 tombstones for roadworks and
+    // other types we deliberately do not ship. UPDATE touches 0 rows when we never
+    // held it, which is exactly the wanted behaviour.
+    const dying = data.deviations.items.filter((d) => d.deleted);
+    const living = data.deviations.items.filter((d) => !d.deleted);
+    for (const c of chunks(dying)) {
+      const r = await client.query(
+        `UPDATE deviations SET deleted = TRUE, modified_time = u.modified_time
+         FROM UNNEST($1::text[], $2::timestamptz[]) AS u(deviation_id, modified_time)
+         WHERE deviations.deviation_id = u.deviation_id`,
+        [col(c, x => x.deviationId), col(c, x => x.modifiedTime)]);
+      counts.deviations += r.rowCount ?? 0;
+    }
+
+    for (const c of chunks(living)) {
       await client.query(
         `INSERT INTO deviations (deviation_id, situation_id, message_type, message_type_value, message,
            severity_code, severity_text, road_number, county_nos, geom, line_geom,

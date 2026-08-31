@@ -24,7 +24,10 @@ async function tv(objecttype: string, schemaversion: string, changeid: string, n
 }
 
 const pt = (w?: string) => { const m = w?.match(/POINT \(([-\d.]+) ([-\d.]+)\)/); return m ? [Number(m[1]), Number(m[2])] : null; };
-const KEEP = new Set(["Accident", "Obstruction", "AbnormalTraffic", "Incident"]);
+// MIRROR of ingest/sources/situations.ts — keep the two in step. Trafikverket's real
+// MessageTypeValue vocabulary has no "Obstruction"/"Incident"; the old set matched only
+// "Accident" in practice. Widening = product decision, see BACKLOG #32.
+const KEEP = new Set(["Accident"]);
 
 async function cursor(name: string): Promise<string> {
   const r = await sql`SELECT last_change_id FROM sync_state WHERE source = ${name}`;
@@ -38,7 +41,16 @@ async function situations() {
   const { items, lastChangeId } = await tv("Situation", "1.6", await cursor("deviations"), "road.trafficinfo");
   let n = 0;
   for (const s of items) for (const d of s.Deviation ?? []) {
-    if (!KEEP.has(d.MessageTypeValue) && !s.Deleted) continue;
+    // Deletes clear hazards we are warning about, so they must always be applied — but
+    // as an UPDATE, so a delete can never CREATE a row for a type we never ship.
+    if (s.Deleted) {
+      await sql`UPDATE deviations SET deleted = TRUE,
+                  modified_time = ${s.ModifiedTime ?? new Date().toISOString()}
+                WHERE deviation_id = ${String(d.Id ?? s.Id)}`;
+      n++;
+      continue;
+    }
+    if (!KEEP.has(d.MessageTypeValue)) continue;
     const p = pt(d?.Geometry?.Point?.WGS84 ?? d?.Geometry?.WGS84);
     await sql`INSERT INTO deviations (deviation_id, situation_id, message_type, message_type_value, message,
         severity_code, severity_text, road_number, county_nos, geom, start_time, end_time, icon_id, modified_time, deleted)

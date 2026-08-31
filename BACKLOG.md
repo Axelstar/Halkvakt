@@ -1,3 +1,23 @@
+32. **Hindren in i rösten — kräver ny HazardKind** (fyndet 31/8): KEEP-filtret var skrivet
+    för "Obstruction"/"Incident", ord Trafikverket aldrig använder, så vi har i praktiken
+    ALDRIG skeppat annat än olyckor — trots att DECISIONS #5 sade "olyckor + hinder".
+    Filtret säger nu sanningen (bara "Accident"). Att vidga det är ett PRODUKTBESLUT:
+    alla tre parsrarna mappar varje deviation till HazardKind "accident", så ett stoppat
+    fordon skulle uttalas "Olycka rapporterad 3 kilometer framför dig" — direkt brott mot
+    överdrivandeförbudet i CLAUDE.md. Kräver: ny HazardKind (motorkontrakt ⇒ vektorer i
+    tre körtider), egen röstfras, prioritetsplats, falsklarmsbudget.
+    KANDIDATER, uppmätt volym över 7 dygn: VehicleObstruction 780 (~110/dygn, stillastående
+    fordon — sannolikt värdefullast), GeneralObstruction 271, AnimalPresenceObstruction 173
+    (LEVANDE djur på vägbanan med riktig position — kvalitativt MYCKET bättre än polisens
+    länscentrum-flöde som DECISIONS #13 underkände). Olåst, men börjar med Axels beslut om
+    vad rösten ska säga.
+33. **Eget arkivbord för hela Situation-flödet** (avvägning som blottades 31/8): missar.ts
+    (#19) läser `deviations` UTAN att filtrera raderade, och använde alltså gravstenarna
+    som facit-underlag. Efter läckfixen kommer bara olyckor in. Uppmätt förlust just nu:
+    NOLL — inga av 4 892 rader träffar halk-regexet i augusti. Men i vinter kan
+    WeatherRelatedRoadConditions bära halktext, och då vill missmätningen ha dem. Rätt
+    struktur är ett separat arkivbord för hela flödet, inte att smutsa ner livetabellen.
+    Litet. Bör göras före första frosten.
 30. **RLS-kontroll på alla tabeller** (Bengts granskning 29–30/8, GitHub issue #3): verifiera
     row-level security på arkivtabellerna (weather_observations, road_conditions,
     road_condition_history, polisen_events, shadow_log, …) — anon-nyckeln får inte

@@ -262,3 +262,27 @@ uppfylld där den behövs, utan att kontraktet rörs.
 **Skyddsräcke:** graderingen är låst till `message_type_value = "Accident"`. Den nya
 repliken säger ordet "olycka" högt och får bara utlösas av något Trafikverket självt
 klassat som olycka. Övriga avvikelsetyper faller igenom till den gamla mildare texten.
+
+## #31 (31/8 2026) Gravstensläckan — raderingar blir UPDATE, aldrig INSERT (Claude)
+Uppmätt: 4 890 av 4 892 rader i `deviations` var raderade, och 4 584 av dem tillhörde
+typer vi aldrig lagrat levande. Orsak: `if (!KEEP.has(x) && !s.Deleted) continue;` — en
+rad med två effekter, där den andra var osynlig. `&& !s.Deleted` fanns av god anledning
+(en röjd olycka MÅSTE kunna släckas i appen, annars varnas det för något som är borta),
+men den släppte samtidigt in varje radering av varje typ som en ny rad.
+
+BESLUT: raderingar hanteras separat och som UPDATE. De kan då fortfarande städa allt vi
+trackar, men aldrig skapa en rad för något vi inte skeppar. Gäller båda ingestvägarna
+(GitHub-jobbet och livemotorns edge function — de var identiskt drabbade).
+
+BESLUT: KEEP smalnas till {"Accident"} — vilket är vad vi FAKTISKT skeppat hela tiden.
+Koden slutar därmed påstå en räckvidd den aldrig haft. DECISIONS #5:s ursprungliga avsikt
+("olyckor + hinder") är inte övergiven, den är flyttad till kort #32 där den hör hemma:
+som ett produktbeslut om vad rösten säger, inte som en tyst stavfelsrättning.
+
+AVVÄGNING SOM AXEL BÖR KÄNNA TILL: missar.ts (#19) läser deviations utan deleted-filter
+och använde gravstenarna som facit. Uppmätt förlust idag = noll (inga av 4 892 rader
+träffar halk-regexet i augusti). I vinter kan det ändras. Kort #33 löser det rätt, med
+ett eget arkivbord i stället för att smutsa ner livetabellen.
+
+EJ GJORT: de 4 584 befintliga gravstenarna ligger kvar. Läckan är tätad så de slutar växa.
+Städning är irreversibel och väntar på Axels ja.

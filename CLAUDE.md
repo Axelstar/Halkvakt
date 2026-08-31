@@ -103,9 +103,15 @@ i samma commit när de överlappar.
   vid fixen före och efter tröskeln) innan en vektor fryses — gissa aldrig på geometrin.
 - Trafikverkets SeverityCode är fyrgradig i praktiken: 1, 2, 4, 5. Kod 3 finns i
   dokumentationen men har aldrig dykt upp i vårt arkiv. Skriv aldrig `>= 3`-logik.
-- KÄNT, EJ ÅTGÄRDAT (upptäckt 31/8 under #28): `KEEP`-filtret i ingest/sources/situations.ts
+- ÅTGÄRDAT 31/8 (upptäckt under #28): `KEEP`-filtret i ingest/sources/situations.ts
   matchar "Obstruction" och "Incident", men Trafikverket använder aldrig de orden — de
   riktiga värdena är "VehicleObstruction", "GeneralObstruction", "AnimalPresenceObstruction"
   m.fl. Filtret släpper alltså i praktiken bara igenom "Accident". Inte trasigt för oss
   idag, men det gör inte det man tror. Eget kort krävs innan någon "fixar" det — att
   vidga filtret släpper in vägarbeten, som DECISIONS #5 medvetet stängde ute.
+  ÅTGÄRD: filtret säger nu sanningen (bara "Accident"); vidgningen är kort #32.
+- Ett filter med formen `if (!KEEP.has(x) && !deleted) continue;` har TVÅ effekter, inte en.
+  Den andra är osynlig: raderingar av OTRACKADE typer släpps in och skapar rader. Halkvakts
+  deviations-tabell bestod till 94 % av gravstenar för vägarbeten vi aldrig lagrat levande
+  (4 584 rader, ~650/dygn). Läxa: separera "vad vi lagrar" från "vad som får radera" —
+  raderingar ska vara UPDATE, aldrig INSERT, så de kan städa men aldrig skapa.

@@ -2,6 +2,7 @@
 // Skips cleanly when TEST_DATABASE_URL is absent (local runs without Docker).
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { ingestAction } from "../ingest/sources/situations.ts";
 
 const url = process.env.TEST_DATABASE_URL;
 
@@ -70,4 +71,18 @@ test("writeAll: migrate, insert, idempotent re-run", { skip: !url }, async () =>
   const state = await readSyncState();
   assert.equal(state.cameras, "cam-1");
   assert.equal(state.weather, "wx-1");
+});
+
+test("gravstensläckan: en raderad avvikelse av otrackad typ får ALDRIG skapa en rad", () => {
+  // Regression för fyndet 31/8: `!KEEP.has(x) && !deleted` släppte in varje raderad
+  // avvikelse av varje typ. 4 584 gravstenar för vägarbeten vi aldrig lagrat levande.
+  assert.equal(ingestAction("MaintenanceWorks", false), "skip");
+  assert.equal(ingestAction("MaintenanceWorks", true), "mark-deleted"); // UPDATE ⇒ 0 rader
+  // Men raderingar av det vi FAKTISKT trackar måste fortfarande gå fram — annars
+  // ligger en röjd olycka kvar och varnas för. Det vore värre än gravstenarna.
+  assert.equal(ingestAction("Accident", false), "store");
+  assert.equal(ingestAction("Accident", true), "mark-deleted");
+  // Och de generiska orden som aldrig fanns i Trafikverkets vokabulär:
+  assert.equal(ingestAction("Obstruction", false), "skip");
+  assert.equal(ingestAction("Incident", false), "skip");
 });

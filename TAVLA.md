@@ -57,6 +57,12 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
 - [ ] 📞 **Skyltfondsrundan** (efter Axels klartecken): fonden + trafikövningsplats v.36 → avsiktsförklaringar 25/9 → SKICKA 28/9
 
 ### Claude — olåst
+- [ ] **#32 Hindren in i rösten** — vi har aldrig skeppat annat än olyckor trots att
+  DECISIONS #5 sade "olyckor + hinder". Kräver ny HazardKind + egen röstfras + Axels
+  beslut om vad rösten säger. Bäst kandidat: **djur på vägbanan** (173 på en vecka, med
+  RIKTIG position — vida bättre än polisens länscentrum som vi underkände i #13).
+- [ ] **#33 Eget arkivbord för hela Situation-flödet** — så missmätningen (#19) har facit
+  i vinter. Litet, bör göras före första frosten.
 - [ ] **#30 RLS-kontroll på alla arkivtabeller** (Bengts issue #3, 30/8) — anon-nyckeln
   är publik via halkvakt-karta; verifiera att den varken kan läsa eller skriva rått i
   weather_observations, road_conditions, road_condition_history, polisen_events,
