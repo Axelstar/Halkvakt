@@ -331,3 +331,17 @@ mot en verklig severity-5-olycka på Väg 32:
                    trafiken. Överväg annan väg. Beräknas röjd vid 11:15."
   t=480s  1998 m  "Sakta ner — olycksplats strax framför dig."
 CI: ci ✅, ios-engine ✅ (Swift-porten klarar v15–v17), android kördes vid pushtillfället.
+
+## 2026-08-31 — CI-domen: tre körtider gröna, signeringen trasig (ej av oss)
+**#28 bevisat i alla tre körtiderna:**
+- `ci` ✅ — 35 TS-prov
+- `ios-engine` ✅ — Swift-porten klarar v15/v16/v17 mot delade vektorer
+- `android` → steget "Kotlin engine vs shared vectors (the cross-platform contract)" ✅,
+  och emulator-jobbet ✅ i sin helhet. Kontraktet håller byte-identiskt i Node, JVM och Swift.
+
+**Men android-jobbet är rött** på steget "Bygg signerad release-AAB":
+`Failed to read key halkvakt from store "/tmp/upload.jks": keystore password was incorrect`.
+Inte orsakat av vår kod. Sista gröna Android-bygget: 30/8 15:07. Nyckelrotationen: 31/8 08:00.
+Vår commit 08:35 var helt enkelt den första körningen EFTER rotationen — den avslöjade felet,
+den orsakade det inte. HV_KEYSTORE_PASS och HV_KEYSTORE_B64 kommer inte från samma jks.
+Axel måste sätta om dem. Blockerar Play-uppladdningen: ingen signerad AAB finns.

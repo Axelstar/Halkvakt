@@ -12,6 +12,15 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 
 ### IDAG (mån 31/8 — uppskjutningsdagen)
 **Axel:**
+- [ ] 🔴 **CI kan inte signera Android-bygget — lösenordet matchar inte nyckeln.**
+  Felet: `Failed to read key halkvakt from store: keystore password was incorrect`.
+  Sista gröna Android-bygget var 30/8 15:07; nyckelrotationen skedde 31/8 08:00 och
+  bygget har inte kört mellan dess — det gick sönder vid rotationen, inte av kod.
+  Åtgärd: sätt om **HV_KEYSTORE_PASS** (och/eller HV_KEYSTORE_B64) i GitHub →
+  Settings → Secrets and variables → Actions, så de kommer från SAMMA jks som
+  ligger i iCloud. Kortet "Kronjuvelerna säkrade" stod som klart medan CI inte
+  kunde signera — halva rotationen var alltså inte verifierad.
+  ⚠️ Blockerar Play-uppladdningen: det finns ingen signerad AAB att ladda upp.
 - [ ] Svara pappa på höstplanen (DECISIONS: öppet ägarbeslut — JA/NEJ/ändrat på tidsregeln)
 - [x] ~~GitHub-nyckeln Issues-rättighet~~ ✅ KLART — Claude läste issue #2 och #3 direkt 31/8 10:17
 - [ ] TestFlight intern: dig själv + Bengt i gruppen Lagerlöf Labs → TestFlight-appen på båda telefonerna

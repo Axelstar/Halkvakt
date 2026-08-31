@@ -115,3 +115,9 @@ i samma commit när de överlappar.
   deviations-tabell bestod till 94 % av gravstenar för vägarbeten vi aldrig lagrat levande
   (4 584 rader, ~650/dygn). Läxa: separera "vad vi lagrar" från "vad som får radera" —
   raderingar ska vara UPDATE, aldrig INSERT, så de kan städa men aldrig skapa.
+- Nyckelrotation är inte klar förrän ett BYGGE har signerats med den nya nyckeln.
+  31/8 roterades upload-nyckeln och CI-secrets "byttes ut" — men HV_KEYSTORE_PASS och
+  HV_KEYSTORE_B64 kom inte från samma jks, och det syntes först fyra commits senare när
+  android.yml kördes nästa gång ("keystore password was incorrect"). Läxa: efter varje
+  rotation, TRIGGA bygget direkt och läs domen. Ett grönt kort på tavlan är inte bevis;
+  en grön körning är.
