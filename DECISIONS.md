@@ -335,3 +335,13 @@ AnimalPresenceObstruction, VehicleObstruction, GeneralObstruction, AbnormalTraff
 AffectedCarriagewayAndLanes. Utestängt: MaintenanceWorks + RoadOrCarriagewayOrLaneManagement
 = 62 % av flödet, chronic noise per DECISIONS #5. Kvar ~210 rader/dygn, ~77 000/år, små
 rader — långt under gratistaket. Omprövas om en utestängd typ visar sig bära halkfacit.
+
+## #34 (31/8 2026) Autostart utan CarPlay — starta tyst om du kan, visa dig om du måste
+Axels egen bil: ingen CarPlay, kartan på mobilen. Bluetooth-utlösaren i #22 var ett
+antagande om bilen, inte om föraren. Beslut: (a) guiden erbjuder FYRA utlösare —
+Bluetooth, Fokus "Kör" (iOS motsvarighet till Androids rörelseigenkänning), kartappen
+öppnas, laddaren ansluts — och användaren väljer. (b) StartGuardIntent byter från
+openAppWhenRun till ForegroundContinuableIntent (iOS 17): med "Alltid" startar vakten i
+bakgrunden och kartan stannar på skärmen; med "Vid användning" tas appen fram bara
+den stund som krävs. Det gör "när kartappen öppnas" till en ren upplevelse i stället
+för att Halkvakt lägger sig över kartan man just öppnade.

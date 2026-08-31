@@ -9,18 +9,25 @@ struct AutostartGuideView: View {
 
     var body: some View {
         Panel {
-            Text("Vakten kan starta av sig själv när bilen kopplar upp — via en automation i Genvägar. Det tar en minut, en gång.")
+            Text("Vakten kan starta av sig själv — via en automation i Genvägar. Det tar en minut, en gång. Välj den utlösare som passar din bil:")
                 .foregroundStyle(Brand.text)
+
+            VStack(alignment: .leading, spacing: 6) {
+                TriggerRow(title: "Bluetooth", sub: "Bilen har handsfree eller CarPlay: parkoppla, välj bilen → Är ansluten")
+                TriggerRow(title: "Fokus Kör", sub: "Ingen Bluetooth: slå på Fokus Kör → Aktivera automatiskt → När du kör. Utlösare: Kör slås på")
+                TriggerRow(title: "Kartappen", sub: "Kör du med Google Maps eller Kartor framme: utlösare App → öppnas")
+                TriggerRow(title: "Laddaren", sub: "Laddar du i bilen: utlösare Laddare → ansluts")
+            }
 
             VStack(alignment: .leading, spacing: 8) {
                 GuideStep(n: 1, text: "Öppna Genvägar → fliken Automation → +")
-                GuideStep(n: 2, text: "Välj Bluetooth → välj din bil → Är ansluten")
+                GuideStep(n: 2, text: "Välj din utlösare ovan")
                 GuideStep(n: 3, text: "Välj Kör direkt (inte Fråga innan) → Nästa")
                 GuideStep(n: 4, text: "Sök \"Halkvakt\" → välj Starta vakten → Klar")
-                GuideStep(n: 5, text: "Gör om det med Är frånkopplad → Stoppa vakten")
+                GuideStep(n: 5, text: "Gör om det för motsatsen → Stoppa vakten")
             }
 
-            Text("Har bilen CarPlay: välj CarPlay i stället för Bluetooth i steg 2.")
+            Text("Ge Halkvakt platsen \"Alltid\" så startar vakten tyst i bakgrunden och kartan stannar på skärmen. Med \"Vid användning\" visas Halkvakt en kort stund vid starten.")
                 .font(.system(size: 13)).foregroundStyle(Brand.dim)
 
             Button {
@@ -31,6 +38,19 @@ struct AutostartGuideView: View {
             }
             .accessibilityHint("Öppnar appen Genvägar där automationen skapas")
         }
+    }
+}
+
+private struct TriggerRow: View {
+    let title: String
+    let sub: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(title).font(.system(size: 15, weight: .semibold)).foregroundStyle(Brand.text)
+            Text(sub).font(.system(size: 13)).foregroundStyle(Brand.dim)
+        }
+        .accessibilityElement(children: .combine)
     }
 }
 

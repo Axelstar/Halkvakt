@@ -151,24 +151,23 @@ appen vilken Bluetooth-enhet som är bilen; nästa gång bilen kopplar upp start
 utan att du gör något, och stannar när bilen kopplas från. Rörelseigenkänning täcker
 även bilar utan Bluetooth. Inget att ställa in.
 
-**iPhone:** Apple låter inte appar starta sig själva när bilen kopplar. Vägen runt är
-en automation i Genvägar som du bygger en gång — guiden finns i Inställningar →
-*Autostart i bilen*, med knappen *Öppna Genvägar*:
+**iPhone:** Apple låter inte appar starta sig själva. Vägen runt är en automation i
+Genvägar som du bygger en gång — guiden finns i Inställningar → *Autostart i bilen*.
+Du väljer själv vad som ska utlösa den:
 
-1. Genvägar → Automation → +
-2. Bluetooth → din bil → *Är ansluten*
-3. *Kör direkt* (inte *Fråga innan*) → Nästa
-4. Sök "Halkvakt" → *Starta vakten* → Klar
-5. Samma sak med *Är frånkopplad* → *Stoppa vakten*
+- **Bluetooth** — bilen har handsfree eller CarPlay. Parkoppla, välj bilen → *Är ansluten*.
+- **Fokus Kör** — ingen Bluetooth. Slå på Fokus Kör → *Aktivera automatiskt* → *När du
+  kör*; telefonen känner av körningen med rörelsesensorerna. Utlösare: *Kör slås på*.
+- **Kartappen** — kör du med Google Maps eller Apple Kartor framme: *App → öppnas*.
+- **Laddaren** — laddar du i bilen: *Laddare → ansluts*.
 
-Har bilen CarPlay väljer du CarPlay i stället för Bluetooth i steg 2.
+Sedan: *Kör direkt* (inte *Fråga innan*) → sök "Halkvakt" → *Starta vakten*. Gör om
+det för motsatsen (frånkopplad / Kör stängs av / appen stängs) → *Stoppa vakten*.
 
-När bilen kopplar tänds Halkvakt, vakten startar, och du lägger undan telefonen —
-den fortsätter vakta med släckt skärm. Det fungerar också med Siri: *"Starta Halkvakt"*.
-
-*Varför tänds appen?* Positionstjänsten får bara startas när appen syns om du gett
-tillstånd "Vid användning". Med "Alltid" fungerar det likadant, bara tystare. Appen
-lämnar aldrig din position ifrån sig — det gäller precis lika vid autostart.
+Ge Halkvakt platsen **"Alltid"** så startar vakten tyst i bakgrunden och kartan stannar
+kvar på skärmen. Med "Vid användning" visas Halkvakt en kort stund vid starten och du
+växlar tillbaka till kartan. Siri fungerar också: *"Starta Halkvakt"*. Appen lämnar
+aldrig din position ifrån sig — det gäller precis lika vid autostart.
 
 ## Bannern över kartappen
 
