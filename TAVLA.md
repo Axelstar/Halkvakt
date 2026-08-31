@@ -33,9 +33,10 @@ med släckt skärm, vakten stannar när du stänger av.
 **5. Beslut som väntar på dig** (rekommendationer i chatten 31/8, DECISIONS #30–#34)
 - [ ] Svara pappa på höstplanen — ja till TågRätt-företräde för DIN tid, ~1 h/vecka till Halkvakt
 - [ ] Rollfördelningen: B2B = Bengt (ja) · Skyltfondsrundan: klartecken (v.36 börjar onsdag)
-- [ ] **Skinnet v3 (#24) — PORTAT till iOS 31/8 kväll (DECISIONS #47).** Kompileras på Macen
-  i morgon: `git pull` → `xcodegen` (nya typsnitt + Info.plist) → Team → bygg. Sedan
-  skärmbild per skärm bredvid designen. Android får samma skinn efteråt.
+- [x] ~~Skinnet v3 (#24) iOS~~ ✅ BEVISAT på Axels telefon 31/8 19:20 — alla skärmar, ikonsetet,
+  intro med kvitton. Går till Bengt som 0.3.3 efter Bodenresan.
+- [ ] **Skinnet v3 på Android** — samma tokens, fem ikoner som Compose-vektorer, två flikar.
+- [ ] **Introduktionen i Claude Design** — enda skärmen som inte ritats om än.
 - [ ] TestFlight intern (Bengt) + extern (kompisarna, Test Information → Submit for Review)
 - [ ] Google Play Console — VÄNTA tills 12 står på väntelistan (4 idag); klockan startar vid köp
 

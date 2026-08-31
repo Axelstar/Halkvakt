@@ -431,3 +431,10 @@ Korrekt tyst: han svängde av E65 vid Skabersjö innan kamerorna. Första riktig
 med DECISIONS #40 i fält, tre timmar efter att koden skrevs. KVAR i morgon: rösten i
 CarPlay förbi kamerorna på E65, bannern, självstoppet. Notering: han satt i samtal
 (telefonikon) — röst under pågående samtal är ett eget testfall.
+
+## 2026-08-31 ~19:20 — ✅ Skinnet v3 bevisat på Axels telefon (DECISIONS #47–#49)
+Typsnitten laddade, "Redo."-hemskärm, körläge, det gula varningskortet med ikonsetet,
+Inställningar med Om som sista avsnitt, intro med kvitton. Axel: "ser riktigt snyggt ut".
+Fynd på vägen: notissidan saknade kvitto (fixat); halvinstallerad app efter Xcode-attach-fel
+(läxa i CLAUDE.md). INTE skickat till Bengt — han kör 0.3.2 till Boden i morgon (#40-testet).
+0.3.3 = skinnet + kvittot för självväckning, efter Boden. Android: samma skinn, nästa varv.
