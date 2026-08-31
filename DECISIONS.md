@@ -514,3 +514,21 @@ någon annanstans; regeln har rätt. Publiceringen förfiltrerar (inga 3 000 bro
 motorn kollar om. Data: OSM bridge=yes på motorway/trunk/primary i Sverige, ODbL,
 attribution i appen; motorvägens två banor slås ihop inom 60 m. Overpass var nere hela
 kvällen — bridges.yml försöker var 6:e timme tills filen finns. Stråket (#38b) väntar.
+
+## #51 (31/8 2026 kväll) Skuggmotorn: ja till planen, men i tre steg — och trösklarna först
+Bengts byggplan v3 tidigarelägger segmentmotorn till november i strikt skugga; dom i mars
+("får den tala?" i stället för "ska den byggas?"). Axel: "varför inte nu — vi har ju
+releasat?" Formellt rätt: #16:s villkor var "efter release", och 0.3.2 ligger hos testarna.
+BESLUT: ja till planen, med tre skärpningar.
+1) Ordningen styrs av VINTERN, inte av köplats. I augusti ligger hela landet på "Normalt" —
+   skuggan skulle räkna "inte halt" på "inte halt" i sex veckor. Skuggkörningen startar när
+   det finns halka (~mitten av oktober, Skåne).
+2) Men de tre delar som INTE kräver frost börjar nu: tröskeldokumentet, ankarklippningen
+   (kräver kamerafilen), offsetmodellen mot arkivet sedan 24/8.
+3) HÅRT VILLKOR: ingen skuggkod före tröskeldokumentet. Utan daterade trösklar är
+   skuggdriften en demo, och en färdigbyggd skugga vill tala — i mars kostar det mer att
+   säga nej till något byggt än till ett förslag. Trösklarna är skyddet mot oss själva.
+Dessutom: prognoskolumnen buntas ur engine/src som resten (läxan från 31/8 — skuggmotorn
+körde gammal motor ett dygn utan att någon märkte det).
+KONKURRENS OM AXELS TID: tolv testare i fjorton dagar är det som avgör om Halkvakt blir
+något. Skuggbygget får aldrig tränga undan det — Bengt skriver samma sak i planen.

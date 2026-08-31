@@ -57,8 +57,22 @@ med släckt skärm, vakten stannar när du stänger av.
 - [x] ~~#38a Broarna~~ ✅ BYGGT 31/8 kväll (DECISIONS #50): tre motorer, v18/v19, publicering,
   OSM-hämtare. "Frysrisk framöver — bro om N meter." VÄNTAR PÅ DATA: Overpass nere, bridges.yml
   försöker var 6:e timme. Rösten säger inget om broar förrän filen finns. Appen: 0.3.3.
-- [ ] **#38b Stråket** — två stationer båda is ⇒ sträckan mellan dem längs vägnätet. Kräver
-  OSM-vägnät. Efter Boden + broarna i fält.
+- [ ] **#38b Stråket / skuggmotorn** — Bengts byggplan v3 (31/8) tidigarelägger segmentmotorn
+  till november, i strikt skugga, dom i mars. AXELS BESLUT: sekvensering mot lanseringen.
+  Claudes råd: börja med de tre delar som INTE kräver frost, låt skuggkörningen vänta på snö.
+  - [ ] **(1) Tröskeldokumentet** — Bengts 2.3, men skriv det NU, inte i oktober. Vilken
+    felnivå, falsklarms- och missandel krävs för att skuggan ska få tala? Daterat före
+    första körningen, annars är skuggdriften bara en demo. En kväll, Bengt + Claude.
+    🔒 HÅRT VILLKOR: ingen skuggkod skrivs innan detta ligger i repot.
+  - [ ] **(2) Ankarklippningen** — kräver kamerafilen (Bengts 1.5): väglagskamerornas
+    koordinater som publicerat lager ur samma Camera-fråga skuggmotorn redan använder.
+    Liten kodändring, kan göras i september. Förutsättning för allt annat.
+  - [ ] **(3) Offsetmodellen mot arkivdata** — vi har data sedan 24/8. Tunt, men nog för
+    att se om matematiken alls håller innan tre veckor läggs på den.
+  - [ ] (4) Skuggkörningen — startar när det finns halka att skugga (~mitten av oktober,
+    Skåne). I augusti räknar den "inte halt" på "inte halt".
+  - [ ] **Skuggmotorns prognoskolumn måste buntas ur engine/src** som resten (läxan 31/8):
+    en handklistrad prognoskolumn driver isär på ett dygn.
 - [ ] #31 Trafikverksbevakningen (litet, olåst, kan bevisas härifrån)
 
 - [x] ~~Testinstruktion till Bengt~~ ✅ docs/TEST-BENGT-0.3.2.md (31/8)
