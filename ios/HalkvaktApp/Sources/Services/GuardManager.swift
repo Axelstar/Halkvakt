@@ -100,6 +100,14 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         manager.requestWhenInUseAuthorization()
     }
 
+    /// Steg två i Apples trappa: iOS visar "Ändra till Tillåt alltid?" bara när vi ber om
+    /// det EFTER att Vid användning getts, och bara i förgrunden. Introduktionen ber här,
+    /// så att Alltid — som självväckningen kräver — avgörs på sida två, inte vid första start.
+    func requestAlwaysUpgrade() {
+        guard manager.authorizationStatus == .authorizedWhenInUse else { return }
+        manager.requestAlwaysAuthorization()
+    }
+
     func requestPermissionAndStart() {
         startRequested = true
         let status = manager.authorizationStatus

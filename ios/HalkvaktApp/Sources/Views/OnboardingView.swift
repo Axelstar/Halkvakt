@@ -69,13 +69,24 @@ struct OnboardingView: View {
             title: "Platsen — bara i telefonen",
             text: "Vakten jämför din position med vägfarorna lokalt. Välj \"Vid användning\" nu. Strax frågar iOS om \"Alltid\" — säg ja: då startar vakten av sig själv när du kör och talar med släckt skärm."
         ) {
-            if guardM.authStatus == .notDetermined {
+            switch guardM.authStatus {
+            case .notDetermined:
                 PillButton(title: "Tillåt plats", icon: "location.fill", color: Brand.yellow) {
                     guardM.requestLocationPermission()
                 }
-            } else {
-                Label("Platsen är tillåten", systemImage: "checkmark.circle.fill")
+            case .authorizedWhenInUse:
+                Label("Vid användning — bra. Ett steg till:", systemImage: "checkmark.circle")
+                    .foregroundStyle(Brand.text)
+                PillButton(title: "Tillåt Alltid", icon: "car.fill", color: Brand.green) {
+                    guardM.requestAlwaysUpgrade()
+                }
+                Text("Kommer ingen fråga: Inställningar → Halkvakt → Plats → Alltid.")
+                    .font(.system(size: 13)).foregroundStyle(Brand.dim)
+            case .authorizedAlways:
+                Label("Alltid — vakten vaknar själv när du kör", systemImage: "checkmark.circle.fill")
                     .foregroundStyle(Brand.green)
+            default:
+                LocationDeniedRow()
             }
         }
     }
