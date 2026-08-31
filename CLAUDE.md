@@ -157,3 +157,6 @@ i samma commit när de överlappar.
   efter #28 utan att någon märkte det — rapportsidan såg levande ut. Regel: index.ts är
   genererad (scripts/bundle-skuggmotor.ts), källan är engine/src, CI kör --check.
   Efter varje motorändring: bunta + deploya skuggmotor i samma varv som testerna.
+- Xcode "Attaching to … / Logging Error: Failed to initialize logging system" + vit skärm som
+  överlever omstart + INGEN kraschrapport i Analysdata = halvinstallerad app (installationen
+  avbröts när debuggern föll). Lösning: radera appen från telefonen → ▶. Inte koden. 31/8.
