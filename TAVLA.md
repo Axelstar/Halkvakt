@@ -82,8 +82,11 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   Tidigast vintern 2027/28 som produkt. Nordiskt namn vid det laget (Nordic RoadSafe, #1).
 - [ ] **Registrera Vegvesen DATEX-konto** (gratis, personligt: namn + e-post) → användarnamn/
   lösenord till GitHub Secrets ⇒ Claude bygger det norska skuggarkivet som det finska.
-  Danmark: Vejdirektoratet delvis nyckelfritt, API-nyckel gratis — väntar, svagast vintervärde.
   Gör i samma svep som PRV + domänen.
+- [ ] **Danmark** (Axel 31/8: brutal vinter 2025/26 ⇒ upp i prio): trafikhändelser nyckelfritt
+  via Dataudveksleren — kan gå in som Finland. Halkstationerna ligger i VejVejr som kräver
+  AVTAL med Vejdirektoratet (Bengt-samtal), alternativt DMI:s öppna API (gratis nyckel) om
+  mätstationerna finns där — Claude verifierar. Tätast trafik per km i Norden.
 
 ### Axel — därefter
 - [ ] **Tolv testare till Play-perioden** — Axels åtagande 31/8: "hittar dem utan problem".
