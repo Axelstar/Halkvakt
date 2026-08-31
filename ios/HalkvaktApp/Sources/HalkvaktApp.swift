@@ -34,9 +34,18 @@ struct InstallningarView: View {
                         .font(.system(size: 13)).foregroundStyle(Brand.dim)
                 }
 
-                SectionHeader(text: "Autostart i bilen (valfritt)")
+                SectionHeader(text: "Vakna själv när du kör")
                 Panel {
-                    Text("Vakten startar med knappen eller med \"Hej Siri, starta Halkvakt\". Vill du att den startar helt av sig själv när bilen startar krävs en automation i Genvägar — en minut, en gång.")
+                    ToggleRow(title: "Starta av sig själv", sub: "Kräver platsen Alltid. Vakten vaknar några minuter in i resan.", isOn: $prefs.autoWake)
+                    if GuardManager.shared.authStatus != .authorizedAlways {
+                        Text("Platsen är inte Alltid än — Inställningar → Halkvakt → Plats → Alltid.")
+                            .font(.system(size: 13)).foregroundStyle(Brand.yellow)
+                    }
+                }
+
+                SectionHeader(text: "Starta direkt (valfritt)")
+                Panel {
+                    Text("Vill du att vakten startar i första metern, inte några minuter in: säg \"Hej Siri, starta Halkvakt\", eller bygg en automation i Genvägar — en minut, en gång.")
                         .font(.system(size: 14)).foregroundStyle(Brand.dim)
                 }
                 AutostartGuideView()
@@ -126,6 +135,12 @@ struct OmView: View {
 @main
 struct HalkvaktApp: App {
     @State private var prefs = Prefs.shared
+
+    init() {
+        // Måste finnas från första millisekunden: när iOS väcker oss i bakgrunden på
+        // betydande förflyttning levereras platsen till DEN delegat som skapas vid start.
+        GuardManager.shared.armAutoWake()
+    }
 
     var body: some Scene {
         WindowGroup {

@@ -67,7 +67,7 @@ struct OnboardingView: View {
         OnboardingPage(
             icon: "location.fill",
             title: "Platsen — bara i telefonen",
-            text: "Vakten jämför din position med vägfarorna lokalt. Välj \"Vid användning\" nu; nästa gång du kör frågar iOS om \"Alltid\", som behövs för att rösten ska tala med släckt skärm."
+            text: "Vakten jämför din position med vägfarorna lokalt. Välj \"Vid användning\" nu. Strax frågar iOS om \"Alltid\" — säg ja: då startar vakten av sig själv när du kör och talar med släckt skärm."
         ) {
             if guardM.authStatus == .notDetermined {
                 PillButton(title: "Tillåt plats", icon: "location.fill", color: Brand.yellow) {
@@ -96,18 +96,16 @@ struct OnboardingView: View {
         OnboardingPage(
             icon: "checkmark.circle.fill",
             title: "Du är klar",
-            text: "Två sätt att starta vakten. Inget mer att ställa in."
+            text: "Vakten startar av sig själv när du kör, om platsen är Alltid. Inget mer att ställa in."
         ) {
             Panel {
-                Label("Tryck på Starta vakten i appen", systemImage: "play.fill")
+                Label("Med platsen Alltid vaknar vakten själv några minuter in i resan", systemImage: "car.fill")
                     .foregroundStyle(Brand.text)
-                Label("Eller säg: \"Hej Siri, starta Halkvakt\"", systemImage: "mic.fill")
+                Label("Vill du starta direkt: tryck på knappen, eller säg \"Hej Siri, starta Halkvakt\"", systemImage: "mic.fill")
                     .foregroundStyle(Brand.text)
-                Text("Siri fungerar med telefonen i facket, utan att du rör den. Vakten stoppar sig själv när bilen stått still en kvart.")
+                Text("Vakten stoppar sig själv när bilen stått still en kvart.")
                     .font(.system(size: 13)).foregroundStyle(Brand.dim)
             }
-            Text("Vill du att vakten startar helt av sig själv när bilen startar? Det går, via en automation i Genvägar — guiden finns under Inställningar → Autostart i bilen. Valfritt.")
-                .font(.system(size: 13)).foregroundStyle(Brand.dim)
         }
     }
 }

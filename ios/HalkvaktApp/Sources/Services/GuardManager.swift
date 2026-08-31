@@ -44,6 +44,19 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     private static let movingKmh = 5.0
     private var lastMovedAt: Date?
 
+    // Vakna själv (DECISIONS #40): med "Alltid" ber vi iOS väcka appen vid betydande
+    // förflyttning (~500 m, även när appen är stängd — iOS startar om oss i bakgrunden).
+    // När vi väcks PROVAR vi: full positionsström i högst 90 s. Ser vi bilfart startar
+    // vakten på riktigt; annars släcks strömmen igen. Det är iOS-motsvarigheten till
+    // Androids rörelseigenkänning. Apples lås gäller Bluetooth, inte plats.
+    private static let probeMaxS: TimeInterval = 90
+    private static let probeStartKmh = 15.0
+    private var probing = false
+    private var probeStartedAt: Date?
+    /// Manuellt stopp mitt i körning får inte följas av en självstart sekunden efter.
+    private var manualStoppedAt: Date?
+    private static let noProbeAfterManualStopS: TimeInterval = 10 * 60
+
     override private init() {
         super.init()
         manager.delegate = self
@@ -107,6 +120,40 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         }
     }
 
+    /// Slå på självväckning om användaren tillåtit Alltid och inte stängt av funktionen.
+    func armAutoWake() {
+        guard Prefs.shared.autoWake, manager.authorizationStatus == .authorizedAlways else {
+            manager.stopMonitoringSignificantLocationChanges()
+            return
+        }
+        manager.startMonitoringSignificantLocationChanges()
+        print("[Vakten] självväckning på")
+    }
+
+    /// Väckt av iOS utan att vakten kör: prova om vi är i en bil.
+    private func beginProbe() {
+        guard !running, !probing, Prefs.shared.autoWake else { return }
+        if let t = manualStoppedAt, Date.now.timeIntervalSince(t) < Self.noProbeAfterManualStopS { return }
+        probing = true
+        probeStartedAt = .now
+        manager.allowsBackgroundLocationUpdates = true
+        manager.startUpdatingLocation()
+        print("[Vakten] väckt — provar farten")
+    }
+
+    private func endProbe(startGuard: Bool) {
+        probing = false
+        probeStartedAt = nil
+        if startGuard {
+            print("[Vakten] bilfart — startar själv")
+            startRequested = true
+            start()
+        } else {
+            manager.stopUpdatingLocation()
+            print("[Vakten] ingen bilfart — somnar om")
+        }
+    }
+
     private func start() {
         guard !running else { return }
         print("[Vakten] startar")
@@ -125,8 +172,10 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     }
 
     func stop() {
+        if running { manualStoppedAt = .now }
         running = false
         startRequested = false
+        probing = false; probeStartedAt = nil
         headsUpTask?.cancel()
         manager.stopUpdatingLocation()
         dismissTask?.cancel()
@@ -139,6 +188,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         let status = manager.authorizationStatus
         Task { @MainActor in
             self.authStatus = status
+            if status == .authorizedAlways { self.armAutoWake() }
             if status == .authorizedWhenInUse || status == .authorizedAlways {
                 self.locationDenied = false
                 if !self.running && self.startRequested { self.requestPermissionAndStart() }
@@ -158,6 +208,19 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         if let p = prevLoc { distanceKm += loc.distance(from: p) / 1000 }
         prevLoc = loc
         recomputeNearby()
+
+        if probing {
+            let kmh = loc.speed >= 0 ? loc.speed * 3.6 : 0
+            if kmh >= Self.probeStartKmh { endProbe(startGuard: true); return }
+            if let t0 = probeStartedAt, Date.now.timeIntervalSince(t0) > Self.probeMaxS { endProbe(startGuard: false) }
+            return
+        }
+        // Väckt av betydande förflyttning medan vakten är av ⇒ prova.
+        if !running, manager.authorizationStatus == .authorizedAlways, Prefs.shared.autoWake {
+            beginProbe()
+            return
+        }
+
         guard running, let engine else { return }
 
         // Självstopp: räkna rörelse, stoppa efter en kvarts stillastående.
@@ -165,6 +228,8 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         if kmh >= Self.movingKmh { lastMovedAt = loc.timestamp }
         if let moved = lastMovedAt, loc.timestamp.timeIntervalSince(moved) >= Self.idleStopAfter {
             stop()
+            manualStoppedAt = nil   // självstopp ⇒ nästa resa får väcka oss direkt
+            print("[Vakten] stillastående en kvart — stoppar själv")
             return
         }
 

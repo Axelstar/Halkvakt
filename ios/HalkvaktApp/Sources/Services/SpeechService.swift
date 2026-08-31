@@ -43,6 +43,8 @@ final class Prefs {
     var carSetup: CarSetup? { didSet { d.set(carSetup?.rawValue, forKey: "k.carSetup") } }
     /// Senaste gången vakten startades av intentet (automation eller Siri) — guidens kvitto.
     var lastIntentStartAt: Date? { didSet { d.set(lastIntentStartAt, forKey: "k.lastIntentStartAt") } }
+    /// Vakna själv vid körning (kräver Alltid). Standard på. DECISIONS #40.
+    var autoWake: Bool { didSet { d.set(autoWake, forKey: "k.autoWake"); GuardManager.shared.armAutoWake() } }
 
     private init() {
         accident = d.object(forKey: "k.accident") as? Bool ?? true
@@ -56,6 +58,7 @@ final class Prefs {
         onboardingDone = d.bool(forKey: "k.onboardingDone")
         carSetup = d.string(forKey: "k.carSetup").flatMap(CarSetup.init(rawValue:))
         lastIntentStartAt = d.object(forKey: "k.lastIntentStartAt") as? Date
+        autoWake = d.object(forKey: "k.autoWake") as? Bool ?? true
     }
 
     /// Tystad kategori: motorn minns, munnen tiger — samma princip som Android.

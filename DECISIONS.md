@@ -401,3 +401,16 @@ Kontrollcenter-kontroll (iOS 18), och ÅTGÄRDSKNAPPEN (iPhone 15 Pro+): Instäl
 Åtgärdsknapp → Genväg → Starta vakten. Fysisk knapp, ett tryck. De flesta kommer aldrig
 bygga en automation hur bra guiden än blir; Siri och knappar är produkten, automationen
 är för entusiasten.
+
+## #40 (31/8 2026) Vakna själv: betydande förflyttning är iOS:s rörelseigenkänning (Axel: "kommer folk komma ihåg Siri varje gång?")
+Nej, det kommer de inte. Och jag hade fel om Apples lås: det gäller BLUETOOTH (appar får
+inte vakna när bilen kopplar), inte PLATS. Med "Alltid" får en app begära
+startMonitoringSignificantLocationChanges — iOS väcker den vid ~500 m förflyttning även
+när den är helt stängd (relansering i bakgrunden, dokumenterat). BYGGT: vid väckning
+provar vi full positionsström i högst 90 s; ≥ 15 km/h ⇒ vakten startar på riktigt, annars
+somnar vi om. Manuellt stopp blockerar självstart i 10 min; självstopp gör det inte.
+Standard PÅ, avstängbart. Pris: start några minuter in i resan, och Alltid krävs.
+KONSEKVENS: introduktionen krymper till EN viktig fråga — säg ja till Alltid. Siri och
+Genvägar blir "starta i första metern", inte förutsättningen. Detta borde byggts i morse
+i stället för Genvägar-varven; Genvägar-arbetet är inte bortkastat (kvar som snabbväg)
+men det var fel huvudväg. Version 0.3.2 (5).
