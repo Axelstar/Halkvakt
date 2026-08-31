@@ -21,6 +21,38 @@ Skärmen är sekundär. Ingen knapp trycks under körning. Tystnad betyder att v
    Inga engelska termer, inga tekniska ord.
 6. **Samma sak på Android.** Det som ritas ska gå att bygga i Compose utan tolkning.
 
+## Vad vi är ute efter — känslan
+En lugn passagerare som bara säger till när det behövs. Inte en instrumentpanel, inte
+Waze. Appen ska kännas som något man litar på och glömmer — som ett bilbälte.
+Tre ord att rita mot: **lugn, tydlig, vaken.** Motsatsen, som vi inte vill ha: livlig,
+informationstät, gamifierad. Referenser att titta på: Apples Väder (lugn hierarki), Things
+(luft och en sak i taget). Referens att INTE titta på: Waze (allt blinkar).
+
+## Vad varje skärm är till för
+
+**Introduktionen** — jobbet: få användaren att säga ja till *Alltid* på 60 sekunder, och
+lita på oss. Det enda som måste synas: löftet ("positionen lämnar aldrig telefonen") och
+steget till Alltid. Undvik: fyra sidor text. Mindre text, mer luft, en tydlig knapp per
+sida. Sida fyra ska kännas som ett kvitto, inte en manual.
+
+**Vakten (hemskärmen)** — jobbet: svara på "är jag skyddad?" med en blick. Det enda som
+måste synas: status (vilande/vaknar själv/på) och vad rösten senast sa. Undvik: lista av
+faror som ser ut som en nyhetsflik. "I närheten" är sekundärt — det får vara litet.
+
+**Körläget** — jobbet: ingenting. Skärmen ligger i hållaren, föraren tittar inte. Det enda
+som måste synas på armlängds avstånd: att vakten är på, och antalet varningar. Undvik:
+allt man behöver läsa. Siffror stora, ord få, "På din väg" får vara en tunn rad.
+
+**Varningskortet** — jobbet: bekräfta rösten i ögonvrån, i en sekund, på 60 cm. Det enda
+som måste synas: ikonen och avståndet. Texten rösten sa i mindre stil under. Undvik:
+knappar, kanter, något att tolka. Det ska se ut som en gul blixt som försvinner.
+
+**Inställningar** — jobbet: besöks sällan, ska kännas trygg och ordnad. Fem växlar först,
+resten under. Undvik: att guiden för Genvägar tar över sidan — den är valfri och ska se
+valfri ut (fällbar, dämpad).
+
+**Om** — jobbet: förtroende. Vilka källor, vem vi är, vad vi inte gör. Undvik: säljtext.
+
 ## Skärmarna (skärmbilder från 0.3.2 finns hos Axel)
 1. **Introduktionen, 4 sidor** — löftet · platsen (Tillåt plats → Tillåt Alltid → grön bock) ·
    bannern · "Du är klar". Prickar för sida, "Hoppa över" + "Nästa/Klar".
