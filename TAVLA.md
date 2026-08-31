@@ -40,6 +40,10 @@ med släckt skärm, vakten stannar när du stänger av.
 - [ ] Google Play Console — VÄNTA tills 12 står på väntelistan (4 idag); klockan startar vid köp
 
 **Claude — nästa förenkling (DECISIONS #38):**
+- [ ] **Live Activity — varningskortet i Dynamic Island och på låsskärmen** (Axel 31/8: "ska den
+  ligga över Maps?"). Ingen app får rita över en annan; Live Activity är det Apple tillåter:
+  gul rad "Vakten på · 42 min" under körning, blossar upp "▲ Halt väglag · 2,0 km" när rösten
+  talar, synlig över kartan och på låst skärm. Bannern (#23) kvar som textvariant.
 - [ ] **Startknapp på låsskärmen + i Kontrollcenter + åtgärdsknappen** — widget (iOS 17),
   Control (iOS 18), och en rad i guiden om Åtgärdsknapp → Genväg → Starta vakten (iPhone 15
   Pro+). Ett tryck, ingen Genvägar. DECISIONS #39.
