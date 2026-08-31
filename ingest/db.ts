@@ -40,7 +40,7 @@ export async function writeAll(data: {
   wildlife?: { items: import("./sources/polisen.ts").WildlifeEvent[] };
   smhi?: { items: import("./sources/smhi.ts").SmhiWarningArea[] };
 }): Promise<Record<string, number>> {
-  const counts: Record<string, number> = { cameras: 0, road_conditions: 0, history: 0, weather: 0, deviations: 0, wildlife: 0, smhi: 0 };
+  const counts: Record<string, number> = { cameras: 0, road_conditions: 0, history: 0, weather: 0, deviations: 0, archive: 0, wildlife: 0, smhi: 0 };
   const pool = makePool();
   const client = await pool.connect();
   try {
@@ -168,7 +168,7 @@ export async function writeAll(data: {
         [col(c, x => x.deviationId), col(c, x => x.messageTypeValue), col(c, x => x.messageType),
          col(c, x => x.message), col(c, x => x.severityCode), col(c, x => x.roadNumber), col(c, x => x.iconId),
          col(c, x => x.lon), col(c, x => x.lat), col(c, x => x.startTime), col(c, x => x.endTime)]);
-      counts.archive = (counts.archive ?? 0) + c.length;
+      counts.archive += c.length;
     }
     for (const c of chunks(dying)) {
       const r = await client.query(

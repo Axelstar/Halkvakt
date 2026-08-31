@@ -41,7 +41,7 @@ test("writeAll: migrate, insert, idempotent re-run", { skip: !url }, async () =>
     ], lastChangeId: "dev-1" },
   } as any;
 
-  const expected = { cameras: 2, road_conditions: 1, history: 1, weather: 1, deviations: 1, wildlife: 1, smhi: 1 };
+  const expected = { cameras: 2, road_conditions: 1, history: 1, weather: 1, deviations: 1, archive: 1, wildlife: 1, smhi: 1 }; // archive: olyckan hamnar i BÅDA (#33)
   const c1 = await writeAll(data);
   assert.deepEqual(c1, expected);
 
