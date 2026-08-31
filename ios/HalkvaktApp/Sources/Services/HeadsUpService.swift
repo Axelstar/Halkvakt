@@ -27,6 +27,11 @@ final class HeadsUpService {
         _ = try? await center.requestAuthorization(options: [.alert])
     }
 
+    /// Nuläget — introduktionens sida tre visar en bock när det är klart.
+    func status() async -> UNAuthorizationStatus {
+        await center.notificationSettings().authorizationStatus
+    }
+
     /// Visa bannern för ett larm. Ersätter en eventuell föregående — aldrig en kö.
     func show(_ alert: Alert) async {
         let content = UNMutableNotificationContent()

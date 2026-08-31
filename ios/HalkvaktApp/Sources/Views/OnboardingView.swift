@@ -3,11 +3,13 @@
 // hoppas över; inget låser. Allt som ställs in här går att ändra senare i Inställningar,
 // och introduktionen kan visas igen därifrån.
 import SwiftUI
+import UserNotifications
 
 struct OnboardingView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var page = 0
     @State private var guardM = GuardManager.shared
+    @State private var notifStatus: UNAuthorizationStatus = .notDetermined
 
     private let pages = 4
 
@@ -97,10 +99,23 @@ struct OnboardingView: View {
             title: "Bannern över kartappen",
             text: "Kör du med Google Maps eller Kartor framme visas rösten som en kort banner i åtta sekunder, sedan försvinner den själv. Inget ljud utöver rösten, inget att trycka på."
         ) {
-            PillButton(title: "Tillåt notiser", icon: "bell.fill", color: Brand.yellow) {
-                Task { await HeadsUpService.shared.requestAuthorizationIfNeeded() }
+            switch notifStatus {
+            case .authorized, .provisional, .ephemeral:
+                Label("Notiser tillåtna — bannern visas över kartan", systemImage: "checkmark.circle.fill")
+                    .foregroundStyle(Brand.green)
+            case .denied:
+                Text("Notiser är avslagna. Rösten talar ändå; bannern uteblir. Ändra i Inställningar → Halkvakt → Notiser.")
+                    .font(Typo.sans(13)).foregroundStyle(Brand.yellow)
+            default:
+                PillButton(title: "Tillåt notiser", icon: "bell.fill", color: Brand.yellow) {
+                    Task {
+                        await HeadsUpService.shared.requestAuthorizationIfNeeded()
+                        notifStatus = await HeadsUpService.shared.status()
+                    }
+                }
             }
         }
+        .task { notifStatus = await HeadsUpService.shared.status() }
     }
 
     private var ready: some View {
