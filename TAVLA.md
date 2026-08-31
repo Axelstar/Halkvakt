@@ -18,11 +18,8 @@ nyckelrotationen 08:00 (sista gröna bygget 30/8 15:07), inte av kod. GitHub →
 Secrets and variables → Actions → sätt om **HV_KEYSTORE_PASS** (och HV_KEYSTORE_B64) från
 SAMMA jks som ligger i iCloud. Blockerar all Play-uppladdning tills det är gjort.
 
-**2. Vid Macen: v0.3.1 (4) till TestFlight**
-Terminal: `cd ~/Halkvakt && git pull && cd ios/HalkvaktApp && xcodegen && open Halkvakt.xcodeproj`
-Xcode: välj Team (varje gång) → bygg till telefonen. Dagens Swift har aldrig kompilerats —
-klistra in ev. fel till Claude, räkna med ett varv. Sedan Product → Archive → App Store
-Connect, precis som i morse. Versionen 0.3.1 (4) är redan satt i repot.
+**2. ~~Vid Macen: till TestFlight~~ ✅ 0.3.1 och 0.3.2 uppladdade 31/8 em.**
+Kvar: lägg 0.3.2 i gruppen i App Store Connect → skicka Bengt testinstruktionen.
 
 **3. På telefonen (efter bygget): fyra kontroller i `ios/MAC-GUIDE.md`**
 Genvägar hittar "Starta vakten" · Siri "Starta Halkvakt" · automationen med Kör direkt ·
@@ -129,6 +126,11 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
 ---
 
 ## 🟢 KLART (senaste vinsterna)
+
+- [x] 🚀 **0.3.2 (5) UPPLADDAT** (31/8 ~14:50) — hela dagens batch: olyckslyftet, heads-up,
+  senast sagt, introduktionen, Siri, självstopp, självväckning + parkeringsstaket. Bengt
+  testar ikväll med CarPlay (docs/TEST-BENGT-0.3.2.md). 0.3.1 (4) laddades upp strax före
+  med samma kod minus självväckningen.
 
 - [x] **#33 Arkivbordet LIVE** (31/8): situation_archive tar emot vinterfacit från båda
   ingestvägarna, missmätningen läser det, bruset utestängt, fött låst. Djur på vägbanan och

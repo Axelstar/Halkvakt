@@ -396,3 +396,12 @@ valet CarPlay/Bluetooth/Inte alls, Starta vakten, deeplink till Ny automation, a
 "When Driving is turned on → Starta vakten" skapad, Fokus Kör satt till Automatiskt,
 **T1 intentet syns, T2 Siri "Starta Halkvakt" startar vakten**.
 KVAR: T3–T7 (automationen i bilen, bannern, självstoppet). Arkiv → TestFlight nu.
+
+## 2026-08-31 kväll — 🚀 0.3.2 (5) UPPLADDAT TILL APP STORE CONNECT (~14:50)
+Andra uppladdningen samma dag. Innehåll sedan 0.3.0 i morse: olyckslyftet (#28), heads-up
+(#23), senast sagt (#24-del), introduktionen (#36–37), Siri + App Intents (#22),
+självstopp (#35), självväckning på betydande förflyttning (#40), parkeringsstaketet (#41),
+Alltid-trappan på sida två. Kompilerade rent (14:46). Bevisat på Axels telefon före
+upload: intro fyra sidor, Vid användning → Alltid → grön bock.
+OBEVISAT, Bengt testar ikväll: självväckningen i bil, bannern, rösten i CarPlay,
+självstoppet. Instruktion: docs/TEST-BENGT-0.3.2.md. Ett tomt resultat är också data.
