@@ -26,26 +26,37 @@ const vaglagSize = write("vaglag.geojson", fc(vaglag.rows.map(r => ({
   properties: { code: r.condition_code, text: r.condition_text, info: r.condition_info,
                 road: r.road_number, updated: r.modified_time, lan: r.lan } }))));
 
+// Sverige (Trafikverket, CC0) + Finland (Fintraffic, CC BY 4.0 — attribution på kartsidan). #34/#44.
 const vader = await pool.query(`
-  SELECT station_id, name, sample_time, surface_temp_c, air_temp_c, precipitation, rain, snow,
+  SELECT 'SE' AS land, station_id, name, sample_time, surface_temp_c, air_temp_c, precipitation, rain, snow,
          ST_AsGeoJSON(geom)::json AS g
-  FROM weather_latest`);
+  FROM weather_latest
+  UNION ALL
+  SELECT 'FI', station_id, name, sample_time, surface_temp_c, air_temp_c, precipitation, rain, snow,
+         ST_AsGeoJSON(geom)::json
+  FROM fi.weather_latest WHERE surface_temp_c IS NOT NULL`);
 write("vader.geojson", fc(vader.rows.map(r => ({
   type: "Feature", geometry: r.g,
-  properties: { name: r.name, t: r.sample_time,
+  properties: { land: r.land, name: r.name, t: r.sample_time,
                 yta: r.surface_temp_c === null ? null : Number(r.surface_temp_c),
                 luft: r.air_temp_c === null ? null : Number(r.air_temp_c),
                 nbd: r.precipitation, sno: r.snow } }))));
 
 const olyckor = await pool.query(`
-  SELECT deviation_id, message_type, message, severity_text, road_number, start_time,
+  SELECT 'SE' AS land, deviation_id, message_type, message, severity_text, road_number, start_time,
          ST_AsGeoJSON(COALESCE(geom, ST_Centroid(line_geom)))::json AS g
   FROM deviations
   WHERE NOT deleted AND (geom IS NOT NULL OR line_geom IS NOT NULL)
-    AND (end_time IS NULL OR end_time > now())`);
+    AND (end_time IS NULL OR end_time > now())
+  UNION ALL
+  SELECT 'FI', deviation_id, message_type, message, severity_text, road_number, start_time,
+         ST_AsGeoJSON(geom)::json
+  FROM fi.deviations
+  WHERE NOT deleted AND geom IS NOT NULL AND (end_time IS NULL OR end_time > now())
+    AND message_type_value = 'Accident'`);
 write("olyckor.geojson", fc(olyckor.rows.map(r => ({
   type: "Feature", geometry: r.g,
-  properties: { typ: r.message_type, msg: r.message, allvar: r.severity_text,
+  properties: { land: r.land, typ: r.message_type, msg: r.message, allvar: r.severity_text,
                 road: r.road_number, start: r.start_time } }))));
 
 const kameror = await pool.query(`
