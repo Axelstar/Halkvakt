@@ -57,6 +57,14 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     private var manualStoppedAt: Date?
     private static let noProbeAfterManualStopS: TimeInterval = 10 * 60
 
+    // Parkeringsstaketet (DECISIONS #41): när vakten stoppar vet vi var bilen står. En
+    // cirkel på 150 m runt platsen; iOS väcker oss när telefonen lämnar den — på ett par
+    // hundra meter i stället för betydande förflyttning-tjänstens ~500 m. Nästa resa
+    // börjar där förra slutade: hemma, jobbet, affären. Betydande förflyttning är kvar
+    // som reserv för första resan efter installation, när ingen parkering är känd.
+    private static let parkingRadiusM: CLLocationDistance = 150
+    private static let parkingRegionId = "halkvakt.parkering"
+
     override private init() {
         super.init()
         manager.delegate = self
@@ -179,6 +187,28 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         }
     }
 
+    /// Lägg staketet runt bilens sista kända plats. Byter ut det förra — bara ett åt gången.
+    private func fenceParking() {
+        guard Prefs.shared.autoWake, manager.authorizationStatus == .authorizedAlways,
+              let p = prevLoc ?? manager.location else { return }
+        for r in manager.monitoredRegions where r.identifier == Self.parkingRegionId {
+            manager.stopMonitoring(for: r)
+        }
+        let region = CLCircularRegion(center: p.coordinate, radius: Self.parkingRadiusM, identifier: Self.parkingRegionId)
+        region.notifyOnEntry = false
+        region.notifyOnExit = true
+        manager.startMonitoring(for: region)
+        print("[Vakten] parkeringsstaket lagt, 150 m")
+    }
+
+    nonisolated func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
+        guard region.identifier == Self.parkingRegionId else { return }
+        Task { @MainActor in
+            print("[Vakten] lämnade parkeringen — provar farten")
+            self.beginProbe()
+        }
+    }
+
     func stop() {
         if running { manualStoppedAt = .now }
         running = false
@@ -188,6 +218,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         manager.stopUpdatingLocation()
         dismissTask?.cancel()
         currentWarning = nil
+        fenceParking()   // nästa resa börjar här
     }
 
     // MARK: - CLLocationManagerDelegate

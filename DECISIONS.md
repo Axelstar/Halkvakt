@@ -414,3 +414,13 @@ KONSEKVENS: introduktionen krymper till EN viktig fråga — säg ja till Alltid
 Genvägar blir "starta i första metern", inte förutsättningen. Detta borde byggts i morse
 i stället för Genvägar-varven; Genvägar-arbetet är inte bortkastat (kvar som snabbväg)
 men det var fel huvudväg. Version 0.3.2 (5).
+
+## #41 (31/8 2026) Parkeringsstaketet: geofence på 150 m runt sista platsen (Axel: "vet vi inte farten?")
+Fart mäts bara när appen är vaken — stängd app har ingen som mäter, iOS tillåter inte
+lyssnande GPS. Väckningar Apple erbjuder: betydande förflyttning (~500 m, ≤ var 5:e min),
+region-utträde, push. Fart är inte en. BYGGT: när vakten stoppar läggs en 150 m-cirkel
+runt bilens sista plats; iOS väcker oss vid utträde, typiskt inom ett par hundra meter och
+en minut. Betydande förflyttning kvar som reserv för första resan (ingen känd parkering).
+Fartprovet (≥ 15 km/h i ≤ 90 s) avgör sedan om det är bil eller promenad. Förväntad
+väckning: stad ~200–500 m, landsväg något längre. MÄTS på Bengts och Axels pendling
+innan det skrivs som löfte i produktboken.

@@ -164,9 +164,9 @@ utan att du gör något, och stannar när bilen kopplas från. Rörelseigenkänn
 även bilar utan Bluetooth. Inget att ställa in.
 
 **iPhone — vakten vaknar själv (0.3.2):** ge Halkvakt platsen **Alltid**. Då ber appen iOS
-väcka den när telefonen flyttat sig en bit, kollar farten, och startar vakten om det är
-bilfart. Det sker några minuter in i resan, inte i första metern, och kostar nästan inget
-batteri. Inget mer att ställa in. Kan stängas av under Inställningar → *Vakna själv när
+väcka den när telefonen lämnar platsen där bilen senast stod (ett par hundra meter), kollar
+farten, och startar vakten om det är bilfart. Första resan efter installation, när ingen
+parkering är känd, väcks den efter ungefär 500 meter i stället. Kostar nästan inget batteri. Inget mer att ställa in. Kan stängas av under Inställningar → *Vakna själv när
 du kör*.
 
 **Vill du att den startar i första metern** finns två snabbare vägar: säg *"Hej Siri,
