@@ -40,8 +40,8 @@ final class VectorTests: XCTestCase {
                 active: m?["active"] as? Bool ?? true,
                 speedLimitKmh: (m?["speedLimitKmh"] as? NSNumber)?.intValue,
                 severityCode: (m?["severityCode"] as? NSNumber)?.intValue,
-                bridge: (m?["bridge"] as? Bool) ?? false,
-                endTimeLocal: m?["endTimeLocal"] as? String))
+                endTimeLocal: m?["endTimeLocal"] as? String,
+                bridge: (m?["bridge"] as? Bool) ?? false))
     }
 
     func runFile(_ url: URL) throws -> ([Alert], [[String: Any]]) {
