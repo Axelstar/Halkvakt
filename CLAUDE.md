@@ -147,3 +147,9 @@ i samma commit när de överlappar.
   på `Enum?` blir `Optional.none` (nil), tyst, utan varning. CarSetup.none → "Inte alls"
   sparade ingenting (Axels telefon 31/8). Använd `noConnection`, `off`, `manual` — vad som
   helst utom `none`.
+- Fokus "Kör" finns INTE som standard på alla iPhones (Axels hade DND/Personal/Sleep/Work).
+  Guider som säger "Fokus → Kör" måste täcka "+ → Kör → Anpassa fokus". Uppmätt 31/8.
+  Bonus-fynd: Fokus Kör har inbyggda utlösare "Automatiskt", "Vid bilens Bluetooth" och
+  "Aktivera med CarPlay" — EN automation ("Kör slås på → Starta vakten") skulle kunna täcka
+  alla tre bilkopplingarna. Genvägars direkta CarPlay/Bluetooth-utlösare är färre steg, så
+  guiden behåller tre spår; men det är ett kandidatsätt att förenkla till ett spår.

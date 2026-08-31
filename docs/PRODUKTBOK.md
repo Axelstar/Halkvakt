@@ -175,8 +175,8 @@ utlösare. Sedan ett steg per skärm, med det du trycker på i fetstil:
   vakten* → Klar. Startar när bilens skärm tänds.
 - **Bluetooth:** tryck *Bluetooth* → din bil, *Är ansluten* → *Kör direkt* → skriv Halkvakt →
   *Starta vakten* → Klar. Startar när bilen vaknar, bara i din bil.
-- **Inte alls:** två delar. Del 1 i Inställningar: *Fokus → Kör → Aktivera automatiskt → När
-  du kör*. Del 2 i Genvägar: tryck *Fokus → Kör* → bocka *Slås på* → *Kör direkt* → skriv
+- **Inte alls:** två delar. Del 1 i Inställningar: *Fokus → Kör* (finns inte Kör i listan:
+  *+ → Kör → Anpassa fokus*) → *Aktivera automatiskt → När du kör → Automatiskt*. Del 2 i Genvägar: tryck *Fokus → Kör* → bocka *Slås på* → *Kör direkt* → skriv
   Halkvakt → *Starta vakten* → Klar. Telefonen känner av körningen själv.
 
 Knappen *Öppna Genvägar på Ny automation* i guiden landar direkt på rätt skärm. Går du

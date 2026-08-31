@@ -79,8 +79,8 @@ struct AutostartGuideView: View {
                     .foregroundStyle(Brand.yellow)
             }
             .accessibilityHint("Öppnar telefonens inställningar")
-            GuideStep(n: 1, text: "Tryck **Fokus** → **Kör** (Focus → Driving)")
-            GuideStep(n: 2, text: "Under Aktivera automatiskt: välj **När du kör** (Turn on Automatically → While Driving)")
+            GuideStep(n: 1, text: "Tryck **Fokus** (Focus). Finns **Kör** (Driving) i listan: tryck på den. Annars: **+** uppe till höger → **Kör** → **Anpassa fokus**")
+            GuideStep(n: 2, text: "Scrolla ner till **Aktivera automatiskt** → **När du kör** → välj **Automatiskt** (Turn On Automatically → While Driving → Automatically)")
             Text("Del 2 — automationen").font(.system(size: 15, weight: .semibold)).foregroundStyle(Brand.text).padding(.top, 6)
             openShortcuts
             GuideStep(n: 3, text: "Tryck **Fokus** i listan → välj **Kör** (Driving)")
