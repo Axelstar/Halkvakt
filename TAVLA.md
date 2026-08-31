@@ -54,7 +54,8 @@ med släckt skärm, vakten stannar när du stänger av.
 - [ ] Vid kompilatorfel från Macen: rätta → push → nytt varv
 
 **Skrivet idag, väntar på bevis i din hand:**
-- [ ] **#22 autostart** — iOS App Intents (fyra utlösare, tyst start med Alltid), Android fanns
+- [ ] **#22 autostart** — T1+T2 GRÖNA på Axels telefon 31/8 (intentet syns, Siri startar).
+  Automationen skapad, Fokus Kör på Automatiskt. Kvar: T3–T7 i bilen. Android fanns.
 - [ ] **#23 heads-up** — bannern över kartappen, båda plattformarna
 - [ ] **#24 skinnet** — DELVIS: "Senast sagt" på hemskärmen, båda. Resten bakom designexport.
 - [ ] **Introduktionen** (iOS) — fyra sidor vid första start: löftet, platsen, bannern, autostart.

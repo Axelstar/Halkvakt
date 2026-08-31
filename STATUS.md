@@ -386,3 +386,13 @@ Förgrund = varningskortet, bakgrund = bannern. **#24:** "Senast sagt" på hemsk
 persisterat, båda plattformarna. Resten av skinnet låst bakom designexport — ingen
 gissning. Skills lästa. INTE KOMPILERAT: app-målen byggs inte i CI. v0.3.1-batchen
 (#22, #23, #24-del) väntar nu på ett enda Mac-varv + bilen.
+
+## 2026-08-31 — Mac-varvet: v0.3.1 på Axels telefon, T1–T3 gröna (hotellet i Grekland)
+Åtta nya Swift-filer kompilerade på FÖRSTA försöket (13:11). Sedan sju rättningsvarv
+på riktiga fynd från Axels hand: sidprickar över knapp, CarSetup.none = Optional.none,
+fel-plusset i Genvägar, tyst no-op vid avslagen plats, guiden svårläst, Fokus Kör saknades.
+BEVISAT PÅ TELEFON: introduktionen (4 sidor, tillståndsdialoger med våra texter),
+valet CarPlay/Bluetooth/Inte alls, Starta vakten, deeplink till Ny automation, automationen
+"When Driving is turned on → Starta vakten" skapad, Fokus Kör satt till Automatiskt,
+**T1 intentet syns, T2 Siri "Starta Halkvakt" startar vakten**.
+KVAR: T3–T7 (automationen i bilen, bannern, självstoppet). Arkiv → TestFlight nu.
