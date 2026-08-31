@@ -44,7 +44,12 @@ final class Prefs {
     /// Senaste gången vakten startades av intentet (automation eller Siri) — guidens kvitto.
     var lastIntentStartAt: Date? { didSet { d.set(lastIntentStartAt, forKey: "k.lastIntentStartAt") } }
     /// Vakna själv vid körning (kräver Alltid). Standard på. DECISIONS #40.
-    var autoWake: Bool { didSet { d.set(autoWake, forKey: "k.autoWake"); GuardManager.shared.armAutoWake() } }
+    var autoWake: Bool {
+        didSet {
+            d.set(autoWake, forKey: "k.autoWake")
+            Task { @MainActor in GuardManager.shared.armAutoWake() }   // MainActor-isolerad
+        }
+    }
 
     private init() {
         accident = d.object(forKey: "k.accident") as? Bool ?? true

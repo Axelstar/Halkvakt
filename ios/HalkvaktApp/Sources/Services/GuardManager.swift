@@ -53,6 +53,9 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     private static let probeStartKmh = 15.0
     private var probing = false
     private var probeStartedAt: Date?
+    /// Vila efter misslyckat prov — annars kan en sen positionsleverans starta nästa direkt.
+    private var lastProbeFailedAt: Date?
+    private static let probeCooldownS: TimeInterval = 5 * 60
     /// Manuellt stopp mitt i körning får inte följas av en självstart sekunden efter.
     private var manualStoppedAt: Date?
     private static let noProbeAfterManualStopS: TimeInterval = 10 * 60
@@ -150,6 +153,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     private func beginProbe() {
         guard !running, !probing, Prefs.shared.autoWake else { return }
         if let t = manualStoppedAt, Date.now.timeIntervalSince(t) < Self.noProbeAfterManualStopS { return }
+        if let t = lastProbeFailedAt, Date.now.timeIntervalSince(t) < Self.probeCooldownS { return }
         probing = true
         probeStartedAt = .now
         manager.allowsBackgroundLocationUpdates = true
@@ -165,6 +169,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
             startRequested = true
             start()
         } else {
+            lastProbeFailedAt = .now
             manager.stopUpdatingLocation()
             print("[Vakten] ingen bilfart — somnar om")
         }
