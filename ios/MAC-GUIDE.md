@@ -119,3 +119,10 @@ och `git pull` + `xcodegen` + Team-valet är gjort (Team heter nu "axel Lagerlof
    *Submit for review*. Första bygget granskas av Apple (typiskt < 1 dygn).
 6. Testarna får mejl → laddar ner **TestFlight-appen** → Halkvakt installeras.
    Bygget lever i 90 dagar. Nya byggen = steg 2–3 igen, testarna uppdateras automatiskt.
+
+## Vit skärm efter xcodegen/team-byte — städtrappan
+1. iPhonen: håll in ikonen → Ta bort app → Radera
+2. Xcode: Product → Clean Build Folder (⇧⌘K)
+3. ▶ mot telefonen
+4. **Biverkan:** radering nollställer "Lita på" — gör Inställningar → Allmänt →
+   VPN & enhetshantering → Lita på igen innan du öppnar appen. (Läxa 31/8.)
