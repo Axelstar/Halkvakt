@@ -54,6 +54,9 @@ med släckt skärm, vakten stannar när du stänger av.
 
 **Claude — i väntan på Macen:**
 - [ ] Introduktionen på Android (spegel av iOS, DECISIONS #36) — efter att iOS-varianten testats
+- [ ] **#38 Stråket** — (a) broarna först: OSM-broar + närmaste station ≤ +3 °C ⇒ "Bro om
+  femhundra meter — frysrisk". (b) stråket: två stationer båda is ⇒ sträckan. Bengts fråga.
+  Efter Boden. Nästa motorvarv om Axel säger ja.
 - [ ] #31 Trafikverksbevakningen (litet, olåst, kan bevisas härifrån)
 
 - [x] ~~Testinstruktion till Bengt~~ ✅ docs/TEST-BENGT-0.3.2.md (31/8)

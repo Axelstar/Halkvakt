@@ -258,3 +258,16 @@ appen läser direkt från Supabase i oktober (då märks minutfärskheten på ri
     när faran passerats. Bygg: ActivityKit + WidgetKit-extension (nytt target i project.yml),
     start vid larm, uppdatera avstånd per fix, end vid passage/8 s. iPhone 14 Pro+ för ön;
     låsskärmen alla iOS 16.1+. Färger: #FFC02E (aktivitetsgul), #140F00 text, #05080A bakgrund.
+
+38. **Stråket — frysrisk mellan stationerna, utan prognos** (Bengts fråga 31/8 kväll):
+    Idag varnar frysrisk bara vid stationens punkt (yta ≤ 1 °C + fukt); sträckorna täcks
+    bara av Trafikverkets operatörsbedömda väglag. Två delar, båda byggda på MÄTNINGAR:
+    (a) **Broarna** — OSM bridge=yes på riks-/europavägar som statiska punkter i snapshoten;
+    aktiva när närmaste station inom N km säger ≤ +3 °C + fukt (högre tröskel: broar
+    fryser först). Röst: "Bro om femhundra meter — frysrisk." Mätning + faktum, inte gissning.
+    En kväll: OSM-hämtning (ODbL, attribution), publish, motorvarv m. vektorer, tre motorer.
+    (b) **Stråket** — två stationer på samma väg, BÅDA ≤ 1 °C + fukt ⇒ sträckan mellan dem
+    (längs OSM-vägnätet, inte rät linje) blir ett frysrisk-stråk; sägs EN gång vid infart:
+    "Frysrisk längs vägen de närmaste två milen." Ena stationen räcker inte. Två kvällar.
+    INGÅR INTE: beräknad temperatur där ingen mätt — det är #16 (prognos), efter facit.
+    Förstudie: Bodenresan 1/9 — broar på E4 Sundsvall–Luleå mot arkivets stationer.
