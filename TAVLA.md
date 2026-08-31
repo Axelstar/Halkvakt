@@ -64,7 +64,7 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 
 - [x] **APPLE DEVELOPER KÖPT** (mån 31/8 09:37, 999 kr, order W1845082767) — via WEBBEN
   (appen krävde körkort; webbvägen ställde ingen ID-fråga = läxa för nästa app).
-  Väntar på aktiveringsmejlet. Förberett: iOS-appikon (spegel av Android), export­-
+  AKTIVERAT 09:55 (18 min efter köpet — webbvägen levererar). Förberett: iOS-appikon (spegel av Android), export­-
   compliance-nyckel, TestFlight-guide i MAC-GUIDE. Utgivarnamn BESLUTAT: Lagerlöf Labs (DECISIONS #29).
 - [x] **BENGT UPPKOPPLAD** (30/8, live under pappasamtalet): Claude-appen installerad på
   Axelstar-kontot (All repositories ⇒ täcker även framtida repon), Bengts GitHub-koppling
