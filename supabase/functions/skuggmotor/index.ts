@@ -1,4 +1,7 @@
-// ═══ engine/src/types.ts (buntad — källan är repo-filen) ═══
+// ═══ GENERERAD av scripts/bundle-skuggmotor.ts — ÄNDRA INTE HÄR ═══
+// Källor: engine/src/{types,geo,texts,engine,snapshot}.ts + supabase/functions/skuggmotor/main.ts
+
+// ═══ engine/src/types.ts ═══
 // Alert engine v0 — pure, deterministic, platform-free (PLAN §1, §2).
 // This module must never import: clocks, randomness, network, DB, Node APIs.
 // The Kotlin (and later Swift) port must pass the identical vectors in engine/vectors/.
@@ -34,6 +37,14 @@ export interface PointHazard {
     active?: boolean;   // precomputed by data layer (season × hour); default true
     /** camera */
     speedLimitKmh?: number | null;
+    /** accident — Trafikverket SeverityCode. Measured range in our archive:
+     *  1 Ingen påverkan, 2 Liten påverkan, 4 Stor påverkan, 5 Mycket stor påverkan.
+     *  (Code 3 has never appeared.) null = unclassified ⇒ treated as mild. */
+    severityCode?: number | null;
+    /** accident — Trafikverket EndTime pre-formatted as "HH:MM" Europe/Stockholm by the
+     *  data layer. The engine reads no clocks and knows no timezones (see header), so the
+     *  string arrives ready to speak or not at all. */
+    endTimeLocal?: string | null;
   };
 }
 
@@ -78,7 +89,11 @@ export interface EngineConfig {
   repeatMinS: number;           // same hazard silent for at least this long ...
   repeatMinM: number;           // ... AND until this much further driven (both must have elapsed)
   cameraTriggerM: number;       // A5 fires at this distance
-  accidentMaxAheadM: number;    // A3 eligibility horizon
+  accidentMaxAheadM: number;    // A3 eligibility horizon = the EARLY call for serious accidents
+  /** A3 grading (DECISIONS #28). severityCode >= this ⇒ serious ⇒ two-step warning. */
+  accidentSeriousMinSeverity: number;
+  /** A3 second step: the reminder distance for serious accidents. */
+  accidentNearM: number;
   warnLeadS: number;            // A1/A2/A4 lead time; distance = speed × this, clamped:
   leadMinM: number;
   leadMaxM: number;
@@ -94,6 +109,8 @@ export const DEFAULT_CONFIG: EngineConfig = {
   repeatMinM: 5000,  // ... / 5 km (PLAN §1)
   cameraTriggerM: 500,
   accidentMaxAheadM: 10_000,
+  accidentSeriousMinSeverity: 5, // "Mycket stor påverkan" only (Axel 31/8, DECISIONS #30a: 4 made two-step the norm)
+  accidentNearM: 2_000,
   warnLeadS: 30,
   leadMinM: 400,
   leadMaxM: 3000,
@@ -101,7 +118,8 @@ export const DEFAULT_CONFIG: EngineConfig = {
   cameraBearingToleranceDeg: 100,
 };
 
-// ═══ engine/src/geo.ts (buntad — källan är repo-filen) ═══
+
+// ═══ engine/src/geo.ts ═══
 // Minimal geodesy for the alert engine. WGS84 throughout, metres out.
 // Haversine is accurate to ~0.5 % — far inside our tolerances (alerts are 100s of metres).
 
@@ -168,15 +186,49 @@ export function samplePolyline(line: [number, number][], stepM: number): LonLat[
   return out;
 }
 
-// ═══ engine/src/texts.ts (buntad — källan är repo-filen) ═══
+
+// ═══ engine/src/texts.ts ═══
 // Spoken Swedish copy (PLAN §1 taxonomy). Phrasing rule, hard:
 // segment sources may claim "på vägen framför dig"; point sources only "framöver".
 
-export function alertText(kind: HazardKind, distanceM: number, hazard?: PointHazard): string {
+/**
+ * Which utterance of a serious accident this is (DECISIONS #28, "Olyckslyftet").
+ *   "early"    — the first call, made far out while exits still remain. Carries the
+ *                routing decision ("Överväg annan väg") because this is the only
+ *                moment the driver can still act on it.
+ *   "reminder" — the second call at close range, AFTER an early call was spoken.
+ *                Short by design: the decision is already made, this is just speed.
+ *   "late"     — close range with NO early call (driver joined the road inside the
+ *                early horizon). Must still say WHAT it is — otherwise this driver
+ *                gets strictly less information than one who came from further away.
+ * Mild accidents and every other hazard kind ignore this.
+ */
+export type AccidentStep = "early" | "reminder" | "late";
+
+export function alertText(
+  kind: HazardKind,
+  distanceM: number,
+  hazard?: PointHazard,
+  step?: AccidentStep,
+): string {
   switch (kind) {
     case "accident": {
       const km = Math.max(1, Math.round(distanceM / 1000));
-      return `Olycka rapporterad ${km} kilometer framför dig.`;
+      switch (step) {
+        case "early": {
+          const clearedAt = hazard?.meta?.endTimeLocal;
+          const base =
+            `Allvarlig olycka ${km} kilometer framför dig — stor påverkan på trafiken. ` +
+            `Överväg annan väg.`;
+          return clearedAt ? `${base} Beräknas röjd vid ${clearedAt}.` : base;
+        }
+        case "reminder":
+          return "Sakta ner — olycksplats strax framför dig.";
+        case "late":
+          return `Allvarlig olycka ${km} kilometer framför dig — stor påverkan. Sakta ner.`;
+        default:
+          return `Olycka rapporterad ${km} kilometer framför dig.`;
+      }
     }
     case "slippery_segment":
       return "Varning: halka rapporterad på vägen framför dig.";
@@ -193,7 +245,8 @@ export function alertText(kind: HazardKind, distanceM: number, hazard?: PointHaz
   }
 }
 
-// ═══ engine/src/engine.ts (buntad — källan är repo-filen) ═══
+
+// ═══ engine/src/engine.ts ═══
 // Halkvakt alert engine v0 — the module that decides when to speak and when to stay silent.
 // Deterministic by construction: no clocks, no randomness, no I/O. Time comes from fixes.
 // Discipline rules (PLAN §1) are hard requirements, encoded here and proven by engine/vectors/.
@@ -202,13 +255,32 @@ export function alertText(kind: HazardKind, distanceM: number, hazard?: PointHaz
 //      Losers are DROPPED, not queued. No exceptions, not even for accidents (logged in
 //      DECISIONS — revisit only on beta evidence).
 //   2. Same hazard never repeats until BOTH 10 min have passed AND 5 km been driven.
+//      SINGLE EXCEPTION (DECISIONS #28): a serious accident speaks twice by design —
+//      once early (10 km, while exits remain) and once close (2 km, "slow down").
+//      These are two different messages about one hazard, not a repeat of one message,
+//      and they are held apart by two distinct alert keys rather than by weakening rule 2.
 //   3. Point sources say "framöver"; only segment sources may say "på vägen framför dig"
 //      (enforced in texts.ts).
 //   4. Silence is the default. No hazard in corridor ⇒ no sound. Ever.
 
+  Alert, EngineConfig, Fix, Hazard, HazardKind, PointHazard, SegmentHazard,
+} from "./types.ts";
+
 interface FiredState { t: number; odometerM: number; }
 
-interface Candidate { hazard: Hazard; kind: HazardKind; distM: number; }
+/**
+ * `alertKey` is what the repeat rules remember — normally the hazard id, but a SERIOUS
+ * accident owns two independent voice slots ("<id>#early" and "<id>#near") so the 2 km
+ * reminder is not swallowed by the 10-min/5-km suppression that follows the 10 km call.
+ * This is the "step-aware warning id" of DECISIONS #28. It stays internal on purpose:
+ * the emitted Alert keeps its hazardId, so the cross-platform log shape is unchanged
+ * and none of the 14 frozen vectors had to be regenerated.
+ */
+interface Candidate {
+  hazard: Hazard; kind: HazardKind; distM: number;
+  alertKey: string;
+  step?: AccidentStep;
+}
 
 // Swedish word-start boundary: "Isfläckar"/"Svår halka" match; "fläckvis Våt" must NOT
 // (the substring 'is' inside "fläckvis" produced 8 false halka-segments on real August
@@ -282,7 +354,7 @@ export class AlertEngine {
 
     // Rule 2: per-hazard repeat suppression (both time AND distance must have elapsed).
     const eligible = candidates.filter((c) => {
-      const f = this.fired.get(c.hazard.id);
+      const f = this.fired.get(c.alertKey);
       if (!f) return true;
       const rearmed =
         fix.t - f.t >= this.cfg.repeatMinS && this.odometerM - f.odometerM >= this.cfg.repeatMinM;
@@ -295,7 +367,7 @@ export class AlertEngine {
       const pa = PRIORITY.indexOf(a.kind), pb = PRIORITY.indexOf(b.kind);
       if (pa !== pb) return pa - pb;
       if (a.distM !== b.distM) return a.distM - b.distM;
-      return a.hazard.id < b.hazard.id ? -1 : 1; // total order ⇒ determinism
+      return a.alertKey < b.alertKey ? -1 : 1; // total order ⇒ determinism
     });
     const win = eligible[0];
 
@@ -305,14 +377,14 @@ export class AlertEngine {
     }
 
     this.lastSpokenT = fix.t;
-    this.fired.set(win.hazard.id, { t: fix.t, odometerM: this.odometerM });
+    this.fired.set(win.alertKey, { t: fix.t, odometerM: this.odometerM });
     const pointHazard = win.hazard.kind === "slippery_segment" ? undefined : (win.hazard as PointHazard);
     return {
       t: fix.t,
       hazardId: win.hazard.id,
       kind: win.kind,
       distanceM: Math.round(win.distM),
-      text: alertText(win.kind, win.distM, pointHazard),
+      text: alertText(win.kind, win.distM, pointHazard, win.step),
     };
   }
 
@@ -350,20 +422,50 @@ export class AlertEngine {
         if (p.bearing != null && angDiffDeg(p.bearing, heading) > this.cfg.cameraBearingToleranceDeg) {
           return null; // camera monitors the opposite direction — stay silent
         }
-        return { hazard: p, kind: p.kind, distM };
+        return { hazard: p, kind: p.kind, distM, alertKey: p.id };
       }
       case "accident":
-        return distM <= this.cfg.accidentMaxAheadM ? { hazard: p, kind: p.kind, distM } : null;
+        return this.evaluateAccident(p, distM);
       case "icing_point": {
         const t = p.meta?.surfaceTempC;
         const icy = t != null && t <= 1 && p.meta?.moisture === true;
-        return icy && distM <= leadM ? { hazard: p, kind: p.kind, distM } : null;
+        return icy && distM <= leadM ? { hazard: p, kind: p.kind, distM, alertKey: p.id } : null;
       }
       case "wildlife": {
         const active = p.meta?.active !== false;
-        return active && distM <= leadM ? { hazard: p, kind: p.kind, distM } : null;
+        return active && distM <= leadM ? { hazard: p, kind: p.kind, distM, alertKey: p.id } : null;
       }
     }
+  }
+
+  /**
+   * A3 grading (DECISIONS #28, "Olyckslyftet"). Trafikverket's SeverityCode decides
+   * whether this is one utterance or two:
+   *
+   *   mild / unclassified  → today's single line, unchanged behaviour.
+   *   serious (>= cfg)     → EARLY call at the 10 km horizon carrying the routing
+   *                          decision, then a REMINDER inside 2 km carrying only speed.
+   *
+   * A driver who joins the road already inside 2 km never heard the early call, so the
+   * near slot speaks "late" copy instead: same facts, no "överväg annan väg" — there is
+   * no exit left to take, and telling someone to reroute when they cannot is noise.
+   */
+  private evaluateAccident(p: PointHazard, distM: number): Candidate | null {
+    if (distM > this.cfg.accidentMaxAheadM) return null;
+
+    const sev = p.meta?.severityCode;
+    const serious = sev != null && sev >= this.cfg.accidentSeriousMinSeverity;
+    if (!serious) return { hazard: p, kind: "accident", distM, alertKey: p.id };
+
+    if (distM <= this.cfg.accidentNearM) {
+      const earlySpoken = this.fired.has(`${p.id}#early`);
+      return {
+        hazard: p, kind: "accident", distM,
+        alertKey: `${p.id}#near`,
+        step: earlySpoken ? "reminder" : "late",
+      };
+    }
+    return { hazard: p, kind: "accident", distM, alertKey: `${p.id}#early`, step: "early" };
   }
 
   private evaluateSegment(
@@ -381,11 +483,12 @@ export class AlertEngine {
       if (ahead && (best === null || distM < best)) best = distM;
     }
     if (best === null || best > leadM) return null;
-    return { hazard: s.h, kind: "slippery_segment", distM: best };
+    return { hazard: s.h, kind: "slippery_segment", distM: best, alertKey: s.h.id };
   }
 }
 
-// ═══ engine/src/snapshot.ts (buntad — källan är repo-filen) ═══
+
+// ═══ engine/src/snapshot.ts ═══
 // Snapshot → Hazard adapter. THE reference mapping from the published app files
 // (data/app/v1/{static,live}.json) into the engine's hazard vocabulary. The Kotlin
 // port must mirror this file 1:1 — it is deliberately boring.
@@ -400,7 +503,13 @@ export interface LiveDoc {
   generated_at: string;
   segments: { id: string; line: [number, number][]; code: number | null; info: string[]; road: string | null }[];
   weather: { id: string; lon: number; lat: number; yta: number | null; fukt: boolean }[];
-  deviations: { id: string; lon: number; lat: number; typ: string | null; road: string | null }[];
+  deviations: {
+    id: string; lon: number; lat: number; typ: string | null; road: string | null;
+    /** Trafikverket SeverityCode, present only for real accidents (#28). */
+    sev?: number | null;
+    /** Clearance time as "HH:MM" Swedish wall clock, pre-formatted by the publisher. */
+    slut?: string | null;
+  }[];
   smhi: unknown[]; // not consumed by the engine v1 (map/UI layer)
   wildlife?: { id: string; lon: number; lat: number; art: string | null }[];
 }
@@ -417,7 +526,10 @@ export function snapshotToHazards(staticDoc: StaticDoc, liveDoc: LiveDoc): Hazar
     out.push({ id: `wx:${w.id}`, kind: "icing_point", lon: w.lon, lat: w.lat, meta: { surfaceTempC: w.yta, moisture: w.fukt } });
   }
   for (const d of liveDoc.deviations) {
-    out.push({ id: `dev:${d.id}`, kind: "accident", lon: d.lon, lat: d.lat });
+    out.push({
+      id: `dev:${d.id}`, kind: "accident", lon: d.lon, lat: d.lat,
+      meta: { severityCode: d.sev ?? null, endTimeLocal: d.slut ?? null },
+    });
   }
   for (const v of liveDoc.wildlife ?? []) {
     out.push({ id: `vilt:${v.id}`, kind: "wildlife", lon: v.lon, lat: v.lat });
@@ -425,16 +537,30 @@ export function snapshotToHazards(staticDoc: StaticDoc, liveDoc: LiveDoc): Hazar
   return out;
 }
 
+
+// ═══ supabase/functions/skuggmotor/main.ts ═══
 // ═══ Skuggmotorn (#20, Bengts design): kör motorn mot färska snapshoten på fasta
 // referensrutter var 30:e min och loggar vad den SKULLE ha sagt — varningslogg
 // med indata oavsett användarantal. Vid varning: arkivera närmaste väglags-
 // kamerabild (facit-hinken, dedupe per station & 3 h). Rör aldrig användare.
-const CDN = "https://axelstar.github.io/halkvakt-karta/data/app/v1/";
+// Land (#34): ?land=fi kör de finska rutterna mot den finska snapshoten. Samma motor,
+// samma logg (kolumnen land), samma rapport. Sverige är standard.
+const CDN_BY_LAND: Record<string, string> = {
+  se: "https://axelstar.github.io/halkvakt-karta/data/app/v1/",
+  fi: "https://axelstar.github.io/halkvakt-karta/data/app/fi/v1/",
+};
 const SB = Deno.env.get("SUPABASE_URL")!;
 const SRK = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const TRV = Deno.env.get("TRAFIKVERKET_API_KEY")!;
 
 // Grova men FASTA referenslinjer (jämförbarhet över tid slår metern):
+// Finland (#34): tre referenslinjer, samma grovhet som de svenska. Fejkresorna.
+const ROUTES_FI: Record<string, [number, number][]> = {
+  "E18 Åbo→Helsingfors":     [[22.27,60.45],[22.60,60.43],[23.13,60.40],[23.60,60.38],[24.05,60.32],[24.50,60.24],[24.94,60.17]],
+  "E75 Helsingfors→Lahtis":  [[24.94,60.17],[25.03,60.36],[25.12,60.52],[25.30,60.70],[25.50,60.85],[25.66,60.98]],
+  "Rv8 Vasa→Uleåborg":       [[21.62,63.10],[22.20,63.35],[22.70,63.55],[23.15,63.80],[23.80,64.05],[24.45,64.40],[25.05,64.75],[25.47,65.01]],
+};
+
 const ROUTES: Record<string, [number, number][]> = {
   "E22 Malmö→Kristianstad": [[13.05,55.60],[13.19,55.70],[13.35,55.76],[13.54,55.83],[13.74,55.85],[13.95,55.90],[14.05,55.95],[14.16,56.03]],
   "Väg 23 Höör→Osby":       [[13.54,55.94],[13.62,56.02],[13.70,56.09],[13.77,56.16],[13.85,56.25],[13.93,56.32],[13.98,56.38]],
@@ -520,6 +646,9 @@ Deno.serve(async (req) => {
   const k = Deno.env.get("INGEST_KEY");
   if (!k || req.headers.get("x-halkvakt-key") !== k) return new Response("forbidden", { status: 403 });
   try {
+    const land = (new URL(req.url).searchParams.get("land") ?? "se").toLowerCase();
+    const CDN = CDN_BY_LAND[land]; if (!CDN) return new Response("okänt land", { status: 400 });
+    const routes = land === "fi" ? ROUTES_FI : ROUTES;
     const bust = `?t=${Date.now()}`;
     const [st, lv] = await Promise.all([
       fetch(CDN + "static.json" + bust).then((r) => r.json()),
@@ -528,19 +657,22 @@ Deno.serve(async (req) => {
     const hazards = snapshotToHazards(st, lv);
     const results: Record<string, unknown> = {};
     let facitTotal = 0;
-    // Rotation: 5 rutter per varv (CPU-taket, läxa 29/8) — alla 20 täcks varje 2h
-    const allNames = Object.keys(ROUTES).sort();
-    const slot = Math.floor(Date.now() / 1800e3) % 7;
-    const batch = allNames.filter((_, i) => i % 7 === slot);
+    // Rotation: 3 rutter per varv (CPU-taket, läxa 29/8) — alla 20 täcks varje 3,5 h.
+    // Finland har bara tre rutter ⇒ alla körs varje varv.
+    const allNames = Object.keys(routes).sort();
+    const slots = land === "fi" ? 1 : 7;
+    const slot = Math.floor(Date.now() / 1800e3) % slots;
+    const batch = allNames.filter((_, i) => i % slots === slot);
     for (const name of batch) {
-      const line = ROUTES[name as keyof typeof ROUTES];
+      const line = routes[name];
       {
       const trace = traceAlong(line);
       const alerts = new AlertEngine(hazards).run(trace);
-      const f = await archiveFacit(alerts, name); facitBudget -= f; facitTotal += f;
+      // Facit-bilder finns bara i Sverige (Trafikverkets väglagskameror).
+      const f = land === "se" ? await archiveFacit(alerts, name) : 0; facitBudget -= f; facitTotal += f;
       results[name] = { fixes: trace.length, alerts: alerts.length };
       const body = JSON.stringify({
-        route: name, snapshot_generated_at: lv.generated_at,
+        route: name, land: land.toUpperCase(), snapshot_generated_at: lv.generated_at,
         n_hazards: hazards.length, n_alerts: alerts.length,
         alerts: alerts.map((a) => ({ t: a.t, kind: a.kind, id: a.hazardId, text: a.text, lon: a.lon, lat: a.lat })),
       });

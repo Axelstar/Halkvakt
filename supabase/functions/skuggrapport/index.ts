@@ -7,11 +7,13 @@ const svTid = (iso: string) =>
   new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Stockholm", weekday: "short",
     hour: "2-digit", minute: "2-digit" }).format(new Date(iso));
 
-Deno.serve(async () => {
+Deno.serve(async (req) => {
   try {
+    // ?land=fi ⇒ de finska testbilarna (#34). Sverige är standard.
+    const land = (new URL(req.url).searchParams.get("land") ?? "se").toUpperCase();
     const since = new Date(Date.now() - 24 * 3600e3).toISOString();
     const r = await fetch(
-      `${SB}/rest/v1/shadow_log?select=route,run_at,n_hazards,n_alerts,alerts&run_at=gte.${since}&order=run_at.desc&limit=2000`,
+      `${SB}/rest/v1/shadow_log?select=route,run_at,n_hazards,n_alerts,alerts&land=eq.${land}&run_at=gte.${since}&order=run_at.desc&limit=2000`,
       { headers: { Authorization: `Bearer ${SRK}`, apikey: SRK } },
     );
     const raw = await r.json();

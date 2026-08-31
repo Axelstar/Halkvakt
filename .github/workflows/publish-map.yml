@@ -24,6 +24,8 @@ jobs:
       - run: node --experimental-strip-types publish/build-map-data.ts out
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
       - run: node --experimental-strip-types publish/build-snapshot.ts out
+      - run: node --experimental-strip-types publish/build-snapshot-fi.ts out
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
       - run: node --experimental-strip-types publish/push-data.ts out
         env: { PUBLISH_TOKEN: "${{ secrets.PUBLISH_TOKEN }}" }
