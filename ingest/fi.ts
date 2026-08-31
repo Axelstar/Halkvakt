@@ -41,7 +41,10 @@ try {
     const m = meta.get(st.id); if (!m) continue;
     const s = new Map<string, Sensor>();
     for (const v of st.sensorValues as Sensor[]) s.set(v.name, v);
-    const surface = s.get("TIE_1")?.value ?? null;
+    // KELI_1 = 0 betyder "The sensor has a fault" — då är TIE_1 skräp (Rovaniemi visade
+    // 0 °C vägyta vid 16,8 °C luft i första körningen). Spara null, inte lögnen.
+    const faulty = s.get("KELI_1")?.value === 0;
+    const surface = faulty ? null : (s.get("TIE_1")?.value ?? null);
     const air = s.get("ILMA")?.value ?? null;
     const keli = s.get("KELI_1")?.sensorValueDescriptionEn ?? null;   // Dry/Moist/Wet/Snow/Ice/Frost/...
     const sade = s.get("SADE")?.value ?? 0;

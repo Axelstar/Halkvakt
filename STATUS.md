@@ -405,3 +405,9 @@ Alltid-trappan på sida två. Kompilerade rent (14:46). Bevisat på Axels telefo
 upload: intro fyra sidor, Vid användning → Alltid → grön bock.
 OBEVISAT, Bengt testar ikväll: självväckningen i bil, bannern, rösten i CarPlay,
 självstoppet. Instruktion: docs/TEST-BENGT-0.3.2.md. Ett tomt resultat är också data.
+
+## 2026-08-31 kväll — 🇫🇮 Finskt skuggarkiv LIVE (#34, DECISIONS #42)
+Axel: "vi bör täcka Skandinavien snart" → arkivet börjar före produkten. sql/004 (schema fi,
+fött låst), ingest/fi.ts, ingest-fi.yml var 30:e min. Första körningen grön: 526 stationer,
+526 arkiverade, 10 händelser, 0 läckta rader till Sverige. Sensorfel-filter inlagt efter
+fyndet i Rovaniemi. Kvar: tre finska skuggrutter i skuggmotorn.

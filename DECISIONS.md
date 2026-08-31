@@ -424,3 +424,14 @@ en minut. Betydande förflyttning kvar som reserv för första resan (ingen kän
 Fartprovet (≥ 15 km/h i ≤ 90 s) avgör sedan om det är bil eller promenad. Förväntad
 väckning: stad ~200–500 m, landsväg något längre. MÄTS på Bengts och Axels pendling
 innan det skrivs som löfte i produktboken.
+
+## #42 (31/8 2026) Finland: arkivet börjar före produkten (Axel: "vi kan sätta upp fejkresor")
+BYGGT samma kväll. Eget schema `fi` med kopior av de svenska tabellerna — isolerat, fött
+låst, ingen svensk fråga rör det. ingest/fi.ts hämtar Fintraffics 526 vägväderstationer
+(TIE_1 vägyta, ILMA luft, SADE, KELI_1 väglagskod med klartext) och aktiva
+trafikmeddelanden med geometri, var 30:e min, samma arkivpolicy som Sverige (DECISIONS #4).
+Vägarbeten ("tietyö") stängs ute som i #5. Första körningen: 526 stationer, 10 händelser,
+0 rader i svenska tabeller. Fynd: KELI_1 = 0 är "sensor fault" ⇒ TIE_1 ska ignoreras.
+NÄSTA VARV: tre finska skuggrutter i skuggmotorn (E18 Åbo–Helsingfors, vt4/E75
+Helsingfors–Lahtis, vt8 Vasa–Uleåborg) så "fejkresorna" kör. Inga användare, ingen röst —
+Finland får en vinter av facit i mars 2027 utan att en enda finne märker något.
