@@ -175,6 +175,11 @@ visar sedan bara de steg som gäller dig:
   känner av körningen själv. Fem steg. Kör du oftast med kartan framme: lägg till
   *App → Google Maps → Öppnas* som en andra automation, så hinner vakten före Fokus.
 
+Knappen *Öppna Genvägar på Ny automation* i guiden landar direkt på rätt skärm. Går du
+in i Genvägar själv: det är fliken **Automation längst ner i mitten** — inte + uppe till
+höger på första fliken, det skapar en genväg, inte en automation. Utlösarna (CarPlay,
+Bluetooth, Fokus, App) är en lista du scrollar i, inget man söker efter.
+
 I alla tre: välj *Kör direkt* (inte *Fråga innan*). **Det räcker.** Vakten stoppar sig
 själv när bilen stått still i en kvart. Svaret går att byta i Inställningar.
 

@@ -47,23 +47,23 @@ struct AutostartGuideView: View {
         switch setup {
         case .carplay:
             Intro("Vakten startar när bilens skärm tänds. En automation i Genvägar, en gång.")
-            GuideStep(n: 1, text: "Öppna Genvägar → fliken Automation → +")
-            GuideStep(n: 2, text: "Välj CarPlay → Ansluts")
+            GuideStep(n: 1, text: "I Genvägar: fliken Automation LÄNGST NER i mitten → Ny automation. (Inte + uppe till höger — det gör en genväg, inte en automation.)")
+            GuideStep(n: 2, text: "Scrolla i listan över utlösare till CarPlay → Ansluts. Sök inte — utlösarna är en lista.")
             GuideStep(n: 3, text: "Välj Kör direkt (inte Fråga innan) → Nästa")
             GuideStep(n: 4, text: "Sök \"Halkvakt\" → välj Starta vakten → Klar")
             openShortcuts
         case .bluetooth:
             Intro("Vakten startar när bilen kopplar upp. Parkoppla telefonen med bilen först om du inte redan gjort det.")
-            GuideStep(n: 1, text: "Öppna Genvägar → fliken Automation → +")
-            GuideStep(n: 2, text: "Välj Bluetooth → välj din bil → Är ansluten")
+            GuideStep(n: 1, text: "I Genvägar: fliken Automation LÄNGST NER i mitten → Ny automation. (Inte + uppe till höger — det gör en genväg, inte en automation.)")
+            GuideStep(n: 2, text: "Scrolla i listan över utlösare till Bluetooth → välj din bil → Är ansluten. Sök inte — utlösarna är en lista.")
             GuideStep(n: 3, text: "Välj Kör direkt (inte Fråga innan) → Nästa")
             GuideStep(n: 4, text: "Sök \"Halkvakt\" → välj Starta vakten → Klar")
             openShortcuts
         case .none:
             Intro("Telefonen känner själv av när du kör, med rörelsesensorerna. Två inställningar, en gång.")
             GuideStep(n: 1, text: "Inställningar → Fokus → Kör → Aktivera automatiskt → När du kör")
-            GuideStep(n: 2, text: "Öppna Genvägar → fliken Automation → +")
-            GuideStep(n: 3, text: "Välj Fokus → Kör → Slås på")
+            GuideStep(n: 2, text: "I Genvägar: fliken Automation LÄNGST NER i mitten → Ny automation. (Inte + uppe till höger — det gör en genväg, inte en automation.)")
+            GuideStep(n: 3, text: "Scrolla i listan över utlösare till Fokus → Kör → Slås på. Sök inte — utlösarna är en lista.")
             GuideStep(n: 4, text: "Välj Kör direkt (inte Fråga innan) → Nästa")
             GuideStep(n: 5, text: "Sök \"Halkvakt\" → välj Starta vakten → Klar")
             Text("Kör du oftast med kartan framme kan du lägga till en automation till: App → Google Maps eller Kartor → Öppnas → Starta vakten. Då hinner vakten före Fokus.")
@@ -81,14 +81,22 @@ struct AutostartGuideView: View {
             .font(.system(size: 13)).foregroundStyle(Brand.dim)
     }
 
+    // Öppnar Genvägar direkt på "Ny automation" (odokumenterad men fungerande deeplink,
+    // Vox Silva 2023: shortcuts://create-automation). Axel visade 31/8 exakt vad som
+    // annars händer: appen landar på Genvägar-fliken, vars + skapar en GENVÄG, och man
+    // söker utlösaren bland åtgärder där den inte finns. Faller Apple tillbaka på
+    // vanliga shortcuts:// står steg 1 kvar som skyddsräcke.
     private var openShortcuts: some View {
         Button {
-            if let url = URL(string: "shortcuts://") { openURL(url) }
+            guard let deep = URL(string: "shortcuts://create-automation") else { return }
+            openURL(deep) { accepted in
+                if !accepted, let plain = URL(string: "shortcuts://") { openURL(plain) }
+            }
         } label: {
-            Label("Öppna Genvägar", systemImage: "arrow.up.forward.app")
+            Label("Öppna Genvägar på Ny automation", systemImage: "arrow.up.forward.app")
                 .foregroundStyle(Brand.yellow)
         }
-        .accessibilityHint("Öppnar appen Genvägar där automationen skapas")
+        .accessibilityHint("Öppnar appen Genvägar direkt på skärmen för ny automation")
     }
 }
 

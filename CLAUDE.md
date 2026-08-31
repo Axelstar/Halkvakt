@@ -138,3 +138,8 @@ i samma commit när de överlappar.
 - SwiftUI TabView(.page) lägger sidprickarna OVANPÅ innehållet, inte under det. Sista
   elementet på varje sida måste ha ≥ 56 pt fri höjd under sig, annars täcks knappar.
   Fångat på Axels telefon 31/8: "Byt bilkoppling" låg under prickarna och gick inte att träffa.
+- Genvägar har TVÅ plus. Det uppe till höger på första fliken skapar en GENVÄG; utlösare
+  (CarPlay/Bluetooth/Fokus/App) finns bara under fliken Automation längst ner i mitten,
+  som en scrollbar lista — inte sökbara bland åtgärder. Axel gick rakt i fällan 31/8 trots
+  att guiden sa "fliken Automation". Deeplink shortcuts://create-automation (odokumenterad,
+  Vox Silva) landar rätt; steg 1 måste ändå namnge fel-plusset uttryckligen.
