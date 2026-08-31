@@ -33,6 +33,14 @@ export interface PointHazard {
     active?: boolean;   // precomputed by data layer (season × hour); default true
     /** camera */
     speedLimitKmh?: number | null;
+    /** accident — Trafikverket SeverityCode. Measured range in our archive:
+     *  1 Ingen påverkan, 2 Liten påverkan, 4 Stor påverkan, 5 Mycket stor påverkan.
+     *  (Code 3 has never appeared.) null = unclassified ⇒ treated as mild. */
+    severityCode?: number | null;
+    /** accident — Trafikverket EndTime pre-formatted as "HH:MM" Europe/Stockholm by the
+     *  data layer. The engine reads no clocks and knows no timezones (see header), so the
+     *  string arrives ready to speak or not at all. */
+    endTimeLocal?: string | null;
   };
 }
 
@@ -77,7 +85,11 @@ export interface EngineConfig {
   repeatMinS: number;           // same hazard silent for at least this long ...
   repeatMinM: number;           // ... AND until this much further driven (both must have elapsed)
   cameraTriggerM: number;       // A5 fires at this distance
-  accidentMaxAheadM: number;    // A3 eligibility horizon
+  accidentMaxAheadM: number;    // A3 eligibility horizon = the EARLY call for serious accidents
+  /** A3 grading (DECISIONS #28). severityCode >= this ⇒ serious ⇒ two-step warning. */
+  accidentSeriousMinSeverity: number;
+  /** A3 second step: the reminder distance for serious accidents. */
+  accidentNearM: number;
   warnLeadS: number;            // A1/A2/A4 lead time; distance = speed × this, clamped:
   leadMinM: number;
   leadMaxM: number;
@@ -93,6 +105,8 @@ export const DEFAULT_CONFIG: EngineConfig = {
   repeatMinM: 5000,  // ... / 5 km (PLAN §1)
   cameraTriggerM: 500,
   accidentMaxAheadM: 10_000,
+  accidentSeriousMinSeverity: 4, // "Stor påverkan" and above
+  accidentNearM: 2_000,
   warnLeadS: 30,
   leadMinM: 400,
   leadMaxM: 3000,

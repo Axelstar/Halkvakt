@@ -104,9 +104,16 @@ object SnapshotRepo {
         val devs = liveDoc.getJSONArray("deviations")
         for (i in 0 until devs.length()) {
             val d = devs.getJSONObject(i)
+            // Olyckslyftet (#28): sev/slut are absent in snapshots published before this
+            // shipped, and absent for non-accident deviation types by design. Missing ⇒ null
+            // ⇒ the engine grades it mild and speaks the old line. Never louder by accident.
             out.add(PointHazard(
                 id = "dev:${d.getString("id")}", kind = HazardKind.ACCIDENT,
                 lon = d.getDouble("lon"), lat = d.getDouble("lat"),
+                meta = PointMeta(
+                    severityCode = if (d.has("sev") && !d.isNull("sev")) d.getInt("sev") else null,
+                    endTimeLocal = if (d.has("slut") && !d.isNull("slut")) d.getString("slut") else null,
+                ),
             ))
         }
         return out

@@ -160,6 +160,47 @@ const scenarios: Scenario[] = [
     }],
     trace: northTrace(120, 80),
   },
+  // ---- Olyckslyftet (#28, DECISIONS #28). Boundary placement follows the design rule
+  // above: the accident sits at 11 019 m so that neither the 10 km horizon nor the 2 km
+  // reminder line falls within ~1 m of an integer-second fix (margins here are ~13 m).
+  {
+    file: "v15_accident_serious_twostep",
+    name: "Allvarlig olycka: tidigt rop + påminnelse",
+    description:
+      "90 km/h norrut, allvarlig olycka (severity 4) 11 019 m fram med röjningstid 14:20. " +
+      "Två repliker: det tidiga ropet när 10 km-horisonten passeras (bär omvägsbeslutet) " +
+      "och påminnelsen innanför 2 km (bär bara farten). Samma hazardId, två varningsplatser.",
+    hazards: [{
+      id: "acc1", kind: "accident", lon: LON0, lat: northOf(11_019),
+      meta: { severityCode: 4, endTimeLocal: "14:20" },
+    }],
+    trace: northTrace(380, 90),
+  },
+  {
+    file: "v16_accident_serious_late_join",
+    name: "Allvarlig olycka: påhoppad innanför 2 km",
+    description:
+      "Föraren svänger ut 1 900 m före en allvarlig olycka och hörde aldrig det tidiga ropet. " +
+      "Påminnelsetexten vore ofullständig här, så nära-platsen talar late-repliken i stället: " +
+      "samma fakta, utan överväg-annan-väg — det finns ingen avfart kvar att ta.",
+    hazards: [{
+      id: "acc1", kind: "accident", lon: LON0, lat: northOf(1_900),
+      meta: { severityCode: 5 },
+    }],
+    trace: northTrace(60, 90),
+  },
+  {
+    file: "v17_accident_mild_unchanged",
+    name: "Lindrig olycka: oförändrad, talar EN gång",
+    description:
+      "Samma geometri som v15 men severity 2 (Liten påverkan). Graderingen får inte ändra " +
+      "beteendet för lindriga olyckor: en enda replik med gamla texten, ingen påminnelse.",
+    hazards: [{
+      id: "acc1", kind: "accident", lon: LON0, lat: northOf(11_019),
+      meta: { severityCode: 2 },
+    }],
+    trace: northTrace(380, 90),
+  },
 ];
 
 /** Canonical replay-with-updates — the reference all three test runners mirror. */

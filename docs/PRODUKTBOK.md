@@ -61,15 +61,28 @@ mätstationer och rapporterade väglag — mellan stationerna är vägen oöverv
 
 | När | Frasen |
 |---|---|
-| Olycka framför dig | "Olycka rapporterad 3 kilometer framför dig." |
+| Lindrig olycka framför dig | "Olycka rapporterad 3 kilometer framför dig." |
+| **Allvarlig olycka — tidigt ropet, ca 10 km** | "Allvarlig olycka 10 kilometer framför dig — stor påverkan på trafiken. Överväg annan väg. Beräknas röjd vid 14:20." |
+| **Allvarlig olycka — påminnelsen, ca 2 km** | "Sakta ner — olycksplats strax framför dig." |
+| **Allvarlig olycka du kom nära utan att höra det tidiga ropet** | "Allvarlig olycka 2 kilometer framför dig — stor påverkan. Sakta ner." |
 | Rapporterad halka på din väg | "Varning: halka rapporterad på vägen framför dig." |
 | Mätstation visar frysrisk | "Isrisk framöver — vägbanan nära noll grader." |
 | Färsk viltolycka i området | "Viltrisk — vanlig olycksplats för älg den här tiden." |
 | Fartkamera | "Fartkamera om 500 meter. Gränsen är 80." |
 | Väglagsdatat är gammalt (en gång per körning) | "Ingen färsk väglagsdata – kör som om det kan vara halt." |
 
+**Allvarlig olycka — varför två gånger?** Trafikverket klassar varje olycka efter
+hur mycket den påverkar trafiken. Är påverkan stor säger Halkvakt till *tidigt*,
+runt en mil innan, medan det fortfarande finns avfarter kvar att välja. Det är
+hela poängen: du ska hinna bestämma dig innan du sitter fast. Sedan kommer en
+kort påminnelse strax innan olycksplatsen, som bara handlar om farten.
+Röjningstiden läses upp när Trafikverket angett en.
+Halkvakt räknar **aldrig** ut omvägen åt dig — det gör din kartapp. Vi levererar
+beslutet i tid, du väljer vägen. Inga knappar att trycka på under körning.
+
 **Röstens uppförandekod:** aldrig mer än en varning per 45 sekunder; samma fara
-upprepas först efter 10 minuter *och* 5 km; står två faror samtidigt framför dig
+upprepas först efter 10 minuter *och* 5 km (enda undantaget är den allvarliga
+olyckans två steg ovan, som är två olika budskap — inte samma sagt två gånger); står två faror samtidigt framför dig
 vinner den allvarligaste (olycka > halka > frysrisk > vilt > kamera) och den
 andra **droppas** — köas aldrig upp till tjat. Under 15 km/h: tyst (du står
 still eller kör på parkering).

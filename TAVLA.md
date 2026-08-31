@@ -23,12 +23,19 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 - [ ] Fotostudion tag 2 — facit ur CI + produktboken
 - [ ] Välkomsttext + testinstruktion till kompisarna
 - [ ] Play: uppladdningsguide för den CI-signerade AAB:n så fort kontot finns
-- [ ] FRYSEN SLÄPPER vid betagodkännande ⇒ v0.3.1-batchen: #22 autostart, #23 heads-up, #24 skinnet, #28 olyckslyftet
+- [x] ~~**#28 Olyckslyftet**~~ ✅ BYGGT 31/8 — graderade olycksrepliker, tidigt rop vid
+  10 km + påminnelse vid 2 km, röjningstid uppläst. Motor + tre parsrar + tre nya vektorer.
+- [ ] v0.3.1-batchen som återstår: **#24 skinnet**, **#23 heads-up**, **#22 autostart**
+  (alla tre är app-UI ⇒ kräver Mac/emulator för bevis, inte bara CI)
 
 *(Kronjuvelerna, Xcode 26.1 och Apple Developer är avklarade och flyttade till KLART.
 Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som återstår.)*
 
 ### Axel — beslut att ta
+- [ ] **#28: ska allvarlighetströskeln stå kvar på 4?** Uppmätt: 206 av 307 arkiverade
+  olyckor är klassade 4–5, alltså två tredjedelar. Vid 4 blir tvåstegsvarningen normalfallet;
+  vid 5 ungefär en tredjedel. Din spec sade "stor påverkan" = 4 och så är det byggt.
+  Det är ett reglage — svara med en siffra, inte ett ombygge. (DECISIONS #30a)
 - [ ] **Helgsamtalet med pappa — nu fyra punkter:** roller (B2B=Bengt?), föreningen, klartecken ringrundan, OCH intäktsmodellen (#27: din viljeinriktning → hans utformning)
 - [ ] **Skyltfonden-paketet (före 1/10):** (a) klartecken till pappas ringrunda (startar v.36!), (b) sökande: pappa privat eller ideell förening?, (c) rollfördelningen — allt hänger ihop. Underlag: `docs/FINANSIERING.md`
 - [ ] **Rollfördelningen**: efterfrågan/affärsmodell/B2B = Bengts ansvar? (hans förslag; vid ja uppdateras PLAN)

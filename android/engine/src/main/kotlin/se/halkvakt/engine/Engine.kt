@@ -31,7 +31,19 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
 
     private val slipperyInfo = Regex("(?<![a-zåäö])(is|snö|halka|frost|mycket besvärligt)", RegexOption.IGNORE_CASE)
 
-    private data class Candidate(val hazard: Hazard, val kind: HazardKind, val distM: Double)
+    /**
+     * `alertKey` is what the repeat rules remember — normally the hazard id, but a SERIOUS
+     * accident owns two voice slots ("<id>#early" / "<id>#near") so the 2 km reminder is not
+     * swallowed by the suppression that follows the 10 km call (DECISIONS #28). Internal on
+     * purpose: the emitted Alert keeps its hazardId, so the shared vector log shape is unchanged.
+     */
+    private data class Candidate(
+        val hazard: Hazard,
+        val kind: HazardKind,
+        val distM: Double,
+        val alertKey: String,
+        val step: AccidentStep? = null,
+    )
 
     fun step(fix: Fix): Alert? {
         val (speedKmh, headingDeg) = kinematics(fix)
@@ -51,24 +63,24 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
         if (candidates.isEmpty()) return null
 
         val eligible = candidates.filter { c ->
-            val f = fired[c.hazard.id] ?: return@filter true
+            val f = fired[c.alertKey] ?: return@filter true
             fix.t - f.first >= cfg.repeatMinS && odometerM - f.second >= cfg.repeatMinM
         }
         if (eligible.isEmpty()) return null
 
         val win = eligible.sortedWith(
-            compareBy({ it.kind.ordinal }, { it.distM }, { it.hazard.id })
+            compareBy({ it.kind.ordinal }, { it.distM }, { it.alertKey })
         ).first()
 
         lastSpokenT?.let { if (fix.t - it < cfg.globalCooldownS) return null }
 
         lastSpokenT = fix.t
-        fired[win.hazard.id] = fix.t to odometerM
+        fired[win.alertKey] = fix.t to odometerM
         val ph = win.hazard as? PointHazard
         return Alert(
             t = fix.t, hazardId = win.hazard.id, kind = win.kind,
             distanceM = Math.round(win.distM),
-            text = Texts.alertText(win.kind, win.distM, ph),
+            text = Texts.alertText(win.kind, win.distM, ph, win.step),
         )
     }
 
@@ -101,19 +113,42 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
                 if (distM > cfg.cameraTriggerM) return null
                 val b = p.bearing
                 if (b != null && Geo.angDiffDeg(b, heading) > cfg.cameraBearingToleranceDeg) return null
-                Candidate(p, p.kind, distM)
+                Candidate(p, p.kind, distM, p.id)
             }
-            HazardKind.ACCIDENT ->
-                if (distM <= cfg.accidentMaxAheadM) Candidate(p, p.kind, distM) else null
+            HazardKind.ACCIDENT -> evaluateAccident(p, distM)
             HazardKind.ICING_POINT -> {
                 val t = p.meta.surfaceTempC
                 val icy = t != null && t <= 1.0 && p.meta.moisture
-                if (icy && distM <= leadM) Candidate(p, p.kind, distM) else null
+                if (icy && distM <= leadM) Candidate(p, p.kind, distM, p.id) else null
             }
             HazardKind.WILDLIFE ->
-                if (p.meta.active && distM <= leadM) Candidate(p, p.kind, distM) else null
+                if (p.meta.active && distM <= leadM) Candidate(p, p.kind, distM, p.id) else null
             else -> null
         }
+    }
+
+    /**
+     * A3 grading (DECISIONS #28). Mild/unclassified accidents keep the single old line.
+     * Serious ones speak early (routing decision, while exits remain) and again inside
+     * 2 km (speed only). A driver who joined the road inside 2 km never heard the early
+     * call, so the near slot speaks the LATE copy instead — same facts, no reroute advice
+     * that can no longer be acted on.
+     */
+    private fun evaluateAccident(p: PointHazard, distM: Double): Candidate? {
+        if (distM > cfg.accidentMaxAheadM) return null
+
+        val sev = p.meta.severityCode
+        val serious = sev != null && sev >= cfg.accidentSeriousMinSeverity
+        if (!serious) return Candidate(p, HazardKind.ACCIDENT, distM, p.id)
+
+        if (distM <= cfg.accidentNearM) {
+            val earlySpoken = fired.containsKey("${p.id}#early")
+            return Candidate(
+                p, HazardKind.ACCIDENT, distM, "${p.id}#near",
+                if (earlySpoken) AccidentStep.REMINDER else AccidentStep.LATE,
+            )
+        }
+        return Candidate(p, HazardKind.ACCIDENT, distM, "${p.id}#early", AccidentStep.EARLY)
     }
 
     private fun evaluateSegment(
@@ -128,6 +163,6 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
         }
         val b = best ?: return null
         if (b > leadM) return null
-        return Candidate(s, HazardKind.SLIPPERY_SEGMENT, b)
+        return Candidate(s, HazardKind.SLIPPERY_SEGMENT, b, s.id)
     }
 }

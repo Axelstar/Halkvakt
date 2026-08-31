@@ -52,9 +52,13 @@ enum SnapshotRepo {
                               meta: PointMeta()))
         }
         for d in arr(liveDoc, "deviations") {
+            // Olyckslyftet (#28): sev/slut are absent in snapshots published before this
+            // shipped, and absent for non-accident deviation types by design. Missing ⇒ nil
+            // ⇒ the engine grades it mild and speaks the old line. Never louder by accident.
             out.append(.point(id: "dev:\(str(d, "id"))", kind: .accident,
                               lon: dbl(d, "lon"), lat: dbl(d, "lat"), bearing: nil,
-                              meta: PointMeta()))
+                              meta: PointMeta(severityCode: optInt(d, "sev"),
+                                              endTimeLocal: d["slut"] as? String)))
         }
         return Snapshot(hazards: out, generatedAt: gen)
     }

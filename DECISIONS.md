@@ -228,3 +228,37 @@ finns. Kvar att besluta: tidsregeln (TågRätt vinner konflikter?) och vad "rest
 betyder när Claude bär byggandet. Bengts svar väntar: JA/NEJ/ändrat.
 Bengts öppna granskningsfrågor — SVAR: ålderströskeln för live.json ÄR byggd
 (åldersvakten, "väglag HH:mm", DECISIONS #26); docs/SYSTEM.md FINNS; RLS = kort #30.
+
+## #30 (31/8 2026) Olyckslyftet, implementationsvalen (Claude, inom Axels princip #28)
+Fyra val gjorda under bygget av #28. Alla mätta, inget gissat.
+
+**a) Tröskeln går vid SeverityCode ≥ 4.** Uppmätt i vårt eget arkiv: Trafikverket
+använder 1 Ingen påverkan, 2 Liten, 4 Stor, 5 Mycket stor — kod 3 förekommer inte.
+Axels spec sade "stor påverkan", vilket är 4. KONSEKVENS SOM AXEL BÖR VETA: av 307
+arkiverade olyckor är 206 klassade 4–5, alltså två tredjedelar. "Allvarlig" är inte
+ett sällsynt undantag i den här datan. Tröskeln ligger därför som ett reglage
+(`accidentSeriousMinSeverity`) — flytt till 5 är en siffra, inte en omskrivning,
+och skulle ge ungefär en tredjedel i stället. ÖPPET: Axel har inte omprövat 4.
+
+**b) Röjningstiden formateras i publiceringssteget, aldrig i motorn.** Motorn läser
+inga klockor och kan inga tidszoner — det är dess grundlag. Hade HH:MM-formateringen
+legat där kunde Node, JVM och Swift gett olika svar och den byte-identiska parvisheten
+spruckit. `slut` skrivs som färdig "HH:MM" i Europe/Stockholm av build-snapshot,
+provad över både sommar- och vintertid.
+
+**c) Tvåstegsvarningen bryter repris-regeln — men regeln försvagades INTE.** Två
+varningsplatser per allvarlig olycka ("<id>#early" / "<id>#near") håller stegen isär
+i motorns minne. Invarianten i test/engine.test.ts gjordes SKARPARE i stället för
+lösare: undantaget kräver att larmet är en olycka, att andra repliken är exakt
+påminnelsetexten, att första var det allvarliga ropet, att det är precis två, att
+andra är närmare, och att de ligger minst 45 s isär. Sex villkor. Alternativet —
+att sänka repeatMinS — hade öppnat för tjat överallt.
+
+**d) Steget syns inte i Alert-objektet.** Det bor internt som varningsnyckel. Därmed
+behövde ingen av de 14 frysta vektorerna regenereras, och loggformatet är oförändrat
+i alla tre körtiderna. Backloggens formulering "stegmedvetna varnings-id" är alltså
+uppfylld där den behövs, utan att kontraktet rörs.
+
+**Skyddsräcke:** graderingen är låst till `message_type_value = "Accident"`. Den nya
+repliken säger ordet "olycka" högt och får bara utlösas av något Trafikverket självt
+klassat som olycka. Övriga avvikelsetyper faller igenom till den gamla mildare texten.

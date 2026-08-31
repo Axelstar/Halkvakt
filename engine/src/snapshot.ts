@@ -13,7 +13,13 @@ export interface LiveDoc {
   generated_at: string;
   segments: { id: string; line: [number, number][]; code: number | null; info: string[]; road: string | null }[];
   weather: { id: string; lon: number; lat: number; yta: number | null; fukt: boolean }[];
-  deviations: { id: string; lon: number; lat: number; typ: string | null; road: string | null }[];
+  deviations: {
+    id: string; lon: number; lat: number; typ: string | null; road: string | null;
+    /** Trafikverket SeverityCode, present only for real accidents (#28). */
+    sev?: number | null;
+    /** Clearance time as "HH:MM" Swedish wall clock, pre-formatted by the publisher. */
+    slut?: string | null;
+  }[];
   smhi: unknown[]; // not consumed by the engine v1 (map/UI layer)
   wildlife?: { id: string; lon: number; lat: number; art: string | null }[];
 }
@@ -30,7 +36,10 @@ export function snapshotToHazards(staticDoc: StaticDoc, liveDoc: LiveDoc): Hazar
     out.push({ id: `wx:${w.id}`, kind: "icing_point", lon: w.lon, lat: w.lat, meta: { surfaceTempC: w.yta, moisture: w.fukt } });
   }
   for (const d of liveDoc.deviations) {
-    out.push({ id: `dev:${d.id}`, kind: "accident", lon: d.lon, lat: d.lat });
+    out.push({
+      id: `dev:${d.id}`, kind: "accident", lon: d.lon, lat: d.lat,
+      meta: { severityCode: d.sev ?? null, endTimeLocal: d.slut ?? null },
+    });
   }
   for (const v of liveDoc.wildlife ?? []) {
     out.push({ id: `vilt:${v.id}`, kind: "wildlife", lon: v.lon, lat: v.lat });

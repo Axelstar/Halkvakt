@@ -21,7 +21,14 @@ data class PointMeta(
     val moisture: Boolean = false,
     val active: Boolean = true,
     val speedLimitKmh: Int? = null,
+    /** accident — Trafikverket SeverityCode (1 Ingen, 2 Liten, 4 Stor, 5 Mycket stor). */
+    val severityCode: Int? = null,
+    /** accident — EndTime pre-formatted "HH:MM" Europe/Stockholm by the publisher. */
+    val endTimeLocal: String? = null,
 )
+
+/** Which utterance of a serious accident this is (DECISIONS #28). Mirrors AccidentStep in texts.ts. */
+enum class AccidentStep { EARLY, REMINDER, LATE }
 
 data class SegmentMeta(val code: Int? = null, val info: List<String> = emptyList())
 
@@ -55,6 +62,8 @@ data class EngineConfig(
     val repeatMinM: Double = 5000.0,
     val cameraTriggerM: Double = 500.0,
     val accidentMaxAheadM: Double = 10_000.0,
+    val accidentSeriousMinSeverity: Int = 4,
+    val accidentNearM: Double = 2_000.0,
     val warnLeadS: Double = 30.0,
     val leadMinM: Double = 400.0,
     val leadMaxM: Double = 3000.0,
@@ -108,10 +117,24 @@ object Geo {
 
 // ---- texts (mirror of texts.ts — exact strings, they are product copy) ----
 object Texts {
-    fun alertText(kind: HazardKind, distanceM: Double, hazard: PointHazard?): String = when (kind) {
+    fun alertText(
+        kind: HazardKind,
+        distanceM: Double,
+        hazard: PointHazard?,
+        step: AccidentStep? = null,
+    ): String = when (kind) {
         HazardKind.ACCIDENT -> {
             val km = max(1L, Math.round(distanceM / 1000.0))
-            "Olycka rapporterad $km kilometer framför dig."
+            when (step) {
+                AccidentStep.EARLY -> {
+                    val base = "Allvarlig olycka $km kilometer framför dig — stor påverkan på trafiken. " +
+                        "Överväg annan väg."
+                    hazard?.meta?.endTimeLocal?.let { "$base Beräknas röjd vid $it." } ?: base
+                }
+                AccidentStep.REMINDER -> "Sakta ner — olycksplats strax framför dig."
+                AccidentStep.LATE -> "Allvarlig olycka $km kilometer framför dig — stor påverkan. Sakta ner."
+                null -> "Olycka rapporterad $km kilometer framför dig."
+            }
         }
         HazardKind.SLIPPERY_SEGMENT -> "Varning: halka rapporterad på vägen framför dig."
         HazardKind.ICING_POINT -> "Isrisk framöver — vägbanan nära noll grader."

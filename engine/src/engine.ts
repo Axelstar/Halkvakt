@@ -6,6 +6,10 @@
 //      Losers are DROPPED, not queued. No exceptions, not even for accidents (logged in
 //      DECISIONS — revisit only on beta evidence).
 //   2. Same hazard never repeats until BOTH 10 min have passed AND 5 km been driven.
+//      SINGLE EXCEPTION (DECISIONS #28): a serious accident speaks twice by design —
+//      once early (10 km, while exits remain) and once close (2 km, "slow down").
+//      These are two different messages about one hazard, not a repeat of one message,
+//      and they are held apart by two distinct alert keys rather than by weakening rule 2.
 //   3. Point sources say "framöver"; only segment sources may say "på vägen framför dig"
 //      (enforced in texts.ts).
 //   4. Silence is the default. No hazard in corridor ⇒ no sound. Ever.
@@ -15,11 +19,23 @@ import type {
 } from "./types.ts";
 import { DEFAULT_CONFIG, PRIORITY } from "./types.ts";
 import { angDiffDeg, bearingDeg, haversineM, isAhead, samplePolyline, type LonLat } from "./geo.ts";
-import { alertText } from "./texts.ts";
+import { alertText, type AccidentStep } from "./texts.ts";
 
 interface FiredState { t: number; odometerM: number; }
 
-interface Candidate { hazard: Hazard; kind: HazardKind; distM: number; }
+/**
+ * `alertKey` is what the repeat rules remember — normally the hazard id, but a SERIOUS
+ * accident owns two independent voice slots ("<id>#early" and "<id>#near") so the 2 km
+ * reminder is not swallowed by the 10-min/5-km suppression that follows the 10 km call.
+ * This is the "step-aware warning id" of DECISIONS #28. It stays internal on purpose:
+ * the emitted Alert keeps its hazardId, so the cross-platform log shape is unchanged
+ * and none of the 14 frozen vectors had to be regenerated.
+ */
+interface Candidate {
+  hazard: Hazard; kind: HazardKind; distM: number;
+  alertKey: string;
+  step?: AccidentStep;
+}
 
 // Swedish word-start boundary: "Isfläckar"/"Svår halka" match; "fläckvis Våt" must NOT
 // (the substring 'is' inside "fläckvis" produced 8 false halka-segments on real August
@@ -93,7 +109,7 @@ export class AlertEngine {
 
     // Rule 2: per-hazard repeat suppression (both time AND distance must have elapsed).
     const eligible = candidates.filter((c) => {
-      const f = this.fired.get(c.hazard.id);
+      const f = this.fired.get(c.alertKey);
       if (!f) return true;
       const rearmed =
         fix.t - f.t >= this.cfg.repeatMinS && this.odometerM - f.odometerM >= this.cfg.repeatMinM;
@@ -106,7 +122,7 @@ export class AlertEngine {
       const pa = PRIORITY.indexOf(a.kind), pb = PRIORITY.indexOf(b.kind);
       if (pa !== pb) return pa - pb;
       if (a.distM !== b.distM) return a.distM - b.distM;
-      return a.hazard.id < b.hazard.id ? -1 : 1; // total order ⇒ determinism
+      return a.alertKey < b.alertKey ? -1 : 1; // total order ⇒ determinism
     });
     const win = eligible[0];
 
@@ -116,14 +132,14 @@ export class AlertEngine {
     }
 
     this.lastSpokenT = fix.t;
-    this.fired.set(win.hazard.id, { t: fix.t, odometerM: this.odometerM });
+    this.fired.set(win.alertKey, { t: fix.t, odometerM: this.odometerM });
     const pointHazard = win.hazard.kind === "slippery_segment" ? undefined : (win.hazard as PointHazard);
     return {
       t: fix.t,
       hazardId: win.hazard.id,
       kind: win.kind,
       distanceM: Math.round(win.distM),
-      text: alertText(win.kind, win.distM, pointHazard),
+      text: alertText(win.kind, win.distM, pointHazard, win.step),
     };
   }
 
@@ -161,20 +177,50 @@ export class AlertEngine {
         if (p.bearing != null && angDiffDeg(p.bearing, heading) > this.cfg.cameraBearingToleranceDeg) {
           return null; // camera monitors the opposite direction — stay silent
         }
-        return { hazard: p, kind: p.kind, distM };
+        return { hazard: p, kind: p.kind, distM, alertKey: p.id };
       }
       case "accident":
-        return distM <= this.cfg.accidentMaxAheadM ? { hazard: p, kind: p.kind, distM } : null;
+        return this.evaluateAccident(p, distM);
       case "icing_point": {
         const t = p.meta?.surfaceTempC;
         const icy = t != null && t <= 1 && p.meta?.moisture === true;
-        return icy && distM <= leadM ? { hazard: p, kind: p.kind, distM } : null;
+        return icy && distM <= leadM ? { hazard: p, kind: p.kind, distM, alertKey: p.id } : null;
       }
       case "wildlife": {
         const active = p.meta?.active !== false;
-        return active && distM <= leadM ? { hazard: p, kind: p.kind, distM } : null;
+        return active && distM <= leadM ? { hazard: p, kind: p.kind, distM, alertKey: p.id } : null;
       }
     }
+  }
+
+  /**
+   * A3 grading (DECISIONS #28, "Olyckslyftet"). Trafikverket's SeverityCode decides
+   * whether this is one utterance or two:
+   *
+   *   mild / unclassified  → today's single line, unchanged behaviour.
+   *   serious (>= cfg)     → EARLY call at the 10 km horizon carrying the routing
+   *                          decision, then a REMINDER inside 2 km carrying only speed.
+   *
+   * A driver who joins the road already inside 2 km never heard the early call, so the
+   * near slot speaks "late" copy instead: same facts, no "överväg annan väg" — there is
+   * no exit left to take, and telling someone to reroute when they cannot is noise.
+   */
+  private evaluateAccident(p: PointHazard, distM: number): Candidate | null {
+    if (distM > this.cfg.accidentMaxAheadM) return null;
+
+    const sev = p.meta?.severityCode;
+    const serious = sev != null && sev >= this.cfg.accidentSeriousMinSeverity;
+    if (!serious) return { hazard: p, kind: "accident", distM, alertKey: p.id };
+
+    if (distM <= this.cfg.accidentNearM) {
+      const earlySpoken = this.fired.has(`${p.id}#early`);
+      return {
+        hazard: p, kind: "accident", distM,
+        alertKey: `${p.id}#near`,
+        step: earlySpoken ? "reminder" : "late",
+      };
+    }
+    return { hazard: p, kind: "accident", distM, alertKey: `${p.id}#early`, step: "early" };
   }
 
   private evaluateSegment(
@@ -192,6 +238,6 @@ export class AlertEngine {
       if (ahead && (best === null || distM < best)) best = distM;
     }
     if (best === null || best > leadM) return null;
-    return { hazard: s.h, kind: "slippery_segment", distM: best };
+    return { hazard: s.h, kind: "slippery_segment", distM: best, alertKey: s.h.id };
   }
 }

@@ -14,10 +14,20 @@ public struct PointMeta {
     public var moisture: Bool = false
     public var active: Bool = true
     public var speedLimitKmh: Int? = nil
-    public init(surfaceTempC: Double? = nil, moisture: Bool = false, active: Bool = true, speedLimitKmh: Int? = nil) {
-        self.surfaceTempC = surfaceTempC; self.moisture = moisture; self.active = active; self.speedLimitKmh = speedLimitKmh
+    /// accident — Trafikverket SeverityCode (1 Ingen, 2 Liten, 4 Stor, 5 Mycket stor påverkan).
+    public var severityCode: Int? = nil
+    /// accident — EndTime pre-formatted "HH:MM" Europe/Stockholm by the publisher.
+    /// The engine reads no clocks and knows no timezones; the string arrives ready to speak.
+    public var endTimeLocal: String? = nil
+    public init(surfaceTempC: Double? = nil, moisture: Bool = false, active: Bool = true,
+                speedLimitKmh: Int? = nil, severityCode: Int? = nil, endTimeLocal: String? = nil) {
+        self.surfaceTempC = surfaceTempC; self.moisture = moisture; self.active = active
+        self.speedLimitKmh = speedLimitKmh; self.severityCode = severityCode; self.endTimeLocal = endTimeLocal
     }
 }
+
+/// Which utterance of a serious accident this is (DECISIONS #28). Mirrors AccidentStep in texts.ts.
+public enum AccidentStep { case early, reminder, late }
 
 public struct SegmentMeta {
     public var code: Int? = nil
@@ -61,6 +71,8 @@ public struct EngineConfig {
     public var repeatMinM = 5000.0
     public var cameraTriggerM = 500.0
     public var accidentMaxAheadM = 10_000.0
+    public var accidentSeriousMinSeverity = 4
+    public var accidentNearM = 2_000.0
     public var warnLeadS = 30.0
     public var leadMinM = 400.0
     public var leadMaxM = 3000.0
@@ -119,11 +131,24 @@ enum Geo {
 // MARK: - Texts (exact product copy — mirror of texts.ts)
 
 enum Texts {
-    static func alertText(_ kind: HazardKind, _ distanceM: Double, _ speedLimitKmh: Int?) -> String {
+    static func alertText(_ kind: HazardKind, _ distanceM: Double, _ speedLimitKmh: Int?,
+                          _ step: AccidentStep? = nil, _ endTimeLocal: String? = nil) -> String {
         switch kind {
         case .accident:
             let km = max(1, Int((distanceM / 1000).rounded()))
-            return "Olycka rapporterad \(km) kilometer framför dig."
+            switch step {
+            case .early:
+                let base = "Allvarlig olycka \(km) kilometer framför dig — stor påverkan på trafiken. "
+                    + "Överväg annan väg."
+                if let t = endTimeLocal { return "\(base) Beräknas röjd vid \(t)." }
+                return base
+            case .reminder:
+                return "Sakta ner — olycksplats strax framför dig."
+            case .late:
+                return "Allvarlig olycka \(km) kilometer framför dig — stor påverkan. Sakta ner."
+            case .none:
+                return "Olycka rapporterad \(km) kilometer framför dig."
+            }
         case .slippery_segment:
             return "Varning: halka rapporterad på vägen framför dig."
         case .icing_point:
@@ -192,7 +217,14 @@ public final class AlertEngine {
         let speedMps = speedKmh * 1000 / 3600
         let leadM = min(cfg.leadMaxM, max(cfg.leadMinM, speedMps * cfg.warnLeadS))
 
-        struct Candidate { let id: String; let kind: HazardKind; let distM: Double; let limit: Int? }
+        // `alertKey` is what the repeat rules remember — normally the hazard id, but a SERIOUS
+        // accident owns two voice slots ("<id>#early" / "<id>#near") so the 2 km reminder is not
+        // swallowed by the suppression following the 10 km call (DECISIONS #28). Internal only:
+        // the emitted Alert keeps its hazardId, so the shared vector log shape is unchanged.
+        struct Candidate {
+            let id: String; let kind: HazardKind; let distM: Double; let limit: Int?
+            var alertKey: String; var step: AccidentStep? = nil; var endTimeLocal: String? = nil
+        }
         var candidates: [Candidate] = []
 
         for p in points {
@@ -202,18 +234,38 @@ public final class AlertEngine {
             case .camera:
                 if distM > cfg.cameraTriggerM { continue }
                 if let b = p.bearing, Geo.angDiffDeg(b, heading) > cfg.cameraBearingToleranceDeg { continue }
-                candidates.append(Candidate(id: p.id, kind: p.kind, distM: distM, limit: p.meta.speedLimitKmh))
+                candidates.append(Candidate(id: p.id, kind: p.kind, distM: distM,
+                                            limit: p.meta.speedLimitKmh, alertKey: p.id))
             case .accident:
+                // A3 grading (DECISIONS #28): mild keeps the old single line; serious speaks
+                // early (routing decision, exits remain) and again inside 2 km (speed only).
+                // Joined the road inside 2 km? Then no early call was heard, so speak LATE copy:
+                // same facts, no reroute advice that can no longer be acted on.
                 if distM <= cfg.accidentMaxAheadM {
-                    candidates.append(Candidate(id: p.id, kind: p.kind, distM: distM, limit: nil))
+                    let sev = p.meta.severityCode
+                    let serious = sev != nil && sev! >= cfg.accidentSeriousMinSeverity
+                    if !serious {
+                        candidates.append(Candidate(id: p.id, kind: p.kind, distM: distM,
+                                                    limit: nil, alertKey: p.id))
+                    } else if distM <= cfg.accidentNearM {
+                        let earlySpoken = fired["\(p.id)#early"] != nil
+                        candidates.append(Candidate(id: p.id, kind: p.kind, distM: distM, limit: nil,
+                                                    alertKey: "\(p.id)#near",
+                                                    step: earlySpoken ? .reminder : .late,
+                                                    endTimeLocal: p.meta.endTimeLocal))
+                    } else {
+                        candidates.append(Candidate(id: p.id, kind: p.kind, distM: distM, limit: nil,
+                                                    alertKey: "\(p.id)#early", step: .early,
+                                                    endTimeLocal: p.meta.endTimeLocal))
+                    }
                 }
             case .icing_point:
                 if let t = p.meta.surfaceTempC, t <= 1, p.meta.moisture, distM <= leadM {
-                    candidates.append(Candidate(id: p.id, kind: p.kind, distM: distM, limit: nil))
+                    candidates.append(Candidate(id: p.id, kind: p.kind, distM: distM, limit: nil, alertKey: p.id))
                 }
             case .wildlife:
                 if p.meta.active, distM <= leadM {
-                    candidates.append(Candidate(id: p.id, kind: p.kind, distM: distM, limit: nil))
+                    candidates.append(Candidate(id: p.id, kind: p.kind, distM: distM, limit: nil, alertKey: p.id))
                 }
             case .slippery_segment:
                 continue
@@ -230,13 +282,13 @@ public final class AlertEngine {
                 if ahead && (best == nil || distM < best!) { best = distM }
             }
             if let b = best, b <= leadM {
-                candidates.append(Candidate(id: s.id, kind: .slippery_segment, distM: b, limit: nil))
+                candidates.append(Candidate(id: s.id, kind: .slippery_segment, distM: b, limit: nil, alertKey: s.id))
             }
         }
         if candidates.isEmpty { return nil }
 
         let eligible = candidates.filter { c in
-            guard let f = fired[c.id] else { return true }
+            guard let f = fired[c.alertKey] else { return true }
             return fix.t - f.t >= cfg.repeatMinS && odometerM - f.odo >= cfg.repeatMinM
         }
         if eligible.isEmpty { return nil }
@@ -244,17 +296,17 @@ public final class AlertEngine {
         let win = eligible.sorted {
             if $0.kind.priority != $1.kind.priority { return $0.kind.priority < $1.kind.priority }
             if $0.distM != $1.distM { return $0.distM < $1.distM }
-            return $0.id < $1.id
+            return $0.alertKey < $1.alertKey
         }[0]
 
         if let last = lastSpokenT, fix.t - last < cfg.globalCooldownS { return nil }
 
         lastSpokenT = fix.t
-        fired[win.id] = (fix.t, odometerM)
+        fired[win.alertKey] = (fix.t, odometerM)
         return Alert(
             t: fix.t, hazardId: win.id, kind: win.kind,
             distanceM: Int(win.distM.rounded()),
-            text: Texts.alertText(win.kind, win.distM, win.limit))
+            text: Texts.alertText(win.kind, win.distM, win.limit, win.step, win.endTimeLocal))
     }
 
     public func run(_ trace: [Fix]) -> [Alert] { trace.compactMap { step($0) } }

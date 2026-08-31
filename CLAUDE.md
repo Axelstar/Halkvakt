@@ -97,3 +97,15 @@ i samma commit när de överlappar.
 - App Store Connect i Brave: Shields dödar kryssrutor/knappar (formulär ser döda ut). Använd Safari för alla Apple-webbsidor. (31/8, Users and Access-formuläret.)
 - Intern TestFlight-testare = teammedlem i App Store Connect (Users and Access → +, roll App Manager räcker) — granskningsfritt, bygget direkt. Extern grupp/publik länk = Beta App Review (timmar–dygn).
 - Filer som presenteras i chatten måste LADDAS NER samma stund — de finns inte kvar på ägarens dator av sig själva (lördagens nyckelfiler försvann så). Upload-nyckeln roterad 31/8 (ny jks + lösenord i GitHub Secrets HV_KEYSTORE_B64/PASS, alias halkvakt, utfärdare Lagerlöf Labs). Riskfritt före första Play-uppladdningen — efter den är nyckeln bunden hos Google.
+- Vektorgeneratorns 5-metersregel är inte kosmetisk: första utkastet till v15 lade
+  10 km-gränsen 1,7 m från en fixpunkt. Node valde t=41; Swift/Kotlin hade mycket väl
+  kunnat välja t=40 på libm-avrundning och brutit parvisheten. MÄT marginalen (avstånd
+  vid fixen före och efter tröskeln) innan en vektor fryses — gissa aldrig på geometrin.
+- Trafikverkets SeverityCode är fyrgradig i praktiken: 1, 2, 4, 5. Kod 3 finns i
+  dokumentationen men har aldrig dykt upp i vårt arkiv. Skriv aldrig `>= 3`-logik.
+- KÄNT, EJ ÅTGÄRDAT (upptäckt 31/8 under #28): `KEEP`-filtret i ingest/sources/situations.ts
+  matchar "Obstruction" och "Incident", men Trafikverket använder aldrig de orden — de
+  riktiga värdena är "VehicleObstruction", "GeneralObstruction", "AnimalPresenceObstruction"
+  m.fl. Filtret släpper alltså i praktiken bara igenom "Accident". Inte trasigt för oss
+  idag, men det gör inte det man tror. Eget kort krävs innan någon "fixar" det — att
+  vidga filtret släpper in vägarbeten, som DECISIONS #5 medvetet stängde ute.

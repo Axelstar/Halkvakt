@@ -38,7 +38,9 @@ final class VectorTests: XCTestCase {
                 surfaceTempC: (m?["surfaceTempC"] as? NSNumber)?.doubleValue,
                 moisture: m?["moisture"] as? Bool ?? false,
                 active: m?["active"] as? Bool ?? true,
-                speedLimitKmh: (m?["speedLimitKmh"] as? NSNumber)?.intValue))
+                speedLimitKmh: (m?["speedLimitKmh"] as? NSNumber)?.intValue,
+                severityCode: (m?["severityCode"] as? NSNumber)?.intValue,
+                endTimeLocal: m?["endTimeLocal"] as? String))
     }
 
     func runFile(_ url: URL) throws -> ([Alert], [[String: Any]]) {
@@ -81,7 +83,7 @@ final class VectorTests: XCTestCase {
         let files = try FileManager.default.contentsOfDirectory(at: dir, includingPropertiesForKeys: nil)
             .filter { $0.pathExtension == "json" }
             .sorted { $0.lastPathComponent < $1.lastPathComponent }
-        XCTAssertGreaterThanOrEqual(files.count, 13, "expected the full vector suite")
+        XCTAssertGreaterThanOrEqual(files.count, 17, "expected the full vector suite")
         for f in files {
             let (got, expected) = try runFile(f)
             assertLogEquals(f.lastPathComponent, got, expected)

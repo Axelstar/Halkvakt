@@ -26,6 +26,9 @@ function loadVector(f: string): VectorFile {
   return JSON.parse(readFileSync(new URL(f, vectorDir), "utf8"));
 }
 
+/** The one utterance allowed to omit the distance (DECISIONS #28, second step). */
+const REMINDER = "Sakta ner — olycksplats strax framför dig.";
+
 /** The discipline rules, checked independently of any expected-log blessing. */
 function assertInvariants(alerts: Alert[], trace: Fix[], label: string): void {
   const cfg = DEFAULT_CONFIG;
@@ -42,7 +45,15 @@ function assertInvariants(alerts: Alert[], trace: Fix[], label: string): void {
       assert.ok(a.distanceM <= cfg.cameraTriggerM + 40, `${label}: camera spoke at ${a.distanceM} m`);
       assert.ok(a.distanceM > 0, `${label}: camera alert after passing`);
     }
-    if (a.kind === "accident") assert.match(a.text, /kilometer framför dig/);
+    if (a.kind === "accident") {
+      // DECISIONS #28: an accident alert either states the distance in plain words, or it
+      // is the second step of a serious two-step warning. Nothing else may pass.
+      const statesDistance = /kilometer framför dig/.test(a.text);
+      assert.ok(
+        statesDistance || a.text === REMINDER,
+        `${label}: accident text is neither a distance line nor the reminder: "${a.text}"`,
+      );
+    }
     if (a.kind === "slippery_segment") assert.match(a.text, /på vägen framför dig/);
     if (a.kind === "icing_point") assert.match(a.text, /framöver/);
     assert.ok(PRIORITY.includes(a.kind), `${label}: unknown kind ${a.kind}`);
@@ -51,10 +62,25 @@ function assertInvariants(alerts: Alert[], trace: Fix[], label: string): void {
   }
   for (const [id, list] of byHazard) {
     for (let i = 1; i < list.length; i++) {
-      assert.ok(
-        list[i].t - list[i - 1].t >= cfg.repeatMinS,
-        `${label}: hazard ${id} repeated after only ${list[i].t - list[i - 1].t}s`,
-      );
+      const gapS = list[i].t - list[i - 1].t;
+      if (gapS >= cfg.repeatMinS) continue;
+
+      // The ONLY sanctioned exception to rule 2 (DECISIONS #28): a serious accident
+      // speaks twice — early with the routing decision, close with the speed reminder.
+      // Every condition below must hold, so this cannot be used to smuggle in a repeat.
+      const [prev, cur] = [list[i - 1], list[i]];
+      assert.equal(cur.kind, "accident",
+        `${label}: hazard ${id} repeated after only ${gapS}s`);
+      assert.equal(cur.text, REMINDER,
+        `${label}: ${id} spoke twice inside ${cfg.repeatMinS}s but not with the reminder line`);
+      assert.match(prev.text, /^Allvarlig olycka/,
+        `${label}: ${id} gave a reminder without a preceding serious early call`);
+      assert.equal(list.length, 2,
+        `${label}: ${id} spoke ${list.length} times — the two-step is exactly two`);
+      assert.ok(cur.distanceM < prev.distanceM,
+        `${label}: ${id} reminder at ${cur.distanceM} m is not closer than ${prev.distanceM} m`);
+      assert.ok(gapS >= cfg.globalCooldownS,
+        `${label}: ${id} two-step steps only ${gapS}s apart`);
     }
   }
 }

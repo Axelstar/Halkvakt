@@ -4,7 +4,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { snapshotToHazards, type LiveDoc, type StaticDoc } from "../engine/src/snapshot.ts";
 import { AlertEngine } from "../engine/src/engine.ts";
-import type { Fix } from "../engine/src/types.ts";
+import type { Fix, PointHazard } from "../engine/src/types.ts";
 
 const staticDoc: StaticDoc = {
   schema: 1,
@@ -53,4 +53,25 @@ test("wildlife-array mappas till vilt-punkter (och tål att saknas)", () => {
   assert.ok(v && v.kind === "wildlife");
   // Bakåtkompatibilitet: gammal snapshot utan fältet
   assert.ok(!snapshotToHazards(staticDoc, liveDoc).some((h) => h.kind === "wildlife"));
+});
+
+test("olyckslyftet: sev/slut når motorn, och gammal snapshot utan fälten är ofarlig (#28)", () => {
+  const serious: LiveDoc = {
+    ...liveDoc,
+    deviations: [{ id: "D9", lon: 13.5, lat: 55.9, typ: "Olycka", road: "E22", sev: 5, slut: "14:20" }],
+  };
+  const h = snapshotToHazards(staticDoc, serious).find((x) => x.id === "dev:D9");
+  assert.ok(h && h.kind === "accident");
+  assert.equal((h as PointHazard).meta?.severityCode, 5);
+  assert.equal((h as PointHazard).meta?.endTimeLocal, "14:20");
+
+  // Bakåtkompatibilitet: en snapshot publicerad före #28 saknar sev/slut helt.
+  // Den MÅSTE landa som lindrig — aldrig som allvarlig av misstag.
+  const old: LiveDoc = {
+    ...liveDoc,
+    deviations: [{ id: "D8", lon: 13.5, lat: 55.9, typ: "Olycka", road: "E22" }],
+  };
+  const o = snapshotToHazards(staticDoc, old).find((x) => x.id === "dev:D8") as PointHazard;
+  assert.equal(o.meta?.severityCode, null);
+  assert.equal(o.meta?.endTimeLocal, null);
 });

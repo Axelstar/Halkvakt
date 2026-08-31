@@ -56,7 +56,8 @@ const wx = await pool.query(`
   FROM weather_latest
   WHERE surface_temp_c IS NOT NULL AND (surface_temp_c <= 3 OR snow)`);
 const devs = await pool.query(`
-  SELECT deviation_id, message_type, road_number,
+  SELECT deviation_id, message_type, message_type_value, road_number,
+         severity_code, end_time,
          ST_X(COALESCE(geom, ST_Centroid(line_geom))) AS lon,
          ST_Y(COALESCE(geom, ST_Centroid(line_geom))) AS lat
   FROM deviations
@@ -87,10 +88,31 @@ const liveDoc = {
   })),
   deviations: devs.rows.map((r) => ({
     id: r.deviation_id, lon: r.lon, lat: r.lat, typ: r.message_type, road: r.road_number,
+    // Olyckslyftet (#28): the engine grades accidents on Trafikverket's SeverityCode
+    // (1 Ingen, 2 Liten, 4 Stor, 5 Mycket stor påverkan — 3 unused in practice).
+    // Gated on message_type_value === "Accident" ON PURPOSE. The graded copy says the
+    // word "olycka" out loud, so it may only ever be triggered by something Trafikverket
+    // itself classified as an accident. Any other deviation type keeps severity null and
+    // therefore falls through to the old, milder line.
+    sev: r.message_type_value === "Accident" && r.severity_code != null
+      ? Number(r.severity_code) : null,
+    // The clearance time is pre-formatted HERE, not in the engine: the engine reads no
+    // clocks and knows no timezones, and all three ports must speak the identical string.
+    slut: r.message_type_value === "Accident" ? hhmmStockholm(r.end_time) : null,
   })),
   smhi: smhi.rows.map((r) => ({ id: Number(r.area_id), event: r.event_sv, niva: r.level_code, geom: r.g })),
   wildlife: vilt.rows.map((r) => ({ id: String(r.event_id), lon: Number(r.lon), lat: Number(r.lat), art: r.species ?? null })),
 };
+
+/** Absolute instant → "HH:MM" in Swedish wall-clock time, or null. */
+function hhmmStockholm(ts: Date | string | null): string | null {
+  if (ts == null) return null;
+  const d = ts instanceof Date ? ts : new Date(ts);
+  if (Number.isNaN(d.getTime())) return null;
+  return new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Europe/Stockholm", hour: "2-digit", minute: "2-digit", hour12: false,
+  }).format(d);
+}
 
 // ---- write + manifest with integrity ----
 function emit(name: string, doc: unknown) {

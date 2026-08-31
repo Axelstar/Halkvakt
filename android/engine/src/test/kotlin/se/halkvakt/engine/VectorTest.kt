@@ -49,6 +49,8 @@ class VectorTest {
                 moisture = m?.optBoolean("moisture", false) ?: false,
                 active = m?.optBoolean("active", true) ?: true,
                 speedLimitKmh = m?.let { if (it.has("speedLimitKmh") && !it.isNull("speedLimitKmh")) it.getInt("speedLimitKmh") else null },
+                severityCode = m?.let { if (it.has("severityCode") && !it.isNull("severityCode")) it.getInt("severityCode") else null },
+                endTimeLocal = m?.let { if (it.has("endTimeLocal") && !it.isNull("endTimeLocal")) it.getString("endTimeLocal") else null },
             ),
         )
     }
@@ -96,7 +98,7 @@ class VectorTest {
     fun allSharedVectorsProduceIdenticalLogs() {
         val dir = File(repoRoot(), "engine/vectors")
         val files = dir.listFiles { f -> f.name.endsWith(".json") }!!.sortedBy { it.name }
-        assertTrue(files.size >= 13, "expected the full vector suite, found ${files.size}")
+        assertTrue(files.size >= 17, "expected the full vector suite, found ${files.size}")
         for (f in files) {
             val (got, expected) = runFile(f)
             assertLogEquals(f.name, got, expected)

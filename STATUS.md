@@ -262,3 +262,32 @@ efter sex dygn där arbetet bokförts i commits men inte i djuplagret.
 
 **Städat på tavlan:** kronjuvelerna, Xcode 26.1 och Apple Developer låg kvar som
 öppna kort trots att de var klara och bevisade; Grekland-genvägen var överspelad.
+
+## 2026-08-31 — #28 Olyckslyftet BYGGT (Claude, samma dag som STATUS-varvet)
+Frysen släppte i och med att 0.3.0 (3) gick in till Apple. Axel beordrade designlyftet;
+jag tog motorkortet först eftersom det är det enda av de fyra som kan bevisas utan Mac.
+
+**Byggt:** severity/endtime hela vägen från Trafikverket till rösten.
+build-snapshot (`sev` + `slut`) → live.json → TS-, Kotlin- och Swift-parsrarna →
+motorns A3-gradering → texts. Allvarlig olycka (SeverityCode ≥ 4) får två repliker:
+tidigt rop vid 10 km-horisonten med omvägsbeslut + röjningstid, påminnelse innanför
+2 km med bara farten. Lindrig olycka helt oförändrad.
+
+**Bevis:** 34 TS-prov gröna. Tre nya delade vektorer (v15 tvåsteg, v16 sen påhoppning,
+v17 lindrig oförändrad). Inga av de 14 gamla vektorerna behövde regenereras — den frysta
+kontraktsloggen står orörd, vilket var själva poängen med att hålla steget internt.
+Kotlin- och Swift-portarna är spegelkodade men bevisas av CI, inte lokalt (containern
+saknar Gradle och Swift).
+
+**Fyra val, bokförda i DECISIONS #30:** tröskeln vid 4 (öppet för Axel — 2/3 av alla
+olyckor hamnar där), tidsformatering i publiceringen inte i motorn, skärpt invariant
+i stället för försvagad repris-regel, och steget internt så kontraktet inte rörs.
+
+**Fångat före frysning:** första v15-utkastet lade 10 km-gränsen 1,7 m från en fixpunkt
+— exakt den libm-fälla generatorns egen designregel varnar för. Uppmätt och flyttad till
+11 019 m, marginal nu ≥ 6 m åt alla håll vid båda trösklarna. Läxa i CLAUDE.md.
+
+**Fynd, ej åtgärdat:** KEEP-filtret i situations.ts matchar ord Trafikverket inte
+använder. Släpper i praktiken bara igenom "Accident". Läxa skriven, eget kort krävs.
+
+**Ej gjort:** #24, #23, #22 — app-UI och autostart, kräver Mac/emulator för bevis.
