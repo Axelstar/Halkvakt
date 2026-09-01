@@ -86,7 +86,7 @@ if (trvKey) {
     const q = `<REQUEST><LOGIN authenticationkey="${trvKey}"/><QUERY objecttype="Camera" schemaversion="1" limit="2500"><FILTER><EQ name="Type" value="Väglagskamera"/></FILTER><INCLUDE>Id</INCLUDE><INCLUDE>Name</INCLUDE><INCLUDE>PhotoUrl</INCLUDE><INCLUDE>Direction</INCLUDE><INCLUDE>RoadNumber</INCLUDE><INCLUDE>Geometry.WGS84</INCLUDE></QUERY></REQUEST>`;
     const r = await fetch("https://api.trafikinfo.trafikverket.se/v2/data.json", {
       method: "POST", headers: { "Content-Type": "text/xml" }, body: q });
-    if (!r.ok) throw new Error(`TRV ${r.status}`);
+    if (!r.ok) throw new Error(`TRV ${r.status}: ${(await r.text()).slice(0, 300)}`);
     const rows = (await r.json())?.RESPONSE?.RESULT?.[0]?.Camera ?? [];
     const feats = rows.flatMap((c: any) => {
       const m = /POINT \(([\d.]+) ([\d.]+)\)/.exec(c?.Geometry?.WGS84 ?? "");
