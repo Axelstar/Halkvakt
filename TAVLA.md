@@ -77,8 +77,12 @@ med släckt skärm, vakten stannar när du stänger av.
   - [ ] **(3) Offsetmodellen mot arkivdata** 🔓 — vi har data sedan 24/8. Tunt, men nog för
     att se om matematiken alls håller innan tre veckor läggs på den.
     SKRIPTET BYGGT 1/9: publish/grind-a.ts + knappen Actions → grind-a (leave-one-out,
-    A1–A3 mot TROSKLAR-SKUGGAN, självtest med känd sanning grönt). 🔑 Första körningen
-    mot arkivet = rökprovet; skarp dom på vinterdata före november.
+    A1–A3 mot TROSKLAR-SKUGGAN, självtest med känd sanning grönt).
+    RÖKPROVET KÖRT 1/9 (grind-a #1, Bengts knapptryck): 43 punkter — felet växer med
+    ankaravståndet precis som teorin säger (0,63 °C vid 0–7 km → 5,39 °C bortom 20 km).
+    Nära ankare under A1-tröskeln redan på sämsta möjliga data; för tunt för dom
+    (minsta underlag ≥ 500 punkter infört i dokumentet). 🔑 Skarp prövning på
+    vinterdata före november.
   - [ ] (4) Skuggkörningen — startar när det finns halka att skugga (~mitten av oktober,
     Skåne). I augusti räknar den "inte halt" på "inte halt".
   - [ ] **Skuggmotorns prognoskolumn måste buntas ur engine/src** som resten (läxan 31/8):

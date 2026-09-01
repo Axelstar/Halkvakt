@@ -61,6 +61,12 @@ Grind A prövas första gången på arkivdata (steg 3 i DECISIONS #51) **innan**
 skuggbygget startar i november. Faller A redan där byggs ingen skugga —
 matematiken håller inte och tre veckor sparas.
 
+**Minsta underlag för grind A** (tillagt 1/9 efter rökprovet, Bengts ja): prövningen
+kräver **≥ 500 bedömbara mätpunkter spridda över ≥ 20 stationer** — annars förlängd
+mätning, ingen dom åt något håll. Rökprovet 1/9 (43 punkter, 29 av dem >20 km från
+ankare) visade varför: tunt underlag är dessutom skevt mot de glesaste delarna av
+nätet och fäller eller friar på urvalsartefakter.
+
 ### Grind B — skuggdriften (hela vintern, dom i mars)
 
 | # | Mått | Tröskel |

@@ -465,3 +465,15 @@ ett teckenfel i par-loopens ena gren som första versionen (lika långa serier) 
 igenom. Grönt: 800 punkter, MAE 0,0000 °C, exit 0. CI kör självtestet före den skarpa
 körningen i samma jobb. Kvar: trycka på knappen (rökprov mot arkivet); skarp prövning
 på vinterdata före november. Ingen motor- eller appkod rörd.
+
+## 2026-09-01 — Rökprovet: grind A:s första kontakt med arkivet (grind-a #1)
+Bengt tryckte på knappen (efter GitHubs tvåstegsfälla — "Run workflow" är två klick;
+Claude läste och körde via Bengts Chrome). Resultat på 60 dygn: 757 stationer, 67 995
+avläsningar, men bara 43 vintertimmar (yta ≤ 5 °C) — sensommarens enda kyla är avlägsna
+fjällstationer, 29/43 punkter >20 km från ankare. Felet växer med ankaravståndet exakt
+som teorin förutsäger: 0,63 °C (0–7 km) → 0,92 → 1,83 → 5,39 °C (>20 km). Nära ankare
+ligger modellen under A1 redan på sitt systematiskt svåraste data (utstrålningskyla i
+glesbygdsterräng). Totalens FALLER är urvalsartefakt, ingen klausul utlöst. Luckan
+rökprovet blottade: grind A saknade minsta underlag — infört i TROSKLAR-SKUGGAN.md
+(≥ 500 punkter, ≥ 20 stationer, Bengts ja) medan dokumentet ännu är fritt att ändra
+(Axels fastställande väntar). Kör: https://github.com/Axelstar/Halkvakt/actions/runs/33466632642
