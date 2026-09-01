@@ -512,3 +512,10 @@ grind-a: Alla jobb har misslyckats" i Bengts inkorg. Hela kedjan provad i följd
 tomt fönster → underlagsvakt exit 1 → rött jobb → notismejl → mottagaren såg det.
 Grind A-mätningen är därmed självövervakande med bevisad larmväg — ingen behöver
 minnas oktober, och en trasig hämtning i november når Bengt av sig själv.
+
+## 2026-09-01 — Strategimejlet skickat (byggplanens huvudbeslut-kommunikation + 2.3-länken)
+Skickat från Bengts Gmail via Chrome på hans uppdrag (utkastet godkänt i chatten, adressen
+hans): Axel har nu huvudbeslutet, länken till TROSKLAR-SKUGGAN.md, grindarna i tre meningar,
+vad som är hans (fastställandet, fri justering till första skuggkörningen) och löftet att
+inget rör hans tid förrän november. Gmail-kvitto "Meddelandet har skickats". Därmed är
+byggplanens båda kommunikationskrav uppfyllda: strategimejl + tröskellänk i samma mejl.
