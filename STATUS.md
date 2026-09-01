@@ -513,6 +513,35 @@ tomt fönster → underlagsvakt exit 1 → rött jobb → notismejl → mottagar
 Grind A-mätningen är därmed självövervakande med bevisad larmväg — ingen behöver
 minnas oktober, och en trasig hämtning i november når Bengt av sig själv.
 
+## 2026-09-01 — Ankarklippningen körd + kamerafilsbuggen (Bengts fråga fällde den)
+Bengt frågade "har vi inte gjort ankarklippningen?" — och svaret visade sig vara nej,
+på ett sätt tavlan inte såg. Morgonens kamerafil hade ALDRIG nått CDN: Trafikverket
+svarade 400 i varje publiceringsvarv sedan 06:06, och fail-soft-grenen ("förra filen
+kvar på CDN") gjorde jobbet grönt fast det aldrig funnits någon förra fil. Grön körning
+≠ gjort — tee-/gravstensmönstret igen, nu i fail-soft-form.
+
+**Diagnos med bevis:** felutskriften utökad till att visa TRV:s svarskropp; körning
+33485723523 gav domen ordagrant: "Invalid query attribute Camera.RoadNumber".
+RoadNumber finns i TrafficSafetyCamera (fartkamerorna), inte i Camera. Committens
+"samma fråga som skuggmotorn" var inte samma — skuggmotorns fungerande fråga har
+bara Id/PhotoUrl/Geometry. Fältet struket; körning 33485863812:
+"kameror-vaglag.geojson: 744 väglagskameror", pushed 15 files (14 förut).
+
+**Ankaranalysen körd** (lokalt mot klonad karta-data — containerns nätpolicy blockerar
+CDN; ankaranalys.yml-knappen finns på grenen och registreras av GitHub när den når main):
+- Ankare: 845 stationer + 744 kameror. MEN 738/744 kameror står exakt vid en station
+  (median 0,0 km; bara 6 st > 1 km). Kamerorna är VViS-samlokaliserade.
+- Täthet, bara stationer → + kameror: nationellt median 6,8→6,7 km, >20 km 4,7→4,6 %;
+  Norrland 9,2→9,2 km, 12,6→12,6 %. Byggplanens hopp att kamerorna krymper glappet
+  bär alltså inte: deras värde är bildfacit (foto vid larm), inte ankartäthet.
+- Ruttklippningen: 3–16 ankare per rutt söderut; artefaktvarning för grova polylinjer —
+  E4 Umeå→Luleå visar 0 ankare för att ruttens raka brytpunktslinje går > 5 km från
+  vägen, inte för att ankare saknas. Skelettmåttet (818 riktiga segment) är det ärliga.
+
+**Kvar:** allt ligger på gren claude/latest-changes-w9lyvo — main kör fortfarande den
+trasiga frågan (ofarligt: filen ligger kvar på CDN, men den uppdateras inte förrän
+merge). Axel/Bengt: merga grenen, sedan finns även ankaranalys-knappen i Actions.
+
 ## 2026-09-01 — Strategimejlet skickat (byggplanens huvudbeslut-kommunikation + 2.3-länken)
 Skickat från Bengts Gmail via Chrome på hans uppdrag (utkastet godkänt i chatten, adressen
 hans): Axel har nu huvudbeslutet, länken till TROSKLAR-SKUGGAN.md, grindarna i tre meningar,

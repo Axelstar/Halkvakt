@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-01 av Claude på Bengts order — tröskeldokumentet till KLART; skuggspåret olåst*
+*Uppdaterad: 2026-09-01 av Claude — ankarklippningen (#38b(2)) körd: kamerafilen lagad + live, kamerorna ger nästan ingen ny ankartäthet (samlokaliserade med stationerna)*
 
 ---
 
@@ -71,9 +71,13 @@ med släckt skärm, vakten stannar när du stänger av.
     — tre grindar (A offsetmodellen, B skuggdriften, C domens giltighet), daterat före all
     skuggkod. Bengt fällde värdena efter genomgång i chatten. 🔓 Hårda villkoret uppfyllt —
     (2) och (3) olåsta. Grind A prövas på arkivet INNAN november: ett gratis tidigt nej.
-  - [ ] **(2) Ankarklippningen** 🔓 — kräver kamerafilen (Bengts 1.5): väglagskamerornas
-    koordinater som publicerat lager ur samma Camera-fråga skuggmotorn redan använder.
-    Liten kodändring, kan göras i september. Förutsättning för allt annat.
+  - [x] ~~**(2) Ankarklippningen**~~ ✅ KÖRD 1/9 (Bengts fråga avslöjade att morgonens
+    kamerafil ALDRIG nått CDN — TRV 400 i varje varv, fail-soft dolde det; rotorsak
+    "Invalid query attribute Camera.RoadNumber", lagad, 744 kameror live i körning
+    33485863812). MÄTRESULTAT: kamerorna ger nästan ingen ny ankartäthet — 738/744
+    står exakt vid en väderstation (VViS). Nationellt 6,8→6,7 km median, >20 km-andel
+    4,7→4,6 %; Norrland oförändrat 9,2 km / 12,6 %. Kamerornas värde är BILDFACIT,
+    inte täckning. Knappen ankaranalys.yml aktiveras när grenen når main.
   - [ ] **(3) Offsetmodellen mot arkivdata** 🔓 — vi har data sedan 24/8. Tunt, men nog för
     att se om matematiken alls håller innan tre veckor läggs på den.
     SKRIPTET BYGGT 1/9: publish/grind-a.ts + knappen Actions → grind-a (leave-one-out,
