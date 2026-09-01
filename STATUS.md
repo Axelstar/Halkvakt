@@ -445,3 +445,13 @@ tröskel +3 vid närmaste station ≤ 15 km, text "Frysrisk framöver — bro om
 tvingade fram "framöver"). TS 38/38, Swift-CI grön efter argumentordning, Kotlin-tester gröna
 (AAB-signeringen är Axels hemlighet). Skuggmotorn buntad + deployad. Overpass nere hela kvällen:
 bridges.yml hämtar var 6:e timme tills filen finns — då börjar broarna synas i live.json.
+
+## 2026-09-01 — Tröskeldokumentet skrivet och fällt (DECISIONS #52, #51:s hårda villkor)
+Bengt + Claude, en session i stället för en oktoberkväll. docs/TROSKLAR-SKUGGAN.md:
+tre grindar (A offsetmodellen ≤ 1,0 °C MAE / ≤ 5 % grova fel / ≤ 10 % frysklassningsfel;
+B skuggdriften ≤ 20 % falsklarm / ≤ 30 % miss / ≥ 25 % mervärde; C giltighet ≥ 20 händelser,
+≥ 30 varningar, backtest↔skugga ≤ 10 p.e.). Underlag: Bengts byggplan v3 läst ur Drive
+(818 segment, median 7 km ankartäthet), motorns skarpa gräns verifierad i engine.ts
+(yta ≤ 1 °C + fukt, bro ≤ 3). Bengt fick varje värde motiverat med osäkerhet redovisad
+(binomialbruset vid n=30 uttalat) och sa "kör". Skuggspåret är nu olåst: ankarklippning
+och offsetkörning mot arkivet kan börja; grind A på arkivdata är nästa naturliga steg.

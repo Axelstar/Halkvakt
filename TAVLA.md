@@ -67,14 +67,14 @@ med släckt skärm, vakten stannar när du stänger av.
 - [ ] **#38b Stråket / skuggmotorn** — Bengts byggplan v3 (31/8) tidigarelägger segmentmotorn
   till november, i strikt skugga, dom i mars. AXELS BESLUT: sekvensering mot lanseringen.
   Claudes råd: börja med de tre delar som INTE kräver frost, låt skuggkörningen vänta på snö.
-  - [ ] **(1) Tröskeldokumentet** — Bengts 2.3, men skriv det NU, inte i oktober. Vilken
-    felnivå, falsklarms- och missandel krävs för att skuggan ska få tala? Daterat före
-    första körningen, annars är skuggdriften bara en demo. En kväll, Bengt + Claude.
-    🔒 HÅRT VILLKOR: ingen skuggkod skrivs innan detta ligger i repot.
-  - [ ] **(2) Ankarklippningen** — kräver kamerafilen (Bengts 1.5): väglagskamerornas
+  - [x] ~~**(1) Tröskeldokumentet**~~ ✅ KLART 1/9 (DECISIONS #52): docs/TROSKLAR-SKUGGAN.md
+    — tre grindar (A offsetmodellen, B skuggdriften, C domens giltighet), daterat före all
+    skuggkod. Bengt fällde värdena efter genomgång i chatten. 🔓 Hårda villkoret uppfyllt —
+    (2) och (3) olåsta. Grind A prövas på arkivet INNAN november: ett gratis tidigt nej.
+  - [ ] **(2) Ankarklippningen** 🔓 — kräver kamerafilen (Bengts 1.5): väglagskamerornas
     koordinater som publicerat lager ur samma Camera-fråga skuggmotorn redan använder.
     Liten kodändring, kan göras i september. Förutsättning för allt annat.
-  - [ ] **(3) Offsetmodellen mot arkivdata** — vi har data sedan 24/8. Tunt, men nog för
+  - [ ] **(3) Offsetmodellen mot arkivdata** 🔓 — vi har data sedan 24/8. Tunt, men nog för
     att se om matematiken alls håller innan tre veckor läggs på den.
   - [ ] (4) Skuggkörningen — startar när det finns halka att skugga (~mitten av oktober,
     Skåne). I augusti räknar den "inte halt" på "inte halt".

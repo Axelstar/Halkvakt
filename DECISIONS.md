@@ -532,3 +532,19 @@ Dessutom: prognoskolumnen buntas ur engine/src som resten (läxan från 31/8 —
 körde gammal motor ett dygn utan att någon märkte det).
 KONKURRENS OM AXELS TID: tolv testare i fjorton dagar är det som avgör om Halkvakt blir
 något. Skuggbygget får aldrig tränga undan det — Bengt skriver samma sak i planen.
+
+## #52 (1/9 2026) Trösklarna fastställda — mars-domens måttstock (Bengt + Claude, #51:s hårda villkor)
+docs/TROSKLAR-SKUGGAN.md skrivet och daterat FÖRE första skuggkörningen och före all
+skuggkod, enligt skuggregel 5 i Bengts byggplan v3 (2.3) och DECISIONS #51. Tre grindar:
+A offsetmodellen (MAE ≤ 1,0 °C i beslutsbandet, grova fel ≤ 5 %, frysklassningsfel ≤ 10 %)
+— prövas på arkivdata INNAN skuggbygget startar, ett gratis tidigt nej; B skuggdriften
+(falsklarm ≤ 20 %, miss ≤ 30 %, mervärde ≥ 25 %); C domens giltighet (≥ 20 facithändelser
+över ≥ 3 halkperioder, ≥ 30 varningar, backtest↔skugga ≤ 10 p.e.). Utan C: alltid fortsatt
+skugga, aldrig tal. Asymmetriregeln operationaliserad: bara stationstemperatur > +2 °C
+eller testarlogg får FÄLLA en varning — en ren kamerabild aldrig (svartis syns inte).
+Ändringsregel med tand: efter första körningen kräver lättnad DECISIONS-post av båda plus
+motivering som inte hänvisar till vinterns siffror. Värdena valda snäppet stränga med
+flit (asymmetriska felkostnader: för strängt = en tyst vinter till, för slappt = en
+talande skugga som har fel). Bengts "kör" 1/9 efter genomgång av varje värde i chatten.
+KONSEKVENS: skuggspårets hårda villkor uppfyllt — ankarklippningen (#51 steg 2) och
+offsetkörningen mot arkivet (#51 steg 3) är olåsta.
