@@ -529,7 +529,17 @@ siffror samma kväll:
    på tunna augustidata (34 punkter, INGEN dom): samma punkter 2,56→2,50 °C (stör
    inte); >20 km-bandet 5,83→4,37 °C och 4 nya punkter à 1,57 °C som basen inte når.
    Pekar åt rätt håll; avgörs på vinterdata och värderas i tröskeldokumentet.
-3. Terrängkovariater: resonemang bokfört på tavlan, inget byggt.
+3. **Höjdprovet (Bengts order, samma kväll):** scripts/hojd-prov.ts + hojd-prov.yml.
+   Designfynd före bygget: lärda paroffsets absorberar redan statisk höjdskillnad, så
+   höjden testas i SEGMENTFALLET (RÅ / RÅ+HÖJD / OFFSET=taket). Självtestet fällde ett
+   teckenfel i korrektionen före push (dubblade felet i stället för att nolla det).
+   Skarp körning (hojd-prov #1): 747/757 stationer fick EU-DEM-höjd. Fynd 1 (STARKT,
+   3 455 par): empirisk lapse 0,71 °C avkylning/100 m mot standardens 0,65 — höjden
+   bär en äkta del av parsystematiken. Fynd 2 (ÄRLIGT, 40 augustipunkter): rå+höjd
+   8,36 ≈ rå 8,36 °C mot offsetens 2,50 — i augusti-utstrålningslägen räcker höjd
+   inte ensam; lärda offsets bär stationskaraktär (himmelsvy m.m.) som höjd inte ser.
+   Vinterdata avgör; GIS-svansen rörs inte förrän dess.
+4. Terrängens GIS-svans (dalgångar/skuggning): parkerad bakom vinterns höjdprov.
 Samma kväll: TROSKLAR-SKUGGAN §2 fick orsaksklassning av missar (utstrålnings- vs
 nederbördsdriven; nederbördsdrivna bokförs på #16, inte B2) på Bengts order efter
 nowcast-diskussionen. Kort #42 (vattenplaning) + förstudie docs/VATTENPLANING-ANALYS.md
