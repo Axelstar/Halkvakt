@@ -494,3 +494,14 @@ Stängt med underlagsvakt i grind-a.ts: <100 stationer eller <1000 avläsningar 
 rött jobb. Självtestet fortsatt grönt. KVAR ATT PROVA: larmvägen (järnlagen — en vakt är
 ingen vakt förrän larmet provats): en avsiktlig körning med dagar=0 ska ge rött jobb +
 notis till Bengt. Väntar på Bengts tryck eller klartecken.
+
+## 2026-09-01 — Larmvägen provad: underlagsvakten fäller på riktigt (grind-a #2, avsiktligt röd)
+Järnlagen ur DECISIONS #26 tillämpad: avsiktlig körning med dagar=0 via Bengts Chrome.
+Resultat: jobbet RÖTT, "Process completed with exit code 1", summary "0 stationer,
+0 bucketade avläsningar" — vakten fällde på exakt det scenario den byggdes för, och
+Summary-sidan fungerar även vid rött (tee hann skriva innan pipefail fällde steget).
+Kör: https://github.com/Axelstar/Halkvakt/actions/runs/33467812822
+Sista länken i larmkedjan — att NOTISEN når Bengt — kan bara Bengt bekräfta (klockan
+på GitHub / mejl beroende på hans notisinställningar). Väntar på hans kvitto; först
+då skrivs larmvägen som HELT bevisad. Kommande söndagskörningar notifierar samma
+konto (schemakörningens actor = senaste committern av workflow-filen = 895845).
