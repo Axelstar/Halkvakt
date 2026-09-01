@@ -101,8 +101,14 @@ med släckt skärm, vakten stannar när du stänger av.
       augustidata (34 punkter, INGEN dom): stör inte där VViS är tätt (2,56→2,50 °C),
       och i >20 km-bandet 5,83→4,37 °C plus 4 nya punkter à 1,57 °C som basen inte
       når alls. 🔑 Omkörning på vinterdata; värderas i tröskeldokumentet.
-    · Terrängkovariater (Lantmäteriets höjddata): störst potential, mest arbete — ännu
-      bara resonemang, inget byggt.
+    · Höjden: PROVET BYGGT + KÖRT 1/9 kväll (Bengts order): scripts/hojd-prov.ts +
+      knappen Actions → hojd-prov (EU-DEM-höjder, tre varianter RÅ / RÅ+HÖJD /
+      OFFSET=taket; självtestet fällde ett teckenfel före push). Två fynd: (1) STARKT,
+      3 455 par: empirisk lapse 0,71 °C/100 m (standard 0,65) — höjden bär en äkta del
+      av parsystematiken; (2) ÄRLIGT, 40 augustipunkter: rå+höjd 8,36 ≈ rå 8,36 mot
+      offsetens 2,50 °C — i utstrålningslägen räcker höjden INTE ensam, lärda offsets
+      bär stationskaraktären. 🔑 Omkörning på vinterdata avgör.
+    · GIS-svansen (dalgångar/skuggning): rörs inte förrän vinterns höjdprov motiverar den.
   - [ ] (4) Skuggkörningen — startar när det finns halka att skugga (~mitten av oktober,
     Skåne). I augusti räknar den "inte halt" på "inte halt".
   - [ ] **Skuggmotorns prognoskolumn måste buntas ur engine/src** som resten (läxan 31/8):
