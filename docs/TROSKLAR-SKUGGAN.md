@@ -42,6 +42,16 @@ flaggade segmentet. Händelse matchas till segment inom 2 km från segmentlinjen
 **Obedömbar** = varning eller händelse utan någon facitkälla — räknas separat,
 aldrig som träff.
 
+**Orsaksklassning av missar** (tillagt 1/9 på Bengts order, efter nowcast-frågan —
+dokumentet är ännu fritt att ändra, Axels fastställande väntar): varje miss klassas
+mot nederbördsdata (närmaste stations regn/snö-flagga inom ±1 h från händelsen) som
+**utstrålningsdriven** eller **nederbördsdriven**. Endast utstrålningsdrivna missar
+bokförs på B2 — en snöby eller underkylt regn mellan stationerna är blixthalkans hål
+(kort #16), inte offsetmodellens, och en dom som blandar dem fäller eller friar fel
+komponent. Nederbördsdrivna missar redovisas separat i marsdomen som underlag för
+#16:s prioritering; klumpar de sig är det ett argument för att tidigarelägga #16,
+inte för att underkänna segmentmotorn.
+
 ## 3. Trösklarna
 
 ### Grind A — offsetmodellen (felkartan; 3.2/3.3 i byggplanen, mätbar från arkivet 24/8)
