@@ -1,5 +1,5 @@
 {
-  "season": "2025/2026",
+  "season": "2026/2027",
   "lan": {},
   "history": [
     {
@@ -37,6 +37,12 @@
       "waitlist": 4,
       "halka": 0,
       "frys": 0
+    },
+    {
+      "date": "2026-09-01",
+      "waitlist": 4,
+      "halka": 0,
+      "frys": 1
     }
   ]
 }
