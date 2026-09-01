@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-08-31 kväll av Claude — 14 commits idag; toppen omskriven som Axels checklista*
+*Uppdaterad: 2026-09-01 av Claude på Bengts order — tröskeldokumentet till KLART; skuggspåret olåst*
 
 ---
 
@@ -192,6 +192,14 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
 ---
 
 ## 🟢 KLART (senaste vinsterna)
+
+- [x] 📏 **TRÖSKELDOKUMENTET — mars-domens måttstock, skriven FÖRE all skuggkod** (1/9,
+  Bengt + Claude, DECISIONS #52): docs/TROSKLAR-SKUGGAN.md med tre grindar (A offset-
+  modellen, B skuggdriften, C domens giltighet) — #51:s hårda villkor uppfyllt, skugg-
+  spårets steg 2–3 olåsta. Samma dag: grind A-mätningen byggd och automatisk varje söndag,
+  larmvägen bevisad hela kedjan (avsiktligt rött jobb → mejl framme hos Bengt), rökprovet
+  kört (felgradienten följer teorin), strategimejlet med länken hos Axel. Kvar hos Axel:
+  fastställandet (eget kort under hans beslut).
 
 - [x] ✅ **SJÄLVVÄCKNINGEN FUNGERAR I FÄLT** (31/8 15:51, Bengts telefon, första försöket):
   0.3.2 startade vakten själv utan att han rörde telefonen. DECISIONS #40 bevisat samma dag
