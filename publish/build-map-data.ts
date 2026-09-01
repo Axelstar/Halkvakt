@@ -83,7 +83,7 @@ write("kameror.geojson", fc(kameror.rows.map(r => ({
 const trvKey = process.env.TRAFIKVERKET_API_KEY;
 if (trvKey) {
   try {
-    const q = `<REQUEST><LOGIN authenticationkey="${trvKey}"/><QUERY objecttype="Camera" schemaversion="1" limit="2500"><FILTER><EQ name="Type" value="Väglagskamera"/></FILTER><INCLUDE>Id</INCLUDE><INCLUDE>Name</INCLUDE><INCLUDE>PhotoUrl</INCLUDE><INCLUDE>Direction</INCLUDE><INCLUDE>RoadNumber</INCLUDE><INCLUDE>Geometry.WGS84</INCLUDE></QUERY></REQUEST>`;
+    const q = `<REQUEST><LOGIN authenticationkey="${trvKey}"/><QUERY objecttype="Camera" schemaversion="1" limit="2500"><FILTER><EQ name="Type" value="Väglagskamera"/></FILTER><INCLUDE>Id</INCLUDE><INCLUDE>Name</INCLUDE><INCLUDE>PhotoUrl</INCLUDE><INCLUDE>Direction</INCLUDE><INCLUDE>Geometry.WGS84</INCLUDE></QUERY></REQUEST>`;
     const r = await fetch("https://api.trafikinfo.trafikverket.se/v2/data.json", {
       method: "POST", headers: { "Content-Type": "text/xml" }, body: q });
     if (!r.ok) throw new Error(`TRV ${r.status}: ${(await r.text()).slice(0, 300)}`);
@@ -93,7 +93,7 @@ if (trvKey) {
       return m ? [{ type: "Feature",
         geometry: { type: "Point", coordinates: [+m[1], +m[2]] },
         properties: { id: String(c.Id), name: c.Name ?? null, photo: c.PhotoUrl ?? null,
-                      dir: c.Direction ?? null, road: c.RoadNumber ?? null } }] : [];
+                      dir: c.Direction ?? null } }] : [];
     });
     if (feats.length < 500) throw new Error(`bara ${feats.length} väglagskameror — trasigt svar?`);
     // generated_at: lets healthcheck tell "fail-soft kept an old file" from "fresh".
