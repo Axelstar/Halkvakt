@@ -76,6 +76,31 @@ write("kameror.geojson", fc(kameror.rows.map(r => ({
   type: "Feature", geometry: r.g,
   properties: { name: r.name, road: r.road_number, bearing: r.bearing } }))));
 
+// Väglagskamerornas koordinater som publicerat lager (byggplan v3 punkt 1.5, kort #38b(2)):
+// anchor file for the ankarklippning — same Camera query the shadow engine already uses.
+// CC0. Fail-soft: cameras change rarely, so on TRV error we skip the write and the
+// previous file stays on the CDN (push-data only replaces files present in out/).
+const trvKey = process.env.TRAFIKVERKET_API_KEY;
+if (trvKey) {
+  try {
+    const q = `<REQUEST><LOGIN authenticationkey="${trvKey}"/><QUERY objecttype="Camera" schemaversion="1" limit="2500"><FILTER><EQ name="Type" value="Väglagskamera"/></FILTER><INCLUDE>Id</INCLUDE><INCLUDE>Name</INCLUDE><INCLUDE>PhotoUrl</INCLUDE><INCLUDE>Direction</INCLUDE><INCLUDE>RoadNumber</INCLUDE><INCLUDE>Geometry.WGS84</INCLUDE></QUERY></REQUEST>`;
+    const r = await fetch("https://api.trafikinfo.trafikverket.se/v2/data.json", {
+      method: "POST", headers: { "Content-Type": "text/xml" }, body: q });
+    if (!r.ok) throw new Error(`TRV ${r.status}`);
+    const rows = (await r.json())?.RESPONSE?.RESULT?.[0]?.Camera ?? [];
+    const feats = rows.flatMap((c: any) => {
+      const m = /POINT \(([\d.]+) ([\d.]+)\)/.exec(c?.Geometry?.WGS84 ?? "");
+      return m ? [{ type: "Feature",
+        geometry: { type: "Point", coordinates: [+m[1], +m[2]] },
+        properties: { id: String(c.Id), name: c.Name ?? null, photo: c.PhotoUrl ?? null,
+                      dir: c.Direction ?? null, road: c.RoadNumber ?? null } }] : [];
+    });
+    if (feats.length < 500) throw new Error(`bara ${feats.length} väglagskameror — trasigt svar?`);
+    write("kameror-vaglag.geojson", fc(feats));
+    console.log(`kameror-vaglag.geojson: ${feats.length} väglagskameror`);
+  } catch (e) { console.error(`kameror-vaglag HOPPAS ÖVER (förra filen kvar på CDN): ${String((e as Error).message)}`); }
+} else console.error("kameror-vaglag HOPPAS ÖVER: TRAFIKVERKET_API_KEY saknas");
+
 // Wildlife: county-level stats ONLY (polisen GPS = länscentrum, DECISIONS #13 — no fake points)
 const vilt = await pool.query(`
   SELECT count(*) FILTER (WHERE datetime > now() - interval '24 hours') AS dygn,

@@ -22,7 +22,9 @@ jobs:
         with: { node-version: 22, cache: npm }
       - run: npm ci
       - run: node --experimental-strip-types publish/build-map-data.ts out
-        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        env:
+          DATABASE_URL: "${{ secrets.DATABASE_URL }}"
+          TRAFIKVERKET_API_KEY: "${{ secrets.TRAFIKVERKET_API_KEY }}"
       - run: node --experimental-strip-types publish/build-snapshot.ts out
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
       - run: node --experimental-strip-types publish/build-snapshot-fi.ts out
