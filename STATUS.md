@@ -455,3 +455,13 @@ B skuggdriften ≤ 20 % falsklarm / ≤ 30 % miss / ≥ 25 % mervärde; C giltig
 (yta ≤ 1 °C + fukt, bro ≤ 3). Bengt fick varje värde motiverat med osäkerhet redovisad
 (binomialbruset vid n=30 uttalat) och sa "kör". Skuggspåret är nu olåst: ankarklippning
 och offsetkörning mot arkivet kan börja; grind A på arkivdata är nästa naturliga steg.
+
+## 2026-09-01 — Grind A-skriptet byggt: publish/grind-a.ts + Actions-knapp (grind-a.yml)
+Leave-one-out över weather_observations (30-min-buckets, K=5 grannar ≤ 50 km, exakt
+uteslutning av utvärderingsbucketen ur paroffseten), redovisat per ankaravståndsband
+0–7/7–15/15–20/>20 km, dömt mot A1–A3 i TROSKLAR-SKUGGAN.md. Självtest utan DB:
+sex syntetiska stationer med kända offsetar och OLIKA serielängder — kravet fångade
+ett teckenfel i par-loopens ena gren som första versionen (lika långa serier) släppte
+igenom. Grönt: 800 punkter, MAE 0,0000 °C, exit 0. CI kör självtestet före den skarpa
+körningen i samma jobb. Kvar: trycka på knappen (rökprov mot arkivet); skarp prövning
+på vinterdata före november. Ingen motor- eller appkod rörd.

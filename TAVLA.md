@@ -76,6 +76,9 @@ med släckt skärm, vakten stannar när du stänger av.
     Liten kodändring, kan göras i september. Förutsättning för allt annat.
   - [ ] **(3) Offsetmodellen mot arkivdata** 🔓 — vi har data sedan 24/8. Tunt, men nog för
     att se om matematiken alls håller innan tre veckor läggs på den.
+    SKRIPTET BYGGT 1/9: publish/grind-a.ts + knappen Actions → grind-a (leave-one-out,
+    A1–A3 mot TROSKLAR-SKUGGAN, självtest med känd sanning grönt). 🔑 Första körningen
+    mot arkivet = rökprovet; skarp dom på vinterdata före november.
   - [ ] (4) Skuggkörningen — startar när det finns halka att skugga (~mitten av oktober,
     Skåne). I augusti räknar den "inte halt" på "inte halt".
   - [ ] **Skuggmotorns prognoskolumn måste buntas ur engine/src** som resten (läxan 31/8):

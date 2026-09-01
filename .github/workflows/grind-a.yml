@@ -1,0 +1,21 @@
+# Grind A (docs/TROSKLAR-SKUGGAN.md): manuell knapp — offsetmodellen mot arkivet.
+# Rökprov nu, skarp prövning på vinterdata FÖRE skuggbygget i november (DECISIONS #52).
+name: grind-a
+on:
+  workflow_dispatch:
+    inputs:
+      dagar:
+        description: "Dagar bakåt"
+        default: "60"
+jobs:
+  grind-a:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types publish/grind-a.ts --sjalvtest
+      - run: node --experimental-strip-types publish/grind-a.ts "${{ inputs.dagar }}"
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
