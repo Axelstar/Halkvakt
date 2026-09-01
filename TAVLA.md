@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-01 av Claude — nytt kort #42 Vattenplaningsvarningen (Bengts idé), låst bakom Axels ja*
+*Uppdaterad: 2026-09-01 kväll av Claude — ankarbreddningen (#38b(3b)): FI-ankare mätta, SMHI-provet byggt + kört (första signal: hjälper bortom 20 km, stör inte nära)*
 
 ---
 
@@ -91,6 +91,18 @@ med släckt skärm, vakten stannar när du stänger av.
     blir rött jobb — larmvägen HELT BEVISAD 1/9 (avsiktlig dagar=0-körning → rött →
     mejlet "Alla jobb har misslyckats" framme hos Bengt, skärmbildskvitto). 🔑 Skarp
     prövning på vinterdata (≥ 500 punkter) före november.
+  - [ ] **(3b) Ankarbreddningen** (Bengts fråga 1/9: "vad krymper avståndet?") —
+    tre kandidater, en mätt, en byggd, en väntar:
+    · Grannländerna: FI MÄTT 1/9 (Norrland >20 km 12,6→11,5 %, gratis — stationerna
+      finns redan i vader.geojson); NO mäts samma dag Vegvesen-kontot fungerar; DK = 0.
+    · SMHI-luftankare: PROVET BYGGT + KÖRT 1/9 (Bengts order): scripts/smhi-prov.ts +
+      knappen Actions → smhi-prov (235 SMHI-stationer, samma leave-one-out som grind-a,
+      självtest där ett fjärran-VViS räddas av luftankare). Första signalen på tunna
+      augustidata (34 punkter, INGEN dom): stör inte där VViS är tätt (2,56→2,50 °C),
+      och i >20 km-bandet 5,83→4,37 °C plus 4 nya punkter à 1,57 °C som basen inte
+      når alls. 🔑 Omkörning på vinterdata; värderas i tröskeldokumentet.
+    · Terrängkovariater (Lantmäteriets höjddata): störst potential, mest arbete — ännu
+      bara resonemang, inget byggt.
   - [ ] (4) Skuggkörningen — startar när det finns halka att skugga (~mitten av oktober,
     Skåne). I augusti räknar den "inte halt" på "inte halt".
   - [ ] **Skuggmotorns prognoskolumn måste buntas ur engine/src** som resten (läxan 31/8):
