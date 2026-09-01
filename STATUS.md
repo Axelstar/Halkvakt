@@ -484,3 +484,13 @@ tee:at till GITHUB_STEP_SUMMARY (shell: bash för pipefail — tee-läxan från 
 Fixade samtidigt: schemakörningar saknar inputs, "${{ inputs.dagar }}" hade blivit tom
 sträng → Number("") = 0 dagar → tomt resultat; nu || '60'. Läsningen ingår i söndags-
 rutinen; jobbet är grönt oavsett KLARAR/FALLER — domen är mänsklig, mätningen automatisk.
+
+## 2026-09-01 — Vaktinventering + underlagsvakt i grind A
+Bengts fråga: vaktar systemet sig självt? Inventering: hämtningarna vaktas av healthcheck
+(stalehet per källa + radgolv + pulskoll, incident-issue vid rött — larmvägen bevisad
+sedan tee-fixen); grind A-krasch ger rött schemajobb med GitHub-notis. Hålet: en mätning
+som lyckas tekniskt men mäter ingenting förblir grön (tee-/gravstensläxans mönster).
+Stängt med underlagsvakt i grind-a.ts: <100 stationer eller <1000 avläsningar ⇒ exit 1 ⇒
+rött jobb. Självtestet fortsatt grönt. KVAR ATT PROVA: larmvägen (järnlagen — en vakt är
+ingen vakt förrän larmet provats): en avsiktlig körning med dagar=0 ska ge rött jobb +
+notis till Bengt. Väntar på Bengts tryck eller klartecken.

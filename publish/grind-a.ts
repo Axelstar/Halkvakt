@@ -144,4 +144,12 @@ for (const r of res.rows) {
 }
 await pool.end();
 console.log(`${stations.size} stationer, ${res.rows.length} bucketade avläsningar, ${DAYS} dygn bakåt`);
+// Underlagsvakt: green-but-empty is the failure mode no threshold catches (the
+// tombstone/tee lesson). A normal 60-day window has ~750 stations and tens of
+// thousands of readings — far below that means a broken fetch or archive, not a
+// quiet winter. Red job => notification, instead of months of green "0 punkter".
+if (stations.size < 100 || res.rows.length < 1000) {
+  console.error(`UNDERLAGSVAKT: ${stations.size} stationer / ${res.rows.length} avläsningar — hämtningen eller arkivet är trasigt (normalt ~750 stationer, >10 000 avläsningar).`);
+  process.exit(1);
+}
 report(evaluate(stations), `senaste ${DAYS} dygnen`);

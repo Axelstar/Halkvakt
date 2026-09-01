@@ -83,8 +83,9 @@ med släckt skärm, vakten stannar när du stänger av.
     Nära ankare under A1-tröskeln redan på sämsta möjliga data; för tunt för dom
     (minsta underlag ≥ 500 punkter infört i dokumentet). AUTOMATISK från 1/9: körs varje
     söndagsmorgon, resultatet på körningens Summary-sida — läses i Bengts söndagsrutin,
-    ingen behöver minnas oktober. 🔑 Skarp prövning på vinterdata (≥ 500 punkter) före
-    november.
+    ingen behöver minnas oktober. Underlagsvakt: grön-men-tom mätning (<100 stationer)
+    blir rött jobb i stället för månader av tyst nolla. 🔑 Skarp prövning på vinterdata
+    (≥ 500 punkter) före november.
   - [ ] (4) Skuggkörningen — startar när det finns halka att skugga (~mitten av oktober,
     Skåne). I augusti räknar den "inte halt" på "inte halt".
   - [ ] **Skuggmotorns prognoskolumn måste buntas ur engine/src** som resten (läxan 31/8):
