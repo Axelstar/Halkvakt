@@ -81,8 +81,10 @@ med släckt skärm, vakten stannar när du stänger av.
     RÖKPROVET KÖRT 1/9 (grind-a #1, Bengts knapptryck): 43 punkter — felet växer med
     ankaravståndet precis som teorin säger (0,63 °C vid 0–7 km → 5,39 °C bortom 20 km).
     Nära ankare under A1-tröskeln redan på sämsta möjliga data; för tunt för dom
-    (minsta underlag ≥ 500 punkter infört i dokumentet). 🔑 Skarp prövning på
-    vinterdata före november.
+    (minsta underlag ≥ 500 punkter infört i dokumentet). AUTOMATISK från 1/9: körs varje
+    söndagsmorgon, resultatet på körningens Summary-sida — läses i Bengts söndagsrutin,
+    ingen behöver minnas oktober. 🔑 Skarp prövning på vinterdata (≥ 500 punkter) före
+    november.
   - [ ] (4) Skuggkörningen — startar när det finns halka att skugga (~mitten av oktober,
     Skåne). I augusti räknar den "inte halt" på "inte halt".
   - [ ] **Skuggmotorns prognoskolumn måste buntas ur engine/src** som resten (läxan 31/8):

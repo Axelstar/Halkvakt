@@ -477,3 +477,10 @@ glesbygdsterräng). Totalens FALLER är urvalsartefakt, ingen klausul utlöst. L
 rökprovet blottade: grind A saknade minsta underlag — infört i TROSKLAR-SKUGGAN.md
 (≥ 500 punkter, ≥ 20 stationer, Bengts ja) medan dokumentet ännu är fritt att ändra
 (Axels fastställande väntar). Kör: https://github.com/Axelstar/Halkvakt/actions/runs/33466632642
+
+## 2026-09-01 — Grind A schemalagd: söndagsmorgnar, resultat på Summary-sidan
+Bengts fråga "måste jag komma ihåg oktober?" → nej: cron söndagar 05 UTC + resultatet
+tee:at till GITHUB_STEP_SUMMARY (shell: bash för pipefail — tee-läxan från DECISIONS #26).
+Fixade samtidigt: schemakörningar saknar inputs, "${{ inputs.dagar }}" hade blivit tom
+sträng → Number("") = 0 dagar → tomt resultat; nu || '60'. Läsningen ingår i söndags-
+rutinen; jobbet är grönt oavsett KLARAR/FALLER — domen är mänsklig, mätningen automatisk.
