@@ -102,6 +102,9 @@ med släckt skärm, vakten stannar när du stänger av.
 Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som återstår.)*
 
 ### Axel — beslut att ta
+- [ ] **Fastställ trösklarna för skuggan** — docs/TROSKLAR-SKUGGAN.md (DECISIONS #52),
+  Bengts metodvärden fällda 1/9. Domen i mars avgör vad rösten får säga = din kolumn.
+  🔑 Ditt ja (eller justerade värden) i chatten/strategimejlet, före första skuggkörningen.
 - [ ] **Helgsamtalet med pappa — nu fyra punkter:** roller (B2B=Bengt?), föreningen, klartecken ringrundan, OCH intäktsmodellen (#27: din viljeinriktning → hans utformning)
 - [ ] **Skyltfonden-paketet (före 1/10):** (a) klartecken till pappas ringrunda (startar v.36!), (b) sökande: pappa privat eller ideell förening?, (c) rollfördelningen — allt hänger ihop. Underlag: `docs/FINANSIERING.md`
 - [ ] **Rollfördelningen**: efterfrågan/affärsmodell/B2B = Bengts ansvar? (hans förslag; vid ja uppdateras PLAN)
