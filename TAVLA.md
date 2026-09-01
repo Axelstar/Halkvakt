@@ -193,7 +193,9 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   på enheten. Punktkälla ⇒ "framöver"-fras, aldrig avstånd. Ordning enligt huslagen:
   eget tröskeldokument FÖRE kod, sedan skugga — kan mätas i höstregn redan i september,
   behöver inte vänta på vintern. Facit: situation_archive (stoppade fordon/olyckor i
-  regnväder). *(nyckel: Axels ja — rösttext, plats i A-skalan, ordning mot #15/#16)*
+  regnväder). FÖRSTUDIE: docs/VATTENPLANING-ANALYS.md (1/9) — steg 0 (RainSum-kolumnen)
+  är riskfritt och lönsamt oavsett utfall. *(nyckel: Axels ja — rösttext, plats i
+  A-skalan, ordning mot #15/#16)*
 
 ---
 
