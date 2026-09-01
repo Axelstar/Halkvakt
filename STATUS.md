@@ -505,3 +505,10 @@ Sista länken i larmkedjan — att NOTISEN når Bengt — kan bara Bengt bekräf
 på GitHub / mejl beroende på hans notisinställningar). Väntar på hans kvitto; först
 då skrivs larmvägen som HELT bevisad. Kommande söndagskörningar notifierar samma
 konto (schemakörningens actor = senaste committern av workflow-filen = 895845).
+
+## 2026-09-01 — Larmvägen HELT bevisad: mejlet framme hos Bengt
+Skärmbildskvitto i chatten: "[Axelstar/Halkvakt] grind-a arbetsflödeskörning —
+grind-a: Alla jobb har misslyckats" i Bengts inkorg. Hela kedjan provad i följd:
+tomt fönster → underlagsvakt exit 1 → rött jobb → notismejl → mottagaren såg det.
+Grind A-mätningen är därmed självövervakande med bevisad larmväg — ingen behöver
+minnas oktober, och en trasig hämtning i november når Bengt av sig själv.
