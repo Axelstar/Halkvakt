@@ -96,7 +96,8 @@ if (trvKey) {
                       dir: c.Direction ?? null, road: c.RoadNumber ?? null } }] : [];
     });
     if (feats.length < 500) throw new Error(`bara ${feats.length} väglagskameror — trasigt svar?`);
-    write("kameror-vaglag.geojson", fc(feats));
+    // generated_at: lets healthcheck tell "fail-soft kept an old file" from "fresh".
+    write("kameror-vaglag.geojson", { ...fc(feats), generated_at: new Date().toISOString() });
     console.log(`kameror-vaglag.geojson: ${feats.length} väglagskameror`);
   } catch (e) { console.error(`kameror-vaglag HOPPAS ÖVER (förra filen kvar på CDN): ${String((e as Error).message)}`); }
 } else console.error("kameror-vaglag HOPPAS ÖVER: TRAFIKVERKET_API_KEY saknas");
