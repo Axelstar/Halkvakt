@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-01 av Claude — ankarklippningen (#38b(2)) körd: kamerafilen lagad + live, kamerorna ger nästan ingen ny ankartäthet (samlokaliserade med stationerna)*
+*Uppdaterad: 2026-09-01 av Claude — nytt kort #42 Vattenplaningsvarningen (Bengts idé), låst bakom Axels ja*
 
 ---
 
@@ -187,6 +187,13 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
 - [ ] **#26 Skolpaketet** (QR-blad, manus, checklista) *(låst: trafikskolans avsiktsförklaring)*
 - [ ] **#15 Kö-slutsmotorn** (TrafficFlow) *(låst: efter release — uppdatering 1)*
 - [ ] **#16 Blixthalke-prognos** (MET Nowcast) *(låst: efter kö-slut — uppdatering 2)*
+- [ ] 🌧️ **#42 Vattenplaningsvarningen** (Bengts idé 1/9) — regnintensitet (VViS RainSum,
+  ny ingestkolumn — vi lagrar idag bara regn ja/nej) × spårdjupslager (Trafikverkets
+  vägytemätning via Lastkajen; licens/färskhet kollas först) × fartgrind ≥ ~70 km/h
+  på enheten. Punktkälla ⇒ "framöver"-fras, aldrig avstånd. Ordning enligt huslagen:
+  eget tröskeldokument FÖRE kod, sedan skugga — kan mätas i höstregn redan i september,
+  behöver inte vänta på vintern. Facit: situation_archive (stoppade fordon/olyckor i
+  regnväder). *(nyckel: Axels ja — rösttext, plats i A-skalan, ordning mot #15/#16)*
 
 ---
 
