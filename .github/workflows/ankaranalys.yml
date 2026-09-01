@@ -1,0 +1,20 @@
+# Ankaranalysen (kort #38b(2), byggplan v3): ankartäthet ± väglagskameror + klippning
+# av de 20 referensrutterna. Läser bara CDN — inga nycklar. Körs på knapp; resultatet
+# skrivs till körningens Summary-sida (samma mönster som grind-a).
+name: ankaranalys
+on:
+  workflow_dispatch:
+jobs:
+  analys:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/ankaranalys.ts | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"

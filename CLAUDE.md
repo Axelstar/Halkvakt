@@ -160,3 +160,9 @@ i samma commit när de överlappar.
 - Xcode "Attaching to … / Logging Error: Failed to initialize logging system" + vit skärm som
   överlever omstart + INGEN kraschrapport i Analysdata = halvinstallerad app (installationen
   avbröts när debuggern föll). Lösning: radera appen från telefonen → ▶. Inte koden. 31/8.
+- En fail-soft-gren för en fil som aldrig funnits är ett tyst ALDRIG: kameror-vaglag hoppade
+  över skrivningen på TRV 400 i varje varv ("förra filen kvar på CDN" — det fanns ingen) och
+  jobbet var grönt. Regel: en ny fils FÖRSTA publicering bevisas med filens egen logg-rad,
+  och fel-loggen ska bära API:ets svarskropp — "TRV 400" utan kropp kostade ett diagnosvarv.
+  (1/9: rotorsaken var "Invalid query attribute Camera.RoadNumber" — fältet finns i
+  TrafficSafetyCamera, inte i Camera.)
