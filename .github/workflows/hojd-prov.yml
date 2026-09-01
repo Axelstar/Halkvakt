@@ -1,0 +1,27 @@
+# Höjdprovet (Bengts order 1/9, ankarbreddningen 3b): vad återvinner en enkel
+# höjdkorrektion där historik saknas (segmentfallet)? Körs på knapp; självtest med
+# känd fysik FÖRE den skarpa körningen, resultatet på Summary-sidan (grind-a-mönstret).
+name: hojd-prov
+on:
+  workflow_dispatch:
+    inputs:
+      dagar:
+        description: "Dagar bakåt"
+        default: "60"
+jobs:
+  hojd-prov:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types scripts/hojd-prov.ts --sjalvtest
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/hojd-prov.ts "${{ inputs.dagar || '60' }}" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
