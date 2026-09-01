@@ -513,6 +513,28 @@ tomt fönster → underlagsvakt exit 1 → rött jobb → notismejl → mottagar
 Grind A-mätningen är därmed självövervakande med bevisad larmväg — ingen behöver
 minnas oktober, och en trasig hämtning i november når Bengt av sig själv.
 
+## 2026-09-01 kväll — Ankarbreddningen: FI mätt, SMHI-provet byggt och kört (Bengt + Claude)
+Bengts fråga "vad kan krympa avståndet när kamerorna inte kunde?" → tre spår, två med
+siffror samma kväll:
+1. **Grannländerna, mätt ur befintlig CDN-data:** finska stationerna (431 st, redan i
+   vader.geojson) krymper Norrlands >20 km-andel 12,6 → 11,5 %, >15 km 25,4 → 24,0 %.
+   Danmark: noll. Norge: mäts samma dag Vegvesen-kontot fungerar (hemligheterna ännu
+   inte inlagda — ingest-no #7 21:09 loggar "saknas", trots att tillståndet enligt
+   Bengt är beviljat; Axel lägger VEGVESEN_USER/PASS och triggar jobbet som bevis).
+2. **SMHI-provet (Bengts order):** scripts/smhi-prov.ts + smhi-prov.yml — grind A:s
+   leave-one-out med två ankarpooler (bas/+SMHI-luft), bandat på VViS-avstånd, nya
+   punkter (utom VViS-räckhåll) särredovisade. Självtest: fjärran-station utan
+   VViS-grannar ska lämnas av basen och räddas av luftankaret (MAE ≈ 0) — grönt.
+   Skarp körning (smhi-prov #1): 757 VViS, 235 SMHI-stationer, 60 dygn. Första signal
+   på tunna augustidata (34 punkter, INGEN dom): samma punkter 2,56→2,50 °C (stör
+   inte); >20 km-bandet 5,83→4,37 °C och 4 nya punkter à 1,57 °C som basen inte når.
+   Pekar åt rätt håll; avgörs på vinterdata och värderas i tröskeldokumentet.
+3. Terrängkovariater: resonemang bokfört på tavlan, inget byggt.
+Samma kväll: TROSKLAR-SKUGGAN §2 fick orsaksklassning av missar (utstrålnings- vs
+nederbördsdriven; nederbördsdrivna bokförs på #16, inte B2) på Bengts order efter
+nowcast-diskussionen. Kort #42 (vattenplaning) + förstudie docs/VATTENPLANING-ANALYS.md
+lades tidigare under dagen, också ur Bengts frågor.
+
 ## 2026-09-01 — Ankarklippningen körd + kamerafilsbuggen (Bengts fråga fällde den)
 Bengt frågade "har vi inte gjort ankarklippningen?" — och svaret visade sig vara nej,
 på ett sätt tavlan inte såg. Morgonens kamerafil hade ALDRIG nått CDN: Trafikverket
