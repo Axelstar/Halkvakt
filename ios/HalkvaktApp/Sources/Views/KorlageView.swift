@@ -80,7 +80,7 @@ struct KorlageView: View {
         .persistentSystemOverlays(.hidden)
     }
 
-    private var elapsedMin: Int { guard let s = guardM.startedAt else { return 0 }; return Int(now.timeIntervalSince(s) / 60) }
+    private var elapsedMin: Int { Int(guardM.drivingSeconds / 60) }
     private var distKm: String { String(format: "%.0f", guardM.distanceKm) }
     private func count(_ k: HazardKind) -> Int { guardM.history.filter { $0.kind == k }.count }
 }

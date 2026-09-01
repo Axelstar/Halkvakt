@@ -548,3 +548,14 @@ flit (asymmetriska felkostnader: för strängt = en tyst vinter till, för slapp
 talande skugga som har fel). Bengts "kör" 1/9 efter genomgång av varje värde i chatten.
 KONSEKVENS: skuggspårets hårda villkor uppfyllt — ankarklippningen (#51 steg 2) och
 offsetkörningen mot arkivet (#51 steg 3) är olåsta.
+
+## #53 (1/9 2026) Resan håller ihop över pauser (Bengts fynd på Bodenresan)
+Bengt: "den räknar inte rätt — vi har kört 50 mil men mätaren står på 23,5". Den räknade
+rätt, men bara ETAPPEN: vakten självstoppar efter 15 min stillastående (#35) och vaknar när
+bilen rullar igen (#40/#41) — och start() nollställde tid, sträcka och varningsräknare varje
+gång. På en dagsresa med tankning och lunch blir det obegripligt. FIX: en resa fortsätter om
+vakten vaknar inom 3 h; pausen räknas bort från körtiden (drivingSeconds), prevLoc nollas vid
+stopp så pausens "hopp" inte adderas till sträckan. Längre uppehåll = ny resa. Sidoobservation
+samma skärmbild: fyra fartkameror på 1,8–2,5 km medan bilen STOD STILLA — utan fart har
+telefonen ingen kurs, så riktningsfiltret kan inte sålla. Kandidatkort: dölj "På din väg" när
+farten är under gångfart, i stället för att visa allt runtomkring.

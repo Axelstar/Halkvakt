@@ -25,6 +25,11 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     // Körlägesstatistik
     var startedAt: Date?
     var distanceKm = 0.0
+    /// Körtid i sekunder, exklusive pauser (resan håller ihop över mackstopp).
+    var drivingSeconds: TimeInterval {
+        guard let s = startedAt else { return 0 }
+        return max(0, Date.now.timeIntervalSince(s) - tripPausedSeconds)
+    }
     var alertCount = 0
     var lastSaid: String?
 
@@ -57,6 +62,12 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     private var autoWoke = false
     /// Vila efter misslyckat prov — annars kan en sen positionsleverans starta nästa direkt.
     private var lastProbeFailedAt: Date?
+    // En RESA håller ihop över pauser (Bengt, Bodenresan 1/9): vakten somnar vid en kvarts
+    // stillastående och vaknar när bilen rullar igen — men tid och sträcka ska inte nollas
+    // vid varje macka. Vaknar vi inom 3 h fortsätter samma resa; efter det är det en ny.
+    private static let sameTripWithin: TimeInterval = 3 * 3600
+    private var tripEndedAt: Date?
+    private var tripPausedSeconds: TimeInterval = 0
     private static let probeCooldownS: TimeInterval = 5 * 60
     /// Manuellt stopp mitt i körning får inte följas av en självstart sekunden efter.
     private var manualStoppedAt: Date?
@@ -184,9 +195,17 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         guard !running else { return }
         print("[Vakten] startar")
         running = true
-        startedAt = .now
         lastMovedAt = .now
-        distanceKm = 0; alertCount = 0; lastSaid = nil
+        // Ny resa bara om det gått länge sedan förra; annars fortsätter tid och sträcka.
+        let sameTrip = tripEndedAt.map { Date.now.timeIntervalSince($0) < Self.sameTripWithin } ?? false
+        if sameTrip, let ended = tripEndedAt {
+            tripPausedSeconds += Date.now.timeIntervalSince(ended)   // pausen räknas inte som körtid
+        } else {
+            distanceKm = 0; alertCount = 0; lastSaid = nil
+            tripPausedSeconds = 0
+            startedAt = .now
+        }
+        tripEndedAt = nil
         staleAnnounced = false
         prevLoc = nil
         manager.allowsBackgroundLocationUpdates = manager.authorizationStatus == .authorizedAlways
@@ -228,6 +247,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         running = false
         startRequested = false
         probing = false; probeStartedAt = nil
+        tripEndedAt = .now
         headsUpTask?.cancel()
         manager.stopUpdatingLocation()
         dismissTask?.cancel()
