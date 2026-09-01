@@ -66,6 +66,16 @@ En sexmånadersplan hade missat båda.
 Formatet på tavlan är redan rätt: **ett kort per sak, med ägare, och en 🔑-rad om vad som
 krävs för att det ska räknas som bevisat.** Det behövs inget nytt verktyg.
 
+## 4b. Ta kortet innan du bygger
+
+Den 1 september byggde Axel och Bengt samma sak tre gånger på ett dygn: DECISIONS-numret
+#52, grind A-skriptet, och nästan vattenplaningskortet. Ingen gjorde fel — men ingen såg
+vad den andra just börjat på.
+
+**Regeln: bocka av kortet som "pågår" med ditt namn, i en commit, INNAN du skriver koden.**
+Det tar tio sekunder och syns i loggen. Är kortet redan taget: skriv i stället en rad om
+vad du hade tänkt göra, så slås idéerna ihop i stället för att kollidera.
+
 ## 5. Regeln som skyddar oss mot oss själva
 
 Ett bygge som kan dömas bort ska ha sina **trösklar skrivna före första körningen**

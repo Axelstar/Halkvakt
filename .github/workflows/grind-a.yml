@@ -12,6 +12,8 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - run: npm ci
-      - name: Grind A — offsetmodellen mot arkivet
+      - name: Grind A — självtest först, sedan arkivet
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
-        run: node --experimental-strip-types scripts/offsetmodell.ts | tee -a "$GITHUB_STEP_SUMMARY"
+        run: |
+          node --experimental-strip-types publish/grind-a.ts --sjalvtest | tee -a "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types publish/grind-a.ts | tee -a "$GITHUB_STEP_SUMMARY"

@@ -559,3 +559,15 @@ stopp så pausens "hopp" inte adderas till sträckan. Längre uppehåll = ny res
 samma skärmbild: fyra fartkameror på 1,8–2,5 km medan bilen STOD STILLA — utan fart har
 telefonen ingen kurs, så riktningsfiltret kan inte sålla. Kandidatkort: dölj "På din väg" när
 farten är under gångfart, i stället för att visa allt runtomkring.
+
+## #54 (1/9 2026) Ett grind A-skript, inte två — och domspärr i stället för fotnot
+Axel och Bengt byggde samma prövning samtidigt (andra kollisionen samma dag efter #52/#53).
+Bengts publish/grind-a.ts behålls som bas: den har ett SJÄLVTEST med syntetiska stationer
+och känd sanning som FALLERAR jobbet om matematiken inte återfinner offseterna — koden
+verifieras innan den mäter verkligheten. Claudes scripts/offsetmodell.ts raderas; det enda
+den hade som saknades var minimikravet, som nu flyttats in: ≥ 500 bedömbara punkter över
+≥ 20 stationer, annars fälls INGEN dom (—, inte KLARAR/FALLER). Skillnaden mot Bengts
+fotnot är att domen inte går att läsa av på tunt underlag. TROSKLAR-SKUGGAN §3 säger
+"ingen dom åt något håll" — nu är det en spärr, inte en anmärkning.
+LÄXA: ta kortet innan du bygger. Två personer i samma repo utan synlig "pågår" ger
+dubbelarbete — tre gånger på ett dygn.

@@ -12,6 +12,9 @@
 
 const K_NEIGHBOURS = 5;    // nearest stations considered per prediction
 const MAX_KM = 50;         // beyond this a station is no anchor, just weather
+// Minsta underlag för att en dom alls får fällas (TROSKLAR-SKUGGAN §3, Bengt 1/9).
+const MIN_POINTS_FOR_VERDICT = 500;
+const MIN_STATIONS_FOR_VERDICT = 20;
 const MIN_SHARED = 20;     // min shared buckets per pair AFTER excluding the eval bucket
 const BUCKET_S = 1800;     // 30 min, same cadence as the shadow engine
 // Thresholds from docs/TROSKLAR-SKUGGAN.md §3 — change THERE first, per its §5.
@@ -20,7 +23,7 @@ const BANDS: [string, number, number][] = [
   ["0–7 km", 0, 7], ["7–15 km", 7, 15], ["15–20 km", 15, 20], [">20 km", 20, Infinity]];
 
 type Station = { lon: number; lat: number; series: Map<number, number> };
-type Eval = { measured: number; pred: number; ankKm: number };
+type Eval = { measured: number; pred: number; ankKm: number; station: string };
 
 function haversineKm(lon1: number, lat1: number, lon2: number, lat2: number): number {
   const R = 6371, dLa = (lat2 - lat1) * Math.PI / 180, dLo = (lon2 - lon1) * Math.PI / 180;
@@ -72,7 +75,7 @@ function evaluate(stations: Map<string, Station>): Eval[] {
         wsum += w; psum += w * (nv + offsetExcl);
         if (km < ank) ank = km;
       }
-      if (wsum > 0) evals.push({ measured, pred: psum / wsum, ankKm: ank });
+      if (wsum > 0) evals.push({ measured, pred: psum / wsum, ankKm: ank, station: s });
     }
   }
   return evals;
@@ -87,7 +90,7 @@ function stats(rows: Eval[]) {
   return { n: rows.length, nDec: dec.length, mae, gross, freeze };
 }
 
-function report(evals: Eval[], label: string) {
+function report(evals: Eval[], label: string, selftest = false) {
   console.log(`Grind A — offsetmodellen mot arkivet (${label})`);
   console.log("band       mätpunkter  MAE(beslutsband)  grova >2°C  frysklassfel");
   for (const [name, lo, hi] of BANDS) {
@@ -97,11 +100,28 @@ function report(evals: Eval[], label: string) {
   const tot = stats(evals);
   console.log(`${"TOTALT".padEnd(10)} ${String(tot.n).padStart(10)}  ${tot.n ? tot.mae.toFixed(2).padStart(13) + " °C" : "            —"}  ${tot.n ? (tot.gross * 100).toFixed(1).padStart(9) + "%" : "         —"}  ${tot.n ? (tot.freeze * 100).toFixed(1).padStart(11) + "%" : "           —"}`);
   if (!tot.n) { console.log("(inga bedömbara mätpunkter — inga vintertimmar med grannar i fönstret)"); return; }
-  const v = (ok: boolean) => ok ? "KLARAR" : "FALLER";
+
+  // DOMSPÄRR (TROSKLAR-SKUGGAN §3, minsta underlag): prövningen kräver ≥ 500 bedömbara
+  // punkter över ≥ 20 stationer. Under det redovisas siffrorna men INGEN dom fälls åt
+  // något håll — tunt underlag är dessutom skevt mot de glesaste delarna av nätet och
+  // fäller eller friar på urvalsartefakter. Rökprovet 1/9 (56 punkter, 33 av dem > 20 km
+  // från ankare) är just det fallet. Skillnaden mot en fotnot: här går domen inte att läsa av.
+  const nStations = new Set(evals.map((e) => e.station)).size;
+  // Självtestet har sin egen kontroll (MAE ≈ 0) och sex syntetiska stationer — domspärren
+  // gäller bara verkligt arkiv.
+  const nog = selftest || (tot.n >= MIN_POINTS_FOR_VERDICT && nStations >= MIN_STATIONS_FOR_VERDICT);
+  const v = (ok: boolean) => nog ? (ok ? "KLARAR" : "FALLER") : "—";
   console.log(`A1 MAE ≤ ${A1_MAX_MAE.toFixed(1)} °C i beslutsbandet: ${tot.mae.toFixed(2)} °C (${tot.nDec} punkter) → ${v(tot.mae <= A1_MAX_MAE)}`);
   console.log(`A2 grova fel > 2 °C ≤ ${A2_MAX_GROSS * 100} %: ${(tot.gross * 100).toFixed(1)} % → ${v(tot.gross <= A2_MAX_GROSS)}`);
   console.log(`A3 frysklassningsfel ≤ ${A3_MAX_FREEZE * 100} %: ${(tot.freeze * 100).toFixed(1)} % → ${v(tot.freeze <= A3_MAX_FREEZE)}`);
-  if (tot.n < 500) console.log(`OBS: bara ${tot.n} mätpunkter — rökprov, inte dom. Grind A:s skarpa prövning körs om på vinterdata före november.`);
+  if (nog && !selftest) {
+    const klarar = tot.mae <= A1_MAX_MAE && tot.gross <= A2_MAX_GROSS && tot.freeze <= A3_MAX_FREEZE;
+    console.log(`\nDOM: ${klarar ? "GRIND A KLARAD — skuggbygget får starta" : "GRIND A FALLEN — bygg ingen skugga (tre veckor sparade)"}`);
+  } else if (!selftest) {
+    console.log(`\n⏳ INGEN DOM — underlaget räcker inte.`);
+    console.log(`   Krav: ≥ ${MIN_POINTS_FOR_VERDICT} bedömbara punkter över ≥ ${MIN_STATIONS_FOR_VERDICT} stationer.`);
+    console.log(`   Har:  ${tot.n} punkter över ${nStations} stationer. Underlaget växer med vintern.`);
+  }
 }
 
 // ── Self-test (no DB): six stations 5 km apart with constant true offsets on a shared
@@ -115,7 +135,7 @@ if (process.argv.includes("--sjalvtest")) {
     stations.set(`test${i}`, { lon: 13 + i * 0.08, lat: 56, series });
   }
   const evals = evaluate(stations);
-  report(evals, "SJÄLVTEST — syntetiska stationer, känd sanning");
+  report(evals, "SJÄLVTEST — syntetiska stationer, känd sanning", true);
   const mae = stats(evals).mae;
   if (!(evals.length > 500 && mae < 0.05)) { console.error(`SJÄLVTEST FALLERAR: n=${evals.length}, MAE=${mae}`); process.exit(1); }
   console.log(`SJÄLVTEST OK: ${evals.length} punkter, MAE ${mae.toFixed(4)} °C`);
