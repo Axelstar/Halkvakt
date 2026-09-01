@@ -1,31 +1,17 @@
-# Grind A (docs/TROSKLAR-SKUGGAN.md): offsetmodellen mot arkivet.
-# Körs varje söndagsmorgon (Bengts söndagsrutin läser resultatet — ingen behöver minnas
-# oktober) och på knapp. Resultatet skrivs till körningens Summary-sida.
-# GitHub-cron kan driva sent (DECISIONS #26) — för en veckomätning kvittar det.
 name: grind-a
 on:
   schedule:
-    - cron: "0 5 * * 0"   # söndagar ~06 svensk tid
+    - cron: "40 5 * * 1"   # måndagar — underlaget växer med vintern
   workflow_dispatch:
-    inputs:
-      dagar:
-        description: "Dagar bakåt"
-        default: "60"
 jobs:
-  grind-a:
+  test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: npm }
+        with: { node-version: 22 }
       - run: npm ci
-      - run: node --experimental-strip-types publish/grind-a.ts --sjalvtest
-      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
-      # Schemakörningar saknar inputs ⇒ fall tillbaka på 60.
-      - shell: bash
-        run: |
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
-          node --experimental-strip-types publish/grind-a.ts "${{ inputs.dagar || '60' }}" | tee -a "$GITHUB_STEP_SUMMARY"
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
+      - name: Grind A — offsetmodellen mot arkivet
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: node --experimental-strip-types scripts/offsetmodell.ts | tee -a "$GITHUB_STEP_SUMMARY"
