@@ -586,3 +586,17 @@ fail-soft dolde det — grönt jobb, ingen fil. Rotorsaken lagades i parallellse
 systematiska svaret är healthcheckens nya CDN-vakt på kamerafilen (finns/≥500 kameror/
 ≤7 dygn gammal, i den bevisade incident-larmvägen). En fail-soft utan extern vakt är
 gravstensläckan om igen: felet finns men syns inte förrän någon råkar titta.
+
+## #55 (1/9 2026) Kameratoleransen 100° → 60° (Bengts fynd på Bodenresan)
+Bengt: "konsekvent fel på varning för fartkameror — den mäter alltid mot kameran som är i
+motsatt färdriktning." Riktigt sett, och rotorsaken var inte den han gissade. Riktningsdata
+FINNS och är tillförlitlig: alla 2 776 kameror har bearing, och 382 av 388 kamerapar inom
+300 m pekar isär >135° — de sitter parvis och bevakar var sin körriktning. Filtret fanns
+också. Felet var att toleransen stod på 100°, vilket ger ett fönster på 200° — mer än en
+halvcirkel. En kamera som bevakar mötande trafik gled in så fort vägen svängde ~30°, alltså
+konstant på E4:s kurvor. Ändrat till 60° i alla tre motorerna: släpper igenom egen riktning
+i kurvor och på ramper, stänger ute mötande. Låst med v20 (motsatt ⇒ tyst) och v21 (40°
+från kurs ⇒ varnar fortfarande) så gränsen inte kan glida åt något håll.
+Bengts förslag "läs kameror på höger sida i färdriktningen" gick inte att bygga — vi har
+position och riktning, inte vägsida, och positionen är för grov för att avgöra sida. Men
+riktningen var exakt rätt spår; den behövde bara användas hårt.

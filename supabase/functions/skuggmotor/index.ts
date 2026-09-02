@@ -118,7 +118,13 @@ export const DEFAULT_CONFIG: EngineConfig = {
   leadMinM: 400,
   leadMaxM: 3000,
   segmentSampleM: 100,
-  cameraBearingToleranceDeg: 100,
+  // 60° (var 100° t.o.m. 1/9): 100 gav ett fönster på 200° — mer än en halvcirkel — så en
+  // kamera som bevakar MÖTANDE trafik gled in så fort vägen svängde 30°. Bengt på E4:
+  // "den mäter alltid mot kameran i motsatt färdriktning". Mätt på publicerad data: 382 av
+  // 388 kamerapar inom 300 m pekar isär >135°, dvs. riktningen är tillförlitlig — grinden
+  // var bara för vid. 60° släpper igenom egen riktning i kurvor och på ramper och stänger
+  // ute mötande.
+  cameraBearingToleranceDeg: 60,
 };
 
 

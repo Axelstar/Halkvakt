@@ -70,7 +70,7 @@ data class EngineConfig(
     val leadMinM: Double = 400.0,
     val leadMaxM: Double = 3000.0,
     val segmentSampleM: Double = 100.0,
-    val cameraBearingToleranceDeg: Double = 100.0,
+    val cameraBearingToleranceDeg: Double = 60.0,
 )
 
 // ---- geo (mirror of geo.ts, same formula sequences) ----

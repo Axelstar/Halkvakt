@@ -84,7 +84,7 @@ public struct EngineConfig {
     public var leadMinM = 400.0
     public var leadMaxM = 3000.0
     public var segmentSampleM = 100.0
-    public var cameraBearingToleranceDeg = 100.0
+    public var cameraBearingToleranceDeg = 60.0
     public init() {}
 }
 
