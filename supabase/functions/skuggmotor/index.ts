@@ -30,6 +30,8 @@ export interface PointHazard {
   /** Camera: monitored direction of travel (deg). Warn only when roughly co-directional. */
   bearing?: number | null;
   meta?: {
+    /** accident — vägnummer ur Trafikverket ("E18", "25"). Rösten säger VAR (Bengt+Axel 2/9). */
+    road?: string | null;
     /** icing_point */
     surfaceTempC?: number | null;
     moisture?: boolean; // rain/snow/wet surface at the station
@@ -214,6 +216,13 @@ export function samplePolyline(line: [number, number][], stepM: number): LonLat[
  */
 export type AccidentStep = "early" | "reminder" | "late";
 
+/** " på E18" / " på väg 25" / "" — tomt när vägnumret saknas. */
+export function roadPhrase(road?: string | null): string {
+  const r = (road ?? "").trim();
+  if (!r) return "";
+  return /^[A-Za-zÅÄÖåäö]/.test(r) ? ` på ${r}` : ` på väg ${r}`;
+}
+
 export function alertText(
   kind: HazardKind,
   distanceM: number,
@@ -223,20 +232,23 @@ export function alertText(
   switch (kind) {
     case "accident": {
       const km = Math.max(1, Math.round(distanceM / 1000));
+      // VAR, inte bara hur långt (Bengt+Axel 2/9). "E18" läses "E arton" av talsyntesen,
+      // men ett blott nummer blir "olycka på 25" — därför "väg 25" när numret saknar bokstav.
+      const on = roadPhrase(hazard?.meta?.road);
       switch (step) {
         case "early": {
           const clearedAt = hazard?.meta?.endTimeLocal;
           const base =
-            `Allvarlig olycka ${km} kilometer framför dig — stor påverkan på trafiken. ` +
+            `Allvarlig olycka${on} ${km} kilometer framför dig — stor påverkan på trafiken. ` +
             `Överväg annan väg.`;
           return clearedAt ? `${base} Beräknas röjd vid ${clearedAt}.` : base;
         }
         case "reminder":
           return "Sakta ner — olycksplats strax framför dig.";
         case "late":
-          return `Allvarlig olycka ${km} kilometer framför dig — stor påverkan. Sakta ner.`;
+          return `Allvarlig olycka${on} ${km} kilometer framför dig — stor påverkan. Sakta ner.`;
         default:
-          return `Olycka rapporterad ${km} kilometer framför dig.`;
+          return `Olycka rapporterad${on} ${km} kilometer framför dig.`;
       }
     }
     case "slippery_segment":
@@ -544,7 +556,7 @@ export function snapshotToHazards(staticDoc: StaticDoc, liveDoc: LiveDoc): Hazar
   for (const d of liveDoc.deviations) {
     out.push({
       id: `dev:${d.id}`, kind: "accident", lon: d.lon, lat: d.lat,
-      meta: { severityCode: d.sev ?? null, endTimeLocal: d.slut ?? null },
+      meta: { severityCode: d.sev ?? null, endTimeLocal: d.slut ?? null, road: d.road ?? null },
     });
   }
   for (const v of liveDoc.wildlife ?? []) {

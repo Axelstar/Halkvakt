@@ -64,7 +64,8 @@ enum SnapshotRepo {
             out.append(.point(id: "dev:\(str(d, "id"))", kind: .accident,
                               lon: dbl(d, "lon"), lat: dbl(d, "lat"), bearing: nil,
                               meta: PointMeta(severityCode: optInt(d, "sev"),
-                                              endTimeLocal: d["slut"] as? String)))
+                                              endTimeLocal: d["slut"] as? String,
+                                              road: str(d, "road"))))
         }
         return Snapshot(hazards: out, generatedAt: gen)
     }

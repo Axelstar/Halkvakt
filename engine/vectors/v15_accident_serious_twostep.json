@@ -1,6 +1,6 @@
 {
  "name": "Allvarlig olycka: tidigt rop + påminnelse",
- "description": "90 km/h norrut, allvarlig olycka (severity 5, Mycket stor påverkan) 11 019 m fram med röjningstid 14:20. Två repliker: det tidiga ropet när 10 km-horisonten passeras (bär omvägsbeslutet) och påminnelsen innanför 2 km (bär bara farten). Samma hazardId, två varningsplatser.",
+ "description": "90 km/h norrut, allvarlig olycka (severity 5, Mycket stor påverkan) 11 019 m fram med röjningstid 14:20. Två repliker: det tidiga ropet när 10 km-horisonten passeras (bär omvägsbeslutet) och påminnelsen innanför 2 km (bär bara farten). Samma hazardId, två varningsplatser. Vägnummer E4 i rösten (2/9).",
  "hazards": [
   {
    "id": "acc1",
@@ -9,7 +9,8 @@
    "lat": 58.09898490837226,
    "meta": {
     "severityCode": 5,
-    "endTimeLocal": "14:20"
+    "endTimeLocal": "14:20",
+    "road": "E4"
    }
   }
  ],
@@ -1926,7 +1927,7 @@
    "hazardId": "acc1",
    "kind": "accident",
    "distanceM": 9983,
-   "text": "Allvarlig olycka 10 kilometer framför dig — stor påverkan på trafiken. Överväg annan väg. Beräknas röjd vid 14:20."
+   "text": "Allvarlig olycka på E4 10 kilometer framför dig — stor påverkan på trafiken. Överväg annan väg. Beräknas röjd vid 14:20."
   },
   {
    "t": 361,

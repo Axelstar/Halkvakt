@@ -40,7 +40,7 @@ export function snapshotToHazards(staticDoc: StaticDoc, liveDoc: LiveDoc): Hazar
   for (const d of liveDoc.deviations) {
     out.push({
       id: `dev:${d.id}`, kind: "accident", lon: d.lon, lat: d.lat,
-      meta: { severityCode: d.sev ?? null, endTimeLocal: d.slut ?? null },
+      meta: { severityCode: d.sev ?? null, endTimeLocal: d.slut ?? null, road: d.road ?? null },
     });
   }
   for (const v of liveDoc.wildlife ?? []) {

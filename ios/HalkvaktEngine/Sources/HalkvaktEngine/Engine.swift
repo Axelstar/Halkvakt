@@ -14,6 +14,8 @@ public struct PointMeta {
     public var moisture: Bool = false
     /// icing_point — punkten är en BRO (#38): temp/fukt från närmaste station, tröskel +3.
     public var bridge: Bool = false
+    /// accident — vägnummer ur Trafikverket ("E18", "25"). Rösten säger VAR (2/9).
+    public var road: String? = nil
     public var active: Bool = true
     public var speedLimitKmh: Int? = nil
     /// accident — Trafikverket SeverityCode (1 Ingen, 2 Liten, 4 Stor, 5 Mycket stor påverkan).
@@ -26,7 +28,7 @@ public struct PointMeta {
                 bridge: Bool = false) {
         self.surfaceTempC = surfaceTempC; self.moisture = moisture; self.active = active
         self.speedLimitKmh = speedLimitKmh; self.severityCode = severityCode; self.endTimeLocal = endTimeLocal
-        self.bridge = bridge
+        self.bridge = bridge; self.road = road
     }
 }
 
@@ -138,11 +140,20 @@ enum Geo {
 // MARK: - Texts (exact product copy — mirror of texts.ts)
 
 enum Texts {
+    /// " på E18" / " på väg 25" / "" när numret saknas.
+    static func roadPhrase(_ road: String?) -> String {
+        guard let r = road?.trimmingCharacters(in: .whitespaces), !r.isEmpty else { return "" }
+        return r.first!.isLetter ? " på \(r)" : " på väg \(r)"
+    }
+
     static func alertText(_ kind: HazardKind, _ distanceM: Double, _ speedLimitKmh: Int?,
                           _ step: AccidentStep? = nil, _ endTimeLocal: String? = nil,
-                          _ bridge: Bool = false) -> String {
+                          _ bridge: Bool = false, _ road: String? = nil) -> String {
         switch kind {
         case .accident:
+            // VAR, inte bara hur långt. "E18" läses "E arton"; blott nummer blir "olycka på
+            // 25" — därför "väg 25" när numret saknar bokstav.
+            let on = Texts.roadPhrase(road)
             let km = max(1, Int((distanceM / 1000).rounded()))
             switch step {
             case .early:
@@ -153,9 +164,9 @@ enum Texts {
             case .reminder:
                 return "Sakta ner — olycksplats strax framför dig."
             case .late:
-                return "Allvarlig olycka \(km) kilometer framför dig — stor påverkan. Sakta ner."
+                return "Allvarlig olycka\(on) \(km) kilometer framför dig — stor påverkan. Sakta ner."
             case .none:
-                return "Olycka rapporterad \(km) kilometer framför dig."
+                return "Olycka rapporterad\(on) \(km) kilometer framför dig."
             }
         case .slippery_segment:
             return "Varning: halka rapporterad på vägen framför dig."
@@ -238,6 +249,7 @@ public final class AlertEngine {
             let id: String; let kind: HazardKind; let distM: Double; let limit: Int?
             var alertKey: String; var step: AccidentStep? = nil; var endTimeLocal: String? = nil
             var bridge: Bool = false
+            var road: String? = nil
         }
         var candidates: [Candidate] = []
 
@@ -260,24 +272,24 @@ public final class AlertEngine {
                     let serious = sev != nil && sev! >= cfg.accidentSeriousMinSeverity
                     if !serious {
                         candidates.append(Candidate(id: p.id, kind: p.kind, distM: distM,
-                                                    limit: nil, alertKey: p.id))
+                                                    limit: nil, alertKey: p.id, road: p.meta.road))
                     } else if distM <= cfg.accidentNearM {
                         let earlySpoken = fired["\(p.id)#early"] != nil
                         candidates.append(Candidate(id: p.id, kind: p.kind, distM: distM, limit: nil,
                                                     alertKey: "\(p.id)#near",
                                                     step: earlySpoken ? .reminder : .late,
-                                                    endTimeLocal: p.meta.endTimeLocal))
+                                                    endTimeLocal: p.meta.endTimeLocal, road: p.meta.road))
                     } else {
                         candidates.append(Candidate(id: p.id, kind: p.kind, distM: distM, limit: nil,
                                                     alertKey: "\(p.id)#early", step: .early,
-                                                    endTimeLocal: p.meta.endTimeLocal))
+                                                    endTimeLocal: p.meta.endTimeLocal, road: p.meta.road))
                     }
                 }
             case .icing_point:
                 // Broar (#38): brobanan fryser först — närmaste station på +3 räcker.
                 if let t = p.meta.surfaceTempC, t <= (p.meta.bridge ? 3 : 1), p.meta.moisture, distM <= leadM {
                     candidates.append(Candidate(id: p.id, kind: p.kind, distM: distM, limit: nil, alertKey: p.id,
-                                                bridge: p.meta.bridge))
+                                                bridge: p.meta.bridge, road: p.meta.road))
                 }
             case .wildlife:
                 if p.meta.active, distM <= leadM {
@@ -322,7 +334,7 @@ public final class AlertEngine {
         return Alert(
             t: fix.t, hazardId: win.id, kind: win.kind,
             distanceM: Int(win.distM.rounded()),
-            text: Texts.alertText(win.kind, win.distM, win.limit, win.step, win.endTimeLocal, win.bridge))
+            text: Texts.alertText(win.kind, win.distM, win.limit, win.step, win.endTimeLocal, win.bridge, win.road))
     }
 
     public func run(_ trace: [Fix]) -> [Alert] { trace.compactMap { step($0) } }

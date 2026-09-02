@@ -127,6 +127,7 @@ object SnapshotRepo {
                 meta = PointMeta(
                     severityCode = if (d.has("sev") && !d.isNull("sev")) d.getInt("sev") else null,
                     endTimeLocal = if (d.has("slut") && !d.isNull("slut")) d.getString("slut") else null,
+                    road = if (d.has("road") && !d.isNull("road")) d.getString("road") else null,
                 ),
             ))
         }

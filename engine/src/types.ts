@@ -26,6 +26,8 @@ export interface PointHazard {
   /** Camera: monitored direction of travel (deg). Warn only when roughly co-directional. */
   bearing?: number | null;
   meta?: {
+    /** accident — vägnummer ur Trafikverket ("E18", "25"). Rösten säger VAR (Bengt+Axel 2/9). */
+    road?: string | null;
     /** icing_point */
     surfaceTempC?: number | null;
     moisture?: boolean; // rain/snow/wet surface at the station

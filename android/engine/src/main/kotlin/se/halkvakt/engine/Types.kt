@@ -27,6 +27,8 @@ data class PointMeta(
     val endTimeLocal: String? = null,
     /** icing_point — punkten är en BRO (#38): temp/fukt från närmaste station, tröskel +3. */
     val bridge: Boolean = false,
+    /** accident — vägnummer ur Trafikverket ("E18", "25"). Rösten säger VAR (2/9). */
+    val road: String? = null,
 )
 
 /** Which utterance of a serious accident this is (DECISIONS #28). Mirrors AccidentStep in texts.ts. */
@@ -119,6 +121,13 @@ object Geo {
 
 // ---- texts (mirror of texts.ts — exact strings, they are product copy) ----
 object Texts {
+    /** " på E18" / " på väg 25" / "" när numret saknas. */
+    fun roadPhrase(road: String?): String {
+        val r = road?.trim().orEmpty()
+        if (r.isEmpty()) return ""
+        return if (r.first().isLetter()) " på $r" else " på väg $r"
+    }
+
     fun alertText(
         kind: HazardKind,
         distanceM: Double,
@@ -127,6 +136,9 @@ object Texts {
     ): String = when (kind) {
         HazardKind.ACCIDENT -> {
             val km = max(1L, Math.round(distanceM / 1000.0))
+            // VAR, inte bara hur långt. "E18" läses "E arton"; blott nummer blir "olycka på
+            // 25" — därför "väg 25" när numret saknar bokstav.
+            val on = roadPhrase(hazard?.meta?.road)
             when (step) {
                 AccidentStep.EARLY -> {
                     val base = "Allvarlig olycka $km kilometer framför dig — stor påverkan på trafiken. " +
@@ -134,8 +146,8 @@ object Texts {
                     hazard?.meta?.endTimeLocal?.let { "$base Beräknas röjd vid $it." } ?: base
                 }
                 AccidentStep.REMINDER -> "Sakta ner — olycksplats strax framför dig."
-                AccidentStep.LATE -> "Allvarlig olycka $km kilometer framför dig — stor påverkan. Sakta ner."
-                null -> "Olycka rapporterad $km kilometer framför dig."
+                AccidentStep.LATE -> "Allvarlig olycka$on $km kilometer framför dig — stor påverkan. Sakta ner."
+                null -> "Olycka rapporterad$on $km kilometer framför dig."
             }
         }
         HazardKind.SLIPPERY_SEGMENT -> "Varning: halka rapporterad på vägen framför dig."

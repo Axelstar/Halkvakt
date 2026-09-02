@@ -600,3 +600,13 @@ från kurs ⇒ varnar fortfarande) så gränsen inte kan glida åt något håll.
 Bengts förslag "läs kameror på höger sida i färdriktningen" gick inte att bygga — vi har
 position och riktning, inte vägsida, och positionen är för grov för att avgöra sida. Men
 riktningen var exakt rätt spår; den behövde bara användas hårt.
+
+## #56 (2/9 2026) Rösten säger VAR — vägnumret in i olycksfrasen (Axel + Bengt)
+Kartan visade "OLYCKA · E18 — lastbil, mycket stor påverkan" medan rösten bara sa "tio
+kilometer framför dig". Vägnumret fanns hela vägen från Trafikverket till motorn — bara
+inte i texten. Nu: "Allvarlig olycka på E18, tio kilometer framför dig — stor påverkan…".
+Talsyntesen läser "E18" som "E arton", men ett blott nummer blir "olycka på 25" — därför
+roadPhrase(): bokstav ⇒ "på E18", siffra ⇒ "på väg 25", saknas ⇒ frasen oförändrad.
+Tre motorer, v15/v16/v17 uppdaterade + v22 (utan vägnummer ⇒ exakt gamla frasen) så att
+ingen framtida ändring kan låta rösten säga "på null". Bara olyckor tills vidare: halka
+och frysrisk gäller sträckor/punkter där föraren redan ÄR, och "på E4" tillför inget där.

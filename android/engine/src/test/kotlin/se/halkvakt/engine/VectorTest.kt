@@ -51,6 +51,7 @@ class VectorTest {
                 speedLimitKmh = m?.let { if (it.has("speedLimitKmh") && !it.isNull("speedLimitKmh")) it.getInt("speedLimitKmh") else null },
                 severityCode = m?.let { if (it.has("severityCode") && !it.isNull("severityCode")) it.getInt("severityCode") else null },
                 bridge = m?.optBoolean("bridge", false) ?: false,
+                road = m?.let { if (it.has("road") && !it.isNull("road")) it.getString("road") else null },
                 endTimeLocal = m?.let { if (it.has("endTimeLocal") && !it.isNull("endTimeLocal")) it.getString("endTimeLocal") else null },
             ),
         )
