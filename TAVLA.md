@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-01 kväll av Claude — ankarbreddningen (#38b(3b)): FI-ankare mätta, SMHI-provet byggt + kört (första signal: hjälper bortom 20 km, stör inte nära)*
+*Uppdaterad: 2026-09-02 av Claude — nytt kort #43 Radarn som infrastruktur (plan + rekognosering); #42 steg 0a klart, 0b körd*
 
 ---
 
@@ -181,6 +181,15 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
 - [ ] 📞 **Skyltfondsrundan** (efter Axels klartecken): fonden + trafikövningsplats v.36 → avsiktsförklaringar 25/9 → SKICKA 28/9
 
 ### Claude — olåst
+- [ ] 📡 **#43 Radarn som infrastruktur** (Bengts beställning 2/9, efter cellmätningens
+  dom) — EN källa, SEX nyttor: vattenplaningens trigger (#42), blixthalkans pipeline
+  (#16), marsdomens orsaksklassning, miss-/skuggfacit, vinterns snöbyar, Norden.
+  PLAN: docs/RADAR-PLAN.md — observation inte prognos (#25-lagen), grids samplas mot
+  skelettet och händelsefiltreras (fritier är lag), stationerna blir kalibrering.
+  Steg 1 REKOGNOSERING 🔓 (SMHI öppna radardata + MET Nordic: format/volym/kadens +
+  kvalitetskartan över fjällens radarskuggor — mäts, inte antas). Steg 2 KÄLLBESLUT
+  🔑 DECISIONS-rad Axel + Bengt. Steg 3 pilotintag i skugga 🔑 steg 2. Steg 4
+  nyttjarna i kortens egen takt. Blind fläck namngiven: frosten ser radarn aldrig.
 - [ ] **#32 Hindren in i rösten** — vi har aldrig skeppat annat än olyckor trots att
   DECISIONS #5 sade "olyckor + hinder". Kräver ny HazardKind + egen röstfras + Axels
   beslut om vad rösten säger. Bäst kandidat: **djur på vägbanan** (173 på en vecka, med
