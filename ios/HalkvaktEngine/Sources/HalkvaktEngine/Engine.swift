@@ -157,7 +157,7 @@ enum Texts {
             let km = max(1, Int((distanceM / 1000).rounded()))
             switch step {
             case .early:
-                let base = "Allvarlig olycka \(km) kilometer framför dig — stor påverkan på trafiken. "
+                let base = "Allvarlig olycka\(on) \(km) kilometer framför dig — stor påverkan på trafiken. "
                     + "Överväg annan väg."
                 if let t = endTimeLocal { return "\(base) Beräknas röjd vid \(t)." }
                 return base
