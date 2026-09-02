@@ -580,3 +580,13 @@ hans): Axel har nu huvudbeslutet, länken till TROSKLAR-SKUGGAN.md, grindarna i 
 vad som är hans (fastställandet, fri justering till första skuggkörningen) och löftet att
 inget rör hans tid förrän november. Gmail-kvitto "Meddelandet har skickats". Därmed är
 byggplanens båda kommunikationskrav uppfyllda: strategimejl + tröskellänk i samma mejl.
+
+## 2026-09-02 morgon — Ankarfyndet till DECISIONS (#55) + kameravakten i healthchecken
+Terminalsessionens varv efter ett dygns paus: körde scripts/ankaranalys.ts mot CDN och
+fick SAMMA siffror som parallellsessionens ankaranalys.yml-körning — oberoende
+reproduktion (744 kameror, alla VViS-monterade, Norrland 12,6 % oförändrat). Fyndet
+stod bara på tavlan; nu bokfört som DECISIONS #55. Healthcheckens CDN-vakt på kamera-
+filen (skriven 1/9, medvetet tillbakahållen tills filen fanns) committad — extra
+motiverad av TRV-400-episoden där fail-soft dolde felet i timmar. Tre rebasar mot
+parallellsessionen under varvet; #54-läxan ("ta kortet innan du bygger") gäller även
+terminalen — ankaranalysen byggdes dubbelt för att ingen såg den andres pågår.
