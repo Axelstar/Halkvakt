@@ -58,7 +58,36 @@ dokumenterat nej för priset av ett kvällsvarv.
 - **Kvalitetsfällor**: smältskiktets överskattning, markekon — därav kalibreringen (steg 3).
 - **Volym mot fritier**: mäts i steg 1 och bevisas i steg 3-piloten; taket är hårt.
 
-## 5. Relation till kort #42:s körschema
+## 5. Rekognoseringens resultat (steg 1 KÖRD 2/9, körning 33616309645)
+
+**A. SMHI:s öppna radardata — helt öppen, rätt form för oss:**
+- API:t svarar 200 på alla nivåer utan nyckel. Sverigekompositen: **5-minuterskadens**
+  (234 filer räknade fram till 09:41 = 288/dygn-takt), **261 kB/fil ≈ 77 MB rå/dygn**
+  — hanterbart eftersom grids aldrig lagras utan samplas till segmentrader (§2).
+- Format: **HDF5/ODIM** (`radar_sweden_comp_*.h5`) per 5-minutersfil; dagslistningen
+  exponerar även en **tif**-nedladdning. Pilotens (steg 3) tekniska val: GeoTIFF-spåret
+  är enklast att sampla i Node — utvärderas där, inte gissas här.
+
+**B. Fjälltäckningen — farhågan höll INTE, med en namngiven lucka:**
+- 422-svepet över 26 punkter längs referensrutterna: **26/26 svarar med data.**
+  `radar_coverage: ok` på E4:s hela sträckning, E10 Gällivare/Kiruna, E14
+  Östersund/Åre/**Storlien** — gränsfjällen täcks, sannolikt för att MET komponerar
+  norska + svenska + finska radarer (nordisk komposit slår nationell).
+- Två undantag, ärligt bokförda: **Tärnaby `no coverage`** (djupa inlandsfjällen
+  mellan radarstationerna — den kända luckan, lokal) och Mora `temporarily
+  unavailable` vid mättillfället (transient, inte struktur).
+- Arkitekturkonsekvens: MET:s punkt-API duger för stickprov men inte för
+  818-segmentssvep var 5:e minut (deras villkor). Rätt mönster är SMHI-kompositen
+  (en fil, 261 kB) + lokal sampling; MET som nordisk kompletterare/verifierare.
+
+**C. Licenser:** SMHI CC BY 4.0, MET NLOD 2.0/CC BY 4.0 med identifierande
+User-Agent (repo-URL, inga personuppgifter). Båda gratis — fritier-lagen hålls.
+
+**Domen från steg 1: inget i rekognoseringen stoppar källbeslutet.** Öppet, gratis,
+5-minutersfärskt, fjällen väsentligen täckta med Tärnaby som enda strukturella lucka.
+Underlaget för steg 2 (DECISIONS-rad, Axel + Bengt) är komplett.
+
+## 6. Relation till kort #42:s körschema
 
 Steg 1 här = körschemats föreslagna "steg 1b" (VATTENPLANING-ANALYS §8). #42:s
 tröskeldokument (dess steg 2) skrivs för det spår rekognoseringen + cellmätningens v2

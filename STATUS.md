@@ -513,6 +513,20 @@ tomt fönster → underlagsvakt exit 1 → rött jobb → notismejl → mottagar
 Grind A-mätningen är därmed självövervakande med bevisad larmväg — ingen behöver
 minnas oktober, och en trasig hämtning i november når Bengt av sig själv.
 
+## 2026-09-02 — Kort #43 steg 1: radar-rekognoseringen körd (Bengts "kör")
+Plan + kort upprättade på Bengts beställning (docs/RADAR-PLAN.md: EN källa, SEX
+nyttjare, bygge låst bakom rekognosering + källbeslut). Sonden körd samma förmiddag
+(radar-rekognosering #1): SMHI:s Sverigekomposit helt öppen — 5-min-kadens, 261 kB/fil
+(~77 MB rå/dygn; grids lagras aldrig, samplas till segmentrader), HDF5 per fil + tif-spår
+i dagslistningen. FJÄLLFYNDET som fällde farhågan: 26/26 punkter längs referensrutterna
+har täckning, radar_coverage:ok även E10 Kiruna och E14 Storlien — METs nordiska komposit
+(norska+svenska+finska radarer) slår nationell täckning; enda strukturella luckan är
+Tärnaby (no coverage), Mora var transient otillgänglig. Arkitekturkonsekvens bokförd:
+SMHI-fil + lokal sampling för skelettet, METs punkt-API bara för stickprov (deras
+villkor). Licenser CC BY 4.0/NLOD, User-Agent = repo-URL utan personuppgifter.
+DOMEN: inget stoppar källbeslutet — steg 2 (DECISIONS-rad Axel + Bengt) har komplett
+underlag. Ingen intagskod skriven, per planens lås.
+
 ## 2026-09-02 — Kort #42 steg 0a KLART + 0b körd: regnfacit tickar, cellrisken uppmätt
 **Steg 0a (Axels ja via Bengt i chatten):** ordningen bevis → bygge → slutbevis, hela
 kedjan grön. Regn-bevis #1 (inga gissade INCLUDE-blad — hela objekten inspekterade):

@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-02 av Claude — nytt kort #43 Radarn som infrastruktur (plan + rekognosering); #42 steg 0a klart, 0b körd*
+*Uppdaterad: 2026-09-02 av Claude — radar-rekognoseringen (#43 steg 1) körd: fjällen täckta (26/26 punkter, enda luckan Tärnaby), källbeslutets underlag komplett*
 
 ---
 
@@ -186,10 +186,14 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   (#16), marsdomens orsaksklassning, miss-/skuggfacit, vinterns snöbyar, Norden.
   PLAN: docs/RADAR-PLAN.md — observation inte prognos (#25-lagen), grids samplas mot
   skelettet och händelsefiltreras (fritier är lag), stationerna blir kalibrering.
-  Steg 1 REKOGNOSERING 🔓 (SMHI öppna radardata + MET Nordic: format/volym/kadens +
-  kvalitetskartan över fjällens radarskuggor — mäts, inte antas). Steg 2 KÄLLBESLUT
-  🔑 DECISIONS-rad Axel + Bengt. Steg 3 pilotintag i skugga 🔑 steg 2. Steg 4
-  nyttjarna i kortens egen takt. Blind fläck namngiven: frosten ser radarn aldrig.
+  ✅ Steg 1 REKOGNOSERING KÖRD 2/9 (körning 33616309645, resultat i planens §5):
+  SMHI-kompositen öppen utan nyckel, 5-min-kadens, 261 kB/fil (~77 MB rå/dygn, samplas
+  — lagras aldrig), HDF5 + tif-spår. FJÄLLFYNDET: 26/26 ruttpunkter täckta — E10
+  Kiruna och E14 Storlien radar_coverage:ok (nordisk komposit slår nationell); enda
+  strukturella luckan är Tärnaby. Licenser CC BY/NLOD, gratis. DOMEN: inget stoppar
+  källbeslutet. 🔑 Steg 2 KÄLLBESLUT: DECISIONS-rad Axel + Bengt — underlaget är
+  komplett. Steg 3 pilotintag i skugga 🔑 steg 2. Steg 4 nyttjarna i kortens egen
+  takt. Blind fläck kvarstår: frosten ser radarn aldrig.
 - [ ] **#32 Hindren in i rösten** — vi har aldrig skeppat annat än olyckor trots att
   DECISIONS #5 sade "olyckor + hinder". Kräver ny HazardKind + egen röstfras + Axels
   beslut om vad rösten säger. Bäst kandidat: **djur på vägbanan** (173 på en vecka, med
