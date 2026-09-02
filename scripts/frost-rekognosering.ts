@@ -49,6 +49,19 @@ for (const t of ts.data ?? [])
   if (!t.validTo) activeIds.add(String(t.sourceId).split(":")[0]);
 console.log(`\nAktiva air_temperature-serier: ${activeIds.size} stationer`);
 
+// 2b. THE question run #1 raised: road_surface_temperature exists in the catalogue and
+// Vegvesen holds 473 stations — how many actively report ROAD SURFACE temp via Frost?
+// If many: Norway's VViS-equivalents are reachable today, without the DATEX account.
+let roadIds = new Set<string>();
+for (const elem of ["road_surface_temperature", encodeURIComponent("max(road_surface_temperature PT10M)")]) {
+  try {
+    const rts = await frost(`/observations/availableTimeSeries/v0.jsonld?elements=${elem}`);
+    for (const t of rts.data ?? []) if (!t.validTo) roadIds.add(String(t.sourceId).split(":")[0]);
+    if (roadIds.size) { console.log(`\nAktiva road_surface_temperature-serier (${decodeURIComponent(elem)}): ${roadIds.size} stationer`); break; }
+  } catch (e) { console.log(`\n(${decodeURIComponent(elem)}: ${String((e as Error).message).slice(0, 120)})`); }
+}
+if (!roadIds.size) console.log("➡ Ingen aktiv road_surface_temperature-serie — yttemp kräver ändå Vegvesen/DATEX.");
+
 // 3. Road/surface elements in the catalogue
 const el = await frost("/elements/v0.jsonld");
 const road = (el.data ?? []).filter((e: any) => /road|surface|ground/i.test(`${e.id} ${e.name ?? ""}`));
@@ -68,6 +81,16 @@ for (const [name, p] of CORRIDORS) {
     .filter((x: any) => x.km <= 100).sort((a: any, b: any) => a.km - b.km);
   console.log(`  ${name.padEnd(16)} ${String(near.length).padStart(3)} st — närmast: ${near[0] ? `${near[0].s.name} (${near[0].km.toFixed(0)} km)` : "ingen"}`);
   if (!probe && near[0]) probe = near[0].s;
+}
+if (roadIds.size) {
+  const roadActive = stations.filter((s: any) => roadIds.has(s.id));
+  console.log(`Aktiva YTTEMP-stationer nära gränsstråken (≤ 100 km):`);
+  for (const [name, p] of CORRIDORS) {
+    const near = roadActive
+      .map((s: any) => ({ s, km: havKm(p, s.geometry.coordinates) }))
+      .filter((x: any) => x.km <= 100).sort((a: any, b: any) => a.km - b.km);
+    console.log(`  ${name.padEnd(16)} ${String(near.length).padStart(3)} st — närmast: ${near[0] ? `${near[0].s.name} (${near[0].km.toFixed(0)} km)` : "ingen"}`);
+  }
 }
 
 // 5. Live probe: latest air temperature from the station nearest a corridor
