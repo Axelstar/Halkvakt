@@ -208,7 +208,7 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
 - [ ] **#26 Skolpaketet** (QR-blad, manus, checklista) *(låst: trafikskolans avsiktsförklaring)*
 - [ ] **#15 Kö-slutsmotorn** (TrafficFlow) *(låst: efter release — uppdatering 1)*
 - [ ] **#16 Blixthalke-prognos** (MET Nowcast) *(låst: efter kö-slut — uppdatering 2)*
-- [ ] 🌧️ **#42 Vattenplaningsvarningen** (Bengts idé 1/9) — regnintensitet (VViS RainSum,
+- [ ] 🌧️ **#42 Vattenplaningsvarningen** — ÄGARE: BENGT (issue #15, 1/9) — regnintensitet (VViS RainSum,
   ny ingestkolumn — vi lagrar idag bara regn ja/nej) × spårdjupslager (Trafikverkets
   vägytemätning via Lastkajen; licens/färskhet kollas först) × fartgrind ≥ ~70 km/h
   på enheten. Punktkälla ⇒ "framöver"-fras, aldrig avstånd. Ordning enligt huslagen:
