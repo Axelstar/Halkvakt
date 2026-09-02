@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-02 kväll av Claude — radarpiloten I DRIFT (#43 steg 3): första 63 raderna skrivna, driftas ur ingest-jobbet, dom efter en vecka*
+*Uppdaterad: 2026-09-02 sen kväll av Claude (terminalen) — tavelsynk på Bengts order: #55 in på ankarkortet, grind-a måndagar + larmvägen återlagad (pipefail)*
 
 ---
 
@@ -80,7 +80,10 @@ med släckt skärm, vakten stannar när du stänger av.
     33485863812). MÄTRESULTAT: kamerorna ger nästan ingen ny ankartäthet — 738/744
     står exakt vid en väderstation (VViS). Nationellt 6,8→6,7 km median, >20 km-andel
     4,7→4,6 %; Norrland oförändrat 9,2 km / 12,6 %. Kamerornas värde är BILDFACIT,
-    inte täckning. Knappen ankaranalys.yml aktiveras när grenen når main.
+    inte täckning. Knappen ankaranalys.yml LIVE på main. Fyndet bokfört som DECISIONS #55
+    2/9 (terminalsessionen reproducerade siffrorna oberoende med scripts/ankaranalys.ts —
+    två verktyg, samma resultat). Healthchecken vaktar nu kamerafilen på CDN
+    (finns/≥500 kameror/≤7 dygn) — fail-soft-läxan från TRV-400-episoden.
   - [ ] **(3) Offsetmodellen mot arkivdata** 🔓 — vi har data sedan 24/8. Tunt, men nog för
     att se om matematiken alls håller innan tre veckor läggs på den.
     SKRIPTET BYGGT 1/9: publish/grind-a.ts + knappen Actions → grind-a (leave-one-out,
@@ -88,11 +91,14 @@ med släckt skärm, vakten stannar när du stänger av.
     RÖKPROVET KÖRT 1/9 (grind-a #1, Bengts knapptryck): 43 punkter — felet växer med
     ankaravståndet precis som teorin säger (0,63 °C vid 0–7 km → 5,39 °C bortom 20 km).
     Nära ankare under A1-tröskeln redan på sämsta möjliga data; för tunt för dom
-    (minsta underlag ≥ 500 punkter infört i dokumentet). AUTOMATISK från 1/9: körs varje
-    söndagsmorgon, resultatet på körningens Summary-sida — läses i Bengts söndagsrutin,
-    ingen behöver minnas oktober. Underlagsvakt: grön-men-tom mätning (<100 stationer)
-    blir rött jobb — larmvägen HELT BEVISAD 1/9 (avsiktlig dagar=0-körning → rött →
-    mejlet "Alla jobb har misslyckats" framme hos Bengt, skärmbildskvitto). 🔑 Skarp
+    (minsta underlag ≥ 500 punkter infört i dokumentet). AUTOMATISK: körs varje MÅNDAG
+    05:40 (skriptsammanslagningen #54 flyttade dagen), resultatet på körningens
+    Summary-sida. Domspärr i skriptet: under 500 punkter/20 stationer skrivs "—", ingen
+    dom går att läsa av. Underlagsvakt: grön-men-tom mätning (<100 stationer) blir rött
+    jobb — larmvägen HELT BEVISAD 1/9 (avsiktlig dagar=0-körning → rött → mejlet "Alla
+    jobb har misslyckats" framme hos Bengt, skärmbildskvitto). OBS 2/9: workflow-
+    omskrivningen tappade `shell: bash` ⇒ `| tee` åt exit-koden igen (tee-läxan #26,
+    larmvägen avväpnad) — LAGAD i terminalsessionens tavelsynk samma kväll. 🔑 Skarp
     prövning på vinterdata (≥ 500 punkter) före november.
   - [ ] **(3b) Ankarbreddningen** (Bengts fråga 1/9: "vad krymper avståndet?") —
     tre kandidater, en mätt, en byggd, en väntar:

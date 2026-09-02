@@ -14,6 +14,9 @@ jobs:
       - run: npm ci
       - name: Grind A — självtest först, sedan arkivet
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        # shell: bash ger pipefail — utan den äter `| tee` exit-koden och underlagsvakt/
+        # självtest kan aldrig fälla jobbet (tee-läxan, DECISIONS #26; larmvägen bevisad 1/9).
+        shell: bash
         run: |
           node --experimental-strip-types publish/grind-a.ts --sjalvtest | tee -a "$GITHUB_STEP_SUMMARY"
           node --experimental-strip-types publish/grind-a.ts | tee -a "$GITHUB_STEP_SUMMARY"
