@@ -674,3 +674,19 @@ kamerariktning men ofullständig olyckstext, och vi visste inte vilket bygge som
 ÅTGÄRD: lagat, ios-engine grön. Version 0.3.5 (8) så den trasiga går att skilja ut.
 REGEL (CLAUDE.md): aldrig be om arkivering utan att först köra ios-engine + android + ci
 och se alla gröna. Kompilering ≠ kontrakt.
+
+## #60 (2/9 2026) KÄLLBESLUTET: SMHI:s radarkomposit in som källa (kort #43 steg 2)
+Bengt + Axel (Axels ok relayerat av Bengt i chatten 2/9; Axel kan kontrasignera genom
+att bocka kortet på tavlan). Beslut: SMHI:s öppna radarkomposit (Sverige, 5-min, CC BY
+4.0) tas in som permanent extern källa enligt docs/RADAR-PLAN.md — observationsdelen
+ENDAST (mätning, inom #25-lagen; extrapolering förblir #16:s parkerade prognosklass).
+Grids lagras aldrig råa: samplas mot 818-skelettet, händelsefiltreras, fritier är lag.
+Stationerna blir markkalibrering, pensioneras inte. MET api.met.no som nordisk
+kompletterare för stickprov (identifierande User-Agent utan personuppgifter).
+Underlag: rekognoseringen (körning 33616309645) — öppet utan nyckel, 261 kB/fil
+(~77 MB rå/dygn), 26/26 ruttpunkter täckta inkl. E10 Kiruna/E14 Storlien, enda
+strukturella luckan Tärnaby; cellmätningen (regnet dekorrelerar under ankaravstånden,
+46–64 % diskordans 5–50 km). Alternativ som valdes bort: enbart stationstrigger
+(cellmätningens dom), MET:s punkt-API för skelettet (deras villkor), köpta källor
+(fritier). Nästa: steg 3 pilotintag i skugga, bevisas med cellmätning v3 mot radar
++ uppmätt fritier efter en vecka.
