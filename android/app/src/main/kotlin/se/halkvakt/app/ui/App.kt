@@ -120,7 +120,8 @@ fun HalkvaktApp(activity: MainActivity) {
                         indicatorColor = Gul.copy(alpha = .14f))
                     NavigationBarItem(tab == 0, { tab = 0 }, { Icon(Icons.Filled.Warning, null) }, label = { Text("Vakten") }, colors = c)
                     NavigationBarItem(tab == 1, { tab = 1 }, { Icon(Icons.Filled.Settings, null) }, label = { Text("Inställningar") }, colors = c)
-                    NavigationBarItem(tab == 2, { tab = 2 }, { Icon(Icons.Filled.Info, null) }, label = { Text("Om") }, colors = c)
+                    // Om-fliken borttagen 2/9 (DECISIONS #48, som iOS): innehållet är sista
+                    // avsnittet i Inställningar. Två flikar, inte tre.
                 }
             }
         ) { pad ->
@@ -128,8 +129,7 @@ fun HalkvaktApp(activity: MainActivity) {
                 TopBar()
                 when (tab) {
                     0 -> VaktScreen(activity)
-                    1 -> SettingsScreen(activity)
-                    else -> OmScreen()
+                    else -> SettingsScreen(activity)   // Om ligger sist i Inställningar (#48)
                 }
             }
         }
@@ -223,9 +223,14 @@ private fun RedoContent(activity: MainActivity) {
                 border = BorderStroke(1.dp, Kant), modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(18.dp)) {
                     Rubrik("STATUS")
-                    Text("Redo att köra", color = Text, fontSize = 30.sp, fontFamily = Cond)
+                    // Skinnet v3: ETT ord i stort sans, som iOS VaktenView. Inte mono —
+                    // mono är för siffror och etiketter.
+                    Text("Redo.", color = Brand.text, fontSize = 64.sp,
+                        fontFamily = Typo.sans, fontWeight = FontWeight.Bold,
+                        letterSpacing = (-2.5).sp)
                     Text("Vakten lyssnar på vägen framför dig så fort du startar.",
-                        color = Dis, fontSize = 14.sp, modifier = Modifier.padding(top = 4.dp))
+                        color = Brand.dim, fontSize = 15.sp, fontFamily = Typo.sans,
+                        lineHeight = 21.sp, modifier = Modifier.padding(top = 6.dp))
                     Spacer(Modifier.height(16.dp))
                     Button(onClick = { activity.onToggle() }, shape = RoundedCornerShape(50),
                         colors = ButtonDefaults.buttonColors(containerColor = Gron, contentColor = Color.White),
@@ -504,13 +509,15 @@ private fun SettingsScreen(activity: MainActivity) {
 /* ---------- OM ---------- */
 
 @Composable
+/** Om-avsnittet — sista delen av Inställningar sedan Om-fliken togs bort (DECISIONS #48). */
+@Composable
 private fun OmScreen() {
     val ctx = LocalContext.current
     val uri = LocalUriHandler.current
     val version = remember {
         runCatching { ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName }.getOrNull() ?: "?"
     }
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp)) {
+    Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
         Rubrik("OM HALKVAKT")
         Spacer(Modifier.height(10.dp))
         Text("Halkvakt varnar dig med rösten — som en passagerare som läst allt Trafikverket vet om vägen framför dig.", color = Text)
@@ -533,6 +540,9 @@ private fun OmScreen() {
             color = Dis, fontSize = 12.sp, fontFamily = FontFamily.Monospace)
         Spacer(Modifier.height(8.dp))
     }
+
+        Spacer(Modifier.height(28.dp))
+        OmScreen()   // #48: Om-fliken borttagen, innehållet ligger sist här
 }
 
 @Composable private fun LinkRow(label: String, onClick: () -> Unit) {
