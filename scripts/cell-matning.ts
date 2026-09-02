@@ -11,6 +11,11 @@
 // diskordansen UNDERSKATTAS. Parning på delade buckets mildrar; höstens täta
 // mängddata (rain_sum_mm, steg 0a) skärper mätningen utan metodbyte.
 //
+// V2 (2/9, artefakten ur #1): stationer UTAN en enda regnrapport i fönstret utesluts —
+// parsern ger rain=false även för givarelösa stationer (~11 % saknar mängdgivare), och
+// en sådan intill en givarförsedd producerar falsk diskord vid varje regn (v1:s
+// 0–5 km-band visade 70 % av just detta). Uteslutna räknas och skrivs ut.
+//
 // Run: DATABASE_URL=... node --experimental-strip-types scripts/cell-matning.ts [dagar=60]
 // Självtest utan DB: scripts/cell-matning.ts --sjalvtest
 
@@ -125,7 +130,14 @@ for (const r of res.rows) {
   if (!s) { s = { id: r.station_id, lon: +r.lon, lat: +r.lat, rain: new Map() }; byId.set(r.station_id, s); }
   s.rain.set(Number(r.b), Boolean(r.rain));
 }
-console.log(`Arkivet: ${byId.size} stationer, ${res.rows.length} bucketade rader, ${DAYS} dygn bakåt`);
+const alla = byId.size;
+for (const [id, st] of byId) {
+  let any = false;
+  for (const v of st.rain.values()) if (v) { any = true; break; }
+  if (!any) byId.delete(id); // aldrig regn i fönstret = trolig givarelös (v2-rensningen)
+}
+console.log(`Arkivet: ${alla} stationer, ${res.rows.length} bucketade rader, ${DAYS} dygn bakåt`);
+console.log(`V2-rensningen: ${alla - byId.size} stationer utan en enda regnrapport uteslutna (troligt givarelösa), ${byId.size} kvar`);
 if (byId.size < 100 || res.rows.length < 1000) {
   console.error(`UNDERLAGSVAKT: ${byId.size} stationer / ${res.rows.length} rader — hämtningen eller arkivet är trasigt.`);
   process.exit(1);
