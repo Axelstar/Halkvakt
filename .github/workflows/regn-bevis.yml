@@ -1,0 +1,24 @@
+# Regnbeviset (kort #42 steg 0a): vilka nederbördsmängder levererar VViS, och med
+# vilken täckning? Körs på knapp; resultatet på Summary-sidan (grind-a-mönstret).
+# Efter kolumnbygget läser samma knapp tillbaka lagrade mängder ur arkivet som slutbevis.
+name: regn-bevis
+on:
+  workflow_dispatch:
+jobs:
+  regn-bevis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/regn-bevis.ts | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env:
+          TRAFIKVERKET_API_KEY: "${{ secrets.TRAFIKVERKET_API_KEY }}"
+          DATABASE_URL: "${{ secrets.DATABASE_URL }}"
