@@ -647,3 +647,15 @@ LÄXOR: (1) rotera aldrig halva paret — B64 och PASS hör ihop och ska sättas
 sittning; (2) jks-filen MÅSTE ligga utanför GitHub (iCloud), annars går paret inte att
 laga; (3) ett CI-jobb som bara säger "success" bevisar ingenting om grenarna saknar
 exit 1 — min första diagnos läste grönt fast lösenordet inte fungerade.
+
+## #59 (2/9 2026) Riktningsvändningen VERIFIERAD mot publicerat känt fall
+Efter #57 kom en ny fältrapport som såg ut som fortsatt fel. Innan ännu en ändring:
+verifiering mot ett externt, publicerat fall i stället för resonemang.
+Kamera-ID 14102020, väg 535, 0,4 km från Öjersjö, har bearing 158 i vår data. Publicerad
+beskrivning av SAMMA ID: "Öjersjö norrgående körriktning — riktad mot sydsydost (bäring
+158°)". Kameran övervakar alltså NORRGÅENDE trafik med bearing 158; 158 + 180 = 338 ≈
+nordnordväst. Vändningen ger rätt övervakad färdriktning. BEKRÄFTAT.
+Slutsats: koden i 0.3.4 är korrekt. Kvarstående fältfel förklaras av att 0.3.4 ännu inte
+var uppladdad när testaren installerade om — han fick 0.3.3 igen.
+METODLÄXA: jag ändrade två saker samtidigt i #55 (tolerans 100→60) och #57 (vändning 180°).
+Det gjorde fältrapporterna svårtolkade. En variabel per bygge när något mäts i verkligheten.
