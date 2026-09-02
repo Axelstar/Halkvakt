@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-02 av Claude — KÄLLBESLUTET taget (DECISIONS #60, Bengt + Axel): radarn in; cellmätningens v2-dom ren (26→60 %), pilotintaget olåst*
+*Uppdaterad: 2026-09-02 kväll av Claude — radarpiloten I DRIFT (#43 steg 3): första 63 raderna skrivna, driftas ur ingest-jobbet, dom efter en vecka*
 
 ---
 
@@ -196,9 +196,14 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   strukturella luckan är Tärnaby. Licenser CC BY/NLOD, gratis. DOMEN: inget stoppar
   källbeslutet. 🔑 Steg 2 KÄLLBESLUT: DECISIONS-rad Axel + Bengt — underlaget är
   komplett. ✅ Steg 2 KÄLLBESLUTET TAGET 2/9: DECISIONS #60 — Bengt + Axel (Axels ok
-  via Bengt i chatten; Axel kontrasignerar genom att bocka här). 🔓 Steg 3 pilotintag
-  i skugga OLÅST — byggs på Bengts ord, bevisas med cellmätning v3 mot radar +
-  uppmätt fritier efter en vecka. Steg 4 nyttjarna i kortens egen takt. Blind fläck
+  via Bengt i chatten; Axel kontrasignerar genom att bocka här). ✅ Steg 3 PILOTEN I DRIFT 2/9 kväll
+  (Bengts "bygg piloten"): ingest/radar.ts — ODIM HDF5 → proj4 → 2 km-sampling mot
+  818-skelettet → Marshall–Palmer → radar_precip (händelsefiltrerad, fött låst),
+  som steg i ingest-jobbet (minutdieten hålls). Prov-läget fällde ett API-fel före
+  skarp drift (h5wasm FS) och bevisade formatet (DBZH, hörnkontroll 458,0×881,0).
+  FÖRSTA SKARPA RADERNA (radar-pilot #3, 18:28): 63 segment med regn just då, max
+  15,38 mm/h, färskhetsrad i varje logg. 🔑 Pilotens dom efter ~1 vecka: cellmätning
+  v3 mot radar (kalibrering) + uppmätt volym/fritier. Steg 4 nyttjarna i kortens egen takt. Blind fläck
   kvarstår: frosten ser radarn aldrig.
 - [ ] **#32 Hindren in i rösten** — vi har aldrig skeppat annat än olyckor trots att
   DECISIONS #5 sade "olyckor + hinder". Kräver ny HazardKind + egen röstfras + Axels
