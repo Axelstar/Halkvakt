@@ -19,3 +19,12 @@ jobs:
         env:
           TRAFIKVERKET_API_KEY: ${{ secrets.TRAFIKVERKET_API_KEY }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      # Radarpiloten i skugga (kort #43 steg 3, DECISIONS #60). Eget steg i detta jobb
+      # för minutdietens skull (#22) — ryms i redan betalda minuter. continue-on-error
+      # under pilotfasen så en SMHI-hicka inte fäller kärningesten; gravstensläxans
+      # motvikt är färskhetsraden i loggen + radar-pilot-knappens bevisläge.
+      - name: Radarpiloten (skugga, får fallera utan att fälla ingest)
+        continue-on-error: true
+        run: node --experimental-strip-types ingest/radar.ts
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
