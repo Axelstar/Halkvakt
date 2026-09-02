@@ -503,6 +503,9 @@ private fun SettingsScreen(activity: MainActivity) {
         Text("Spelar en provvarning i samma kanal som riktiga varningar — bra för att ställa volymen i bilen.",
             color = Dis, fontSize = 12.sp, modifier = Modifier.padding(top = 6.dp))
         Spacer(Modifier.height(16.dp))
+
+        Spacer(Modifier.height(28.dp))
+        OmScreen()   // #48: Om-fliken borttagen — innehållet är sista avsnittet här
     }
 }
 
@@ -540,9 +543,6 @@ private fun OmScreen() {
             color = Dis, fontSize = 12.sp, fontFamily = FontFamily.Monospace)
         Spacer(Modifier.height(8.dp))
     }
-
-        Spacer(Modifier.height(28.dp))
-        OmScreen()   // #48: Om-fliken borttagen, innehållet ligger sist här
 }
 
 @Composable private fun LinkRow(label: String, onClick: () -> Unit) {
