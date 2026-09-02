@@ -38,6 +38,9 @@ förbi vid varje autostart.
 med släckt skärm, vakten stannar när du stänger av.
 
 **5. Beslut som väntar på dig** (rekommendationer i chatten 31/8, DECISIONS #30–#34)
+- [ ] 🔑 **Fastställ trösklarna för skuggan** — ETT ORD räcker ("kör" som svar på Bengts
+  strategimejl 1/9), eller justera värdena fritt i docs/TROSKLAR-SKUGGAN.md före första
+  skuggkörningen (~mitten av oktober). Detaljkortet under "Axel — beslut att ta" nedan.
 - [ ] Svara pappa på höstplanen — ja till TågRätt-företräde för DIN tid, ~1 h/vecka till Halkvakt
 - [ ] Rollfördelningen: B2B = Bengt (ja) · Skyltfondsrundan: klartecken (v.36 börjar onsdag)
 - [x] ~~Skinnet v3 (#24) iOS~~ ✅ BEVISAT på Axels telefon 31/8 19:20 — alla skärmar, ikonsetet,
