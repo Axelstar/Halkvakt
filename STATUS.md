@@ -513,6 +513,23 @@ tomt fönster → underlagsvakt exit 1 → rött jobb → notismejl → mottagar
 Grind A-mätningen är därmed självövervakande med bevisad larmväg — ingen behöver
 minnas oktober, och en trasig hämtning i november når Bengt av sig själv.
 
+## 2026-09-02 kväll — Radarpiloten I DRIFT (kort #43 steg 3, Bengts "bygg piloten")
+ingest/radar.ts: senaste SMHI-kompositen (ODIM HDF5) → h5wasm → proj4 mot filens egen
+projdef → 2 km-sampling mot 818-skelettet → Marshall–Palmer (kalibreras i v3, gissas
+inte) → radar_precip, händelsefiltrerad (≥ 0,1 mm/h), idempotent, fött låst med
+rollvakt. Drift som steg i ingest-jobbet — ryms i redan betalda minuter (minutdieten
+#22); continue-on-error under pilotfasen med färskhetsrad som motvikt; bevisknapp
+radar-pilot (prov/skarp). Bevisordningen höll: prov-läget (RoadNumber-läxan för
+binärformat) fällde först ett API-fel (h5wasm:s FS bor på ready-modulen — radar-pilot
+#1 röd, lagad, #2 grön) och bevisade sedan formatet mot verkligheten: DBZH 458×881 px
+à 2 km, gain 0,4/offset −30, hörnkontroll 458,0×881,0 — geometrivakterna nöjda.
+SKARP (radar-pilot #3 18:28): regnväder över skelettet i realtid — 13 049 provpunkter
+(84 utanför täckning), 63 segment ≥ 0,1 mm/h, max 15,38 mm/h, "radar_precip senaste
+dygnet: 63 rader, senaste 18:20Z". Från nästa timvisa ingest-varv matar piloten sig
+själv. 🔑 Domen efter ~1 vecka: cellmätning v3 (radar mot stationernas rain_sum_mm =
+kalibreringskurvan) + uppmätt radantal/fritier. Beroenden: h5wasm + proj4 (rena
+JS/wasm, gratis).
+
 ## 2026-09-02 em — KÄLLBESLUTET (DECISIONS #60) + cellmätningens v2-dom
 **Källbeslutet taget:** Bengt + Axel ("jag o Axel säger ok" i chatten — Axels ok
 relayerat av Bengt, kontrasigneras på tavlan). SMHI:s radarkomposit in som permanent
