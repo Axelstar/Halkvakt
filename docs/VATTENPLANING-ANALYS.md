@@ -109,3 +109,41 @@ i september. Ordningen enligt huslagen:
 Steg 0 är riskfritt och lönsamt oavsett utfall — det enda som behöver Axels ja
 *nu*. Steg 1–4 väntar bakom kortets nyckel som tavlan redan anger: rösttext,
 plats i A-skalan och ordning mot #15/#16.
+
+## 7. Granskning vid andra läsningen (1/9 kväll, Bengts beställning)
+
+Fyra luckor hittade när förstudien lästes kritiskt — de är inarbetade i
+körschemat i §8:
+
+1. **RainSum-beviset var underspecificerat.** Ett fält kan finnas i schemat och
+   ändå vara null på flertalet stationer (alla VViS har inte mängdgivare).
+   Beviset ska mäta TÄCKNING: hur många av 845 stationer levererar numerisk
+   mängd — inte bara att fältet svarar.
+2. **Cellproblemet (§4) lämnades okvantifierat i onödan.** Regnets
+   dekorrelationslängd kan mätas I DAG ur arkivets befintliga ja/nej-flaggor:
+   hur ofta regnar det på station A men inte grannen B, per avståndsband?
+   Det är vattenplaningens motsvarighet till grind A:s felkarta och kräver
+   varken RainSum eller ny data.
+3. **Falsklarmsdefinitionen saknades.** "Regn utan olycka" är INTE falsklarm —
+   korrekta riskvarningar följs sällan av olyckor. Tröskeldokumentet behöver
+   sin egen asymmetriregel (kandidat: bara en station som i efterhand visar
+   att tröskeln aldrig nåddes, eller kamerabild med torr väg, får fälla).
+4. **Vinterinteraktionen saknades.** Snöslask kan trigga både halk- och
+   vattenplaningsvarning på samma segment. Vem vinner i A-skalan, och ska
+   vattenplaningen vila när vintervarning är aktiv? Axel-beslut som hör hemma
+   i tröskeldokumentet, inte i december.
+
+## 8. Körschema (fastlagt 1/9 kväll; ägare: Bengt, issue #15)
+
+| Steg | Vad | Vecka | Ägare | Släpper vidare när |
+|---|---|---|---|---|
+| 0a | RainSum-bevis i CI **med täckningsmätning** + mängdkolumn i båda ingestvägarna | v.36 | Axels ja → Claude | Mängd bevisad; facit börjar ticka |
+| 0b | Cellmätningen ur befintliga ja/nej-flaggor (dekorrelation per avståndsband) | v.36–37 | Claude (olåst mätning) | Siffra på missrisken mellan stationer |
+| 1 | Lastkajen-rekognosering: licens, format, färskhet för spårdjup | v.37 | Bengt (konto) + Claude | Beslutspunkt: med spårdjup, eller utan med högre regntröskel |
+| 2 | TROSKLAR-VATTENPLANING: regn-/avståndströskel, fartgrind, falsklarmsdefinition (§7.3), vinterinteraktion (§7.4), radar-observationsfrågan | v.38–39 | Bengt fäller värden, Axel fastställer | Dokumentet i repot FÖRE all kod |
+| 3 | Grind V-A: LOO-prövning av "regn framöver"-påståendet mot arkivet, knapp à la grind-a med domspärr | v.39–40 | Claude | Klarar → skugga; faller → dokumenterat nej |
+| 4 | Skuggkörning i höstregnen (kolumn i skuggmotorn, buntad ur engine/src) | okt–nov | Claude bygger, Bengts söndagsrutin läser | Grindarna ur steg 2 |
+| 5 | Dom + ev. röst: HazardKind i tre motorer, delade vektorer, produktbok | nov/dec | Axel dömer, Claude bygger | Endast om domen håller |
+
+Kritisk stig: **0a** — varje regnvecka utan mängdkolumn är förlorat facit, och
+oktoberstormarna är skuggsäsongen. Allt före steg 5 är mätning; ingen app-kod rörs.
