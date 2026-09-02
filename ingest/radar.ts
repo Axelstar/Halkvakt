@@ -60,8 +60,9 @@ function attr(groups: any[], name: string): number | string | null {
 const { link, validIso } = await latestFile();
 console.log(`radar: hämtar ${link} (giltig ${validIso})`);
 const buf = new Uint8Array(await (await fetch(link, { headers: { "User-Agent": UA } })).arrayBuffer());
-await h5wasm.ready;
-h5wasm.FS.writeFile("comp.h5", buf);
+// FS bor på modulen som ready resolvar till — inte på importen (radar-pilot #1 föll på det).
+const Module: any = await h5wasm.ready;
+Module.FS.writeFile("comp.h5", buf);
 const file = new h5wasm.File("comp.h5", "r");
 
 if (PROV) {
