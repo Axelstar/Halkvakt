@@ -513,6 +513,36 @@ tomt fönster → underlagsvakt exit 1 → rött jobb → notismejl → mottagar
 Grind A-mätningen är därmed självövervakande med bevisad larmväg — ingen behöver
 minnas oktober, och en trasig hämtning i november når Bengt av sig själv.
 
+## 2026-09-02 — Kort #42 steg 0a KLART + 0b körd: regnfacit tickar, cellrisken uppmätt
+**Steg 0a (Axels ja via Bengt i chatten):** ordningen bevis → bygge → slutbevis, hela
+kedjan grön. Regn-bevis #1 (inga gissade INCLUDE-blad — hela objekten inspekterade):
+RainSum finns med 89 % täckning (751/844 stationer). Kolumnbygget: rain_sum_mm +
+snow_wateq_mm ur Aggregated30minutes (matchar ingestkadensen; snön i samma svep som
+vinterfacit för #16), migration 008 i auto-migrationen, isInteresting orörd (radantal/
+fritier opåverkade), integrationsprov låser att mängden landar i arkivraden. Självtestet
+i CI + grön integrationskörning. SLUTBEVIS (regn-bevis #3, 06:35): 658 stationer med
+rain_sum_mm i arkivet, senaste 06:05. Mellanläget 0 rader (regn-bevis #2) var deltasynkens
+tremninutersfönster — inte fel; fail-soft-läxan följdes: inget bokfördes förrän arkivets
+egen rad fanns.
+
+**Steg 0b (cellmätningen):** scripts/cell-matning.ts + knapp, självtest som återfinner
+teorikurvan 2d/(L+d) ur svepta syntetceller. Skarpt (92 983 regnhändelser i par, 845
+stationer): P(diskord|regn) stiger monotont 46 % (5–10 km) → 64 % (30–50 km) — redan vid
+vår mediana ankartäthet är regnflaggan nära slantsingling om grannpunkten. ARTEFAKT
+FUNNEN av mätningen själv: 0–5 km-bandet visar 70 % för att givarelösa stationer (~11 %)
+får rain=false i parsern och producerar falsk diskord — v2 som utesluter dem behövs, och
+nivåerna är därmed uppblåsta åt ena hållet medan arkivfiltrets torra-grannar-skevhet
+drar åt andra.
+
+**Vägvalet som öppnats (Bengts fråga "meningsfullt utan nowcast?"):** för vattenplaning
+är stationsspåret sannolikt för svagt — regnet dekorrelerar under ankaravstånden. Radar-
+observationsspåret (SMHI:s öppna radarkomposit, senaste 5 min = MÄTNING, inom "mätning +
+faktum"-lagen; extrapoleringen förblir #16:s parkerade prognosklass) kandiderar som
+huvudtrigger med stationerna som markkalibrering. Beslutsunderlaget byggs av: v2 av
+cellmätningen (fäller/friar stationsspåret med rensad siffra) + radar-rekognosering
+(format/volym/kadens/fritier — föreslaget som steg 1b i körschemat). Bengts ord väntas;
+permanent radarintag är ett källbeslut som får egen DECISIONS-rad när det tas.
+
 ## 2026-09-01 kväll — Ankarbreddningen: FI mätt, SMHI-provet byggt och kört (Bengt + Claude)
 Bengts fråga "vad kan krympa avståndet när kamerorna inte kunde?" → tre spår, två med
 siffror samma kväll:

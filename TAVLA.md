@@ -214,9 +214,17 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   på enheten. Punktkälla ⇒ "framöver"-fras, aldrig avstånd. Ordning enligt huslagen:
   eget tröskeldokument FÖRE kod, sedan skugga — kan mätas i höstregn redan i september,
   behöver inte vänta på vintern. Facit: situation_archive (stoppade fordon/olyckor i
-  regnväder). FÖRSTUDIE: docs/VATTENPLANING-ANALYS.md (1/9) — steg 0 (RainSum-kolumnen)
-  är riskfritt och lönsamt oavsett utfall. *(nyckel: Axels ja — rösttext, plats i
-  A-skalan, ordning mot #15/#16)*
+  regnväder). FÖRSTUDIE: docs/VATTENPLANING-ANALYS.md (1/9, granskning + körschema §7–8).
+  ✅ **Steg 0a KLART 2/9** (Axels ja via Bengt): RainSum bevisad 89 % täckning FÖRE bygget
+  (regn-bevis #1), rain_sum_mm + snow_wateq_mm i arkivet, slutbevis 658 stationer med
+  mängd (regn-bevis #3). Facit tickar från nu.
+  ✅ **Steg 0b KÖRD 2/9** (cellmätningen, 92 983 regnhändelser): diskordansen stiger
+  46→64 % från 5 till 50 km — enstationstrigger är nära slantsingling på våra
+  ankaravstånd. 0–5 km-artefakt funnen (givarelösa stationer räknas som torra) ⇒ v2
+  behövs. SLUTSATS UNDER PRÖVNING: stationsspåret ser svagt ut för regn; radar-
+  observationsspåret (SMHI:s öppna radarkomposit = mätning, inte prognos) kandiderar
+  som huvudtrigger — v2 + radar-rekognosering (nytt steg 1b) avgör, Bengts ord väntas.
+  *(nyckel för röst: Axels ja — rösttext, plats i A-skalan, ordning mot #15/#16)*
 
 ---
 
