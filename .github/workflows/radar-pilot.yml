@@ -1,0 +1,32 @@
+# Radarpilotens bevisknapp (kort #43 steg 3): kör piloten på begäran — PROV-läget
+# parsar senaste kompositen och skriver ut verklig struktur + tre kända punkter utan
+# DB-skrivning (RoadNumber-läxan för binärformat); SKARP kör hela vägen till
+# radar_precip och skriver färskhetsraden. Löpande drift sker som steg i ingest.yml.
+name: radar-pilot
+on:
+  workflow_dispatch:
+    inputs:
+      lage:
+        description: "prov (ingen DB-skrivning) eller skarp"
+        default: "prov"
+jobs:
+  radar-pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          if [ "${{ inputs.lage || 'prov' }}" = "skarp" ]; then
+            node --experimental-strip-types ingest/radar.ts | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            node --experimental-strip-types ingest/radar.ts --prov | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env:
+          DATABASE_URL: "${{ secrets.DATABASE_URL }}"
