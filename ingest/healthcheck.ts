@@ -44,6 +44,17 @@ try {
     console.log(`webb meta.json: ${webAge.toFixed(0)} min gammal (limit 90)`);
     if (webAge > 90) problems.push(`publicerad meta.json ${webAge.toFixed(0)} min gammal (>90) — publish-map står stilla?`);
   } catch (e) { problems.push(`kunde inte läsa publicerad meta.json: ${String((e as Error).message)}`); }
+  // Kamerafilen (ankarlagret, #38b(2)): fail-soft i publiceringen betyder att ett
+  // permanent TRV-fel annars lämnar en gammal fil kvar på CDN i tysthet. Kamerorna
+  // ändras sällan — larmgränsen är generös (7 dygn), vakten är mot "trasigt för evigt".
+  try {
+    const k = await (await fetch(`https://axelstar.github.io/halkvakt-karta/data/kameror-vaglag.geojson?t=${Date.now()}`)).json();
+    const n = k?.features?.length ?? 0;
+    const ageD = k?.generated_at ? (Date.now() - new Date(k.generated_at).getTime()) / 86_400_000 : null;
+    console.log(`kameror-vaglag: ${n} kameror, ${ageD === null ? "ingen stämpel (äldre version — självläker)" : ageD.toFixed(1) + " dygn gammal (limit 7)"}`);
+    if (n < 500) problems.push(`kameror-vaglag: bara ${n} kameror (<500)`);
+    if (ageD !== null && ageD > 7) problems.push(`kameror-vaglag ${ageD.toFixed(1)} dygn gammal (>7) — TRV-steget i publish fallerar permanent?`);
+  } catch (e) { problems.push(`kunde inte läsa kameror-vaglag.geojson: ${String((e as Error).message)}`); }
 } catch (e) {
   problems.push(`healthcheck query failed: ${String((e as Error).message)}`);
 } finally { await pool.end(); }

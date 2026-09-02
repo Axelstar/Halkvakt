@@ -571,3 +571,18 @@ fotnot är att domen inte går att läsa av på tunt underlag. TROSKLAR-SKUGGAN 
 "ingen dom åt något håll" — nu är det en spärr, inte en anmärkning.
 LÄXA: ta kortet innan du bygger. Två personer i samma repo utan synlig "pågår" ger
 dubbelarbete — tre gånger på ett dygn.
+
+## #55 (2/9 2026) Ankarfyndet bokfört: kamerorna ÄR stationerna — och fail-soft-läxan
+Två oberoende körningar av ankaranalysen (parallellsessionens ankaranalys.yml, körning
+33485863812, och scripts/ankaranalys.ts lokalt 2/9) ger SAMMA siffror: 744 väglagskameror,
+alla med "VViS" i id, 99 % inom 1 km från en väderstation — 6 av 744 ger nytt ankarläge.
+Byggplanens antagande "~1 500–1 650 kameror utöver 845 stationer; Norrlands 13 %-lucka är
+målet" faller: Norrland 12,6 % >20 km OFÖRÄNDRAT med kameror. Kamerornas värde är BILDFACIT
+vid stationen, inte täckning. Bengts v2-täthetssiffror reproducerade (median 6,8 km, 12,6 %).
+Claudes råd: luckan fylls inte med gissningar — grind A:s felkarta hanterar den (utfall b);
+ankarbreddningen (3b: FI/SMHI/höjd) är rätta spåret för att KRYMPA den. Bengt äger planfrågan.
+LÄXA (fail-soft): TRV svarade 400 på ett ogiltigt query-attribut i VARJE varv i timmar och
+fail-soft dolde det — grönt jobb, ingen fil. Rotorsaken lagades i parallellsessionen;
+systematiska svaret är healthcheckens nya CDN-vakt på kamerafilen (finns/≥500 kameror/
+≤7 dygn gammal, i den bevisade incident-larmvägen). En fail-soft utan extern vakt är
+gravstensläckan om igen: felet finns men syns inte förrän någon råkar titta.
