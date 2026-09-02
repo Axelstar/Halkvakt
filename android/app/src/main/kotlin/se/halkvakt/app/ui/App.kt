@@ -24,10 +24,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -40,20 +42,23 @@ import se.halkvakt.app.MainActivity
 import se.halkvakt.app.Nearby
 import se.halkvakt.app.NearbyItem
 import se.halkvakt.app.Prefs
+import se.halkvakt.app.R
 import se.halkvakt.engine.HazardKind
 
-private val Gul = Color(0xFFFFC400)
-private val Natt = Color(0xFF06090D)
-private val Text = Color(0xFFF3F6F9)
-private val Dis = Color(0xFF9FB3C8)
-private val Yta = Color(0xFF0E1720)
-private val Kant = Color(0xFF1B2530)
-private val Gron = Color(0xFF34A853)
-private val GronLjus = Color(0xFF7ADCA1)
+// Skinnet v3 (DECISIONS #47): tokens bor i Theme.kt och speglar iOS Theme.swift exakt.
+// De gamla namnen står kvar som alias så vyerna nedan inte behöver röras i samma varv.
+private val Gul = Brand.yellow
+private val Natt = Brand.bg
+private val Text = Brand.text
+private val Dis = Brand.dim
+private val Yta = Brand.panel
+private val Kant = Brand.stroke
+private val Gron = Brand.green
+private val GronLjus = Brand.greenText
 private val GronMork = Color(0xFF0E1F16)
 private val GronKant = Color(0xFF1C3327)
-private val Teal = Color(0xFF7EC8E3)
-private val Cond = FontFamily(Typeface.create("sans-serif-condensed", Typeface.BOLD))
+private val Teal = Brand.blue
+private val Cond = Typo.mono
 
 private val Scheme = darkColorScheme(
     primary = Gul, onPrimary = Natt, background = Natt, onBackground = Text,
@@ -62,6 +67,24 @@ private val Scheme = darkColorScheme(
 )
 
 private fun kindColor(k: HazardKind) = if (k == HazardKind.ICING_POINT) Teal else Gul
+/** Ikonsetet (DECISIONS #49) — fem faror, samma former som iOS. Triangeln är varumärket
+ *  och är INTE en av dem: den står kvar överst på varningskortet. */
+@Composable
+fun HazardIcon(k: HazardKind, size: Dp = 24.dp, tint: Color = Brand.yellow) {
+    Icon(
+        painter = painterResource(when (k) {
+            HazardKind.SLIPPERY_SEGMENT -> R.drawable.ikon_halka
+            HazardKind.ICING_POINT      -> R.drawable.ikon_frysrisk
+            HazardKind.ACCIDENT         -> R.drawable.ikon_olycka
+            HazardKind.WILDLIFE         -> R.drawable.ikon_vilt
+            HazardKind.CAMERA           -> R.drawable.ikon_kamera
+        }),
+        contentDescription = kindTitle(k),
+        tint = tint,
+        modifier = Modifier.size(size),
+    )
+}
+
 private fun kindChip(k: HazardKind) = when (k) {
     HazardKind.ACCIDENT -> "OLYCKA"; HazardKind.SLIPPERY_SEGMENT -> "HALT VÄGLAG"
     HazardKind.ICING_POINT -> "FRYSRISK"; HazardKind.WILDLIFE -> "VILT"; HazardKind.CAMERA -> "FARTKAMERA"

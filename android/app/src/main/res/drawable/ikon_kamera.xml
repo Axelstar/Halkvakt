@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ikonsetet (DECISIONS #49) — genererad ur docs/design/icons/kamera.svg. Ändra designen, kör om. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24"
+    android:tint="?attr/colorControlNormal">
+    <path android:pathData="M5.2,4.8 h9.2 a2.0,2.0 0 0 1 2.0,2.0 v3.8 a2.0,2.0 0 0 1 -2.0,2.0 h-9.2 a2.0,2.0 0 0 1 -2.0,-2.0 v-3.8 a2.0,2.0 0 0 1 2.0,-2.0 z" android:strokeColor="#FFFFFF" android:strokeWidth="2"
+          android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="#00000000"/>
+    <path android:pathData="M5.7,8.7 a2.3,2.3 0 1 0 4.6,0 a2.3,2.3 0 1 0 -4.6,0 z" android:strokeColor="#FFFFFF" android:strokeWidth="2"
+          android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="#00000000"/>
+    <path android:pathData="M18.2 7.2l2.4-1.7" android:strokeColor="#FFFFFF" android:strokeWidth="2"
+          android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="#00000000"/>
+    <path android:pathData="M18.6 10.2h2.7" android:strokeColor="#FFFFFF" android:strokeWidth="2"
+          android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="#00000000"/>
+    <path android:pathData="M10 12.6V20" android:strokeColor="#FFFFFF" android:strokeWidth="2"
+          android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="#00000000"/>
+    <path android:pathData="M7.4 20h5.2" android:strokeColor="#FFFFFF" android:strokeWidth="2"
+          android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="#00000000"/>
+</vector>
