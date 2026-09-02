@@ -20,7 +20,8 @@ test("writeAll: migrate, insert, idempotent re-run", { skip: !url }, async () =>
     ], lastChangeId: "cond-1" },
     weather: { items: [
       { stationId: "W1", name: "Teststation", lon: 17.0, lat: 62.4, sampleTime: "2026-08-24T10:00:00Z",
-        surfaceTempC: -1.2, airTempC: 0.5, dewpointC: -2, humidityPct: 90, precipitation: "snow", rain: false, snow: true, modifiedTime: "2026-08-24T10:00:00Z" },
+        surfaceTempC: -1.2, airTempC: 0.5, dewpointC: -2, humidityPct: 90, precipitation: "snow", rain: false, snow: true,
+        rainSumMm: 0.4, snowWateqMm: 1.1, modifiedTime: "2026-08-24T10:00:00Z" },
     ], lastChangeId: "wx-1" },
     wildlife: { items: [
       { eventId: 999001, datetime: "2026-08-23T09:43:26+02:00", countyName: "Jämtlands län",
@@ -56,6 +57,8 @@ test("writeAll: migrate, insert, idempotent re-run", { skip: !url }, async () =>
   assert.equal(await n("SELECT count(*) FROM road_conditions"), 1);
   assert.equal(await n("SELECT count(*) FROM road_condition_history"), 1);
   assert.equal(await n("SELECT count(*) FROM weather_observations"), 1);
+  // Kort #42 steg 0a: mängderna ska landa i arkivet, inte bara i parsern.
+  assert.equal(await n("SELECT count(*) FROM weather_observations WHERE rain_sum_mm = 0.4 AND snow_wateq_mm = 1.1"), 1);
   assert.equal(await n("SELECT count(*) FROM deviations"), 1);
   assert.equal(await n("SELECT count(*) FROM polisen_events"), 1);
   assert.equal(await n("SELECT count(*) FROM smhi_warnings"), 1);

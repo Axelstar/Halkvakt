@@ -17,6 +17,8 @@ export interface WeatherObs {
   precipitation: string | null; // "no" | "rain" | "snow" | ...
   rain: boolean;
   snow: boolean;
+  rainSumMm: number | null;     // Aggregated30minutes (mm/30 min) — matches ingest cadence
+  snowWateqMm: number | null;   // Aggregated30minutes SnowSum.WaterEquivalent (mm/30 min)
   modifiedTime: string;
 }
 
@@ -33,6 +35,7 @@ export async function fetchWeather(apiKey: string, changeid = "0"): Promise<TvRe
     const o = w?.Observation;
     if (!p || !o?.Sample) continue;
     const agg = o?.Aggregated10minutes?.Precipitation;
+    const agg30 = o?.Aggregated30minutes?.Precipitation;
     out.push({
       stationId: String(w.Id),
       name: w.Name ?? "",
@@ -45,6 +48,8 @@ export async function fetchWeather(apiKey: string, changeid = "0"): Promise<TvRe
       precipitation: o?.Weather?.Precipitation ?? null,
       rain: Boolean(agg?.Rain),
       snow: Boolean(agg?.Snow),
+      rainSumMm: typeof agg30?.RainSum?.Value === "number" ? agg30.RainSum.Value : null,
+      snowWateqMm: typeof agg30?.SnowSum?.WaterEquivalent?.Value === "number" ? agg30.SnowSum.WaterEquivalent.Value : null,
       modifiedTime: w.ModifiedTime,
     });
   }

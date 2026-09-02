@@ -21,6 +21,9 @@ test("weather fixture shape", () => {
   assert.ok(w.Id && w.Geometry?.WGS84?.startsWith("POINT"));
   assert.ok(w.Observation?.Sample);
   assert.equal(typeof w.Observation.Surface.Temperature.Value, "number");
+  // Kort #42 steg 0a: mängdfälten (bevisade 89 % täckning i regn-bevis #1).
+  assert.equal(typeof w.Observation.Aggregated30minutes.Precipitation.RainSum.Value, "number");
+  assert.equal(typeof w.Observation.Aggregated30minutes.Precipitation.SnowSum.WaterEquivalent.Value, "number");
 });
 
 test("roadcondition fixture shape", () => {
