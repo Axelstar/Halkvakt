@@ -46,6 +46,7 @@ export async function writeAll(data: {
   try {
     await client.query(readFileSync(new URL("../sql/001_init.sql", import.meta.url), "utf8"));
     await client.query(readFileSync(new URL("../sql/003_situation_archive.sql", import.meta.url), "utf8"));
+    await client.query(readFileSync(new URL("../sql/008_rain_sum.sql", import.meta.url), "utf8"));
 
     // Weather archive policy needs last stored temp per station — ONE query, not N.
     const lastTemps = new Map<string, number | null>();
@@ -125,18 +126,20 @@ export async function writeAll(data: {
     for (const c of chunks(keepWeather)) {
       await client.query(
         `INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c,
-           air_temp_c, dewpoint_c, humidity_pct, precipitation, rain, snow)
+           air_temp_c, dewpoint_c, humidity_pct, precipitation, rain, snow, rain_sum_mm, snow_wateq_mm)
          SELECT u.station_id, u.name, ST_SetSRID(ST_MakePoint(u.lon, u.lat), 4326), u.sample_time,
-                u.surface_temp_c, u.air_temp_c, u.dewpoint_c, u.humidity_pct, u.precipitation, u.rain, u.snow
+                u.surface_temp_c, u.air_temp_c, u.dewpoint_c, u.humidity_pct, u.precipitation, u.rain, u.snow,
+                u.rain_sum_mm, u.snow_wateq_mm
          FROM UNNEST($1::text[],$2::text[],$3::float8[],$4::float8[],$5::timestamptz[],$6::numeric[],
-                     $7::numeric[],$8::numeric[],$9::numeric[],$10::text[],$11::bool[],$12::bool[])
+                     $7::numeric[],$8::numeric[],$9::numeric[],$10::text[],$11::bool[],$12::bool[],
+                     $13::numeric[],$14::numeric[])
               AS u(station_id, name, lon, lat, sample_time, surface_temp_c, air_temp_c, dewpoint_c,
-                   humidity_pct, precipitation, rain, snow)
+                   humidity_pct, precipitation, rain, snow, rain_sum_mm, snow_wateq_mm)
          ON CONFLICT (station_id, sample_time) DO NOTHING`,
         [col(c, x => x.stationId), col(c, x => x.name), col(c, x => x.lon), col(c, x => x.lat),
          col(c, x => x.sampleTime), col(c, x => x.surfaceTempC), col(c, x => x.airTempC),
          col(c, x => x.dewpointC), col(c, x => x.humidityPct), col(c, x => x.precipitation),
-         col(c, x => x.rain), col(c, x => x.snow)]);
+         col(c, x => x.rain), col(c, x => x.snow), col(c, x => x.rainSumMm), col(c, x => x.snowWateqMm)]);
       counts.weather += c.length;
     }
 
