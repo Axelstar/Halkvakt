@@ -4,6 +4,8 @@
 # provet upprepas på vinterdata och värderas i tröskeldokumentet.
 name: smhi-prov
 on:
+  schedule:
+    - cron: "0 6 * * 1"   # måndagar, 20 min efter grind-a — båda vinterkurvorna växer ihop
   workflow_dispatch:
     inputs:
       dagar:

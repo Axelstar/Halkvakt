@@ -117,7 +117,9 @@ med släckt skärm, vakten stannar när du stänger av.
       självtest där ett fjärran-VViS räddas av luftankare). Första signalen på tunna
       augustidata (34 punkter, INGEN dom): stör inte där VViS är tätt (2,56→2,50 °C),
       och i >20 km-bandet 5,83→4,37 °C plus 4 nya punkter à 1,57 °C som basen inte
-      når alls. 🔑 Omkörning på vinterdata; värderas i tröskeldokumentet.
+      når alls. SCHEMALAGD från 2/9 (Bengts order): måndagar 06:00, 20 min efter grind-a
+      — båda vinterkurvorna växer av sig själva, läses i samma rutin. 🔑 Omkörning på
+      vinterdata; värderas i tröskeldokumentet.
     · Höjden: PROVET BYGGT + KÖRT 1/9 kväll (Bengts order): scripts/hojd-prov.ts +
       knappen Actions → hojd-prov (EU-DEM-höjder, tre varianter RÅ / RÅ+HÖJD /
       OFFSET=taket; självtestet fällde ett teckenfel före push). Två fynd: (1) STARKT,
