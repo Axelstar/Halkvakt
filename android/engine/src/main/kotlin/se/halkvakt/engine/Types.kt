@@ -141,7 +141,7 @@ object Texts {
             val on = roadPhrase(hazard?.meta?.road)
             when (step) {
                 AccidentStep.EARLY -> {
-                    val base = "Allvarlig olycka $km kilometer framför dig — stor påverkan på trafiken. " +
+                    val base = "Allvarlig olycka$on $km kilometer framför dig — stor påverkan på trafiken. " +
                         "Överväg annan väg."
                     hazard?.meta?.endTimeLocal?.let { "$base Beräknas röjd vid $it." } ?: base
                 }
