@@ -173,3 +173,9 @@ i samma commit när de överlappar.
   från samma jks i samma sittning. 31/8 roterades bara lösenordet ⇒ tre dagars trasig
   Play-pipeline. jks-filen ska ligga i iCloud, aldrig bara i GitHub — utan filen kan paret
   inte lagas, bara ersättas (2/9, DECISIONS #58).
+- ALDRIG be Axel arkivera när ios-engine (Swift-vektorerna) är röd. Xcode kompilerar glatt
+  kod som bryter kontraktet — 2/9 låg ios-engine röd i FYRA körningar medan 0.3.4 byggdes,
+  deployades och testades i bil av Bengt. Vägnumret nådde aldrig EARLY-grenen i vare sig
+  Swift eller Kotlin (texten delad över två rader ⇒ min sträng-ersättning missade), och
+  fältrapporterna blev omöjliga att tolka. Kontroll före varje "arkivera nu": kör
+  ios-engine + android + ci, alla gröna, INNAN uppmaningen skickas.

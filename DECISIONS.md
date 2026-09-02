@@ -659,3 +659,18 @@ Slutsats: koden i 0.3.4 är korrekt. Kvarstående fältfel förklaras av att 0.3
 var uppladdad när testaren installerade om — han fick 0.3.3 igen.
 METODLÄXA: jag ändrade två saker samtidigt i #55 (tolerans 100→60) och #57 (vändning 180°).
 Det gjorde fältrapporterna svårtolkade. En variabel per bygge när något mäts i verkligheten.
+
+## #60 (2/9 2026) Vi deployade med rött kontraktstest — rutinfel, inte kodfel
+Axel: "ska vi inte bara göra det en gång till så vi vet att allt gått rätt till?" Rätt fråga.
+FYND: ios-engine (Swift-vektorerna) hade legat RÖD sedan 08:39 — fyra körningar — medan
+0.3.4 byggdes, laddades upp och testades i bil. Xcode kompilerade utan invändning; det är
+kontraktstestet som bevisar att de tre motorerna säger samma sak, och det sa nej.
+ORSAK: vägnumret (#56) nådde aldrig EARLY-grenen i Swift eller Kotlin. Olyckstexten är
+delad över två rader i båda språken, så min sträng-ersättning matchade bara LATE och den
+enkla. Kotlin fångades av att jag körde gradle lokalt; Swift har ingen lokal körning här
+och jag litade på att bygget gick igenom.
+KONSEKVENS: Bengts fältrapporter från 0.3.4 kan inte tolkas — appen han körde hade rätt
+kamerariktning men ofullständig olyckstext, och vi visste inte vilket bygge som testade vad.
+ÅTGÄRD: lagat, ios-engine grön. Version 0.3.5 (8) så den trasiga går att skilja ut.
+REGEL (CLAUDE.md): aldrig be om arkivering utan att först köra ios-engine + android + ci
+och se alla gröna. Kompilering ≠ kontrakt.
