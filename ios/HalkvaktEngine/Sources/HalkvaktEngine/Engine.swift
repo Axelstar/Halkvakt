@@ -25,7 +25,7 @@ public struct PointMeta {
     public var endTimeLocal: String? = nil
     public init(surfaceTempC: Double? = nil, moisture: Bool = false, active: Bool = true,
                 speedLimitKmh: Int? = nil, severityCode: Int? = nil, endTimeLocal: String? = nil,
-                bridge: Bool = false) {
+                bridge: Bool = false, road: String? = nil) {
         self.surfaceTempC = surfaceTempC; self.moisture = moisture; self.active = active
         self.speedLimitKmh = speedLimitKmh; self.severityCode = severityCode; self.endTimeLocal = endTimeLocal
         self.bridge = bridge; self.road = road
