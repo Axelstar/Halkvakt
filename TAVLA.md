@@ -116,9 +116,12 @@ med släckt skärm, vakten stannar när du stänger av.
     Skåne). I augusti räknar den "inte halt" på "inte halt".
   - [ ] **Skuggmotorns prognoskolumn måste buntas ur engine/src** som resten (läxan 31/8):
     en handklistrad prognoskolumn driver isär på ett dygn.
-- [x] ~~**Kameravarningen i fel riktning**~~ ✅ FIXAT + UTE (DECISIONS #55): toleransen
-  100°→60° i tre motorer, v20/v21 låser gränsen. 0.3.3 (6) uppladdat 2/9 11:28 och
-  installerat hos Bengt mitt i resan. 🔑 Bevisas på HEMRESAN — samma kameror, nu tysta.
+- [ ] **Kameravarningen i fel riktning** — tre varv 2/9: #55 tolerans 100°→60°, #57
+  riktningen vänd 180° (Trafikverkets Bearing = dit kameran TITTAR), #59 verifierad mot
+  Öjersjö-kameran ID 14102020. Koden är nu bevisat rätt i alla tre motorerna.
+  0.3.5 (8) uppladdad 14:42 — första bygget med grönt kontrakt (#60).
+  🔑 BEVIS SAKNAS ÄN: Bengt kör 0.3.5 och noterar KLOCKSLAG + PLATS per larm och per
+  kamera utan larm. Beskrivningar räcker inte, vi har gissat tre gånger.
 - [ ] #31 Trafikverksbevakningen (litet, olåst, kan bevisas härifrån)
 
 - [x] ~~Testinstruktion till Bengt~~ ✅ docs/TEST-BENGT-0.3.2.md (31/8)

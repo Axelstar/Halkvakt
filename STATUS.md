@@ -642,3 +642,15 @@ broarna vilande tills OSM svarar (#50). Han uppdaterade via TestFlight utan att 
 inställningar, platstillstånd och parkeringsstaket behållna mitt i en testresa.
 🔑 HEMRESAN ÄR BEVISET: han vet var kamerorna sitter och var 0.3.2 varnade fel. Tystnad på
 rätt ställen = #55 bevisad av den som hittade felet.
+
+## 2026-09-02 14:42 — 🚀 0.3.5 (8) uppladdad, första bygget idag med GRÖNT kontrakt
+Innehåll: kamerariktningen vänd + verifierad mot Öjersjö (#57, #59), vägnumret i
+olycksfrasen och nu även i EARLY-grenen i Swift OCH Kotlin (#56, #60), resan över
+pauser (#53), skinnet, broarna vilande.
+LÄRDOMEN FRÅN DAGEN (#60): 0.3.3 och 0.3.4 byggdes och deployades medan ios-engine låg
+RÖD — fyra körningar. Xcode kompilerade glatt; kontraktstestet gjorde inte det. Bengts
+fältrapporter från de byggena går inte att tolka i efterhand. Regeln nu i CLAUDE.md:
+aldrig be om arkivering utan grön ios-engine + android + ci.
+🔑 NÄSTA BEVIS: Bengt kör 0.3.5 och noterar KLOCKSLAG + PLATS vid varje kameralarm och
+varje kamera som passeras utan larm. Beskrivningar räcker inte — vi har gissat tre gånger.
+Notera: max EN varning per 45 s, så tätt sittande ATK-kameror ger bara ett larm (avsiktligt).
