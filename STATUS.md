@@ -513,6 +513,20 @@ tomt fönster → underlagsvakt exit 1 → rött jobb → notismejl → mottagar
 Grind A-mätningen är därmed självövervakande med bevisad larmväg — ingen behöver
 minnas oktober, och en trasig hämtning i november når Bengt av sig själv.
 
+## 2026-09-02 em — KÄLLBESLUTET (DECISIONS #60) + cellmätningens v2-dom
+**Källbeslutet taget:** Bengt + Axel ("jag o Axel säger ok" i chatten — Axels ok
+relayerat av Bengt, kontrasigneras på tavlan). SMHI:s radarkomposit in som permanent
+källa enligt RADAR-PLAN: observation endast, grids samplas/lagras aldrig råa,
+stationerna blir kalibrering. Kort #43 steg 3 (pilotintag i skugga) därmed olåst;
+byggs på Bengts ord.
+
+**Cellmätningen v2** (givarelösa stationer uteslutna — de utan en enda regnrapport i
+fönstret): artefakten bekräftad och borta. Kurvan nu rent monoton: 26 % (0–5 km) → 36
+→ 41 → 47 → 52 → 60 % (30–50 km), 84 341 händelser. v1:s 0–5-band på 70 % var falsk
+diskord från givarelösa grannar, precis som misstänkt. Domen står och skärps: redan
+vid 5–10 km är >1/3 av regnhändelserna enstations — stationstrigger ensam räcker inte
+för vattenplaning. Beslutet #60 vilar nu på rensad siffra.
+
 ## 2026-09-02 — Kort #43 steg 1: radar-rekognoseringen körd (Bengts "kör")
 Plan + kort upprättade på Bengts beställning (docs/RADAR-PLAN.md: EN källa, SEX
 nyttjare, bygge låst bakom rekognosering + källbeslut). Sonden körd samma förmiddag
