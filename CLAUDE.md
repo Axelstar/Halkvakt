@@ -169,3 +169,7 @@ i samma commit när de överlappar.
 - Trafikverkets Camera.Bearing = riktningen kameran TITTAR (mot trafiken), INTE färdriktningen
   den bevakar. Övervakad kurs = bearing + 180°. Samma fälla finns i NVDB. Kontrollera alltid
   vinkelkonventioner mot en känd mätplats innan filter byggs på dem (2/9, Bengts E4-mätning).
+- Signeringshemligheter roteras ALLTID i par: HV_KEYSTORE_B64 och HV_KEYSTORE_PASS måste komma
+  från samma jks i samma sittning. 31/8 roterades bara lösenordet ⇒ tre dagars trasig
+  Play-pipeline. jks-filen ska ligga i iCloud, aldrig bara i GitHub — utan filen kan paret
+  inte lagas, bara ersättas (2/9, DECISIONS #58).

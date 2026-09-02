@@ -630,3 +630,20 @@ BEVIS PÅ RIKTIG DATA: Skåne-fixturen byter varnade kameror — paret Västra V
 konsekvent för fel av dem. Alla kameravektorer vända 180°, facit regenererat.
 LÄXA: ett filter som "nästan fungerar" på grund av en vid tolerans döljer ett fel i data-
 tolkningen. Skärpningen som avslöjar felet är inte en regression — den är diagnosen.
+
+## #58 (2/9 2026) Android-signeringen lagad — halva rotationen hade gjorts
+Sedan 31/8 08:00 föll varje signerat Android-bygge på "keystore password was incorrect",
+och tavlan antog att lösenordet var fel. Diagnos i CI (engångsjobb, skrev aldrig ut
+hemligheten): filen avkodades till 4 300 byte men INGET lösenord öppnade den, och aliaset
+kunde inte listas. Rotorsak: vid nyckelrotationen uppdaterades HV_KEYSTORE_PASS men inte
+HV_KEYSTORE_B64 — filen i GitHub var lördagens keystore, lösenordet måndagens. Paret hörde
+inte ihop, och jks-filen fanns inte kvar på någon disk (find ~ -name "*.jks" gav tomt).
+ÅTGÄRD: ny keystore skapad 2/9 (RSA 4096, alias halkvakt, samma lösenord för store och
+nyckel), båda hemligheterna satta från SAMMA fil. Ofarligt eftersom appen aldrig laddats
+upp till Play — en keystore blir oersättlig först när Google känner den.
+BEVIS: keystore-check grön (alias halkvakt, PrivateKeyEntry, lösenordet öppnar båda),
+sedan android.yml grön hela vägen — signerad release-AAB 2,5 MB som artefakt.
+LÄXOR: (1) rotera aldrig halva paret — B64 och PASS hör ihop och ska sättas i samma
+sittning; (2) jks-filen MÅSTE ligga utanför GitHub (iCloud), annars går paret inte att
+laga; (3) ett CI-jobb som bara säger "success" bevisar ingenting om grenarna saknar
+exit 1 — min första diagnos läste grönt fast lösenordet inte fungerade.

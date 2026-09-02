@@ -19,11 +19,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ### AXELS NÄSTA STEG — i den här ordningen
 
-**1. Fem minuter, var som helst: signeringshemligheten** 🔴
-CI kan inte signera Android-bygget: `keystore password was incorrect`. Gick sönder vid
-nyckelrotationen 08:00 (sista gröna bygget 30/8 15:07), inte av kod. GitHub → Settings →
-Secrets and variables → Actions → sätt om **HV_KEYSTORE_PASS** (och HV_KEYSTORE_B64) från
-SAMMA jks som ligger i iCloud. Blockerar all Play-uppladdning tills det är gjort.
+**1. ~~Signeringshemligheten~~ ✅ LAGAD 2/9 (DECISIONS #58)** — rotorsak: bara HV_KEYSTORE_PASS
+hade roterats 31/8, inte B64; paret hörde inte ihop och jks-filen fanns inte kvar. Ny keystore
+skapad 2/9, båda hemligheterna från samma fil, signerad AAB 2,5 MB grön i CI.
+🔑 KVAR (Axel, 2 min): lägg `~/halkvakt-upload.jks` i iCloud Drive/Halkvakt-nycklar och
+uppdatera anteckningen i Apple Passwords. Utan filen går paret aldrig att laga igen.
 
 **2. ~~Vid Macen: till TestFlight~~ ✅ 0.3.1 och 0.3.2 uppladdade 31/8 em.**
 Kvar: lägg 0.3.2 i gruppen i App Store Connect → skicka Bengt testinstruktionen.
