@@ -511,7 +511,6 @@ private fun SettingsScreen(activity: MainActivity) {
 
 /* ---------- OM ---------- */
 
-@Composable
 /** Om-avsnittet — sista delen av Inställningar sedan Om-fliken togs bort (DECISIONS #48). */
 @Composable
 private fun OmScreen() {
