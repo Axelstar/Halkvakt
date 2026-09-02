@@ -620,3 +620,11 @@ filen (skriven 1/9, medvetet tillbakahållen tills filen fanns) committad — ex
 motiverad av TRV-400-episoden där fail-soft dolde felet i timmar. Tre rebasar mot
 parallellsessionen under varvet; #54-läxan ("ta kortet innan du bygger") gäller även
 terminalen — ankaranalysen byggdes dubbelt för att ingen såg den andres pågår.
+
+## 2026-09-02 11:28 — 🚀 0.3.3 (6) UPPLADDAT och installerat hos Bengt mitt i Bodenresan
+Tredje uppladdningen på tre dagar. Innehåll: kameratoleransen 100°→60° (#55, hans eget fynd
+på E4), resan håller ihop över pauser (#53, hans fynd), skinnet v3 med ikonsetet (#47–49),
+broarna vilande tills OSM svarar (#50). Han uppdaterade via TestFlight utan att radera —
+inställningar, platstillstånd och parkeringsstaket behållna mitt i en testresa.
+🔑 HEMRESAN ÄR BEVISET: han vet var kamerorna sitter och var 0.3.2 varnade fel. Tystnad på
+rätt ställen = #55 bevisad av den som hittade felet.

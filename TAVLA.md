@@ -116,9 +116,9 @@ med släckt skärm, vakten stannar när du stänger av.
     Skåne). I augusti räknar den "inte halt" på "inte halt".
   - [ ] **Skuggmotorns prognoskolumn måste buntas ur engine/src** som resten (läxan 31/8):
     en handklistrad prognoskolumn driver isär på ett dygn.
-- [x] ~~**Kameravarningen i fel riktning**~~ ✅ FIXAT 1/9 (DECISIONS #55, Bengts fynd på
-  Bodenresan): toleransen 100°→60° i tre motorer, v20/v21 låser gränsen. 🔑 Bevisas på
-  E4 av Bengt i 0.3.3 — han hörde felet, han ska höra tystnaden.
+- [x] ~~**Kameravarningen i fel riktning**~~ ✅ FIXAT + UTE (DECISIONS #55): toleransen
+  100°→60° i tre motorer, v20/v21 låser gränsen. 0.3.3 (6) uppladdat 2/9 11:28 och
+  installerat hos Bengt mitt i resan. 🔑 Bevisas på HEMRESAN — samma kameror, nu tysta.
 - [ ] #31 Trafikverksbevakningen (litet, olåst, kan bevisas härifrån)
 
 - [x] ~~Testinstruktion till Bengt~~ ✅ docs/TEST-BENGT-0.3.2.md (31/8)
