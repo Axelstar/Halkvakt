@@ -1,6 +1,6 @@
 {
  "name": "Verklig Skånedata: väg 108 Trelleborg→Slågarp",
- "description": "Dagens faktiska kameror/väglag/väderstationer (2026-08-25) + syntetisk 80 km/h-rutt genom de riktiga kamerapositionerna. Augusti: alla segment Normalt, alla ytor varma → ENDAST kameravarningar är korrekta.",
+ "description": "Dagens faktiska kameror/väglag/väderstationer (2026-08-25) + syntetisk 80 km/h-rutt genom de riktiga kamerapositionerna. Augusti: alla segment Normalt, alla ytor varma → ENDAST kameravarningar är korrekta. Kamerariktningen vänd 180° 2/9 (DECISIONS #57): facit regenererat — nu varnar de kameror som faktiskt bevakar färdriktningen (paret Västra Vemmerlöv 131693→131671 visar vändningen).",
  "hazards": [
   {
    "id": "cam_Västra_Vemmerlöv_131693",
@@ -3450,24 +3450,17 @@
  ],
  "expected": [
   {
-   "t": 17,
-   "hazardId": "cam_Trelleborg_131518",
+   "t": 139,
+   "hazardId": "cam_Västra_Vemmerlöv_131671",
    "kind": "camera",
-   "distanceM": 491,
+   "distanceM": 478,
    "text": "Fartkamera om 500 meter."
   },
   {
-   "t": 157,
-   "hazardId": "cam_Västra_Vemmerlöv_131693",
+   "t": 382,
+   "hazardId": "cam_Slågarpsdal_131626",
    "kind": "camera",
-   "distanceM": 499,
-   "text": "Fartkamera om 500 meter."
-  },
-  {
-   "t": 424,
-   "hazardId": "cam_Slågarp_131490",
-   "kind": "camera",
-   "distanceM": 496,
+   "distanceM": 489,
    "text": "Fartkamera om 500 meter."
   }
  ]

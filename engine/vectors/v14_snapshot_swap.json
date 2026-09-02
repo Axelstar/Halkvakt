@@ -1,13 +1,13 @@
 {
  "name": "Databyte mitt i körning — minnet överlever (#9)",
- "description": "cam1 500 m fram fyrar t=1. Vid t=20 byts snapshoten (samma cam1 + ny cam2 2511 m fram). Minnet MÅSTE överleva bytet: cam1 får inte upprepas (repris-reglerna gäller via fired-kartan), cam2 fyrar först inom 500 m vid t=91. En motor som byggs om vid bytet fyrar cam1 igen vid t=20 — exakt det felet den här vektorn dödar. (2511, inte 2500: designregeln om gränsmarginal.)",
+ "description": "cam1 500 m fram fyrar t=1. Vid t=20 byts snapshoten (samma cam1 + ny cam2 2511 m fram). Minnet MÅSTE överleva bytet: cam1 får inte upprepas (repris-reglerna gäller via fired-kartan), cam2 fyrar först inom 500 m vid t=91. En motor som byggs om vid bytet fyrar cam1 igen vid t=20 — exakt det felet den här vektorn dödar. (2511, inte 2500: designregeln om gränsmarginal.). Kamerornas bearing vänd 180° 2/9: Trafikverkets värde är riktningen kameran TITTAR, färdriktningen den fotar är motsatt.",
  "hazards": [
   {
    "id": "cam1",
    "kind": "camera",
    "lon": 15,
    "lat": 58.00449155587496,
-   "bearing": 0
+   "bearing": 180
   }
  ],
  "updates": [
@@ -19,14 +19,14 @@
      "kind": "camera",
      "lon": 15,
      "lat": 58.00449155587496,
-     "bearing": 0
+     "bearing": 180
     },
     {
      "id": "cam2",
      "kind": "camera",
      "lon": 15,
      "lat": 58.02255659360402,
-     "bearing": 0
+     "bearing": 180
     }
    ]
   }

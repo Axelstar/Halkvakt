@@ -1,13 +1,13 @@
 {
  "name": "Kamera bakom oss",
- "description": "Kameran passerades innan start. Tystnad.",
+ "description": "Kameran passerades innan start. Tystnad. Kamerornas bearing vänd 180° 2/9: Trafikverkets värde är riktningen kameran TITTAR, färdriktningen den fotar är motsatt.",
  "hazards": [
   {
    "id": "cam1",
    "kind": "camera",
    "lon": 15,
    "lat": 57.99730506647503,
-   "bearing": 0
+   "bearing": 180
   }
  ],
  "trace": [

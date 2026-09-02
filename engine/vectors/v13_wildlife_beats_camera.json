@@ -1,6 +1,6 @@
 {
  "name": "Vilt slår kamera i prioritet",
- "description": "Aktiv viltzon 600 m fram + kamera 480 m fram, kvalificerade samtidigt. Viltet talar; kameran släpps och passeras. EN varning.",
+ "description": "Aktiv viltzon 600 m fram + kamera 480 m fram, kvalificerade samtidigt. Viltet talar; kameran släpps och passeras. EN varning. Kamerans bearing 180 = tittar söderut ⇒ fotar vår norrgående riktning (riktningsvändningen 2/9).",
  "hazards": [
   {
    "id": "wild1",
@@ -16,7 +16,7 @@
    "kind": "camera",
    "lon": 15,
    "lat": 58.00431189363996,
-   "bearing": 0
+   "bearing": 180
   }
  ],
  "trace": [

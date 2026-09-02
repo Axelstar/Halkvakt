@@ -166,3 +166,6 @@ i samma commit när de överlappar.
   och fel-loggen ska bära API:ets svarskropp — "TRV 400" utan kropp kostade ett diagnosvarv.
   (1/9: rotorsaken var "Invalid query attribute Camera.RoadNumber" — fältet finns i
   TrafficSafetyCamera, inte i Camera.)
+- Trafikverkets Camera.Bearing = riktningen kameran TITTAR (mot trafiken), INTE färdriktningen
+  den bevakar. Övervakad kurs = bearing + 180°. Samma fälla finns i NVDB. Kontrollera alltid
+  vinkelkonventioner mot en känd mätplats innan filter byggs på dem (2/9, Bengts E4-mätning).

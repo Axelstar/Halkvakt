@@ -1,13 +1,13 @@
 {
  "name": "TYSTNADEN — viktigaste vektorn",
- "description": "Faror finns i världen men inte i vår korridor (20 km bort, bakom, avsides, varm station). En hel körning utan ett enda ljud.",
+ "description": "Faror finns i världen men inte i vår korridor (20 km bort, bakom, avsides, varm station). En hel körning utan ett enda ljud. Kamerornas bearing vänd 180° 2/9: Trafikverkets värde är riktningen kameran TITTAR, färdriktningen den fotar är motsatt.",
  "hazards": [
   {
    "id": "cam_far",
    "kind": "camera",
    "lon": 15,
    "lat": 58.179662234998204,
-   "bearing": 0
+   "bearing": 180
   },
   {
    "id": "acc_far",
@@ -20,7 +20,7 @@
    "kind": "camera",
    "lon": 15.050855549266974,
    "lat": 58.00898311174991,
-   "bearing": 0
+   "bearing": 180
   },
   {
    "id": "wx_warm",

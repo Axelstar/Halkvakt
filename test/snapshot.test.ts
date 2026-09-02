@@ -8,7 +8,9 @@ import type { Fix, PointHazard } from "../engine/src/types.ts";
 
 const staticDoc: StaticDoc = {
   schema: 1,
-  cameras: [{ id: "TV1", lon: 15.0, lat: 58.026948, bearing: 0, road: "E4" }], // 3 km norr
+  // bearing 180 = kameran TITTAR söderut ⇒ fotograferar norrgående trafik, dvs. vår
+  // riktning (Trafikverkets konvention, vänd 180° 2/9 — DECISIONS #57).
+  cameras: [{ id: "TV1", lon: 15.0, lat: 58.026948, bearing: 180, road: "E4" }], // 3 km norr
 };
 const liveDoc: LiveDoc = {
   schema: 1, generated_at: "2026-08-25T00:00:00Z",

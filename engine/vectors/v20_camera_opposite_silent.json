@@ -1,13 +1,13 @@
 {
  "name": "Kamera i motsatt riktning — tyst (Bengt, E4 1/9)",
- "description": "80 km/h norrut (kurs 0°), kamera 3 km fram men bearing 175° — den bevakar MÖTANDE trafik. Ska vara HELT tyst. Låser toleransen: med det gamla värdet 100° (fönster 200°) släpptes mötande kameror igenom så fort vägen svängde; 60° stänger dem ute. Mätt på publicerad data: 382 av 388 kamerapar inom 300 m pekar isär >135°.",
+ "description": "80 km/h norrut (kurs 0°), kamera 3 km fram men bearing 175° — den bevakar MÖTANDE trafik. Ska vara HELT tyst. Låser toleransen: med det gamla värdet 100° (fönster 200°) släpptes mötande kameror igenom så fort vägen svängde; 60° stänger dem ute. Mätt på publicerad data: 382 av 388 kamerapar inom 300 m pekar isär >135°. RIKTNING 2/9: bearing 0 = kameran tittar norrut ⇒ fotar SÖDERgående = mötande.",
  "hazards": [
   {
    "id": "cam1",
    "kind": "camera",
    "lon": 15,
    "lat": 58.02694933524973,
-   "bearing": 175
+   "bearing": 0
   }
  ],
  "trace": [

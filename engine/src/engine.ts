@@ -174,8 +174,13 @@ export class AlertEngine {
     switch (p.kind) {
       case "camera": {
         if (distM > this.cfg.cameraTriggerM) return null;
-        if (p.bearing != null && angDiffDeg(p.bearing, heading) > this.cfg.cameraBearingToleranceDeg) {
-          return null; // camera monitors the opposite direction — stay silent
+        // Trafikverkets Bearing = riktningen kameran TITTAR, alltså rakt MOT trafiken den
+        // fotograferar (mätplats för norrgående trafik har bäring ~158°, sydsydost). Den
+        // övervakade färdriktningen är därför bearing + 180°. Bengt mätte felet på E4 2/9:
+        // med rå jämförelse tystnade kameran på hans sida och den mötande varnade.
+        if (p.bearing != null &&
+            angDiffDeg((p.bearing + 180) % 360, heading) > this.cfg.cameraBearingToleranceDeg) {
+          return null; // camera watches the opposite direction — stay silent
         }
         return { hazard: p, kind: p.kind, distM, alertKey: p.id };
       }

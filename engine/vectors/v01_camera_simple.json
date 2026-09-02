@@ -1,13 +1,13 @@
 {
  "name": "Kamera rakt fram",
- "description": "80 km/h norrut, kamera 3 km fram (bearing 0 = fotar vår riktning). Exakt EN varning ~500 m före.",
+ "description": "80 km/h norrut, kamera 3 km fram (bearing 0 = fotar vår riktning). Exakt EN varning ~500 m före. RIKTNING 2/9: bearing 180 = kameran tittar söderut ⇒ fotar norrgående = vår riktning.",
  "hazards": [
   {
    "id": "cam1",
    "kind": "camera",
    "lon": 15,
    "lat": 58.02694933524973,
-   "bearing": 0
+   "bearing": 180
   }
  ],
  "trace": [

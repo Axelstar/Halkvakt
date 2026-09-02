@@ -111,8 +111,11 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
         return when (p.kind) {
             HazardKind.CAMERA -> {
                 if (distM > cfg.cameraTriggerM) return null
+                // Trafikverkets Bearing = riktningen kameran TITTAR, rakt MOT trafiken den
+                // fotograferar (mätplats för norrgående trafik har bäring ~158°). Övervakad
+                // färdriktning = bearing + 180° (Bengts mätning på E4 2/9).
                 val b = p.bearing
-                if (b != null && Geo.angDiffDeg(b, heading) > cfg.cameraBearingToleranceDeg) return null
+                if (b != null && Geo.angDiffDeg((b + 180.0) % 360.0, heading) > cfg.cameraBearingToleranceDeg) return null
                 Candidate(p, p.kind, distM, p.id)
             }
             HazardKind.ACCIDENT -> evaluateAccident(p, distM)

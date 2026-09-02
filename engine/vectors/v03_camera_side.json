@@ -1,13 +1,13 @@
 {
  "name": "Kamera på annan väg",
- "description": "Kamera 2 km öster om vår väg — utanför korridoren. Tystnad.",
+ "description": "Kamera 2 km öster om vår väg — utanför korridoren. Tystnad. Kamerornas bearing vänd 180° 2/9: Trafikverkets värde är riktningen kameran TITTAR, färdriktningen den fotar är motsatt.",
  "hazards": [
   {
    "id": "cam1",
    "kind": "camera",
    "lon": 15.033903699511317,
    "lat": 58.01347466762486,
-   "bearing": 0
+   "bearing": 180
   }
  ],
  "trace": [

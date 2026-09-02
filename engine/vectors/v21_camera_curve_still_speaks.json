@@ -1,13 +1,13 @@
 {
  "name": "Kamera i egen riktning trots kurva — varnar (Bengt 1/9)",
- "description": "Samma resa, kamera bearing 40° medan vi kör kurs 0°. Vägen svänger — kameran bevakar VÅR riktning och ska varna. Låser att 60° inte blev för snävt: en kamera 40° från vår kurs måste fortfarande höras.",
+ "description": "Samma resa, kamera bearing 40° medan vi kör kurs 0°. Vägen svänger — kameran bevakar VÅR riktning och ska varna. Låser att 60° inte blev för snävt: en kamera 40° från vår kurs måste fortfarande höras. RIKTNING 2/9: bearing 220 ⇒ fotar färdriktning 40°, inom 60° från vår kurs 0°.",
  "hazards": [
   {
    "id": "cam1",
    "kind": "camera",
    "lon": 15,
    "lat": 58.02694933524973,
-   "bearing": 40
+   "bearing": 220
   }
  ],
  "trace": [

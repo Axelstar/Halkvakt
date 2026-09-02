@@ -1,20 +1,20 @@
 {
  "name": "45-sekundersregeln",
- "description": "Två kameror 400 m isär i 80 km/h (18 s mellanrum). Första talar; andra faller i tystnadsfönstret, släpps, och passeras. EN varning totalt.",
+ "description": "Två kameror 400 m isär i 80 km/h (18 s mellanrum). Första talar; andra faller i tystnadsfönstret, släpps, och passeras. EN varning totalt. Kamerornas bearing vänd 180° 2/9: Trafikverkets värde är riktningen kameran TITTAR, färdriktningen den fotar är motsatt.",
  "hazards": [
   {
    "id": "camA",
    "kind": "camera",
    "lon": 15,
    "lat": 58.02694933524973,
-   "bearing": 0
+   "bearing": 180
   },
   {
    "id": "camB",
    "kind": "camera",
    "lon": 15,
    "lat": 58.030542579949696,
-   "bearing": 0
+   "bearing": 180
   }
  ],
  "trace": [

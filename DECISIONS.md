@@ -610,3 +610,23 @@ roadPhrase(): bokstav ⇒ "på E18", siffra ⇒ "på väg 25", saknas ⇒ frasen
 Tre motorer, v15/v16/v17 uppdaterade + v22 (utan vägnummer ⇒ exakt gamla frasen) så att
 ingen framtida ändring kan låta rösten säga "på null". Bara olyckor tills vidare: halka
 och frysrisk gäller sträckor/punkter där föraren redan ÄR, och "på E4" tillför inget där.
+
+## #57 (2/9 2026) Kamerariktningen var 180° fel — och min #55-fix gjorde det synligt
+Bengt på E4 en timme efter 0.3.3: "Passerade precis en kamera på min sida. Ingen varning.
+20 sekunder senare varnade den, och då var det för motsatta sidan." Entydigt — och
+motsatsen till vad #55 skulle ge.
+ROTORSAKEN: Trafikverkets Camera.Bearing är riktningen kameran TITTAR, alltså rakt MOT
+trafiken den fotograferar. Bekräftat av två oberoende källor: NVDB anger "vinkeln kameran
+tittar i", medan databaser som listar färdriktning använder "diametralt motsatt vinkel";
+och en publicerad mätplats för NORRgående körriktning har bäring 158° (sydsydost).
+Vi jämförde bearing direkt med kursen — 180° fel sedan dag ett.
+VARFÖR DET INTE SYNTES FÖRRÄN NU: med den gamla toleransen 100° var fönstret 200° och båda
+kamerorna i ett par släpptes ofta igenom, så felet såg ut som "den varnar för fel kamera
+ibland". När #55 skärpte till 60° blev filtret precist — och började konsekvent filtrera
+bort rätt kamera. Min fix gjorde alltså felet värre och därmed mätbart; Bengt mätte det på
+en timme. Rätt fix: angDiff((bearing + 180) % 360, heading) ≤ 60°.
+BEVIS PÅ RIKTIG DATA: Skåne-fixturen byter varnade kameror — paret Västra Vemmerlöv
+131693 → 131671, två kameror på samma plats som bevakar var sin riktning. Vi varnade
+konsekvent för fel av dem. Alla kameravektorer vända 180°, facit regenererat.
+LÄXA: ett filter som "nästan fungerar" på grund av en vid tolerans döljer ett fel i data-
+tolkningen. Skärpningen som avslöjar felet är inte en regression — den är diagnosen.

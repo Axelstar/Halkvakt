@@ -259,7 +259,10 @@ public final class AlertEngine {
             switch p.kind {
             case .camera:
                 if distM > cfg.cameraTriggerM { continue }
-                if let b = p.bearing, Geo.angDiffDeg(b, heading) > cfg.cameraBearingToleranceDeg { continue }
+                // Trafikverkets Bearing = riktningen kameran TITTAR, rakt MOT trafiken den
+                // fotograferar. Övervakad färdriktning = bearing + 180° (Bengts mätning E4 2/9).
+                if let b = p.bearing,
+                   Geo.angDiffDeg((b + 180).truncatingRemainder(dividingBy: 360), heading) > cfg.cameraBearingToleranceDeg { continue }
                 candidates.append(Candidate(id: p.id, kind: p.kind, distM: distM,
                                             limit: p.meta.speedLimitKmh, alertKey: p.id))
             case .accident:

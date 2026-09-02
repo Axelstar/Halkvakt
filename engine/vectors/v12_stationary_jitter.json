@@ -1,13 +1,13 @@
 {
  "name": "Parkerad med GPS-brus",
- "description": "Stillastående; positionen hoppar ±3 m men telefonens dopplerfart är ~0 (KONTRAKT: appen skickar alltid med speedKmh när den finns — härledd fart ur jitter kan se ut som 20 km/h). Kamera 100 m bort. Fartspärren håller tyst.",
+ "description": "Stillastående; positionen hoppar ±3 m men telefonens dopplerfart är ~0 (KONTRAKT: appen skickar alltid med speedKmh när den finns — härledd fart ur jitter kan se ut som 20 km/h). Kamera 100 m bort. Fartspärren håller tyst. Kamerornas bearing vänd 180° 2/9: Trafikverkets värde är riktningen kameran TITTAR, färdriktningen den fotar är motsatt.",
  "hazards": [
   {
    "id": "cam1",
    "kind": "camera",
    "lon": 15,
    "lat": 58.00089831117499,
-   "bearing": 0
+   "bearing": 180
   }
  ],
  "trace": [
