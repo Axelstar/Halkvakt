@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-02 av Claude — radar-rekognoseringen (#43 steg 1) körd: fjällen täckta (26/26 punkter, enda luckan Tärnaby), källbeslutets underlag komplett*
+*Uppdaterad: 2026-09-02 av Claude — KÄLLBESLUTET taget (DECISIONS #60, Bengt + Axel): radarn in; cellmätningens v2-dom ren (26→60 %), pilotintaget olåst*
 
 ---
 
@@ -195,8 +195,11 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   Kiruna och E14 Storlien radar_coverage:ok (nordisk komposit slår nationell); enda
   strukturella luckan är Tärnaby. Licenser CC BY/NLOD, gratis. DOMEN: inget stoppar
   källbeslutet. 🔑 Steg 2 KÄLLBESLUT: DECISIONS-rad Axel + Bengt — underlaget är
-  komplett. Steg 3 pilotintag i skugga 🔑 steg 2. Steg 4 nyttjarna i kortens egen
-  takt. Blind fläck kvarstår: frosten ser radarn aldrig.
+  komplett. ✅ Steg 2 KÄLLBESLUTET TAGET 2/9: DECISIONS #60 — Bengt + Axel (Axels ok
+  via Bengt i chatten; Axel kontrasignerar genom att bocka här). 🔓 Steg 3 pilotintag
+  i skugga OLÅST — byggs på Bengts ord, bevisas med cellmätning v3 mot radar +
+  uppmätt fritier efter en vecka. Steg 4 nyttjarna i kortens egen takt. Blind fläck
+  kvarstår: frosten ser radarn aldrig.
 - [ ] **#32 Hindren in i rösten** — vi har aldrig skeppat annat än olyckor trots att
   DECISIONS #5 sade "olyckor + hinder". Kräver ny HazardKind + egen röstfras + Axels
   beslut om vad rösten säger. Bäst kandidat: **djur på vägbanan** (173 på en vecka, med
@@ -237,12 +240,11 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   ✅ **Steg 0a KLART 2/9** (Axels ja via Bengt): RainSum bevisad 89 % täckning FÖRE bygget
   (regn-bevis #1), rain_sum_mm + snow_wateq_mm i arkivet, slutbevis 658 stationer med
   mängd (regn-bevis #3). Facit tickar från nu.
-  ✅ **Steg 0b KÖRD 2/9** (cellmätningen, 92 983 regnhändelser): diskordansen stiger
-  46→64 % från 5 till 50 km — enstationstrigger är nära slantsingling på våra
-  ankaravstånd. 0–5 km-artefakt funnen (givarelösa stationer räknas som torra) ⇒ v2
-  behövs. SLUTSATS UNDER PRÖVNING: stationsspåret ser svagt ut för regn; radar-
-  observationsspåret (SMHI:s öppna radarkomposit = mätning, inte prognos) kandiderar
-  som huvudtrigger — v2 + radar-rekognosering (nytt steg 1b) avgör, Bengts ord väntas.
+  ✅ **Steg 0b KLAR 2/9, v2-dom** (cell-matning #2, 84 341 händelser, givarelösa
+  uteslutna): artefakten bekräftad och borta — kurvan nu rent monoton 26 % (0–5 km)
+  → 36 → 41 → 47 → 52 → 60 % (30–50 km). Redan vid 5–10 km är över en tredjedel av
+  regnhändelserna enstations. DOMEN STÅR: stationstrigger ensam räcker inte —
+  radarspåret valt (DECISIONS #60), stationerna blir kalibrering + fartgrind.
   *(nyckel för röst: Axels ja — rösttext, plats i A-skalan, ordning mot #15/#16)*
 
 ---
