@@ -1,0 +1,21 @@
+# Radar-rekognoseringen (kort #43 steg 1, docs/RADAR-PLAN.md §3): ren läsning av
+# SMHI:s öppna radardata + MET nowcast — åtkomst, format, kadens, volym, licens och
+# fjälltäckningen (422-svepet). Körs på knapp; resultatet på Summary-sidan.
+# Inga hemligheter behövs — båda källorna är öppna.
+name: radar-rekognosering
+on:
+  workflow_dispatch:
+jobs:
+  rekognosering:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/radar-rekognosering.ts | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
