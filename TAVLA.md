@@ -104,6 +104,13 @@ med släckt skärm, vakten stannar när du stänger av.
     tre kandidater, en mätt, en byggd, en väntar:
     · Grannländerna: FI MÄTT 1/9 (Norrland >20 km 12,6→11,5 %, gratis — stationerna
       finns redan i vader.geojson); NO mäts samma dag Vegvesen-kontot fungerar; DK = 0.
+    · **Frost-ankare (NO)** — MET Norges Frost-API ger norska stationers lufttemp UTAN
+      Vegvesen (gratis, mejlregistrering, basic auth, väg verifierad 2/9). Norges
+      SMHI-luftankare: gränsstationerna mot E8/E10/E14-stråken är vinsten. 🔒 Nyckel:
+      Bengt registrerar (frost.met.no/auth/requestCredentials.html) och lägger client-id
+      som GitHub Secret FROST_CLIENT_ID → Claude bygger rekognosering + prov i ett varv,
+      bevisat mot API:et direkt (inte blint — TRV-400-läxan). *(Bengts beställning 2/9,
+      terminalsessionen)*
     · SMHI-luftankare: PROVET BYGGT + KÖRT 1/9 (Bengts order): scripts/smhi-prov.ts +
       knappen Actions → smhi-prov (235 SMHI-stationer, samma leave-one-out som grind-a,
       självtest där ett fjärran-VViS räddas av luftankare). Första signalen på tunna
