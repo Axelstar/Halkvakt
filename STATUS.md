@@ -685,3 +685,13 @@ aldrig be om arkivering utan grön ios-engine + android + ci.
 🔑 NÄSTA BEVIS: Bengt kör 0.3.5 och noterar KLOCKSLAG + PLATS vid varje kameralarm och
 varje kamera som passeras utan larm. Beskrivningar räcker inte — vi har gissat tre gånger.
 Notera: max EN varning per 45 s, så tätt sittande ATK-kameror ger bara ett larm (avsiktligt).
+
+## 2026-09-02 kväll — Frost-varvet: nyckel → rekognosering → prov, allt bevisat live (DECISIONS #60)
+Bengt registrerade FROST_CLIENT_ID (Bitwarden + Secrets, hemligheten aldrig genom Claude).
+frost-rekognosering #1–2 + frost-prov #1, alla gröna med resultat på Summary-sidorna.
+Fynden: Vegvesen bor i Frost (461 aktiva vägstationer, lufttemp, dataprov 8,6 °C
+Bossovarri); yttemp kräver ändå DATEX (404 på serierna, felkroppen loggad); svenska
+Norrlandsluckan orubbad av 1 104 norska stationer — den är inlands, inte vid gränsen.
+Vegvesens DATEX-svar anlände till Axel under kvällen; hans handgrepp (USER/PASS i
+Secrets) är nästa nyckel. Ingen VEGVESEN-hemlighet fanns i repot vid kontroll (Secrets-
+sidan läst via Bengts Chrome); Bengts inkorg hade noll vegvesen-träffar.

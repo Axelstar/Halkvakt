@@ -104,13 +104,14 @@ med släckt skärm, vakten stannar när du stänger av.
     tre kandidater, en mätt, en byggd, en väntar:
     · Grannländerna: FI MÄTT 1/9 (Norrland >20 km 12,6→11,5 %, gratis — stationerna
       finns redan i vader.geojson); NO mäts samma dag Vegvesen-kontot fungerar; DK = 0.
-    · **Frost-ankare (NO)** — MET Norges Frost-API ger norska stationers lufttemp UTAN
-      Vegvesen (gratis, mejlregistrering, basic auth, väg verifierad 2/9). Norges
-      SMHI-luftankare: gränsstationerna mot E8/E10/E14-stråken är vinsten. 🔒 Nyckel:
-      Bengt registrerar (frost.met.no/auth/requestCredentials.html) och lägger client-id
-      som GitHub Secret FROST_CLIENT_ID → Claude bygger rekognosering + prov i ett varv,
-      bevisat mot API:et direkt (inte blint — TRV-400-läxan). *(Bengts beställning 2/9,
-      terminalsessionen)*
+    · **Frost-ankare (NO)** ✅ KÖRT 2/9 kväll (DECISIONS #60): Bengt registrerade nyckeln,
+      rekognosering + prov byggda och körda mot levande API samma kväll (knappar:
+      frost-rekognosering, frost-prov). TRE FYND: (a) Vegvesen bor i Frost — 461 aktiva
+      vägstationer med lufttemp, "E10 BJØRNFJELL" 1 km från Riksgränsen, dataprov 8,6 °C;
+      norskt luftarkiv möjligt UTAN DATEX. (b) Yttemp kräver ändå DATEX (404 på serierna).
+      (c) Svenska Norrlandsluckan RUBBAS INTE (9,1 km / 11,5 % i alla påbyggnadssteg) —
+      luckan är INLANDS, inte vid gränsen; kvarvarande spår är SMHI+höjd eller felkartan.
+      *(Bengts beställning 2/9, terminalsessionen)*
     · SMHI-luftankare: PROVET BYGGT + KÖRT 1/9 (Bengts order): scripts/smhi-prov.ts +
       knappen Actions → smhi-prov (235 SMHI-stationer, samma leave-one-out som grind-a,
       självtest där ett fjärran-VViS räddas av luftankare). Första signalen på tunna
@@ -174,10 +175,11 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   per säsong är kandidatmodellen; B2B (hemtjänst, försäkring, åkerier) är taket.
 - [ ] **Norden efter facit:** Finland LIVE i arkivet (31/8). Norge sedan, Danmark sist.
   Tidigast vintern 2027/28 som produkt. Nordiskt namn vid det laget (Nordic RoadSafe, #1).
-- [ ] **Vegvesen DATEX-konto** — BEGÄRT 31/8 15:43. När svaret kommer: VEGVESEN_USER +
-  VEGVESEN_PASS i GitHub Secrets ⇒ Claude skriver parsern och Norge kör. Allt annat är
-  förberett (#35). Kräver de fast IP: proxy-beslut till Axel.
-  Gör i samma svep som PRV + domänen.
+- [ ] **Vegvesen DATEX-konto** — 📬 SVARET ANLÄNT till Axel 2/9 kväll (Bengts besked).
+  AXELS NÄSTA HANDGREPP: läs svaret → VEGVESEN_USER + VEGVESEN_PASS i GitHub Secrets ⇒
+  Claude skriver parsern och Norge kör. Allt annat är förberett (#35). Kräver de fast IP:
+  proxy-beslut till Axel. Frost täcker redan lufttemp (DECISIONS #60) — DATEX ger
+  yttemp/väglag, det Frost inte kan.
 - [x] ~~Mejl till Vejdirektoratet om VejVejr~~ ✅ SKICKAT 31/8 16:05 via kontaktformuläret
   (ämne "Forespørgsel om en sag eller et projekt" — vinterdriftens formulär var stängt).
   Väntar svar. Tills dess: grästemp i arkivet, rösten tyst om frysrisk i DK (#45).

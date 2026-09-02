@@ -690,3 +690,23 @@ strukturella luckan Tärnaby; cellmätningen (regnet dekorrelerar under ankaravs
 (cellmätningens dom), MET:s punkt-API för skelettet (deras villkor), köpta källor
 (fritier). Nästa: steg 3 pilotintag i skugga, bevisas med cellmätning v3 mot radar
 + uppmätt fritier efter en vecka.
+
+## #60 (2/9 2026 kväll) Frost-rekognoseringen + provet: Norge öppnar, men luckan är inlands
+Bengt registrerade FROST_CLIENT_ID; rekognosering + prov byggda och körda mot levande API
+samma kväll (frost-rekognosering #1–2, frost-prov #1, allt på Summary-sidorna). TRE FYND:
+(a) VEGVESEN BOR I FROST: 473 av 1 606 norska stationer hålls av Statens vegvesen, 461
+    aktiva med lufttemperatur — vägstationsnamn som "E10 BJØRNFJELL" (1 km från Riks-
+    gränsen), "E14 TEVELDALEN" (3 km från Storlien). Skarpt dataprov: 8,6 °C @ 19:00Z.
+    Norskt luftarkiv kan alltså börja tickas UTAN DATEX-kontot, som FI före produkten.
+(b) YTTEMP KRÄVER ÄNDÅ DATEX: road_surface_temperature finns i elementkatalogen men
+    availableTimeSeries ger 404 för både bas- och max-varianten — inga läsbara serier
+    med öppna uppgifter. Väglag/yttemp går fortsatt genom Vegvesens DATEX.
+(c) SVENSKA LUCKAN RUBBAS INTE: ankarstegen SE→+FI→+NO(Vegvesen)→+NO(alla) ger Norrland
+    9,1 km / 11,5 % i ALLA tre påbyggnadsstegen — noll ytterligare effekt av 1 104 norska
+    stationer. Slutsatsen är geometrisk och viktig: Norrlands >20 km-lucka ligger i
+    INLANDET, inte vid gränsen. Kvarvarande spår för luckan: SMHI-luftankare + höjd
+    (redan under prov) eller acceptans via grind A:s felkarta. OBS: Frost-ankare är
+    lufttemperatur — provet mäter avstånd, prognosvärdet döms enligt TROSKLAR-SKUGGAN.
+SAMMA KVÄLL: Vegvesens svar på DATEX-begäran anlänt till Axel (Bengts besked i chatten).
+Nästa steg är Axels: VEGVESEN_USER/PASS i GitHub Secrets (och proxy-beslutet om fast IP
+krävs) ⇒ parsern skrivs och Norge kör på riktigt. Frost förblir komplement (lufttemp).
