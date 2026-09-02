@@ -22,8 +22,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 **1. ~~Signeringshemligheten~~ ✅ LAGAD 2/9 (DECISIONS #58)** — rotorsak: bara HV_KEYSTORE_PASS
 hade roterats 31/8, inte B64; paret hörde inte ihop och jks-filen fanns inte kvar. Ny keystore
 skapad 2/9, båda hemligheterna från samma fil, signerad AAB 2,5 MB grön i CI.
-🔑 KVAR (Axel, 2 min): lägg `~/halkvakt-upload.jks` i iCloud Drive/Halkvakt-nycklar och
-uppdatera anteckningen i Apple Passwords. Utan filen går paret aldrig att laga igen.
+✅ Filen uppladdad till iCloud Drive/Halkvakt-nycklar 2/9 (utrymmet var fullt, Axel köpte mer)
+och anteckningen i Apple Passwords uppdaterad. Kortet HELT stängt.
 
 **2. ~~Vid Macen: till TestFlight~~ ✅ 0.3.1 och 0.3.2 uppladdade 31/8 em.**
 Kvar: lägg 0.3.2 i gruppen i App Store Connect → skicka Bengt testinstruktionen.
