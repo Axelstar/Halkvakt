@@ -725,3 +725,13 @@ Två nya dokument skapade i samma Drive-mapp (v4 orörda): "Ansökan ... 2026-09
   sanning (injicerade par, kvot exakt 2,0) grönt lokalt; underlagsvakt < 20 par = rött
   jobb; domspärren står i varje utskrift. Kedjebeviskörningen görs direkt efter merge
   (knappen registreras först på main) — domen fälls i eget varv på ~7 dygns data.
+- **S-2026-09-03fm (forts 2): v3-kedjebeviset KÖRT.** Körning #1 fällde en riktig bugg —
+  precis det kedjebeviset var till för: geography-ST_DWithin över 818 segment × 658
+  stationer utan förfilter sprängde Supabase statement_timeout (57014, felkroppen i
+  loggen). Fix: bbox-förfilter (&& ST_Expand 0,15°) + SET statement_timeout 300s
+  (PR #32). Körning #2 grön på 27 s: 1 311 radar↔station-par ur 18 kompositer
+  (2/9 18:20 → 3/9 08:00), bekräftelsen växer monotont med radarbandet
+  13→30→51→71 %, kalibreringsmediankvot 0,39 (radar under mätarna — rimligt:
+  5-min-bild mot 30-min-summa, medel mot punktmätare), missriktningen 85 % radartäckt.
+  KEDJAN BEVISAD — parning, enheter och tidsmatchning håller, underlaget växer av sig
+  självt. Domen fälls i eget varv på ~7 dygn; siffrorna ovan är inte den.
