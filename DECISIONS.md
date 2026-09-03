@@ -724,3 +724,15 @@ göra det). Därmed är ALLA mänskliga förvillkor för skuggkörningen uppfyll
 kvar är bara vintern. BOKFÖRINGSNOT: #60 är trippelbokat (rutinfelet, källbeslutet
 radar, Frost-rekognoseringen) — två varv skrev parallellt. Numren lämnas orörda
 (historik skrivs inte om); referenser till #60 bör ange vilket. Nästa nummer: #62.
+
+## #62 (3/9 2026) TÄTHETSBESLUTET: motfashämtning av regnsummorna (kort #44 alternativ a)
+Bengt + Axel i chatten ("Jag o Axel säger a") efter regntäckningsmätningen: timhämtningen
+fångar 1 av 2 30-min-buckets i 78 % av regnmätartimmarna (täckning 44 %). Vald väg:
+lätt regn-endast-körning i MOTFAS (:41, mot ingests :11) — ingest/regn30.ts + regn-30.yml,
+samma parser och INSERT som ingest, bara nederbördsrader (arkivdieten #4), ON CONFLICT
+DO NOTHING. Kostnad: ~1 CI-minut/timme (minutdieten #22 medvetet utökad med detta).
+Alternativ: (b) hela ingest till 30-min-takt (dubbel kostnad, mer än frågan kräver) och
+(c) acceptera 44 % (halv växttakt för vinterserierna) — båda bortvalda. BEVISKRAV
+(rotationsläxan): beslutet är genomfört först när regn-tackning EFTER driftsättningen
+visar 2/2-andelen stiga; skriptets egen täthetspuls (3 h-fönster) följer samma siffra
+varje körning.

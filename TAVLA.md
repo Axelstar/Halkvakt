@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-03 kväll av Claude (webben) — regntäckningen MÄTT: varannan 30-min-regnsumma tappas (kort #44), täthetsbeslut till Bengt + Axel*
+*Uppdaterad: 2026-09-03 kväll av Claude (webben) — täthetsbeslutet TAGET (a, DECISIONS #62) och motfashämtningen byggd; eftermätning bokad*
 
 ---
 
@@ -253,8 +253,11 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   0-timmarna, 29 %). Vi tappar alltså ungefär varannan 30-min-regnsumma. Ofarligt
   för v3/cellmätningen (slumpvis förlust = mindre urval, ingen skevhet, ±45 min-
   parningen hittar den fångade bucketen) men halverar vinterseriernas växttakt.
-  🔑 TÄTHETSBESLUT (Bengt + Axel, minutdieten #22): (a) lätt regn-endast-hämtning
-  var 30:e min, (b) hela ingest till 30-min, eller (c) acceptera. Claudes råd: (a).
+  ✅ TÄTHETSBESLUTET TAGET 3/9 kväll (Bengt + Axel i chatten, DECISIONS #62): väg (a).
+  BYGGT samma varv: ingest/regn30.ts + regn-30.yml — lätt motfashämtning :41 (mot
+  ingests :11), samma parser/INSERT, bara nederbördsrader, idempotent. 🔨 EFTERMÄTNING
+  KRÄVS (rotationsläxan): kortet stängs först när regn-tackning efter ~ett dygns drift
+  visar 2/2-andelen stiga; skriptets täthetspuls (3 h) följer siffran varje körning.
 - [ ] **#32 Hindren in i rösten** — vi har aldrig skeppat annat än olyckor trots att
   DECISIONS #5 sade "olyckor + hinder". Kräver ny HazardKind + egen röstfras + Axels
   beslut om vad rösten säger. Bäst kandidat: **djur på vägbanan** (173 på en vecka, med
