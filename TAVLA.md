@@ -138,7 +138,7 @@ med släckt skärm, vakten stannar när du stänger av.
   0.3.5 (8) uppladdad 14:42 — första bygget med grönt kontrakt (#60).
   🔑 BEVIS SAKNAS ÄN: Bengt kör 0.3.5 och noterar KLOCKSLAG + PLATS per larm och per
   kamera utan larm. Beskrivningar räcker inte, vi har gissat tre gånger.
-- [ ] #31 Trafikverksbevakningen (litet, olåst, kan bevisas härifrån)
+- [x] ~~#31 Trafikverksbevakningen~~ ✅ KLART 3/9 (detaljkortet under Claude — olåst)
 
 - [x] ~~Testinstruktion till Bengt~~ ✅ docs/TEST-BENGT-0.3.2.md (31/8)
 - [ ] **Bodenresan 1/9** — docs/TEST-BENGT-BODEN.md: E4 hela vägen = skuggflottans väg.
@@ -243,9 +243,13 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   DECISIONS #5 sade "olyckor + hinder". Kräver ny HazardKind + egen röstfras + Axels
   beslut om vad rösten säger. Bäst kandidat: **djur på vägbanan** (173 på en vecka, med
   RIKTIG position — vida bättre än polisens länscentrum som vi underkände i #13).
-- [ ] 🔨 **PÅGÅR (Bengt + Claude, terminalen 3/9 ~17:40) — #31 Bevakning av Trafikverkets nyheter** (Bengts issue #2, 29/8) — API-ändringar
-  och avvecklingar ska fångas innan de bryter ingest. Litet jobb: RSS/changelog-koll i
-  healthchecken eller veckojobb som mejlar.
+- [x] ~~**#31 Bevakning av Trafikverkets nyheter**~~ ✅ KLART 3/9 (Bengt + Claude, terminalen):
+  RSS-veckovakt måndagar 06:40 (scripts/trv-bevakning.ts + trv-bevakning.yml) mot verifierade
+  feeden "Nyheter om Trafikverkets data" — nya poster blir issue med label trv-nyhet assignad
+  Bengt; tom/trasig feed = rött jobb. LARMVÄGEN BEVISAD 3/9: --testlarm-körning skapade issue
+  #35, grönt jobb, notis till Bengt. State seedad (24 poster). Öppna API:ets egna utskick har
+  ingen feed — täcks av Bengts medlemskap i Google-gruppen "Öppet API Trafikverket" (mejl per
+  utskick). 🔑 Kvar: Bengts gruppmedlemskap + hans kvitto på issue-notisen.
 - [ ] **Varvloggen ikapp:** STATUS.md:s sessionslogg slutar 2026-08-25 och "Current state"
   står kvar på 2026-08-24 — sex dygns arbete (Android-release, iOS-bygget, skuggflottan,
   Apple-kontot, uppladdningen) är bokfört i commits och på tavlan men inte i djuplagret.

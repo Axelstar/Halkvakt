@@ -740,3 +740,14 @@ Två nya dokument skapade i samma Drive-mapp (v4 orörda): "Ansökan ... 2026-09
   tre mätkurvorna står i följd på måndagens Summary-sidor. Domspärr och underlagsvakt
   gäller varje körning; första schemalagda: måndag 7/9 (~4,5 dygns data, fortfarande
   kedjekoll), andra 14/9 på fullt underlag — där kan domvarvet läsa av.
+
+## 2026-09-03 kväll — #31 Trafikverksbevakningen byggd och larmvägsbevisad (Bengt + Claude)
+Källan verifierad före koden: bransch-sidans RSS "Nyheter om Trafikverkets data" (24 poster,
+välformad). Veckovakt måndagar 06:40 — fjärde jobbet i måndagsserien: nya poster ⇒ issue
+med label trv-nyhet assignad Bengt (healthcheckens bevisade mönster), tom/trasig feed ⇒
+rött jobb med svarskropp. State seedad lokalt (ingen flod på första körningen), tyst
+omkörning bevisad grön. Larmvägstest via --testlarm: issue #35 skapad, grönt jobb.
+Windows-fälla på vägen: process.exit under undici-teardown ⇒ libuv-assert, exit 127 —
+löst med naturlig exit (main() + exitCode). Öppna API:ets egna utskick saknar feed
+(Google-gruppen) — täcks av Bengts medlemskap, dokumenterat i skript och workflow.
+Bengts issues #3 och #5 stängda samma kväll med bevis (redan åtgärdade sedan 31/8 resp 2/9).
