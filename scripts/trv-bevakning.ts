@@ -117,6 +117,14 @@ async function main(): Promise<number> {
   for (const [name, fn] of hashSources) {
     try {
       const text = await fn();
+      // Stabilitetskontroll: hämta två gånger i samma körning. Skiljer de sig åt varierar
+      // sidan per request (rotation/AB-test) — då är en hashjämförelse bara brus. Fångat
+      // skarpt 3/9: halkvarning larmade mot lokalt seedad hash trots sifferstrippning.
+      const text2 = await fn();
+      if (sha(text) !== sha(text2)) {
+        console.log(`${name}: INSTABIL (två hämtningar skiljer sig, ${text.length}/${text2.length} tecken) — hoppar jämförelse.`);
+        continue;
+      }
       const h = sha(text);
       const spaVarning = text.length < 200 ? " (OBS: nästan ingen text — JS-renderad sida, vakten ser bara skalet)" : "";
       console.log(`${name}: ${text.length} tecken, hash ${h}${spaVarning}`);
