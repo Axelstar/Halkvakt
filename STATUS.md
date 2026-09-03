@@ -769,3 +769,8 @@ forum, inte en levande kanal. Claudes råd byggde på en overifierad sökträff;
 skript och tavla. Ingen täckningslucka uppstår: portalens nyhetssida (som trv-portal-news
 vaktar) är där dagens API-utskick faktiskt publiceras. Läxan är samma som alltid —
 verifiera källan mot verkligheten, inte mot dess rykte.
+
+## 2026-09-03 — Kvittot: Bengt bekräftade notiserna #35–#37 — kort #31 HELT stängt
+Alla tre testissues nådde Bengts inkorg (hans besked i chatten) och stängdes med bevis-
+kommentarer. Larmkedjan därmed bevisad i varje länk: källa → diff → issue → notis →
+mottagare läste. Källvakten rullar själv måndagar 06:40 utan obevisade antaganden kvar.
