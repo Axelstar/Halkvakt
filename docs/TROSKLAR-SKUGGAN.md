@@ -1,9 +1,10 @@
 # Trösklarna för skuggmotorn — mars-domens måttstock
 
-**Datum: 2026-09-01. Fastställt av Bengt (metod) 1/9. Axels fastställande (ägarbeslut —
-domen i mars avgör vad rösten får säga) väntas via strategimejlet; det ska vara på plats
-FÖRE första skuggkörningen, och till dess kan han justera vilket värde som helst utan
-att ändringsregeln i §5 slår in.** Detta är skuggregel 5 i Byggplan v3 (2.3) och det hårda villkoret i
+**Datum: 2026-09-01. Fastställt av Bengt (metod) 1/9. FASTSTÄLLT AV AXEL 2/9
+(ägarbeslut — "kör", relayerat av Bengt i chatten; kontrasigneras genom att kortet
+bockas på tavlan; DECISIONS #61). Värdena är oförändrade från Bengts 1/9-version
+inklusive §2-orsaksklassningen. Från och med första skuggkörningen (~mitten av
+oktober) gäller ändringsregeln i §5 fullt ut.** Detta är skuggregel 5 i Byggplan v3 (2.3) och det hårda villkoret i
 DECISIONS #51: ingen skuggkod skrivs innan detta dokument ligger i repot. Domen i
 mars 2027 fälls mot värdena nedan — ingen flyttar målstolparna när siffrorna kommit.
 
