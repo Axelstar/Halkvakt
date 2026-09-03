@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-03 av Claude (webben) — trösklarna fastställda (#61) + cellmätningen v3 byggd (kedjebevis före radardomen)*
+*Uppdaterad: 2026-09-03 av Claude (webben) — trösklarna fastställda (#61) + v3-kedjebeviset kört (kedjan håller, dom om ~1 vecka)*
 
 ---
 
@@ -230,7 +230,11 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   kedjebevis men ingen dom"): scripts/cell-matning-v3.ts + Actions-knappen cell-matning-v3
   — A) bekräftelse per radarband, B) Marshall–Palmer-kalibrering (mediankvot radar/mätare),
   C) missriktningen; självtest med känd sanning grönt, underlagsvakt (< 20 par = rött),
-  domspärr i utskriften. 🔑 Pilotens dom efter ~1 vecka: v3 på moget underlag + uppmätt
+  domspärr i utskriften. KEDJEBEVISET KÖRT 3/9 (körning #2; #1 fällde en riktig bugg —
+  geography-svep utan bbox-förfilter sprängde statement_timeout, lagad): 1 311 par ur
+  18 kompositer, bekräftelsen växer monotont med radarintensiteten 13→30→51→71 %,
+  mediankvot 0,39, missriktningen 85 % — kedjan (parning, enheter, tidsmatchning)
+  bevisad; siffrorna är INTE domen (14 h data). 🔑 Pilotens dom efter ~1 vecka: v3 på moget underlag + uppmätt
   volym/fritier. Steg 4 nyttjarna i kortens egen takt. Blind fläck
   kvarstår: frosten ser radarn aldrig.
 - [ ] **#32 Hindren in i rösten** — vi har aldrig skeppat annat än olyckor trots att
