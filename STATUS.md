@@ -788,3 +788,10 @@ stället. Segmentstabilitetens tidsserie inför mars börjar ticka med detta var
   timmar så kolumnens ungdom inte döms som samplingsförlust. Självtest med känd
   sanning (63 % på konstruerat A/B-fall) grönt lokalt. Underlag för täthetsbeslutet;
   ingen dom i skriptet. Skarp körning direkt efter merge.
+- **S-2026-09-03kväll: Regntäckningen MÄTT (kort #44, körning #1).** Hypotesen bekräftad
+  med siffror: regnmätarna fångar exakt 1 av 2 30-min-buckets i 78 % av station-
+  timmarna (2/2 bara 5 %, 0/2 17 %), total bucket-täckning 44 %; alla observationer
+  39 % (händelsefiltreringen späder på 0-timmarna där). Timhämtningen tappar alltså
+  ungefär varannan regnsumma. Konsekvens: ingen skevhet i v3/cellmätningen (slumpvis
+  förlust, parningen hittar den fångade bucketen) men vinterns mätserier växer i halv
+  takt. Täthetsbeslutet ligger nu på tavlan med tre vägar och kostnad (minutdieten #22).
