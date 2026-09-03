@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-03 av Claude (webben) — trösklarna fastställda (#61) + v3-kedjebeviset kört (kedjan håller, dom om ~1 vecka)*
+*Uppdaterad: 2026-09-03 av Claude (webben) — trösklarna fastställda (#61), v3-kedjebeviset kört + måndagsbokat, regntäckningsknappen byggd (kort #44)*
 
 ---
 
@@ -242,6 +242,13 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   måndagsmorgon, resultatet på Summary-sidan. 🔑 Pilotens dom efter ~1 vecka: v3 på moget underlag + uppmätt
   volym/fritier. Steg 4 nyttjarna i kortens egen takt. Blind fläck
   kvarstår: frosten ser radarn aldrig.
+- [ ] 📏 **#44 Regntäckningen** (Bengts täthetsfråga 3/9: "räcker timhämtningen?") —
+  stationerna summerar regn per 30 min, ingest hämtar per timme: tappar vi varannan
+  bucket? KNAPPEN BYGGD 3/9: scripts/regn-tackning.ts + Actions → regn-tackning
+  (histogram 2/1/0 buckets per station-timme + täckningsprocent, självtest med känd
+  sanning grönt, underlagsvakt). Nämnaren är pipelinens körtimmar, inte kalendern.
+  Underlag för täthetsbeslutet — akuta lagret har redan minutgräddfil (#19), frost
+  är timskala; frågan gäller bara regnarkivet inför vinterns mätserier.
 - [ ] **#32 Hindren in i rösten** — vi har aldrig skeppat annat än olyckor trots att
   DECISIONS #5 sade "olyckor + hinder". Kräver ny HazardKind + egen röstfras + Axels
   beslut om vad rösten säger. Bäst kandidat: **djur på vägbanan** (173 på en vecka, med

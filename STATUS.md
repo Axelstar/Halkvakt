@@ -781,3 +781,10 @@ på CDN bär segment_id efter 16:37Z-publiceringen; issue #4 stängd med kvittot
 min CDN-väktare läste bara första 600 tecknen (koordinater, aldrig properties) och hade
 tigit till timeout — Bengts fråga avslöjade den; direktverifiering med full parse i
 stället. Segmentstabilitetens tidsserie inför mars börjar ticka med detta varv.
+- **S-2026-09-03em: Regntäckningsknappen byggd (kort #44).** Bengts täthetsfråga: tappar
+  timhämtningen varannan av stationernas 30-min-regnsummor? scripts/regn-tackning.ts +
+  knappen regn-tackning: histogram 2/1/0 buckets per station-timme + täckningsprocent,
+  för alla observationer och regnmätarna separat; nämnaren är pipelinens egna kör-
+  timmar så kolumnens ungdom inte döms som samplingsförlust. Självtest med känd
+  sanning (63 % på konstruerat A/B-fall) grönt lokalt. Underlag för täthetsbeslutet;
+  ingen dom i skriptet. Skarp körning direkt efter merge.

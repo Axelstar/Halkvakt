@@ -1,0 +1,27 @@
+# Regntäckningen (Bengts täthetsfråga 3/9): tappar timhämtningen varannan av
+# stationernas 30-min-regnsummor? Körs på knapp; självtest med känd sanning före
+# den skarpa körningen, resultatet på Summary-sidan. Underlag för täthetsbeslutet.
+name: regn-tackning
+on:
+  workflow_dispatch:
+    inputs:
+      dagar:
+        description: "Dagar bakåt"
+        default: "7"
+jobs:
+  regn-tackning:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types scripts/regn-tackning.ts --sjalvtest
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/regn-tackning.ts "${{ inputs.dagar || '7' }}" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
