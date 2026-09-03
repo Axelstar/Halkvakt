@@ -1,0 +1,41 @@
+# Trafikverksbevakningen (kort #31, Bengts issue #2): veckokoll av RSS-feeden
+# "Nyheter om Trafikverkets data". Nya poster => issue med label trv-nyhet, assignad
+# Bengt (bevisad larmväg: issue => notis). Trasig/tom feed => rött jobb.
+# Öppna API:ets egna utskick täcks av Bengts medlemskap i Google-gruppen (mejl).
+name: trv-bevakning
+on:
+  schedule:
+    - cron: "40 6 * * 1"   # måndagar, efter grind-a/smhi/radar — hela vinterserien i följd
+  workflow_dispatch:
+    inputs:
+      testlarm:
+        description: "true = behandla senaste posten som ny (larmvägstest)"
+        default: "false"
+permissions:
+  issues: write
+  contents: write
+jobs:
+  bevakning:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      # shell: bash ger pipefail — annars äter tee exit-koden (tee-läxan, DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/trv-bevakning.ts ${{ inputs.testlarm == 'true' && '--testlarm' || '' }} | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" }
+      - name: Committa uppdaterad state (om ändrad)
+        shell: bash
+        run: |
+          if ! git diff --quiet ingest/trv-nyheter-state.json; then
+            git config user.name "trv-bevakning"
+            git config user.email "noreply@halkvakt"
+            git add ingest/trv-nyheter-state.json
+            git commit -m "trv-bevakning: state uppdaterad [skip ci]"
+            git pull --rebase && git push
+          fi
