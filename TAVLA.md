@@ -244,10 +244,13 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   beslut om vad rösten säger. Bäst kandidat: **djur på vägbanan** (173 på en vecka, med
   RIKTIG position — vida bättre än polisens länscentrum som vi underkände i #13).
 - [x] ~~**#31 Bevakning av Trafikverkets nyheter**~~ ✅ KLART 3/9 (Bengt + Claude, terminalen):
-  RSS-veckovakt måndagar 06:40 (scripts/trv-bevakning.ts + trv-bevakning.yml) mot verifierade
-  feeden "Nyheter om Trafikverkets data" — nya poster blir issue med label trv-nyhet assignad
-  Bengt; tom/trasig feed = rött jobb. LARMVÄGEN BEVISAD 3/9: --testlarm-körning skapade issue
-  #35, grönt jobb, notis till Bengt. State seedad (24 poster). Öppna API:ets egna utskick har
+  KÄLLVAKT måndagar 06:40 (scripts/trv-bevakning.ts) över ALLA sju källor ur issue #2
+  (Visualping-ersättaren): TRV bransch-RSS + portalens nyheter (CMS-GraphQL, 125 poster —
+  där väglagskameror-25/8 låg) + driftinformationen (17 poster) + SMHI opendata (sitemap,
+  238 sidor) + met.no + halkvarning + klimator (texthash, siffror strippade, instabil sida
+  självdetekteras och jämförs inte). Nytt/ändrat = issue per källa (trv-nyhet, assignad
+  Bengt); trasig källa = rött jobb. LARMVÄGEN BEVISAD 3/9 två gånger: testissues #35/#36
+  + äkta brusfynd #37 som ledde till stabilitetskontrollen. Öppna API:ets egna utskick har
   ingen feed — täcks av Bengts medlemskap i Google-gruppen "Öppet API Trafikverket" (mejl per
   utskick). 🔑 Kvar: Bengts gruppmedlemskap + hans kvitto på issue-notisen.
 - [ ] **Varvloggen ikapp:** STATUS.md:s sessionslogg slutar 2026-08-25 och "Current state"

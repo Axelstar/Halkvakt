@@ -751,3 +751,14 @@ Windows-fälla på vägen: process.exit under undici-teardown ⇒ libuv-assert, 
 löst med naturlig exit (main() + exitCode). Öppna API:ets egna utskick saknar feed
 (Google-gruppen) — täcks av Bengts medlemskap, dokumenterat i skript och workflow.
 Bengts issues #3 och #5 stängda samma kväll med bevis (redan åtgärdade sedan 31/8 resp 2/9).
+
+## 2026-09-03 sen kväll — Källbevakningen fullbordad enligt issue #2:s HELA spec
+Ärlighetsvarv: första bygget täckte en källa; issuens text (läst i sin helhet först vid
+stängningen) specade sex. Nu sju källor via var sin stadigaste väg — portalens nyheter
+och driftinformation via CMS-GraphQL (rekognoserad live: GetRootPages/GetPagesByParentIds,
+öppen endpoint), SMHI via sitemap, resten texthash. Tre fällor fångade av provkörningar
+INNAN de blev tysta ALDRIG eller veckobrus: GetPageContent gav 21 tecken (driftposterna
+låg som CMS-barn), SMHI-skalet 0 tecken (Docusaurus), halkvarning varierar per request
+(stabilitetskontroll: två hämtningar, olika = ingen jämförelse). Larmväg dubbelt bevisad
+(#35/#36 test + #37 äkta). Kvar hos Bengt: Google-gruppmedlemskapet + stänga testissues
+som notiskvitto.
