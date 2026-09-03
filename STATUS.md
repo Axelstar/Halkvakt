@@ -695,3 +695,12 @@ Norrlandsluckan orubbad av 1 104 norska stationer — den är inlands, inte vid 
 Vegvesens DATEX-svar anlände till Axel under kvällen; hans handgrepp (USER/PASS i
 Secrets) är nästa nyckel. Ingen VEGVESEN-hemlighet fanns i repot vid kontroll (Secrets-
 sidan läst via Bengts Chrome); Bengts inkorg hade noll vegvesen-träffar.
+- **S-2026-09-03fm (webbsessionen): TRÖSKLARNA FASTSTÄLLDA — sista mänskliga förvillkoret
+  för skuggkörningen avklarat.** Axels "kör" relayerat av Bengt i chatten ("Axel säger kör
+  via Bengt") → DECISIONS #61, huvudet i docs/TROSKLAR-SKUGGAN.md uppdaterat (värdena
+  oförändrade från Bengts 1/9-version inkl. §2-orsaksklassningen), båda tavelkorten
+  bockade (bocken = Axels kontrasignering, samma ordning som källbeslutet #60/radar).
+  Från första skuggkörningen (~mitten av oktober) gäller §5: ändring kräver bådas
+  signatur. Bokföringsfynd i samma varv: #60 var trippelbokat (två varv skrev
+  parallellt) — noterat i #61, numren lämnade orörda, nästa nummer #62. Kvar för
+  skuggan: bara vintern.

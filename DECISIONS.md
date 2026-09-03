@@ -710,3 +710,17 @@ samma kväll (frost-rekognosering #1–2, frost-prov #1, allt på Summary-sidorn
 SAMMA KVÄLL: Vegvesens svar på DATEX-begäran anlänt till Axel (Bengts besked i chatten).
 Nästa steg är Axels: VEGVESEN_USER/PASS i GitHub Secrets (och proxy-beslutet om fast IP
 krävs) ⇒ parsern skrivs och Norge kör på riktigt. Frost förblir komplement (lufttemp).
+
+## #61 (2/9 2026) TRÖSKLARNA FASTSTÄLLDA av Axel — mars-domens måttstock låst
+Axels "kör" relayerat av Bengt i chatten 2/9 ("Axel säger kör via Bengt"); kontra-
+signering sker genom att kortet bockas på tavlan, samma ordning som källbeslutet.
+Innebörd: docs/TROSKLAR-SKUGGAN.md gäller oförändrad från Bengts 1/9-version
+(inklusive §2-orsaksklassningen av missar), och från första skuggkörningen
+(~mitten av oktober) kan dokumentet bara ändras med DECISIONS-post signerad av
+BÅDA (§5) — lättnad dessutom med motivering som inte pekar på vinterns siffror.
+Alternativ: vänta på strategimejlsvaret (valt bort — beslutet är detsamma och
+skuggspåret ska inte stå still på formalia); justera värden (Axel valde att inte
+göra det). Därmed är ALLA mänskliga förvillkor för skuggkörningen uppfyllda —
+kvar är bara vintern. BOKFÖRINGSNOT: #60 är trippelbokat (rutinfelet, källbeslutet
+radar, Frost-rekognoseringen) — två varv skrev parallellt. Numren lämnas orörda
+(historik skrivs inte om); referenser till #60 bör ange vilket. Nästa nummer: #62.

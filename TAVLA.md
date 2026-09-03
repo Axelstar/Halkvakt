@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-02 sen kväll av Claude (terminalen) — tavelsynk på Bengts order: #55 in på ankarkortet, grind-a måndagar + larmvägen återlagad (pipefail)*
+*Uppdaterad: 2026-09-03 av Claude (webben) — trösklarna FASTSTÄLLDA av Axel via Bengt (DECISIONS #61); skuggkörningens alla mänskliga förvillkor uppfyllda*
 
 ---
 
@@ -38,9 +38,9 @@ förbi vid varje autostart.
 med släckt skärm, vakten stannar när du stänger av.
 
 **5. Beslut som väntar på dig** (rekommendationer i chatten 31/8, DECISIONS #30–#34)
-- [ ] 🔑 **Fastställ trösklarna för skuggan** — ETT ORD räcker ("kör" som svar på Bengts
-  strategimejl 1/9), eller justera värdena fritt i docs/TROSKLAR-SKUGGAN.md före första
-  skuggkörningen (~mitten av oktober). Detaljkortet under "Axel — beslut att ta" nedan.
+- [x] 🔑 ~~Fastställ trösklarna för skuggan~~ ✅ FASTSTÄLLT 2/9 — Axels "kör" relayerat
+  av Bengt i chatten (DECISIONS #61). Kontrasignera genom att låta bocken stå; vill du
+  ändå justera ett värde går det fram till första skuggkörningen (~mitten av oktober).
 - [ ] Svara pappa på höstplanen — ja till TågRätt-företräde för DIN tid, ~1 h/vecka till Halkvakt
 - [ ] Rollfördelningen: B2B = Bengt (ja) · Skyltfondsrundan: klartecken (v.36 börjar onsdag)
 - [x] ~~Skinnet v3 (#24) iOS~~ ✅ BEVISAT på Axels telefon 31/8 19:20 — alla skärmar, ikonsetet,
@@ -160,10 +160,10 @@ med släckt skärm, vakten stannar när du stänger av.
 Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som återstår.)*
 
 ### Axel — beslut att ta
-- [ ] **Fastställ trösklarna för skuggan** — docs/TROSKLAR-SKUGGAN.md (DECISIONS #52),
-  Bengts metodvärden fällda 1/9. Domen i mars avgör vad rösten får säga = din kolumn.
-  Strategimejlet med länken SKICKAT 1/9 (Bengt → axel.lagerlof@, "Meddelandet har
-  skickats"-kvitto). 🔑 Ditt ja (eller justerade värden), före första skuggkörningen.
+- [x] ~~Fastställ trösklarna för skuggan~~ ✅ FASTSTÄLLT 2/9 (DECISIONS #61): Axels
+  "kör" relayerat av Bengt i chatten, värdena oförändrade från Bengts 1/9-version inkl.
+  §2-orsaksklassningen. Kvitto: huvudet i docs/TROSKLAR-SKUGGAN.md. Bocken här är
+  kontrasigneringen. Från första skuggkörningen gäller §5: ändring kräver båda.
 - [ ] **Helgsamtalet med pappa — nu fyra punkter:** roller (B2B=Bengt?), föreningen, klartecken ringrundan, OCH intäktsmodellen (#27: din viljeinriktning → hans utformning)
 - [ ] **Skyltfonden-paketet (före 1/10):** (a) klartecken till pappas ringrunda (startar v.36!), (b) sökande: pappa privat eller ideell förening?, (c) rollfördelningen — allt hänger ihop. Underlag: `docs/FINANSIERING.md`
 - [ ] **Rollfördelningen**: efterfrågan/affärsmodell/B2B = Bengts ansvar? (hans förslag; vid ja uppdateras PLAN)
