@@ -234,7 +234,9 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   geography-svep utan bbox-förfilter sprängde statement_timeout, lagad): 1 311 par ur
   18 kompositer, bekräftelsen växer monotont med radarintensiteten 13→30→51→71 %,
   mediankvot 0,39, missriktningen 85 % — kedjan (parning, enheter, tidsmatchning)
-  bevisad; siffrorna är INTE domen (14 h data). 🔑 Pilotens dom efter ~1 vecka: v3 på moget underlag + uppmätt
+  bevisad; siffrorna är INTE domen (14 h data). AUTOMATISK 3/9 (Bengts order): körs varje
+  MÅNDAG 06:20 efter grind-a 05:40 och smhi-prov 06:00 — tre mätkurvor i följd varje
+  måndagsmorgon, resultatet på Summary-sidan. 🔑 Pilotens dom efter ~1 vecka: v3 på moget underlag + uppmätt
   volym/fritier. Steg 4 nyttjarna i kortens egen takt. Blind fläck
   kvarstår: frosten ser radarn aldrig.
 - [ ] **#32 Hindren in i rösten** — vi har aldrig skeppat annat än olyckor trots att
