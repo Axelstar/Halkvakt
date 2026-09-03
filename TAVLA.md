@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-03 av Claude (webben) — trösklarna fastställda (#61), v3-kedjebeviset kört + måndagsbokat, regntäckningsknappen byggd (kort #44)*
+*Uppdaterad: 2026-09-03 kväll av Claude (webben) — regntäckningen MÄTT: varannan 30-min-regnsumma tappas (kort #44), täthetsbeslut till Bengt + Axel*
 
 ---
 
@@ -247,8 +247,14 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   bucket? KNAPPEN BYGGD 3/9: scripts/regn-tackning.ts + Actions → regn-tackning
   (histogram 2/1/0 buckets per station-timme + täckningsprocent, självtest med känd
   sanning grönt, underlagsvakt). Nämnaren är pipelinens körtimmar, inte kalendern.
-  Underlag för täthetsbeslutet — akuta lagret har redan minutgräddfil (#19), frost
-  är timskala; frågan gäller bara regnarkivet inför vinterns mätserier.
+  MÄTT 3/9 kväll (körning #1): hypotesen BEKRÄFTAD — regnmätarna fångar 1 av 2
+  buckets i 78 % av station-timmarna (2/2 bara 5 %), total täckning 44 % av
+  teoretiska 48/dygn; alla observationer 39 % (där späder händelsefiltreringen på
+  0-timmarna, 29 %). Vi tappar alltså ungefär varannan 30-min-regnsumma. Ofarligt
+  för v3/cellmätningen (slumpvis förlust = mindre urval, ingen skevhet, ±45 min-
+  parningen hittar den fångade bucketen) men halverar vinterseriernas växttakt.
+  🔑 TÄTHETSBESLUT (Bengt + Axel, minutdieten #22): (a) lätt regn-endast-hämtning
+  var 30:e min, (b) hela ingest till 30-min, eller (c) acceptera. Claudes råd: (a).
 - [ ] **#32 Hindren in i rösten** — vi har aldrig skeppat annat än olyckor trots att
   DECISIONS #5 sade "olyckor + hinder". Kräver ny HazardKind + egen röstfras + Axels
   beslut om vad rösten säger. Bäst kandidat: **djur på vägbanan** (173 på en vecka, med
