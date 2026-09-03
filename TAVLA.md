@@ -243,7 +243,7 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   DECISIONS #5 sade "olyckor + hinder". Kräver ny HazardKind + egen röstfras + Axels
   beslut om vad rösten säger. Bäst kandidat: **djur på vägbanan** (173 på en vecka, med
   RIKTIG position — vida bättre än polisens länscentrum som vi underkände i #13).
-- [ ] **#31 Bevakning av Trafikverkets nyheter** (Bengts issue #2, 29/8) — API-ändringar
+- [ ] 🔨 **PÅGÅR (Bengt + Claude, terminalen 3/9 ~17:40) — #31 Bevakning av Trafikverkets nyheter** (Bengts issue #2, 29/8) — API-ändringar
   och avvecklingar ska fångas innan de bryter ingest. Litet jobb: RSS/changelog-koll i
   healthchecken eller veckojobb som mejlar.
 - [ ] **Varvloggen ikapp:** STATUS.md:s sessionslogg slutar 2026-08-25 och "Current state"
