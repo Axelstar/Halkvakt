@@ -735,3 +735,8 @@ Två nya dokument skapade i samma Drive-mapp (v4 orörda): "Ansökan ... 2026-09
   5-min-bild mot 30-min-summa, medel mot punktmätare), missriktningen 85 % radartäckt.
   KEDJAN BEVISAD — parning, enheter och tidsmatchning håller, underlaget växer av sig
   självt. Domen fälls i eget varv på ~7 dygn; siffrorna ovan är inte den.
+- **S-2026-09-03fm (forts 3): v3 automatisk** (Bengts order "boka radarraden"). Måndagscron
+  06:20 i cell-matning-v3.yml — landar efter grind-a (05:40) och smhi-prov (06:00) så alla
+  tre mätkurvorna står i följd på måndagens Summary-sidor. Domspärr och underlagsvakt
+  gäller varje körning; första schemalagda: måndag 7/9 (~4,5 dygns data, fortfarande
+  kedjekoll), andra 14/9 på fullt underlag — där kan domvarvet läsa av.
