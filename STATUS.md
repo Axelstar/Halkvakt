@@ -762,3 +762,10 @@ låg som CMS-barn), SMHI-skalet 0 tecken (Docusaurus), halkvarning varierar per 
 (stabilitetskontroll: två hämtningar, olika = ingen jämförelse). Larmväg dubbelt bevisad
 (#35/#36 test + #37 äkta). Kvar hos Bengt: Google-gruppmedlemskapet + stänga testissues
 som notiskvitto.
+
+## 2026-09-03 — Rättelse: Google-gruppen är död sedan 2014 (Bengts koll)
+Bengt öppnade gruppen innan han gick med: 14 trådar, senaste 2014-03-17 — betatestets
+forum, inte en levande kanal. Claudes råd byggde på en overifierad sökträff; rättat i
+skript och tavla. Ingen täckningslucka uppstår: portalens nyhetssida (som trv-portal-news
+vaktar) är där dagens API-utskick faktiskt publiceras. Läxan är samma som alltid —
+verifiera källan mot verkligheten, inte mot dess rykte.

@@ -14,7 +14,8 @@
 //     klimator         www.klimator.se (JS-tung — vakten ser bara serverskalet; sägs i larmet)
 // New/changed => ETT issue per källa (label trv-nyhet, assignad Bengt) — bevisad larmväg.
 // Trasig källa => rött jobb med svarskropp (TRV-400-läxan). Google-gruppen "Öppet API
-// Trafikverket" saknar feed — den täcks av Bengts medlemskap (mejl), inte av detta skript.
+// Trafikverket" är DÖD sedan 2014 (Bengts koll 3/9: 14 trådar, senaste 2014-03-17) —
+// dagens API-utskick publiceras på portalens nyhetssida, som trv-portal-news täcker.
 //
 // Modes: (default) diff+larma · --seed skriv om state utan larm · --testlarm behandla
 // senaste RSS-posten som ny (provar issue-vägen). Exit: naturlig (aldrig process.exit —

@@ -252,7 +252,9 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   Bengt); trasig källa = rött jobb. LARMVÄGEN BEVISAD 3/9 två gånger: testissues #35/#36
   + äkta brusfynd #37 som ledde till stabilitetskontrollen. Öppna API:ets egna utskick har
   ingen feed — täcks av Bengts medlemskap i Google-gruppen "Öppet API Trafikverket" (mejl per
-  utskick). 🔑 Kvar: Bengts gruppmedlemskap + hans kvitto på issue-notisen.
+  utskick). 🔑 Kvar: Bengts kvitto på issue-notiserna (#35–#37, stäng när sedda). Google-gruppen
+  visade sig DÖD sedan 2014 (Bengts koll) — portalvakten täcker API-utskicken, inget
+  medlemskap behövs.
 - [ ] **Varvloggen ikapp:** STATUS.md:s sessionslogg slutar 2026-08-25 och "Current state"
   står kvar på 2026-08-24 — sex dygns arbete (Android-release, iOS-bygget, skuggflottan,
   Apple-kontot, uppladdningen) är bokfört i commits och på tavlan men inte i djuplagret.
