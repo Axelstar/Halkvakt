@@ -774,3 +774,10 @@ verifiera källan mot verkligheten, inte mot dess rykte.
 Alla tre testissues nådde Bengts inkorg (hans besked i chatten) och stängdes med bevis-
 kommentarer. Larmkedjan därmed bevisad i varje länk: källa → diff → issue → notis →
 mottagare läste. Källvakten rullar själv måndagar 06:40 utan obevisade antaganden kvar.
+
+## 2026-09-03 kväll — Issue #4 klar och CDN-bevisad: segment_id i vaglag.geojson
+Enraders-ändring i build-map-data.ts (kolumnen hämtades redan). Bevis: 818/818 features
+på CDN bär segment_id efter 16:37Z-publiceringen; issue #4 stängd med kvittot. Bifynd:
+min CDN-väktare läste bara första 600 tecknen (koordinater, aldrig properties) och hade
+tigit till timeout — Bengts fråga avslöjade den; direktverifiering med full parse i
+stället. Segmentstabilitetens tidsserie inför mars börjar ticka med detta varv.
