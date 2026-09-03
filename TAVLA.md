@@ -198,7 +198,14 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
 - [ ] Läsa SYSTEM.md mot koden månadsvis (första: september)
 - [ ] Samtal med Axel: sensortrappan — tidsättning av steg 2 (våren 2027?)
 - [ ] 💼 **B2B: skolpaketet som produkt** — per-elev-moment i körkortspaketen; STR som skalkanal; säljs våren 2027 med halkbanedata *(Axels idé, Bengts spår)*
-- [ ] 📞 **Skyltfondsrundan** (efter Axels klartecken): fonden + trafikövningsplats v.36 → avsiktsförklaringar 25/9 → SKICKA 28/9
+- [ ] 📞 **Skyltfondsrundan** (efter Axels klartecken): fonden + trafikövningsplats v.36 → avsiktsförklaringar 25/9 → SKICKA 28/9.
+  UNDERLAGEN UPPDATERADE 3/9 (Bengts order, terminalsessionen): ansökan v5 + kontaktplan v5
+  i Drive-mappen. Nytt däri: (a) VERIFIERAT att handledarkursen slopades 2026-08-01
+  (prop. 2025/26:127) — trafikskole-pitchen omskriven; (b) prognoslagrets beskrivning i
+  linje med tröskeldokumentet (offsetmodell, inte Nowcast) så bilaga 7 stämmer med texten;
+  (c) grind A-infrastrukturen synliggjord som egenfinansierad indata (gränsdragningen);
+  (d) konkreta kandidater: AB Bulltoftabanan Malmö (040-29 29 05) + 7 trafikskolor.
+  ⏰ Förhandssamtalet till fonden = "första veckan i september" = NU.
 
 ### Claude — olåst
 - [ ] 📡 **#43 Radarn som infrastruktur** (Bengts beställning 2/9, efter cellmätningens

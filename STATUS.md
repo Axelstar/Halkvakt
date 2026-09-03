@@ -704,3 +704,15 @@ sidan läst via Bengts Chrome); Bengts inkorg hade noll vegvesen-träffar.
   signatur. Bokföringsfynd i samma varv: #60 var trippelbokat (två varv skrev
   parallellt) — noterat i #61, numren lämnade orörda, nästa nummer #62. Kvar för
   skuggan: bara vintern.
+
+## 2026-09-03 — Skyltfondsunderlagen granskade mot senaste dagarnas arbete → v5 i Drive
+Bengts order: granska ansökan + kontaktplan (Drive) mot det som byggts sedan 31/8.
+Fynd som krävde ändring: (1) prognoslagrets beskrivning sa Nowcast — det beslutade bygget
+är offsetmodellen (bilaga 7 hade motsagt texten); (2) tröskeldokumentet finns nu (daterat
+1/9) — tempus + bevislinje in; (3) grind A-infrastrukturen kör redan veckovis — synliggjord
+som egenfinansierad indata så gränsdragningen mot fonden håller; (4) NYTT LÄGE, verifierat
+mot riksdagen: handledarkursen slopades 2026-08-01 (prop. 2025/26:127) — trafikskole-
+pitchen omskriven till kanaloberoende. Research: AB Bulltoftabanan = Malmös trafiköv-
+ningsplats (040-29 29 05, kandidat AP6), Ljungbyhed reserv, 7 trafikskolekandidater.
+Två nya dokument skapade i samma Drive-mapp (v4 orörda): "Ansökan ... 2026-09-03 v5" och
+"Kontaktplan ... 2026-09-03 v5". Tidsflagga: förhandssamtalet till fonden är DENNA vecka.
