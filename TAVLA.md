@@ -138,6 +138,7 @@ med släckt skärm, vakten stannar när du stänger av.
   0.3.5 (8) uppladdad 14:42 — första bygget med grönt kontrakt (#60).
   🔑 BEVIS SAKNAS ÄN: Bengt kör 0.3.5 och noterar KLOCKSLAG + PLATS per larm och per
   kamera utan larm. Beskrivningar räcker inte, vi har gissat tre gånger.
+- [ ] 🔨 PÅGÅR (Bengt + Claude, terminalen 3/9 kväll) — issue #4: publicera segment_id i vaglag.geojson
 - [x] ~~#31 Trafikverksbevakningen~~ ✅ KLART 3/9 (detaljkortet under Claude — olåst)
 
 - [x] ~~Testinstruktion till Bengt~~ ✅ docs/TEST-BENGT-0.3.2.md (31/8)
