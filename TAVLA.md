@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-03 av Claude (webben) — trösklarna FASTSTÄLLDA av Axel via Bengt (DECISIONS #61); skuggkörningens alla mänskliga förvillkor uppfyllda*
+*Uppdaterad: 2026-09-03 av Claude (webben) — trösklarna fastställda (#61) + cellmätningen v3 byggd (kedjebevis före radardomen)*
 
 ---
 
@@ -226,8 +226,12 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   som steg i ingest-jobbet (minutdieten hålls). Prov-läget fällde ett API-fel före
   skarp drift (h5wasm FS) och bevisade formatet (DBZH, hörnkontroll 458,0×881,0).
   FÖRSTA SKARPA RADERNA (radar-pilot #3, 18:28): 63 segment med regn just då, max
-  15,38 mm/h, färskhetsrad i varje logg. 🔑 Pilotens dom efter ~1 vecka: cellmätning
-  v3 mot radar (kalibrering) + uppmätt volym/fritier. Steg 4 nyttjarna i kortens egen takt. Blind fläck
+  15,38 mm/h, färskhetsrad i varje logg. ✅ V3-KNAPPEN BYGGD 3/9 (Bengts "bygg och kör
+  kedjebevis men ingen dom"): scripts/cell-matning-v3.ts + Actions-knappen cell-matning-v3
+  — A) bekräftelse per radarband, B) Marshall–Palmer-kalibrering (mediankvot radar/mätare),
+  C) missriktningen; självtest med känd sanning grönt, underlagsvakt (< 20 par = rött),
+  domspärr i utskriften. 🔑 Pilotens dom efter ~1 vecka: v3 på moget underlag + uppmätt
+  volym/fritier. Steg 4 nyttjarna i kortens egen takt. Blind fläck
   kvarstår: frosten ser radarn aldrig.
 - [ ] **#32 Hindren in i rösten** — vi har aldrig skeppat annat än olyckor trots att
   DECISIONS #5 sade "olyckor + hinder". Kräver ny HazardKind + egen röstfras + Axels

@@ -716,3 +716,12 @@ pitchen omskriven till kanaloberoende. Research: AB Bulltoftabanan = Malmös tra
 ningsplats (040-29 29 05, kandidat AP6), Ljungbyhed reserv, 7 trafikskolekandidater.
 Två nya dokument skapade i samma Drive-mapp (v4 orörda): "Ansökan ... 2026-09-03 v5" och
 "Kontaktplan ... 2026-09-03 v5". Tidsflagga: förhandssamtalet till fonden är DENNA vecka.
+- **S-2026-09-03fm (forts): Cellmätningen v3 byggd — kedjebeviset före radardomen.**
+  Bengts order "bygg och kör kedjebevis men ingen dom". scripts/cell-matning-v3.ts +
+  knappen cell-matning-v3: radar_precip paras mot stationernas rain_sum_mm (station
+  ≤ 5 km från segmentet i PostGIS, närmaste observation ±45 min) och ger A) bekräftelse
+  per radarband, B) Marshall–Palmer-kalibrering (mediankvot radar/mätare), C) miss-
+  riktningen (stationsregn utan radarrad vid samplad komposittid). Självtest med känd
+  sanning (injicerade par, kvot exakt 2,0) grönt lokalt; underlagsvakt < 20 par = rött
+  jobb; domspärren står i varje utskrift. Kedjebeviskörningen görs direkt efter merge
+  (knappen registreras först på main) — domen fälls i eget varv på ~7 dygns data.

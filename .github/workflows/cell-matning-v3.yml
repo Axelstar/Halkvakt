@@ -1,0 +1,27 @@
+# Cellmätningen v3 (kort #43): radarpiloten mot stationernas regnmätare. Körs på knapp;
+# självtest med känd sanning FÖRE den skarpa körningen, resultatet på Summary-sidan.
+# Byggd som kedjebevis före domen — domen kräver ~7 dygns radardata och fälls i eget varv.
+name: cell-matning-v3
+on:
+  workflow_dispatch:
+    inputs:
+      dagar:
+        description: "Dagar bakåt"
+        default: "7"
+jobs:
+  cell-matning-v3:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types scripts/cell-matning-v3.ts --sjalvtest
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/cell-matning-v3.ts "${{ inputs.dagar || '7' }}" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
