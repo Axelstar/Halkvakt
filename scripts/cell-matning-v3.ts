@@ -87,6 +87,7 @@ if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
 const pg = (await import("pg")).default;
 const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });
 const DAYS = Number(process.argv[2] ?? 7);
+await pool.query(`SET statement_timeout = '300s'`); // max 1 anslutning ⇒ gäller alla frågor nedan
 
 // Stationer med regnmätare nära segmentnätet (en rad per station, senaste positionen).
 const NARA = `
@@ -96,7 +97,8 @@ const NARA = `
           WHERE sample_time > now() - $1 * interval '1 day' AND rain_sum_mm IS NOT NULL
           ORDER BY station_id, sample_time DESC) w
     JOIN road_conditions rc ON NOT rc.deleted AND rc.geom IS NOT NULL
-      AND ST_DWithin(rc.geom::geography, w.geom::geography, ${DIST_M})
+      AND rc.geom && ST_Expand(w.geom, 0.15)  -- billig bbox först: utan den timeout:ade
+      AND ST_DWithin(rc.geom::geography, w.geom::geography, ${DIST_M})  -- geography-svepet (körning #1, 57014)
   )`;
 
 // A+B: varje radarhändelse × närliggande mätarstation, närmaste observation i tid.
@@ -129,6 +131,7 @@ const missRes = await pool.query(`
       SELECT 1 FROM radar_precip r
       JOIN road_conditions rc ON rc.segment_id = r.segment_id
       WHERE r.observed_at = k.observed_at
+        AND rc.geom && ST_Expand(ev.geom, 0.15)
         AND ST_DWithin(rc.geom::geography, ev.geom::geography, ${DIST_M})
     ) AS traff
   FROM ev
