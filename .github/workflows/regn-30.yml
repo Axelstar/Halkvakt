@@ -1,0 +1,27 @@
+# Regn-30 (täthetsbeslutet a, kort #44, DECISIONS #62): lätt motfashämtning av
+# stationernas 30-min-regnsummor — ingest fångar :11-bucketen, den här :41-bucketen.
+# Idempotent (ON CONFLICT DO NOTHING), bara nederbördsrader. Bevis: körningens egen
+# täthetspuls + eftermätning med regn-tackning (2/2-andelen ska stiga).
+name: regn-30
+on:
+  schedule:
+    - cron: "41 * * * *"   # motfas mot ingest :11
+  workflow_dispatch:
+jobs:
+  regn-30:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types ingest/regn30.ts | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env:
+          TRAFIKVERKET_API_KEY: "${{ secrets.TRAFIKVERKET_API_KEY }}"
+          DATABASE_URL: "${{ secrets.DATABASE_URL }}"

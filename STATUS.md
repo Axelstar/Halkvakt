@@ -795,3 +795,10 @@ stället. Segmentstabilitetens tidsserie inför mars börjar ticka med detta var
   ungefär varannan regnsumma. Konsekvens: ingen skevhet i v3/cellmätningen (slumpvis
   förlust, parningen hittar den fångade bucketen) men vinterns mätserier växer i halv
   takt. Täthetsbeslutet ligger nu på tavlan med tre vägar och kostnad (minutdieten #22).
+- **S-2026-09-03kväll (forts): täthetsbeslutet taget och byggt (kort #44 → DECISIONS #62).**
+  Bengt + Axel valde (a) i chatten. ingest/regn30.ts + regn-30.yml: lätt motfashämtning
+  :41 mot ingests :11 — samma parser och INSERT som ingest, bara nederbördsrader
+  (arkivdieten #4), ON CONFLICT DO NOTHING, ~1 CI-minut/timme. Bevisrad + täthetspuls
+  (2/2-andel våta station-timmar, 3 h-fönster) i varje körning. EFTERMÄTNING BOKAD:
+  regn-tackning körs om efter ~ett dygns drift — först när 2/2-andelen bevisligen
+  stigit stängs kortet (rotationsläxan: ett beslut är inte klart förrän bygget bevisat).
