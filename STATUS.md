@@ -924,6 +924,18 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   1 min, fi 30 min, dk 25 min, gräns-wx 20 stationer, meta.json 30 min; incident-issues 0
   öppna. Avvikelse: pulsklocka.yml hänvisar till DECISIONS #63 som inte fanns i filen —
   skrivet i efterhand i detta varv. Inget skrivet i pg_cron från terminalen.
+- **S-2026-09-04em: höjdprovet måndagsbokat** (Bengts ja): cron 07:00, sist i måndags-
+  serien (grind-a 05:40 · smhi-prov 06:00 · cell-matning-v3 06:20 · trv-bevakning 06:40
+  · hojd-prov 07:00). Workflowen hade redan pipefail + input-fallback. Tankeläget bokfört
+  på 3b-kortet: felkartan dömer (behöver vi laga inlandsluckan alls?), luftankarna lagar
+  (billigast, bevisade bortom 20 km men på höstdata), höjden finjusterar (0,71 °C/100 m
+  äkta, men vänder tecken i inversionsnätter — aldrig fristående). "Okänt" i inlandet är
+  ett legitimt utfall, inte ett misslyckande.
+- **S-2026-09-04em: Norge REKOGNOSERAD** (ingest-no #28, efter 406-fixen — Accept */*):
+  stationstabell 1,9 MB, mätdata 1,4 MB med 936 siteMeasurements varav 848 bär
+  roadSurfaceTemperature (det Frost inte kunde ge), GetSituation 30 MB / 15 414 poster
+  (gravstensläxan gäller vid inläsning). Parsern skrevs av terminalsessionen samma
+  eftermiddag mot exakt den strukturen — se nästa post.
 - **S-2026-09-04 15:24: 🇳🇴 NORGE TICKAR (Bengt: "har du skrivit parsern?", DECISIONS #64):**
   parsern (ingest/sources/vegvesen.ts, regex utan beroenden, prefix-agnostisk) skriven mot
   rekognoseringen i ingest-no #28 (Accept */*; 468 siteMeasurements, 848 roadSurface-

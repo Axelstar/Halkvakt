@@ -3,6 +3,8 @@
 # känd fysik FÖRE den skarpa körningen, resultatet på Summary-sidan (grind-a-mönstret).
 name: hojd-prov
 on:
+  schedule:
+    - cron: "0 7 * * 1"   # måndagar, sist i mätserien (grind-a 05:40 · smhi 06:00 · v3 06:20 · trv 06:40)
   workflow_dispatch:
     inputs:
       dagar:
