@@ -31,7 +31,16 @@ async function main(): Promise<number> {
       count(*) FILTER (WHERE surface_temp_c <= 0 AND NOT ${NED} AND surface_temp_c <= dewpoint_c + 0.0)::int AS f_t0_m0,
       count(*) FILTER (WHERE surface_temp_c <= 0 AND NOT ${NED} AND surface_temp_c <= dewpoint_c + 0.5)::int AS f_t0_m05,
       count(*) FILTER (WHERE surface_temp_c <= 0 AND NOT ${NED} AND surface_temp_c <= dewpoint_c + 1.0)::int AS f_t0_m1,
-      count(DISTINCT station_id) FILTER (WHERE surface_temp_c <= 1 AND NOT ${NED} AND surface_temp_c <= dewpoint_c + 0.5)::int AS st_t1_m05
+      count(DISTINCT station_id) FILTER (WHERE surface_temp_c <= 1 AND NOT ${NED} AND surface_temp_c <= dewpoint_c + 0.5)::int AS st_t1_m05,
+      -- Körning #1:s fynd: topp-3 hade yta−dagg −28…−49° = trasiga daggpunktsgivare.
+      -- ÄKTA kandidat kräver därför korsgivaren (RH ≥ 90 — rimfrost kräver fuktig luft)
+      -- och fysikaliskt band (yta−dagg ≥ −5°). GIVARFEL räknas separat — de blir en
+      -- egen läxa: frostgrenen behöver en givarvakt innan den någonsin byggs.
+      count(*) FILTER (WHERE surface_temp_c <= 1 AND NOT ${NED} AND surface_temp_c <= dewpoint_c + 0.5
+        AND humidity_pct >= 90 AND surface_temp_c - dewpoint_c >= -5)::int AS akta_t1_m05,
+      count(DISTINCT station_id) FILTER (WHERE surface_temp_c <= 1 AND NOT ${NED} AND surface_temp_c <= dewpoint_c + 0.5
+        AND humidity_pct >= 90 AND surface_temp_c - dewpoint_c >= -5)::int AS akta_st,
+      count(*) FILTER (WHERE surface_temp_c <= 1 AND surface_temp_c - dewpoint_c < -10)::int AS givarfel
     FROM weather_observations`);
   const r = tot.rows[0];
   // Underlagsvakt: utan daggpunktsdata finns inget att analysera — rött, inte tomt grönt.
@@ -44,16 +53,19 @@ async function main(): Promise<number> {
   console.log(`yta ≤ 1 °C   ${String(r.f_t1_m0).padStart(8)} ${String(r.f_t1_m05).padStart(8)} ${String(r.f_t1_m1).padStart(8)}`);
   console.log(`yta ≤ 0 °C   ${String(r.f_t0_m0).padStart(8)} ${String(r.f_t0_m05).padStart(8)} ${String(r.f_t0_m1).padStart(8)}`);
   console.log(`Stationer bakom mittvarianten (t1/m0,5): ${r.st_t1_m05}`);
+  console.log(`
+ÄKTHETSFILTRERAT (t1/m0,5 + RH ≥ 90 + yta−dagg ≥ −5°): ${r.akta_t1_m05} kandidater från ${r.akta_st} stationer`);
+  console.log(`GIVARFEL-misstänkta rader (yta−dagg < −10° vid yta ≤ 1): ${r.givarfel} — frostgrenen KRÄVER givarvakt.`);
 
   // Fysikens verifiering: dygnsprofil för mittvarianten, svensk tid (Europe/Stockholm).
   const hh = await pool.query(`
     SELECT extract(hour FROM sample_time AT TIME ZONE 'Europe/Stockholm')::int AS h, count(*)::int AS n
     FROM weather_observations
-    WHERE surface_temp_c <= 1 AND NOT ${NED} AND surface_temp_c <= dewpoint_c + 0.5
+    WHERE surface_temp_c <= 1 AND NOT ${NED} AND surface_temp_c <= dewpoint_c + 0.5 AND humidity_pct >= 90 AND surface_temp_c - dewpoint_c >= -5
     GROUP BY 1 ORDER BY 1`);
   const byH = new Map(hh.rows.map((x: any) => [x.h, x.n]));
   const tot2 = hh.rows.reduce((a: number, x: any) => a + x.n, 0);
-  console.log(`\nDygnsprofil (svensk tid) för t1/m0,5 — rimfrost ska toppa i gryningen:`);
+  console.log(`\nDygnsprofil (svensk tid), ÄKTA kandidater — rimfrost ska toppa i gryningen:`);
   for (let h = 0; h < 24; h++) {
     const n = byH.get(h) ?? 0;
     console.log(`${String(h).padStart(2, "0")}  ${"█".repeat(Math.round((n / Math.max(1, tot2)) * 120)).padEnd(0)} ${n}`);
@@ -71,9 +83,9 @@ async function main(): Promise<number> {
       min(sample_time)::date AS forsta, max(sample_time)::date AS sista,
       round(avg(surface_temp_c - dewpoint_c)::numeric, 2) AS medel_yta_minus_dagg
     FROM weather_observations
-    WHERE surface_temp_c <= 1 AND NOT ${NED} AND surface_temp_c <= dewpoint_c + 0.5
+    WHERE surface_temp_c <= 1 AND NOT ${NED} AND surface_temp_c <= dewpoint_c + 0.5 AND humidity_pct >= 90 AND surface_temp_c - dewpoint_c >= -5
     GROUP BY 1, 2 ORDER BY n DESC LIMIT 8`);
-  console.log(`\nToppstationer (t1/m0,5):`);
+  console.log(`\nToppstationer (äkta kandidater):`);
   for (const s of st.rows) console.log(`  ${String(s.n).padStart(5)}  ${s.name} (${s.station_id})  ${s.forsta}→${s.sista}  yta−dagg medel ${s.medel_yta_minus_dagg}°`);
 
   console.log(`\nOBS: arkivet är händelsefiltrerat (yta ≤ 5° lagras) — kalla nätter finns, varma dagar saknas;`);
