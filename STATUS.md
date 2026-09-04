@@ -1048,3 +1048,21 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   Åtgärden är en rad i pulsklockans NYA-lista (`puls-healthcheck`), men den rör skarp
   pg_cron och väntar därför på Bengts/Axels "kör". Beviskrav när det gått: ett dygn utan
   mellanrum över 2 h 30.
+- **S-2026-09-04kväll (forts 9): vakthunden in på pulsklockan** (Bengts "kör push
+  healthcheck", DECISIONS #70, PR #57). En rad i pulsklockans NYA-lista: `puls-healthcheck`
+  `23 */2 * * *` → healthcheck.yml. Schemat oförändrat från workflowens eget cron — bara
+  leveransvägen byttes — och GitHub-cronen står kvar, så pulsen är additiv som för regn-30.
+  Kört inventering först (formatet bevisat), sedan skarpt: pulsklocka #5 21:08:18 grön med
+  `OK puls-healthcheck: workflow=healthcheck.yml schema=23 */2 * * * aktiv=true token=true`
+  och `Alla 5 pulsjobben på plats`. Elva cron-jobb i pg_cron nu, var tio. Bevisvakten är
+  vad som gör raden värd något: den hade fällt jobbet rött om något av de fem pekat fel,
+  tappat token eller fått fel schema.
+  KORTET ÄR INTE STÄNGT. Rotationsläxan gäller — pg_cron-raden är inte beviset, avfyrningen
+  är. Första pulsavfyrningen 22:23 UTC, avläsning bokad 22:38, dygnsmätning därefter;
+  beviskravet är att inget mellanrum överstiger 2 h 30.
+  Två sidofynd värda att minnas. (1) Genomgången av alla 15 cron-rader gjordes FÖRE kortet
+  skrevs och ändrade påståendet: publish-map svälter inte, eftersom den är kedjad på
+  `workflow_run: [ingest]` och därmed ärver pulsen — oavsiktligt men verkligt. Utan den
+  läsningen hade kortet påstått något falskt. (2) Väntad bieffekt bokförd i förväg: en vakt
+  som tittar var annan timme i stället för var femte kommer se stalheter som förut hann
+  rätta sig osedda, så fler incident-issues betyder att vakten börjat fungera.
