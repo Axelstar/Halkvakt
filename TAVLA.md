@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-04 kväll av Claude (webben) — grind V-A körd skarpt: FALLER mot kraven, men grannarna vet ATT det regnar (88–94 %) och inte HUR MYCKET; beslutsläge till Bengt + Axel (DECISIONS #69)*
+*Uppdaterad: 2026-09-04 kväll av Claude (webben) — läsvarv inför radardomen 14/9: regn-30 går 8/8 timmar på pulsen (#44), men vakthunden själv svalt på GitHub-cron — 40 % av bokad takt, värsta hålet 6 h 44 (nytt kort #50)*
 
 ---
 
@@ -285,6 +285,41 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   30 min, dk-arkivet 25 min (gräns 120), gräns-wx 20 FI-stationer, 0 öppna incident-issues
   (#70/#71 var röda på just fi/dk-stalehet — larmvägen provad i skarpt läge). KVAR på
   kortet: regn-tackning efter ≥1 dygn på pulsen ska visa 2/2-andelen stiga (beviskravet i #62).
+  PULSEN MÄTT 4/9 kväll (läsvarv, ingen kod ändrad): regn-30 har gått 8/8 hela timmar
+  12:41–19:41 på token-dispatch. Samma dygn dessförinnan, på enbart GitHub-cron, gav
+  00:41–11:41 tolv möjliga timmar men bara 3 avfyrningar — och 2 av dem dog i jobbets
+  5-minutersgräns där `npm ci` hängde (01:21 och 11:43, normalt 1–2 s). 1 av 12 timmar
+  landade alltså före pulsen; 8 av 8 efter. TÄTHETSPULSEN i körningarnas egna loggar:
+  34 % (12:41, fönstret bar fortfarande cron-hålet) → 59 % (16:41, tre hela pulstimmar)
+  → 51 % (19:41). ⚠️ LÄS INTE DEN SIFFRAN SOM TÄCKNING: pulsen räknar bara våta
+  station-timmar i ett 3 h-fönster, och fönstret klipper sin äldsta timme mitt itu —
+  den timmen kan aldrig få två buckets, så pulsen har ett inbyggt tak klart under 100 %.
+  En station som är våt vid :41 men torr vid :11 skriver dessutom EN bucket helt korrekt
+  och räknas ändå som halv. Dygnsbeviset (regn-tackning dagar=1) 5/9 18:00 är mätningen
+  som gäller — taket där ligger också under 100 %, och kortet ska dömas mot den insikten,
+  inte mot 100.
+- [ ] 🐕 **#50 Vakthunden är själv obevakad** (fynd 4/9 kväll, läsvarvet inför
+  radardomen) — healthchecken är den enda som märker när något tystnar, och den går
+  fortfarande på ren GitHub-cron. GENOMGÅNG av alla 15 cron-rader i repot: pulsklockan
+  bär ingest/fi/dk/no/regn-30; publish-map räddas utan att någon tänkt på det, eftersom
+  den är kedjad på `workflow_run: [ingest]` och därmed ärver pulsen; bridges (6 h),
+  marknadsföring (dygn) och måndagsserien tål drift. Kvar som ENDA tidskritiska jobb
+  på naken GitHub-cron: vakthunden själv.
+  MÄTT (20 schemalagda körningar, 31/8 17:38 – 4/9 20:34 = 98 h 56 min): cron säger
+  `23 */2 * * *`, alltså ~49 avfyrningar. Verkligheten gav **20 — 40 %**. Mellanrum:
+  kortast **3 h 03**, längst **6 h 44** (två gånger: 2/9 04:40→11:24 och 4/9 04:39→11:23),
+  snitt 4 h 59. **Noll** av 19 mellanrum nådde de bokade 2 timmarna; 16 av 19 var över 4 h.
+  Workflowens egen kommentar påstår "vakthunden i skriptet larmar ändå inom 2 h" —
+  mätningen motbevisar den rad för rad. KONSEKVENS: värsta hålet är nästan 3,4 gånger
+  längre än stalehetsgränsen (120 min) vakten ska fånga, så en tystnad kan hinna börja,
+  pågå och rätta sig själv utan att någon ser den. Det var precis vad som hände 4/9:
+  UNHEALTHY-larmet 11:27 var första signalen om en FI/DK-stalehet som redan pågått i timmar,
+  och nästa blick därefter kom först 16:25. Medan vi samlar data mot radardomen 14/9 är
+  det här den enda kända vägen till en tyst förlorad insamling.
+  🔑 ÅTGÄRDSFÖRSLAG (Claudes): `puls-healthcheck` in i pulsklockans NYA-lista — en rad,
+  samma bevisade mekanik som #63 gav ingest/fi/dk/no/regn-30, ingen ny kod och ingen ny
+  hemlighet. Kräver Bengts/Axels "kör" (handgrepp mot skarp pg_cron). Bevis när det gått:
+  ett dygns healthcheck-körningar där inget mellanrum överstiger 2 h 30.
 - [x] ~~⛏️ **#48 Golvbyggena**~~ ✅ KLART 4/9 (utom bygge 3) (Bengts order 4/9: "ta hela kortet, allt självförsörjande")
   — PÅGÅR (terminalen): GOLVET.md:s byggen 1–4 med automatiseringskrav: automigrering
   vid varje ingest (db.ts/fi.ts-mönstret), healthcheck-golv på varje ny fältfamilj
