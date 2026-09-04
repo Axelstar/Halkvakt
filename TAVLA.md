@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-04 av Claude (webben) — pulsklockan breddad (FI/DK/regn-30, HEALTHY 12:10) + Norge-kontot beviljat, koden härdad och redo för hemligheterna*
+*Uppdaterad: 2026-09-04 15:10 av Claude (terminalen) — pulsklockan BEVISAD I DRIFT (FI/DK/regn-30 avfyrar från pg_cron), healthcheckvakten grön #73 15:06*
 
 ---
 
@@ -268,6 +268,13 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   5-timmarshål — samma syndrom som fällde ingest före pulsklockan. KORTET ÖPPET.
   🔑 ÅTGÄRDSFÖRSLAG (Claudes): regn-30 in i Supabase-pulsklockan (:41), samma bot
   som #26 gav ingest. Kräver handgrepp i pg_cron — Bengt/Axel säger kör.
+  ✅ PULSKLOCKAN SKARP 4/9 14:05 (pulsklocka #2, DECISIONS #63): tre pulsjobb i pg_cron.
+  BEVISADE I DRIFT 15:06 (Bengts "kör igång", terminalen): pulsen trycker — ingest-fi #29
+  14:37, ingest-dk #27/#28 14:12/14:42, regn-30 #7 14:41, alla "Manually run by Axelstar"
+  = dispatch via token, inte GitHub-cron. Healthcheckvakten #73 15:06 HEALTHY: fi-arkivet
+  30 min, dk-arkivet 25 min (gräns 120), gräns-wx 20 FI-stationer, 0 öppna incident-issues
+  (#70/#71 var röda på just fi/dk-stalehet — larmvägen provad i skarpt läge). KVAR på
+  kortet: regn-tackning efter ≥1 dygn på pulsen ska visa 2/2-andelen stiga (beviskravet i #62).
 - [x] ~~⛏️ **#48 Golvbyggena**~~ ✅ KLART 4/9 (utom bygge 3) (Bengts order 4/9: "ta hela kortet, allt självförsörjande")
   — PÅGÅR (terminalen): GOLVET.md:s byggen 1–4 med automatiseringskrav: automigrering
   vid varje ingest (db.ts/fi.ts-mönstret), healthcheck-golv på varje ny fältfamilj

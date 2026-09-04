@@ -736,3 +736,16 @@ Alternativ: (b) hela ingest till 30-min-takt (dubbel kostnad, mer än frågan kr
 (rotationsläxan): beslutet är genomfört först när regn-tackning EFTER driftsättningen
 visar 2/2-andelen stiga; skriptets egen täthetspuls (3 h-fönster) följer samma siffra
 varje körning.
+
+## #63 (4/9 2026) PULSKLOCKAN BREDDAD: FI, DK och regn-30 in på Supabase pg_cron
+Bengt + Axel efter healthcheck-larmet 4/9 (fi 291 min, dk 139 min) och eftermätningen på
+kort #44: de tre jobb som ännu hängde på GitHubs schemaläggare svalt, medan svenska ingest
+och publish skyddats av pulsklockan sedan #26. BESLUT: puls-ingest-fi (7,37), puls-ingest-dk
+(12,42) och puls-regn-30 (41) som pg_cron-jobb, skapade av scripts/pulsklocka.ts genom att
+KOPIERA det bevisade ingest-pulsjobbets kommando och byta workflow-filnamn i databasen —
+GitHub-token passerar aldrig en logg eller repot. Alternativ: fler GitHub-cron-tider
+(bortvalt, svälten sitter i schemaläggaren) och pg_cron-kommandon skrivna för hand
+(bortvalt, token i klartext). BEVIS: pulsklocka #2 14:05 (9 jobb), avfyrningar 14:12–14:42
+med aktör Axelstar (token), healthcheck #73 15:06 HEALTHY med fi 30 / dk 25 min. Posten
+skrevs i efterhand av terminal-Claude 15:10 — workflow-filen hänvisade till #63 innan
+posten fanns.

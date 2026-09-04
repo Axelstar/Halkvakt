@@ -916,3 +916,11 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   uppgifter); workflowen fick pipefail + Summary + npm-cache. Kvar: hemligheterna i GitHub
   Secrets (mänskligt handgrepp — passerar aldrig chatt eller repo), sedan rekognoserings-
   körning → parser i eget varv. Ingen no.*-skrivning förrän parsern finns.
+- **S-2026-09-04 15:06: Pulsklockan + healthcheckvakten BEVISADE (Bengt: "kör du igång"):**
+  pulsklocka #2 (14:05, skarp) la puls-ingest-fi 7,37 / puls-ingest-dk 12,42 / puls-regn-30
+  41 i pg_cron (9 jobb totalt). Avfyrningar sedan dess: ingest-fi 14:37, ingest-dk 14:12 +
+  14:42, regn-30 14:41 — aktören är Axelstar (token-dispatch), inte Scheduled. Healthcheck
+  #73 (manuell 15:06, aa322b1) HEALTHY: cameras/weather 55 min, deviations/road_conditions
+  1 min, fi 30 min, dk 25 min, gräns-wx 20 stationer, meta.json 30 min; incident-issues 0
+  öppna. Avvikelse: pulsklocka.yml hänvisar till DECISIONS #63 som inte fanns i filen —
+  skrivet i efterhand i detta varv. Inget skrivet i pg_cron från terminalen.
