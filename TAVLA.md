@@ -268,10 +268,16 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   gör den inte det är villkoret brus)? KÖRNING #1 (4/9, 6 min): fysikkontrollen FÄLLDE
   resultatet — platt dygnsprofil, och topp-3-stationerna hade yta−dagg −28…−49° =
   TRASIGA DAGGPUNKTSGIVARE (53/58 kandidater från 3 stationer). STORT BIFYND: frost-
-  grenen kräver GIVARVAKT innan den byggs, annars falsklarmsmaskin. v2 med äkthets-
-  villkor (RH ≥ 90 korsgivare + yta−dagg ≥ −5°) + separat givarfelsräkning körd samma
-  kväll. 🔑 Motoränring + vektor är ETT SENARE beslut på siffrorna (äkta höstnätter
-  sept–okt ger det riktiga underlaget); rösten är Axels.
+  grenen kräver GIVARVAKT innan den byggs, annars falsklarmsmaskin. v2 med äkthetsvillkor (RH ≥ 90
+  korsgivare + yta−dagg ≥ −5°) KÖRD (#2, 2m58s): 0 av 53 kandidater överlevde — ALLA
+  var givarfel (57 rader < −10°, stationerna Ollsta 2346, Storvik 2135, Bolhyttan 1713).
+  ANALYSFASENS DOM: (a) arkivet saknar ännu äkta rimfrostnätter — kvantifieringen görs
+  om vid höstens första riktiga frostnätter (knappen redo); (b) ETABLERAT: givarvakten
+  är obligatorisk del av varje framtida frostgren — utan den hade rimfrostvarningar
+  avfyrats på skrot från tre stationer; (c) felet är isolerat till daggpunkten —
+  offsetmodellen/grind A använder bara yttemp och är opåverkad. KANDIDAT (Bengts
+  kolumn): påtala de tre stationernas orimliga daggpunkter för Trafikverket.
+  🔑 Motoränring + vektor är ETT SENARE beslut på höstens siffror; rösten är Axels.
 - [ ] 🌨️ **#45 Nederbördstypen — regn, snö eller slask?** (Bengts fråga 3/9: "hur mäter
   vi snö, snöslask etc som är lika riskabla?") 🔒 LÅST BAKOM RADARDOMEN 14/9.
   **Läget när kortet skrevs:** snö och slask PÅ vägen talas redan — men bara indirekt:

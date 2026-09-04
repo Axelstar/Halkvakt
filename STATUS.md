@@ -815,3 +815,12 @@ givare) och dygnsprofilen var platt; skriptets inbyggda kontroll skrev själv "d
 inte fällas". LÄXAN STÖRRE ÄN FRÅGAN: en frostgren utan givarvakt blir en falsklarms-
 maskin — RH-korsgivare + fysikaliskt band är obligatoriska delar av varje framtida
 metodändring. v2 med äkthetsvillkor pushad och körd samma kväll (körning #2).
+
+## 2026-09-04 — Rimfrost-analysen körning #2: 0 av 53 äkta — analysfasen levererade sin dom
+Äkthetsfiltret (RH ≥ 90 + yta−dagg ≥ −5°) rensade ALLT: samtliga kandidater var givarfel
+(57 rader, tre stationer: Ollsta, Storvik, Bolhyttan — daggpunkter upp till 49° över ytan).
+Domen: metodhålet (daggpunkten oanvänd) står kvar men kan inte kvantifieras förrän höstens
+första äkta frostnätter — knappen är redo; givarvakten är från och med nu obligatoriskt
+förvillkor för frostgrenen; felet är isolerat till daggpunktskolumnen (offsetmodellen
+opåverkad). Analysfasen betalade sig innan en rad motorkod skrevs: falsklarmsmaskinen
+hittades i data, inte i produktion.
