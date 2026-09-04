@@ -1,0 +1,21 @@
+# Rimfrost-analysen (kort #46, hål A): engångsknapp — backtest av frostgrenen mot
+# arkivet FÖRE metodändring. Resultat på Summary-sidan.
+name: rimfrost-analys
+on:
+  workflow_dispatch: {}
+jobs:
+  analys:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      # shell: bash ger pipefail — annars äter tee exit-koden (tee-läxan, DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/rimfrost-analys.ts | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
