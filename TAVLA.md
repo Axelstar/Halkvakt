@@ -258,6 +258,15 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   ingests :11), samma parser/INSERT, bara nederbördsrader, idempotent. 🔨 EFTERMÄTNING
   KRÄVS (rotationsläxan): kortet stängs först när regn-tackning efter ~ett dygns drift
   visar 2/2-andelen stiga; skriptets täthetspuls (3 h) följer siffran varje körning.
+- [ ] 🔨 ❄️ **#46 Rimfrosten — svartis utan nederbörd** (Bengts hål A, 4/9) — PÅGÅR:
+  ANALYSFAS (Bengt + Claude, terminalen 4/9). Fyndet: motorns fuktvillkor är enbart
+  nederbörd, men dewpoint_c ligger oanvänd i varje arkivrad sedan 24/8. Rimfrost
+  (klar natt, yta ≤ daggpunkt, ingen nederbörd) = höstens klassiska svartis — motorn
+  tiger. Analysen backtestar villkoret mot arkivet INNAN någon metodändring föreslås:
+  hur många stationstimmar skulle nya grenen fånga (marginaler 0/0,5/1 °C × yttröskel
+  0/1 °C), överlappar den befintlig fukt, och toppar den kl 03–07 (fysikens signatur —
+  gör den inte det är villkoret brus)? 🔑 Motoränring + vektor är ETT SENARE beslut på
+  siffrorna; rösten är Axels.
 - [ ] 🌨️ **#45 Nederbördstypen — regn, snö eller slask?** (Bengts fråga 3/9: "hur mäter
   vi snö, snöslask etc som är lika riskabla?") 🔒 LÅST BAKOM RADARDOMEN 14/9.
   **Läget när kortet skrevs:** snö och slask PÅ vägen talas redan — men bara indirekt:
