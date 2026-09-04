@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-04 kväll av Claude (webben) — TROSKLAR-VATTENPLANING: Bengt fällde värdena (DECISIONS #67), Axels fastställande + vinterinteraktionen nu på hans beslutslista*
+*Uppdaterad: 2026-09-04 kväll av Claude (webben) — TROSKLAR-VATTENPLANING FASTSTÄLLT av Axel (DECISIONS #68), vinterinteraktionen avgjord; steg 3 grind V-A olåst*
 
 ---
 
@@ -170,11 +170,11 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   "kör" relayerat av Bengt i chatten, värdena oförändrade från Bengts 1/9-version inkl.
   §2-orsaksklassningen. Kvitto: huvudet i docs/TROSKLAR-SKUGGAN.md. Bocken här är
   kontrasigneringen. Från första skuggkörningen gäller §5: ändring kräver båda.
-- [ ] 🔑 **Fastställ TROSKLAR-VATTENPLANING** (kort #42 steg 2, DECISIONS #67) — Bengt
-  fällde värdena 4/9; ditt ja (eller justerade värden) krävs före all kod. I samma
-  beslut: vinterinteraktionen §4 — när halk- och vattenplaningsvarning krockar på samma
-  segment måste EN tiga (alarmdisciplinen). Claudes rekommendation: halkan vinner alltid,
-  vattenplaningen vilar helt vid yttemp ≤ +4 °C.
+- [x] 🔑 ~~Fastställ TROSKLAR-VATTENPLANING~~ ✅ FASTSTÄLLT 4/9 (DECISIONS #68): Axels
+  ja relayerat av Bengt, värdena oförändrade från #67. Vinterinteraktionen avgjord enligt
+  rekommendationen — HALKAN VINNER ALLTID, vattenplaningen vilar helt vid yttemp ≤ +4 °C
+  och ligger under halkan i A-skalan. Bocken här är kontrasigneringen; vill du ändå
+  justera går det fram till första skuggkörningen, sedan gäller §5 (båda signerar).
 - [ ] **Helgsamtalet med pappa — nu fyra punkter:** roller (B2B=Bengt?), föreningen, klartecken ringrundan, OCH intäktsmodellen (#27: din viljeinriktning → hans utformning)
 - [ ] **Skyltfonden-paketet (före 1/10):** (a) klartecken till pappas ringrunda (startar v.36!), (b) sökande: pappa privat eller ideell förening?, (c) rollfördelningen — allt hänger ihop. Underlag: `docs/FINANSIERING.md`
 - [ ] **Rollfördelningen**: efterfrågan/affärsmodell/B2B = Bengts ansvar? (hans förslag; vid ja uppdateras PLAN)
@@ -491,9 +491,11 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   inom 0–10 km · V-B 20 % falsklarm / 40 % miss / max 3 varningar per rutt och regndygn ·
   V-C ≥200 varningar, ≥15 facithändelser, ≥5 regndygn, ≥3 län. Regntröskeln i mm/h
   förblir osatt (ska falla ur V-A:s mätning) och radarn är villkorad av domen 14/9.
-  🔑 **KVAR HOS AXEL:** fastställandet + vinterinteraktionen (§4 — Claudes rekommendation:
-  halkan vinner alltid, vattenplaningen vilar vid yttemp ≤ +4 °C). Ingen kod före det;
-  #51:s hårda villkor, samma som skuggmotorn fick.
+  ✅ **FASTSTÄLLT AV AXEL 4/9** (DECISIONS #68, relayerat av Bengt): värdena står,
+  vinterinteraktionen avgjord — halkan vinner alltid, vattenplaningen vilar helt vid
+  yttemp ≤ +4 °C (förvillkor i koden, inte prioritetsfråga i alarmkön ⇒ egen vektor).
+  🔓 **STEG 3 OLÅST:** grind V-A (LOO mot arkivet, knapp med domspärr) är Claudes nästa
+  bygge på kortet. #51:s hårda villkor uppfyllt — dokumentet låg i repot före koden.
   *(nyckel för röst: Axels ja — rösttext, plats i A-skalan, ordning mot #15/#16)*
 
 ---

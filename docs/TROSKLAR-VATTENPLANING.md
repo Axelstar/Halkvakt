@@ -1,9 +1,10 @@
 # Trösklarna för vattenplaningsvarningen — höstens måttstock
 
 **Datum: 2026-09-04. VÄRDENA FÄLLDA AV BENGT 4/9** ("låt värdena stå" i chatten, efter
-genomgång av grindarna och de fyra öppna punkterna). **Axels fastställande (ägarbeslut —
-domen i nov/dec avgör vad rösten får säga) återstår; till dess kan han justera vilket
-värde som helst utan att ändringsregeln i §5 slår in.**
+genomgång av grindarna och de fyra öppna punkterna). **FASTSTÄLLT AV AXEL 4/9** (ägarbeslut — domen i
+nov/dec avgör vad rösten får säga; "Axel fastställer och följer din rekommendation",
+relayerat av Bengt i chatten, kontrasigneras genom att kortet bockas på tavlan;
+DECISIONS #68). Från och med första skuggkörningen gäller ändringsregeln i §5 fullt ut.
 (Körschemat §8 steg 2 i `docs/VATTENPLANING-ANALYS.md`.) Dokumentet ska ligga i repot
 **FÖRE all kod**, samma hårda villkor som DECISIONS #51 gav skuggmotorn. Domen i
 november/december fälls mot värdena nedan — ingen flyttar målstolparna när siffrorna kommit.
@@ -111,19 +112,23 @@ Radarpiloten döms 14/9. Två utfall, båda förberedda:
 
 Radar får i inget av fallen **fälla falsklarm** förrän dess kalibrering är dömd (§2).
 
-## 4. Vinterinteraktionen — Axels beslut (granskningens §7.4)
+## 4. Vinterinteraktionen — FASTSTÄLLD av Axel 4/9 (granskningens §7.4)
 
 Snöslask kan trigga både halk- och vattenplaningsvarning på samma segment samma minut.
 Alarmdisciplinen (max 1 talad varning/45 s, prioritet A3>A1>A2>A4>A5, lägre släpps —
 köas aldrig) betyder att **en av dem tystnar**. Vem?
 
-**Claudes rekommendation, för Axel att fastställa:** halkvarningen vinner alltid.
+**AXELS BESLUT 4/9 (följer Claudes rekommendation): halkvarningen vinner alltid.**
 Is och slask dödar; vattenplaning på slask är dessutom fysikaliskt samma händelse och
-föraren behöver en åtgärd, inte två. Konkret förslag:
+föraren behöver en åtgärd, inte två. Fastställt:
 
 - Vattenplaningsvarningen **vilar helt** när yttemperaturen på segmentet är ≤ +4 °C,
   oavsett regnintensitet. Under den gränsen är halkmotorn rätt vakt.
 - Vattenplaningen placeras i A-skalan **under** halkvarningen.
+
+Konsekvens för koden: fartgrinden och regntröskeln prövas ALDRIG när yttemp ≤ +4 °C —
+vilan är ett förvillkor, inte en prioritetsfråga i alarmkön. Det gör den testbar som
+egen vektor i `engine/vectors/` när steg 5 byggs.
 
 *Alternativ som valdes bort:* låta båda tala i tur och ordning (bryter 45-sekundersregeln
 och gör rösten till en radiopratare), eller slå ihop dem till en fras (överdriver vad
@@ -154,4 +159,6 @@ facit. Axel fäller domen mot värdena ovan.
 4. **Regntröskeln i mm/h förblir osatt** — den ska falla ur grind V-A:s mätning, inte
    gissas. Samma disciplin som höll spårdjupet utanför (#65/#66).
 
-**Kvar innan kod:** Axels fastställande, plus hans beslut om vinterinteraktionen (§4).
+**Kvar innan kod: INGENTING.** Axel fastställde 4/9 och avgjorde vinterinteraktionen
+enligt §4. Steg 3 (grind V-A) är därmed olåst — dokumentet låg i repot före koden,
+precis som #51 kräver.

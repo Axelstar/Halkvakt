@@ -832,3 +832,21 @@ aldrig får fälla eftersom svartis inte syns; här SYNS torr asfalt.
 KVAR HOS AXEL: fastställandet, plus vinterinteraktionen (§4) där Claudes rekommendation
 är att halkan alltid vinner och vattenplaningen vilar helt vid yttemp ≤ +4 °C.
 Ingen kod skrivs före Axels ja — #51:s hårda villkor, samma som skuggmotorn fick.
+
+## #68 (4/9 2026) TROSKLAR-VATTENPLANING FASTSTÄLLT + vinterinteraktionen avgjord
+Axels "fastställer och följer din rekommendation" relayerat av Bengt i chatten 4/9;
+kontrasignering sker genom att kortet bockas på tavlan, samma ordning som #61 (skuggans
+trösklar) och #60 (radarns källbeslut). Värdena är oförändrade från Bengts fällning
+samma kväll (#67).
+VINTERINTERAKTIONEN, granskningens §7.4, nu avgjord: HALKVARNINGEN VINNER ALLTID.
+Vattenplaningsvarningen vilar HELT vid yttemp ≤ +4 °C på segmentet, oavsett
+regnintensitet, och placeras i A-skalan under halkvarningen. Skälet: is och slask dödar,
+och vattenplaning på slask är fysikaliskt samma händelse — föraren behöver en åtgärd,
+inte två. Alternativ bortvalda: båda talar i tur och ordning (bryter 45-sekundersregeln,
+gör rösten till radiopratare) och en sammanslagen fras (överdriver vad datat bär).
+KODKONSEKVENS värd att notera nu, inte upptäcka i december: vilan är ett FÖRVILLKOR, inte
+en prioritetsfråga i alarmkön. Fartgrind och regntröskel prövas aldrig när yttemp ≤ +4 °C.
+Det gör den testbar som egen vektor i engine/vectors/ när steg 5 byggs.
+LÄGET: #51:s hårda villkor uppfyllt — dokumentet låg i repot före all kod. Steg 3
+(grind V-A: LOO-prövning mot arkivet med domspärr) är därmed olåst och blir Claudes
+nästa bygge på kortet. Kvar hos människorna: ingenting före domen i nov/dec.

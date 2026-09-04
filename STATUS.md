@@ -999,3 +999,10 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   osatta — den första ska falla ur V-A:s mätning, den andra ur radardomen 14/9. Nytt
   kort under "Axel — beslut att ta": fastställandet + vinterinteraktionen. Ingen kod
   före Axels ja.
+- **S-2026-09-04kväll (forts 5): TROSKLAR-VATTENPLANING FASTSTÄLLT** (DECISIONS #68).
+  Axels ja relayerat av Bengt samma kväll, värdena oförändrade från #67. Vinterinteraktionen
+  avgjord enligt rekommendationen: halkan vinner alltid, vattenplaningen vilar HELT vid
+  yttemp ≤ +4 °C och ligger under halkan i A-skalan. Kodkonsekvens noterad nu i stället för
+  upptäckt i december: vilan är ett förvillkor, inte en prioritetsfråga i alarmkön — fartgrind
+  och regntröskel prövas aldrig under gränsen, vilket gör den testbar som egen vektor.
+  #51:s hårda villkor uppfyllt (dokument före kod) ⇒ STEG 3 OLÅST: grind V-A är nästa bygge.
