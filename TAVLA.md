@@ -265,8 +265,13 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   tiger. Analysen backtestar villkoret mot arkivet INNAN någon metodändring föreslås:
   hur många stationstimmar skulle nya grenen fånga (marginaler 0/0,5/1 °C × yttröskel
   0/1 °C), överlappar den befintlig fukt, och toppar den kl 03–07 (fysikens signatur —
-  gör den inte det är villkoret brus)? 🔑 Motoränring + vektor är ETT SENARE beslut på
-  siffrorna; rösten är Axels.
+  gör den inte det är villkoret brus)? KÖRNING #1 (4/9, 6 min): fysikkontrollen FÄLLDE
+  resultatet — platt dygnsprofil, och topp-3-stationerna hade yta−dagg −28…−49° =
+  TRASIGA DAGGPUNKTSGIVARE (53/58 kandidater från 3 stationer). STORT BIFYND: frost-
+  grenen kräver GIVARVAKT innan den byggs, annars falsklarmsmaskin. v2 med äkthets-
+  villkor (RH ≥ 90 korsgivare + yta−dagg ≥ −5°) + separat givarfelsräkning körd samma
+  kväll. 🔑 Motoränring + vektor är ETT SENARE beslut på siffrorna (äkta höstnätter
+  sept–okt ger det riktiga underlaget); rösten är Axels.
 - [ ] 🌨️ **#45 Nederbördstypen — regn, snö eller slask?** (Bengts fråga 3/9: "hur mäter
   vi snö, snöslask etc som är lika riskabla?") 🔒 LÅST BAKOM RADARDOMEN 14/9.
   **Läget när kortet skrevs:** snö och slask PÅ vägen talas redan — men bara indirekt:

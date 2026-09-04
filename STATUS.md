@@ -806,3 +806,12 @@ stället. Segmentstabilitetens tidsserie inför mars börjar ticka med detta var
   — efter radardomen 14/9 tas frågan upp om radarn som trigger mellan stationerna, med
   v3:s kalibreringsfaktor och via TROSKLAR-VATTENPLANING före kod. Före domen låst
   (cirkularitet + okalibrerad skala). Beslut Bengt + Axel.
+
+## 2026-09-04 — Rimfrost-analysen (kort #46, hål A): körning #1 fällde sig själv — givarfelsfyndet
+Analysfas på Bengts order. Skript + knapp byggda (sex villkorsvarianter, dygnsprofil som
+fysikverifiering, underlagsvakt). Körning #1: 136 901 rader, 58 vintertimmar — men 53
+"kandidater" kom från 3 stationer med yta−dagg −28…−49° (omöjligt = trasiga daggpunkts-
+givare) och dygnsprofilen var platt; skriptets inbyggda kontroll skrev själv "dom får
+inte fällas". LÄXAN STÖRRE ÄN FRÅGAN: en frostgren utan givarvakt blir en falsklarms-
+maskin — RH-korsgivare + fysikaliskt band är obligatoriska delar av varje framtida
+metodändring. v2 med äkthetsvillkor pushad och körd samma kväll (körning #2).
