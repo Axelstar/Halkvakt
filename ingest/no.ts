@@ -14,17 +14,46 @@ const BASE = "https://datex-server-get-v3-1.atlas.vegvesen.no/datexapi";
 const UA = "Halkvakt/0.4 (+https://github.com/Axelstar/Halkvakt)";
 const auth = "Basic " + Buffer.from(`${USER}:${PASS}`).toString("base64");
 
+// 406 vid första skarpa körningen 4/9: kontot autentiserade (inte 401/403) men
+// servern vägrade vårt Accept. Vilket format den vill ha står ingenstans — så gissa
+// inte: prova varianterna, minns den som fungerar och SKRIV UT den. RoadNumber-läxan
+// på innehållsförhandling.
+const ACCEPT_KANDIDATER = [
+  "application/xml",                                   // det vi provade (406)
+  "*/*",                                               // servern får välja
+  "application/xml, text/xml;q=0.9, */*;q=0.8",        // vanlig webbläsarform
+  "text/xml",
+  "application/xml;charset=UTF-8",
+  null,                                                // ingen Accept-header alls
+];
+let acceptVald: string | null | undefined;             // sätts av första lyckade svaret
+
+async function hamta(pub: string, accept: string | null): Promise<Response> {
+  const headers: Record<string, string> = { Authorization: auth, "User-Agent": UA };
+  if (accept !== null) headers.Accept = accept;
+  return fetch(`${BASE}/${pub}/pullsnapshotdata`, { headers });
+}
+
 async function pull(pub: string): Promise<string> {
-  const r = await fetch(`${BASE}/${pub}/pullsnapshotdata`,
-    { headers: { Authorization: auth, Accept: "application/xml", "User-Agent": UA } });
-  if (!r.ok) {
+  const provas = acceptVald !== undefined ? [acceptVald] : ACCEPT_KANDIDATER;
+  const fel: string[] = [];
+  for (const accept of provas) {
+    const r = await hamta(pub, accept);
+    if (r.ok) {
+      if (acceptVald === undefined) {
+        acceptVald = accept;
+        console.log(`no: servern accepterar ${accept === null ? "(ingen Accept-header)" : `Accept: ${accept}`}`);
+      }
+      return r.text();
+    }
     // Fel-loggen bär API:ets svarskropp — "TRV 400" utan kropp kostade ett diagnosvarv.
-    const kropp = (await r.text().catch(() => "")).slice(0, 300);
+    const kropp = (await r.text().catch(() => "")).slice(0, 200);
     if (r.status === 401) throw new Error(`${pub}: HTTP 401 — hemligheterna nekas (fel par, eller kontot ännu inte aktiverat hos Vegvesen). Svar: ${kropp}`);
     if (r.status === 403) throw new Error(`${pub}: HTTP 403 — kontot saknar rätt till publikationen (eller IP-spärr). Svar: ${kropp}`);
-    throw new Error(`${pub}: HTTP ${r.status}. Svar: ${kropp}`);
+    fel.push(`${accept ?? "(ingen)"} → ${r.status}${kropp ? ` ${kropp}` : ""}`);
+    if (r.status !== 406) break; // bara innehållsförhandling är värd att prova om
   }
-  return r.text();
+  throw new Error(`${pub}: ingen Accept-variant godtogs. ${fel.join(" | ")}`);
 }
 
 // Rekognosering: storlek + huvudet av varje publikation, plus en grov räkning av
