@@ -85,23 +85,26 @@ const wx = await pool.query(`
 // En förare vid gränsen ska matchas mot NÄRMASTE station, inte närmaste SVENSKA.
 // FI-stationer inom 40 km av svenska vägnätet läggs till väderpunkterna, källmärkta.
 // Privacy orörd (matchning fortf. on-device), röst orörd (punktkälla = samma text).
-// v1 = FI (äkta vägyta TIE_1). DK hålls (grästemp #45), NO faller in med kontot via
-// samma mönster. Reachability-diagnostik (any temp) loggas som förstapubliceringsbevis.
+// FI (äkta vägyta TIE_1) sedan 4/9 fm; NO (Vegvesen roadSurfaceTemperature, DECISIONS #64)
+// sedan 4/9 em — samma mönster, samma 40 km. DK hålls (grästemp #45). Reachability-
+// diagnostik (any temp) loggas per land som förstapubliceringsbevis.
 const BORDER_M = 40_000;
-let borderCold: typeof wx.rows = [];
-let borderReach = 0;
-try {
-  const b = await pool.query(`
-    WITH se AS (SELECT ST_Collect(geom) g FROM road_conditions WHERE NOT deleted AND geom IS NOT NULL)
-    SELECT f.station_id, f.surface_temp_c, f.rain, f.snow, f.precipitation,
-           ST_X(f.geom) AS lon, ST_Y(f.geom) AS lat
-    FROM fi.weather_latest f, se
-    WHERE f.surface_temp_c IS NOT NULL AND f.sample_time > now() - interval '3 hours'
-      AND ST_DWithin(f.geom::geography, se.g::geography, $1)`, [BORDER_M]);
-  borderReach = b.rows.length;
-  borderCold = b.rows.filter((r) => Number(r.surface_temp_c) <= 3 || r.snow);
-} catch (e) { console.log(`gräns-wx: fi-schemat ej läsbart (${String((e as Error).message).slice(0, 80)}) — hoppar`); }
-wx.rows.push(...borderCold);
+const BORDER_LANDS = ["fi", "no"] as const;
+const border: Record<string, { reach: number; cold: number }> = {};
+for (const land of BORDER_LANDS) {
+  try {
+    const b = await pool.query(`
+      WITH se AS (SELECT ST_Collect(geom) g FROM road_conditions WHERE NOT deleted AND geom IS NOT NULL)
+      SELECT f.station_id, f.surface_temp_c, f.rain, f.snow, f.precipitation,
+             ST_X(f.geom) AS lon, ST_Y(f.geom) AS lat
+      FROM ${land}.weather_latest f, se
+      WHERE f.surface_temp_c IS NOT NULL AND f.sample_time > now() - interval '3 hours'
+        AND ST_DWithin(f.geom::geography, se.g::geography, $1)`, [BORDER_M]);
+    const cold = b.rows.filter((r) => Number(r.surface_temp_c) <= 3 || r.snow);
+    border[land] = { reach: b.rows.length, cold: cold.length };
+    wx.rows.push(...cold);
+  } catch (e) { console.log(`gräns-wx: ${land}-schemat ej läsbart (${String((e as Error).message).slice(0, 80)}) — hoppar`); }
+}
 const devs = await pool.query(`
   SELECT deviation_id, message_type, message_type_value, road_number,
          severity_code, end_time,
@@ -177,8 +180,9 @@ writeFileSync(join(outDir, "manifest.json"), JSON.stringify(manifest));
 const kb = (b: number) => `${(b / 1024).toFixed(0)} kB`;
 console.log(`snapshot built: static ${kb(fStatic.bytes)} (gz ${kb(fStatic.gz_bytes)}, ${staticDoc.cameras.length} cameras), ` +
   `live ${kb(fLive.bytes)} (gz ${kb(fLive.gz_bytes)}; segs ${liveDoc.segments.length}, wx ${liveDoc.weather.length}, dev ${liveDoc.deviations.length}, vilt ${liveDoc.wildlife.length}, broar ${liveDoc.bridges.length}, smhi ${liveDoc.smhi.length})`);
-// #49 förstapubliceringsbevis: FI-gränsstationer inom 40 km av svenska vägar (any temp =
+// #49 förstapubliceringsbevis per land: gränsstationer inom 40 km av svenska vägar (any temp =
 // reachability, stabil året runt) och hur många som är kalla nog att ligga i snapshoten nu.
-console.log(`gräns-wx (#49): FI ${borderReach} stationer inom 40 km av svenska vägnätet (varav ${borderCold.length} kalla i snapshoten nu)`);
+for (const land of BORDER_LANDS)
+  console.log(`gräns-wx (#49): ${land.toUpperCase()} ${border[land]?.reach ?? "—"} stationer inom 40 km av svenska vägnätet (varav ${border[land]?.cold ?? "—"} kalla i snapshoten nu)`);
 if (fLive.gz_bytes > 1_500_000) console.warn("SPLIT CRITERION HIT (DECISIONS #14): live gz > 1.5 MB — time for per-län files");
 await pool.end();
