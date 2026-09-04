@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-04 kväll av Claude (webben) — OMTAG kort #42 (DECISIONS #65, väg C): spårdjupet blockerar inte, skuggan startar oavsett; Lastkajen-reconen körs som ren kunskap*
+*Uppdaterad: 2026-09-04 kväll av Claude (webben) — reconen KÖRD: spårdjup finns inte öppet, men AADT+tung trafik hittad som gratis proxy (DECISIONS #66); steg 4b = trafikproxyn, spårdjup till 4c*
 
 ---
 
@@ -464,6 +464,17 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   spårdjupströskel (ingen gissad tröskel) · skuggan börjar oavsett · hinner datan
   fram blir spårdjup ANALYSKOLUMN (nytt steg 4b), aldrig varningströskel förrän
   nyttan är mätt. Körschemat §8 omskrivet.
+  ✅ **RECONEN KÖRD 4/9 (körning #1–2, DECISIONS #66) — svaret ändrar kortet:**
+  spårdjup finns INTE i öppna API:et (PavementData 19 fält, RoadData 24 fält,
+  inventerade namn för namn — noll rut/djup/IRI/textur/friktion). Lastkajen kräver
+  konto (/api/Identity/Login → 405 på GET: finns, vill ha POST). MEN GRATIS PROXY
+  HITTAD: RoadData bär **AADT + AADTHeavyVehicles** (tung trafik = spårens orsak),
+  RoadWidth, BearingCapacity, WearLayer; PavementData bär PavementDate/-Type/
+  Thickness — allt i vägnummer + löpande längd, samma referenssystem som våra 818
+  segment. Steg 4b = TRAFIKPROXYN (byggs när skuggan står), mätt spårdjup flyttat
+  till nytt steg 4c, villkorat. Räcker proxyn behövs Lastkajen aldrig.
+  ⚠️ Mätt färskhetsvarning: beläggningsdatum 1967/1980/2013 i stickprovet — grov på
+  småvägar, men Lastkajens egna mätningar har samma svaghet där. Redovisas i domen.
   *(nyckel för röst: Axels ja — rösttext, plats i A-skalan, ordning mot #15/#16)*
 
 ---
