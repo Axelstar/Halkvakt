@@ -139,11 +139,23 @@ körschemat i §8:
 |---|---|---|---|---|
 | 0a | RainSum-bevis i CI **med täckningsmätning** + mängdkolumn i båda ingestvägarna | v.36 | Axels ja → Claude | Mängd bevisad; facit börjar ticka |
 | 0b | Cellmätningen ur befintliga ja/nej-flaggor (dekorrelation per avståndsband) | v.36–37 | Claude (olåst mätning) | Siffra på missrisken mellan stationer |
-| 1 | Lastkajen-rekognosering: licens, format, färskhet för spårdjup | v.37 | Bengt (konto) + Claude | Beslutspunkt: med spårdjup, eller utan med högre regntröskel |
-| 2 | TROSKLAR-VATTENPLANING: regn-/avståndströskel, fartgrind, falsklarmsdefinition (§7.3), vinterinteraktion (§7.4), radar-observationsfrågan | v.38–39 | Bengt fäller värden, Axel fastställer | Dokumentet i repot FÖRE all kod |
+| 1 | Lastkajen-rekognosering: licens, format, färskhet, kontokrav — REN LÄSNING, blockerar inte | v.37 | Claude kör, Bengt om konto krävs | Kunskap bokförd; kräver ansökan ⇒ Bengt startar den, kalendertiden löper parallellt |
+| 2 | TROSKLAR-VATTENPLANING **utan spårdjupströskel**: regn-/avståndströskel, fartgrind, falsklarmsdefinition (§7.3), vinterinteraktion (§7.4), radar-observationsfrågan | v.38–39 | Bengt fäller värden, Axel fastställer | Dokumentet i repot FÖRE all kod |
 | 3 | Grind V-A: LOO-prövning av "regn framöver"-påståendet mot arkivet, knapp à la grind-a med domspärr | v.39–40 | Claude | Klarar → skugga; faller → dokumenterat nej |
-| 4 | Skuggkörning i höstregnen (kolumn i skuggmotorn, buntad ur engine/src) | okt–nov | Claude bygger, Bengts söndagsrutin läser | Grindarna ur steg 2 |
+| 4 | Skuggkörning i höstregnen (kolumn i skuggmotorn, buntad ur engine/src) — startar OAVSETT spårdjup | okt–nov | Claude bygger, Bengts söndagsrutin läser | Grindarna ur steg 2 |
+| 4b | Spårdjup som ANALYSKOLUMN om datan hunnit fram: nyttan mäts mot samma skuggdata, tröskeldokumentet orört | okt–nov | Claude | Bevisad nytta ⇒ tröskel in i steg 2-dokumentet med dubbelsignatur (§5-mönstret) |
 | 5 | Dom + ev. röst: HazardKind i tre motorer, delade vektorer, produktbok | nov/dec | Axel dömer, Claude bygger | Endast om domen håller |
 
 Kritisk stig: **0a** — varje regnvecka utan mängdkolumn är förlorat facit, och
 oktoberstormarna är skuggsäsongen. Allt före steg 5 är mätning; ingen app-kod rörs.
+
+**OMTAG 4/9 (Bengts granskningsfråga, DECISIONS #65) — spårdjupet blockerar inte längre.**
+Steg 1 mätte TILLGÅNG, inte NYTTA: samma fälla som ankarklippningen, där 744 kameror var
+fullt tillgängliga och gav noll ny täckning. Men att bara skjuta spårdjupet vore värre —
+höstregnen är en engångschans i år (frosten återkommer varje vinter, det här regnet gör
+det inte, nästa chans hösten 2027). Därför parallellt: reconen körs som ren kunskap,
+ansökan startas om konto krävs (kalendertid kostar inget att låta löpa), tröskeldokumentet
+skrivs UTAN spårdjupströskel så inget värde behöver gissas, och skuggan börjar oavsett.
+Hinner datan fram läggs spårdjup in som analyskolumn (steg 4b) — nyttan mäts då mot exakt
+samma skuggdata utan att röra ett fastställt tröskeldokument. Priset: en mätning till att
+underhålla, och visar sig spårdjupet avgörande måste tröskeln ändå in med dubbelsignatur.

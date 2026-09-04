@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-04 15:50 av Claude (terminalen) — 🇳🇴 Norge i GRÄNSSNAPSHOTEN: 42 NO-stationer inom 40 km av svenska vägar nåbara för appen (publicering #621), healthcheckgolv 20; höjdprovet måndagsbokat 07:00 (webben)*
+*Uppdaterad: 2026-09-04 kväll av Claude (webben) — OMTAG kort #42 (DECISIONS #65, väg C): spårdjupet blockerar inte, skuggan startar oavsett; Lastkajen-reconen körs som ren kunskap*
 
 ---
 
@@ -456,6 +456,14 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   RoadNumber-läxan) och Lastkajens egna ytor (katalog/swagger/licenstext). Laddar
   inget, skriver inget; en fallen kandidat är ett svar, bara total tystnad fäller
   jobbet. Det som kräver konto är Bengts handgrepp — kortet är hans.
+  🔄 **OMTAG 4/9 (Bengts granskningsfråga → väg C, DECISIONS #65): spårdjupet
+  blockerar inte längre.** Steg 1 mätte tillgång, inte nytta — ankarklippningens
+  fälla. Men att skjuta spårdjupet vore värre: höstregnen är en engångschans i år
+  (nästa hösten 2027). Nu parallellt: reconen = ren kunskap · ansökan startas om
+  konto krävs (kalendertid löper gratis) · TROSKLAR-VATTENPLANING skrivs UTAN
+  spårdjupströskel (ingen gissad tröskel) · skuggan börjar oavsett · hinner datan
+  fram blir spårdjup ANALYSKOLUMN (nytt steg 4b), aldrig varningströskel förrän
+  nyttan är mätt. Körschemat §8 omskrivet.
   *(nyckel för röst: Axels ja — rösttext, plats i A-skalan, ordning mot #15/#16)*
 
 ---

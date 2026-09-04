@@ -767,3 +767,27 @@ arkiv), skriva mot DATEX-schemat blint (RoadNumber-läxan). BEVIS: ingest-no #29
 468/468 stationer med koordinater, latest 468, archived 468; pulsklocka #3 10 jobb;
 healthcheck #74 HEALTHY "no-arkivet: synkat för 5 min sedan". ÖPPET: nederbörd 0/468 —
 elementvägen bevisas första regnvädret.
+
+## #65 (4/9 2026) OMTAG kort #42: spårdjupet blockerar inte, skuggan startar oavsett
+Bengts granskningsfråga efter att Lastkajen-rekognoseringen byggts ("är det här bästa
+sättet?") — och svaret var nej i sin ursprungliga form. Steg 1 mätte TILLGÅNG (licens,
+format, färskhet), inte NYTTA. Exakt ankarklippningens fälla: 744 kameror var fullt
+tillgängliga och gav noll ny ankartäthet, vilket vi upptäckte först när nyttan mättes.
+MEN det räckte inte att skjuta spårdjupet till efter skuggan (Claudes första förslag):
+höstregnen är en engångschans i år — frosten återkommer varje vinter, den här
+regnmängden gör det inte, och nästa chans vore hösten 2027. Ett skjutet steg blir
+dessutom lätt liggande.
+BESLUT (väg C, Bengt 4/9 efter att för- och nackdelar lagts fram för tre alternativ):
+parallellt i stället för i serie. (a) Reconen körs som ren kunskap, blockerar inget.
+(b) Kräver Lastkajen ansökan startar Bengt den direkt — kalendertid kostar ingen
+arbetstid. (c) TROSKLAR-VATTENPLANING skrivs UTAN spårdjupströskel, så inget värde
+behöver gissas (8 mm? 12 mm? — att gissa trösklar är vad tröskeldokumenten finns för
+att förhindra). (d) Skuggkörningen börjar i höstregnen oavsett. (e) Hinner spårdjupet
+fram läggs det in som ANALYSKOLUMN (steg 4b), aldrig som varningströskel — då mäts
+nyttan mot samma skuggdata utan att ett fastställt dokument rörs.
+Bortvalt: A, spårdjup med från början (en arkitektur i stället för två, men tvingar
+fram en gissad tröskel och blockerar steg 2 bakom licens/format/klippning). B, spårdjup
+villkorat efter skuggan (kortast stig, men riskerar förbruka höstens regn på en mätning
+som ändå kräver spårdjup). PRIS FÖR C, ärligt: en mätning till att underhålla, och
+visar sig spårdjupet avgörande måste tröskeln ändå in i tröskeldokumentet med
+dubbelsignatur — vilket A hade sluppit.

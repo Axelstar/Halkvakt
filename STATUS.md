@@ -966,3 +966,10 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   Lastkajens publika ytor (katalog/swagger/licensord). Gissar ingen URL — provar
   kandidater, rapporterar status + svarskropp, säger vilken som bar frukt. Lokalt
   0 svar (containerproxyn), vakten fällde korrekt; mätningen sker i CI.
+- **S-2026-09-04kväll (forts): OMTAG på kort #42 (DECISIONS #65, väg C).** Bengt frågade
+  om Lastkajen-reconen var bästa sättet — den var det inte i sin serieform: den mätte
+  tillgång, inte nytta (ankarklippningens fälla). Men mitt första motförslag (skjut
+  spårdjupet till efter skuggan) var sämre: höstregnen är en engångschans i år. Valet
+  blev parallellt — recon som kunskap, ansökan startas om den krävs, tröskeldokument
+  utan gissad spårdjupströskel, skuggan startar oavsett, spårdjup som analyskolumn
+  (steg 4b) om datan hinner fram. Körschemat §8 omskrivet med omtaget motiverat i löptext.
