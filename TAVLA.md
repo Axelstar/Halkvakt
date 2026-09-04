@@ -281,6 +281,18 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   Camera PhotoTime (daterat facit), RoadCondition LocationText (röstens VAR).
   Rent golv: TrafficSafetyCamera, Polisen. Recon-lucka: Situation-dumpens datumfilter.
   🔑 Fynden är KANDIDATER — föreslagen ordning i GOLVET.md; inget hämtas utan eget kort.
+- [ ] 🔨 🌉 **#49 Gränssnapshoten — grannländernas data in i svenska appen** (Bengts
+  order 4/9) — PÅGÅR (terminalen). FYND: build-snapshot.ts läser BARA weather_latest
+  (svenska stationer) — FI/DK/NO ligger i egna scheman och matar bara skuggsnapshoterna,
+  når ALDRIG appen. En förare i Haparanda/Karesuando/Riksgränsen/Storlien får varningar
+  mot närmaste SVENSKA station även när en finsk står två km bort. Vi MÄTTE nyttan 1/9
+  (Norrland >20 km 12,6→11,5 % med FI) — men mätningen blir produktnytta först när
+  gränsstationerna når snapshoten. BYGGE: UNION i snapshotens väderfråga, utländska
+  stationer inom 40 km av svenska vägnätet, källmärkta. Tre invarianter ORÖRDA: privacy
+  (matchning fortfarande on-device), röst (punktkälla = samma text), licens (attribution
+  finns för kartan, appen är Axels kolumn). v1 = FI (äkta vägyta TIE_1); DK HÅLLS
+  (grästemp-ärligheten #45, Bengt/Axel), NO faller in med kontot. 🔑 Attribution i
+  app-copyn = Axels beslut; grässtemp-DK = Bengt/Axel.
 - [ ] 🔨 ❄️ **#46 Rimfrosten — svartis utan nederbörd** (Bengts hål A, 4/9) — PÅGÅR:
   ANALYSFAS (Bengt + Claude, terminalen 4/9). Fyndet: motorns fuktvillkor är enbart
   nederbörd, men dewpoint_c ligger oanvänd i varje arkivrad sedan 24/8. Rimfrost
