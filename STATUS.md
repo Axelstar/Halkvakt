@@ -907,3 +907,12 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   ÖPPET enligt beviskravet. Åtgärdsförslag till Bengt/Axel: regn-30 in i Supabase-
   pulsklockan (:41), samma bot som DECISIONS #26 gav ingest. Notabelt: npm-registret
   hade en dålig dag (npm ci 2–7 min i flera jobb) — orelaterat till vår kod.
+- **S-2026-09-04: Norge-tillståndet beviljat** (Bengt fick DATEX-kontot, användarnamn
+  TjeDatexlagerlof). ingest/no.ts härdad med varvets läxor före första skarpa körningen:
+  rekognoseringen räknar nu även nyckelelementen (measurementSiteRecord, siteMeasurements,
+  situationRecord, roadSurfaceTemperature, airTemperature) så parsern kan skrivas mot mätt
+  struktur; fel-loggen bär API:ets svarskropp och skiljer 401 (fel par/ej aktiverat) från
+  403 (saknad rätt/IP-spärr); identifierande User-Agent (NLOD-källangivelse, inga person-
+  uppgifter); workflowen fick pipefail + Summary + npm-cache. Kvar: hemligheterna i GitHub
+  Secrets (mänskligt handgrepp — passerar aldrig chatt eller repo), sedan rekognoserings-
+  körning → parser i eget varv. Ingen no.*-skrivning förrän parsern finns.

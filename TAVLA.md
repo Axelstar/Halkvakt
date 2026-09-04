@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-04 av Claude (webben) — eftermätningen körd: motfasmekaniken bevisad, GitHub-cronen svalt, kort #44 öppet med pulsklockeförslag*
+*Uppdaterad: 2026-09-04 av Claude (webben) — pulsklockan breddad (FI/DK/regn-30, HEALTHY 12:10) + Norge-kontot beviljat, koden härdad och redo för hemligheterna*
 
 ---
 
@@ -180,11 +180,17 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   per säsong är kandidatmodellen; B2B (hemtjänst, försäkring, åkerier) är taket.
 - [ ] **Norden efter facit:** Finland LIVE i arkivet (31/8). Norge sedan, Danmark sist.
   Tidigast vintern 2027/28 som produkt. Nordiskt namn vid det laget (Nordic RoadSafe, #1).
-- [ ] **Vegvesen DATEX-konto** — 📬 SVARET ANLÄNT till Axel 2/9 kväll (Bengts besked).
-  AXELS NÄSTA HANDGREPP: läs svaret → VEGVESEN_USER + VEGVESEN_PASS i GitHub Secrets ⇒
-  Claude skriver parsern och Norge kör. Allt annat är förberett (#35). Kräver de fast IP:
-  proxy-beslut till Axel. Frost täcker redan lufttemp (DECISIONS #60) — DATEX ger
-  yttemp/väglag, det Frost inte kan.
+- [ ] **Vegvesen DATEX-konto** — ✅ TILLSTÅNDET BEVILJAT 4/9 (Bengt): användarnamn
+  TjeDatexlagerlof. Koden härdad samma varv: ingest/no.ts gör en REKOGNOSERING vid
+  första körningen med hemligheter (verklig XML + elementräkning på Summary), fel-
+  loggen bär svarskroppen och skiljer 401 (fel par / ej aktiverat) från 403 (saknad
+  rätt / IP-spärr); workflowen har pipefail + Summary.
+  🔑 ETT HANDGREPP KVAR (Bengt eller Axel): lägg VEGVESEN_USER + VEGVESEN_PASS i
+  GitHub Secrets (Settings → Secrets and variables → Actions). Hemligheterna får
+  aldrig gå genom chatten eller repot. Sedan: kör knappen ingest-no → Claude läser
+  rekognoseringen → parsern skrivs mot verklig struktur → no-arkivet tickar
+  (+ pulsklockan och healthcheckvakt när det bevisligen ger rader).
+  Frost täcker redan lufttemp (DECISIONS #60) — DATEX ger yttemp/väglag, det Frost inte kan.
 - [x] ~~Mejl till Vejdirektoratet om VejVejr~~ ✅ SKICKAT 31/8 16:05 via kontaktformuläret
   (ämne "Forespørgsel om en sag eller et projekt" — vinterdriftens formulär var stängt).
   Väntar svar. Tills dess: grästemp i arkivet, rösten tyst om frysrisk i DK (#45).
