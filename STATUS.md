@@ -888,3 +888,14 @@ med yta ≤ +3° + fukt skickas — ingen bro i september är rätt svar). Kedja
 snapshot → CDN fungerar; första frostmorgonen nära en bro fyller arrayen automatiskt,
 och publish-loggens "broar N" är löpande bevis. #38a är därmed HELT i drift: 2476 broar
 i underlaget, väntar bara på väder.
+
+## 2026-09-04 — Kort #49 Gränssnapshoten BYGGD + bevisad: FI in i svenska appen
+build-snapshot.ts UNION:ar nu fi.weather_latest via ST_DWithin (40 km, ST_Collect av
+hela svenska vägnätet), schema-vaktat. Publicering #596 grön, loggrad "gräns-wx (#49):
+FI 16 stationer inom 40 km av svenska vägnätet (0 kalla nu)" — rörläggningen bevisad,
+0 kalla i sept korrekt (samma som broarna). En förare i Haparanda/Karesuando/Riksgränsen/
+Storlien matchas nu mot närmaste station oavsett land. Invarianterna orörda: privacy
+(on-device), röst (punktkälla), motorvektorer (npm test 41/0). Healthcheck: FI-nåbarhets-
+golv (<10 larmar), schema-vaktat. v1 = FI (äkta vägyta). Kvar: DK (grästemp-beslut #45,
+Bengt/Axel), NO (via Vegvesen-kontot, samma mekanism), attribution i app-copyn (Axel).
+Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bara geometri.

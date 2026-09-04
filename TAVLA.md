@@ -281,8 +281,10 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   Camera PhotoTime (daterat facit), RoadCondition LocationText (röstens VAR).
   Rent golv: TrafficSafetyCamera, Polisen. Recon-lucka: Situation-dumpens datumfilter.
   🔑 Fynden är KANDIDATER — föreslagen ordning i GOLVET.md; inget hämtas utan eget kort.
-- [ ] 🔨 🌉 **#49 Gränssnapshoten — grannländernas data in i svenska appen** (Bengts
-  order 4/9) — PÅGÅR (terminalen). FYND: build-snapshot.ts läser BARA weather_latest
+- [x] ~~🌉 **#49 Gränssnapshoten — grannländernas data in i svenska appen**~~ ✅ BYGGT +
+  BEVISAT 4/9 (Bengt + Claude, terminalen). Publicering #596 grön, loggraden: FI 16
+  stationer inom 40 km av svenska vägnätet nåbara för appen (0 kalla i sept = rätt, som
+  broarna). Healthcheckgolv (<10 = larm) + reachability-logg varje publish. FYND: build-snapshot.ts läser BARA weather_latest
   (svenska stationer) — FI/DK/NO ligger i egna scheman och matar bara skuggsnapshoterna,
   når ALDRIG appen. En förare i Haparanda/Karesuando/Riksgränsen/Storlien får varningar
   mot närmaste SVENSKA station även när en finsk står två km bort. Vi MÄTTE nyttan 1/9
