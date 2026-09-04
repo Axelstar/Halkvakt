@@ -749,3 +749,21 @@ GitHub-token passerar aldrig en logg eller repot. Alternativ: fler GitHub-cron-t
 med aktör Axelstar (token), healthcheck #73 15:06 HEALTHY med fi 30 / dk 25 min. Posten
 skrevs i efterhand av terminal-Claude 15:10 — workflow-filen hänvisade till #63 innan
 posten fanns.
+
+## #64 (4/9 2026) NORGE: väderparsern mot mätt struktur, arkivpolicy #4 ordagrant
+Bengt ("har du skrivit parsern mot den här strukturen — stationstabell + mätdata →
+no.weather händelsefiltrerat enligt samma arkivpolicy som Sverige och Finland?").
+BESLUT: (a) parsern skrivs mot rekognoseringens XML (ingest-no #28), inte mot DATEX-
+schemat; det som låg utanför fönstret (stationens position) får en STRUKTURVAKT som
+skriver inget och dumpar råa XML:et i loggen i stället för att fylla ett tomt arkiv
+tyst. (b) Regex utan XML-bibliotek — gratisnivån, inga nya beroenden, namnrymdsprefix
+ignoreras. (c) Arkivpolicyn är DECISIONS #4 ordagrant (≤ 5 °C, nederbörd, Δ ≥ 0,5,
+första observationen) — inget norskt undantag. (d) GetSituation hämtas INTE av
+väderparsern: 30 MB och nästan bara MaintenanceWorks; olyckor → no.deviations är ett
+eget kort med eget filter (jfr #5). (e) Pulsen 17,47 läggs i pg_cron och healthchecken
+vaktar no-arkivet med samma 120-minutersgräns som fi/dk, tyst tills första raden.
+Alternativ bortvalda: vänta på fullständig XML-dump före parsern (ett varv till utan
+arkiv), skriva mot DATEX-schemat blint (RoadNumber-läxan). BEVIS: ingest-no #29 15:24
+468/468 stationer med koordinater, latest 468, archived 468; pulsklocka #3 10 jobb;
+healthcheck #74 HEALTHY "no-arkivet: synkat för 5 min sedan". ÖPPET: nederbörd 0/468 —
+elementvägen bevisas första regnvädret.

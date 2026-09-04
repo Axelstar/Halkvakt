@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-04 15:10 av Claude (terminalen) — pulsklockan BEVISAD I DRIFT (FI/DK/regn-30 avfyrar från pg_cron), healthcheckvakten grön #73 15:06*
+*Uppdaterad: 2026-09-04 15:35 av Claude (terminalen) — 🇳🇴 NORGE TICKAR: parsern skriven mot mätt struktur, 468 stationer i no.weather, puls 17,47 i pg_cron, healthcheck vaktar (no-arkivet 5 min, HEALTHY #74)*
 
 ---
 
@@ -185,12 +185,14 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   första körningen med hemligheter (verklig XML + elementräkning på Summary), fel-
   loggen bär svarskroppen och skiljer 401 (fel par / ej aktiverat) från 403 (saknad
   rätt / IP-spärr); workflowen har pipefail + Summary.
-  🔑 ETT HANDGREPP KVAR (Bengt eller Axel): lägg VEGVESEN_USER + VEGVESEN_PASS i
-  GitHub Secrets (Settings → Secrets and variables → Actions). Hemligheterna får
-  aldrig gå genom chatten eller repot. Sedan: kör knappen ingest-no → Claude läser
-  rekognoseringen → parsern skrivs mot verklig struktur → no-arkivet tickar
-  (+ pulsklockan och healthcheckvakt när det bevisligen ger rader).
-  Frost täcker redan lufttemp (DECISIONS #60) — DATEX ger yttemp/väglag, det Frost inte kan.
+  ✅ HELA KEDJAN KLAR 4/9 em (Bengt + Claude, terminalen): hemligheterna inlagda → #28
+  rekognosering (406 → Accept */* mätt) → parsern (ingest/sources/vegvesen.ts, test mot
+  fixtur) → ingest-no #29 15:24: 468 stationer med koordinater, vägyta 422, luft 427,
+  daggpunkt 425, fukt 436, latest 468 / archived 468 → puls-ingest-no 17,47 i pg_cron
+  (pulsklocka #3, 10 jobb) → healthcheck #74 HEALTHY med "no-arkivet: synkat för 5 min".
+  Arkivpolicyn DECISIONS #4 ordagrant som SE/FI. Kortet flyttat till KLART (DECISIONS #64).
+  ÖPPET: nederbörd 0 av 468 — DATEX-nederbördens form är omätt (torr eftermiddag eller
+  annan elementväg?), bevisas första regnvädret; olyckor → no.deviations är eget kort.
 - [x] ~~Mejl till Vejdirektoratet om VejVejr~~ ✅ SKICKAT 31/8 16:05 via kontaktformuläret
   (ämne "Forespørgsel om en sag eller et projekt" — vinterdriftens formulär var stängt).
   Väntar svar. Tills dess: grästemp i arkivet, rösten tyst om frysrisk i DK (#45).
@@ -455,6 +457,11 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] 🇳🇴 **NORGE TICKAR — no.weather fylls från Vegvesen DATEX** (4/9 15:24, Bengt +
+  Claude, DECISIONS #64): parsern skriven mot MÄTT struktur (rekognosering #28), inte mot
+  schemat; strukturvakt som dumpar XML och skriver inget om positionen saknas — den
+  behövde aldrig larma (468/468 med koordinater). Puls 17,47 i pg_cron, healthcheckvakt
+  på plats. Norden: SE + FI + NO med äkta vägyta, DK grästemp.
 - [x] 📏 **TRÖSKELDOKUMENTET — mars-domens måttstock, skriven FÖRE all skuggkod** (1/9,
   Bengt + Claude, DECISIONS #52): docs/TROSKLAR-SKUGGAN.md med tre grindar (A offset-
   modellen, B skuggdriften, C domens giltighet) — #51:s hårda villkor uppfyllt, skugg-
