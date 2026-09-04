@@ -866,3 +866,16 @@ nederbördsform, SMHI-moln som klar natt-detektor, metadataguldet SensorNames/Ph
 LocationText) + två rena golv (fartkameror, Polisen) + en recon-lucka (Situation-dumpens
 datumfilter). Allt som kandidater med föreslagen ordning — inget hämtat utan beslut,
 free tier-vakten (DECISIONS #4) uttryckligen i dokumentet.
+
+## 2026-09-04 — Kort #48 Golvbyggena LEVERERADE: arkivet breddat på två länder, allt självförsörjande
+Byggen 1+2+4 i ett varv med Bengts automatiseringskrav uppfyllt: automigreringar (011 via
+db.ts, 012 via fi.ts) körs vid varje ingest; healthchecken breddad med FI/DK-stalehetsvakt
+(fanns inte alls!) och exists-vaktade fältgolv (vind ≥100/sikt ≥30 — larmar först efter
+första skörden, ofödd-falsklarm omöjligt); förstapubliceringsloggrader i båda ingesterna.
+BEVIS: SE #237 grön, FI #26 grön med "frostpunkt 433, sikt 455, vind 433" (= rekog-
+noseringen exakt), healthcheck #69 grön. Sverige arkiverar nu vind×3 + sikt; Finland
+därtill frostpunkt, saltfryspunkt, saltmängd, nederbördsform, ytstatus. LocationText in
+i väglaget (COALESCE-bevarad, publiceras som "plats", fylls med vinterns omklassningar).
+Fångat vid bygget: history-insertens args-index förskjöts av nya kolumnen (10/11-fixen).
+Bygge 3 (PhotoTime) till webben-varvet — ingen edge-deploy-väg från terminalen/CI.
+Motorvektorerna orörda: npm test 0 fallerande.

@@ -258,7 +258,7 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   ingests :11), samma parser/INSERT, bara nederbördsrader, idempotent. 🔨 EFTERMÄTNING
   KRÄVS (rotationsläxan): kortet stängs först när regn-tackning efter ~ett dygns drift
   visar 2/2-andelen stiga; skriptets täthetspuls (3 h) följer siffran varje körning.
-- [ ] 🔨 ⛏️ **#48 Golvbyggena** (Bengts order 4/9: "ta hela kortet, allt självförsörjande")
+- [x] ~~⛏️ **#48 Golvbyggena**~~ ✅ KLART 4/9 (utom bygge 3) (Bengts order 4/9: "ta hela kortet, allt självförsörjande")
   — PÅGÅR (terminalen): GOLVET.md:s byggen 1–4 med automatiseringskrav: automigrering
   vid varje ingest (db.ts/fi.ts-mönstret), healthcheck-golv på varje ny fältfamilj
   (exists-vaktade så de inte larmar på ofött), förstapubliceringsbevis i loggrader.
