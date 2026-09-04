@@ -1,5 +1,9 @@
 // Pulsklockan (DECISIONS #26) breddad till de tre svältande jobben — FI, DK, regn-30
 // (Bengt + Axel 4/9, efter healthcheck-larmet och eftermätningen på kort #44).
+// Sedan ingest-no (kort #35) och — kort #50, Bengts "kör push healthcheck" 4/9 kväll —
+// healthchecken själv: vakthunden var det sista tidskritiska jobbet på naken GitHub-cron
+// och levererade 40 % av bokad takt (20 av ~49 avfyrningar på 99 h, värsta hål 6 h 44,
+// noll mellanrum inom de bokade 2 h). En vakthund som inte vaktas mäter tur, inte tystnad.
 //
 // HEMLIGHETSREGELN STYR FORMEN: pulsjobbens kommandon bär en GitHub-token. Skriptet
 // LÄSER därför aldrig ut ett kommando i klartext och SKRIVER aldrig ett nytt från
@@ -8,7 +12,7 @@
 //
 // --inventering: visar cron-jobben maskerat (jobid, namn, schema, vilken workflow-fil
 //   kommandot pekar på, om Authorization-header finns) — formatet bevisas före bygget.
-// skarpt: skapar/uppdaterar de tre pulsjobben ur mallen och läser tillbaka som bevis.
+// skarpt: skapar/uppdaterar pulsjobben i NYA ur mallen och läser tillbaka som bevis.
 //
 // Run: DATABASE_URL=... node --experimental-strip-types scripts/pulsklocka.ts [--inventering]
 
@@ -17,6 +21,7 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
   { namn: "puls-ingest-dk", schema: "12,42 * * * *", fil: "ingest-dk.yml" },
   { namn: "puls-regn-30", schema: "41 * * * *", fil: "regn-30.yml" },
   { namn: "puls-ingest-no", schema: "17,47 * * * *", fil: "ingest-no.yml" },   // kort #35, 4/9: no-arkivet tickar
+  { namn: "puls-healthcheck", schema: "23 */2 * * *", fil: "healthcheck.yml" }, // kort #50, 4/9: vakthunden vaktades inte själv
 ];
 const MALLFIL = "ingest.yml";            // svenska ingest-pulsen = bevisat fungerande mall
 const INVENTERING = process.argv.includes("--inventering");
@@ -72,4 +77,4 @@ for (const n of NYA) {
 }
 await pool.end();
 if (!ok) { console.error("BEVISVAKT: minst ett pulsjobb blev inte som beställt."); process.exit(1); }
-console.log(`\nAlla tre pulsjobben på plats. Bevis kommer från jobbens EGNA körningar: healthchecken (FI/DK-stalehet) och regn-tackningens 2/2-andel — inte från den här raden.`);
+console.log(`\nAlla ${NYA.length} pulsjobben på plats. Bevis kommer från jobbens EGNA körningar: healthcheckens egna mellanrum (kort #50: inget över 2 h 30), FI/DK-stalheten och regn-tackningens 2/2-andel — inte från den här raden.`);

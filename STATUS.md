@@ -1024,3 +1024,27 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   att flytta målstolparna när siffrorna kommit är vad §5 förbjuder. Tre vägar lagda som
   beslutsläge på kortet (nej / §5-ändring / vänta på radardomen 14/9). Reservation mätt:
   rain_sum_mm startade 2/9, så fönstret är tre dygns septemberregn; måndagscronen fyller på.
+- **S-2026-09-04kväll (forts 8): läsvarv inför radardomen — vakthunden visade sig vara
+  obevakad** (Bengts "vi väntar på radardomen, du läser o samlar data"). Ingen kod ändrad,
+  bara Actions-historik läst. Två mätningar, båda bokförda på tavlan:
+  (1) **Kort #44, pulsen verkar.** Regn-30 har gått 8/8 hela timmar 12:41–19:41 på
+  token-dispatch. Samma dygn dessförinnan, på ren GitHub-cron, landade 1 av 12 möjliga
+  timmar — 3 avfyrningar varav 2 dog i jobbets 5-minutersgräns med hängande `npm ci`
+  (normalt 1–2 s). Täthetspulsen i körningarnas egna loggar: 34 → 59 → 51 %. Varning mot
+  övertolkning skriven in på kortet: pulsens 3 h-fönster klipper sin äldsta timme mitt itu,
+  så den timmen kan aldrig få båda buckets ⇒ inbyggt tak klart under 100 %. Dygnsbeviset
+  5/9 18:00 ska dömas mot den insikten, inte mot 100.
+  (2) **NYTT KORT #50: healthchecken svälter.** Vakthunden är det enda tidskritiska jobbet
+  som ännu går på naken GitHub-cron (genomgång av alla 15 cron-rader: pulsklockan bär
+  ingest-familjen + regn-30; publish-map ärver pulsen via `workflow_run: [ingest]` —
+  oavsiktligt men verkligt; bridges/marknadsföring/måndagsserien tål drift). Mätt över
+  98 h 56 min: 20 av ~49 bokade avfyrningar = 40 %. Kortaste mellanrum 3 h 03, längsta
+  6 h 44 (två gånger), snitt 4 h 59 — **noll** av 19 mellanrum nådde de bokade 2 timmarna.
+  Workflowens egen kommentar ("vakthunden i skriptet larmar ändå inom 2 h") är därmed
+  motbevisad. Konsekvensen är inte teoretisk: värsta hålet är 3,4× längre än
+  stalehetsgränsen på 120 min som vakten ska fånga, och UNHEALTHY-larmet 4/9 11:27 var
+  första blicken på en FI/DK-stalehet som redan pågått — nästa blick kom först 16:25.
+  Läxa i klartext: **en vakthund som inte själv vaktas mäter inte tystnad, den mäter tur.**
+  Åtgärden är en rad i pulsklockans NYA-lista (`puls-healthcheck`), men den rör skarp
+  pg_cron och väntar därför på Bengts/Axels "kör". Beviskrav när det gått: ett dygn utan
+  mellanrum över 2 h 30.
