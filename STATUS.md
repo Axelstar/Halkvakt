@@ -1014,3 +1014,13 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   krävde: sex kandidattrösklar sveps och den lägsta som klarar 70 %/25 % i bandet 0–10 km
   är svaret. Binomialbrus per andel (V-C3), domspärr < 200 fall / < 20 stationer,
   underlagsvakt. Självtest med känd sanning grönt: identiskt regn 100 %/0 %, oberoende 34 %/66 %.
+- **S-2026-09-04kväll (forts 7): grind V-A körd skarpt — FALLER, men fyndet är större än
+  domen** (DECISIONS #69). n=1 141 fall i 0–10 km ⇒ riktig dom, inte "för tunt". Mot de
+  fastställda kraven faller V-A på alla sex trösklar. Men falsklarmen klarar V-A2 med
+  marginal överallt (12/10/8/7/4 %) — det är träffen som fäller (61 % mot 70 %), och
+  DELVIS-andelen är stor och växande (27→71 %). Träff+delvis = 88–94 %. Slutsats:
+  grannarna vet med hög säkerhet ATT det regnar hos målstationen, men inte HUR MYCKET.
+  Intensitetströskeln bär inte; regnpåståendet gör det. V-A1 skrivs INTE om av Claude —
+  att flytta målstolparna när siffrorna kommit är vad §5 förbjuder. Tre vägar lagda som
+  beslutsläge på kortet (nej / §5-ändring / vänta på radardomen 14/9). Reservation mätt:
+  rain_sum_mm startade 2/9, så fönstret är tre dygns septemberregn; måndagscronen fyller på.

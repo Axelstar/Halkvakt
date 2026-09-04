@@ -850,3 +850,24 @@ Det gör den testbar som egen vektor i engine/vectors/ när steg 5 byggs.
 LÄGET: #51:s hårda villkor uppfyllt — dokumentet låg i repot före all kod. Steg 3
 (grind V-A: LOO-prövning mot arkivet med domspärr) är därmed olåst och blir Claudes
 nästa bygge på kortet. Kvar hos människorna: ingenting före domen i nov/dec.
+
+## #69 (4/9 2026) GRIND V-A FALLER — men fyndet är att grannarna vet ATT, inte HUR MYCKET
+Första skarpa körningen (grind-v-a #1, 30 dygn bakåt, Bengts "kör skarpt"). Domen mot de
+fastställda kraven (#67/#68: V-A1 ≥ 70 % träff, V-A2 ≤ 25 % falsklarm i bandet 0–10 km):
+V-A FALLER på alla sex prövade trösklar. Underlaget räckte — n = 1 141 fall vid 0,5 mm/h,
+väl över domspärrens 200 — så detta är en riktig dom, inte ett "för tunt".
+MEN LÄS KOLUMNERNA, INTE BARA DOMEN. Falsklarmen ligger LÅGT och klarar V-A2 med marginal
+på varje tröskel: 12 % (0,5), 10 % (1), 8 % (2), 7 % (4), 4 % (6). Det är TRÄFFEN som
+fäller: 61 % som bäst, mot kravet 70 %. Och mellanläget är stort och växande: DELVIS
+(det regnade, men svagare än tröskeln) 27 % → 38 % → 55 % → 63 % → 62 % → 71 %.
+Slår man ihop träff och delvis säger grannarna rätt i 88 % (0,5 mm/h), 90 % (1), 91 % (2)
+och 94 % (4) av fallen. SLUTSATSEN ÄR ALLTSÅ INTE "regn går inte att prognostisera mellan
+stationer" utan: grannarna vet med hög säkerhet ATT det regnar hos målstationen — de vet
+inte HUR MYCKET. Intensitetströskeln är det som inte bär, inte regnpåståendet.
+VAD SOM INTE GÖRS NU: V-A1 skrivs INTE om till "regnar det alls". Dokumentet är fastställt
+och att flytta målstolparna när siffrorna kommit är precis vad §5 förbjuder — en sådan
+ändring kräver Axels och Bengts signaturer och en motivering som inte lutar sig mot detta
+utfall. Frågan läggs som beslutsläge på kortet, inte som en tyst justering.
+RESERVATION, mätt och inte gissad: rain_sum_mm började tickas 2/9 (steg 0a), så "30 dygn
+bakåt" är i praktiken tre dygns septemberregn. Kurvan ska köras om när höstregnen fyllt
+arkivet — knappen går måndagar 07:20 och siffrorna växer av sig själva.
