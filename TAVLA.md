@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-04 kväll av Claude (webben) — reconen KÖRD: spårdjup finns inte öppet, men AADT+tung trafik hittad som gratis proxy (DECISIONS #66); steg 4b = trafikproxyn, spårdjup till 4c*
+*Uppdaterad: 2026-09-04 kväll av Claude (webben) — TROSKLAR-VATTENPLANING utkast i repot (kort #42 steg 2): tre grindar, asymmetrisk facittabell, vinterinteraktionen till Axel; Bengt fäller värdena*
 
 ---
 
@@ -475,6 +475,15 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   till nytt steg 4c, villkorat. Räcker proxyn behövs Lastkajen aldrig.
   ⚠️ Mätt färskhetsvarning: beläggningsdatum 1967/1980/2013 i stickprovet — grov på
   småvägar, men Lastkajens egna mätningar har samma svaghet där. Redovisas i domen.
+  📏 **STEG 2 UTKAST SKRIVET 4/9** (Bengts order): docs/TROSKLAR-VATTENPLANING.md —
+  tre grindar (V-A påståendets bärkraft, mätbar NU; V-B skuggdriften; V-C domens
+  giltighet med binomialbruset), asymmetrisk facittabell där "regn utan olycka"
+  INTE är falsklarm (granskningens §7.3), vinterinteraktionen som Axel-beslut med
+  rekommendation (halkan vinner alltid, vattenplaningen vilar ≤ +4 °C), radarns roll
+  villkorad av domen 14/9, ingen spårdjupströskel (#65/#66). Regntröskeln i mm/h
+  medvetet OSATT — den ska falla ur V-A:s mätning, inte gissas.
+  🔑 **BENGT FÄLLER VÄRDENA** (fyra öppna punkter i §6), sedan Axel fastställer.
+  Ingen kod skrivs före det — #51:s hårda villkor, samma som skuggmotorn.
   *(nyckel för röst: Axels ja — rösttext, plats i A-skalan, ordning mot #15/#16)*
 
 ---

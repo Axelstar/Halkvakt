@@ -983,3 +983,12 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   inte antagen: beläggningsdatum 1967/1980/2013 i stickprovet — grov proxy på småvägar,
   men Lastkajens mätningar delar svagheten där. Reconen kostade två CI-minuter och
   sparade möjligen ett konto, en licensgranskning och en formatkonvertering.
+- **S-2026-09-04kväll (forts 3): TROSKLAR-VATTENPLANING utkast skrivet** (kort #42 steg 2,
+  Bengts order). Speglar TROSKLAR-SKUGGANs form: tre grindar (V-A påståendets bärkraft
+  — LOO mot arkivet, mätbar före all skuggkod; V-B skuggdriften i höstregnen; V-C domens
+  giltighet med binomialbruset utskrivet: N=200, p=0,20 ⇒ ±5,5 p.e.), asymmetrisk
+  facittabell (granskningens §7.3: "regn utan olycka" är INTE falsklarm — bara stationen
+  själv, torr kamerabild eller testarlogg får fälla), vinterinteraktionen (§7.4) som
+  Axel-beslut med rekommendation, radarns roll villkorad av domen 14/9, och INGEN
+  spårdjupströskel (#65/#66). Regntröskeln i mm/h avsiktligt osatt — ska falla ur V-A:s
+  mätning, inte gissas. Fyra öppna punkter listade för Bengt att fälla; Axel fastställer.
