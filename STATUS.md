@@ -879,3 +879,12 @@ i väglaget (COALESCE-bevarad, publiceras som "plats", fylls med vinterns omklas
 Fångat vid bygget: history-insertens args-index förskjöts av nya kolumnen (10/11-fixen).
 Bygge 3 (PhotoTime) till webben-varvet — ingen edge-deploy-väg från terminalen/CI.
 Motorvektorerna orörda: npm test 0 fallerande.
+
+## 2026-09-04 — Broarnas rörläggning CDN-bevisad: bridges-nyckeln live, tom av rätt skäl
+Väktaren greppade static.json — fel fil (broarna bor i live.json, tredje väktarläxan:
+väktare ska verifieras mot rätt mål innan de armeras). Direktverifiering: live.json
+05:54Z bär bridges-nyckeln, 0 broar = förfiltret gör sitt jobb (bara broar nära station
+med yta ≤ +3° + fukt skickas — ingen bro i september är rätt svar). Kedjan repo-fil →
+snapshot → CDN fungerar; första frostmorgonen nära en bro fyller arrayen automatiskt,
+och publish-loggens "broar N" är löpande bevis. #38a är därmed HELT i drift: 2476 broar
+i underlaget, väntar bara på väder.
