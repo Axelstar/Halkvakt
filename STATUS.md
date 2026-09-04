@@ -973,3 +973,13 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   blev parallellt — recon som kunskap, ansökan startas om den krävs, tröskeldokument
   utan gissad spårdjupströskel, skuggan startar oavsett, spårdjup som analyskolumn
   (steg 4b) om datan hinner fram. Körschemat §8 omskrivet med omtaget motiverat i löptext.
+- **S-2026-09-04kväll (forts 2): reconen körd, kortet #42 ändrat (DECISIONS #66).**
+  Kärnfrågan besvarad: spårdjup finns INTE i öppna API:et — PavementData (19 fält) och
+  RoadData (24 fält) inventerade fältnamn för fältnamn, noll kandidater. Lastkajen
+  kräver konto (405 på GET mot /api/Identity/Login = endpointen finns). Men samma
+  körning gav en gratis proxy: AADT + AADTHeavyVehicles + RoadWidth + BearingCapacity +
+  WearLayer + PavementDate/-Type/Thickness, allt i vägnummer + löpande längd. Steg 4b
+  blir trafikproxyn, mätt spårdjup flyttas till nytt steg 4c. Färskhetsvarning mätt,
+  inte antagen: beläggningsdatum 1967/1980/2013 i stickprovet — grov proxy på småvägar,
+  men Lastkajens mätningar delar svagheten där. Reconen kostade två CI-minuter och
+  sparade möjligen ett konto, en licensgranskning och en formatkonvertering.

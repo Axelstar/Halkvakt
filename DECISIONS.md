@@ -791,3 +791,24 @@ villkorat efter skuggan (kortast stig, men riskerar förbruka höstens regn på 
 som ändå kräver spårdjup). PRIS FÖR C, ärligt: en mätning till att underhålla, och
 visar sig spårdjupet avgörande måste tröskeln ändå in i tröskeldokumentet med
 dubbelsignatur — vilket A hade sluppit.
+
+## #66 (4/9 2026) Spårdjup finns inte öppet — trafikproxyn blir steg 4b:s första variant
+Reconen (lastkajen-rekognosering #1–2, ren läsning) besvarade körschemats fyra frågor.
+FYND 1, kärnfrågan: spårdjup finns INTE i Trafikverkets öppna API. PavementData (19 fält)
+och RoadData (24 fält) inventerades fältnamn för fältnamn — noll träffar på
+rut/djup/IRI/textur/friktion. FYND 2: Lastkajen kräver konto; /api/Identity/Login svarar
+405 på GET (endpointen finns, vill ha POST), sajten är ett Angular-skal utan läsbar text.
+FYND 3, det värdefulla: RoadData bär AADT och AADTHeavyVehicles, plus RoadWidth,
+BearingCapacity och WearLayer; PavementData bär PavementDate, PavementType och Thickness.
+Tung trafik ÄR spårens fysikaliska orsak, och allt ligger i vägnummer + löpande längd —
+samma referenssystem som våra 818 segment, ingen klippning mot främmande geometri, ingen
+licensgranskning, inget konto. FYND 4, mätt färskhetsvarning: beläggningsdatumen i
+stickprovet var 1967, 1980 och 2013.
+BESLUT (Bengt 4/9): trafikproxyn blir steg 4b:s FÖRSTA variant och byggs när skuggan
+står; mätt spårdjup flyttas till steg 4c, villkorat av att Lastkajen-datan hunnit fram.
+Räcker proxyn för att förklara falsklarmsklustren behövs Lastkajen aldrig.
+ÄRLIG BEGRÄNSNING: åldersproxyn är grov på lågtrafikerade vägar — men samma svaghet
+drabbar Lastkajens egna mätningar (vart 1–3 år på stora vägar, sällan på små). Ingen
+källa är stark just där nätet är glest; det är ett villkor att redovisa i domen, inte
+ett fel att dölja. Väg C (#65) står orörd: ansökan får fortfarande startas parallellt,
+men den är inte längre kritisk stig.

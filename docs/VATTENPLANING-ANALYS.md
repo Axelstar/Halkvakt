@@ -35,10 +35,20 @@ lika viktigt som regnet.
   varningen sedan byggs eller inte.**
 
 **B. Var vattnet blir stående — spårdjupet.**
-- ATT VERIFIERA: Trafikverkets vägytemätningar (spårdjup per delsträcka) finns i
-  Lastkajen. Tre frågor före löfte: licens (öppna data?), format (går det att
-  klippa mot vårt 818-segmentskelett?), färskhet (mäts per väg vart 1–3 år —
-  gott nog, spår flyttar sig långsamt).
+- MÄTT 4/9 (lastkajen-rekognosering #1–2, DECISIONS #66): spårdjup finns INTE i det
+  öppna API:et. `PavementData` (19 fält) och `RoadData` (24 fält) inventerade
+  fältnamn för fältnamn — noll kandidater på rut/djup/IRI/textur/friktion. Mätt
+  spårdjup kräver Lastkajen, som kräver konto (`/api/Identity/Login` svarar 405 på
+  GET: endpointen finns, vill ha POST).
+- MEN GRATIS PROXY HITTAD i samma körning: `RoadData` bär **AADT** och
+  **AADTHeavyVehicles**, plus `RoadWidth`, `BearingCapacity` och `WearLayer`;
+  `PavementData` bär `PavementDate`, `PavementType` och `Thickness`. Tung trafik är
+  spårens fysikaliska orsak, och allt ligger i vägnummer + löpande längd — samma
+  referenssystem som våra 818 segment, ingen klippning mot främmande geometri.
+- FÄRSKHETSVARNING, mätt: beläggningsdatumen i stickprovet var 1967, 1980 och 2013.
+  Åldersproxyn blir grov på lågtrafikerade vägar — men samma svaghet drabbar
+  Lastkajens egna mätningar, som görs vart 1–3 år på de stora vägarna och sällan
+  eller aldrig på de små. Ingen av källorna är alltså stark just där nätet är glest.
 - Utan spårdjup går varningen ändå att bygga på enbart regnintensitet, men
   skuggan får då visa om falsklarmen blir för många på slät ny asfalt.
 
@@ -143,7 +153,8 @@ körschemat i §8:
 | 2 | TROSKLAR-VATTENPLANING **utan spårdjupströskel**: regn-/avståndströskel, fartgrind, falsklarmsdefinition (§7.3), vinterinteraktion (§7.4), radar-observationsfrågan | v.38–39 | Bengt fäller värden, Axel fastställer | Dokumentet i repot FÖRE all kod |
 | 3 | Grind V-A: LOO-prövning av "regn framöver"-påståendet mot arkivet, knapp à la grind-a med domspärr | v.39–40 | Claude | Klarar → skugga; faller → dokumenterat nej |
 | 4 | Skuggkörning i höstregnen (kolumn i skuggmotorn, buntad ur engine/src) — startar OAVSETT spårdjup | okt–nov | Claude bygger, Bengts söndagsrutin läser | Grindarna ur steg 2 |
-| 4b | Spårdjup som ANALYSKOLUMN om datan hunnit fram: nyttan mäts mot samma skuggdata, tröskeldokumentet orört | okt–nov | Claude | Bevisad nytta ⇒ tröskel in i steg 2-dokumentet med dubbelsignatur (§5-mönstret) |
+| 4b | **Trafikproxyn** som ANALYSKOLUMN: AADT + AADTHeavyVehicles + beläggningsålder + RoadWidth ur öppna API:et (RoadData/PavementData) — spårens fysikaliska orsak, gratis, samma referenssystem (vägnummer + löpande längd) | okt–nov | Claude | Proxyn förklarar falsklarmsklustren ⇒ Lastkajen behövs aldrig |
+| 4c | Mätt spårdjup som analyskolumn OM Lastkajen-datan hunnit fram: prövas mot samma skuggdata som proxyn, tröskeldokumentet orört | okt–nov | Claude | Bevisad nytta utöver proxyn ⇒ tröskel in i steg 2-dokumentet med dubbelsignatur (§5-mönstret) |
 | 5 | Dom + ev. röst: HazardKind i tre motorer, delade vektorer, produktbok | nov/dec | Axel dömer, Claude bygger | Endast om domen håller |
 
 Kritisk stig: **0a** — varje regnvecka utan mängdkolumn är förlorat facit, och
