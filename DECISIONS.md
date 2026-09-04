@@ -871,3 +871,37 @@ utfall. Frågan läggs som beslutsläge på kortet, inte som en tyst justering.
 RESERVATION, mätt och inte gissad: rain_sum_mm började tickas 2/9 (steg 0a), så "30 dygn
 bakåt" är i praktiken tre dygns septemberregn. Kurvan ska köras om när höstregnen fyllt
 arkivet — knappen går måndagar 07:20 och siffrorna växer av sig själva.
+
+## #70 (4/9 2026) VAKTHUNDEN SJÄLV IN PÅ PULSKLOCKAN — och regeln som följer av mätningen
+Bengts order ("kör push healthcheck") efter läsvarvets fynd. Healthchecken var det sista
+tidskritiska jobbet som gick på naken GitHub-cron, och den svalt precis som ingest gjorde
+före #26. MÄTT över 98 h 56 min (20 schemalagda körningar, 31/8 17:38 – 4/9 20:34): cron
+säger `23 */2 * * *` ≈ 49 avfyrningar, verkligheten gav 20 — 40 %. Mellanrum 3 h 03 som
+kortast, 6 h 44 som längst (två gånger), snitt 4 h 59, och NOLL av 19 mellanrum inom de
+bokade 2 timmarna. Workflowens egen kommentar, "vakthunden i skriptet larmar ändå inom
+2 h", var alltså fel sedan den skrevs.
+VARFÖR DET SPELADE ROLL: värsta hålet är 3,4× längre än stalehetsgränsen på 120 min som
+vakten ska fånga. En tystnad hann alltså börja, pågå och rätta sig själv utan att någon
+såg den. Det var exakt vad som hände 4/9: UNHEALTHY-larmet 11:27 var första blicken på en
+FI/DK-stalehet som redan pågått, och nästa blick kom först 16:25.
+ÅTGÄRD: en rad i pulsklockans NYA-lista. Schemat är oförändrat — bara leveransvägen byts,
+inte avsikten — och GitHub-cronen står kvar som för regn-30, så pulsen är additiv.
+Bevisvakten grön i pulsklocka #5 (21:08:18): puls-healthcheck aktiv, rätt workflow, token
+med. Registrerad är dock inte levererad: beviskravet är healthcheckens EGNA mellanrum
+under ett dygn, inget över 2 h 30.
+GENOMGÅNGEN SOM GJORDES FÖRST, och som ändrade påståendet: alla 15 cron-rader i repot
+lästes innan kortet skrevs. Pulsklockan bär ingest-familjen och regn-30. Publish-map
+klarar sig av en anledning ingen planerat — den är kedjad på `workflow_run: [ingest]` och
+ärver därmed pulsen gratis. Bridges (6 h), marknadsföring (dygn) och måndagsserien tål
+drift. Utan den genomgången hade kortet påstått att healthchecken var "det enda jobbet på
+GitHub-cron", vilket är falskt; det sanna är "det enda TIDSKRITISKA".
+REGELN SOM FÖLJER: GitHub-cron är en reserv, inte ett schema. Varje nytt återkommande jobb
+vars VÄRDE SITTER I TIDPUNKTEN ska bokas på pulsklockan i samma varv som det byggs — och
+för ett jobb vars uppgift är att upptäcka tystnad räknas inte "det larmar ändå" som
+argument, eftersom det argumentet är precis vad den här mätningen fällde. Drifttåliga
+jobb (veckomätningar, dygnsrapporter) får ligga kvar på GitHub-cron.
+LÄXAN I EN RAD: en vakthund som inte själv vaktas mäter inte tystnad, den mäter tur.
+VÄNTAD BIEFFEKT, bokförd i förväg så den inte misstolkas som en försämring: en vakt som
+tittar var annan timme i stället för var femte kommer se stalheter som förut hann rätta
+sig osedda. Fler incident-issues den närmaste tiden är ett tecken på att vakten börjat
+fungera.

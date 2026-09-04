@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-04 kväll av Claude (webben) — läsvarv inför radardomen 14/9: regn-30 går 8/8 timmar på pulsen (#44), men vakthunden själv svalt på GitHub-cron — 40 % av bokad takt, värsta hålet 6 h 44 (nytt kort #50)*
+*Uppdaterad: 2026-09-04 kväll av Claude (webben) — vakthunden in på pulsklockan (kort #50, Bengts "kör push healthcheck"): puls-healthcheck skarp i pg_cron 21:08, bevisvakten grön. Registrerad ≠ levererad — första avfyrningen 22:23 avläses, kortet öppet till dygnsbeviset*
 
 ---
 
@@ -316,10 +316,23 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   UNHEALTHY-larmet 11:27 var första signalen om en FI/DK-stalehet som redan pågått i timmar,
   och nästa blick därefter kom först 16:25. Medan vi samlar data mot radardomen 14/9 är
   det här den enda kända vägen till en tyst förlorad insamling.
-  🔑 ÅTGÄRDSFÖRSLAG (Claudes): `puls-healthcheck` in i pulsklockans NYA-lista — en rad,
-  samma bevisade mekanik som #63 gav ingest/fi/dk/no/regn-30, ingen ny kod och ingen ny
-  hemlighet. Kräver Bengts/Axels "kör" (handgrepp mot skarp pg_cron). Bevis när det gått:
-  ett dygns healthcheck-körningar där inget mellanrum överstiger 2 h 30.
+  ✅ ÅTGÄRDEN KÖRD 4/9 21:08 (Bengts "kör push healthcheck"): `puls-healthcheck` skarp
+  i pg_cron — en rad i pulsklockans NYA-lista, samma mekanik som #63, ingen ny kod och
+  ingen ny hemlighet (kommandot kopieras i databasen, token passerar aldrig en logg).
+  Schemat `23 */2 * * *` är oförändrat från workflowens eget cron: bara leveransvägen
+  byttes, inte avsikten. GitHub-cronen står kvar; pulsen är additiv, som för regn-30.
+  BEVIS (pulsklocka-körning #5, 21:08:18, bevisvakten grön — den hade fällt jobbet rött
+  om något av de fem pekat fel eller tappat token):
+  `OK puls-healthcheck: workflow=healthcheck.yml schema=23 */2 * * * aktiv=true token=true`
+  → `Alla 5 pulsjobben på plats`. Elva cron-jobb i pg_cron nu, var tio.
+  🔁 MEN REGISTRERAD ÄR INTE LEVERERAD (rotationsläxan): pg_cron-raden är inte beviset,
+  avfyrningen är. Första pulsavfyrningen 22:23 UTC — avläsning bokad 22:38, och en
+  dygnsmätning därefter. KORTET STÅR ÖPPET tills beviskravet är uppfyllt: ett dygns
+  healthcheck-körningar där inget mellanrum överstiger 2 h 30.
+  ⚠️ VÄNTAD BIEFFEKT, säg det innan någon misstolkar den: en vakt som tittar var annan
+  timme i stället för var femte kommer se stalheter som förut hann börja och rätta sig
+  osedda. Fler incident-issues den närmaste tiden betyder att vakten börjat fungera —
+  inte att pipelinen blivit sämre.
 - [x] ~~⛏️ **#48 Golvbyggena**~~ ✅ KLART 4/9 (utom bygge 3) (Bengts order 4/9: "ta hela kortet, allt självförsörjande")
   — PÅGÅR (terminalen): GOLVET.md:s byggen 1–4 med automatiseringskrav: automigrering
   vid varje ingest (db.ts/fi.ts-mönstret), healthcheck-golv på varje ny fältfamilj
