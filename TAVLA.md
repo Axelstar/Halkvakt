@@ -276,7 +276,20 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   är obligatorisk del av varje framtida frostgren — utan den hade rimfrostvarningar
   avfyrats på skrot från tre stationer; (c) felet är isolerat till daggpunkten —
   offsetmodellen/grind A använder bara yttemp och är opåverkad. KANDIDAT (Bengts
-  kolumn): påtala de tre stationernas orimliga daggpunkter för Trafikverket.
+  kolumn): påtala de tre stationernas orimliga daggpunkter för Trafikverket (mejlutkast
+  levererat i chatten 4/9).
+  ANALYSFAS DEL 2 (beslutad 4/9, Bengt: "gör 1,2,3") — metodgenomgångens tre spår:
+  (1) ✅ FI-DAGGPUNKTEN IN I INGESTEN 4/9: KASTEPISTE fanns i källan men släpptes på
+  golvet (verifierat live: 505/528 stationer, ex. station 1001 = 7,5°). Lapplands
+  septemberfrost ger äkta rimfrostnätter VECKOR före Sverige — samma analys, finskt
+  arkiv. 🔑 Bevis: nästa ingest-fi-loggrad "daggpunkt N st".
+  (2) HÖSTENS OMKÖRNING GÖRS UTFALLSDRIVEN, inte villkorsräknande: starta i FACIT
+  (väglagets frost-omklassningar en klar morgon + gryningsbilder ur kamerafacit) och
+  fråga bakåt om daggpunktsgrenen såg det 1–3 h innan där nederbördsgrenen var blind.
+  Missmätningens (#19) riktning; bevis per händelse i stället för timstatistik.
+  (3) NOTERADE, DRIVS EJ: historik bakåt är stängd väg (TRV live-only, SMHI saknar
+  vägyta — begränsning, inte slarv); fysisk mikrovalidering (frostplatta/termometer)
+  är trevlig men ger aldrig statistik.
   🔑 Motoränring + vektor är ETT SENARE beslut på höstens siffror; rösten är Axels.
 - [ ] 🌨️ **#45 Nederbördstypen — regn, snö eller slask?** (Bengts fråga 3/9: "hur mäter
   vi snö, snöslask etc som är lika riskabla?") 🔒 LÅST BAKOM RADARDOMEN 14/9.

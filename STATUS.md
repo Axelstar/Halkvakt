@@ -824,3 +824,15 @@ första äkta frostnätter — knappen är redo; givarvakten är från och med n
 förvillkor för frostgrenen; felet är isolerat till daggpunktskolumnen (offsetmodellen
 opåverkad). Analysfasen betalade sig innan en rad motorkod skrevs: falsklarmsmaskinen
 hittades i data, inte i produktion.
+
+## 2026-09-04 — Kort #46 analysfas del 2 (Bengts metodfråga: "var detta enda sättet?")
+Metodgenomgång gav tre spår, alla beslutade av Bengt ("gör 1,2,3"): (1) FI-daggpunkten
+in i ingesten — KASTEPISTE fanns i Digitraffic men släpptes på golvet (verifierat live:
+505/528 stationer); Lapplands septemberfrost ger äkta rimfrostnätter veckor före Sverige.
+Bevis vid nästa ingest-fi-körning: ny loggrad "daggpunkt N st". (2) Höstens omkörning
+byggs om till UTFALLSDRIVEN (starta i väglagets frost-omklassningar + gryningsbilder,
+fråga bakåt) — missmätningens riktning, bevis per händelse. (3) Historik bakåt (stängd
+väg) och fysisk mikrovalidering noterade, drivs ej. Mejlutkast till Trafikverket om de
+tre trasiga daggpunktsgivarna levererat i chatten. Mönstret bekräftat tredje gången:
+källan har fältet, ingest släpper det (svensk dewpoint, svensk vind, finsk KASTEPISTE)
+— värt en egen genomgång: "vad mer ligger på golvet?"
