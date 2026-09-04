@@ -1066,3 +1066,21 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   läsningen hade kortet påstått något falskt. (2) Väntad bieffekt bokförd i förväg: en vakt
   som tittar var annan timme i stället för var femte kommer se stalheter som förut hann
   rätta sig osedda, så fler incident-issues betyder att vakten börjat fungera.
+- **S-2026-09-04kväll (forts 10): kort #45:s grind kopplad — den hade annars förblivit låst**
+  (Bengts fråga "hur gick det med allt vårt snack om vad som faller på vad"). Svaret: matrisen
+  finns komplett på kort #45, inskriven 4/9 — vägytan som TILLSTÅND (torr → blöt → slask →
+  snöbelagd → packad snöväg), nederbörden som ÖVERGÅNG ovanpå, och regn-på-snö som farligaste
+  korsningen. Metoden är våtbulb per segment × radarintensitet, båda redan i arkivet.
+  MEN TVÅ SAKER SOM INTE STÄMDE. (1) Kortet är låst bakom radardomen 14/9, och avläsningen den
+  dagen var skriven för tre frågor som alla rörde #43 och #42 — #45 nämndes inte. Grinden hade
+  alltså ingen som öppnade den. Avläsningen heter nu "Radardomen + #42-inkopplingen +
+  #45-grinden" och bär #45 som fjärde fråga med båda utfallen samt snöbaseline-spärren
+  (packad snöväg är NORMALT vinterväglag i norr och får aldrig larma).
+  (2) Läst i koden, inte antaget: motorn kan i dag inte skilja fallen åt alls. `icing_point`
+  avgörs av `surfaceTempC <= tröskel && moisture === true`, och `moisture` är hopslagen till en
+  bit — `rain OR snow OR COALESCE(precipitation,'') <> ''` (publish/missar.ts). Regn på torrt,
+  regn på snö och snö på snö ger samma `true`. Matrisens farligaste korsning är osynlig för
+  motorn just nu. Det står nu på kortet, så nästa läsare ser luckan i stället för att anta att
+  resonemanget redan blivit kod.
+  LÄXA: ett kort som är låst bakom en dom måste NAMNGES i den domens avläsning. Annars är
+  "låst" i praktiken samma sak som glömt — tavelregelns idéer-utan-kort-fälla, ett steg upp.

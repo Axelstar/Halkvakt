@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-04 kväll av Claude (webben) — vakthunden in på pulsklockan (kort #50, Bengts "kör push healthcheck"): puls-healthcheck skarp i pg_cron 21:08, bevisvakten grön. Registrerad ≠ levererad — första avfyrningen 22:23 avläses, kortet öppet till dygnsbeviset*
+*Uppdaterad: 2026-09-04 kväll av Claude (webben) — kort #45:s grind kopplad: 14/9-avläsningen lyfter nu nederbördstypen som fjärde fråga (den hade annars blivit liggande låst). Mätt i koden samma varv: motorns `moisture` är EN hopslagen bit, så regn-på-snö är osynligt i dag*
 
 ---
 
@@ -438,6 +438,18 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   som nu är mätbar ur väglagshistoriken + segment_id-tidsserien (issue #4). OVERIFIERAT
   tills vintern: exakt hur norrlandsetiketterna faller ut i vår data — prövas mot
   arkivets första vintermånad innan någon regel fryses.
+  🔓 **GRINDEN KOPPLAD 4/9 kväll** (Bengts fråga "hur gick det med vad som faller på vad"):
+  kortet stod låst bakom radardomen 14/9 — men avläsningen den dagen var skriven för att
+  lyfta tre frågor (#43, #42:s trigger, #42:s beslutsläge) och nämnde INTE #45. Kortet hade
+  alltså blivit liggande låst utan att någon öppnat grinden. Avläsningen heter nu
+  "Radardomen + #42-inkopplingen + #45-grinden" och bär #45 som fjärde fråga, med båda
+  utfallen och snöbaseline-spärren inskrivna.
+  📏 **MÄTT LÄGE I KODEN 4/9** (läst, inte antaget): motorn kan i dag inte skilja de här
+  fallen åt alls. `icing_point` avgörs av `surfaceTempC <= tröskel && moisture === true`, och
+  `moisture` är en hopslagen bit — `rain OR snow OR COALESCE(precipitation,'') <> ''`
+  (publish/missar.ts). Regn på torrt, regn på snö och snö på snö ger alla samma `true`.
+  Matrisens farligaste korsning är alltså osynlig för motorn i dag; det är exakt luckan
+  kortet finns för att stänga.
   **Rösten är ett SEPARAT beslut (Axels kolumn, som #32):** om "snöfall framöver" eller
   "slask på vägen" blir egna rösthändelser avgör Axel; tystnadsdisciplinen gäller —
   ett slask-larm som har fel är värre än inget. Prognos av KOMMANDE snöfall är #16,
