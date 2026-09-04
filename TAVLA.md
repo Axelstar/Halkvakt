@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-04 kväll av Claude (webben) — kort #45:s grind kopplad: 14/9-avläsningen lyfter nu nederbördstypen som fjärde fråga (den hade annars blivit liggande låst). Mätt i koden samma varv: motorns `moisture` är EN hopslagen bit, så regn-på-snö är osynligt i dag*
+*Uppdaterad: 2026-09-04 22:40 av Claude (webben) — kort #50: pulsen TRYCKTE, healthcheck #77 via dispatch 22:23:02, HEALTHY. Ett mellanrum är inte ett dygn — kortet öppet till dygnsmätningen 5/9 21:30*
 
 ---
 
@@ -325,10 +325,17 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   om något av de fem pekat fel eller tappat token):
   `OK puls-healthcheck: workflow=healthcheck.yml schema=23 */2 * * * aktiv=true token=true`
   → `Alla 5 pulsjobben på plats`. Elva cron-jobb i pg_cron nu, var tio.
-  🔁 MEN REGISTRERAD ÄR INTE LEVERERAD (rotationsläxan): pg_cron-raden är inte beviset,
-  avfyrningen är. Första pulsavfyrningen 22:23 UTC — avläsning bokad 22:38, och en
-  dygnsmätning därefter. KORTET STÅR ÖPPET tills beviskravet är uppfyllt: ett dygns
-  healthcheck-körningar där inget mellanrum överstiger 2 h 30.
+  ✅ **AVFYRNINGEN BEVISAD 4/9 22:23** (avläsning 22:38, rotationsläxan uppfylld —
+  pg_cron-raden var inte beviset, den här körningen är det): healthcheck **#77**,
+  `workflow_dispatch`, **22:23:02 UTC** — två sekunder efter schemats minut, utlöst av
+  token precis som ingest-familjen. Utfall HEALTHY (gräns-wx 20 FI / **44 NO** inom 40 km,
+  2 783 kameror, 818 segment, 153 150 väderobs, webbens meta.json 11 min gammal).
+  Inga incident-issues: larmsteget hoppades över, auto-close-steget körde.
+  Mellanrummen kring bytet: #75 16:25 → #76 20:48 (4 h 23, gammal cron) → **#77 22:23
+  (1 h 35, pulsen)** — första mellanrummet under de bokade 2 h sedan mätningen började.
+  🔁 KORTET STÅR ÄNDÅ ÖPPET: ETT mellanrum är inte ett dygn. Beviskravet är oförändrat
+  — ett dygns healthcheck-körningar där inget mellanrum överstiger 2 h 30. Dygnsmätning
+  bokad 5/9 21:30 UTC; den avgör om kortet får stängas.
   ⚠️ VÄNTAD BIEFFEKT, säg det innan någon misstolkar den: en vakt som tittar var annan
   timme i stället för var femte kommer se stalheter som förut hann börja och rätta sig
   osedda. Fler incident-issues den närmaste tiden betyder att vakten börjat fungera —

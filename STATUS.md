@@ -1084,3 +1084,15 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   resonemanget redan blivit kod.
   LÄXA: ett kort som är låst bakom en dom måste NAMNGES i den domens avläsning. Annars är
   "låst" i praktiken samma sak som glömt — tavelregelns idéer-utan-kort-fälla, ett steg upp.
+- **S-2026-09-04 22:40: pulsen TRYCKTE på vakthunden** (kort #50, bokad avläsning 22:38).
+  healthcheck **#77**, `workflow_dispatch`, **22:23:02 UTC** — två sekunder efter schemats
+  minut, utlöst av token precis som ingest-familjen. En schedule-körning hade inte bevisat
+  något; det är skillnaden avläsningen letade efter. Utfall HEALTHY: gräns-wx 20 FI / 44 NO
+  inom 40 km, 2 783 kameror, 818 segment, 153 150 väderobs, meta.json 11 min gammal, inga
+  incident-issues (larmsteget hoppades över, auto-close körde).
+  Mellanrummen kring bytet: #75 16:25 → #76 20:48 (4 h 23, gammal cron) → #77 22:23
+  (1 h 35, pulsen). Det är första mellanrummet under de bokade 2 timmarna sedan mätningen
+  i #70 började — men ETT mellanrum är inte ett dygn, och kortet stängs inte på det.
+  Dygnsmätning bokad 5/9 21:30 UTC mot beviskravet: inget mellanrum över 2 h 30.
+  Sidonotering: NO-stationerna i gränssnapshoten står nu på 44, mot 42 vid publicering #621.
+  Fluktuation i vilka stationer som är nåbara, inte en ändring vi gjort — noterat, inget kort.
