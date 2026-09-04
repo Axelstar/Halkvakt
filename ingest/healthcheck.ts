@@ -54,6 +54,17 @@ try {
     if (ff.vind_fott && Number(ff.vind_nu) < 100) problems.push(`vindfältet dött: ${ff.vind_nu} stationer (<100) trots tidigare skörd`);
     if (ff.sikt_fott && Number(ff.sikt_nu) < 30) problems.push(`siktfältet dött: ${ff.sikt_nu} stationer (<30) trots tidigare skörd`);
   } catch { console.log("fältgolv: kolumnerna inte födda än (011 väntar på första ingesten) — hoppar"); }
+  // Gränssnapshoten (kort #49): FI-stationer nära svenska vägar ska förbli nåbara — annars
+  // tystnar gränsområdena utan att någon ser det. Reachability (any temp), schema-vaktat.
+  try {
+    const gr = await pool.query(`
+      WITH se AS (SELECT ST_Collect(geom) g FROM road_conditions WHERE NOT deleted AND geom IS NOT NULL)
+      SELECT count(*)::int AS n FROM fi.weather_latest f, se
+      WHERE f.sample_time > now() - interval '3 hours' AND ST_DWithin(f.geom::geography, se.g::geography, 40000)`);
+    const n = gr.rows[0].n;
+    console.log(`gräns-wx: ${n} FI-stationer nåbara inom 40 km av svenska vägar`);
+    if (Number(n) < 10) problems.push(`gränssnapshoten tunn: bara ${n} FI-stationer nåbara (<10) — FI-ingest eller gränslogik trasig?`);
+  } catch { console.log("gräns-wx: fi-schemat saknas (CI) — hoppar"); }
   const counts = await pool.query(`SELECT
     (SELECT count(*) FROM cameras WHERE NOT deleted) AS cameras,
     (SELECT count(*) FROM road_conditions WHERE NOT deleted) AS segments,
