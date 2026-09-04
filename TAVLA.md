@@ -282,7 +282,9 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   (1) ✅ FI-DAGGPUNKTEN IN I INGESTEN 4/9: KASTEPISTE fanns i källan men släpptes på
   golvet (verifierat live: 505/528 stationer, ex. station 1001 = 7,5°). Lapplands
   septemberfrost ger äkta rimfrostnätter VECKOR före Sverige — samma analys, finskt
-  arkiv. 🔑 Bevis: nästa ingest-fi-loggrad "daggpunkt N st".
+  arkiv. ✅ BEVISAT 4/9: körning #24 föll på 42703 (latest-tabellen saknade kolumnen —
+  rotationsläxan fångade det på minuter), sql/010 + automigrering i fi.ts, körning #25
+  GRÖN med loggraden "daggpunkt 505 st". Finska daggpunkter arkiveras från och med nu.
   (2) HÖSTENS OMKÖRNING GÖRS UTFALLSDRIVEN, inte villkorsräknande: starta i FACIT
   (väglagets frost-omklassningar en klar morgon + gryningsbilder ur kamerafacit) och
   fråga bakåt om daggpunktsgrenen såg det 1–3 h innan där nederbördsgrenen var blind.

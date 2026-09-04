@@ -836,3 +836,12 @@ väg) och fysisk mikrovalidering noterade, drivs ej. Mejlutkast till Trafikverke
 tre trasiga daggpunktsgivarna levererat i chatten. Mönstret bekräftat tredje gången:
 källan har fältet, ingest släpper det (svensk dewpoint, svensk vind, finsk KASTEPISTE)
 — värt en egen genomgång: "vad mer ligger på golvet?"
+
+## 2026-09-04 — FI-daggpunkten BEVISAD i drift: körning #25 grön, "daggpunkt 505 st"
+Kedjan i sin helhet, med två läxor som gjorde sitt jobb: (1) rotationsläxan — bygget
+triggades direkt efter push och körning #24 föll på 42703 (fi.weather_latest saknade
+dewpoint_c; LIKE public ärvde avsaknaden) i stället för att ligga trasig till nästa cron;
+(2) förstapubliceringsläxan — beviset är körning #25:s egen loggrad "fi: latest 528,
+archived 361, daggpunkt 505 st", som matchar liveverifieringens 505/528 exakt.
+sql/010 + automigrering i fi.ts (008-mönstret). Lapplands frostnätter arkiveras nu med
+daggpunkt — rimfrost-analysen får äkta finska kandidater veckor före de svenska.
