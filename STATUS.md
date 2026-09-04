@@ -1006,3 +1006,11 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   upptäckt i december: vilan är ett förvillkor, inte en prioritetsfråga i alarmkön — fartgrind
   och regntröskel prövas aldrig under gränsen, vilket gör den testbar som egen vektor.
   #51:s hårda villkor uppfyllt (dokument före kod) ⇒ STEG 3 OLÅST: grind V-A är nästa bygge.
+- **S-2026-09-04kväll (forts 6): grind V-A byggd** (kort #42 steg 3, Bengts "bygg grinden").
+  publish/grind-v-a.ts + knapp + måndagscron 07:20 (sist i mätserien). LOO mot regnarkivet
+  med stationen utesluten ur sin egen prognos. Två designval värda att minnas: (1) TRIPPEL-
+  delning — träff / delvis / falsklarm — eftersom en tvådelning antingen blåser upp eller
+  döljer falsklarmen; (2) regntröskeln SÄTTS inte utan faller ur mätningen, som dokumentet
+  krävde: sex kandidattrösklar sveps och den lägsta som klarar 70 %/25 % i bandet 0–10 km
+  är svaret. Binomialbrus per andel (V-C3), domspärr < 200 fall / < 20 stationer,
+  underlagsvakt. Självtest med känd sanning grönt: identiskt regn 100 %/0 %, oberoende 34 %/66 %.
