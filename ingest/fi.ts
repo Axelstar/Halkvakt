@@ -8,6 +8,7 @@
 // Samma arkivpolicy som Sverige (DECISIONS #4): vägyta ≤ 5 °C, nederbörd eller Δ ≥ 0,5 °C
 // ⇒ spara; annars bara "latest". Kör var 30:e minut från ingest-fi.yml.
 import pg from "pg";
+import { readFileSync } from "node:fs";
 
 const UA = { "Digitraffic-User": "Halkvakt/0.3 (axelstar.github.io/halkvakt-karta)" };
 const BASE = "https://tie.digitraffic.fi/api";
