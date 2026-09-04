@@ -24,6 +24,8 @@ type Sensor = { name: string; value: number; sensorValueDescriptionEn?: string |
 const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
 const client = await pool.connect();
 try {
+  // Auto-migrering (sql/010): latest-tabellen saknade dewpoint_c — körning #24 föll på 42703.
+  await client.query(readFileSync(new URL("../sql/010_fi_dewpoint_latest.sql", import.meta.url), "utf8"));
   const stations = await get<any>("/weather/v1/stations");
   const meta = new Map<number, { name: string; lon: number; lat: number }>();
   for (const f of stations.features) {
