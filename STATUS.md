@@ -899,3 +899,11 @@ Storlien matchas nu mot närmaste station oavsett land. Invarianterna orörda: p
 golv (<10 larmar), schema-vaktat. v1 = FI (äkta vägyta). Kvar: DK (grästemp-beslut #45,
 Bengt/Axel), NO (via Vegvesen-kontot, samma mekanism), attribution i app-copyn (Axel).
 Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bara geometri.
+- **S-2026-09-04 (eftermätningen, kort #44):** regn-tackning #2 (dagar=1): regnmätarnas
+  2/2-andel 5 → 9 %, täckning 42 %. Tudelad dom: MEKANIKEN BEVISAD — pulsen nådde 30 %
+  under timmar då motfasen gick, varje körning skriver ~85 rader som annars tappats —
+  men GitHub-cronen svalt precis som före pulsklockan: 3 avfyrningar av ~14 möjliga
+  (23:31 grön, 01:21 avbruten i npm-seghet, 06:31 grön), 5-timmarshål. Kortet står
+  ÖPPET enligt beviskravet. Åtgärdsförslag till Bengt/Axel: regn-30 in i Supabase-
+  pulsklockan (:41), samma bot som DECISIONS #26 gav ingest. Notabelt: npm-registret
+  hade en dålig dag (npm ci 2–7 min i flera jobb) — orelaterat till vår kod.

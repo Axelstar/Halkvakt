@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-04 av Claude (webben) — radarinkopplingen i regnspåret dagsatt till efter radardomen 14/9 (kort #42)*
+*Uppdaterad: 2026-09-04 av Claude (webben) — eftermätningen körd: motfasmekaniken bevisad, GitHub-cronen svalt, kort #44 öppet med pulsklockeförslag*
 
 ---
 
@@ -255,9 +255,13 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   parningen hittar den fångade bucketen) men halverar vinterseriernas växttakt.
   ✅ TÄTHETSBESLUTET TAGET 3/9 kväll (Bengt + Axel i chatten, DECISIONS #62): väg (a).
   BYGGT samma varv: ingest/regn30.ts + regn-30.yml — lätt motfashämtning :41 (mot
-  ingests :11), samma parser/INSERT, bara nederbördsrader, idempotent. 🔨 EFTERMÄTNING
-  KRÄVS (rotationsläxan): kortet stängs först när regn-tackning efter ~ett dygns drift
-  visar 2/2-andelen stiga; skriptets täthetspuls (3 h) följer siffran varje körning.
+  ingests :11), samma parser/INSERT, bara nederbördsrader, idempotent. EFTERMÄTNING
+  KÖRD 4/9 (regn-tackning #2, dagar=1): 2/2-andelen 5 → 9 % — MEKANIKEN BEVISAD
+  (pulsen nådde 30 % under aktiva timmar; varje körning skriver ~85 rader som annars
+  tappats) men GITHUB-CRONEN SVALT: 3 avfyrningar av ~14 möjliga, 2 fullbordade,
+  5-timmarshål — samma syndrom som fällde ingest före pulsklockan. KORTET ÖPPET.
+  🔑 ÅTGÄRDSFÖRSLAG (Claudes): regn-30 in i Supabase-pulsklockan (:41), samma bot
+  som #26 gav ingest. Kräver handgrepp i pg_cron — Bengt/Axel säger kör.
 - [x] ~~⛏️ **#48 Golvbyggena**~~ ✅ KLART 4/9 (utom bygge 3) (Bengts order 4/9: "ta hela kortet, allt självförsörjande")
   — PÅGÅR (terminalen): GOLVET.md:s byggen 1–4 med automatiseringskrav: automigrering
   vid varje ingest (db.ts/fi.ts-mönstret), healthcheck-golv på varje ny fältfamilj
