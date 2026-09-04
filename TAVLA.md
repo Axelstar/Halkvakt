@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-04 15:10 av Claude (terminalen) — pulsklockan BEVISAD I DRIFT (FI/DK/regn-30 avfyrar från pg_cron), healthcheckvakten grön #73 15:06*
+*Uppdaterad: 2026-09-04 av Claude (webben) — höjdprovet måndagsbokat 07:00 (mätserien komplett: grind-a, smhi, v3, trv, höjd); Norge rekognoserad (848 yttemp-punkter)*
 
 ---
 
@@ -126,7 +126,10 @@ med släckt skärm, vakten stannar när du stänger av.
       3 455 par: empirisk lapse 0,71 °C/100 m (standard 0,65) — höjden bär en äkta del
       av parsystematiken; (2) ÄRLIGT, 40 augustipunkter: rå+höjd 8,36 ≈ rå 8,36 mot
       offsetens 2,50 °C — i utstrålningslägen räcker höjden INTE ensam, lärda offsets
-      bär stationskaraktären. 🔑 Omkörning på vinterdata avgör.
+      bär stationskaraktären. AUTOMATISK 4/9 (Bengts ja): måndagar 07:00, sist i
+      mätserien efter grind-a/smhi/v3/trv — vinterkurvan växer utan knapptryck, och
+      rangordningen står: felkartan dömer, luftankarna lagar, höjden finjusterar.
+      🔑 Omkörning på vinterdata avgör.
     · GIS-svansen (dalgångar/skuggning): rörs inte förrän vinterns höjdprov motiverar den.
   - [ ] (4) Skuggkörningen — startar när det finns halka att skugga (~mitten av oktober,
     Skåne). I augusti räknar den "inte halt" på "inte halt".
