@@ -42,6 +42,38 @@ async function sparA() {
   rad("A: läs felmeddelandena — Trafikverket brukar räkna upp giltiga objekttyper där.");
 }
 
+// ── Spår C (tillagt 4/9 efter spår A:s fynd): PavementData SVARADE 200 ur det öppna
+// API:et — beläggningsdata finns alltså utan Lastkajen-konto. Kvarstående fråga, och
+// hela kortets kärna: BÄR den spårdjup, eller bara beläggningsår? Utskriften klipptes
+// mitt i "Pav…". Här listas FÄLTNAMNEN i stället för rå text, och de fält som skulle
+// kunna vara spårdjup/ojämnhet pekas ut. Fältlistan är svaret på "format"-frågan.
+async function sparC() {
+  rad(`\n=== SPÅR C: bär PavementData spårdjup? (fältinventering) ===`);
+  if (!KEY) { rad("C: ingen nyckel — hoppar."); return; }
+  for (const typ of ["PavementData", "RoadData"]) {
+    const body = `<REQUEST><LOGIN authenticationkey="${KEY}"/>` +
+      `<QUERY objecttype="${typ}" schemaversion="1" limit="3"/></REQUEST>`;
+    try {
+      const r = await fetch(API, { method: "POST", headers: { "Content-Type": "text/xml", "User-Agent": UA }, body });
+      const j: any = await r.json();
+      const rader = j?.RESPONSE?.RESULT?.[0]?.[typ] ?? [];
+      if (!rader.length) { rad(`C ${typ}: 0 rader i svaret.`); continue; }
+      // Unionen av nycklar över raderna — ett fält kan saknas i en enskild rad.
+      const falt = [...new Set(rader.flatMap((o: any) => Object.keys(o)))].sort();
+      rad(`C ${typ}: ${falt.length} fält → ${falt.join(", ")}`);
+      const kandidater = falt.filter((f: string) =>
+        /rut|spar|spår|depth|djup|iri|even|ojamn|ojämn|texture|friction|macro|condition|matning|mätning/i.test(f));
+      rad(`C ${typ}: spårdjups-/ojämnhetskandidater: ${kandidater.length ? kandidater.join(", ") : "INGA — fältet finns inte i öppna API:et"}`);
+      // Färskheten: hur gammal är beläggningsuppgiften i stickprovet?
+      for (const o of rader.slice(0, 3)) {
+        const datum = o.PavementDate ?? o.MeasurementDate ?? o.ModifiedTime ?? "—";
+        rad(`C ${typ}: prov väg ${o.RoadMainNumber ?? "?"} län ${o.County ?? "?"} datum ${datum}`);
+      }
+      svar++;
+    } catch (e) { rad(`C ${typ}: FEL ${String((e as Error).message).slice(0, 140)}`); }
+  }
+}
+
 // ── Spår B: Lastkajens ytor. Vi vet att tjänsten finns och (enligt förstudien) kräver
 // konto; det som ska mätas är VAD som är läsbart utan konto: katalog, licens, format.
 async function sparB() {
@@ -72,6 +104,7 @@ async function sparB() {
 }
 
 await sparA();
+await sparC();
 await sparB();
 
 rad(`\n=== SAMMANFATTNING ===`);
