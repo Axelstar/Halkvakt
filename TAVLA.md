@@ -279,6 +279,18 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   eget kedjebevis vore våning två före grunden. Klarar radarn domen: bygg klassningen
   som skuggkolumn i radarspåret (litet steg). Faller radarn: kortet omprövas — våtbulben
    enbart kan fortfarande klassa nederbörd SOM STATIONERNA ser, men inte mellan dem.
+  **BENGTS MATRIS (4/9) — kortets egentliga mål är ÖVERGÅNGARNA, inte vädertyperna:**
+  vägytan är ett TILLSTÅND (torr → blöt → slask/modd → snöbelagd → packad snöväg) och
+  nederbörden en ÖVERGÅNG ovanpå det. Farligast är korsningarna: SNÖ PÅ SNÖ (nysnö på
+  packad bana) och framför allt REGN PÅ SNÖ (polerar snövägen till is — fönstret innan
+  operatören klassat om är där varningen är värd mest). Klassningen ska därför korsas
+  med segmentets NUVARANDE väglagsstate (finns i arkivet), inte bara klassa det som
+  faller. VIKTIG PRINCIP: snöväg som VINTERBASELINE i norr larmar ALDRIG — TRV kodar
+  packad snöväg som normalt vinterväglag, och en app som ropar halt nov–april i Norrland
+  avinstalleras (H2/cry wolf). Värdet är AVVIKELSEN från segmentets säsongsbaseline,
+  som nu är mätbar ur väglagshistoriken + segment_id-tidsserien (issue #4). OVERIFIERAT
+  tills vintern: exakt hur norrlandsetiketterna faller ut i vår data — prövas mot
+  arkivets första vintermånad innan någon regel fryses.
   **Rösten är ett SEPARAT beslut (Axels kolumn, som #32):** om "snöfall framöver" eller
   "slask på vägen" blir egna rösthändelser avgör Axel; tystnadsdisciplinen gäller —
   ett slask-larm som har fel är värre än inget. Prognos av KOMMANDE snöfall är #16,
