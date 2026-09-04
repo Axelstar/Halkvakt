@@ -57,8 +57,8 @@ try {
   } catch { console.log("fältgolv: kolumnerna inte födda än (011 väntar på första ingesten) — hoppar"); }
   // Gränssnapshoten (kort #49): FI-stationer nära svenska vägar ska förbli nåbara — annars
   // tystnar gränsområdena utan att någon ser det. Reachability (any temp), schema-vaktat.
-  // Golv per land: FI 10 (mätt 16–20). NO-golvet sätts efter första mätningen (null = logga bara).
-  for (const [land, golv] of [["fi", 10], ["no", null]] as const) {
+  // Golv per land: FI 10 (mätt 16–20), NO 20 (mätt 42 i publicering #621, 4/9 15:47).
+  for (const [land, golv] of [["fi", 10], ["no", 20]] as const) {
     try {
       const gr = await pool.query(`
         WITH se AS (SELECT ST_Collect(geom) g FROM road_conditions WHERE NOT deleted AND geom IS NOT NULL)

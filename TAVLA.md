@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-04 15:35 av Claude (terminalen) — 🇳🇴 NORGE TICKAR: parsern skriven mot mätt struktur, 468 stationer i no.weather, puls 17,47 i pg_cron, healthcheck vaktar (no-arkivet 5 min, HEALTHY #74); höjdprovet måndagsbokat 07:00 (webben) — mätserien komplett*
+*Uppdaterad: 2026-09-04 15:50 av Claude (terminalen) — 🇳🇴 Norge i GRÄNSSNAPSHOTEN: 42 NO-stationer inom 40 km av svenska vägar nåbara för appen (publicering #621), healthcheckgolv 20; höjdprovet måndagsbokat 07:00 (webben)*
 
 ---
 
@@ -460,6 +460,13 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] 🇳🇴 **NORGE I GRÄNSSNAPSHOTEN** (4/9 15:47, Bengt: "kör gränssnapshoten"): #49-mönstret
+  som loop över fi + no i build-snapshot.ts — publicering #621 (e217891): "NO 42 stationer
+  inom 40 km av svenska vägnätet (varav 0 kalla nu)", FI 16 som förut. En förare på E8/E10/
+  E12/E14 matchas nu mot närmaste station oavsett land. Healthcheckgolv NO 20 (< 20 larmar).
+  0 kalla i september är rätt — samma som FI och broarna. Ingen rösttext ändrad (punktkälla).
+  DK MEDVETET UTANFÖR: dk.weather_latest bär GRÄSTEMP, inte vägyta (#45) — hade den legat i
+  snapshoten hade appen sagt frysrisk på fel grund. In först när Vejdirektoratet svarar.
 - [x] 🇳🇴 **NORGE TICKAR — no.weather fylls från Vegvesen DATEX** (4/9 15:24, Bengt +
   Claude, DECISIONS #64): parsern skriven mot MÄTT struktur (rekognosering #28), inte mot
   schemat; strukturvakt som dumpar XML och skriver inget om positionen saknas — den

@@ -936,6 +936,16 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   roadSurfaceTemperature (det Frost inte kunde ge), GetSituation 30 MB / 15 414 poster
   (gravstensläxan gäller vid inläsning). Parsern skrevs av terminalsessionen samma
   eftermiddag mot exakt den strukturen — se nästa post.
+- **S-2026-09-04 15:47: 🇳🇴 Norge i gränssnapshoten (Bengt: "kör gränssnapshoten"):**
+  build-snapshot.ts:s #49-block är nu en loop över fi + no (samma ST_DWithin 40 km mot
+  svenska vägnätet, samma kall-filter, schema-vaktat per land, bevisrad per land).
+  Pulsen (#619 15:37) och GitHub-cronen (#620) hann köra på förra commiten; manuell
+  publicering #621 (e217891, webben-commit ovanpå c2eb330) gav: "gräns-wx (#49): NO 42
+  stationer inom 40 km av svenska vägnätet (varav 0 kalla i snapshoten nu)", FI 16 (0 kalla).
+  wx 0 i live.json = september, inte fel. Healthcheck: gränsvakten loopar fi/no med golv
+  10/20 (NO-golvet satt EFTER mätningen, inte före). DK medvetet utanför (grästemp #45).
+  Kartan (build-map-data vader.geojson) visar SE/FI/DK men INTE NO än — eget litet kort,
+  karta-repots landfärger måste vaktas först.
 - **S-2026-09-04 15:24: 🇳🇴 NORGE TICKAR (Bengt: "har du skrivit parsern?", DECISIONS #64):**
   parsern (ingest/sources/vegvesen.ts, regex utan beroenden, prefix-agnostisk) skriven mot
   rekognoseringen i ingest-no #28 (Accept */*; 468 siteMeasurements, 848 roadSurface-

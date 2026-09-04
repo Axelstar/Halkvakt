@@ -6,7 +6,8 @@
     E14 mot Storlien), Norge-knapp på testbilarna. ✅ KONTOT KOM 4/9 OCH ARKIVET TICKAR
     (DECISIONS #64): parsern skriven mot mätt XML (sources/vegvesen.ts), ingest-no #29
     468 stationer, puls-ingest-no 17,47 i pg_cron, healthcheckvakt. KVAR (egna kort):
-    build-snapshot-no.ts (gränssnapshoten, jfr #49 för FI), olyckor → no.deviations
+    ~~gränssnapshoten~~ ✅ 4/9 15:47 (publicering #621: NO 42 stationer inom 40 km,
+    healthcheckgolv 20), olyckor → no.deviations
     (GetSituation är 30 MB och nästan bara MaintenanceWorks — filtrera hårt), nederbördens
     elementväg bevisas första regnvädret. Ursprungligt KVAR: parsern mot riktigt XML,
     build-snapshot-no.ts, cron. Risk: formuläret krävde "fast IP" — vi svarade
