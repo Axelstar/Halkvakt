@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-03 kväll av Claude (webben) — täthetsbeslutet TAGET (a, DECISIONS #62) och motfashämtningen byggd; eftermätning bokad*
+*Uppdaterad: 2026-09-04 av Claude (webben) — radarinkopplingen i regnspåret dagsatt till efter radardomen 14/9 (kort #42)*
 
 ---
 
@@ -312,6 +312,12 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   → 36 → 41 → 47 → 52 → 60 % (30–50 km). Redan vid 5–10 km är över en tredjedel av
   regnhändelserna enstations. DOMEN STÅR: stationstrigger ensam räcker inte —
   radarspåret valt (DECISIONS #60), stationerna blir kalibrering + fartgrind.
+  📅 **EFTER RADARDOMEN 14/9** (Bengts order 4/9): fundera på att koppla in radar-
+  spåret som #42:s trigger mellan stationerna — MED kalibreringsfaktorn från v3,
+  inskrivet i TROSKLAR-VATTENPLANING (steg 2) före triggerkod. Före domen är det
+  låst: cirkularitet (stationerna är radarns domare) + okalibrerad skala (kvot 0,39
+  på tunt underlag). Faller domen väl ut är detta nästa steg; faller den illa
+  omprövas hela triggerfrågan. Beslut: Bengt + Axel.
   *(nyckel för röst: Axels ja — rösttext, plats i A-skalan, ordning mot #15/#16)*
 
 ---

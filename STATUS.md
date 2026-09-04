@@ -802,3 +802,7 @@ stället. Segmentstabilitetens tidsserie inför mars börjar ticka med detta var
   (2/2-andel våta station-timmar, 3 h-fönster) i varje körning. EFTERMÄTNING BOKAD:
   regn-tackning körs om efter ~ett dygns drift — först när 2/2-andelen bevisligen
   stigit stängs kortet (rotationsläxan: ett beslut är inte klart förrän bygget bevisat).
+- **S-2026-09-04: Radarinkopplingen i regnspåret DAGSATT** (Bengts order): rad på kort #42
+  — efter radardomen 14/9 tas frågan upp om radarn som trigger mellan stationerna, med
+  v3:s kalibreringsfaktor och via TROSKLAR-VATTENPLANING före kod. Före domen låst
+  (cirkularitet + okalibrerad skala). Beslut Bengt + Axel.
