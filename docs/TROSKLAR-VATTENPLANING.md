@@ -1,7 +1,10 @@
 # Trösklarna för vattenplaningsvarningen — höstens måttstock
 
-**Datum: 2026-09-04. UTKAST — Claude föreslår, Bengt fäller, Axel fastställer**
-(körschemat §8 steg 2 i `docs/VATTENPLANING-ANALYS.md`). Dokumentet ska ligga i repot
+**Datum: 2026-09-04. VÄRDENA FÄLLDA AV BENGT 4/9** ("låt värdena stå" i chatten, efter
+genomgång av grindarna och de fyra öppna punkterna). **Axels fastställande (ägarbeslut —
+domen i nov/dec avgör vad rösten får säga) återstår; till dess kan han justera vilket
+värde som helst utan att ändringsregeln i §5 slår in.**
+(Körschemat §8 steg 2 i `docs/VATTENPLANING-ANALYS.md`.) Dokumentet ska ligga i repot
 **FÖRE all kod**, samma hårda villkor som DECISIONS #51 gav skuggmotorn. Domen i
 november/december fälls mot värdena nedan — ingen flyttar målstolparna när siffrorna kommit.
 
@@ -59,7 +62,7 @@ segment där ingen varning gick ut under 30 min före händelsen.
 LOO-prövning mot arkivet: prognostisera regnintensiteten vid varje station ur grannarna,
 stationen aldrig med i sin egen prognos. Samma metod som grind A, samma domspärr.
 
-| # | Mått | Förslag (Bengt fäller) |
+| # | Mått | Fällt värde (Bengt 4/9) |
 |---|---|---|
 | V-A1 | Träffsäkerhet: andel fall där grannarna säger "över tröskel" och stationen håller med | **≥ 70 %** inom 0–10 km |
 | V-A2 | Falsklarmsandel i prövningen: grannarna säger regn, stationen torr | **≤ 25 %** inom 0–10 km |
@@ -72,7 +75,7 @@ regnarkivet, som är husets billigaste utfall.
 
 ### Grind V-B — skuggdriften (höstregnen, dom i nov/dec)
 
-| # | Mått | Förslag (Bengt fäller) |
+| # | Mått | Fällt värde (Bengt 4/9) |
 |---|---|---|
 | V-B1 | Falsklarmsandel enligt §2:s definition | **≤ 20 %** av utfärdade skuggvarningar |
 | V-B2 | Missandel av facitbekräftade händelser | **≤ 40 %** |
@@ -84,7 +87,7 @@ Asymmetrin är avsiktlig och samma som i skuggmotorn.
 
 ### Grind V-C — domens giltighet (utan C fälls ingen dom alls)
 
-| # | Villkor | Förslag |
+| # | Villkor | Fällt värde (Bengt 4/9) |
 |---|---|---|
 | V-C1 | Minsta underlag | **≥ 200** skuggvarningar och **≥ 15** facitbekräftade händelser |
 | V-C2 | Minsta spridning | **≥ 5** regndygn och **≥ 3** län |
@@ -143,10 +146,12 @@ Claude räknar (grind V-A som knapp med domspärr, skuggkolumnen buntad ur `engi
 allt annat — DECISIONS #43/#51). Bengt läser skuggloggen i söndagsrutinen och klassar
 facit. Axel fäller domen mot värdena ovan.
 
-**Öppna punkter för Bengt att fälla innan Axel fastställer:**
-1. V-A1/V-A2: är 70 % / 25 % rätt nivå, eller ska cellmätningens kurva sätta dem exakt?
-2. V-B1/V-B2: 20 % falsklarm och 40 % miss — eller strängare, givet att detta är
-   uppdatering 2 eller 3 och inte kärnprodukten?
-3. V-B3: 3 varningar per rutt och regndygn — mätt mot vad du såg i Boden?
-4. Regntröskeln i mm/h är medvetet inte satt här: den ska falla ur grind V-A:s mätning,
-   inte gissas. Håller du med, eller vill du ha ett tak redan nu?
+**De fyra öppna punkterna — avgjorda av Bengt 4/9:**
+1. **V-A1/V-A2 står** på 70 % / 25 % inom 0–10 km. Cellmätningens kurva motiverar dem;
+   att kräva mer vore att kräva mer än fysiken tillåter.
+2. **V-B1/V-B2 står** på 20 % falsklarm / 40 % miss, med asymmetrin motiverad i §3.
+3. **V-B3 står** på 3 varningar per rutt och regndygn.
+4. **Regntröskeln i mm/h förblir osatt** — den ska falla ur grind V-A:s mätning, inte
+   gissas. Samma disciplin som höll spårdjupet utanför (#65/#66).
+
+**Kvar innan kod:** Axels fastställande, plus hans beslut om vinterinteraktionen (§4).

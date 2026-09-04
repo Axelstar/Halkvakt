@@ -812,3 +812,23 @@ drabbar Lastkajens egna mätningar (vart 1–3 år på stora vägar, sällan på
 källa är stark just där nätet är glest; det är ett villkor att redovisa i domen, inte
 ett fel att dölja. Väg C (#65) står orörd: ansökan får fortfarande startas parallellt,
 men den är inte längre kritisk stig.
+
+## #67 (4/9 2026) TROSKLAR-VATTENPLANING: Bengt fäller värdena, Axels fastställande återstår
+Kort #42 steg 2. Dokumentet skrevs som utkast med motiverade förslag och Bengt fällde det
+oförändrat samma kväll ("låt värdena stå") efter genomgång av de fyra öppna punkterna.
+FÄLLDA VÄRDEN: grind V-A (påståendets bärkraft, mätbar före all skuggkod) 70 % träff /
+25 % falsklarm inom 0–10 km — motiverat av cellmätningens uppmätta 26–36 % diskordans
+där; grind V-B (skuggdriften) 20 % falsklarm / 40 % miss / högst 3 varningar per rutt
+och regndygn; grind V-C (domens giltighet) minst 200 skuggvarningar, 15 facitbekräftade
+händelser, 5 regndygn, 3 län, med binomialbruset utskrivet (N=200, p=0,20 ⇒ ±5,5 p.e.).
+TVÅ SAKER MEDVETET OSATTA: regntröskeln i mm/h ska falla ur V-A:s mätning, inte gissas
+(samma disciplin som höll spårdjupet utanför, #65/#66), och radarns roll är villkorad av
+domen 14/9 med båda utfallen förberedda — faller den tiger rösten bortom 15 km från
+mätande station, vilket är produktinvarianten i arbete, inte ett misslyckande.
+ASYMMETRIN, granskningens §7.3: "regn utan olycka" är INTE falsklarm — en korrekt
+riskvarning följs oftast av att ingenting händer. Bara stationens egen mätning, en torr
+kamerabild eller en testarlogg får fälla. Spegelvänt mot skuggmotorn, där kamerabilder
+aldrig får fälla eftersom svartis inte syns; här SYNS torr asfalt.
+KVAR HOS AXEL: fastställandet, plus vinterinteraktionen (§4) där Claudes rekommendation
+är att halkan alltid vinner och vattenplaningen vilar helt vid yttemp ≤ +4 °C.
+Ingen kod skrivs före Axels ja — #51:s hårda villkor, samma som skuggmotorn fick.

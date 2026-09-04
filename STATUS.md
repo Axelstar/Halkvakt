@@ -992,3 +992,10 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   Axel-beslut med rekommendation, radarns roll villkorad av domen 14/9, och INGEN
   spårdjupströskel (#65/#66). Regntröskeln i mm/h avsiktligt osatt — ska falla ur V-A:s
   mätning, inte gissas. Fyra öppna punkter listade för Bengt att fälla; Axel fastställer.
+- **S-2026-09-04kväll (forts 4): tröskeldokumentets värden fällda** (DECISIONS #67).
+  Bengt fällde utkastet oförändrat samma kväll: V-A 70 %/25 % inom 0–10 km, V-B 20 %
+  falsklarm / 40 % miss / max 3 varningar per rutt och regndygn, V-C ≥200 varningar,
+  ≥15 facithändelser, ≥5 regndygn, ≥3 län. Regntröskeln i mm/h och radarns roll medvetet
+  osatta — den första ska falla ur V-A:s mätning, den andra ur radardomen 14/9. Nytt
+  kort under "Axel — beslut att ta": fastställandet + vinterinteraktionen. Ingen kod
+  före Axels ja.
