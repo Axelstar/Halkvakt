@@ -1,0 +1,31 @@
+# Pulsklockan breddad (DECISIONS #26 → #63): FI, DK och regn-30 in på Supabase pg_cron,
+# eftersom GitHub-cronen svälter dem (healthcheck-larm 4/9 + eftermätningen kort #44).
+# Kommandona kopieras från det bevisade ingest-pulsjobbet — GitHub-token passerar
+# aldrig en logg. Kör --inventering först, skarpt efter att formatet bevisats.
+name: pulsklocka
+on:
+  workflow_dispatch:
+    inputs:
+      lage:
+        description: "inventering (läser, maskerat) eller skarp"
+        default: "inventering"
+jobs:
+  pulsklocka:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          if [ "${{ inputs.lage || 'inventering' }}" = "skarp" ]; then
+            node --experimental-strip-types scripts/pulsklocka.ts | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            node --experimental-strip-types scripts/pulsklocka.ts --inventering | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
