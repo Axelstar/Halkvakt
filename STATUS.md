@@ -959,3 +959,10 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   puls-ingest-no 17,47 → 10 jobb i pg_cron. healthcheck #74 HEALTHY: no-arkivet 5 min,
   fi 23, dk 18. Reservation: nederbörd 0/468 — elementvägen (precipitationType/
   millimetresPerHourIntensity) är DATEX-standardens, inte mätt; bevisas första regnvädret.
+- **S-2026-09-04kväll: kort #42 steg 1 förberett** (Bengts "förbered lastkajen recon"):
+  scripts/lastkajen-rekognosering.ts + knapp. Ren läsning mot körschemats fyra frågor
+  (licens, format mot 818-skelettet, färskhet, kontokrav) i två spår: öppna API:et med
+  kandidatobjekttyper (RoadNumber-läxan: felmeddelandet listar ofta vad som finns) och
+  Lastkajens publika ytor (katalog/swagger/licensord). Gissar ingen URL — provar
+  kandidater, rapporterar status + svarskropp, säger vilken som bar frukt. Lokalt
+  0 svar (containerproxyn), vakten fällde korrekt; mätningen sker i CI.

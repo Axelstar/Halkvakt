@@ -1,0 +1,22 @@
+# Lastkajen-rekognoseringen (kort #42 steg 1): licens, format, färskhet och kontokrav
+# för spårdjupsdata — REN LÄSNING, laddar inget, skriver inget. Körs på knapp; svaren
+# på Summary-sidan. Att en kandidat faller är ett svar, inte ett fel.
+name: lastkajen-rekognosering
+on:
+  workflow_dispatch:
+jobs:
+  lastkajen-rekognosering:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/lastkajen-rekognosering.ts | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env: { TRAFIKVERKET_API_KEY: "${{ secrets.TRAFIKVERKET_API_KEY }}" }

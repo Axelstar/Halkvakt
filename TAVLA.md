@@ -449,6 +449,13 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   låst: cirkularitet (stationerna är radarns domare) + okalibrerad skala (kvot 0,39
   på tunt underlag). Faller domen väl ut är detta nästa steg; faller den illa
   omprövas hela triggerfrågan. Beslut: Bengt + Axel.
+  🔨 **STEG 1 FÖRBEREDD 4/9** (Bengts order): scripts/lastkajen-rekognosering.ts +
+  knappen lastkajen-rekognosering — REN LÄSNING som söker svar på körschemats fyra
+  frågor (licens · format mot 818-skelettet · färskhet · kontokrav). Två spår:
+  öppna API:et (kandidatobjekttyper — felmeddelandet är den ärligaste katalogen,
+  RoadNumber-läxan) och Lastkajens egna ytor (katalog/swagger/licenstext). Laddar
+  inget, skriver inget; en fallen kandidat är ett svar, bara total tystnad fäller
+  jobbet. Det som kräver konto är Bengts handgrepp — kortet är hans.
   *(nyckel för röst: Axels ja — rösttext, plats i A-skalan, ordning mot #15/#16)*
 
 ---
