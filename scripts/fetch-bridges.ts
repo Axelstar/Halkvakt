@@ -2,9 +2,12 @@
 // (Overpass) till data/bridges.geojson. Statisk fil i repot: broar flyttar inte. Körs av
 // bridges.yml var 6:e timme tills filen finns, sedan en gång i månaden. Provar tre speglar.
 // Licens: ODbL — "© OpenStreetMap-bidragsgivare" måste anges där broarna syns.
-import { writeFileSync, existsSync, statSync } from "node:fs";
+import { writeFileSync, existsSync, statSync, mkdirSync } from "node:fs";
 
 const OUT = new URL("../data/bridges.geojson", import.meta.url);
+// data/ finns inte i ett färskt checkout (git spårar inte tomma kataloger) — utan denna
+// rad kraschade skrivningen på ENOENT i varje körning så fort Overpass väl svarade (4/9).
+mkdirSync(new URL("../data/", import.meta.url), { recursive: true });
 const MAX_AGE_DAYS = 30;
 if (existsSync(OUT) && (Date.now() - statSync(OUT).mtimeMs) / 86400e3 < MAX_AGE_DAYS && !process.argv.includes("--force")) {
   console.log("bridges.geojson är färsk — hoppar över"); process.exit(0);
