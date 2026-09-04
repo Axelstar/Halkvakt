@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-04 kväll av Claude (webben) — grind V-A byggd (kort #42 steg 3): regntröskeln faller ur mätningen, självtest grönt*
+*Uppdaterad: 2026-09-04 kväll av Claude (webben) — grind V-A körd skarpt: FALLER mot kraven, men grannarna vet ATT det regnar (88–94 %) och inte HUR MYCKET; beslutsläge till Bengt + Axel (DECISIONS #69)*
 
 ---
 
@@ -503,6 +503,21 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   lägsta som klarar 70 %/25 % i bandet 0–10 km är svaret. Binomialbrus per andel (V-C3),
   domspärr < 200 fall, underlagsvakt. Självtest med känd sanning grönt: identiskt regn
   ⇒ 100 % träff / 0 % falsklarm, oberoende regn ⇒ 34 % / 66 %.
+  ⚖️ **SKARP KÖRNING 4/9 — V-A FALLER, men läs kolumnerna (DECISIONS #69):** n=1 141 fall
+  i 0–10 km, alltså riktig dom och inte "för tunt". FALSKLARMEN KLARAR V-A2 med marginal
+  överallt (12/10/8/7/4 % för 0,5/1/2/4/6 mm/h). Det är TRÄFFEN som fäller: 61 % som bäst
+  mot kravet 70 %. DELVIS-andelen är stor och växande (27→71 %): det regnade hos
+  målstationen, men svagare än tröskeln. Träff+delvis = 88–94 %.
+  ⇒ **Grannarna vet ATT det regnar, inte HUR MYCKET.** Intensitetströskeln bär inte —
+  regnpåståendet gör det.
+  🔑 **BESLUTSLÄGE (Bengt + Axel):** (a) dokumenterat nej, kortet stängs, regnarkivet
+  behålls; (b) §5-ändring som omformulerar V-A1 mot "regnar det alls" + låter farten och
+  platsfaktorn bära risken — kräver BÅDAS signaturer och en motivering som INTE lutar sig
+  mot det här utfallet; (c) vänta på radardomen 14/9, som kan ge intensiteten mellan
+  stationerna. Claude ändrar ingenting själv — att flytta målstolparna när siffrorna
+  kommit är precis vad §5 förbjuder.
+  ⚠️ Reservation: rain_sum_mm startade 2/9, så "30 dygn" är tre dygns septemberregn.
+  Knappen går måndagar 07:20 och kurvan växer med höstregnen.
   *(nyckel för röst: Axels ja — rösttext, plats i A-skalan, ordning mot #15/#16)*
 
 ---
