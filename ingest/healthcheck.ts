@@ -29,6 +29,31 @@ try {
       if (j.status === 'failed') problems.push(`livemotorns senaste cron-körning FAILED @ ${j.end_time}`);
     }
   } catch { console.log('livemotor cron: (job_run_details ej läsbar — hoppar pulsen)'); }
+  // FI/DK-stalehet (kort #48): grannländernas skuggarkiv vaktades INTE — bara svenska
+  // sync_state lästes. Nu: schema-existens-vaktat (CI:s PostGIS saknar fi/dk, 003-läxan).
+  for (const land of ["fi", "dk"]) {
+    try {
+      const st = await pool.query(`SELECT synced_at, (now() - synced_at) AS age FROM ${land}.sync_state ORDER BY synced_at DESC LIMIT 1`);
+      if (st.rows.length) {
+        const ageMin = (Date.now() - new Date(st.rows[0].synced_at).getTime()) / 60000;
+        console.log(`${land}-arkivet: synkat för ${ageMin.toFixed(0)} min sedan (limit 120)`);
+        if (ageMin > 120) problems.push(`${land}-arkivet stale: ${ageMin.toFixed(0)} min — ingest-${land} står stilla?`);
+      }
+    } catch { console.log(`${land}-arkivet: (schema saknas — hoppar)`); }
+  }
+  // Fältgolv (kort #48): nya fältfamiljer får inte dö tyst. Exists-vaktade — larmar bara
+  // om arkivet NÅGONSIN sett fältet (annars "ofödd"-falsklarm, kamerafilsvakt-läxan).
+  try {
+    const falt = await pool.query(`SELECT
+      (SELECT count(*) FROM weather_latest WHERE wind_speed_ms IS NOT NULL) AS vind_nu,
+      (SELECT EXISTS (SELECT 1 FROM weather_observations WHERE wind_speed_ms IS NOT NULL)) AS vind_fott,
+      (SELECT count(*) FROM weather_latest WHERE visibility_m IS NOT NULL) AS sikt_nu,
+      (SELECT EXISTS (SELECT 1 FROM weather_observations WHERE visibility_m IS NOT NULL)) AS sikt_fott`);
+    const ff = falt.rows[0];
+    console.log(`fältgolv: vind ${ff.vind_nu} st (född: ${ff.vind_fott}), sikt ${ff.sikt_nu} st (född: ${ff.sikt_fott})`);
+    if (ff.vind_fott && Number(ff.vind_nu) < 100) problems.push(`vindfältet dött: ${ff.vind_nu} stationer (<100) trots tidigare skörd`);
+    if (ff.sikt_fott && Number(ff.sikt_nu) < 30) problems.push(`siktfältet dött: ${ff.sikt_nu} stationer (<30) trots tidigare skörd`);
+  } catch { console.log("fältgolv: kolumnerna inte födda än (011 väntar på första ingesten) — hoppar"); }
   const counts = await pool.query(`SELECT
     (SELECT count(*) FROM cameras WHERE NOT deleted) AS cameras,
     (SELECT count(*) FROM road_conditions WHERE NOT deleted) AS segments,

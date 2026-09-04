@@ -34,6 +34,8 @@ const coldStations = weather.items.filter(w => w.surfaceTempC !== null && w.surf
 const activeConditions = conditions.items.filter(c => !c.deleted && c.conditionText !== "Normalt");
 console.log(`Fetched in ${Date.now() - t0} ms`);
 console.log(`weather stations:     ${weather.items.length} (surface<=5C: ${coldStations.length})`);
+// Kort #48: förstapubliceringsbevis för vind/sikt — nya fält bevisas med egen loggrad.
+console.log(`  vind: ${weather.items.filter(w => w.windSpeedMs !== null).length} st, byvind: ${weather.items.filter(w => w.windGustMs !== null).length}, sikt: ${weather.items.filter(w => w.visibilityM !== null).length} st`);
 console.log(`road condition segs:  ${conditions.items.length} (non-normal active: ${activeConditions.length})`);
 console.log(`speed cameras:        ${cameras.items.filter(c => !c.deleted).length}`);
 console.log(`live deviations kept: ${deviations.items.filter(d => !d.deleted).length}`);

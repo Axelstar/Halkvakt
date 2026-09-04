@@ -18,15 +18,17 @@ function write(name: string, obj: unknown): number {
 }
 
 const vaglag = await pool.query(`
-  SELECT segment_id, condition_code, condition_text, condition_info, road_number, modified_time, county_nos[1] AS lan,
+  SELECT segment_id, condition_code, condition_text, condition_info, road_number, location_text, modified_time, county_nos[1] AS lan,
          ST_AsGeoJSON(ST_SimplifyPreserveTopology(geom, 0.001))::json AS g
   FROM road_conditions WHERE NOT deleted AND geom IS NOT NULL`);
 const vaglagSize = write("vaglag.geojson", fc(vaglag.rows.map(r => ({
   type: "Feature", geometry: r.g,
   // segment_id (issue #4): makes the map repo's half-hour commits a free time series
   // for segment-stability measurement ahead of the March verdict. CC0, TRV's own id.
+  // plats = LocationText (kort #48): fylls i takt med omklassningar, full först vintern.
   properties: { segment_id: r.segment_id, code: r.condition_code, text: r.condition_text,
-                info: r.condition_info, road: r.road_number, updated: r.modified_time, lan: r.lan } }))));
+                info: r.condition_info, road: r.road_number, plats: r.location_text,
+                updated: r.modified_time, lan: r.lan } }))));
 
 // Sverige (Trafikverket, CC0) + Finland (Fintraffic, CC BY 4.0 — attribution på kartsidan). #34/#44.
 const vader = await pool.query(`

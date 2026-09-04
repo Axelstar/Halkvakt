@@ -19,6 +19,11 @@ export interface WeatherObs {
   snow: boolean;
   rainSumMm: number | null;     // Aggregated30minutes (mm/30 min) — matches ingest cadence
   snowWateqMm: number | null;   // Aggregated30minutes SnowSum.WaterEquivalent (mm/30 min)
+  // Kort #48 (GOLVET.md bygge 1): fanns i källan, låg på golvet — verifierade fältvägar.
+  windSpeedMs: number | null;   // Observation.Wind[0].Speed (m/s)
+  windGustMs: number | null;    // Aggregated30minutes.Wind.SpeedMax — byvinden fäller höga fordon
+  windDirDeg: number | null;    // Observation.Wind[0].Direction
+  visibilityM: number | null;   // Observation.Air.VisibleDistance — dimma/sikt (hål C)
   modifiedTime: string;
 }
 
@@ -50,6 +55,10 @@ export async function fetchWeather(apiKey: string, changeid = "0"): Promise<TvRe
       snow: Boolean(agg?.Snow),
       rainSumMm: typeof agg30?.RainSum?.Value === "number" ? agg30.RainSum.Value : null,
       snowWateqMm: typeof agg30?.SnowSum?.WaterEquivalent?.Value === "number" ? agg30.SnowSum.WaterEquivalent.Value : null,
+      windSpeedMs: o?.Wind?.[0]?.Speed?.Value ?? null,
+      windGustMs: o?.Aggregated30minutes?.Wind?.SpeedMax?.Value ?? null,
+      windDirDeg: o?.Wind?.[0]?.Direction?.Value ?? null,
+      visibilityM: o?.Air?.VisibleDistance?.Value ?? null,
       modifiedTime: w.ModifiedTime,
     });
   }

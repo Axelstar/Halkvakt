@@ -47,6 +47,7 @@ export async function writeAll(data: {
     await client.query(readFileSync(new URL("../sql/001_init.sql", import.meta.url), "utf8"));
     await client.query(readFileSync(new URL("../sql/003_situation_archive.sql", import.meta.url), "utf8"));
     await client.query(readFileSync(new URL("../sql/008_rain_sum.sql", import.meta.url), "utf8"));
+    await client.query(readFileSync(new URL("../sql/011_vind_sikt.sql", import.meta.url), "utf8"));
 
     // Weather archive policy needs last stored temp per station — ONE query, not N.
     const lastTemps = new Map<string, number | null>();
@@ -76,22 +77,23 @@ export async function writeAll(data: {
     for (const c of chunks(data.conditions.items)) {
       const args = [col(c, x => x.segmentId), col(c, x => x.conditionCode), col(c, x => x.conditionText),
         col(c, x => JSON.stringify(x.conditionInfo)), col(c, x => JSON.stringify(x.countyNos)),
-        col(c, x => x.roadNumber), col(c, x => x.wgs84Line), col(c, x => x.startTime),
+        col(c, x => x.roadNumber), col(c, x => x.locationText), col(c, x => x.wgs84Line), col(c, x => x.startTime),
         col(c, x => x.endTime), col(c, x => x.modifiedTime), col(c, x => x.deleted)];
       await client.query(
         `INSERT INTO road_conditions (segment_id, condition_code, condition_text, condition_info,
-           county_nos, road_number, geom, start_time, end_time, modified_time, deleted)
+           county_nos, road_number, location_text, geom, start_time, end_time, modified_time, deleted)
          SELECT u.segment_id, u.condition_code, u.condition_text,
                 ARRAY(SELECT jsonb_array_elements_text(u.condition_info::jsonb)),
                 ARRAY(SELECT (jsonb_array_elements_text(u.county_nos::jsonb))::int),
-                u.road_number, ST_GeomFromText(u.wkt, 4326), u.start_time, u.end_time, u.modified_time, u.deleted
-         FROM UNNEST($1::text[],$2::int[],$3::text[],$4::text[],$5::text[],$6::text[],$7::text[],
-                     $8::timestamptz[],$9::timestamptz[],$10::timestamptz[],$11::bool[])
+                u.road_number, u.location_text, ST_GeomFromText(u.wkt, 4326), u.start_time, u.end_time, u.modified_time, u.deleted
+         FROM UNNEST($1::text[],$2::int[],$3::text[],$4::text[],$5::text[],$6::text[],$7::text[],$8::text[],
+                     $9::timestamptz[],$10::timestamptz[],$11::timestamptz[],$12::bool[])
               AS u(segment_id, condition_code, condition_text, condition_info, county_nos, road_number,
-                   wkt, start_time, end_time, modified_time, deleted)
+                   location_text, wkt, start_time, end_time, modified_time, deleted)
          ON CONFLICT (segment_id) DO UPDATE SET condition_code=EXCLUDED.condition_code,
            condition_text=EXCLUDED.condition_text, condition_info=EXCLUDED.condition_info,
            county_nos=EXCLUDED.county_nos, road_number=EXCLUDED.road_number,
+           location_text=COALESCE(EXCLUDED.location_text, road_conditions.location_text),
            geom=COALESCE(EXCLUDED.geom, road_conditions.geom),
            start_time=EXCLUDED.start_time, end_time=EXCLUDED.end_time,
            modified_time=EXCLUDED.modified_time, deleted=EXCLUDED.deleted`, args);
@@ -102,44 +104,55 @@ export async function writeAll(data: {
          FROM UNNEST($1::text[],$2::int[],$3::text[],$4::text[],$5::timestamptz[],$6::bool[])
               AS u(segment_id, condition_code, condition_text, condition_info, modified_time, deleted)
          ON CONFLICT (segment_id, modified_time) DO NOTHING`,
-        [args[0], args[1], args[2], args[3], args[9], args[10]]);
+        // OBS: location_text sköts in på index 6 (kort #48) — modified_time/deleted är nu 10/11.
+        [args[0], args[1], args[2], args[3], args[10], args[11]]);
       counts.road_conditions += c.length;
       counts.history += c.length;
     }
 
     for (const c of chunks(data.weather.items)) {
       await client.query(
-        `INSERT INTO weather_latest (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, precipitation, rain, snow)
+        `INSERT INTO weather_latest (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, precipitation, rain, snow,
+           wind_speed_ms, wind_gust_ms, wind_dir_deg, visibility_m)
          SELECT u.station_id, u.name, ST_SetSRID(ST_MakePoint(u.lon, u.lat), 4326), u.sample_time,
-                u.surface_temp_c, u.air_temp_c, u.precipitation, u.rain, u.snow
-         FROM UNNEST($1::text[],$2::text[],$3::float8[],$4::float8[],$5::timestamptz[],$6::numeric[],$7::numeric[],$8::text[],$9::bool[],$10::bool[])
-              AS u(station_id, name, lon, lat, sample_time, surface_temp_c, air_temp_c, precipitation, rain, snow)
+                u.surface_temp_c, u.air_temp_c, u.precipitation, u.rain, u.snow,
+                u.wind_speed_ms, u.wind_gust_ms, u.wind_dir_deg, u.visibility_m
+         FROM UNNEST($1::text[],$2::text[],$3::float8[],$4::float8[],$5::timestamptz[],$6::numeric[],$7::numeric[],$8::text[],$9::bool[],$10::bool[],
+                     $11::numeric[],$12::numeric[],$13::numeric[],$14::numeric[])
+              AS u(station_id, name, lon, lat, sample_time, surface_temp_c, air_temp_c, precipitation, rain, snow,
+                   wind_speed_ms, wind_gust_ms, wind_dir_deg, visibility_m)
          ON CONFLICT (station_id) DO UPDATE SET name=EXCLUDED.name, geom=EXCLUDED.geom,
            sample_time=EXCLUDED.sample_time, surface_temp_c=EXCLUDED.surface_temp_c,
            air_temp_c=EXCLUDED.air_temp_c, precipitation=EXCLUDED.precipitation,
-           rain=EXCLUDED.rain, snow=EXCLUDED.snow`,
+           rain=EXCLUDED.rain, snow=EXCLUDED.snow,
+           wind_speed_ms=EXCLUDED.wind_speed_ms, wind_gust_ms=EXCLUDED.wind_gust_ms,
+           wind_dir_deg=EXCLUDED.wind_dir_deg, visibility_m=EXCLUDED.visibility_m`,
         [col(c, x => x.stationId), col(c, x => x.name), col(c, x => x.lon), col(c, x => x.lat),
          col(c, x => x.sampleTime), col(c, x => x.surfaceTempC), col(c, x => x.airTempC),
-         col(c, x => x.precipitation), col(c, x => x.rain), col(c, x => x.snow)]);
+         col(c, x => x.precipitation), col(c, x => x.rain), col(c, x => x.snow),
+         col(c, x => x.windSpeedMs), col(c, x => x.windGustMs), col(c, x => x.windDirDeg), col(c, x => x.visibilityM)]);
     }
 
     for (const c of chunks(keepWeather)) {
       await client.query(
         `INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c,
-           air_temp_c, dewpoint_c, humidity_pct, precipitation, rain, snow, rain_sum_mm, snow_wateq_mm)
+           air_temp_c, dewpoint_c, humidity_pct, precipitation, rain, snow, rain_sum_mm, snow_wateq_mm,
+           wind_speed_ms, wind_gust_ms, wind_dir_deg, visibility_m)
          SELECT u.station_id, u.name, ST_SetSRID(ST_MakePoint(u.lon, u.lat), 4326), u.sample_time,
                 u.surface_temp_c, u.air_temp_c, u.dewpoint_c, u.humidity_pct, u.precipitation, u.rain, u.snow,
-                u.rain_sum_mm, u.snow_wateq_mm
+                u.rain_sum_mm, u.snow_wateq_mm, u.wind_speed_ms, u.wind_gust_ms, u.wind_dir_deg, u.visibility_m
          FROM UNNEST($1::text[],$2::text[],$3::float8[],$4::float8[],$5::timestamptz[],$6::numeric[],
                      $7::numeric[],$8::numeric[],$9::numeric[],$10::text[],$11::bool[],$12::bool[],
-                     $13::numeric[],$14::numeric[])
+                     $13::numeric[],$14::numeric[],$15::numeric[],$16::numeric[],$17::numeric[],$18::numeric[])
               AS u(station_id, name, lon, lat, sample_time, surface_temp_c, air_temp_c, dewpoint_c,
-                   humidity_pct, precipitation, rain, snow, rain_sum_mm, snow_wateq_mm)
+                   humidity_pct, precipitation, rain, snow, rain_sum_mm, snow_wateq_mm,
+                   wind_speed_ms, wind_gust_ms, wind_dir_deg, visibility_m)
          ON CONFLICT (station_id, sample_time) DO NOTHING`,
         [col(c, x => x.stationId), col(c, x => x.name), col(c, x => x.lon), col(c, x => x.lat),
          col(c, x => x.sampleTime), col(c, x => x.surfaceTempC), col(c, x => x.airTempC),
          col(c, x => x.dewpointC), col(c, x => x.humidityPct), col(c, x => x.precipitation),
-         col(c, x => x.rain), col(c, x => x.snow), col(c, x => x.rainSumMm), col(c, x => x.snowWateqMm)]);
+         col(c, x => x.rain), col(c, x => x.snow), col(c, x => x.rainSumMm), col(c, x => x.snowWateqMm),
+         col(c, x => x.windSpeedMs), col(c, x => x.windGustMs), col(c, x => x.windDirDeg), col(c, x => x.visibilityM)]);
       counts.weather += c.length;
     }
 

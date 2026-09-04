@@ -8,6 +8,7 @@ export interface RoadConditionSeg {
   conditionInfo: string[];     // ["Våt"], ["Is och snö"], ...
   countyNos: number[];
   roadNumber: string | null;
+  locationText: string | null; // "E 4 Sundsvall Trafikplats Skönsmon - Gnarp" (kort #48 — röstens VAR-kandidat)
   wgs84Line: string | null;    // raw WKT LINESTRING, parsed by PostGIS
   startTime: string | null;
   endTime: string | null;
@@ -29,6 +30,7 @@ export async function fetchRoadConditions(apiKey: string, changeid = "0"): Promi
     conditionInfo: r.ConditionInfo ?? [],
     countyNos: r.CountyNo ?? [],
     roadNumber: r.RoadNumber ?? null,
+    locationText: r.LocationText ?? null,
     wgs84Line: r?.Geometry?.WGS84 ?? null,
     startTime: r.StartTime ?? null,
     endTime: r.EndTime ?? null,

@@ -26,6 +26,8 @@ const client = await pool.connect();
 try {
   // Auto-migrering (sql/010): latest-tabellen saknade dewpoint_c — körning #24 föll på 42703.
   await client.query(readFileSync(new URL("../sql/010_fi_dewpoint_latest.sql", import.meta.url), "utf8"));
+  // Auto-migrering (sql/012, kort #48): FI-breddningen — frostpunkt, fryspunkt, salt, vind, sikt, form, ytstatus.
+  await client.query(readFileSync(new URL("../sql/012_fi_falt.sql", import.meta.url), "utf8"));
   const stations = await get<any>("/weather/v1/stations");
   const meta = new Map<number, { name: string; lon: number; lat: number }>();
   for (const f of stations.features) {
@@ -38,7 +40,7 @@ try {
                                  FROM fi.weather_observations ORDER BY station_id, sample_time DESC`);
   for (const r of lt.rows) lastTemps.set(r.station_id, r.surface_temp_c === null ? null : Number(r.surface_temp_c));
 
-  let latest = 0, archived = 0, dagg = 0;
+  let latest = 0, archived = 0, dagg = 0, frostN = 0, siktN = 0, vindN = 0;
   await client.query("BEGIN");
   for (const st of data.stations) {
     const m = meta.get(st.id); if (!m) continue;
@@ -54,6 +56,16 @@ try {
     // rimfrost-analysen äkta nätter veckor före Sverige. Verifierat live: 505/528 stationer.
     const dewpoint = s.get("KASTEPISTE")?.value ?? null;
     if (dewpoint !== null) dagg++;
+    // FI-breddningen (kort #48, GOLVET.md): nio sensorer som låg på golvet — frostpunkten
+    // FÄRDIGRÄKNAD (rimfrost #46), saltjusterad fryspunkt, saltmängd, vind, sikt,
+    // nederbördens form (facit för #45), ytstatus. Triggar inte lagring (policy #4 orörd).
+    const g = (n: string) => s.get(n)?.value ?? null;
+    const brett = { frost: g("KUURAPISTE"), fryspkt: g("JÄÄTYMISPISTE_1"), salt: g("SUOLAN_MÄÄRÄ_1"),
+      vind: g("KESKITUULI"), byvind: g("MAKSIMITUULI"), vindr: g("TUULENSUUNTA"),
+      sikt: g("NÄKYVYYS_M"), form: g("SATEEN_OLOMUOTO_PWDXX"), ytstatus: g("TIENPINNAN_TILA_1") };
+    if (brett.frost !== null) frostN++;
+    if (brett.sikt !== null) siktN++;
+    if (brett.vind !== null) vindN++;
     const keli = s.get("KELI_1")?.sensorValueDescriptionEn ?? null;   // Dry/Moist/Wet/Snow/Ice/Frost/...
     const sade = s.get("SADE")?.value ?? 0;
     const wintry = keli != null && /snow|ice|frost|slush/i.test(keli);
@@ -63,11 +75,16 @@ try {
     const t = st.dataUpdatedTime ?? data.dataUpdatedTime;
 
     await client.query(
-      `INSERT INTO fi.weather_latest (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, dewpoint_c, precipitation, rain, snow)
-       VALUES ($1,$2,ST_SetSRID(ST_MakePoint($3,$4),4326),$5,$6,$7,$8,$9,$10,$11)
+      `INSERT INTO fi.weather_latest (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, dewpoint_c, precipitation, rain, snow,
+         frost_point_c, freeze_point_c, salt_gm2, wind_speed_ms, wind_gust_ms, wind_dir_deg, visibility_m, precip_form, surface_state)
+       VALUES ($1,$2,ST_SetSRID(ST_MakePoint($3,$4),4326),$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20)
        ON CONFLICT (station_id) DO UPDATE SET sample_time=EXCLUDED.sample_time, surface_temp_c=EXCLUDED.surface_temp_c,
-         air_temp_c=EXCLUDED.air_temp_c, dewpoint_c=EXCLUDED.dewpoint_c, precipitation=EXCLUDED.precipitation, rain=EXCLUDED.rain, snow=EXCLUDED.snow`,
-      [id, m.name, m.lon, m.lat, t, surface, air, dewpoint, keli, rain, snow]);
+         air_temp_c=EXCLUDED.air_temp_c, dewpoint_c=EXCLUDED.dewpoint_c, precipitation=EXCLUDED.precipitation, rain=EXCLUDED.rain, snow=EXCLUDED.snow,
+         frost_point_c=EXCLUDED.frost_point_c, freeze_point_c=EXCLUDED.freeze_point_c, salt_gm2=EXCLUDED.salt_gm2,
+         wind_speed_ms=EXCLUDED.wind_speed_ms, wind_gust_ms=EXCLUDED.wind_gust_ms, wind_dir_deg=EXCLUDED.wind_dir_deg,
+         visibility_m=EXCLUDED.visibility_m, precip_form=EXCLUDED.precip_form, surface_state=EXCLUDED.surface_state`,
+      [id, m.name, m.lon, m.lat, t, surface, air, dewpoint, keli, rain, snow,
+       brett.frost, brett.fryspkt, brett.salt, brett.vind, brett.byvind, brett.vindr, brett.sikt, brett.form, brett.ytstatus]);
     latest++;
 
     const last = lastTemps.has(id) ? lastTemps.get(id)! : null;
@@ -75,9 +92,11 @@ try {
       (surface !== null && last !== null && Math.abs(surface - last) >= 0.5) || !lastTemps.has(id);
     if (interesting) {
       await client.query(
-        `INSERT INTO fi.weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, dewpoint_c, precipitation, rain, snow)
-         VALUES ($1,$2,ST_SetSRID(ST_MakePoint($3,$4),4326),$5,$6,$7,$8,$9,$10,$11) ON CONFLICT DO NOTHING`,
-        [id, m.name, m.lon, m.lat, t, surface, air, dewpoint, keli, rain, snow]);
+        `INSERT INTO fi.weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, dewpoint_c, precipitation, rain, snow,
+           frost_point_c, freeze_point_c, salt_gm2, wind_speed_ms, wind_gust_ms, wind_dir_deg, visibility_m, precip_form, surface_state)
+         VALUES ($1,$2,ST_SetSRID(ST_MakePoint($3,$4),4326),$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20) ON CONFLICT DO NOTHING`,
+        [id, m.name, m.lon, m.lat, t, surface, air, dewpoint, keli, rain, snow,
+         brett.frost, brett.fryspkt, brett.salt, brett.vind, brett.byvind, brett.vindr, brett.sikt, brett.form, brett.ytstatus]);
       archived++;
     }
   }
@@ -112,7 +131,7 @@ try {
   await client.query(`INSERT INTO fi.sync_state (source, last_change_id, synced_at) VALUES ('fintraffic','',now())
                       ON CONFLICT (source) DO UPDATE SET synced_at=now()`);
   await client.query("COMMIT");
-  console.log(`fi: latest ${latest}, archived ${archived}, deviations ${devs}, daggpunkt ${dagg} st (KASTEPISTE — första publiceringen bevisas här)`);
+  console.log(`fi: latest ${latest}, archived ${archived}, deviations ${devs}, daggpunkt ${dagg} st, frostpunkt ${frostN} st, sikt ${siktN} st, vind ${vindN} st (kort #48 — första publiceringen bevisas här)`);
 } catch (e) {
   await client.query("ROLLBACK").catch(() => {});
   throw e;
