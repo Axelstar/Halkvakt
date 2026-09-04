@@ -3,8 +3,13 @@
     ingest/no.ts som rekognoserar XML:et första gången, ingest-no.yml (hoppar över tills
     VEGVESEN_USER/PASS finns), 20 norska rutter i skuggmotorn (E6 i sju etapper Oslo–
     Kirkenes, E18, E39 kusten, E16/Rv7/E134 över fjället, E10 Lofoten, E8 mot Kilpisjärvi,
-    E14 mot Storlien), Norge-knapp på testbilarna. KVAR NÄR KONTOT KOMMER: parsern mot
-    riktigt XML, build-snapshot-no.ts, cron. Risk: formuläret krävde "fast IP" — vi svarade
+    E14 mot Storlien), Norge-knapp på testbilarna. ✅ KONTOT KOM 4/9 OCH ARKIVET TICKAR
+    (DECISIONS #64): parsern skriven mot mätt XML (sources/vegvesen.ts), ingest-no #29
+    468 stationer, puls-ingest-no 17,47 i pg_cron, healthcheckvakt. KVAR (egna kort):
+    build-snapshot-no.ts (gränssnapshoten, jfr #49 för FI), olyckor → no.deviations
+    (GetSituation är 30 MB och nästan bara MaintenanceWorks — filtrera hårt), nederbördens
+    elementväg bevisas första regnvädret. Ursprungligt KVAR: parsern mot riktigt XML,
+    build-snapshot-no.ts, cron. Risk: formuläret krävde "fast IP" — vi svarade
     ärligt att vi saknar en; om Vegvesen kräver IP-låsning behövs en proxy med fast adress
     (kostar, Axels beslut per gratisregeln).
 34. **Finskt skuggarkiv före produkten** (Axel 31/8: "vi bör täcka Skandinavien snart"):

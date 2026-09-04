@@ -934,5 +934,18 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
 - **S-2026-09-04em: Norge REKOGNOSERAD** (ingest-no #28, efter 406-fixen — Accept */*):
   stationstabell 1,9 MB, mätdata 1,4 MB med 936 siteMeasurements varav 848 bär
   roadSurfaceTemperature (det Frost inte kunde ge), GetSituation 30 MB / 15 414 poster
-  (gravstensläxan gäller vid inläsning). Parsern skrivs i eget varv mot mätt struktur
-  (tabell + mätdata kopplade via measurementSiteReference).
+  (gravstensläxan gäller vid inläsning). Parsern skrevs av terminalsessionen samma
+  eftermiddag mot exakt den strukturen — se nästa post.
+- **S-2026-09-04 15:24: 🇳🇴 NORGE TICKAR (Bengt: "har du skrivit parsern?", DECISIONS #64):**
+  parsern (ingest/sources/vegvesen.ts, regex utan beroenden, prefix-agnostisk) skriven mot
+  rekognoseringen i ingest-no #28 (Accept */*; 468 siteMeasurements, 848 roadSurface-
+  Temperature-element). Test mot fixtur (3 nya, 44/0 lokalt). Position låg utanför
+  rekognoseringens fönster ⇒ strukturvakt (skriver inget + dumpar första stationen om
+  koordinater/matchningar saknas). ingest-no #29 (dec1a05): 468 stationer (468 med
+  koordinater), vägyta 422, luft 427, daggpunkt 425, fukt 436, nederbörd 0, mättid 468;
+  latest 468, archived 468 (första observationen, policy #4). 013 la dewpoint_c +
+  humidity_pct på no.weather_latest (samma fälla som fi/010). GetSituation hämtas inte
+  längre (30 MB, 15 414 poster, nästan allt MaintenanceWorks). pulsklocka #3 skarp:
+  puls-ingest-no 17,47 → 10 jobb i pg_cron. healthcheck #74 HEALTHY: no-arkivet 5 min,
+  fi 23, dk 18. Reservation: nederbörd 0/468 — elementvägen (precipitationType/
+  millimetresPerHourIntensity) är DATEX-standardens, inte mätt; bevisas första regnvädret.
