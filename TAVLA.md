@@ -258,6 +258,31 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   ingests :11), samma parser/INSERT, bara nederbördsrader, idempotent. 🔨 EFTERMÄTNING
   KRÄVS (rotationsläxan): kortet stängs först när regn-tackning efter ~ett dygns drift
   visar 2/2-andelen stiga; skriptets täthetspuls (3 h) följer siffran varje körning.
+- [ ] 🌨️ **#45 Nederbördstypen — regn, snö eller slask?** (Bengts fråga 3/9: "hur mäter
+  vi snö, snöslask etc som är lika riskabla?") 🔒 LÅST BAKOM RADARDOMEN 14/9.
+  **Läget när kortet skrevs:** snö och slask PÅ vägen talas redan — men bara indirekt:
+  (a) VViS-stationernas snow-flagga räknas som fukt i frysriskmotorn ("frysrisk framöver"),
+  (b) väglagets operatörsklasser ("Snöigt", "Is och snö", "Slask") blir slippery_segment
+  och rösten säger "halt väglag". Hålet är eftersläpningen (operatören måste hinna klassa)
+  och att radarn — som ser nederbörd i realtid MELLAN stationerna — inte vet SORTEN.
+  **Metoden (det som ska mätas, inte gissas):** sorten avgörs av temperaturen nederbörden
+  faller genom. Standard: VÅTBULBSTEMPERATUR (luft + fuktighet, båda finns per station):
+  ≳ +1,5 °C regn · ≲ 0 °C snö · DÄREMELLAN SLASK — farligaste zonen, vattenplaning och
+  blivande is samtidigt. Klassningen = våtbulb per segment (offsetmodell + höjdkorrektion,
+  höjden flyttar snögränsen — ankarbreddningens lapse 0,71°/100 m) × radarintensitet
+  (radar_precip, redan per segment var 5:e min). ALLA ingredienser ligger redan i arkivet
+  — detta är en beräkning, ingen ny källa.
+  **Facit finns gratis:** SMHI:s stationer rapporterar observerad nederbördstyp, och
+  väglagets operatörsklasser är andra domaren. Klassningen körs i skugga och döms mot
+  båda innan något får synas — tröskeldokumentets princip, samma som allt annat.
+  **Varför låst till 14/9:** typklassning ovanpå en radarkälla som inte bestått sitt
+  eget kedjebevis vore våning två före grunden. Klarar radarn domen: bygg klassningen
+  som skuggkolumn i radarspåret (litet steg). Faller radarn: kortet omprövas — våtbulben
+   enbart kan fortfarande klassa nederbörd SOM STATIONERNA ser, men inte mellan dem.
+  **Rösten är ett SEPARAT beslut (Axels kolumn, som #32):** om "snöfall framöver" eller
+  "slask på vägen" blir egna rösthändelser avgör Axel; tystnadsdisciplinen gäller —
+  ett slask-larm som har fel är värre än inget. Prognos av KOMMANDE snöfall är #16,
+  fortsatt medvetet parkerat. *(Bengt + Claude, terminalen 3–4/9)*
 - [ ] **#32 Hindren in i rösten** — vi har aldrig skeppat annat än olyckor trots att
   DECISIONS #5 sade "olyckor + hinder". Kräver ny HazardKind + egen röstfras + Axels
   beslut om vad rösten säger. Bäst kandidat: **djur på vägbanan** (173 på en vecka, med
