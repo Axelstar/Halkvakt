@@ -258,6 +258,14 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   ingests :11), samma parser/INSERT, bara nederbördsrader, idempotent. 🔨 EFTERMÄTNING
   KRÄVS (rotationsläxan): kortet stängs först när regn-tackning efter ~ett dygns drift
   visar 2/2-andelen stiga; skriptets täthetspuls (3 h) följer siffran varje körning.
+- [ ] 🔨 🧹 **#47 Vad ligger mer på golvet?** (Bengts order 4/9) — PÅGÅR (terminalen):
+  systematisk genomgång av VARJE källas fulla fältlista mot vad vi faktiskt arkiverar.
+  Motiv: samma mönster tre gånger på fyra dygn — svensk daggpunkt (oanvänd i motorn),
+  svensk vind (ohämtad), finsk KASTEPISTE (ohämtad). Källorna bär fält vi tappar på
+  golvet. Metod: levande fältdump per källa (TRV via recon-knapp med nyckeln i CI,
+  Fintraffic/SMHI/Polisen/DMI lokalt), jämförelse mot arkivschemat, dom per fält:
+  GULD PÅ GOLVET / MEDVETET BORTVALT (med källa till beslutet) / IRRELEVANT.
+  Resultat: docs/GOLVET.md. 🔑 Fynden blir kandidatkort — inget hämtas utan beslut.
 - [ ] 🔨 ❄️ **#46 Rimfrosten — svartis utan nederbörd** (Bengts hål A, 4/9) — PÅGÅR:
   ANALYSFAS (Bengt + Claude, terminalen 4/9). Fyndet: motorns fuktvillkor är enbart
   nederbörd, men dewpoint_c ligger oanvänd i varje arkivrad sedan 24/8. Rimfrost
