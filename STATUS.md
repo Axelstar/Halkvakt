@@ -857,3 +857,12 @@ tomma kataloger). mkdir-fix + lokal körning: 2476 broar committade (spegel 1 ga
 spegel 2 levererade). CDN-väktare på static.json armerad (fullkroppsgrep denna gång —
 läxan från segment_id-väktaren som läste 600 tecken). Rimfrost-analysen är enda mätningen
 utan cron — medvetet, Bengts val om den ska in i måndagsserien.
+
+## 2026-09-04 — Kort #47 KLART: golvgenomgången (docs/GOLVET.md)
+Tio källor mot levande fältdumpar — TRV via ny recon-knapp (fulla objekt utan INCLUDE,
+körning 33840067087), Fintraffic/SMHI/Polisen lokalt, DK/NO ur ingest+tidigare recon.
+Fem tunga fynd (sikt överallt, vind överallt, FI:s färdigräknade frostpunkt/fryspunkt/
+nederbördsform, SMHI-moln som klar natt-detektor, metadataguldet SensorNames/PhotoTime/
+LocationText) + två rena golv (fartkameror, Polisen) + en recon-lucka (Situation-dumpens
+datumfilter). Allt som kandidater med föreslagen ordning — inget hämtat utan beslut,
+free tier-vakten (DECISIONS #4) uttryckligen i dokumentet.

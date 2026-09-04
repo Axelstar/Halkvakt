@@ -258,14 +258,17 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   ingests :11), samma parser/INSERT, bara nederbördsrader, idempotent. 🔨 EFTERMÄTNING
   KRÄVS (rotationsläxan): kortet stängs först när regn-tackning efter ~ett dygns drift
   visar 2/2-andelen stiga; skriptets täthetspuls (3 h) följer siffran varje körning.
-- [ ] 🔨 🧹 **#47 Vad ligger mer på golvet?** (Bengts order 4/9) — PÅGÅR (terminalen):
-  systematisk genomgång av VARJE källas fulla fältlista mot vad vi faktiskt arkiverar.
-  Motiv: samma mönster tre gånger på fyra dygn — svensk daggpunkt (oanvänd i motorn),
-  svensk vind (ohämtad), finsk KASTEPISTE (ohämtad). Källorna bär fält vi tappar på
-  golvet. Metod: levande fältdump per källa (TRV via recon-knapp med nyckeln i CI,
-  Fintraffic/SMHI/Polisen/DMI lokalt), jämförelse mot arkivschemat, dom per fält:
-  GULD PÅ GOLVET / MEDVETET BORTVALT (med källa till beslutet) / IRRELEVANT.
-  Resultat: docs/GOLVET.md. 🔑 Fynden blir kandidatkort — inget hämtas utan beslut.
+- [x] ~~🧹 **#47 Vad ligger mer på golvet?**~~ ✅ KLART 4/9 (Bengt + Claude, terminalen):
+  docs/GOLVET.md — tio källor genomgångna mot LEVANDE fältdumpar (TRV-recon körning
+  33840067087 + lokala dumpar). FEM TUNGA FYND: (1) SIKTEN finns i ALLA källor
+  (TRV VisibleDistance!, FI, SMHI 12, DMI) — hål C var ett hämtningshål, inte källhål;
+  (2) VINDEN likaså (TRV Wind[] + byvind SpeedMax); (3) Finland levererar RIMFROSTEN
+  FÄRDIGRÄKNAD (KUURAPISTE, KASTEPISTE_ERO_TIE) + saltjusterad FRYSPUNKT (JÄÄTYMISPISTE)
+  + nederbördens FORM (SATEEN_OLOMUOTO = #45-facit); (4) SMHI:s MOLNMÄNGD = rimfrostens
+  klar natt-detektor; (5) metadata-guld: TRV SensorNames (sensorspecifik givarvakt),
+  Camera PhotoTime (daterat facit), RoadCondition LocationText (röstens VAR).
+  Rent golv: TrafficSafetyCamera, Polisen. Recon-lucka: Situation-dumpens datumfilter.
+  🔑 Fynden är KANDIDATER — föreslagen ordning i GOLVET.md; inget hämtas utan eget kort.
 - [ ] 🔨 ❄️ **#46 Rimfrosten — svartis utan nederbörd** (Bengts hål A, 4/9) — PÅGÅR:
   ANALYSFAS (Bengt + Claude, terminalen 4/9). Fyndet: motorns fuktvillkor är enbart
   nederbörd, men dewpoint_c ligger oanvänd i varje arkivrad sedan 24/8. Rimfrost
