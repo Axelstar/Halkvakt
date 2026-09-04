@@ -1,12 +1,16 @@
-// Norskt skuggarkiv (#35): Statens vegvesen DATEX II 3.1 → schema `no`.
-// KONTOT BEVILJAT 4/9 (Bengt: användarnamn i GitHub Secrets VEGVESEN_USER/PASS —
-// hemligheter passerar aldrig repo eller chatt). Parsern skrivs mot Vegvesens
-// VERKLIGA XML i nästa varv, inte blint mot DATEX-schemat: den här körningen är
-// rekognoseringen som visar sanningen (RoadNumber-läxan).
-// Känt (vegvesen.no, NLOD): basic auth; väderstationer var 10:e min i
-// GetMeasuredWeatherData + stationstabell i GetMeasurementWeatherSiteTable;
-// trafikläge i GetSituation. Pull-snapshots, XML, If-Modified-Since stöds.
+// Norskt skuggarkiv (#35): Statens vegvesen DATEX II 3.1 → schema `no`. Ingen app, ingen
+// röst — bara arkivet, som Finland (fi.ts): stationstabell + mätdata → no.weather_latest
+// (alla stationer) och no.weather_observations (händelsefiltrerat, arkivpolicyn DECISIONS #4).
+// Parsern (sources/vegvesen.ts) är skriven mot rekognoseringen i ingest-no #28 (4/9 14:54):
+// kontot autentiserar, servern vill ha Accept */*, 468 stationsmätningar, 848 vägytetemp-
+// element. GetSituation (30 MB, 15 414 poster — nästan allt MaintenanceWorks) hämtas INTE:
+// olyckor till no.deviations är ett eget kort, inte en bieffekt av väderparsern.
+// Hemligheter: VEGVESEN_USER/PASS i GitHub Secrets — passerar aldrig repo, chatt eller logg.
 // Källa ska anges (NLOD) — User-Agent bär repo-URL, inga personuppgifter.
+import pg from "pg";
+import { readFileSync } from "node:fs";
+import { parseSiteTable, parseMeasuredData, interesting } from "./sources/vegvesen.ts";
+
 const USER = process.env.VEGVESEN_USER, PASS = process.env.VEGVESEN_PASS;
 if (!USER || !PASS) { console.log("no: VEGVESEN_USER/PASS saknas — hoppar över (kontot väntar på Vegvesen)"); process.exit(0); }
 
@@ -14,16 +18,13 @@ const BASE = "https://datex-server-get-v3-1.atlas.vegvesen.no/datexapi";
 const UA = "Halkvakt/0.4 (+https://github.com/Axelstar/Halkvakt)";
 const auth = "Basic " + Buffer.from(`${USER}:${PASS}`).toString("base64");
 
-// 406 vid första skarpa körningen 4/9: kontot autentiserade (inte 401/403) men
-// servern vägrade vårt Accept. Vilket format den vill ha står ingenstans — så gissa
-// inte: prova varianterna, minns den som fungerar och SKRIV UT den. RoadNumber-läxan
-// på innehållsförhandling.
+// Innehållsförhandlingen MÄTT 4/9: application/xml → 406, */* → 200. */* först; resten
+// står kvar som reserv om servern ändrar sig, och den som fungerar skrivs alltid ut.
 const ACCEPT_KANDIDATER = [
-  "application/xml",                                   // det vi provade (406)
-  "*/*",                                               // servern får välja
-  "application/xml, text/xml;q=0.9, */*;q=0.8",        // vanlig webbläsarform
+  "*/*",                                               // bevisad 4/9 (ingest-no #28)
+  "application/xml, text/xml;q=0.9, */*;q=0.8",
   "text/xml",
-  "application/xml;charset=UTF-8",
+  "application/xml",                                   // gav 406 4/9
   null,                                                // ingen Accept-header alls
 ];
 let acceptVald: string | null | undefined;             // sätts av första lyckade svaret
@@ -56,21 +57,61 @@ async function pull(pub: string): Promise<string> {
   throw new Error(`${pub}: ingen Accept-variant godtogs. ${fel.join(" | ")}`);
 }
 
-// Rekognosering: storlek + huvudet av varje publikation, plus en grov räkning av
-// de element parsern kommer att leta efter — så nästa varv byggs på mätt struktur.
-let allaOk = true;
-for (const pub of ["GetMeasurementWeatherSiteTable", "GetMeasuredWeatherData", "GetSituation"]) {
-  try {
-    const xml = await pull(pub);
-    const rakna = (t: string) => (xml.match(new RegExp(`<[^>]*${t}[^>]*>`, "g")) ?? []).length;
-    console.log(`\n=== ${pub}: ${xml.length} tecken ===`);
-    console.log(`element: measurementSiteRecord=${rakna("measurementSiteRecord")} siteMeasurements=${rakna("siteMeasurements")} situationRecord=${rakna("situationRecord")} roadSurfaceTemperature=${rakna("roadSurfaceTemperature")} airTemperature=${rakna("airTemperature")}`);
-    console.log(xml.slice(0, 2000));
-  } catch (e) {
-    allaOk = false;
-    console.error(`REKOGNOSERING FALLERADE: ${String((e as Error).message)}`);
-  }
+const sites = parseSiteTable(await pull("GetMeasurementWeatherSiteTable"));
+const data = parseMeasuredData(await pull("GetMeasuredWeatherData"));
+const meta = new Map(sites.stations.map(s => [s.id, s]));
+const matched = data.items.filter(i => meta.has(i.siteId));
+const n = (f: (i: typeof matched[number]) => unknown) => matched.filter(i => f(i) !== null && f(i) !== false).length;
+console.log(`no: stationstabell ${sites.sitesTotal} stationer (${sites.stations.length} med koordinater), mätdata ${data.items.length} stationsmätningar, ${matched.length} matchade`);
+console.log(`no: vägyta ${n(i => i.surfaceTempC)} st, luft ${n(i => i.airTempC)} st, daggpunkt ${n(i => i.dewpointC)} st, fukt ${n(i => i.humidityPct)} st, nederbörd ${n(i => i.precipitation)} st, mättid ${n(i => i.sampleTime)} st (publicationTime ${data.publicationTime})`);
+
+// STRUKTURVAKT: parsern byggdes delvis utanför rekognoseringens fönster (positionen). Hittar
+// den inga koordinater eller inga matchningar skrivs INGET — och första stationens råa XML
+// hamnar i loggen så nästa varv byggs på mätt struktur, inte på ett tyst tomt arkiv.
+if (sites.stations.length === 0 || matched.length === 0) {
+  console.error(`STRUKTURVAKT: ${sites.stations.length} stationer med koordinater, ${matched.length} matchade — inget skrivet. Första stationen ur tabellen:\n${sites.sample ?? "(ingen measurementSite hittad)"}`);
+  process.exit(1);
 }
-if (!allaOk) { console.error("no: minst en publikation svarade inte — se felkroppen ovan."); process.exit(1); }
-console.log("\nno: rekognosering klar — parsern skrivs mot ovanstående i nästa varv (BACKLOG #35).");
-console.log("OBS: inget skrivet till no.*-schemat än; arkivet börjar ticka när parsern finns.");
+
+const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+const client = await pool.connect();
+try {
+  // Auto-migrering (fi.ts-mönstret): 006 föder schemat om det saknas, 013 daggpunkt + fukt.
+  await client.query(readFileSync(new URL("../sql/006_no_schema.sql", import.meta.url), "utf8"));
+  await client.query(readFileSync(new URL("../sql/013_no_falt.sql", import.meta.url), "utf8"));
+  const lastTemps = new Map<string, number | null>();
+  const lt = await client.query(`SELECT DISTINCT ON (station_id) station_id, surface_temp_c
+                                 FROM no.weather_observations ORDER BY station_id, sample_time DESC`);
+  for (const r of lt.rows) lastTemps.set(r.station_id, r.surface_temp_c === null ? null : Number(r.surface_temp_c));
+
+  let latest = 0, archived = 0;
+  await client.query("BEGIN");
+  for (const o of matched) {
+    const m = meta.get(o.siteId)!;
+    const id = `NO:${o.siteId}`;
+    const t = o.sampleTime ?? new Date().toISOString();
+    const cols = [id, m.name, m.lon, m.lat, t, o.surfaceTempC, o.airTempC, o.dewpointC, o.humidityPct, o.precipitation, o.rain, o.snow];
+    await client.query(
+      `INSERT INTO no.weather_latest (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, dewpoint_c, humidity_pct, precipitation, rain, snow)
+       VALUES ($1,$2,ST_SetSRID(ST_MakePoint($3,$4),4326),$5,$6,$7,$8,$9,$10,$11,$12)
+       ON CONFLICT (station_id) DO UPDATE SET name=EXCLUDED.name, geom=EXCLUDED.geom, sample_time=EXCLUDED.sample_time,
+         surface_temp_c=EXCLUDED.surface_temp_c, air_temp_c=EXCLUDED.air_temp_c, dewpoint_c=EXCLUDED.dewpoint_c,
+         humidity_pct=EXCLUDED.humidity_pct, precipitation=EXCLUDED.precipitation, rain=EXCLUDED.rain, snow=EXCLUDED.snow`, cols);
+    latest++;
+    if (interesting(o, lastTemps.get(id) ?? null, lastTemps.has(id))) {
+      await client.query(
+        `INSERT INTO no.weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, dewpoint_c, humidity_pct, precipitation, rain, snow)
+         VALUES ($1,$2,ST_SetSRID(ST_MakePoint($3,$4),4326),$5,$6,$7,$8,$9,$10,$11,$12) ON CONFLICT DO NOTHING`, cols);
+      archived++;
+    }
+  }
+  await client.query(`INSERT INTO no.sync_state (source, last_change_id, synced_at) VALUES ('vegvesen','',now())
+                      ON CONFLICT (source) DO UPDATE SET synced_at=now()`);
+  await client.query("COMMIT");
+  console.log(`no: latest ${latest}, archived ${archived} (kort #35 — första publiceringen bevisas här)`);
+} catch (e) {
+  await client.query("ROLLBACK").catch(() => {});
+  throw e;
+} finally {
+  client.release(); await pool.end();
+}

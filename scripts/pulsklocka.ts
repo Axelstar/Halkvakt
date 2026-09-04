@@ -16,6 +16,7 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
   { namn: "puls-ingest-fi", schema: "7,37 * * * *", fil: "ingest-fi.yml" },
   { namn: "puls-ingest-dk", schema: "12,42 * * * *", fil: "ingest-dk.yml" },
   { namn: "puls-regn-30", schema: "41 * * * *", fil: "regn-30.yml" },
+  { namn: "puls-ingest-no", schema: "17,47 * * * *", fil: "ingest-no.yml" },   // kort #35, 4/9: no-arkivet tickar
 ];
 const MALLFIL = "ingest.yml";            // svenska ingest-pulsen = bevisat fungerande mall
 const INVENTERING = process.argv.includes("--inventering");

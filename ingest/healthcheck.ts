@@ -31,7 +31,8 @@ try {
   } catch { console.log('livemotor cron: (job_run_details ej läsbar — hoppar pulsen)'); }
   // FI/DK-stalehet (kort #48): grannländernas skuggarkiv vaktades INTE — bara svenska
   // sync_state lästes. Nu: schema-existens-vaktat (CI:s PostGIS saknar fi/dk, 003-läxan).
-  for (const land of ["fi", "dk"]) {
+  // no (kort #35, 4/9): samma vakt — tyst tills no.sync_state har sin första rad.
+  for (const land of ["fi", "dk", "no"]) {
     try {
       const st = await pool.query(`SELECT synced_at, (now() - synced_at) AS age FROM ${land}.sync_state ORDER BY synced_at DESC LIMIT 1`);
       if (st.rows.length) {

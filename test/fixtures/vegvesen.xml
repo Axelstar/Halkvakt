@@ -1,0 +1,44 @@
+<!-- Vegvesen DATEX II 3.1, kort #35. Namnrymder, prefix och elementvägar för
+     measurementSite / siteMeasurements / TemperatureInformation / HumidityInformation är
+     ordagrant ur rekognoseringen (ingest-no #28, 4/9 2026). measurementSiteLocation
+     (latitude/longitude), roadSurfaceTemperature-vägen, dewPointTemperature och
+     precipitation är DATEX-standardens form — LÅG UTANFÖR rekognoseringens fönster,
+     strukturvakten i ingest/no.ts avgör om verkligheten stämmer. Station 2 saknar position
+     med flit (ska räknas men inte lagras). -->
+<ns2:messageContainer xmlns="http://datex2.eu/schema/3/common" xmlns:ns2="http://datex2.eu/schema/3/messageContainer" xmlns:ns6="http://datex2.eu/schema/3/roadTrafficData" xmlns:ns9="http://datex2.eu/schema/3/locationReferencing">
+<ns2:payload xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns6:MeasurementSiteTablePublication" lang="en" modelBaseVersion="3">
+<publicationTime>2026-09-04T14:04:16.085+02:00</publicationTime>
+<ns6:measurementSiteTable id="WOST" version="20260904140147000">
+<ns6:measurementSiteTableIdentification>WEATHER_OBSERVATION_STATION_TABLE</ns6:measurementSiteTableIdentification>
+<ns6:measurementSite id="1629006" version="3561">
+  <ns6:measurementSiteName><values><value lang="nob">Fv 714 Våvatnet</value></values></ns6:measurementSiteName>
+  <ns6:measurementSiteIdentification>1629006</ns6:measurementSiteIdentification>
+  <ns6:measurementSpecificCharacteristics index="101"><ns6:measurementSpecificCharacteristics><ns6:specificMeasurementValueType>temperatureInformation</ns6:specificMeasurementValueType></ns6:measurementSpecificCharacteristics></ns6:measurementSpecificCharacteristics>
+  <ns6:measurementSiteLocation xsi:type="ns9:PointLocation"><ns9:pointByCoordinates><ns9:pointCoordinates><ns9:latitude>63.6421</ns9:latitude><ns9:longitude>9.4187</ns9:longitude></ns9:pointCoordinates></ns9:pointByCoordinates></ns6:measurementSiteLocation>
+</ns6:measurementSite>
+<ns6:measurementSite id="2" version="1">
+  <ns6:measurementSiteName><values><value lang="nob">Utan posisjon</value></values></ns6:measurementSiteName>
+</ns6:measurementSite>
+</ns6:measurementSiteTable>
+</ns2:payload>
+</ns2:messageContainer>
+<!-- SPLIT -->
+<ns2:messageContainer xmlns="http://datex2.eu/schema/3/common" xmlns:ns2="http://datex2.eu/schema/3/messageContainer" xmlns:ns6="http://datex2.eu/schema/3/roadTrafficData">
+<ns2:payload xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns6:MeasuredDataPublication" lang="en" modelBaseVersion="3">
+<publicationTime>2026-09-04T14:54:23.879+02:00</publicationTime>
+<ns6:measurementSiteTableReference targetClass="roa:MeasurementSiteTable" id="WOST" version="20260904140147000"/>
+<ns6:siteMeasurements>
+  <ns6:measurementSiteReference targetClass="roa:MeasurementSite" id="1629006" version="3561"/>
+  <ns6:measurementTimeDefault>2026-09-04T14:50:00+02:00</ns6:measurementTimeDefault>
+  <ns6:physicalQuantity index="101"><ns6:physicalQuantity xsi:type="ns6:SinglePhysicalQuantity"><ns6:basicData xsi:type="ns6:TemperatureInformation"><ns6:temperature><airTemperature><temperature>15.8</temperature></airTemperature><dewPointTemperature><temperature>7.4</temperature></dewPointTemperature></ns6:temperature></ns6:basicData></ns6:physicalQuantity></ns6:physicalQuantity>
+  <ns6:physicalQuantity index="201"><ns6:physicalQuantity xsi:type="ns6:SinglePhysicalQuantity"><ns6:basicData xsi:type="ns6:HumidityInformation"><ns6:humidity><relativeHumidity><percentage>57.7</percentage></relativeHumidity></ns6:humidity></ns6:basicData></ns6:physicalQuantity></ns6:physicalQuantity>
+  <ns6:physicalQuantity index="301"><ns6:physicalQuantity xsi:type="ns6:SinglePhysicalQuantity"><ns6:basicData xsi:type="ns6:RoadSurfaceConditionInformation"><ns6:roadSurfaceConditionMeasurements><ns6:roadSurfaceTemperature><temperature>-1.2</temperature></ns6:roadSurfaceTemperature></ns6:roadSurfaceConditionMeasurements></ns6:basicData></ns6:physicalQuantity></ns6:physicalQuantity>
+  <ns6:physicalQuantity index="401"><ns6:physicalQuantity xsi:type="ns6:SinglePhysicalQuantity"><ns6:basicData xsi:type="ns6:PrecipitationInformation"><ns6:precipitationDetail><ns6:precipitationType>snow</ns6:precipitationType><ns6:precipitationIntensity><millimetresPerHourIntensity>0.8</millimetresPerHourIntensity></ns6:precipitationIntensity></ns6:precipitationDetail></ns6:basicData></ns6:physicalQuantity></ns6:physicalQuantity>
+</ns6:siteMeasurements>
+<ns6:siteMeasurements>
+  <ns6:measurementSiteReference targetClass="roa:MeasurementSite" id="2" version="1"/>
+  <ns6:physicalQuantity index="101"><ns6:physicalQuantity xsi:type="ns6:SinglePhysicalQuantity"><ns6:basicData xsi:type="ns6:TemperatureInformation"><ns6:temperature><airTemperature><temperature>12.0</temperature></airTemperature></ns6:temperature></ns6:basicData></ns6:physicalQuantity></ns6:physicalQuantity>
+  <ns6:physicalQuantity index="401"><ns6:physicalQuantity xsi:type="ns6:SinglePhysicalQuantity"><ns6:basicData xsi:type="ns6:PrecipitationInformation"><ns6:precipitationDetail><ns6:precipitationType>noPrecipitation</ns6:precipitationType></ns6:precipitationDetail></ns6:basicData></ns6:physicalQuantity></ns6:physicalQuantity>
+</ns6:siteMeasurements>
+</ns2:payload>
+</ns2:messageContainer>
