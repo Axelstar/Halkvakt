@@ -258,6 +258,18 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   ingests :11), samma parser/INSERT, bara nederbördsrader, idempotent. 🔨 EFTERMÄTNING
   KRÄVS (rotationsläxan): kortet stängs först när regn-tackning efter ~ett dygns drift
   visar 2/2-andelen stiga; skriptets täthetspuls (3 h) följer siffran varje körning.
+- [ ] 🔨 ⛏️ **#48 Golvbyggena** (Bengts order 4/9: "ta hela kortet, allt självförsörjande")
+  — PÅGÅR (terminalen): GOLVET.md:s byggen 1–4 med automatiseringskrav: automigrering
+  vid varje ingest (db.ts/fi.ts-mönstret), healthcheck-golv på varje ny fältfamilj
+  (exists-vaktade så de inte larmar på ofött), förstapubliceringsbevis i loggrader.
+  (1) SE vind×3 + sikt, (2) FI-breddningen ~9 sensorer (frostpunkt, saltfryspunkt,
+  saltmängd, vind, sikt, nederbördsform, ytstatus), (3) PhotoTime — UPPTÄCKT: ingen
+  deploy-väg för edge-funktioner finns från terminalen/CI (inga Supabase-tokens i
+  Secrets) — skjuts till webben-varvet med deploy-läxan, (4) LocationText in i ingest +
+  vaglag.geojson (OBS: fylls i takt med omklassningar — full först under vintern).
+  Bonus i samma svep: healthchecken får FI/DK-stalehetsvakt (fanns inte — bara svenska
+  sync_state vaktades!). Kortanteckningar: SMHI-moln→#46, SATEEN_OLOMUOTO→#45,
+  SensorNames→#46, DMI/NO→sina spår, röst-LocationText→Axel.
 - [x] ~~🧹 **#47 Vad ligger mer på golvet?**~~ ✅ KLART 4/9 (Bengt + Claude, terminalen):
   docs/GOLVET.md — tio källor genomgångna mot LEVANDE fältdumpar (TRV-recon körning
   33840067087 + lokala dumpar). FEM TUNGA FYND: (1) SIKTEN finns i ALLA källor
