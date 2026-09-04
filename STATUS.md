@@ -845,3 +845,15 @@ dewpoint_c; LIKE public ärvde avsaknaden) i stället för att ligga trasig till
 archived 361, daggpunkt 505 st", som matchar liveverifieringens 505/528 exakt.
 sql/010 + automigrering i fi.ts (008-mönstret). Lapplands frostnätter arkiveras nu med
 daggpunkt — rimfrost-analysen får äkta finska kandidater veckor före de svenska.
+
+## 2026-09-04 — Automatkörningsinventering (Bengts fråga) + broarna väckta ur fyra dygns dvala
+Full inventering: 13 cron-workflows verifierade — måndagskvartetten (grind-a 05:40,
+smhi-prov 06:00, radar 06:20, källvakten 06:40), kontinuerliga (ingest SE/FI/NO/DK,
+regn-30, publish */30, healthcheck 2h, marknadsföring, bridges 6h) + pulsklockan.
+GULA FLAGGAN som inventeringen fångade: bridges.geojson hade ALDRIG fötts trots 6h-cron
+sedan 31/8. Tvålagersrotorsak: exit 0 när speglarna fallerar (fail-soft utan vakt) +
+ENOENT när Overpass kom tillbaka (data/ finns inte i färskt checkout — git spårar inte
+tomma kataloger). mkdir-fix + lokal körning: 2476 broar committade (spegel 1 gav 504,
+spegel 2 levererade). CDN-väktare på static.json armerad (fullkroppsgrep denna gång —
+läxan från segment_id-väktaren som läste 600 tecken). Rimfrost-analysen är enda mätningen
+utan cron — medvetet, Bengts val om den ska in i måndagsserien.
