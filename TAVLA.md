@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-04 kväll av Claude (webben) — TROSKLAR-VATTENPLANING FASTSTÄLLT av Axel (DECISIONS #68), vinterinteraktionen avgjord; steg 3 grind V-A olåst*
+*Uppdaterad: 2026-09-04 kväll av Claude (webben) — grind V-A byggd (kort #42 steg 3): regntröskeln faller ur mätningen, självtest grönt*
 
 ---
 
@@ -494,8 +494,15 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   ✅ **FASTSTÄLLT AV AXEL 4/9** (DECISIONS #68, relayerat av Bengt): värdena står,
   vinterinteraktionen avgjord — halkan vinner alltid, vattenplaningen vilar helt vid
   yttemp ≤ +4 °C (förvillkor i koden, inte prioritetsfråga i alarmkön ⇒ egen vektor).
-  🔓 **STEG 3 OLÅST:** grind V-A (LOO mot arkivet, knapp med domspärr) är Claudes nästa
-  bygge på kortet. #51:s hårda villkor uppfyllt — dokumentet låg i repot före koden.
+  ✅ **STEG 3 BYGGT 4/9** (Bengts "bygg grinden"): publish/grind-v-a.ts + knappen
+  grind-v-a, måndagar 07:20 sist i mätserien. LOO mot regnarkivet, stationen aldrig
+  med i sin egen prognos. TRIPPELDELNING i stället för tvådelning: när grannarna säger
+  "≥ T" är egen mätning TRÄFF (≥T), DELVIS (0<egen<T) eller FALSKLARM (=0) — att slå
+  ihop delvis+falsklarm hade blåst upp falsklarmen, att slå ihop träff+delvis hade
+  dolt dem. REGNTRÖSKELN SÄTTS INTE, DEN FALLER UT: 0,5/1/2/4/6/10 mm/h sveps och
+  lägsta som klarar 70 %/25 % i bandet 0–10 km är svaret. Binomialbrus per andel (V-C3),
+  domspärr < 200 fall, underlagsvakt. Självtest med känd sanning grönt: identiskt regn
+  ⇒ 100 % träff / 0 % falsklarm, oberoende regn ⇒ 34 % / 66 %.
   *(nyckel för röst: Axels ja — rösttext, plats i A-skalan, ordning mot #15/#16)*
 
 ---
