@@ -905,3 +905,33 @@ VÄNTAD BIEFFEKT, bokförd i förväg så den inte misstolkas som en försämrin
 tittar var annan timme i stället för var femte kommer se stalheter som förut hann rätta
 sig osedda. Fler incident-issues den närmaste tiden är ett tecken på att vakten börjat
 fungera.
+
+## #71 (5/9 2026) ARKIVLÄCKAN MÄTT — nollresultat som friar ingen, och en tom moat
+Bengts order "mät bortfallet på 51" efter att mekaniken bevisats i koden. Mätknapp byggd
+(scripts/arkivlackan.ts + arkivlackan.yml) med självtest mot känd sanning, underlagsvakt och
+invariantvakt. Körning #1, 5/9 04:02.
+UTFALL: bortfall **0 av 818 segment (0,0 %)**. Varje nuvarande tillstånd återfinns i
+road_condition_history — 806 ändrade före 25/8, 12 efter, noll saknade, noll segment utan
+historikrad. Min hypotes om ett stort bortfall BEKRÄFTADES ALLTSÅ INTE, och det ska stå
+lika tydligt som om den bekräftats.
+MEN SIFFRAN FRIAR INGEN, och skälet är hela poängen: arkivet är 830 rader över 818 segment —
+en rad per segment plus tolv — och nyaste raden är 2026-08-25 08:09. Tidsserien över 30 dygn
+innehåller EN dag. Inte en enda omklassning har skett på elva dygn. Bortfallet är noll för
+att flödet står stilla, inte för att arkivet fungerar. Ett nollresultat, inte en friande dom.
+DET STÖRRE FYNDET, som mätningen inte letade efter: moaten är inte läckande — den är TOM.
+"Vinterarkivet" innehåller ingen vinterhistorik alls, bara ett stillbildsavtryck plus tolv
+ändringar. Kort #45:s säsongsbaseline per segment saknar därmed underlag oavsett läckan, och
+det är en annan och närmare vägg än den jag beskrev igår.
+VARFÖR DEN AVGÖRANDE MÄTNINGEN INTE GÅR ATT GÖRA ÄNNU: den delade changeid-kursorn kan bara
+fälla eller fria när segment faktiskt klassas om. I september ligger RoadCondition-strömmen
+still. Hypotesen är otestbar tills snön kommer — vilket är precis när den spelar roll.
+BLIND FLÄCK UPPTÄCKT I SAMMA VARV: healthchecken vaktar sync_state-FÄRSKHET, och
+edge-funktionen skriver synced_at = now() varje minut oavsett om något hämtades. Vakten kan
+alltså inte skilja "färsk och tyst" från "färsk och trasig". Elva tysta dygn ser identiska ut
+med elva trasiga. Det är samma familj av fel som fail-soft-läxan och gravstensläckan: ett
+grönt kvitto på att ett jobb KÖRDE säger ingenting om att det UTRÄTTADE något.
+LÄXAN, generell: mät hypotesen innan du bygger fixen — men mät också om mätningen ÖVERHUVUD
+TAGET kan falsifiera hypotesen med det underlag som finns. En mätning som returnerar noll för
+att ingenting hänt är inte ett svar, och att läsa den som ett svar hade varit värre än att
+inte ha mätt alls. Här räddades det av att tidsserien och arkivets ålder skrevs ut bredvid
+procenttalet; hade rapporten bara visat "0,0 %" hade kortet stängts på falska grunder.
