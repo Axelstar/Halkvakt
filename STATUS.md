@@ -1176,3 +1176,16 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   Blinda fläcken från #71 är därmed STÄNGD — "färsk och tyst" är bevisat tyst, inte trasigt.
   INTE AVGJORT: läckan. Kortet #51 står öppet till första omklassningsvädret, då arkivvakten
   (var annan timme) och kursormätningen (på knapp) gör jobbet automatiskt.
+- **S-2026-09-05 04:55: egen kursor åt arkivspåret i drift** (Bengts "ja bygg", DECISIONS #73,
+  PR #67). GitHub-ingesten läser nu road_conditions_arkiv; livemotorns nyckel orörd. Tre
+  följdändringar hörde till: bakåtvakt mot regression på upserten (kapplöpningsfönstret växer
+  när vi behandlar en hel timme), räknare på rowCount i stället för c.length, och ett SKÄRPT
+  integrationstest — det fällde mig först och hade rätt, eftersom det krävde history: 1 på
+  omkörning trots att noll rader skrevs.
+  BEVIS (ingest #267): full första synk (ingen road_conditions-nyckel i kursorlistan),
+  818 segment, DB WRITE OK {"road_conditions":818,"history":0}. Nollan är ärlig — inget nytt
+  att arkivera. Gamla räknaren hade skrivit 818 och ljugit.
+  OVÄNTAD INSIKT, viktigare än bygget: samma körning mätte 178 segment med regn (max 15,38
+  mm/h) men noll omklassade väglag. REGN FLYTTAR INTE VÄGLAGSSTRÖMMEN — omklassning är ett
+  vinterfenomen. Det förklarar tystnaden definitivt, och det betyder att vi hade fel om att
+  höstregnen skulle ge väglagsdata. De ger REGNdata, vilket är något annat. Gäller #51 och #45.

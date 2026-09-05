@@ -961,3 +961,33 @@ efteråt hade vi haft en ändrad kursor i drift utan att ha lärt oss något, al
 utbyte. Regel: innan en mätning motiverar ett ingrepp i produktionen ska den prövas som
 LÄSANDE variant först, och man ska kunna säga i förväg vilket utfall som skulle ha falsifierat
 hypotesen. Kunde man inte det är det ingen mätning, det är en förhoppning.
+
+## #73 (5/9 2026) EGEN KURSOR åt arkivspåret — och regnet som bevisade att strömmen är vinterbunden
+Bengts "ja bygg" efter #72, där kursorbytet omdefinierades från MÄTNING till FÖRBÄTTRING:
+det ger färre tappade rader när vintern kommer, men bevisar ingenting i dag.
+ÄNDRINGEN: GitHub-ingesten läser sync_state-nyckeln "road_conditions_arkiv" i stället för den
+delade "road_conditions". Livemotorns nyckel är orörd, dess minutkadens likaså. Arkivets enda
+skrivare konsumerar därmed hela timmens ström i stället för sista minutens delta.
+TRE FÖLJDÄNDRINGAR, som hörde till bygget och inte var extra arbete:
+(a) BAKÅTVAKT på road_conditions-upserten: EXCLUDED.modified_time >= road_conditions.modified_time.
+Nödvändig FÖLJD av kursorbytet — vi behandlar nu en hel timme samtidigt som livemotorn skriver
+varje minut, så kapplöpningsfönstret växer och ett äldre tillstånd kunde annars skriva över ett
+nyare. Historiken påverkas inte: den är en egen sats som ska arkivera allt TRV visat oss, även
+det bakåtvakten hindrar från att röra nuläget. Nuläget ska vara färskast, arkivet fullständigast.
+(b) Räknarna mäter VERKLIGA skrivningar (rowCount) i stället för försök (c.length). Utan det
+går kursorbytets nytta inte att se — "history += 818" betydde rader vi PROVADE att skriva.
+(c) Integrationstestet SKÄRPT. Det fällde första försöket, och hade rätt: det krävde history: 1
+även på omkörning, trots att noll rader skrevs. Räknaren ljög och testet påstod lögnen. Nu krävs
+history: 0 på andra körningen, vilket PRÖVAR CLAUDE.md:s invariant "en rerun får aldrig duplicera
+rader" i stället för att anta den. Ett skärpt påstående, inte ett försvagat — skillnaden är hela
+poängen med regeln om att aldrig mjuka upp ett test för att få grönt.
+BEVIS (ingest #267, 04:55:26): kursorlistan saknade road_conditions-nyckel ⇒ full första synk som
+väntat; 818 segment; DB WRITE OK {"road_conditions":818,"history":0}. Nollan är den ärliga
+räknaren i arbete.
+OVÄNTAD INSIKT SAMMA KÖRNING, och den är viktigare än bygget: radarsteget mätte 178 segment med
+regn ≥ 0,1 mm/h och max 15,38 mm/h — det REGNADE över Sverige. Ändå var non-normal active 0.
+REGN FLYTTAR INTE VÄGLAGSSTRÖMMEN. Omklassning är ett vinterfenomen, inte ett nederbördsfenomen.
+Det förklarar elva tysta dygn definitivt och skärper förväntan för både #51 och #45: arkivet
+förblir tyst tills det fryser, hur mycket det än regnar, och en säsongsbaseline per segment kan
+alltså inte börja byggas förrän första frostvädret. Vi hade fel om att "höstregnen" skulle ge
+väglagsdata — de ger regndata, vilket är något annat.
