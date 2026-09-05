@@ -1,0 +1,24 @@
+# Segmentlängden (kort #52): hur många gånger talar ett "Packad snö"-segment, som i dag,
+# delat i 5 km-bitar, respektive med regeln "en gång per segment"? Kör motorn skarpt mot
+# syntetiska resor. Ingen databas, inget nät, inga hemligheter — helt reproducerbar.
+# Värd en knapp trots determinismen: ändras repeatMinS/leadM/korridoren i types.ts mäter
+# den om konsekvensen i röst i stället för att någon får gissa den.
+name: segmentlangden
+on:
+  workflow_dispatch:
+jobs:
+  segmentlangden:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types scripts/segmentlangden.ts --sjalvtest
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/segmentlangden.ts | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"

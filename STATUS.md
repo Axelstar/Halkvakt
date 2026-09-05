@@ -1204,3 +1204,21 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   vinter i arkivet. Två länsgränser redovisas för att valet är ett produktbeslut.
   Beslutet ligger hos Bengt + Axel; ingen ändring görs på eget bevåg eftersom den rör
   engine/vectors och tre körtider.
+- **S-2026-09-05: "går det göra segmenten kortare?" — mätt i motorn, svaret är NEJ**
+  (Bengts fråga → "mät"). scripts/segmentlangden.ts + knapp: motorn körs skarpt mot
+  syntetiska resor i 90 km/h längs hela segmentet, code 1 + "Packad snö". Ingen databas,
+  inget nät, helt reproducerbar. Självtest med känd sanning: 5 km ⇒ exakt 1 larm (200 s
+  körtid < 600 s reprisfönster), och 59 km klassat "Torrt" ⇒ 0 larm.
+  Larm per resa — A som i dag · B delat i 5 km-bitar · C regeln "en gång per segment":
+  Jämtland 39 min: 4 · 12 · 1. Västerbotten 34 min: 4 · 10 · 1. Norrbotten 31 min: 4 · 9 · 1.
+  Dalarna 25 min: 3 · 8 · 1. Utanför Norrland 17 min: 2 · 5 · 1. Stockholm 12 min: 2 · 4 · 1.
+  Jämtland delat talar minut 0, 3, 6, 9, 13, 16, 19, 22, 26, 29, 32, 36 — var tredje minut
+  i trettionio minuter.
+  VARFÖR: ett nytt id har ingen reprishistorik (`if (!f) return true`), så varje bit är
+  berättigad direkt och talar en gång. Geometrin är inte spaken. Dessutom vore kortare
+  segment FALSK PRECISION — Trafikverket klassar hela sträckan, så finare geometri bär
+  inte finare information, och att låtsas annat bryter mot överdrivandeförbudet.
+  SPAKARNA i stället: (1) #52/#45 — larmar inte baseline-snö alls blir längden irrelevant;
+  (2) reprisregeln för segment ger kolumn C, 4→1 i norr och 2→1 i söder, utan geometriändring
+  och med verkan i hela landet (men en avvägning: en påminnelse efter en halvtimme kan vara
+  önskad); (3) rösten säger inte hur långt sträckan räcker — Axels spår.

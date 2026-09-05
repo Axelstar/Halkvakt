@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-05 av Claude (webben) — cry-wolf-ytan mätt (#52): Norrland är 20,5 % av segmenten men 31,7 % av sträckan, och nordliga segment är 1,8× längre (Jämtland 59 km/segment mot Stockholms 18). Ett enda snösegment i norr är nästan sex mil varningsyta*
+*Uppdaterad: 2026-09-05 av Claude (webben) — svar på Bengts fråga, mätt i motorn: kortare segment gör det TRE gånger värre (Jämtland 4 larm → 12, var tredje minut i 39 min). Geometrin är inte spaken; reprisregeln och baseline-regeln är det*
 
 ---
 
@@ -351,6 +351,32 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   ⚠️ MÄTNINGENS GRÄNS, står i rapporten och inte bara här: det här är EXPONERING, inte
   incidens. Arkivet börjar 24/8 så vi har ingen vinter att räkna på — hur många av de 168
   som FAKTISKT bär "Packad snö" i januari vet vi inte. Siffran är ett TAK, inte en prognos.
+  🧪 **RÖSTKOSTNADEN MÄTT 5/9 (Bengts "går det göra segmenten kortare?" → "mät").**
+  scripts/segmentlangden.ts kör MOTORN skarpt mot syntetiska resor i 90 km/h längs hela
+  segmentet, code 1 + "Packad snö". Ingen databas, inget nät — helt reproducerbar.
+  Självtest med känd sanning: 5 km (200 s körtid < 600 s reprisfönster) ⇒ exakt 1 larm;
+  59 km klassat "Torrt" ⇒ 0 larm (riggen larmar inte på vad som helst).
+  ```
+                              körtid  A som i dag  B delat 5 km  C en gång
+    Jämtland                  39 min            4            12          1
+    Västerbotten              34 min            4            10          1
+    Norrbotten                31 min            4             9          1
+    Dalarna                   25 min            3             8          1
+    utanför Norrland (snitt)  17 min            2             5          1
+    Stockholm                 12 min            2             4          1
+  ```
+  Jämtland i detalj: A talar minut 0, 10, 20, 30. B talar minut 0, 3, 6, 9, 13, 16, 19,
+  22, 26, 29, 32, 36 — **var tredje minut i trettionio minuter**.
+  🛑 **SVARET PÅ FRÅGAN ÄR NEJ: kortare segment gör det TRE GÅNGER VÄRRE.** Ett nytt id har
+  ingen reprishistorik (`if (!f) return true` i engine.ts) och är berättigat direkt, så
+  varje bit talar en gång. Geometrin är inte spaken. Dessutom vore det falsk precision —
+  Trafikverket klassar hela sträckan, så finare geometri bär inte finare information.
+  🔑 SPAKARNA, i ordning: (1) grundfixet är #52/#45 — larmar inte baseline-snö alls blir
+  längden irrelevant; (2) reprisregeln för segment: "talar inte igen förrän klassningen
+  ändras" ger kolumn C, alltså 4→1 i norr och 2→1 i söder, utan att röra geometrin, och
+  hjälper i hela landet. Avvägning, inte självklar vinst: på en lång resa kan en påminnelse
+  efter en halvtimme vara önskad. (3) Axels spår: rösten säger inte hur långt sträckan
+  räcker — på sex mil vore det ärligare, och gör tystnaden efteråt motiverad.
   🔑 BESLUT TILL BENGT + AXEL, kopplat till #45 — nu med storleksordning i handen: ska
   "Packad snö" på code 1 fortsätta larma nationellt tills baseline finns? Var gränsen går
   (21–25 eller 17+20–25) är också ert val; mätningen ger båda och väljer inte åt någon.
