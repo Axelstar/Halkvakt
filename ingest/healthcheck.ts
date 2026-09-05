@@ -69,6 +69,35 @@ try {
       if (golv !== null && Number(n) < golv) problems.push(`gränssnapshoten tunn: bara ${n} ${land.toUpperCase()}-stationer nåbara (<${golv}) — ${land}-ingest eller gränslogik trasig?`);
     } catch { console.log(`gräns-wx: ${land}-schemat saknas (CI) — hoppar`); }
   }
+  // ARKIVVAKTEN (kort #51, DECISIONS #71): road_condition_history är vinterarkivet och
+  // marsdomens facit, men ingen vakt mätte om det faktiskt fylls. Att larma på "arkivet
+  // växte inte" GÅR INTE — i september klassas inget om, och tystnad är då korrekt (mätt
+  // 5/9: noll omklassningar på elva dygn). Vakten frågar därför något som bara har ett
+  // svar: finns ett NUVARANDE tillstånd som borde ha hunnit arkiveras och inte gjorde det?
+  // Ingesten går varje timme, så 3 h betyder att tre körningar passerat — en rad som
+  // saknas då är förlorad, inte försenad. Noll larm på tyst ström, larm första dygnet
+  // strömmen lever och rader tappas. Räknarna bredvid är till för människan: "0 saknade"
+  // betyder inte "allt väl" om det också står "0 omklassningar senaste dygnet".
+  try {
+    const ark = await pool.query(`SELECT
+      (SELECT count(*) FROM road_conditions c
+         WHERE NOT c.deleted AND c.modified_time IS NOT NULL
+           AND c.modified_time < now() - interval '3 hours'
+           AND NOT EXISTS (SELECT 1 FROM road_condition_history h
+                           WHERE h.segment_id = c.segment_id AND h.modified_time = c.modified_time)
+      )::int AS saknade,
+      (SELECT count(*) FROM road_conditions WHERE NOT deleted AND modified_time IS NOT NULL
+         AND modified_time < now() - interval '3 hours')::int AS provade,
+      (SELECT count(*) FROM road_condition_history)::int AS rader,
+      (SELECT count(*) FROM road_conditions WHERE NOT deleted
+         AND modified_time > now() - interval '24 hours')::int AS omklassade_dygn,
+      (SELECT extract(epoch FROM now() - max(modified_time)) / 3600 FROM road_condition_history) AS nyaste_h`);
+    const a = ark.rows[0];
+    const nyaste = a.nyaste_h === null ? "tomt arkiv" : `nyaste ${Number(a.nyaste_h).toFixed(0)} h gammal`;
+    console.log(`arkivvakt: ${a.saknade} oarkiverade av ${a.provade} prövade tillstånd (>3 h) · arkivet ${a.rader} rader, ${nyaste} · ${a.omklassade_dygn} omklassningar senaste dygnet`);
+    if (Number(a.saknade) > 0) problems.push(
+      `arkivläcka: ${a.saknade} nuvarande tillstånd saknas i road_condition_history trots >3 h (tre ingestkörningar) — vinterarkivet tappar rader, se kort #51`);
+  } catch { console.log("arkivvakt: road_condition_history saknas (CI) — hoppar"); }
   const counts = await pool.query(`SELECT
     (SELECT count(*) FROM cameras WHERE NOT deleted) AS cameras,
     (SELECT count(*) FROM road_conditions WHERE NOT deleted) AS segments,
