@@ -1,0 +1,59 @@
+# Grannländerna i ETT jobb (kort #53): FI, DK och NO delade tidigare tre workflows med
+# tre checkout + tre npm ci. GitHub debiterar per JOBB och avrundar uppåt till hel minut,
+# så tre 25-sekundersjobb kostade tre minuter där ett kostar en. Mätt förbrukning låg på
+# ~216 min/dygn mot gratisnivåns 2 000/månad; det här är den enskilt största besparingen
+# som inte kostar funktion.
+#
+# INGEN CRON: pulsklockan är klockan (DECISIONS #26/#63/#70 — GitHub-cronen levererade
+# 40 % av bokad takt). Healthchecken behåller sin egen cron som oberoende sista utpost,
+# så att en död puls upptäcks i stället för att tystna osynligt.
+#
+# OBEROENDET BEVARAT: `if: !cancelled()` gör att DK och NO körs även om FI fallerar, och
+# jobbet blir ändå rött. Ett gemensamt jobb får inte betyda att ett lands fel tystar de
+# andras insamling — det var priset Bengt varnades för, och det här är hur vi slipper det.
+name: ingest-grannar
+on:
+  workflow_dispatch:
+concurrency: { group: ingest-grannar, cancel-in-progress: false }
+jobs:
+  grannar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - name: 🇫🇮 Fintraffic → fi.* (skuggarkiv, inga användare)
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          echo '### 🇫🇮 Finland' >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types ingest/fi.ts | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 🇩🇰 DMI + trafikkort → dk.* (skuggarkiv, inga användare)
+        if: ${{ !cancelled() }}
+        shell: bash
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          echo '### 🇩🇰 Danmark' >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types ingest/dk.ts | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 🇳🇴 Vegvesen DATEX → no.*
+        if: ${{ !cancelled() }}
+        shell: bash
+        env:
+          DATABASE_URL: "${{ secrets.DATABASE_URL }}"
+          VEGVESEN_USER: "${{ secrets.VEGVESEN_USER }}"
+          VEGVESEN_PASS: "${{ secrets.VEGVESEN_PASS }}"
+        run: |
+          echo '### 🇳🇴 Norge' >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types ingest/no.ts | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"

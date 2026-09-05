@@ -4,8 +4,9 @@
 # tar över takten när arkivet faktiskt tickar (DECISIONS #26/#63).
 name: ingest-no
 on:
-  schedule:
-    - cron: "17,47 * * * *"
+  # CRON BORTTAGEN (kort #53): pulsklockan är klockan, och GitHub-cronen
+  # levererade bara 40 % av bokad takt (#70) medan den kostade full minut per
+  # körning. Healthcheck.yml behåller sin cron som oberoende sista utpost.
   workflow_dispatch:
 concurrency: { group: ingest-no, cancel-in-progress: false }
 jobs:

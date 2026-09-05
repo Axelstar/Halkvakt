@@ -1243,3 +1243,24 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   läcker inte men kod och tavla blir offentliga), eller skär i kadensen — att slå ihop
   ingest-fi/dk/no till ett jobb sparar ensamt ~4 min/h.
   Livemotorn i Supabase (pg_cron) berörs INTE — den kör utanför GitHub.
+- **S-2026-09-05: de två gratisdelarna byggda (kort #53)** (Bengts "ja bygg de två").
+  (1) Cron borttagen ur ingest, ingest-fi, ingest-dk, ingest-no och regn-30 — de fem
+  pulsdrivna, som körde dubbelt (bevis: ingest-dk 15:11:16 schedule + 15:12:01 dispatch,
+  45 s isär). Varje rad bär nu ett VARFÖR så ingen återställer den som en glömska.
+  Healthcheckens cron BEHÅLLS: hänger allt annat på pulsen måste något ha en oberoende
+  klocka, annars dör pulsen tyst — vakthundsläxan från #50 i ny form.
+  (2) ingest-grannar.yml kör FI+DK+NO i ett jobb: en checkout, en npm ci. Oberoendet
+  bevarat med `if: !cancelled()` så ett lands fel inte tystar de andras insamling.
+  (3) Pulsklockan kan nu AVVECKLA jobb. Den kunde bara skapa — ett hål som var osynligt
+  tills merget krävde det, för utan borttagning hade de gamla pulsjobben fortsatt fyra mot
+  de gamla filerna och besparingen blivit noll. Avveckling sker SIST, efter att ersättaren
+  skapats, och bevisvakten kräver att de avvecklade faktiskt är borta.
+  INTE AKTIVERAT: kräver en pulsklocka-körning, som kräver att Actions lever. De gamla
+  filerna ligger kvar med borttagen cron så pulsen träffar dem tills den pekas om — inget
+  glapp. Radering av dem blir ett eget varv EFTER att avvecklingen bevisats.
+  ÄRLIGT OM RÄCKVIDDEN: det räcker inte. publish-map är uppmätt till 69-74 s per körning,
+  alltså 2 debiterade minuter, var 30:e minut = 96 min/dygn ≈ 2 880 min/månad. Publiceringen
+  ensam överskrider hela gratisnivån. Under 2 000 kommer vi inte utan att publish-map också
+  flyttas eller saktas ned, och kadensen är beslut #22:s löfte om ≤ 35 min färsk webb.
+  BEHÖRIGHETSFYND: Bengts konto har `admin: false` på repot (verifierat via API). Han kan
+  alltså varken se fakturering eller ändra Actions-inställningar — det måste Axel göra.

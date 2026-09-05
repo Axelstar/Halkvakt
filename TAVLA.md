@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-05 av Claude (webben) — 🛑 HELA PIPELINEN STÅR sedan ~12:11: alla workflows dör på 3–5 s med noll steg och noll loggar, på oförändrad kod (ingest lyckades 11:11, föll 12:11 på samma commit). Troligast Actions-minuterna slut — privat repo, ~216 min/dygn. Kort #53, kräver Bengt/Axel i Billing*
+*Uppdaterad: 2026-09-05 av Claude (webben) — kort #53: de två gratisdelarna byggda (cron bort ur fem pulsdrivna, grannländerna i ETT jobb, pulsklockan kan nu avveckla). Aktiveras när Actions lever. Räcker INTE till gratisnivån: publish-map ensam är uppmätt 2 880 min/månad*
 
 ---
 
@@ -253,6 +253,36 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   hemligheter ligger i Secrets och läcker inte, men koden och tavlan blir offentliga),
   (c) skär i kadensen: färre körningar, eller slå ihop ingest-fi/dk/no till ETT jobb, vilket
   ensamt skulle spara ~4 minuter i timmen.
+  ✅ **DE TVÅ GRATISDELARNA BYGGDA 5/9** (Bengts "ja bygg de två gratisdelarna").
+  (1) **CRON BORTTAGEN** ur ingest, ingest-fi, ingest-dk, ingest-no och regn-30 — de fem
+  pulsdrivna. GitHub-cronen fyrade parallellt med pulsen och gjorde samma arbete två gånger
+  (bevis: ingest-dk 15:11:16 schedule + 15:12:01 dispatch, 45 s isär, samma jobb; över livet
+  33 schedule + 58 dispatch). Varje rad bär nu en kommentar om VARFÖR, så ingen "återställer"
+  den som en glömska. **HEALTHCHECKENS CRON BEHÅLLS MED FLIT** — hänger allt annat på pulsen
+  måste något ha en oberoende klocka, annars dör pulsen tyst. Gårdagens vakthundsläxa (#50)
+  i ny form: en oberoende vakt, allt annat på pulsen.
+  (2) **GRANNLÄNDERNA SLAGNA IHOP**: `ingest-grannar.yml` kör FI, DK och NO i ETT jobb med
+  en checkout och en `npm ci` i stället för tre. GitHub debiterar per JOBB och avrundar
+  uppåt, så tre 25-sekundersjobb kostade tre minuter där ett kostar en.
+  OBEROENDET BEVARAT: `if: !cancelled()` gör att DK och NO körs även om FI fallerar, och
+  jobbet blir ändå rött. Ett lands fel får inte tysta de andras insamling — det var priset
+  Bengt varnades för, och så här slipper vi betala det.
+  (3) **PULSKLOCKAN KAN NU AVVECKLA.** Den kunde bara SKAPA jobb, aldrig ta bort — ett hål
+  som var osynligt tills merget krävde det. Utan avveckling hade puls-ingest-fi/dk/no
+  fortsatt fyra mot de gamla filerna och besparingen blivit noll. Ny `AVVECKLA`-lista, bara
+  namngivna jobb, avveckling SIST så ersättaren finns innan föregångaren tas bort, och
+  bevisvakten kräver nu att de avvecklade faktiskt är borta.
+  🔁 **INTE AKTIVERAT ÄN — kräver en pulsklocka-körning, som kräver att Actions lever.**
+  De tre gamla filerna ligger kvar med borttagen cron, så pulsen fortsätter träffa dem tills
+  den pekas om. Inget glapp. När Actions svarar: kör `pulsklocka` (inventering först, sedan
+  skarp), verifiera att de tre avvecklats, och radera då de gamla filerna i ett eget varv.
+  📏 **ÄRLIGT OM VAD DET RÄCKER TILL — det räcker inte.** publish-map är uppmätt till
+  **69–74 s per körning ⇒ 2 debiterade minuter**, var 30:e minut = 48 körningar/dygn =
+  **96 min/dygn ≈ 2 880 min/månad**. Publiceringen ensam överskrider alltså hela gratisnivån
+  på 2 000. De två delarna ovan halverar ungefär resten (~120 → ~60 min/dygn), men summan
+  landar fortfarande klart över taket. **Under 2 000 kommer vi inte utan att publish-map
+  också flyttas eller saktas ned** — och kadensen */30 är beslut #22:s löfte om ≤ 35 min
+  färsk webb, alltså ett produktbeslut och inte en optimering.
   🚨 **VAD SOM STÅR STILLA UNDER TIDEN:** all datainsamling (SE/FI/DK/NO), radarpiloten,
   publiceringen till kartan (webben åldras), regn-30 — och **healthchecken själv**, så
   ingen vakt kommer att larma om det här. Kort #44:s dygnsbevis och #50:s dygnsmätning
