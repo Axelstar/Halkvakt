@@ -935,3 +935,29 @@ TAGET kan falsifiera hypotesen med det underlag som finns. En mätning som retur
 att ingenting hänt är inte ett svar, och att läsa den som ett svar hade varit värre än att
 inte ha mätt alls. Här räddades det av att tidsserien och arkivets ålder skrevs ut bredvid
 procenttalet; hade rapporten bara visat "0,0 %" hade kortet stängts på falska grunder.
+
+## #72 (5/9 2026) KURSORMÄTNINGEN: pipelinen frias av Trafikverket, läckan förblir otestbar
+Bengts order "kör kursormätningen". Som jag beskrev den igår krävde den en produktionsändring
+— egen changeid-kursor åt GitHub-ingesten — och jag lovade att den skulle "fälla eller fria
+hypotesen UTAN att vänta på snö". DET LÖFTET HÖLL INTE, och felet var mitt: med tyst ström kan
+ingen mätning avgöra en starvationshypotes, eftersom svält kräver ett flöde att svälta på.
+VAD SOM BYGGDES I STÄLLET (helt läsande, produktionsflödet orört): gårdagens mätning var
+CIRKULÄR — den jämförde våra egna tabeller med varandra, så när båda stod still såg det ut som
+hälsa. Den nya hämtar Trafikverkets fulla sanning (changeid 0) och prövar varje ModifiedTime
+mot arkivet. Förlust mäts alltså mot KÄLLAN. Domen är trestegs med flit, och självtestet prövar
+uttryckligen att tyst ström ger OTESTBAR och aldrig ett friande svar.
+UTFALL (kursormatning #1, 04:38): vår last_change_id 7677878362341114260 = TRV:s just nu,
+alltså IKAPP. 818 levande segment hos TRV, noll omklassade senaste timmen, dygnet ELLER veckan,
+och 0 av 818 saknas i arkivet. road_conditions senast ändrad 25/8 08:09 — samma som TRV.
+DOM: OTESTBAR.
+AVGJORT, mot en extern domare: (a) vår pipeline är inte döv — tystnaden är Trafikverkets, inte
+vår; (b) arkivet är komplett mot källan; (c) livemotorn ligger exakt ikapp. Därmed är den
+BLINDA FLÄCKEN från #71 stängd: "färsk och tyst" är bevisat tyst och inte trasigt. Det var det
+farligare av de två alternativen och det är nu uteslutet.
+INTE AVGJORT: läckhypotesen. Den kan bara prövas när segment faktiskt klassas om.
+LÄXAN, och den är dyrare än den låter: jag föreslog en produktionsändring som MÄTNING, och
+motiverade den med att den skulle ge svar direkt. Den hade i själva verket gett noll — och
+efteråt hade vi haft en ändrad kursor i drift utan att ha lärt oss något, alltså risk utan
+utbyte. Regel: innan en mätning motiverar ett ingrepp i produktionen ska den prövas som
+LÄSANDE variant först, och man ska kunna säga i förväg vilket utfall som skulle ha falsifierat
+hypotesen. Kunde man inte det är det ingen mätning, det är en förhoppning.

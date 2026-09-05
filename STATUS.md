@@ -1163,3 +1163,16 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   EJ BEVISAT och sagt som sådant: larmgrenen har aldrig fällt skarpt och kan inte bevisas
   förrän strömmen rör sig. Joinens semantik är prövad mot känd sanning i arkivlackans
   självtest. Kvar att besluta: den avgörande kursormätningen, som ändrar produktionsflödet.
+- **S-2026-09-05 04:38: kursormätningen körd — TRV som domare, pipelinen friad, läckan kvar
+  otestbar** (Bengts order, DECISIONS #72, PR #65). Jag hade lovat att mätningen skulle avgöra
+  saken utan att vänta på snö. Löftet höll inte, och felet var mitt: starvation kräver ett
+  flöde att svälta på, och strömmen står still.
+  Byggdes därför om till en HELT LÄSANDE variant som låter Trafikverket vara domare i stället
+  för att jämföra våra tabeller med varandra — gårdagens cirkulära fel.
+  BEVIS (kursormatning #1): last_change_id 7677878362341114260 = TRV:s just nu ⇒ IKAPP.
+  818 levande segment, 0 omklassade senaste timmen/dygnet/veckan, 0 av 818 saknas i arkivet.
+  DOM: OTESTBAR — och domspärren är prövad i självtestet så tyst ström aldrig kan bli friande.
+  AVGJORT: pipelinen är inte döv, arkivet är komplett mot källan, livemotorn ligger ikapp.
+  Blinda fläcken från #71 är därmed STÄNGD — "färsk och tyst" är bevisat tyst, inte trasigt.
+  INTE AVGJORT: läckan. Kortet #51 står öppet till första omklassningsvädret, då arkivvakten
+  (var annan timme) och kursormätningen (på knapp) gör jobbet automatiskt.

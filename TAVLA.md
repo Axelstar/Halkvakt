@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-05 av Claude (webben) — arkivvakten (#51) BYGGD OCH I DRIFT: larmar på bevisad förlust, aldrig på tystnad. Bevis i healthcheck #82. Kortet öppet tills larmgrenen prövats av riktigt vinterväder eller den avgörande kursormätningen gjorts*
+*Uppdaterad: 2026-09-05 av Claude (webben) — kursormätningen körd med TRV som domare: pipelinen är INTE döv, arkivet komplett mot källan, livemotorn ikapp. Blinda fläcken stängd. Läckhypotesen kvar som OTESTBAR — tyst ström kan inte fria den, och domspärren ser till att den inte gör det*
 
 ---
 
@@ -280,10 +280,30 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   tyst. Det var precis felet gårdagens mätning nästan lurade mig att göra.
   ⚠️ EJ BEVISAT: larmgrenen har aldrig fällt skarpt och kan inte bevisas förrän strömmen rör
   sig. Joinens semantik är prövad mot känd sanning i arkivlackans självtest.
-  🔑 KVAR ATT BESLUTA (Bengt + Axel): den AVGÖRANDE mätningen — ge GitHub-ingesten en EGEN
-  changeid-kursor och mät differensen mot livemotorns ström direkt. Den skulle fälla eller
-  fria hypotesen utan att vänta på snö, men den ändrar produktionsflödet. Kortet står öppet
-  tills antingen den mätningen gjorts eller vakten hunnit se en vinter.
+  🧭 **KURSORMÄTNINGEN KÖRD 5/9 04:38 (Bengts order) — HELT LÄSANDE, och den ändrade frågan.**
+  Jag hade lovat att den skulle fälla eller fria hypotesen "utan att vänta på snö". **Det
+  löftet höll inte, och det är mitt fel** — med tyst ström kan INGEN mätning avgöra saken.
+  Men i stället för produktionsändringen (egen kursor) byggdes en läsande variant som låter
+  TRAFIKVERKET vara domare i stället för att jämföra våra tabeller med varandra, som gårdagens
+  cirkulära mätning gjorde. Den avgjorde en ANNAN och farligare fråga.
+  BEVIS (kursormatning #1):
+  `KURSORN: vår lagrade last_change_id 7677878362341114260 · TRV:s just nu 7677878362341114260
+  → IKAPP — livemotorn har konsumerat hela strömmen`
+  `TRV:s sanning (818 levande segment) mot arkivet (830 rader): senaste timmen 0/0 · dygnet 0/0
+  · veckan 0/0 · hela beståndet 818 omklassade, 0 EJ arkiverade`
+  `DOM: OTESTBAR — noll omklassningar hos Trafikverket det senaste dygnet.`
+  ✅ **DET SOM ÄR AVGJORT, mot en extern domare:** (a) vår pipeline är INTE döv — tystnaden är
+  Trafikverkets, inte vår; (b) arkivet är KOMPLETT mot källan, 0 av 818 saknas; (c) livemotorn
+  ligger exakt ikapp TRV:s changeid, inget står i kö bakom oss. **Gårdagens blinda fläck är
+  därmed stängd: "färsk och tyst" är bevisat tyst, inte trasigt.** Det var det farligare av de
+  två alternativen, och det är nu uteslutet.
+  🔒 DET SOM INTE ÄR AVGJORT: läckhypotesen. Domen säger OTESTBAR med flit — självtestet
+  prövar uttryckligen att tyst ström ALDRIG får bli ett friande svar. Starvation kräver ett
+  flöde att svälta på; med noll flöde finns noll svält, och alltså inget att mäta.
+  🔑 KORTET STÅR ÖPPET till första riktiga omklassningsvädret. Då gör arkivvakten (var annan
+  timme) och kursormätningen (på knapp) jobbet automatiskt. Kvar som beslut: om ni ändå vill
+  ha den egna kursorn INNAN dess — den är då inte längre en mätning utan en FÖRBÄTTRING, och
+  bör motiveras som sådan.
 - [ ] ⚠️ **#52 Ett test låser fast motsatsen till vinterbaseline-principen** (samma svep,
   verifierat). test/engine.test.ts:143-146 hävdar att ett segment klassat **code 1 (Normalt)**
   med info **"Packad snö"** MÅSTE ge exakt ett larm — tillsammans med Isfläckar, Svår halka och
