@@ -1,0 +1,27 @@
+# Arkivläckan (kort #51): når väglagsströmmen road_condition_history, husets vinterarkiv?
+# Självtest med känd sanning före den skarpa körningen; underlagsvakt mot grön-men-tom;
+# resultatet på Summary-sidan. Mätning, ingen fix — åtgärden är Bengts och Axels beslut.
+name: arkivlackan
+on:
+  workflow_dispatch:
+    inputs:
+      dagar:
+        description: "Dagar bakåt i tidsserien"
+        default: "30"
+jobs:
+  arkivlackan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types scripts/arkivlackan.ts --sjalvtest
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/arkivlackan.ts "${{ inputs.dagar || '30' }}" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }

@@ -1096,3 +1096,37 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   Dygnsmätning bokad 5/9 21:30 UTC mot beviskravet: inget mellanrum över 2 h 30.
   Sidonotering: NO-stationerna i gränssnapshoten står nu på 44, mot 42 vid publicering #621.
   Fluktuation i vilka stationer som är nåbara, inte en ändring vi gjort — noterat, inget kort.
+- **S-2026-09-05: svep inför kort #45 gav tre fynd större än frågan** (Bengts fråga: tar
+  mätningen hänsyn till snö-på-snö och regn-på-snö, och hur bestäms Norrland?). Fyra parallella
+  läsvarv genom repot; allt nedan efterkontrollerat av mig i koden, inte taget på ord.
+  **SVARET PÅ NORRLAND-FRÅGAN: det definieras inte, och ska inte göra det.** Produkten är helt
+  regionblind — inga läns-, latitud-, zon- eller gränsbegrepp i motorn, snapshoten eller
+  ingesten, i någon av de tre portarna. Repots enda Norrland är `new Set([21,22,23,24,25])` i
+  två MÄTSKRIPT (ankaranalys.ts:13, frost-prov.ts:16) som bara delar statistik. Rätt design:
+  en geografisk gräns vore fel tre gånger om — baseline flyttar med årstiden, en bar blöt väg
+  i Kiruna i november är en avvikelse värd att varna för, och baseline skiftar inom samma län.
+  Per segment löser alla tre.
+  **FYND 1 (NYTT KORT #51, brådskar): vinterarkivet skrivs nästan inte.**
+  `road_condition_history` kallas i sql/001 "the winter archive (our moat)", men dess enda
+  skrivare är GitHub-ingesten. Livemotorns edge function — som äger väglaget sedan 25/8 och kör
+  varje minut — skriver bara `road_conditions` som UPSERT, noll träffar på historiken. Båda
+  delar changeid-kursor (`sync_state` källa road_conditions), så minutjobbet flyttar fram
+  kursorn ~59 ggr/timme och timjobbet ser bara sista minutens delta. Omklassningarna däremellan
+  försvinner. Ingen vakt märker det: healthchecken mäter färskhet och antal segment, aldrig om
+  historiken växer. Kort #45:s baseline OCH marsdomens vinterfacit vilar båda på detta.
+  Magnituden är ännu inte mätt — mekanismen är bevisad, siffran är en slutsats, och första
+  steget är därför en mätning (rader/dygn före och efter 25/8), inte en fix.
+  **FYND 2 (NYTT KORT #52): ett test låser fast motsatsen till baseline-principen.**
+  test/engine.test.ts:143-146 kräver att code 1 (Normalt) + "Packad snö" MÅSTE ge ett larm —
+  exakt det fall kort #45 säger aldrig får larma i norr. Samma test i alla tre portarna. Att
+  ändra det är en kontraktsändring mot engine/vectors, alltså ett beslut, inte en fix.
+  **FYND 3: #45:s "alla ingredienser ligger redan i arkivet" var för optimistiskt.**
+  weather_latest (som snapshoten byggs ur) bär varken fuktighet eller daggpunkt; höjd lagras
+  inte alls (hojd-prov hämtar live från opentopodata); ingen våtbulbsformel finns i koden.
+  Det som FINNS per segment är radar_precip. Halva metoden är verklig, andra halvan obyggd.
+  **SIDOFYND (bugg, bara marknadsmotorn):** vader.geojson publicerar ingen `lan`-egenskap
+  (build-map-data.ts:48), men marknadsforing/generator.mjs:36 läser `p.lan` på väderstationer
+  ⇒ alltid hink 0 ⇒ LAN[0] undefined ⇒ frys-/snöräknarna kan aldrig bidra till ett länslarm.
+  Rör inte produkten. Nämnt, inte fixat — inte mitt uppdrag i det här varvet.
+  **LÄXA:** kortet påstod "alla ingredienser finns" utan att någon läst schemat. Ett
+  ingredienspåstående är en mätning, inte en känsla — det ska beläggas när kortet skrivs.

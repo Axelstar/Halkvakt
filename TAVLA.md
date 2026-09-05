@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-04 22:40 av Claude (webben) — kort #50: pulsen TRYCKTE, healthcheck #77 via dispatch 22:23:02, HEALTHY. Ett mellanrum är inte ett dygn — kortet öppet till dygnsmätningen 5/9 21:30*
+*Uppdaterad: 2026-09-05 av Claude (webben) — svep inför kort #45 gav tre fynd större än frågan: vinterarkivet skrivs nästan inte (NYTT #51, brådskar), ett test låser fast motsatsen till vinterbaseline-principen (NYTT #52), och #45:s "alla ingredienser finns" var för optimistiskt. "Norrland" definieras inte i produkten — och ska inte göra det*
 
 ---
 
@@ -227,6 +227,37 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   ⏰ Förhandssamtalet till fonden = "första veckan i september" = NU.
 
 ### Claude — olåst
+- [ ] 🚨 **#51 Vinterarkivet skrivs nästan inte — moaten läcker** (fynd 4/9 kväll, svep
+  inför kort #45; VERIFIERAT i koden, inte agentpåstående). `road_condition_history` är
+  husets uttryckliga vinterarkiv — sql/001_init.sql:30 säger ordagrant *"Append-only: this
+  is the winter archive (our moat)"*. MEN dess ENDA skrivare är GitHub-ingesten (ingest/db.ts:101).
+  Livemotorns edge function, som äger väglaget sedan 25/8 (DECISIONS #22) och kör VARJE MINUT,
+  skriver bara `road_conditions` som UPSERT och rör aldrig historiken — noll träffar på
+  `road_condition_history` i supabase/functions/ingest-live/index.ts.
+  MEKANIKEN som gör det allvarligt: båda delar changeid-kursor, `sync_state` källa
+  `road_conditions` (edge: index.ts:93 + saveCursor; GitHub: ingest/index.ts:26). Minutjobbet
+  flyttar fram kursorn ~59 gånger per timme, så timjobbet — arkivets enda skrivare — ser bara
+  deltat sedan senaste minutkörningen. Omklassningarna däremellan konsumeras och försvinner.
+  KONSEKVENS: (a) kort #45:s säsongsbaseline per segment vilar på data som till största delen
+  inte sparas; (b) marsdomens vinterfacit likaså; (c) ingen vakt märker det — healthchecken
+  mäter sync_state-färskhet och antal segment, aldrig om historiken VÄXER (ingest/healthcheck.ts).
+  ⚠️ BRÅDSKAR OBEROENDE AV RADARDOMEN: varje dygn som går kostar vinterdata som inte går att
+  hämta i efterhand, och vintern börjar nu. Kortet är INTE låst bakom 14/9.
+  🔑 EJ MÄTT ÄNNU: exakt hur stort bortfallet är. Mekanismen är bevisad, magnituden är en
+  slutsats. FÖRSTA STEGET är en mätning — rader per dygn i road_condition_history, före och
+  efter 25/8 — inte en fix. Mät innan du bygger, som alltid.
+- [ ] ⚠️ **#52 Ett test låser fast motsatsen till vinterbaseline-principen** (samma svep,
+  verifierat). test/engine.test.ts:143-146 hävdar att ett segment klassat **code 1 (Normalt)**
+  med info **"Packad snö"** MÅSTE ge exakt ett larm — tillsammans med Isfläckar, Svår halka och
+  Risk för halka. Det är ordagrant det vinterbaseline-fall som kort #45 säger *"larmar ALDRIG"*.
+  Principen är alltså inte bara obyggd; den är aktivt låst åt andra hållet, och i alla tre
+  motorportarna (engine/src/engine.ts:237, Engine.kt:162, Engine.swift:306 gör samma test).
+  Varför det spelar roll NU: att ändra det är en KONTRAKTSÄNDRING som rör engine/vectors och
+  tre körtider — inte något man upptäcker i december när snön ligger. CLAUDE.md: en vektor får
+  aldrig försvagas för att få ett bygge grönt, så ändringen kräver eget beslut med motivering.
+  🔑 Beslut till Bengt + Axel, kopplat till #45: ska "Packad snö" på code 1 fortsätta larma
+  nationellt tills baseline finns, eller är cry-wolf-risken i norr större än vinsten i söder?
+  Ingen ändring görs på eget bevåg.
 - [ ] 📡 **#43 Radarn som infrastruktur** (Bengts beställning 2/9, efter cellmätningens
   dom) — EN källa, SEX nyttor: vattenplaningens trigger (#42), blixthalkans pipeline
   (#16), marsdomens orsaksklassning, miss-/skuggfacit, vinterns snöbyar, Norden.
@@ -457,6 +488,31 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   (publish/missar.ts). Regn på torrt, regn på snö och snö på snö ger alla samma `true`.
   Matrisens farligaste korsning är alltså osynlig för motorn i dag; det är exakt luckan
   kortet finns för att stänga.
+  🛑 **INGREDIENSPÅSTÅENDET ÖVERDREV — rättat 4/9 kväll efter svep** (Bengts fråga om
+  baseline och Norrland). Kortet ovan säger "ALLA ingredienser ligger redan i arkivet". Det
+  stämmer inte, och tre saker fattas:
+  (1) `weather_latest` — tabellen snapshoten byggs ur — bär VARKEN fuktighet ELLER daggpunkt
+  (sql/001_init.sql: bara surface_temp_c, air_temp_c, precipitation, rain, snow). De finns
+  bara i `weather_observations`, som är händelsefiltrerat (DECISIONS #4). Ingen tät serie.
+  (2) HÖJD lagras inte alls — ingen höjdkolumn finns i sql/; scripts/hojd-prov.ts hämtar
+  höjderna live från opentopodata vid varje körning. Lapse-korrektionen (0,0065) finns bara
+  i det provskriptet, aldrig i ingest, publish, snapshot eller motor.
+  (3) Ingen VÅTBULBSFORMEL finns någonstans i koden — ordet står bara i TAVLA och STATUS.
+  DET SOM FAKTISKT FINNS per segment: radarns nederbördsintensitet (radar_precip, 2 km-sampling
+  mot 818-skelettet). Halva metoden är alltså verklig; andra halvan är obyggd.
+  🚨 OCH baseline-halvan står på #51: vinterarkivet som säsongsbaselinen ska räknas ur
+  skrivs nästan inte. Kort #45 kan inte bli sant förrän #51 är löst — den kopplingen är ny
+  och gjordes inte när kortet skrevs.
+  🗺️ "NORRLAND" DEFINIERAS INTE, och ska inte göra det (svaret på Bengts fråga 4/9):
+  produkten är helt regionblind — inga läns-, latitud-, zon- eller gränsbegrepp finns i
+  motorn, snapshoten eller ingesten, i någon av de tre portarna. Repots enda Norrland är
+  `new Set([21,22,23,24,25])` i TVÅ MÄTSKRIPT (scripts/ankaranalys.ts:13, scripts/frost-prov.ts:16),
+  där det bara delar statistik i "Nationellt" / "Norrland" och aldrig rör larmlogik.
+  Det är rätt: en geografisk gräns vore fel på tre sätt samtidigt — packad snöväg i Dalarna
+  i mars är lika normal som i Norrbotten (gränsen måste flytta med årstiden), en bar blöt väg
+  i Kiruna i november är en avvikelse VÄRD att varna för som en Norrlandsspärr hade tystat,
+  och baseline skiftar inom samma län (kustens E4 plogas till barmark, inlandsvägen ligger
+  snöpackad). Per segment löser alla tre utan att någon ritar en linje på kartan.
   **Rösten är ett SEPARAT beslut (Axels kolumn, som #32):** om "snöfall framöver" eller
   "slask på vägen" blir egna rösthändelser avgör Axel; tystnadsdisciplinen gäller —
   ett slask-larm som har fel är värre än inget. Prognos av KOMMANDE snöfall är #16,
