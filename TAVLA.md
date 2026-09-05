@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-05 av Claude (webben) — kursormätningen körd med TRV som domare: pipelinen är INTE döv, arkivet komplett mot källan, livemotorn ikapp. Blinda fläcken stängd. Läckhypotesen kvar som OTESTBAR — tyst ström kan inte fria den, och domspärren ser till att den inte gör det*
+*Uppdaterad: 2026-09-05 av Claude (webben) — egen kursor åt arkivspåret i drift (#51/#73), bevisad i ingest #267. Oväntad insikt samma körning: det regnar (178 segment, max 15 mm/h) men noll omklassningar — väglagsströmmen är ett VINTERfenomen, inte ett nederbördsfenomen*
 
 ---
 
@@ -300,10 +300,32 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   🔒 DET SOM INTE ÄR AVGJORT: läckhypotesen. Domen säger OTESTBAR med flit — självtestet
   prövar uttryckligen att tyst ström ALDRIG får bli ett friande svar. Starvation kräver ett
   flöde att svälta på; med noll flöde finns noll svält, och alltså inget att mäta.
-  🔑 KORTET STÅR ÖPPET till första riktiga omklassningsvädret. Då gör arkivvakten (var annan
-  timme) och kursormätningen (på knapp) jobbet automatiskt. Kvar som beslut: om ni ändå vill
-  ha den egna kursorn INNAN dess — den är då inte längre en mätning utan en FÖRBÄTTRING, och
-  bör motiveras som sådan.
+  ✅ **EGEN KURSOR BYGGD OCH I DRIFT 5/9 04:55** (Bengts "ja bygg", DECISIONS #73, PR #67).
+  GitHub-ingesten läser nu `road_conditions_arkiv` i stället för den delade nyckeln, så
+  arkivets enda skrivare konsumerar hela timmens ström i stället för sista minutens delta.
+  Livemotorns kursor är orörd. TRE FÖLJDÄNDRINGAR som hörde till, inte extra:
+  (a) BAKÅTVAKT på upserten (`EXCLUDED.modified_time >= road_conditions.modified_time`) —
+  nödvändig eftersom vi nu behandlar en hel timme samtidigt som livemotorn skriver varje
+  minut, så kapplöpningsfönstret växer; (b) räknarna mäter VERKLIGA skrivningar (rowCount)
+  i stället för försök, annars går nyttan inte att se; (c) integrationstestet SKÄRPT — det
+  fällde mig först, och hade rätt: det krävde `history: 1` på omkörning trots att noll rader
+  skrevs. Nu krävs `history: 0`, vilket bevisar CLAUDE.md:s "en rerun får aldrig duplicera
+  rader" i stället för att anta den.
+  BEVIS (ingest #267, 04:55:26):
+  `delta sync from: { deviations, weather, cameras }` ← ingen road_conditions-nyckel, alltså
+  full första synk som väntat · `road condition segs: 818` ·
+  `DB WRITE OK: {"road_conditions":818,"history":0,...}`
+  Nollan är den ärliga räknaren i arbete: inget nytt att arkivera, eftersom alla 818 redan
+  fanns. Under den gamla räknaren hade samma körning skrivit ut `history: 818` — en lögn.
+  🌧️ **OVÄNTAD INSIKT SAMMA KÖRNING, värd att minnas:** radarsteget mätte 178 segment med regn
+  ≥ 0,1 mm/h just nu, max 15,38 mm/h — det REGNAR över Sverige. Ändå: `non-normal active: 0`.
+  Regn flyttar alltså inte väglagsströmmen alls. Omklassning är ett VINTERfenomen, inte ett
+  nederbördsfenomen. Det förklarar tystnaden definitivt och skärper förväntan: arkivet
+  förblir tyst tills det fryser, hur mycket det än regnar. Gäller även kort #45.
+  🔑 KORTET STÅR FORTFARANDE ÖPPET: nyttan går inte att mäta förrän strömmen lever. Men nu
+  väntar vi med en bättre pipeline i stället för med en obesvarad fråga — arkivvakten läser
+  var annan timme, kursormätningen sitter på knapp, och den egna kursorn ser till att det
+  finns något att arkivera när vintern kommer.
 - [ ] ⚠️ **#52 Ett test låser fast motsatsen till vinterbaseline-principen** (samma svep,
   verifierat). test/engine.test.ts:143-146 hävdar att ett segment klassat **code 1 (Normalt)**
   med info **"Packad snö"** MÅSTE ge exakt ett larm — tillsammans med Isfläckar, Svår halka och
