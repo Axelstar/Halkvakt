@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-05 av Claude (webben) — svar på Bengts fråga, mätt i motorn: kortare segment gör det TRE gånger värre (Jämtland 4 larm → 12, var tredje minut i 39 min). Geometrin är inte spaken; reprisregeln och baseline-regeln är det*
+*Uppdaterad: 2026-09-05 av Claude (webben) — 🛑 HELA PIPELINEN STÅR sedan ~12:11: alla workflows dör på 3–5 s med noll steg och noll loggar, på oförändrad kod (ingest lyckades 11:11, föll 12:11 på samma commit). Troligast Actions-minuterna slut — privat repo, ~216 min/dygn. Kort #53, kräver Bengt/Axel i Billing*
 
 ---
 
@@ -227,6 +227,37 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   ⏰ Förhandssamtalet till fonden = "första veckan i september" = NU.
 
 ### Claude — olåst
+- [ ] 🛑 **#53 HELA PIPELINEN STÅR — Actions vägrar starta jobb** (upptäckt 5/9 ~15:40 via
+  Bengts felmeddelande om regn-30; visade sig vara mycket större än regn-30).
+  🧭 **DIAGNOS, mätt och inte gissad.** Felet är INTE vår kod:
+  · ingest #275 kl **11:11 LYCKADES** (32 s) · ingest #276 kl **12:11 FÖLL** (4 s)
+  · **samma commit** (a7caa3d), samma workflow-fil, ingenting ändrat däremellan.
+  · Efter ~12:11 faller ALLT: ingest, ingest-fi, ingest-dk, ingest-no, publish-map,
+  bridges, healthcheck, regn-30. Varje körning dör på 3–5 sekunder med **noll steg**
+  och **noll loggar** (logg-API:t ger 404 — jobbet producerade aldrig något).
+  Ett jobb som dör före första steget, i alla workflows samtidigt, på oförändrad kod,
+  är per definition ett konto- eller inställningsfel — inte ett programfel.
+  💸 **TROLIGASTE ORSAK: Actions-minuterna slut.** Repot är PRIVAT (verifierat via API:
+  `"visibility": "private"`), och privata repon på GitHub Free har **2 000 minuter/månad**.
+  RÄKNINGEN, ur observerade körningar 12:00–15:37: ~32 körningar på 3,6 h ≈ **9 körningar/h**.
+  GitHub avrundar VARJE jobb uppåt till hel minut, och våra jobb tar 20–40 s — alltså
+  ~9 min/h ≈ **216 minuter/dygn**, och 2 000 / 216 ≈ **9 dygn**. Repot skapades 24/8.
+  ⚠️ VÅR JOBBFORM ÄR MAXIMALT DYR under den modellen: många små jobb. Ett 25-sekundersjobb
+  kostar en hel minut, så pulsklockan som gav oss tillförlitlighet (#63, #70) fördubblade
+  samtidigt minutförbrukningen. Det är en avvägning ingen räknade på när den byggdes.
+  🔑 **KRÄVER BENGT/AXEL — jag har varken behörighet eller insyn i fakturering:**
+  kontrollera Settings → Billing → Actions (använda minuter, spending limit) och
+  Settings → Actions (om Actions stängts av). Är det minuterna finns tre vägar:
+  (a) höj spending limit (kostar pengar — DECISIONS-post krävs enligt fritier-regeln),
+  (b) **gör repot publikt** ⇒ Actions blir gratis och obegränsat (men allt blir läsbart —
+  hemligheter ligger i Secrets och läcker inte, men koden och tavlan blir offentliga),
+  (c) skär i kadensen: färre körningar, eller slå ihop ingest-fi/dk/no till ETT jobb, vilket
+  ensamt skulle spara ~4 minuter i timmen.
+  🚨 **VAD SOM STÅR STILLA UNDER TIDEN:** all datainsamling (SE/FI/DK/NO), radarpiloten,
+  publiceringen till kartan (webben åldras), regn-30 — och **healthchecken själv**, så
+  ingen vakt kommer att larma om det här. Kort #44:s dygnsbevis och #50:s dygnsmätning
+  kan inte fullföljas medan det pågår. Livemotorn i Supabase (pg_cron) berörs INTE — den
+  kör utanför GitHub, så minutfärsk data fortsätter landa i databasen.
 - [ ] 🚨 **#51 Vinterarkivet skrivs nästan inte — moaten läcker** (fynd 4/9 kväll, svep
   inför kort #45; VERIFIERAT i koden, inte agentpåstående). `road_condition_history` är
   husets uttryckliga vinterarkiv — sql/001_init.sql:30 säger ordagrant *"Append-only: this

@@ -1222,3 +1222,24 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   (2) reprisregeln för segment ger kolumn C, 4→1 i norr och 2→1 i söder, utan geometriändring
   och med verkan i hela landet (men en avvägning: en påminnelse efter en halvtimme kan vara
   önskad); (3) rösten säger inte hur långt sträckan räcker — Axels spår.
+- **S-2026-09-05 ~15:40: HELA PIPELINEN STÅR — nytt kort #53** (Bengt rapporterade ett
+  regn-30-fel; det visade sig vara mycket större än regn-30).
+  DIAGNOS: ingest #275 kl 11:11 lyckades på 32 s, #276 kl 12:11 föll på 4 s — SAMMA COMMIT
+  (a7caa3d), samma workflow-fil, ingenting ändrat däremellan. Efter ~12:11 faller varenda
+  workflow: ingest, fi, dk, no, publish-map, bridges, healthcheck, regn-30. Alla dör på
+  3–5 s med noll steg och noll loggar (logg-API 404). Ett jobb som dör före första steget,
+  i alla workflows samtidigt, på oförändrad kod, är ett konto- eller inställningsfel.
+  TROLIGAST: Actions-minuterna slut. Repot är privat (verifierat: visibility private) och
+  privata repon på Free har 2 000 min/månad. Räknat ur observerade körningar 12:00–15:37:
+  ~9 körningar/h, och GitHub avrundar varje jobb uppåt till hel minut medan våra jobb tar
+  20–40 s ⇒ ~216 min/dygn ⇒ 2 000 räcker ~9 dygn. Repot skapades 24/8.
+  LÄXA VÄRD ATT MINNAS: vår jobbform är maximalt dyr under den modellen — många små jobb,
+  där ett 25-sekundersjobb kostar en hel minut. Pulsklockan (#63/#70) gav oss tillförlitlighet
+  och fördubblade samtidigt minutförbrukningen. Ingen räknade på den avvägningen när den
+  byggdes, och fritier-regeln i CLAUDE.md säger att vi skulle gjort det.
+  KRÄVER BENGT/AXEL: Settings → Billing → Actions, och Settings → Actions. Jag har varken
+  behörighet eller insyn. Tre vägar om det är minuterna: höj spending limit (kostar pengar,
+  kräver DECISIONS-post), gör repot publikt (Actions blir gratis; hemligheter i Secrets
+  läcker inte men kod och tavla blir offentliga), eller skär i kadensen — att slå ihop
+  ingest-fi/dk/no till ett jobb sparar ensamt ~4 min/h.
+  Livemotorn i Supabase (pg_cron) berörs INTE — den kör utanför GitHub.
