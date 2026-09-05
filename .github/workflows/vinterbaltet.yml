@@ -1,0 +1,23 @@
+# Vinterbältet (kort #52): hur stor del av varningsytan ligger i län där packad snöväg är
+# normalt vinterväglag? Underlag för beslutet om "Packad snö" på code 1 ska fortsätta larma.
+# Helt läsande. Mäter EXPONERING, inte incidens — det står i rapporten, inte bara här.
+name: vinterbaltet
+on:
+  workflow_dispatch:
+jobs:
+  vinterbaltet:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types scripts/vinterbaltet.ts --sjalvtest
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/vinterbaltet.ts | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
