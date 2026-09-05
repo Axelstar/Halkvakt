@@ -1130,3 +1130,20 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   Rör inte produkten. Nämnt, inte fixat — inte mitt uppdrag i det här varvet.
   **LÄXA:** kortet påstod "alla ingredienser finns" utan att någon läst schemat. Ett
   ingredienspåstående är en mätning, inte en känsla — det ska beläggas när kortet skrivs.
+- **S-2026-09-05 04:02: arkivläckan MÄTT — nollresultat, och en tom moat** (Bengts "mät
+  bortfallet på 51", DECISIONS #71, PR #61). Knapp byggd med självtest mot känd sanning
+  (10 segment, 4 oarkiverade, 2 utan historik — alla fyra måtten gröna), underlagsvakt under
+  100 segment och invariantvakt mot trasig join.
+  UTFALL: bortfall 0 av 818 segment. Hypotesen om ett stort bortfall bekräftades INTE.
+  Men arkivet är 830 rader över 818 segment, nyaste raden 2026-08-25 08:09, och tidsserien
+  över 30 dygn innehåller en enda dag. Ingen omklassning på elva dygn. Bortfallet är noll för
+  att flödet står stilla — nollresultat, inte friande dom.
+  Det större fyndet: moaten är inte läckande utan TOM. Ingen vinterhistorik finns, bara ett
+  stillbildsavtryck per segment. Kort #45:s baseline saknar underlag oavsett läckan.
+  Blind fläck i samma varv: healthchecken vaktar sync_state-färskhet, men edge-funktionen
+  skriver synced_at varje minut oavsett utfall — vakten kan inte skilja "färsk och tyst" från
+  "färsk och trasig". Samma familj som fail-soft-läxan: ett kvitto på att jobbet KÖRDE säger
+  inget om att det UTRÄTTADE något.
+  REKOMMENDATION till Bengt + Axel: bygg vakten, inte fixen. En tillväxtvakt på
+  road_condition_history ger besked första dygnet snön faller. Den avgörande mätningen —
+  egen kursor åt GitHub-ingesten och mät differensen — ändrar produktionsflödet och kräver ja.

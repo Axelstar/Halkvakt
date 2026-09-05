@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-05 av Claude (webben) — svep inför kort #45 gav tre fynd större än frågan: vinterarkivet skrivs nästan inte (NYTT #51, brådskar), ett test låser fast motsatsen till vinterbaseline-principen (NYTT #52), och #45:s "alla ingredienser finns" var för optimistiskt. "Norrland" definieras inte i produkten — och ska inte göra det*
+*Uppdaterad: 2026-09-05 av Claude (webben) — #51 MÄTT: bortfall 0 %, men hypotesen friades inte. Arkivet är 830 rader över 818 segment och har inte fått en rad på elva dygn — moaten är tom, inte läckande, och den avgörande mätningen går inte att göra förrän segment klassas om i vinterväder*
 
 ---
 
@@ -243,9 +243,32 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   mäter sync_state-färskhet och antal segment, aldrig om historiken VÄXER (ingest/healthcheck.ts).
   ⚠️ BRÅDSKAR OBEROENDE AV RADARDOMEN: varje dygn som går kostar vinterdata som inte går att
   hämta i efterhand, och vintern börjar nu. Kortet är INTE låst bakom 14/9.
-  🔑 EJ MÄTT ÄNNU: exakt hur stort bortfallet är. Mekanismen är bevisad, magnituden är en
-  slutsats. FÖRSTA STEGET är en mätning — rader per dygn i road_condition_history, före och
-  efter 25/8 — inte en fix. Mät innan du bygger, som alltid.
+  📏 **MÄTT 5/9 (arkivlackan #1, Bengts "mät bortfallet") — OCH HYPOTESEN BEKRÄFTADES INTE.**
+  Uppmätt bortfall: **0 av 818 segment** (0,0 %). Varje nuvarande tillstånd finns i arkivet,
+  både de 806 som ändrades före 25/8 och de 12 efter. Inget segment saknar historikrad.
+  MEN LÄS VARFÖR, för siffran friar ingen: arkivet är **830 rader över 818 segment** — i
+  praktiken EN rad per segment plus tolv — och dess **nyaste rad är 2026-08-25 08:09**.
+  Tidsserien över 30 dygn innehåller EN enda dag: 25/8, med 12 rader. Inte en enda
+  omklassning har alltså skett på **elva dygn**. Bortfallet är noll för att flödet står
+  stilla, inte för att arkivet fungerar. Mätningen är ett NOLLRESULTAT, inte en friande dom.
+  🚨 DET STÖRRE FYNDET, som jag inte letade efter: **moaten är inte läckande — den är tom.**
+  "Vinterarkivet" innehåller ingen vinterhistorik alls, bara ett stillbildsavtryck av varje
+  segments tillstånd plus tolv ändringar. Äldsta modified_time är 2026-02-21, vilket bara
+  betyder att segmentet inte klassats om sedan dess. Det finns ingenting att räkna en
+  säsongsbaseline ur i dag — kort #45:s premiss saknar underlag oavsett läckan.
+  🔒 VARFÖR DEN AVGÖRANDE MÄTNINGEN INTE GÅR ATT GÖRA ÄNNU: den delade kursorn kan bara
+  fälla eller fria när segment FAKTISKT klassas om, alltså i vinterväder. I september ligger
+  RoadCondition-strömmen still. Hypotesen är därmed varken bevisad eller motbevisad — den är
+  otestbar tills snön kommer, vilket är exakt när den spelar roll.
+  ⚠️ BLIND FLÄCK UPPTÄCKT I SAMMA VARV: healthchecken vaktar `sync_state`-FÄRSKHET, och
+  edge-funktionen skriver `synced_at = now()` varje minut oavsett om något hämtades. Vakten
+  kan alltså inte skilja "färsk och tyst" från "färsk och trasig". Elva tysta dygn ser
+  identiska ut med elva trasiga.
+  🔑 REKOMMENDATION (Claudes, beslut hos Bengt + Axel): bygg inte fixen nu — bygg VAKTEN.
+  En tillväxtvakt på road_condition_history (rader sedan förra körningen) gör att vi får veta
+  första dygnet snön faller om raderna kommer eller försvinner, i stället för att upptäcka det
+  i mars. Alternativet, att ge GitHub-ingesten en EGEN kursor och mäta differensen direkt,
+  är den avgörande mätningen — men den ändrar produktionsflödet och kräver ert ja.
 - [ ] ⚠️ **#52 Ett test låser fast motsatsen till vinterbaseline-principen** (samma svep,
   verifierat). test/engine.test.ts:143-146 hävdar att ett segment klassat **code 1 (Normalt)**
   med info **"Packad snö"** MÅSTE ge exakt ett larm — tillsammans med Isfläckar, Svår halka och
