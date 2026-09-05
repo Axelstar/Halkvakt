@@ -1,0 +1,25 @@
+# Kursormätningen (kort #51): låter Trafikverket vara domare i stället för att jämföra våra
+# egna tabeller med varandra. HELT LÄSANDE — ingen kursor flyttas, ingen rad skrivs.
+# Trestegsdom: förlust bevisad · arkivet höll · otestbar (tyst ström). Den sista är poängen.
+name: kursormatning
+on:
+  workflow_dispatch:
+jobs:
+  kursormatning:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types scripts/kursormatning.ts --sjalvtest
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/kursormatning.ts | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env:
+          TRAFIKVERKET_API_KEY: "${{ secrets.TRAFIKVERKET_API_KEY }}"
+          DATABASE_URL: "${{ secrets.DATABASE_URL }}"
