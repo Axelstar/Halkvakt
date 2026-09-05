@@ -79,7 +79,7 @@ export async function writeAll(data: {
         col(c, x => JSON.stringify(x.conditionInfo)), col(c, x => JSON.stringify(x.countyNos)),
         col(c, x => x.roadNumber), col(c, x => x.locationText), col(c, x => x.wgs84Line), col(c, x => x.startTime),
         col(c, x => x.endTime), col(c, x => x.modifiedTime), col(c, x => x.deleted)];
-      await client.query(
+      const rcRes = await client.query(
         `INSERT INTO road_conditions (segment_id, condition_code, condition_text, condition_info,
            county_nos, road_number, location_text, geom, start_time, end_time, modified_time, deleted)
          SELECT u.segment_id, u.condition_code, u.condition_text,
@@ -96,8 +96,10 @@ export async function writeAll(data: {
            location_text=COALESCE(EXCLUDED.location_text, road_conditions.location_text),
            geom=COALESCE(EXCLUDED.geom, road_conditions.geom),
            start_time=EXCLUDED.start_time, end_time=EXCLUDED.end_time,
-           modified_time=EXCLUDED.modified_time, deleted=EXCLUDED.deleted`, args);
-      await client.query(
+           modified_time=EXCLUDED.modified_time, deleted=EXCLUDED.deleted
+         WHERE road_conditions.modified_time IS NULL
+            OR EXCLUDED.modified_time >= road_conditions.modified_time`, args);
+      const histRes = await client.query(
         `INSERT INTO road_condition_history (segment_id, condition_code, condition_text, condition_info, modified_time, deleted)
          SELECT u.segment_id, u.condition_code, u.condition_text,
                 ARRAY(SELECT jsonb_array_elements_text(u.condition_info::jsonb)), u.modified_time, u.deleted
@@ -106,8 +108,8 @@ export async function writeAll(data: {
          ON CONFLICT (segment_id, modified_time) DO NOTHING`,
         // OBS: location_text sköts in på index 6 (kort #48) — modified_time/deleted är nu 10/11.
         [args[0], args[1], args[2], args[3], args[10], args[11]]);
-      counts.road_conditions += c.length;
-      counts.history += c.length;
+      counts.road_conditions += rcRes.rowCount ?? 0;
+      counts.history += histRes.rowCount ?? 0;
     }
 
     for (const c of chunks(data.weather.items)) {
@@ -267,7 +269,7 @@ export async function writeAll(data: {
     }
 
     for (const [source, id] of [
-      ["weather", data.weather.lastChangeId], ["road_conditions", data.conditions.lastChangeId],
+      ["weather", data.weather.lastChangeId], ["road_conditions_arkiv", data.conditions.lastChangeId],
       ["cameras", data.cameras.lastChangeId], ["deviations", data.deviations.lastChangeId],
     ] as const) {
       if (id) await client.query(

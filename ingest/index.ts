@@ -23,7 +23,11 @@ if (!dryRun && hasDb) {
 const t0 = Date.now();
 const [weather, conditions, cameras, deviations, wildlife, smhi] = await Promise.all([
   fetchWeather(apiKey, since.weather ?? "0"),
-  fetchRoadConditions(apiKey, since.road_conditions ?? "0"),
+  // EGEN KURSOR (kort #51, DECISIONS #73): livemotorn (minutvis) och den här ingesten
+  // delade tidigare sync_state-raden "road_conditions". Minutjobbet flyttade fram kursorn
+  // ~59 ggr/timme, så det här jobbet — road_condition_historys ENDA skrivare — såg bara
+  // sista minutens delta. Med "road_conditions_arkiv" konsumerar vi hela timmens ström.
+  fetchRoadConditions(apiKey, since.road_conditions_arkiv ?? "0"),
   fetchCameras(apiKey, since.cameras ?? "0"),
   fetchDeviations(apiKey, since.deviations ?? "0"),
   fetchWildlifeEvents().catch((e) => { console.warn("polisen.se skipped:", e.message); return { items: [] }; }),

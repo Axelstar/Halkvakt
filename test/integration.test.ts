@@ -47,8 +47,16 @@ test("writeAll: migrate, insert, idempotent re-run", { skip: !url }, async () =>
   assert.deepEqual(c1, expected);
 
   // Idempotency: same input again must not duplicate anything.
+  // SKÄRPT (DECISIONS #73): history-räknaren är sedan den egna kursorn VERKLIGA skrivningar
+  // (rowCount), inte försök (c.length). Andra körningen ska därför ge history: 0 — arkivet
+  // är append-only med ON CONFLICT DO NOTHING, så en omkörning får inte lägga till något.
+  // Det är ett STARKARE påstående än det gamla: förut passerade testet med history: 1 trots
+  // att ingen rad skrevs, eftersom räknaren räknade försök. Nu bevisas invarianten i
+  // CLAUDE.md ("en rerun får aldrig duplicera rader") i stället för att antas.
+  // road_conditions stannar på 1 båda varven: ON CONFLICT DO UPDATE skriver om raden, och
+  // bakåtvakten släpper igenom eftersom modified_time är oförändrad (>=).
   const c2 = await writeAll(data);
-  assert.deepEqual(c2, expected);
+  assert.deepEqual(c2, { ...expected, history: 0 });
 
   const pg = (await import("pg")).default;
   const pool = new pg.Pool({ connectionString: url, max: 1 });
