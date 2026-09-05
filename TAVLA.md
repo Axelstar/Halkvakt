@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-05 18:00 av Claude (webben) — kort #44: pulsen gav 23/23 timmar i följd innan avbrottet (GitHub-cronen 8 av 29 och aldrig på rätt minut), men 2/2-andelen går inte att mäta med Actions nere — kortet stängs inte. Avbrottet i #53 skärpt till 11:11–11:41*
+*Uppdaterad: 2026-09-05 21:35 av Claude (webben) — kort #50: dygnsmätningen körd men dygnet finns inte; 0 av 10 mellanrum över 2 h 30 i det levande halvdygnet, sedan ett hål på 10 h 54 min. Fyndet: pulsen gav vakthunden en oberoende klocka men ingen oberoende löpare. Kortet stängs inte*
 
 ---
 
@@ -290,6 +290,14 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   ingen vakt kommer att larma om det här. Kort #44:s dygnsbevis och #50:s dygnsmätning
   kan inte fullföljas medan det pågår. Livemotorn i Supabase (pg_cron) berörs INTE — den
   kör utanför GitHub, så minutfärsk data fortsätter landa i databasen.
+  📉 **LÄGET 5/9 21:35, tionde timmen:** fortfarande **noll lyckade körningar**. Av de
+  100 senaste körningarna (15:11 → 21:17, alla workflows) är **100 misslyckade** — ~16
+  döda körningar i timmen. Logg-API:t ger 404 även på den senaste, alltså producerar
+  jobben fortfarande ingenting alls. Pulsklockan i Supabase fyrar planenligt hela tiden
+  (healthcheck-dispatch finns kvar på :23 varannan timme genom hela avbrottet) — det är
+  runnern, inte klockan, som är blockerad. Diagnosen från 15:40 står oemotsagd.
+  ⛔ Kortet kan inte drivas vidare härifrån: nästa steg kräver Billing-sidan, och den
+  kräver Axel. Allt som gick att göra utan behörighet är gjort och ligger i grenen.
 - [ ] 🚨 **#51 Vinterarkivet skrivs nästan inte — moaten läcker** (fynd 4/9 kväll, svep
   inför kort #45; VERIFIERAT i koden, inte agentpåstående). `road_condition_history` är
   husets uttryckliga vinterarkiv — sql/001_init.sql:30 säger ordagrant *"Append-only: this
@@ -564,6 +572,28 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   🔁 KORTET STÅR ÄNDÅ ÖPPET: ETT mellanrum är inte ett dygn. Beviskravet är oförändrat
   — ett dygns healthcheck-körningar där inget mellanrum överstiger 2 h 30. Dygnsmätning
   bokad 5/9 21:30 UTC; den avgör om kortet får stängas.
+  📏 **DYGNSMÄTNINGEN KÖRD 5/9 21:30 — KORTET STÄNGS INTE.** Fönstret som kortet bokade
+  (4/9 22:23 → 5/9 22:23) är inte mätbart: Actions har inte startat ett enda jobb sedan
+  ~11:41 (kort #53). Jag mäter därför det fönster som FANNS och säger det uttryckligen.
+  LEVANDE FÖNSTER 4/9 22:23:02 → 5/9 10:40:27 (12 h 17 min, 11 lyckade körningar,
+  10 mellanrum): kortast **1 min**, längst **2 h 00 min 01 s**, snitt **1 h 13 min**,
+  **0 av 10** över 2 h 30. Pulsen levererade **6 av 6** tvåtimmarsavfyrningar på :23,
+  varje gång inom 2 sekunder (00:23:02, 02:23:01, 04:23:02, 06:23:02, 08:23:02, 10:23:01);
+  GitHub-cronen bidrog med 5 extra körningar som drift (00:08, 04:24, 04:35, 10:40 …).
+  Så långt håller beviskravet — men det är ett halvdygn, inte ett dygn.
+  🕳️ **PÅGÅENDE HÅL: 10 h 54 min och växande** vid mätningen (10:40:27 → 21:35).
+  Det är **4,4 gånger** stalehetsgränsen på 120 min som vakten finns till för att fånga.
+  🔎 **DET MÄTNINGEN LÄRDE OSS SOM VI INTE VISSTE:** pulsen gav vakthunden en **oberoende
+  klocka** — men inte en **oberoende löpare**. Pulsklockan fyrade planenligt genom hela
+  avbrottet (12:23, 14:23, 16:23, 18:23, 20:23 finns alla som `workflow_dispatch`), och
+  varenda en dog på 1 sekund utan steg. Vakthundens enda eskaleringsväg är att öppna en
+  incident-issue, och den kräver att jobbet FÅR köra. Kvitto: **0 öppna incident-issues**
+  i repot efter 11 timmars totalstopp (enda öppna issue är #15, Bengts kort #42 från 2/9).
+  Ett fel som slår ut runnern slår alltså ut både insamlingen OCH larmet om den — samma
+  enda punkt. Att avbrottet ändå syns beror på GitHubs egna misslyckandemejl (så Bengt
+  fick veta), inte på något vi byggt. Det är tur, inte konstruktion.
+  ⏭️ NÄSTA: mät om samma fönsterlängd när Actions lever igen (kort #53 är grinden).
+  Beviskravet är oförändrat — ett DYGN utan mellanrum över 2 h 30.
   ⚠️ VÄNTAD BIEFFEKT, säg det innan någon misstolkar den: en vakt som tittar var annan
   timme i stället för var femte kommer se stalheter som förut hann börja och rätta sig
   osedda. Fler incident-issues den närmaste tiden betyder att vakten börjat fungera —

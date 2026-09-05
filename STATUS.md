@@ -1274,3 +1274,21 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   nere. Beviskravet i #62 gäller, kortet stängs inte. Kadens är inte täckning.
   BIFYND som skärper #53: regn-30:s sista gröna var 10:41 och första röda 11:41, alltså
   började avbrottet mellan 11:11 och 11:41 — snävare än fönstret jag först angav ur ingest.
+- **S-2026-09-05 21:35: dygnsmätningen för kort #50 — mätt, men dygnet finns inte**
+  (bokad avläsning). Fönstret kortet bokade (4/9 22:23 → 5/9 22:23) är inte mätbart:
+  Actions har inte startat ett jobb sedan ~11:41. Mätte därför det levande fönstret och
+  sa det uttryckligen. 4/9 22:23:02 → 5/9 10:40:27 (12 h 17 min, 11 lyckade körningar,
+  10 mellanrum): kortast 1 min, längst 2 h 00 min 01 s, snitt 1 h 13 min, 0 av 10 över
+  gränsen 2 h 30. Pulsen levererade 6 av 6 tvåtimmarsavfyrningar på :23, varje gång inom
+  2 sekunder. Så långt håller beviskravet — men ett halvdygn är inte ett dygn, och
+  KORTET STÄNGS INTE. Pågående hål vid mätningen: 10 h 54 min, 4,4 gånger stalehetsgränsen.
+  FYNDET SOM VAR NYTT: pulsen gav vakthunden en oberoende KLOCKA men ingen oberoende
+  LÖPARE. Pulsklockan fyrade planenligt genom hela avbrottet (dispatch på 12:23, 14:23,
+  16:23, 18:23, 20:23 finns alla) och varenda körning dog på 1 sekund utan steg.
+  Vakthundens enda eskaleringsväg är att öppna en incident-issue, vilket kräver att jobbet
+  får köra. Kvitto: 0 öppna incident-issues efter elva timmars totalstopp. Ett fel som
+  slår ut runnern slår alltså ut både insamlingen och larmet om den — samma enda punkt.
+  Att avbrottet ändå syns beror på GitHubs egna misslyckandemejl, inte på något vi byggt.
+  LÄGET I #53: 100 av de 100 senaste körningarna (15:11 → 21:17, alla workflows) röda,
+  ~16 döda körningar i timmen, logg-API 404 även på den senaste. Kortet kan inte drivas
+  vidare utan Billing-sidan, och den kräver Axel.
