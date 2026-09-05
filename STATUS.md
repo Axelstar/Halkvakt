@@ -1264,3 +1264,13 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   flyttas eller saktas ned, och kadensen är beslut #22:s löfte om ≤ 35 min färsk webb.
   BEHÖRIGHETSFYND: Bengts konto har `admin: false` på repot (verifierat via API). Han kan
   alltså varken se fakturering eller ändra Actions-inställningar — det måste Axel göra.
+- **S-2026-09-05 18:00: dygnsbeviset för kort #44 — halva delen klar, andra omöjlig**
+  (bokad avläsning). KADENSEN BEVISAD: regn-30 gick 23 av 23 timmar i följd 4/9 12:41 →
+  5/9 10:41, varje timme på minuten :41, alla via workflow_dispatch, alla gröna. Ett helt
+  dygn utan ett missat varv. GitHub-cronen i samma fönster: 8 av 29 möjliga (28 %), och
+  utspridda 16:35, 19:07, 21:48, 00:22, 04:55, 09:20, 13:01, 16:14 — aldrig på :41. Det
+  bekräftar #70:s 40 %-mätning oberoende och motiverar i efterhand borttagningen i #53.
+  ANDRA HALVAN GÅR INTE: 2/2-andelen kräver en regn-tackning-körning och Actions ligger
+  nere. Beviskravet i #62 gäller, kortet stängs inte. Kadens är inte täckning.
+  BIFYND som skärper #53: regn-30:s sista gröna var 10:41 och första röda 11:41, alltså
+  började avbrottet mellan 11:11 och 11:41 — snävare än fönstret jag först angav ur ingest.

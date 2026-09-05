@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-05 av Claude (webben) — kort #53: de två gratisdelarna byggda (cron bort ur fem pulsdrivna, grannländerna i ETT jobb, pulsklockan kan nu avveckla). Aktiveras när Actions lever. Räcker INTE till gratisnivån: publish-map ensam är uppmätt 2 880 min/månad*
+*Uppdaterad: 2026-09-05 18:00 av Claude (webben) — kort #44: pulsen gav 23/23 timmar i följd innan avbrottet (GitHub-cronen 8 av 29 och aldrig på rätt minut), men 2/2-andelen går inte att mäta med Actions nere — kortet stängs inte. Avbrottet i #53 skärpt till 11:11–11:41*
 
 ---
 
@@ -232,6 +232,8 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   🧭 **DIAGNOS, mätt och inte gissad.** Felet är INTE vår kod:
   · ingest #275 kl **11:11 LYCKADES** (32 s) · ingest #276 kl **12:11 FÖLL** (4 s)
   · **samma commit** (a7caa3d), samma workflow-fil, ingenting ändrat däremellan.
+  · SKÄRPT 18:00 med regn-30:s serie: sista gröna 10:41, första röda **11:41**. Avbrottet
+  började alltså mellan **11:11 och 11:41** — snävare än det första fönstret jag angav.
   · Efter ~12:11 faller ALLT: ingest, ingest-fi, ingest-dk, ingest-no, publish-map,
   bridges, healthcheck, regn-30. Varje körning dör på 3–5 sekunder med **noll steg**
   och **noll loggar** (logg-API:t ger 404 — jobbet producerade aldrig något).
@@ -500,6 +502,17 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   30 min, dk-arkivet 25 min (gräns 120), gräns-wx 20 FI-stationer, 0 öppna incident-issues
   (#70/#71 var röda på just fi/dk-stalehet — larmvägen provad i skarpt läge). KVAR på
   kortet: regn-tackning efter ≥1 dygn på pulsen ska visa 2/2-andelen stiga (beviskravet i #62).
+  📏 **DYGNSBEVISET, HALVA DELEN KLAR 5/9 18:00** (bokad avläsning). KADENSEN är bevisad:
+  regn-30 gick **23 av 23 timmar i följd** 4/9 12:41 → 5/9 10:41, varje timme på minuten :41,
+  alla `workflow_dispatch`, alla gröna. Ett helt dygn utan ett enda missat varv.
+  GitHub-cronen under samma fönster: **8 avfyrningar av 29 möjliga (28 %)** — och de kom
+  16:35, 19:07, 21:48, 00:22, 04:55, 09:20, 13:01, 16:14, alltså utspridda över hela timmen
+  i stället för på :41. Det bekräftar #70:s 40 %-mätning oberoende och motiverar i efterhand
+  att cronen togs bort i kort #53.
+  🛑 **ANDRA HALVAN GÅR INTE ATT MÄTA:** 2/2-andelen kräver en regn-tackning-körning, och
+  Actions ligger nere sedan 5/9 (kort #53). Beviskravet i #62 gäller alltså fortfarande och
+  **kortet stängs inte** — kadensen räcker inte som bevis för täckningen. Mätningen görs om
+  så fort Actions svarar.
   PULSEN MÄTT 4/9 kväll (läsvarv, ingen kod ändrad): regn-30 har gått 8/8 hela timmar
   12:41–19:41 på token-dispatch. Samma dygn dessförinnan, på enbart GitHub-cron, gav
   00:41–11:41 tolv möjliga timmar men bara 3 avfyrningar — och 2 av dem dog i jobbets
