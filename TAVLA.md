@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-05 av Claude (webben) — egen kursor åt arkivspåret i drift (#51/#73), bevisad i ingest #267. Oväntad insikt samma körning: det regnar (178 segment, max 15 mm/h) men noll omklassningar — väglagsströmmen är ett VINTERfenomen, inte ett nederbördsfenomen*
+*Uppdaterad: 2026-09-05 av Claude (webben) — cry-wolf-ytan mätt (#52): Norrland är 20,5 % av segmenten men 31,7 % av sträckan, och nordliga segment är 1,8× längre (Jämtland 59 km/segment mot Stockholms 18). Ett enda snösegment i norr är nästan sex mil varningsyta*
 
 ---
 
@@ -335,9 +335,26 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   Varför det spelar roll NU: att ändra det är en KONTRAKTSÄNDRING som rör engine/vectors och
   tre körtider — inte något man upptäcker i december när snön ligger. CLAUDE.md: en vektor får
   aldrig försvagas för att få ett bygge grönt, så ändringen kräver eget beslut med motivering.
-  🔑 Beslut till Bengt + Axel, kopplat till #45: ska "Packad snö" på code 1 fortsätta larma
-  nationellt tills baseline finns, eller är cry-wolf-risken i norr större än vinsten i söder?
-  Ingen ändring görs på eget bevåg.
+  📏 **CRY-WOLF-YTAN MÄTT 5/9 07:28** (Bengts "mät norrlandssegmenten", vinterbaltet #1,
+  helt läsande). Vägnätet: 818 segment, 23 700 km. Alla 818 bär exakt EN länskod — noll utan
+  län, noll som spänner över flera, så uppdelningen är entydig.
+  `Norrland (21–25):        168 segment (20,5 %) · 7 519,6 km (31,7 % av sträckan)`
+  `Vinterbältet (17,20–25): 258 segment (31,5 %) · 10 389,6 km (43,8 % av sträckan)`
+  🔍 **DET SOM GÖR SIFFRAN SKARPARE ÄN DEN SER UT — nordliga segment är LÅNGA.**
+  Jämtland 59,0 km/segment · Västerbotten 50,4 · Norrbotten 47,1 — mot Stockholm 18,4,
+  Västra Götaland 20,5 och Skåne 20,7. Snitt i Norrland 44,8 km mot 24,9 i resten, alltså
+  **1,8 gånger längre**. Ett enda "Packad snö"-segment i Jämtland är alltså nästan sex mil
+  sammanhängande varningsyta. Och eftersom repriser släpps igenom efter 10 min OCH 5 km
+  (engine.ts fired-kartan) kan SAMMA segment tala flera gånger under en resa längs det —
+  i 90 km/h är sex mil ~40 minuter, alltså upp till tre gånger. Procenttalet 31,7 %
+  underskattar därför problemet mätt i *tid under larmande segment*.
+  ⚠️ MÄTNINGENS GRÄNS, står i rapporten och inte bara här: det här är EXPONERING, inte
+  incidens. Arkivet börjar 24/8 så vi har ingen vinter att räkna på — hur många av de 168
+  som FAKTISKT bär "Packad snö" i januari vet vi inte. Siffran är ett TAK, inte en prognos.
+  🔑 BESLUT TILL BENGT + AXEL, kopplat till #45 — nu med storleksordning i handen: ska
+  "Packad snö" på code 1 fortsätta larma nationellt tills baseline finns? Var gränsen går
+  (21–25 eller 17+20–25) är också ert val; mätningen ger båda och väljer inte åt någon.
+  Ingen ändring görs på eget bevåg — det rör engine/vectors och tre körtider.
 - [ ] 📡 **#43 Radarn som infrastruktur** (Bengts beställning 2/9, efter cellmätningens
   dom) — EN källa, SEX nyttor: vattenplaningens trigger (#42), blixthalkans pipeline
   (#16), marsdomens orsaksklassning, miss-/skuggfacit, vinterns snöbyar, Norden.

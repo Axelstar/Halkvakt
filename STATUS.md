@@ -1189,3 +1189,18 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   mm/h) men noll omklassade väglag. REGN FLYTTAR INTE VÄGLAGSSTRÖMMEN — omklassning är ett
   vinterfenomen. Det förklarar tystnaden definitivt, och det betyder att vi hade fel om att
   höstregnen skulle ge väglagsdata. De ger REGNdata, vilket är något annat. Gäller #51 och #45.
+- **S-2026-09-05 07:28: cry-wolf-ytan mätt inför #52** (Bengts "mät norrlandssegmenten",
+  vinterbaltet #1, PR #69, helt läsande). Vägnätet är 818 segment och 23 700 km. Alla 818 bär
+  exakt en länskod — noll utan län, noll över flera — så uppdelningen är entydig.
+  Norrland (21–25): 168 segment (20,5 %) men 7 519,6 km (31,7 % av sträckan).
+  Vinterbältet (17,20–25): 258 segment (31,5 %), 10 389,6 km (43,8 %).
+  FYNDET SOM INTE SYNS I PROCENTTALET: nordliga segment är LÅNGA. Jämtland 59,0 km per
+  segment, Västerbotten 50,4, Norrbotten 47,1 — mot Stockholm 18,4 och Skåne 20,7. Snittet i
+  Norrland är 44,8 km mot 24,9 i resten, alltså 1,8 gånger längre. Ett enda "Packad snö"-
+  segment i Jämtland är nästan sex mil sammanhängande varningsyta, och eftersom repriser
+  släpps efter 10 min OCH 5 km kan samma segment tala upp till tre gånger under en resa
+  längs det. Procenttalet underskattar alltså problemet mätt i tid under larmande segment.
+  GRÄNSEN, upprepad: exponering, inte incidens. Ett tak, inte en prognos — vi har ingen
+  vinter i arkivet. Två länsgränser redovisas för att valet är ett produktbeslut.
+  Beslutet ligger hos Bengt + Axel; ingen ändring görs på eget bevåg eftersom den rör
+  engine/vectors och tre körtider.
