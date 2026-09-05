@@ -1147,3 +1147,19 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   REKOMMENDATION till Bengt + Axel: bygg vakten, inte fixen. En tillväxtvakt på
   road_condition_history ger besked första dygnet snön faller. Den avgörande mätningen —
   egen kursor åt GitHub-ingesten och mät differensen — ändrar produktionsflödet och kräver ja.
+- **S-2026-09-05 04:25: arkivvakten byggd och i drift** (Bengts "bygg vakten", kort #51,
+  PR #63). Sitter i healthchecken, som går var annan timme på pulsklockan sedan #50.
+  Den svåra delen var att "arkivet växte inte" inte går att larma på: i september klassas
+  inget om, och en tillväxtvakt hade tjutit hela hösten och blivit avstängd precis före
+  vintern då den behövs. Vakten frågar i stället något som bara har ett svar — finns ett
+  NUVARANDE tillstånd som borde ha hunnit arkiveras och inte gjorde det? Tröskeln 3 h är tre
+  ingestkörningar, så en saknad rad är förlorad och inte försenad, och en enstaka fallerad
+  ingest fäller inte vakten.
+  BEVIS (healthcheck #82, HEALTHY): `arkivvakt: 0 oarkiverade av 818 prövade tillstånd (>3 h)
+  · arkivet 830 rader, nyaste 260 h gammal · 0 omklassningar senaste dygnet`.
+  Loggraden bär nämnaren och tystnaden med flit. "0 oarkiverade" utan skala är ett tal utan
+  mening, och utan omklassningsräknaren bredvid kan det läsas som hälsa när det bara är tyst
+  — exakt det fel gårdagens mätning nästan lurade mig att göra.
+  EJ BEVISAT och sagt som sådant: larmgrenen har aldrig fällt skarpt och kan inte bevisas
+  förrän strömmen rör sig. Joinens semantik är prövad mot känd sanning i arkivlackans
+  självtest. Kvar att besluta: den avgörande kursormätningen, som ändrar produktionsflödet.

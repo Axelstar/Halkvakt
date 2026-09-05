@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-05 av Claude (webben) — #51 MÄTT: bortfall 0 %, men hypotesen friades inte. Arkivet är 830 rader över 818 segment och har inte fått en rad på elva dygn — moaten är tom, inte läckande, och den avgörande mätningen går inte att göra förrän segment klassas om i vinterväder*
+*Uppdaterad: 2026-09-05 av Claude (webben) — arkivvakten (#51) BYGGD OCH I DRIFT: larmar på bevisad förlust, aldrig på tystnad. Bevis i healthcheck #82. Kortet öppet tills larmgrenen prövats av riktigt vinterväder eller den avgörande kursormätningen gjorts*
 
 ---
 
@@ -264,11 +264,26 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   edge-funktionen skriver `synced_at = now()` varje minut oavsett om något hämtades. Vakten
   kan alltså inte skilja "färsk och tyst" från "färsk och trasig". Elva tysta dygn ser
   identiska ut med elva trasiga.
-  🔑 REKOMMENDATION (Claudes, beslut hos Bengt + Axel): bygg inte fixen nu — bygg VAKTEN.
-  En tillväxtvakt på road_condition_history (rader sedan förra körningen) gör att vi får veta
-  första dygnet snön faller om raderna kommer eller försvinner, i stället för att upptäcka det
-  i mars. Alternativet, att ge GitHub-ingesten en EGEN kursor och mäta differensen direkt,
-  är den avgörande mätningen — men den ändrar produktionsflödet och kräver ert ja.
+  ✅ **VAKTEN BYGGD OCH I DRIFT 5/9 04:25** (Bengts "bygg vakten"): arkivvakten sitter i
+  healthchecken, som går var annan timme på pulsklockan sedan #50.
+  DEN SVÅRA DELEN LÖST: "arkivet växte inte" GÅR INTE att larma på — i september klassas
+  inget om, och en sådan vakt hade tjutit hela hösten och blivit avstängd före vintern.
+  Vakten frågar i stället något som bara har ett svar: finns ett NUVARANDE tillstånd som
+  borde ha hunnit arkiveras och inte gjorde det? Tröskeln 3 h = tre ingestkörningar, så en
+  rad som saknas då är förlorad och inte försenad — och en enstaka fallerad ingest fäller
+  inte vakten. Noll larm på tyst ström; larm första dygnet strömmen lever och rader tappas.
+  BEVIS (healthcheck #82, 04:25:50, HEALTHY):
+  `arkivvakt: 0 oarkiverade av 818 prövade tillstånd (>3 h) · arkivet 830 rader, nyaste 260 h
+  gammal · 0 omklassningar senaste dygnet`
+  Loggraden bär nämnaren OCH tystnaden med flit: "0 oarkiverade" utan skala är ett tal utan
+  mening, och utan "0 omklassningar senaste dygnet" kan det läsas som hälsa när det bara är
+  tyst. Det var precis felet gårdagens mätning nästan lurade mig att göra.
+  ⚠️ EJ BEVISAT: larmgrenen har aldrig fällt skarpt och kan inte bevisas förrän strömmen rör
+  sig. Joinens semantik är prövad mot känd sanning i arkivlackans självtest.
+  🔑 KVAR ATT BESLUTA (Bengt + Axel): den AVGÖRANDE mätningen — ge GitHub-ingesten en EGEN
+  changeid-kursor och mät differensen mot livemotorns ström direkt. Den skulle fälla eller
+  fria hypotesen utan att vänta på snö, men den ändrar produktionsflödet. Kortet står öppet
+  tills antingen den mätningen gjorts eller vakten hunnit se en vinter.
 - [ ] ⚠️ **#52 Ett test låser fast motsatsen till vinterbaseline-principen** (samma svep,
   verifierat). test/engine.test.ts:143-146 hävdar att ett segment klassat **code 1 (Normalt)**
   med info **"Packad snö"** MÅSTE ge exakt ett larm — tillsammans med Isfläckar, Svår halka och
