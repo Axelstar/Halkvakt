@@ -1324,3 +1324,9 @@ TIDSZONSNOT: terminalvarvets kort säger "död sedan 5/9 13:12" och jag säger 1
 ögonblick, CEST mot UTC. Husregeln är UTC.
 MERGE: origin/main (terminalvarvets minutplan, fyra commits) merged in i grenen, konflikterna i
 TAVLA/STATUS var ren append-mot-append och båda sidor behölls.
+
+## 2026-09-06 15:05 — Avläsning 2: Actions lever fortfarande inte
+segmentlangden #2, workflow_dispatch 15:05:17 UTC, död efter 4 sekunder med noll steg — identiskt
+med #1 åtta timmar tidigare, samma commit (0c2f1bc). Förlorad insamling sedan 5/9 11:41: 27 h 24 min.
+Ingen ny diagnos, inget byggt: minutplanen räknar problemet färdigt och nästa steg kräver Axel
+(Billing, publikt repo eller self-hosted runner). Ny avläsning bokad ~8 h fram.

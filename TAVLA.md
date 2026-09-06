@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-06 07:10 av Claude (webben) — Actions fortfarande dött (segmentlangden 07:00:32, 4 s, noll steg): 19 h 24 min förlorad insamling. Minutplanen från terminalvarvet gäller (docs/MINUTPLAN-2026-09-06.md). Kort #50: dygnsmätningen körd men dygnet finns inte — 0 av 10 mellanrum över 2 h 30 i det levande halvdygnet, kortet stängs inte*
+*Uppdaterad: 2026-09-06 15:05 av Claude (webben) — avläsning 2: Actions fortfarande dött (segmentlangden #2, 4 s, noll steg). 27 h 24 min förlorad insamling. Väntar på Axel: Billing, publikt repo eller self-hosted runner — minutplanen räknar alla tre*
 
 ---
 
@@ -333,6 +333,9 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   insamling: 19 h 24 min** räknat från första döda körningen 11:41, 19 h 54 min från
   sista säkra 11:11. Ingen ny diagnos behövs — terminalvarvets minutplan
   (docs/MINUTPLAN-2026-09-06.md) räknar problemet färdigt. Ny avläsning bokad ~8 h fram.
+  🕒 **AVLÄSNING 2, 6/9 15:05: fortfarande dött.** segmentlangden #2, dispatch 15:05:17,
+  död efter **4 sekunder**, noll steg — identiskt med #1 åtta timmar tidigare, samma commit.
+  **Förlorad insamling: 27 h 24 min.** Inget nytt att diagnostisera; kortet väntar på Axel.
   🔗 SIFFERKROCK SOM INTE ÄR EN KROCK: terminalkortet säger "död sedan 5/9 13:12", jag
   säger 11:11–11:41. Det är samma ögonblick i olika tidszoner (13:12 CEST = 11:12 UTC).
   Husregeln är UTC — men båda skrivsätten står nu på tavlan, så ingen ska behöva räkna ut det.
