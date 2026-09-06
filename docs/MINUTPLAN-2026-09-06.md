@@ -82,6 +82,25 @@ i stället för ~2; dieten + UNNEST-batchning ≈ 5 500; **Supabase-flytten (8�
 11. Supabase-projektet pausas efter 7 dygns inaktivitet på gratisnivån (ANTAGANDE ur docs-minne) —
     irrelevant så länge livemotorn skriver varje minut.
 
+## 4b. Vad det kostar att köpa sig ur det (Bengts fråga 6/9, priser ur docs.github.com 6/9)
+
+GitHub Free: 2 000 min/mån ingår; därutöver **0,006 USD/min** för standard 2-core Linux (sänkt från
+0,008). Pro: 4 USD/mån, 3 000 min ingår. Self-hosted runners: **gratis** minuter. Kurs ~10 kr/USD
+antagen; moms kan tillkomma. Spending limit sätts av Axel (ägarens konto).
+
+| Scenario | Min/mån | Överskott × 0,006 | ≈ kr/mån |
+|---|---|---|---|
+| Uppmätt takt 1–5/9 (blandning svält + full puls) | ~13 100 | 11 100 → 67 USD | ~670 |
+| Bokad takt, dagens kod, pulsen levererar fullt | 28 000–30 000 | 26 000–28 000 → 156–168 USD | ~1 600–1 700 |
+| Efter dieten (#1–7) | ~8 000 | 6 000 → 36 USD | ~360 |
+| Diet + UNNEST-batchning av FI/DK/NO | ~5 500 | 3 500 → 21 USD | ~210 |
+| Supabase-flytt + ci/android-filter | ~1 250 | 0 | 0 |
+| Alternativ budgethöjning: Supabase Pro (om gratisgränserna biter efter flytten) | — | 25 USD fast | ~250 |
+
+Pro-planen (4 USD) ger bara 1 000 extra minuter (= 6 USD i överskott) — marginell. Slutsats: att köpa
+minuter för dagens datainsamling kostar 700–1 700 kr/mån och stiger med varje ny källa; samma arbete
+på Supabase kostar 0–250 kr/mån. Betalning löser inte heller prolog-slöseriet (58 % av minuterna).
+
 ## 5. Rekommenderad ordning, närmaste 48 h
 1. **Claude nu**: diet-PR med #1, #2, #3, #4, #5 (inga produktbeslut), YAML syntaxkontrollerad lokalt;
    kan inte verifieras av ci förrän potten är ny. Bokförs som förslag, inte klart.
