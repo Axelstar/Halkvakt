@@ -101,6 +101,52 @@ Pro-planen (4 USD) ger bara 1 000 extra minuter (= 6 USD i överskott) — margi
 minuter för dagens datainsamling kostar 700–1 700 kr/mån och stiger med varje ny källa; samma arbete
 på Supabase kostar 0–250 kr/mån. Betalning löser inte heller prolog-slöseriet (58 % av minuterna).
 
+## 4c. Publikt repo — vad som måste ut först (Bengts fråga 6/9, skannat läs-only)
+
+**Historiken är ren.** Skanning av hela git-historiken (alla branches) efter tokenmönster (sbp_, ghp_,
+github_pat_, JWT, postgres-URL:er med lösenord, authKey, privata nycklar, INGEST_KEY, VEGVESEN_PASS,
+TRAFIKVERKET_API_KEY, PUBLISH_TOKEN, keystore-lösenord): **noll riktiga träffar** — bara CI:s
+`postgres:postgres@localhost` och `.env.example`:s platshållare. Inga .env/.jks/.p12/.pem har någonsin
+committats. Alltså ingen historikomskrivning behövs; repot kan bli publikt som det är, efter att
+nedanstående flyttats ut. "Telefonnummer"-träffarna är falska (epoch-tal i engine/vectors).
+
+| Måste ut (privat systerrepo) | Varför |
+|---|---|
+| PLAN.md | affärsplan, fasplan, taxonomi med tidslinjer |
+| docs/FINANSIERING.md | Skyltfonden, intäktsscenarier, B2B-prissättning |
+| docs/GTM.md | marknadsplan, kanaler, budget |
+| docs/REKRYTERING.md | rekryteringsinlägg, postningsplan |
+| docs/RISKKARTA-BENGT.md | personlig research + "stängda dörrar" |
+| docs/BESLUTSGANGEN.md, ARBETSSATT.md, BENGT-CLAUDE-KODEN.md, VALKOMMEN-BENGT.md | intern arbetsordning, personrelationer |
+| docs/fordonsdata-kartlaggning, fullstandig-kallkartlaggning, synergianalys | marknadsanalys, namngivna aktörer/upphandling |
+| marknadsforing/ (generator, utkast, butikstext, state) | marknadsmotorn — men utkasten är redan publika texter; bedöm |
+
+**Svårigheten är inte filerna ovan utan arbetsminnet:** TAVLA.md, STATUS.md, DECISIONS.md, BACKLOG.md
+(285 kB) blandar teknik med affär (DECISIONS #27 intäkter, #18 GTM, rollfördelning, förnamn Axel/
+Bengt/David, Apple/Play-detaljer). De är sessionsprotokollets hjärta och kan inte bara lyftas ut.
+Två vägar: (a) de fyra flyttas till det privata repot och Claude-sessionerna klonar båda (protokollet
+ändras: "läs TAVLA i intern-repot"); (b) de rensas rad för rad — dyrt och läcker vid nästa varv.
+Rekommendation: (a).
+
+**Det som blir publikt och är OK:** motorn (engine/, vectorer), ingest/, publish/, supabase/functions/,
+sql/, android/, ios/, workflows, RUNBOOK/SYSTEM/PRODUKTBOK/GOLVET/TROSKLAR-dokumenten, test-fixturer
+(Trafikverkets öppna data), data/bridges.geojson (OSM ODbL — attribution finns i PRODUKTBOK).
+Moaten är arkivet i Supabase, inte koden (Bengts granskning II, TAVLA). Ingen LICENSE-fil finns:
+publikt utan licens = synligt och forkbart men inte lagligt återanvändbart — ett medvetet val eller
+en licens (Axel).
+
+**Ny publik yta att disciplinera:** Actions-loggar och Step Summaries (25 workflows skriver sådana),
+incident-issues (healthcheck-loggar), trv-nyhet- och snölarm-issues, PR-diskussioner, commit-
+meddelanden med Claude-sessionslänkar. Inget av det bär hemligheter i dag (android.yml:30 dekodar
+keystore till fil, ekar den inte), men "aldrig eka en secret" blir järnlag. supabase/.temp/
+linked-project.json (projektref) är redan publik via kartsajtens REST-anrop — ofarlig.
+
+**Insats:** ~2–4 h (nytt privat repo, flytt av ~15 filer, protokollrad i CLAUDE.md, README-rensning,
+granskning av de fyra arbetsfilerna) + Axels handgrepp (skapa privat repo, byta synlighet, kolla att
+PUBLISH_TOKEN/PAT-scope tål publikt). Effekt: obegränsade minuter omedelbart, alla 15 åtgärder ovan
+blir valfria i stället för nödvändiga — men dieten (#1–5) är fortfarande värd att göra för
+att hålla körlistan läsbar.
+
 ## 5. Rekommenderad ordning, närmaste 48 h
 1. **Claude nu**: diet-PR med #1, #2, #3, #4, #5 (inga produktbeslut), YAML syntaxkontrollerad lokalt;
    kan inte verifieras av ci förrän potten är ny. Bokförs som förslag, inte klart.
