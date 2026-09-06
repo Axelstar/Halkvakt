@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-05 21:35 av Claude (webben) — kort #50: dygnsmätningen körd men dygnet finns inte; 0 av 10 mellanrum över 2 h 30 i det levande halvdygnet, sedan ett hål på 10 h 54 min. Fyndet: pulsen gav vakthunden en oberoende klocka men ingen oberoende löpare. Kortet stängs inte*
+*Uppdaterad: 2026-09-06 07:10 av Claude (webben) — Actions fortfarande dött (segmentlangden 07:00:32, 4 s, noll steg): 19 h 24 min förlorad insamling. Minutplanen från terminalvarvet gäller (docs/MINUTPLAN-2026-09-06.md). Kort #50: dygnsmätningen körd men dygnet finns inte — 0 av 10 mellanrum över 2 h 30 i det levande halvdygnet, kortet stängs inte*
 
 ---
 
@@ -18,6 +18,34 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Löser roten till 31/8 — han kan köra sina egna analyser i stället för att beskriva dem.
 
 ### AXELS NÄSTA STEG — i den här ordningen
+
+**0. 🛑 PIPELINEN STÅR STILLA SEDAN 5/9 13:12 — ACTIONS-MINUTERNA ÄR SLUT (Bengts larm 6/9, Claude terminalen)**
+GitHubs gratistak för privata repon är 2 000 minuter/månad. Förbrukat 1–5 september: **1 985 min**
+(Actions → Usage metrics). Varje körning sedan 5/9 ~13:12 dör efter 3–7 s med annoteringen
+*"The job was not started because recent account payments have failed or your spending limit
+needs to be increased"* (publish-map #761 m.fl., 88 sidor körningar). CDN:s meta.json stannade
+2026-09-05 11:11Z. Livemotorn på Supabase (väglag/olyckor varje minut) och skuggmotorn kör
+OPÅVERKADE — det är GitHub-delen som är död: ingest väder/kameror, FI/DK/NO, regn-30,
+publicering, healthcheck (vakthunden bor på Actions och kan därför inte larma om detta).
+VAR MINUTERNA GICK (månad): publish-map 616 · ci 299 · ingest-fi 236 · android 197 · ingest 193 ·
+ingest-no 160 · ingest-dk 97 · healthcheck 49 · regn-30 46. Takten är ~400 min/dygn = 6× vad
+2 000/mån tål. DECISIONS #22 (25/8) satte minutdieten till ~1 750/mån; sedan dess har ci på varje
+push (404 pushar/30 d), pulsklockans breddning 4/9 (FI/DK/NO/regn-30 = 539 min på två dygn) och
+publish-map var 30:e min ätit upp den. Claude (terminalen) breddade pulsen 4/9 utan att räkna
+minuterna — det står här som eget fel, inte som naturkraft.
+🔑 DITT BESLUT, ett av tre — inget annat får igång datan förrän Axels faktureringscykel nollställs
+(datum okänt för Bengt/Claude, syns i Axels Billing & plans):
+(a) **Gör repot publikt** → obegränsade minuter, omedelbart. DECISIONS #7 valde privat för att
+PLAN.md bär affärsstrategin — flytta PLAN.md/GTM/FINANSIERING till ett privat systerrepo först
+(en timmes jobb). Hemligheter ligger i Secrets och påverkas inte.
+(b) **Höj spending limit** → ~0,008 USD/min; dagens takt ≈ 100 USD/mån. Dyrt för fel skäl.
+(c) **Vänta till nollställningen** + bantning. Datan är död tills dess.
+OAVSETT val: bantningen (nytt kort under Claude olåst) måste in innan pulsen släpps på igen,
+annars är oktober slut den 6:e. Budgeten per dygn ska stå på tavlan som ett tal, inte som en känsla.
+📄 **OMVÄRDERINGEN 6/9 (Bengts "lista vad som kan göras utan beslut"): docs/MINUTPLAN-2026-09-06.md** —
+15 åtgärder rangordnade, svar på "nordisk sammanslagning + Supabase löser det helt?" (halvrätt: flytten
+ja, sammanslagningen nej, och ci/android spränger taket ensamt). Snabbaste data FÖRE nollställningen:
+nödkörning på Bengts dator med Axels tre hemligheter (#14) — handgrepp, inte beslut.
 
 **1. ~~Signeringshemligheten~~ ✅ LAGAD 2/9 (DECISIONS #58)** — rotorsak: bara HV_KEYSTORE_PASS
 hade roterats 31/8, inte B64; paret hörde inte ihop och jks-filen fanns inte kvar. Ny keystore
@@ -298,6 +326,27 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   runnern, inte klockan, som är blockerad. Diagnosen från 15:40 står oemotsagd.
   ⛔ Kortet kan inte drivas vidare härifrån: nästa steg kräver Billing-sidan, och den
   kräver Axel. Allt som gick att göra utan behörighet är gjort och ligger i grenen.
+  🕗 **AVLÄSNING 6/9 07:00 (bokad incheckning): FORTFARANDE DÖTT.** Provkörde den
+  lättaste workflowen som finns — `segmentlangden`, varken databas eller nät — på main:
+  körning #1, `workflow_dispatch` 07:00:32, **död efter 4 sekunder**, noll steg.
+  Samma symptom som i går, nu på annan kod (main har fyra nya commits). **Förlorad
+  insamling: 19 h 24 min** räknat från första döda körningen 11:41, 19 h 54 min från
+  sista säkra 11:11. Ingen ny diagnos behövs — terminalvarvets minutplan
+  (docs/MINUTPLAN-2026-09-06.md) räknar problemet färdigt. Ny avläsning bokad ~8 h fram.
+  🔗 SIFFERKROCK SOM INTE ÄR EN KROCK: terminalkortet säger "död sedan 5/9 13:12", jag
+  säger 11:11–11:41. Det är samma ögonblick i olika tidszoner (13:12 CEST = 11:12 UTC).
+  Husregeln är UTC — men båda skrivsätten står nu på tavlan, så ingen ska behöva räkna ut det.
+- [ ] 💸 **Minutbantning av GitHub-pipelinen** (6/9, följd av 🛑-kortet; byggs OAVSETT Axels val, släpps
+  på först när minuter finns): mål ≤ 60 min/dygn (= 1 800/mån). Kandidater med uppskattad vinst:
+  (1) publish-map bara kedjad efter ingest (timvis) i stället för egen 30-min-klocka: −300 min/mån
+  — webben blir högst 60 min gammal i stället för 30, livemotorn/appen rör det inte;
+  (2) EN nordisk ingest-workflow (SE+FI+DK+NO+regn-30 i samma jobb, ett checkout+npm ci i
+  stället för fem): −250; (3) ci.yml bara på PR + main-pushar som rör engine/ingest/sql, inte
+  docs/tavla: −200; (4) android.yml bara på taggar/manuellt: −150; (5) FI/DK/NO från 2×/h till
+  1×/h: −200. Summa ≈ −1 100 min/mån → ~900/mån. Alternativet som tar bort problemet i grunden:
+  flytta de tidskritiska jobben (ingest + publicering) till Supabase edge functions på pg_cron —
+  noll GitHub-minuter, samma väg som livemotorn — men det är ett bygge på dagar, inte timmar.
+  BEVISKRAV: Usage metrics per dygn efter bantningen, bokfört som tal på tavlan varje måndag.
 - [ ] 🚨 **#51 Vinterarkivet skrivs nästan inte — moaten läcker** (fynd 4/9 kväll, svep
   inför kort #45; VERIFIERAT i koden, inte agentpåstående). `road_condition_history` är
   husets uttryckliga vinterarkiv — sql/001_init.sql:30 säger ordagrant *"Append-only: this
