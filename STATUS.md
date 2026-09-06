@@ -30,6 +30,9 @@
   förrän vädret levererar. Skuggflottan + missmätningsskriptet står redo som domare.
 
 ## Waiting on Axel
+- **🛑 ACTIONS-MINUTERNA SLUT (6/9):** 1 985/2 000 min förbrukade 1–5/9, alla GitHub-jobb dör på
+  4 s sedan 5/9 13:12 ("spending limit needs to be increased"). Beslut: publikt repo / höjt
+  spending limit / vänta till nollställning — se tavlans kort 0. Livemotorn opåverkad.
 - **Google Play-kontot** (25 USD) — enda återstående köp; 14-dagarsklockan startar där
 - **Testare**: 4 på väntelistan, 12 krävs (se TAVLA)
 - Revoke the unused second PAT (public-read-only one from 2026-08-24) — ej verifierad
@@ -1222,3 +1225,20 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   (2) reprisregeln för segment ger kolumn C, 4→1 i norr och 2→1 i söder, utan geometriändring
   och med verkan i hela landet (men en avvägning: en påminnelse efter en halvtimme kan vara
   önskad); (3) rösten säger inte hur långt sträckan räcker — Axels spår.
+
+## 2026-09-06 — 🛑 GitHub-pipelinen död sedan 5/9 13:12: Actions-minuterna slut (Bengts larm)
+Bengt: "vår lagring i GitHub har nått maxgräns och vi får inte längre data". MÄTT: det är inte
+lagring utan Actions-MINUTER — Usage metrics visar 1 985 av 2 000 (privat repo, gratisplan) förbrukade
+1–5 september; publish-map #761 och alla körningar sedan 5/9 ~13:12 dör efter 3–7 s med "The job
+was not started because recent account payments have failed or your spending limit needs to be
+increased". CDN meta.json senast 2026-09-05 11:11Z. Livemotorn (pg_cron, Supabase) och skuggmotorn
+rullar opåverkade; healthchecken kan inte larma eftersom den själv bor på Actions. Fördelning:
+publish-map 616 · ci 299 · ingest-fi 236 · android 197 · ingest 193 · ingest-no 160 · ingest-dk 97
+· healthcheck 49 · regn-30 46 (av 1 985). DECISIONS #22 budgeterade ~1 750/mån; sedan dess: ci på
+404 pushar/30 d, pulsklockans breddning 4/9 (FI/DK/NO/regn-30 ≈ 539 min på två dygn — Claude
+terminalen, utan minuträkning) och publish-map var 30:e min. Bokfört: tavlans kort 0 (Axels
+beslut) + nytt Claude-kort "Minutbantning". INGEN ändring i pipelinen gjord — allt väntar på
+Axels val; bantningen byggs oavsett men släpps på först när minuter finns.
+KONSEKVENS FÖR GRANSKNINGEN AV #51 (Bengts fråga samma morgon): trigger-förslaget står sig —
+det flyttar arkivskrivningen IN i databasen och bort från GitHub-minuterna. Den egna kursorn och
+varje pulsdriven GitHub-körning går åt andra hållet: de kostar minuter per körning.
