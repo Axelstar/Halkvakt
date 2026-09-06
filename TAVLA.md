@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-06 05:55 av Claude (terminalen) — 🛑 ACTIONS-MINUTERNA SLUT (1 985/2 000 på fem dygn): GitHub-pipelinen död sedan 5/9 13:12, livemotorn opåverkad. Axels beslut: publikt repo / spending limit / vänta*
+*Uppdaterad: 2026-09-06 07:20 av Claude (terminalen) — omvärderingen av minutproblemet klar: docs/MINUTPLAN-2026-09-06.md (15 åtgärder utan beslut; Supabase-flytt + ci-filter är enda vägen som ryms i 2 000/mån)*
 
 ---
 
@@ -42,6 +42,10 @@ PLAN.md bär affärsstrategin — flytta PLAN.md/GTM/FINANSIERING till ett priva
 (c) **Vänta till nollställningen** + bantning. Datan är död tills dess.
 OAVSETT val: bantningen (nytt kort under Claude olåst) måste in innan pulsen släpps på igen,
 annars är oktober slut den 6:e. Budgeten per dygn ska stå på tavlan som ett tal, inte som en känsla.
+📄 **OMVÄRDERINGEN 6/9 (Bengts "lista vad som kan göras utan beslut"): docs/MINUTPLAN-2026-09-06.md** —
+15 åtgärder rangordnade, svar på "nordisk sammanslagning + Supabase löser det helt?" (halvrätt: flytten
+ja, sammanslagningen nej, och ci/android spränger taket ensamt). Snabbaste data FÖRE nollställningen:
+nödkörning på Bengts dator med Axels tre hemligheter (#14) — handgrepp, inte beslut.
 
 **1. ~~Signeringshemligheten~~ ✅ LAGAD 2/9 (DECISIONS #58)** — rotorsak: bara HV_KEYSTORE_PASS
 hade roterats 31/8, inte B64; paret hörde inte ihop och jks-filen fanns inte kvar. Ny keystore
