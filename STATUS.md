@@ -1330,3 +1330,9 @@ segmentlangden #2, workflow_dispatch 15:05:17 UTC, död efter 4 sekunder med nol
 med #1 åtta timmar tidigare, samma commit (0c2f1bc). Förlorad insamling sedan 5/9 11:41: 27 h 24 min.
 Ingen ny diagnos, inget byggt: minutplanen räknar problemet färdigt och nästa steg kräver Axel
 (Billing, publikt repo eller self-hosted runner). Ny avläsning bokad ~8 h fram.
+
+## 2026-09-07 12:01 — Avläsning 3 (Bengts "kolla igen"): Actions lever fortfarande inte
+segmentlangden #3, workflow_dispatch 12:01:24 UTC, död efter 5 sekunder med noll steg. Pulsen
+fyrar fortfarande varje slot (ingest 11:11, fi 11:37, regn-30 11:41, dk 11:42, no 11:47 — alla
+röda på 4 s). Förlorad insamling sedan 5/9 11:41: 48 h 21 min, två dygn. Ingen ändring på main
+sedan 6/9. Inget byggt. Nästa steg kräver Axel.
