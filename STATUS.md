@@ -1336,3 +1336,8 @@ segmentlangden #3, workflow_dispatch 12:01:24 UTC, död efter 5 sekunder med nol
 fyrar fortfarande varje slot (ingest 11:11, fi 11:37, regn-30 11:41, dk 11:42, no 11:47 — alla
 röda på 4 s). Förlorad insamling sedan 5/9 11:41: 48 h 21 min, två dygn. Ingen ändring på main
 sedan 6/9. Inget byggt. Nästa steg kräver Axel.
+
+## 2026-09-07 20:05 — Avläsning 4: Actions lever fortfarande inte
+segmentlangden #4, workflow_dispatch 20:05:17 UTC, död efter 5 sekunder med noll steg. Alla
+pulsslottar 19:37–19:56 röda på 3–4 s. Förlorad insamling sedan 5/9 11:41: 56 h 25 min. Ingen
+ändring på main sedan 6/9. Inget byggt. Nästa steg kräver Axel.
