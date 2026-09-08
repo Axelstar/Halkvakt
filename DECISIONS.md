@@ -1191,3 +1191,20 @@ weather_latest. Det är den upplösning Grind A byggdes på, och det tar tillvä
 945a532. Koden är identisk med weather.ts som fungerade före 5/9. Motorn rapporterar
 "weather: 128" men max(sample_time) stod still på 20:50 i tio minuter — pekar mot markören
 eller mot att samma stationer returneras om igen. Rotorsak EJ hittad. Kort för Bengt.
+
+## #81 (8/9 2026 23:06) Actions-budget satt till 35 USD — pipelinen lever igen
+Axel satte månadsbudget 35 USD (~400 kr) på Actions med "stop usage when budget limit is
+reached" kvar påslaget. Krävde att ett betalsätt först lades in; budgetraden fanns redan men
+stod på 0 med stop=yes, vilket var varför varje jobb dog på 4 s utan runner.
+BEVIS: ios-engine dispatchad 23:07 ⇒ success på 66 s. Första gröna Actions-körningen sedan
+5/9 13:12. Swift-kontraktet därmed verifierat på aktuell main.
+VAD BUDGETEN RÄCKER TILL (mätt på faktiska körtider): efter kvällens flytt ligger bara
+regn-30 (0,3 min × 24 = 7 min/dygn) och bridges kvar på cron. Byggena kostar ~11 min per
+push (android 8, ios-engine 2, ci 1). 35 USD ≈ 3 500 min till verkligt pris (19,69/2000 =
+0,0098 USD/min) — gott om marginal för resten av september.
+RISKEN ATT BEVAKA: grannländerna var det som brände de 2 000 gratisminuterna — ingest-fi
+2,5 min × 48/dygn = 120 min, ingest-no 110, ingest-dk 38. Tillsammans 268 min/dygn av ~400.
+De ligger raderade (404) sedan Bengts avveckling. När de återställs i oktober ska takten
+vara GLESARE än varannan halvtimme; två gånger per dygn räcker för ett skuggarkiv.
+De fyra övriga budgetarna (Codespaces, Packages, Git LFS, AI Credits) står kvar på 0 med
+stop=yes — de används inte och skyddar mot överraskningar.
