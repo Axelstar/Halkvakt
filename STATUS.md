@@ -1406,3 +1406,11 @@ och mejl, och oktoberpotten bränns inte på gamla filer; (6) deploy-supabase.ym
 SUPABASE_ACCESS_TOKEN (kort #78). Nytt kort #79: regn-30 troligen överflödig sedan #72, 720
 min/mån annars. DECISIONS #78.
 
+
+## 2026-09-08 21:15 — #77 bevisat av Axel, weather_latest bevisat tinat, #78 mergat
+Axel deployade publicera från 15ba9ad: ms 10 727, meta.json 20:23:03, stationer 1 300,
+kameror_vaglag 746 (DECISIONS #77-bevis). Sex filer i commiten, inte nio — Git Data API
+blobbar bara det som ändrats; min förväntan var fel. Ur vader.geojson: 848 SE-stationer, 99 %
+med sample_time ≤ 12 min, Storvik nu yta null med tid 20:15 ⇒ weather_latest-tinandet (punkt 2)
+är bevisat i grunden. PR #75 (#78) mergad efter en append-konflikt i DECISIONS, båda sidor
+behållna. Kvar av sex: vakthundsbevis (3), Billing-klipp (5), SUPABASE_ACCESS_TOKEN (6).

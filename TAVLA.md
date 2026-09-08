@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-08 21:00 av Claude (webben) — av Axels sex punkter gick två att göra härifrån: grannlandsfilerna raderade (pulsen får 404, inga mejl, ingen oktoberbränning) och deploy-knappen byggd (#78, väntar på token). Fyra kräver Axel: deploy, SQL-bevis, vakthundsbevis, Billing. Nytt #79: regn-30 sannolikt överflödig*
+*Uppdaterad: 2026-09-08 21:15 av Claude (webben) — #77 KLART (Axel deployade, ms 10 727, meta.json färsk), weather_latest BEVISAT tinat (99 % av 848 stationer ≤ 12 min), #78 mergat (grannlandsfilerna bort, deploy-knapp väntar på token). Kvar av sex punkter: vakthundsbevis, Billing-klipp, token*
 
 ---
 
@@ -287,7 +287,11 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   publicera läser weather_latest, som frös 5/9 11:05. Storvik var inte en trasig station i
   en levande tabell utan en död tabell. DOM: kedjan Trafikverket → databas → CDN lever;
   CDN → app gör det inte. Fixat i #74/#75-bygget, väntar på Axels deploy.
-- [ ] ⏱️ **#77 publish-map:s egen cron lever kvar — BYGGT + MERGAT TILL MAIN 8/9 20:45 (PR #74, 15ba9ad), väntar på Axels deploy**
+- [x] ✅ **#77 Kartlagren in i publicera — KLART 8/9 20:23, BEVISAT** (DECISIONS #77): Axel deployade
+  från main 15ba9ad. **ms 10 727** (under 60-sekundersgränsen, ingen uppdelning behövs).
+  meta.json generated_at 20:23:03, stationer 1 300, kameror_vaglag 746. Commit a8e843f skrev
+  sex filer, inte nio: Git Data API skapar blobar bara för det som ändrats, kameror.geojson
+  och vaglag.geojson var byteidentiska — rätt beteende, min förväntan "nio" var fel.
   ✅ `publish/map-core.ts` bygger kartsajtens sex filer; `publicera` publicerar dem i samma
   commit som appfilerna på :00/:30 (`?karta=1` tvingar). publish-map.yml: cron borta, bygger
   varken kartlager eller app-snapshot, kedjad på ingest + ingest-grannar för fi/dk. 52 tester
@@ -349,8 +353,10 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   Verify: två på varandra följande commits i kartrepot från olika skrivare ger samma
   bridges-antal.
 - [x] ✅ **#75 Givarvakt före publicering — I DRIFT 8/9 20:04** (DECISIONS #74): Storvik 2135 är borta
-  ur live.json (0 väderpunkter, rimligt en septemberkväll), weather_latest tinat efter Axels
-  bool-array-fix i ingest-live (822d178). Kvar att bevisa: PostGIS-testet i CI (oktober) och
+  ur live.json (0 väderpunkter, rimligt en septemberkväll). **weather_latest BEVISAT tinat 8/9
+  20:25** ur vader.geojson på CDN: 848 SE-stationer, 99 % med sample_time ≤ 12 min, Storvik
+  rapporterar nu yta null (givaren själv säger inget) med tid 20:15. Axels bool-array-fix
+  (822d178) verkar. Kvar att bevisa: PostGIS-testet i CI (oktober) och
   Bengts mejl till Trafikverket — vakten döljer givarfelen, den lagar dem inte.
   ✅ WX_SANE i VARJE väderfråga (svensk, gräns, bro): färsk ≤ 3 h OCH yta ≥ luft − 12 °.
   Fäller bara på bevisad orimlighet. PostGIS-test i integration.test.ts (Storvik-lik,
