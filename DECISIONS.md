@@ -1121,3 +1121,23 @@ förra körningen. Alla nio ligger på plats i data/. (Bengt: förväntan "nio f
 gäller bara när alla nio faktiskt ändrats — normalt är färre.)
 BEVIS 3 — data/meta.json generated_at 2026-09-08T20:23:03Z, inte 5/9.
 Vakthunden fortsatt grön med manifestkontrollen.
+## #78 (8/9 2026) De tre gamla grannlandsfilerna raderade nu, och en deploy-knapp utan Axels terminal
+BENGT: "så många som möjligt av de sex punkterna härifrån." Fyra av sex kräver Supabase-token,
+databas eller Billing-sidan — inget av det finns i containern (ingen token, ingen CLI, proxyn
+släpper bara github.com). Två gick att göra:
+ 1. **ingest-fi.yml, ingest-dk.yml, ingest-no.yml RADERADE.** Kort #53:s regel var "aldrig före
+    avvecklingen — då uppstår ett glapp där ingen hämtar". Regeln antog att Actions levde. Nu
+    hämtar ingen ändå (dött sedan 5/9 11:41), pulsen fyrar de tre 2×/h mot döda jobb (288
+    misslyckandemejl/dygn till Bengt), och den 1/10 hade samma puls bränt oktoberpotten på de
+    gamla filerna INNAN pulsklockan hunnit peka om. Utan filerna svarar GitHub 404 på dispatchen:
+    ingen körning, ingen minut, inget mejl. Grannländerna vilar tills första oktoberkörningen
+    är `pulsklocka` (inventering, sedan skarp), som skapar puls-ingest-grannar och avvecklar de
+    tre pulsjobben — ordningen i kort #53 gäller, bara att filraderingen kom först eftersom
+    glappet redan finns. regn-30 KVAR: hourly = 720 min/mån i oktober; sannolikt överflödig
+    sedan ingest-live:s weather() arkiverar nederbörd varje minut (#72) — eget kort (#79).
+ 2. **deploy-supabase.yml**: workflow_dispatch, väljer funktion (eller alla), kontrollerar att
+    bundlarna är i synk, deployar med `--no-verify-jwt` (pg_cron talar INGEST_KEY, inte JWT).
+    Kräver SUPABASE_ACCESS_TOKEN i Secrets — Axels handgrepp, kort #78. Fäller tydligt utan den.
+    Kan inte köras förrän Actions lever; den finns för att 8/9 aldrig ska upprepas: tre fixar
+    färdiga på main i timmar och en enda deploy-väg.
+

@@ -1398,3 +1398,11 @@ för fi/dk. 52 tester gröna (2 nya), bundlen i synk och parsar, YAML ok, tsc re
 bevisas härifrån: deploy och wall-clock för 1,7 MB via Git Data API — svaret bär `ms`.
 DECISIONS #77.
 
+## 2026-09-08 21:00 — Bengts "så många som möjligt härifrån": två av sex
+Blockerat härifrån (mätt): ingen Supabase-token eller CLI, ingen DATABASE_URL, proxyn släpper
+bara github.com ⇒ deploy (1), SQL-bevis (2), vakthundsbevis (3) och Billing (5) kräver Axel.
+Gjort: (4) ingest-fi/dk/no.yml raderade — pulsen får 404 i stället för att skapa döda körningar
+och mejl, och oktoberpotten bränns inte på gamla filer; (6) deploy-supabase.yml byggd, kräver
+SUPABASE_ACCESS_TOKEN (kort #78). Nytt kort #79: regn-30 troligen överflödig sedan #72, 720
+min/mån annars. DECISIONS #78.
+

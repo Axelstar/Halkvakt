@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-08 20:40 av Claude (webben) — #77 byggt: kartlagren in i publicera (var 30:e min, noll Actions-minuter), publish-map utan cron. Väntar på Axels deploy. Kartsajten är kvar på 5/9 tills dess*
+*Uppdaterad: 2026-09-08 21:00 av Claude (webben) — av Axels sex punkter gick två att göra härifrån: grannlandsfilerna raderade (pulsen får 404, inga mejl, ingen oktoberbränning) och deploy-knappen byggd (#78, väntar på token). Fyra kräver Axel: deploy, SQL-bevis, vakthundsbevis, Billing. Nytt #79: regn-30 sannolikt överflödig*
 
 ---
 
@@ -287,7 +287,7 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   publicera läser weather_latest, som frös 5/9 11:05. Storvik var inte en trasig station i
   en levande tabell utan en död tabell. DOM: kedjan Trafikverket → databas → CDN lever;
   CDN → app gör det inte. Fixat i #74/#75-bygget, väntar på Axels deploy.
-- [ ] ⏱️ **#77 publish-map:s egen cron lever kvar — BYGGT 8/9 20:40 (DECISIONS #77), väntar på deploy**
+- [ ] ⏱️ **#77 publish-map:s egen cron lever kvar — BYGGT + MERGAT TILL MAIN 8/9 20:45 (PR #74, 15ba9ad), väntar på Axels deploy**
   ✅ `publish/map-core.ts` bygger kartsajtens sex filer; `publicera` publicerar dem i samma
   commit som appfilerna på :00/:30 (`?karta=1` tvingar). publish-map.yml: cron borta, bygger
   varken kartlager eller app-snapshot, kedjad på ingest + ingest-grannar för fi/dk. 52 tester
@@ -302,6 +302,18 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   in i publicera (samma mönster, noll minuter) eller (b) publish-map timvis via puls +
   grannar 1×/h (minutplanens #6/#7, produktbeslut Bengt+Axel). Verify: första oktober-
   veckans Usage under 66 min/dygn.
+- [ ] 🔑 **#78 Deploy-knappen: deploy-supabase.yml väntar på SUPABASE_ACCESS_TOKEN (Axel)** (DECISIONS #78)
+  Byggd 8/9 21:00. workflow_dispatch → välj funktion → bundle-check → `supabase functions
+  deploy --no-verify-jwt`. 🔑 AXEL: Supabase → Account → Access Tokens → ny token "Halkvakt
+  deploy" → GitHub → Settings → Secrets → SUPABASE_ACCESS_TOKEN. Verify: första körningen i
+  oktober deployar publicera och nästa kartrepo-commit bär rätt manifest-sha. Tills Actions
+  lever är Axels terminal enda vägen — kommandona står på kort #77.
+- [ ] 🌧️ **#79 regn-30 är sannolikt överflödig sedan #72 — 720 min/mån i oktober annars** (fynd 8/9):
+  regn-30 pulsas varje timme (:41) och tar ~1 debiterad minut ⇒ 720 min/mån av 2 000. Men
+  ingest-live:s weather() arkiverar sedan 8/9 varje mätning med nederbörd, varje minut (#72).
+  Kort #44:s 2/2-andel mäter om :11 och :41 fångas — med minutupplösning i arkivet blir
+  frågan meningslös. BESLUT (Bengt+Axel): stäng puls-regn-30 och radera filen, eller behåll
+  som oberoende mätning. Verify: regn-tackning dagar=1 i oktober ≥ baslinjen utan regn-30.
 - [ ] 🐕 **#76 Vakthunden i Supabase mäter fel led — ÅTGÄRDAD PÅ MAIN 8/9 17:24 (822d178), deploy ej bevisad härifrån.**
   Led 3 hämtar nu manifest.json och jämför sha256 med live.json. Stängs när vakthunden
   bevisligen larmat OCH tystnat på riktiga data (issue med etiketten vakthund), inte förr.
@@ -430,6 +442,11 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   runnern, inte klockan, som är blockerad. Diagnosen från 15:40 står oemotsagd.
   ⛔ Kortet kan inte drivas vidare härifrån: nästa steg kräver Billing-sidan, och den
   kräver Axel. Allt som gick att göra utan behörighet är gjort och ligger i grenen.
+  🗑️ **8/9 21:00: ingest-fi/dk/no.yml RADERADE** (DECISIONS #78, Bengts "så många som möjligt
+  härifrån"). "Aldrig före avvecklingen" antog att Actions levde; nu finns glappet redan, pulsen
+  fyrar 2×/h mot döda jobb (288 mejl/dygn) och hade bränt oktoberpotten på de gamla filerna
+  dag ett. Utan filerna svarar GitHub 404: ingen körning, ingen minut, inget mejl. Första
+  oktoberkörningen är fortfarande pulsklockan (inventering → skarp → grannar tar över).
   🕗 **AVLÄSNING 6/9 07:00 (bokad incheckning): FORTFARANDE DÖTT.** Provkörde den
   lättaste workflowen som finns — `segmentlangden`, varken databas eller nät — på main:
   körning #1, `workflow_dispatch` 07:00:32, **död efter 4 sekunder**, noll steg.
