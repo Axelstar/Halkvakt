@@ -17,181 +17,30 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Desktop mot Halkvakt-mappen, ingen terminal. Axel: skrivrättigheter till repot.
   Löser roten till 31/8 — han kan köra sina egna analyser i stället för att beskriva dem.
 
-### AXELS NÄSTA STEG — i den här ordningen
+### AXELS NÄSTA STEG — i den här ordningen (uppdaterad 8/9 kväll)
 
-**0. 🛑 PIPELINEN STÅR STILLA SEDAN 5/9 13:12 — ACTIONS-MINUTERNA ÄR SLUT (Bengts larm 6/9, Claude terminalen)**
-GitHubs gratistak för privata repon är 2 000 minuter/månad. Förbrukat 1–5 september: **1 985 min**
-(Actions → Usage metrics). Varje körning sedan 5/9 ~13:12 dör efter 3–7 s med annoteringen
-*"The job was not started because recent account payments have failed or your spending limit
-needs to be increased"* (publish-map #761 m.fl., 88 sidor körningar). CDN:s meta.json stannade
-2026-09-05 11:11Z. Livemotorn på Supabase (väglag/olyckor varje minut) och skuggmotorn kör
-OPÅVERKADE — det är GitHub-delen som är död: ingest väder/kameror, FI/DK/NO, regn-30,
-publicering, healthcheck (vakthunden bor på Actions och kan därför inte larma om detta).
-VAR MINUTERNA GICK (månad): publish-map 616 · ci 299 · ingest-fi 236 · android 197 · ingest 193 ·
-ingest-no 160 · ingest-dk 97 · healthcheck 49 · regn-30 46. Takten är ~400 min/dygn = 6× vad
-2 000/mån tål. DECISIONS #22 (25/8) satte minutdieten till ~1 750/mån; sedan dess har ci på varje
-push (404 pushar/30 d), pulsklockans breddning 4/9 (FI/DK/NO/regn-30 = 539 min på två dygn) och
-publish-map var 30:e min ätit upp den. Claude (terminalen) breddade pulsen 4/9 utan att räkna
-minuterna — det står här som eget fel, inte som naturkraft.
-🔑 DITT BESLUT, ett av tre — inget annat får igång datan förrän Axels faktureringscykel nollställs
-(datum okänt för Bengt/Claude, syns i Axels Billing & plans):
-(a) **Gör repot publikt** → obegränsade minuter, omedelbart. DECISIONS #7 valde privat för att
-PLAN.md bär affärsstrategin — flytta PLAN.md/GTM/FINANSIERING till ett privat systerrepo först
-(en timmes jobb). Hemligheter ligger i Secrets och påverkas inte.
-(b) **Höj spending limit** → ~0,008 USD/min; dagens takt ≈ 100 USD/mån. Dyrt för fel skäl.
-(c) **Vänta till nollställningen** + bantning. Datan är död tills dess.
-OAVSETT val: bantningen (nytt kort under Claude olåst) måste in innan pulsen släpps på igen,
-annars är oktober slut den 6:e. Budgeten per dygn ska stå på tavlan som ett tal, inte som en känsla.
-📄 **OMVÄRDERINGEN 6/9 (Bengts "lista vad som kan göras utan beslut"): docs/MINUTPLAN-2026-09-06.md** —
-15 åtgärder rangordnade, svar på "nordisk sammanslagning + Supabase löser det helt?" (halvrätt: flytten
-ja, sammanslagningen nej, och ci/android spränger taket ensamt). Snabbaste data FÖRE nollställningen:
-nödkörning på Bengts dator med Axels tre hemligheter (#14) — handgrepp, inte beslut.
+- [x] ~~1. Bevisa vakthunden~~ ✅ GJORT 8/9 — pg_cron kört 18:07/19:07/20:07, alla succeeded.
+  MEN fyndet: larmvägen var trasig (#78). Beviset att klistra till Bengt står i DECISIONS #78.
+- [ ] **2. 🔴 PAT:en behöver `Issues: Write`** (nytt, viktigast av dessa) — utan det kan
+  vakthunden inte larma, bara rapportera när allt är bra. Provat skarpt 8/9: POST /issues → 403.
+  Samma sak som blockerade svaret på Bengts issue #3 den 31/8. GitHub → Settings → Developer
+  settings → PAT → Halkvakt-token → Repository permissions → Issues: Read and write.
+- [ ] **3. Skärmklipp av Billing till Bengt** — du har redan bilden (2000/2000 min, reset om
+  23 dagar ⇒ 1/10, spending limit noll). Vidarebefordra den bara.
+- [ ] **4. Supabase-token som `SUPABASE_ACCESS_TOKEN` i GitHub Secrets** — Supabase → Account
+  → Access Tokens → ny "Halkvakt deploy". Då kan Bengt deploya själv när Actions lever
+  (deploy-supabase.yml finns på main). I kväll låg tre färdiga fixar odeployade i timmar.
+- [ ] 5. TestFlight-gruppen: lägg 0.3.5 (8) om det inte skett automatiskt
+- [ ] 6. Tolv testare till väntelistan (fortfarande det som avgör vintern)
+- [ ] 7. Google Play-konto (signeringen är lagad, AAB:n grön — vägen är öppen)
 
-**1. ~~Signeringshemligheten~~ ✅ LAGAD 2/9 (DECISIONS #58)** — rotorsak: bara HV_KEYSTORE_PASS
-hade roterats 31/8, inte B64; paret hörde inte ihop och jks-filen fanns inte kvar. Ny keystore
-skapad 2/9, båda hemligheterna från samma fil, signerad AAB 2,5 MB grön i CI.
-✅ Filen uppladdad till iCloud Drive/Halkvakt-nycklar 2/9 (utrymmet var fullt, Axel köpte mer)
-och anteckningen i Apple Passwords uppdaterad. Kortet HELT stängt.
+**Beslut som väntar, inte brådskande (med Bengt):**
+- [ ] #79 regn-30: pulsas varje timme = 720 min/mån av oktobers 2 000. Sedan ingest-live
+  arkiverar vädret varje minut är den troligen överflödig. Mät innan den väcks.
+- [ ] Publikt repo eller köpa minuter — appen behöver inte längre svaret (#72), ta det lugnt.
+- [ ] Gallringsregel för weather_observations före vintern — ~40 000 rader/dygn när alla 845
+  stationer ligger under 5 °C fyller gratisnivån på ~2 månader. Får inte kasta det Grind A mäter.
 
-**2. ~~Vid Macen: till TestFlight~~ ✅ 0.3.1 och 0.3.2 uppladdade 31/8 em.**
-Kvar: lägg 0.3.2 i gruppen i App Store Connect → skicka Bengt testinstruktionen.
-
-**3. På telefonen (efter bygget): fyra kontroller i `ios/MAC-GUIDE.md`**
-Genvägar hittar "Starta vakten" · Siri "Starta Halkvakt" · automationen med Kör direkt ·
-"Senast sagt" står kvar dagen efter. Ge Halkvakt platsen **Alltid** — annars blinkar appen
-förbi vid varje autostart.
-
-**4. I bilen:** Fokus Kör + kartappen som utlösare (du har ingen CarPlay — se PRODUKTBOK
-"Autostart i bilen"). Kör förbi en fartkamera med Maps framme: bannern i 8 s, rösten talar
-med släckt skärm, vakten stannar när du stänger av.
-
-**5. Beslut som väntar på dig** (rekommendationer i chatten 31/8, DECISIONS #30–#34)
-- [x] 🔑 ~~Fastställ trösklarna för skuggan~~ ✅ FASTSTÄLLT 2/9 — Axels "kör" relayerat
-  av Bengt i chatten (DECISIONS #61). Kontrasignera genom att låta bocken stå; vill du
-  ändå justera ett värde går det fram till första skuggkörningen (~mitten av oktober).
-- [ ] Svara pappa på höstplanen — ja till TågRätt-företräde för DIN tid, ~1 h/vecka till Halkvakt
-- [ ] Rollfördelningen: B2B = Bengt (ja) · Skyltfondsrundan: klartecken (v.36 börjar onsdag)
-- [x] ~~Skinnet v3 (#24) iOS~~ ✅ BEVISAT på Axels telefon 31/8 19:20 — alla skärmar, ikonsetet,
-  intro med kvitton. Går till Bengt som 0.3.3 efter Bodenresan.
-- [ ] 🔨 **PÅGÅR (Claude, 2/9 ~15:00) — Skinnet v3 på Android** — samma tokens, fem ikoner som Compose-vektorer, två flikar.
-- [ ] **Introduktionen i Claude Design** — enda skärmen som inte ritats om än.
-- [ ] TestFlight intern (Bengt) + extern (kompisarna, Test Information → Submit for Review)
-- [ ] Google Play Console — VÄNTA tills 12 står på väntelistan (4 idag); klockan startar vid köp
-
-**Claude — nästa förenkling (DECISIONS #38):**
-- [ ] **Live Activity — varningskortet i Dynamic Island och på låsskärmen** (Axel 31/8: "ska den
-  ligga över Maps?"). Ingen app får rita över en annan; Live Activity är det Apple tillåter:
-  gul rad "Vakten på · 42 min" under körning, blossar upp "▲ Halt väglag · 2,0 km" när rösten
-  talar, synlig över kartan och på låst skärm. Bannern (#23) kvar som textvariant.
-- [ ] **Startknapp på låsskärmen + i Kontrollcenter + åtgärdsknappen** — widget (iOS 17),
-  Control (iOS 18), och en rad i guiden om Åtgärdsknapp → Genväg → Starta vakten (iPhone 15
-  Pro+). Ett tryck, ingen Genvägar. DECISIONS #39.
-- [ ] **Guiden med bilder + film** — skärmbild per steg (ringad knapp) inbakade i appen;
-  15 s film per spår på kartsajten. Råmaterial: Axels inspelningar 31/8 (Inte alls), Bengt
-  filmar CarPlay-spåret.
-
-**Claude — i väntan på Macen:**
-- [ ] Introduktionen på Android (spegel av iOS, DECISIONS #36) — efter att iOS-varianten testats
-- [x] ~~#38a Broarna~~ ✅ BYGGT 31/8 kväll (DECISIONS #50): tre motorer, v18/v19, publicering,
-  OSM-hämtare. "Frysrisk framöver — bro om N meter." VÄNTAR PÅ DATA: Overpass nere, bridges.yml
-  försöker var 6:e timme. Rösten säger inget om broar förrän filen finns. Appen: 0.3.3.
-- [ ] **#38b Stråket / skuggmotorn** — Bengts byggplan v3 (31/8) tidigarelägger segmentmotorn
-  till november, i strikt skugga, dom i mars. AXELS BESLUT: sekvensering mot lanseringen.
-  Claudes råd: börja med de tre delar som INTE kräver frost, låt skuggkörningen vänta på snö.
-  - [x] ~~**(1) Tröskeldokumentet**~~ ✅ KLART 1/9 (DECISIONS #52): docs/TROSKLAR-SKUGGAN.md
-    — tre grindar (A offsetmodellen, B skuggdriften, C domens giltighet), daterat före all
-    skuggkod. Bengt fällde värdena efter genomgång i chatten. 🔓 Hårda villkoret uppfyllt —
-    (2) och (3) olåsta. Grind A prövas på arkivet INNAN november: ett gratis tidigt nej.
-  - [x] ~~**(2) Ankarklippningen**~~ ✅ KÖRD 1/9 (Bengts fråga avslöjade att morgonens
-    kamerafil ALDRIG nått CDN — TRV 400 i varje varv, fail-soft dolde det; rotorsak
-    "Invalid query attribute Camera.RoadNumber", lagad, 744 kameror live i körning
-    33485863812). MÄTRESULTAT: kamerorna ger nästan ingen ny ankartäthet — 738/744
-    står exakt vid en väderstation (VViS). Nationellt 6,8→6,7 km median, >20 km-andel
-    4,7→4,6 %; Norrland oförändrat 9,2 km / 12,6 %. Kamerornas värde är BILDFACIT,
-    inte täckning. Knappen ankaranalys.yml LIVE på main. Fyndet bokfört som DECISIONS #55
-    2/9 (terminalsessionen reproducerade siffrorna oberoende med scripts/ankaranalys.ts —
-    två verktyg, samma resultat). Healthchecken vaktar nu kamerafilen på CDN
-    (finns/≥500 kameror/≤7 dygn) — fail-soft-läxan från TRV-400-episoden.
-  - [ ] **(3) Offsetmodellen mot arkivdata** 🔓 — vi har data sedan 24/8. Tunt, men nog för
-    att se om matematiken alls håller innan tre veckor läggs på den.
-    SKRIPTET BYGGT 1/9: publish/grind-a.ts + knappen Actions → grind-a (leave-one-out,
-    A1–A3 mot TROSKLAR-SKUGGAN, självtest med känd sanning grönt).
-    RÖKPROVET KÖRT 1/9 (grind-a #1, Bengts knapptryck): 43 punkter — felet växer med
-    ankaravståndet precis som teorin säger (0,63 °C vid 0–7 km → 5,39 °C bortom 20 km).
-    Nära ankare under A1-tröskeln redan på sämsta möjliga data; för tunt för dom
-    (minsta underlag ≥ 500 punkter infört i dokumentet). AUTOMATISK: körs varje MÅNDAG
-    05:40 (skriptsammanslagningen #54 flyttade dagen), resultatet på körningens
-    Summary-sida. Domspärr i skriptet: under 500 punkter/20 stationer skrivs "—", ingen
-    dom går att läsa av. Underlagsvakt: grön-men-tom mätning (<100 stationer) blir rött
-    jobb — larmvägen HELT BEVISAD 1/9 (avsiktlig dagar=0-körning → rött → mejlet "Alla
-    jobb har misslyckats" framme hos Bengt, skärmbildskvitto). OBS 2/9: workflow-
-    omskrivningen tappade `shell: bash` ⇒ `| tee` åt exit-koden igen (tee-läxan #26,
-    larmvägen avväpnad) — LAGAD i terminalsessionens tavelsynk samma kväll. 🔑 Skarp
-    prövning på vinterdata (≥ 500 punkter) före november.
-  - [ ] **(3b) Ankarbreddningen** (Bengts fråga 1/9: "vad krymper avståndet?") —
-    tre kandidater, en mätt, en byggd, en väntar:
-    · Grannländerna: FI MÄTT 1/9 (Norrland >20 km 12,6→11,5 %, gratis — stationerna
-      finns redan i vader.geojson); NO mäts samma dag Vegvesen-kontot fungerar; DK = 0.
-    · **Frost-ankare (NO)** ✅ KÖRT 2/9 kväll (DECISIONS #60): Bengt registrerade nyckeln,
-      rekognosering + prov byggda och körda mot levande API samma kväll (knappar:
-      frost-rekognosering, frost-prov). TRE FYND: (a) Vegvesen bor i Frost — 461 aktiva
-      vägstationer med lufttemp, "E10 BJØRNFJELL" 1 km från Riksgränsen, dataprov 8,6 °C;
-      norskt luftarkiv möjligt UTAN DATEX. (b) Yttemp kräver ändå DATEX (404 på serierna).
-      (c) Svenska Norrlandsluckan RUBBAS INTE (9,1 km / 11,5 % i alla påbyggnadssteg) —
-      luckan är INLANDS, inte vid gränsen; kvarvarande spår är SMHI+höjd eller felkartan.
-      *(Bengts beställning 2/9, terminalsessionen)*
-    · SMHI-luftankare: PROVET BYGGT + KÖRT 1/9 (Bengts order): scripts/smhi-prov.ts +
-      knappen Actions → smhi-prov (235 SMHI-stationer, samma leave-one-out som grind-a,
-      självtest där ett fjärran-VViS räddas av luftankare). Första signalen på tunna
-      augustidata (34 punkter, INGEN dom): stör inte där VViS är tätt (2,56→2,50 °C),
-      och i >20 km-bandet 5,83→4,37 °C plus 4 nya punkter à 1,57 °C som basen inte
-      når alls. SCHEMALAGD från 2/9 (Bengts order): måndagar 06:00, 20 min efter grind-a
-      — båda vinterkurvorna växer av sig själva, läses i samma rutin. 🔑 Omkörning på
-      vinterdata; värderas i tröskeldokumentet.
-    · Höjden: PROVET BYGGT + KÖRT 1/9 kväll (Bengts order): scripts/hojd-prov.ts +
-      knappen Actions → hojd-prov (EU-DEM-höjder, tre varianter RÅ / RÅ+HÖJD /
-      OFFSET=taket; självtestet fällde ett teckenfel före push). Två fynd: (1) STARKT,
-      3 455 par: empirisk lapse 0,71 °C/100 m (standard 0,65) — höjden bär en äkta del
-      av parsystematiken; (2) ÄRLIGT, 40 augustipunkter: rå+höjd 8,36 ≈ rå 8,36 mot
-      offsetens 2,50 °C — i utstrålningslägen räcker höjden INTE ensam, lärda offsets
-      bär stationskaraktären. AUTOMATISK 4/9 (Bengts ja): måndagar 07:00, sist i
-      mätserien efter grind-a/smhi/v3/trv — vinterkurvan växer utan knapptryck, och
-      rangordningen står: felkartan dömer, luftankarna lagar, höjden finjusterar.
-      🔑 Omkörning på vinterdata avgör.
-    · GIS-svansen (dalgångar/skuggning): rörs inte förrän vinterns höjdprov motiverar den.
-  - [ ] (4) Skuggkörningen — startar när det finns halka att skugga (~mitten av oktober,
-    Skåne). I augusti räknar den "inte halt" på "inte halt".
-  - [ ] **Skuggmotorns prognoskolumn måste buntas ur engine/src** som resten (läxan 31/8):
-    en handklistrad prognoskolumn driver isär på ett dygn.
-- [ ] **Kameravarningen i fel riktning** — tre varv 2/9: #55 tolerans 100°→60°, #57
-  riktningen vänd 180° (Trafikverkets Bearing = dit kameran TITTAR), #59 verifierad mot
-  Öjersjö-kameran ID 14102020. Koden är nu bevisat rätt i alla tre motorerna.
-  0.3.5 (8) uppladdad 14:42 — första bygget med grönt kontrakt (#60).
-  🔑 BEVIS SAKNAS ÄN: Bengt kör 0.3.5 och noterar KLOCKSLAG + PLATS per larm och per
-  kamera utan larm. Beskrivningar räcker inte, vi har gissat tre gånger.
-- [x] ~~issue #4: segment_id i vaglag.geojson~~ ✅ KLART + BEVISAT 3/9 (Bengt + Claude):
-  818/818 features på CDN bär segment_id (publicering 16:37Z). Segmentstabilitetens
-  tidsserie inför mars tickar nu gratis i kartrepots halvtimmescommits. Issue stängd.
-- [x] ~~#31 Trafikverksbevakningen~~ ✅ KLART 3/9 (detaljkortet under Claude — olåst)
-
-- [x] ~~Testinstruktion till Bengt~~ ✅ docs/TEST-BENGT-0.3.2.md (31/8)
-- [ ] **Bodenresan 1/9** — docs/TEST-BENGT-BODEN.md: E4 hela vägen = skuggflottans väg.
-  Efteråt: Bengts logg bredvid testbilarnas rapport för samma dag = första riktiga facit.
-- [ ] Välkomsttext + testinstruktion till kompisarna
-- [ ] Play: uppladdningsguide för den CI-signerade AAB:n så fort hemligheten är satt
-- [ ] Fotostudion tag 2 — facit ur CI + produktboken
-- [ ] Vid kompilatorfel från Macen: rätta → push → nytt varv
-
-**Skrivet idag, väntar på bevis i din hand:**
-- [ ] **#22 autostart** — T1+T2 GRÖNA på Axels telefon 31/8 (intentet syns, Siri startar).
-  Automationen skapad, Fokus Kör på Automatiskt. Kvar: T3–T7 i bilen. Android fanns.
-- [ ] **#23 heads-up** — bannern över kartappen, båda plattformarna
-- [ ] **#24 skinnet** — DELVIS: "Senast sagt" på hemskärmen, båda. Resten bakom designexport.
-- [ ] **Introduktionen** (iOS) — fyra sidor vid första start: löftet, platsen, bannern, autostart.
-  Kontroll: radera appen → installera → intron ska komma först; "Visa igen" i Inställningar.
-
-*(Kronjuvelerna, Xcode 26.1 och Apple Developer är avklarade och flyttade till KLART.
-Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som återstår.)*
 
 ### Axel — beslut att ta
 - [x] ~~Fastställ trösklarna för skuggan~~ ✅ FASTSTÄLLT 2/9 (DECISIONS #61): Axels
