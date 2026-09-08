@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-08 21:40 av Claude (webben) — kort #42: facitet (rain_sum_mm) har svultit sedan 5/9, ingest-live skrev inte mängden. Lagat i kod (DECISIONS #79), väntar på Axels deploy av ingest-live. Beslutsläget a/b/c oförändrat*
+*Uppdaterad: 2026-09-08 21:50 av Claude (webben) — #42: regnmängden tillbaka i arkivet (PR #76 mergad), Axel deployar ingest-live. Axels varv: vakthunden bevisad levande men larmvägen trasig (PAT saknar Issues:Write, DECISIONS #78), Billing 2 000/2 000 med nollställning 1/10*
 
 ---
 
@@ -921,7 +921,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   kommit är precis vad §5 förbjuder.
   ⚠️ Reservation: rain_sum_mm startade 2/9, så "30 dygn" är tre dygns septemberregn.
   Knappen går måndagar 07:20 och kurvan växer med höstregnen.
-  🔴 **FACITET SVALT SEDAN 5/9 — LAGAT I KOD 8/9 21:40 (DECISIONS #79), väntar på deploy:**
+  🔴 **FACITET SVALT SEDAN 5/9 — LAGAT OCH MERGAT 8/9 21:50 (PR #76, DECISIONS #79), väntar på Axels deploy av ingest-live:**
   ingest-live:s väder (#72) skrev arkivet UTAN rain_sum_mm/snow_wateq_mm/vind/sikt. Grind V-A,
   regn-tackning och hela facitet läser rain_sum_mm ⇒ tre dygns septemberregn omätta, och det
   hade fortsatt. Nu speglar ingest-live weather.ts fält för fält. 🔑 AXEL: deploya ingest-live,
