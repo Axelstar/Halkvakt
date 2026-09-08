@@ -1237,3 +1237,19 @@ VAD SOM SKA HA HÄNT FÖRE 1 OKTOBER FÖR ATT GRÄNSEN SKA KUNNA GÅ TILLBAKA TI
  4. Gallringsregeln (#80) beslutad — den rör Supabase, men hör till samma budgetdisciplin.
 Klaras 1–3 räcker gratisnivåns 2 000 min till byggena med marginal, och gränsen sätts
 tillbaka till 0. Följs upp i oktober.
+## #83 (8/9 2026 21:19) Pulsklockan omstartad efter avbrottet — grannar EN gång i timmen, tre pulsjobb avvecklade
+FÖRSTA JOBBET NÄR ACTIONS VAKNADE (Axels 35 USD, #81/#82) var pulsklockan, som planerat sedan
+kort #53. Två ändringar krävdes först: mallen (puls-ingest, ingest.yml) hade Axel stängt av 8/9,
+så mallvakten hade fällt körningen — mallen är nu puls-regn-30 (regn-30.yml), det pulsjobb som
+finns kvar och bär token. Och NYA-listan bar puls-healthcheck, som Axel stängt av med flit
+(vakthunden i Supabase tog över) — struken, får inte återskapas härifrån.
+INVENTERING (#6, 21:17): 10 cron-jobb, mall #9 puls-regn-30 token=true, skulle skapa 1 och
+avveckla 3. SKARP (#7, 21:19): `schemalagt: puls-ingest-grannar (24 * * * *)`, `avvecklat:
+puls-ingest-fi/dk/no`, bevisvakten: `OK puls-ingest-grannar … token=true`, `OK …-fi/dk/no: borta`,
+"Alla 1 pulsjobben på plats". 8 cron-jobb kvar.
+EN GÅNG I TIMMEN, inte 2×/h som de gamla: DECISIONS #82:s rättelse 2. Glesare än så tystar
+gränsstationerna (givarvakten #75 släpper bara < 3 h); tätare kostar ~3 debiterade minuter per
+körning i onödan. Uppskattad kostnad ~5 min/körning ⇒ ~120 min/dygn ⇒ ~12 kr/dygn tills FI/NO:s
+rad-för-rad-inserts batchas (minutplanen A1) eller flyttas till Supabase.
+BEVISET är inte den här raden utan grannar-jobbets EGNA körningar på :24 — tre länder på Summary.
+

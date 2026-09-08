@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-08 21:40 av Claude (webben) — kort #42: facitet (rain_sum_mm) har svultit sedan 5/9, ingest-live skrev inte mängden. Lagat i kod (DECISIONS #79), väntar på Axels deploy av ingest-live. Beslutsläget a/b/c oförändrat*
+*Uppdaterad: 2026-09-08 21:25 av Claude (webben) — ACTIONS LEVER. Pulsklockan körd skarpt: grannar hourly på :24, tre gamla pulsjobb avvecklade, bevisvakten grön (DECISIONS #83). ci grön på main. Väntar på första grannar-körningen 21:24*
 
 ---
 
@@ -40,6 +40,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] Publikt repo eller köpa minuter — appen behöver inte längre svaret (#72), ta det lugnt.
 - [ ] Gallringsregel för weather_observations före vintern — ~40 000 rader/dygn när alla 845
   stationer ligger under 5 °C fyller gratisnivån på ~2 månader. Får inte kasta det Grind A mäter.
+  ⚠️ RÄKNAT OM 8/9 22:00 (Bengts Claude, ur vader.geojson): 809 av 848 stationer mäter på
+  10-minutersslag, och livemotorn läser varje minut ⇒ **~120 000 rader/dygn**, inte 40 000
+  (den siffran är GitHub-ingestens 2×/h). 500 MB räcker då **~3 veckor**, inte 2 månader.
+  Gallringen måste finnas FÖRE första kalla veckan, inte "före vintern". Alternativ som inte
+  kastar Grind A:s underlag: spara var 30:e minut i arkivet men behåll varje minut i
+  weather_latest — det är exakt den upplösning GitHub-ingesten hade när Grind A byggdes.
 
 
 ### Axel — beslut att ta
@@ -167,6 +173,21 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Kort #44:s 2/2-andel mäter om :11 och :41 fångas — med minutupplösning i arkivet blir
   frågan meningslös. BESLUT (Bengt+Axel): stäng puls-regn-30 och radera filen, eller behåll
   som oberoende mätning. Verify: regn-tackning dagar=1 i oktober ≥ baslinjen utan regn-30.
+- [ ] 🕳️ **#80 Arkivet, kamerorna, viltet och SMHI stannade när puls-ingest stängdes av** (fynd 8/9
+  21:13, healthcheck #144 — första körningen sedan Actions vaknade): `cameras` och
+  `road_conditions_arkiv` synkade för 4 922 min sedan, fi/dk/no likaså. Svenska GitHub-ingesten
+  (ingest.yml) bär FEM saker livemotorn inte gör: kamerorna, vinterarkivets egna kursor
+  (road_condition_history — moaten, #51/#73), polisens viltolyckor, SMHI-varningarna och
+  broarnas indata. Axel stängde puls-ingest 8/9 i tron att "väderhämtningen" flyttat — vädret
+  hade, resten inte. Sedan 5/9 11:11 skrivs alltså inget till moaten och inga nya viltolyckor
+  eller SMHI-varningar når appen. Tredje "grönt men tyst"-felet i dag.
+  VARFÖR INTE BARA SLÅ PÅ IGEN: ingest/index.ts hämtar ALLA sex källor och delar kursor-
+  nycklarna `weather` och `deviations` med ingest-live ⇒ två skrivare på samma changeid
+  (läxan #73a). VÄG: `--skip weather,deviations` i ingest/index.ts (liten ändring, test),
+  sedan puls-ingest tillbaka EN gång i timmen (~2 debiterade min/h, ~5 kr/dygn). Verify:
+  healthcheck grön på cameras + road_conditions_arkiv, och arkivvakten visar omklassningar
+  när väglaget ändras. Alternativet på sikt är minutplanens #13 (DB-trigger för arkivet)
+  + vilt/SMHI i ingest-live — då behövs ingest.yml aldrig mer.
 - [ ] 🐕 **#76 Vakthunden i Supabase mäter fel led — ÅTGÄRDAD PÅ MAIN 8/9 17:24 (822d178), deploy ej bevisad härifrån.**
   Led 3 hämtar nu manifest.json och jämför sha256 med live.json. Stängs när vakthunden
   bevisligen larmat OCH tystnat på riktiga data (issue med etiketten vakthund), inte förr.
@@ -307,6 +328,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   fyrar 2×/h mot döda jobb (288 mejl/dygn) och hade bränt oktoberpotten på de gamla filerna
   dag ett. Utan filerna svarar GitHub 404: ingen körning, ingen minut, inget mejl. Första
   oktoberkörningen är fortfarande pulsklockan (inventering → skarp → grannar tar över).
+  🟢 **ACTIONS LEVER 8/9 21:07 (Axels 35 USD-gräns, DECISIONS #81/#82).** Första jobbet:
+  pulsklockan (DECISIONS #83) — inventering #6 ren, skarp #7 bevisad: puls-ingest-grannar på
+  `24 * * * *`, puls-ingest-fi/dk/no avvecklade, bevisvakten grön, 8 cron-jobb kvar. Mallen
+  bytt till puls-regn-30 (puls-ingest avstängd av Axel). ci grön på main (#455/#456) ⇒
+  PostGIS-testet av givarvakten och bundle-checkarna har passerat. Kvar under #53: #80
+  (moaten/kameror/vilt/SMHI utan skrivare), #79 (regn-30), och Billing-frågan i lugn.
   🕗 **AVLÄSNING 6/9 07:00 (bokad incheckning): FORTFARANDE DÖTT.** Provkörde den
   lättaste workflowen som finns — `segmentlangden`, varken databas eller nät — på main:
   körning #1, `workflow_dispatch` 07:00:32, **död efter 4 sekunder**, noll steg.
@@ -921,7 +948,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   kommit är precis vad §5 förbjuder.
   ⚠️ Reservation: rain_sum_mm startade 2/9, så "30 dygn" är tre dygns septemberregn.
   Knappen går måndagar 07:20 och kurvan växer med höstregnen.
-  🔴 **FACITET SVALT SEDAN 5/9 — LAGAT I KOD 8/9 21:40 (DECISIONS #79), väntar på deploy:**
+  🔴 **FACITET SVALT SEDAN 5/9 — LAGAT OCH MERGAT 8/9 21:50 (PR #76, DECISIONS #79), väntar på Axels deploy av ingest-live:**
   ingest-live:s väder (#72) skrev arkivet UTAN rain_sum_mm/snow_wateq_mm/vind/sikt. Grind V-A,
   regn-tackning och hela facitet läser rain_sum_mm ⇒ tre dygns septemberregn omätta, och det
   hade fortsatt. Nu speglar ingest-live weather.ts fält för fält. 🔑 AXEL: deploya ingest-live,
