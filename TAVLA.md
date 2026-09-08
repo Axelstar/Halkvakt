@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-08 21:15 av Claude (webben) — #77 KLART (Axel deployade, ms 10 727, meta.json färsk), weather_latest BEVISAT tinat (99 % av 848 stationer ≤ 12 min), #78 mergat (grannlandsfilerna bort, deploy-knapp väntar på token). Kvar av sex punkter: vakthundsbevis, Billing-klipp, token*
+*Uppdaterad: 2026-09-08 21:20 av Claude (webben) — avläsning 7: Actions fortfarande dött (80 h 43 min förlorad insamling), men appen och kartsajten lever ur Supabase. Kvar för Axel: vakthundsbevis, Billing-klipp, deploy-token*
 
 ---
 
@@ -448,6 +448,11 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   runnern, inte klockan, som är blockerad. Diagnosen från 15:40 står oemotsagd.
   ⛔ Kortet kan inte drivas vidare härifrån: nästa steg kräver Billing-sidan, och den
   kräver Axel. Allt som gick att göra utan behörighet är gjort och ligger i grenen.
+  🌙 **AVLÄSNING 7, 8/9 20:24: fortfarande dött.** Inget nytt prov behövdes: ci-körningarna
+  på kvällens pushar (#445 20:12:14, #446 20:12:23) dog efter 2–4 s utan runner, samma
+  mönster. **Förlorad insamling: 80 h 43 min.** Skillnaden mot i morse: appen och kartsajten lever
+  nu ur Supabase (#72/#74/#77), så Actions-avbrottet kostar bara det som ligger kvar där:
+  grannländerna, regn-30, mätknapparna och healthchecken (vakthunden i Supabase tar över).
   🗑️ **8/9 21:00: ingest-fi/dk/no.yml RADERADE** (DECISIONS #78, Bengts "så många som möjligt
   härifrån"). "Aldrig före avvecklingen" antog att Actions levde; nu finns glappet redan, pulsen
   fyrar 2×/h mot döda jobb (288 mejl/dygn) och hade bränt oktoberpotten på de gamla filerna
