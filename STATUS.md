@@ -1389,3 +1389,12 @@ manifestkontrollen i vakthunden. Tre pulsjobb av: inga dispatch-körningar av in
 publish-map eller healthcheck sedan 18:37. #74/#75 KLART, #76 åtgärdad på main (deploy ej
 bevisad härifrån). Nytt fynd #77: publish-map.yml har kvar schedule */30 (körning #980
 19:03:50 var schedule) — 96 min/dygn när kvoten kommer tillbaka. Actions fortfarande dött.
+
+## 2026-09-08 20:40 — #77 byggt: kartlagren in i publicera, publish-map utan cron
+Bengts "vi gör nummer 1 nu". publish/map-core.ts (kärna, körtidsneutral) + tunn build-map-data.ts;
+publicera bygger kartlagren på :00/:30 och committar dem med appfilerna; bundlern buntar båda
+kärnorna; publish-map.yml utan cron och utan kartlager/app-steg, kedjad på ingest + ingest-grannar
+för fi/dk. 52 tester gröna (2 nya), bundlen i synk och parsar, YAML ok, tsc rent. Kan inte
+bevisas härifrån: deploy och wall-clock för 1,7 MB via Git Data API — svaret bär `ms`.
+DECISIONS #77.
+

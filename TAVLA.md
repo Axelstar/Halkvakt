@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-08 20:10 av Claude (webben) — Axels åtgärder kontrollerade i kartrepot: manifest-sha MATCH sedan 17:18, Storvik borta, tre pulsjobb av. #74/#75 KLART, #76 åtgärdad på main. Nytt #77: publish-map:s egen cron lever kvar och äter oktoberpotten*
+*Uppdaterad: 2026-09-08 20:40 av Claude (webben) — #77 byggt: kartlagren in i publicera (var 30:e min, noll Actions-minuter), publish-map utan cron. Väntar på Axels deploy. Kartsajten är kvar på 5/9 tills dess*
 
 ---
 
@@ -287,7 +287,13 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   publicera läser weather_latest, som frös 5/9 11:05. Storvik var inte en trasig station i
   en levande tabell utan en död tabell. DOM: kedjan Trafikverket → databas → CDN lever;
   CDN → app gör det inte. Fixat i #74/#75-bygget, väntar på Axels deploy.
-- [ ] ⏱️ **#77 publish-map:s egen cron lever kvar — 96 min/dygn dag ett efter nollställningen**
+- [ ] ⏱️ **#77 publish-map:s egen cron lever kvar — BYGGT 8/9 20:40 (DECISIONS #77), väntar på deploy**
+  ✅ `publish/map-core.ts` bygger kartsajtens sex filer; `publicera` publicerar dem i samma
+  commit som appfilerna på :00/:30 (`?karta=1` tvingar). publish-map.yml: cron borta, bygger
+  varken kartlager eller app-snapshot, kedjad på ingest + ingest-grannar för fi/dk. 52 tester
+  gröna, bundlen i synk. 🔑 AXEL: bunta-check + `supabase functions deploy publicera`. BEVIS:
+  en :00/:30-commit i kartrepot med nio filer och meta.json inom 35 min; läs `ms` i svaret.
+  URSPRUNGLIGT FYND:
   (fynd 8/9 20:04 vid kontrollen av Axels åtgärder). Tre pulsjobb är av (ingest, publish,
   healthcheck — bekräftat: inga dispatch-körningar av dem sedan 18:37), men publish-map.yml
   har fortfarande `schedule: */30` (körning #980 kl 19:03:50 var `schedule`). Kartlagren tar
