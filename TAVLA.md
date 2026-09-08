@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-07 20:05 av Claude (webben) — avläsning 4: Actions fortfarande dött (segmentlangden #4, 5 s, noll steg). 56 h 25 min förlorad insamling. Väntar på Axel: Billing, publikt repo eller self-hosted runner*
+*Uppdaterad: 2026-09-08 04:10 av Claude (webben) — avläsning 5: Actions fortfarande dött (segmentlangden #5, 5 s, noll steg). 64 h 29 min förlorad insamling. Väntar på Axel: Billing, publikt repo eller self-hosted runner*
 
 ---
 
@@ -343,6 +343,9 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   🌙 **AVLÄSNING 4, 7/9 20:05: fortfarande dött.** segmentlangden #4, dispatch 20:05:17,
   död efter **5 sekunder**, noll steg. Alla slottar 19:37–19:56 röda på 3–4 s.
   **Förlorad insamling: 56 h 25 min.** Ingen ändring på main. Väntar på Axel.
+  🌅 **AVLÄSNING 5, 8/9 04:09: fortfarande dött.** segmentlangden #5, dispatch 04:09:28,
+  död efter **5 sekunder**, noll steg. Pulsslottarna 03:37–04:07 röda på 4 s.
+  **Förlorad insamling: 64 h 29 min.** Ingen ändring på main. Väntar på Axel.
   🔗 SIFFERKROCK SOM INTE ÄR EN KROCK: terminalkortet säger "död sedan 5/9 13:12", jag
   säger 11:11–11:41. Det är samma ögonblick i olika tidszoner (13:12 CEST = 11:12 UTC).
   Husregeln är UTC — men båda skrivsätten står nu på tavlan, så ingen ska behöva räkna ut det.

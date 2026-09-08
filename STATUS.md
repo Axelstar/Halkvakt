@@ -1341,3 +1341,8 @@ sedan 6/9. Inget byggt. Nästa steg kräver Axel.
 segmentlangden #4, workflow_dispatch 20:05:17 UTC, död efter 5 sekunder med noll steg. Alla
 pulsslottar 19:37–19:56 röda på 3–4 s. Förlorad insamling sedan 5/9 11:41: 56 h 25 min. Ingen
 ändring på main sedan 6/9. Inget byggt. Nästa steg kräver Axel.
+
+## 2026-09-08 04:09 — Avläsning 5: Actions lever fortfarande inte
+segmentlangden #5, workflow_dispatch 04:09:28 UTC, död efter 5 sekunder med noll steg. Pulsslottarna
+03:37–04:07 röda på 4 s. Förlorad insamling sedan 5/9 11:41: 64 h 29 min. Ingen ändring på main.
+Inget byggt. Nästa steg kräver Axel.
