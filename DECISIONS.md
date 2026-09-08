@@ -1141,6 +1141,23 @@ släpper bara github.com). Två gick att göra:
     Kan inte köras förrän Actions lever; den finns för att 8/9 aldrig ska upprepas: tre fixar
     färdiga på main i timmar och en enda deploy-väg.
 
+
+## #78 (8/9 2026 kväll) Vakthundens larmväg var trasig — den kunde bara säga "allt bra"
+Bengt ville se att vakthunden LEVER, inte bara att den kan anropas. Två fynd.
+LEVER: ja. pg_cron har kört den 18:07, 19:07, 20:07, alla succeeded, svar 200. Att ingen
+issue skapats var korrekt — allt har varit grönt.
+MEN LARMVÄGEN VAR TRASIG: ett medvetet larmprov (?larmprov=1) gav HTTP 500 i stället för ett
+larm. Orsak: PAT:en saknar Issues:Write (känt sedan 31/8, DECISIONS #32 — Bengts issue #3
+kunde inte besvaras av samma skäl). Vakthunden kraschade alltså exakt när den behövdes och
+fungerade bara när inget var fel. Samma slag av fel som #76: en grön lampa på ett led ingen
+mätte.
+ÅTGÄRD: larmvägen kan inte längre fälla vakthunden. Fel fångas och rapporteras som
+`larmvag: TRASIG: …` i svaret, och `ok` blir false. Larmprovet är kvar som permanent
+funktion — larmvägen ska kunna provas när som helst utan att något går sönder på riktigt.
+KVAR FÖR AXEL: ge PAT:en Issues:Write (eller byt till en token som har det), så går larmet
+fram. Tills dess syns problem bara i funktionssvaret, inte som issue.
+LÄXA: en larmväg som aldrig provats är ingen larmväg. Prova den medvetet, och låt den aldrig
+kunna tysta det den ska larma om.
 ## #79 (8/9 2026) Kort #42:s facit svalt sedan 5/9 — ingest-live bär nu regnmängden
 FYND (Bengts "kan vi åtgärda #42 nu?"): ingest-live:s weather() (8/9, #72) skriver arkivet med
 temperatur, daggpunkt, fukt och regn ja/nej — men INTE rain_sum_mm, snow_wateq_mm, vind eller
