@@ -1107,6 +1107,20 @@ riktningar), bundlen i synk och parsar. Efter deploy: en :00/:30-commit i kartre
 filer (tre app + sex karta) och meta.json:s generated_at inom 35 min. Tills dess är kartsajten
 kvar på 5/9.
 
+
+## #77-bevis (8/9 2026 kväll) Kartlagren driftsatta — Bengts tre bevis avklarade
+Bengts Claude kunde inte deploya (ingen Supabase-token, ingen CLI, api.supabase.com blockerad
+i den miljön). Deployat härifrån från main 15ba9ad efter synkkontroll
+(`bundle-publicera.ts --check` ⇒ "publicera/index.ts i synk").
+BEVIS 1 — tidmätningen: **ms 10727** (vägguret 11,3 s) mot Bengts 60-sekundersgräns. Ingen
+uppdelning av kartlagren behövs. karta-objektet komplett: stationer 1300, kameror_vaglag 746,
+vaglag_total 818, olyckor 9, kameror 2783.
+BEVIS 2 — commit a8e843f skrev SEX filer, inte nio. Inte ett fel: Git Data API skapar bara
+nya blobar för det som ÄNDRATS, och kameror.geojson + vaglag.geojson var byteidentiska med
+förra körningen. Alla nio ligger på plats i data/. (Bengt: förväntan "nio filer per commit"
+gäller bara när alla nio faktiskt ändrats — normalt är färre.)
+BEVIS 3 — data/meta.json generated_at 2026-09-08T20:23:03Z, inte 5/9.
+Vakthunden fortsatt grön med manifestkontrollen.
 ## #78 (8/9 2026) De tre gamla grannlandsfilerna raderade nu, och en deploy-knapp utan Axels terminal
 BENGT: "så många som möjligt av de sex punkterna härifrån." Fyra av sex kräver Supabase-token,
 databas eller Billing-sidan — inget av det finns i containern (ingen token, ingen CLI, proxyn
