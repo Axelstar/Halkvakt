@@ -1053,3 +1053,15 @@ typkontroll och deploy kan bara Axel göra. Beviset EFTER deploy är en commit i
 ALLA TRE filerna och manifestets sha = live.json:s — mät det, lita inte på deploy-kvittot.
 LÄXA: "filen på CDN är färsk" är inte "appen har den". Kontrollera alltid manifestet.
 
+
+## #73 (8/9 2026) Vakthunden flyttad till Supabase — en vakthund får inte dö med det den vaktar
+healthcheck.yml låg i Actions. När minuterna tog slut 5/9 tystnade den SAMTIDIGT som kedjan
+gick sönder, och att live.json var 66 h gammal upptäcktes bara för att Bengt råkade titta.
+Ny edge function `vakthund`, pg_cron varje timme (jobid 20). Kollar tre led i den ordning de
+kan brista: (1) hämtar vi — sync_state per källa; (2) sparar vi — nyaste väderobservationen;
+(3) NÅR DET APPEN — live.json:s generated_at på CDN. Led 3 är det som faktiskt fallerade och
+som healthcheck aldrig kollade: den mätte databasen, inte leveransen.
+Larm via GitHub-issue över API:t (inga Actions-minuter), en issue i taget, stängs automatiskt
+när allt är grönt. GitHub-flödets källor (cameras, arkivet, FI/NO/DK) har MJUK tröskel — de
+vilar tills kvoten nollställs 1/10 och ska inte larma under september.
+Bevis: första körningen grön — hämtning 0 min, väderdata 6 min, CDN 6 min.
