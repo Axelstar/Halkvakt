@@ -12,6 +12,18 @@ if (!apiKey) { console.error("TRAFIKVERKET_API_KEY not set"); process.exit(1); }
 const dryRun = process.argv.includes("--dry-run");
 const hasDb = Boolean(process.env.DATABASE_URL);
 
+// Kort #80: --skip=weather,deviations. Livemotorn (supabase/functions/ingest-live, #72) äger
+// kursorerna "weather" och "deviations" sedan 8/9; kör den här ingesten samma källor slåss
+// två skrivare om samma changeid (läxan #73a) och nuläget hoppar. Det som INTE får hoppas
+// över är det livemotorn inte gör: kamerorna, vinterarkivets egna kursor, polisen, SMHI.
+// Bara de två namnen tillåts — ett okänt namn är ett skrivfel, inte en tyst nolla.
+const SKIPPABLE = new Set(["weather", "deviations"]);
+const skipArg = process.argv.find((a) => a.startsWith("--skip="));
+const SKIP = new Set(skipArg ? skipArg.slice("--skip=".length).split(",").filter(Boolean) : []);
+for (const s of SKIP) if (!SKIPPABLE.has(s)) { console.error(`--skip: okänd källa "${s}" (tillåtna: ${[...SKIPPABLE].join(", ")})`); process.exit(1); }
+if (SKIP.size) console.log(`hoppar över (livemotorn äger kursorn, kort #80): ${[...SKIP].join(", ")}`);
+const tom = { items: [] as never[], lastChangeId: "" };   // tom lastChangeId ⇒ writeAll rör inte sync_state
+
 let since: Record<string, string> = {};
 if (!dryRun && hasDb) {
   const { readSyncState } = await import("./db.ts");
@@ -22,14 +34,14 @@ if (!dryRun && hasDb) {
 
 const t0 = Date.now();
 const [weather, conditions, cameras, deviations, wildlife, smhi] = await Promise.all([
-  fetchWeather(apiKey, since.weather ?? "0"),
+  SKIP.has("weather") ? tom : fetchWeather(apiKey, since.weather ?? "0"),
   // EGEN KURSOR (kort #51, DECISIONS #73): livemotorn (minutvis) och den här ingesten
   // delade tidigare sync_state-raden "road_conditions". Minutjobbet flyttade fram kursorn
   // ~59 ggr/timme, så det här jobbet — road_condition_historys ENDA skrivare — såg bara
   // sista minutens delta. Med "road_conditions_arkiv" konsumerar vi hela timmens ström.
   fetchRoadConditions(apiKey, since.road_conditions_arkiv ?? "0"),
   fetchCameras(apiKey, since.cameras ?? "0"),
-  fetchDeviations(apiKey, since.deviations ?? "0"),
+  SKIP.has("deviations") ? tom : fetchDeviations(apiKey, since.deviations ?? "0"),
   fetchWildlifeEvents().catch((e) => { console.warn("polisen.se skipped:", e.message); return { items: [] }; }),
   fetchSmhiWarnings().catch((e) => { console.warn("SMHI skipped:", e.message); return { items: [] }; }),
 ]);
