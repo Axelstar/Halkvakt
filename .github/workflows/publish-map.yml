@@ -25,8 +25,10 @@ jobs:
         env:
           DATABASE_URL: "${{ secrets.DATABASE_URL }}"
           TRAFIKVERKET_API_KEY: "${{ secrets.TRAFIKVERKET_API_KEY }}"
-      - run: node --experimental-strip-types publish/build-snapshot.ts out
-        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+      # data/app/v1/ (appens snapshot) skrivs INTE här sedan kort #74 (8/9): Supabase-
+      # funktionen publicera är enda skrivaren, var 10:e minut. Två skrivare gav 7 ↔ 0
+      # broar och en manifest.json som inte stämde med live.json. Kärnan är gemensam:
+      # publish/snapshot-core.ts. Kartlagren och fi/dk-snapshoterna bor kvar här.
       - run: node --experimental-strip-types publish/build-snapshot-fi.ts out
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
       - run: node --experimental-strip-types publish/build-snapshot-dk.ts out

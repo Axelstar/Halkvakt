@@ -179,3 +179,9 @@ i samma commit när de överlappar.
   Swift eller Kotlin (texten delad över två rader ⇒ min sträng-ersättning missade), och
   fältrapporterna blev omöjliga att tolka. Kontroll före varje "arkivera nu": kör
   ios-engine + android + ci, alla gröna, INNAN uppmaningen skickas.
+- "Filen på CDN är färsk" är INTE "appen har den". Apparna verifierar sha256 ur manifest.json
+  och behåller cachen vid fel. publicera skrev live.json utan manifest 8/9 06:10–12:40: 38 gröna
+  commits, noll nya snapshots i telefonen. Bevisa alltid med manifestets sha = filens sha.
+- `Boolean(precipitation)` är en falsklarmsmaskin: Trafikverket skriver "no" vid uppehåll och
+  de nordiska källorna "Dry". Nederbördsklasser är strängar med ordlista, aldrig sanningsvärden.
+

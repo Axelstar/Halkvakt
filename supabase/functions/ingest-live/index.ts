@@ -118,6 +118,13 @@ async function roadconditions() {
 async function weather() {
   const { items, lastChangeId } = await tv("WeatherMeasurepoint", "2.1", await cursor("weather"));
   let n = 0;
+  // weather_latest = "nuläge per station, alltid upsertad" (sql/001_init.sql) — det är den
+  // tabellen publicera läser. Första versionen (8/9 fm) skrev BARA arkivet, så nuläget
+  // frös på 5/9 och appens enda väderpunkt var Storvik på −10,7 °C i september (#75).
+  // Skrivs för VARJE mätning, även ointressanta: annars fryser en station som värmts upp
+  // fast på sitt sista kalla värde. Batchad som i ingest/db.ts; bakåtvakt på sample_time.
+  const latest: { id: string; name: string; lon: number; lat: number; t: string; yta: number | null;
+                  luft: number | null; nbd: string | null; rain: boolean; snow: boolean }[] = [];
   for (const w of items) {
     if (w.Deleted) continue;
     const p = pt(w?.Geometry?.WGS84);
@@ -127,6 +134,8 @@ async function weather() {
     const agg = o?.Aggregated10minutes?.Precipitation;
     const rain = Boolean(agg?.Rain), snow = Boolean(agg?.Snow);
     const nederbord = o?.Weather?.Precipitation ?? null;
+    latest.push({ id: String(w.Id), name: w.Name ?? "", lon: p[0], lat: p[1], t: o.Sample, yta,
+                  luft: o?.Air?.Temperature?.Value ?? null, nbd: nederbord, rain, snow });
     // Arkivpolicyn: ointressanta lägen skrivs inte alls.
     const intressant = (yta !== null && yta <= 5) || rain || snow || (nederbord && nederbord !== "no");
     if (!intressant) continue;
@@ -138,6 +147,22 @@ async function weather() {
         ${o?.Air?.RelativeHumidity?.Value ?? null}, ${nederbord}, ${rain}, ${snow})
       ON CONFLICT (station_id, sample_time) DO NOTHING`;
     n++;
+  }
+  if (latest.length) {
+    await sql`INSERT INTO weather_latest (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, precipitation, rain, snow)
+      SELECT u.station_id, u.name, ST_SetSRID(ST_MakePoint(u.lon, u.lat), 4326), u.sample_time,
+             u.surface_temp_c, u.air_temp_c, u.precipitation, u.rain, u.snow
+      FROM UNNEST(${latest.map((x) => x.id)}::text[], ${latest.map((x) => x.name)}::text[],
+                  ${latest.map((x) => x.lon)}::float8[], ${latest.map((x) => x.lat)}::float8[],
+                  ${latest.map((x) => x.t)}::timestamptz[], ${latest.map((x) => x.yta)}::numeric[],
+                  ${latest.map((x) => x.luft)}::numeric[], ${latest.map((x) => x.nbd)}::text[],
+                  ${latest.map((x) => x.rain)}::bool[], ${latest.map((x) => x.snow)}::bool[])
+           AS u(station_id, name, lon, lat, sample_time, surface_temp_c, air_temp_c, precipitation, rain, snow)
+      ON CONFLICT (station_id) DO UPDATE SET name = EXCLUDED.name, geom = EXCLUDED.geom,
+        sample_time = EXCLUDED.sample_time, surface_temp_c = EXCLUDED.surface_temp_c,
+        air_temp_c = EXCLUDED.air_temp_c, precipitation = EXCLUDED.precipitation,
+        rain = EXCLUDED.rain, snow = EXCLUDED.snow
+      WHERE EXCLUDED.sample_time >= weather_latest.sample_time`;
   }
   await saveCursor("weather", lastChangeId);
   return n;
