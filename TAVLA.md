@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-08 21:50 av Claude (webben) — #42: regnmängden tillbaka i arkivet (PR #76 mergad), Axel deployar ingest-live. Axels varv: vakthunden bevisad levande men larmvägen trasig (PAT saknar Issues:Write, DECISIONS #78), Billing 2 000/2 000 med nollställning 1/10*
+*Uppdaterad: 2026-09-08 22:00 av Claude (webben) — Axels rapport avstämd: vakthund och Billing stämmer, larmvägsfyndet är rätt. Korrigering: vinterarkivet växer ~120 000 rader/dygn med livemotorn, inte 40 000 — gratisnivån räcker ~3 veckor. Gallring före första kalla veckan*
 
 ---
 
@@ -40,6 +40,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] Publikt repo eller köpa minuter — appen behöver inte längre svaret (#72), ta det lugnt.
 - [ ] Gallringsregel för weather_observations före vintern — ~40 000 rader/dygn när alla 845
   stationer ligger under 5 °C fyller gratisnivån på ~2 månader. Får inte kasta det Grind A mäter.
+  ⚠️ RÄKNAT OM 8/9 22:00 (Bengts Claude, ur vader.geojson): 809 av 848 stationer mäter på
+  10-minutersslag, och livemotorn läser varje minut ⇒ **~120 000 rader/dygn**, inte 40 000
+  (den siffran är GitHub-ingestens 2×/h). 500 MB räcker då **~3 veckor**, inte 2 månader.
+  Gallringen måste finnas FÖRE första kalla veckan, inte "före vintern". Alternativ som inte
+  kastar Grind A:s underlag: spara var 30:e minut i arkivet men behåll varje minut i
+  weather_latest — det är exakt den upplösning GitHub-ingesten hade när Grind A byggdes.
 
 
 ### Axel — beslut att ta
