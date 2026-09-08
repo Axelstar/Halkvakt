@@ -1174,3 +1174,20 @@ KORT #42 I ÖVRIGT: beslutsläget (a/b/c, DECISIONS #69) är oförändrat och Be
 Grind V-A kan inte köras förrän Actions lever (eller lokalt av Axel med DATABASE_URL:
 `node --experimental-strip-types publish/grind-v-a.ts 30`). Radardomen 14/9 står.
 
+
+## #80 (8/9 2026 kväll) Vintersiffran omräknad på MÄTT kadens — 14 dagar, inte 2 månader
+Bengt: "40 000 rader/dygn är GitHub-ingestens takt, stationerna mäter var 10:e minut ⇒
+~120 000, gratisnivån räcker 3 veckor." Rätt kritik, fel siffra — verkligheten är värre.
+MÄTT (7 596 intervall, senaste 3 h): snitt 5,9 min mellan prover, vanligast 5 min. Alltså
+8,6 rader per station och timme, inte 6. Med alla 848 stationer kalla: ~175 000 rader/dygn
+= 30 MB/dygn. Databasen är 87 MB, gratisnivån 500 ⇒ **14 dagar**, inte 3 veckor och absolut
+inte mina 2 månader. Mitt fel var att räkna på HÄMTNINGSfrekvens; det som styr är
+stationens MÄTfrekvens, eftersom ON CONFLICT (station_id, sample_time) sparar varje unik
+mättid oavsett hur ofta vi läser.
+BENGTS FÖRSLAG HÅLLER OCH BLIR VIKTIGARE: arkivera var 30:e minut, behåll varje minut i
+weather_latest. Det är den upplösning Grind A byggdes på, och det tar tillväxten från
+175 000 till ~40 000 rader/dygn ⇒ utrymmet räcker en hel vinter. Beslut denna vecka.
+ÖPPET, EJ LÖST: #42-fälten (rain_sum_mm, vind, sikt) skrivs fortfarande inte efter deploy av
+945a532. Koden är identisk med weather.ts som fungerade före 5/9. Motorn rapporterar
+"weather: 128" men max(sample_time) stod still på 20:50 i tio minuter — pekar mot markören
+eller mot att samma stationer returneras om igen. Rotorsak EJ hittad. Kort för Bengt.
