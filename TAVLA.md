@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-08 21:30 av Claude (webben) — ACTIONS LEVER (Axels 35 USD, #81/#82): segmentlangden #8 grön, ci grön på main. Pulsklockan pekas om (mall regn-30, grannar hourly) och inventeras. Nytt #80: arkivet/kameror/vilt/SMHI stannade när puls-ingest stängdes — kursorkrock hindrar enkel återstart*
+*Uppdaterad: 2026-09-08 21:25 av Claude (webben) — ACTIONS LEVER. Pulsklockan körd skarpt: grannar hourly på :24, tre gamla pulsjobb avvecklade, bevisvakten grön (DECISIONS #83). ci grön på main. Väntar på första grannar-körningen 21:24*
 
 ---
 
@@ -328,6 +328,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   fyrar 2×/h mot döda jobb (288 mejl/dygn) och hade bränt oktoberpotten på de gamla filerna
   dag ett. Utan filerna svarar GitHub 404: ingen körning, ingen minut, inget mejl. Första
   oktoberkörningen är fortfarande pulsklockan (inventering → skarp → grannar tar över).
+  🟢 **ACTIONS LEVER 8/9 21:07 (Axels 35 USD-gräns, DECISIONS #81/#82).** Första jobbet:
+  pulsklockan (DECISIONS #83) — inventering #6 ren, skarp #7 bevisad: puls-ingest-grannar på
+  `24 * * * *`, puls-ingest-fi/dk/no avvecklade, bevisvakten grön, 8 cron-jobb kvar. Mallen
+  bytt till puls-regn-30 (puls-ingest avstängd av Axel). ci grön på main (#455/#456) ⇒
+  PostGIS-testet av givarvakten och bundle-checkarna har passerat. Kvar under #53: #80
+  (moaten/kameror/vilt/SMHI utan skrivare), #79 (regn-30), och Billing-frågan i lugn.
   🕗 **AVLÄSNING 6/9 07:00 (bokad incheckning): FORTFARANDE DÖTT.** Provkörde den
   lättaste workflowen som finns — `segmentlangden`, varken databas eller nät — på main:
   körning #1, `workflow_dispatch` 07:00:32, **död efter 4 sekunder**, noll steg.
