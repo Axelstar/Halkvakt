@@ -48,14 +48,29 @@ Deno.serve(async (req) => {
     rad.push(`nyaste väderobservation: ${wMin.toFixed(0)} min`);
     if (wMin > 90) problem.push(`**Väderdatan står stilla**: nyaste mätning ${wMin.toFixed(0)} min gammal`);
 
-    // 3. Når det appen? Ledet som fallerade 5/9 utan att någon märkte det.
-    const res = await fetch(CDN, { cache: "no-store" });
-    if (!res.ok) problem.push(`**live.json svarar ${res.status}** — appen får ingen snapshot`);
+    // 3. Når det APPEN? Inte "ligger filen på CDN" — apparna hämtar manifest.json och
+    //    FÖRKASTAR en fil vars sha256 inte stämmer, och behåller den förra. 8/9 skrev den
+    //    första publicera-versionen ingen manifest.json alls: CDN såg färsk ut, telefonerna
+    //    stod kvar på 5/9-snapshoten, och en vakthund som bara mätte live.json:s ålder sa
+    //    grönt. Bengts granskning fångade det (#76). Mät det appen faktiskt gör.
+    const [mRes, lRes] = await Promise.all([
+      fetch(CDN.replace("live.json", "manifest.json"), { cache: "no-store" }),
+      fetch(CDN, { cache: "no-store" }),
+    ]);
+    if (!mRes.ok) problem.push(`**manifest.json svarar ${mRes.status}** — apparna kan inte verifiera och behåller gammal data`);
+    else if (!lRes.ok) problem.push(`**live.json svarar ${lRes.status}** — appen får ingen snapshot`);
     else {
-      const doc = await res.json();
-      const cdnMin = (Date.now() - new Date(doc.generated_at).getTime()) / 60000;
-      rad.push(`live.json på CDN: ${cdnMin.toFixed(0)} min`);
-      if (cdnMin > 45) problem.push(`**Appen får gammal data**: live.json ${cdnMin.toFixed(0)} min (publiceras var 10:e min)`);
+      const manifest = await mRes.json();
+      const rå = new Uint8Array(await lRes.clone().arrayBuffer());
+      const sum = [...new Uint8Array(await crypto.subtle.digest("SHA-256", rå))]
+        .map((b) => b.toString(16).padStart(2, "0")).join("");
+      const väntad = manifest?.files?.live?.sha256;
+      const cdnMin = (Date.now() - new Date(manifest.generated_at).getTime()) / 60000;
+      rad.push(`manifest: ${cdnMin.toFixed(0)} min | sha ${sum === väntad ? "stämmer" : "MISMATCH"}`);
+      if (sum !== väntad)
+        problem.push(`**Manifestets sha256 stämmer inte med live.json** — apparna förkastar filen och kör vidare på förra snapshoten. Det här är felet som INTE syns på CDN.`);
+      if (cdnMin > 45)
+        problem.push(`**Appen får gammal data**: manifestet ${cdnMin.toFixed(0)} min gammalt (publiceras var 10:e min)`);
     }
   } catch (e) {
     problem.push(`Vakthunden kunde inte slutföra kontrollen: ${String(e)}`);

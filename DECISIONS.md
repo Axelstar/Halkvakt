@@ -1065,3 +1065,25 @@ Larm via GitHub-issue över API:t (inga Actions-minuter), en issue i taget, stä
 när allt är grönt. GitHub-flödets källor (cameras, arkivet, FI/NO/DK) har MJUK tröskel — de
 vilar tills kvoten nollställs 1/10 och ska inte larma under september.
 Bevis: första körningen grön — hämtning 0 min, väderdata 6 min, CDN 6 min.
+
+## #76 (8/9 2026) Bengts granskning: "FIXAT" gällde till CDN:n, inte till telefonen
+Bengt granskade #72/#73 mot verkligheten och hittade fyra fel. Alla bekräftade genom mätning,
+alla åtgärdade. Granskningen var korrekt på varje punkt.
+1. MANIFESTET. Apparna hämtar manifest.json och FÖRKASTAR en fil vars sha256 inte stämmer,
+   och behåller den förra. Min publicera-version skrev inget manifest alls: CDN såg färsk ut,
+   telefonerna stod kvar på 5/9-snapshoten. Uppmätt mismatch bekräftad. Bengts snapshot-core
+   (redan på main, odeployad) skriver manifestet — driftsatt nu, sha stämmer.
+2. WEATHER_LATEST ÄR EN TABELL, inte en vy. publicera läser den; min weather() skrev bara
+   arkivet, så nuläget frös på 5/9 och appens enda väderpunkt var Storvik −10,7 °C i
+   september. Bengts fix skriver båda. Vid driftsättning kraschade den varje minut på
+   "cannot cast type boolean to boolean[]" (postgres.js serialiserar bool-arrayer så
+   UNNEST inte tar dem) — löst med text[] + ::boolean. Nuläget tinat, verifierat.
+3. VAKTHUNDENS BLINDA FLÄCK. Den mätte live.json:s ålder, inte det appen gör. Grön lampa
+   på exakt det fel som gjorde att ingen märkte något på tre dygn. Mäter nu manifestets
+   sha256 mot filen och larmar på mismatch.
+4. PULSJOBBEN. halkvakt-puls-publish, halkvakt-puls-ingest och puls-healthcheck fyrade
+   fortfarande mot Actions trots att Supabase gör jobbet. Hade bränt oktoberkvoten på ~9
+   dagar. Avschemalagda. Kvar mot Actions: FI, DK, NO, regn-30 — de har ingen Supabase-
+   motsvarighet ännu och ska väckas medvetet efter 1/10.
+LÄXA: "ligger filen på CDN" är inte samma sak som "appen tog emot den". Verifiera alltid
+sista metern, och låt vakthunden mäta det konsumenten gör — inte det producenten skickar.

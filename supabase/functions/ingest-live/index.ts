@@ -151,12 +151,12 @@ async function weather() {
   if (latest.length) {
     await sql`INSERT INTO weather_latest (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, precipitation, rain, snow)
       SELECT u.station_id, u.name, ST_SetSRID(ST_MakePoint(u.lon, u.lat), 4326), u.sample_time,
-             u.surface_temp_c, u.air_temp_c, u.precipitation, u.rain, u.snow
+             u.surface_temp_c, u.air_temp_c, u.precipitation, u.rain::boolean, u.snow::boolean
       FROM UNNEST(${latest.map((x) => x.id)}::text[], ${latest.map((x) => x.name)}::text[],
                   ${latest.map((x) => x.lon)}::float8[], ${latest.map((x) => x.lat)}::float8[],
                   ${latest.map((x) => x.t)}::timestamptz[], ${latest.map((x) => x.yta)}::numeric[],
                   ${latest.map((x) => x.luft)}::numeric[], ${latest.map((x) => x.nbd)}::text[],
-                  ${latest.map((x) => x.rain)}::bool[], ${latest.map((x) => x.snow)}::bool[])
+                  ${latest.map((x) => String(x.rain))}::text[], ${latest.map((x) => String(x.snow))}::text[])
            AS u(station_id, name, lon, lat, sample_time, surface_temp_c, air_temp_c, precipitation, rain, snow)
       ON CONFLICT (station_id) DO UPDATE SET name = EXCLUDED.name, geom = EXCLUDED.geom,
         sample_time = EXCLUDED.sample_time, surface_temp_c = EXCLUDED.surface_temp_c,
