@@ -1174,6 +1174,69 @@ KORT #42 I ÖVRIGT: beslutsläget (a/b/c, DECISIONS #69) är oförändrat och Be
 Grind V-A kan inte köras förrän Actions lever (eller lokalt av Axel med DATABASE_URL:
 `node --experimental-strip-types publish/grind-v-a.ts 30`). Radardomen 14/9 står.
 
+
+## #80 (8/9 2026 kväll) Vintersiffran omräknad på MÄTT kadens — 14 dagar, inte 2 månader
+Bengt: "40 000 rader/dygn är GitHub-ingestens takt, stationerna mäter var 10:e minut ⇒
+~120 000, gratisnivån räcker 3 veckor." Rätt kritik, fel siffra — verkligheten är värre.
+MÄTT (7 596 intervall, senaste 3 h): snitt 5,9 min mellan prover, vanligast 5 min. Alltså
+8,6 rader per station och timme, inte 6. Med alla 848 stationer kalla: ~175 000 rader/dygn
+= 30 MB/dygn. Databasen är 87 MB, gratisnivån 500 ⇒ **14 dagar**, inte 3 veckor och absolut
+inte mina 2 månader. Mitt fel var att räkna på HÄMTNINGSfrekvens; det som styr är
+stationens MÄTfrekvens, eftersom ON CONFLICT (station_id, sample_time) sparar varje unik
+mättid oavsett hur ofta vi läser.
+BENGTS FÖRSLAG HÅLLER OCH BLIR VIKTIGARE: arkivera var 30:e minut, behåll varje minut i
+weather_latest. Det är den upplösning Grind A byggdes på, och det tar tillväxten från
+175 000 till ~40 000 rader/dygn ⇒ utrymmet räcker en hel vinter. Beslut denna vecka.
+ÖPPET, EJ LÖST: #42-fälten (rain_sum_mm, vind, sikt) skrivs fortfarande inte efter deploy av
+945a532. Koden är identisk med weather.ts som fungerade före 5/9. Motorn rapporterar
+"weather: 128" men max(sample_time) stod still på 20:50 i tio minuter — pekar mot markören
+eller mot att samma stationer returneras om igen. Rotorsak EJ hittad. Kort för Bengt.
+
+## #81 (8/9 2026 23:06) Actions-budget satt till 35 USD — pipelinen lever igen
+Axel satte månadsbudget 35 USD (~400 kr) på Actions med "stop usage when budget limit is
+reached" kvar påslaget. Krävde att ett betalsätt först lades in; budgetraden fanns redan men
+stod på 0 med stop=yes, vilket var varför varje jobb dog på 4 s utan runner.
+BEVIS: ios-engine dispatchad 23:07 ⇒ success på 66 s. Första gröna Actions-körningen sedan
+5/9 13:12. Swift-kontraktet därmed verifierat på aktuell main.
+VAD BUDGETEN RÄCKER TILL (mätt på faktiska körtider): efter kvällens flytt ligger bara
+regn-30 (0,3 min × 24 = 7 min/dygn) och bridges kvar på cron. Byggena kostar ~11 min per
+push (android 8, ios-engine 2, ci 1). 35 USD ≈ 3 500 min till verkligt pris (19,69/2000 =
+0,0098 USD/min) — gott om marginal för resten av september.
+RISKEN ATT BEVAKA: grannländerna var det som brände de 2 000 gratisminuterna. Bengt
+kontrollmätte: 63 lyckade ingest-fi-körningar, median 137 s ⇒ 3 DEBITERADE min/körning
+(GitHub rundar upp till hel minut), 48 körningar/dygn = 144 min för Finland ensamt.
+De tre länderna ≈ 268 min/dygn. De ligger raderade (404) sedan Bengts avveckling.
+RÄTTELSE 1 (Bengt): basförbrukningen är 40–50 min/dygn, inte mina 10. Uppåtrundningen per
+jobb slår hårt på korta jobb: regn-30 tar 0,3 min men debiteras 1 min × 24 = 24 min/dygn.
+Plus healthcheckens cron, broarna och veckoproven. ~5 kr/dygn — småpengar, men rätt siffra.
+RÄTTELSE 2 (Bengt): mitt förslag "två gånger per dygn" för grannländerna var FEL och hade
+tystat något utan att synas. Givarvakten (#75, WX_SANE) släpper bara igenom mätningar
+yngre än TRE TIMMAR. Med två hämtningar/dygn vore gränsstationerna osynliga 21 av 24 timmar
+och halkpunkterna på E8/E10/E12/E14 skulle försvinna. Rätt lösning är den byggda: ETT jobb
+för alla tre länderna varje timme med batchade skrivningar (~7 kr/dygn) — eller flytta dem
+till Supabase som allt annat, då noll.
+RÄTTELSE 3 (Bengt): gränsen gäller från I DAG, inte 1/10. Bevisat: ios-engine grön 23:07.
+Allt med cron börjar debiteras direkt, så första körningen ska vara pulsklockan.
+De fyra övriga budgetarna (Codespaces, Packages, Git LFS, AI Credits) står kvar på 0 med
+stop=yes — de används inte och skyddar mot överraskningar.
+
+## #82 (8/9 2026) Betald Actions-gräns — undantag från gratisnivåregeln, Axels beslut
+CLAUDE.md: gratisnivån är lag; en betald gräns kräver en DECISIONS-post godkänd av Axel.
+Här är det Axel som beslutar och skriver posten (Bengts formkrav).
+BELOPP: 35 USD/månad (~400 kr) på Actions, med "stop usage when budget limit is reached"
+kvar påslaget. Övriga fyra budgetar (Codespaces, Packages, Git LFS, AI Credits) står kvar
+på 0 med stop=yes.
+VARFÖR: app-byggena. Datan behöver inte längre Actions (#72/#73), men CI, Android och iOS
+gör det, och utan dem kan ingen ny version nå testarna före oktober. Det är det som avgör
+om vintern blir en mätning eller en gissning.
+VAD SOM SKA HA HÄNT FÖRE 1 OKTOBER FÖR ATT GRÄNSEN SKA KUNNA GÅ TILLBAKA TILL NOLL:
+ 1. Grannländerna (FI/DK/NO) sammanslagna till ETT timjobb med batchade skrivningar, eller
+    flyttade till Supabase. Så länge de kan väckas i gammal form är 268 min/dygn en risk.
+ 2. regn-30 avgjord (#79): behövs den när ingest-live arkiverar vädret varje minut?
+ 3. Pulsklockan som första jobb varje månad, så inget dubbelarbete bränner potten dag ett.
+ 4. Gallringsregeln (#80) beslutad — den rör Supabase, men hör till samma budgetdisciplin.
+Klaras 1–3 räcker gratisnivåns 2 000 min till byggena med marginal, och gränsen sätts
+tillbaka till 0. Följs upp i oktober.
 ## #83 (8/9 2026 21:19) Pulsklockan omstartad efter avbrottet — grannar EN gång i timmen, tre pulsjobb avvecklade
 FÖRSTA JOBBET NÄR ACTIONS VAKNADE (Axels 35 USD, #81/#82) var pulsklockan, som planerat sedan
 kort #53. Två ändringar krävdes först: mallen (puls-ingest, ingest.yml) hade Axel stängt av 8/9,
