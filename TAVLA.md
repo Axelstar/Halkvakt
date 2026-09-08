@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-08 12:55 av Claude (webben) — #74/#75 mergade till main på Bengts order (PR #73, squash 7b8d605). Kvar: Axel deployar publicera + ingest-live och bevisar med manifest-sha = live-sha i kartrepot*
+*Uppdaterad: 2026-09-08 13:40 av Claude (webben) — bedömning av Axels lägesrapport: kedjan till CDN lever, kedjan till APPEN gör det inte (manifest-mismatch mätt 13:35, nya publicera ej deployad). Nytt kort #76: vakthunden mäter live.json-ålder, inte manifestets sha, och friar ett brutet led*
 
 ---
 
@@ -287,6 +287,18 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   publicera läser weather_latest, som frös 5/9 11:05. Storvik var inte en trasig station i
   en levande tabell utan en död tabell. DOM: kedjan Trafikverket → databas → CDN lever;
   CDN → app gör det inte. Fixat i #74/#75-bygget, väntar på Axels deploy.
+- [ ] 🐕 **#76 Vakthunden i Supabase mäter fel led — grön medan appen förkastar** (fynd 8/9 13:35,
+  läst mot grunden vid bedömningen av Axels lägesrapport). Terminalvarvets `vakthund`
+  (DECISIONS #73, 8/9) kollar led 3 "når det appen?" genom live.json:s generated_at på CDN.
+  Men appen tar inte emot live.json, den tar emot live.json OM manifestets sha256 stämmer.
+  Uppmätt 13:35 i kartrepot: live.json 6 min gammal, manifest.json från 5/9, sha MISMATCH ⇒
+  båda apparna förkastar och behåller 5/9-snapshoten. Vakthundens "första körningen grön —
+  CDN 6 min" är alltså exakt den blinda fläcken: den friar ett led som är brutet.
+  VÄG: led 3 = hämta manifest.json OCH live.json, jämför sha256, larma vid mismatch eller
+  om manifestets generated_at är gammalt. Tre rader. Verify: vakthunden ska larma på dagens
+  läge (mismatch) och tystna först när den nya publicera deployats.
+  LÄGET 13:35: nya publicera (#74, mergad 12:55) är INTE deployad — kartrepots commits
+  13:00–13:30 skriver fortfarande bara live.json, vädret är fortfarande enbart Storvik −10,7.
 - [ ] 🔀 **#74 Två skrivare till live.json — BYGGT + MERGAT TILL MAIN 8/9 12:55 (PR #73, 7b8d605), väntar på Axels deploy** (DECISIONS #74)
   ✅ `publish/snapshot-core.ts` är enda källan till appens tre filer; publicera/index.ts
   genereras av scripts/bundle-publicera.ts (kärna + 2 476 broar inbäddade + main.ts), CI kör
