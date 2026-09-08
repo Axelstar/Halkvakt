@@ -1357,3 +1357,10 @@ filen — kort #74, två skrivare till en fil; (2) kartsajten fortfarande 5/9 11
 publiceras ur Supabase); (3) appens enda väderpunkt är Storvik 2135 med yta −10,7 °C i september,
 känt givarfel från #46 men där ansågs felet isolerat till daggpunkten — motorn gör det till en
 icing_point. Kort #75, givarvakt före publicering.
+
+## 2026-09-08 12:22 — Avläsning 6, läst mot grunden: Actions lever inte, minuterna orörda
+Bengt: Axel säger att han vidtagit åtgärder. Axels åtgärd är #72 (Supabase-flytten), bevisad.
+På minutsidan per API: repot private; jobbet 102054360896 (prov #7, 12:06:35) runner_id 0,
+runner_name tom, dött efter 2 s med tom check-run; alla 35 workflows active; pulsen fyrar
+(12:07–12:17, alla röda på 4 s); inga commits eller grenar efter 06:12. Spending limit och
+betalstatus kan bara Axel läsa. Förlorad insamling sedan 5/9 11:41: 72 h 41 min. Inget byggt.

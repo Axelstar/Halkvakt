@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-08 12:00 av Claude (webben) — #72 livekedjan KONTROLLERAD: 35 Supabase-commits var 10:e minut, live.json 6,8 min gammal, Actions fortfarande dött. Tre bifynd: broarna föll ur appen (#74), kartsajten 3 dygn gammal, Storvik 2135 larmar på skrot (#75)*
+*Uppdaterad: 2026-09-08 12:25 av Claude (webben) — avläsning 6 läst mot grunden: Actions fortfarande dött (runner_id 0, repot privat, alla workflows aktiva). 72 h 41 min förlorad insamling. #72 Supabase-kedjan är Axels åtgärd och den fungerar; minuterna är orörda*
 
 ---
 
@@ -385,6 +385,16 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   🌅 **AVLÄSNING 5, 8/9 04:09: fortfarande dött.** segmentlangden #5, dispatch 04:09:28,
   död efter **5 sekunder**, noll steg. Pulsslottarna 03:37–04:07 röda på 4 s.
   **Förlorad insamling: 64 h 29 min.** Ingen ändring på main. Väntar på Axel.
+  🔍 **AVLÄSNING 6, 8/9 12:06–12:22, LÄST MOT GRUNDEN (Bengt: "Axel säger att han
+  vidtagit åtgärder"):** Axels åtgärd är #72, Supabase-flytten — bevisad och fungerande.
+  På minutsidan är INGET gjort, per API: repot `visibility: private`; jobbet 102054360896
+  (prov #7, 12:06:35) fick `runner_id: 0`, `runner_name: ""` och dog efter 2 s med tom
+  check-run; alla 35 workflows `state: active` (inget avstängt i UI); pulsen fyrar fortfarande
+  (12:07, 12:11, 12:12, 12:17, alla röda på 4 s); inga nya commits eller grenar efter 06:12.
+  `runner_id: 0` är den avgörande raden: GitHub tilldelade aldrig en maskin. Det jag inte kan
+  läsa är spending limit och betalstatus — bara Axel ser dem. Om han höjt gränsen är
+  kandidaterna fel konto, saknad/avvisad betalmetod, eller osparad ändring.
+  **Förlorad insamling: 72 h 41 min — tre dygn.**
   🔗 SIFFERKROCK SOM INTE ÄR EN KROCK: terminalkortet säger "död sedan 5/9 13:12", jag
   säger 11:11–11:41. Det är samma ögonblick i olika tidszoner (13:12 CEST = 11:12 UTC).
   Husregeln är UTC — men båda skrivsätten står nu på tavlan, så ingen ska behöva räkna ut det.
