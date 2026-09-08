@@ -31,6 +31,7 @@ Deno.serve(async (req) => {
   if (!k || req.headers.get("x-halkvakt-key") !== k) return new Response("forbidden", { status: 403 });
 
   const problem: string[] = [];
+  if (new URL(req.url).searchParams.get("larmprov") === "1") problem.push("**LARMPROV** — medvetet framkallat fel för att bevisa larmvägen. Ska stängas automatiskt vid nästa gröna körning.");
   const rad: string[] = [];
   try {
     // 1. Hämtar vi? Livemotorns källor har hård tröskel, GitHub-flödets mjuk (de väntar
@@ -76,20 +77,27 @@ Deno.serve(async (req) => {
     problem.push(`Vakthunden kunde inte slutföra kontrollen: ${String(e)}`);
   }
 
-  // Larm via issue — en åt gången.
-  const öppna = await gh(`/issues?state=open&labels=vakthund`);
-  const min = öppna.find((i: any) => (i.body ?? "").includes(MARK));
   const kropp = `${MARK}\n**Kontroll ${new Date().toISOString()}**\n\n` +
     (problem.length ? problem.map((p) => `- ❌ ${p}`).join("\n") : "- ✅ allt grönt") +
     `\n\n<details><summary>mätvärden</summary>\n\n\`\`\`\n${rad.join("\n")}\n\`\`\`\n</details>`;
 
-  if (problem.length) {
-    if (min) await gh(`/issues/${min.number}/comments`, "POST", { body: kropp });
-    else await gh(`/issues`, "POST", { title: "🔴 Vakthunden: kedjan är bruten", body: kropp, labels: ["vakthund"] });
-  } else if (min) {
-    await gh(`/issues/${min.number}/comments`, "POST", { body: `${kropp}\n\nStänger — allt grönt igen.` });
-    await gh(`/issues/${min.number}`, "PATCH", { state: "closed" });
+  // Larmvägen får ALDRIG fälla vakthunden. 8/9: PAT:en saknade Issues:Write, så första
+  // larmprovet gav 500 i stället för ett larm — en vakthund som bara klarar av att säga
+  // "allt bra" är värdelös. Nu fångas felet och rapporteras i svaret, så pulsen ser det.
+  let larmvag = "ok";
+  try {
+    const öppna = await gh(`/issues?state=open&labels=vakthund`);
+    const min = öppna.find((i: any) => (i.body ?? "").includes(MARK));
+    if (problem.length) {
+      if (min) await gh(`/issues/${min.number}/comments`, "POST", { body: kropp });
+      else await gh(`/issues`, "POST", { title: "🔴 Vakthunden: kedjan är bruten", body: kropp, labels: ["vakthund"] });
+    } else if (min) {
+      await gh(`/issues/${min.number}/comments`, "POST", { body: `${kropp}\n\nStänger — allt grönt igen.` });
+      await gh(`/issues/${min.number}`, "PATCH", { state: "closed" });
+    }
+  } catch (e) {
+    larmvag = `TRASIG: ${String(e)}`;
   }
-  return new Response(JSON.stringify({ ok: problem.length === 0, problem, rad }),
+  return new Response(JSON.stringify({ ok: problem.length === 0 && larmvag === "ok", problem, larmvag, rad }),
     { headers: { "Content-Type": "application/json" } });
 });
