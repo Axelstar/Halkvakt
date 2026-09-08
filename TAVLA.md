@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-08 21:32 av Claude (webben) — grannar-jobbet bevisat: första :24-dispatchen grön, FI+DK+NO på 5 min 00 s, ~12 kr/dygn. Pulsklockan mergad (PR #78). Healthcheck fortsatt röd på cameras/arkiv tills #80 är gjort*
+*Uppdaterad: 2026-09-08 23:25 av Claude (webben) — #80 byggt och bevisat i körning: svenska ingesten med --skip=weather,deviations (32 s), puls-ingest hourly på väg in via pulsklockan. Moaten, kameror, vilt och SMHI får skrivare igen*
 
 ---
 
@@ -173,7 +173,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Kort #44:s 2/2-andel mäter om :11 och :41 fångas — med minutupplösning i arkivet blir
   frågan meningslös. BESLUT (Bengt+Axel): stäng puls-regn-30 och radera filen, eller behåll
   som oberoende mätning. Verify: regn-tackning dagar=1 i oktober ≥ baslinjen utan regn-30.
-- [ ] 🕳️ **#80 Arkivet, kamerorna, viltet och SMHI stannade när puls-ingest stängdes av** (fynd 8/9
+- [ ] 🕳️ **#80 Arkivet, kamerorna, viltet och SMHI stannade när puls-ingest stängdes av — BYGGT 8/9 23:20 (DECISIONS #84)**
+  ✅ `--skip=weather,deviations` i ingest/index.ts (bara de två tillåts, okänt namn fäller), ingest.yml
+  kör flaggan, puls-ingest `11 * * * *` i pulsklockans NYA. BEVIS: ingest #375 från grenen —
+  "hoppar över: weather, deviations", wildlife 1, smhi 16, kursorerna orörda, 32 s. STÄNGS när
+  healthcheck visar cameras + road_conditions_arkiv gröna (inom en timme efter skarp pulsklocka).
+  URSPRUNGLIGT FYND (8/9
   21:13, healthcheck #144 — första körningen sedan Actions vaknade): `cameras` och
   `road_conditions_arkiv` synkade för 4 922 min sedan, fi/dk/no likaså. Svenska GitHub-ingesten
   (ingest.yml) bär FEM saker livemotorn inte gör: kamerorna, vinterarkivets egna kursor

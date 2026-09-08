@@ -1432,3 +1432,11 @@ ci grön på main (#455/#456) ⇒ PostGIS-testet av givarvakten passerade. Healt
 UNHEALTHY på cameras/road_conditions_arkiv/fi/dk/no: grannländerna löser sig från nu, men
 kameror, moaten, vilt och SMHI saknar skrivare sedan puls-ingest stängdes — kort #80.
 PR #78 mergad efter en append-konflikt i DECISIONS.
+
+## 2026-09-08 23:25 — #80 byggt: svenska ingesten tillbaka med --skip, puls-ingest hourly
+ingest/index.ts: --skip=weather,deviations (tillåtna namn bara de två; hoppad källa ⇒ tom
+lastChangeId ⇒ sync_state orörd, integrationstest). ingest.yml kör flaggan. pulsklocka NYA:
+puls-ingest 11 * * * *. Bevis: ingest #375 från grenen grön på 32 s, "hoppar över: weather,
+deviations", wildlife 1, smhi 16, kursorerna orörda. Inventering #8: skulle skapa puls-ingest.
+Skarp pulsklocka därefter. DECISIONS #84.
+
