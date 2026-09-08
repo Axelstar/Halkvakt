@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-08 12:25 av Claude (webben) — avläsning 6 läst mot grunden: Actions fortfarande dött (runner_id 0, repot privat, alla workflows aktiva). 72 h 41 min förlorad insamling. #72 Supabase-kedjan är Axels åtgärd och den fungerar; minuterna är orörda*
+*Uppdaterad: 2026-09-08 12:40 av Claude (webben) — PR #72 mergad till main på Bengts order (cron bort ur fem driftfiler, grannländerna i ett jobb, pulsklockan kan avveckla). Inget aktiverat förrän pulsklockan körs. Actions fortfarande dött*
 
 ---
 
@@ -341,6 +341,9 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   fortsatt fyra mot de gamla filerna och besparingen blivit noll. Ny `AVVECKLA`-lista, bara
   namngivna jobb, avveckling SIST så ersättaren finns innan föregångaren tas bort, och
   bevisvakten kräver nu att de avvecklade faktiskt är borta.
+  ✅ **MERGAT TILL MAIN 8/9 12:40 (Bengts "merga 72", squash c027252).** CI kunde inte köra —
+  YAML syntaxkontrollerad lokalt, tsc utan fel i berörda filer. Ingenting aktiveras av merget:
+  cronen är borta (pulsen fyrar ändå), grannlands-jobbet och avvecklingen väntar på pulsklockan.
   🔁 **INTE AKTIVERAT ÄN — kräver en pulsklocka-körning, som kräver att Actions lever.**
   De tre gamla filerna ligger kvar med borttagen cron, så pulsen fortsätter träffa dem tills
   den pekas om. Inget glapp. När Actions svarar: kör `pulsklocka` (inventering först, sedan
