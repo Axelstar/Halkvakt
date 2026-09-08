@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-08 21:20 av Claude (webben) — avläsning 7: Actions fortfarande dött (80 h 43 min förlorad insamling), men appen och kartsajten lever ur Supabase. Kvar för Axel: vakthundsbevis, Billing-klipp, deploy-token*
+*Uppdaterad: 2026-09-08 21:40 av Claude (webben) — kort #42: facitet (rain_sum_mm) har svultit sedan 5/9, ingest-live skrev inte mängden. Lagat i kod (DECISIONS #79), väntar på Axels deploy av ingest-live. Beslutsläget a/b/c oförändrat*
 
 ---
 
@@ -1072,6 +1072,12 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   kommit är precis vad §5 förbjuder.
   ⚠️ Reservation: rain_sum_mm startade 2/9, så "30 dygn" är tre dygns septemberregn.
   Knappen går måndagar 07:20 och kurvan växer med höstregnen.
+  🔴 **FACITET SVALT SEDAN 5/9 — LAGAT I KOD 8/9 21:40 (DECISIONS #79), väntar på deploy:**
+  ingest-live:s väder (#72) skrev arkivet UTAN rain_sum_mm/snow_wateq_mm/vind/sikt. Grind V-A,
+  regn-tackning och hela facitet läser rain_sum_mm ⇒ tre dygns septemberregn omätta, och det
+  hade fortsatt. Nu speglar ingest-live weather.ts fält för fält. 🔑 AXEL: deploya ingest-live,
+  bevis = rader med rain_sum_mm senaste timmen vid regn. BESLUTSLÄGET (a/b/c) oförändrat.
+  Grind V-A kräver Actions eller Axels lokala körning (`publish/grind-v-a.ts 30`).
   *(nyckel för röst: Axels ja — rösttext, plats i A-skalan, ordning mot #15/#16)*
 
 ---

@@ -1414,3 +1414,11 @@ blobbar bara det som ändrats; min förväntan var fel. Ur vader.geojson: 848 SE
 med sample_time ≤ 12 min, Storvik nu yta null med tid 20:15 ⇒ weather_latest-tinandet (punkt 2)
 är bevisat i grunden. PR #75 (#78) mergad efter en append-konflikt i DECISIONS, båda sidor
 behållna. Kvar av sex: vakthundsbevis (3), Billing-klipp (5), SUPABASE_ACCESS_TOKEN (6).
+
+## 2026-09-08 21:40 — Kort #42: facitet svalt sedan 5/9, lagat i ingest-live
+Bengts "kan vi åtgärda #42 nu?". Läst i koden: ingest-live:s weather() skriver arkivet utan
+rain_sum_mm, snow_wateq_mm, vind och sikt — grind V-A och regn-tackning läser rain_sum_mm.
+Arkivet har fått rader sedan 8/9 men inga mängder; septemberregnen 5/9–8/9 omätta. Insert
+speglar nu ingest/sources/weather.ts fält för fält; tv() har inget INCLUDE så fälten finns.
+Parsar. Deploy och bevis: Axel. Beslutsläget a/b/c (DECISIONS #69) rörs inte. DECISIONS #79.
+
