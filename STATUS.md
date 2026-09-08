@@ -1346,3 +1346,14 @@ pulsslottar 19:37–19:56 röda på 3–4 s. Förlorad insamling sedan 5/9 11:41
 segmentlangden #5, workflow_dispatch 04:09:28 UTC, död efter 5 sekunder med noll steg. Pulsslottarna
 03:37–04:07 röda på 4 s. Förlorad insamling sedan 5/9 11:41: 64 h 29 min. Ingen ändring på main.
 Inget byggt. Nästa steg kräver Axel.
+
+## 2026-09-08 11:56 — Kontroll av #72 (Bengts "fungerar den?"): JA, bevisat oberoende
+Klonade kartrepot och läste historiken: 35 commits "data: … (Supabase)" i följd 06:10:30 →
+11:50:05, exakt var 10:e minut, inget hål; dessförinnan tystnad sedan 5/9 11:12. live.json
+6,8 min gammal vid avläsningen: 0 segment, 1 väderstation, 1 olycka, 15 SMHI, 2 783 kameror.
+Actions samtidigt fortfarande dött (segmentlangden #6, 11:55:40, 5 s, noll steg) — kedjan lever
+utan GitHub. Bifynd: (1) broarna föll ur appen 7 → 0, publicera skriver bridges: [] över hela
+filen — kort #74, två skrivare till en fil; (2) kartsajten fortfarande 5/9 11:11 (bara app-filerna
+publiceras ur Supabase); (3) appens enda väderpunkt är Storvik 2135 med yta −10,7 °C i september,
+känt givarfel från #46 men där ansågs felet isolerat till daggpunkten — motorn gör det till en
+icing_point. Kort #75, givarvakt före publicering.

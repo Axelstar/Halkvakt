@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-08 04:10 av Claude (webben) — avläsning 5: Actions fortfarande dött (segmentlangden #5, 5 s, noll steg). 64 h 29 min förlorad insamling. Väntar på Axel: Billing, publikt repo eller self-hosted runner*
+*Uppdaterad: 2026-09-08 12:00 av Claude (webben) — #72 livekedjan KONTROLLERAD: 35 Supabase-commits var 10:e minut, live.json 6,8 min gammal, Actions fortfarande dött. Tre bifynd: broarna föll ur appen (#74), kartsajten 3 dygn gammal, Storvik 2135 larmar på skrot (#75)*
 
 ---
 
@@ -255,6 +255,45 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   ⏰ Förhandssamtalet till fonden = "första veckan i september" = NU.
 
 ### Claude — olåst
+- [x] ✅ **#72 Livekedjan i Supabase — KONTROLLERAD 8/9 11:56 (Bengts "fungerar den?")**
+  Terminalvarvets bygge (DECISIONS #72, commit f15f8cc): edge function `publicera` bygger
+  appens snapshot ur databasen och committar den till kartrepot via Git Data API på
+  pg_cron var 10:e minut. Noll Actions-minuter. JAG MÄTTE DEN OBEROENDE, i kartrepot:
+  · **35 commits "data: … (Supabase)" i följd, 06:10:30 → 11:50:05, exakt var 10:e minut,
+    inget hål.** Före dem: tystnad sedan 5/9 11:12 (67 timmar — hela avbrottet).
+  · **live.json 6,8 min gammal** vid avläsningen (generated_at 11:50:03). Innehåll: 0 segment
+    (september, alla kod 1 — rätt), 1 väderstation, 1 olycka, 15 SMHI-varningar, 2 783 kameror.
+  · Actions är FORTFARANDE dött (segmentlangden #6, 11:55:40, 5 s, noll steg) — kedjan
+    lever alltså bevisligen UTAN GitHub. Det var poängen, och den håller.
+  ⚠️ TRE BIFYND, inget av dem stoppar kedjan:
+  (1) **Broarna föll ur appen: 7 → 0.** `publicera` skriver `bridges: []` (kommentaren säger
+  att GitHub-jobbet ska publicera dem) — men den skriver ÖVER hela live.json, så de sju broar
+  som låg där 5/9 är borta. När Actions vaknar kommer publish-map och publicera turas om att
+  skriva samma fil med olika innehåll (7 ↔ 0 var 10–30 min). Två skrivare till en fil = ett
+  eget kort (#74).
+  (2) **Kartsajten är fortfarande 3 dygn gammal.** meta.json generated_at 5/9 11:11. Bara
+  appens filer (data/app/v1) publiceras ur Supabase; kartlagren ligger kvar i Actions (står i
+  DECISIONS #72 som "KVAR"). Appen lever, webben inte.
+  (3) **Enda väderpunkten i appen är ett känt givarfel.** Station **2135 Storvik**, yta
+  **−10,7 °C** med fukt — i september. Samma värde låg i live.json 5/9, så det är inte #72:s
+  fel, men det är #46:s "isolerat till daggpunkten"-slutsats som spricker: här är YTTEMPEN
+  trasig, och motorn gör den till en `icing_point` med moisture=true. Det är en halkvarning
+  som väntar på nästa bil förbi Storvik. "Silence is a feature" — eget kort (#75).
+- [ ] 🔀 **#74 Två skrivare till live.json** (fynd 8/9 vid kontrollen av #72): publish-map
+  (Actions, broar med) och `publicera` (Supabase, broar tomma) skriver samma fil. Så länge
+  Actions är dött syns det bara som 7 → 0 broar; när Actions vaknar blir det ping-pong.
+  VÄG: EN ägare. Antingen läser publicera broarna ur en tabell/CDN-fil (då kan publish-map:s
+  app-steg tas bort), eller så skriver publish-map bara kartlagren och aldrig data/app/.
+  Verify: två på varandra följande commits i kartrepot från olika skrivare ger samma
+  bridges-antal.
+- [ ] 🚫 **#75 Givarvakt före publicering — Storvik 2135 larmar på skrot** (fynd 8/9):
+  `publicera` (och build-snapshot.ts, samma fråga) släpper igenom yta ≤ 3 °C utan rimlighets-
+  kontroll. Storvik rapporterar −10,7 °C i september och blir appens ENDA icing_point.
+  #46 fastslog redan att givarvakt är obligatorisk för frostgrenen — den gäller uppenbart
+  också yttemp. VÄG: spärra stationer vars yta avviker orimligt (t.ex. > 15 ° under lufttemp
+  eller under närmaste grannars median) i publiceringsfrågan, i BÅDA skrivarna. Verify:
+  live.json utan 2135 medan stationen fortfarande står på −10,7 i weather_latest, och en
+  vektor i engine/vectors/ som visar att en spärrad station inte larmar.
 - [ ] 🛑 **#53 HELA PIPELINEN STÅR — Actions vägrar starta jobb** (upptäckt 5/9 ~15:40 via
   Bengts felmeddelande om regn-30; visade sig vara mycket större än regn-30).
   🧭 **DIAGNOS, mätt och inte gissad.** Felet är INTE vår kod:
