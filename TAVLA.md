@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-08 12:45 av Claude (webben) — #74/#75 BYGGDA: en snapshotkärna för båda skrivarna, manifest.json med, givarvakt i varje väderfråga, fukt betyder fukt. Två nya fynd: appen har inte fått en ny snapshot sedan 5/9 (manifest-mismatch) och weather_latest frös 5/9. Väntar på Axels deploy av publicera + ingest-live*
+*Uppdaterad: 2026-09-08 12:55 av Claude (webben) — #74/#75 mergade till main på Bengts order (PR #73, squash 7b8d605). Kvar: Axel deployar publicera + ingest-live och bevisar med manifest-sha = live-sha i kartrepot*
 
 ---
 
@@ -287,7 +287,7 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   publicera läser weather_latest, som frös 5/9 11:05. Storvik var inte en trasig station i
   en levande tabell utan en död tabell. DOM: kedjan Trafikverket → databas → CDN lever;
   CDN → app gör det inte. Fixat i #74/#75-bygget, väntar på Axels deploy.
-- [ ] 🔀 **#74 Två skrivare till live.json — BYGGT 8/9 12:45, väntar på Axels deploy** (DECISIONS #74)
+- [ ] 🔀 **#74 Två skrivare till live.json — BYGGT + MERGAT TILL MAIN 8/9 12:55 (PR #73, 7b8d605), väntar på Axels deploy** (DECISIONS #74)
   ✅ `publish/snapshot-core.ts` är enda källan till appens tre filer; publicera/index.ts
   genereras av scripts/bundle-publicera.ts (kärna + 2 476 broar inbäddade + main.ts), CI kör
   --check; publish-map skriver aldrig mer data/app/v1/. Manifestet skrivs med. Formatet är
@@ -303,7 +303,7 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   app-steg tas bort), eller så skriver publish-map bara kartlagren och aldrig data/app/.
   Verify: två på varandra följande commits i kartrepot från olika skrivare ger samma
   bridges-antal.
-- [ ] 🚫 **#75 Givarvakt före publicering — BYGGT 8/9 12:45, väntar på Axels deploy** (DECISIONS #74)
+- [ ] 🚫 **#75 Givarvakt före publicering — BYGGT + MERGAT TILL MAIN 8/9 12:55 (PR #73), väntar på Axels deploy** (DECISIONS #74)
   ✅ WX_SANE i VARJE väderfråga (svensk, gräns, bro): färsk ≤ 3 h OCH yta ≥ luft − 12 °.
   Fäller bara på bevisad orimlighet. PostGIS-test i integration.test.ts (Storvik-lik,
   gammal, färsk, utan luft) körs när CI lever. ⚠️ BIFYND SOM ÄR VÄRRE ÄN STORVIK: båda gamla
