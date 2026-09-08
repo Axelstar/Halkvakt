@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-08 12:40 av Claude (webben) — PR #72 mergad till main på Bengts order (cron bort ur fem driftfiler, grannländerna i ett jobb, pulsklockan kan avveckla). Inget aktiverat förrän pulsklockan körs. Actions fortfarande dött*
+*Uppdaterad: 2026-09-08 12:45 av Claude (webben) — #74/#75 BYGGDA: en snapshotkärna för båda skrivarna, manifest.json med, givarvakt i varje väderfråga, fukt betyder fukt. Två nya fynd: appen har inte fått en ny snapshot sedan 5/9 (manifest-mismatch) och weather_latest frös 5/9. Väntar på Axels deploy av publicera + ingest-live*
 
 ---
 
@@ -279,14 +279,40 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   fel, men det är #46:s "isolerat till daggpunkten"-slutsats som spricker: här är YTTEMPEN
   trasig, och motorn gör den till en `icing_point` med moisture=true. Det är en halkvarning
   som väntar på nästa bil förbi Storvik. "Silence is a feature" — eget kort (#75).
-- [ ] 🔀 **#74 Två skrivare till live.json** (fynd 8/9 vid kontrollen av #72): publish-map
+  🔴 **TVÅ FYND TILL UR GRUNDEN 12:30, och de ändrar domen:** (4) **publicera skriver
+  ingen manifest.json.** Båda apparna verifierar sha256 ur manifestet och förkastar filen vid
+  fel; manifestet på CDN är från 5/9 11:12 och live.json från 8/9 — MISMATCH uppmätt lokalt.
+  Appen har alltså INTE fått en ny snapshot sedan 5/9. "1,1 min gammal" var sant på CDN och
+  falskt i telefonen. (5) **ingest-live:s väder når aldrig weather_latest** — bara arkivet.
+  publicera läser weather_latest, som frös 5/9 11:05. Storvik var inte en trasig station i
+  en levande tabell utan en död tabell. DOM: kedjan Trafikverket → databas → CDN lever;
+  CDN → app gör det inte. Fixat i #74/#75-bygget, väntar på Axels deploy.
+- [ ] 🔀 **#74 Två skrivare till live.json — BYGGT 8/9 12:45, väntar på Axels deploy** (DECISIONS #74)
+  ✅ `publish/snapshot-core.ts` är enda källan till appens tre filer; publicera/index.ts
+  genereras av scripts/bundle-publicera.ts (kärna + 2 476 broar inbäddade + main.ts), CI kör
+  --check; publish-map skriver aldrig mer data/app/v1/. Manifestet skrivs med. Formatet är
+  motorns: SMHI `niva`/`geom`, olyckans severity gated på "Accident", gränsstationer (#49).
+  50 tester gröna, 7 nya. 🔑 AXEL: `node --experimental-strip-types scripts/bundle-publicera.ts
+  --check` (ska säga "i synk"), sedan `supabase functions deploy publicera` OCH `ingest-live`.
+  BEVIS efter deploy: en commit i kartrepot med alla tre filerna och manifestets live-sha lika
+  med sha256 av live.json. Inte deploy-kvittot.
+  URSPRUNGLIGT FYND (8/9 vid kontrollen av #72): publish-map
   (Actions, broar med) och `publicera` (Supabase, broar tomma) skriver samma fil. Så länge
   Actions är dött syns det bara som 7 → 0 broar; när Actions vaknar blir det ping-pong.
   VÄG: EN ägare. Antingen läser publicera broarna ur en tabell/CDN-fil (då kan publish-map:s
   app-steg tas bort), eller så skriver publish-map bara kartlagren och aldrig data/app/.
   Verify: två på varandra följande commits i kartrepot från olika skrivare ger samma
   bridges-antal.
-- [ ] 🚫 **#75 Givarvakt före publicering — Storvik 2135 larmar på skrot** (fynd 8/9):
+- [ ] 🚫 **#75 Givarvakt före publicering — BYGGT 8/9 12:45, väntar på Axels deploy** (DECISIONS #74)
+  ✅ WX_SANE i VARJE väderfråga (svensk, gräns, bro): färsk ≤ 3 h OCH yta ≥ luft − 12 °.
+  Fäller bara på bevisad orimlighet. PostGIS-test i integration.test.ts (Storvik-lik,
+  gammal, färsk, utan luft) körs när CI lever. ⚠️ BIFYND SOM ÄR VÄRRE ÄN STORVIK: båda gamla
+  skrivarna gjorde `Boolean(precipitation)`, och Trafikverket skriver **"no"** vid uppehåll
+  (680 av 1 297 stationer 5/9). Varje torr station var alltså "våt", och motorn larmar på
+  kall OCH våt — en falsklarmsmaskin som väntade på första kalla torra natten. Fixat: fukt =
+  regn, snö eller nederbördsklass som inte är "no"/"Dry". Test på sex klasser.
+  ✅ ingest-live upsertar nu weather_latest för varje mätning (batchat, bakåtvakt).
+  URSPRUNGLIGT FYND (8/9):
   `publicera` (och build-snapshot.ts, samma fråga) släpper igenom yta ≤ 3 °C utan rimlighets-
   kontroll. Storvik rapporterar −10,7 °C i september och blir appens ENDA icing_point.
   #46 fastslog redan att givarvakt är obligatorisk för frostgrenen — den gäller uppenbart

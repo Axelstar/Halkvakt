@@ -1,24 +1,15 @@
-// Builds the APP SNAPSHOTS (PLAN Phase 1) — the files every phone downloads and
-// matches against on-device. Published to data/app/v1/ on the public map repo (CDN'd
-// by GitHub Pages, HTTP-gzip on the wire).
+// Bygger appens snapshot LOKALT/MANUELLT ur databasen: data/app/v1/{static,live,manifest}.json.
 //
-// DECISIONS #14: v1 ships NATIONAL files, not per-län. Measured reality: today's whole
-// country compresses to a fraction of PLAN's 3 MB/län budget; the county split solves a
-// size problem we do not have. Split criterion: live.json gz > 1.5 MB two publishes in
-// a row → implement per-län (boundaries via PostGIS län table). Sizes logged every run.
+// Sedan kort #74 (8/9 2026) är Supabase-funktionen `publicera` den ENDA som skriver de här
+// filerna till CDN:n — publish-map kör inte längre det här steget. Kvar som Node-ingång
+// till samma kärna (publish/snapshot-core.ts), för lokal körning och för integrations-
+// testet. Frågorna och formatet bor i kärnan; det här är bara pg-koppling och filskrivning.
 //
-// Format is the ENGINE's hazard vocabulary, not GeoJSON — the Android adapter becomes
-// a straight mapping, and engine/src/snapshot.ts consumes these files directly.
-//
-//   static.json  — cameras (change rarely; re-downloaded only on hash change)
-//   live.json    — slippery segments, icing-candidate stations, active deviations,
-//                  SMHI winter areas. Refreshed every publish (30 min cadence, #7).
-//   manifest.json— schema version, generated_at, per-file sha256 + sizes.
+//   node --experimental-strip-types publish/build-snapshot.ts out
 import pg from "pg";
-import { writeFileSync, mkdirSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
-import { createHash } from "node:crypto";
-import { gzipSync } from "node:zlib";
+import { buildSnapshot, bridgesFromGeoJSON, manifestFor } from "./snapshot-core.ts";
 
 const url = process.env.DATABASE_URL;
 if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
@@ -26,163 +17,25 @@ const outDir = join(process.argv[2] ?? "out", "app", "v1");
 mkdirSync(outDir, { recursive: true });
 const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });
 
-const num = (x: unknown) => (x === null || x === undefined ? null : Number(x));
-
-// ---- static: cameras ----
-const cams = await pool.query(`
-  SELECT camera_id, road_number, bearing,
-         ST_X(geom) AS lon, ST_Y(geom) AS lat
-  FROM cameras WHERE NOT deleted`);
-const staticDoc = {
-  schema: 1,
-  cameras: cams.rows.map((r) => ({
-    id: r.camera_id, lon: r.lon, lat: r.lat,
-    bearing: r.bearing === null ? null : Number(r.bearing),
-    road: r.road_number,
-  })),
-};
-
-// ---- #38 Broarna: OSM-broar vars närmaste vägväderstation (≤ 15 km) är nära frysande ----
-// Motorn kollar samma regel igen (tröskel +3 för bro), publiceringen förfiltrerar för
-// att inte skicka 3 000 broar till varje telefon i juli. Saknas data/bridges.geojson
-// (Overpass nere) ⇒ tom lista, inget annat påverkas.
-import { existsSync, readFileSync } from "node:fs";
-const allWx = await pool.query(`
-  SELECT station_id, surface_temp_c, rain, snow, precipitation, ST_X(geom) AS lon, ST_Y(geom) AS lat
-  FROM weather_latest WHERE surface_temp_c IS NOT NULL AND sample_time > now() - interval '3 hours'`);
+// #38: saknas data/bridges.geojson (Overpass nere) ⇒ tom lista, inget annat påverkas.
 const bridgesFile = new URL("../data/bridges.geojson", import.meta.url);
-const bridges: { id: string; lon: number; lat: number; road: string | null; yta: number | null; fukt: boolean }[] = [];
-if (existsSync(bridgesFile)) {
-  const fc = JSON.parse(readFileSync(bridgesFile, "utf8"));
-  const cold = allWx.rows.map((r) => ({ lon: Number(r.lon), lat: Number(r.lat), yta: Number(r.surface_temp_c),
-    fukt: Boolean(r.rain || r.snow || r.precipitation) })).filter((w) => w.yta <= 3 && w.fukt);
-  for (const f of fc.features) {
-    const [lon, lat] = f.geometry.coordinates;
-    let best: typeof cold[number] | null = null, bestD = Infinity;
-    for (const w of cold) {
-      const d = Math.hypot((w.lon - lon) * 111_320 * Math.cos(lat * Math.PI / 180), (w.lat - lat) * 111_000);
-      if (d < bestD) { bestD = d; best = w; }
-    }
-    if (best && bestD <= 15_000) bridges.push({ id: f.properties.id, lon, lat, road: f.properties.road ?? null, yta: best.yta, fukt: true });
-  }
-}
+const bridges = existsSync(bridgesFile) ? bridgesFromGeoJSON(JSON.parse(readFileSync(bridgesFile, "utf8"))) : [];
 
-// ---- live: everything the engine alerts on ----
-const segs = await pool.query(`
-  SELECT segment_id, condition_code, condition_info, road_number,
-         ST_AsGeoJSON(ST_SimplifyPreserveTopology(geom, 0.0005))::json AS g
-  FROM road_conditions
-  WHERE NOT deleted AND geom IS NOT NULL
-    AND (condition_code >= 2 OR EXISTS (
-      SELECT 1 FROM unnest(condition_info) i WHERE i ~* '(^|[^a-zåäö])(is|snö|halka|frost)'))`);
-const wx = await pool.query(`
-  SELECT station_id, surface_temp_c, rain, snow, precipitation,
-         ST_X(geom) AS lon, ST_Y(geom) AS lat
-  FROM weather_latest
-  WHERE surface_temp_c IS NOT NULL AND (surface_temp_c <= 3 OR snow)`);
+const { staticDoc, liveDoc, border, notes } = await buildSnapshot(
+  async (text, params) => (await pool.query(text, params as any[])).rows, bridges);
+for (const n of notes) console.log(n);
 
-// ---- #49 Gränssnapshoten: grannländernas stationer nära svenska vägar ----
-// En förare vid gränsen ska matchas mot NÄRMASTE station, inte närmaste SVENSKA.
-// FI-stationer inom 40 km av svenska vägnätet läggs till väderpunkterna, källmärkta.
-// Privacy orörd (matchning fortf. on-device), röst orörd (punktkälla = samma text).
-// FI (äkta vägyta TIE_1) sedan 4/9 fm; NO (Vegvesen roadSurfaceTemperature, DECISIONS #64)
-// sedan 4/9 em — samma mönster, samma 40 km. DK hålls (grästemp #45). Reachability-
-// diagnostik (any temp) loggas per land som förstapubliceringsbevis.
-const BORDER_M = 40_000;
-const BORDER_LANDS = ["fi", "no"] as const;
-const border: Record<string, { reach: number; cold: number }> = {};
-for (const land of BORDER_LANDS) {
-  try {
-    const b = await pool.query(`
-      WITH se AS (SELECT ST_Collect(geom) g FROM road_conditions WHERE NOT deleted AND geom IS NOT NULL)
-      SELECT f.station_id, f.surface_temp_c, f.rain, f.snow, f.precipitation,
-             ST_X(f.geom) AS lon, ST_Y(f.geom) AS lat
-      FROM ${land}.weather_latest f, se
-      WHERE f.surface_temp_c IS NOT NULL AND f.sample_time > now() - interval '3 hours'
-        AND ST_DWithin(f.geom::geography, se.g::geography, $1)`, [BORDER_M]);
-    const cold = b.rows.filter((r) => Number(r.surface_temp_c) <= 3 || r.snow);
-    border[land] = { reach: b.rows.length, cold: cold.length };
-    wx.rows.push(...cold);
-  } catch (e) { console.log(`gräns-wx: ${land}-schemat ej läsbart (${String((e as Error).message).slice(0, 80)}) — hoppar`); }
-}
-const devs = await pool.query(`
-  SELECT deviation_id, message_type, message_type_value, road_number,
-         severity_code, end_time,
-         ST_X(COALESCE(geom, ST_Centroid(line_geom))) AS lon,
-         ST_Y(COALESCE(geom, ST_Centroid(line_geom))) AS lat
-  FROM deviations
-  WHERE NOT deleted AND (geom IS NOT NULL OR line_geom IS NOT NULL)
-    AND (end_time IS NULL OR end_time > now())`);
-const vilt = await pool.query(`
-  SELECT event_id, ST_X(geom::geometry) lon, ST_Y(geom::geometry) lat, species, datetime
-  FROM polisen_events
-  WHERE geom IS NOT NULL AND datetime > now() - interval '48 hours'
-  ORDER BY datetime DESC`);
-const smhi = await pool.query(`
-  SELECT area_id, event_sv, level_code,
-         ST_AsGeoJSON(ST_SimplifyPreserveTopology(geom, 0.01))::json AS g
-  FROM smhi_warnings
-  WHERE geom IS NOT NULL AND event_code ~* 'SNOW|ICE|ICING|COLD|WIND'`);
-
-const liveDoc = {
-  schema: 1,
-  generated_at: new Date().toISOString(),
-  segments: segs.rows.map((r) => ({
-    id: r.segment_id, line: r.g.coordinates,
-    code: r.condition_code, info: r.condition_info ?? [], road: r.road_number,
-  })),
-  weather: wx.rows.map((r) => ({
-    id: r.station_id, lon: r.lon, lat: r.lat,
-    yta: num(r.surface_temp_c),
-    fukt: Boolean(r.rain || r.snow || r.precipitation),
-  })),
-  deviations: devs.rows.map((r) => ({
-    id: r.deviation_id, lon: r.lon, lat: r.lat, typ: r.message_type, road: r.road_number,
-    // Olyckslyftet (#28): the engine grades accidents on Trafikverket's SeverityCode
-    // (1 Ingen, 2 Liten, 4 Stor, 5 Mycket stor påverkan — 3 unused in practice).
-    // Gated on message_type_value === "Accident" ON PURPOSE. The graded copy says the
-    // word "olycka" out loud, so it may only ever be triggered by something Trafikverket
-    // itself classified as an accident. Any other deviation type keeps severity null and
-    // therefore falls through to the old, milder line.
-    sev: r.message_type_value === "Accident" && r.severity_code != null
-      ? Number(r.severity_code) : null,
-    // The clearance time is pre-formatted HERE, not in the engine: the engine reads no
-    // clocks and knows no timezones, and all three ports must speak the identical string.
-    slut: r.message_type_value === "Accident" ? hhmmStockholm(r.end_time) : null,
-  })),
-  smhi: smhi.rows.map((r) => ({ id: Number(r.area_id), event: r.event_sv, niva: r.level_code, geom: r.g })),
-  wildlife: vilt.rows.map((r) => ({ id: String(r.event_id), lon: Number(r.lon), lat: Number(r.lat), art: r.species ?? null })),
-  bridges,
-};
-
-/** Absolute instant → "HH:MM" in Swedish wall-clock time, or null. */
-function hhmmStockholm(ts: Date | string | null): string | null {
-  if (ts == null) return null;
-  const d = ts instanceof Date ? ts : new Date(ts);
-  if (Number.isNaN(d.getTime())) return null;
-  return new Intl.DateTimeFormat("sv-SE", {
-    timeZone: "Europe/Stockholm", hour: "2-digit", minute: "2-digit", hour12: false,
-  }).format(d);
-}
-
-// ---- write + manifest with integrity ----
-function emit(name: string, doc: unknown) {
-  const json = JSON.stringify(doc);
-  writeFileSync(join(outDir, name), json);
-  const gz = gzipSync(Buffer.from(json)).length;
-  return { path: `app/v1/${name}`, sha256: createHash("sha256").update(json).digest("hex"), bytes: Buffer.byteLength(json), gz_bytes: gz };
-}
-const fStatic = emit("static.json", staticDoc);
-const fLive = emit("live.json", liveDoc);
-const manifest = { schema: 1, generated_at: liveDoc.generated_at, files: { static: fStatic, live: fLive } };
+const sStatic = JSON.stringify(staticDoc), sLive = JSON.stringify(liveDoc);
+const manifest = await manifestFor(liveDoc.generated_at, { static: sStatic, live: sLive });
+writeFileSync(join(outDir, "static.json"), sStatic);
+writeFileSync(join(outDir, "live.json"), sLive);
 writeFileSync(join(outDir, "manifest.json"), JSON.stringify(manifest));
 
 const kb = (b: number) => `${(b / 1024).toFixed(0)} kB`;
-console.log(`snapshot built: static ${kb(fStatic.bytes)} (gz ${kb(fStatic.gz_bytes)}, ${staticDoc.cameras.length} cameras), ` +
-  `live ${kb(fLive.bytes)} (gz ${kb(fLive.gz_bytes)}; segs ${liveDoc.segments.length}, wx ${liveDoc.weather.length}, dev ${liveDoc.deviations.length}, vilt ${liveDoc.wildlife.length}, broar ${liveDoc.bridges.length}, smhi ${liveDoc.smhi.length})`);
-// #49 förstapubliceringsbevis per land: gränsstationer inom 40 km av svenska vägar (any temp =
-// reachability, stabil året runt) och hur många som är kalla nog att ligga i snapshoten nu.
-for (const land of BORDER_LANDS)
+const f = manifest.files;
+console.log(`snapshot built: static ${kb(f.static.bytes)} (gz ${kb(f.static.gz_bytes)}, ${staticDoc.cameras.length} cameras), ` +
+  `live ${kb(f.live.bytes)} (gz ${kb(f.live.gz_bytes)}; segs ${liveDoc.segments.length}, wx ${liveDoc.weather.length}, dev ${liveDoc.deviations.length}, vilt ${liveDoc.wildlife.length}, broar ${liveDoc.bridges.length}, smhi ${liveDoc.smhi.length})`);
+for (const land of ["fi", "no"])
   console.log(`gräns-wx (#49): ${land.toUpperCase()} ${border[land]?.reach ?? "—"} stationer inom 40 km av svenska vägnätet (varav ${border[land]?.cold ?? "—"} kalla i snapshoten nu)`);
-if (fLive.gz_bytes > 1_500_000) console.warn("SPLIT CRITERION HIT (DECISIONS #14): live gz > 1.5 MB — time for per-län files");
+if (f.live.gz_bytes > 1_500_000) console.warn("SPLIT CRITERION HIT (DECISIONS #14): live gz > 1.5 MB — time for per-län files");
 await pool.end();

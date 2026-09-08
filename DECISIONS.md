@@ -1012,3 +1012,44 @@ FÖLJD FÖR REPOBESLUTET: publikt repo (Bengts minutplan) är nu ett val om öpp
 ekonomi, inte ett nödingrepp för att hålla appen vid liv. Beslutet kan fattas i lugn.
 KVAR I ACTIONS (tål att vänta på kvotnollställning): FI/NO/DK-ingesten, broarna (#38),
 kartlagren, grind A och veckoproven, marknadsmotorn, healthcheck.
+
+## #74 (8/9 2026) EN skrivare av appens snapshot — snapshotkärnan, givarvakten och tre fynd ur grunden
+BAKGRUND: #72 (8/9) flyttade publiceringen till Supabase-funktionen `publicera`, en handskriven
+spegel av publish/build-snapshot.ts. Bengts "fungerar den?" mättes mot kartrepot: 35 commits var
+10:e minut, live.json 6,8 min gammal. Kedjan levde. Men läst mot grunden gick TRE saker sönder:
+ 1. **Ingen manifest.json.** Båda apparna verifierar sha256 ur manifestet och förkastar filen vid
+    fel (SnapshotRepo.kt/.swift: "checksum mismatch" ⇒ cachen gäller). Manifestet på CDN var från
+    5/9 11:12, live.json från 8/9 — MISMATCH mätt. Appen har alltså INTE fått en enda ny snapshot
+    sedan 5/9; "live.json 1,1 min gammal" var sant på CDN och falskt i telefonen.
+ 2. **Vädret nådde aldrig nuläget.** ingest-live:s nya weather() skrev bara weather_observations
+    (arkivet). publicera läser weather_latest, som frös 5/9 11:05. Därför var Storvik 2135 med
+    −10,7 °C i september appens enda väderpunkt: tabellen var död, inte stationen.
+ 3. **Två skrivare, två format.** publicera: broar alltid tomma, SMHI-fält `level`/`g` (motorn
+    och kartan läser `niva`/`geom`), olyckans severity ograderad på typ (texten säger "olycka"
+    högt — får bara utlösas av Trafikverkets "Accident"), inga gränsstationer (#49), ingen
+    färskhetsgräns. publish-map i Actions skrev det gamla formatet — 7 ↔ 0 broar var bara det
+    synligaste symptomet.
+BESLUT:
+ · **publish/snapshot-core.ts är enda källan** till data/app/v1/{static,live,manifest}.json.
+   Körtidsneutral (Web Crypto, CompressionStream, Intl); Node (build-snapshot.ts) och Deno
+   (publicera) matar in en fråge-funktion. Skuggmotor-mönstret: publicera/index.ts GENERERAS av
+   scripts/bundle-publicera.ts ur kärnan + data/bridges.geojson (2 476 broar inbäddade,
+   ~120 kB) + publicera/main.ts. CI kör --check.
+ · **publish-map skriver aldrig mer data/app/v1/.** Kartlagren och fi/dk-snapshoterna bor kvar.
+ · **Givarvakten (#75) i VARJE väderfråga** (svensk, gräns, bro): `sample_time > now() − 3 h`
+   OCH `(air_temp_c IS NULL OR surface_temp_c >= air_temp_c − 12)`. Fäller bara på bevisad
+   orimlighet, aldrig på okunskap. Storvik (−10,7 vs luft ~12) faller på båda.
+ · **Fukt betyder fukt.** Båda gamla skrivarna gjorde `Boolean(precipitation)`; Trafikverket
+   skriver "no" vid uppehåll (680 av 1 297 stationer 5/9) och de nordiska "Dry". Alltså var
+   varje torr station "våt", och motorn larmar på kall OCH våt ⇒ en falsklarmsmaskin i väntan
+   på första kalla torra natten. Nu: regn, snö, eller nederbördsklass som inte är "no"/"dry".
+ · ingest-live upsertar weather_latest batchat (UNNEST) för VARJE mätning, inte bara
+   arkivvärdiga, med bakåtvakt på sample_time — annars fryser en uppvärmd station på sitt
+   sista kalla värde.
+BEVIS: 50 tester gröna lokalt (7 nya: format, olycksgate, brokoppling, givarvakt i alla
+frågor, fukt, grannschema, manifest-sha256 = node:crypto). PostGIS-testet av givarvakten
+ligger i integration.test.ts och körs när CI lever. Bundlen parsar (node --check); Deno-
+typkontroll och deploy kan bara Axel göra. Beviset EFTER deploy är en commit i kartrepot med
+ALLA TRE filerna och manifestets sha = live.json:s — mät det, lita inte på deploy-kvittot.
+LÄXA: "filen på CDN är färsk" är inte "appen har den". Kontrollera alltid manifestet.
+

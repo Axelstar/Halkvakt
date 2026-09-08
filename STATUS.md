@@ -1364,3 +1364,18 @@ På minutsidan per API: repot private; jobbet 102054360896 (prov #7, 12:06:35) r
 runner_name tom, dött efter 2 s med tom check-run; alla 35 workflows active; pulsen fyrar
 (12:07–12:17, alla röda på 4 s); inga commits eller grenar efter 06:12. Spending limit och
 betalstatus kan bara Axel läsa. Förlorad insamling sedan 5/9 11:41: 72 h 41 min. Inget byggt.
+
+## 2026-09-08 12:45 — #74/#75 byggda: snapshotkärnan, givarvakten, och tre fynd ur grunden
+Bengts "bygg 74 och 75". Läst mot grunden före kod: (1) publicera skriver ingen manifest.json —
+apparna verifierar sha256 och förkastar; manifestet på CDN 5/9, live.json 8/9, MISMATCH mätt.
+Appen har inte fått en ny snapshot sedan 5/9. (2) ingest-live:s väder skrev bara arkivet, aldrig
+weather_latest som publicera läser — tabellen frös 5/9 11:05. (3) Båda skrivarna gjorde
+Boolean(precipitation) och Trafikverket skriver "no" vid uppehåll: varje torr station var "våt".
+BYGGT: publish/snapshot-core.ts (enda källan, körtidsneutral), build-snapshot.ts som tunn
+Node-ingång, publicera/main.ts + scripts/bundle-publicera.ts → genererad index.ts med 2 476
+broar inbäddade, CI --check, publish-map utan app-steg, WX_SANE i alla väderfrågor, fukt-regel,
+weather_latest-upsert i ingest-live. 50 tester gröna (7 nya), bundlarna parsar, YAML ok.
+KAN INTE BEVISAS HÄRIFRÅN: Deno-typkontroll, deploy, PostGIS-testet. Axel deployar publicera +
+ingest-live; beviset är en kartrepo-commit med alla tre filerna och manifest-sha = live-sha.
+DECISIONS #74.
+
