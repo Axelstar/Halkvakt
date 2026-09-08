@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-08 21:25 av Claude (webben) — ACTIONS LEVER. Pulsklockan körd skarpt: grannar hourly på :24, tre gamla pulsjobb avvecklade, bevisvakten grön (DECISIONS #83). ci grön på main. Väntar på första grannar-körningen 21:24*
+*Uppdaterad: 2026-09-08 21:32 av Claude (webben) — grannar-jobbet bevisat: första :24-dispatchen grön, FI+DK+NO på 5 min 00 s, ~12 kr/dygn. Pulsklockan mergad (PR #78). Healthcheck fortsatt röd på cameras/arkiv tills #80 är gjort*
 
 ---
 
@@ -328,6 +328,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   fyrar 2×/h mot döda jobb (288 mejl/dygn) och hade bränt oktoberpotten på de gamla filerna
   dag ett. Utan filerna svarar GitHub 404: ingen körning, ingen minut, inget mejl. Första
   oktoberkörningen är fortfarande pulsklockan (inventering → skarp → grannar tar över).
+  ✅ **GRANNAR-JOBBET BEVISAT 8/9 21:24–21:29:** första pulsdispatchen kom 21:24:01, körning #1
+  grön: 🇫🇮 2 min 17 s · 🇩🇰 29 s · 🇳🇴 2 min 06 s = 5 min 00 s ⇒ 5 debiterade minuter per timme,
+  ~120 min/dygn, ~12 kr/dygn. De tre gamla filerna är borta, de tre gamla pulsjobben avvecklade.
+  Kort #53:s aktiveringssteg är därmed KLART; kortet står öppet bara för #79/#80 och
+  Billing-frågan.
   🟢 **ACTIONS LEVER 8/9 21:07 (Axels 35 USD-gräns, DECISIONS #81/#82).** Första jobbet:
   pulsklockan (DECISIONS #83) — inventering #6 ren, skarp #7 bevisad: puls-ingest-grannar på
   `24 * * * *`, puls-ingest-fi/dk/no avvecklade, bevisvakten grön, 8 cron-jobb kvar. Mallen

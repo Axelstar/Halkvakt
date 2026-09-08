@@ -1422,3 +1422,13 @@ Arkivet har fått rader sedan 8/9 men inga mängder; septemberregnen 5/9–8/9 o
 speglar nu ingest/sources/weather.ts fält för fält; tv() har inget INCLUDE så fälten finns.
 Parsar. Deploy och bevis: Axel. Beslutsläget a/b/c (DECISIONS #69) rörs inte. DECISIONS #79.
 
+
+## 2026-09-08 21:32 — Actions lever, pulsklockan körd, grannar-jobbet bevisat
+Axel satte 35 USD (DECISIONS #81/#82) 21:07. Första jobbet: pulsklockan från grenen —
+mallen bytt till puls-regn-30 (puls-ingest avstängd), NYA bara grannar hourly, healthcheck
+återskapas inte. Inventering #6 ren, skarp #7 bevisad (DECISIONS #83). Första grannar-
+dispatchen 21:24:01, körning #1 grön: FI 2:17, DK 0:29, NO 2:06 = 5:00 ⇒ ~120 min/dygn.
+ci grön på main (#455/#456) ⇒ PostGIS-testet av givarvakten passerade. Healthcheck #144
+UNHEALTHY på cameras/road_conditions_arkiv/fi/dk/no: grannländerna löser sig från nu, men
+kameror, moaten, vilt och SMHI saknar skrivare sedan puls-ingest stängdes — kort #80.
+PR #78 mergad efter en append-konflikt i DECISIONS.
