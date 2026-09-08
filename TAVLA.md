@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-08 12:45 av Claude (webben) — #74/#75 BYGGDA: en snapshotkärna för båda skrivarna, manifest.json med, givarvakt i varje väderfråga, fukt betyder fukt. Två nya fynd: appen har inte fått en ny snapshot sedan 5/9 (manifest-mismatch) och weather_latest frös 5/9. Väntar på Axels deploy av publicera + ingest-live*
+*Uppdaterad: 2026-09-08 20:40 av Claude (webben) — #77 byggt: kartlagren in i publicera (var 30:e min, noll Actions-minuter), publish-map utan cron. Väntar på Axels deploy. Kartsajten är kvar på 5/9 tills dess*
 
 ---
 
@@ -287,7 +287,40 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   publicera läser weather_latest, som frös 5/9 11:05. Storvik var inte en trasig station i
   en levande tabell utan en död tabell. DOM: kedjan Trafikverket → databas → CDN lever;
   CDN → app gör det inte. Fixat i #74/#75-bygget, väntar på Axels deploy.
-- [ ] 🔀 **#74 Två skrivare till live.json — BYGGT 8/9 12:45, väntar på Axels deploy** (DECISIONS #74)
+- [ ] ⏱️ **#77 publish-map:s egen cron lever kvar — BYGGT 8/9 20:40 (DECISIONS #77), väntar på deploy**
+  ✅ `publish/map-core.ts` bygger kartsajtens sex filer; `publicera` publicerar dem i samma
+  commit som appfilerna på :00/:30 (`?karta=1` tvingar). publish-map.yml: cron borta, bygger
+  varken kartlager eller app-snapshot, kedjad på ingest + ingest-grannar för fi/dk. 52 tester
+  gröna, bundlen i synk. 🔑 AXEL: bunta-check + `supabase functions deploy publicera`. BEVIS:
+  en :00/:30-commit i kartrepot med nio filer och meta.json inom 35 min; läs `ms` i svaret.
+  URSPRUNGLIGT FYND:
+  (fynd 8/9 20:04 vid kontrollen av Axels åtgärder). Tre pulsjobb är av (ingest, publish,
+  healthcheck — bekräftat: inga dispatch-körningar av dem sedan 18:37), men publish-map.yml
+  har fortfarande `schedule: */30` (körning #980 kl 19:03:50 var `schedule`). Kartlagren tar
+  69–74 s ⇒ 2 debiterade minuter × 48/dygn = hela oktoberpotten på 21 dagar, ensam. Kvar på
+  puls dessutom: FI/DK/NO 2×/h och regn-30 1×/h. BESLUT KRÄVS före 1/10: (a) kartlagren
+  in i publicera (samma mönster, noll minuter) eller (b) publish-map timvis via puls +
+  grannar 1×/h (minutplanens #6/#7, produktbeslut Bengt+Axel). Verify: första oktober-
+  veckans Usage under 66 min/dygn.
+- [ ] 🐕 **#76 Vakthunden i Supabase mäter fel led — ÅTGÄRDAD PÅ MAIN 8/9 17:24 (822d178), deploy ej bevisad härifrån.**
+  Led 3 hämtar nu manifest.json och jämför sha256 med live.json. Stängs när vakthunden
+  bevisligen larmat OCH tystnat på riktiga data (issue med etiketten vakthund), inte förr.
+  URSPRUNGLIGT FYND (8/9 13:35,
+  läst mot grunden vid bedömningen av Axels lägesrapport). Terminalvarvets `vakthund`
+  (DECISIONS #73, 8/9) kollar led 3 "når det appen?" genom live.json:s generated_at på CDN.
+  Men appen tar inte emot live.json, den tar emot live.json OM manifestets sha256 stämmer.
+  Uppmätt 13:35 i kartrepot: live.json 6 min gammal, manifest.json från 5/9, sha MISMATCH ⇒
+  båda apparna förkastar och behåller 5/9-snapshoten. Vakthundens "första körningen grön —
+  CDN 6 min" är alltså exakt den blinda fläcken: den friar ett led som är brutet.
+  VÄG: led 3 = hämta manifest.json OCH live.json, jämför sha256, larma vid mismatch eller
+  om manifestets generated_at är gammalt. Tre rader. Verify: vakthunden ska larma på dagens
+  läge (mismatch) och tystna först när den nya publicera deployats.
+  LÄGET 13:35: nya publicera (#74, mergad 12:55) är INTE deployad — kartrepots commits
+  13:00–13:30 skriver fortfarande bara live.json, vädret är fortfarande enbart Storvik −10,7.
+- [x] ✅ **#74 Två skrivare till live.json — KLART 8/9 20:04, BEVISAT I KARTREPOT** (DECISIONS #74): Axel deployade
+  ~17:18 (första commit med manifest.json: 4013689). Mätt 20:04: manifest och live.json båda
+  generated_at 20:00:12, sha256 MATCH för live OCH static, SMHI-nycklar `niva`/`geom`, bundlen
+  i synk på main. Sista metern till telefonen är hel.
   ✅ `publish/snapshot-core.ts` är enda källan till appens tre filer; publicera/index.ts
   genereras av scripts/bundle-publicera.ts (kärna + 2 476 broar inbäddade + main.ts), CI kör
   --check; publish-map skriver aldrig mer data/app/v1/. Manifestet skrivs med. Formatet är
@@ -303,7 +336,10 @@ Play-kontot lever kvar i IDAG-listan ovan — det är den enda köp-punkten som 
   app-steg tas bort), eller så skriver publish-map bara kartlagren och aldrig data/app/.
   Verify: två på varandra följande commits i kartrepot från olika skrivare ger samma
   bridges-antal.
-- [ ] 🚫 **#75 Givarvakt före publicering — BYGGT 8/9 12:45, väntar på Axels deploy** (DECISIONS #74)
+- [x] ✅ **#75 Givarvakt före publicering — I DRIFT 8/9 20:04** (DECISIONS #74): Storvik 2135 är borta
+  ur live.json (0 väderpunkter, rimligt en septemberkväll), weather_latest tinat efter Axels
+  bool-array-fix i ingest-live (822d178). Kvar att bevisa: PostGIS-testet i CI (oktober) och
+  Bengts mejl till Trafikverket — vakten döljer givarfelen, den lagar dem inte.
   ✅ WX_SANE i VARJE väderfråga (svensk, gräns, bro): färsk ≤ 3 h OCH yta ≥ luft − 12 °.
   Fäller bara på bevisad orimlighet. PostGIS-test i integration.test.ts (Storvik-lik,
   gammal, färsk, utan luft) körs när CI lever. ⚠️ BIFYND SOM ÄR VÄRRE ÄN STORVIK: båda gamla

@@ -1,11 +1,12 @@
 name: publish-map
+# Sedan kort #77 (8/9 2026) publicerar Supabase-funktionen `publicera` BÅDE appens snapshot
+# (#74) och kartsajtens lager, var 30:e minut, utan Actions-minuter. Kvar här: de nordiska
+# app-snapshoterna (fi/dk), som bara behöver köras när grannlandsingesten gått. Ingen egen
+# cron längre — den (*/30 × 2 debiterade minuter) hade ensam ätit oktoberpotten på tre veckor.
 on:
   workflow_run:
-    workflows: [ingest]        # kedjad: publicerar direkt när färsk data landat
+    workflows: [ingest, ingest-grannar]   # kedjad: publicerar när färsk nordisk data landat
     types: [completed]
-  schedule:
-    - cron: "*/30 * * * *"     # egen klocka: DB är minutfärsk via livemotorn, så webben
-                               # hålls ≤ ~35 min gammal oavsett ingest-kedjan. Beslut #22.
   workflow_dispatch: {}
 concurrency:
   group: publish-map
@@ -21,14 +22,9 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci
-      - run: node --experimental-strip-types publish/build-map-data.ts out
-        env:
-          DATABASE_URL: "${{ secrets.DATABASE_URL }}"
-          TRAFIKVERKET_API_KEY: "${{ secrets.TRAFIKVERKET_API_KEY }}"
-      # data/app/v1/ (appens snapshot) skrivs INTE här sedan kort #74 (8/9): Supabase-
-      # funktionen publicera är enda skrivaren, var 10:e minut. Två skrivare gav 7 ↔ 0
-      # broar och en manifest.json som inte stämde med live.json. Kärnan är gemensam:
-      # publish/snapshot-core.ts. Kartlagren och fi/dk-snapshoterna bor kvar här.
+      # Varken kartlagren (#77) eller data/app/v1/ (#74) byggs här längre: publicera i
+      # Supabase är enda skrivaren av båda. Kärnorna är gemensamma: publish/map-core.ts
+      # och publish/snapshot-core.ts. Kvar: fi/dk-snapshoterna nedan.
       - run: node --experimental-strip-types publish/build-snapshot-fi.ts out
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
       - run: node --experimental-strip-types publish/build-snapshot-dk.ts out

@@ -1,4 +1,4 @@
-// Buntar publish/snapshot-core.ts + data/bridges.geojson + supabase/functions/publicera/main.ts
+// Buntar publish/snapshot-core.ts + publish/map-core.ts + data/bridges.geojson + publicera/main.ts
 // → supabase/functions/publicera/index.ts. Samma mönster som bundle-skuggmotor (#34-läxan):
 // index.ts är en GENERERAD fil — ändra i källorna och kör:
 //   node --experimental-strip-types scripts/bundle-publicera.ts
@@ -10,14 +10,16 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { bridgesFromGeoJSON } from "../publish/snapshot-core.ts";
 
-const core = readFileSync(new URL("../publish/snapshot-core.ts", import.meta.url), "utf8")
-  .replace(/^import\b[\s\S]*?from\s+"[^"]+";[ \t]*\n/gm, "");
+const strip = (src: string) => src.replace(/^import\b[\s\S]*?from\s+"[^"]+";[ \t]*\n/gm, "");
+const core = strip(readFileSync(new URL("../publish/snapshot-core.ts", import.meta.url), "utf8"));
+const mapCore = strip(readFileSync(new URL("../publish/map-core.ts", import.meta.url), "utf8"));
 const bridges = bridgesFromGeoJSON(JSON.parse(readFileSync(new URL("../data/bridges.geojson", import.meta.url), "utf8")));
 const main = readFileSync(new URL("../supabase/functions/publicera/main.ts", import.meta.url), "utf8");
 
 const out = `// ═══ GENERERAD av scripts/bundle-publicera.ts — ÄNDRA INTE HÄR ═══\n` +
-  `// Källor: publish/snapshot-core.ts + data/bridges.geojson + supabase/functions/publicera/main.ts\n\n` +
+  `// Källor: publish/snapshot-core.ts + publish/map-core.ts + data/bridges.geojson + supabase/functions/publicera/main.ts\n\n` +
   `// ═══ publish/snapshot-core.ts ═══\n${core}\n\n` +
+  `// ═══ publish/map-core.ts ═══\n${mapCore}\n\n` +
   `// ═══ data/bridges.geojson (${bridges.length} broar, #38) ═══\n` +
   `const BRIDGES: Bridge[] = ${JSON.stringify(bridges)};\n\n` +
   `// ═══ supabase/functions/publicera/main.ts ═══\n${main}`;

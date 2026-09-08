@@ -1087,3 +1087,23 @@ alla åtgärdade. Granskningen var korrekt på varje punkt.
    motsvarighet ännu och ska väckas medvetet efter 1/10.
 LÄXA: "ligger filen på CDN" är inte samma sak som "appen tog emot den". Verifiera alltid
 sista metern, och låt vakthunden mäta det konsumenten gör — inte det producenten skickar.
+
+## #77 (8/9 2026) Kartlagren in i publicera — publish-map:s egen cron bort
+FYND (8/9 20:04, kontrollen av Axels åtgärder): tre pulsjobb var av, men publish-map.yml hade
+kvar `schedule: */30` (körning #980 19:03:50 var `schedule`). Kartlagren tar 69–74 s ⇒ 2
+debiterade minuter × 48/dygn = 96 min/dygn: hela oktoberpotten på 21 dagar, ensam.
+BESLUT (Bengt: "vi gör nummer 1 nu"): kartsajtens sex filer byggs av `publish/map-core.ts`
+(körtidsneutral, samma mönster som snapshotkärnan #74) och publiceras av `publicera` i SAMMA
+commit som appfilerna, på körningarna :00 och :30 (`?karta=1` tvingar). Kadensen 30 min är
+oförändrad: DECISIONS #22:s löfte om ≤ 35 min färsk webb, och issue #4:s halvtimmesserie av
+vaglag.geojson. Noll Actions-minuter. publish-map.yml har ingen cron längre och bygger varken
+kartlager eller data/app/v1 — kvar är fi/dk-snapshoterna, kedjade på ingest OCH ingest-grannar.
+Väglagskamerornas fail-soft-gren behållen (TRV-fel ⇒ filen utelämnas, förra ligger kvar) men
+noten bär API:ets svarskropp och meta.json bär `kameror_vaglag: null` när den hoppats över.
+KOSTNAD PER :00/:30-KÖRNING: ~1,7 MB JSON till Git Data API i sex blobbar, uppskattat 10–20 s
+wall-clock, CPU < 0,5 s. Svaret bär `ms` — MÄT första körningen, det är gissning tills dess.
+BEVIS: 52 tester gröna lokalt (2 nya: sex filer i kartsajtens format, fail-soft i tre
+riktningar), bundlen i synk och parsar. Efter deploy: en :00/:30-commit i kartrepot med nio
+filer (tre app + sex karta) och meta.json:s generated_at inom 35 min. Tills dess är kartsajten
+kvar på 5/9.
+
