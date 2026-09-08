@@ -17,9 +17,13 @@
 // Run: DATABASE_URL=... node --experimental-strip-types scripts/pulsklocka.ts [--inventering]
 
 const NYA: { namn: string; schema: string; fil: string }[] = [
-  { namn: "puls-ingest-grannar", schema: "24,54 * * * *", fil: "ingest-grannar.yml" }, // kort #53: FI+DK+NO i ETT jobb
-  { namn: "puls-regn-30", schema: "41 * * * *", fil: "regn-30.yml" },
-  { namn: "puls-healthcheck", schema: "23 */2 * * *", fil: "healthcheck.yml" }, // kort #50, 4/9: vakthunden vaktades inte själv
+  // Kort #53: FI+DK+NO i ETT jobb. EN gång i timmen (Bengt + Axel 8/9, DECISIONS #82:s
+  // rättelse 2): glesare hade tystat gränsstationerna — givarvakten (#75) släpper bara
+  // mätningar yngre än 3 h. Tätare kostar 3 debiterade minuter per körning i onödan.
+  { namn: "puls-ingest-grannar", schema: "24 * * * *", fil: "ingest-grannar.yml" },
+  // puls-regn-30 finns redan (kort #79 avgör om den ska bort) och puls-healthcheck stängde
+  // Axel av 8/9 med flit — vakthunden i Supabase (DECISIONS #73/#78) tog över. Ingen av
+  // dem får återskapas härifrån.
 ];
 
 // AVVECKLAS (kort #53): de tre grannjobben ersätts av ett. Utan borttagning skulle de
@@ -27,7 +31,10 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
 // bara SKAPA, aldrig ta bort, och det hålet var osynligt tills merget krävde det.
 // Bara namn i den här listan rörs; inget mönster, ingen slasktratt.
 const AVVECKLA: string[] = ["puls-ingest-fi", "puls-ingest-dk", "puls-ingest-no"];
-const MALLFIL = "ingest.yml";            // svenska ingest-pulsen = bevisat fungerande mall
+// Mallen var puls-ingest (ingest.yml), men Axel stängde av den 8/9 när svenska ingesten
+// flyttade till Supabase (#72). puls-regn-30 är det pulsjobb som är kvar, fyrar varje timme
+// och bär token — mallvakten nedan bevisar det innan något kopieras.
+const MALLFIL = "regn-30.yml";
 const INVENTERING = process.argv.includes("--inventering");
 
 const url = process.env.DATABASE_URL;

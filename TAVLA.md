@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-08 22:00 av Claude (webben) — Axels rapport avstämd: vakthund och Billing stämmer, larmvägsfyndet är rätt. Korrigering: vinterarkivet växer ~120 000 rader/dygn med livemotorn, inte 40 000 — gratisnivån räcker ~3 veckor. Gallring före första kalla veckan*
+*Uppdaterad: 2026-09-08 21:30 av Claude (webben) — ACTIONS LEVER (Axels 35 USD, #81/#82): segmentlangden #8 grön, ci grön på main. Pulsklockan pekas om (mall regn-30, grannar hourly) och inventeras. Nytt #80: arkivet/kameror/vilt/SMHI stannade när puls-ingest stängdes — kursorkrock hindrar enkel återstart*
 
 ---
 
@@ -173,6 +173,21 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Kort #44:s 2/2-andel mäter om :11 och :41 fångas — med minutupplösning i arkivet blir
   frågan meningslös. BESLUT (Bengt+Axel): stäng puls-regn-30 och radera filen, eller behåll
   som oberoende mätning. Verify: regn-tackning dagar=1 i oktober ≥ baslinjen utan regn-30.
+- [ ] 🕳️ **#80 Arkivet, kamerorna, viltet och SMHI stannade när puls-ingest stängdes av** (fynd 8/9
+  21:13, healthcheck #144 — första körningen sedan Actions vaknade): `cameras` och
+  `road_conditions_arkiv` synkade för 4 922 min sedan, fi/dk/no likaså. Svenska GitHub-ingesten
+  (ingest.yml) bär FEM saker livemotorn inte gör: kamerorna, vinterarkivets egna kursor
+  (road_condition_history — moaten, #51/#73), polisens viltolyckor, SMHI-varningarna och
+  broarnas indata. Axel stängde puls-ingest 8/9 i tron att "väderhämtningen" flyttat — vädret
+  hade, resten inte. Sedan 5/9 11:11 skrivs alltså inget till moaten och inga nya viltolyckor
+  eller SMHI-varningar når appen. Tredje "grönt men tyst"-felet i dag.
+  VARFÖR INTE BARA SLÅ PÅ IGEN: ingest/index.ts hämtar ALLA sex källor och delar kursor-
+  nycklarna `weather` och `deviations` med ingest-live ⇒ två skrivare på samma changeid
+  (läxan #73a). VÄG: `--skip weather,deviations` i ingest/index.ts (liten ändring, test),
+  sedan puls-ingest tillbaka EN gång i timmen (~2 debiterade min/h, ~5 kr/dygn). Verify:
+  healthcheck grön på cameras + road_conditions_arkiv, och arkivvakten visar omklassningar
+  när väglaget ändras. Alternativet på sikt är minutplanens #13 (DB-trigger för arkivet)
+  + vilt/SMHI i ingest-live — då behövs ingest.yml aldrig mer.
 - [ ] 🐕 **#76 Vakthunden i Supabase mäter fel led — ÅTGÄRDAD PÅ MAIN 8/9 17:24 (822d178), deploy ej bevisad härifrån.**
   Led 3 hämtar nu manifest.json och jämför sha256 med live.json. Stängs när vakthunden
   bevisligen larmat OCH tystnat på riktiga data (issue med etiketten vakthund), inte förr.
