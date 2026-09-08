@@ -21,6 +21,9 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
   // rättelse 2): glesare hade tystat gränsstationerna — givarvakten (#75) släpper bara
   // mätningar yngre än 3 h. Tätare kostar 3 debiterade minuter per körning i onödan.
   { namn: "puls-ingest-grannar", schema: "24 * * * *", fil: "ingest-grannar.yml" },
+  // Kort #80: svenska GitHub-ingesten tillbaka EN gång i timmen — med --skip=weather,deviations
+  // i ingest.yml bär den bara det livemotorn inte gör (kamerorna, moaten, polisen, SMHI).
+  { namn: "puls-ingest", schema: "11 * * * *", fil: "ingest.yml" },
   // puls-regn-30 finns redan (kort #79 avgör om den ska bort) och puls-healthcheck stängde
   // Axel av 8/9 med flit — vakthunden i Supabase (DECISIONS #73/#78) tog över. Ingen av
   // dem får återskapas härifrån.

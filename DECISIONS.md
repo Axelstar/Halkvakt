@@ -1253,3 +1253,20 @@ körning i onödan. Uppskattad kostnad ~5 min/körning ⇒ ~120 min/dygn ⇒ ~12
 rad-för-rad-inserts batchas (minutplanen A1) eller flyttas till Supabase.
 BEVISET är inte den här raden utan grannar-jobbets EGNA körningar på :24 — tre länder på Summary.
 
+## #84 (8/9 2026 23:20) Kort #80: svenska GitHub-ingesten tillbaka med --skip — moaten, kameror, vilt och SMHI har skrivare igen
+FYND (healthcheck #144, första körningen sedan Actions vaknade): cameras och road_conditions_arkiv
+synkade för 4 922 min sedan. När Axel stängde av puls-ingest 8/9 ("väderhämtningen har flyttat")
+stannade fyra saker som INTE flyttat: kamerorna, vinterarkivets egna kursor (road_condition_history
+— moaten, #51/#73), polisens viltolyckor och SMHI-varningarna. Inget av det skrevs sedan 5/9 11:11.
+VARFÖR INTE BARA SLÅ PÅ: ingest/index.ts hämtade alla sex källor och delar sync_state-nycklarna
+`weather` och `deviations` med ingest-live ⇒ två skrivare på samma changeid (läxan #73a).
+BESLUT: `--skip=weather,deviations` i ingest/index.ts. Bara de två namnen tillåts (okänt namn fäller
+körningen — ett skrivfel får inte bli en tyst nolla). Hoppad källa ⇒ tom lastChangeId ⇒ writeAll
+rör inte sync_state (integrationstest #80). ingest.yml kör flaggan; pulsklockan skapar puls-ingest
+`11 * * * *` — EN gång i timmen, ~1 debiterad minut (körningen tar 32 s).
+BEVIS: ingest #375 från grenen: `hoppar över (livemotorn äger kursorn, kort #80): weather,
+deviations`, weather 0 / deviations 0, wildlife 1, smhi 16, kameror delta 0, DB WRITE OK.
+Kursorerna weather/deviations i loggen är livemotorns och rördes inte. Pulsklocka inventering #8:
+skulle skapa puls-ingest; skarp körning därefter. Healthcheckens cameras/road_conditions_arkiv
+ska gå grönt inom en timme — det är beviset, inte den här raden.
+

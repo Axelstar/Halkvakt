@@ -1,10 +1,7 @@
 name: ingest
 on:
-  # CRON BORTTAGEN (kort #53): pulsklockan är klockan, och GitHub-cronen
-  # levererade bara 40 % av bokad takt (#70) medan den kostade full minut per
-  # körning. Healthcheck.yml behåller sin cron som oberoende sista utpost.
-                             # situations/roadcondition — GitHub-flödet sköter väder/kameror/
-                             # polisen/smhi + fungerar som reserv. Beslut #22 (minutdiet).
+  # CRON BORTTAGEN (kort #53): pulsklockan är klockan (puls-ingest, EN gång i timmen
+  # sedan kort #80), och GitHub-cronen levererade bara 40 % av bokad takt (#70).
   workflow_dispatch: {}
 jobs:
   ingest:
@@ -16,7 +13,10 @@ jobs:
         with: { node-version: 22, cache: npm }
       - run: npm ci
       - run: npm test
-      - run: npm run ingest
+      # Kort #80: väder och olyckor ägs av livemotorn (ingest-live, #72) — den här körningen
+      # bär det livemotorn inte gör: kamerorna, vinterarkivets egna kursor (moaten), polisens
+      # viltolyckor och SMHI. Utan --skip slåss två skrivare om samma changeid (#73a).
+      - run: npm run ingest -- --skip=weather,deviations
         env:
           TRAFIKVERKET_API_KEY: ${{ secrets.TRAFIKVERKET_API_KEY }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}

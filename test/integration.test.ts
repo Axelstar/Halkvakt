@@ -138,3 +138,26 @@ test("#75 givarvakten: frusen, orimlig och gammal station publiceras inte", { sk
     assert.deepEqual(liveDoc.weather.find((w) => w.id === "FARSK"), { id: "FARSK", lon: 15.1, lat: 59.1, yta: -1.5, fukt: true });
   } finally { await pool.end(); }
 });
+
+// #80: en källa som hoppas över (tom lastChangeId) får INTE röra sync_state — annars skulle
+// GitHub-ingesten flytta livemotorns kursor och stämpla "weather synced 0 min ago" utan att
+// ha hämtat något. Det är hela poängen med --skip.
+test("#80 --skip: tom lastChangeId lämnar sync_state orörd", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { writeAll } = await import("../ingest/db.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  try {
+    await pool.query(`INSERT INTO sync_state (source, last_change_id, synced_at) VALUES ('weather', 'live-42', now() - interval '7 minutes'), ('deviations', 'live-43', now() - interval '7 minutes')
+      ON CONFLICT (source) DO UPDATE SET last_change_id = EXCLUDED.last_change_id, synced_at = EXCLUDED.synced_at`);
+    const fore = (await pool.query(`SELECT source, last_change_id, synced_at FROM sync_state WHERE source IN ('weather','deviations') ORDER BY source`)).rows;
+    const tom = { items: [], lastChangeId: "" };
+    const counts = await writeAll({ weather: tom, deviations: tom,
+      conditions: { items: [], lastChangeId: "cond-9" }, cameras: { items: [], lastChangeId: "cam-9" } } as any);
+    assert.equal(counts.weather, 0); assert.equal(counts.deviations, 0);
+    const efter = (await pool.query(`SELECT source, last_change_id, synced_at FROM sync_state WHERE source IN ('weather','deviations') ORDER BY source`)).rows;
+    assert.deepEqual(efter, fore, "weather/deviations-kursorerna får inte röras");
+    const cam = (await pool.query(`SELECT last_change_id FROM sync_state WHERE source = 'cameras'`)).rows[0];
+    assert.equal(cam.last_change_id, "cam-9", "de källor som INTE hoppas över uppdateras som vanligt");
+  } finally { await pool.end(); }
+});
+
