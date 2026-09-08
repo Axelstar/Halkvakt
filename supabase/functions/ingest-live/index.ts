@@ -132,6 +132,7 @@ async function weather() {
     if (!p || !o?.Sample) continue;
     const yta = o?.Surface?.Temperature?.Value ?? null;
     const agg = o?.Aggregated10minutes?.Precipitation;
+    const agg30 = o?.Aggregated30minutes?.Precipitation;
     const rain = Boolean(agg?.Rain), snow = Boolean(agg?.Snow);
     const nederbord = o?.Weather?.Precipitation ?? null;
     latest.push({ id: String(w.Id), name: w.Name ?? "", lon: p[0], lat: p[1], t: o.Sample, yta,
@@ -139,12 +140,22 @@ async function weather() {
     // Arkivpolicyn: ointressanta lägen skrivs inte alls.
     const intressant = (yta !== null && yta <= 5) || rain || snow || (nederbord && nederbord !== "no");
     if (!intressant) continue;
+    // Regnmängd, snöns vattenvärde, vind och sikt (kort #42 steg 0a, DECISIONS #77-serien i
+    // ingest/sources/weather.ts): första versionen (8/9) skrev bara temperatur och ja/nej —
+    // hela #42:s facit (rain_sum_mm, grind V-A) svalt sedan 5/9 fast arkivet fick rader.
+    // Speglar weather.ts fält för fält; ändras den ena ska den andra följa med.
+    const rainSum = typeof agg30?.RainSum?.Value === "number" ? agg30.RainSum.Value : null;
+    const snowWateq = typeof agg30?.SnowSum?.WaterEquivalent?.Value === "number" ? agg30.SnowSum.WaterEquivalent.Value : null;
     await sql`INSERT INTO weather_observations (station_id, name, geom, sample_time,
-        surface_temp_c, air_temp_c, dewpoint_c, humidity_pct, precipitation, rain, snow)
+        surface_temp_c, air_temp_c, dewpoint_c, humidity_pct, precipitation, rain, snow,
+        rain_sum_mm, snow_wateq_mm, wind_speed_ms, wind_gust_ms, wind_dir_deg, visibility_m)
       VALUES (${String(w.Id)}, ${w.Name ?? ""},
         ST_SetSRID(ST_MakePoint(${p[0]}, ${p[1]}), 4326), ${o.Sample},
         ${yta}, ${o?.Air?.Temperature?.Value ?? null}, ${o?.Air?.Dewpoint?.Value ?? null},
-        ${o?.Air?.RelativeHumidity?.Value ?? null}, ${nederbord}, ${rain}, ${snow})
+        ${o?.Air?.RelativeHumidity?.Value ?? null}, ${nederbord}, ${rain}, ${snow},
+        ${rainSum}, ${snowWateq},
+        ${o?.Wind?.[0]?.Speed?.Value ?? null}, ${o?.Aggregated30minutes?.Wind?.SpeedMax?.Value ?? null},
+        ${o?.Wind?.[0]?.Direction?.Value ?? null}, ${o?.Air?.VisibleDistance?.Value ?? null})
       ON CONFLICT (station_id, sample_time) DO NOTHING`;
     n++;
   }

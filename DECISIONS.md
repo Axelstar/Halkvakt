@@ -1158,3 +1158,19 @@ KVAR FÖR AXEL: ge PAT:en Issues:Write (eller byt till en token som har det), s�
 fram. Tills dess syns problem bara i funktionssvaret, inte som issue.
 LÄXA: en larmväg som aldrig provats är ingen larmväg. Prova den medvetet, och låt den aldrig
 kunna tysta det den ska larma om.
+## #79 (8/9 2026) Kort #42:s facit svalt sedan 5/9 — ingest-live bär nu regnmängden
+FYND (Bengts "kan vi åtgärda #42 nu?"): ingest-live:s weather() (8/9, #72) skriver arkivet med
+temperatur, daggpunkt, fukt och regn ja/nej — men INTE rain_sum_mm, snow_wateq_mm, vind eller
+sikt. Steg 0a i #42 (2/9) lade in regnmängden via GitHub-ingesten, och grind V-A, regn-tackning
+och hela vattenplaningsfacit läser rain_sum_mm. Sedan Actions dog 5/9 11:05 har alltså arkivet
+fått rader men inga mängder: septemberregnen — "en engångschans i år" (DECISIONS #65) — har
+gått förbi omätta i tre dygn, och hade fortsatt göra det med livemotorn i drift.
+ÅTGÄRD: ingest-live:s arkivinsert speglar nu ingest/sources/weather.ts fält för fält:
+rain_sum_mm och snow_wateq_mm (Aggregated30minutes), wind_speed_ms, wind_gust_ms (byvinden,
+höga fordon), wind_dir_deg, visibility_m (sikt, hål C). Inget INCLUDE-filter i tv() ⇒ fälten
+finns i svaret. Bevis efter deploy: `select count(*) from weather_observations where
+rain_sum_mm is not null and sample_time > now() - interval '1 hour'` > 0 vid regn.
+KORT #42 I ÖVRIGT: beslutsläget (a/b/c, DECISIONS #69) är oförändrat och Bengts + Axels.
+Grind V-A kan inte köras förrän Actions lever (eller lokalt av Axel med DATABASE_URL:
+`node --experimental-strip-types publish/grind-v-a.ts 30`). Radardomen 14/9 står.
+
