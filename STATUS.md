@@ -1379,3 +1379,13 @@ KAN INTE BEVISAS HÄRIFRÅN: Deno-typkontroll, deploy, PostGIS-testet. Axel depl
 ingest-live; beviset är en kartrepo-commit med alla tre filerna och manifest-sha = live-sha.
 DECISIONS #74.
 
+
+## 2026-09-08 20:04 — Axels åtgärder kontrollerade mot kartrepot och main
+Manifest och live.json båda generated_at 20:00:12, sha256 MATCH för live och static; första
+commit med manifest 4013689 kl 17:18. SMHI i motorns format, bundle-publicera --check "i synk"
+på main. Storvik borta ur live.json (0 väderpunkter). Axel lagade ett bool-array-fel i min
+weather_latest-upsert (postgres.js + UNNEST; nu text[] med ::boolean, 822d178) och lade
+manifestkontrollen i vakthunden. Tre pulsjobb av: inga dispatch-körningar av ingest,
+publish-map eller healthcheck sedan 18:37. #74/#75 KLART, #76 åtgärdad på main (deploy ej
+bevisad härifrån). Nytt fynd #77: publish-map.yml har kvar schedule */30 (körning #980
+19:03:50 var schedule) — 96 min/dygn när kvoten kommer tillbaka. Actions fortfarande dött.
