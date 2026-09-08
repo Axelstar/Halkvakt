@@ -111,6 +111,38 @@ async function roadconditions() {
   return n;
 }
 
+// Väderstationerna (#72, 8/9): flyttade hit från GitHub-ingesten när Actions-minuterna tog
+// slut 5/9 och databasen slutade få mätningar. Arkivpolicyn är DECISIONS #4:s — spara bara
+// "intressanta" lägen (yta ≤ 5 °C, eller nederbörd) så gratisnivån räcker. Speglar
+// ingest/sources/weather.ts; ändras den ena ska den andra följa med.
+async function weather() {
+  const { items, lastChangeId } = await tv("WeatherMeasurepoint", "2.1", await cursor("weather"));
+  let n = 0;
+  for (const w of items) {
+    if (w.Deleted) continue;
+    const p = pt(w?.Geometry?.WGS84);
+    const o = w?.Observation;
+    if (!p || !o?.Sample) continue;
+    const yta = o?.Surface?.Temperature?.Value ?? null;
+    const agg = o?.Aggregated10minutes?.Precipitation;
+    const rain = Boolean(agg?.Rain), snow = Boolean(agg?.Snow);
+    const nederbord = o?.Weather?.Precipitation ?? null;
+    // Arkivpolicyn: ointressanta lägen skrivs inte alls.
+    const intressant = (yta !== null && yta <= 5) || rain || snow || (nederbord && nederbord !== "no");
+    if (!intressant) continue;
+    await sql`INSERT INTO weather_observations (station_id, name, geom, sample_time,
+        surface_temp_c, air_temp_c, dewpoint_c, humidity_pct, precipitation, rain, snow)
+      VALUES (${String(w.Id)}, ${w.Name ?? ""},
+        ST_SetSRID(ST_MakePoint(${p[0]}, ${p[1]}), 4326), ${o.Sample},
+        ${yta}, ${o?.Air?.Temperature?.Value ?? null}, ${o?.Air?.Dewpoint?.Value ?? null},
+        ${o?.Air?.RelativeHumidity?.Value ?? null}, ${nederbord}, ${rain}, ${snow})
+      ON CONFLICT (station_id, sample_time) DO NOTHING`;
+    n++;
+  }
+  await saveCursor("weather", lastChangeId);
+  return n;
+}
+
 Deno.serve(async (req) => {
   // Fail-closed: kräver delad hemlighet (sätts som secret INGEST_KEY; cron skickar headern).
   const k = Deno.env.get("INGEST_KEY");
@@ -118,8 +150,8 @@ Deno.serve(async (req) => {
     return new Response("forbidden", { status: 403 });
   }
   try {
-    const [s, r] = await Promise.all([situations(), roadconditions()]);
-    return new Response(JSON.stringify({ ok: true, situations: s, roadconditions: r }), {
+    const [s, r, w] = await Promise.all([situations(), roadconditions(), weather()]);
+    return new Response(JSON.stringify({ ok: true, situations: s, roadconditions: r, weather: w }), {
       headers: { "Content-Type": "application/json" } });
   } catch (e) {
     return new Response(JSON.stringify({ ok: false, error: String(e) }), { status: 500 });

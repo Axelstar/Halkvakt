@@ -991,3 +991,24 @@ Det förklarar elva tysta dygn definitivt och skärper förväntan för både #5
 förblir tyst tills det fryser, hur mycket det än regnar, och en säsongsbaseline per segment kan
 alltså inte börja byggas förrän första frostvädret. Vi hade fel om att "höstregnen" skulle ge
 väglagsdata — de ger regndata, vilket är något annat.
+
+## #72 (8/9 2026) Livekedjan flyttad till Supabase — appen lever utan Actions-minuter
+LÄGET: Actions-minuterna tog slut 5/9 13:12. Bengts mejl sa att livemotorn kör som vanligt;
+mätning visade annat. weather_observations hade INGEN ny rad sedan 5/9 11:05, och live.json
+på CDN var 66,7 timmar gammal med EN väderstation i sig. Åldersspärren (AgeGate) höll —
+vakten sa "Ingen färsk väglagsdata" i stället för att ljuga — men den hade inget att säga.
+FYND: pg_cron-jobben var mestadels KLOCKOR som väckte GitHub, inte arbete. Det enda som
+faktiskt kördes i Supabase var ingest-live (olyckor + väglag), och den lever hela tiden.
+Väderstationerna, de nordiska flödena och HELA publiceringen låg i Actions.
+ÅTGÄRD, två steg, båda i Supabase:
+ 1. weather() inlagd i ingest-live — samma arkivpolicy som DECISIONS #4 (spara bara yta
+    ≤ 5 °C eller nederbörd). Bevis: 106 nya observationer inom en minut efter driftsättning.
+ 2. Ny edge function `publicera` — speglar build-snapshot.ts (samma frågor, samma format)
+    och push-data.ts (Git Data API, inte git). pg_cron var 10:e minut, jobid 19.
+    Bevis: live.json på CDN 1,1 minut gammal, commit 76bdf30.
+KOSTNAD: noll Actions-minuter. Kedjan Trafikverket → databas → CDN → app går nu helt
+utanför GitHub.
+FÖLJD FÖR REPOBESLUTET: publikt repo (Bengts minutplan) är nu ett val om öppenhet och
+ekonomi, inte ett nödingrepp för att hålla appen vid liv. Beslutet kan fattas i lugn.
+KVAR I ACTIONS (tål att vänta på kvotnollställning): FI/NO/DK-ingesten, broarna (#38),
+kartlagren, grind A och veckoproven, marknadsmotorn, healthcheck.
