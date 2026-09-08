@@ -1,7 +1,8 @@
 name: ingest
 on:
-  schedule:
-    - cron: "11 * * * *"     # timvis: livemotorn (pg_cron) äger nu minutfärskheten för
+  # CRON BORTTAGEN (kort #53): pulsklockan är klockan, och GitHub-cronen
+  # levererade bara 40 % av bokad takt (#70) medan den kostade full minut per
+  # körning. Healthcheck.yml behåller sin cron som oberoende sista utpost.
                              # situations/roadcondition — GitHub-flödet sköter väder/kameror/
                              # polisen/smhi + fungerar som reserv. Beslut #22 (minutdiet).
   workflow_dispatch: {}

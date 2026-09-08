@@ -1225,6 +1225,76 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   (2) reprisregeln för segment ger kolumn C, 4→1 i norr och 2→1 i söder, utan geometriändring
   och med verkan i hela landet (men en avvägning: en påminnelse efter en halvtimme kan vara
   önskad); (3) rösten säger inte hur långt sträckan räcker — Axels spår.
+- **S-2026-09-05 ~15:40: HELA PIPELINEN STÅR — nytt kort #53** (Bengt rapporterade ett
+  regn-30-fel; det visade sig vara mycket större än regn-30).
+  DIAGNOS: ingest #275 kl 11:11 lyckades på 32 s, #276 kl 12:11 föll på 4 s — SAMMA COMMIT
+  (a7caa3d), samma workflow-fil, ingenting ändrat däremellan. Efter ~12:11 faller varenda
+  workflow: ingest, fi, dk, no, publish-map, bridges, healthcheck, regn-30. Alla dör på
+  3–5 s med noll steg och noll loggar (logg-API 404). Ett jobb som dör före första steget,
+  i alla workflows samtidigt, på oförändrad kod, är ett konto- eller inställningsfel.
+  TROLIGAST: Actions-minuterna slut. Repot är privat (verifierat: visibility private) och
+  privata repon på Free har 2 000 min/månad. Räknat ur observerade körningar 12:00–15:37:
+  ~9 körningar/h, och GitHub avrundar varje jobb uppåt till hel minut medan våra jobb tar
+  20–40 s ⇒ ~216 min/dygn ⇒ 2 000 räcker ~9 dygn. Repot skapades 24/8.
+  LÄXA VÄRD ATT MINNAS: vår jobbform är maximalt dyr under den modellen — många små jobb,
+  där ett 25-sekundersjobb kostar en hel minut. Pulsklockan (#63/#70) gav oss tillförlitlighet
+  och fördubblade samtidigt minutförbrukningen. Ingen räknade på den avvägningen när den
+  byggdes, och fritier-regeln i CLAUDE.md säger att vi skulle gjort det.
+  KRÄVER BENGT/AXEL: Settings → Billing → Actions, och Settings → Actions. Jag har varken
+  behörighet eller insyn. Tre vägar om det är minuterna: höj spending limit (kostar pengar,
+  kräver DECISIONS-post), gör repot publikt (Actions blir gratis; hemligheter i Secrets
+  läcker inte men kod och tavla blir offentliga), eller skär i kadensen — att slå ihop
+  ingest-fi/dk/no till ett jobb sparar ensamt ~4 min/h.
+  Livemotorn i Supabase (pg_cron) berörs INTE — den kör utanför GitHub.
+- **S-2026-09-05: de två gratisdelarna byggda (kort #53)** (Bengts "ja bygg de två").
+  (1) Cron borttagen ur ingest, ingest-fi, ingest-dk, ingest-no och regn-30 — de fem
+  pulsdrivna, som körde dubbelt (bevis: ingest-dk 15:11:16 schedule + 15:12:01 dispatch,
+  45 s isär). Varje rad bär nu ett VARFÖR så ingen återställer den som en glömska.
+  Healthcheckens cron BEHÅLLS: hänger allt annat på pulsen måste något ha en oberoende
+  klocka, annars dör pulsen tyst — vakthundsläxan från #50 i ny form.
+  (2) ingest-grannar.yml kör FI+DK+NO i ett jobb: en checkout, en npm ci. Oberoendet
+  bevarat med `if: !cancelled()` så ett lands fel inte tystar de andras insamling.
+  (3) Pulsklockan kan nu AVVECKLA jobb. Den kunde bara skapa — ett hål som var osynligt
+  tills merget krävde det, för utan borttagning hade de gamla pulsjobben fortsatt fyra mot
+  de gamla filerna och besparingen blivit noll. Avveckling sker SIST, efter att ersättaren
+  skapats, och bevisvakten kräver att de avvecklade faktiskt är borta.
+  INTE AKTIVERAT: kräver en pulsklocka-körning, som kräver att Actions lever. De gamla
+  filerna ligger kvar med borttagen cron så pulsen träffar dem tills den pekas om — inget
+  glapp. Radering av dem blir ett eget varv EFTER att avvecklingen bevisats.
+  ÄRLIGT OM RÄCKVIDDEN: det räcker inte. publish-map är uppmätt till 69-74 s per körning,
+  alltså 2 debiterade minuter, var 30:e minut = 96 min/dygn ≈ 2 880 min/månad. Publiceringen
+  ensam överskrider hela gratisnivån. Under 2 000 kommer vi inte utan att publish-map också
+  flyttas eller saktas ned, och kadensen är beslut #22:s löfte om ≤ 35 min färsk webb.
+  BEHÖRIGHETSFYND: Bengts konto har `admin: false` på repot (verifierat via API). Han kan
+  alltså varken se fakturering eller ändra Actions-inställningar — det måste Axel göra.
+- **S-2026-09-05 18:00: dygnsbeviset för kort #44 — halva delen klar, andra omöjlig**
+  (bokad avläsning). KADENSEN BEVISAD: regn-30 gick 23 av 23 timmar i följd 4/9 12:41 →
+  5/9 10:41, varje timme på minuten :41, alla via workflow_dispatch, alla gröna. Ett helt
+  dygn utan ett missat varv. GitHub-cronen i samma fönster: 8 av 29 möjliga (28 %), och
+  utspridda 16:35, 19:07, 21:48, 00:22, 04:55, 09:20, 13:01, 16:14 — aldrig på :41. Det
+  bekräftar #70:s 40 %-mätning oberoende och motiverar i efterhand borttagningen i #53.
+  ANDRA HALVAN GÅR INTE: 2/2-andelen kräver en regn-tackning-körning och Actions ligger
+  nere. Beviskravet i #62 gäller, kortet stängs inte. Kadens är inte täckning.
+  BIFYND som skärper #53: regn-30:s sista gröna var 10:41 och första röda 11:41, alltså
+  började avbrottet mellan 11:11 och 11:41 — snävare än fönstret jag först angav ur ingest.
+- **S-2026-09-05 21:35: dygnsmätningen för kort #50 — mätt, men dygnet finns inte**
+  (bokad avläsning). Fönstret kortet bokade (4/9 22:23 → 5/9 22:23) är inte mätbart:
+  Actions har inte startat ett jobb sedan ~11:41. Mätte därför det levande fönstret och
+  sa det uttryckligen. 4/9 22:23:02 → 5/9 10:40:27 (12 h 17 min, 11 lyckade körningar,
+  10 mellanrum): kortast 1 min, längst 2 h 00 min 01 s, snitt 1 h 13 min, 0 av 10 över
+  gränsen 2 h 30. Pulsen levererade 6 av 6 tvåtimmarsavfyrningar på :23, varje gång inom
+  2 sekunder. Så långt håller beviskravet — men ett halvdygn är inte ett dygn, och
+  KORTET STÄNGS INTE. Pågående hål vid mätningen: 10 h 54 min, 4,4 gånger stalehetsgränsen.
+  FYNDET SOM VAR NYTT: pulsen gav vakthunden en oberoende KLOCKA men ingen oberoende
+  LÖPARE. Pulsklockan fyrade planenligt genom hela avbrottet (dispatch på 12:23, 14:23,
+  16:23, 18:23, 20:23 finns alla) och varenda körning dog på 1 sekund utan steg.
+  Vakthundens enda eskaleringsväg är att öppna en incident-issue, vilket kräver att jobbet
+  får köra. Kvitto: 0 öppna incident-issues efter elva timmars totalstopp. Ett fel som
+  slår ut runnern slår alltså ut både insamlingen och larmet om den — samma enda punkt.
+  Att avbrottet ändå syns beror på GitHubs egna misslyckandemejl, inte på något vi byggt.
+  LÄGET I #53: 100 av de 100 senaste körningarna (15:11 → 21:17, alla workflows) röda,
+  ~16 döda körningar i timmen, logg-API 404 även på den senaste. Kortet kan inte drivas
+  vidare utan Billing-sidan, och den kräver Axel.
 
 ## 2026-09-06 — 🛑 GitHub-pipelinen död sedan 5/9 13:12: Actions-minuterna slut (Bengts larm)
 Bengt: "vår lagring i GitHub har nått maxgräns och vi får inte längre data". MÄTT: det är inte
@@ -1242,3 +1312,55 @@ Axels val; bantningen byggs oavsett men släpps på först när minuter finns.
 KONSEKVENS FÖR GRANSKNINGEN AV #51 (Bengts fråga samma morgon): trigger-förslaget står sig —
 det flyttar arkivskrivningen IN i databasen och bort från GitHub-minuterna. Den egna kursorn och
 varje pulsdriven GitHub-körning går åt andra hållet: de kostar minuter per körning.
+
+## 2026-09-06 07:00 — Bokad avläsning: Actions lever inte
+Provkörde den lättaste workflowen i repot (`segmentlangden` — varken databas eller nät) på main:
+körning #1, workflow_dispatch 07:00:32 UTC, död efter 4 sekunder med noll steg. Samma symptom
+som 5/9, nu på annan kod (main hade fyra nya commits). Ingen aktivering av kort #53:s färdiga
+gratisdelar, ingen regn-tackning för #44, ingen ny dygnsmätning för #50 — alla tre kräver att
+jobb får köra. FÖRLORAD INSAMLING: 19 h 24 min från första döda körningen 11:41 (19 h 54 min
+från sista säkra 11:11). Byggde ingenting; incheckningen sa uttryckligen att inte göra det.
+TIDSZONSNOT: terminalvarvets kort säger "död sedan 5/9 13:12" och jag säger 11:11–11:41 — samma
+ögonblick, CEST mot UTC. Husregeln är UTC.
+MERGE: origin/main (terminalvarvets minutplan, fyra commits) merged in i grenen, konflikterna i
+TAVLA/STATUS var ren append-mot-append och båda sidor behölls.
+
+## 2026-09-06 15:05 — Avläsning 2: Actions lever fortfarande inte
+segmentlangden #2, workflow_dispatch 15:05:17 UTC, död efter 4 sekunder med noll steg — identiskt
+med #1 åtta timmar tidigare, samma commit (0c2f1bc). Förlorad insamling sedan 5/9 11:41: 27 h 24 min.
+Ingen ny diagnos, inget byggt: minutplanen räknar problemet färdigt och nästa steg kräver Axel
+(Billing, publikt repo eller self-hosted runner). Ny avläsning bokad ~8 h fram.
+
+## 2026-09-07 12:01 — Avläsning 3 (Bengts "kolla igen"): Actions lever fortfarande inte
+segmentlangden #3, workflow_dispatch 12:01:24 UTC, död efter 5 sekunder med noll steg. Pulsen
+fyrar fortfarande varje slot (ingest 11:11, fi 11:37, regn-30 11:41, dk 11:42, no 11:47 — alla
+röda på 4 s). Förlorad insamling sedan 5/9 11:41: 48 h 21 min, två dygn. Ingen ändring på main
+sedan 6/9. Inget byggt. Nästa steg kräver Axel.
+
+## 2026-09-07 20:05 — Avläsning 4: Actions lever fortfarande inte
+segmentlangden #4, workflow_dispatch 20:05:17 UTC, död efter 5 sekunder med noll steg. Alla
+pulsslottar 19:37–19:56 röda på 3–4 s. Förlorad insamling sedan 5/9 11:41: 56 h 25 min. Ingen
+ändring på main sedan 6/9. Inget byggt. Nästa steg kräver Axel.
+
+## 2026-09-08 04:09 — Avläsning 5: Actions lever fortfarande inte
+segmentlangden #5, workflow_dispatch 04:09:28 UTC, död efter 5 sekunder med noll steg. Pulsslottarna
+03:37–04:07 röda på 4 s. Förlorad insamling sedan 5/9 11:41: 64 h 29 min. Ingen ändring på main.
+Inget byggt. Nästa steg kräver Axel.
+
+## 2026-09-08 11:56 — Kontroll av #72 (Bengts "fungerar den?"): JA, bevisat oberoende
+Klonade kartrepot och läste historiken: 35 commits "data: … (Supabase)" i följd 06:10:30 →
+11:50:05, exakt var 10:e minut, inget hål; dessförinnan tystnad sedan 5/9 11:12. live.json
+6,8 min gammal vid avläsningen: 0 segment, 1 väderstation, 1 olycka, 15 SMHI, 2 783 kameror.
+Actions samtidigt fortfarande dött (segmentlangden #6, 11:55:40, 5 s, noll steg) — kedjan lever
+utan GitHub. Bifynd: (1) broarna föll ur appen 7 → 0, publicera skriver bridges: [] över hela
+filen — kort #74, två skrivare till en fil; (2) kartsajten fortfarande 5/9 11:11 (bara app-filerna
+publiceras ur Supabase); (3) appens enda väderpunkt är Storvik 2135 med yta −10,7 °C i september,
+känt givarfel från #46 men där ansågs felet isolerat till daggpunkten — motorn gör det till en
+icing_point. Kort #75, givarvakt före publicering.
+
+## 2026-09-08 12:22 — Avläsning 6, läst mot grunden: Actions lever inte, minuterna orörda
+Bengt: Axel säger att han vidtagit åtgärder. Axels åtgärd är #72 (Supabase-flytten), bevisad.
+På minutsidan per API: repot private; jobbet 102054360896 (prov #7, 12:06:35) runner_id 0,
+runner_name tom, dött efter 2 s med tom check-run; alla 35 workflows active; pulsen fyrar
+(12:07–12:17, alla röda på 4 s); inga commits eller grenar efter 06:12. Spending limit och
+betalstatus kan bara Axel läsa. Förlorad insamling sedan 5/9 11:41: 72 h 41 min. Inget byggt.

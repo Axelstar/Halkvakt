@@ -17,12 +17,16 @@
 // Run: DATABASE_URL=... node --experimental-strip-types scripts/pulsklocka.ts [--inventering]
 
 const NYA: { namn: string; schema: string; fil: string }[] = [
-  { namn: "puls-ingest-fi", schema: "7,37 * * * *", fil: "ingest-fi.yml" },
-  { namn: "puls-ingest-dk", schema: "12,42 * * * *", fil: "ingest-dk.yml" },
+  { namn: "puls-ingest-grannar", schema: "24,54 * * * *", fil: "ingest-grannar.yml" }, // kort #53: FI+DK+NO i ETT jobb
   { namn: "puls-regn-30", schema: "41 * * * *", fil: "regn-30.yml" },
-  { namn: "puls-ingest-no", schema: "17,47 * * * *", fil: "ingest-no.yml" },   // kort #35, 4/9: no-arkivet tickar
   { namn: "puls-healthcheck", schema: "23 */2 * * *", fil: "healthcheck.yml" }, // kort #50, 4/9: vakthunden vaktades inte själv
 ];
+
+// AVVECKLAS (kort #53): de tre grannjobben ersätts av ett. Utan borttagning skulle de
+// gamla fortsätta fyra mot de gamla filerna och besparingen bli noll — pulsklockan kunde
+// bara SKAPA, aldrig ta bort, och det hålet var osynligt tills merget krävde det.
+// Bara namn i den här listan rörs; inget mönster, ingen slasktratt.
+const AVVECKLA: string[] = ["puls-ingest-fi", "puls-ingest-dk", "puls-ingest-no"];
 const MALLFIL = "ingest.yml";            // svenska ingest-pulsen = bevisat fungerande mall
 const INVENTERING = process.argv.includes("--inventering");
 
@@ -53,7 +57,11 @@ if (!mall.har_token) { console.error("MALLVAKT: malljobbet saknar Authorization 
 
 if (INVENTERING) {
   console.log(`\nINVENTERING — inget skrivet. Skulle skapa:`);
-  for (const n of NYA) console.log(`  ${n.namn.padEnd(20)} ${n.schema.padEnd(15)} → ${n.fil}`);
+  for (const n of NYA) console.log(`  ${n.namn.padEnd(22)} ${n.schema.padEnd(15)} → ${n.fil}`);
+  const finns = new Set(fore.rows.map((r: any) => r.jobname));
+  console.log(`\nSkulle AVVECKLA:`);
+  for (const namn of AVVECKLA)
+    console.log(`  ${namn.padEnd(22)} ${finns.has(namn) ? "finns → tas bort" : "finns inte redan — inget att göra"}`);
   await pool.end(); process.exit(0);
 }
 
@@ -65,6 +73,16 @@ for (const n of NYA) {
   console.log(`schemalagt: ${n.namn} (${n.schema}) → ${n.fil}`);
 }
 
+// Avveckling SIST, aldrig före: ersättaren ska finnas innan föregångaren tas bort, annars
+// uppstår ett glapp där ingen hämtar. cron.unschedule tål inte ett namn som saknas, så
+// varje borttagning vaktas mot den lästa listan.
+const fanns = new Set(fore.rows.map((r: any) => r.jobname));
+for (const namn of AVVECKLA) {
+  if (!fanns.has(namn)) { console.log(`avvecklat redan: ${namn} (fanns inte)`); continue; }
+  await pool.query(`SELECT cron.unschedule($1)`, [namn]);
+  console.log(`avvecklat: ${namn}`);
+}
+
 // Bevis: läs tillbaka och kräv att varje nytt jobb pekar rätt och bär token.
 const efter = await pool.query(VY);
 console.log(`\nEfter (${efter.rows.length} jobb):`);
@@ -74,6 +92,11 @@ for (const n of NYA) {
   const bra = r && r.active && r.workflow_fil === n.fil && r.har_token && r.schedule === n.schema;
   console.log(`  ${bra ? "OK " : "FEL"} ${n.namn}: workflow=${r?.workflow_fil ?? "—"} schema=${r?.schedule ?? "—"} aktiv=${r?.active ?? "—"} token=${r?.har_token ?? "—"}`);
   if (!bra) ok = false;
+}
+for (const namn of AVVECKLA) {
+  const kvar = efter.rows.some((x: any) => x.jobname === namn);
+  console.log(`  ${kvar ? "FEL" : "OK "} ${namn}: ${kvar ? "FINNS KVAR — dubbelkörning och dubbel kostnad" : "borta"}`);
+  if (kvar) ok = false;
 }
 await pool.end();
 if (!ok) { console.error("BEVISVAKT: minst ett pulsjobb blev inte som beställt."); process.exit(1); }

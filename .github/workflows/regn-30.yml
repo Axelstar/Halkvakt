@@ -4,8 +4,9 @@
 # täthetspuls + eftermätning med regn-tackning (2/2-andelen ska stiga).
 name: regn-30
 on:
-  schedule:
-    - cron: "41 * * * *"   # motfas mot ingest :11
+  # CRON BORTTAGEN (kort #53): pulsklockan är klockan, och GitHub-cronen
+  # levererade bara 40 % av bokad takt (#70) medan den kostade full minut per
+  # körning. Healthcheck.yml behåller sin cron som oberoende sista utpost.
   workflow_dispatch:
 jobs:
   regn-30:

@@ -1,7 +1,8 @@
 name: ingest-dk
 on:
-  schedule:
-    - cron: "12,42 * * * *"
+  # CRON BORTTAGEN (kort #53): pulsklockan är klockan, och GitHub-cronen
+  # levererade bara 40 % av bokad takt (#70) medan den kostade full minut per
+  # körning. Healthcheck.yml behåller sin cron som oberoende sista utpost.
   workflow_dispatch:
 concurrency: { group: ingest-dk, cancel-in-progress: false }
 jobs:

@@ -1,7 +1,8 @@
 name: ingest-fi
 on:
-  schedule:
-    - cron: "7,37 * * * *"   # var 30:e min, förskjutet från Sverige
+  # CRON BORTTAGEN (kort #53): pulsklockan är klockan, och GitHub-cronen
+  # levererade bara 40 % av bokad takt (#70) medan den kostade full minut per
+  # körning. Healthcheck.yml behåller sin cron som oberoende sista utpost.
   workflow_dispatch:
 concurrency: { group: ingest-fi, cancel-in-progress: false }
 jobs:
