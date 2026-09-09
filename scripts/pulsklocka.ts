@@ -24,20 +24,22 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
   // Kort #80: svenska GitHub-ingesten tillbaka EN gång i timmen — med --skip=weather,deviations
   // i ingest.yml bär den bara det livemotorn inte gör (kamerorna, moaten, polisen, SMHI).
   { namn: "puls-ingest", schema: "11 * * * *", fil: "ingest.yml" },
-  // puls-regn-30 finns redan (kort #79 avgör om den ska bort) och puls-healthcheck stängde
-  // Axel av 8/9 med flit — vakthunden i Supabase (DECISIONS #73/#78) tog över. Ingen av
-  // dem får återskapas härifrån.
+  // puls-healthcheck stängde Axel av 8/9 med flit — vakthunden i Supabase (DECISIONS #73/#78)
+  // tog över. Får inte återskapas härifrån utan hans ja (fråga öppen 9/9, kort #50).
 ];
 
 // AVVECKLAS (kort #53): de tre grannjobben ersätts av ett. Utan borttagning skulle de
 // gamla fortsätta fyra mot de gamla filerna och besparingen bli noll — pulsklockan kunde
 // bara SKAPA, aldrig ta bort, och det hålet var osynligt tills merget krävde det.
 // Bara namn i den här listan rörs; inget mönster, ingen slasktratt.
-const AVVECKLA: string[] = ["puls-ingest-fi", "puls-ingest-dk", "puls-ingest-no"];
-// Mallen var puls-ingest (ingest.yml), men Axel stängde av den 8/9 när svenska ingesten
-// flyttade till Supabase (#72). puls-regn-30 är det pulsjobb som är kvar, fyrar varje timme
-// och bär token — mallvakten nedan bevisar det innan något kopieras.
-const MALLFIL = "regn-30.yml";
+// Kort #79/#85 (Axel + Bengt 9/9, DECISIONS #89): puls-regn-30 avvecklas. Sedan ingest-live
+// deployades 9/9 skriver livemotorn rain_sum_mm varje minut; regn-30 kom bara in i en restnisch
+// (raden var redan låst med NULL, ON CONFLICT DO NOTHING) och kostade 24 debiterade min/dygn.
+const AVVECKLA: string[] = ["puls-ingest-fi", "puls-ingest-dk", "puls-ingest-no", "puls-regn-30"];
+// Mallen var puls-ingest (ingest.yml, avstängd av Axel 8/9), sedan puls-regn-30 (avvecklas nu).
+// puls-ingest-grannar är det pulsjobb som fyrar varje timme och bär token — mallvakten nedan
+// bevisar det innan något kopieras. Byt mall INNAN dess föregångare avvecklas, aldrig efter.
+const MALLFIL = "ingest-grannar.yml";
 const INVENTERING = process.argv.includes("--inventering");
 
 const url = process.env.DATABASE_URL;
