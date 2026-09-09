@@ -41,7 +41,7 @@ c) `SELECT cron.alter_job(1, command:='...samma http_post med nya nyckeln...');`
 (ordningen ger max ~1 missad minut).
 
 Kadenser efter beslut #22: livemotorn 1 min · GitHub-ingest timvis (väder/kameror/polisen/smhi)
-· publish-map var 30:e min (+kedjad efter ingest) · healthcheck varannan timme
+· publicera (Supabase pg_cron) var 10:e min, kartlager :00/:30 · fi/dk-snapshoter sist i ingest-grannar (#85) · healthcheck varannan timme
 (trösklar: deviations/road_conditions 15 min, övriga 150 min, + puls på cron-status).
 
 ## Rotating secrets

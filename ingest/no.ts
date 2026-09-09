@@ -10,6 +10,7 @@
 import pg from "pg";
 import { readFileSync } from "node:fs";
 import { parseSiteTable, parseMeasuredData, interesting } from "./sources/vegvesen.ts";
+import { writeNo, type NoRow } from "./grannar-db.ts";
 
 const USER = process.env.VEGVESEN_USER, PASS = process.env.VEGVESEN_PASS;
 if (!USER || !PASS) { console.log("no: VEGVESEN_USER/PASS saknas — hoppar över (kontot väntar på Vegvesen)"); process.exit(0); }
@@ -84,27 +85,20 @@ try {
                                  FROM no.weather_observations ORDER BY station_id, sample_time DESC`);
   for (const r of lt.rows) lastTemps.set(r.station_id, r.surface_temp_c === null ? null : Number(r.surface_temp_c));
 
-  let latest = 0, archived = 0;
-  await client.query("BEGIN");
+  // Batchat (kort #85): 468 × 2 enradiga INSERT tog 2 min 25 s per körning.
+  const latestRows: NoRow[] = [], archiveRows: NoRow[] = [];
   for (const o of matched) {
     const m = meta.get(o.siteId)!;
     const id = `NO:${o.siteId}`;
-    const t = o.sampleTime ?? new Date().toISOString();
-    const cols = [id, m.name, m.lon, m.lat, t, o.surfaceTempC, o.airTempC, o.dewpointC, o.humidityPct, o.precipitation, o.rain, o.snow];
-    await client.query(
-      `INSERT INTO no.weather_latest (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, dewpoint_c, humidity_pct, precipitation, rain, snow)
-       VALUES ($1,$2,ST_SetSRID(ST_MakePoint($3,$4),4326),$5,$6,$7,$8,$9,$10,$11,$12)
-       ON CONFLICT (station_id) DO UPDATE SET name=EXCLUDED.name, geom=EXCLUDED.geom, sample_time=EXCLUDED.sample_time,
-         surface_temp_c=EXCLUDED.surface_temp_c, air_temp_c=EXCLUDED.air_temp_c, dewpoint_c=EXCLUDED.dewpoint_c,
-         humidity_pct=EXCLUDED.humidity_pct, precipitation=EXCLUDED.precipitation, rain=EXCLUDED.rain, snow=EXCLUDED.snow`, cols);
-    latest++;
-    if (interesting(o, lastTemps.get(id) ?? null, lastTemps.has(id))) {
-      await client.query(
-        `INSERT INTO no.weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, dewpoint_c, humidity_pct, precipitation, rain, snow)
-         VALUES ($1,$2,ST_SetSRID(ST_MakePoint($3,$4),4326),$5,$6,$7,$8,$9,$10,$11,$12) ON CONFLICT DO NOTHING`, cols);
-      archived++;
-    }
+    const row: NoRow = { id, name: m.name, lon: m.lon, lat: m.lat, t: o.sampleTime ?? new Date().toISOString(),
+      surface: o.surfaceTempC, air: o.airTempC, dewpoint: o.dewpointC, humidity: o.humidityPct,
+      precipitation: o.precipitation, rain: o.rain, snow: o.snow };
+    latestRows.push(row);
+    if (interesting(o, lastTemps.get(id) ?? null, lastTemps.has(id))) archiveRows.push(row);
   }
+  const latest = latestRows.length, archived = archiveRows.length;
+  await client.query("BEGIN");
+  await writeNo(client, latestRows, archiveRows);
   await client.query(`INSERT INTO no.sync_state (source, last_change_id, synced_at) VALUES ('vegvesen','',now())
                       ON CONFLICT (source) DO UPDATE SET synced_at=now()`);
   await client.query("COMMIT");

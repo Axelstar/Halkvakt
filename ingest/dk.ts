@@ -7,6 +7,7 @@
 // storage.googleapis.com/trafikkort-data (publikt, odokumenterat, backend för
 // trafikkort.vejdirektoratet.dk — byt till NAP-flödet med gratisnyckel före produktion).
 import pg from "pg";
+import { writeDk, type DkRow } from "./grannar-db.ts";
 
 const DMI = "https://opendataapi.dmi.dk/v2/metObs/collections";
 const VD = "https://storage.googleapis.com/trafikkort-data/geojson/big-screen-events.json";
@@ -42,29 +43,21 @@ try {
   const lastTemps = new Map<string, number | null>();
   for (const r of lt.rows) lastTemps.set(r.station_id, r.surface_temp_c === null ? null : Number(r.surface_temp_c));
 
-  let n = 0, archived = 0;
-  await client.query("BEGIN");
+  // Batchat (kort #85): samma UNNEST-mönster som FI/NO, en sats per tabell i stället för en per station.
+  const latestRows: DkRow[] = [], archiveRows: DkRow[] = [];
   for (const [sid, m] of meta) {
     const g = grass.get(sid); if (!g) continue;   // bara stationer med grästemp
     const id = `DK:${sid}`;
     const surface = g.v, a = air.get(sid)?.v ?? null, dp = dew.get(sid)?.v ?? null, pr = precip.get(sid)?.v ?? 0;
     const rain = pr > 0 && (a ?? 5) > 1, snow = pr > 0 && (a ?? 5) <= 1;
-    await client.query(
-      `INSERT INTO dk.weather_latest (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, precipitation, rain, snow)
-       VALUES ($1,$2,ST_SetSRID(ST_MakePoint($3,$4),4326),$5,$6,$7,'grass',$8,$9)
-       ON CONFLICT (station_id) DO UPDATE SET sample_time=EXCLUDED.sample_time, surface_temp_c=EXCLUDED.surface_temp_c,
-         air_temp_c=EXCLUDED.air_temp_c, rain=EXCLUDED.rain, snow=EXCLUDED.snow`,
-      [id, m.name, m.lon, m.lat, g.t, surface, a, rain, snow]);
-    n++;
+    const row: DkRow = { id, name: m.name, lon: m.lon, lat: m.lat, t: g.t, surface, air: a, dewpoint: dp, rain, snow };
+    latestRows.push(row);
     const last = lastTemps.has(id) ? lastTemps.get(id)! : null;
-    if (surface <= 5 || rain || snow || (last !== null && Math.abs(surface - last) >= 0.5) || !lastTemps.has(id)) {
-      await client.query(
-        `INSERT INTO dk.weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, dewpoint_c, precipitation, rain, snow)
-         VALUES ($1,$2,ST_SetSRID(ST_MakePoint($3,$4),4326),$5,$6,$7,$8,'grass',$9,$10) ON CONFLICT DO NOTHING`,
-        [id, m.name, m.lon, m.lat, g.t, surface, a, dp, rain, snow]);
-      archived++;
-    }
+    if (surface <= 5 || rain || snow || (last !== null && Math.abs(surface - last) >= 0.5) || !lastTemps.has(id)) archiveRows.push(row);
   }
+  const n = latestRows.length, archived = archiveRows.length;
+  await client.query("BEGIN");
+  await writeDk(client, latestRows, archiveRows);
 
   // Trafikkort: en FeatureCollection per händelse. DATEX-klassen i TrafficMan2_Type.
   const ev = await get<any[]>(VD);

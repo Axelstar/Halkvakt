@@ -6,9 +6,11 @@
 //                                    med engelsk beskrivning: Dry/Moist/Wet/Snow/Ice/Frost)
 //   /api/traffic-message/v1/messages trafikmeddelanden med geometri (olyckor, hinder)
 // Samma arkivpolicy som Sverige (DECISIONS #4): vägyta ≤ 5 °C, nederbörd eller Δ ≥ 0,5 °C
-// ⇒ spara; annars bara "latest". Kör var 30:e minut från ingest-fi.yml.
+// ⇒ spara; annars bara "latest". Körs ur ingest-grannar.yml (pulsklockan, en gång i timmen).
+// Skrivningen är BATCHAD (kort #85): 526 × 2 enradiga INSERT tog 2 min 51 s per körning.
 import pg from "pg";
 import { readFileSync } from "node:fs";
+import { writeFi, type FiRow } from "./grannar-db.ts";
 
 const UA = { "Digitraffic-User": "Halkvakt/0.3 (axelstar.github.io/halkvakt-karta)" };
 const BASE = "https://tie.digitraffic.fi/api";
@@ -40,8 +42,8 @@ try {
                                  FROM fi.weather_observations ORDER BY station_id, sample_time DESC`);
   for (const r of lt.rows) lastTemps.set(r.station_id, r.surface_temp_c === null ? null : Number(r.surface_temp_c));
 
-  let latest = 0, archived = 0, dagg = 0, frostN = 0, siktN = 0, vindN = 0;
-  await client.query("BEGIN");
+  let dagg = 0, frostN = 0, siktN = 0, vindN = 0;
+  const latestRows: FiRow[] = [], archiveRows: FiRow[] = [];
   for (const st of data.stations) {
     const m = meta.get(st.id); if (!m) continue;
     const s = new Map<string, Sensor>();
@@ -74,32 +76,17 @@ try {
     const id = `FI:${st.id}`;
     const t = st.dataUpdatedTime ?? data.dataUpdatedTime;
 
-    await client.query(
-      `INSERT INTO fi.weather_latest (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, dewpoint_c, precipitation, rain, snow,
-         frost_point_c, freeze_point_c, salt_gm2, wind_speed_ms, wind_gust_ms, wind_dir_deg, visibility_m, precip_form, surface_state)
-       VALUES ($1,$2,ST_SetSRID(ST_MakePoint($3,$4),4326),$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20)
-       ON CONFLICT (station_id) DO UPDATE SET sample_time=EXCLUDED.sample_time, surface_temp_c=EXCLUDED.surface_temp_c,
-         air_temp_c=EXCLUDED.air_temp_c, dewpoint_c=EXCLUDED.dewpoint_c, precipitation=EXCLUDED.precipitation, rain=EXCLUDED.rain, snow=EXCLUDED.snow,
-         frost_point_c=EXCLUDED.frost_point_c, freeze_point_c=EXCLUDED.freeze_point_c, salt_gm2=EXCLUDED.salt_gm2,
-         wind_speed_ms=EXCLUDED.wind_speed_ms, wind_gust_ms=EXCLUDED.wind_gust_ms, wind_dir_deg=EXCLUDED.wind_dir_deg,
-         visibility_m=EXCLUDED.visibility_m, precip_form=EXCLUDED.precip_form, surface_state=EXCLUDED.surface_state`,
-      [id, m.name, m.lon, m.lat, t, surface, air, dewpoint, keli, rain, snow,
-       brett.frost, brett.fryspkt, brett.salt, brett.vind, brett.byvind, brett.vindr, brett.sikt, brett.form, brett.ytstatus]);
-    latest++;
+    const row: FiRow = { id, name: m.name, lon: m.lon, lat: m.lat, t, surface, air, dewpoint, keli, rain, snow, ...brett };
+    latestRows.push(row);
 
     const last = lastTemps.has(id) ? lastTemps.get(id)! : null;
     const interesting = (surface !== null && surface <= 5) || rain || snow ||
       (surface !== null && last !== null && Math.abs(surface - last) >= 0.5) || !lastTemps.has(id);
-    if (interesting) {
-      await client.query(
-        `INSERT INTO fi.weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, dewpoint_c, precipitation, rain, snow,
-           frost_point_c, freeze_point_c, salt_gm2, wind_speed_ms, wind_gust_ms, wind_dir_deg, visibility_m, precip_form, surface_state)
-         VALUES ($1,$2,ST_SetSRID(ST_MakePoint($3,$4),4326),$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20) ON CONFLICT DO NOTHING`,
-        [id, m.name, m.lon, m.lat, t, surface, air, dewpoint, keli, rain, snow,
-         brett.frost, brett.fryspkt, brett.salt, brett.vind, brett.byvind, brett.vindr, brett.sikt, brett.form, brett.ytstatus]);
-      archived++;
-    }
+    if (interesting) archiveRows.push(row);
   }
+  const latest = latestRows.length, archived = archiveRows.length;
+  await client.query("BEGIN");
+  await writeFi(client, latestRows, archiveRows);
 
   // Trafikmeddelanden: aktiva, med geometri. Olyckor och hinder — vägarbeten stängs ute som i Sverige.
   const msgs = await get<any>("/traffic-message/v1/messages?inactiveHours=0&includeAreaGeometry=false&situationType=TRAFFIC_ANNOUNCEMENT");

@@ -106,12 +106,12 @@ try {
   console.log(`cameras=${c.cameras} segments=${c.segments} weather_obs=${c.weather_obs}`);
   if (Number(c.cameras) < 2000) problems.push(`cameras=${c.cameras} (<2000: bad sync?)`);
   if (Number(c.segments) < 400) problems.push(`segments=${c.segments} (<400: bad sync?)`);
-  // Webbens ålder: publicerade meta.json får inte åldras (publish-map var 30:e min)
+  // Webbens ålder: publicerade meta.json får inte åldras (publicera i Supabase var 30:e min, #77)
   try {
     const m = await (await fetch(`https://axelstar.github.io/halkvakt-karta/data/meta.json?t=${Date.now()}`)).json();
     const webAge = (Date.now() - new Date(m.generated_at).getTime()) / 60000;
     console.log(`webb meta.json: ${webAge.toFixed(0)} min gammal (limit 90)`);
-    if (webAge > 90) problems.push(`publicerad meta.json ${webAge.toFixed(0)} min gammal (>90) — publish-map står stilla?`);
+    if (webAge > 90) problems.push(`publicerad meta.json ${webAge.toFixed(0)} min gammal (>90) — publicera (pg_cron) står stilla?`);
   } catch (e) { problems.push(`kunde inte läsa publicerad meta.json: ${String((e as Error).message)}`); }
   // Kamerafilen (ankarlagret, #38b(2)): fail-soft i publiceringen betyder att ett
   // permanent TRV-fel annars lämnar en gammal fil kvar på CDN i tysthet. Kamerorna
