@@ -1347,3 +1347,15 @@ BEVISAT 9/9 08:24 (ingest-grannar #12, första på b0420e8): 44 s totalt mot 6 m
 (2:51), DK 13 s (0:32), NO 7 s (2:25), fi/dk-steget 6 s; kartrepot commit a28ea98 08:24:42 med fi+dk
 live/manifest ur samma körning. En debiterad minut i stället för sex.
 
+## #89 (9/9 2026 10:47) puls-regn-30 avvecklad — kort #79 stängt, tredje snittet i #85
+Axel ("i övrigt kör vi", 9/9 fm, relayerat av Bengt) + Bengt ("kör"): regn-30 är överflödig sedan
+ingest-live deployades 9/9 05:00 — livemotorn skriver rain_sum_mm varje minut, och regn-30 kom bara
+in där ingest-live inte skrivit alls (restnischen, kort #44/#84). Kostnad 24 debiterade min/dygn.
+GENOMFÖRT via pulsklockan, inte handskrivet SQL: AVVECKLA += puls-regn-30, MALLFIL bytt till
+ingest-grannar.yml FÖRE avvecklingen (mallvakten får aldrig peka på ett jobb som tas bort i samma
+körning). Inventering #10 (10:46): 9 jobb, mall #21 puls-ingest-grannar token=true, "puls-regn-30
+finns → tas bort". Skarp #11 (10:47): `avvecklat: puls-regn-30`, bevisvakten OK på alla sex rader,
+8 jobb kvar. regn-30.yml står kvar som knapp (workflow_dispatch) för en manuell motfasmätning om
+kort #44 någonsin behöver den. FYND i samma lista: inget `halkvakt-gallring`-jobb ännu — 014 har
+inte körts av Axel (kort #83). Sista kvittot: ingen regn-30-körning 11:41.
+
