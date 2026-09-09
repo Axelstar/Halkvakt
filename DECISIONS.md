@@ -1343,4 +1343,7 @@ kartrepot i samma körning. (3) Kvällsavläsningen räknar min/dygn mot 240-bas
 Bortvalt: kedja publish-map bara på grannar (halverar, men behåller en jobbstart för ingenting);
 sammanslagning av ingest + grannar i ett jobb (#82 punkt 1 nämner det — sparar en prolog/timme men
 binder svenska kameror/vilt/SMHI till grannländernas fel; oberoendet var Bengts villkor för #53).
+BEVISAT 9/9 08:24 (ingest-grannar #12, första på b0420e8): 44 s totalt mot 6 min 04 s i #10 — FI 6 s
+(2:51), DK 13 s (0:32), NO 7 s (2:25), fi/dk-steget 6 s; kartrepot commit a28ea98 08:24:42 med fi+dk
+live/manifest ur samma körning. En debiterad minut i stället för sex.
 

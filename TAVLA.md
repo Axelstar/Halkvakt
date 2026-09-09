@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-09 07:45 av Claude (webben) — kort #85 snitt 1+2 BYGGDA (grannar batchade, publish-map nedlagd, DECISIONS #88), bevis väntar på nästa pulsade körning. Före det: kort #83 steg 1 BYGGT (sql/014_gallring.sql, DECISIONS #87), Axel kör i SQL-editorn. Före det: Axels varv bokfört: #84 och #78 KLART (ingest-live deployad, deploy-knappen lever), #83 omräknat på Axels mätning + ja till steg 1, nytt #86 nyckelkalendern (PAT 22/11, Supabase 8/12). Före det: morgonavläsning: #82 slutbevis, #50 två hål > 2 h 30 (puls-healthcheck av), #44 dygnsbevis 26 % men skevt urval, #83 uppmätt 62 000 rader/dygn, #79 stäng regn-30 nu, NYTT #85 Actions-takten spränger 35 USD ~26/9. Före det: kort #83 (gallring, två steg + mätfråga) och #84 (deploya ingest-live; fynd: regn-30 kan inte laga luckan) skrivna för Axel. Före det: kort #82 KLART: bridges-cronen bort (PR #81, ci #464 grön). Före det: nytt kort #81: byggordningen efter radardomen 14/9 för #42, sju regler ur veckans fel och sex steg med varsitt bevis. Låst bakom domen*
+*Uppdaterad: 2026-09-09 08:40 av Claude (webben) — kort #85 snitt 1+2 BEVISADE: grannar #12 44 s (var 6 min), fi/dk-commit a28ea98 ur samma körning. Före det: kort #85 snitt 1+2 BYGGDA (grannar batchade, publish-map nedlagd, DECISIONS #88), bevis väntar på nästa pulsade körning. Före det: kort #83 steg 1 BYGGT (sql/014_gallring.sql, DECISIONS #87), Axel kör i SQL-editorn. Före det: Axels varv bokfört: #84 och #78 KLART (ingest-live deployad, deploy-knappen lever), #83 omräknat på Axels mätning + ja till steg 1, nytt #86 nyckelkalendern (PAT 22/11, Supabase 8/12). Före det: morgonavläsning: #82 slutbevis, #50 två hål > 2 h 30 (puls-healthcheck av), #44 dygnsbevis 26 % men skevt urval, #83 uppmätt 62 000 rader/dygn, #79 stäng regn-30 nu, NYTT #85 Actions-takten spränger 35 USD ~26/9. Före det: kort #83 (gallring, två steg + mätfråga) och #84 (deploya ingest-live; fynd: regn-30 kan inte laga luckan) skrivna för Axel. Före det: kort #82 KLART: bridges-cronen bort (PR #81, ci #464 grön). Före det: nytt kort #81: byggordningen efter radardomen 14/9 för #42, sju regler ur veckans fel och sex steg med varsitt bevis. Låst bakom domen*
 
 ---
 
@@ -85,9 +85,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **SNITT 1 + 2 BYGGDA 9/9 07:45 (DECISIONS #88, Bengts "bygg båda nu"):** ingest/grannar-db.ts
   batchar FI/NO/DK med UNNEST (uppmätt före: FI 2:51, DK 0:32, NO 2:25 i grannar #10 = 6 min/körning);
   publish-map.yml RADERAD, fi/dk-snapshoterna är sista steget i ingest-grannar.yml (0 extra starter).
-  Integrationstest #85 mot riktiga fi/no/dk-scheman i CI. 📏 BEVIS VÄNTAR: nästa pulsade grannar-
-  körning (:24) ska ta ≤ 2 min och lämna en fi/dk-commit i kartrepot; kvällsavläsningen räknar
-  min/dygn. 🔑 SNITT 3 kvar hos Axel: `SELECT cron.unschedule('puls-regn-30');`
+  Integrationstest #85 mot riktiga fi/no/dk-scheman i CI.
+  ✅ **BEVISAT 9/9 08:24 (ingest-grannar #12, första körningen på b0420e8):** hela jobbet **44 s**
+  (#10 igår: 6 min 04 s) — FI **6 s** (var 2:51), DK **13 s** (var 0:32), NO **7 s** (var 2:25),
+  fi/dk-snapshoter + push **6 s**. Kartrepot fick commit a28ea98 08:24:42 med fi+dk live.json och
+  manifest.json ur samma körning. Debiterat: **1 min i stället för 6** ⇒ −120 min/dygn, plus
+  publish-map:s 48 jobbstarter borta ⇒ tillsammans **~168 min/dygn mindre**. Kvällsavläsningen
+  17:30 räknar hela dygnet mot 240-baslinjen. 🔑 SNITT 3 kvar hos Axel: `SELECT cron.unschedule('puls-regn-30');`
 - [ ] 🗄️ **#83 GALLRING av weather_observations — måste finnas FÖRE första kalla veckan**
   (Bengts beställning 9/9 01:40; kort + förslag av Claude, mätt mot koden 9/9).
   **VARFÖR NU:** arkivdieten (DECISIONS #4: bara yta ≤ 5 °C eller nederbörd) finns i
