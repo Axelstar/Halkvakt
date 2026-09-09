@@ -1494,3 +1494,11 @@ idempotent, filen omkörbar) och med integrationstest #83 mot CI:s PostGIS. Inte
 Axel kör filen i SQL-editorn och klistrar första körningens tal. Effekt ~55 dygn på gratisnivån;
 steg 2 för hela vintern (1,1 GB) är ett oktoberbeslut.
 
+## 2026-09-09 07:45 — Kort #85 snitt 1+2: grannar batchade, publish-map nedlagd (DECISIONS #88)
+Bengts "bygg båda nu". FI/NO/DK skriver nu en UNNEST-sats per tabell (ingest/grannar-db.ts) i
+stället för en INSERT per station (uppmätt 6 min/körning i grannar #10). publish-map.yml raderad:
+fi/dk-snapshoterna byggs som sista steg i ingest-grannar.yml, bara vid full framgång, noll extra
+jobbstarter. Integrationstest #85 mot riktiga scheman i CI. Bevis: nästa pulsade grannar (:24)
+≤ 2 min + fi/dk-commit i kartrepot; kvällsavläsningen räknar min/dygn mot 240. Kvar: Axel stänger
+puls-regn-30.
+

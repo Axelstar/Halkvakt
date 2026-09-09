@@ -1321,3 +1321,26 @@ Alternativ bortvalda: tunna vid SKRIVNING i ingest-live (rör livemotorn, tar bo
 minutupplösning, och en bugg där kostar data för alltid — en DELETE i efterhand kan provköras);
 filtrera på yttemp (V-A behöver regn oavsett temperatur).
 
+## #88 (9/9 2026) Kort #85: två snitt i Actions-takten — grannar batchade, publish-map nedlagd
+MÄTT (morgonavläsning 9/9, kort #85): ~240 debiterade min/dygn med gratispotten slut ⇒ ~42 USD till
+1/10 ⇒ 35 USD-gränsen (#82) nådd ~26/9 och Actions dör tyst en andra gång. Två av tre snitt byggda
+nu; det tredje (puls-regn-30) är en SQL-rad som bara Axel kan köra.
+SNITT 1 — GRANNAR BATCHADE (ingest/grannar-db.ts): fi.ts/no.ts/dk.ts skrev en INSERT per station
+och tabell (FI 526 × 2, NO 468 × 2 nätverksvarv mot poolern). Uppmätt i ingest-grannar #10: FI 2 min
+51 s, DK 32 s, NO 2 min 25 s ⇒ 6 debiterade minuter × 24 = 144 min/dygn. Nu en UNNEST-sats per
+tabell (samma mönster som ingest/db.ts), kolumner och ON CONFLICT ordagrant desamma, transaktionen
+orörd. Förväntat ≤ 2 min/körning; beviset är körtiden i nästa pulsade körning, inte den här raden.
+SNITT 2 — PUBLISH-MAP NEDLAGD: workflowen kedjades (workflow_run) efter BÅDE ingest och grannar ⇒
+48 jobbstarter/dygn à en debiterad minut för 20 s arbete, och efter ingest var körningen dessutom
+meningslös (fi/dk-datan kommer från grannar). fi/dk-snapshoterna byggs nu som sista steg i
+ingest-grannar.yml, bara när alla tre länder lyckats (samma villkor som förr: conclusion == success),
+noll extra jobbstarter. publish-map.yml raderad. Kartlagren och den svenska snapshoten rörs inte —
+publicera i Supabase äger dem sedan #74/#77.
+EFFEKT om mätningen håller: 240 → ~100 min/dygn ⇒ ~17 USD till 1/10; med regn-30 stängd ~75 ⇒ ~13.
+BEVIS: (1) integrationstest #85 mot CI:s PostGIS med riktiga fi/no/dk-scheman (typkastningen i
+UNNEST är det som kan gå fel). (2) Nästa ingest-grannar på pulsen (:24): körtid och fi/dk-commit i
+kartrepot i samma körning. (3) Kvällsavläsningen räknar min/dygn mot 240-baslinjen.
+Bortvalt: kedja publish-map bara på grannar (halverar, men behåller en jobbstart för ingenting);
+sammanslagning av ingest + grannar i ett jobb (#82 punkt 1 nämner det — sparar en prolog/timme men
+binder svenska kameror/vilt/SMHI till grannländernas fel; oberoendet var Bengts villkor för #53).
+
