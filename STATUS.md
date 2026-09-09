@@ -1447,3 +1447,10 @@ fi/dk/no alla färska, gränsstationerna nåbara. Healthchecken stängde inciden
 Enda öppna issue är #15 (kort #42, Bengts). Pipelinen är hel igen: livemotorn i Supabase
 (väder/olyckor/väglag varje minut, publicering var 10:e min, kartlager var 30:e), GitHub-
 ingesten en gång i timmen för kameror/arkiv/vilt/SMHI, grannländerna en gång i timmen.
+
+## 2026-09-09 01:05 — Kort #82: bridges-cronen struken (DECISIONS #85)
+Svar på Bengts fråga om broarna i skuggan (de ligger i den skarpa motorn, icing_point med
+broflagga, och följer därmed med i shadow_log automatiskt) avslöjade att bridges.yml fortfarande
+körde var 6:e timme: 32 körningar sedan start, de senaste veckorna bara "hoppar över", en minut
+styck. Cron borttagen, knappen kvar med --force. Bevis kommer i Actions efter mergen.
+
