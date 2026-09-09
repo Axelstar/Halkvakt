@@ -1529,3 +1529,9 @@ Issue #91 (larmprovet) stängdes av vakthunden 11:07:02. Nytt kort #87: healthch
 vakthunden, sedan healthcheck.yml ner (låst bakom 14/9). Dagens facit: alla punkter i Axels lista
 verkställda utom nyckelrotationerna (datum i #86). Kvällsavläsningen 17:30 räknar minuter och hål.
 
+## 2026-09-09 12:05 — Nyckelrotationen förberedd (kort #86), go ahead till Axel
+Bengt: rotera nu, inte i november. Fynd: PUBLISH_TOKEN ligger på tre ställen (Supabase-secrets för publicera
+och vakthund, GitHub Secrets för grannar-jobbets fi/dk-push). Kortet bär Axels exakta steg (två tokens, utgång
+2027-04-30, samma smala rättigheter) och fyra bevis som Bengt/Claude kör efteråt. Gamla nycklar raderas först
+när bevisen är gröna.
+
