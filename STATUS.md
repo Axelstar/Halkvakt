@@ -1477,3 +1477,13 @@ runt 26/9. Tre snitt föreslagna (publish-map-kedjan, regn-30, batchad grannar-I
 Egen läxa: tre docs-mergar i natt kostade 6 ci-minuter — `[skip ci]` på rena tavelcommits.
 Byggt: inget (avläsningsvarv). Nästa avläsning bokas till kvällen.
 
+## 2026-09-09 05:45 — Axels varv: ingest-live deployad, deploy-knappen lever, gallringen har ett ja
+Axel (relayerat av Bengt): (1) ingest-live deployad, bevis 30 min efter `vind 844 | regn 907 | sikt 844
+| alla 907` ⇒ #84 KLART, #42:s facit räddat, regn-30 helt överflödig. (2) SUPABASE_ACCESS_TOKEN i
+Secrets, scopad Edge Functions: Write enbart; deploy-supabase #1 grön 05:20 (vakthund) ⇒ #78 KLART.
+(3) Arkivet mätt: 183 B/rad, 205 763 rader, 42 582/dygn nu, mest aktiva station 233/dygn ⇒ vintern
+11–16 dygn på gratisnivån; ja till gallringens steg 1. (4) ios-engine #60 grön 66 s (8/9 21:07),
+första gröna sedan 5/9. (5) Kvar hos Axel: Issues:Write på PAT:en. Nytt kort #86: PAT går ut 22/11,
+Supabase-token 8/12. Healthcheck #147 kom 04:48 (slot 04:23, 25 min sent) — #50 står.
+Byggt: inget än; nästa byggsteg är sql/014_gallring.sql på Axels ja.
+

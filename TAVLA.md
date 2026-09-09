@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-09 04:45 av Claude (webben) — morgonavläsning: #82 slutbevis, #50 två hål > 2 h 30 (puls-healthcheck av), #44 dygnsbevis 26 % men skevt urval, #83 uppmätt 62 000 rader/dygn, #79 stäng regn-30 nu, NYTT #85 Actions-takten spränger 35 USD ~26/9. Före det: kort #83 (gallring, två steg + mätfråga) och #84 (deploya ingest-live; fynd: regn-30 kan inte laga luckan) skrivna för Axel. Före det: kort #82 KLART: bridges-cronen bort (PR #81, ci #464 grön). Före det: nytt kort #81: byggordningen efter radardomen 14/9 för #42, sju regler ur veckans fel och sex steg med varsitt bevis. Låst bakom domen*
+*Uppdaterad: 2026-09-09 05:45 av Claude (webben) — Axels varv bokfört: #84 och #78 KLART (ingest-live deployad, deploy-knappen lever), #83 omräknat på Axels mätning + ja till steg 1, nytt #86 nyckelkalendern (PAT 22/11, Supabase 8/12). Före det: morgonavläsning: #82 slutbevis, #50 två hål > 2 h 30 (puls-healthcheck av), #44 dygnsbevis 26 % men skevt urval, #83 uppmätt 62 000 rader/dygn, #79 stäng regn-30 nu, NYTT #85 Actions-takten spränger 35 USD ~26/9. Före det: kort #83 (gallring, två steg + mätfråga) och #84 (deploya ingest-live; fynd: regn-30 kan inte laga luckan) skrivna för Axel. Före det: kort #82 KLART: bridges-cronen bort (PR #81, ci #464 grön). Före det: nytt kort #81: byggordningen efter radardomen 14/9 för #42, sju regler ur veckans fel och sex steg med varsitt bevis. Låst bakom domen*
 
 ---
 
@@ -19,32 +19,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ### AXELS NÄSTA STEG — i den här ordningen (uppdaterad 8/9 kväll)
 
-- [ ] 🔴 **#84 DEPLOYA ingest-live — varje dygn utan är ett dygn regnfacit borta för alltid**
-  (Bengts beställning 9/9 01:40, kort skrivet av Claude). LÄGET: rättelsen som skriver
-  rain_sum_mm/snö/vind/sikt till arkivet ligger på main sedan 8/9 21:50 (PR #76, DECISIONS
-  #79) men livemotorn kör fortfarande 8/9-förmiddagens version. NYTT FYND 9/9 som gör det
-  brådskande: regn-30 (timpulsen :41) kan inte laga det annat än i en smal nisch. Båda skriver
-  samma rad (station_id, sample_time) med ON CONFLICT DO NOTHING, och ingest-live kör varje
-  minut ⇒ den hinner först på varje "intressant" mätning (yta ≤ 5 °C eller nederbördsflagga)
-  och låser raden med rain_sum_mm = NULL; regn-30:s rad med regnmängden kastas. Kvar för
-  regn-30 är bara varma mätningar med släckt flagga men 30-min-summa > 0 (regn-tackning #3
-  9/9: 9 körtimmar, skevt urval). Vintern stänger även den nischen. Trafikverket lämnar bara ut senaste mätningen, så luckan 5/9 → deploy
-  går ALDRIG att fylla i efterhand. Grind V-A måndag 14/9 07:20 ser noll regnrader sedan 5/9
-  om det inte deployats innan.
-  **TVÅ VÄGAR, välj en (5 min):**
-  · **A. Terminalen** (snabbast): `git pull` på main, sedan
-    `supabase functions deploy ingest-live --project-ref xmpfztykhyvhmrzsnjrc --no-verify-jwt`
-    (ingest-live/index.ts är källa, ingen buntning behövs).
-  · **B. Knappen** (löser alla framtida deployer på köpet): Supabase → Account → Access
-    Tokens → ny token "Halkvakt deploy" → GitHub → Settings → Secrets → SUPABASE_ACCESS_TOKEN.
-    Säg till, så trycker Bengt eller Claude på deploy-supabase (funktion: ingest-live).
-  **BEVISET (SQL-editorn, inom 10 min efter deploy, fungerar även i uppehåll eftersom vind
-  alltid finns):**
-  `SELECT count(*) FILTER (WHERE wind_speed_ms IS NOT NULL) AS vind, count(*) FILTER (WHERE
-  rain_sum_mm IS NOT NULL) AS regn, count(*) AS alla FROM weather_observations WHERE
-  sample_time > now() - interval '30 min';` — före deploy: vind = 0; efter: vind ≈ alla.
-  Klistra svaret till Bengt, då bockas kortet och #42:s facitrad.
-
 - [x] ~~1. Bevisa vakthunden~~ ✅ GJORT 8/9 — pg_cron kört 18:07/19:07/20:07, alla succeeded.
   MEN fyndet: larmvägen var trasig (#78). Beviset att klistra till Bengt står i DECISIONS #78.
 - [ ] **2. 🔴 PAT:en behöver `Issues: Write`** (nytt, viktigast av dessa) — utan det kan
@@ -53,9 +27,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   settings → PAT → Halkvakt-token → Repository permissions → Issues: Read and write.
 - [ ] **3. Skärmklipp av Billing till Bengt** — du har redan bilden (2000/2000 min, reset om
   23 dagar ⇒ 1/10, spending limit noll). Vidarebefordra den bara.
-- [ ] **4. Supabase-token som `SUPABASE_ACCESS_TOKEN` i GitHub Secrets** — Supabase → Account
-  → Access Tokens → ny "Halkvakt deploy". Då kan Bengt deploya själv när Actions lever
-  (deploy-supabase.yml finns på main). I kväll låg tre färdiga fixar odeployade i timmar.
+- [x] ~~4. Supabase-token som `SUPABASE_ACCESS_TOKEN` i GitHub Secrets~~ ✅ GJORT 9/9 05:20 — tokenen är
+  projekt-scopad till Halkvakt med ENDAST Edge Functions: Write (Axels val: en deploy-nyckel ska inte
+  kunna röra databas eller nycklar). Bevis: deploy-supabase #1 grön 05:20:51, funktion=vakthund,
+  "Deployed Functions: vakthund". Bengt och Claude kan deploya själva nu. ⏰ Tokenen går ut 8/12 (#86).
 - [ ] 5. TestFlight-gruppen: lägg 0.3.5 (8) om det inte skett automatiskt
 - [ ] 6. Tolv testare till väntelistan (fortfarande det som avgör vintern)
 - [ ] 7. Google Play-konto (signeringen är lagad, AAB:n grön — vägen är öppen)
@@ -75,6 +50,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 
 ### Axel — beslut att ta
+- [ ] ⏰ **#86 NYCKELKALENDERN — två nycklar går ut mitt i säsongen** (Axels fynd 9/9, kort av Claude):
+  · **PAT:en (kartrepot/publicera + vakthundens larm) går ut 22/11.** · **Supabase-tokenen (deploy-knappen)
+  går ut 8/12.** Båda slutar fungera utan att något ser trasigt ut: publicera får 401 ⇒ CDN fryser ⇒ appens
+  åldersspärr tystnar vakten (5/9-läget), och vakthunden kan inte larma om det eftersom larmvägen använder
+  samma PAT. Axel lägger påminnelser; tavlan bär datumen. REGEL (CLAUDE.md-läxan om rotation): en ny nyckel
+  är inte "bytt" förrän ett BYGGE/en publicering gått igenom med den — rotera PAT:en senast **15/11** och
+  bevisa med nästa kartrepo-commit, Supabase-tokenen senast **1/12** och bevisa med en deploy-supabase-körning.
+  Vakthunden borde dessutom kontrollera PAT:ens utgångsdatum (GitHub svarar med `github-authentication-token-
+  expiration`-headern) och larma 14 dygn före — eget litet kort när Issues:Write finns.
 - [ ] 💸 **#85 Actions-takten spränger 35 USD-gränsen före 1/10 — tre snitt räcker** (mätt 9/9
   04:30 av morgonavläsningen, DECISIONS #82:s budget). UPPMÄTT sedan Actions vaknade 8/9 21:07
   → 9/9 04:31 (7,4 h): **59 körningar, ≈ 98 debiterade minuter** (varje jobb avrundas uppåt):
@@ -137,6 +121,17 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (SELECT count(*) FROM weather_observations WHERE sample_time > now() - interval '1 day')
   AS senaste_dygnet FROM weather_observations;` — totalt/rader = verklig byte per rad,
   senaste_dygnet × byte = verklig MB/dygn. Klistra till Bengt; kortet räknas om på riktiga tal.
+  📏 **AXELS MÄTNING 9/9 ~05:30:** vader 36 MB · totalt 92 MB · 205 763 rader · 42 582 senaste dygnet ·
+  **183 B/rad** · mest aktiva station **233 rader/dygn**, p90 109, median 54. Axels poäng, och den är rätt:
+  dygnssnittet (42 582) underskattar vintern — nu är stationerna intressanta bara tidvis; i vinter ligger
+  alla 848 i det övre läget dygnet runt. 233 > 144 betyder dessutom att vissa stationer mäter var 5–6:e
+  minut, inte var 10:e. ÖVRE GRÄNS: 848 × 233 ≈ 198 000 rader = 36 MB/dygn ⇒ (500 − 92) / 36 ≈ **11 dygn**;
+  nedre (alla på 10 min): 122 000 = 22 MB ⇒ 18 dygn. Sanningen ligger emellan, 11–16 står sig.
+  ✅ **JA TILL STEG 1 FRÅN AXEL 9/9** ("bygg migrationen så körs den"). Omräknat med 183 B/rad: efter
+  tunning 848 × 48 = 40 700 rader = **7,4 MB/dygn ⇒ ~55 dygn** på återstående 408 MB (stationer med tätare
+  takt tunnas till samma 48). Steg 2 kvarstår: nov–mars ≈ 150 × 7,4 ≈ **1,1 GB** ⇒ export eller Pro.
+  NÄSTA: Claude bygger sql/014_gallring.sql (funktion + vaktad cron), Axel kör den i SQL-editorn, bevis =
+  rader/dygn äldre än 7 d ≤ 45 000 och grind-a #N oförändrad.
 - [x] ~~Fastställ trösklarna för skuggan~~ ✅ FASTSTÄLLT 2/9 (DECISIONS #61): Axels
   "kör" relayerat av Bengt i chatten, värdena oförändrade från Bengts 1/9-version inkl.
   §2-orsaksklassningen. Kvitto: huvudet i docs/TROSKLAR-SKUGGAN.md. Bocken här är
@@ -249,12 +244,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   in i publicera (samma mönster, noll minuter) eller (b) publish-map timvis via puls +
   grannar 1×/h (minutplanens #6/#7, produktbeslut Bengt+Axel). Verify: första oktober-
   veckans Usage under 66 min/dygn.
-- [ ] 🔑 **#78 Deploy-knappen: deploy-supabase.yml väntar på SUPABASE_ACCESS_TOKEN (Axel)** (DECISIONS #78)
-  Byggd 8/9 21:00. workflow_dispatch → välj funktion → bundle-check → `supabase functions
-  deploy --no-verify-jwt`. 🔑 AXEL: Supabase → Account → Access Tokens → ny token "Halkvakt
-  deploy" → GitHub → Settings → Secrets → SUPABASE_ACCESS_TOKEN. Verify: första körningen i
-  oktober deployar publicera och nästa kartrepo-commit bär rätt manifest-sha. Tills Actions
-  lever är Axels terminal enda vägen — kommandona står på kort #77.
 - [ ] 🌧️ **#79 regn-30 är sannolikt överflödig sedan #72 — 720 min/mån i oktober annars** (fynd 8/9):
   regn-30 pulsas varje timme (:41) och tar ~1 debiterad minut ⇒ 720 min/mån av 2 000. Men
   ingest-live:s weather() arkiverar sedan 8/9 varje mätning med nederbörd, varje minut (#72).
@@ -788,7 +777,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   är avstängd av Axel (med flit, 8/9) ⇒ vakthunden går åter på naken GitHub-cron. Fönstret sedan
   Actions vaknade (8/9 21:07 → 9/9 04:37, 7 h 30): körningar 21:13 (röd, #144), 23:58 (manuell,
   #145), 00:18 (cron, #146 grön). Mellanrum: **2 h 45** (21:13→23:58) och **4 h 19 och växande**
-  (00:18→04:37) — cronens slots 02:23 och 04:23 kom aldrig. **2 av 2 mellanrum över 2 h 30.**
+  (00:18→04:48) — slot 02:23 kom aldrig, 04:23 kom 25 min sent som #147 04:48. **2 av 2 mellanrum över 2 h 30.**
   Supabase-vakthunden (jobid 20, timvis) är primär vakt, men dess larmväg saknar PAT-rättighet
   (Axels punkt 2). Alltså: två vakter, ingen som kan larma i tid. FÖRSLAG (Axels beslut, ingen
   kod): slå på puls-healthcheck igen — en rad i pulsklockans NYA-lista, 12 körningar/dygn ≈ 12 min.
@@ -1068,7 +1057,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   kommit är precis vad §5 förbjuder.
   ⚠️ Reservation: rain_sum_mm startade 2/9, så "30 dygn" är tre dygns septemberregn.
   Knappen går måndagar 07:20 och kurvan växer med höstregnen.
-  🔴 **FACITET SVALT SEDAN 5/9 — LAGAT OCH MERGAT 8/9 21:50 (PR #76, DECISIONS #79), väntar på Axels deploy av ingest-live:**
+  ✅ **FACITET RÄDDAT 9/9 ~05:00 — ingest-live deployad av Axel (kort #84), bevis `vind 844 | regn 907 | alla 907`.** Luckan 5/9–9/9 är permanent och redovisas i grind V-A:s "30 dygn". Historik:
   ingest-live:s väder (#72) skrev arkivet UTAN rain_sum_mm/snow_wateq_mm/vind/sikt. Grind V-A,
   regn-tackning och hela facitet läser rain_sum_mm ⇒ tre dygns septemberregn omätta, och det
   hade fortsatt. Nu speglar ingest-live weather.ts fält för fält. 🔑 AXEL: deploya ingest-live,
@@ -1135,6 +1124,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#84 ingest-live DEPLOYAD — KLART 9/9 ~05:00, BEVISAT av Axel** (rättelsen PR #76 / DECISIONS #79): SQL-beviset 30 min efter deploy: `vind 844 | regn 907 | sikt 844 | alla 907` (före: vind 0). rain_sum_mm, snö, vind och sikt landar i arkivet varje minut. Luckan 5/9 → 9/9 05:00 är permanent (Trafikverket ger bara senaste mätningen) och redovisas så i grind V-A. Regn-30 (#79) är därmed helt överflödig.
+- [x] ✅ **#78 Deploy-knappen LEVER — KLART 9/9 05:20** (DECISIONS #78): SUPABASE_ACCESS_TOKEN i Secrets (Edge Functions: Write, inget annat), deploy-supabase #1 grön 05:20:51 med funktion=vakthund. Från och med nu är "väntar på Axels terminal" borta ur kedjan; en ändring under supabase/functions/ deployas av den som mergar, i samma varv, och beviset är fortfarande mätningen efter deployen (CLAUDE.md-läxan).
 - [x] ✅ **#82 bridges.yml: cron bort — KLART 9/9 01:10** (PR #81, DECISIONS #85): mergad till main som d02294c, ci #464 grön 01:02, workflowen på main har bara knappen kvar (--force). 32 tomma schemakörningar à en minut är stoppade; slutbeviset (ingen körning 03:23, gamla schematiden) läses av morgonavläsningen 04:29. ✅ **SLUTBEVIS 9/9 04:30:** ingen schedule-körning 03:23 (gamla schematiden), #32 21:15 8/9 är fortfarande sista.
 - [x] 🇳🇴 **NORGE I GRÄNSSNAPSHOTEN** (4/9 15:47, Bengt: "kör gränssnapshoten"): #49-mönstret
   som loop över fi + no i build-snapshot.ts — publicering #621 (e217891): "NO 42 stationer
