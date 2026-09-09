@@ -1454,3 +1454,12 @@ broflagga, och följer därmed med i shadow_log automatiskt) avslöjade att brid
 körde var 6:e timme: 32 körningar sedan start, de senaste veckorna bara "hoppar över", en minut
 styck. Cron borttagen, knappen kvar med --force. Bevis kommer i Actions efter mergen.
 
+## 2026-09-09 01:45 — Kort #83 (gallring) och #84 (deploya ingest-live) skrivna för Axel
+Bengt bad om kort + lösningsförslag på de två punkter som avgör om arkivet överlever vintern.
+Fynd under skrivandet: (1) regn-30 kan inte ersätta deployen — ingest-live (varje minut) hinner
+alltid först på (station_id, sample_time) och ON CONFLICT DO NOTHING kastar regn-30:s rad med
+regnmängden; luckan 5/9 → deploy är permanent. (2) Ingen dom läser 10-minutersupplösningen:
+grind A och V-A hinkar på 30 min (BUCKET_S = 1800), så tunning till 30 min efter 7 dygn rör
+inte domen men fyrdubblar tiden på gratisnivån. (3) Även tunnat räcker 500 MB ~45 dygn, inte en
+vinter — steg 2 (export till Storage, gratis, eller Pro) är ett oktoberbeslut efter Axels mätning.
+

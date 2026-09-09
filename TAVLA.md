@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-09 01:10 av Claude (webben) — kort #82 KLART: bridges-cronen bort (PR #81, ci #464 grön). Före det: nytt kort #81: byggordningen efter radardomen 14/9 för #42, sju regler ur veckans fel och sex steg med varsitt bevis. Låst bakom domen*
+*Uppdaterad: 2026-09-09 01:45 av Claude (webben) — kort #83 (gallring, två steg + mätfråga) och #84 (deploya ingest-live; fynd: regn-30 kan inte laga luckan) skrivna för Axel. Före det: kort #82 KLART: bridges-cronen bort (PR #81, ci #464 grön). Före det: nytt kort #81: byggordningen efter radardomen 14/9 för #42, sju regler ur veckans fel och sex steg med varsitt bevis. Låst bakom domen*
 
 ---
 
@@ -18,6 +18,30 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Löser roten till 31/8 — han kan köra sina egna analyser i stället för att beskriva dem.
 
 ### AXELS NÄSTA STEG — i den här ordningen (uppdaterad 8/9 kväll)
+
+- [ ] 🔴 **#84 DEPLOYA ingest-live — varje dygn utan är ett dygn regnfacit borta för alltid**
+  (Bengts beställning 9/9 01:40, kort skrivet av Claude). LÄGET: rättelsen som skriver
+  rain_sum_mm/snö/vind/sikt till arkivet ligger på main sedan 8/9 21:50 (PR #76, DECISIONS
+  #79) men livemotorn kör fortfarande 8/9-förmiddagens version. NYTT FYND 9/9 som gör det
+  brådskande: regn-30 (timpulsen :41) kan INTE laga det. Båda skriver samma rad
+  (station_id, sample_time) med ON CONFLICT DO NOTHING, och ingest-live kör varje minut
+  ⇒ den hinner alltid först och låser raden med rain_sum_mm = NULL; regn-30:s rad med
+  regnmängden kastas. Trafikverket lämnar bara ut senaste mätningen, så luckan 5/9 → deploy
+  går ALDRIG att fylla i efterhand. Grind V-A måndag 14/9 07:20 ser noll regnrader sedan 5/9
+  om det inte deployats innan.
+  **TVÅ VÄGAR, välj en (5 min):**
+  · **A. Terminalen** (snabbast): `git pull` på main, sedan
+    `supabase functions deploy ingest-live --project-ref xmpfztykhyvhmrzsnjrc --no-verify-jwt`
+    (ingest-live/index.ts är källa, ingen buntning behövs).
+  · **B. Knappen** (löser alla framtida deployer på köpet): Supabase → Account → Access
+    Tokens → ny token "Halkvakt deploy" → GitHub → Settings → Secrets → SUPABASE_ACCESS_TOKEN.
+    Säg till, så trycker Bengt eller Claude på deploy-supabase (funktion: ingest-live).
+  **BEVISET (SQL-editorn, inom 10 min efter deploy, fungerar även i uppehåll eftersom vind
+  alltid finns):**
+  `SELECT count(*) FILTER (WHERE wind_speed_ms IS NOT NULL) AS vind, count(*) FILTER (WHERE
+  rain_sum_mm IS NOT NULL) AS regn, count(*) AS alla FROM weather_observations WHERE
+  sample_time > now() - interval '30 min';` — före deploy: vind = 0; efter: vind ≈ alla.
+  Klistra svaret till Bengt, då bockas kortet och #42:s facitrad.
 
 - [x] ~~1. Bevisa vakthunden~~ ✅ GJORT 8/9 — pg_cron kört 18:07/19:07/20:07, alla succeeded.
   MEN fyndet: larmvägen var trasig (#78). Beviset att klistra till Bengt står i DECISIONS #78.
@@ -49,6 +73,43 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 
 ### Axel — beslut att ta
+- [ ] 🗄️ **#83 GALLRING av weather_observations — måste finnas FÖRE första kalla veckan**
+  (Bengts beställning 9/9 01:40; kort + förslag av Claude, mätt mot koden 9/9).
+  **VARFÖR NU:** arkivdieten (DECISIONS #4: bara yta ≤ 5 °C eller nederbörd) finns i
+  ingest-live, men vintern upphäver den — under 5 °C är ALLA 848 stationer intressanta,
+  var 10:e minut, dygnet runt: 848 × 144 ≈ 122 000 rader/dygn. Axel mätte 175 000 (8/9).
+  Uppskattat ~260 B/rad inkl. index ⇒ 30–45 MB/dygn ⇒ gratisnivåns 500 MB är full på
+  **11–16 dygn** räknat från första kalla veckan. Full databas = ingest-live dör tyst =
+  appen serverar gammal data igen (5/9-läget, fast utan Actions-larm).
+  **VAD SOM FÅR SLÄNGAS UTAN ATT DOMEN RÖRS (mätt i koden):** grind A och grind V-A läser
+  båda i 30-minutershinkar och tar SENASTE mätningen per hink (BUCKET_S = 1800,
+  ORDER BY sample_time DESC). missar.ts läser 45-minutersfönster. Ingen dom läser
+  10-minutersupplösningen. Det var exakt GitHub-ingestens takt (2×/h) när grind A byggdes.
+  **STEG 1 — TUNNA TILL 30 MIN EFTER 7 DYGN (Claude bygger, Axel kör; noll beslut om pengar):**
+  pg_cron-jobb 03:15 UTC som per station och 30-min-hink behåller senaste raden och raderar
+  resten för allt äldre än 7 dygn. Sista veckan behåller full upplösning (missar, felsökning).
+  Effekt: vintern ≈ 848 × 48 ≈ 41 000 rader/dygn ≈ 11 MB/dygn ⇒ ~45 dygn på 500 MB.
+  Migration sql/014_gallring.sql (funktion `gallra_vader(dagar)` + cron.schedule vaktad med
+  IF EXISTS pg_extension, CI:s PostGIS saknar pg_cron — samma läxa som rollerna i 003).
+  Verify: rader/dygn äldre än 7 d ≤ 45 000 i SQL-editorn, grind-a #N ger samma n som veckan
+  före (tunningen får inte synas i domen). OBS: DELETE frigör inte disk förrän autovacuum
+  återanvänt den — pg_total_relation_size planar ut, sjunker inte; det är rätt utfall.
+  **STEG 2 — VINTERN ÄR LÄNGRE ÄN 45 DYGN (beslut Axel + Bengt i oktober, EFTER mätning):**
+  nov–mars ≈ 150 dygn × 11 MB ≈ 1,6 GB även efter steg 1. Tre vägar:
+  · **2a Rullande export (gratis):** månadsvis CSV.gz av rader äldre än 60 dygn till Supabase
+    Storage (1 GB gratis; gzip ~10× ⇒ hela vintern ~150 MB), sedan DELETE. Grind A/V-A körs
+    redan varje måndag på 30-dygnsfönster och deras utfall är små tabeller; marsdomen läser
+    veckoutfallen + exporten. Kostar ~2 h kod + en edge function. Rekommenderad.
+  · **2b Supabase Pro** (25 USD/mån, 8 GB): ~1 400 kr för nov–mars. Kräver DECISIONS-post
+    (gratisnivåregeln) som #82 för Actions. Snabbast, men pengar för att slippa 2 h kod.
+  · **2c Färre stationer:** nej — TROSKLAR-SKUGGAN §3 kräver grind A "nationellt över alla
+    845 stationer".
+  **MÄT FÖRST (Axel, SQL-editorn, 30 s) — svaret avgör om steg 1 räcker till oktober:**
+  `SELECT pg_size_pretty(pg_total_relation_size('weather_observations')) AS vader,
+  pg_size_pretty(pg_database_size(current_database())) AS totalt, count(*) AS rader,
+  (SELECT count(*) FROM weather_observations WHERE sample_time > now() - interval '1 day')
+  AS senaste_dygnet FROM weather_observations;` — totalt/rader = verklig byte per rad,
+  senaste_dygnet × byte = verklig MB/dygn. Klistra till Bengt; kortet räknas om på riktiga tal.
 - [x] ~~Fastställ trösklarna för skuggan~~ ✅ FASTSTÄLLT 2/9 (DECISIONS #61): Axels
   "kör" relayerat av Bengt i chatten, värdena oförändrade från Bengts 1/9-version inkl.
   §2-orsaksklassningen. Kvitto: huvudet i docs/TROSKLAR-SKUGGAN.md. Bocken här är
