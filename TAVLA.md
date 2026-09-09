@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-09 01:45 av Claude (webben) — kort #83 (gallring, två steg + mätfråga) och #84 (deploya ingest-live; fynd: regn-30 kan inte laga luckan) skrivna för Axel. Före det: kort #82 KLART: bridges-cronen bort (PR #81, ci #464 grön). Före det: nytt kort #81: byggordningen efter radardomen 14/9 för #42, sju regler ur veckans fel och sex steg med varsitt bevis. Låst bakom domen*
+*Uppdaterad: 2026-09-09 04:45 av Claude (webben) — morgonavläsning: #82 slutbevis, #50 två hål > 2 h 30 (puls-healthcheck av), #44 dygnsbevis 26 % men skevt urval, #83 uppmätt 62 000 rader/dygn, #79 stäng regn-30 nu, NYTT #85 Actions-takten spränger 35 USD ~26/9. Före det: kort #83 (gallring, två steg + mätfråga) och #84 (deploya ingest-live; fynd: regn-30 kan inte laga luckan) skrivna för Axel. Före det: kort #82 KLART: bridges-cronen bort (PR #81, ci #464 grön). Före det: nytt kort #81: byggordningen efter radardomen 14/9 för #42, sju regler ur veckans fel och sex steg med varsitt bevis. Låst bakom domen*
 
 ---
 
@@ -23,10 +23,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (Bengts beställning 9/9 01:40, kort skrivet av Claude). LÄGET: rättelsen som skriver
   rain_sum_mm/snö/vind/sikt till arkivet ligger på main sedan 8/9 21:50 (PR #76, DECISIONS
   #79) men livemotorn kör fortfarande 8/9-förmiddagens version. NYTT FYND 9/9 som gör det
-  brådskande: regn-30 (timpulsen :41) kan INTE laga det. Båda skriver samma rad
-  (station_id, sample_time) med ON CONFLICT DO NOTHING, och ingest-live kör varje minut
-  ⇒ den hinner alltid först och låser raden med rain_sum_mm = NULL; regn-30:s rad med
-  regnmängden kastas. Trafikverket lämnar bara ut senaste mätningen, så luckan 5/9 → deploy
+  brådskande: regn-30 (timpulsen :41) kan inte laga det annat än i en smal nisch. Båda skriver
+  samma rad (station_id, sample_time) med ON CONFLICT DO NOTHING, och ingest-live kör varje
+  minut ⇒ den hinner först på varje "intressant" mätning (yta ≤ 5 °C eller nederbördsflagga)
+  och låser raden med rain_sum_mm = NULL; regn-30:s rad med regnmängden kastas. Kvar för
+  regn-30 är bara varma mätningar med släckt flagga men 30-min-summa > 0 (regn-tackning #3
+  9/9: 9 körtimmar, skevt urval). Vintern stänger även den nischen. Trafikverket lämnar bara ut senaste mätningen, så luckan 5/9 → deploy
   går ALDRIG att fylla i efterhand. Grind V-A måndag 14/9 07:20 ser noll regnrader sedan 5/9
   om det inte deployats innan.
   **TVÅ VÄGAR, välj en (5 min):**
@@ -73,13 +75,38 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 
 ### Axel — beslut att ta
+- [ ] 💸 **#85 Actions-takten spränger 35 USD-gränsen före 1/10 — tre snitt räcker** (mätt 9/9
+  04:30 av morgonavläsningen, DECISIONS #82:s budget). UPPMÄTT sedan Actions vaknade 8/9 21:07
+  → 9/9 04:31 (7,4 h): **59 körningar, ≈ 98 debiterade minuter** (varje jobb avrundas uppåt):
+  ingest-grannar 8 × ~5,4 min = 43 · publish-map 14 × 1 = 14 (workflow_run efter varje ingest
+  OCH grannar ⇒ 2/timme) · ci 14 = 14 (mina tre docs-mergar kostade 6 av dem — läxa: `[skip ci]`
+  på rena tavelcommits, gäller från den här) · ingest 6 × ~1,2 = 7 · regn-30 7 = 7 ·
+  healthcheck 5 · pulsklocka 4 · ios-engine 2 · bridges 1 (sista) · segmentlangden 1.
+  STEADY STATE utan mina mergar ≈ **10 min/timme = 240 min/dygn**. Gratispotten är slut
+  (2 000/2 000 t.o.m. 30/9) ⇒ allt debiteras: 240 × 0,008 USD = **1,9 USD/dygn**, 22 dygn kvar
+  ⇒ **~42 USD > 35**. Gränsen nås runt **26/9** och Actions dör igen, tyst, som 5/9. OBS: 35 USD
+  är **4 375 min** (Linux 0,008 USD/min), inte 5 800 som avläsningsprompten antog.
+  TRE SNITT, alla utan ny kod och utan att röra insamlingen (ordnade efter minuter/dygn):
+  · **publish-map:s workflow_run (48 min/dygn):** den bygger bara fi/dk-snapshoter och kedjas
+    efter BÅDE ingest och grannar ⇒ 48 jobbstarter/dygn. Kedja bara på ingest-grannar (fi/dk-
+    datan kommer därifrån) ⇒ 24/dygn, eller kör steget SIST i grannar-jobbet (MINUTPLAN rad 2)
+    ⇒ 0 extra starter. Claude, 3 rader, Bengts ja räcker.
+  · **regn-30 (24 min/dygn):** stäng nu, kort #79 — restnisch tills deploy, noll efter.
+  · **ingest-grannar (130 min/dygn = 54 %):** 5,4 min/körning är FI/NO:s rad-för-rad-INSERT
+    (MINUTPLAN: ~1 000 nätverksvarv). Batcha som ingest/db.ts ⇒ ~1,5 min ⇒ sparar ~95 min/dygn.
+    Claude, ~1 h kod + integrationstest. Kräver inget beslut, bara plats i kön.
+  Med alla tre: 240 → ~75 min/dygn ⇒ 0,6 USD/dygn ⇒ **~13 USD till 1/10**, och oktoberpotten
+  räcker hela månaden. Verify: morgonavläsningens räkning nästa dygn ≤ 100 min/dygn.
 - [ ] 🗄️ **#83 GALLRING av weather_observations — måste finnas FÖRE första kalla veckan**
   (Bengts beställning 9/9 01:40; kort + förslag av Claude, mätt mot koden 9/9).
   **VARFÖR NU:** arkivdieten (DECISIONS #4: bara yta ≤ 5 °C eller nederbörd) finns i
   ingest-live, men vintern upphäver den — under 5 °C är ALLA 848 stationer intressanta,
   var 10:e minut, dygnet runt: 848 × 144 ≈ 122 000 rader/dygn. Axel mätte 175 000 (8/9).
   Uppskattat ~260 B/rad inkl. index ⇒ 30–45 MB/dygn ⇒ gratisnivåns 500 MB är full på
-  **11–16 dygn** räknat från första kalla veckan. Full databas = ingest-live dör tyst =
+  **11–16 dygn** räknat från första kalla veckan. 📏 UPPMÄTT 9/9 ur healthcheckens egna
+  räknare: weather_obs 187 582 (8/9 21:13) → 195 500 (9/9 00:18) = 7 918 rader på 3 h 05 ⇒
+  **~62 000 rader/dygn i september MED dieten** (mild natt, få stationer under 5 °C). Vintern
+  släpper alla 848 stationer genom dieten ⇒ 2× det, i linje med 122 000-uppskattningen. Full databas = ingest-live dör tyst =
   appen serverar gammal data igen (5/9-läget, fast utan Actions-larm).
   **VAD SOM FÅR SLÄNGAS UTAN ATT DOMEN RÖRS (mätt i koden):** grind A och grind V-A läser
   båda i 30-minutershinkar och tar SENASTE mätningen per hink (BUCKET_S = 1800,
@@ -234,6 +261,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Kort #44:s 2/2-andel mäter om :11 och :41 fångas — med minutupplösning i arkivet blir
   frågan meningslös. BESLUT (Bengt+Axel): stäng puls-regn-30 och radera filen, eller behåll
   som oberoende mätning. Verify: regn-tackning dagar=1 i oktober ≥ baslinjen utan regn-30.
+  📏 9/9 04:30: regn-30 gick 7/7 timmar i natt (7 debiterade min) och kom bara in i restnischen
+  (kort #44/#84: ingest-live låser raden först). Just nu 24 min/dygn för ett skevt urval;
+  efter Axels deploy av ingest-live noll nytta. REKOMMENDATION: stäng puls-regn-30 NU (Axel:
+  `SELECT cron.unschedule('puls-regn-30')`, eller Claude via pulsklockans AVVECKLA) — det är
+  den billigaste av de tre besparingarna i kort #85.
 - [x] ✅ **#80 Arkivet, kamerorna, viltet och SMHI stannade när puls-ingest stängdes av — KLART 8/9 23:59, BEVISAT** (PR #79, DECISIONS #84): healthcheck **#145 GRÖN** (23:58:39, första gröna sedan 5/9) — cameras och road_conditions_arkiv färska, fi/dk/no färska via grannar, och den stängde incident-issue #77 själv. puls-ingest skarpt i pg_cron (pulsklocka #9), första ordinarie körning 00:11.
   ✅ `--skip=weather,deviations` i ingest/index.ts (bara de två tillåts, okänt namn fäller), ingest.yml
   kör flaggan, puls-ingest `11 * * * *` i pulsklockans NYA. BEVIS: ingest #375 från grenen —
@@ -685,6 +717,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   och räknas ändå som halv. Dygnsbeviset (regn-tackning dagar=1) 5/9 18:00 är mätningen
   som gäller — taket där ligger också under 100 %, och kortet ska dömas mot den insikten,
   inte mot 100.
+  📏 **DYGNSBEVISET KÖRT 9/9 04:31 (regn-tackning #3, dagar=1) — KORTET STÄNGS INTE:** regnmätarna
+  617 stationer × **9 körtimmar**, 2 buckets/timme **26 %** (baslinjer 5 % 3/9, 9 % 4/9), 1: 20 %,
+  0: 54 %, bucket-täckning 36 %. Andelen har stigit — men de 9 körtimmarna är exakt regn-30:s
+  pulstimmar sedan 21:41, och raderna är ett SKEVT urval: ingest-live (varje minut) skriver varje
+  "intressant" mätning först med rain_sum_mm = NULL, och regn-30:s rad kastas av ON CONFLICT DO
+  NOTHING. Regn-30 kommer bara in där ingest-live inte skrev alls (yta > 5 °C och nederbördsflaggan
+  släckt, men 30-min-summan > 0 — "regnet slutade nyss"). Siffran mäter alltså regn-30:s
+  restnisch, inte täckningen. Riktig dygnsmätning kräver först Axels deploy av ingest-live (kort
+  #84); efter den skriver livemotorn rain_sum_mm varje minut och #79 avgör om regn-30 alls behövs.
 - [ ] 🐕 **#50 Vakthunden är själv obevakad** (fynd 4/9 kväll, läsvarvet inför
   radardomen) — healthchecken är den enda som märker när något tystnar, och den går
   fortfarande på ren GitHub-cron. GENOMGÅNG av alla 15 cron-rader i repot: pulsklockan
@@ -743,6 +784,14 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Ett fel som slår ut runnern slår alltså ut både insamlingen OCH larmet om den — samma
   enda punkt. Att avbrottet ändå syns beror på GitHubs egna misslyckandemejl (så Bengt
   fick veta), inte på något vi byggt. Det är tur, inte konstruktion.
+  📏 **MORGONAVLÄSNING 9/9 04:30 — KORTET STÄNGS INTE, och läget är sämre än 4/9:** puls-healthcheck
+  är avstängd av Axel (med flit, 8/9) ⇒ vakthunden går åter på naken GitHub-cron. Fönstret sedan
+  Actions vaknade (8/9 21:07 → 9/9 04:37, 7 h 30): körningar 21:13 (röd, #144), 23:58 (manuell,
+  #145), 00:18 (cron, #146 grön). Mellanrum: **2 h 45** (21:13→23:58) och **4 h 19 och växande**
+  (00:18→04:37) — cronens slots 02:23 och 04:23 kom aldrig. **2 av 2 mellanrum över 2 h 30.**
+  Supabase-vakthunden (jobid 20, timvis) är primär vakt, men dess larmväg saknar PAT-rättighet
+  (Axels punkt 2). Alltså: två vakter, ingen som kan larma i tid. FÖRSLAG (Axels beslut, ingen
+  kod): slå på puls-healthcheck igen — en rad i pulsklockans NYA-lista, 12 körningar/dygn ≈ 12 min.
   ⏭️ NÄSTA: mät om samma fönsterlängd när Actions lever igen (kort #53 är grinden).
   Beviskravet är oförändrat — ett DYGN utan mellanrum över 2 h 30.
   ⚠️ VÄNTAD BIEFFEKT, säg det innan någon misstolkar den: en vakt som tittar var annan
@@ -1086,7 +1135,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
-- [x] ✅ **#82 bridges.yml: cron bort — KLART 9/9 01:10** (PR #81, DECISIONS #85): mergad till main som d02294c, ci #464 grön 01:02, workflowen på main har bara knappen kvar (--force). 32 tomma schemakörningar à en minut är stoppade; slutbeviset (ingen körning 03:23, gamla schematiden) läses av morgonavläsningen 04:29.
+- [x] ✅ **#82 bridges.yml: cron bort — KLART 9/9 01:10** (PR #81, DECISIONS #85): mergad till main som d02294c, ci #464 grön 01:02, workflowen på main har bara knappen kvar (--force). 32 tomma schemakörningar à en minut är stoppade; slutbeviset (ingen körning 03:23, gamla schematiden) läses av morgonavläsningen 04:29. ✅ **SLUTBEVIS 9/9 04:30:** ingen schedule-körning 03:23 (gamla schematiden), #32 21:15 8/9 är fortfarande sista.
 - [x] 🇳🇴 **NORGE I GRÄNSSNAPSHOTEN** (4/9 15:47, Bengt: "kör gränssnapshoten"): #49-mönstret
   som loop över fi + no i build-snapshot.ts — publicering #621 (e217891): "NO 42 stationer
   inom 40 km av svenska vägnätet (varav 0 kalla nu)", FI 16 som förut. En förare på E8/E10/

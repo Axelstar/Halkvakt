@@ -1463,3 +1463,17 @@ grind A och V-A hinkar på 30 min (BUCKET_S = 1800), så tunning till 30 min eft
 inte domen men fyrdubblar tiden på gratisnivån. (3) Även tunnat räcker 500 MB ~45 dygn, inte en
 vinter — steg 2 (export till Storage, gratis, eller Pro) är ett oktoberbeslut efter Axels mätning.
 
+## 2026-09-09 04:45 — Morgonavläsning: kedjan hel, vakten hålig, kassan läcker
+GRÖNT: ci #468 grön på main (bundle-checkar + PostGIS-testerna). Kartrepot 04:30: manifestets
+live-sha = sha256(live.json), meta.json 04:30:47, vader.geojson 1 247 av 1 298 stationer ≤ 12 min
+(96 %). Healthcheck #146 00:18 HEALTHY (cameras 7 min, arkiv 7 min, fi/dk/no 52–54 min, gräns-wx
+20 FI / 44 NO), issue #77 auto-stängd 23:59. puls-ingest 01:11–04:11 och grannar 01:24–04:24 alla
+gröna på minuten. bridges: ingen körning 03:23 ⇒ kort #82 slutbevisat.
+INTE GRÖNT: (1) #50 — healthchecken går på naken GitHub-cron igen (puls-healthcheck avstängd av
+Axel), slots 02:23 och 04:23 uteblev: 2 av 2 mellanrum över 2 h 30. (2) #44 — regn-tackning #3
+gav 26 % men på regn-30:s restnisch (ingest-live låser raden först); riktig mätning efter deploy.
+(3) #85 NYTT — 98 debiterade minuter på 7,4 h ⇒ ~240 min/dygn ⇒ ~42 USD till 1/10, över 35 USD
+runt 26/9. Tre snitt föreslagna (publish-map-kedjan, regn-30, batchad grannar-INSERT) ⇒ ~13 USD.
+Egen läxa: tre docs-mergar i natt kostade 6 ci-minuter — `[skip ci]` på rena tavelcommits.
+Byggt: inget (avläsningsvarv). Nästa avläsning bokas till kvällen.
+
