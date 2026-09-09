@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-08 23:30 av Claude (webben) — #80 mergat, puls-ingest 11 * * * * skarpt (pulsklocka #9, 9 cron-jobb). Första puls-ingest-körningen 00:11, healthcheck 01:23 avgör om #80 stängs. Morgonavläsning 04:29 läser det*
+*Uppdaterad: 2026-09-09 00:02 av Claude (webben) — #80 KLART: healthcheck #145 grön, första gröna sedan 5/9, incident-issue #77 auto-stängd. Enda öppna issue är #15 (kort #42, Bengts)*
 
 ---
 
@@ -173,7 +173,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Kort #44:s 2/2-andel mäter om :11 och :41 fångas — med minutupplösning i arkivet blir
   frågan meningslös. BESLUT (Bengt+Axel): stäng puls-regn-30 och radera filen, eller behåll
   som oberoende mätning. Verify: regn-tackning dagar=1 i oktober ≥ baslinjen utan regn-30.
-- [ ] 🕳️ **#80 Arkivet, kamerorna, viltet och SMHI stannade när puls-ingest stängdes av — BYGGT + MERGAT 8/9 23:27 (PR #79, DECISIONS #84), puls-ingest skarpt i pg_cron (pulsklocka #9: "Alla 2 pulsjobben på plats")**
+- [x] ✅ **#80 Arkivet, kamerorna, viltet och SMHI stannade när puls-ingest stängdes av — KLART 8/9 23:59, BEVISAT** (PR #79, DECISIONS #84): healthcheck **#145 GRÖN** (23:58:39, första gröna sedan 5/9) — cameras och road_conditions_arkiv färska, fi/dk/no färska via grannar, och den stängde incident-issue #77 själv. puls-ingest skarpt i pg_cron (pulsklocka #9), första ordinarie körning 00:11.
   ✅ `--skip=weather,deviations` i ingest/index.ts (bara de två tillåts, okänt namn fäller), ingest.yml
   kör flaggan, puls-ingest `11 * * * *` i pulsklockans NYA. BEVIS: ingest #375 från grenen —
   "hoppar över: weather, deviations", wildlife 1, smhi 16, kursorerna orörda, 32 s. STÄNGS när

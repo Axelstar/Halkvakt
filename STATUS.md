@@ -1440,3 +1440,10 @@ puls-ingest 11 * * * *. Bevis: ingest #375 från grenen grön på 32 s, "hoppar 
 deviations", wildlife 1, smhi 16, kursorerna orörda. Inventering #8: skulle skapa puls-ingest.
 Skarp pulsklocka därefter. DECISIONS #84.
 
+
+## 2026-09-08 23:59 — Healthcheck #145 GRÖN, första gröna sedan 5/9 — #80 KLART
+Körd manuellt efter ingest #375 (23:20) och grannar 23:24: cameras, road_conditions_arkiv,
+fi/dk/no alla färska, gränsstationerna nåbara. Healthchecken stängde incident-issue #77 själv.
+Enda öppna issue är #15 (kort #42, Bengts). Pipelinen är hel igen: livemotorn i Supabase
+(väder/olyckor/väglag varje minut, publicering var 10:e min, kartlager var 30:e), GitHub-
+ingesten en gång i timmen för kameror/arkiv/vilt/SMHI, grannländerna en gång i timmen.
