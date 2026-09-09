@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-09 11:15 av Claude (webben) — puls-healthcheck PÅ som bro (pulsklocka #13, kort #50, DECISIONS #91), issue #91 auto-stängd 11:07 (larmvägen hel åt båda hållen), nytt kort #87 (healthchecken in i vakthunden, låst bakom 14/9). Före det: DB-knappen byggd (dbknapp.yml): gallringen KÖRD (3 551 raderade, cron-jobb aktivt), larmprovet BEVISAT (issue #91, PAT har Issues:Write). Före det: #79 KLART (puls-regn-30 avvecklad, pulsklocka #11), #85 alla tre snitten i drift, #50 svar på Axels pulsfråga. Före det: kort #85 snitt 1+2 BEVISADE: grannar #12 44 s (var 6 min), fi/dk-commit a28ea98 ur samma körning. Före det: kort #85 snitt 1+2 BYGGDA (grannar batchade, publish-map nedlagd, DECISIONS #88), bevis väntar på nästa pulsade körning. Före det: kort #83 steg 1 BYGGT (sql/014_gallring.sql, DECISIONS #87), Axel kör i SQL-editorn. Före det: Axels varv bokfört: #84 och #78 KLART (ingest-live deployad, deploy-knappen lever), #83 omräknat på Axels mätning + ja till steg 1, nytt #86 nyckelkalendern (PAT 22/11, Supabase 8/12). Före det: morgonavläsning: #82 slutbevis, #50 två hål > 2 h 30 (puls-healthcheck av), #44 dygnsbevis 26 % men skevt urval, #83 uppmätt 62 000 rader/dygn, #79 stäng regn-30 nu, NYTT #85 Actions-takten spränger 35 USD ~26/9. Före det: kort #83 (gallring, två steg + mätfråga) och #84 (deploya ingest-live; fynd: regn-30 kan inte laga luckan) skrivna för Axel. Före det: kort #82 KLART: bridges-cronen bort (PR #81, ci #464 grön). Före det: nytt kort #81: byggordningen efter radardomen 14/9 för #42, sju regler ur veckans fel och sex steg med varsitt bevis. Låst bakom domen*
+*Uppdaterad: 2026-09-09 12:05 av Claude (webben) — kort #86: nyckelrotation förberedd (tre ställen för PUBLISH_TOKEN, ordning A/B, fyra bevis), go ahead till Axel. Före det: puls-healthcheck PÅ som bro (pulsklocka #13, kort #50, DECISIONS #91), issue #91 auto-stängd 11:07 (larmvägen hel åt båda hållen), nytt kort #87 (healthchecken in i vakthunden, låst bakom 14/9). Före det: DB-knappen byggd (dbknapp.yml): gallringen KÖRD (3 551 raderade, cron-jobb aktivt), larmprovet BEVISAT (issue #91, PAT har Issues:Write). Före det: #79 KLART (puls-regn-30 avvecklad, pulsklocka #11), #85 alla tre snitten i drift, #50 svar på Axels pulsfråga. Före det: kort #85 snitt 1+2 BEVISADE: grannar #12 44 s (var 6 min), fi/dk-commit a28ea98 ur samma körning. Före det: kort #85 snitt 1+2 BYGGDA (grannar batchade, publish-map nedlagd, DECISIONS #88), bevis väntar på nästa pulsade körning. Före det: kort #83 steg 1 BYGGT (sql/014_gallring.sql, DECISIONS #87), Axel kör i SQL-editorn. Före det: Axels varv bokfört: #84 och #78 KLART (ingest-live deployad, deploy-knappen lever), #83 omräknat på Axels mätning + ja till steg 1, nytt #86 nyckelkalendern (PAT 22/11, Supabase 8/12). Före det: morgonavläsning: #82 slutbevis, #50 två hål > 2 h 30 (puls-healthcheck av), #44 dygnsbevis 26 % men skevt urval, #83 uppmätt 62 000 rader/dygn, #79 stäng regn-30 nu, NYTT #85 Actions-takten spränger 35 USD ~26/9. Före det: kort #83 (gallring, två steg + mätfråga) och #84 (deploya ingest-live; fynd: regn-30 kan inte laga luckan) skrivna för Axel. Före det: kort #82 KLART: bridges-cronen bort (PR #81, ci #464 grön). Före det: nytt kort #81: byggordningen efter radardomen 14/9 för #42, sju regler ur veckans fel och sex steg med varsitt bevis. Låst bakom domen*
 
 ---
 
@@ -60,6 +60,25 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   bevisa med nästa kartrepo-commit, Supabase-tokenen senast **1/12** och bevisa med en deploy-supabase-körning.
   Vakthunden borde dessutom kontrollera PAT:ens utgångsdatum (GitHub svarar med `github-authentication-token-
   expiration`-headern) och larma 14 dygn före — eget litet kort när Issues:Write finns.
+  🔑 **ROTERA NU, INTE I NOVEMBER (Bengt 9/9 12:00; förberett av Claude, GO AHEAD skickat till Axel):** idag
+  finns bevisen färdiga (larmprov via DB-knappen, publicera var 10:e min, deploy-knappen); i november byggs de
+  i mörker mitt i säsongen. FYND i förberedelsen: PUBLISH_TOKEN sitter på TRE ställen, inte två — Supabase
+  Edge Function Secrets (publicera + vakthund) OCH GitHub Secrets (ingest-grannar pushar fi/dk-snapshoterna
+  med den). Missas det tredje dör fi/dk-publiceringen tyst 22/11. AXELS ORDNING (5 + 5 min):
+  **A. PAT:** GitHub → Settings → Developer settings → Fine-grained tokens → ny: namn "Halkvakt publicera
+  2027", utgång **2027-04-30** (efter marsdomen), resource owner Axelstar, repon halkvakt-karta + Halkvakt,
+  Repository permissions: **Contents Read and write** (kartrepot) + **Issues Read and write** (Halkvakt),
+  inget annat. Klistra in som PUBLISH_TOKEN i (1) Supabase → Edge Functions → Secrets och (2) GitHub →
+  Halkvakt → Settings → Secrets → Actions. Ta INTE bort den gamla än.
+  **B. Supabase-token:** Supabase → Account → Access Tokens → ny "Halkvakt deploy 2027", utgång 2027-04-30,
+  samma scope som 9/9 (projekt Halkvakt, ENDAST Edge Functions: Write). Ersätt SUPABASE_ACCESS_TOKEN i
+  GitHub Secrets. Ta INTE bort den gamla än.
+  **BEVIS (Bengt/Claude kör, inom 15 min efter A och B):** (a) nästa "(Supabase)"-commit i kartrepot med
+  manifest-sha = sha256(live.json) — publicera skriver med nya PAT:en; (b) DB-knappen larmprov ⇒ ny issue med
+  etiketten vakthund, auto-stängd nästa timme — vakthunden larmar med nya PAT:en; (c) nästa grannar-körning
+  (:24) lämnar fi/dk-commit — GitHub Secrets-kopian fungerar; (d) deploy-supabase på vakthund grön — nya
+  Supabase-tokenen fungerar. FÖRST DÅ: Axel raderar de två gamla nycklarna, och kortet stängs med datumen
+  2027-04-30 som enda vakt. Bevis efter raderingen: (a) och (c) en gång till.
 - [ ] 💸 **#85 Actions-takten spränger 35 USD-gränsen före 1/10 — tre snitt räcker** (mätt 9/9
   04:30 av morgonavläsningen, DECISIONS #82:s budget). UPPMÄTT sedan Actions vaknade 8/9 21:07
   → 9/9 04:31 (7,4 h): **59 körningar, ≈ 98 debiterade minuter** (varje jobb avrundas uppåt):
