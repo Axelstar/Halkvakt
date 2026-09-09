@@ -53,7 +53,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   settings → PAT → Halkvakt-token → Repository permissions → Issues: Read and write.
 - [ ] **3. Skärmklipp av Billing till Bengt** — du har redan bilden (2000/2000 min, reset om
   23 dagar ⇒ 1/10, spending limit noll). Vidarebefordra den bara.
-- [ ] **4. Supabase-token som `SUPABASE_ACCESS_TOKEN` i GitHub Secrets** — Supabase → Account
+- [x] ~~4. Supabase-token i GitHub Secrets~~ ✅ 9/9 (#86) — deploy-supabase.yml bevisat grönt
+  med funktion=vakthund. ⚠️ Går ut ~8 dec, mitt i vintern — lägg påminnelse.
+- [ ] ~~gammal rad~~ **4b. Supabase-token** — Supabase → Account
   → Access Tokens → ny "Halkvakt deploy". Då kan Bengt deploya själv när Actions lever
   (deploy-supabase.yml finns på main). I kväll låg tre färdiga fixar odeployade i timmar.
 - [ ] 5. TestFlight-gruppen: lägg 0.3.5 (8) om det inte skett automatiskt

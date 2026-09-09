@@ -1283,3 +1283,15 @@ den hade behövt --force för att alls göra något, och en månatlig Overpass-h
 som inte ändras är fortfarande en minut för ingenting.
 BEVIS: inga schedule-körningar av bridges efter mergen; kortet bockas av morgonavläsningen.
 
+
+## #86 (9/9 2026) Deploy-vägen öppen — Axel är inte längre flaskhals
+SUPABASE_ACCESS_TOKEN inlagd i GitHub Secrets (Supabase-token, projekt-scopad till Halkvakt
+i org tagratt, ENDAST Edge Functions: Write, 90 dagar). Övriga behörigheter None — särskilt
+API Keys, Auth Config, Auth Signing Keys och Edge Function Secrets, alla märkta hög risk.
+Full access valdes bort: en deploy-token ska inte kunna röra databasen eller nycklarna.
+BEVIS: deploy-supabase.yml dispatchad med funktion=vakthund ⇒ "Deployed Functions on
+project xmpfztykhyvhmrzsnjrc: vakthund", grönt. Bengt kan nu deploya utan Axels terminal —
+orsaken till att tre färdiga fixar låg odriftsatta i timmar 8/9.
+⚠️ GÅR UT ~8 DECEMBER (90 dagar), mitt i vintersäsongen. Påminnelse behövs, annars är det
+nästa tysta fel: deployer slutar fungera utan att något ser trasigt ut.
+KVAR: PAT:en behöver Issues:Write, annars kan vakthunden inte larma (#78).
