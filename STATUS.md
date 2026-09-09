@@ -1487,3 +1487,10 @@ första gröna sedan 5/9. (5) Kvar hos Axel: Issues:Write på PAT:en. Nytt kort 
 Supabase-token 8/12. Healthcheck #147 kom 04:48 (slot 04:23, 25 min sent) — #50 står.
 Byggt: inget än; nästa byggsteg är sql/014_gallring.sql på Axels ja.
 
+## 2026-09-09 07:15 — Kort #83 steg 1 byggt: gallra_vader + nattlig pg_cron (DECISIONS #87)
+sql/014_gallring.sql tunnar allt äldre än 7 dygn till en rad per station och 30-minutershink
+(grind A:s hink, senaste raden). Bevisat lokalt mot Postgres 16 (576 → 336 raderade, rätt rad kvar,
+idempotent, filen omkörbar) och med integrationstest #83 mot CI:s PostGIS. Inte i auto-migrationen:
+Axel kör filen i SQL-editorn och klistrar första körningens tal. Effekt ~55 dygn på gratisnivån;
+steg 2 för hela vintern (1,1 GB) är ett oktoberbeslut.
+

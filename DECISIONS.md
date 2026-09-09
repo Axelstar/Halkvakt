@@ -1295,3 +1295,29 @@ orsaken till att tre färdiga fixar låg odriftsatta i timmar 8/9.
 ⚠️ GÅR UT ~8 DECEMBER (90 dagar), mitt i vintersäsongen. Påminnelse behövs, annars är det
 nästa tysta fel: deployer slutar fungera utan att något ser trasigt ut.
 KVAR: PAT:en behöver Issues:Write, annars kan vakthunden inte larma (#78).
+
+## #87 (9/9 2026) Kort #83 steg 1: arkivet tunnas till 30 min efter 7 dygn — Axels ja, byggt av Claude
+VARFÖR: Axels mätning 9/9 (183 B/rad, mest aktiva station 233 rader/dygn, 92 av 500 MB använda)
+ger vintern ~11 dygn på gratisnivån innan ingest-live dör tyst. Ingen dom läser 10-minuters-
+upplösningen: grind A och grind V-A hinkar på 30 min och tar senaste raden per hink (BUCKET_S =
+1800, ORDER BY sample_time DESC), missar.ts läser 45-minutersfönster. GitHub-ingesten hade 2×/h
+när grind A byggdes — tunningen återställer den upplösningen, inget mer.
+BESLUT: sql/014_gallring.sql: `gallra_vader(dagar)` behåller per station och 30-minutershink
+(ordagrant grind A:s floor(epoch/1800)) den senaste raden och raderar resten för allt äldre än
+`dagar`; standard 7 (sista veckan i full upplösning för missar och felsökning). pg_cron
+`halkvakt-gallring` 03:15 UTC dagligen, vaktad med IF EXISTS pg_extension (CI:s PostGIS saknar
+pg_cron — samma läxa som rollerna i 003). Axel kör filen i SQL-editorn: deploy-tokenen får inte
+röra databasen (#86), och 014 läggs INTE i ingest/db.ts auto-migration — ett cron-jobb ska
+skapas av en människa, inte av nästa timkörning.
+EFFEKT: 848 × 48 ≈ 41 000 rader ≈ 7,4 MB/dygn ⇒ ~55 dygn på återstående 408 MB. INTE en vinter:
+nov–mars ≈ 1,1 GB även tunnat ⇒ steg 2 (export till Storage, gratis, eller Pro) är ett
+oktoberbeslut med båda underskrifter. Stationer med 5-minuterstakt (233/dygn) tunnas till
+samma 48. DELETE frigör inte disk förrän autovacuum återanvänt den — storleken planar ut.
+BEVIS: (1) lokal Postgres 16 mot attrapptabell: 576 rader → 336 raderade (144→48, 288→48,
+gårdagens 144 orörda), kvar i hink 0 är 00:20 resp 00:25 (senaste), andra körningen 0, filen
+omkörd utan fel. (2) Integrationstest #83 i CI mot riktiga tabellen med PostGIS-geom. (3) Efter
+Axels körning: rader/dygn äldre än 7 d ≤ 45 000 i SQL-editorn och grind-a:s n oförändrat 14/9.
+Alternativ bortvalda: tunna vid SKRIVNING i ingest-live (rör livemotorn, tar bort felsökningens
+minutupplösning, och en bugg där kostar data för alltid — en DELETE i efterhand kan provköras);
+filtrera på yttemp (V-A behöver regn oavsett temperatur).
+

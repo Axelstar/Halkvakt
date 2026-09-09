@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-09 05:45 av Claude (webben) — Axels varv bokfört: #84 och #78 KLART (ingest-live deployad, deploy-knappen lever), #83 omräknat på Axels mätning + ja till steg 1, nytt #86 nyckelkalendern (PAT 22/11, Supabase 8/12). Före det: morgonavläsning: #82 slutbevis, #50 två hål > 2 h 30 (puls-healthcheck av), #44 dygnsbevis 26 % men skevt urval, #83 uppmätt 62 000 rader/dygn, #79 stäng regn-30 nu, NYTT #85 Actions-takten spränger 35 USD ~26/9. Före det: kort #83 (gallring, två steg + mätfråga) och #84 (deploya ingest-live; fynd: regn-30 kan inte laga luckan) skrivna för Axel. Före det: kort #82 KLART: bridges-cronen bort (PR #81, ci #464 grön). Före det: nytt kort #81: byggordningen efter radardomen 14/9 för #42, sju regler ur veckans fel och sex steg med varsitt bevis. Låst bakom domen*
+*Uppdaterad: 2026-09-09 07:15 av Claude (webben) — kort #83 steg 1 BYGGT (sql/014_gallring.sql, DECISIONS #87), Axel kör i SQL-editorn. Före det: Axels varv bokfört: #84 och #78 KLART (ingest-live deployad, deploy-knappen lever), #83 omräknat på Axels mätning + ja till steg 1, nytt #86 nyckelkalendern (PAT 22/11, Supabase 8/12). Före det: morgonavläsning: #82 slutbevis, #50 två hål > 2 h 30 (puls-healthcheck av), #44 dygnsbevis 26 % men skevt urval, #83 uppmätt 62 000 rader/dygn, #79 stäng regn-30 nu, NYTT #85 Actions-takten spränger 35 USD ~26/9. Före det: kort #83 (gallring, två steg + mätfråga) och #84 (deploya ingest-live; fynd: regn-30 kan inte laga luckan) skrivna för Axel. Före det: kort #82 KLART: bridges-cronen bort (PR #81, ci #464 grön). Före det: nytt kort #81: byggordningen efter radardomen 14/9 för #42, sju regler ur veckans fel och sex steg med varsitt bevis. Låst bakom domen*
 
 ---
 
@@ -131,8 +131,14 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **JA TILL STEG 1 FRÅN AXEL 9/9** ("bygg migrationen så körs den"). Omräknat med 183 B/rad: efter
   tunning 848 × 48 = 40 700 rader = **7,4 MB/dygn ⇒ ~55 dygn** på återstående 408 MB (stationer med tätare
   takt tunnas till samma 48). Steg 2 kvarstår: nov–mars ≈ 150 × 7,4 ≈ **1,1 GB** ⇒ export eller Pro.
-  NÄSTA: Claude bygger sql/014_gallring.sql (funktion + vaktad cron), Axel kör den i SQL-editorn, bevis =
-  rader/dygn äldre än 7 d ≤ 45 000 och grind-a #N oförändrad.
+  ✅ **STEG 1 BYGGT 9/9 07:15 (DECISIONS #87):** sql/014_gallring.sql — `gallra_vader(dagar)` + pg_cron
+  `halkvakt-gallring` 03:15 UTC (vaktad, CI saknar pg_cron). Bevis lokalt: 576 → 336 raderade (144→48,
+  288→48, gårdagen orörd), hink 0 behåller 00:20/00:25 = senaste, andra körningen 0. Integrationstest
+  #83 i CI. 🔑 **AXEL KÖR:** klistra hela sql/014_gallring.sql i SQL-editorn (deploy-tokenen får inte röra
+  databasen, #86). Första körningen: `SELECT gallra_vader(7);` direkt efteråt ger svaret hur många rader
+  som togs — klistra talet till Bengt. Bevis därefter: `SELECT count(*) FROM weather_observations WHERE
+  sample_time BETWEEN now() - interval '9 days' AND now() - interval '8 days';` ≤ 45 000, och grind-a
+  14/9 med samma n som 7/9-körningen hade gett. Steg 2 (1,1 GB-vintern) kvarstår som oktoberbeslut.
 - [x] ~~Fastställ trösklarna för skuggan~~ ✅ FASTSTÄLLT 2/9 (DECISIONS #61): Axels
   "kör" relayerat av Bengt i chatten, värdena oförändrade från Bengts 1/9-version inkl.
   §2-orsaksklassningen. Kvitto: huvudet i docs/TROSKLAR-SKUGGAN.md. Bocken här är

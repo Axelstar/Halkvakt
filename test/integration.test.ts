@@ -161,3 +161,36 @@ test("#80 --skip: tom lastChangeId lämnar sync_state orörd", { skip: !url }, a
   } finally { await pool.end(); }
 });
 
+
+// #83 gallringen: allt äldre än `dagar` tunnas till EN rad per station och 30-minutershink — den
+// senaste, precis den grind A och grind V-A väljer (BUCKET_S = 1800, ORDER BY sample_time DESC).
+// Sista veckan rörs inte. Andra körningen hittar inget. Körs mot riktiga tabellen (PostGIS-geom).
+test("#83 gallra_vader: tunnar gammalt till 30 min, lämnar sista veckan, idempotent", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  try {
+    await pool.query(readFileSync(new URL("../sql/014_gallring.sql", import.meta.url), "utf8"));
+    await pool.query(`DELETE FROM weather_observations WHERE station_id IN ('G10', 'G5')`);
+    // G10 mäter var 10:e minut: ett helt dygn 20 dygn sedan + ett helt dygn igår. G5 var 5:e minut, 20 dygn sedan.
+    await pool.query(`
+      INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c)
+      SELECT 'G10', 'Tiominuters', ST_SetSRID(ST_MakePoint(15, 60), 4326), date_trunc('day', now() - interval '20 days') + i * interval '10 min', i FROM generate_series(0, 143) i
+      UNION ALL
+      SELECT 'G10', 'Tiominuters', ST_SetSRID(ST_MakePoint(15, 60), 4326), date_trunc('day', now() - interval '1 day') + i * interval '10 min', i FROM generate_series(0, 143) i
+      UNION ALL
+      SELECT 'G5', 'Femminuters', ST_SetSRID(ST_MakePoint(16, 61), 4326), date_trunc('day', now() - interval '20 days') + i * interval '5 min', i FROM generate_series(0, 287) i`);
+    const bort = (await pool.query(`SELECT gallra_vader(7) AS n`)).rows[0].n;
+    assert.equal(Number(bort), 96 + 240, "G10: 144 → 48, G5: 288 → 48; igår orörd");
+    const kvar = (await pool.query(`SELECT station_id, (sample_time < now() - interval '7 days') AS gammal, count(*)::int AS n
+      FROM weather_observations WHERE station_id IN ('G10', 'G5') GROUP BY 1, 2 ORDER BY 1, 2`)).rows;
+    assert.deepEqual(kvar, [
+      { station_id: "G10", gammal: false, n: 144 }, { station_id: "G10", gammal: true, n: 48 }, { station_id: "G5", gammal: true, n: 48 }]);
+    // Kvar i varje hink är den SENASTE mätningen: hink 0 (00:00–00:29) behåller 00:20 för G10, 00:25 för G5.
+    const forsta = (await pool.query(`SELECT station_id, to_char(min(sample_time), 'HH24:MI') AS t FROM weather_observations
+      WHERE station_id IN ('G10', 'G5') AND sample_time < now() - interval '7 days' GROUP BY 1 ORDER BY 1`)).rows;
+    assert.deepEqual(forsta, [{ station_id: "G10", t: "00:20" }, { station_id: "G5", t: "00:25" }]);
+    const igen = (await pool.query(`SELECT gallra_vader(7) AS n`)).rows[0].n;
+    assert.equal(Number(igen), 0, "andra körningen har inget att ta");
+  } finally { await pool.end(); }
+});
