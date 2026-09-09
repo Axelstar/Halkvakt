@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-09 00:02 av Claude (webben) — #80 KLART: healthcheck #145 grön, första gröna sedan 5/9, incident-issue #77 auto-stängd. Enda öppna issue är #15 (kort #42, Bengts)*
+*Uppdaterad: 2026-09-09 00:10 av Claude (webben) — nytt kort #81: byggordningen efter radardomen 14/9 för #42, sju regler ur veckans fel och sex steg med varsitt bevis. Låst bakom domen*
 
 ---
 
@@ -965,6 +965,56 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   bevis = rader med rain_sum_mm senaste timmen vid regn. BESLUTSLÄGET (a/b/c) oförändrat.
   Grind V-A kräver Actions eller Axels lokala körning (`publish/grind-v-a.ts 30`).
   *(nyckel för röst: Axels ja — rösttext, plats i A-skalan, ordning mot #15/#16)*
+- [ ] 🧭 **#81 Byggordning efter radardomen 14/9 — så byggs #42 utan att upprepa 5–8/9** (Bengts
+  beställning 9/9 00:05). 🔒 LÅST BAKOM 14/9: faller domen illa gäller #42:s alternativ a/b i
+  stället, och det här kortet stängs oanvänt. Faller den väl ut byggs det i DEN HÄR ordningen,
+  och varje steg har sitt eget bevis innan nästa börjar.
+  **SJU REGLER som var och en svarar mot ett fel vi redan betalat för:**
+  (1) **Allt nytt bor i Supabase.** Actions är till för mätknappar, veckoprov och byggen — inte
+  drift. Fem dygn utan data (5/9) och 2 000 minuter på grannländer (#53) är priset vi vet.
+  (2) **En skrivare per fil, tabell och kursor.** Manifestet som inte stämde (#74) och
+  kursorkrocken (#73a/#80) var båda två skrivare. Nytt fält = en ägare, namngiven i kortet.
+  (3) **Deploy är inte klar förrän mätt EFTER deploy** — via deploy-supabase.yml när tokenen
+  finns, aldrig "ligger på main". Tre fixar låg färdiga i timmar 8/9 med Axels terminal som
+  enda väg.
+  (4) **Bevisa på det led som faktiskt kan gå sönder.** "Filen är färsk på CDN" var inte
+  "appen har den" (manifest-sha). Varje steg nedan anger vilket led som mäts.
+  (5) **Vakthunden får en rad per nytt led INNAN ledet går skarpt.** En grön lampa på ett led
+  ingen mäter är värre än ingen lampa (#76, #78).
+  (6) **Tröskeldokumentet styr, aldrig koden.** Regntröskeln och kalibreringsfaktorn faller
+  ur domen och V-A, skrivs in i TROSKLAR-VATTENPLANING §2 FÖRE kod, ändras bara med §5:s
+  dubbelsignatur. Halkan vinner alltid (DECISIONS #68) — egen vektor.
+  (7) **Silence is a feature.** Radarn får en givarvakt som stationerna (#75): täckningsmask,
+  kalibreringsfaktor, ålder ≤ 70 min — utanför det är den tyst, inte "ungefär rätt".
+  **STEGEN, i ordning, var och en med Verify:**
+  · **A. Kalibreringen in i dokumentet.** Radar-mot-station-faktorn ur domens v3 skrivs in i
+    TROSKLAR-VATTENPLANING steg 2 tillsammans med regntröskeln ur V-A (måndag 14/9). Ingen
+    kod. Verify: PR med siffrorna, båda signaturerna, innan steg B öppnas.
+  · **B. Datan — utan nya minuter.** radar_precip fylls redan en gång i timmen som ett steg i
+    ingest-jobbet (ryms i timmens minut). Tätare kadens BARA om radar.ts bevisats köra under
+    2 s CPU som edge function (h5wasm går i Deno, wall-clock är ofarlig, CPU:n omätt) — då
+    flyttas den och kan gå var 5:e minut för noll minuter. Aldrig tätare i Actions: 12/h vore
+    288 min/dygn, oktoberpotten på en vecka. Verify: `ms` och CPU i första edge-körningen, ELLER
+    Actions-minuter per dygn oförändrade efter en vecka.
+  · **C. Snapshoten — en skrivare.** publicera (snapshotkärnan) får `regn` mm/h per station
+    (rain_sum_mm × 2) och per segment (radar_precip, ålder ≤ 70 min, faktor ur A, täcknings-
+    mask). Ingen annan skriver fältet. Verify: test i snapshot-core.test.ts, manifest-sha
+    stämmer i kartrepot, fältet syns i live.json — och vakthunden får raden "regn i snapshoten".
+  · **D. Motorn — tre portar, en vektor per regel.** Ny hazard `aquaplaning`: segmentkälla
+    (radar) får säga "på vägen framöver", punktkälla (station) bara "framöver". Grindar:
+    fart ≥ 70 km/h på enheten, yttemp > +4 °C (halkan vinner, egen vektor), max 3 per rutt
+    och regndygn (V-B). Plats i A-skalan = Axels ja. Verify: vektorerna gröna i TS, Kotlin och
+    Swift (ios-engine + android gröna INNAN någon arkiverar — läxan 2/9).
+  · **E. Skuggan i skuggmotorn (V-B).** Loggar vad rösten SKULLE sagt, rör ingen användare.
+    Facit: situation_archive (skrivs av ingest-live, noll minuter). Veckorapport måndagar via
+    grind-v-b-knappen (1–3 min/vecka) eller skuggrapporten i Supabase. Verify: V-B:s tal
+    (≤ 20 % falsklarm, ≤ 40 % miss) över V-C:s underlag (≥ 200 varningar, ≥ 15 facit,
+    ≥ 5 regndygn, ≥ 3 län). Inte förr.
+  · **F. Rösten.** Bara efter V-C och Axels ja (rösttext, A-skalan, ordning mot #15/#16).
+    PRODUKTBOK i samma commit. Verify: en rad i skuggloggen som blev ett riktigt larm, hörd
+    i bil av Bengt.
+  **KOSTNAD OM ORDNINGEN HÅLLS:** noll nya Actions-minuter i drift; 1–3 min/vecka för grinden.
+  Det som kan kosta är bara steg B om radarn tätas i Actions — därför regel 1.
 
 ---
 
