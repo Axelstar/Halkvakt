@@ -1523,3 +1523,9 @@ rader. Riktig tunning börjar 16/9 när minutupplösningen passerat 7 dygn. Larm
 med etiketten vakthund ⇒ PAT:en har Issues:Write, Axels punkt 2 bockad. Kvar: issue #91 ska auto-stängas
 11:07; puls-healthcheck är fortfarande Axels val (kort #50).
 
+## 2026-09-09 11:15 — puls-healthcheck på som bro (DECISIONS #91), larmvägen hel åt båda hållen
+Bengt: "gör den som en bro". pulsklocka #12/#13: puls-healthcheck 23 */2 tillbaka, token=true, 10 cron-jobb.
+Issue #91 (larmprovet) stängdes av vakthunden 11:07:02. Nytt kort #87: healthcheckens fem kontroller in i
+vakthunden, sedan healthcheck.yml ner (låst bakom 14/9). Dagens facit: alla punkter i Axels lista
+verkställda utom nyckelrotationerna (datum i #86). Kvällsavläsningen 17:30 räknar minuter och hål.
+

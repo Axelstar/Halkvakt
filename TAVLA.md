@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-09 11:05 av Claude (webben) — DB-knappen byggd (dbknapp.yml): gallringen KÖRD (3 551 raderade, cron-jobb aktivt), larmprovet BEVISAT (issue #91, PAT har Issues:Write). Före det: #79 KLART (puls-regn-30 avvecklad, pulsklocka #11), #85 alla tre snitten i drift, #50 svar på Axels pulsfråga. Före det: kort #85 snitt 1+2 BEVISADE: grannar #12 44 s (var 6 min), fi/dk-commit a28ea98 ur samma körning. Före det: kort #85 snitt 1+2 BYGGDA (grannar batchade, publish-map nedlagd, DECISIONS #88), bevis väntar på nästa pulsade körning. Före det: kort #83 steg 1 BYGGT (sql/014_gallring.sql, DECISIONS #87), Axel kör i SQL-editorn. Före det: Axels varv bokfört: #84 och #78 KLART (ingest-live deployad, deploy-knappen lever), #83 omräknat på Axels mätning + ja till steg 1, nytt #86 nyckelkalendern (PAT 22/11, Supabase 8/12). Före det: morgonavläsning: #82 slutbevis, #50 två hål > 2 h 30 (puls-healthcheck av), #44 dygnsbevis 26 % men skevt urval, #83 uppmätt 62 000 rader/dygn, #79 stäng regn-30 nu, NYTT #85 Actions-takten spränger 35 USD ~26/9. Före det: kort #83 (gallring, två steg + mätfråga) och #84 (deploya ingest-live; fynd: regn-30 kan inte laga luckan) skrivna för Axel. Före det: kort #82 KLART: bridges-cronen bort (PR #81, ci #464 grön). Före det: nytt kort #81: byggordningen efter radardomen 14/9 för #42, sju regler ur veckans fel och sex steg med varsitt bevis. Låst bakom domen*
+*Uppdaterad: 2026-09-09 11:15 av Claude (webben) — puls-healthcheck PÅ som bro (pulsklocka #13, kort #50, DECISIONS #91), issue #91 auto-stängd 11:07 (larmvägen hel åt båda hållen), nytt kort #87 (healthchecken in i vakthunden, låst bakom 14/9). Före det: DB-knappen byggd (dbknapp.yml): gallringen KÖRD (3 551 raderade, cron-jobb aktivt), larmprovet BEVISAT (issue #91, PAT har Issues:Write). Före det: #79 KLART (puls-regn-30 avvecklad, pulsklocka #11), #85 alla tre snitten i drift, #50 svar på Axels pulsfråga. Före det: kort #85 snitt 1+2 BEVISADE: grannar #12 44 s (var 6 min), fi/dk-commit a28ea98 ur samma körning. Före det: kort #85 snitt 1+2 BYGGDA (grannar batchade, publish-map nedlagd, DECISIONS #88), bevis väntar på nästa pulsade körning. Före det: kort #83 steg 1 BYGGT (sql/014_gallring.sql, DECISIONS #87), Axel kör i SQL-editorn. Före det: Axels varv bokfört: #84 och #78 KLART (ingest-live deployad, deploy-knappen lever), #83 omräknat på Axels mätning + ja till steg 1, nytt #86 nyckelkalendern (PAT 22/11, Supabase 8/12). Före det: morgonavläsning: #82 slutbevis, #50 två hål > 2 h 30 (puls-healthcheck av), #44 dygnsbevis 26 % men skevt urval, #83 uppmätt 62 000 rader/dygn, #79 stäng regn-30 nu, NYTT #85 Actions-takten spränger 35 USD ~26/9. Före det: kort #83 (gallring, två steg + mätfråga) och #84 (deploya ingest-live; fynd: regn-30 kan inte laga luckan) skrivna för Axel. Före det: kort #82 KLART: bridges-cronen bort (PR #81, ci #464 grön). Före det: nytt kort #81: byggordningen efter radardomen 14/9 för #42, sju regler ur veckans fel och sex steg med varsitt bevis. Låst bakom domen*
 
 ---
 
@@ -804,6 +804,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   aldrig fel. Kostnad om den slås på: 12 jobbstarter/dygn ≈ 12 min. Alternativet är att vakthunden i
   Supabase bär hela vakten — men dess larmväg är obevisad tills larmprovet (?larmprov=1) gett en issue
   med etiketten vakthund; 9/9 11:00 finns ingen sådan issue. Axels val, ingen kod förrän han sagt ja.
+  ✅ **BRON PÅ 9/9 11:09 (Bengts beslut "gör den som en bro", DECISIONS #91):** pulsklocka #12 inventering +
+  #13 skarp: `schemalagt: puls-healthcheck (23 */2 * * *) → healthcheck.yml`, bevisvakten `OK … token=true`,
+  10 cron-jobb. Larmvägen bevisad åt båda hållen samma timme: larmprovet öppnade issue #91 10:58:40 och
+  vakthundens gröna körning stängde den 11:07:02. BRONS SLUT = kort #87 (kontrollerna in i vakthunden,
+  healthcheck.yml läggs ner). Bevis för bron: healthcheck-körningar på :23 varannan timme från 12:23, inget
+  mellanrum över 2 h 30 under ett dygn — kort #50:s ursprungliga beviskrav, läses av morgonavläsningen 10/9.
   ⏭️ NÄSTA: mät om samma fönsterlängd när Actions lever igen (kort #53 är grinden).
   Beviskravet är oförändrat — ett DYGN utan mellanrum över 2 h 30.
   ⚠️ VÄNTAD BIEFFEKT, säg det innan någon misstolkar den: en vakt som tittar var annan
@@ -978,6 +984,18 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Bryter dokumentationsregeln. *(Delvis åtgärdad i detta varv — resten nästa.)*
 
 ### Claude — låst (väntar på nyckel)
+- [ ] 🐕 **#87 Healthcheckens fem kontroller in i vakthunden — sedan läggs healthcheck.yml ner** (bron i
+  kort #50, Bengt 9/9). 🔒 LÅST BAKOM 14/9 (radardomen först, kort #81:s ordning). Vakthunden i Supabase
+  (varje timme, larmväg bevisad 9/9 med issue #91 öppnad OCH stängd) ser livekedjan och manifestet. Kvar i
+  healthcheck.yml, som kostar 12 Actions-minuter/dygn på pulsen: (1) fi/dk/no-arkivens ålder (gräns 120 min),
+  (2) gränsstationerna (FI ≥ 10, NO ≥ 20 nåbara), (3) kamerorna + road_conditions_arkiv (gräns 150 min),
+  (4) arkivvakten (oarkiverade tillstånd > 3 h), (5) kartlagrens ålder (meta.json ≤ 90 min, kameror-vaglag
+  ≤ 7 dygn). Alla är SQL eller en GET — inget kräver Actions. Bygg: fem rader i vakthund/index.ts med samma
+  trösklar, bunta/deploya via deploy-supabase, larmprov, sedan pulsklockans AVVECKLA += puls-healthcheck
+  och healthcheck.yml raderas (auto-close av incident-issues flyttar med). Verify: en vecka utan healthcheck-
+  körningar där vakthunden larmat på ett framkallat fel i VARJE av de fem (?larmprov räcker inte — fem
+  riktiga trösklar sänkta tillfälligt i ett prov). Sparar 12 min/dygn = 360 min/mån = hela oktoberpotten
+  för iOS-vektorerna och Android-byggena.
 - [ ] **#27 asc-CLI:t** — enkommandos-TestFlight + CI-hämtad testarfeedback.
   🔓 **Halvöppnad 31/8:** Apple-kontot finns. Kvarvarande nyckel = en ASC API-nyckel
   som Axel skapar i App Store Connect → Users and Access → Integrations. Säg till så
