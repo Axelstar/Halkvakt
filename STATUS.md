@@ -1508,3 +1508,11 @@ ingest-grannar #12 (08:24, första på nya koden): FI 6 s, DK 13 s, NO 7 s, fi/d
 körning. publish-map körde inte (nedlagd). Väntat: ~168 min/dygn mindre; kvällsavläsningen 17:30
 mäter hela dygnet. Kvar: Axel stänger puls-regn-30 (24 min/dygn).
 
+## 2026-09-09 11:00 — puls-regn-30 avvecklad (DECISIONS #89); Axels svar bokfört
+Axel: "i övrigt kör vi", osäker på pulsklockan, tror sig ha full behörighet. Kört: pulsklocka #10
+(inventering) + #11 (skarp) från grenen: puls-regn-30 borta, 8 cron-jobb kvar, mall = grannar.
+Alla tre #85-snitten i drift. Svar på pulsfrågan på kort #50: pulsen har aldrig missat en avfyrning
+i någon mätning (6/6, 23/23, 4/4, 4/4), GitHub-cronen 40 %. "Full behörighet" är obevisad: ingen
+issue med etiketten vakthund finns ⇒ larmprovet är inte kört. Gallringen (014) inte körd än:
+inget halkvakt-gallring-jobb i cron-listan.
+
