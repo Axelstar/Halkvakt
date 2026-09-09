@@ -27,10 +27,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   settings → PAT → Halkvakt-token → Repository permissions → Issues: Read and write.
 - [ ] **3. Skärmklipp av Billing till Bengt** — du har redan bilden (2000/2000 min, reset om
   23 dagar ⇒ 1/10, spending limit noll). Vidarebefordra den bara.
-- [x] ~~4. Supabase-token som `SUPABASE_ACCESS_TOKEN` i GitHub Secrets~~ ✅ GJORT 9/9 05:20 — tokenen är
-  projekt-scopad till Halkvakt med ENDAST Edge Functions: Write (Axels val: en deploy-nyckel ska inte
-  kunna röra databas eller nycklar). Bevis: deploy-supabase #1 grön 05:20:51, funktion=vakthund,
-  "Deployed Functions: vakthund". Bengt och Claude kan deploya själva nu. ⏰ Tokenen går ut 8/12 (#86).
+- [x] ~~4. Supabase-token som `SUPABASE_ACCESS_TOKEN` i GitHub Secrets~~ ✅ GJORT 9/9 05:20 (Axel,
+  DECISIONS #86) — tokenen är projekt-scopad till Halkvakt med ENDAST Edge Functions: Write (Axels val:
+  en deploy-nyckel ska inte kunna röra databas eller nycklar). Bevis: deploy-supabase #1 grön 05:20:51,
+  funktion=vakthund, "Deployed Functions: vakthund". Bengt och Claude kan deploya själva nu.
+  ⚠️ Går ut ~8/12, mitt i vintern — Axel lägger påminnelse, tavlan bär datumet i kort #86.
 - [ ] 5. TestFlight-gruppen: lägg 0.3.5 (8) om det inte skett automatiskt
 - [ ] 6. Tolv testare till väntelistan (fortfarande det som avgör vintern)
 - [ ] 7. Google Play-konto (signeringen är lagad, AAB:n grön — vägen är öppen)
