@@ -1,6 +1,7 @@
 // #38 Broarna — hämtar alla broar på motorväg/riksväg/primärväg i Sverige ur OpenStreetMap
-// (Overpass) till data/bridges.geojson. Statisk fil i repot: broar flyttar inte. Körs av
-// bridges.yml var 6:e timme tills filen finns, sedan en gång i månaden. Provar tre speglar.
+// (Overpass) till data/bridges.geojson. Statisk fil i repot: broar flyttar inte. Körs bara
+// på knapp (bridges.yml, alltid --force) sedan kort #82 — 30-dagarsspärren nedan gäller lokalt;
+// i CI har filen alltid ålder noll. Provar tre speglar.
 // Licens: ODbL — "© OpenStreetMap-bidragsgivare" måste anges där broarna syns.
 import { writeFileSync, existsSync, statSync, mkdirSync } from "node:fs";
 

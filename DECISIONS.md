@@ -1270,3 +1270,16 @@ Kursorerna weather/deviations i loggen är livemotorns och rördes inte. Pulsklo
 skulle skapa puls-ingest; skarp körning därefter. Healthcheckens cameras/road_conditions_arkiv
 ska gå grönt inom en timme — det är beviset, inte den här raden.
 
+## #85 (9/9 2026 01:05) Kort #82: bridges.yml utan cron — knapp med --force
+FYND under Bengts brofråga: bridges.yml körde `23 */6 * * *` "tills filen finns, sedan skippar
+skriptet i 30 dagar". Filen finns sedan 4/9, men jobbet fortsatte: 32 körningar t.o.m. 8/9 21:15
+(körning #32, 10 s, "hoppar över"), varje debiterad som en hel minut ≈ 120 min/mån för ingenting.
+Spärren bet dessutom fel åt andra hållet: mtime i ett färskt checkout är alltid nu ⇒ i CI hade
+filen ALDRIG uppdaterats, inte ens efter 30 dagar.
+BESLUT: cronen stryks. Kvar är workflow_dispatch, och knappen kör `--force` så att ett tryck
+hämtar på riktigt. Broar flyttar inte (#50: "statisk fil i repot"); uppdatering är ett medvetet
+handgrepp, inte en klocka. Alternativet "cron en gång i månaden" (MINUTPLAN rad 5) valdes bort:
+den hade behövt --force för att alls göra något, och en månatlig Overpass-hämtning mot en fil
+som inte ändras är fortfarande en minut för ingenting.
+BEVIS: inga schedule-körningar av bridges efter mergen; kortet bockas av morgonavläsningen.
+

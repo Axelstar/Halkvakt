@@ -1,7 +1,9 @@
 name: bridges
+# Kort #82 (9/9 2026): ingen cron. Broar flyttar inte, filen ligger i repot sedan 4/9, och
+# 30-dagarsspärren i skriptet bet aldrig i CI (ett färskt checkout ger filen ålder noll) —
+# jobbet körde var 6:e timme för att skriva "hoppar över" och debiterades en minut varje gång
+# (32 körningar t.o.m. 8/9). Uppdatering = knappen, som tvingar hämtning.
 on:
-  schedule:
-    - cron: "23 */6 * * *"   # var 6:e timme tills data/bridges.geojson finns, sedan skippar skriptet i 30 dagar
   workflow_dispatch:
 jobs:
   fetch:
@@ -12,7 +14,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
-      - run: node --experimental-strip-types scripts/fetch-bridges.ts
+      - run: node --experimental-strip-types scripts/fetch-bridges.ts --force
       - name: Commit om filen ändrats
         run: |
           git config user.name "Claude (Halkvakt)"; git config user.email "claude@halkvakt.se"

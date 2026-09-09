@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-09 00:10 av Claude (webben) — nytt kort #81: byggordningen efter radardomen 14/9 för #42, sju regler ur veckans fel och sex steg med varsitt bevis. Låst bakom domen*
+*Uppdaterad: 2026-09-09 01:05 av Claude (webben) — kort #82: bridges-cronen bort (32 tomma körningar), knappen kvar med --force. Före det: nytt kort #81: byggordningen efter radardomen 14/9 för #42, sju regler ur veckans fel och sex steg med varsitt bevis. Låst bakom domen*
 
 ---
 
@@ -1019,6 +1019,17 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 ---
 
 ## 🟡 GÖRA (pågår just nu)
+
+- [ ] 🧹 **#82 bridges.yml: cron bort — jobbet körde var 6:e timme för att göra ingenting**
+  (Bengts order 9/9 01:00, hittat under brofrågan). FYND: data/bridges.geojson ligger i repot
+  sedan 4/9 (2 476 broar), men jobbet fortsatte var 6:e timme: 32 körningar t.o.m. #32 8/9
+  21:15, var och en ~10 s och debiterad som en hel minut ≈ 120 min/mån ur potten
+  (MINUTPLAN 6/9 rad 5). Orsak två: skriptets 30-dagarsspärr mäter filens mtime, och ett färskt
+  checkout ger alltid ålder noll ⇒ "hoppar över" för evigt, aldrig en uppdatering. BYGGT:
+  cron struken, bara knappen kvar, och knappen kör med --force så att ett tryck faktiskt hämtar.
+  Broar flyttar inte; nästa hämtning är ett medvetet tryck (t.ex. inför säsong 2).
+  Verify: inga fler schedule-körningar av bridges efter mergen (Actions → bridges visar bara
+  #32 som sista schedule), och CI grön. Beviset läses av morgonavläsningen.
 
 
 ---
