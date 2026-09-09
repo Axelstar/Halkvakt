@@ -24,8 +24,12 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
   // Kort #80: svenska GitHub-ingesten tillbaka EN gång i timmen — med --skip=weather,deviations
   // i ingest.yml bär den bara det livemotorn inte gör (kamerorna, moaten, polisen, SMHI).
   { namn: "puls-ingest", schema: "11 * * * *", fil: "ingest.yml" },
-  // puls-healthcheck stängde Axel av 8/9 med flit — vakthunden i Supabase (DECISIONS #73/#78)
-  // tog över. Får inte återskapas härifrån utan hans ja (fråga öppen 9/9, kort #50).
+  // Kort #50 (Bengts beslut 9/9 "gör den som en bro", DECISIONS #91): puls-healthcheck tillbaka.
+  // Axel stängde den 8/9 när vakthunden i Supabase tog över, men vakthunden ser bara livekedjan
+  // och manifestet — healthchecken är ensam om grannländerna, gränsstationerna, kamerorna,
+  // kartlagren och arkivvakten, och naken GitHub-cron gav 40 % och fyrtimmarshål. BRO: 12 min/dygn
+  // tills kontrollerna flyttat in i vakthunden och healthcheck.yml lagts ner (kort #87).
+  { namn: "puls-healthcheck", schema: "23 */2 * * *", fil: "healthcheck.yml" },
 ];
 
 // AVVECKLAS (kort #53): de tre grannjobben ersätts av ett. Utan borttagning skulle de

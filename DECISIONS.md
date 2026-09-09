@@ -1376,3 +1376,18 @@ etiketten vakthund och LARMPROV-raden. PAT:en har alltså Issues:Write — Axels
 och kort #78:s larmväg är hel. Issuen ska stängas automatiskt av vakthundens nästa gröna körning 11:07;
 det är kvittot på att larmvägen fungerar åt båda hållen.
 
+## #91 (9/9 2026 11:09) puls-healthcheck tillbaka — som BRO, inte som slutläge (kort #50, Bengt)
+Axel var osäker ("har inte pulsklockan orsakat bekymmer?"). Mätningarna säger nej: pulsen har levererat
+på sekunden varje gång den mätts (healthcheck 6/6, regn-30 23/23, grannar och ingest 4/4 + 4/4 i natt);
+GitHub-cronen gav 40 % och fyrtimmarshål 9/9 (02:23 uteblev, 04:23 kom 25 min sent). Det som såg ut som
+pulsens fel 5/9 var Actions-gränsen. Bengts beslut: på, som bro.
+VARFÖR BRO: vakthunden i Supabase har sedan 9/9 10:58 en bevisad larmväg (issue #91 öppnad av larmprovet,
+stängd av nästa gröna körning 11:07:02), men den ser bara livekedjan och manifestet. Healthchecken är
+ensam om grannländerna, gränsstationerna, kamerorna, arkivvakten och kartlagren. Rätt slutläge är #82:s
+regel — allt nytt bor i Supabase: flytta de fem kontrollerna in i vakthunden och lägg ner healthcheck.yml
+(kort #87, låst bakom 14/9). Tills dess: 12 jobbstarter/dygn ≈ 12 min ≈ 2 USD till 1/10.
+GENOMFÖRT: pulsklocka #12 (inventering) + #13 (skarp, 11:09): `schemalagt: puls-healthcheck
+(23 */2 * * *) → healthcheck.yml`, bevisvakten OK token=true, 10 cron-jobb (varav halkvakt-gallring
+från 10:58). BEVIS: healthcheck som workflow_dispatch på :23 varannan timme från 12:23, inget mellanrum
+över 2 h 30 under ett dygn — läses av morgonavläsningen 10/9.
+
