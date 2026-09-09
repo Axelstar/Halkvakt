@@ -1,0 +1,40 @@
+name: dbknapp
+# DB-knappen (9/9): kör en migration ur sql/ eller vakthundens larmprov mot databasen, med
+# DATABASE_URL som redan ligger i Secrets. Ett medvetet tryck, aldrig cron. Se scripts/dbknapp.ts.
+on:
+  workflow_dispatch:
+    inputs:
+      atgard:
+        description: "migrera (kör fil) eller larmprov (vakthundens larmväg)"
+        type: choice
+        default: migrera
+        options: [migrera, larmprov]
+      fil:
+        description: "SQL-fil (bara för migrera)"
+        default: sql/014_gallring.sql
+      bevis:
+        description: "Bevisrader efter migrationen, en SQL-sats per rad (bara för migrera)"
+        default: "SELECT jobname, schedule, active FROM cron.job WHERE jobname LIKE 'halkvakt-%' OR jobname LIKE 'puls-%' ORDER BY jobname"
+jobs:
+  dbknapp:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - shell: bash
+        env:
+          DATABASE_URL: "${{ secrets.DATABASE_URL }}"
+          ATGARD: "${{ inputs.atgard }}"
+          FIL: "${{ inputs.fil }}"
+          BEVIS: "${{ inputs.bevis }}"
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          if [ "$ATGARD" = larmprov ]; then
+            node --experimental-strip-types scripts/dbknapp.ts larmprov | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            node --experimental-strip-types scripts/dbknapp.ts migrera "$FIL" --bevis "$BEVIS" | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
