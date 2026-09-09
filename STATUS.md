@@ -1535,3 +1535,11 @@ och vakthund, GitHub Secrets för grannar-jobbets fi/dk-push). Kortet bär Axels
 2027-04-30, samma smala rättigheter) och fyra bevis som Bengt/Claude kör efteråt. Gamla nycklar raderas först
 när bevisen är gröna.
 
+## 2026-09-09 17:45 — Kvällsavläsning: kassan under kontroll, bron levererar, kedjan hel
+Actions 04:31→17:32: 60 körningar, 84 debiterade min ⇒ 155 min/dygn (baslinje 240); steady state
+efter dagens tre snitt ~60 min/dygn ⇒ ~10 USD till 1/10. regn-30 sist 10:41, publish-map sist 07:11,
+bridges sist 8/9 21:15. Healthcheck på pulsen 12:23/14:23/16:23 alla inom 2 s, 0 hål över 2 h 30 sedan
+11:09 (före: 6 h 41). Kartrepot 17:30: manifest-sha = live-sha, meta 1 min, SE 93 % ≤ 12 min, FI 76 %
+(timvis), DK 0/24 (DMI timvärden — väntat). ci #475 grön på main. Arkivet +8 355 rader netto på
+dagen (~24 000 brutto/dygn med dieten). Byggt: inget. Nästa: morgonavläsning 10/9 04:30 UTC.
+

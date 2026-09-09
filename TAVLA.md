@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-09 12:05 av Claude (webben) — kort #86: nyckelrotation förberedd (tre ställen för PUBLISH_TOKEN, ordning A/B, fyra bevis), go ahead till Axel. Före det: puls-healthcheck PÅ som bro (pulsklocka #13, kort #50, DECISIONS #91), issue #91 auto-stängd 11:07 (larmvägen hel åt båda hållen), nytt kort #87 (healthchecken in i vakthunden, låst bakom 14/9). Före det: DB-knappen byggd (dbknapp.yml): gallringen KÖRD (3 551 raderade, cron-jobb aktivt), larmprovet BEVISAT (issue #91, PAT har Issues:Write). Före det: #79 KLART (puls-regn-30 avvecklad, pulsklocka #11), #85 alla tre snitten i drift, #50 svar på Axels pulsfråga. Före det: kort #85 snitt 1+2 BEVISADE: grannar #12 44 s (var 6 min), fi/dk-commit a28ea98 ur samma körning. Före det: kort #85 snitt 1+2 BYGGDA (grannar batchade, publish-map nedlagd, DECISIONS #88), bevis väntar på nästa pulsade körning. Före det: kort #83 steg 1 BYGGT (sql/014_gallring.sql, DECISIONS #87), Axel kör i SQL-editorn. Före det: Axels varv bokfört: #84 och #78 KLART (ingest-live deployad, deploy-knappen lever), #83 omräknat på Axels mätning + ja till steg 1, nytt #86 nyckelkalendern (PAT 22/11, Supabase 8/12). Före det: morgonavläsning: #82 slutbevis, #50 två hål > 2 h 30 (puls-healthcheck av), #44 dygnsbevis 26 % men skevt urval, #83 uppmätt 62 000 rader/dygn, #79 stäng regn-30 nu, NYTT #85 Actions-takten spränger 35 USD ~26/9. Före det: kort #83 (gallring, två steg + mätfråga) och #84 (deploya ingest-live; fynd: regn-30 kan inte laga luckan) skrivna för Axel. Före det: kort #82 KLART: bridges-cronen bort (PR #81, ci #464 grön). Före det: nytt kort #81: byggordningen efter radardomen 14/9 för #42, sju regler ur veckans fel och sex steg med varsitt bevis. Låst bakom domen*
+*Uppdaterad: 2026-09-09 17:45 av Claude (webben) — kvällsavläsning: 155 min/dygn i fönstret, steady state ~60, bron 3/3 och 0 hål, regn-30 tyst sedan 10:41, kartrepot helt. Före det: kort #86: nyckelrotation förberedd (tre ställen för PUBLISH_TOKEN, ordning A/B, fyra bevis), go ahead till Axel. Före det: puls-healthcheck PÅ som bro (pulsklocka #13, kort #50, DECISIONS #91), issue #91 auto-stängd 11:07 (larmvägen hel åt båda hållen), nytt kort #87 (healthchecken in i vakthunden, låst bakom 14/9). Före det: DB-knappen byggd (dbknapp.yml): gallringen KÖRD (3 551 raderade, cron-jobb aktivt), larmprovet BEVISAT (issue #91, PAT har Issues:Write). Före det: #79 KLART (puls-regn-30 avvecklad, pulsklocka #11), #85 alla tre snitten i drift, #50 svar på Axels pulsfråga. Före det: kort #85 snitt 1+2 BEVISADE: grannar #12 44 s (var 6 min), fi/dk-commit a28ea98 ur samma körning. Före det: kort #85 snitt 1+2 BYGGDA (grannar batchade, publish-map nedlagd, DECISIONS #88), bevis väntar på nästa pulsade körning. Före det: kort #83 steg 1 BYGGT (sql/014_gallring.sql, DECISIONS #87), Axel kör i SQL-editorn. Före det: Axels varv bokfört: #84 och #78 KLART (ingest-live deployad, deploy-knappen lever), #83 omräknat på Axels mätning + ja till steg 1, nytt #86 nyckelkalendern (PAT 22/11, Supabase 8/12). Före det: morgonavläsning: #82 slutbevis, #50 två hål > 2 h 30 (puls-healthcheck av), #44 dygnsbevis 26 % men skevt urval, #83 uppmätt 62 000 rader/dygn, #79 stäng regn-30 nu, NYTT #85 Actions-takten spränger 35 USD ~26/9. Före det: kort #83 (gallring, två steg + mätfråga) och #84 (deploya ingest-live; fynd: regn-30 kan inte laga luckan) skrivna för Axel. Före det: kort #82 KLART: bridges-cronen bort (PR #81, ci #464 grön). Före det: nytt kort #81: byggordningen efter radardomen 14/9 för #42, sju regler ur veckans fel och sex steg med varsitt bevis. Låst bakom domen*
 
 ---
 
@@ -113,6 +113,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   17:30 räknar hela dygnet mot 240-baslinjen. ✅ **SNITT 3 KÖRT 9/9 10:47** via pulsklockans AVVECKLA
   (pulsklocka #11: `avvecklat: puls-regn-30`, 8 jobb kvar) på Axels "i övrigt kör vi". Alla tre snitten
   är därmed i drift: väntat ~75 min/dygn ⇒ ~13 USD till 1/10. Kvällsavläsningen 17:30 mäter.
+  📏 **KVÄLLSAVLÄSNING 9/9 17:32 (fönster 04:31→17:32, 13,0 h): 60 körningar, 84 debiterade min ⇒ 155
+  min/dygn** (morgonens baslinje 240). Fördelning: grannar 13 × = 31 (5 av dem på gamla koden à 6 min,
+  8 nya à 1), ingest 14, healthcheck 11, ci 7, regn-30 7 (t.o.m. 10:41, sedan borta), publish-map 5
+  (t.o.m. 07:11, sedan borta), pulsklocka 4, dbknapp 2, deploy 1, regn-tackning 1, marknadsforing 1.
+  Fönstret bär alltså fortfarande de tre avvecklade posterna. STEADY STATE från 11:09: grannar 24 +
+  ingest 24 + healthcheck 12 = **~60 min/dygn ⇒ 0,48 USD/dygn ⇒ ~10 USD till 1/10.** Morgonavläsningen
+  10/9 räknar ett rent dygn.
 - [ ] 🗄️ **#83 GALLRING av weather_observations — måste finnas FÖRE första kalla veckan**
   (Bengts beställning 9/9 01:40; kort + förslag av Claude, mätt mot koden 9/9).
   **VARFÖR NU:** arkivdieten (DECISIONS #4: bara yta ≤ 5 °C eller nederbörd) finns i
@@ -122,7 +129,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   **11–16 dygn** räknat från första kalla veckan. 📏 UPPMÄTT 9/9 ur healthcheckens egna
   räknare: weather_obs 187 582 (8/9 21:13) → 195 500 (9/9 00:18) = 7 918 rader på 3 h 05 ⇒
   **~62 000 rader/dygn i september MED dieten** (mild natt, få stationer under 5 °C). Vintern
-  släpper alla 848 stationer genom dieten ⇒ 2× det, i linje med 122 000-uppskattningen. Full databas = ingest-live dör tyst =
+  släpper alla 848 stationer genom dieten ⇒ 2× det, i linje med 122 000-uppskattningen. 📏 DAGTAKT
+  9/9: weather_obs 205 275 (04:49) → 213 630 (16:43) = +8 355 netto på 11 h 54 med gallringens 3 551
+  borträknade ⇒ **~24 000 rader/dygn brutto på dagen**, ~62 000 på natten. Dieten gör sitt jobb i
+  september; vintern upphäver den. Full databas = ingest-live dör tyst =
   appen serverar gammal data igen (5/9-läget, fast utan Actions-larm).
   **VAD SOM FÅR SLÄNGAS UTAN ATT DOMEN RÖRS (mätt i koden):** grind A och grind V-A läser
   båda i 30-minutershinkar och tar SENASTE mätningen per hink (BUCKET_S = 1800,
@@ -829,6 +839,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   vakthundens gröna körning stängde den 11:07:02. BRONS SLUT = kort #87 (kontrollerna in i vakthunden,
   healthcheck.yml läggs ner). Bevis för bron: healthcheck-körningar på :23 varannan timme från 12:23, inget
   mellanrum över 2 h 30 under ett dygn — kort #50:s ursprungliga beviskrav, läses av morgonavläsningen 10/9.
+  📏 **KVÄLLSAVLÄSNING 17:32 — bron levererar:** pulsens workflow_dispatch 12:23:02, 14:23:02, 16:23:01 (3/3
+  inom 2 s). Mellanrum sedan bron slogs på 11:09: 11:29→12:23, 12:23→14:23, 14:23→16:23, 16:23→16:42 —
+  **0 av 4 över 2 h 30.** FÖRE bron, samma dygn: 04:48→11:29 = **6 h 41** på naken cron (slots 06:23,
+  08:23 och 10:23 uteblev alla tre). Dygnsbeviset fullbordas 10/9 ~11:09.
   ⏭️ NÄSTA: mät om samma fönsterlängd när Actions lever igen (kort #53 är grinden).
   Beviskravet är oförändrat — ett DYGN utan mellanrum över 2 h 30.
   ⚠️ VÄNTAD BIEFFEKT, säg det innan någon misstolkar den: en vakt som tittar var annan
