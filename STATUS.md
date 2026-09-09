@@ -1502,3 +1502,9 @@ jobbstarter. Integrationstest #85 mot riktiga scheman i CI. Bevis: nästa pulsad
 ≤ 2 min + fi/dk-commit i kartrepot; kvällsavläsningen räknar min/dygn mot 240. Kvar: Axel stänger
 puls-regn-30.
 
+## 2026-09-09 08:40 — Kort #85 snitt 1+2 bevisade: grannar 44 s i stället för 6 min
+ingest-grannar #12 (08:24, första på nya koden): FI 6 s, DK 13 s, NO 7 s, fi/dk-publicering 6 s,
+44 s totalt = 1 debiterad minut (var 6). Kartrepot a28ea98 08:24:42 med fi+dk-filerna ur samma
+körning. publish-map körde inte (nedlagd). Väntat: ~168 min/dygn mindre; kvällsavläsningen 17:30
+mäter hela dygnet. Kvar: Axel stänger puls-regn-30 (24 min/dygn).
+
