@@ -1516,3 +1516,10 @@ i någon mätning (6/6, 23/23, 4/4, 4/4), GitHub-cronen 40 %. "Full behörighet"
 issue med etiketten vakthund finns ⇒ larmprovet är inte kört. Gallringen (014) inte körd än:
 inget halkvakt-gallring-jobb i cron-listan.
 
+## 2026-09-09 11:05 — DB-knappen: gallringen körd, larmvägen bevisad (DECISIONS #90)
+dbknapp.yml (PR #90) kör en sql/-fil eller vakthundens larmprov med DATABASE_URL ur Secrets. Körd 10:58:
+014 in, gallra_vader(7) 3 551 raderade, halkvakt-gallring aktivt 03:15 UTC, tabellen 37 MB / 207 587
+rader. Riktig tunning börjar 16/9 när minutupplösningen passerat 7 dygn. Larmprovet skapade issue #91
+med etiketten vakthund ⇒ PAT:en har Issues:Write, Axels punkt 2 bockad. Kvar: issue #91 ska auto-stängas
+11:07; puls-healthcheck är fortfarande Axels val (kort #50).
+

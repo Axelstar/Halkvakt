@@ -1359,3 +1359,20 @@ finns → tas bort". Skarp #11 (10:47): `avvecklat: puls-regn-30`, bevisvakten O
 kort #44 någonsin behöver den. FYND i samma lista: inget `halkvakt-gallring`-jobb ännu — 014 har
 inte körts av Axel (kort #83). Sista kvittot: ingen regn-30-körning 11:41.
 
+## #90 (9/9 2026 10:58) DB-knappen: migrationer och larmprov via Actions — gallringen körd, larmvägen bevisad
+Bengts order ("vi gör allt i meddelandet från Axel + halkvakt gallring jobb + kör larmprov"). Ingen av oss
+kan nå SQL-editorn härifrån, men DATABASE_URL ligger redan i Actions-secrets och migrerar i ingesten varje
+timme. Ett medvetet tryck är inte auto-migration: dbknapp.yml (scripts/dbknapp.ts) kör en namngiven fil ur
+sql/ i en transaktion och skriver ut bevisrader efteråt, eller vakthundens larmprov genom att läsa
+vakthundens eget cron-kommando ur cron.job och lägga ?larmprov=1 på URL:en (exakt en träff krävs,
+kommandot skrivs aldrig ut — nyckeln passerar ingen logg).
+GALLRINGEN (dbknapp #1, 10:58:37): 014 körd, `gallra_vader(7)` = 3 551 raderade, `halkvakt-gallring
+15 3 * * * active=true`, rader 8–9 dygn gamla 15 744, tabellen 37 MB / 207 587 rader. Det låga talet är
+väntat: allt äldre än 7 dygn kommer från GitHub-ingestens 2×/h (redan 30-minutersupplösning) och 5–8/9
+saknar data. Minutupplösningen från ingest-live (8/9→) passerar 7-dygnsgränsen 15/9; första riktiga
+tunningen är nattkörningen 16/9 03:15, beviset läses 16/9.
+LARMPROVET (dbknapp #2, 10:58:29): issue #91 "🔴 Vakthunden: kedjan är bruten" skapad 10:58:40 med
+etiketten vakthund och LARMPROV-raden. PAT:en har alltså Issues:Write — Axels "full behörighet" bevisad,
+och kort #78:s larmväg är hel. Issuen ska stängas automatiskt av vakthundens nästa gröna körning 11:07;
+det är kvittot på att larmvägen fungerar åt båda hållen.
+
