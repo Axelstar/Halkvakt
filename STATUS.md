@@ -1553,3 +1553,12 @@ Kartrepot 04:30: manifest-sha = live-sha, meta 1 min, SE 92 % / FI 96 % / DK 92 
 från grannar 04:24. ci #475 grön (inga nya pushar). bridges tyst sedan #32, regn-30 sedan 10:41.
 Radardomen 14/9 08:30 UTC bokad. Byggt: inget. Nästa: kvällsavläsning 10/9 17:30 UTC.
 
+## 2026-09-10 05:30 — Systemanalysen blev åtta kort (Bengts "gör kort för allt")
+Claudes övergripande analys av varningssystemen (samband, beroenden, samarbeten) bokförd som kort så
+inget tappas: #88 trenden ur minutarkivet (billigaste stora klivet, skugga först), #89 övergångarna
+regn→frost och torka→första regnet, #90 vind/sikt som punktfaror, #91 kallplatslagret (statisk
+geometri, förklaringsvariabel i grind A), #92 däcktyp/fordonstyp på enheten (Axel), #93 kommunala
+vägar + SMHI som förstärkare (Bengt), #94 samarbeten försäkringsbolag/åkerier/NTF (Bengt), #95 SMHI
+som reserv för Trafikverket-beroendet (mätning). Alla nya faror: skuggkolumn före röst, tröskel-
+dokument före kod — tystnaden är funktionen. Byggt: inget.
+
