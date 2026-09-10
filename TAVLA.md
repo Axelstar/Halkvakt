@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-10 08:00 av Claude (webben) — kort #95 breddat på Bengts fråga: SMHI som pusselbit för "3 km längre fram" (molnmängd = representativitetsradie, förtätning av ankarnätet), inte bara reserv. Före det: åtta kort ur systemanalysen (#88 trend, #89 övergångar, #90 vind/sikt, #91 kallplatser, #92 däcktyp, #93 kommunala vägar, #94 samarbeten, #95 plan B) på Bengts "gör kort för allt". Före det: morgonavläsning: rent dygn 79 min/dygn (13 USD till 1/10), bron 9/9 inom 2 s och 0 hål på 17 h, arkivet 36 600 rader/dygn i natt, kartrepot helt, nycklarna inte roterade än. Före det: kvällsavläsning: 155 min/dygn i fönstret, steady state ~60, bron 3/3 och 0 hål, regn-30 tyst sedan 10:41, kartrepot helt. Före det: kort #86: nyckelrotation förberedd (tre ställen för PUBLISH_TOKEN, ordning A/B, fyra bevis), go ahead till Axel. Före det: puls-healthcheck PÅ som bro (pulsklocka #13, kort #50, DECISIONS #91), issue #91 auto-stängd 11:07 (larmvägen hel åt båda hållen), nytt kort #87 (healthchecken in i vakthunden, låst bakom 14/9). Före det: DB-knappen byggd (dbknapp.yml): gallringen KÖRD (3 551 raderade, cron-jobb aktivt), larmprovet BEVISAT (issue #91, PAT har Issues:Write). Före det: #79 KLART (puls-regn-30 avvecklad, pulsklocka #11), #85 alla tre snitten i drift, #50 svar på Axels pulsfråga. Före det: kort #85 snitt 1+2 BEVISADE: grannar #12 44 s (var 6 min), fi/dk-commit a28ea98 ur samma körning. Före det: kort #85 snitt 1+2 BYGGDA (grannar batchade, publish-map nedlagd, DECISIONS #88), bevis väntar på nästa pulsade körning. Före det: kort #83 steg 1 BYGGT (sql/014_gallring.sql, DECISIONS #87), Axel kör i SQL-editorn. Före det: Axels varv bokfört: #84 och #78 KLART (ingest-live deployad, deploy-knappen lever), #83 omräknat på Axels mätning + ja till steg 1, nytt #86 nyckelkalendern (PAT 22/11, Supabase 8/12). Före det: morgonavläsning: #82 slutbevis, #50 två hål > 2 h 30 (puls-healthcheck av), #44 dygnsbevis 26 % men skevt urval, #83 uppmätt 62 000 rader/dygn, #79 stäng regn-30 nu, NYTT #85 Actions-takten spränger 35 USD ~26/9. Före det: kort #83 (gallring, två steg + mätfråga) och #84 (deploya ingest-live; fynd: regn-30 kan inte laga luckan) skrivna för Axel. Före det: kort #82 KLART: bridges-cronen bort (PR #81, ci #464 grön). Före det: nytt kort #81: byggordningen efter radardomen 14/9 för #42, sju regler ur veckans fel och sex steg med varsitt bevis. Låst bakom domen*
+*Uppdaterad: 2026-09-10 12:10 av Claude (webben) — 11 kort + #38b:s tre delkort ÅTERSTÄLLDA (↩︎): #38b stråket/ankarbreddningen m.fl. föll av tavlan 8/9 20:43 (commit 99473c7); höjdspåret bokfört på #38b (måndag 7/9 körde aldrig, nästa 14/9 07:00 UTC)*
 
 ---
 
@@ -245,6 +245,26 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] **Danmark — NAP-nyckel** (gratis registrering) före produktion: trafikkort-flödet vi
   läser nu är publikt men odokumenterat.
 
+*↩︎ = ÅTERSTÄLLT 10/9. Korten nedan föll av tavlan 8/9 20:43 (commit 99473c7: Claudes tavelsynk av
+"Axels nästa steg" svalde 174 rader, inkl. tre Claude-sektioner). Inget av dem har bevis på klart sedan dess.*
+- [ ] ↩︎ **Live Activity — varningskortet i Dynamic Island och på låsskärmen** (Axel 31/8: "ska den
+  ligga över Maps?"). Ingen app får rita över en annan; Live Activity är det Apple tillåter:
+  gul rad "Vakten på · 42 min" under körning, blossar upp "▲ Halt väglag · 2,0 km" när rösten
+  talar, synlig över kartan och på låst skärm. Bannern (#23) kvar som textvariant. DECISIONS #38.
+- [ ] ↩︎ **Startknapp på låsskärmen + i Kontrollcenter + åtgärdsknappen** — widget (iOS 17),
+  Control (iOS 18), och en rad i guiden om Åtgärdsknapp → Genväg → Starta vakten (iPhone 15
+  Pro+). Ett tryck, ingen Genvägar. DECISIONS #39.
+- [ ] ↩︎ **Guiden med bilder + film** — skärmbild per steg (ringad knapp) inbakade i appen;
+  15 s film per spår på kartsajten. Råmaterial: Axels inspelningar 31/8 (Inte alls), Bengt
+  filmar CarPlay-spåret.
+- [ ] ↩︎ **Introduktionen** (iOS) — bevis saknas: radera appen → installera → intron ska komma
+  först; "Visa igen" i Inställningar. Introduktionen i Claude Design är enda skärmen som inte
+  ritats om än. Android-spegeln (DECISIONS #36) efter att iOS-varianten testats.
+- [ ] ↩︎ **#23 heads-up** — bannern över kartappen, båda plattformarna. (#22 T3–T7 i bilen och
+  #24-resten står under Claude — låst, Android-listan.)
+- [ ] ↩︎ Skinnet v3 på Android — del 1+2 committade 2/9 (5829d29, ee72f22: Theme.kt, fonter,
+  fem ikoner, två flikar). Bevis på telefon saknas; bockas när Axel sett det.
+
 ### Axel — därefter
 - [ ] **Tolv testare till Play-perioden** — Axels åtagande 31/8: "hittar dem utan problem".
   Väntelisterutan på kartan borttagen på hans beslut. Kvar i `docs/REKRYTERING.md` om det behövs.
@@ -276,6 +296,16 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (c) grind A-infrastrukturen synliggjord som egenfinansierad indata (gränsdragningen);
   (d) konkreta kandidater: AB Bulltoftabanan Malmö (040-29 29 05) + 7 trafikskolor.
   ⏰ Förhandssamtalet till fonden = "första veckan i september" = NU.
+
+- [ ] ↩︎ **Kameravarningen i fel riktning — BEVISET SAKNAS ÄN** (återställt 10/9, föll av 8/9). Koden
+  är bevisat rätt i alla tre motorerna (#55 tolerans 100°→60°, #57 riktningen vänd 180°, #59
+  Öjersjö ID 14102020; 0.3.5 (8) första bygget med grönt kontrakt). Kvar: Bengt kör 0.3.5 och
+  noterar KLOCKSLAG + PLATS per larm och per kamera utan larm. Beskrivningar räcker inte, vi har
+  gissat tre gånger.
+- [ ] ↩︎ Välkomsttext + testinstruktion till kompisarna (extern TestFlight-grupp = Beta App Review).
+- [x] ↩︎ ~~Bodenresan 1/9~~ ✅ GENOMFÖRD — gav DECISIONS #53 (resan håller över pauser) och #55
+  (kameratoleransen). Jämförelsen "Bengts logg bredvid testbilarnas rapport" gjordes aldrig;
+  facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
 - [ ] 🪢 **#95 Plan B för Trafikverket-beroendet — mät SMHI som reserv** (systemanalys 10/9). Allt
@@ -1075,6 +1105,41 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Bryter dokumentationsregeln. *(Delvis åtgärdad i detta varv — resten nästa.)*
 
 ### Claude — låst (väntar på nyckel)
+- [ ] 🧭 ↩︎ **#38b Stråket / skuggmotorn — ÅTERSTÄLLT 10/9** (föll av tavlan 8/9 20:43 i commit
+  99473c7; #88, #91 och #95 hänvisar hit). Bengts byggplan v3 (31/8): segmentmotorn i november, i
+  strikt skugga, dom i mars. Sekvensering mot lanseringen = Axels beslut.
+  - [x] ~~(1) Tröskeldokumentet~~ ✅ 1/9 (DECISIONS #52): docs/TROSKLAR-SKUGGAN.md, grind A/B/C.
+  - [x] ~~(2) Ankarklippningen~~ ✅ 1/9 (DECISIONS #55): kamerorna ger ingen ny ankartäthet
+    (738/744 står vid en VViS); Norrland 9,2 km / 12,6 % oförändrat. Knappen ankaranalys.yml.
+  - [ ] **(3) Offsetmodellen mot arkivdata (grind A)** — publish/grind-a.ts, knappen grind-a,
+    leave-one-out mot A1–A3, domspärr under 500 punkter/20 stationer, larmväg bevisad 1/9.
+    Rökprov 1/9 (43 punkter): felet växer med ankaravståndet (0,63 °C 0–7 km → 5,39 °C >20 km).
+    AUTOMATISK måndagar 05:40. 🔑 Skarp prövning på vinterdata (≥ 500 punkter) före november.
+  - [ ] **(3b) Ankarbreddningen** (Bengts fråga 1/9: "vad krymper avståndet?") — rangordningen
+    står: FELKARTAN DÖMER (behöver luckan lagas alls?), LUFTANKARNA LAGAR, HÖJDEN FINJUSTERAR.
+    · Grannländerna: FI MÄTT 1/9 (Norrland >20 km 12,6→11,5 %). NO/Frost KÖRT 2/9 (DECISIONS
+      #60): luckan RUBBAS INTE (9,1 km / 11,5 % i alla steg) — den är INLANDS, inte vid gränsen.
+    · SMHI-luftankare: smhi-prov byggt + kört 1/9 (34 augustipunkter, INGEN dom): stör inte
+      nära (2,56→2,50 °C), hjälper >20 km (5,83→4,37 °C, 4 nya punkter à 1,57 °C). Måndagar
+      06:00. Vidgat 10/9 till pusselbit för "3 km fram" — se #95 (molnmängd = representativitets-
+      radie, förtätning).
+    · HÖJDEN (Bengts fråga 10/9 "höjdmätningar o nivåskillnader — är inte det en del av detta?"
+      — JA, det är terrängfaktorn i #95:s lager och #91:s grund): hojd-prov byggt + kört 1/9
+      (EU-DEM via opentopodata, 747/757 stationer, varianter RÅ / RÅ+HÖJD / OFFSET=taket).
+      Fynd 1 STARKT (3 455 par): empirisk lapse 0,71 °C/100 m (standard 0,65) — höjden bär en
+      äkta del av parsystematiken. Fynd 2 ÄRLIGT (40 augustipunkter): rå+höjd 8,36 ≈ rå 8,36 mot
+      offsetens 2,50 °C — i utstrålningslägen räcker höjden INTE ensam; den vänder t.o.m. tecken
+      i inversionsnätter (kalluft i dalen). Aldrig fristående. Måndagar 07:00 sedan 4/9.
+      ⚠️ MÅNDAG 7/9 KÖRDES ALDRIG: hela måndagsserien (grind-a #5, smhi-prov #2, hojd-prov #2)
+      föll på 2 s i spending-limit-stoppet. Nästa: MÅNDAG 14/9 07:00 UTC — samma morgon som
+      radardomen (08:30). Höjd lagras inte i databasen; korrektionen finns bara i provskriptet.
+    · GIS-svansen (dalgångar/skuggning) = kort #91 kallplatslagret. Rörs inte förrän vinterns
+      höjdprov motiverar den.
+  - [ ] (4) Skuggkörningen — startar när det finns halka att skugga (~mitten av oktober, Skåne).
+  - [x] ~~Skuggmotorns prognoskolumn buntas ur engine/src~~ ✅ scripts/bundle-skuggmotor.ts,
+    ci.yml kör --check (läxan i CLAUDE.md).
+- [ ] ↩︎ Play: uppladdningsguide för den CI-signerade AAB:n + fotostudion tag 2 (facit ur CI +
+  produktboken) *(låst: Play-kontot)*.
 - [ ] 📈 **#88 TRENDEN — vi mäter var minut men använder bara sista värdet** (systemanalys 10/9;
   det billigaste stora klivet). Sedan 9/9 har arkivet minutupplösning på 848 stationer. Lutningen
   dT/dt på ytan mot noll, med daggpunkten strax under, är svartisens fysiska förvarning — INGEN
