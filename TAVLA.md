@@ -301,7 +301,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   stationerna (bara radarn, #43) och om saltbilen passerat (ingen öppen källa, RISKKARTA-BENGT).
   Blir svaret ja på molnfrågan är SMHI inte en reserv utan en del av motorn — då skrivs kortet om
   till ett byggkort med tröskelrad i TROSKLAR-SKUGGAN (§5, båda signerar). Resonemanget i sin helhet:
-  Drive, "Framtida utvecklingsmöjligheter — systemanalys varningssystemen 2026-09-10 (läsbar)", §2.8.
+  Drive, "Framtida utvecklingsmöjligheter — systemanalys varningssystemen 2026-09-10 v2 (läsbar)", §2.8.
 - [x] ✅ **#72 Livekedjan i Supabase — KONTROLLERAD 8/9 11:56 (Bengts "fungerar den?")**
   Terminalvarvets bygge (DECISIONS #72, commit f15f8cc): edge function `publicera` bygger
   appens snapshot ur databasen och committar den till kartrepot via Git Data API på
