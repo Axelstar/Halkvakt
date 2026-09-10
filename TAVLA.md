@@ -1,4 +1,5 @@
 # 📋 TAVLAN — allt på ett ställe
+> Snabb överblick och triage: se TAVLA-STRUKTUR.md.
 
 Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
