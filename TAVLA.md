@@ -297,7 +297,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   giltigt svar. Verify (utöver ovan): grind A körd med SMHI-ankare inlagda — sjunker MAE i bandet
   15–20 km och >20 km? Och: felet i leave-one-out som funktion av SMHI-molnmängd (klar/halvklar/
   mulet) — är spridningen 2× större klara nätter? Om ja är molnmängden representativitetsknappen
-  TROSKLAR-SKUGGAN:s trenivåmärkning saknar.
+  TROSKLAR-SKUGGAN:s trenivåmärkning saknar. FORTFARANDE OSYNLIGT oavsett SMHI: en snöby mellan
+  stationerna (bara radarn, #43) och om saltbilen passerat (ingen öppen källa, RISKKARTA-BENGT).
+  Blir svaret ja på molnfrågan är SMHI inte en reserv utan en del av motorn — då skrivs kortet om
+  till ett byggkort med tröskelrad i TROSKLAR-SKUGGAN (§5, båda signerar). Resonemanget i sin helhet:
+  Drive, "Framtida utvecklingsmöjligheter — systemanalys varningssystemen 2026-09-10 (läsbar)", §2.8.
 - [x] ✅ **#72 Livekedjan i Supabase — KONTROLLERAD 8/9 11:56 (Bengts "fungerar den?")**
   Terminalvarvets bygge (DECISIONS #72, commit f15f8cc): edge function `publicera` bygger
   appens snapshot ur databasen och committar den till kartrepot via Git Data API på
