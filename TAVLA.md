@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-10 12:10 av Claude (webben) — 11 kort + #38b:s tre delkort ÅTERSTÄLLDA (↩︎): #38b stråket/ankarbreddningen m.fl. föll av tavlan 8/9 20:43 (commit 99473c7); höjdspåret bokfört på #38b (måndag 7/9 körde aldrig, nästa 14/9 07:00 UTC)*
+*Uppdaterad: 2026-09-10 13:00 av Claude (webben) — höjdprovet utlyft ur #38b till eget kort #96 (bredvid #91); analysdokumentet i Drive v3 med kostnad i kr + datamängd under varje punkt (#88–#96 ≈ 1 kr/mån löpande)*
 
 ---
 
@@ -1123,16 +1123,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
       nära (2,56→2,50 °C), hjälper >20 km (5,83→4,37 °C, 4 nya punkter à 1,57 °C). Måndagar
       06:00. Vidgat 10/9 till pusselbit för "3 km fram" — se #95 (molnmängd = representativitets-
       radie, förtätning).
-    · HÖJDEN (Bengts fråga 10/9 "höjdmätningar o nivåskillnader — är inte det en del av detta?"
-      — JA, det är terrängfaktorn i #95:s lager och #91:s grund): hojd-prov byggt + kört 1/9
-      (EU-DEM via opentopodata, 747/757 stationer, varianter RÅ / RÅ+HÖJD / OFFSET=taket).
-      Fynd 1 STARKT (3 455 par): empirisk lapse 0,71 °C/100 m (standard 0,65) — höjden bär en
-      äkta del av parsystematiken. Fynd 2 ÄRLIGT (40 augustipunkter): rå+höjd 8,36 ≈ rå 8,36 mot
-      offsetens 2,50 °C — i utstrålningslägen räcker höjden INTE ensam; den vänder t.o.m. tecken
-      i inversionsnätter (kalluft i dalen). Aldrig fristående. Måndagar 07:00 sedan 4/9.
-      ⚠️ MÅNDAG 7/9 KÖRDES ALDRIG: hela måndagsserien (grind-a #5, smhi-prov #2, hojd-prov #2)
-      föll på 2 s i spending-limit-stoppet. Nästa: MÅNDAG 14/9 07:00 UTC — samma morgon som
-      radardomen (08:30). Höjd lagras inte i databasen; korrektionen finns bara i provskriptet.
+    · Höjden: UTLYFT 10/9 till eget kort #96 (Bengts order) — lapse 0,71 °C/100 m, räcker inte ensam,
+      måndagar 07:00. Här kvar bara som led i rangordningen ovan.
     · GIS-svansen (dalgångar/skuggning) = kort #91 kallplatslagret. Rörs inte förrän vinterns
       höjdprov motiverar den.
   - [ ] (4) Skuggkörningen — startar när det finns halka att skugga (~mitten av oktober, Skåne).
@@ -1164,12 +1156,27 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Verify: skuggkolumn med facit ur situation_archive (vindrelaterade olyckor) en höstmånad.
 - [ ] 🏔️ **#91 KALLPLATSLAGRET — bron är ett specialfall av "strukturellt kallare platser"**
   (systemanalys 10/9). Dalgångar där kalluft samlas, skuggade kurvor i skog, sträckor längs vatten:
-  statisk geometri, ingen livedata. Lantmäteriets höjddata är öppen och höjdprovet (hojd-prov) finns.
+  statisk geometri, ingen livedata. Lantmäteriets höjddata är öppen och höjdprovet är kort #96 (nedan).
   Ett statiskt lager per segment (kallplats-index) ger frysrisken något att peka på MELLAN stationerna
   och ankarklippningen en fysisk anledning till att ett segment fryser före ett annat. 🔒 NYCKEL:
   #38b (stråket) och grind A — lagret är en förklaringsvariabel i felkartan innan det är en fara.
   Verify: kallplats-index förklarar en mätbar del av grind A:s residualer (leave-one-out) — annars
   läggs det ner.
+- [ ] ⛰️ **#96 HÖJDPROVET — terrängens första faktor, mäter redan** (utlyft ur #38b 10/9 på Bengts order:
+  "höjdmätningar o nivåskillnader är väl också en del av detta" — ja: terrängfaktorn i #95:s lager och
+  grunden för #91). scripts/hojd-prov.ts + knappen Actions → hojd-prov: EU-DEM 25 m via opentopodata,
+  747/757 stationer, tre varianter RÅ / RÅ+HÖJD / OFFSET=taket mot arkivet. FYND 1 (starkt, 3 455 par):
+  empirisk lapse **0,71 °C/100 m** (standard 0,65) — höjden bär en äkta del av parsystematiken.
+  FYND 2 (ärligt, 40 augustipunkter): rå+höjd 8,36 ≈ rå 8,36 mot offsetens 2,50 °C — i utstrålningslägen
+  räcker höjden INTE ensam, den vänder t.o.m. tecken i inversionsnätter (kalluft i dalen). Aldrig
+  fristående: felkartan dömer, luftankarna lagar, höjden finjusterar. AUTOMATISK måndagar 07:00 UTC
+  sedan 4/9. ⚠️ Måndag 7/9 kördes aldrig (hela mätserien föll i spending-limit-stoppet, 2 s) — nästa
+  14/9 07:00, samma morgon som radardomen. Höjd lagras inte i databasen; korrektionen finns bara i
+  provskriptet, aldrig i motorn. 💰 1 Actions-min/vecka ≈ 0,4 kr/mån, 8 API-anrop, 6 kB om höjden
+  lagras. 🔒 NYCKEL: vinterdata (≥ 500 punkter) — samma dom som grind A. Sedan: höjd som kolumn i
+  weather_latest (så snapshoten och #91 kan läsa den) kräver tröskelrad i TROSKLAR-SKUGGAN.
+  Verify: måndagsserien 14/9 grön med hojd-prov-sammanfattning; vinterkurvan lapse/MAE per band växer
+  vecka för vecka utan knapptryck. Resonemanget: Drive-dokumentet v3 §2.4.
 - [ ] 🐕 **#87 Healthcheckens fem kontroller in i vakthunden — sedan läggs healthcheck.yml ner** (bron i
   kort #50, Bengt 9/9). 🔒 LÅST BAKOM 14/9 (radardomen först, kort #81:s ordning). Vakthunden i Supabase
   (varje timme, larmväg bevisad 9/9 med issue #91 öppnad OCH stängd) ser livekedjan och manifestet. Kvar i

@@ -1572,3 +1572,10 @@ kameravarningsbeviset, Bodenresan m.fl. Kort #88/#91/#95 hänvisade till ett #38
 Återställt i rätt sektioner, märkta ↩︎; höjdläget uppdaterat: måndag 7/9 körde hela mätserien
 aldrig (spending-limit-stoppet, 2 s), nästa 14/9 07:00 UTC. Läxa i CLAUDE.md (diffa kortantal vid
 sektionsbyte). Byggt: inget. Nästa: kvällsavläsning 17:30 UTC.
+
+## 2026-09-10 13:00 — #96 höjdprovet eget kort; analysdokumentet v3 med kostnad/datamängd per punkt
+Bengts order: lyft ut höjden ur #38b nära #90 ⇒ kort #96 direkt efter #91 (samma fynd, 7/9-missen,
+14/9 nästa). Drive-dokumentet v3: höjdfyndet i §2.4, kostnadsrad under varje punkt räknad på uppmätta
+tal (183 B/rad, 0,008 USD/Actions-min, 23 481 km vägnät ur vaglag.geojson, skugglogg ~140 rader/dygn).
+Summa #88–#96: ≈ 1 kr/mån löpande, ≈ 3 kr + 3 MB en gång (#91-sampling), +25 MB/mån bara om SMHI blir
+ankare (#95, flyttar Pro-beslutet ~5 dagar). Inget kort ändrar oktoberbeslutet. Byggt: inget.
