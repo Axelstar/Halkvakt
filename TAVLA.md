@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-10 04:45 av Claude (webben) — morgonavläsning: rent dygn 79 min/dygn (13 USD till 1/10), bron 9/9 inom 2 s och 0 hål på 17 h, arkivet 36 600 rader/dygn i natt, kartrepot helt, nycklarna inte roterade än. Före det: kvällsavläsning: 155 min/dygn i fönstret, steady state ~60, bron 3/3 och 0 hål, regn-30 tyst sedan 10:41, kartrepot helt. Före det: kort #86: nyckelrotation förberedd (tre ställen för PUBLISH_TOKEN, ordning A/B, fyra bevis), go ahead till Axel. Före det: puls-healthcheck PÅ som bro (pulsklocka #13, kort #50, DECISIONS #91), issue #91 auto-stängd 11:07 (larmvägen hel åt båda hållen), nytt kort #87 (healthchecken in i vakthunden, låst bakom 14/9). Före det: DB-knappen byggd (dbknapp.yml): gallringen KÖRD (3 551 raderade, cron-jobb aktivt), larmprovet BEVISAT (issue #91, PAT har Issues:Write). Före det: #79 KLART (puls-regn-30 avvecklad, pulsklocka #11), #85 alla tre snitten i drift, #50 svar på Axels pulsfråga. Före det: kort #85 snitt 1+2 BEVISADE: grannar #12 44 s (var 6 min), fi/dk-commit a28ea98 ur samma körning. Före det: kort #85 snitt 1+2 BYGGDA (grannar batchade, publish-map nedlagd, DECISIONS #88), bevis väntar på nästa pulsade körning. Före det: kort #83 steg 1 BYGGT (sql/014_gallring.sql, DECISIONS #87), Axel kör i SQL-editorn. Före det: Axels varv bokfört: #84 och #78 KLART (ingest-live deployad, deploy-knappen lever), #83 omräknat på Axels mätning + ja till steg 1, nytt #86 nyckelkalendern (PAT 22/11, Supabase 8/12). Före det: morgonavläsning: #82 slutbevis, #50 två hål > 2 h 30 (puls-healthcheck av), #44 dygnsbevis 26 % men skevt urval, #83 uppmätt 62 000 rader/dygn, #79 stäng regn-30 nu, NYTT #85 Actions-takten spränger 35 USD ~26/9. Före det: kort #83 (gallring, två steg + mätfråga) och #84 (deploya ingest-live; fynd: regn-30 kan inte laga luckan) skrivna för Axel. Före det: kort #82 KLART: bridges-cronen bort (PR #81, ci #464 grön). Före det: nytt kort #81: byggordningen efter radardomen 14/9 för #42, sju regler ur veckans fel och sex steg med varsitt bevis. Låst bakom domen*
+*Uppdaterad: 2026-09-10 05:30 av Claude (webben) — åtta kort ur systemanalysen (#88 trend, #89 övergångar, #90 vind/sikt, #91 kallplatser, #92 däcktyp, #93 kommunala vägar, #94 samarbeten, #95 plan B) på Bengts "gör kort för allt". Före det: morgonavläsning: rent dygn 79 min/dygn (13 USD till 1/10), bron 9/9 inom 2 s och 0 hål på 17 h, arkivet 36 600 rader/dygn i natt, kartrepot helt, nycklarna inte roterade än. Före det: kvällsavläsning: 155 min/dygn i fönstret, steady state ~60, bron 3/3 och 0 hål, regn-30 tyst sedan 10:41, kartrepot helt. Före det: kort #86: nyckelrotation förberedd (tre ställen för PUBLISH_TOKEN, ordning A/B, fyra bevis), go ahead till Axel. Före det: puls-healthcheck PÅ som bro (pulsklocka #13, kort #50, DECISIONS #91), issue #91 auto-stängd 11:07 (larmvägen hel åt båda hållen), nytt kort #87 (healthchecken in i vakthunden, låst bakom 14/9). Före det: DB-knappen byggd (dbknapp.yml): gallringen KÖRD (3 551 raderade, cron-jobb aktivt), larmprovet BEVISAT (issue #91, PAT har Issues:Write). Före det: #79 KLART (puls-regn-30 avvecklad, pulsklocka #11), #85 alla tre snitten i drift, #50 svar på Axels pulsfråga. Före det: kort #85 snitt 1+2 BEVISADE: grannar #12 44 s (var 6 min), fi/dk-commit a28ea98 ur samma körning. Före det: kort #85 snitt 1+2 BYGGDA (grannar batchade, publish-map nedlagd, DECISIONS #88), bevis väntar på nästa pulsade körning. Före det: kort #83 steg 1 BYGGT (sql/014_gallring.sql, DECISIONS #87), Axel kör i SQL-editorn. Före det: Axels varv bokfört: #84 och #78 KLART (ingest-live deployad, deploy-knappen lever), #83 omräknat på Axels mätning + ja till steg 1, nytt #86 nyckelkalendern (PAT 22/11, Supabase 8/12). Före det: morgonavläsning: #82 slutbevis, #50 två hål > 2 h 30 (puls-healthcheck av), #44 dygnsbevis 26 % men skevt urval, #83 uppmätt 62 000 rader/dygn, #79 stäng regn-30 nu, NYTT #85 Actions-takten spränger 35 USD ~26/9. Före det: kort #83 (gallring, två steg + mätfråga) och #84 (deploya ingest-live; fynd: regn-30 kan inte laga luckan) skrivna för Axel. Före det: kort #82 KLART: bridges-cronen bort (PR #81, ci #464 grön). Före det: nytt kort #81: byggordningen efter radardomen 14/9 för #42, sju regler ur veckans fel och sex steg med varsitt bevis. Låst bakom domen*
 
 ---
 
@@ -212,6 +212,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] **#21 Anonym puls + feedback-knapp** — rör "samlar in: ingenting"-löftet; Claudes råd: paketera med sensorbeslutet våren 2027
 
 ### Axel — hösten (brainstorm 31/8)
+- [ ] 🛞 **#92 Däcktyp och fordonstyp som inställning på enheten** (ur Claudes systemanalys 10/9,
+  Bengts "gör kort för allt"). Motorn vet fart och riktning men inget om däck eller fordon: sommardäck
+  vid +3 °C är halare än dubbdäck vid −5, och släp/lastbil ändrar vad sidvind och vattenplaning betyder.
+  En engångsinställning (sommar/dubbfritt/dubb · personbil/släp/husbil/lastbil) som flyttar trösklarna
+  LOKALT — aldrig skickad någonstans, integritetslöftet orört. Kräver: tröskeljustering per däcktyp
+  i tröskeldokumenten (§5, båda signerar), vektorer i tre portar, PRODUKTBOK. Verify: v-vektor där samma
+  trace ger varning med sommardäck och tystnad med dubb; texten säger inte "däck" utan bara varnar.
 - [ ] **Skydda namnet:** varumärket Halkvakt hos PRV + domänen halkvakt.se. Enda juridiska
   muren som finns i branschen; arkivet och relationerna är resten av försvaret.
 - [ ] **Betalvilja mäts i mars, inte gissas i augusti:** en fråga i appen ("N varningar i
@@ -245,6 +252,19 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] Fysisk Android-testenhet (pappas telefon? begagnad?)
 
 ### Bengt
+- [ ] 🤝 **#94 Samarbeten vi inte prövat: försäkringsbolag, åkerier, NTF/M Sverige** (ur Claudes
+  systemanalys 10/9). Försäkringsbolagen har historiskt köpt halkvarningstjänster och sitter på skadedata
+  per dygn — både FACIT till marsdomen och betalningsvilja. Åkerier och bussbolag kör samma sträckor
+  varje dag: perfekta testbilar och B2B-marknad (kopplar till #92 fordonstyp). NTF och M Sverige är
+  kanaler till landsvägsföraren i mörker. Ordning: försäkringsbolag först (de har facit). Verify: ett
+  möte bokat per spår, och skadedata-frågan ställd skriftligt (vilken upplösning, vilket avtal).
+- [ ] 🏘️ **#93 Kommunala vägar är det största hålet — och det finns ingen plan** (systemanalys 10/9).
+  VViS sitter på statligt vägnät; svartisen som skadar flest finns på gator, cykelbanor och infarter,
+  där vi inte har en enda givare. SYSTEM.md säger det ärligt, men inget kort bär det. Kandidater:
+  kommunernas driftavdelningar (egna stationer, saltloggar), och SMHI:s varningsklasser som vi redan
+  hämtar men bara ritar på kartan — som FÖRSTÄRKARE av frysrisken (snöfallsvarning + yta nära noll =
+  högre konfidens), aldrig som egen fara. Verify: (a) tre kommuner tillfrågade om stationsdata,
+  (b) skuggkolumn "smhi_forstarkt" mätt mot facit en vintermånad.
 - [ ] Läsa SYSTEM.md mot koden månadsvis (första: september)
 - [ ] Samtal med Axel: sensortrappan — tidsättning av steg 2 (våren 2027?)
 - [ ] 💼 **B2B: skolpaketet som produkt** — per-elev-moment i körkortspaketen; STR som skalkanal; säljs våren 2027 med halkbanedata *(Axels idé, Bengts spår)*
@@ -258,6 +278,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⏰ Förhandssamtalet till fonden = "första veckan i september" = NU.
 
 ### Claude — olåst
+- [ ] 🪢 **#95 Plan B för Trafikverket-beroendet — mät SMHI som reserv** (systemanalys 10/9). Allt
+  hänger på ETT API (WeatherMeasurepoint). Givarvakten fångar trasiga sensorer, inte ett flöde som byter
+  schema eller stänger; FI/NO/DK ger ingen redundans i Sverige. SMHI metobs (lufttemp, daggpunkt, moln,
+  sikt, vind — GOLVET §7) har provats (smhi-prov) men aldrig mätts som RESERV: hur många av de 818
+  segmenten får en SMHI-station inom 15 km, och hur väl följer SMHI:s lufttemp VViS-ytan vintertid?
+  Ren mätning ur arkivet + smhi-provet, ingen ny hämtning i drift. Verify: en tabell segment ×
+  närmaste SMHI-station (avstånd, täckning %) och en korrelationsrad luft→yta ur en kall vecka.
 - [x] ✅ **#72 Livekedjan i Supabase — KONTROLLERAD 8/9 11:56 (Bengts "fungerar den?")**
   Terminalvarvets bygge (DECISIONS #72, commit f15f8cc): edge function `publicera` bygger
   appens snapshot ur databasen och committar den till kartrepot via Git Data API på
@@ -1031,6 +1058,36 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Bryter dokumentationsregeln. *(Delvis åtgärdad i detta varv — resten nästa.)*
 
 ### Claude — låst (väntar på nyckel)
+- [ ] 📈 **#88 TRENDEN — vi mäter var minut men använder bara sista värdet** (systemanalys 10/9;
+  det billigaste stora klivet). Sedan 9/9 har arkivet minutupplösning på 848 stationer. Lutningen
+  dT/dt på ytan mot noll, med daggpunkten strax under, är svartisens fysiska förvarning — INGEN
+  prognos, en observerad trend, som får sägas som "risk framöver" (kommunikationsregeln). Åt andra
+  hållet: stigande yta = skälet att tystna tidigare på morgonen. 🔒 NYCKEL: tröskeldokument först
+  (husregeln: lutning över hur många minuter, vilket daggpunktsgap), sedan SKUGGKOLUMN i skuggmotorn,
+  aldrig röst före dom. Efter 14/9 (kort #81:s ordning). Verify: skuggkolumnen bokförs mot samma
+  facit som #16/#38b; andelen träffar där punktmotorn var tyst eller > 30 min senare (B3-måttet).
+- [ ] 🔀 **#89 ÖVERGÅNGARNA mellan faror — regn→frost, torka→första regnet** (systemanalys 10/9;
+  syskon till #45 som redan har snö-på-snö/regn-på-snö). (a) Regn som slutar och yta som faller under
+  noll inom 2 h = efterhalka: regnsumma + yttemp + trend (#88) finns alla, inget sitter ihop. (b) Första
+  regnet efter ≥ 5 torrdygn: oljefilm, de första 20 minuterna hala oavsett fart — en torrdygnsräknare
+  per station ur regnarkivet, en kolumn. (c) Dimma×frysrisk = rimfrost (#46), sidvind×halka och
+  dimma×halka har ingen förhandlad interaktion alls (bara halka×vattenplaning har det, #68).
+  🔒 NYCKEL: #45:s dom + tröskelrader (§5). Verify: varje övergång som egen skuggkolumn med
+  facit ur situation_archive; (b) kan mätas redan i höstregnen.
+- [ ] 🌬️ **#90 Vind och sikt som punktfaror — arkiverade sedan 9/9, används inte** (systemanalys
+  10/9). wind_speed_ms/wind_gust_ms/visibility_m landar varje minut (kort #84). Sidvind på broar och
+  slätter är en riktig risk för husbil, släp och lastbil (= B2B, #92/#94); dimma är en fartfråga.
+  Båda är PUNKTKÄLLOR ⇒ "framöver", aldrig "på vägen". 🔒 NYCKEL: Axels ja + tröskeldokument (byvind
+  m/s per fordonstyp, sikt m), plats i A-skalan under halkan, vektorer i tre portar. Skugga först.
+  Verify: skuggkolumn med facit ur situation_archive (vindrelaterade olyckor) en höstmånad.
+- [ ] 🏔️ **#91 KALLPLATSLAGRET — bron är ett specialfall av "strukturellt kallare platser"**
+  (systemanalys 10/9). Dalgångar där kalluft samlas, skuggade kurvor i skog, sträckor längs vatten:
+  statisk geometri, ingen livedata. Lantmäteriets höjddata är öppen och höjdprovet (hojd-prov) finns.
+  Ett statiskt lager per segment (kallplats-index) ger frysrisken något att peka på MELLAN stationerna
+  och ankarklippningen en fysisk anledning till att ett segment fryser före ett annat. 🔒 NYCKEL:
+  #38b (stråket) och grind A — lagret är en förklaringsvariabel i felkartan innan det är en fara.
+  Verify: kallplats-index förklarar en mätbar del av grind A:s residualer (leave-one-out) — annars
+  läggs det ner.
 - [ ] 🐕 **#87 Healthcheckens fem kontroller in i vakthunden — sedan läggs healthcheck.yml ner** (bron i
   kort #50, Bengt 9/9). 🔒 LÅST BAKOM 14/9 (radardomen först, kort #81:s ordning). Vakthunden i Supabase
   (varje timme, larmväg bevisad 9/9 med issue #91 öppnad OCH stängd) ser livekedjan och manifestet. Kvar i
