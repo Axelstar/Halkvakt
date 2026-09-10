@@ -185,3 +185,8 @@ i samma commit när de överlappar.
 - `Boolean(precipitation)` är en falsklarmsmaskin: Trafikverket skriver "no" vid uppehåll och
   de nordiska källorna "Dry". Nederbördsklasser är strängar med ordlista, aldrig sanningsvärden.
 
+- En tavelsynk som ERSÄTTER en sektion måste diffas på kortantal före push. 99473c7 (8/9 20:43)
+  skrev om "Axels nästa steg" och svalde 174 rader — hela #38b (stråket, grind A, ankar-
+  breddningen med höjd- och SMHI-proven) plus tretton kort till, utan att någon märkte det på
+  två dygn; tre nya kort hänvisade till ett #38b som inte fanns. Regel: `git diff --stat TAVLA.md`
+  med fler än ~30 raderade rader ⇒ lista de raderade `- [ ]`-raderna och bekräfta varje flytt.

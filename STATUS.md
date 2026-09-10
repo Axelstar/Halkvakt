@@ -1562,3 +1562,13 @@ vägar + SMHI som förstärkare (Bengt), #94 samarbeten försäkringsbolag/åker
 som reserv för Trafikverket-beroendet (mätning). Alla nya faror: skuggkolumn före röst, tröskel-
 dokument före kod — tystnaden är funktionen. Byggt: inget.
 
+
+## 2026-09-10 12:10 — 14 kort återställda: #38b föll av tavlan 8/9 (Bengts höjdfråga avslöjade det)
+Bengt frågade var höjdmätningarna landat. Svaret fanns i STATUS (hojd-prov 1/9: lapse 0,71 °C/100 m,
+räcker inte ensam i utstrålningslägen, måndagar 07:00) men INTE på tavlan: commit 99473c7 (8/9
+20:43, Claudes omskrivning av Axels lista) raderade 174 rader — #38b med (3) grind A, (3b) ankar-
+breddningen (FI/NO/SMHI/höjd), (4) skuggkörningen, samt Live Activity, startknappen, guiden,
+kameravarningsbeviset, Bodenresan m.fl. Kort #88/#91/#95 hänvisade till ett #38b som inte fanns.
+Återställt i rätt sektioner, märkta ↩︎; höjdläget uppdaterat: måndag 7/9 körde hela mätserien
+aldrig (spending-limit-stoppet, 2 s), nästa 14/9 07:00 UTC. Läxa i CLAUDE.md (diffa kortantal vid
+sektionsbyte). Byggt: inget. Nästa: kvällsavläsning 17:30 UTC.
