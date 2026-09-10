@@ -1579,3 +1579,15 @@ Bengts order: lyft ut höjden ur #38b nära #90 ⇒ kort #96 direkt efter #91 (s
 tal (183 B/rad, 0,008 USD/Actions-min, 23 481 km vägnät ur vaglag.geojson, skugglogg ~140 rader/dygn).
 Summa #88–#96: ≈ 1 kr/mån löpande, ≈ 3 kr + 3 MB en gång (#91-sampling), +25 MB/mån bara om SMHI blir
 ankare (#95, flyttar Pro-beslutet ~5 dagar). Inget kort ändrar oktoberbeslutet. Byggt: inget.
+
+## 2026-09-10 17:35 — Kvällsavläsning: bro-dygnet bevisat, kassan 96 min/dygn, nycklar ej roterade
+#50: puls-healthcheck 9/9 12:23 → 10/9 16:23 = 15 avfyrningar inom 2 s, längsta mellanrum 2 h 00, noll hål
+> 2 h 30 på 29 h ⇒ BEVISAT. Men healthcheck.yml:s egen cron fyrar också (7 gånger, 26–65 min sena) ⇒ 22
+körningar där 15 räckt; förslag att ta bort schedule-raden ligger hos Bengt. #85: 04:31→17:32 (13,0 h) 37
+körningar, 52 min ⇒ 96 min/dygn (grannar 22, healthcheck 15, ingest 13, ci 1, marknadsforing 1); grannar
+57–101 s (44 s 9/9) ⇒ 9 av 13 debiteras 2 min. ~16 USD till 1/10, gränsen håller. #86: ingen deploy-supabase
+efter 9/9 05:20, ingen vakthund-issue efter #91 ⇒ ej roterat. CI main #476 grön 11:36. Kartrepot 17:30:
+SE/FI/DK live-sha = manifest-sha, meta.json 1 min, fi/dk från :24-körningen (17:24:59 / 17:25:01), SE
+live.json 0 väderposter (september). #82 bridges tyst sedan #32 (8/9 21:15), #79 regn-30 tyst sedan #152
+(9/9 10:41). #83: weather_obs 232 028 → 242 351 på 11,65 h ⇒ ~21 300/dygn dagtid. Byggt: inget.
+Nästa: morgonavläsning 11/9 04:30 UTC.

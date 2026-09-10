@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-10 13:00 av Claude (webben) — höjdprovet utlyft ur #38b till eget kort #96 (bredvid #91); analysdokumentet i Drive v3 med kostnad i kr + datamängd under varje punkt (#88–#96 ≈ 1 kr/mån löpande)*
+*Uppdaterad: 2026-09-10 17:35 av Claude (webben) — kvällsavläsning: bro-dygnet BEVISAT (15 pulser, 0 hål > 2 h 30 på 29 h, men GitHub-cronen dubblar 7×), kassan 96 min/dygn (grannar över 60 s), nycklar ej roterade, kartrepot helt (sha = manifest, meta 1 min)*
 
 ---
 
@@ -79,6 +79,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (:24) lämnar fi/dk-commit — GitHub Secrets-kopian fungerar; (d) deploy-supabase på vakthund grön — nya
   Supabase-tokenen fungerar. FÖRST DÅ: Axel raderar de två gamla nycklarna, och kortet stängs med datumen
   2027-04-30 som enda vakt. Bevis efter raderingen: (a) och (c) en gång till.
+   ⏰ KVÄLL 10/9 17:32: ingen deploy-supabase-körning efter 9/9 05:20, ingen ny vakthund-issue efter #91 (9/9)
+   ⇒ Axel har inte roterat än. De fyra bevisen väntar.
 - [ ] 💸 **#85 Actions-takten spränger 35 USD-gränsen före 1/10 — tre snitt räcker** (mätt 9/9
   04:30 av morgonavläsningen, DECISIONS #82:s budget). UPPMÄTT sedan Actions vaknade 8/9 21:07
   → 9/9 04:31 (7,4 h): **59 körningar, ≈ 98 debiterade minuter** (varje jobb avrundas uppåt):
@@ -125,6 +127,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (snitt 53 s), ingest 11 × 1 (30 s), healthcheck 8 × 1–2 (6 på pulsen + 2 gånger GitHub-cronen som
   fortfarande fyrar ibland, additivt). Noll röda. Från 240 till 79 på ett dygn; gränsen 35 USD hålls med
   marginal, oktoberpotten räcker.
+   📊 **KVÄLL 10/9 17:32 (fönster 04:31 → 17:32, 13,0 h): 37 körningar, 52 debiterade min ⇒ 96 min/dygn**
+   (väntat 70–80). Två orsaker: grannar 13 × 52–101 s ⇒ 22 min (9 av 13 över 60 s debiteras som 2; 44 s
+   bevisat 9/9, nu 57–101 s), healthcheck 9 × ⇒ 15 min (6 på pulsen + 3 på GitHub-cronen, se #50), ingest
+   13 × 1 = 13. Noll röda. ~0,77 USD/dygn ⇒ ~16 USD till 1/10 — gränsen 35 håller. Två snitt kvar: cron-raden
+   i healthcheck.yml (−7 min/dygn) och grannar tillbaka under 60 s (−9 min/dygn; mät var sekunderna går).
 - [ ] 🗄️ **#83 GALLRING av weather_observations — måste finnas FÖRE första kalla veckan**
   (Bengts beställning 9/9 01:40; kort + förslag av Claude, mätt mot koden 9/9).
   **VARFÖR NU:** arkivdieten (DECISIONS #4: bara yta ≤ 5 °C eller nederbörd) finns i
@@ -197,6 +204,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   äldre än 7 dygn skrevs av GitHub-ingesten 2×/h — redan 30-minutersupplösning — och 5–8/9 finns ingen data.
   Minutupplösningen (ingest-live sedan 8/9) blir 7 dygn gammal **15/9**; första nattkörningen som tunnar på
   riktigt är 16/9 03:15. Bevis då: rader/dygn för 8/9 ≤ 45 000 i morgonavläsningen 16/9.
+   📈 KVÄLL 10/9: weather_obs 232 028 (04:49) → 242 351 (16:28) = 10 323 rader på 11,65 h ⇒ **~21 300/dygn
+   dagtid** (natten 36 600 väntas igen). Nattjobbet 03:15 syns inte från Actions; första riktiga bevis 16/9.
 - [x] ~~Fastställ trösklarna för skuggan~~ ✅ FASTSTÄLLT 2/9 (DECISIONS #61): Axels
   "kör" relayerat av Bengt i chatten, värdena oförändrade från Bengts 1/9-version inkl.
   §2-orsaksklassningen. Kvitto: huvudet i docs/TROSKLAR-SKUGGAN.md. Bocken här är
@@ -937,6 +946,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   timme i stället för var femte kommer se stalheter som förut hann börja och rätta sig
   osedda. Fler incident-issues den närmaste tiden betyder att vakten börjat fungera —
   inte att pipelinen blivit sämre.
+   ✅ **BRO-DYGNET BEVISAT (kvällsavläsning 10/9 17:32):** 9/9 12:23 → 10/9 16:23 = 15 pulsavfyrningar, alla
+   inom 2 s från :23:00; längsta mellanrum mellan två healthcheck-körningar 2 h 00 min; noll hål > 2 h 30 på
+   29 h. GitHub-cronen fyrade DESSUTOM 7 gånger i samma fönster (26–65 min sena) ⇒ 22 körningar där 15 räckt,
+   ~7 extra minuter/dygn. Bron står; kortet stängs först av #87. FÖRSLAG (Bengts ja): ta bort schedule-raden i
+   healthcheck.yml nu — en rad, pulsen är bevisad, vakthunden i Supabase larmar ändå inom 2 h.
 - [x] ~~⛏️ **#48 Golvbyggena**~~ ✅ KLART 4/9 (utom bygge 3) (Bengts order 4/9: "ta hela kortet, allt självförsörjande")
   — PÅGÅR (terminalen): GOLVET.md:s byggen 1–4 med automatiseringskrav: automigrering
   vid varje ingest (db.ts/fi.ts-mönstret), healthcheck-golv på varje ny fältfamilj
