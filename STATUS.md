@@ -1543,3 +1543,13 @@ bridges sist 8/9 21:15. Healthcheck på pulsen 12:23/14:23/16:23 alla inom 2 s, 
 (timvis), DK 0/24 (DMI timvärden — väntat). ci #475 grön på main. Arkivet +8 355 rader netto på
 dagen (~24 000 brutto/dygn med dieten). Byggt: inget. Nästa: morgonavläsning 10/9 04:30 UTC.
 
+## 2026-09-10 04:45 — Morgonavläsning: rent dygn 79 min/dygn, bron levererar 9/9, kedjan hel
+Actions 9/9 17:32 → 10/9 04:31: 30 körningar, 36 debiterade min ⇒ 79 min/dygn ⇒ ~13 USD till 1/10
+(grannar 11, ingest 11, healthcheck 8, noll röda). Healthcheck på pulsen 9/9 sedan 12:23 inom 2 s,
+0 hål över 2 h 30 på 17 h; dygnsbeviset klart 11:09. Arkivet +14 734 rader 16:43→02:23 (~36 600/dygn
+i natt), inget fall vid 03:15 — väntat, jobbets körning kan bara databasen bevisa (SQL på kortet).
+Kort #86: ingen deploy-supabase-körning, ingen ny vakthund-issue ⇒ Axel har inte roterat än.
+Kartrepot 04:30: manifest-sha = live-sha, meta 1 min, SE 92 % / FI 96 % / DK 92 % ≤ 12 min, fi/dk
+från grannar 04:24. ci #475 grön (inga nya pushar). bridges tyst sedan #32, regn-30 sedan 10:41.
+Radardomen 14/9 08:30 UTC bokad. Byggt: inget. Nästa: kvällsavläsning 10/9 17:30 UTC.
+
