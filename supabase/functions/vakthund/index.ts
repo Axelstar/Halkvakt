@@ -10,6 +10,11 @@
 //   3. Når det appen?  live.json på CDN — det led som faktiskt fallerade
 // Larmar via GitHub-issue (API-anrop, inga Actions-minuter). En issue åt gången: öppnas när
 // något är fel, uppdateras medan det består, stängs när allt är grönt igen.
+//
+// Därtill EN händelsevakt som inte är en felkontroll (4, kort #52): första vinterordet i
+// väglagsarkivet. Egen etikett, egen issue, en enda gång — den säger inte att något är
+// trasigt utan att något äntligen går att mäta. Prov: ?vinterprov=1 (egen etikett, så ett
+// prov aldrig förbrukar det riktiga engångslarmet).
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
 
 const sql = postgres(Deno.env.get("SUPABASE_DB_URL")!, { max: 1, prepare: false });
@@ -75,6 +80,57 @@ Deno.serve(async (req) => {
     }
   } catch (e) {
     problem.push(`Vakthunden kunde inte slutföra kontrollen: ${String(e)}`);
+  }
+
+  // 4. HAR VINTERN KOMMIT I VÄGLAGSDATAN? Inte en felkontroll — en HÄNDELSE, och därför
+  //    egen issue med egen etikett. Den får ALDRIG färga vakthunden röd: inget är brutet.
+  //    Varför den finns: kodgrindens mätning (kort #52) kan inte falsifiera sin premiss
+  //    förrän arkivet bär vinterord. 11/9 var hela ordförrådet fyra neutrala strängar
+  //    (Torrt 799, Våt 25, fläckvis 14) och senaste omklassningen 25/8. Alternativet var
+  //    ett schemalagt veckojobb som mäter ingenting tills det snöar — kort #85:s minutdiet
+  //    säger nej. Utlösaren ska vara första vinterordet, inte en kalender.
+  //    INTE samma sak som marknadsföringens snolarm: det fyrar på `code !== 1` ur CDN-
+  //    snapshoten (säsongens första VERKLIGA halka, per län, ett säljtillfälle). Det här
+  //    fyrar på ordförrådet i ARKIVET oavsett kod — och den intressanta cellen för #52 är
+  //    just kod 1, som snölarmet per konstruktion hoppar över.
+  //    EN gång: etiketten letas i state=all, så en stängd issue inte ger ett nytt larm.
+  try {
+    const [v] = await sql`SELECT EXISTS (
+      SELECT 1 FROM road_condition_history h, unnest(h.condition_info) i
+      WHERE i ~* '(^|[^a-zåäö])(is|snö|halka|frost)') AS finns`;
+    rad.push(`vinterord i väglagsarkivet: ${v.finns ? "JA" : "nej"}`);
+    const prov = new URL(req.url).searchParams.get("vinterprov") === "1";
+    if (v.finns || prov) {
+      // Provet bär egen etikett, annars skulle ett prov förbruka det riktiga engångslarmet.
+      const etikett = prov && !v.finns ? "vinterord-prov" : "vinterord";
+      const tidigare = await gh(`/issues?state=all&labels=${etikett}&per_page=1`);
+      if (!tidigare.length) {
+        const brott = await sql`
+          SELECT h.condition_code AS kod, i AS ord, count(*)::int AS n
+          FROM road_condition_history h, unnest(h.condition_info) i
+          WHERE i ~* '(^|[^a-zåäö])(is|snö|halka|frost)'
+          GROUP BY 1, 2 ORDER BY 1, 3 DESC LIMIT 40`;
+        const tabell = brott.length
+          ? brott.map((b: any) => `| ${b.kod} | ${b.ord} | ${b.n} |`).join("\n")
+          : "| — | (inga rader; detta är ett prov) | 0 |";
+        await gh(`/issues`, "POST", {
+          title: `❄️ Första vinterordet i väglagsarkivet — kodgrinden kan mätas (kort #52)${prov && !v.finns ? " [PROV]" : ""}`,
+          labels: [etikett],
+          body: `Trafikverket har börjat skriva vinterord i \`condition_info\`. Kodgrindens mätning ` +
+            `kunde inte falsifiera sin premiss så länge arkivet bara bar Torrt och Våt; nu kan den.\n\n` +
+            `| kod | ord | förekomster |\n|---|---|---|\n${tabell}\n\n` +
+            `**Att göra:** kör knappen \`kodgrinden\` i Actions och läs C-raden.\n\n` +
+            `**Varför det brådskar:** står det ett farlighetsord (is/halka/frost) på **kod 1** i tabellen ovan ` +
+            `faller förslaget om nivådelning, och den regionala gränsen (län 21–25 eller 17+20–25) blir ` +
+            `alternativet. Står där bara ytord på kod 1 håller premissen och nivådelningen kan beslutas.\n\n` +
+            `Beslutet är Bengts och Axels. Ingen motorändring görs på eget bevåg — den rör engine/vectors ` +
+            `och tre körtider.\n\nEngångslarm: den här issuen skapas aldrig igen, öppen eller stängd.`,
+        });
+      }
+    }
+  } catch (e) {
+    // Tappat signal ÄR ett vakthundsfel: vinterordet får inte passera obemärkt.
+    problem.push(`**Vinterkollen (kort #52) kunde inte larma**: ${String(e)}`);
   }
 
   const kropp = `${MARK}\n**Kontroll ${new Date().toISOString()}**\n\n` +
