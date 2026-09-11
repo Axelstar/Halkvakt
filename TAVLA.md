@@ -1295,6 +1295,19 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   frosten; (5) "regn inom N h" som fjärde signal i TYSTNADSFEL §3; (6) (c) överlämnas. Steg 0–1 är
   inte kod och kan göras i dag. Verify för steg 0: tre tal ur arkivet — hålets storlek, (a):s och
   (b):s underlag.
+  🔁 **ANDRA LÄSNINGEN 11/9** (Bengts "har vi förbisett något i pipen, t.ex. 2.8?"): JA, två saker —
+  men inte 2.8. Förstudiens §3, §4.2, §4.6 och §10 reviderade. (1) **`radar_precip` skriver redan
+  regnhistorik PER SEGMENT** (sql/009, timvis sedan 2/9) — förbisett; gör (a) segmentnivå från dag
+  ett, och datat är inte låst bakom 14/9, bara ny radarkod är det. (2) **Operatörens "Våt"** i
+  väglaget är ingesterad men 100 % oanvänd (engine.ts:240 "Normalt/Våt make no sound") — Trafikverkets
+  egen blöt-klassning per sträcka, var 15:e min; värdet hänger på hur länge den står kvar efter
+  regnet, vilket steg 0 ska mäta. (3) **#46 och (a) partitionerar efterhalkan**, inte dubbelräknar:
+  fuktig efterhalka (yta ≤ daggpunkt, kondensation) är #46:s; torr efterhalka (kallfront, daggpunkten
+  faller, regnvattnet fryser) är (a):s och den enda regnhistoriken ser. (4) **§2.8 ger inget i dag:**
+  smhi-prov hämtar bara lufttemperatur och lagrar inget; molnmängden är en FRYS-signal som skärper
+  trenden, inte en blöt-signal som fyller hålet. Regelskissen är nu en union av proxyer, gatad per
+  proxy med B3-paret — en union ingen mäter ensam är en falsklarmsmaskin. Bifynd: `types.ts:33`
+  lovar "wet surface" i kommentaren; koden levererar nederbörd nu. Rättas med (a), inte förr.
 - [ ] 🌬️ **#90 Vind och sikt som punktfaror — arkiverade sedan 9/9, används inte** (systemanalys
   10/9). wind_speed_ms/wind_gust_ms/visibility_m landar varje minut (kort #84). Sidvind på broar och
   slätter är en riktig risk för husbil, släp och lastbil (= B2B, #92/#94); dimma är en fartfråga.
