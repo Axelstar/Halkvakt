@@ -128,6 +128,10 @@ if (process.argv.includes("--sjalvtest")) {
   k("kod 1 yta", kt.get(1)!.per.get("YTA"), 3);
   k("kod 1 farlighet", kt.get(1)!.per.get("FARLIGHET") ?? 0, 0);
   k("kod 2 farlighet", kt.get(2)!.per.get("FARLIGHET"), 5);
+  // Falsifierbarhetsvakten (DECISIONS #71): ett arkiv utan vinterord får aldrig läsas som stöd.
+  const vinterord = (kk: Kors) => [...kk.values()].reduce((s, c) => s + (c.per.get("FARLIGHET") ?? 0) + (c.per.get("YTA") ?? 0), 0);
+  k("vinterord i rikt arkiv", vinterord(kt), 10);
+  k("vinterord i tomt arkiv", vinterord(korstabulera([{ code: 1, info: "Torrt", n: 99 }])), 0);
   rapportB(kt);
   rapportBlind(korstabulera([{ code: 1, info: "Rimfrost", n: 2 }, { code: 1, info: "Torrt", n: 9 }]));
   if (!ok) { console.error("\nSJÄLVTEST FÄLLDE."); process.exit(1); }
@@ -148,9 +152,11 @@ const spann = (await q(`SELECT count(*)::int AS rader, count(DISTINCT segment_id
     EXTRACT(epoch FROM max(modified_time) - min(modified_time)) / 86400.0 AS dygn
   FROM road_condition_history`))[0];
 
+const stillestand = (Date.now() - new Date(spann.sist).getTime()) / 86400000;
 console.log(`Kodgrinden (kort #52) — håller ConditionCode som grind?\n`);
 console.log(`ARKIVET: ${spann.rader} rader, ${spann.segment} segment, ${Number(spann.dygn).toFixed(1)} dygn`);
 console.log(`  ${String(spann.forst).slice(0, 16)} → ${String(spann.sist).slice(0, 16)}`);
+console.log(`  ${(spann.rader / spann.segment).toFixed(2)} rader per segment · senaste omklassning för ${stillestand.toFixed(0)} dygn sedan`);
 
 // Underlagsvakt: grön-men-tom räknas inte (samma regel som grind-a och vinterbältet).
 if (!spann.rader || Number(spann.dygn) < 5) {
@@ -193,9 +199,18 @@ const c = await q(`SELECT h.segment_id, h.condition_text AS text, h.condition_in
   ORDER BY h.modified_time DESC LIMIT 25`);
 const cAntal = (await q(`SELECT count(*)::int AS n FROM road_condition_history h WHERE h.condition_code = 1
   AND EXISTS (SELECT 1 FROM unnest(h.condition_info) i WHERE i ~* '(^|[^a-zåäö])(is|halka|frost|mycket besvärligt)')`))[0].n;
+// Falsifierbarhetsvakt (DECISIONS #71:s läxa): en mätning som inte KAN falsifiera hypotesen
+// med det underlag som finns får aldrig rapportera "premissen håller". Saknas vinterorden helt
+// är noll träffar i C ett utsagolöst noll, inte ett stöd.
+const vinterord = [...kors.values()].reduce((s, c) => s + (c.per.get("FARLIGHET") ?? 0) + (c.per.get("YTA") ?? 0), 0);
 console.log(`\nC — PREMISSEN: lämnar Trafikverket farlighetsord på kod 1 (Normalt)?`);
-if (!cAntal) {
-  console.log(`  ✓ NOLL träffar i hela arkivet. Premissen håller så långt arkivet räcker.`);
+if (!vinterord) {
+  console.log(`  ⊘ OAVGJORT. Arkivet innehåller noll farlighetsord och noll ytord — oavsett kod.`);
+  console.log(`    Frågan KAN alltså inte falsifieras med det här underlaget, och noll träffar`);
+  console.log(`    nedan betyder ingenting. Det är läxan i DECISIONS #71: moaten är tom, inte hel.`);
+  console.log(`    Mätningen blir avgörande först när ordförrådet i B innehåller vinterord.`);
+} else if (!cAntal) {
+  console.log(`  ✓ NOLL träffar av ${vinterord} vinterord i arkivet. Premissen håller så långt arkivet räcker.`);
 } else {
   console.log(`  ⚠ ${cAntal} rader har kod 1 OCH ett farlighetsord. Premissen håller INTE rakt av.`);
   console.log(`  De ${Math.min(25, cAntal)} senaste, att läsa för hand:`);
@@ -213,12 +228,13 @@ const d = (await q(`WITH steg AS (
     percentile_disc(0.90) WITHIN GROUP (ORDER BY s) AS p90
   FROM steg WHERE s IS NOT NULL AND s > 0`))[0];
 console.log(`\nD — HUR LÄNGE STÅR EN KLASSNING? (${d.n} övergångar)`);
-if (d.n) {
+if (d.n >= 30) {
   console.log(`  fjärdedel ${tid(Number(d.p25))} · median ${tid(Number(d.p50))} · tre fjärdedelar ${tid(Number(d.p75))} · nio av tio ${tid(Number(d.p90))}`);
   console.log(`  Läsning: reprisregeln "tystnar tills klassningen ändras" tystar i praktiken ungefär`);
   console.log(`  medianen. Är medianen längre än en typisk resa behövs ingen tidsgräns alls.`);
 } else {
-  console.log(`  Inga övergångar ännu — varje segment har bara en klassning i arkivet.`);
+  console.log(`  ⊘ För få övergångar för att säga något. Percentiler på ${d.n} värden är inte statistik,`);
+  console.log(`    de är fyra avläsningar av samma handfull tal. Kräver minst 30; kommer med vintern.`);
 }
 
 console.log(`\nMÄTNINGENS GRÄNS, och den ska läsas innan siffrorna används:`);
