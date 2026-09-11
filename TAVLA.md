@@ -1267,6 +1267,34 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   dimma×halka har ingen förhandlad interaktion alls (bara halka×vattenplaning har det, #68).
   🔒 NYCKEL: #45:s dom + tröskelrader (§5). Verify: varje övergång som egen skuggkolumn med
   facit ur situation_archive; (b) kan mätas redan i höstregnen.
+  📄 **FÖRSTUDIE SKRIVEN 11/9** (Bengts "gör en ordentlig genomlysning"): `docs/OVERGANGAR-ANALYS.md`,
+  samma form som vattenplaningens. Ingenting beslutat. Tre fynd som ändrar kortet:
+  🕳️ **(a) ÄR ETT HÅL, INTE ETT SAMBAND.** `icing_point` kräver `moisture === true` (engine.ts:191), och
+  `moisture` = `rain OR snow OR precipitation` ur 10-minutersaggregatet (weather.ts:54, snapshot-core:42)
+  — alltså "regnar det JUST NU". När regnet slutar blir fukten falsk inom tio minuter och frysrisken
+  kan inte fyra igen förrän det regnar på nytt, oavsett hur blöt vägen är och hur kall ytan blir.
+  Efterhalkan inträffar nästan alltid EFTER att nederbörden upphört — exakt i det fönstret tiger regeln.
+  Ingen blöt-väg-givare finns i skala (TRV har ytstatus på 30–50 av ~750 stationer, vi hämtar dem inte).
+  Rättelsen är en utvidgning av fuktvillkoret med regnhistorik: `fukt OR regn inom N h`. Strikt
+  superset, kan bara lägga till larm ⇒ döms med B3-paret (räddade missar mot tillkomna falsklarm).
+  🔀 **(a), (b), (c) är tre olika sorters arbete** och ska inte dela nyckel: (a) utvidgar en regel
+  som finns (B3-mått), (b) är en NY fara (V-B-mått, från noll), (c) är prioritetsregler som hör hemma
+  i #46:s (dimma = konfidens för daggpunktsregeln) och #90:s (sidvind/dimma × halka, #68 som mall)
+  tröskeldokument. Förslag: #89 lämnar över (c) och behåller (a) + (b).
+  🔓 **NYCKELN #45:s dom ÄR FEL LÅS för (a) och (b).** De behöver regnhistorik + yttemp, som finns per
+  station sedan 2/9 — inte radarn, inte typklassningen. Bara regn-på-snö/snö-på-snö beror på #45, och
+  de är redan #45:s. Förslag: dela nyckeln — (a)+(b) låses upp av eget tröskeldokument.
+  ❓ **FRÅGA TILL AXEL FÖRE (b) BYGGS (förstudiens §5.6):** är oljefilm inom Halkvakts löfte? Appen
+  lovar is och halka; oljefilm är halka i ordets vidare mening, inte i produktens, och är frekvent
+  med tunt facit (olyckor utan orsak, ~210/dygn nationellt, 20-minutersfönster). Ett nej sparar en
+  höst. Ett ja eller "mät och se" öppnar fönstret NU — höstregn efter torka slutar när vintern kommer.
+  📋 **ORDNING (förstudiens §9):** (0) mät hålet nu, läsande, en minut — regnstopp per station sedan 9/9,
+  hur fort fukten går falsk, vad ytan gör de följande timmarna, plus underlagsstorlek för (a) och (b);
+  (1) TROSKLAR-OVERGANGAR med (a) som huvudsak och svep i stället för värden; (2) regnhistorik per
+  station i Supabase efter 14/9; (3) (b) i skugga om Axel säger ja; (4) (a) i skugga, döms vid första
+  frosten; (5) "regn inom N h" som fjärde signal i TYSTNADSFEL §3; (6) (c) överlämnas. Steg 0–1 är
+  inte kod och kan göras i dag. Verify för steg 0: tre tal ur arkivet — hålets storlek, (a):s och
+  (b):s underlag.
 - [ ] 🌬️ **#90 Vind och sikt som punktfaror — arkiverade sedan 9/9, används inte** (systemanalys
   10/9). wind_speed_ms/wind_gust_ms/visibility_m landar varje minut (kort #84). Sidvind på broar och
   slätter är en riktig risk för husbil, släp och lastbil (= B2B, #92/#94); dimma är en fartfråga.
