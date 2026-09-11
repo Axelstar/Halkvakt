@@ -1474,6 +1474,23 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     i bil av Bengt.
   **KOSTNAD OM ORDNINGEN HÅLLS:** noll nya Actions-minuter i drift; 1–3 min/vecka för grinden.
   Det som kan kosta är bara steg B om radarn tätas i Actions — därför regel 1.
+  📋 **VAD DOMEN OCKSÅ LÅSER UPP — LÄS DEN HÄR LISTAN DEN 14/9** (Bengts order 11/9: "påminn mej om
+  att detta ska byggas efter radardomen"). Kortet ovan bygger #42. Men domen är grind för FLERA kort,
+  och de har inget eget datum som påminner om sig själva. Faller domen väl ut står kön så här:
+  · **#88 TRENDEN** — tröskeldokumentet fastställt OCH kontrasignerat (DECISIONS #92/#95). Inget är
+    byggt: noll rader kod, ingen trendkolumn i skuggmotorn, inga lutningskolumner i skuggloggen
+    (kontrollerat 11/9). Fyra steg i TROSKLAR-TRENDEN §7, vart och ett med eget bevis: (1) givarvakten
+    som filter, (2) lutning + gap + band som tre kolumner, (3) T-A som knapp med svepet, (4) B3 och
+    tystnadsfelet som veckorapport. ⏰ TIDSKRITISKT: T-A kräver höstens FÖRSTA frostnätter. Byggs det
+    inte i tid finns ingen skuggkolumn när frosten kommer, och T-A:s underlag börjar ett år senare.
+  · **#98 TYSTNADSFELET** — samma läge: fastställt, kontrasignerat, noll kod. Skuggkolumn efter domen.
+    Döms mot egen facitstack (DECISIONS #94), alltså från första frosten och inte från mars.
+  · **#87 Healthcheckens fem kontroller in i vakthunden**, sedan läggs healthcheck.yml ner
+    (−12 Actions-min/dygn).
+  · **#45 Snö/snöslask/nederbördstyp** och **#91 kallplatslagret**, enligt sina egna kort.
+  ⚠️ **VARNING TILL DEN SOM LÄSER DEN 14/9:** "fastställt och kontrasignerat" är INTE "mäter". Kort
+  #88 och #98 har fullständiga tröskeldokument och noll kod. Bengt trodde 11/9 att de redan mätte —
+  ett rimligt missförstånd, eftersom allt annat på korten är grönt. Säg det rakt ut i avläsningen.
 
 ---
 
