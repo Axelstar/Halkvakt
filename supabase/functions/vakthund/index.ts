@@ -150,9 +150,17 @@ Deno.serve(async (req) => {
   //    timme, så talet går att följa och tröskeln att ändra mot verkligheten.
   const FROST_STATIONER = 50;
   try {
+    //    GIVARVAKTEN GÄLLER HÄR OCKSÅ (#75). Första provet 11/9 rapporterade "kallast −49,9 °C"
+    //    — ingen vägyta, en trasig givare, samma sort som Storvik 2135 som stod på −10,7 °C i
+    //    september och var appens enda halkpunkt. Snapshoten filtrerar bort dem med WX_SANE;
+    //    den här frågan gjorde det inte, och en snubbeltråd som räknar trasiga givare kan väcka
+    //    folk mitt i sommaren. Kravet är strängare än snapshotens: lufttemperaturen måste FINNAS,
+    //    så att rimligheten går att pröva alls. En station vi inte kan kontrollera får inte väcka
+    //    någon — "silence is a feature" gäller vakthunden med.
     const [f] = await sql`SELECT count(DISTINCT station_id)::int AS n, min(surface_temp_c) AS kallast
       FROM weather_observations
-      WHERE sample_time > now() - interval '24 hours' AND surface_temp_c <= 0`;
+      WHERE sample_time > now() - interval '24 hours' AND surface_temp_c <= 0
+        AND air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12`;
     rad.push(`frost: ${f.n} stationer med yta <= 0 °C senaste dygnet (larm vid ${FROST_STATIONER})`);
     const prov = new URL(req.url).searchParams.get("frostprov") === "1";
     if (f.n >= FROST_STATIONER || prov) {
