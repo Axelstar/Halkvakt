@@ -1582,3 +1582,39 @@ köra om mätningen efter texträttelsen i 0f (siffrorna oförändrade, en minut
 
 LÄGET EFTER DETTA: steg 0 är klart och kortet #89 kan gå vidare till steg 1 — TROSKLAR-OVERGANGAR,
 som inte är kod och inte behöver radardomen. Steg 2–4 ligger kvar bakom 14/9.
+
+## #97 (11/9 2026) Gallringsfällan i steg 0 — två tal i #96 rättade, och en regel för alla arkivläsningar
+
+BESLUT: steg 0 (och varje framtida mätning som bygger på minutupplösning) körs med `dagar <= 7`,
+och en händelse måste läsas INOM sju dygn efter att den inträffat. Två tal i #96 är rättade.
+
+FYNDET: gallringen (kort #83, sql/014) behåller en rad per station och halvtimme för allt äldre än
+sju dygn. Steg 0:s gap-vakt kastar varje omslag där föregående rad ligger mer än 20 minuter bort —
+alltså blir HELA den gallrade halvan av ett 14-dygnsfönster obrukbar per konstruktion. Det syntes som
+6 866 GAP av 7 146 omslag i den första körningen, och jag läste det som "arkivdieten", vilket bara var
+halva sanningen: dieten glesar i nuet, gallringen raderar i efterhand.
+
+BEVISET (körning 34580876588, `dagar=7`, mot 34579255737, `dagar=14`):
+* 7 dygn:  1 971 omslag, 157 användbara, 120 med mätarregn vid omslaget (76 %), 22 omslag/dygn
+* 14 dygn: 7 146 omslag, 189 användbara, 124 med mätarregn vid omslaget (66 %), 14 omslag/dygn
+Den gallrade veckan bidrog alltså med 32 användbara omslag av 5 175 — en avkastning på 0,6 % mot den
+ogallrade veckans 8 %. Skillnaden är gallringen, inte vädret.
+
+RÄTTADE TAL I #96:
+* 0a: mätarregn vid omslaget i **76 %** av fallen (120 av 157), inte 66 %. Hålet är större än
+  rapporterat: tre av fyra regnstopp, inte två av tre.
+* 0c: populationen är **22 användbara omslag/dygn**, inte 14.
+* Oförändrat: medianen 35 min (robust mot fönstret), RH-guardens död (7-dygnskörningen är om möjligt
+  tydligare — ≥ 80 % i 96 % av fallen vid +3 h), 0d, 0e och 0f.
+
+VARFÖR DET SPELAR ROLL BORTOM DEN HÄR MÄTNINGEN: varje dom som behöver veta vad som hände MELLAN två
+halvtimmar måste falla inom sju dygn. Det gäller #88:s trendkolumn och #98:s tystnadsfel lika mycket
+som #89. Gallringen är rätt beslut (utrymmet räcker annars elva dygn i vinter), men den sätter en
+tidsgräns på retrospektiv analys som ingen av tröskeldokumenten nämner i dag.
+
+ALTERNATIV SOM VALDES BORT: att höja gap-vakten till 35 min så att gallrade rader duger. Det hade gett
+fler "omslag" men inte fler observationer — en halvtimmesrad kan inte säga när regnet slutade, bara
+att det var torrt vid provet. Falsk precision är värre än OAVGJORT.
+
+LÄGET EFTER DETTA: #96 står kvar med sina slutsatser; bara de två talen är rättade. Regeln `dagar <= 7`
+gäller från nu, och en körning efter höstens första frostnätter ska ske inom sju dygn efter dem.

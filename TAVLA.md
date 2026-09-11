@@ -1342,7 +1342,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **STEG 0 KÖRT 11/9** (Bengts "kör steg 0"): `scripts/overgangar-steg0.ts` + knapp
   `overgangar-steg0`, helt läsande, PR #124, körning 34579255737, 14 dygns fönster. Driftvakten
   grön: SQL-uttrycket och motorns egen `fukt()` ense om alla 7 146 omslag — mätningen ÄR motorns.
-  **0a HÅLET ÄR BEVISAT OCH STÖRRE ÄN GISSNINGEN.** På 124 av 189 användbara regnstopp (66 %) visade
+  **0a HÅLET ÄR BEVISAT OCH STÖRRE ÄN GISSNINGEN.** (Talen nedan är 14-dygnskörningens; de
+  RÄTTADE talen ur den ogallrade veckan står i "GALLRINGSFÄLLAN" längst ned.) På 124 av 189
+  användbara regnstopp (66 %) visade
   regnmätaren regn i de senaste 30 minuterna i samma stund som motorns fukt slog om till torrt.
   Mätaren stod kvar över noll median 35 min efter omslaget. Förstudien gissade "~10 min"; golvet är
   ~35 min, och p75/p90 (1,8–1,9 h) ligger mot 2-timmarstaket i frågan ⇒ censurerade, läs dem som
@@ -1360,8 +1362,22 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   samma varv, siffrorna oförändrade. Två kända luckor i instrumentet, att täppa före grinden:
   0a:s svans är censurerad vid 2 h och kan innehålla ÅTERKOMMANDE regn, och 0d räknar olyckor utan
   förväntat antal (ingen nollhypotes ⇒ 6 är ett tal, inte ett bevis).
+  ⏳ **GALLRINGSFÄLLAN, upptäckt 11/9 vid omkörning med `dagar=7` (körning 34580876588).**
+  Gallringen (#83, sql/014) tunnar allt äldre än sju dygn till EN rad per halvtimme. Gap-vakten
+  kastar allt med mer än 20 min mellan raderna ⇒ hela den gallrade halvan blir GAP. Bevis:
+  7 dygn gav 1 971 omslag varav **157 användbara**; 14 dygn gav 7 146 varav 189 — alltså kom
+  83 % av de användbara ur den ogallrade veckan, och den gallrade halvan bidrog med 32 av 5 175.
+  **RÄTTADE TAL** (ogallrad vecka, full upplösning): mätarregn vid omslaget **120 av 157 = 76 %**,
+  inte 66 %. Population **22 omslag/dygn**, inte 14. Medianen 35 min står oförändrad. Hålet är
+  alltså STÖRRE än jag först skrev: tre av fyra regnstopp, inte två av tre.
+  📌 **REGEL SOM FÖLJER:** steg 0 körs alltid med `dagar <= 7`, och en händelse måste läsas
+  INOM sju dygn — annars har gallringen ätit upplösningen och 0a/0b/0c blir OAVGJORT.
   ➡️ **NÄSTA: steg 1** — TROSKLAR-OVERGANGAR med (a) som huvudsak, (b) med nedläggningsklausul
   (0d säger att den inte kan dömas i höst), "Våt" ute ur unionen, RH-guarden struken.
+  🥶 **OCH EN KÖRNING NÄR FROSTEN KOMMER** (Bengts order 11/9): 0c är den enda frågan vars svar
+  ändras — 3–4 frysningar i dag, domen kräver ~30. Måste ske inom sju dygn efter frostnätterna
+  (gallringsfällan ovan). Påminnelse: issue med etiketten `efter-frosten`, minnesfil, och —
+  om Bengt säger ja — en larmkoll i vakthunden, som är det enda som larmar av sig självt.
 - [ ] 🌬️ **#90 Vind och sikt som punktfaror — arkiverade sedan 9/9, används inte** (systemanalys
   10/9). wind_speed_ms/wind_gust_ms/visibility_m landar varje minut (kort #84). Sidvind på broar och
   slätter är en riktig risk för husbil, släp och lastbil (= B2B, #92/#94); dimma är en fartfråga.
