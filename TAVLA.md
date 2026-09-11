@@ -1372,7 +1372,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   alltså STÖRRE än jag först skrev: tre av fyra regnstopp, inte två av tre.
   📌 **REGEL SOM FÖLJER:** steg 0 körs alltid med `dagar <= 7`, och en händelse måste läsas
   INOM sju dygn — annars har gallringen ätit upplösningen och 0a/0b/0c blir OAVGJORT.
-  🔁 **FEMTE LÄSNINGEN 11/9 — AXELS GRANSKNING.** Han verifierade fukthålet oberoende och vände på
+  🔁 **FEMTE LÄSNINGEN 11/9 — AXELS GRANSKNING** (DECISIONS #100)**.** Han verifierade fukthålet oberoende och vände på
   mätriktningen: från FROSTEN i stället för från regnstoppen. Han har rätt och min riktning var fel
   vald — falsklarmsrisken skalar med FYRNINGAR, inte med tillfällen — och hans riktning tål dessutom
   gallringen bättre. 0c omskriven (PR #133/#134), körning 34590257682. Hans tal: 312 frostmätningar,
@@ -1410,6 +1410,27 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   lufttemperaturen måste finnas, så att rimligheten alls går att pröva. Bevis efter deployen
   (f964dd6): `frost: 1 stationer` mot provets 4 — tre av fyra var givare vi inte kan lita på.
   Passiv påminnelse finns kvar som issue #127 (`efter-frosten`) och som minnesfil.
+- [x] ✅ **#99 VINTERDAGEN — fem påhittade resor genom den riktiga motorn — KLART 11/9**
+  (parallell session, DECISIONS #99, `scripts/vinterdag.ts`). Riktiga referensrutter ur skuggflottan,
+  PÅHITTADE väderlägen. Dömer INGENTING och skriver ingenting — inte weather_observations, inte
+  skuggloggen, inte CDN. Utdata är text till människor. Den svarar på rytm och mängd, inte på om en
+  regel är rätt: syntetiskt väder som får svara på "håller regeln" är en maskin som bekräftar våra
+  antaganden. Fynd: 45 röstlarm över fem resor; novembermorgonen 11 larm på 62 min.
+  ⚠️ **BÄRANDE FYND, och det blev kortet #100:** nollgradersdimman gav SEX IDENTISKA "Isrisk framöver"
+  på en timme. Frysrisken är en PUNKTkälla och varje station längs vägen fyrar separat — reprisregeln
+  gäller samma id, inte samma FARA.
+  🔗 **BEKRÄFTAR §4.7 OBEROENDE:** klarnatten går från 3 larm till 7 med utvidgat fuktvillkor, alltså
+  drygt en fördubbling av resan. Episodräkningen i steg 0 gav 2,0 × samma dag, med helt annan metod
+  och annat underlag. Två instrument, samma svar. (Fyndraden i #99 citerar mätningens RADtal —
+  312/14/71 — som enligt DECISIONS #100 är fel valuta för röst; slutsatsen står ändå.)
+- [ ] 🔇 **#100 Dämpning per FARA och sträcka, inte per id — före vintern** (följd av #99, kandidatkort
+  enligt DECISIONS #99). Motorn tystar repriser av samma larm-id inom 10 min/5 km, men frysrisk från
+  tio olika stationer längs samma väg är tio olika id och alla får tala. Vinterdagen hörde sex
+  identiska meningar på en timme. Det är inte en ny fara — det är att befintliga faror inte ska
+  upprepa sig längs en rutt. 🔒 NYCKEL: rör motorn och tre portars vektorer ⇒ tröskelrader + Axels ja.
+  Verify: vinterdagen körd före och efter, samma resor, larmräkningen ska falla utan att någon NY
+  fara tystnar. Hänger ihop med röstbudgeten i OVERGANGAR-ANALYS §4.7 — (a) gör problemet värre,
+  så dämpningen bör finnas INNAN (a) får röst.
 - [ ] 🌬️ **#90 Vind och sikt som punktfaror — arkiverade sedan 9/9, används inte** (systemanalys
   10/9). wind_speed_ms/wind_gust_ms/visibility_m landar varje minut (kort #84). Sidvind på broar och
   slätter är en riktig risk för husbil, släp och lastbil (= B2B, #92/#94); dimma är en fartfråga.
