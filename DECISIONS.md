@@ -1660,3 +1660,28 @@ givarvakten (godtycklig, och den hade inte fångat Storviks −10,7 °C).
 
 LÄGET EFTER DETTA: kort #89 har allt steg 0 kan ge i september. Nästa avläsning sker när larmet
 fyrar. Steg 1 (TROSKLAR-OVERGANGAR) väntar på Bengt och är varken kod eller Actions-minuter.
+## #99 (11/9 2026) Vinterdagen — fem påhittade resor genom den riktiga motorn
+scripts/vinterdag.ts. Fem scenarier på riktiga referensrutter med PÅHITTADE väderlägen:
+novembermorgonen (allt samtidigt), klarnatten efter regnet (#89a:s hål), nollgradersdimman
+(gränsfallet ±0,1 °C), torra vinterdagen (tystnadskontroll) och långresan (45-sekunders-
+spärren under press).
+VAD DEN INTE FÅR GÖRA: döma en regel. Grind A, tystnadsfelet och #89:s B3-par kräver
+verklig frost mot verkligt facit; syntetiskt väder som får svara på "håller regeln" är en
+maskin som bekräftar våra antaganden. Därför skriver den INGENTING — inte till
+weather_observations, inte till skuggloggen, inte till CDN. Utdata är text till människor.
+VAD DEN GER: rytmen. Vi har aldrig hört produkten i vinterläge.
+FYND VID FÖRSTA KÖRNINGEN:
+ • 45 röstlarm över fem resor. Novembermorgonen: 11 larm på 62 min = ett var 6:e minut.
+ • Nollgradersdimman: 9 larm på 58 min, varav SEX identiska "Isrisk framöver — vägbanan
+   nära noll grader." Samma mening, sex gånger, på en timme. Det är den allvarligaste
+   observationen: frysrisken är en PUNKTkälla och varje station längs vägen fyrar separat.
+   Husregeln "tystnad är en funktion" håller inte i vinter utan någon form av dämpning per
+   fara och sträcka — en repris-regel finns för samma id, men inte för samma FARA.
+ • #89a-jämförelsen, hörbar: klarnatten går från 3 larm (dagens regel, tyst om isen) till
+   7 med utvidgat fuktvillkor — varav fem frysrisk. Utvidgningen gör inte regeln lite mer
+   talför; den fördubblar resan. Stämmer med mätningen 11/9 (312 kalla mätningar, 14 larmar
+   i dag, 71 hade regn inom 4 h).
+ • Torra vinterdagen är korrekt tyst: −6 °C utan fukt ⇒ bara fartkameror. Tystnadskontrollen
+   passerar.
+FÖLJD: kandidatkort — dämpning per fara och sträcka (inte per id) före vintern. Det är
+inte en ny fara, det är att befintliga faror inte ska upprepa sig längs en rutt.
