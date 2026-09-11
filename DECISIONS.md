@@ -1685,3 +1685,55 @@ FYND VID FÖRSTA KÖRNINGEN:
    passerar.
 FÖLJD: kandidatkort — dämpning per fara och sträcka (inte per id) före vintern. Det är
 inte en ny fara, det är att befintliga faror inte ska upprepa sig längs en rutt.
+
+## #99 (11/9 2026) Axels granskning av §2.2-förstudien — mätriktningen vänd, röstbudgeten införd, 61 % av frostdatan underkänd
+
+BESLUT: Axels invändningar godtas i sak. Förstudien är omskriven på fem punkter, 0c är mätt om i hans
+riktning, och en datakvalitetsregel som gäller långt utanför kort #89 är fastställd.
+
+VAD HAN HADE RÄTT OM:
+* **Mätriktningen.** Jag mätte från regnstoppen och frågade hur många som följdes av frost. Han mätte
+  från FROSTEN och frågade hur många fall som skulle få röst. Hans är den beslutsrelevanta riktningen
+  — falsklarmsrisken skalar med fyrningar, inte med tillfällen — och den tål dessutom gallringen
+  (#97) bättre, eftersom en frostrad och dess regnsumma överlever halvtimmesglesningen medan ett
+  omslag kräver att man vet NÄR regnet slutade. 0c är omskriven i hans form (PR #133).
+* **Hålet i rösten.** Förstudien sade att (a) är "en strikt superset som bara kan lägga till larm"
+  och åberopade husregeln "tystnad är en funktion" för (b) men inte för (a), där den är mer hotad.
+  Det var dokumentets allvarligaste utelämnande. Nytt §4.7 täpper det.
+* **0d mot §5.6.** Dokumentet sade att Axel ska svara innan (b) byggs och lade ändå mätningen i steg
+  0. Motsägelsen är rättad: frågan först, mätningen bara vid ja.
+* **För många frågor i första varvet.** Riktigt i ordningen, även om det kostade en enda
+  Actions-minut att få alla sex. Utfallet gav honom rätt: 0e gav OAVGJORT och strök en proxy.
+
+VAD HANS TAL BEHÖVDE, OCH SOM ÄNDRAR TOLKNINGEN: hans "sex gånger talförare" är räknat på ARKIVRADER.
+Motorn talar inte per rad — högst ett larm per 45 s, ingen repris inom 10 min/5 km, snapshot var
+tionde minut. Mätt i båda enheterna, efter givarvakten: rader 123 frostfall, 2 larmar i dag, 25 tysta
+med regn ≤ 4 h ⇒ 13,5 ×. EPISODER 15 frostfall, 2 larmar, 2 med regn ≤ 4 h ⇒ **2,0 ×**. 8,2 rader per
+episod, 6 stationer berörda. Röstkostnaden är alltså en fördubbling av 2 fall till 4 över fjorton
+dygn — inte en sexdubbling. Korskontroll: den omslagsbaserade riktningen fann 4 fall samma period,
+alltså samma handfull väder räknat från andra hållet. REGEL: röst räknas i episoder, aldrig i
+arkivrader; ett radtal som citeras som röstpåstående är ett mätfel.
+
+Hans poäng står ändå kvar efter reservationen, och det är därför §4.7 finns: i november är frost inte
+15 episoder på 6 stationer, multiplikatorn kan gå åt båda hållen, och den ska mätas om på vinterdata
+INNAN golvet sätts. Grinden i §4.4 får ord-per-resa som eget fällande kriterium — ett tillskott som
+räddar missar men fördubblar rösten ska kunna falla på röstkriteriet ensamt.
+
+OCH ETT FYND SOM INGEN AV OSS LETADE EFTER: av 317 frostrader (yta ≤ 1 °C) i fjortondygnsfönstret föll
+**194, alltså 61 %**, på givarvakten (#75) — ytan mer än 12 ° under luften, värst −49,9 °C. NOLL
+saknade lufttemperatur, så det är inte okontrollerbar data utan trasiga givare. Axels 312 är alltså
+till nästan två tredjedelar skrot. FASTSTÄLLT: varje mätning som läser yttemperatur bär vakten
+`air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12`. Det gäller #88:s trend och #98:s
+tystnadsfel lika mycket som (a), och står inte i deras tröskeldokument i dag — en rad att lägga till
+när de byggs efter 14/9.
+
+ÄVEN INFÖRT: RH-guarden är struken ur svepet i §4.3 (0b visar att fuktigheten STIGER efter regnet), och
+N sätts av golvet och röstbudgeten i stället för av svepet, eftersom kurvan saknar knä — att fördubbla
+N fördubblar tillskottet (22→25 rader, 1→2 episoder).
+
+ALTERNATIV SOM VALDES BORT: att försvara den ursprungliga mätriktningen (hans är bättre ställd); att
+rapportera 194 som "skrot" utan att först dela upp i okontrollerbara och orimliga (PR #134 — det visade
+sig vara noll respektive 194, men det fick inte antas).
+
+LÄGET EFTER DETTA: förstudien är i sin femte version. Steg 1 (TROSKLAR-OVERGANGAR) väntar fortfarande
+på Bengt och är varken kod eller Actions-minuter.
