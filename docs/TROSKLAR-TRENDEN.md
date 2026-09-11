@@ -176,25 +176,29 @@ detta: ingen dom, kortet står öppet.
 ## 6. Facit — vad kortet beror på
 
 T-A kan köras ur arkivet ensamt (frost mot icke-frost vid stationen). T-B och T-C kräver **facit om
-verklig halka**, och det är den bindande resursen:
+verklig halka**.
 
-- Mars-domen: en vinters bekräftade halttillfällen — men först till våren.
-- Försäkringsbolagens skadedata (#94): skulle göra T-B skarp redan i höst.
+**AVGJORT 2026-09-11 av Bengt (DECISIONS #94): T-B väntar INTE på försäkringsbolagen.** Samarbetet är
+klarlagt otillgängligt, och kortet #94 bär det inte längre som facitkälla. T-B döms i stället mot den
+facitstack vi **redan skriver varje dygn**, samma som TROSKLAR-TYSTNADSFEL §8 och mars-domen:
 
-Kortet är alltså delvis en beställning på #94, och ett argument till för att ta försäkringsbolagen
-först.
+- **road_condition_history** — väglagets omklassningar till halka/is är facit på att det var halt.
+- **Kamerafacit (#20)** — väglagskamerabilder vid varning och i gryningen. 738 av 744 kameror står vid
+  en VViS-station (#55), alltså **per konstruktion inom räckvidd**, vilket är precis T-B:s
+  räckviddsvillkor. Det är den bärande källan.
+- **situation_archive (#33)** — olyckor och stoppade fordon med position och tid.
 
-**Rättelse 2026-09-11 (DECISIONS #93):** här stod att det är "samma beroende som
-TROSKLAR-TYSTNADSFEL". Det var fel redan när det skrevs. Tystnadsfelets §8 skrevs om 10/9 kl 21:09,
-två timmar före det här dokumentet, och tog uttryckligen bort beroendet av #94: måttet döms mot
-facitstacken vi redan skriver varje dygn (road_condition_history, kamerafacit #20, situation_archive
-#33) och kräver inget samarbete utanför huset.
+Konsekvensen är en tidplan, inte bara en källa: facitstacken flödar kontinuerligt från första frosten,
+så **T-B kan börja räknas i höst i stället för i mars**. Mars-domen är därmed inte T-B:s förutsättning
+utan dess fördjupning — en hel vinters bekräftade halttillfällen läggs ovanpå när den finns.
 
-**Öppen fråga som följer av rättelsen, för Bengt och Axel:** om tystnadsfelet klarar sig på befintligt
-facit, varför skulle T-B vänta på #94? Kamerafacit är kandidaten — 738 av 744 kameror står vid en
-VViS-station (#55) och ligger därmed per konstruktion inom räckvidd, vilket är precis T-B:s
-räckviddsvillkor. Håller det kan T-B köras i höst i stället för i mars. Frågan är inte avgjord här;
-den flyttar kortets tidplan och hör till tavlan.
+Kortet är alltså **inte längre** en beställning på #94. Den tidigare formuleringen här ("delvis en
+beställning på #94, och ett argument till för att ta försäkringsbolagen först") föll med beslutet.
+
+*Historik: fram till 11/9 stod här att T-B hade "samma beroende som TROSKLAR-TYSTNADSFEL", alltså #94.
+Det var fel redan när det skrevs — tystnadsfelets §8 skrevs om 10/9 kl 21:09, två timmar före det här
+dokumentet, och hade redan tagit bort beroendet (DECISIONS #93). Bengts beslut 11/9 stänger frågan för
+båda dokumenten.*
 
 **Datavarning att skriva in i domen:** minutupplösningen började 9/9. Allt äldre är GitHub-ingestens
 30-minutersrader, som inte duger till 15/30-minutersfönster. T-A:s underlag börjar alltså vid
@@ -209,7 +213,7 @@ höstens första frost, inte i arkivets början.
 | Tröskeldokumentet (detta) | ✅ fastställt 10/9 | Bengt; Axel kontrasignerar på tavlan |
 | Skuggkolumnen byggs | efter radardomen 14/9 | kort #81:s ordning |
 | T-A körs | höstens första frostnätter (okt–nov) | ≥ 30 nätter, fysikkontrollen |
-| T-B skuggar | hela vintern | facit läggs ovanpå (#94 / mars) |
+| T-B skuggar | **från första frosten**, hela vintern | facit ur egen stack (§6): kamerafacit #20, road_condition_history, situation_archive #33 |
 | T-C dömer | mars | underlagskraven |
 | Röst | bara efter T-C **och** Axels ja | rösttext, plats i A-skalan, PRODUKTBOK |
 
