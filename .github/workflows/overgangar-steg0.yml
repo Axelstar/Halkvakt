@@ -1,0 +1,30 @@
+# Steg 0 för kort #89 (övergångarna, systemanalysens §2.2): mäter hålet i fuktvillkoret innan
+# någon regel vidgas. Sex frågor — eftersläpningen, torkningskurvan, underlaget för efterhalkan
+# och för oljefilmen, operatörens "Våt" och radarns tidstäckning. Varje fråga har egen
+# underlagsvakt: under 20 händelser skrivs OAVGJORT, aldrig ett tal.
+# Helt läsande. Knapp, inte cron — kadensen beslutas när första avläsningen finns (minutdieten).
+name: overgangar-steg0
+on:
+  workflow_dispatch:
+    inputs:
+      dagar:
+        description: "Fönster i dygn (arkivet har regnmängd sedan 2/9)"
+        required: false
+        default: "14"
+jobs:
+  steg0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types scripts/overgangar-steg0.ts --sjalvtest
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/overgangar-steg0.ts "${{ inputs.dagar || '14' }}" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
