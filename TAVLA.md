@@ -1372,6 +1372,27 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   alltså STÖRRE än jag först skrev: tre av fyra regnstopp, inte två av tre.
   📌 **REGEL SOM FÖLJER:** steg 0 körs alltid med `dagar <= 7`, och en händelse måste läsas
   INOM sju dygn — annars har gallringen ätit upplösningen och 0a/0b/0c blir OAVGJORT.
+  🔁 **FEMTE LÄSNINGEN 11/9 — AXELS GRANSKNING.** Han verifierade fukthålet oberoende och vände på
+  mätriktningen: från FROSTEN i stället för från regnstoppen. Han har rätt och min riktning var fel
+  vald — falsklarmsrisken skalar med FYRNINGAR, inte med tillfällen — och hans riktning tål dessutom
+  gallringen bättre. 0c omskriven (PR #133/#134), körning 34590257682. Hans tal: 312 frostmätningar,
+  14 larmar i dag, 298 tysta, 71 med regn inom 4 h ⇒ "sex gånger talförare".
+  🔢 **EPISODRÄKNINGEN SOM SAKNADES, och den ändrar tolkningen.** Motorn talar inte per arkivrad
+  (45 s mellan larm, ingen repris inom 10 min/5 km, snapshot var 10:e min). Räknat i BÅDA enheterna,
+  efter givarvakten: **rader 123 → 2 larmar i dag, 25 tysta med regn ≤ 4 h ⇒ 13,5 ×. EPISODER 15 → 2
+  larmar, 2 med regn ≤ 4 h ⇒ 2,0 ×.** 8,2 rader per episod, 6 stationer. Sexan är alltså ett
+  RADtal; röstkostnaden är en fördubbling av 2 fall till 4, över fjorton dygn. Korskontroll: den
+  omslagsbaserade riktningen fann 4 — samma handfull väder räknat från andra hållet.
+  🚨 **OCH ETT FYND SOM GÄLLER LÅNGT UTANFÖR DET HÄR KORTET: 61 % av arkivets frostrader är skrot.**
+  Av 317 frostrader (yta ≤ 1 °C) föll 194 på givarvakten (#75) — ytan mer än 12 ° under luften,
+  värst −49,9 °C. NOLL saknade lufttemperatur, så det är trasiga givare, inte okontrollerbar data.
+  Varje mätning som läser yttemperatur måste bära vakten, annars är sex av tio frostfall falska.
+  **Det gäller #88:s trend och #98:s tystnadsfel lika mycket, och står inte i deras tröskeldokument.**
+  ✏️ **INFÖRT I FÖRSTUDIEN** (PR nedan): nytt §4.7 röstbudgeten (hålet Axel hittade — dokumentet sa
+  ingenting om vad utvidgningen gör med tystnaden, och åberopade husregeln för (b) men inte för (a));
+  §4.3 RH-guarden struken och N sätts av golvet, inte av svepet (kurvan har inget knä: 22→25 rader,
+  1→2 episoder); §4.4 grinden får ord-per-resa som eget fällande kriterium; §3 givarvakten; §9 0c
+  omskriven och (b) flyttad ur steg 0 till §5.6-frågan, som dokumentet alltid sagt men §9 motsade.
   ➡️ **NÄSTA: steg 1** — TROSKLAR-OVERGANGAR med (a) som huvudsak, (b) med nedläggningsklausul
   (0d säger att den inte kan dömas i höst), "Våt" ute ur unionen, RH-guarden struken.
   🥶 **OCH EN KÖRNING NÄR FROSTEN KOMMER — LARMET BYGGT OCH BEVISAT 11/9** (Bengts order).

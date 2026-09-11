@@ -25,6 +25,15 @@ och #90.
 och det var förstudiens största brist. §1b nedan är ramen som saknades — vägytan är ett tillstånd,
 händelserna är övergångar, och motorn minns resan men inte vägen. §9 steg 2 är omskrivet därefter.*
 
+*Femte läsningen 11/9 (Axels granskning, efter att steg 0 körts): kärnpåståendet verifierat av
+honom oberoende, och han vände på mätriktningen — från FROSTEN i stället för från regnstoppen.
+Det var rätt, och min riktning var fel vald: falsklarmsrisken skalar med fyrningar, inte med
+tillfällen. Hans riktning tål dessutom gallringen bättre. Tre saker följde: §4.7 (röstbudgeten)
+är ny och täpper det hål han hittade — dokumentet sa ingenting om vad utvidgningen gör med rösten,
+och åberopade husregeln "tystnad är en funktion" för (b) men inte för (a), där den är mer hotad.
+§4.3 säger nu att N sätts av golvet, inte av svepet. Och (b) flyttas ur steg 0 till en fråga till
+Bengt, som §5.6 alltid sagt men §9 motsade.*
+
 *Fjärde läsningen 11/9 (Bengts frågor "täcks vattenplaning in? är rimfrost ett tillstånd? gäller
 samma för sidvind × halka?"): ja, ja, och nej — och nejet är poängen. Vattenplaning är ett tillstånd
 (vattenfilm) och saknades i grafen. Rimfrost är ett tillstånd (is), dimma och frysrisk är dess
@@ -199,6 +208,14 @@ omklassning till halka/is), kamerafacit (#20: bild arkiverad vid varning och i g
 kameror står vid en VViS-station, #55), `situation_archive` (bara `Accident`, ~210 rader/dygn, med
 position och tid men **utan orsak** — situations.ts:37).
 
+**HAR, MEN KAN INTE LITA PÅ — mätt 11/9, och det gäller långt bortom det här kortet.** Av 317
+frostrader (yta ≤ 1 °C) i ett fjortondygnsfönster föll **194, alltså 61 %**, på givarvakten (#75):
+ytan låg mer än 12 ° under luften, värst −49,9 °C. Noll rader saknade lufttemperatur, så det är
+inte okontrollerbar data utan **trasiga givare**. Varje mätning som läser yttemperatur måste
+därför bära vakten `air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12`, annars är sex
+av tio frostfall skrot. Det gäller #88:s trend och #98:s tystnadsfel lika mycket som (a), och står
+inte i något av deras tröskeldokument i dag.
+
 **Har inte:** vägens faktiska blöthet i skala (§1). Saltbilens passage (ingen öppen källa,
 källkartläggningen rad 222). Olyckans orsak. Spårdjup (DECISIONS #66).
 
@@ -278,11 +295,17 @@ Samma princip som TROSKLAR-TRENDEN §2: dokumentet anger svepet, grinden väljer
 | Parameter | Vad den styr | Svep |
 | :-- | :-- | :-- |
 | **N** | hur länge efter sista regnet vägen räknas som blöt | 1 · 2 · 3 · 4 h |
-| **RH_min** | fuktguard mot torkad väg | ingen · 80 · 90 % |
+| ~~**RH_min**~~ | ~~fuktguard mot torkad väg~~ | **STRUKEN 11/9** — 0b visar att fuktigheten STIGER efter regnet (median 90 % vid +1 h, 95 % vid +4 h). En guard vid 80 eller 90 % filtrerar bort nästan ingenting och ger bara falsk precision. |
 | **Minsta regn** | hur lite regn som räknas som "blöt väg" | > 0 · ≥ 0,2 · ≥ 0,5 mm/30 min |
 | **Utfallsfönster** | hur länge efter fyrningen facit får komma | 60 · 120 · 180 min |
 
 Vad som INTE sveps: yttröskeln (1 °C / bro 3 °C). Den är frysriskens och ändras inte av (a).
+
+**Och N väljs inte av svepet — det väljs av golvet.** Steg 0 mätte tillskottet vid 2 h och 4 h:
+22 respektive 25 rader, 1 respektive 2 episoder. Att fördubbla N fördubblar ungefär tillskottet,
+och kurvan har alltså inget knä i det här materialet. Det finns ingen punkt där fysiken säger
+"hit men inte längre". Därmed är det **falsklarmsgolvet och röstbudgeten (§4.7) som sätter N**,
+inte svepet — och de två raderna i §4.4 blir dokumentets viktigaste, inte en formalitet.
 
 ### 4.4 Facit och grind
 
@@ -297,6 +320,11 @@ falsklarm tillkommer på tillfällen som inte blev hala. Två kurvor mot N; där
 N. Golv mot brus, samma logik som trendens: nettonytt ≥ 5 % av facit inom räckvidd, tillkomna
 falsklarm ≤ 25 % av tillkomna fyrningar. Talen är gissade i trendens mening (golv, inte trösklar) och
 fastställs av Bengt.
+
+**Grinden har ett tredje krav sedan 11/9: ORD PER RESA.** B3-paret mäter om utvidgningen har rätt.
+Det mäter inte om den är uthärdlig. Ett tillskott som räddar missar men fördubblar rösten ska kunna
+falla på röstkriteriet ensamt, utan att B3 ens behöver vägas. Se §4.7 för talen och för varför måttet
+måste räknas i episoder och inte i arkivrader.
 
 ATT VERIFIERA (vintern): allt ovan. T-A-liknande grind: minst 30 regn-följt-av-frost-nätter, minst
 20 stationer, båda halvorna av perioden. Fysikkontrollen: träffarna ska toppa efter midnatt och vara
@@ -352,6 +380,43 @@ radarn (5 min) i kadens; SMHI:s bidrag där är täckning inåt landet, inte pre
 oanvänd. Regelskissen i §4.2 är reviderad till en union av proxyer, var och en gatad för sig.
 Ordningen i §9 ändras inte, men steg 0 får två frågor till (radarn och "Våt"), och steg 2:s
 regnhistorik ska byggas per segment ur radarn, inte bara per station ur VViS.
+
+### 4.7 Röstbudgeten — vad utvidgningen gör med tystnaden (nytt 11/9, Axels invändning)
+
+Dokumentets första version behandlade (a) som en ren vinst: "en strikt superset, kan bara lägga till
+larm". Just den formuleringen döljer kostnaden. Husregeln **tystnad är en funktion** åberopades för
+(b) i §5.2 men inte för (a) — trots att (a) rör den fara som talar oftast. Axel hittade hålet, och
+det är dokumentets allvarligaste utelämnande.
+
+Steg 0 mätte det, i två enheter, fjortondygnsfönster, efter givarvakten (§3):
+
+| Enhet | Frostfall | Larmar i dag | Tysta | Tysta med regn ≤ 2 h | ≤ 4 h | Med N = 4 h |
+| :-- | --: | --: | --: | --: | --: | --: |
+| **Arkivrader** | 123 | 2 | 121 | 22 | 25 | 27 mot 2 = **13,5 ×** |
+| **Episoder** | 15 | 2 | 13 | 1 | 2 | 4 mot 2 = **2,0 ×** |
+
+**Skillnaden mellan raderna är hela poängen, och den är sju gånger.** Motorn talar inte per arkivrad:
+högst ett larm per 45 s, aldrig samma larm inom 10 min eller 5 km, och den läser en snapshot som
+publiceras var tionde minut. En station som är frusen hela natten ger 8,2 rader i snitt men **ett**
+larm per förbipasserande förare. En multiplikator räknad på rader säger hur ofta villkoret är sant;
+bara episodtalet säger något om rösten. Röstbudgeten ska därför alltid räknas i episoder, och ett
+radtal som smyger sig in i ett tröskeldokument är ett mätfel.
+
+**Vad talen faktiskt säger, med nämnaren utskriven.** Tvåan är en fördubbling, inte en sexdubbling —
+men den är räknad på 2 fall som blir 4, över fjorton dygn, på 6 stationer. Det är september, den
+årstid där både täljare och nämnare är som minst, och ett förhållande byggt på två observationer är
+inte en prognos. Korskontrollen stöder att nivån är låg: den omslagsbaserade riktningen fann 4
+regnstopp följda av frost inom 4 h under samma period, alltså samma handfull väder räknat från andra
+hållet.
+
+**Det som ändå står kvar efter alla reservationer, och som är Axels egentliga poäng:** i november är
+frost inte längre 15 episoder på 6 stationer. Multiplikatorn kan bli mindre (fler frostfall har då
+nederbörd och fyrar redan i dag) eller större, och vi vet inte vilket. Därför:
+
+1. Röstbudgeten mäts om på vinterdata **innan** golvet sätts, i episoder.
+2. Grinden i §4.4 får ord-per-resa som eget, fällande kriterium.
+3. Ett radtal får aldrig citeras som röstpåstående — varken i det här dokumentet eller i
+   TROSKLAR-OVERGANGAR.
 
 ---
 
@@ -486,10 +551,10 @@ och #90; regn-på-snö och snö-på-snö stannar hos #45. Kort #81:s byggordning
 
 | Steg | Vad | När | Grind | Kostnad |
 | :-- | :-- | :-- | :-- | :-- |
-| **0. Mät hålet — sex frågor** (utökat 11/9 efter andra och fjärde läsningen) | Läsande skript mot arkivet, samma form som kodgrinden, med självtest och falsifierbarhetsvakt. **(0a) Eftersläpningen:** för varje regnstopp per station sedan 9/9, hur snabbt går `fukt` falskt? Väntat ~10 min; det är hålets bredd. **(0b) Torkningskurvan:** yta och luftfuktighet de följande fyra timmarna efter regnstopp — ger N. **(0c) Underlag (a):** regnstopp per dygn, och andelen följda av yta ≤ 1 °C inom fyra timmar. **(0d) Underlag (b):** torrperioder ≥ 5 dygn följda av regn sedan 2/9, och olyckor i `situation_archive` inom räckvidd under deras första 20 minuter — avgör om V-B-grinden alls är nåbar i höst. **(0e) Operatörens "Våt":** när ett segment blir Våt, hur länge står det kvar, och hur förhåller det sig till `rain_sum_mm` vid närmaste station? Avgör om "Våt" duger som proxy (§4.6). **(0f) Radarn:** för regnstopp vid en station, ser `radar_precip` samma regn på segmenten inom 15 km, och hur ofta missar timsamplingen ett regn stationen såg? Avgör om radarn duger som segmentproxy (§4.6). Varje fråga med egen underlagsvakt: färre än 20 händelser ⇒ "oavgjort", aldrig ett tal. | Nu | Ingen — det är en läsning | 1 Actions-minut som knapp, eller steg i måndagsserien |
+| **0. Mät hålet — sex frågor** (utökat 11/9 efter andra och fjärde läsningen) | Läsande skript mot arkivet, samma form som kodgrinden, med självtest och falsifierbarhetsvakt. **(0a) Eftersläpningen:** för varje regnstopp per station sedan 9/9, hur snabbt går `fukt` falskt? Väntat ~10 min; det är hålets bredd. **(0b) Torkningskurvan:** yta och luftfuktighet de följande fyra timmarna efter regnstopp — ger N. **(0c) Underlag (a) — FRÅN FROSTEN, inte från regnstoppen** (omskriven 11/9 efter Axels granskning; hans riktning är den beslutsrelevanta, eftersom falsklarmsrisken skalar med fyrningar och inte med tillfällen, och den tål gallringen bättre): av alla frostfall (yta ≤ 1 °C, efter givarvakten i §3), hur många larmar dagens regel på, hur många är tysta, och hur många av de tysta hade regn inom 2 respektive 4 timmar? **Räknas i BÅDA enheterna — arkivrader och episoder** — eftersom bara episodtalet säger något om rösten (§4.7). **(0d) Underlag (b) — MEN FÖRST §5.6-FRÅGAN** (rättat 11/9: dokumentet sade redan i §5.6 att Axel ska svara innan (b) byggs, och lade ändå mätningen här; Axel påpekade motsägelsen). Svaret tar trettio sekunder och sparar en höst om det är nej. Blir det ja: torrperioder ≥ 5 dygn följda av regn, och olyckor i `situation_archive` inom räckvidd under deras första 20 minuter. **(0e) Operatörens "Våt":** när ett segment blir Våt, hur länge står det kvar, och hur förhåller det sig till `rain_sum_mm` vid närmaste station? Avgör om "Våt" duger som proxy (§4.6). **(0f) Radarn:** för regnstopp vid en station, ser `radar_precip` samma regn på segmenten inom 15 km, och hur ofta missar timsamplingen ett regn stationen såg? Avgör om radarn duger som segmentproxy (§4.6). Varje fråga med egen underlagsvakt: färre än 20 händelser ⇒ "oavgjort", aldrig ett tal. | Nu | Ingen — det är en läsning | 1 Actions-minut som knapp, eller steg i måndagsserien |
 | **1. Tröskeldokumentet** | TROSKLAR-OVERGANGAR med (a) som huvudsak, (b) som egen gate med nedläggningsklausul, (c) som överlämning. Svep, inte värden. | Nu, direkt efter steg 0 | Bengt fastställer, Axel bockar | 0 |
 | **2. Tillståndsskattaren i skugga** (omskrivet 11/9, §1b) | En kolumn per SEGMENT i skuggloggen: skattat yttillstånd ∈ {torr, blöt, slask, snöig, packad, is} ur operatörens klass när den finns, regn/snö-historik (station + `radar_precip`), yta mot noll, daggpunkt mot yta, tid sedan sista händelse. Beräknad i Supabase, rör inte motorn. **Eget facit först:** skattat "blöt" mot operatörens "Våt", skattat "is" mot omklassning till halka. Tjänar (a), (b), #45, #46. | Efter 14/9 (#81:s ordning, det är kod) | Skattarens egen träffsäkerhet mot operatören ≥ golv (sätts i tröskeldokumentet) INNAN någon övergångsregel läser den; vakthundsrad (#81 regel 5) | 0 kr, en kolumn × ~140 rader/dygn |
-| **3. (b) i skugga** | Oljefilm som skuggkolumn i skuggmotorn, V-B-grind. **Bara om Axel säger att den hör till löftet (§5.6).** | Efter 14/9, medan höstregnen pågår | V-B | 0 kr |
+| **3. (b) i skugga** | **Föregås ALLTID av §5.6-frågan till Axel** — ett nej avslutar (b) här. Blir det ja: oljefilm som skuggkolumn i skuggmotorn, V-B-grind. Steg 0 visade att grinden inte är nåbar i höst (55 torrperioder, 6 olyckor mot kravets 15), så ett ja betyder "mät till nästa höst", inte "döm i vinter". | Efter 14/9, medan höstregnen pågår | V-B | 0 kr |
 | **4. (a) i skugga** | Utvidgat fuktvillkor som skuggkolumn bredvid dagens `icing_point`, B3-paret. Data finns från steg 2; domen kräver frost. | Efter 14/9; döms vid höstens första frostnätter | B3 ≥ golven, fysikkontrollen | 0 kr |
 | **5. Tystnadsfelet** | "Regn inom N h" som fjärde signal i TYSTNADSFEL §3. | Med steg 1 | Rad i DECISIONS | 0 |
 | **6. (c) överlämnas** | En rad på #46 (sikt som konfidens), en designfråga i #90:s framtida dokument (modifiera eller förlora). Kort #89 krymper. | Med steg 1 | Tavlan | 0 |
@@ -537,18 +602,27 @@ frostnätter, som inte kan tas ikapp.
 
 ## Rekommendation
 
-1. **Kör steg 0 nu** — en läsning, en minut, inga beslut. Den ger sex svar: hålets bredd (0a),
-   torkningskurvan som ger N (0b), (a):s underlag (0c), (b):s underlag och om dess grind alls är
-   nåbar i höst (0d), om operatörens "Våt" duger som proxy (0e) och om radarn gör det (0f). Utan dem
-   är resten av planen antaganden — och två av proxyerna i §4.2 kan visa sig vara luft.
+1. ~~**Kör steg 0 nu**~~ — **GJORT 11/9** (körningar 34579255737, 34580876588, 34590257682). Utfall:
+   hålet är bevisat och bredare än gissningen (0a: 76 % av regnstoppen hade mätarregn, median 35 min);
+   RH-guarden är död (0b); populationen finns men frysningen inte än, och röstkostnaden är 2,0 × i
+   episoder (0c, §4.7); oljefilmen kan inte dömas i höst (0d); "Våt" är OAVGJORT och stryks ur
+   unionen (0e); radarn samplar 8,3 % av tiden (0f). Två av proxyerna visade sig vara luft, precis
+   som raden befarade. Nästa avläsning sker när frostlarmet i vakthunden fyrar — inom sju dygn,
+   eftersom gallringen då äter upplösningen.
 2. **Skriv tröskeldokumentet direkt efter**, med (a) som huvudsak. Det är det som låser upp allt
    annat, och det är inte kod.
 3. **Ställ §5.6-frågan till Axel innan (b) byggs.** Ett nej sparar en höst.
 4. **Dela #89:s nyckel** så att (a) inte väntar på #45 i onödan.
 5. **Lägg "regn inom N h" i TYSTNADSFEL §3** i samma varv som tröskeldokumentet.
+6. **Bär givarvakten i varje mätning som läser yttemperatur** (§3). Sex av tio frostfall i arkivet
+   är trasiga givare, och det gäller #88 och #98 lika mycket som det här kortet.
+7. **Räkna röst i episoder, aldrig i arkivrader** (§4.7). Skillnaden var sju gånger i höstens data.
 
 Det billigaste stora klivet i §2.2 är inte ett nytt samband. Det är att sluta definiera bort den
 blöta vägen tio minuter efter att regnet slutat.
+
+Men det klivet har ett pris i ord, och priset ska mätas innan det tas. Det är skillnaden mellan den
+här versionen och den förra.
 
 ---
 
