@@ -11,10 +11,11 @@
 // Larmar via GitHub-issue (API-anrop, inga Actions-minuter). En issue åt gången: öppnas när
 // något är fel, uppdateras medan det består, stängs när allt är grönt igen.
 //
-// Därtill EN händelsevakt som inte är en felkontroll (4, kort #52): första vinterordet i
-// väglagsarkivet. Egen etikett, egen issue, en enda gång — den säger inte att något är
-// trasigt utan att något äntligen går att mäta. Prov: ?vinterprov=1 (egen etikett, så ett
-// prov aldrig förbrukar det riktiga engångslarmet).
+// Därtill TVÅ händelsevakter som inte är felkontroller. De säger inte att något är trasigt
+// utan att något äntligen går att mäta — egen etikett, egen issue, en enda gång var:
+//   4. Första vinterordet i väglagsarkivet (kort #52). Prov: ?vinterprov=1
+//   5. Frosten är här (kort #89, Bengts order 11/9). Prov: ?frostprov=1
+// Provet bär egen etikett, så att ett prov aldrig förbrukar det riktiga engångslarmet.
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
 
 const sql = postgres(Deno.env.get("SUPABASE_DB_URL")!, { max: 1, prepare: false });
@@ -131,6 +132,59 @@ Deno.serve(async (req) => {
   } catch (e) {
     // Tappat signal ÄR ett vakthundsfel: vinterordet får inte passera obemärkt.
     problem.push(`**Vinterkollen (kort #52) kunde inte larma**: ${String(e)}`);
+  }
+
+  // 5. HAR FROSTEN KOMMIT? Samma sort som 4: en HÄNDELSE, egen etikett, egen issue, EN gång,
+  //    och den får aldrig färga vakthunden röd. Bengts order 11/9 efter steg 0 (kort #89).
+  //    Varför den måste larma i stället för att stå i en issue: steg 0:s frysfråga (0c) gav
+  //    3–4 fall och behöver ~30, och avläsningen har en HÅRD deadline på sju dygn — gallringen
+  //    (#83, sql/014) tunnar allt äldre än så till en rad per halvtimme, och då kan arkivet
+  //    inte längre säga NÄR regnet slutade (DECISIONS #97). En passiv påminnelse som ingen
+  //    läser på tio dagar är i praktiken ingen påminnelse.
+  //    SNUBBELTRÅD, INTE MÄTNING. Den räknar stationer med frusen yta — inte regnstopp följda
+  //    av frost, som är 0c:s fråga. Att bygga om steg 0:s klassning här hade gett en andra
+  //    implementation av samma regel, och det är precis vad driftvakten i steg 0 finns för att
+  //    förhindra. Tråden säger "gå och titta"; knappen mäter.
+  //    TRÖSKELN ÄR ETT GOLV MOT BRUS, ingen mätt gräns (trendens mening, TROSKLAR-TRENDEN §2):
+  //    enstaka fjällstationer under noll i september ska inte väcka någon. Raden skrivs varje
+  //    timme, så talet går att följa och tröskeln att ändra mot verkligheten.
+  const FROST_STATIONER = 50;
+  try {
+    const [f] = await sql`SELECT count(DISTINCT station_id)::int AS n, min(surface_temp_c) AS kallast
+      FROM weather_observations
+      WHERE sample_time > now() - interval '24 hours' AND surface_temp_c <= 0`;
+    rad.push(`frost: ${f.n} stationer med yta <= 0 °C senaste dygnet (larm vid ${FROST_STATIONER})`);
+    const prov = new URL(req.url).searchParams.get("frostprov") === "1";
+    if (f.n >= FROST_STATIONER || prov) {
+      // Provet bär egen etikett, annars förbrukar det det riktiga engångslarmet.
+      const etikett = prov && f.n < FROST_STATIONER ? "frostlarm-prov" : "frostlarm";
+      const tidigare = await gh(`/issues?state=all&labels=${etikett}&per_page=1`);
+      if (!tidigare.length) {
+        await gh(`/issues`, "POST", {
+          title: `🥶 Frosten är här — kör steg 0 inom sju dygn (kort #89)${prov && f.n < FROST_STATIONER ? " [PROV]" : ""}`,
+          labels: [etikett],
+          assignees: ["895845"],
+          body: `${f.n} stationer har haft vägyta ≤ 0 °C det senaste dygnet` +
+            `${f.kallast != null ? ` (kallast ${Number(f.kallast).toFixed(1)} °C)` : ""}. Tröskeln är ${FROST_STATIONER}.\n\n` +
+            `**Att göra nu:** tryck knappen \`overgangar-steg0\` i Actions med \`dagar = 7\`.\n\n` +
+            `**Varför det brådskar — sju dygn, inte "när det passar":** gallringen (kort #83, sql/014) ` +
+            `tunnar allt äldre än sju dygn till EN rad per station och halvtimme. Steg 0:s gap-vakt kastar ` +
+            `varje omslag med mer än 20 minuters lucka, så en gallrad vecka är obrukbar per konstruktion. ` +
+            `Mätt 11/9 (DECISIONS #97): ogallrad vecka 157 användbara omslag av 1 971, gallrad vecka 32 av ` +
+            `5 175. Läses frostnätterna för sent finns raderna kvar — men de kan inte längre säga NÄR ` +
+            `regnet slutade, och 0a/0b/0c blir OAVGJORT.\n\n` +
+            `**Vad som faktiskt ändras:** bara 0c. Avläsningen 11/9 gav 3–4 regnstopp följda av yta ≤ 1 °C; ` +
+            `grinden behöver ~30. 0a (76 %, median 35 min), 0b, 0d och 0f ger samma svar som då.\n\n` +
+            `**Kolla #88 i samma varv:** grind T-A (trendkolumnen) väntar på exakt samma frostnätter och ` +
+            `kan lika lite ta dem ikapp.\n\n` +
+            `Bakgrund: #127, \`docs/OVERGANGAR-ANALYS.md\` §9, DECISIONS #96 och #97, kort #89.\n\n` +
+            `Engångslarm: den här issuen skapas aldrig igen, öppen eller stängd.`,
+        });
+      }
+    }
+  } catch (e) {
+    // Tappad signal ÄR ett vakthundsfel: frosten kommer en gång per år och kan inte tas om.
+    problem.push(`**Frostvakten (kort #89) kunde inte larma**: ${String(e)}`);
   }
 
   const kropp = `${MARK}\n**Kontroll ${new Date().toISOString()}**\n\n` +
