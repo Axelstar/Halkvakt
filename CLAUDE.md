@@ -190,3 +190,10 @@ i samma commit när de överlappar.
   breddningen med höjd- och SMHI-proven) plus tretton kort till, utan att någon märkte det på
   två dygn; tre nya kort hänvisade till ett #38b som inte fanns. Regel: `git diff --stat TAVLA.md`
   med fler än ~30 raderade rader ⇒ lista de raderade `- [ ]`-raderna och bekräfta varje flytt.
+- Ett FASTSTÄLLT dokument som inte är incheckat finns inte. TROSKLAR-TRENDEN skrevs och fastställdes
+  10/9 23:04 och låg ett dygn som enda kopia i ett arbetsträd — inte på origin, inte i gren, inte i
+  PR. Repot är enda synken mellan parallella sessioner, så ett dygns arbete hängde på en disk, och
+  tavlans kort #88 sa fortfarande "tröskeldokument först" som om inget fanns. Regel: fastställande
+  och incheckning sker i SAMMA varv, med kortraden och DECISIONS-raden i samma commit. Kontroll före
+  varje sessionsslut: `git status --porcelain --untracked-files=all` — en ospårad fil under docs/ är
+  ett larm, inte en detalj.
