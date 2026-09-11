@@ -782,6 +782,21 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
    Premissen är alltså OPRÖVAD, och beslutet nedan kan inte tas på det här underlaget. D varaktighet: 12 övergångar,
    median 2 803 h — arkivet är för tunt för en tidsgränsdom. MÄTNINGENS GRÄNS: "Packad snö" på kod 1 finns
    inte i arkivet förrän det snöat; C prövas på höstens is/frost, en analogi. Bifynd ur självtestet ⇒ kort #97.
+   ❄️ **VINTERLARMET I VAKTHUNDEN, DEPLOYAT + BEVISAT 11/9 04:53** (Bengts "lägg larmet i vakthunden
+   istället", PR #108). Mätningen kan inte falsifiera sin premiss förrän arkivet bär vinterord, så
+   utlösaren är första vinterordet — inte en kalender. Den veckokadens jag föreslagit (nio måndags-
+   körningar till 1/11) är **struken**: den hade betalat minuter för att mäta ingenting tills det snöar.
+   Vakthunden larmar via issue utan en enda Actions-minut (#73). Egen etikett `vinterord`, egen issue,
+   ENGÅNGSLARM (letas i state=all). Det är en HÄNDELSE, inte ett fel — den färgar aldrig vakthunden röd.
+   Faller larmvägen hamnar DET i problem[], för ett vinterord som passerar obemärkt är just vad kortet
+   ska förhindra. Issuens kropp bryter ner förekomsterna per kod, så det syns direkt om ett farlighetsord
+   står på kod 1 (⇒ nivådelningen faller, regional gräns blir alternativet). Prov: `?vinterprov=1`, egen
+   etikett så provet inte förbrukar engångslarmet; båda etiketterna skapade i förväg (läxan från #73:s
+   första larmprov som gav 500). **BEVIS, inte deploy-kvittot:** vakthundens larmprov 04:53 (issue #109)
+   visar raden `vinterord i väglagsarkivet: nej` bland mätvärdena — nya koden kör skarpt i Supabase.
+   ⚠️ INTE samma sak som marknadsföringens `snolarm`, som fyrar på `code !== 1` ur CDN-snapshoten
+   (säsongens första verkliga halka per län, ett säljtillfälle). Det här läser ARKIVET oavsett kod, och
+   den intressanta cellen för #52 är kod 1 — den som snölarmet per konstruktion hoppar över.
 - [ ] 📡 **#43 Radarn som infrastruktur** (Bengts beställning 2/9, efter cellmätningens
   dom) — EN källa, SEX nyttor: vattenplaningens trigger (#42), blixthalkans pipeline
   (#16), marsdomens orsaksklassning, miss-/skuggfacit, vinterns snöbyar, Norden.
