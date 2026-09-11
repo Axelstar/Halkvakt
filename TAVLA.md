@@ -1213,11 +1213,38 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🕳️ **DOKUMENTET LÅG OINCHECKAT I ETT DYGN** (skrivet 10/9 23:04, incheckat 11/9 på Bengts order).
   Det fanns varken på origin, i gren eller PR — enda kopian låg i ett arbetsträd. Repot är enda
   synken mellan sessioner; ett dygns arbete hängde på en disk. Läxa förd till CLAUDE.md.
-  🕳️ **DANGLANDE KÄLLA:** dokumentet citerar `docs/TROSKLAR-TYSTNADSFEL.md` på tre ställen som
-  B3-syskon. Den filen finns inte i repot. Tystnadsfelsmåttet i T-B står därför på egna ben tills
-  någon skriver den — eget kort krävs innan T-B körs skarpt.
+  ✅ ~~**DANGLANDE KÄLLA:** `docs/TROSKLAR-TYSTNADSFEL.md` finns inte i repot~~ **STÄNGT 11/9**
+  (DECISIONS #93): dokumentet låg i Bengts Drive, skrivet 10/9 21:09, två timmar FÖRE trenden — och
+  gick samma väg som trenden, alltså aldrig in i repot. Nu fastställt och incheckat som **kort #98**.
+  ⚠️ **MEN DET AVSLÖJADE ETT SAKFEL I §6 HÄR:** trenddokumentet säger att T-B har "samma beroende som
+  TROSKLAR-TYSTNADSFEL", alltså kort #94 (försäkringsbolagen). Tystnadsfelets §8 skrevs om samma kväll
+  21:09 och tog uttryckligen BORT det beroendet — måttet döms mot facitstacken vi redan skriver varje
+  dygn. Trenden skrevs 23:04 och citerade alltså en version som redan var ersatt. §6 är rättad.
+  🔑 **ÖPPEN FRÅGA TILL BENGT + AXEL (ny 11/9):** om tystnadsfelet klarar sig på befintligt facit,
+  varför skulle T-B vänta på #94? Kamerafacit är kandidaten: 738 av 744 kameror står vid en
+  VViS-station (#55), alltså per konstruktion inom räckvidd — precis T-B:s räckviddsvillkor. Håller
+  det kan T-B köras i HÖST i stället för i mars. Avgörs inte av mig; det flyttar kortets tidplan.
   🔑 KVAR FÖRE BYGGE: Axels bock här (kontrasigneringen dokumentet förutsätter, DECISIONS #61/#68:s
   form). Skuggkolumnen är fortsatt låst bakom radardomen 14/9.
+- [ ] 🤐 **#98 TYSTNADSFELET — mät tystnadens fel, inte larmens träff** (B3-syskon till #88; skrivet
+  10/9 21:09, hittat i Bengts Drive 11/9, FASTSTÄLLT 11/9 på Bengts order, DECISIONS #93).
+  `docs/TROSKLAR-TYSTNADSFEL.md`. Avgör Bengts egen tvist från 10/9 med data i stället för princip:
+  en missad svartisvarning kan döda, ett falsklarm irriterar — men varje larm sänker värdet av nästa.
+  **MÅTTET:** varje bekräftat halttillfälle där systemet TEG klassas som *oursäktligt* (signal fanns:
+  daggpunktsgapet slöt sig, trenden pekade mot noll, eller en station inom räckvidd visade risk) eller
+  *ursäktligt* (ingen signal: snöby bara radarn ser #43, saltbil, kommunal gata utan givare #93). Bara
+  det oursäktliga går att laga med en tröskel; det ursäktliga pekar på nya källor. **PRISET STÅR
+  BREDVID:** nya falsklarm per kandidattröskel. Två kurvor mot tröskeln, och där marginalen korsar
+  sitter den. **RÄCKVIDDSVILLKORET (§6) är det avgörande:** en tyst miss räknas bara när halkan låg
+  inom räckvidd men utanför rösten — annars drunknar tröskelsignalen i täckningshål (#93), som är ett
+  annat problem. 🔑 NYCKEL: Axels bock här (kontrasignering, #61/#68/#92:s form). Skuggkolumn efter
+  radardomen 14/9; aldrig röst före grind-A/B/C-dom i mars.
+  ⚡ **KAN BÖRJA RÄKNAS I HÖST, INTE I MARS** — §8 skrevs om 10/9 kväll när försäkringsbolagens
+  skadedata visade sig otillgänglig: måttet döms i stället mot facitstacken vi redan skriver varje
+  dygn (road_condition_history, kamerafacit #20, situation_archive #33). Inget samarbete utanför
+  huset krävs. Det är också grunden för den öppna frågan på #88 om T-B kan tidigareläggas.
+  Verify: korsningskurvan ritad över hela svepet, med räckviddsvillkoret tillämpat och binomialbrus
+  redovisat; utfallsmeningen i §7 ifylld med riktiga N, M, X och Y.
 - [ ] 🔀 **#89 ÖVERGÅNGARNA mellan faror — regn→frost, torka→första regnet** (systemanalys 10/9;
   syskon till #45 som redan har snö-på-snö/regn-på-snö). (a) Regn som slutar och yta som faller under
   noll inom 2 h = efterhalka: regnsumma + yttemp + trend (#88) finns alla, inget sitter ihop. (b) Första

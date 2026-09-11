@@ -1429,3 +1429,46 @@ kräver facit om verklig halka — marsdomen eller försäkringsbolagens skadeda
 delvis en beställning på #94, och ett argument till för att ta försäkringsbolagen först. Datavarning
 till domen: minutupplösningen började 9/9; allt äldre är 30-minutersrader som inte duger till
 15/30-minutersfönster.
+
+## #93 (11/9 2026) TROSKLAR-TYSTNADSFEL fastställt — kort #98, och ett sakfel i #92 rättat
+BESLUT: Bengt fastställde 11/9 i chatten TROSKLAR-TYSTNADSFEL som godkänt och tillämpligt, inte som
+utkast. Axel kontrasignerar genom bock på tavlan, samma form som #61/#68/#92. Fastställda: måttets
+definition (§2–§4), räckviddsvillkoret (§6) och facitstacken (§8). Dokumentet är
+`docs/TROSKLAR-TYSTNADSFEL.md`, bokfört som kort #98. Ingen kod; skuggkolumnen är låst bakom
+radardomen 14/9 (kort #81:s ordning), och röst kräver grind-A/B/C-dom i mars.
+
+VAD MÅTTET GÖR: det vänder på utvärderingen och räknar tystnadens fel i stället för larmens träff.
+Varje bekräftat halttillfälle där systemet teg klassas som OURSÄKTLIGT (signal fanns — daggpunktsgapet
+slöt sig, trenden pekade mot nollgenomgång, eller en station inom räckvidd visade risk och nattens
+representativitetsradie sträckte sig dit) eller URSÄKTLIGT (ingen signal — snöby bara radarn ser #43,
+saltbil utan öppen källa, kommunal gata utan givare #93). Bara det oursäktliga går att laga med en
+tröskel; det ursäktliga är ett argument för nya källor. Priset räknas bredvid som nya falsklarm per
+kandidattröskel, och där de två kurvorna korsar sitter tröskeln.
+
+VARFÖR DET BEHÖVDES: det avgör Bengts egen tvist från 10/9 med data i stället för princip. Ett missat
+svartisvarning kan döda, ett falsklarm irriterar — men varje larm sänker värdet av nästa. Utan måttet
+är valet en åsiktsfråga.
+
+RÄCKVIDDSVILLKORET (§6) ÄR DET SOM GÖR MÅTTET ÄRLIGT: en tyst miss räknas bara när halkan låg inom
+systemets räckvidd men utanför dess röst. Annars drunknar tröskelsignalen i täckningshål, som är ett
+annat problem (#93) och inte ska blandas in.
+
+HUR DET HITTADES: dokumentet skrevs 10/9 kl 21:09 och låg kvar i Bengts Drive. Det gick alltså samma
+väg som TROSKLAR-TRENDEN (#92) — skrivet, aldrig incheckat — men ett steg värre: trenden fanns
+åtminstone på disk, det här fanns bara i Drive. Bengt hittade det själv 11/9. Läxan i CLAUDE.md från
+#92 gäller därför även dokument som föds i Drive, inte bara i arbetsträdet.
+
+SAKFEL I #92 SOM DETTA AVSLÖJADE, OCH SOM ÄR RÄTTAT: TROSKLAR-TRENDEN §6 påstod att T-B har "samma
+beroende som TROSKLAR-TYSTNADSFEL", alltså kort #94 (försäkringsbolagens skadedata). Tystnadsfelets §8
+skrevs om 10/9 kl 21:09 och tog uttryckligen bort det beroendet; trenden skrevs 23:04 och citerade
+alltså en version som redan var ersatt. §6 bär nu en rättelse.
+
+ÖPPEN FRÅGA SOM FÖLJER, INTE AVGJORD HÄR: om tystnadsfelet klarar sig på befintligt facit, varför ska
+trendens grind T-B vänta på #94? Kamerafacit är kandidaten — 738 av 744 kameror står vid en
+VViS-station (#55) och ligger därmed per konstruktion inom räckvidd, vilket är precis T-B:s
+räckviddsvillkor. Håller det kan T-B köras i höst i stället för i mars. Frågan står på kort #88 och
+#98 och kräver Bengt + Axel; den flyttar en tidplan och avgörs inte av en session.
+
+FORMATERING: dokumentet hade rundgått via Drive, som escapar markdown och plattar tabeller.
+Formateringen är återställd vid incheckningen; innehållet är oförändrat utom statusraden (förslag ⇒
+fastställt) och kortnumret (#97 ⇒ #98, eftersom #97 togs av regex-blindfläcken 11/9 04:45).
