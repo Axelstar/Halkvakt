@@ -1472,3 +1472,35 @@ räckviddsvillkor. Håller det kan T-B köras i höst i stället för i mars. Fr
 FORMATERING: dokumentet hade rundgått via Drive, som escapar markdown och plattar tabeller.
 Formateringen är återställd vid incheckningen; innehållet är oförändrat utom statusraden (förslag ⇒
 fastställt) och kortnumret (#97 ⇒ #98, eftersom #97 togs av regex-blindfläcken 11/9 04:45).
+
+## #94 (11/9 2026) Försäkringsspåret stängt — T-B väntar inte, och skuggar från första frosten
+BESLUT (Bengt, i chatten): "Vi kommer inte att vänta på några försäkringsbolag i T-B. Det är klarlagt
+att vi inte kan få det samarbetet." Försäkringsbolagen utgår därmed som facitkälla och som första spår
+i kort #94. Grind T-B i TROSKLAR-TRENDEN (#88) och tystnadsfelet (#98) döms mot vår egen facitstack.
+
+FACITSTACKEN SOM GÄLLER, oförändrad i sak sedan TROSKLAR-TYSTNADSFEL §8 (10/9 21:09), nu även för T-B:
+- Kamerafacit (#20) är den BÄRANDE källan: 738 av 744 väglagskameror står vid en VViS-station (#55).
+  Facit ligger därmed per konstruktion inom räckvidd, vilket är precis T-B:s räckviddsvillkor. Det är
+  inte en lycklig tillfällighet utan skälet till att stacken duger: den mäter där systemet hade en
+  chans att tala.
+- road_condition_history: operatörens omklassning till halka/is är facit på att det var halt.
+- situation_archive (#33): olyckor och stoppade fordon med position och tid.
+
+KONSEKVENS SOM ÄR EN TIDPLAN, INTE BARA EN KÄLLA: facitstacken flödar kontinuerligt från första
+frosten, så T-B skuggar FRÅN HÖSTEN i stället för att vänta på mars. Mars-domen är inte längre T-B:s
+förutsättning utan dess fördjupning — en hel vinters bekräftade halttillfällen läggs ovanpå när den
+finns. Samma sak gäller redan #98.
+
+VAD SOM FÖRLORAS, ärligt: försäkringsbolagens skadedata hade varit facit av en annan kvalitet — verklig
+personskada och plåtskada, inte operatörens klassning eller en kamerabild. Vi mäter nu mot vad
+väghållaren och våra egna kameror såg, inte mot vad som faktiskt hände med bilarna. Den begränsningen
+ska stå i domen, inte upptäckas i efterhand.
+
+VAD SOM OCKSÅ FÖLJER: kort #94 förlorade sitt facitmotiv men inte hela sitt syfte. Åkerier och
+bussbolag blir första spåret — de är både testbilar och B2B-marknad — följt av NTF och M Sverige som
+kanaler. Drive-analysens §2.7 ("försäkringsbolag först, de har facit") är överspelad; tavlan gäller,
+som den analysen själv skriver.
+
+ÄNDRADE FILER: docs/TROSKLAR-TRENDEN.md §6 (omskriven) och §7 (tabellraden för T-B), TAVLA.md #88,
+#94 och #98. Beslutet är Bengts ensamt; Axels bock på #88 och #98 kvarstår som förut och rör
+trösklarna, inte facitkällan.

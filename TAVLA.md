@@ -291,12 +291,16 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] Fysisk Android-testenhet (pappas telefon? begagnad?)
 
 ### Bengt
-- [ ] 🤝 **#94 Samarbeten vi inte prövat: försäkringsbolag, åkerier, NTF/M Sverige** (ur Claudes
-  systemanalys 10/9). Försäkringsbolagen har historiskt köpt halkvarningstjänster och sitter på skadedata
-  per dygn — både FACIT till marsdomen och betalningsvilja. Åkerier och bussbolag kör samma sträckor
-  varje dag: perfekta testbilar och B2B-marknad (kopplar till #92 fordonstyp). NTF och M Sverige är
-  kanaler till landsvägsföraren i mörker. Ordning: försäkringsbolag först (de har facit). Verify: ett
-  möte bokat per spår, och skadedata-frågan ställd skriftligt (vilken upplösning, vilket avtal).
+- [ ] 🤝 **#94 Samarbeten vi inte prövat: ~~försäkringsbolag~~, åkerier, NTF/M Sverige** (ur Claudes
+  systemanalys 10/9). 🛑 **FÖRSÄKRINGSSPÅRET STÄNGT 11/9 av Bengt (DECISIONS #94):** "det är klarlagt
+  att vi inte kan få det samarbetet". Kortet bär det därmed varken som facitkälla eller som första
+  spår. Konsekvens: skadedata är inte längre en väg till facit — grind T-B (#88) och tystnadsfelet
+  (#98) döms mot vår EGEN facitstack (kamerafacit #20, road_condition_history, situation_archive #33),
+  och betalningsviljan får sökas i de spår som lever. Drive-analysens §2.7 "försäkringsbolag först,
+  de har facit" är därmed överspelad; tavlan gäller.
+  **KVAR, i ny ordning:** (1) Åkerier och bussbolag kör samma sträckor varje dag — perfekta testbilar
+  OCH B2B-marknad (kopplar till #92 fordonstyp och #90 sidvind). Nu första spåret. (2) NTF och
+  M Sverige som kanaler till landsvägsföraren i mörker. Verify: ett möte bokat per kvarvarande spår.
 - [ ] 🏘️ **#93 Kommunala vägar är det största hålet — och det finns ingen plan** (systemanalys 10/9).
   VViS sitter på statligt vägnät; svartisen som skadar flest finns på gator, cykelbanor och infarter,
   där vi inte har en enda givare. SYSTEM.md säger det ärligt, men inget kort bär det. Kandidater:
@@ -1220,10 +1224,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   TROSKLAR-TYSTNADSFEL", alltså kort #94 (försäkringsbolagen). Tystnadsfelets §8 skrevs om samma kväll
   21:09 och tog uttryckligen BORT det beroendet — måttet döms mot facitstacken vi redan skriver varje
   dygn. Trenden skrevs 23:04 och citerade alltså en version som redan var ersatt. §6 är rättad.
-  🔑 **ÖPPEN FRÅGA TILL BENGT + AXEL (ny 11/9):** om tystnadsfelet klarar sig på befintligt facit,
-  varför skulle T-B vänta på #94? Kamerafacit är kandidaten: 738 av 744 kameror står vid en
-  VViS-station (#55), alltså per konstruktion inom räckvidd — precis T-B:s räckviddsvillkor. Håller
-  det kan T-B köras i HÖST i stället för i mars. Avgörs inte av mig; det flyttar kortets tidplan.
+  ✅ ~~ÖPPEN FRÅGA: kan T-B sluta vänta på #94?~~ **AVGJORT 11/9 av Bengt (DECISIONS #94): JA.**
+  "Vi kommer inte att vänta på några försäkringsbolag i T-B. Det är klarlagt att vi inte kan få det
+  samarbetet." T-B döms mot facitstacken vi redan skriver: kamerafacit (#20) som bärande källa —
+  738 av 744 kameror står vid en VViS-station (#55), alltså per konstruktion inom räckvidd, precis
+  T-B:s räckviddsvillkor — plus road_condition_history och situation_archive (#33).
+  ⚡ **TIDPLANEN FLYTTAS: T-B skuggar från FÖRSTA FROSTEN, inte från mars.** Mars-domen är inte
+  längre T-B:s förutsättning utan dess fördjupning. §6 och §7 i dokumentet omskrivna.
   🔑 KVAR FÖRE BYGGE: Axels bock här (kontrasigneringen dokumentet förutsätter, DECISIONS #61/#68:s
   form). Skuggkolumnen är fortsatt låst bakom radardomen 14/9.
 - [ ] 🤐 **#98 TYSTNADSFELET — mät tystnadens fel, inte larmens träff** (B3-syskon till #88; skrivet
@@ -1242,7 +1249,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⚡ **KAN BÖRJA RÄKNAS I HÖST, INTE I MARS** — §8 skrevs om 10/9 kväll när försäkringsbolagens
   skadedata visade sig otillgänglig: måttet döms i stället mot facitstacken vi redan skriver varje
   dygn (road_condition_history, kamerafacit #20, situation_archive #33). Inget samarbete utanför
-  huset krävs. Det är också grunden för den öppna frågan på #88 om T-B kan tidigareläggas.
+  huset krävs. ✅ **BEKRÄFTAT SOM HUSREGEL 11/9 (DECISIONS #94, Bengt):** samarbetet med
+  försäkringsbolagen är klarlagt otillgängligt. Samma facitstack gäller nu även trendens T-B (#88),
+  som därmed skuggar från första frosten i stället för att vänta på mars.
   Verify: korsningskurvan ritad över hela svepet, med räckviddsvillkoret tillämpat och binomialbrus
   redovisat; utfallsmeningen i §7 ifylld med riktiga N, M, X och Y.
 - [ ] 🔀 **#89 ÖVERGÅNGARNA mellan faror — regn→frost, torka→första regnet** (systemanalys 10/9;
