@@ -776,7 +776,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
    läsande, knapp inte cron. Arkivet: 830 rader / 818 segment / 185 dygn (21/2 → 25/8; inga omklassningar
    sedan). A KODHÅLET: 0 rader och 0 segment utan kod. B ORDFÖRRÅDET på kod 1: 838 förekomster, ALLA neutrala
    (799 Torrt, 25 Våt, 14 fläckvis) — noll yta, noll farlighet. C PREMISSEN "Trafikverket lämnar aldrig ett
-   farlighetsord på kod 1": NOLL träffar — håller så långt arkivet räcker. D varaktighet: 12 övergångar,
+   farlighetsord på kod 1": **OAVGJORT, inte "håller"** (rättat 11/9, PR #105). Noll träffar i ett arkiv med
+   noll vinterord är ett utsagolöst noll, inte ett stöd — läxan i DECISIONS #71. Skriptet skrev först
+   "håller så långt arkivet räcker"; vakten räknar nu vinterorden och rapporterar OAVGJORT när de saknas.
+   Premissen är alltså OPRÖVAD, och beslutet nedan kan inte tas på det här underlaget. D varaktighet: 12 övergångar,
    median 2 803 h — arkivet är för tunt för en tidsgränsdom. MÄTNINGENS GRÄNS: "Packad snö" på kod 1 finns
    inte i arkivet förrän det snöat; C prövas på höstens is/frost, en analogi. Bifynd ur självtestet ⇒ kort #97.
 - [ ] 📡 **#43 Radarn som infrastruktur** (Bengts beställning 2/9, efter cellmätningens
