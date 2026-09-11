@@ -1,7 +1,7 @@
 # TROSKLAR-TYSTNADSFEL
 
-**Kort:** #98 TYSTNADSFELET (B3-syskon till #88). **Status:** FASTSTÄLLT 2026-09-11 — Bengt i
-chatten; Axel kontrasignerar genom bock på tavlan (samma form som DECISIONS #61/#68/#92).
+**Kort:** #98 TYSTNADSFELET (B3-syskon till #88). **Status:** ✅ **FASTSTÄLLT OCH KONTRASIGNERAT** —
+Bengt 2026-09-11 i chatten, Axel samma dag via Bengt (samma form som DECISIONS #61/#68/#92; se #95).
 Fastställda: måttets definition (§2–§4), räckviddsvillkoret (§6) och facitstacken (§8). Ingen kod,
 ingen röst före grind-A/B/C-dom. Skuggkolumnen byggs efter radardomen 14/9 (kort #81:s ordning).
 

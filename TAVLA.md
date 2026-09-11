@@ -1231,8 +1231,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   T-B:s räckviddsvillkor — plus road_condition_history och situation_archive (#33).
   ⚡ **TIDPLANEN FLYTTAS: T-B skuggar från FÖRSTA FROSTEN, inte från mars.** Mars-domen är inte
   längre T-B:s förutsättning utan dess fördjupning. §6 och §7 i dokumentet omskrivna.
-  🔑 KVAR FÖRE BYGGE: Axels bock här (kontrasigneringen dokumentet förutsätter, DECISIONS #61/#68:s
-  form). Skuggkolumnen är fortsatt låst bakom radardomen 14/9.
+  ✅ ~~KVAR FÖRE BYGGE: Axels bock här~~ **KONTRASIGNERAT 11/9 av Axel via Bengt** (DECISIONS #95,
+  samma form som #61/#68). Tröskeldokumentet är därmed fullt godkänt av båda. Kvar före bygge är
+  bara radardomen 14/9 (kort #81:s ordning) — ingen mänsklig signatur saknas längre.
+  ⚠️ Bocken ändrar INTE §8:s regim: den är knuten till första skuggkörningen, inte till signaturen.
+  Fram till dess får svepet i §2 och kraven i §4 justeras av vem som helst av oss med en rad i
+  DECISIONS; därefter krävs båda signaturer och en motivering som inte lutar sig mot utfallet.
 - [ ] 🤐 **#98 TYSTNADSFELET — mät tystnadens fel, inte larmens träff** (B3-syskon till #88; skrivet
   10/9 21:09, hittat i Bengts Drive 11/9, FASTSTÄLLT 11/9 på Bengts order, DECISIONS #93).
   `docs/TROSKLAR-TYSTNADSFEL.md`. Avgör Bengts egen tvist från 10/9 med data i stället för princip:
@@ -1244,7 +1248,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   BREDVID:** nya falsklarm per kandidattröskel. Två kurvor mot tröskeln, och där marginalen korsar
   sitter den. **RÄCKVIDDSVILLKORET (§6) är det avgörande:** en tyst miss räknas bara när halkan låg
   inom räckvidd men utanför rösten — annars drunknar tröskelsignalen i täckningshål (#93), som är ett
-  annat problem. 🔑 NYCKEL: Axels bock här (kontrasignering, #61/#68/#92:s form). Skuggkolumn efter
+  annat problem. ✅ ~~NYCKEL: Axels bock här~~ **KONTRASIGNERAT 11/9 av Axel via Bengt** (DECISIONS
+  #95, samma form som #61/#68/#92) — dokumentet är fullt godkänt av båda. Kvar: skuggkolumn efter
   radardomen 14/9; aldrig röst före grind-A/B/C-dom i mars.
   ⚡ **KAN BÖRJA RÄKNAS I HÖST, INTE I MARS** — §8 skrevs om 10/9 kväll när försäkringsbolagens
   skadedata visade sig otillgänglig: måttet döms i stället mot facitstacken vi redan skriver varje
