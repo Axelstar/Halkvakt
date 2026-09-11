@@ -797,6 +797,17 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
    ⚠️ INTE samma sak som marknadsföringens `snolarm`, som fyrar på `code !== 1` ur CDN-snapshoten
    (säsongens första verkliga halka per län, ett säljtillfälle). Det här läser ARKIVET oavsett kod, och
    den intressanta cellen för #52 är kod 1 — den som snölarmet per konstruktion hoppar över.
+   ✅ **VINTERPROVET KÖRT 11/9 05:02 — LARMVÄGEN BEVISAD FÖRE SNÖN** (Bengts "kör vinterprovet",
+   PR #111). Larmet fyrar EN gång per säsong; ett larm som aldrig fyrat är inte bevisat, och #73:s
+   första larmprov gav 500 i stället för larm. Här hade ingen kunnat prova förrän snön kom, och då
+   är signalen redan förbrukad. DB-knappen fick därför flaggan `vinterprov` (vitlistad, läggs på
+   vakthundens EGET cron-kommando — nyckeln passerar aldrig en logg; vitlistan ligger FÖRE
+   databasfrågan så en felstavning faller på en rad och går att prova utan DATABASE_URL).
+   **UTFALL:** issue #112 skapad med etiketten `vinterord-prov`, det riktiga engångslarmet
+   `vinterord` ORÖRT (noll issues) — provet förbrukade det alltså inte. Tabellraden visade
+   "(inga rader; detta är ett prov)", som den ska när arkivet saknar vinterord. #112 stängd.
+   BONUSBEVIS i samma varv: larmprovets issue #109 stängdes automatiskt 05:00 av nästa gröna
+   timkörning ("Stänger — allt grönt igen"), så även STÄNGvägen är bevisad, inte bara öppnandet.
 - [ ] 📡 **#43 Radarn som infrastruktur** (Bengts beställning 2/9, efter cellmätningens
   dom) — EN källa, SEX nyttor: vattenplaningens trigger (#42), blixthalkans pipeline
   (#16), marsdomens orsaksklassning, miss-/skuggfacit, vinterns snöbyar, Norden.
