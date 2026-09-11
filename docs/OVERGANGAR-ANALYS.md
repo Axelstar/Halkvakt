@@ -34,6 +34,9 @@ VERIFIERAT, tre ställen i koden 11/9:
   med som mest tio minuters eftersläpning.
 - `publish/snapshot-core.ts:42–43` och `publish/missar.ts` (citerat på kort #45): `fukt` =
   `rain OR snow OR precipitation ∉ {torrt}`. Ingen annan ingrediens.
+- `engine/src/types.ts:33` säger `moisture?: boolean; // rain/snow/wet surface at the station`.
+  Kommentaren lovar "wet surface"; implementationen levererar nederbörd nu. Den som läser typen
+  tror att hålet inte finns. Kommentaren bör rättas i samma varv som (a) byggs, inte förr.
 
 Konsekvens: **när regnet slutar blir `moisture` falskt inom tio minuter, och frysrisken kan inte
 fyra igen förrän det börjar regna på nytt** — oavsett hur blöt vägen är och hur långt under noll
@@ -83,6 +86,25 @@ position och tid men **utan orsak** — situations.ts:37).
 **Har inte:** vägens faktiska blöthet i skala (§1). Saltbilens passage (ingen öppen källa,
 källkartläggningen rad 222). Olyckans orsak. Spårdjup (DECISIONS #66).
 
+**Har, men förbisåg i första versionen (tillägg 11/9 efter Bengts fråga "har vi förbisett något i
+pipen?" — VERIFIERAT):**
+- **`radar_precip`, per SEGMENT** (sql/009): `rate_max_mmh`/`rate_mean_mmh` per segment och
+  5-minuterskomposit, skriven en gång i timmen av `ingest/radar.ts` sedan 2/9 (kort #43 steg 3).
+  Regnhistorik finns alltså redan på segmentnivå, inte bara vid stationen. Timvis sampling av
+  5-minutersbilder: en skur som börjar och slutar mellan två prov syns inte, men "regnade det på
+  det här segmentet de senaste 2–4 timmarna" går att svara på i dag.
+- **Operatörens "Våt"** i `road_conditions.condition_info` (kodgrinden 11/9: 25 "Våt" + 8
+  "fläckvis Våt" i arkivet). Trafikverkets egen klassning av att vägbanan är blöt — segmentnivå,
+  mänskligt bedömd, ~var 15:e minut. **Helt oanvänd nedströms:** snapshoten filtrerar bort kod 1
+  utan vinterord (snapshot-core.ts:84–85) och motorn säger uttryckligen att "Normalt/Våt segments
+  make no sound" (engine.ts:240). Hur länge "Våt" står kvar efter regnet är okänt och avgör värdet.
+- **Daggpunkten** (#46) — planerad, inte förbisedd, men underskattad i §10 nedan: yta ≤ daggpunkt
+  betyder att vatten kondenserar på vägen just nu, alltså ett blöt-signal i sig.
+
+Vad som **inte** finns, trots §2.8: SMHI:s molnmängd. `scripts/smhi-prov.ts` hämtar bara
+parameter 1 (lufttemperatur), live, och lagrar ingenting. Bara `smhi_warnings` (varningsklasser) är
+i arkivet. §2.8:s "molnmängd som representativitetsradie" är helt framtida.
+
 **Gallringen (kort #83, sql/014) påverkar analysen:** efter sju dygn överlever bara
 30-minutersraderna. Det räcker för torrdygnsräkning och för "regn inom N timmar" i drift, men
 retrospektiv analys av *exakt när* regnet slutade måste ske inom veckan eller nöja sig med
@@ -113,8 +135,18 @@ VERIFIERAT: motorn ser i dag ingenting av detta (§1).
 
 Utvidga fuktvillkoret, rör ingenting annat:
 
-    fukt_utvidgad = fukt_nu  ELLER  (regn_sum_mm > 0 inom senaste N timmar vid stationen)
-    icing_point   = yta <= tröskel  OCH  fukt_utvidgad
+    blöt = fukt_nu
+         ELLER regn_sum_mm > 0 inom N h vid stationen          (VViS, 30-min, 89 % täckning)
+         ELLER radar_precip.rate_max > r inom N h på segmentet  (radar, redan i arkivet — §3)
+         ELLER segmentet är "Våt" enligt operatören             (RoadCondition, oanvänd — §3)
+    icing_point = yta <= tröskel  OCH  blöt
+
+*(Reviderad 11/9: första versionen hade bara stationsregnet. De tre proxyerna är inte likvärdiga —
+§4.6 rangordnar dem — och de ska gatas var för sig: B3-paret per proxy avgör vilka som förtjänar
+sin plats. En union av fyra svaga signaler är en falsklarmsmaskin om ingen mäts ensam.)*
+
+Daggpunkten (#46, yta ≤ daggpunkt) är den fjärde blöt-signalen men hör till ett annat kort och en
+annan fysik (kondensation, inte kvarvarande regnvatten); §4.6 säger hur de delar fallen.
 
 Allt annat i `icing_point` (tröskel 1 °C, bro 3 °C, räckvidd, repris, prioritet A2) är oförändrat.
 Utvidgningen är en strikt superset: varje larm som fyrar i dag fyrar också med den.
@@ -160,6 +192,50 @@ RESONEMANG: de överlappar inte, de staplas. Trenden säger *"risk framöver"* n
 med daggpunkten nära — det är förvarningen. (a) är själva träffen: när ytan passerar 1 °C på en väg
 som är blöt av regn ska frysrisken fyra. Utan (a) skulle trenden varna, och sedan skulle den verkliga
 frysningen vara tyst — en incoherent röst. Med (a) hänger de ihop: förvarning, sedan larm.
+
+### 4.6 Andra fuktproxies i pipen — vad som kompenserar hålet, rangordnat (tillägg 11/9)
+
+Bengts fråga: *har vi förbisett något i pipen som kompenserar det här på annat sätt, t.ex. bygget av
+§2.8?* Svaret är ja — men §2.8 är inte det. Rangordnat efter vad som faktiskt finns i dag:
+
+**1. Radarn (#43) — redan i arkivet, per segment, förbisedd i första versionen.** `radar_precip`
+skrivs timvis sedan 2/9 (§3). Det gör att (a) kan vara **segmentnivå från dag ett**: "regnade det på
+den här sträckan" i stället för "regnade det vid närmaste station". Det är dessutom precis det
+§2.8:s "3 km fram"-stack vill ha: radar säger *var* det regnade, stationen säger *hur kall ytan är*
+vid ankaret, terrängen (#91/#96) säger om sträckan är kallare än ankaret. Datat är inte låst bakom
+14/9 — det skrivs nu. Bara *ny* radarkod är det (#81 steg B).
+
+**2. Daggpunkten (#46) — planerad, och den DELAR efterhalkan med (a).** RESONEMANG, fysiken har två
+varianter som är olika vanliga och fångas av olika regler:
+- *Fuktig efterhalka* (fronten stannar, luften förblir fuktig): regnet slutar, daggpunkten ligger
+  kvar högt, himlen klarnar, ytan strålar ut och faller **under daggpunkten** → kondensation ovanpå
+  regnvattnet → is. Här fyrar #46:s regel (yta ≤ daggpunkt). (a) behövs inte för att larma, bara
+  för att förklara varför.
+- *Torr efterhalka* (kallfront passerar): regn, sedan torr kall luft bakom fronten, daggpunkten
+  **faller** långt under ytan, himlen klarnar, regnvattnet fryser utan någon kondensation. #46 är
+  tyst (yta > daggpunkt). Bara regnhistoriken ser det. Det är det klassiska svenska höstmönstret
+  med nordvästlig kallfront, och det är (a):s egentliga domän.
+Så: inte dubbelräkning utan **partition**. Tröskeldokumentet ska säga att #46 äger fallet när yta ≤
+daggpunkt och (a) när yta > daggpunkt men regn inom N h. Tystnadsfelet räknar då varje miss en gång.
+
+**3. Operatörens "Våt" — ingesterad, oanvänd, värde okänt.** Trafikverkets egen bedömning att
+vägbanan är blöt, på segmentnivå, ~var 15:e minut. Om den står kvar timmar efter regnet är den den
+bästa proxyn av alla: mänsklig, per sträcka, gratis. Om den släcks när regnet slutar är den
+värdelös för (a). ATT VERIFIERA nu, i höstregnen: när ett segment blir "Våt", hur länge står det
+kvar, och hur förhåller sig det till `rain_sum_mm` vid närmaste station? Det är en fråga till
+steg 0 (§9), inte till vintern.
+
+**4. SMHI (§2.8) — ingenting i dag, en skärpare i morgon.** Bara lufttemperatur hämtas, inget
+lagras (§3). Molnmängden, när den finns, är inte en blöt-signal utan en **frys-signal**: klar himmel
+= utstrålning = ytan faller. Den skärper trenden (#88) och (a):s dom — "risk som inte föll ut"
+blir tolkbar om man vet att molnen rullade in — men den fyller inte hålet i fuktvillkoret. §2.8:s
+egen punkt 4 ("nederbördstyp och -mängd per timme till #89") överträffas redan av VViS (30 min) och
+radarn (5 min) i kadens; SMHI:s bidrag där är täckning inåt landet, inte precision.
+
+**Slutsats för (a):** hålet har tre kompensationer i pipen, varav en skriver data i dag och en är
+oanvänd. Regelskissen i §4.2 är reviderad till en union av proxyer, var och en gatad för sig.
+Ordningen i §9 ändras inte, men steg 0 får två frågor till (radarn och "Våt"), och steg 2:s
+regnhistorik ska byggas per segment ur radarn, inte bara per station ur VViS.
 
 ---
 
@@ -302,10 +378,16 @@ frostnätter, som inte kan tas ikapp.
 - **(a) kan bli en falsklarmsmaskin i söder.** En blöt väg vid +1 °C fryser inte alltid; salt,
   trafik och dagsljus håller den flytande. Utan N-svepet och falsklarmsgolvet blir utvidgningen
   "regnade det i går? då larmar vi". Grinden finns för det.
-- **(a) och #46 kan dubbelräkna.** Rimfrost efter regn (daggpunkt hög, yta faller under den) fyrar
-  båda. Det är inte fel — det är samma is — men tystnadsfelet ska inte räkna en räddad miss två
-  gånger. Tröskeldokumentet måste säga vem som äger fallet: förslagsvis (a) om det regnat inom N h,
-  annars #46.
+- **(a) och #46 ska partitionera, inte dubbelräkna** (reviderat 11/9, se §4.6). Första versionen
+  här sade "(a) om det regnat inom N h, annars #46". Det är fel håll: daggpunkten är den starkare
+  signalen när den finns. Rätt gräns är fysikens — #46 äger fallet när yta ≤ daggpunkt
+  (kondensation pågår), (a) när yta > daggpunkt men regn inom N h (kvarvarande regnvatten fryser i
+  torr luft). Tystnadsfelet räknar då varje miss en gång.
+- **En union av fyra blöt-proxyer är en falsklarmsmaskin om ingen mäts ensam.** §4.2:s reviderade
+  skiss lägger ihop stationsregn, segmentradar och operatörens "Våt". Var och en har egna fel:
+  stationsregnet missar skurar mellan stationer, radarn samplas bara en gång i timmen, "Våt" har
+  okänd eftersläpning. B3-paret ska köras **per proxy**, och den som inte räddar missar utan att
+  kosta falsklarm tas bort ur unionen innan röst.
 - **(b) kan vara utanför löftet** (§5.6). Att mäta något som sedan visar sig oönskat kostar en
   skuggkolumn och en höst. Frågan ska ställas före steg 3, inte efter.
 - **Facit för (b) är tunt.** Om underlaget i steg 0 visar färre än ett tiotal olyckor i fönstren
