@@ -257,22 +257,101 @@ await avsnitt("0b — TORKNINGSKURVAN", async () => {
   console.log("  den skulle släppa igenom nästan allt. Faller den snabbt är den ett skarpt filter.");
 });
 
-// ── 0c UNDERLAG (a).
+// ── 0c UNDERLAG (a) — FRÅN FROSTEN, inte från regnstoppen.
+// OMSKRIVEN 11/9 efter Axels granskning, och hans riktning är den rätta: falsklarmsrisken
+// skalar med FYRNINGAR, inte med tillfällen. Den tål dessutom gallringen (#83) bättre än den
+// omslagsbaserade frågan — en frostrad och dess regnsumma överlever halvtimmesglesningen,
+// medan ett omslag kräver att man vet NÄR regnet slutade (DECISIONS #97).
+//
+// TVÅ ENHETER, och skillnaden mellan dem är hela poängen. Motorn talar inte per arkivrad:
+// högst ett larm per 45 s, aldrig samma larm inom 10 min eller 5 km, och den läser en snapshot
+// som publiceras var tionde minut (CLAUDE.md, produktinvarianterna). En station som är frusen
+// hela natten ger dussintals rader men ETT larm per förbipasserande förare. Rader mäter hur ofta
+// villkoret är sant; EPISODER mäter hur ofta något nytt hänt. Ett röstpåstående måste vila på
+// episoder. En episod = samma station, frostrader utan mer än en timmes lucka emellan.
+//
+// GIVARVAKTEN (#75) gäller: en givare som påstår −49,9 °C är inte frost. Utan den räknas
+// trasiga givare som underlag — samma läxa som frostlarmet i vakthunden lärde sig 11/9.
+const EPISODGLAPP_MIN = 60;
+type Enhet = { fukt: boolean; regn2: boolean; regn4: boolean };
+export function rakna(e: Enhet[]) {
+  const larmar = e.filter((x) => x.fukt).length;
+  const tysta = e.filter((x) => !x.fukt);
+  return {
+    n: e.length, larmar, tysta: tysta.length,
+    tystaRegn2: tysta.filter((x) => x.regn2).length,
+    tystaRegn4: tysta.filter((x) => x.regn4).length,
+  };
+}
+
 await avsnitt("0c — UNDERLAG (a)", async () => {
-  console.log("\n0c — UNDERLAG (a): hur ofta fryser det efter regnet, med motorn tyst?");
-  if (!dom(bra.length, true)) { console.log(`  ⊘ OAVGJORT. ${bra.length} användbara omslag, kräver ${MIN_HANDELSER}.`); return; }
-  console.log(`  ${bra.length} användbara omslag över ${DAGAR} dygn ≈ ${(bra.length / DAGAR).toFixed(0)} per dygn i hela riket.`);
-  for (const n of [1, 2, 3, 4]) {
-    const traff = bra.filter((r) => r.till_frys_min !== null && Number(r.till_frys_min) <= n * 60).length;
-    console.log(`    N = ${n} h:  ${String(traff).padStart(5)} omslag följdes av yta <= 1 °C inom fönstret  (${pct(traff, bra.length)})`);
-  }
-  const nagon = bra.filter((r) => r.till_frys_min !== null).length;
-  console.log("  Varje sådant fall är ett tillfälle där den vidgade regeln HADE talat och dagens tiger.");
-  console.log("  Det är inte samma sak som att det blev halt — det avgör facit i vinter, inte den här raden.");
-  if (!nagon) {
-    console.log("  ⚠ NOLL frysningar i hela fönstret. Väntat i september: det är ett underlag som ännu");
-    console.log("    inte finns, inte ett svar på om hålet spelar roll. Frågan mognar med första frosten.");
-  }
+  console.log("\n0c — UNDERLAG (a): hur många frostfall skulle den vidgade regeln ge RÖST åt?");
+  const fr = await q(`
+    WITH frost AS (
+      SELECT station_id, sample_time, surface_temp_c, ${FUKT_SQL} AS fukt,
+             (air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12) AS rimlig
+      FROM weather_observations
+      WHERE sample_time > now() - $1 * interval '1 day' AND surface_temp_c <= 1
+    ),
+    m AS (SELECT *, lag(sample_time) OVER w AS f_tid FROM frost
+          WINDOW w AS (PARTITION BY station_id ORDER BY sample_time)),
+    ep AS (
+      SELECT *, sum(CASE WHEN f_tid IS NULL OR sample_time - f_tid > interval '${EPISODGLAPP_MIN} minutes'
+                    THEN 1 ELSE 0 END) OVER (PARTITION BY station_id ORDER BY sample_time) AS episod
+      FROM m
+    )
+    SELECT e.station_id, e.episod, e.fukt, e.rimlig,
+      (r2.n > 0) AS regn2, (r4.n > 0) AS regn4
+    FROM ep e
+    LEFT JOIN LATERAL (SELECT count(*) AS n FROM weather_observations w
+      WHERE w.station_id = e.station_id AND w.sample_time <= e.sample_time
+        AND w.sample_time > e.sample_time - interval '2 hours'
+        AND (w.rain_sum_mm > 0 OR ${FUKT_SQL})) r2 ON true
+    LEFT JOIN LATERAL (SELECT count(*) AS n FROM weather_observations w
+      WHERE w.station_id = e.station_id AND w.sample_time <= e.sample_time
+        AND w.sample_time > e.sample_time - interval '4 hours'
+        AND (w.rain_sum_mm > 0 OR ${FUKT_SQL})) r4 ON true`, [DAGAR]);
+
+  const till = (r: any): Enhet => ({ fukt: !!r.fukt, regn2: !!r.regn2, regn4: !!r.regn4 });
+  const episoder = (rows: any[]) => {
+    const k = new Map<string, Enhet>();
+    for (const r of rows) {
+      const id = `${r.station_id}#${r.episod}`;
+      const e = k.get(id) ?? { fukt: false, regn2: false, regn4: false };
+      k.set(id, { fukt: e.fukt || !!r.fukt, regn2: e.regn2 || !!r.regn2, regn4: e.regn4 || !!r.regn4 });
+    }
+    return [...k.values()];
+  };
+  const rimliga = fr.filter((r) => r.rimlig);
+  const skrot = fr.length - rimliga.length;
+
+  const visa = (namn: string, t: ReturnType<typeof rakna>) => {
+    const efter = t.larmar + t.tystaRegn4;
+    const kvot = t.larmar ? (efter / t.larmar).toFixed(1) : "–";
+    console.log(`    ${namn.padEnd(10)} ${String(t.n).padStart(6)} frostfall · ${String(t.larmar).padStart(5)} larmar i dag · ` +
+      `${String(t.tysta).padStart(5)} tysta · varav regn inom 2 h ${String(t.tystaRegn2).padStart(5)} · inom 4 h ${String(t.tystaRegn4).padStart(5)}`);
+    console.log(`    ${" ".repeat(10)} ⇒ med N = 4 h talar regeln i ${efter} fall i stället för ${t.larmar} — ${kvot} gånger`);
+  };
+
+  if (!dom(fr.length, true)) { console.log(`  ⊘ OAVGJORT. ${fr.length} frostrader, kräver ${MIN_HANDELSER}.`); return; }
+  console.log(`  Frostrader (yta <= 1 °C) i fönstret: ${fr.length}, varav ${skrot} föll på givarvakten (#75).`);
+  console.log(`  Allt nedan räknas på de ${rimliga.length} rimliga. "Regn" = regnmängd > 0 ELLER fukt bakåt i tiden.
+`);
+  visa("RADER", rakna(rimliga.map(till)));
+  const ep = episoder(rimliga);
+  visa("EPISODER", rakna(ep));
+  console.log(`
+  ${rimliga.length} rader blir ${ep.length} episoder — ${(rimliga.length / Math.max(1, ep.length)).toFixed(1)} rader per episod.`);
+  console.log(`  ${new Set(rimliga.map((r) => r.station_id)).size} stationer berörda.`);
+  console.log(`  LÄS RADEN OVAN INNAN MULTIPLIKATORN ANVÄNDS: en multiplikator räknad på rader säger hur`);
+  console.log(`  ofta VILLKORET blir sant, inte hur ofta RÖSTEN hörs. Motorn talar en gång per episod och`);
+  console.log(`  förare, inte en gång per rad. Skiljer sig de två kolumnerna åt är radtalet fel valuta.`);
+  console.log(`
+  Till jämförelse, den omslagsbaserade riktningen (samma väder, annan enhet):`);
+  const fran = [1, 2, 3, 4].map((n) => bra.filter((r) => r.till_frys_min !== null && Number(r.till_frys_min) <= n * 60).length);
+  console.log(`    av ${bra.length} användbara regnstopp följdes ${fran[3]} av yta <= 1 °C inom 4 h (1/2/3 h: ${fran[0]}/${fran[1]}/${fran[2]}).`);
+  console.log(`  Är episodtalet ovan i samma storleksordning som ${fran[3]} är det samma handfull väder,`);
+  console.log(`  räknat en gång från varje håll — och då är den absoluta nivån låg även om kvoten är hög.`);
 });
 
 // ── 0d UNDERLAG (b): oljefilmen.
