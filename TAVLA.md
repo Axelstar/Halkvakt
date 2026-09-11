@@ -1203,6 +1203,21 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (husregeln: lutning över hur många minuter, vilket daggpunktsgap), sedan SKUGGKOLUMN i skuggmotorn,
   aldrig röst före dom. Efter 14/9 (kort #81:s ordning). Verify: skuggkolumnen bokförs mot samma
   facit som #16/#38b; andelen träffar där punktmotorn var tyst eller > 30 min senare (B3-måttet).
+  ✅ **TRÖSKELDOKUMENTET FASTSTÄLLT 10/9, INCHECKAT 11/9** (DECISIONS #92). `docs/TROSKLAR-TRENDEN.md`,
+  225 rader: sju OSATTA parametrar med svep (fönster 15/30/60 min, lutning 0,4–1,2 °C, daggpunktsgap,
+  startband, stigande tröskel, nära-miss-band, utfallsfönster), ärvd givarvakt (#46:s daggpunkt +
+  #75:s WX_SANE + trendens egen: ≥ 3 mätningar i fönstret, hopp > 3 °C diskvalificerar), tre grindar
+  T-A/T-B/T-C, och en ASYMMETRISK falsklarmsdefinition — "risk som inte föll ut" (ytan inom 0,5 °C
+  på 90 min) räknas INTE som falsklarm, eftersom trenden säger *risk*, inte *är*. Golv: B3 ≥ 20 %,
+  nettonytt ≥ 5 %, falsklarm ≤ 25 %; domen är korsningskurvan, golven hindrar bara röst på brus.
+  🕳️ **DOKUMENTET LÅG OINCHECKAT I ETT DYGN** (skrivet 10/9 23:04, incheckat 11/9 på Bengts order).
+  Det fanns varken på origin, i gren eller PR — enda kopian låg i ett arbetsträd. Repot är enda
+  synken mellan sessioner; ett dygns arbete hängde på en disk. Läxa förd till CLAUDE.md.
+  🕳️ **DANGLANDE KÄLLA:** dokumentet citerar `docs/TROSKLAR-TYSTNADSFEL.md` på tre ställen som
+  B3-syskon. Den filen finns inte i repot. Tystnadsfelsmåttet i T-B står därför på egna ben tills
+  någon skriver den — eget kort krävs innan T-B körs skarpt.
+  🔑 KVAR FÖRE BYGGE: Axels bock här (kontrasigneringen dokumentet förutsätter, DECISIONS #61/#68:s
+  form). Skuggkolumnen är fortsatt låst bakom radardomen 14/9.
 - [ ] 🔀 **#89 ÖVERGÅNGARNA mellan faror — regn→frost, torka→första regnet** (systemanalys 10/9;
   syskon till #45 som redan har snö-på-snö/regn-på-snö). (a) Regn som slutar och yta som faller under
   noll inom 2 h = efterhalka: regnsumma + yttemp + trend (#88) finns alla, inget sitter ihop. (b) Första

@@ -1391,3 +1391,41 @@ GENOMFÖRT: pulsklocka #12 (inventering) + #13 (skarp, 11:09): `schemalagt: puls
 från 10:58). BEVIS: healthcheck som workflow_dispatch på :23 varannan timme från 12:23, inget mellanrum
 över 2 h 30 under ett dygn — läses av morgonavläsningen 10/9.
 
+
+## #92 (10/9 2026, incheckat 11/9) TROSKLAR-TRENDEN fastställt — kort #88:s nyckel öppnad
+BESLUT: Bengt fastställde 10/9 i chatten trösklarna för TRENDEN (systemanalysen §2.1, kort #88):
+svepet i §2, golven i T-B (B3 ≥ 20 %, nettonytt ≥ 5 %, falsklarm ≤ 25 %) och underlagskraven i T-C.
+Axel kontrasignerar genom bock på tavlan, samma form som #61 och #68. Dokumentet är
+`docs/TROSKLAR-TRENDEN.md`, 225 rader. Ingen kod; skuggkolumnen är fortsatt låst bakom radardomen
+14/9 (kort #81:s ordning).
+
+VAD SOM ÄR NYTT MOT SYSKONDOKUMENTEN: falsklarmsdefinitionen är ASYMMETRISK. Trenden säger *risk*,
+inte *är*, och en risk som inte faller ut är inte automatiskt fel — molnen kan ha rullat in efter att
+varningen gavs. Fyrningar som inte ledde till ≤ 1 °C delas därför i "risk som inte föll ut" (ytan kom
+inom 0,5 °C av tröskeln inom 90 min; räknas INTE som falsklarm) och verkligt falsklarm. Utan den
+delningen straffar måttet trenden för att vädret ändrade sig, och 25 %-taket mäter något annat än man
+tror. Samma princip som V-A:s facittabell, där "regn utan olycka" inte är falsklarm.
+
+ALTERNATIV SOM VALDES BORT: symmetrisk falsklarmsräkning (enklare, men mäter fel sak); att sätta
+lutningströskeln direkt i dokumentet (bryter husregeln att trösklar faller ur mätning — därför svep,
+och T-A väljer värdet); att låta B3 ensamt bära nyttan (en trend som bara är tidigare på tillfällen
+punktregeln ändå fångar skulle passera, därför eget golv på nettonya svansen).
+
+GOLVEN ÄR ETT MEDVETET UNDANTAG: 20/5/25 har inte fallit ur mätning. De är golv mot brus, inte
+trösklar i regeln, och får flyttas fram till första skuggkörningen med en rad här. Därefter gäller
+dokumentets §8: båda signaturerna, och en motivering som inte lutar sig mot utfallet.
+
+TVÅ HÅL SOM BOKFÖRS I SAMMA ANDETAG, INTE TYST:
+1. Dokumentet låg OINCHECKAT ett dygn (skrivet 10/9 23:04, incheckat 11/9 på Bengts order). Det fanns
+   varken på origin, i gren eller PR — enda kopian låg i ett arbetsträd. Repot är enda synken mellan
+   parallella sessioner. Läxan är förd till CLAUDE.md: ett fastställt tröskeldokument checkas in i
+   samma varv som det fastställs, annars finns det inte.
+2. Dokumentet citerar `docs/TROSKLAR-TYSTNADSFEL.md` på tre ställen som B3-syskon. Den filen finns
+   inte i repot. Tystnadsfelsmåttet i T-B står därför på egna ben tills någon skriver den; källraden
+   är märkt, och eget kort krävs innan T-B körs skarpt.
+
+BEROENDE ATT MINNAS: T-A kan köras ur arkivet ensamt vid höstens första frostnätter, men T-B och T-C
+kräver facit om verklig halka — marsdomen eller försäkringsbolagens skadedata (#94). Kortet är alltså
+delvis en beställning på #94, och ett argument till för att ta försäkringsbolagen först. Datavarning
+till domen: minutupplösningen började 9/9; allt äldre är 30-minutersrader som inte duger till
+15/30-minutersfönster.
