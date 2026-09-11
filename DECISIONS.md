@@ -1737,3 +1737,49 @@ sig vara noll respektive 194, men det fick inte antas).
 
 LÄGET EFTER DETTA: förstudien är i sin femte version. Steg 1 (TROSKLAR-OVERGANGAR) väntar fortfarande
 på Bengt och är varken kod eller Actions-minuter.
+
+## #101 (11/9 2026) Upprepningen mätt — 50 % av resorna hör samma mening två gånger, och det är kamerorna
+
+BESLUT: kort #100:s före-värde är mätt ur skuggloggen utan att något byggdes, och fyndet delar
+kortet i två problem med två olika botemedel.
+
+VARFÖR DET GICK ATT SVARA UTAN BYGGE: skuggmotorn har sedan kort #20 loggat varje larm den skulle
+ha sagt på fasta rutter var 30:e minut, med kind, id, text och tid i `shadow_log.alerts`. De larmen
+har redan passerat motorns egna spärrar (45 s global cooldown, ingen repris av samma id inom
+10 min/5 km), så listan ÄR vad en förare hade hört. `scripts/upprepningen.ts` + knapp, helt läsande,
+körning 34620622893.
+
+TALEN (14 dygns fönster, 1 759 körningar på 20 rutter sedan 29/8, 678 resor med larm):
+* **340 av 678 resor (50 %)** innehåller samma MENING minst två gånger. 215 (32 %) tre gånger,
+  111 (16 %) fyra. Median 2, tre fjärdedelar 3, värst 4.
+* Fördelningen per fara: `camera` 337 resor, `icing_point` 2, `accident` 1.
+* Värsta fallen: "Fartkamera om 500 meter." fyra gånger på 46 min (E18 Örebro→Stockholm) och fyra
+  gånger på 83 min (Rv70 Enköping→Mora).
+
+MITT EGET ANTAGANDE FÖLL, OCH DET ÄR FYNDET: skriptet skrevs med kommentaren att fem olika
+fartkameror ger fem olika meningar och därför inte skulle räknas som upprepning. Fel. A5 fyrar på
+ett FAST avstånd (`cameraTriggerM`), så varje kamera säger ordagrant "Fartkamera om 500 meter."
+Antagandet var precis det mätningen fanns till för att pröva, och det höll inte. Rättat i skriptets
+kommentar och i dess utskrift.
+
+FÖLJDEN: #100 är två problem, inte ett.
+1. **Is och halka ska DÄMPAS.** Samma fara, samma åtgärd, ingen ny information i den andra
+   meningen. Reprisregeln gäller i dag samma id; den behöver gälla samma FARA längs en sträcka.
+   Det är en motorändring och kräver vektorer i tre portar.
+2. **Kameror ska bli SÄRSKILJBARA.** De är olika objekt och förtjänar var sitt larm, men texten
+   bär ingenting som skiljer dem åt, så örat kan inte avgöra om det är en ny kamera eller ett eko.
+   Det är en RÖSTTEXT-fråga (PRODUKTBOKEN, Axels bord), inte en dämpningsregel. Att tysta dem vore
+   fel botemedel på rätt symptom.
+
+VARFÖR KAMERAFYNDET ÄR VIKTIGARE ÄN DET LÅTER: A5 är LÄGST i prioritetsstegen. Rösten fylls alltså
+med det minst angelägna redan i september, innan vintern lagt halka, frysrisk och trend ovanpå.
+Vinterdagens sex identiska isvarningar är inte nådda i verkligt väder än (värst i is: 3 gånger, 2
+resor) — men mekanismen är bevisad, och den skalar med hur många punktkällor som fyrar samtidigt.
+I november är det isen som är många.
+
+TVÅ DISPLAYFEL RÄTTADE I SAMMA VARV: tidsstämpeln i "värsta resorna" klipptes till datum och fick
+listan att se ut som dubbletter, och slutsatsmeningen var tvärsäkrare än datat bar. Siffrorna
+oförändrade ⇒ ingen omkörning (minutdieten #22).
+
+LÄGET EFTER DETTA: före-värdet finns. Efter en dämpning ska samma knapp tryckas igen, och kravet är
+att upprepningarna faller UTAN att antalet distinkta meningar per resa gör det.
