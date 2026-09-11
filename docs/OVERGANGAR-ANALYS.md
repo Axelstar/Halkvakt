@@ -21,6 +21,10 @@ andra korts tröskeldokument. Ordningen blir därför: mät hålet nu, skriv tr�
 som huvudsak, bygg (b) som skugga i höstregnen om Axel vill ha den alls, och lämna (c) till #46
 och #90.
 
+*Tredje läsningen 11/9 (Bengts fråga "var kommer tillståndsövergångarna in?"): de kom inte in alls,
+och det var förstudiens största brist. §1b nedan är ramen som saknades — vägytan är ett tillstånd,
+händelserna är övergångar, och motorn minns resan men inte vägen. §9 steg 2 är omskrivet därefter.*
+
 ---
 
 ## 1. Fyndet som ändrar bilden: frysrisken är blind efter regnet
@@ -54,6 +58,65 @@ de täcker under 7 % av nätet. Det finns alltså **ingen blöt-väg-givare i sk
 härledas.
 
 ---
+
+## 1b. Ramen som förstudien saknade: vägytan är ett tillstånd (tillägg 11/9)
+
+Bengts matris på kort #45 (4/9), ordagrant: *"vägytan är ett TILLSTÅND (torr → blöt → slask/modd →
+snöbelagd → packad snöväg) och nederbörden en ÖVERGÅNG ovanpå det. Farligast är korsningarna."*
+Och: *"Klassningen ska därför korsas med segmentets NUVARANDE väglagsstate, inte bara klassa det som
+faller."*
+
+Det är ramen. §2.2:s tre punkter, #45:s två övergångar, #46:s rimfrost och #88:s trend är alla
+**kanter i samma graf**. Förstudiens första två versioner analyserade tre kanter var för sig utan att
+rita grafen. Här är den, med ägare:
+
+| Från | Till | Genom | Fara | Ägare |
+| :-- | :-- | :-- | :-- | :-- |
+| torr | blöt | första regnet efter ≥ D torrdygn | oljefilm | **#89 (b)** |
+| torr | blöt | regn (annars) | ingen — blöt väg vid +8 °C är inte en fara | — |
+| torr | is | kondensation, yta ≤ daggpunkt, klar natt | rimfrost | **#46** |
+| blöt | is | yta faller under 0 medan vägen är blöt | efterhalka | **#89 (a)** — och #46 när daggpunkten nås först (§4.6) |
+| torr/blöt | snöig | snöfall på bar väg | första snön | **#45** |
+| snöig/packad | lös snö ovanpå | snö på snö | dold packad bana | **#45** |
+| snöig/packad | is | regn på snö, polerar | den farligaste | **#45** |
+| is/snöig | slask/blöt | tö, temperaturen stiger genom 0 | slask, vatten på is | **ingen** |
+| blöt | torr | avdunstning | ingen fara — men *när ska rösten tystna?* | **#88** (stigande sida) |
+| is | blöt | saltbil | ingen fara — men varningen ska släckas | **ingen källa** (källkartläggningen rad 222) |
+
+Tre saker följer, och de är viktigare än något enskilt i §4–§6:
+
+**1. Motorn minns resan men inte vägen.** VERIFIERAT: `engine.ts:50–54` bär `prevFix`, `odometerM`,
+`lastHeadingDeg`, `lastSpokenT` och `fired`-kartan — allt om *bilen* och vad som redan *sagts*.
+Ingenting om vad *ytan* var för en timme sedan. Varje fara utvärderas ur ögonblickets värden i
+snapshoten. Fukthålet i §1 är därför inte ett fel i ett villkor utan **ett symptom**: en motor utan
+tillstånd kan inte veta att vägen var blöt, bara att det regnar. Regnhistorik, daggpunkt, radar och
+operatörens "Våt" (§4.6) är fyra sätt att **skatta ett tillstånd som motorn inte bär**.
+
+**2. Tillståndet måste skattas, för det kan inte observeras i skala** (§1: ytstatusgivare på 30–50
+av 750 stationer). Skattaren är en funktion av operatörens klass när den finns (Torrt, Våt, Slask,
+Snöigt, Is och snö, Packad snö — hela alfabetet är operatörens, kodgrinden mäter det), regn- och
+snöhistorik (station + radar), yttemperatur mot noll, daggpunkt mot yta, och tid sedan sista
+händelse. Den har ett eget facit: **stämmer skattat "blöt" med operatörens "Våt" när båda finns,
+och skattat "is" med omklassningen till halka?** Det är en mätning i sig, före någon övergångsregel.
+
+**3. Övergångsreglerna blir enkla när tillståndet finns.** (a) = tillstånd ∈ {blöt} OCH yta passerar
+≤ 1. (b) = tillstånd = torr sedan ≥ D dygn OCH regn börjar. Regn på snö = tillstånd ∈ {snöig,
+packad} OCH regn börjar. Rimfrost = tillstånd = torr OCH yta ≤ daggpunkt. Utan gemensamt tillstånd
+härleder varje regel "vad vägen var" på sitt eget sätt — (a) ur regn inom N h, (b) ur torrdygn, #45
+ur operatören — och de kommer att säga emot varandra. Med det delar de en skattare och mäts var för
+sig.
+
+**Vad som INTE följer, och det är lika viktigt:** att bygga en tillståndsmaskin i motorn nu. Motorn
+är ren, plattformsfri och vektorbunden i tre språk; en arkitekturändring där, före en enda övergång
+klarat sin grind, är "våning två före grunden" (#45:s egna ord om radarn). Tillståndsskattaren hör
+hemma **i skuggloggen först** — en kolumn per segment, beräknad i Supabase ur arkivet, dömd mot
+operatörens klasser. Övergångsreglerna läser den kolumnen som skuggkolumner. Motorn rörs när en
+övergång bevisat sig, och då som en kolumn i snapshoten (skattat tillstånd per segment, märkt
+MODELLERAT), inte som minne i motorn. Det håller motorn ren och tillståndet mätbart.
+
+**Två celler saknar ägare:** töet (is → slask när temperaturen stiger — vatten på is är halt på ett
+annat sätt än is, och rösten tystnar i dag när ytan passerar +1) och saltbilen (ingen öppen källa,
+känt sedan källkartläggningen). Töet är en kandidat till eget kort; saltbilen är ett dokumenterat hål.
 
 ## 2. Vad §2.2 egentligen består av
 
@@ -360,7 +423,7 @@ och #90; regn-på-snö och snö-på-snö stannar hos #45. Kort #81:s byggordning
 | :-- | :-- | :-- | :-- | :-- |
 | **0. Mät hålet** | Läsande skript mot arkivet: för varje regnstopp per station sedan 9/9 — hur snabbt går `fukt` falskt, och vad gör ytan och fuktigheten de följande fyra timmarna? Plus: antal regnstopp per dygn (underlagets storlek), antal torrperioder ≥ 5 dygn följda av regn (b:s underlag). | Nu | Ingen — det är en läsning | 1 Actions-minut som knapp, eller steg i måndagsserien |
 | **1. Tröskeldokumentet** | TROSKLAR-OVERGANGAR med (a) som huvudsak, (b) som egen gate med nedläggningsklausul, (c) som överlämning. Svep, inte värden. | Nu, direkt efter steg 0 | Bengt fastställer, Axel bockar | 0 |
-| **2. Regnhistoriken** | En härledning per station: senaste regn (tid), regn inom N h (bool per N i svepet), torrdygn. Vy eller kolumn i Supabase, skriven av ingest-live. Tjänar både (a) och (b). | Efter 14/9 (#81:s ordning, det är kod) | Vakthundsrad innan den går skarpt (#81 regel 5) | 0 kr, ~50 kB |
+| **2. Tillståndsskattaren i skugga** (omskrivet 11/9, §1b) | En kolumn per SEGMENT i skuggloggen: skattat yttillstånd ∈ {torr, blöt, slask, snöig, packad, is} ur operatörens klass när den finns, regn/snö-historik (station + `radar_precip`), yta mot noll, daggpunkt mot yta, tid sedan sista händelse. Beräknad i Supabase, rör inte motorn. **Eget facit först:** skattat "blöt" mot operatörens "Våt", skattat "is" mot omklassning till halka. Tjänar (a), (b), #45, #46. | Efter 14/9 (#81:s ordning, det är kod) | Skattarens egen träffsäkerhet mot operatören ≥ golv (sätts i tröskeldokumentet) INNAN någon övergångsregel läser den; vakthundsrad (#81 regel 5) | 0 kr, en kolumn × ~140 rader/dygn |
 | **3. (b) i skugga** | Oljefilm som skuggkolumn i skuggmotorn, V-B-grind. **Bara om Axel säger att den hör till löftet (§5.6).** | Efter 14/9, medan höstregnen pågår | V-B | 0 kr |
 | **4. (a) i skugga** | Utvidgat fuktvillkor som skuggkolumn bredvid dagens `icing_point`, B3-paret. Data finns från steg 2; domen kräver frost. | Efter 14/9; döms vid höstens första frostnätter | B3 ≥ golven, fysikkontrollen | 0 kr |
 | **5. Tystnadsfelet** | "Regn inom N h" som fjärde signal i TYSTNADSFEL §3. | Med steg 1 | Rad i DECISIONS | 0 |
@@ -396,6 +459,14 @@ frostnätter, som inte kan tas ikapp.
 - **Arkivdieten döljer varma efterregn.** För (a) spelar det ingen roll. För steg 0:s
   torkningskurvor betyder det att vi bara ser hur vägen torkar när det är kallt — vilket är det vi
   vill veta, men det ska sägas.
+- **Tillståndsskattaren kan bli ett projekt i sig** (§1b). Sex tillstånd, fem signalkällor och en
+  facitmatchning är mer än en kolumn om man låter det växa. Skyddet är ordningen: skattaren byggs för
+  de två tillstånd (a) och (b) behöver — blöt och torr-sedan-D-dygn — och utökas per övergång som
+  öppnas, aldrig i förväg. Snö och is läggs till när #45 låses upp, inte innan.
+- **Operatörens klasser är inte sanningen, de är en observation.** Skattaren döms mot dem för att de
+  är det bästa vi har i skala, men kort #52 visade i veckan att "Packad snö" på kod 1 är vinter-
+  baseline i norr, inte fara. Facitmatchningen måste ärva #45:s baselineprincip: ett tillstånd som är
+  normalt för säsongen och regionen är inte en övergång.
 
 ---
 

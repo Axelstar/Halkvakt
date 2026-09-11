@@ -1308,6 +1308,23 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   trenden, inte en blöt-signal som fyller hålet. Regelskissen är nu en union av proxyer, gatad per
   proxy med B3-paret — en union ingen mäter ensam är en falsklarmsmaskin. Bifynd: `types.ts:33`
   lovar "wet surface" i kommentaren; koden levererar nederbörd nu. Rättas med (a), inte förr.
+  🧭 **TREDJE LÄSNINGEN 11/9** (Bengts "var kommer tillståndsövergångarna in — torr→blöt, torr→hal,
+  snö→regn, regn→frys?"): de kom inte in alls, och det var förstudiens största brist. Ny §1b: din
+  matris från #45 är RAMEN — vägytan är ett tillstånd, händelserna är övergångar, och §2.2:s tre
+  punkter, #45:s två, #46 och #88 är kanter i samma graf. Grafen är ritad med ägare per kant.
+  **KÄRNFYNDET (verifierat engine.ts:50–54): motorn minns RESAN men inte VÄGEN** — prevFix,
+  odometer, kurs, tystnadsklocka, fired-karta; noll minne om vad ytan var för en timme sedan.
+  Fukthålet är ett SYMPTOM av det, inte ett fel i ett villkor. Regnhistorik, daggpunkt, radar och
+  operatörens Våt är fyra sätt att skatta ett tillstånd motorn inte bär. **KONSEKVENS för planen:**
+  steg 2 är inte "regnhistorik" utan **tillståndsskattaren i skuggloggen** — en kolumn per segment
+  ur operatörens klass + regn/snö-historik + yta + daggpunkt, med EGET facit (skattat blöt mot
+  operatörens Våt, skattat is mot omklassning) innan någon övergångsregel läser den. INTE en
+  tillståndsmaskin i motorn — det vore "våning två före grunden"; motorn rörs när en övergång bevisat
+  sig, och då som en snapshotkolumn märkt MODELLERAT. Skattaren byggs för blöt och torr först, snö
+  och is när #45 låses upp. **TVÅ CELLER SAKNAR ÄGARE:** töet (is→slask när temperaturen stiger;
+  rösten tystnar i dag vid +1 medan vatten står på is) — kandidat till eget kort — och saltbilen
+  (ingen öppen källa, känt). Facitmatchningen ärver #45:s baselineprincip: packad snö i norr är
+  inte en övergång.
 - [ ] 🌬️ **#90 Vind och sikt som punktfaror — arkiverade sedan 9/9, används inte** (systemanalys
   10/9). wind_speed_ms/wind_gust_ms/visibility_m landar varje minut (kort #84). Sidvind på broar och
   slätter är en riktig risk för husbil, släp och lastbil (= B2B, #92/#94); dimma är en fartfråga.
