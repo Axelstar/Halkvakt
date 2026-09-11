@@ -25,6 +25,13 @@ och #90.
 och det var förstudiens största brist. §1b nedan är ramen som saknades — vägytan är ett tillstånd,
 händelserna är övergångar, och motorn minns resan men inte vägen. §9 steg 2 är omskrivet därefter.*
 
+*Fjärde läsningen 11/9 (Bengts frågor "täcks vattenplaning in? är rimfrost ett tillstånd? gäller
+samma för sidvind × halka?"): ja, ja, och nej — och nejet är poängen. Vattenplaning är ett tillstånd
+(vattenfilm) och saknades i grafen. Rimfrost är ett tillstånd (is), dimma och frysrisk är dess
+orsaker. Men sidvind och dimma-som-sikt ändrar inte ytan alls; de ändrar faran för föraren givet en
+yta. Det är ett ANNAT lager, byggs utan minne, och §6 hade blandat ihop de två. §1b har nu två lager,
+§6 är omskriven, §9 steg 0 räknar sex frågor i stället för tre.*
+
 *Femte läsningen 11/9 (Axels granskning, efter att steg 0 körts): kärnpåståendet verifierat av
 honom oberoende, och han vände på mätriktningen — från FROSTEN i stället för från regnstoppen.
 Det var rätt, och min riktning var fel vald: falsklarmsrisken skalar med fyrningar, inte med
@@ -33,13 +40,6 @@ tillfällen. Hans riktning tål dessutom gallringen bättre. Tre saker följde: 
 och åberopade husregeln "tystnad är en funktion" för (b) men inte för (a), där den är mer hotad.
 §4.3 säger nu att N sätts av golvet, inte av svepet. Och (b) flyttas ur steg 0 till en fråga till
 Bengt, som §5.6 alltid sagt men §9 motsade.*
-
-*Fjärde läsningen 11/9 (Bengts frågor "täcks vattenplaning in? är rimfrost ett tillstånd? gäller
-samma för sidvind × halka?"): ja, ja, och nej — och nejet är poängen. Vattenplaning är ett tillstånd
-(vattenfilm) och saknades i grafen. Rimfrost är ett tillstånd (is), dimma och frysrisk är dess
-orsaker. Men sidvind och dimma-som-sikt ändrar inte ytan alls; de ändrar faran för föraren givet en
-yta. Det är ett ANNAT lager, byggs utan minne, och §6 hade blandat ihop de två. §1b har nu två lager,
-§6 är omskriven, §9 steg 0 räknar sex frågor i stället för tre.*
 
 ---
 
