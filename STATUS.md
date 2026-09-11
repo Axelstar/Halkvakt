@@ -1591,3 +1591,14 @@ SE/FI/DK live-sha = manifest-sha, meta.json 1 min, fi/dk från :24-körningen (1
 live.json 0 väderposter (september). #82 bridges tyst sedan #32 (8/9 21:15), #79 regn-30 tyst sedan #152
 (9/9 10:41). #83: weather_obs 232 028 → 242 351 på 11,65 h ⇒ ~21 300/dygn dagtid. Byggt: inget.
 Nästa: morgonavläsning 11/9 04:30 UTC.
+
+## 2026-09-11 04:45 — Morgonavläsning: 94 min/dygn, pulsen 6/6, arkivet 9 200/dygn (mild natt), kodgrinden bokförd
+#85: 17:32→04:31 (11,0 h) 33 körningar, 43 min ⇒ 94 min/dygn; grannar 43–64 s (5 av 11 över 60 s), stegtider
+04:24: uppstart 6, npm ci 1, FI 8, DK 19, NO 10, fi/dk-publicering 6, avslut 4 s — DK dubblat mot 9/9.
+#50: puls 18:23–04:23 alla inom 2 s; cron dubblade 20:54 och 00:13. #86: oförändrat. CI main grön 04:24 (#104).
+Kartrepot 04:30: SE/FI/DK sha = manifest, SE live 33 väderposter, fi/dk 04:24:50/52, meta 1 min. bridges tyst
+sedan #32, regn-30 sedan #152. #83: weather_obs 242 351 → 242 495 → 246 339 ⇒ 144 rader/1,9 h kvällen,
+~9 200/dygn natten — dieten i mild luft, inte fel. #52: kodgrinden (PR #104, parallell session, mergad av
+Bengt 04:24 utan tavelrad) körd 04:25: 0 kodhål, kod 1 = 838 neutrala strängar, premissen håller (0 farlighets-
+ord på kod 1), 12 övergångar/median 2 803 h. Bifynd ⇒ #97: regexen blind för "Rimfrost"/"Halkrisk".
+Byggt: inget. Nästa: kvällsavläsning 11/9 17:30 UTC.

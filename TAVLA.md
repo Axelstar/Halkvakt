@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-10 17:35 av Claude (webben) — kvällsavläsning: bro-dygnet BEVISAT (15 pulser, 0 hål > 2 h 30 på 29 h, men GitHub-cronen dubblar 7×), kassan 96 min/dygn (grannar över 60 s), nycklar ej roterade, kartrepot helt (sha = manifest, meta 1 min)*
+*Uppdaterad: 2026-09-11 04:45 av Claude (webben) — morgonavläsning: natten 94 min/dygn (DK-steget 19 s avgör grannar över/under 60 s), pulsen 6/6 inom 2 s + 2 cron-dubbletter, arkivet 9 200/dygn i en mild natt (dieten), nycklar ej roterade; kodgrinden (#52, PR #104) bokförd + nytt kort #97 regex-blindfläck*
 
 ---
 
@@ -81,6 +81,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   2027-04-30 som enda vakt. Bevis efter raderingen: (a) och (c) en gång till.
    ⏰ KVÄLL 10/9 17:32: ingen deploy-supabase-körning efter 9/9 05:20, ingen ny vakthund-issue efter #91 (9/9)
    ⇒ Axel har inte roterat än. De fyra bevisen väntar.
+   ⏰ MORGON 11/9 04:31: oförändrat — ingen deploy-supabase efter 9/9 05:20, ingen vakthund-issue efter #91.
 - [ ] 💸 **#85 Actions-takten spränger 35 USD-gränsen före 1/10 — tre snitt räcker** (mätt 9/9
   04:30 av morgonavläsningen, DECISIONS #82:s budget). UPPMÄTT sedan Actions vaknade 8/9 21:07
   → 9/9 04:31 (7,4 h): **59 körningar, ≈ 98 debiterade minuter** (varje jobb avrundas uppåt):
@@ -132,6 +133,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
    bevisat 9/9, nu 57–101 s), healthcheck 9 × ⇒ 15 min (6 på pulsen + 3 på GitHub-cronen, se #50), ingest
    13 × 1 = 13. Noll röda. ~0,77 USD/dygn ⇒ ~16 USD till 1/10 — gränsen 35 håller. Två snitt kvar: cron-raden
    i healthcheck.yml (−7 min/dygn) och grannar tillbaka under 60 s (−9 min/dygn; mät var sekunderna går).
+   🌙 **NATT 10/9 17:32 → 11/9 04:31 (11,0 h): 33 körningar, 43 min ⇒ 94 min/dygn.** Grannar 11 × 43–64 s
+   ⇒ 16 min (5 av 11 över 60 s); healthcheck 8 × 59–69 s ⇒ 13 min (6 puls + 2 cron); ingest 11 × 25–36 s
+   ⇒ 11; ci 2 + kodgrinden 1 (PR #104). Noll röda. VAR GRANNAR-SEKUNDERNA GÅR (jobb 04:24, 54 s): uppstart
+   6 s · npm ci 1 s · FI 8 s · DK 19 s · NO 10 s · fi/dk-publicering 6 s · avslut 4 s. DK är dubbelt mot 9/9
+   (13 s) och avgör om körningen landar över eller under 60 s. Dygnssnitt 10/9: (52+43) min / 24 h ≈ 95.
 - [ ] 🗄️ **#83 GALLRING av weather_observations — måste finnas FÖRE första kalla veckan**
   (Bengts beställning 9/9 01:40; kort + förslag av Claude, mätt mot koden 9/9).
   **VARFÖR NU:** arkivdieten (DECISIONS #4: bara yta ≤ 5 °C eller nederbörd) finns i
@@ -206,6 +212,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   riktigt är 16/9 03:15. Bevis då: rader/dygn för 8/9 ≤ 45 000 i morgonavläsningen 16/9.
    📈 KVÄLL 10/9: weather_obs 232 028 (04:49) → 242 351 (16:28) = 10 323 rader på 11,65 h ⇒ **~21 300/dygn
    dagtid** (natten 36 600 väntas igen). Nattjobbet 03:15 syns inte från Actions; första riktiga bevis 16/9.
+   🌙 NATT 11/9: weather_obs 242 351 (16:28) → 242 495 (18:23) → 246 339 (04:23): **144 rader på 1,9 h
+   kvällen, 3 844 på 10 h natten ⇒ ~9 200/dygn** (mot 36 600 natten innan). Inte ett fel: dieten (#4) släpper
+   bara stationer ≤ 5 °C eller nederbörd, och SE live.json hade 33 väderposter 04:30 mot hundratals kalla
+   natten 9/9. weather: synced 0 min i varje healthcheck. Takten är väderstyrd — läs den mot antalet kalla stationer.
 - [x] ~~Fastställ trösklarna för skuggan~~ ✅ FASTSTÄLLT 2/9 (DECISIONS #61): Axels
   "kör" relayerat av Bengt i chatten, värdena oförändrade från Bengts 1/9-version inkl.
   §2-orsaksklassningen. Kvitto: huvudet i docs/TROSKLAR-SKUGGAN.md. Bocken här är
@@ -761,6 +771,14 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   "Packad snö" på code 1 fortsätta larma nationellt tills baseline finns? Var gränsen går
   (21–25 eller 17+20–25) är också ert val; mätningen ger båda och väljer inte åt någon.
   Ingen ändring görs på eget bevåg — det rör engine/vectors och tre körtider.
+   🧪 **KODGRINDEN BYGGD + KÖRD 11/9 04:25** (PR #104, mergad av Bengt 04:24, parallell Claude-session —
+   kortraden saknades, bokförd här av morgonavläsningen). scripts/kodgrinden.ts + knappen kodgrinden, helt
+   läsande, knapp inte cron. Arkivet: 830 rader / 818 segment / 185 dygn (21/2 → 25/8; inga omklassningar
+   sedan). A KODHÅLET: 0 rader och 0 segment utan kod. B ORDFÖRRÅDET på kod 1: 838 förekomster, ALLA neutrala
+   (799 Torrt, 25 Våt, 14 fläckvis) — noll yta, noll farlighet. C PREMISSEN "Trafikverket lämnar aldrig ett
+   farlighetsord på kod 1": NOLL träffar — håller så långt arkivet räcker. D varaktighet: 12 övergångar,
+   median 2 803 h — arkivet är för tunt för en tidsgränsdom. MÄTNINGENS GRÄNS: "Packad snö" på kod 1 finns
+   inte i arkivet förrän det snöat; C prövas på höstens is/frost, en analogi. Bifynd ur självtestet ⇒ kort #97.
 - [ ] 📡 **#43 Radarn som infrastruktur** (Bengts beställning 2/9, efter cellmätningens
   dom) — EN källa, SEX nyttor: vattenplaningens trigger (#42), blixthalkans pipeline
   (#16), marsdomens orsaksklassning, miss-/skuggfacit, vinterns snöbyar, Norden.
@@ -951,6 +969,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
    29 h. GitHub-cronen fyrade DESSUTOM 7 gånger i samma fönster (26–65 min sena) ⇒ 22 körningar där 15 räckt,
    ~7 extra minuter/dygn. Bron står; kortet stängs först av #87. FÖRSLAG (Bengts ja): ta bort schedule-raden i
    healthcheck.yml nu — en rad, pulsen är bevisad, vakthunden i Supabase larmar ändå inom 2 h.
+   🌙 NATT 11/9: pulsen 18:23, 20:23, 22:23, 00:23, 02:23, 04:23 — alla inom 2 s. GitHub-cronen dubblade
+   2 gånger till (20:54, 00:13). Bron håller; cron-raden kostar fortfarande.
 - [x] ~~⛏️ **#48 Golvbyggena**~~ ✅ KLART 4/9 (utom bygge 3) (Bengts order 4/9: "ta hela kortet, allt självförsörjande")
   — PÅGÅR (terminalen): GOLVET.md:s byggen 1–4 med automatiseringskrav: automigrering
   vid varje ingest (db.ts/fi.ts-mönstret), healthcheck-golv på varje ny fältfamilj
@@ -1191,6 +1211,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   weather_latest (så snapshoten och #91 kan läsa den) kräver tröskelrad i TROSKLAR-SKUGGAN.
   Verify: måndagsserien 14/9 grön med hojd-prov-sammanfattning; vinterkurvan lapse/MAE per band växer
   vecka för vecka utan knapptryck. Resonemanget: Drive-dokumentet v3 §2.4.
+- [ ] 🕳️ **#97 Motorns halk-regex är blind för sammansättningar — "Rimfrost", "Halkrisk"** (kodgrindens
+  självtest 11/9, PR #104). Lookbehind-regexen i engine.ts:40 matchar faroordet bara när det står först i
+  ordet; "Rimfrost" och "Halkrisk" passerar tysta oavsett kod. I arkivets 838 infosträngar förekommer ingen av
+  dem — ingen miss i dag, men en tyst ALDRIG den dag Trafikverket skriver så. 🔒 NYCKEL: motorändring =
+  vektor i tre portar + buntad skuggmotor (CLAUDE.md), och Bengts beslut: vidga ordlistan, eller låta
+  kodgrinden vakta (BLINDLISTA tom utöver "fläckvis …" i varje körning, annars larm). Verify: kodgrindens
+  BLINDLISTA i nästa körning; en vektor med "Rimfrost" på kod 2 som larmar i alla tre portarna om ordlistan vidgas.
 - [ ] 🐕 **#87 Healthcheckens fem kontroller in i vakthunden — sedan läggs healthcheck.yml ner** (bron i
   kort #50, Bengt 9/9). 🔒 LÅST BAKOM 14/9 (radardomen först, kort #81:s ordning). Vakthunden i Supabase
   (varje timme, larmväg bevisad 9/9 med issue #91 öppnad OCH stängd) ser livekedjan och manifestet. Kvar i
