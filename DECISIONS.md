@@ -1504,3 +1504,25 @@ som den analysen själv skriver.
 ÄNDRADE FILER: docs/TROSKLAR-TRENDEN.md §6 (omskriven) och §7 (tabellraden för T-B), TAVLA.md #88,
 #94 och #98. Beslutet är Bengts ensamt; Axels bock på #88 och #98 kvarstår som förut och rör
 trösklarna, inte facitkällan.
+
+## #95 (11/9 2026) Axels kontrasignering av #88 och #98 — båda tröskeldokumenten fullt godkända
+BESLUT: Axel kontrasignerar TROSKLAR-TRENDEN (kort #88) och TROSKLAR-TYSTNADSFEL (kort #98) genom
+Bengt, i chatten. Samma form som #61 (trösklarna fastställda av Axel via Bengt) och #68. Båda
+dokumenten är därmed godkända av båda, och ingen mänsklig signatur saknas längre för något av dem.
+
+VAD SOM DÄRMED ÄR LÅST: trendens svep (§2), golven i T-B (B3 ≥ 20 %, nettonytt ≥ 5 %, falsklarm
+≤ 25 % asymmetriskt räknat) och underlagskraven i T-C; tystnadsfelets måttdefinition (§2–§4),
+räckviddsvillkoret (§6) och facitstacken (§8).
+
+VAD BOCKEN INTE GÖR, och det ska stå tydligt så ingen tror något annat:
+1. Den låser inte §8:s ändringsregim. Den är knuten till FÖRSTA SKUGGKÖRNINGEN, inte till signaturen.
+   Fram till dess får svepet och kraven justeras av vem som helst av oss med en rad här; därefter
+   krävs båda signaturer och en motivering som inte lutar sig mot utfallet.
+2. Den låser inte upp bygget. Skuggkolumnerna står fortsatt bakom radardomen 14/9 (kort #81:s ordning).
+   Det som återstår är alltså en teknisk grind, inte en mänsklig.
+3. Den godkänner ingen röst. Röst kräver grind-A/B/C-dom i mars OCH ett separat ja från Axel, med
+   rösttext, plats i A-skalan och PRODUKTBOK enligt produktboksregeln.
+
+LÄGET EFTER DETTA: fyra tröskeldokument ligger i repot, alla fastställda — SKUGGAN (#61), VATTENPLANING
+(#68), TRENDEN (#92 + detta) och TYSTNADSFEL (#93 + detta). Nästa grind för #88 och #98 är densamma
+som för #42/#45: radardomen på söndag.

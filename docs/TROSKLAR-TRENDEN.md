@@ -1,9 +1,11 @@
 # TROSKLAR-TRENDEN
 
-**Kort:** #88 TRENDEN (systemanalysen §2.1). **Status:** FASTSTÄLLT 2026-09-10 — Bengt i chatten;
-Axel kontrasignerar genom bock på tavlan (samma form som DECISIONS #61/#68). Fastställda: svepet i
-§2, golven i T-B (20 / 5 / 25 %), underlagskraven i T-C. Ingen kod ännu. Skuggkolumnen byggs först
-efter radardomen 14/9 (kort #81:s ordning). Från första skuggkörningen gäller §8.
+**Kort:** #88 TRENDEN (systemanalysen §2.1). **Status:** ✅ **FASTSTÄLLT OCH KONTRASIGNERAT** —
+Bengt 2026-09-10 i chatten, Axel 2026-09-11 via Bengt (samma form som DECISIONS #61/#68; se #95).
+Fastställda: svepet i §2, golven i T-B (20 / 5 / 25 %), underlagskraven i T-C. Ingen kod ännu.
+Skuggkolumnen byggs först efter radardomen 14/9 (kort #81:s ordning). Från första skuggkörningen
+gäller §8 — kontrasigneringen ändrar inte den regimen, den är knuten till första skuggkörningen och
+inte till signaturen.
 
 Husreglerna som gäller: tröskeldokument före kod · skuggkolumn före röst · punktkällor säger
 "framöver" · tystnad är en funktion · trösklar gissas inte, de faller ur mätning · ändring efter
