@@ -1526,3 +1526,59 @@ VAD BOCKEN INTE GÖR, och det ska stå tydligt så ingen tror något annat:
 LÄGET EFTER DETTA: fyra tröskeldokument ligger i repot, alla fastställda — SKUGGAN (#61), VATTENPLANING
 (#68), TRENDEN (#92 + detta) och TYSTNADSFEL (#93 + detta). Nästa grind för #88 och #98 är densamma
 som för #42/#45: radardomen på söndag.
+
+## #96 (11/9 2026) Steg 0 för kort #89 kört — hålet bevisat, två proxies stryks, en fråga skjuts på framtiden
+
+BESLUT: förstudiens steg 0 (docs/OVERGANGAR-ANALYS.md §9) är byggt som `scripts/overgangar-steg0.ts`
+med knappen `overgangar-steg0` (workflow_dispatch, aldrig cron — kort #85) och kört en gång mot
+arkivet, 14 dygns fönster (PR #124, körning 34579255737). Helt läsande. Fyra av sex frågor gav svar,
+två gav OAVGJORT — och båda OAVGJORT ändrar regelskissen i §4.2.
+
+VAD SOM MÄTTES, och vad det betyder för bygget:
+* **0a. Hålet är bevisat och bredare än förstudiens gissning.** På 124 av 189 användbara regnstopp
+  (66 %) visade stationens regnmätare regn i de senaste 30 minuterna i exakt den stund motorns
+  `moisture` slog om till torrt. Mätaren stod kvar över noll median 35 min efter omslaget. Förstudien
+  skrev "väntat ~10 min"; golvet är ~35 min. p75/p90 (1,8–1,9 h) ligger mot frågans eget 2-timmarstak
+  och är censurerade — de ska läsas som "minst så länge", aldrig som ett värde.
+* **0b. RH-guarden i §4.2 stryks som svep.** Luftfuktigheten STIGER efter regnet (median 90 % vid
+  +1 h, 95 % vid +4 h; ≥ 80 % i 74–84 % av fallen). En guard vid 80 eller 90 % filtrerar bort nästan
+  ingenting och ger bara falsk precision. Svepet "ingen · 80 · 90 %" krymper till "ingen guard",
+  och den som vill återinföra den får göra det mot mätning.
+* **0c. Populationen finns, frysningen inte än.** 189 användbara omslag över 14 dygn ≈ 14/dygn i
+  riket. Bara 3–4 följdes av yta ≤ 1 °C, och N = 1 h → 4 h lägger till exakt ett fall. Det är
+  september och det är väntat: domen kräver höstens första frostnätter (samma fönster som #88:s T-A).
+* **0d. Oljefilmen kan inte dömas i höst.** 55 äkta torrperioder ≥ 5 dygn med 6 olyckor i
+  20-minutersfönstren, mot V-B-grindens krav på 200 fyrningar och 15 facit-olyckor. (b) får därför
+  en uttrycklig nedläggningsklausul i tröskeldokumentet i stället för ett löfte om dom.
+* **0e. Operatörens "Våt" stryks ur unionen i §4.2 tills vidare.** 33 Våt-rader i väglagsarkivet,
+  NOLL med en efterföljande klassning, noll nya rader i fönstret — arkivet står stilla sedan 25/8.
+  En proxy vars eftersläpning är omätbar får inte ingå i ett fuktvillkor. Frågan öppnas igen när
+  operatören klassar om vägar, alltså i vinter.
+* **0f. Radarn samplar 8,3 % av tiden.** 24 prov/dygn × 5 minuter. Resten är osamplat, och en skur
+  som börjar och slutar mellan två prov lämnar inget spår. För (a):s N-timmarsfönster betyder det
+  ungefär N prov — tunt, men inte tomt.
+
+DRIFTVAKTEN, och varför den finns: fuktvillkoret bor i mätningen i två former, som SQL i frågan och
+som motorns egen `fukt()` i TypeScript, och körningen jämför dem rad för rad. Utfallet: ense om alla
+7 146 omslag. Utan den vakten hade mätningen kunnat mäta en annan regel än den motorn kör och ändå
+se grön ut — samma klass av fel som kodgrindens falska gröna (#71).
+
+ETT FEL RÄTTAT I SAMMA VARV: första körningens 0f-rad räknade `distinct observed_at` (median 15/dygn)
+gånger 5 minuter och kallade det "5,2 % av dygnet observerat". Det var att läsa händelsefiltrering
+som kadens — radar_precip får en rad bara när radarn ser regn ≥ 0,1 mm/h någonstans (sql/009), så
+talet mäter hur många timmar som hade regn i landet. Kadensen är 24/dygn. Skriptets text är rättad;
+siffrorna är oförändrade, så ingen omkörning gjordes (minutdieten, #22).
+
+TVÅ KÄNDA LUCKOR I INSTRUMENTET, att täppa innan grinden i vinter läser det:
+1. 0a:s svans är censurerad vid 2 h OCH kan innehålla återkommande regn — flimmervakten stänger bara
+   de första 30 minuterna. Ett längre fönster plus ett krav på fortsatt uppehåll behövs för ett tal
+   på p75/p90.
+2. 0d räknar olyckor i fönstren utan förväntat antal. Sex olyckor är ett tal, inte ett bevis, förrän
+   en nollhypotes finns (samma exponering, slumpmässiga tidpunkter).
+
+ALTERNATIV SOM VALDES BORT: att gå direkt på tröskeldokumentet utan mätning (förstudien hade då
+skrivit in "~10 min" och en RH-guard som inte filtrerar, och räknat "Våt" som en bärande proxy); att
+köra om mätningen efter texträttelsen i 0f (siffrorna oförändrade, en minut sparad).
+
+LÄGET EFTER DETTA: steg 0 är klart och kortet #89 kan gå vidare till steg 1 — TROSKLAR-OVERGANGAR,
+som inte är kod och inte behöver radardomen. Steg 2–4 ligger kvar bakom 14/9.

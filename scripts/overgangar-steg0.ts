@@ -369,9 +369,16 @@ await avsnitt("0f — RADARNS TIDSTÄCKNING", async () => {
   const tider = t.map((x) => Number(x.tider));
   const med = percentil(tider, 0.5) ?? 0;
   console.log(`  ${t.length} dygn med radardata, median ${med} komposittider per dygn.`);
-  console.log(`  En komposit täcker 5 minuter. ${med} × 5 min = ${(med * 5 / 14.4).toFixed(1)} % av dygnet observerat.`);
-  console.log("  ⚠ Det är inte ett fel — det är timsamplingen (kort #43 steg 3). En skur som börjar och");
-  console.log("    slutar mellan två prov lämnar inget spår alls i radar_precip.");
+  // RÄTTAD 11/9 efter första körningen: den första versionen räknade ${med} × 5 min som
+  // "andel av dygnet observerad". Det var att läsa händelsefiltrering som kadens. Tabellen
+  // får en rad bara när radarn ser regn ≥ 0,1 mm/h någonstans (sql/009), så talet mäter hur
+  // många timmar som hade regn i landet — inte hur ofta vi tittar.
+  console.log("  KADENSEN är 24 prov per dygn: ingest.yml körs en gång i timmen (pulsklockan, kort");
+  console.log("  #80) och hämtar EN 5-minuterskomposit per körning ⇒ 24 × 5 min = 8,3 % av tiden samplad.");
+  console.log(`  Tabellen är händelsefiltrerad (sql/009), så ${med} säger hur många timmar per dygn som`);
+  console.log("  hade regn NÅGONSTANS i landet. De två talen får inte blandas ihop.");
+  console.log("  ⚠ De osamplade 91,7 % är hålet: en skur som börjar och slutar mellan två prov lämnar");
+  console.log("    inget spår alls i radar_precip.");
   const e = await q(`
     WITH ev AS (
       SELECT w.sample_time FROM weather_observations w
@@ -386,9 +393,10 @@ await avsnitt("0f — RADARNS TIDSTÄCKNING", async () => {
   const { n, i_tid } = e[0];
   if (!dom(Number(n), true)) { console.log(`  ⊘ Samtidigheten OAVGJORD: ${n} stationsregn >= 0,5 mm, kräver ${MIN_HANDELSER}.`); return; }
   console.log(`  Av ${n} stationsregn (>= 0,5 mm/30 min) låg ${i_tid} (${pct(Number(i_tid), Number(n))}) inom ±45 min från en komposittid.`);
-  console.log("  Resten är osynliga för radarn oavsett hur bra parningen är — det är taket för vad");
-  console.log("  radarproxyn i §4.2 kan bidra med innan kadensen ändras. Träffsäkerheten INOM de");
-  console.log("  observerade tiderna är redan mätt i scripts/cell-matning-v3.ts och byggs inte om här.");
+  console.log("  Det talet säger att kompositerna ligger spridda över dygnet — INTE att radarn såg");
+  console.log("  regnet. Träffsäkerheten inom de observerade tiderna är mätt i cell-matning-v3.ts");
+  console.log("  (kort #43) och byggs inte om här. För (a) är det som räknas att ett N-timmarsfönster");
+  console.log("  innehåller ungefär N prov: tunt, men inte tomt.");
 });
 
 console.log("\nMÄTNINGENS GRÄNS, och den ska läsas innan siffrorna används:");

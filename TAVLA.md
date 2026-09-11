@@ -1339,6 +1339,29 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   underlag a, underlag b, Våt-eftersläpning, radartäckning), varje med egen underlagsvakt.
   Rekommendationens "tre tal" rättat till sex svar. Förstudien sparad i repot, i Drive och som fil
   i chatten.
+  ✅ **STEG 0 KÖRT 11/9** (Bengts "kör steg 0"): `scripts/overgangar-steg0.ts` + knapp
+  `overgangar-steg0`, helt läsande, PR #124, körning 34579255737, 14 dygns fönster. Driftvakten
+  grön: SQL-uttrycket och motorns egen `fukt()` ense om alla 7 146 omslag — mätningen ÄR motorns.
+  **0a HÅLET ÄR BEVISAT OCH STÖRRE ÄN GISSNINGEN.** På 124 av 189 användbara regnstopp (66 %) visade
+  regnmätaren regn i de senaste 30 minuterna i samma stund som motorns fukt slog om till torrt.
+  Mätaren stod kvar över noll median 35 min efter omslaget. Förstudien gissade "~10 min"; golvet är
+  ~35 min, och p75/p90 (1,8–1,9 h) ligger mot 2-timmarstaket i frågan ⇒ censurerade, läs dem som
+  "minst så länge". **0b RH-GUARDEN ÄR DÖD.** Luftfuktigheten STIGER efter regnet (median 90 % vid
+  +1 h → 95 % vid +4 h; ≥ 80 % i 74–84 % av fallen). RH_min ≥ 80 filtrerar alltså bort nästan
+  ingenting — svepet i §4.3 kan strykas till "ingen guard" tills något talar emot. **0c
+  POPULATIONEN FINNS, FRYSNINGEN INTE ÄN:** 189 användbara omslag ≈ 14/dygn i riket, men bara 3–4
+  följdes av yta ≤ 1 °C — och N = 1 h → 4 h lägger till EXAKT ETT fall. September, väntat; domen
+  kräver frost. **0d OLJEFILMEN ÄR INTE NÅBAR I HÖST:** 55 äkta torrperioder ≥ 5 dygn, 6 olyckor i
+  20-minutersfönstren; V-B kräver 15 facit-olyckor och 200 fyrningar. **0e "VÅT" ÄR OAVGJORT OCH
+  FÅR INTE RÄKNAS:** 33 Våt-rader, NOLL med efterföljande klassning, noll väglagsrader i fönstret —
+  arkivet står stilla sedan 25/8. Proxyn stryks ur unionen i §4.2 tills operatören klassar om igen.
+  **0f RADARN:** kadensen är 24 prov/dygn × 5 min = 8,3 % av tiden samplad; 91,7 % osamplat.
+  ⚠ Första körningens 0f-rad läste händelsefiltrering som kadens ("5,2 %") — rättat i skriptet
+  samma varv, siffrorna oförändrade. Två kända luckor i instrumentet, att täppa före grinden:
+  0a:s svans är censurerad vid 2 h och kan innehålla ÅTERKOMMANDE regn, och 0d räknar olyckor utan
+  förväntat antal (ingen nollhypotes ⇒ 6 är ett tal, inte ett bevis).
+  ➡️ **NÄSTA: steg 1** — TROSKLAR-OVERGANGAR med (a) som huvudsak, (b) med nedläggningsklausul
+  (0d säger att den inte kan dömas i höst), "Våt" ute ur unionen, RH-guarden struken.
 - [ ] 🌬️ **#90 Vind och sikt som punktfaror — arkiverade sedan 9/9, används inte** (systemanalys
   10/9). wind_speed_ms/wind_gust_ms/visibility_m landar varje minut (kort #84). Sidvind på broar och
   slätter är en riktig risk för husbil, släp och lastbil (= B2B, #92/#94); dimma är en fartfråga.
