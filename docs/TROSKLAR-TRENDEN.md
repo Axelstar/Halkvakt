@@ -181,8 +181,20 @@ verklig halka**, och det är den bindande resursen:
 - Mars-domen: en vinters bekräftade halttillfällen — men först till våren.
 - Försäkringsbolagens skadedata (#94): skulle göra T-B skarp redan i höst.
 
-Kortet är alltså delvis en beställning på #94 — samma beroende som TROSKLAR-TYSTNADSFEL, och ett
-argument till för att ta försäkringsbolagen först.
+Kortet är alltså delvis en beställning på #94, och ett argument till för att ta försäkringsbolagen
+först.
+
+**Rättelse 2026-09-11 (DECISIONS #93):** här stod att det är "samma beroende som
+TROSKLAR-TYSTNADSFEL". Det var fel redan när det skrevs. Tystnadsfelets §8 skrevs om 10/9 kl 21:09,
+två timmar före det här dokumentet, och tog uttryckligen bort beroendet av #94: måttet döms mot
+facitstacken vi redan skriver varje dygn (road_condition_history, kamerafacit #20, situation_archive
+#33) och kräver inget samarbete utanför huset.
+
+**Öppen fråga som följer av rättelsen, för Bengt och Axel:** om tystnadsfelet klarar sig på befintligt
+facit, varför skulle T-B vänta på #94? Kamerafacit är kandidaten — 738 av 744 kameror står vid en
+VViS-station (#55) och ligger därmed per konstruktion inom räckvidd, vilket är precis T-B:s
+räckviddsvillkor. Håller det kan T-B köras i höst i stället för i mars. Frågan är inte avgjord här;
+den flyttar kortets tidplan och hör till tavlan.
 
 **Datavarning att skriva in i domen:** minutupplösningen började 9/9. Allt äldre är GitHub-ingestens
 30-minutersrader, som inte duger till 15/30-minutersfönster. T-A:s underlag börjar alltså vid
@@ -220,6 +232,6 @@ vad regeln finns för att hindra.
 ---
 
 *Källor: TAVLA.md #88, #46, #75, #81, #94, #38b; docs/TROSKLAR-SKUGGAN.md;
-docs/TROSKLAR-VATTENPLANING.md; docs/TROSKLAR-TYSTNADSFEL.md (B3-syskon — **finns inte i repot
-2026-09-11, se DECISIONS #92**; tystnadsfelsmåttet i §4 T-B står därför på egna ben tills det
-skrivs); Drive: "Framtida utvecklingsmöjligheter — systemanalys varningssystemen 2026-09-10 v3" §2.1.*
+docs/TROSKLAR-VATTENPLANING.md; docs/TROSKLAR-TYSTNADSFEL.md (B3-syskon, kort #98 — fastställt och
+incheckat 2026-09-11, DECISIONS #93); Drive: "Framtida utvecklingsmöjligheter — systemanalys
+varningssystemen 2026-09-10 v3" §2.1.*
