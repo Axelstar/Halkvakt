@@ -25,6 +25,13 @@ och #90.
 och det var förstudiens största brist. §1b nedan är ramen som saknades — vägytan är ett tillstånd,
 händelserna är övergångar, och motorn minns resan men inte vägen. §9 steg 2 är omskrivet därefter.*
 
+*Fjärde läsningen 11/9 (Bengts frågor "täcks vattenplaning in? är rimfrost ett tillstånd? gäller
+samma för sidvind × halka?"): ja, ja, och nej — och nejet är poängen. Vattenplaning är ett tillstånd
+(vattenfilm) och saknades i grafen. Rimfrost är ett tillstånd (is), dimma och frysrisk är dess
+orsaker. Men sidvind och dimma-som-sikt ändrar inte ytan alls; de ändrar faran för föraren givet en
+yta. Det är ett ANNAT lager, byggs utan minne, och §6 hade blandat ihop de två. §1b har nu två lager,
+§6 är omskriven, §9 steg 0 räknar sex frågor i stället för tre.*
+
 ---
 
 ## 1. Fyndet som ändrar bilden: frysrisken är blind efter regnet
@@ -74,7 +81,8 @@ rita grafen. Här är den, med ägare:
 | :-- | :-- | :-- | :-- | :-- |
 | torr | blöt | första regnet efter ≥ D torrdygn | oljefilm | **#89 (b)** |
 | torr | blöt | regn (annars) | ingen — blöt väg vid +8 °C är inte en fara | — |
-| torr | is | kondensation, yta ≤ daggpunkt, klar natt | rimfrost | **#46** |
+| blöt | vattenfilm | kraftigt regn, dålig avrinning, hjulspår | vattenplaning | **#42** (saknades i första grafen — fjärde läsningen) |
+| torr | is | kondensation, yta ≤ daggpunkt, klar natt — dimma gör den trivial | rimfrost | **#46** |
 | blöt | is | yta faller under 0 medan vägen är blöt | efterhalka | **#89 (a)** — och #46 när daggpunkten nås först (§4.6) |
 | torr/blöt | snöig | snöfall på bar väg | första snön | **#45** |
 | snöig/packad | lös snö ovanpå | snö på snö | dold packad bana | **#45** |
@@ -117,6 +125,51 @@ MODELLERAT), inte som minne i motorn. Det håller motorn ren och tillståndet m�
 **Två celler saknar ägare:** töet (is → slask när temperaturen stiger — vatten på is är halt på ett
 annat sätt än is, och rösten tystnar i dag när ytan passerar +1) och saltbilen (ingen öppen källa,
 känt sedan källkartläggningen). Töet är en kandidat till eget kort; saltbilen är ett dokumenterat hål.
+
+### 1b.2 Det andra lagret: riskmodifierare som inte rör ytan (fjärde läsningen 11/9)
+
+Grafen ovan är **lager 1: yttillståndet**. Noderna är torr, blöt, vattenfilm, slask, snöig, packad
+och is. Kanterna är övergångarna. Allt i lager 1 kräver **minne** — man måste veta vad ytan *var* för
+att veta vad den *blev*. Det är därför skattaren (§9 steg 2) finns.
+
+Men flera saker på korten är inte tillstånd och inte övergångar. De ändrar inte ytan. De ändrar
+**faran för föraren givet en yta**:
+
+| Modifierare | Vad den gör med en given yta | Källa | Ägare |
+| :-- | :-- | :-- | :-- |
+| Fart | vattenfilm blir vattenplaning först över ~70 km/h; is är farligare i 110 än i 50 | telefonen, motorn har `minSpeedKmh` redan | #42 (fartgrinden) |
+| Sidvind, byvind | is + sidvind på bro/slätt: släp och husbil tappar greppet i båda leden | VViS `wind_gust_ms`, arkiverad sedan 9/9 | **#90** |
+| Dimma som sikt | is + kort sikt: reaktionstiden räcker inte till varningens försprång | VViS `visibility_m`, arkiverad sedan 9/9 | **#90** |
+| Däck och fordon | sommardäck vid +3 är halare än dubb vid −5; släp ändrar vad vind betyder | inställning på enheten, lämnar aldrig telefonen | **#92** |
+| Mörker | samma is, sämre chans att se den | ingen källa i dag (solhöjd vore trivial) | ingen |
+
+Det här är **lager 2**, och det har tre egenskaper som skiljer det från lager 1:
+
+1. **Inget minne.** En modifierare gäller om den är sann *nu*, oavsett historik. Sidvind × halka
+   behöver inte veta att det blåste för en timme sedan. Därför behöver lager 2 **inte skattaren**.
+2. **Byggs som regler i motorn**, av det slag som redan finns: #68 (halkan vinner, vattenplaningen
+   vilar ≤ +4 °C) och vattenplaningens fartgrind är lager 2-regler. Mönstret är förvillkor,
+   prioritet eller modifiering av försprång — testbart som egen vektor i tre portar.
+3. **Vattenplaningen bevisar redan mönstret.** VATTENPLANING-ANALYS §1: "vattenfilm på vägbanan,
+   fart och däckens skick". Det är lager 1 × lager 2 × lager 2. Designen finns; den var bara inte
+   namngiven som ett mönster.
+
+**Dimma sitter i båda lagren, och det är inte en motsägelse.** Som *orsak* gör den kondensation
+trivial (RH ≈ 100 % ⇒ daggpunkt ≈ luft ⇒ ytan under daggpunkten så fort den är kallare än luften):
+det är lager 1, övergången torr → is, ägare #46. Som *sikt* förkortar den reaktionstiden på vilken
+yta som helst: det är lager 2, ägare #90. Samma givare, två helt olika roller.
+
+**"Frysrisk" och "halka" är inte tillstånd — de är namn på larm om tillstånd.** Frysrisk är motorns
+skattning att ytan är eller strax blir is (`icing_point`: yta ≤ 1 och fukt). Halka är operatörens
+observation att ytan ∈ {is, snöig, packad …} (`slippery_segment`). Bengts fråga "är dimma och
+frysrisk tillstånd?" har därför svaret: nej, ingen av dem — dimma är en orsak (lager 1) eller en
+modifierare (lager 2), frysrisk är ett larm om lager 1-noden *is*. Rimfrost är däremot ett tillstånd:
+det är *is*, nådd via kondensation.
+
+**Arkitekturkonsekvensen, som §6 hade fel om:** lager 1 kräver skattaren och kan inte byggas förrän
+den finns. Lager 2 kräver bara att båda signalerna finns i snapshoten samtidigt, och kan byggas som
+#68 byggdes — en rad i tröskeldokumentet, en vektor, ingen historik. De två lagren ska inte dela
+kort, nyckel eller mått.
 
 ## 2. Vad §2.2 egentligen består av
 
@@ -364,19 +417,31 @@ VERIFIERAT: motorn har en förhandlad interaktion (halka × vattenplaning, DECIS
 vinner, vattenplaningen vilar helt vid yta ≤ +4 °C) och en till i trendens §5 (halka vinner över
 trend). Prioritetsstegen A3 > A1 > A2 > A4 > A5 avgör resten mekaniskt: en vinnare, övriga släpps.
 
-De tre paren i §2.2 hör hemma på olika ställen:
+De tre paren i §2.2 är **inte tre av samma sort** (fjärde läsningen, §1b.2). Ett av dem är en
+övergångsorsak i lager 1; två är riskmodifierare i lager 2. Första versionen av det här avsnittet
+kallade alla tre "interaktioner", och det var fel:
 
-- **Dimma × frysrisk = rimfrost → kort #46.** RESONEMANG: dimma är luft vid ~100 % relativ
-  fuktighet, alltså daggpunkt ≈ lufttemperatur. #46:s villkor (yta ≤ daggpunkt) blir då trivialt
-  uppfyllt så snart ytan understiger luften. Sikt < X m är därför en **konfidenshöjare** för #46:s
-  regel, inte en egen fara. En rad i #46:s tröskeldokument när det skrivs, inget mer.
-- **Sidvind × halka och dimma × halka → kort #90.** Ingen av dem finns förrän vind och sikt är
-  faror, och det kräver Axels ja och ett tröskeldokument (#90:s nyckel). Interaktionsregeln skrivs
-  då, med #68 som mall. Den öppna designfrågan, som bör stå i #90:s dokument: ska dimma eller sidvind
-  **modifiera** halkvarningen (längre försprång, eftersom reaktionstiden är sämre) i stället för att
-  bara förlora prioritetsstriden? Det är den enda nya tanken i (c), och den är #90:s.
+- **Dimma × frysrisk = rimfrost → kort #46, som ÖVERGÅNGSORSAK (lager 1), inte interaktion.**
+  RESONEMANG: dimma är luft vid ~100 % relativ fuktighet, alltså daggpunkt ≈ lufttemperatur. #46:s
+  villkor (yta ≤ daggpunkt) blir då uppfyllt så fort ytan är kallare än luften, vilket den är varje
+  klar natt. Dimma är alltså inte något som *samverkar* med frysrisken — den är en av mekanismerna
+  som *flyttar ytan* från torr till is. Sikt < X m hör hemma i #46:s tröskeldokument som en
+  **konfidenshöjare för kondensationsvillkoret**, och den läser skattarens tillstånd (torr → is).
+  Ingen egen fara, ingen egen prioritet.
+- **Sidvind × halka och dimma × halka → kort #90, som RISKMODIFIERARE (lager 2).** Här ändras ytan
+  inte. Isen är densamma; det som ändras är att föraren har sämre grepp i sidled eller sämre sikt
+  framåt. Ingen av dem finns förrän vind och sikt är faror, och det kräver Axels ja och ett
+  tröskeldokument (#90:s nyckel). Regeln skrivs då med #68 som mall — och den behöver inget minne,
+  ingen skattare, bara båda signalerna i snapshoten samtidigt. Den öppna designfrågan, som bör stå i
+  #90:s dokument: ska dimma eller sidvind **modifiera** halkvarningen (längre försprång, eftersom
+  reaktionstiden är sämre) i stället för att bara förlora prioritetsstriden? Det är den enda nya
+  tanken i (c), och den är #90:s.
+- **Vattenplaning × halka (#68) är lager 2-precedensen.** Halkan vinner, vattenplaningen vilar ≤
+  +4 °C. Det är exakt formen sidvind × halka ska få: ett förvillkor, en vektor, ingen historik.
 
-Rekommendation: kort #89 lämnar över (c) uttryckligen och behåller bara (a) och (b).
+Rekommendation: kort #89 lämnar över (c) uttryckligen och behåller bara (a) och (b). Och när (c)
+lämnas över ska det stå vilket lager varje del hör till, så #46 inte bygger en interaktion och #90
+inte bygger en skattare.
 
 ---
 
@@ -421,7 +486,7 @@ och #90; regn-på-snö och snö-på-snö stannar hos #45. Kort #81:s byggordning
 
 | Steg | Vad | När | Grind | Kostnad |
 | :-- | :-- | :-- | :-- | :-- |
-| **0. Mät hålet** | Läsande skript mot arkivet: för varje regnstopp per station sedan 9/9 — hur snabbt går `fukt` falskt, och vad gör ytan och fuktigheten de följande fyra timmarna? Plus: antal regnstopp per dygn (underlagets storlek), antal torrperioder ≥ 5 dygn följda av regn (b:s underlag). | Nu | Ingen — det är en läsning | 1 Actions-minut som knapp, eller steg i måndagsserien |
+| **0. Mät hålet — sex frågor** (utökat 11/9 efter andra och fjärde läsningen) | Läsande skript mot arkivet, samma form som kodgrinden, med självtest och falsifierbarhetsvakt. **(0a) Eftersläpningen:** för varje regnstopp per station sedan 9/9, hur snabbt går `fukt` falskt? Väntat ~10 min; det är hålets bredd. **(0b) Torkningskurvan:** yta och luftfuktighet de följande fyra timmarna efter regnstopp — ger N. **(0c) Underlag (a):** regnstopp per dygn, och andelen följda av yta ≤ 1 °C inom fyra timmar. **(0d) Underlag (b):** torrperioder ≥ 5 dygn följda av regn sedan 2/9, och olyckor i `situation_archive` inom räckvidd under deras första 20 minuter — avgör om V-B-grinden alls är nåbar i höst. **(0e) Operatörens "Våt":** när ett segment blir Våt, hur länge står det kvar, och hur förhåller det sig till `rain_sum_mm` vid närmaste station? Avgör om "Våt" duger som proxy (§4.6). **(0f) Radarn:** för regnstopp vid en station, ser `radar_precip` samma regn på segmenten inom 15 km, och hur ofta missar timsamplingen ett regn stationen såg? Avgör om radarn duger som segmentproxy (§4.6). Varje fråga med egen underlagsvakt: färre än 20 händelser ⇒ "oavgjort", aldrig ett tal. | Nu | Ingen — det är en läsning | 1 Actions-minut som knapp, eller steg i måndagsserien |
 | **1. Tröskeldokumentet** | TROSKLAR-OVERGANGAR med (a) som huvudsak, (b) som egen gate med nedläggningsklausul, (c) som överlämning. Svep, inte värden. | Nu, direkt efter steg 0 | Bengt fastställer, Axel bockar | 0 |
 | **2. Tillståndsskattaren i skugga** (omskrivet 11/9, §1b) | En kolumn per SEGMENT i skuggloggen: skattat yttillstånd ∈ {torr, blöt, slask, snöig, packad, is} ur operatörens klass när den finns, regn/snö-historik (station + `radar_precip`), yta mot noll, daggpunkt mot yta, tid sedan sista händelse. Beräknad i Supabase, rör inte motorn. **Eget facit först:** skattat "blöt" mot operatörens "Våt", skattat "is" mot omklassning till halka. Tjänar (a), (b), #45, #46. | Efter 14/9 (#81:s ordning, det är kod) | Skattarens egen träffsäkerhet mot operatören ≥ golv (sätts i tröskeldokumentet) INNAN någon övergångsregel läser den; vakthundsrad (#81 regel 5) | 0 kr, en kolumn × ~140 rader/dygn |
 | **3. (b) i skugga** | Oljefilm som skuggkolumn i skuggmotorn, V-B-grind. **Bara om Axel säger att den hör till löftet (§5.6).** | Efter 14/9, medan höstregnen pågår | V-B | 0 kr |
@@ -472,8 +537,10 @@ frostnätter, som inte kan tas ikapp.
 
 ## Rekommendation
 
-1. **Kör steg 0 nu** — en läsning, en minut, inga beslut. Den ger tre tal: hålets storlek,
-   (a):s underlag och (b):s underlag. Utan dem är resten av planen antaganden.
+1. **Kör steg 0 nu** — en läsning, en minut, inga beslut. Den ger sex svar: hålets bredd (0a),
+   torkningskurvan som ger N (0b), (a):s underlag (0c), (b):s underlag och om dess grind alls är
+   nåbar i höst (0d), om operatörens "Våt" duger som proxy (0e) och om radarn gör det (0f). Utan dem
+   är resten av planen antaganden — och två av proxyerna i §4.2 kan visa sig vara luft.
 2. **Skriv tröskeldokumentet direkt efter**, med (a) som huvudsak. Det är det som låser upp allt
    annat, och det är inte kod.
 3. **Ställ §5.6-frågan till Axel innan (b) byggs.** Ett nej sparar en höst.
