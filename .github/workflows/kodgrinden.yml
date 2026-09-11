@@ -1,0 +1,24 @@
+# Kodgrinden (kort #52): håller Trafikverkets ConditionCode som grind, så att ordlistan kan
+# delas i farlighetsord (larmar alltid) och ytord (larmar bara på kod >= 2)? Mäter kodhålet,
+# ordförrådet per kod, premissen "kod 1 bär aldrig farlighetsord" och hur länge en klassning står.
+# Helt läsande. Knapp, inte cron — kadensen beslutas när första avläsningen finns (minutdieten).
+name: kodgrinden
+on:
+  workflow_dispatch:
+jobs:
+  kodgrinden:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types scripts/kodgrinden.ts --sjalvtest
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/kodgrinden.ts | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
