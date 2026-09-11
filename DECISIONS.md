@@ -1686,7 +1686,7 @@ FYND VID FÖRSTA KÖRNINGEN:
 FÖLJD: kandidatkort — dämpning per fara och sträcka (inte per id) före vintern. Det är
 inte en ny fara, det är att befintliga faror inte ska upprepa sig längs en rutt.
 
-## #99 (11/9 2026) Axels granskning av §2.2-förstudien — mätriktningen vänd, röstbudgeten införd, 61 % av frostdatan underkänd
+## #100 (11/9 2026) Axels granskning av §2.2-förstudien — mätriktningen vänd, röstbudgeten införd, 61 % av frostdatan underkänd
 
 BESLUT: Axels invändningar godtas i sak. Förstudien är omskriven på fem punkter, 0c är mätt om i hans
 riktning, och en datakvalitetsregel som gäller långt utanför kort #89 är fastställd.
