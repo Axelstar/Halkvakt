@@ -1,0 +1,29 @@
+# Upprepningen (kort #100): hör en förare samma MENING om och om igen? Läser skuggloggens
+# larmlistor — larm som redan passerat motorns egna spärrar — och räknar identiska meningar
+# per resa. Ger FÖRE-värdet till kort #100:s Verify-rad. Helt läsande.
+# Knapp, inte cron: den ska tryckas två gånger, före och efter dämpningen.
+name: upprepningen
+on:
+  workflow_dispatch:
+    inputs:
+      dagar:
+        description: "Fönster i dygn"
+        required: false
+        default: "14"
+jobs:
+  upprepningen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types scripts/upprepningen.ts --sjalvtest
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/upprepningen.ts "${{ inputs.dagar || '14' }}" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
