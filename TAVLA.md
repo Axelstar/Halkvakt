@@ -1374,10 +1374,21 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   INOM sju dygn — annars har gallringen ätit upplösningen och 0a/0b/0c blir OAVGJORT.
   ➡️ **NÄSTA: steg 1** — TROSKLAR-OVERGANGAR med (a) som huvudsak, (b) med nedläggningsklausul
   (0d säger att den inte kan dömas i höst), "Våt" ute ur unionen, RH-guarden struken.
-  🥶 **OCH EN KÖRNING NÄR FROSTEN KOMMER** (Bengts order 11/9): 0c är den enda frågan vars svar
-  ändras — 3–4 frysningar i dag, domen kräver ~30. Måste ske inom sju dygn efter frostnätterna
-  (gallringsfällan ovan). Påminnelse: issue med etiketten `efter-frosten`, minnesfil, och —
-  om Bengt säger ja — en larmkoll i vakthunden, som är det enda som larmar av sig självt.
+  🥶 **OCH EN KÖRNING NÄR FROSTEN KOMMER — LARMET BYGGT OCH BEVISAT 11/9** (Bengts order).
+  0c är den enda frågan vars svar ändras (3–4 frysningar i dag, domen kräver ~30), och den måste
+  läsas inom sju dygn efter frostnätterna (gallringsfällan ovan). Passiv påminnelse räcker inte
+  när fönstret är en vecka, så påminnelsen larmar nu själv: **check 5 i vakthunden** (PR #128),
+  timvis i Supabase, noll Actions-minuter. Larmar en enda gång när ≥ 50 stationer haft yta
+  ≤ 0 °C senaste dygnet ⇒ issue med etiketten `frostlarm`, tilldelad Bengt, som säger "tryck
+  `overgangar-steg0` med dagar=7 inom sju dygn" och hänvisar till #88:s T-A i samma varv.
+  Statusraden skrivs varje timme så talet går att följa: `frost: N stationer (larm vid 50)`.
+  Prov: `frostprov` i dbknapp-knappen, egen etikett så det riktiga engångslarmet aldrig förbrukas.
+  🐛 **PROVET HITTADE ETT FEL I LARMET, vilket är vad prov är till för.** Första körningen (issue
+  #129) skrev "4 stationer … kallast −49,9 °C" — ingen vägyta, en trasig givare av Storvik-sorten
+  (#75). Frågan saknade givarvakten. Rättat i PR #130 med ett krav STRÄNGARE än snapshotens:
+  lufttemperaturen måste finnas, så att rimligheten alls går att pröva. Bevis efter deployen
+  (f964dd6): `frost: 1 stationer` mot provets 4 — tre av fyra var givare vi inte kan lita på.
+  Passiv påminnelse finns kvar som issue #127 (`efter-frosten`) och som minnesfil.
 - [ ] 🌬️ **#90 Vind och sikt som punktfaror — arkiverade sedan 9/9, används inte** (systemanalys
   10/9). wind_speed_ms/wind_gust_ms/visibility_m landar varje minut (kort #84). Sidvind på broar och
   slätter är en riktig risk för husbil, släp och lastbil (= B2B, #92/#94); dimma är en fartfråga.

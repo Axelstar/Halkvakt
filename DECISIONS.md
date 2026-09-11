@@ -1618,3 +1618,45 @@ att det var torrt vid provet. Falsk precision är värre än OAVGJORT.
 
 LÄGET EFTER DETTA: #96 står kvar med sina slutsatser; bara de två talen är rättade. Regeln `dagar <= 7`
 gäller från nu, och en körning efter höstens första frostnätter ska ske inom sju dygn efter dem.
+
+## #98 (11/9 2026) Frostlarm i vakthunden — påminnelsen som larmar själv, och givarvakten som provet avslöjade
+
+BESLUT: steg 0:s omkörning efter höstens första frost påminns av en HÄNDELSEVAKT i vakthunden
+(check 5, PR #128), inte av en passiv issue. Larmet fyrar en enda gång när minst 50 stationer haft
+vägyta ≤ 0 °C det senaste dygnet, öppnar en issue med etiketten `frostlarm` tilldelad Bengt, och
+skriver sin räknare i mätvärdena varje timme. Timvis i Supabase via pg_cron ⇒ noll Actions-minuter.
+
+VARFÖR INTE BARA EN ISSUE: avläsningen har en hård deadline på sju dygn (#97, gallringen). Issue #127
+och en minnesfil finns kvar som passiva spår, men de förutsätter att någon tittar. Kommer frosten en
+torsdag och veckan därpå går åt till annat är fönstret stängt innan påminnelsen lästs. Skillnaden mot
+radardomen är att den har ett datum; frosten har bara ett villkor.
+
+SNUBBELTRÅD, INTE MÄTNING: larmet räknar stationer med frusen yta — inte regnstopp följda av frost,
+som är 0c:s fråga. Att bygga om steg 0:s klassning i en timvis funktion hade gett en andra
+implementation av samma regel, vilket är precis vad steg 0:s driftvakt finns för att förhindra.
+Tråden säger "gå och titta"; knappen mäter. Tröskeln 50 är ett golv mot brus i trendens mening
+(TROSKLAR-TRENDEN §2), ingen mätt gräns — enstaka fjällstationer under noll i september ska inte
+väcka någon. Räknaren i mätvärdena gör tröskeln ändringsbar mot verkligheten.
+
+PROVET HITTADE ETT FEL, OCH DET ÄR HELA POÄNGEN MED PROV: första körningen (issue #129) rapporterade
+"4 stationer … kallast −49,9 °C". Det är ingen vägyta utan en trasig givare — samma sort som Storvik
+2135, som stod på −10,7 °C i september och var appens enda halkpunkt (#75). Snapshoten filtrerar bort
+dem med WX_SANE; min frostfråga gjorde det inte, och en snubbeltråd som räknar trasiga givare kan
+väcka folk mitt i sommaren. Rättat i PR #130 med ett krav STRÄNGARE än snapshotens egen vakt:
+lufttemperaturen måste FINNAS, så att rimligheten alls går att pröva. En station vi inte kan
+kontrollera får inte väcka någon — "silence is a feature" gäller vakthunden med.
+
+BEVISET, mätt EFTER deployen (f964dd6) och inte ur commit-hashen: vakthundens mätvärden i issue #131
+skriver `frost: 1 stationer med yta <= 0 °C senaste dygnet (larm vid 50)`, mot provets 4 före
+rättelsen. Tre av fyra föll alltså på rimlighetsprövningen. Att provet och det skarpa larmet bär
+skilda etiketter (`frostlarm-prov` mot `frostlarm`) gör att hela den här övningen aldrig rörde
+engångslarmet: det står oanvänt och väntar på frosten.
+
+ALTERNATIV SOM VALDES BORT: ett schemalagt veckojobb som frågar "har det frusit?" (kort #85:s
+minutdiet säger nej till jobb som mäter ingenting elva månader om året); att låta larmet kommentera
+på #127 i stället för att öppna en egen issue (etiketten är engångsnyckeln i det här mönstret, och
+#127 bär redan etiketten `efter-frosten`); en absolut nedre gräns som −40 °C i stället för
+givarvakten (godtycklig, och den hade inte fångat Storviks −10,7 °C).
+
+LÄGET EFTER DETTA: kort #89 har allt steg 0 kan ge i september. Nästa avläsning sker när larmet
+fyrar. Steg 1 (TROSKLAR-OVERGANGAR) väntar på Bengt och är varken kod eller Actions-minuter.
