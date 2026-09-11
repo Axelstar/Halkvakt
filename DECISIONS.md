@@ -1783,3 +1783,49 @@ oförändrade ⇒ ingen omkörning (minutdieten #22).
 
 LÄGET EFTER DETTA: före-värdet finns. Efter en dämpning ska samma knapp tryckas igen, och kravet är
 att upprepningarna faller UTAN att antalet distinkta meningar per resa gör det.
+
+## #102 (11/9 2026) Kamerorna är rätt — Bengts fältdom river huvudtalet i #101, och mätfelet var mitt
+
+BESLUT: fartkamerornas varningar rörs inte. #101:s huvudtal ("50 % av resorna hör samma mening två
+gånger") dras tillbaka som missvisande, och kort #100 skrivs om kring uppdelningen objektfaror mot
+tillståndsfaror. Före-värdet för dämpningen är OAVGJORT och väntar på vintern.
+
+FÄLTDOMEN: Bengt körde Malmö–Boden och tillbaka. Kamerorna fyrade "helt perfekt hela vägen" — en
+varning 500 m före varje verklig kamera. Det avgör saken, och det slår en slutsats dragen ur
+skuggloggen: varje varning följdes av sitt eget objekt, så identisk text förvirrar inte. Kontexten
+skiljer dem åt — du hör, du passerar, klart.
+
+VAD JAG GJORDE FEL, i två led:
+1. **Fel ombud.** Jag mätte "identisk mening" som ombud för "onödig upprepning" utan att pröva om
+   upprepningen faktiskt var fel. En upprepad mening som är SANN varje gång och följs av det den
+   varnar för är inte en defekt.
+2. **Rätt vakt på fel nämnare, vilket är kodgrindens fel igen (#71).** Underlagsvakten stod på
+   "resor med något larm" (678 st) och passerade med god marginal. Men populationen som betyder
+   något är resor med en TILLSTÅNDSfara, och där finns 3. Domen skulle ha varit OAVGJORT. Gott om
+   underlag om fel sak är inte underlag — det var precis den läxan #71 skrevs för, och jag
+   upprepade den med en annan nämnare.
+
+UPPDELNINGEN SOM BLIR KVAR, och den är mer värd än talet som föll:
+* **OBJEKTFAROR** — `camera`, `accident`, `wildlife`. Distinkta saker föraren passerar. En varning
+  per objekt är rätt, även med ordagrant samma mening. Rörs inte. Fältverifierat.
+* **TILLSTÅNDSFAROR** — `slippery_segment`, `icing_point`. Ett sammanhängande tillstånd som råkar
+  observeras av flera givare. Sex stationer längs en väg beskriver EN halka, inte sex. Andra
+  meningen bär ingen ny information och kräver ingen ny åtgärd.
+* Regeln: **varna en gång per OBJEKT, en gång per TILLSTÅND — aldrig en gång per givare.**
+
+Det är också samma skiljelinje som OVERGANGAR-ANALYS §1b drar mellan yttillstånd och
+riskmodifierare, och den passar ihop: ett tillstånd är något vägen ÄR, ett objekt är något som
+STÅR där. Dämpningsregeln i #100 ska formuleras på tillståndssidan.
+
+TILLBAKADRAGET FÖRSLAG: jag föreslog i chatten att kameratexten skulle bära vägnummer eller plats i
+stället för ett fast avstånd, som "billigaste åtgärden först" — den hade halverat upprepningstalet.
+Det förslaget är dött. Det hade ändrat något som bevisligen fungerar i bil, på grundval av ett tal
+som mätte fel sak. Ingen ändring i `strings/sv.xml` eller PRODUKTBOKEN för A5.
+
+MÄTNINGEN ÄR OMSKRIVEN, inte skrotad: `scripts/upprepningen.ts` delar nu larmen i de två klasserna,
+ställer domen och underlagsvakten på tillståndsfarorna, och redovisar objektfarorna som en KONTROLL
+— efter dämpningen ska den siffran stå still, annars har vi tystat något som ska höras.
+
+LÄGET EFTER DETTA: #100:s före-värde är OAVGJORT (2 resor med upprepad frysrisk, värst 3 gånger;
+halka i praktiken aldrig, eftersom väglagsarkivet står stilla sedan 25/8). Knappen finns och är
+byggd rätt. Frågan mognar med vintern.

@@ -1436,20 +1436,28 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   larmen har REDAN passerat motorns spärrar, så det är vad en förare hade hört.
   **50 % av resorna (340 av 678) innehåller samma MENING minst två gånger.** 32 % tre gånger,
   16 % fyra. Median 2, värst 4.
-  🎥 **MEN DET ÄR INTE ISEN — DET ÄR KAMERORNA.** 337 av 340 upprepningar är `camera`;
-  `icing_point` bara 2 resor, `accident` 1. Värsta fallet: **"Fartkamera om 500 meter." fyra
-  gånger på 46 minuter** (E18 Örebro→Stockholm) och fyra gånger på 83 min (Rv70 Enköping→Mora).
-  ⚠️ **MITT EGET ANTAGANDE FÖLL, och det ändrar kortet.** Skriptet utgick från att olika kameror
-  ger olika meningar och därför inte skulle räknas. Fel: A5 fyrar på fast avstånd
-  (`cameraTriggerM`), så varje kamera säger ordagrant samma sak. **Det är alltså TVÅ problem med
-  TVÅ botemedel:** is ska DÄMPAS (samma fara, samma åtgärd, ingen ny information), kameror ska bli
-  SÄRSKILJBARA (olika objekt, men texten bär inget som skiljer dem åt — det är en RÖSTTEXT-fråga,
-  PRODUKTBOKEN, inte en dämpningsregel). Kortet bör delas därefter.
-  🕐 **Och tidsfönstret gör kamerafyndet viktigare, inte mindre viktigt:** A5 är lägst i
-  prioritetsstegen. Den fyller alltså rösten med det minst angelägna redan i september, innan
-  vintern lagt till halka, frysrisk och trend ovanpå. Vinterdagens sex identiska isvarningar är
-  inte nådda i verkligt väder än (värst i is: 3), men mekanismen är bevisad och skalar med hur
-  många punktkällor som fyrar samtidigt.
+  🛑 **FÄLTDOM 11/9, BENGT: KAMERORNA ÄR RÄTT OCH RÖRS INTE.** Malmö→Boden och tillbaka: en
+  varning 500 m före varje verklig kamera, hela vägen. "Det var perfekt." Därmed faller den första
+  avläsningens huvudtal — 337 av 340 upprepningar var `camera`, och de är KORREKTA. Identisk text
+  är inget fel när varje varning följs av sitt eget objekt; kontexten skiljer dem åt.
+  ⚠️ **MÄTFELET VAR MITT, och det är av kodgrindens sort (#71): rätt vakt på fel nämnare.**
+  Underlagsvakten stod på "resor med något larm" (678) och rapporterade 50 % upprepning. Men
+  populationen som betyder något är resor med en TILLSTÅNDSfara, och där finns 3 resor — alltså
+  **OAVGJORT**, inte 50 %. Mycket underlag om fel sak är inte underlag.
+  🔑 **UPPDELNINGEN SOM BLEV KVAR, och den är kortets egentliga innehåll:**
+  **OBJEKTFAROR** (kamera, olycka, vilt) = distinkta saker föraren passerar. En varning per objekt
+  är rätt, även med ordagrant samma mening. **RÖRS INTE — fältverifierat.**
+  **TILLSTÅNDSFAROR** (halka, frysrisk) = ett sammanhängande tillstånd som råkar observeras av
+  flera givare. Sex stationer längs en väg beskriver EN halka, inte sex; andra meningen bär ingen
+  ny information och kräver ingen ny åtgärd. **Dämpning hör hemma här och bara här.**
+  Regeln: varna en gång per objekt, en gång per tillstånd — aldrig en gång per givare.
+  📉 **FÖRE-VÄRDET ÄR DÄRMED OAVGJORT och väntar på vintern.** `icing_point` upprepas på 2 resor
+  (värst 3), `slippery_segment` i praktiken aldrig — väglagsarkivet står stilla sedan 25/8.
+  Vinterdagens sex identiska isvarningar är varken bekräftade eller motbevisade av verkligt väder.
+  Knappen finns, mätningen är byggd; frågan mognar med vintern, inte med mer kod.
+  ✅ **KRAVET EFTER DÄMPNINGEN ÄR TVÅDELAT:** upprepningarna i tillståndsfarorna ska falla utan att
+  antalet distinkta meningar gör det — OCH objektfarornas siffra ska stå still. Kamerorna ska låta
+  exakt som de gör i dag.
 - [ ] 🌬️ **#90 Vind och sikt som punktfaror — arkiverade sedan 9/9, används inte** (systemanalys
   10/9). wind_speed_ms/wind_gust_ms/visibility_m landar varje minut (kort #84). Sidvind på broar och
   slätter är en riktig risk för husbil, släp och lastbil (= B2B, #92/#94); dimma är en fartfråga.
