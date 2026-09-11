@@ -6,9 +6,12 @@
 //
 //   migrera <fil> [--bevis "SQL"]   kör filen i en transaktion, kör sedan varje bevisrad
 //                                    (radbrutna SQL-satser) och skriver ut resultatraderna.
-//   larmprov                          läser vakthundens eget cron-kommando ur cron.job, lägger
-//                                    ?larmprov=1 på URL:en och kör det — nyckeln passerar
-//                                    aldrig en logg. Beviset är issuen med etiketten vakthund.
+//   larmprov [flagga]                 läser vakthundens eget cron-kommando ur cron.job, lägger
+//                                    prov-flaggan på URL:en och kör det — nyckeln passerar
+//                                    aldrig en logg. Flaggor (vitlista): larmprov (standard,
+//                                    framkallar ett fel ⇒ issue `vakthund`) och vinterprov
+//                                    (framkallar vinterordslarmet, kort #52 ⇒ issue
+//                                    `vinterord-prov`). Beviset är issuen, inte utskriften.
 import pg from "pg";
 import { readFileSync } from "node:fs";
 
@@ -37,15 +40,24 @@ try {
       if (!r.rows.length) console.log("  (inga rader)");
     }
   } else if (atgard === "larmprov") {
+    // Vitlistan först, före databasen: en felstavad flagga ska falla på en rad, inte efter
+    // att ha öppnat en anslutning — och då går den att prova utan DATABASE_URL.
+    const FLAGGOR: Record<string, string> = { larmprov: "larmprov=1", vinterprov: "vinterprov=1" };
+    const flagga = FLAGGOR[arg ?? "larmprov"];
+    if (!flagga) { console.error(`larmprov: okänd flagga "${arg}" — tillåtna: ${Object.keys(FLAGGOR).join(", ")}`); process.exit(1); }
     const j = await pool.query(`SELECT jobid, command FROM cron.job WHERE jobname = 'halkvakt-vakthund'`);
     if (j.rows.length !== 1) { console.error(`larmprov: hittade ${j.rows.length} jobb med namnet halkvakt-vakthund — avbryter`); process.exit(1); }
     const kommando: string = j.rows[0].command;
     const traffar = kommando.match(/functions\/v1\/vakthund(?=['"?])/g) ?? [];
     if (traffar.length !== 1) { console.error(`larmprov: väntade exakt EN vakthund-URL i kommandot, hittade ${traffar.length} — avbryter (kommandot skrivs aldrig ut)`); process.exit(1); }
-    const prov = kommando.replace(/functions\/v1\/vakthund(?=['"?])/, "functions/v1/vakthund?larmprov=1");
+    // Flaggan är vitlistad (ovan), aldrig fri text: den byggs in i ett SQL-kommando som körs
+    // skarpt, och kommandot innehåller nyckeln.
+    const prov = kommando.replace(/functions\/v1\/vakthund(?=['"?])/, `functions/v1/vakthund?${flagga}`);
     const r = await pool.query(prov);
-    console.log(`larmprov: vakthundens kommando (jobb #${j.rows[0].jobid}, ${kommando.length} tecken) kört med ?larmprov=1 → ${JSON.stringify(r.rows[0] ?? {})}`);
-    console.log("Beviset är INTE den här raden: en issue med etiketten `vakthund` ska finnas inom en minut, och stängas av nästa gröna timkörning (xx:07).");
+    console.log(`larmprov: vakthundens kommando (jobb #${j.rows[0].jobid}, ${kommando.length} tecken) kört med ?${flagga} → ${JSON.stringify(r.rows[0] ?? {})}`);
+    console.log(flagga === "vinterprov=1"
+      ? "Beviset är INTE den här raden: en issue med etiketten `vinterord-prov` ska finnas inom en minut. Den bär EGEN etikett, så provet inte förbrukar det riktiga engångslarmet."
+      : "Beviset är INTE den här raden: en issue med etiketten `vakthund` ska finnas inom en minut, och stängas av nästa gröna timkörning (xx:07).");
   } else {
     console.error("dbknapp: atgard måste vara migrera eller larmprov"); process.exit(1);
   }
