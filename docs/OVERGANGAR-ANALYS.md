@@ -478,9 +478,15 @@ höstregnen fönstret och det öppnar nu.
 
 ## 6. (c) Interaktionerna — inte ett eget arbete
 
-VERIFIERAT: motorn har en förhandlad interaktion (halka × vattenplaning, DECISIONS #68: halkan
-vinner, vattenplaningen vilar helt vid yta ≤ +4 °C) och en till i trendens §5 (halka vinner över
-trend). Prioritetsstegen A3 > A1 > A2 > A4 > A5 avgör resten mekaniskt: en vinnare, övriga släpps.
+VERIFIERAT (rättat 11/9 — den första formuleringen var fel): motorn har **ingen** förhandlad
+interaktion i kod. Den har fem faror och bara fem — `accident`, `slippery_segment`, `icing_point`,
+`wildlife`, `camera` (types.ts:6–10) — och ordet vattenplaning förekommer inte en enda gång i
+`engine/src/` eller i snapshotkärnan. DECISIONS #68 BESLUTADE interaktionen (halkan vinner,
+vattenplaningen vilar helt vid yta ≤ +4 °C) och trendens §5 beslutade en till, men båda är
+papper, inte kod. Vattenplaningen står därmed på samma hylla som trenden och tystnadsfelet:
+fastställt tröskeldokument, noll rader kod. Det som faktiskt KÖR är grind V-A, en nivå under
+varningen — den prövar om grannstationerna alls bär påståendet "regn framöver". Prioritetsstegen
+A3 > A1 > A2 > A4 > A5 avgör resten mekaniskt: en vinnare, övriga släpps. Prioritetsstegen A3 > A1 > A2 > A4 > A5 avgör resten mekaniskt: en vinnare, övriga släpps.
 
 De tre paren i §2.2 är **inte tre av samma sort** (fjärde läsningen, §1b.2). Ett av dem är en
 övergångsorsak i lager 1; två är riskmodifierare i lager 2. Första versionen av det här avsnittet
@@ -501,8 +507,10 @@ kallade alla tre "interaktioner", och det var fel:
   #90:s dokument: ska dimma eller sidvind **modifiera** halkvarningen (längre försprång, eftersom
   reaktionstiden är sämre) i stället för att bara förlora prioritetsstriden? Det är den enda nya
   tanken i (c), och den är #90:s.
-- **Vattenplaning × halka (#68) är lager 2-precedensen.** Halkan vinner, vattenplaningen vilar ≤
-  +4 °C. Det är exakt formen sidvind × halka ska få: ett förvillkor, en vektor, ingen historik.
+- **Vattenplaning × halka (#68) är lager 2-precedensen — men på papper, inte i kod.** Halkan
+  vinner, vattenplaningen vilar ≤ +4 °C. Formen är rätt och den är exakt vad sidvind × halka ska
+  få: ett förvillkor, en vektor, ingen historik. Men den är BESLUTAD, inte byggd (se §6), så den
+  visar mönstret utan att bevisa det. Första lager 2-regeln som faktiskt skrivs blir precedensen.
 
 Rekommendation: kort #89 lämnar över (c) uttryckligen och behåller bara (a) och (b). Och när (c)
 lämnas över ska det stå vilket lager varje del hör till, så #46 inte bygger en interaktion och #90
