@@ -1325,6 +1325,20 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   rösten tystnar i dag vid +1 medan vatten står på is) — kandidat till eget kort — och saltbilen
   (ingen öppen källa, känt). Facitmatchningen ärver #45:s baselineprincip: packad snö i norr är
   inte en övergång.
+  🔬 **FJÄRDE LÄSNINGEN 11/9** (Bengts "täcks vattenplaning in? är rimfrost ett tillstånd? gäller
+  samma för sidvind × halka?"): ja, ja, nej — och nejet är poängen. Vattenplaning ÄR ett tillstånd
+  (vattenfilm, #42) och saknades i grafen; rättat. Rimfrost ÄR ett tillstånd (is), dimma och frysrisk
+  är dess ORSAKER — frysrisk och halka är inte tillstånd utan NAMN PÅ LARM om tillstånd. Men sidvind
+  och dimma-som-sikt ändrar inte ytan; de ändrar faran för föraren givet en yta. Det är **LAGER 2:
+  riskmodifierare** (fart, sidvind, sikt, däck #92, mörker) — kräver INGET minne, ingen skattare,
+  byggs som #68 (förvillkor/prioritet/försprång, en vektor). Lager 1 (ytan) kräver skattaren. De ska
+  inte dela kort, nyckel eller mått. §6 hade blandat ihop dem: dimma × frysrisk är en lager 1-orsak
+  (→ #46, konfidens för kondensationsvillkoret), sidvind/dimma × halka är lager 2 (→ #90, #68 som
+  mall). Dimma sitter i båda lagren utan motsägelse. Vattenplaningen bevisar mönstret redan:
+  vattenfilm × fart × däck. **Steg 0 utökat till sex frågor** (0a–0f: eftersläpning, torkningskurva,
+  underlag a, underlag b, Våt-eftersläpning, radartäckning), varje med egen underlagsvakt.
+  Rekommendationens "tre tal" rättat till sex svar. Förstudien sparad i repot, i Drive och som fil
+  i chatten.
 - [ ] 🌬️ **#90 Vind och sikt som punktfaror — arkiverade sedan 9/9, används inte** (systemanalys
   10/9). wind_speed_ms/wind_gust_ms/visibility_m landar varje minut (kort #84). Sidvind på broar och
   slätter är en riktig risk för husbil, släp och lastbil (= B2B, #92/#94); dimma är en fartfråga.
