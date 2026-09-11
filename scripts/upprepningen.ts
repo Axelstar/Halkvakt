@@ -12,12 +12,22 @@
 // (45 s global cooldown, ingen repris av samma id inom 10 min/5 km). Alltså: exakt det en
 // förare skulle ha hört. Ingen ny kod, ingen ny insamling, ingen vinter att vänta på.
 //
-// IDENTISK TEXT, INTE BARA SAMMA TYP. Därför mäts texten, inte typen.
-// RÄTTAT 11/9 EFTER FÖRSTA KÖRNINGEN: den här kommentaren antog att fem olika fartkameror ger
-// fem olika meningar och därför inte skulle räknas. Fel. A5 fyrar på ett fast avstånd
-// (cameraTriggerM), så VARJE kamera säger ordagrant "Fartkamera om 500 meter." Mätningen visade
-// att upprepningen i dag är nästan uteslutande kameror — 337 av 340 resor. Antagandet var alltså
-// precis det mätningen fanns till för att pröva, och det höll inte.
+// OBJEKT MOT TILLSTÅND — den enda uppdelning som betyder något här.
+// RÄTTAT 11/9 andra gången, av Bengts fältkörning Malmö–Boden och tillbaka: kamerorna fyrade
+// "helt perfekt hela vägen", en varning 500 m före varje verklig kamera. Alltså är upprepad
+// IDENTISK TEXT inte i sig ett fel — och min första version mätte just det och drog fel slutsats.
+//
+// Skillnaden går mellan vad faran ÄR:
+//   OBJEKTFAROR (camera, accident, wildlife) — distinkta saker föraren passerar. Varje varning
+//   följs av sitt eget objekt. Fem varningar om fem kameror är fem korrekta varningar, även om
+//   meningen är ordagrant densamma. Kontexten skiljer dem åt: du hör, du passerar, klart.
+//   RÖR INTE. Fältverifierat.
+//   TILLSTÅNDSFAROR (slippery_segment, icing_point) — ett sammanhängande tillstånd som råkar
+//   observeras av flera givare. Sex stationer längs samma väg beskriver EN halka, inte sex.
+//   Andra meningen bär ingen ny information och kräver ingen ny åtgärd. Det är här dämpning hör
+//   hemma, och bara här.
+//
+// Regeln: varna en gång per OBJEKT, en gång per TILLSTÅND — aldrig en gång per givare.
 //
 // VAD DEN INTE GÖR. Den dömer ingen tröskel och föreslår ingen dämpningsregel. Den ger
 // FÖRE-värdet till kort #100:s Verify-rad, så att samma fråga kan ställas efteråt och visa
@@ -29,6 +39,11 @@
 const MIN_RESOR = 20;   // underlagsvakt: färre resor med larm ⇒ OAVGJORT, aldrig ett tal
 
 export type Larm = { t: number; kind: string; id: string; text: string };
+
+/** Faror som är distinkta saker föraren passerar. Upprepning är KORREKT och rörs inte. */
+export const OBJEKT = new Set(["camera", "accident", "wildlife"]);
+/** Faror som är ett sammanhängande tillstånd observerat av flera givare. Här hör dämpning hemma. */
+export const TILLSTAND = new Set(["slippery_segment", "icing_point"]);
 export type Resa = {
   n: number;                    // antal larm på resan
   varst: number;                // flest identiska MENINGAR
@@ -38,8 +53,10 @@ export type Resa = {
   varstTyp: number;             // flest larm av samma TYP (kind), oavsett text
 };
 
-/** En resa = en traversering av en rutt vid en körning. Räknar identiska meningar. */
-export function analysera(larm: Larm[]): Resa {
+/** En resa = en traversering av en rutt vid en körning. Räknar identiska meningar.
+ *  `bara` filtrerar till en faroklass — domen ställs på TILLSTAND, aldrig på allt. */
+export function analysera(larm: Larm[], bara?: Set<string>): Resa {
+  if (bara) larm = larm.filter((l) => bara.has(l.kind));
   const perText = new Map<string, Larm[]>();
   const perKind = new Map<string, number>();
   for (const l of larm) {
@@ -108,6 +125,14 @@ if (process.argv.includes("--sjalvtest")) {
   k("blandat: spann", r3.varstSpannS, 700);
   // Tom resa.
   k("tom resa: varst", analysera([]).varst, 0);
+  // Uppdelningen objekt/tillstånd: kameror räknas INTE i domen, is gör det.
+  const blandat2: Larm[] = [...kameror, ...sex];
+  k("blandat: allt", analysera(blandat2).varst, 6);
+  k("blandat: bara TILLSTAND", analysera(blandat2, TILLSTAND).varst, 6);
+  k("blandat: bara OBJEKT", analysera(blandat2, OBJEKT).varst, 1);
+  k("kameror är objekt", OBJEKT.has("camera"), true);
+  k("is är tillstånd", TILLSTAND.has("icing_point"), true);
+  k("halka är tillstånd", TILLSTAND.has("slippery_segment"), true);
   // Vakterna.
   k("percentil p50 av 1..5", percentil([1, 2, 3, 4, 5], 0.5), 3);
   k("dom(19)", dom(19, "svar"), null);
@@ -140,60 +165,71 @@ const rows = await q(`SELECT route, run_at, alerts FROM shadow_log
   WHERE land = 'SE' AND run_at > now() - $1 * interval '1 day' AND jsonb_array_length(alerts) > 0
   ORDER BY run_at DESC LIMIT 60000`, [DAGAR]);
 
-const resor = rows.map((r) => {
+const parsade = rows.map((r) => {
   const a = typeof r.alerts === "string" ? JSON.parse(r.alerts) : r.alerts;
-  return { route: r.route, run_at: r.run_at, ...analysera(Array.isArray(a) ? a : []) };
+  return { route: r.route, run_at: r.run_at, larm: (Array.isArray(a) ? a : []) as Larm[] };
 });
 
-console.log(`\nFÖNSTRET: ${DAGAR} dygn · ${resor.length} resor med minst ett larm`);
-if (!dom(resor.length, true)) {
-  console.log(`  ⊘ OAVGJORT. Kräver ${MIN_RESOR} resor med larm; det finns ${resor.length}.`);
-  console.log(`    Skuggloggen bär bara larm när något kvalificerar, och i september kvalificerar`);
-  console.log(`    nästan bara fartkameror. Frågan mognar med vintern — men mätningen finns nu.`);
+// DOMEN STÄLLS PÅ TILLSTÅNDSFARORNA. Första versionen satte underlagsvakten på "resor med
+// något larm" (678) och rapporterade 50 % upprepning — men 337 av 340 var kameror, som ska
+// upprepa sig. Vakten passerade alltså på gott om data om FEL sak. Samma klass av fel som
+// kodgrindens falska gröna (#71): mycket underlag är inte rätt underlag.
+const tillstand = parsade.map((r) => ({ ...r, ...analysera(r.larm, TILLSTAND) })).filter((r) => r.n > 0);
+const objekt = parsade.map((r) => ({ ...r, ...analysera(r.larm, OBJEKT) })).filter((r) => r.n > 0);
+
+console.log(`
+FÖNSTRET: ${DAGAR} dygn · ${parsade.length} resor med minst ett larm`);
+console.log(`  varav ${tillstand.length} har en TILLSTÅNDSfara (halka, frysrisk) och ${objekt.length} en OBJEKTfara`);
+
+console.log(`
+OBJEKTFAROR — kamera, olycka, vilt: RÖRS INTE`);
+const objUpp = objekt.filter((r) => r.varst >= 2).length;
+console.log(`  ${objUpp} av ${objekt.length} resor upprepar en identisk mening, värst ${objekt.length ? Math.max(...objekt.map((r) => r.varst)) : 0} gånger.`);
+console.log(`  Det är KORREKT beteende och fältverifierat: Bengt körde Malmö–Boden och tillbaka och`);
+console.log(`  fick en varning 500 m före varje verklig kamera, hela vägen. Varje varning följs av`);
+console.log(`  sitt eget objekt, så identisk text förvirrar inte — kontexten skiljer dem åt.`);
+console.log(`  Siffran står här som kontroll att objektfarorna FORTSÄTTER tala, inte som ett problem.`);
+
+console.log(`
+TILLSTÅNDSFAROR — halka och frysrisk: HÄR HÖR DÄMPNING HEMMA`);
+if (!dom(tillstand.length, true)) {
+  console.log(`  ⊘ OAVGJORT. ${tillstand.length} resor med en tillståndsfara, kräver ${MIN_RESOR}.`);
+  console.log(`    Det är september: halka och frysrisk kvalificerar nästan aldrig. Mätningen är`);
+  console.log(`    byggd och knappen finns — frågan mognar med vintern, inte med mer kod.`);
+  console.log(`    Vinterdagens sex identiska isvarningar är alltså varken bekräftade eller`);
+  console.log(`    motbevisade av verkligt väder ännu.`);
   await pool.end(); process.exit(0);
 }
-
-const varstar = resor.map((r) => r.varst);
-console.log(`\nIDENTISKA MENINGAR PER RESA — det en förare faktiskt hör`);
+const varstar = tillstand.map((r) => r.varst);
+console.log(`  ${tillstand.length} resor. Identiska meningar per resa:`);
 console.log(`  median ${percentil(varstar, 0.5)} · tre fjärdedelar ${percentil(varstar, 0.75)} · nio av tio ${percentil(varstar, 0.9)} · värst ${Math.max(...varstar)}`);
 for (const g of [2, 3, 4, 6]) {
-  const n = resor.filter((r) => r.varst >= g).length;
-  console.log(`    ${String(n).padStart(6)} resor (${pct(n, resor.length)}) hör samma mening ${g} gånger eller fler`);
+  const n = tillstand.filter((r) => r.varst >= g).length;
+  console.log(`    ${String(n).padStart(6)} resor (${pct(n, tillstand.length)}) hör samma mening ${g} gånger eller fler`);
 }
-
-console.log(`\nPER FARA — var upprepningen sitter`);
 const perKind = new Map<string, { resor: number; varst: number }>();
-for (const r of resor) {
+for (const r of tillstand) {
   if (!r.varstKind || r.varst < 2) continue;
   const k = perKind.get(r.varstKind) ?? { resor: 0, varst: 0 };
   k.resor++; k.varst = Math.max(k.varst, r.varst);
   perKind.set(r.varstKind, k);
 }
-if (!perKind.size) console.log(`  (ingen resa har någon mening två gånger)`);
 for (const [kind, v] of [...perKind].sort((a, b) => b[1].resor - a[1].resor)) {
   console.log(`    ${kind.padEnd(18)} ${String(v.resor).padStart(6)} resor med upprepning · värst ${v.varst} gånger`);
 }
-console.log(`  OBS: A5 fyrar på fast avstånd, så alla kameror säger ordagrant samma mening. De är`);
-console.log(`  olika OBJEKT men omöjliga att skilja åt i örat — och det är två olika problem med`);
-console.log(`  två olika botemedel: is ska DÄMPAS (samma fara, samma åtgärd), kameror ska bli`);
-console.log(`  SÄRSKILJBARA (olika objekt, texten bär ingen information om vilket).`);
-
-console.log(`\nDE VÄRSTA RESORNA — att läsa för hand`);
-for (const r of [...resor].sort((a, b) => b.varst - a.varst).slice(0, 8)) {
+console.log(`
+  DE VÄRSTA RESORNA — att läsa för hand`);
+for (const r of [...tillstand].sort((a, b) => b.varst - a.varst).slice(0, 8)) {
   if (r.varst < 2) break;
   const nar = new Date(r.run_at).toISOString().slice(0, 16).replace("T", " ");
   console.log(`    ${nar}  ${String(r.route).padEnd(32).slice(0, 32)} ${r.varst} ggr på ${tid(r.varstSpannS)}`);
   console.log(`      "${r.varstText}"`);
 }
-
-const medUpprepning = resor.filter((r) => r.varst >= 2).length;
-console.log(`\nSVARET PÅ KORT #100:S FRÅGA`);
-console.log(`  ${medUpprepning} av ${resor.length} resor (${pct(medUpprepning, resor.length)}) innehåller minst en mening två gånger.`);
-const varstIs = resor.filter((r) => r.varstKind === "icing_point").map((r) => r.varst);
-console.log(`  Vinterdagens SEX identiska frysrisklarm är inte nådda i verkligt väder än (värst i is:`);
-console.log(`  ${varstIs.length ? Math.max(...varstIs) : 0}), men mekanismen är bevisad och biter redan — på kameror, inte på is.`);
-console.log(`  Det är september: is kvalificerar nästan aldrig. Mekanismen skalar med hur många`);
-console.log(`  punktkällor som fyrar samtidigt, och i november är det isen som är många.`);
-console.log(`\nFÖRE-VÄRDET är sparat i den här utskriften. Efter att dämpningen byggts ska samma fråga`);
-console.log(`ställas igen: upprepningarna ska falla utan att antalet DISTINKTA meningar per resa gör det.`);
+const medUpprepning = tillstand.filter((r) => r.varst >= 2).length;
+console.log(`
+FÖRE-VÄRDET FÖR KORT #100`);
+console.log(`  ${medUpprepning} av ${tillstand.length} resor (${pct(medUpprepning, tillstand.length)}) hör samma tillståndsmening minst två gånger.`);
+console.log(`  Efter dämpningen ska samma knapp tryckas igen. KRAVET ÄR TVÅDELAT:`);
+console.log(`    1. upprepningarna ovan faller, UTAN att antalet distinkta meningar per resa gör det`);
+console.log(`    2. objektfarornas siffra står STILLA — kamerorna ska fortsätta låta som de gör`);
 await pool.end();
