@@ -288,7 +288,7 @@ await avsnitt("0c — UNDERLAG (a)", async () => {
   console.log("\n0c — UNDERLAG (a): hur många frostfall skulle den vidgade regeln ge RÖST åt?");
   const fr = await q(`
     WITH frost AS (
-      SELECT station_id, sample_time, surface_temp_c, ${FUKT_SQL} AS fukt,
+      SELECT station_id, sample_time, surface_temp_c, air_temp_c, ${FUKT_SQL} AS fukt,
              (air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12) AS rimlig
       FROM weather_observations
       WHERE sample_time > now() - $1 * interval '1 day' AND surface_temp_c <= 1
@@ -300,7 +300,7 @@ await avsnitt("0c — UNDERLAG (a)", async () => {
                     THEN 1 ELSE 0 END) OVER (PARTITION BY station_id ORDER BY sample_time) AS episod
       FROM m
     )
-    SELECT e.station_id, e.episod, e.fukt, e.rimlig,
+    SELECT e.station_id, e.episod, e.fukt, e.rimlig, e.surface_temp_c AS yta, e.air_temp_c AS luft,
       (r2.n > 0) AS regn2, (r4.n > 0) AS regn4
     FROM ep e
     LEFT JOIN LATERAL (SELECT count(*) AS n FROM weather_observations w
@@ -334,7 +334,15 @@ await avsnitt("0c — UNDERLAG (a)", async () => {
   };
 
   if (!dom(fr.length, true)) { console.log(`  ⊘ OAVGJORT. ${fr.length} frostrader, kräver ${MIN_HANDELSER}.`); return; }
-  console.log(`  Frostrader (yta <= 1 °C) i fönstret: ${fr.length}, varav ${skrot} föll på givarvakten (#75).`);
+  // Vakten fäller av TVÅ skäl, och de betyder helt olika saker: en givare som påstår något
+  // orimligt är skrot, medan en rad utan lufttemperatur bara är OKONTROLLERBAR — den kan vara
+  // sann. Att slå ihop dem till "skrot" vore att överdriva. Rapporten skiljer dem åt.
+  const utanLuft = fr.filter((r) => r.luft === null).length;
+  const orimliga = fr.filter((r) => r.luft !== null && !r.rimlig);
+  const varst = orimliga.length ? Math.min(...orimliga.map((r) => Number(r.yta))) : null;
+  console.log(`  Frostrader (yta <= 1 °C) i fönstret: ${fr.length}, varav ${skrot} föll på givarvakten (#75):`);
+  console.log(`    ${utanLuft} saknar lufttemperatur ⇒ OKONTROLLERBARA (kan vara sanna, men får inte bära en dom)`);
+  console.log(`    ${orimliga.length} har yta mer än 12 ° under luften ⇒ ORIMLIGA${varst !== null ? ` (värst ${varst.toFixed(1)} °C)` : ""}`);
   console.log(`  Allt nedan räknas på de ${rimliga.length} rimliga. "Regn" = regnmängd > 0 ELLER fukt bakåt i tiden.
 `);
   visa("RADER", rakna(rimliga.map(till)));
