@@ -1431,6 +1431,25 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Verify: vinterdagen körd före och efter, samma resor, larmräkningen ska falla utan att någon NY
   fara tystnar. Hänger ihop med röstbudgeten i OVERGANGAR-ANALYS §4.7 — (a) gör problemet värre,
   så dämpningen bör finnas INNAN (a) får röst.
+  📊 **FÖRE-VÄRDET MÄTT 11/9** (`scripts/upprepningen.ts` + knapp, körning 34620622893, DECISIONS
+  #101). Skuggloggen bär 1 759 körningar på 20 rutter sedan 29/8, varav 678 med larm — och de
+  larmen har REDAN passerat motorns spärrar, så det är vad en förare hade hört.
+  **50 % av resorna (340 av 678) innehåller samma MENING minst två gånger.** 32 % tre gånger,
+  16 % fyra. Median 2, värst 4.
+  🎥 **MEN DET ÄR INTE ISEN — DET ÄR KAMERORNA.** 337 av 340 upprepningar är `camera`;
+  `icing_point` bara 2 resor, `accident` 1. Värsta fallet: **"Fartkamera om 500 meter." fyra
+  gånger på 46 minuter** (E18 Örebro→Stockholm) och fyra gånger på 83 min (Rv70 Enköping→Mora).
+  ⚠️ **MITT EGET ANTAGANDE FÖLL, och det ändrar kortet.** Skriptet utgick från att olika kameror
+  ger olika meningar och därför inte skulle räknas. Fel: A5 fyrar på fast avstånd
+  (`cameraTriggerM`), så varje kamera säger ordagrant samma sak. **Det är alltså TVÅ problem med
+  TVÅ botemedel:** is ska DÄMPAS (samma fara, samma åtgärd, ingen ny information), kameror ska bli
+  SÄRSKILJBARA (olika objekt, men texten bär inget som skiljer dem åt — det är en RÖSTTEXT-fråga,
+  PRODUKTBOKEN, inte en dämpningsregel). Kortet bör delas därefter.
+  🕐 **Och tidsfönstret gör kamerafyndet viktigare, inte mindre viktigt:** A5 är lägst i
+  prioritetsstegen. Den fyller alltså rösten med det minst angelägna redan i september, innan
+  vintern lagt till halka, frysrisk och trend ovanpå. Vinterdagens sex identiska isvarningar är
+  inte nådda i verkligt väder än (värst i is: 3), men mekanismen är bevisad och skalar med hur
+  många punktkällor som fyrar samtidigt.
 - [ ] 🌬️ **#90 Vind och sikt som punktfaror — arkiverade sedan 9/9, används inte** (systemanalys
   10/9). wind_speed_ms/wind_gust_ms/visibility_m landar varje minut (kort #84). Sidvind på broar och
   slätter är en riktig risk för husbil, släp och lastbil (= B2B, #92/#94); dimma är en fartfråga.
