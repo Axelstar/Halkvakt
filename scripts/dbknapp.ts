@@ -11,7 +11,9 @@
 //                                    aldrig en logg. Flaggor (vitlista): larmprov (standard,
 //                                    framkallar ett fel ⇒ issue `vakthund`) och vinterprov
 //                                    (framkallar vinterordslarmet, kort #52 ⇒ issue
-//                                    `vinterord-prov`). Beviset är issuen, inte utskriften.
+//                                    `vinterord-prov`), frostprov (framkallar frostlarmet,
+//                                    kort #89 ⇒ issue `frostlarm-prov`). Beviset är issuen,
+//                                    inte utskriften.
 import pg from "pg";
 import { readFileSync } from "node:fs";
 
@@ -42,7 +44,7 @@ try {
   } else if (atgard === "larmprov") {
     // Vitlistan först, före databasen: en felstavad flagga ska falla på en rad, inte efter
     // att ha öppnat en anslutning — och då går den att prova utan DATABASE_URL.
-    const FLAGGOR: Record<string, string> = { larmprov: "larmprov=1", vinterprov: "vinterprov=1" };
+    const FLAGGOR: Record<string, string> = { larmprov: "larmprov=1", vinterprov: "vinterprov=1", frostprov: "frostprov=1" };
     const flagga = FLAGGOR[arg ?? "larmprov"];
     if (!flagga) { console.error(`larmprov: okänd flagga "${arg}" — tillåtna: ${Object.keys(FLAGGOR).join(", ")}`); process.exit(1); }
     const j = await pool.query(`SELECT jobid, command FROM cron.job WHERE jobname = 'halkvakt-vakthund'`);
