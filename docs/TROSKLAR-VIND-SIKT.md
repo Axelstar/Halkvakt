@@ -104,25 +104,36 @@ men det är ETT band, i september, `situation_archive` bär ingen orsak, och nä
 
 ### 3.2 Fönstret går inte att vidga — och täckningssiffran betyder något annat än den ser ut att göra
 
-**Kolumnerna är äldre än värdena.** `sql/011_vind_sikt.sql` la till `wind_speed_ms`, `wind_gust_ms`
-och `visibility_m` den **4/9** (kort #48) — men de fylldes inte förrän **ingest-live deployades 9/9
-ca 05:00** (kort #84, DECISIONS #79), vars eget SQL-bevis lyder `vind 844 | regn 907 | sikt 844`
-**mot `vind 0` före deployen**. Luckan 5/9 → 9/9 är permanent; Trafikverket ger bara senaste
-mätningen.
+**Mätt i omkörningen 12/9, inte härlett:** första arkivtimmen med byvind är **4/9 05:00**, alltså
+**8,1 dygn** av steg 0:s 14-dygnsfönster. De sex dygnen därutöver är tomma på alla tre fälten —
+`sql/011_vind_sikt.sql` la till kolumnerna den 4/9 (kort #48), och dessförinnan fanns de inte.
+Inuti de 8,1 dygnen ligger dessutom **minutkrisens lucka 5/9 → 9/9 05:00**, permanent eftersom
+Trafikverket bara ger senaste mätningen (kort #84).
 
-**Följd 1 — täckningsraden i 3.1 ska läsas om.** "42,5 % byvind" tolkades som att mindre än hälften
-av stationerna bär fälten. Det är fel: 751 stationer bär dem. Det som saknas är **rader som är äldre
-än 9/9**, alltså tid, inte givare. Talet är ett tidsartefakt, inte ett täckningshål.
+**Följd 1 — täckningsraden i 3.1 ska läsas om.** "42,6 % byvind" tolkades som att mindre än hälften
+av stationerna bär fälten. Det är fel: **751 stationer bär dem.** Det som saknas är rader från dygn
+då fälten inte fanns eller inte skrevs — tid, inte givare.
 
-**Följd 2 — underlaget är tunnare än OAVGJORT antydde.** Steg 0:s 14-dygnsfönster innehåller ungefär
-**tre dygn** med vind och sikt, inte fjorton. Skriptet skriver numera ut det första sample_time som
-bär byvind, så talet behöver inte härledas igen.
+**Följd 2 — den verkliga exponeringen är mätt, och den är låg.** I fönstret finns **27 557
+stationstimmar med byvind av 145 819 möjliga (751 stationer × 8,1 dygn × 24 h) = 18,9 %.**
 
-**Följd 3 — W-A går inte att laga med ett längre fönster**, bara med mer tid. W-A4:s krav på 500
-stationstimmar i det högsta bandet nås när höstens stormar koncentrerar exponeringen. Det säger också
-när grinden ska köras om: **efter första höststormen**, på samma sätt som T-A körs om efter första
-frostnatten. Till skillnad från T-A finns ingen gallringsdeadline — W-A räknar stationstimmar, och
-gallringen (#83) tunnar till en rad per halvtimme, vilket lämnar stationstimmen intakt.
+| Vad som äter exponeringen | Kvar |
+| :-- | --: |
+| Alla möjliga stationstimmar i de 8,1 dygnen | 145 819 |
+| Efter minutkrisens lucka 5/9 → 9/9 (≈ 4 dygn borta) | ~73 900 |
+| Efter arkivdieten | **27 557 (18,9 %)** |
+
+Dieten kostar alltså ungefär **två tredjedelar** av det som återstår efter luckan. Talet skrivs
+numera ut av skriptet vid varje körning och behöver inte härledas igen.
+
+**Följd 3 — W-A går inte att laga med ett längre fönster.** Ett fönster över 8,1 dygn läser tomma
+dygn, och luckan går inte att fylla i efterhand.
+
+Bara mer tid hjälper. W-A4:s krav på 500 stationstimmar i det högsta bandet nås när höstens stormar
+koncentrerar exponeringen. Det säger också när grinden ska köras om: **efter första höststormen**, på
+samma sätt som T-A körs om efter första frostnatten. Till skillnad från T-A finns ingen
+gallringsdeadline — W-A räknar stationstimmar, och gallringen (#83) tunnar till en rad per halvtimme,
+vilket lämnar stationstimmen intakt.
 
 ---
 
