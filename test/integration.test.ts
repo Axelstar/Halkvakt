@@ -206,7 +206,7 @@ test("#85 writeFi/writeNo/writeDk: batchat, upsert på latest, DO NOTHING i arki
   const pool = new pg.Pool({ connectionString: url, max: 1 });
   const sql = (f: string) => readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8");
   try {
-    for (const f of ["004_fi_schema.sql", "010_fi_dewpoint_latest.sql", "012_fi_falt.sql", "006_no_schema.sql", "013_no_falt.sql", "007_dk_schema.sql"]) await pool.query(sql(f));
+    for (const f of ["004_fi_schema.sql", "010_fi_dewpoint_latest.sql", "012_fi_falt.sql", "016_fi_humidity_latest.sql", "006_no_schema.sql", "013_no_falt.sql", "007_dk_schema.sql"]) await pool.query(sql(f));
     const client = await pool.connect();
     try {
       const fi = [

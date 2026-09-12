@@ -26,8 +26,13 @@ const FI_COLS = `station_id, name, geom, sample_time, surface_temp_c, air_temp_c
 const FI_SELECT = `SELECT u.station_id, u.name, ST_SetSRID(ST_MakePoint(u.lon, u.lat), 4326), u.sample_time, u.surface_temp_c, u.air_temp_c,
     u.dewpoint_c, u.humidity_pct, u.precipitation, u.rain, u.snow, u.frost_point_c, u.freeze_point_c, u.salt_gm2, u.wind_speed_ms, u.wind_gust_ms,
     u.wind_dir_deg, u.visibility_m, u.precip_form, u.surface_state
-  FROM UNNEST($1::text[],$2::text[],$3::float8[],$4::float8[],$5::timestamptz[],$6::numeric[],$7::numeric[],$8::numeric[],$9::text[],
-              $10::bool[],$11::bool[],$12::numeric[],$13::numeric[],$14::numeric[],$15::numeric[],$16::numeric[],$17::numeric[],
+  -- TYPKASTEN ÄR POSITIONELLA och måste följa kolumnordningen ovan. När humidity_pct lades in
+  -- som $9 (DECISIONS #138) sköts precipitation till $10 och de två boolean-fälten till $11/$12
+  -- — men casten låg kvar, så $9 kastades som text[] och fick ett tal. CI fällde det direkt
+  -- (integrationstestet mot riktig PostGIS). Läxa: en ny kolumn mitt i listan flyttar ALLA
+  -- efterföljande typer, inte bara antalet parametrar.
+  FROM UNNEST($1::text[],$2::text[],$3::float8[],$4::float8[],$5::timestamptz[],$6::numeric[],$7::numeric[],$8::numeric[],$9::numeric[],
+              $10::text[],$11::bool[],$12::bool[],$13::numeric[],$14::numeric[],$15::numeric[],$16::numeric[],$17::numeric[],
               $18::numeric[],$19::numeric[],$20::numeric[],$21::numeric[])
     AS u(station_id, name, lon, lat, sample_time, surface_temp_c, air_temp_c, dewpoint_c, humidity_pct, precipitation, rain, snow,
          frost_point_c, freeze_point_c, salt_gm2, wind_speed_ms, wind_gust_ms, wind_dir_deg, visibility_m, precip_form, surface_state)`;
