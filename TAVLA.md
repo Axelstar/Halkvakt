@@ -364,7 +364,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   på. Taket för det felet är tio gånger hårdare (≤ 1 % mot ≥ 95 %).
   🍂 **Vakt mot september:** K-A4 kräver ≥ 100 punkter med UPPMÄTT frys. Annars kan ett
   septemberunderlag ge 99 % rätt klass genom att alltid svara "fryser inte".
-  🔑 **KVAR: Bengt fastställer värdena, Axel kontrasignerar.** Sedan K-A på befintligt arkiv.
+  🔑 **KVAR: Bengt fastställer värdena** (han äger mätningen — ingen kontrasignering, DECISIONS #132).
+  Sedan K-A på befintligt arkiv.
 - [x] 🗺️ **#102 RUTTBEREDSKAPEN — vilken av skuggflottans tjugo bilar kan pröva vilken grind**
   ✅ **KLART 12/9 kväll** (Bengts order "gör beredskapstabellen", DECISIONS #124).
   `scripts/ruttberedskap.ts` + knapp, helt läsande. **Rutterna läses UR skuggmotorn, kopieras
@@ -427,7 +428,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   representativitetsradien (hur långt molnet FÅR sträckas) och SMHI-förstärkaren nedan. Ingetdera
   blockerar längre något.
   🔨 **(d) FÖRSTÄRKAREN BYGGD 12/9 kväll** (Bengts "vi bygger smhi förstärkaren", DECISIONS #121).
-  📄 `docs/TROSKLAR-SMHI-FORSTARKAREN.md` (UTKAST) — väntar på Bengts fastställande och Axels bock.
+  📄 `docs/TROSKLAR-SMHI-FORSTARKAREN.md` (UTKAST) — väntar på Bengts fastställande (DECISIONS #132).
   ⚖️ **SPÄNNINGEN I KORTET LÖST FÖRE SVEPET:** "yta nära noll" är BREDARE än motorns `yta ≤ 1 °C
   OCH fukt`, men kortet förbjuder uttryckligen att regeln skapar en varning. Därför får parametern
   F3 ett **tak vid motorns egen tröskel** — regeln får skära bort, aldrig lägga till.
@@ -1195,7 +1196,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ett krav: ingen station får stå för mer än 20 % av träffarna. **Billigaste vägen till underlag är
   det FINSKA arkivet** — KASTEPISTE sedan 4/9, Lapplands septemberfrost ger äkta rimfrostnätter
   veckor före Sverige, och den körningen kräver ingen svensk frost och ingen dom.
-  🔑 **KVAR: Bengt fastställer värdena, Axel kontrasignerar.**
+  🔑 **KVAR: Bengt fastställer värdena** (ingen kontrasignering behövs, DECISIONS #132).
   📥 **ÖVERLÄMNAT FRÅN #89 den 12/9** (TROSKLAR-OVERGANGAR §6, DECISIONS #109). Två saker ska in i
   #46:s eget tröskeldokument. **(1) Dimma är en ÖVERGÅNGSORSAK, inte en interaktion:** dimma är luft
   vid ~100 % RH, alltså daggpunkt ≈ lufttemperatur, så kondensationsvillkoret (yta ≤ daggpunkt) blir
@@ -1525,9 +1526,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   fyrat.** Därför gatas den som en egen proxy — **B3 körs med och utan förlängningen** — och går den
   inte att döma sätts den till AV, aldrig till ett gissat värde. Dömbar först på varningar skrivna
   efter `sql/015` (12/9), för dessförinnan saknade arkivet giltighetsfönstret.
-  🔑 **AXEL SKA SE §2.3 FÖRE FÖRSTA SKUGGKÖRNINGEN.** Hans kontrasignering 12/9 gällde dokumentet
-  utan parametern. §10 tillåter tillägget med en rad i DECISIONS så länge ingen skuggkörning gjorts,
-  men den som kontrasignerat ska veta vad som står i det han signerat.
+  📎 **HISTORIK:** §2.3 lades till 12/9 efter fastställandet. Axel är underrättad och har läst den.
+  **Den blockerar ingenting** (DECISIONS #132): mätningen är Bengts område, motorn och rösten Axels.
   📄 **FÖRSTUDIE SKRIVEN 11/9** (Bengts "gör en ordentlig genomlysning"): `docs/OVERGANGAR-ANALYS.md`,
   samma form som vattenplaningens. Ingenting beslutat. Tre fynd som ändrar kortet:
   🕳️ **(a) ÄR ETT HÅL, INTE ETT SAMBAND.** `icing_point` kräver `moisture === true` (engine.ts:191), och
@@ -1756,7 +1756,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   exakt som de gör i dag.
 - [ ] 🌬️ **#90 VIND OCH SIKT — AXELS JA GIVET 12/9, TRÖSKELDOKUMENT SKRIVET** (systemanalys
   ✅ **`docs/TROSKLAR-VIND-SIKT.md`** (utkast 12/9, DECISIONS #112). Axels ja öppnade halva nyckeln;
-  kvar är Bengts fastställande av värdena och Axels kontrasignering.
+  kvar är Bengts fastställande av värdena (ingen kontrasignering, DECISIONS #132).
   ⚠️ **RÄTTAT 12/9 KVÄLL — TVÅ SAKFEL I DOKUMENTET** (DECISIONS #116). (1) §4 påstod att
   "exponeringen är mätt kontinuerligt vid varje station". Fel: **arkivdieten** (#4) sparar bara rader
   vid yta ≤ 5 °C, nederbörd eller Δyta ≥ 0,5 °C, så W-A:s nämnare är stationstimmar **som dieten

@@ -2,7 +2,7 @@
 
 **Kort:** #103 FRYSKLASSNINGEN — kan en modell som är opålitlig på grader ändå bära en
 frysklassning? **Status:** 📝 **UTKAST 2026-09-12.** Väntar på Bengts fastställande av värdena och
-därefter Axels kontrasignering.
+därefter är det klart att köra. **Ingen kontrasignering behövs** (Bengts beslut 12/9, DECISIONS #132).
 
 **Varifrån kortet kommer.** Grind A föll 12/9 (DECISIONS #119). Men A3 — frysklassningsfelet —
 klarade med **1,1 % mot ett krav på 10 %**, alltså tio gånger bättre än vad som krävdes. Axels
@@ -18,8 +18,8 @@ gjorts. Ingen siffra här kommer ur A3:s utfall, och A3:s 1,1 % får inte åbero
 tal i §2 — det är just den återkopplingen som gör efterhandsjusteringar värdelösa.
 
 Husreglerna som gäller: tröskeldokument före kod · skuggkolumn före röst · tystnad är en funktion ·
-trösklar gissas inte, de faller ur mätning · ändring efter första skuggkörningen kräver båda
-signaturer (§7).
+trösklar gissas inte, de faller ur mätning · trösklarna är daterade FÖRE mätningen och skrivs
+inte om när talen kommit (§7).
 
 ---
 
@@ -141,7 +141,7 @@ en boolean per skuggrad. **0 kr/mån.**
 
 ## 7. Ordning och ändring
 
-1. Det här dokumentet fastställs av Bengt, kontrasigneras av Axel.
+1. Det här dokumentet fastställs av Bengt, som äger mätningen. Ingen kontrasignering behövs.
 2. **K-A körs på befintligt arkiv** — den kräver ingen ny data och kan köras i dag. I september
    väntas OAVGJORT på K-A4:s krav om 100 frysande punkter.
 3. Vid första frostperioden: K-A om, skarpt.
@@ -150,7 +150,7 @@ en boolean per skuggrad. **0 kr/mån.**
 6. Först därefter en effekt i motorn (K4 = E1). **Rösten är Axels.**
 
 Fram till **första skuggkörningen** får §2:s svep och §4:s krav justeras av vem som helst av oss med
-en rad i DECISIONS. Därefter krävs **båda signaturerna** och en motivering som inte lutar sig mot
+en rad i DECISIONS. **Därefter ändras ingen tröskel alls** — en ändring som lutar sig mot
 utfallet.
 
 **Undantaget från all lättnad är K-A2:s tak och §1:s avgränsning.** Ett modellerat värde får aldrig
