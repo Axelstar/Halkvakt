@@ -2888,3 +2888,51 @@ eller fyra trasiga stationer för att bära hela de 47 punkterna i den värsta h
    talen, och därför ska Bengt och Axel besluta det, inte jag.
 3. **Anomalin behöver inte längre stoppa er.** Den har en förklaring som är prövbar och som
    pekar på datakvalitet, inte på att modellen gör något annat än vi tror.
+
+## #126 (12/9 2026) Marginalvakten — en grind får inte fälla på två mätvärdens marginal
+
+BESLUT (Bengts order "lägg in marginalvakten"): TROSKLAR-SKUGGAN §3 får ett nytt stycke och
+`publish/grind-a.ts` en ny vakt. **Ligger ett A-mått inom ±1,96 standardfel från sin tröskel
+skrivs OAVGJORT ut i stället för KLARAR eller FALLER.**
+
+VARFÖR. Domspärren från 1/9 vaktar MÄNGDEN underlag — minst 500 punkter över minst 20
+stationer — men ingenting vaktar MARGINALEN. Därför läser ett "FALLER" på två raders marginal
+exakt likadant som ett "FALLER" på tvåhundra raders. Anomalimätningen (#125) gjorde skillnaden
+konkret: A2 med #75:s givarvakt landar på **5,1 % mot kravets 5,0 %**, och på 1 943 punkter är
+en tiondels procentenhet ungefär **två mätvärden**. Två rader är ingen marginal, det är brus.
+
+| läsning | A2 | ±1,96 SE | kravet 5,0 % inom intervallet? |
+| :-- | --: | --: | :-- |
+| grind A som den körs (utan givarvakt) | 10,7 % | ±1,3 pe | **nej — långt utanför** |
+| med #75:s givarvakt | 5,1 % | ±1,0 pe | **ja — mitt i** |
+
+**DEN STÅENDE DOMEN BERÖRS INTE.** 10,7 % mot 5,0 % ligger långt utanför bruset och faller lika
+brett med vakten som utan. Det bevisades genom omkörning efter att vakten lagts in, inte genom
+resonemang — en ändring i domlogiken ska visas ofarlig, inte antas vara det.
+
+**VAKTEN ÄR ENSIDIG, och det är själva poängen.** Mätpunkterna är inte oberoende (samma
+stationer, intilliggande halvtimmar), så binomial- och medelvärdesfelet är en **undre gräns**
+för osäkerheten. Ligger utfallet INOM intervallet är frågan säkert oavgjord. Ligger det UTANFÖR
+är den inte därmed avgjord — vakten är minimikravet, inte ett tillräckligt bevis. Ett tal som
+klarar marginalvakten har alltså inte fått ett kvalitetsintyg, bara passerat den lägsta ribban.
+
+**DEN KAN ALDRIG ÖPPNA EN STÄNGD GRIND.** Ett KLARAR inom bruset blir OAVGJORT (skärpning), och
+ett FALLER inom bruset blir OAVGJORT (mät vidare). Grinden öppnar bara på KLARAR. Domlogiken är
+därför: **något mått FALLER ⇒ grinden faller; annars något OAVGJORT ⇒ ingen dom; annars klarad.**
+En avgörande fallning räcker alltså fortfarande för att fälla hela grinden, även om ett annat
+mått är oavgjort.
+
+SJÄLVTESTET har fått sju nya kontroller mot känd sanning, bland annat de två tal som föranledde
+vakten: att 5,1 % mot 5,0 % på 1 943 punkter INTE är skiljbart, och att 10,7 % mot 5,0 % på
+2 042 punkter ÄR det. Noll punkter och en enda punkt ger aldrig skiljbarhet.
+
+ÄNDRINGSREGIMEN: TROSKLAR-SKUGGAN är fastställt av båda 1/9, och §5 kräver båda underskrifterna
+efter första skuggkörningen. Segmentets skuggkörning har inte startat (#38b steg 4 väntar på
+halka i oktober), så tillägget är formellt i sin ordning med Bengts order och den här raden.
+**Men dokumentet är bådas, och stycket bär därför en rad om att Axel ska se det.** Ingen dom som
+VILAR på marginalvakten får fällas innan han läst den — den stående domen gör inte det.
+
+STÖRRE ÄN GRIND A: samma lucka finns i varje grind vi skrivit i dag. T-A, W-A, F-A, Ö-A och R-A
+har alla underlagsvakter men ingen marginalvakt. De har hittills bara sagt OAVGJORT av
+underlagsskäl, så luckan har inte kostat något än — men den ska stängas i samma form när de
+börjar fälla. Eget kort.
