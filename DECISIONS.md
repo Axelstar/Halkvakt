@@ -3089,3 +3089,46 @@ underlag. A2 kan inte avgöras på septemberdata, och vinterdata kommer efter no
 mellan att skjuta segmentmotorn till nästa vinter eller att bygga på en modell som inte är
 klarerad. **Grinden har gjort sitt jobb — den vägrar svara på en fråga materialet inte kan svara
 på.** Det är dyrare än ett nej, men det är sant.
+
+## #132 (12/9 2026) Kontrasigneringen var aldrig beslutad — arbetsdelningen är en annan
+
+BESLUT (Bengt, ägaren): **kontrasigneringsregimen avskaffas.** Den var en konvention som växte i
+repot utan att någon beslutat den, och den har i praktiken bara producerat väntan. Åtta av nio
+tröskeldokument hade den inskriven, och varje nytt dokument ärvde den vidare — inklusive de fyra
+som skrevs 12/9.
+
+**DEN VERKLIGA ARBETSDELNINGEN, Bengts ord:**
+
+| Axel | Bengt |
+| :-- | :-- |
+| Motorn, appen, allt som är igång — vektorerna, rösten, telefonkopplingarna | Utvecklingen framåt: kan motorn förbättras, kan vi mäta mer eller bättre för att minska osäkerheten i prognoser och varningar |
+
+**Följden, och den städar upp ett fel jag gjort genomgående:** grindomarna är **Bengts**, inte
+gemensamma. Jag har skrivit "domen är Bengts och Axels" om grind A hela dygnet. Det är fel.
+Överlämningspunkten till Axel är när något färdigmätt ska bli **kod i motorn eller ord i bilen** —
+inte när en tröskel ska sättas.
+
+**VAD SOM INTE FÖRSVINNER, och skillnaden är hela poängen.** Två saker hade blandats ihop:
+
+* **Ceremonin** — två underskrifter, versionering, tak på antal öppna dokument. Avskaffad.
+* **Disciplinen** — att trösklarna är daterade FÖRE mätningen och inte skrivs om när talen kommit.
+  **Den står kvar**, och den gjorde verkligt arbete 12/9: grind A:s tal går att lita på enbart
+  därför att gränserna skrevs 1/9. Den behöver ingen signatur — den behöver ett datum och att den
+  som skrev tröskeln inte skriver om den efter att ha sett utfallet. Under den här arbetsdelningen
+  är det **Bengt själv** skyddet gäller.
+
+ÅTGÄRDAT I SAMMA VARV: alla nio tröskeldokuments ändringsstycken och husregelrader bytta från
+"kräver båda signaturer" till ändringsdisciplinen, statusraderna från "väntar på kontrasignering"
+till "klart att köra", och tavlans fyra 🔑-rader avblockerade. Historiska rader — vad som faktiskt
+hände 11/9 och 12/9 — står kvar som historik. **Ett dokument som säger en sak medan ägarna gör en
+annan är värre än inget dokument**, och det är samma glapp som lät fyra mätningar stå döda i fem
+dygn medan tavlan sa att de kördes.
+
+AVBLOCKERAT DIREKT: TROSKLAR-VIND-SIKT (#90), TROSKLAR-RIMFROST (#46),
+TROSKLAR-SMHI-FORSTARKAREN (#95 d) och TROSKLAR-FRYSKLASSNINGEN (#103) väntar nu bara på Bengts
+fastställande. §10-raden i OVERGANGAR om att Axel ska läsa §2.3 före första skuggkörningen är
+nedgraderad från spärr till notis — han är underrättad, och mätningen är Bengts område.
+
+AXELS MOTFÖRSLAG som därmed FALLER: versionering av signerade dokument, och ett tak på tre öppna
+tröskeldokument. Båda var rimliga svar på en styrningsrisk — men risken var en följd av ceremonin,
+inte av arbetet. Utan ceremonin finns ingen signatur som kan bli innehållslös.

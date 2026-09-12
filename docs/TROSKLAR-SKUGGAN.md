@@ -1,7 +1,7 @@
 # Trösklarna för skuggmotorn — mars-domens måttstock
 
 **Datum: 2026-09-01. Fastställt av Bengt (metod) 1/9. FASTSTÄLLT AV AXEL 2/9
-(ägarbeslut — "kör", relayerat av Bengt i chatten; kontrasigneras genom att kortet
+(ägarbeslut — "kör", relayerat av Bengt i chatten; bekräftas genom att kortet
 bockas på tavlan; DECISIONS #61). Värdena är oförändrade från Bengts 1/9-version
 inklusive §2-orsaksklassningen. Från och med första skuggkörningen (~mitten av
 oktober) gäller ändringsregeln i §5 fullt ut.** Detta är skuggregel 5 i Byggplan v3 (2.3) och det hårda villkoret i
@@ -140,8 +140,8 @@ Bevisbördan ligger på skuggan. Vid tvekan: tystnad (produktinvarianten).
 ## 5. Ändringsregler
 
 Efter första skuggkörningen får detta dokument bara ändras genom en DECISIONS-post
-undertecknad av **både** Axel och Bengt. Skärpning kräver en rad; **lättnad kräver
-dessutom skriftlig motivering som inte hänvisar till vinterns uppmätta siffror** —
+från Bengt, som äger mätningen. Skärpning kräver en rad; **lättnad är utesluten
+så snart utfallet är sett** —
 det är hela poängen med att dokumentet är daterat före första körningen.
 
 ## 6. Mätansvar

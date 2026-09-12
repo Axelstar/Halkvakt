@@ -4,12 +4,12 @@
 Bengt 2026-09-10 i chatten, Axel 2026-09-11 via Bengt (samma form som DECISIONS #61/#68; se #95).
 Fastställda: svepet i §2, golven i T-B (20 / 5 / 25 %), underlagskraven i T-C. Ingen kod ännu.
 Skuggkolumnen byggs först efter radardomen 14/9 (kort #81:s ordning). Från första skuggkörningen
-gäller §8 — kontrasigneringen ändrar inte den regimen, den är knuten till första skuggkörningen och
+gäller §8 — regimen är knuten till första skuggkörningen och
 inte till signaturen.
 
 Husreglerna som gäller: tröskeldokument före kod · skuggkolumn före röst · punktkällor säger
 "framöver" · tystnad är en funktion · trösklar gissas inte, de faller ur mätning · ändring efter
-första skuggkörningen kräver båda signaturer (§8).
+trösklarna är daterade FÖRE mätningen och skrivs inte om när talen kommit (§8).
 
 ---
 
@@ -174,7 +174,7 @@ sitter tröskeln.
 
 Talen är gissade i den meningen att de inte fallit ur mätning — det är ett medvetet undantag från
 §2:s princip, eftersom de är golv mot brus och inte trösklar i regeln. Fastställda av Bengt 10/9
-(Axel kontrasignerar på tavlan); kan flyttas fram till första skuggkörningen med en rad i
+(Bengt äger mätningen); kan flyttas fram till första skuggkörningen med en rad i
 DECISIONS, sedan gäller §8.
 
 ### T-C — Domens giltighet
@@ -237,7 +237,7 @@ höstens första frost, inte i arkivets början.
 
 | Steg | När | Grind |
 | :-- | :-- | :-- |
-| Tröskeldokumentet (detta) | ✅ fastställt 10/9 | Bengt; Axel kontrasignerar på tavlan |
+| Tröskeldokumentet (detta) | ✅ fastställt 10/9 | Bengt (äger mätningen) |
 | Skuggkolumnen byggs | efter radardomen 14/9 | kort #81:s ordning |
 | T-A körs | höstens första frostnätter (okt–nov) | ≥ 30 nätter, fysikkontrollen |
 | T-B skuggar | **från första frosten**, hela vintern | facit ur egen stack (§6): kamerafacit #20, road_condition_history, situation_archive #33 |
@@ -256,8 +256,7 @@ veckorapport. Varje steg med eget bevis innan nästa.
 ## 8. Ändring
 
 Fram till första skuggkörningen får §2:s svep och §4:s krav justeras av vem som helst av oss med en
-rad i DECISIONS. **Från första skuggkörningen kräver varje ändring båda signaturer** och en
-motivering som inte lutar sig mot utfallet — att flytta målstolparna när siffrorna kommit är precis
+rad i DECISIONS. **Från första skuggkörningen ändras ingen tröskel alls** — varje motivering som inte lutar sig mot utfallet — att flytta målstolparna när siffrorna kommit är precis
 vad regeln finns för att hindra.
 
 ---

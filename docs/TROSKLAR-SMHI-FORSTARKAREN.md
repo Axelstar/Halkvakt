@@ -3,11 +3,11 @@
 **Kort:** #95 (d) SMHI-FÖRSTÄRKAREN — snöfallsvarning + yta nära noll (systemanalysens §2.8,
 övertagen från #93 den 12/9, DECISIONS #108). **Status:** 📝 **UTKAST 2026-09-12** på Bengts order
 "vi bygger smhi förstärkaren". Väntar på Bengts fastställande av värdena och därefter Axels
-kontrasignering. Ingen kod i motorn, ingen röst.
+är det klart att köra — **ingen kontrasignering behövs** (Bengts beslut 12/9, DECISIONS #132). Ingen kod i motorn, ingen röst.
 
 Husreglerna som gäller: tröskeldokument före kod · skuggkolumn före röst · **punktkällor säger
 "framöver", aldrig en sträcka** · tystnad är en funktion · trösklar gissas inte, de faller ur mätning
-· ändring efter första skuggkörningen kräver båda signaturer (§8).
+· trösklarna är daterade FÖRE mätningen och skrivs inte om när talen kommit (§8).
 
 ---
 
@@ -205,7 +205,7 @@ tusental. Skuggkolumnen `smhi_forstarkt` är en boolean per skuggrad. **0 kr/må
 
 1. ✅ **`sql/015` + ingesten** — giltighetsfönstret in i arkivet. Gjort 12/9; måste göras före vintern
    eller data går förlorad (§3.1).
-2. ✅ **Det här dokumentet** fastställs av Bengt, kontrasigneras av Axel.
+2. ✅ **Det här dokumentet** fastställs av Bengt, som äger mätningen.
 3. ✅ **Steg 0 / grind F-A** — `scripts/smhi-forstarkaren-steg0.ts`, läsande knapp. Kan köras i dag;
    i september väntas OAVGJORT, och det är ett underlagsbesked.
 4. **Vid första vintervarningarna:** F-A körs om skarpt.
@@ -220,8 +220,8 @@ tusental. Skuggkolumnen `smhi_forstarkt` är en boolean per skuggrad. **0 kr/må
 ## 9. Ändring
 
 Fram till **första skuggkörningen** får svepet i §2 och kraven i §4 justeras av vem som helst av oss
-med en rad i DECISIONS. Därefter krävs **båda signaturerna** och en motivering **som inte lutar sig
-mot utfallet**. Regimen är knuten till första skuggkörningen, inte till signaturen — samma form som
+med en rad i DECISIONS. **Därefter ändras ingen tröskel alls.** En ändring som lutar sig mot
+utfallet är värdelös — det är hela skälet till att dokumentet är daterat. Regimen är knuten till första skuggkörningen, inte till signaturen — samma form som
 TROSKLAR-TRENDEN §8, TROSKLAR-OVERGANGAR §10 och TROSKLAR-RIMFROST §9.
 
 **Undantaget från all lättnad är §1.1:s tak.** F3 får aldrig sättas över motorns egen tröskel,

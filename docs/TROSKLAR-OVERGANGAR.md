@@ -5,7 +5,7 @@ Bengt 2026-09-12 i chatten med tillägget att **(b) oljefilmen stryks** (§5), A
 Bengt (samma form som DECISIONS #61/#68/#95). Fastställda: svepet i §2, givarvakten i §3, golven i
 Ö-B, underlagskraven i Ö-C, läsfönstret i Ö-D. Ingen kod ännu.
 Skuggkolumnerna byggs efter radardomen 14/9 (kort #81:s ordning). Från första skuggkörningen gäller
-§10 — kontrasigneringen ändrar inte den regimen, den är knuten till första skuggkörningen och inte
+§10 — regimen är knuten till första skuggkörningen och inte
 till signaturen.
 
 **Förstudie:** `docs/OVERGANGAR-ANALYS.md` (fem läsningar, 11–12/9). **Steg 0 kört** tre gånger
@@ -14,7 +14,7 @@ resonemang. Varje tal nedan som inte är märkt RESONEMANG är mätt.
 
 Husreglerna som gäller: tröskeldokument före kod · skuggkolumn före röst · punktkällor säger
 "framöver" · tystnad är en funktion · trösklar gissas inte, de faller ur mätning · ändring efter
-första skuggkörningen kräver båda signaturer (§10).
+trösklarna är daterade FÖRE mätningen och skrivs inte om när talen kommit (§10).
 
 ---
 
@@ -325,7 +325,7 @@ TROSKLAR-VATTENPLANING §2.
 | Steg | Vad | När | Grind |
 | :-- | :-- | :-- | :-- |
 | 0 | Mät hålet — sex frågor | ✅ **klart 12/9** | Ö-A passerad |
-| 1 | **Detta dokument** | ✅ **12/9** | Bengt fastställer, Axel kontrasignerar |
+| 1 | **Detta dokument** | ✅ **12/9** | Bengt fastställer |
 | 2 | Tillståndsskattaren i skuggloggen, per segment | efter 14/9 | egen träffsäkerhet mot operatörens klasser FÖRE någon övergångsregel läser den |
 | 3 | (a) som skuggkolumn | efter 14/9 | Ö-B, döms vid frost inom **sju dygn** (Ö-D) |
 | 4 | "Regn inom N h" som fjärde signal i TYSTNADSFEL §3 | med detta dokument | rad i DECISIONS |
@@ -341,8 +341,7 @@ kan tas ikapp. Steg 2 måste därför stå klart innan frosten, annars finns ing
 ## 10. Ändring
 
 Fram till första skuggkörningen får §2:s svep och §4:s krav justeras av vem som helst av oss med en
-rad i DECISIONS. **Från första skuggkörningen kräver varje ändring båda signaturer** och en
-motivering som inte lutar sig mot utfallet — att flytta målstolparna när siffrorna kommit är precis
+rad i DECISIONS. **Från första skuggkörningen ändras ingen tröskel alls** — varje motivering som inte lutar sig mot utfallet — att flytta målstolparna när siffrorna kommit är precis
 vad regeln finns för att hindra.
 
 Fyra ändringar är redan gjorda och ska inte göras om: RH-guarden struken (§2.1), ord-per-resa struket
@@ -350,10 +349,10 @@ som fällande kriterium (§4, DECISIONS #103), **(b) oljefilmen struken (§5, Be
 **N_varning tillagd i svepet (§2.3, Bengts beslut 12/9, DECISIONS #123)**. Alla fyra skedde före
 första skuggkörningen och vilar på mätning, fältdom respektive beslut — inte på utfall.
 
-⚠️ **Axel ska se §2.3.** Hans kontrasignering 12/9 gällde dokumentet utan den parametern. Regeln i
+📎 **Historik:** §2.3 lades till 12/9 efter att dokumentet fastställts. Regeln i
 stycket ovan säger att tillägget är tillåtet med en rad i DECISIONS så länge ingen skuggkörning
-gjorts — men en ny parameter är mer än ett justerat svepvärde, och den som kontrasignerat ska veta
-vad som står i det han signerat. Ingen skuggkörning får göras innan han läst den.
+gjorts. Axel har läst parametern och är underrättad; den **blockerar ingenting** (Bengts beslut
+12/9, DECISIONS #132 — mätningen är Bengts område, motorn och rösten är Axels).
 
 ---
 

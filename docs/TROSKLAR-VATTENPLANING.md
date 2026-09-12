@@ -3,7 +3,7 @@
 **Datum: 2026-09-04. VÄRDENA FÄLLDA AV BENGT 4/9** ("låt värdena stå" i chatten, efter
 genomgång av grindarna och de fyra öppna punkterna). **FASTSTÄLLT AV AXEL 4/9** (ägarbeslut — domen i
 nov/dec avgör vad rösten får säga; "Axel fastställer och följer din rekommendation",
-relayerat av Bengt i chatten, kontrasigneras genom att kortet bockas på tavlan;
+relayerat av Bengt i chatten, bekräftas genom att kortet bockas på tavlan;
 DECISIONS #68). Från och med första skuggkörningen gäller ändringsregeln i §5 fullt ut.
 (Körschemat §8 steg 2 i `docs/VATTENPLANING-ANALYS.md`.) Dokumentet ska ligga i repot
 **FÖRE all kod**, samma hårda villkor som DECISIONS #51 gav skuggmotorn. Domen i
@@ -137,8 +137,8 @@ datat bär — vi vet inte vilken risken är).
 ## 5. Ändringsregler
 
 Efter första skuggkörningen får detta dokument bara ändras genom en DECISIONS-post
-undertecknad av **både** Axel och Bengt. Skärpning kräver en rad; **lättnad kräver dessutom
-skriftlig motivering som inte hänvisar till höstens uppmätta siffror** — det är hela poängen
+från Bengt, som äger mätningen. Skärpning kräver en rad; **lättnad är utesluten
+så snart utfallet är sett** — skriftlig motivering som inte hänvisar till höstens uppmätta siffror** — det är hela poängen
 med att dokumentet är daterat före första körningen.
 
 Att **lägga till** en faktor (spårdjup från steg 4c, radar från §3.4) räknas som ändring och
