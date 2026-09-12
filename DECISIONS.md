@@ -1829,3 +1829,53 @@ ställer domen och underlagsvakten på tillståndsfarorna, och redovisar objektf
 LÄGET EFTER DETTA: #100:s före-värde är OAVGJORT (2 resor med upprepad frysrisk, värst 3 gånger;
 halka i praktiken aldrig, eftersom väglagsarkivet står stilla sedan 25/8). Knappen finns och är
 byggd rätt. Frågan mognar med vintern.
+
+## #103 (12/9 2026) Kort #100 stängt utan att byggas, och ord-per-resa struket ur §4.4 — Bengts fältdom
+
+BESLUT: dämpningsregeln byggs inte. Kort #100 stängs som ett dokumenterat nej, och kravet
+"ord per resa" stryks som fällande kriterium i OVERGANGAR-ANALYS §4.4. Bengts order 12/9.
+
+BENGTS ARGUMENT, och det är principiellt rätt: "Om du kör en sträcka, säg 80 km och väglaget är
+detsamma; det är ishalka hela tiden … jag kan verkligen inte se att det skulle störa eller vara
+någon cry wolf-situation. Det är halt hela tiden och att någon säger åt mej att det är halt; kom
+ihåg det, det är fortfarande halt."
+
+**Cry wolf handlar om FALSKA varningar.** Det är falskheten som äter förtroendet, inte upprepningen.
+En sann varning som upprepas är redundans — och mot uppmärksamhetsförfall under två monotona timmar
+är redundans snarare rätt design än fel. Hela kort #100 vilade på att upprepning i sig är en defekt,
+och det antagandet prövades aldrig mot hur produkten faktiskt upplevs i bil.
+
+MÄTNINGEN SOM AVGJORDE (scripts/segmentlangden.ts, kört 12/9 — helt ren, ingen databas):
+* Jämtlands 59 km-segment, 39 min i 90 km/h: motorn talar **4 gånger**, vid minut 0, 10, 20, 30.
+  Det är reprisregelns golv (10 min OCH 5 km) som sätter takten, inte ett fel.
+* Variant B (kortare segment, eget id per bit): **12 larm** — att korta geometrin gör det värre.
+* Variant C (den föreslagna dämpningen, ett larm per segment): **1 larm för 39 minuters halka.**
+
+Kuren var alltså tystare än sjukdomen. Bengts gissning på fyra larm stämde för en dryg halvtimme;
+över två timmar blir det ungefär tolv — och hans dom stod fast även med det korrigerade talet.
+
+VAD SOM STRYKS I §4.4: kravet att ett tillskott som fördubblar rösten ska kunna falla på
+röstkriteriet ensamt. Det var Axels invändning (#100 i DECISIONS), och den vilade på samma
+antagande. Kvar blir B3-paret, som bär kostnaden där den hör hemma: i FALSKLARMEN.
+
+SKILJELINJEN SOM BLIR KVAR, och den är mer användbar än den som ströks: **upprepning av en SANN
+varning är billig, upprepning av en FÖRUTSAGD är dyr.** `slippery_segment` är operatörens
+observation — den är sann, och då gäller Bengts argument fullt ut. Efterhalkan i #89 (a) är en
+gissning om att en blöt väg ska frysa; fördubblas antalet gissningar fördubblas priset för att
+gissa fel. Det är därför §4.7 är omskriven i stället för struken: talen står kvar som beskrivning,
+domen bärs av B3 ensamt.
+
+VAD SOM FORTFARANDE ÄR VÄRT ATT BEVAKA: totalen när många OLIKA faror kvalificerar samtidigt.
+Vinterdagens novembermorgon gav 11 larm på 62 minuter, men det var halka, frysrisk, vilt och
+kameror om vartannat — en annan fråga än upprepning, och den mäts i larm per timme.
+
+ALTERNATIV SOM VALDES BORT: att parkera kortet i stället för att stänga det (husregeln i
+systemanalysens §4 — klarar något inte sin prövning läggs det ner, inte på hyllan); att bygga
+dämpningen "ändå, för säkerhets skull" (den hade tystat en sann och pågående fara).
+
+BEHÅLLS: `scripts/upprepningen.ts` och dess knapp. De kostar ingenting i vila och ger ett vintertal
+om frågan skulle komma tillbaka. Före-värdet är och förblir OAVGJORT.
+
+LÄGET EFTER DETTA: tre kort har nu stängts eller krympts av mätning i stället för byggts — #100 här,
+försäkringsspåret i #94, och (b):s nedläggningsklausul i #89. Det är avsett: ett dokumenterat nej
+är ett bra utfall.

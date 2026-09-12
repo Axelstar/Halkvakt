@@ -304,8 +304,8 @@ Vad som INTE sveps: yttröskeln (1 °C / bro 3 °C). Den är frysriskens och än
 **Och N väljs inte av svepet — det väljs av golvet.** Steg 0 mätte tillskottet vid 2 h och 4 h:
 22 respektive 25 rader, 1 respektive 2 episoder. Att fördubbla N fördubblar ungefär tillskottet,
 och kurvan har alltså inget knä i det här materialet. Det finns ingen punkt där fysiken säger
-"hit men inte längre". Därmed är det **falsklarmsgolvet och röstbudgeten (§4.7) som sätter N**,
-inte svepet — och de två raderna i §4.4 blir dokumentets viktigaste, inte en formalitet.
+"hit men inte längre". Därmed är det **falsklarmsgolvet som sätter N** (röstbudgeten ströks som
+grind 12/9, se §4.7) — och golvraden i §4.4 blir dokumentets viktigaste, inte en formalitet.
 
 ### 4.4 Facit och grind
 
@@ -321,10 +321,15 @@ N. Golv mot brus, samma logik som trendens: nettonytt ≥ 5 % av facit inom räc
 falsklarm ≤ 25 % av tillkomna fyrningar. Talen är gissade i trendens mening (golv, inte trösklar) och
 fastställs av Bengt.
 
-**Grinden har ett tredje krav sedan 11/9: ORD PER RESA.** B3-paret mäter om utvidgningen har rätt.
-Det mäter inte om den är uthärdlig. Ett tillskott som räddar missar men fördubblar rösten ska kunna
-falla på röstkriteriet ensamt, utan att B3 ens behöver vägas. Se §4.7 för talen och för varför måttet
-måste räknas i episoder och inte i arkivrader.
+~~**Grinden har ett tredje krav sedan 11/9: ORD PER RESA.**~~ **STRUKET 12/9 av Bengts fältdom
+(DECISIONS #103).** Kravet vilade på att fler varningar i sig är dåligt. Det stämmer inte för SANNA
+varningar: cry wolf handlar om falska larm, och en sann varning som upprepas är redundans — mot
+uppmärksamhetsförfall under en lång vinterresa snarare rätt än fel. Mätningen bakom stängningen av
+kort #100: ett 59 km halksegment ger fyra larm på 39 minuter, och den föreslagna dämpningen hade
+gett ett. Kuren var tystare än sjukdomen.
+**Kvar blir B3-paret, och det är rätt ställe för kostnaden:** falsklarmen bär den. Det som gör
+utvidgningen dyr är inte att den talar oftare, utan att den talar oftare om något den GISSAR. Se
+§4.7, som är omskriven därefter.
 
 ATT VERIFIERA (vintern): allt ovan. T-A-liknande grind: minst 30 regn-följt-av-frost-nätter, minst
 20 stationer, båda halvorna av perioden. Fysikkontrollen: träffarna ska toppa efter midnatt och vara
@@ -409,14 +414,23 @@ inte en prognos. Korskontrollen stöder att nivån är låg: den omslagsbaserade
 regnstopp följda av frost inom 4 h under samma period, alltså samma handfull väder räknat från andra
 hållet.
 
-**Det som ändå står kvar efter alla reservationer, och som är Axels egentliga poäng:** i november är
-frost inte längre 15 episoder på 6 stationer. Multiplikatorn kan bli mindre (fler frostfall har då
-nederbörd och fyrar redan i dag) eller större, och vi vet inte vilket. Därför:
+**REVIDERAT 12/9 EFTER BENGTS FÄLTDOM.** Avsnittets första version drog slutsatsen att fler larm i
+sig är en kostnad. Det är fel för SANNA varningar, och kort #100 stängdes på den insikten: cry wolf
+handlar om falska larm, inte om upprepade riktiga. En förare som får veta var tionde minut att det
+fortfarande är halt har fått tio korrekta besked, inte nio för många.
 
-1. Röstbudgeten mäts om på vinterdata **innan** golvet sätts, i episoder.
-2. Grinden i §4.4 får ord-per-resa som eget, fällande kriterium.
-3. Ett radtal får aldrig citeras som röstpåstående — varken i det här dokumentet eller i
-   TROSKLAR-OVERGANGAR.
+Kostnaden sitter alltså inte i antalet — den sitter i **andelen som inte var sanna**. Och där är (a)
+sårbar på ett sätt halkan inte är: `slippery_segment` är operatörens observation, medan efterhalkan
+är en GISSNING om att en blöt väg ska frysa. Fördubblas antalet gissningar fördubblas priset för att
+gissa fel. Därför:
+
+1. Röstbudgeten mäts om på vinterdata i EPISODER, som beskrivning — inte som grind.
+2. Domen bärs av **B3-paret ensamt**: tillkomna falsklarm mot räddade missar. Ord-per-resa är
+   struket som fällande kriterium i §4.4.
+3. Ett radtal får aldrig citeras som röstpåstående — varken här eller i TROSKLAR-OVERGANGAR.
+4. **Det som fortfarande är värt att bevaka är TOTALEN när många OLIKA faror kvalificerar samtidigt**
+   (vinterdagens 11 larm på 62 minuter var halka, frysrisk, vilt och kameror om vartannat). Det är
+   en annan fråga än (a):s bidrag, och den mäts i larm per timme — inte i upprepningar av en mening.
 
 ---
 
