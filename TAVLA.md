@@ -346,7 +346,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ### Claude — olåst
 - [ ] 🧊 **#151 VÄGLAGETS ÅLDER — ska en stående vinterklassning tystas när mätningarna säger att vintern tagit slut?**
-  📄 **TRÖSKELDOKUMENT SKRIVET 12/9** (`docs/TROSKLAR-VAGLAGETS-ALDER.md`, **UTKAST — väntar på Bengts fastställande**).
+  📄 **TRÖSKELDOKUMENT FASTSTÄLLT 12/9 av Bengt** (`docs/TROSKLAR-VAGLAGETS-ALDER.md`, DECISIONS #151/#152).
   **Kortet kommer ur att Axel mätte i stället för att bygga det jag antog.** Jag flaggade att
   `road_conditions` saknar väderpunkternas tretimmarsgräns; Axel mätte och upphävde antagandet:
   818 segment, alla kod 1, **exponering noll i september**, senaste ändring 25/8, **inget segment
@@ -364,7 +364,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   **Taket är hårdare än vanligt och skälet står i §5:** alla andra tröskeldokument reglerar när vi
   får SÄGA något. Det här reglerar när vi får TIGA, och ett fel åt det hållet syns inte i en logg —
   det syns i att en förare inte fick veta. E3 (tysta utan skuggkörning) = **aldrig**.
-  ⏭️ **Väntar på:** Bengts fastställande (en rad), och därefter på vinterns första klassning.
+  ⏭️ **Väntar på VINTERN.** Inget mäts förrän arkivet fått vinterklassningar — körs Å-A i september
+  blir svaret OAVGJORT på Å-A4:s krav om 100 fall, och det är rätt svar, inte ett misslyckande.
+  Fram till första skuggkörningen får §4:s svep och §5:s krav justeras med en rad i DECISIONS;
+  därefter inte alls.
   🔧 **Axels två, utanför det här kortet:** `end_time`-filtret på segmenten (en rad — kolumnen finns
   i sql/001:24 och ingesten skriver den redan, men den är OPRÖVAD tills TRV satt en EndTime en gång)
   och stillaståendevakten (återanvänd mätvaktens 6b-form: larma inte på tystnad, larma på tystnad
