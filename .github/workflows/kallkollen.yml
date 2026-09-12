@@ -1,0 +1,24 @@
+# Källkollen (Bengts avstämning 12/9): växer alla källor som våra domar vilar på?
+# Healthchecken frågar "är kedjan till appen hel"; den här frågar "kan vi fälla domarna i vinter".
+# Olika frågor med olika tidshorisont — en tabell som slutar växa i dag syns i appen först i mars.
+# Helt läsande. Knapp, inte cron: svaret hör hemma i vakthunden, men mäts först.
+name: kallkollen
+on:
+  workflow_dispatch:
+jobs:
+  kallkollen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types scripts/kallkollen.ts --sjalvtest
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/kallkollen.ts | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
