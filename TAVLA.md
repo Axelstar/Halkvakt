@@ -405,6 +405,18 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⚠️ **Ett län är inte en väg** — varningsområdena är länspolygoner, så stor träffyta är inget bevis.
   🔬 `scripts/smhi-forstarkaren-steg0.ts` + knapp. F-B är en VINTERGRIND: facit
   (`road_condition_history`) står stilla sedan 25/8 och kan inte döma i september.
+  ⊘ **FÖRSTA KÖRNINGEN 12/9: OAVGJORT, som väntat** (DECISIONS #122). 126 historikrader, 41 områden,
+  geom i 97,6 %, **giltighetsfönster i 0,0 %** (alla skrivna före sql/015). Bara **3 kvalificerande
+  stationstimmar** på 30 dygn, och **0 förstärkta i alla nio F1 × F2-rutor**. Varningstyperna:
+  WIND_SEA 85 · FIRE 25 · WATER_SHORTAGE 10 · RAIN 3 · FLOODING 3 — **noll SNOW_ICE, noll ICING.**
+  🐟 **BIFYND: `isWinterRelevant()` räknar kuling till havs som vinter.** Ingestens regex matchar
+  `WIND`, och därmed `WIND_SEA`. Ofarligt i drift (flaggan används bara i en loggrad, inget
+  filtreras på den) men loggraden "winter-relevant: N" betyder inte vad den ser ut att betyda.
+  Vakten i skriptet räknar nu per kodmängd i stället för ett enda tal.
+  🧱 **BIFYND 2: en migration i automigrationslistan är inte en körd migration.** Första försöket
+  föll på `column "approx_start" does not exist` — `sql/015` körs först när INGESTEN kör, och
+  mätskriptet kördes emellan. Samma form som "en ändrad fil under supabase/functions/ är INTE en
+  deploy". **Regel: efter en migration som ett mätskript beror på, tryck dbknappen i samma varv.**
   ➕ **ÖVERTAGET FRÅN #93 den 12/9 (DECISIONS #108): SMHI-FÖRSTÄRKAREN.** `smhi_warnings` hämtas
   redan och ligger i arkivet (tiotals kB/dygn), så regeln **snöfallsvarning + yta nära noll = högre
   konfidens** kostar 0 kr och kräver ingen ny källa. Förstärkare av frysrisken, ALDRIG en egen fara

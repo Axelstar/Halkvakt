@@ -151,12 +151,21 @@ console.log(`  varningstyper i fönstret:`);
 for (const r of koder) console.log(`    ${String(r.event_code).padEnd(18)} ${String(r.level_code).padEnd(9)} ${r.n}`);
 if (!koder.length) console.log(`    (inga alls)`);
 
-// FALSIFIERBARHETSVAKTEN (DECISIONS #71): finns det någon vintervarning att mäta på?
-const vinter = (await q(`SELECT count(*)::int AS n FROM smhi_warnings_history
-  WHERE published > now() - $1 * interval '1 day' AND geom IS NOT NULL AND event_code ~* $2`,
-  [DAGAR, KODSVEP[2][1]]))[0];
-console.log(`\n  vinterrelevanta varningar med geom: ${vinter.n}`);
-if (vinter.n === 0) {
+// FALSIFIERBARHETSVAKTEN (DECISIONS #71): finns det någon vintervarning att mäta på? Räknas per
+// kodmängd, för ETT tal här är vilseledande — se varningen under tabellen.
+console.log(`\n  varningar med geom per kodmängd i F1:`);
+let bredast = 0;
+for (const [namn, re] of KODSVEP) {
+  const n = Number((await q(`SELECT count(*)::int AS n FROM smhi_warnings_history
+    WHERE published > now() - $1 * interval '1 day' AND geom IS NOT NULL AND event_code ~* $2`,
+    [DAGAR, re]))[0].n);
+  console.log(`    ${namn.padEnd(17)} ${n}`);
+  bredast = Math.max(bredast, n);
+}
+console.log(`  ⚠️  Läs WINTER_CODES-raden för hand. Ingestens regex matchar WIND, och därmed också`);
+console.log(`     WIND_SEA — kuling till havs, som inte är en frysriskfråga alls. Ett högt tal där`);
+console.log(`     tillsammans med noll i SNOW_ICE betyder "inga vintervarningar", inte "gott om dem".`);
+if (bredast === 0) {
   console.log(`\n⊘ OAVGJORT — det finns ingen vintervarning i fönstret att mäta paret på.`);
   console.log(`  Det är ett UNDERLAGSBESKED, inte ett nej: september ger inga snöfallsvarningar.`);
   console.log(`  Grind F-A körs om vid de första vintervarningarna (TROSKLAR-SMHI-FORSTARKAREN §8).`);

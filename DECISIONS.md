@@ -2657,3 +2657,45 @@ dokumentet säger det i stället för att låtsas annat.
 
 KOSTNAD: ingen ny källa, ingen ny hämtning. Två `timestamptz` per varningsrad (~16 byte), och
 varningsrader är tiotal per dygn. **0 kr/mån.**
+
+## #122 (12/9 2026) Förstärkarens första körning — OAVGJORT som väntat, och två fynd på vägen dit
+
+BESLUT: grind F-A kördes end-to-end (30 dygns fönster). **Utfall OAVGJORT** — underlagsvakten håller
+på noll förstärkta stationstimmar och noll områden. Det är ett underlagsbesked, inte ett nej, och
+det var det väntade utfallet i september. Värdet ligger i att instrumentet är prövat innan det
+behövs, precis som grind T-A (#113).
+
+| Inventeringen, 30 dygn | |
+| :-- | --: |
+| Historikrader | 126 (41 områden) |
+| Med `geom` | 97,6 % |
+| **Med giltighetsfönster** | **0,0 %** — alla skrivna före `sql/015` |
+| Spann | 18/8 – 10/9 |
+| Kvalificerande stationstimmar (yta ≤ 1 °C och fukt, efter givarvakten) | **3** |
+| Förstärkta, i alla nio F1 × F2-kombinationer | **0** |
+
+Varningstyperna i fönstret: `WIND_SEA` 85 · `FIRE` 25 · `WATER_SHORTAGE` 10 · `RAIN` 3 ·
+`FLOODING` 3. **Noll `SNOW_ICE`, noll `ICING`.** Känsligheten i F4 (±0/±1/±3 h) och F5 (inuti /
+10 km / 25 km) ändrar ingenting — noll av tre i varje ruta.
+
+**FYND 1: `isWinterRelevant()` räknar kuling till havs som vinter.** Ingestens regex
+(`ingest/sources/smhi.ts`) är `SNOW|ICE|ICING|COLD|WIND`, och **`WIND` matchar `WIND_SEA`**. Alla 85
+"vinterrelevanta" varningar i fönstret är sjövarningar. Det är **ofarligt i drift** — flaggan
+används bara i en loggrad (`ingest/index.ts:61`), policyn är "lagra allt" och ingenting filtreras på
+den — men loggraden "winter-relevant: N" betyder inte vad den ser ut att betyda, och min egen
+falsifierbarhetsvakt skrev först ut just det talet. **Rättat:** vakten räknar nu per kodmängd och
+skriver ut alla tre, med en rad som säger varför WINTER_CODES-talet inte får läsas ensamt.
+Det bekräftar också F1:s svep: **WIND hör inte hemma i en frysriskförstärkare.**
+
+**FYND 2: en migration i automigrationslistan är inte en körd migration.** Första försöket föll på
+`column "approx_start" does not exist`. `sql/015` ligger i `ingest/db.ts`:s automigration, men den
+listan körs först när INGESTEN kör — och mätskriptet kördes emellan. Samma form som läxan "en ändrad
+fil under supabase/functions/ är INTE en deploy": koden var mergad, databasen visste inget.
+Åtgärd: dbknappen (`migrera sql/015_smhi_giltighet.sql`) kördes med kolumnlistan som bevis.
+**Regel att ta med: efter en migration som ett mätskript beror på, tryck dbknappen i samma varv —
+vänta inte på nästa timkörning.** Ingesten går timvis och grön (senast 07:11), så fälten skrivs
+framåt från och med nästa varv.
+
+**VAD SOM INTE GÅR ATT VETA ÄNNU:** med 3 kvalificerande stationstimmar på 30 dygn finns ingen
+nämnare värd namnet. F-A körs om vid de första vintervarningarna, och då bär de sitt
+giltighetsfönster — vilket de 126 raderna i arkivet i dag inte gör och aldrig kommer att göra.
