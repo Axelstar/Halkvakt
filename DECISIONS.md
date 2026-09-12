@@ -3051,3 +3051,41 @@ gånger hårdare än för det andra, och det är undantaget från all lättnad.
 **OCH EN VAKT MOT SEPTEMBER:** K-A4 kräver minst 100 punkter med UPPMÄTT frys. Ett septemberunderlag
 kan annars ge 99 % rätt klass genom att alltid svara "fryser inte". En klassificerare som aldrig
 sett ett positivt fall är inte prövad.
+
+## #131 (12/9 2026) Grind A med båda vakterna: INGEN DOM — och anomalin är borta ur talen
+
+BESLUT: omkörning av grind A med #75:s givarvakt (#129) och marginalvakten (#126/#128) på plats.
+
+| band | mätpunkter | MAE | grova > 2 °C | frysklassfel |
+| :-- | --: | --: | --: | --: |
+| 0–7 km | 81 | 0,33 °C | 0,0 % | 0,0 % |
+| 7–15 km | 129 | 0,78 °C | 3,1 % | 0,0 % |
+| 15–20 km | 250 | 0,85 °C | 6,4 % | 0,0 % |
+| > 20 km | 1 483 | 0,89 °C | 5,4 % | 0,4 % |
+| **TOTALT** | **1 943** | **0,85 °C** | **5,1 %** | **0,3 %** |
+
+| mått | utfall | marginal | dom |
+| :-- | --: | --: | :-- |
+| A1 MAE ≤ 1,0 °C | 0,85 | ±0,05 | **KLARAR** |
+| A2 grova ≤ 5,0 % | 5,1 % | ±1,0 pe | **OAVGJORT** |
+| A3 frysklassfel ≤ 10 % | 0,3 % | ±0,2 pe | **KLARAR** |
+
+**⏳ INGEN DOM.** Precis som förutsagt i #129. Det är inte ett godkännande — grinden öppnar bara på
+KLARAR — men husets svar är nu "vi vet inte än" i stället för "nej".
+
+**ANOMALIN FINNS INTE LÄNGRE I TALEN.** 0,33 · 0,78 · 0,85 · 0,89 stiger monotont med
+ankaravståndet, som fysiken kräver. Det band som var sämst av alla fyra är nu näst bäst. Fyndet i
+#125 håller hela vägen genom till den skarpa körningen.
+
+**A1 KLARAR PÅ RIKTIGT**, inte inom bruset: 0,85 mot 1,0 är femton hundradelar mot en marginal på
+fem. Det är den enda av de tre raderna som är avgjord åt det positiva hållet.
+
+**A3 FÖRBÄTTRADES FRÅN 1,1 % TILL 0,3 %** och är noll i tre av fyra band. Det talet får enligt
+TROSKLAR-FRYSKLASSNINGEN §2 **inte** användas för att sätta någon tröskel i kort #103 — men det är
+ett skäl att tycka att frågan är värd att ställa.
+
+**VAD SOM NU LIGGER PÅ BENGT OCH AXEL, och det är en tidsfråga:** novemberbeslutet har inget
+underlag. A2 kan inte avgöras på septemberdata, och vinterdata kommer efter november. Valet står
+mellan att skjuta segmentmotorn till nästa vinter eller att bygga på en modell som inte är
+klarerad. **Grinden har gjort sitt jobb — den vägrar svara på en fråga materialet inte kan svara
+på.** Det är dyrare än ett nej, men det är sant.

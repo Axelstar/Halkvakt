@@ -1349,6 +1349,16 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     vakten släpper: **A1 MAE 1,06 °C mot kravets 1,0 ⇒ FALLER. A2 grova fel 10,7 % mot 5 % ⇒
     FALLER. A3 frysklassfel 1,1 % mot 10 % ⇒ KLARAR med bred marginal.** Skriptets egen rad:
     *"GRIND A FALLEN — bygg ingen skugga (tre veckor sparade)."*
+    🔄 **OMKÖRD 12/9 MED BÅDA VAKTERNA (DECISIONS #131, Bengts order + Axels ja): INGEN DOM.**
+    Med #75:s givarvakt (#129) och marginalvakten: **A1 0,85 ± 0,05 mot 1,0 ⇒ KLARAR**,
+    **A2 5,1 % ± 1,0 pe mot 5,0 % ⇒ OAVGJORT**, **A3 0,3 % ± 0,2 pe mot 10 % ⇒ KLARAR**.
+    ⛔ **Det är INGET godkännande** — grinden öppnar bara på KLARAR, segmentmotorn får inte
+    byggas. Men husets svar är nu "vi vet inte än" i stället för "nej".
+    ✅ **ANOMALIN FINNS INTE LÄNGRE I TALEN:** 0,33 · 0,78 · 0,85 · 0,89 stiger monotont med
+    ankaravståndet. Bandet som var sämst av alla fyra är nu näst bäst.
+    ⏰ **OCH DÄR SITTER NOVEMBERBESLUTET:** A2 går inte att avgöra på septemberdata, och
+    vinterdata kommer EFTER november. Valet står mellan att skjuta segmentmotorn till nästa
+    vinter eller bygga på en modell som inte är klarerad. **Bengts och Axels.**
     ⚖️ **MARGINALVAKTEN INLAGD 12/9 kväll (DECISIONS #126/#127) — OCH A1 FÖLL ALDRIG.**
     Domspärren vaktade mängden underlag, inte marginalen. Med vakten: **A1 1,06 ± 0,09 °C mot
     tröskeln 1,0 ⇒ OAVGJORT** (intervallet omsluter tröskeln), **A2 10,7 % ± 1,3 pe mot 5,0 %
