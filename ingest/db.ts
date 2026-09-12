@@ -48,6 +48,7 @@ export async function writeAll(data: {
     await client.query(readFileSync(new URL("../sql/003_situation_archive.sql", import.meta.url), "utf8"));
     await client.query(readFileSync(new URL("../sql/008_rain_sum.sql", import.meta.url), "utf8"));
     await client.query(readFileSync(new URL("../sql/011_vind_sikt.sql", import.meta.url), "utf8"));
+    await client.query(readFileSync(new URL("../sql/015_smhi_giltighet.sql", import.meta.url), "utf8"));
 
     // Weather archive policy needs last stored temp per station — ONE query, not N.
     const lastTemps = new Map<string, number | null>();
@@ -260,8 +261,11 @@ export async function writeAll(data: {
                 AS u(area_id, warning_id, event_code, event_sv, level_code, level_sv,
                      description_sv, area_name, affected_areas, geom_json, approx_start, approx_end, published)`, params);
         await client.query(
-          `INSERT INTO smhi_warnings_history (area_id, published, warning_id, event_code, level_code, area_name, geom)
-           SELECT area_id, published, warning_id, event_code, level_code, area_name, geom
+          // approx_start/approx_end följer med sedan sql/015 (kort #95 d): nuläget töms vid varje
+          // synk, så gäller-fönstret finns bara här. SMHI publicerar i förväg — utan de två
+          // fälten vet arkivet när varningen publicerades, inte när den gällde.
+          `INSERT INTO smhi_warnings_history (area_id, published, warning_id, event_code, level_code, area_name, geom, approx_start, approx_end)
+           SELECT area_id, published, warning_id, event_code, level_code, area_name, geom, approx_start, approx_end
            FROM smhi_warnings WHERE area_id = ANY($1::bigint[])
            ON CONFLICT (area_id, published) DO NOTHING`, [col(c, x => x.areaId)]);
         counts.smhi += c.length;
