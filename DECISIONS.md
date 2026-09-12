@@ -2699,3 +2699,59 @@ framåt från och med nästa varv.
 **VAD SOM INTE GÅR ATT VETA ÄNNU:** med 3 kvalificerande stationstimmar på 30 dygn finns ingen
 nämnare värd namnet. F-A körs om vid de första vintervarningarna, och då bär de sitt
 giltighetsfönster — vilket de 126 raderna i arkivet i dag inte gör och aldrig kommer att göra.
+
+## #123 (12/9 2026) Den smala förstärkaren vald — och den breda idéns kärna flyttad till #89 som N_varning
+
+BESLUT (Bengt, på direkt fråga "vilken är din bedömning av rätt; den smala eller den breda" och
+ordern "ta den smala och skriv in det tredje i 89"):
+
+**1. SMHI-förstärkaren (#95 d) är SMAL.** Regeln verkar bara på stationstimmar som redan kvalificerar
+för motorns frysrisk. F3:s tak vid motorns egen tröskel står fast, och det är undantaget från all
+lättnad i §9 — den dagen regeln får skapa varningar är den ett annat kort.
+
+SKÄLET SOM FÄLLDE DEN BREDA, och det är värt att kunna utantill: **ett län är ingen punkt och ingen
+sträcka.** Om det verkligen snöar över länet rapporterar de flesta av våra stationer där redan
+nederbörd, och motorn varnar. De stationer som är TORRA under en aktiv länsvarning är just de där
+varningen är lokalt fel eller där snön inte hunnit fram — **alltså exakt falsklarmen.** En varning
+född ur en länspolygon hade legat på varenda väg i Jämtland i åtta timmar, på den sorts larm som
+DECISIONS #103 pekade ut som den dyra: en förutsägelse, inte en observation.
+
+OCH DET AVGÖRANDE ARGUMENTET: **hålet ägs redan av ett annat kort, som gör det bättre.** #89 (a)
+efterhalkan attackerar samma blindhet — att `moisture` betyder "nu" — men med en PUNKTKÄLLA:
+stationens egen regnhistorik, uppmätt till 76 % av regnstoppen med median 35 minuter. En punktkälla
+får säga "framöver"; en länspolygon får inte det. **Den breda förstärkaren var inte en bättre
+förstärkare, den var en sämre #89 (a).**
+
+ÄRLIGT OM DEN SMALA: dess informationsvinst är NÄRA NOLL. Stationen har redan mätt vägytan på plats
+och sagt att det faller nederbörd; en länsvarning som säger "det snöar någonstans i Jämtland" är
+strikt svagare information än en direkt mätning. Den byggs ändå därför att den kostar noll,
+instrumentet finns, och **ett dokumenterat nej stänger den sista levande delen av #95** i stället
+för att lämna den som en idé. F-A3:s TAK är den intressanta mätningen: täcker vintervarningarna
+90 % av de kvalificerande timmarna säger regeln bara "det är vinter" och svaret är nej med siffror.
+
+**2. DEN BREDA IDÉNS BERÄTTIGADE KÄRNA FLYTTAS TILL #89 SOM PARAMETERN `N_varning`**
+(TROSKLAR-OVERGANGAR §2.3, ny). SMHI vet två saker våra stationer inte vet: **ytan mellan
+stationerna** och **tiden före händelsen** — varningarna publiceras i förväg. Den smala regeln
+använder ingendera. N_varning använder den andra:
+
+> Utlösaren är oförändrad — **stationens EGET uppmätta regn**. Vägen var mätbart blöt. Det enda
+> varningen påverkar är hur länge vi antar att den förblir det.
+
+Svep: **av · 2 · 4 · 6 h**, mot N:s 1 · 2 · 3 · 4. Kodmängden ärvs från förstärkarens F1/F2 och
+sveps inte två gånger.
+
+**DET ÄR INGEN GRATIS ÄNDRING, och dokumentet säger det rakt ut: N_varning FYRAR LARM som annars
+inte fyrat.** Skillnaden mot den breda regeln är i art, inte i storlek — här finns alltid en uppmätt
+väta i botten. Därför gatas den som en egen proxy: **B3-paret körs med och utan förlängningen**, och
+den överlever bara om den räddar missar utan att bära mer än sin del av falsklarmen. Går den inte att
+döma sätts den till **av**, aldrig till ett gissat värde.
+
+HÅRD BEGRÄNSNING: `smhi_warnings_history` bar inte giltighetsfönstret förrän `sql/015` (#121).
+**N_varning kan därför bara dömas på varningar skrivna efter 12/9.** Rader med okänt fönster räknas
+som "vet inte", aldrig som "ingen varning", och andelen ska stå i varje utfall.
+
+ÄNDRINGSREGIMEN: TROSKLAR-OVERGANGAR är fastställt av Bengt och kontrasignerat av Axel 12/9. §10
+tillåter ändringar i §2:s svep med en rad i DECISIONS fram till första skuggkörningen, och någon
+sådan har inte gjorts — tillägget är alltså formellt i sin ordning. **Men en ny parameter är mer än
+ett justerat svepvärde.** §10 bär därför en rad om att Axel ska se §2.3, och att ingen skuggkörning
+får göras innan han läst den. Den som kontrasignerat ska veta vad som står i det han signerat.

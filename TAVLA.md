@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-12 07:15 av Claude (Bengts "ta alla fem") — genomgång av systemanalysens 2.1–2.8: de fyra döda måndagsmätningarna igång igen och alla gröna, **grind A föll för första gången** (2 042 punkter, MAE 1,06 mot 1,0), höjden återvinner noll på 1 962 punkter, SMHI som extra ankare gör modellen SÄMRE (1,05 → 1,20) ⇒ §2.8:s ankarroll avgjord; TROSKLAR-RIMFROST skrivet (#46); två sakfel rättade i TROSKLAR-VIND-SIKT (#90). Resonemanget i sin helhet: Drive, "Framtida utvecklingsmöjligheter — systemanalys varningssystemen 2026-09-12 **v5** (läsbar)" — §2.4 och §2.8 omskrivna från grunden, §3 har ny ordning där **grind A:s dom är punkt 2**, före allt utom trenden. KVÄLL: SMHI-förstärkaren (#95 d) byggd — tröskeldokument, sql/015 (varningarnas giltighetsfönster saknades i arkivet) och grind F-A som läsande knapp.*
+*Uppdaterad: 2026-09-12 07:15 av Claude (Bengts "ta alla fem") — genomgång av systemanalysens 2.1–2.8: de fyra döda måndagsmätningarna igång igen och alla gröna, **grind A föll för första gången** (2 042 punkter, MAE 1,06 mot 1,0), höjden återvinner noll på 1 962 punkter, SMHI som extra ankare gör modellen SÄMRE (1,05 → 1,20) ⇒ §2.8:s ankarroll avgjord; TROSKLAR-RIMFROST skrivet (#46); två sakfel rättade i TROSKLAR-VIND-SIKT (#90). Resonemanget i sin helhet: Drive, "Framtida utvecklingsmöjligheter — systemanalys varningssystemen 2026-09-12 **v5** (läsbar)" — §2.4 och §2.8 omskrivna från grunden, §3 har ny ordning där **grind A:s dom är punkt 2**, före allt utom trenden. KVÄLL: SMHI-förstärkaren (#95 d) byggd — tröskeldokument, sql/015 (varningarnas giltighetsfönster saknades i arkivet) och grind F-A som läsande knapp. **Bengt valde den SMALA regeln**, och den breda idéns kärna flyttades till #89 som parametern `N_varning` — en aktiv vintervarning förlänger N, utan att uppfinna väta ur en länspolygon.*
 
 ---
 
@@ -387,9 +387,17 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   📄 `docs/TROSKLAR-SMHI-FORSTARKAREN.md` (UTKAST) — väntar på Bengts fastställande och Axels bock.
   ⚖️ **SPÄNNINGEN I KORTET LÖST FÖRE SVEPET:** "yta nära noll" är BREDARE än motorns `yta ≤ 1 °C
   OCH fukt`, men kortet förbjuder uttryckligen att regeln skapar en varning. Därför får parametern
-  F3 ett **tak vid motorns egen tröskel** — regeln får skära bort, aldrig lägga till. **Menade du
-  det bredare är det ett annat kort** (efterhalkans syskon, egen grind, egen falsklarmsräkning);
-  det byggs inte smygande in i en förstärkare.
+  F3 ett **tak vid motorns egen tröskel** — regeln får skära bort, aldrig lägga till.
+  ✅ **AVGJORT AV BENGT 12/9: DEN SMALA** (DECISIONS #123). Skälet som fällde den breda: **ett län är
+  ingen punkt och ingen sträcka.** Snöar det verkligen över länet rapporterar de flesta stationerna
+  där redan nederbörd och motorn varnar; de som är TORRA under en aktiv länsvarning är just de där
+  varningen är lokalt fel — alltså exakt falsklarmen. Och hålet ägs redan av ett bättre kort:
+  **#89 (a) gör samma sak med en PUNKTKÄLLA** (stationens egen regnhistorik, 76 % av regnstoppen).
+  Den breda förstärkaren var inte en bättre förstärkare, den var en sämre #89 (a).
+  ➡️ **DEN BREDA IDÉNS KÄRNA FLYTTAD TILL #89, inte slängd:** ny parameter **`N_varning`** i
+  TROSKLAR-OVERGANGAR §2.3 — en aktiv vintervarning **förlänger N** (hur länge efter uppmätt regn
+  frysrisken lever vidare) utan att uppfinna väta ur en polygon. Utlösaren förblir stationens eget
+  uppmätta regn. Svep av · 2 · 4 · 6 h, gatad med och utan i B3.
   🎚️ **MOTORN HAR INGET KONFIDENSFÄLT**, så effekten är namngiven: **E0 skuggkolumn (startläget)**
   · E1 längre försprång (samma form som #90:s roll B) · E2 annan text (Axels) · **E3 högre
   prioritet ALDRIG** — det skulle tysta en olycka.
@@ -1421,6 +1429,19 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   dimma×halka har ingen förhandlad interaktion alls (bara halka×vattenplaning har det, #68).
   🔒 NYCKEL: #45:s dom + tröskelrader (§5). Verify: varje övergång som egen skuggkolumn med
   facit ur situation_archive; (b) kan mätas redan i höstregnen.
+  ➕ **NY PARAMETER `N_varning` 12/9 kväll** (§2.3 i tröskeldokumentet, Bengts order, DECISIONS #123).
+  Kom hit från #95 (d): när den breda SMHI-regeln föll — *ett län är ingen punkt och ingen sträcka* —
+  var dess berättigade kärna kvar. SMHI vet **tiden före händelsen** (varningarna publiceras i
+  förväg), och det går att använda utan att uppfinna väta ur en polygon: **en aktiv vintervarning
+  förlänger N**, alltså hur länge efter stationens EGET uppmätta regn frysrisken lever vidare.
+  Utlösaren är oförändrad. Svep **av · 2 · 4 · 6 h** mot N:s 1 · 2 · 3 · 4.
+  ⚠️ **Ingen gratis ändring, och dokumentet säger det rakt ut: N_varning fyrar larm som annars inte
+  fyrat.** Därför gatas den som en egen proxy — **B3 körs med och utan förlängningen** — och går den
+  inte att döma sätts den till AV, aldrig till ett gissat värde. Dömbar först på varningar skrivna
+  efter `sql/015` (12/9), för dessförinnan saknade arkivet giltighetsfönstret.
+  🔑 **AXEL SKA SE §2.3 FÖRE FÖRSTA SKUGGKÖRNINGEN.** Hans kontrasignering 12/9 gällde dokumentet
+  utan parametern. §10 tillåter tillägget med en rad i DECISIONS så länge ingen skuggkörning gjorts,
+  men den som kontrasignerat ska veta vad som står i det han signerat.
   📄 **FÖRSTUDIE SKRIVEN 11/9** (Bengts "gör en ordentlig genomlysning"): `docs/OVERGANGAR-ANALYS.md`,
   samma form som vattenplaningens. Ingenting beslutat. Tre fynd som ändrar kortet:
   🕳️ **(a) ÄR ETT HÅL, INTE ETT SAMBAND.** `icing_point` kräver `moisture === true` (engine.ts:191), och

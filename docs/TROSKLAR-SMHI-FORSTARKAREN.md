@@ -33,10 +33,21 @@ regeln alltså kunna fyra där motorn i dag tiger — vilket den andra meningen 
 kvalificerar**. Parametern F3 ("yta nära noll") får därför ett **tak vid motorns egen tröskel** och
 kan aldrig sättas högre. Regeln kan skära bort, aldrig lägga till.
 
-⚠️ **Om Bengt menade det bredare — att varningen ska kunna FYRA där stationen är torr — är det ett
-annat kort.** Det är efterhalkans syskon: en varning skapad ur en områdesvarning i stället för ur en
-punktmätning, och den hör hemma i #89:s familj med egen grind och egen falsklarmsräkning. Säg till,
-så skrivs det som ett eget dokument. Det byggs inte smygande in här.
+✅ **AVGJORT AV BENGT 12/9: den smala** (DECISIONS #123). Frågan ställdes rakt — smal eller bred —
+och svaret var den smala. Skälet som fällde den breda: **ett län är ingen punkt och ingen sträcka.**
+Om det verkligen snöar över länet rapporterar de flesta av våra stationer där redan nederbörd, och
+motorn varnar. De stationer som är TORRA under en aktiv länsvarning är just de där varningen är
+lokalt fel eller där snön inte kommit än — alltså precis falsklarmen. En varning född ur en
+länspolygon hade legat på varenda väg i länet i åtta timmar, och det på den sorts larm som DECISIONS
+#103 pekade ut som den dyra: en förutsägelse, inte en observation.
+
+➡️ **Den breda idéns berättigade kärna flyttades till #89, inte till papperskorgen.** SMHI vet två
+saker våra stationer inte vet: ytan mellan stationerna, och **tiden före händelsen** — varningarna
+publiceras i förväg. Den smala regeln använder ingendera. Därför lades **N_varning** in i
+`TROSKLAR-OVERGANGAR §2.3`: en aktiv vintervarning **förlänger N** — hur länge efter uppmätt regn
+eller snö frysrisken får leva vidare — utan att uppfinna väta ur en polygon. Utlösaren förblir
+stationens eget uppmätta regn. **Det är SMHI som prior på en redan öppen fråga, i stället för som
+avtryckare.**
 
 ### 1.2 Vad "höja konfidensen" konkret gör — motorn har inget konfidensfält
 

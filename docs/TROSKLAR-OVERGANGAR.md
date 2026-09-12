@@ -53,6 +53,7 @@ grinden väljer värdet.
 | Parameter | Vad den styr | Svep |
 | :-- | :-- | :-- |
 | **N** | hur länge efter sista regnet vägen räknas som blöt | 1 · 2 · 3 · 4 h |
+| **N_varning** | samma sak, men när en aktiv SMHI-vintervarning täcker punkten (§2.3) | av · 2 · 4 · 6 h |
 | **Minsta regn** | hur lite regn som räknas som "blöt väg" | > 0 · ≥ 0,2 · ≥ 0,5 mm/30 min |
 | **r** | radarintensitet som räknas som regn på segmentet | 0,1 · 0,5 · 2 mm/h |
 | **Utfallsfönster** | hur länge efter fyrningen facit får komma | 60 · 120 · 180 min |
@@ -81,6 +82,39 @@ det materialet. Det finns ingen punkt där fysiken säger "hit men inte längre"
 
 Konsekvensen är att **falsklarmsgolvet i §4 sätter N**, inte svepet. Golvraden är därmed dokumentets
 viktigaste, inte en formalitet.
+
+### 2.3 N_varning — SMHI som prior på en redan öppen fråga (Bengts beslut 12/9)
+
+**Var den kommer ifrån.** Kort #95 (d) skulle bygga en förstärkare av frysrisken ur SMHI:s
+vintervarningar. Frågan blev: ska varningen få **skapa** en varning där stationen är torr (den
+"breda" regeln) eller bara förstärka en som redan kvalificerar (den "smala")? Bengt valde **den
+smala** (DECISIONS #123), och skälet gäller även här: **ett län är ingen punkt och ingen sträcka.**
+En varning född ur en länspolygon skulle ligga på varenda väg i länet i åtta timmar, och de
+stationer som är torra under en aktiv länsvarning är just de där varningen är lokalt fel — alltså
+precis falsklarmen.
+
+**Men SMHI vet två saker våra stationer inte vet:** ytan mellan stationerna, och **tiden före
+händelsen** — varningarna publiceras i förväg. Den smala förstärkaren använder ingendera. Den här
+parametern använder den andra, utan att uppfinna väta ur en polygon:
+
+> **Utlösaren är oförändrad — stationens EGET uppmätta regn.** Vägen var mätbart blöt. Det enda
+> varningen påverkar är **hur länge vi antar att den förblir det.** Är ett vinterväder enligt SMHI
+> pågående över området är det mindre troligt att vägen hann torka.
+
+**Detta är ingen gratis ändring, och det ska sägas rakt ut: N_varning FYRAR LARM som annars inte
+fyrat.** Med N = 2 h och N_varning = 6 h lever frysriskgrenen fyra timmar längre. Skillnaden mot den
+breda regeln är i art, inte i storlek: här finns alltid en uppmätt väta i botten. Därför gatas
+N_varning **precis som varje proxy i §4** — B3-paret körs med och utan förlängningen, och den
+överlever bara om den räddar missar utan att bära mer än sin del av falsklarmen.
+
+**Vilka varningar räknas:** samma smala kodmängd som förstärkarens F1 (`SNOW_ICE`, `ICING`), nivå
+enligt dess F2. Sveps inte om här — ändras den där ändras den här.
+
+⚠️ **Hård begränsning som inte går att förhandla bort:** `smhi_warnings_history` bar inte varningens
+**giltighetsfönster** förrän `sql/015` (12/9, DECISIONS #121). Arkivet visste när en varning
+publicerades, inte när den gällde — och SMHI publicerar i förväg. **N_varning kan därför bara dömas
+på varningar skrivna efter 12/9.** Andelen rader med okänt fönster ska stå i varje utfall, och
+rader med okänt fönster räknas som "vet inte", aldrig som "ingen varning".
 
 ---
 
@@ -111,9 +145,12 @@ inte vakten skriven i sina dokument (DECISIONS #106). En rad att lägga till nä
 ### Regelskissen som döms
 
 ```
+N_eff = N_varning  om en aktiv SMHI-vintervarning täcker punkten   (§2.3, annars N)
+        ANNARS N
+
 blöt = fukt_nu
-     ELLER regn_sum_mm > Minsta regn inom N h vid stationen     (VViS, 30-min, 89 % täckning)
-     ELLER radar_precip.rate_max > r inom N h på segmentet      (radar, redan i arkivet)
+     ELLER regn_sum_mm > Minsta regn inom N_eff h vid stationen    (VViS, 30-min, 89 % täckning)
+     ELLER radar_precip.rate_max > r inom N_eff h på segmentet     (radar, redan i arkivet)
 
 icing_point = yta <= tröskel  OCH  blöt
 ```
@@ -124,6 +161,12 @@ Utvidgningen är en **strikt superset**: varje larm som fyrar i dag fyrar också
 **Varje proxy gatas för sig.** En union av svaga signaler är en falsklarmsmaskin om ingen mäts
 ensam. B3-paret nedan körs **per proxy**, och den proxy som inte räddar missar utan att kosta
 falsklarm tas bort ur unionen innan röst.
+
+**N_varning gatas som en egen proxy, fast den inte är en.** Den lägger ingen ny signal till unionen
+— den förlänger fönstret för de två som redan finns. Men den fyrar larm som annars inte fyrat
+(§2.3), så B3-paret körs **med och utan** förlängningen, och den överlever bara om den räddar missar
+utan att bära mer än sin del av falsklarmen. Kan den inte dömas på varningar med känt
+giltighetsfönster sätts den till **av**, aldrig till ett gissat värde.
 
 ### Ö-A — Finns hålet och finns underlaget? ✅ **BESVARAD 12/9**
 
@@ -287,6 +330,7 @@ TROSKLAR-VATTENPLANING §2.
 | 3 | (a) som skuggkolumn | efter 14/9 | Ö-B, döms vid frost inom **sju dygn** (Ö-D) |
 | 4 | "Regn inom N h" som fjärde signal i TYSTNADSFEL §3 | med detta dokument | rad i DECISIONS |
 | 5 | (c) överlämnas till #46 och #90 | med detta dokument | tavlan |
+| 5b | **N_varning (§2.3)** — sveps i steg 3, döms bara på varningar skrivna efter `sql/015` | med steg 3 | B3 med och utan |
 | 6 | Röst | mars, efter dom och Axels ja | — |
 
 **Tidskritiskt:** steg 3:s dom har samma fönster som #88:s T-A — höstens första frostnätter, som inte
@@ -301,16 +345,23 @@ rad i DECISIONS. **Från första skuggkörningen kräver varje ändring båda si
 motivering som inte lutar sig mot utfallet — att flytta målstolparna när siffrorna kommit är precis
 vad regeln finns för att hindra.
 
-Tre ändringar är redan gjorda och ska inte göras om: RH-guarden struken (§2.1), ord-per-resa
-struket som fällande kriterium (§4, DECISIONS #103) och **(b) oljefilmen struken (§5, Bengt 12/9)**.
-Alla tre skedde före första skuggkörningen och vilar på mätning, fältdom respektive beslut — inte på
-utfall.
+Fyra ändringar är redan gjorda och ska inte göras om: RH-guarden struken (§2.1), ord-per-resa struket
+som fällande kriterium (§4, DECISIONS #103), **(b) oljefilmen struken (§5, Bengt 12/9)** och
+**N_varning tillagd i svepet (§2.3, Bengts beslut 12/9, DECISIONS #123)**. Alla fyra skedde före
+första skuggkörningen och vilar på mätning, fältdom respektive beslut — inte på utfall.
+
+⚠️ **Axel ska se §2.3.** Hans kontrasignering 12/9 gällde dokumentet utan den parametern. Regeln i
+stycket ovan säger att tillägget är tillåtet med en rad i DECISIONS så länge ingen skuggkörning
+gjorts — men en ny parameter är mer än ett justerat svepvärde, och den som kontrasignerat ska veta
+vad som står i det han signerat. Ingen skuggkörning får göras innan han läst den.
 
 ---
 
 *Källor: TAVLA.md #89, #42, #45, #46, #75, #81, #83, #88, #90, #95, #98; docs/OVERGANGAR-ANALYS.md
 (förstudien, fem läsningar); docs/TROSKLAR-TRENDEN.md §2/§4/§8; docs/TROSKLAR-TYSTNADSFEL.md
-§3/§5/§6; docs/TROSKLAR-VATTENPLANING.md §2/§3; DECISIONS #4, #68, #71, #94, #96, #97, #98, #100,
-#103, #104, #106; engine/src/engine.ts:189–193, types.ts:6–10; publish/snapshot-core.ts:42;
-ingest/sources/weather.ts:42–56; sql/009_radar_precip.sql, sql/014_gallring.sql;
+§3/§5/§6; docs/TROSKLAR-VATTENPLANING.md §2/§3; **docs/TROSKLAR-SMHI-FORSTARKAREN.md §1.1/§2 (F1,
+F2 — kodmängden N_varning läser)**; DECISIONS #4, #68, #71, #94, #96, #97, #98, #100,
+#103, #104, #106, **#121, #123**; engine/src/engine.ts:189–193, types.ts:6–10;
+publish/snapshot-core.ts:42; ingest/sources/weather.ts:42–56; sql/009_radar_precip.sql,
+sql/014_gallring.sql, **sql/015_smhi_giltighet.sql**;
 scripts/overgangar-steg0.ts (steg 0, körningar 34579255737 · 34580876588 · 34590257682).*
