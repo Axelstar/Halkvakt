@@ -2204,3 +2204,51 @@ Fem tröskeldokument ligger nu i repot, alla fastställda och alla utom SKUGGAN 
 kontrasignerade i den här formen. Tre av de fem har noll kod. Det som avgör vintern är inte fler
 dokument utan att skuggkolumnerna byggs före frosten — och trenden (#88) är den som har naturens
 deadline.
+
+## #112 (12/9 2026) Axels ja till #90, och TROSKLAR-VIND-SIKT skrivet — med en distinktion kortet saknade
+
+BESLUT: Axel säger ja till vind och sikt som faror (relayerat av Bengt 12/9), vilket öppnade halva
+kort #90:s nyckel. Tröskeldokumentet `docs/TROSKLAR-VIND-SIKT.md` är skrivet och incheckat som utkast;
+kvar är Bengts fastställande av värdena och Axels kontrasignering.
+
+DEN DISTINKTION SOM SAKNADES, och som är dokumentets egentliga bidrag: kortet kallade dem
+"punktfaror", överlämningen från #89 kallade dem "lager 2 — riskmodifierare", och BÅDA hade rätt. Det
+är två roller som måste dömas var för sig:
+* **Roll A — egen fara.** Byvind 25 m/s på en bro är farligt oavsett väglag. Döms som vilken ny fara
+  som helst, från noll.
+* **Roll B — modifierare.** Samma is, sämre grepp i sidled. Döms som en regel om en fara som redan
+  finns, utan minne och utan tillståndsskattare.
+Faller A men håller B är utfallet "vind är ingen egen fara men förvärrar halkan" — ett giltigt och
+användbart svar som en enda grind hade dolt.
+
+PER FORDONSTYP UTGÅR, och det är kortets största svaghet: nyckeln sade "byvind m/s per fordonstyp",
+men kort #92 stängdes samma dag (#108) och motorn vet därför inte om den talar till en personbil
+eller en husvagn. En tröskel för husvagn talar för mycket med personbilister; en för personbil missar
+exakt den B2B-grupp som motiverade kortet. Svepet spänner hela intervallet och W-B mäter
+falsklarmskostnaden vid varje tröskel. Räcker ingen enda tröskel för båda grupperna är DET ett mätt
+argument för att öppna #92 igen — men argumentet ska bäras av mätning, inte av intuition.
+
+GIVARVAKTEN ÄR OMÄTT TERRITORIUM, och dokumentet säger det rakt ut. För yttemperaturen vet vi att
+61 % av frostraderna faller på vakten, värst −49,9 °C. För `wind_gust_ms` och `visibility_m` har
+ingen någonsin mätt motsvarande. Därför är steg 0 inte valfritt: det ska leta sentineltal, fastnade
+värden, byvind under medelvind och fältens täckning innan något tal i §4 får användas. En vakt som
+inte vet vad den vaktar mot är ingen vakt.
+
+W-A ÄR MÄTBAR NU, OCH DET ÄR DOKUMENTETS BÄSTA EGENSKAP: frågan är om olycksfrekvensen stiger
+monotont med byvind respektive sjunkande sikt, räknad per stationstimme mot `situation_archive`. Till
+skillnad från vattenplaningen **går nollhypotesen att räkna här** — exponeringen mäts kontinuerligt
+vid varje station, så "hur ofta sker olyckor vid normal vind" är ett tal och inte en gissning. Det var
+precis det 0d saknade i #89 (b). Faller W-A läggs kortet ner utan en rad motorkod.
+
+ORDNINGEN VÄNDS: roll B byggs FÖRE roll A, tvärtemot kortets ursprungliga lydelse. Roll B är
+billigare (ingen ny fara, ingen ny rösttext, ingen ny plats i A-skalan) och prövar samtidigt det
+mönster som #46 och alla framtida lager 2-regler ska ärva. Den blir därmed **den första lager 2-regel
+som faktiskt skrivs** — #68 beslutades men byggdes aldrig.
+
+DESIGNFRÅGAN KORTET STÄLLDE ÄR BESVARAD: modifieraren ska FÖRLÄNGA FÖRSPRÅNGET, inte höja
+prioriteten. Skälet är husregeln — prioritetsstegen droppar förloraren, så en höjd prioritet skulle
+tysta något annat. Ett längre försprång säger samma sak tidigare, vilket är exakt vad sämre grepp och
+sämre sikt kräver. Halkan vinner fortfarande alltid.
+
+LÄGET EFTER DETTA: 2.3 står nu lika långt som 2.2 gjorde i morse — tröskeldokument skrivet, nyckel
+halvöppen, och ett steg 0 som kan köras före radardomen. Sex tröskeldokument ligger i repot.

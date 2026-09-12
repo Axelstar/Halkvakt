@@ -1521,7 +1521,29 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **KRAVET EFTER DÄMPNINGEN ÄR TVÅDELAT:** upprepningarna i tillståndsfarorna ska falla utan att
   antalet distinkta meningar gör det — OCH objektfarornas siffra ska stå still. Kamerorna ska låta
   exakt som de gör i dag.
-- [ ] 🌬️ **#90 Vind och sikt som punktfaror — arkiverade sedan 9/9, används inte** (systemanalys
+- [ ] 🌬️ **#90 VIND OCH SIKT — AXELS JA GIVET 12/9, TRÖSKELDOKUMENT SKRIVET** (systemanalys
+  ✅ **`docs/TROSKLAR-VIND-SIKT.md`** (utkast 12/9, DECISIONS #112). Axels ja öppnade halva nyckeln;
+  kvar är Bengts fastställande av värdena och Axels kontrasignering.
+  🔀 **DOKUMENTET DELAR KORTET I TVÅ ROLLER som döms var för sig** — kortet sa "punktfaror",
+  överlämningen från #89 sa "riskmodifierare", och **båda hade rätt**: (A) EGEN FARA — byvind 25 m/s
+  på en bro är farligt oavsett väglag; (B) MODIFIERARE — samma is, sämre grepp i sidled. Faller A men
+  håller B är utfallet "vind är ingen egen fara men förvärrar halkan", vilket är ett giltigt svar.
+  ⚠️ **PER FORDONSTYP GÅR INTE LÄNGRE** — kort #92 stängdes samma dag (#108), så motorn vet inte om
+  den talar till en personbil eller en husvagn. En tröskel för husvagn pratar för mycket med
+  personbilister; en för personbil missar B2B-gruppen som motiverade kortet. Svepet spänner hela
+  intervallet och **grinden får avgöra** — räcker ingen enda tröskel är det ett mätt argument för att
+  öppna #92 igen.
+  🔬 **GIVARVAKTEN ÄR OMÄTT TERRITORIUM.** För yttemperaturen vet vi att 61 % faller på vakten
+  (#106). För vind och sikt vet vi **ingenting** — ingen har mätt hur ofta värdena är orimliga.
+  Därför är steg 0 inte valfritt.
+  ⏱️ **STEG 0 KAN GÖRAS NU, före radardomen:** givarkollen + grind W-A mot arkivet. W-A frågar om
+  olycksfrekvensen stiger monotont med byvind respektive sjunkande sikt — och till skillnad från
+  vattenplaningen **går nollhypotesen att räkna här**, eftersom exponeringen mäts kontinuerligt vid
+  varje station. Faller W-A är kortet klart utan en rad motorkod.
+  🥈 Roll B byggs FÖRE roll A (billigare, ingen ny fara) och blir **den första lager 2-regel som
+  faktiskt skrivs** — #68 beslutades men byggdes aldrig. Designfrågan besvarad: modifieraren
+  FÖRLÄNGER FÖRSPRÅNGET, den höjer inte prioriteten, för prioritetsstegen droppar förloraren.
+  (systemanalys
   📥 **ÖVERLÄMNAT FRÅN #89 den 12/9** (TROSKLAR-OVERGANGAR §6, DECISIONS #109): sidvind × halka och
   dimma-som-sikt × halka är **LAGER 2 — riskmodifierare**. De ändrar inte ytan, de ändrar faran för
   föraren GIVET en yta. Följden är att de **inte behöver minne och inte tillståndsskattaren** — de
