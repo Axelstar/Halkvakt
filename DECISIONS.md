@@ -2358,3 +2358,47 @@ FÖLJD FÖR ORDNINGEN i systemanalysens §3 (v4): 2.8 flyttas från fjärde till
 inte för egen skull utan för att 2.1 inte kan dömas utan den. Rekommendationen var
 2.1 → 2.2 → 2.3 → 2.8 → 2.4; den bör läsas som 2.1 (med 2.8:s molnbit inbakad) → 2.2 → 2.3 → resten
 av 2.8 → 2.4.
+
+## #115 (12/9 2026) Grind T-A:s fysikkontroll är hel — och första signalen stödjer utstrålningshypotesen
+
+BESLUT: 2.8:s blockering av 2.1 är lyft. Molnet hämtas vid körning i scripts/grind-t-a.ts ur SMHI
+metobs parameter 16, och fysikkontrollen kör nu båda sina halvor. Ingen arkivering, ingen ny tabell,
+noll lagring (#114).
+
+FÖRSTA HELA KÖRNINGEN (34677154925, 7 dygn): 16 av 17 frostnätter fick en molnobservation inom 50 km,
+hämtad från 6 stationer.
+
+| molnklass | frostnätter | fyrade (bästa kombinationen) |
+| :-- | --: | --: |
+| klar | 7 | 2 (29 %) |
+| mellan | 4 | 0 |
+| mulen | 5 | 0 |
+| okänd | 1 | 1 |
+
+Fyrningsandel klara nätter 29 % mot mulna 0 %. **Fysikkontrollen stödjer utstrålningshypotesen** —
+triggern fyrar på klara nätter och inte på mulna, vilket är precis vad utstrålningskylning förutsäger.
+
+MEN TALET ÄR TVÅ, och det ska sägas högre än slutsatsen. Sju klara nätter och fem mulna är precis över
+skriptets egen gräns för att alls jämföra, och 2 mot 0 är ingen statistik. Riktningen är rätt;
+styrkan är okänd. Domen kräver fortfarande ≥ 30 frostnätter och ≥ 20 stationer, och den kommer med
+höstens frost.
+
+TVÅ FYND I SMHI:S DATAFORMAT, båda inbyggda i klassningen och båda av samma sort som tidigare
+sentinelfynd:
+* Enheten heter "procent" men värdena är OCTAS omräknade: 0, 13, 25, 38, 50, 63, 75, 88, 100 = noll
+  till åtta åttondelar. Klassningen följer skalan i stället för att dela intervallet jämnt.
+* **113 % förekommer.** Det är 9/8 — SMHI:s kod för HIMLEN SKYMD (dimma, tätt snöfall). Som
+  procenttal är det omöjligt, och fysikaliskt är en skymd himmel MOTSATSEN till en klar natt: ingen
+  utstrålning mot rymden. Den klassas som "skymd" och räknas med de mulna. Hade den behandlats som
+  ett procenttal hade den blivit "mest molnigt av allt", vilket råkar bli rätt klass av fel skäl —
+  men bara tills någon jämför tal i stället för klasser.
+
+EN OLÖST OBSERVATION SOM STÅR KVAR: timfördelningen är fortfarande platt. Bara 5 av 17 frostnätter
+hade sin kallaste stund kl 03–07; resten låg spridda över dygnet (22, 23, 10, 11, 12, 14). Att
+triggern ändå fyrar på klara nätter men inte mulna är förenligt med att de FÅ utstrålningsnätter som
+finns i materialet är just de klara — men det betyder också att septembers "frostnätter" till
+största delen inte är utstrålningsnätter alls. Det stärker att underlaget måste vara höstens frost.
+
+LÄGET EFTER DETTA: grind T-A är komplett — svep, tre givarvakter, domspärr, båda halvorna av
+fysikkontrollen, och ett molnberoende som är löst utan lagring. Instrumentet är prövat end-to-end och
+väntar bara på frostlarmet.

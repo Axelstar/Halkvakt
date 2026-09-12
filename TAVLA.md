@@ -359,9 +359,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   en molnobservation inom 50 km** (median 29 km). Molnet är en STORSKALIG storhet — ett molntäcke
   sträcker sig tiotals mil — så 50 km är en helt annan sak här än för en yttemperatur. Hur långt det
   FÅR sträckas är dock inte mätt, bara hur långt det MÅSTE.
-  ➡️ **KVAR FÖR ATT LYFTA BLOCKERINGEN:** koppla in hämtningen i `scripts/grind-t-a.ts` — parameter
-  16 per frostnatt, klassa natten klar/mulen, redovisa träffandel per klass. Läsande ändring i ett
-  läsande skript, kräver inte radardomen.
+  ✅ **BLOCKERINGEN LYFT 12/9** (PR #163, DECISIONS #115): hämtningen är inkopplad i
+  `scripts/grind-t-a.ts` och fysikkontrollen kör båda halvorna. Första utfallet: klara nätter 29 %
+  fyrning mot mulna 0 %. **Sentinelfynd i formatet:** enheten heter procent men värdena är octas
+  omräknade, och **113 % är inte molnmängd utan SMHI:s kod för HIMLEN SKYMD** — fysikaliskt
+  motsatsen till klar natt. Klassas som skymd, räknas med de mulna.
+  ➡️ **KVAR AV #95:** ankarrollen (SMHI som extra ankare i grind A) och representativitetsradien —
+  hur långt molnet FÅR sträckas, inte bara hur långt det måste. Ingetdera blockerar längre något.
   ➕ **ÖVERTAGET FRÅN #93 den 12/9 (DECISIONS #108): SMHI-FÖRSTÄRKAREN.** `smhi_warnings` hämtas
   redan och ligger i arkivet (tiotals kB/dygn), så regeln **snöfallsvarning + yta nära noll = högre
   konfidens** kostar 0 kr och kräver ingen ny källa. Förstärkare av frysrisken, ALDRIG en egen fara
@@ -1251,6 +1255,16 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⊘ **Utfall: OAVGJORT, som det ska vara.** 2 912 station-nätter, 17 frostnätter på 7 stationer mot
   domspärrens 30 och 20. Alla 144 kombinationer räknade; bästa separation 17 %, men **ingen klarar
   båda-halvor-kravet**. Domspärren skrivs ut FÖRE tabellen så ingen läser den som en dom.
+  ☁️ **FYSIKKONTROLLEN ÄR HEL SEDAN 12/9** (PR #163, körning 34677154925, DECISIONS #115). Molnet
+  hämtas VID KÖRNING ur SMHI parameter 16 — ingen arkivering, ingen tabell, noll lagring. 16 av 17
+  frostnätter fick en molnobservation inom 50 km från 6 stationer.
+  ✅ **FÖRSTA SIGNALEN STÖDJER UTSTRÅLNINGSHYPOTESEN: fyrningsandel klara nätter 29 % (2 av 7) mot
+  mulna 0 % (0 av 5).** Triggern fyrar på klara nätter och inte på mulna, precis som
+  utstrålningskylning förutsäger. **MEN TALET ÄR TVÅ** — riktningen är rätt, styrkan okänd.
+  🕳️ **Och en olöst observation:** timfördelningen är fortfarande platt (5 av 17 kl 03–07; resten
+  22, 23, 10, 11, 12, 14). Septembers "frostnätter" är till största delen INTE utstrålningsnätter.
+  Att triggern ändå skiljer klart från mulet är förenligt med att de få utstrålningsnätter som finns
+  är just de klara — men det stärker att underlaget måste vara höstens frost.
   🔍 **Tre fynd som hör hemma i TROSKLAR-TRENDEN, inte i koden:** (1) **fysikkontrollens andra halva
   går inte att köra** — "vanligast klara nätter" kräver molnmängd, som inte finns i arkivet. T-A är
   alltså BEROENDE AV kort #95, och det står inte i dokumentet. (2) **Gallringen äter svepet:** efter
