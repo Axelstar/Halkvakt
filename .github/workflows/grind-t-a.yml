@@ -1,0 +1,30 @@
+# Grind T-A (kort #88, TROSKLAR-TRENDEN §4): har trenden signal? Tvågruppsjämförelse mot arkivet —
+# lutning och daggpunktsgap på nätter som slutade i frost mot nätter som inte gjorde det.
+# Helt läsande, rör inte skuggloggen. Byggd FÖRE skuggkolumnen med flit: T-A läser arkivet, och
+# instrumentet ska vara prövat innan höstens första frostnätter, som är en engångschans.
+# Knapp, inte cron: den trycks när frostlarmet i vakthunden går, och inom sju dygn (DECISIONS #97).
+name: grind-t-a
+on:
+  workflow_dispatch:
+    inputs:
+      dagar:
+        description: "Fönster i dygn — håll <= 7, annars har gallringen ätit minutupplösningen"
+        required: false
+        default: "7"
+jobs:
+  grind-t-a:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types scripts/grind-t-a.ts --sjalvtest
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/grind-t-a.ts "${{ inputs.dagar || '7' }}" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
