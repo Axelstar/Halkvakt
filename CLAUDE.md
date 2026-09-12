@@ -192,6 +192,11 @@ i samma commit när de överlappar.
 - "Filen på CDN är färsk" är INTE "appen har den". Apparna verifierar sha256 ur manifest.json
   och behåller cachen vid fel. publicera skrev live.json utan manifest 8/9 06:10–12:40: 38 gröna
   commits, noll nya snapshots i telefonen. Bevisa alltid med manifestets sha = filens sha.
+- Ett tröskelvärde som kopieras till mer än en fil FÖRS IN i `scripts/kontraktsgrinden.ts` i samma
+  commit som den andra kopian skrivs. #75:s givarvakt hann bli sjutton kopior i tolv filer innan
+  någon vakt fanns; varje kopia sitter i en mätning som lämnar en dom, så en drivande kopia
+  förfalskar domen och inte bara en siffra. Grinden är ett skyddsnät MELLAN ändringstillfällena —
+  när en tröskel faktiskt ändras gäller fortfarande en fullständig grep över hela kodbasen.
 - `Boolean(precipitation)` är en falsklarmsmaskin: Trafikverket skriver "no" vid uppehåll och
   de nordiska källorna "Dry". Nederbördsklasser är strängar med ordlista, aldrig sanningsvärden.
 
