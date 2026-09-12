@@ -36,6 +36,7 @@
 // Självtest utan DB: scripts/grind-r-a.ts --sjalvtest
 
 import { andelSe, utfallGolv, utfallTak, marginalPe } from "../publish/marginal.ts";
+import { vaktdiagnos } from "../publish/vaktdiagnos.ts";
 
 // ── Svepet ur TROSKLAR-RIMFROST §2. Inget tal är valt ur ett utfall.
 export const R1_MARGINAL = [0, 0.5, 1.0];   // yta ≤ daggpunkt + M
@@ -169,34 +170,17 @@ if (LAND === "fi") {
   console.log(`rimfrostnätter VECKOR före Sverige. Ingen ny källa, inga svenska nätter att vänta på.\n`);
 }
 
-// VAKTDIAGNOSEN FÖRST: hur många rader faller på VARJE led? En nolla ska aldrig vara tvetydig.
-const diag = (await pool.query(`
-  SELECT count(*)::int AS alla,
-    count(*) FILTER (WHERE surface_temp_c IS NOT NULL AND dewpoint_c IS NOT NULL)::int AS med_yta_dagg,
-    count(*) FILTER (WHERE air_temp_c IS NOT NULL)::int AS med_luft,
-    count(*) FILTER (WHERE humidity_pct IS NOT NULL)::int AS med_rh,
-    count(*) FILTER (WHERE surface_temp_c IS NOT NULL AND air_temp_c IS NOT NULL
-      AND surface_temp_c >= air_temp_c - 12)::int AS klarar_75,
-    count(*) FILTER (WHERE surface_temp_c IS NOT NULL AND dewpoint_c IS NOT NULL
-      AND surface_temp_c - dewpoint_c >= -5)::int AS klarar_dagg,
-    count(*) FILTER (WHERE surface_temp_c <= 0)::int AS frysande
-  FROM ${SCHEMA} WHERE sample_time > now() - $1 * interval '1 day'`, [DAGAR])).rows[0] as any;
-const harRh = Number(diag.med_rh) > 0;
-console.log(`VAKTDIAGNOS — hur många rader bär vad? (${diag.alla} rader i fönstret)`);
-console.log(`  yta + daggpunkt:      ${diag.med_yta_dagg}`);
-console.log(`  lufttemperatur:       ${diag.med_luft}`);
-console.log(`  luftfuktighet:        ${diag.med_rh}${harRh ? "" : "   FÄLTET FINNS INTE I DET HÄR ARKIVET"}`);
-console.log(`  klarar #75:s vakt:    ${diag.klarar_75}`);
-console.log(`  klarar daggpunktens:  ${diag.klarar_dagg}`);
-console.log(`  yta under noll:       ${diag.frysande}`);
-if (!harRh) {
-  console.log(``);
-  console.log(`  KORSGIVARKONTROLLEN GÅR INTE ATT UTVÄRDERA HÄR — vakten i §3 är tredelad och två`);
-  console.log(`  av tre led går att pröva. Talen nedan är ett FÖRHANDSBESKED, inte ett grindutfall.`);
-  console.log(`  Att köra vidare utan ledet vore att mjuka upp en vakt dokumentet kallar undantagen`);
-  console.log(`  från all lättnad.`);
-}
-console.log(``);
+// VAKTDIAGNOSEN FÖRST — nu den DELADE (DECISIONS #141). Den föddes här, ur att `humidity_pct`
+// inte finns i det finska arkivet och tyst filtrerade bort varje rad; nu bär varje grind samma.
+const vd = await vaktdiagnos((q2, p2) => pool.query(q2, p2 as any[]).then((r) => r.rows),
+  SCHEMA, `WHERE sample_time > now() - ${DAGAR} * interval '1 day'`, [
+    { namn: "yta + daggpunkt finns", bar: "surface_temp_c IS NOT NULL AND dewpoint_c IS NOT NULL", villkor: "true" },
+    { namn: "#75: lufttemperatur finns", bar: "air_temp_c IS NOT NULL", villkor: "true" },
+    { namn: "#75: yta - luft >= -12 grader", bar: "surface_temp_c IS NOT NULL AND air_temp_c IS NOT NULL", villkor: "surface_temp_c >= air_temp_c - 12" },
+    { namn: "daggpunktens: yta - dagg >= -5", bar: "surface_temp_c IS NOT NULL AND dewpoint_c IS NOT NULL", villkor: "surface_temp_c - dewpoint_c >= -5" },
+    { namn: "korsgivare: luftfuktighet >= 90 %", bar: "humidity_pct IS NOT NULL", villkor: "humidity_pct >= 90" },
+  ], [DAGAR]);
+const harRh = vd.utfall[4] !== "SAKNAS" && vd.utfall[4] !== "TOMT ARKIV";
 
 // GIVARVAKTEN SITTER I FRÅGAN (§3). RH-ledet tas med bara när fältet finns.
 const rader = (await pool.query(`
