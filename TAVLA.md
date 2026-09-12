@@ -345,6 +345,30 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [ ] 🧊 **#151 VÄGLAGETS ÅLDER — ska en stående vinterklassning tystas när mätningarna säger att vintern tagit slut?**
+  📄 **TRÖSKELDOKUMENT SKRIVET 12/9** (`docs/TROSKLAR-VAGLAGETS-ALDER.md`, **UTKAST — väntar på Bengts fastställande**).
+  **Kortet kommer ur att Axel mätte i stället för att bygga det jag antog.** Jag flaggade att
+  `road_conditions` saknar väderpunkternas tretimmarsgräns; Axel mätte och upphävde antagandet:
+  818 segment, alla kod 1, **exponering noll i september**, senaste ändring 25/8, **inget segment
+  har end_time**. Operatören skriver bara vid FÖRÄNDRING — alltså kan en gammal klassning vara sann,
+  och en hård åldersgräns skulle tysta en halkvarning på en väg som varit hal i tre dygn. Precis det
+  fel dämpningen (#100) fälldes för.
+  **Frågan är omformulerad:** inte *"är klassningen gammal?"* utan *"motsäger världen den?"*.
+  Ålder är på sin höjd en förstärkning, aldrig en grund.
+  **Tre regler i §3:** R0 ingen regel (förvalet) · R1 ytan motsäger · R2 ytan motsäger + ålder ·
+  **R3 hård åldersgräns FÖRKASTAD före mätning** — felet ligger i formen, inte i tröskeln, och
+  skälet står skrivet så att nästa förslag möts av det.
+  **Nollan är ett utsagolöst noll** (#71): arkivet har inga vinterord alls i september, så mätningen
+  KAN inte falsifiera. Körs om vid första vinterklassningen — med `kodgrinden` avsnitt D, som redan
+  mäter exakt den frågan.
+  **Taket är hårdare än vanligt och skälet står i §5:** alla andra tröskeldokument reglerar när vi
+  får SÄGA något. Det här reglerar när vi får TIGA, och ett fel åt det hållet syns inte i en logg —
+  det syns i att en förare inte fick veta. E3 (tysta utan skuggkörning) = **aldrig**.
+  ⏭️ **Väntar på:** Bengts fastställande (en rad), och därefter på vinterns första klassning.
+  🔧 **Axels två, utanför det här kortet:** `end_time`-filtret på segmenten (en rad — kolumnen finns
+  i sql/001:24 och ingesten skriver den redan, men den är OPRÖVAD tills TRV satt en EndTime en gång)
+  och stillaståendevakten (återanvänd mätvaktens 6b-form: larma inte på tystnad, larma på tystnad
+  MEDAN stationerna säger vinter — och "alla 848 stationer" inträffar aldrig).
 - [ ] 🗑️ **#146 27,6 MB SWIFT-BYGGUTDATA LIGGER SPÅRAT I REPOT — beslut krävs innan något tas bort**
   Upptäckt 12/9 under CRLF-arbetet (#145): `ios/HalkvaktEngine/.build/` är spårad med **504 filer,
   27,6 MB** — Linux-byggutdata (`.o`, `.swiftmodule`, `.pcm`, `master.priors`, `debug.yaml`) från en

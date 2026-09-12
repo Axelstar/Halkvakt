@@ -3958,3 +3958,68 @@ mätning EFTER deployen, inte commit-hashen.
 **Vad den INTE löser:** veckotakten. En avveckling som annonseras på en tisdag hittas ändå först
 följande måndag. Att flytta källvakten till pulsklockan och köra den dagligen kostar debiterade
 minuter och är ett eget beslut mot fritier-regeln.
+
+## #151 (12/9 2026) Väglagets ålder — Axel mätte i stället för att bygga det jag antog
+
+**Beslut:** `docs/TROSKLAR-VAGLAGETS-ALDER.md` skrivet som **utkast**, väntar på Bengts
+fastställande. Frågan omformulerad från *"är klassningen gammal?"* till *"motsäger världen den?"*.
+
+**Bakgrunden är en rättelse av mig.** Jag flaggade under systemanalysen att `road_conditions`
+saknar den åldersgräns väderpunkterna har, och antog underförstått att den skulle läggas till.
+Axel mätte i stället, och mätningen upphävde antagandet:
+
+| Axels mätning 12/9 | Värde |
+| :-- | :-- |
+| Segment i `road_conditions` | 818 |
+| Med kod ≥ 2 eller vinterord | **0** |
+| Exponering i snapshoten | **noll** |
+| Senaste `modified_time` | 25 augusti |
+| Äldsta `modified_time` | 21 februari |
+| Segment med `end_time` | **0** |
+
+**Domänfaktan:** Trafikverkets operatör skriver bara om ett segment när läget ÄNDRAS, inte när det
+består. En klassning som står sedan i förrgår kan alltså vara sann. Väderpunkternas tretimmarsgräns
+fungerar av motsatt skäl — en station mäter kontinuerligt, så en gammal mätning betyder trasig
+givare. **Samma form, olika källa, olika betydelse.**
+
+En hård åldersgräns skulle därmed tysta en halkvarning på en väg som varit hal i tre dygn. Det är
+exakt det fel dämpningen (#100) fälldes för, och det är skälet att R3 förkastas **före** mätning:
+felet ligger i regelns form, inte i dess tröskel, så ingen mätning kan rädda den.
+
+**Axels tre kodpåståenden verifierade rad för rad:**
+
+| Påstående | Verifierat |
+| :-- | :-- |
+| Väderpunkterna har 3 h | `publish/snapshot-core.ts:26` |
+| Segmenten har ingen tidsgräns | rad 82–85: bara `NOT deleted`, `geom IS NOT NULL` och kod/ord |
+| Avvikelser filtreras på `end_time` | rad 140: `AND (end_time IS NULL OR end_time > now())` |
+| "Det är en rad" | ✅ och bättre: kolumnen finns (`sql/001_init.sql:24`) och ingesten skriver den redan (`roadcondition.ts:36`) — ingen migration |
+
+**Tre påpekanden tillbaka till Axel:**
+
+1. **Nollan är ett utsagolöst noll.** Arkivet har inga vinterord alls i september, så mätningen KAN
+   inte falsifiera hypotesen — läxan i #71, som kodgrindens C-avsnitt vaktar med sin
+   `vinterord`-räkning. Han formulerar sig försiktigt, men talet **noll** kommer att citeras utan
+   brasklappen i november.
+2. **Mätningen finns redan som knapp.** `scripts/kodgrinden.ts` avsnitt D mäter exakt "hur länge står
+   en klassning?" med percentiler och säger ⊘ under 30 övergångar. Handmätningen är samma fråga;
+   knappen är repeterbar och svarar av sig själv när vintern ger övergångar.
+3. **Stillaståendevakten har en mall.** Mätvaktens 6b löser samma problem för radarn: larma inte på
+   tystnad, larma på tystnad MEDAN den andra signalen säger att något borde röra sig. Och tröskeln
+   behöver ett riktigt tal — **"alla 848 stationer visar minus" inträffar aldrig**, så den vakten
+   skulle aldrig fyra.
+
+**En reservation på hans "en rad":** `end_time`-klausulen blir oprövad kod dagen den skrivs, eftersom
+inget segment har fältet. Samma form som fail-soft-grenen för filen som aldrig fanns — **ett tyst
+ALDRIG**. Lägg in den, men räkna den inte som en åtgärd förrän Trafikverket satt en EndTime en gång
+och vi sett den filtrera. Och eftersom `snapshot-core.ts` buntas in i `publicera` måste raden följas
+av bunt + deploy i samma varv.
+
+**Varför taket i §5 är hårdare än i andra tröskeldokument.** Alla andra reglerar när vi får SÄGA
+något. Det här reglerar när vi får TIGA. Ett fel åt det hållet syns inte i någon logg — det syns i
+att en förare inte fick veta. Därför: E0 skuggkolumn direkt, E1 efter Å-A, E2 bara efter Å-B och
+Bengts uttryckliga ord, **E3 aldrig**.
+
+**Arbetsdelningen höll.** Axel äger motorn och det som är igång — `end_time`-raden och vakten är
+hans. Bengt äger mätning, grindar och trösklar — modellen är hans, och det här dokumentet är den.
+Ingen kontrasignering behövdes för att avgöra det.
