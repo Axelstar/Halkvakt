@@ -51,7 +51,13 @@ Varje tyst miss klassas därför som en av två:
 
 - daggpunktsgapet slöt sig, eller trenden (#88) pekade mot nollgenomgång,
 - eller en VViS-station inom räckvidd visade risk och representativitetsradien den natten (klart,
-  vindstilla — SMHI-moln, #95) sträckte sig till platsen.
+  vindstilla — SMHI-moln, #95) sträckte sig till platsen,
+- **eller det regnade inom N timmar vid stationen** (tillagd 2026-09-12, TROSKLAR-OVERGANGAR §9
+  steg 5, kort #89). Utan den signalen klassas efterhalkans missar på de tre ovan — ofta
+  oursäktliga ändå, eftersom daggpunkten är hög efter regn — men **utan att orsaken syns**, och då
+  kan tystnadsfelet inte skilja "för hög tröskel" från "hål i fuktvillkoret". N hämtas ur
+  TROSKLAR-OVERGANGAR §2 och är samma tal som grind Ö-B väljer; innan Ö-B dömt används hela svepet
+  och utfallet redovisas per N.
 
 Detta är rena tröskelfel: en sänkt tröskel fångar dem utan ny datakälla. Det är scenariot "svartis
 3 km fram medan systemet teg".
