@@ -1329,6 +1329,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     vakten släpper: **A1 MAE 1,06 °C mot kravets 1,0 ⇒ FALLER. A2 grova fel 10,7 % mot 5 % ⇒
     FALLER. A3 frysklassfel 1,1 % mot 10 % ⇒ KLARAR med bred marginal.** Skriptets egen rad:
     *"GRIND A FALLEN — bygg ingen skugga (tre veckor sparade)."*
+    ⚖️ **MARGINALVAKTEN INLAGD 12/9 kväll (DECISIONS #126/#127) — OCH A1 FÖLL ALDRIG.**
+    Domspärren vaktade mängden underlag, inte marginalen. Med vakten: **A1 1,06 ± 0,09 °C mot
+    tröskeln 1,0 ⇒ OAVGJORT** (intervallet omsluter tröskeln), **A2 10,7 % ± 1,3 pe mot 5,0 %
+    ⇒ FALLER brett**, A3 1,1 % ± 0,4 pe mot 10 % ⇒ KLARAR brett. **Domen står — men den vilar
+    på ETT mått, inte två.** Det skärper vad den säger: inte "modellen är i genomsnitt för
+    dålig" (oavgjort) utan **"den går tillräckligt ofta tillräckligt fel"**. Läs om raden
+    nedan i ljuset av det.
     ⚠️ **Tre saker som måste läsas med innan någon agerar:** (a) A1 faller på SEX HUNDRADELAR
     (1,06 mot 1,00) medan A2 faller med marginal — det är de grova felen som fäller, inte
     medelfelet. (b) Bandet **7–15 km är sämst av alla** (MAE 1,41 · 18,4 % grova), sämre än
