@@ -12,6 +12,31 @@
 //     met-api          api.met.no
 //     halkvarning      www.halkvarning.se
 //     klimator         www.klimator.se (JS-tung — vakten ser bara serverskalet; sägs i larmet)
+//
+// BREDDNINGEN 12/9 (Bengts order, DECISIONS #148). Beroendekartan (#147) mätte att av NIO
+// produktionsberoenden var ETT bevisat bevakat. Listan ovan valdes när issue #2 skrevs i
+// augusti; sedan dess har radar, moln, Finland, Norge, Danmark och polisen tillkommit och
+// listan följde inte med. Sex källor till, var och en uppmätt innan den kopplades in:
+//     smhi-uppdateringar  www.smhi.se/rss/uppdateringar-oppna-data-fran-smhi — RSS, 7 poster.
+//                      DET HÄR ÄR SMHI:S RIKTIGA KANAL. smhi-opendata ovan bevakar
+//                      DOKUMENTATIONSsajten; våra tre SMHI-värdar (varningar, radar, metobs)
+//                      annonseras här, på www.smhi.se, och ingen av feedens sju poster har
+//                      någonsin synts i den sitemapen.
+//     fi-digitraffic   www.digitraffic.fi/en/news/ (hash, 20 857 tecken, stabil). API-changes-
+//                      sidan är JS-renderad och ger bara 1 694 tecken skal — nyhetssidan är
+//                      den sturdiest access path som finns.
+//     no-vegvesen      vegvesen.no …/hva-er-datex/informasjon-og-nyheter/ (hash, 1 364 tecken).
+//                      Det var HÄR v3.1 annonserades — samma publikation vår ingest hämtar.
+//     dk-dmi           www.dmi.dk/frie-data (hash, 3 980 tecken). Adressen kommer ur DMI:s
+//                      eget API-rotsvar. Gamla opendatadocs.dmi.govcloud.dk svarar 404 på
+//                      VARJE sökväg och dmiapi.govcloud.dk 503 — dokumentationen har flyttat.
+//     polisen-regler   polisen.se …/regler-for-oppna-data/ (hash, 5 318 tecken). Villkoren,
+//                      inklusive user-agent-kravet som ger 403 om det bryts.
+//     polisen-api      polisen.se …/api-over-polisens-handelser/ (hash, 4 327 tecken). Fälten.
+// Alla sex hämtade två gånger före inkoppling: samtliga stabila (identisk hash).
+//
+// NAMNET LJUGER numera — filen heter trv-bevakning men vakten är inte trafikverksspecifik.
+// Omdöpning rör workflow, statefil och kortreferenser; eget beslut, inte en sidoeffekt här.
 // New/changed => ETT issue per källa (label trv-nyhet, assignad Bengt) — bevisad larmväg.
 // Trasig källa => rött jobb med svarskropp (TRV-400-läxan). Google-gruppen "Öppet API
 // Trafikverket" är DÖD sedan 2014 (Bengts koll 3/9: 14 trådar, senaste 2014-03-17) —
@@ -32,8 +57,11 @@ const testlarm = process.argv.includes("--testlarm");
 
 type Change = { source: string; title: string; lines: string[] };
 
+// Polisens villkor för öppna data KRÄVER en user-agent som namnger appen; saknas den kan
+// svaret bli 403 eller blockeras helt (läst 12/9). Samma hövlighet mot alla källor.
+const UA = "Halkvakt/0.3 (axelstar.github.io/halkvakt-karta)";
 async function fetchText(url: string, accept = "text/html"): Promise<string> {
-  const r = await fetch(url, { headers: { Accept: accept } });
+  const r = await fetch(url, { headers: { Accept: accept, "User-Agent": UA } });
   const body = await r.text();
   if (!r.ok) throw new Error(`${url} -> ${r.status}: ${body.slice(0, 300)}`);
   return body;
@@ -53,16 +81,23 @@ const norm = (html: string) => html
 const sha = (s: string) => createHash("sha256").update(s).digest("hex").slice(0, 16);
 
 // ── List sources ──────────────────────────────────────────────────────────────
-async function trvRss(): Promise<{ guid: string; label: string }[]> {
-  const body = await fetchText("https://bransch.trafikverket.se/om-oss/aktuellt-for-dig-i-branschen3/Trafikverkets-RSS-floden/RSS-floden-pa-amnessidor/nyheter-om-trafikverkets-data/", "application/rss+xml");
+// En RSS-feed är en RSS-feed: samma parser för Trafikverket och SMHI. Guid faller tillbaka
+// på link — SMHI:s feed bär guid, men en feed utan guid får inte bli en tyst nolla.
+async function rss(url: string): Promise<{ guid: string; label: string }[]> {
+  const body = await fetchText(url, "application/rss+xml");
   const out: { guid: string; label: string }[] = [];
   for (const m of body.matchAll(/<item>([\s\S]*?)<\/item>/g)) {
-    const f = (tag: string) => (m[1].match(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`))?.[1] ?? "").trim();
+    const f = (tag: string) => (m[1].match(new RegExp(`<${tag}[^>]*>(?:<!\\[CDATA\\[)?([\\s\\S]*?)(?:\\]\\]>)?</${tag}>`))?.[1] ?? "").trim();
     const guid = f("guid") || f("link");
     if (guid) out.push({ guid, label: `${f("title")} (${f("pubDate")}) ${f("link")}` });
   }
   return out;
 }
+const trvRss = () => rss("https://bransch.trafikverket.se/om-oss/aktuellt-for-dig-i-branschen3/Trafikverkets-RSS-floden/RSS-floden-pa-amnessidor/nyheter-om-trafikverkets-data/");
+// SMHI:s EGEN uppdateringskanal för öppna data — inte dokumentationssajten. Verifierad 12/9:
+// 7 poster, äldsta 18 jan 2024, senaste 28 maj 2026. De tre senaste rör prognoser och analyser
+// (PMP3, Mesan) — INTE metobs, radar eller varningar, alltså inte oss. Men vi hade inte vetat.
+const smhiUppdateringar = () => rss("https://www.smhi.se/rss/uppdateringar-oppna-data-fran-smhi");
 const PAGES_Q = `query GetPagesByParentIds($parentIds: [String!]!) { cms { pagesByParentIds(parentIds: $parentIds, getOptions: { sortByDescendings: ["navigationPriority"] }) { id slug title } } }`;
 async function trvPortalNews(): Promise<{ guid: string; label: string }[]> {
   const level1 = (await gql(PAGES_Q, { parentIds: ["news-0"] })).cms.pagesByParentIds as any[];
@@ -93,7 +128,8 @@ async function main(): Promise<number> {
   // List sources
   const listSources: [string, () => Promise<{ guid: string; label: string }[]>][] = [
     ["trv-rss", trvRss], ["trv-portal-news", trvPortalNews],
-    ["trv-drift", trvDrift], ["smhi-opendata", smhiSitemap]];
+    ["trv-drift", trvDrift], ["smhi-opendata", smhiSitemap],
+    ["smhi-uppdateringar", smhiUppdateringar]];
   for (const [name, fn] of listSources) {
     try {
       const items = await fn();
@@ -114,7 +150,13 @@ async function main(): Promise<number> {
   const hashSources: [string, () => Promise<string>][] = [
     ["met-api", async () => stable(norm(await fetchText("https://api.met.no/")))],
     ["halkvarning", async () => stable(norm(await fetchText("https://www.halkvarning.se/")))],
-    ["klimator", async () => stable(norm(await fetchText("https://www.klimator.se/")))]];
+    ["klimator", async () => stable(norm(await fetchText("https://www.klimator.se/")))],
+    // Breddningen 12/9: fyra produktionsberoenden som saknade signal helt (#147, #148).
+    ["fi-digitraffic", async () => stable(norm(await fetchText("https://www.digitraffic.fi/en/news/")))],
+    ["no-vegvesen", async () => stable(norm(await fetchText("https://www.vegvesen.no/fag/teknologi/apne-data/et-utvalg-apne-data/hva-er-datex/informasjon-og-nyheter/")))],
+    ["dk-dmi", async () => stable(norm(await fetchText("https://www.dmi.dk/frie-data")))],
+    ["polisen-regler", async () => stable(norm(await fetchText("https://polisen.se/om-polisen/om-webbplatsen/oppna-data/regler-for-oppna-data/")))],
+    ["polisen-api", async () => stable(norm(await fetchText("https://polisen.se/om-polisen/om-webbplatsen/oppna-data/api-over-polisens-handelser/")))]];
   for (const [name, fn] of hashSources) {
     try {
       const text = await fn();

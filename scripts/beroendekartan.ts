@@ -49,43 +49,43 @@ export const KARTAN: Beroende[] = [
   { vard: "opendata-download-warnings.smhi.se", roll: "produktion",
     matar: "SMHI:s vädervarningar (ingest/sources/smhi.ts)",
     brister: "varningsarkivet och grind F-A:s hela underlag",
-    bevakad: "",
-    signal: "INDIREKT OCH OPRÖVAD — opendata.smhi.se bevakas, men ingen har prövat om en ändring i NEDLADDNINGS-API:et syns i den sitemapen" },
+    bevakad: "smhi-uppdateringar",
+    signal: "www.smhi.se/rss/uppdateringar-oppna-data-fran-smhi — RSS, 7 poster, verifierad 12/9 (#148)" },
   { vard: "opendata-download-radar.smhi.se", roll: "produktion",
     matar: "radarn (ingest/radar.ts)",
     brister: "radardomen och en av tre proxies i #89 (a)",
-    bevakad: "",
-    signal: "INDIREKT OCH OPRÖVAD — se SMHI-varningarna ovan" },
+    bevakad: "smhi-uppdateringar",
+    signal: "samma RSS som SMHI-varningarna (#148)" },
   { vard: "opendata-download-metobs.smhi.se", roll: "produktion",
     matar: "molnmängd parameter 16 (publish/moln.ts) — hämtas vid körning, lagras inte",
     brister: "grind R-A4 och grind T-A:s molnkontroll",
-    bevakad: "",
-    signal: "INDIREKT OCH OPRÖVAD — se SMHI-varningarna ovan" },
+    bevakad: "smhi-uppdateringar",
+    signal: "samma RSS som SMHI-varningarna (#148)" },
   { vard: "tie.digitraffic.fi", roll: "produktion",
     matar: "finska vägstationer (ingest/fi.ts)",
     brister: "gränssnapshoten mot Finland och grind R-A --land=fi",
-    bevakad: "",
-    signal: "OKÄND" },
+    bevakad: "fi-digitraffic",
+    signal: "www.digitraffic.fi/en/news/ — hash, 20 857 tecken, stabil. API-changes-sidan är JS-renderad och ger bara skal (#148)" },
   { vard: "datex-server-get-v3-1.atlas.vegvesen.no", roll: "produktion",
     matar: "norska vägstationer, DATEX (ingest/no.ts)",
     brister: "gränssnapshoten mot Norge",
-    bevakad: "",
-    signal: "OKÄND" },
+    bevakad: "no-vegvesen",
+    signal: "vegvesen.no …/hva-er-datex/informasjon-og-nyheter/ — hash, 1 364 tecken. Det var här v3.1 annonserades (#148)" },
   { vard: "opendataapi.dmi.dk", roll: "produktion",
     matar: "danska stationer (ingest/dk.ts)",
     brister: "dk-arkivet (medvetet utanför snapshoten — grästemp, #45)",
-    bevakad: "",
-    signal: "OKÄND" },
+    bevakad: "dk-dmi",
+    signal: "www.dmi.dk/frie-data — hash, 3 980 tecken. Adressen kommer ur DMI:s eget API-rotsvar; gamla opendatadocs.dmi.govcloud.dk svarar 404 på varje sökväg (#148)" },
   { vard: "storage.googleapis.com", roll: "produktion",
     matar: "DMI:s utlagda filer (ingest/dk.ts)",
     brister: "samma som DMI",
-    bevakad: "",
-    signal: "OKÄND" },
+    bevakad: "dk-dmi",
+    signal: "täcks av DMI:s egen kanal — filerna är DMI:s, lagringen bara en hylla (#148)" },
   { vard: "polisen.se", roll: "produktion",
     matar: "vilthändelser (ingest/sources/polisen.ts) — varningsslag A4",
     brister: "viltvarningarna",
-    bevakad: "",
-    signal: "OKÄND" },
+    bevakad: "polisen-regler + polisen-api",
+    signal: "polisen.se regler-for-oppna-data (villkoren, user-agent-kravet) och api-over-polisens-handelser (fälten) — hash, båda stabila (#148)" },
 
   // ── VERKTYG ──────────────────────────────────────────────────────────────────────────
   { vard: "frost.met.no", roll: "verktyg",
@@ -119,6 +119,18 @@ export const KARTAN: Beroende[] = [
   { vard: "opendata.smhi.se", roll: "signal",
     matar: "inget — SMHI:s DOKUMENTATIONSsajt. Bevakas, men är inte en av de tre nedladdningsvärdar vi faktiskt hämtar från",
     brister: "inget", bevakad: "smhi-opendata", signal: "sitemap.xml, 238 sidor (#31)" },
+  { vard: "www.smhi.se", roll: "signal",
+    matar: "inget — SMHI:s EGEN uppdateringskanal för öppna data, RSS. Det är HÄR ändringar i varnings-, radar- och metobs-API:erna annonseras",
+    brister: "inget", bevakad: "smhi-uppdateringar", signal: "rss/uppdateringar-oppna-data-fran-smhi (#148)" },
+  { vard: "www.digitraffic.fi", roll: "signal",
+    matar: "inget — Fintraffics nyhetssida för Digitraffic",
+    brister: "inget", bevakad: "fi-digitraffic", signal: "en/news/, hash (#148)" },
+  { vard: "www.vegvesen.no", roll: "signal",
+    matar: "inget — Vegvesens DATEX-sida för information och nyheter",
+    brister: "inget", bevakad: "no-vegvesen", signal: "hva-er-datex/informasjon-og-nyheter/, hash (#148)" },
+  { vard: "www.dmi.dk", roll: "signal",
+    matar: "inget — DMI:s frie data-sida, adressen kommer ur API:ets eget rotsvar",
+    brister: "inget", bevakad: "dk-dmi", signal: "frie-data, hash (#148)" },
   { vard: "bransch.trafikverket.se", roll: "signal",
     matar: "inget — nyhetsflödet för api.trafikinfo", brister: "inget", bevakad: "trv-rss",
     signal: "RSS (#31)" },
@@ -232,13 +244,23 @@ for (const roll of ["produktion", "signal", "verktyg", "omvärld", "bygg"] as Ro
 console.log(`\n${"─".repeat(78)}`);
 console.log(`GAPET: ${g.obevakade.length} av ${KARTAN.filter((b) => b.roll === "produktion").length} produktionsberoenden saknar bevakning.`);
 for (const b of g.obevakade) console.log(`  ✗ ${b.vard.padEnd(40)} ${b.brister}`);
-const sig = KARTAN.filter((b) => b.roll === "signal").length;
-const omv = KARTAN.filter((b) => b.roll === "omvärld").length;
+const prod = KARTAN.filter((b) => b.roll === "produktion");
+const sig = KARTAN.filter((b) => b.roll === "signal");
+const omv = KARTAN.filter((b) => b.roll === "omvärld");
+// Antalet KÄLLOR i källvakten räknas ur kartans egna hänvisningar, inte ur minnet —
+// en rad kan peka på flera källor ("polisen-regler + polisen-api").
+const kallor = new Set(KARTAN.flatMap((b) => b.bevakad.split("+").map((x) => x.trim())).filter(Boolean));
 console.log(`
-Källvakten (#31) bevakar ${KARTAN.filter((b) => b.bevakad).length} värdar: ${sig} signalkällor och ${omv} omvärldssidor.`);
-console.log(`Signalkällorna täcker Trafikverket BEVISAT (#31) och SMHI OPRÖVAT — ingen har kollat`);
-console.log(`om en ändring i nedladdnings-API:erna syns i dokumentationssajtens sitemap.`);
-console.log(`Fem beroenden har INGEN signal alls: Finland, Norge, Danmark (två värdar), polisen.`);
+Källvakten kör ${kallor.size} källor. De täcker ${prod.filter((b) => b.bevakad).length} av ${prod.length} produktionsberoenden`);
+console.log(`via ${sig.length} signalkällor, plus ${omv.length} omvärldssidor som inte är beroenden.`);
+const utanSignal = prod.filter((b) => !b.bevakad);
+if (utanSignal.length) console.log(`Utan signal: ${utanSignal.map((b) => b.vard).join(", ")}.`);
+else {
+  console.log(`Inget produktionsberoende står utan signal. Det säger INTE att varje signal är`);
+  console.log(`bevisad: bara Trafikverkets larmväg har fyrat skarpt (#31). De sex nya är uppmätta`);
+  console.log(`som stabila och läsbara — inte som bevisat larmande. Beviset kommer med första`);
+  console.log(`äkta ändringen, och först då vet vi att kedjan källa → issue → notis håller.`);
+}
 
 if (g.doda.length) {
   console.log(`\nRADER UTAN MOTSVARIGHET I KODEN (${g.doda.length}) — källan är borta, eller på väg in:`);
