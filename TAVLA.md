@@ -1616,6 +1616,16 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   duggregn ger ingen vattenplaning. #69:s öppna fråga (ska V-A1 skrivas om till "regnar det
   alls"?) besvaras därmed NEJ på sakliga grunder: det hade gjort påståendet mätbart och samtidigt
   värdelöst för faran. **Stationsspåret kan inte bära en intensitetsvarning.**
+  🛰️ **RADARDOMENS UNDERLAG FÖRNYAT 12/9** (körning 34670799228). Cellmätningen hade också bara
+  EN skarp körning — 3/9, på ett dygns radardata — och dess måndagskörning 7/9 föll i samma
+  minutkris. Domen hade alltså vilat på nio dygn gammalt underlag. Nu kört med de sju dygn kortet
+  #43 kräver: **14 583 radar↔station-par, 88 kompositer, 5/9 → 12/9.**
+  📈 Bekräftelsen VÄXER MONOTONT med intensiteten — kurvans egen rimlighetskontroll, och den
+  passerar: 39 % (0,1–0,5 mm/h) → 54 % (0,5–2) → 73 % (2–10) → **79 % (≥ 10)**.
+  🎯 Missriktningen: av 14 511 stationsregn vid samplad komposittid hade radarn en rad ≤ 5 km i
+  **93 %**. Jämför grind V-A:s 61 % station-mot-station. Kalibreringen (Marshall–Palmer /
+  station) median **0,66** över 8 198 par, mot 0,39 på det tunna underlaget i #42.
+  ⚠️ **KEDJEBEVIS, INGEN DOM** — skriptet säger det självt. Domen är Bengts och Axels på söndag.
   ➡️ Hela kortet vilar nu på **radardomen 14/9**, precis som DECISIONS #60 förutsåg: radarn mäter
   intensitet RUMSLIGT, stationerna blir kalibrering + fartgrind. Faller domen väl ut gäller #81:s
   ordning A–F. Faller den illa står #42 utan trigger.
