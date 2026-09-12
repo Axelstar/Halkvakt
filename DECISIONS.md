@@ -3386,3 +3386,37 @@ noll att plocka upp. Det är tredje gången på nio dygn vi hittar ett användba
 
 BEVISET ÄR EN RAD, INTE EN COMMIT: `fi: … daggpunkt N st, luftfuktighet N st, …` i nästa timkörning.
 Utan den raden är fältet inte skrivet, oavsett vad koden säger (kort #73:s läxa).
+
+## #139 (12/9 2026) Typkastet som inte flyttade med — och ett rött bygge som jag mergade ändå
+
+TVÅ FEL, båda mina, och det andra är värre än det första.
+
+**FEL 1 — DEN POSITIONELLA FÄLLAN.** `FI_SELECT` bygger raderna med `UNNEST($1::text[], $2::text[],
+…)`, och **typkasten är positionella**. När `humidity_pct` lades in som kolumn 9 (#138) sköts
+`precipitation` till $10 och de två boolean-fälten till $11/$12 — men jag la bara till `$21` i
+slutet och lät casten ligga kvar. **$9 kastades alltså som `text[]` och fick ett tal, $10 som
+`bool[]` och fick en sträng.**
+
+CI fällde det direkt — integrationstestet kör mot riktig PostGIS och skriver en finsk rad. Vakten
+fungerade exakt som den skulle.
+
+**LÄXAN, och den gäller varje sådan lista i repot:** en ny kolumn mitt i en UNNEST-lista flyttar
+**alla efterföljande typer**, inte bara antalet parametrar. Det syns inte i en diff — raden med
+casten ligger tre rader bort från raden med kolumnnamnen. Rättat, och kontrollerat kolumn för
+kolumn: 21 kast, 21 kolumner, alla i rätt ordning.
+
+**FEL 2, OCH DET ÄR DET ALLVARLIGA — JAG MERGADE ETT RÖTT BYGGE.** Mitt kommando kedjade
+`vänta på CI → merga` utan att pröva utfallet. CI skrev `test failure` och merge-steget körde ändå.
+PR #188 gick in i main med en trasig ingest.
+
+Det är precis den sorts tyst genomgång huset har regler mot: **en grön körning är beviset, inte en
+grön känsla** (nyckelrotationens läxa 31/8). Att jag byggde marginalvakten och värdevakten samma
+dygn gör det sämre, inte bättre — jag automatiserade bort exakt den kontroll jag skrev regler om.
+
+**FÖLJDEN I DRIFT:** ingesten kör timvis, så fönstret mellan den trasiga mergen och den här
+rättelsen är som mest en körning. Den körningen skulle ha fallit på typfelet och gett ett rött jobb
+— alltså bortfall, inte tyst felskrivning. Inga felaktiga rader kan ha skrivits: PostgreSQL
+förkastar hela satsen, den skriver inte halva.
+
+**REGEL FRAMÅT:** merge-steget ska läsa CI:s slutsats och avbryta på annat än `success`. Att kedjan
+är bekväm är inget skäl — det var bekvämligheten som orsakade felet.
