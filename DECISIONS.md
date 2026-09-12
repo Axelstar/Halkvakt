@@ -3185,3 +3185,41 @@ där den ska: mellan arkivet och motorn, före roll B byggs.
 
 SJÄLVTESTET prövar alla fyra verkliga fallen plus att en kodlista inte fälls för dominans och att
 ett odeklarerat fält är obesiktigat även när talen ser rimliga ut.
+
+## #134 (12/9 2026) Värdevaktens första körning — en radarartefakt på 727 mm/h, och fyra falska larm av mina
+
+BESLUT: värdevakten kördes (30 dygn, 31 numeriska fält i 12 tabeller) och skärptes omedelbart.
+Den hittade en sak som gäller **i dag**, och den ropade vargen på fyra ställen där den inte borde.
+
+**FYNDET SOM GÄLLER RADARDOMEN: `radar_precip.rate_max_mmh` går upp till 727,54 mm/h.**
+Världens uppmätta extremintensiteter ligger kring 150–200 mm/h för en femminutersskur. **727 är
+inte regn, det är en radarartefakt** — och det fältet bär hela vattenplaningsspåret sedan grind
+V-A föll (#104). Tröskelsvepet i TROSKLAR-VATTENPLANING går på 0,1 · 0,5 · 2 mm/h, så artefakten
+ligger långt ovanför varje kandidattröskel och påverkar sannolikt ingen dom — **men den har aldrig
+varit besiktad, och den ligger i det fält domen i dag vilar på.** Spannet är nu deklarerat till
+0–200 mm/h och fältet står som UTANFÖR SPANN tills någon tittat på de raderna.
+
+**OCH SENTINELERNA FASTNADE, precis som de skulle:** `visibility_m` med takvärdet 20 000 i 49,5 %
+av `weather_observations` och **89,4 % av `weather_latest`** — alltså nio av tio rader i den tabell
+snapshoten byggs ur. `wind_gust_ms` max 85,5 m/s fälldes på spannet.
+
+**MEN FYRA LARM VAR MINA EGNA, och regeln var för trubbig.** Första dominansregeln var "ett värde
+över 5 % i ett fält med många distinkta värden". Den flaggade `rain_sum_mm` (0 i 58 %),
+`snow_wateq_mm` (0 i 99,9 %), `wind_speed_ms` (0,5 i 6,8 %) och `shadow_log.n_hazards` (1 i 19 %).
+**Noll nederbörd i september ÄR det vanligaste värdet. Det är inte en sentinel, det är väder.**
+
+Den verkliga signaturen är smalare och nu inskriven: **en sentinel ligger vid TAKET och tar en
+stor andel.** 20 000 m är maxvärdet. 113 % låg över taket. Ett dominerande MINIMUM är däremot
+nästan alltid "ingenting hände", och ett sentinelvärde under golvet (−999 och liknande) fastnar på
+spannkontrollen i stället. Regeln är därför: topp ≥ 20 % **och** toppvärdet = maxvärdet.
+
+**En vakt som ropar varg på fyra av elva är sämre än ingen vakt** — det är hela produktens egen
+lag tillämpad på vårt eget verktyg. De fyra fallen ligger nu som självtester, så regeln inte kan
+glida tillbaka.
+
+**IDENTIFIERARE FICK EN EGEN KATEGORI.** `id`, `event_id`, `area_id`, `warning_id` stod som
+OBESIKTIGADE, vilket är fel sorts larm: de är inte mätvärden. De rapporteras nu som 🔖 ID — *inte
+ett mätvärde, får inte bära en tröskel*. Att tiga om dem hade varit lika fel som att larma.
+
+KVAR ATT DEKLARERA EFTER SKÄRPNINGEN: inga — `wind_dir_deg` och radarns två intensiteter fick
+sina spann i samma varv.
