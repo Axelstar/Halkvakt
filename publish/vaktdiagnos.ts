@@ -55,7 +55,14 @@ export async function vaktdiagnos(
   q: (s: string, p?: unknown[]) => Promise<any[]>,
   tabell: string, fonster: string, led: Led[], p: unknown[] = [],
 ): Promise<{ alla: number; utfall: Utfall[]; garAttUtvardera: boolean }> {
-  const r = (await q(sql(tabell, fonster, led), p))[0];
+  const fraga = sql(tabell, fonster, led);
+  // Fönstret interpoleras oftast direkt (`${DAGAR}`), och då finns inga platshållare. Skickas
+  // ändå parametrar svarar Postgres med ett bindfel (08P01) som inte säger vad som är fel.
+  // Grind R-A föll på precis det 12/9 — säg det i klartext i stället.
+  if (p.length && !fraga.includes("$1"))
+    throw new Error(`vaktdiagnos: frågan har inga platshållare men ${p.length} parametrar skickades — ` +
+      `fönstret interpolerar troligen värdet direkt. Skicka inga parametrar, eller använd $1 i fönstret.`);
+  const r = (await q(fraga, p))[0];
   const alla = Number(r.alla);
   const utfall: Utfall[] = [];
   console.log(`VAKTDIAGNOS — ${tabell}: ${alla} rader i fönstret`);
