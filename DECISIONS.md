@@ -1879,3 +1879,49 @@ om frågan skulle komma tillbaka. Före-värdet är och förblir OAVGJORT.
 LÄGET EFTER DETTA: tre kort har nu stängts eller krympts av mätning i stället för byggts — #100 här,
 försäkringsspåret i #94, och (b):s nedläggningsklausul i #89. Det är avsett: ett dokumenterat nej
 är ett bra utfall.
+
+## #104 (12/9 2026) Grind V-A omkörd med tio dygns regn — domen står, och nu är den välmätt
+
+BESLUT: V-A:s nej från 4/9 är bekräftat och får betraktas som slutgiltigt för stationsspåret.
+Reservationen i #69 ("tre dygns septemberregn") är därmed upphävd.
+
+BAKGRUND: #69 sade uttryckligen att kurvan skulle köras om när höstregnen fyllt arkivet, och att
+måndagsknappen skulle sköta det av sig själv. Den gjorde den inte. Den schemalagda körningen
+2026-09-07 13:31 FALLERADE — tillsammans med ingest-fi, ingest-no, publish-map och regn-30 samma
+dygn, alltså minutkrisen från 5/9 och inte ett kodfel. Ingen körde om den när minuterna kom
+tillbaka, och domen vilade på tre dygns data i åtta dygn utan att någon märkte det.
+
+OMKÖRNINGEN (körning 34670516460, 30 dygns fönster, 755 stationer, 68 967 avläsningar):
+
+| tröskel | n (0–10 km) | träff | delvis | falsklarm | dom |
+| :-- | --: | --: | --: | --: | :-- |
+| 0,5 mm/h | 3 594 | 61 ± 2 % | 27 % | 12 ± 1 % | faller |
+| 1 mm/h | 2 495 | 54 ± 2 % | 36 % | 10 ± 1 % | faller |
+| 2 mm/h | 1 266 | 41 ± 3 % | 51 % | 8 ± 2 % | faller |
+| 4 mm/h | 510 | 28 ± 4 % | 65 % | 7 ± 2 % | faller |
+| 6 mm/h | 216 | 20 ± 5 % | 75 % | 5 ± 3 % | faller |
+| 10 mm/h | 53 | 11 ± 9 % | 83 % | 6 ± 6 % | faller |
+
+Underlaget är tredubblat mot 4/9 (3 594 mot 1 141 vid 0,5 mm/h) och talen är i praktiken
+oförändrade: 61 % träff och 12 % falsklarm då som nu. Ett nej som inte rör sig när underlaget
+tredubblas är ett riktigt nej.
+
+FYNDET FRÅN #69 STÅR OCKSÅ KVAR, och är nu välmätt: falsklarmen klarar V-A2 med marginal på varje
+tröskel (4–12 %). Det är TRÄFFEN som fäller. Träff + delvis är 88 % vid 0,5 mm/h och stiger till
+94 % vid 4 mm/h. **Grannarna vet med hög säkerhet ATT det regnar hos målstationen — de vet inte
+HUR MYCKET.**
+
+OCH DET ÄR PRECIS DÄRFÖR VATTENPLANINGEN ÄR SVÅR, vilket inte stod utskrivet i #69: intensiteten är
+exakt det faran behöver. Duggregn ger ingen vattenplaning. Att skriva om V-A1 till "regnar det alls"
+skulle göra påståendet mätbart och samtidigt värdelöst för den fara det ska bära. Frågan i #69 —
+ska V-A1 skrivas om? — besvaras alltså med NEJ på sakliga grunder, inte bara på §5-formalia.
+Stationsspåret kan inte bära en intensitetsvarning, och det är slutsatsen.
+
+FÖLJDEN: hela vattenplaningsspåret vilar nu på radardomen 14/9, precis som DECISIONS #60 förutsåg
+när radarspåret valdes — stationerna blir kalibrering och fartgrind, radarn blir triggern, eftersom
+radarn mäter intensitet RUMSLIGT. Faller radardomen väl ut gäller kort #81:s ordning A–F. Faller den
+illa står #42 utan trigger, och då är alternativ a/b på kortet det som återstår.
+
+ALTERNATIV SOM VALDES BORT: att skriva om V-A1 till ett påstående som bär (se ovan — det hade varit
+att flytta målstolparna OCH tappa faran på vägen); att vänta till måndagens schemalagda körning
+(domen har redan legat åtta dygn på fel underlag).
