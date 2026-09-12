@@ -4048,3 +4048,36 @@ BYGGT (tystar inget):
 INTE BYGGT: om ett gammalt "Is och snö" ska tystas när stationerna visat +8 i tre timmar.
 Det är en modell, inte en vakt, och hör hemma i TROSKLAR-VAGLAGETS-ALDER med vinterfacit —
 Bengt skriver det, fastställt före vintern så tröskeln inte skrivs efter utfallet.
+
+## #152 (12/9 2026) TROSKLAR-VAGLAGETS-ALDER fastställd
+
+**Beslut:** Bengt fastställer `docs/TROSKLAR-VAGLAGETS-ALDER.md` (#151). Svepet i §4 och kraven i
+§5 är därmed låsta enligt §8:s regim. Ingen kontrasignering — trösklar är Bengts, och det räckte
+med ordet.
+
+**Vad som låses:**
+
+| | Innehåll |
+| :-- | :-- |
+| Svep (§4) | T 2·5·8 °C · H 2·3·6 h · N 1·3 stationer · D 1·3·7 dygn · **R = 50 km, ärvd** |
+| Grindar (§5) | Å-A1 ≥ 70 % · Å-A2 ≥ 5 % · **Å-A3 ≤ 10 %** · Å-A4 ≥ 100 fall annars OAVGJORT · Å-B1 ≥ 20 · Å-B2 ≥ 90 % |
+| Effektstege (§5) | E0 skuggkolumn · E1 efter Å-A · E2 efter Å-B **och Bengts uttryckliga ord** · **E3 aldrig** |
+| Förkastat före mätning (§3) | **R3, hård åldersgräns** — felet ligger i formen, inte i tröskeln |
+
+**Tre satser som inte får mjukas upp, oavsett vem som ber om det** (§8:s undantag):
+
+1. **Ingen tystnad utan motsägelse.** Ingen regel härifrån får tysta en klassning som operatören
+   inte avslutat och som mätningarna inte motsäger.
+2. **R3 förblir förkastad.** En hård åldersgräns kan tysta en sann varning utan något belägg för
+   att den blivit falsk — samma fel som dämpningen (#100) fälldes för.
+3. **E3 aldrig.** Tystnad utan föregående skuggkörning finns inte som alternativ.
+
+**Skälet att taket är hårdare här än i de nio andra tröskeldokumenten** står i §5 och tål att
+upprepas: alla andra reglerar när vi får SÄGA något. Det här reglerar när vi får TIGA. Ett fel åt
+det hållet syns inte i någon logg — det syns i att en förare inte fick veta.
+
+**Nästa steg är naturens, inte vårt.** Inget mäts förrän arkivet fått vinterklassningar. Körs Å-A i
+september blir svaret OAVGJORT på Å-A4, och det är rätt svar. Vid första vinterklassningen körs
+exponeringsmätningen (§2) om med `scripts/kodgrinden.ts` avsnitt D.
+
+**Tionde tröskeldokumentet, och noll utkast kvar.**

@@ -1,9 +1,9 @@
 # TROSKLAR-VAGLAGETS-ALDER
 
 **Kort:** #151 VÄGLAGETS ÅLDER — ska en stående vinterklassning tystas när mätningarna säger
-att vintern tagit slut på just den vägen? **Status:** 📝 **UTKAST 2026-09-12, väntar på Bengts
-fastställande.** Svepet i §4 och kraven i §5 är skrivna INNAN någon mätning gjorts, och ingen
-siffra i dem kommer ur ett utfall.
+att vintern tagit slut på just den vägen? **Status:** ✅ **FASTSTÄLLT 2026-09-12 av Bengt**
+(DECISIONS #152). Svepet i §4 och kraven i §5 är låsta enligt §8:s regim — skrivna INNAN någon
+mätning gjorts, och ingen siffra i dem kommer ur ett utfall.
 
 **Varifrån kortet kommer.** Jag flaggade att `road_conditions` saknar den åldersgräns som
 väderpunkterna har, och antog underförstått att den skulle läggas till. Axel mätte i stället, och
