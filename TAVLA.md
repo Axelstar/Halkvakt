@@ -1421,8 +1421,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   §4.3 RH-guarden struken och N sätts av golvet, inte av svepet (kurvan har inget knä: 22→25 rader,
   1→2 episoder); §4.4 grinden får ord-per-resa som eget fällande kriterium; §3 givarvakten; §9 0c
   omskriven och (b) flyttad ur steg 0 till §5.6-frågan, som dokumentet alltid sagt men §9 motsade.
-  ✅ **STEG 1 KLART 12/9 — `docs/TROSKLAR-OVERGANGAR.md` SKRIVET** (Bengts order, DECISIONS #109).
-  Utkast, väntar på Bengts fastställande och Axels kontrasignering. Skrivet på MÄTNING, inte på
+  ✅ **STEG 1 KLART 12/9 — `docs/TROSKLAR-OVERGANGAR.md` FASTSTÄLLT AV BENGT** (DECISIONS #109/#110),
+  med tillägget att **(b) oljefilmen stryks**. Väntar på Axels kontrasignering. Skrivet på MÄTNING, inte på
   resonemang: varje tal som inte är märkt RESONEMANG kommer ur steg 0. Fyra grindar — **Ö-A**
   (finns hålet? **redan passerad**: 76 %, median 35 min, 22 omslag/dygn), **Ö-B** (B3-paret per
   proxy, döms vid frost), **Ö-C** (giltighet: ≥ 30 nätter, ≥ 20 stationer, fysikkontrollen),
@@ -1432,6 +1432,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   inget knä. Ord-per-resa är INTE fällande kriterium (#103); röst räknas i episoder, aldrig i rader.
   🔗 **TYSTNADSFEL §3 har fått sin fjärde signal** i samma varv: "det regnade inom N timmar vid
   stationen". Utan den klassas efterhalkans missar på de andra tre utan att orsaken syns.
+  ✂️ **(b) OLJEFILMEN STRUKEN 12/9 av Bengt.** Kortet krymper till (a) plus överlämningen. Och
+  **§5.6-frågan till Axel förfaller** — den behöver aldrig ställas, kortet bär inte längre en spärr
+  som väntar på någon annan. Mätningen hade redan visat att grinden inte var nåbar i höst (55
+  torrperioder, 6 olyckor mot kravets 15) och att instrumentet saknade nollhypotes. Tas frågan
+  någonsin upp igen börjar den om från steg 0, inte från texten.
   ➡️ **NÄSTA: steg 2** — tillståndsskattaren i skuggloggen, efter 14/9. Den måste stå klar före
   frosten, annars finns ingen skugga att döma Ö-B på.
   (0d säger att den inte kan dömas i höst), "Våt" ute ur unionen, RH-guarden struken.

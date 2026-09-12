@@ -1,7 +1,9 @@
 # TROSKLAR-OVERGANGAR
 
-**Kort:** #89 ÖVERGÅNGARNA (systemanalysen §2.2). **Status:** 📝 **UTKAST 2026-09-12** — väntar på
-Bengts fastställande, sedan Axels kontrasignering (samma form som #61/#68/#92/#95). Ingen kod ännu.
+**Kort:** #89 ÖVERGÅNGARNA (systemanalysen §2.2). **Status:** ✅ **FASTSTÄLLT av Bengt 2026-09-12**
+— med tillägget att **(b) oljefilmen stryks** (§5). Väntar på Axels kontrasignering (samma form som
+#61/#68/#92/#95). Fastställda: svepet i §2, givarvakten i §3, golven i Ö-B, underlagskraven i Ö-C,
+läsfönstret i Ö-D. Ingen kod ännu.
 Skuggkolumnerna byggs efter radardomen 14/9 (kort #81:s ordning). Från första skuggkörningen gäller
 §10 — kontrasigneringen ändrar inte den regimen, den är knuten till första skuggkörningen och inte
 till signaturen.
@@ -23,7 +25,7 @@ Kortet bar tre punkter. De är **inte tre av samma sort**, och dokumentet behand
 | Punkt | Vad det är | Var det döms |
 | :-- | :-- | :-- |
 | **(a) Efterhalkan** | **Utvidgning av en regel vi redan har** — frysriskens fuktvillkor | Här, §4 (grind Ö-B) |
-| **(b) Oljefilmen** | **Ny fara**, finns inte alls i motorn | Här, §5 — med nedläggningsklausul |
+| ~~**(b) Oljefilmen**~~ | ~~Ny fara~~ | **STRUKEN 12/9** — §5 |
 | **(c) Interaktionerna** | Stycken i två ANDRA korts tröskeldokument | Överlämnas, §6 |
 
 **Huvudsaken är (a).** `icing_point` larmar om och endast om `surfaceTempC <= (bro ? 3 : 1) &&
@@ -180,43 +182,25 @@ inom sju dygn efter det.
 
 ---
 
-## 5. (b) Oljefilmen — egen grind, med nedläggningsklausul
+## 5. (b) Oljefilmen — STRUKEN
 
-**Fysiken (RESONEMANG, att källbelägga före bygge):** under torrperioder samlas olja, gummi och damm
-på vägbanan. Det första regnet lyfter dem till en emulsion som sänker friktionen under de första
-10–30 minuterna, tills regnet spolat bort den. Det är **inte is** och inträffar oavsett temperatur.
+**BESLUT: struken av Bengt 2026-09-12, vid fastställandet av det här dokumentet.** Första regnet
+efter torka byggs inte, mäts inte och skuggas inte. Kortet #89 krymper därmed till (a) plus
+överlämningen i §6.
 
-```
-torrdygn(station) = dygn sedan senaste rad med regn_sum_mm > 0
-oljefilm = regn_sum_mm > 0 nu  OCH  torrdygn >= D  OCH  minuter sedan regnstart <= T
-```
+**Vad strykningen gör med de öppna frågorna:** den förra versionens §5.6-fråga till Axel — *är
+oljefilm inom Halkvakts löfte?* — **förfaller**. Den behöver aldrig ställas, och kortet bär inte
+längre en spärr som väntar på någon annan.
 
-| Parameter | Svep |
-| :-- | :-- |
-| **D**, torrdygn | 3 · 5 · 7 |
-| **T**, fönstret efter regnstart | 15 · 20 · 30 min |
+**Vad mätningen redan hade visat, och som står kvar som dokumenterat nej** (steg 0, fråga 0d): 55
+äkta torrperioder ≥ 5 dygn i arkivet, med **6 olyckor** i 20-minutersfönstren mot V-B-grindens krav
+på 15. Grinden var alltså **inte nåbar denna höst** oavsett beslut, och höstregnen är ett fönster
+som stänger när vintern kommer. Dessutom var instrumentet svagt på ett sätt som inte var lagat: 0d
+räknade olyckor utan förväntat antal, så sex var ett tal och inte ett bevis.
 
-**Grind V-B:s form** (TROSKLAR-VATTENPLANING §3): falsklarm ≤ 20 % av fyrningar, miss ≤ 40 % av
-facit, över ≥ 200 fyrningar, ≥ 15 facit-olyckor inom fönster och räckvidd, ≥ 5 regndygn, ≥ 3 län.
-
-### 5.1 Två spärrar före en enda rad kod
-
-**Spärr 1 — Axels ja.** Är oljefilm inom Halkvakts löfte? Appen heter Halkvakt och lovar is och
-halka. Oljefilm är halka i ordets vidare mening men inte i produktens. **Frågan ställs innan mätning
-påbörjas**, inte efter. Ett nej avslutar (b) här och kortet krymper till (a).
-
-**Spärr 2 — underlaget finns inte i höst.** Steg 0 (0d) mätte: **55 äkta torrperioder ≥ 5 dygn med
-6 olyckor** i 20-minutersfönstren, mot grindens krav på 15. Grinden är alltså **inte nåbar denna
-höst**. Ett ja från Axel betyder därför "mät till nästa höst", inte "döm i vinter".
-
-### 5.2 Nedläggningsklausul
-
-Klarar (b) inte V-B:s krav när underlaget väl finns **läggs den ner, inte parkeras** (husregeln i
-systemanalysens §4). Ett dokumenterat nej är ett bra utfall och kostar en skuggkolumn.
-
-**Och en känd svaghet i instrumentet som ska lagas före domen:** 0d räknar olyckor i fönstren utan
-förväntat antal. Sex olyckor är ett tal, inte ett bevis, förrän en nollhypotes finns — samma
-exponering med slumpmässiga tidpunkter. Utan den kan (b) varken fällas eller frias.
+**Om frågan någon gång tas upp igen** ska den börja om från §9 steg 0 med en nollhypotes i
+instrumentet, inte från den här texten. Husregeln gäller: ett dokumenterat nej är ett bra utfall, och
+det som inte klarar sin grind läggs ner — inte parkeras.
 
 ---
 
@@ -300,13 +284,12 @@ TROSKLAR-VATTENPLANING §2.
 | 0 | Mät hålet — sex frågor | ✅ **klart 12/9** | Ö-A passerad |
 | 1 | **Detta dokument** | ✅ **12/9** | Bengt fastställer, Axel kontrasignerar |
 | 2 | Tillståndsskattaren i skuggloggen, per segment | efter 14/9 | egen träffsäkerhet mot operatörens klasser FÖRE någon övergångsregel läser den |
-| 3 | (b) i skugga — **bara vid Axels ja** | efter 14/9 | V-B, §5 |
-| 4 | (a) som skuggkolumn | efter 14/9 | Ö-B, döms vid frost inom **sju dygn** (Ö-D) |
-| 5 | "Regn inom N h" som fjärde signal i TYSTNADSFEL §3 | med detta dokument | rad i DECISIONS |
-| 6 | (c) överlämnas till #46 och #90 | med detta dokument | tavlan |
-| 7 | Röst | mars, efter dom och Axels ja | — |
+| 3 | (a) som skuggkolumn | efter 14/9 | Ö-B, döms vid frost inom **sju dygn** (Ö-D) |
+| 4 | "Regn inom N h" som fjärde signal i TYSTNADSFEL §3 | med detta dokument | rad i DECISIONS |
+| 5 | (c) överlämnas till #46 och #90 | med detta dokument | tavlan |
+| 6 | Röst | mars, efter dom och Axels ja | — |
 
-**Tidskritiskt:** steg 4:s dom har samma fönster som #88:s T-A — höstens första frostnätter, som inte
+**Tidskritiskt:** steg 3:s dom har samma fönster som #88:s T-A — höstens första frostnätter, som inte
 kan tas ikapp. Steg 2 måste därför stå klart innan frosten, annars finns ingen skugga att döma.
 
 ---
@@ -318,9 +301,10 @@ rad i DECISIONS. **Från första skuggkörningen kräver varje ändring båda si
 motivering som inte lutar sig mot utfallet — att flytta målstolparna när siffrorna kommit är precis
 vad regeln finns för att hindra.
 
-Två ändringar är redan gjorda och ska inte göras om: RH-guarden struken (§2.1) och ord-per-resa
-struket som fällande kriterium (§4, DECISIONS #103). Båda skedde före första skuggkörningen och
-vilar på mätning respektive fältdom, inte på utfall.
+Tre ändringar är redan gjorda och ska inte göras om: RH-guarden struken (§2.1), ord-per-resa
+struket som fällande kriterium (§4, DECISIONS #103) och **(b) oljefilmen struken (§5, Bengt 12/9)**.
+Alla tre skedde före första skuggkörningen och vilar på mätning, fältdom respektive beslut — inte på
+utfall.
 
 ---
 
