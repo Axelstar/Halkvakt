@@ -229,14 +229,21 @@ if (process.argv.includes("--sjalvtest")) {
 // och ruttberedskapen (#124): listan som ska vara komplett läses från källan, inte från minnet.
 const { execSync } = await import("node:child_process");
 const { readFileSync } = await import("node:fs");
+const { fileURLToPath } = await import("node:url");
 
 const SJALV = "scripts/kontraktsgrinden.ts";   // grinden bär formerna själv och räknar inte sig
 const ANDELSER = /\.(ts|tsx|sql|kt|swift)$/;
 
-const spar = execSync("git ls-files", { encoding: "utf-8" }).split("\n")
+// Roten läses ur git, inte ur process.cwd(): grinden ska ge samma svar oavsett varifrån den
+// körs. Utan det fäller den falskt på "under golvet" så fort någon kör den ur scripts/.
+// git körs ur skriptets EGEN katalog, så den hittar repot även när cwd står någon annanstans.
+const har = { encoding: "utf-8" as const, cwd: fileURLToPath(new URL(".", import.meta.url)) };
+const rot = execSync("git rev-parse --show-toplevel", har).trim();
+
+const spar = execSync("git ls-files", { ...har, cwd: rot }).split("\n")
   .map((s) => s.trim()).filter((s) => s && ANDELSER.test(s) && s !== SJALV && !s.startsWith("node_modules/"));
 
-const filer = spar.map((fil) => ({ fil, text: readFileSync(fil, "utf-8") }));
+const filer = spar.map((fil) => ({ fil, text: readFileSync(`${rot}/${fil}`, "utf-8") }));
 
 console.log(`Kontraktsgrinden — bär de upprepade kontrakten samma värde överallt?\n`);
 console.log(`Läser ${filer.length} spårade filer ur git (${SJALV} räknar inte sig själv).`);
