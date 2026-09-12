@@ -1540,6 +1540,17 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] **#26 Skolpaketet** (QR-blad, manus, checklista) *(låst: trafikskolans avsiktsförklaring)*
 - [ ] **#15 Kö-slutsmotorn** (TrafficFlow) *(låst: efter release — uppdatering 1)*
 - [ ] **#16 Blixthalke-prognos** (MET Nowcast) *(låst: efter kö-slut — uppdatering 2)*
+- [ ] 🔕 **#101 Schemalagda mätkörningar har ingen vakthund — ett tyst fel låg fem dygn**
+  (upptäckt 12/9 under vattenplaningsgenomgången). Grind V-A:s måndagskörning 7/9 fallerade i
+  minutkrisens svallvågor, ingen larmade, och DECISIONS #69:s uttryckliga omkörning uteblev i åtta
+  dygn. Kort #81 regel 5 säger "vakthunden får en rad per nytt led INNAN ledet går skarpt" — den
+  regeln gäller drift, inte mätningar, och där finns hålet. Åtta arbetsflöden har cron i dag
+  (healthcheck, marknadsforing + måndagsserien grind-a · smhi-prov · cell-matning-v3 ·
+  trv-bevakning · hojd-prov · grind-v-a) och INGET av dem larmar när det fallerar.
+  🔒 NYCKEL: ingen — men bör byggas i vakthunden (noll Actions-minuter), inte som nytt Actions-jobb.
+  Verify: en medvetet fallerad måndagskörning ger en issue inom en timme. Form: vakthunden frågar
+  GitHub-API:et efter senaste körning per schemalagt arbetsflöde och larmar på conclusion
+  != success ELLER ålder > 2 × kadensen — samma engångsmönster som vinterordslarmet.
 - [ ] 🌧️ **#42 Vattenplaningsvarningen** — ÄGARE: BENGT (issue #15, 1/9) — regnintensitet (VViS RainSum,
   ny ingestkolumn — vi lagrar idag bara regn ja/nej) × spårdjupslager (Trafikverkets
   vägytemätning via Lastkajen; licens/färskhet kollas först) × fartgrind ≥ ~70 km/h
@@ -1594,6 +1605,24 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   rekommendation (halkan vinner alltid, vattenplaningen vilar ≤ +4 °C), radarns roll
   villkorad av domen 14/9, ingen spårdjupströskel (#65/#66). Regntröskeln i mm/h
   medvetet OSATT — den ska falla ur V-A:s mätning, inte gissas.
+  ⛔ **GRIND V-A FALLER — BEKRÄFTAT 12/9 MED TREDUBBELT UNDERLAG** (körning 34670516460,
+  DECISIONS #104; första domen #69, 4/9). 0–10 km vid 0,5 mm/h: **träff 61 ± 2 %** mot kravets
+  70 %, falsklarm 12 ± 1 % mot kravets 25 %. n = 3 594 mot 1 141 i första körningen, och talen
+  är oförändrade. Ett nej som inte rör sig när underlaget tredubblas är ett riktigt nej.
+  🔍 **FALSKLARMEN ÄR INTE PROBLEMET — TRÄFFEN ÄR DET.** Falsklarm 4–12 % på varje tröskel, långt
+  under kravet. Träff + delvis är 88 % vid 0,5 mm/h och 94 % vid 4 mm/h: grannarna vet med hög
+  säkerhet ATT det regnar hos målstationen, men inte HUR MYCKET.
+  ❗ **OCH DET ÄR PRECIS DÄRFÖR FARAN ÄR SVÅR:** intensiteten är exakt det vattenplaning behöver —
+  duggregn ger ingen vattenplaning. #69:s öppna fråga (ska V-A1 skrivas om till "regnar det
+  alls"?) besvaras därmed NEJ på sakliga grunder: det hade gjort påståendet mätbart och samtidigt
+  värdelöst för faran. **Stationsspåret kan inte bära en intensitetsvarning.**
+  ➡️ Hela kortet vilar nu på **radardomen 14/9**, precis som DECISIONS #60 förutsåg: radarn mäter
+  intensitet RUMSLIGT, stationerna blir kalibrering + fartgrind. Faller domen väl ut gäller #81:s
+  ordning A–F. Faller den illa står #42 utan trigger.
+  🐛 **OCH ETT TYST FEL, funnet 12/9:** #69 sade att kurvan skulle köras om av måndagsknappen när
+  höstregnen fyllt arkivet. Den schemalagda körningen **7/9 13:31 fallerade** — tillsammans med
+  ingest-fi, ingest-no, publish-map och regn-30 samma dygn, alltså minutkrisen 5/9 och inte ett
+  kodfel. Ingen märkte det på fem dygn, och domen låg på fel underlag i åtta. Se kort #101.
   ✅ **VÄRDENA FÄLLDA AV BENGT 4/9** ("låt värdena stå", DECISIONS #67): V-A 70 %/25 %
   inom 0–10 km · V-B 20 % falsklarm / 40 % miss / max 3 varningar per rutt och regndygn ·
   V-C ≥200 varningar, ≥15 facithändelser, ≥5 regndygn, ≥3 län. Regntröskeln i mm/h
