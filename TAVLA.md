@@ -375,6 +375,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   representativitetsradien (50 km, 108 stationer) men lämnade §2.8:s EGEN Verify 1 obesvarad — "hur
   många av de 818 segmenten får en SMHI-station inom **15 km**", alltså luftens 235 stationer.
   `scripts/smhi-tackning.ts` mäter nu båda och håller isär dem i utskriften.
+  📊 **VERIFY 1 — SVARET 12/9 (DECISIONS #120): 331 av 818 segment (40 %) har en SMHI-luftstation
+  inom 15 km.** Median 17 km, 88 % inom 30 km, 100 % inom 50 km; 235 aktiva luftstationer av 1 003 i
+  registret. **Vid den gräns §2.8 själv satte räcker täckningen alltså inte.** Var gränsen FÅR ligga
+  är inte mätt — det är Verify 2, och den har redan fått ett svagt förhandsbesked samma kväll
+  (SMHI-ankaret försämrar modellen, 2,36 °C på de punkter som bara SMHI ger).
   ➡️ **KVAR AV #95:** Verify 2 (luft→yta-korrelationen vintertid — den enda som kan avgöra reserven),
   representativitetsradien (hur långt molnet FÅR sträckas) och SMHI-förstärkaren nedan. Ingetdera
   blockerar längre något.
@@ -1616,12 +1621,17 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   vid yta ≤ 5 °C, nederbörd eller Δyta ≥ 0,5 °C, så W-A:s nämnare är stationstimmar **som dieten
   sparade**. Samma klass av fel som 0f:s — att läsa en händelsefiltrerad tabell som en kadens, andra
   gången på två dygn. Täckningsgraden mäts nu i givarkollen och skrivs ut med varje utfall.
-  (2) **Kolumnerna är äldre än värdena:** sql/011 la till fälten 4/9, men de fylldes först när
-  ingest-live deployades **9/9 ca 05:00** (#84, bevis `vind 844` mot `vind 0` före). Alltså:
-  "42,5 % täckning" är ett TIDSARTEFAKT, inte ett givarhål — 751 stationer bär fälten, det är rader
-  äldre än 9/9 som saknas. Steg 0:s 14-dygnsfönster innehöll ungefär **tre dygn** med vind och sikt.
+  (2) **"42,6 % täckning" är ett TIDSARTEFAKT, inte ett givarhål** — 751 stationer bär fälten; det är
+  dygn utan rader som saknas.
+  📏 **OMKÖRT OCH MÄTT 12/9** (DECISIONS #120) — och min härledda gissning var nästan dubbelt så hög
+  som verkligheten: första arkivtimmen med byvind är **4/9 05:00 ⇒ 8,1 dygn** av fönstrets 14, och
+  det faktiska underlaget är **27 557 stationstimmar av 145 819 möjliga = 18,9 %**. Minutkrisens
+  lucka 5/9→9/9 tar ungefär halva tiden, dieten två tredjedelar av resten. (Jag skrev först "tre
+  dygn", härlett ur #84:s `vind 0` — den nollan gällde luckan, inte fälten. **Tredje gången på två
+  dygn som ett härlett tal faller på en mätning.**)
   ⇒ **W-A:s OAVGJORT går inte att laga med ett längre fönster, bara med mer tid. Grinden körs om
   efter FÖRSTA HÖSTSTORMEN**, som T-A körs om efter första frostnatten. Ingen gallringsdeadline här.
+  Utfallet oförändrat: 36 stationstimmar i högsta bandet mot kravets 500; antydan 2,23 × står kvar.
   🔀 **DOKUMENTET DELAR KORTET I TVÅ ROLLER som döms var för sig** — kortet sa "punktfaror",
   överlämningen från #89 sa "riskmodifierare", och **båda hade rätt**: (A) EGEN FARA — byvind 25 m/s
   på en bro är farligt oavsett väglag; (B) MODIFIERARE — samma is, sämre grepp i sidled. Faller A men

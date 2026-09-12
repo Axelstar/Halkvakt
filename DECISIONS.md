@@ -2428,8 +2428,8 @@ ingest-live deployades 9/9 ca 05:00 (kort #84, DECISIONS #79), vars eget SQL-bev
 
 | Följd | Vad som ändras |
 | :-- | :-- |
-| Täckningsraden "42,5 % byvind" | Tolkades som att mindre än hälften av STATIONERNA bär fälten. Fel: 751 stationer bär dem. Det som saknas är RADER ÄLDRE ÄN 9/9 — tid, inte givare. |
-| Underlaget i steg 0 | 14-dygnsfönstret innehåller ungefär TRE dygn med vind och sikt, inte fjorton. |
+| Täckningsraden "42,5 % byvind" | Tolkades som att mindre än hälften av STATIONERNA bär fälten. Fel: 751 stationer bär dem. Det som saknas är rader från dygn då fälten inte fanns eller inte skrevs — tid, inte givare. |
+| Underlaget i steg 0 | 14-dygnsfönstret bär vind och sikt i bara en del av tiden; hur stor del MÄTTES i omkörningen, se nedan. |
 | W-A:s OAVGJORT | Går inte att laga med ett längre fönster, bara med mer tid. Grinden körs om EFTER FÖRSTA HÖSTSTORMEN, som T-A körs om efter första frostnatten. |
 
 Ingen gallringsdeadline här, till skillnad från T-A och #89: W-A räknar stationstimmar, och gallringen
@@ -2550,3 +2550,52 @@ ska svara på ordentligt. §2.8:s ankarroll är därmed i praktiken avgjord utan
 **(4) trv-bevakning:** grön, inga nya poster i Trafikverkets RSS, state committad (88a55bf).
 
 KOSTNAD FÖR HELA OMGÅNGEN: fyra körningar, storleksordningen tio debiterade minuter, under en krona.
+
+## #120 (12/9 2026) Båda rättelserna mätta i stället för härledda — och §2.8:s Verify 1 har ett svar
+
+BESLUT: de två skript som rättades i #116 och #118 kördes om, och talen är nu mätta. **Det var inte
+en formalitet: min härledda gissning var nästan dubbelt så hög som verkligheten.**
+
+**(1) W-A:S EXPONERING — 18,9 %, inte de ~32 % jag räknade fram.** Skriptet skriver nu ut både första
+arkivtimmen med byvind och täckningsgraden (körning 12/9, 14 dygns fönster, 216 514 rader):
+
+| | |
+| :-- | --: |
+| Första timmen med byvind | **4/9 05:00** ⇒ 8,1 dygn med data av fönstrets 14 |
+| Möjliga stationstimmar i de 8,1 dygnen | 145 819 (751 stationer × 8,1 dygn × 24 h) |
+| Efter minutkrisens lucka 5/9 → 9/9 05:00 | ≈ 73 900 |
+| **Efter arkivdieten — faktiskt underlag** | **27 557 (18,9 %)** |
+
+RÄTTELSE TILL #116: jag skrev där att fönstret innehåller "ungefär tre dygn" med vind och sikt,
+härlett ur kort #84:s SQL-bevis `vind 0`. Mätningen säger **8,1 dygn** — kolumnerna fylldes redan
+från 4/9 05:00, och #84:s nolla gällde den fyra dygn långa minutkrisluckan, inte fälten som sådana.
+Båda fakta är sanna; min slutsats av dem var inte. **Det är tredje gången på två dygn som ett
+härlett tal fallit på en mätning** (0f:s kadens, 1/9:s SMHI-ankare, och nu det här) — och det är
+argumentet för att varje sådant tal ska komma ur skriptets utskrift, inte ur ett resonemang i ett
+dokument.
+
+Dieten kostar alltså ungefär TVÅ TREDJEDELAR av det som återstår efter luckan. Riktningen på
+snedvridningen står kvar som resonemang (#116) och är fortfarande inte mätt.
+
+W-A:s utfall är oförändrat: **OAVGJORT**, 36 stationstimmar i högsta bandet mot kravets 500, och
+antydan i bandet 10–15 m/s står kvar på 2,23 × (89,54 mot 40,16 per 1 000 stationstimmar, 927
+stationstimmar). Sikt-sentinelen 20 000 m förekommer i 45 924 rader.
+
+**(2) §2.8:s VERIFY 1 — 40 % av vägnätet har en SMHI-luftstation inom 15 km.**
+
+| Fråga | Parameter | Stationer | Median | ≤ 15 km | ≤ 30 km | ≤ 50 km |
+| :-- | --: | --: | --: | --: | --: | --: |
+| Representativitetsradien (segment → moln) | 16 | 108 av 459 | 28 km | 16 % | 55 % | **94 %** |
+| **Verify 1** (segment → lufttemp) | 1 | **235 av 1 003** | **17 km** | **40 %** | 88 % | 100 % |
+| Överföringsfunktionens par (VViS → lufttemp) | 1 | 235 | 17 km | 41 % | 86 % | 99 % |
+
+LÄSNINGEN: **vid den gräns §2.8 själv satte — 15 km — räcker täckningen inte.** 331 av 818 segment,
+alltså 40 %. Vid 30 km är den 88 % och vid 50 km fullständig, men var gränsen FÅR ligga är inte
+mätt här; det är Verify 2. Och Verify 2 har redan fått ett förhandsbesked från samma kväll: SMHI som
+extra ankare gör offsetmodellen SÄMRE (#119), och de punkter som bara finns tack vare SMHI kostar
+2,36 °C i MAE.
+
+SAMLAD LÄSNING AV #95 EFTER KVÄLLEN: molnet är klart och gav T-A sin fysikkontroll. Ankarrollen är
+besvarad med ett nej. Reservrollen har täckningen mätt men dugligheten omätt, och det första
+förhandsbeskedet är svagt. **Kvar som levande i kortet är SMHI-förstärkaren (snöfallsvarning + yta
+nära noll), som kom in från #93 och inte berörs av något av ovanstående.**
