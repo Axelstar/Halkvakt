@@ -1,0 +1,28 @@
+# Ruttberedskapen (Bengts order 12/9): vilken av skuggflottans tjugo bilar kan pröva vilken
+# grind, och när? Läser rutterna UR skuggmotorn, stationerna ur arkivet, varningsområdena ur
+# historiken. Helt läsande. Knapp, inte cron — svaret ändras med årstiden, inte med timmen.
+name: ruttberedskap
+on:
+  workflow_dispatch:
+    inputs:
+      dagar:
+        description: "Fönster i dygn"
+        required: false
+        default: "30"
+jobs:
+  ruttberedskap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types scripts/ruttberedskap.ts --sjalvtest
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/ruttberedskap.ts "${{ inputs.dagar || '30' }}" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
