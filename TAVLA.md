@@ -1421,8 +1421,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   §4.3 RH-guarden struken och N sätts av golvet, inte av svepet (kurvan har inget knä: 22→25 rader,
   1→2 episoder); §4.4 grinden får ord-per-resa som eget fällande kriterium; §3 givarvakten; §9 0c
   omskriven och (b) flyttad ur steg 0 till §5.6-frågan, som dokumentet alltid sagt men §9 motsade.
-  ✅ **STEG 1 KLART 12/9 — `docs/TROSKLAR-OVERGANGAR.md` FASTSTÄLLT AV BENGT** (DECISIONS #109/#110),
-  med tillägget att **(b) oljefilmen stryks**. Väntar på Axels kontrasignering. Skrivet på MÄTNING, inte på
+  ✅ **STEG 1 KLART 12/9 — `docs/TROSKLAR-OVERGANGAR.md` FASTSTÄLLT OCH KONTRASIGNERAT**
+  (Bengt 12/9 med tillägget att **(b) oljefilmen stryks**, Axel 12/9 via Bengt; DECISIONS
+  #109/#110/#111). Nyckeln är därmed öppen — kodstegen väntar bara på radardomen. Skrivet på MÄTNING, inte på
   resonemang: varje tal som inte är märkt RESONEMANG kommer ur steg 0. Fyra grindar — **Ö-A**
   (finns hålet? **redan passerad**: 76 %, median 35 min, 22 omslag/dygn), **Ö-B** (B3-paret per
   proxy, döms vid frost), **Ö-C** (giltighet: ≥ 30 nätter, ≥ 20 stationer, fysikkontrollen),
