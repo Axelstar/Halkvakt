@@ -231,7 +231,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] **#21 Anonym puls + feedback-knapp** — rör "samlar in: ingenting"-löftet; Claudes råd: paketera med sensorbeslutet våren 2027
 
 ### Axel — hösten (brainstorm 31/8)
-- [ ] 🛞 **#92 Däcktyp och fordonstyp som inställning på enheten** (ur Claudes systemanalys 10/9,
+- [x] ⛔ **#92 Däcktyp och fordonstyp — STÄNGT 12/9, dokumenterat nej** (Bengts order när §2.5 togs ur
+  systemanalysen, DECISIONS #108). Idén är inte fel — den är rätt formulerad som **lager
+  2-riskmodifierare** i OVERGANGAR-ANALYS §1b.2, och där står den kvar som begrepp. Men den kräver
+  tröskeljustering i FLERA tröskeldokument med dubbla signaturer, vektorer i tre portar och nya
+  PRODUKTBOK-bilder, och den bär ingen egen fara. Den konkurrerar alltså om samma kvällar som
+  trenden, som har naturens deadline. Öppnas igen om Axel vill ha den, inte förr. Ursprunglig text:** (ur Claudes systemanalys 10/9,
   Bengts "gör kort för allt"). Motorn vet fart och riktning men inget om däck eller fordon: sommardäck
   vid +3 °C är halare än dubbdäck vid −5, och släp/lastbil ändrar vad sidvind och vattenplaning betyder.
   En engångsinställning (sommar/dubbfritt/dubb · personbil/släp/husbil/lastbil) som flyttar trösklarna
@@ -301,7 +306,16 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   **KVAR, i ny ordning:** (1) Åkerier och bussbolag kör samma sträckor varje dag — perfekta testbilar
   OCH B2B-marknad (kopplar till #92 fordonstyp och #90 sidvind). Nu första spåret. (2) NTF och
   M Sverige som kanaler till landsvägsföraren i mörker. Verify: ett möte bokat per kvarvarande spår.
-- [ ] 🏘️ **#93 Kommunala vägar är det största hålet — och det finns ingen plan** (systemanalys 10/9).
+- [x] ⛔ **#93 Kommunala vägar — STÄNGT 12/9, men HALVA KORTET FLYTTADES** (Bengts order när §2.6 togs ur
+  systemanalysen, DECISIONS #108).
+  ✘ **(a) kommunernas stationsdata läggs ner:** det finns ingen öppen källa, ingen förhandling
+  pågår, och att hålla ett kort öppet för något ingen arbetar på är att låtsas. Hålet i täckningen
+  är verkligt och står kvar dokumenterat i SYSTEM.md — det är skillnad på att veta om ett hål och
+  att ha en plan för det.
+  ➡️ **(b) SMHI-förstärkaren FLYTTAS till kort #95**, där den hör hemma: `smhi_warnings` hämtas
+  redan och ligger i arkivet, så regeln "snöfallsvarning + yta nära noll = högre konfidens" kostar
+  0 kr och 0 nya källor. Att slänga den med kortet hade varit att kasta den enda byggbara delen.
+  Ursprunglig text:** (systemanalys 10/9).
   VViS sitter på statligt vägnät; svartisen som skadar flest finns på gator, cykelbanor och infarter,
   där vi inte har en enda givare. SYSTEM.md säger det ärligt, men inget kort bär det. Kandidater:
   kommunernas driftavdelningar (egna stationer, saltloggar), och SMHI:s varningsklasser som vi redan
@@ -332,6 +346,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ### Claude — olåst
 - [ ] 🪢 **#95 Plan B för Trafikverket-beroendet — mät SMHI som reserv** (systemanalys 10/9). Allt
+  ➕ **ÖVERTAGET FRÅN #93 den 12/9 (DECISIONS #108): SMHI-FÖRSTÄRKAREN.** `smhi_warnings` hämtas
+  redan och ligger i arkivet (tiotals kB/dygn), så regeln **snöfallsvarning + yta nära noll = högre
+  konfidens** kostar 0 kr och kräver ingen ny källa. Förstärkare av frysrisken, ALDRIG en egen fara
+  — den får höja konfidensen i en varning som redan kvalificerar, inte skapa en varning. Verify:
+  skuggkolumn `smhi_forstarkt` mätt mot facit en vintermånad. Detta är den billigaste delen av hela
+  #95 och kan göras före täckningstabellen.
   hänger på ETT API (WeatherMeasurepoint). Givarvakten fångar trasiga sensorer, inte ett flöde som byter
   schema eller stänger; FI/NO/DK ger ingen redundans i Sverige. SMHI metobs (lufttemp, daggpunkt, moln,
   sikt, vind — GOLVET §7) har provats (smhi-prov) men aldrig mätts som RESERV: hur många av de 818
