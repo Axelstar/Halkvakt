@@ -1,0 +1,30 @@
+# Steg 0 för kort #90 (TROSKLAR-VIND-SIKT §7): givarkollen och grind W-A.
+# Givarkollen först — för yttemperaturen vet vi att 61 % faller på vakten, för vind och sikt vet
+# ingen någonting. W-A frågar sedan om olycksfrekvensen per stationstimme stiger med byvind och
+# sjunkande sikt. Till skillnad från vattenplaningen går nollhypotesen att räkna: exponeringen mäts.
+# Helt läsande. Knapp, inte cron — kräver inte radardomen och kan köras när som helst.
+name: vindsikt-steg0
+on:
+  workflow_dispatch:
+    inputs:
+      dagar:
+        description: "Fönster i dygn"
+        required: false
+        default: "14"
+jobs:
+  vindsikt-steg0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types scripts/vindsikt-steg0.ts --sjalvtest
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/vindsikt-steg0.ts "${{ inputs.dagar || '14' }}" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
