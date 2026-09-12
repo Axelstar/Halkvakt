@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-12 07:15 av Claude (Bengts "ta alla fem") — genomgång av systemanalysens 2.1–2.8: de fyra döda måndagsmätningarna igång igen och alla gröna, **grind A föll för första gången** (2 042 punkter, MAE 1,06 mot 1,0), höjden återvinner noll på 1 962 punkter, SMHI som extra ankare gör modellen SÄMRE (1,05 → 1,20) ⇒ §2.8:s ankarroll avgjord; TROSKLAR-RIMFROST skrivet (#46); två sakfel rättade i TROSKLAR-VIND-SIKT (#90)*
+*Uppdaterad: 2026-09-12 07:15 av Claude (Bengts "ta alla fem") — genomgång av systemanalysens 2.1–2.8: de fyra döda måndagsmätningarna igång igen och alla gröna, **grind A föll för första gången** (2 042 punkter, MAE 1,06 mot 1,0), höjden återvinner noll på 1 962 punkter, SMHI som extra ankare gör modellen SÄMRE (1,05 → 1,20) ⇒ §2.8:s ankarroll avgjord; TROSKLAR-RIMFROST skrivet (#46); två sakfel rättade i TROSKLAR-VIND-SIKT (#90). Resonemanget i sin helhet: Drive, "Framtida utvecklingsmöjligheter — systemanalys varningssystemen 2026-09-12 **v5** (läsbar)" — §2.4 och §2.8 omskrivna från grunden, §3 har ny ordning där **grind A:s dom är punkt 2**, före allt utom trenden.*
 
 ---
 
