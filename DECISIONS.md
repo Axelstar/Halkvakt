@@ -3679,3 +3679,61 @@ som CI kör) är och förblir LF.
 blobbar är orörda, och de är döda Linux-artefakter. Att de är spårade över huvud taget är ett eget
 kort (se TAVLA): **504 filer, 27,6 MB**, och `.gitignore` täcker `android/build/` men inte Swifts
 `.build/`.
+
+## #147 (12/9 2026) Beroendekartan — bedömningen kan aldrig bli bättre än listan den bedöms mot
+
+**Beslut:** `scripts/beroendekartan.ts` byggd och inlagd som eget CI-steg. Den läser varje extern
+värd ur spårad kod, jämför med en deklarerad karta, och **fäller om koden hämtar från något som
+inte står i kartan**. Helt läsande.
+
+**Frågan bakom** är Bengts, 12/9: *"har vi något system som tar hand om uppdateringar från vägverket,
+smhi och alla andra som vi hämtar uppgifter från"* — och sedan: *"kan man bygga det så att all ny
+information processas maskinellt och man får en bedömning av en nyhet."*
+
+Svaret på första frågan är ja: källvakten (#31, `scripts/trv-bevakning.ts`, cron måndagar 06:40)
+bevakar sju källor med bevisad larmväg källa → issue → notis. **Men listan valdes när issue #2
+skrevs, i augusti.** Sedan dess har radar, moln, Finland, Norge, Danmark och polisen tillkommit,
+och listan följde inte med. Det är samma husregel som mätvakten (#105), ruttberedskapen (#124),
+värdevakten (#133) och kontraktsgrinden (#144): **listan som ska vara komplett läses från källan,
+inte från minnet.**
+
+**Uppmätt: 23 externa värdar i koden, 9 av dem produktionsberoenden.**
+
+| Roll | Antal | Bevakade |
+| :-- | --: | --: |
+| Produktion — matar motorn, arkivet eller en grind | 9 | **1** |
+| Signalkälla — annonserar ändringar i ett produktionsberoende | 3 | 3 |
+| Verktyg — bara mätskript och rekognosering | 7 | 0 |
+| Omvärld — vi hämtar inga data därifrån | 3 | 3 |
+| Bygg — byggkedjan, inte data | 1 | 0 |
+
+**Gapet, med vad som brister:**
+
+| Obevakat produktionsberoende | Vad som brister |
+| :-- | :-- |
+| `opendata-download-warnings.smhi.se` | varningsarkivet och grind F-A:s hela underlag |
+| `opendata-download-radar.smhi.se` | radardomen och en av tre proxies i #89 (a) |
+| `opendata-download-metobs.smhi.se` | grind R-A4 och grind T-A:s molnkontroll |
+| `tie.digitraffic.fi` | gränssnapshoten mot Finland och grind R-A `--land=fi` |
+| `datex-…vegvesen.no` | gränssnapshoten mot Norge |
+| `opendataapi.dmi.dk` + `storage.googleapis.com` | dk-arkivet |
+| `polisen.se` | viltvarningarna (varningsslag A4) |
+
+**Två fynd som kartan tvingade fram:**
+
+1. **SMHI-täckningen är indirekt och OPRÖVAD.** Källvakten bevakar `opendata.smhi.se` — SMHI:s
+   dokumentationssajt. Vi hämtar från tre helt andra värdar (`opendata-download-warnings`,
+   `-radar`, `-metobs`). Ingen har prövat om en ändring i nedladdnings-API:erna ens syns i den
+   sitemapen. Att kalla SMHI "bevakat" var en tro, inte en mätning.
+2. **Tre av de sju bevakade är omvärld, inte beroenden** (halkvarning, klimator, met.no). Ett larm
+   om att en konkurrent bytt framsida är inte värdelöst, men det är inte samma sak som att veta
+   att DMI byter API-version.
+
+**Bevisat:** självtest mot känd sanning utan nät (ny värd fångas, borttagen rapporteras utan att
+fälla, egen infrastruktur ignoreras, gapet räknas bara i produktionsledet, varje produktionsrad
+måste säga vad som brister). Plus mutationsprov mot riktiga repot: en påhittad värd i
+`smhi-tackning.ts` gav exit 1 med värden utpekad; återställd gav 0.
+
+**Vad kartan INTE gör:** den bedömer ingen nyhet. Den är underlaget en sådan bedömning måste slå
+upp i — steget före, inte steget självt. Och där `signal`-kolumnen säger OKÄND har ingen letat
+ännu; det är ärligare än att gissa en feed som inte finns.
