@@ -3907,3 +3907,54 @@ och den vägrar gissa. Nitton poster fördelade över drygt två år är ungefä
 **Läxan som är värd att behålla:** en bedömningsregel som aldrig prövats mot det material den ska
 bedöma är ett antagande. Torrkörningen tog tio minuter och hittade två fel som annars hade landat
 i Bengts inkorg som falska larm.
+
+## #150 (12/9 2026) Källvaktspåminnelsen — en larmväg som fungerar en gång är inte en larmväg
+
+**Beslut:** vakthunden får en sjunde check som letar öppna `trv-nyhet`-issues och lyfter dem när
+de legat över sin frist. Egen etikett (`kallvaktspaminnelse`), egen öppna/uppdatera/stäng-cykel,
+och den färgar **aldrig** driftvakthunden röd — samma regel som mätvakten.
+
+**Frågan var Bengts:** *"hur får vi veta att vi ska agera på en"*. Svaret var, ända till nu:
+källvakten skapar ett GitHub-issue tilldelat Bengt, och GitHub skickar notisen. Det är hela vägen.
+
+**Den vägen har inget golv, och det är uppmätt — inte befarat:**
+
+| Fynd 12/9 | Tal |
+| :-- | :-- |
+| Issue #165 (met-api) låg öppet utan att något påminde | **11 timmar**, noll kommentarer |
+| Källvaktens körningar totalt sedan 3/9 | 4, varav **1 schemalagd** |
+| Den enda schemalagda körningen (7/9) | **misslyckades** — dog i spending-limit-stoppet |
+| Tid innan någon märkte det | **5 dygn** (och då för att jag letade) |
+| Vakthundens checkar som nämner `trv-nyhet` | **0** |
+| Källvakten på pulsklockan | **nej** — naken GitHub-cron, som #70 mätte till 40 % |
+
+**FRISTERNA, och varför den vita aldrig larmar:**
+
+| Dom i rubriken | Frist | Skäl |
+| :-- | --: | :-- |
+| `[RÖR OSS]` | 24 h | ett beroende vi hämtar från har annonserat något |
+| `[VET INTE]` | 72 h | måste läsas av en människa, men brådskar inte lika |
+| ingen dom (före #149) | 72 h | de är inte vita, de är obedömda |
+| `[RÖR OSS INTE]` | **aldrig** | bedömningen har svarat; att det ligger öppet är städning |
+
+Att låta den vita larma vore att bygga en vakt som aldrig kan tystna, och en sådan blir ignorerad —
+då dör de riktiga larmen med den. Samma resonemang som när check 4 fick förbud mot att färga
+vakthunden röd.
+
+**Påminnelsen lyfter bedömningens egna `Brister:`-rader** ur nyhetsissuets kropp och visar dem
+direkt. Skillnaden mellan en notis och en åtgärd är att man kan se VAD som står på spel utan att
+öppna något.
+
+**Alternationsordningen i regexen är inte kosmetisk.** `[RÖR OSS INTE]` måste stå FÖRE `[RÖR OSS]`
+i alternationen, annars matchar den senare först och den vita domen läses som röd — alltså precis
+tvärtemot. Prövat mot fem rubriker, inklusive de två verkliga issuena i repot i dag.
+
+**Varför den inte testas i `npm test`:** vakthunden är en Deno-funktion som importerar postgresjs
+över nätet vid toppnivå och kan inte laddas av node:test. Det är därför `kadensTimmar` legat
+exporterad men otestad sedan #73. Logiken prövades i stället fristående, och larmvägen prövas
+skarpt med `?paminnelseprov=1` efter deployen — vilket är husets egen standard: beviset är en
+mätning EFTER deployen, inte commit-hashen.
+
+**Vad den INTE löser:** veckotakten. En avveckling som annonseras på en tisdag hittas ändå först
+följande måndag. Att flytta källvakten till pulsklockan och köra den dagligen kostar debiterade
+minuter och är ett eget beslut mot fritier-regeln.
