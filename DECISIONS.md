@@ -2145,3 +2145,36 @@ regeln "röst räknas i episoder, aldrig i arkivrader" är skriven in.
 
 LÄGET EFTER DETTA: steg 1 av sju är klart. Steg 2 (tillståndsskattaren) ligger efter radardomen och
 MÅSTE stå klar före frosten, annars finns ingen skugga att döma Ö-B på.
+
+## #110 (12/9 2026) TROSKLAR-OVERGANGAR FASTSTÄLLT av Bengt — och (b) oljefilmen struken
+
+BESLUT: Bengt fastställer TROSKLAR-OVERGANGAR med ett tillägg: **(b) oljefilmen stryks.** Dokumentet
+är därmed fastställt i samma mening som #61, #68, #92 och #95 — Axels kontrasignering sker genom att
+kortet bockas på tavlan. Från första skuggkörningen gäller §10:s ändringsregim.
+
+VAD SOM FASTSTÄLLS: svepet i §2 (N 1·2·3·4 h, minsta regn, radarintensitet r, utfallsfönster),
+givarvakten i §3 som obligatorisk, golven i Ö-B (nettonytt ≥ 5 %, tillkomna falsklarm ≤ 25 %),
+underlagskraven i Ö-C (≥ 30 nätter, ≥ 20 stationer, båda halvorna, fysikkontrollen) och läsfönstret
+i Ö-D (sju dygn).
+
+VAD STRYKNINGEN AV (b) INNEBÄR:
+* Första regnet efter torka byggs inte, mäts inte och skuggas inte. Kort #89 krymper till (a) plus
+  överlämningen i §6.
+* **§5.6-frågan till Axel förfaller.** Den skulle ha avgjort om oljefilm alls hör till Halkvakts
+  löfte, och den behöver nu aldrig ställas. Kortet bär därmed ingen spärr som väntar på någon annan
+  — det är en öppen fråga färre i hela systemanalysen.
+* Det som redan var mätt står kvar som dokumenterat nej: 55 äkta torrperioder ≥ 5 dygn med 6 olyckor
+  i 20-minutersfönstren mot V-B-grindens krav på 15. Grinden var inte nåbar denna höst oavsett
+  beslut, och höstregnen är ett fönster som stänger när vintern kommer. Instrumentet var dessutom
+  svagt på en punkt som aldrig lagades: 0d räknade olyckor utan förväntat antal.
+* Tas frågan någonsin upp igen börjar den om från §9 steg 0 med en nollhypotes i instrumentet, inte
+  från den befintliga texten.
+
+ORDNINGEN I §9 KRYMPER FRÅN SJU STEG TILL SEX. Steg 2 (tillståndsskattaren) och steg 3 (a) som
+skuggkolumn) är de enda som är kod, och båda ligger efter radardomen. Steg 4 och 5 (fjärde signalen i
+TYSTNADSFEL, överlämningen till #46 och #90) är gjorda i samma varv som dokumentet.
+
+LÄGET EFTER DETTA: fem tröskeldokument ligger i repot, alla fastställda — SKUGGAN (#61),
+VATTENPLANING (#68), TRENDEN (#92/#95), TYSTNADSFEL (#93/#95) och ÖVERGÅNGARNA (detta). Tre av dem
+har noll kod. Det som avgör vintern är inte fler dokument utan att skuggkolumnerna byggs före
+frosten.
