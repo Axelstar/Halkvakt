@@ -1062,6 +1062,14 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (grästemp-ärligheten #45, Bengt/Axel), NO faller in med kontot. 🔑 Attribution i
   app-copyn = Axels beslut; grässtemp-DK = Bengt/Axel.
 - [ ] 🔨 ❄️ **#46 Rimfrosten — svartis utan nederbörd** (Bengts hål A, 4/9) — PÅGÅR:
+  📥 **ÖVERLÄMNAT FRÅN #89 den 12/9** (TROSKLAR-OVERGANGAR §6, DECISIONS #109). Två saker ska in i
+  #46:s eget tröskeldokument. **(1) Dimma är en ÖVERGÅNGSORSAK, inte en interaktion:** dimma är luft
+  vid ~100 % RH, alltså daggpunkt ≈ lufttemperatur, så kondensationsvillkoret (yta ≤ daggpunkt) blir
+  uppfyllt så fort ytan är kallare än luften. Sikt < X m hör därför hemma som **konfidenshöjare för
+  kondensationsvillkoret** — ingen egen fara, ingen egen prioritet. **(2) PARTITIONEN mot efterhalkan:**
+  **#46 äger fallet när yta ≤ daggpunkt** (kondensation pågår), **#89 (a) när yta > daggpunkt men
+  regn inom N h** (kvarvarande regnvatten fryser i torr luft). Utan den gränsen dubbelräknar
+  tystnadsfelet samma miss.
   ANALYSFAS (Bengt + Claude, terminalen 4/9). Fyndet: motorns fuktvillkor är enbart
   nederbörd, men dewpoint_c ligger oanvänd i varje arkivrad sedan 24/8. Rimfrost
   (klar natt, yta ≤ daggpunkt, ingen nederbörd) = höstens klassiska svartis — motorn
@@ -1413,7 +1421,19 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   §4.3 RH-guarden struken och N sätts av golvet, inte av svepet (kurvan har inget knä: 22→25 rader,
   1→2 episoder); §4.4 grinden får ord-per-resa som eget fällande kriterium; §3 givarvakten; §9 0c
   omskriven och (b) flyttad ur steg 0 till §5.6-frågan, som dokumentet alltid sagt men §9 motsade.
-  ➡️ **NÄSTA: steg 1** — TROSKLAR-OVERGANGAR med (a) som huvudsak, (b) med nedläggningsklausul
+  ✅ **STEG 1 KLART 12/9 — `docs/TROSKLAR-OVERGANGAR.md` SKRIVET** (Bengts order, DECISIONS #109).
+  Utkast, väntar på Bengts fastställande och Axels kontrasignering. Skrivet på MÄTNING, inte på
+  resonemang: varje tal som inte är märkt RESONEMANG kommer ur steg 0. Fyra grindar — **Ö-A**
+  (finns hålet? **redan passerad**: 76 %, median 35 min, 22 omslag/dygn), **Ö-B** (B3-paret per
+  proxy, döms vid frost), **Ö-C** (giltighet: ≥ 30 nätter, ≥ 20 stationer, fysikkontrollen),
+  **Ö-D** (läsfönstret — sju dygn, annars har gallringen ätit upplösningen).
+  ✂️ Två parametrar redan strukna av mätning: RH-guarden (fuktigheten stiger efter regnet) och
+  operatörens "Våt" (noll mätbara varaktigheter). N sätts av golvet, inte av svepet — kurvan har
+  inget knä. Ord-per-resa är INTE fällande kriterium (#103); röst räknas i episoder, aldrig i rader.
+  🔗 **TYSTNADSFEL §3 har fått sin fjärde signal** i samma varv: "det regnade inom N timmar vid
+  stationen". Utan den klassas efterhalkans missar på de andra tre utan att orsaken syns.
+  ➡️ **NÄSTA: steg 2** — tillståndsskattaren i skuggloggen, efter 14/9. Den måste stå klar före
+  frosten, annars finns ingen skugga att döma Ö-B på.
   (0d säger att den inte kan dömas i höst), "Våt" ute ur unionen, RH-guarden struken.
   🥶 **OCH EN KÖRNING NÄR FROSTEN KOMMER — LARMET BYGGT OCH BEVISAT 11/9** (Bengts order).
   0c är den enda frågan vars svar ändras (3–4 frysningar i dag, domen kräver ~30), och den måste
@@ -1496,6 +1516,14 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   antalet distinkta meningar gör det — OCH objektfarornas siffra ska stå still. Kamerorna ska låta
   exakt som de gör i dag.
 - [ ] 🌬️ **#90 Vind och sikt som punktfaror — arkiverade sedan 9/9, används inte** (systemanalys
+  📥 **ÖVERLÄMNAT FRÅN #89 den 12/9** (TROSKLAR-OVERGANGAR §6, DECISIONS #109): sidvind × halka och
+  dimma-som-sikt × halka är **LAGER 2 — riskmodifierare**. De ändrar inte ytan, de ändrar faran för
+  föraren GIVET en yta. Följden är att de **inte behöver minne och inte tillståndsskattaren** — de
+  byggs som #68 var tänkt: ett förvillkor eller ett längre försprång, en rad i tröskeldokumentet, en
+  vektor. Väsentligt billigare byggform än lager 1. Öppen designfråga som hör hemma i #90:s dokument:
+  ska sikt/sidvind MODIFIERA halkvarningen (längre försprång, sämre reaktionstid) i stället för att
+  bara förlora prioritetsstriden? ⚠️ Notera att #68 är BESLUTAD men aldrig byggd — den visar formen,
+  bevisar den inte. Första lager 2-regeln som faktiskt skrivs blir precedensen.
   10/9). wind_speed_ms/wind_gust_ms/visibility_m landar varje minut (kort #84). Sidvind på broar och
   slätter är en riktig risk för husbil, släp och lastbil (= B2B, #92/#94); dimma är en fartfråga.
   Båda är PUNKTKÄLLOR ⇒ "framöver", aldrig "på vägen". 🔒 NYCKEL: Axels ja + tröskeldokument (byvind

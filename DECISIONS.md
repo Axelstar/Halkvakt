@@ -2085,3 +2085,63 @@ LÄGET EFTER DETTA: av systemanalysens nio kort (#88–#96) är #92, #93 och #94
 tidigare i dag (#103), och kvar som aktiva är #88, #89, #90, #91, #95 och #96 — precis de fem
 punkter Bengt valde att arbeta vidare med (2.1, 2.2, 2.3, 2.4, 2.8). Dokumentet och tavlan säger
 samma sak igen.
+
+## #109 (12/9 2026) TROSKLAR-OVERGANGAR skrivet — steg 1 klart, och (c) överlämnad till #46 och #90
+
+BESLUT: kort #89:s tröskeldokument är skrivet och incheckat (`docs/TROSKLAR-OVERGANGAR.md`, 332
+rader). Status UTKAST — väntar på Bengts fastställande och därefter Axels kontrasignering, samma form
+som #61/#68/#92/#95. Ingen kod. Bengts order "skriv tröskeldokumentet".
+
+DOKUMENTET ÄR SKRIVET PÅ MÄTNING, INTE PÅ RESONEMANG, och det är dess viktigaste egenskap. Varje tal
+som inte är märkt RESONEMANG kommer ur steg 0 (körningarna 34579255737, 34580876588, 34590257682).
+Det skiljer det från TROSKLAR-TRENDEN och TROSKLAR-VATTENPLANING, som skrevs före sina mätningar.
+
+FYRA GRINDAR:
+* **Ö-A — finns hålet?** REDAN PASSERAD: 76 % av regnstoppen hade mätarregn när fukten slog om,
+  median 35 min kvar, 22 användbara omslag/dygn. Grinden bevisar att frågan är värd att ställa, inte
+  att utvidgningen är rätt.
+* **Ö-B — skuggdriften.** B3-paret PER PROXY: nettonytt ≥ 5 % av facit inom räckvidd, tillkomna
+  falsklarm ≤ 25 % av tillkomna fyrningar. En union av svaga signaler är en falsklarmsmaskin om
+  ingen mäts ensam.
+* **Ö-C — giltighet.** ≥ 30 regn-följt-av-frost-nätter, ≥ 20 stationer, båda halvorna av perioden,
+  plus fysikkontrollen: träffarna ska toppa efter midnatt och vara vanligast klara nätter. Faller de
+  jämnt över dygnet mäter vi något annat än utstrålningshalka.
+* **Ö-D — läsfönstret, ny och kan fälla allt annat.** Varje avläsning på minutupplösning måste ske
+  inom sju dygn (gallringen, #97). Frostlarmet i vakthunden (#98) är därför en DEL av grinden, inte
+  en bekvämlighet.
+
+TVÅ PARAMETRAR ÄR STRUKNA INNAN DOKUMENTET ENS FASTSTÄLLTS, båda av mätning: RH-guarden (0b visade
+att fuktigheten STIGER efter regnet, 90 → 95 % på fyra timmar) och operatörens "Våt" (0e gav
+OAVGJORT — noll mätbara varaktigheter). Och N sätts av falsklarmsgolvet, inte av svepet, eftersom
+kurvan saknar knä (22 → 25 rader, 1 → 2 episoder mellan 2 h och 4 h).
+
+GIVARVAKTEN ÄR OBLIGATORISK OCH FÅR EGET AVSNITT (§3): 61 % av arkivets frostrader faller på den,
+noll saknar lufttemperatur. Utan vakten är varje tal i grindarna meningslöst. Den gäller bortom det
+här kortet — #88 och #98 läser samma kolumn och har den inte skriven i sina dokument (#106).
+
+(b) OLJEFILMEN FÅR TVÅ SPÄRRAR FÖRE EN ENDA RAD KOD: Axels ja om den alls hör till löftet, och
+konstaterandet att underlaget inte finns i höst (55 torrperioder, 6 olyckor mot kravets 15). Plus en
+nedläggningsklausul och en utskriven svaghet i instrumentet — 0d räknar olyckor utan nollhypotes, och
+utan den kan (b) varken fällas eller frias.
+
+(c) ÖVERLÄMNAD, MED LAGER UTSKRIVET (§6): dimma × frysrisk = rimfrost går till #46 som
+ÖVERGÅNGSORSAK i lager 1 (sikt som konfidenshöjare för kondensationsvillkoret), och sidvind × halka
+plus dimma-som-sikt × halka går till #90 som RISKMODIFIERARE i lager 2 (inget minne, ingen skattare,
+en rad plus en vektor). Båda korten har fått raden på tavlan. Utan lagermärkningen hade #46 byggt en
+interaktion och #90 en skattare.
+
+PARTITIONEN MOT #46 ÄR NU SKRIVEN PÅ BÅDA KORTEN: #46 äger fallet när yta ≤ daggpunkt, #89 (a) när
+yta > daggpunkt men regn inom N h. Tystnadsfelet räknar då varje miss en gång.
+
+I SAMMA VARV: TROSKLAR-TYSTNADSFEL §3 har fått sin FJÄRDE signaltyp — "det regnade inom N timmar vid
+stationen". Utan den klassas efterhalkans missar på de tre befintliga signalerna, ofta oursäktliga
+ändå, men utan att orsaken syns — och då kan tystnadsfelet inte skilja "för hög tröskel" från "hål i
+fuktvillkoret". Ändringen gjordes före första skuggkörningen och är därmed tillåten med en rad i
+DECISIONS enligt det dokumentets §9.
+
+ORD-PER-RESA ÄR INTE ETT FÄLLANDE KRITERIUM i Ö-B, och det står utskrivet varför (#103): cry wolf
+handlar om falska varningar. Röstbudgeten redovisas som beskrivning i §7 med båda enheterna, och
+regeln "röst räknas i episoder, aldrig i arkivrader" är skriven in.
+
+LÄGET EFTER DETTA: steg 1 av sju är klart. Steg 2 (tillståndsskattaren) ligger efter radardomen och
+MÅSTE stå klar före frosten, annars finns ingen skugga att döma Ö-B på.
