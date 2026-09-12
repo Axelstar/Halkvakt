@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-12 07:15 av Claude (Bengts "ta alla fem") — genomgång av systemanalysens 2.1–2.8: de fyra döda måndagsmätningarna igång igen och alla gröna, **grind A föll för första gången** (2 042 punkter, MAE 1,06 mot 1,0), höjden återvinner noll på 1 962 punkter, SMHI som extra ankare gör modellen SÄMRE (1,05 → 1,20) ⇒ §2.8:s ankarroll avgjord; TROSKLAR-RIMFROST skrivet (#46); två sakfel rättade i TROSKLAR-VIND-SIKT (#90). Resonemanget i sin helhet: Drive, "Framtida utvecklingsmöjligheter — systemanalys varningssystemen 2026-09-12 **v5** (läsbar)" — §2.4 och §2.8 omskrivna från grunden, §3 har ny ordning där **grind A:s dom är punkt 2**, före allt utom trenden. KVÄLL: SMHI-förstärkaren (#95 d) byggd — tröskeldokument, sql/015 (varningarnas giltighetsfönster saknades i arkivet) och grind F-A som läsande knapp. **Bengt valde den SMALA regeln**, och den breda idéns kärna flyttades till #89 som parametern `N_varning` — en aktiv vintervarning förlänger N, utan att uppfinna väta ur en länspolygon.*
+*Uppdaterad: 2026-09-12 18:55 av Claude (webben, avläsningen) — kassan har TREDUBBLATS: 202 min/dygn över dygnet, 261 senaste 10 h, ci 92 körningar (bygget kostar, inte driften) ⇒ 31–40 USD till 1/10 mot taket 35 med hårt stopp. Bron håller (13 puls + 7 cron, max 2,00 h). Nycklarna ej roterade. Kartrepot helt.*
 
 ---
 
@@ -82,6 +82,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
    ⏰ KVÄLL 10/9 17:32: ingen deploy-supabase-körning efter 9/9 05:20, ingen ny vakthund-issue efter #91 (9/9)
    ⇒ Axel har inte roterat än. De fyra bevisen väntar.
    ⏰ MORGON 11/9 04:31: oförändrat — ingen deploy-supabase efter 9/9 05:20, ingen vakthund-issue efter #91.
+   ⏰ **12/9 18:51: fortfarande INTE roterat.** Två saker ser ut som bevis men är det inte: deploy-supabase
+   har körts 6 gånger sedan 9/9 (körning 3–8, senast 12/9 17:22) — men med tokenen från 9/9, inte en ny;
+   och tre vakthund-issues (#109, #131, #151) är LARMPROV från DB-knappen, inte kedjebrott och inte
+   rotationsbevis. Larmvägen är därmed bevisad tre gånger till. Rotationen väntar på Axel.
 - [ ] 💸 **#85 Actions-takten spränger 35 USD-gränsen före 1/10 — tre snitt räcker** (mätt 9/9
   04:30 av morgonavläsningen, DECISIONS #82:s budget). UPPMÄTT sedan Actions vaknade 8/9 21:07
   → 9/9 04:31 (7,4 h): **59 körningar, ≈ 98 debiterade minuter** (varje jobb avrundas uppåt):
@@ -138,6 +142,19 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
    ⇒ 11; ci 2 + kodgrinden 1 (PR #104). Noll röda. VAR GRANNAR-SEKUNDERNA GÅR (jobb 04:24, 54 s): uppstart
    6 s · npm ci 1 s · FI 8 s · DK 19 s · NO 10 s · fi/dk-publicering 6 s · avslut 4 s. DK är dubbelt mot 9/9
    (13 s) och avgör om körningen landar över eller under 60 s. Dygnssnitt 10/9: (52+43) min / 24 h ≈ 95.
+   🚨 **TAKTEN HAR TREDUBBLATS — mätt 12/9 18:51 (avläsningen låg nere ett dygn, se STATUS).**
+   Fönster 11/9 16:25 → 12/9 18:51 (26,5 h): **200 körningar, 223 debiterade min ⇒ 202 min/dygn**
+   (1,62 USD/dygn). Senaste 10 h: 100 körningar, 108 min ⇒ **261 min/dygn** (2,08 USD/dygn).
+   VAD SOM KOSTAR: **ci 92 körningar / 94 min** — 44 push + 47 PR över 91 unika commits, alltså
+   ~2 min per ändring (PR + merge; ingen dubbeldebitering på samma sha). Drift är oförändrad:
+   grannar 26 × (34 min), healthcheck 20 × (32), ingest 26 × (26). Grindarna/knapparna 18 min totalt.
+   **PROJEKTION till 1/10 (19 dygn): 31 USD vid 202 min/dygn, 40 USD vid 261** — ovanpå det som
+   redan är förbrukat i september. Taket 35 USD har HÅRT STOPP (Axels inställning): slår det i
+   stannar grannar/ingest/healthcheck som 5/9. Livemotorn i Supabase påverkas inte.
+   🔑 BENGTS BESLUT, tre spakar (jag bygger inget): (1) `[skip ci]` på rena tavel-/dokumentcommits
+   — de flesta av dygnets 91 ändringar rör inte kod; (2) bygg färre och större PR:er; (3) höj taket.
+   Röda i fönstret: ci 3 (14:28–14:31), grind-r-a 1, grannar 1 (11:24, nästa timme grön igen),
+   smhi-forstarkaren-steg0 1. Grannar 26 körningar 42–98 s, 8 över 60 s.
 - [ ] 🗄️ **#83 GALLRING av weather_observations — måste finnas FÖRE första kalla veckan**
   (Bengts beställning 9/9 01:40; kort + förslag av Claude, mätt mot koden 9/9).
   **VARFÖR NU:** arkivdieten (DECISIONS #4: bara yta ≤ 5 °C eller nederbörd) finns i
@@ -216,6 +233,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
    kvällen, 3 844 på 10 h natten ⇒ ~9 200/dygn** (mot 36 600 natten innan). Inte ett fel: dieten (#4) släpper
    bara stationer ≤ 5 °C eller nederbörd, och SE live.json hade 33 väderposter 04:30 mot hundratals kalla
    natten 9/9. weather: synced 0 min i varje healthcheck. Takten är väderstyrd — läs den mot antalet kalla stationer.
+   📈 **12/9:** weather_obs 246 339 (11/9 04:23) → 254 129 (12/9 04:23) → 258 197 (12/9 18:27) ⇒
+   **7 790 rader på dygnet, ~6 900/dygn dagtid**. meta.json: 1 kall station. Mild vecka, dieten håller
+   takten nere — tredjedelen av septembersnittet. Gallringens första riktiga natt är fortfarande 16/9.
 - [x] ~~Fastställ trösklarna för skuggan~~ ✅ FASTSTÄLLT 2/9 (DECISIONS #61): Axels
   "kör" relayerat av Bengt i chatten, värdena oförändrade från Bengts 1/9-version inkl.
   §2-orsaksklassningen. Kvitto: huvudet i docs/TROSKLAR-SKUGGAN.md. Bocken här är
@@ -1187,6 +1207,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
    healthcheck.yml nu — en rad, pulsen är bevisad, vakthunden i Supabase larmar ändå inom 2 h.
    🌙 NATT 11/9: pulsen 18:23, 20:23, 22:23, 00:23, 02:23, 04:23 — alla inom 2 s. GitHub-cronen dubblade
    2 gånger till (20:54, 00:13). Bron håller; cron-raden kostar fortfarande.
+   🌙 **DYGNET 11/9 16:25 → 12/9 18:51:** 20 healthcheck-körningar — **13 på pulsen, 7 på GitHub-cronen**,
+   längsta mellanrum 2,00 h. Bron håller fortfarande utan hål. Cron-raden kostar ~6 min/dygn; förslaget
+   att stryka den ligger kvar hos Bengt.
 - [x] ~~⛏️ **#48 Golvbyggena**~~ ✅ KLART 4/9 (utom bygge 3) (Bengts order 4/9: "ta hela kortet, allt självförsörjande")
   — PÅGÅR (terminalen): GOLVET.md:s byggen 1–4 med automatiseringskrav: automigrering
   vid varje ingest (db.ts/fi.ts-mönstret), healthcheck-golv på varje ny fältfamilj
