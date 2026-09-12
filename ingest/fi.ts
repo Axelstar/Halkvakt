@@ -28,6 +28,8 @@ const client = await pool.connect();
 try {
   // Auto-migrering (sql/010): latest-tabellen saknade dewpoint_c — körning #24 föll på 42703.
   await client.query(readFileSync(new URL("../sql/010_fi_dewpoint_latest.sql", import.meta.url), "utf8"));
+  // sql/016 (12/9): samma fälla en tredje gång — latest-tabellen saknade humidity_pct.
+  await client.query(readFileSync(new URL("../sql/016_fi_humidity_latest.sql", import.meta.url), "utf8"));
   // Auto-migrering (sql/012, kort #48): FI-breddningen — frostpunkt, fryspunkt, salt, vind, sikt, form, ytstatus.
   await client.query(readFileSync(new URL("../sql/012_fi_falt.sql", import.meta.url), "utf8"));
   const stations = await get<any>("/weather/v1/stations");

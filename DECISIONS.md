@@ -3386,3 +3386,75 @@ noll att plocka upp. Det är tredje gången på nio dygn vi hittar ett användba
 
 BEVISET ÄR EN RAD, INTE EN COMMIT: `fi: … daggpunkt N st, luftfuktighet N st, …` i nästa timkörning.
 Utan den raden är fältet inte skrivet, oavsett vad koden säger (kort #73:s läxa).
+
+## #139 (12/9 2026) Typkastet som inte flyttade med — och ett rött bygge som jag mergade ändå
+
+TVÅ FEL, båda mina, och det andra är värre än det första.
+
+**FEL 1 — DEN POSITIONELLA FÄLLAN.** `FI_SELECT` bygger raderna med `UNNEST($1::text[], $2::text[],
+…)`, och **typkasten är positionella**. När `humidity_pct` lades in som kolumn 9 (#138) sköts
+`precipitation` till $10 och de två boolean-fälten till $11/$12 — men jag la bara till `$21` i
+slutet och lät casten ligga kvar. **$9 kastades alltså som `text[]` och fick ett tal, $10 som
+`bool[]` och fick en sträng.**
+
+CI fällde det direkt — integrationstestet kör mot riktig PostGIS och skriver en finsk rad. Vakten
+fungerade exakt som den skulle.
+
+**LÄXAN, och den gäller varje sådan lista i repot:** en ny kolumn mitt i en UNNEST-lista flyttar
+**alla efterföljande typer**, inte bara antalet parametrar. Det syns inte i en diff — raden med
+casten ligger tre rader bort från raden med kolumnnamnen. Rättat, och kontrollerat kolumn för
+kolumn: 21 kast, 21 kolumner, alla i rätt ordning.
+
+**FEL 2, OCH DET ÄR DET ALLVARLIGA — JAG MERGADE ETT RÖTT BYGGE.** Mitt kommando kedjade
+`vänta på CI → merga` utan att pröva utfallet. CI skrev `test failure` och merge-steget körde ändå.
+PR #188 gick in i main med en trasig ingest.
+
+Det är precis den sorts tyst genomgång huset har regler mot: **en grön körning är beviset, inte en
+grön känsla** (nyckelrotationens läxa 31/8). Att jag byggde marginalvakten och värdevakten samma
+dygn gör det sämre, inte bättre — jag automatiserade bort exakt den kontroll jag skrev regler om.
+
+**FÖLJDEN I DRIFT:** ingesten kör timvis, så fönstret mellan den trasiga mergen och den här
+rättelsen är som mest en körning. Den körningen skulle ha fallit på typfelet och gett ett rött jobb
+— alltså bortfall, inte tyst felskrivning. Inga felaktiga rader kan ha skrivits: PostgreSQL
+förkastar hela satsen, den skriver inte halva.
+
+**REGEL FRAMÅT:** merge-steget ska läsa CI:s slutsats och avbryta på annat än `success`. Att kedjan
+är bekväm är inget skäl — det var bekvämligheten som orsakade felet.
+
+## #140 (12/9 2026) Latest-tabellens lucka — tredje gången samma fälla, och nu står regeln skriven
+
+BESLUT: `sql/016_fi_humidity_latest.sql`, inlagd i automigreringen i `ingest/fi.ts` och i
+integrationstestets schemalista.
+
+**CI:s andra röda körning avslöjade den verkliga orsaken**, och det var inte typkasten (#139) utan
+något strukturellt:
+
+```
+column "humidity_pct" of relation "weather_latest" does not exist   (42703)
+```
+
+**`public.weather_observations` har TIO fält. `public.weather_latest` har NIO** — den saknar både
+`dewpoint_c` och `humidity_pct`. Grannschemana skapas med `LIKE public.… INCLUDING ALL`, så
+**varje granntabell ärver luckan**. Lägger man till ett fält i arkivvägen fungerar det direkt, och
+nulägesvägen faller på 42703 först när koden körs.
+
+**DET HAR NU HÄNT TRE GÅNGER:**
+
+| | |
+| :-- | :-- |
+| `sql/010` | fi.weather_latest saknade `dewpoint_c` — körning #24 föll på 42703 |
+| `sql/013` | no.weather_latest saknade `humidity_pct` — migrationens egen kommentar: *"samma fälla som fi (010)"* |
+| `sql/016` | fi.weather_latest saknade `humidity_pct` — CI föll på 42703, igen |
+
+Norges migration **namnger fällan i sin egen kommentar** och den fångade mig ändå. Det är inte
+slarv i stunden — det är att luckan är osynlig i den fil man redigerar. Man skriver i `fi.ts`, och
+felet ligger i en tabell som skapades av ett annat skript i augusti.
+
+**REGELN, skriven i migrationen så att nästa person läser den på rätt ställe:** ett nytt väderfält
+kräver **två kolumner, inte en** — arkivet och nuläget. Kontrollera latest-tabellen INNAN koden
+skrivs, inte efter att CI fällt den.
+
+**OCH DET HÄR ÄR VAD SOM RÄDDADE OSS:** integrationstestet kör mot riktig PostGIS och skriver en
+finsk rad. Utan det hade felet nått drift och visat sig som ett rött timjobb — eller värre, som
+tysta bortfall om satsen hade delvis lyckats. Den vakten är från augusti och har nu betalat sig
+tre gånger.
