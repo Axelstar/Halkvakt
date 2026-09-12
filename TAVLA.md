@@ -1228,6 +1228,18 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] ↩︎ Play: uppladdningsguide för den CI-signerade AAB:n + fotostudion tag 2 (facit ur CI +
   produktboken) *(låst: Play-kontot)*.
 - [ ] 📈 **#88 TRENDEN — vi mäter var minut men använder bara sista värdet** (systemanalys 10/9;
+  ✅ **GRIND T-A BYGGD OCH KÖRD 12/9 — instrumentet är laddat före frosten** (`scripts/grind-t-a.ts`
+  + knapp, PR #158, körning 34675279484, DECISIONS #113). Byggd FÖRE skuggkolumnen med flit: T-A
+  läser ARKIVET, de tre kolumnerna i §7 steg 2 matar T-B. Avvikelse från §7:s ordning, inte från
+  dess innehåll, tillåten före första skuggkörningen enligt §8.
+  ⊘ **Utfall: OAVGJORT, som det ska vara.** 2 912 station-nätter, 17 frostnätter på 7 stationer mot
+  domspärrens 30 och 20. Alla 144 kombinationer räknade; bästa separation 17 %, men **ingen klarar
+  båda-halvor-kravet**. Domspärren skrivs ut FÖRE tabellen så ingen läser den som en dom.
+  🔍 **Tre fynd som hör hemma i TROSKLAR-TRENDEN, inte i koden:** (1) **fysikkontrollens andra halva
+  går inte att köra** — "vanligast klara nätter" kräver molnmängd, som inte finns i arkivet. T-A är
+  alltså BEROENDE AV kort #95, och det står inte i dokumentet. (2) **Gallringen äter svepet:** efter
+  sju dygn faller 15-minutersfönstret bort helt och 30-minuters på trendens egen vakt. (3) Septembers
+  frostnätter är INTE utstrålningsnätter — bara 5 av 17 hade kallaste stunden kl 03–07.
   det billigaste stora klivet). Sedan 9/9 har arkivet minutupplösning på 848 stationer. Lutningen
   dT/dt på ytan mot noll, med daggpunkten strax under, är svartisens fysiska förvarning — INGEN
   prognos, en observerad trend, som får sägas som "risk framöver" (kommunikationsregeln). Åt andra
@@ -1536,7 +1548,22 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔬 **GIVARVAKTEN ÄR OMÄTT TERRITORIUM.** För yttemperaturen vet vi att 61 % faller på vakten
   (#106). För vind och sikt vet vi **ingenting** — ingen har mätt hur ofta värdena är orimliga.
   Därför är steg 0 inte valfritt.
-  ⏱️ **STEG 0 KAN GÖRAS NU, före radardomen:** givarkollen + grind W-A mot arkivet. W-A frågar om
+  ✅ **STEG 0 KÖRT 12/9** (`scripts/vindsikt-steg0.ts` + knapp, PR #159, körning 34675456017,
+  DECISIONS #113). W-A gav **OAVGJORT** för både vind och sikt — 36 respektive 83 stationstimmar i
+  högsta bandet mot kravets 500. September är inte blåsigast på året; underlagsbesked, inte nej.
+  🔬 **MEN GIVARKOLLEN GAV TVÅ KONKRETA SAKER TILL VAKTEN, vilket var hela poängen:**
+  **(1) byvind max 85,5 m/s** — Sveriges rekord ligger kring 81 och då på fjällstation; 85,5 vid en
+  vägstation är med all sannolikhet en trasig givare, och vakten behöver ett tak.
+  **(2) sikt 20 000 m förekommer 45 650 gånger** av ~92 000 siktrader — det är ett SENTINELVÄRDE
+  ("minst 20 km"), inte en mätning. Hälften av siktmaterialet är ett tak.
+  **(3) täckningen är 42,5 % för byvind och 42,6 % för sikt** — mindre än hälften av arkivraderna
+  bär fälten alls, vilket halverar W-A:s underlag och ska stå i varje dom.
+  Noll rader med byvind < medelvind och noll negativa värden — den delen av vakten behövs inte.
+  📈 **EN ANTYDAN SOM INTE FÅR ÖVERTOLKAS:** bandet 10–15 m/s har **2,23 × olycksfrekvensen** mot
+  < 10 m/s (89,5 mot 40,2 per 1 000 stationstimmar). Det är över W-A2:s krav på 1,5 × och den första
+  kvantitativa antydan att kortet har något att mäta. Men det är ETT band, i september, och
+  situation_archive bär ingen orsak — samband, inte kausalitet.
+  ⏱️ **STEG 0 KUNDE GÖRAS FÖRE RADARDOMEN:** givarkollen + grind W-A mot arkivet. W-A frågar om
   olycksfrekvensen stiger monotont med byvind respektive sjunkande sikt — och till skillnad från
   vattenplaningen **går nollhypotesen att räkna här**, eftersom exponeringen mäts kontinuerligt vid
   varje station. Faller W-A är kortet klart utan en rad motorkod.

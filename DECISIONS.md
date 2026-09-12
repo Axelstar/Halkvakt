@@ -2252,3 +2252,63 @@ sämre sikt kräver. Halkan vinner fortfarande alltid.
 
 LÄGET EFTER DETTA: 2.3 står nu lika långt som 2.2 gjorde i morse — tröskeldokument skrivet, nyckel
 halvöppen, och ett steg 0 som kan köras före radardomen. Sex tröskeldokument ligger i repot.
+
+## #113 (12/9 2026) Två instrument byggda före måndag — grind T-A och #90:s steg 0, båda körda
+
+BESLUT: Bengts "ta båda". Två läsande knappar byggda, självtestade och körda skarpt en gång var.
+Ingen av dem rör skuggloggen, driften eller motorn, och ingen av dem väntar på radardomen.
+
+### Grind T-A (kort #88) — instrumentet klart före frosten
+
+Byggd FÖRE skuggkolumnen, tvärtemot TROSKLAR-TRENDEN §7:s sekvens. Skälet: T-A läser ARKIVET, inte
+skuggloggen — de tre kolumnerna i §7 steg 2 matar T-B. Avvikelsen gäller ordningen, inte innehållet,
+och är tillåten före första skuggkörningen enligt §8. Risken som motiverar den är mätt samma dag:
+grind V-A och cellmätningen låg döda i fem dygn, och steg 0:s instrument hade två fel som bara
+upptäcktes av att det kördes. T-A:s fönster är en engångschans och ska inte mötas med otestad kod.
+
+FÖRSTA KÖRNINGEN (34675279484, 7 dygn): **OAVGJORT**, som väntat. 2 912 station-nätter, varav 17
+frostnätter på 7 stationer — domspärren kräver 30 och 20. Svepets 144 kombinationer räknades, bästa
+separation 17 % (60 min, 0,4 °C, gap 2,0, band +1..+3), men **ingen kombination klarar
+båda-halvor-kravet**. Allt är rätt beteende.
+
+SJÄLVTESTET FÄLLDE FÖRSTA FÖRSÖKET, och felet var mitt test: daggpunkt 0 mot yta 3,5 ger ett gap på
+3,5 som aldrig kan passera tröskeln 1,0, så triggern föll på gapvillkoret i stället för på lutningen.
+Testet mätte alltså inte det det påstod. Rättat.
+
+**TVÅ FYND SOM HÖR HEMMA I TROSKLAR-TRENDEN, inte i koden:**
+1. **Fysikkontrollens andra halva går inte att köra.** §4 kräver att träffarna ska vara "vanligast
+   klara nätter", men molnmängd finns inte i arkivet — smhi-prov hämtar bara lufttemperatur och
+   lagrar ingenting. Klarhetsdelen av T-A är alltså BEROENDE AV kort #95 (§2.8), och det beroendet
+   står inte i dokumentet. Det bör skrivas in.
+2. **Gallringen begränsar svepet.** Efter sju dygn finns bara halvtimmesrader; då faller
+   15-minutersfönstret bort helt och 30-minutersfönstret på trendens egen vakt (≥ 3 mätningar i
+   fönstret). Svepets tre fönster är alltså i praktiken två för varje läsning som sker sent.
+3. Och ett tredje, som första körningen visade: septembers frostnätter är INTE utstrålningsnätter.
+   Bara 5 av 17 hade sin kallaste stund kl 03–07; resten låg spridda över dygnet (22, 23, 10, 11,
+   12, 14). Det stärker att det riktiga underlaget måste vara höstens frost och inte septembers.
+
+### Steg 0 för kort #90 — givarkollen och W-A
+
+FÖRSTA KÖRNINGEN (34675456017, 14 dygn). W-A gav **OAVGJORT** för både vind och sikt: högsta
+vindbandet har 36 stationstimmar och högsta siktbandet 83, mot kravets 500. September är inte
+blåsigast på året, så det är ett underlagsbesked och inte ett nej.
+
+**MEN GIVARKOLLEN GAV TVÅ KONKRETA SAKER TILL VAKTEN, vilket var hela poängen med att köra den
+först:**
+* **Byvind max 85,5 m/s.** Sveriges uppmätta rekord ligger kring 81 m/s och då på fjällstation. 85,5
+  vid en vägstation är med all sannolikhet en trasig givare. Givarvakten behöver ett tak.
+* **Sikt 20 000 m förekommer 45 650 gånger** av ~92 000 siktrader — det är ett SENTINELVÄRDE ("minst
+  20 km"), inte en mätning. Hälften av siktmaterialet är alltså ett tak och måste behandlas som
+  "god sikt", aldrig som ett mätvärde i en tröskel.
+* Täckningen är **42,5 % för byvind och 42,6 % för sikt** — mindre än hälften av arkivraderna bär
+  fälten alls. Det halverar underlaget för W-A och ska stå i varje dom.
+* Noll rader med byvind < medelvind och noll negativa värden. Den delen av vakten behövs inte.
+
+**EN ANTYDAN SOM INTE FÅR ÖVERTOLKAS:** bandet 10–15 m/s har **2,23 × olycksfrekvensen** mot < 10
+m/s (89,5 mot 40,2 per 1 000 stationstimmar, på 927 stationstimmar och 83 olyckstimmar). Det är över
+W-A2:s krav på 1,5 ×, och det är den första kvantitativa antydan att #90 har något att mäta alls.
+Men det är ETT band, i september, och situation_archive bär ingen orsak — samband, inte kausalitet.
+Ingen dom får byggas på det.
+
+LÄGET EFTER DETTA: 2.1:s instrument är prövat och laddat inför frostlarmet. 2.3 har både
+tröskeldokument och ett kört steg 0 på en dag. Måndagen kan gå till det som verkligen kräver domen.
