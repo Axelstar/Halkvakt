@@ -2051,3 +2051,37 @@ LÄGET EFTER DETTA: hela kedjan är bevakad i tre lager. Kedjan till appen (heal
 check 1–3), mätningarnas körningar (6a) och mätningarnas underlag (6b). Kvar som obevakat är bara
 det som inte finns: #88 trenden och #98 tystnadsfelet har fastställda tröskeldokument men ingen
 insamlare, och T-A kan inte ta höstens första frostnätter i efterhand.
+
+## #108 (12/9 2026) Kort #92 och #93 stängda — och halva #93 flyttad i stället för slängd
+
+BESLUT: Bengts order efter att §2.5 och §2.6 tagits ur systemanalysen (v4). Båda korten stängs som
+dokumenterade nej. Men #93 hade två halvor, och bara den ena lades ner.
+
+#92 DÄCKTYP OCH FORDONSTYP — NED. Idén är inte fel: den är rätt formulerad som lager
+2-riskmodifierare i OVERGANGAR-ANALYS §1b.2, och där står den kvar som begrepp. Men den kräver
+tröskeljustering i FLERA tröskeldokument med dubbla signaturer, vektorer i tre portar och nya
+PRODUKTBOK-bilder — och den bär ingen egen fara. Den konkurrerar alltså om exakt samma kvällar som
+trenden (#88), som har naturens deadline i höstens första frostnätter. Öppnas igen om Axel vill ha
+den, inte förr.
+
+#93 KOMMUNALA VÄGAR — DELAT BESLUT, och det är poängen med posten.
+* **(a) kommunernas stationsdata läggs ner.** Det finns ingen öppen källa, ingen förhandling pågår,
+  och att hålla ett kort öppet för något ingen arbetar på är att låtsas att det är planerat. Hålet i
+  täckningen är verkligt — svartisen som skadar flest finns på gator och infarter där vi inte har en
+  enda givare — och det står kvar dokumenterat i SYSTEM.md. Det är skillnad på att VETA om ett hål
+  och att ha en PLAN för det; vi behåller det första och slutar låtsas om det andra.
+* **(b) SMHI-förstärkaren flyttas till kort #95.** `smhi_warnings` hämtas redan och ligger i
+  arkivet, så regeln "snöfallsvarning + yta nära noll = högre konfidens" kostar 0 kr och kräver
+  ingen ny källa. Den är en FÖRSTÄRKARE av frysrisken, aldrig en egen fara: den får höja konfidensen
+  i en varning som redan kvalificerar, inte skapa en varning. Den hör dessutom begreppsligt hemma i
+  §2.8, som är SMHI-punkten. Att slänga den med kortet hade varit att kasta den enda delen av #93
+  som var byggbar i dag.
+
+VARFÖR DEN UPPDELNINGEN ÄR VÄRD EN EGEN POST: ett kort som stängs tar med sig allt som står på det.
+#93 bar en källa vi inte har OCH en regel vi redan kan bygga, och de två har inget med varandra att
+göra utom att de skrevs samma dag. Innan ett kort stängs ska det läsas efter delar som lever.
+
+LÄGET EFTER DETTA: av systemanalysens nio kort (#88–#96) är #92, #93 och #94 stängda, #100 stängt
+tidigare i dag (#103), och kvar som aktiva är #88, #89, #90, #91, #95 och #96 — precis de fem
+punkter Bengt valde att arbeta vidare med (2.1, 2.2, 2.3, 2.4, 2.8). Dokumentet och tavlan säger
+samma sak igen.
