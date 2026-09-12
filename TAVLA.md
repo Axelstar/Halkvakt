@@ -1423,7 +1423,24 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   drygt en fördubbling av resan. Episodräkningen i steg 0 gav 2,0 × samma dag, med helt annan metod
   och annat underlag. Två instrument, samma svar. (Fyndraden i #99 citerar mätningens RADtal —
   312/14/71 — som enligt DECISIONS #100 är fel valuta för röst; slutsatsen står ändå.)
-- [ ] 🔇 **#100 Dämpning per FARA och sträcka, inte per id — före vintern** (följd av #99, kandidatkort
+- [x] ⛔ **#100 Dämpning per FARA och sträcka — STÄNGT 12/9 UTAN ATT BYGGAS, ett dokumenterat nej**
+  (Bengts fältdom + `scripts/segmentlangden.ts` körd 12/9, DECISIONS #103). Kortet ville laga något
+  som inte var trasigt, med en kur som hade gjort produkten sämre.
+  📏 **MÄTNINGEN:** Jämtlands 59 km-segment, 39 min i 90 km/h — motorn talar **4 gånger, vid minut
+  0, 10, 20, 30**. Det är reprisregelns golv (10 min OCH 5 km), inte ett fel. Variant B (kortare
+  segment) ger 12 larm, variant C (den föreslagna dämpningen, ett larm per segment) ger **1 larm
+  för 39 minuters halka**. Kuren var alltså tystare än sjukdomen.
+  🗣️ **BENGTS DOM 11–12/9:** "Om du kör 80 km och det är ishalka hela tiden … jag kan verkligen inte
+  se att det skulle störa eller vara någon cry wolf-situation. Det är halt hela tiden och att någon
+  säger åt mej att det är halt; kom ihåg det, det är fortfarande halt." Principen är dessutom
+  precis rätt: **cry wolf handlar om FALSKA varningar.** En sann varning som upprepas är redundans,
+  och mot uppmärksamhetsförfall under två monotona timmar är redundans snarare rätt än fel.
+  ➡️ **VAD SOM ÖVERLEVER:** inte upprepningen, utan möjligen TOTALEN när många OLIKA faror
+  kvalificerar samtidigt (vinterdagens 11 larm på 62 min var halka + frysrisk + vilt + kameror om
+  vartannat). Det är §4.7:s fråga och mäts i larm per timme, inte i upprepningar av en mening.
+  🧰 `scripts/upprepningen.ts` och dess knapp behålls — de kostar ingenting och ger ett vintertal om
+  frågan skulle komma tillbaka. Före-värdet är och förblir OAVGJORT.
+- [ ] ~~🔇 **#100 Dämpning per FARA och sträcka, inte per id — före vintern**~~ (följd av #99, kandidatkort
   enligt DECISIONS #99). Motorn tystar repriser av samma larm-id inom 10 min/5 km, men frysrisk från
   tio olika stationer längs samma väg är tio olika id och alla får tala. Vinterdagen hörde sex
   identiska meningar på en timme. Det är inte en ny fara — det är att befintliga faror inte ska
