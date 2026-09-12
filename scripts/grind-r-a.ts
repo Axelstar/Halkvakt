@@ -37,6 +37,7 @@
 
 import { andelSe, utfallGolv, utfallTak, marginalPe } from "../publish/marginal.ts";
 import { vaktdiagnos } from "../publish/vaktdiagnos.ts";
+import { molnForPunkter, type Molnklass } from "../publish/moln.ts";
 
 // ── Svepet ur TROSKLAR-RIMFROST §2. Inget tal är valt ur ett utfall.
 export const R1_MARGINAL = [0, 0.5, 1.0];   // yta ≤ daggpunkt + M
@@ -44,10 +45,13 @@ export const R2_YTA = [0, 1.0];             // yta ≤ Y
 export const R3_UTHALL = [30, 60];          // villkoret ska hålla i minst U minuter
 // ── Kraven ur §4.
 const R_A1_TIMMAR = 200, R_A2_STATIONER = 20, R_A3_NATT = 0.40, R_A5_DOMINANS = 0.20;
+const R_A4_KVOT = 2, R_A4_MIN = 5;   // klara ska fyra dubbelt så ofta som mulna, minst 5 av varje
 const MAXGAP_MIN = 45;   // längre lucka bryter episoden — arkivdieten, inte vädret
 
-export type Rad = { station: string; t: number; yta: number; dagg: number; rh: number; timme: number; natt: string };
-export type Episod = { station: string; natt: string; minuter: number; kallastTimme: number };
+export type Rad = { station: string; t: number; yta: number; dagg: number; rh: number; timme: number;
+  natt: string; lon: number; lat: number };
+export type Episod = { station: string; natt: string; minuter: number; kallastTimme: number;
+  kallastT: number; lon: number; lat: number; moln?: Molnklass };
 
 /** Villkoret. Vakten sitter i frågan; den här funktionen prövar bara fysiken. */
 export function uppfyller(r: { yta: number; dagg: number }, m: number, y: number): boolean {
@@ -71,7 +75,8 @@ export function episoder(rader: Rad[], m: number, y: number, uthall: number): Ep
         const minuter = (lopande[lopande.length - 1].t - lopande[0].t) / 60;
         if (minuter >= uthall) {
           const kallast = lopande.reduce((a, b) => (b.yta < a.yta ? b : a));
-          ut.push({ station, natt: lopande[0].natt, minuter, kallastTimme: kallast.timme });
+          ut.push({ station, natt: lopande[0].natt, minuter, kallastTimme: kallast.timme,
+            kallastT: kallast.t / 60, lon: kallast.lon, lat: kallast.lat });
         }
       }
       lopande = [];
@@ -118,7 +123,7 @@ if (process.argv.includes("--sjalvtest")) {
   k("yta +0,5 passerar yttröskeln 1", uppfyller({ yta: 0.5, dagg: 3 }, 0, 1), true);
   // Episoder på 30-minuterstakt.
   const rad = (min: number, yta: number, timme = 4): Rad =>
-    ({ station: "A", t: min * 60, yta, dagg: yta + 1, rh: 95, timme, natt: "2026-09-12" });
+    ({ station: "A", t: min * 60, yta, dagg: yta + 1, rh: 95, timme, natt: "2026-09-12", lon: 15, lat: 60 });
   k("två rader 30 min isär ⇒ en episod på 30 min",
     episoder([rad(0, -1), rad(30, -2)], 0, 0, 30).length, 1);
   k("två rader räcker inte för 60 min",
@@ -131,7 +136,8 @@ if (process.argv.includes("--sjalvtest")) {
   k("kallaste timmen plockas ur episoden",
     episoder([rad(0, -1, 22), rad(30, -5, 4), rad(60, -2, 5)], 0, 0, 30)[0].kallastTimme, 4);
   // R-A5.
-  const ep = (s: string): Episod => ({ station: s, natt: "n", minuter: 30, kallastTimme: 4 });
+  const ep = (s: string): Episod => ({ station: s, natt: "n", minuter: 30, kallastTimme: 4,
+    kallastT: 0, lon: 15, lat: 60 });
   // Spridda över många stationer — annars dominerar den största trivialt, vilket vore rätt svar
   // men inte ett prov (första skrivningen hade två stationer och B bar 80 %).
   const spritt = (n: number) => Array.from({ length: n }, (_, i) => ep(`s${i}`));
@@ -187,6 +193,7 @@ const rader = (await pool.query(`
   SELECT station_id,
     extract(epoch FROM sample_time)::bigint AS t,
     surface_temp_c AS yta, dewpoint_c AS dagg, humidity_pct AS rh,
+    ST_X(geom) AS lon, ST_Y(geom) AS lat,
     extract(hour FROM sample_time AT TIME ZONE $2)::int AS timme,
     ((sample_time AT TIME ZONE $2) - interval '12 hours')::date::text AS natt
   FROM ${SCHEMA}
@@ -198,7 +205,8 @@ const rader = (await pool.query(`
   ORDER BY station_id, t`, [DAGAR, TZ])).rows as any[];
 const data: Rad[] = rader.map((r) => ({
   station: r.station_id, t: Number(r.t), yta: Number(r.yta), dagg: Number(r.dagg),
-  rh: Number(r.rh), timme: Number(r.timme), natt: r.natt }));
+  rh: Number(r.rh), timme: Number(r.timme), natt: r.natt,
+  lon: Number(r.lon), lat: Number(r.lat) }));
 console.log(`Efter den tredelade givarvakten: ${data.length} rader, ${new Set(data.map((d) => d.station)).size} stationer.`);
 console.log(`  (#75:s vakt · yta − daggpunkt ≥ −5 °C · ${harRh ? "luftfuktighet >= 90 %" : "RH SAKNAS I ARKIVET"}. Tidszon ${TZ}.)`);
 if (!data.length) {
@@ -250,15 +258,40 @@ if (!harRh) {
   console.log(`     ⇒ ${utfallTak(d.andel, R_A5_DOMINANS, andelSe(d.andel, bast.ep.length))}`);
 }
 
-console.log(`\nR-A4 MOLNKONTROLLEN — INTE KÖRD, och skälet ska stå här`);
-if (LAND === "fi") {
-  console.log(`  SMHI:s molnstationer är svenska och når inte finska vägstationer. Den halvan av`);
-  console.log(`  fysikkontrollen kan bara köras på svensk frost, med samma hämtning som grind T-A`);
-  console.log(`  använder (parameter 16, DECISIONS #115). Att räkna den på finska stationer vore att`);
-  console.log(`  sträcka en molnobservation över Bottenviken och kalla det en mätning.`);
+// R-A4 FYSIKKONTROLLEN, MOLNET. Rimfrost är per definition ett utstrålningsfenomen: den bildas
+// när ytan strålar bort sin värme mot en klar himmel. Fyrar villkoret lika ofta mulna nätter som
+// klara är det inte utstrålning som driver träffarna — och då är hypotesen fel även om talen ser
+// bra ut (§5 utfall 2). Kravet i §4: klara nätter ska fyra minst DUBBELT så ofta som mulna.
+if (LAND === "se") {
+  console.log(`\nR-A4 MOLNKONTROLLEN — molnet hämtas vid körning ur SMHI metobs parameter 16`);
+  try {
+    const klass = await molnForPunkter(bast.ep.map((e) => ({ lon: e.lon, lat: e.lat, tMin: e.kallastT })));
+    bast.ep.forEach((e, i) => { e.moln = klass[i]; });
+    const n = bast.ep.length;
+    const klara = bast.ep.filter((e) => e.moln === "klar").length;
+    const mulna = bast.ep.filter((e) => e.moln === "mulen" || e.moln === "skymd").length;
+    const okand = bast.ep.filter((e) => e.moln === "okänd").length;
+    console.log(`  klar ${klara} · mellan ${n - klara - mulna - okand} · mulen/skymd ${mulna} · okänd ${okand}`);
+    if (klara < R_A4_MIN || mulna < R_A4_MIN) {
+      console.log(`  ⊘ OAVGJORT — för få nätter i endera klassen (kräver ${R_A4_MIN} vardera för att jämföra).`);
+    } else {
+      const kvot = klara / mulna;
+      console.log(`  klara mot mulna: ${kvot.toFixed(2)} × (krav ≥ ${R_A4_KVOT})`);
+      console.log(`  ⇒ ${kvot >= R_A4_KVOT ? "R-A4 STÖDJER utstrålningshypotesen" : "R-A4 STÖDJER INTE hypotesen — och då är den fel även om talen ser bra ut"}`);
+    }
+    console.log(`  Sentinelen: 113 % är SMHI:s kod för HIMLEN SKYMD, inte molnmängd — fysikaliskt`);
+    console.log(`  motsatsen till klar natt. Den räknas med de mulna (publish/moln.ts).`);
+  } catch (e) {
+    console.log(`  SMHI svarade inte: ${String((e as Error).message).slice(0, 90)}`);
+    console.log(`  Molnkontrollen är OKÖRD — det är tystnad, inte ett negativt svar.`);
+  }
 } else {
-  console.log(`  Kopplas in med samma hämtning som grind T-A (SMHI parameter 16) när R-A1/R-A2 passerar.`);
+  console.log(`\nR-A4 MOLNKONTROLLEN — INTE KÖRD PÅ DET FINSKA ARKIVET, och skälet ska stå här`);
+  console.log(`  SMHI:s molnstationer är svenska och når inte finska vägstationer. Att sträcka en`);
+  console.log(`  molnobservation över Bottenviken och kalla det en mätning vore precis det`);
+  console.log(`  representativitetsfel §2.8 mätte bort. Kör om med --land=se vid svensk frost.`);
 }
+
 console.log(`\n  Att läsa med: R-A prövar om SIGNALEN finns och är fysik. Den ger ingen rätt till röst.`);
 console.log(`  Rimfrosten blir en ANDRA GREN i icing_point, aldrig en sjätte farotyp (§1).`);
 await pool.end();

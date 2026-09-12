@@ -208,8 +208,13 @@ Deno.serve(async (req) => {
             `regnet slutade, och 0a/0b/0c blir OAVGJORT.\n\n` +
             `**Vad som faktiskt ändras:** bara 0c. Avläsningen 11/9 gav 3–4 regnstopp följda av yta ≤ 1 °C; ` +
             `grinden behöver ~30. 0a (76 %, median 35 min), 0b, 0d och 0f ger samma svar som då.\n\n` +
-            `**Kolla #88 i samma varv:** grind T-A (trendkolumnen) väntar på exakt samma frostnätter och ` +
-            `kan lika lite ta dem ikapp.\n\n` +
+            `**FYRA MÄTNINGAR VÄNTAR PÅ SAMMA NÄTTER, och ingen av dem kan ta dem ikapp:**\n` +
+            `1. \`overgangar-steg0\` med \`dagar = 7\` — kort #89, 0c (ovan)\n` +
+            `2. \`grind-t-a\` — trenden (#88), kräver >= 30 frostnätter på >= 20 stationer\n` +
+            `3. \`grind-r-a\` med \`land = se\` — rimfrosten (#46). Svensk körning är den ENDA som kan ` +
+            `köra R-A4, molnkontrollen: SMHI:s molnstationer är svenska. Finsk körning är förhandsbesked.\n` +
+            `4. \`grind-k-a\` — frysklassningen (#103), vars septembervakt kräver >= 100 punkter med ` +
+            `UPPMÄTT frys. Den har hittills haft noll.\n\n` +
             `Bakgrund: #127, \`docs/OVERGANGAR-ANALYS.md\` §9, DECISIONS #96 och #97, kort #89.\n\n` +
             `Engångslarm: den här issuen skapas aldrig igen, öppen eller stängd.`,
         });
