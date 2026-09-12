@@ -212,3 +212,8 @@ i samma commit när de överlappar.
   och incheckning sker i SAMMA varv, med kortraden och DECISIONS-raden i samma commit. Kontroll före
   varje sessionsslut: `git status --porcelain --untracked-files=all` — en ospårad fil under docs/ är
   ett larm, inte en detalj.
+- DEPLOYA ALDRIG en Supabase-funktion utan att först `git pull` och verifiera att lokala filen
+  är identisk med main (`git diff origin/main -- supabase/functions/X/`). 12/9 skrev jag över
+  Bengts check 7 med en version som saknade den; main hade båda, driften bara min. Efter
+  deploy: kör funktionens egna prov så varje check bevisligen finns i det som kör. En check
+  som tyst försvinner ur driften är värre än en som aldrig byggdes (DECISIONS #126).

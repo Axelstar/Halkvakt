@@ -4081,3 +4081,18 @@ september blir svaret OAVGJORT på Å-A4, och det är rätt svar. Vid första vi
 exponeringsmätningen (§2) om med `scripts/kodgrinden.ts` avsnitt D.
 
 **Tionde tröskeldokumentet, och noll utkast kvar.**
+
+## #126 (12/9 2026) Överskriven check: jag deployade vakthunden FÖRE rebasen mot main
+Bengts fråga: "deployade du vakthunden efter 3f2a43a? vilken version kör den?" Svaret:
+nej. Jag deployade min lokala fil (med 6c) INNAN jag hämtade main, där Bengt samma dag lagt
+check 7 (källvaktspåminnelsen, 2ca4609). Resultat: main hade båda, driften hade bara min.
+BEVIS: ?paminnelseprov=1 gav inget svar från check 7. Efter omdeploy från main svarar
+både 7 och 6c. Mätvaktens #198 var alltså en ÖVERSKRIVEN CHECK, inte en missad takt.
+Detta är samma fel som 2/9 (#60: deployade med rött kontrakt) i ny form: jag deployade
+utan att först säkerställa att det jag deployade var main. Två personer deployar samma
+funktion samma dag; den som deployar sist utan att ha pullat först raderar den andres jobb
+utan att något ser trasigt ut. En check som tyst försvinner är värre än en som aldrig
+byggdes — den fanns i loggen, i DECISIONS och på tavlan, men inte i drift.
+REGEL (CLAUDE.md): deploya ALDRIG en Supabase-funktion utan att först git pull och verifiera
+att den lokala filen är identisk med main. Och efter deploy: kör funktionens egna prov
+(?larmprov, ?paminnelseprov) så att varje check bevisligen finns i det som kör.
