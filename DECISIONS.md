@@ -3349,3 +3349,40 @@ RÄTTAT I SAMMA VARV, i tre delar:
 hämtar ingest/fi.ts RH framåt — Fintraffic levererar det, fältet plockades bara aldrig upp — eller
 så väntar R-A på svensk frost. Det är Bengts val, och det är billigare än det låter: RH ligger i
 samma svar som de fält vi redan läser.
+
+## #138 (12/9 2026) Luftfuktigheten in i den finska ingesten — noll kronor, och den verkar bara framåt
+
+BESLUT (Bengts order efter kostnadsfrågan): `ingest/fi.ts` läser nu `ILMAN_KOSTEUS` och skriver den
+till `humidity_pct` i både `fi.weather_latest` och `fi.weather_observations`.
+
+**MÄTT FÖRE BESLUTET, inte gissat.** Jag hämtade Fintraffics stationssvar och räknade:
+
+| | |
+| :-- | --: |
+| Stationer i svaret | 528 |
+| **`ILMAN_KOSTEUS`** | **505 stationer** |
+| `KASTEPISTE` | 505 stationer |
+| Distinkta givarnamn i svaret | **131** |
+| Givare vi läste | 6 |
+
+**Luftfuktigheten ligger på exakt samma 505 stationer som daggpunkten, i samma svar vi redan
+laddar ner var trettionde minut — och kastade på golvet.** Precis samma miss som KASTEPISTE var
+den 4/9, och som svenska motorns oanvända `dewpoint_c` var dessförinnan.
+
+KOSTNADEN, post för post: noll extra anrop, noll extra bytes (360 kB gzippat, fältet är redan med),
+**ingen migration** (`fi.weather_observations` skapades `LIKE public.weather_observations INCLUDING
+ALL`, så kolumnen fanns redan och stod tom), noll Actions-minuter, storleksordningen 0,15 MB/dygn,
+tre rader kod.
+
+**DEN VERKAR BARA FRAMÅT, och det är hela skälet att göra den i dag.** Rader som redan skrivits
+förblir tomma. R-A vid full vaktstyrka behöver alltså finska frostnätter som kommer EFTER den här
+ändringen — och Lapplands frost kommer om veckor, inte månader. Samma logik som `sql/015` i går:
+det som inte hämtas när det händer finns inte sedan.
+
+BIFYND SOM INTE SKA GLÖMMAS: **131 givarnamn i svaret, sex som vi läser.** Det är ingen kritik —
+arkivdieten och gratisnivån är verkliga skäl — men den finska källan är mycket rikare än vad vi tar
+ur den. Behöver ett framtida kort ett finskt fält ligger det sannolikt redan i svaret, och kostar
+noll att plocka upp. Det är tredje gången på nio dygn vi hittar ett användbart fält på golvet.
+
+BEVISET ÄR EN RAD, INTE EN COMMIT: `fi: … daggpunkt N st, luftfuktighet N st, …` i nästa timkörning.
+Utan den raden är fältet inte skrivet, oavsett vad koden säger (kort #73:s läxa).
