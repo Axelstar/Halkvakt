@@ -1,0 +1,225 @@
+# TROSKLAR-VIND-SIKT
+
+**Kort:** #90 VIND OCH SIKT (systemanalysen §2.3). **Status:** 📝 **UTKAST 2026-09-12** — **Axels ja
+givet 12/9 via Bengt**, vilket öppnade halva nyckeln. Väntar på Bengts fastställande av värdena och
+därefter Axels kontrasignering (samma form som #61/#68/#92/#95/#110). Ingen kod ännu.
+
+Husreglerna som gäller: tröskeldokument före kod · skuggkolumn före röst · **punktkällor säger
+"framöver", aldrig "på vägen"** · tystnad är en funktion · trösklar gissas inte, de faller ur mätning
+· ändring efter första skuggkörningen kräver båda signaturer (§8).
+
+---
+
+## 1. Vad som döms — och en distinktion kortet saknade
+
+`wind_speed_ms`, `wind_gust_ms` och `visibility_m` landar varje minut sedan kort #84 (sql/011) och
+har **aldrig använts nedströms**. Kortet formulerade dem som "punktfaror". Överlämningen från #89
+(TROSKLAR-OVERGANGAR §6) kallade dem "lager 2 — riskmodifierare". **Båda har rätt, och det är två
+olika roller som måste dömas var för sig:**
+
+| Roll | Vad det betyder | Exempel |
+| :-- | :-- | :-- |
+| **A. Egen fara** | Storheten är farlig i sig, oavsett väglag | Byvind 25 m/s på en bro, torr vägbana, husvagn |
+| **B. Modifierare** | Storheten ändrar inte ytan, men gör en ANNAN fara värre | Is + sidvind: samma is, sämre grepp i sidled |
+
+Roll A är en **ny fara** i A-skalan och döms som en sådan — från noll, med eget facit.
+Roll B är en **regel om en fara som redan finns** och döms som #68 var tänkt: ett förvillkor eller ett
+modifierat försprång, ingen historik, ingen tillståndsskattare.
+
+**Dokumentet dömer rollerna separat.** Faller A men håller B är utfallet "vind är ingen egen fara men
+förvärrar halkan" — ett helt giltigt och användbart svar. Faller båda läggs kortet ner.
+
+**Punktspråket är inte förhandlingsbart.** Vind och sikt mäts vid en station. Rösten säger
+"framöver", aldrig ett avstånd eller "på vägen framför". Samma regel som frysrisken lyder under.
+
+---
+
+## 2. Parametrar som ska sättas — medvetet OSATTA
+
+| Parameter | Vad den styr | Svep |
+| :-- | :-- | :-- |
+| **G** byvindtröskel | när byvind är en egen fara (roll A) | 15 · 18 · 21 · 25 m/s |
+| **G_mod** byvind som modifierare | när vind förvärrar halka (roll B) | 10 · 13 · 16 m/s |
+| **S** siktgräns | när sikt är en egen fara | 200 · 300 · 500 m |
+| **S_mod** sikt som modifierare | när sikt förvärrar halka | 300 · 500 · 800 m |
+| **Utfallsfönster** | hur länge efter fyrningen facit får komma | 30 · 60 · 120 min |
+
+**Vad som INTE sveps:** att båda är punktkällor, och att halkan vinner prioritetsstriden. Det är
+avgjort i DECISIONS #68:s anda och ändras inte här.
+
+### 2.1 Per fordonstyp är INTE längre möjligt — och det är kortets största svaghet
+
+Kortets ursprungliga nyckel sade "byvind m/s **per fordonstyp**". Det går inte längre: **kort #92
+(däcktyp och fordonstyp som inställning på enheten) stängdes 2026-09-12** (DECISIONS #108). Utan den
+inställningen vet motorn inte om den talar till en personbil eller en husvagn.
+
+Konsekvensen är oundviklig och ska stå utskriven:
+
+- En tröskel satt för **husvagn och släp** (där faran är verklig vid 15–18 m/s) kommer att tala till
+  personbilsförare som inte behöver höra det.
+- En tröskel satt för **personbil** (kanske 25 m/s) missar exakt den B2B-grupp som motiverade kortet.
+
+**Beslutet skjuts till grinden, inte till gissningen:** svepet ovan spänner hela intervallet, och
+W-B mäter falsklarmskostnaden vid varje tröskel. Räcker inte en enda tröskel för båda grupperna är
+det ett argument för att öppna #92 igen — men det argumentet ska bäras av mätning, inte av intuition.
+
+---
+
+## 3. Givarvakt — obligatorisk, men OMÄTT för de här givarna
+
+Varje fråga i det här dokumentet som läser vind eller sikt **måste** bära en givarvakt, av samma skäl
+som yttemperaturen bär #75:ans.
+
+**Och här är en varning som inte får läsas förbi:** för yttemperaturen VET vi vad vakten fångar —
+**61 % av arkivets frostrader föll på den**, med −49,9 °C som värsta värde (DECISIONS #106). För vind
+och sikt **vet vi ingenting**. Ingen har någonsin mätt hur ofta `wind_gust_ms` eller `visibility_m`
+är orimliga i vårt arkiv.
+
+**Därför är steg 0 (§7) inte valfritt.** Det ska mäta, innan något annat:
+
+- Fördelningen av `wind_gust_ms` och `visibility_m` — finns sentineltal (−1, 0, 9999), fastnade
+  värden, byvind under medelvind?
+- Andelen rader där byvind < medelvind (fysiskt omöjligt) eller sikt exakt lika för en hel dag.
+- Hur stor andel av stationerna som över huvud taget rapporterar de tre fälten.
+
+Utan den mätningen är varje tal i §4 meningslöst. **En vakt som inte vet vad den vaktar mot är ingen
+vakt.**
+
+---
+
+## 4. Grindarna
+
+### W-A — Finns signalen alls? (mätbar NU, före all skuggkod)
+
+Frågan: **stiger olycksfrekvensen mätbart med byvind respektive sjunkande sikt i vårt eget arkiv?**
+
+Metod: för varje station och timme, para `wind_gust_ms` och `visibility_m` mot olyckor i
+`situation_archive` inom räckvidd. Jämför olycksfrekvensen per stationstimme i band (byvind < 10,
+10–15, 15–20, ≥ 20 m/s; sikt > 1000, 500–1000, 200–500, < 200 m).
+
+**Detta är den avgörande skillnaden mot vattenplaningen:** där var exponeringen omätbar och facit
+saknades. Här är exponeringen mätt kontinuerligt vid varje station, så en **nollhypotes går att
+räkna** — vad är olycksfrekvensen vid normal vind, och stiger den?
+
+| # | Mått | Krav |
+| :-- | :-- | :-- |
+| W-A1 | Olycksfrekvensen ska stiga **monotont** med byvindbandet | ja/nej |
+| W-A2 | Högsta bandet mot lägsta | **≥ 1,5 ×** |
+| W-A3 | Samma två krav för sikt, räknade separat | ja/nej |
+| W-A4 | Underlag | **≥ 500** stationstimmar i det högsta bandet, **≥ 20** olyckor totalt |
+
+**Faller W-A är svaret ett dokumenterat nej** och kortet läggs ner utan en rad kod. Det är ett
+billigt och bra utfall — och det är därför W-A byggs först.
+
+*Reservation som ska stå i utfallet: olyckor i `situation_archive` bär ingen orsak
+(situations.ts:37). En association mellan vind och olycka är inte ett bevis på orsak, och en
+hastighetsrelaterad olycka i blåst räknas som "vindolycka" här. W-A mäter samband, inte kausalitet.*
+
+### W-B — Skuggdriften (döms efter en höst- eller vintermånad)
+
+Skuggkolumn i skuggmotorn, ingen röst. Rollerna mäts **var för sig**:
+
+| # | Mått | Fällt värde (Bengt) |
+| :-- | :-- | :-- |
+| W-B1 | **Roll A** — falsklarmsandel av utfärdade skuggvarningar | **≤ 20 %** |
+| W-B2 | **Roll A** — missandel av facitbekräftade händelser | **≤ 40 %** |
+| W-B3 | **Roll A** — varningsfrekvens per rutt och blåsdygn | **≤ 3** |
+| W-B4 | **Roll B** — nettonytt: halkfall där modifieraren hade gett bättre försprång | **≥ 5 %** av halkfacit |
+| W-B5 | **Roll B** — priset: tillkomna fyrningar som inte var hala | **≤ 25 %** |
+
+Asymmetrin i W-B1/W-B2 är avsiktlig och ärvd ur TROSKLAR-VATTENPLANING §3: en missad varning lämnar
+föraren där hen redan är; ett falsklarm lär föraren att ignorera rösten, och då dör även halkvarningen.
+
+### W-C — Domens giltighet
+
+| # | Villkor | Fällt värde |
+| :-- | :-- | :-- |
+| W-C1 | Skuggvarningar i underlaget | **≥ 200** |
+| W-C2 | Facitbekräftade händelser | **≥ 15** |
+| W-C3 | Blås- eller dimdygn | **≥ 5** |
+| W-C4 | Län | **≥ 3** |
+| W-C5 | Givarvaktens bortfall redovisat | alltid, som andel |
+
+W-C5 finns för att §3:s okända inte ska försvinna i en dom. Faller 60 % av vindmätningarna på vakten
+ska det synas bredvid talen, inte döljas i dem.
+
+---
+
+## 5. Modifierarrollen — formen, och varför den är billig
+
+Roll B byggs som DECISIONS #68 var tänkt, och **den blir den första lager 2-regel som faktiskt
+skrivs** (#68 beslutades men byggdes aldrig — motorn har fem faror och ingen av dem är vattenplaning).
+
+Formen är:
+
+```
+om halka ELLER frysrisk kvalificerar
+   och byvind >= G_mod (eller sikt <= S_mod)
+då  förläng försprånget  ELLER  höj prioriteten inom A-skalan
+```
+
+**Ingen historik, ingen tillståndsskattare, inget minne.** Båda signalerna finns i samma snapshot i
+samma ögonblick. Det är hela skillnaden mot lager 1 (§2.2 i OVERGANGAR-ANALYS) och skälet att roll B
+är väsentligt billigare att bygga än roll A.
+
+**Den öppna designfrågan, som kortet ställde och som besvaras här:** modifieraren ska **förlänga
+försprånget**, inte höja prioriteten. Skälet är husregeln — prioritetsstegen droppar förloraren, så
+en höjd prioritet skulle tysta något annat. Ett längre försprång säger samma sak tidigare, vilket är
+exakt vad sämre grepp och sämre sikt kräver. Halkan vinner fortfarande alltid.
+
+---
+
+## 6. Facit — och en ärlig svaghet
+
+| Källa | Får bekräfta träff | Får fälla falsklarm |
+| :-- | :-- | :-- |
+| Olycka i `situation_archive` inom räckvidd och fönster | ja | nej |
+| Stationens egen mätning i efterhand (byvind/sikt nådde aldrig tröskeln) | ja | **ja** |
+| SMHI:s vindvarningsklasser (`smhi_warnings`) | ja | nej |
+| Testarlogg (förare, tid, plats) | ja | ja |
+
+**Svagheten, utskriven:** olyckor bär ingen orsak. Vi kan aldrig visa att en olycka orsakades av
+sidvind — bara att den inträffade när det blåste. Därför får bara stationens egen mätning och en
+mänsklig testarlogg fälla falsklarm; allt annat får bara bekräfta. Samma asymmetri som
+vattenplaningens §2, och av samma skäl: **"blåst utan olycka" är inte ett falsklarm** — en korrekt
+riskvarning följs oftast av att ingenting händer.
+
+---
+
+## 7. Ordning — vad görs när
+
+| Steg | Vad | När | Grind |
+| :-- | :-- | :-- | :-- |
+| 0 | **Givarkollen + W-A**, läsande knapp mot arkivet | **kan göras nu** — kräver inte radardomen | W-A |
+| 1 | Detta dokument fastställs och kontrasigneras | efter steg 0:s tal | Bengt + Axel |
+| 2 | Roll B som skuggkolumn (billigast, ingen ny fara) | efter 14/9 | W-B4/W-B5 |
+| 3 | Roll A som skuggkolumn | efter 14/9 | W-B1–W-B3 |
+| 4 | Röst | efter W-C och Axels ja — rösttext, A-skalan, PRODUKTBOK | — |
+
+**Steg 0 kan göras i helgen.** Det kräver ingen ny källa, ingen skuggkolumn och ingen deploy — bara
+`weather_observations` och `situation_archive`, som båda växer (källkollen 12/9). Faller W-A är
+kortet klart utan att en rad motorkod skrivits.
+
+**Roll B före roll A** i steg 2–3, tvärtemot kortets ursprungliga ordning. Skälet: roll B är
+billigare (ingen ny fara, ingen ny rösttext, ingen ny plats i A-skalan) och den prövar samtidigt det
+mönster som #46 och framtida lager 2-regler ska ärva.
+
+---
+
+## 8. Ändring
+
+Fram till första skuggkörningen får §2:s svep och §4:s krav justeras av vem som helst av oss med en
+rad i DECISIONS. **Från första skuggkörningen kräver varje ändring båda signaturer** och en
+motivering som inte lutar sig mot utfallet.
+
+En ändring är redan gjord mot kortets ursprungliga lydelse och ska inte göras om: **per fordonstyp
+utgår** (§2.1), eftersom kort #92 stängdes 12/9. Vill någon tillbaka dit är vägen att öppna #92 med
+mätning som skäl, inte att skriva om det här dokumentet.
+
+---
+
+*Källor: TAVLA.md #90, #46, #68, #75, #81, #84, #92 (stängt), #95; docs/TROSKLAR-OVERGANGAR.md §6
+(överlämningen, lagerindelningen); docs/OVERGANGAR-ANALYS.md §1b.2 (lager 1 mot lager 2);
+docs/TROSKLAR-VATTENPLANING.md §2/§3 (asymmetrin, grindformen); docs/TROSKLAR-TRENDEN.md §8
+(ändringsregimen); DECISIONS #68, #106, #108, #109, #111; sql/011_vind_sikt.sql;
+ingest/sources/situations.ts:37; scripts/kallkollen.ts (källorna växer).*
