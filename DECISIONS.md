@@ -3619,3 +3619,63 @@ läsande kontroll stänger lika bra. Grinden rör ingen kod — den läser.
 
 **Vad den INTE bevisar:** bara deklarerade kontrakt vaktas. Grinden är ett skyddsnät MELLAN
 ändringstillfällena, inte en ersättning för en fullständig grep när en tröskel faktiskt ändras.
+
+## #145 (12/9 2026) CRLF-glappet stängt — två kontroller som aldrig kunde köras före push
+
+**Beslut:** `.gitattributes` med `* text=auto eol=lf` (plus `*.bat`/`*.cmd` som `eol=crlf`).
+Radslut bestäms nu av REPOT, inte av varje maskins git-installation.
+
+**Glappet.** `bundle-skuggmotor --check` och `bundle-publicera --check` **föll alltid** lokalt på
+Windows och gick **alltid** igenom i CI. Orsaken var inte koden: git lagrar varje blob med LF,
+men Git for Windows sätter `core.autocrlf=true` i sin SYSTEM-config
+(`C:/Program Files/Git/etc/gitconfig`) utan att fråga, så arbetsträdet fick CRLF. Generatorn
+skriver LF, filen på disk bar CRLF, jämförelsen sa "matchar inte källorna".
+
+Följden: **de två kontrollerna kunde aldrig användas som förkontroll.** En verklig buntdrift —
+precis den som lät skuggmotorn köra ett dygn på gammal motor efter #28 — hade bara kunnat fångas
+efter push, aldrig före. En vakt som alltid ropar varg är en vakt ingen längre läser.
+
+**Uppmätt före:** 364 av 411 spårade textfiler bar CRLF lokalt; varje blob i git bar LF. Inställningen
+fanns varken i repots eller användarens git-config — bara i systemets, alltså osynlig och olika på
+varje dator.
+
+**Vad ändringen rörde, mätt fil för fil mot fingeravtryck tagna före:**
+
+| | Antal |
+| :-- | --: |
+| Filer totalt | 909 |
+| Oförändrade | 546 |
+| Ändrade — **bara radslut** | 363 |
+| Ändrade på annat sätt | **0** |
+| Binära filer som rörts | **0** |
+| Filer som saknas efteråt | **0** |
+| Bär fortfarande CRLF | 1 (`android/gradlew.bat`, avsett) |
+
+**Noll blobbar i historiken ändrades.** `git status` visade efteråt bara `?? .gitattributes`. Det
+är hela poängen: med `text=auto` är en CRLF-fil *likvärdig* med LF-bloben, så git ser aldrig någon
+skillnad — vilket också är varför `git checkout-index -a -f` inte rörde någonting och filerna fick
+materialiseras om (raderas ur arbetsträdet och hämtas tillbaka ur git).
+
+**Bevis efteråt:** `bundle-skuggmotor --check` = "skuggmotor/index.ts i synk", `bundle-publicera
+--check` = "publicera/index.ts i synk", kontraktsgrindens självtest OK, `npm test` 57 tester
+52 gröna 0 fel (5 hoppade, DB-beroende).
+
+**Slutbeviset är en FÄRSK KLON på samma maskin**, med samma system-config som skapade problemet:
+
+| | Före | Efter (färsk klon) |
+| :-- | --: | --: |
+| Textfiler med rena LF | 47 | **411** |
+| Textfiler med CRLF | 364 | **1** (`android/gradlew.bat`) |
+| Binära | 498 | 498 |
+| `bundle-skuggmotor --check` | föll | **i synk** |
+| `bundle-publicera --check` | föll | **i synk** |
+| `git status` i klonen | — | rent |
+
+**Undantaget.** `android/gradlew.bat` behåller CRLF; cmd.exe vill ha det. `android/gradlew` (skalet
+som CI kör) är och förblir LF.
+
+**Bifynd som inte åtgärdats här:** 26 av de 363 renormaliserade filerna ligger under
+`ios/HalkvaktEngine/.build/` — spårade Swift-byggartefakter. Bara lokala radslut ändrades, deras
+blobbar är orörda, och de är döda Linux-artefakter. Att de är spårade över huvud taget är ett eget
+kort (se TAVLA): **504 filer, 27,6 MB**, och `.gitignore` täcker `android/build/` men inte Swifts
+`.build/`.

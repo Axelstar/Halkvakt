@@ -345,6 +345,19 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [ ] 🗑️ **#146 27,6 MB SWIFT-BYGGUTDATA LIGGER SPÅRAT I REPOT — beslut krävs innan något tas bort**
+  Upptäckt 12/9 under CRLF-arbetet (#145): `ios/HalkvaktEngine/.build/` är spårad med **504 filer,
+  27,6 MB** — Linux-byggutdata (`.o`, `.swiftmodule`, `.pcm`, `master.priors`, `debug.yaml`) från en
+  CI-körning som blivit incheckad. `.gitignore` täcker `android/build/` och `android/*/build/` men
+  **inte Swifts `.build/`**. Varje klon betalar för det, och filerna är värdelösa på en annan maskin
+  än den som byggde dem. Åtgärden är två rader (`git rm -r --cached` + rad i `.gitignore`) men att ta
+  bort spårade filer är ett medvetet beslut, inte städning — **Bengt eller Axel säger till först**.
+  Historiken blir inte mindre av det; bara nya kloner slutar hämta dem på nytt.
+  **Bevisad skada, inte bara vikt (12/9):** en klon till en nästlad katalog FALLER på Windows
+  260-teckengräns — `fatal: cannot create directory at 'ios/HalkvaktEngine/.build/x86_64-unknown-
+  linux-gnu/debug/HalkvaktEnginePackageDiscoveredTests.build': Filename too long`. Klonen gick
+  igenom först med `-c core.longpaths=true`. Det är alltså inte bara 27,6 MB — det är en repo som
+  inte går att klona normalt på Windows, och orsaken är uteslutande byggartefakterna.
 - [ ] 🧊 **#103 FRYSKLASSNINGEN — kan en modell som är opålitlig på grader ändå bära en klass?**
   📄 **TRÖSKELDOKUMENT SKRIVET 12/9** (`docs/TROSKLAR-FRYSKLASSNINGEN.md`, **FASTSTÄLLT 12/9**, DECISIONS #130/#135).
   **Frågan är Axels, ordagrant**, ur hans bedömning av grind A: grind A föll, men A3
@@ -2138,6 +2151,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#145 CRLF-GLAPPET STÄNGT — KLART 12/9** (DECISIONS #145): `.gitattributes` med `* text=auto eol=lf`. `bundle-skuggmotor --check` och `bundle-publicera --check` föll ALLTID lokalt på Windows och gick ALLTID igenom i CI — git lagrar LF, Git for Windows sätter `core.autocrlf=true` i sin SYSTEM-config utan att fråga. De två kontrollerna kunde därmed aldrig användas som förkontroll före push. Uppmätt före: 364 av 411 textfiler bar CRLF lokalt. Mätt fil för fil efteråt: 363 ändrade **bara i radslut**, 0 ändrade på annat sätt, **0 binära rörda**, 0 saknade, noll blobbar i historiken ändrade. Undantag: `android/gradlew.bat` behåller CRLF. Bevis: båda bundelkontrollerna gröna lokalt, `npm test` 52/0.
 - [x] ✅ **#144 KONTRAKTSGRINDEN — KLART 12/9** (DECISIONS #144, PR-länk i commiten): `scripts/kontraktsgrinden.ts` som eget CI-steg före `npm test`. Hålet: #75:s givarvakt stod ordagrant på **17 ställen i 12 filer utan någon vakt alls** — ändras 12 till 10 i en av dem mäter grindarna olika populationer tyst. Fem kontrakt vaktas (#75, fukten, `BUCKET_S` 1800, `MAX_KM` 50, `K_NEIGHBOURS` 5); alla håller redan. Fuktkontraktet jämför **över språkgränsen** (TS-mängd mot SQL-lista, normaliserad som mängd). Bevis: självtest 5 fall + två mutationsprov mot riktiga repot — `grind-t-a.ts` 12→10 ⇒ exit 1 med avvikaren utpekad, och SQL-listan utan `'dry'` ⇒ exit 1 på drift **inuti en enda fil** (rad 42 mot rad 48). Avsiktliga olikheter som INTE vaktas står i filens huvud: nollpolitiken kring #75 (motorn släpper igenom rader utan lufttemp, grindarna inte) och `MIN_SHARED` (cell-matning 10 mot grind A 20). Husregel i CLAUDE.md: en tröskel som kopieras förs in i grinden i samma commit.
 - [x] ✅ **#79 puls-regn-30 AVVECKLAD — KLART 9/9 10:47 (pulsklocka #11 skarp, DECISIONS #89):** Axels "i övrigt kör vi" + Bengts "kör". Överflödig sedan ingest-live deployades (rain_sum_mm varje minut; regn-30 kom bara in i restnischen, #44/#84). Bevisvakten: `avvecklat: puls-regn-30` … `OK puls-regn-30: borta`, 8 cron-jobb kvar, mallen bytt till puls-ingest-grannar FÖRE avvecklingen. −24 debiterade min/dygn. Sista kvittot: ingen regn-30-körning 11:41 (kvällsavläsningen).
 - [x] ✅ **#84 ingest-live DEPLOYAD — KLART 9/9 ~05:00, BEVISAT av Axel** (rättelsen PR #76 / DECISIONS #79): SQL-beviset 30 min efter deploy: `vind 844 | regn 907 | sikt 844 | alla 907` (före: vind 0). rain_sum_mm, snö, vind och sikt landar i arkivet varje minut. Luckan 5/9 → 9/9 05:00 är permanent (Trafikverket ger bara senaste mätningen) och redovisas så i grind V-A. Regn-30 (#79) är därmed helt överflödig.

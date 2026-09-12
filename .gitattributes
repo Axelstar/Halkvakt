@@ -1,0 +1,18 @@
+# Radslut bestäms av REPOT, inte av varje maskins git-installation.
+#
+# Utan den här filen avgör core.autocrlf lokalt på varje dator hur arbetsträdet ser ut.
+# Git for Windows sätter den till true i sin SYSTEM-config (C:/Program Files/Git/etc/gitconfig)
+# utan att fråga, så en Windows-utvecklares arbetsträd fick CRLF medan git lagrade LF och
+# Linux/macOS fick LF. Följden var att bundle-skuggmotor --check och bundle-publicera --check
+# ALLTID föll lokalt på Windows (generatorn skriver LF, filen på disk bar CRLF) och ALLTID
+# gick igenom i CI. De två kontrollerna kunde därmed aldrig användas som förkontroll före
+# push — bara CI kunde fälla dem. Uppmätt 12/9 2026: 364 av 411 spårade textfiler bar CRLF
+# lokalt, medan varje blob i git bar LF.
+#
+# text=auto: git avgör själv vad som är text (binärt lämnas orört). eol=lf: text checkas ut
+# med LF överallt. Ingen blob i historiken ändras av det här — bara arbetsträdet.
+* text=auto eol=lf
+
+# Undantaget: Windows batch. cmd.exe vill ha CRLF, och android/gradlew.bat är den enda.
+*.bat text eol=crlf
+*.cmd text eol=crlf
