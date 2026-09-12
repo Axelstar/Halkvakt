@@ -2,11 +2,11 @@
 
 **Kort:** #90 VIND OCH SIKT (systemanalysen §2.3). **Status:** 📝 **UTKAST 2026-09-12** — **Axels ja
 givet 12/9 via Bengt**, vilket öppnade halva nyckeln. Väntar på Bengts fastställande av värdena och
-därefter Axels kontrasignering (samma form som #61/#68/#92/#95/#110). Ingen kod ännu.
+därefter är det klart att köra. **Ingen kontrasignering behövs** (Bengts beslut 12/9, DECISIONS #132). Ingen kod ännu.
 
 Husreglerna som gäller: tröskeldokument före kod · skuggkolumn före röst · **punktkällor säger
 "framöver", aldrig "på vägen"** · tystnad är en funktion · trösklar gissas inte, de faller ur mätning
-· ändring efter första skuggkörningen kräver båda signaturer (§8).
+· trösklarna är daterade FÖRE mätningen och skrivs inte om när talen kommit (§8).
 
 ---
 
@@ -254,7 +254,7 @@ riskvarning följs oftast av att ingenting händer.
 | Steg | Vad | När | Grind |
 | :-- | :-- | :-- | :-- |
 | 0 | **Givarkollen + W-A**, läsande knapp mot arkivet | **kan göras nu** — kräver inte radardomen | W-A |
-| 1 | Detta dokument fastställs och kontrasigneras | efter steg 0:s tal | Bengt + Axel |
+| 1 | Detta dokument fastställs | efter steg 0:s tal | Bengt (äger mätningen) |
 | 2 | Roll B som skuggkolumn (billigast, ingen ny fara) | efter 14/9 | W-B4/W-B5 |
 | 3 | Roll A som skuggkolumn | efter 14/9 | W-B1–W-B3 |
 | 4 | Röst | efter W-C och Axels ja — rösttext, A-skalan, PRODUKTBOK | — |
@@ -272,8 +272,7 @@ mönster som #46 och framtida lager 2-regler ska ärva.
 ## 8. Ändring
 
 Fram till första skuggkörningen får §2:s svep och §4:s krav justeras av vem som helst av oss med en
-rad i DECISIONS. **Från första skuggkörningen kräver varje ändring båda signaturer** och en
-motivering som inte lutar sig mot utfallet.
+rad i DECISIONS. **Från första skuggkörningen ändras ingen tröskel alls** — varje motivering som inte lutar sig mot utfallet.
 
 En ändring är redan gjord mot kortets ursprungliga lydelse och ska inte göras om: **per fordonstyp
 utgår** (§2.1), eftersom kort #92 stängdes 12/9. Vill någon tillbaka dit är vägen att öppna #92 med

@@ -129,7 +129,7 @@ ska inte blandas in i tystnadsmåttet.
 
 - Skuggkolumn i skuggmotorn, aldrig röst före grind-A/B/C-dom (mars).
 - Punktkälla säger "risk framöver"; endast sträcka säger "på vägen".
-- Tröskelrad i TROSKLAR-SKUGGAN kräver **båda signaturer** (§5 i moderdokumentet) innan den flyttas
+- Tröskelrad i TROSKLAR-SKUGGAN ändras enligt §5 i moderdokumentet innan den flyttas
   från prov till motor.
 - "Okänt" förblir ett giltigt utfall — en oursäktlig tyst miss som saknar signal ska inte tvingas
   till en gissning.

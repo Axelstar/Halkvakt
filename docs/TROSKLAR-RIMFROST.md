@@ -1,8 +1,8 @@
 # TROSKLAR-RIMFROST
 
 **Kort:** #46 RIMFROSTEN — svartis utan nederbörd (Bengts hål A, 4/9). **Status:** 📝 **UTKAST
-2026-09-12.** Väntar på Bengts fastställande av värdena och därefter Axels kontrasignering (samma
-form som #61/#68/#92/#95/#110). Ingen kod ännu, och ingen röst förrän grindarna dömt.
+2026-09-12.** Väntar på Bengts fastställande av värdena. **Ingen kontrasignering behövs**
+(Bengts beslut 12/9, DECISIONS #132). Ingen kod ännu, och ingen röst förrän grindarna dömt.
 
 **Varför det skrivs nu:** TROSKLAR-OVERGANGAR §6 (DECISIONS #109, fastställt och kontrasignerat 12/9)
 lämnade över två saker till "#46:s eget tröskeldokument" — och det dokumentet fanns inte. Det är
@@ -12,7 +12,7 @@ rimfrostnätter, men som slog fast något viktigare på vägen.
 
 Husreglerna som gäller: tröskeldokument före kod · skuggkolumn före röst · **punktkällor säger
 "framöver", aldrig en sträcka** · tystnad är en funktion · trösklar gissas inte, de faller ur mätning
-· ändring efter första skuggkörningen kräver båda signaturer (§9).
+· trösklarna är daterade FÖRE mätningen och skrivs inte om när talen kommit (§9).
 
 ---
 
@@ -229,7 +229,7 @@ som trendens. Mätkörningarna är knappar, ett par Actions-minuter styck. **0 k
 
 ## 8. Ordning — vad görs när
 
-1. **Nu:** det här dokumentet fastställs av Bengt och kontrasigneras av Axel.
+1. **Nu:** det här dokumentet fastställs av Bengt, som äger mätningen. Ingen kontrasignering behövs.
 2. **Nu, utan att vänta på svensk frost:** kör R-A på **det finska arkivet** (§5). Lapplands
    septemberfrost är äkta. Instrumentet är en läsande knapp i samma form som grind T-A.
 3. **Vid första svenska frostlarmet** (vakthundens check 5): kör R-A på svenska arkivet **inom sju
@@ -247,8 +247,8 @@ Steg 2 kan göras före måndag och kräver ingen dom. Steg 4 och framåt gör d
 ## 9. Ändring
 
 Fram till **första skuggkörningen** får svepet i §2 och kraven i §4 justeras av vem som helst av oss
-med en rad i DECISIONS. Därefter krävs **båda signaturerna** och en motivering **som inte lutar sig
-mot utfallet**. Regimen är knuten till första skuggkörningen, inte till signaturen — samma form som
+med en rad i DECISIONS. **Därefter ändras ingen tröskel alls.** En ändring som lutar sig mot
+utfallet är värdelös — det är hela skälet till att dokumentet är daterat. Regimen är knuten till första skuggkörningen, inte till signaturen — samma form som
 TROSKLAR-TRENDEN §8 och TROSKLAR-OVERGANGAR §10.
 
 **Givarvakten i §3 är undantagen från all lättnad.** Den får skärpas men aldrig mjukas upp, oavsett
