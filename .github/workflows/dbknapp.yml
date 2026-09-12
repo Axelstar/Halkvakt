@@ -5,10 +5,10 @@ on:
   workflow_dispatch:
     inputs:
       atgard:
-        description: "migrera (kör fil), larmprov, vinterprov (kort #52), frostprov (kort #89) eller matvaktprov (mätvakten, kort #101)"
+        description: "migrera (kör fil), larmprov, vinterprov (kort #52), frostprov (kort #89), matvaktprov (mätvakten, kort #101) eller paminnelseprov (källvaktspåminnelsen, #150)"
         type: choice
         default: migrera
-        options: [migrera, larmprov, vinterprov, frostprov, matvaktprov]
+        options: [migrera, larmprov, vinterprov, frostprov, matvaktprov, paminnelseprov]
       fil:
         description: "SQL-fil (bara för migrera)"
         default: sql/014_gallring.sql
@@ -32,7 +32,7 @@ jobs:
           BEVIS: "${{ inputs.bevis }}"
         run: |
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-          if [ "$ATGARD" = larmprov ] || [ "$ATGARD" = vinterprov ] || [ "$ATGARD" = frostprov ] || [ "$ATGARD" = matvaktprov ]; then
+          if [ "$ATGARD" = larmprov ] || [ "$ATGARD" = vinterprov ] || [ "$ATGARD" = frostprov ] || [ "$ATGARD" = matvaktprov ] || [ "$ATGARD" = paminnelseprov ]; then
             node --experimental-strip-types scripts/dbknapp.ts larmprov "$ATGARD" | tee -a "$GITHUB_STEP_SUMMARY"
           else
             node --experimental-strip-types scripts/dbknapp.ts migrera "$FIL" --bevis "$BEVIS" | tee -a "$GITHUB_STEP_SUMMARY"
