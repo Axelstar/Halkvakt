@@ -3864,3 +3864,46 @@ post som beskriver en brytande ändring med andra ord än de deklarerade blir �
 grön. Och den genomför ingenting automatiskt: Bengts mening slutade *"…så genomförs uppdateringen
 i systemet automatiskt"*, och det steget är medvetet inte byggt. Att låta en nyhetstext utlösa en
 kodändring utan att en människa läst diffen är inte samma sak som att säga ok till en bedömning.
+
+### #149 b (12/9 2026) Kalibreringen — torrkörningen mot 31 verkliga poster hittade två fel i mitt eget bygge
+
+Innan bedömningen mergades kördes den mot **alla poster som redan ligger i flödena**: Trafikverkets
+24 och SMHI:s 7. Två fel föll ut, båda mina egna.
+
+**FEL 1 — två falska röda, båda på ett nyckelord som matchade kanalens NAMN.** `"öppna data"` låg
+i Trafikverkets produktionsrad. Det gjorde att *"Välkommen på Trafikverkets webbinarie för
+användare av öppna data"* och *"Nu är det lättare att söka efter Trafikverkets Öppna data"* båda
+blev 🔴 RÖR OSS. Ett nyckelord som matchar rubriken på ungefär varje post i en feed är en
+falsklarmsmaskin, och **falska röda äter upp förtroendet för de äkta**. Borttaget; två tester låser
+fast rättningen med posternas ordagranna text.
+
+**FEL 2 — delsträngsmatchning på korta ord.** `orden()` använde `String.includes`. Det betyder att
+`"api"` träffar **rapid**, `"cap"` träffar **kapacitet** och `"is"` hade träffat **Diesel** — exakt
+den fälla motorns lookbehind en gång sattes mot (engine.ts:43, åtta falsklarm på augustidata).
+Rättat till samma lookbehind: matchning kräver **ordbörjan**.
+
+Priset är detsamma som i motorn och är medvetet valt: en sammansättning där ordet inte står först
+missas — *"snöfallsvarning"* matchar inte `"varning"`. **Men båda missarna faller åt det säkra
+hållet:** ett missat nyckelord ger 🟡 VET INTE, aldrig tystnad, och ett missat främmande ord gör att
+vi *inte* säger "rör oss inte". Ingen avslutande gräns, för `"pmp"` måste träffa **PMP3** — namnet
+på det API SMHI avvecklade 31 mars.
+
+**NetInfo och Inspire** lades till som främmande för Trafikverkets kanal: egna produkter som inte
+kan röra våra fem objekttyper. **NVDB gjordes medvetet INTE främmande** — NVDB-data på väg *in* i
+Öppet API vore i högsta grad vår sak, och regel 2 säger att tveksamma fall ska läsas, inte tystas.
+Flödet domineras av NVDB, så priset är gula larm i stället för missade röda.
+
+**Utfall efter rättningen, samma 31 poster:**
+
+| | trv-rss (24) | smhi-uppdateringar (7) |
+| :-- | --: | --: |
+| 🔴 RÖR OSS | **0** | **0** |
+| 🟡 VET INTE | 18 | 1 |
+| ⚪ RÖR OSS INTE | 6 | 6 |
+
+Noll falska röda. Att 19 av 31 blir gula är inte en brist utan designen: bedömningen matchar ord,
+och den vägrar gissa. Nitton poster fördelade över drygt två år är ungefär en läsning i månaden.
+
+**Läxan som är värd att behålla:** en bedömningsregel som aldrig prövats mot det material den ska
+bedöma är ett antagande. Torrkörningen tog tio minuter och hittade två fel som annars hade landat
+i Bengts inkorg som falska larm.

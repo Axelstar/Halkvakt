@@ -39,10 +39,21 @@ export type Bedomning = {
   rader: string[];         // färdiga textrader till issuet
 };
 
+// Matchningen kräver ORDBÖRJAN, inte bara delsträng. Rak `includes` gör korta nyckelord till
+// falsklarmsmaskiner: "api" träffar *rapid*, "cap" träffar *kapacitet*, "is" träffar *Diesel*.
+// Samma lookbehind som motorn använder (engine.ts:43, satt mot augustis åtta falsklarm).
+//
+// PRISET är detsamma som där, och det är medvetet valt: en SAMMANSÄTTNING där ordet inte står
+// först missas — "snöfallsvarning" matchar inte "varning". Men ett missat nyckelord gör larmet
+// 🟡 VET INTE, aldrig tyst, och ett missat FRÄMMANDE ord gör att vi INTE säger "rör oss inte".
+// Båda missarna faller alltså åt det säkra hållet: mot att posten läses.
+//
+// Ingen avslutande gräns: "pmp" måste träffa *PMP3*, som är precis vad SMHI kallade API:et
+// de avvecklade 31 mars.
 const orden = (text: string, ord: string[] | undefined): string[] => {
   if (!ord?.length) return [];
-  const t = text.toLowerCase();
-  return ord.filter((o) => t.includes(o.toLowerCase()));
+  return ord.filter((o) =>
+    new RegExp(`(?<![a-zåäöé0-9])${o.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`, "i").test(text));
 };
 
 export function bedom(kallnamn: string, text: string, kartan: Beroende[]): Bedomning {

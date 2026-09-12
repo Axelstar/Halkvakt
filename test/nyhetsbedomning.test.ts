@@ -141,3 +141,54 @@ test("hash-källa MED textdiff kan bedömas på innehåll", () => {
   assert.equal(b.grad, "RÖR OSS");
   assert.match(b.traffar[0].vard, /digitraffic/);
 });
+
+// ── KALIBRERING MOT VERKLIGHETEN ──────────────────────────────────────────────────────────
+// En torrkörning 12/9 mot flödets 24 verkliga poster gav TVÅ röda, och båda var falska:
+// nyckelordet "öppna data" matchade kanalens NAMN i stället för dess innehåll. Testerna
+// nedan låser fast rättningen — ett nyckelord som matchar rubriken på varje post i en feed
+// är en falsklarmsmaskin, och falska röda äter upp förtroendet för de äkta.
+test("verklig post: 'webbinarie för användare av öppna data' får INTE bli röd", () => {
+  const b = bedom("trv-rss", "Välkommen på Trafikverkets webbinarie för användare av öppna data", KARTAN);
+  assert.notEqual(b.grad, "RÖR OSS");
+});
+
+test("verklig post: 'lättare att söka efter Trafikverkets Öppna data' får INTE bli röd", () => {
+  const b = bedom("trv-rss", "Nu är det lättare för våra kunder att söka efter Trafikverkets Öppna data", KARTAN);
+  assert.notEqual(b.grad, "RÖR OSS");
+});
+
+test("verklig post: 'Förändringar i NetInfo-tjänster' är en annan produkt", () => {
+  assert.equal(bedom("trv-rss", "Förändringar i NetInfo-tjänster", KARTAN).grad, "RÖR OSS INTE");
+});
+
+test("NVDB tystas INTE — data på väg in i Öppet API vore vår sak", () => {
+  // Medvetet gul, inte vit. Regel 2: tveksamma fall läses, de tystas inte.
+  const b = bedom("trv-rss", "NVDB vägdata tillgängliga i Trafikverkets Datautbytesportal för användning i Öppet API", KARTAN);
+  assert.equal(b.grad, "VET INTE");
+});
+
+test("en äkta ändring drunknar inte i rättningen", () => {
+  // Kontrollen att fixen inte gjorde vakten blind: de riktiga orden ska fortfarande fyra.
+  assert.equal(bedom("trv-rss", "Ny schemaversion för WeatherMeasurepoint", KARTAN).grad, "RÖR OSS");
+  assert.equal(bedom("trv-rss", "Ändrat väglag i RoadCondition", KARTAN).grad, "RÖR OSS");
+});
+
+// ── ORDGRÄNSEN ────────────────────────────────────────────────────────────────────────────
+// Rak delsträngsmatchning gjorde korta nyckelord till falsklarmsmaskiner. Samma fälla som
+// motorns "fläckvis Våt" en gång var, och samma lösning: lookbehind på ordbörjan.
+test("korta nyckelord får inte träffa inuti andra ord", () => {
+  // "api" finns i "rapid", "cap" i "kapacitet", "station" i "poliststation" — inget av dem
+  // är en API-ändring.
+  assert.equal(bedom("polisen-regler", "Rapid utveckling av vår kapacitet", KARTAN).traffar.length, 0);
+  assert.equal(bedom("smhi-uppdateringar", "Ökad kapacitet i våra system", KARTAN).traffar.length, 0);
+});
+
+test("men ordbörjan räcker — prefix ska fortfarande träffa", () => {
+  // Utan det här hade "pmp" inte matchat PMP3, som är precis vad SMHI kallade API:et.
+  assert.ok(bedom("smhi-uppdateringar", "API för PMP3 avvecklas", KARTAN).frammande.includes("pmp"));
+  assert.ok(bedom("smhi-uppdateringar", "Radarprodukten byter namn", KARTAN).traffar.length, "radar- ska träffa");
+});
+
+test("hela ord träffar som förut", () => {
+  assert.equal(bedom("polisen-regler", "Nytt krav på user-agent i vårt API", KARTAN).grad, "RÖR OSS");
+});

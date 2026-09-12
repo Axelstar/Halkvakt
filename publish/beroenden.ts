@@ -40,7 +40,11 @@ export const KARTAN: Beroende[] = [
     brister: "allt: snapshoten, alla fem varningsslag, hela arkivet",
     bevakad: "trv-rss + trv-portal-news + trv-drift",
     signal: "bransch-RSS och portalens nyhetssida (bevisad väg, #31)",
-    nyckelord: [...TRV_OBJEKT, "väglag", "vädermätpunkt", "väderstation", "trafikinfo", "öppna data", "datacache", "schemaversion"] },
+    // "öppna data" stod här först och togs BORT 12/9: torrkörningen mot flödets 24 verkliga
+    // poster gav två röda, och båda var falska — "webbinarie för användare av öppna data" och
+    // "lättare att söka efter Trafikverkets Öppna data". Ett nyckelord som matchar kanalens
+    // NAMN i stället för dess innehåll är en falsklarmsmaskin.
+    nyckelord: [...TRV_OBJEKT, "väglag", "vädermätpunkt", "väderstation", "trafikinfo", "datacache", "schemaversion"] },
   { vard: "opendata-download-warnings.smhi.se", roll: "produktion",
     matar: "SMHI:s vädervarningar (ingest/sources/smhi.ts)",
     brister: "varningsarkivet och grind F-A:s hela underlag",
@@ -136,11 +140,19 @@ export const KARTAN: Beroende[] = [
     matar: "inget — nyhetsflödet för api.trafikinfo", brister: "inget", bevakad: "trv-rss",
     signal: "RSS (#31)",
     // Trafikverkets dataflöde täcker järnväg och färja lika mycket som väg.
-    frammande: ["baninfo", "järnväg", "tåg", "trainannouncement", "railway", "färja", "ferry"] },
+    // NetInfo och Inspire är EGNA produkter som inte kan röra våra fem objekttyper i Öppet
+    // API. NVDB står medvetet INTE här: NVDB-data på väg IN i Öppet API vore i högsta grad
+    // vår sak, och regel 2 säger att tveksamma fall ska läsas, inte tystas. Flödet domineras
+    // av NVDB (uppmätt 12/9: 24 poster) — priset är gula larm, inte missade röda.
+    frammande: ["baninfo", "järnväg", "tåg", "trainannouncement", "railway", "färja", "ferry", "netinfo", "inspire"] },
   { vard: "data.trafikverket.se", roll: "signal",
     matar: "inget — portalens nyheter och driftinformation för api.trafikinfo",
     brister: "inget", bevakad: "trv-portal-news + trv-drift", signal: "CMS-GraphQL (#31)",
-    frammande: ["baninfo", "järnväg", "tåg", "trainannouncement", "railway", "färja", "ferry"] },
+    // NetInfo och Inspire är EGNA produkter som inte kan röra våra fem objekttyper i Öppet
+    // API. NVDB står medvetet INTE här: NVDB-data på väg IN i Öppet API vore i högsta grad
+    // vår sak, och regel 2 säger att tveksamma fall ska läsas, inte tystas. Flödet domineras
+    // av NVDB (uppmätt 12/9: 24 poster) — priset är gula larm, inte missade röda.
+    frammande: ["baninfo", "järnväg", "tåg", "trainannouncement", "railway", "färja", "ferry", "netinfo", "inspire"] },
 
   // ── OMVÄRLD ──────────────────────────────────────────────────────────────────────────
   { vard: "api.met.no", roll: "omvärld",
