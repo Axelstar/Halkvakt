@@ -30,6 +30,7 @@
 import { readFileSync } from "node:fs";
 import { andelSe, utfallGolv, utfallTak, grindutfall, marginalPe, type Utfall }
   from "../publish/marginal.ts";
+import { vaktdiagnos } from "../publish/vaktdiagnos.ts";
 
 // ── Speglar publish/grind-a.ts. ÄNDRA DÄR FÖRST — driftvakten fäller annars.
 const K_NEIGHBOURS = 5;
@@ -146,6 +147,14 @@ const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("loc
 await pool.query("SET statement_timeout = '600s'");
 
 type Station = { id: string; lon: number; lat: number; series: Map<number, number> };
+// VAKTDIAGNOSEN FÖRST (DECISIONS #141).
+await vaktdiagnos((s, p) => pool.query(s, p as any[]).then((r) => r.rows),
+  "weather_observations", `WHERE sample_time > now() - ${DAGAR} * interval '1 day'`, [
+    { namn: "yttemperatur finns", bar: "surface_temp_c IS NOT NULL", villkor: "true" },
+    { namn: "#75: lufttemperatur finns", bar: "air_temp_c IS NOT NULL", villkor: "true" },
+    { namn: "#75: yta - luft >= -12 grader", bar: "surface_temp_c IS NOT NULL AND air_temp_c IS NOT NULL", villkor: "surface_temp_c >= air_temp_c - 12" },
+    { namn: "vintertimme (yta <= 5 grader)", bar: "surface_temp_c IS NOT NULL", villkor: "surface_temp_c <= 5" },
+  ]);
 const res = await pool.query(`
   SELECT DISTINCT ON (station_id, b) station_id,
     ST_X(geom::geometry) lon, ST_Y(geom::geometry) lat,

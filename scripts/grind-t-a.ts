@@ -97,6 +97,7 @@ export function separation(natter: Natt[], p: Param) {
 }
 
 import { andelSe, skiljbar, marginalPe } from "../publish/marginal.ts";
+import { vaktdiagnos } from "../publish/vaktdiagnos.ts";
 
 const pct = (x: number) => `${(100 * x).toFixed(0)} %`;
 
@@ -205,6 +206,17 @@ if (DAGAR > 7) {
   console.log(`    kan då inte räknas alls, och 30-minutersfönstret får exakt två mätningar — under`);
   console.log(`    trendens egen vakt (≥ 3). Läs talen nedan som "det gallringen lämnade kvar".\n`);
 }
+
+// VAKTDIAGNOSEN FÖRST (DECISIONS #141): trendens vakter ärvs från #46 och #75, och ett saknat
+// fält får inte se ut som ett mätresultat.
+await vaktdiagnos((q2, p2) => pool.query(q2, p2 as any[]).then((r) => r.rows),
+  "weather_observations", `WHERE sample_time > now() - ${DAGAR} * interval '1 day'`, [
+    { namn: "yttemperatur finns", bar: "surface_temp_c IS NOT NULL", villkor: "true" },
+    { namn: "#75: lufttemperatur finns", bar: "air_temp_c IS NOT NULL", villkor: "true" },
+    { namn: "#75: yta - luft >= -12 grader", bar: "surface_temp_c IS NOT NULL AND air_temp_c IS NOT NULL", villkor: "surface_temp_c >= air_temp_c - 12" },
+    { namn: "#46: daggpunkt finns", bar: "dewpoint_c IS NOT NULL", villkor: "true" },
+    { namn: "#46: yta - dagg >= -5 grader", bar: "surface_temp_c IS NOT NULL AND dewpoint_c IS NOT NULL", villkor: "surface_temp_c - dewpoint_c >= -5" },
+  ]);
 
 // Natten tillhör det dygn den började: skifta 12 h så att en natt inte delas av midnatt.
 const rows = await pool.query(`

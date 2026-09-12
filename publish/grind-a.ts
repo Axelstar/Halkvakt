@@ -100,6 +100,7 @@ function evaluate(stations: Map<string, Station>): Eval[] {
 // DEN KAN ALDRIG ÖPPNA EN STÄNGD GRIND. Ett KLARAR inom bruset blir OAVGJORT (skärpning), och
 // ett FALLER inom bruset blir OAVGJORT (mät igen) — grinden öppnar bara på KLARAR.
 import { Z, andelSe, medelSe, skiljbar, utfallTak, grindutfall } from "./marginal.ts";
+import { vaktdiagnos } from "./vaktdiagnos.ts";
 
 function stats(rows: Eval[]) {
   const dec = rows.filter((r) => r.measured >= -5);      // decision band −5…+5 (≤5 already)
@@ -203,6 +204,15 @@ if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
 const pg = (await import("pg")).default;
 const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });
 const DAYS = Number(process.argv[2] ?? 60);
+
+// VAKTDIAGNOSEN FÖRST (DECISIONS #141): en nolla ska aldrig vara tvetydig mellan "fältet
+// saknas", "vakten fäller allt" och "arkivet är tomt".
+await vaktdiagnos((s, p) => pool.query(s, p as any[]).then((r) => r.rows),
+  "weather_observations", `WHERE sample_time > now() - ${DAYS} * interval '1 day'`, [
+    { namn: "yttemperatur finns", bar: "surface_temp_c IS NOT NULL", villkor: "true" },
+    { namn: "#75: lufttemperatur finns", bar: "air_temp_c IS NOT NULL", villkor: "true" },
+    { namn: "#75: yta - luft >= -12 grader", bar: "surface_temp_c IS NOT NULL AND air_temp_c IS NOT NULL", villkor: "surface_temp_c >= air_temp_c - 12" },
+  ]);
 
 // Latest surface reading per (station, 30-min bucket). numeric arrives as string — cast.
 const res = await pool.query(`

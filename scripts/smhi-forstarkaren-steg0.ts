@@ -24,6 +24,7 @@
 // Självtest utan DB: scripts/smhi-forstarkaren-steg0.ts --sjalvtest
 
 import { andelSe, utfallGolv, utfallTak, grindutfall, marginalPe } from "../publish/marginal.ts";
+import { vaktdiagnos } from "../publish/vaktdiagnos.ts";
 
 const MIN_TIMMAR = 200;          // F-A1
 const MIN_OMRADEN = 20;          // F-A2
@@ -132,6 +133,15 @@ await pool.query("SET statement_timeout = '300s'");
 const q = async (sql: string, p: unknown[] = []) => (await pool.query(sql, p)).rows as any[];
 
 console.log(`Steg 0 för kort #95 (d) — SMHI-förstärkaren, grind F-A (${DAGAR} dygns fönster)\n`);
+
+// VAKTDIAGNOSEN FÖRST (DECISIONS #141): bär stationssidan det den ska?
+await vaktdiagnos(q, "weather_observations",
+  `WHERE sample_time > now() - ${DAGAR} * interval '1 day'`, [
+    { namn: "yttemperatur finns", bar: "surface_temp_c IS NOT NULL", villkor: "true" },
+    { namn: "#75: lufttemperatur finns", bar: "air_temp_c IS NOT NULL", villkor: "true" },
+    { namn: "#75: yta - luft >= -12 grader", bar: "surface_temp_c IS NOT NULL AND air_temp_c IS NOT NULL", villkor: "surface_temp_c >= air_temp_c - 12" },
+    { namn: "fukt: nederbordsklass finns", bar: "precipitation IS NOT NULL OR rain OR snow", villkor: "true" },
+  ]);
 
 // ── A. INVENTERINGEN: vad bär varningsarkivet egentligen?
 console.log(`A — INVENTERINGEN: vad finns i smhi_warnings_history?`);
