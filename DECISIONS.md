@@ -2811,3 +2811,80 @@ skriver ut det av sig själv.
 
 GILTIGHET: tabellen säger var en grind KAN prövas, aldrig vad den kommer att visa. Ankarbanden
 vandrar med stationsbortfall, så den ska köras om när vintern satt sig.
+
+## #125 (12/9 2026) Anomalin i grind A är förklarad — och domen står ändå
+
+BESLUT (Bengts order efter Axels bedömning, "mät anomalin med de tre uppdelningarna"):
+`scripts/anomalin.ts` + knapp. Modellen är grind A:s, inte en egen — samma konstanter, samma
+leave-one-out, samma `DISTINCT ON` per hink, och ett självtest som LÄSER `publish/grind-a.ts`
+och fäller om konstanterna glidit isär.
+
+**HUVUDFYNDET: GRIND A BÄR INTE #75:s GIVARVAKT — OCH DET ÄR DÄR ANOMALIN SITTER.**
+Frågan i `publish/grind-a.ts` tar varje rad med `surface_temp_c`, utan att kräva att
+lufttemperaturen finns eller att yta − luft är rimlig. **61 % av arkivets frostrader faller på
+den vakten** (#106). En trasig givare förstör både sin egen punkt och sina GRANNARS
+prediktioner — och en granne på 10 km får hög vikt i den inversa avståndsviktningen.
+
+| band | utan vakt (grind A i dag) | med #75:s vakt |
+| :-- | --: | --: |
+| 0–7 km | 0,38 / 0,0 % (101) | 0,33 / 0,0 % (81) |
+| **7–15 km** | **1,41 / 18,4 % (147)** | **0,78 / 3,1 % (129)** |
+| 15–20 km | 0,95 / 8,2 % (243) | 0,85 / 6,4 % (250) |
+| > 20 km | 1,09 / 11,1 % (1 551) | 0,89 / 5,4 % (1 483) |
+| **TOTALT** | **1,06 / 10,7 % (2 042)** | **0,85 / 5,1 % (1 943)** |
+
+Med vakten på är **anomalin borta**: 0,33 · 0,78 · 0,85 · 0,89 stiger monotont med
+ankaravståndet, precis som fysiken förutsäger. Bandet 7–15 km går från sämst till näst bäst,
+och de grova felen där faller från 18,4 % till 3,1 %.
+
+**OCH DOMEN STÅR ÄNDÅ.** A1 skulle klara (0,85 mot kravets 1,0). **A2 faller på en tiondels
+procentenhet: 5,1 % mot kravets 5,0 %.** Det är därför en decimal lades till i utskriften innan
+något rapporterades — avrundningen till "5 %" dolde exakt den skillnaden. Grind A faller i båda
+läsningarna; det som ändras är VARFÖR. Utan vakten föll den på trasiga givare. Med vakten faller
+den knappt, på äkta modellfel.
+
+**(a) REGION — min egen hypotes är FALSIFIERAD.** Jag hade föreslagit att anomalin kunde vara
+geografi: 76 % av punkterna ligger i bandet > 20 km, alltså Norrland, och beslutsbandet −5…+5 °C
+gör att bara kalla stunder kvalificerar. Mätningen säger nej. **Inom Norrland ENSAMT är 7–15 km
+fortfarande värst med bred marginal:** 0,33 · **2,10** · 0,96 · 1,09. I syd är samma band
+välartat (0,57). Anomalin överlever regionuppdelningen — den är inte geografi.
+
+*Bifynd värt ett eget kort:* mellersta Sverige (58,5–60,5°) bidrar med **tolv punkter totalt** i
+hela fönstret. Grind A:s dom vilar i praktiken på Norrland och Skåne.
+
+**(b) HÖJDSKILLNAD — Axels hypotes träffar PLATSEN men inte FORMEN.** Inom 7–15 km, uppdelat på
+höjdskillnad station ↔ närmaste bidragande granne: 20–50 m ger 0,51 / 0,0 % (42 punkter),
+**50–100 m ger 4,16 / 55,3 % (47 punkter)**, och ≥ 100 m ger 0,59 / 2,2 % (45 punkter). Hela
+skadan ligger i EN cell. Men om mekanismen vore "nära nog för hög vikt, långt nog för annan
+terräng" borde ≥ 100 m vara värst av alla — och den är välartad. Tillsammans med (d) är den
+troligaste läsningen att de 47 punkterna är NÅGRA FÅ TRASIGA STATIONER som råkar ligga 50–100 m
+isär i höjd, inte en terrängeffekt. Terränghypotesen är inte motbevisad, men den behöver ett
+underlag där givarfelen redan är borta.
+
+**(c) FILTERUTFALLET — och här måste Axels verifiering kompletteras.** Han kontrollerade
+stationsantalet per band och fann att 7–15 km har flest, 302 stycken; min mätning ger 291 för
+samma band (annat fönster). **Den kontrollen är rätt gjord på fel storhet.** Geometriskt band
+säger hur många stationer som HAR en granne på det avståndet. Domen bärs av de stationer som
+faktiskt producerade en utvärderingspunkt, och där ser det ut så här:
+
+| band | stationer (geometriskt) | stationer (utvärderade) | punkter |
+| :-- | --: | --: | --: |
+| 0–7 km | 182 | **5** | 101 |
+| 7–15 km | **291** | **13** | 147 |
+| 15–20 km | 140 | 19 | 243 |
+| > 20 km | 141 | 88 | 1 551 |
+
+**7–15 km-domen vilar på tretton stationer.** Av 761 stationer hade **629 ingen enda vintertimme**
+(ingen hink under 5 °C på 60 dygn), och bara 109 gav någon punkt alls. Det ÄR alltså ett
+urvalsfel — inte i geometrin Axel kontrollerade, utan i vilka stationer som blev kalla nog och
+samtidigt hade en samobserverande granne. Med 11,3 punkter per station i det bandet räcker tre
+eller fyra trasiga stationer för att bära hela de 47 punkterna i den värsta höjdcellen.
+
+**VAD SOM FÖLJER, och inget av det är mitt att besluta:**
+1. **Domen står** — A2 faller i båda läsningarna. Ingen tröskel har rörts.
+2. **Grind A:s frågesats saknar en vakt som huset kallar obligatorisk.** #75 gäller "varje
+   väderfråga", TROSKLAR-RIMFROST §3 kallar den "obligatorisk del av varje framtida frostgren",
+   och grind A har den inte. Att lägga till den är inte att flytta målstolpar — men det ändrar
+   talen, och därför ska Bengt och Axel besluta det, inte jag.
+3. **Anomalin behöver inte längre stoppa er.** Den har en förklaring som är prövbar och som
+   pekar på datakvalitet, inte på att modellen gör något annat än vi tror.
