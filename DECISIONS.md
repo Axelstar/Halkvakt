@@ -3518,3 +3518,41 @@ skulle ha letat i frågebyggaren. Modulen kastar därför nu i stället:
 ett anropsfel mot pg kan bara upptäckas skarpt. Det är inte ett hål att täppa med fler självtest —
 det är skälet till att varje ny mätning körs som knapp direkt efter merge, i stället för att antas
 fungera. Den vanan fångade det här inom en minut.
+
+## #143 (12/9 2026) Molnet blir delat, R-A4 byggs för svensk frost — och frostlarmet namnger alla fyra
+
+BESLUT (Bengt: "vi mäter inte bara mot Finland utan även mot Sverige när det kommer frost"):
+
+**1. MOLNET FLYTTAR TILL `publish/moln.ts`.** Fysikkontrollen "träffarna ska vara vanligast klara
+nätter" behövs i BÅDE grind T-A (#88) och grind R-A (#46) — utstrålningskylning är samma fysik i
+båda. Den byggdes i T-A 12/9 (#115); att kopiera den till R-A hade varit precis den drift vi vaktat
+mot hela dygnet. T-A läser nu ur modulen i stället för ur sina egna kopior, och dess självtest
+täcker fortfarande sentinelen 113 % (himlen skymd) och octas-skalan.
+
+**2. R-A4 ÄR BYGGD, INTE BARA BESKRIVEN.** `--land=se` kör nu molnkontrollen på riktigt: klara
+nätter ska fyra minst **dubbelt** så ofta som mulna (§4), med minst fem nätter i varje klass innan
+kvoten alls räknas. Tidigare stod det bara en notis om att den "kopplas in senare" — en notis är
+inte en mätning.
+
+**DEN FINSKA KÖRNINGEN ÄR ETT FÖRHANDSBESKED, DEN SVENSKA ÄR DOMEN.** Två skäl, och båda är
+arkivets, inte valets:
+* **R-A4 går inte att köra finskt.** SMHI:s molnstationer är svenska. Att sträcka en molnobservation
+  över Bottenviken vore precis det representativitetsfel §2.8 mätte bort.
+* **Korsgivarkontrollen fanns inte finskt** förrän i dag (#138), och den verkar bara framåt.
+
+Finland ger däremot något Sverige inte kan: **frostnätter veckor tidigare**. Rollerna är alltså
+tydliga — Finland provar instrumentet och ger tidiga signaler, Sverige fäller domen.
+
+**3. FROSTLARMET NAMNGER NU ALLA FYRA MÄTNINGAR.** Vakthundens check 5 sa tidigare "kör steg 0" och
+nämnde #88 i en bisats. Fyra mätningar väntar på exakt samma nätter och **ingen av dem kan ta dem
+ikapp**:
+
+| # | Knapp | Kort | Vad som kräver just de nätterna |
+| :-- | :-- | :-- | :-- |
+| 1 | `overgangar-steg0` `dagar=7` | #89 | gallringen äter minutupplösningen efter sju dygn |
+| 2 | `grind-t-a` | #88 | ≥ 30 frostnätter på ≥ 20 stationer |
+| 3 | `grind-r-a` `land=se` | #46 | enda körningen som kan köra R-A4 |
+| 4 | `grind-k-a` | #103 | septembervakten kräver ≥ 100 punkter med UPPMÄTT frys — har haft noll |
+
+**Ett larm som namnger en av fyra mätningar är ett larm som tappar tre.** Att #88 låg i en bisats
+var precis den sortens glapp som lät fyra mätningar stå döda i fem dygn.
