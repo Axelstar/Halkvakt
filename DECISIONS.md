@@ -2402,3 +2402,151 @@ största delen inte är utstrålningsnätter alls. Det stärker att underlaget m
 LÄGET EFTER DETTA: grind T-A är komplett — svep, tre givarvakter, domspärr, båda halvorna av
 fysikkontrollen, och ett molnberoende som är löst utan lagring. Instrumentet är prövat end-to-end och
 väntar bara på frostlarmet.
+
+## #116 (12/9 2026) W-A:s exponering är diet-filtrerad — rättelse, och kolumnerna var äldre än värdena
+
+BESLUT: TROSKLAR-VIND-SIKT §4 och `scripts/vindsikt-steg0.ts` huvud påstod att "exponeringen är mätt
+kontinuerligt vid varje station". Det är FEL och är rättat. **Arkivdieten** (DECISIONS #4,
+`ingest/sources/weather.ts:69`) sparar bara rader vid yta ≤ 5 °C, nederbörd, eller när ytan rört sig
+≥ 0,5 °C sedan senast. En lugn, torr, mild timme lämnar ofta inget spår. W-A:s nämnare är
+**stationstimmar som dieten sparade**, inte stationstimmar som inträffade.
+
+SAMMA KLASS AV FEL SOM 0f:s (DECISIONS #96): att läsa en händelsefiltrerad tabell som om den vore en
+kadens. Det är andra gången på två dygn, i två olika skript, och det är därför rättelsen inte stannar
+vid en textändring: **täckningsgraden mäts nu i givarkollen och skrivs ut med varje utfall.**
+
+RIKTNINGEN PÅ FELET ÄR RESONERAD, INTE MÄTT, och det ska stå så: dieten sparar oftare vid nederbörd
+och snabba temperaturfall, alltså i just det väder som blåser. Referensbandet < 10 m/s borde därför
+tappa fler lugna timmar än de höga banden, vilket blåser upp referensens frekvens och TRYCKER NER
+kvoten. Om resonemanget håller är W-A konservativ och antydan 2,23 × underskattad snarare än
+överskattad. Men det är inte mätt, och kvoten får inte läsas som om det vore det.
+
+ANDRA FYNDET, OCH DET ÄR STÖRRE: **kolumnerna är äldre än värdena.** `sql/011_vind_sikt.sql` la till
+`wind_speed_ms`, `wind_gust_ms` och `visibility_m` den 4/9 (kort #48) — men de fylldes inte förrän
+ingest-live deployades 9/9 ca 05:00 (kort #84, DECISIONS #79), vars eget SQL-bevis lyder
+`vind 844 | regn 907 | sikt 844` mot `vind 0` före deployen.
+
+| Följd | Vad som ändras |
+| :-- | :-- |
+| Täckningsraden "42,5 % byvind" | Tolkades som att mindre än hälften av STATIONERNA bär fälten. Fel: 751 stationer bär dem. Det som saknas är RADER ÄLDRE ÄN 9/9 — tid, inte givare. |
+| Underlaget i steg 0 | 14-dygnsfönstret innehåller ungefär TRE dygn med vind och sikt, inte fjorton. |
+| W-A:s OAVGJORT | Går inte att laga med ett längre fönster, bara med mer tid. Grinden körs om EFTER FÖRSTA HÖSTSTORMEN, som T-A körs om efter första frostnatten. |
+
+Ingen gallringsdeadline här, till skillnad från T-A och #89: W-A räknar stationstimmar, och gallringen
+(#83) tunnar till en rad per halvtimme, vilket lämnar stationstimmen intakt.
+
+Skriptet skriver numera ut första `sample_time` som bär byvind, så talet inte behöver härledas igen.
+
+## #117 (12/9 2026) TROSKLAR-RIMFROST skrivet — #89:s överlämning har landat
+
+BESLUT: `docs/TROSKLAR-RIMFROST.md` skrivet som UTKAST för kort #46. Väntar på Bengts fastställande
+av värdena och därefter Axels kontrasignering.
+
+VARFÖR NU: TROSKLAR-OVERGANGAR §6 (DECISIONS #109, fastställt OCH kontrasignerat 12/9) lämnade över
+två saker till "#46:s eget tröskeldokument" — och det dokumentet fanns inte. Samma form som den
+dinglande källan 11/9, när TROSKLAR-TYSTNADSFEL bara låg i Bengts Drive. **En överlämning till ett
+dokument som inte finns är en tappad idé med kvitto.**
+
+FORMEN ÄR AVGJORD FÖRE SVEPET: rimfrosten blir **en andra gren i `icing_point`**, inte en sjätte
+farotyp. Motorn har fem faror med en prioritetsstege där förloraren droppas; en sjätte kind skulle
+röra vid varje vektor i `engine/vectors/` och vid prioritetsordningen. Samma fara — is på vägen — med
+en annan väg fram till slutsatsen.
+
+TVÅ SAKER ÖVERTAGNA ORDAGRANT FRÅN #89: (1) partitionen — **#46 äger fallet yta ≤ daggpunkt**
+(kondensation pågår), **#89 (a) yta > daggpunkt men regn inom N h** (kvarvarande vatten fryser i torr
+luft), så överlappet är tomt per konstruktion och tystnadsfelet inte dubbelräknar. (2) **dimma är en
+ÖVERGÅNGSORSAK, inte en interaktion** — dimma är daggpunkt ≈ lufttemperatur, så `visibility_m < S` är
+en konfidenshöjare för kondensationsvillkoret, aldrig en egen fara.
+
+GIVARVAKTEN ÄR DOKUMENTETS TYNGSTA AVSNITT och är undantagen från all lättnad — den får skärpas men
+aldrig mjukas upp, oavsett signaturer. Skälet är kortets egna körningar 4/9: 53 av 58 kandidater kom
+från TRE stationer (Ollsta 2346, Storvik 2135, Bolhyttan 1713) med yta − daggpunkt −28…−49 °C, och
+med äkthetsvillkoret överlevde **0 av 53**. Vakten är tredelad: #75:s ärvda vakt (61 % av arkivets
+frostrader faller på den), daggpunktens egen (yta − dagg ≥ −5 °C) och korsgivarkontrollen (RH ≥ 90).
+**R-A5 gör läxan till ett krav:** ingen enskild station får stå för mer än 20 % av träffarna.
+
+BILLIGASTE VÄGEN TILL UNDERLAG, OCH DEN KRÄVER INGEN SVENSK FROST: det finska arkivet. `KASTEPISTE`
+arkiveras ur Fintraffic sedan 4/9 (505 av 528 stationer), och **Lapplands septemberfrost ger äkta
+rimfrostnätter veckor före Sverige**. Samma analys, finskt arkiv, ingen ny källa.
+
+R5 (molnklassen) kostar heller ingenting nytt: molnhämtningen byggd för grind T-A (DECISIONS #115)
+återanvänds rakt av, med samma sentinelfälla — 113 % är "himlen skymd", inte molnmängd.
+
+## #118 (12/9 2026) SMHI-täckningen svarar på §2.8:s Verify 1 — reservfrågan skild från representativitetsradien
+
+BESLUT: `scripts/smhi-tackning.ts` mäter nu BÅDA parametrarna, och de två frågorna hålls isär i
+utskriften. Molnkörningen 12/9 (DECISIONS #114) svarade på representativitetsradien — men lämnade
+§2.8:s EGEN Verify 1 obesvarad, och det syntes inte eftersom båda talen ser ut som "täckning".
+
+| Del | Parameter | Frågan | Bandet |
+| :-- | --: | :-- | :-- |
+| 1 | 16 (moln) | Hur långt får en VViS-yta sträckas ut? Går T-A:s klarhetskontroll att köra? | 50 km, för molnet är storskaligt |
+| 2 | 1 (lufttemp) | §2.8 ordagrant: hur många av de 818 segmenten får en SMHI-station inom 15 km? | **15 km**, för luften varierar med terrängen |
+
+Molnets 108 stationer är en ANNAN population än luftens 235, och 50 km en annan fråga än 15. Att
+svara på den ena och tro att den andra är besvarad är ett täckningshål i läsningen, inte i datan.
+
+VAKTEN SOM FÖLJER MED SVARET: **täckning är inte duglighet.** Att en station finns inom 15 km säger
+ingenting om hur väl dess lufttemperatur följer VViS-ytan vintertid. Det är Verify 2, och den är inte
+körd. Ett högt tal i Verify 1 är ett VILLKOR för reserven, aldrig ett kvitto på den.
+
+## #119 (12/9 2026) De fyra måndagsmätningarna återstartade — och grind A föll för första gången
+
+BESLUT (Bengts "ta alla fem"): de fyra flöden som fallerade 7/9 trycktes igång manuellt.
+**Alla fyra gröna.** Felsignaturen visade sig inte vara en bugg: jobben hade **noll steg och två
+sekunders körtid**, alltså vägrade GitHub starta dem — kostnadstaket 7/9, inte kod. Det fanns
+ingenting att laga, bara att trycka. Mätvakten (check 6) larmade rätt i issue #146; **handgreppet var
+det som saknades**, och det är den halvan vakten inte kan ersätta.
+
+DE TRE MÄTNINGARNA GAV TRE DOMAR, och två av dem ändrar bilden av §2.4 och §2.8.
+
+**(1) GRIND A FALLEN — första domen alls** (körning 12/9 06:51, 60 dygn, 761 stationer, 155 339
+bucketade avläsningar). Den 1/9 hade grinden 57 mätpunkter och underlagsvakten höll: "INGEN DOM". Nu
+finns 2 042 punkter, **36 gånger fler**, och vakten släpper.
+
+| band | mätpunkter | MAE | grova > 2 °C |
+| :-- | --: | --: | --: |
+| 0–7 km | 101 | 0,38 °C | 0,0 % |
+| 7–15 km | 147 | **1,41 °C** | **18,4 %** |
+| 15–20 km | 243 | 0,95 °C | 8,2 % |
+| > 20 km | 1 551 | 1,09 °C | 11,1 % |
+| **TOTALT** | **2 042** | **1,06 °C** | **10,7 %** |
+
+A1 (MAE ≤ 1,0 °C): 1,06 ⇒ **FALLER**. A2 (grova ≤ 5 %): 10,7 % ⇒ **FALLER**. A3 (frysklassfel
+≤ 10 %): 1,1 % ⇒ **KLARAR med bred marginal.** Skriptets egen dom: *"GRIND A FALLEN — bygg ingen
+skugga (tre veckor sparade)."*
+
+TVÅ SAKER SOM MÅSTE LÄSAS MED: (a) **A1 faller på sex hundradelar** — 1,06 mot 1,00 — medan A2 faller
+med marginal. Det är de grova felen som fäller, inte medelfelet. (b) **Bandet 7–15 km är sämst av
+alla**, sämre än > 20 km. Det är inte monotont i avstånd och har ingen förklaring i dag. (c)
+**Frysklassfelet klarar med 1,1 % mot 10 %:** modellen är nästan tillräcklig för det BESLUT den
+används till, men inte för den TEMPERATUR den rapporterar. Domen är Bengts och Axels, inte min.
+
+**(2) HÖJDEN ÅTERVINNER NOLL — augustifyndet håller med 49 gånger mer data** (1 962 punkter mot 40).
+
+| band | n | MAE rå | MAE rå+höjd | MAE offset |
+| :-- | --: | --: | --: | --: |
+| 0–7 km | 102 | 2,58 | 2,31 | 0,38 |
+| 7–15 km | 129 | 5,21 | **5,34** | 1,41 |
+| 15–20 km | 249 | 1,52 | 1,38 | 0,95 |
+| > 20 km | 1 482 | 1,30 | **1,33** | 1,09 |
+| **ALLA** | **1 962** | **1,65** | **1,65** | **1,06** |
+
+Totalt återvinner höjdkorrektionen **exakt ingenting** (1,65 → 1,65), och i två av fyra band gör den
+det SÄMRE. **Empirisk lapse 0,63 °C/100 m ur 3 476 par** — tidigare rapporterat 0,71 ur 3 455 par,
+alltså närmare lärobokens 0,65 när underlaget växte. Rangordningen "felkartan dömer, luftankarna
+lagar, höjden finjusterar" står kvar i sin andra och tredje del — men **första delen dömer nu emot
+sig själv.**
+
+**(3) SMHI SOM EXTRA ANKARE GÖR MODELLEN SÄMRE — §2.8:s Verify 3 besvarad, och svaret är nej.**
+235 aktiva luftstationer, alla med data i fönstret. På **samma punkter** (1 918 st, jämförbart rakt
+av): bas 1,05 °C → **+SMHI 1,20 °C**. Varje band blir sämre, inte bara helheten. De 352 punkter som
+BARA finns tack vare SMHI har MAE 2,36 °C.
+
+Läsningen, och den är tvådelad: **som förtätning där VViS redan finns är svaret nej** — luftankaret
+stör. **Som reserv där VViS saknas helt** är 2,36 °C priset, och det är en annan fråga som Verify 2
+ska svara på ordentligt. §2.8:s ankarroll är därmed i praktiken avgjord utan att en rad byggts.
+
+**(4) trv-bevakning:** grön, inga nya poster i Trafikverkets RSS, state committad (88a55bf).
+
+KOSTNAD FÖR HELA OMGÅNGEN: fyra körningar, storleksordningen tio debiterade minuter, under en krona.
