@@ -85,6 +85,11 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
            ST_AsGeoJSON(ST_SimplifyPreserveTopology(geom, 0.0005))::json AS g
     FROM road_conditions
     WHERE NOT deleted AND geom IS NOT NULL
+      -- Operatörens eget slut (#124, 12/9): avvikelser filtrerades redan på end_time,
+      -- segmenten inte. INGEN åldersgräns utöver detta — en klassning står tills den ändras,
+      -- så ålder ≠ inaktualitet (Bengts dämpningsdom #103: tysta aldrig en sann varning).
+      -- OPRÖVAD tills Trafikverket satt en EndTime en gång: i dag har 0 av 818 segment det.
+      AND (end_time IS NULL OR end_time > now())
       AND (condition_code >= 2 OR EXISTS (
         SELECT 1 FROM unnest(condition_info) i WHERE i ~* '(^|[^a-zåäö])(is|snö|halka|frost)'))`);
 

@@ -4023,3 +4023,28 @@ Bengts uttryckliga ord, **E3 aldrig**.
 **Arbetsdelningen höll.** Axel äger motorn och det som är igång — `end_time`-raden och vakten är
 hans. Bengt äger mätning, grindar och trösklar — modellen är hans, och det här dokumentet är den.
 Ingen kontrasignering behövdes för att avgöra det.
+
+## #124 (12/9 2026) Väglagets ålder — end_time-klausul + vakt 6c, INGEN åldersgräns
+Bengts Claude fann att väderpunkterna har tre timmars åldersgräns men segmenten ingen.
+MÄTT före bygge: exponeringen är NOLL just nu — alla 818 segment står som kod 1 "Normalt"
+utan vinterord, inget i snapshoten. Men nollan är utsagolös (samma fälla som #71): arkivet
+har inga vinterord alls i september, så den kan inte falsifiera hypotesen. Körs om efter
+första vinterklassningen; kodgrindens avsnitt D svarar av sig själv när övergångar finns.
+DOMÄNFAKTA SOM UPPHÄVER DEN UPPENBARA FIXEN: senaste modified_time 25/8, äldsta 21/2, ingen
+end_time på något segment. Operatören skriver om ett segment när läget ÄNDRAS, inte medan
+det består. En klassning "Is och snö" som är sann i tre dygn får ingen ny stämpel. En hård
+åldersgräns skulle tysta en sann varning — exakt felet Bengt fällde dämpningen för (#103).
+Ålder ≠ inaktualitet för operatörsklassningar. Väderpunkternas gräns fungerar för att de
+MÄTER kontinuerligt; en gammal mätning = trasig givare. Det gäller inte här.
+BYGGT (tystar inget):
+ 1. end_time-klausul på segmenten, samma som avvikelserna redan har. Kolumnen fanns,
+    ingesten skriver den. OPRÖVAD KOD tills Trafikverket satt en EndTime en gång — i dag
+    0 av 818 — och ska inte räknas som åtgärd förrän vi sett den filtrera (Bengts
+    reservation). Buntad in i publicera, deployad, publicera grön.
+ 2. Vakt 6c i vakthunden, i mätvaktens 6b-form (radarns korskontroll): larma när
+    road_conditions stått stilla > 48 h MEDAN ≥ 10 % av stationerna legat ≤ 0 °C senaste
+    3 h. Bengt: "alla 848 visar minus" inträffar aldrig och skulle aldrig fyra; 10 % är en
+    tröskel som kan slå. Första körning: väglaget 441,8 h stilla, 1/192 kalla ⇒ korrekt tyst.
+INTE BYGGT: om ett gammalt "Is och snö" ska tystas när stationerna visat +8 i tre timmar.
+Det är en modell, inte en vakt, och hör hemma i TROSKLAR-VAGLAGETS-ALDER med vinterfacit —
+Bengt skriver det, fastställt före vintern så tröskeln inte skrivs efter utfallet.

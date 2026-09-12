@@ -304,9 +304,20 @@ Deno.serve(async (req) => {
     const [rp] = await sql`SELECT max(observed_at) t FROM radar_precip`;
     const [vatt] = await sql`SELECT count(*)::int AS n FROM weather_observations
       WHERE sample_time > now() - interval '3 hours' AND (rain OR snow OR rain_sum_mm > 0)`;
+    // 6c. VÄGLAGSARKIVET (#124, 12/9): samma korskontroll som radarn. En operatörsklassning
+    //     står tills den ändras, så ren ålder säger inget — men står arkivet stilla MEDAN
+    //     en väsentlig andel stationer ligger under noll är antingen ingesten trasig eller
+    //     Trafikverket tyst. Tröskel: ≥ 10 % av stationerna med yta ≤ 0 senaste 3 h (Bengt:
+    //     "alla 848 visar minus" inträffar aldrig och skulle aldrig fyra). Tystar INGET.
+    const [rc] = await sql`SELECT max(modified_time) t FROM road_conditions WHERE NOT deleted`;
+    const [kallt] = await sql`SELECT count(DISTINCT station_id)::int AS n,
+        (SELECT count(DISTINCT station_id) FROM weather_observations WHERE sample_time > now() - interval '3 hours')::int AS alla
+      FROM weather_observations WHERE sample_time > now() - interval '3 hours' AND surface_temp_c <= 0`;
+    const aRc = alderH(rc.t);
+    const kallAndel = kallt.alla ? kallt.n / kallt.alla : 0;
     const aSl = alderH(sl.t), aSa = alderH(sa.t), aRp = alderH(rp.t);
     const visa = (a: number | null) => a === null ? "tom" : a < 1 ? `${(a * 60).toFixed(0)} min` : `${a.toFixed(1)} h`;
-    rad.push(`källor: skuggloggen ${visa(aSl)} · olycksarkivet ${visa(aSa)} · radarn ${visa(aRp)} (stationsnederbörd 3 h: ${vatt.n})`);
+    rad.push(`källor: skuggloggen ${visa(aSl)} · olycksarkivet ${visa(aSa)} · radarn ${visa(aRp)} (stationsnederbörd 3 h: ${vatt.n}) · väglaget ${visa(aRc)} (kalla stationer 3 h: ${kallt.n}/${kallt.alla})`);
 
     const torra: string[] = [];
     if (aSl === null || aSl > 2)
@@ -315,6 +326,8 @@ Deno.serve(async (req) => {
       torra.push(`**situation_archive** har inte växt på ${visa(aSa)} (~240 rader/dygn normalt) — facit för varenda grind`);
     if ((aRp === null || aRp > 3) && vatt.n > 0)
       torra.push(`**radar_precip** tyst i ${visa(aRp)} MEDAN ${vatt.n} stationsmätningar visat nederbörd de senaste 3 h — radarsteget i ingest.yml kör med continue-on-error och fäller inte jobbet`);
+    if ((aRc === null || aRc > 48) && kallAndel >= 0.10)
+      torra.push(`**road_conditions** står stilla sedan ${visa(aRc)} MEDAN ${kallt.n} av ${kallt.alla} stationer (${(kallAndel * 100).toFixed(0)} %) legat på eller under noll de senaste 3 h — operatören borde klassa om; antingen ingest-live:s roadconditions() eller Trafikverket är tyst (#124)`);
 
     // Egen livscykel, egen etikett. Aldrig problem.push() — se huvudkommentaren.
     const allt = [...sena.map((x) => `- ❌ KÖRNING · ${x}`), ...torra.map((x) => `- ❌ KÄLLA · ${x}`)];
