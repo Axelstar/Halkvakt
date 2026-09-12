@@ -3254,3 +3254,54 @@ vinter. K-A läser samma arkiv som grind A. R-A läser `KASTEPISTE` ur det finsk
 arkiverats sedan 4/9 och där Lapplands frostnätter kommer veckor före Sveriges. Det var inte en
 slump utan ett val när dokumenten skrevs: **varje grind fick en väg till underlag som inte kräver
 att man väntar på naturen, om en sådan väg alls fanns.**
+
+## #136 (12/9 2026) Grind K-A och grind R-A byggda — de två som inte behöver vänta på naturen
+
+BESLUT (Bengts order "bygg K-A och R-A"): `scripts/grind-k-a.ts` och `scripts/grind-r-a.ts`, båda
+med knapp. Helt läsande, ingen motorkod, ingen röst.
+
+**K-A — FRYSKLASSNINGEN (kort #103).** Axels fråga: kan en modell som är opålitlig på grader ändå
+bära ett binärt påstående om vilken sida av noll ytan ligger?
+
+Modellen är **grind A:s, inte en egen** — samma leave-one-out, samma konstanter, samma givarvakt,
+och ett självtest som läser `publish/grind-a.ts` och fäller om de glidit isär.
+
+**Den avgörande skillnaden mot grind A: här får modellen AVSTÅ.** Grind A tvingade den att svara i
+varje punkt; en klassificerare får säga "vet inte" nära gränsen. Det gör den träffsäkrare på det
+den uttalar sig om, och priset är täckning. Därför sveps K2 (osäkerhetszonen ±0 · 0,5 · 1,0 °C) och
+därför har K-A **både** ett träffsäkerhetskrav och ett täckningskrav — en hög träffsäkerhet på en
+tiondel av punkterna är inget resultat. Svepet är 3 × 3 × 3 = 27 kombinationer.
+
+**K-A2 räknas åt rätt håll och det finns ett prov på det:** ett farligt fel är när modellen säger
+"fryser inte" om en yta mätningen säger fryser. Det omvända är fel men inte farligt, och
+självtestet skiljer dem.
+
+**Och septembervakten:** K-A4 kräver ≥ 100 punkter med UPPMÄTT frys. Utan den kan ett
+septemberunderlag ge 99 % rätt klass genom att alltid svara "fryser inte" — en klassificerare som
+aldrig sett ett positivt fall är inte prövad. Det är den vakten som väntas hålla i dag.
+
+**R-A — RIMFROSTEN (kort #46), på det FINSKA arkivet.** Dokumentets eget val (§5): `KASTEPISTE`
+arkiveras sedan 4/9, och Lapplands septemberfrost ger äkta rimfrostnätter veckor före Sverige.
+`--land=se` kör samma mätning här när frosten kommer.
+
+**TIDSZONEN ÄR INTE EN DETALJ, och den hade tyst förstört fysikkontrollen.** `sample_time` är UTC,
+men R-A3 frågar efter LOKAL tid: utstrålningskylningen bottnar strax före gryningen. Finland ligger
+UTC+3 på sommartid, Sverige UTC+2. **Räknar man kl 03–07 i UTC mäter man fel timmar i fel land** —
+och felet hade sett ut som ett fysikaliskt resultat. Frågan konverterar med `AT TIME ZONE`, och
+zonen följer landet.
+
+**Uthålligheten räknar SPANN, inte antal rader.** Finska arkivet har 30-minuterstakt, så R3 = 30 min
+kräver två rader och 60 min kräver tre. Självtestet provar just det, plus att en lucka över 45
+minuter bryter episoden (arkivdieten gör hålen, inte vädret).
+
+**GIVARVAKTEN ÄR TREDELAD OCH SITTER I FRÅGAN:** #75:s vakt, daggpunktens egen (yta − dagg ≥ −5 °C)
+och korsgivarkontrollen (RH ≥ 90 %). Skälet är kortets egna körningar 4/9 — 53 av 58 kandidater
+från tre stationer, noll överlevande.
+
+**R-A4 MOLNKONTROLLEN GÅR INTE ATT KÖRA PÅ FINSKA STATIONER, och skriptet säger det i stället för
+att låtsas.** SMHI:s molnstationer är svenska. Att sträcka en molnobservation över Bottenviken och
+kalla det en mätning vore precis det representativitetsfelet vi mätte oss fram till i går.
+
+**Ett självtest fällde mig under bygget:** dominansprovet skrev "en station med 2 av 10 dominerar
+inte" med bara två stationer i materialet — då bär den andra 80 % och provet blev meningslöst.
+Rättat till spridda stationer, med det triviala fallet kvar som eget prov.
