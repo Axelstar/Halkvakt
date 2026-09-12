@@ -208,9 +208,14 @@ const { fileURLToPath } = await import("node:url");
 
 const har = { encoding: "utf-8" as const, cwd: fileURLToPath(new URL(".", import.meta.url)) };
 const rot = execSync("git rev-parse --show-toplevel", har).trim();
+// Statefiler undantas. De är DATA, inte kod: källvaktens state fylls med guid-länkar ur
+// tredje parts RSS-flöden, och en SMHI-post som råkar länka till en ny domän skulle annars
+// fälla CI på ett helt orelaterat bygge. Kartan ska svara på vad VI hämtar från, inte på
+// vad andra länkar till.
 const filer = execSync("git ls-files", { ...har, cwd: rot }).split("\n").map((s) => s.trim())
   .filter((s) => s && /\.(ts|yml|yaml|kt|swift|sql|json)$/.test(s)
-    && !s.includes("/.build/") && !s.includes("/vectors/") && s !== "scripts/beroendekartan.ts");
+    && !s.includes("/.build/") && !s.includes("/vectors/") && !/-state\.json$/.test(s)
+    && s !== "scripts/beroendekartan.ts");
 
 const vardar = new Set<string>();
 for (const f of filer) {
