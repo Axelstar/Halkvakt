@@ -345,6 +345,29 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [x] 🗺️ **#102 RUTTBEREDSKAPEN — vilken av skuggflottans tjugo bilar kan pröva vilken grind**
+  ✅ **KLART 12/9 kväll** (Bengts order "gör beredskapstabellen", DECISIONS #124).
+  `scripts/ruttberedskap.ts` + knapp, helt läsande. **Rutterna läses UR skuggmotorn, kopieras
+  inte** — självtestet fäller om parsningen slutar hitta dem, och det är driftvakten.
+  🏆 **GRIND A: E4 Umeå→Luleå — 58 % av rutten i det OFÖRKLARADE 7–15 km-bandet.** Tvåan och
+  trean ligger på 53 och 50 %. Det är den bilen som kan säga något om varför mittenbandet föll
+  sämst (MAE 1,41 °C, 18,4 % grova fel, #119).
+  ⚠️ **MEN: de rutter som kan pröva de svåraste frågorna har tunnast underlag.** E4 Umeå→Luleå
+  har 10 stationer inom räckvidd; E10 Luleå→Kiruna — den kallaste — har 6, och 49 % av sin längd
+  bortom 20 km från närmaste ankare. Glest stationsnät är både orsaken till ankarproblemet och
+  hindret för att mäta det.
+  🐛 **FÖRSTA KÖRNINGEN FÄLLDE TVÅ AV SINA EGNA DOMAR** (PR #173, båda lagade med vakt +
+  självtest): (1) **rätt vakt på fel nämnare, tredje gången på tre dygn** — T-A-domen utsåg
+  E6 Malmö→Halmstad på EN frostrad vid 0,0 °C; vakten räknade stationer, inte frostrader.
+  Golv 20 frostrader; under det rangordnas på kallaste yta, märkt OMBUD. (2) **tabellen läste
+  inte sitt eget tröskeldokument** — W-A-domen utsåg E4 Södertälje→Uppsala på **55,1 m/s** byvind
+  (Sveriges rekord ≈ 81, och då på fjällstation). TROSKLAR-VIND-SIKT §3.1 hade redan skrivit att
+  vakten behöver ett tak. Rangordning nu under 30 m/s, råmax bredvid som givarmisstanke.
+  🔭 **ATT FÖLJA UPP I VINTER:** tre rutter skär NOLL arkiverade varningsområden — E4 Umeå→Luleå,
+  E10 Luleå→Kiruna, E14 Sundsvall→Åre. Sommarvarningarna är sydliga, så det är sannolikt
+  årstiden — men det är just de tre förstärkaren (#95 d) behöver. Skillnaden mellan "inga
+  varningar ännu" och "polygonerna matchar inte däruppe" syns först vid första snövarningen.
+  🔁 Kör om när vintern satt sig: ankarbanden vandrar med stationsbortfall.
 - [ ] 🪢 **#95 Plan B för Trafikverket-beroendet — mät SMHI som reserv** (systemanalys 10/9). Allt
   🔓 **BLOCKERARFYNDET 12/9 (DECISIONS #114): kortet blockerar #88:s dom.** T-A:s fysikkontroll
   kräver "vanligast klara nätter", och molnmängd finns inte i arkivet. #95 är alltså inte en
