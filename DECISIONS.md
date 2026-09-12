@@ -2312,3 +2312,49 @@ Ingen dom får byggas på det.
 
 LÄGET EFTER DETTA: 2.1:s instrument är prövat och laddat inför frostlarmet. 2.3 har både
 tröskeldokument och ett kört steg 0 på en dag. Måndagen kan gå till det som verkligen kräver domen.
+
+## #114 (12/9 2026) 2.8 är T-A:s blockerare — och täckningen räcker. Molnet behöver inte arkiveras
+
+BESLUT: Bengts fråga "bör vi inte göra det som krävs av 2.8 för att kunna köra det andra" besvaras
+med ja, och den blockerande delen är nu mätt (scripts/smhi-tackning.ts + knapp, körning 34676483898).
+Utfallet ändrar både §2.8:s kostnad och dess plats i ordningen.
+
+BAKGRUNDEN: grind T-A:s fysikkontroll (TROSKLAR-TRENDEN §4) kräver att träffarna ska vara "vanligast
+klara nätter". Molnmängd finns inte i vårt arkiv, så halva kontrollen gick inte att köra vid T-A:s
+första körning (#113). Kort #95 var därmed inte längre en förstärkare som kunde vänta till våren —
+den blockerade #88:s dom, och #88 är den enda punkten med naturens deadline.
+
+FYND 1 — MOLNET BEHÖVER INTE ARKIVERAS, och det river §2.8:s dyraste rad. SMHI metobs parameter 16
+(total molnmängd, momentanvärde, 1 gång/tim) har perioden latest-months som sträcker sig 130 dygn
+bakåt (mätt 12/9), plus corrected-archive därutöver. Molnet kan alltså hämtas I EFTERHAND när T-A
+körs, på samma sätt som scripts/smhi-prov.ts redan hämtar lufttemperatur vid körning. Ingen ny
+tabell, ingen ingest, ingen drift, noll lagring. §2.8:s tal "+25 MB/mån och oktoberbeslutet fem dagar
+närmare" gäller ANKARROLLEN (SMHI som extra ankare i offsetmodellen), inte molnet för fysikkontrollen.
+
+FYND 2 — TÄCKNINGEN RÄCKER, men bara 108 av 459 stationer rapporterar molnmängd, så frågan var inte
+retorisk:
+
+| Avstånd till närmaste molnobservation | VViS-stationer (848) | Vägsegment (818) |
+| :-- | --: | --: |
+| <= 15 km | 133 (16 %) | 127 (16 %) |
+| <= 30 km | 449 (53 %) | 453 (55 %) |
+| <= 50 km | 774 (91 %) | 765 (94 %) |
+| <= 100 km | 842 (99 %) | 816 (100 %) |
+| median | 29 km | 28 km |
+
+VARFÖR 50 KM ÄR ETT RIMLIGT AVSTÅND HÄR, till skillnad från för yttemperaturen: molnet är en
+STORSKALIG storhet. Ett molntäcke sträcker sig tiotals mil, medan yttemperaturen varierar mellan
+dalgång och krön inom någon kilometer. Att sträcka en molnobservation 50 km är därför inte samma sak
+som att sträcka ett VViS-värde 50 km — vilket är hela poängen med §2.8:s representativitetsradie.
+Men hur långt molnet FÅR sträckas är inte mätt här, bara hur långt det MÅSTE sträckas. Det avgörs av
+nästa körning, inte av den här.
+
+VAD SOM ÅTERSTÅR FÖR ATT LYFTA BLOCKERINGEN: koppla in hämtningen i scripts/grind-t-a.ts — hämta
+parameter 16 för närmaste molnstation per frostnatt, klassa natten som klar eller mulen, och
+redovisa träffandelen per klass. Det är en läsande ändring i ett läsande skript, kräver inte
+radardomen, och är det sista steget innan T-A:s fysikkontroll kan köras hel.
+
+FÖLJD FÖR ORDNINGEN i systemanalysens §3 (v4): 2.8 flyttas från fjärde till ANDRA plats i prioritet,
+inte för egen skull utan för att 2.1 inte kan dömas utan den. Rekommendationen var
+2.1 → 2.2 → 2.3 → 2.8 → 2.4; den bör läsas som 2.1 (med 2.8:s molnbit inbakad) → 2.2 → 2.3 → resten
+av 2.8 → 2.4.
