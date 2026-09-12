@@ -18,6 +18,14 @@
 // VAD DEN GER I DAG: OAVGJORT. Domspärren kräver ≥ 30 frostnätter och ≥ 20 stationer; i september
 // finns en handfull. Det är rätt utfall och det bevisar att spärren fungerar.
 //
+// FYSIKKONTROLLEN ÄR HEL SEDAN 12/9 (DECISIONS #114). §4 kräver att träffarna ska toppa kl 03–07
+// OCH vara vanligast klara nätter. Andra halvan gick inte att köra förut — molnmängd finns inte i
+// vårt arkiv. Nu hämtas den vid körning ur SMHI metobs parameter 16 (total molnmängd, timvärde),
+// vars period latest-months räcker 130 dygn bakåt. Ingen arkivering, ingen ny tabell, noll lagring.
+// Täckningen är mätt: 91 % av VViS-stationerna har en molnobservation inom 50 km (median 29 km),
+// och molnet är en storskalig storhet — ett molntäcke sträcker sig tiotals mil — så den radien är
+// något helt annat här än för en yttemperatur.
+//
 // Helt läsande. Run: DATABASE_URL=... node --experimental-strip-types scripts/grind-t-a.ts [dagar=7]
 // Självtest utan DB: scripts/grind-t-a.ts --sjalvtest
 
@@ -75,7 +83,8 @@ export function fyrar(rader: Rad[], p: Param): boolean {
   return false;
 }
 
-export type Natt = { station: string; halva: 0 | 1; frost: boolean; rader: Rad[]; kallastTim: number };
+export type Natt = { station: string; halva: 0 | 1; frost: boolean; rader: Rad[]; kallastTim: number;
+  lon: number; lat: number; kallastT: number; moln?: Molnklass; molnKm?: number };
 
 /** Separationen: andel frostnätter som fyrar minus andel icke-frostnätter som fyrar. */
 export function separation(natter: Natt[], p: Param) {
@@ -88,6 +97,39 @@ export function separation(natter: Natt[], p: Param) {
 }
 
 const pct = (x: number) => `${(100 * x).toFixed(0)} %`;
+
+// ── MOLNET (SMHI metobs parameter 16, enhet procent men värdena är octas omräknade:
+//    0 · 13 · 25 · 38 · 50 · 63 · 75 · 88 · 100 = 0/8 … 8/8).
+//    OCH EN SENTINEL SOM MÅSTE HANTERAS: 113 % är 9/8 — SMHI:s kod för HIMLEN SKYMD, alltså dimma
+//    eller tätt snöfall. Det är ingen molnmängd och får aldrig räknas som ett procenttal. Fysikaliskt
+//    är en skymd himmel motsatsen till en klar natt: ingen utstrålning mot rymden. Den klassas
+//    därför som "skymd" och räknas med de mulna, aldrig med de klara.
+export type Molnklass = "klar" | "mellan" | "mulen" | "skymd" | "okänd";
+export function klassaMoln(v: number | null): Molnklass {
+  if (v === null || !Number.isFinite(v)) return "okänd";
+  if (v > 100) return "skymd";      // 113 = himlen skymd
+  if (v <= 25) return "klar";       // 0–2 åttondelar
+  if (v >= 75) return "mulen";      // 6–8 åttondelar
+  return "mellan";
+}
+
+export function haversineKm(lon1: number, lat1: number, lon2: number, lat2: number): number {
+  const R = 6371, d2r = Math.PI / 180;
+  const dLa = (lat2 - lat1) * d2r, dLo = (lon2 - lon1) * d2r;
+  const a = Math.sin(dLa / 2) ** 2 + Math.cos(lat1 * d2r) * Math.cos(lat2 * d2r) * Math.sin(dLo / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+
+/** Närmaste observation i tid, eller null om ingen ligger inom maxMin minuter. */
+export function narmastITid(serie: Map<number, number>, tMin: number, maxMin: number): number | null {
+  let b: number | null = null, bd = Infinity;
+  for (const [t, v] of serie) {
+    const d = Math.abs(t - tMin);
+    if (d < bd && d <= maxMin) { bd = d; b = v; }
+  }
+  return b;
+}
+
 
 // ── Självtest med känd sanning, utan DB.
 if (process.argv.includes("--sjalvtest")) {
@@ -128,8 +170,20 @@ if (process.argv.includes("--sjalvtest")) {
   k("separation: träff", s.traff, 1);
   k("separation: falsklarm", s.falsk, 0);
   k("separation: sep", s.sep, 1);
+  // Molnet: octaskalan och sentinelen.
+  k("moln 0 % = klar", klassaMoln(0), "klar");
+  k("moln 25 % = klar (2 åttondelar)", klassaMoln(25), "klar");
+  k("moln 50 % = mellan", klassaMoln(50), "mellan");
+  k("moln 88 % = mulen", klassaMoln(88), "mulen");
+  k("moln 113 % = SKYMD, inte mulen och absolut inte klar", klassaMoln(113), "skymd");
+  k("moln saknas = okänd", klassaMoln(null), "okänd");
+  // Närmaste i tid, med fönster.
+  const serie = new Map([[100, 25], [160, 88], [220, 0]]);
+  k("närmast i tid väljer rätt", narmastITid(serie, 150, 90), 88);
+  k("närmast i tid utanför fönstret", narmastITid(serie, 500, 90), null);
+  k("en breddgrad ≈ 111 km", Math.round(haversineKm(15, 60, 15, 61)), 111);
   if (!ok) { console.error("\nSJÄLVTEST FÄLLDE."); process.exit(1); }
-  console.log("\nSJÄLVTEST OK: vakterna fäller rätt rader, lutningen räknar rätt håll, triggern kräver alla tre villkoren.");
+  console.log("\nSJÄLVTEST OK: vakterna fäller rätt rader, lutningen räknar rätt håll, triggern kräver alla tre villkoren,\noch molnets sentinel 113 klassas som skymd i stället för som 113 procent.");
   process.exit(0);
 }
 
@@ -156,17 +210,18 @@ const rows = await pool.query(`
          (date_trunc('day', sample_time - interval '12 hours'))::date AS natt,
          EXTRACT(epoch FROM sample_time) / 60 AS t,
          EXTRACT(hour FROM sample_time) AS tim,
-         surface_temp_c AS yta, dewpoint_c AS dagg, humidity_pct AS rh, air_temp_c AS luft
+         surface_temp_c AS yta, dewpoint_c AS dagg, humidity_pct AS rh, air_temp_c AS luft,
+         ST_X(geom) AS lon, ST_Y(geom) AS lat
   FROM weather_observations
   WHERE sample_time > now() - $1 * interval '1 day' AND surface_temp_c IS NOT NULL
   ORDER BY station_id, sample_time`, [DAGAR]);
 
 // Gruppera till station-nätter.
-const kartan = new Map<string, { station: string; natt: string; rader: Rad[]; timmar: number[] }>();
+const kartan = new Map<string, { station: string; natt: string; rader: Rad[]; timmar: number[]; lon: number; lat: number }>();
 for (const r of rows.rows as any[]) {
   const nyckel = `${r.station_id}|${String(r.natt).slice(0, 10)}`;
   let g = kartan.get(nyckel);
-  if (!g) { g = { station: r.station_id, natt: String(r.natt).slice(0, 10), rader: [], timmar: [] }; kartan.set(nyckel, g); }
+  if (!g) { g = { station: r.station_id, natt: String(r.natt).slice(0, 10), rader: [], timmar: [], lon: Number(r.lon), lat: Number(r.lat) }; kartan.set(nyckel, g); }
   g.rader.push({ t: Number(r.t), yta: Number(r.yta), dagg: r.dagg === null ? null : Number(r.dagg), rh: r.rh === null ? null : Number(r.rh), luft: r.luft === null ? null : Number(r.luft) });
   g.timmar.push(Number(r.tim));
 }
@@ -177,7 +232,8 @@ const mitt = datum[Math.floor(datum.length / 2)] ?? "";
 const natter: Natt[] = alla.filter((g) => g.rader.length >= 3).map((g) => {
   let min = Infinity, minIdx = 0;
   g.rader.forEach((r, i) => { if (r.yta < min) { min = r.yta; minIdx = i; } });
-  return { station: g.station, halva: (g.natt < mitt ? 0 : 1) as 0 | 1, frost: min <= 1, rader: g.rader, kallastTim: g.timmar[minIdx] };
+  return { station: g.station, halva: (g.natt < mitt ? 0 : 1) as 0 | 1, frost: min <= 1, rader: g.rader,
+    kallastTim: g.timmar[minIdx], lon: g.lon, lat: g.lat, kallastT: g.rader[minIdx].t };
 });
 
 const frostN = natter.filter((n) => n.frost);
@@ -224,11 +280,74 @@ for (const n of frostN) timmar.set(n.kallastTim, (timmar.get(n.kallastTim) ?? 0)
 const iNatt = frostN.filter((n) => n.kallastTim >= 3 && n.kallastTim <= 7).length;
 console.log(`  Kallaste stunden kl 03–07: ${iNatt} av ${frostN.length} frostnätter (${frostN.length ? pct(iNatt / frostN.length) : "–"})`);
 console.log(`  Fördelning per timme: ${[...timmar].sort((a, b) => a[0] - b[0]).map(([h, n]) => `${h}:${n}`).join(" ")}`);
-console.log(`  ⚠️  ANDRA HALVAN AV FYSIKKONTROLLEN GÅR INTE ATT KÖRA I DAG. §4 kräver att träffarna ska`);
-console.log(`     vara "vanligast klara nätter" — men molnmängd finns inte i arkivet. scripts/smhi-prov.ts`);
-console.log(`     hämtar bara lufttemperatur och lagrar ingenting (OVERGANGAR-ANALYS §3). Klarhetsdelen`);
-console.log(`     av T-A:s fysikkontroll är alltså BEROENDE AV kort #95 (systemanalysens §2.8), och det`);
-console.log(`     beroendet står inte i TROSKLAR-TRENDEN. Det bör skrivas in där.`);
+
+// ── Andra halvan: klara nätter. Molnet hämtas VID KÖRNING ur SMHI, aldrig ur vårt arkiv.
+const MAX_MOLN_KM = 50;      // täckningsmätningen 12/9: 91 % av stationerna ligger inom detta
+const MAX_MOLN_MIN = 90;     // molnet rapporteras varje timme
+const MAX_STATIONER = 40;    // tak på antalet SMHI-hämtningar per körning
+console.log(`\n  KLARA NÄTTER — molnet hämtas vid körning ur SMHI metobs parameter 16`);
+try {
+  const rs = await fetch("https://opendata-download-metobs.smhi.se/api/version/1.0/parameter/16.json",
+    { headers: { "User-Agent": "Halkvakt/1.0 (oppna data, CC BY 4.0)" } });
+  if (!rs.ok) throw new Error(`SMHI stationslista svarade ${rs.status}`);
+  const molnSt = (((await rs.json()) as any).station ?? []).filter((x: any) => x.active && x.longitude != null)
+    .map((x: any) => ({ id: String(x.id), lon: Number(x.longitude), lat: Number(x.latitude) }));
+
+  // Närmaste molnstation per frostnatt, och hur många nätter varje station får betjäna.
+  const behov = new Map<string, number>();
+  for (const n of frostN) {
+    let bi = -1, bd = Infinity;
+    molnSt.forEach((m: any, i: number) => { const d = haversineKm(n.lon, n.lat, m.lon, m.lat); if (d < bd) { bd = d; bi = i; } });
+    if (bi >= 0 && bd <= MAX_MOLN_KM) { n.molnKm = bd; (n as any)._st = molnSt[bi].id; behov.set(molnSt[bi].id, (behov.get(molnSt[bi].id) ?? 0) + 1); }
+  }
+  const hamta = [...behov].sort((a, b) => b[1] - a[1]).slice(0, MAX_STATIONER).map(([id]) => id);
+  console.log(`  ${frostN.filter((n) => n.molnKm !== undefined).length} av ${frostN.length} frostnätter har en molnstation inom ${MAX_MOLN_KM} km · hämtar ${hamta.length} stationer`);
+
+  const serier = new Map<string, Map<number, number>>();
+  for (const id of hamta) {
+    try {
+      const d = await fetch(`https://opendata-download-metobs.smhi.se/api/version/1.0/parameter/16/station/${id}/period/latest-months/data.json`,
+        { headers: { "User-Agent": "Halkvakt/1.0 (oppna data, CC BY 4.0)" } });
+      if (!d.ok) continue;
+      const m = new Map<number, number>();
+      for (const v of (((await d.json()) as any).value ?? [])) {
+        if (v.value === null) continue;
+        m.set(Number(v.date) / 60000, Number(v.value));
+      }
+      serier.set(id, m);
+    } catch { /* en station som inte svarar är tystnad, inte ett fel */ }
+  }
+
+  for (const n of frostN) {
+    const id = (n as any)._st;
+    const serie = id ? serier.get(id) : undefined;
+    n.moln = klassaMoln(serie ? narmastITid(serie, n.kallastT, MAX_MOLN_MIN) : null);
+  }
+
+  const klasser: Molnklass[] = ["klar", "mellan", "mulen", "skymd", "okänd"];
+  console.log(`  klass     frostnätter   fyrade (bästa kombinationen)`);
+  const basta = ut[0]?.p;
+  for (const kl of klasser) {
+    const grupp = frostN.filter((n) => n.moln === kl);
+    if (!grupp.length) continue;
+    const fyrade = basta ? grupp.filter((n) => fyrar(n.rader, basta)).length : 0;
+    console.log(`  ${kl.padEnd(9)} ${String(grupp.length).padStart(11)}   ${String(fyrade).padStart(6)} (${grupp.length ? pct(fyrade / grupp.length) : "–"})`);
+  }
+  const klara = frostN.filter((n) => n.moln === "klar");
+  const mulna = frostN.filter((n) => n.moln === "mulen" || n.moln === "skymd");
+  if (klara.length >= 5 && mulna.length >= 5 && basta) {
+    const fk = klara.filter((n) => fyrar(n.rader, basta)).length / klara.length;
+    const fm = mulna.filter((n) => fyrar(n.rader, basta)).length / mulna.length;
+    console.log(`  ⇒ fyrningsandel klara nätter ${pct(fk)} mot mulna ${pct(fm)} — fysikkontrollen ${fk > fm ? "STÖDJER" : "STÖDJER INTE"} utstrålningshypotesen`);
+  } else {
+    console.log(`  ⊘ För få nätter per klass för att jämföra (kräver 5 klara och 5 mulna; finns ${klara.length} och ${mulna.length}).`);
+    console.log(`    Molnhämtningen FUNGERAR — det är frosten som saknas, inte molnet.`);
+  }
+  console.log(`  Källa: SMHI öppna data (CC BY 4.0), metobs parameter 16. Hämtat vid körning, inget lagrat.`);
+} catch (e) {
+  console.log(`  ✗ Molnhämtningen gick inte: ${String(e).slice(0, 90)}`);
+  console.log(`    Timfördelningen ovan står kvar; klarhetsdelen saknas denna körning.`);
+}
 
 console.log(`\nMÄTNINGENS GRÄNS`);
 console.log(`  Ingen tröskel sätts här. Svepet väljer värde först när domspärren släpper, och den`);
