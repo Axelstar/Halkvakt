@@ -17,7 +17,11 @@
 //   5. Frosten är här (kort #89, Bengts order 11/9). Prov: ?frostprov=1
 // Provet bär egen etikett, så att ett prov aldrig förbrukar det riktiga engångslarmet.
 //
-// Och EN vakt över mätningarna själva (6, kort #101, Bengts order 12/9). Prov: ?matvaktprov=1
+// Och EN vakt över mätningarna själva (6, kort #101 + #106, Bengts order 12/9). Två halvor i
+// samma larm, för de svarar på samma fråga — är mätapparaten frisk?
+//   6a. KÖRNINGARNA: går de schemalagda mätjobben, och i tid?
+//   6b. KÄLLORNA: växer tabellerna som domarna ska vila på?
+// Prov: ?matvaktprov=1
 // Den har egen etikett och egen öppna/uppdatera/stäng-cykel — INTE engångslarm, för ett schemafel
 // kan upprepas — och den färgar aldrig driftvakthunden röd. Skälet: rött ska betyda "kedjan till
 // appen är bruten NU". En mätning som missade en måndag är inte det, och låg den i samma issue
@@ -216,7 +220,7 @@ Deno.serve(async (req) => {
     problem.push(`**Frostvakten (kort #89) kunde inte larma**: ${String(e)}`);
   }
 
-  // 6. GÅR MÄTNINGARNA? (kort #101, Bengts order 12/9.)
+  // 6a. GÅR MÄTNINGSKÖRNINGARNA? (kort #101, Bengts order 12/9.)
   //    BAKGRUNDEN: grind V-A:s måndagskörning 7/9 fallerade i minutkrisens svallvågor, ingen
   //    larmade, och den omkörning DECISIONS #69 uttryckligen krävde uteblev i åtta dygn. Samma
   //    sak hade hänt cellmätningen, vars enda skarpa körning låg nio dygn gammal två dygn före
@@ -264,24 +268,63 @@ Deno.serve(async (req) => {
       sena.push("**PROV** — påhittad rad för att bevisa mätvaktens larmväg. Försvinner vid nästa gröna körning.");
     rad.push(`mätvakten: ${schemalagda.length} schemalagda flöden, ${sena.length} med problem`);
 
+    // 6b. VÄXER KÄLLORNA? (kort #106, källkollen 12/9.) Tre tabeller bär varje dom vi ska
+    //     fälla i vinter och ingen av dem hade en vakt: radarn är vattenplaningens enda
+    //     kvarvarande trigger sedan grind V-A föll (#104), situation_archive är facit för
+    //     varenda grind, och shadow_log är skuggans utdata.
+    //
+    //     EN TABELL SOM SLUTAR VÄXA I DAG SYNS INTE I APPEN FÖRRÄN I MARS, när underlaget
+    //     skulle ha dömts. Det är därför den här frågan är en annan än healthcheckens, som
+    //     har timmars tidshorisont och frågar om kedjan till appen är hel.
+    //
+    //     RADARN TESTAS MED KORSKONTROLL, inte med ren färskhet. radar_precip är
+    //     händelsefiltrerad (sql/009: rad bara vid regn ≥ 0,1 mm/h), så en tyst tabell kan
+    //     betyda rikstorrt väder — en färskhetsvakt hade larmat på solsken. Larmet går därför
+    //     bara när radarn tigit MEDAN stationerna rapporterat nederbörd. Det fångar precis den
+    //     fara som oroar: ingest.yml kör radar.ts med continue-on-error, så ett stående
+    //     SMHI-fel lämnar jobbet grönt och ingen får veta.
+    //
+    //     polisen_events och smhi_warnings vaktas INTE här med flit: deras luckor är världens,
+    //     inte vårt systems. Att ingen viltolycka rapporterats på ett dygn är inte ett fel. Att
+    //     INGESTEN slutat hämta är det, och den frågan ställer check 1 via sync_state.
+    const alderH = (t: unknown) => t ? (Date.now() - new Date(t as string).getTime()) / 3600000 : null;
+    const [sl] = await sql`SELECT max(run_at) t FROM shadow_log`;
+    const [sa] = await sql`SELECT max(last_seen) t FROM situation_archive`;
+    const [rp] = await sql`SELECT max(observed_at) t FROM radar_precip`;
+    const [vatt] = await sql`SELECT count(*)::int AS n FROM weather_observations
+      WHERE sample_time > now() - interval '3 hours' AND (rain OR snow OR rain_sum_mm > 0)`;
+    const aSl = alderH(sl.t), aSa = alderH(sa.t), aRp = alderH(rp.t);
+    const visa = (a: number | null) => a === null ? "tom" : a < 1 ? `${(a * 60).toFixed(0)} min` : `${a.toFixed(1)} h`;
+    rad.push(`källor: skuggloggen ${visa(aSl)} · olycksarkivet ${visa(aSa)} · radarn ${visa(aRp)} (stationsnederbörd 3 h: ${vatt.n})`);
+
+    const torra: string[] = [];
+    if (aSl === null || aSl > 2)
+      torra.push(`**shadow_log** har inte växt på ${visa(aSl)} (skrivs var 30:e min) — skuggans utdata bär B3, V-B och upprepningen`);
+    if (aSa === null || aSa > 3)
+      torra.push(`**situation_archive** har inte växt på ${visa(aSa)} (~240 rader/dygn normalt) — facit för varenda grind`);
+    if ((aRp === null || aRp > 3) && vatt.n > 0)
+      torra.push(`**radar_precip** tyst i ${visa(aRp)} MEDAN ${vatt.n} stationsmätningar visat nederbörd de senaste 3 h — radarsteget i ingest.yml kör med continue-on-error och fäller inte jobbet`);
+
     // Egen livscykel, egen etikett. Aldrig problem.push() — se huvudkommentaren.
+    const allt = [...sena.map((x) => `- ❌ KÖRNING · ${x}`), ...torra.map((x) => `- ❌ KÄLLA · ${x}`)];
     const mKropp = `${MATVAKT}` + "\n" + `**Mätvakten ${new Date().toISOString()}**` + "\n" + "\n" +
-      (sena.length ? sena.map((x) => `- ❌ ${x}`).join("\n") : "- ✅ alla schemalagda mätningar går") +
+      (allt.length ? allt.join("\n") : "- ✅ alla schemalagda mätningar går och alla källor växer") +
       "\n" + "\n" + `Bevakade flöden: ${schemalagda.map((x) => String(x.w.name)).join(", ")}` +
       "\n" + "\n" + `En mätning som inte gick betyder att en DOM kan vila på gammalt underlag. Kolla vad ` +
-      `flödet matar innan du kvitterar — det var så grind V-A låg åtta dygn på tre dygns regn.`;
+      `flödet matar innan du kvitterar — det var så grind V-A låg åtta dygn på tre dygns regn.` +
+      "\n" + "\n" + `Och en källa som slutat växa märks inte i appen förrän domen ska fällas i vinter.`;
     const oppnaM = await gh(`/issues?state=open&labels=matvakt`);
     const minM = oppnaM.find((i: any) => (i.body ?? "").includes(MATVAKT));
-    if (sena.length) {
+    if (allt.length) {
       if (minM) await gh(`/issues/${minM.number}/comments`, "POST", { body: mKropp });
-      else await gh(`/issues`, "POST", { title: "🔕 Mätvakten: en schemalagd mätning går inte", body: mKropp, labels: ["matvakt"], assignees: ["895845"] });
+      else await gh(`/issues`, "POST", { title: "🔕 Mätvakten: en mätning går inte eller en källa har slutat växa", body: mKropp, labels: ["matvakt"], assignees: ["895845"] });
     } else if (minM) {
-      await gh(`/issues/${minM.number}/comments`, "POST", { body: mKropp + "\n" + "\n" + "Stänger — alla mätningar går igen." });
+      await gh(`/issues/${minM.number}/comments`, "POST", { body: mKropp + "\n" + "\n" + "Stänger — mätningarna går och källorna växer igen." });
       await gh(`/issues/${minM.number}`, "PATCH", { state: "closed" });
     }
   } catch (e) {
     // Tappad signal ÄR ett vakthundsfel: en blind mätvakt är värre än ingen (#76-läxan).
-    problem.push(`**Mätvakten (kort #101) kunde inte köras**: ${String(e)}`);
+    problem.push(`**Mätvakten (kort #101/#106) kunde inte köras**: ${String(e)}`);
   }
 
   const kropp = `${MARK}\n**Kontroll ${new Date().toISOString()}**\n\n` +
