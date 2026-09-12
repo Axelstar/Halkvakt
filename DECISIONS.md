@@ -3556,3 +3556,66 @@ ikapp**:
 
 **Ett larm som namnger en av fyra mätningar är ett larm som tappar tre.** Att #88 låg i en bisats
 var precis den sortens glapp som lät fyra mätningar stå döda i fem dygn.
+
+## #144 (12/9 2026) Kontraktsgrinden — sjutton kopior av samma tröskel, noll vakter
+
+**Beslut:** `scripts/kontraktsgrinden.ts` byggd och inlagd som eget CI-steg före `npm test`.
+Den läser repots spårade filer ur `git ls-files`, letar upp varje förekomst av en deklarerad
+FORM, plockar ut VÄRDET och fäller om kopiorna inte bär samma värde — eller om antalet sjunkit
+under det uppmätta golvet.
+
+**Hålet den stänger.** #75:s givarvakt (`surface_temp_c >= air_temp_c - 12`) står ordagrant på
+**sjutton ställen i tolv filer** och hade ingen vakt alls. Varje kopia sitter i en mätning som
+lämnar en DOM. Ändras 12 till 10 i en av dem mäter grindarna olika populationer *tyst*: samma
+arkiv, olika svar, ingen som märker det. Det är inte en hypotes — CLAUDE.md:s TradingOS-avsnitt
+beskriver exakt samma fälla två gånger, där en tröskeländring inte följdes av en fullständig grep
+och fem ytterligare ställen hittades först veckor senare.
+
+**Uppmätt i dag — alla fem kontrakt håller redan:**
+
+| Kontrakt | Förekomster | Filer | Värde |
+| :-- | --: | --: | :-- |
+| #75 givarvakten (`yta >= luft − N`) | 17 | 12 | 12 |
+| Fukten (TS-mängd + SQL-lista) | 6 | 4 | `dry\|no` |
+| Takten (`BUCKET_S`) | 7 | 7 | 1800 |
+| Ankarradien (`MAX_KM`) | 5 | 5 | 50 |
+| Grannantalet (`K_NEIGHBOURS`) | 5 | 5 | 5 |
+
+**Fuktkontraktet är det som bär mest.** Det är deklarerat i två språk — en TypeScript-mängd
+(`DRY = new Set(["no","dry"])`) och en SQL-lista (`lower(precipitation) NOT IN ('no','dry')`) —
+och normaliseras som MÄNGD, inte som text, så att ordning och versaler inte spelar roll. Det gör
+grinden till den enda kontroll vi har som jämför över språkgränsen.
+
+**Bevisat, inte påstått.** Självtestet kör fem fall mot känd sanning utan disk: samstämmiga
+kopior håller, en drivande kopia fäller *och pekas ut vid namn*, en försvunnen kopia fäller på
+golvet trots att de kvarvarande är eniga, samma ordlista i två språk normaliseras lika, och en
+SQL-lista som tappat ett ord fäller. Därefter två mutationsprov mot det riktiga repot:
+
+* `grind-t-a.ts` ändrad 12 → 10 ⇒ exitkod 1, `värde "12" — 16 st` mot `värde "10" — 1 st`,
+  avvikaren utpekad på `scripts/grind-t-a.ts:190`.
+* `overgangar-steg0.ts` SQL-listan tappar `'dry'` ⇒ exitkod 1 — och **drift inuti EN fil**,
+  mellan TypeScript-definitionen på rad 42 och SQL-frågan på rad 48. Det är precis den klassen
+  av fel som tyst dödade grind R-A (#141).
+
+**Två avsiktliga olikheter vaktas INTE, och skälet står i filens huvud:**
+
+1. **Nollpolitiken.** Motorn (`snapshot-core`, `publicera`) skriver
+   `(air_temp_c IS NULL OR surface_temp_c >= air_temp_c - 12)` — rader utan lufttemperatur
+   släpps igenom. Grindarna kräver `air_temp_c IS NOT NULL AND ...`. Motorn publicerar alltså
+   en något större population än grindarna mäter. **Talet** är kontraktet; nollpolitiken är ett
+   medvetet val på varje sida.
+2. **`MIN_SHARED`.** `cell-matning.ts` kör 10 där grind A kör 20, för ett annat syfte än
+   leave-one-out. Ett kontrakt med en legitim avvikare är inget kontrakt — att vakta det ändå
+   vore att bygga en vakt som ropar varg.
+
+**Golvet är inte en formalitet.** En kopia som försvinner är lika tyst som en som ändras. Sjunker
+antalet fäller grinden, och felmeddelandet säger uttryckligen: är borttagningen avsiktlig, sänk
+golvet i samma commit — så att den blir ett beslut och inte ett slarv.
+
+**Alternativet som valdes bort:** att refaktorera de sjutton kopiorna till en delad modul. Bengts
+invändning höll: mätningarna i de olika -A är riktiga och korrekta, 80–90 % av mätningarna är
+redan byggda, och en refaktorering skulle röra fungerande kod för att stänga ett hål som en
+läsande kontroll stänger lika bra. Grinden rör ingen kod — den läser.
+
+**Vad den INTE bevisar:** bara deklarerade kontrakt vaktas. Grinden är ett skyddsnät MELLAN
+ändringstillfällena, inte en ersättning för en fullständig grep när en tröskel faktiskt ändras.
