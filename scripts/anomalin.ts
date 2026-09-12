@@ -81,7 +81,7 @@ export function matt(rader: Rad[]) {
 export function cell(rader: Rad[]): string {
   const m = matt(rader);
   if (m.n < MIN_CELL) return `– (${m.n})`;
-  return `${m.mae.toFixed(2)} / ${(m.grova * 100).toFixed(0)}% (${m.n})`;
+  return `${m.mae.toFixed(2)} / ${(m.grova * 100).toFixed(1)}% (${m.n})`;
 }
 
 type Station = { id: string; lon: number; lat: number; elev: number | null; series: Map<number, number> };
@@ -323,7 +323,7 @@ for (const [bn, blo, bhi] of BANDS) {
   console.log(`  ${bn.padEnd(12)} ${cell(u).padStart(20)} ${cell(v).padStart(20)}`);
 }
 const tu = matt(rader), tv = matt(raderVakt);
-console.log(`  ${"TOTALT".padEnd(12)} ${`${tu.mae.toFixed(2)} / ${(tu.grova * 100).toFixed(0)}% (${tu.n})`.padStart(20)} ${`${tv.mae.toFixed(2)} / ${(tv.grova * 100).toFixed(0)}% (${tv.n})`.padStart(20)}`);
+console.log(`  ${"TOTALT".padEnd(12)} ${`${tu.mae.toFixed(2)} / ${(tu.grova * 100).toFixed(1)}% (${tu.n})`.padStart(20)} ${`${tv.mae.toFixed(2)} / ${(tv.grova * 100).toFixed(1)}% (${tv.n})`.padStart(20)}`);
 console.log(`  Krymper 7–15-anomalin med vakten på är trasiga givare en del av förklaringen —`);
 console.log(`  och då är det ett FYND OM GRIND A SJÄLV, inte bara om anomalin.`);
 
