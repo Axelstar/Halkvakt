@@ -3660,6 +3660,17 @@ materialiseras om (raderas ur arbetsträdet och hämtas tillbaka ur git).
 --check` = "publicera/index.ts i synk", kontraktsgrindens självtest OK, `npm test` 57 tester
 52 gröna 0 fel (5 hoppade, DB-beroende).
 
+**Slutbeviset är en FÄRSK KLON på samma maskin**, med samma system-config som skapade problemet:
+
+| | Före | Efter (färsk klon) |
+| :-- | --: | --: |
+| Textfiler med rena LF | 47 | **411** |
+| Textfiler med CRLF | 364 | **1** (`android/gradlew.bat`) |
+| Binära | 498 | 498 |
+| `bundle-skuggmotor --check` | föll | **i synk** |
+| `bundle-publicera --check` | föll | **i synk** |
+| `git status` i klonen | — | rent |
+
 **Undantaget.** `android/gradlew.bat` behåller CRLF; cmd.exe vill ha det. `android/gradlew` (skalet
 som CI kör) är och förblir LF.
 

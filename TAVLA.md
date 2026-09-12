@@ -353,6 +353,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   än den som byggde dem. Åtgärden är två rader (`git rm -r --cached` + rad i `.gitignore`) men att ta
   bort spårade filer är ett medvetet beslut, inte städning — **Bengt eller Axel säger till först**.
   Historiken blir inte mindre av det; bara nya kloner slutar hämta dem på nytt.
+  **Bevisad skada, inte bara vikt (12/9):** en klon till en nästlad katalog FALLER på Windows
+  260-teckengräns — `fatal: cannot create directory at 'ios/HalkvaktEngine/.build/x86_64-unknown-
+  linux-gnu/debug/HalkvaktEnginePackageDiscoveredTests.build': Filename too long`. Klonen gick
+  igenom först med `-c core.longpaths=true`. Det är alltså inte bara 27,6 MB — det är en repo som
+  inte går att klona normalt på Windows, och orsaken är uteslutande byggartefakterna.
 - [ ] 🧊 **#103 FRYSKLASSNINGEN — kan en modell som är opålitlig på grader ändå bära en klass?**
   📄 **TRÖSKELDOKUMENT SKRIVET 12/9** (`docs/TROSKLAR-FRYSKLASSNINGEN.md`, **FASTSTÄLLT 12/9**, DECISIONS #130/#135).
   **Frågan är Axels, ordagrant**, ur hans bedömning av grind A: grind A föll, men A3
