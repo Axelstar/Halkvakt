@@ -3305,3 +3305,47 @@ kalla det en mätning vore precis det representativitetsfelet vi mätte oss fram
 **Ett självtest fällde mig under bygget:** dominansprovet skrev "en station med 2 av 10 dominerar
 inte" med bara två stationer i materialet — då bär den andra 80 % och provet blev meningslöst.
 Rättat till spridda stationer, med det triviala fallet kvar som eget prov.
+
+## #137 (12/9 2026) K-A och R-A körda — vakterna höll, och R-A fällde mig på ett tyst filter
+
+**K-A (frysklassningen, kort #103): ⊘ INGEN DOM, och septembervakten är precis det som biter.**
+
+| | |
+| :-- | --: |
+| Underlag | 709 stationer, 147 060 bucketade avläsningar |
+| Mätpunkter (K3 = 15 km) | 210 över 16 stationer |
+| **Punkter med UPPMÄTT frys** | **0** |
+
+Kravet är ≥ 500 punkter över ≥ 20 stationer **och ≥ 100 punkter med uppmätt frys**. Talen i svepet
+ser lysande ut — 99–100 % rätt klass, 0,0 % farliga fel i varje kombination — **och de betyder
+ingenting.** Med noll frysande punkter säger modellen "fryser inte" varje gång och har rätt varje
+gång. Det är exakt det septembervakten skrevs för att hindra, och det är första gången den biter.
+
+**Att talen ser bra ut och ändå inte får läsas är hela poängen med en underlagsvakt.** Hade
+dokumentet skrivits efter mätningen hade 99,5 % varit svårt att inte citera.
+
+**R-A (rimfrosten, kort #46) på det finska arkivet: 0 rader efter vakten — och det var MITT fel.**
+
+Första körningen svarade "⊘ OAVGJORT — inga rader överlever vakten" som om det vore ett
+underlagsbesked. Det var det inte. **`ingest/fi.ts` hämtar TIE_1, ILMA, KASTEPISTE, SADE och
+KELI_1 — men aldrig luftfuktighet.** Korsgivarkontrollen `humidity_pct >= 90` filtrerade därmed
+bort **varje rad i arkivet**, och skriptet rapporterade det som ett resultat.
+
+**Det är samma familj som `Boolean(precipitation)` och vinddatan före #84: ett villkor som tyst
+filtrerar allt därför att fältet inte finns, presenterat som en mätning.** Att jag byggde det
+samma dygn som värdevakten — vars hela poäng är att ett fält ska besiktas innan det bär något —
+gör det värre, inte bättre.
+
+RÄTTAT I SAMMA VARV, i tre delar:
+1. **Vaktdiagnos före allt annat:** frågan räknar nu varje led för sig — hur många rader som bär
+   yta+daggpunkt, luft, RH, och hur många som klarar #75:s respektive daggpunktens vakt.
+   **En nolla kan aldrig mer vara tvetydig.**
+2. **RH-ledet tas med bara när fältet finns**, och dess frånvaro skrivs ut i klartext.
+3. **Grindutfallet blir OAVGJORT när ett vaktled inte går att utvärdera** — oavsett hur talen ser
+   ut. Att köra vidare på två av tre led vore att mjuka upp en vakt §3 kallar undantagen från all
+   lättnad, och talen redovisas därför som **FÖRHANDSBESKED**, aldrig som ett grindutfall.
+
+**FÖLJDEN FÖR KORTET:** R-A kan inte köras vid full vaktstyrka på det finska arkivet. Antingen
+hämtar ingest/fi.ts RH framåt — Fintraffic levererar det, fältet plockades bara aldrig upp — eller
+så väntar R-A på svensk frost. Det är Bengts val, och det är billigare än det låter: RH ligger i
+samma svar som de fält vi redan läser.
