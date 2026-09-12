@@ -39,6 +39,7 @@ förvärrar halkan" — ett helt giltigt och användbart svar. Faller båda läg
 | Parameter | Vad den styr | Svep |
 | :-- | :-- | :-- |
 | **G** byvindtröskel | när byvind är en egen fara (roll A) | 15 · 18 · 21 · 25 m/s |
+| **G_tak** rimlighetstak | över detta är byvinden en trasig givare, inte väder (§3.1) | 30 · 40 · 50 m/s |
 | **G_mod** byvind som modifierare | när vind förvärrar halka (roll B) | 10 · 13 · 16 m/s |
 | **S** siktgräns | när sikt är en egen fara | 200 · 300 · 500 m |
 | **S_mod** sikt som modifierare | när sikt förvärrar halka | 300 · 500 · 800 m |
@@ -84,6 +85,22 @@ och sikt **vet vi ingenting**. Ingen har någonsin mätt hur ofta `wind_gust_ms`
 
 Utan den mätningen är varje tal i §4 meningslöst. **En vakt som inte vet vad den vaktar mot är ingen
 vakt.**
+
+### 3.1 Mätt 2026-09-12 — vakten har fått två tal och en täckningssiffra
+
+Steg 0 kördes (körning 34675456017, 14 dygn, 216 041 rader) och gav vakten dess innehåll:
+
+| Fynd | Vad vakten ska göra |
+| :-- | :-- |
+| **Byvind max 85,5 m/s** | Sveriges uppmätta rekord ligger kring 81 m/s, och då på fjällstation. 85,5 vid en vägstation är med all sannolikhet en trasig givare. **Vakten behöver ett tak** — svepet 30 · 40 · 50 m/s, och det lägsta som inte kastar verkliga stormar vinner. |
+| **Sikt 20 000 m i 45 650 av ~92 000 rader** | Det är ett **SENTINELVÄRDE** ("minst 20 km"), inte en mätning. Hälften av siktmaterialet är ett tak. Vakten ska behandla 20 000 som "god sikt" och aldrig låta det bära en tröskel eller räknas som ett mätvärde. |
+| **Täckning 42,5 % byvind, 42,6 % sikt** | Mindre än hälften av arkivraderna bär fälten alls (751 respektive 747 stationer). Det halverar W-A:s underlag och **ska stå i varje dom**, som andel, enligt W-C5. |
+| Noll rader med byvind < medelvind, noll negativa värden | Den delen av vakten behövs inte. Ett mätt nej är också ett svar. |
+
+**En antydan som INTE får bära en tröskel:** bandet 10–15 m/s hade 2,23 × olycksfrekvensen mot
+< 10 m/s (89,5 mot 40,2 per 1 000 stationstimmar, på 927 stationstimmar). Det är över W-A2:s krav —
+men det är ETT band, i september, och `situation_archive` bär ingen orsak. Det är ett skäl att köra
+om W-A när vinterstormarna kommit, inte ett skäl att sätta G nu.
 
 ---
 

@@ -1,0 +1,25 @@
+# SMHI-täckningen (kort #95, §2.8 Verify 1) — och grind T-A:s blockerare.
+# T-A:s fysikkontroll kräver molnmängd, som inte finns i vårt arkiv. Molnet kan hämtas i efterhand
+# ur SMHI metobs parameter 16 (latest-months räcker 130 dygn bakåt), men bara 108 av 459 stationer
+# rapporterar det. Den här mätningen svarar på hur långt det är till närmaste molnobservation.
+# Läser SMHI:s öppna API (CC BY 4.0) och vårt arkiv. Skriver ingenting. Knapp, inte cron.
+name: smhi-tackning
+on:
+  workflow_dispatch:
+jobs:
+  smhi-tackning:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types scripts/smhi-tackning.ts --sjalvtest
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/smhi-tackning.ts | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }

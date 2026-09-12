@@ -101,6 +101,31 @@ Domspärr: < 30 frostnätter eller < 20 stationer ⇒ ingen dom, bara en tabell.
 vanligast klara nätter. Toppar de platt över dygnet är villkoret brus, oavsett hur bra siffrorna
 ser ut.
 
+**BEROENDE SOM SAKNADES I DOKUMENTET, infört 2026-09-12 efter T-A:s första körning (DECISIONS #113):
+klarhetsdelen av fysikkontrollen kräver MOLNMÄNGD, som inte finns i vårt arkiv.** Kontrollen har
+alltså två halvor med olika status: timfördelningen går att köra i dag, klarheten gör det inte.
+
+Molnet hämtas ur **SMHI metobs parameter 16 (total molnmängd, timvärde)** — och det är billigare än
+kort #95 antog: perioden `latest-months` sträcker sig **130 dygn bakåt** (mätt 12/9), med
+`corrected-archive` därutöver. **Molnet kan alltså hämtas i EFTERHAND när T-A körs och behöver inte
+arkiveras.** Ingen ny tabell, ingen lagringskostnad, ingen drift — samma hämtning vid körning som
+`scripts/smhi-prov.ts` redan gör för lufttemperaturen.
+
+**Begränsningen som ska mätas innan kontrollen litas på:** bara **108 av 459 SMHI-stationer**
+rapporterar total molnmängd. Hur långt från närmaste molnstation en VViS-station ligger avgör om
+klarhetsdelen går att köra alls, och för hur stor del av landet. Den mätningen är kort #95:s
+täckningstabell och hör hemma där.
+
+**Tills täckningen är mätt fälls ingen dom på klarhetsdelen** — timfördelningen ensam räcker inte.
+En trend som toppar 03–07 men inte oftare klara nätter kan vara advektion i stället för utstrålning,
+och det är en annan fysik med en annan regel.
+
+**Och en andra gräns som första körningen visade:** gallringen (#83, DECISIONS #97) tunnar allt äldre
+än sju dygn till en rad per halvtimme. Då faller **15-minutersfönstret i §2 bort helt**, och
+30-minutersfönstret faller på §3:s egen vakt (≥ 3 mätningar i fönstret). Svepets tre fönster är i
+praktiken **två** för varje läsning som sker senare än en vecka efter frostnätterna. T-A ska därför
+köras inom sju dygn efter att frostlarmet gått.
+
 ### T-B — Skuggdriften (B3 + tystnadsfelet)
 
 Skuggkolumnen loggar varje minut vad trenden **skulle** ha sagt. Facit läggs ovanpå i efterhand.
