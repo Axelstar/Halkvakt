@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-12 07:15 av Claude (Bengts "ta alla fem") — genomgång av systemanalysens 2.1–2.8: de fyra döda måndagsmätningarna igång igen och alla gröna, **grind A föll för första gången** (2 042 punkter, MAE 1,06 mot 1,0), höjden återvinner noll på 1 962 punkter, SMHI som extra ankare gör modellen SÄMRE (1,05 → 1,20) ⇒ §2.8:s ankarroll avgjord; TROSKLAR-RIMFROST skrivet (#46); två sakfel rättade i TROSKLAR-VIND-SIKT (#90). Resonemanget i sin helhet: Drive, "Framtida utvecklingsmöjligheter — systemanalys varningssystemen 2026-09-12 **v5** (läsbar)" — §2.4 och §2.8 omskrivna från grunden, §3 har ny ordning där **grind A:s dom är punkt 2**, före allt utom trenden.*
+*Uppdaterad: 2026-09-12 07:15 av Claude (Bengts "ta alla fem") — genomgång av systemanalysens 2.1–2.8: de fyra döda måndagsmätningarna igång igen och alla gröna, **grind A föll för första gången** (2 042 punkter, MAE 1,06 mot 1,0), höjden återvinner noll på 1 962 punkter, SMHI som extra ankare gör modellen SÄMRE (1,05 → 1,20) ⇒ §2.8:s ankarroll avgjord; TROSKLAR-RIMFROST skrivet (#46); två sakfel rättade i TROSKLAR-VIND-SIKT (#90). Resonemanget i sin helhet: Drive, "Framtida utvecklingsmöjligheter — systemanalys varningssystemen 2026-09-12 **v5** (läsbar)" — §2.4 och §2.8 omskrivna från grunden, §3 har ny ordning där **grind A:s dom är punkt 2**, före allt utom trenden. KVÄLL: SMHI-förstärkaren (#95 d) byggd — tröskeldokument, sql/015 (varningarnas giltighetsfönster saknades i arkivet) och grind F-A som läsande knapp.*
 
 ---
 
@@ -383,6 +383,28 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ➡️ **KVAR AV #95:** Verify 2 (luft→yta-korrelationen vintertid — den enda som kan avgöra reserven),
   representativitetsradien (hur långt molnet FÅR sträckas) och SMHI-förstärkaren nedan. Ingetdera
   blockerar längre något.
+  🔨 **(d) FÖRSTÄRKAREN BYGGD 12/9 kväll** (Bengts "vi bygger smhi förstärkaren", DECISIONS #121).
+  📄 `docs/TROSKLAR-SMHI-FORSTARKAREN.md` (UTKAST) — väntar på Bengts fastställande och Axels bock.
+  ⚖️ **SPÄNNINGEN I KORTET LÖST FÖRE SVEPET:** "yta nära noll" är BREDARE än motorns `yta ≤ 1 °C
+  OCH fukt`, men kortet förbjuder uttryckligen att regeln skapar en varning. Därför får parametern
+  F3 ett **tak vid motorns egen tröskel** — regeln får skära bort, aldrig lägga till. **Menade du
+  det bredare är det ett annat kort** (efterhalkans syskon, egen grind, egen falsklarmsräkning);
+  det byggs inte smygande in i en förstärkare.
+  🎚️ **MOTORN HAR INGET KONFIDENSFÄLT**, så effekten är namngiven: **E0 skuggkolumn (startläget)**
+  · E1 längre försprång (samma form som #90:s roll B) · E2 annan text (Axels) · **E3 högre
+  prioritet ALDRIG** — det skulle tysta en olycka.
+  🕳️ **FYNDET UNDER BYGGET, dyrare än regeln själv: arkivet saknade varningens GILTIGHETSFÖNSTER.**
+  `smhi_warnings` bär `approx_start`/`approx_end`, men töms vid varje synk; historiken har sedan
+  `001_init` burit allt utom just de två fälten. Arkivet visste **när en varning publicerades, inte
+  när den gällde** — och SMHI publicerar i förväg (publicerad 14, gäller 22–06). **Går inte att laga
+  i efterhand.** ✅ `sql/015_smhi_giltighet.sql` + automigrationen i `ingest/db.ts` + historik-
+  skrivningen bär fälten framåt. Varje dygn utan den migrationen hade varit ett dygn vinterunderlag
+  som aldrig kan lagas — samma logik som T-A:s frostnätter.
+  🚪 **GRIND F-A HAR BÅDE GOLV OCH TAK:** ≥ 200 förstärkta stationstimmar, ≥ 20 områden, andelen
+  **mellan 5 % och 80 %**, inget område över 25 %. Över taket säger regeln bara "det är vinter".
+  ⚠️ **Ett län är inte en väg** — varningsområdena är länspolygoner, så stor träffyta är inget bevis.
+  🔬 `scripts/smhi-forstarkaren-steg0.ts` + knapp. F-B är en VINTERGRIND: facit
+  (`road_condition_history`) står stilla sedan 25/8 och kan inte döma i september.
   ➕ **ÖVERTAGET FRÅN #93 den 12/9 (DECISIONS #108): SMHI-FÖRSTÄRKAREN.** `smhi_warnings` hämtas
   redan och ligger i arkivet (tiotals kB/dygn), så regeln **snöfallsvarning + yta nära noll = högre
   konfidens** kostar 0 kr och kräver ingen ny källa. Förstärkare av frysrisken, ALDRIG en egen fara

@@ -1,0 +1,29 @@
+# Steg 0 för kort #95 (d) — SMHI-förstärkaren, grind F-A (TROSKLAR-SMHI-FORSTARKAREN §8 steg 3).
+# Frågan: hur ofta ligger en stationstimme som REDAN kvalificerar för frysrisken under en aktiv
+# SMHI-vintervarning? Regeln får aldrig skapa en varning, bara förstärka en som finns.
+# Helt läsande. Knapp, inte cron — i september väntas OAVGJORT, och det är ett underlagsbesked.
+name: smhi-forstarkaren-steg0
+on:
+  workflow_dispatch:
+    inputs:
+      dagar:
+        description: "Fönster i dygn"
+        required: false
+        default: "30"
+jobs:
+  smhi-forstarkaren-steg0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types scripts/smhi-forstarkaren-steg0.ts --sjalvtest
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/smhi-forstarkaren-steg0.ts "${{ inputs.dagar || '30' }}" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }

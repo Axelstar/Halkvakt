@@ -2599,3 +2599,61 @@ SAMLAD LÄSNING AV #95 EFTER KVÄLLEN: molnet är klart och gav T-A sin fysikkon
 besvarad med ett nej. Reservrollen har täckningen mätt men dugligheten omätt, och det första
 förhandsbeskedet är svagt. **Kvar som levande i kortet är SMHI-förstärkaren (snöfallsvarning + yta
 nära noll), som kom in från #93 och inte berörs av något av ovanstående.**
+
+## #121 (12/9 2026) SMHI-förstärkaren byggd — och arkivet visade sig sakna varningens giltighetsfönster
+
+BESLUT (Bengts "vi bygger smhi förstärkaren"): kort #95 (d) har fått tröskeldokument, migration,
+ingestfix och ett läsande steg 0-instrument. Ingen motorkod, ingen röst.
+
+**SPÄNNINGEN I KORTET, LÖST FÖRE SVEPET.** Kortet säger två saker som drar åt olika håll:
+"snöfallsvarning + **yta nära noll** = högre konfidens" och "ALDRIG en egen fara — den får höja
+konfidensen i en varning som redan kvalificerar, **inte skapa en varning**". "Yta nära noll" är ett
+BREDARE villkor än motorns `yta ≤ 1 °C OCH fukt`, så läst bokstavligt skulle regeln kunna fyra där
+motorn i dag tiger. Lösningen: parametern F3 får ett **tak vid motorns egen tröskel** och kan aldrig
+sättas högre — regeln får skära bort, aldrig lägga till. **Om Bengt menade det bredare är det ett
+annat kort**, efterhalkans syskon, med egen grind och egen falsklarmsräkning. Det byggs inte
+smygande in i en förstärkare.
+
+**OCH EN ANDRA SAK SOM MÅSTE AVGÖRAS FÖRE SVEPET: motorn har inget konfidensfält.** En förstärkare
+som inte gör något är värdelös, så effekten är namngiven i dokumentet: **E0 skuggkolumn (startläget)
+· E1 längre försprång (samma form som #90:s roll B) · E2 annan text (Axels, inte min) · E3 högre
+prioritet (ALDRIG — skulle tysta en olycka).** Vi bygger E0.
+
+**FYNDET UNDER BYGGET, och det är dyrare än regeln själv: `smhi_warnings_history` saknade
+giltighetsfönstret.** Nuläget `smhi_warnings` bär `approx_start`/`approx_end`, men den tabellen TÖMS
+och skrivs om vid varje synk ("replace-all: feed IS the current truth", ingest/db.ts:243). Historiken
+har sedan `001_init` burit allt utom just de två fälten.
+
+| | |
+| :-- | :-- |
+| Vad arkivet visste | NÄR en varning publicerades |
+| Vad det inte visste | NÄR den gällde |
+| Varför det spelar roll | **SMHI publicerar i förväg** — en varning publicerad kl 14 kan gälla 22–06 |
+| Går det att laga i efterhand | **Nej.** API:et ger bara nuläget; historikraderna är redan skrivna |
+
+Åtgärdat med `sql/015_smhi_giltighet.sql` (två kolumner + index, additiv och idempotent), inlagd i
+**automigrationen i ingest/db.ts** så den appliceras av nästa timkörning utan knapptryck, och
+historikskrivningen bär nu fälten framåt. Gamla rader får NULL och räknas som **"okänt
+giltighetsfönster", aldrig som "gällde inte"** — F-C3 kräver att andelen okända redovisas i varje dom.
+
+**Varje dygn utan den här migrationen hade varit ett dygn vinterunderlag som aldrig kan lagas.**
+Samma logik som grind T-A:s frostnätter, och det är skälet till att den gjordes i september.
+
+**GRIND F-A HAR BÅDE GOLV OCH TAK, och taket är det ovanliga.** Kraven: ≥ 200 förstärkta
+stationstimmar, ≥ 20 varningsområden, **andelen förstärkta mellan 5 % och 80 %**, och inget enskilt
+område får bära mer än 25 % av träffarna. Under golvet gör regeln ingenting; **över taket säger den
+bara "det är vinter" och skiljer inte två fall åt.** En förstärkare som alltid är på är ingen
+förstärkare. F-A4 är rimfrostens läxa (#117 R-A5) i förebyggande form: en enda länsvarning över
+Norrbotten kan ensam skapa tusentals stationstimmar.
+
+**DEN ÄRLIGA SVAGHETEN, skriven före mätningen: ett län är inte en väg.** Varningsområdena är
+länspolygoner, och att en snöfallsvarning täcker en station säger ingenting om den stationens hundra
+meter. Det är samma läxa som §2.8:s täckningsmätning gav — **täckning är inte duglighet** — och
+taket i F-A3 är den mekanism som ska fånga den.
+
+F-B (skiljer regeln?) är en VINTERGRIND: facit är `road_condition_history`, som står stilla sedan
+25/8 eftersom Trafikverket klassar om vägar först på vintern. Den kan inte dömas i september, och
+dokumentet säger det i stället för att låtsas annat.
+
+KOSTNAD: ingen ny källa, ingen ny hämtning. Två `timestamptz` per varningsrad (~16 byte), och
+varningsrader är tiotal per dygn. **0 kr/mån.**
