@@ -1,0 +1,28 @@
+# Värdevakten (Bengts order 12/9, DECISIONS #133): besiktar varje numeriskt fält i arkivet.
+# Schemat läses UR DATABASEN, så ett nytt fält är med från dag ett — och står som OBESIKTIGAT
+# tills någon deklarerat vad det får innehålla. Helt läsande. Knapp, inte cron.
+name: vardevakten
+on:
+  workflow_dispatch:
+    inputs:
+      dagar:
+        description: "Fönster i dygn"
+        required: false
+        default: "30"
+jobs:
+  vardevakten:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types scripts/vardevakten.ts --sjalvtest
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/vardevakten.ts "${{ inputs.dagar || '30' }}" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }

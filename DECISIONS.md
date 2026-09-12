@@ -3132,3 +3132,56 @@ nedgraderad från spärr till notis — han är underrättad, och mätningen är
 AXELS MOTFÖRSLAG som därmed FALLER: versionering av signerade dokument, och ett tak på tre öppna
 tröskeldokument. Båda var rimliga svar på en styrningsrisk — men risken var en följd av ceremonin,
 inte av arbetet. Utan ceremonin finns ingen signatur som kan bli innehållslös.
+
+## #133 (12/9 2026) Värdevakten — ett fält får inte bära en mätning innan det besiktats
+
+BESLUT (Bengts order "bygg värdevakten för allt i arkivet och lägg till det som ett krav"):
+`scripts/vardevakten.ts` + knapp, och en **husregel i CLAUDE.md**.
+
+**SKÄLET, och det är en mönsterlista Axel satte ord på.** På ett dygn visade sig nio antaganden
+vara fel eller datan smutsig — men fyra av dem var inte resonemangsfel alls, utan **samma defekt i
+källan: ett fält vars värden innehåller koder som är typgiltiga men fysiskt omöjliga.**
+
+| fält | såg ut som | var |
+| :-- | :-- | :-- |
+| `wind_gust_ms` | 85,5 m/s | trasig givare (rekordet ≈ 81, på fjällstation) |
+| `visibility_m` | 20 000 m i hälften av raderna | **sentinel**, "minst 20 km" |
+| molnmängd | 113 % | **kod** för himlen skymd |
+| `precipitation` | "no" / "Dry" | strängar som betyder torrt |
+
+Plus två äldre av samma sort: `SeverityCode 3` som aldrig förekommit, och `Camera.Bearing` som
+pekar åt MOTSATT håll mot kursen den bevakar.
+
+**INTE ETT ENDA AV DEM HITTADES AV EN VAKT.** Alla hittades av att en människa läste en utskrift,
+och varje vakt vi har — #75, DRY-listan, G_tak — skrevs EFTER att samma defekt bitit oss. Det var
+den systematiska luckan, och den här vakten är svaret.
+
+**TRE KONTROLLER, och den tredje gör den till en grind:**
+1. **Spannet** — ligger min/max inom det fysiskt rimliga? (85,5 m/s fastnar här)
+2. **Dominans** — tar ett enda värde över 5 % i ett fält med ≥ 50 distinkta värden? Det är
+   sentinelns signatur. (20 000 m fastnar här) Kodlistor som `condition_code` fälls INTE — de har
+   för få distinkta värden, och att klass 1 är vanligast är legitimt.
+3. **Deklarationen** — **ett fält utan deklarerat spann rapporteras som OBESIKTIGAT.**
+
+**PUNKT 3 ÄR AVSIKTLIGT OBEKVÄM.** Ett nytt fält dyker upp som obesiktigat den dag det finns i
+arkivet och står så tills någon skrivit ned vad det får innehålla. Och obesiktigat **slår** de
+andra kontrollerna: ett fält vi inte vet något om friskförklaras inte av att dess tal råkar se
+rimliga ut. Det är billigare att deklarera ett spann än att upptäcka en sentinel i en tröskel.
+
+**SCHEMAT LÄSES UR DATABASEN**, inte ur en lista i skriptet — `information_schema.columns` över
+arkivets tolv tabeller. Ett nytt fält är därmed med från dag ett utan att någon behöver komma ihåg
+att lägga till det. Det är samma form som mätvaktens kadensläsning ur repot (#105) och
+ruttberedskapens ruttläsning ur skuggmotorn (#124): **listan som ska vara komplett läses från
+källan, inte från minnet.**
+
+**HUSREGELN (CLAUDE.md):** ett fält får inte bära en mätning, en tröskel eller en varning förrän
+det passerat värdevakten. Bygger man något nytt som ska mätas: deklarera spannet och kör knappen
+INNAN fältet används i en grind.
+
+**VAD DET BETYDER FÖR AXELS OMRÅDE:** motorn läser nio fält, och inget av de sentinelbärande
+(vind, sikt, moln, daggpunkt) når den — de stannar i arkivet. Men **vind och sikt är nästa fält i
+kön till motorn** (roll B i #90), och de är just de två som bär sentinelerna. Vakten står därmed
+där den ska: mellan arkivet och motorn, före roll B byggs.
+
+SJÄLVTESTET prövar alla fyra verkliga fallen plus att en kodlista inte fälls för dominans och att
+ett odeklarerat fält är obesiktigat även när talen ser rimliga ut.
