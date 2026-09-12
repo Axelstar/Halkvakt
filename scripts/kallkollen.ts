@@ -25,7 +25,12 @@ type Kalla = {
 export const KALLOR: Kalla[] = [
   { tabell: "weather_observations", tid: "sample_time", maxTimmar: 0.5, vaktas: "healthcheck + vakthund", barer: "allt väder: trend, efterhalka, grind A, V-A" },
   { tabell: "weather_latest", tid: "sample_time", maxTimmar: 0.5, vaktas: "healthcheck", barer: "snapshoten till appen" },
-  { tabell: "road_conditions", tid: "modified_time", maxTimmar: 24, vaktas: "healthcheck (arkivvakten)", barer: "halkvarningen A1" },
+  // RÄTTAT 12/9 efter första körningen: 24 h var fel tröskel. road_conditions är NULÄGET, och
+  // Trafikverket klassar om vägar i vinter — i september står det stilla i veckor, helt normalt
+  // (mätt: 17,8 dygn). Min vakt larmade alltså på årstiden. Den SÄSONGSOBEROENDE frågan ställer
+  // healthcheckens arkivvakt (#51/#71): finns tillstånd som INTE arkiverats? Den frågan har ett
+  // rätt svar året om. Här räcker en grov livstecken-gräns.
+  { tabell: "road_conditions", tid: "modified_time", maxTimmar: 24 * 45, vaktas: "healthcheck (arkivvakten)", barer: "halkvarningen A1" },
   { tabell: "road_condition_history", tid: "modified_time", maxTimmar: 24 * 30, vaktas: "healthcheck (arkivvakten)", barer: "vinterfacit — moaten" },
   { tabell: "radar_precip", tid: "observed_at", maxTimmar: 3, vaktas: "INGEN", barer: "vattenplaningens enda kvarvarande trigger" },
   { tabell: "situation_archive", tid: "last_seen", maxTimmar: 2, vaktas: "INGEN", barer: "facit för alla grindar" },
