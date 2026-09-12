@@ -1602,3 +1602,19 @@ sedan #32, regn-30 sedan #152. #83: weather_obs 242 351 → 242 495 → 246 339 
 Bengt 04:24 utan tavelrad) körd 04:25: 0 kodhål, kod 1 = 838 neutrala strängar, premissen håller (0 farlighets-
 ord på kod 1), 12 övergångar/median 2 803 h. Bifynd ⇒ #97: regexen blind för "Rimfrost"/"Halkrisk".
 Byggt: inget. Nästa: kvällsavläsning 11/9 17:30 UTC.
+
+## 2026-09-12 18:55 — Avläsningen: kassan tredubblad (202 min/dygn), bron håller, nycklar ej roterade
+AVLÄSNINGEN LÅG NERE ETT DYGN: kvällsavläsningen 11/9 17:30 fyrade men sessionen vaknade först 12/9 18:51,
+så det här varvet täcker 26,5 h i stället för 13. Under tiden byggde parallellsessionen ~90 commits
+(kort #98–#152, DECISIONS t.o.m. #150) utan att någon avläsning mätte kassan.
+#85: 11/9 16:25 → 12/9 18:51 = 200 körningar, 223 min ⇒ 202 min/dygn (1,62 USD/dygn); senaste 10 h
+261 min/dygn. ci 92 körningar/94 min över 91 unika commits (44 push + 47 PR, ~2 min per ändring) är
+kostnaden — driften är oförändrad (grannar 34, healthcheck 32, ingest 26 min). Projektion till 1/10:
+31 USD vid dagens takt, 40 vid de senaste 10 timmarnas, ovanpå redan förbrukat; taket 35 USD har hårt
+stopp. Tre spakar till Bengt: [skip ci] på dokumentcommits, färre/större PR:er, eller höjt tak.
+#50: 20 healthcheck-körningar, 13 puls + 7 cron, längsta mellanrum 2,00 h — bron hel.
+#86: ej roterat; deploy-supabase-körningarna använder 9/9-tokenen och vakthund-issues #109/#131/#151 är
+larmprov, inte rotationsbevis. #83: 7 790 rader/dygn, 1 kall station. Kartrepot 18:50: SE/FI/DK
+live-sha = manifest-sha, SE 3 min, fi/dk 28 min (:24-körningen), meta 22 min. bridges tyst sedan #32,
+regn-30 sedan #152. Röda i fönstret: ci 3, grind-r-a 1, grannar 1 (självläkt), smhi-steg0 1.
+Byggt: inget. Nästa: morgonavläsning 13/9 04:30 UTC.
