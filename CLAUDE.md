@@ -52,6 +52,16 @@ Define success criteria. Loop until verified.
 - Secrets (Trafikverket key etc.) live in GitHub Actions secrets / local `.env`; never
   in code, snapshots, or the client app.
 - Log significant choices in DECISIONS.md (date, decision, alternatives, why).
+- **VÄRDEVAKTEN (Bengts order 2026-09-12).** Ett fält får inte bära en mätning, en tröskel eller
+  en varning förrän det passerat `scripts/vardevakten.ts`. Ett fält utan deklarerat spann
+  rapporteras som **OBESIKTIGAT** — det är ett hinder, inte en varning, och det friskförklaras
+  inte av att talen råkar se rimliga ut. Bygger du något nytt som ska mätas: deklarera spannet i
+  skriptets `SPANN` och kör knappen INNAN fältet används i en grind eller en tröskel.
+  Skälet: på ett dygn visade sig fyra fält innehålla koder som är typgiltiga men fysiskt omöjliga
+  — byvind 85,5 m/s (trasig givare), sikt 20 000 m (sentinel i halva materialet), molnmängd 113 %
+  (SMHI:s kod för himlen skymd), `precipitation` "no"/"Dry" (strängar som betyder torrt). Plus två
+  äldre: SeverityCode 3 som aldrig funnits, och Camera.Bearing som pekar åt motsatt håll.
+  **Inget av dem hittades av en vakt** — alla av att en människa läste en utskrift.
 
 **Language:** code + comments in English; all user-facing strings in `strings/sv.xml`
 first, English second.

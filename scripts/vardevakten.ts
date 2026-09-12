@@ -1,0 +1,199 @@
+// VÄRDEVAKTEN — besiktar varje numeriskt fält i arkivet (Bengts order 12/9, DECISIONS #133).
+//
+// VARFÖR DEN FINNS. På ett dygn visade sig nio antaganden vara fel eller datan smutsig, och fyra
+// av dem var samma defekt: **ett fält vars värden innehåller koder som är typgiltiga men fysiskt
+// omöjliga.**
+//
+//   byvind 85,5 m/s     — trasig givare (Sveriges rekord ≈ 81, och då på fjällstation)
+//   sikt 20 000 m       — SENTINEL ("minst 20 km") i hälften av raderna, inte en mätning
+//   molnmängd 113 %     — SMHI:s KOD för himlen skymd, fysikaliskt motsatsen till klar natt
+//   precipitation "no"  — sträng som betyder torrt; Boolean() av den var en falsklarmsmaskin
+//
+// Och två äldre av samma sort: SeverityCode 3 som aldrig funnits, och Camera.Bearing som pekar
+// åt MOTSATT håll mot den kurs den bevakar.
+//
+// **INTE ETT ENDA AV DEM HITTADES AV EN VAKT.** Alla nio hittades av att en människa läste en
+// utskrift, och varje vakt vi har — #75, DRY-listan, G_tak — skrevs EFTER att samma sorts defekt
+// bitit oss. Det här skriptet är den systematiska kontroll som saknades.
+//
+// TRE KONTROLLER, och den tredje är den som gör den till en grind:
+//
+//   1. SPANNET   — ligger min/max inom det fysiskt rimliga? (85,5 m/s hade fastnat här)
+//   2. DOMINANS  — tar ett enda värde en orimlig andel i ett fält med många distinkta värden?
+//                  Det är sentinelns signatur. (20 000 m tog halva siktmaterialet)
+//   3. DEKLARATIONEN — **ett fält utan deklarerat spann rapporteras som OBESIKTIGAT.**
+//
+// Punkt 3 är avsiktligt obekväm. Ett nytt fält dyker upp som obesiktigat den dag det finns i
+// arkivet, och står så tills någon skriver ned vad det får innehålla. Det är billigare att
+// deklarera ett spann än att upptäcka en sentinel i en tröskel.
+//
+// HUSREGELN (CLAUDE.md): ett fält får inte bära en mätning, en tröskel eller en varning förrän
+// det passerat värdevakten.
+//
+// Helt läsande. Run: DATABASE_URL=... node --experimental-strip-types scripts/vardevakten.ts [dagar=30]
+// Självtest utan DB: scripts/vardevakten.ts --sjalvtest
+
+const MIN_RADER = 100;        // under detta får fältet ingen dom, bara ett tal
+const DOMINANS = 0.05;        // ett värde över 5 % i ett fält med många distinkta = misstänkt
+const MANGA_DISTINKTA = 50;   // under detta är fältet en kodlista, inte en mätning
+
+/** Deklarerade spann. Fysikens gränser, inte driftens — en grind får vara strängare (t.ex.
+ *  G_tak 30/40/50 i TROSKLAR-VIND-SIKT), men ingen får vara vidare. Ett fält som saknas här
+ *  är OBESIKTIGAT och får inte bära en mätning. */
+export const SPANN: Record<string, [number, number, string]> = {
+  surface_temp_c: [-60, 60, "°C"], air_temp_c: [-60, 60, "°C"], dewpoint_c: [-60, 60, "°C"],
+  humidity_pct: [0, 100, "%"],
+  wind_speed_ms: [0, 60, "m/s"], wind_gust_ms: [0, 60, "m/s"],
+  visibility_m: [0, 20000, "m — 20 000 ÄR ETT TAK, inte en mätning"],
+  rain_sum_mm: [0, 100, "mm/30 min"], snow_wateq_mm: [0, 100, "mm/30 min"],
+  condition_code: [1, 4, "Trafikverkets väglagsklass"],
+  severity_code: [1, 5, "TRV SeverityCode — 3 har aldrig förekommit"],
+  rate_max: [0, 200, "mm/h"], rate_mean: [0, 200, "mm/h"],
+  speed_limit_kmh: [0, 130, "km/h"], bearing: [0, 360, "grader — kameran TITTAR hit, kursen är +180"],
+  n_hazards: [0, 10000, "st"], n_alerts: [0, 1000, "st"],
+  county_no: [1, 25, "länskod"], area_id: [1, 1e12, "SMHI-id"], warning_id: [1, 1e12, "SMHI-id"],
+};
+
+export type Falt = {
+  tabell: string; kolumn: string; rader: number; nollor: number;
+  min: number | null; max: number | null; distinkta: number;
+  toppVarde: number | null; toppAndel: number;
+};
+
+export type Dom = { utfall: "OK" | "OBESIKTIGAT" | "UTANFÖR SPANN" | "SENTINEL?" | "–"; varfor: string };
+
+/** Domen för ett fält. Ordningen är avsiktlig: obesiktigat slår allt annat, för ett fält vi inte
+ *  vet något om kan inte friskförklaras av att dess tal råkar se rimliga ut. */
+export function doma(f: Falt): Dom {
+  const s = SPANN[f.kolumn];
+  if (!s) return { utfall: "OBESIKTIGAT", varfor: "inget deklarerat spann — får inte bära en mätning" };
+  if (f.rader < MIN_RADER) return { utfall: "–", varfor: `${f.rader} rader, kräver ${MIN_RADER}` };
+  const [lo, hi, enhet] = s;
+  if (f.min !== null && f.min < lo) return { utfall: "UTANFÖR SPANN", varfor: `min ${f.min} < ${lo} ${enhet}` };
+  if (f.max !== null && f.max > hi) return { utfall: "UTANFÖR SPANN", varfor: `max ${f.max} > ${hi} ${enhet}` };
+  if (f.distinkta >= MANGA_DISTINKTA && f.toppAndel >= DOMINANS)
+    return { utfall: "SENTINEL?", varfor: `värdet ${f.toppVarde} tar ${(100 * f.toppAndel).toFixed(1)} % av ${f.distinkta} distinkta` };
+  return { utfall: "OK", varfor: `${f.min}…${f.max} ${enhet}` };
+}
+
+const ikon = (u: Dom["utfall"]) =>
+  u === "OK" ? "✅" : u === "OBESIKTIGAT" ? "⊘" : u === "–" ? "·" : "⚠️";
+
+// ── Självtest: de fyra verkliga fallen från 12/9, plus ett obesiktigat fält.
+if (process.argv.includes("--sjalvtest")) {
+  console.log("SJÄLVTEST — värdevakten mot de fyra fall som faktiskt lurade oss\n");
+  let ok = true;
+  const k = (namn: string, fick: unknown, vantat: unknown) => {
+    if (fick !== vantat) { console.error(`  FEL: ${namn} = ${fick}, väntat ${vantat}`); ok = false; }
+    else console.log(`  ok: ${namn} = ${fick}`);
+  };
+  const f = (kolumn: string, o: Partial<Falt> = {}): Falt => ({
+    tabell: "t", kolumn, rader: 10000, nollor: 0, min: 0, max: 1, distinkta: 500,
+    toppVarde: 0, toppAndel: 0.001, ...o });
+  // 1. Byvinden 85,5 m/s — hade fastnat på spannet.
+  k("byvind 85,5 m/s fälls", doma(f("wind_gust_ms", { min: 0, max: 85.5 })).utfall, "UTANFÖR SPANN");
+  k("byvind 25 m/s passerar", doma(f("wind_gust_ms", { min: 0, max: 25 })).utfall, "OK");
+  // 2. Sikten: 20 000 i halva materialet — dominansen fångar den även inom spannet.
+  k("sikt 20 000 i 50 % fälls som sentinel",
+    doma(f("visibility_m", { min: 8, max: 20000, distinkta: 4000, toppVarde: 20000, toppAndel: 0.5 })).utfall, "SENTINEL?");
+  k("sikt utan dominans passerar",
+    doma(f("visibility_m", { min: 8, max: 19000, distinkta: 4000, toppVarde: 12000, toppAndel: 0.01 })).utfall, "OK");
+  // 3. Kodlistor ska INTE fällas för dominans — condition_code 1 är legitimt vanligast.
+  k("väglagsklass 1 i 80 % är inte en sentinel",
+    doma(f("condition_code", { min: 1, max: 4, distinkta: 4, toppVarde: 1, toppAndel: 0.8 })).utfall, "OK");
+  k("väglagsklass 7 fälls på spannet",
+    doma(f("condition_code", { min: 1, max: 7, distinkta: 5 })).utfall, "UTANFÖR SPANN");
+  // 4. Molnmängden 113 % — utanför skalan, hade fastnat om fältet fanns i arkivet.
+  k("molnliknande 113 mot 0–100 fälls", doma(f("humidity_pct", { min: 0, max: 113 })).utfall, "UTANFÖR SPANN");
+  // 5. Det obekväma: ett nytt fält är OBESIKTIGAT tills någon deklarerar det.
+  k("okänt fält är obesiktigat", doma(f("nytt_falt_2027")).utfall, "OBESIKTIGAT");
+  k("obesiktigat slår även rimliga tal",
+    doma(f("nytt_falt_2027", { min: 0, max: 1, distinkta: 2 })).utfall, "OBESIKTIGAT");
+  // 6. Underlagsvakten.
+  k("för få rader ger ingen dom", doma(f("wind_gust_ms", { rader: 99 })).utfall, "–");
+  k("deklarationen täcker de fält motorn läser",
+    ["surface_temp_c", "severity_code", "speed_limit_kmh", "bearing"].every((x) => x in SPANN), true);
+  if (!ok) { console.error("\nSJÄLVTEST FÄLLDE."); process.exit(1); }
+  console.log("\nSJÄLVTEST OK: alla fyra fall som lurade oss 12/9 fastnar, kodlistor fälls inte");
+  console.log("för dominans, och ett odeklarerat fält är obesiktigat även när talen ser rimliga ut.");
+  process.exit(0);
+}
+
+// ── Skarpt (läser bara).
+const url = process.env.DATABASE_URL;
+if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
+const DAGAR = Number(process.argv.slice(2).find((a) => /^\d+$/.test(a)) ?? 30);
+const pg = (await import("pg")).default;
+const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });
+await pool.query("SET statement_timeout = '600s'");
+const q = async (sql: string, p: unknown[] = []) => (await pool.query(sql, p)).rows as any[];
+
+// Tidskolumn per tabell, så stora tabeller kan fönstras. Speglar scripts/kallkollen.ts.
+const TID: Record<string, string> = {
+  weather_observations: "sample_time", weather_latest: "sample_time",
+  road_conditions: "modified_time", road_condition_history: "modified_time",
+  radar_precip: "observed_at", situation_archive: "last_seen", shadow_log: "run_at",
+  polisen_events: "ingested_at", smhi_warnings: "published", smhi_warnings_history: "published",
+  cameras: "modified_time", deviations: "start_time",
+};
+
+console.log(`Värdevakten — besiktning av arkivets numeriska fält (${DAGAR} dygns fönster)\n`);
+
+// Schemat läses UR DATABASEN, inte ur en lista här. Ett nytt fält är därmed med från dag ett.
+const kolumner = await q(`
+  SELECT table_name, column_name, data_type
+  FROM information_schema.columns
+  WHERE table_schema = 'public'
+    AND data_type IN ('numeric','integer','bigint','smallint','double precision','real')
+    AND table_name = ANY($1::text[])
+  ORDER BY table_name, ordinal_position`, [Object.keys(TID)]);
+console.log(`Schemat ur databasen: ${kolumner.length} numeriska fält i ${new Set(kolumner.map((k) => k.table_name)).size} tabeller.`);
+console.log(`Deklarerade spann: ${Object.keys(SPANN).length}.\n`);
+
+const falt: { f: Falt; d: Dom }[] = [];
+for (const { table_name: t, column_name: c } of kolumner) {
+  const fonster = TID[t] ? `WHERE ${TID[t]} > now() - ${DAGAR} * interval '1 day'` : "";
+  const g = (await q(`SELECT count(*)::bigint AS rader,
+      count(*) FILTER (WHERE "${c}" IS NULL)::bigint AS nollor,
+      min("${c}") AS mn, max("${c}") AS mx, count(DISTINCT "${c}")::bigint AS distinkta
+    FROM "${t}" ${fonster}`))[0];
+  const rader = Number(g.rader) - Number(g.nollor);
+  let toppVarde: number | null = null, toppAndel = 0;
+  if (rader > 0) {
+    const topp = (await q(`SELECT "${c}" AS v, count(*)::bigint AS n FROM "${t}"
+      ${fonster} ${fonster ? "AND" : "WHERE"} "${c}" IS NOT NULL
+      GROUP BY 1 ORDER BY 2 DESC LIMIT 1`))[0];
+    if (topp) { toppVarde = Number(topp.v); toppAndel = Number(topp.n) / rader; }
+  }
+  const f: Falt = { tabell: t, kolumn: c, rader, nollor: Number(g.nollor),
+    min: g.mn === null ? null : Number(g.mn), max: g.mx === null ? null : Number(g.mx),
+    distinkta: Number(g.distinkta), toppVarde, toppAndel };
+  falt.push({ f, d: doma(f) });
+}
+
+let tabell = "";
+for (const { f, d } of falt) {
+  if (f.tabell !== tabell) { tabell = f.tabell; console.log(`\n${tabell}`); }
+  console.log(`  ${ikon(d.utfall)} ${f.kolumn.padEnd(22)} ${String(f.rader).padStart(9)} rader · ` +
+    `${f.min ?? "–"}…${f.max ?? "–"} · ${f.distinkta} distinkta` +
+    (f.toppVarde !== null && f.toppAndel >= 0.05 ? ` · vanligast ${f.toppVarde} (${(100 * f.toppAndel).toFixed(0)} %)` : ""));
+  if (d.utfall !== "OK") console.log(`     ${d.utfall}: ${d.varfor}`);
+}
+
+const rakna = (u: Dom["utfall"]) => falt.filter((x) => x.d.utfall === u).length;
+console.log(`\nSAMMANFATTNING`);
+console.log(`  ✅ ${rakna("OK")} besiktade och rimliga`);
+console.log(`  ⚠️  ${rakna("UTANFÖR SPANN")} utanför deklarerat spann · ${rakna("SENTINEL?")} misstänkt sentinel`);
+console.log(`  ⊘ ${rakna("OBESIKTIGAT")} OBESIKTIGADE — inget deklarerat spann`);
+console.log(`  · ${rakna("–")} för tunt underlag för en dom`);
+
+const hinder = falt.filter((x) => x.d.utfall === "OBESIKTIGAT" || x.d.utfall === "UTANFÖR SPANN" || x.d.utfall === "SENTINEL?");
+if (hinder.length) {
+  console.log(`\nFÄLT SOM INTE FÅR BÄRA EN MÄTNING, TRÖSKEL ELLER VARNING (husregeln i CLAUDE.md):`);
+  for (const { f, d } of hinder) console.log(`  ${ikon(d.utfall)} ${f.tabell}.${f.kolumn} — ${d.varfor}`);
+  console.log(`\n  Ett obesiktigat fält friskförklaras inte av att talen ser rimliga ut. Deklarera`);
+  console.log(`  spannet i SPANN här ovan, eller låt bli att bygga på fältet.`);
+} else {
+  console.log(`\nAlla fält är besiktade och inom sina spann.`);
+}
+await pool.end();
