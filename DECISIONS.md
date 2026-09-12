@@ -1969,3 +1969,51 @@ mäter då något verkligt: att cron inte duger som klocka.
 
 LÄGET EFTER DETTA: två domar räddades av att hålet upptäcktes — grind V-A och radarunderlaget, båda
 omkörda 12/9 (DECISIONS #104). Framöver larmar systemet självt.
+
+## #106 (12/9 2026) Källkollen — alla tio källor växer, men fem har ingen vakt och två regimer har ingen insamlare
+
+BESLUT: Bengts avstämning "ligger allt vi ska mäta på mätbara och aktiverade källor?" är besvarad med
+mätning (scripts/kallkollen.ts + knapp, körning 34672334763). Svaret är ja på källorna och nej på
+bevakningen.
+
+ALLA TIO KÄLLOR VÄXER:
+
+| källa | senaste rad | senaste dygnet | vaktas av |
+| :-- | --: | --: | :-- |
+| weather_observations | 6 min | 9 345 | healthcheck + vakthund |
+| weather_latest | 6 min | 845 | healthcheck |
+| radar_precip | 1,0 h | 841 | **INGEN** |
+| situation_archive | 5 min | 240 | **INGEN** |
+| shadow_log | 11 min | 384 | **INGEN** |
+| polisen_events | 9,0 h | 4 | **INGEN** |
+| smhi_warnings | 3,6 dygn | 0 | **INGEN** |
+| cameras | 22,6 h | 3 | healthcheck |
+| road_conditions | 17,8 dygn | 0 | healthcheck (arkivvakten) |
+| road_condition_history | 17,8 dygn | 0 | healthcheck (arkivvakten) |
+
+MITT EGET MÄTFEL, rättat i samma varv: jag satte 24 h som gräns för road_conditions och fick en
+varning. Fel tröskel. road_conditions är NULÄGET, och Trafikverket klassar om vägar i vinter — i
+september står det stilla i veckor, helt normalt. Vakten larmade alltså på årstiden. Den
+säsongsoberoende frågan ställer healthcheckens arkivvakt (#51/#71): finns tillstånd som INTE
+arkiverats? Den har ett rätt svar året om. Gränsen är höjd till 45 dygn som grovt livstecken.
+
+FEM KÄLLOR HAR INGEN VAKT, och tre av dem är bärande:
+* **radar_precip** — vattenplaningens enda kvarvarande trigger sedan grind V-A föll (#104). Och
+  den är extra utsatt: ingest.yml kör radar.ts med `continue-on-error: true`, så om SMHI-hämtningen
+  fallerar varje timme förblir jobbet grönt och ingen får veta.
+* **situation_archive** — facit för varenda grind.
+* **shadow_log** — skuggans utdata, som bär B3, V-B och upprepningen.
+polisen_events och smhi_warnings är mindre kritiska men lika obevakade.
+
+OCH DEN STÖRSTA LUCKAN ÄR INTE EN KÄLLA UTAN EN SAKNAD INSAMLARE: #88 TRENDEN och #98 TYSTNADSFELET
+är fastställda och kontrasignerade, men ingenting samlar in åt dem. Det finns ingen trendkolumn i
+skuggloggen och ingen missklassificering någonstans — kontrollerat 11/9 och igen 12/9. Källorna de
+ska läsa (weather_observations) växer, men ingen läser dem. Det är inte en källa som dött, det är en
+insamlare som aldrig byggts, och T-A är tidskritisk mot höstens första frostnätter.
+
+VARFÖR KÄLLKOLLEN ÄR EN ANNAN FRÅGA ÄN HEALTHCHECKENS: healthchecken frågar om kedjan till appen är
+hel — den har timmars tidshorisont. Källkollen frågar om domarna går att fälla i vinter. En tabell
+som slutar växa i dag syns inte i appen förrän i mars, när underlaget skulle ha dömts.
+
+LÄGET EFTER DETTA: knappen finns och är läsande. Nästa steg, om Bengt vill, är att flytta de tre
+bärande källorna in i vakthunden som check 7 — samma mönster som mätvakten, noll Actions-minuter.
