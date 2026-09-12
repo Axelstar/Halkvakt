@@ -3500,3 +3500,21 @@ själv i stället för att någon ska läsa en fördelning för hand.
 minnet — mätvaktens kadens ur repot (#105), ruttberedskapens rutter ur skuggmotorn (#124),
 värdevaktens schema ur databasen (#133). Vaktdiagnosen är samma sak för vaktleden: de deklareras
 bredvid frågan de hör till, och räknas av databasen.
+
+## #142 (12/9 2026) Vaktdiagnosens egen barnsjukdom — och varför den fick ett klartextfel
+
+Första skarpa körningen av den delade vaktdiagnosen föll: `bind message supplies 1 parameters, but
+prepared statement "" requires 0` (08P01). Orsaken var min egen anropsrad i R-A — fönstret
+interpolerar `${DAGAR}` direkt, så frågan har **noll platshållare**, men jag skickade ändå med
+`[DAGAR]`.
+
+Ett trivialt fel, men **Postgres svar säger ingenting om vad man gjorde fel**, och nästa person
+skulle ha letat i frågebyggaren. Modulen kastar därför nu i stället:
+
+> `vaktdiagnos: frågan har inga platshållare men 1 parametrar skickades — fönstret interpolerar
+> troligen värdet direkt.`
+
+**Och det är värt en rad om varför vakterna inte fångade det:** självtesterna kör utan databas, så
+ett anropsfel mot pg kan bara upptäckas skarpt. Det är inte ett hål att täppa med fler självtest —
+det är skälet till att varje ny mätning körs som knapp direkt efter merge, i stället för att antas
+fungera. Den vanan fångade det här inom en minut.

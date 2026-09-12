@@ -179,7 +179,7 @@ const vd = await vaktdiagnos((q2, p2) => pool.query(q2, p2 as any[]).then((r) =>
     { namn: "#75: yta - luft >= -12 grader", bar: "surface_temp_c IS NOT NULL AND air_temp_c IS NOT NULL", villkor: "surface_temp_c >= air_temp_c - 12" },
     { namn: "daggpunktens: yta - dagg >= -5", bar: "surface_temp_c IS NOT NULL AND dewpoint_c IS NOT NULL", villkor: "surface_temp_c - dewpoint_c >= -5" },
     { namn: "korsgivare: luftfuktighet >= 90 %", bar: "humidity_pct IS NOT NULL", villkor: "humidity_pct >= 90" },
-  ], [DAGAR]);
+  ]);
 const harRh = vd.utfall[4] !== "SAKNAS" && vd.utfall[4] !== "TOMT ARKIV";
 
 // GIVARVAKTEN SITTER I FRÅGAN (§3). RH-ledet tas med bara när fältet finns.
