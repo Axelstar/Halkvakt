@@ -78,6 +78,29 @@ mätning, ingen dom åt något håll. Rökprovet 1/9 (43 punkter, 29 av dem >20 
 ankare) visade varför: tunt underlag är dessutom skevt mot de glesaste delarna av
 nätet och fäller eller friar på urvalsartefakter.
 
+**Marginalvakten** (tillagd 12/9 på Bengts order, DECISIONS #126): underlagsspärren ovan
+vaktar **mängden** underlag, inte **marginalen**. Ett "FALLER" på två raders marginal läser
+exakt likadant som ett "FALLER" på tvåhundra raders, och de två påståendena är inte samma
+sak. Därför gäller nu också:
+
+> **Ligger ett A-mått inom ±1,96 standardfel från sin tröskel skrivs OAVGJORT ut i stället
+> för KLARAR eller FALLER.** Andelar (A2, A3) får binomialfel, medelfelet (A1) får
+> medelvärdets fel. Grinden öppnar bara på KLARAR, så vakten kan aldrig öppna en stängd grind.
+
+**Vakten är ENSIDIG, och det är avsiktligt.** Mätpunkterna är inte oberoende — samma
+stationer, intilliggande halvtimmar — så intervallet är en **undre gräns** för osäkerheten.
+Ligger utfallet **inom** det är frågan därmed säkert oavgjord. Ligger det **utanför** är den
+inte därmed avgjord; vakten är minimikravet, inte ett tillräckligt bevis.
+
+Skälet den skrevs: anomalimätningen 12/9 (DECISIONS #125) visade att A2 med #75:s givarvakt
+landar på **5,1 % mot kravets 5,0 %**, vilket på 1 943 punkter är en skillnad på ungefär **två
+mätvärden**. Den standande domen berörs inte — 10,7 % mot 5,0 % ligger långt utanför bruset
+(±1,3 procentenheter) och faller lika brett med vakten som utan.
+
+⚠️ **Axel ska se det här stycket.** Tillägget är en skärpning av vad som får kallas en dom och
+kan aldrig öppna en stängd grind, men §5 nedan gör dokumentet till bådas. Ingen dom som vilar
+på marginalvakten får fällas innan han läst den.
+
 ### Grind B — skuggdriften (hela vintern, dom i mars)
 
 | # | Mått | Tröskel |

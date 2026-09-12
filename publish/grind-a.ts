@@ -81,13 +81,49 @@ function evaluate(stations: Map<string, Station>): Eval[] {
   return evals;
 }
 
+// ── MARGINALVAKTEN (TROSKLAR-SKUGGAN §3, tillagd 12/9 på Bengts order, DECISIONS #126).
+//
+// VARFÖR. Domspärren ovan vaktar MÄNGDEN underlag, inte MARGINALEN. Därför läser ett "FALLER"
+// på två raders marginal exakt likadant som ett "FALLER" på tvåhundra raders — och de två
+// påståendena är inte samma sak. Anomalimätningen 12/9 visade det skarpt: med #75:s givarvakt
+// hamnade A2 på 5,1 % mot kravets 5,0 %, vilket på 1 943 punkter är en skillnad på ungefär TVÅ
+// mätvärden.
+//
+// TESTET. Andelar (A2, A3) får binomialfel, medelfelet (A1) får medelvärdets fel. Ligger
+// utfallet inom ±1,96 standardfel från tröskeln skrivs OAVGJORT i stället för KLARAR/FALLER.
+//
+// VAKTEN ÄR ENSIDIG, och det är avsiktligt. Punkterna är INTE oberoende — samma stationer,
+// intilliggande halvtimmar — så det här intervallet är en UNDRE gräns för osäkerheten.
+// Ligger utfallet INOM intervallet är frågan alltså säkert oavgjord. Ligger det UTANFÖR är
+// den inte därmed avgjord; vakten är minimikravet, inte ett tillräckligt bevis.
+//
+// DEN KAN ALDRIG ÖPPNA EN STÄNGD GRIND. Ett KLARAR inom bruset blir OAVGJORT (skärpning), och
+// ett FALLER inom bruset blir OAVGJORT (mät igen) — grinden öppnar bara på KLARAR.
+const Z = 1.96; // 95 %
+
+export function andelSe(p: number, n: number): number {
+  return n > 0 ? Math.sqrt(Math.max(p * (1 - p), 0) / n) : Infinity;
+}
+export function medelSe(absfel: number[]): number {
+  const n = absfel.length;
+  if (n < 2) return Infinity;
+  const m = absfel.reduce((a, b) => a + b, 0) / n;
+  return Math.sqrt(absfel.reduce((a, b) => a + (b - m) ** 2, 0) / (n - 1) / n);
+}
+/** true = utfallet går att skilja från tröskeln vid det här underlaget. */
+export function skiljbar(varde: number, troskel: number, se: number): boolean {
+  return Number.isFinite(se) && Math.abs(varde - troskel) > Z * se;
+}
+
 function stats(rows: Eval[]) {
   const dec = rows.filter((r) => r.measured >= -5);      // decision band −5…+5 (≤5 already)
-  const mae = dec.length ? dec.reduce((a, r) => a + Math.abs(r.pred - r.measured), 0) / dec.length : NaN;
+  const absDec = dec.map((r) => Math.abs(r.pred - r.measured));
+  const mae = dec.length ? absDec.reduce((a, b) => a + b, 0) / dec.length : NaN;
   const gross = rows.length ? rows.filter((r) => Math.abs(r.pred - r.measured) > 2).length / rows.length : NaN;
   const freeze = rows.length ? rows.filter((r) =>
     (r.measured < 0 && r.pred > 2) || (r.measured > 2 && r.pred < 0)).length / rows.length : NaN;
-  return { n: rows.length, nDec: dec.length, mae, gross, freeze };
+  return { n: rows.length, nDec: dec.length, mae, gross, freeze,
+    maeSe: medelSe(absDec), grossSe: andelSe(gross, rows.length), freezeSe: andelSe(freeze, rows.length) };
 }
 
 function report(evals: Eval[], label: string, selftest = false) {
@@ -110,13 +146,30 @@ function report(evals: Eval[], label: string, selftest = false) {
   // Självtestet har sin egen kontroll (MAE ≈ 0) och sex syntetiska stationer — domspärren
   // gäller bara verkligt arkiv.
   const nog = selftest || (tot.n >= MIN_POINTS_FOR_VERDICT && nStations >= MIN_STATIONS_FOR_VERDICT);
-  const v = (ok: boolean) => nog ? (ok ? "KLARAR" : "FALLER") : "—";
-  console.log(`A1 MAE ≤ ${A1_MAX_MAE.toFixed(1)} °C i beslutsbandet: ${tot.mae.toFixed(2)} °C (${tot.nDec} punkter) → ${v(tot.mae <= A1_MAX_MAE)}`);
-  console.log(`A2 grova fel > 2 °C ≤ ${A2_MAX_GROSS * 100} %: ${(tot.gross * 100).toFixed(1)} % → ${v(tot.gross <= A2_MAX_GROSS)}`);
-  console.log(`A3 frysklassningsfel ≤ ${A3_MAX_FREEZE * 100} %: ${(tot.freeze * 100).toFixed(1)} % → ${v(tot.freeze <= A3_MAX_FREEZE)}`);
+  // Marginalvakten: ett utfall inom bruset får inget omdöme åt något håll.
+  const utfall = (varde: number, troskel: number, se: number) =>
+    !nog ? "—" : !skiljbar(varde, troskel, se) ? "OAVGJORT" : varde <= troskel ? "KLARAR" : "FALLER";
+  const a1 = utfall(tot.mae, A1_MAX_MAE, tot.maeSe);
+  const a2 = utfall(tot.gross, A2_MAX_GROSS, tot.grossSe);
+  const a3 = utfall(tot.freeze, A3_MAX_FREEZE, tot.freezeSe);
+  // ±1,96 standardfel, i måttets egen enhet. "pe" = procentenheter.
+  const margGrad = (se: number) => nog && Number.isFinite(se) ? ` [±${(Z * se).toFixed(2)} °C]` : "";
+  const margPe = (se: number) => nog && Number.isFinite(se) ? ` [±${(Z * se * 100).toFixed(1)} pe]` : "";
+  console.log(`A1 MAE ≤ ${A1_MAX_MAE.toFixed(1)} °C i beslutsbandet: ${tot.mae.toFixed(2)} °C (${tot.nDec} punkter)${margGrad(tot.maeSe)} → ${a1}`);
+  console.log(`A2 grova fel > 2 °C ≤ ${A2_MAX_GROSS * 100} %: ${(tot.gross * 100).toFixed(1)} %${margPe(tot.grossSe)} → ${a2}`);
+  console.log(`A3 frysklassningsfel ≤ ${A3_MAX_FREEZE * 100} %: ${(tot.freeze * 100).toFixed(1)} %${margPe(tot.freezeSe)} → ${a3}`);
   if (nog && !selftest) {
-    const klarar = tot.mae <= A1_MAX_MAE && tot.gross <= A2_MAX_GROSS && tot.freeze <= A3_MAX_FREEZE;
-    console.log(`\nDOM: ${klarar ? "GRIND A KLARAD — skuggbygget får starta" : "GRIND A FALLEN — bygg ingen skugga (tre veckor sparade)"}`);
+    const domar = [a1, a2, a3];
+    if (domar.includes("FALLER")) {
+      console.log(`\nDOM: GRIND A FALLEN — bygg ingen skugga (tre veckor sparade)`);
+    } else if (domar.includes("OAVGJORT")) {
+      console.log(`\n⏳ INGEN DOM — ett eller flera mått ligger INOM bruset (marginalvakten, §3).`);
+      console.log(`   Marginalen är mindre än mätosäkerheten, och intervallet är dessutom en UNDRE`);
+      console.log(`   gräns: punkterna är inte oberoende. Mät vidare — ett tal ska inte fälla`);
+      console.log(`   eller fria när skillnaden mot tröskeln är några enstaka mätvärden.`);
+    } else {
+      console.log(`\nDOM: GRIND A KLARAD — skuggbygget får starta`);
+    }
   } else if (!selftest) {
     console.log(`\n⏳ INGEN DOM — underlaget räcker inte.`);
     console.log(`   Krav: ≥ ${MIN_POINTS_FOR_VERDICT} bedömbara punkter över ≥ ${MIN_STATIONS_FOR_VERDICT} stationer.`);
@@ -138,7 +191,23 @@ if (process.argv.includes("--sjalvtest")) {
   report(evals, "SJÄLVTEST — syntetiska stationer, känd sanning", true);
   const mae = stats(evals).mae;
   if (!(evals.length > 500 && mae < 0.05)) { console.error(`SJÄLVTEST FALLERAR: n=${evals.length}, MAE=${mae}`); process.exit(1); }
-  console.log(`SJÄLVTEST OK: ${evals.length} punkter, MAE ${mae.toFixed(4)} °C`);
+  // Marginalvakten mot känd sanning (§3, DECISIONS #126).
+  let mOk = true;
+  const m = (namn: string, fick: unknown, vantat: unknown) => {
+    if (fick !== vantat) { console.error(`  FEL: ${namn} = ${fick}, väntat ${vantat}`); mOk = false; }
+    else console.log(`  ok: ${namn} = ${fick}`);
+  };
+  // Binomialfelet: 5 % på 1 943 punkter ger ~0,5 pe standardfel, alltså ±1,0 pe vid 95 %.
+  m("binomialfel 5 % på 1943 ≈ 0,50 pe", (andelSe(0.051, 1943) * 100).toFixed(2), "0.50");
+  m("5,1 % mot 5,0 % är INTE skiljbart", skiljbar(0.051, 0.05, andelSe(0.051, 1943)), false);
+  m("10,7 % mot 5,0 % ÄR skiljbart", skiljbar(0.107, 0.05, andelSe(0.107, 2042)), true);
+  m("noll punkter ⇒ aldrig skiljbart", skiljbar(0.5, 0.05, andelSe(0.5, 0)), false);
+  m("en enda punkt ⇒ aldrig skiljbart", skiljbar(2, 1, medelSe([2])), false);
+  // Medelfelet: tio identiska värden har noll spridning ⇒ skiljbart; spretiga ⇒ inte.
+  m("tio lika värden är skiljbara från tröskeln", skiljbar(2, 1, medelSe(Array(10).fill(2))), true);
+  m("tio spretiga värden är det inte", skiljbar(1.05, 1, medelSe([0, 2, 0, 2, 0, 2, 0, 2, 0, 2.5])), false);
+  if (!mOk) { console.error("SJÄLVTEST FALLERAR: marginalvakten."); process.exit(1); }
+  console.log(`SJÄLVTEST OK: ${evals.length} punkter, MAE ${mae.toFixed(4)} °C, marginalvakten håller`);
   process.exit(0);
 }
 
