@@ -1,9 +1,9 @@
 # TROSKLAR-SMHI-FORSTARKAREN
 
 **Kort:** #95 (d) SMHI-FÖRSTÄRKAREN — snöfallsvarning + yta nära noll (systemanalysens §2.8,
-övertagen från #93 den 12/9, DECISIONS #108). **Status:** 📝 **UTKAST 2026-09-12** på Bengts order
-"vi bygger smhi förstärkaren". Väntar på Bengts fastställande av värdena och därefter Axels
-är det klart att köra — **ingen kontrasignering behövs** (Bengts beslut 12/9, DECISIONS #132). Ingen kod i motorn, ingen röst.
+övertagen från #93 den 12/9, DECISIONS #108). **Status:** ✅ **FASTSTÄLLT 2026-09-12 av Bengt**
+(DECISIONS #135), på hans order "vi bygger smhi förstärkaren". Svepet i §2 och kraven i §4 är låsta
+enligt §8:s regim. Ingen kod i motorn, ingen röst.
 
 Husreglerna som gäller: tröskeldokument före kod · skuggkolumn före röst · **punktkällor säger
 "framöver", aldrig en sträcka** · tystnad är en funktion · trösklar gissas inte, de faller ur mätning

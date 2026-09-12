@@ -1,8 +1,9 @@
 # TROSKLAR-VIND-SIKT
 
-**Kort:** #90 VIND OCH SIKT (systemanalysen §2.3). **Status:** 📝 **UTKAST 2026-09-12** — **Axels ja
-givet 12/9 via Bengt**, vilket öppnade halva nyckeln. Väntar på Bengts fastställande av värdena och
-därefter är det klart att köra. **Ingen kontrasignering behövs** (Bengts beslut 12/9, DECISIONS #132). Ingen kod ännu.
+**Kort:** #90 VIND OCH SIKT (systemanalysen §2.3). **Status:** ✅ **FASTSTÄLLT 2026-09-12 av Bengt**
+(DECISIONS #135). Axels ja till själva frågan gavs 12/9 via Bengt; mätningen är Bengts område, så
+ingen kontrasignering behövs (#132). Svepet i §2 och kraven i §4 är därmed låsta enligt §8:s regim.
+Ingen kod ännu.
 
 Husreglerna som gäller: tröskeldokument före kod · skuggkolumn före röst · **punktkällor säger
 "framöver", aldrig "på vägen"** · tystnad är en funktion · trösklar gissas inte, de faller ur mätning

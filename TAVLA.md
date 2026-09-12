@@ -346,7 +346,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ### Claude — olåst
 - [ ] 🧊 **#103 FRYSKLASSNINGEN — kan en modell som är opålitlig på grader ändå bära en klass?**
-  📄 **TRÖSKELDOKUMENT SKRIVET 12/9** (`docs/TROSKLAR-FRYSKLASSNINGEN.md`, UTKAST, DECISIONS #130).
+  📄 **TRÖSKELDOKUMENT SKRIVET 12/9** (`docs/TROSKLAR-FRYSKLASSNINGEN.md`, **FASTSTÄLLT 12/9**, DECISIONS #130/#135).
   **Frågan är Axels, ordagrant**, ur hans bedömning av grind A: grind A föll, men A3
   frysklassningsfelet klarade med **1,1 % mot ett krav på 10** — modellen är dålig på GRADER men
   nästan aldrig fel om VILKEN SIDA AV NOLL, och det är den fråga motorn faktiskt ställer.
@@ -364,8 +364,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   på. Taket för det felet är tio gånger hårdare (≤ 1 % mot ≥ 95 %).
   🍂 **Vakt mot september:** K-A4 kräver ≥ 100 punkter med UPPMÄTT frys. Annars kan ett
   septemberunderlag ge 99 % rätt klass genom att alltid svara "fryser inte".
-  🔑 **KVAR: Bengt fastställer värdena** (han äger mätningen — ingen kontrasignering, DECISIONS #132).
-  Sedan K-A på befintligt arkiv.
+  ✅ **FASTSTÄLLT 12/9 av Bengt** (DECISIONS #135). Svepet och kraven är låsta.
+  ➡️ **NÄSTA: K-A på befintligt arkiv** — kräver ingen ny data och ingen frost.
 - [x] 🗺️ **#102 RUTTBEREDSKAPEN — vilken av skuggflottans tjugo bilar kan pröva vilken grind**
   ✅ **KLART 12/9 kväll** (Bengts order "gör beredskapstabellen", DECISIONS #124).
   `scripts/ruttberedskap.ts` + knapp, helt läsande. **Rutterna läses UR skuggmotorn, kopieras
@@ -428,7 +428,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   representativitetsradien (hur långt molnet FÅR sträckas) och SMHI-förstärkaren nedan. Ingetdera
   blockerar längre något.
   🔨 **(d) FÖRSTÄRKAREN BYGGD 12/9 kväll** (Bengts "vi bygger smhi förstärkaren", DECISIONS #121).
-  📄 `docs/TROSKLAR-SMHI-FORSTARKAREN.md` (UTKAST) — väntar på Bengts fastställande (DECISIONS #132).
+  📄 `docs/TROSKLAR-SMHI-FORSTARKAREN.md` — ✅ **FASTSTÄLLT 12/9 av Bengt** (DECISIONS #135).
   ⚖️ **SPÄNNINGEN I KORTET LÖST FÖRE SVEPET:** "yta nära noll" är BREDARE än motorns `yta ≤ 1 °C
   OCH fukt`, men kortet förbjuder uttryckligen att regeln skapar en varning. Därför får parametern
   F3 ett **tak vid motorns egen tröskel** — regeln får skära bort, aldrig lägga till.
@@ -1185,7 +1185,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (grästemp-ärligheten #45, Bengt/Axel), NO faller in med kontot. 🔑 Attribution i
   app-copyn = Axels beslut; grässtemp-DK = Bengt/Axel.
 - [ ] 🔨 ❄️ **#46 Rimfrosten — svartis utan nederbörd** (Bengts hål A, 4/9) — PÅGÅR:
-  📄 **TRÖSKELDOKUMENT SKRIVET 12/9** (`docs/TROSKLAR-RIMFROST.md`, UTKAST, DECISIONS #117).
+  📄 **TRÖSKELDOKUMENT SKRIVET 12/9** (`docs/TROSKLAR-RIMFROST.md`, **FASTSTÄLLT 12/9**, DECISIONS #117/#135).
   Skälet: #89:s överlämning nedan pekade på "#46:s eget tröskeldokument" — som inte fanns. En
   överlämning till ett dokument som inte finns är en tappad idé med kvitto (samma form som den
   dinglande TROSKLAR-TYSTNADSFEL 11/9). **Formen avgjord före svepet:** rimfrosten blir en ANDRA
@@ -1196,7 +1196,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ett krav: ingen station får stå för mer än 20 % av träffarna. **Billigaste vägen till underlag är
   det FINSKA arkivet** — KASTEPISTE sedan 4/9, Lapplands septemberfrost ger äkta rimfrostnätter
   veckor före Sverige, och den körningen kräver ingen svensk frost och ingen dom.
-  🔑 **KVAR: Bengt fastställer värdena** (ingen kontrasignering behövs, DECISIONS #132).
+  ✅ **FASTSTÄLLT 12/9 av Bengt** (DECISIONS #135). Svepet och kraven är låsta.
   📥 **ÖVERLÄMNAT FRÅN #89 den 12/9** (TROSKLAR-OVERGANGAR §6, DECISIONS #109). Två saker ska in i
   #46:s eget tröskeldokument. **(1) Dimma är en ÖVERGÅNGSORSAK, inte en interaktion:** dimma är luft
   vid ~100 % RH, alltså daggpunkt ≈ lufttemperatur, så kondensationsvillkoret (yta ≤ daggpunkt) blir
@@ -1756,7 +1756,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   exakt som de gör i dag.
 - [ ] 🌬️ **#90 VIND OCH SIKT — AXELS JA GIVET 12/9, TRÖSKELDOKUMENT SKRIVET** (systemanalys
   ✅ **`docs/TROSKLAR-VIND-SIKT.md`** (utkast 12/9, DECISIONS #112). Axels ja öppnade halva nyckeln;
-  kvar är Bengts fastställande av värdena (ingen kontrasignering, DECISIONS #132).
+  **fastställt 12/9 av Bengt** (DECISIONS #135) — svepet och kraven är låsta.
   ⚠️ **RÄTTAT 12/9 KVÄLL — TVÅ SAKFEL I DOKUMENTET** (DECISIONS #116). (1) §4 påstod att
   "exponeringen är mätt kontinuerligt vid varje station". Fel: **arkivdieten** (#4) sparar bara rader
   vid yta ≤ 5 °C, nederbörd eller Δyta ≥ 0,5 °C, så W-A:s nämnare är stationstimmar **som dieten

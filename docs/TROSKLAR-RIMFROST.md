@@ -1,8 +1,8 @@
 # TROSKLAR-RIMFROST
 
-**Kort:** #46 RIMFROSTEN — svartis utan nederbörd (Bengts hål A, 4/9). **Status:** 📝 **UTKAST
-2026-09-12.** Väntar på Bengts fastställande av värdena. **Ingen kontrasignering behövs**
-(Bengts beslut 12/9, DECISIONS #132). Ingen kod ännu, och ingen röst förrän grindarna dömt.
+**Kort:** #46 RIMFROSTEN — svartis utan nederbörd (Bengts hål A, 4/9). **Status:** ✅ **FASTSTÄLLT
+2026-09-12 av Bengt** (DECISIONS #135). Svepet i §2 och kraven i §4 är låsta enligt §9:s regim.
+Ingen kod ännu, och ingen röst förrän grindarna dömt.
 
 **Varför det skrivs nu:** TROSKLAR-OVERGANGAR §6 (DECISIONS #109, fastställt och kontrasignerat 12/9)
 lämnade över två saker till "#46:s eget tröskeldokument" — och det dokumentet fanns inte. Det är
