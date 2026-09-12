@@ -60,7 +60,11 @@ function utvardera(stationer: Station[], T: number): Utfall[] {
 }
 
 // Binomialbruset (V-C3): en andel utan sitt brus är en gissning som låtsas vara en mätning.
-const brus = (p: number, n: number) => n > 0 ? 1.96 * Math.sqrt(p * (1 - p) / n) : NaN;
+// MARGINALVAKTEN 12/9 (DECISIONS #128): bruset räknades redan ut här och SKREVS UT — men domen
+// fälldes ändå på punktskattningen. Nu avgör den. V-A:s stående nej berörs inte: 61 % mot kravets
+// 70 % är nio procentenheters gap mot två i brus, alltså avgjort med bred marginal.
+import { Z, andelSe, utfallGolv, utfallTak, grindutfall } from "./marginal.ts";
+const brus = (p: number, n: number) => n > 0 ? Z * andelSe(p, n) : NaN;
 
 function rapport(stationer: Station[], label: string, domspärr: boolean) {
   console.log(`Grind V-A — bär påståendet "regn framöver"? (${label})`);
@@ -76,11 +80,13 @@ function rapport(stationer: Station[], label: string, domspärr: boolean) {
       const u = per[bi], n = u.traff + u.delvis + u.falsklarm;
       if (!n) { console.log(`  ${BAND[bi][0].padEnd(9)} — inga fall`); continue; }
       const p1 = u.traff / n, p2 = u.falsklarm / n;
+      // V-A1 har GOLV (träff ≥ 70 %), V-A2 har TAK (falsklarm ≤ 25 %). Marginalvakten på båda.
+      const utf = grindutfall([utfallGolv(p1, V_A1, andelSe(p1, n)), utfallTak(p2, V_A2, andelSe(p2, n))]);
       const dom = bi === 0 && !domspärr
-        ? (p1 >= V_A1 && p2 <= V_A2 ? "  ⇒ KLARAR V-A" : "  ⇒ faller")
+        ? (utf === "KLARAR" ? "  ⇒ KLARAR V-A" : utf === "OAVGJORT" ? "  ⇒ OAVGJORT (inom bruset)" : "  ⇒ faller")
         : (bi === 0 ? "  ⇒ — (för tunt underlag)" : "  (räknas inte in, V-A3)");
       console.log(`  ${BAND[bi][0].padEnd(9)} n=${String(n).padStart(6)}  träff ${(100 * p1).toFixed(0)}±${(100 * brus(p1, n)).toFixed(0)} %  delvis ${(100 * u.delvis / n).toFixed(0)} %  falsklarm ${(100 * p2).toFixed(0)}±${(100 * brus(p2, n)).toFixed(0)} %${dom}`);
-      if (bi === 0 && !domspärr && p1 >= V_A1 && p2 <= V_A2 && basta === null) basta = T;
+      if (bi === 0 && !domspärr && utf === "KLARAR" && basta === null) basta = T;
     }
   }
   console.log("");

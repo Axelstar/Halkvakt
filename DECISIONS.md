@@ -2965,3 +2965,89 @@ från trasiga givare, och med #75:s vakt faller de grova felen från 10,7 % till
 Formuleringen i lägesrapporten och i TAVLA — "A1 och A2 faller" — ska läsas om till **"A2 faller;
 A1 är oavgjort"**. Axels bedömning berörs inte i sak: han lät domen stå på att A1 OCH A2 faller,
 och den står fortfarande, men på en smalare grund än han fick se.
+
+## #128 (12/9 2026) Marginalvakten i varje grind — och den flyttades till en delad modul
+
+BESLUT (Bengts order, Axels ja): marginalvakten från #126 gäller nu **varje grind i huset** och
+bor i **en enda modul**, `publish/marginal.ts`. En statistisk regel kopierad till sex skript är
+exakt den drift vi vaktat mot hela dygnet.
+
+| Grind | Vad som fick vakten |
+| :-- | :-- |
+| **A** (offsetmodellen) | A1/A2/A3 mot sina tak; sammanvägningen via `grindutfall` |
+| **V-A** (vattenplaningen) | V-A1 (golv 70 %) och V-A2 (tak 25 %) — **bruset räknades redan ut och SKREVS UT här, men domen fälldes på punktskattningen** |
+| **W-A** (vind och sikt) | kvoten ≥ 1,5 × |
+| **F-A** (SMHI-förstärkaren) | andelen mot BÅDA sina gränser, golv 5 % och tak 80 % |
+| **T-A** (trenden) | separationen mot noll, i topplistan |
+| **Ö-A** (övergångarna) | 0a:s huvudtal, det som blev Ö-A:s dom |
+
+**EN KVOT FÅR INTE BINOMIALFEL, och det är inte en detalj.** W-A:s mått är en kvot mellan två
+olycksfrekvenser, inte en andel. Osäkerheten sitter i logaritmen och domineras av det minsta
+antalet händelser: SE(ln kvot) ≈ √(1/a + 1/b). Att applicera binomialfelet där hade gett ett
+snyggt tal som mäter fel sak — samma klass av fel som "rätt vakt på fel nämnare" (#103, #124).
+Modulen har därför två funktioner, `skiljbar` för andelar och medelvärden, `skiljbarKvot` för
+kvoter, och T-A:s separation — en SKILLNAD mellan två andelar — får √(se₁² + se₂²).
+
+**V-A ÄR DET TYDLIGASTE EXEMPLET PÅ LUCKAN.** Skriptet räknade redan ut binomialbruset och skrev
+ut det bredvid varje tal ("61 ± 2 %"), men domen fälldes ändå på punktskattningen. Talet syntes,
+det avgjorde bara ingenting. **V-A:s stående nej berörs inte:** 61 % mot kravets 70 % är nio
+procentenheters gap mot två i brus.
+
+Domlogiken är delad och densamma överallt: **något mått FALLER ⇒ grinden faller; annars något
+OAVGJORT ⇒ ingen dom; annars klarad.** En avgörande fallning räcker alltså fortfarande.
+
+## #129 (12/9 2026) #75:s givarvakt in i grind A — och den stående domen får därmed omprövas
+
+BESLUT (Bengts order, **Axels ja**): `publish/grind-a.ts` läser nu bara rader som klarar #75:s
+givarvakt. Fram till i dag gjorde den inte det, trots att vakten enligt #75 gäller "varje
+väderfråga" och enligt TROSKLAR-RIMFROST §3 är "obligatorisk del av varje framtida frostgren".
+
+**VARFÖR DET INTE ÄR MÅLSTOLPSFLYTT — och varför frågan ändå ställdes till Axel.** Ingen tröskel
+har rörts. Det som ändras är att indata följer en husregel som fanns före mätningen. Men vi
+upptäckte att vakten saknades **därför att vi letade efter något som kunde förklara ett dåligt
+utfall**, och den ordningen gör att fyndet inte får bokföras av oss ensamma. Därför gick frågan
+till Axel innan vakten lades in, med alla tal framme.
+
+**VAD SOM FAKTISKT ÄNDRAS.** Anomalimätningen (#125) gav förhandsbeskedet: A1 0,85 (mot 1,0),
+A2 5,1 % (mot 5,0 %), A3 klarar. Med marginalvakten (#126) blir A2 därmed **OAVGJORT**, inte en
+fallning — 5,1 mot 5,0 är ungefär två mätvärden. **Grind A går alltså sannolikt från FALLEN till
+INGEN DOM.**
+
+**Det är inte ett godkännande.** Grinden öppnar bara på KLARAR, så segmentmotorn får fortfarande
+inte byggas. Skillnaden är att husets svar blir "vi vet inte än" i stället för "nej" — och det har
+en kostnad som ska stå här: **grind A fanns för att fatta novemberbeslutet tidigt och billigt. Ett
+OAVGJORT i september betyder att novemberbeslutet saknar underlag, och vinterdata som kan avgöra
+det kommer efter november.** Valet står då mellan att skjuta segmentmotorn till nästa vinter eller
+att bygga på en modell som inte är klarerad. Det valet är Bengts och Axels.
+
+**A1 FÖLL ALDRIG** (#127), och det ska sägas en gång till här eftersom det ändrar vad Axel
+godkände: han lät domen stå på att "A1 och A2 faller". A1:s intervall (1,06 ± 0,09) omslöt
+tröskeln hela tiden. Domen vilade på A2 ensamt redan innan givarvakten kom på tal.
+
+## #130 (12/9 2026) Frysklassningskortet öppnat — Axels fråga, med trösklar skrivna före mätning
+
+BESLUT: kort **#103** och `docs/TROSKLAR-FRYSKLASSNINGEN.md` (utkast). Frågan är Axels, ordagrant:
+*"kan en modell som är opålitlig på grader ändå bära en frysklassning?"*
+
+Skälet den är legitim och inte en efterhandsräddning står i hans egen formulering: **samma data,
+ny fråga, ärlig ordning.** Dokumentet är därför skrivet så att inget tal i §2 eller §4 kommer ur
+A3:s utfall, och det står uttryckligen att A3:s 1,1 % inte får åberopas som skäl för någon tröskel
+— det är just den återkopplingen som gör efterhandsjusteringar värdelösa.
+
+**AVGRÄNSNINGEN SOM AVGÖR ALLT ANNAT (§1):** en godkänd frysklassning ger **inte** rätt att skapa
+en varning där motorn tiger. Den får bara stärka eller försvaga en bedömning som redan vilar på en
+uppmätt station. Samma regel som SMHI-förstärkaren fick, av samma skäl: **en modellerad storhet får
+aldrig vara en avtryckare.**
+
+**K2 ÄR DOKUMENTETS EGENTLIGA IDÉ.** Grind A tvingade modellen att svara i varje punkt. En
+klassificerare får avstå nära gränsen — och frågan blir hur bra den är på det den uttalar sig om,
+och hur mycket den då måste avstå. Därför har K-A både ett träffsäkerhetskrav och ett
+täckningskrav; en hög träffsäkerhet på en tiondel av punkterna är inget resultat.
+
+**K-A2 ÄR ASYMMETRISK MED FLIT:** att säga "fryser" om en torr väg kostar ett onödigt larm, att
+säga "fryser inte" om en isig väg kostar löftet produkten vilar på. Taket för det felet är tio
+gånger hårdare än för det andra, och det är undantaget från all lättnad.
+
+**OCH EN VAKT MOT SEPTEMBER:** K-A4 kräver minst 100 punkter med UPPMÄTT frys. Ett septemberunderlag
+kan annars ge 99 % rätt klass genom att alltid svara "fryser inte". En klassificerare som aldrig
+sett ett positivt fall är inte prövad.

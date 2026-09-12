@@ -42,6 +42,8 @@
 // Helt läsande. Run: DATABASE_URL=... node --experimental-strip-types scripts/vindsikt-steg0.ts [dagar=14]
 // Självtest utan DB: scripts/vindsikt-steg0.ts --sjalvtest
 
+import { skiljbarKvot } from "../publish/marginal.ts";
+
 const RACKVIDD_M = 15000;      // station ↔ olycka, samma som #89:s steg 0 (0d)
 const MIN_STATIONSTIMMAR = 500; // W-A4, högsta bandet
 const MIN_OLYCKOR = 20;         // W-A4, totalt
@@ -217,8 +219,16 @@ for (const [rubrik, kolumn, banden, riktning] of [
     console.log(`    (kräver ${MIN_STATIONSTIMMAR}) och ${olyckorTot} olyckor totalt (kräver ${MIN_OLYCKOR}).`);
     console.log(`    September är inte blåsigast på året. Det här är ett underlagsbesked, inte ett nej.`);
   } else {
+    // MARGINALVAKTEN (DECISIONS #128). En KVOT av två olycksfrekvenser får inte binomialfel —
+    // osäkerheten sitter i logaritmen och domineras av det minsta antalet olyckor.
+    const skilj = skiljbarKvot(kvot, 1.5, sista.olyckor, rader[0].olyckor);
     console.log(`  monotont stigande: ${mono ? "JA" : "NEJ"} · högsta mot lägsta: ${tal(kvot)} × (krav ≥ 1,5)`);
-    console.log(`  ⇒ ${mono && kvot >= 1.5 ? "W-A PASSERAD för den här storheten" : "W-A FALLER för den här storheten"}`);
+    if (!skilj) {
+      console.log(`  ⊘ OAVGJORT — kvoten går inte att skilja från 1,5 vid ${sista.olyckor} respektive`);
+      console.log(`    ${rader[0].olyckor} olyckor. Marginalvakten: ett tal inom bruset fäller inte och friar inte.`);
+    } else {
+      console.log(`  ⇒ ${mono && kvot >= 1.5 ? "W-A PASSERAD för den här storheten" : "W-A FALLER för den här storheten"}`);
+    }
   }
 }
 
