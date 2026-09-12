@@ -42,7 +42,7 @@ try {
                                  FROM fi.weather_observations ORDER BY station_id, sample_time DESC`);
   for (const r of lt.rows) lastTemps.set(r.station_id, r.surface_temp_c === null ? null : Number(r.surface_temp_c));
 
-  let dagg = 0, frostN = 0, siktN = 0, vindN = 0;
+  let dagg = 0, fukt = 0, frostN = 0, siktN = 0, vindN = 0;
   const latestRows: FiRow[] = [], archiveRows: FiRow[] = [];
   for (const st of data.stations) {
     const m = meta.get(st.id); if (!m) continue;
@@ -58,6 +58,13 @@ try {
     // rimfrost-analysen äkta nätter veckor före Sverige. Verifierat live: 505/528 stationer.
     const dewpoint = s.get("KASTEPISTE")?.value ?? null;
     if (dewpoint !== null) dagg++;
+    // ILMAN_KOSTEUS (kort #46, 12/9, DECISIONS #138): luftfuktigheten låg i SAMMA svar som
+    // daggpunkten och plockades aldrig upp. Grind R-A:s tredje vaktled — korsgivarkontrollen
+    // RH >= 90 — gick därför inte att utvärdera på det finska arkivet, och första körningen
+    // svarade "0 rader" som om det vore ett underlagsbesked. Mätt 12/9: 505 av 528 stationer
+    // bär den, exakt samma täckning som KASTEPISTE. Noll extra anrop, noll extra bytes.
+    const humidity = s.get("ILMAN_KOSTEUS")?.value ?? null;
+    if (humidity !== null) fukt++;
     // FI-breddningen (kort #48, GOLVET.md): nio sensorer som låg på golvet — frostpunkten
     // FÄRDIGRÄKNAD (rimfrost #46), saltjusterad fryspunkt, saltmängd, vind, sikt,
     // nederbördens form (facit för #45), ytstatus. Triggar inte lagring (policy #4 orörd).
@@ -76,7 +83,7 @@ try {
     const id = `FI:${st.id}`;
     const t = st.dataUpdatedTime ?? data.dataUpdatedTime;
 
-    const row: FiRow = { id, name: m.name, lon: m.lon, lat: m.lat, t, surface, air, dewpoint, keli, rain, snow, ...brett };
+    const row: FiRow = { id, name: m.name, lon: m.lon, lat: m.lat, t, surface, air, dewpoint, humidity, keli, rain, snow, ...brett };
     latestRows.push(row);
 
     const last = lastTemps.has(id) ? lastTemps.get(id)! : null;
@@ -118,7 +125,7 @@ try {
   await client.query(`INSERT INTO fi.sync_state (source, last_change_id, synced_at) VALUES ('fintraffic','',now())
                       ON CONFLICT (source) DO UPDATE SET synced_at=now()`);
   await client.query("COMMIT");
-  console.log(`fi: latest ${latest}, archived ${archived}, deviations ${devs}, daggpunkt ${dagg} st, frostpunkt ${frostN} st, sikt ${siktN} st, vind ${vindN} st (kort #48 — första publiceringen bevisas här)`);
+  console.log(`fi: latest ${latest}, archived ${archived}, deviations ${devs}, daggpunkt ${dagg} st, luftfuktighet ${fukt} st, frostpunkt ${frostN} st, sikt ${siktN} st, vind ${vindN} st (kort #48 — första publiceringen bevisas här)`);
 } catch (e) {
   await client.query("ROLLBACK").catch(() => {});
   throw e;
