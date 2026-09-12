@@ -1925,3 +1925,47 @@ illa står #42 utan trigger, och då är alternativ a/b på kortet det som åter
 ALTERNATIV SOM VALDES BORT: att skriva om V-A1 till ett påstående som bär (se ovan — det hade varit
 att flytta målstolparna OCH tappa faran på vägen); att vänta till måndagens schemalagda körning
 (domen har redan legat åtta dygn på fel underlag).
+
+## #105 (12/9 2026) Mätvakten i drift — och den hittade fyra döda mätningar till i samma andetag
+
+BESLUT: schemalagda mätningar bevakas nu av vakthunden (check 6, kort #101, Bengts order att drifta
+det så att allt bevakas och varnas i mätningarna). Deployad från 0e84812 och bevisad EFTER deployen
+med issue #146.
+
+VAD DEN GÖR: läser vilka arbetsflöden som har cron DIREKT UR REPOT, hämtar varje flödes senaste
+körning, och larmar på två villkor — (a) senaste körningen fallerade, (b) det var längre än
+1,5 × kadensen sedan den kördes alls. Kadensen räknas ur cron-uttrycket; ett uttryck som inte går
+att tolka larmar i sig, för en vakt som inte förstår schemat är blind. Timvis i Supabase, noll
+Actions-minuter.
+
+VARFÖR SCHEMAT LÄSES UR REPOT och inte ur en lista i koden: en hårdkodad lista blir inaktuell i
+tysthet, vilket är exakt det fel vakten finns för att fånga. Ett nytt schemalagt flöde bevakas
+därför från första timmen utan att någon behöver minnas att lägga till det.
+
+VARFÖR ÅLDERSVILLKORET ÄR DET VIKTIGARE: villkor (a) fångade grind V-A, som fallerade synligt. Men
+det farligare fallet är att GitHub-cronen inte levererar alls — #70 mätte 40 % av bokad takt. Då
+finns ingen körning att sätta en flagga på, och bara ålderskontrollen ser det.
+
+EGEN ETIKETT, EGEN LIVSCYKEL, ALDRIG RÖD DRIFTVAKTHUND: ett schemafel kan upprepas, så engångs-
+mönstret från vinterordslarmet passar inte — den öppnar, uppdaterar och stänger som driftvakthunden.
+Men den skriver aldrig till problem-listan. Rött ska betyda att kedjan till appen är bruten NU; en
+missad måndagsmätning är inte det, och låg den i samma issue skulle den hålla vakthunden röd i en
+vecka och dränka ett riktigt driftlarm.
+
+FYNDET VID FÖRSTA KÖRNINGEN, och det är större än väntat: fyra ytterligare mätningar hade fallerat
+7/9 utan att någon visste — grind-a (skuggans offsetmodell, kort #61), smhi-prov, trv-bevakning och
+hojd-prov (kort #96). Tillsammans med grind-v-a och cell-matning-v3, som kördes om för hand samma
+dag, betyder det att HELA måndagsserien föll i minutkrisens svallvågor och att ingen upptäckte det
+på fem dygn. Åtta schemalagda flöden bevakas nu; healthcheck och marknadsforing var gröna (de går
+varannan timme respektive dagligen och hade hunnit återhämta sig).
+
+VAD SOM INTE GÖRS: de fyra körs inte om för hand. Måndagsserien går 14/9 och ska då lyckas av sig
+själv — och gör den inte det står issuen kvar öppen, vilket är hela poängen. Mätvakten får bevisa
+sig på den körningen.
+
+RESERVATION: om GitHub-cronens opålitlighet (40 %) gör vakten pratsam är svaret INTE att lossa på
+tröskeln utan att flytta mätningarna till pulsklockan, precis som #53 gjorde med ingesten. Larmet
+mäter då något verkligt: att cron inte duger som klocka.
+
+LÄGET EFTER DETTA: två domar räddades av att hålet upptäcktes — grind V-A och radarunderlaget, båda
+omkörda 12/9 (DECISIONS #104). Framöver larmar systemet självt.
