@@ -3420,3 +3420,41 @@ förkastar hela satsen, den skriver inte halva.
 
 **REGEL FRAMÅT:** merge-steget ska läsa CI:s slutsats och avbryta på annat än `success`. Att kedjan
 är bekväm är inget skäl — det var bekvämligheten som orsakade felet.
+
+## #140 (12/9 2026) Latest-tabellens lucka — tredje gången samma fälla, och nu står regeln skriven
+
+BESLUT: `sql/016_fi_humidity_latest.sql`, inlagd i automigreringen i `ingest/fi.ts` och i
+integrationstestets schemalista.
+
+**CI:s andra röda körning avslöjade den verkliga orsaken**, och det var inte typkasten (#139) utan
+något strukturellt:
+
+```
+column "humidity_pct" of relation "weather_latest" does not exist   (42703)
+```
+
+**`public.weather_observations` har TIO fält. `public.weather_latest` har NIO** — den saknar både
+`dewpoint_c` och `humidity_pct`. Grannschemana skapas med `LIKE public.… INCLUDING ALL`, så
+**varje granntabell ärver luckan**. Lägger man till ett fält i arkivvägen fungerar det direkt, och
+nulägesvägen faller på 42703 först när koden körs.
+
+**DET HAR NU HÄNT TRE GÅNGER:**
+
+| | |
+| :-- | :-- |
+| `sql/010` | fi.weather_latest saknade `dewpoint_c` — körning #24 föll på 42703 |
+| `sql/013` | no.weather_latest saknade `humidity_pct` — migrationens egen kommentar: *"samma fälla som fi (010)"* |
+| `sql/016` | fi.weather_latest saknade `humidity_pct` — CI föll på 42703, igen |
+
+Norges migration **namnger fällan i sin egen kommentar** och den fångade mig ändå. Det är inte
+slarv i stunden — det är att luckan är osynlig i den fil man redigerar. Man skriver i `fi.ts`, och
+felet ligger i en tabell som skapades av ett annat skript i augusti.
+
+**REGELN, skriven i migrationen så att nästa person läser den på rätt ställe:** ett nytt väderfält
+kräver **två kolumner, inte en** — arkivet och nuläget. Kontrollera latest-tabellen INNAN koden
+skrivs, inte efter att CI fällt den.
+
+**OCH DET HÄR ÄR VAD SOM RÄDDADE OSS:** integrationstestet kör mot riktig PostGIS och skriver en
+finsk rad. Utan det hade felet nått drift och visat sig som ett rött timjobb — eller värre, som
+tysta bortfall om satsen hade delvis lyckats. Den vakten är från augusti och har nu betalat sig
+tre gånger.
