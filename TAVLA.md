@@ -346,6 +346,22 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ### Claude — olåst
 - [ ] 🪢 **#95 Plan B för Trafikverket-beroendet — mät SMHI som reserv** (systemanalys 10/9). Allt
+  🔓 **BLOCKERARFYNDET 12/9 (DECISIONS #114): kortet blockerar #88:s dom.** T-A:s fysikkontroll
+  kräver "vanligast klara nätter", och molnmängd finns inte i arkivet. #95 är alltså inte en
+  förstärkare som kan vänta till våren — den står i vägen för den enda punkten med naturens deadline.
+  💰 **MEN MOLNET BEHÖVER INTE ARKIVERAS, och det river kortets dyraste rad.** SMHI metobs
+  **parameter 16** (total molnmängd, timvärde) har `latest-months` som räcker **130 dygn bakåt**,
+  plus `corrected-archive`. Molnet hämtas I EFTERHAND vid körning, som smhi-prov redan gör med
+  lufttemperaturen. Ingen tabell, ingen ingest, noll lagring. Kortets "+25 MB/mån och oktoberbeslutet
+  fem dagar närmare" gäller ANKARROLLEN, inte molnet.
+  📐 **TÄCKNINGEN MÄTT** (`scripts/smhi-tackning.ts` + knapp, körning 34676483898): bara 108 av 459
+  SMHI-stationer rapporterar molnmängd, men **91 % av VViS-stationerna och 94 % av vägsegmenten har
+  en molnobservation inom 50 km** (median 29 km). Molnet är en STORSKALIG storhet — ett molntäcke
+  sträcker sig tiotals mil — så 50 km är en helt annan sak här än för en yttemperatur. Hur långt det
+  FÅR sträckas är dock inte mätt, bara hur långt det MÅSTE.
+  ➡️ **KVAR FÖR ATT LYFTA BLOCKERINGEN:** koppla in hämtningen i `scripts/grind-t-a.ts` — parameter
+  16 per frostnatt, klassa natten klar/mulen, redovisa träffandel per klass. Läsande ändring i ett
+  läsande skript, kräver inte radardomen.
   ➕ **ÖVERTAGET FRÅN #93 den 12/9 (DECISIONS #108): SMHI-FÖRSTÄRKAREN.** `smhi_warnings` hämtas
   redan och ligger i arkivet (tiotals kB/dygn), så regeln **snöfallsvarning + yta nära noll = högre
   konfidens** kostar 0 kr och kräver ingen ny källa. Förstärkare av frysrisken, ALDRIG en egen fara
