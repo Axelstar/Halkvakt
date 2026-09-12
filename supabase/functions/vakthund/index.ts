@@ -16,6 +16,12 @@
 //   4. Första vinterordet i väglagsarkivet (kort #52). Prov: ?vinterprov=1
 //   5. Frosten är här (kort #89, Bengts order 11/9). Prov: ?frostprov=1
 // Provet bär egen etikett, så att ett prov aldrig förbrukar det riktiga engångslarmet.
+//
+// Och EN vakt över mätningarna själva (6, kort #101, Bengts order 12/9). Prov: ?matvaktprov=1
+// Den har egen etikett och egen öppna/uppdatera/stäng-cykel — INTE engångslarm, för ett schemafel
+// kan upprepas — och den färgar aldrig driftvakthunden röd. Skälet: rött ska betyda "kedjan till
+// appen är bruten NU". En mätning som missade en måndag är inte det, och låg den i samma issue
+// skulle den hålla vakthunden röd i en vecka och dränka ett riktigt driftlarm.
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
 
 const sql = postgres(Deno.env.get("SUPABASE_DB_URL")!, { max: 1, prepare: false });
@@ -30,6 +36,21 @@ async function gh(path: string, method = "GET", body?: unknown): Promise<any> {
     body: body ? JSON.stringify(body) : undefined });
   if (!r.ok) throw new Error(`${method} ${path} -> ${r.status}`);
   return r.json();
+}
+
+/** Kadens i timmar ur ett 5-fälts cron-uttryck. null = går inte att tolka, och DET är ett larm
+ *  i sig — en vakt som inte förstår schemat kan inte se när schemat missas. */
+export function kadensTimmar(cron: string): number | null {
+  const f = cron.trim().split(/\s+/);
+  if (f.length !== 5) return null;
+  const [, tim, dom, , dow] = f;
+  const varje = tim.match(/^\*\/(\d+)$/);
+  if (varje) return Number(varje[1]);   // "23 */2 * * *" ⇒ varannan timme
+  if (tim === "*") return 1;
+  if (!/^\d+$/.test(tim)) return null;  // listor och intervall finns inte i repot i dag
+  if (dow !== "*") return 24 * 7;       // veckovis
+  if (dom !== "*") return 24 * 28;
+  return 24;                            // dagligen
 }
 
 Deno.serve(async (req) => {
@@ -193,6 +214,74 @@ Deno.serve(async (req) => {
   } catch (e) {
     // Tappad signal ÄR ett vakthundsfel: frosten kommer en gång per år och kan inte tas om.
     problem.push(`**Frostvakten (kort #89) kunde inte larma**: ${String(e)}`);
+  }
+
+  // 6. GÅR MÄTNINGARNA? (kort #101, Bengts order 12/9.)
+  //    BAKGRUNDEN: grind V-A:s måndagskörning 7/9 fallerade i minutkrisens svallvågor, ingen
+  //    larmade, och den omkörning DECISIONS #69 uttryckligen krävde uteblev i åtta dygn. Samma
+  //    sak hade hänt cellmätningen, vars enda skarpa körning låg nio dygn gammal två dygn före
+  //    radardomen. Två domar vilade på fel underlag utan att någon visste. Kort #81 regel 5 säger
+  //    att varje nytt led ska få en rad i vakthunden innan det går skarpt — den regeln gällde
+  //    drift, inte mätningar, och det här täpper hålet.
+  //
+  //    TVÅ VILLKOR, och det andra är det viktigare: (a) senaste körningen fallerade, (b) det var
+  //    för länge sedan den kördes alls. (a) fångade V-A, men det farligare fallet är att
+  //    GitHub-cronen helt enkelt INTE LEVERERAR — #70 mätte att den levererade 40 % av bokad takt.
+  //    Då finns ingen körning att sätta en flagga på, och bara ålderskontrollen ser det.
+  //
+  //    SCHEMAT LÄSES UR REPOT, inte ur en lista här. En hårdkodad lista hade blivit inaktuell i
+  //    tysthet — exakt det fel vakten finns för att fånga. Ett nytt schemalagt flöde bevakas
+  //    därför automatiskt från första timmen.
+  const MATVAKT = "<!-- matvakt -->";
+  try {
+    const wfs = ((await gh(`/actions/workflows?per_page=100`)).workflows ?? [])
+      .filter((w: any) => w.state === "active");
+    // Filerna hämtas parallellt: ~20 anrop i ETT varv i stället för i följd (vakthunden har en
+    // vägg-klocka att hålla sig inom).
+    const filer = await Promise.all(wfs.map((w: any) =>
+      gh(`/contents/${w.path}`)
+        .then((f: any) => ({ w, yaml: atob(String(f.content).replace(/\n/g, "")) }))
+        .catch(() => ({ w, yaml: "" }))));
+    const schemalagda = filer
+      .map(({ w, yaml }) => ({ w, crons: [...yaml.matchAll(/^\s*-\s*cron:\s*["']([^"']+)["']/gm)].map((m) => m[1]) }))
+      .filter((x) => x.crons.length);
+    const lagen = await Promise.all(schemalagda.map(async ({ w, crons }) => {
+      const timmar = Math.min(...crons.map(kadensTimmar).filter((t): t is number => t !== null));
+      const r = ((await gh(`/actions/workflows/${w.id}/runs?per_page=1`)).workflow_runs ?? [])[0];
+      return { namn: String(w.name), timmar, r };
+    }));
+    const sena: string[] = [];
+    for (const { namn, timmar, r } of lagen) {
+      if (!Number.isFinite(timmar)) { sena.push(`**${namn}**: cron-uttrycket går inte att tolka — kadensen okänd, vakten blind`); continue; }
+      if (!r) { sena.push(`**${namn}**: schemalagd men har ALDRIG kört`); continue; }
+      const alderH = (Date.now() - new Date(r.created_at).getTime()) / 3600000;
+      if (r.conclusion && r.conclusion !== "success" && r.conclusion !== "skipped")
+        sena.push(`**${namn}**: senaste körningen ${r.conclusion} (${String(r.created_at).slice(0, 16)})`);
+      else if (alderH > timmar * 1.5)
+        sena.push(`**${namn}**: ${alderH.toFixed(0)} h sedan senaste körning, kadens ${timmar} h`);
+    }
+    if (new URL(req.url).searchParams.get("matvaktprov") === "1")
+      sena.push("**PROV** — påhittad rad för att bevisa mätvaktens larmväg. Försvinner vid nästa gröna körning.");
+    rad.push(`mätvakten: ${schemalagda.length} schemalagda flöden, ${sena.length} med problem`);
+
+    // Egen livscykel, egen etikett. Aldrig problem.push() — se huvudkommentaren.
+    const mKropp = `${MATVAKT}` + "\n" + `**Mätvakten ${new Date().toISOString()}**` + "\n" + "\n" +
+      (sena.length ? sena.map((x) => `- ❌ ${x}`).join("\n") : "- ✅ alla schemalagda mätningar går") +
+      "\n" + "\n" + `Bevakade flöden: ${schemalagda.map((x) => String(x.w.name)).join(", ")}` +
+      "\n" + "\n" + `En mätning som inte gick betyder att en DOM kan vila på gammalt underlag. Kolla vad ` +
+      `flödet matar innan du kvitterar — det var så grind V-A låg åtta dygn på tre dygns regn.`;
+    const oppnaM = await gh(`/issues?state=open&labels=matvakt`);
+    const minM = oppnaM.find((i: any) => (i.body ?? "").includes(MATVAKT));
+    if (sena.length) {
+      if (minM) await gh(`/issues/${minM.number}/comments`, "POST", { body: mKropp });
+      else await gh(`/issues`, "POST", { title: "🔕 Mätvakten: en schemalagd mätning går inte", body: mKropp, labels: ["matvakt"], assignees: ["895845"] });
+    } else if (minM) {
+      await gh(`/issues/${minM.number}/comments`, "POST", { body: mKropp + "\n" + "\n" + "Stänger — alla mätningar går igen." });
+      await gh(`/issues/${minM.number}`, "PATCH", { state: "closed" });
+    }
+  } catch (e) {
+    // Tappad signal ÄR ett vakthundsfel: en blind mätvakt är värre än ingen (#76-läxan).
+    problem.push(`**Mätvakten (kort #101) kunde inte köras**: ${String(e)}`);
   }
 
   const kropp = `${MARK}\n**Kontroll ${new Date().toISOString()}**\n\n` +
