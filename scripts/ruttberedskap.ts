@@ -35,7 +35,25 @@ import { readFileSync } from "node:fs";
 const STEG_KM = 2;               // provpunkt var annan kilometer längs rutten
 const RACKVIDD_KM = 15;          // station räknas till rutten inom detta avstånd
 const MIN_STATIONER = 5;         // underlagsvakt per rutt
+const MIN_FROSTRADER = 20;       // underlagsvakt för T-A-domen — se nedan
+const BY_TAK = 30;               // m/s, lägsta steget i TROSKLAR-VIND-SIKT:s G_tak-svep
 const GIVARVAKT = "air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12"; // #75
+
+// TVÅ VAKTER SOM KOM UR FÖRSTA KÖRNINGEN 12/9, och båda fällde en dom jag själv hade skrivit:
+//
+// MIN_FROSTRADER. Första körningen utsåg "E6 Malmö→Halmstad" till bästa rutt för T-A på EN
+// enda frostrad vid exakt 0,0 °C — medan E10 Luleå→Kiruna, som legat på 0,5 °C, hamnade långt
+// ned. Att rangordna på ett tal vars största värde är 1 är att rangordna brus. Underlagsvakten
+// fanns, men den vaktade ANTALET STATIONER, inte antalet frostrader: rätt vakt på fel nämnare,
+// samma fel som fällde upprepningsmätningen (DECISIONS #103). Under golvet rangordnas rutterna
+// i stället på KALLASTE UPPMÄTTA YTA, uttryckligen märkt som ombud.
+//
+// BY_TAK. Första körningen utsåg "E4 Södertälje→Uppsala" till bästa rutt för W-A på en byvind
+// av 55,1 m/s, och tvåan hade 45,0. Sveriges rekord ligger kring 81 m/s och då på fjällstation;
+// 55 m/s på E4 i september är en trasig givare, inte väder. TROSKLAR-VIND-SIKT §3.1 hade redan
+// skrivit att vakten behöver ett tak (svep 30 · 40 · 50) — tabellen läste bara inte sitt eget
+// tröskeldokument. Rangordningen sker nu på högsta by UNDER taket; råmaxvärdet visas bredvid
+// som givarmisstanke, eftersom en trasig givare också är något man vill veta om.
 
 export const BAND: [string, number][] = [["0–7", 7], ["7–15", 15], ["15–20", 20], [">20", Infinity]];
 
@@ -91,6 +109,17 @@ export function dom<T>(stationer: number, svar: T): T | null {
   return stationer >= MIN_STATIONER ? svar : null;
 }
 
+/** T-A-domens egen vakt: går det att rangordna på frostrader, eller måste ombudet användas? */
+export function frostdom(frostraderTotalt: number): boolean {
+  return frostraderTotalt >= MIN_FROSTRADER;
+}
+
+/** W-A: byvind över taket är en trasig givare, inte väder. Returnerar null när inget håller. */
+export function rimligBy(byar: number[]): number | null {
+  const kvar = byar.filter((b) => b <= BY_TAK);
+  return kvar.length ? Math.max(...kvar) : null;
+}
+
 const pct = (a: number, b: number) => (b ? `${Math.round((100 * a) / b)} %` : "–");
 
 // ── Självtest med känd sanning, utan DB. Läser den riktiga skuggmotorn — det ÄR driftvakten.
@@ -119,6 +148,14 @@ if (process.argv.includes("--sjalvtest")) {
   k("40 km i sista", bandet(40), ">20");
   k("underlagsvakt: 4 stationer", dom(4, "svar"), null);
   k("underlagsvakt: 5 stationer", dom(5, "svar"), "svar");
+  // De två vakterna som första körningen tvingade fram.
+  k("frostdom: 1 frostrad räcker inte", frostdom(1), false);
+  k("frostdom: 19 räcker inte", frostdom(19), false);
+  k("frostdom: 20 räcker", frostdom(20), true);
+  k("by 55,1 m/s förkastas", rimligBy([12.4, 55.1]), 12.4);
+  k("by 30,0 m/s är precis på taket", rimligBy([30.0, 55.1]), 30.0);
+  k("bara orimliga byar ⇒ null", rimligBy([45.0, 55.1]), null);
+  k("inga byar alls ⇒ null", rimligBy([]), null);
   // DRIFTVAKTEN: rutterna läses ur skuggmotorn, inte ur en kopia här.
   const kod = readFileSync(new URL("../supabase/functions/skuggmotor/index.ts", import.meta.url), "utf8");
   const rutter = lasRutter(kod);
@@ -171,7 +208,8 @@ if (stationer.length < 100) {
 type Rad = {
   namn: string; km: number; band: Record<string, number>; punkter: number;
   nara: number; medFrost: number; frostrader: number; kallast: number | null;
-  medVind: number; maxBy: number | null; omraden: number; vinterOmraden: number;
+  medVind: number; maxBy: number | null; byRimlig: number | null;
+  omraden: number; vinterOmraden: number;
 };
 const rader: Rad[] = [];
 
@@ -202,6 +240,7 @@ for (const [namn, linje] of Object.entries(rutter)) {
     kallast: kallaste.length ? Math.min(...kallaste) : null,
     medVind: nara.filter((s) => s.vind > 0).length,
     maxBy: byar.length ? Math.max(...byar) : null,
+    byRimlig: rimligBy(byar),
     omraden: Number(w.omraden), vinterOmraden: Number(w.vinter),
   });
 }
@@ -216,9 +255,19 @@ for (const r of [...rader].sort((a, b) => b.band["7–15"] / b.punkter - a.band[
     `${h(pct(r.band["7–15"], r.punkter), 6)} ${h(pct(r.band["15–20"], r.punkter), 6)} ${h(pct(r.band[">20"], r.punkter), 6)}`);
 }
 
+const frostTotalt = rader.reduce((a, r) => a + r.frostrader, 0);
+const kanRangordnaFrost = frostdom(frostTotalt);
 console.log(`\nT-A OCH RIMFROSTEN — vem fryser först? (stationer inom ${RACKVIDD_KM} km, efter #75:s givarvakt)`);
+if (!kanRangordnaFrost) {
+  console.log(`  ⊘ ${frostTotalt} frostrader i hela landet (kräver ${MIN_FROSTRADER} för att rangordna på dem).`);
+  console.log(`    Rutterna sorteras därför på KALLASTE UPPMÄTTA YTA, som är ett OMBUD för`);
+  console.log(`    "fryser först" — inte en mätning av det. September, inte ett fel.`);
+}
+const frostSort = kanRangordnaFrost
+  ? (a: Rad, b: Rad) => b.frostrader - a.frostrader
+  : (a: Rad, b: Rad) => (a.kallast ?? 99) - (b.kallast ?? 99);
 console.log(`  ${p("rutt", 28)} ${h("stationer", 10)} ${h("m. frost", 9)} ${h("frostrader", 11)} ${h("kallast", 9)}`);
-for (const r of [...rader].sort((a, b) => b.frostrader - a.frostrader)) {
+for (const r of [...rader].sort(frostSort)) {
   const d = dom(r.nara, true);
   console.log(`  ${p(r.namn, 28)} ${h(String(r.nara), 10)} ${h(d ? String(r.medFrost) : "–", 9)} ` +
     `${h(d ? String(r.frostrader) : "–", 11)} ${h(r.kallast !== null ? `${r.kallast.toFixed(1)} °C` : "–", 9)}` +
@@ -226,10 +275,14 @@ for (const r of [...rader].sort((a, b) => b.frostrader - a.frostrader)) {
 }
 
 console.log(`\nW-A — vem bär vind och sikt? (bara ~42 % av arkivraderna gör det, #120)`);
-console.log(`  ${p("rutt", 28)} ${h("stationer", 10)} ${h("m. vind", 9)} ${h("andel", 7)} ${h("högsta by", 10)}`);
-for (const r of [...rader].sort((a, b) => (b.maxBy ?? 0) - (a.maxBy ?? 0))) {
+console.log(`  Rangordnat på högsta by UNDER taket ${BY_TAK} m/s. Råmaxvärdet står bredvid:`);
+console.log(`  ett tal långt över taket är en trasig givare, inte en blåsig rutt.`);
+console.log(`  ${p("rutt", 28)} ${h("stationer", 10)} ${h("m. vind", 9)} ${h("andel", 7)} ${h("by ≤ tak", 10)} ${h("råmax", 10)}`);
+for (const r of [...rader].sort((a, b) => (b.byRimlig ?? -1) - (a.byRimlig ?? -1))) {
+  const misstanke = r.maxBy !== null && r.maxBy > BY_TAK ? "  ⚠ givare" : "";
   console.log(`  ${p(r.namn, 28)} ${h(String(r.nara), 10)} ${h(String(r.medVind), 9)} ` +
-    `${h(pct(r.medVind, r.nara), 7)} ${h(r.maxBy !== null ? `${r.maxBy.toFixed(1)} m/s` : "–", 10)}`);
+    `${h(pct(r.medVind, r.nara), 7)} ${h(r.byRimlig !== null ? `${r.byRimlig.toFixed(1)} m/s` : "–", 10)} ` +
+    `${h(r.maxBy !== null ? `${r.maxBy.toFixed(1)} m/s` : "–", 10)}${misstanke}`);
 }
 
 console.log(`\nF-A — KAPACITETSKOLL, inte rangordning`);
@@ -244,18 +297,28 @@ for (const r of [...rader].sort((a, b) => b.omraden - a.omraden)) {
 // ── Läsningen: en mening per grind, och den ska peka ut EN bil.
 const basta = (f: (r: Rad) => number) => [...rader].sort((a, b) => f(b) - f(a))[0];
 const ga = basta((r) => r.band["7–15"] / r.punkter);
-const ta = basta((r) => (dom(r.nara, 1) ? r.frostrader : -1));
-const wa = basta((r) => r.maxBy ?? -1);
+const ta = [...rader].filter((r) => dom(r.nara, true)).sort(frostSort)[0];
+const wa = basta((r) => (dom(r.nara, 1) ? r.byRimlig ?? -1 : -1));
 const skarNagot = rader.some((r) => r.omraden > 0);
+const norrUtanOmraden = rader.filter((r) => r.omraden === 0).map((r) => r.namn);
 
 console.log(`\nLÄSNINGEN — vilken bil ska tittas på för vilken fråga`);
 console.log(`  GRIND A:  ${ga.namn} — ${pct(ga.band["7–15"], ga.punkter)} av rutten i det oförklarade`);
 console.log(`            7–15 km-bandet. Den bilen kan säga något om varför mittenbandet är sämst.`);
-console.log(`  T-A/#46:  ${ta.namn} — ${ta.frostrader} frostrader på ${ta.medFrost} stationer,`);
-console.log(`            kallast ${ta.kallast !== null ? ta.kallast.toFixed(1) + " °C" : "–"}. Den fryser först och hinner inom gallringens sju dygn.`);
-console.log(`  W-A:      ${wa.namn} — högsta byvind ${wa.maxBy !== null ? wa.maxBy.toFixed(1) + " m/s" : "–"} på ${wa.medVind} givare.`);
+if (kanRangordnaFrost) {
+  console.log(`  T-A/#46:  ${ta.namn} — ${ta.frostrader} frostrader på ${ta.medFrost} stationer.`);
+} else {
+  console.log(`  T-A/#46:  ${ta.namn} — kallast ${ta.kallast !== null ? ta.kallast.toFixed(1) + " °C" : "–"} hittills, på ${ta.nara} stationer.`);
+  console.log(`            OMBUD, inte mätning: landet har ${frostTotalt} frostrader totalt. Kör om vid frostlarmet.`);
+}
+console.log(`  W-A:      ${wa.namn} — högsta rimliga by ${wa.byRimlig !== null ? wa.byRimlig.toFixed(1) + " m/s" : "–"} på ${wa.medVind} givare.`);
 console.log(`            Körs om efter första höststormen, inte förr (#120).`);
 console.log(`  F-A:      ingen rangordning — arkivet saknar vintervarningar. Geometrin ${skarNagot ? "FUNGERAR" : "SKÄR INGET, undersök"}.`);
+if (norrUtanOmraden.length) {
+  console.log(`            ⚠ ${norrUtanOmraden.length} rutter skär NOLL områden: ${norrUtanOmraden.join(", ")}.`);
+  console.log(`            Sommarvarningar är sydliga, så det kan vara årstiden — men det är just`);
+  console.log(`            de rutterna förstärkaren behöver i vinter. Kontrollera vid första snövarningen.`);
+}
 console.log(`\n  Att läsa med: tabellen säger var en grind KAN prövas, aldrig vad den kommer att visa.`);
 console.log(`  Ankarbanden vandrar dessutom med stationsbortfall — kör om den när vintern satt sig.`);
 await pool.end();
