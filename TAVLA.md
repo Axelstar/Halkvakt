@@ -1540,7 +1540,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] **#26 Skolpaketet** (QR-blad, manus, checklista) *(låst: trafikskolans avsiktsförklaring)*
 - [ ] **#15 Kö-slutsmotorn** (TrafficFlow) *(låst: efter release — uppdatering 1)*
 - [ ] **#16 Blixthalke-prognos** (MET Nowcast) *(låst: efter kö-slut — uppdatering 2)*
-- [ ] 🔕 **#101 Schemalagda mätkörningar har ingen vakthund — ett tyst fel låg fem dygn**
+- [x] ✅ **#101 MÄTVAKTEN — KLART 12/9, och den hittade fyra döda mätningar till**
   (upptäckt 12/9 under vattenplaningsgenomgången). Grind V-A:s måndagskörning 7/9 fallerade i
   minutkrisens svallvågor, ingen larmade, och DECISIONS #69:s uttryckliga omkörning uteblev i åtta
   dygn. Kort #81 regel 5 säger "vakthunden får en rad per nytt led INNAN ledet går skarpt" — den
@@ -1548,9 +1548,22 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (healthcheck, marknadsforing + måndagsserien grind-a · smhi-prov · cell-matning-v3 ·
   trv-bevakning · hojd-prov · grind-v-a) och INGET av dem larmar när det fallerar.
   🔒 NYCKEL: ingen — men bör byggas i vakthunden (noll Actions-minuter), inte som nytt Actions-jobb.
-  Verify: en medvetet fallerad måndagskörning ger en issue inom en timme. Form: vakthunden frågar
-  GitHub-API:et efter senaste körning per schemalagt arbetsflöde och larmar på conclusion
-  != success ELLER ålder > 2 × kadensen — samma engångsmönster som vinterordslarmet.
+  ✅ **BYGGT OCH BEVISAT** (check 6 i vakthunden, PR #145, deployad 0e84812, bevis issue #146 EFTER
+  deployen, DECISIONS #105). Timvis i Supabase, noll Actions-minuter.
+  Två villkor: senaste körningen fallerade, ELLER längre än **1,5 × kadensen** sedan den kördes alls.
+  Ålderskontrollen är den viktigare — GitHub-cronen levererar 40 % av bokad takt (#70), och då finns
+  ingen körning att sätta en flagga på. **Schemat läses ur REPOT**, inte ur en lista i koden: ett nytt
+  schemalagt flöde bevakas automatiskt från första timmen, och ett otolkbart cron-uttryck larmar i sig.
+  Egen etikett `matvakt`, egen öppna/uppdatera/stäng-cykel, färgar aldrig driftvakthunden röd.
+  Prov: `matvaktprov` i dbknapp-knappen.
+  🔦 **FYNDET VID FÖRSTA KÖRNINGEN — hela måndagsserien låg nere:** utöver grind-v-a och
+  cell-matning-v3, som kördes om för hand 12/9, hade även **grind-a** (skuggans offsetmodell #61),
+  **smhi-prov**, **trv-bevakning** och **hojd-prov** (#96) fallerat 7/9. Sex av åtta schemalagda
+  flöden döda i fem dygn utan att någon visste. healthcheck och marknadsforing var gröna.
+  ⏭️ De fyra körs INTE om för hand: måndagsserien går 14/9 och ska lyckas av sig själv. Gör den inte
+  det står issuen kvar öppen — och det är hela poängen. Mätvakten får bevisa sig på den körningen.
+  ⚠️ Blir vakten pratsam av cronens opålitlighet är svaret att flytta mätningarna till pulsklockan
+  (som #53 gjorde med ingesten), inte att lossa på tröskeln.
 - [ ] 🌧️ **#42 Vattenplaningsvarningen** — ÄGARE: BENGT (issue #15, 1/9) — regnintensitet (VViS RainSum,
   ny ingestkolumn — vi lagrar idag bara regn ja/nej) × spårdjupslager (Trafikverkets
   vägytemätning via Lastkajen; licens/färskhet kollas först) × fartgrind ≥ ~70 km/h
