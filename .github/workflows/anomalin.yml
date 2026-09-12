@@ -1,0 +1,29 @@
+# Anomalin i grind A (Bengts order 12/9 efter Axels bedömning): varför är bandet 7–15 km
+# sämst av alla fyra? Tre uppdelningar — region, höjdskillnad station↔granne, filterutfall —
+# plus en fjärde körning med #75:s givarvakt på, som grind A självt saknar.
+# Helt läsande. Knapp, inte cron. Hämtar EU-DEM-höjder (~9 anrop) vid körning.
+name: anomalin
+on:
+  workflow_dispatch:
+    inputs:
+      dagar:
+        description: "Fönster i dygn"
+        required: false
+        default: "60"
+jobs:
+  anomalin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types scripts/anomalin.ts --sjalvtest
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/anomalin.ts "${{ inputs.dagar || '60' }}" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
