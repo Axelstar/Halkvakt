@@ -345,6 +345,26 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [ ] 🧊 **#103 FRYSKLASSNINGEN — kan en modell som är opålitlig på grader ändå bära en klass?**
+  📄 **TRÖSKELDOKUMENT SKRIVET 12/9** (`docs/TROSKLAR-FRYSKLASSNINGEN.md`, UTKAST, DECISIONS #130).
+  **Frågan är Axels, ordagrant**, ur hans bedömning av grind A: grind A föll, men A3
+  frysklassningsfelet klarade med **1,1 % mot ett krav på 10** — modellen är dålig på GRADER men
+  nästan aldrig fel om VILKEN SIDA AV NOLL, och det är den fråga motorn faktiskt ställer.
+  ⚖️ **Legitim, inte en efterhandsräddning** — hans egen formulering: *samma data, ny fråga, ärlig
+  ordning*. Dokumentet är skrivet så att **inget tal i §2 eller §4 kommer ur A3:s utfall**, och det
+  står uttryckligen att 1,1 % inte får åberopas som skäl för någon tröskel.
+  🚧 **AVGRÄNSNINGEN SOM AVGÖR ALLT ANNAT:** en godkänd frysklassning ger INTE rätt att skapa en
+  varning där motorn tiger. Den får bara stärka en bedömning som redan vilar på en uppmätt station.
+  **En modellerad storhet får aldrig vara en avtryckare** — samma regel som #95 (d) fick.
+  🎯 **K2 är dokumentets egentliga idé:** grind A tvingade modellen att svara i varje punkt. En
+  klassificerare får AVSTÅ nära gränsen — frågan blir hur bra den är på det den uttalar sig om, och
+  hur mycket den då måste avstå. Därför har K-A både träffsäkerhets- OCH täckningskrav.
+  ⚠️ **K-A2 är asymmetrisk med flit och undantagen från all lättnad:** att säga "fryser" om en torr
+  väg kostar ett onödigt larm, att säga "fryser inte" om en isig väg kostar löftet produkten vilar
+  på. Taket för det felet är tio gånger hårdare (≤ 1 % mot ≥ 95 %).
+  🍂 **Vakt mot september:** K-A4 kräver ≥ 100 punkter med UPPMÄTT frys. Annars kan ett
+  septemberunderlag ge 99 % rätt klass genom att alltid svara "fryser inte".
+  🔑 **KVAR: Bengt fastställer värdena, Axel kontrasignerar.** Sedan K-A på befintligt arkiv.
 - [x] 🗺️ **#102 RUTTBEREDSKAPEN — vilken av skuggflottans tjugo bilar kan pröva vilken grind**
   ✅ **KLART 12/9 kväll** (Bengts order "gör beredskapstabellen", DECISIONS #124).
   `scripts/ruttberedskap.ts` + knapp, helt läsande. **Rutterna läses UR skuggmotorn, kopieras

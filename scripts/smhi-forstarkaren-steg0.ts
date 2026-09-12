@@ -23,6 +23,8 @@
 // Helt läsande. Run: DATABASE_URL=... node --experimental-strip-types scripts/smhi-forstarkaren-steg0.ts [dagar=30]
 // Självtest utan DB: scripts/smhi-forstarkaren-steg0.ts --sjalvtest
 
+import { andelSe, utfallGolv, utfallTak, grindutfall, marginalPe } from "../publish/marginal.ts";
+
 const MIN_TIMMAR = 200;          // F-A1
 const MIN_OMRADEN = 20;          // F-A2
 const ANDEL_GOLV = 0.05;         // F-A3 golv
@@ -273,8 +275,14 @@ if (!utfall) {
   console.log(`  vid de första vintervarningarna, och då bär varningarna sitt giltighetsfönster.`);
 } else {
   const andel = bast.traff / bast.n;
-  console.log(`  Andel förstärkta: ${pct(bast.traff, bast.n)} (golv ${100 * ANDEL_GOLV} %, tak ${100 * ANDEL_TAK} %)`);
-  console.log(`  ⇒ ${andelOk(andel) ? "F-A PASSERAD" : andel < ANDEL_GOLV ? "F-A FALLER — regeln gör nästan ingenting" : "F-A FALLER — regeln säger bara 'det är vinter'"}`);
+  const se = andelSe(andel, bast.n);
+  console.log(`  Andel förstärkta: ${pct(bast.traff, bast.n)}${marginalPe(se)} (golv ${100 * ANDEL_GOLV} %, tak ${100 * ANDEL_TAK} %)`);
+  // MARGINALVAKTEN (DECISIONS #128): andelen har BÅDA gränserna, så båda prövas mot bruset.
+  const mot = grindutfall([utfallGolv(andel, ANDEL_GOLV, se), utfallTak(andel, ANDEL_TAK, se)]);
+  console.log(`  ⇒ ${mot === "KLARAR" ? "F-A PASSERAD"
+    : mot === "OAVGJORT" ? "⊘ OAVGJORT — andelen ligger inom bruset från en av gränserna"
+    : andel < ANDEL_GOLV ? "F-A FALLER — regeln gör nästan ingenting"
+    : "F-A FALLER — regeln säger bara 'det är vinter'"}`);
 }
 console.log(`\n  Att läsa med, alltid: varningsområdena är LÄN. En stor träffyta är inget bevis på`);
 console.log(`  att regeln vet något om vägen — det är just vad taket i F-A3 finns för att fånga.`);

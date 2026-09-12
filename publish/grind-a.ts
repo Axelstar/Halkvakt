@@ -99,21 +99,7 @@ function evaluate(stations: Map<string, Station>): Eval[] {
 //
 // DEN KAN ALDRIG ÖPPNA EN STÄNGD GRIND. Ett KLARAR inom bruset blir OAVGJORT (skärpning), och
 // ett FALLER inom bruset blir OAVGJORT (mät igen) — grinden öppnar bara på KLARAR.
-const Z = 1.96; // 95 %
-
-export function andelSe(p: number, n: number): number {
-  return n > 0 ? Math.sqrt(Math.max(p * (1 - p), 0) / n) : Infinity;
-}
-export function medelSe(absfel: number[]): number {
-  const n = absfel.length;
-  if (n < 2) return Infinity;
-  const m = absfel.reduce((a, b) => a + b, 0) / n;
-  return Math.sqrt(absfel.reduce((a, b) => a + (b - m) ** 2, 0) / (n - 1) / n);
-}
-/** true = utfallet går att skilja från tröskeln vid det här underlaget. */
-export function skiljbar(varde: number, troskel: number, se: number): boolean {
-  return Number.isFinite(se) && Math.abs(varde - troskel) > Z * se;
-}
+import { Z, andelSe, medelSe, skiljbar, utfallTak, grindutfall } from "./marginal.ts";
 
 function stats(rows: Eval[]) {
   const dec = rows.filter((r) => r.measured >= -5);      // decision band −5…+5 (≤5 already)
@@ -147,11 +133,12 @@ function report(evals: Eval[], label: string, selftest = false) {
   // gäller bara verkligt arkiv.
   const nog = selftest || (tot.n >= MIN_POINTS_FOR_VERDICT && nStations >= MIN_STATIONS_FOR_VERDICT);
   // Marginalvakten: ett utfall inom bruset får inget omdöme åt något håll.
-  const utfall = (varde: number, troskel: number, se: number) =>
-    !nog ? "—" : !skiljbar(varde, troskel, se) ? "OAVGJORT" : varde <= troskel ? "KLARAR" : "FALLER";
-  const a1 = utfall(tot.mae, A1_MAX_MAE, tot.maeSe);
-  const a2 = utfall(tot.gross, A2_MAX_GROSS, tot.grossSe);
-  const a3 = utfall(tot.freeze, A3_MAX_FREEZE, tot.freezeSe);
+  // Marginalvakten (publish/marginal.ts): ett utfall inom bruset får inget omdöme åt något håll.
+  const u = (varde: number, troskel: number, se: number) =>
+    !nog ? "—" : utfallTak(varde, troskel, se);
+  const a1 = u(tot.mae, A1_MAX_MAE, tot.maeSe);
+  const a2 = u(tot.gross, A2_MAX_GROSS, tot.grossSe);
+  const a3 = u(tot.freeze, A3_MAX_FREEZE, tot.freezeSe);
   // ±1,96 standardfel, i måttets egen enhet. "pe" = procentenheter.
   const margGrad = (se: number) => nog && Number.isFinite(se) ? ` [±${(Z * se).toFixed(2)} °C]` : "";
   const margPe = (se: number) => nog && Number.isFinite(se) ? ` [±${(Z * se * 100).toFixed(1)} pe]` : "";
@@ -159,10 +146,10 @@ function report(evals: Eval[], label: string, selftest = false) {
   console.log(`A2 grova fel > 2 °C ≤ ${A2_MAX_GROSS * 100} %: ${(tot.gross * 100).toFixed(1)} %${margPe(tot.grossSe)} → ${a2}`);
   console.log(`A3 frysklassningsfel ≤ ${A3_MAX_FREEZE * 100} %: ${(tot.freeze * 100).toFixed(1)} %${margPe(tot.freezeSe)} → ${a3}`);
   if (nog && !selftest) {
-    const domar = [a1, a2, a3];
-    if (domar.includes("FALLER")) {
+    const domar = grindutfall([a1, a2, a3] as any);
+    if (domar === "FALLER") {
       console.log(`\nDOM: GRIND A FALLEN — bygg ingen skugga (tre veckor sparade)`);
-    } else if (domar.includes("OAVGJORT")) {
+    } else if (domar === "OAVGJORT") {
       console.log(`\n⏳ INGEN DOM — ett eller flera mått ligger INOM bruset (marginalvakten, §3).`);
       console.log(`   Marginalen är mindre än mätosäkerheten, och intervallet är dessutom en UNDRE`);
       console.log(`   gräns: punkterna är inte oberoende. Mät vidare — ett tal ska inte fälla`);
@@ -224,6 +211,15 @@ const res = await pool.query(`
     floor(extract(epoch FROM sample_time) / ${BUCKET_S})::bigint AS b, surface_temp_c
   FROM weather_observations
   WHERE surface_temp_c IS NOT NULL AND sample_time > now() - $1 * interval '1 day'
+    -- #75:s GIVARVAKT, tillagd 12/9 på Bengts order med Axels ja (DECISIONS #129).
+    -- Fram till dess saknade grind A den, trots att #75 gäller "varje väderfråga" och
+    -- TROSKLAR-RIMFROST §3 kallar den obligatorisk i varje frostgren. 61 % av arkivets
+    -- frostrader faller på den (#106), och en trasig givare förstör inte bara sin EGEN
+    -- punkt utan även sina GRANNARS prediktioner — en granne på 10 km får hög vikt i den
+    -- inversa avståndsviktningen. Anomalimätningen (#125) visade följden: utan vakten är
+    -- bandet 7–15 km sämst av alla fyra (1,41 °C / 18,4 %), med den är det näst bäst
+    -- (0,78 °C / 3,1 %) och felet stiger monotont med ankaravståndet som fysiken kräver.
+    AND air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12
   ORDER BY station_id, b, sample_time DESC`, [DAYS]);
 const stations = new Map<string, Station>();
 for (const r of res.rows) {

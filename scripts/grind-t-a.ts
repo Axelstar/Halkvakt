@@ -96,6 +96,8 @@ export function separation(natter: Natt[], p: Param) {
   return { traff: tr, falsk: fa, sep: tr - fa, nFrost: f.length, nIcke: i.length, fF, fI };
 }
 
+import { andelSe, skiljbar, marginalPe } from "../publish/marginal.ts";
+
 const pct = (x: number) => `${(100 * x).toFixed(0)} %`;
 
 // ── MOLNET (SMHI metobs parameter 16, enhet procent men värdena är octas omräknade:
@@ -265,13 +267,21 @@ for (const fonster of FONSTER) for (const lut of LUTNING) for (const gap of DAGG
   ut.push({ p, s, sepA: a.sep, sepB: b.sep });
 }
 ut.sort((x, y) => y.s.sep - x.s.sep);
+// MARGINALVAKTEN (DECISIONS #128). Separationen är en SKILLNAD mellan två andelar, så dess
+// brus är √(se_träff² + se_falsk²). En separation som inte går att skilja från NOLL skiljer
+// ingenting — och en sådan rad får inte se ut som en kandidat bara för att den ligger överst.
 console.log(`  fönster  lutn  gap  band      träff        falsklarm     separation   halva A   halva B`);
 for (const { p, s, sepA, sepB } of ut.slice(0, 10)) {
   const badaHalvor = sepA > 0 && sepB > 0;
+  const seSep = Math.sqrt(andelSe(s.traff, s.nFrost) ** 2 + andelSe(s.falsk, s.nIcke) ** 2);
+  const skild = skiljbar(s.sep, 0, seSep);
   console.log(`  ${String(p.fonster).padStart(5)} m  ${p.lut.toFixed(1)}  ${p.gap.toFixed(1)}  +${p.band[0]}..+${p.band[1]}   ` +
     `${pct(s.traff).padStart(5)} (${s.fF}/${s.nFrost})  ${pct(s.falsk).padStart(5)} (${s.fI}/${s.nIcke})  ` +
-    `${pct(s.sep).padStart(8)}   ${pct(sepA).padStart(6)}  ${pct(sepB).padStart(6)}  ${badaHalvor ? "✓" : "✗ ej båda halvor"}`);
+    `${pct(s.sep).padStart(8)}${marginalPe(seSep)}   ${pct(sepA).padStart(6)}  ${pct(sepB).padStart(6)}  ` +
+    `${!skild ? "⊘ inom bruset" : badaHalvor ? "✓" : "✗ ej båda halvor"}`);
 }
+console.log(`  ⊘ = separationen går inte att skilja från noll vid det här underlaget. En sådan`);
+console.log(`     kombination är ingen kandidat, hur högt den än hamnar i listan.`);
 
 // ── Fysikkontrollen, §4.
 console.log(`\nFYSIKKONTROLLEN (den som fällde #46:s första körning)`);

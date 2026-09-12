@@ -27,6 +27,8 @@
 // Helt läsande. Run: DATABASE_URL=... node --experimental-strip-types scripts/overgangar-steg0.ts [dagar=14]
 // Självtest utan DB: scripts/overgangar-steg0.ts --sjalvtest
 
+import { andelSe, marginalPe } from "../publish/marginal.ts";
+
 const MIN_HANDELSER = 20;   // förstudiens underlagsvakt: färre än så ⇒ OAVGJORT
 const UTHALL_MIN = 30;      // ett regnstopp måste hålla i sig så länge, annars är det flimmer
 const MAXGAP_MIN = 20;      // längre lucka före omslaget ⇒ arkivdieten, inte vädret, gjorde det
@@ -223,7 +225,10 @@ await avsnitt("0a — EFTERSLÄPNINGEN", async () => {
   const medMm = bra.filter((r) => Number(r.rain_sum_mm) > 0);
   const svansar = bra.filter((r) => r.mm_svans_min !== null).map((r) => Number(r.mm_svans_min));
   console.log(`  ${bra.length} användbara omslag.`);
-  console.log(`  Vid själva omslaget visade regnmätaren regn i de senaste 30 minuterna på ${medMm.length} av ${bra.length} (${pct(medMm.length, bra.length)}).`);
+  // MARGINALVAKTEN (DECISIONS #128): det här talet blev Ö-A:s dom i TROSKLAR-OVERGANGAR.
+  // En andel utan sitt brus är en gissning som låtsas vara en mätning.
+  const seOa = andelSe(medMm.length / bra.length, bra.length);
+  console.log(`  Vid själva omslaget visade regnmätaren regn i de senaste 30 minuterna på ${medMm.length} av ${bra.length} (${pct(medMm.length, bra.length)}${marginalPe(seOa)}).`);
   console.log("    Det är hålet i sin renaste form: motorn kallar vägen torr medan mätaren säger att det regnat.");
   if (svansar.length >= MIN_HANDELSER) {
     console.log(`  Hur länge regnmätaren stod kvar över noll EFTER omslaget (${svansar.length} fall):`);
