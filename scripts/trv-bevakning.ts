@@ -37,6 +37,14 @@
 //
 // NAMNET LJUGER numera — filen heter trv-bevakning men vakten är inte trafikverksspecifik.
 // Omdöpning rör workflow, statefil och kortreferenser; eget beslut, inte en sidoeffekt här.
+//
+// BEDÖMNINGEN 12/9 (Bengts order, DECISIONS #149). Larmet sa förut "Bedöm: rör det våra
+// källor/ingest?" — hela bedömningen låg på läsaren. Nu slår varje larm upp sin källa i
+// beroendekartan (publish/beroenden.ts), matchar texten mot radernas nyckelord och skriver
+// VAD SOM BRISTER. Rubriken bär domen: 🔴 RÖR OSS · 🟡 VET INTE · ⚪ RÖR OSS INTE.
+// Bedömningen FÄLLER ALDRIG ett larm — samma issue, samma mottagare, en rad text ovanför.
+// Hash-källornas text sparas i state, så att nästa ändring kan DIFFAS och bedömas på
+// innehåll i stället för att bara konstatera att något rört sig.
 // New/changed => ETT issue per källa (label trv-nyhet, assignad Bengt) — bevisad larmväg.
 // Trasig källa => rött jobb med svarskropp (TRV-400-läxan). Google-gruppen "Öppet API
 // Trafikverket" är DÖD sedan 2014 (Bengts koll 3/9: 14 trådar, senaste 2014-03-17) —
@@ -48,6 +56,8 @@
 
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { createHash } from "node:crypto";
+import { KARTAN } from "../publish/beroenden.ts";
+import { bedom, nyText } from "../publish/nyhetsbedomning.ts";
 
 const STATE = "ingest/trv-nyheter-state.json";
 const REPO = "Axelstar/Halkvakt";
@@ -55,7 +65,10 @@ const GQL = "https://data.trafikverket.se/hc/graphql";
 const seed = process.argv.includes("--seed");
 const testlarm = process.argv.includes("--testlarm");
 
-type Change = { source: string; title: string; lines: string[] };
+// `text` är det som ska BEDÖMAS — nya postens rubriker, eller de nya meningarna på en
+// hash-sida. `lines` är det som ska LÄSAS. De skiljer sig: lines bär även hashar och
+// textlängder, som inte ska matchas mot nyckelord.
+type Change = { source: string; title: string; lines: string[]; text?: string };
 
 // Polisens villkor för öppna data KRÄVER en user-agent som namnger appen; saknas den kan
 // svaret bli 403 eller blockeras helt (läst 12/9). Samma hövlighet mot alla källor.
@@ -120,7 +133,7 @@ async function smhiSitemap(): Promise<{ guid: string; label: string }[]> {
 
 async function main(): Promise<number> {
   const state = existsSync(STATE) ? JSON.parse(readFileSync(STATE, "utf8")) : {};
-  const sources: Record<string, { seen?: string[]; hash?: string; textLen?: number }> = state.sources ?? {};
+  const sources: Record<string, { seen?: string[]; hash?: string; textLen?: number; text?: string }> = state.sources ?? {};
   if (Array.isArray(state.seen)) sources["trv-rss"] = { seen: state.seen }; // migrera v1-state
   const changes: Change[] = [];
   let fel = 0;
@@ -138,7 +151,7 @@ async function main(): Promise<number> {
       const seen = sources[name]?.seen ?? [];
       let nya = seed ? [] : items.filter((i) => !seen.includes(i.guid));
       if (testlarm && name === "trv-rss") nya = [items[0]];
-      if (nya.length && seen.length) changes.push({ source: name, title: `${nya.length} ny${nya.length > 1 ? "a" : ""} post${nya.length > 1 ? "er" : ""}`, lines: nya.map((n) => n.label) });
+      if (nya.length && seen.length) changes.push({ source: name, title: `${nya.length} ny${nya.length > 1 ? "a" : ""} post${nya.length > 1 ? "er" : ""}`, lines: nya.map((n) => n.label), text: nya.map((n) => n.label).join(" ") });
       else if (nya.length) console.log(`${name}: första körningen (${nya.length} poster) — seedar utan larm.`);
       if (!testlarm) sources[name] = { seen: items.map((i) => i.guid) };
     } catch (e) { console.error(`${name}: ${String((e as Error).message)}`); fel++; }
@@ -172,15 +185,27 @@ async function main(): Promise<number> {
       const spaVarning = text.length < 200 ? " (OBS: nästan ingen text — JS-renderad sida, vakten ser bara skalet)" : "";
       console.log(`${name}: ${text.length} tecken, hash ${h}${spaVarning}`);
       const prev = sources[name]?.hash;
-      if (!seed && prev && prev !== h)
-        changes.push({ source: name, title: "innehållet ändrat", lines: [`Textlängd ${sources[name]?.textLen} → ${text.length} tecken, hash ${prev} → ${h}.${spaVarning}`, `Öppna källan och bedöm: ${name}`] });
-      sources[name] = { hash: h, textLen: text.length };
+      if (!seed && prev && prev !== h) {
+        // Texten sparas i state just för det här ögonblicket: utan den föregående texten kan
+        // en hash-vakt bara säga ATT något ändrats, aldrig VAD — och då blir varje larm ett
+        // "öppna källan och bedöm", vilket är precis det bedömningen skulle ta bort.
+        const nya = nyText(sources[name]?.text ?? "", text);
+        const rader = [`Textlängd ${sources[name]?.textLen} → ${text.length} tecken, hash ${prev} → ${h}.${spaVarning}`];
+        if (nya.length) { rader.push(`Nytt på sidan (${nya.length} stycken, de ${Math.min(6, nya.length)} första):`); rader.push(...nya.slice(0, 6).map((m) => `  "${m.slice(0, 220)}"`)); }
+        else rader.push(sources[name]?.text ? `Ingen ny mening kunde pekas ut — ändringen sitter i något kortare än en mening (meny, siffra, layout).` : `Ingen tidigare text sparad (första ändringen efter #149) — nästa gång kan diffen visas.`);
+        changes.push({ source: name, title: "innehållet ändrat", lines: rader, text: nya.join(" ") });
+      }
+      sources[name] = { hash: h, textLen: text.length, text };
     } catch (e) { console.error(`${name}: ${String((e as Error).message)}`); fel++; }
   }
 
   if (seed) { console.log("State seedad för alla källor — inga larm."); }
   for (const c of changes) {
     console.log(`ÄNDRING ${c.source}: ${c.title}`); for (const l of c.lines) console.log(`  - ${l}`);
+    // MASKINELL BEDÖMNING (#149). Den fäller aldrig något — larmet går ut precis som förut,
+    // till samma mottagare. Den svarar bara på frågan som förut låg på läsaren.
+    const dom = bedom(c.source, c.text ?? "", KARTAN);
+    console.log(`  BEDÖMNING: ${dom.grad}`); for (const r of dom.rader) console.log(`    ${r.replace(/\*\*/g, "")}`);
     const token = process.env.GITHUB_TOKEN;
     if (!token) { console.error("GITHUB_TOKEN saknas — kan inte larma."); return 1; }
     const gh = async (path: string, method = "GET", payload?: unknown): Promise<any> => {
@@ -190,8 +215,14 @@ async function main(): Promise<number> {
       if (!r.ok) throw new Error(`${method} ${path} -> ${r.status}: ${(await r.text()).slice(0, 300)}`);
       return r.json();
     };
-    const body = `${testlarm ? "🧪 **TESTLARM — avsiktlig larmvägskontroll.**\n\n" : ""}Källbevakningen (kort #31): **${c.source}** — ${c.title}:\n\n${c.lines.map((l) => `- ${l}`).join("\n")}\n\nBedöm: rör det våra källor/ingest? Stäng när läst.`;
-    const title = `📰 Källbevakningen: ${c.source} — ${c.title}`;
+    const IKON: Record<string, string> = { "RÖR OSS": "🔴", "VET INTE": "🟡", "RÖR OSS INTE": "⚪" };
+    const body = `${testlarm ? "🧪 **TESTLARM — avsiktlig larmvägskontroll.**\n\n" : ""}`
+      + `Källbevakningen (kort #31): **${c.source}** — ${c.title}:\n\n`
+      + `${c.lines.map((l) => `- ${l}`).join("\n")}\n\n---\n\n`
+      + `${dom.rader.join("\n")}\n\n`
+      + `*Bedömningen är maskinell (#149): den matchar ORD mot beroendekartan, den förstår ingenting.*\n`
+      + `*Den fäller aldrig ett larm — läs posten och säg ok. Är bedömningen fel, rätta nyckelorden i \`publish/beroenden.ts\`.*`;
+    const title = `${IKON[dom.grad] ?? "📰"} Källbevakningen: ${c.source} — ${c.title} [${dom.grad}]`;
     const open = (await gh(`/issues?labels=trv-nyhet&state=open&per_page=50`)).find((i: any) => i.title.includes(c.source));
     if (open) { await gh(`/issues/${open.number}/comments`, "POST", { body }); console.log(`Larm: kommentar på issue #${open.number}.`); }
     else { const issue = await gh(`/issues`, "POST", { title, body, labels: ["trv-nyhet"], assignees: ["895845"] }); console.log(`Larm: issue #${issue.number} skapad.`); }

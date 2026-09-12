@@ -3802,3 +3802,65 @@ fortfarande "Bedöm: rör det våra källor/ingest?". Det ledet är kvar att byg
 **Kvarstår, eget beslut:** filen heter `trv-bevakning.ts` men vakten är inte längre
 trafikverksspecifik. Omdöpning rör workflow, statefil och kortreferenser och görs inte som
 sidoeffekt.
+
+## #149 (12/9 2026) Nyhetsbedömningen — larmet svarar på frågan i stället för att ställa den
+
+**Beslut:** `publish/nyhetsbedomning.ts` byggd och inkopplad i källvakten. Varje larm slår nu upp
+sin källa i beroendekartan, matchar nyhetens text mot radernas nyckelord och skriver **vad som
+brister**. Rubriken bär domen: 🔴 RÖR OSS · 🟡 VET INTE · ⚪ RÖR OSS INTE.
+
+**Frågan, ordagrant (Bengt 12/9):** *"kan man bygga det så att all ny information processas
+maskinellt och man får en bedömning av en nyhet. Det här kan komma att påverka det och det, och
+att en människa, jag eller Axel, bara säger ok."*
+
+Före det här löd larmtexten: *"Bedöm: rör det våra källor/ingest? Stäng när läst."* Hela
+bedömningen låg på läsaren.
+
+**TRE REGLER som står i modulens huvud och som inte får brytas:**
+
+1. **Bedömningen fäller aldrig ett larm.** Samma issue, samma mottagare, samma frekvens — en rad
+   text ovanför posten, aldrig ett filter. En tyst felbedömning vore långt värre än en läst rad
+   för mycket. "Silence is a feature" gäller våra egna varningar; här är tystnaden inte vår utan
+   källans.
+2. **"RÖR OSS INTE" kräver POSITIVT BEVIS.** Att inga av våra nyckelord finns räcker inte — då
+   blir svaret VET INTE. Först när posten matchar ett **främmande** ord (något kanalen skriver om
+   som vi bevisligen inte hämtar) får den säga att den inte rör oss. Frånvaro av bevis är inte
+   bevis om frånvaro.
+3. **Utan text finns ingen bedömning.** En hash-källa som ändrats vet bara ATT något ändrats.
+   Därför sparas nu den normaliserade texten i state, så att nästa ändring kan **diffas** och
+   bedömas på innehåll. Utan diffen hade åtta av tretton källor alltid blivit VET INTE.
+
+**Bevisat mot verkliga poster, inte bara påhittade.** 18 tester, varav fem kör ordagranna poster
+ur SMHI:s och Trafikverkets flöden lästa 12/9:
+
+| Verklig post | Dom | Varför |
+| :-- | :-- | :-- |
+| SMHI 16/3 2026 "API för PMP3 avvecklas 31 mars" | ⚪ RÖR OSS INTE | PMP3 är prognos, inte vårt |
+| SMHI 28/5 2026 "Nytt API för meteorologiska analyser" | ⚪ RÖR OSS INTE | analys, inte observation |
+| SMHI 12/9 2025 "Nya API:er för prognoser och analyser" | ⚪ RÖR OSS INTE | samma |
+| SMHI 11/2 2025 "Uppdaterad portal för API-dokumentation" | 🟡 VET INTE | inga ord åt något håll — **regel 2** |
+| TRV 19/5 2026 "Ny version av BanInfo" | ⚪ RÖR OSS INTE | järnväg |
+
+Den fjärde raden är den viktiga: den hade varit lätt att klassa som ointressant, och bedömningen
+vägrar. Skarp provkörning gav samma svar på BanInfo-posten i verkligheten som i testet.
+
+**Strukturen flyttades för att bedömningen skulle bli möjlig.** Kartan låg i
+`scripts/beroendekartan.ts`, ett skript med toppnivåkod — en import hade kört hela den skarpa
+körningen och avslutat processen. Den bor nu i `publish/beroenden.ts` som ren modul, läst av två
+saker: driftvakten och bedömningen. Samma mönster som `publish/marginal.ts`, `vaktdiagnos.ts`
+och `moln.ts`.
+
+**Två driftvakter tillkom på köpet:**
+
+* **Trafikverkets objekttyper** i kartan jämförs mot vad koden faktiskt frågar efter
+  (`git grep objecttype`). Vakten fällde direkt på sitt eget bygge: mönstret utan citationstecken
+  matchade även typdeklarationen `objecttype: string` och plockade ut **"tring"**. Rättat till att
+  bara citerade värden räknas.
+* **Varje produktionsrad måste bära nyckelord.** En rad utan dem kan aldrig bedömas, och skulle
+  tyst bli VET INTE för alltid.
+
+**Vad den INTE gör, och det ska stå i klartext:** den matchar **ord**, den förstår ingenting. En
+post som beskriver en brytande ändring med andra ord än de deklarerade blir 🟡 VET INTE — inte
+grön. Och den genomför ingenting automatiskt: Bengts mening slutade *"…så genomförs uppdateringen
+i systemet automatiskt"*, och det steget är medvetet inte byggt. Att låta en nyhetstext utlösa en
+kodändring utan att en människa läst diffen är inte samma sak som att säga ok till en bedömning.
