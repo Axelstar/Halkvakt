@@ -3679,3 +3679,126 @@ som CI kör) är och förblir LF.
 blobbar är orörda, och de är döda Linux-artefakter. Att de är spårade över huvud taget är ett eget
 kort (se TAVLA): **504 filer, 27,6 MB**, och `.gitignore` täcker `android/build/` men inte Swifts
 `.build/`.
+
+## #147 (12/9 2026) Beroendekartan — bedömningen kan aldrig bli bättre än listan den bedöms mot
+
+**Beslut:** `scripts/beroendekartan.ts` byggd och inlagd som eget CI-steg. Den läser varje extern
+värd ur spårad kod, jämför med en deklarerad karta, och **fäller om koden hämtar från något som
+inte står i kartan**. Helt läsande.
+
+**Frågan bakom** är Bengts, 12/9: *"har vi något system som tar hand om uppdateringar från vägverket,
+smhi och alla andra som vi hämtar uppgifter från"* — och sedan: *"kan man bygga det så att all ny
+information processas maskinellt och man får en bedömning av en nyhet."*
+
+Svaret på första frågan är ja: källvakten (#31, `scripts/trv-bevakning.ts`, cron måndagar 06:40)
+bevakar sju källor med bevisad larmväg källa → issue → notis. **Men listan valdes när issue #2
+skrevs, i augusti.** Sedan dess har radar, moln, Finland, Norge, Danmark och polisen tillkommit,
+och listan följde inte med. Det är samma husregel som mätvakten (#105), ruttberedskapen (#124),
+värdevakten (#133) och kontraktsgrinden (#144): **listan som ska vara komplett läses från källan,
+inte från minnet.**
+
+**Uppmätt: 23 externa värdar i koden, 9 av dem produktionsberoenden.**
+
+| Roll | Antal | Bevakade |
+| :-- | --: | --: |
+| Produktion — matar motorn, arkivet eller en grind | 9 | **1** |
+| Signalkälla — annonserar ändringar i ett produktionsberoende | 3 | 3 |
+| Verktyg — bara mätskript och rekognosering | 7 | 0 |
+| Omvärld — vi hämtar inga data därifrån | 3 | 3 |
+| Bygg — byggkedjan, inte data | 1 | 0 |
+
+**Gapet, med vad som brister:**
+
+| Obevakat produktionsberoende | Vad som brister |
+| :-- | :-- |
+| `opendata-download-warnings.smhi.se` | varningsarkivet och grind F-A:s hela underlag |
+| `opendata-download-radar.smhi.se` | radardomen och en av tre proxies i #89 (a) |
+| `opendata-download-metobs.smhi.se` | grind R-A4 och grind T-A:s molnkontroll |
+| `tie.digitraffic.fi` | gränssnapshoten mot Finland och grind R-A `--land=fi` |
+| `datex-…vegvesen.no` | gränssnapshoten mot Norge |
+| `opendataapi.dmi.dk` + `storage.googleapis.com` | dk-arkivet |
+| `polisen.se` | viltvarningarna (varningsslag A4) |
+
+**Två fynd som kartan tvingade fram:**
+
+1. **SMHI-täckningen är indirekt och OPRÖVAD.** Källvakten bevakar `opendata.smhi.se` — SMHI:s
+   dokumentationssajt. Vi hämtar från tre helt andra värdar (`opendata-download-warnings`,
+   `-radar`, `-metobs`). Ingen har prövat om en ändring i nedladdnings-API:erna ens syns i den
+   sitemapen. Att kalla SMHI "bevakat" var en tro, inte en mätning.
+2. **Tre av de sju bevakade är omvärld, inte beroenden** (halkvarning, klimator, met.no). Ett larm
+   om att en konkurrent bytt framsida är inte värdelöst, men det är inte samma sak som att veta
+   att DMI byter API-version.
+
+**Bevisat:** självtest mot känd sanning utan nät (ny värd fångas, borttagen rapporteras utan att
+fälla, egen infrastruktur ignoreras, gapet räknas bara i produktionsledet, varje produktionsrad
+måste säga vad som brister). Plus mutationsprov mot riktiga repot: en påhittad värd i
+`smhi-tackning.ts` gav exit 1 med värden utpekad; återställd gav 0.
+
+**Vad kartan INTE gör:** den bedömer ingen nyhet. Den är underlaget en sådan bedömning måste slå
+upp i — steget före, inte steget självt. Och där `signal`-kolumnen säger OKÄND har ingen letat
+ännu; det är ärligare än att gissa en feed som inte finns.
+
+## #148 (12/9 2026) Källvakten breddad — sex nya källor, och SMHI bevakades på fel sida
+
+**Beslut:** `scripts/trv-bevakning.ts` utökad från sju till **tretton källor**. Efter breddningen
+täcker källvakten **9 av 9 produktionsberoenden** (beroendekartan #147 mätte 1 av 9).
+
+**De sex nya, var och en uppmätt före inkoppling:**
+
+| Källa | Signal | Typ | Uppmätt |
+| :-- | :-- | :-- | :-- |
+| `smhi-uppdateringar` | `www.smhi.se/rss/uppdateringar-oppna-data-fran-smhi` | RSS | 7 poster, 18/1 2024 → 28/5 2026 |
+| `fi-digitraffic` | `digitraffic.fi/en/news/` | hash | 20 857 tecken, stabil |
+| `no-vegvesen` | vegvesen.no `…/hva-er-datex/informasjon-og-nyheter/` | hash | 1 364 tecken, stabil |
+| `dk-dmi` | `www.dmi.dk/frie-data` | hash | 3 980 tecken, stabil |
+| `polisen-regler` | polisen.se `…/regler-for-oppna-data/` | hash | 5 318 tecken, stabil |
+| `polisen-api` | polisen.se `…/api-over-polisens-handelser/` | hash | 4 327 tecken, stabil |
+
+Varje hash-kandidat hämtades **två gånger före inkoppling** och jämfördes efter sifferstrippning;
+samtliga gav identisk hash. En instabil sida hade blivit en vakt som säger "INSTABIL" varje vecka,
+alltså ingen vakt alls.
+
+**FYND 1 — SMHI bevakades på fel sida, och det var en tro, inte en mätning.** Källvakten bevakade
+`opendata.smhi.se/sitemap.xml`. Det är SMHI:s **dokumentationssajt**. Våra tre SMHI-värdar
+(varningar, radar, metobs) får sina ändringar annonserade på **www.smhi.se**, som har en egen
+RSS för öppna data. **Ingen av feedens sju poster har någonsin kunnat synas i den sitemapen.**
+
+De tre senaste posterna lästes för hand: *Nytt API för meteorologiska analyser* (28/5 2026),
+*API för PMP3 avvecklas 31 mars* (16/3 2026) och *Nya API:er för meteorologiska prognoser och
+analyser* (12/9 2025). Alla tre rör **prognoser och analyser** — PMP3gv2 och Mesan2gv1, avvecklade
+31 mars 2026. **Ingen av dem rör metobs, radar eller varningar.** Vi var alltså inte drabbade —
+men vi hade inte vetat om vi varit det.
+
+**FYND 2 — DMI:s dokumentation har flyttat, och den gamla är helt borta.**
+`opendatadocs.dmi.govcloud.dk` svarar **404 på varje sökväg** och `dmiapi.govcloud.dk` svarar 503.
+Gamla API-värden `dmigw.govcloud.dk` pensionerades 30/6 2026; nya `opendataapi.dmi.dk` kom
+2/12 2025. Vår `ingest/dk.ts` skrevs **31/8 2026 — efter pensioneringen** — och pekar på den nya
+värden, som svarar 200. Vi klarade alltså en migrering vi inte bevakade genom att komma in efteråt,
+inte genom skicklighet. Den nya adressen står i DMI:s eget API-rotsvar:
+*"Please visit us at https://www.dmi.dk/frie-data"*.
+
+**FYND 3 — user-agent saknades i källvaktens egna hämtningar.** Polisens villkor för öppna data
+kräver en user-agent som namnger appen; saknas den kan svaret bli 403 eller blockeras. `fetchText`
+skickade bara `Accept`. Rättat för alla källor. (Ingesterna själva var redan rätt: `polisen.ts`
+skickar User-Agent och `fi.ts` skickar `Digitraffic-User`, som Fintraffic kräver sedan 3/12 2024
+för att slippa strypning med 429.)
+
+**FYND 4 — beroendekartan fällde sitt eget bygge, direkt.** När de sex källorna lagts in fällde
+`beroendekartan.ts` på fyra odeklarerade värdar: `www.smhi.se`, `www.digitraffic.fi`,
+`www.vegvesen.no`, `www.dmi.dk`. Signalkällor är också beroenden. Driftvakten från #147 gjorde
+sitt jobb på sin första riktiga användning, och mot mitt eget arbete.
+
+**Metodval:** RSS-parsern generaliserades (`rss(url)`) i stället för att kopieras — SMHI:s feed
+behöver exakt samma parsning som Trafikverkets, och en andra kopia hade varit ett nytt kontrakt
+utan vakt (#144). Digitraffics egen `api-changes`-sida valdes BORT: den är JS-renderad och ger
+bara 1 694 tecken skal. Nyhetssidan är den sturdiest access path som finns, samma princip som
+när smhi-sitemapen valdes framför Docusaurus-skalet.
+
+**Vad breddningen INTE bevisar:** bara Trafikverkets larmväg har fyrat skarpt (#31, tre gånger
+3/9). De sex nya är uppmätta som **stabila och läsbara**, inte som **bevisat larmande**. Beviset
+kommer med första äkta ändringen. Och ingen av dem är en maskinell BEDÖMNING — larmtexten säger
+fortfarande "Bedöm: rör det våra källor/ingest?". Det ledet är kvar att bygga.
+
+**Kvarstår, eget beslut:** filen heter `trv-bevakning.ts` men vakten är inte längre
+trafikverksspecifik. Omdöpning rör workflow, statefil och kortreferenser och görs inte som
+sidoeffekt.
