@@ -34,7 +34,16 @@
 // Självtest utan DB: scripts/vardevakten.ts --sjalvtest
 
 const MIN_RADER = 100;        // under detta får fältet ingen dom, bara ett tal
-const DOMINANS = 0.05;        // ett värde över 5 % i ett fält med många distinkta = misstänkt
+// DOMINANSEN SKÄRPT efter första körningen (DECISIONS #134). Första regeln var "ett värde över
+// 5 % i ett fält med många distinkta" — den flaggade `rain_sum_mm` (0 i 58 %), `snow_wateq_mm`
+// (0 i 99,9 %) och `wind_speed_ms` (0,5 i 6,8 %), alla fullkomligt legitima. Noll nederbörd i
+// september ÄR det vanligaste värdet; det är inte en sentinel, det är väder.
+//
+// Den verkliga signaturen är smalare: **en sentinel ligger vid TAKET och tar en stor andel.**
+// 20 000 m sikt är maxvärdet och tar halva materialet. 113 % molnmängd ligger över taket. Ett
+// dominerande MINIMUM är däremot nästan alltid "ingenting hände". Ett sentinelvärde under golvet
+// (−999 och liknande) fastnar på spannkontrollen i stället.
+const DOMINANS = 0.20;        // en sentinel tar en STOR andel, inte bara en ovanligt stor
 const MANGA_DISTINKTA = 50;   // under detta är fältet en kodlista, inte en mätning
 
 /** Deklarerade spann. Fysikens gränser, inte driftens — en grind får vara strängare (t.ex.
@@ -48,11 +57,19 @@ export const SPANN: Record<string, [number, number, string]> = {
   rain_sum_mm: [0, 100, "mm/30 min"], snow_wateq_mm: [0, 100, "mm/30 min"],
   condition_code: [1, 4, "Trafikverkets väglagsklass"],
   severity_code: [1, 5, "TRV SeverityCode — 3 har aldrig förekommit"],
-  rate_max: [0, 200, "mm/h"], rate_mean: [0, 200, "mm/h"],
+  // Radarns intensiteter. 200 mm/h är fysikens gräns för en 5-minutersskur; extrema
+  // konvektiva celler når 150–200. HÖGRE ÄR EN RADARARTEFAKT, inte regn — och de här två
+  // fälten bär hela vattenplaningsspåret sedan grind V-A föll (#104).
+  rate_max_mmh: [0, 200, "mm/h"], rate_mean_mmh: [0, 200, "mm/h"],
+  wind_dir_deg: [0, 360, "grader"],
   speed_limit_kmh: [0, 130, "km/h"], bearing: [0, 360, "grader — kameran TITTAR hit, kursen är +180"],
   n_hazards: [0, 10000, "st"], n_alerts: [0, 1000, "st"],
   county_no: [1, 25, "länskod"], area_id: [1, 1e12, "SMHI-id"], warning_id: [1, 1e12, "SMHI-id"],
 };
+
+/** Identifierare är inte mätvärden. De ska inte stå som obesiktigade — men de ska inte heller
+ *  kunna bära en tröskel, så de får en egen kategori i stället för att tigas ihjäl. */
+export const IDFALT = new Set(["id", "event_id", "area_id", "warning_id", "camera_id", "segment_id"]);
 
 export type Falt = {
   tabell: string; kolumn: string; rader: number; nollor: number;
@@ -60,24 +77,25 @@ export type Falt = {
   toppVarde: number | null; toppAndel: number;
 };
 
-export type Dom = { utfall: "OK" | "OBESIKTIGAT" | "UTANFÖR SPANN" | "SENTINEL?" | "–"; varfor: string };
+export type Dom = { utfall: "OK" | "OBESIKTIGAT" | "UTANFÖR SPANN" | "SENTINEL?" | "ID" | "–"; varfor: string };
 
 /** Domen för ett fält. Ordningen är avsiktlig: obesiktigat slår allt annat, för ett fält vi inte
  *  vet något om kan inte friskförklaras av att dess tal råkar se rimliga ut. */
 export function doma(f: Falt): Dom {
+  if (IDFALT.has(f.kolumn)) return { utfall: "ID", varfor: "identifierare — inte ett mätvärde, får inte bära en tröskel" };
   const s = SPANN[f.kolumn];
   if (!s) return { utfall: "OBESIKTIGAT", varfor: "inget deklarerat spann — får inte bära en mätning" };
   if (f.rader < MIN_RADER) return { utfall: "–", varfor: `${f.rader} rader, kräver ${MIN_RADER}` };
   const [lo, hi, enhet] = s;
   if (f.min !== null && f.min < lo) return { utfall: "UTANFÖR SPANN", varfor: `min ${f.min} < ${lo} ${enhet}` };
   if (f.max !== null && f.max > hi) return { utfall: "UTANFÖR SPANN", varfor: `max ${f.max} > ${hi} ${enhet}` };
-  if (f.distinkta >= MANGA_DISTINKTA && f.toppAndel >= DOMINANS)
-    return { utfall: "SENTINEL?", varfor: `värdet ${f.toppVarde} tar ${(100 * f.toppAndel).toFixed(1)} % av ${f.distinkta} distinkta` };
+  if (f.distinkta >= MANGA_DISTINKTA && f.toppAndel >= DOMINANS && f.toppVarde === f.max)
+    return { utfall: "SENTINEL?", varfor: `TAKVÄRDET ${f.toppVarde} tar ${(100 * f.toppAndel).toFixed(1)} % av ${f.distinkta} distinkta` };
   return { utfall: "OK", varfor: `${f.min}…${f.max} ${enhet}` };
 }
 
 const ikon = (u: Dom["utfall"]) =>
-  u === "OK" ? "✅" : u === "OBESIKTIGAT" ? "⊘" : u === "–" ? "·" : "⚠️";
+  u === "OK" ? "✅" : u === "OBESIKTIGAT" ? "⊘" : u === "–" ? "·" : u === "ID" ? "🔖" : "⚠️";
 
 // ── Självtest: de fyra verkliga fallen från 12/9, plus ett obesiktigat fält.
 if (process.argv.includes("--sjalvtest")) {
@@ -109,6 +127,16 @@ if (process.argv.includes("--sjalvtest")) {
   k("okänt fält är obesiktigat", doma(f("nytt_falt_2027")).utfall, "OBESIKTIGAT");
   k("obesiktigat slår även rimliga tal",
     doma(f("nytt_falt_2027", { min: 0, max: 1, distinkta: 2 })).utfall, "OBESIKTIGAT");
+  // 6. DE FALSKA LARMEN FRÅN FÖRSTA KÖRNINGEN — noll nederbörd är väder, inte en sentinel.
+  k("noll regn i 58 % är inte en sentinel",
+    doma(f("rain_sum_mm", { min: 0, max: 24.2, distinkta: 123, toppVarde: 0, toppAndel: 0.583 })).utfall, "OK");
+  k("noll snö i 99,9 % är inte en sentinel",
+    doma(f("snow_wateq_mm", { min: 0, max: 1.05, distinkta: 68, toppVarde: 0, toppAndel: 0.999 })).utfall, "OK");
+  k("vanlig låg vind i 7 % är inte en sentinel",
+    doma(f("wind_speed_ms", { min: 0.1, max: 12.2, distinkta: 119, toppVarde: 0.5, toppAndel: 0.068 })).utfall, "OK");
+  k("identifierare är inte obesiktigad", doma(f("event_id", { min: 1, max: 9e5 })).utfall, "ID");
+  k("radarartefakt 727 mm/h fälls",
+    doma(f("rate_max_mmh", { min: 0.1, max: 727.54, distinkta: 117 })).utfall, "UTANFÖR SPANN");
   // 6. Underlagsvakten.
   k("för få rader ger ingen dom", doma(f("wind_gust_ms", { rader: 99 })).utfall, "–");
   k("deklarationen täcker de fält motorn läser",
