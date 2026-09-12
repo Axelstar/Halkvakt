@@ -8,11 +8,25 @@
 //    den vaktar mot är ingen vakt, och varje tal i W-A vore meningslöst utan det här.
 //
 // B. GRIND W-A — stiger olycksfrekvensen med byvind och sjunkande sikt?
-//    METODEN, och skillnaden mot vattenplaningen: exponeringen är MÄTT. Varje station rapporterar
-//    vind och sikt varje minut, så "hur många stationstimmar har vi haft vid byvind 15–20 m/s" är
-//    ett tal. Därmed går NOLLHYPOTESEN att räkna — vad är olycksfrekvensen per stationstimme vid
-//    normal vind, och stiger den? Det var precis det #89 (b) saknade när oljefilmen inte kunde
-//    dömas: där fanns ingen exponering att dela med.
+//    METODEN, och skillnaden mot vattenplaningen: här FINNS en nämnare. Oljefilmens 0d hade ingen
+//    alls — vi visste inte hur många torrperioder som passerat utan olycka. Här går antalet
+//    stationstimmar per vindband att räkna, och därmed går NOLLHYPOTESEN att räkna.
+//
+//    MEN NÄMNAREN ÄR INTE ALLA TIMMAR, och det är den viktigaste reservationen i hela skriptet
+//    (rättat 12/9, DECISIONS #116 — huvudet påstod tidigare att varje station rapporterar varje
+//    minut). ARKIVDIETEN (DECISIONS #4, ingest/sources/weather.ts:69) sparar bara rader vid yta
+//    ≤ 5 °C, nederbörd, eller när ytan rört sig ≥ 0,5 °C sedan senast. En lugn, torr, mild timme
+//    lämnar därför ofta INGET spår alls. Nämnaren är "stationstimmar som dieten sparade", inte
+//    "stationstimmar som inträffade" — och det är samma klass av fel som 0f:s (DECISIONS #96):
+//    att läsa en händelsefiltrerad tabell som om den vore en kadens. TÄCKNINGSGRADEN MÄTS DÄRFÖR
+//    I GIVARKOLLEN nedan och skrivs ut bredvid talen.
+//
+//    RIKTNINGEN PÅ FELET ÄR RESONEMANG, INTE MÄTNING: dieten sparar oftare vid nederbörd och
+//    snabba temperaturfall, alltså i just det väder som blåser. Referensbandet (< 10 m/s) borde
+//    därför tappa fler lugna timmar än de höga banden, vilket blåser upp referensens
+//    olycksfrekvens och TRYCKER NER kvoten. Om det stämmer är W-A konservativ och en antydan
+//    underskattad snarare än överskattad. Men det är inte mätt, och kvoten får inte läsas som om
+//    det vore det.
 //
 //    Räknas som: olyckor inom räckvidd under en stationstimme, delat med antalet stationstimmar,
 //    per band. Ett tal per band, jämförbart över band.
@@ -132,6 +146,30 @@ const sentinel = await q(`SELECT visibility_m AS v, count(*)::int AS n FROM weat
 console.log(`  vanligaste siktvärdena (sentineltal syns här): ${sentinel.map((r) => `${r.v} m ×${r.n}`).join(" · ")}`);
 console.log(`  ⚠️  Läs raden ovan för hand. Ett värde som dominerar är ofta en sentinel ("ingen mätning"),`);
 console.log(`     inte en observation — och det ska in i givarvakten innan W-A får sätta en tröskel.`);
+
+// TÄCKNINGSGRADEN — hur stor del av de MÖJLIGA stationstimmarna bär ett vindvärde alls?
+// Arkivdieten sparar inte lugna, torra, milda timmar, så W-A:s nämnare är "timmar dieten
+// sparade". Talet nedan säger hur stor del vi faktiskt ser och ska följa med i varje utfall.
+const t = (await q(`
+  WITH h AS (
+    SELECT DISTINCT station_id, date_trunc('hour', sample_time) AS h
+    FROM weather_observations
+    WHERE sample_time > now() - $1 * interval '1 day' AND wind_gust_ms IS NOT NULL
+  )
+  SELECT (SELECT count(*) FROM h)::int AS faktiska,
+         (SELECT count(DISTINCT station_id) FROM h)::int AS stationer,
+         (SELECT min(h) FROM h) AS forsta`, [DAGAR]))[0];
+// Kolumnerna är äldre än värdena: sql/011 la till fälten 4/9, men de fylldes först när
+// ingest-live deployades 9/9 (kort #84). Ett fönster längre än så läser tomma dygn.
+const dygnMedData = t.forsta ? (Date.now() - new Date(t.forsta).getTime()) / 86400000 : 0;
+const mojliga = Math.round(Number(t.stationer) * dygnMedData * 24);
+console.log(`  FÖRSTA TIMMEN MED BYVIND: ${t.forsta ?? "–"} ⇒ ${tal(dygnMedData, 1)} dygn med data`);
+console.log(`     (fönstret är ${DAGAR} dygn — dygn därutöver är tomma på vind och sikt)`);
+console.log(`  TÄCKNINGSGRAD: ${t.faktiska} stationstimmar med byvind av ${mojliga} möjliga`);
+console.log(`     (${t.stationer} stationer × ${tal(dygnMedData, 1)} dygn × 24 h) = ${pct(Number(t.faktiska), mojliga)}`);
+console.log(`  ⚠️  ARKIVDIETEN (DECISIONS #4) sparar bara rader vid yta ≤ 5 °C, nederbörd eller`);
+console.log(`     Δyta ≥ 0,5 °C. W-A:s nämnare är därför stationstimmar SOM SPARATS, inte som`);
+console.log(`     INTRÄFFAT. Riktningen på felet står i skriptets huvud — den är resonerad, inte mätt.`);
 
 // ── B. GRIND W-A
 // Exponeringen: stationstimmar per band. Olyckorna: station-timme där en olycka låg inom räckvidd.

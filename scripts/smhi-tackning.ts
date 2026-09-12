@@ -16,15 +16,20 @@
 // molnobservation? Är svaret "för långt" kan klarhetsdelen av T-A inte köras, och det ska stå i
 // TROSKLAR-TRENDEN i stället för att upptäckas i november.
 //
-// Två frågor, samma räkning, olika indata:
-//   1. VViS-stationerna — avgör om T-A:s fysikkontroll går att köra (och för hur stor del av landet)
-//   2. Vägsegmenten — §2.8:s egen Verify 1, avgör om molnet kan bära en representativitetsradie
+// TVÅ PARAMETRAR, TVÅ OLIKA FRÅGOR — och de ska inte förväxlas (rättat 12/9, DECISIONS #118):
+//   DEL 1, parameter 16 (moln): representativitetsradien — hur långt får en VViS-yta sträckas ut,
+//     och går T-A:s klarhetskontroll att köra? Molnet är storskaligt, så 50 km är ett rimligt band.
+//   DEL 2, parameter 1 (lufttemperatur): §2.8:s EGEN Verify 1, ordagrant "hur många av de 818
+//     segmenten får en SMHI-station inom 15 km". Det är RESERVFRÅGAN — vad vi har kvar om
+//     Trafikverkets WeatherMeasurepoint tystnar. Den besvarades inte av molnkörningen 12/9:
+//     molnets 108 stationer är en annan population än luftens, och 50 km en annan fråga än 15.
 //
 // Läser SMHI:s öppna API (CC BY 4.0, källa anges) och vårt arkiv. Skriver ingenting.
 // Run: DATABASE_URL=... node --experimental-strip-types scripts/smhi-tackning.ts
 // Självtest utan nät/DB: scripts/smhi-tackning.ts --sjalvtest
 
 const PARAM_MOLN = 16;   // Total molnmängd, momentanvärde, 1 gång/tim
+const PARAM_LUFT = 1;    // Lufttemperatur, momentanvärde, 1 gång/tim — reservfrågans parameter
 export const BAND: [string, number][] = [["≤ 15 km", 15], ["≤ 30 km", 30], ["≤ 50 km", 50], ["≤ 100 km", 100]];
 
 export function haversineKm(lon1: number, lat1: number, lon2: number, lat2: number): number {
@@ -101,22 +106,33 @@ const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("loc
 
 console.log(`SMHI-täckningen (kort #95) — hur långt är det till närmaste molnobservation?\n`);
 
-// 1. SMHI:s molnstationer.
-const r = await fetch(`https://opendata-download-metobs.smhi.se/api/version/1.0/parameter/${PARAM_MOLN}.json`,
-  { headers: { "User-Agent": "Halkvakt/1.0 (oppna data, CC BY 4.0)" } });
-if (!r.ok) { console.error(`SMHI svarade ${r.status}`); await pool.end(); process.exit(1); }
-const smhi = await r.json() as any;
-const alla = (smhi.station ?? []) as any[];
-const moln: Punkt[] = alla.filter((s) => s.active && s.longitude != null && s.latitude != null)
-  .map((s) => ({ lon: Number(s.longitude), lat: Number(s.latitude) }));
-console.log(`SMHI parameter ${PARAM_MOLN} (${smhi.title ?? "total molnmängd"}):`);
-console.log(`  ${moln.length} AKTIVA stationer med position, av ${alla.length} i registret`);
-console.log(`  Perioden latest-months räcker 130 dygn bakåt (mätt 12/9), corrected-archive därutöver`);
-console.log(`  ⇒ molnet kan hämtas I EFTERHAND vid körning; ingen arkivering behövs.\n`);
+// 1. SMHI:s stationer, för båda parametrarna.
+async function stationer(param: number): Promise<{ punkter: Punkt[]; titel: string; iRegistret: number }> {
+  const r = await fetch(`https://opendata-download-metobs.smhi.se/api/version/1.0/parameter/${param}.json`,
+    { headers: { "User-Agent": "Halkvakt/1.0 (oppna data, CC BY 4.0)" } });
+  if (!r.ok) { console.error(`SMHI svarade ${r.status} för parameter ${param}`); await pool.end(); process.exit(1); }
+  const j = await r.json() as any;
+  const alla = (j.station ?? []) as any[];
+  return {
+    punkter: alla.filter((s) => s.active && s.longitude != null && s.latitude != null)
+      .map((s) => ({ lon: Number(s.longitude), lat: Number(s.latitude) })),
+    titel: j.title ?? `parameter ${param}`,
+    iRegistret: alla.length,
+  };
+}
 
-if (moln.length < 20) {
-  console.error(`UNDERLAGSVAKT: ${moln.length} molnstationer är för få för att svara på något. Avbryter.`);
-  await pool.end(); process.exit(1);
+const moln = await stationer(PARAM_MOLN);
+const luft = await stationer(PARAM_LUFT);
+console.log(`SMHI parameter ${PARAM_MOLN} (${moln.titel}): ${moln.punkter.length} AKTIVA stationer med position, av ${moln.iRegistret} i registret`);
+console.log(`SMHI parameter ${PARAM_LUFT} (${luft.titel}): ${luft.punkter.length} AKTIVA stationer med position, av ${luft.iRegistret} i registret`);
+console.log(`  Perioden latest-months räcker 130 dygn bakåt (mätt 12/9), corrected-archive därutöver`);
+console.log(`  ⇒ båda kan hämtas I EFTERHAND vid körning; ingen arkivering behövs.\n`);
+
+for (const [namn, s] of [["moln", moln], ["lufttemperatur", luft]] as [string, typeof moln][]) {
+  if (s.punkter.length < 20) {
+    console.error(`UNDERLAGSVAKT: ${s.punkter.length} ${namn}stationer är för få för att svara på något. Avbryter.`);
+    await pool.end(); process.exit(1);
+  }
 }
 
 // 2. Våra mätpunkter: VViS-stationerna (T-A:s fråga) och vägsegmenten (§2.8:s Verify 1).
@@ -128,17 +144,15 @@ const seg = (await pool.query(`SELECT segment_id, ST_X(ST_LineInterpolatePoint(g
     ST_Y(ST_LineInterpolatePoint(geom, 0.5)) AS lat
   FROM road_conditions WHERE NOT deleted AND geom IS NOT NULL`)).rows as any[];
 
-for (const [rubrik, punkter, varfor] of [
-  ["1. VViS-STATIONERNA — avgör om T-A:s fysikkontroll går att köra", vvis,
-   "Varje frostnatt mäts vid en VViS-station. Utan moln inom rimligt avstånd kan natten inte\n  klassas som klar eller mulen, och klarhetsdelen av T-A:s fysikkontroll faller."],
-  ["2. VÄGSEGMENTEN — §2.8:s egen Verify 1", seg,
-   "Representativitetsradien ska gälla en STRÄCKA, inte en station. Det här är talet §2.8 frågade\n  efter: hur stor del av vägnätet har en molnobservation inom räckhåll."],
-] as [string, any[], string][]) {
-  console.log(`${rubrik}`);
-  console.log(`  ${varfor}`);
-  const avst = punkter.map((p) => narmast({ lon: Number(p.lon), lat: Number(p.lat) }, moln))
+function rad(punkter: any[], kandidater: Punkt[]): number[] {
+  return punkter.map((p) => narmast({ lon: Number(p.lon), lat: Number(p.lat) }, kandidater))
     .filter((d) => Number.isFinite(d));
-  console.log(`  ${punkter.length} punkter · median ${percentil(avst, 0.5)?.toFixed(0)} km · ` +
+}
+
+function skriv(rubrik: string, varfor: string, avst: number[], antal: number) {
+  console.log(rubrik);
+  console.log(`  ${varfor}`);
+  console.log(`  ${antal} punkter · median ${percentil(avst, 0.5)?.toFixed(0)} km · ` +
     `tre fjärdedelar ${percentil(avst, 0.75)?.toFixed(0)} km · nio av tio ${percentil(avst, 0.9)?.toFixed(0)} km · värst ${Math.max(...avst).toFixed(0)} km`);
   for (const b of fordela(avst)) {
     console.log(`    ${b.band.padEnd(10)} ${String(b.n).padStart(6)} (${pct(b.andel)})`);
@@ -146,12 +160,40 @@ for (const [rubrik, punkter, varfor] of [
   console.log("");
 }
 
-console.log(`LÄSNINGEN — vad talen betyder för T-A`);
+console.log(`══ DEL 1: MOLNET (parameter ${PARAM_MOLN}) — representativitetsradien och T-A:s fysikkontroll\n`);
+skriv("1. VViS-STATIONERNA — avgör om T-A:s fysikkontroll går att köra",
+  "Varje frostnatt mäts vid en VViS-station. Utan moln inom rimligt avstånd kan natten inte\n  klassas som klar eller mulen, och klarhetsdelen av T-A:s fysikkontroll faller.",
+  rad(vvis, moln.punkter), vvis.length);
+skriv("2. VÄGSEGMENTEN — representativitetsradien över vägnätet",
+  "Radien ska gälla en STRÄCKA, inte en station: hur stor del av vägnätet har en\n  molnobservation inom räckhåll.",
+  rad(seg, moln.punkter), seg.length);
+
+// §2.8:s egen Verify 1, ordagrant: "hur många av de 818 segmenten får en SMHI-station inom 15 km".
+// Den frågan gäller RESERVEN — en modellerad yta ur luft + daggpunkt när Trafikverket tystnar — och
+// därför lufttemperaturens stationer (parameter 1), inte molnets 108. Molnet svarade på en ANNAN
+// fråga (representativitetsradien) och lämnade den här obesvarad fram till 12/9.
+console.log(`══ DEL 2: LUFTTEMPERATUREN (parameter ${PARAM_LUFT}) — §2.8:s Verify 1, reservfrågan\n`);
+const avstSegLuft = rad(seg, luft.punkter);
+skriv("3. VÄGSEGMENTEN mot närmaste SMHI-luftstation — VERIFY 1",
+  "Faller Trafikverkets WeatherMeasurepoint bort är SMHI:s luftstationer allt vi har. Reserven\n  är en MODELL (yta ur luft + daggpunkt + moln), aldrig en mätning — och en modell som ska\n  gälla ett segment kräver en station nära nog. §2.8 satte frågan vid 15 km.",
+  avstSegLuft, seg.length);
+skriv("4. VViS-STATIONERNA mot närmaste SMHI-luftstation — överföringsfunktionens underlag",
+  "Luft→yta-överföringen ska läras per station. Det kräver ett par: en VViS-station med uppmätt\n  yta och en SMHI-station med luft, nära nog att paret betyder något.",
+  rad(vvis, luft.punkter), vvis.length);
+
+const inom15 = fordela(avstSegLuft)[0];
+console.log(`VERIFY 1 — SVARET: ${inom15.n} av ${seg.length} segment (${pct(inom15.andel)}) har en`);
+console.log(`  SMHI-luftstation inom 15 km. Det är täckningstabellen §2.8 begärde.`);
+console.log(`  ⚠️  TÄCKNING ÄR INTE DUGLIGHET. Att en station finns inom 15 km säger ingenting om hur`);
+console.log(`     väl dess lufttemperatur följer VViS-ytan vintertid — det är Verify 2, och den är`);
+console.log(`     inte körd. Ett högt tal här är ett villkor för reserven, aldrig ett kvitto på den.\n`);
+
+console.log(`LÄSNINGEN — varför 15 km och 50 km inte är samma sorts tal`);
 console.log(`  Molnet är en STORSKALIG storhet. Ett molntäcke sträcker sig tiotals mil, till skillnad`);
 console.log(`  från yttemperaturen som varierar mellan dalgång och krön. Att sträcka en molnobservation`);
-console.log(`  50 km är därför en helt annan sak än att sträcka en yttemperatur 50 km — men HUR långt`);
-console.log(`  den får sträckas är inte mätt här, bara hur långt den MÅSTE sträckas.`);
-console.log(`  Nästa steg, om täckningen räcker: kör T-A igen med molnet inhämtat och se om träffarna`);
-console.log(`  faktiskt är vanligare klara nätter. Det är den mätningen som avgör, inte den här.`);
-console.log(`\n  Källa: SMHI öppna data (CC BY 4.0), metobs parameter ${PARAM_MOLN}.`);
+console.log(`  50 km är därför en helt annan sak än att sträcka en lufttemperatur 15 km — men HUR långt`);
+console.log(`  någon av dem FÅR sträckas är inte mätt här, bara hur långt de MÅSTE sträckas.`);
+console.log(`  Nästa steg för molnet: T-A med molnet inhämtat (gjort 12/9). För luften: Verify 2,`);
+console.log(`  korrelationen luft→yta på en kall vecka. Den mätningen avgör reserven, inte den här.`);
+console.log(`\n  Källa: SMHI öppna data (CC BY 4.0), metobs parameter ${PARAM_MOLN} och ${PARAM_LUFT}.`);
 await pool.end();

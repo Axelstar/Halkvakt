@@ -12,8 +12,8 @@ Husreglerna som gäller: tröskeldokument före kod · skuggkolumn före röst �
 
 ## 1. Vad som döms — och en distinktion kortet saknade
 
-`wind_speed_ms`, `wind_gust_ms` och `visibility_m` landar varje minut sedan kort #84 (sql/011) och
-har **aldrig använts nedströms**. Kortet formulerade dem som "punktfaror". Överlämningen från #89
+`wind_speed_ms`, `wind_gust_ms` och `visibility_m` hämtas varje minut sedan kort #48 (sql/011, 4/9)
+men **arkiveras bara när arkivdieten släpper igenom raden** (§4) och har **aldrig använts nedströms**. Kortet formulerade dem som "punktfaror". Överlämningen från #89
 (TROSKLAR-OVERGANGAR §6) kallade dem "lager 2 — riskmodifierare". **Båda har rätt, och det är två
 olika roller som måste dömas var för sig:**
 
@@ -99,8 +99,30 @@ Steg 0 kördes (körning 34675456017, 14 dygn, 216 041 rader) och gav vakten des
 
 **En antydan som INTE får bära en tröskel:** bandet 10–15 m/s hade 2,23 × olycksfrekvensen mot
 < 10 m/s (89,5 mot 40,2 per 1 000 stationstimmar, på 927 stationstimmar). Det är över W-A2:s krav —
-men det är ETT band, i september, och `situation_archive` bär ingen orsak. Det är ett skäl att köra
-om W-A när vinterstormarna kommit, inte ett skäl att sätta G nu.
+men det är ETT band, i september, `situation_archive` bär ingen orsak, och nämnaren är diet-filtrerad
+(§4). Det är ett skäl att köra om W-A när vinterstormarna kommit, inte ett skäl att sätta G nu.
+
+### 3.2 Fönstret går inte att vidga — och täckningssiffran betyder något annat än den ser ut att göra
+
+**Kolumnerna är äldre än värdena.** `sql/011_vind_sikt.sql` la till `wind_speed_ms`, `wind_gust_ms`
+och `visibility_m` den **4/9** (kort #48) — men de fylldes inte förrän **ingest-live deployades 9/9
+ca 05:00** (kort #84, DECISIONS #79), vars eget SQL-bevis lyder `vind 844 | regn 907 | sikt 844`
+**mot `vind 0` före deployen**. Luckan 5/9 → 9/9 är permanent; Trafikverket ger bara senaste
+mätningen.
+
+**Följd 1 — täckningsraden i 3.1 ska läsas om.** "42,5 % byvind" tolkades som att mindre än hälften
+av stationerna bär fälten. Det är fel: 751 stationer bär dem. Det som saknas är **rader som är äldre
+än 9/9**, alltså tid, inte givare. Talet är ett tidsartefakt, inte ett täckningshål.
+
+**Följd 2 — underlaget är tunnare än OAVGJORT antydde.** Steg 0:s 14-dygnsfönster innehåller ungefär
+**tre dygn** med vind och sikt, inte fjorton. Skriptet skriver numera ut det första sample_time som
+bär byvind, så talet behöver inte härledas igen.
+
+**Följd 3 — W-A går inte att laga med ett längre fönster**, bara med mer tid. W-A4:s krav på 500
+stationstimmar i det högsta bandet nås när höstens stormar koncentrerar exponeringen. Det säger också
+när grinden ska köras om: **efter första höststormen**, på samma sätt som T-A körs om efter första
+frostnatten. Till skillnad från T-A finns ingen gallringsdeadline — W-A räknar stationstimmar, och
+gallringen (#83) tunnar till en rad per halvtimme, vilket lämnar stationstimmen intakt.
 
 ---
 
@@ -114,9 +136,22 @@ Metod: för varje station och timme, para `wind_gust_ms` och `visibility_m` mot 
 `situation_archive` inom räckvidd. Jämför olycksfrekvensen per stationstimme i band (byvind < 10,
 10–15, 15–20, ≥ 20 m/s; sikt > 1000, 500–1000, 200–500, < 200 m).
 
-**Detta är den avgörande skillnaden mot vattenplaningen:** där var exponeringen omätbar och facit
-saknades. Här är exponeringen mätt kontinuerligt vid varje station, så en **nollhypotes går att
-räkna** — vad är olycksfrekvensen vid normal vind, och stiger den?
+**Detta är den avgörande skillnaden mot vattenplaningen:** där fanns ingen nämnare alls — oljefilmens
+0d kunde inte räkna hur många torrperioder som passerat utan olycka. Här finns en, så en
+**nollhypotes går att räkna**: vad är olycksfrekvensen vid normal vind, och stiger den?
+
+⚠️ **MEN NÄMNAREN ÄR INTE ALLA TIMMAR — rättat 12/9 (DECISIONS #116).** Den här paragrafen påstod
+tidigare att "exponeringen är mätt kontinuerligt vid varje station". Det är fel. **Arkivdieten**
+(DECISIONS #4, `ingest/sources/weather.ts:69`) sparar bara rader vid yta ≤ 5 °C, nederbörd, eller när
+ytan rört sig ≥ 0,5 °C sedan senast. En lugn, torr, mild timme lämnar ofta inget spår. W-A:s nämnare
+är alltså **stationstimmar som dieten sparade**, inte stationstimmar som inträffade. Det är samma
+klass av fel som 0f:s (DECISIONS #96): att läsa en händelsefiltrerad tabell som en kadens.
+
+**Täckningsgraden mäts numera och skrivs ut med varje utfall** (`scripts/vindsikt-steg0.ts`,
+givarkollen). Riktningen på felet är **resonerad, inte mätt**: dieten sparar oftare vid nederbörd och
+snabba temperaturfall, alltså i just det väder som blåser, så referensbandet < 10 m/s borde tappa
+fler lugna timmar än de höga banden. Det blåser upp referensens frekvens och **trycker ner kvoten** —
+om resonemanget håller är W-A konservativ. Kvoten får inte läsas som om det vore bevisat.
 
 | # | Mått | Krav |
 | :-- | :-- | :-- |
