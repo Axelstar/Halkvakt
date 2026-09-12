@@ -1334,7 +1334,33 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     medelfelet. (b) Bandet **7–15 km är sämst av alla** (MAE 1,41 · 18,4 % grova), sämre än
     > 20 km — inte monotont i avstånd, och utan förklaring i dag. (c) Frysklassfelet klarar med
     1,1 %: modellen är nästan tillräcklig för det BESLUT den används till, men inte för den
-    TEMPERATUR den rapporterar. 🔑 **DOMEN ÄR BENGTS OCH AXELS, inte Claudes** — kortet står kvar
+    TEMPERATUR den rapporterar.
+    🔬 **ANOMALIN MÄTT 12/9 kväll — OCH FÖRKLARAD** (`scripts/anomalin.ts` + knapp, Bengts order
+    efter Axels bedömning, DECISIONS #125). **Grind A bär INTE #75:s givarvakt.** Frågesatsen tar
+    varje rad med `surface_temp_c` utan att kräva rimlig yta−luft, och 61 % av arkivets frostrader
+    faller på den vakten (#106). En trasig givare förstör både sin egen punkt och sina GRANNARS —
+    och en granne på 10 km får hög vikt. **Med vakten på är anomalin borta:** 7–15 km går från
+    1,41 / 18,4 % till **0,78 / 3,1 %**, och banden stiger monotont med avståndet
+    (0,33 · 0,78 · 0,85 · 0,89) precis som fysiken förutsäger.
+    ✅ **OCH DOMEN STÅR ÄNDÅ.** A1 skulle klara (0,85 mot 1,0). **A2 faller på en tiondels
+    procentenhet: 5,1 % mot 5,0 %.** Därför lades en decimal till i utskriften innan något
+    rapporterades — "5 %" dolde exakt den skillnaden. Ingen tröskel har rörts.
+    ❌ **Min egen konfunderingshypotes är FALSIFIERAD:** inom Norrland ensamt är 7–15 km
+    fortfarande värst (0,33 · **2,10** · 0,96 · 1,09). Anomalin är inte geografi.
+    🏔️ **Axels terränghypotes träffar PLATSEN men inte FORMEN:** hela skadan ligger i cellen
+    höjdskillnad 50–100 m (4,16 / 55,3 % på 47 punkter), men ≥ 100 m är välartad (0,59). Vore
+    mekanismen "nära nog för vikt, långt nog för annan terräng" borde ≥ 100 m vara värst.
+    ⚠️ **OCH EN KOMPLETTERING TILL AXELS VERIFIERING:** hans 302 stationer är det GEOMETRISKA
+    bandet. Domen bärs av stationer som faktiskt gav en utvärderingspunkt, och där är talen
+    **5 · 13 · 19 · 88**. **7–15 km-domen vilar på tretton stationer.** 629 av 761 stationer hade
+    ingen enda vintertimme. Det ÄR ett urvalsfel — inte i geometrin han kontrollerade, utan i
+    vilka stationer som blev kalla nog med en samobserverande granne.
+    🕳️ **Bifynd värt ett eget kort:** mellersta Sverige (58,5–60,5°) bidrar med TOLV punkter
+    totalt. Grind A:s dom vilar i praktiken på Norrland och Skåne.
+    🔑 **ATT BESLUTA (Bengt + Axel):** ska grind A:s frågesats få #75:s vakt? Huset kallar den
+    obligatorisk för varje väderfråga; grind A har den inte. Det är inte målstolpsflytt — men det
+    ändrar talen, och därför är det inte Claudes beslut.
+    🔑 **DOMEN ÄR BENGTS OCH AXELS, inte Claudes** — kortet står kvar
     som låst tills de läst talen. Frågan att avgöra: faller hela segmentmotorn, eller ska A2:s
     gräns prövas mot vad frysklassfelet faktiskt visar?
   - [ ] **(3b) Ankarbreddningen** (Bengts fråga 1/9: "vad krymper avståndet?") — rangordningen
