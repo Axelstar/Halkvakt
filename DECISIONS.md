@@ -2017,3 +2017,37 @@ som slutar växa i dag syns inte i appen förrän i mars, när underlaget skulle
 
 LÄGET EFTER DETTA: knappen finns och är läsande. Nästa steg, om Bengt vill, är att flytta de tre
 bärande källorna in i vakthunden som check 7 — samma mönster som mätvakten, noll Actions-minuter.
+
+## #107 (12/9 2026) Check 7 byggd — mätvakten vaktar nu både körningarna och källorna
+
+BESLUT: källkollens tre bärande tabeller vaktas av vakthunden. Bengts order "bygg check 7".
+Lagd IN I mätvakten som en andra halva i stället för som en egen check, för det är samma fråga:
+är mätapparaten frisk? 6a körningarna, 6b källorna — ett larm, en etikett, en livscykel.
+
+VAD SOM VAKTAS OCH VARFÖR JUST DE TRE:
+* shadow_log (tyst > 2 h) — skuggans utdata, bär B3, V-B och upprepningsmätningen.
+* situation_archive (tyst > 3 h) — facit för varenda grind vi ska fälla.
+* radar_precip — vattenplaningens enda kvarvarande trigger sedan grind V-A föll (#104).
+
+RADARN TESTAS MED KORSKONTROLL, INTE MED REN FÄRSKHET, och det är avsnittets enda icke-triviala
+designval. radar_precip är händelsefiltrerad (sql/009: rad bara vid regn ≥ 0,1 mm/h), så en tyst
+tabell kan betyda rikstorrt väder. En färskhetsvakt hade larmat på solsken och blivit avstängd
+inom en vecka. Larmet går därför bara när radarn tigit MEDAN stationerna rapporterat nederbörd de
+senaste tre timmarna. Det fångar precis den fara som motiverade kortet: ingest.yml kör radar.ts med
+continue-on-error, så ett stående SMHI-fel lämnar jobbet grönt och ingen får veta.
+
+POLISEN_EVENTS OCH SMHI_WARNINGS VAKTAS INTE, med flit. Deras luckor är världens, inte vårt systems
+— att ingen viltolycka rapporterats på ett dygn är inte ett fel. Att INGESTEN slutat hämta är det,
+och den frågan ställer check 1 via sync_state. Att vakta båda hade gett två larm för ett fel och ett
+larm för noll fel.
+
+BEVIS EFTER DEPLOYEN (41929bd, larmprov 12/9), inte ur commit-hashen:
+  källor: skuggloggen 1 min · olycksarkivet 6 min · radarn 21 min (stationsnederbörd 3 h: 339)
+Raden är starkare än den ser ut: 339 stationsmätningar visade nederbörd de senaste tre timmarna OCH
+radarn skrev för 21 minuter sedan. Korskontrollen prövades alltså skarpt i det läge där den ska
+larma — det regnade, och radarn svarade.
+
+LÄGET EFTER DETTA: hela kedjan är bevakad i tre lager. Kedjan till appen (healthcheck + vakthundens
+check 1–3), mätningarnas körningar (6a) och mätningarnas underlag (6b). Kvar som obevakat är bara
+det som inte finns: #88 trenden och #98 tystnadsfelet har fastställda tröskeldokument men ingen
+insamlare, och T-A kan inte ta höstens första frostnätter i efterhand.

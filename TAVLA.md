@@ -1564,6 +1564,19 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   det står issuen kvar öppen — och det är hela poängen. Mätvakten får bevisa sig på den körningen.
   ⚠️ Blir vakten pratsam av cronens opålitlighet är svaret att flytta mätningarna till pulsklockan
   (som #53 gjorde med ingesten), inte att lossa på tröskeln.
+  ➕ **ANDRA HALVAN BYGGD 12/9 — CHECK 6b, KÄLLORNA** (Bengts "bygg check 7", PR #150, deployad
+  41929bd, DECISIONS #106/#107). Källkollen (`scripts/kallkollen.ts` + knapp) visade att alla tio
+  arkivkällor växer men att FEM saknade vakt. De tre bärande ligger nu i mätvakten: **shadow_log**
+  (tyst > 2 h), **situation_archive** (tyst > 3 h) och **radar_precip**.
+  🎯 **Radarn testas med KORSKONTROLL, inte färskhet** — tabellen är händelsefiltrerad, så en tyst
+  radar kan betyda rikstorrt väder och en färskhetsvakt hade larmat på solsken. Larmet går bara när
+  radarn tigit MEDAN stationerna rapporterat nederbörd de senaste 3 h. Det fångar den verkliga faran:
+  `ingest.yml` kör `radar.ts` med `continue-on-error`, så ett stående SMHI-fel lämnar jobbet grönt.
+  🚫 polisen_events och smhi_warnings vaktas INTE, med flit: deras luckor är världens, inte systemets.
+  Att ingesten slutat hämta fångas av check 1 via `sync_state`.
+  ✅ **Bevis efter deployen:** `källor: skuggloggen 1 min · olycksarkivet 6 min · radarn 21 min
+  (stationsnederbörd 3 h: 339)` — korskontrollen prövad skarpt i det läge den ska larma: det regnade
+  över 339 stationsmätningar, och radarn svarade.
 - [ ] 🌧️ **#42 Vattenplaningsvarningen** — ÄGARE: BENGT (issue #15, 1/9) — regnintensitet (VViS RainSum,
   ny ingestkolumn — vi lagrar idag bara regn ja/nej) × spårdjupslager (Trafikverkets
   vägytemätning via Lastkajen; licens/färskhet kollas först) × fartgrind ≥ ~70 km/h
