@@ -2936,3 +2936,32 @@ STÖRRE ÄN GRIND A: samma lucka finns i varje grind vi skrivit i dag. T-A, W-A,
 har alla underlagsvakter men ingen marginalvakt. De har hittills bara sagt OAVGJORT av
 underlagsskäl, så luckan har inte kostat något än — men den ska stängas i samma form när de
 börjar fälla. Eget kort.
+
+## #127 (12/9 2026) Marginalvakten körd — A1 föll aldrig, och domen vilar på ETT mått
+
+BESLUT: omkörning av grind A med marginalvakten inlagd (#126). Domen står oförändrad, men
+**en av de tre raderna var fel läst hela tiden**.
+
+| mått | uppmätt | ±1,96 SE | tröskel | före vakten | efter vakten |
+| :-- | --: | --: | --: | :-- | :-- |
+| A1 medelfel | 1,06 °C | **±0,09 °C** | ≤ 1,0 | FALLER | **OAVGJORT** |
+| A2 grova fel | 10,7 % | ±1,3 pe | ≤ 5,0 % | FALLER | **FALLER** |
+| A3 frysklassfel | 1,1 % | ±0,4 pe | ≤ 10 % | KLARAR | KLARAR |
+
+**A1 FÖLL ALDRIG.** 1,06 mot 1,0 är sex hundradelar, och osäkerheten är nio. Intervallet
+0,97–1,15 omsluter tröskeln. Jag rapporterade det i morse som "faller på sex hundradelar" och
+behandlade det som en fallning — det var fel läst, och det är precis den sortens läsning vakten
+byggdes för att hindra. **Måttet är inte avgjort åt något håll.**
+
+**DOMEN STÅR, och den vilar på ETT mått: A2.** Gapet är 5,7 procentenheter mot en osäkerhet på
+1,3 — det faller brett och utan tvekan. A3 klarar lika brett (1,1 % mot 10, osäkerhet 0,4).
+
+**DET SKÄRPER VAD DOMEN FAKTISKT SÄGER.** Inte "modellen är i genomsnitt för dålig" — det är
+oavgjort. Utan **"modellen går tillräckligt ofta tillräckligt fel"**: vart tionde svar mer än två
+grader bort. En modell med acceptabelt medelfel och oacceptabla utliggare är ett annat problem än
+en som är jämnt dålig, och det pekar åt samma håll som anomalifyndet (#125): utliggarna kommer
+från trasiga givare, och med #75:s vakt faller de grova felen från 10,7 % till 5,1 %.
+
+Formuleringen i lägesrapporten och i TAVLA — "A1 och A2 faller" — ska läsas om till **"A2 faller;
+A1 är oavgjort"**. Axels bedömning berörs inte i sak: han lät domen stå på att A1 OCH A2 faller,
+och den står fortfarande, men på en smalare grund än han fick se.
