@@ -3458,3 +3458,45 @@ skrivs, inte efter att CI fällt den.
 finsk rad. Utan det hade felet nått drift och visat sig som ett rött timjobb — eller värre, som
 tysta bortfall om satsen hade delvis lyckats. Den vakten är från augusti och har nu betalat sig
 tre gånger.
+
+## #141 (12/9 2026) Vaktdiagnosen i varje grind — en nolla ska aldrig vara tvetydig
+
+BESLUT (Bengts order "för in vaktdiagnosen överallt"): `publish/vaktdiagnos.ts`, delad av alla sju
+grindar — A, V-A, T-A, K-A, R-A, W-A och F-A.
+
+**DEN FÖDDES UR ETT AV MINA EGNA FEL, och det ska stå.** Grind R-A svarade "0 rader överlever
+vakten — OAVGJORT" som om det vore ett underlagsbesked. Det var det inte: `ingest/fi.ts` hämtade
+aldrig luftfuktighet, så korsgivarkontrollen filtrerade bort **varje rad i arkivet**. Ett villkor
+som tyst filtrerar allt därför att fältet inte finns, presenterat som en mätning.
+
+**TRE SVAR SOM SÅG LIKADANA UT OCH INTE ÄR DET:**
+
+| Utfall | Vad det betyder | Vad grinden ska göra |
+| :-- | :-- | :-- |
+| **SAKNAS** | fältet finns inte i arkivet | **OAVGJORT** — ledet går inte att utvärdera |
+| **FÄLLER ALLT** | fältet finns, ingen rad klarar villkoret | det **ÄR** ett mätresultat |
+| SLÄPPER | rader klarar | normalfallet |
+
+Skillnaden mellan de två första är hela skillnaden mellan att veta något och att tro att man gör
+det. Varje grind räknar nu sina vaktled **för sig, före allt annat**, och `garAttUtvardera()`
+gatar domen: ett enda ouvärderbart led räcker för att svara OAVGJORT.
+
+**VAD VARJE GRIND NU DIAGNOSTISERAR:**
+
+| Grind | Vaktled |
+| :-- | :-- |
+| A, K-A | yttemperatur · #75:s två led (+ K-A: vintertimme ≤ 5 °C) |
+| V-A | regnmängd finns · regn > 0 någon gång |
+| T-A | #75:s två led · #46:s daggpunktsled (finns / yta − dagg ≥ −5) |
+| R-A | de tre ovan **plus korsgivaren RH ≥ 90** — den som fällde mig |
+| W-A | byvind · sikt · **sikt under taket 20 000 m** · lufttemperatur |
+| F-A | #75:s två led · nederbördsklassen bakom fukten |
+
+**W-A:s tredje led är värt att peka på:** "sikt under taket 20 000 m" gör sentinelen till ett
+vaktled i stället för en fotnot. Blir den 100 % en dag bär arkivet bara tak, och grinden säger det
+själv i stället för att någon ska läsa en fördelning för hand.
+
+**MÖNSTRET, för tredje gången i dag:** listan som ska vara komplett läses från källan, inte från
+minnet — mätvaktens kadens ur repot (#105), ruttberedskapens rutter ur skuggmotorn (#124),
+värdevaktens schema ur databasen (#133). Vaktdiagnosen är samma sak för vaktleden: de deklareras
+bredvid frågan de hör till, och räknas av databasen.

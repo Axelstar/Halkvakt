@@ -43,6 +43,7 @@
 // Självtest utan DB: scripts/vindsikt-steg0.ts --sjalvtest
 
 import { skiljbarKvot } from "../publish/marginal.ts";
+import { vaktdiagnos } from "../publish/vaktdiagnos.ts";
 
 const RACKVIDD_M = 15000;      // station ↔ olycka, samma som #89:s steg 0 (0d)
 const MIN_STATIONSTIMMAR = 500; // W-A4, högsta bandet
@@ -124,6 +125,15 @@ await pool.query("SET statement_timeout = '300s'");
 const q = async (sql: string, p: unknown[] = []) => (await pool.query(sql, p)).rows as any[];
 
 console.log(`Steg 0 för kort #90 — givarkollen och grind W-A (${DAGAR} dygns fönster)\n`);
+
+// VAKTDIAGNOSEN FÖRST (DECISIONS #141): bär arkivet fälten alls?
+await vaktdiagnos(q, "weather_observations",
+  `WHERE sample_time > now() - ${DAGAR} * interval '1 day'`, [
+    { namn: "byvind finns", bar: "wind_gust_ms IS NOT NULL", villkor: "true" },
+    { namn: "sikt finns", bar: "visibility_m IS NOT NULL", villkor: "true" },
+    { namn: "sikt under taket 20 000 m", bar: "visibility_m IS NOT NULL", villkor: "visibility_m < 20000" },
+    { namn: "#75: lufttemperatur finns", bar: "air_temp_c IS NOT NULL", villkor: "true" },
+  ]);
 
 // ── A. GIVARKOLLEN
 console.log(`A — GIVARKOLLEN: går det att lita på vind och sikt?`);

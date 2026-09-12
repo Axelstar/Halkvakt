@@ -64,6 +64,7 @@ function utvardera(stationer: Station[], T: number): Utfall[] {
 // fälldes ändå på punktskattningen. Nu avgör den. V-A:s stående nej berörs inte: 61 % mot kravets
 // 70 % är nio procentenheters gap mot två i brus, alltså avgjort med bred marginal.
 import { Z, andelSe, utfallGolv, utfallTak, grindutfall } from "./marginal.ts";
+import { vaktdiagnos } from "./vaktdiagnos.ts";
 const brus = (p: number, n: number) => n > 0 ? Z * andelSe(p, n) : NaN;
 
 function rapport(stationer: Station[], label: string, domspärr: boolean) {
@@ -143,6 +144,13 @@ if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
 const pg = (await import("pg")).default;
 const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });
 const DAGAR = Number(process.argv[2] ?? 30);
+// VAKTDIAGNOSEN FÖRST (DECISIONS #141).
+await vaktdiagnos((s, p) => pool.query(s, p as any[]).then((r) => r.rows),
+  "weather_observations", `WHERE sample_time > now() - ${DAGAR} * interval '1 day'`, [
+    { namn: "regnmangd (rain_sum_mm) finns", bar: "rain_sum_mm IS NOT NULL", villkor: "true" },
+    { namn: "regn > 0 nagon gang", bar: "rain_sum_mm IS NOT NULL", villkor: "rain_sum_mm > 0" },
+  ]);
+
 const res = await pool.query(`
   SELECT DISTINCT ON (station_id, b) station_id,
     ST_X(geom::geometry) lon, ST_Y(geom::geometry) lat,
