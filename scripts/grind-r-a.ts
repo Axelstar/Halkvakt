@@ -20,6 +20,14 @@
 // överlevde **0 av 53**. Varenda kandidat var givarfel. En rimfrostgren byggd utan vakt hade fyrat
 // på skrot natt efter natt.
 //
+// FYND UR FÖRSTA KÖRNINGEN (DECISIONS #137): DET FINSKA ARKIVET BÄR INGEN LUFTFUKTIGHET.
+// ingest/fi.ts hämtar TIE_1, ILMA, KASTEPISTE, SADE och KELI_1 — men aldrig RH. Korsgivar-
+// kontrollen i §3 går alltså inte att utvärdera där, och första versionen av det här skriptet
+// svarade "0 rader, OAVGJORT" som om det vore ett underlagsbesked. Det var det inte: det var ett
+// villkor som TYST FILTRERADE BORT ALLT därför att fältet inte finns. Samma familj som
+// Boolean(precipitation) och vinddatan före #84 — ett filter som ser ut som en mätning.
+// Därför räknas varje vaktled FÖR SIG nu, och en nolla kan aldrig vara tvetydig.
+//
 // VAD DEN INTE KAN GÖRA HÄR: R-A4, molnkontrollen. SMHI:s molnstationer är svenska och når inte
 // finska vägstationer. Den halvan körs på svensk frost, och skriptet säger det i stället för att
 // låtsas.
@@ -161,7 +169,36 @@ if (LAND === "fi") {
   console.log(`rimfrostnätter VECKOR före Sverige. Ingen ny källa, inga svenska nätter att vänta på.\n`);
 }
 
-// GIVARVAKTEN ÄR TREDELAD OCH SITTER I FRÅGAN (§3).
+// VAKTDIAGNOSEN FÖRST: hur många rader faller på VARJE led? En nolla ska aldrig vara tvetydig.
+const diag = (await pool.query(`
+  SELECT count(*)::int AS alla,
+    count(*) FILTER (WHERE surface_temp_c IS NOT NULL AND dewpoint_c IS NOT NULL)::int AS med_yta_dagg,
+    count(*) FILTER (WHERE air_temp_c IS NOT NULL)::int AS med_luft,
+    count(*) FILTER (WHERE humidity_pct IS NOT NULL)::int AS med_rh,
+    count(*) FILTER (WHERE surface_temp_c IS NOT NULL AND air_temp_c IS NOT NULL
+      AND surface_temp_c >= air_temp_c - 12)::int AS klarar_75,
+    count(*) FILTER (WHERE surface_temp_c IS NOT NULL AND dewpoint_c IS NOT NULL
+      AND surface_temp_c - dewpoint_c >= -5)::int AS klarar_dagg,
+    count(*) FILTER (WHERE surface_temp_c <= 0)::int AS frysande
+  FROM ${SCHEMA} WHERE sample_time > now() - $1 * interval '1 day'`, [DAGAR])).rows[0] as any;
+const harRh = Number(diag.med_rh) > 0;
+console.log(`VAKTDIAGNOS — hur många rader bär vad? (${diag.alla} rader i fönstret)`);
+console.log(`  yta + daggpunkt:      ${diag.med_yta_dagg}`);
+console.log(`  lufttemperatur:       ${diag.med_luft}`);
+console.log(`  luftfuktighet:        ${diag.med_rh}${harRh ? "" : "   FÄLTET FINNS INTE I DET HÄR ARKIVET"}`);
+console.log(`  klarar #75:s vakt:    ${diag.klarar_75}`);
+console.log(`  klarar daggpunktens:  ${diag.klarar_dagg}`);
+console.log(`  yta under noll:       ${diag.frysande}`);
+if (!harRh) {
+  console.log(``);
+  console.log(`  KORSGIVARKONTROLLEN GÅR INTE ATT UTVÄRDERA HÄR — vakten i §3 är tredelad och två`);
+  console.log(`  av tre led går att pröva. Talen nedan är ett FÖRHANDSBESKED, inte ett grindutfall.`);
+  console.log(`  Att köra vidare utan ledet vore att mjuka upp en vakt dokumentet kallar undantagen`);
+  console.log(`  från all lättnad.`);
+}
+console.log(``);
+
+// GIVARVAKTEN SITTER I FRÅGAN (§3). RH-ledet tas med bara när fältet finns.
 const rader = (await pool.query(`
   SELECT station_id,
     extract(epoch FROM sample_time)::bigint AS t,
@@ -173,15 +210,17 @@ const rader = (await pool.query(`
     AND surface_temp_c IS NOT NULL AND dewpoint_c IS NOT NULL
     AND air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12   -- #75:s vakt
     AND surface_temp_c - dewpoint_c >= -5                               -- daggpunktens egen (4/9)
-    AND humidity_pct IS NOT NULL AND humidity_pct >= 90                 -- korsgivarkontrollen
+    ${harRh ? "AND humidity_pct IS NOT NULL AND humidity_pct >= 90" : ""}  -- korsgivarkontrollen
   ORDER BY station_id, t`, [DAGAR, TZ])).rows as any[];
 const data: Rad[] = rader.map((r) => ({
   station: r.station_id, t: Number(r.t), yta: Number(r.yta), dagg: Number(r.dagg),
   rh: Number(r.rh), timme: Number(r.timme), natt: r.natt }));
 console.log(`Efter den tredelade givarvakten: ${data.length} rader, ${new Set(data.map((d) => d.station)).size} stationer.`);
-console.log(`  (#75:s vakt · yta − daggpunkt ≥ −5 °C · luftfuktighet ≥ 90 %. Tidszon ${TZ}.)`);
+console.log(`  (#75:s vakt · yta − daggpunkt ≥ −5 °C · ${harRh ? "luftfuktighet >= 90 %" : "RH SAKNAS I ARKIVET"}. Tidszon ${TZ}.)`);
 if (!data.length) {
-  console.log(`\n⊘ OAVGJORT — inga rader överlever vakten i fönstret. Det är ett underlagsbesked.`);
+  console.log(`\n⊘ OAVGJORT — inga rader överlever vakten i fönstret.`);
+  console.log(`  Läs vaktdiagnosen ovan för VILKET led som tömde materialet: ett fält som saknas`);
+  console.log(`  och en vakt som fäller är två helt olika svar.`);
   await pool.end(); process.exit(0);
 }
 
@@ -207,7 +246,11 @@ for (const m of R1_MARGINAL) for (const y of R2_YTA) for (const u of R3_UTHALL) 
 const bast = alla.reduce((a, b) => (b.ep.length > a.ep.length ? b : a));
 const stationer = new Set(bast.ep.map((e) => e.station)).size;
 console.log(`\nGRIND R-A`);
-if (!dom(bast.ep.length, stationer, true)) {
+if (!harRh) {
+  console.log(`  OAVGJORT — korsgivarkontrollen (§3, tredje ledet) går inte att utvärdera i det`);
+  console.log(`  här arkivet. Talen ovan är ett FÖRHANDSBESKED och får inte läsas som ett`);
+  console.log(`  grindutfall. Kör om med --land=se när svensk frost kommer, där RH finns.`);
+} else if (!dom(bast.ep.length, stationer, true)) {
   console.log(`  ⊘ OAVGJORT — domspärren håller. Bästa kombinationen gav ${bast.ep.length} episoder`);
   console.log(`    på ${stationer} stationer, kravet är ${R_A1_TIMMAR} och ${R_A2_STATIONER}.`);
   console.log(`    Det är ett UNDERLAGSBESKED, inte ett nej. Frosten har inte kommit än.`);
