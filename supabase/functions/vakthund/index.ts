@@ -26,6 +26,12 @@
 // kan upprepas — och den färgar aldrig driftvakthunden röd. Skälet: rött ska betyda "kedjan till
 // appen är bruten NU". En mätning som missade en måndag är inte det, och låg den i samma issue
 // skulle den hålla vakthunden röd i en vecka och dränka ett riktigt driftlarm.
+//
+// Och EN vakt över att NÅGON LÄSER larmen (7, kort #31 + #149, Bengts order 12/9):
+//   7. KÄLLÄNDRINGARNA: ligger ett nyhetslarm oläst över sin frist?
+// Prov: ?paminnelseprov=1
+// Källvakten hade EN larmväg — ett issue tilldelat Bengt — och inget golv under den. Samma
+// egen etikett och egen cykel, samma regel om att aldrig färga driftvakthunden röd.
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
 
 const sql = postgres(Deno.env.get("SUPABASE_DB_URL")!, { max: 1, prepare: false });
@@ -330,6 +336,73 @@ Deno.serve(async (req) => {
   } catch (e) {
     // Tappad signal ÄR ett vakthundsfel: en blind mätvakt är värre än ingen (#76-läxan).
     problem.push(`**Mätvakten (kort #101/#106) kunde inte köras**: ${String(e)}`);
+  }
+
+  // 7. LIGGER EN KÄLLÄNDRING OLÄST? (kort #31 + #149, Bengts order 12/9.)
+  //
+  //    Källvakten skapar ett issue när en källa ändrats, tilldelat Bengt, och GitHub skickar
+  //    notisen. Det ÄR hela vägen från källa till människa — och den hade inget golv under sig:
+  //    ingenting påminde om ett oläst larm. Uppmätt 12/9: issue #165 (met-api) låg öppet i elva
+  //    timmar utan att något höjt rösten, och källvaktens enda schemalagda körning någonsin
+  //    (7/9) dog i spending-limit-stoppet utan att någon märkte det på fem dygn.
+  //
+  //    En larmväg som fungerar EN gång är inte en larmväg. Den här checken är golvet.
+  //
+  //    DOMEN LÄSES UR RUBRIKEN, som källvakten sätter efter nyhetsbedömningen (#149):
+  //      [RÖR OSS]        ⇒ 24 h. Ett beroende vi hämtar från har annonserat något.
+  //      [VET INTE]       ⇒ 72 h. Måste läsas av en människa, men brådskar inte lika.
+  //      (ingen dom)      ⇒ 72 h. Issues skapade FÖRE #149 bär ingen dom — de är inte vita.
+  //      [RÖR OSS INTE]   ⇒ larmar ALDRIG. Bedömningen har redan svarat; att det ligger öppet
+  //                          är städning, inte risk. Ett larm som aldrig kan tystna blir
+  //                          ignorerat, och då dör de riktiga med det.
+  //
+  //    Egen etikett, egen livscykel, aldrig problem.push() — samma skäl som mätvakten: rött på
+  //    driftvakthunden ska betyda att kedjan till appen är bruten NU. Ett oläst nyhetslarm är
+  //    allvarligt, men det är inte det.
+  const PAMINNELSE = "<!-- kallvaktspaminnelse -->";
+  const FRIST: Record<string, number> = { "RÖR OSS": 24, "VET INTE": 72, "OBEDÖMD": 72 };
+  try {
+    const nyheter = (await gh(`/issues?state=open&labels=trv-nyhet&per_page=50`))
+      .filter((i: any) => !i.pull_request);
+    const forsenade: string[] = [];
+    for (const i of nyheter) {
+      const m = String(i.title).match(/\[(RÖR OSS INTE|RÖR OSS|VET INTE)\]/);
+      const dom = m ? m[1] : "OBEDÖMD";
+      const frist = FRIST[dom];
+      if (frist === undefined) continue;                  // RÖR OSS INTE — se kommentaren ovan
+      const alderH = (Date.now() - new Date(i.created_at).getTime()) / 3600000;
+      if (alderH <= frist) continue;
+      // Bedömningens egna rader ligger i kroppen. Att lyfta dem hit gör påminnelsen läsbar
+      // utan att man öppnar issuet — det är skillnaden mellan en notis och en åtgärd.
+      const brister = String(i.body ?? "").split("\n").filter((r) => r.includes("**Brister:**")).slice(0, 3);
+      forsenade.push(`- ❌ **[${dom}]** #${i.number} öppet i ${(alderH / 24).toFixed(1)} dygn (frist ${frist} h): ${String(i.title).replace(/^[^ ]+ /, "").slice(0, 90)}`
+        + (brister.length ? "\n" + brister.map((b) => `  ${b.trim()}`).join("\n") : ""));
+    }
+    if (new URL(req.url).searchParams.get("paminnelseprov") === "1")
+      forsenade.push("- ❌ **PROV** — påhittad rad för att bevisa påminnelsens larmväg. Försvinner vid nästa körning utan prov.");
+    rad.push(`källvaktspåminnelsen: ${nyheter.length} öppna källändringar, ${forsenade.length} över frist`);
+
+    const pKropp = `${PAMINNELSE}` + "\n" + `**Källvaktspåminnelsen ${new Date().toISOString()}**` + "\n" + "\n" +
+      (forsenade.length ? forsenade.join("\n") : "- ✅ ingen källändring ligger över sin frist") +
+      "\n" + "\n" + `Frister: **RÖR OSS 24 h** · **VET INTE 72 h** · obedömda (före #149) 72 h. ` +
+      `**RÖR OSS INTE larmar aldrig** — bedömningen har svarat, att det ligger öppet är städning.` +
+      "\n" + "\n" + `Stäng nyhetsissuet när du läst det, så stängs den här av sig själv. ` +
+      `Kräver posten kod: lägg ett kort på tavlan och skriv kortnumret i nyhetsissuet innan du stänger det.` +
+      "\n" + "\n" + `Skälet att den här vakten finns: källvakten hade EN larmväg och inget golv. ` +
+      `Issue #165 låg elva timmar utan att något höjt rösten, och den enda schemalagda körningen ` +
+      `någonsin föll 7/9 utan att det märktes på fem dygn.`;
+    const oppnaP = await gh(`/issues?state=open&labels=kallvaktspaminnelse`);
+    const minP = oppnaP.find((i: any) => (i.body ?? "").includes(PAMINNELSE));
+    if (forsenade.length) {
+      if (minP) await gh(`/issues/${minP.number}/comments`, "POST", { body: pKropp });
+      else await gh(`/issues`, "POST", { title: "🔔 Källvakten: en källändring ligger oläst över sin frist", body: pKropp, labels: ["kallvaktspaminnelse"], assignees: ["895845"] });
+    } else if (minP) {
+      await gh(`/issues/${minP.number}/comments`, "POST", { body: pKropp + "\n" + "\n" + "Stänger — inget ligger över frist längre." });
+      await gh(`/issues/${minP.number}`, "PATCH", { state: "closed" });
+    }
+  } catch (e) {
+    // Samma regel som mätvakten: en blind påminnelse är värre än ingen.
+    problem.push(`**Källvaktspåminnelsen (kort #31/#149) kunde inte köras**: ${String(e)}`);
   }
 
   const kropp = `${MARK}\n**Kontroll ${new Date().toISOString()}**\n\n` +
