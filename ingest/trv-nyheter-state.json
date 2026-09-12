@@ -421,8 +421,8 @@
       ]
     },
     "met-api": {
-      "hash": "752a8cf7deca1f31",
-      "textLen": 4671
+      "hash": "ddead82cbce47359",
+      "textLen": 4808
     },
     "halkvarning": {
       "hash": "9753631446954034",
@@ -433,5 +433,5 @@
       "textLen": 60
     }
   },
-  "updated_at": "2026-09-03T15:48:06.453Z"
+  "updated_at": "2026-09-12T06:52:15.833Z"
 }
