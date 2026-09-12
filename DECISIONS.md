@@ -2755,3 +2755,59 @@ tillåter ändringar i §2:s svep med en rad i DECISIONS fram till första skugg
 sådan har inte gjorts — tillägget är alltså formellt i sin ordning. **Men en ny parameter är mer än
 ett justerat svepvärde.** §10 bär därför en rad om att Axel ska se §2.3, och att ingen skuggkörning
 får göras innan han läst den. Den som kontrasignerat ska veta vad som står i det han signerat.
+
+## #124 (12/9 2026) Ruttberedskapen — vilken av skuggflottans tjugo bilar kan pröva vilken grind
+
+BESLUT (Bengts order "gör beredskapstabellen"): `scripts/ruttberedskap.ts` + knapp. Läsande.
+Fem av de skuggkolumner vi skrivit tröskeldokument för ska köras på skuggflottan (Axels idé
+29/8) — trenden #88, tillståndsskattaren och efterhalkan #89, rimfrosten #46 och SMHI-
+förstärkaren #95 (d). I vinter kommer frågan "vilken bil ska vi titta på?", och att läsa alla
+tjugo är inte ett svar.
+
+RUTTERNA LÄSES UR SKUGGMOTORN, de kopieras inte. Självtestet fäller om parsningen slutar hitta
+dem — det är driftvakten, och den finns därför att en kopia av `fukt()` behövde skyddas mot
+samma sak i går.
+
+**UTFALL (körning 12/9, 30 dygn, 849 stationer):**
+
+| Grind | Bästa bil | Talet |
+| :-- | :-- | :-- |
+| **A** | **E4 Umeå→Luleå** | **58 %** av rutten i det oförklarade 7–15 km-bandet |
+| T-A / #46 | E6 Halmstad→Göteborg | kallast −0,5 °C — **ombud, inte mätning** |
+| W-A | E6 Malmö→Halmstad | högsta rimliga by 18,4 m/s på 24 givare |
+| F-A | ingen rangordning | arkivet saknar vintervarningar |
+
+GRIND A-RADEN ÄR DEN SOM BETYDER NÅGOT NU. E4 Umeå→Luleå ligger till 58 % i det band som föll
+sämst i grind A (MAE 1,41 °C, 18,4 % grova fel, #119) och som saknar förklaring. Ingen annan
+rutt kommer i närheten; tvåan och trean ligger på 53 och 50 %. Samtidigt har den bara **10
+stationer** inom räckvidd, och E10 Luleå→Kiruna — den kallaste — har **6 stationer och 49 % av
+sin längd bortom 20 km från närmaste ankare**. **De rutter som kan pröva de svåraste frågorna är
+de som har tunnast underlag.** Det är inte en slump: glest stationsnät är både orsaken till
+ankarproblemet och hindret för att mäta det.
+
+**FÖRSTA KÖRNINGEN FÄLLDE TVÅ AV SINA EGNA DOMAR, och båda är lagade med vakt och självtest:**
+
+**(1) Rätt vakt på fel nämnare, igen.** Tabellen utsåg E6 Malmö→Halmstad till bästa rutt för T-A
+på EN enda frostrad vid exakt 0,0 °C, medan E10 Luleå→Kiruna (0,5 °C) hamnade långt ned.
+Underlagsvakten fanns men vaktade ANTALET STATIONER, inte antalet frostrader. Landet har tre
+frostrader totalt. Golv 20 infört; under det rangordnas på kallaste uppmätta yta, uttryckligen
+märkt OMBUD. Samma klass av fel som fällde upprepningsmätningen (#103) — tredje gången i den
+här familjen på tre dygn.
+
+**(2) Tabellen läste inte sitt eget tröskeldokument.** Den utsåg E4 Södertälje→Uppsala till
+bästa rutt för W-A på en byvind av **55,1 m/s**, tvåan 45,0. Sveriges rekord ligger kring 81 m/s
+och då på fjällstation; 55 m/s på E4 i september är en trasig givare. TROSKLAR-VIND-SIKT §3.1
+hade REDAN skrivit att vakten behöver ett tak (svep 30 · 40 · 50) — dokumentet fanns, skriptet
+läste det inte. Rangordning sker nu under taket 30 m/s, med råmaxvärdet bredvid som
+givarmisstanke. Tre rutter bär en sådan: E4 Södertälje→Uppsala (55,1), E4 Uppsala→Gävle (45,0)
+och E4 Jönköping→Linköping (32,0).
+
+**EN VARNING SOM SKA FÖLJAS UPP I VINTER:** tre rutter skär **noll** arkiverade varningsområden
+— E4 Umeå→Luleå, E10 Luleå→Kiruna och E14 Sundsvall→Åre. Sommarens varningar (FIRE,
+WATER_SHORTAGE, WIND_SEA) är sydliga, så det är sannolikt årstiden och inte trasig geometri. Men
+det är just de tre rutterna förstärkaren behöver i vinter, och skillnaden mellan "inga varningar
+ännu" och "polygonerna matchar inte däruppe" syns först vid första snövarningen. Läsningen
+skriver ut det av sig själv.
+
+GILTIGHET: tabellen säger var en grind KAN prövas, aldrig vad den kommer att visa. Ankarbanden
+vandrar med stationsbortfall, så den ska köras om när vintern satt sig.
