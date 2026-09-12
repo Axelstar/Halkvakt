@@ -3223,3 +3223,34 @@ ett mätvärde, får inte bära en tröskel*. Att tiga om dem hade varit lika fe
 
 KVAR ATT DEKLARERA EFTER SKÄRPNINGEN: inga — `wind_dir_deg` och radarns två intensiteter fick
 sina spann i samma varv.
+
+## #135 (12/9 2026) Fyra tröskeldokument fastställda — och därmed står inget som utkast längre
+
+BESLUT (Bengt, klartecken): **TROSKLAR-VIND-SIKT (#90), TROSKLAR-RIMFROST (#46),
+TROSKLAR-SMHI-FORSTARKAREN (#95 d) och TROSKLAR-FRYSKLASSNINGEN (#103) är fastställda.**
+Ingen kontrasignering — mätningen är Bengts område (#132).
+
+**VAD FASTSTÄLLANDET FAKTISKT BETYDER, och det ska inte missförstås:** det är inte värdena som
+sätts. Det är **svepen och kraven** som låses. Värdena faller ur grindarna — det är hela
+konstruktionen, och skälet till att talen går att lita på efteråt. Från och med nu gäller varje
+dokuments egen ändringsregim: fram till första skuggkörningen får svepet justeras med en rad i
+DECISIONS, därefter inte alls.
+
+**LÄGET EFTER DETTA: nio tröskeldokument, noll utkast.**
+
+| Dokument | Grind | Vad som händer nu |
+| :-- | :-- | :-- |
+| **#103 FRYSKLASSNINGEN** | K-A | **kan köras på befintligt arkiv** — ingen ny data, ingen frost. Instrumentet är inte byggt. |
+| **#46 RIMFROSTEN** | R-A | **kan köras på det FINSKA arkivet** — Lapplands septemberfrost, ingen svensk frost behövs. Instrumentet är inte byggt. |
+| #90 VIND OCH SIKT | W-A | redan kört: OAVGJORT av strukturella skäl. Körs om efter **första höststormen** (#120). |
+| #95 (d) FÖRSTÄRKAREN | F-A | redan kört: OAVGJORT, arkivet saknar vintervarningar (#122). |
+
+**Två instrument blir alltså byggbara i dag och två grindar väntar på väder.** Det är första gången
+sedan helgens början som kön inte innehåller en enda mänsklig signatur — allt som står stilla står
+stilla på data eller på årstid.
+
+**Och en sak värd att notera om formen:** K-A och R-A kan båda köras utan att vänta på svensk
+vinter. K-A läser samma arkiv som grind A. R-A läser `KASTEPISTE` ur det finska arkivet, som
+arkiverats sedan 4/9 och där Lapplands frostnätter kommer veckor före Sveriges. Det var inte en
+slump utan ett val när dokumenten skrevs: **varje grind fick en väg till underlag som inte kräver
+att man väntar på naturen, om en sådan väg alls fanns.**

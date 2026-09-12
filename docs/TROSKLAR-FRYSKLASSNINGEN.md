@@ -1,8 +1,9 @@
 # TROSKLAR-FRYSKLASSNINGEN
 
 **Kort:** #103 FRYSKLASSNINGEN — kan en modell som är opålitlig på grader ändå bära en
-frysklassning? **Status:** 📝 **UTKAST 2026-09-12.** Väntar på Bengts fastställande av värdena och
-därefter är det klart att köra. **Ingen kontrasignering behövs** (Bengts beslut 12/9, DECISIONS #132).
+frysklassning? **Status:** ✅ **FASTSTÄLLT 2026-09-12 av Bengt** (DECISIONS #135).
+Svepet i §2 och kraven i §4 är låsta enligt §7:s regim — och **inget tal i dem kommer ur A3:s
+utfall**, vilket är hela skälet till att kortet är legitimt.
 
 **Varifrån kortet kommer.** Grind A föll 12/9 (DECISIONS #119). Men A3 — frysklassningsfelet —
 klarade med **1,1 % mot ett krav på 10 %**, alltså tio gånger bättre än vad som krävdes. Axels
