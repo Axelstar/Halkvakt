@@ -2178,3 +2178,29 @@ LÄGET EFTER DETTA: fem tröskeldokument ligger i repot, alla fastställda — S
 VATTENPLANING (#68), TRENDEN (#92/#95), TYSTNADSFEL (#93/#95) och ÖVERGÅNGARNA (detta). Tre av dem
 har noll kod. Det som avgör vintern är inte fler dokument utan att skuggkolumnerna byggs före
 frosten.
+
+## #111 (12/9 2026) Axels kontrasignering av TROSKLAR-OVERGANGAR — kort #89:s nyckel öppen
+
+BESLUT: Axel kontrasignerar TROSKLAR-OVERGANGAR, relayerat av Bengt i chatten samma dag som Bengt
+fastställde det (#110). Samma form som DECISIONS #61 (skuggan), #68 (vattenplaningen) och #95
+(trenden och tystnadsfelet): kontrasigneringen sker genom att kortet bockas på tavlan.
+
+VAD SOM ÄR KONTRASIGNERAT: hela dokumentet som det står efter Bengts tillägg — svepet i §2 med
+RH-guarden struken, givarvakten i §3 som obligatorisk, golven i Ö-B (nettonytt ≥ 5 %, tillkomna
+falsklarm ≤ 25 %), underlagskraven i Ö-C, läsfönstret i Ö-D, strykningen av (b) i §5 och
+överlämningen av (c) i §6.
+
+VAD KONTRASIGNERINGEN INTE GÖR: den ändrar inte ändringsregimen. §10 är knuten till **första
+skuggkörningen**, inte till signaturen — fram till dess får svepet och kraven justeras med en rad i
+DECISIONS av vem som helst av oss, därefter krävs båda signaturer och en motivering som inte lutar
+sig mot utfallet. Samma konstruktion som TROSKLAR-TRENDEN §8, och av samma skäl: det är siffrorna som
+ska få ändra reglerna först när de inte längre kan väljas.
+
+LÄGET EFTER DETTA: kort #89:s nyckel är öppen. Kvar är två kodsteg, båda bakom radardomen 14/9 och
+kort #81:s ordning — steg 2 tillståndsskattaren i skuggloggen, steg 3 (a) som skuggkolumn, dömd mot
+Ö-B vid höstens första frostnätter och inom Ö-D:s sjudygnsfönster.
+
+Fem tröskeldokument ligger nu i repot, alla fastställda och alla utom SKUGGAN och VATTENPLANING även
+kontrasignerade i den här formen. Tre av de fem har noll kod. Det som avgör vintern är inte fler
+dokument utan att skuggkolumnerna byggs före frosten — och trenden (#88) är den som har naturens
+deadline.

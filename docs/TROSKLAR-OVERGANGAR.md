@@ -1,9 +1,9 @@
 # TROSKLAR-OVERGANGAR
 
-**Kort:** #89 ÖVERGÅNGARNA (systemanalysen §2.2). **Status:** ✅ **FASTSTÄLLT av Bengt 2026-09-12**
-— med tillägget att **(b) oljefilmen stryks** (§5). Väntar på Axels kontrasignering (samma form som
-#61/#68/#92/#95). Fastställda: svepet i §2, givarvakten i §3, golven i Ö-B, underlagskraven i Ö-C,
-läsfönstret i Ö-D. Ingen kod ännu.
+**Kort:** #89 ÖVERGÅNGARNA (systemanalysen §2.2). **Status:** ✅ **FASTSTÄLLT OCH KONTRASIGNERAT** —
+Bengt 2026-09-12 i chatten med tillägget att **(b) oljefilmen stryks** (§5), Axel 2026-09-12 via
+Bengt (samma form som DECISIONS #61/#68/#95). Fastställda: svepet i §2, givarvakten i §3, golven i
+Ö-B, underlagskraven i Ö-C, läsfönstret i Ö-D. Ingen kod ännu.
 Skuggkolumnerna byggs efter radardomen 14/9 (kort #81:s ordning). Från första skuggkörningen gäller
 §10 — kontrasigneringen ändrar inte den regimen, den är knuten till första skuggkörningen och inte
 till signaturen.
