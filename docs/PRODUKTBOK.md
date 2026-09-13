@@ -215,6 +215,120 @@ gränsen ser motorn de finska och norska stationerna inom 40 km av svenska väga
 frysrisken slutar inte vid gränsen. Rösten säger inget om frysrisk i Danmark ännu; det
 väntar på beslut.
 
+## Hur vi vet att rösten har rätt — mätapparaten
+
+Halkvakt gissar inte. Varje fara rösten talar om, och varje fara den *inte* talar om, ska
+kunna bevisas mot verkligheten. Det är det som skiljer appen från en som säger "det kan
+vara halt" när det är kallt. Här är hur det går till.
+
+### Principen: trösklar före mätning, dom efter
+
+```mermaid
+flowchart LR
+    F[Fråga<br/>"kan X bära en varning?"] --> T[Tröskeldokument<br/>vad som krävs för JA<br/>skrivs INNAN mätning]
+    T --> S[Signaturer<br/>Bengt fastställer<br/>Axel kontrasignerar]
+    S --> M[Mätning<br/>mot facit, i skugga<br/>rösten rörs inte]
+    M --> D{Dom}
+    D -- klarar --> R[Rösten får säga det<br/>nästa app-version]
+    D -- faller --> N[Dokumenterat nej<br/>kortet stängs]
+    D -- för lite data --> O[OAVGJORT<br/>väntar på vinter]
+    style T fill:#FFC94A,color:#140F00
+    style D fill:#1FB25A,color:#fff
+```
+
+Det viktiga är ordningen. **Trösklarna skrivs innan någon vet hur talen ser ut.** Det är det
+enda som gör att en dom går att lita på — och det enda som gör att ett nej inte kan
+förhandlas bort i efterhand. Grind A skrevs den 1 september på 57 mätpunkter. Den föll den
+12 september på 2 042. Ingen flyttade målstolparna, för de var daterade.
+
+En dom har tre utfall, aldrig två. **OAVGJORT** är ett riktigt svar: instrumentet vägrar
+döma under ett minsta underlag (till exempel 500 punkter över 20 stationer) och skriver
+det ut i stället för ett tal. Det skyddar mot att döma på urvalsfel — i september är
+nästan alla kalla mätningar från samma tre stationer.
+
+### Grindarna — vad som mäts, hur, och var det står
+
+| Grind | Frågan | Måttet | Facit | Status 13/9 |
+|---|---|---|---|---|
+| **A — Skuggmotorn** | Kan en stations yttemp förutsägas ur grannarnas? | MAE ≤ 1,0 °C · grova fel ≤ 5 % · frysklassfel ≤ 10 % | Stationen själv, leave-one-out | **FALLEN** 12/9: 1,06 °C, 10,7 %. Men frysklassfel 1,1 % ⇒ ny grind |
+| **Frysklassningen** | Kan en modell dålig på grader ändå bära *vilken sida av noll*? | Egna trösklar, skrivna före mätning | Samma leave-one-out | Fastställd 12/9, väntar på körning |
+| **V — Vattenplaning** | Kan stationsregn förutsäga intensitet där du kör? | Träff ≥ 70 % · falsklarm ≤ 20 % | Radar + olyckor | **NEJ** (61 % på 3 594 punkter). Stationsspåret nedlagt |
+| **Radardomen** | Duger radarn som segmentkälla för regn? | Bekräftelse mot station per intensitetsband | Stationerna | Din och Bengts, 14/9. Underlag: 14 583 par |
+| **T — Trenden** | Varnar "ytan faller mot noll" i tid? | T-A fysik (klara nätter) · T-B träff/miss/falsklarm | Omklassning till halka, kameror | **OAVGJORT** — 17 frostnätter av 30 |
+| **Ö — Övergångarna** | Fryser en blöt väg efter regnet som slutat? | B3-paret: räddade missar mot tillkomna falsklarm, per proxy | Omklassning, kameror, olyckor | Ö-A passerad (hålet finns: 35 min, inte 10). Ö-B väntar på frost |
+| **W — Vind och sikt** | Är byvind/sikt en egen fara, eller förvärrar de halka? | Två roller, dömda var för sig | Olyckor per exponeringsband | **OAVGJORT** — 36 stationstimmar av 500 |
+| **F — SMHI-förstärkaren** | Höjer en snövarning konfidensen? | Golv OCH tak (5–80 %) | Omklassning | **OAVGJORT** — 3 stationstimmar |
+| **Rimfrost** | Svartis utan nederbörd, yta under daggpunkt? | Andra gren i frysrisken, inte sjätte fara | Finska arkivet, Lapplands septemberfrost | Fastställd 12/9 |
+| **Tystnadsfelet** | Hur ofta tiger rösten när den borde tala? | Oursäktlig miss (signal fanns) mot ursäktlig | Hela facitstacken | Fastställd, ingen kod förrän skuggan går |
+| **Väglagets ålder** | Ska ett stående "Is och snö" tystas när vintern tagit slut? | Världen motsäger klassningen, inte ålder | Stationer mot segment | Fastställd 12/9. INGEN åldersgräns byggd |
+
+Alla tio ligger i `docs/TROSKLAR-*.md`. Tre kort har stängts som dokumenterade nej på
+två veckor: vattenplaningens stationsspår, dämpningen, och däcktyp. Ett nej som skrivs ner
+är värt lika mycket som ett ja — det hindrar att samma idé kommer tillbaka om tre veckor.
+
+### Instrumenten — vad som mäter vad
+
+```mermaid
+flowchart TB
+    subgraph K[KONSISTENS — gör motorn vad vi sagt?]
+        V[23 vektorer<br/>byte-för-byte i TS, Kotlin, Swift]
+        B[Buntkontroll<br/>skuggmotorn = engine/src]
+        MS[Manifest + sha256<br/>appen förkastar trasig snapshot]
+        KG[Kodgrinden<br/>farlighetsord i kod]
+    end
+    subgraph S[SANNING — stämmer det med vägen?]
+        SM[Skuggmotorn<br/>3+20 rutter var 30:e min<br/>loggar vad rösten SKULLE sagt]
+        FH[Facit-hinken<br/>kamerabild vid varje varning<br/>+ gryningsbild]
+        MI[missar.ts<br/>träffar och missar<br/>mot arkivhändelser]
+        SU[Spärrloggen<br/>vad rösten INTE fick säga<br/>ny 13/9]
+    end
+    subgraph V2[VAKTER — lever apparaten?]
+        VH[Vakthunden, varje timme<br/>hämtar · sparar · når appen]
+        MV[Mätvakten<br/>har schemalagda mätningar kört?]
+        KV[Källvakten<br/>växer tabellerna domarna vilar på?]
+        LP[Larmprov<br/>kan vakten larma?]
+    end
+    K --> S
+    S --> V2
+    SM --> FH
+    SM --> SU
+    MI --> FH
+    style K fill:#0F1518,color:#E9EFF2,stroke:#FFC94A
+    style S fill:#0F1518,color:#E9EFF2,stroke:#1FB25A
+    style V2 fill:#0F1518,color:#E9EFF2,stroke:#6EC9E8
+```
+
+**Konsistensvakterna** svarar på om motorn gör vad vi sagt. De 23 vektorerna är den
+viktigaste: en fil per scenario med spår, faror och exakt förväntad röstlogg, och alla
+tre motorerna — TypeScript, Kotlin, Swift — måste ge samma svar byte för byte. Ändras en
+regel måste vektorn ändras med, synligt, i samma commit. De kan köras i augusti.
+
+**Sanningsvakterna** svarar på om det motorn säger stämmer med vägen. De kräver facit,
+och facit finns bara på vintern. Skuggmotorn kör referensrutter var trettionde minut mot
+riktig data och loggar vad rösten *skulle* ha sagt — utan att någon förare hör det.
+Facit-hinken arkiverar en kamerabild från Trafikverkets väglagskameror vid varje
+skuggvarning, så vi i mars kan öppna bilden och se: sa vi halka, och *var* det halt?
+
+**Spärrloggen** är nyast. Det rösten inte fick säga — kastat av spärren — loggades
+ingenstans förrän 13/9. Nu står det i skuggloggen: vad, tystat av vad, med vilken marginal.
+
+**Vakterna** svarar på om apparaten själv lever. Vakthunden kollar varje timme att datan
+hämtas, sparas *och når telefonen* — det sista ledet är det som gick sönder i tre dygn
+utan att synas. Mätvakten kollar att de schemalagda mätningarna faktiskt kört; fyra låg
+döda i fem dygn i september. Och larmprovet: en vakt som aldrig provats är ingen vakt.
+Första gången vi provade kunde vakthunden bara säga "allt bra" — larmvägen gav 500.
+
+### Vad mätningarna säger i dag
+
+Det korta svaret: **motorn är bevisat konsekvent och oprövat sann.** Vektorerna bevisar
+att den gör vad vi sagt. Ingen sanningsvakt har haft en enda vinterdag att mäta mot.
+Grind A föll på septemberdata som redan var 36 gånger större än vid skrivningen. Trenden,
+vinden, förstärkaren står alla på OAVGJORT av samma skäl: för lite frost.
+
+Det som gör oss lugna är att apparaten kunde säga nej till oss själva när den fick data.
+Det som gör oss vaksamma är att tre gånger på två veckor verifierade vi att något *fanns*
+i stället för att det *fungerade*. Instrumenten är byggda. Vintern är facit.
+
 ## Vad appen inte gör
 
 Ingen prognos (varnar på uppmätt läge, inte gissningar), tyst mellan
