@@ -448,6 +448,15 @@ Deno.serve(async (req) => {
   //    DET ANVÄNDBARA TALET ÄR PROGNOSEN, inte procenten. "I dagens takt slår taket i den 27:e"
   //    går att agera på; "62 % förbrukat" gör det inte.
   //
+  //    TVÅ TAKTER, OCH BÅDA STÅR I LARMET (Bengts order 13/9). Förbrukningen läses ur
+  //    månad-till-datum; PROGNOSEN räknas på en SLÄPANDE takt över de två senaste kompletta
+  //    dygnen. Skälet är mätt och inte teoretiskt: 13/9 sa månadssnittet 311 min/dygn och pekade
+  //    på 21 september, men i snittet låg fem flöden som slutade köra vid konsolideringen 8–9/9
+  //    (ingest-fi, -no, -dk, publish-map, regn-30 — kort #53/#79/#85). Senaste dygnet var 232 och
+  //    de två senaste 180. Ett snitt som räknar in nedlagda flöden svarar på fel fråga.
+  //    Priset åt andra hållet: den släpande takten är känslig för en enskild byggskur. Därför
+  //    skrivs BÅDA ut, och avviker de mer än 25 % säger larmet uttryckligen att marken rör sig.
+  //
   //    KÖRS FYRA GÅNGER PER DYGN, inte varje timme: en räkning är ~30 API-anrop och budgeten
   //    rör sig 1–2 USD per dygn. Att lösa ett slöserifel med slöseri vore fel medicin.
   //
@@ -475,41 +484,73 @@ Deno.serve(async (req) => {
       // för den ger lugn på fel grund. Ett dygn rymmer långt under 1 000 körningar, och
       // dygnsvakten nedan larmar ändå om något dygn skulle slå i taket.
       let minuter = 0, korningar = 0, avkortad = false;
+      // Dygnssummorna sparas medan vi ändå går igenom dygnen — den släpande takten nedan
+      // kostar därför INGA extra API-anrop.
+      const perDag = new Map<string, number>();
       for (let d = new Date(start); d <= nu; d.setUTCDate(d.getUTCDate() + 1)) {
         const dag = d.toISOString().slice(0, 10);
+        let dagMin = 0;
         for (let sida = 1; sida <= SIDTAK; sida++) {
           const k = ((await gh(`/actions/runs?per_page=100&page=${sida}&created=${dag}`)).workflow_runs ?? []);
           for (const r of k) {
             // Pågående körningar räknas nästa varv — en halvfärdig körning har ingen sluttid.
             if (r.status !== "completed" || !r.run_started_at) continue;
             const sek = (new Date(r.updated_at).getTime() - new Date(r.run_started_at).getTime()) / 1000;
-            minuter += Math.max(1, Math.ceil(sek / 60));
+            dagMin += Math.max(1, Math.ceil(sek / 60));
             korningar++;
           }
           if (k.length < 100) break;
           if (sida === SIDTAK) avkortad = true;   // ett dygn med > 1 000 körningar: säg det
         }
+        perDag.set(dag, dagMin);
+        minuter += dagMin;
       }
       const debiterat = Math.max(0, minuter - GRATIS_MIN);
       const kostnad = debiterat * PRIS_PER_MIN;
       const dygnIn = Math.max(1 / 24, (nu.getTime() - start.getTime()) / 86400000);
       const takt = minuter / dygnIn;
       const dygnIManaden = new Date(Date.UTC(nu.getUTCFullYear(), nu.getUTCMonth() + 1, 0)).getUTCDate();
-      const prognosUsd = Math.max(0, takt * dygnIManaden - GRATIS_MIN) * PRIS_PER_MIN;
-      // Vilket datum slår taket i? Totalminuter när det DEBITERADE når taket, delat med takten.
+
+      // SLÄPANDE TAKT (Bengts order 13/9, kort #152). Månadssnittet är rätt för frågan "vad har
+      // vi förbrukat" men FEL för frågan "när tar det slut", eftersom det låser fast en takt som
+      // kan ha upphört att gälla. Mätt 13/9: snittet sa 311 min/dygn och pekade på 21 september,
+      // men i det snittet låg fem flöden som slutade köra 8–9/9 vid konsolideringen (ingest-fi,
+      // ingest-no, ingest-dk, publish-map, regn-30, kort #53/#79/#85). Senaste dygnet var 232 och
+      // de två senaste 180 — skillnaden mellan "agera i dag" och "vi har en vecka till".
+      //
+      // TVÅ KOMPLETTA DYGN, inte ett: ett enda dygn domineras av en byggskur. Och inte det
+      // pågående dygnet, som alltid är delvis och därför räknar för lågt.
+      // FALLBACK till månadssnittet den 1:a och 2:a, när inget komplett dygn finns än.
+      const idag = nu.toISOString().slice(0, 10);
+      const kompletta = [...perDag.keys()].filter((d) => d < idag).sort().slice(-2);
+      const slapande = kompletta.length
+        ? kompletta.reduce((s, d) => s + (perDag.get(d) ?? 0), 0) / kompletta.length : takt;
+      // Avviker takterna mycket står marken och gungar under prognosen, och då ska det SÄGAS
+      // i stället för att en av siffrorna tyst vinner.
+      const gungar = takt > 0 && Math.abs(slapande - takt) / takt > 0.25;
+
+      // PROGNOSEN RÄKNAS PÅ DEN SLÄPANDE TAKTEN, och räknas framåt FRÅN NU i stället för från
+      // månadens början — samma tal när takten är konstant, men rätt när den inte är det.
+      const prognosUsd = Math.max(0, minuter + slapande * (dygnIManaden - dygnIn) - GRATIS_MIN) * PRIS_PER_MIN;
       const takMin = GRATIS_MIN + TAK_USD / PRIS_PER_MIN;
-      const dygnTillTak = takt > 0 ? takMin / takt : Infinity;
-      const takDatum = dygnTillTak <= dygnIManaden
-        ? new Date(start.getTime() + dygnTillTak * 86400000).toISOString().slice(0, 10) : null;
+      const dygnTillTak = slapande > 0 ? (takMin - minuter) / slapande : Infinity;
+      const takDatum = dygnTillTak >= 0 && dygnIn + dygnTillTak <= dygnIManaden
+        ? new Date(nu.getTime() + dygnTillTak * 86400000).toISOString().slice(0, 10) : null;
       rad.push(`kassan: ${minuter} min sedan ${sedan} (${korningar} körningar) · debiterat ${debiterat} min ` +
-        `= ${kostnad.toFixed(2)} av ${TAK_USD} USD · takt ${takt.toFixed(0)} min/dygn · prognos ${prognosUsd.toFixed(0)} USD` +
-        `${takDatum ? ` · TAKET SLÅR I ${takDatum}` : ""}${avkortad ? " · AVKORTAD" : ""}`);
+        `= ${kostnad.toFixed(2)} av ${TAK_USD} USD · takt ${takt.toFixed(0)} månad / ${slapande.toFixed(0)} släpande ` +
+        `min per dygn · prognos ${prognosUsd.toFixed(0)} USD` +
+        `${takDatum ? ` · TAKET SLÅR I ${takDatum}` : ""}${gungar ? " · TAKTEN ÄNDRAS" : ""}${avkortad ? " · AVKORTAD" : ""}`);
 
       const skal: string[] = [];
       if (kostnad >= TAK_USD * LARM_ANDEL)
         skal.push(`**${((kostnad / TAK_USD) * 100).toFixed(0)} % av taket förbrukat** — ${kostnad.toFixed(2)} av ${TAK_USD} USD.`);
       if (takDatum)
-        skal.push(`**I dagens takt (${takt.toFixed(0)} min/dygn) slår taket i den ${takDatum}**, alltså före månadsskiftet.`);
+        skal.push(`**I den släpande takten (${slapande.toFixed(0)} min/dygn, snitt över ${kompletta.length || "—"} kompletta dygn) ` +
+          `slår taket i den ${takDatum}**, alltså före månadsskiftet.`);
+      if (gungar)
+        skal.push(`**Takten ändras:** släpande ${slapande.toFixed(0)} mot månadssnittet ${takt.toFixed(0)} min/dygn. ` +
+          `Prognosen räknas på den släpande — men den vilar alltså på mark som rör sig, och en byggskur ` +
+          `eller ett nedlagt flöde slår igenom direkt. Läs båda talen innan du agerar på datumet.`);
       if (avkortad)
         skal.push(`Ett dygn hade fler än ${SIDTAK * 100} körningar och räkningen avkortades — talet är för lågt även för det här repot.`);
       if (kassaprov)
@@ -519,7 +560,12 @@ Deno.serve(async (req) => {
         (skal.length ? skal.map((s) => `- ⚠️ ${s}`).join("\n") : "- ✅ god marginal till taket") + "\n" + "\n" +
         `Förbrukat sedan ${sedan}: **${minuter} min** över ${korningar} körningar. Gratispotten ${GRATIS_MIN} min ` +
         `dras bort först ⇒ debiterat **${debiterat} min = ${kostnad.toFixed(2)} USD** av taket ${TAK_USD}. ` +
-        `Takt **${takt.toFixed(0)} min/dygn**, prognos för månaden **${prognosUsd.toFixed(0)} USD**.` + "\n" + "\n" +
+        `Takt: **${takt.toFixed(0)} min/dygn** månad-till-datum, **${slapande.toFixed(0)} min/dygn** släpande ` +
+        `(${kompletta.length} kompletta dygn). Prognos för månaden **${prognosUsd.toFixed(0)} USD**.` + "\n" + "\n" +
+        `**Förbrukningen läses ur månadstalet, prognosen ur det släpande.** Månadssnittet låser fast ` +
+        `en takt som kan ha upphört att gälla — 13/9 innehöll det fem flöden som lades ner 8–9/9 och ` +
+        `pekade därför nio dygn fel. Det släpande talet är i gengäld känsligt för en enskild byggskur. ` +
+        `Båda står här med flit; ingen av dem är sann ensam.` + "\n" + "\n" +
         `Slår taket i blir det HÅRT STOPP: grannar, ingest och healthcheck tystnar som 5/9. ` +
         `Livemotorn i Supabase påverkas inte — den kostar inga Actions-minuter.` + "\n" + "\n" +
         `**Talet är ett GOLV, inte fakturan.** Taket är kontoomfattande men vi ser bara ${REPO}; ` +

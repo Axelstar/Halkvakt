@@ -5,6 +5,14 @@ flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
 *Uppdaterad: 2026-09-13 02:15 av Claude (webben) — KASSAVAKTEN (#152) KLAR OCH BEVISAD: issue #210, larmade på egen grund. Första skarpa mätningen rättar #85: 311 min/dygn över hela månaden, prognos 59 USD mot taket 35, taket slår i 21/9. Mina fönstertal var för låga.*
+  💰 **RÄTTAD 13/9 (DECISIONS #160, Bengts order):** prognosen räknade på månad-till-datum, och i
+  det snittet låg fem flöden som lades ner 8–9/9 (`ingest-fi`, `-no`, `-dk`, `publish-map`,
+  `regn-30`). Vakten sa **21 september**; uppmätt verklig takt var 232 min/dygn senaste dygnet och
+  180 de två senaste, mot snittets 311. **Förbrukningen läses nu ur månadstalet, prognosen ur en
+  SLÄPANDE takt** över de två senaste kompletta dygnen — taket flyttas därmed till **26 september**
+  på verkliga tal. Båda talen står i varje larm: månadssnittet låser fast en takt som kan ha
+  upphört, den släpande är känslig för en byggskur. Avviker de mer än 25 % säger larmet
+  **TAKTEN ÄNDRAS**. Kostar noll extra API-anrop — dygnsloopen fanns redan.
 
 ---
 
@@ -374,6 +382,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 ### Claude — olåst
 - [ ] 💸 **#152 KASSAVAKTEN — check 8 i vakthunden: larmar innan Actions-taket slår i** (Bengts order
   13/9: "Kan man ha någon mätning på taket så man vet när man närmar sig gränsen. Automatisk alltså").
+  💰 **RÄTTAD 13/9 (DECISIONS #160, Bengts order "gör kort 152 nu"):** prognosen räknade på
+  månad-till-datum, och i det snittet låg fem flöden som lades ner 8–9/9 (`ingest-fi`, `-no`,
+  `-dk`, `publish-map`, `regn-30`). Vakten sa **21 september**; uppmätt verklig takt var
+  **232 min/dygn** senaste dygnet och **180** de två senaste, mot snittets 311 — och driften ensam
+  (ingest + grannar + healthcheck) är **81**, resten är bygge. **Förbrukningen läses nu ur
+  månadstalet, prognosen ur en SLÄPANDE takt** över de två senaste kompletta dygnen; taket flyttas
+  därmed till **26 september** på verkliga tal. Båda talen står i varje larm — månadssnittet låser
+  fast en takt som kan ha upphört, det släpande är känsligt för en byggskur — och avviker de mer än
+  25 % säger larmet **TAKTEN ÄNDRAS**. Kostar noll extra API-anrop: dygnsloopen fanns redan.
   🔨 BYGGD 13/9, väntar på deploy + bevis. Bakgrunden är 5/9: minuterna tog slut mitt i drift, appen
   serverade 66 h gammal data, och det upptäcktes bara för att en människa råkade titta. Taket har HÅRT
   STOPP, så det är en vägg och inte en försämring. Ligger i vakthunden (Supabase, noll Actions-minuter)
