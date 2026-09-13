@@ -4828,3 +4828,52 @@ och ett jobb i drift. Instrumentet är byggt så att båda vägarna är öppna.
 tom just nu: `road_condition_history` står stilla sedan 25/8 och `slippery_segment` fyrar i praktiken
 aldrig i september. Instrumentet kan byggas före datat — samma skäl som T-A byggdes före frosten —
 men det är ett eget steg och det görs inte i smyg här.
+
+## #170 (13/9 2026) Trendberäkningen in i ingest-live — och driftvakten fällde flyttalen
+
+**Beslut (Bengts order 13/9, "lägg trendberäkningen i ingest-live"):** trendkandidaterna räknas nu i
+driften, i `sql/018_trend_berakna.sql`, anropad av `ingest-live`. Sjudygnsrisken från #169 är borta:
+en frostnatt kräver inte längre att någon hinner trycka en knapp.
+
+**KOSTNADEN VAR FRÅGAN, och svaret är noll.** `ingest-live` kör redan var minut i Supabase. Ett
+Actions-schema var 30:e minut hade kostat ~48 debiterade minuter per dygn — nästan en tredjedel av
+hela förbrukningen (kassavakten mätte 169 min/dygn) för en enda kolumn. Ett nytt pg_cron-jobb hade
+varit gratis men öppnat något #85 stängde. Påhänget kostar ingetdera.
+
+**LOGIKEN LIGGER I SQL, INTE I FUNKTIONEN, och det är en riskavvägning.** `ingest-live` ÄR
+livemotorns ingest — situationer, väglag och väder i samma anrop. Kod som kastar där stoppar hela
+kedjan för hela appen. Trenden är en skuggmätning och får aldrig kosta driften något. Den deployade
+funktionen bär därför **en enda rad**, inlindad i try/catch, och felet går med i svaret: en
+fail-soft-gren utan spår är ett tyst ALDRIG (kameror-vaglag-läxan).
+
+**DRIFTVAKTEN FÄLLDE PÅ FÖRSTA KÖRNINGEN, och fyndet är allmängiltigt.** Två kopior av samma
+trösklar — TypeScript för T-A och knappen, SQL för driften — jämfördes över samma sjudygnsfönster i
+en transaktion som rullades tillbaka. Utfallet: **TypeScript 3 851 rader, SQL 4 713, och 862 rader
+bara i SQL.** Noll i andra riktningen.
+
+Orsaken var inte logik utan **aritmetik**: station 2004, 11/9 01:55, yta faller 4,8 → 4,4 på
+60 minuter. TypeScript räknar `4.8 - 4.4` i binär flyttal och får **0,39999999999999947**, vilket är
+under tröskeln 0,4. Postgres räknar samma subtraktion exakt i `numeric` och får **0,4**, vilket är
+lika med tröskeln. **SQL hade rätt** — ett fall på 0,4 grader är ett fall på 0,4 grader.
+
+Rättelsen är en avrundning till tusendels grad på TypeScript-sidan före jämförelsen. Mätvärdena har
+EN decimal, så tusendelen kan inte dölja någon verklig skillnad. Provet låser det exakta fallet ur
+station 2004. Omkörning: **4 713 mot 4 713, noll i någon riktning.** Läxan förd till CLAUDE.md.
+
+**TVÅ VAKTER, OCH DE VAKTAR OLIKA SAKER.** Kontraktsgrinden fick två nya kontrakt (minsta lutning
+0,4 och bredaste bandets tak 6; nu tio stycken, mutationsprovade) — den vaktar att kopiorna bär samma
+TAL. Jämförelsen vaktar att de fattar samma BESLUT. Grinden hade sagt grönt hela tiden medan 862
+rader låg isär; utan jämförelsen hade T-A dömt på en uppsättning kandidater och driften sparat en annan.
+
+**BEVISET EFTER DEPLOYEN ÄR OFULLSTÄNDIGT, och det sägs rakt ut.** Deployen gick igenom och
+`ingest-live` kör: `sync_state.weather` var fem sekunder gammal vid mätningen. Men **noll rader**
+skrevs, och orsaken är mätt och inte antagen: **0 av 750 stationer har just nu en yta mellan 1 och
+6 °C.** Mitt på dagen i september finns ingen kandidat att skriva. Att livepathen fungerar hela vägen
+kan därför inte påstås ännu — det syns först när ytan kyls ner.
+
+**SIGNATUREN ATT LETA EFTER:** en rad i `trend_kandidater` med `utfall_rader IS NULL` och
+`observed_at` inom de senaste 90 minuterna kan bara ha skrivits av driften, eftersom knappen fyller
+utfallet direkt för mogna rader. Finns en sådan i morgon är kedjan bevisad.
+
+**Och de 862 raderna är ifyllda:** knappen kördes om efter rättelsen och skrev dem. Arkivet rymmer
+**4 713 kandidater** 8–13/9, fortfarande noll följda av yta ≤ 0 °C.
