@@ -4239,3 +4239,62 @@ checkades medvetet inte in: det hade blivit en andra kopia av tre trösklar och 
 kontraktsgrindens regel för noll nytta. Konstanterna finns i en enda fil. Larmvägen bevisas skarpt
 med ?kassaprov=1 EFTER deployen, enligt husregeln att en ändrad fil under supabase/functions/ inte
 är en deploy.
+
+## #158 (13/9 2026) Check 7 bevisad hela vägen — och min felhypotes bokförd, inte bortstädad
+
+**Bevis för #150.** Källvaktspåminnelsens öppna/uppdatera/stäng-cykel är nu prövad ände till ände
+mot issue #198:
+
+| Tid (12/9, UTC) | Vad | Vad det bevisar |
+| :-- | :-- | :-- |
+| 17:37:25 | issue skapad med provrad | larmvägen **öppnar** |
+| 18:07 | **ingenting** | — se nedan |
+| 19:01:06 | kommentar, provraden igen | **uppdaterar** när listan inte är tom |
+| 19:07:04 | kommentar utan prov, **stängning** | takten slår, och den **stänger** |
+
+**Tystnaden 18:07 var en ÖVERSKRIVEN CHECK, inte en missad takt.** Axels Claude hade deployat sin
+lokala vakthundsfil före en pull, så driften fick 6c men tappade check 7 (#126). Main hade båda,
+driften hade en. Efter omdeploy från main svarar båda.
+
+**MIN FELHYPOTES, och den skrivs ut i stället för att städas bort.** Jag konstaterade att 19:01
+inte var `:07` och drog slutsatsen att `pg_net` levererat om ett anrop den trodde hade misslyckats.
+Det var fel. 19:01 var Axels egen `?paminnelseprov=1` efter omdeployen — alltså ett andra, avsiktligt
+prov, inte en omleverans. Jag sa dessutom till Bengt att min oro för en överskriven check var
+**obefogad**, och det var det motsatta mot sant.
+
+Varför det bokförs: en förkastad hypotes är billigare för nästa läsare än en tyst rättelse. Den som
+ser en oväntad tid i en logg kommer att gissa på omleverans igen, och då ska det stå här att
+förklaringen förra gången var mänsklig och inte teknisk. **Leta efter en andra deploy innan du
+misstänker transportlagret.**
+
+**Vad som gjorde diagnosen möjlig** var att bevakningen skilde på *kommentar utan stängning* och
+*stängning*. Hade den bara frågat "är den stängd?" hade 19:01 sett ut som tystnad, och det verkliga
+felet — att provraden fanns i indata — hade aldrig synts. En vakt som bara mäter slutläget kan inte
+säga varför.
+
+---
+
+## #159 (13/9 2026) ci hoppar över rena dokumentändringar — kassan styr formen
+
+**Beslut (Bengts order, "lägg in det"):** `paths-ignore: ["**.md"]` på både `push` och
+`pull_request` i `.github/workflows/ci.yml`.
+
+**Skälet är kassavaktens tal, inte en känsla.** Check 8 mätte 13/9: **311 min/dygn**, 3 761 min
+sedan 1/9, debiterat 14,09 av 35 USD, och **taket slår i den 21 september** — före vintern, och före
+de fem mätningar som väntar på första frostnätterna och som alla kör i Actions.
+
+**Uppmätt fördelning 12/9:** av de hundra senaste körningarna var **femtio `ci`**, det enskilt
+största flödet. Två av mina sju PR samma dag var rena dokumentändringar som ändå startade en
+postgres-tjänst och körde hela sviten.
+
+**Vad raden inte kan missbrukas till:** `paths-ignore` hoppar över bara när VARJE ändrad fil
+matchar. En gren som rör kod och dokument kör fortfarande allt — kontraktsgrinden (#144) och
+beroendekartan (#147) går inte att smyga förbi genom att lägga till en md-fil.
+
+**Fällan som är dokumenterad i filen:** detta är säkert enbart så länge `ci` inte är en obligatorisk
+statuskontroll. Kontrollerat 13/9 via API — `main` har inget grenskydd alls. Införs grenskydd med
+`ci` som krav måste raden bort i samma ändring, annars kan en ren dokument-PR aldrig mergas:
+kontrollen rapporterar då aldrig, och grenen ser trasig ut utan att vara det.
+
+**Besparingen lovades inte i förväg.** Den här posten är själva provet — en ren dokumentcommit som
+ska passera utan `ci`-körning. Utfallet skrivs in nedan när det lästs.
