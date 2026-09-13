@@ -1679,3 +1679,15 @@ Verify för steg B: Actions-min/dygn oförändrade efter en vecka, avläses 20/9
 Byggt: ingen kod — att inte flytta är beslutets hela innehåll.
 Nästa buildbara steg är C (snapshotens regnfält, en skrivare). Det kräver kod, CI och deploy, och
 kassan på 202 min/dygn mot taket 35 USD är fortfarande obesvarad — den frågan gatear nu C.
+
+## 2026-09-13 02:10 — Kort #152 kassavakten byggd: check 8 larmar innan Actions-taket slår i
+Bengts order "Bygg check 8". Vakthunden får en åttonde check som räknar körningar sedan den 1:a,
+drar bort gratispotten 2 000 min, multiplicerar med 0,008 USD och larmar när prognosen når taket före
+månadsskiftet eller när 70 % redan är förbrukat. Ligger i Supabase ⇒ noll Actions-minuter, och
+använder samma nyckel som mätvakten redan läser Actions-API:t med.
+Designvalet (DECISIONS #157): vi räknar själva i stället för att läsa Billing-API:t, som kräver
+kontobehörighet vi inte har. Priset är två kända fel som skrivs ut i varje larm — kontoomfattande tak
+mot ett repo, och avrundning per körning i stället för per jobb. Talet är ett golv, aldrig fakturan.
+Aritmetiken bevisad fristående mot sex handräknade fall, bland annat att 261 min/dygn ger takdatum
+25/9 och att gratispotten gör oktober gratis tills den är slut. Syntaxkontroll grön.
+KVAR I DETTA VARV: deploy + ?kassaprov=1 som bevis EFTER deployen.

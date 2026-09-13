@@ -27,6 +27,11 @@
 // appen är bruten NU". En mätning som missade en måndag är inte det, och låg den i samma issue
 // skulle den hålla vakthunden röd i en vecka och dränka ett riktigt driftlarm.
 //
+// Och EN vakt över KASSAN (8, kort #152, Bengts order 13/9):
+//   8. ACTIONS-TAKET: närmar vi oss den gräns som har hårt stopp?
+// Prov: ?kassaprov=1
+// Samma egen etikett och egen cykel, samma regel om att aldrig färga driftvakthunden röd.
+//
 // Och EN vakt över att NÅGON LÄSER larmen (7, kort #31 + #149, Bengts order 12/9):
 //   7. KÄLLÄNDRINGARNA: ligger ett nyhetslarm oläst över sin frist?
 // Prov: ?paminnelseprov=1
@@ -416,6 +421,114 @@ Deno.serve(async (req) => {
   } catch (e) {
     // Samma regel som mätvakten: en blind påminnelse är värre än ingen.
     problem.push(`**Källvaktspåminnelsen (kort #31/#149) kunde inte köras**: ${String(e)}`);
+  }
+
+  // 8. NÄRMAR VI OSS ACTIONS-TAKET? (kort #152, Bengts order 13/9: "Kan man ha någon mätning
+  //    på taket så man vet när man närmar sig gränsen. Automatisk alltså".)
+  //
+  //    BAKGRUNDEN: 5/9 tog minuterna slut mitt i drift. Pipelinen stannade, appen serverade
+  //    66 timmar gammal data, och det upptäcktes bara för att en människa råkade titta. Taket
+  //    har HÅRT STOPP (Axels 35 USD, DECISIONS #81/#82) — det är inte en långsam försämring
+  //    utan en vägg. 12/9 mättes takten till 202 min/dygn, vilket pekar mot 31–40 USD till 1/10.
+  //
+  //    VARFÖR VI RÄKNAR SJÄLVA i stället för att läsa fakturan: Billing-API:t kräver en nyckel
+  //    med KONTObehörighet och PUBLISH_TOKEN har bara repo-behörigheter. Att skaffa den nyckeln
+  //    är Axels handgrepp; den här vakten är byggd för att fungera utan den. Priset är två fel
+  //    som vi känner till och därför skriver ut i varje larm i stället för att dölja:
+  //      · TAKET ÄR KONTOOMFATTANDE, vi ser ETT repo. Bränner ett annat repo under samma konto
+  //        minuter räknar vi för lågt. Vår siffra är ett GOLV för förbrukningen, aldrig ett facit.
+  //      · GitHub avrundar per JOBB, vi per KÖRNING. Alla våra flöden har ett jobb utom
+  //        android.yml som har två — där räknar vi en minut för lite per körning.
+  //    Ett golv duger för frågan som ställdes, nämligen "närmar vi oss".
+  //
+  //    GRATISPOTTEN DRAS BORT FÖRST, och det är den lätta att missa: 2 000 minuter ingår per
+  //    månad och nollställs den 1:a. En räknare som glömmer det rapporterar tjugo dollar den
+  //    1 oktober när verkligheten är noll.
+  //
+  //    DET ANVÄNDBARA TALET ÄR PROGNOSEN, inte procenten. "I dagens takt slår taket i den 27:e"
+  //    går att agera på; "62 % förbrukat" gör det inte.
+  //
+  //    KÖRS FYRA GÅNGER PER DYGN, inte varje timme: en räkning är ~30 API-anrop och budgeten
+  //    rör sig 1–2 USD per dygn. Att lösa ett slöserifel med slöseri vore fel medicin.
+  //
+  //    FÄRGAR ALDRIG DRIFTVAKTHUNDEN RÖD — samma regel och samma skäl som mätvakten: rött ska
+  //    betyda "kedjan till appen är bruten NU". Ett tak vi når om nio dygn är inte det, och låg
+  //    det i samma issue skulle det hålla vakthunden röd i en vecka och dränka ett driftlarm.
+  const KASSA = "<!-- kassavakt -->";
+  const TAK_USD = 35;          // Axels spending limit (DECISIONS #81/#82) — hårt stopp vid gränsen
+  const PRIS_PER_MIN = 0.008;  // USD, standard 2-core Linux
+  const GRATIS_MIN = 2000;     // ingår per månad, nollställs den 1:a
+  const LARM_ANDEL = 0.70;     // larma när FAKTISK förbrukning passerat denna andel av taket
+  const SIDTAK = 40;           // max 40 sidor à 100 körningar; en tyst avkortning vore ett eget fel
+  try {
+    const nu = new Date();
+    const kassaprov = new URL(req.url).searchParams.get("kassaprov") === "1";
+    if (nu.getUTCHours() % 6 !== 5 && !kassaprov) {
+      rad.push(`kassan: räknas 05/11/17/23 UTC (nu ${String(nu.getUTCHours()).padStart(2, "0")})`);
+    } else {
+      const start = new Date(Date.UTC(nu.getUTCFullYear(), nu.getUTCMonth(), 1));
+      const sedan = start.toISOString().slice(0, 10);
+      let minuter = 0, korningar = 0, avkortad = false;
+      for (let sida = 1; sida <= SIDTAK; sida++) {
+        const k = ((await gh(`/actions/runs?per_page=100&page=${sida}&created=%3E%3D${sedan}`)).workflow_runs ?? []);
+        for (const r of k) {
+          // Pågående körningar räknas nästa varv — en halvfärdig körning har ingen sluttid.
+          if (r.status !== "completed" || !r.run_started_at) continue;
+          const sek = (new Date(r.updated_at).getTime() - new Date(r.run_started_at).getTime()) / 1000;
+          minuter += Math.max(1, Math.ceil(sek / 60));
+          korningar++;
+        }
+        if (k.length < 100) break;
+        if (sida === SIDTAK) avkortad = true;
+      }
+      const debiterat = Math.max(0, minuter - GRATIS_MIN);
+      const kostnad = debiterat * PRIS_PER_MIN;
+      const dygnIn = Math.max(1 / 24, (nu.getTime() - start.getTime()) / 86400000);
+      const takt = minuter / dygnIn;
+      const dygnIManaden = new Date(Date.UTC(nu.getUTCFullYear(), nu.getUTCMonth() + 1, 0)).getUTCDate();
+      const prognosUsd = Math.max(0, takt * dygnIManaden - GRATIS_MIN) * PRIS_PER_MIN;
+      // Vilket datum slår taket i? Totalminuter när det DEBITERADE når taket, delat med takten.
+      const takMin = GRATIS_MIN + TAK_USD / PRIS_PER_MIN;
+      const dygnTillTak = takt > 0 ? takMin / takt : Infinity;
+      const takDatum = dygnTillTak <= dygnIManaden
+        ? new Date(start.getTime() + dygnTillTak * 86400000).toISOString().slice(0, 10) : null;
+      rad.push(`kassan: ${minuter} min sedan ${sedan} (${korningar} körningar) · debiterat ${debiterat} min ` +
+        `= ${kostnad.toFixed(2)} av ${TAK_USD} USD · takt ${takt.toFixed(0)} min/dygn · prognos ${prognosUsd.toFixed(0)} USD` +
+        `${takDatum ? ` · TAKET SLÅR I ${takDatum}` : ""}${avkortad ? " · AVKORTAD" : ""}`);
+
+      const skal: string[] = [];
+      if (kostnad >= TAK_USD * LARM_ANDEL)
+        skal.push(`**${((kostnad / TAK_USD) * 100).toFixed(0)} % av taket förbrukat** — ${kostnad.toFixed(2)} av ${TAK_USD} USD.`);
+      if (takDatum)
+        skal.push(`**I dagens takt (${takt.toFixed(0)} min/dygn) slår taket i den ${takDatum}**, alltså före månadsskiftet.`);
+      if (avkortad)
+        skal.push(`Räkningen avkortades vid ${SIDTAK} sidor — talet är för lågt även jämfört med det här repots verkliga förbrukning.`);
+      if (kassaprov)
+        skal.push("**PROV** — påhittad rad för att bevisa kassavaktens larmväg. Försvinner vid nästa körning under gränsen.");
+
+      const kKropp = `${KASSA}` + "\n" + `**Kassavakten ${new Date().toISOString()}**` + "\n" + "\n" +
+        (skal.length ? skal.map((s) => `- ⚠️ ${s}`).join("\n") : "- ✅ god marginal till taket") + "\n" + "\n" +
+        `Förbrukat sedan ${sedan}: **${minuter} min** över ${korningar} körningar. Gratispotten ${GRATIS_MIN} min ` +
+        `dras bort först ⇒ debiterat **${debiterat} min = ${kostnad.toFixed(2)} USD** av taket ${TAK_USD}. ` +
+        `Takt **${takt.toFixed(0)} min/dygn**, prognos för månaden **${prognosUsd.toFixed(0)} USD**.` + "\n" + "\n" +
+        `Slår taket i blir det HÅRT STOPP: grannar, ingest och healthcheck tystnar som 5/9. ` +
+        `Livemotorn i Supabase påverkas inte — den kostar inga Actions-minuter.` + "\n" + "\n" +
+        `**Talet är ett GOLV, inte fakturan.** Taket är kontoomfattande men vi ser bara ${REPO}; ` +
+        `och GitHub avrundar per jobb medan vi avrundar per körning (android.yml har två jobb). ` +
+        `Den exakta siffran kräver en nyckel med kontobehörighet och ligger hos Axel.`;
+      const oppnaK = await gh(`/issues?state=open&labels=kassavakt`);
+      const minK = oppnaK.find((i: any) => (i.body ?? "").includes(KASSA));
+      if (skal.length) {
+        if (minK) await gh(`/issues/${minK.number}/comments`, "POST", { body: kKropp });
+        else await gh(`/issues`, "POST", { title: "💸 Kassavakten: Actions-taket närmar sig", body: kKropp, labels: ["kassavakt"] });
+      } else if (minK) {
+        await gh(`/issues/${minK.number}/comments`, "POST", { body: kKropp + "\n" + "\n" + "Stänger — god marginal igen." });
+        await gh(`/issues/${minK.number}`, "PATCH", { state: "closed" });
+      }
+    }
+  } catch (e) {
+    // Samma regel som mätvakten och påminnelsen: en blind vakt är värre än ingen.
+    problem.push(`**Kassavakten (kort #152) kunde inte köras**: ${String(e)}`);
   }
 
   const kropp = `${MARK}\n**Kontroll ${new Date().toISOString()}**\n\n` +

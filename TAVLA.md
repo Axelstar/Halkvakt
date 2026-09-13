@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-13 01:55 av Claude (webben) — HELA §3.4 AVGJORD: tröskeln ≥ 2,0 mm/h kontrasignerad av Axel, faktorn 0,65 fastställd. Steg A OCH B klara — radarn stannar i timingesten (noll extra minuter, verify 20/9). Stegen C–F öppna: nästa bygge är snapshotens regnfält.*
+*Uppdaterad: 2026-09-13 02:10 av Claude (webben) — kort #152 KASSAVAKTEN byggd: check 8 i vakthunden räknar Actions-minuter mot taket och larmar på PROGNOSEN, inte procenten. Noll Actions-minuter, egen etikett, färgar aldrig driftvakthunden röd. Aritmetiken bevisad mot sex handräknade fall; deploy + prov återstår.*
 
 ---
 
@@ -365,6 +365,30 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [ ] 💸 **#152 KASSAVAKTEN — check 8 i vakthunden: larmar innan Actions-taket slår i** (Bengts order
+  13/9: "Kan man ha någon mätning på taket så man vet när man närmar sig gränsen. Automatisk alltså").
+  🔨 BYGGD 13/9, väntar på deploy + bevis. Bakgrunden är 5/9: minuterna tog slut mitt i drift, appen
+  serverade 66 h gammal data, och det upptäcktes bara för att en människa råkade titta. Taket har HÅRT
+  STOPP, så det är en vägg och inte en försämring. Ligger i vakthunden (Supabase, noll Actions-minuter)
+  med samma nyckel som mätvakten redan använder för att läsa Actions-API:t.
+  RÄKNINGEN: körningar sedan den 1:a, avrundade uppåt per körning, minus gratispotten 2 000 min,
+  gånger 0,008 USD. Larmar när (a) faktisk förbrukning passerat 70 % av taket, eller (b) prognosen når
+  taket före månadsskiftet — och det är (b) som är poängen: "i dagens takt slår taket i den 25:e" går
+  att agera på, "62 % förbrukat" gör det inte.
+  TVÅ KÄNDA FEL, utskrivna i varje larm i stället för dolda: taket är KONTOOMFATTANDE men vi ser ett
+  repo, och GitHub avrundar per jobb medan vi avrundar per körning (android.yml har två jobb). Talet är
+  därför ett GOLV, aldrig fakturan. Exakta siffran kräver kontobehörighet ⇒ Axels handgrepp, eget kort
+  om vi vill ha den.
+  KÖRS 05/11/17/23 UTC, inte varje timme: en räkning är ~30 API-anrop och budgeten rör sig 1–2 USD/dygn.
+  FÄRGAR ALDRIG DRIFTVAKTHUNDEN RÖD (egen etikett `kassavakt`, egen öppna/uppdatera/stäng-cykel) — samma
+  regel som mätvakten: rött ska betyda "kedjan till appen är bruten NU".
+  ✅ ARITMETIKEN BEVISAD fristående mot sex handräknade fall (husets konvention för vakthundslogik, som
+  kadensTimmar): gratispotten ej förbrukad ⇒ 0 USD; 6 375 min ⇒ exakt 35,00; 202 min/dygn ⇒ taket nås
+  INTE i september; 261 min/dygn ⇒ taket slår i 25/9; noll minuter ⇒ inget datum; första halvtimmen i
+  månaden ⇒ ändlig takt. Testet checkades medvetet INTE in: det hade blivit en andra kopia av tre
+  trösklar och utlöst kontraktsgrinden för noll nytta — konstanterna finns i EN fil.
+  Verify: deploy-supabase grön, sedan `?kassaprov=1` ⇒ issue med etiketten `kassavakt` som stängs av
+  nästa körning under gränsen. Och en riktig kassarad i nästa vakthundskörning 05/11/17/23.
 - [ ] 🧊 **#151 VÄGLAGETS ÅLDER — ska en stående vinterklassning tystas när mätningarna säger att vintern tagit slut?**
   📄 **TRÖSKELDOKUMENT FASTSTÄLLT 12/9 av Bengt** (`docs/TROSKLAR-VAGLAGETS-ALDER.md`, DECISIONS #151/#152).
   **Kortet kommer ur att Axel mätte i stället för att bygga det jag antog.** Jag flaggade att
