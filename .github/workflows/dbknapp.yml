@@ -32,9 +32,16 @@ jobs:
           BEVIS: "${{ inputs.bevis }}"
         run: |
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-          if [ "$ATGARD" = larmprov ] || [ "$ATGARD" = vinterprov ] || [ "$ATGARD" = frostprov ] || [ "$ATGARD" = matvaktprov ] || [ "$ATGARD" = paminnelseprov ]; then
-            node --experimental-strip-types scripts/dbknapp.ts larmprov "$ATGARD" | tee -a "$GITHUB_STEP_SUMMARY"
-          else
+          # INVERTERAD MED FLIT (13/9): villkoret frågar efter migrera, inte efter provflaggorna.
+          # Förut räknade den upp varje provflagga, alltså en ANDRA vitlista vid sidan av
+          # scripts/dbknapp.ts:FLAGGOR. Kassaprovet lades till i skriptets lista men inte här, och
+          # en körning med atgard=kassaprov föll då TYST ned i migrera-grenen och körde
+          # sql/014_gallring.sql i stället för larmprovet. Ofarligt den gången (migrationen är
+          # idempotent) men fel sak, och nästa gång kanske filen inte är idempotent.
+          # Nu finns EN lista, i skriptet. Okänd flagga når skriptet och avvisas högljutt.
+          if [ "$ATGARD" = migrera ]; then
             node --experimental-strip-types scripts/dbknapp.ts migrera "$FIL" --bevis "$BEVIS" | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            node --experimental-strip-types scripts/dbknapp.ts larmprov "$ATGARD" | tee -a "$GITHUB_STEP_SUMMARY"
           fi
           echo '```' >> "$GITHUB_STEP_SUMMARY"
