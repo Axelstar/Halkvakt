@@ -36,7 +36,11 @@ test("snapshot chain: files → hazards → disciplined alerts", () => {
   // vinner prioritet över wx/seg om samtidiga)... verifiera disciplinen strukturellt:
   assert.ok(alerts.length >= 3, `expected a busy but disciplined drive, got ${alerts.length}`);
   for (let i = 1; i < alerts.length; i++) {
-    assert.ok(alerts[i].t - alerts[i - 1].t >= 45, "45s rule broken via snapshot path");
+    // #127 (13/9): golvet är 10 s och prioritetsmedvetet — en HÖGRE fara får bryta det.
+    // Två larm av samma eller lägre prioritet måste fortfarande ha ≥ 10 s emellan.
+    const P = ["accident", "slippery_segment", "icing_point", "wildlife", "camera"];
+    if (P.indexOf(alerts[i].kind) >= P.indexOf(alerts[i - 1].kind))
+      assert.ok(alerts[i].t - alerts[i - 1].t >= 10, "10 s-golvet brutet via snapshot-vägen");
   }
   assert.ok(alerts.some((a) => a.hazardId === "cam:TV1"), "camera missing");
   assert.ok(alerts.some((a) => a.kind === "accident"), "deviation→accident mapping missing");

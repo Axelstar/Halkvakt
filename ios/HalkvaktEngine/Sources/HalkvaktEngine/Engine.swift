@@ -75,7 +75,7 @@ public struct Alert: Equatable {
 public struct EngineConfig {
     public var corridorHalfAngleDeg = 35.0
     public var minSpeedKmh = 15.0
-    public var globalCooldownS = 45.0
+    public var globalCooldownS = 10.0   // #127: var 45; prioritetsmedveten nu
     public var repeatMinS = 600.0
     public var repeatMinM = 5000.0
     public var cameraTriggerM = 500.0
@@ -199,6 +199,8 @@ public final class AlertEngine {
     private var lastHeadingDeg: Double?
     private var odometerM = 0.0
     private var lastSpokenT: Double?
+    /// Vad som senast sades — spärren får bara tysta något som INTE är viktigare (#127).
+    private var lastSpokenKind: HazardKind?
     private var fired: [String: (t: Double, odo: Double)] = [:]
 
     private let slipperyInfo = try! NSRegularExpression(
@@ -330,9 +332,15 @@ public final class AlertEngine {
             return $0.alertKey < $1.alertKey
         }[0]
 
-        if let last = lastSpokenT, fix.t - last < cfg.globalCooldownS { return nil }
+        // Regel 1b: PRIORITETSMEDVETEN spärr (#127). Får bara kasta en vinnare vars prioritet
+        // inte är högre än det senast sagda. Is får avbryta en kamera; en kamera aldrig is.
+        if let last = lastSpokenT, fix.t - last < cfg.globalCooldownS {
+            let lastP = lastSpokenKind?.priority ?? Int.max
+            if win.kind.priority >= lastP { return nil }
+        }
 
         lastSpokenT = fix.t
+        lastSpokenKind = win.kind
         fired[win.alertKey] = (fix.t, odometerM)
         return Alert(
             t: fix.t, hazardId: win.id, kind: win.kind,

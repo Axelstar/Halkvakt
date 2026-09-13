@@ -1,6 +1,6 @@
 {
- "name": "45-sekundersregeln",
- "description": "Två kameror 400 m isär i 80 km/h (18 s mellanrum). Första talar; andra faller i tystnadsfönstret, släpps, och passeras. EN varning totalt. Kamerornas bearing vänd 180° 2/9: Trafikverkets värde är riktningen kameran TITTAR, färdriktningen den fotar är motsatt.",
+ "name": "Golvet: andra kameran väntar 10 s, kastas inte (#127)",
+ "description": "OMSKRIVEN 13/9 (#127). Två kameror 200 m isär i 80 km/h = 9 s. camA talar t=113. camB kvalificerar t=122 (9 s senare, under golvet) och KASTAS den sekunden — men motorn omprövar varje sekund och camB är fortfarande kandidat, så vid t=123 (10 s) är golvet passerat och camB talar. Låser TVÅ saker: att golvet finns (t=123, inte t=122) och att en kamera aldrig tystas permanent av det — Bengts mätning: minsta avstånd 520 m i samma riktning ⇒ 15,6 s vid 120 km/h, alltid över golvet. Bearing 180 = fotar norrgående.",
  "hazards": [
   {
    "id": "camA",
@@ -13,7 +13,7 @@
    "id": "camB",
    "kind": "camera",
    "lon": 15,
-   "lat": 58.030542579949696,
+   "lat": 58.02882882882883,
    "bearing": 180
   }
  ],
@@ -1230,6 +1230,13 @@
    "hazardId": "camA",
    "kind": "camera",
    "distanceM": 488,
+   "text": "Fartkamera om 500 meter."
+  },
+  {
+   "t": 123,
+   "hazardId": "camB",
+   "kind": "camera",
+   "distanceM": 475,
    "text": "Fartkamera om 500 meter."
   }
  ]
