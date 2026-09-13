@@ -4298,3 +4298,11 @@ kontrollen rapporterar då aldrig, och grenen ser trasig ut utan att vara det.
 
 **Besparingen lovades inte i förväg.** Den här posten är själva provet — en ren dokumentcommit som
 ska passera utan `ci`-körning. Utfallet skrivs in nedan när det lästs.
+
+**UTFALLET, läst 13/9:** provet HÖLL. Commiten `e15fa19` rörde bara `DECISIONS.md` och startade
+ingen ci-körning — senaste körningen var och förblev **#604**, från paths-ignore-mergen själv.
+Raden verkar alltså som avsett.
+
+Vad det INTE säger: hur mycket det sparar. Det vet vi först när kassavakten mätt några dygn med
+raden på plats, och den siffran ska läsas ur vakten och inte skattas här. Det enda som är bevisat
+är att mekanismen fungerar — att en ren dokumentändring inte längre startar en postgres-tjänst.
