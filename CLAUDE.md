@@ -230,3 +230,11 @@ i samma commit när de överlappar.
   och en vakt som tyst halverar sig själv ger lugn på fel grund. Regel: paginera aldrig en månad i ett
   svep, dela upp i fönster som säkert rymmer under taket (ett dygn), och lita aldrig på att "sista
   sidan var kort" betyder "det var allt". Samma fälla finns i alla list-API:er med hårt träfftak.
+- TypeScript räknar i binär flyttal, Postgres i exakt `numeric`. `4.8 - 4.4` är **0,39999999999999947**
+  i den ena och **0,4** i den andra — och en tröskel på 0,4 skiljer dem åt. Uppmätt 13/9 av
+  trendarkivets driftvakt: SQL valde **862 av 4 713** kandidater som TypeScript inte valde, utan en
+  enda skillnad i logik. Regel: när samma regel finns i BÅDA språken, avrunda på TypeScript-sidan
+  till fler decimaler än mätvärdet har (mätvärde med en decimal ⇒ avrunda till tre) INNAN
+  jämförelsen mot tröskeln. Och bygg en jämförelse som kör båda sidorna över samma fönster —
+  kontraktsgrinden vaktar att kopiorna bär samma TAL, men bara en jämförelse vaktar att de fattar
+  samma BESLUT.

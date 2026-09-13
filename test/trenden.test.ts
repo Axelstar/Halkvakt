@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { FONSTER, LUTNING, DAGGGAP, STARTBAND, BREDASTE_BAND, MINSTA_LUTNING, fyrar, type Rad, type Param }
+import { FONSTER, LUTNING, DAGGGAP, STARTBAND, BREDASTE_BAND, MINSTA_LUTNING, fyrar, lutning, type Rad, type Param }
   from "../publish/trenden.ts";
 import { arKandidat, utfall } from "../publish/trendkandidat.ts";
 
@@ -92,4 +92,19 @@ test("kandidatens lutningar kommer i svepets ordning", () => {
   assert.ok(Math.abs((k.lutningar[2] ?? 0) - 4.0) < 1e-9);
   // 15-minutersfönstret ser tre steg à 0,4.
   assert.ok(Math.abs((k.lutningar[0] ?? 0) - 1.2) < 1e-9);
+});
+
+// Uppmätt 13/9 på station 2004: driftens SQL valde raden, knappens TypeScript inte, och
+// skillnaden var ren representation. 862 av 4 713 kandidater föll på det.
+test("4,8 − 4,4 är 0,4 och inte 0,39999999999999947 — annars glider SQL och TypeScript isär", () => {
+  const rader: Rad[] = [
+    { t: 0, yta: 4.8, dagg: 2.0, rh: 95, luft: 2.6 },
+    { t: 5, yta: 4.9, dagg: 2.2, rh: 97, luft: 2.4 },
+    { t: 55, yta: 4.2, dagg: 3.2, rh: 97, luft: 3.6 },
+    { t: 60, yta: 4.4, dagg: 2.9, rh: 98, luft: 3.2 },
+  ];
+  const l = lutning(rader, 3, 60);
+  assert.equal(l, 0.4);
+  assert.ok((l ?? 0) >= MINSTA_LUTNING, "exakt tröskelvärde ska räknas som uppnått");
+  assert.ok(arKandidat(rader, 3) !== null, "raden ÄR kandidat, precis som SQL räknar den");
 });

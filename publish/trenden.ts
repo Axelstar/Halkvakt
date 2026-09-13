@@ -42,7 +42,12 @@ export function lutning(rader: Rad[], i: number, fonsterMin: number): number | n
   for (let j = i; j >= 0 && rader[j].t >= start; j--) f.unshift(rader[j]);
   if (f.length < 3) return null;
   for (let j = 1; j < f.length; j++) if (Math.abs(f[j].yta - f[j - 1].yta) > 3) return null;
-  return f[0].yta - slut.yta;   // positivt när ytan FALLER
+  // AVRUNDAT TILL TUSENDELS GRAD, och det är inte kosmetik. Mätvärdena har EN decimal, men
+  // binär flyttal ger 4,8 − 4,4 = 0,39999999999999947 — under tröskeln 0,4, medan Postgres
+  // räknar samma subtraktion exakt i numeric och får 0,4. Utan avrundningen väljer drifträkningen
+  // och knappen olika rader på ren representation (uppmätt 13/9: 862 av 4 713 kandidater).
+  // Tusendelen kan inte dölja en verklig skillnad i ett material med en decimal.
+  return Math.round((f[0].yta - slut.yta) * 1000) / 1000;   // positivt när ytan FALLER
 }
 
 export type Param = { fonster: number; lut: number; gap: number; band: [number, number] };
