@@ -348,6 +348,24 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] Fysisk Android-testenhet (pappas telefon? begagnad?)
 
 ### Bengt
+- [ ] 📮 **#154 ANMÄL NIO TRASIGA BYVINDGIVARE TILL TRAFIKVERKET — skriven och klar, skickas av Bengt**
+  **Beställd av Bengt 13/9** ("gör 1 och 2") efter att stationsvakten (#90, DECISIONS #164) hittat dem.
+  **Brevet ligger i `docs/ANMALAN-TRV-BYVINDGIVARE.md`** — komplett med stations-id, namn, WGS84,
+  antal omöjliga timmar, värsta kvot, median byvind och den tydligaste enskilda observationen per
+  station. Enda luckan är kontaktuppgifterna, som medvetet står som platshållare.
+  **De nio:** 2312 Handöl (29 omöjliga timmar, 85,5 m/s — över Sveriges rekord), 2438 Ruskträsk,
+  227 Arlanda, 1732 Fastnäs, 426 Oxelösund (87,7 m/s), 618 Brahehus, 2107 Hamnäs, 310 Överboda,
+  1311 Mossjön. Mönstret är detsamma i alla nio: **spiken inträffar i nära vindstilla** — medelvind
+  0,4–2,1 m/s mot byvind 23,8–87,7.
+  **Beviset är deras eget material, inte vår modell:** i Trafikverkets egna data (alla stationer,
+  medelvind ≥ 5 m/s, 3 142 rader) är byvindfaktorns median 1,75, p95 2,25 och p99,9 3,08. De nio
+  ligger på 25–175.
+  ⏭️ **VAD SOM ÅTERSTÅR:** fyll i kontaktuppgifter och skicka. Att skicka är Bengts beslut — jag
+  skickar ingenting i hans namn. Vägen är Trafikverkets kontaktformulär för öppna data (eller
+  trafikverket@trafikverket.se med ärendet "öppna data — WeatherMeasurepoint").
+  💡 **Varför det är värt att skicka:** vi har uteslutit stationerna ur vårt eget underlag, så vi är
+  inte blockerade. Men felet ligger kvar för alla andra som läser samma öppna data — och svaret
+  (givare, överföring eller aggregering?) avgör om konsumenter kan filtrera bort det själva.
 - [ ] ⚖️ **#153 SAMMANVÄGT ALLVAR + ETT SMALARE UNDANTAG — två beslut som är BENGTS, inte byggbara förrän vintern**
   **Varifrån kortet kommer:** Bengts fråga 13/9, ordagrant: *"vi håller på att bygga ett antal olika
   risker som ska definiera och förutsäga vägförhållanden framöver men de ska inte kunna kombineras
