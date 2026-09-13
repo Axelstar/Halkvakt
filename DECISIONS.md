@@ -4306,3 +4306,50 @@ Raden verkar alltså som avsett.
 Vad det INTE säger: hur mycket det sparar. Det vet vi först när kassavakten mätt några dygn med
 raden på plats, och den siffran ska läsas ur vakten och inte skattas här. Det enda som är bevisat
 är att mekanismen fungerar — att en ren dokumentändring inte längre startar en postgres-tjänst.
+
+## #160 (13/9 2026) Kassavakten räknar två takter — månadssnittet svarade på fel fråga
+
+**Beslut (Bengts order 13/9, "vi kommer att bygga nu, gör kort 152 nu"):** check 8 rapporterar
+**förbrukningen** ur månad-till-datum men räknar **prognosen** på en **släpande takt** över de två
+senaste kompletta dygnen. Båda talen skrivs ut i varje larm.
+
+**Felet var mätt, inte befarat.** Vakten sa 13/9 att taket slår i den **21 september** vid
+311 min/dygn. I det snittet låg fem flöden som slutade köra vid konsolideringen 8–9/9 —
+`ingest-fi`, `ingest-no`, `ingest-dk`, `publish-map` och `regn-30` (kort #53/#79/#85). Deras
+`.yml`-filer finns inte längre; deras körningar ligger kvar i månadens summa.
+
+**Uppmätt verklig förbrukning samma natt:**
+
+| Fönster | min/dygn | varav bygge (`ci`) |
+| :-- | --: | --: |
+| Månad-till-datum | 311 | — |
+| Senaste 24 h | **232** | 103 |
+| Senaste 48 h | **180** | 66 |
+| Driften ensam (ingest + grannar + healthcheck) | **81** | 0 |
+
+**Konsekvensen av rättelsen, räknad på verkliga dygnssummor:** taket flyttas från **21 till
+26 september**. Det är skillnaden mellan "agera i dag" och "det finns en vecka".
+
+**VARFÖR BÅDA TALEN STÅR KVAR, och inte bara det nya.** Månadssnittet är rätt för frågan *vad har
+vi förbrukat* — det är den frågan fakturan ställer. Den släpande takten är rätt för *när tar det
+slut*. Att byta ut det ena mot det andra hade flyttat felet i stället för att ta bort det: en
+släpande takt är i gengäld känslig för en enskild byggskur, och ett dygn med mycket PR-arbete
+skulle slå igenom hårt i prognosen. Avviker talen mer än **25 %** säger larmet uttryckligen
+**TAKTEN ÄNDRAS** och att prognosen vilar på mark som rör sig.
+
+**TVÅ KOMPLETTA DYGN, inte ett och inte det pågående.** Ett enda dygn domineras av en byggskur;
+det pågående dygnet är alltid delvis och räknar därför för lågt. Den 1:a och 2:a i månaden finns
+inget komplett dygn — då faller den tillbaka på månadssnittet, vilket är rätt eftersom de då är
+samma sak.
+
+**Kostar noll extra API-anrop.** Dygnsloopen fanns redan (Axels rättelse mot GitHubs tysta
+1 000-träffstak); dygnssummorna sparas nu medan den ändå går igenom dygnen.
+
+**Prövat fristående mot tre fall innan deploy:** verkliga tal 13/9 (311 månad / 201 släpande /
+taket 26 sept / gungar), första dygnet i månaden (fallback till månadssnittet), och en halverad
+takt (gungar, taket nås inte inom månaden). Vakthunden är en Deno-funktion och kan inte laddas av
+`node:test` — samma skäl som `kadensTimmar` legat otestad sedan #73.
+
+**Vad det INTE ändrar:** talet är fortfarande ett GOLV, inte fakturan. Taket är kontoomfattande
+men vakten ser ett repo, och GitHub avrundar per jobb medan vi avrundar per körning. Den exakta
+siffran kräver en nyckel med kontobehörighet och ligger hos Axel.
