@@ -4327,8 +4327,13 @@ senaste kompletta dygnen. Båda talen skrivs ut i varje larm.
 | Senaste 48 h | **180** | 66 |
 | Driften ensam (ingest + grannar + healthcheck) | **81** | 0 |
 
-**Konsekvensen av rättelsen, räknad på verkliga dygnssummor:** taket flyttas från **21 till
-26 september**. Det är skillnaden mellan "agera i dag" och "det finns en vecka".
+**Konsekvensen av rättelsen, UPPMÄTT ur den deployade funktionen 13/9 03:0x:** släpande takt
+**169 min/dygn** mot månadssnittets 311 ⇒ taket flyttas från **21 till 28 september**.
+
+*(Rättelse i samma post: jag skrev först 26 september utifrån ett fristående prov med påhittade
+dygnssummor som gav 201 min/dygn. Den deployade funktionen räknar på de verkliga dygnen och ger
+169 och den 28:e. Koden hade rätt, min bokföring hade fel — och en post som citerar ett
+skattat tal i stället för ett uppmätt är precis det fel hela kortet handlar om.)*
 
 **VARFÖR BÅDA TALEN STÅR KVAR, och inte bara det nya.** Månadssnittet är rätt för frågan *vad har
 vi förbrukat* — det är den frågan fakturan ställer. Den släpande takten är rätt för *när tar det
