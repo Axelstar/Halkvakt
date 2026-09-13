@@ -131,6 +131,12 @@ await q(`CREATE TEMP TABLE rdtim AS
   GROUP BY 1, 2`, [DAGAR]);
 await q("CREATE INDEX rdtim_idx ON rdtim (segment_id, h)");
 
+// Tidsaxeln som BÅDA nämnarna räknar på: varje hel timme arkivet faktiskt sträcker sig över.
+await q(`CREATE TEMP TABLE rdtim_spann AS
+  SELECT generate_series(minsta, storsta, interval '1 hour') AS h FROM (
+    SELECT least((SELECT min(h) FROM rdtim), (SELECT min(h) FROM sttim)) AS minsta,
+           greatest((SELECT max(h) FROM rdtim), (SELECT max(h) FROM sttim)) AS storsta) t`);
+
 // ── 2a TÄCKNINGEN.
 await avsnitt("2a TÄCKNINGEN", async () => {
   const a = (await q(`SELECT count(*)::int AS segment,
@@ -195,8 +201,13 @@ await avsnitt("2c SAMSTÄMMIGHETEN", async () => {
       count(*) FILTER (WHERE NOT radar_vat AND NOT station_vat)::int AS ingen
     FROM grund`, [r, MAX_KM]))[0];
   const n = Number(rad.jamforelser);
+  // Nämnaren räknas ur arkivets FAKTISKA spann, inte ur det begärda fönstret. Arkivet är
+  // yngre än sju dygn (minutkrisen, gallringen), och ett nominellt fönster blåser upp
+  // nämnaren och trycker ner täckningsgraden — ett tal som då råkar likna 0f:s 8,3 % utan
+  // att mäta samma sak. En falsk bekräftelse är värre än inget tal.
   const tack = (await q(`SELECT (SELECT count(*)::int FROM rdtim) AS radartimmar,
-      (SELECT count(DISTINCT segment_id)::int FROM rdtim) * $1 * 24 AS mojliga`, [DAGAR]))[0];
+      (SELECT count(DISTINCT segment_id) FROM rdtim)
+        * (SELECT count(DISTINCT h) FROM rdtim_spann) AS mojliga`))[0];
   console.log(`  Radarn har en åsikt om ${tack.radartimmar} av ${tack.mojliga} möjliga segmenttimmar`
     + ` (${pct(Number(tack.radartimmar), Number(tack.mojliga))}) — resten är OSAMPLAT, inte torrt.`);
   console.log(`  Vid r ≥ ${r} och stationsregn ${m === 0 ? "> 0" : `≥ ${m}`}, ${n} jämförbara segmenttimmar:`);
@@ -244,7 +255,8 @@ await avsnitt("2d SKATTNINGEN", async () => {
   console.log("  ⚠️ 'torr' i tabellen betyder ALLTID stationstäckt torr. Segmenttimmar utan mätning");
   console.log("     räknas inte som torra — de finns inte i nämnaren alls.");
   const diet = (await q(`SELECT (SELECT count(*)::int FROM sttim) AS sparade,
-      (SELECT count(DISTINCT station_id)::int FROM sttim) * $1 * 24 AS mojliga`, [DAGAR]))[0];
+      (SELECT count(DISTINCT station_id) FROM sttim)
+        * (SELECT count(DISTINCT h) FROM rdtim_spann) AS mojliga`))[0];
   console.log(`  🚨 OCH DEN VIKTIGASTE RESERVATIONEN: nämnaren är ARKIVDIETENS urval, inte tiden.`);
   console.log(`     ${diet.sparade} av ${diet.mojliga} möjliga stationstimmar sparades`
     + ` (${pct(Number(diet.sparade), Number(diet.mojliga))}), och dieten (#4) sparar rader just`);
