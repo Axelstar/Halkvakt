@@ -603,6 +603,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   där redan nederbörd och motorn varnar; de som är TORRA under en aktiv länsvarning är just de där
   varningen är lokalt fel — alltså exakt falsklarmen. Och hålet ägs redan av ett bättre kort:
   **#89 (a) gör samma sak med en PUNKTKÄLLA** (stationens egen regnhistorik, 76 % av regnstoppen).
+  🔓 **UPPLÅST 13/9 (DECISIONS #161, Bengts order):** regelskissen pekade på `rate_max`, som är
+  SPÄRRAT av värdevakten sedan 727,54 mm/h hittades i det (#134). Bytt till **`rate_mean_mmh`** —
+  en tvingad rättelse, inte en justering mot ett utfall. Svepet 0,1 · 0,5 · 2 är oförändrat och
+  blir dessutom rätt matchat: de talen kommer ur bekräftelsekurvans band, som mättes på just
+  `rate_mean`. Skalan utskriven i §2 (råradar; i stationens skala ≈ 0,15 · 0,8 · 3,1).
+  **Skuggkolumnen är därmed inte längre blockerad** — den väntade på radardomen, och den föll 13/9.
   Den breda förstärkaren var inte en bättre förstärkare, den var en sämre #89 (a).
   ➡️ **DEN BREDA IDÉNS KÄRNA FLYTTAD TILL #89, inte slängd:** ny parameter **`N_varning`** i
   TROSKLAR-OVERGANGAR §2.3 — en aktiv vintervarning **förlänger N** (hur länge efter uppmätt regn
