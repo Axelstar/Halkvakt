@@ -20,6 +20,7 @@ function fakeDb(rows: Partial<Record<string, any[]>>) {
       return text.includes("fi.") ? rows.fi ?? [] : rows.no ?? [];
     }
     if (text.includes("FROM road_conditions")) return rows.segments ?? [];
+    if (text.includes("FROM radar_precip")) return rows.radar ?? [];
     if (text.includes("FROM weather_latest") && text.includes("surface_temp_c <= 3")) return rows.wx ?? [];
     if (text.includes("FROM weather_latest")) return rows.allWx ?? [];
     if (text.includes("FROM deviations")) return rows.deviations ?? [];
@@ -131,4 +132,73 @@ test("manifest.json: sha256 och bytes stämmer med filerna apparna verifierar", 
     assert.equal(f.bytes, Buffer.byteLength(files[name]));
     assert.ok(f.gz_bytes > 0 && f.gz_bytes < f.bytes, `gzip krymper ${name}`);
   }
+});
+
+// ── RADARN I SNAPSHOTEN (kort #81 steg C, DECISIONS #153–#156) ───────────────────────────
+// Tre saker prövas, och den tredje är den som betyder något: att frånvaro av radar blir NULL
+// och inte noll. radar_precip skrivs bara vid eko ≥ 0,1 mm/h inom täckning, så en saknad rad
+// kan betyda torrt ELLER utanför täckning — och en nolla hade påstått det första.
+test("radarn skrivs om till stationens skala: divideras med 0,65, aldrig multipliceras", async () => {
+  const { q } = fakeDb({
+    segments: [{ segment_id: "S1", condition_code: 3, condition_info: ["Is"], road_number: "E4",
+                 g: { coordinates: [[15, 60], [15.1, 60.1]] } }],
+    radar: [{ segment_id: "S1", rate_mean_mmh: "2.0" }],
+  });
+  const { liveDoc } = await buildSnapshot(q, [], NOW);
+  // 2,0 råradar ⇒ 2,0 / 0,65 ≈ 3,1 i stationens skala. Multiplikation hade gett 1,3.
+  assert.equal(liveDoc.segments[0].regn, 3.1);
+  assert.notEqual(liveDoc.segments[0].regn, 1.3, "faktorn får inte multipliceras — då halveras värdet");
+});
+
+test("ett segment utan radarrad får null, ALDRIG noll", async () => {
+  const { q } = fakeDb({
+    segments: [{ segment_id: "S1", condition_code: 3, condition_info: ["Is"], road_number: null,
+                 g: { coordinates: [[15, 60], [15.1, 60.1]] } }],
+    radar: [],
+  });
+  const { liveDoc } = await buildSnapshot(q, [], NOW);
+  assert.equal(liveDoc.segments[0].regn, null);
+  assert.notEqual(liveDoc.segments[0].regn, 0, "noll vore ett påstående om torrhet vi inte mätt");
+});
+
+test("bara det segment radarn sett får ett värde", async () => {
+  const { q } = fakeDb({
+    segments: [
+      { segment_id: "S1", condition_code: 3, condition_info: ["Is"], road_number: null, g: { coordinates: [[15, 60], [15.1, 60.1]] } },
+      { segment_id: "S2", condition_code: 4, condition_info: ["Snö"], road_number: null, g: { coordinates: [[16, 61], [16.1, 61.1]] } },
+    ],
+    radar: [{ segment_id: "S2", rate_mean_mmh: "0.65" }],
+  });
+  const { liveDoc } = await buildSnapshot(q, [], NOW);
+  assert.equal(liveDoc.segments[0].regn, null);
+  assert.equal(liveDoc.segments[1].regn, 1);   // 0,65 / 0,65 = 1,0 exakt
+});
+
+test("giltighetsfönstret står i frågan — radarn är tyst när den är för gammal", async () => {
+  const { q, asked } = fakeDb({ radar: [] });
+  await buildSnapshot(q, [], NOW);
+  const f = asked.find((t) => t.includes("FROM radar_precip"));
+  assert.ok(f, "radarfrågan ska ställas");
+  assert.match(f!, /70 minutes/, "#81 regel 7: äldre än 70 min är radarn tyst");
+  assert.match(f!, /rate_mean_mmh/, "faktorn är mätt på rate_mean — rate_max är spärrat (#134)");
+  assert.ok(!f!.includes("rate_max"), "rate_max får inte användas här");
+});
+
+test("en otillgänglig radartabell fäller INTE snapshoten — men den noteras", async () => {
+  // publicera bygger snapshoten för alla fem varningsslag. Att döda halka, is, olyckor, vilt och
+  // kameror för att ett valfritt fält saknas vore oproportionerligt. Men tystnad vore värre:
+  // en fail-soft-gren utan spår är ett tyst ALDRIG.
+  const rows: any = {
+    segments: [{ segment_id: "S1", condition_code: 3, condition_info: ["Is"], road_number: null,
+                 g: { coordinates: [[15, 60], [15.1, 60.1]] } }],
+  };
+  const q: Q = async (text) => {
+    if (text.includes("FROM radar_precip")) throw new Error('relation "radar_precip" does not exist');
+    if (text.includes("FROM road_conditions")) return rows.segments;
+    return [];
+  };
+  const { liveDoc, notes } = await buildSnapshot(q, [], NOW);
+  assert.equal(liveDoc.segments.length, 1, "snapshoten byggs ändå");
+  assert.equal(liveDoc.segments[0].regn, null);
+  assert.ok(notes.some((n) => n.includes("radar_precip ej läsbar")), "felet ska stå i noterna, inte försvinna");
 });

@@ -4408,3 +4408,63 @@ det ett skäl att rensa fältet och byta tillbaka, och då vilar bytet på mätn
 
 **Det som vore fel är att rensa `rate_max` FÖR ATT låsa upp #89.** Då väljer schemat fält, bara
 åt andra hållet.
+
+## #162 (13/9 2026) Steg C, radarhalvan: regn per segment i snapshoten — och stationshalvan är blockerad
+
+**Beslut (Bengts order 13/9, "bygg sedan c"):** snapshotkärnan får fältet **`regn`** per segment,
+mm/h i **stationens skala**, ur `radar_precip.rate_mean_mmh` dividerat med faktorn 0,65 och med
+giltighetsfönstret 70 minuter. Kort #81 steg C, radarhalvan.
+
+**EN SKRIVARE.** Ingen annan sätter fältet. Faktorn och fönstret är konstanter i
+`publish/snapshot-core.ts` med §3.4 och #81 regel 7 utskrivna intill.
+
+**FRÅNVARO ÄR INTE TORRT — och det är byggets viktigaste rad.** `radar_precip` skrivs bara när ett
+segment hade eko ≥ 0,1 mm/h OCH låg inom täckningen: `ingest/radar.ts` returnerar `null` för
+nodata, och provpunkten räknas då inte alls. En saknad rad kan därför betyda **torrt ELLER utanför
+täckning**, och tabellen kan inte skilja dem åt. Fältet blir alltså **`null`, aldrig 0**. En nolla
+hade påstått en torrhet vi inte mätt, och det är precis den tysta osanningen värdevakten (#133)
+och septembervakten finns emot. Ett eget test låser fast det.
+
+**RIKTNINGEN LÅST MED ETT TEST, inte med en kommentar.** 2,0 råradar ⇒ **3,1** i stationens skala.
+Testet slår också fast att 1,3 är FEL svar — alltså att faktorn inte får multipliceras. §3.4 skrev
+ut riktningen i ord; nu finns den som ett fällande test.
+
+**KONTRAKTSGRINDEN FICK TVÅ NYA KONTRAKT I SAMMA COMMIT**, enligt husregeln i CLAUDE.md. Skälet är
+mekaniskt: `snapshot-core.ts` buntas in i `publicera/index.ts`, så faktorn och fönstret fanns på
+**två** ställen i samma ögonblick som de skrevs. 7 kontrakt håller.
+
+**STATIONSHALVAN GÅR INTE ATT BYGGA — FÄLLAN SLOG EN FJÄRDE GÅNG, men den här gången före koden.**
+Steg C säger `regn` per station ur `rain_sum_mm × 2`. Men `sql/008_rain_sum.sql` lade
+`rain_sum_mm` **bara i `weather_observations`**. `weather_latest` har nio fält och saknar det —
+exakt det strukturella hål sql/016 dokumenterade: *"ett nytt väderfält kräver TVÅ kolumner, inte
+en. Kontrollera latest-tabellen INNAN koden skrivs, inte efter att CI fällt den."* Regeln gjorde
+sitt jobb.
+
+Stationshalvan kräver därmed tre saker som radarhalvan inte gjorde: en migration, en ändring i
+`ingest/db.ts`, och en ändring i `supabase/functions/ingest-live/index.ts` — **livemotorns egen
+ingest, med deploy**. Det är en annan sorts ändring och ett eget steg. Den läggs inte in här i
+smyg för att kortet råkade skriva båda halvorna på samma rad.
+
+**KVAR AV STEG C:s VERIFY:** vakthundens rad "regn i snapshoten", och att fältet syns i live.json
+efter deploy. Radarn är torr i september, så fältet väntas vara `null` på varje segment — och
+**det är rätt utfall**, inte ett misslyckande.
+
+**RÖD CI PÅ FÖRSTA FÖRSÖKET, och den avslöjade ett produktionsfel — inte bara ett testfel.**
+Integrationstestet mot riktig PostGIS föll på `relation "radar_precip" does not exist`. Tabellen
+skapas av `ingest/radar.ts` vid varje körning (även torra dygn), så i drift finns den — men felet
+betydde att **publicera nu skulle DÖ om den saknades**, och publicera bygger snapshoten för ALLA
+fem varningsslag. Att döda halka, is, olyckor, vilt och kameror för att ett valfritt fält saknas
+vore oproportionerligt.
+
+**Löst åt båda hållen, för ingetdera räcker ensamt:**
+1. **Radarfrågan får en fail-soft-gren MED NOT.** Samma avvägning som grannschemana redan har i
+   samma funktion. Men aldrig tyst: felet skrivs i `notes`, för en fail-soft-gren utan spår är ett
+   **tyst ALDRIG** — CLAUDE.md-läxan från kameror-vaglag, som hoppade över en skrivning i varje varv
+   medan jobbet var grönt. Eget test: tabellen kastar ⇒ snapshoten byggs ändå, `regn` blir null,
+   och noten finns.
+2. **Integrationstestet applicerar sql/009 före `buildSnapshot`** — samma mönster som gallringen
+   (014) och grannschemana. Utan det prövas bara den degraderade vägen, och den riktiga aldrig.
+
+Att bara göra (1) hade gjort testet grönt utan att någonsin köra den riktiga frågan mot en riktig
+tabell. Att bara göra (2) hade lämnat publicera dödlig mot en saknad tabell. **Rött bygge som
+hittade ett verkligt fel är billigt; det var därför det skulle vara rött.**

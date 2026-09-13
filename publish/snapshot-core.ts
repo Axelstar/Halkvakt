@@ -28,6 +28,18 @@ export const WX_SANE =
 
 const BORDER_M = 40_000;
 const BORDER_LANDS = ["fi", "no"] as const;
+
+/** RADARN I SNAPSHOTEN (kort #81 steg C, TROSKLAR-VATTENPLANING §3.4, DECISIONS #153–#156).
+ *
+ *  Fältet `regn` bär mm/h i STATIONENS SKALA — en enda skala i hela snapshoten, oavsett källa.
+ *  Radarvärdet DIVIDERAS därför med faktorn; att multiplicera halverar i stället för att dubbla,
+ *  och §3.4 skrev ut riktningen just för att den annars blir omvänd en gång.
+ *
+ *  Faktorn och fältet är mätta ihop: 0,65 gäller `rate_mean_mmh` och ingenting annat.
+ *  `rate_max_mmh` är spärrat av värdevakten (727,54 mm/h, DECISIONS #134) och används inte här. */
+export const RADAR_FAKTOR = 0.65;
+/** #81 regel 7: utanför sin giltighet är radarn TYST, inte "ungefär rätt". */
+export const RADAR_MAX_ALDER_MIN = 70;
 const BRIDGE_M = 15_000;
 
 const num = (x: unknown) => (x === null || x === undefined ? null : Number(x));
@@ -88,6 +100,37 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
       AND (end_time IS NULL OR end_time > now())
       AND (condition_code >= 2 OR EXISTS (
         SELECT 1 FROM unnest(condition_info) i WHERE i ~* '(^|[^a-zåäö])(is|snö|halka|frost)'))`);
+
+  // ---- live: radarns regn per segment (kort #81 steg C) ----
+  // EN SKRIVARE: ingen annan sätter `regn`. Senaste raden per segment inom giltighetsfönstret.
+  //
+  // FRÅNVARO ÄR INTE TORRT, och det är hela finessen. radar_precip skrivs bara när ett segment
+  // hade eko ≥ 0,1 mm/h OCH låg inom radartäckningen (ingest/radar.ts: nodata ⇒ punkten räknas
+  // inte alls). En saknad rad kan alltså betyda "torrt" ELLER "utanför täckning", och tabellen
+  // kan inte skilja dem åt. Därför skrivs `regn: null` — aldrig 0. Att skriva 0 vore att påstå
+  // en torrhet vi inte mätt, och en sådan nolla är precis den sortens tysta osanning
+  // värdevakten (#133) och septembervakten finns emot.
+  //
+  // OCH RADARN FÅR INTE FÄLLA HELA SNAPSHOTEN. Tabellen skapas av ingest/radar.ts vid varje
+  // körning, så i drift finns den — men publicera bygger snapshoten för ALLA fem varningsslag,
+  // och att döda halka, is, olyckor, vilt och kameror för att ett valfritt fält saknas vore
+  // oproportionerligt. Samma avvägning som grannschemana redan har i den här funktionen.
+  // MEN INTE TYST: felet noteras, för en fail-soft-gren utan spår är ett tyst ALDRIG
+  // (CLAUDE.md-läxan från kameror-vaglag).
+  const regnPerSegment = new Map<string, number>();
+  try {
+    const radar = await q(`
+      SELECT DISTINCT ON (segment_id) segment_id, rate_mean_mmh
+      FROM radar_precip
+      WHERE observed_at > now() - interval '${RADAR_MAX_ALDER_MIN} minutes'
+      ORDER BY segment_id, observed_at DESC`);
+    for (const r of radar) {
+      const raa = Number(r.rate_mean_mmh);
+      if (Number.isFinite(raa) && raa >= 0) regnPerSegment.set(String(r.segment_id), Math.round((raa / RADAR_FAKTOR) * 10) / 10);
+    }
+  } catch (e) {
+    notes.push(`radar: radar_precip ej läsbar (${String((e as Error).message).slice(0, 80)}) — regn blir null på varje segment`);
+  }
 
   // ---- live: väderpunkter (svenska), med givarvakten ----
   const wx = await q(`
@@ -159,6 +202,8 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
     segments: segs.map((r) => ({
       id: String(r.segment_id), line: r.g.coordinates as [number, number][],
       code: num(r.condition_code), info: (r.condition_info ?? []) as string[], road: r.road_number ?? null,
+      // mm/h i stationens skala, eller null när radarn inte har något att säga om segmentet.
+      regn: regnPerSegment.get(String(r.segment_id)) ?? null,
     })),
     weather: wx.map((r) => ({
       id: String(r.station_id), lon: Number(r.lon), lat: Number(r.lat),
