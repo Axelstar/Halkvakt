@@ -1720,3 +1720,22 @@ CI grön på main. Kartrepot 04:30: SE/FI/DK live-sha = manifest-sha, meta 1 min
 med bara 1 kall station — nederbörden driver, inte kylan. Det är redan vinterprojektionens nivå.
 Parallellsessionen har dessutom byggt steg C (radarns regnfält i snapshoten, #162) i natt.
 Byggt: inget detta varv. Nästa: avläsning 17:30 UTC.
+
+## 2026-09-13 17:40 — Kvällsavläsning: kassavakten läser sig själv, och ett fynd om steg C
+#85 ur kassavaktens egna tal (hon körde 05, 11, 17 som schemat säger): 3 904 min sedan 1/9 över
+2 902 körningar, debiterat 1 904 min = 15,23 av 35 USD, takt 307 månad-till-datum och 169 släpande,
+takdatum 28/9. Issue #210 står öppen, rätteligen — prognosen når taket. Hennes "takten ändras"-
+varning går eftersom takterna skiljer mer än 25 %.
+#50: 10 körningar, 7 puls + 3 cron, längsta mellanrum 2,00 h; 16:23 fyrade puls och cron samma minut.
+#86: ingen rotationsnotis. CI grön på main. Kartrepot 17:30: SE/FI/DK live-sha = manifest-sha,
+meta 0 min. bridges #32, regn-30 #152, båda tysta.
+#83 RÄTTELSE: 275 410 (04:25) → 282 370 (16:23) = 13 950/dygn dagtid; helt dygn 12/9→13/9 = 21 281.
+Mitt morgontal 40 500 var extrapolerat från fyra timmar. Samma feltyp som 311-talet i natt, alltså
+två gånger på ett dygn. Regel införd på kortet: extrapolera aldrig ett arkivtal från under 12 timmar.
+NYTT KORT #154: steg C:s regnfält sätts bara på segment som redan är onormalt klassade
+(condition_code >= 2 eller is/snö-ord), så ett normalklassat blött segment kan aldrig bära regn —
+och det är just där vattenplaning sitter. SE live.json har 0 segment nu medan radarn ser 124 med
+regn. Frågan lämnas till Bengt och steg C:s ägare, jag har inte rört koden.
+Parallellsessionen har byggt vidare hela dagen: #88 trenden in i ingest-live, #89 steg 2,
+vindtaket i W-A, stationsvakten, PRODUKTBOK, och #127 prioritetsmedveten spärr med golv 45→10 s.
+Byggt: inget detta varv. Nästa: morgonavläsning 14/9 04:30 UTC.

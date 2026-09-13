@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-13 04:45 av Claude (webben) — morgonavläsning: mitt 311-tal var månadssnittet fel använt; släpande takt ger 169 min/dygn och taket 28/9. ci nere på 21 % av minuterna (paths-ignore biter). Bron hel. Arkivet fyrdubblat över natten (40 500/dygn) men bara 1 kall station — nederbörden driver. Nycklar ej roterade.*
+*Uppdaterad: 2026-09-13 17:40 av Claude (webben) — kvällsavläsning ur kassavaktens egna tal: 15,23 av 35 USD, släpande 169 min/dygn, taket 28/9, issue #210 rätteligen öppen. Arkivtakten tillbaka på 21 281/dygn (mitt 40 500 var en fyratimmarsextrapolering). NYTT KORT #154: steg C:s regnfält når inte normalklassade blöta segment.*
   💰 **RÄTTAD 13/9 (DECISIONS #160, Bengts order):** prognosen räknade på månad-till-datum, och i
   det snittet låg fem flöden som lades ner 8–9/9 (`ingest-fi`, `-no`, `-dk`, `publish-map`,
   `regn-30`). Vakten sa **21 september**; uppmätt verklig takt var 232 min/dygn senaste dygnet och
@@ -97,6 +97,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⏰ MORGON 13/9: fortfarande ej roterat, ingen rotationsnotis i STATUS/TAVLA/DECISIONS. ⚠️ OBS för
   framtida avläsningar: "finns en deploy-supabase-körning" duger INTE längre som indicium — jag körde
   den själv två gånger i natt för kassavakten. Bevis är en notis om NY nyckel, inget annat.
+  ⏰ KVÄLL 13/9: ingen rotationsnotis i STATUS, TAVLA eller DECISIONS. Oförändrat.
 - [ ] 💸 **#85 Actions-takten spränger 35 USD-gränsen före 1/10 — tre snitt räcker** (mätt 9/9
   04:30 av morgonavläsningen, DECISIONS #82:s budget). UPPMÄTT sedan Actions vaknade 8/9 21:07
   → 9/9 04:31 (7,4 h): **59 körningar, ≈ 98 debiterade minuter** (varje jobb avrundas uppåt):
@@ -181,6 +182,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ci är nu nere på **21 %** av minuterna (16 av 76) mot 42 % i går — paths-ignore biter.
   Fördelning: ingest 20 min, ci 16, healthcheck 13, grannar 12, dbknapp 7, deploy 5, cellmätning 2,
   grind-v-a 1. En röd: ci 03:51 på grenen steg-c-radar-i-snapshoten, grön när den mergades 03:55.
+  🌆 **KVÄLL 13/9 17:30 — nu läst ur kassavaktens EGNA tal, inte handräknat.** Hon har kört 05, 11
+  och 17 UTC som schemat säger. Vid 17:08: **3 904 min sedan 1/9 över 2 902 körningar**, debiterat
+  1 904 min = **15,23 av 35 USD**. Takt **307 min/dygn månad-till-datum** och **169 släpande**,
+  takdatum **28 september**. Issue #210 står öppen, vilket är rätt: prognosen når fortfarande taket.
+  Hennes egen "takten ändras"-varning går, eftersom de två takterna skiljer mer än 25 % — marken
+  under datumet rör sig, och det säger hon själv i larmet.
 - [ ] 🗄️ **#83 GALLRING av weather_observations — måste finnas FÖRE första kalla veckan**
   (Bengts beställning 9/9 01:40; kort + förslag av Claude, mätt mot koden 9/9).
   **VARFÖR NU:** arkivdieten (DECISIONS #4: bara yta ≤ 5 °C eller nederbörd) finns i
@@ -268,6 +275,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   igenom båda. Talet ligger redan på vinterprojektionens 41 000/dygn som gallringen dimensionerades
   för, i mitten av september. Värt att läsa om vid nästa avläsning innan man drar slutsatser av ett
   enda dygn.
+  📉 **KVÄLL 13/9 — RÄTTELSE AV MITT MORGONTAL.** weather_obs 275 410 (04:25) → 282 370 (16:23) =
+  6 960 rader på 12,0 h ⇒ **~13 950/dygn dagtid**. Helt dygn 12/9 04:23 → 13/9 04:25: 254 129 →
+  275 410 = **21 281/dygn**. Mitt morgontal 40 500 var en extrapolering av FYRA timmar och höll inte
+  — nattskuren var en skur. Vinterprojektionens 41 000 är alltså inte nådd; vi ligger på halva.
+  ⚠️ Samma feltyp som mitt 311-tal i natt: kort fönster utsträckt till ett dygn. Två gånger på ett
+  dygn. Regel för kommande avläsningar: extrapolera aldrig ett arkivtal från under 12 timmar, och
+  sätt alltid helt-dygn-talet bredvid.
 - [x] ~~Fastställ trösklarna för skuggan~~ ✅ FASTSTÄLLT 2/9 (DECISIONS #61): Axels
   "kör" relayerat av Bengt i chatten, värdena oförändrade från Bengts 1/9-version inkl.
   §2-orsaksklassningen. Kvitto: huvudet i docs/TROSKLAR-SKUGGAN.md. Bocken här är
@@ -455,6 +469,19 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [ ] 🕳️ **#154 STEG C:s REGNFÄLT NÅR INTE DE SEGMENT VATTENPLANINGEN SITTER PÅ** (fynd i
+  kvällsavläsningen 13/9, oprövat av mig i kod — lämnas till den som äger steg C).
+  `publish/snapshot-core.ts` sätter `regn` på raderna ur väglagsfrågan, och den frågan hämtar bara
+  segment med `condition_code >= 2` ELLER ett is/snö/halka/frost-ord i info (rad ~101). Ett segment
+  som är NORMALT klassat men vått kommer alltså aldrig in i snapshoten, och kan därför aldrig bära
+  `regn`. Vattenplaning uppstår just på en normalklassad blöt väg.
+  BEVIS I DAG: SE live.json 17:30 har **0 segment** — fältet är osynligt i produktion, och skulle
+  vara det även under regn. Samtidigt såg radarn 124 segment med regn ≥ 0,1 mm/h i senaste bilden.
+  🔑 FRÅGA TILL BENGT/ÄGAREN AV STEG C, inte en fix: ska väglagsfrågan vidgas med "eller regn över
+  tröskeln", eller ska steg D läsa radar_precip direkt i stället för via snapshoten? Det första gör
+  snapshoten större (kostnad per användare), det andra ger två läsare av samma fält och bryter
+  en-skrivare-regeln i #81 regel 2. Verify: ett regnigt dygn där minst ett normalklassat segment
+  syns i live.json med `regn` satt.
 - [ ] 💸 **#152 KASSAVAKTEN — check 8 i vakthunden: larmar innan Actions-taket slår i** (Bengts order
   13/9: "Kan man ha någon mätning på taket så man vet när man närmar sig gränsen. Automatisk alltså").
   💰 **RÄTTAD 13/9 (DECISIONS #160, Bengts order "gör kort 152 nu"):** prognosen räknade på
@@ -1405,6 +1432,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
    att stryka den ligger kvar hos Bengt.
   🌅 MORGON 13/9: 8 healthcheck-körningar sedan 12/9 18:26 — 5 på pulsen, 3 på GitHub-cronen,
   längsta mellanrum 2,00 h. Bron hel. Cron-raden kostar fortfarande.
+  🌆 KVÄLL 13/9: 10 healthcheck-körningar sedan 04:23 — 7 puls, 3 cron, längsta mellanrum 2,00 h.
+  Kuriosa värd att notera: 16:23 fyrade puls OCH cron samma minut, alltså två körningar på samma
+  mätning. Ännu ett argument för att stryka cron-raden.
 - [x] ~~⛏️ **#48 Golvbyggena**~~ ✅ KLART 4/9 (utom bygge 3) (Bengts order 4/9: "ta hela kortet, allt självförsörjande")
   — PÅGÅR (terminalen): GOLVET.md:s byggen 1–4 med automatiseringskrav: automigrering
   vid varje ingest (db.ts/fi.ts-mönstret), healthcheck-golv på varje ny fältfamilj
