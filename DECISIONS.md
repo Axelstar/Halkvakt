@@ -4778,3 +4778,53 @@ och ~10 % vid det lägsta svepsteget r ≥ 0,1.
 **Vad domen INTE är:** inget nej till radarn som källa. Radarn är fortfarande **precis** (96,0 % av
 det den kallar regn bekräftas av stationen, #167) och den täcker segment som saknar station helt.
 Det som föll är att bidraget skulle VÄXA med avståndet.
+
+## #169 (13/9 2026) Kort #88 steg 2: trendarkivet — en tabell i stället för en skuggkolumn, och varför
+
+**Beslut (Bengts order 13/9, "kan vi göra issuen bygga 88 och 98", issue #119):** trendens
+kandidater sparas i en egen durabel tabell, skriven av en knapp, i stället för som kolumner i
+skuggloggen. Svepet, vakterna och utfallsfönstret är dokumentets, oförändrade.
+
+**VARFÖR §7:s ORDALYDELSE INTE GÅR ATT FÖLJA.** Steg 2 säger "lutning + gap + band som tre kolumner
+i skuggloggen". Skuggloggen skrivs av skuggmotorn, och **skuggmotorn läser snapshoten** — en
+ögonblicksbild utan historik (`supabase/functions/skuggmotor/main.ts`: hämtar static.json +
+live.json, kör motorn över syntetiska spår). Lutningen finns inte där och kan inte räknas där. Att
+lägga den i snapshoten hade krävt en ändring i `publicera` och en deploy av två funktioner för ett
+fält ingen röst läser. Ett cron-jobb som räknar löpande är stängt sedan #85.
+
+**VARFÖR DET ÄNDÅ BRÅDSKAR.** Ingångarna finns i arkivet, men bara i **sju dygn**: gallringen (#83,
+sql/014) tunnar äldre rader till en per halvtimme, och då faller 15-minutersfönstret bort **helt**
+och 30-minuters på trendens egen vakt (≥ 3 mätningar i fönstret). Underlaget är färskvara, och
+höstens första frostnätter går inte att ta igen. Knappen räknar därför inom sju dygn och skriver
+durabelt. Vakthundens check 5 larmar redan vid frost och säger just "kör inom sju dygn".
+
+**AVVIKELSEN ÄR ARKITEKTUR, INTE TRÖSKEL** — §8:s regim rör §2:s svep och §4:s krav, och de är orörda.
+
+**EN KÄLLA FÖR TRÖSKLARNA.** Svepet och givarvakterna satt i `scripts/grind-t-a.ts` och behövdes nu
+av arkivet. De flyttades till `publish/trenden.ts`, importerad av båda. En andra kopia hade fött
+precis den drift kontraktsgrinden finns emot — och värre än en siffra på drift: **T-A hade dömt med
+en uppsättning trösklar och arkivet sparat kandidater med en annan**, så domen och underlaget hade
+slutat handla om samma sak.
+
+**SUPERSETINVARIANTEN, låst med prov.** En kandidat är ett stationsögonblick där NÅGON kombination i
+svepet skulle kunna fyra. Provet kör hela svepet — 1 872 kombinationer — och kräver: *fyrar någon
+kombination på en rad så ÄR raden kandidat*. Faller den sparar arkivet bort just de rader T-B
+behöver, och tyst.
+
+**RADERNA BÄR MÄTTA STORHETER, INGEN DOM.** Lutning per fönster, daggpunktsgap, yta, och utfallet
+(lägsta yta inom 90 min) — så att hela svepet kan prövas i efterhand. En sparad dom hade låst
+tröskeln innan T-A valt den. Noll utfallsrader betyder **OKÄNT**, aldrig "blev inte kallare".
+
+**KÖRT OCH BEVISAT 13/9.** Torrkörning först, sedan skarpt: **3 851 kandidater över 98 stationer**,
+8–13/9, ur 117 962 arkivrader från 696 stationer. **Noll följdes av yta ≤ 0 °C inom 90 min** — det
+är september, och det är rätt utfall. Omkörning direkt efteråt: **0 nya rader, 3 851 fanns redan**,
+alltså idempotens bevisad med mätning och inte med en kommentar.
+
+**RISKEN SOM FÖLJER, och den är Bengts att väga:** trycks knappen inte inom sju dygn efter en
+frostnatt är den natten borta. En skrivande kolumn hade tagit bort risken till priset av en deploy
+och ett jobb i drift. Instrumentet är byggt så att båda vägarna är öppna.
+
+**#98 ÄR INTE BYGGT.** Tystnadsfelets mått behöver bekräftade halttillfällen, och facitstacken är
+tom just nu: `road_condition_history` står stilla sedan 25/8 och `slippery_segment` fyrar i praktiken
+aldrig i september. Instrumentet kan byggas före datat — samma skäl som T-A byggdes före frosten —
+men det är ett eget steg och det görs inte i smyg här.
