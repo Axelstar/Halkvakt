@@ -136,6 +136,68 @@ samma sätt som T-A körs om efter första frostnatten. Till skillnad från T-A 
 gallringsdeadline — W-A räknar stationstimmar, och gallringen (#83) tunnar till en rad per halvtimme,
 vilket lämnar stationstimmen intakt.
 
+### 3.3 Stationsvakten — FASTSTÄLLD 2026-09-13 av Bengt (DECISIONS #164, #166)
+
+§3.1 gav vakten ett **värdetak** (G_tak 30 m/s). Ett värdetak tar bort dåliga **avläsningar**. Det
+tar inte bort en dålig **station**, och skillnaden visade sig vara hela frågan: station 2312 bar 26
+av arkivets 36 stationstimmar över 30 m/s, spridda över hela perioden, och dess spikar drar upp
+varje aggregat den bidrar till — också i timmarna UNDER taket, där G_tak per konstruktion inte gör
+något. Två av de nio stationerna (2438, 2107) har dessutom sina omöjliga värden **under 30 m/s** och
+är därmed osynliga för värdetaket.
+
+**Kriteriet är fysik, inte en lista med id:n.** En lista blir inaktuell i tysthet; ett mått fångar
+nästa trasiga station också.
+
+| Tröskel | Värde | Varför just det |
+| :-- | --: | :-- |
+| **Byvindgolv** | **15 m/s** | W-A:s egen bandgräns (§4). Under den kan en felkvot inte lyfta en timme in i ett band grinden bryr sig om, och då ska vakten tiga. |
+| **Kvottak** | **5** | Byvindfaktorn är 1,3–1,5 över öppen terräng, 2,5–3 i den ruggigaste. Arkivets egna tal vid medelvind ≥ 5 m/s (3 142 rader): median **1,75**, p95 **2,25**, p99,9 **3,08**. |
+| **Krav för diskning** | **≥ 1 omöjlig timme** | En omöjlig timme är omöjlig. Svepet 1 · 2 · 5 skrivs ut vid varje körning. |
+| **Parningen** | timmens högsta by mot timmens högsta medelvind | Byvinden är `Aggregated30minutes.Wind.SpeedMax`, medelvinden `Observation.Wind[0].Speed` — ett bakåtfönster mot ett ögonblick. Timmen är den minsta parning som inte ställer dem mot varandra. |
+
+**Vakten gäller BARA B1.** En trasig byvindgivare säger ingenting om siktgivaren på samma stolpe —
+de är olika instrument, och att kasta båda vore att slänga mätningar vi inte har skäl att misstro.
+B2 utesluter ingen station.
+
+**Utfall 2026-09-13:** 9 av de 42 stationer som har någon timme över 15 m/s diskvalificeras. De bär
+46 av arkivets 110 stationstimmar över 15 m/s, och 45 av dessa 46 är omöjliga — stationerna är inte
+ibland trasiga. Effekten på B1: −1,1 % av alla stationstimmar men **−67 % av det högsta bandet**
+(9 → 3). Taksvepet visar att valet inte är bärande: kvot > 5 och kvot > 10 ger båda 9 stationer,
+kvot > 3 ger 11.
+
+#### Det första kriteriet föll — och det står här för att ingen ska bygga om det
+
+Första utkastet mätte kvoten **per rad** vid medelvind ≥ 1 m/s. Den skarpa körningen gav **335
+diskvalificerade av 748 stationer** och åt 47 % av B1:s stationstimmar. Orsaken syns i råraderna:
+station 2534, 13/9 02:50–03:20, står byvinden stilla på 10,5 · 10,5 · 10,5 · 10,5 · 10,5 · 10,4
+medan medelvinden faller 3,8 → 3,3 → 2,5 → 1,9 → 1,4 → 1,0. Ingestern säger varför:
+`wind_gust_ms` är ett **30-minutersmaximum** (`Aggregated30minutes.Wind.SpeedMax`) medan
+`wind_speed_ms` är ögonblicket (`Observation.Wind[0].Speed`). Kvoten var två tidsfönster delade med
+varandra.
+
+**Att bara höja golvet dög inte.** Vid medelvind ≥ 5 m/s fångas EN station (426), och 2312 — den som
+motiverade hela vakten — slipper undan, eftersom dess medelvind står under golvet när byvinden visar
+85. En vakt som missar den kända trasiga stationen men ser ut att vakta är sämre än ingen vakt.
+
+**Kvottaket 5 flyttades INTE**, trots att utfallet hade sett prydligare ut vid 10. Felet satt i
+nämnaren, inte i gränsen, och att flytta en tröskel efter att ha sett utfallet är precis den
+glidning §8 finns för att förhindra.
+
+#### Den kvarvarande svagheten — namngiven och mätt
+
+Eftersom byvinden är ett 30-minutersmaximum kan en **verklig** by i princip parras mot en
+efterföljande lugn timme och ge en falsk diskning. Kontrollen är gjord: med medelvinden tagen som
+högsta värde över timmen **och timmen före** — ett fönster som säkert täcker byvindens hela
+mätperiod — blir resultatet **identiskt**: samma 9 stationer, samma 45 timmar, samma fördelning per
+station. Svagheten finns alltså i konstruktionen men har noll verkan på det här materialet.
+
+**Vad som ska väcka den frågan igen:** en framtida körning som diskar en station på **exakt en**
+omöjlig timme medan den i övrigt beter sig normalt. Då ska kravet ≥ 1 omprövas mot ≥ 2 innan
+stationen kastas — med en rad i DECISIONS, enligt §8.
+
+**De nio stationerna är anmälda uppåt:** `docs/ANMALAN-TRV-BYVINDGIVARE.md` (2026-09-13). En vakt som
+bara gömmer felet för oss själva lämnar det kvar för alla andra som läser samma öppna data.
+
 ---
 
 ## 4. Grindarna
@@ -274,6 +336,11 @@ mönster som #46 och framtida lager 2-regler ska ärva.
 
 Fram till första skuggkörningen får §2:s svep och §4:s krav justeras av vem som helst av oss med en
 rad i DECISIONS. **Från första skuggkörningen ändras ingen tröskel alls** — varje motivering som inte lutar sig mot utfallet.
+
+**Tillägg 2026-09-13 (Bengts order "bygg stationsvakten"):** §3.3 lägger till stationsvakten —
+byvindgolv 15 m/s, kvottak 5, krav ≥ 1 omöjlig timme, bara B1. Tillägget rör givarvakten (§3),
+inte §2:s svep eller §4:s krav, och görs före första skuggkörningen. Det första kriteriet föll på
+sin egen mätning och är bevarat i §3.3 som varning, inte bortstädat (DECISIONS #164, #166).
 
 En ändring är redan gjord mot kortets ursprungliga lydelse och ska inte göras om: **per fordonstyp
 utgår** (§2.1), eftersom kort #92 stängdes 12/9. Vill någon tillbaka dit är vägen att öppna #92 med

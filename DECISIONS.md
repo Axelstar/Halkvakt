@@ -4613,3 +4613,55 @@ som saknats sedan början: hur ofta spärren tystade, och vad.
 INTE ARKIVERAT: rösten är Axels. Ändringen ligger på main med grönt kontrakt; nästa
 app-version bär den. Bengt: "skickas som ett konstaterat fel med ett förslag" — det var
 rätt form, och förslaget höll i alla tre portar.
+
+## #166 (13/9 2026) Stationsvaktens trösklar fastställda i §3.3 — och de nio givarna anmälda uppåt
+
+**Beslut (Bengts order 13/9, "gör 1 och 2"):** (1) anmälan om de nio trasiga byvindgivarna skrivs och
+ställs till Bengt för utskick; (2) stationsvaktens trösklar förs in i `docs/TROSKLAR-VIND-SIKT.md`
+som **§3.3, FASTSTÄLLD 2026-09-13** — byvindgolv **15 m/s**, kvottak **5**, krav **≥ 1 omöjlig
+timme**, och vakten gäller **bara B1**.
+
+**Varför de hör hemma i dokumentet och inte i skriptet.** En tröskel som bara bor i koden kan ändras
+av den som råkar redigera filen. §3 är givarvaktens hem, och stationsvakten ÄR givarvakten — samma
+plats som G_tak och siktsentinelen fick 12/9. §8 tillåter tillägget: det rör §3, inte §2:s svep eller
+§4:s krav, och det görs före första skuggkörningen.
+
+**ETT FYND UR INGESTERN SOM AVGJORDE FRÅGAN, och som ingen hade skrivit ned:**
+`wind_gust_ms` är `Aggregated30minutes.Wind.SpeedMax` — ett **maximum över de föregående 30
+minuterna**. `wind_speed_ms` är `Observation.Wind[0].Speed` — ett **ögonblicksvärde**. De två fälten
+har alltså aldrig mätt samma tid, och det är exakt varför det första kriteriet (#164) fällde 335 av
+748 stationer. Kommentaren stod i `ingest/sources/weather.ts:59` hela tiden; ingen mätning hade
+behövt läsa den förrän nu.
+
+**DEN KVARVARANDE SVAGHETEN ÄR NAMNGIVEN OCH MÄTT.** Eftersom byvinden är ett 30-minutersmaximum kan
+en VERKLIG by i princip parras mot en efterföljande lugn timme och ge en falsk diskning. Kontrollen
+är gjord: med medelvinden tagen som högsta värde över timmen OCH timmen före — ett fönster som säkert
+täcker byvindens hela mätperiod — blir resultatet **identiskt**: samma 9 stationer, samma 45 timmar,
+samma fördelning per station. Svagheten finns i konstruktionen men har noll verkan på materialet.
+Det som ska väcka frågan igen står i §3.3: en station som diskas på EXAKT en omöjlig timme medan den
+i övrigt beter sig normalt.
+
+**ANMÄLAN: `docs/ANMALAN-TRV-BYVINDGIVARE.md`.** Nio stationer, med id, namn, WGS84, antal omöjliga
+timmar, värsta kvot, median byvind och den tydligaste enskilda observationen per station:
+
+| id | namn | omöjliga timmar | värsta kvot | max byvind | median byvind |
+| :-- | :-- | --: | --: | --: | --: |
+| 2312 | Handöl | 29 | 100,3 | 85,5 | 6,6 |
+| 2438 | Ruskträsk | 4 | 39,7 | 29,9 | 2,8 |
+| 227 | Arlanda | 3 | 78,7 | 55,1 | 4,7 |
+| 1732 | Fastnäs | 3 | 37,3 | 78,4 | 2,9 |
+| 426 | Oxelösund | 2 | 25,8 | 87,7 | 3,4 |
+| 618 · 2107 · 310 · 1311 | Brahehus · Hamnäs · Överboda · Mossjön | 1 | 64,0 · 64,0 · 37,5 · 27,4 | 32,0 · 25,6 · 45,0 · 30,1 | 4,8 · 2,1 · 4,2 · 3,0 |
+
+**Mönstret är detsamma i alla nio: spiken inträffar i nära vindstilla.** Värsta raden per station
+parar medelvind **0,4–2,1 m/s** mot byvind **23,8–87,7 m/s**. Det är inte ett väderläge; en trasig
+givarkanal spikar oberoende av vinden, och medelvindskanalen på samma stolpe läser rätt.
+
+**Anmälan påstår inte var felet sitter** — givare, överföring eller aggregering. Vi ser bara de
+öppna data vi hämtar, och det står i brevets reservationer tillsammans med fönstrets längd (4–13/9,
+med hämtningsavbrottet 5–9/9 inuti) och att vi inte jämfört mot grannstationer. Beviset vilar på
+stationens EGET förhållande mellan by och medel och är därför oberoende av väderläget.
+
+**UTSKICKET ÄR BENGTS, INTE MITT.** Brevet är komplett utom kontaktuppgifterna, som står som
+platshållare. Kort #154 bär det. Skälet att skicka alls: vi har uteslutit stationerna ur vårt eget
+underlag och är inte blockerade — men felet ligger kvar för alla andra som läser samma öppna data.
