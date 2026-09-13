@@ -149,6 +149,21 @@ export const KONTRAKT: Kontrakt[] = [
     former: [/const K_NEIGHBOURS\s*=\s*(\d+)/],
     golv: 5,
   },
+  {
+    // Buntningen skapar den andra kopian av sig själv: snapshot-core.ts genereras in i
+    // publicera/index.ts. Faktorn hamnade därför på två ställen i samma commit som den skrevs,
+    // och husregeln i CLAUDE.md säger att den då förs in här direkt.
+    namn: "Radarfaktorn — radarvärdet DIVIDERAS med detta för stationens skala",
+    varfor: "Driver den isär läser motorn en annan intensitet än den kalibrerade (§3.4, DECISIONS #154).",
+    former: [/const RADAR_FAKTOR\s*=\s*(\d+(?:\.\d+)?)/],
+    golv: 2,
+  },
+  {
+    namn: "Radarns giltighetsfönster — äldre än så är radarn tyst",
+    varfor: "#81 regel 7. Glider fönstret talar ett gammalt eko som om det vore nu.",
+    former: [/const RADAR_MAX_ALDER_MIN\s*=\s*(\d+)/],
+    golv: 2,
+  },
 ];
 
 // ── SJÄLVTEST mot känd sanning, utan disk ──────────────────────────────────────────────
