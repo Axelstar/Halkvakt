@@ -13,8 +13,9 @@
 //                                    (framkallar vinterordslarmet, kort #52 ⇒ issue
 //                                    `vinterord-prov`), frostprov (framkallar frostlarmet,
 //                                    kort #89 ⇒ issue `frostlarm-prov`), matvaktprov (framkallar
-//                                    mätvaktens larm, kort #101 ⇒ issue `matvakt`). Beviset är
-//                                    issuen, inte utskriften.
+//                                    mätvaktens larm, kort #101 ⇒ issue `matvakt`) och kassaprov
+//                                    (framkallar kassavaktens larm, kort #152 ⇒ issue `kassavakt`).
+//                                    Beviset är issuen, inte utskriften.
 import pg from "pg";
 import { readFileSync } from "node:fs";
 
@@ -46,7 +47,7 @@ try {
     // Vitlistan först, före FRÅGAN: en felstavad flagga ska falla på en rad, inte efter att ha
     // kört något mot databasen. (Rättat 12/9: kommentaren sa tidigare att den därmed gick att
     // prova helt utan DATABASE_URL — det stämmer inte, toppnivåvakten kräver den ändå.)
-    const FLAGGOR: Record<string, string> = { larmprov: "larmprov=1", vinterprov: "vinterprov=1", frostprov: "frostprov=1", matvaktprov: "matvaktprov=1", paminnelseprov: "paminnelseprov=1" };
+    const FLAGGOR: Record<string, string> = { larmprov: "larmprov=1", vinterprov: "vinterprov=1", frostprov: "frostprov=1", matvaktprov: "matvaktprov=1", paminnelseprov: "paminnelseprov=1", kassaprov: "kassaprov=1" };
     const flagga = FLAGGOR[arg ?? "larmprov"];
     if (!flagga) { console.error(`larmprov: okänd flagga "${arg}" — tillåtna: ${Object.keys(FLAGGOR).join(", ")}`); process.exit(1); }
     const j = await pool.query(`SELECT jobid, command FROM cron.job WHERE jobname = 'halkvakt-vakthund'`);
@@ -65,6 +66,7 @@ try {
       "frostprov=1": "en issue med etiketten `frost-prov` ska finnas inom en minut, av samma skäl som vinterprovet.",
       "matvaktprov=1": "en issue med etiketten `matvakt` ska finnas inom en minut, och stängas av nästa gröna timkörning.",
       "paminnelseprov=1": "en issue med etiketten `kallvaktspaminnelse` ska finnas inom en minut, och stängas av nästa timkörning utan prov (#150).",
+      "kassaprov=1": "en issue med etiketten `kassavakt` ska finnas inom en minut, och stängas av nästa körning 05/11/17/23 UTC som ligger under gränsen (#152).",
     };
     const fallback = "en issue med etiketten vakthund ska finnas inom en minut, och stängas av nästa gröna timkörning (xx:07).";
     console.log(`Beviset är INTE den här raden: ${BEVIS[flagga] ?? fallback}`);
