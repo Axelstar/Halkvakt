@@ -1,7 +1,23 @@
 name: ci
+# KASSAN STYR FORMEN (kort #152, 13/9): kassavakten mätte 311 min/dygn och taket 35 USD slår i
+# den 21 september — före vintern, och före de mätningar vinterns domar vilar på. Av de hundra
+# senaste körningarna 12/9 var FEMTIO ci, det enskilt största flödet, och flera av dem var rena
+# dokumentändringar som ändå startade en postgres-tjänst och körde hela sviten.
+#
+# paths-ignore hoppar över körningen bara när VARJE ändrad fil matchar. En gren som rör kod OCH
+# dokument kör alltså fortfarande allt — kontrakts- och beroendegrindarna kan inte smygas förbi
+# genom att lägga till en md-fil.
+#
+# ⚠️ SÄKERT ENBART SÅ LÄNGE ci INTE ÄR EN OBLIGATORISK STATUSKONTROLL. Kontrollerat 13/9: main
+# har inget grenskydd alls. Införs grenskydd med `ci` som krav måste den här raden bort samtidigt,
+# annars kan en ren dokument-PR aldrig mergas — kontrollen rapporterar då aldrig, och en PR som
+# väntar på ett svar som inte kommer ser ut som en trasig gren.
 on:
-  push: { branches: [main] }
-  pull_request: {}
+  push:
+    branches: [main]
+    paths-ignore: ["**.md"]
+  pull_request:
+    paths-ignore: ["**.md"]
 jobs:
   test:
     runs-on: ubuntu-latest
