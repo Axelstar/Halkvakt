@@ -1735,6 +1735,16 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   regnet efter ≥ 5 torrdygn: oljefilm, de första 20 minuterna hala oavsett fart — en torrdygnsräknare
   per station ur regnarkivet, en kolumn. (c) Dimma×frysrisk = rimfrost (#46), sidvind×halka och
   dimma×halka har ingen förhandlad interaktion alls (bara halka×vattenplaning har det, #68).
+  🔓 **UPPLÅST 13/9 (DECISIONS #161, Bengts order):** regelskissen pekade på `rate_max`, som är
+  SPÄRRAT av värdevakten sedan 727,54 mm/h hittades i det (#134). Bytt till **`rate_mean_mmh`** —
+  en tvingad rättelse, inte en justering mot ett utfall. Svepet 0,1 · 0,5 · 2 är oförändrat och
+  blir dessutom rätt matchat: de talen kommer ur bekräftelsekurvans band, som mättes på just
+  `rate_mean`. Skalan utskriven i §2 (råradar; i stationens skala ≈ 0,15 · 0,8 · 3,1).
+  **Skuggkolumnen är därmed inte längre blockerad** — den väntade på radardomen, och den föll 13/9.
+  🔬 **OMPRÖVNING GÅR VIA MÄTNING, inte via städning:** `cell-matning-v3.ts` läser redan BÅDA
+  fälten på samma rad, så en bekräftelsekurva för `rate_max` är en KÖRNING och inte ett bygge.
+  Visar den att max bekräftas väsentligt bättre är det skäl att rensa fältet och byta tillbaka.
+  Att rensa `rate_max` FÖR ATT låsa upp det här kortet vore däremot att låta schemat välja fält.
   🔒 NYCKEL: #45:s dom + tröskelrader (§5). Verify: varje övergång som egen skuggkolumn med
   facit ur situation_archive; (b) kan mätas redan i höstregnen.
   ➕ **NY PARAMETER `N_varning` 12/9 kväll** (§2.3 i tröskeldokumentet, Bengts order, DECISIONS #123).

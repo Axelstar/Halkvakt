@@ -55,11 +55,18 @@ grinden väljer värdet.
 | **N** | hur länge efter sista regnet vägen räknas som blöt | 1 · 2 · 3 · 4 h |
 | **N_varning** | samma sak, men när en aktiv SMHI-vintervarning täcker punkten (§2.3) | av · 2 · 4 · 6 h |
 | **Minsta regn** | hur lite regn som räknas som "blöt väg" | > 0 · ≥ 0,2 · ≥ 0,5 mm/30 min |
-| **r** | radarintensitet som räknas som regn på segmentet | 0,1 · 0,5 · 2 mm/h |
+| **r** | radarintensitet som räknas som regn på segmentet — gäller **`rate_mean_mmh`** | 0,1 · 0,5 · 2 mm/h |
 | **Utfallsfönster** | hur länge efter fyrningen facit får komma | 60 · 120 · 180 min |
 
 **Vad som INTE sveps:** yttröskeln (1 °C, bro 3 °C). Den är frysriskens egen och ändras inte av (a).
 Riktningen sveps inte heller — "vägen var blöt" är fysik, inte parameter.
+
+**SKALAN PÅ `r`, utskriven för att den annars gissas.** Svepet gäller **råradarvärdet** i
+`rate_mean_mmh` — samma fält och samma skala som kalibreringsfaktorn 0,65 mättes på
+(TROSKLAR-VATTENPLANING §3.4). I stationens skala motsvarar 0,1 · 0,5 · 2 ungefär
+**0,15 · 0,8 · 3,1 mm/h**, eftersom radarvärdet **divideras** med 0,65 för att uttryckas i
+stationens skala. Att blanda skalorna är precis den tysta drift som §3.4:s fältregel och
+kontraktsgrinden (#144) finns för att fånga.
 
 ### 2.1 Två parametrar är redan strukna, av mätning
 
@@ -150,7 +157,7 @@ N_eff = N_varning  om en aktiv SMHI-vintervarning täcker punkten   (§2.3, anna
 
 blöt = fukt_nu
      ELLER regn_sum_mm > Minsta regn inom N_eff h vid stationen    (VViS, 30-min, 89 % täckning)
-     ELLER radar_precip.rate_max > r inom N_eff h på segmentet     (radar, redan i arkivet)
+     ELLER radar_precip.rate_mean_mmh > r inom N_eff h på segmentet (radar, redan i arkivet)
 
 icing_point = yta <= tröskel  OCH  blöt
 ```
@@ -344,10 +351,22 @@ Fram till första skuggkörningen får §2:s svep och §4:s krav justeras av vem
 rad i DECISIONS. **Från första skuggkörningen ändras ingen tröskel alls** — varje motivering som inte lutar sig mot utfallet — att flytta målstolparna när siffrorna kommit är precis
 vad regeln finns för att hindra.
 
-Fyra ändringar är redan gjorda och ska inte göras om: RH-guarden struken (§2.1), ord-per-resa struket
-som fällande kriterium (§4, DECISIONS #103), **(b) oljefilmen struken (§5, Bengt 12/9)** och
-**N_varning tillagd i svepet (§2.3, Bengts beslut 12/9, DECISIONS #123)**. Alla fyra skedde före
-första skuggkörningen och vilar på mätning, fältdom respektive beslut — inte på utfall.
+Fem ändringar är redan gjorda och ska inte göras om: RH-guarden struken (§2.1), ord-per-resa struket
+som fällande kriterium (§4, DECISIONS #103), **(b) oljefilmen struken (§5, Bengt 12/9)**,
+**N_varning tillagd i svepet (§2.3, Bengts beslut 12/9, DECISIONS #123)** och **radarfältet bytt
+från `rate_max` till `rate_mean_mmh` (§2 och §4, Bengts order 13/9, DECISIONS #161)**. Alla fem
+skedde före första skuggkörningen och vilar på mätning, fältdom respektive beslut — inte på utfall.
+
+📎 **Om radarfältet (13/9).** Bytet är inte en justering mot ett utfall utan en **tvingad rättelse**:
+`rate_max_mmh` står som UTANFÖR SPANN hos värdevakten sedan 727,54 mm/h hittades i det (DECISIONS
+#134) och får enligt TROSKLAR-VATTENPLANING §3.4 inte bära tröskel eller utlösare. Bytet gör
+dessutom dokumentet **mer** konsekvent, inte mindre: svepets tal 0,1 · 0,5 · 2 kommer ur
+bekräftelsekurvans radarband, och de banden mättes på `rate_mean_mmh`. Att använda dem på
+`rate_max` var alltså felmatchningen — inte tvärtom.
+
+⚠️ **Förstudien bär den gamla formuleringen.** `docs/OVERGANGAR-ANALYS.md` rad 273 säger fortfarande
+`rate_max > r`. Den är ett daterat underlag och redigeras inte i efterhand; **det här dokumentet
+gäller**, och den raden är därmed ersatt.
 
 📎 **Historik:** §2.3 lades till 12/9 efter att dokumentet fastställts. Regeln i
 stycket ovan säger att tillägget är tillåtet med en rad i DECISIONS så länge ingen skuggkörning

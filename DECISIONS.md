@@ -4358,3 +4358,53 @@ takt (gungar, taket nås inte inom månaden). Vakthunden är en Deno-funktion oc
 **Vad det INTE ändrar:** talet är fortfarande ett GOLV, inte fakturan. Taket är kontoomfattande
 men vakten ser ett repo, och GitHub avrundar per jobb medan vi avrundar per körning. Den exakta
 siffran kräver en nyckel med kontobehörighet och ligger hos Axel.
+
+## #161 (13/9 2026) Övergångarnas radarfält bytt till rate_mean — en tvingad rättelse, inte en justering
+
+**Beslut (Bengts order 13/9, "ändra 89 till rate_mean och bygg sedan c"):** §2:s svep och §4:s
+regelskiss i TROSKLAR-OVERGANGAR byter radarfält från `rate_max` till **`rate_mean_mmh`**.
+
+**Varför det var tvunget.** `rate_max_mmh` står som UTANFÖR SPANN hos värdevakten sedan 727,54 mm/h
+hittades i det (#134) — en radarartefakt, inte regn — och TROSKLAR-VATTENPLANING §3.4 förbjuder
+uttryckligen att fältet bär tröskel eller utlösare. Kort #89:s skuggkolumn var därmed blockerad:
+den väntade på radardomen, domen kom (#153–#156), och då visade sig regelskissen peka på ett
+spärrat fält.
+
+**Och bytet gör dokumentet MER konsekvent, inte mindre.** Svepets tal 0,1 · 0,5 · 2 mm/h kommer ur
+bekräftelsekurvans radarband, och de banden mättes på `rate_mean_mmh`. Att använda dem på
+`rate_max` var alltså felmatchningen — inte tvärtom. Svepet är därför oförändrat; bara fältet byts.
+
+**Skalan skrevs ut i samma varv.** Ny stycke i §2: `r` gäller RÅRADARVÄRDET, samma skala som
+faktorn 0,65 mättes på. I stationens skala motsvarar 0,1 · 0,5 · 2 ungefär 0,15 · 0,8 · 3,1 mm/h,
+eftersom radarvärdet **divideras** med 0,65. Utan den raden hade nästa läsare gissat, och att blanda
+skalorna är precis den tysta drift §3.4:s fältregel och kontraktsgrinden (#144) finns mot.
+
+**Regimen tillät det.** §10: svep och krav får justeras fram till första skuggkörningen med en rad i
+DECISIONS. Ingen skuggkörning har gjorts — den väntade på just den här domen. Ändringen lutar sig
+inte mot något utfall; den tar bort ett fält som inte får användas.
+
+**Förstudien lämnas orörd.** `docs/OVERGANGAR-ANALYS.md` rad 273 bär fortfarande den gamla
+formuleringen. Den är ett daterat underlag och redigeras inte i efterhand — ersättningen noteras i
+tröskeldokumentets §10 i stället, så att den som grepar hittar pekaren.
+
+**OMPRÖVNINGEN ÄR MÖJLIG, OCH VÄGEN ÄR MÄTT — INTE ARGUMENTERAD.** Bengt frågade vad som egentligen
+är bäst: byta fält eller rensa `rate_max`. Svaret som gavs, och som beslutet vilar på:
+
+`rate_mean` är bättre på sakskäl, inte bara för att `rate_max` är spärrat. (1) Kalibreringen och
+hela bekräftelsekurvan (42/56/77/82 %) är mätta på `rate_mean`; för `rate_max` finns **varken
+faktor eller kurva**, så svepets tal skulle vara tal vars innebörd vi aldrig mätt. (2) `rate_max`
+är max över segmentets provpunkter — **en enda dålig bildpunkt blir hela segmentets värde**, medan
+medelvärdet späder ut den. Att rensa 727,54 en gång gör inte fältet säkert; det är en egenskap hos
+måttet, inte ett engångsfel.
+
+**Priset erkänns:** `rate_mean` missar en kraftig cell som täcker en mindre del av ett långt
+segment. För en säkerhetsvarning är det ingen oviktig invändning.
+
+**Det som skulle avgöra saken ordentligt är inte att rensa `rate_max` utan att MÄTA det.**
+`scripts/cell-matning-v3.ts` läser redan båda fälten på samma rad (`rate_max_mmh AS mx,
+rate_mean_mmh AS mn`), så en bekräftelsekurva för `rate_max` är en **körning, inte ett bygge** —
+samma två fönster och samma metod som gav 0,65. Visar den att max bekräftas väsentligt bättre är
+det ett skäl att rensa fältet och byta tillbaka, och då vilar bytet på mätning i båda riktningarna.
+
+**Det som vore fel är att rensa `rate_max` FÖR ATT låsa upp #89.** Då väljer schemat fält, bara
+åt andra hållet.
