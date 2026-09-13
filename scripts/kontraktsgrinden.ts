@@ -116,6 +116,19 @@ export function rapport(utfall: Utfall[]): boolean {
 // ── DE VAKTADE KONTRAKTEN ──────────────────────────────────────────────────────────────
 export const KONTRAKT: Kontrakt[] = [
   {
+    namn: "Trendens minsta lutning — svepets lägsta steg (°C per fönster)",
+    varfor: "Finns i TypeScript (T-A och knappen) och i SQL (drifträkningen). Driver den sparar driften andra kandidater än domen prövar.",
+    former: [/LUTNING\s*=\s*\[(\d+(?:\.\d+)?)/, /medel\)?\s*>=\s*(0\.4)/, />=\s*(0\.4)\s*$/m],
+    golv: 2,
+  },
+  {
+    namn: "Trendens bredaste startband — övre gränsen i °C",
+    varfor: "Utanför bandet kan ingen kombination fyra. Driver taket sparar drifträkningen bort rader T-B behöver.",
+    former: [/STARTBAND[^=]*=\s*\[\[1,\s*3\],\s*\[1,\s*4\],\s*\[1,\s*(\d+)\]\]/,
+              /r\.surface_temp_c\s*>=\s*1\s*AND\s*r\.surface_temp_c\s*<=\s*(\d+)/],
+    golv: 2,
+  },
+  {
     namn: "#75 givarvakten — yta får ligga högst N grader under luften",
     varfor: "61 % av arkivets frostrader faller på den. Driver talet mäter grindarna olika arkiv.",
     former: [/surface_temp_c\s*>=\s*air_temp_c\s*-\s*(\d+(?:\.\d+)?)/],

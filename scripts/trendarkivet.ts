@@ -70,7 +70,13 @@ console.log(`  arkivet till en rad per halvtimme, och 15-minutersfönstret finns
 // Tabellen skapas av knappen själv, som radarn gör (#162) — ingen separat migrationstryckning.
 const migration = (await import("node:fs")).readFileSync(
   new URL("../sql/017_trend_kandidater.sql", import.meta.url), "utf8");
-if (!TORRKOR) { await pool.query(migration); console.log("  sql/017 körd (idempotent)\n"); }
+const berakning = (await import("node:fs")).readFileSync(
+  new URL("../sql/018_trend_berakna.sql", import.meta.url), "utf8");
+if (!TORRKOR) {
+  await pool.query(migration);
+  await pool.query(berakning);
+  console.log("  sql/017 + sql/018 körda (idempotenta)" + "\n");
+}
 
 const rader = await q(`
   SELECT station_id, sample_time, surface_temp_c, air_temp_c, dewpoint_c, humidity_pct
@@ -116,6 +122,38 @@ if (ut.length) {
   console.log(`  ${nadde0} kandidater följdes av yta ≤ 0 °C inom ${UTFALLSFONSTER_MIN} min`);
   const tider = ut.map((u) => new Date(u.tid).getTime()).sort();
   console.log(`  ${new Date(tider[0]).toISOString().slice(0, 16)} → ${new Date(tider[tider.length - 1]).toISOString().slice(0, 16)}`);
+}
+
+// ── DRIFTVAKTEN: väljer SQL-funktionen och TypeScript SAMMA rader?
+// Två kopior av samma trösklar är två kopior som kan glida isär. Kontraktsgrinden vaktar att de
+// bär samma TAL; det här provet vaktar att de fattar samma BESLUT. Samma form som steg 0:s
+// driftvakt, där SQL-uttrycket och motorns egen fukt() var ense om alla 7 146 omslag.
+// Körs i en transaktion som rullas tillbaka — ingenting skrivs.
+if (process.argv.includes("--jamfor")) {
+  await pool.query(migration);
+  await pool.query(berakning);
+  const nyckel = (s: string, d: Date | string) => `${s}|${new Date(d).toISOString()}`;
+  const ts = new Set(ut.map((u) => nyckel(u.station, u.tid)));
+  await pool.query("BEGIN");
+  await pool.query("DELETE FROM trend_kandidater WHERE observed_at > now() - $1 * interval '1 day'", [DAGAR]);
+  const rakning = (await q("SELECT * FROM berakna_trendkandidater($1 * interval '1 day')", [DAGAR]))[0];
+  const sqlRader = await q(
+    "SELECT station_id, observed_at FROM trend_kandidater WHERE observed_at > now() - $1 * interval '1 day'", [DAGAR]);
+  await pool.query("ROLLBACK");
+  const sq = new Set(sqlRader.map((r) => nyckel(r.station_id, r.observed_at)));
+  const baraTs = [...ts].filter((x) => !sq.has(x));
+  const baraSql = [...sq].filter((x) => !ts.has(x));
+  console.log(`\n  DRIFTVAKTEN — SQL-funktionen mot TypeScript, ${DAGAR} dygn (transaktionen rullad tillbaka)`);
+  console.log(`    TypeScript valde ${ts.size} rader · SQL valde ${sq.size} · funktionen rapporterade ${rakning.nya} nya`);
+  console.log(`    bara TypeScript: ${baraTs.length}`);
+  console.log(`    bara SQL:        ${baraSql.length}`);
+  for (const x of [...baraTs.slice(0, 5), ...baraSql.slice(0, 5)]) console.log(`      avvikelse: ${x}`);
+  if (baraTs.length || baraSql.length) {
+    console.error("\n  ✗ KOPIORNA HAR GLIDIT ISÄR. Domen och underlaget handlar inte om samma sak.");
+    await pool.end(); process.exit(1);
+  }
+  console.log("    ✓ ENSE OM VARJE RAD. Drifträkningen och knappen väljer samma kandidater.");
+  await pool.end(); process.exit(0);
 }
 
 if (TORRKOR) {
