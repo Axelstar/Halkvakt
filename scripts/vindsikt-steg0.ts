@@ -75,26 +75,46 @@ export const SIKTBAND: [string, number, number][] = [
 // Station 2312 bar 26 av 36 timmar över 30 m/s och 18 av 24 över 50, spridda över HELA arkivet
 // 4–13/9. Dess medelbyvind är 21,9 men medianen 6,4 — spikarna drar upp varje aggregat den
 // bidrar till, också i timmar UNDER taket där den kan rapportera 25 när sanningen är 6. G_tak
-// rör inte det. (Och 85,5 m/s är precis det tal värdevakten dokumenterade som trasig givare vid
-// sin första körning — stationen har matat W-A i nio dygn sedan dess.)
+// rör inte det. Och två stationer till (2438, 2107) har sina omöjliga avläsningar UNDER 30 m/s:
+// G_tak kan per konstruktion aldrig se dem.
 //
 // KRITERIET ÄR FYSIK, INTE EN LISTA MED ID:N. En lista blir inaktuell i tysthet; ett fysikaliskt
 // mått fångar nästa trasiga station också. En byvind är per definition en excursion från
 // MEDELVINDEN: byvindfaktorn ligger på 1,3–1,5 över öppen terräng och når 2,5–3 i den ruggigaste.
-// Över 5 finns inte. De sju stationerna i arkivet har 37–175.
+// Arkivets egna tal vid meningsfull vind (medel ≥ 5 m/s, 3 142 rader): median 1,75 · p95 2,25 ·
+// p99,9 3,08. Taket 5 är alltså rundligt tilltaget åt rätt håll.
 //
-// TVÅ VAKTER MOT VAKTEN SJÄLV:
-//  · Kvoten bedöms BARA när medelvinden är minst 1 m/s. Vid vindstilla blir varje kvot instabil
-//    — en pust på 3 m/s mot ett medel på 0,2 ger 15 utan att något är trasigt.
+// FÖRSTA KRITERIET FÖLL PÅ SIN EGEN MÄTNING, och det står här för att nästa läsare inte ska
+// bygga om det. K1 var kvoten PER RAD vid medelvind ≥ 1 m/s. Den diskvalificerade 335 av 748
+// stationer (45 %) och åt 47 % av B1:s stationstimmar. Orsaken syns i råraderna: station 2534,
+// 13/9 02:50–03:20, byvind 10,5 · 10,5 · 10,5 · 10,5 · 10,5 · 10,4 medan medelvinden faller
+// 3,8 → 3,3 → 2,5 → 1,9 → 1,4 → 1,0. BYVINDEN ÄR ETT MAX ÖVER ETT BAKÅTFÖNSTER SOM INTE FLYTTAR
+// SIG; medelvinden är ögonblicket. Kvoten var två olika tidsfönster delade med varandra.
+// Att bara höja golvet räckte inte: vid medelvind ≥ 5 m/s fångas EN station (426), och 2312 —
+// den som motiverade hela vakten — slipper undan, för när den rapporterar 85 m/s står dess
+// medelvind under golvet. En vakt som missar den kända trasiga stationen är sämre än ingen.
+//
+// K2, SOM ANVÄNDS: räkna per STATIONSTIMME, inte per rad. Inom timmen är timmens högsta
+// medelvind en rättvis följeslagare till timmens högsta by, och fönsterglappet dör.
+//  · En stationstimme är OMÖJLIG när byvinden når BYVIND_GOLV och kvoten överstiger BYKVOT_TAK.
+//  · Golvet är W-A:s eget bandgräns, inte mitt: under 15 m/s kan en felkvot inte lyfta en timme
+//    in i ett band grinden bryr sig om, och då ska vakten hålla tyst.
 //  · Bara BYVINDEN diskvalificeras. Siktgivaren på samma stolpe är ett annat instrument, och att
 //    kasta den vore att slänga mätningar vi inte har skäl att misstro.
 export const BYKVOT_SVEP = [3, 5, 10] as const;
-export const BYKVOT_TAK = 5;          // byvindfaktor över detta är fysiskt omöjlig
-export const BYKVOT_MIN_MEDEL = 1.0;  // m/s — under detta är kvoten brus, inte bevis
+export const BYKVOT_TAK = 5;                     // byvindfaktor över detta är fysiskt omöjlig
+export const BYVIND_GOLV = 15;                   // m/s — under W-A:s första intressanta band tiger vakten
+export const OMOJLIGA_TIMMAR_SVEP = [1, 2, 5] as const;
+export const OMOJLIGA_TIMMAR = OMOJLIGA_TIMMAR_SVEP[0];
 
-/** Ren, testbar: ska stationen diskvalificeras för byvind? */
-export function diskvalificera(varstaKvot: number, kvotTak = BYKVOT_TAK): boolean {
-  return Number.isFinite(varstaKvot) && varstaKvot > kvotTak;
+/** Ren, testbar: är stationstimmen fysiskt omöjlig? (by och medel är timmens högsta av varje) */
+export function omojligTimme(byvind: number, medel: number, kvotTak = BYKVOT_TAK): boolean {
+  return byvind >= BYVIND_GOLV && medel > 0 && byvind / medel > kvotTak;
+}
+
+/** Och stationen: räcker antalet omöjliga timmar för att diska den ur B1? */
+export function diskvalificera(omojligaTimmar: number, krav = OMOJLIGA_TIMMAR): boolean {
+  return Number.isFinite(omojligaTimmar) && omojligaTimmar >= krav;
 }
 
 export type Bandrad = { namn: string; timmar: number; olyckor: number };
@@ -158,16 +178,21 @@ if (process.argv.includes("--sjalvtest")) {
   k("översta vindbandet slutar vid G_TAK", VINDBAND[VINDBAND.length - 1][2], G_TAK);
   k("87,7 m/s hamnar utanför alla band", VINDBAND.some(([, lo, hi]) => 87.7 >= lo && 87.7 < hi), false);
   k("25 m/s ryms fortfarande", VINDBAND.some(([, lo, hi]) => 25 >= lo && 25 < hi), true);
-  // STATIONSVAKTEN mot de sju verkliga stationerna ur mätningen 13/9. Talen är avlästa ur
-  // arkivet, inte påhittade — så testet faller om kriteriet slutar fånga dem.
-  k("station 426 (kvot 175) diskas", diskvalificera(175.4), true);
-  k("station 2312 (kvot 168) diskas", diskvalificera(167.6), true);
-  k("station 1732 (lägsta av de sju, 37) diskas", diskvalificera(37.3), true);
-  // Och den viktigare halvan: en VERKLIG byvindfaktor får inte diskas.
-  k("byig terräng, faktor 3,0, behålls", diskvalificera(3.0), false);
-  k("extrem men verklig, faktor 4,9, behålls", diskvalificera(4.9), false);
+  // STATIONSVAKTEN mot VERKLIGA stationstimmar ur mätningen 13/9. Talen är avlästa ur arkivet,
+  // inte påhittade — så provet faller om kriteriet slutar fånga dem.
+  k("2312:s värsta timme, 85,5 mot 0,9, är omöjlig", omojligTimme(85.5, 0.9), true);
+  k("2438, 29,9 mot 0,75, är omöjlig", omojligTimme(29.9, 0.75), true);
+  k("… och 2438 ligger UNDER G_tak, alltså osynlig för värdetaket", 29.9 < G_TAK, true);
+  // Den viktigare halvan: verkligt väder får inte diskas.
+  k("verklig storm, 20 m/s med faktor 2,0, behålls", omojligTimme(20, 10), false);
+  k("ruggig terräng, 18 m/s med faktor 3,0, behålls", omojligTimme(18, 6), false);
+  // K1:s fälla, inbakad som prov: fönsterglappet vid liten byvind får ALDRIG fälla en station.
+  k("2534:s fönsterglapp, 10,5 mot 1,0, är inte omöjligt", omojligTimme(10.5, 1.0), false);
+  k("ingen medelvind alls ger ingen dom", omojligTimme(16, 0), false);
   k("taket är svepets mitt", BYKVOT_TAK, BYKVOT_SVEP[1]);
-  k("ingen kvot alls (medelvind saknas) diskar inte", diskvalificera(NaN), false);
+  k("kravet är kravsvepets lägsta", OMOJLIGA_TIMMAR, Math.min(...OMOJLIGA_TIMMAR_SVEP));
+  k("en enda omöjlig timme räcker", diskvalificera(1), true);
+  k("noll omöjliga timmar diskar inte", diskvalificera(0), false);
   if (!ok) { console.error("\nSJÄLVTEST FÄLLDE."); process.exit(1); }
   console.log("\nSJÄLVTEST OK: frekvensen delar med exponeringen, monotonin fångar ett fall, vakten håller.");
   process.exit(0);
@@ -297,26 +322,49 @@ console.log(`\nG_TAK-SVEPET (TROSKLAR-VIND-SIKT §3.1) — vad varje steg skulle
 }
 
 
-console.log(`\nSTATIONSVAKTEN — byvindfaktor (by / medelvind), bedömd vid medelvind ≥ ${BYKVOT_MIN_MEDEL} m/s`);
+console.log(`\nSTATIONSVAKTEN — omöjliga stationstimmar (byvind ≥ ${BYVIND_GOLV} m/s och kvot > ${BYKVOT_TAK})`);
 const diskade: string[] = [];
 {
-  const kvoter = await q(`
-    SELECT station_id, max(wind_gust_ms / wind_speed_ms) AS kvot, round(max(wind_gust_ms), 1) AS max_by
-    FROM weather_observations
-    WHERE sample_time > now() - $1 * interval '1 day'
-      AND wind_gust_ms IS NOT NULL AND wind_speed_ms >= $2
-    GROUP BY 1`, [DAGAR, BYKVOT_MIN_MEDEL]);
-  console.log(`  ${kvoter.length} stationer med både byvind och medelvind i fönstret`);
-  for (const steg of BYKVOT_SVEP) {
-    const n = kvoter.filter((r) => diskvalificera(Number(r.kvot), steg)).length;
-    console.log(`    kvot > ${String(steg).padStart(2)}: ${String(n).padStart(3)} stationer skulle diskvalificeras${steg === BYKVOT_TAK ? "   ← VALT" : ""}`);
+  // Svepets steg blir varsin kolumn, så taket har EN källa och SQL:en inte en andra kopia.
+  const kol = BYKVOT_SVEP.map((s, i) =>
+    `count(*) FILTER (WHERE byvind >= $2 AND medel > 0 AND byvind / medel > ${s})::int AS o${i}`).join(",\n             ");
+  const rader = await q(`
+    WITH t AS (
+      SELECT station_id, date_trunc('hour', sample_time) AS h,
+             max(wind_gust_ms) AS byvind, max(wind_speed_ms) AS medel
+      FROM weather_observations
+      WHERE sample_time > now() - $1 * interval '1 day'
+        AND wind_gust_ms IS NOT NULL AND wind_speed_ms IS NOT NULL
+      GROUP BY 1, 2
+    )
+    SELECT station_id, ${kol},
+           count(*) FILTER (WHERE byvind >= $2)::int AS hoga_timmar,
+           round(max(byvind / NULLIF(medel, 0))::numeric, 1) AS varsta_kvot,
+           round(max(byvind)::numeric, 1) AS max_by
+    FROM t GROUP BY 1
+    HAVING count(*) FILTER (WHERE byvind >= $2) > 0
+    ORDER BY 2 DESC, 4 DESC`, [DAGAR, BYVIND_GOLV]);
+  const valt = BYKVOT_SVEP.indexOf(BYKVOT_TAK);
+  console.log(`  ${rader.length} stationer har någon timme över ${BYVIND_GOLV} m/s — bara de kan bedömas`);
+  console.log(`  TAKSVEPET (vid krav ≥ ${OMOJLIGA_TIMMAR} omöjlig timme):`);
+  for (const [i, s] of BYKVOT_SVEP.entries()) {
+    const n = rader.filter((r) => diskvalificera(Number(r[`o${i}`]))).length;
+    console.log(`    kvot > ${String(s).padStart(2)}: ${String(n).padStart(3)} stationer${s === BYKVOT_TAK ? "   ← VALT" : ""}`);
   }
-  const ut = kvoter.filter((r) => diskvalificera(Number(r.kvot))).sort((a, b) => Number(b.kvot) - Number(a.kvot));
+  console.log(`  KRAVSVEPET (vid tak ${BYKVOT_TAK}):`);
+  for (const krav of OMOJLIGA_TIMMAR_SVEP) {
+    const n = rader.filter((r) => diskvalificera(Number(r[`o${valt}`]), krav)).length;
+    console.log(`    ≥ ${krav} omöjliga timmar: ${String(n).padStart(3)} stationer${krav === OMOJLIGA_TIMMAR ? "   ← VALT" : ""}`);
+  }
+  const ut = rader.filter((r) => diskvalificera(Number(r[`o${valt}`])));
   for (const r of ut) diskade.push(String(r.station_id));
   console.log(`  DISKVALIFICERADE (${diskade.length}) — utesluts ur B1, men INTE ur B2:`);
-  for (const r of ut.slice(0, 12)) console.log(`    station ${String(r.station_id).padEnd(6)} värsta byvindfaktor ${Number(r.kvot).toFixed(1).padStart(7)} · max byvind ${r.max_by} m/s`);
+  for (const r of ut.slice(0, 12)) {
+    console.log(`    station ${String(r.station_id).padEnd(6)} ${String(r[`o${valt}`]).padStart(3)} omöjliga av ${String(r.hoga_timmar).padStart(3)} höga timmar` +
+      ` · värsta kvot ${String(r.varsta_kvot).padStart(6)} · max byvind ${r.max_by} m/s${Number(r.max_by) < G_TAK ? "   ← under G_tak, osynlig för värdetaket" : ""}`);
+  }
   if (ut.length > 12) console.log(`    … och ${ut.length - 12} till`);
-  console.log(`  En byvindfaktor på ${BYKVOT_TAK} är redan långt över det fysiskt möjliga (1,3–3).`);
+  console.log(`  Arkivets egen medianbyvindfaktor i höga timmar är ~2,0 — taket ${BYKVOT_TAK} ligger långt ovanför.`);
   console.log(`  Stationerna ovan har en trasig BYVINDGIVARE — det bör meddelas Trafikverket.`);
 }
 
