@@ -1658,3 +1658,12 @@ timingesten och kostar noll extra minuter; var-5:e-minut kräver flytt till edge
 CPU < 2 s, aldrig tätare i Actions (12/h = 288 min/dygn). Stegen C–F kräver utlösartröskeln, som är
 medvetet osatt — att härleda den ur domens egen körning är vad §5 förbjuder.
 Byggt: ingen kod. Nästa: tröskeln (människor), sedan steg B:s gaffel.
+
+## 2026-09-13 01:45 — Utlösartröskeln satt: radar rate_mean ≥ 2,0 mm/h (Bengt), Axel återstår
+DECISIONS #155. Bengts "Ja till 2" inskrivet i TROSKLAR-VATTENPLANING §3.4 med motiveringen
+formulerad mot underlaget: 2–10 mm/h är lägsta bandet där en station inom 5 km bekräftar i klar
+majoritet (77 %, mot 56 och 42 i banden under). Med faktorn 0,65 motsvarar 2,0 på radarn ≈ 3,1 mm/h
+verklig intensitet — regn som lägger vatten, inte fuktar. Tröskeln gäller rate_mean_mmh, samma fält
+som faktorn; rate_max är fortsatt spärrat.
+KVAR: Axels kontrasignering av tröskeln enligt §5, samma krav som faktorn hade (#154). Stegen C–F
+öppnas då; steg B beror inte av tröskeln och är redan öppet. Byggt: ingen kod.

@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-13 01:35 av Claude (webben) — Axel kontrasignerade §3.4: kalibreringsfaktorn 0,65 på rate_mean_mmh är FASTSTÄLLD, kort #81 steg A KLART, steg B öppet. Kvar före röst: utlösartröskeln i mm/h (osatt med flit) och stegen B–F.*
+*Uppdaterad: 2026-09-13 01:45 av Claude (webben) — utlösartröskeln satt av Bengt: radar rate_mean ≥ 2,0 mm/h (≈ 3,1 verkligt, 77 % bekräftelse). Faktorn 0,65 är fastställd med båda signaturerna. Kvar före kod: Axels signatur på TRÖSKELN. Steg A klart, steg B öppet, C–F väntar.*
 
 ---
 
@@ -1086,6 +1086,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   fullständig ⇒ **kalibreringsfaktorn 0,65 på `rate_mean_mmh` är FASTSTÄLLD och kort #81 steg A är KLART.**
   Låst med signaturen: faktorn, fältet, riktningen och spärren mot rate_max. 🔓 Steg B öppet.
   🔑 KVAR: utlösartröskeln i mm/h — medvetet osatt, får inte härledas ur domens egen körning (§5).
+  🎯 **TRÖSKELN SATT 13/9 av Bengt ("Ja till 2"): `rate_mean_mmh` ≥ 2,0 mm/h** (DECISIONS #155).
+  Motsvarar ≈ 3,1 mm/h verklig intensitet med faktorn 0,65; bekräftelsen i det bandet är 77 % (73 % i
+  föregående fönster), mot 56 % och 42 % i banden under. 🔑 KVAR: Axels kontrasignering av tröskeln —
+  stegen C–F i #81 öppnas då. Steg B är redan öppet och beror inte av tröskeln.
 - [ ] 📏 **#44 Regntäckningen** (Bengts täthetsfråga 3/9: "räcker timhämtningen?") —
   stationerna summerar regn per 30 min, ingest hämtar per timme: tappar vi varannan
   bucket? KNAPPEN BYGGD 3/9: scripts/regn-tackning.ts + Actions → regn-tackning
