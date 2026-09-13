@@ -1618,3 +1618,21 @@ larmprov, inte rotationsbevis. #83: 7 790 rader/dygn, 1 kall station. Kartrepot 
 live-sha = manifest-sha, SE 3 min, fi/dk 28 min (:24-körningen), meta 22 min. bridges tyst sedan #32,
 regn-30 sedan #152. Röda i fönstret: ci 3, grind-r-a 1, grannar 1 (självläkt), smhi-steg0 1.
 Byggt: inget. Nästa: morgonavläsning 13/9 04:30 UTC.
+
+## 2026-09-13 01:15 — Radardomens underlag framlagt en dag tidigt (Bengts "jag vill ha domen idag")
+Domen var bokad till måndag 14/9 08:30. Bengt bad om den idag. Måndagsserien kör inte på en söndag,
+så de två mätningar domen faktiskt vilar på trycktes för hand: cell-matning-v3 (34729680622) och
+grind-v-a (34729681410), 2 Actions-minuter. INGEN DOM FÄLLD AV MIG — den är Bengts och Axels.
+GRINDEN (RADAR-PLAN steg 3→4) har två delar och båda är uppmätta.
+(1) Kalibreringskurvan, 13/9 01:07, 7 dygn, 98 kompositer, 13 577 par: bekräftelse per radarband
+42 / 56 / 77 / 82 % för 0,1–0,5 / 0,5–2 / 2–10 / ≥10 mm/h. Kalibrering median 0,65 över 7 931 par.
+Täckning 91 % av 15 540 stationsregn. Gårdagens oberoende körning på förskjutet fönster: 39/54/73/79 %,
+0,66, 93 % — två fönster, samma monotont stigande kurva.
+(2) Fritier efter en vecka, ur ingest 00:11: radar_precip 2 029 rader/dygn över 24 kompositer
+≈ 0,3 MB/dygn ≈ 9 MB/mån mot 500. Händelsefiltret håller (124 av 818 segment med regn i senaste bilden).
+Grind V-A omkörd samma natt: FALLER på alla sex trösklarna, träff 60 % som bäst mot kravet 70,
+falsklarm 5–12 % mot kravet 25, delvis växer 28 → 83 %. Tredje körningen med samma svar.
+TVÅ RESERVATIONER IN I DOMEN: artefakten 727,54 mm/h i rate_max_mmh (fältet står UTANFÖR SPANN,
+DECISIONS #134) sitter i ett annat fält än kalibreringen (rate_mean), men i det fält en utlösare
+skulle läsa; och TROSKLAR-VATTENPLANING §3.4 namnger inget fält alls, så faktorn måste skrivas in
+med fältnamn enligt #81 steg A. Byggt: inget. Fyra frågor ligger hos Bengt och Axel.

@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-12 18:55 av Claude (webben, avläsningen) — kassan har TREDUBBLATS: 202 min/dygn över dygnet, 261 senaste 10 h, ci 92 körningar (bygget kostar, inte driften) ⇒ 31–40 USD till 1/10 mot taket 35 med hårt stopp. Bron håller (13 puls + 7 cron, max 2,00 h). Nycklarna ej roterade. Kartrepot helt.*
+*Uppdaterad: 2026-09-13 01:15 av Claude (webben) — RADARDOMENS UNDERLAG FRAMLAGT en dag tidigt på Bengts order: kalibreringskurvan stiger monotont 42/56/77/82 %, median 0,65, täckning 91 %, samma kurva i två oberoende fönster. Fritier 2 029 rader/dygn ≈ 9 MB/mån. Grind V-A omkörd: FALLER på alla sex trösklarna. Domen är Bengts och Axels — fyra frågor ligger hos dem.*
 
 ---
 
@@ -1046,6 +1046,35 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   måndagsmorgon, resultatet på Summary-sidan. 🔑 Pilotens dom efter ~1 vecka: v3 på moget underlag + uppmätt
   volym/fritier. Steg 4 nyttjarna i kortens egen takt. Blind fläck
   kvarstår: frosten ser radarn aldrig.
+  ⚖️ **DOMSUNDERLAGET FRAMLAGT 13/9 01:10 — Bengts order "jag vill ha domen idag".** Domen var bokad
+  till måndag 14/9 08:30; måndagsserien kör inte på en söndag, så cell-matning-v3 och grind-v-a
+  trycktes för hand (körning 34729680622 och 34729681410, 2 Actions-min). INGEN DOM FÄLLD HÄR —
+  den är Bengts och Axels, underlaget är mitt.
+  **GRINDEN ur RADAR-PLAN.md steg 3→4 har två delar. Båda är nu uppmätta:**
+  · **(1) KALIBRERINGSKURVAN.** Färsk körning 13/9 01:07, 7 dygn (8/9 23:10 → 13/9 00:05),
+    98 kompositer, 13 577 radar↔station-par:
+    `0,1–0,5 mm/h  n=4852  station såg regn 42 %`
+    `0,5–2         n=4055                   56 %`
+    `2–10          n=3852                   77 %`
+    `≥10           n= 818                   82 %`
+    Kalibrering median **0,65** över 7 931 par (1,0 = Marshall–Palmer exakt). Missriktning: radarn
+    hade rad ≤ 5 km vid **91 %** av 15 540 stationsregn.
+    🔁 **STABILITETEN ÄR SJÄLV ETT BEVIS:** gårdagens oberoende körning på ett förskjutet fönster gav
+    39/54/73/79 %, kalibrering 0,66, täckning 93 %. Två fönster, samma kurva. Den stiger monotont med
+    intensiteten — det är den fysiska signaturen domen letar efter.
+  · **(2) FRITIER-FÖRBRUKNINGEN EFTER 1 VECKA.** Ur ingest 13/9 00:11: `radar_precip senaste dygnet:
+    2029 rader över 24 kompositer`. Alltså ~2 000 rader/dygn ≈ 0,3 MB/dygn ≈ 9 MB/mån mot gratisnivåns
+    500. Händelsefiltret håller: 124 av 818 segment hade regn ≥ 0,1 mm/h i senaste bilden, 13 049
+    provpunkter, 84 utanför täckning. Grids lagras aldrig. **Fritier-lagen hålls med marginal.**
+  ⚠️ **TVÅ SAKER SOM MÅSTE MED I DOMEN, båda upptäckta efter att grinden skrevs:**
+  · **Artefakten (DECISIONS #134):** `radar_precip.rate_max_mmh` går till 727,54 mm/h. Världens
+    extremvärden ligger kring 150–200 för en femminutersskur. Fältet står som UTANFÖR SPANN (0–200)
+    tills någon läst raderna. Kalibreringen ovan är mätt på `rate_mean_mmh`, inte på rate_max —
+    artefakten sitter alltså i ETT ANNAT FÄLT än det domen vilar på, men i det fält en utlösare
+    troligen skulle läsa.
+  · **TROSKLAR-VATTENPLANING §3.4 NAMNGER INGET FÄLT.** Skrivs kalibreringsfaktorn in enligt #81 steg A
+    måste dokumentet samtidigt säga OM den gäller rate_mean eller rate_max. Annars mäts faktorn på ett
+    fält och används på ett annat — precis den tysta drift kontraktsgrinden finns för att fånga.
 - [ ] 📏 **#44 Regntäckningen** (Bengts täthetsfråga 3/9: "räcker timhämtningen?") —
   stationerna summerar regn per 30 min, ingest hämtar per timme: tappar vi varannan
   bucket? KNAPPEN BYGGD 3/9: scripts/regn-tackning.ts + Actions → regn-tackning
@@ -2124,6 +2153,18 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   bevis = rader med rain_sum_mm senaste timmen vid regn. BESLUTSLÄGET (a/b/c) oförändrat.
   Grind V-A kräver Actions eller Axels lokala körning (`publish/grind-v-a.ts 30`).
   *(nyckel för röst: Axels ja — rösttext, plats i A-skalan, ordning mot #15/#16)*
+  🔁 **GRIND V-A OMKÖRD 13/9 01:06 (färsk, 30 dygn, 755 stationer, 73 194 bucketade avläsningar).**
+  Kravet ur TROSKLAR-VATTENPLANING §3: V-A1 träff ≥ 70 %, V-A2 falsklarm ≤ 25 %, bara 0–10 km (V-A3).
+  `0,5 mm/h  n=3800  träff 60±2 %  delvis 28 %  falsklarm 12±1 %`
+  `1         n=2578  träff 53±2 %  delvis 37 %  falsklarm 10±1 %`
+  `2         n=1295  träff 40±3 %  delvis 51 %  falsklarm  9±2 %`
+  `4         n= 513  träff 27±4 %  delvis 65 %  falsklarm  7±2 %`
+  `6         n= 216  träff 20±5 %  delvis 75 %  falsklarm  5±3 %`
+  `10        n=  53  träff 11±9 %  delvis 83 %  falsklarm  6±6 %`
+  **DOM: V-A FALLER på alla sex trösklarna.** Tredje körningen med samma svar, nu på växande underlag
+  (1 141 → 3 594 → 3 800 fall i 0–10 km). Falsklarmen klarar V-A2 överallt (5–12 %); det är TRÄFFEN som
+  fäller, och delvis-andelen växer monotont med tröskeln (28 → 83 %). Grannarna vet ATT det regnar, inte
+  HUR MYCKET. ⇒ Beslutsläge (a)/(b)/(c) oförändrat i sak, men (c) har nu mätt underlag: se #43 13/9.
 - [ ] 🧭 **#81 Byggordning efter radardomen 14/9 — så byggs #42 utan att upprepa 5–8/9** (Bengts
   beställning 9/9 00:05). 🔒 LÅST BAKOM 14/9: faller domen illa gäller #42:s alternativ a/b i
   stället, och det här kortet stängs oanvänt. Faller den väl ut byggs det i DEN HÄR ordningen,
