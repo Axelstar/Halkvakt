@@ -433,7 +433,7 @@ Har rösten aldrig behövt säga något står det så — tystnad är en funktio
 | 0.3.3 (6) | 2/9 | Skinnet v3, ikonsetet, Om-fliken bort, resan över pauser, broarna vilande. |
 | 0.3.4 (7) | 2/9 | Kameratoleransen 60°, vägnumret i rösten. Byggd med rött kontrakt — *ogiltig*. |
 | 0.3.5 (8) | 2/9 | Kamerariktningen vänd 180°. Första bygget med grönt kontrakt i alla tre motorer. |
-| *nästa* | — | Prioritetsmedveten spärr, golv 10 s (#127). Ligger på main, väntar på arkivering. |
+| *nästa* | — | Prioritetsmedveten spärr, golv 10 s (#165). Ligger på main, väntar på arkivering. |
 
 Android ligger kvar på 0.3.1 med gammalt skinn. Skinnet v3 är portat och bevisat i
 emulator; Play-lanseringen väntar på tolv testare.

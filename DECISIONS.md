@@ -4505,7 +4505,86 @@ Mutationsprov: `BY_TAK` driven till 40 ⇒ exit 1.
 som ändå bara har 45 av 500 krävda stationstimmar. Nyttan ligger i höst: när blåsten kommer ska
 underlaget vara rent från början, inte städat efteråt.
 
-## #127 (13/9 2026) Spärren var prioritetsblind — inverterade prioriteten för faror i följd
+## #164 (13/9 2026) Stationsvakten — och kriteriet som föll på sin egen mätning innan det fick gälla
+
+**Beslut (Bengts order 13/9, "bygg stationsvakten"):** `scripts/vindsikt-steg0.ts` utesluter
+stationer med bevisligen trasig byvindgivare ur grind W-A:s B1. Kriteriet är fysikaliskt, inte en
+lista med ID:n — en lista blir inaktuell i tysthet, ett mått fångar nästa trasiga station också.
+
+**Varför G_tak (#163) inte räckte.** Ett värdetak tar bort dåliga AVLÄSNINGAR. Det tar inte bort en
+dålig STATION. Station 2312 bar 26 av 36 stationstimmar över 30 m/s och 18 av 24 över 50, spridda
+över hela arkivet 4–13/9; medelbyvind 21,9 men median 6,4. Spikarna drar upp varje aggregat den
+bidrar till — också i timmarna UNDER taket, där G_tak per konstruktion inte gör något.
+
+**FÖRSTA KRITERIET (K1) FÖLL, och det bokförs här i sin helhet därför att felet är lärorikt.**
+K1 var kvoten byvind/medelvind **per rad**, bedömd vid medelvind ≥ 1 m/s, tak 5. Den skarpa
+körningen på grenen gav **335 diskvalificerade av 748 stationer (45 %)** och åt **47 % av B1:s
+stationstimmar**. Golvsvepet visade en klippa: 335 vid golv 1,0 → 17 vid 2,0 → 3 vid 3,0 → 1 vid
+5,0 → 0 vid 6,0. Upprepningen saknades helt: vid golv 5 fanns EN station med EN rad över kvoten,
+och en trasig givare gör det om och om igen.
+
+Orsaken syns i råraderna. Station 2534, 13/9 02:50–03:20, femminuterskadens: byvinden står stilla
+på **10,5 · 10,5 · 10,5 · 10,5 · 10,5 · 10,4** medan medelvinden faller **3,8 → 3,3 → 2,5 → 1,9 →
+1,4 → 1,0**. **Byvinden är ett max över ett bakåtfönster som inte flyttar sig; medelvinden är
+ögonblicket.** Kvoten var två olika tidsfönster delade med varandra. Det är samma klass av fel som
+0f:s (#96) — att läsa en tabell som om den vore något annat än den är.
+
+**Taket 5 var däremot rätt, och det flyttades INTE.** Arkivets egna byvindfaktorer vid
+meteorologiskt meningsfull vind (medel ≥ 5 m/s, 3 142 rader): median **1,75**, p95 **2,25**,
+p99,9 **3,08**, alltså exakt den fysik som skrevs före mätningen (1,3–2, extremt 3). Felet satt i
+nämnaren, inte i gränsen — och att flytta taket till 10 för att utfallet såg bättre ut hade varit
+precis den glidning huset förbjuder.
+
+**Att bara höja golvet dög inte heller.** Vid medel ≥ 5 m/s fångas EN station (426: 87,7/5,8 =
+15,1), och **2312 slipper undan** — när den rapporterar 85 m/s står dess medelvind under golvet.
+En vakt som missar den kända trasiga stationen men ser ut att vakta är sämre än ingen vakt.
+
+**K2, SOM GÄLLER — deklarerat med falsifieringsvillkor FÖRE mätningen.** Räkna per **stationstimme**
+i stället för per rad: timmens högsta byvind mot timmens högsta medelvind. Inom timmen är de
+rättvisa följeslagare, och fönsterglappet dör. En stationstimme är **omöjlig** vid byvind
+**≥ 15 m/s** — W-A:s egen bandgräns, inte ett tal jag valt; under den kan en felkvot inte lyfta en
+timme in i ett band grinden bryr sig om — och kvot **> 5**. En station diskas vid **≥ 1** sådan
+timme. Villkoren som skulle ha fällt också K2: fler än 20 stationer, eller 2312 omissad.
+
+**Utfallet: 9 stationer av de 42 som har någon timme över 15 m/s.**
+
+| station | omöjliga / höga timmar | värsta kvot | max byvind |
+|---|---|---|---|
+| 2312 | 29 / 30 | 100,3 | 85,5 |
+| 2438 | 4 / 4 | 39,7 | **29,9 — under G_tak** |
+| 1732 | 3 / 3 | 37,3 | 78,4 |
+| 227 | 3 / 3 | 78,7 | 55,1 |
+| 426 | 2 / 2 | 25,8 | 87,7 |
+| 618 · 1311 · 310 | 1 / 1 | 64,0 · 27,4 · 37,5 | 32,0 · 30,1 · 45,0 |
+| 2107 | 1 / 1 | 64,0 | **25,6 — under G_tak** |
+
+**TVÅ AV DE NIO HAR SINA OMÖJLIGA VÄRDEN UNDER 30 M/S.** G_tak kan per konstruktion aldrig se dem.
+Det är vaktens starkaste existensskäl, och det var inte känt när kortet beställdes.
+
+Stationerna är inte ibland trasiga: de nio har **44 av arkivets 110 stationstimmar över 15 m/s**,
+och när de rapporterar en hög by är den nästan alltid omöjlig (2312: 29 av 30).
+
+**Effekten på B1**, mot körningen med enbart G_tak: < 10 m/s 30 095 → 29 774, 10–15 1 121 → 1 111,
+15–20 65 → 61, **20–30 9 → 3**. Vakten tar **1,1 %** av arkivets stationstimmar och **67 %** av det
+högsta bandet — det högsta bandet bestod alltså till två tredjedelar av trasiga givare. Taksvepet
+visar dessutom att valet inte är bärande: kvot > 5 och kvot > 10 ger båda 9 stationer, kvot > 3 ger 11.
+
+**Bara B1 utesluter. B2 utesluter ingen.** En trasig byvindgivare säger ingenting om siktgivaren på
+samma stolpe — de är olika instrument, och att kasta båda vore att slänga mätningar vi inte har
+skäl att misstro. B2:s tal är oförändrade, vilket också syns i körningen.
+
+**Provet ligger mot verkligheten, inte mot påhittade tal:** självtestet prövar 2312:s och 2438:s
+faktiska timmar, att 2438 ligger under G_tak, att verklig storm (faktor 2,0) och ruggig terräng
+(faktor 3,0) behålls — och **K1:s fälla är inbakad som prov**: 2534:s 10,5 mot 1,0 får aldrig
+fälla en station.
+
+**Vad det INTE gör:** W-A är fortfarande ⊘ OAVGJORT — 3 stationstimmar i högsta bandet mot kravet
+500. Vakten rensar underlaget inför hösten; den avgör ingenting i september. Och de nio stationerna
+har en trasig byvindgivare som bör meddelas Trafikverket: skriptet listar dem, det anmäler dem inte.
+
+## #165 (13/9 2026) Spärren var prioritetsblind — inverterade prioriteten för faror i följd
+
+*Skriven som #127 av Axel och OMNUMRERAD till #165 vid mergen: #127 var upptaget sedan 12/9 (marginalvakten körd). Texten är hans, oförändrad. Produktbokens versionstabell pekar om till #165. Samma krock finns kvar på #126 — den refereras redan i CLAUDE.md och lämnas därför orörd.*
 BENGTS FYND: den globala 45-sekundersspärren (regel 1b) kördes EFTER prioritetsvalet (1a)
 och visste inte vad den tystade. Faror som kvalificerar samtidigt prioriterades rätt; faror
 som kvalificerar EFTER varandra fick inverterad ordning. Kamera vid X, is vid X+200, 50 km/h:
