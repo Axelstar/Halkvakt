@@ -4561,7 +4561,7 @@ timme. Villkoren som skulle ha fällt också K2: fler än 20 stationer, eller 23
 **TVÅ AV DE NIO HAR SINA OMÖJLIGA VÄRDEN UNDER 30 M/S.** G_tak kan per konstruktion aldrig se dem.
 Det är vaktens starkaste existensskäl, och det var inte känt när kortet beställdes.
 
-Stationerna är inte ibland trasiga: de nio har **44 av arkivets 110 stationstimmar över 15 m/s**,
+Stationerna är inte ibland trasiga: de nio har **46 av arkivets 110 stationstimmar över 15 m/s** (42 %),
 och när de rapporterar en hög by är den nästan alltid omöjlig (2312: 29 av 30).
 
 **Effekten på B1**, mot körningen med enbart G_tak: < 10 m/s 30 095 → 29 774, 10–15 1 121 → 1 111,
