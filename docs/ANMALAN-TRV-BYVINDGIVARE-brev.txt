@@ -1,0 +1,145 @@
+ANMÄLAN: NIO VÄDERSTATIONER RAPPORTERAR FYSISKT OMÖJLIG BYVIND
+
+Datum: 13 september 2026
+Avsändare: Lagerlöf Labs (Halkvakt), [namn, e-post, telefon fylls i]
+Gäller: Trafikverkets öppna data, WeatherMeasurepoint / WeatherObservation,
+        fältet Aggregated30minutes.Wind.SpeedMax
+Observationsfönster: 4-13 september 2026, 115 987 observationer med byvind
+        från 751 stationer
+
+
+SAMMANFATTNING
+
+Vi läser Trafikverkets öppna väderdata löpande. I materialet från 4 till
+13 september 2026 rapporterar nio av 751 stationer byvindvärden som är
+fysiskt omöjliga: byvindar på mellan 23,8 och 87,7 meter per sekund
+samtidigt som stationens egen medelvind ligger på mellan 0,4 och 2,1
+meter per sekund.
+
+Station 2312 Handöl rapporterar 85,5 m/s, vilket är högre än Sveriges uppmätta
+rekord på omkring 81 m/s, och det rekordet är satt på fjällstation. Station 426
+Oxelösund rapporterar 87,7 m/s vid en kustnära vägstation i september.
+
+Talen är inte enstaka utslag. Handöl har 29 sådana timmar spridda över
+hela perioden, och stationerna rapporterar i övrigt helt normala värden:
+deras medianbyvind ligger på mellan 2 och 7 m/s. Det rör sig alltså om
+spikar i ett annars normalt material.
+
+Vi gör inget anspråk på att veta var felet sitter, om det är i givaren,
+i dataöverföringen eller i trettiominutersaggregeringen. Vi rapporterar
+vad som syns i de öppna data vi hämtar.
+
+
+STATIONERNA
+
+Station 2312 Handöl (63,26783 N, 12,38533 E)
+  29 omöjliga timmar under 4-13 september. Högsta byvind 85,5 m/s.
+  Medianbyvind i perioden 6,6 m/s. Värsta förhållandet by/medel: 100 gånger.
+  Tydligaste observationen: 11 september kl. 00:30 UTC, medelvind 0,5 m/s
+  och byvind 83,8 m/s.
+
+Station 2438 Ruskträsk (64,82426 N, 18,79660 E)
+  4 omöjliga timmar under 5-13 september. Högsta byvind 29,9 m/s.
+  Medianbyvind 2,8 m/s. Värsta förhållandet: 40 gånger.
+  Tydligaste observationen: 5 september kl. 02:05 UTC, medelvind 0,6 m/s
+  och byvind 23,8 m/s.
+
+Station 227 Arlanda (59,64336 N, 17,89332 E)
+  3 omöjliga timmar under 4-5 september. Högsta byvind 55,1 m/s.
+  Medianbyvind 4,7 m/s. Värsta förhållandet: 79 gånger.
+  Tydligaste observationen: 4 september kl. 08:05 UTC, medelvind 0,7 m/s
+  och byvind 55,1 m/s.
+
+Station 1732 Fastnäs (60,28845 N, 13,39538 E)
+  3 omöjliga timmar under 4-11 september. Högsta byvind 78,4 m/s.
+  Medianbyvind 2,9 m/s. Värsta förhållandet: 37 gånger.
+  Tydligaste observationen: 4 september kl. 16:05 UTC, medelvind 2,1 m/s
+  och byvind 78,4 m/s.
+
+Station 426 Oxelösund (58,69095 N, 17,04798 E)
+  2 omöjliga timmar den 13 september. Högsta byvind 87,7 m/s.
+  Medianbyvind 3,4 m/s. Värsta förhållandet: 175 gånger.
+  Tydligaste observationen: 13 september kl. 04:10 UTC, medelvind 0,5 m/s
+  och byvind 87,7 m/s.
+
+Station 618 Brahehus (58,06883 N, 14,52885 E)
+  1 omöjlig timme den 5 september. Högsta byvind 32,0 m/s.
+  Medianbyvind 4,8 m/s. Värsta förhållandet: 80 gånger.
+  Tydligaste observationen: 5 september kl. 08:50 UTC, medelvind 0,4 m/s
+  och byvind 32,0 m/s.
+
+Station 2107 Hamnäs (61,19249 N, 16,77012 E)
+  1 omöjlig timme den 4 september. Högsta byvind 25,6 m/s.
+  Medianbyvind 2,1 m/s. Värsta förhållandet: 64 gånger.
+  Tydligaste observationen: 4 september kl. 12:05 UTC, medelvind 0,4 m/s
+  och byvind 25,6 m/s.
+
+Station 310 Överboda (60,60235 N, 17,45239 E)
+  1 omöjlig timme den 9 september. Högsta byvind 45,0 m/s.
+  Medianbyvind 4,2 m/s. Värsta förhållandet: 75 gånger.
+  Tydligaste observationen: 9 september kl. 05:10 UTC, medelvind 0,6 m/s
+  och byvind 45,0 m/s.
+
+Station 1311 Mossjön (56,95058 N, 12,79389 E)
+  1 omöjlig timme den 12 september. Högsta byvind 30,1 m/s.
+  Medianbyvind 3,0 m/s. Värsta förhållandet: 75 gånger.
+  Tydligaste observationen: 12 september kl. 19:45 UTC, medelvind 0,4 m/s
+  och byvind 30,1 m/s.
+
+Mönstret är detsamma i alla nio fall: spiken inträffar i nära
+vindstilla.
+
+
+METOD
+
+Varje observation grupperas per station och timme. För timmen tas den
+högsta byvinden och den högsta medelvinden. En stationstimme räknas som
+omöjlig när byvinden når 15 m/s och samtidigt är mer än fem gånger så
+hög som medelvinden.
+
+Gränsen fem är rundligt tilltagen. Byvindfaktorn, alltså förhållandet
+mellan by och medelvind, ligger i verkligheten på 1,3 till 1,5 över
+öppen terräng och når 2,5 till 3 i den ruggigaste. I ert eget material,
+räknat över alla stationer vid medelvind på minst 5 m/s och 3 142
+observationer, är medianen 1,75, den 95:e percentilen 2,25 och den
+99,9:e percentilen 3,08. De nio stationerna ovan ligger på mellan 25 och
+175.
+
+Kontroll av metoden: byvinden är ett maximum över de föregående trettio
+minuterna medan medelvinden är ett ögonblicksvärde. En snäv parning
+skulle därför i princip kunna ställa en verklig by mot en efterföljande
+lugn stund. Vi har räknat om med medelvinden tagen som högsta värde över
+timmen och timmen före, alltså ett fönster som med säkerhet täcker
+byvindens hela mätperiod. Resultatet blev identiskt: samma nio stationer
+och samma 45 timmar. Fönsterparningen förklarar alltså inte talen.
+
+
+VAD VI BER OM
+
+1. En kontroll av de nio stationernas byvindgivare.
+
+2. Besked om felet ligger i givaren, i överföringen eller i
+   trettiominutersaggregeringen. Det avgör om den som använder öppna data kan
+   filtrera bort felet själv eller inte.
+
+3. Om värdena är kända och avsiktliga, till exempel en sentinel- eller felkod
+   som vi inte känner till, ber vi om en upplysning om vilket värde som betyder
+   vad.
+
+
+RESERVATIONER
+
+Vi ser bara de öppna data vi hämtar, inte råsignalen från givaren.
+
+Fönstret är kort, 4 till 13 september 2026, eftersom vi började spara
+vind den 4 september. Inuti fönstret finns dessutom ett avbrott i vår
+egen hämtning mellan den 5 och den 9 september. Stationerna kan alltså
+ha fler omöjliga timmar än vi ser, men inte färre.
+
+Vi har inte jämfört mot grannstationer i den här mätningen. Slutsatsen
+vilar på varje stations eget förhållande mellan byvind och medelvind,
+vilket gör den oberoende av väderläget.
+
+Vi använder byvinden i ett trafiksäkerhetsunderlag under utveckling och
+har uteslutit de nio stationerna ur vårt eget material. Anmälan görs för
+att felet bör vara känt hos källan, inte för att vi är blockerade.
