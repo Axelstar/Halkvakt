@@ -4504,3 +4504,33 @@ Mutationsprov: `BY_TAK` driven till 40 ⇒ exit 1.
 **Vad det INTE gör:** W-A är fortfarande ⊘ OAVGJORT. Taket tar bort en trasig givare ur ett band
 som ändå bara har 45 av 500 krävda stationstimmar. Nyttan ligger i höst: när blåsten kommer ska
 underlaget vara rent från början, inte städat efteråt.
+
+## #127 (13/9 2026) Spärren var prioritetsblind — inverterade prioriteten för faror i följd
+BENGTS FYND: den globala 45-sekundersspärren (regel 1b) kördes EFTER prioritetsvalet (1a)
+och visste inte vad den tystade. Faror som kvalificerar samtidigt prioriterades rätt; faror
+som kvalificerar EFTER varandra fick inverterad ordning. Kamera vid X, is vid X+200, 50 km/h:
+kameran kvalificerar vid X−500 (fast 500 m), isen vid X−217 (leadM 417). Kameran talar, isen
+kastas 20 s senare (< 45), spärren öppnar när föraren är 75 m från isen.
+REPRODUCERAT (v23): 61 m, inte 75. Verkligheten var värre än aritmetiken.
+Aritmetiken behövde inte mätas. Det som var uppmätt (Bengt, static.json, 2 790 kameror):
+minsta avstånd mellan två kameror i SAMMA riktning är 520 m, median 3 946, noll under 500.
+Det ger golvet ett härlett värde: 520 m i 120 km/h = 15,6 s ⇒ ett golv på 10 s kan aldrig
+tysta en kamera. Fartkameror behöver ingen spärr alls.
+ÄNDRINGEN, tre motorer: regel 1b får bara kasta en vinnare vars prioritet inte är HÖGRE
+än det som senast sades (lastSpokenKind). Golvet 45 → 10 s. Upprepningsregeln (regel 2,
+10 min / 5 km) orörd. Is får avbryta en kamera; en kamera kan aldrig avbryta is. Motorn
+omprövar varje fix och köar inget, så kortare golv skapar ingen kö — en passerad fara är
+inte kandidat. Arkitekturen gjorde redan rätt; konstanten var fel.
+VEKTORER: v23 ny (sekvensfallet: isen talar 409 m före i stället för 61). v04/v13 uppdaterade
+— kameran får plats 10 s efter olyckan/viltet, sann och aktuell. v05 OMSKRIVEN från
+"throttle_45s" till "throttle_floor_10s": det gamla fallet (kameror 400 m isär) finns inte
+i verkligheten; det nya låser golvet (camB t=123, inte t=122) och att en kamera aldrig
+tystas permanent. Kedjetestets 45-s-invariant ersatt med prioritetsmedveten 10-s.
+BEVIS: TS 84/84, Kotlin grön lokalt, ios-engine + ci gröna på 7250068.
+(a) SPÄRREN SYNLIG: motorn har onSuppressed; skuggmotorn loggar varje kastad vinnare i
+shadow_log.suppressed (sql/016: kind, id, distM, by, sinceS). Första körning: 0 kastade på
+3 rutter — väntat i september (bara kameror, ≥ 520 m isär). I vinter blir kolumnen talet
+som saknats sedan början: hur ofta spärren tystade, och vad.
+INTE ARKIVERAT: rösten är Axels. Ändringen ligger på main med grönt kontrakt; nästa
+app-version bär den. Bengt: "skickas som ett konstaterat fel med ett förslag" — det var
+rätt form, och förslaget höll i alla tre portar.
