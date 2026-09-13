@@ -1648,3 +1648,13 @@ bekräftelsekurvan som underlag. Fastställande och incheckning i SAMMA varv enl
 KVAR FÖRE KOD, båda hos människor: Axels kontrasignering i §3.4 (§5:s dubbelsignatur) och
 utlösartröskeln i mm/h, som inte får härledas ur utfallet. Steg B i #81 öppnas först då.
 Byggt: ingen kod — steg A är per definition dokument, inte kod. Nästa: Axels signatur.
+
+## 2026-09-13 01:35 — Axel kontrasignerade: kalibreringsfaktorn fastställd, steg A klart
+DECISIONS #154. Dubbelsignaturen enligt §5 fullständig (Bengt "Kör c", Axel relayerad av Bengt samma
+väg som #60 och #61). Fastställt och därmed låst: faktorn 0,65, fältet rate_mean_mmh, riktningen
+(dividera med 0,65 ≈ ×1,54) och spärren mot rate_max_mmh tills spannet 0–200 är rensat.
+Kort #81 steg A KLART ⇒ steg B öppet. Steg B:s gaffel är ett eget beslut: radar.ts ligger i dag i
+timingesten och kostar noll extra minuter; var-5:e-minut kräver flytt till edge function OCH bevisad
+CPU < 2 s, aldrig tätare i Actions (12/h = 288 min/dygn). Stegen C–F kräver utlösartröskeln, som är
+medvetet osatt — att härleda den ur domens egen körning är vad §5 förbjuder.
+Byggt: ingen kod. Nästa: tröskeln (människor), sedan steg B:s gaffel.

@@ -4136,3 +4136,23 @@ TVÅ RESERVATIONER SOM FÖLJER MED IN I BYGGET, båda upptäckta efter att grind
 
 ÖPPET: själva utlösartröskeln i mm/h. Den sätts inte av utfallet och kräver dubbelsignatur.
 Bekräftelsekurvan står i §3.4 som dess underlag.
+
+## #154 (13/9 2026) Axel kontrasignerar §3.4 — kalibreringsfaktorn fastställd, steg A klart
+
+BESLUT (Axel, relayerad av Bengt i chatten samma väg som källbeslutet #60 och trösklarna #61):
+Axel kontrasignerar TROSKLAR-VATTENPLANING §3.4. Dubbelsignaturen enligt §5 är därmed fullständig
+och kalibreringsfaktorn **0,65 på `rate_mean_mmh`** är FASTSTÄLLD. Kort #81 steg A är klart.
+
+VAD SOM ÄR LÅST MED DETTA: faktorns värde, fältet den gäller, riktningen (dividera med 0,65,
+alltså ≈ ×1,54), och spärren mot `rate_max_mmh` tills dess spann 0–200 är rensat. Ändring av
+något av detta kräver ny dubbelsignatur enligt §5.
+
+VAD SOM INTE ÄR LÅST: **utlösartröskeln i mm/h är fortfarande öppen.** Den är medvetet inte satt
+i samma varv som domen föll — att härleda tröskeln ur den körning som nyss dömde är precis vad §5
+förbjuder. Bekräftelsekurvan i §3.4 är dess underlag.
+
+FÖLJD FÖR BYGGORDNINGEN (kort #81): steg A klart ⇒ steg B öppet. Steg B har en gaffel som är ett
+eget beslut: radar.ts ligger i dag som ett steg i timingesten och kostar noll extra minuter. Att
+täta kadensen till var 5:e minut kräver att den flyttas till en edge function OCH att CPU:n bevisas
+under 2 s — aldrig tätare i Actions, där 12 körningar i timmen vore 288 min/dygn. Stegen C–F kräver
+tröskeln och rörs inte förrän den är satt.

@@ -146,8 +146,11 @@ Radar får fortfarande i **inget** fall **fälla falsklarm** (§2 oförändrad) 
 inte facit.
 
 **Signaturer enligt §5** (att lägga till en faktor kräver dubbelsignatur men inte motivering,
-eftersom en ny faktor skärper underlaget): Bengt 13/9 2026 ("Kör c"). **Axel: öppen.**
-Steg B i kort #81 öppnas först när båda står här.
+eftersom en ny faktor skärper underlaget): **Bengt 13/9 2026** ("Kör c") · **Axel 13/9 2026**
+(relayerad av Bengt i chatten, samma väg som källbeslutet #60 och trösklarna #61).
+**DUBBELSIGNATUREN ÄR FULLSTÄNDIG — kalibreringsfaktorn är FASTSTÄLLD** och kort #81 steg A är klart.
+
+Kvar innan rösten kan säga något: **utlösartröskeln i mm/h** (nedan) och stegen B–F i kort #81.
 
 ## 4. Vinterinteraktionen — FASTSTÄLLD av Axel 4/9 (granskningens §7.4)
 
