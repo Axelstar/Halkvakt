@@ -4175,3 +4175,27 @@ tills dess spann 0–200 är rensat (#134) — en tröskel på ett obesiktigat f
 
 KVAR: Axels kontrasignering av tröskeln enligt §5, samma krav som faktorn hade (#154). Stegen C–F i
 kort #81 öppnas först då. Steg B beror inte av tröskeln och är redan öppet.
+
+## #156 (13/9 2026) Axel kontrasignerar tröskeln, och radarn STANNAR i timingesten (steg B avgjort)
+
+TVÅ BESLUT i samma svar från Bengt ("Axel signerar. Vi flyttar inte nu").
+
+(1) AXEL KONTRASIGNERAR UTLÖSARTRÖSKELN (relayerad av Bengt, samma väg som #60, #61 och #154).
+Dubbelsignaturen enligt §5 är fullständig och `rate_mean_mmh` ≥ 2,0 mm/h är FASTSTÄLLD. Därmed är
+hela §3.4 avgjord: faktorn 0,65, fältet, riktningen, spärren mot `rate_max_mmh` och tröskeln.
+Stegen C–F i kort #81 är öppna.
+
+(2) STEG B AVGJORT: RADARN FLYTTAS INTE NU. `ingest/radar.ts` ligger kvar som ett steg i
+timingesten och kostar noll extra Actions-minuter. Alternativet — flytt till edge function med
+bevisad CPU < 2 s för 5-minuterskadens — är inte förkastat, bara inte nu. Tätare kadens i Actions
+förblir uteslutet: 12 körningar i timmen vore 288 min/dygn, oktoberpotten på en vecka.
+
+VARFÖR DET ÄR RÄTT BESLUT NU, och inte bara ett uppskjutande: kadensen bestämmer hur färsk en
+varning kan bli, inte om den är sann. Med timkadens är radarraden som mest 60 min gammal, och
+#81:s regel 7 kräver ändå ålder ≤ 70 min för att fältet ska få tala — marginalen är 10 minuter och
+alltså tunn men hel. Faller en körning bort blir raden för gammal och radarn tiger, vilket är rätt
+utfall. Kassan är dessutom det verkliga trycket just nu (202 min/dygn mot taket 35 USD), och steg B
+är det enda steget som kan kosta minuter.
+
+STEG B:S VERIFY ENLIGT KORT #81: "Actions-minuter per dygn oförändrade efter en vecka." Avläses
+20/9. Ingen kod skrevs för detta beslut — att inte flytta är beslutets hela innehåll.

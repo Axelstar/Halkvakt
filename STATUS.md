@@ -1667,3 +1667,15 @@ verklig intensitet — regn som lägger vatten, inte fuktar. Tröskeln gäller r
 som faktorn; rate_max är fortsatt spärrat.
 KVAR: Axels kontrasignering av tröskeln enligt §5, samma krav som faktorn hade (#154). Stegen C–F
 öppnas då; steg B beror inte av tröskeln och är redan öppet. Byggt: ingen kod.
+
+## 2026-09-13 01:55 — Hela §3.4 avgjord, steg A och B klara, C–F öppna
+DECISIONS #156, två beslut i ett svar. Axel kontrasignerade tröskeln (relayerad av Bengt) ⇒
+dubbelsignaturen fullständig och rate_mean_mmh ≥ 2,0 mm/h fastställd. Hela §3.4 är därmed avgjord:
+faktor, fält, riktning, spärr och tröskel. Och steg B avgjort: radarn flyttas INTE nu, den ligger
+kvar i timingesten och kostar noll extra minuter. Edge-flytten är inte förkastad, bara inte nu.
+Marginalen bokförd: timkadens ger rader som mest 60 min gamla mot regel 7:s ≤ 70 min — tunt men
+helt, och faller en körning bort tiger radarn, vilket är rätt utfall.
+Verify för steg B: Actions-min/dygn oförändrade efter en vecka, avläses 20/9.
+Byggt: ingen kod — att inte flytta är beslutets hela innehåll.
+Nästa buildbara steg är C (snapshotens regnfält, en skrivare). Det kräver kod, CI och deploy, och
+kassan på 202 min/dygn mot taket 35 USD är fortfarande obesvarad — den frågan gatear nu C.
