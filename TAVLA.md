@@ -1699,8 +1699,21 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   med en annan — domen och underlaget hade slutat handla om samma sak.
   🔒 **SUPERSETINVARIANTEN låst med prov över hela svepet (1 872 kombinationer):** fyrar någon
   kombination på en rad så ÄR raden kandidat. Faller den sparar arkivet bort precis det T-B behöver.
-  ⚠️ **RISKEN SOM FÖLJER, Bengts att väga:** trycks knappen inte inom sju dygn efter en frostnatt är
-  den natten borta. En skrivande kolumn tar bort risken, till priset av en deploy och ett driftjobb.
+  ✅ **SJUDYGNSRISKEN BORTA 13/9 — BERÄKNINGEN LIGGER I `ingest-live`** (Bengts order, DECISIONS
+  #170, PR #232). Noll Actions-minuter och inget nytt cron-jobb: räkningen rider på ett anrop som
+  redan sker var minut. Logiken bor i `sql/018`, den deployade funktionen bär EN rad i try/catch —
+  ingest-live är livemotorns ingest och trenden får aldrig kosta driften något.
+  🐛 **DRIFTVAKTEN FÄLLDE PÅ FÖRSTA KÖRNINGEN: 862 av 4 713 rader låg isär, och orsaken var
+  ARITMETIK.** TypeScript räknar 4,8 − 4,4 = 0,39999999999999947 i binär flyttal; Postgres räknar
+  exakt i numeric och får 0,4. Tröskeln ÄR 0,4, så den ena valde raden och den andra inte — utan
+  en enda skillnad i logik. SQL hade rätt. Lutningen avrundas nu till tusendels grad; omkörning gav
+  **4 713 mot 4 713, noll i någon riktning**. Läxan förd till CLAUDE.md.
+  🔍 **KONTRAKTSGRINDEN SA GRÖNT HELA TIDEN** — den vaktar att kopiorna bär samma TAL, inte att de
+  fattar samma BESLUT. Det krävdes en jämförelse som kör båda sidorna över samma fönster.
+  ⏳ **BEVISET ÄR OFULLSTÄNDIGT och det sägs rakt ut:** ingest-live kör (sync_state fem sekunder
+  gammal) men skrev noll rader, för **0 av 750 stationer** har just nu en yta mellan 1 och 6 °C.
+  Signaturen att leta efter i morgon: en rad med `utfall_rader IS NULL` och `observed_at` inom 90
+  minuter — den kan bara ha skrivits av driften.
   ✅ **GRIND T-A BYGGD OCH KÖRD 12/9 — instrumentet är laddat före frosten** (`scripts/grind-t-a.ts`
   + knapp, PR #158, körning 34675279484, DECISIONS #113). Byggd FÖRE skuggkolumnen med flit: T-A
   läser ARKIVET, de tre kolumnerna i §7 steg 2 matar T-B. Avvikelse från §7:s ordning, inte från
