@@ -217,3 +217,10 @@ i samma commit när de överlappar.
   Bengts check 7 med en version som saknade den; main hade båda, driften bara min. Efter
   deploy: kör funktionens egna prov så varje check bevisligen finns i det som kör. En check
   som tyst försvinner ur driften är värre än en som aldrig byggdes (DECISIONS #126).
+- En vitlista som finns på TVÅ ställen är en lista som glider isär. `scripts/dbknapp.ts` hade
+  FLAGGOR och `dbknapp.yml` räknade upp samma flaggor i sin if-sats. 13/9 lades `kassaprov` till i
+  skriptet men inte i YAML:en, och körningen föll TYST ned i else-grenen och körde en migration i
+  stället för larmprovet. Ofarligt just då (filen var idempotent) men fel sak gjord utan ett ord.
+  Regel: när ett val ska styra vilken gren som körs, fråga efter DEN ENA grenen (`if migrera`) och
+  låt allt annat gå till den andra, så att den riktiga listan ligger i koden och en okänd flagga
+  avvisas högljutt i stället för att tolkas som något annat.
