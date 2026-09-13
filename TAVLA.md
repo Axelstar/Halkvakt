@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-13 02:10 av Claude (webben) — kort #152 KASSAVAKTEN byggd: check 8 i vakthunden räknar Actions-minuter mot taket och larmar på PROGNOSEN, inte procenten. Noll Actions-minuter, egen etikett, färgar aldrig driftvakthunden röd. Aritmetiken bevisad mot sex handräknade fall; deploy + prov återstår.*
+*Uppdaterad: 2026-09-13 02:15 av Claude (webben) — KASSAVAKTEN (#152) KLAR OCH BEVISAD: issue #210, larmade på egen grund. Första skarpa mätningen rättar #85: 311 min/dygn över hela månaden, prognos 59 USD mot taket 35, taket slår i 21/9. Mina fönstertal var för låga.*
 
 ---
 
@@ -155,6 +155,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
    — de flesta av dygnets 91 ändringar rör inte kod; (2) bygg färre och större PR:er; (3) höj taket.
    Röda i fönstret: ci 3 (14:28–14:31), grind-r-a 1, grannar 1 (11:24, nästa timme grön igen),
    smhi-forstarkaren-steg0 1. Grannar 26 körningar 42–98 s, 8 över 60 s.
+  🔴 **RÄTTAT TAL 13/9 02:08, uppmätt av kassavakten (#152) över HELA månaden i stället för ett fönster:**
+  3 761 min sedan 1/9, 2 798 körningar ⇒ **311 min/dygn**, debiterat 14,09 av 35 USD, **prognos 59 USD**
+  och taket slår i **21 september**. Mina tidigare tal (202 min/dygn, 31–40 USD till 1/10) kom ur ett
+  26,5-timmarsfönster som råkade vara lugnare än snittet. Gränsen hålls alltså INTE i dagens takt.
+  ⚖️ Spakarna står kvar och är nu mer brådskande: paths-ignore i ci.yml (~20 min/dygn), cron-raden i
+  healthcheck.yml (~6 min/dygn), färre och större PR:er (~40 min/dygn), eller höjt tak. De tre första
+  räcker inte till 311 — höjt tak eller väsentligt färre byggen är det som avgör.
 - [ ] 🗄️ **#83 GALLRING av weather_observations — måste finnas FÖRE första kalla veckan**
   (Bengts beställning 9/9 01:40; kort + förslag av Claude, mätt mot koden 9/9).
   **VARFÖR NU:** arkivdieten (DECISIONS #4: bara yta ≤ 5 °C eller nederbörd) finns i
@@ -389,6 +396,24 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   trösklar och utlöst kontraktsgrinden för noll nytta — konstanterna finns i EN fil.
   Verify: deploy-supabase grön, sedan `?kassaprov=1` ⇒ issue med etiketten `kassavakt` som stängs av
   nästa körning under gränsen. Och en riktig kassarad i nästa vakthundskörning 05/11/17/23.
+  ✅ **KLAR OCH BEVISAD 13/9 02:08.** Deployad (vakthund, 705 kB) och larmvägen prövad skarpt med
+  `?kassaprov=1` via DB-knappen ⇒ **issue #210 med etiketten `kassavakt`**. Den larmade på EGEN grund,
+  inte bara på provraden: *"I dagens takt (311 min/dygn) slår taket i den 2026-09-21."*
+  **FÖRSTA SKARPA MÄTNINGEN, och den är värre än fönsterskattningen:** 3 761 min sedan 1/9 över
+  2 798 körningar ⇒ debiterat 1 761 min = **14,09 av 35 USD**, takt **311 min/dygn**, prognos för
+  månaden **59 USD**. Fönstermätningen 12/9 gav 202 min/dygn — den fönstret var alltså lugnare än
+  månadssnittet, och 31–40 USD var för lågt räknat.
+  🩹 **TVÅ FEL AV MIG PÅ VÄGEN, båda bokförda för att de är lärorika:**
+  · Jag dispatchade deploy-supabase UTAN `funktion` och fick standardvärdet `publicera`. Jobbet blev
+    grönt, jag läste grönt som "rätt sak deployad", och första provet kunde inte fungera. Läxan är den
+    gamla: en grön körning bevisar att NÅGOT gick bra, inte att det var det man tänkt.
+  · Första skarpa körningen räknade exakt 1 000 körningar och rapporterade 94 min/dygn — halva
+    sanningen, utan felmeddelande. `/actions/runs` paginerar bara till 1 000 träffar. Lagat: räkningen
+    går ett dygn i taget, och dygnsloopen är självtestad. Läxa i CLAUDE.md.
+  · (Ett tredje, ofarligt: `kassaprov` lades i skriptets vitlista men inte i dbknapp.yml:s if-sats, så
+    en körning föll tyst i migrera-grenen och körde om gallringsmigrationen. Idempotent, inga rader
+    rörda, bevisraderna visade alla tio cron-jobb intakta. Villkoret är nu inverterat så att det bara
+    finns EN lista. Läxa i CLAUDE.md.)
 - [ ] 🧊 **#151 VÄGLAGETS ÅLDER — ska en stående vinterklassning tystas när mätningarna säger att vintern tagit slut?**
   📄 **TRÖSKELDOKUMENT FASTSTÄLLT 12/9 av Bengt** (`docs/TROSKLAR-VAGLAGETS-ALDER.md`, DECISIONS #151/#152).
   **Kortet kommer ur att Axel mätte i stället för att bygga det jag antog.** Jag flaggade att
