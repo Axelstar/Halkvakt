@@ -179,6 +179,25 @@ async function weather() {
   return n;
 }
 
+// TRENDKANDIDATERNA (kort #88 steg 2, Bengts order 13/9 "lägg trendberäkningen i ingest-live").
+// Logiken bor i sql/018_trend_berakna.sql, inte här. Skälet: den här funktionen ÄR livemotorns
+// ingest — situationer, väglag och väder i samma anrop — och kod som kastar här stoppar hela
+// kedjan för hela appen. Trenden är en skuggmätning och får aldrig kosta driften något.
+//
+// FEL SKRIVS UT, ALDRIG TYST. En fail-soft-gren utan spår är ett tyst ALDRIG (CLAUDE.md-läxan
+// från kameror-vaglag): felet går med i svaret så en tyst trend syns i loggen i stället för att
+// se ut som noll kandidater.
+//
+// NOLL NYA ACTIONS-MINUTER och inget nytt cron-jobb: räkningen rider på ett anrop som redan sker.
+async function trend(): Promise<string> {
+  try {
+    const r = await sql`SELECT * FROM berakna_trendkandidater(interval '2 hours')`;
+    return `${r[0].nya} nya, ${r[0].utfall} utfall`;
+  } catch (e) {
+    return `FEL: ${String(e).slice(0, 120)}`;
+  }
+}
+
 Deno.serve(async (req) => {
   // Fail-closed: kräver delad hemlighet (sätts som secret INGEST_KEY; cron skickar headern).
   const k = Deno.env.get("INGEST_KEY");
@@ -187,7 +206,9 @@ Deno.serve(async (req) => {
   }
   try {
     const [s, r, w] = await Promise.all([situations(), roadconditions(), weather()]);
-    return new Response(JSON.stringify({ ok: true, situations: s, roadconditions: r, weather: w }), {
+    // Efter vädret, aldrig parallellt med det: trenden räknar på raderna weather() nyss skrev.
+    const tr = await trend();
+    return new Response(JSON.stringify({ ok: true, situations: s, roadconditions: r, weather: w, trend: tr }), {
       headers: { "Content-Type": "application/json" } });
   } catch (e) {
     return new Response(JSON.stringify({ ok: false, error: String(e) }), { status: 500 });

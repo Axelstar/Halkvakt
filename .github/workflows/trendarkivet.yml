@@ -14,6 +14,10 @@ on:
         description: "Torrkörning: räkna och rapportera, skriv inget"
         type: boolean
         default: false
+      jamfor:
+        description: "Driftvakten: väljer SQL-funktionen och TypeScript samma rader? (skriver inget)"
+        type: boolean
+        default: false
 jobs:
   trendarkivet:
     runs-on: ubuntu-latest
@@ -29,5 +33,5 @@ jobs:
           DATABASE_URL: "${{ secrets.DATABASE_URL }}"
         run: |
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-          node --experimental-strip-types scripts/trendarkivet.ts "${{ inputs.dagar || '7' }}" ${{ inputs.torrkor && '--torrkor' || '' }} | tee -a "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/trendarkivet.ts "${{ inputs.dagar || '7' }}" ${{ inputs.torrkor && '--torrkor' || '' }} ${{ inputs.jamfor && '--jamfor' || '' }} | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
