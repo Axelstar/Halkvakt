@@ -21,6 +21,7 @@
 //   2b VÅTBEVISEN     — hur mycket blött ser varje svepsteg, per källa?
 //   2c SAMSTÄMMIGHETEN — där BÅDA källorna har en åsikt: hur ofta är de ense? ERSÄTTNINGSFACIT.
 //   2d SKATTNINGEN    — hur faller blöt/torr/okänt ut över svepet N × r?
+//   2f BIDRAGET      — växer radarns unika bidrag med avståndet till närmaste station?
 // Och 2e: operatörsfacit, som ska stå som ⊘ INGEN DOM med sin mätta orsak, aldrig som tystnad.
 //
 // TRÖSKLARNA ÄR DOKUMENTETS. Svepen kommer ur `publish/tillstand.ts`, som i sin tur läser
@@ -263,6 +264,82 @@ await avsnitt("2d SKATTNINGEN", async () => {
   console.log(`     vid NEDERBÖRD, låg yta eller snabb ytrörelse. Andelen blöt ovan är därför`);
   console.log(`     kraftigt uppblåst och säger INTE hur ofta svensk väg är blöt. Tabellen duger`);
   console.log(`     till att jämföra N och r MOT VARANDRA — inget annat.`);
+});
+
+
+// ── 2f RADARNS BIDRAG MOT AVSTÅNDET (Bengts order 13/9, efter 2c:s utfall).
+//
+// FRÅGAN: 2c visade att radarn bidrar med 97 timmar av 5 955 i unionen. Men den mätningen gjordes
+// på segment som i median har en station 6,7 km bort — alltså där radarn behövs MINST. Frågan är
+// om bidraget växer med avståndet.
+//
+// HYPOTESEN, SKRIVEN FÖRE SVARET: stationens regn är ett punktvärde. Ju längre bort stationen
+// sitter desto sämre representerar den segmentet, och desto mer borde radarn lägga till. Är
+// bidraget i stället oberoende av avståndet är radarn begränsad av sin EGEN sampling (13,1 % av
+// segmenttimmarna) och inte av geografin — och då hjälper ingen glesbygd.
+//
+// VAD MÅTTET INTE KAN: det visar OENIGHET, inte vem som har rätt. Det finns ingen tredje källa.
+// Därför räknas båda riktningarna per band. Växer BARA "bara radarn" är det asymmetriskt och talar
+// för att radarn ser något verkligt. Växer BÅDA riktningarna är det stationens representativitet
+// som vittrar, och då säger talet ingenting om radarns kvalitet.
+//
+// BANDEN ÄR VALDA FÖRE MÄTNINGEN, ur 2a:s egen fördelning: median 6,7 km, p90 15,2 km, värst 48,5.
+const AVSTANDSBAND: [string, number, number][] = [
+  ["0–5 km", 0, 5], ["5–10 km", 5, 10], ["10–20 km", 10, 20], ["20–50 km", 20, 50],
+];
+
+await avsnitt("2f RADARNS BIDRAG MOT AVSTÅNDET", async () => {
+  console.log("\n2f RADARNS BIDRAG MOT AVSTÅNDET — behövs segmentupplösningen där stationen är långt bort?");
+  console.log("  HYPOTES (skriven före svaret): bidraget växer med avståndet, eftersom stationens");
+  console.log("  punktvärde representerar segmentet allt sämre. Är det platt är radarn begränsad av");
+  console.log("  sin egen sampling, inte av geografin.");
+  console.log("  Måttet visar OENIGHET, inte vem som har rätt — ingen tredje källa finns.");
+  console.log("\n  RADARNS UNIKA BIDRAG (andel av 'någon såg regn'-timmar där BARA radarn såg det)");
+  console.log("  band          segment" + R_SVEP.map((r) => `r ≥ ${r}`.padStart(12)).join(""));
+  for (const [namn, lo, hi] of AVSTANDSBAND) {
+    const celler: string[] = [];
+    let segment = 0;
+    for (const r of R_SVEP) {
+      const x = (await q(`
+        WITH grund AS (
+          SELECT p.segment_id, (s.mm > 0) AS st_vat, (d.mmh >= $1) AS rd_vat
+          FROM par p JOIN sttim s ON s.station_id = p.station_id
+                     JOIN rdtim d ON d.segment_id = p.segment_id AND d.h = s.h
+          WHERE p.km >= $2 AND p.km < $3)
+        SELECT count(*)::int AS n, count(DISTINCT segment_id)::int AS segment,
+          count(*) FILTER (WHERE rd_vat AND st_vat)::int AS bada,
+          count(*) FILTER (WHERE rd_vat AND NOT st_vat)::int AS bara_radar,
+          count(*) FILTER (WHERE NOT rd_vat AND st_vat)::int AS bara_station
+        FROM grund`, [r, lo, hi]))[0];
+      segment = Number(x.segment);
+      const vat = Number(x.bada) + Number(x.bara_radar) + Number(x.bara_station);
+      celler.push(Number(x.n) < MIN_JAMFORELSER || !vat ? "OAVGJORT".padStart(12)
+        : pct(Number(x.bara_radar), vat).padStart(12));
+    }
+    console.log(`  ${namn.padEnd(12)} ${String(segment).padStart(7)}` + celler.join(""));
+  }
+  console.log("\n  BÅDA RIKTNINGARNA vid r ≥ " + R_SVEP[1] + " — växer bara den ena eller båda?");
+  console.log("  band          jämförelser   båda   bara radarn   bara stationen   oenighet");
+  for (const [namn, lo, hi] of AVSTANDSBAND) {
+    const x = (await q(`
+      WITH grund AS (
+        SELECT (s.mm > 0) AS st_vat, (d.mmh >= $1) AS rd_vat
+        FROM par p JOIN sttim s ON s.station_id = p.station_id
+                   JOIN rdtim d ON d.segment_id = p.segment_id AND d.h = s.h
+        WHERE p.km >= $2 AND p.km < $3)
+      SELECT count(*)::int AS n,
+        count(*) FILTER (WHERE rd_vat AND st_vat)::int AS bada,
+        count(*) FILTER (WHERE rd_vat AND NOT st_vat)::int AS bara_radar,
+        count(*) FILTER (WHERE NOT rd_vat AND st_vat)::int AS bara_station
+      FROM grund`, [R_SVEP[1], lo, hi]))[0];
+    const n = Number(x.n);
+    if (n < MIN_JAMFORELSER) { console.log(`  ${namn.padEnd(12)} ${String(n).padStart(11)}   ⊘ OAVGJORT`); continue; }
+    const vat = Number(x.bada) + Number(x.bara_radar) + Number(x.bara_station);
+    console.log(`  ${namn.padEnd(12)} ${String(n).padStart(11)} ${String(x.bada).padStart(6)}`
+      + ` ${String(x.bara_radar).padStart(13)} ${String(x.bara_station).padStart(16)}`
+      + ` ${pct(Number(x.bara_radar) + Number(x.bara_station), vat).padStart(10)}`);
+  }
+  console.log("  Oenighet = andelen av de våta timmarna där källorna INTE är ense.");
 });
 
 // ── 2e OPERATÖRSFACIT.
