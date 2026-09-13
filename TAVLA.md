@@ -1939,8 +1939,32 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   som väntar på någon annan. Mätningen hade redan visat att grinden inte var nåbar i höst (55
   torrperioder, 6 olyckor mot kravets 15) och att instrumentet saknade nollhypotes. Tas frågan
   någonsin upp igen börjar den om från steg 0, inte från texten.
-  ➡️ **NÄSTA: steg 2** — tillståndsskattaren i skuggloggen, efter 14/9. Den måste stå klar före
-  frosten, annars finns ingen skugga att döma Ö-B på.
+  ✅ **STEG 2 BYGGT OCH KÖRT 13/9** (Bengts "bygg steg 2 nu på det som finns" + "kör knappen",
+  DECISIONS #167, PR #223/#225/#226). `publish/tillstand.ts` (ren skattare, blöt/torr/okänt per
+  segment och timme) + `scripts/tillstand-steg2.ts` med knapp. **Svepen är §2:s ord för ord** —
+  skattaren uppfinner ingen tröskel, och ett prov faller om de driver isär.
+  🔓 **VARFÖR DET GICK ATT GÖRA TROTS ATT GRINDEN INTE KAN DÖMAS:** dokumentet lyder "eget facit
+  först … INNAN någon övergångsregel läser den". Grinden spärrar ANVÄNDNINGEN, inte bygget — den
+  spärrar alltså steg 3, inte steg 2.
+  🚫 **INGEN SKRIVANDE KOLUMN.** Ingångarna är sparade och gallringen rör bara
+  `weather_observations`, så skattningen räknas om i efterhand för vilket fönster som helst — också
+  för frostnätterna, inom Ö-D:s sju dygn. En kolumn hade dessutom krävt ett nytt cron-jobb (#85).
+  📊 **RADARN ÄR PRECIS MEN INTE KÄNSLIG — mätningens bärande fynd.** När radarn säger regn håller
+  stationen med i **96,0 %** (2 338 av 2 435). När stationen säger regn håller radarn med i **39,9 %**
+  (2 338 av 5 858). Radarn har en åsikt om bara **13,1 %** av segmenttimmarna; resten är OSAMPLAT,
+  inte torrt. I unionen bidrar radarn med **97 timmar av 5 955**. N dominerar r: 1 → 4 h ger
+  +11 procentenheter blöt, r 0,1 → 2 tar bort 4.
+  ⚠️ **Och det testade radarn där den behövs MINST:** median 6,7 km till närmaste station. Segment
+  långt från station är inte mätta — det är den naturliga nästa frågan, inte ett avfärdande av radarn.
+  🐛 **TRE FEL I MITT EGET INSTRUMENT, funna av att knappen faktiskt trycktes** (alla rättade och
+  omkörda): 2c läste en saknad radarrad som "torrt" — exakt det modulen förbjuder; 2d:s nämnare är
+  arkivdietens urval och skriptet sa det inte; och nämnarna räknade det nominella fönstret (7 dygn)
+  mot ett arkiv som sträcker sig 5,3, vilket gav radarn 8,7 % täckning i stället för 13,1 %. Det
+  tredje var nära att bli en FALSK BEKRÄFTELSE mot steg 0:s 0f-tal 8,3 %.
+  ⛔ **2e OPERATÖRSFACIT: ⊘ INGEN DOM, med mätt orsak.** `road_condition_history` står stilla sedan
+  25/8, dess 33 blöta rader slutar **12 juni**, `radar_precip` börjar **2 september** — fönstren
+  överlappar inte med en dag, och bara **12 av 818 segment** har någonsin bytt klass.
+  ➡️ **NÄSTA: steg 3**, som väntar på operatörens klasser OCH på frosten.
   (0d säger att den inte kan dömas i höst), "Våt" ute ur unionen, RH-guarden struken.
   🥶 **OCH EN KÖRNING NÄR FROSTEN KOMMER — LARMET BYGGT OCH BEVISAT 11/9** (Bengts order).
   0c är den enda frågan vars svar ändras (3–4 frysningar i dag, domen kräver ~30), och den måste

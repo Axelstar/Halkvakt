@@ -4665,3 +4665,72 @@ stationens EGET förhållande mellan by och medel och är därför oberoende av 
 **UTSKICKET ÄR BENGTS, INTE MITT.** Brevet är komplett utom kontaktuppgifterna, som står som
 platshållare. Kort #154 bär det. Skälet att skicka alls: vi har uteslutit stationerna ur vårt eget
 underlag och är inte blockerade — men felet ligger kvar för alla andra som läser samma öppna data.
+
+## #167 (13/9 2026) Steg 2 för #89: tillståndsskattaren byggd, mätt — och instrumentet rättat tre gånger
+
+**Beslut (Bengts order 13/9, "bygg steg 2 nu på det som finns" + "kör knappen"):** skattaren finns
+som ren modul (`publish/tillstand.ts`), mätningen som knapp (`scripts/tillstand-steg2.ts`), och
+skattningen räknas **retroaktivt ur arkiven** i stället för att skrivas som kolumn.
+
+**GRINDEN SPÄRRAR ANVÄNDNING, INTE BYGGE — och det är hela skälet att steget kunde göras nu.**
+Dokumentets grind lyder "eget facit först … **INNAN någon övergångsregel läser den**". Facit finns
+inte: `road_condition_history` står stilla sedan 25/8, dess 33 blöta rader slutar **12 juni**, och
+`radar_precip` börjar **2 september**. Fönstren överlappar inte med en enda dag, och bara **12 av
+818 segment** har någonsin bytt klass. Grinden spärrar därför steg 3, inte steg 2.
+
+**INGEN SKRIVANDE KOLUMN, och det är ett beslut.** Planen sa "en kolumn per segment i skuggloggen".
+Den behövs inte: ingångarna är redan sparade och gallringen (#83) rör bara `weather_observations`,
+så skattningen kan räknas om i efterhand för vilket fönster som helst — också för frostnätterna,
+inom Ö-D:s sju dygn. En kolumn hade dessutom krävt ett nytt cron-jobb, stängda sedan #85.
+
+**SVEPEN ÄR DOKUMENTETS, ORD FÖR ORD.** N 1·2·3·4 h, stationsregn >0·≥0,2·≥0,5 mm/30 min, r
+0,1·0,5·2 mm/h i råradarskala. Ett prov faller om de driver isär från §2. Skattaren väljer ingen
+punkt; den skriver ut hela rutnätet.
+
+**BÄRANDE REGEL: FRÅNVARO ÄR INTE TORRT.** Radarn kan aldrig ensam säga "torr" — en saknad rad
+betyder torrt ELLER utanför täckning (#162). Bara stationen kan, och bara när den observerat.
+Annars "okänt". Tio prov låser det.
+
+### Mätningen (7 dygns fönster, arkivets faktiska spann 8–13/9)
+
+| Fråga | Utfall |
+| :-- | :-- |
+| 2a täckning | 818 segment · närmaste station median **6,7 km**, p90 15,2 km, värst 48,5 km · 808 segment har radartimmar |
+| 2b radarn | 11 752 segmenttimmar med rad · r ≥ 0,1: 57,3 % · r ≥ 0,5: 25,5 % · r ≥ 2: 7,3 % |
+| 2b stationen | 15 285 stationstimmar · > 0: 61,7 % · ≥ 0,2: 41,1 % · ≥ 0,5: 22,1 % |
+| 2c jämförbara | 7 367 segmenttimmar där **båda** har en åsikt |
+| 2c utfall | båda blöta 2 338 · bara radarn 97 · bara stationen 3 520 · båda torra 1 412 |
+| 2d skattningen | 63,1–78,4 % blöt över rutnätet, av 15 504 segmenttimmar |
+| 2e operatörsfacit | ⊘ **INGEN DOM** — fönstren överlappar inte |
+
+**RADARN ÄR PRECIS MEN INTE KÄNSLIG, och det är mätningens viktigaste fynd.** När radarn säger regn
+håller stationen med i **2 338 av 2 435 fall (96,0 %)**. När stationen säger regn håller radarn med i
+**2 338 av 5 858 (39,9 %)**. Radarn har dessutom en åsikt om bara **13,1 %** av segmenttimmarna —
+resten är osamplat, inte torrt.
+
+**FÖLJDEN FÖR (a):** i unionen `fukt ELLER regn inom N h` bidrar radarn med **97 timmar av 5 955**
+där någon såg regn. N dominerar: 1 → 4 h lägger till ~11 procentenheter blöt, medan r 0,1 → 2 tar
+bort ~4. Vid median 6,7 km till närmaste station är stationen helt enkelt närmare än radarns
+upplösning. **Det säger inte att radarn är onödig** — den testades här bara på segment som har en
+station nära, alltså där den behövs minst. Segment långt från station är inte mätta, och det är den
+naturliga nästa frågan.
+
+### TRE FEL I MITT EGET INSTRUMENT, funna av att knappen faktiskt trycktes
+
+1. **2c läste en saknad radarrad som "torrt"** (`COALESCE(..., 0) >= r`) — exakt den tysta osanning
+   modulen förbjuder i sin egen regel. Rättat: universumet är nu segmenttimmar där båda har en åsikt.
+   Före rättelsen såg det ut som att radarn missade 76 % av stationens regn; sant är 60 %.
+2. **2d:s nämnare är arkivdietens urval, inte tiden**, och skriptet sa det inte. Dieten (#4) sparar
+   rader just vid nederbörd. Andelen blöt är därför kraftigt uppblåst. Reservationen skrivs nu ut.
+3. **Nämnarna räknade det NOMINELLA fönstret (7 dygn) mot ett arkiv som sträcker sig 5,3.**
+   Radarns täckning rapporterades som 8,7 % när den är **13,1 %**. Felet var värre än en decimal:
+   8,7 % ligger nära steg 0:s 0f-tal **8,3 %** (radarns kadens), och jag var nära att skriva ut det
+   som en oberoende bekräftelse. Det hade varit en **falsk bekräftelse** — två olika storheter som
+   råkade sammanfalla för att nämnaren var uppblåst. Båda nämnarna räknar nu arkivets faktiska spann.
+
+**En bekräftelse som däremot håller:** dietens täckning mätt på regn är **18,5 %**, mot **18,9 %**
+mätt på byvind i TROSKLAR-VIND-SIKT §3.2. Två olika fält, olika fönster, samma diet — storleken
+stämmer, och det är en konsistens, inte ett bevis.
+
+**Vad detta INTE är:** ingen dom. Skattaren är byggd och mätt, inte godkänd. Ingen regel läser den,
+ingen röst rörs, ingen kolumn skrivs. Steg 3 väntar på operatörens klasser OCH på frosten.
