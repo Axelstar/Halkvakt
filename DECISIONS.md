@@ -4156,3 +4156,22 @@ eget beslut: radar.ts ligger i dag som ett steg i timingesten och kostar noll ex
 täta kadensen till var 5:e minut kräver att den flyttas till en edge function OCH att CPU:n bevisas
 under 2 s — aldrig tätare i Actions, där 12 körningar i timmen vore 288 min/dygn. Stegen C–F kräver
 tröskeln och rörs inte förrän den är satt.
+
+## #155 (13/9 2026) Utlösartröskeln satt av Bengt: radar rate_mean ≥ 2,0 mm/h
+
+BESLUT (Bengt, "Ja till 2", 13/9): vattenplaningens utlösare mellan stationerna sätts till
+`radar_precip.rate_mean_mmh` **≥ 2,0 mm/h** över segmentet. Inskrivet i TROSKLAR-VATTENPLANING §3.4.
+
+MOTIVERING, formulerad mot underlaget och inte härledd ur en enskild körnings utfall: bandet
+2–10 mm/h är det lägsta där en station inom 5 km bekräftar regn i en klar majoritet av fallen —
+77 % i det färska fönstret, 73 % i det föregående. Under det faller bekräftelsen till 56 % (0,5–2)
+och 42 % (0,1–0,5). Omräknat med den fastställda faktorn 0,65 motsvarar 2,0 mm/h på radarn ungefär
+3,1 mm/h verklig intensitet, alltså regn som lägger vatten på vägbanan i stället för att fukta den.
+Det är samma sakskäl som avvisade (b) i #153: duggregn ger ingen vattenplaning, och en varning som
+går på duggregn är mätbar och samtidigt värdelös för faran.
+
+FÄLTET: tröskeln gäller `rate_mean_mmh`, samma fält som faktorn. `rate_max_mmh` är fortsatt spärrat
+tills dess spann 0–200 är rensat (#134) — en tröskel på ett obesiktigat fält är ingen tröskel.
+
+KVAR: Axels kontrasignering av tröskeln enligt §5, samma krav som faktorn hade (#154). Stegen C–F i
+kort #81 öppnas först då. Steg B beror inte av tröskeln och är redan öppet.

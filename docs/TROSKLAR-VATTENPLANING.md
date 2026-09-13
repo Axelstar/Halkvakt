@@ -139,8 +139,25 @@ station ≤ 5 km såg regn inom ±45 min, per radarband (13/9, med 12/9 inom par
 Kurvan stiger monotont med intensiteten i båda fönstren. Täckningen är 91 % (93): radarn hade en
 rad ≤ 5 km vid 14 190 av 15 540 stationsregn.
 
-🔑 **ÖPPET OCH KRÄVER DUBBELSIGNATUR: själva utlösartröskeln i mm/h.** Den sätts inte här och
-härleds inte ur utfallet av en enskild körning. Tabellen ovan är dess underlag.
+**UTLÖSARTRÖSKELN — satt av Bengt 13/9 2026 ("Ja till 2"):**
+
+| Storhet | Värde |
+|---|---|
+| Utlösare | `radar_precip.rate_mean_mmh` **≥ 2,0 mm/h** över segmentet |
+| Motsvarar i stationens skala | 2,0 / 0,65 ≈ **3,1 mm/h** verklig intensitet |
+| Bekräftelse i det bandet | **77 %** (73 % i föregående fönster) |
+
+*Motivering, skriven med underlaget och inte ur det:* 2–10 mm/h är det LÄGSTA bandet där en station
+inom 5 km håller med i en klar majoritet av fallen. Under det faller bekräftelsen till 56 och 42 %.
+I stationens skala är 3,1 mm/h regn som lägger vatten på vägbanan i stället för att fukta den —
+duggregn ger ingen vattenplaning, vilket är samma sakskäl som avvisade omskrivningen av V-A1 till
+"regnar det alls" (DECISIONS #153).
+
+Tröskeln gäller `rate_mean_mmh`, samma fält som kalibreringsfaktorn. `rate_max_mmh` är fortfarande
+spärrat enligt regeln ovan.
+
+🔑 **KVAR: Axels kontrasignering av tröskeln** (§5:s dubbelsignatur, samma krav som faktorn hade).
+Stegen C–F i kort #81 öppnas först då. Steg B är redan öppet och beror inte av tröskeln.
 
 Radar får fortfarande i **inget** fall **fälla falsklarm** (§2 oförändrad) — den är observation,
 inte facit.
