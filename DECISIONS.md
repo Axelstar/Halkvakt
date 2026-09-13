@@ -4734,3 +4734,47 @@ stämmer, och det är en konsistens, inte ett bevis.
 
 **Vad detta INTE är:** ingen dom. Skattaren är byggd och mätt, inte godkänd. Ingen regel läser den,
 ingen röst rörs, ingen kolumn skrivs. Steg 3 väntar på operatörens klasser OCH på frosten.
+
+## #168 (13/9 2026) Radarns bidrag växer INTE med avståndet — hypotesen föll på sin egen mätning
+
+**Beslut (Bengts order 13/9, "mät radarns bidrag mot avståndet till närmaste station"):** fråga 2f
+läggs till i `scripts/tillstand-steg2.ts`. Hypotesen skrevs i koden före svaret och står kvar där.
+
+**HYPOTESEN:** stationens regn är ett punktvärde, så ju längre bort stationen sitter desto sämre
+representerar den segmentet — och desto mer borde radarn lägga till. Banden valdes före mätningen
+ur 2a:s egen fördelning (median 6,7 km, p90 15,2, värst 48,5): 0–5 · 5–10 · 10–20 · 20–50 km.
+
+**UTFALLET ÄR PLATT, och det är ett nej.**
+
+| band | segment | r ≥ 0,1 | r ≥ 0,5 | r ≥ 2 |
+| :-- | --: | --: | --: | --: |
+| 0–5 km | 268 | 10,4 % | 1,4 % | 0,1 % |
+| 5–10 km | 245 | 10,1 % | 1,6 % | 0,2 % |
+| 10–20 km | 200 | 10,4 % | 2,0 % | 0,3 % |
+| 20–50 km | 25 | 9,4 % | 1,6 % | 0,0 % |
+
+Talen är radarns UNIKA bidrag: andelen av "någon såg regn"-timmar där bara radarn såg det. Ingen
+lutning i någon kolumn. **Radarn är begränsad av sin egen sampling — 13,1 % av segmenttimmarna —
+inte av geografin.** Avstånd till station låser inte upp något värde.
+
+**OCH ASYMMETRIN PEKAR ÅT FEL HÅLL FÖR HYPOTESEN.** Oenigheten växer visserligen med avståndet
+(58,0 → 62,8 → 61,6 → 70,3 %), men den växer i riktningen **"bara stationen"**: 1 321 → 1 213 →
+905 → 88 fall mot radarns 33 → 32 → 30 → 2. Ju längre bort stationen sitter, desto oftare påstår
+den regn radarn inte ser — inte tvärtom. Hade radarn burit verklig information där stationen är
+långt bort skulle asymmetrin ha vänt.
+
+**FÖLJDEN FÖR (a):** segmentupplösningen köper ingen extra vätedetektion i glesbygden. Unionens
+`fukt ELLER regn inom N h` bärs av stationen; radarn bidrar med ~1,5 % vid r ≥ 0,5 oavsett avstånd,
+och ~10 % vid det lägsta svepsteget r ≥ 0,1.
+
+**TVÅ RESERVATIONER SOM BEGRÄNSAR DOMEN:**
+1. **Bandet 20–50 km bär 25 segment och 149 jämförelser.** Det passerar underlagsvakten (100) men
+   är tunt, och dess två "bara radarn"-fall är för få för att bära något.
+2. **Fönstret är 5,3 dygn i ett regnigt september.** Frontregn är storskaligt — där SKA stationen
+   och radarn vara ense. Konvektiva skurar är lokala, och det är där radarn borde vinna. Vilken
+   sorts regn som föll 8–13/9 är inte mätt, så en omkörning i annat väder kan ge annat svar. Det är
+   ett skäl att köra om 2f, inte ett skäl att läsa talen ovan som mindre än vad de är.
+
+**Vad domen INTE är:** inget nej till radarn som källa. Radarn är fortfarande **precis** (96,0 % av
+det den kallar regn bekräftas av stationen, #167) och den täcker segment som saknar station helt.
+Det som föll är att bidraget skulle VÄXA med avståndet.
