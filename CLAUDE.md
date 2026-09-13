@@ -224,3 +224,9 @@ i samma commit när de överlappar.
   Regel: när ett val ska styra vilken gren som körs, fråga efter DEN ENA grenen (`if migrera`) och
   låt allt annat gå till den andra, så att den riktiga listan ligger i koden och en okänd flagga
   avvisas högljutt i stället för att tolkas som något annat.
+- GitHubs `/actions/runs` paginerar bara fram till **1 000 träffar** och säger det inte. Kassavaktens
+  första körning 13/9 räknade exakt 1 000 körningar, rapporterade 94 min/dygn och såg fullt rimlig ut
+  — mot 202 min/dygn som mätts oberoende samma dygn. Talet var alltså halverat utan ett felmeddelande,
+  och en vakt som tyst halverar sig själv ger lugn på fel grund. Regel: paginera aldrig en månad i ett
+  svep, dela upp i fönster som säkert rymmer under taket (ett dygn), och lita aldrig på att "sista
+  sidan var kort" betyder "det var allt". Samma fälla finns i alla list-API:er med hårt träfftak.

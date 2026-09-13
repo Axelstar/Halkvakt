@@ -459,7 +459,7 @@ Deno.serve(async (req) => {
   const PRIS_PER_MIN = 0.008;  // USD, standard 2-core Linux
   const GRATIS_MIN = 2000;     // ingår per månad, nollställs den 1:a
   const LARM_ANDEL = 0.70;     // larma när FAKTISK förbrukning passerat denna andel av taket
-  const SIDTAK = 40;           // max 40 sidor à 100 körningar; en tyst avkortning vore ett eget fel
+  const SIDTAK = 10;           // max 10 sidor à 100 körningar PER DYGN — GitHub paginerar ändå bara till 1 000
   try {
     const nu = new Date();
     const kassaprov = new URL(req.url).searchParams.get("kassaprov") === "1";
@@ -468,18 +468,27 @@ Deno.serve(async (req) => {
     } else {
       const start = new Date(Date.UTC(nu.getUTCFullYear(), nu.getUTCMonth(), 1));
       const sedan = start.toISOString().slice(0, 10);
+      // ETT DYGN I TAGET, inte hela månaden på en gång. GitHubs runs-endpoint paginerar bara
+      // fram till 1 000 träffar och säger det inte: första bygget 13/9 räknade exakt 1 000
+      // körningar, rapporterade 94 min/dygn och såg fullt rimligt ut — mot 202 som mätts
+      // oberoende samma dygn. En vakt som tyst halverar sitt eget tal är värre än ingen vakt,
+      // för den ger lugn på fel grund. Ett dygn rymmer långt under 1 000 körningar, och
+      // dygnsvakten nedan larmar ändå om något dygn skulle slå i taket.
       let minuter = 0, korningar = 0, avkortad = false;
-      for (let sida = 1; sida <= SIDTAK; sida++) {
-        const k = ((await gh(`/actions/runs?per_page=100&page=${sida}&created=%3E%3D${sedan}`)).workflow_runs ?? []);
-        for (const r of k) {
-          // Pågående körningar räknas nästa varv — en halvfärdig körning har ingen sluttid.
-          if (r.status !== "completed" || !r.run_started_at) continue;
-          const sek = (new Date(r.updated_at).getTime() - new Date(r.run_started_at).getTime()) / 1000;
-          minuter += Math.max(1, Math.ceil(sek / 60));
-          korningar++;
+      for (let d = new Date(start); d <= nu; d.setUTCDate(d.getUTCDate() + 1)) {
+        const dag = d.toISOString().slice(0, 10);
+        for (let sida = 1; sida <= SIDTAK; sida++) {
+          const k = ((await gh(`/actions/runs?per_page=100&page=${sida}&created=${dag}`)).workflow_runs ?? []);
+          for (const r of k) {
+            // Pågående körningar räknas nästa varv — en halvfärdig körning har ingen sluttid.
+            if (r.status !== "completed" || !r.run_started_at) continue;
+            const sek = (new Date(r.updated_at).getTime() - new Date(r.run_started_at).getTime()) / 1000;
+            minuter += Math.max(1, Math.ceil(sek / 60));
+            korningar++;
+          }
+          if (k.length < 100) break;
+          if (sida === SIDTAK) avkortad = true;   // ett dygn med > 1 000 körningar: säg det
         }
-        if (k.length < 100) break;
-        if (sida === SIDTAK) avkortad = true;
       }
       const debiterat = Math.max(0, minuter - GRATIS_MIN);
       const kostnad = debiterat * PRIS_PER_MIN;
@@ -502,7 +511,7 @@ Deno.serve(async (req) => {
       if (takDatum)
         skal.push(`**I dagens takt (${takt.toFixed(0)} min/dygn) slår taket i den ${takDatum}**, alltså före månadsskiftet.`);
       if (avkortad)
-        skal.push(`Räkningen avkortades vid ${SIDTAK} sidor — talet är för lågt även jämfört med det här repots verkliga förbrukning.`);
+        skal.push(`Ett dygn hade fler än ${SIDTAK * 100} körningar och räkningen avkortades — talet är för lågt även för det här repot.`);
       if (kassaprov)
         skal.push("**PROV** — påhittad rad för att bevisa kassavaktens larmväg. Försvinner vid nästa körning under gränsen.");
 
