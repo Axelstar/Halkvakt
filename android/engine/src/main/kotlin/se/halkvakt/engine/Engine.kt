@@ -27,6 +27,8 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
     private var lastHeadingDeg: Double? = null
     private var odometerM = 0.0
     private var lastSpokenT: Double? = null
+    /** Vad som senast sades — spärren får bara tysta något som INTE är viktigare (#127). */
+    private var lastSpokenKind: HazardKind? = null
     private val fired = HashMap<String, Pair<Double, Double>>() // id -> (t, odometerM)
 
     private val slipperyInfo = Regex("(?<![a-zåäö])(is|snö|halka|frost|mycket besvärligt)", RegexOption.IGNORE_CASE)
@@ -72,9 +74,17 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
             compareBy({ it.kind.ordinal }, { it.distM }, { it.alertKey })
         ).first()
 
-        lastSpokenT?.let { if (fix.t - it < cfg.globalCooldownS) return null }
+        // Regel 1b: PRIORITETSMEDVETEN spärr (#127). Får bara kasta en vinnare vars prioritet
+        // inte är högre än det senast sagda. Is får avbryta en kamera; en kamera aldrig is.
+        lastSpokenT?.let { last ->
+            if (fix.t - last < cfg.globalCooldownS) {
+                val lastP = lastSpokenKind?.ordinal ?: Int.MAX_VALUE
+                if (win.kind.ordinal >= lastP) return null
+            }
+        }
 
         lastSpokenT = fix.t
+        lastSpokenKind = win.kind
         fired[win.alertKey] = fix.t to odometerM
         val ph = win.hazard as? PointHazard
         return Alert(

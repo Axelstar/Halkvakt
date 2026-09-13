@@ -61,7 +61,7 @@ data class Alert(
 data class EngineConfig(
     val corridorHalfAngleDeg: Double = 35.0,
     val minSpeedKmh: Double = 15.0,
-    val globalCooldownS: Double = 45.0,
+    val globalCooldownS: Double = 10.0,   // #127: var 45; prioritetsmedveten nu
     val repeatMinS: Double = 600.0,
     val repeatMinM: Double = 5000.0,
     val cameraTriggerM: Double = 500.0,

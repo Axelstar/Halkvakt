@@ -1,6 +1,6 @@
 {
  "name": "Vilt slår kamera i prioritet",
- "description": "Aktiv viltzon 600 m fram + kamera 480 m fram, kvalificerade samtidigt. Viltet talar; kameran släpps och passeras. EN varning. Kamerans bearing 180 = tittar söderut ⇒ fotar vår norrgående riktning (riktningsvändningen 2/9).",
+ "description": "Aktiv viltzon 600 m fram + kamera 480 m fram, kvalificerade samtidigt. Viltet talar; kameran släpps och passeras. EN varning. Kamerans bearing 180 = tittar söderut ⇒ fotar vår norrgående riktning (riktningsvändningen 2/9). UPPDATERAD 13/9 (#127): viltet talar t=1; kameran tystas 10 s (lägre prioritet) och talar t=11. Två varningar nu, båda sanna — en andra, annan, aktuell varning får plats.",
  "hazards": [
   {
    "id": "wild1",
@@ -633,6 +633,13 @@
    "kind": "wildlife",
    "distanceM": 577,
    "text": "Viltrisk — vanlig olycksplats för älg den här tiden."
+  },
+  {
+   "t": 11,
+   "hazardId": "cam1",
+   "kind": "camera",
+   "distanceM": 235,
+   "text": "Fartkamera om 500 meter."
   }
  ]
 }

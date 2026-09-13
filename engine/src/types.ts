@@ -105,7 +105,9 @@ export interface EngineConfig {
 export const DEFAULT_CONFIG: EngineConfig = {
   corridorHalfAngleDeg: 35,
   minSpeedKmh: 15,
-  globalCooldownS: 45,
+  // 10 s (var 45 t.o.m. 13/9, #127): härlett ur kamerornas minimidistans i samma
+  // riktning — 520 m ⇒ 15,6 s vid 120 km/h. Spärren är dessutom prioritetsmedveten nu.
+  globalCooldownS: 10,
   repeatMinS: 600,   // 10 min ...
   repeatMinM: 5000,  // ... / 5 km (PLAN §1)
   cameraTriggerM: 500,

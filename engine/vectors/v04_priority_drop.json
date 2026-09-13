@@ -1,6 +1,6 @@
 {
  "name": "Prioritet: olycka vinner, kamera SLÄPPS",
- "description": "Olycka 5 km fram + kamera 450 m fram blir kvalificerade samtidigt. Olyckan talar; kameran släpps (köas ej) och hinner passeras under 45 s-fönstret. Halksegment vid 2 km talar när fönstret öppnat. Kamerornas bearing vänd 180° 2/9: Trafikverkets värde är riktningen kameran TITTAR, färdriktningen den fotar är motsatt.",
+ "description": "Olycka 5 km fram + kamera 450 m fram blir kvalificerade samtidigt. Olyckan talar; kameran släpps (köas ej) och hinner passeras under 45 s-fönstret. Halksegment vid 2 km talar när fönstret öppnat. Kamerornas bearing vänd 180° 2/9: Trafikverkets värde är riktningen kameran TITTAR, färdriktningen den fotar är motsatt. UPPDATERAD 13/9 (#127): spärren är nu prioritetsmedveten med 10 s golv. Olyckan talar t=1; kameran (lägre prioritet) tystas i 10 s och talar sedan t=11 — den är sann och aktuell. Halksegmentet t=61 som förr.",
  "hazards": [
   {
    "id": "acc1",
@@ -950,6 +950,13 @@
    "kind": "accident",
    "distanceM": 4972,
    "text": "Olycka rapporterad 5 kilometer framför dig."
+  },
+  {
+   "t": 11,
+   "hazardId": "cam1",
+   "kind": "camera",
+   "distanceM": 205,
+   "text": "Fartkamera om 500 meter."
   },
   {
    "t": 61,

@@ -109,7 +109,9 @@ export interface EngineConfig {
 export const DEFAULT_CONFIG: EngineConfig = {
   corridorHalfAngleDeg: 35,
   minSpeedKmh: 15,
-  globalCooldownS: 45,
+  // 10 s (var 45 t.o.m. 13/9, #127): härlett ur kamerornas minimidistans i samma
+  // riktning — 520 m ⇒ 15,6 s vid 120 km/h. Spärren är dessutom prioritetsmedveten nu.
+  globalCooldownS: 10,
   repeatMinS: 600,   // 10 min ...
   repeatMinM: 5000,  // ... / 5 km (PLAN §1)
   cameraTriggerM: 500,
@@ -320,6 +322,10 @@ export class AlertEngine {
   private lastHeadingDeg: number | null = null;
   private odometerM = 0;
   private lastSpokenT: number | null = null;
+  /** Vad som senast sades — spärren får bara tysta något som INTE är viktigare (#127). */
+  private lastSpokenKind: HazardKind | null = null;
+  /** Skuggmotorn lyssnar här (#127 a): vad spärren kastar syns annars ingenstans. */
+  onSuppressed?: (c: { kind: HazardKind; hazardId: string; distM: number; by: HazardKind; sinceS: number }) => void;
   private fired = new Map<string, FiredState>();
 
   constructor(hazards: Hazard[], cfg: Partial<EngineConfig> = {}) {
@@ -395,12 +401,27 @@ export class AlertEngine {
     });
     const win = eligible[0];
 
-    // Rule 1b: hard global throttle. Winner inside the window is dropped, not queued.
+    // Rule 1b: PRIORITETSMEDVETEN global spärr (#127, Bengt 13/9). Den gamla spärren var
+    // blind: den tystade allt inom 45 s oavsett vad som just sagts. Faror som kvalificerar
+    // EFTER varandra i stället för samtidigt fick då inverterad prioritet — kameran talade,
+    // isen 20 s senare kastades, och när spärren öppnade var isen 61 m bort (v23).
+    // Nu: spärren får bara kasta en vinnare vars prioritet inte är HÖGRE än det som senast
+    // sades. En kamera kan aldrig avbryta is; is får avbryta en kamera. Golvet 10 s är
+    // härlett ur kamerornas minimidistans (520 m i samma riktning ⇒ 15,6 s vid 120 km/h),
+    // så en fartkamera kan aldrig tystas av det. Upprepningsregeln (regel 2) är orörd.
     if (this.lastSpokenT !== null && fix.t - this.lastSpokenT < this.cfg.globalCooldownS) {
-      return null;
+      const winP = PRIORITY.indexOf(win.kind);
+      const lastP = this.lastSpokenKind === null ? Infinity : PRIORITY.indexOf(this.lastSpokenKind);
+      if (winP >= lastP) {   // inte viktigare än det senaste ⇒ kastas, som förr
+        this.onSuppressed?.({ kind: win.kind, hazardId: win.hazard.id, distM: win.distM,
+                              by: this.lastSpokenKind!, sinceS: fix.t - this.lastSpokenT });
+        return null;
+      }
+      // viktigare ⇒ släpps igenom trots spärren
     }
 
     this.lastSpokenT = fix.t;
+    this.lastSpokenKind = win.kind;
     this.fired.set(win.alertKey, { t: fix.t, odometerM: this.odometerM });
     const pointHazard = win.hazard.kind === "slippery_segment" ? undefined : (win.hazard as PointHazard);
     return {
