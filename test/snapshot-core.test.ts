@@ -183,3 +183,22 @@ test("giltighetsfönstret står i frågan — radarn är tyst när den är för 
   assert.match(f!, /rate_mean_mmh/, "faktorn är mätt på rate_mean — rate_max är spärrat (#134)");
   assert.ok(!f!.includes("rate_max"), "rate_max får inte användas här");
 });
+
+test("en otillgänglig radartabell fäller INTE snapshoten — men den noteras", async () => {
+  // publicera bygger snapshoten för alla fem varningsslag. Att döda halka, is, olyckor, vilt och
+  // kameror för att ett valfritt fält saknas vore oproportionerligt. Men tystnad vore värre:
+  // en fail-soft-gren utan spår är ett tyst ALDRIG.
+  const rows: any = {
+    segments: [{ segment_id: "S1", condition_code: 3, condition_info: ["Is"], road_number: null,
+                 g: { coordinates: [[15, 60], [15.1, 60.1]] } }],
+  };
+  const q: Q = async (text) => {
+    if (text.includes("FROM radar_precip")) throw new Error('relation "radar_precip" does not exist');
+    if (text.includes("FROM road_conditions")) return rows.segments;
+    return [];
+  };
+  const { liveDoc, notes } = await buildSnapshot(q, [], NOW);
+  assert.equal(liveDoc.segments.length, 1, "snapshoten byggs ändå");
+  assert.equal(liveDoc.segments[0].regn, null);
+  assert.ok(notes.some((n) => n.includes("radar_precip ej läsbar")), "felet ska stå i noterna, inte försvinna");
+});

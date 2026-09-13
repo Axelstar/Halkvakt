@@ -114,15 +114,26 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   // kan inte skilja dem åt. Därför skrivs `regn: null` — aldrig 0. Att skriva 0 vore att påstå
   // en torrhet vi inte mätt, och en sådan nolla är precis den sortens tysta osanning
   // värdevakten (#133) och septembervakten finns emot.
-  const radar = await q(`
-    SELECT DISTINCT ON (segment_id) segment_id, rate_mean_mmh
-    FROM radar_precip
-    WHERE observed_at > now() - interval '${RADAR_MAX_ALDER_MIN} minutes'
-    ORDER BY segment_id, observed_at DESC`);
+  //
+  // OCH RADARN FÅR INTE FÄLLA HELA SNAPSHOTEN. Tabellen skapas av ingest/radar.ts vid varje
+  // körning, så i drift finns den — men publicera bygger snapshoten för ALLA fem varningsslag,
+  // och att döda halka, is, olyckor, vilt och kameror för att ett valfritt fält saknas vore
+  // oproportionerligt. Samma avvägning som grannschemana redan har i den här funktionen.
+  // MEN INTE TYST: felet noteras, för en fail-soft-gren utan spår är ett tyst ALDRIG
+  // (CLAUDE.md-läxan från kameror-vaglag).
   const regnPerSegment = new Map<string, number>();
-  for (const r of radar) {
-    const raa = Number(r.rate_mean_mmh);
-    if (Number.isFinite(raa) && raa >= 0) regnPerSegment.set(String(r.segment_id), Math.round((raa / RADAR_FAKTOR) * 10) / 10);
+  try {
+    const radar = await q(`
+      SELECT DISTINCT ON (segment_id) segment_id, rate_mean_mmh
+      FROM radar_precip
+      WHERE observed_at > now() - interval '${RADAR_MAX_ALDER_MIN} minutes'
+      ORDER BY segment_id, observed_at DESC`);
+    for (const r of radar) {
+      const raa = Number(r.rate_mean_mmh);
+      if (Number.isFinite(raa) && raa >= 0) regnPerSegment.set(String(r.segment_id), Math.round((raa / RADAR_FAKTOR) * 10) / 10);
+    }
+  } catch (e) {
+    notes.push(`radar: radar_precip ej läsbar (${String((e as Error).message).slice(0, 80)}) — regn blir null på varje segment`);
   }
 
   // ---- live: väderpunkter (svenska), med givarvakten ----

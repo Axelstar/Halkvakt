@@ -130,6 +130,10 @@ test("#75 givarvakten: frusen, orimlig och gammal station publiceras inte", { sk
         ('OKANDLUFT','Utan lufttemp',     ST_SetSRID(ST_MakePoint(15.20, 59.20), 4326), now() - interval '10 minutes', -3.0, NULL, 'no',   false, false)
       ON CONFLICT (station_id) DO UPDATE SET sample_time = EXCLUDED.sample_time, surface_temp_c = EXCLUDED.surface_temp_c,
         air_temp_c = EXCLUDED.air_temp_c, precipitation = EXCLUDED.precipitation, rain = EXCLUDED.rain, snow = EXCLUDED.snow`);
+    // radar_precip skapas av ingest/radar.ts i drift; här appliceras migrationen som testet
+    // annars saknar. Samma mönster som gallringen (014) och grannschemana nedan.
+    const { readFileSync: rf } = await import("node:fs");
+    await pool.query(rf(new URL("../sql/009_radar_precip.sql", import.meta.url), "utf8"));
     const { liveDoc } = await buildSnapshot(async (t, p) => (await pool.query(t, p as any[])).rows, []);
     // W1 från writeAll-testet ovan har sample_time 2026-08-24 ⇒ gammal ⇒ tyst. Storvik: 22,7°
     // under luften ⇒ orimlig ⇒ tyst. GAMMAL: 5 h ⇒ tyst. Kvar: den färska och den vi inte

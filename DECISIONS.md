@@ -4448,3 +4448,23 @@ smyg för att kortet råkade skriva båda halvorna på samma rad.
 **KVAR AV STEG C:s VERIFY:** vakthundens rad "regn i snapshoten", och att fältet syns i live.json
 efter deploy. Radarn är torr i september, så fältet väntas vara `null` på varje segment — och
 **det är rätt utfall**, inte ett misslyckande.
+
+**RÖD CI PÅ FÖRSTA FÖRSÖKET, och den avslöjade ett produktionsfel — inte bara ett testfel.**
+Integrationstestet mot riktig PostGIS föll på `relation "radar_precip" does not exist`. Tabellen
+skapas av `ingest/radar.ts` vid varje körning (även torra dygn), så i drift finns den — men felet
+betydde att **publicera nu skulle DÖ om den saknades**, och publicera bygger snapshoten för ALLA
+fem varningsslag. Att döda halka, is, olyckor, vilt och kameror för att ett valfritt fält saknas
+vore oproportionerligt.
+
+**Löst åt båda hållen, för ingetdera räcker ensamt:**
+1. **Radarfrågan får en fail-soft-gren MED NOT.** Samma avvägning som grannschemana redan har i
+   samma funktion. Men aldrig tyst: felet skrivs i `notes`, för en fail-soft-gren utan spår är ett
+   **tyst ALDRIG** — CLAUDE.md-läxan från kameror-vaglag, som hoppade över en skrivning i varje varv
+   medan jobbet var grönt. Eget test: tabellen kastar ⇒ snapshoten byggs ändå, `regn` blir null,
+   och noten finns.
+2. **Integrationstestet applicerar sql/009 före `buildSnapshot`** — samma mönster som gallringen
+   (014) och grannschemana. Utan det prövas bara den degraderade vägen, och den riktiga aldrig.
+
+Att bara göra (1) hade gjort testet grönt utan att någonsin köra den riktiga frågan mot en riktig
+tabell. Att bara göra (2) hade lämnat publicera dödlig mot en saknad tabell. **Rött bygge som
+hittade ett verkligt fel är billigt; det var därför det skulle vara rött.**
