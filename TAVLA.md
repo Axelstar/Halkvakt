@@ -331,6 +331,46 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] Fysisk Android-testenhet (pappas telefon? begagnad?)
 
 ### Bengt
+- [ ] ⚖️ **#153 SAMMANVÄGT ALLVAR + ETT SMALARE UNDANTAG — två beslut som är BENGTS, inte byggbara förrän vintern**
+  **Varifrån kortet kommer:** Bengts fråga 13/9, ordagrant: *"vi håller på att bygga ett antal olika
+  risker som ska definiera och förutsäga vägförhållanden framöver men de ska inte kunna kombineras
+  för att meddela trafikanten om den sammanlagda risken utan bara den största risken. Enligt dej är
+  det rätt väg att gå?"* — och dessförinnan: *"om radarn signalerar blött och offset signalerar under
+  noll, kommer motorn att generera en isrisk framöver?"* Svaret på den andra var **nej**, och det
+  gjorde den första till en riktig invändning i stället för ett missförstånd.
+  **TVÅ REGLER HADE TRASSLAT IHOP SIG, och de har olika skäl:**
+  · **Regel 1 — en röst i taget.** `engine.ts` rad 120–129: *"priority selects the single winner;
+  everything else is dropped"* och *"hard global throttle. Winner inside the window is dropped, not
+  queued."* Det är MÄNNISKOFAKTORER, inte modellering — man kan inte säga tre saker på 45 sekunder
+  till någon i 90 km/h. Regeln är rätt och ska inte röras.
+  · **Regel 2 — en modellerad storhet får aldrig vara en avtryckare** (TROSKLAR-FRYSKLASSNINGEN §1,
+  samma regel som SMHI-förstärkaren #95 d fick). Skyddar mot varningar som inte kan motbevisas av en
+  mätning. Rätt i princip.
+  **BESLUT 1 — SAMMANVÄGT ALLVARSMÅTT.** Motorn kan i dag säga VAD faran är men inte HUR ILLA det är:
+  prioriteten är en fast ordning mellan SLAG, inte ett mått på allvar. Ett segment som är halt OCH har
+  isrisk OCH kraftigt regn låter exakt likadant som ett som bara är halt. Förslaget är att
+  kombinationen ändrar **den enda varning vi säger** — ordval, framförhållning eller prioritet — i
+  stället för att lägga till en andra. *"Halka framöver"* mot *"kraftig halkrisk, flera tecken".*
+  Det bryter ingen av de två reglerna, och det uttrycker precis den sammanlagda risk Bengt efterlyste.
+  🔒 Kräver eget tröskeldokument med svep skrivna före mätning, och skuggsteg före röst.
+  **BESLUT 2 — ETT SMALARE UNDANTAG I §1.** Min tillämpning av regel 2 är trubbigare än verkligheten,
+  och det erkänns här: **(a) radarn är ingen modell** utan en mätning av nederbörd, kalibrerad med
+  faktorn 0,65 (#153/#154) — i kombinationen blött+kallt är alltså bara ena halvan modellerad; **(b)
+  interpolation mellan två mätningar är inte extrapolation från en.** Ligger vägen mellan en station
+  som mäter −3 °C och en som mäter −2 °C är *"här är det under noll"* inramat av två eniga mätningar.
+  Grind A:s egna tal säger samma sak: i bandet **0–7 km är MAE 0,33 °C och de grova felen 0,0 %**
+  (DECISIONS #131) — modellen är utmärkt nära och dålig långt bort, och §1 gör ingen skillnad på de två.
+  Förslaget: en modellerad temperatur får bära en avtryckare **ENDAST** när punkten ligger inramad
+  mellan mätande stationer inom kort avstånd som är **eniga om tecknet**. Egna trösklar, eget skuggsteg.
+  ⚠️ **Det kräver att Bengt ändrar ett dokument han själv fastställde 12/9.** §8 tillåter det fram till
+  första skuggkörningen — men det ska göras som ett BESLUT, inte som en glidning när talen ser bra ut.
+  **VARFÖR KORTET INTE KAN ARBETAS PÅ NU:** båda vilar på vinterdata. K-A står på ⊘ INGEN DOM med
+  **noll** uppmätta frysfall (DECISIONS #137), och Finland har det inte heller — mätt 13/9: 133
+  "frysrader" som alla är exakt 0,0 från EN station, alltså en fastnaglad givare och inte frost.
+  Grind A:s A2-rad är OAVGJORT och kan inte avgöras på septemberdata.
+  ⏭️ **STÄLLS TILL BENGT.** Inget byggs på det här kortet förrän vintern gett data. Det som ska göras
+  NU är ingenting — kortet finns för att frågan inte ska tappas bort, och för att den ska vara rätt
+  formulerad den dagen mätningarna kan svara på den.
 - [ ] 🤝 **#94 Samarbeten vi inte prövat: ~~försäkringsbolag~~, åkerier, NTF/M Sverige** (ur Claudes
   systemanalys 10/9). 🛑 **FÖRSÄKRINGSSPÅRET STÄNGT 11/9 av Bengt (DECISIONS #94):** "det är klarlagt
   att vi inte kan få det samarbetet". Kortet bär det därmed varken som facitkälla eller som första
