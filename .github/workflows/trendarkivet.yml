@@ -1,0 +1,33 @@
+# Trendarkivet — kort #88 steg 2. Räknar trendkandidater ur weather_observations och skriver dem
+# durabelt, INNAN gallringen (#83) tunnar arkivet till en rad per halvtimme efter sju dygn.
+# Knapp, inte cron (#85). Ska tryckas inom sju dygn efter varje frostnatt — vakthundens check 5
+# larmar vid frost och säger just det.
+name: trendarkivet
+on:
+  workflow_dispatch:
+    inputs:
+      dagar:
+        description: "Fönster i dygn — taket är 7, bortom det har gallringen ätit upplösningen"
+        required: false
+        default: "7"
+      torrkor:
+        description: "Torrkörning: räkna och rapportera, skriv inget"
+        type: boolean
+        default: false
+jobs:
+  trendarkivet:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types scripts/trendarkivet.ts --sjalvtest
+      - name: Arkivera
+        env:
+          DATABASE_URL: "${{ secrets.DATABASE_URL }}"
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/trendarkivet.ts "${{ inputs.dagar || '7' }}" ${{ inputs.torrkor && '--torrkor' || '' }} | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
