@@ -2050,6 +2050,23 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   < 10 m/s (89,5 mot 40,2 per 1 000 stationstimmar). Det är över W-A2:s krav på 1,5 × och den första
   kvantitativa antydan att kortet har något att mäta. Men det är ETT band, i september, och
   situation_archive bär ingen orsak — samband, inte kausalitet.
+  ✅ **VINDTAKET G_tak SATT 13/9** (DECISIONS #163, PR #219). Översta bandet går från `[20, 999]`
+  till `[20, 30]` — 87,7 m/s låg i exakt de 45 stationstimmar domen vilade på. Svepet 30·40·50 är
+  dokumentets eget; lägsta steget valt, och varje steg skrivs ut vid varje körning.
+  ✅ **STATIONSVAKTEN BYGGD 13/9** (Bengts order, DECISIONS #164, PR #220). Ett värdetak tar bort
+  dåliga AVLÄSNINGAR, inte en dålig STATION: 2312 bar 26 av 36 timmar över 30 m/s spridda över hela
+  arkivet. Kriteriet är fysik, inte en ID-lista — en stationstimme är omöjlig vid byvind ≥ 15 m/s
+  och byvindfaktor > 5. **9 stationer diskas ur B1, ingen ur B2** (siktgivaren på samma stolpe är
+  ett annat instrument). Effekt: −1,1 % av arkivets stationstimmar men **−67 % av högsta bandet**
+  (9 → 3) — det bandet bestod till två tredjedelar av trasiga givare.
+  ⚠️ **FÖRSTA KRITERIET FÖLL PÅ SIN EGEN MÄTNING och det står kvar i koden som varning:** kvoten
+  per rad diskvalificerade **335 av 748 stationer** och åt 47 % av B1. Byvinden är ett max över ett
+  bakåtfönster, medelvinden är ögonblicket — kvoten var två tidsfönster delade med varandra. Taket 5
+  flyttades INTE (arkivets p99,9 är 3,08); det var nämnaren som var fel.
+  🔎 **TVÅ AV DE NIO (2438, 2107) HAR SINA OMÖJLIGA VÄRDEN UNDER 30 m/s** — G_tak kan aldrig se dem.
+  Det var okänt när kortet beställdes och är vaktens starkaste existensskäl.
+  ⏭️ **TILL BENGT:** de nio stationerna har en trasig byvindgivare. Skriptet listar dem, det anmäler
+  dem inte — en anmälan till Trafikverket är ett eget beslut (eget kort om det ska göras).
   ⏱️ **STEG 0 KUNDE GÖRAS FÖRE RADARDOMEN:** givarkollen + grind W-A mot arkivet. W-A frågar om
   olycksfrekvensen stiger monotont med byvind respektive sjunkande sikt — och till skillnad från
   vattenplaningen **går nollhypotesen att räkna här**, eftersom exponeringen mäts kontinuerligt vid
