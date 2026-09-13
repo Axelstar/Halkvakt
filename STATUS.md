@@ -1691,3 +1691,18 @@ mot ett repo, och avrundning per körning i stället för per jobb. Talet är et
 Aritmetiken bevisad fristående mot sex handräknade fall, bland annat att 261 min/dygn ger takdatum
 25/9 och att gratispotten gör oktober gratis tills den är slut. Syntaxkontroll grön.
 KVAR I DETTA VARV: deploy + ?kassaprov=1 som bevis EFTER deployen.
+
+## 2026-09-13 02:15 — Kassavakten klar och bevisad, och den rättar genast kassans tal
+Check 8 deployad och larmvägen prövad skarpt: issue #210 med etiketten kassavakt, skapad av provet
+men med en RIKTIG larmrad ovanför provraden — "i dagens takt (311 min/dygn) slår taket i 2026-09-21".
+FÖRSTA SKARPA MÄTNINGEN över hela månaden: 3 761 min sedan 1/9 över 2 798 körningar, debiterat
+1 761 min = 14,09 av 35 USD, takt 311 min/dygn, prognos 59 USD. Det rättar #85: mina 202 min/dygn kom
+ur ett 26,5-timmarsfönster som var lugnare än månadssnittet, och 31–40 USD var för lågt. Gränsen
+hålls inte i dagens takt, och taket är åtta dygn bort.
+TRE FEL AV MIG I VARVET, alla bokförda: (1) deploy-supabase dispatchad utan funktion ⇒ standardvärdet
+publicera deployades och jag läste grönt som rätt sak; (2) kassaprov i skriptets vitlista men inte i
+dbknapp.yml:s if-sats ⇒ en körning föll tyst i migrera-grenen och körde om gallringsmigrationen
+(idempotent, alla tio cron-jobb intakta i bevisraderna); (3) första räkningen kapades tyst vid
+GitHubs 1 000-träffstak och rapporterade 94 min/dygn, alltså halva sanningen. Alla tre lagade,
+de två sista med läxa i CLAUDE.md.
+Byggt: check 8 (kort #152), dbknapp-villkoret inverterat. Nästa: Bengts val på kassans spakar.
