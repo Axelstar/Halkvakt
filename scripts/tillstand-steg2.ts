@@ -175,13 +175,18 @@ await avsnitt("2c SAMSTÄMMIGHETEN", async () => {
   // Universum: segmenttimmar där stationen mätte OCH segmentet bevisligen ligger i radarns
   // täckning någon gång i fönstret (annars är radarns tystnad inte ett "nej", bara ett "vet ej").
   const r = R_SVEP[1], m = REGN_SVEP[0];
+  // UNIVERSUM: bara segmenttimmar där BÅDA har en åsikt. Radarn har en åsikt först när det
+  // FINNS en rad — en saknad rad betyder torrt ELLER osamplat, och radarn tar bara 24 prov per
+  // dygn à 5 minuter (steg 0:s 0f: 8,3 % av tiden). Att läsa tystnad som "torrt" vore samma
+  // tysta osanning som skattaren själv förbjuder.
   const rad = (await q(`
-    WITH tackt AS (SELECT DISTINCT segment_id FROM rdtim),
-    grund AS (
+    WITH grund AS (
       SELECT p.segment_id, s.h,
              (s.mm > 0) AS station_vat,
-             COALESCE((SELECT max(mmh) FROM rdtim d WHERE d.segment_id = p.segment_id AND d.h = s.h), 0) >= $1 AS radar_vat
-      FROM par p JOIN tackt t USING (segment_id) JOIN sttim s ON s.station_id = p.station_id
+             (d.mmh >= $1) AS radar_vat
+      FROM par p
+      JOIN sttim s ON s.station_id = p.station_id
+      JOIN rdtim d ON d.segment_id = p.segment_id AND d.h = s.h
       WHERE p.km <= $2)
     SELECT count(*)::int AS jamforelser,
       count(*) FILTER (WHERE radar_vat AND station_vat)::int AS bada,
@@ -190,6 +195,10 @@ await avsnitt("2c SAMSTÄMMIGHETEN", async () => {
       count(*) FILTER (WHERE NOT radar_vat AND NOT station_vat)::int AS ingen
     FROM grund`, [r, MAX_KM]))[0];
   const n = Number(rad.jamforelser);
+  const tack = (await q(`SELECT (SELECT count(*)::int FROM rdtim) AS radartimmar,
+      (SELECT count(DISTINCT segment_id)::int FROM rdtim) * $1 * 24 AS mojliga`, [DAGAR]))[0];
+  console.log(`  Radarn har en åsikt om ${tack.radartimmar} av ${tack.mojliga} möjliga segmenttimmar`
+    + ` (${pct(Number(tack.radartimmar), Number(tack.mojliga))}) — resten är OSAMPLAT, inte torrt.`);
   console.log(`  Vid r ≥ ${r} och stationsregn ${m === 0 ? "> 0" : `≥ ${m}`}, ${n} jämförbara segmenttimmar:`);
   console.log(`    båda blöta          ${String(rad.bada).padStart(7)}`);
   console.log(`    bara radarn blöt    ${String(rad.bara_radar).padStart(7)}`);
@@ -234,6 +243,14 @@ await avsnitt("2d SKATTNINGEN", async () => {
   console.log("  Ingen punkt är vald här. Dokumentets §4-golv väljer N, inte den här tabellen (§2.2).");
   console.log("  ⚠️ 'torr' i tabellen betyder ALLTID stationstäckt torr. Segmenttimmar utan mätning");
   console.log("     räknas inte som torra — de finns inte i nämnaren alls.");
+  const diet = (await q(`SELECT (SELECT count(*)::int FROM sttim) AS sparade,
+      (SELECT count(DISTINCT station_id)::int FROM sttim) * $1 * 24 AS mojliga`, [DAGAR]))[0];
+  console.log(`  🚨 OCH DEN VIKTIGASTE RESERVATIONEN: nämnaren är ARKIVDIETENS urval, inte tiden.`);
+  console.log(`     ${diet.sparade} av ${diet.mojliga} möjliga stationstimmar sparades`
+    + ` (${pct(Number(diet.sparade), Number(diet.mojliga))}), och dieten (#4) sparar rader just`);
+  console.log(`     vid NEDERBÖRD, låg yta eller snabb ytrörelse. Andelen blöt ovan är därför`);
+  console.log(`     kraftigt uppblåst och säger INTE hur ofta svensk väg är blöt. Tabellen duger`);
+  console.log(`     till att jämföra N och r MOT VARANDRA — inget annat.`);
 });
 
 // ── 2e OPERATÖRSFACIT.
