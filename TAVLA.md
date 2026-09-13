@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-13 01:45 av Claude (webben) — utlösartröskeln satt av Bengt: radar rate_mean ≥ 2,0 mm/h (≈ 3,1 verkligt, 77 % bekräftelse). Faktorn 0,65 är fastställd med båda signaturerna. Kvar före kod: Axels signatur på TRÖSKELN. Steg A klart, steg B öppet, C–F väntar.*
+*Uppdaterad: 2026-09-13 01:55 av Claude (webben) — HELA §3.4 AVGJORD: tröskeln ≥ 2,0 mm/h kontrasignerad av Axel, faktorn 0,65 fastställd. Steg A OCH B klara — radarn stannar i timingesten (noll extra minuter, verify 20/9). Stegen C–F öppna: nästa bygge är snapshotens regnfält.*
 
 ---
 
@@ -1090,6 +1090,14 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Motsvarar ≈ 3,1 mm/h verklig intensitet med faktorn 0,65; bekräftelsen i det bandet är 77 % (73 % i
   föregående fönster), mot 56 % och 42 % i banden under. 🔑 KVAR: Axels kontrasignering av tröskeln —
   stegen C–F i #81 öppnas då. Steg B är redan öppet och beror inte av tröskeln.
+  ✍️✅ **TRÖSKELN KONTRASIGNERAD AV AXEL 13/9 — HELA §3.4 ÄR AVGJORD** (DECISIONS #156): faktorn 0,65,
+  fältet `rate_mean_mmh`, riktningen, spärren mot `rate_max_mmh` och tröskeln ≥ 2,0 mm/h. Ändring kräver
+  ny dubbelsignatur. 🔓 **STEGEN C–F I KORT #81 ÄR ÖPPNA.**
+  ⚙️ **STEG B AVGJORT SAMTIDIGT: radarn FLYTTAS INTE nu** (Bengt: "Vi flyttar inte nu"). ingest/radar.ts
+  ligger kvar i timingesten ⇒ noll extra Actions-minuter. Edge-flytten för 5-minuterskadens är inte
+  förkastad, bara inte nu; tätare i Actions förblir uteslutet (12/h = 288 min/dygn). Marginalen att känna
+  till: timkadens ger rader som mest 60 min gamla mot regel 7:s krav ≤ 70 min — tunt men helt, och faller
+  en körning bort tiger radarn, vilket är rätt utfall. 📅 Verify 20/9: Actions-min/dygn oförändrade.
 - [ ] 📏 **#44 Regntäckningen** (Bengts täthetsfråga 3/9: "räcker timhämtningen?") —
   stationerna summerar regn per 30 min, ingest hämtar per timme: tappar vi varannan
   bucket? KNAPPEN BYGGD 3/9: scripts/regn-tackning.ts + Actions → regn-tackning

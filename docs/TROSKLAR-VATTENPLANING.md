@@ -156,8 +156,11 @@ duggregn ger ingen vattenplaning, vilket är samma sakskäl som avvisade omskriv
 Tröskeln gäller `rate_mean_mmh`, samma fält som kalibreringsfaktorn. `rate_max_mmh` är fortfarande
 spärrat enligt regeln ovan.
 
-🔑 **KVAR: Axels kontrasignering av tröskeln** (§5:s dubbelsignatur, samma krav som faktorn hade).
-Stegen C–F i kort #81 öppnas först då. Steg B är redan öppet och beror inte av tröskeln.
+**Signaturer på tröskeln enligt §5: Bengt 13/9 2026** ("Ja till 2") · **Axel 13/9 2026**
+(relayerad av Bengt). **DUBBELSIGNATUREN ÄR FULLSTÄNDIG — tröskeln är FASTSTÄLLD.**
+
+Därmed är hela §3.4 avgjord: faktorn, fältet, riktningen, spärren mot `rate_max_mmh` och tröskeln.
+Ändring av något av dem kräver ny dubbelsignatur. Stegen C–F i kort #81 är öppna.
 
 Radar får fortfarande i **inget** fall **fälla falsklarm** (§2 oförändrad) — den är observation,
 inte facit.
