@@ -1685,6 +1685,22 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] ↩︎ Play: uppladdningsguide för den CI-signerade AAB:n + fotostudion tag 2 (facit ur CI +
   produktboken) *(låst: Play-kontot)*.
 - [ ] 📈 **#88 TRENDEN — vi mäter var minut men använder bara sista värdet** (systemanalys 10/9;
+  ✅ **STEG 2 BYGGT OCH KÖRT 13/9 — TRENDARKIVET** (Bengts order, issue #119, DECISIONS #169,
+  PR #230). `sql/017_trend_kandidater.sql` + `scripts/trendarkivet.ts` med knapp och torrkörning.
+  **3 851 kandidater över 98 stationer** 8–13/9, ur 117 962 arkivrader. Noll följdes av yta ≤ 0 °C
+  inom 90 min — september, rätt utfall. Omkörning: **0 nya rader**, idempotensen bevisad med mätning.
+  🏗️ **EN TABELL, INTE EN SKUGGKOLUMN — och skälet är arkitektur, inte bekvämlighet.** Skuggmotorn
+  läser SNAPSHOTEN, en ögonblicksbild utan historik: lutningen finns inte där och kan inte räknas
+  där. Cron är stängt sedan #85. Men ingångarna finns i arkivet — och bara i sju dygn, för
+  gallringen (#83) tunnar äldre rader till en per halvtimme och då faller 15-minutersfönstret bort
+  HELT. Knappen räknar inom sju dygn och skriver durabelt; check 5 larmar redan vid frost.
+  🔑 **EN KÄLLA FÖR TRÖSKLARNA:** svepet och vakterna flyttade till `publish/trenden.ts`, delad av
+  T-A och arkivet. Två kopior hade låtit T-A döma med en uppsättning trösklar och arkivet spara
+  med en annan — domen och underlaget hade slutat handla om samma sak.
+  🔒 **SUPERSETINVARIANTEN låst med prov över hela svepet (1 872 kombinationer):** fyrar någon
+  kombination på en rad så ÄR raden kandidat. Faller den sparar arkivet bort precis det T-B behöver.
+  ⚠️ **RISKEN SOM FÖLJER, Bengts att väga:** trycks knappen inte inom sju dygn efter en frostnatt är
+  den natten borta. En skrivande kolumn tar bort risken, till priset av en deploy och ett driftjobb.
   ✅ **GRIND T-A BYGGD OCH KÖRD 12/9 — instrumentet är laddat före frosten** (`scripts/grind-t-a.ts`
   + knapp, PR #158, körning 34675279484, DECISIONS #113). Byggd FÖRE skuggkolumnen med flit: T-A
   läser ARKIVET, de tre kolumnerna i §7 steg 2 matar T-B. Avvikelse från §7:s ordning, inte från
