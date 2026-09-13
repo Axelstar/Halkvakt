@@ -4199,3 +4199,43 @@ utfall. Kassan är dessutom det verkliga trycket just nu (202 min/dygn mot taket
 
 STEG B:S VERIFY ENLIGT KORT #81: "Actions-minuter per dygn oförändrade efter en vecka." Avläses
 20/9. Ingen kod skrevs för detta beslut — att inte flytta är beslutets hela innehåll.
+
+## #157 (13/9 2026) Kassavakten — check 8 räknar själv i stället för att läsa fakturan
+
+BESLUT (Bengts order 13/9, "Bygg check 8"): vakthunden får en åttonde check som räknar Actions-
+minuter mot taket och larmar innan det hårda stoppet slår i. Kort #152.
+
+VALET SOM AVGJORDE DESIGNEN: GitHubs Billing-API ger den exakta siffran men kräver en nyckel med
+KONTObehörighet. PUBLISH_TOKEN har bara repo-behörigheter, och att skaffa en kontonyckel är Axels
+handgrepp. Alternativen var alltså (a) vänta på nyckeln och inte ha någon vakt under tiden, eller
+(b) räkna själva ur workflow-runs-API:t, som samma nyckel redan läser i mätvakten. (b) valdes: en
+skattning som finns i dag slår ett exakt tal som kanske finns i morgon, när felet vi skyddar mot är
+att pipelinen dör tyst.
+
+PRISET FÖR (b) ÄR TVÅ KÄNDA FEL, och regeln är att de skrivs ut i VARJE larm i stället för att
+döljas: taket är kontoomfattande men vi ser bara ett repo, och GitHub avrundar per jobb medan vi
+avrundar per körning (android.yml är enda flödet med två jobb). Talet är därför ett GOLV för
+förbrukningen. Ett golv duger för frågan som ställdes — "närmar vi oss" — men får aldrig kallas
+faktura.
+
+LARMET GÅR PÅ PROGNOSEN, inte på procenten. "I dagens takt slår taket i den 25:e" går att agera på;
+"62 % förbrukat" gör det inte. Andelsvillkoret (70 %) finns kvar som ett andra nät för det fall
+takten faller men förbrukningen redan är hög.
+
+GRATISPOTTEN DRAS BORT FÖRST. 2 000 min ingår per månad och nollställs den 1:a. Utan den raden
+rapporterar vakten tjugo dollar den 1 oktober när verkligheten är noll — och en vakt som ropar varg
+den första dagen varje månad blir ignorerad i resten av den.
+
+FYRA GÅNGER PER DYGN, inte varje timme: en räkning är ~30 API-anrop och budgeten rör sig 1–2 USD per
+dygn. Att lösa ett slöserifel med slöseri vore fel medicin.
+
+FÄRGAR ALDRIG DRIFTVAKTHUNDEN RÖD, samma regel och skäl som mätvakten (#101) och påminnelsen (#150):
+rött ska betyda "kedjan till appen är bruten NU". Ett tak vi når om nio dygn är inte det, och i samma
+issue skulle det hålla vakthunden röd i en vecka och dränka ett riktigt driftlarm.
+
+BEVIS: aritmetiken prövad fristående mot sex handräknade fall (husets konvention för vakthundslogik
+— funktionen importerar postgresjs över nätet på toppnivå och kan inte laddas av node:test). Testet
+checkades medvetet inte in: det hade blivit en andra kopia av tre trösklar och utlöst
+kontraktsgrindens regel för noll nytta. Konstanterna finns i en enda fil. Larmvägen bevisas skarpt
+med ?kassaprov=1 EFTER deployen, enligt husregeln att en ändrad fil under supabase/functions/ inte
+är en deploy.
