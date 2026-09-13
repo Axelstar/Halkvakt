@@ -4096,3 +4096,43 @@ byggdes — den fanns i loggen, i DECISIONS och på tavlan, men inte i drift.
 REGEL (CLAUDE.md): deploya ALDRIG en Supabase-funktion utan att först git pull och verifiera
 att den lokala filen är identisk med main. Och efter deploy: kör funktionens egna prov
 (?larmprov, ?paminnelseprov) så att varje check bevisligen finns i det som kör.
+
+## #153 (13/9 2026) Radardomen HÖLL — Bengt valde (c): radarn ger intensiteten mellan stationerna
+
+BESLUT (Bengt, "Kör c", 13/9 efter att underlaget lagts fram samma natt): radarpiloten godkänns,
+och kort #42:s beslutsläge avgörs till **(c)**. Radar blir utlösare mellan stationerna. Kort #43
+steg 3 är därmed passerat och steg 4 öppnat. Axels kontrasignering på tröskeldokumentets §3.4
+återstår innan kod skrivs (§5:s dubbelsignatur, kort #81 steg A).
+
+UNDERLAGET, framlagt en dag före den bokade domen på Bengts order. Grinden i RADAR-PLAN steg 3→4
+har två delar och båda mättes:
+
+(1) KALIBRERINGSKURVAN, cellmätning v3 i TVÅ oberoende fönster:
+    13/9 01:07 (7 dygn, 98 kompositer, 13 577 par): 42 / 56 / 77 / 82 % bekräftelse för banden
+    0,1–0,5 / 0,5–2 / 2–10 / ≥10 mm/h. Median 0,65 över 7 931 par. Täckning 91 %.
+    12/9 03:37 (förskjutet fönster): 39 / 54 / 73 / 79 %, median 0,66, täckning 93 %.
+    Att kurvan stiger monotont med intensiteten OCH att den inte rör sig mellan två fönster är
+    det som bär domen. Ett mått som står still när underlaget byts är ett mätt mått.
+
+(2) FRITIER EFTER EN VECKA, ur ingest 13/9 00:11: radar_precip 2 029 rader/dygn över 24
+    kompositer ≈ 0,3 MB/dygn ≈ 9 MB/mån mot gratisnivåns 500 MB. Händelsefiltret håller:
+    124 av 818 segment bar regn ≥ 0,1 mm/h i senaste bilden, 13 049 provpunkter, 84 utanför
+    täckning, grids lagras aldrig. Fritier-lagen hålls med marginal.
+
+VARFÖR (c) OCH INTE (a) ELLER (b): grind V-A kördes om 13/9 01:06 på 30 dygn och 73 194 bucketade
+avläsningar och FÖLL på alla sex trösklarna — träff 60 % som bäst mot kravet 70, för tredje gången
+med samma svar. Falsklarmen klarade V-A2 överallt (5–12 % mot 25). Det är träffen som fäller, och
+delvis-andelen växer monotont med tröskeln (28 → 83 %). Stationerna vet ATT det regnar, inte HUR
+MYCKET — och intensiteten är exakt det vattenplaning behöver. (b), att skriva om V-A1 till "regnar
+det alls", avvisades redan 12/9 på saklig grund: det hade gjort påståendet mätbart och samtidigt
+värdelöst för faran. (a) hade kastat en källa som mäter just det som fattas.
+
+TVÅ RESERVATIONER SOM FÖLJER MED IN I BYGGET, båda upptäckta efter att grinden skrevs:
+- `rate_max_mmh` går till 727,54 mm/h (DECISIONS #134) och står som UTANFÖR SPANN. Kalibreringen
+  är mätt på `rate_mean_mmh`. Fältregeln är nu inskriven i §3.4: rate_max får inte bära tröskel
+  eller utlösare förrän spannet 0–200 är rensat.
+- §3.4 namngav tidigare inget fält alls. Faktorn 0,65 är nu inskriven MED fältnamn och med
+  riktningen utskriven (dividera med 0,65, alltså ×1,54 — multiplicera halverar i stället).
+
+ÖPPET: själva utlösartröskeln i mm/h. Den sätts inte av utfallet och kräver dubbelsignatur.
+Bekräftelsekurvan står i §3.4 som dess underlag.

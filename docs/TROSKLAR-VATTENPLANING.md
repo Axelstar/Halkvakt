@@ -98,19 +98,56 @@ Asymmetrin är avsiktlig och samma som i skuggmotorn.
 En uppmätt falsklarmsandel på 17 % kan alltså i sanning vara 22 %. Därför fäller vi ingen
 dom på marginaler mindre än bruset — samma disciplin som grind A:s domspärr.
 
-### 3.4 Radarns roll — villkorad av kort #43
+### 3.4 Radarns roll — AVGJORD 13/9 2026 (kort #43, DECISIONS #153)
 
-Radarpiloten döms 14/9. Två utfall, båda förberedda:
+Radardomen HÖLL, och Bengt valde beslutsläge **(c)**: radarn ger den intensitet stationerna
+inte kan. Underlaget är cellmätning v3 i två oberoende fönster (12/9 03:37 och 13/9 01:07) och
+grind V-A:s tredje fall. Radar är därmed **utlösare mellan stationerna**, och avståndsberoendet
+i V-A3 mildras i motsvarande mån.
 
-- **Radardomen håller** (kalibreringen mot `rain_sum_mm` visar användbar överensstämmelse):
-  radar får bli **utlösare mellan stationerna**, med kalibreringsfaktorn från cellmätning v3
-  inskriven här som en ändring enligt §5. Då mildras avståndsberoendet i V-A3.
-- **Radardomen faller eller dröjer:** varningen bygger enbart på stationer, och V-A3:s
-  avståndsgräns gäller strikt — segment längre än 15 km från mätande station får status
-  **okänt** och rösten tiger där. Det är inte ett misslyckande utan produktinvarianten
-  i arbete.
+**Kalibreringsfaktorn — och FÄLTET den gäller.** Mätt som `radar rate_mean_mmh / stationens mm/h`
+över 7 931 par med båda > 0:
 
-Radar får i inget av fallen **fälla falsklarm** förrän dess kalibrering är dömd (§2).
+| Fönster | Median | Par |
+|---|---|---|
+| 12/9 03:37, 7 dygn | 0,66 | 8 198 |
+| 13/9 01:07, 7 dygn | **0,65** | 7 931 |
+
+**Faktorn som gäller är 0,65, och den gäller `rate_mean_mmh`.** 1,0 skulle betyda att
+Marshall–Palmer träffar exakt; 0,65 betyder att radarn läser ungefär två tredjedelar av vad
+stationen mäter. **Riktningen, utskriven för att den annars blir omvänd en gång:** för att
+uttrycka radarvärdet i stationens skala **divideras** det med 0,65, alltså ungefär × 1,54.
+Att multiplicera med 0,65 halverar i stället för att dubbla. Grovheten är känd och accepterad:
+en 5-minutersbild ställs mot en 30-minuterssumma.
+
+**`rate_max_mmh` FÅR INTE bära tröskel eller utlösare** förrän värdevaktens spann 0–200 mm/h är
+rensat. Fältet står som UTANFÖR SPANN sedan 727,54 mm/h hittades i det (DECISIONS #134) — en
+radarartefakt, inte regn. Kalibreringen ovan är aldrig mätt på det fältet. Regeln finns eftersom
+en faktor mätt på ett fält och använd på ett annat är precis den tysta drift kontraktsgrinden
+byggdes för att fånga.
+
+**Bekräftelsekurvan — underlaget för tröskeln, som ännu inte är satt.** Andel av paren där en
+station ≤ 5 km såg regn inom ±45 min, per radarband (13/9, med 12/9 inom parentes):
+
+| Radarband | Par | Station såg regn |
+|---|---|---|
+| 0,1–0,5 mm/h | 4 852 | 42 % (39) |
+| 0,5–2 | 4 055 | 56 % (54) |
+| 2–10 | 3 852 | 77 % (73) |
+| ≥ 10 | 818 | 82 % (79) |
+
+Kurvan stiger monotont med intensiteten i båda fönstren. Täckningen är 91 % (93): radarn hade en
+rad ≤ 5 km vid 14 190 av 15 540 stationsregn.
+
+🔑 **ÖPPET OCH KRÄVER DUBBELSIGNATUR: själva utlösartröskeln i mm/h.** Den sätts inte här och
+härleds inte ur utfallet av en enskild körning. Tabellen ovan är dess underlag.
+
+Radar får fortfarande i **inget** fall **fälla falsklarm** (§2 oförändrad) — den är observation,
+inte facit.
+
+**Signaturer enligt §5** (att lägga till en faktor kräver dubbelsignatur men inte motivering,
+eftersom en ny faktor skärper underlaget): Bengt 13/9 2026 ("Kör c"). **Axel: öppen.**
+Steg B i kort #81 öppnas först när båda står här.
 
 ## 4. Vinterinteraktionen — FASTSTÄLLD av Axel 4/9 (granskningens §7.4)
 

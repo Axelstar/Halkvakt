@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-13 01:15 av Claude (webben) — RADARDOMENS UNDERLAG FRAMLAGT en dag tidigt på Bengts order: kalibreringskurvan stiger monotont 42/56/77/82 %, median 0,65, täckning 91 %, samma kurva i två oberoende fönster. Fritier 2 029 rader/dygn ≈ 9 MB/mån. Grind V-A omkörd: FALLER på alla sex trösklarna. Domen är Bengts och Axels — fyra frågor ligger hos dem.*
+*Uppdaterad: 2026-09-13 01:25 av Claude (webben) — RADARDOMEN HÖLL, Bengt valde (c): radarn blir utlösare mellan stationerna (DECISIONS #153). Kalibreringsfaktorn 0,65 på rate_mean_mmh inskriven i TROSKLAR-VATTENPLANING §3.4 med riktning och fältregel. Kvar före kod: Axels kontrasignering + utlösartröskeln i mm/h.*
 
 ---
 
@@ -1075,6 +1075,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   · **TROSKLAR-VATTENPLANING §3.4 NAMNGER INGET FÄLT.** Skrivs kalibreringsfaktorn in enligt #81 steg A
     måste dokumentet samtidigt säga OM den gäller rate_mean eller rate_max. Annars mäts faktorn på ett
     fält och används på ett annat — precis den tysta drift kontraktsgrinden finns för att fånga.
+  ⚖️⚖️ **DOMEN FÄLLD 13/9 — BENGT: "KÖR C". RADARDOMEN HÖLL** (DECISIONS #153). Steg 3 passerat,
+  **steg 4 öppnat**: radarn blir utlösare mellan stationerna. Kalibreringsfaktorn **0,65 på
+  `rate_mean_mmh`** är inskriven i TROSKLAR-VATTENPLANING §3.4 med riktningen utskriven (dividera
+  med 0,65 ≈ ×1,54; multiplicera halverar i stället) och med fältregeln att `rate_max_mmh` INTE får
+  bära tröskel förrän spannet 0–200 är rensat. 🔑 KVAR: Axels kontrasignering i §3.4 (§5:s
+  dubbelsignatur) — steg B i kort #81 öppnas först då. Och utlösartröskeln i mm/h är öppen; den
+  sätts inte av utfallet, bekräftelsekurvan i §3.4 är dess underlag.
 - [ ] 📏 **#44 Regntäckningen** (Bengts täthetsfråga 3/9: "räcker timhämtningen?") —
   stationerna summerar regn per 30 min, ingest hämtar per timme: tappar vi varannan
   bucket? KNAPPEN BYGGD 3/9: scripts/regn-tackning.ts + Actions → regn-tackning
@@ -2165,6 +2172,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (1 141 → 3 594 → 3 800 fall i 0–10 km). Falsklarmen klarar V-A2 överallt (5–12 %); det är TRÄFFEN som
   fäller, och delvis-andelen växer monotont med tröskeln (28 → 83 %). Grannarna vet ATT det regnar, inte
   HUR MYCKET. ⇒ Beslutsläge (a)/(b)/(c) oförändrat i sak, men (c) har nu mätt underlag: se #43 13/9.
+  ✅ **BESLUTSLÄGET AVGJORT 13/9 — (c) VALT AV BENGT** (DECISIONS #153): radarn ger intensiteten
+  stationerna inte kan. (a) hade kastat en källa som mäter just det som fattas; (b) avvisades redan
+  12/9 på saklig grund — "regnar det alls" hade gjort påståendet mätbart och samtidigt värdelöst för
+  faran. Kortet går därmed vidare enligt kort #81:s stegordning A→F, och steg A (kalibreringen in i
+  dokumentet) är skrivet. 🔑 Axels kontrasignering i §3.4 innan steg B.
 - [ ] 🧭 **#81 Byggordning efter radardomen 14/9 — så byggs #42 utan att upprepa 5–8/9** (Bengts
   beställning 9/9 00:05). 🔒 LÅST BAKOM 14/9: faller domen illa gäller #42:s alternativ a/b i
   stället, och det här kortet stängs oanvänt. Faller den väl ut byggs det i DEN HÄR ordningen,

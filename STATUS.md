@@ -1636,3 +1636,15 @@ TVÅ RESERVATIONER IN I DOMEN: artefakten 727,54 mm/h i rate_max_mmh (fältet st
 DECISIONS #134) sitter i ett annat fält än kalibreringen (rate_mean), men i det fält en utlösare
 skulle läsa; och TROSKLAR-VATTENPLANING §3.4 namnger inget fält alls, så faktorn måste skrivas in
 med fältnamn enligt #81 steg A. Byggt: inget. Fyra frågor ligger hos Bengt och Axel.
+
+## 2026-09-13 01:25 — Radardomen HÖLL: Bengt valde (c), kalibreringen inskriven, Axel återstår
+Bengt svarade "Kör c" på underlaget. DECISIONS #153: radarpiloten godkänd, kort #43 steg 3 passerat
+och steg 4 öppnat, kort #42:s beslutsläge avgjort till (c) — radarn ger intensiteten stationerna
+inte kan. Kort #81 steg A utfört: TROSKLAR-VATTENPLANING §3.4 omskriven från "villkorad av #43" till
+avgjord, med kalibreringsfaktorn 0,65 mätt på rate_mean_mmh över 7 931 par, riktningen utskriven
+(dividera med 0,65 ≈ ×1,54 — multiplicera halverar i stället), fältregeln att rate_max_mmh inte får
+bära tröskel förrän spannet 0–200 är rensat (artefakten 727,54, DECISIONS #134), och
+bekräftelsekurvan som underlag. Fastställande och incheckning i SAMMA varv enligt CLAUDE.md-läxan.
+KVAR FÖRE KOD, båda hos människor: Axels kontrasignering i §3.4 (§5:s dubbelsignatur) och
+utlösartröskeln i mm/h, som inte får härledas ur utfallet. Steg B i #81 öppnas först då.
+Byggt: ingen kod — steg A är per definition dokument, inte kod. Nästa: Axels signatur.
