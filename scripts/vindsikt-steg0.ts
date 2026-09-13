@@ -69,6 +69,34 @@ export const SIKTBAND: [string, number, number][] = [
   ["> 1000 m", 1000, 999999], ["500–1000", 500, 1000], ["200–500", 200, 500], ["< 200", 0, 200],
 ];
 
+// ── STATIONSVAKTEN (Bengts order 13/9, DECISIONS #164)
+//
+// ETT VÄRDETAK TAR BORT DÅLIGA AVLÄSNINGAR. DET TAR INTE BORT EN DÅLIG STATION.
+// Station 2312 bar 26 av 36 timmar över 30 m/s och 18 av 24 över 50, spridda över HELA arkivet
+// 4–13/9. Dess medelbyvind är 21,9 men medianen 6,4 — spikarna drar upp varje aggregat den
+// bidrar till, också i timmar UNDER taket där den kan rapportera 25 när sanningen är 6. G_tak
+// rör inte det. (Och 85,5 m/s är precis det tal värdevakten dokumenterade som trasig givare vid
+// sin första körning — stationen har matat W-A i nio dygn sedan dess.)
+//
+// KRITERIET ÄR FYSIK, INTE EN LISTA MED ID:N. En lista blir inaktuell i tysthet; ett fysikaliskt
+// mått fångar nästa trasiga station också. En byvind är per definition en excursion från
+// MEDELVINDEN: byvindfaktorn ligger på 1,3–1,5 över öppen terräng och når 2,5–3 i den ruggigaste.
+// Över 5 finns inte. De sju stationerna i arkivet har 37–175.
+//
+// TVÅ VAKTER MOT VAKTEN SJÄLV:
+//  · Kvoten bedöms BARA när medelvinden är minst 1 m/s. Vid vindstilla blir varje kvot instabil
+//    — en pust på 3 m/s mot ett medel på 0,2 ger 15 utan att något är trasigt.
+//  · Bara BYVINDEN diskvalificeras. Siktgivaren på samma stolpe är ett annat instrument, och att
+//    kasta den vore att slänga mätningar vi inte har skäl att misstro.
+export const BYKVOT_SVEP = [3, 5, 10] as const;
+export const BYKVOT_TAK = 5;          // byvindfaktor över detta är fysiskt omöjlig
+export const BYKVOT_MIN_MEDEL = 1.0;  // m/s — under detta är kvoten brus, inte bevis
+
+/** Ren, testbar: ska stationen diskvalificeras för byvind? */
+export function diskvalificera(varstaKvot: number, kvotTak = BYKVOT_TAK): boolean {
+  return Number.isFinite(varstaKvot) && varstaKvot > kvotTak;
+}
+
 export type Bandrad = { namn: string; timmar: number; olyckor: number };
 
 /** Olycksfrekvens per 1 000 stationstimmar, och kvoten mot referensbandet. */
@@ -130,6 +158,16 @@ if (process.argv.includes("--sjalvtest")) {
   k("översta vindbandet slutar vid G_TAK", VINDBAND[VINDBAND.length - 1][2], G_TAK);
   k("87,7 m/s hamnar utanför alla band", VINDBAND.some(([, lo, hi]) => 87.7 >= lo && 87.7 < hi), false);
   k("25 m/s ryms fortfarande", VINDBAND.some(([, lo, hi]) => 25 >= lo && 25 < hi), true);
+  // STATIONSVAKTEN mot de sju verkliga stationerna ur mätningen 13/9. Talen är avlästa ur
+  // arkivet, inte påhittade — så testet faller om kriteriet slutar fånga dem.
+  k("station 426 (kvot 175) diskas", diskvalificera(175.4), true);
+  k("station 2312 (kvot 168) diskas", diskvalificera(167.6), true);
+  k("station 1732 (lägsta av de sju, 37) diskas", diskvalificera(37.3), true);
+  // Och den viktigare halvan: en VERKLIG byvindfaktor får inte diskas.
+  k("byig terräng, faktor 3,0, behålls", diskvalificera(3.0), false);
+  k("extrem men verklig, faktor 4,9, behålls", diskvalificera(4.9), false);
+  k("taket är svepets mitt", BYKVOT_TAK, BYKVOT_SVEP[1]);
+  k("ingen kvot alls (medelvind saknas) diskar inte", diskvalificera(NaN), false);
   if (!ok) { console.error("\nSJÄLVTEST FÄLLDE."); process.exit(1); }
   console.log("\nSJÄLVTEST OK: frekvensen delar med exponeringen, monotonin fångar ett fall, vakten håller.");
   process.exit(0);
@@ -205,7 +243,8 @@ console.log(`     INTRÄFFAT. Riktningen på felet står i skriptets huvud — d
 
 // ── B. GRIND W-A
 // Exponeringen: stationstimmar per band. Olyckorna: station-timme där en olycka låg inom räckvidd.
-async function band(kolumn: string, banden: [string, number, number][], riktning: "hog" | "lag"): Promise<Bandrad[]> {
+async function band(kolumn: string, banden: [string, number, number][], riktning: "hog" | "lag",
+                    uteslutna: string[] = []): Promise<Bandrad[]> {
   const ut: Bandrad[] = [];
   for (const [namn, lo, hi] of banden) {
     const r = (await q(`
@@ -215,6 +254,7 @@ async function band(kolumn: string, banden: [string, number, number][], riktning
                (array_agg(geom ORDER BY sample_time))[1] AS geom
         FROM weather_observations
         WHERE sample_time > now() - $1 * interval '1 day' AND ${kolumn} IS NOT NULL
+          AND NOT (station_id = ANY($4::text[]))
         GROUP BY 1, 2
       ),
       i AS (SELECT * FROM st WHERE v >= $2 AND v < $3)
@@ -224,7 +264,7 @@ async function band(kolumn: string, banden: [string, number, number][], riktning
           WHERE a.geom IS NOT NULL AND a.start_time >= i.h AND a.start_time < i.h + interval '1 hour'
             AND a.geom && ST_Expand(i.geom, 0.25)
             AND ST_DWithin(a.geom::geography, i.geom::geography, ${RACKVIDD_M})))::int AS olyckor
-      FROM i`, [DAGAR, lo, hi]))[0];
+      FROM i`, [DAGAR, lo, hi, uteslutna]))[0];
     ut.push({ namn, timmar: Number(r.timmar), olyckor: Number(r.olyckor) });
   }
   return ut;
@@ -256,12 +296,39 @@ console.log(`\nG_TAK-SVEPET (TROSKLAR-VIND-SIKT §3.1) — vad varje steg skulle
     console.log(`  ⚠️ ${o.stationer30} STATIONER över 30 m/s — det kan vara väder och inte givarfel. LÄS för hand.`);
 }
 
-for (const [rubrik, kolumn, banden, riktning] of [
-  ["B1 — BYVIND", "wind_gust_ms", VINDBAND, "hog"],
-  ["B2 — SIKT", "visibility_m", SIKTBAND, "lag"],
-] as [string, string, [string, number, number][], "hog" | "lag"][]) {
+
+console.log(`\nSTATIONSVAKTEN — byvindfaktor (by / medelvind), bedömd vid medelvind ≥ ${BYKVOT_MIN_MEDEL} m/s`);
+const diskade: string[] = [];
+{
+  const kvoter = await q(`
+    SELECT station_id, max(wind_gust_ms / wind_speed_ms) AS kvot, round(max(wind_gust_ms), 1) AS max_by
+    FROM weather_observations
+    WHERE sample_time > now() - $1 * interval '1 day'
+      AND wind_gust_ms IS NOT NULL AND wind_speed_ms >= $2
+    GROUP BY 1`, [DAGAR, BYKVOT_MIN_MEDEL]);
+  console.log(`  ${kvoter.length} stationer med både byvind och medelvind i fönstret`);
+  for (const steg of BYKVOT_SVEP) {
+    const n = kvoter.filter((r) => diskvalificera(Number(r.kvot), steg)).length;
+    console.log(`    kvot > ${String(steg).padStart(2)}: ${String(n).padStart(3)} stationer skulle diskvalificeras${steg === BYKVOT_TAK ? "   ← VALT" : ""}`);
+  }
+  const ut = kvoter.filter((r) => diskvalificera(Number(r.kvot))).sort((a, b) => Number(b.kvot) - Number(a.kvot));
+  for (const r of ut) diskade.push(String(r.station_id));
+  console.log(`  DISKVALIFICERADE (${diskade.length}) — utesluts ur B1, men INTE ur B2:`);
+  for (const r of ut.slice(0, 12)) console.log(`    station ${String(r.station_id).padEnd(6)} värsta byvindfaktor ${Number(r.kvot).toFixed(1).padStart(7)} · max byvind ${r.max_by} m/s`);
+  if (ut.length > 12) console.log(`    … och ${ut.length - 12} till`);
+  console.log(`  En byvindfaktor på ${BYKVOT_TAK} är redan långt över det fysiskt möjliga (1,3–3).`);
+  console.log(`  Stationerna ovan har en trasig BYVINDGIVARE — det bör meddelas Trafikverket.`);
+}
+
+for (const [rubrik, kolumn, banden, riktning, uteslut] of [
+  ["B1 — BYVIND", "wind_gust_ms", VINDBAND, "hog", diskade],
+  // SIKTEN UTESLUTER INGEN STATION: en trasig byvindgivare säger ingenting om siktgivaren
+  // på samma stolpe. De är olika instrument, och att diskvalificera båda vore att kasta
+  // mätningar vi inte har något skäl att misstro.
+  ["B2 — SIKT", "visibility_m", SIKTBAND, "lag", []],
+] as [string, string, [string, number, number][], "hog" | "lag", string[]][]) {
   console.log(`\n${rubrik}: stiger olycksfrekvensen?`);
-  const rader = frekvens(await band(kolumn, banden, riktning));
+  const rader = frekvens(await band(kolumn, banden, riktning, uteslut));
   console.log(`  band          stationstimmar   timmar m. olycka   per 1 000 tim   kvot mot första`);
   for (const r of rader) {
     console.log(`  ${r.namn.padEnd(12)} ${String(r.timmar).padStart(14)} ${String(r.olyckor).padStart(18)} ${tal(r.per1000).padStart(15)} ${tal(r.kvot).padStart(17)}`);
