@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-13 02:15 av Claude (webben) — KASSAVAKTEN (#152) KLAR OCH BEVISAD: issue #210, larmade på egen grund. Första skarpa mätningen rättar #85: 311 min/dygn över hela månaden, prognos 59 USD mot taket 35, taket slår i 21/9. Mina fönstertal var för låga.*
+*Uppdaterad: 2026-09-13 04:45 av Claude (webben) — morgonavläsning: mitt 311-tal var månadssnittet fel använt; släpande takt ger 169 min/dygn och taket 28/9. ci nere på 21 % av minuterna (paths-ignore biter). Bron hel. Arkivet fyrdubblat över natten (40 500/dygn) men bara 1 kall station — nederbörden driver. Nycklar ej roterade.*
   💰 **RÄTTAD 13/9 (DECISIONS #160, Bengts order):** prognosen räknade på månad-till-datum, och i
   det snittet låg fem flöden som lades ner 8–9/9 (`ingest-fi`, `-no`, `-dk`, `publish-map`,
   `regn-30`). Vakten sa **21 september**; uppmätt verklig takt var 232 min/dygn senaste dygnet och
@@ -94,6 +94,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
    har körts 6 gånger sedan 9/9 (körning 3–8, senast 12/9 17:22) — men med tokenen från 9/9, inte en ny;
    och tre vakthund-issues (#109, #131, #151) är LARMPROV från DB-knappen, inte kedjebrott och inte
    rotationsbevis. Larmvägen är därmed bevisad tre gånger till. Rotationen väntar på Axel.
+  ⏰ MORGON 13/9: fortfarande ej roterat, ingen rotationsnotis i STATUS/TAVLA/DECISIONS. ⚠️ OBS för
+  framtida avläsningar: "finns en deploy-supabase-körning" duger INTE längre som indicium — jag körde
+  den själv två gånger i natt för kassavakten. Bevis är en notis om NY nyckel, inget annat.
 - [ ] 💸 **#85 Actions-takten spränger 35 USD-gränsen före 1/10 — tre snitt räcker** (mätt 9/9
   04:30 av morgonavläsningen, DECISIONS #82:s budget). UPPMÄTT sedan Actions vaknade 8/9 21:07
   → 9/9 04:31 (7,4 h): **59 körningar, ≈ 98 debiterade minuter** (varje jobb avrundas uppåt):
@@ -170,6 +173,14 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⚖️ Spakarna står kvar och är nu mer brådskande: paths-ignore i ci.yml (~20 min/dygn), cron-raden i
   healthcheck.yml (~6 min/dygn), färre och större PR:er (~40 min/dygn), eller höjt tak. De tre första
   räcker inte till 311 — höjt tak eller väsentligt färre byggen är det som avgör.
+  🌅 **MORGONAVLÄSNING 13/9 04:31.** Mitt eget tal från i natt (311 min/dygn, taket 21/9) var FEL
+  ANVÄNT: 311 är månadssnittet, som svarar på "vad har vi förbrukat" och inte på "när tar det slut".
+  Parallellsessionen fångade det och gav kassavakten en SLÄPANDE takt (kort #160) ⇒ **169 min/dygn,
+  taket slår i 28 september.** Min egen fönstermätning 12/9 18:51 → 13/9 04:31 (9,7 h): 57 körningar,
+  76 min ⇒ **189 min/dygn**, i samma härad. Månad-till-datum står kvar som förbrukningstal.
+  ci är nu nere på **21 %** av minuterna (16 av 76) mot 42 % i går — paths-ignore biter.
+  Fördelning: ingest 20 min, ci 16, healthcheck 13, grannar 12, dbknapp 7, deploy 5, cellmätning 2,
+  grind-v-a 1. En röd: ci 03:51 på grenen steg-c-radar-i-snapshoten, grön när den mergades 03:55.
 - [ ] 🗄️ **#83 GALLRING av weather_observations — måste finnas FÖRE första kalla veckan**
   (Bengts beställning 9/9 01:40; kort + förslag av Claude, mätt mot koden 9/9).
   **VARFÖR NU:** arkivdieten (DECISIONS #4: bara yta ≤ 5 °C eller nederbörd) finns i
@@ -251,6 +262,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
    📈 **12/9:** weather_obs 246 339 (11/9 04:23) → 254 129 (12/9 04:23) → 258 197 (12/9 18:27) ⇒
    **7 790 rader på dygnet, ~6 900/dygn dagtid**. meta.json: 1 kall station. Mild vecka, dieten håller
    takten nere — tredjedelen av septembersnittet. Gallringens första riktiga natt är fortfarande 16/9.
+  📈 **MORGON 13/9: takten har fyrdubblats över natten.** weather_obs 268 613 (00:23) → 275 410
+  (04:25) = 6 797 rader på 4,0 h ⇒ **~40 500/dygn**, mot 9 200 i går. meta.json säger ändå bara
+  **1 kall station** — det är alltså NEDERBÖRDEN och inte kylan som driver, dieten (#4) släpper
+  igenom båda. Talet ligger redan på vinterprojektionens 41 000/dygn som gallringen dimensionerades
+  för, i mitten av september. Värt att läsa om vid nästa avläsning innan man drar slutsatser av ett
+  enda dygn.
 - [x] ~~Fastställ trösklarna för skuggan~~ ✅ FASTSTÄLLT 2/9 (DECISIONS #61): Axels
   "kör" relayerat av Bengt i chatten, värdena oförändrade från Bengts 1/9-version inkl.
   §2-orsaksklassningen. Kvitto: huvudet i docs/TROSKLAR-SKUGGAN.md. Bocken här är
@@ -1368,6 +1385,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
    🌙 **DYGNET 11/9 16:25 → 12/9 18:51:** 20 healthcheck-körningar — **13 på pulsen, 7 på GitHub-cronen**,
    längsta mellanrum 2,00 h. Bron håller fortfarande utan hål. Cron-raden kostar ~6 min/dygn; förslaget
    att stryka den ligger kvar hos Bengt.
+  🌅 MORGON 13/9: 8 healthcheck-körningar sedan 12/9 18:26 — 5 på pulsen, 3 på GitHub-cronen,
+  längsta mellanrum 2,00 h. Bron hel. Cron-raden kostar fortfarande.
 - [x] ~~⛏️ **#48 Golvbyggena**~~ ✅ KLART 4/9 (utom bygge 3) (Bengts order 4/9: "ta hela kortet, allt självförsörjande")
   — PÅGÅR (terminalen): GOLVET.md:s byggen 1–4 med automatiseringskrav: automigrering
   vid varje ingest (db.ts/fi.ts-mönstret), healthcheck-golv på varje ny fältfamilj

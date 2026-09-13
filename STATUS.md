@@ -1706,3 +1706,17 @@ dbknapp.yml:s if-sats ⇒ en körning föll tyst i migrera-grenen och körde om 
 GitHubs 1 000-träffstak och rapporterade 94 min/dygn, alltså halva sanningen. Alla tre lagade,
 de två sista med läxa i CLAUDE.md.
 Byggt: check 8 (kort #152), dbknapp-villkoret inverterat. Nästa: Bengts val på kassans spakar.
+
+## 2026-09-13 04:45 — Morgonavläsning: mitt kassatal var fel använt, arkivet fyrdubblat över natten
+#85: 311 min/dygn som jag rapporterade i natt är MÅNADSSNITTET, vilket svarar på "vad har vi
+förbrukat" men inte på "när tar det slut". Parallellsessionen fångade det och gav kassavakten en
+släpande takt (kort #160) ⇒ 169 min/dygn och taket 28/9 i stället för 21/9. Min egen fönstermätning
+12/9 18:51 → 13/9 04:31 (9,7 h): 57 körningar, 76 min ⇒ 189 min/dygn, samma härad. ci är nere på
+21 % av minuterna mot 42 % i går — paths-ignore (kort #159, parallellsessionen) biter.
+#50: 8 körningar, 5 puls + 3 cron, längsta mellanrum 2,00 h. #86: ej roterat; och en
+deploy-supabase-körning duger inte längre som indicium eftersom jag körde den två gånger i natt.
+CI grön på main. Kartrepot 04:30: SE/FI/DK live-sha = manifest-sha, meta 1 min. bridges tyst sedan
+#32, regn-30 sedan #152. #83: weather_obs 268 613 → 275 410 på 4,0 h ⇒ ~40 500/dygn mot 9 200 i går,
+med bara 1 kall station — nederbörden driver, inte kylan. Det är redan vinterprojektionens nivå.
+Parallellsessionen har dessutom byggt steg C (radarns regnfält i snapshoten, #162) i natt.
+Byggt: inget detta varv. Nästa: avläsning 17:30 UTC.
