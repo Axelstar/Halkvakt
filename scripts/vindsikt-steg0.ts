@@ -49,8 +49,21 @@ const RACKVIDD_M = 15000;      // station ↔ olycka, samma som #89:s steg 0 (0d
 const MIN_STATIONSTIMMAR = 500; // W-A4, högsta bandet
 const MIN_OLYCKOR = 20;         // W-A4, totalt
 
+/** G_tak, rimlighetstaket ur TROSKLAR-VIND-SIKT §3.1 (Bengts order 13/9).
+ *
+ *  Körningen 13/9 gav **byvind max 87,7 m/s**. Sveriges rekord ligger kring 81 m/s och då på
+ *  fjällstation; 87,7 vid en vägstation i september är en trasig givare, inte väder. Utan tak
+ *  räknas den i det HÖGSTA bandet — samma band vars 45 stationstimmar hela domen vilar på.
+ *
+ *  Svepet är dokumentets, inte mitt: 30 · 40 · 50 m/s, och regeln är att **det lägsta som inte
+ *  kastar verkliga stormar vinner**. Därför används lägsta steget, och skriptet SKRIVER UT hur
+ *  många stationstimmar varje steg skulle kasta — så valet kan göras på mätning i stället för
+ *  på antagande när höststormarna kommit. Samma tak och samma skäl som ruttberedskapen (#124). */
+export const G_TAK_SVEP = [30, 40, 50] as const;
+export const G_TAK = G_TAK_SVEP[0];
+
 export const VINDBAND: [string, number, number][] = [
-  ["< 10 m/s", 0, 10], ["10–15", 10, 15], ["15–20", 15, 20], ["≥ 20", 20, 999],
+  ["< 10 m/s", 0, 10], ["10–15", 10, 15], ["15–20", 15, 20], [`20–${G_TAK}`, 20, G_TAK],
 ];
 export const SIKTBAND: [string, number, number][] = [
   ["> 1000 m", 1000, 999999], ["500–1000", 500, 1000], ["200–500", 200, 500], ["< 200", 0, 200],
@@ -110,6 +123,13 @@ if (process.argv.includes("--sjalvtest")) {
   k("dom: båda räcker", dom(500, 20, "svar"), "svar");
   // Banden ska täcka utan hål.
   k("vindbanden hänger ihop", VINDBAND.every((b, i) => i === 0 || b[1] === VINDBAND[i - 1][2]), true);
+  // G_tak: taket ska vara svepets LÄGSTA steg, och det ska faktiskt sitta på översta bandet.
+  // Utan den andra kontrollen kan konstanten ändras utan att bandet följer med — och då
+  // släpps den trasiga givaren in igen utan att något ser fel ut.
+  k("G_TAK är svepets lägsta steg", G_TAK, Math.min(...G_TAK_SVEP));
+  k("översta vindbandet slutar vid G_TAK", VINDBAND[VINDBAND.length - 1][2], G_TAK);
+  k("87,7 m/s hamnar utanför alla band", VINDBAND.some(([, lo, hi]) => 87.7 >= lo && 87.7 < hi), false);
+  k("25 m/s ryms fortfarande", VINDBAND.some(([, lo, hi]) => 25 >= lo && 25 < hi), true);
   if (!ok) { console.error("\nSJÄLVTEST FÄLLDE."); process.exit(1); }
   console.log("\nSJÄLVTEST OK: frekvensen delar med exponeringen, monotonin fångar ett fall, vakten håller.");
   process.exit(0);
@@ -208,6 +228,32 @@ async function band(kolumn: string, banden: [string, number, number][], riktning
     ut.push({ namn, timmar: Number(r.timmar), olyckor: Number(r.olyckor) });
   }
   return ut;
+}
+
+// G_TAK-SVEPET, skrivet ut så att valet kan göras på mätning. Dokumentets regel är "det lägsta
+// som inte kastar verkliga stormar" — och det går bara att avgöra när man ser vad varje steg
+// kastar. I september väntas allt utom den trasiga givaren ligga under 30.
+console.log(`\nG_TAK-SVEPET (TROSKLAR-VIND-SIKT §3.1) — vad varje steg skulle kasta:`);
+{
+  const over = await q(`
+    WITH st AS (
+      SELECT station_id, date_trunc('hour', sample_time) AS h, max(wind_gust_ms) AS v
+      FROM weather_observations
+      WHERE sample_time > now() - $1 * interval '1 day' AND wind_gust_ms IS NOT NULL
+      GROUP BY 1, 2)
+    SELECT count(*) FILTER (WHERE v >= 30)::int AS over30,
+           count(*) FILTER (WHERE v >= 40)::int AS over40,
+           count(*) FILTER (WHERE v >= 50)::int AS over50,
+           count(DISTINCT station_id) FILTER (WHERE v >= 30)::int AS stationer30,
+           round(max(v), 1) AS hogsta
+    FROM st`, [DAGAR]);
+  const o = over[0];
+  console.log(`  ≥ 30 m/s: ${o.over30} stationstimmar på ${o.stationer30} stationer · ≥ 40: ${o.over40} · ≥ 50: ${o.over50} · högsta ${o.hogsta} m/s`);
+  console.log(`  VALT: ${G_TAK} m/s (lägsta steget). Allt över räknas som trasig givare och ingår`);
+  console.log(`  inte i något band. Kommer höststormarna och steget visar sig kasta verkliga`);
+  console.log(`  stormar ska det höjas — med en rad i DECISIONS, före mätningen som ska använda det.`);
+  if (Number(o.over30) > 0 && Number(o.stationer30) > 2)
+    console.log(`  ⚠️ ${o.stationer30} STATIONER över 30 m/s — det kan vara väder och inte givarfel. LÄS för hand.`);
 }
 
 for (const [rubrik, kolumn, banden, riktning] of [

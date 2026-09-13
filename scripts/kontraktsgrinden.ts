@@ -164,6 +164,17 @@ export const KONTRAKT: Kontrakt[] = [
     former: [/const RADAR_MAX_ALDER_MIN\s*=\s*(\d+)/],
     golv: 2,
   },
+  {
+    // Samma tröskel under TVÅ NAMN — ruttberedskapen kallar den BY_TAK, W-A kallar den G_TAK
+    // efter dokumentets §3.1. Namnen skiljer sig, värdet får inte göra det, och en regex per
+    // namn hade missat den ena. Samma konstruktion som fuktkontraktet över språkgränsen.
+    namn: "G_tak — byvind över detta är trasig givare, inte väder",
+    varfor: "87,7 m/s ligger i arkivet. Driver taket isär mäter W-A och ruttberedskapen olika stormar.",
+    // G_TAK definieras som svepets första steg, inte som en literal — kontraktet läser därför
+    // svepets första tal. Att det steget ÄR det lägsta låses av vindsikt-steg0:s eget självtest.
+    former: [/const BY_TAK\s*=\s*(\d+)/, /const G_TAK_SVEP\s*=\s*\[\s*(\d+)/],
+    golv: 2,
+  },
 ];
 
 // ── SJÄLVTEST mot känd sanning, utan disk ──────────────────────────────────────────────

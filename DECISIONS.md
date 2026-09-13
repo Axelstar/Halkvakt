@@ -4468,3 +4468,39 @@ vore oproportionerligt.
 Att bara göra (1) hade gjort testet grönt utan att någonsin köra den riktiga frågan mot en riktig
 tabell. Att bara göra (2) hade lämnat publicera dödlig mot en saknad tabell. **Rött bygge som
 hittade ett verkligt fel är billigt; det var därför det skulle vara rött.**
+
+## #163 (13/9 2026) Vindtaket in i W-A — 87,7 m/s låg i det band domen vilar på
+
+**Beslut (Bengts order 13/9, "lägg in vindtaket"):** `scripts/vindsikt-steg0.ts` får G_tak ur
+TROSKLAR-VIND-SIKT §3.1. Översta vindbandet går från `[20, 999]` till `[20, 30]`; allt däröver
+räknas som trasig givare och ingår inte i något band.
+
+**Fyndet som utlöste det.** Körningen 13/9: **byvind max 87,7 m/s**. Sveriges rekord ligger kring
+81 m/s och då på fjällstation — 87,7 vid en vägstation i september är en givare, inte väder. Utan
+tak låg den i det HÖGSTA bandet, alltså i exakt de **45 stationstimmar** hela W-A-domen vilar på
+(kravet är 500). Dokumentet hade redan förutsett det och skrivit svepet; ingen hade satt det.
+
+**Svepet är dokumentets, inte mitt:** 30 · 40 · 50 m/s, regeln "det lägsta som inte kastar verkliga
+stormar vinner". Lägsta steget valdes, samma som ruttberedskapen redan gjort (#124). Och skriptet
+**skriver nu ut vad varje steg skulle kasta** — stationstimmar och antal stationer över 30, 40 och
+50 — så att valet kan omprövas på mätning när höststormarna kommit, i stället för på antagande.
+Larmar det på fler än två stationer över 30 m/s ska raden läsas för hand: då kan det vara väder.
+
+**Siktsentinelen rördes INTE, och det är ett aktivt beslut.** 44 % av siktvärdena är exakt
+20 000 m. Men 20 000 betyder "minst 20 km", vilket faktiskt ÄR god sikt — den ligger i
+referensbandet utan att bära någon tröskel, precis som §3.1 kräver. Att "rätta" den vore att
+kasta verkliga timmar med god sikt ur nämnaren och därmed blåsa upp varje kvot i B2.
+
+**Fyra kontroller i självtestet**, varav två är driftvakter mot framtida ändringar: att G_TAK är
+svepets lägsta steg, att översta bandet faktiskt SLUTAR vid G_TAK (annars kan konstanten ändras
+utan att bandet följer med, och givaren släpps in igen utan att något ser fel ut), att 87,7 hamnar
+utanför alla band, och att 25 m/s fortfarande ryms.
+
+**KONTRAKTSGRINDEN FICK ETT ÅTTONDE KONTRAKT, och det är av en ny sort.** Tröskeln finns nu under
+TVÅ NAMN: `BY_TAK` i ruttberedskapen och `G_TAK` i W-A. En regex per namn hade missat den ena,
+så kontraktet bär två former — samma konstruktion som fuktkontraktet använder över språkgränsen.
+Mutationsprov: `BY_TAK` driven till 40 ⇒ exit 1.
+
+**Vad det INTE gör:** W-A är fortfarande ⊘ OAVGJORT. Taket tar bort en trasig givare ur ett band
+som ändå bara har 45 av 500 krävda stationstimmar. Nyttan ligger i höst: när blåsten kommer ska
+underlaget vara rent från början, inte städat efteråt.
