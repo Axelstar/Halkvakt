@@ -1964,6 +1964,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⛔ **2e OPERATÖRSFACIT: ⊘ INGEN DOM, med mätt orsak.** `road_condition_history` står stilla sedan
   25/8, dess 33 blöta rader slutar **12 juni**, `radar_precip` börjar **2 september** — fönstren
   överlappar inte med en dag, och bara **12 av 818 segment** har någonsin bytt klass.
+  📏 **2f MÄTT 13/9 — RADARNS BIDRAG VÄXER INTE MED AVSTÅNDET** (Bengts order, DECISIONS #168).
+  Unikt bidrag per avståndsband vid r ≥ 0,5: **1,4 · 1,6 · 2,0 · 1,6 %** (0–5 · 5–10 · 10–20 ·
+  20–50 km). Vid r ≥ 0,1: 10,4 · 10,1 · 10,4 · 9,4 %. **Ingen lutning.** Radarn är begränsad av
+  sin egen sampling (13,1 % av segmenttimmarna), inte av geografin. Oenigheten växer visserligen
+  (58 → 70 %) men i riktningen **bara stationen** — asymmetrin pekar åt fel håll för hypotesen.
+  ⚠️ Bandet 20–50 km bär 25 segment och 149 jämförelser — tunt. Och fönstret är 5,3 dygn regnigt
+  september: frontregn är storskaligt, konvektiva skurar lokala. Kör om 2f i annat väder.
   ➡️ **NÄSTA: steg 3**, som väntar på operatörens klasser OCH på frosten.
   (0d säger att den inte kan dömas i höst), "Våt" ute ur unionen, RH-guarden struken.
   🥶 **OCH EN KÖRNING NÄR FROSTEN KOMMER — LARMET BYGGT OCH BEVISAT 11/9** (Bengts order).
