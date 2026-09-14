@@ -128,6 +128,99 @@ export function rapport(utfall: Utfall[]): boolean {
 
 // ── DE VAKTADE KONTRAKTEN ──────────────────────────────────────────────────────────────
 export const KONTRAKT: Kontrakt[] = [
+  // ── HEALTHCHECKENS TRÖSKLAR (kort #87, 14/9). TIDSBEGRÄNSADE MED FLIT.
+  // De tolv nedan vaktar en duplicering som ska UPPHÖRA: healthcheck.yml och vakthunden kör
+  // parallellt tills kortets Verify är uppfylld (en vecka där vakthunden larmat på ett
+  // framkallat fel i var och en). Då raderas healthcheck.yml, kopian blir en, och de här
+  // kontrakten ska tas bort i SAMMA commit — annars faller de på golvet och ser ut som drift.
+  //
+  // FORMEN ÄR MEDVETET ANNORLUNDA: talet är PINNAT i mönstret i stället för fritt fångat.
+  // Ändras en kopia försvinner den ur räkningen och GOLVET fäller — vilket är rätt larm, och
+  // det enda som fungerar när de två filerna skriver samma tröskel med olika variabelnamn.
+  {
+    namn: "Grannarkivens ålder — fi/dk/no",
+    varfor: "Flyttad från healthcheck.yml till vakthunden (#87). Under parallellveckan kör båda; driver talet larmar den ena på ett läge den andra kallar friskt.",
+    former: [/> (120)\b/],
+    filer: /healthcheck\.ts|functions\/vakthund\//,
+    golv: 2,
+  },
+  {
+    namn: "Gränsgolvet FI — nåbara stationer",
+    varfor: "Golvet är MÄTT (16–20 vid mätningen), inte valt. Sänks en kopia tystnar gränsområdena i den ena implementationen.",
+    former: [/\["fi", (\d+)\]/],
+    filer: /healthcheck\.ts|functions\/vakthund\//,
+    golv: 2,
+  },
+  {
+    namn: "Gränsgolvet NO — nåbara stationer",
+    varfor: "Samma sak för Norge (mätt 42). Två kopior under parallellveckan.",
+    former: [/\["no", (\d+)\]/],
+    filer: /healthcheck\.ts|functions\/vakthund\//,
+    golv: 2,
+  },
+  {
+    namn: "Gränsradien — hur nära svensk väg en grannstation räknas",
+    varfor: "40 km är gränssnapshotens definition. Driver den mäter de två implementationerna olika populationer.",
+    former: [/se\.g::geography, (\d+)\)/],
+    filer: /healthcheck\.ts|functions\/vakthund\//,
+    golv: 2,
+  },
+  {
+    namn: "Fältgolvet vind — stationer med vindfält",
+    varfor: "Larmar bara om fältet NÅGONSIN skördats. Driver golvet dör fältet tyst i den ena.",
+    former: [/vind_nu\) < (\d+)/],
+    filer: /healthcheck\.ts|functions\/vakthund\//,
+    golv: 2,
+  },
+  {
+    namn: "Fältgolvet sikt — stationer med siktfält",
+    varfor: "Samma konstruktion som vindens.",
+    former: [/sikt_nu\) < (\d+)/],
+    filer: /healthcheck\.ts|functions\/vakthund\//,
+    golv: 2,
+  },
+  {
+    namn: "Arkivvaktens fönster — hur länge ett tillstånd får vara oarkiverat",
+    varfor: "Tre timmar = tre passerade ingestkörningar, alltså förlorat och inte försenat. Formen är bunden till modified_time-kontexten: en bredare form fångade elva orelaterade timintervall och lämnade ett hål där en ändring kunde passera under golvet.",
+    former: [/modified_time < now\(\) - interval '(3) hours'/],
+    filer: /healthcheck\.ts|functions\/vakthund\//,
+    golv: 4,
+  },
+  {
+    namn: "Kameraräknarens golv",
+    varfor: "En halv synk ser inte trasig ut, den ser bara mindre ut.",
+    former: [/(?:cameras|kameror)\) < (\d+)/],
+    filer: /healthcheck\.ts|functions\/vakthund\//,
+    golv: 2,
+  },
+  {
+    namn: "Segmenträknarens golv",
+    varfor: "Samma sak för väglagssegmenten.",
+    former: [/(?:segments|segment)\) < (\d+)/],
+    filer: /healthcheck\.ts|functions\/vakthund\//,
+    golv: 2,
+  },
+  {
+    namn: "Kartans meta.json — högsta ålder",
+    varfor: "Kartsajtens fil, ett ANNAT led än appens manifest. Driver gränsen ser den ena en frusen karta som färsk.",
+    former: [/> (90)\b/],
+    filer: /healthcheck\.ts|functions\/vakthund\//,
+    golv: 2,
+  },
+  {
+    namn: "Kameralagrets golv",
+    varfor: "Publiceringen är fail-soft, så ett permanent TRV-fel lämnar annars en gammal fil kvar i tysthet.",
+    former: [/(?:n|antal) < (500)\b/],
+    filer: /healthcheck\.ts|functions\/vakthund\//,
+    golv: 2,
+  },
+  {
+    namn: "Kameralagrets högsta ålder i dygn",
+    varfor: "Generös med flit — vakten är mot 'trasigt för evigt', inte mot en sen körning.",
+    former: [/(?:ageD|dygn) > (7)\b/],
+    filer: /healthcheck\.ts|functions\/vakthund\//,
+    golv: 2,
+  },
   {
     namn: "Snapshotens halkfilter — vilka ord släpper in ett segment till motorn",
     varfor: "publicera/index.ts är BUNTEN av snapshot-core.ts. Skiljer de sig kör driften en annan filtrering än proven.",
