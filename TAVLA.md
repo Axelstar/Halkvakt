@@ -363,6 +363,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ### Bengt
 - [ ] 🧩 **#159 INTEGRATIONSKARTAN — tre av våra egna regler står i vägen för produkten**
+  🔎 **§5.6 TILLAGD 14/9 (DECISIONS #183)** på Bengts kontrollfråga *"är detta inarbetat i kartan"*.
+  Sju av sju avvikelser fanns där — men **förbehållen stod bara i chatten**, och ett av dem dölde ett
+  för starkt påstående: vektortalen **6/3/23 är ett TAK** (vektorer som BÄR faran), inte en uppmätt
+  kostnad. Det enda som gör dem till kostnader är att köra dem — §5.5 steg 3.
+  ⚠️ **§5.3:s premiss kan falla:** "F1 är gratis" vilar på att båda portarna läser snapshoten OTYPAT.
+  Byts en port till typad avkodning slutar ett nytt fält vara ofarligt.
   🔧 **MOTORN OCH FOGARNA INARBETADE 14/9 (DECISIONS #182)** på Bengts fråga om kartan tar hänsyn
   till det som FAKTISKT kör. Svaret var nej — kartan var skriven från skuggans sida. Ny §4 (motorn
   som den ser ut, läst ur koden) och §5 (fogarna).

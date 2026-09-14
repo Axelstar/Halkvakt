@@ -5414,3 +5414,32 @@ andra storheten. Två olika saker med samma ord, och motorn har bara den första
 0 segment, 0 broar, 0 SMHI-ytor. I september har motorn i praktiken bara `icing_point` och kamerorna.
 
 Kartan är nu 13 paragrafer, 508 rader. Inget kortnummer ur föregående version saknas.
+
+## #183 (14/9 2026) Metodförbehållen in i kartan — och ett tal som var för starkt
+
+**Bengts kontrollfråga 14/9:** *"är detta inarbetat i integrationskartan"* om det jag rapporterat i chatten.
+
+**Kontrollerat post för post mot filen. Sju av sju avvikelser fanns där** — fogen som läcker (§5.2),
+"lägg till, ersätt aldrig" (§5.3), v11 som grind (§5.1), två sorters räckvidd (§4.2), de olästa fälten
+(§5.2), `live.json` 05:10 (§4.3), sekvensen F1 före F4 (§5.5).
+
+**Men REservationerna gjorde det inte, och en av dem döljde ett överdrivet påstående.** Kartan sade
+*"F4:s tal är räknade, inte gissade"* om 6/3/23. Talen kommer av att söka efter `icing_point` respektive
+`slippery_segment` i `engine/vectors/` — de räknar alltså vektorer som **bär** en sådan fara, vilket är
+en **övre gräns** för vad en regeländring kan rubba. En vektor som bär en ispunkt kan mycket väl ge
+samma utfall efter ändringen. Formuleringen gjorde ett tak till en kostnad.
+
+**Ny §5.6 "Vad §4 och §5 vilar på — och vad de inte bevisar":** en tabell där varje påstående står mot
+sin källa och mot vad den INTE täcker. Två rader är viktigare än de andra:
+
+- **Vektortalen är ett tak, inte en kostnad.** Det enda som gör dem till kostnader är att köra dem —
+  alltså steg 3 i §5.5, som därmed inte är byråkrati utan mätpunkten.
+- **§5.3:s premiss kan falla.** "F1 är gratis" vilar på att båda portarna läser snapshoten OTYPAT
+  (`org.json.JSONObject`, `JSONSerialization`). Byts någon port till typad avkodning slutar ett nytt
+  fält vara ofarligt, utan att någon text någonstans säger det.
+
+**Och kostnadskolumnerna mäter FOG, inte arbete.** Tillståndsskattaren och kallplatslagret har samma
+fog och helt olika vägar dit.
+
+Läxan är densamma som för registret (#181): **ett förbehåll som bara står i chatten finns inte.** Det
+gäller även — kanske särskilt — förbehåll mot mina egna siffror.
