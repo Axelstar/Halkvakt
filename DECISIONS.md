@@ -5137,3 +5137,53 @@ rutterna eller om facitstacken bara är gles i norr. **Ingen radie ändras innan
 (Supabases WORKER_LIMIT — funktionen slog i CPU- eller minnestaket). Skuggmotorn roterar redan tre
 rutter per varv just på grund av CPU-taket (läxan 29/8). Två träffar på tre timmar är inte ett larm,
 men det är värt en rad någonstans innan någon lägger till arbete i den funktionen.
+
+## #177 (14/9 2026) Rotorsaken bakom det tomma kamerafacit: skuggloggens larm har ingen position
+
+**Bengts order 14/9, "mät radien".** Mätningen gjordes — och svarade på en annan fråga än den
+ställdes: **radien var aldrig problemet.**
+
+**FACITRADIEN GAV ⊘, OCH TOMHETEN VAR LEDTRÅDEN.** `scripts/facitradien.ts` hämtade 749
+väglagskameror ur kartlagret och frågade skuggloggen efter larmpositioner. Svaret: **0 skugglarm i
+Sverige med position** — trots 756 larmande körningar på fjorton dygn. Ett tomt material i en fråga
+vars population bevisligen finns är inte ett underlagsproblem, det är ett fynd.
+
+**BEVISAT PÅ LAGRAD DATA, inte härlett ur typerna.** En verklig rad ur `shadow_log`:
+
+```json
+{"t": 1705, "id": "cam:22029010", "kind": "camera", "text": "Fartkamera om 500 meter."}
+```
+
+Och över hela fönstret: **2 103 larm, 0 med `lon`, 0 med `distanceM`.**
+
+**VARFÖR.** Motorns `Alert` (`engine/src/types.ts:77`) bär `t`, `hazardId`, `kind`, `distanceM` och
+`text` — **ingen koordinat**. Skuggmotorn skriver ändå `lon: a.lon, lat: a.lat` (`main.ts:205`) på
+fält som inte finns. I TypeScript hade det varit ett typfel; edge-funktionen deployas utan
+typkontroll, så det blir `undefined`, och `JSON.stringify` tappar nycklarna tyst.
+
+**OCH DÄRMED FALLER HELA KEDJAN PÅ EN RAD:** `archiveFacit` räknar
+`haversineM({lon: undefined, lat: undefined}, kamera)` ⇒ **NaN** ⇒ `d < bd` är falskt för varje
+kamera ⇒ `best` förblir null ⇒ skälet blir *"ingen kamera inom 15 km"*, precis som rättelse 3
+rapporterade. **Bucketen har aldrig kunnat fyllas.**
+
+**TRE SLUTSATSER, och den mittersta är den obehagliga:**
+
+1. **Radien 15 km är oprövad, inte fel.** Den har aldrig fått en giltig position att mäta mot.
+   Ingen radie ändras; frågan går inte att ställa förrän positionerna finns.
+2. **MITT EGET INSTRUMENT HADE SVARAT FEL.** Tystnadsfelets T3 (#171) frågar om något skugglarm
+   låg nära facit i tid och rum. Utan positioner hittar den aldrig ett larm och klassar därför
+   **varje** bekräftat halttillfälle som en **tyst miss** — ett svar som ser ut som en mätning men
+   är en artefakt. Det spelade ingen roll i dag (facit är tomt) och hade spelat all roll i vinter.
+   T3 har nu en vakt som **vägrar svara** i stället för att svara fel.
+3. **Min apikey-hypotes (#173) är fortfarande oprövad och nu också oviktig** — koden når inte
+   uppladdningen och har aldrig gjort det. Rättelsen skadar inget och kan stå kvar.
+
+**ÅTGÄRDEN ÄR INTE MIN ATT GÖRA.** `main.ts` måste slå upp faran på `hazardId` bland `hazards` och
+skriva dess position — plus `distanceM`, som Alert faktiskt bär och som skuggmotorn i dag kastar
+bort. Det är en ändring i skuggmotorns egen fil, men den ändrar vad skuggloggen INNEHÅLLER, och
+skuggloggen är underlaget för mars-domen. Eget kort, och Axels ögon på formen.
+
+**LÄXAN, och den är generell:** ett fält som skrivs från en typ som saknar det blir `undefined`,
+försvinner tyst ur JSON, och syns först när någon frågar efter det tre veckor senare. Kedjan såg
+frisk ut i varje led som hade en logg. Det var först när en gren TVINGADES säga varför den gav upp
+som frågan kunde ställas alls.

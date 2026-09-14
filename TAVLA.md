@@ -363,6 +363,21 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ### Bengt
 - [ ] 📷 **#157 KAMERAFACIT ÄR TOMT — noll objekt efter 5 657 skuggkörningar**
+  🎯 **ROTORSAKEN FUNNEN 14/9 (DECISIONS #177): SKUGGLOGGENS LARM HAR INGEN POSITION.**
+  Bevisat på lagrad data: **2 103 larm på fjorton dygn, 0 med `lon`, 0 med `distanceM`**. En
+  verklig rad: `{"t":1705,"id":"cam:22029010","kind":"camera","text":"Fartkamera om 500 meter."}`
+  📐 **VARFÖR:** motorns `Alert` (types.ts:77) bär ingen koordinat, men skuggmotorn skriver ändå
+  `lon: a.lon` (main.ts:205). Edge-funktionen deployas utan typkontroll ⇒ `undefined` ⇒
+  `JSON.stringify` tappar nyckeln tyst. `archiveFacit` räknar då haversine på NaN, hittar aldrig
+  en kamera, och rapporterar "ingen kamera inom 15 km". **Bucketen har aldrig kunnat fyllas.**
+  ✅ **RADIEN ÄR OPRÖVAD, INTE FEL** — den har aldrig fått en giltig position att mäta mot.
+  Mätknappen `facitradien` finns och kan köras om den dagen positionerna är på plats.
+  🚨 **OCH TYSTNADSFELET (#98) HADE SVARAT FEL:** utan positioner hittar T3 aldrig ett larm och
+  klassar VARJE facit-tillfälle som tyst miss — en artefakt som ser ut som en mätning. Spelade
+  ingen roll i dag (facit tomt), hade spelat all roll i vinter. **T3 vägrar nu svara i stället.**
+  ⏭️ **ÅTGÄRDEN ÄR AXELS FORM:** `main.ts` måste slå upp faran på `hazardId` och skriva dess
+  position plus `distanceM` (som Alert faktiskt bär och skuggmotorn kastar bort). Det ändrar vad
+  SKUGGLOGGEN innehåller, och skuggloggen är mars-domens underlag. Eget kort.
   🎯 **SKÄLET ÄR FRAMME 14/9 — OCH DET VAR INTE APIKEY** (DECISIONS #176). pg_net lagrar
   skuggmotorns svar i `net._http_response`, och där står det: `"facit":0,"facitSkal":
   ["ingen kamera inom 15 km"]`. Larmet inträffar, TRV svarar med kameror — men närmaste

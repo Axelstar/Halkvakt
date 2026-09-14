@@ -183,6 +183,24 @@ await avsnitt("T3 VAD SYSTEMET SA", async () => {
     + `${String(sl.forst).slice(0, 16)} → ${String(sl.sist).slice(0, 16)}`);
   console.log(`  ⚠️ SKUGGAN TÄCKER RUTTER, INTE LANDET. Ett facit-tillfälle som inte ligger vid en`);
   console.log(`     skuggrutt har ingen skuggdom alls — det är "okänt", inte "tyst".`);
+
+  // VAKT MOT ETT SYSTEMATISKT FEL SVAR (kort #157, mätt 14/9): skuggloggens larm saknar
+  // POSITION. 2 103 larm på fjorton dygn, noll med lon — motorns Alert-typ bär `t`, `hazardId`,
+  // `kind`, `distanceM` och `text`, men ingen koordinat, och skuggmotorn skriver `lon: a.lon`
+  // på ett fält som inte finns. Utan den här vakten hittar frågan nedan aldrig något larm och
+  // klassar därför VARJE facit-tillfälle som en tyst miss — ett svar som ser ut som en mätning
+  // men är en artefakt. Hellre ⊘ än ett tal som pekar åt fel håll.
+  const [pos] = await q(`SELECT count(*) FILTER (WHERE a ? 'lon')::int AS med_pos,
+      count(*)::int AS alla
+    FROM shadow_log s, jsonb_array_elements(s.alerts) a
+    WHERE s.run_at > now() - $1 * interval '1 day'`, [DAGAR]);
+  console.log(`  larm med position: ${pos.med_pos} av ${pos.alla}`);
+  if (!Number(pos.med_pos)) {
+    console.log(`  ⊘ KAN INTE AVGÖRAS — INGET larm i skuggloggen bär en position (kort #157).`);
+    console.log(`     Frågan "teg systemet?" går inte att ställa mot larm utan koordinater, och`);
+    console.log(`     att räkna alla som tysta vore ett svar som ser ut som en mätning.`);
+    return;
+  }
   if (!inomRackvidd.length) { console.log("  ⊘ inget facit inom räckvidd att pröva."); return; }
   for (const f of inomRackvidd) {
     const sa = (await q(`SELECT count(*)::int AS n FROM shadow_log s, jsonb_array_elements(s.alerts) a
