@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-13 17:40 av Claude (webben) — kvällsavläsning ur kassavaktens egna tal: 15,23 av 35 USD, släpande 169 min/dygn, taket 28/9, issue #210 rätteligen öppen. Arkivtakten tillbaka på 21 281/dygn (mitt 40 500 var en fyratimmarsextrapolering). NYTT KORT #154: steg C:s regnfält når inte normalklassade blöta segment.*
+*Uppdaterad: 2026-09-14 08:10 av Claude (webben) — 🔴 MÅNDAGSSERIEN KÖRDE INTE (kort #160): ingen av de sex, alla aktiva, naken GitHub-cron levererade inte — och mätvakten är blind för en missad måndag i 10,5 dygn. Kassan: släpande takt upp till 200 min/dygn, takdatum framflyttat till 26/9.*
   💰 **RÄTTAD 13/9 (DECISIONS #160, Bengts order):** prognosen räknade på månad-till-datum, och i
   det snittet låg fem flöden som lades ner 8–9/9 (`ingest-fi`, `-no`, `-dk`, `publish-map`,
   `regn-30`). Vakten sa **21 september**; uppmätt verklig takt var 232 min/dygn senaste dygnet och
@@ -98,6 +98,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   framtida avläsningar: "finns en deploy-supabase-körning" duger INTE längre som indicium — jag körde
   den själv två gånger i natt för kassavakten. Bevis är en notis om NY nyckel, inget annat.
   ⏰ KVÄLL 13/9: ingen rotationsnotis i STATUS, TAVLA eller DECISIONS. Oförändrat.
+  ⏰ MORGON 14/9: ingen rotationsnotis. Oförändrat.
 - [ ] 💸 **#85 Actions-takten spränger 35 USD-gränsen före 1/10 — tre snitt räcker** (mätt 9/9
   04:30 av morgonavläsningen, DECISIONS #82:s budget). UPPMÄTT sedan Actions vaknade 8/9 21:07
   → 9/9 04:31 (7,4 h): **59 körningar, ≈ 98 debiterade minuter** (varje jobb avrundas uppåt):
@@ -188,6 +189,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   takdatum **28 september**. Issue #210 står öppen, vilket är rätt: prognosen når fortfarande taket.
   Hennes egen "takten ändras"-varning går, eftersom de två takterna skiljer mer än 25 % — marken
   under datumet rör sig, och det säger hon själv i larmet.
+  🌅 MORGON 14/9 ur kassavaktens egen rad 05:08: **3 976 min sedan 1/9 över 2 968 körningar**,
+  debiterat 1 976 min. Släpande takt **200 min/dygn** (upp från 169), månadssnitt 301, och takdatumet
+  har flyttats fram två dygn till **26 september**. Issue #210 står kvar öppen. Takterna divergerar
+  fortfarande, så hennes egen varning om gungande mark går.
 - [ ] 🗄️ **#83 GALLRING av weather_observations — måste finnas FÖRE första kalla veckan**
   (Bengts beställning 9/9 01:40; kort + förslag av Claude, mätt mot koden 9/9).
   **VARFÖR NU:** arkivdieten (DECISIONS #4: bara yta ≤ 5 °C eller nederbörd) finns i
@@ -282,6 +287,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⚠️ Samma feltyp som mitt 311-tal i natt: kort fönster utsträckt till ett dygn. Två gånger på ett
   dygn. Regel för kommande avläsningar: extrapolera aldrig ett arkivtal från under 12 timmar, och
   sätt alltid helt-dygn-talet bredvid.
+  📉 MORGON 14/9, mätt över 14,0 h enligt regeln (aldrig under 12): weather_obs 282 370 (13/9 16:23)
+  → 289 958 (14/9 06:23) = 7 588 rader ⇒ **~13 000/dygn**. Kalla stationer 3 (var 1 i går). Takten
+  ligger kvar långt under vinterprojektionens 41 000.
 - [x] ~~Fastställ trösklarna för skuggan~~ ✅ FASTSTÄLLT 2/9 (DECISIONS #61): Axels
   "kör" relayerat av Bengt i chatten, värdena oförändrade från Bengts 1/9-version inkl.
   §2-orsaksklassningen. Kvitto: huvudet i docs/TROSKLAR-SKUGGAN.md. Bocken här är
@@ -688,6 +696,29 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [ ] 🔴 **#160 MÅNDAGSSERIEN KÖRDE INTE 14/9 — och mätvakten kan inte se det förrän om tio dygn**
+  (morgonavläsningen 14/9 08:00). **DET HÄR ÄR 7/9 OM IGEN, och den gången tog det fem dygn innan en
+  människa råkade titta.**
+  **FAKTA:** ingen av de sex körde — grind-a 05:40, smhi-prov 06:00, cell-matning-v3 06:20,
+  trv-bevakning 06:40, hojd-prov 07:00, grind-v-a 07:20. Klockan 08:00 fanns 40 körningar på dygnet
+  och noll ur serien. Alla sex flöden är `state=active` och cron-raderna står rätt på main. Det är
+  alltså inte avstängning och inte ett schemafel.
+  **ROTORSAK: naken GitHub-cron levererar inte.** #70 mätte 40 % leverans. Att healthchecken lever
+  beror inte på tur — den fyras av PULSKLOCKAN ur pg_cron, och en av dess egna cron-körningar kom i
+  dag 39 min sen (bokad 04:23, levererad 05:02). Måndagsserien har ingen puls bakom sig.
+  **OCH VAKTEN SER DET INTE.** Mätvakten (check 6) bevakar precis rätt sex flöden, men larmar på
+  `ålder > kadens × 1,5`. För ett veckojobb är kadensen 168 h ⇒ **tolerans 252 h = 10,5 dygn.** Dess
+  kommentar 07:07 i dag nämner bara `marknadsforing`. Vakten som byggdes för exakt det här felet är
+  blind för det i tio och ett halvt dygn — sämre än de fem dygn det tog en människa 7/9.
+  🔑 **TVÅ ÅTGÄRDER, båda Bengts beslut — jag har inte rört koden:**
+  · **(a) Lägg de sex på pulsklockan**, som healthcheck, ingest och grannar redan ligger. Beprövad
+    väg, noll nya minuter, och den fyrar oavsett vad GitHub-cronen gör.
+  · **(b) Ge mätvakten en FAST frist i stället för en multiplikator** — t.ex. `kadens + 3 h`. För ett
+    timjobb blir det nästan oförändrat; för ett veckojobb blir en missad måndag synlig samma kväll i
+    stället för om tio dygn. En multiplikator skalar tolerans med kadens, vilket är precis fel håll:
+    ju sällsyntare mätningen är, desto viktigare är varje enskild körning.
+  Verify: (a) nästa måndag går alla sex utan knapptryck; (b) ett flöde vars körning uteblir en gång
+  ger en rad i mätvakten inom ett dygn, prövat med matvaktprov.
 - [ ] 🕳️ **#154 STEG C:s REGNFÄLT NÅR INTE DE SEGMENT VATTENPLANINGEN SITTER PÅ** (fynd i
   kvällsavläsningen 13/9, oprövat av mig i kod — lämnas till den som äger steg C).
   `publish/snapshot-core.ts` sätter `regn` på raderna ur väglagsfrågan, och den frågan hämtar bara
@@ -1654,6 +1685,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🌆 KVÄLL 13/9: 10 healthcheck-körningar sedan 04:23 — 7 puls, 3 cron, längsta mellanrum 2,00 h.
   Kuriosa värd att notera: 16:23 fyrade puls OCH cron samma minut, alltså två körningar på samma
   mätning. Ännu ett argument för att stryka cron-raden.
+  🌅 MORGON 14/9: 12 healthcheck-körningar sedan 13/9 16:23 — 8 puls, 4 cron, längsta mellanrum
+  2,00 h. En av cron-körningarna kom 39 min sen (bokad 04:23, levererad 05:02); pulsen höll tiden.
+  Det är samma leveransproblem som fällde måndagsserien i dag, se kort #160.
 - [x] ~~⛏️ **#48 Golvbyggena**~~ ✅ KLART 4/9 (utom bygge 3) (Bengts order 4/9: "ta hela kortet, allt självförsörjande")
   — PÅGÅR (terminalen): GOLVET.md:s byggen 1–4 med automatiseringskrav: automigrering
   vid varje ingest (db.ts/fi.ts-mönstret), healthcheck-golv på varje ny fältfamilj
