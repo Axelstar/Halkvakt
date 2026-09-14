@@ -363,6 +363,19 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ### Bengt
 - [ ] 🧩 **#159 INTEGRATIONSKARTAN — tre av våra egna regler står i vägen för produkten**
+  🔴 **RÄTTAD 14/9 PÅ BENGTS INVÄNDNING (DECISIONS #180): GRIND A HAR INTE FALLIT.** Jag citerade
+  körningen FÖRE givarvakten och marginalvakten. Med båda på plats (#131, 1 943 punkter): MAE
+  **0,85** (A1 KLARAR), grova **5,1 %** (A2 OAVGJORT), frysklassfel **0,3 %** (A3 KLARAR) — domen
+  är ⏳ INGEN DOM, uttryckligen *inte ett nej*. Talen **stiger monotont** med ankaravståndet:
+  0,33 · 0,78 · 0,85 · 0,89.
+  🔑 **DET ÄNDRAR L4 I GRUNDEN:** ankaret är inte en tom ruta utan en MÄTT avståndsberoende
+  osäkerhetskurva — precis den storhet räckviddslagret behöver. Det som saknas är **knappen**, inte
+  mekanismen: vad som gör kurvan brantare eller flackare en enskild natt.
+  ⚖️ **NY §8 I KARTAN: ett nej gäller en ROLL, inte en del.** Prejudikatet finns: kamerorna
+  underkändes som täckning och blev BILDFACIT. Bromsen mot önsketänkande: en ny roll kräver en ny
+  fråga, skriven före mätningen, med egen grind. **Ingen del återinförs på hopp.**
+  📋 **De sju underkända har alla en obesvarad fråga i det sammanvägda**, och två kräver inte vinter:
+  höjden som VARIANSpredikator, och radarns SEGMENTUPPLÖSNING (mätt där stationen stod 6,7 km bort).
   **Bengts order 14/9:** *"delarna skulle integrera och tillsammans bli starkare … om vi byggt fel
   så att det motverkar syftet vill jag att du särskilt pekar på det."* Svaret:
   `docs/INTEGRATIONSKARTAN.md`.

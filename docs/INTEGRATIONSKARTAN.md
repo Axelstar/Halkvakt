@@ -31,7 +31,7 @@ nämnaren, och den är också nyckeln till hur de ska sitta ihop.
 | **L1 TROVÄRDIGHET** | Får vi tro på mätvärdet? | #75 givarvakten · stationsvakten (#164) · G_tak (#163) · värdevakten · R-A5 | ✅ i drift |
 | **L2 TILLSTÅND** | Vad **är** ytan? | tillståndsskattaren (#89 steg 2) · radarns `regn` (#81 C) · operatörens klass · **#45 våtbulb → regn/slask/snö** · **#42 vattenfilm** | 🔨 blöt/torr byggt, resten kvar |
 | **L3 UTVECKLING** | Vart är den på **väg**? | trendarkivet (#88) · övergångarna (#89 a) · **#46 rimfrost** · N_varning (SMHI) | 🔨 mätt, ingen regel |
-| **L4 RÄCKVIDD** | Hur långt **gäller** mätningen? | grind A:s ankare (#38b) · SMHI molnmängd (#95) · **#91 kallplatslagret** | ⚠️ **saknas i praktiken** |
+| **L4 RÄCKVIDD** | Hur långt **gäller** mätningen? | grind A:s ankare (#38b) · SMHI molnmängd (#95) · **#91 kallplatslagret** | ⚠️ **ankaret mätt och dugligt, knappen saknas** |
 | **L5 ALLVAR & RÖST** | Vad **sägs**, och hur illa är det? | #153 sammanvägt allvar · spärren (#165) · #90 riskmodifierare | ⛔ **finns inte** |
 
 **Ordningen är inte godtycklig.** L1 gatar allt. L2 och L3 multiplicerar varandra. L4 avgör hur långt
@@ -191,9 +191,67 @@ allvar (4.1), modellerade storheter får inte utlösa (4.2), och grindarna döme
 kombinationer (4.3). Ingen av dem är ett kodfel. Alla tre är beslut, och alla tre är Bengts och Axels
 att ompröva.
 
-**Räckviddslagret (L4) är dessutom praktiskt tomt** — SMHI mättes som fel sak, höjden återvinner noll,
-kallplatslagret är inte byggt. Utan L4 kan L2×L3 bara gälla där en station står, och då har vi inte
-byggt "tre kilometer fram" utan "vid stationen, med minne".
+**RÄTTAT 14/9 EFTER BENGTS INVÄNDNING — jag citerade en överspelad mätning.** Första utkastet sade
+att L4 var praktiskt tomt och att grind A hade fallit. **Det är fel.** Domen jag citerade (MAE 1,06,
+grova 10,7 %) gäller körningen FÖRE #75:s givarvakt och marginalvakten. Med båda på plats
+(DECISIONS #131, 1 943 punkter):
+
+| band | MAE | grova > 2 °C | frysklassfel |
+| :-- | --: | --: | --: |
+| 0–7 km | **0,33 °C** | 0,0 % | 0,0 % |
+| 7–15 km | 0,78 | 3,1 % | 0,0 % |
+| 15–20 km | 0,85 | 6,4 % | 0,0 % |
+| > 20 km | 0,89 | 5,4 % | 0,4 % |
+| **totalt** | **0,85** | **5,1 %** | **0,3 %** |
+
+**A1 KLARAR** (0,85 mot 1,0, marginal ±0,05) · **A2 OAVGJORT** (5,1 mot 5,0) · **A3 KLARAR**
+(0,3 mot 10). Domen är ⏳ INGEN DOM — inte ett nej.
+
+**Och anomalin är borta:** 0,33 · 0,78 · 0,85 · 0,89 **stiger monotont med ankaravståndet**, som
+fysiken kräver. Det bandet som var sämst av alla fyra är nu näst bäst.
+
+**Det ändrar L4 i grunden.** Ankaret är inte en tom ruta — det är en **mätt avståndsberoende
+osäkerhetskurva**, och det är precis den storhet räckviddslagret behöver. Vad som saknas är inte
+mekanismen utan **knappen**: vad som gör kurvan brantare eller flackare en enskild natt (moln, vind,
+terräng). Vi har alltså inte "vid stationen, med minne" — vi har ett ankare vars fel vi känner som
+funktion av avstånd, och saknar bara det som modulerar det.
 
 **Det är fortfarande mycket mer än i dag.** Men det är inte produkten Bengt beskriver, och skillnaden
 sitter i L4 och L5 — inte i det vi byggt de senaste dygnen.
+
+
+---
+
+## 8. Ett nej gäller en ROLL, inte en del
+
+**Bengts invändning 14/9:** *"är det inte så att vi får lyfta in alla underkända och bedöma dem på
+nytt — även om de förlorade per se har de något att bidra med i det sammanvägda."*
+
+Det är rätt, och prejudikatet finns redan i protokollet: **kamerorna** underkändes som täckning
+(744 st, 99 % inom 1 km från en station, Norrlands lucka oförändrad) — och blev **bildfacit**, en av
+tre facitkällor systemet i dag vilar på. Samma del, annan roll, avgörande värde.
+
+**Men principen behöver en broms, annars blir den ett sätt att aldrig ta ett nej:**
+
+> Ett underkännande gäller den **fråga som ställdes**. En del får prövas i en ny roll — men den nya
+> rollen kräver en **ny fråga, skriven före mätningen, med egen grind**. Ingen del återinförs på hopp.
+
+### De sju underkända, och deras obesvarade fråga i helheten
+
+| Del | Vad som underkändes (mätt) | Obesvarad fråga i det sammanvägda |
+| :-- | :-- | :-- |
+| **SMHI** | som ANKARE: MAE 1,05 → 1,20 | som **räckviddsknapp** (L4): gör molnmängden grind A:s felkurva brantare klara nätter? Aldrig mätt |
+| **Höjden** | återvinner noll på YTtemperatur | (a) #45 använder **luft**, inte yta — annan storhet. (b) förutsäger höjden **var modellen är opålitlig** i stället för att korrigera medelvärdet? |
+| **Kamerorna** | som TÄCKNING: 6 av 744 ger nytt ankarläge | ✅ redan omrollad till **bildfacit** — prejudikatet |
+| **RH-guarden** | som FILTER: fuktigheten stiger efter regn | den **stigningen** är i sig ett tillstånd — förutsättningen för kondensation och rimfrost (#46) |
+| **Operatörens "Våt"** | som PROXY: omätbar eftersläpning | som **facit** i stället för indata — samma skifte som kamerorna gjorde |
+| **`rate_max`** | som VÄRDE: 727 mm/h, spärrat | **kvoten max/mean** är en formsignal: konvektiv skur mot frontregn. Exakt vad #45 behöver för att skilja lokal snöby från utbrett regn |
+| **Radarns bidrag** | växer inte med avståndet (platt ~1,5 %) | mätt där en station står **6,7 km** bort i median. Radarns roll är **upplösning per sträcka**, inte mer väta — aldrig mätt som det |
+
+**Två av dem har dessutom en mätbar fråga som inte kräver vinter:** höjden som varianspredikator och
+radarns segmentupplösning. Båda kan ställas mot befintligt arkiv.
+
+**Och en varning som följer av samma logik:** #100:s dämpning och den breda SMHI-regeln underkändes
+också — men deras kärnor flyttades redan (till #153 respektive `N_varning`). Det är formen: **nejet
+stänger rollen, kärnan flyttar.** Det som inte får hända är att en kärna stryks utan att någon frågar
+vart den tog vägen.
