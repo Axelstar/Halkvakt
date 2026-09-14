@@ -255,3 +255,69 @@ radarns segmentupplösning. Båda kan ställas mot befintligt arkiv.
 också — men deras kärnor flyttades redan (till #153 respektive `N_varning`). Det är formen: **nejet
 stänger rollen, kärnan flyttar.** Det som inte får hända är att en kärna stryks utan att någon frågar
 vart den tog vägen.
+
+---
+
+## 9. Registret över allt struket, stängt och flyttat
+
+**Bengts invändning 14/9:** *"allt som är struket eller flyttat ska väl flyttas in i
+integrationsdokumentet så att det inte landar bredvid eller missas … det kan väl i alla fall innebära
+att den samlade effekten bidrar till en klarare bild."*
+
+Rätt — och skarpare än §8. Ett underkännande gällde en roll. **Ett struket spår lämnar nästan alltid
+något kvar**, och det kvarlämnade faller i tre slag:
+
+- **GRÄNS** — det definierar var produkten *inte* kan nå. Utan gränsen läses varje mätning som om
+  den gällde överallt.
+- **VILLKOR** — det binder vad kombinationen inte får göra. Ett villkor som glöms bort återuppfinns
+  som ett misstag.
+- **MÄTT FAKTUM** — mätningen överlever även när delen inte gjorde det.
+
+### 9.1 Stängda kort
+
+| Kort | Varför stängt | Vad det bidrar med i helheten | Slag |
+| :-- | :-- | :-- | :-- |
+| **#92 däck och fordonstyp** | kräver tröskeljustering i flera dokument, tre portar, nya produktboksbilder — och bär ingen egen fara | **Gränsen för hur precis en varning får vara.** Vi vet inget om däcken, alltså ska rösten tala om VÄGEN, aldrig om bromssträcka. Begreppet står kvar som **lager 2-riskmodifierare** (OVERGANGAR-ANALYS §1b.2) | gräns |
+| **#93 kommunala vägar** | inga givare där | **Räckviddsvillkoret** (#98 §6) finns tack vare det: en tyst miss räknas bara där systemet HADE en chans. Utan den gränsen drunknar varje tröskelsignal i täckningshål | gräns |
+| **#100 dämpning per fara** | kuren var tystare än sjukdomen: variant C ger **1 larm för 39 minuters halka** | Mätningen av hur rösten beter sig över långa sträckor — **4 larm på 59 km** — är indata till allvarsskalan (#153). Kärnan (TOTALEN när många OLIKA faror kvalificerar) flyttad dit | mätt faktum |
+| **#94 försäkringsbolagen** | samarbetet klarlagt otillgängligt | Tvingade fram att facitstacken definierades ur **vår egen** data. Det är skälet att T-B och #98 kan dömas i vinter i stället för nästa | villkor |
+
+### 9.2 Strukna parametrar och regler
+
+| Vad | Varför | Vad som överlever | Slag |
+| :-- | :-- | :-- | :-- |
+| **RH-guarden** (#89 §4.3) | fuktigheten STIGER efter regn: 90 % vid +1 h → 95 % vid +4 h | Själva mätningen är ett positivt faktum om efterregnstillståndet — **förutsättningen för kondensation och rimfrost** (#46) | mätt faktum |
+| **Operatörens "Våt"** (#89 §2.1) | 33 rader, noll med efterföljande klassning | Kandidat som **facit** i stället för indata (samma skifte som kamerorna) | mätt faktum |
+| **Oljefilmen, #89 (b)** | 55 torrperioder, 6 olyckor mot grindens 15 — inte nåbar i höst | **Torrdygnsräknaren är samma beräkning #42 behöver** för vattenfilmens ålder. Kortet säger att frågan börjar om från steg 0 — men koden är inte förlorad | mätt faktum |
+| **Ord-per-resa** (#103) | fel valuta | **Röst räknas i EPISODER, aldrig i rader.** Det är enheten allvarsskalan måste använda | villkor |
+| **R3 hård åldersgräns** (vägens ålder) | avvisad FÖRE mätning | Principen *"ålder ≠ inaktualitet — en klassning står tills den ändras"* ärvs rakt av tillståndsskattaren | villkor |
+| **E3 högre prioritet** (#95 d) | skulle tysta en olycka | **Bindande villkor på #153:** kombinationen får ändra ordval och försprång — **aldrig prioritet** | villkor |
+| **`rate_max`** (#134) | 727,54 mm/h, spärrat av värdevakten | **Kvoten max/mean** är en formsignal: konvektiv skur mot frontregn — precis vad #45 behöver | mätt faktum |
+| **K1, byvindkvot per rad** (#164) | 335 av 748 stationer | Kvoten per rad är en **fönsterglappsdetektor** — ett datakvalitetsmått för L1 | mätt faktum |
+| **Per fordonstyp** (vind/sikt §2.1) | #92 stängt | Samma gräns som #92 | gräns |
+
+### 9.3 Kärnor som flyttats — och vart
+
+| Från | Till | Vad som flyttade |
+| :-- | :-- | :-- |
+| #95 breda SMHI-regeln | **#89 §2.3 `N_varning`** | SMHI vet **tiden före händelsen** (varningar publiceras i förväg). Utlösaren förblir stationens eget regn; varningen förlänger bara N |
+| #100 dämpningen | **#153** | TOTALEN när många OLIKA faror kvalificerar samtidigt |
+| #93 halva kortet | **#95 (d) förstärkaren** | snöfallsvarning + yta nära noll = högre konfidens |
+| #89 (c) interaktionerna | **#46** (lager 1, dimma som konfidens) och **#90** (lager 2, sidvind × halka) | dimma × frysrisk är en ORSAK; sidvind ändrar faran givet en yta |
+| #88 T-B:s facit | **egen facitstack** | kamerafacit, väglagsarkivet, situation_archive |
+
+### 9.4 Vad registret sammantaget säger
+
+Tre saker blir synliga först när allt står på ett ställe:
+
+1. **Gränserna är inte hål — de är produktens form.** #92 och #93 säger tillsammans: *vi talar om
+   vägen där någon mäter den, inte om fordonet och inte där ingen mäter.* Det är en skarpare
+   produktdefinition än något av korten säger ensamt.
+
+2. **Villkoren på allvarsskalan är redan skrivna, fast utspridda.** E3 säger att prioritet aldrig får
+   röras. #103 säger att enheten är episoder. #100 ger talen för hur rösten låter över en lång
+   sträcka. **#153 behöver inte uppfinna sina ramar — de finns, i tre stängda kort.**
+
+3. **Flera strukna delar lämnade en BERÄKNING efter sig, inte bara en idé.** Torrdygnsräknaren
+   (#89 b) är #42:s vattenfilmålder. Kvoten max/mean (`rate_max`) är #45:s formsignal. K1:s
+   radkvot är en givarvaktsdetektor. Det är billigare att återanvända dem än att bygga om dem.

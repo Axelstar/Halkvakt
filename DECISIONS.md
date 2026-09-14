@@ -5320,3 +5320,33 @@ median — aldrig mätt som upplösning). Båda går att ställa mot befintligt 
 **OCH EN FORM SOM REDAN VISAT SIG:** #100:s dämpning och den breda SMHI-regeln underkändes, men deras
 kärnor flyttades (till #153 respektive `N_varning`). Nejet stänger rollen, kärnan flyttar. Det som
 inte får hända är att en kärna stryks utan att någon frågar vart den tog vägen.
+
+## #181 (14/9 2026) Integrationskartans register — allt struket, stängt och flyttat i samma dokument
+
+Bengts invändning: allt som strukits eller flyttats ska in i integrationsdokumentet, så
+att det inte landar bredvid när man tar ett samlat grepp - och den samlade effekten
+bidrar ändå till en klarare bild.
+
+Rätt, och skarpare än §8. Ett underkännande gällde en ROLL. Ett struket spår lämnar
+nästan alltid något kvar, och det kvarlämnade faller i tre slag:
+
+  GRÄNS       definierar var produkten inte kan nå (#92 däcken, #93 kommunala vägar)
+  VILLKOR     binder vad kombinationen inte får göra (E3, R3, ord-per-resa, #94)
+  MÄTT FAKTUM mätningen överlever även när delen inte gjorde det (RH, rate_max, K1)
+
+Registret täcker fyra stängda kort, nio strukna parametrar och fem flyttade kärnor.
+
+Tre saker blir synliga först när allt står på ett ställe:
+
+1. Gränserna är inte hål - de är produktens FORM. #92 och #93 säger tillsammans: vi
+   talar om vägen där någon mäter den, inte om fordonet och inte där ingen mäter. Det
+   är en skarpare produktdefinition än något av korten säger ensamt.
+
+2. Villkoren på allvarsskalan är redan skrivna, fast utspridda. E3 säger att prioritet
+   aldrig får röras, #103 att enheten är episoder, #100 ger talen för hur rösten låter
+   över en lång sträcka. Kort #153 behöver inte uppfinna sina ramar - de finns, i tre
+   stängda kort.
+
+3. Flera strukna delar lämnade en BERÄKNING efter sig, inte bara en idé.
+   Torrdygnsräknaren är #42:s vattenfilmålder, kvoten max/mean är #45:s formsignal,
+   K1:s radkvot är en givarvaktsdetektor. Billigare att återanvända än att bygga om.
