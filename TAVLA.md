@@ -362,6 +362,17 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] Fysisk Android-testenhet (pappas telefon? begagnad?)
 
 ### Bengt
+- [ ] 🧵 **#155 SNUBBELTRÅD: ändras #83:s kvarhållning måste #89 och #98 byta byggform**
+  **Principen (skriven 14/9 i TROSKLAR-OVERGANGAR och TROSKLAR-TRENDEN, Bengts order):** spara det
+  som inte går att räkna om, räkna om det som går — och vilket som är vilket är en MÄTNING, inte en
+  smaksak. Trendarkivet (#88) sparar för att gallringen förstör dess 15-minutersfönster.
+  Tillståndsskattaren (#89) och tystnadsfelet (#98) räknar om, för att deras ingångar överlever.
+  ⚠️ **DET VILAR PÅ ATT KVARHÅLLNINGEN INTE SKÄRPS.** Gallringens eget huvud (sql/014) säger att
+  gratisnivån räcker ungefär **55 dygn in i vintern**, och steg 2 — export eller Pro — är ett öppet
+  **oktoberbeslut**. Skärps kvarhållningen, eller börjar `radar_precip` gallras (inget gör det i
+  dag), upphör ingången att vara återskapbar och båda måtten måste byta till #88:s form.
+  ⏭️ **VAD SOM SKA GÖRAS NU: ingenting.** Kortet finns för att beslutet i oktober ska veta att det
+  rör mer än lagringsutrymme — det avgör två mätinstruments byggform.
 - [ ] 📮 **#154 ANMÄL NIO TRASIGA BYVINDGIVARE TILL TRAFIKVERKET — skriven och klar, skickas av Bengt**
   **Beställd av Bengt 13/9** ("gör 1 och 2") efter att stationsvakten (#90, DECISIONS #164) hittat dem.
   **Brevet ligger i `docs/ANMALAN-TRV-BYVINDGIVARE.md`** — komplett med stations-id, namn, WGS84,
