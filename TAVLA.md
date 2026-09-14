@@ -362,6 +362,25 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] Fysisk Android-testenhet (pappas telefon? begagnad?)
 
 ### Bengt
+- [ ] 📍 **#158 SKUGGLOGGENS LARM SAKNAR POSITION — och tre mätningar hänger på det**
+  **Fyndet 14/9 (DECISIONS #177):** 2 103 larm på fjorton dygn, **0 med `lon`, 0 med `distanceM`**.
+  En verklig rad: `{"t":1705,"id":"cam:22029010","kind":"camera","text":"Fartkamera om 500 meter."}`
+  📐 **ORSAKEN:** motorns `Alert` (`engine/src/types.ts:77`) bär `t`, `hazardId`, `kind`,
+  `distanceM` och `text` — ingen koordinat. Skuggmotorn skriver ändå `lon: a.lon` (`main.ts:205`)
+  på ett fält som inte finns. Edge-funktionen deployas utan typkontroll ⇒ `undefined` ⇒
+  `JSON.stringify` tappar nyckeln **tyst**.
+  🧯 **VAD SOM FALLER PÅ DET:** (1) kamerafacit har aldrig kunnat fyllas — `archiveFacit` räknar
+  haversine på NaN och rapporterar "ingen kamera inom 15 km" (#157). (2) Tystnadsfelets T3 (#98)
+  hade klassat VARJE facit-tillfälle som tyst miss; den vägrar nu svara i stället. (3) Radien
+  15 km är **oprövad**, inte fel — knappen `facitradien` finns och väntar på giltiga positioner.
+  🔧 **ÅTGÄRDEN, och den är Axels form:** `main.ts` slår upp faran på `hazardId` bland `hazards`
+  och skriver dess position **plus `distanceM`**, som Alert faktiskt bär men skuggmotorn kastar
+  bort. Punktfaror har lon/lat; segmentfaror har en polyline och behöver ett val (närmaste punkt
+  på linjen vid larmögonblicket är det som svarar mot vad föraren såg).
+  ⚠️ **VARFÖR DET INTE ÄR MITT:** ändringen ändrar vad SKUGGLOGGEN INNEHÅLLER, och skuggloggen är
+  mars-domens underlag. Formen ska Axel se på innan den skrivs.
+  🕰️ **TIDSKRITISKT:** varje larm som loggas utan position är ett facit som inte går att återskapa
+  — kamerabilden för en passerad natt finns inte kvar hos Trafikverket.
 - [ ] 📷 **#157 KAMERAFACIT ÄR TOMT — noll objekt efter 5 657 skuggkörningar**
   🎯 **ROTORSAKEN FUNNEN 14/9 (DECISIONS #177): SKUGGLOGGENS LARM HAR INGEN POSITION.**
   Bevisat på lagrad data: **2 103 larm på fjorton dygn, 0 med `lon`, 0 med `distanceM`**. En
@@ -2344,7 +2363,19 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   vektor i tre portar + buntad skuggmotor (CLAUDE.md), och Bengts beslut: vidga ordlistan, eller låta
   kodgrinden vakta (BLINDLISTA tom utöver "fläckvis …" i varje körning, annars larm). Verify: kodgrindens
   BLINDLISTA i nästa körning; en vektor med "Rimfrost" på kod 2 som larmar i alla tre portarna om ordlistan vidgas.
-- [ ] 🐕 **#87 Healthcheckens kontroller in i vakthunden — FEM PÅ KORTET, TIO I FILEN — sedan läggs healthcheck.yml ner** (bron i
+- [x] ✅ **#87 HEALTHCHECKENS KONTROLLER IN I VAKTHUNDEN — KLART 14/9, och filen blir KVAR** (Bengts beslut, DECISIONS #178)
+  ⛔ **RADERINGEN AV `healthcheck.yml` ÄR INSTÄLLD — ett dokumenterat nej, inte en gloms bort.**
+  Bengt 14/9: *"ta inte bort healthcheck eftersom den knappt kostar något"*. Skälet väger tyngre
+  än de 12 min/dygn: den är **den enda kontroll som körs UTANFÖR det den vaktar**. Vakthunden
+  lever inuti Supabase, och tystnad efter grönt ser identiskt ut som "allt väl" — samma dygn gav
+  skuggmotorn status 546 (WORKER_LIMIT) två gånger, och en kedja visade sig ha varit tyst trasig
+  i sexton dygn (#177). Redundansen är vad som fångar sådant.
+  📌 **FÖLJDER AV BESLUTET:** de tolv kontrakten är nu **permanenta**, inte tidsbegränsade, och
+  kommentaren i kontraktsgrinden är rättad så att nästa läsare inte tar bort dem. Pulsklockans
+  `puls-healthcheck` blir kvar. Verify-veckan behövs inte längre för raderingens skull — att
+  bevisa varje larm har fortfarande värde, men det blockerar ingenting.
+  💰 **BESPARINGEN UTEBLIR MEDVETET:** 12 min/dygn ≈ 7 % av uppmätta 169 min/dygn, och taket slår
+  omkring 28 september. Det är ett pris som är valt, inte förbisett.
   ✅ **BYGGT OCH BEVISAT 14/9** (Bengts order, DECISIONS #175, PR #242). Alla **tio** kontroller
   ligger i vakthunden som check 9 och kör i produktion. Beviset är larmprovets issue #243, som
   bär mätvärdesblocket ur det som faktiskt kör: grannarkiven 31–32 min · gräns-wx FI 20 / NO 44 ·
