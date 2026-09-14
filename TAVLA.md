@@ -363,6 +363,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ### Bengt
 - [ ] 🧩 **#159 INTEGRATIONSKARTAN — tre av våra egna regler står i vägen för produkten**
+  📖 **OMARBETAD 14/9 TILL ETT SAMMANHANGANDE DOKUMENT (Bengts order).** Kartan lag i EN fil men
+  var skriven i tre lager ovanpa varandra: original, rattelse inklistrad i sammanfattningen, tva
+  tillagg med egen "Bengts invandning"-inramning. Den lastes som ett samtal, inte som en karta.
+  🧭 **Nu 11 paragrafer i lasordning:** fragan → fem lager → multiplikationen → **var lagren faktiskt
+  star** (§4, med grind A:s matta felkurva som FAKTUM, inte som rattelse) → atta motkrafter → A–E →
+  ett nej galler en roll → registret → det osynliga → arlig sammanfattning → **§11 rattelsehistorik**.
+  ✅ **Inget tappat:** varje siffra och varje kortnummer ur den gamla versionen finns kvar (diffat
+  post for post), 323 → 335 rader. Historiken ligger i §11 + DECISIONS #159/#180/#181, sa brodtexten
+  sager vad som GALLER i stallet for vad som andrats.
   📚 **§9 REGISTRET TILLAGT 14/9 på Bengts invändning** (DECISIONS #181): allt struket, stängt och
   flyttat står nu i SAMMA dokument — fyra stängda kort, nio strukna parametrar, fem flyttade kärnor.
   Skälet: annars landar de bredvid när någon tar ett samlat grepp.
