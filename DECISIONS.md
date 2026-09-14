@@ -5036,3 +5036,104 @@ utöva. Underlaget: `docs/TILL-AXEL-HALKORDEN.md`.
 **EN RÄTTELSE AV MIG SJÄLV:** brevet till Axel skrev "de tre andra listorna rör mätningar och kan vi
 ta själva". Det var slarvigt — motorns egen lista är också hans domän. Den skillnaden är att motorns
 lista inte BEHÖVER ändras; den är referensen de andra mäts mot. Våra var två, inte tre.
+
+## #175 (14/9 2026) Kort #87: healthcheckens kontroller in i vakthunden — och kortet sa fem av tio
+
+**Beslut (Bengts order 14/9, "sätt igång"):** `healthcheck.yml`:s kontroller flyttas till vakthunden
+som **check 9**. Den kostar 12 Actions-minuter per dygn — 360 i månaden — mot ett tak kassavakten
+(check 8) räknar ner till slutet av september. Allt den gör är SQL eller en GET; i Supabase kostar
+det noll.
+
+**KORTET SA FEM KONTROLLER. FILEN INNEHÅLLER TIO.** Det upptäcktes när de skulle flyttas, och det är
+kortets viktigaste fynd: hade bara de fem porterats och `healthcheck.yml` sedan raderats hade **fem
+kontroller försvunnit tyst**. Kortets lista är rättad i samma varv.
+
+| Kortets fem | De fem som saknades i listan |
+| :-- | :-- |
+| grannarkivens ålder (120 min) | `sync_state`-källräkningen (< 4 källor) |
+| gränsstationerna (FI 10, NO 20) | de **vilande** källornas 150-minutersgräns |
+| arkivvakten (> 3 h oarkiverat) | livemotorns cron-puls (`failed`) |
+| kartans meta.json (90 min) | fältgolvet (vind < 100, sikt < 30) |
+| kameralagret (500 st, 7 dygn) | räknarna (kameror < 2000, segment < 400) |
+
+**Den vilande gränsen är den som förvånar mest.** Vakthundens check 1 ger `cameras` och
+`road_conditions_arkiv` **ingen gräns alls** — den skriver ut "GitHub-flödet, vilar". Healthchecken
+hade 150 minuter på dem. Utan den raden kan en kamerakursor frysa utan att någon ser det, och det
+hade blivit läget dagen `healthcheck.yml` försvann.
+
+**DE HÖR TILL DEN OPERATIVA VAKTEN**, inte till en egen etikett som 6/7/8. De mäter om kedjan är
+trasig här och nu — ett arkiv som står stilla, en gränssnapshot som tunnats ut, en kartfil som frusit.
+Samma sort som check 1–3, och en trasig kedja ska inte behöva två ställen att synas på.
+
+**BEVISAT EFTER DEPLOY, inte med deploykvittot.** Vakthundens eget larmprov kördes och issue #243
+bär mätvärdesblocket ur det som faktiskt kör:
+
+```
+fi-arkivet: 32 min (gräns 120) · dk 32 · no 31
+gräns-wx FI: 20 nåbara inom 40 km (golv 10) · NO: 44 (golv 20)
+cameras: 46 min (mjuk gräns 150) · road_conditions_arkiv: 46 min
+livemotorns cron: succeeded
+fältgolv: vind 747 (golv 100), sikt 736 (golv 30)
+arkivvakt: 0 oarkiverade av 818 prövade (>3 h)
+räknare: 2790 kameror (golv 2000), 818 segment (golv 400)
+kartans meta.json: 26 min (gräns 90)
+kameror-vaglag: 749 st (golv 500), 0.0 dygn (gräns 7)
+```
+
+Alla tio syns. Enda problemraden är larmprovet självt; issuen stängs av nästa gröna timkörning.
+
+**TOLV NYA KONTRAKT, TIDSBEGRÄNSADE MED FLIT.** Trösklarna finns nu i två filer, och husregeln kräver
+då kontraktsgrinden. De vaktar parallellveckan och **ska bort i samma commit som `healthcheck.yml`** —
+annars faller de på golvet och ser ut som drift. Formen är annorlunda än husets övriga: talet är
+**pinnat i mönstret** i stället för fritt fångat, eftersom de två filerna skriver samma tröskel med
+olika variabelnamn. Ändras en kopia försvinner den ur räkningen och golvet fäller. Mutationsprov:
+120 → 130 ⇒ exit 1. **26 kontrakt håller.**
+
+**EN FÖRSTA FORM HADE ETT HÅL, och det rättades före commit.** Arkivvaktens kontrakt matchade först
+varje `interval 'N hours'` i båda filerna — elva förekomster med olika värden. Pinnat till 3 blev det
+grönt, men med golv 6 mot nio förekomster kunde en ändring passera obemärkt. Formen är nu bunden till
+`modified_time`-kontexten, golv 4.
+
+**HEALTHCHECK.YML RADERAS INTE HÄR, och det är kortets egen Verify som bestämmer det:** en vecka där
+vakthunden larmat på ett **framkallat** fel i var och en — `?larmprov` räcker inte. Tills dess kör
+båda parallellt. Besparingen på 12 min/dygn realiseras alltså först om en vecka.
+
+**EN SPRICKA I DEPLOYVÄGEN, upptäckt på köpet.** Första deployförsöket föll på
+`Failed to resolve latest Supabase CLI release: rate limit exceeded` — `supabase/setup-cli@v1` med
+`version: latest` slår upp senaste utgåvan via GitHubs API **oautentiserat**, och det taket kan slå.
+Omförsöket gick igenom. Det är den enda deployvägen som inte kräver Axels terminal (kort #78), och den
+hänger på en oautentiserad uppslagning. Att pinna CLI-versionen tar bort beroendet — eget kort behövs.
+
+## #176 (14/9 2026) Kamerafacit: skälet är framme — och det var INTE apikey
+
+**Fyndet (kort #157, samma dygn som rättelsen deployades):** pg_net lagrar skuggmotorns svar i
+`net._http_response`, och där står nu skälet svart på vitt:
+
+```json
+{"ok":true,"results":{"E14 Sundsvall→Åre":{"fixes":2315,"alerts":1}, ...},
+ "facit":0,"facitSkal":["ingen kamera inom 15 km"]}
+```
+
+**RÄTTELSE 3 VAR DEN SOM BETYDDE NÅGOT.** Tre rättelser gick ut (#173): `apikey` i uppladdningen,
+budgeten per anrop, och grenar som säger varför. Den tredje — den som såg minst ut — är den som
+svarade på frågan. Utan den hade vi läst `facit: 0` och trott att apikey-rättelsen behövde mer tid.
+
+**MIN HYPOTES ÄR DÄRMED OPRÖVAD, INTE BEKRÄFTAD.** Koden når aldrig uppladdningen, så vi vet
+fortfarande inte om `apikey` saknades i praktiken. Den slutsats jag var närmast att dra 14/9 — "sex
+av sju led håller, alltså är det headern" — var ett korrekt resonemang på ofullständigt underlag.
+Det sjunde ledet var inte uppladdningen utan **kameravalet**, och det låg före.
+
+**VAD SOM FAKTISKT HÄNDER:** larmet inträffar, TRV svarar med kameror (annars hade skälet varit
+"TRV gav noll väglagskameror"), men **närmaste väglagskamera ligger längre bort än 15 km** från
+larmets position. Radien är hårdkodad i `archiveFacit` och har aldrig mätts mot skuggrutterna.
+
+**NÄSTA FRÅGA ÄR MÄTBAR OCH INTE GISSAD:** hur långt är det egentligen från ett skugglarm till
+närmaste väglagskamera? 749 kameror ligger publicerade i kartlagret med koordinater, och
+`shadow_log.alerts` bär varje larms lon/lat. Fördelningen avgör om 15 km är fel radie för de här
+rutterna eller om facitstacken bara är gles i norr. **Ingen radie ändras innan det är mätt** —
+§8:s regim och husets tröskeldisciplin gäller även ett tal som aldrig skrivits in i ett dokument.
+
+**EN BIFYND SOM INTE HÖR TILL KORTET:** två av skuggmotorns anrop 02:00 gav **status 546**
+(Supabases WORKER_LIMIT — funktionen slog i CPU- eller minnestaket). Skuggmotorn roterar redan tre
+rutter per varv just på grund av CPU-taket (läxan 29/8). Två träffar på tre timmar är inte ett larm,
+men det är värt en rad någonstans innan någon lägger till arbete i den funktionen.
