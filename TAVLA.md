@@ -362,6 +362,36 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] Fysisk Android-testenhet (pappas telefon? begagnad?)
 
 ### Bengt
+- [ ] 🧩 **#159 INTEGRATIONSKARTAN — tre av våra egna regler står i vägen för produkten**
+  **Bengts order 14/9:** *"delarna skulle integrera och tillsammans bli starkare … om vi byggt fel
+  så att det motverkar syftet vill jag att du särskilt pekar på det."* Svaret:
+  `docs/INTEGRATIONSKARTAN.md`.
+  🏗️ **FEM LAGER, och varje befintlig del faller i ett utan att skrivas om:** L1 trovärdighet (i
+  drift) · L2 tillstånd (blöt/torr byggt, #45 och #42 kvar) · L3 utveckling (mätt, ingen regel) ·
+  **L4 räckvidd (praktiskt tomt)** · **L5 allvar och röst (finns inte)**.
+  ✖️ **VÄRDET ÄR EN MULTIPLIKATION:** blöt × faller mot noll × mätningen gäller hit = en
+  FÖRUTSÄGELSE. Var för sig är alla tre observationer.
+  ⛔ **TRE MOTKRAFTER, OCH TVÅ ÄR REGLER VI SJÄLVA SKRIVIT:**
+  (1) **Utgången väljer på SLAG, inte ALLVAR** — halt+isrisk+kraftigt regn låter exakt som bara
+  halt. En integration som inte kan sägas finns inte för föraren. (#153)
+  (2) **"En modellerad storhet får aldrig vara en avtryckare"** — varje integrerad storhet ÄR
+  modellerad. Bokstavligt tolkad förbjuder regeln produkten.
+  (3) **Grindarna dömer delar, inte kombinationer** — och vi har redan gjort felet: SMHI mättes som
+  ANKARE och underkändes, men dess roll i modellen är RÄCKVIDDSKNAPP. Fel fråga, och nejet står
+  kvar som om saken vore avgjord.
+  📉 **TÄCKNINGEN MULTIPLICERAS OCH KRYMPER:** station 18,5 % × radar 13,1 % ⇒ **8,2 %** där båda
+  talar. Integrationen måste degradera graciöst, inte kräva alla lager.
+  🪞 **TVÅ AV MINA EGNA BYGGEN BÄR SAMMA FEL:** skattaren kastar bort bevisets STYRKA (enum i
+  stället för gradient), och trendarkivet är ett superset av TRIGGERN, inte av FENOMENET — det kan
+  inte svara på när ytan börjar STIGA, vilket är skälet att tystna på morgonen.
+  ⚠️ **#45 lutar på en höjdkorrektion #91 mätte till NOLL** (1,65 → 1,65 °C). Luft mot yta är inte
+  samma storhet — men ingenstans står det, och #45 är skrivet som om korrektionen vore etablerad.
+  ✅ **EN SAK GJORDES RÄTT och är förebilden:** rimfrosten (#46) blev en ANDRA GREN i `icing_point`,
+  inte ett sjätte farslag. Berika en befintlig faras underlag — lägg aldrig till slag, för varje
+  nytt slag gör regel 1a värre.
+  ⏭️ **FEM SAKER MÅSTE FINNAS:** A allvarsskala (Axels) · B bevisbärare i snapshoten · C en grind
+  för KOMBINATIONEN · D skriven regel för gemensam kalibrering · E graciös degradering (min kod).
+  **C och D är dokument och kan skrivas före frosten.**
 - [ ] 📍 **#158 SKUGGLOGGENS LARM SAKNAR POSITION — och tre mätningar hänger på det**
   ✅ **BYGGT OCH DEPLOYAT 14/9 — FORM A** (Axels ja via Bengt, DECISIONS #179, PR #248).
   Positionen tas ur FARAN, inte ur motorn: punktfaror bär lon/lat själva, så en uppslagning på
