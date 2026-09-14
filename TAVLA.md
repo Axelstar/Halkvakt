@@ -363,6 +363,21 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ### Bengt
 - [ ] 📷 **#157 KAMERAFACIT ÄR TOMT — noll objekt efter 5 657 skuggkörningar**
+  🔬 **UTREDD 14/9 (DECISIONS #172) — sex av sju led håller, felet är inringat till ETT.**
+  Bucketen finns (skapad 29/8 10:22) · TRV-frågan fungerar (**749 kameror** ligger publicerade i
+  kartlagret ur samma fråga) · kamerabildens URL ger **HTTP 200, image/jpeg, 13 kB** (provat
+  utifrån) · skuggan larmade i **756 av 1 802** svenska körningar på 14 dygn · och bucketen har
+  ändå **noll objekt** — i alla bucketar, inte bara `facit`.
+  🎯 **DET ENDA OPRÖVADE LEDET ÄR UPPLADDNINGEN, och det är också det enda som avviker:**
+  `archiveFacit` postar med **bara** `Authorization: Bearer`, medan varje annat Supabase-anrop i
+  samma fil skickar `Authorization` OCH **`apikey`** (`main.ts:210`). Det är repots ENDA
+  storage-anrop, så ingen annan kod har prövat vägen. Hypotesen är INTE bevisad — den kan bara
+  bevisas genom att lägga till raden och mäta efteråt.
+  🚨 **MEN DET STRUKTURELLA FELET ÄR ATT INGEN VET:** funktionen har FYRA tysta grenar och
+  returnerar en siffra som blir `facit: 0` — omöjligt att skilja från "inga larm". Exakt
+  kameror-vaglag-läxan i CLAUDE.md, som fanns nedskriven men inte tillämpad här.
+  ⏭️ **FÖRSLAG (Axels märke, kräver bunt + deploy):** lägg till `apikey`, och gör varje gren
+  högljudd med API:ets svarskropp. Jag rör inte motorkedjan.
   **Upptäckt 14/9** när #98:s instrument kördes första gången (DECISIONS #171).
   `TROSKLAR-TYSTNADSFEL` §8 gör kamerafacit till en **bärande** facitkälla: *"738 av 744 kameror
   står vid en VViS-station (#55), facit ligger per konstruktion inom räckvidd"*. Skuggmotorn
@@ -387,6 +402,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⏭️ **VAD SOM SKA GÖRAS NU: ingenting.** Kortet finns för att beslutet i oktober ska veta att det
   rör mer än lagringsutrymme — det avgör två mätinstruments byggform.
 - [ ] 🔤 **#156 HALKORDEN FINNS I TRE OLIKA VERSIONER — upptäckt 14/9 av en ny kontraktsgrind**
+  🔬 **MÄTT 14/9 (DECISIONS #172): ⊘ KAN INTE AVGÖRAS PÅ DATA.** "mycket besvärligt" vid kod < 2:
+  **0** i arkivet och **0** live. "snö" vid kod 1: **0** och **0**. Skälet är att inget vinterord
+  någonsin förekommit — hela materialet är kod 1 med Torrt (799), Våt (25), fläckvis Våt (8),
+  fläckvis Torrt (6). Arkivet börjar 21/2, efter förra vinterns slut.
+  ⚖️ **Skillnaden är alltså utan verkan I DAG — men inte ofarlig:** den blir verksam i samma stund
+  operatören klassar om i vinter. Beslutet måste fattas på semantik, eller skjutas till vintern
+  med en omkörning inbokad. Ingen lista rörd.
   **Fyndet:** listan över vilka ConditionInfo-ord som betyder HALT finns på **nio ställen i sju
   filer**, med **tre olika värden**. Ingen hade någonsin jämförts mot en annan.
   · `is|snö|halka|frost|mycket besvärligt` — **motorn** (engine.ts:43) och skuggmotorn

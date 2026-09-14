@@ -4940,3 +4940,61 @@ CI-körning och **avslutade sedan tyst med kod 0** — den såg ut som en lyckad
 PR:en hade en konflikt med main, och GitHub kör ingen CI på en PR den inte kan slå ihop. Slingan
 säger nu ifrån högljutt när den ger upp. En vakt som ger upp tyst är samma klass av fel som en
 fail-soft-gren utan spår.
+
+## #172 (14/9 2026) Båda korten utredda: kamerafacitets fel inringat till en rad, halkorden kan inte mätas ännu
+
+**Bengts order 14/9, "titta på båda":** kort #157 (tomt kamerafacit) och #156 (halkorden i tre
+versioner). Båda är läsande utredningar; ingenting byggdes och ingenting deployades.
+
+### #157 — KAMERAFACIT: sex av sju led håller
+
+| Led | Utfall |
+| :-- | :-- |
+| Bucketen `facit` existerar | ✅ skapad **2026-08-29 10:22** |
+| TRV-frågan (`Camera`, `Type = Väglagskamera`) fungerar | ✅ **749 kameror** ligger publicerade i kartlagret ur SAMMA fråga |
+| Kamerabildens URL går att hämta | ✅ HTTP 200, `image/jpeg`, 13 kB, giltiga JPEG-byte (provat utifrån 14/9) |
+| Skuggan larmar i Sverige | ✅ **756 av 1 802 körningar** hade larm på 14 dygn |
+| Objekt i bucketen | ❌ **NOLL** — i alla bucketar, inte bara `facit` |
+
+**Det enda ledet som inte går att prova utifrån är uppladdningen — och det är också det enda som
+skiljer sig från husets övriga anrop.** `archiveFacit` postar till `/storage/v1/object/facit/...`
+med **bara** `Authorization: Bearer`. Varje annat Supabase-anrop i samma fil skickar
+**`Authorization` OCH `apikey`** (jfr `main.ts:210`, skrivningen till `shadow_log`). Det är repots
+enda storage-anrop, så ingen annan kod har någonsin prövat den vägen.
+
+**HYPOTESEN ÄR INTE BEVISAD:** att gatewayen avvisar anropet utan `apikey` kan bara visas genom att
+lägga till raden och mäta efteråt. Jag har inte tjänstenyckeln och ska inte ha den.
+
+**MEN DET VERKLIGA FELET ÄR ATT INGEN VET, och det är strukturellt.** `archiveFacit` har **fyra tysta
+grenar**: `if (!cams.length) return 0`, `if (!best || seen.has(...)) continue`, `if (!img) continue`,
+`if (up.ok) saved++`. Ingen loggar varför, och funktionen returnerar en siffra som blir `facit: 0` i
+svaret — omöjligt att skilja från "inga larm". Det är exakt kameror-vaglag-läxan i CLAUDE.md: en
+fail-soft-gren utan spår är ett tyst ALDRIG, och fel-loggen ska bära API:ets svarskropp. Läxan fanns
+nedskriven; den hade inte tillämpats här.
+
+**ÅTGÄRDEN ÄR INTE MIN:** `archiveFacit` bor i `skuggmotor/main.ts` och `index.ts` är den genererade
+bunten. En rättelse kräver bunt + deploy i motorkedjan. Kort #157 bär förslaget: lägg till `apikey`,
+och gör varje gren högljudd med svarskroppen.
+
+### #156 — HALKORDEN: frågan är riktig men kan inte mätas i dag
+
+Den avgörande frågan var om listorna skiljer sig åt i PRAKTIKEN. Mätt över hela arkivet (830 rader,
+21/2–25/8) och hela livetabellen (818 segment):
+
+| Fråga | Arkivet | Livetabellen |
+| :-- | --: | --: |
+| "mycket besvärligt" vid `condition_code < 2` | **0** | **0** |
+| "snö" vid `condition_code = 1` | **0** | **0** |
+
+Skälet är att **inget vinterord någonsin förekommit**: hela materialet är `condition_code 1` med
+Torrt (799), Våt (25), fläckvis Våt (8), fläckvis Torrt (6). Arkivet börjar 21 februari, alltså efter
+förra vinterns slut.
+
+**⊘ KAN INTE AVGÖRAS PÅ DATA.** Skillnaden mellan de tre listorna är i dag **utan verkan** — men det
+är inte samma sak som ofarlig, för den blir verksam i samma stund operatören börjar klassa om i
+vinter. Beslutet måste fattas på semantik, eller skjutas till vintern med en omkörning inbokad.
+Ingen lista rörd.
+
+**En sak mätningen gav på köpet:** samma tomhet förklarar #98:s ⊘ OAVGJORT och steg 2:s
+operatörsfacit (#167). Tre mätningar står stilla på samma orsak — operatören har inte klassat om en
+enda väg sedan 25 augusti.
