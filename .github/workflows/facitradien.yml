@@ -1,0 +1,28 @@
+# Facitradien — hur långt är det från ett skugglarm till närmaste väglagskamera? (kort #157)
+# Helt läsande: en GET mot kartlagret och en fråga till skuggloggen. Ingen radie ändras av
+# körningen; den skriver ut hela svepet så att valet kan göras på mätning.
+name: facitradien
+on:
+  workflow_dispatch:
+    inputs:
+      dagar:
+        description: "Fönster i dygn"
+        required: false
+        default: "14"
+jobs:
+  facitradien:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types scripts/facitradien.ts --sjalvtest
+      - name: Mät
+        env:
+          DATABASE_URL: "${{ secrets.DATABASE_URL }}"
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/facitradien.ts "${{ inputs.dagar || '14' }}" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
