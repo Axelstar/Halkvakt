@@ -5530,3 +5530,40 @@ tröskelregeln skrivs om till Axels lydelse (ja, men säg åt honom om #157) · 
 ja).
 
 Allt står i kartans nya **§13**, så att brevet inte landar bredvid dokumentet.
+
+## #185 (14/9 2026) En CRLF-blob fällde två flöden i nio dygn — och gjorde sex källvakter till attrapper
+
+**Beslut:** `android/gradlew.bat` renormaliseras (`git add --renormalize`) så att bloben bär LF och
+arbetsträdet CRLF, som `.gitattributes` föreskriver. Flödenas commit-steg RÖRS INTE i det här varvet
+— härdningen är kort #161 och Bengts beslut.
+
+**Vad som mättes.** `trv-bevakning` och `marknadsforing` är de enda två flöden i repot som gör
+`git pull --rebase`. Båda faller i sitt commit-steg med `error: cannot pull with rebase: You have
+unstaged changes.` — efter att deras EGEN commit gått igenom. marknadsforing: röd 6, 7, 8, 13 och
+14/9; trv-bevakning: båda sina schemalagda körningar (7/9, 14/9). Fyra gröna dygn emellan gjorde
+mönstret svårt att se, och rotorsaken förklarar just nyckfullheten.
+
+**Rotorsaken.** `.gitattributes` infördes 12/9 med `*.bat text eol=crlf`. `android/gradlew.bat`
+ligger i git med CRLF redan i bloben. Rengöringsfiltret normaliserar arbetsträdets CRLF till LF före
+jämförelsen — LF ≠ blobens CRLF — så filen är permanent "ändrad" varje gång git faktiskt läser
+innehållet i stället för att lita på stat-cachen. Bevis lokalt 14/9: `touch android/gradlew.bat`
+följt av `git status` ger ` M android/gradlew.bat`, `git diff --stat` ger 94 +/94 − med enbart
+radslut, och `git ls-files --eol` gav `i/crlf w/crlf` — index och arbetsträd båda CRLF, alltså exakt
+det attributet förbjuder. Efter renormaliseringen: `i/lf w/crlf`.
+
+**Den dyra följden är inte de röda jobben — det är tystnaden bakom dem.** `trv-bevakning` skriver sitt
+state, committar det lokalt och når aldrig pushen. Källvakten breddades 12/9 (6354771) från 7 till 13
+källor. State-filen på main bär fortfarande 7 källor, senast skriven 12/9 06:52. De sex nya —
+`smhi-uppdateringar`, `fi-digitraffic`, `no-vegvesen`, `dk-dmi`, `polisen-regler`, `polisen-api` —
+seedar om sig vid varje körning och kan därför aldrig larma. Vakten ser levande ut i loggen och
+bevakar sex källor i tomma luften. Samma familj som fail-soft-grenen för en fil som aldrig funnits.
+
+**Varför flödena inte härdas i samma varv.** Läsanvisningen för dygnet är "bygg inget utan Bengts ja".
+Renormaliseringen tas ändå: den är en reparation med bevis, den ändrar ingen funktionell rad, och utan
+den är arbetsträdet smutsigt i varje kommande varv. Härdningen (`--autostash`, och en `git status
+--porcelain` i fel-grenen) ändrar hur flödena BETER sig och är därför ett beslut, inte en reparation.
+
+**Läxan, i samma form som de andra:** ett commit-steg som stagar en enskild sökväg antar tyst att
+resten av trädet är rent. Antagandet håller tills någon inför ett attribut, och då faller steget på
+en fil det aldrig rört. Felmeddelandet nämner dessutom inte VILKEN fil — "You have unstaged changes"
+utan filnamn kostade ett diagnosvarv, precis som "TRV 400" utan svarskropp gjorde.

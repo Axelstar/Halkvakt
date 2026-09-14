@@ -1757,3 +1757,25 @@ Kartrepot 08:00: SE/FI/DK sha = manifest, meta 3 min, kalla stationer 3. weather
 mätt över 14 h. Parallellsessionen har stängt kort #87 (alla tio kontroller in i vakthunden,
 healthcheck.yml blir kvar, DECISIONS #178) och rättat påståendet att grind A fallit.
 Byggt: inget detta varv. Nästa: kvällsavläsning 17:30 UTC.
+
+## 2026-09-14 17:45 — Måndagsserien kom, sju timmar sen, och en CRLF-fil visade sig tysta sex vakter
+RÄTTELSE TILL I MORSE (kort #160): de sex uteblev inte — de kom 5 h 18 min till 6 h 48 min för sent,
+och förseningen växte genom serien (grind-a +5h18 … grind-v-a +6h48). Fyra gröna. Grind A körde med
+2 881 punkter: MAE 0,81 °C (A1 klarar), grova fel 5,0 % (A2 oavgjort), frysklassningsfel 0,6 %
+(A3 klarar) ⇒ ingen dom, marginalvakten. Vinterunderlaget stod alltså inte stilla; domen gjorde det.
+Åtgärd (a) står kvar, (b) blir viktigare: en åldersvakt kan inte skilja "uteblev" från "kom sent".
+Samma dygn: healthcheckens tre cron-körningar 32 min, 39 min och 1 h 51 min sena; pulsklockans nio
+på sekunden (:23:01).
+NYTT KORT #161 + DECISIONS #185: `android/gradlew.bat` ligger i git med CRLF i bloben medan
+.gitattributes (12/9) säger `*.bat text eol=crlf`. Filen är därmed permanent ändrad så snart git
+läser innehåll i stället för stat-cachen, och fäller `git pull --rebase` i de två enda flöden som
+committar tillbaka — marknadsforing (röd 6, 7, 8, 13, 14/9) och trv-bevakning (båda sina schemalagda
+körningar). Följden är värre än de röda jobben: trv-bevaknings state når aldrig main, så de sex
+källor som lades till 12/9 seedar om sig varje körning och kan aldrig larma. Filen renormaliserad i
+detta varv; härdningen av flödena är Bengts beslut (kortets två frågor).
+RUTIN: kassan 4 026 min/3 006 körningar = 16,21 USD av 35, släpande takt 200 oförändrad, takdatum
+26/9 oförändrat, dygnets egen takt 100 min/dygn, #210 öppen med rader 05:08/11:08/17:08. Bron
+12 körningar (9 puls + 3 cron). Kartrepot 17:30: SE/FI/DK live-sha = manifest-sha (prövat med
+sha256), meta.json 15 min, kalla stationer 2, SE live.json fortfarande 0 segment (kort #154).
+weather_obs 284 090 → 291 757 över 16,0 h ⇒ ~11 500 rader/dygn. CI grön på main. #86 ej roterat.
+Byggt: renormaliseringen (reparation, inte funktion). Nästa: morgonavläsning 15/9 04:30 UTC.
