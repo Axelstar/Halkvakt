@@ -116,6 +116,13 @@ export function rapport(utfall: Utfall[]): boolean {
 // ── DE VAKTADE KONTRAKTEN ──────────────────────────────────────────────────────────────
 export const KONTRAKT: Kontrakt[] = [
   {
+    namn: "Halkorden i MOTORN — vilka ConditionInfo-ord som får motorn att tala",
+    varfor: "Skuggmotorn är genererad ur engine.ts, och tystnadsfelet dömer mot samma lista. Glider de isär mäter måttet något annat än motorn säger.",
+    former: [/SLIPPERY_INFO\s*=\s*\/\(\?<!\[a-zåäö\]\)\(([^)]+)\)/,
+              /HALKORD\s*=\s*"([^"]+)"/],
+    golv: 3,
+  },
+  {
     namn: "Trendens minsta lutning — svepets lägsta steg (°C per fönster)",
     varfor: "Finns i TypeScript (T-A och knappen) och i SQL (drifträkningen). Driver den sparar driften andra kandidater än domen prövar.",
     former: [/LUTNING\s*=\s*\[(\d+(?:\.\d+)?)/, /medel\)?\s*>=\s*(0\.4)/, />=\s*(0\.4)\s*$/m],
