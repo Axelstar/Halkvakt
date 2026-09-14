@@ -586,6 +586,137 @@ Deno.serve(async (req) => {
     problem.push(`**Kassavakten (kort #152) kunde inte köras**: ${String(e)}`);
   }
 
+  // 9. HEALTHCHECKENS KONTROLLER (kort #87, Bengts order 14/9).
+  //
+  //    VARFÖR: `healthcheck.yml` kostar 12 Actions-minuter per dygn — 360 i månaden, vilket
+  //    kassavakten (check 8) räknar mot ett tak som slår i slutet av september. Allt den gör är
+  //    SQL eller en GET, och inget av det kräver Actions. Här kostar det noll.
+  //
+  //    KORTET SA FEM KONTROLLER. FILEN INNEHÅLLER TIO, och det upptäcktes när de skulle flyttas.
+  //    Hade bara de fem porterats och healthcheck.yml sedan raderats hade fem kontroller
+  //    försvunnit TYST — precis den sortens fel huset redan betalat för flera gånger. Därför
+  //    flyttas alla tio, och kortets lista rättas i samma varv.
+  //
+  //    DE HÖR TILL DEN OPERATIVA VAKTEN, inte till en egen etikett som 6/7/8. Skälet: de mäter
+  //    om kedjan är trasig här och nu — ett arkiv som står stilla, en gränssnapshot som tunnats
+  //    ut, en kartfil som frusit. Det är samma sorts fel som check 1–3, och en trasig kedja ska
+  //    inte behöva två ställen att synas på.
+  //
+  //    HEALTHCHECK.YML RADERAS INTE HÄR. Kortets Verify kräver en vecka där vakthunden larmat på
+  //    ett FRAMKALLAT fel i var och en — `?larmprov` räcker inte. Tills dess kör båda parallellt,
+  //    och kontraktsgrinden vaktar att trösklarna är identiska i de två implementationerna.
+  try {
+    const KARTA = "https://axelstar.github.io/halkvakt-karta/data";
+
+    // 9a. Grannländernas skuggarkiv (kort #48). Schema-vaktat: CI:s PostGIS saknar fi/dk/no.
+    for (const land of ["fi", "dk", "no"]) {
+      try {
+        const r = await sql.unsafe(`SELECT synced_at FROM ${land}.sync_state ORDER BY synced_at DESC LIMIT 1`);
+        if (!r.length) continue;
+        const min = (Date.now() - new Date(r[0].synced_at).getTime()) / 60000;
+        rad.push(`${land}-arkivet: ${min.toFixed(0)} min (gräns 120)`);
+        if (min > 120) problem.push(`**${land}-arkivet står stilla**: ${min.toFixed(0)} min sedan synk (gräns 120) — ingest-${land}?`);
+      } catch { rad.push(`${land}-arkivet: schemat saknas — hoppar`); }
+    }
+
+    // 9b. Gränssnapshoten (kort #49). Golven är MÄTTA, inte valda: FI 16–20, NO 42 vid mätningen.
+    for (const [land, golv] of [["fi", 10], ["no", 20]] as [string, number][]) {
+      try {
+        const r = await sql.unsafe(`
+          WITH se AS (SELECT ST_Collect(geom) g FROM road_conditions WHERE NOT deleted AND geom IS NOT NULL)
+          SELECT count(*)::int AS n FROM ${land}.weather_latest f, se
+          WHERE f.sample_time > now() - interval '3 hours'
+            AND ST_DWithin(f.geom::geography, se.g::geography, 40000)`);
+        const n = Number(r[0].n);
+        rad.push(`gräns-wx ${land.toUpperCase()}: ${n} nåbara inom 40 km (golv ${golv})`);
+        if (n < golv) problem.push(`**Gränssnapshoten tunn**: bara ${n} ${land.toUpperCase()}-stationer nåbara (golv ${golv}) — ${land}-ingest eller gränslogiken?`);
+      } catch { rad.push(`gräns-wx ${land}: schemat saknas — hoppar`); }
+    }
+
+    // 9c. De VILANDE källorna. Check 1 ovan ger dem ingen gräns alls ("GitHub-flödet, vilar") —
+    //     healthchecken hade 150 min, och utan den raden kan en kamerakursor frysa osett.
+    const kallor = await sql`SELECT source, synced_at FROM sync_state ORDER BY source`;
+    if (kallor.length < 4) problem.push(`**sync_state har ${kallor.length} av 4 källor** — en kursor har fallit bort`);
+    for (const r of kallor) {
+      if (["deviations", "road_conditions", "weather"].includes(r.source)) continue;   // hårda i check 1
+      const min = (Date.now() - new Date(r.synced_at).getTime()) / 60000;
+      rad.push(`${r.source}: ${min.toFixed(0)} min (mjuk gräns 150)`);
+      if (min > 150) problem.push(`**${r.source} står stilla**: ${min.toFixed(0)} min (gräns 150)`);
+    }
+
+    // 9d. Livemotorns egen cron-puls. Tål att job_run_details inte är läsbar.
+    try {
+      const c = await sql`SELECT status, end_time FROM cron.job_run_details
+        WHERE jobid = (SELECT jobid FROM cron.job WHERE jobname = 'halkvakt-ingest-live')
+        ORDER BY end_time DESC LIMIT 1`;
+      if (c.length) {
+        rad.push(`livemotorns cron: ${c[0].status}`);
+        if (c[0].status === "failed") problem.push(`**Livemotorns senaste cron-körning FAILED** @ ${c[0].end_time}`);
+      }
+    } catch { rad.push("livemotorns cron: job_run_details ej läsbar — hoppar"); }
+
+    // 9e. Fältgolvet (kort #48). EXISTS-vaktat: larma aldrig på ett fält som aldrig funnits —
+    //     en fail-soft-gren för något ofött är ett tyst ALDRIG åt andra hållet.
+    try {
+      const [f] = await sql`SELECT
+        (SELECT count(*) FROM weather_latest WHERE wind_speed_ms IS NOT NULL)::int AS vind_nu,
+        (SELECT EXISTS (SELECT 1 FROM weather_observations WHERE wind_speed_ms IS NOT NULL)) AS vind_fott,
+        (SELECT count(*) FROM weather_latest WHERE visibility_m IS NOT NULL)::int AS sikt_nu,
+        (SELECT EXISTS (SELECT 1 FROM weather_observations WHERE visibility_m IS NOT NULL)) AS sikt_fott`;
+      rad.push(`fältgolv: vind ${f.vind_nu} (golv 100), sikt ${f.sikt_nu} (golv 30)`);
+      if (f.vind_fott && Number(f.vind_nu) < 100) problem.push(`**Vindfältet dött**: ${f.vind_nu} stationer (golv 100) trots tidigare skörd`);
+      if (f.sikt_fott && Number(f.sikt_nu) < 30) problem.push(`**Siktfältet dött**: ${f.sikt_nu} stationer (golv 30) trots tidigare skörd`);
+    } catch { rad.push("fältgolv: kolumnerna inte födda — hoppar"); }
+
+    // 9f. Arkivvakten (kort #51, DECISIONS #71). Frågar inte "växte arkivet" — i september är
+    //     tystnad korrekt. Frågar: finns ett NUVARANDE tillstånd som borde hunnit arkiveras?
+    //     Ingesten går varje timme, så 3 h betyder tre passerade körningar: förlorat, inte försenat.
+    try {
+      const [a] = await sql`SELECT
+        (SELECT count(*) FROM road_conditions c
+           WHERE NOT c.deleted AND c.modified_time IS NOT NULL
+             AND c.modified_time < now() - interval '3 hours'
+             AND NOT EXISTS (SELECT 1 FROM road_condition_history h
+                             WHERE h.segment_id = c.segment_id AND h.modified_time = c.modified_time))::int AS saknade,
+        (SELECT count(*) FROM road_conditions WHERE NOT deleted AND modified_time IS NOT NULL
+           AND modified_time < now() - interval '3 hours')::int AS provade`;
+      rad.push(`arkivvakt: ${a.saknade} oarkiverade av ${a.provade} prövade (>3 h)`);
+      if (Number(a.saknade) > 0) problem.push(`**Arkivläcka**: ${a.saknade} nuvarande tillstånd saknas i road_condition_history trots >3 h — vinterarkivet tappar rader (kort #51)`);
+    } catch { rad.push("arkivvakt: road_condition_history saknas — hoppar"); }
+
+    // 9g. Räknarna: en halv synk ser inte trasig ut, den ser bara mindre ut.
+    const [n] = await sql`SELECT
+      (SELECT count(*) FROM cameras WHERE NOT deleted)::int AS kameror,
+      (SELECT count(*) FROM road_conditions WHERE NOT deleted)::int AS segment`;
+    rad.push(`räknare: ${n.kameror} kameror (golv 2000), ${n.segment} segment (golv 400)`);
+    if (Number(n.kameror) < 2000) problem.push(`**Kamerorna tunnats ut**: ${n.kameror} (golv 2000) — trasig synk?`);
+    if (Number(n.segment) < 400) problem.push(`**Segmenten tunnats ut**: ${n.segment} (golv 400) — trasig synk?`);
+
+    // 9h. Kartans meta.json. Check 3 mäter APPENS manifest; det här är kartsajten, en annan fil
+    //     med en annan publiceringsväg. Att de båda är "publicera" gör dem inte till samma led.
+    try {
+      const m = await (await fetch(`${KARTA}/meta.json?t=${Date.now()}`, { cache: "no-store" })).json();
+      const min = (Date.now() - new Date(m.generated_at).getTime()) / 60000;
+      rad.push(`kartans meta.json: ${min.toFixed(0)} min (gräns 90)`);
+      if (min > 90) problem.push(`**Kartans meta.json ${min.toFixed(0)} min gammal** (gräns 90) — publicera står stilla?`);
+    } catch (e) { problem.push(`**Kunde inte läsa kartans meta.json**: ${String(e)}`); }
+
+    // 9i. Kameralagret (#38b). Publiceringen är fail-soft, så ett permanent TRV-fel lämnar annars
+    //     en gammal fil kvar på CDN i tysthet — exakt kameror-vaglag-läxan. Gränsen är generös
+    //     med flit: kamerorna ändras sällan, vakten är mot "trasigt för evigt".
+    try {
+      const k = await (await fetch(`${KARTA}/kameror-vaglag.geojson?t=${Date.now()}`, { cache: "no-store" })).json();
+      const antal = k?.features?.length ?? 0;
+      const dygn = k?.generated_at ? (Date.now() - new Date(k.generated_at).getTime()) / 86_400_000 : null;
+      rad.push(`kameror-vaglag: ${antal} st (golv 500)${dygn === null ? ", ingen stämpel" : `, ${dygn.toFixed(1)} dygn (gräns 7)`}`);
+      if (antal < 500) problem.push(`**Kameralagret tunt**: ${antal} kameror (golv 500)`);
+      if (dygn !== null && dygn > 7) problem.push(`**Kameralagret ${dygn.toFixed(1)} dygn gammalt** (gräns 7) — TRV-steget i publiceringen fallerar permanent?`);
+    } catch (e) { problem.push(`**Kunde inte läsa kameror-vaglag.geojson**: ${String(e)}`); }
+  } catch (e) {
+    // Samma regel som de andra: en blind vakt är värre än ingen.
+    problem.push(`**Healthcheckens kontroller (kort #87) kunde inte köras**: ${String(e)}`);
+  }
+
   const kropp = `${MARK}\n**Kontroll ${new Date().toISOString()}**\n\n` +
     (problem.length ? problem.map((p) => `- ❌ ${p}`).join("\n") : "- ✅ allt grönt") +
     `\n\n<details><summary>mätvärden</summary>\n\n\`\`\`\n${rad.join("\n")}\n\`\`\`\n</details>`;
