@@ -4998,3 +4998,41 @@ Ingen lista rörd.
 **En sak mätningen gav på köpet:** samma tomhet förklarar #98:s ⊘ OAVGJORT och steg 2:s
 operatörsfacit (#167). Tre mätningar står stilla på samma orsak — operatören har inte klassat om en
 enda väg sedan 25 augusti.
+
+## #174 (14/9 2026) Halkorden: fyra frågor fick fyra kontrakt — och grinden lärde sig avgränsa
+
+**Beslut (Bengts order 14/9, "de tre som rör oss kan vi åtgärda"):** de listor som INTE kräver Axels
+beslut vaktas nu var för sig, med sitt eget namn och sitt eget skäl. **Ingen ordlista ändrad, ingen
+funktion deployad.**
+
+**FYNDET SOM ÄNDRADE ÅTGÄRDEN.** Nio förekomster i sju filer med tre värden såg ut som en lista på
+drift. Läser man vad varje ställe FRÅGAR efter är det fyra frågor, och tre av skillnaderna är
+försvarbara: vakthunden letar vinterns första tecken (en allvarlighetsfras är inget vinterord),
+kodgrinden prövar "kod 1 trots farlighetsord" (packad snö vid kod 1 är normalt vinterväglag i norr).
+Att rätta alla till en lista hade alltså varit fel — det hade tvingat fram falsk enighet.
+
+**GRINDEN FICK ETT NYTT FÄLT: `filer`.** Utan det gick frågorna inte att skilja, eftersom raderna ser
+likadana ut (`WHERE i ~* '(^|[^a-zåäö])(...)'`). Med avgränsningen blir varje fråga ett eget kontrakt:
+
+| Kontrakt | Filer | Golv | Värde |
+| :-- | :-- | --: | :-- |
+| Halkorden i MOTORN | engine.ts + skuggmotorns bunt + tystnadsfelet | 3 | `is\|snö\|halka\|frost\|mycket besvärligt` |
+| Snapshotens halkfilter | snapshot-core + publiceras bunt | 2 | `is\|snö\|halka\|frost` |
+| Vinterorden i vakthunden | vakthund (två kopior, rad 137 och 148) | 2 | `is\|snö\|halka\|frost` |
+| Farlighetsorden i kodgrinden | kodgrinden (två kopior, rad 198 och 201) | 2 | `is\|halka\|frost\|mycket besvärligt` |
+
+**Fjorton kontrakt håller.** Mutationsprov på båda de nya: vakthundens ena kopia driven ⇒ exit 1,
+kodgrindens ⇒ exit 1.
+
+**DUBBLERINGEN VAKTAS I STÄLLET FÖR ATT STÄDAS.** Både vakthunden och kodgrinden bär sin lista två
+gånger i samma fil. Att lyfta dem till en konstant hade krävt en **deploy av vakthunden för en ren
+refaktorering** — risk utan vinst, och #126 är läxan: en deploy tog då tyst bort check 7. Grinden ger
+samma skydd till noll risk.
+
+**VAD SOM ÄR KVAR OCH BARA AXELS:** ska `mycket besvärligt` in i snapshotens filter, så att snapshoten
+blir ett superset av motorn? I dag är den det inte, och motorn bär därmed en regel den inte kan
+utöva. Underlaget: `docs/TILL-AXEL-HALKORDEN.md`.
+
+**EN RÄTTELSE AV MIG SJÄLV:** brevet till Axel skrev "de tre andra listorna rör mätningar och kan vi
+ta själva". Det var slarvigt — motorns egen lista är också hans domän. Den skillnaden är att motorns
+lista inte BEHÖVER ändras; den är referensen de andra mäts mot. Våra var två, inte tre.
