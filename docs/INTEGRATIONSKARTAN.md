@@ -1,11 +1,14 @@
-# Integrationskartan — hur delarna blir en produkt, och var vi byggt emot den
+# Integrationskartan
 
-**Skriven 2026-09-14 på Bengts order:** *"allt det här jobbet har haft ett enda syfte, att delarna
-skulle integrera och tillsammans bli starkare … om vi i någon eller några delar har byggt fel så att
-det motverkar det syftet vill jag att du särskilt pekar på det."*
+**Hur delarna blir en produkt, var vi byggt emot den, och vad allt underkänt lämnade kvar.**
+
+Det här är det enda dokumentet över hur Halkvakts delar hänger ihop. Allt som rör integrationen står
+här: lagren, multiplikationen, motkrafterna, principen för hur en del döms, och registret över allt
+som strukits, stängts eller flyttats. Ligger något om helheten någon annanstans är det ett fel.
 
 Fokus på skuggans delar (#88–#95), men vattenplaningen (#42), snön (#45), broarna (#38/#91) och det
-som redan står i motorn vägs in.
+som redan står i motorn vägs in. Beslutens historik — vad som rättats och när — ligger i DECISIONS
+(#159, #180, #181) och sammanfattas i §11. Brödtexten säger vad som *gäller*, inte vad som ändrats.
 
 ---
 
@@ -31,7 +34,7 @@ nämnaren, och den är också nyckeln till hur de ska sitta ihop.
 | **L1 TROVÄRDIGHET** | Får vi tro på mätvärdet? | #75 givarvakten · stationsvakten (#164) · G_tak (#163) · värdevakten · R-A5 | ✅ i drift |
 | **L2 TILLSTÅND** | Vad **är** ytan? | tillståndsskattaren (#89 steg 2) · radarns `regn` (#81 C) · operatörens klass · **#45 våtbulb → regn/slask/snö** · **#42 vattenfilm** | 🔨 blöt/torr byggt, resten kvar |
 | **L3 UTVECKLING** | Vart är den på **väg**? | trendarkivet (#88) · övergångarna (#89 a) · **#46 rimfrost** · N_varning (SMHI) | 🔨 mätt, ingen regel |
-| **L4 RÄCKVIDD** | Hur långt **gäller** mätningen? | grind A:s ankare (#38b) · SMHI molnmängd (#95) · **#91 kallplatslagret** | ⚠️ **ankaret mätt och dugligt, knappen saknas** |
+| **L4 RÄCKVIDD** | Hur långt **gäller** mätningen? | grind A:s ankare (#38b) · SMHI molnmängd (#95) · **#91 kallplatslagret** | ⚠️ ankaret mätt och dugligt, **knappen saknas** |
 | **L5 ALLVAR & RÖST** | Vad **sägs**, och hur illa är det? | #153 sammanvägt allvar · spärren (#165) · #90 riskmodifierare | ⛔ **finns inte** |
 
 **Ordningen är inte godtycklig.** L1 gatar allt. L2 och L3 multiplicerar varandra. L4 avgör hur långt
@@ -60,11 +63,54 @@ L2 + L3 stänger det hålet. Det är den enskilt största vinsten som finns att 
 
 ---
 
-## 4. Var vi har byggt **mot** syftet
+## 4. Var lagren faktiskt står i dag
 
-Det här är den del Bengt bad om särskilt. Åtta punkter, ordnade efter hur mycket de hindrar.
+### 4.1 L4 är inte tomt — ankaret är en mätt osäkerhetskurva
 
-### 4.1 Utgången väljer på SLAG, inte på ALLVAR — och kan bara säga en sak
+Grind A (offsetmodellen) med både givarvakten (#129) och marginalvakten (#126/#128), DECISIONS #131,
+1 943 punkter:
+
+| band | MAE | grova > 2 °C | frysklassfel |
+| :-- | --: | --: | --: |
+| 0–7 km | **0,33 °C** | 0,0 % | 0,0 % |
+| 7–15 km | 0,78 | 3,1 % | 0,0 % |
+| 15–20 km | 0,85 | 6,4 % | 0,0 % |
+| > 20 km | 0,89 | 5,4 % | 0,4 % |
+| **totalt** | **0,85** | **5,1 %** | **0,3 %** |
+
+**A1 KLARAR** (0,85 mot 1,0, marginal ±0,05) · **A2 OAVGJORT** (5,1 mot 5,0) · **A3 KLARAR**
+(0,3 mot 10). Domen är ⏳ **INGEN DOM** — uttryckligen *inte ett nej*.
+
+**Talen stiger monotont med ankaravståndet:** 0,33 · 0,78 · 0,85 · 0,89 — som fysiken kräver. Det
+bandet som en gång var sämst av alla fyra är nu näst bäst.
+
+Det betyder att räckviddslagret inte saknar en mekanism. Det har **en avståndsberoende felkurva som
+faktiskt är uppmätt** — precis den storhet L4 behöver. Vad som saknas är **knappen**: vad som gör
+kurvan brantare eller flackare en enskild natt (moln, vind, terräng). Vi har alltså inte bara "vid
+stationen, med minne" — vi har ett ankare vars fel vi känner som funktion av avstånd, och saknar bara
+det som modulerar det.
+
+### 4.2 Täckningen multipliceras — och krymper därmed
+
+Mätt 14/9 över segmenttimmar:
+
+| lager | täckning |
+| :-- | --: |
+| stationen har en mätning | 18,5 % |
+| radarn har en åsikt | 13,1 % |
+| **båda samtidigt** | **8,2 %** |
+
+Varje lager som läggs till **krymper** populationen där alla lager talar. Kräver den integrerade
+regeln alla lager fyrar den på några få procent av vägnätet. Det är inte ett argument mot
+integrationen — det är kravet att den måste **degradera graciöst** (§6 E).
+
+---
+
+## 5. Var vi har byggt **mot** syftet
+
+Åtta punkter, ordnade efter hur mycket de hindrar.
+
+### 5.1 Utgången väljer på SLAG, inte på ALLVAR — och kan bara säga en sak
 
 Regel 1a: *"priority selects the single winner; everything else is dropped."* Prioriteten är en fast
 ordning mellan **farslag** (A3 > A1 > A2 > A4 > A5), inte ett mått på hur illa det är.
@@ -77,7 +123,7 @@ uttrycka allvar över huvud taget.
 
 Kort #153 bär frågan. Ingenting är byggt. Det här är den enskilt största motkraften.
 
-### 4.2 "En modellerad storhet får aldrig vara en avtryckare"
+### 5.2 "En modellerad storhet får aldrig vara en avtryckare"
 
 TROSKLAR-FRYSKLASSNINGEN §1. Regeln är skriven mot varningar som inte kan motbevisas av en mätning —
 ett riktigt skäl. **Men varje integrerad storhet är per definition modellerad.** Tillstånd ×
@@ -87,7 +133,7 @@ Tolkad bokstavligt förbjuder regeln alltså produkten. Den ser ut som stringens
 ett principiellt stopp. Kort #153 beslut 2 öppnade ett smalare undantag (radarn är en mätning;
 interpolation mellan två eniga mätningar är inte extrapolation) — **men det är inte avgjort.**
 
-### 4.3 Varje grind dömer sin del ENSAM. Det finns ingen grind för kombinationen
+### 5.3 Varje grind dömer sin del ENSAM. Det finns ingen grind för kombinationen
 
 T-A/B/C, W-A/B/C, Ö-A/B/C/D, V-A/B, F-A/B, R-A…R-D, Å-A/B. Var och en har golv som delen ska klara
 **för sig**.
@@ -99,44 +145,32 @@ nejet ligger nu på kortet som om SMHI vore avgjort.
 
 > **Vi riskerar att underkänna produktens ingredienser en och en, på prov som ställer fel fråga.**
 
-### 4.4 Trösklarna fryses per del — gemensam kalibrering är inte tillåten
+Motmedlet är §7 — och den grind för kombinationen som §6 C beställer.
 
-§8-regimen i varje dokument: från första skuggkörningen ändras ingen tröskel. Det skyddar mot att
-flytta målstolparna när siffrorna kommit — rätt regel.
+### 5.4 Trösklarna fryses per del — gemensam kalibrering är inte tillåten
+
+§8-regimen i varje tröskeldokument: från första skuggkörningen ändras ingen tröskel. Det skyddar mot
+att flytta målstolparna när siffrorna kommit — rätt regel.
 
 **Men en kombinerad modell behöver kalibreras GEMENSAMT.** N (#89), fönstret (#88), gapet (#46) och
 r (#42) väljs var för sig, för solo-prestanda. Ingen text säger hur en kombination får kalibreras,
 och som reglerna står i dag får den inte det.
 
-### 4.5 Täckningen MULTIPLICERAS — och krymper därmed
+### 5.5 Skattaren kastar bort bevisets STYRKA
 
-Mätt 14/9 över segmenttimmar:
+`skatta()` returnerar `blöt | torr | okänt` — en enum. Men en sammanvägd allvarsgrad behöver *hur*
+blöt: 20 minuter sedan 2 mm är något annat än fyra timmar sedan 0,2 mm. Underlaget finns i `Underlag`
+och slängs i returvärdet. Det är en hård OCH-logik där integrationen behöver en gradient.
 
-| lager | täckning |
-| :-- | --: |
-| stationen har en mätning | 18,5 % |
-| radarn har en åsikt | 13,1 % |
-| **båda samtidigt** | **8,2 %** |
+Mitt eget bygge, min egen fix — §6 E.
 
-Varje lager som läggs till **krymper** populationen där alla lager talar. Kräver den integrerade
-regeln alla lager fyrar den på några få procent av vägnätet.
+### 5.6 Trendarkivet är ett superset av TRIGGERN, inte av FENOMENET
 
-> **Integrationen måste degradera graciöst — falla tillbaka på färre lager med lägre säkerhet —
-> inte kräva alla.**
+Det sparar bara rader i bandet 1–6 °C med fallande yta. Det kan därför inte svara på hur snabbt ytan
+faller *under* noll, och inte på när ytan börjar **stiga** — vilket kortet självt kallar *"skälet att
+tystna tidigare på morgonen"*. För L3 vill man ha trenden överallt där tillståndet betyder något.
 
-### 4.6 Mina egna två byggen bär spår av precis det felet
-
-**(a) Skattaren kastar bort bevisets STYRKA.** `skatta()` returnerar `blöt | torr | okänt` — en enum.
-Men en sammanvägd allvarsgrad behöver *hur* blöt: 20 minuter sedan 2 mm är något annat än fyra timmar
-sedan 0,2 mm. Underlaget finns i `Underlag` och slängs i returvärdet. Det är en hård OCH-logik där
-integrationen behöver en gradient.
-
-**(b) Trendarkivet är ett superset av TRIGGERN, inte av FENOMENET.** Det sparar bara rader i bandet
-1–6 °C med fallande yta. Det kan därför inte svara på hur snabbt ytan faller *under* noll, och inte
-på när ytan börjar **stiga** — vilket kortet självt kallar *"skälet att tystna tidigare på
-morgonen"*. För L3 vill man ha trenden överallt där tillståndet betyder något.
-
-### 4.7 #45 lutar på en höjdkorrektion som #91 mätte till noll
+### 5.7 #45 lutar på en höjdkorrektion som #91 mätte till noll
 
 #45:s metod: våtbulb per segment via **offsetmodell + höjdkorrektion** (lapse 0,71 °/100 m), för att
 höjden flyttar snögränsen.
@@ -148,7 +182,7 @@ De två är inte samma storhet — #91 mätte **yttemperatur**, #45 använder **
 rate är fysikaliskt rimligare för luft. **Men ingenstans står det.** Ett dokument lutar på en
 korrektion ett annat dokument har mätt emot, och ingen har skrivit varför det ändå går.
 
-### 4.8 En sak gjordes RÄTT, och den är förebilden
+### 5.8 En sak gjordes RÄTT, och den är förebilden
 
 **Rimfrosten (#46) blev en ANDRA GREN i `icing_point` — inte en sjätte farotyp.** Skälet som skrevs:
 en sjätte `kind` hade rört varje vektor och hela prioritetsstegen.
@@ -158,7 +192,7 @@ farslag.** Varje nytt slag gör regel 1a värre — fler konkurrenter om en enda
 
 ---
 
-## 5. Vad som minst måste finnas för att helheten ska lyfta
+## 6. Vad som minst måste finnas för att helheten ska lyfta
 
 | # | Vad | Vems | Kostnad |
 | :-- | :-- | :-- | :-- |
@@ -173,70 +207,18 @@ Axels och den tyngsta. B följer av A.
 
 ---
 
-## 6. Vad som förblir osynligt oavsett allt ovan
+## 7. Hur en del döms: ett nej gäller en ROLL, inte en del
 
-En **snöby mellan stationerna** (bara radarn ser den, #43) och **om saltbilen passerat** (ingen öppen
-källa). Båda är kända och står i förstudierna. De hör till kartans kanter, inte till dess mitt.
-
----
-
-## 7. Den ärliga sammanfattningen
-
-Delarna **är** byggda så att de kan integrera: de faller i fem lager utan att någon behöver skrivas
-om, och varje del producerar en mätt storhet i stället för en dom — vilket är förutsättningen för att
-de ska kunna vägas ihop senare.
-
-**Men tre saker står i vägen, och två av dem är regler vi själva skrivit:** utgången kan inte uttrycka
-allvar (4.1), modellerade storheter får inte utlösa (4.2), och grindarna dömer delar i stället för
-kombinationer (4.3). Ingen av dem är ett kodfel. Alla tre är beslut, och alla tre är Bengts och Axels
-att ompröva.
-
-**RÄTTAT 14/9 EFTER BENGTS INVÄNDNING — jag citerade en överspelad mätning.** Första utkastet sade
-att L4 var praktiskt tomt och att grind A hade fallit. **Det är fel.** Domen jag citerade (MAE 1,06,
-grova 10,7 %) gäller körningen FÖRE #75:s givarvakt och marginalvakten. Med båda på plats
-(DECISIONS #131, 1 943 punkter):
-
-| band | MAE | grova > 2 °C | frysklassfel |
-| :-- | --: | --: | --: |
-| 0–7 km | **0,33 °C** | 0,0 % | 0,0 % |
-| 7–15 km | 0,78 | 3,1 % | 0,0 % |
-| 15–20 km | 0,85 | 6,4 % | 0,0 % |
-| > 20 km | 0,89 | 5,4 % | 0,4 % |
-| **totalt** | **0,85** | **5,1 %** | **0,3 %** |
-
-**A1 KLARAR** (0,85 mot 1,0, marginal ±0,05) · **A2 OAVGJORT** (5,1 mot 5,0) · **A3 KLARAR**
-(0,3 mot 10). Domen är ⏳ INGEN DOM — inte ett nej.
-
-**Och anomalin är borta:** 0,33 · 0,78 · 0,85 · 0,89 **stiger monotont med ankaravståndet**, som
-fysiken kräver. Det bandet som var sämst av alla fyra är nu näst bäst.
-
-**Det ändrar L4 i grunden.** Ankaret är inte en tom ruta — det är en **mätt avståndsberoende
-osäkerhetskurva**, och det är precis den storhet räckviddslagret behöver. Vad som saknas är inte
-mekanismen utan **knappen**: vad som gör kurvan brantare eller flackare en enskild natt (moln, vind,
-terräng). Vi har alltså inte "vid stationen, med minne" — vi har ett ankare vars fel vi känner som
-funktion av avstånd, och saknar bara det som modulerar det.
-
-**Det är fortfarande mycket mer än i dag.** Men det är inte produkten Bengt beskriver, och skillnaden
-sitter i L4 och L5 — inte i det vi byggt de senaste dygnen.
-
-
----
-
-## 8. Ett nej gäller en ROLL, inte en del
-
-**Bengts invändning 14/9:** *"är det inte så att vi får lyfta in alla underkända och bedöma dem på
-nytt — även om de förlorade per se har de något att bidra med i det sammanvägda."*
-
-Det är rätt, och prejudikatet finns redan i protokollet: **kamerorna** underkändes som täckning
-(744 st, 99 % inom 1 km från en station, Norrlands lucka oförändrad) — och blev **bildfacit**, en av
-tre facitkällor systemet i dag vilar på. Samma del, annan roll, avgörande värde.
+Prejudikatet finns i protokollet: **kamerorna** underkändes som täckning (744 st, 99 % inom 1 km från
+en station, Norrlands lucka oförändrad) — och blev **bildfacit**, en av tre facitkällor systemet i dag
+vilar på. Samma del, annan roll, avgörande värde.
 
 **Men principen behöver en broms, annars blir den ett sätt att aldrig ta ett nej:**
 
 > Ett underkännande gäller den **fråga som ställdes**. En del får prövas i en ny roll — men den nya
 > rollen kräver en **ny fråga, skriven före mätningen, med egen grind**. Ingen del återinförs på hopp.
 
-### De sju underkända, och deras obesvarade fråga i helheten
+### 7.1 De sju underkända, och deras obesvarade fråga i helheten
 
 | Del | Vad som underkändes (mätt) | Obesvarad fråga i det sammanvägda |
 | :-- | :-- | :-- |
@@ -248,24 +230,15 @@ tre facitkällor systemet i dag vilar på. Samma del, annan roll, avgörande vä
 | **`rate_max`** | som VÄRDE: 727 mm/h, spärrat | **kvoten max/mean** är en formsignal: konvektiv skur mot frontregn. Exakt vad #45 behöver för att skilja lokal snöby från utbrett regn |
 | **Radarns bidrag** | växer inte med avståndet (platt ~1,5 %) | mätt där en station står **6,7 km** bort i median. Radarns roll är **upplösning per sträcka**, inte mer väta — aldrig mätt som det |
 
-**Två av dem har dessutom en mätbar fråga som inte kräver vinter:** höjden som varianspredikator och
-radarns segmentupplösning. Båda kan ställas mot befintligt arkiv.
-
-**Och en varning som följer av samma logik:** #100:s dämpning och den breda SMHI-regeln underkändes
-också — men deras kärnor flyttades redan (till #153 respektive `N_varning`). Det är formen: **nejet
-stänger rollen, kärnan flyttar.** Det som inte får hända är att en kärna stryks utan att någon frågar
-vart den tog vägen.
+**Två av dem har en mätbar fråga som inte kräver vinter:** höjden som varianspredikator och radarns
+segmentupplösning. Båda kan ställas mot befintligt arkiv.
 
 ---
 
-## 9. Registret över allt struket, stängt och flyttat
+## 8. Registret över allt struket, stängt och flyttat
 
-**Bengts invändning 14/9:** *"allt som är struket eller flyttat ska väl flyttas in i
-integrationsdokumentet så att det inte landar bredvid eller missas … det kan väl i alla fall innebära
-att den samlade effekten bidrar till en klarare bild."*
-
-Rätt — och skarpare än §8. Ett underkännande gällde en roll. **Ett struket spår lämnar nästan alltid
-något kvar**, och det kvarlämnade faller i tre slag:
+Ett underkännande gällde en roll. **Ett struket spår lämnar nästan alltid något kvar**, och det
+kvarlämnade faller i tre slag:
 
 - **GRÄNS** — det definierar var produkten *inte* kan nå. Utan gränsen läses varje mätning som om
   den gällde överallt.
@@ -273,7 +246,7 @@ något kvar**, och det kvarlämnade faller i tre slag:
   som ett misstag.
 - **MÄTT FAKTUM** — mätningen överlever även när delen inte gjorde det.
 
-### 9.1 Stängda kort
+### 8.1 Stängda kort
 
 | Kort | Varför stängt | Vad det bidrar med i helheten | Slag |
 | :-- | :-- | :-- | :-- |
@@ -282,7 +255,7 @@ något kvar**, och det kvarlämnade faller i tre slag:
 | **#100 dämpning per fara** | kuren var tystare än sjukdomen: variant C ger **1 larm för 39 minuters halka** | Mätningen av hur rösten beter sig över långa sträckor — **4 larm på 59 km** — är indata till allvarsskalan (#153). Kärnan (TOTALEN när många OLIKA faror kvalificerar) flyttad dit | mätt faktum |
 | **#94 försäkringsbolagen** | samarbetet klarlagt otillgängligt | Tvingade fram att facitstacken definierades ur **vår egen** data. Det är skälet att T-B och #98 kan dömas i vinter i stället för nästa | villkor |
 
-### 9.2 Strukna parametrar och regler
+### 8.2 Strukna parametrar och regler
 
 | Vad | Varför | Vad som överlever | Slag |
 | :-- | :-- | :-- | :-- |
@@ -296,7 +269,7 @@ något kvar**, och det kvarlämnade faller i tre slag:
 | **K1, byvindkvot per rad** (#164) | 335 av 748 stationer | Kvoten per rad är en **fönsterglappsdetektor** — ett datakvalitetsmått för L1 | mätt faktum |
 | **Per fordonstyp** (vind/sikt §2.1) | #92 stängt | Samma gräns som #92 | gräns |
 
-### 9.3 Kärnor som flyttats — och vart
+### 8.3 Kärnor som flyttats — och vart
 
 | Från | Till | Vad som flyttade |
 | :-- | :-- | :-- |
@@ -306,7 +279,7 @@ något kvar**, och det kvarlämnade faller i tre slag:
 | #89 (c) interaktionerna | **#46** (lager 1, dimma som konfidens) och **#90** (lager 2, sidvind × halka) | dimma × frysrisk är en ORSAK; sidvind ändrar faran givet en yta |
 | #88 T-B:s facit | **egen facitstack** | kamerafacit, väglagsarkivet, situation_archive |
 
-### 9.4 Vad registret sammantaget säger
+### 8.4 Vad registret sammantaget säger
 
 Tre saker blir synliga först när allt står på ett ställe:
 
@@ -321,3 +294,42 @@ Tre saker blir synliga först när allt står på ett ställe:
 3. **Flera strukna delar lämnade en BERÄKNING efter sig, inte bara en idé.** Torrdygnsräknaren
    (#89 b) är #42:s vattenfilmålder. Kvoten max/mean (`rate_max`) är #45:s formsignal. K1:s
    radkvot är en givarvaktsdetektor. Det är billigare att återanvända dem än att bygga om dem.
+
+---
+
+## 9. Vad som förblir osynligt oavsett allt ovan
+
+En **snöby mellan stationerna** (bara radarn ser den, #43) och **om saltbilen passerat** (ingen öppen
+källa). Båda är kända och står i förstudierna. De hör till kartans kanter, inte till dess mitt.
+
+---
+
+## 10. Den ärliga sammanfattningen
+
+Delarna **är** byggda så att de kan integrera: de faller i fem lager utan att någon behöver skrivas
+om, och varje del producerar en mätt storhet i stället för en dom — vilket är förutsättningen för att
+de ska kunna vägas ihop senare. Räckvidden är mätt och duger (§4.1), tillståndet och utvecklingen är
+byggda och sparade, och registret visar att även det underkända lämnat användbara beräkningar efter
+sig (§8.4).
+
+**Men tre saker står i vägen, och två av dem är regler vi själva skrivit:** utgången kan inte uttrycka
+allvar (§5.1), modellerade storheter får inte utlösa (§5.2), och grindarna dömer delar i stället för
+kombinationer (§5.3). Ingen av dem är ett kodfel. Alla tre är beslut, och alla tre är Bengts och Axels
+att ompröva.
+
+**Skillnaden mellan det vi har och produkten Bengt beskriver sitter alltså i L4:s knapp och i L5** —
+inte i det vi byggt de senaste dygnen.
+
+---
+
+## 11. Rättelsehistorik
+
+Brödtexten ovan säger vad som gäller i dag. Det här är vad som ändrats sedan kartan skrevs, så att
+ingen läser en överspelad version någon annanstans.
+
+| Datum | Vad | Var beslutet står |
+| :-- | :-- | :-- |
+| 14/9 | Kartan skriven | DECISIONS #159 |
+| 14/9 | **Grind A hade inte fallit.** Första utkastet sade att L4 var praktiskt tomt och citerade domen MAE 1,06 / grova 10,7 % — den gäller körningen FÖRE givarvakten och marginalvakten. Rätt dom är MAE 0,85 / 5,1 % / 0,3 %, ⏳ ingen dom. §4.1 säger nu det | DECISIONS #180 |
+| 14/9 | **Ett nej gäller en roll** (§7) och **registret** (§8) tillagda på Bengts två invändningar | DECISIONS #180, #181 |
+| 14/9 | Dokumentet omarbetat till **en** sammanhängande karta: rättelsen inarbetad i §4.1 i stället för inklistrad i sammanfattningen, tilläggen infogade i läsordningen, historiken samlad här | — |
