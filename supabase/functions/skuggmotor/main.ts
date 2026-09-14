@@ -232,10 +232,39 @@ Deno.serve(async (req) => {
       const f = land === "se" ? await archiveFacit(alerts, name) : { saved: 0, skal: [] };
       facitBudget -= f.saved; facitTotal += f.saved; facitSkal.push(...f.skal);
       results[name] = { fixes: trace.length, alerts: alerts.length };
+      // LARMETS POSITION (kort #158, DECISIONS #177/#179, Axels ja via Bengt 14/9).
+      //
+      // FÖRUT SKREVS `lon: a.lon` — OCH DET FÄLTET FINNS INTE. Motorns Alert bär `t`, `hazardId`,
+      // `kind`, `distanceM` och `text`, ingen koordinat. Edge-funktioner deployas utan typkontroll,
+      // så det blev `undefined` och JSON.stringify tappade nyckeln TYST. Mätt 14/9: 2 103 larm på
+      // fjorton dygn, NOLL med lon. Följden var att archiveFacit räknade haversine på NaN, aldrig
+      // hittade en kamera och rapporterade "ingen kamera inom 15 km" — kamerafacit har därför
+      // aldrig kunnat fyllas, och en kamerabild går inte att hämta i efterhand.
+      //
+      // POSITIONEN TAS UR FARAN, inte ur motorn. Punktfaror bär lon/lat själva; att slå upp dem på
+      // hazardId kräver ingen motorlogik i den här filen (CLAUDE.md: klistra aldrig motorkod i en
+      // edge function). `distanceM` skrivs också — Alert har alltid burit det, skuggmotorn kastade
+      // bara bort det.
+      //
+      // SEGMENT FÅR INGEN KOORDINAT, OCH DET SÄGS RAKT UT. En slippery_segment är en polyline; dess
+      // centroid kan ligga milsvitt från larmpunkten (Jämtlands segment är 59 km). Att skriva en
+      // ungefärlig punkt vore att göra om samma fel en gång till, fast tystare. Fältet `geo` säger
+      // därför VARFÖR en koordinat saknas: "punkt" = den finns, "segment" = den finns inte och ska
+      // inte finnas, "okänd" = faran hittades inte alls, vilket i sig är ett larm värt att se.
+      // Exakt punkt för segment kräver att motorns Alert bär den — det är form B och rör vektorerna.
+      const farorById = new Map(hazards.map((h) => [h.id, h]));
       const body = JSON.stringify({
         route: name, land: land.toUpperCase(), snapshot_generated_at: lv.generated_at,
         n_hazards: hazards.length, n_alerts: alerts.length,
-        alerts: alerts.map((a) => ({ t: a.t, kind: a.kind, id: a.hazardId, text: a.text, lon: a.lon, lat: a.lat })),
+        alerts: alerts.map((a) => {
+          const h = farorById.get(a.hazardId) as any;
+          const punkt = h && h.kind !== "slippery_segment" && typeof h.lon === "number";
+          return {
+            t: a.t, kind: a.kind, id: a.hazardId, text: a.text, distanceM: a.distanceM,
+            geo: !h ? "okänd" : punkt ? "punkt" : "segment",
+            ...(punkt ? { lon: h.lon, lat: h.lat } : {}),
+          };
+        }),
       });
       await fetch(`${SB}/rest/v1/shadow_log`, {
         method: "POST",
