@@ -363,6 +363,17 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ### Bengt
 - [ ] 📷 **#157 KAMERAFACIT ÄR TOMT — noll objekt efter 5 657 skuggkörningar**
+  🎯 **SKÄLET ÄR FRAMME 14/9 — OCH DET VAR INTE APIKEY** (DECISIONS #176). pg_net lagrar
+  skuggmotorns svar i `net._http_response`, och där står det: `"facit":0,"facitSkal":
+  ["ingen kamera inom 15 km"]`. Larmet inträffar, TRV svarar med kameror — men närmaste
+  väglagskamera ligger längre bort än radien.
+  🔬 **RÄTTELSE 3 VAR DEN SOM BETYDDE NÅGOT.** Den som såg minst ut — grenar som säger varför —
+  besvarade frågan. Utan den hade vi läst `facit: 0` och trott att apikey-rättelsen behövde tid.
+  ⚠️ **MIN HYPOTES ÄR OPRÖVAD, INTE BEKRÄFTAD:** koden når aldrig uppladdningen. Det sjunde ledet
+  var inte uppladdningen utan KAMERAVALET, och det låg före.
+  📏 **NÄSTA FRÅGA ÄR MÄTBAR:** hur långt är det från ett skugglarm till närmaste väglagskamera?
+  749 kameror med koordinater finns i kartlagret, `shadow_log.alerts` bär varje larms position.
+  **Ingen radie ändras innan det är mätt.**
   🔬 **UTREDD 14/9 (DECISIONS #172) — sex av sju led håller, felet är inringat till ETT.**
   Bucketen finns (skapad 29/8 10:22) · TRV-frågan fungerar (**749 kameror** ligger publicerade i
   kartlagret ur samma fråga) · kamerabildens URL ger **HTTP 200, image/jpeg, 13 kB** (provat
@@ -2318,7 +2329,26 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   vektor i tre portar + buntad skuggmotor (CLAUDE.md), och Bengts beslut: vidga ordlistan, eller låta
   kodgrinden vakta (BLINDLISTA tom utöver "fläckvis …" i varje körning, annars larm). Verify: kodgrindens
   BLINDLISTA i nästa körning; en vektor med "Rimfrost" på kod 2 som larmar i alla tre portarna om ordlistan vidgas.
-- [ ] 🐕 **#87 Healthcheckens fem kontroller in i vakthunden — sedan läggs healthcheck.yml ner** (bron i
+- [ ] 🐕 **#87 Healthcheckens kontroller in i vakthunden — FEM PÅ KORTET, TIO I FILEN — sedan läggs healthcheck.yml ner** (bron i
+  ✅ **BYGGT OCH BEVISAT 14/9** (Bengts order, DECISIONS #175, PR #242). Alla **tio** kontroller
+  ligger i vakthunden som check 9 och kör i produktion. Beviset är larmprovets issue #243, som
+  bär mätvärdesblocket ur det som faktiskt kör: grannarkiven 31–32 min · gräns-wx FI 20 / NO 44 ·
+  cameras och road_conditions_arkiv 46 min mot mjuka gränsen · livemotorns cron succeeded ·
+  fältgolv vind 747 / sikt 736 · arkivvakt 0 av 818 · räknare 2 790 / 818 · kartans meta 26 min ·
+  kameror-vaglag 749 st, 0,0 dygn. Enda problemraden är provet självt.
+  🔍 **KORTET SA FEM. FILEN INNEHÖLL TIO** — upptäckt vid flytten. De fem som saknades i listan:
+  `sync_state`-källräkningen, de VILANDE källornas 150-minutersgräns (check 1 ger dem ingen gräns
+  alls), livemotorns cron-puls, fältgolvet för vind och sikt, och räknarna. Hade bara kortets fem
+  porterats och filen sedan raderats hade fem kontroller försvunnit **tyst**.
+  🔒 **TOLV NYA KONTRAKT, TIDSBEGRÄNSADE MED FLIT** — de vaktar parallellveckan och ska bort i
+  SAMMA commit som healthcheck.yml. 26 kontrakt håller; mutationsprov 120 → 130 ⇒ exit 1.
+  ⏭️ **KVAR: VERIFY-VECKAN.** healthcheck.yml lever tills vakthunden larmat på ett FRAMKALLAT fel
+  i var och en av de tio (`?larmprov` räcker inte). Besparingen 12 min/dygn realiseras först då,
+  och raderingen är en egen fråga till Bengt och Axel (prejudikat: #79 krävde båda).
+  🕳️ **SPRICKA I DEPLOYVÄGEN, upptäckt på köpet:** första försöket föll på *"Failed to resolve
+  latest Supabase CLI release: rate limit exceeded"* — `supabase/setup-cli@v1` med `version:
+  latest` slår upp utgåvan OAUTENTISERAT. Omförsöket gick igenom. Enda deployvägen utan Axels
+  terminal hänger alltså på ett tak vi inte styr. Att pinna versionen tar bort beroendet.
   kort #50, Bengt 9/9). 🔒 LÅST BAKOM 14/9 (radardomen först, kort #81:s ordning). Vakthunden i Supabase
   (varje timme, larmväg bevisad 9/9 med issue #91 öppnad OCH stängd) ser livekedjan och manifestet. Kvar i
   healthcheck.yml, som kostar 12 Actions-minuter/dygn på pulsen: (1) fi/dk/no-arkivens ålder (gräns 120 min),
