@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-14 08:10 av Claude (webben) — 🔴 MÅNDAGSSERIEN KÖRDE INTE (kort #160): ingen av de sex, alla aktiva, naken GitHub-cron levererade inte — och mätvakten är blind för en missad måndag i 10,5 dygn. Kassan: släpande takt upp till 200 min/dygn, takdatum framflyttat till 26/9.*
+*Uppdaterad: 2026-09-14 17:45 av Claude (webben) — 🟠 MÅNDAGSSERIEN KOM, MEN 5 h 18 min till 6 h 48 min FÖR SENT (kort #160 rättat: de uteblev inte, de kom när cronen kände för det). 🔴 NYTT #161: `android/gradlew.bat` är permanent smutsig och fäller commit-steget i två flöden — sex källvakter har aldrig fått sitt state sparat. Kassan 16,21 USD av 35, takdatum 26/9 oförändrat, uppmätt takt i dag 100 min/dygn.*
   💰 **RÄTTAD 13/9 (DECISIONS #160, Bengts order):** prognosen räknade på månad-till-datum, och i
   det snittet låg fem flöden som lades ner 8–9/9 (`ingest-fi`, `-no`, `-dk`, `publish-map`,
   `regn-30`). Vakten sa **21 september**; uppmätt verklig takt var 232 min/dygn senaste dygnet och
@@ -213,6 +213,14 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   SQL-editorn — eller Claude via DB-knappen om den får en ren bevis-åtgärd). Första synliga effekten
   i räknaren: natten till 16/9. Full databas = ingest-live dör tyst =
   appen serverar gammal data igen (5/9-läget, fast utan Actions-larm).
+  📏 **UPPMÄTT 14/9 ur healthcheckens räknare, 16,0 h isär (över #83:s 12-timmarsgräns):**
+  weather_obs 284 090 (00:23) → 291 757 (16:23) = +7 667 netto ⇒ **~11 500 rader/dygn** i september
+  med dieten, efter gallringen. Raden bredvid de två föregående: 13 000/dygn (morgonen 14/9, 14 h)
+  och 21 281/dygn (hela dygnet 13/9). Kurvan pekar nedåt och ligger långt under septembertoppen
+  62 000 — milda dygn släpper få stationer genom dieten. Vintern upphäver den; talet säger ingenting
+  om november. Sidofynd samma körningar: road_conditions-arkivet står stilla
+  (830 rader, nyaste 472 h → 488 h gammal, 0 omklassningar) — väntat i en mild september, men värt
+  ett öga när första kalla veckan kommer.
   **VAD SOM FÅR SLÄNGAS UTAN ATT DOMEN RÖRS (mätt i koden):** grind A och grind V-A läser
   båda i 30-minutershinkar och tar SENASTE mätningen per hink (BUCKET_S = 1800,
   ORDER BY sample_time DESC). missar.ts läser 45-minutersfönster. Ingen dom läser
@@ -716,14 +724,29 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
-- [ ] 🔴 **#160 MÅNDAGSSERIEN KÖRDE INTE 14/9 — och mätvakten kan inte se det förrän om tio dygn**
+- [ ] 🟠 **#160 MÅNDAGSSERIEN KOM 5–7 TIMMAR SENT 14/9 — och mätvakten kan inte se det förrän om tio dygn**
   (morgonavläsningen 14/9 08:00). **DET HÄR ÄR 7/9 OM IGEN, och den gången tog det fem dygn innan en
   människa råkade titta.**
-  **FAKTA:** ingen av de sex körde — grind-a 05:40, smhi-prov 06:00, cell-matning-v3 06:20,
+  📏 **RÄTTAT I KVÄLLSAVLÄSNINGEN 14/9 17:30 — DE KÖRDE, DE KOM SENT.** Morgonens dom "körde inte"
+  var sann klockan 08:00 och falsk vid dagens slut. Alla sex levererades, och förseningen VÄXER genom
+  serien: grind-a 05:40 → **10:57** (+5h18) · smhi-prov 06:00 → **11:10** (+5h10) · cell-matning-v3
+  06:20 → **12:52** (+6h32) · trv-bevakning 06:40 → **13:19** (+6h39) · hojd-prov 07:00 → **13:48**
+  (+6h48) · grind-v-a 07:20 → **14:08** (+6h48). Fyra gröna; trv-bevakning röd av en annan orsak
+  (kort #161), liksom marknadsforing 05:45 → 10:07. **Grind A körde alltså — 2 881 punkter, MAE 0,81 °C
+  (A1 KLARAR), grova fel 5,0 % (A2 OAVGJORT), frysklassningsfel 0,6 % (A3 KLARAR) ⇒ INGEN DOM,
+  marginalvakten. Vinterunderlaget stod inte stilla; domen gjorde det.**
+  **Det ändrar diagnosen men inte åtgärden.** Naken GitHub-cron uteblir inte alltid — den kommer när
+  den kommer, och det duger inte för en serie vars sex steg lagts 20 minuter isär just för att de
+  bygger på varandra. Samma dygn kom healthcheckens tre cron-körningar 32 min, 39 min och 1 h 51 min
+  sent, medan pulsklockans nio låg på sekunden (:23:01). Pulsen levererar; cronen lovar.
+  Åtgärd (a) står oförändrad. (b) blir VIKTIGARE, inte mindre: en vakt som mäter ålder kan inte skilja
+  "uteblev" från "kom sju timmar sent" — och det var det senare som hände.
+  **FAKTA (morgonens bild, 08:00):** ingen av de sex hade kört — grind-a 05:40, smhi-prov 06:00, cell-matning-v3 06:20,
   trv-bevakning 06:40, hojd-prov 07:00, grind-v-a 07:20. Klockan 08:00 fanns 40 körningar på dygnet
   och noll ur serien. Alla sex flöden är `state=active` och cron-raderna står rätt på main. Det är
   alltså inte avstängning och inte ett schemafel.
-  **ROTORSAK: naken GitHub-cron levererar inte.** #70 mätte 40 % leverans. Att healthchecken lever
+  **ROTORSAK: naken GitHub-cron levererar opålitligt.** #70 mätte 40 % leverans; i dag levererade den
+  allt, 5–7 timmar sent. Att healthchecken lever
   beror inte på tur — den fyras av PULSKLOCKAN ur pg_cron, och en av dess egna cron-körningar kom i
   dag 39 min sen (bokad 04:23, levererad 05:02). Måndagsserien har ingen puls bakom sig.
   **OCH VAKTEN SER DET INTE.** Mätvakten (check 6) bevakar precis rätt sex flöden, men larmar på
@@ -739,6 +762,37 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     ju sällsyntare mätningen är, desto viktigare är varje enskild körning.
   Verify: (a) nästa måndag går alla sex utan knapptryck; (b) ett flöde vars körning uteblir en gång
   ger en rad i mätvakten inom ett dygn, prövat med matvaktprov.
+- [ ] 🧱 **#161 EN CRLF-FIL FÄLLER VARJE FLÖDE SOM COMMITTAR TILLBAKA — och sex källvakter har
+  aldrig sparat sitt state** (fynd + rotorsak i kvällsavläsningen 14/9).
+  **SYMTOM:** `trv-bevakning` och `marknadsforing` faller i sitt commit-steg med
+  `error: cannot pull with rebase: You have unstaged changes.` — EFTER att deras egen commit gått
+  igenom. Röda dygn: marknadsforing 6, 7, 8, 13 och 14/9; trv-bevakning båda sina schemalagda
+  körningar (7/9, 14/9). Det är precis de två enda flöden i repot som gör `git pull --rebase`.
+  **ROTORSAK, MÄTT LOKALT 14/9:** `android/gradlew.bat` ligger i git med CRLF i bloben, medan
+  `.gitattributes` (infört 12/9) säger `*.bat text eol=crlf`. Rengöringsfiltret normaliserar
+  arbetsträdets CRLF till LF före jämförelsen, LF ≠ blobens CRLF ⇒ filen är PERMANENT ändrad så
+  snart git gör en innehållsjämförelse i stället för att lita på stat-cachen. Bevis:
+  `touch android/gradlew.bat && git status` ⇒ ` M android/gradlew.bat`; `git diff --stat` ⇒
+  94 +/94 −, enbart radslut; `git ls-files --eol` ⇒ `i/crlf w/crlf` — index och arbetsträd båda CRLF,
+  vilket är exakt det attributet förbjuder. Det förklarar också varför felet är NYCKFULLT: det syns
+  bara när stat-cachen inte räcker till, och det avgörs av under-sekund-timing på löparen.
+  ✅ **ÅTGÄRDAT I SAMMA VARV:** `git add --renormalize android/gradlew.bat` ⇒ `i/lf w/crlf`, som
+  attributet föreskriver. Ingen funktionell rad ändras — bara bloben.
+  ⚠️ **DEN DYRA FÖLJDEN — ett tyst ALDRIG:** `trv-bevakning` skriver sitt state och committar det,
+  men pushen nås aldrig. Källvakten breddades 12/9 (6354771) från 7 till 13 källor. State-filen på
+  main bär fortfarande **7 källor**, senast skriven 12/9 06:52. De sex nya — `smhi-uppdateringar`,
+  `fi-digitraffic`, `no-vegvesen`, `dk-dmi`, `polisen-regler`, `polisen-api` — seedar om sig varje
+  körning ("första körningen — seedar utan larm" står i dagens logg) och kan därför ALDRIG larma.
+  Vakten ser levande ut och bevakar sex källor i tomma luften. Samma familj som CDN-fail-soft-läxan.
+  🔑 **TVÅ FRÅGOR TILL BENGT — jag har inte rört flödena:**
+  · **(a)** Ska commit-stegen härdas? De stagar en enskild sökväg och antar att resten av trädet är
+    rent. `git pull --rebase --autostash` (eller `git stash -u` före pull) gör dem okänsliga för
+    nästa smutsiga fil — och det kommer en nästa.
+  · **(b)** Ska steget skriva ut `git status --porcelain` när det faller? Loggen säger "You have
+    unstaged changes" utan att nämna VILKEN fil; det kostade ett diagnosvarv, precis som
+    "TRV 400" utan svarskropp gjorde.
+  Verify: (a) nästa trv-bevakning-körning pushar ett state med 13 källor; (b) ett framtvingat fel
+  visar filnamnet i loggen.
 - [ ] 🕳️ **#154 STEG C:s REGNFÄLT NÅR INTE DE SEGMENT VATTENPLANINGEN SITTER PÅ** (fynd i
   kvällsavläsningen 13/9, oprövat av mig i kod — lämnas till den som äger steg C).
   `publish/snapshot-core.ts` sätter `regn` på raderna ur väglagsfrågan, och den frågan hämtar bara
@@ -803,6 +857,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     en körning föll tyst i migrera-grenen och körde om gallringsmigrationen. Idempotent, inga rader
     rörda, bevisraderna visade alla tio cron-jobb intakta. Villkoret är nu inverterat så att det bara
     finns EN lista. Läxa i CLAUDE.md.)
+  📏 **AVLÄST 14/9 17:08 (kassavaktens egen rad, issue #210):** förbrukat sedan 1/9 **4 026 min över
+  3 006 körningar** ⇒ debiterat 2 026 min = **16,21 USD av taket 35**. Släpande takt **200 min/dygn**
+  (oförändrad sedan 05:08), månadssnittet sjunker (301 → 294). Takdatum **26/9, oförändrat sedan i
+  morse** — det går alltså inte åt fel håll. **Dygnets EGEN takt är lägre än båda:** 05:08 → 17:08
+  (12,0 h) gav 50 debiterade min över 38 körningar ⇒ **100 min/dygn**. Raderna 05:08, 11:08 och 17:08
+  finns alla; vakten fyrar som den ska.
 - [ ] 🧊 **#151 VÄGLAGETS ÅLDER — ska en stående vinterklassning tystas när mätningarna säger att vintern tagit slut?**
   📄 **TRÖSKELDOKUMENT FASTSTÄLLT 12/9 av Bengt** (`docs/TROSKLAR-VAGLAGETS-ALDER.md`, DECISIONS #151/#152).
   **Kortet kommer ur att Axel mätte i stället för att bygga det jag antog.** Jag flaggade att

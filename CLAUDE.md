@@ -197,6 +197,15 @@ i samma commit när de överlappar.
   någon vakt fanns; varje kopia sitter i en mätning som lämnar en dom, så en drivande kopia
   förfalskar domen och inte bara en siffra. Grinden är ett skyddsnät MELLAN ändringstillfällena —
   när en tröskel faktiskt ändras gäller fortfarande en fullständig grep över hela kodbasen.
+- Ett commit-steg som gör `git add <en sökväg>` antar tyst att RESTEN av trädet är rent, och faller på
+  en fil det aldrig rört. 12/9 infördes `*.bat text eol=crlf` medan `android/gradlew.bat` låg i git med
+  CRLF redan i bloben ⇒ filen är permanent "ändrad" varje gång git läser innehåll i stället för att lita
+  på stat-cachen, och `git pull --rebase` vägrar med "You have unstaged changes" UTAN att nämna filen.
+  Nyckfullt (fyra gröna dygn emellan), så mönstret syns inte i en enskild logg. Följden var värre än de
+  röda jobben: trv-bevaknings state nådde aldrig main, och sex källvakter seedade om sig varje körning —
+  levande i loggen, oförmögna att larma. Regel: flöden som committar tillbaka använder
+  `git pull --rebase --autostash` och skriver ut `git status --porcelain` i fel-grenen; och ett nytt
+  radslutsattribut följs av `git add --renormalize` i samma commit.
 - `Boolean(precipitation)` är en falsklarmsmaskin: Trafikverket skriver "no" vid uppehåll och
   de nordiska källorna "Dry". Nederbördsklasser är strängar med ordlista, aldrig sanningsvärden.
 
