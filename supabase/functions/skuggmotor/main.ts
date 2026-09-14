@@ -141,12 +141,36 @@ async function trvCameras(): Promise<{ id: string; lon: number; lat: number; url
   });
 }
 
-let facitBudget = 5;
-async function archiveFacit(alerts: Alert[], route: string): Promise<number> {
-  if (facitBudget <= 0) return 0;
-  if (!alerts.length) return 0;
+// FACITARKIVERINGEN — rättad 14/9 (kort #157, DECISIONS #172/#173, Bengts order).
+//
+// VAD SOM VAR FEL: bucketen `facit` innehöll NOLL objekt efter 5 657 skuggkörningar, varav 756
+// med larm. Sex av sju led i kedjan mättes och höll — bucketen fanns sedan 29/8, TRV-frågan gav
+// 749 kameror, bildens URL svarade 200 med en giltig jpeg. Det sjunde ledet, uppladdningen, var
+// det enda som inte gick att prova utifrån, och det enda Supabase-anropet i hela repot som
+// saknade `apikey`. Varje annat anrop i den här filen skickar både Authorization och apikey.
+//
+// TRE RÄTTELSER, för en ensam hade dolt de andra två:
+//  1. `apikey` läggs till i uppladdningen.
+//  2. Budgeten återställs PER ANROP. Den stod på modulnivå och minskades bara vid LYCKAD
+//     sparning, så ett isolat som fått sina fem bilder tystnade för gott. Med enbart rättelse 1
+//     hade det gett fem bilder och sedan tystnad — och sett ut som att felet var löst.
+//  3. VARJE GREN SÄGER VARFÖR. Funktionen returnerade bara en siffra, och noll gick inte att
+//     skilja från "inga larm". Nu går skälet med i svaret, och uppladdningens fel bär API:ets
+//     SVARSKROPP — kameror-vaglag-läxan i CLAUDE.md, som fanns nedskriven men inte tillämpad här.
+//
+// VARFÖR DET HASTAR: en kamerabild är ett ögonblick. Trafikverket serverar bara den senaste, så
+// det finns inget arkiv att hämta en passerad natt ur. Kamerafacit är därmed den enda källan i
+// hela projektet som INTE går att räkna om i efterhand — och den bärande facitkällan för T-B
+// (#88), tystnadsfelet (#98) och mars-domen (DECISIONS #94).
+const FACIT_PER_KORNING = 5;
+let facitBudget = FACIT_PER_KORNING;
+
+async function archiveFacit(alerts: Alert[], route: string): Promise<{ saved: number; skal: string[] }> {
+  const skal: string[] = [];
+  if (facitBudget <= 0) return { saved: 0, skal: ["budget slut"] };
+  if (!alerts.length) return { saved: 0, skal: [] };
   const cams = await trvCameras();
-  if (!cams.length) return 0;
+  if (!cams.length) return { saved: 0, skal: ["TRV gav noll väglagskameror"] };
   const bucket3h = Math.floor(Date.now() / 10_800_000);
   const day = new Date().toISOString().slice(0, 10);
   let saved = 0;
@@ -157,18 +181,23 @@ async function archiveFacit(alerts: Alert[], route: string): Promise<number> {
       const d = haversineM({ lon: a.lon, lat: a.lat }, { lon: c.lon, lat: c.lat });
       if (d < bd) { bd = d; best = c; }
     }
-    if (!best || seen.has(best.id)) continue;
+    if (!best) { skal.push("ingen kamera inom 15 km"); continue; }
+    if (seen.has(best.id)) continue;
     seen.add(best.id);
     const path = `${day}/${best.id}-${bucket3h}.jpg`;
-    const img = await fetch(best.url).then((r) => r.ok ? r.arrayBuffer() : null).catch(() => null);
-    if (!img) continue;
+    const bild = await fetch(best.url).catch(() => null);
+    if (!bild?.ok) { skal.push(`bildhämtning ${bild ? bild.status : "kastade"}`); continue; }
+    const img = await bild.arrayBuffer();
     const up = await fetch(`${SB}/storage/v1/object/facit/${path}`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${SRK}`, "Content-Type": "image/jpeg" },
+      // apikey SAKNADES här, och bara här. Det var kort #157:s troliga rotorsak.
+      headers: { Authorization: `Bearer ${SRK}`, apikey: SRK, "Content-Type": "image/jpeg" },
       body: img });
-    if (up.ok) saved++;               // 409 = fanns redan (dedupe) — helt ok
+    if (up.ok) { saved++; continue; }
+    if (up.status === 409) { skal.push("409 fanns redan"); continue; }   // dedupe — helt ok
+    skal.push(`uppladdning ${up.status}: ${(await up.text().catch(() => "")).slice(0, 120)}`);
   }
-  return saved;
+  return { saved, skal };
 }
 
 Deno.serve(async (req) => {
@@ -186,6 +215,8 @@ Deno.serve(async (req) => {
     const hazards = snapshotToHazards(st, lv);
     const results: Record<string, unknown> = {};
     let facitTotal = 0;
+    const facitSkal: string[] = [];
+    facitBudget = FACIT_PER_KORNING;   // per ANROP, inte per isolat — se rättelse 2 ovan
     // Rotation: 3 rutter per varv (CPU-taket, läxa 29/8) — alla 20 täcks varje 3,5 h,
     // i båda länderna.
     const allNames = Object.keys(routes).sort();
@@ -198,7 +229,8 @@ Deno.serve(async (req) => {
       const trace = traceAlong(line);
       const alerts = new AlertEngine(hazards).run(trace);
       // Facit-bilder finns bara i Sverige (Trafikverkets väglagskameror).
-      const f = land === "se" ? await archiveFacit(alerts, name) : 0; facitBudget -= f; facitTotal += f;
+      const f = land === "se" ? await archiveFacit(alerts, name) : { saved: 0, skal: [] };
+      facitBudget -= f.saved; facitTotal += f.saved; facitSkal.push(...f.skal);
       results[name] = { fixes: trace.length, alerts: alerts.length };
       const body = JSON.stringify({
         route: name, land: land.toUpperCase(), snapshot_generated_at: lv.generated_at,
@@ -211,7 +243,10 @@ Deno.serve(async (req) => {
         body });
       }
     }
-    return new Response(JSON.stringify({ ok: true, results, facit: facitTotal }), {
+    // Skälen går med i svaret. En nolla utan skäl är omöjlig att skilja från "inga larm",
+    // och det var precis det som lät bucketen stå tom i sexton dygn utan att någon såg det.
+    return new Response(JSON.stringify({ ok: true, results, facit: facitTotal,
+      facitSkal: [...new Set(facitSkal)].slice(0, 8) }), {
       headers: { "Content-Type": "application/json" } });
   } catch (e) {
     return new Response(JSON.stringify({ ok: false, error: String(e) }), { status: 500 });
