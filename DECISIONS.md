@@ -5321,7 +5321,7 @@ median — aldrig mätt som upplösning). Båda går att ställa mot befintligt 
 kärnor flyttades (till #153 respektive `N_varning`). Nejet stänger rollen, kärnan flyttar. Det som
 inte får hända är att en kärna stryks utan att någon frågar vart den tog vägen.
 
-## #181 (14/9 2026) Integrationskartans register — allt struket, stängt och flyttat i samma dokumentegistret över allt struket, stängt och flyttat
+## #181 (14/9 2026) Integrationskartans register — allt struket, stängt och flyttat i samma dokument
 
 Bengts invändning: allt som strukits eller flyttats ska in i integrationsdokumentet, så
 att det inte landar bredvid när man tar ett samlat grepp - och den samlade effekten
