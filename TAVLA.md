@@ -363,6 +363,19 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ### Bengt
 - [ ] 📍 **#158 SKUGGLOGGENS LARM SAKNAR POSITION — och tre mätningar hänger på det**
+  ✅ **BYGGT OCH DEPLOYAT 14/9 — FORM A** (Axels ja via Bengt, DECISIONS #179, PR #248).
+  Positionen tas ur FARAN, inte ur motorn: punktfaror bär lon/lat själva, så en uppslagning på
+  `hazardId` räcker — ingen motorlogik i edge-funktionen. `distanceM` skrivs också, som Alert
+  alltid burit och skuggmotorn kastade bort. **Motorkoden och vektorerna orörda**, bunten
+  omgenererad, `--check` grön, deployad efter verifiering mot main.
+  🧭 **SEGMENT FÅR INGEN KOORDINAT — ett beslut, inte en lucka.** En polyline vars centroid kan
+  ligga milsvitt från larmpunkten (Jämtlands segment är 59 km) hade gett ett tal som ser ut som en
+  position men pekar fel — samma fel igen, fast tystare. Fältet **`geo`** säger varför: `punkt`,
+  `segment` eller `okänd`, där okänd i sig är ett larm värt att se.
+  ⏭️ **FORM B ligger kvar som ett senare val:** motorns `Alert` bär punkten `distanceM` mättes till.
+  Exakt för alla farslag, men rör vektorerna och alla tre motorer.
+  ⚠️ **DET SOM PASSERAT ÄR BORTA.** Sexton dygns larm loggades utan position, och kamerabilden för
+  en passerad natt finns inte kvar hos Trafikverket. Facitstacken börjar från i dag.
   **Fyndet 14/9 (DECISIONS #177):** 2 103 larm på fjorton dygn, **0 med `lon`, 0 med `distanceM`**.
   En verklig rad: `{"t":1705,"id":"cam:22029010","kind":"camera","text":"Fartkamera om 500 meter."}`
   📐 **ORSAKEN:** motorns `Alert` (`engine/src/types.ts:77`) bär `t`, `hazardId`, `kind`,

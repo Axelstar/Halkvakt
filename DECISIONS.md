@@ -5229,3 +5229,48 @@ kvar och berörs inte av det här beslutet.
 närmar sig. Bygget gjordes, besparingen uteblir, och det är rätt beslut ändå — men kortets
 ursprungliga motiv var kostnaden, och det motivet gäller inte längre. Det som blev kvar av värde är
 att **vakthunden nu ser tio kontroller den inte såg i går**, och att fem av dem aldrig stod på kortet.
+
+## #179 (14/9 2026) Larmets position in i skuggloggen — form A, och frånvaron får ett skäl
+
+**Beslut (Axels ja via Bengt 14/9, kort #158):** skuggmotorn skriver larmets position, hämtad ur
+**faran** och inte ur motorn. Form A av de två som lades fram; form B — att motorns `Alert` bär
+punkten `distanceM` mättes till — rör vektorerna och ligger kvar som ett senare val.
+
+**VAD SOM VAR FEL.** `main.ts` skrev `lon: a.lon` på ett fält som inte finns: `Alert`
+(`engine/src/types.ts:77`) bär `t`, `hazardId`, `kind`, `distanceM` och `text`. Edge-funktioner
+deployas utan typkontroll, så det blev `undefined` och `JSON.stringify` tappade nyckeln tyst. Mätt
+14/9: **2 103 larm på fjorton dygn, 0 med `lon`, 0 med `distanceM`** (#177).
+
+**VAD SOM ÄNDRAS.** Punktfaror bär `lon`/`lat` själva, så en uppslagning på `hazardId` bland
+`hazards` räcker — ingen motorlogik i edge-funktionen (CLAUDE.md:s regel om att aldrig klistra
+motorkod i en edge function). `distanceM` skrivs också; Alert har alltid burit det och skuggmotorn
+kastade bara bort det.
+
+**SEGMENT FÅR INGEN KOORDINAT, OCH DET ÄR ETT BESLUT.** En `slippery_segment` är en polyline vars
+centroid kan ligga milsvitt från larmpunkten — Jämtlands segment är 59 km (kort #100:s mätning). Att
+skriva en ungefärlig punkt hade varit att göra om exakt samma fel en gång till, fast tystare: ett
+tal som ser ut som en position men pekar fel. Exakt punkt kräver form B.
+
+**FÄLTET `geo` SÄGER VARFÖR EN KOORDINAT SAKNAS**, och det är den egentliga läxan ur #177:
+
+| `geo` | betyder |
+| :-- | :-- |
+| `punkt` | koordinaten finns |
+| `segment` | den finns inte och **ska** inte finnas |
+| `okänd` | faran hittades inte i `hazards` — i sig ett larm värt att se |
+
+En saknad nyckel var förut omöjlig att skilja från en bugg. Nu bär varje larm sitt eget skäl, och
+det var precis den formen som löste #157 när `archiveFacit` tvingades säga varför den gav upp.
+
+**MOTORKODEN OCH VEKTORERNA ÄR ORÖRDA:** `engine/` har noll ändrade rader, bunten är omgenererad och
+`bundle-skuggmotor --check` är grön. Deployad efter `git pull` och verifiering mot main, enligt
+Axels regel (#126).
+
+**VAD SOM LÅSES UPP NÄR POSITIONERNA BÖRJAR FLYTA:**
+1. **Kamerafacit (#157)** — `archiveFacit` kan äntligen hitta en kamera och spara en bild.
+2. **Facitradien (#157)** — knappen finns och kan mäta om 15 km är rätt radie, för första gången.
+3. **Tystnadsfelets T3 (#98)** — vakten som i dag vägrar svara kan börja svara.
+
+**RESERVATION SOM SKA FÖLJA MED:** det som redan passerat är borta. Kamerabilden för en passerad natt
+finns inte hos Trafikverket, och sexton dygns larm har loggats utan position. Facitstacken börjar
+alltså från i dag, inte från 29 augusti.
