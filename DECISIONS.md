@@ -5350,3 +5350,67 @@ Tre saker blir synliga först när allt står på ett ställe:
 3. Flera strukna delar lämnade en BERÄKNING efter sig, inte bara en idé.
    Torrdygnsräknaren är #42:s vattenfilmålder, kvoten max/mean är #45:s formsignal,
    K1:s radkvot är en givarvaktsdetektor. Billigare att återanvända än att bygga om.
+
+## #182 (14/9 2026) Motorn och fogarna inarbetade i integrationskartan
+
+**Bengts fråga 14/9:** *"tar integrationskartan hänsyn till det som faktiskt ligger i motorn nu och hur
+det som är i motorn och det som ligger i kartan som inte klart sömlöst ska kunna länkas ihop."*
+
+**Nej, den gjorde inte det.** Kartan var skriven från skuggans sida; motorn nämndes bara anekdotiskt
+(`engine.ts:50–54`, regel 1a, `icing_point`). Ny §4 (motorn som den faktiskt ser ut) och §5 (fogarna),
+lästa ur `engine/src/{types,engine,snapshot,texts}.ts`, de 23 vektorerna, båda portarnas
+snapshot-läsare och den publicerade `live.json` — inte ur minnet.
+
+**MOTORN HAR EXAKT FEM FOGAR, och de kostar dramatiskt olika mycket:**
+
+| Fog | Var | Vektorer som måste göras om | Portar |
+| :-- | :-- | --: | --: |
+| F1 | `live.json` (`snapshot-core.ts`) | **0** | **0** |
+| F2 | `snapshotToHazards()` | 0 | 3 |
+| F3 | `meta` på Point/SegmentHazard | 0 | 3 |
+| F4 | `evaluatePoint`/`evaluateSegment` | **6 is / 3 segment** | 3 |
+| F5 | `PRIORITY`, regel 1a/1b, `alertText()` | **23 (alla)** | 3 |
+
+F4:s tal är räknade: sex vektorer bär en `icing_point` (v08, v09, v11, v18, v19, v23), tre ett
+`slippery_segment` (v04, v07, v11).
+
+**v11_silent_drive är den verkliga grinden för hela tillståndslagret.** Den bevisar TYSTNAD och bär
+både en ispunkt och ett segment som måste förbli tysta. Varje vidgning av L2 — skattaren säger "blöt"
+där `fukt` var falskt — får v11 att tala, och en vektor försvagas aldrig för att få ett bygge grönt.
+
+**TRE FYND SOM ÄNDRAR BILDEN:**
+
+1. **Fogen läcker redan.** `snapshot-core.ts` skriver `segments[].regn` (radarns mm/h, #81 C) i varje
+   publicerad `live.json` — men `LiveDoc` i `engine/src/snapshot.ts` deklarerar inte fältet och
+   adaptern kastar det. Radarlagret ligger alltså **redan i telefonen** och slängs vid adaptern.
+   Samma sak för `smhi[]` (deklarerat `unknown[]`, "map/UI layer"), `segments[].road`,
+   `deviations[].typ`, `wildlife[].art`, `cameras[].road`. Första riktiga integrationen — radarns
+   väta × operatörens klass — kräver alltså INGEN ny publicering, bara F2+F3+F4.
+
+2. **F1 är gratis, men "ersätt" är livsfarligt.** Båda portarna läser snapshoten otypat
+   (`org.json.JSONObject` respektive `JSONSerialization` → `[String: Any]`), så okända nycklar
+   ignoreras per konstruktion — ett nytt fält kan inte fälla en installerad app. Men Android läser
+   `w.optBoolean("fukt", false)`: byts `fukt` mot en graderad nivå blir defaultvärdet `false` och
+   **varje app som inte uppdaterats tystnar på is**, utan felmeddelande och utan checksummefel.
+   Regeln som skrivs in i kartan: **LÄGG TILL, ERSÄTT ALDRIG.**
+
+3. **Repetitionsscenen finns redan och tvingar fram en ordning.** `bundle-skuggmotor.ts` buntar
+   `engine/src/*.ts` ordagrant, och både `ci` och `deploy-supabase` kör `--check` — skuggmotorn ÄR
+   motorn. Men skuggan läser samma `live.json` som apparna, så ett opublicerat fält finns inte heller
+   för skuggan. Sekvensen blir: **F1 publicera → mät i skuggan → F4 ändra villkoret → tre portar**, och
+   F1 ligger alltid minst ett varv före F4. Görs de i samma varv finns ingen mätning som skiljer
+   "regeln blev bättre" från "fältet blev tillgängligt".
+
+**MÖNSTRET:** nio av tio skuggdelar greppar **additivt**. Bara #153 (allvarsskalan) kostar F5. Det är
+§7.8:s lärdom tillämpad — rimfrosten valde F3+F4 i stället för F5 och slapp 23 vektorer — och samma val
+står öppet för #45 (snö/slask) och #42 (vattenplaning): de ska byggas som meta, aldrig som ett sjätte
+farslag.
+
+**SKÄRPNING AV EN GAMMAL FORMULERING:** motorns `leadM` (fart × 30 s, klämt till 400–3 000 m) är inte
+en giltighetsradie — den mäter förarens fart, inte mätningens räckvidd. Grind A:s felkurva mäter den
+andra storheten. Två olika saker med samma ord, och motorn har bara den första.
+
+**Uppmätt i den publicerade `live.json` 14/9 05:10:** 28 väderstationer, 1 avvikelse, 1 viltpunkt,
+0 segment, 0 broar, 0 SMHI-ytor. I september har motorn i praktiken bara `icing_point` och kamerorna.
+
+Kartan är nu 13 paragrafer, 508 rader. Inget kortnummer ur föregående version saknas.
