@@ -5274,3 +5274,49 @@ Axels regel (#126).
 **RESERVATION SOM SKA FÖLJA MED:** det som redan passerat är borta. Kamerabilden för en passerad natt
 finns inte hos Trafikverket, och sexton dygns larm har loggats utan position. Facitstacken börjar
 alltså från i dag, inte från 29 augusti.
+
+## #180 (14/9 2026) Integrationskartan rättad: grind A står, och ett nej gäller en ROLL
+
+**Bengts två invändningar 14/9**, båda riktiga: *"är det inte så att vi får lyfta in alla underkända
+och bedöma dem på nytt"* och *"jag tror inte offset är förkastad, ny mätning visade att den duger."*
+
+**RÄTTELSE — JAG CITERADE EN ÖVERSPELAD MÄTNING.** Integrationskartan och mitt svar samma dag sade
+att grind A hade **fallit** (MAE 1,06, grova 10,7 %). Den domen gäller körningen **före** #75:s
+givarvakt (#129) och marginalvakten (#126/#128). Med båda på plats, DECISIONS #131:
+
+| band | MAE | grova > 2 °C | frysklassfel |
+| :-- | --: | --: | --: |
+| 0–7 km | **0,33 °C** | 0,0 % | 0,0 % |
+| 7–15 km | 0,78 | 3,1 % | 0,0 % |
+| 15–20 km | 0,85 | 6,4 % | 0,0 % |
+| > 20 km | 0,89 | 5,4 % | 0,4 % |
+| **totalt (1 943 p)** | **0,85** | **5,1 %** | **0,3 %** |
+
+A1 **KLARAR** (0,85 mot 1,0) · A2 **OAVGJORT** (5,1 mot 5,0) · A3 **KLARAR** (0,3 mot 10).
+Domen är ⏳ **INGEN DOM** — uttryckligen *"inte ett nej"*.
+
+**OCH DET ÄNDRAR L4 I GRUNDEN.** Talen stiger monotont med ankaravståndet — 0,33 · 0,78 · 0,85 · 0,89
+— som fysiken kräver. Det är inte en tom ruta utan en **mätt avståndsberoende osäkerhetskurva**, och
+det är precis den storhet räckviddslagret behöver. Det som saknas är inte mekanismen utan **knappen**:
+vad som gör kurvan brantare eller flackare en enskild natt.
+
+Att jag skrev "praktiskt tomt" var alltså inte en nyansfråga — det var fel underlag, och det gjorde
+ett lager som fungerar till ett som saknas.
+
+**PRINCIPEN SOM FÖLJER AV DEN ANDRA INVÄNDNINGEN, nu skriven i kartans §8:**
+
+> Ett underkännande gäller den **fråga som ställdes**. En del får prövas i en ny roll — men den nya
+> rollen kräver en **ny fråga, skriven före mätningen, med egen grind**. Ingen del återinförs på hopp.
+
+Bromsen är nödvändig, annars blir principen ett sätt att aldrig ta ett nej. Men prejudikatet finns
+redan: **kamerorna** underkändes som täckning (6 av 744 gav nytt ankarläge) och blev **bildfacit** —
+en av tre facitkällor systemet i dag vilar på. Samma del, annan roll, avgörande värde.
+
+**De sju underkända har alla en obesvarad fråga i det sammanvägda**, och två av dem kräver inte ens
+vinter: **höjden som varianspredikator** (förutsäger den var modellen är opålitlig, i stället för att
+korrigera medelvärdet?) och **radarns segmentupplösning** (mätt där en station stod 6,7 km bort i
+median — aldrig mätt som upplösning). Båda går att ställa mot befintligt arkiv.
+
+**OCH EN FORM SOM REDAN VISAT SIG:** #100:s dämpning och den breda SMHI-regeln underkändes, men deras
+kärnor flyttades (till #153 respektive `N_varning`). Nejet stänger rollen, kärnan flyttar. Det som
+inte får hända är att en kärna stryks utan att någon frågar vart den tog vägen.
