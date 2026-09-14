@@ -363,6 +363,17 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ### Bengt
 - [ ] 🧩 **#159 INTEGRATIONSKARTAN — tre av våra egna regler står i vägen för produkten**
+  📚 **§9 REGISTRET TILLAGT 14/9 på Bengts invändning** (DECISIONS #181): allt struket, stängt och
+  flyttat står nu i SAMMA dokument — fyra stängda kort, nio strukna parametrar, fem flyttade kärnor.
+  Skälet: annars landar de bredvid när någon tar ett samlat grepp.
+  🧭 **Det kvarlämnade faller i tre slag:** GRÄNS (var produkten inte kan nå) · VILLKOR (vad
+  kombinationen inte får göra) · MÄTT FAKTUM (mätningen överlever även när delen inte gjorde det).
+  💡 **Tre saker syns först när allt står på ett ställe:** (1) gränserna är inte hål utan produktens
+  FORM — #92 och #93 säger tillsammans *vi talar om vägen där någon mäter den, inte om fordonet och
+  inte där ingen mäter*. (2) **Allvarsskalans ramar är redan skrivna, fast utspridda** i tre stängda
+  kort: E3 (aldrig prioritet), #103 (episoder, inte rader), #100 (talen för långa sträckor) — #153
+  behöver inte uppfinna dem. (3) Flera strukna delar lämnade en BERÄKNING efter sig, inte bara en
+  idé: torrdygnsräknaren är #42:s vattenfilmålder, kvoten max/mean är #45:s formsignal.
   🔴 **RÄTTAD 14/9 PÅ BENGTS INVÄNDNING (DECISIONS #180): GRIND A HAR INTE FALLIT.** Jag citerade
   körningen FÖRE givarvakten och marginalvakten. Med båda på plats (#131, 1 943 punkter): MAE
   **0,85** (A1 KLARAR), grova **5,1 %** (A2 OAVGJORT), frysklassfel **0,3 %** (A3 KLARAR) — domen
