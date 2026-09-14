@@ -363,6 +363,22 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ### Bengt
 - [ ] 🧩 **#159 INTEGRATIONSKARTAN — tre av våra egna regler står i vägen för produkten**
+  🔧 **MOTORN OCH FOGARNA INARBETADE 14/9 (DECISIONS #182)** på Bengts fråga om kartan tar hänsyn
+  till det som FAKTISKT kör. Svaret var nej — kartan var skriven från skuggans sida. Ny §4 (motorn
+  som den ser ut, läst ur koden) och §5 (fogarna).
+  🔓 **MOTORN HAR EXAKT FEM FOGAR:** F1 `live.json` (**0 vektorer, 0 portar**) · F2 adaptern · F3
+  `meta` · F4 villkoret (**6 is / 3 segment**) · F5 prioritet+röst (**23 = alla**). Nio av tio
+  skuggdelar greppar ADDITIVT; bara #153 kostar F5.
+  🚨 **FOGEN LÄCKER REDAN:** `segments[].regn` (radarns mm/h, #81 C) publiceras i varje `live.json`
+  men finns inte i `LiveDoc` — **radarlagret ligger redan i telefonen och kastas vid adaptern**. Samma
+  för `smhi[]`. Första riktiga integrationen kräver alltså INGEN ny publicering.
+  ⚠️ **LÄGG TILL, ERSÄTT ALDRIG.** Portarna läser snapshoten OTYPAT ⇒ nya fält är gratis. Men Android
+  läser `optBoolean("fukt", false)` — byts `fukt` ut tystnar **varje icke-uppdaterad app på is**, utan
+  felmeddelande och utan checksummefel.
+  🧪 **v11_silent_drive är grinden för hela tillståndslagret** — den bevisar TYSTNAD, och varje
+  vidgning av L2 får den att tala. En vektor försvagas aldrig för att få ett bygge grönt.
+  🔁 **SEKVENS:** F1 publicera → mät i skuggan (skuggmotorn ÄR motorn, `--check` i två workflows)
+  → F4 ändra villkoret → tre portar. F1 alltid minst ett varv före F4.
   📖 **OMARBETAD 14/9 TILL ETT SAMMANHANGANDE DOKUMENT (Bengts order).** Kartan lag i EN fil men
   var skriven i tre lager ovanpa varandra: original, rattelse inklistrad i sammanfattningen, tva
   tillagg med egen "Bengts invandning"-inramning. Den lastes som ett samtal, inte som en karta.
