@@ -343,6 +343,29 @@ TROSKLAR-VATTENPLANING §2.
 **Tidskritiskt:** steg 3:s dom har samma fönster som #88:s T-A — höstens första frostnätter, som inte
 kan tas ikapp. Steg 2 måste därför stå klart innan frosten, annars finns ingen skugga att döma.
 
+### Vad som sparas och vad som räknas om — principen bakom byggformen
+
+**SPARA DET SOM INTE GÅR ATT RÄKNA OM. RÄKNA OM DET SOM GÅR.** Och — det avgörande — **vilket som
+är vilket är en MÄTNING, inte en smaksak**: frågan är om gallringen (#83, sql/014) förstör den
+upplösning måttet behöver.
+
+Gallringen behåller sista raden per station och 30-minutershink för allt äldre än sju dygn.
+
+| Mått | Ingång | Upplösning måttet kräver | Överlever gallringen? | ⇒ byggform |
+| :-- | :-- | :-- | :-- | :-- |
+| **#88 trenden** | yttemperatur per minut | 15 min, ≥ 3 mätningar | **nej** | härledda storheter sparas (`trend_kandidater`) |
+| **#89 skattaren** | regn per timme | 1 timme | **ja** | räknas om vid behov, inget sparas |
+| **#98 tystnadsfelet** | facit + skuggloggen + fyra signaler | händelse | **ja** (append-only tabeller) | räknas om vid behov, inget sparas |
+
+Att de tre byggena ser olika ut är alltså inte slarv. Den som sparar gör det för att ingången
+förstörs; de som räknar om gör det för att ingången finns kvar. **Båda sparar dessutom bara MÄTTA
+STORHETER, aldrig domar** — en sparad dom hade låst tröskeln innan grinden valt den.
+
+⚠️ **SNUBBELTRÅDEN (kort #155):** principen vilar på att kvarhållningen inte skärps. Gallringens
+eget huvud säger att gratisnivån räcker ~55 dygn in i vintern, och steg 2 (export eller Pro) är ett
+öppet oktoberbeslut. Skärps kvarhållningen — eller börjar `radar_precip` gallras, vilket inget gör i
+dag — **upphör ingången att vara återskapbar, och då måste måttet byta form.**
+
 ---
 
 ## 10. Ändring

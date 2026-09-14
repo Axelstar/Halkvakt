@@ -10,11 +10,18 @@
 // "eget facit först … INNAN någon övergångsregel läser den". Den spärrar ANVÄNDNINGEN, inte
 // bygget. Skattaren får alltså byggas och skuggas; det är steg 3 som måste vänta på facit.
 //
-// VARFÖR INGEN SKRIVANDE KOLUMN. Planen sa "en kolumn per segment i skuggloggen". Den behövs inte:
-// ingångarna (`radar_precip`, `weather_observations`) är redan sparade, och gallringen (#83, sql/014)
-// rör bara `weather_observations`. Skattningen kan därför räknas om i efterhand för vilket fönster
-// som helst — också för frostnätterna, i efterhand, inom Ö-D:s sju dygn. En skrivande kolumn hade
-// dessutom krävt ett nytt cron-jobb, och de är stängda sedan #85. Knapp, inte kadens.
+// VARFÖR INGEN SKRIVANDE KOLUMN — och skälet är MÄTT, inte valt. Principen står i
+// TROSKLAR-OVERGANGAR: spara det som inte går att räkna om, räkna om det som går. Trendarkivet
+// (#88) MÅSTE spara, eftersom gallringen förstör dess 15-minutersfönster. Det här måttet räknar
+// på TIMME, och timupplösningen ÖVERLEVER gallringen: den behåller sista raden per
+// 30-minutershink, och rain_sum_mm är en 30-minuters BAKÅTSUMMA — den sparade raden är alltså
+// just den som ser hinkens regn. radar_precip gallras inte alls. En skrivande kolumn hade
+// dessutom krävt ett nytt cron-jobb, och de är stängda sedan #85.
+//
+// FÖLJDEN: ingen driftvakt behövs här. #88 har två kopior av samma regel — TypeScript och SQL —
+// och behöver därför ett prov som visar att de väljer samma rader (flyttalsfyndet 13/9).
+// Skattaren finns bara i TypeScript och kan inte glida isär med sig själv. Räknas den någon gång
+// i drift gäller samma krav som för #88.
 //
 // VAD DEN SVARAR PÅ — fyra frågor, var och en med egen underlagsvakt:
 //   2a TÄCKNINGEN     — hur många segment går att skatta alls, och hur långt bort sitter beviset?
@@ -34,6 +41,7 @@
 
 import { skatta, samstammiga, N_SVEP, REGN_SVEP, R_SVEP } from "../publish/tillstand.ts";
 
+const MAX_DAGAR = 14;            // hårt tak, inte bara en varning
 const MIN_SEGMENTTIMMAR = 500;   // under detta skrivs OAVGJORT, aldrig ett tal
 const MIN_JAMFORELSER = 100;     // 2c:s egen vakt — en samstämmighet på tio timmar är ingen dom
 const MAX_KM = 50;               // samma ankargräns som grind A (publish/grind-a.ts:14)
@@ -72,7 +80,7 @@ if (process.argv.includes("--sjalvtest")) {
 // ── Skarpt (läser bara).
 const url = process.env.DATABASE_URL;
 if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
-const DAGAR = Number(process.argv.slice(2).find((a) => /^\d+$/.test(a)) ?? 7);
+const DAGAR = Math.min(Number(process.argv.slice(2).find((a) => /^\d+$/.test(a)) ?? 7), MAX_DAGAR);
 const pg = (await import("pg")).default;
 const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });
 await pool.query("SET statement_timeout = '600s'");
@@ -84,8 +92,10 @@ async function avsnitt(namn: string, fn: () => Promise<void>) {
 }
 
 console.log(`Steg 2 för kort #89 — tillståndsskattaren mot arkivet (${DAGAR} dygns fönster)\n`);
-console.log(`  Ö-D: fönstret hålls på sju dygn eller mindre. Gallringen (#83) tunnar allt äldre`);
-console.log(`  till en rad per halvtimme, och då blir stationstäckningen en fiktion.\n`);
+console.log(`  Fönstret är taket ${MAX_DAGAR} dygn. Till skillnad från trendarkivet (#88) klarar`);
+console.log(`  det här måttet gallringen: den behåller sista raden per 30-minutershink, och`);
+console.log(`  skattaren räknar på TIMME. rain_sum_mm är dessutom en 30-minuters BAKÅTSUMMA, så`);
+console.log(`  den rad som sparas är just den som ser hinkens regn. radar_precip gallras inte alls.`);
 
 // ── ARKIVET.
 const wx = (await q(`SELECT count(*)::int AS rader, count(DISTINCT station_id)::int AS stationer,
