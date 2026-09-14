@@ -10,7 +10,8 @@ eller flyttats. Ligger något om helheten någon annanstans är det ett fel.
 
 Fokus på skuggans delar (#88–#95), men vattenplaningen (#42), snön (#45), broarna (#38/#91) och det
 som redan står i motorn vägs in. Beslutens historik — vad som rättats och när — ligger i DECISIONS
-(#159, #180, #181, #182) och sammanfattas i §13. Brödtexten säger vad som *gäller*, inte vad som
+(#159, #180, #181, #182, #183, #184) och sammanfattas i §14. **Axels invändningar och vad de
+gjorde med kartan står i §13.** Brödtexten säger vad som *gäller*, inte vad som
 ändrats.
 
 ---
@@ -38,7 +39,7 @@ nämnaren, och den är också nyckeln till hur de ska sitta ihop.
 | **L2 TILLSTÅND** | Vad **är** ytan? | tillståndsskattaren (#89 steg 2) · radarns `regn` (#81 C) · operatörens klass · **#45 våtbulb → regn/slask/snö** · **#42 vattenfilm** | 🔨 blöt/torr byggt, resten kvar |
 | **L3 UTVECKLING** | Vart är den på **väg**? | trendarkivet (#88) · övergångarna (#89 a) · **#46 rimfrost** · N_varning (SMHI) | 🔨 mätt, ingen regel |
 | **L4 RÄCKVIDD** | Hur långt **gäller** mätningen? | grind A:s ankare (#38b) · SMHI molnmängd (#95) · **#91 kallplatslagret** | ⚠️ ankaret mätt och dugligt, **knappen saknas** |
-| **L5 ALLVAR & RÖST** | Vad **sägs**, och hur illa är det? | #153 sammanvägt allvar · spärren (#165) · #90 riskmodifierare | ⛔ **finns inte** |
+| **L5 ALLVAR & RÖST** | Vad **sägs**, och hur illa är det? | #153 allvar som **försprång** · spärren (#165) · **#90 roll B** | ⚠️ **formen beslutad (tid, inte ord), regeln obyggd** |
 
 **Ordningen är inte godtycklig.** L1 gatar allt. L2 och L3 multiplicerar varandra. L4 avgör hur långt
 produkten av L2×L3 får sträckas. L5 är det enda ställe där något når föraren.
@@ -91,8 +92,9 @@ Talen som styr allt annat (`DEFAULT_CONFIG`): korridor **±35°**, minsta fart *
 
 - **Inget minne om vägen.** Odometern och fired-kartan minns *rösten*, inte ytan. Ingen struktur bär
   vad en station visade för en timme sedan.
-- **Ingen allvarsgrad.** Prioriteten är en ordning mellan *slag*, inte ett mått på hur illa det är
-  (§7.1).
+- **Ingen allvarsgrad i rösten** — och det är avsiktligt (§7.1, §13.1). Men maskineriet för att
+  uttrycka allvar som **tid** finns redan: `leadM` spänner 400–3 000 m, vid 90 km/h **16–120 s**.
+  Ingen regel sätter det per fara ännu.
 - **Ingen giltighetsradie.** Det enda avståndsbegrepp motorn har är `leadM` = fart × 30 s, klämt till
   400–3 000 m.
 
@@ -190,14 +192,15 @@ syns inte av sig självt.**
 | **#42 vattenplaning** | L2 | F1 + F3 + F4 | nej | 6 isvektorer |
 | **#91 kallplatslagret** | L4 | F1 på `weather[]` + F3 + F4 | nej | 6 isvektorer |
 | **SMHI `N_varning`** (#95) | L3/L4 | F2+F3+F4 — **`smhi[]` publiceras redan** | nej | 6 isvektorer |
-| **#153 allvarsskalan** | L5 | **F5** | ja — rösten och stegen | **23 vektorer, tre portar** |
+| **#153 allvar som FÖRSPRÅNG** | L5 | F4 — `leadM` per fara | nej | 6 is / 3 segment (§13.1) |
+| *#153 om allvar någonsin rör ORD eller PRIORITET* | L5 | **F5** | ja | **23 vektorer, tre portar** — och E3 förbjuder redan det senare (§10.2) |
 
 Trendarkivets fog är extra billig av ett skäl värt att skriva ut: `trend_kandidater` är nycklad på
 `station_id`, **samma nyckel som `live.json`:s `weather[].id`**. Ingen ny sammanfogningslogik behövs —
 bara en kolumn till i den fråga som redan bygger `weather`-raden.
 
-Mönstret som faller ut: **allt utom #153 är additivt.** Nio av tio delar kan greppa utan att röra
-prioritetsstegen eller rösten. Det är inte en slump — det är §7.8:s lärdom tillämpad, och den är
+Mönstret som faller ut: **allt är additivt så länge allvar uttrycks som TID.** Varje del kan greppa
+utan att röra prioritetsstegen eller rösten. Det är inte en slump — det är §7.8:s lärdom tillämpad, och den är
 anledningen till att arbetet i skuggan faktiskt går att landa.
 
 ### 5.5 Repetitionsscenen finns redan — och den tvingar fram en ordning
@@ -301,8 +304,18 @@ uttrycka allvar över huvud taget.
 
 > **En integration som inte kan sägas finns inte för föraren.**
 
-Kort #153 bär frågan. Ingenting är byggt. Det här är den enskilt största motkraften — och den enda
-delen i hela kartan som kräver **F5**, alltså alla 23 vektorer och tre portar (§5.4).
+**Första utkastet kallade det den enskilt största motkraften. Axel har visat att det är fel** (§13.1):
+rösten SKA säga samma ord. En förare i 90 km/h behöver veta att det är halt, inte om det är 60 eller
+85 procent halt — en sammanvägd allvarsgrad i rösten är ett mätinstrument, inte en varning.
+
+**Men allvar KAN uttryckas, som TID.** Rösten säger samma ord, tidigare. Formen är redan beslutad:
+#90 roll B — *"modifieraren förlänger försprånget, den höjer inte prioriteten"* — och SMHI-
+förstärkarens E1 upprepar den. Motorn har maskineriet: `leadM`, klämt till **400–3 000 m**, vid
+90 km/h **16 till 120 sekunder** — en faktor **7,5** utan att röra ett enda ord.
+
+Den verkliga motkraften är alltså mycket mindre än jag skrev: inte att utgången saknar allvar, utan
+att **ingen regel ännu kopplar ett sammanvägt tillstånd till ett försprång**. Kort #153 bär den
+frågan, och som försprång kostar den **F4, inte F5** (§5.4).
 
 ### 7.2 "En modellerad storhet får aldrig vara en avtryckare"
 
@@ -344,9 +357,13 @@ och som reglerna står i dag får den inte det.
 blöt: 20 minuter sedan 2 mm är något annat än fyra timmar sedan 0,2 mm. Underlaget finns i `Underlag`
 och slängs i returvärdet. Det är en hård OCH-logik där integrationen behöver en gradient.
 
-Felet har dessutom en fog-konsekvens: en **enum** kan bara ersätta `fukt`:s booleska roll, medan en
-**gradient** kan läggas bredvid den — alltså är §8 E inte bara en förfining, den är förutsättningen
-för att följa "lägg till, ersätt aldrig" (§5.3). Mitt eget bygge, min egen fix.
+Felets riktiga fog-konsekvens blev tydlig först genom Axels invändning (§13.5): **uttrycks allvar som
+TID behövs ett graderat mått för att sätta tiden.** En tregradig enum ger tre försprångsvärden. §8 E
+är därför **indata till §7.1**, inte en förfining efteråt. Mitt eget bygge, min egen fix.
+
+*(Första utkastet gav ett annat skäl — att en enum bara kan ERSÄTTA `fukt`:s booleska roll medan en
+gradient kan läggas bredvid. Det var fel: en enum kan också läggas bredvid. Skälet ovan är det som
+håller.)*
 
 ### 7.6 Trendarkivet är ett superset av TRIGGERN, inte av FENOMENET
 
@@ -384,15 +401,15 @@ ska byggas som meta på `icing_point` respektive segmentet.
 
 | # | Vad | Vems | Fog | Kostnad |
 | :-- | :-- | :-- | :-- | :-- |
-| **A** | **En allvarsskala** — kombinationen ändrar ordval/försprång/prioritet för den ENDA varning vi säger | Axels (rösten) | **F5** | kort #153, ej byggt |
+| **A** | **Allvar som FÖRSPRÅNG** — samma ord, tidigare. Formen beslutad (#90 roll B); regeln saknas | Axels (rösten) | **F4** | kort #153, ej byggt |
 | **B** | **Bevisbärare i snapshoten** — varje fara bär vilka lager som talade och hur starkt, inte en boolean | delad | F1+F3 | additiv |
 | **C** | **En grind för KOMBINATIONEN** vid sidan av per-delsgrindarna | mätningen, alltså vår | — | ett dokument |
 | **D** | **En skriven regel för gemensam kalibrering** — tillägg till §8-regimerna | Bengt fastställer | — | ett stycke |
 | **E** | **Graciös degradering** — skattaren returnerar nivå + bevis i stället för enum | min kod | F3 | liten |
 
 **C och D är dokument och kan skrivas före frosten.** E är en liten ändring i min egen modul — och
-enligt §7.5 en förutsättning, inte en förfining. A är Axels och den tyngsta; den är också den enda
-som kostar F5.
+enligt §7.5 **indata till A**, inte en förfining. A är Axels; sedan hans invändning (§13.1) kostar
+den **F4, inte F5**, vilket flyttar den från nästa vinter till den här.
 
 ---
 
@@ -514,11 +531,127 @@ kombinationer (§7.3). Ingen av dem är ett kodfel. Alla tre är beslut, och all
 att ompröva.
 
 **Skillnaden mellan det vi har och produkten Bengt beskriver sitter alltså i L4:s knapp och i L5** —
-och L5 är den enda delen i hela kartan som kostar F5.
+och L5 är billigare än kartan först påstod: som **försprång** kostar den F4 (§13.1). Att kartan mätte
+det byggda mot ett löfte ingen gett är Axels kritik, och den ger jag (§13.3).
 
 ---
 
-## 13. Rättelsehistorik
+## 13. Axels invändningar, och vad de gör med kartan
+
+Axel läste kartan i sin helhet 14/9 — i ett **tidigt underlag, där rättelsen av grind A ännu inte
+fanns med**. Fyra invändningar. Tre står och är inarbetade i brödtexten ovan; en faller på det
+underlag han fick, men bär en ramkritik som står.
+
+Det som är **beslut** står här som öppet. Kartan föregriper dem inte.
+
+### 13.1 "Utgången väljer på slag, inte allvar" är inte ett fel — det är produkten
+
+> **Axel:** *"En förare i 90 km/h behöver veta att det är halt — inte om det är 60 eller 85 procent
+> halt. En sammanvägd allvarsgrad är ett mätinstrument, inte en röst. Det finns ett smalare sätt att
+> uttrycka allvar som inte bryter det: försprång. Rösten säger samma ord men tidigare."*
+
+**Han har rätt — och mer rätt än han själv skriver.** Det är inte ett förslag. Det är ett **fattat
+beslut** som kartan missade att koppla till L5:
+
+- **TAVLA #90 roll B:** *"Designfrågan besvarad: modifieraren FÖRLÄNGER FÖRSPRÅNGET, den höjer inte
+  prioriteten, för prioritetsstegen droppar förloraren."*
+- **TROSKLAR-SMHI-FORSTARKAREN E1:** samma form, ordagrant.
+
+Kartans första utkast skrev "L5 ⛔ finns inte" medan mekanismen stod nedskriven på två ställen.
+
+**Två följder han inte nämner, och som gör hans linje starkare:**
+
+| | Tal |
+| :-- | :-- |
+| Allvar som **ord/prioritet** (allvarsskala i rösten) | **F5 — 23 vektorer, tre portar** |
+| Allvar som **försprång** (`leadM` per fara) | **F4 — högst 6 is / 3 segment** |
+| Försprångets spann (`leadMinM`–`leadMaxM`) | **400–3 000 m** |
+| Samma spann i tid vid 90 km/h | **16 s – 120 s, en faktor 7,5** |
+
+Att uttrycka allvar som tid är alltså inte en kompromiss utan en **regeländring i stället för en
+arkitekturändring** — skillnaden mellan den här vintern och nästa.
+
+**En hake han bör känna till:** A1-rösten plattar redan ihop ConditionCode 2 (Besvärligt) och 4
+(Extremt) till samma mening. Under hans egen regel är det rätt — förarens handling är densamma — men
+det betyder att det **första** försprånget att modulera troligen är segmentets, inte ispunktens.
+
+### 13.2 Tröskelregeln ska preciseras, inte upphävas
+
+> **Axel:** *"Regeln kom från Grind A och handlade om en extrapolerad temperatur — ett tal gissat där
+> ingen mätt, som inte kan motbevisas. 'Vägen är blöt, det regnade 2 mm för 40 minuter sedan' är
+> aggregation av mätningar med känd kedja, och det kan motbevisas … En storhet som inte kan
+> motbevisas av en mätning får inte utlösa. Extrapolation faller. Minne av mätningar består."*
+
+**Rätt, och bättre formulerat än mitt §7.2.** Att säga att regeln "förbjuder produkten" var uppblåst;
+hans kriterium är operativt och pekar ut *vilken* mätning som ska kunna fälla påståendet.
+
+**Men kriteriet saknar vittne i dag, och det är inte en detalj.** Han namnger två motbevisande
+mätningar. Båda är tomma:
+
+| Vittne | Läge |
+| :-- | :-- |
+| Ytstatus / operatörens "Våt" | **33 rader, noll med efterföljande klassning** — skälet den ströks (§10.2) |
+| Kameran visar torr asfalt | **kamerafacit: 0 objekt efter 5 657 skuggkörningar** (kort #157) |
+
+Följden: **kort #157 blir bärande för Axels egen punkt 13.4.** Den enda funktion han vill släppa till
+rösten i vinter kan inte passera hans eget test förrän kamerafacit faktiskt fylls.
+
+### 13.3 Kartan mäter det byggda mot en produkt som inte är lovad
+
+> **Axel:** *"Om-avsnittet säger ordagrant: varnar vid Trafikverkets mätstationer och rapporterade
+> väglag — mellan stationerna är vägen oövervakad. Grind A föll den 12:e, och det var Grind A som
+> skulle ha gett räckvidden. 'Vid stationen, med minne' är inte en brist. Det är vinterns leverans."*
+
+**Premissen faller. Ramkritiken står.**
+
+**Grind A föll inte.** Domen han citerar (MAE 1,06, grova 10,7 %) är körningen **före** givarvakten
+och marginalvakten. Med båda: **MAE 0,85 · grova 5,1 % · frysklassfel 0,3 % ⇒ ⏳ ingen dom**,
+uttryckligen *inte ett nej* (§6.1). Felkurvan stiger dessutom monotont med ankaravståndet — den *är*
+räckviddsstorheten. Felet är underlagets, inte Axels.
+
+**Men slutsatsen överlever delvis ändå**, av andra skäl än han anger: domen är *ingen dom* och inte
+godkänt (A2 står 5,1 mot 5,0), knappen saknas, och materialet är höst. "L4 är nästa produkt" håller
+för den här vintern.
+
+**Och ramkritiken ger jag helt.** `docs/PRODUKTBOK.md:108` säger ordagrant det han citerar. Kartan
+mätte det byggda mot ett löfte ingen gett. "Vid stationen, med minne" är vinterns leverans och mer än
+appen gör i dag.
+
+### 13.4 Vad som faktiskt kan nå rösten i vinter
+
+> **Axel:** *"En sak kan gå till röst i vinter — frysrisk som fyrar när det inte regnar men vägen är
+> blöt och ytan faller. Det är L2 × L3 utan L4 och L5 … Allt annat i kartan är mätapparat, och det
+> ska byggas — men som skugga, för mars."*
+
+**Vi konvergerar, och §5 ger hans rekommendation dess byggplan.** Hans "en sak" greppar i
+**F1 + F3 + F4** på `icing_point` — ingen F5, ingen ny arkitektur, högst sex vektorer, och grinden är
+`v11_silent_drive` (§5.1). Sekvensen står i §5.5: **publicera fältet → mät i skuggan → ändra
+villkoret → tre portar.**
+
+### 13.5 Där jag är oense: E kan inte vänta
+
+Axel skriver att B och E väntar tills något klarat en grind. **E bör inte det, och skälet är hans
+eget:** blir allvar till **tid** behövs ett **graderat** mått för att sätta tiden. En tregradig enum
+ger tre försprångsvärden. E är alltså indata till 13.1, inte en förfining efteråt.
+
+Hans invändning avslöjade dessutom ett tankefel i kartans eget §7.5 — se rättelsen där.
+
+### 13.6 Vad som är avgjort och vad som är öppet
+
+| Sak | Läge |
+| :-- | :-- |
+| L5:s form är **försprång**, inte ord | **redan beslutat** (#90 roll B, E1) — kartan säger det nu |
+| #153 som försprång kostar **F4**, inte F5 | **mätt** (§5.1, §5.4) |
+| Grind A står | **mätt** (#131) |
+| #157 är bärande för vinterleveransen | **följer av 13.2** |
+| Om #153 **ska** omformuleras till försprång | **öppet — Bengts och Axels** |
+| Om tröskelregeln ska skrivas om till Axels lydelse | **öppet — Bengts och Axels** |
+| Om E byggs före vintern | **öppet** — jag rekommenderar ja (13.5) |
+| Om vinterns röstleverans begränsas till Axels "en sak" | **öppet** — jag rekommenderar ja |
+
+---
+
+## 14. Rättelsehistorik
 
 Brödtexten ovan säger vad som gäller i dag. Det här är vad som ändrats sedan kartan skrevs, så att
 ingen läser en överspelad version någon annanstans.
@@ -531,3 +664,4 @@ ingen läser en överspelad version någon annanstans.
 | 14/9 | Dokumentet omarbetat till **en** sammanhängande karta | — |
 | 14/9 | **Motorn och fogarna inarbetade** (§4, §5) på Bengts fråga om kartan tar hänsyn till det som faktiskt kör. Läst ur koden, inte ur minnet | DECISIONS #182 |
 | 14/9 | **§5.6 tillagd:** metodförbehållen stod bara i chatten. Vektortalen 6/3/23 är ett **tak** (vektorer som BÄR faran), inte en uppmätt kostnad; §4–§5 är lästa, inte körda | DECISIONS #183 |
+| 14/9 | **Axels fyra invändningar inarbetade (§13).** L5 var inte tomt — formen är beslutad som FÖRSPRÅNG (#90 roll B); #153 kostar därmed **F4, inte F5**; §7.5:s enum-resonemang var fel | DECISIONS #184 |

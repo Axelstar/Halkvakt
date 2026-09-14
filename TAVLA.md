@@ -371,6 +371,26 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ### Bengt
 - [ ] 🧩 **#159 INTEGRATIONSKARTAN — tre av våra egna regler står i vägen för produkten**
+  📬 **AXELS FYRA INVÄNDNINGAR INARBETADE 14/9 (DECISIONS #184, kartans nya §13).** Han läste ett
+  TIDIGT underlag, där grind A-rättelsen inte fanns. **Tre står, en föll på underlaget.**
+  🎯 **1. Allvar som FÖRSPRÅNG, inte ord — han har RÄTT, och det är inget förslag utan ett FATTAT
+  BESLUT kartan missade:** #90 roll B och SMHI-förstärkarens E1 säger redan *"modifieraren förlänger
+  försprånget, den höjer inte prioriteten"*. Kartan skrev **"L5 finns inte"** — fel, rättat.
+  💰 **FÖLJD HAN INTE SJÄLV NÄMNER: #153 faller från F5 till F4** — 23 vektorer och tre portar blir
+  högst 6. Spannet finns: `leadM` 400–3 000 m = **16–120 s vid 90 km/h, faktor 7,5**. Alltså en
+  REGELÄNDRING i stället för en arkitekturändring — den här vintern i stället för nästa.
+  🚨 **2. Hans tröskelregel är bättre än min — MEN SAKNAR VITTNE.** "Måste kunna motbevisas av en
+  mätning": hans två vittnen är operatörens "Våt" (**33 rader, noll klassade**) och kameran
+  (**kamerafacit: 0 objekt / 5 657 körningar**). **#157 blir därmed BÄRANDE för hans egen punkt 4.**
+  ❌ **3. "Grind A föll den 12:e" är FALSKT** — den domen är körningen före vakterna. Med båda: MAE
+  **0,85** / **5,1 %** / **0,3 %** = ingen dom. Felet är underlagets, inte Axels. **Men ramkritiken ger
+  jag:** PRODUKTBOK.md:108 säger ordagrant det han citerar — kartan mätte mot ett löfte ingen gett.
+  ✅ **4. En sak till rösten i vinter — vi konvergerar.** Hans "en sak" är F1+F3+F4 på `icing_point`,
+  ingen F5, grind `v11_silent_drive`, sekvens enligt §5.5.
+  ⚖️ **DÄR JAG ÄR OÄNSE: E kan inte vänta**, av hans eget skäl — blir allvar TID behövs ett GRADERAT
+  mått för att sätta tiden. Det avslöjade också ett tankefel i kartans eget §7.5, nu rättat.
+  ❓ **ÖPPET FÖR BENGT+AXEL:** omformulera #153 till försprång? · skriv om tröskelregeln? · bygg E före
+  vintern? · begränsa vinterns röstleverans till Axels "en sak"? Jag rekommenderar **ja på alla fyra**.
   🔎 **§5.6 TILLAGD 14/9 (DECISIONS #183)** på Bengts kontrollfråga *"är detta inarbetat i kartan"*.
   Sju av sju avvikelser fanns där — men **förbehållen stod bara i chatten**, och ett av dem dölde ett
   för starkt påstående: vektortalen **6/3/23 är ett TAK** (vektorer som BÄR faran), inte en uppmätt

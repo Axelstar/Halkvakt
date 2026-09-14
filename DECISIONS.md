@@ -5443,3 +5443,90 @@ fog och helt olika vägar dit.
 
 Läxan är densamma som för registret (#181): **ett förbehåll som bara står i chatten finns inte.** Det
 gäller även — kanske särskilt — förbehåll mot mina egna siffror.
+
+## #184 (14/9 2026) Axels fyra invändningar mot integrationskartan — tre står, en föll på fel underlag
+
+**Bengt skickade kartan till Axel i ett tidigt underlag, där rättelsen av grind A ännu inte fanns.**
+Axel svarade med fyra invändningar. Bengts order: bedöm dem och arbeta in dem i kartan, med det
+öppna markerat som öppet.
+
+### 1. "Utgången väljer på slag, inte allvar" är inte ett fel — det är produkten
+
+**Axel har rätt, och mer rätt än han själv skriver: det är inte ett förslag, det är ett fattat
+beslut som kartan missade.** Två dokument säger redan hur allvar får uttryckas:
+
+- **TAVLA #90 roll B:** *"Designfrågan besvarad: modifieraren FÖRLÄNGER FÖRSPRÅNGET, den höjer inte
+  prioriteten, för prioritetsstegen droppar förloraren."*
+- **TROSKLAR-SMHI-FORSTARKAREN E1:** samma form, ordagrant.
+
+Kartan skrev **"L5 ⛔ finns inte"** medan mekanismen stod nedskriven på två ställen. Det var fel och
+är rättat.
+
+**TVÅ FÖLJDER SOM AXEL INTE NÄMNER, OCH SOM GÖR HANS LINJE STARKARE:**
+
+| | Tal |
+| :-- | :-- |
+| Allvar som ord/prioritet (allvarsskala i rösten) | **F5 — 23 vektorer, tre portar** |
+| Allvar som försprång (`leadM` per fara) | **F4 — högst 6 is / 3 segment** |
+| Försprångets spann (`leadMinM`–`leadMaxM`) | **400–3 000 m** |
+| Samma spann i tid vid 90 km/h | **16–120 s, faktor 7,5** |
+
+Det flyttar #153 från en arkitekturändring till en regeländring — alltså från nästa vinter till den
+här. **Hake:** A1-rösten plattar redan ihop ConditionCode 2 och 4 till samma mening, så det första
+försprånget att modulera är troligen segmentets, inte ispunktens.
+
+### 2. Tröskelregeln ska preciseras, inte upphävas
+
+Axels lydelse — *"en storhet som inte kan motbevisas av en mätning får inte utlösa; extrapolation
+faller, minne av mätningar består"* — är **bättre än kartans §7.2**, som sade att regeln "förbjuder
+produkten". Det var uppblåst.
+
+**MEN KRITERIET SAKNAR VITTNE I DAG.** Han namnger två motbevisande mätningar; båda är tomma:
+
+| Vittne | Läge |
+| :-- | :-- |
+| ytstatus / operatörens "Våt" | **33 rader, noll med efterföljande klassning** — skälet den ströks |
+| kameran visar torr asfalt | **kamerafacit: 0 objekt efter 5 657 skuggkörningar** (#157) |
+
+**Kort #157 blir därmed bärande för Axels egen punkt 4.** Den enda funktion han vill släppa till
+rösten i vinter kan inte passera hans eget test förrän kamerafacit fylls.
+
+### 3. Kartan mäter mot ett löfte som inte getts — premissen faller, ramkritiken står
+
+**"Grind A föll den 12:e" är falskt.** Den domen (MAE 1,06, grova 10,7 %) är körningen FÖRE
+givarvakten och marginalvakten. Med båda, #131, 1 943 punkter: **MAE 0,85 · grova 5,1 ·
+frysklassfel 0,3 % ⇒ ingen dom**, uttryckligen inte ett nej. Felkurvan stiger monotont med
+ankaravståndet och ÄR räckviddsstorheten. Felet är underlagets, inte Axels.
+
+**Men slutsatsen överlever delvis**, av andra skäl: domen är ingen dom och inte godkänt (A2 5,1 mot
+5,0), knappen saknas, materialet är höst. Och **ramkritiken ger jag helt** — `PRODUKTBOK.md:108`
+säger ordagrant det han citerar. Kartan mätte det byggda mot ett löfte ingen gett.
+
+### 4. En sak kan nå rösten i vinter — vi konvergerar
+
+Hans "en sak" (frysrisk som fyrar när det inte regnar men vägen är blöt och ytan faller) greppar i
+**F1 + F3 + F4** på `icing_point`: ingen F5, ingen ny arkitektur, högst sex vektorer, grind
+`v11_silent_drive`. Sekvensen står i kartans §5.5.
+
+### Där jag är oense: E kan inte vänta
+
+Axel låter B och E vänta. **E bör inte det, och skälet är hans eget:** blir allvar till TID behövs ett
+GRADERAT mått för att sätta tiden — en tregradig enum ger tre försprångsvärden. E är indata till
+hans punkt 1, inte en förfining efteråt.
+
+**Hans invändning avslöjade dessutom ett tankefel i kartans eget §7.5.** Där stod att "en enum kan
+bara ERSÄTTA `fukt`:s booleska roll medan en gradient kan läggas bredvid". Det är fel — en enum kan
+också läggas bredvid. Det riktiga skälet till E är försprånget, och §7.5 säger nu det, med den gamla
+formuleringen utskriven som rättad.
+
+### Vad som är avgjort och vad som är öppet
+
+**Avgjort (mätt eller redan beslutat):** L5:s form är försprång · #153 som försprång kostar F4 ·
+grind A står · #157 är bärande för vinterleveransen.
+
+**Öppet — Bengts och Axels:** om #153 ska omformuleras till försprång (jag rekommenderar ja) · om
+tröskelregeln skrivs om till Axels lydelse (ja, men säg åt honom om #157) · om E byggs före vintern
+(jag rekommenderar ja) · om vinterns röstleverans begränsas till Axels "en sak" (jag rekommenderar
+ja).
+
+Allt står i kartans nya **§13**, så att brevet inte landar bredvid dokumentet.
