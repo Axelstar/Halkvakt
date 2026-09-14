@@ -1,0 +1,31 @@
+# Tystnadsfelet — kort #98. Räknar tystnadens fel mot facitstacken: hur många bekräftade
+# halttillfällen systemet TEG vid, och hur många av dem det hade signal för.
+#
+# Helt läsande, inget sparas. Byggformen är principens (TROSKLAR-TYSTNADSFEL / #155): allt måttet
+# behöver är append-only och överlever gallringen, alltså räknas det om vid behov. Ingen tabell,
+# ingen deploy, inget cron-jobb — noll kostnad tills knappen trycks.
+name: tystnadsfelet
+on:
+  workflow_dispatch:
+    inputs:
+      dagar:
+        description: "Fönster i dygn (facit är append-only, inget hårt tak)"
+        required: false
+        default: "30"
+jobs:
+  tystnadsfelet:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types scripts/tystnadsfelet.ts --sjalvtest
+      - name: Mät
+        env:
+          DATABASE_URL: "${{ secrets.DATABASE_URL }}"
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/tystnadsfelet.ts "${{ inputs.dagar || '30' }}" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"

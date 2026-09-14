@@ -362,6 +362,21 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] Fysisk Android-testenhet (pappas telefon? begagnad?)
 
 ### Bengt
+- [ ] 🔤 **#156 HALKORDEN FINNS I TRE OLIKA VERSIONER — upptäckt 14/9 av en ny kontraktsgrind**
+  **Fyndet:** listan över vilka ConditionInfo-ord som betyder HALT finns på **nio ställen i sju
+  filer**, med **tre olika värden**. Ingen hade någonsin jämförts mot en annan.
+  · `is|snö|halka|frost|mycket besvärligt` — **motorn** (engine.ts:43) och skuggmotorn
+  · `is|snö|halka|frost` — **snapshoten** (publish/snapshot-core.ts:102), **publicera**, **vakthunden** (×2)
+  · `is|halka|frost|mycket besvärligt` — **kodgrinden** (×2), utan "snö"
+  ⚖️ **DET KAN VARA TRE OLIKA FRÅGOR, inte en lista på drift** — och det är därför kortet ställs i
+  stället för att jag rättar: snapshotens rad är en ELLER-gren ovanpå `condition_code >= 2`, så
+  "mycket besvärligt" kan komma in den vägen ändå. Kodgrindens saknade "snö" kan vara medvetet:
+  packad snö vid kod 1 är normalt vinterväglag i norr, inte en avvikelse.
+  ❓ **MEN INGEN VET, för ingen har mätt det.** Frågan som avgör: finns det segment med "mycket
+  besvärligt" och kod < 2, och segment med "snö" vid kod 1? Det är en läsande fråga till arkivet.
+  ⚠️ **RÖRS INTE AV MIG:** en ändring i snapshoten ändrar vad appen varnar för, alltså Axels märke
+  och produktboksregeln. Den nya grinden vaktar tills vidare bara motorns egen lista (motor +
+  skuggmotor + tystnadsfelet, tre filer, samma värde).
 - [ ] 📮 **#154 ANMÄL NIO TRASIGA BYVINDGIVARE TILL TRAFIKVERKET — skriven och klar, skickas av Bengt**
   **Beställd av Bengt 13/9** ("gör 1 och 2") efter att stationsvakten (#90, DECISIONS #164) hittat dem.
   **Brevet ligger i `docs/ANMALAN-TRV-BYVINDGIVARE.md`** — komplett med stations-id, namn, WGS84,
