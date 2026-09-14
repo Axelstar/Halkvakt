@@ -402,6 +402,21 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⏭️ **VAD SOM SKA GÖRAS NU: ingenting.** Kortet finns för att beslutet i oktober ska veta att det
   rör mer än lagringsutrymme — det avgör två mätinstruments byggform.
 - [ ] 🔤 **#156 HALKORDEN FINNS I TRE OLIKA VERSIONER — upptäckt 14/9 av en ny kontraktsgrind**
+  ✅ **VÅR HALVA ÅTGÄRDAD 14/9** (Bengts order, DECISIONS #174). Fyra frågor ⇒ **fyra namngivna
+  kontrakt**, vart och ett med sitt eget `varfor`, så att skillnaderna står som BESLUT i stället
+  för som slarv — precis vad grindens egen feltext föreskriver.
+  · *Snapshotens halkfilter* (snapshot-core + publiceras bunt, golv 2)
+  · *Vinterorden i vakthunden* (två kopior i samma fil, rad 137 och 148, golv 2)
+  · *Farlighetsorden i kodgrinden* (två kopior i samma fil, rad 198 och 201, golv 2)
+  · *Halkorden i motorn* (engine.ts + skuggmotorns bunt + tystnadsfelet, golv 3)
+  🔧 **GRINDEN FICK ETT NYTT FÄLT, `filer`,** för utan det gick frågorna inte att skilja: raderna
+  ser likadana ut och ett gemensamt kontrakt hade tvingat fram falsk enighet mellan fyra frågor
+  som SKA skilja sig. Mutationsprov: vakthundens ena kopia driven ⇒ exit 1, kodgrindens ⇒ exit 1.
+  🚫 **INGEN ORDLISTA ÄNDRAD, ingen funktion deployad.** Dubbleringen inom vakthunden och
+  kodgrinden är nu VAKTAD i stället för bortstädad — en deploy av vakthunden för en ren
+  refaktorering vore risk utan vinst (jfr #126, då en deploy tyst tog bort check 7).
+  ⏭️ **KVAR OCH BARA AXELS:** ska `mycket besvärligt` in i snapshotens filter, så att snapshoten
+  blir ett superset av motorn? Underlaget ligger i `docs/TILL-AXEL-HALKORDEN.md`.
   🔬 **MÄTT 14/9 (DECISIONS #172): ⊘ KAN INTE AVGÖRAS PÅ DATA.** "mycket besvärligt" vid kod < 2:
   **0** i arkivet och **0** live. "snö" vid kod 1: **0** och **0**. Skälet är att inget vinterord
   någonsin förekommit — hela materialet är kod 1 med Torrt (799), Våt (25), fläckvis Våt (8),

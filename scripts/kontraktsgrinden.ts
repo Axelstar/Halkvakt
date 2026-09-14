@@ -49,6 +49,18 @@ export type Kontrakt = {
   former: RegExp[];    // varje form har EXAKT en fångstgrupp: värdet som inte får driva
   golv: number;        // uppmätt antal i dag; färre = en kopia har försvunnit
   lista?: boolean;     // värdet är en ordlista (normaliseras sorterad och gemen)
+  filer?: RegExp;      // begränsa till filer vars sökväg matchar — se nedan
+
+  // VARFÖR `filer` FINNS (tillagd 14/9, kort #156). Samma ordlista kan stå på flera ställen och
+  // ändå svara på OLIKA frågor. Halkorden är exemplet: motorn frågar "vad får oss att tala",
+  // snapshoten "vad får nå motorn", vakthunden "har vintern börjat synas", kodgrinden "kod 1
+  // tillsammans med farlighetsord". Tre av de fyra listorna SKA skilja sig, och ett kontrakt som
+  // buntar ihop dem hade tvingat fram en falsk enighet — eller, värre, sett grönt ut ända tills
+  // någon rättade den ena och då fällt på fel grund.
+  //
+  // Utan avgränsningen går de inte att skilja, eftersom raderna ser likadana ut. MED den blir
+  // varje fråga ett eget namngivet kontrakt, och skillnaden står som ett BESLUT i stället för
+  // som slarv — precis vad grindens egen feltext föreskriver.
 };
 
 export type Fynd = { fil: string; rad: number; varde: string; utdrag: string };
@@ -65,6 +77,7 @@ export function granska(kontrakt: Kontrakt[], filer: { fil: string; text: string
   return kontrakt.map((k) => {
     const fynd: Fynd[] = [];
     for (const f of filer) {
+      if (k.filer && !k.filer.test(f.fil)) continue;
       const rader = f.text.split("\n");
       for (let i = 0; i < rader.length; i++) {
         for (const form of k.former) {
@@ -115,6 +128,27 @@ export function rapport(utfall: Utfall[]): boolean {
 
 // ── DE VAKTADE KONTRAKTEN ──────────────────────────────────────────────────────────────
 export const KONTRAKT: Kontrakt[] = [
+  {
+    namn: "Snapshotens halkfilter — vilka ord släpper in ett segment till motorn",
+    varfor: "publicera/index.ts är BUNTEN av snapshot-core.ts. Skiljer de sig kör driften en annan filtrering än proven.",
+    former: [/i ~\* '\(\^\|\[\^a-zåäö\]\)\(([^)]+)\)'/],
+    filer: /snapshot-core\.ts|functions\/publicera\//,
+    golv: 2,
+  },
+  {
+    namn: "Vinterorden i vakthunden — har vintern börjat synas i arkivet?",
+    varfor: "Vakthunden bär listan TVÅ gånger i samma fil (rad 137 och 148): statusraden och tabellen i larmet. Driver de isär larmar den på ett ordförråd och redovisar ett annat.",
+    former: [/i ~\* '\(\^\|\[\^a-zåäö\]\)\(([^)]+)\)'/],
+    filer: /functions\/vakthund\//,
+    golv: 2,
+  },
+  {
+    namn: "Farlighetsorden i kodgrinden — kod 1 tillsammans med farlighetsord",
+    varfor: "Bärs två gånger i samma fil (rad 198 och 201): urvalet och räkningen. Driver de isär räknar grinden andra rader än den visar.",
+    former: [/i ~\* '\(\^\|\[\^a-zåäö\]\)\(([^)]+)\)'/],
+    filer: /kodgrinden\.ts/,
+    golv: 2,
+  },
   {
     namn: "Halkorden i MOTORN — vilka ConditionInfo-ord som får motorn att tala",
     varfor: "Skuggmotorn är genererad ur engine.ts, och tystnadsfelet dömer mot samma lista. Glider de isär mäter måttet något annat än motorn säger.",
