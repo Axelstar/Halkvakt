@@ -133,8 +133,10 @@ svar: motorn har **fem** ställen där något nytt kan fästa, och de kostar dra
 | **F4** | `evaluatePoint()` / `evaluateSegment()` | **villkoret** ändras | **6 is / 3 segment** | 3 |
 | **F5** | `PRIORITY`, regel 1a/1b, `alertText()` | ordningen eller rösten | **23 (alla)** | 3 |
 
-F4:s tal är räknade, inte gissade: sex vektorer innehåller en `icing_point` (v08, v09, **v11**, v18,
-v19, v23) och tre ett `slippery_segment` (v04, v07, **v11**).
+F4:s tal är räknade, inte gissade — men de ska läsas rätt: de är antalet vektorer som
+**innehåller** en fara av det slaget, alltså en **övre gräns** för vad en regeländring kan rubba.
+Sex bär en `icing_point` (v08, v09, **v11**, v18, v19, v23), tre ett `slippery_segment` (v04, v07,
+**v11**). Hur många som faktiskt vänder beror på ändringen — se §5.6.
 
 **v11 är grinden som betyder något.** `v11_silent_drive` bevisar *tystnad* — den bär både en
 isvärnpunkt och ett segment som måste förbli tysta. Varje **vidgning** av L2 (skattaren säger "blöt"
@@ -219,6 +221,28 @@ inte publicerats finns inte heller för skuggan.
 
 ---
 
+### 5.6 Vad §4 och §5 vilar på — och vad de inte bevisar
+
+Kartans två motorparagrafer är **lästa ur koden, inte körda**. Det är en starkare grund än minne och
+en svagare än en mätning, och skillnaden ska stå skriven här och inte upptäckas senare.
+
+| Påstående | Vad det vilar på | Vad det inte bevisar |
+| :-- | :-- | :-- |
+| §4.1 villkor och tal | `engine/src/{types,engine}.ts` lästa i sin helhet | — detta ÄR koden |
+| §4.3 ledningen | `snapshot-core.ts` → `publicera` → `SnapshotRepo` → `snapshot.ts`, lästa | att alla tre portarna beter sig lika i drift; bara vektorerna bevisar det |
+| §4.3 talen 28/1/1/0/0/0 | den publicerade `live.json` hämtad 14/9 05:10 | något om vintern — i september är materialet nästan tomt |
+| §5.1 vektortalen 6/3/23 | filsökning efter `icing_point` respektive `slippery_segment` i `engine/vectors/` | **att alla sex faktiskt vänder.** En vektor som BÄR en fara kan mycket väl ge samma utfall efter ändringen. Talet är ett tak, inte en kostnad |
+| §5.2 oläst-listan | fält för fält mellan publiceraren och `LiveDoc`/adaptern | att inget ANNAT läses fel — listan är över det som publiceras, inte en revision av motorn |
+| §5.3 otypad läsning | `org.json.JSONObject` i `SnapshotRepo.kt`, `JSONSerialization` i `SnapshotRepo.swift` | att en FRAMTIDA port gör likadant. Byts någon port till typad avkodning faller §5.3:s premiss, och F1 slutar vara gratis |
+
+**Kostnadskolumnerna mäter FOG, inte arbete.** Att en del "bara" kostar F4 säger var den greppar —
+inte hur svår regeln är att formulera, och inte hur lång mätningen blir innan den får ändras.
+Tillståndsskattaren och kallplatslagret har samma fog och helt olika vägar dit.
+
+**Det enda som gör talen till kostnader är att köra dem.** Sekvensen i §5.5 steg 3 är därför inte
+byråkrati: den är stället där "sex vektorer" blir ett verkligt tal i stället för ett tak.
+
+---
 ## 6. Var lagren står, mätt
 
 ### 6.1 L4 är inte tomt — ankaret är en mätt osäkerhetskurva
@@ -506,3 +530,4 @@ ingen läser en överspelad version någon annanstans.
 | 14/9 | **Ett nej gäller en roll** (§9) och **registret** (§10) tillagda på Bengts två invändningar | DECISIONS #180, #181 |
 | 14/9 | Dokumentet omarbetat till **en** sammanhängande karta | — |
 | 14/9 | **Motorn och fogarna inarbetade** (§4, §5) på Bengts fråga om kartan tar hänsyn till det som faktiskt kör. Läst ur koden, inte ur minnet | DECISIONS #182 |
+| 14/9 | **§5.6 tillagd:** metodförbehållen stod bara i chatten. Vektortalen 6/3/23 är ett **tak** (vektorer som BÄR faran), inte en uppmätt kostnad; §4–§5 är lästa, inte körda | DECISIONS #183 |
