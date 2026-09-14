@@ -4877,3 +4877,66 @@ utfallet direkt för mogna rader. Finns en sådan i morgon är kedjan bevisad.
 
 **Och de 862 raderna är ifyllda:** knappen kördes om efter rättelsen och skrev dem. Arkivet rymmer
 **4 713 kandidater** 8–13/9, fortfarande noll följda av yta ≤ 0 °C.
+
+## #171 (14/9 2026) Principen skriven, och #98:s instrument byggt i det billigaste formatet
+
+**Beslut (Bengts frågor och order 14/9):** (1) principen bakom byggformen skrivs in i båda
+tröskeldokumenten, (2) tre inkonsekvenser i mitt eget rättas, (3) #98:s instrument byggs — i det
+format principen pekar ut.
+
+**PRINCIPEN:** *spara det som inte går att räkna om, räkna om det som går* — och **vilket som är
+vilket är en MÄTNING, inte en smaksak**: frågan är om gallringen (#83) förstör den upplösning måttet
+behöver. #88 sparar (15-minutersfönster överlever inte), #89 och #98 räknar om (timme respektive
+händelse överlever). Bengts fråga var om de borde ha samma bygge; svaret är **samma princip, inte
+samma bygge** — byggena skiljer sig för att datat skiljer sig.
+
+**TRE RÄTTELSER, ALLA MINA EGNA.** #89:s skript hade bara en UTSKRIVEN varning om sju dygn medan #88
+har hårt tak (nu `Math.min` mot 14). Varningstexten var dessutom **fel** — den ärvde trendens problem;
+timupplösningen överlever gallringen, som behåller sista raden per 30-minutershink, och `rain_sum_mm`
+är en 30-minuters BAKÅTSUMMA, så den sparade raden är just den som ser hinkens regn. Och skriptet
+säger nu varför ingen driftvakt behövs där: skattaren finns bara i ett språk.
+
+**KORT #155 BÄR SNUBBELTRÅDEN:** principen vilar på att kvarhållningen inte skärps. Skärps den i
+oktoberbeslutet upphör ingången att vara återskapbar, och två mätinstrument måste byta form.
+
+**#98:S FORMAT ÄR PRINCIPENS, INTE ETT VAL.** Allt måttet behöver är append-only och överlever
+gallringen: facit, skuggloggen, `trend_kandidater` (sparad av #88) och väderarkivets timupplösning.
+Alltså en LÄSANDE knapp. **Ingen tabell, ingen deploy, inget cron-jobb, noll kostnad tills den trycks.**
+Fem avsnitt med egna underlagsvakter, och §9:s regel kodad: "okänt" är ett giltigt utfall och tvingas
+aldrig till en gissning.
+
+**PRISKURVAN (§5) ÄR MEDVETET INTE BYGGD, och säger det högljutt i utskriften.** Priset kräver att
+motorn körs om med andra trösklar över skuggrutterna — ett bygge i motorkedjan — och det går inte att
+öva på ett material där M är noll. Utan priset är måttet en halva, inte ett par.
+
+### Körningen 14/9: ⊘ OAVGJORT, som väntat — men två fynd som inte är årstidens
+
+| | |
+| :-- | --: |
+| (a) väglagets omklassningar till halka, 30 dygn | **0** |
+| (b) olyckor i `situation_archive` | 2 773 — men **utan orsak**, räknas inte in |
+| (c) **arkiverade kamerabilder** | **0** |
+| skuggloggen | 5 657 körningar · 60 rutter · 29/8 → 14/9 |
+
+**KAMERAFACIT ÄR TOMT, och det är inte september som förklarar det.** `TROSKLAR-TYSTNADSFEL` §8 gör
+kamerafacit till en **bärande** källa — "738 av 744 kameror står vid en VViS-station, facit ligger per
+konstruktion inom räckvidd" — och skuggmotorn arkiverar bilder vid varje larm (`archiveFacit`, bucket
+`facit`). Efter 5 657 skuggkörningar innehåller bucketen **noll objekt**. Frågan ställdes utan fel och
+fick svaret 0, så det är inte en rättighet som saknas. Kort **#157**.
+
+**GRINDEN HITTADE EN DRIFT SAMMA STUND DEN SKREVS.** Halkorden — vilka ConditionInfo-ord som betyder
+HALT — finns på **nio ställen i sju filer med TRE olika värden**: motorn och skuggmotorn har
+`is|snö|halka|frost|mycket besvärligt`, snapshoten och vakthunden saknar "mycket besvärligt", och
+kodgrinden saknar dessutom "snö". Ingen hade någonsin jämförts mot en annan.
+
+Det KAN vara tre olika frågor: snapshotens rad är en ELLER-gren ovanpå `condition_code >= 2`, och
+kodgrindens saknade "snö" kan vara medvetet eftersom packad snö vid kod 1 är normalt vinterväglag i
+norr. **Men ingen vet, för ingen har mätt det**, och en ändring i snapshoten ändrar vad appen varnar
+för. Kort **#156** bär frågan; kontraktet vaktar tills vidare bara motorns egen lista över tre filer.
+Elva kontrakt håller.
+
+**OCH ETT FEL I MITT EGET VERKTYG:** mergeslingan snurrade tio minuter utan att hitta någon
+CI-körning och **avslutade sedan tyst med kod 0** — den såg ut som en lyckad körning. Orsaken var att
+PR:en hade en konflikt med main, och GitHub kör ingen CI på en PR den inte kan slå ihop. Slingan
+säger nu ifrån högljutt när den ger upp. En vakt som ger upp tyst är samma klass av fel som en
+fail-soft-gren utan spår.

@@ -362,6 +362,19 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] Fysisk Android-testenhet (pappas telefon? begagnad?)
 
 ### Bengt
+- [ ] 📷 **#157 KAMERAFACIT ÄR TOMT — noll objekt efter 5 657 skuggkörningar**
+  **Upptäckt 14/9** när #98:s instrument kördes första gången (DECISIONS #171).
+  `TROSKLAR-TYSTNADSFEL` §8 gör kamerafacit till en **bärande** facitkälla: *"738 av 744 kameror
+  står vid en VViS-station (#55), facit ligger per konstruktion inom räckvidd"*. Skuggmotorn
+  arkiverar bilder vid varje larm (`archiveFacit`, bucket `facit`, `supabase/functions/skuggmotor`).
+  📉 **Efter 5 657 skuggkörningar över 60 rutter innehåller bucketen NOLL objekt.** Frågan ställdes
+  utan fel och fick svaret 0 — det är alltså inte en saknad rättighet.
+  ❓ **Vad som ska mätas:** arkiverar `archiveFacit` alls (loggar den?), tar `facitBudget` slut,
+  eller laddas bilderna upp och raderas? Och: skriver den bara vid `land === "se"` och bara när
+  larm finns — hur ofta larmar skuggan i Sverige i september?
+  ⚠️ **VARFÖR DET HASTAR:** både #98 och mars-domen räknar med den här stacken. En facitkälla som
+  tyst inte fyller på är värre än en som aldrig byggdes — den ger lugn på fel grund, precis som
+  kameror-vaglag gjorde (CLAUDE.md-läxan om tysta ALDRIG).
 - [ ] 🧵 **#155 SNUBBELTRÅD: ändras #83:s kvarhållning måste #89 och #98 byta byggform**
   **Principen (skriven 14/9 i TROSKLAR-OVERGANGAR och TROSKLAR-TRENDEN, Bengts order):** spara det
   som inte går att räkna om, räkna om det som går — och vilket som är vilket är en MÄTNING, inte en
