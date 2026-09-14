@@ -128,11 +128,13 @@ export function rapport(utfall: Utfall[]): boolean {
 
 // ── DE VAKTADE KONTRAKTEN ──────────────────────────────────────────────────────────────
 export const KONTRAKT: Kontrakt[] = [
-  // ── HEALTHCHECKENS TRÖSKLAR (kort #87, 14/9). TIDSBEGRÄNSADE MED FLIT.
-  // De tolv nedan vaktar en duplicering som ska UPPHÖRA: healthcheck.yml och vakthunden kör
-  // parallellt tills kortets Verify är uppfylld (en vecka där vakthunden larmat på ett
-  // framkallat fel i var och en). Då raderas healthcheck.yml, kopian blir en, och de här
-  // kontrakten ska tas bort i SAMMA commit — annars faller de på golvet och ser ut som drift.
+  // ── HEALTHCHECKENS TRÖSKLAR (kort #87). PERMANENTA — läs den här raden innan du rör dem.
+  // De skrevs 14/9 som tidsbegränsade, för planen var att healthcheck.yml skulle raderas när
+  // kontrollerna flyttat in i vakthunden. BENGTS BESLUT SAMMA DAG: filen blir kvar. Skälet är
+  // inte kostnaden (12 min/dygn) utan att den är den enda kontroll som KÖRS UTANFÖR det den
+  // vaktar — vakthunden lever inuti Supabase, och tystnad efter grönt ser identiskt ut som
+  // "allt väl". Samma dygn hittades en kedja som varit tyst trasig i sexton dygn (#177).
+  // Dupliceringen är alltså permanent OCH avsiktlig, och de tolv nedan ska INTE tas bort.
   //
   // FORMEN ÄR MEDVETET ANNORLUNDA: talet är PINNAT i mönstret i stället för fritt fångat.
   // Ändras en kopia försvinner den ur räkningen och GOLVET fäller — vilket är rätt larm, och

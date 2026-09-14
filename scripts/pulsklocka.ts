@@ -28,7 +28,9 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
   // Axel stängde den 8/9 när vakthunden i Supabase tog över, men vakthunden ser bara livekedjan
   // och manifestet — healthchecken är ensam om grannländerna, gränsstationerna, kamerorna,
   // kartlagren och arkivvakten, och naken GitHub-cron gav 40 % och fyrtimmarshål. BRO: 12 min/dygn
-  // tills kontrollerna flyttat in i vakthunden och healthcheck.yml lagts ner (kort #87).
+  // Kontrollerna flyttade in i vakthunden 14/9 (kort #87, DECISIONS #175) — men filen blev
+  // KVAR på Bengts beslut samma dag: den är den enda kontroll som körs utanför det den vaktar.
+  // Bron är alltså inte längre en bro utan ett andra spår, och pulsen behövs permanent.
   { namn: "puls-healthcheck", schema: "23 */2 * * *", fil: "healthcheck.yml" },
 ];
 

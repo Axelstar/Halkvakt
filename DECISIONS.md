@@ -5187,3 +5187,45 @@ skuggloggen är underlaget för mars-domen. Eget kort, och Axels ögon på forme
 försvinner tyst ur JSON, och syns först när någon frågar efter det tre veckor senare. Kedjan såg
 frisk ut i varje led som hade en logg. Det var först när en gren TVINGADES säga varför den gav upp
 som frågan kunde ställas alls.
+
+## #178 (14/9 2026) healthcheck.yml blir KVAR — raderingen inställd, och kort #87 stängt
+
+**Beslut (Bengt 14/9, ordagrant):** *"ta bort inte bort healthcheck eftersom den knappt kostar något
+och stäng kortet som hänvisar till det."*
+
+**VAD SOM ÄNDRAS MOT DEN URSPRUNGLIGA PLANEN.** `healthcheck.yml` skrevs 9/9 som en **BRO** — Bengts
+eget ord i kort #50 — som skulle läggas ner när kontrollerna flyttat in i vakthunden. Kontrollerna
+flyttade 14/9 (#175, alla tio bevisade i produktion). **Bron blir ändå kvar, och blir därmed ett
+andra spår i stället för en bro.**
+
+**SKÄLET ÄR INTE KOSTNADEN, OCH DET ÄR POÄNGEN.** 12 min/dygn är ungefär 7 % av uppmätta 169, och
+taket slår omkring 28 september — besparingen var verklig. Den väljs bort mot något som väger tyngre:
+**healthcheck.yml är den enda kontroll som körs UTANFÖR det den vaktar.** Vakthunden lever inuti
+Supabase. Slutar den fungera öppnas ingen issue, och **tystnad efter grönt ser identiskt ut som
+"allt väl"**.
+
+Samma dygn gav två bevis på att det inte är en teoretisk risk: skuggmotorn returnerade status **546**
+(Supabases WORKER_LIMIT) två gånger på tre timmar, och kamerafacit visade sig ha varit **tyst trasigt
+i sexton dygn** (#177) utan att någon vakt kunde se det. Redundans är vad som fångar sådant.
+
+**Vad beslutet INTE löser:** båda spåren drivs av samma pg_cron. Dör den dör båda. Den punkten finns
+kvar och berörs inte av det här beslutet.
+
+### Följder som måste skrivas in, annars biter de senare
+
+1. **De tolv kontrakten är nu PERMANENTA.** De skrevs samma morgon med kommentaren *"ska tas bort i
+   SAMMA commit [som healthcheck.yml]"*. Den instruktionen är nu fel och hade fått en framtida läsare
+   att ta bort tolv vakter i god tro. Kommentaren är omskriven: dupliceringen är avsiktlig och
+   permanent, och kontrakten ska stå kvar.
+2. **Pulsklockans kommentar är rättad.** Den sa *"tills … healthcheck.yml lagts ner (kort #87)"*.
+   `puls-healthcheck` blir kvar permanent.
+3. **Verify-veckan blockerar ingenting längre.** Den var villkoret för raderingen. Att bevisa varje
+   larm på ett framkallat fel har fortfarande värde — men det är nu ett frivilligt kvalitetssteg,
+   inte en grind.
+4. **Kort #87 är stängt** med raderingen som ett dokumenterat NEJ. Ett kort som stängs med en
+   inställd delåtgärd måste säga vilken, annars ser det ut som att den bara glömdes bort.
+
+**En anmärkning om proportioner.** Rekommendationen jag gav var att bygga #87 just för att taket
+närmar sig. Bygget gjordes, besparingen uteblir, och det är rätt beslut ändå — men kortets
+ursprungliga motiv var kostnaden, och det motivet gäller inte längre. Det som blev kvar av värde är
+att **vakthunden nu ser tio kontroller den inte såg i går**, och att fem av dem aldrig stod på kortet.
