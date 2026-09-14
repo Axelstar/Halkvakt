@@ -1739,3 +1739,21 @@ regn. Frågan lämnas till Bengt och steg C:s ägare, jag har inte rört koden.
 Parallellsessionen har byggt vidare hela dagen: #88 trenden in i ingest-live, #89 steg 2,
 vindtaket i W-A, stationsvakten, PRODUKTBOK, och #127 prioritetsmedveten spärr med golv 45→10 s.
 Byggt: inget detta varv. Nästa: morgonavläsning 14/9 04:30 UTC.
+
+## 2026-09-14 08:10 — Måndagsserien körde inte, och vakten för just det är blind i tio dygn
+FYNDET (kort #160): ingen av de sex måndagsmätningarna körde. Klockan 08:00 fanns 40 körningar på
+dygnet och noll ur serien. Alla sex är state=active och cron-raderna står rätt på main, så det är
+varken avstängning eller schemafel. Rotorsak: naken GitHub-cron levererar inte (#70 mätte 40 %).
+Healthchecken lever för att PULSKLOCKAN fyrar den ur pg_cron — en av dess egna cron-körningar kom
+39 min sen i dag (bokad 04:23, levererad 05:02). Måndagsserien har ingen puls bakom sig.
+ALLVARLIGARE: mätvakten (check 6) bevakar rätt sex flöden men larmar på ålder > kadens × 1,5. För
+ett veckojobb är kadensen 168 h, alltså tolerans 252 h = 10,5 dygn. Dess kommentar 07:07 nämner bara
+marknadsforing. Vakten som byggdes för exakt 7/9-felet är blind för det längre än det tog en
+människa att upptäcka det. Två åtgärder föreslagna på kortet, båda Bengts beslut: lägg de sex på
+pulsklockan, och byt mätvaktens multiplikator mot en fast frist.
+RUTIN: kassan 3 976 min/2 968 körningar, släpande takt 200 (upp från 169), takdatum framflyttat till
+26/9, #210 öppen. Bron 12 körningar, 8 puls + 4 cron, max 2,00 h. #86 ej roterat. CI grön på main.
+Kartrepot 08:00: SE/FI/DK sha = manifest, meta 3 min, kalla stationer 3. weather_obs 13 000/dygn
+mätt över 14 h. Parallellsessionen har stängt kort #87 (alla tio kontroller in i vakthunden,
+healthcheck.yml blir kvar, DECISIONS #178) och rättat påståendet att grind A fallit.
+Byggt: inget detta varv. Nästa: kvällsavläsning 17:30 UTC.
