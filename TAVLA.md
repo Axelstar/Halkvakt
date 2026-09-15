@@ -724,6 +724,16 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [ ] 📋 **#185 BEDÖMNING 15/9 — förslag till åtgärder ur allt material, VÄNTAR PÅ BENGTS OCH AXELS BESLUT**
+  (`docs/BEDOMNING-2026-09-15.md`, Bengts order: analys + förslag, inget byggt). Sorterat i I DAG (T1–T10),
+  KORT SIKT (K1–K9), LÄNGRE SIKT (L1–L7), vad som tas bort ur schemat, och sju beslut med rekommendation.
+  🔑 **Bärande slutsats:** efterhalkan ligger INNANFÖR produktlöftet ("vid stationen") — stationen ser
+  ytan falla efter regnstoppet, motorn gör det inte. Axels "en sak" täpper ett hål i bottenvåningen, inte
+  bygger en andra. **Kritisk väg: kamerafacit (#157), 0 objekt** — utan facit kan inget dömas, inte ens
+  av Axels egen regel. **I motorns regler: inget i dag.** I snapshoten: publicera skattarens råa indata
+  bredvid `fukt` (F1, noll vektorer). I skuggan: bevisa facit, läs `regn`/`smhi` vid sidan av motorn.
+  📏 Grind A lever — 14/9: 2 881 p, MAE 0,81 / 5,0 % / 0,6 % = INGEN DOM. Axels brev är i otakt på
+  sex punkter (dokumentets §0), och Drive-kopian han läste saknar §13.
 - [ ] 🟠 **#160 MÅNDAGSSERIEN KOM 5–7 TIMMAR SENT 14/9 — och mätvakten kan inte se det förrän om tio dygn**
   (morgonavläsningen 14/9 08:00). **DET HÄR ÄR 7/9 OM IGEN, och den gången tog det fem dygn innan en
   människa råkade titta.**
