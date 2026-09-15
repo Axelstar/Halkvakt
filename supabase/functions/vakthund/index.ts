@@ -723,7 +723,7 @@ Deno.serve(async (req) => {
     problem.push(`**Healthcheckens kontroller (kort #87) kunde inte köras**: ${String(e)}`);
   }
 
-  // 10. NYCKELKALENDERN (kort #86, bedömning v3 N3 — Bengts order 15/9).
+  // 10. NYCKELKALENDERN (kort #86, bedömning v3 N3, DECISIONS #190 — Bengts order 15/9).
   //     Två nycklar går ut mitt i säsongen, och båda dör TYST: publicera får 401 ⇒ CDN fryser ⇒
   //     appens åldersspärr tystnar vakten (5/9-läget), och den här vakthundens larmväg går på samma
   //     PAT. Därför läses PAT:ens utgång LIVE ur GitHubs svarshuvud
