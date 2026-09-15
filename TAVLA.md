@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-15 04:45 av Claude (webben) — 🟡 #161:s CRLF-fix BEVISAD PÅ DISK men ÄNNU INTE I DRIFT: hela trädet är rent efter en tvingad innehållsrefresh (0 av 938 spårade filer smutsiga), men marknadsforing — det dagliga flöde som varit rött fem dygn — hade inte kört när avläsningen gjordes (bokad 04:45 UTC, levererad 10:07 i går). Kassan 16,46 USD av 35, takdatum 26/9 oförändrat. FÖRSTA MINUSGRADEN i live-snapshoten: FI:14047 −0,3 °C yta, fyra kalla stationer i meta.json.*
+*Uppdaterad: 2026-09-15 09:40 av Claude (webben) — ✅ #161 BEKRÄFTAT I DRIFT: marknadsforing körde 09:35 och commit `3a3622f` av Marknadsmotorn ligger på main — första gången sedan 12/9. CRLF-rotorsaken var rätt. Kvar: trv-bevaknings sex källvakter kan tidigast bevisas 21/9. Cronen levererade 4 h 50 min sent (#160 igen). Kassan 16,46 USD av 35, takdatum 26/9.*
   💰 **RÄTTAD 13/9 (DECISIONS #160, Bengts order):** prognosen räknade på månad-till-datum, och i
   det snittet låg fem flöden som lades ner 8–9/9 (`ingest-fi`, `-no`, `-dk`, `publish-map`,
   `regn-30`). Vakten sa **21 september**; uppmätt verklig takt var 232 min/dygn senaste dygnet och
@@ -844,6 +844,17 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   genomfört commit-steg, inget annat. `trv-bevakning` kör bara måndagar: state-filen på main bär
   fortfarande 7 källor (skriven 12/9 06:52), och 13 källor kan tidigast synas **21/9**. Fram till
   dess är de sex källvakterna fortfarande blinda — fixen är lagd, inte verifierad.
+  ✅ **BEKRÄFTAT I DRIFT 15/9 09:35 — rotorsaken var rätt.** `marknadsforing` #22 (körning
+  34953342840) gick **grön**, och beviset är inte färgen utan commiten: **`3a3622f` "Halkläget
+  2026-09-15" av Marknadsmotorn ligger på main**, alltså gick hela kedjan commit → `git pull
+  --rebase` → `git push` igenom. Föregående commit från samma författare är `1112af3` från **12/9** —
+  13/9 och 14/9 saknas helt, precis som de röda körningarna sa. Ett dygn efter renormaliseringen
+  landar utkastet igen, utan att en rad i flödet rörts.
+  ⏳ **KVAR ATT BEVISA:** `trv-bevakning` kör bara måndagar. Tidigast **21/9** kan state-filen visa
+  13 källor i stället för 7, och först då är de sex källvakterna bevisligen seende. Halva kortet är
+  alltså klart, halva väntar på en måndag.
+  📏 Sidomätning till #160: cronen levererade marknadsforing **4 h 50 min sent** (bokad 04:45,
+  levererad 09:35). I går 5 h 22 min. Två dygn i rad, samma storleksordning.
   🔑 **TVÅ FRÅGOR TILL BENGT — jag har inte rört flödena:**
   · **(a)** Ska commit-stegen härdas? De stagar en enskild sökväg och antar att resten av trädet är
     rent. `git pull --rebase --autostash` (eller `git stash -u` före pull) gör dem okänsliga för

@@ -1798,3 +1798,16 @@ RUTIN: kassan 4 058 min/3 025 körningar = 16,46 USD av 35, släpande takt 200 o
 FÖRSTA MINUSGRADEN: live-snapshoten bär FI:14047 −0,3 °C yta, och meta.json visar 4 kalla stationer
 (2 i går). Gallringens motiv börjar bli verkligt.
 Byggt: inget detta varv. Nästa: kvällsavläsning 15/9 17:30 UTC.
+
+## 2026-09-15 09:40 — #161 bekräftat i drift: utkastet landade för första gången sedan 12/9
+Provet föll ut som det skulle. marknadsforing #22 (körning 34953342840) gick grön 09:35, och beviset
+är commiten, inte färgen: `3a3622f` "Halkläget 2026-09-15" av Marknadsmotorn ligger på main. Hela
+kedjan commit → `git pull --rebase` → `git push` gick alltså igenom. Närmast föregående commit från
+samma författare är `1112af3` från 12/9 — 13/9 och 14/9 saknas helt, exakt som de röda körningarna
+sa. CRLF-rotorsaken i DECISIONS #185 var rätt, och renormaliseringen räckte utan att en rad i flödet
+rördes.
+KVAR: trv-bevakning kör bara måndagar, så state-filens 13 källor kan tidigast bevisas 21/9. Fram
+till dess är de sex källvakterna fortfarande blinda. Halva kortet klart, halva väntar på en måndag.
+Sidomätning till #160: cronen levererade marknadsforing 4 h 50 min sent (bokad 04:45, levererad
+09:35); i går 5 h 22 min. Två dygn i rad i samma storleksordning.
+Byggt: inget detta varv. Nästa: kvällsavläsning 15/9 17:30 UTC.
