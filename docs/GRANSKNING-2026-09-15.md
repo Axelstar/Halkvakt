@@ -1,3 +1,6 @@
+> **ARKIVERAD 15/9 (Bengts beslut).** Fynden är införda i `docs/BEDOMNING-2026-09-15.md` (v3); rättelserna
+> R1–R15 väntar där i bilaga A tills en rör kod. Dokumentet ändras inte mer. Läs det som historik.
+
 # Granskning av integrationskartan — 2026-09-15, sammanställd
 
 **Status: UNDERLAG.** Inget byggt, inget beslutat. Sammanställd ur tre granskningsvändor 15/9 (Bengts

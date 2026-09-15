@@ -3,6 +3,9 @@
 **Hur delarna blir en produkt, var vi byggt emot den, hur det nya greppar i motorn som redan kör,
 och vad allt underkänt lämnade kvar.**
 
+**Kartan är fryst sedan 15/9** (Axels förslag, Bengts beslut): nästa ändring kommer efter att något
+byggts och mätts. *Vad som görs, och när, står i `docs/BEDOMNING-2026-09-15.md` — den enda listan.*
+
 Det här är det enda dokumentet över hur Halkvakts delar hänger ihop. Allt som rör integrationen står
 här: lagren, multiplikationen, **motorn som den faktiskt ser ut**, **fogarna där en skuggdel kan
 greppa**, motkrafterna, principen för hur en del döms, och registret över allt som strukits, stängts
@@ -392,8 +395,10 @@ I fogarnas språk: **#46 valde F3+F4 i stället för F5** — sex vektorer i st�
 prioritetsstegen orörd. Det är exakt rätt mönster: **berika en befintlig faras underlag, lägg inte
 till farslag.** Varje nytt slag gör regel 1a värre — fler konkurrenter om en enda plats i rösten.
 
-Samma val står öppet för #45 (snö/slask) och #42 (vattenplaning). Båda *känns* som egna faror. Båda
-ska byggas som meta på `icing_point` respektive segmentet.
+**Kriteriet, fastställt av Bengt 15/9 (DECISIONS #186):** ett nytt farslag är motiverat bara om **(1)** förarens
+handling skiljer sig från alla befintliga slag, **(2)** texten inte kan lånas från ett befintligt slag utan att
+ljuga, och **(3)** prioriteten mot varje befintligt slag är beslutad av Axel före vektorn skrivs. Kandidaterna
+(#42, #32, #45, #15) prövas mot det — i bedömningen, inte här.
 
 ---
 
@@ -664,4 +669,5 @@ ingen läser en överspelad version någon annanstans.
 | 14/9 | Dokumentet omarbetat till **en** sammanhängande karta | — |
 | 14/9 | **Motorn och fogarna inarbetade** (§4, §5) på Bengts fråga om kartan tar hänsyn till det som faktiskt kör. Läst ur koden, inte ur minnet | DECISIONS #182 |
 | 14/9 | **§5.6 tillagd:** metodförbehållen stod bara i chatten. Vektortalen 6/3/23 är ett **tak** (vektorer som BÄR faran), inte en uppmätt kostnad; §4–§5 är lästa, inte körda | DECISIONS #183 |
+| 15/9 | **Kartan fryst.** Kriteriet för nytt farslag infört i §7.8 (tre rader, Bengt fastställde). Femton kända rättelser väntar i bedömningens bilaga A tills en rör kod | DECISIONS #186 |
 | 14/9 | **Axels fyra invändningar inarbetade (§13).** L5 var inte tomt — formen är beslutad som FÖRSPRÅNG (#90 roll B); #153 kostar därmed **F4, inte F5**; §7.5:s enum-resonemang var fel | DECISIONS #184 |

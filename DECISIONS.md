@@ -5567,3 +5567,30 @@ den är arbetsträdet smutsigt i varje kommande varv. Härdningen (`--autostash`
 resten av trädet är rent. Antagandet håller tills någon inför ett attribut, och då faller steget på
 en fil det aldrig rört. Felmeddelandet nämner dessutom inte VILKEN fil — "You have unstaged changes"
 utan filnamn kostade ett diagnosvarv, precis som "TRV 400" utan svarskropp gjorde.
+
+## #186 (15/9 2026) Axels andra brev: kartan fryst, förarna som facit, efterhalkan som märkt beta i november
+
+**Axels brev 15/9**, efter att han läst karta, bedömning v2 och granskning: *"Ni har byggt en mätapparat av en
+klass jag inte sett i ett projekt av den här storleken. Den saknar två saker: facit som fylls, och en väg från
+skugga till förare som är kortare än en vinter."* Han rättade sig själv på två punkter — grind A föll inte,
+och E kan inte vänta — och föreslog fyra saker. **Bengt beslutade samma dag:**
+
+1. **Kartan fryses.** Tjugofyra rättelser på ett dygn var en ekokammare. Nästa ändring i kartan kommer efter
+   att något byggts och mätts. R1–R15 väntar i bedömningens bilaga A tills en av dem rör kod. Enda undantaget:
+   kriteriet för nytt farslag, tre rader i §7.8, som Bengt fastställde: *handling · text · prioritet beslutad
+   av Axel före vektorn.*
+2. **Betatestarna får skicka varningsfacit** — *"stämde det?"* efter varje varning, varnings-id + svar, inget
+   spår — med uttryckligt samtycke i känd krets. Löftet *"samlar in: ingenting"* gäller oförändrat för
+   allmänheten (kort #21 hade skjutit knappen till våren 2027 av just det skälet).
+3. **Efterhalkan släpps som märkt beta i november**, före grinden: *"Halkvakt tror: frysrisk framöver"*, som
+   ny gren i `icing_point` (F3+F4+text, tre portar, `v11_silent_drive` måste tiga). Dom i januari på
+   förarfacit plus vad kamerafacit hunnit ge; mars-domen blir en dom på riktig data. Trösklarna rörs inte.
+4. **Tre dokument blir ett levande och två stilla:** kartan (varför, fryst) · bedömning v3 (vad och när, den
+   enda listan: nu 5 rader, senare, ännu senare) · granskningen (arkiverad).
+
+**Axels tre "måste oavsett" är bedömningens N1–N3:** kamerafacit bevisat med ett objekt i hinken, #42 i
+höstregn, nycklarna roterade senast 15/11 med publiceringsbevis. Ingen av dem var startad när brevet kom.
+
+**Två kostnader Axel inte nämnde, nu i listan:** *"kräver ingenting nytt i motorn"* stämmer inte — regeln
+finns som skript, inte i motorn apparna kör; betan är L1 flyttad till november, ett motorbygge med v11 som
+grind (S3). Och facitknappen kräver samtyckesbeslutet ovan (S4).
