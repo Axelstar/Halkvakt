@@ -1779,3 +1779,22 @@ RUTIN: kassan 4 026 min/3 006 körningar = 16,21 USD av 35, släpande takt 200 o
 sha256), meta.json 15 min, kalla stationer 2, SE live.json fortfarande 0 segment (kort #154).
 weather_obs 284 090 → 291 757 över 16,0 h ⇒ ~11 500 rader/dygn. CI grön på main. #86 ej roterat.
 Byggt: renormaliseringen (reparation, inte funktion). Nästa: morgonavläsning 15/9 04:30 UTC.
+
+## 2026-09-15 04:45 — CRLF-fixen bevisad på disk, ännu inte i drift
+KORT #161: hela trädet är rent efter en TVINGAD innehållsrefresh (`git ls-files -z | xargs -0 touch`
+följt av `git status` ⇒ tomt), och `git ls-files --eol` visar noll `i/crlf` kvar av 938 spårade
+filer. gradlew.bat var alltså den enda filen med felet. MEN driften är inte bevisad: marknadsforing
+är bokad 04:45 UTC och hade inte kört kl 04:40 — i går kom den 10:07, 5 h 22 min sent. Beviset är en
+grön körning med genomfört commit-steg. trv-bevakning kör bara måndagar, så 13 källor i state-filen
+kan tidigast synas 21/9; fram till dess är de sex källvakterna fortfarande blinda.
+KORT #160: inget svar från Bengt (ingen DECISIONS efter #185, inga commits som rör pulsklockan eller
+mätvakten). Natten gav mer av samma mätning: healthcheckens sex pulskörningar 18:23–04:23 låg alla
+på :23:01–:23:02, GitHub-cronens två kom 1 h 02 min och 47 min sent. Sex av sex mot noll av två.
+RUTIN: kassan 4 058 min/3 025 körningar = 16,46 USD av 35, släpande takt 200 oförändrad, månadssnitt
+294 → 291, takdatum 26/9 oförändrat; nattens egen takt 128 min/dygn. CI grön på main (cbef7a7);
+#259–#264 från parallellsessionen är rena dokument och hoppas av paths-ignore som avsett. Kartrepot
+04:30: SE/FI/DK live-sha = manifest-sha, meta.json 1 min. weather_obs 291 757 → 297 789 över 12,0 h
+⇒ ~12 100 rader/dygn. SE live.json har fortfarande 0 segment (#154 står).
+FÖRSTA MINUSGRADEN: live-snapshoten bär FI:14047 −0,3 °C yta, och meta.json visar 4 kalla stationer
+(2 i går). Gallringens motiv börjar bli verkligt.
+Byggt: inget detta varv. Nästa: kvällsavläsning 15/9 17:30 UTC.
