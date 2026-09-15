@@ -724,6 +724,20 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [ ] 🔍 **#186 GRANSKNING 15/9 — de förkastade prövade på nytt, och allt bedömningen missade. VÄNTAR PÅ BESLUT**
+  (`docs/GRANSKNING-2026-09-15.md`, Bengts order: genomgripande granskning, inget byggt).
+  🕳️ **#42 är bedömningens största hål:** fick en rad, har egen byggordning (#81 A–F) där A, B och halva C
+  är BYGGDA, V-A föll ×3, radardomen höll, tröskeln 2,0 mm/h kontrasignerad — och motorsteget är ett
+  SJÄTTE FARSLAG (F5) enligt kortet, i strid med kartans §7.8. Enda spåret med HÖSTFÖNSTER.
+  🚨 **Kartans "radarn ligger redan i telefonen" är halvsann:** `regn` sätts bara på halkklassade segment
+  (`snapshot-core.ts:101`). Vattenplaningens segment når det aldrig (#154, bekräftat i koden).
+  📊 **Tio tröskeldokument: ett fallit (V-A), noll passerade, nio väntar.** §1.2 täckte fyra av tio.
+  ⚖️ **Sjutton förkastanden prövade — alla rätt.** Fyra efterord i kartan fel/överspelade: #96 höjden MÄTER
+  fortfarande (lapse 0,63, #45 använder 0,71), `rate_max` SPÄRRAT, oljefilm→#42 överspelad (#155), #94 ÖPPET.
+  🐛 **Motorfel kartan missade:** #97 regexen blind för "Rimfrost"/"Halkrisk" · #156 · #44 regnmätarna
+  fångar varannan bucket (44 %) · #83 gallringen före första kalla veckan.
+  🔑 **Frysklassningens K2 (osäkerhetszon) är exakt det graderade mått E behöver** — redan fastställt.
+  17 rättelser (R1–R17) till kartan och bedömningen, nio nya beslut. Två nummerkollisioner: #154 och #103.
 - [ ] 📋 **#185 BEDÖMNING 15/9 — förslag till åtgärder ur allt material, VÄNTAR PÅ BENGTS OCH AXELS BESLUT**
   (`docs/BEDOMNING-2026-09-15.md`, Bengts order: analys + förslag, inget byggt). Sorterat i I DAG (T1–T10),
   KORT SIKT (K1–K9), LÄNGRE SIKT (L1–L7), vad som tas bort ur schemat, och sju beslut med rekommendation.
