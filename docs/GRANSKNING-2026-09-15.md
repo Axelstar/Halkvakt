@@ -32,7 +32,9 @@ och grindar · DECISIONS #55, #96, #103, #110, #116, #119, #134, #137, #153, #15
    är ett öppet kort, inte ett stängt.
 5. **Tre motorfel och två datakvalitetsfel som kartan aldrig nämner:** #97 (halk-regexen blind för
    "Rimfrost"/"Halkrisk"), #156 (halkorden i tre versioner), #154 (regnfältet), #44 (regnmätarna
-   fångar varannan bucket — 44 % täckning), #83 (gallringen före första kalla veckan).
+   fångade varannan bucket — 44 % täckning, mätt före ingest-live-bytet 9/9), #83 (gallringens
+   räckvidd ~55 dygn in i vintern; oktoberbeslutet).
+   *Rättat i §10 efter tredje vändan: #83:s gallring finns, #44:s tal är från före bytet.*
 6. **Andra vändan (Bengts "är allt täckt nu?") hittade sex hål till — se §9.** Två av tre facitkällor
    är tomma eller stillastående (kamerafacit 0 objekt, `road_condition_history` 830 rader, nyaste 25/8);
    ett test låser **motsatsen** till #45:s vinterbaseline i alla tre portarna (#52); två nycklar går ut
@@ -200,8 +202,8 @@ uppfinna en egen skala.
 | **#97** | `SLIPPERY_INFO`-regexens lookbehind matchar bara ordstart: "Rimfrost", "Halkrisk" passerar tysta oavsett kod. 0 träffar i 838 arkivsträngar i dag — **en tyst ALDRIG** den dag TRV skriver så | F4 | en vektor, tre portar | Bengt: vidga ordlistan, eller låt kodgrinden vakta |
 | **#156** | Halkorden i tre versioner: motorn har `mycket besvärligt`, SQL:en i `snapshot-core.ts:102` har det **inte** | F1/F4 | — | Axel |
 | **#154** | `regn` bara på halkklassade segment | F1 | vidga frågan (snapshot större) eller andra läsare (bryter #81:2) | Bengt / steg C:s ägare |
-| **#44** | Regnmätarna fångar **1 av 2** buckets (78 % av stationstimmarna), täckning **44 %**. `regn-30` byggd 3/9, GitHub-cronen svalde den (3 av 14 avfyrningar) | — | halverar vinterseriernas växttakt; **T1:s `regn_h` vilar på detta** | Bengt: regn-30 på pulsen, eller släpp |
-| **#83** | Gallring saknas före första kalla veckan: 122 000–175 000 rader/dygn ⇒ 500 MB på 11–16 dygn | — | avgör om #89/#98 kan "räkna om" eller måste spara som #88 (#155) | **oktoberbeslut**, ligger inte i bedömningen |
+| **#44** | Regnmätarna fångade **1 av 2** buckets, täckning **44 %** — *mätt 3/9, FÖRE ingest-live tog över regnmängden var minut 9/9 (#79, regn-30 nedlagd med flit)*. Ny täckning **omätt** sedan 5/9 | — | **T1:s `regn_h` vilar på en täckning ingen mätt efter bytet** | Bengt: kör `regn-tackning` en gång — knapp, inte cron |
+| **#83** | Gallringen **finns** (sql/014 i pg_cron, första synliga effekt natten till 16/9) — jag skrev "saknas", det var fel. Öppet är om den **räcker**: dess eget huvud säger ~55 dygn in i vintern, sedan export eller Pro | — | avgör om #89/#98 kan "räkna om" eller måste spara som #88 (#155) | **oktoberbeslutet** (export/Pro) — bör tas före första kalla veckan |
 | **#45** | Lapse-konstant **0,71** — #96:s färska tal är **0,63** ur 3 476 par | dokument | §5 dubbelsignatur | Bengt + Axel |
 
 ---
@@ -248,8 +250,8 @@ inaktuell.
 | #154: vidga väglagsfrågan eller andra läsare? | Bengt / steg C | vidga frågan med `regn ≥ 2,0` — en skrivare hålls, snapshoten växer marginellt (124 segment i regn) |
 | #97: vidga ordlistan eller kodgrind? | Bengt | **kodgrind nu** (noll vektorer), ordlistan när TRV skriver så |
 | #45: lapse 0,71 → 0,63 | Bengt + Axel (§5) | ja — det är #96:s mätning, inte ett tyckande |
-| #44: regn-30 på pulsen | Bengt | ja — halverad växttakt drabbar varje vinterserie |
-| #83: gallringen (oktoberbeslutet) | Bengt | **måste tas före första kalla veckan**, inte i oktober |
+| #44: mät regntäckningen EFTER ingest-live-bytet (regn-30 är nedlagd, #79) | Bengt | ja — en knapptryckning; 44 % är ett tal från före bytet |
+| #83: steg 2 (export eller Pro) — gallringen finns, räcker ~55 dygn | Bengt | **ta beslutet före första kalla veckan**, inte i oktober |
 | Höjden som varianspredikator — ny fråga, egen grind | Bengt | ja — kräver inte vinter, #96:s data finns |
 | E byggs på K2 | Bengt | ja |
 
@@ -331,5 +333,88 @@ L4 säger "#45 som meta" som om vägen vore fri. **Den är låst av en vektor so
 
 *Lärdomen från den här vändan: "inte integration" var en klassning jag gjorde på rubrik. Tre av tre
 lästa kort var integration. Resten av de 19 avfärdade är fortfarande olästa.*
+---
+
+## 10. Tredje vändan — de nitton olästa korten, lästa
+
+Bengts order: *"läs de 16 olästa korten också."* Strikt räknat nitton — alla jag inte läst i sin helhet.
+Alla nitton lästa i sin helhet 15/9. Resultat: **fyra rör integrationen, tre rättar min egen granskning,
+tolv rör den inte.**
+
+### 10.1 Klassningen
+
+| Kort | Vad | Rör integrationen? | Fynd |
+| :-- | :-- | :-- | :-- |
+| #15 · #16 · #25 · #26 | kö-slut, blixthalka, halkbana, skolpaket | nej | låsta bakom release/avsiktsförklaringar — en rad var |
+| #21 · #23 · #27 | anonym puls, heads-up-banner, asc-CLI | nej | produkt/verktyg |
+| #146 | 27,6 MB Swift-byggutdata spårat | nej — men **klon faller på Windows** (260 tecken) utan `core.longpaths` | ops, Bengts/Axels beslut |
+| #50 | vakthunden själv obevakad | nej (ops) | på pulsen sedan 4/9 21:08, ett mellanrum bevisat, dygnsbeviset öppet |
+| #53 | Actions stod 5/9 | nej (historik) | rotorsaken till hela kassaläget: privata repots 2 000 min; cron togs bort ur fem flöden |
+| #76 | vakthundens led 3 mäter manifest-sha | nej (ops) | åtgärdat på main 8/9, **deploybevis saknas** — det är vakten för "F1 är gratis" |
+| #85 | Actions-takten (9/9) | nej — ersatt av #152 | tre snitt föreslagna; regn-30 lades ner (#79) |
+| #152 | kassavakten check 8 | nej (ops) | byggd 13/9, väntar deploy + bevis |
+| #160 | måndagsserien 5–7 h sen | nej (ops) | behandlad i bedömningen §1.7 |
+| **#32** | hindren in i rösten — **ny `HazardKind`** för djur på vägbanan (173/vecka, riktig position) | **ja** | **tredje kandidaten till ett sjätte farslag** — se 10.3 |
+| **#44** | regntäckningen | **ja** | **rättar §5** — se 10.2 |
+| **#83** | gallringen | **ja** | **rättar §5** — se 10.2 |
+| **#156** | halkorden i tre versioner | ja | vår halva gjord (fyra kontrakt); Axels halva öppen; **kan inte avgöras på data** (0 vinterord i arkivet) — beslut på semantik eller vänta på vintern |
+| **#161** | CRLF fäller commit-steget | ja (facit) | **rättar bedömningens T8** — se 10.2 |
+
+### 10.2 Tre rättelser till min egen granskning och bedömning
+
+**#44 — talet 44 % är från före bytet.** `regn-30` lades **ner med flit** 9/9 (kort #79) därför att
+`ingest-live` sedan dess bär `rain_sum_mm` **var minut**. Bucket-förlusten var timingestens problem.
+§5 sade "cronen svalde den" — det gäller tiden före pulsen 4/9, och pulsen är i sin tur överspelad av
+ingest-live. **Vad som gäller:** ny täckning **omätt** sedan 5/9 (`regn-tackning` har inte körts).
+T1:s `regn_h` vilar alltså på en täckning ingen mätt efter bytet. §8:s beslut "regn-30 på pulsen" är
+moot och ersatt med "kör `regn-tackning` en gång".
+
+**#83 — gallringen finns.** `sql/014` ligger i pg_cron; första synliga effekt i räknaren natten till 16/9.
+§5 sade "gallring saknas" — fel. Det öppna är om den **räcker**: dess eget huvud säger ~55 dygn in i
+vintern, sedan är steg 2 (export eller Pro) ett oktoberbeslut. Septembertakten mätt 14/9: ~11 500
+rader/dygn med dieten; vintern upphäver dieten.
+
+**#161 — CRLF är åtgärdat, sex vakter är det inte.** `git add --renormalize` gjordes i samma varv 14/9.
+Bedömningens T8 ("#161 gradlew CRLF") är därmed gjord. **Det som återstår är det dyra:** `trv-bevakning`
+breddades 12/9 från 7 till 13 källor, men state-filen på main bär fortfarande **7** — de sex nya
+(`smhi-uppdateringar`, `fi-digitraffic`, `no-vegvesen`, `dk-dmi`, `polisen-regler`, `polisen-api`) seedar
+om sig varje körning och **kan aldrig larma**. T8 ska lyda: *bevisa att trv-bevakning pushar state med
+13 källor*. Samma familj som #51:s vakt som inte mäter tillväxt.
+
+### 10.3 Tre kandidater till ett sjätte farslag — §7.8 är inte längre en regel, det är en åsikt
+
+Kartans §7.8 säger *"berika en befintlig faras underlag, lägg inte till farslag"* och bedömningens L4
+upprepar det. Men tavlan bär nu **tre** kort som vill ha ett nytt `HazardKind`:
+
+| Kort | Slag | Skäl kortet ger | Fog |
+| :-- | :-- | :-- | :-- |
+| **#42** (#81 D) | `aquaplaning` | annan fara, annan handling (fart), eget förvillkor (yta > +4), egen text, "halkan vinner" som egen vektor | F5 |
+| **#32** | hinder / djur på vägbanan | DECISIONS #5 lovade "olyckor + hinder"; 173 händelser/vecka med riktig position | F5 |
+| **#45** | snö/slask — *om* meta inte räcker | våtbulb-klass per segment; men #52:s vektor låser motsatsen | F5 eller F4 |
+
+Var och en är sakligt rimlig. Tillsammans är de exakt det §7.8 varnar för: **varje nytt slag gör regel
+1a värre** — fler konkurrenter om en enda plats i rösten. Och det finns i dag **ingen skriven regel** för
+när ett nytt slag är motiverat; §7.8 är en lärdom ur ett lyckat fall (#46), inte ett kriterium.
+
+**Förslag till kriterium, att fastställas före något av de tre byggs:** ett nytt farslag är motiverat
+bara om (1) förarens **handling** skiljer sig från alla befintliga slag, (2) **texten** inte kan lånas
+från ett befintligt slag utan att ljuga, och (3) prioriteten mot varje befintligt slag är **beslutad av
+Axel före vektorn skrivs**. #42 klarar (1) och (2) — (3) är öppen. #32 klarar (1) — (2) och (3) är
+öppna. #45 klarar troligen inget av dem: handlingen är halkans, texten kan vara halkans, och
+prioriteten är halkans. **Så: #42 ja, #32 kanske, #45 nej — men det ska stå i kartan som regel, inte
+avgöras kort för kort.**
+
+### 10.4 Beslut som tillkommer
+
+| Beslut | Vem | Rekommendation |
+| :-- | :-- | :-- |
+| Kriterium för nytt farslag (10.3) in i kartan §7.8 | Bengt + Axel | **ja, före #42 D, #32 eller #45** |
+| `regn-tackning` en gång efter ingest-live-bytet | Bengt | ja — knapp, en minut |
+| T8 omformulerad: bevisa 13 källor i trv-bevaknings state | Claude | ja |
+| #76: deploybevis för manifest-sha-vakten | Axel/Bengt | ja — det är vakten som gör "F1 är gratis" mätbart |
+| #146: `git rm --cached` + `.gitignore` | Bengt/Axel | ja — repot går inte att klona normalt på Windows |
+
+*Efter tredje vändan finns inga olästa öppna kort på tavlan. Det betyder inte att listan är komplett —
+det betyder att den är läst.*
 *Underlag till en ny bedömning. Kartan är fortfarande den enda källan för hur delarna hänger ihop;
 rättelserna R1–R17 ska in där, inte här.*
