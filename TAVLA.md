@@ -741,6 +741,14 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [ ] 🔇 **#188 SPÄRREN SYNLIG PÅ RIKTIGT — `shadow_log.suppressed` skrevs aldrig** (bifynd 15/9 i #191, Bengts ja).
+  #127 a byggde kroken i motorn och kolumnen i sql/016, men skuggmotorn lyssnade aldrig: `[]` i varje rad sedan 13/9.
+  BYGGT 15/9 (DECISIONS #193): kroken inkopplad, listan skrivs, skuggrapporten får `sparren`. VÄNTAR: deploy skuggmotor
+  + skuggrapport, bevis = `sparren.kastade > 0` i rapporten.
+- [ ] 🔢 **#189 TRENDARKIVETS FLYTTALSRESTER** (bifynd 15/9 i #192, Bengts ja): `lutning30_c` min −0,7999999999999998 —
+  rader från 26 minuter 13/9 innan avrundningen fanns; `dagg_gap_c` var dessutom orundat i skrivaren. BYGGT 15/9
+  (DECISIONS #194): gapet avrundas i `trendkandidat.ts`, sql/020 rundar arkivet. VÄNTAR: migration 020 via dbknapp,
+  bevis = 0 orundade rader efteråt.
 - [ ] 🧪 **#187 F1: SKATTARENS RÅA INDATA I live.json — `regn_h`, `lutning15/30/60` bredvid `fukt`** (bedömning v3 N4,
   Bengts order 15/9, DECISIONS #188). BYGGT 15/9 i `publish/snapshot-core.ts` (PR #270): null när fönstret är tomt,
   aldrig noll; motorn läser inget; gränsstationer null. `radar_h` UPPSKJUTEN (LATERAL-koppling i publicera var 10:e

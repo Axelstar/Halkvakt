@@ -25,7 +25,9 @@ export function arKandidat(rader: Rad[], i: number): Kandidat | null {
   const lutningar = FONSTER.map((f) => lutning(rader, i, f));
   // Når ingen lutning svepets lägsta steg fyrar ingen kombination heller.
   if (!lutningar.some((l) => l !== null && l >= MINSTA_LUTNING)) return null;
-  return { rad: r, lutningar, gap: r.dagg === null ? null : r.yta - r.dagg };
+  // Avrundat som lutningen (trenden.ts, flyttalsläxan 13/9): 4,8 − 4,4 är 0,39999999999999947 i
+  // binärt och 0,4 i numeric, och dagg_gap_c ska bära en tröskel (S2). Tre decimaler, en mer än mätvärdet.
+  return { rad: r, lutningar, gap: r.dagg === null ? null : Math.round((r.yta - r.dagg) * 1000) / 1000 };
 }
 
 /** Utfallet: lägsta yta inom fönstret efter ögonblicket, och hur många rader det vilar på.

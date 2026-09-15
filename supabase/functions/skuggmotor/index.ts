@@ -859,7 +859,13 @@ Deno.serve(async (req) => {
       const line = routes[name];
       {
       const trace = traceAlong(line);
-      const alerts = new AlertEngine(hazards).run(trace);
+      // SPÄRREN SYNLIG (#127 a, kort #188, DECISIONS #193, Bengts ja 15/9). Kroken fanns i motorn och
+      // kolumnen i sql/016 sedan 13/9 — men ingen lyssnade, så kolumnen stod tom. Nu: det regel 1b
+      // kastar loggas per körning, med vad som tystade det och med vilken marginal.
+      const motor = new AlertEngine(hazards);
+      const suppressed: { kind: string; id: string; distM: number; by: string; sinceS: number }[] = [];
+      motor.onSuppressed = (c) => suppressed.push({ kind: c.kind, id: c.hazardId, distM: Math.round(c.distM), by: c.by, sinceS: c.sinceS });
+      const alerts = motor.run(trace);
       const vb = land === "se" ? vbAlerts(lv, line, trace) : [];
       // Facit-bilder finns bara i Sverige (Trafikverkets väglagskameror). Punkterna slås upp ur
       // faran, inte ur larmet — motorns Alert bär ingen position (rättelse 4 ovan, DECISIONS #189).
@@ -875,7 +881,7 @@ Deno.serve(async (req) => {
       // En nolla utan skäl är omöjlig att skilja från "inga larm" (#173) — även den här grenen säger varför.
       if (land === "se" && alerts.length && !punkter.length) f.skal.push("bara segmentlarm — ingen punkt att söka kamera från");
       facitBudget -= f.saved; facitTotal += f.saved; facitSkal.push(...f.skal);
-      results[name] = { fixes: trace.length, alerts: alerts.length, vb: vb.length };
+      results[name] = { fixes: trace.length, alerts: alerts.length, vb: vb.length, suppressed: suppressed.length };
       // LARMETS POSITION (kort #158, DECISIONS #177/#179, Axels ja via Bengt 14/9).
       //
       // FÖRUT SKREVS `lon: a.lon` — OCH DET FÄLTET FINNS INTE. Motorns Alert bär `t`, `hazardId`,
@@ -898,7 +904,7 @@ Deno.serve(async (req) => {
       // Exakt punkt för segment kräver att motorns Alert bär den — det är form B och rör vektorerna.
       const body = JSON.stringify({
         route: name, land: land.toUpperCase(), snapshot_generated_at: lv.generated_at,
-        n_hazards: hazards.length, n_alerts: alerts.length, vb,
+        n_hazards: hazards.length, n_alerts: alerts.length, vb, suppressed,
         alerts: alerts.map((a) => {
           const h = farorById.get(a.hazardId) as any;
           const punkt = h && h.kind !== "slippery_segment" && typeof h.lon === "number";
