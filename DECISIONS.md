@@ -5698,6 +5698,29 @@ inte föregå den. Nästa länk när första regndygnet loggats. Domen fälls ö
 **Ordning vid driftsättning:** migrationen (sql/019) FÖRE deployen — PostgREST avvisar en okänd kolumn och
 hade annars fällt hela skuggloggningen, inte bara `vb`.
 
+**Bevis 15/9:** första `vb`-raderna 17:30Z: **5 skuggvarningar** (E18 Karlstad→Örebro, 5 st, regnsegment 18060/18065/18067) i skuggrapportens `vattenplaning`.
+
 **Bifynd:** kolumnen `shadow_log.suppressed` (sql/016, #127 a) skrivs aldrig av skuggmotorn — `onSuppressed`
 finns i motorn men ingen lyssnar. Kolumnen har stått tom sedan 13/9. Eget kort behövs innan någon "fixar" det.
+
+## #192 (15/9 2026) Trendfälten besiktigade — värdevakten skannade aldrig `trend_kandidater`
+
+**Bengts fråga 15/9 ("finns det något annat av nu-sakerna som kan påbörjas") — svaret var förkravet för S2/S3.**
+Värdevaktsregeln (12/9) säger att ett fält inte får bära en tröskel förrän det passerat vakten. `lutning15/30/60`
+bär redan `lutning` i live.json (N4, #188) och ska bära efterhalkans villkor (S3). Men `trend_kandidater` stod
+inte i vaktens tabellista (`TID`), så dess fält skannades aldrig — **inte ens som OBESIKTIGADE.** "Schemat läses
+ur databasen" gällde bara inom listan. Tabellen är tillagd, sex fält har spann.
+
+**Domen (knappen på grenen, 30 dygn, 7 787 rader):** alla sex ✅ OK — `lutning15_c` −1,7…1,7, `lutning30_c`
+−0,8…2,2, `lutning60_c` −1,4…2,0 (°C per fönster, positivt = faller), `dagg_gap_c` −4,6…8,2, `min_yta_90min_c`
+0,3…6,3, `utfall_rader` 0…18 (17 vanligast, 50 %). Spannen: lutning ±20 per fönster (fysikens yttergräns; bortom
+det är ett givarhopp, som trendens egen vakt redan kastar mellan rader), gap och min-yta ±60, utfall 0–200.
+
+**Bifynd:** `lutning30_c` har minimum **−0,7999999999999998** — en binär flyttalsrest i en `numeric`-kolumn.
+Skrivaren avrundar alltså inte (13/9-läxan: avrunda på TypeScript-sidan till fler decimaler än mätvärdet har).
+Ofarligt för besiktningen, men en tröskel på 0,8 skiljer −0,8 från −0,79999. Eget kort innan S2 sätter en tröskel
+på fältet.
+
+**Vad det INTE bevisar:** att värdena är rätt. Vakten säger att de är fysiskt möjliga och fria från sentineler;
+T-A (första frostnätterna) säger om lutningen förutsäger något.
 
