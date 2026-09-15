@@ -488,6 +488,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⏭️ **FEM SAKER MÅSTE FINNAS:** A allvarsskala (Axels) · B bevisbärare i snapshoten · C en grind
   för KOMBINATIONEN · D skriven regel för gemensam kalibrering · E graciös degradering (min kod).
   **C och D är dokument och kan skrivas före frosten.**
+  ❄️ **FRYST 15/9 (DECISIONS #186, Axels förslag, Bengts beslut).** Nästa ändring efter bygge + mätning. Enda
+  undantaget infört: kriteriet för nytt farslag i §7.8 (tre rader). R1–R15 väntar i bedömningens bilaga A.
 - [ ] 📍 **#158 SKUGGLOGGENS LARM SAKNAR POSITION — och tre mätningar hänger på det**
   ✅ **BYGGT OCH DEPLOYAT 14/9 — FORM A** (Axels ja via Bengt, DECISIONS #179, PR #248).
   Positionen tas ur FARAN, inte ur motorn: punktfaror bär lon/lat själva, så en uppslagning på
@@ -755,6 +757,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Kartans §7.8 är därmed en åsikt, inte en regel. Kriterium föreslaget: handling · text · prioritet före vektorn.
   📎 **SAMMANSTÄLLD 15/9 (Bengts order före utskick till Axel):** tre vändor ihopvävda per ämne, bara fynd som
   stått sig, rättat står i rättad form. 13 paragrafer, R1–R22, 18 beslut. Drive-kopia uppladdad.
+  🗄️ **ARKIVERAD 15/9.** Fynden införda i bedömning v3; R1–R15 i dess bilaga A. Ändras inte mer.
 - [ ] 📋 **#185 BEDÖMNING 15/9 — förslag till åtgärder ur allt material, VÄNTAR PÅ BENGTS OCH AXELS BESLUT**
   (`docs/BEDOMNING-2026-09-15.md`, Bengts order: analys + förslag, inget byggt). Sorterat i I DAG (T1–T10),
   KORT SIKT (K1–K9), LÄNGRE SIKT (L1–L7), vad som tas bort ur schemat, och sju beslut med rekommendation.
@@ -769,6 +772,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   tröskeldokument · facitstacken två av tre tomma · `regn` bara på halkklassade segment · K2 som graderat mått ·
   nycklarna #86 · **#42 som eget spår med höstfönster (T0)** · kriterium för sjätte farslag. 20 beslut. §8 = deltat mot v1.
   Kartan orörd — R1–R15 väntar på Bengt. Drive-kopior: karta (nu main @ 0022d92), bedömning v2, granskning.
+  📌 **v3 15/9 = DEN ENDA LEVANDE LISTAN** (DECISIONS #186). Nu: 5 rader (kamerafacit, #42 i höstregn,
+  nycklarna 15/11, F1 råa indata, §7.8-kriteriet). Senare: efterhalkan som MÄRKT BETA i november med förarfacit
+  (S1–S6), dom i januari. Ännu senare: mars. Bengts två beslut: facitknapp med samtycke · beta före grinden.
 - [ ] 🟠 **#160 MÅNDAGSSERIEN KOM 5–7 TIMMAR SENT 14/9 — och mätvakten kan inte se det förrän om tio dygn**
   (morgonavläsningen 14/9 08:00). **DET HÄR ÄR 7/9 OM IGEN, och den gången tog det fem dygn innan en
   människa råkade titta.**
