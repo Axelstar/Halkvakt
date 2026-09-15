@@ -59,6 +59,25 @@ async function gh(path: string, method = "GET", body?: unknown): Promise<any> {
   return r.json();
 }
 
+/** EN öppen issue per etikett (kort #190, DECISIONS #195). 15/9 14:07Z gav listanropet en tom lista
+ *  medan #224 stod öppen med rätt etikett och markör; mätvakten skapade #268 och kommenterade sedan
+ *  alltid i den nyaste — #224 stod övergiven i sju timmar. Orsaken syntes inte, för sökningen loggades
+ *  inte. Därför: (a) ett tomt svar frågas om EN gång innan något skapas, (b) finns fler än en öppen
+ *  stängs de äldre som dubbletter, (c) antalet träffar går till `rad` så att nästa gång syns.
+ *  Samma fälla som kassavaktens 1 000-tak: ett list-API som svarar tunt utan felkod ser ut som sanning. */
+async function enOppen(etikett: string, mark: string, rad: string[]): Promise<any | undefined> {
+  const lista = async () => ((await gh(`/issues?state=open&labels=${etikett}`)) as any[]).filter((i) => (i.body ?? "").includes(mark));
+  let traffar = await lista();
+  if (!traffar.length) traffar = await lista();
+  rad.push(`issue ${etikett}: ${traffar.length} öppna`);
+  const [nyast, ...aldre] = traffar;   // GitHub listar nyast först
+  for (const d of aldre) {
+    await gh(`/issues/${d.number}/comments`, "POST", { body: `${mark}\nDubblett av #${nyast.number} — stängs av vakthunden (kort #190).` });
+    await gh(`/issues/${d.number}`, "PATCH", { state: "closed" });
+  }
+  return nyast;
+}
+
 /** Kadens i timmar ur ett 5-fälts cron-uttryck. null = går inte att tolka, och DET är ett larm
  *  i sig — en vakt som inte förstår schemat kan inte se när schemat missas. */
 export function kadensTimmar(cron: string): number | null {
@@ -348,8 +367,7 @@ Deno.serve(async (req) => {
       "\n" + "\n" + `En mätning som inte gick betyder att en DOM kan vila på gammalt underlag. Kolla vad ` +
       `flödet matar innan du kvitterar — det var så grind V-A låg åtta dygn på tre dygns regn.` +
       "\n" + "\n" + `Och en källa som slutat växa märks inte i appen förrän domen ska fällas i vinter.`;
-    const oppnaM = await gh(`/issues?state=open&labels=matvakt`);
-    const minM = oppnaM.find((i: any) => (i.body ?? "").includes(MATVAKT));
+    const minM = await enOppen("matvakt", MATVAKT, rad);
     if (allt.length) {
       if (minM) await gh(`/issues/${minM.number}/comments`, "POST", { body: mKropp });
       else await gh(`/issues`, "POST", { title: "🔕 Mätvakten: en mätning går inte eller en källa har slutat växa", body: mKropp, labels: ["matvakt"], assignees: ["895845"] });
@@ -415,8 +433,7 @@ Deno.serve(async (req) => {
       "\n" + "\n" + `Skälet att den här vakten finns: källvakten hade EN larmväg och inget golv. ` +
       `Issue #165 låg elva timmar utan att något höjt rösten, och den enda schemalagda körningen ` +
       `någonsin föll 7/9 utan att det märktes på fem dygn.`;
-    const oppnaP = await gh(`/issues?state=open&labels=kallvaktspaminnelse`);
-    const minP = oppnaP.find((i: any) => (i.body ?? "").includes(PAMINNELSE));
+    const minP = await enOppen("kallvaktspaminnelse", PAMINNELSE, rad);
     if (forsenade.length) {
       if (minP) await gh(`/issues/${minP.number}/comments`, "POST", { body: pKropp });
       else await gh(`/issues`, "POST", { title: "🔔 Källvakten: en källändring ligger oläst över sin frist", body: pKropp, labels: ["kallvaktspaminnelse"], assignees: ["895845"] });
@@ -577,8 +594,7 @@ Deno.serve(async (req) => {
         `**Talet är ett GOLV, inte fakturan.** Taket är kontoomfattande men vi ser bara ${REPO}; ` +
         `och GitHub avrundar per jobb medan vi avrundar per körning (android.yml har två jobb). ` +
         `Den exakta siffran kräver en nyckel med kontobehörighet och ligger hos Axel.`;
-      const oppnaK = await gh(`/issues?state=open&labels=kassavakt`);
-      const minK = oppnaK.find((i: any) => (i.body ?? "").includes(KASSA));
+      const minK = await enOppen("kassavakt", KASSA, rad);
       if (skal.length) {
         if (minK) await gh(`/issues/${minK.number}/comments`, "POST", { body: kKropp });
         else await gh(`/issues`, "POST", { title: "💸 Kassavakten: Actions-taket närmar sig", body: kKropp, labels: ["kassavakt"] });
@@ -761,8 +777,7 @@ Deno.serve(async (req) => {
       const nKropp = `<!-- nyckelkalender -->\n**Nyckelkalendern ${nuN.toISOString()}**\n\n` +
         (sena.length ? sena.join("\n") : "- ✅ ingen nyckel inom varsel") + `\n\n${rader.join("\n")}\n\n` +
         `Varsel ${NYCKEL_VARSEL_DYGN} dygn. PAT:ens datum läses ur GitHubs svarshuvud vid varje körning; Supabase-tokenens står i vakthundens kod (kort #86).`;
-      const oppnaN = await gh(`/issues?state=open&labels=nyckelkalender`);
-      const minN = oppnaN.find((i: any) => (i.body ?? "").includes("<!-- nyckelkalender -->"));
+      const minN = await enOppen("nyckelkalender", "<!-- nyckelkalender -->", rad);
       if (sena.length) {
         if (minN) await gh(`/issues/${minN.number}/comments`, "POST", { body: nKropp });
         else await gh(`/issues`, "POST", { title: `🔑 Nyckelkalendern: en nyckel går ut inom ${NYCKEL_VARSEL_DYGN} dygn — rotera och bevisa (kort #86)`, body: nKropp, labels: ["nyckelkalender"], assignees: ["895845"] });
@@ -784,8 +799,7 @@ Deno.serve(async (req) => {
   // "allt bra" är värdelös. Nu fångas felet och rapporteras i svaret, så pulsen ser det.
   let larmvag = "ok";
   try {
-    const öppna = await gh(`/issues?state=open&labels=vakthund`);
-    const min = öppna.find((i: any) => (i.body ?? "").includes(MARK));
+    const min = await enOppen("vakthund", MARK, rad);
     if (problem.length) {
       if (min) await gh(`/issues/${min.number}/comments`, "POST", { body: kropp });
       else await gh(`/issues`, "POST", { title: "🔴 Vakthunden: kedjan är bruten", body: kropp, labels: ["vakthund"] });

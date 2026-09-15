@@ -741,6 +741,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [ ] 🪞 **#190 EN ÖPPEN ISSUE PER ETIKETT — vakthundens sökning hade inget försvar** (Bengts utredningsorder 15/9,
+  DECISIONS #195). 15/9 14:07Z gav listanropet tomt medan #224 stod öppen ⇒ #268 skapades, #224 övergavs. BYGGT 15/9:
+  `enOppen()` för alla fem egencykel-issuerna — omfråga vid tomt svar, äldre dubbletter stängs, antal träffar i `rad`.
+  #224 stängd 21:39Z. VÄNTAR: deploy vakthund + `matvaktprov`, bevis = `issue matvakt: 1 öppna` och ingen ny issue.
 - [ ] 🔇 **#188 SPÄRREN SYNLIG PÅ RIKTIGT — `shadow_log.suppressed` skrevs aldrig** (bifynd 15/9 i #191, Bengts ja).
   #127 a byggde kroken i motorn och kolumnen i sql/016, men skuggmotorn lyssnade aldrig: `[]` i varje rad sedan 13/9.
   BYGGT 15/9 (DECISIONS #193): kroken inkopplad, listan skrivs, skuggrapporten får `sparren`. VÄNTAR: deploy skuggmotor

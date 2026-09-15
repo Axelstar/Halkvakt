@@ -5749,3 +5749,22 @@ bevisrad räknar orundade rader före/efter; värdevakten ska visa −0,8, inte 
 **Varför nu och inte "före S2":** en tröskel på 0,8 skiljer −0,8 från −0,79999, och att i stället avrunda vid
 jämförelsen i S2 är exakt fällan 13/9 — två sidor som avrundar olika.
 
+## #195 (15/9 2026) Två öppna mätvaktsissues — ett tomt listsvar utan felkod, och vakthunden hade inget försvar
+
+**Bengts order 15/9 ("utred #224/#268", sedan "ja till båda").** #224 (mätvakten, öppen sedan 13/9 10:07Z, 52
+kommentarer en per timme) fick sin sista kommentar 15/9 13:07Z. Nästa timkörning, 14:07:04Z, skapade #268 med
+samma innehåll — och har kommenterat där sedan dess. #224 var aldrig stängd eller återöppnad (inga händelser),
+hade etikett och markör på plats; ingen vakthund-deploy skedde 15/9 före 15:51Z, inget anrop från Actions,
+ingen röd vakthund kring 14:07Z. Det enda som skiljer den timmen är GitHubs svar: `GET /issues?state=open&labels=
+matvakt` gav inget som matchade. Orsaken går inte att se — sökningen loggades aldrig. Effekten är deterministisk:
+koden tar första träffen i listan (nyast först) och kommenterar där; en äldre dubblett stängs aldrig av någon.
+
+**Beslut:** (1) #224 stängd 21:39Z som dubblett av #268. (2) Skyddsnät i vakthunden, `enOppen(etikett, mark, rad)`,
+för alla fem egencykel-issuerna (vakthund, mätvakt, källvaktspåminnelse, kassavakt, nyckelkalender): ett tomt svar
+frågas om EN gång innan något skapas; finns fler än en öppen stängs de äldre som dubbletter med kommentar; antalet
+träffar skrivs i `rad` så att nästa gång är observerbar. Samma fälla som kassavaktens 1 000-tak (CLAUDE.md): ett
+list-API som svarar tunt utan felkod ser ut som sanning.
+
+**Bevis som gäller:** `matvaktprov` efter deploy — raden `issue matvakt: 1 öppna` i vakthundens svar, en kommentar
+i #268 och ingen ny issue.
+
