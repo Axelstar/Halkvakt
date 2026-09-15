@@ -5594,3 +5594,73 @@ höstregn, nycklarna roterade senast 15/11 med publiceringsbevis. Ingen av dem v
 **Två kostnader Axel inte nämnde, nu i listan:** *"kräver ingenting nytt i motorn"* stämmer inte — regeln
 finns som skript, inte i motorn apparna kör; betan är L1 flyttad till november, ett motorbygge med v11 som
 grind (S3). Och facitknappen kräver samtyckesbeslutet ovan (S4).
+
+## #187 (15/9 2026) Regnsegmenten får en EGEN nyckel i live.json — vidgningen av väglagsfrågan hade blivit en falsklarmsmaskin
+
+**Bedömning v3 N2 (kort #154, Bengts "då gör vi nu nu" 15/9, PR #270).** Uppgiften: låta radarns `regn` nå de
+normalklassade segment vattenplaningen sitter på. Den första ritningen — vidga väglagsfrågans WHERE med
+`rate_mean_mmh ≥ 2,0` — stoppades av koden själv: `engine/src/snapshot.ts` gör VARJE rad i `segments[]` till en
+`slippery_segment`, och `SnapshotRepo.kt`/`.swift` likaså. En vidgad fråga hade fått tre portar att säga "halka
+på vägen framför" på varje blöt normalväg i höstregn — F4/F5 utklädd till F1.
+
+**Beslut:** ny toppnyckel **`rain_segments`** med samma form som `segments` (`id, line, code, info, road, regn`),
+fylld av segment som INTE är halkklassade och vars senaste radarrad inom 70 min har rå `rate_mean_mmh ≥
+REGN_UTLOSARE_MMH = 2,0` (#155/#156, jämförd mot råvärdet). Ingen port läser nyckeln — båda läser otypat och
+okända nycklar ignoreras ("LÄGG TILL, ERSÄTT ALDRIG"); skuggan kan (steg E, V-B). Samma enda `regn`-skrivare.
+Fail-soft med not, aldrig tyst. Tre nya konstanter finns i två filer (källan + buntade publicera/index.ts) och
+står i kontraktsgrinden (golv 2). Test: normalklassat S2 över 2,0 hamnar i `rain_segments`, `segments` orörd,
+motorn ser fortfarande EN slippery_segment.
+
+**Förkastat:** vidgad WHERE (falsklarm i tre portar) · filter i `snapshotToHazards` (motorändring + tre portar för
+en F1-uppgift) · `regn` som separat karta `{id: mm/h}` (skuggan behöver geometrin ändå). **Bengts ja på #154**
+togs som givet av ordern att köra NU-listan; eftersom nyckeln inte når någon port ändrar ett nej ingenting apparna gör.
+
+## #188 (15/9 2026) F1: skattarens råa indata i live.json — `regn_h` och `lutning15/30/60`; `radar_h` uppskjuten
+
+**Bedömning v3 N4 (kort #187, PR #270).** Varje väderpunkt bär nu `regn_h` (timmar sedan arkivet senast såg
+`rain_sum_mm > 0`, fönster `REGN_H_FONSTER_H = 48`) och `lutning15/30/60` (°C per fönster ur `trend_kandidater`,
+senaste rad inom `LUTNING_MAX_ALDER_MIN = 60`, positivt = ytan faller). Null = inget i fönstret eller okänt,
+aldrig noll. Gränsstationer (fi/no) får null. Motorn läser inget av det — F1 ligger ett varv före F4, S1 mäter först.
+
+**`radar_h` uppskjuten:** kräver en LATERAL-koppling segment↔station i publicera var tionde minut; skuggmotorn slog i
+WORKER_LIMIT två gånger 14/9 (#176) och ingen CPU-mätning finns. Byggs när steg E ändå läser radarn per station.
+
+**Regntäckningen mätt (N4:s förkrav, 7 dygn t.o.m. 15/9):** 750 stationer × 169 körtimmar, bucket-täckning
+**13 %** (2/2 10 %, 1/2 7 %, 0/2 83 %). 3/9 var talet 44 %, 9/9 36 %. INTE jämförbart rakt av: nämnaren är alla
+station-körtimmar, och arkivdieten (#4) sparar bara "intressanta" rader — i en varm torr septembervecka är 0/2
+oftast rätt, inte tappat. Måttet skiljer inte torrt från missat. Konsekvens för `regn_h`: en regnbucket
+arkiveras bara medan nederbördsflaggan är satt eller ytan ≤ 5 °C, så `regn_h` kan överskatta med upp till en
+bucket (30 min). S1:s skuggjämförelse är beviset som gäller, inte täckningsprocenten.
+
+**Värdevakten:** innan fälten bär en tröskel (S2/S3) deklareras de i `scripts/vardevakten.ts` SPANN och knappen körs.
+
+## #189 (15/9 2026) Kamerafacit: den åttonde länken — `archiveFacit` fick aldrig positionen
+
+**Bedömning v3 N1 (kort #157, PR #270).** Två mätningar 15/9: facitradien (14 dygn) — **174 positionerade svenska
+skugglarm, 100 % inom 15 km** från en väglagskamera (närmast 0,2 km, längst bort 13,4; medianer per rutt
+0,4–13,4 km); tystnadsfelet (30 dygn) — **0 arkiverade kamerabilder**. Radien friad, hinken tom: en länk till.
+
+**Fyndet, i koden:** form A (#179) gav skuggloggens rader lon/lat genom uppslag i faran — men `archiveFacit(alerts, …)`
+fick fortfarande motorns `Alert`, som inte bär någon position (`engine/src/types.ts`), och räknade haversine på NaN
+precis som före form A. "Ingen kamera inom 15 km" var sant för NaN, inte för larmen.
+
+**Rättelse 4:** funktionen tar PUNKTER, uppslagna ur faran på samma sätt som loggen; segmentlarm ger ingen punkt
+(form A:s regel) och grenen säger det: "bara segmentlarm — ingen punkt att söka kamera från". **Bevis: ett objekt i
+bucketen efter deploy, räknat av tystnadsfelet — inte en commit.**
+
+**Bifynd ur samma körning:** `situation_archive` är INTE tomt — **3 122 olyckor på 30 dygn** (S7 sa "mät"; nu mätt).
+`road_condition_history`: 0 omklassningar till halka på 30 dygn — moaten är tom, som väntat i september.
+
+## #190 (15/9 2026) Nyckelkalendern i vakthunden — PAT:ens utgång läses live, Supabase-tokenens står i koden
+
+**Bedömning v3 N3 (kort #86, PR #270).** Vakthundens check 10 läser PAT:ens utgångsdatum ur GitHubs svarshuvud
+`github-authentication-token-expiration` vid varje körning — roterar Axel nyckeln flyttas datumet av sig självt,
+och en rotation som inte nått Supabase-hemligheten syns som ett datum som inte flyttat sig. Supabase-tokenen
+(deploy-knappen) saknar sådant huvud; `SUPABASE_TOKEN_UTGAR = 2026-12-08` står i koden och flyttas vid rotation.
+Varsel 14 dygn (rotationsläxan: bytet bevisas med en publicering, och det tar dagar). Egen etikett `nyckelkalender`,
+egen cykel, skrivs 06 UTC en gång om dygnet, färgar aldrig driftvakthunden röd. Prov `?nyckelprov=1` via dbknapp
+(flaggan i skriptets ENDA lista + YAML-menyn, 13/9-läxan).
+
+**Rotationen själv är Axels** (senast 15/11, bevis = publicering med ny nyckel). Kalendern larmar 8/11 för PAT:en och
+24/11 för Supabase-tokenen — om ingen rört dem.
+

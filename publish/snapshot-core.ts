@@ -40,6 +40,15 @@ const BORDER_LANDS = ["fi", "no"] as const;
 export const RADAR_FAKTOR = 0.65;
 /** #81 regel 7: utanför sin giltighet är radarn TYST, inte "ungefär rätt". */
 export const RADAR_MAX_ALDER_MIN = 70;
+/** UTLÖSAREN (TROSKLAR-VATTENPLANING §3.4, DECISIONS #155/#156): radarns RÅA `rate_mean_mmh`
+ *  ≥ 2,0 mm/h öppnar ett segment för `rain_segments` nedan. Jämförs mot råvärdet, så som tröskeln
+ *  sattes och kontrasignerades — inte mot det omskalade. */
+export const REGN_UTLOSARE_MMH = 2.0;
+/** F1 (kort #187): hur långt bakåt `regn_h` letar efter arkiverad nederbörd. Bortom detta är
+ *  timmarna sedan regnet inte längre ett regnstopp utan bara torrt — fältet blir null. */
+export const REGN_H_FONSTER_H = 48;
+/** F1 (kort #187): en lutning äldre än sitt längsta fönster säger inget om nu. */
+export const LUTNING_MAX_ALDER_MIN = 60;
 const BRIDGE_M = 15_000;
 
 const num = (x: unknown) => (x === null || x === undefined ? null : Number(x));
@@ -118,6 +127,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   // MEN INTE TYST: felet noteras, för en fail-soft-gren utan spår är ett tyst ALDRIG
   // (CLAUDE.md-läxan från kameror-vaglag).
   const regnPerSegment = new Map<string, number>();
+  const utlosta: string[] = [];
   try {
     const radar = await q(`
       SELECT DISTINCT ON (segment_id) segment_id, rate_mean_mmh
@@ -126,10 +136,36 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
       ORDER BY segment_id, observed_at DESC`);
     for (const r of radar) {
       const raa = Number(r.rate_mean_mmh);
-      if (Number.isFinite(raa) && raa >= 0) regnPerSegment.set(String(r.segment_id), Math.round((raa / RADAR_FAKTOR) * 10) / 10);
+      if (!(Number.isFinite(raa) && raa >= 0)) continue;
+      regnPerSegment.set(String(r.segment_id), Math.round((raa / RADAR_FAKTOR) * 10) / 10);
+      if (raa >= REGN_UTLOSARE_MMH) utlosta.push(String(r.segment_id));
     }
   } catch (e) {
     notes.push(`radar: radar_precip ej läsbar (${String((e as Error).message).slice(0, 80)}) — regn blir null på varje segment`);
+  }
+
+  // ---- live: regnsegmenten (kort #154 → DECISIONS #187, bedömning v3 N2) ----
+  // Väglagsfrågan ovan släpper bara HALKKLASSADE segment, så radarns `regn` nådde aldrig de segment
+  // vattenplaningen sitter på. De läggs INTE i `segments`: motorn och båda portarna gör varje rad
+  // där till en slippery_segment-varning (engine/src/snapshot.ts, SnapshotRepo.kt/.swift), så en
+  // vidgad WHERE hade fått apparna att säga "halka" på varje blöt normalväg i höstregn. Egen nyckel
+  // i stället — ingen port läser den, skuggan kan (LÄGG TILL, ERSÄTT ALDRIG). Samma form som
+  // `segments`, samma enda `regn`-skrivare. Fail-soft av samma skäl som radarn: tom + not, aldrig tyst.
+  const segIds = new Set(segs.map((r) => String(r.segment_id)));
+  const nya = utlosta.filter((id) => !segIds.has(id));
+  let regnSegs: Record<string, any>[] = [];
+  if (nya.length) {
+    try {
+      regnSegs = await q(`
+        SELECT segment_id, condition_code, condition_info, road_number,
+               ST_AsGeoJSON(ST_SimplifyPreserveTopology(geom, 0.0005))::json AS g
+        FROM road_conditions
+        WHERE NOT deleted AND geom IS NOT NULL
+          AND (end_time IS NULL OR end_time > now())
+          AND segment_id = ANY($1::text[])`, [nya]);
+    } catch (e) {
+      notes.push(`regnsegment: geometrin ej läsbar (${String((e as Error).message).slice(0, 80)}) — rain_segments blir tom`);
+    }
   }
 
   // ---- live: väderpunkter (svenska), med givarvakten ----
@@ -155,6 +191,34 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
     } catch (e) {
       notes.push(`gräns-wx: ${land}-schemat ej läsbart (${String((e as Error).message).slice(0, 80)}) — hoppar`);
     }
+  }
+
+  // ---- live: skattarens råa indata per station (F1, kort #187, DECISIONS #188) ----
+  // Bredvid `fukt`, utan tolkning: `regn_h` = timmar sedan arkivet senast såg regn på stationen,
+  // `lutning15/30/60` = ytans fall per fönster ur trendkandidaterna (positivt = faller). Motorn
+  // läser inget av det ännu — F1 ligger ett varv före F4 så att skuggan kan mäta först (S1).
+  // Null betyder "inget i fönstret" eller "okänt", aldrig noll. Fail-soft som radarn.
+  const regnH = new Map<string, number>();
+  try {
+    const rh = await q(`
+      SELECT station_id, EXTRACT(EPOCH FROM (now() - max(sample_time))) / 3600 AS regn_h
+      FROM weather_observations
+      WHERE rain_sum_mm > 0 AND sample_time > now() - interval '${REGN_H_FONSTER_H} hours'
+      GROUP BY station_id`);
+    for (const r of rh) regnH.set(String(r.station_id), Math.round(Number(r.regn_h) * 10) / 10);
+  } catch (e) {
+    notes.push(`regn_h: weather_observations ej läsbar (${String((e as Error).message).slice(0, 80)}) — regn_h blir null`);
+  }
+  const lutning = new Map<string, { l15: number | null; l30: number | null; l60: number | null }>();
+  try {
+    const tk = await q(`
+      SELECT DISTINCT ON (station_id) station_id, lutning15_c, lutning30_c, lutning60_c
+      FROM trend_kandidater
+      WHERE observed_at > now() - interval '${LUTNING_MAX_ALDER_MIN} minutes'
+      ORDER BY station_id, observed_at DESC`);
+    for (const r of tk) lutning.set(String(r.station_id), { l15: num(r.lutning15_c), l30: num(r.lutning30_c), l60: num(r.lutning60_c) });
+  } catch (e) {
+    notes.push(`lutning: trend_kandidater ej läsbar (${String((e as Error).message).slice(0, 80)}) — lutning blir null`);
   }
 
   // ---- #38 broarna: OSM-broar vars närmaste kalla+våta station ligger ≤ 15 km bort ----
@@ -196,19 +260,27 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
     FROM smhi_warnings
     WHERE geom IS NOT NULL AND event_code ~* 'SNOW|ICE|ICING|COLD|WIND'`);
 
+  const segRow = (r: Record<string, any>) => ({
+    id: String(r.segment_id), line: r.g.coordinates as [number, number][],
+    code: num(r.condition_code), info: (r.condition_info ?? []) as string[], road: r.road_number ?? null,
+    // mm/h i stationens skala, eller null när radarn inte har något att säga om segmentet.
+    regn: regnPerSegment.get(String(r.segment_id)) ?? null,
+  });
   const liveDoc = {
     schema: 1,
     generated_at: now.toISOString(),
-    segments: segs.map((r) => ({
-      id: String(r.segment_id), line: r.g.coordinates as [number, number][],
-      code: num(r.condition_code), info: (r.condition_info ?? []) as string[], road: r.road_number ?? null,
-      // mm/h i stationens skala, eller null när radarn inte har något att säga om segmentet.
-      regn: regnPerSegment.get(String(r.segment_id)) ?? null,
-    })),
-    weather: wx.map((r) => ({
-      id: String(r.station_id), lon: Number(r.lon), lat: Number(r.lat),
-      yta: num(r.surface_temp_c), fukt: fukt(r),
-    })),
+    segments: segs.map(segRow),
+    // Regnsegmenten (#154): normalklassade segment med råradar ≥ utlösaren. Ingen port läser nyckeln.
+    rain_segments: regnSegs.map(segRow),
+    weather: wx.map((r) => {
+      const id = String(r.station_id), l = lutning.get(id);
+      return {
+        id, lon: Number(r.lon), lat: Number(r.lat), yta: num(r.surface_temp_c), fukt: fukt(r),
+        // F1 (#187): råa indata bredvid fukt. Motorn läser dem inte; skuggan mäter (S1).
+        regn_h: regnH.get(id) ?? null,
+        lutning15: l?.l15 ?? null, lutning30: l?.l30 ?? null, lutning60: l?.l60 ?? null,
+      };
+    }),
     deviations: devs.map((r) => ({
       id: String(r.deviation_id), lon: Number(r.lon), lat: Number(r.lat),
       typ: r.message_type ?? null, road: r.road_number ?? null,

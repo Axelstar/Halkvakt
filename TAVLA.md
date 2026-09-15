@@ -99,6 +99,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   den själv två gånger i natt för kassavakten. Bevis är en notis om NY nyckel, inget annat.
   ⏰ KVÄLL 13/9: ingen rotationsnotis i STATUS, TAVLA eller DECISIONS. Oförändrat.
   ⏰ MORGON 14/9: ingen rotationsnotis. Oförändrat.
+  🗓️ **KALENDERN BYGGD I VAKTHUNDEN 15/9 (bedömning v3 N3, DECISIONS #190, PR #270):** check 10 läser PAT:ens utgång
+  ur GitHubs svarshuvud, Supabase-tokenens (8/12) ur koden; larm 14 dygn före i egen issue `nyckelkalender` (06 UTC);
+  prov `nyckelprov` via dbknapp. VÄNTAR: deploy vakthund + prov. ROTATIONEN ÄR FORTFARANDE AXELS (senast 15/11).
 - [ ] 💸 **#85 Actions-takten spränger 35 USD-gränsen före 1/10 — tre snitt räcker** (mätt 9/9
   04:30 av morgonavläsningen, DECISIONS #82:s budget). UPPMÄTT sedan Actions vaknade 8/9 21:07
   → 9/9 04:31 (7,4 h): **59 körningar, ≈ 98 debiterade minuter** (varje jobb avrundas uppåt):
@@ -576,6 +579,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⚠️ **VARFÖR DET HASTAR:** både #98 och mars-domen räknar med den här stacken. En facitkälla som
   tyst inte fyller på är värre än en som aldrig byggdes — den ger lugn på fel grund, precis som
   kameror-vaglag gjorde (CLAUDE.md-läxan om tysta ALDRIG).
+  🔧 **ÅTTONDE LÄNKEN 15/9 (bedömning v3 N1, DECISIONS #189, PR #270):** facitradien 174 larm, **100 % inom 15 km**
+  (median 0,4–13,4 km/rutt) — och tystnadsfelet: **0 bilder**. `archiveFacit` fick motorns Alert UTAN position (form A
+  gav bara loggen lon/lat) ⇒ NaN ⇒ "ingen kamera inom 15 km". Tar nu punkter ur faran. VÄNTAR: deploy skuggmotor +
+  ett objekt i hinken räknat av tystnadsfelet.
 - [ ] 🧵 **#155 SNUBBELTRÅD: ändras #83:s kvarhållning måste #89 och #98 byta byggform**
   **Principen (skriven 14/9 i TROSKLAR-OVERGANGAR och TROSKLAR-TRENDEN, Bengts order):** spara det
   som inte går att räkna om, räkna om det som går — och vilket som är vilket är en MÄTNING, inte en
@@ -731,6 +738,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [ ] 🧪 **#187 F1: SKATTARENS RÅA INDATA I live.json — `regn_h`, `lutning15/30/60` bredvid `fukt`** (bedömning v3 N4,
+  Bengts order 15/9, DECISIONS #188). BYGGT 15/9 i `publish/snapshot-core.ts` (PR #270): null när fönstret är tomt,
+  aldrig noll; motorn läser inget; gränsstationer null. `radar_h` UPPSKJUTEN (LATERAL-koppling i publicera var 10:e
+  min, ingen CPU-mätning, #176:s WORKER_LIMIT). Regntäckningen 15/9: 13 % på 7 dygn — måttet skiljer inte torrt
+  från missat (arkivdieten), S1 är beviset. VÄNTAR: deploy publicera + fälten i live.json med manifest-sha. Sedan
+  S1 (skuggan läser fälten) och värdevakten på fälten före S2/S3.
 - [ ] 🔍 **#186 GRANSKNING 15/9 — de förkastade prövade på nytt, och allt bedömningen missade. VÄNTAR PÅ BESLUT**
   (`docs/GRANSKNING-2026-09-15.md`, Bengts order: genomgripande granskning, inget byggt).
   🕳️ **#42 är bedömningens största hål:** fick en rad, har egen byggordning (#81 A–F) där A, B och halva C
@@ -775,6 +788,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   📌 **v3 15/9 = DEN ENDA LEVANDE LISTAN** (DECISIONS #186). Nu: 5 rader (kamerafacit, #42 i höstregn,
   nycklarna 15/11, F1 råa indata, §7.8-kriteriet). Senare: efterhalkan som MÄRKT BETA i november med förarfacit
   (S1–S6), dom i januari. Ännu senare: mars. Bengts två beslut: facitknapp med samtycke · beta före grinden.
+  ▶️ **NU-LISTAN I GÅNG 15/9 ("då gör vi nu nu"):** N1–N4 byggda i PR #270 (DECISIONS #187–#190), N5 klar. Spårningen
+  står i bedömningens §0; deployer och bevis väntar och skrivs in där när de finns.
 - [ ] 🟠 **#160 MÅNDAGSSERIEN KOM 5–7 TIMMAR SENT 14/9 — och mätvakten kan inte se det förrän om tio dygn**
   (morgonavläsningen 14/9 08:00). **DET HÄR ÄR 7/9 OM IGEN, och den gången tog det fem dygn innan en
   människa råkade titta.**
@@ -883,6 +898,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   snapshoten större (kostnad per användare), det andra ger två läsare av samma fält och bryter
   en-skrivare-regeln i #81 regel 2. Verify: ett regnigt dygn där minst ett normalklassat segment
   syns i live.json med `regn` satt.
+  ✅ **BYGGT 15/9 SOM EGEN NYCKEL `rain_segments` (bedömning v3 N2, DECISIONS #187, PR #270):** den vidgade WHERE:n
+  stoppades — varje rad i `segments[]` blir en varning i motorn OCH båda portarna (falsklarm på blöt normalväg i
+  höstregn). Nyckeln når ingen port; skuggan kan läsa den (steg E). VÄNTAR: deploy publicera + nyckeln i live.json.
 - [ ] 💸 **#152 KASSAVAKTEN — check 8 i vakthunden: larmar innan Actions-taket slår i** (Bengts order
   13/9: "Kan man ha någon mätning på taket så man vet när man närmar sig gränsen. Automatisk alltså").
   💰 **RÄTTAD 13/9 (DECISIONS #160, Bengts order "gör kort 152 nu"):** prognosen räknade på
@@ -1737,6 +1755,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   släckt, men 30-min-summan > 0 — "regnet slutade nyss"). Siffran mäter alltså regn-30:s
   restnisch, inte täckningen. Riktig dygnsmätning kräver först Axels deploy av ingest-live (kort
   #84); efter den skriver livemotorn rain_sum_mm varje minut och #79 avgör om regn-30 alls behövs.
+  📏 **KÖRD 15/9 (regn-tackning dagar=7, första efter ingest-live-bytet):** 750 stationer × 169 körtimmar, 2/2 10 %,
+  1/2 7 %, 0/2 83 %, täckning **13 %** (44 % 3/9, 36 % 9/9). INTE jämförbart rakt av: nämnaren är alla station-
+  körtimmar och arkivdieten sparar bara intressanta rader — måttet skiljer inte torrt från missat. Kortet döms inte
+  på det här talet (DECISIONS #188).
 - [ ] 🐕 **#50 Vakthunden är själv obevakad** (fynd 4/9 kväll, läsvarvet inför
   radardomen) — healthchecken är den enda som märker när något tystnar, och den går
   fortfarande på ren GitHub-cron. GENOMGÅNG av alla 15 cron-rader i repot: pulsklockan

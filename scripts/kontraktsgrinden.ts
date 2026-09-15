@@ -314,6 +314,24 @@ export const KONTRAKT: Kontrakt[] = [
     golv: 2,
   },
   {
+    namn: "Regnutlösaren — råradar över detta öppnar ett segment för rain_segments",
+    varfor: "Satt av Bengt, kontrasignerad av Axel (#155/#156). Driver den publiceras andra segment än tröskeldokumentet säger.",
+    former: [/const REGN_UTLOSARE_MMH\s*=\s*(\d+(?:\.\d+)?)/],
+    golv: 2,
+  },
+  {
+    namn: "regn_h-fönstret — hur långt bakåt arkivet får svara på när det senast regnade",
+    varfor: "Ett annat fönster i buntningen än i källan ger skuggan en annan regnstoppsbild än den motorn publicerar.",
+    former: [/const REGN_H_FONSTER_H\s*=\s*(\d+)/],
+    golv: 2,
+  },
+  {
+    namn: "Lutningens giltighetsfönster — äldre än så säger lutningen inget om nu",
+    varfor: "Samma skäl som radarns fönster: ett gammalt fall som talar som om det vore nu.",
+    former: [/const LUTNING_MAX_ALDER_MIN\s*=\s*(\d+)/],
+    golv: 2,
+  },
+  {
     // Samma tröskel under TVÅ NAMN — ruttberedskapen kallar den BY_TAK, W-A kallar den G_TAK
     // efter dokumentets §3.1. Namnen skiljer sig, värdet får inte göra det, och en regex per
     // namn hade missat den ena. Samma konstruktion som fuktkontraktet över språkgränsen.
