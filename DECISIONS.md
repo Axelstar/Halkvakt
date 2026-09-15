@@ -5724,3 +5724,28 @@ på fältet.
 **Vad det INTE bevisar:** att värdena är rätt. Vakten säger att de är fysiskt möjliga och fria från sentineler;
 T-A (första frostnätterna) säger om lutningen förutsäger något.
 
+## #193 (15/9 2026) Spärren synlig på riktigt — `shadow_log.suppressed` skrivs efter två dygns tystnad
+
+**Bengts ja 15/9 (kort #188).** #127 a (13/9) byggde kroken `onSuppressed` i motorn och kolumnen i sql/016 — men
+skuggmotorn kopplade aldrig in kroken, så kolumnen har stått `[]` i varje rad sedan dag ett. Inte en regression:
+`git log -S` visar att strängen bara någonsin funnits i motorkällan, aldrig i `main.ts`. Nu lyssnar skuggmotorn
+och skriver `[{kind, id, distM, by, sinceS}]` per körning — vad regel 1b kastade, tystat av vad, med vilken marginal.
+Skuggrapporten får fältet `sparren` (kastade totalt och per par "X tystad av Y"), så beviset är publikt.
+
+**Bevis som gäller:** en körning med `sparren.kastade > 0` efter deploy — inte commit-hashen. Rutter med tät
+kameraföljd (E18 Örebro→Stockholm, 28 kameralarm/dygn) ger den inom några varv.
+
+## #194 (15/9 2026) Trendarkivets flyttalsrester: en 26-minuters lucka 13/9, rundad i efterhand — och gapet var orundat
+
+**Bengts ja 15/9 (kort #189).** Värdevakten (#192) visade `lutning30_c` min −0,7999999999999998. Källan: tabellen
+föddes 13/9 14:21, den första knappkörningen skrev TypeScript-lutningar oavrundade, och avrundningen till tre
+decimaler kom 14:47 (9b6b317, flyttalsläxan). SQL-vägen (018) räknar i `numeric` och är exakt. **Men `dagg_gap_c`
+var fortfarande orundat** i `publish/trendkandidat.ts` (`r.yta - r.dagg`) — samma klass av fel, ännu inte fångat.
+
+**Två rättelser:** (1) gapet avrundas till tre decimaler vid beräkningen, som lutningen; (2) sql/020 rundar de
+befintliga raderna (fem kolumner, idempotent — rör bara rader som inte redan är rundade). Bevis: migrationens
+bevisrad räknar orundade rader före/efter; värdevakten ska visa −0,8, inte −0,79999.
+
+**Varför nu och inte "före S2":** en tröskel på 0,8 skiljer −0,8 från −0,79999, och att i stället avrunda vid
+jämförelsen i S2 är exakt fällan 13/9 — två sidor som avrundar olika.
+
