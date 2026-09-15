@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-14 17:45 av Claude (webben) — 🟠 MÅNDAGSSERIEN KOM, MEN 5 h 18 min till 6 h 48 min FÖR SENT (kort #160 rättat: de uteblev inte, de kom när cronen kände för det). 🔴 NYTT #161: `android/gradlew.bat` är permanent smutsig och fäller commit-steget i två flöden — sex källvakter har aldrig fått sitt state sparat. Kassan 16,21 USD av 35, takdatum 26/9 oförändrat, uppmätt takt i dag 100 min/dygn.*
+*Uppdaterad: 2026-09-15 04:45 av Claude (webben) — 🟡 #161:s CRLF-fix BEVISAD PÅ DISK men ÄNNU INTE I DRIFT: hela trädet är rent efter en tvingad innehållsrefresh (0 av 938 spårade filer smutsiga), men marknadsforing — det dagliga flöde som varit rött fem dygn — hade inte kört när avläsningen gjordes (bokad 04:45 UTC, levererad 10:07 i går). Kassan 16,46 USD av 35, takdatum 26/9 oförändrat. FÖRSTA MINUSGRADEN i live-snapshoten: FI:14047 −0,3 °C yta, fyra kalla stationer i meta.json.*
   💰 **RÄTTAD 13/9 (DECISIONS #160, Bengts order):** prognosen räknade på månad-till-datum, och i
   det snittet låg fem flöden som lades ner 8–9/9 (`ingest-fi`, `-no`, `-dk`, `publish-map`,
   `regn-30`). Vakten sa **21 september**; uppmätt verklig takt var 232 min/dygn senaste dygnet och
@@ -221,6 +221,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   om november. Sidofynd samma körningar: road_conditions-arkivet står stilla
   (830 rader, nyaste 472 h → 488 h gammal, 0 omklassningar) — väntat i en mild september, men värt
   ett öga när första kalla veckan kommer.
+  📏 **15/9, 12,0 h isär:** weather_obs 291 757 (14/9 16:23) → 297 789 (15/9 04:23) = +6 032 ⇒
+  **~12 100 rader/dygn**, i linje med gårdagens 11 500. Och nu börjar det som gallringen byggdes för:
+  meta.json visar **4 kalla stationer** (2 i går), och live-snapshoten bär sin första minusgrad —
+  FI:14047 **−0,3 °C** yta, med 2566 0,3 · 1106 0,5 · FI:14018 0,6 · FI:14049 0,8 strax över.
+  Dieten släpper igenom fler stationer för varje kall natt; kurvan vänder uppåt härifrån.
   **VAD SOM FÅR SLÄNGAS UTAN ATT DOMEN RÖRS (mätt i koden):** grind A och grind V-A läser
   båda i 30-minutershinkar och tar SENASTE mätningen per hink (BUCKET_S = 1800,
   ORDER BY sample_time DESC). missar.ts läser 45-minutersfönster. Ingen dom läser
@@ -793,6 +798,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   `ålder > kadens × 1,5`. För ett veckojobb är kadensen 168 h ⇒ **tolerans 252 h = 10,5 dygn.** Dess
   kommentar 07:07 i dag nämner bara `marknadsforing`. Vakten som byggdes för exakt det här felet är
   blind för det i tio och ett halvt dygn — sämre än de fem dygn det tog en människa 7/9.
+  📏 **15/9 04:45: inget svar ännu.** Ingen DECISIONS-post efter #185, inga commits som rör vare sig
+  pulsklockan eller mätvakten (parallellsessionen har kört granskningsdokument, #259–#264). Natten
+  gav mer av samma mätning: healthcheckens pulskörningar 18:23, 20:23, 22:23, 00:23, 02:23 och 04:23
+  låg alla på :23:01–:23:02, medan GitHub-cronens två kom **1 h 02 min** (19:25 mot bokat 18:23) och
+  **47 min** (23:10 mot 22:23) sent. Sex av sex på pulsen, noll av två i tid på cronen.
   🔑 **TVÅ ÅTGÄRDER, båda Bengts beslut — jag har inte rört koden:**
   · **(a) Lägg de sex på pulsklockan**, som healthcheck, ingest och grannar redan ligger. Beprövad
     väg, noll nya minuter, och den fyrar oavsett vad GitHub-cronen gör.
@@ -824,6 +834,16 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   `fi-digitraffic`, `no-vegvesen`, `dk-dmi`, `polisen-regler`, `polisen-api` — seedar om sig varje
   körning ("första körningen — seedar utan larm" står i dagens logg) och kan därför ALDRIG larma.
   Vakten ser levande ut och bevakar sex källor i tomma luften. Samma familj som CDN-fail-soft-läxan.
+  📏 **MORGONEN 15/9 — VAD SOM ÄR BEVISAT OCH VAD SOM INTE ÄR DET.**
+  BEVISAT på disk: `git ls-files -z | xargs -0 touch` följt av `git status` ger **tomt** — efter en
+  tvingad innehållsjämförelse av varje spårad fil är INGEN smutsig, och `git ls-files --eol` visar
+  noll `i/crlf` kvar (414 lf, 498 binära, 24 tomma). gradlew.bat var alltså den enda filen med
+  felet, och den är lagad.
+  INTE BEVISAT: att driften läkt. `marknadsforing` är bokad 04:45 UTC och hade inte kört kl 04:40 —
+  i går levererade cronen den 10:07, alltså 5 h 22 min sent. Beviset är en GRÖN körning med ett
+  genomfört commit-steg, inget annat. `trv-bevakning` kör bara måndagar: state-filen på main bär
+  fortfarande 7 källor (skriven 12/9 06:52), och 13 källor kan tidigast synas **21/9**. Fram till
+  dess är de sex källvakterna fortfarande blinda — fixen är lagd, inte verifierad.
   🔑 **TVÅ FRÅGOR TILL BENGT — jag har inte rört flödena:**
   · **(a)** Ska commit-stegen härdas? De stagar en enskild sökväg och antar att resten av trädet är
     rent. `git pull --rebase --autostash` (eller `git stash -u` före pull) gör dem okänsliga för
@@ -903,6 +923,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   morse** — det går alltså inte åt fel håll. **Dygnets EGEN takt är lägre än båda:** 05:08 → 17:08
   (12,0 h) gav 50 debiterade min över 38 körningar ⇒ **100 min/dygn**. Raderna 05:08, 11:08 och 17:08
   finns alla; vakten fyrar som den ska.
+  📏 **15/9 04:45:** raden 23:08 finns — förbrukat **4 058 min över 3 025 körningar** ⇒ debiterat
+  2 058 min = **16,46 USD av 35**. Släpande takt 200 oförändrad, månadssnittet ned 294 → 291,
+  takdatum **26/9 oförändrat**. Nattens egen takt 17:08 → 23:08 (6,0 h): 32 min ⇒ **128 min/dygn**.
+  05:08-raden hade inte kommit när avläsningen gjordes (vakthunden fyrar 05 UTC).
 - [ ] 🧊 **#151 VÄGLAGETS ÅLDER — ska en stående vinterklassning tystas när mätningarna säger att vintern tagit slut?**
   📄 **TRÖSKELDOKUMENT FASTSTÄLLT 12/9 av Bengt** (`docs/TROSKLAR-VAGLAGETS-ALDER.md`, DECISIONS #151/#152).
   **Kortet kommer ur att Axel mätte i stället för att bygga det jag antog.** Jag flaggade att
