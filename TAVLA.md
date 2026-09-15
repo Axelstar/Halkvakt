@@ -102,6 +102,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🗓️ **KALENDERN BYGGD I VAKTHUNDEN 15/9 (bedömning v3 N3, DECISIONS #190, PR #270):** check 10 läser PAT:ens utgång
   ur GitHubs svarshuvud, Supabase-tokenens (8/12) ur koden; larm 14 dygn före i egen issue `nyckelkalender` (06 UTC);
   prov `nyckelprov` via dbknapp. VÄNTAR: deploy vakthund + prov. ROTATIONEN ÄR FORTFARANDE AXELS (senast 15/11).
+  ✅ I DRIFT 15/9: vakthund deployad 15:52Z, `nyckelprov` gav issue #272 (15:53Z) — PAT:ens datum läst LIVE ur
+  GitHubs svarshuvud: **2026-11-22** (67 dygn), Supabase **2026-12-08** (83 dygn). Provissuen stängs 06 UTC 16/9. Rotationen: Axel.
 - [ ] 💸 **#85 Actions-takten spränger 35 USD-gränsen före 1/10 — tre snitt räcker** (mätt 9/9
   04:30 av morgonavläsningen, DECISIONS #82:s budget). UPPMÄTT sedan Actions vaknade 8/9 21:07
   → 9/9 04:31 (7,4 h): **59 körningar, ≈ 98 debiterade minuter** (varje jobb avrundas uppåt):
@@ -583,6 +585,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (median 0,4–13,4 km/rutt) — och tystnadsfelet: **0 bilder**. `archiveFacit` fick motorns Alert UTAN position (form A
   gav bara loggen lon/lat) ⇒ NaN ⇒ "ingen kamera inom 15 km". Tar nu punkter ur faran. VÄNTAR: deploy skuggmotor +
   ett objekt i hinken räknat av tystnadsfelet.
+  ✅ HINKEN FYLLS 15/9: skuggmotor deployad 15:52Z; tystnadsfelet 16:02Z: **1 bild i `facit`**, senast 15/9 — första objektet någonsin. Den åttonde länken var den sista.
 - [ ] 🧵 **#155 SNUBBELTRÅD: ändras #83:s kvarhållning måste #89 och #98 byta byggform**
   **Principen (skriven 14/9 i TROSKLAR-OVERGANGAR och TROSKLAR-TRENDEN, Bengts order):** spara det
   som inte går att räkna om, räkna om det som går — och vilket som är vilket är en MÄTNING, inte en
@@ -744,6 +747,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   min, ingen CPU-mätning, #176:s WORKER_LIMIT). Regntäckningen 15/9: 13 % på 7 dygn — måttet skiljer inte torrt
   från missat (arkivdieten), S1 är beviset. VÄNTAR: deploy publicera + fälten i live.json med manifest-sha. Sedan
   S1 (skuggan läser fälten) och värdevakten på fälten före S2/S3.
+  ⏳ DEPLOYAD 15:52Z, FÄLTBEVIS VÄNTAR: live.json 2026-09-15T16:00:01Z: `weather` **tom** — ingen station ≤ 3 °C klarar givarvakten (lägsta riktiga yta 7,1 °C; Rovaniemi 0,0 °C mot luft 12,6 stoppas av #75). Fälten bevisas i CI:s PostGIS (integration.test.ts) men ÄNNU INTE på CDN. Kontroll: första natten med en station ≤ 3 °C ⇒ läs `weather[0]` i live.json.
 - [ ] 🔍 **#186 GRANSKNING 15/9 — de förkastade prövade på nytt, och allt bedömningen missade. VÄNTAR PÅ BESLUT**
   (`docs/GRANSKNING-2026-09-15.md`, Bengts order: genomgripande granskning, inget byggt).
   🕳️ **#42 är bedömningens största hål:** fick en rad, har egen byggordning (#81 A–F) där A, B och halva C
@@ -901,6 +905,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **BYGGT 15/9 SOM EGEN NYCKEL `rain_segments` (bedömning v3 N2, DECISIONS #187, PR #270):** den vidgade WHERE:n
   stoppades — varje rad i `segments[]` blir en varning i motorn OCH båda portarna (falsklarm på blöt normalväg i
   höstregn). Nyckeln når ingen port; skuggan kan läsa den (steg E). VÄNTAR: deploy publicera + nyckeln i live.json.
+  ✅ I DRIFT 15/9: live.json 2026-09-15T16:00:01Z (manifest-sha STÄMMER): **`rain_segments` 34 st** — t.ex. segment 16010 E16, kod 1 "Torrt", `regn` 3,1 (= 2,0 rå); `segments` 0 st, som förut i september. Steg E (skuggan läser `rain_segments`, V-B) är nästa länk.
 - [ ] 💸 **#152 KASSAVAKTEN — check 8 i vakthunden: larmar innan Actions-taket slår i** (Bengts order
   13/9: "Kan man ha någon mätning på taket så man vet när man närmar sig gränsen. Automatisk alltså").
   💰 **RÄTTAD 13/9 (DECISIONS #160, Bengts order "gör kort 152 nu"):** prognosen räknade på
