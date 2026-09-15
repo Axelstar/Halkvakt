@@ -906,6 +906,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   stoppades — varje rad i `segments[]` blir en varning i motorn OCH båda portarna (falsklarm på blöt normalväg i
   höstregn). Nyckeln når ingen port; skuggan kan läsa den (steg E). VÄNTAR: deploy publicera + nyckeln i live.json.
   ✅ I DRIFT 15/9: live.json 2026-09-15T16:00:01Z (manifest-sha STÄMMER): **`rain_segments` 34 st** — t.ex. segment 16010 E16, kod 1 "Torrt", `regn` 3,1 (= 2,0 rå); `segments` 0 st, som förut i september. Steg E (skuggan läser `rain_segments`, V-B) är nästa länk.
+  ✅ **BENGTS JA 15/9 + STEG E BYGGT (DECISIONS #191, PR #274):** skuggmotorn kör en egen motorinstans över
+  `rain_segments` och loggar vad rösten SKULLE sagt i kolumnen `vb` (sql/019); bilens position går till facit.
+  Skuggrapporten får `vattenplaning`. VÄNTAR: migration 019 → deploy skuggmotor + skuggrapport → första `vb`-raden.
 - [ ] 💸 **#152 KASSAVAKTEN — check 8 i vakthunden: larmar innan Actions-taket slår i** (Bengts order
   13/9: "Kan man ha någon mätning på taket så man vet när man närmar sig gränsen. Automatisk alltså").
   💰 **RÄTTAD 13/9 (DECISIONS #160, Bengts order "gör kort 152 nu"):** prognosen räknade på
@@ -2992,6 +2995,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⚠️ **VARNING TILL DEN SOM LÄSER DEN 14/9:** "fastställt och kontrasignerat" är INTE "mäter". Kort
   #88 och #98 har fullständiga tröskeldokument och noll kod. Bengt trodde 11/9 att de redan mätte —
   ett rimligt missförstånd, eftersom allt annat på korten är grönt. Säg det rakt ut i avläsningen.
+  🧭 **LÄGET 15/9:** A ✅ · B ✅ (radarn kvar i timingesten) · C ✅ radar (`regn` + `rain_segments`, #187) / C-station
+  låst (`weather_latest` saknar `rain_sum_mm`) · **D väntar** (sjätte farslaget, §7.8-kriteriet, Axels ja på plats i
+  A-skalan) · **E BYGGT** (DECISIONS #191, PR #274): egen motorinstans, kolumn `vb`, skuggrapportens `vattenplaning`;
+  dom-knappen grind-v-b byggs när första regndygnet loggats · F efter V-C och Axels ja.
+  🕳️ BIFYND: `shadow_log.suppressed` (#127 a, sql/016) skrivs aldrig — kolumnen är tom sedan 13/9. Eget kort krävs.
 
 ---
 
