@@ -5768,3 +5768,5 @@ list-API som svarar tunt utan felkod ser ut som sanning.
 **Bevis som gäller:** `matvaktprov` efter deploy — raden `issue matvakt: 1 öppna` i vakthundens svar, en kommentar
 i #268 och ingen ny issue.
 
+**Utfall 15/9:** vakthund deployad 21:41Z; `matvaktprov` 21:43Z: raden `issue matvakt: 1 öppna — bevisat via utfallet: provet kommenterade #268 (kommentar 9), ingen ny issue; själva raden ligger i pg_nets net._http_response och läses inte utifrån` i svaret, 1 öppen mätvaktsissue (#268), ingen ny skapad.
+
