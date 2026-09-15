@@ -738,6 +738,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   fångar varannan bucket (44 %) · #83 gallringen före första kalla veckan.
   🔑 **Frysklassningens K2 (osäkerhetszon) är exakt det graderade mått E behöver** — redan fastställt.
   17 rättelser (R1–R17) till kartan och bedömningen, nio nya beslut. Två nummerkollisioner: #154 och #103.
+  🔁 **§9 ANDRA VÄNDAN 15/9 (Bengts "är allt täckt nu, även kort 95?") — NEJ, SEX HÅL TILL.** #95:s Verify 2 och
+  representativitetsradie stod i inget dokument. Tre kort avfärdade OLÄSTA som "inte integration", alla tre var det:
+  **#86** PAT 22/11 + Supabase-token 8/12 — fäller allt tyst, vakthunden kan inte larma (samma PAT) · **#51** moaten
+  är TOM (830 rader, nyaste 25/8) ⇒ **två av tre facitkällor tomma/stilla**, tredje omätt · **#52** ett test låser
+  MOTSATSEN till #45:s vinterbaseline i tre portar (Norrland 31,7 % av sträckan) — "#45 som meta" är låst av en vektor.
 - [ ] 📋 **#185 BEDÖMNING 15/9 — förslag till åtgärder ur allt material, VÄNTAR PÅ BENGTS OCH AXELS BESLUT**
   (`docs/BEDOMNING-2026-09-15.md`, Bengts order: analys + förslag, inget byggt). Sorterat i I DAG (T1–T10),
   KORT SIKT (K1–K9), LÄNGRE SIKT (L1–L7), vad som tas bort ur schemat, och sju beslut med rekommendation.

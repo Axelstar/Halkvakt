@@ -33,6 +33,11 @@ och grindar · DECISIONS #55, #96, #103, #110, #116, #119, #134, #137, #153, #15
 5. **Tre motorfel och två datakvalitetsfel som kartan aldrig nämner:** #97 (halk-regexen blind för
    "Rimfrost"/"Halkrisk"), #156 (halkorden i tre versioner), #154 (regnfältet), #44 (regnmätarna
    fångar varannan bucket — 44 % täckning), #83 (gallringen före första kalla veckan).
+6. **Andra vändan (Bengts "är allt täckt nu?") hittade sex hål till — se §9.** Två av tre facitkällor
+   är tomma eller stillastående (kamerafacit 0 objekt, `road_condition_history` 830 rader, nyaste 25/8);
+   ett test låser **motsatsen** till #45:s vinterbaseline i alla tre portarna (#52); två nycklar går ut
+   mitt i säsongen och fäller allt utan att något ser trasigt ut (#86); och #95:s Verify 2 och
+   representativitetsradie står i inget dokument.
 
 ---
 
@@ -250,5 +255,81 @@ inaktuell.
 
 ---
 
+---
+
+## 9. Andra vändan — det jag avfärdade utan att läsa, och #95:s trådar som inte står någonstans
+
+Bengts kontrollfråga: *"är allt täckt nu, även kort 95?"* Kontrollerat mot alla tre dokumenten (kartan,
+bedömningen, granskningen §0–§8). Svaret var nej på sex punkter.
+
+### 9.1 #95 — två trådar står i inget dokument
+
+| Tråd | Kartan | Bedömningen | Granskningen §0–8 |
+| :-- | :-- | :-- | :-- |
+| Ankaret förkastat (1,05 → 1,20) | ja | — | ja |
+| Reserv när Trafikverket tystnar helt — **uppmätt pris 2,36 °C** på 352 punkter | — | — | ja (§3 rad 1) |
+| #95(d) förstärkaren, F-B som tredje vintergrind | — | — | ja (§4) |
+| T4 ska bygga mot #95(d):s F-svep | — | — | ja (R11) |
+| **Verify 2** — luft→yta-korrelationen vintertid, *"den enda som kan avgöra reserven"* | **—** | **—** | **—** |
+| **Representativitetsradien** — hur långt molnet FÅR sträckas (bara hur långt det MÅSTE är mätt: 50 km, 108 stationer) | **—** | **—** | **—** |
+
+Dessutom: analysen av #95:s fem trådar gavs **i chatten** 15/9 och skrevs aldrig in någonstans förrän nu.
+Enligt husregeln fanns den alltså inte. Båda saknade trådarna hör till **längre sikt** (reserven är en
+beredskap, inte en väg; radien är L4-arbete) — men de ska stå på #95:s rad i kartan.
+
+### 9.2 Tre kort jag klassade som "inte integration" utan att läsa dem — alla tre var det
+
+**#86 NYCKELKALENDERN — kan stoppa vintern mitt i säsongen, tyst.** PAT:en (kartrepot/publicera +
+vakthundens larm) går ut **22/11**; Supabase-tokenen (deploy-knappen) **8/12**. Kedjan när PAT:en dör:
+publicera får 401 ⇒ CDN fryser ⇒ appens åldersspärr tystnar vakten (5/9-läget) ⇒ **vakthunden kan inte
+larma, för larmvägen använder samma PAT.** Ingenting ser trasigt ut. Rotera senast **15/11**, och en
+nyckel är inte bytt förrän en publicering gått igenom med den. Axels kort — men det hör till varje lista
+över vad som kan fälla vinterleveransen, och det stod i ingen av mina.
+
+**#51 VINTERARKIVET — moaten är inte läckande, den är tom.** `road_condition_history` är husets
+uttryckliga vinterarkiv (*"our moat"*, sql/001). Mätt 5/9: **830 rader över 818 segment, nyaste rad
+2026-08-25** — ett stillbildsavtryck plus tolv ändringar, ingen vinterhistorik alls. Hypotesen om den
+delade kursorn (minutjobbet flyttar kursorn ~59 gånger i timmen, timjobbet — arkivets enda skrivare —
+ser bara sista deltat) är **otestbar tills snön kommer**, vilket är exakt när den spelar roll. Och en
+blind fläck: healthchecken vaktar `sync_state`-färskhet, men edge-funktionen skriver `synced_at = now()`
+varje minut oavsett om något hämtades — vakten kan inte skilja *färsk och tyst* från *färsk och trasig*.
+
+**Det ändrar §1.3 i bedömningen.** Där står att kamerafacit är tomt. Nu vet vi att **två av tre
+facitkällor** är tomma eller stillastående (kamerafacit 0 objekt, `road_condition_history` still sedan
+25/8). Den tredje, `situation_archive`, har jag inte mätt. T-B, #98 och #42 döms mot den här stacken.
+**Facitstacken är inte en lös tråd — den är nästan tom, och ingen vakt mäter om den växer.**
+
+**#52 ETT TEST LÅSER MOTSATSEN TILL #45:S VINTERBASELINE — i alla tre portarna.**
+`test/engine.test.ts:143–146` (och Engine.kt:162, Engine.swift:306) hävdar att ett segment med **kod 1
+(Normalt)** och info **"Packad snö"** MÅSTE larma. Kort #45 säger att packad snö i vinterbaseline
+*"larmar ALDRIG"* — i Norrland är det normaltillståndet. Principen är alltså inte obyggd; den är
+**aktivt låst åt andra hållet**, och att ändra den är en kontraktsändring i vektorerna. Exponeringen
+mätt 5/9: Norrland 168 segment, **31,7 % av vägsträckan**, snitt **44,8 km per segment** (1,8 × resten).
+Ett "Packad snö"-segment i Jämtland är nästan sex mil sammanhängande larmyta, upp till tre repriser
+per resa. Det är ett tak, inte en prognos — arkivet har ingen vinter. Men kartans §7.8 och bedömningens
+L4 säger "#45 som meta" som om vägen vore fri. **Den är låst av en vektor som måste beslutas först.**
+
+### 9.3 Vad det gör med listorna
+
+| Var | Tillägg |
+| :-- | :-- |
+| Bedömningen §1.3 | facitstacken: **två av tre källor** tomma/stilla, tredje omätt; ingen vakt mäter tillväxt |
+| Bedömningen §2.4 (I DAG) | **T11:** mät `situation_archive`:s tillväxt och lägg en vakthundsrad för *historiken växer* — inte bara *sync_state är färsk* |
+| Bedömningen §3 (kort sikt) | **K10:** #86 rotera PAT senast 15/11, bevisa med en publicering · **K11:** #52 — beslut om vinterbaseline-vektorn FÖRE #45 byggs |
+| Kartan §2, #95-raden | Verify 2 och representativitetsradien som öppna L4-frågor |
+| Kartan §7.8 / bedömningen L4 | "#45 som meta" ⇒ "#45 som meta, **efter att #52:s vektor beslutats**" |
+| Kartan §11 (det osynliga) | #51: säsongsbaselinen har inget underlag oavsett läckan |
+
+### 9.4 Beslut som tillkommer
+
+| Beslut | Vem | Rekommendation |
+| :-- | :-- | :-- |
+| #52: ska kod 1 + "Packad snö" larma? | Bengt + Axel (vektor i tre portar) | **avgör före #45** — annars byggs #45 mot en vektor som säger emot den |
+| #86: rotation senast 15/11 med publiceringsbevis | Axel | ja — och lägg datumet i vakthunden, inte bara på tavlan |
+| #51: vakthundsrad "historiken växer" | Bengt | ja — samma klass som kamerafacit-vakten |
+| `situation_archive` mätt | Claude, på Bengts ord | ja — tredje facitkällan är omätt |
+
+*Lärdomen från den här vändan: "inte integration" var en klassning jag gjorde på rubrik. Tre av tre
+lästa kort var integration. Resten av de 19 avfärdade är fortfarande olästa.*
 *Underlag till en ny bedömning. Kartan är fortfarande den enda källan för hur delarna hänger ihop;
 rättelserna R1–R17 ska in där, inte här.*
