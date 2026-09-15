@@ -23,10 +23,10 @@ när beviset finns, inte när koden är skriven.
 
 | # | Läge | Kort | DECISIONS | PR / issue | Beviset som gäller |
 | :-- | :-- | :-- | :-- | :-- | :-- |
-| N1 | 🔨 åttonde länken lagad (`archiveFacit` fick aldrig positionen) — deploy skuggmotor + hink väntar | #157 | #189 | PR #270 | ett objekt i `facit`, räknat av tystnadsfelet |
-| N2 | 🔨 `rain_segments` byggd som egen nyckel (vidgad WHERE = falsklarm i tre portar) — deploy publicera väntar; steg E återstår | #154, #42/#81 C | #187 | PR #270, issue #15 | nyckeln i `live.json`, manifest-sha stämmer; V-B-rader |
-| N3 | 🔨 nyckelkalendern byggd i vakthunden — deploy + prov väntar; **rotationen är Axels** | #86 | #190 | PR #270 | vakthundsrad + provissue `nyckelkalender`; publicering med ny nyckel |
-| N4 | 🔨 `regn_h` + `lutning15/30/60` byggda; `radar_h` uppskjuten; regn-tackning körd (13 %) | #187 (nytt) | #188 | PR #270 | fälten i `live.json`, manifest-sha stämmer |
+| N1 | ✅ **KLAR** — tystnadsfelet 16:02Z: **1 bild i `facit`**, senast 15/9 — första objektet någonsin | #157 | #189 | PR #270 | ett objekt i `facit`, räknat av tystnadsfelet |
+| N2 | ✅ nyckeln i drift — live.json 2026-09-15T16:00:01Z (manifest-sha STÄMMER): **`rain_segments` 34 st** — t.ex. segment 16010 E16, kod 1 "Torrt", `regn` 3,1 (= 2,0 rå); `segments` 0 st, som förut i september. **Steg E (skuggan V-B) återstår** | #154, #42/#81 C | #187 | PR #270, issue #15 | nyckeln i `live.json`, manifest-sha stämmer; V-B-rader |
+| N3 | ✅ kalendern i drift — deployad 15:52Z, prov gav issue #272 med PAT:ens datum läst LIVE (2026-11-22, 67 dygn) och Supabase 2026-12-08 (83 dygn); **rotationen är Axels, senast 15/11** | #86 | #190 | PR #270, issue #272 | publicering med ny nyckel |
+| N4 | 🔨 deployad 15:52Z, väntar på första kalla stationen — live.json 2026-09-15T16:00:01Z: `weather` **tom** — ingen station ≤ 3 °C klarar givarvakten (lägsta riktiga yta 7,1 °C; Rovaniemi 0,0 °C mot luft 12,6 stoppas av #75). Fälten bevisas i CI:s PostGIS (integration.test.ts) men ÄNNU INTE på CDN; `radar_h` uppskjuten | #187 (nytt) | #188 | PR #270 | fälten i `live.json`, manifest-sha stämmer |
 | N5 | ✅ klar | — | #186 | — | kartan §7.8 |
 
 ---
@@ -37,9 +37,9 @@ Fem rader. Inget annat är "nu".
 
 | # | Vad | Vems | Bevis |
 | :-- | :-- | :-- | :-- |
-| **N1** | **Kamerafacit bevisat.** Kör skuggan mot ett känt svenskt spår som ger ett positionerat larm; ett objekt i hinken. *Noll objekt efter 5 657 körningar är ett trasigt instrument, inte väntan på data* | Claude | ett objekt i `kamerafacit` |
-| **N2** | **#42 i höstregn.** Vidga väglagsfrågan så `regn` når normalklassade segment (#154, en skrivare hålls), sedan steg E: skuggan V-B loggar vad rösten *skulle* sagt. Enda spåret med höstfönster | Claude, Bengts ja på #154 | ett normalklassat segment med `regn` i `live.json`; V-B-rader i skuggloggen |
-| **N3** | **Nycklarna.** PAT går ut 22/11, Supabase-tokenen 8/12. Rotera PAT senast **15/11**; en nyckel är bytt först när en publicering gått igenom med den. Lägg datumen i vakthunden | Axel | publicering med ny nyckel; vakthundsrad |
+| ~~**N1**~~ | ~~**Kamerafacit bevisat.** Kör skuggan mot ett känt svenskt spår som ger ett positionerat larm; ett objekt i hinken. *Noll objekt efter 5 657 körningar är ett trasigt instrument, inte väntan på data*~~ | Claude | **KLAR 15/9: 1 bild i hinken** (DECISIONS #189) |
+| **N2** | **#42 i höstregn.** ~~Vidga väglagsfrågan så `regn` når normalklassade segment (#154, en skrivare hålls)~~ **(klart 15/9 som `rain_segments`, DECISIONS #187)**, sedan steg E: skuggan V-B loggar vad rösten *skulle* sagt. Enda spåret med höstfönster | Claude, Bengts ja på #154 | ~~ett normalklassat segment med `regn` i `live.json`~~ ✅ 34 st 16:00Z; V-B-rader i skuggloggen |
+| **N3** | **Nycklarna.** PAT går ut 22/11, Supabase-tokenen 8/12. Rotera PAT senast **15/11**; en nyckel är bytt först när en publicering gått igenom med den. ~~Lägg datumen i vakthunden~~ **(klart 15/9: check 10, issue #272)** | Axel | publicering med ny nyckel; vakthundsrad |
 | **N4** | **F1: skattarens råa indata i `live.json`** bredvid `fukt` — `regn_h`, `radar_h`, `lutning` (nycklad på `station_id`). Förutsättning för betan: F1 ligger ett varv före F4. Kör `regn-tackning` en gång först — 44 %-talet är från före ingest-live-bytet | Claude, Bengts ja | fältet i `live.json`, manifest-sha stämmer |
 | ~~**N5**~~ | ~~**Kriteriet för nytt farslag** i kartans §7.8 — handling · text · prioritet före vektorn~~ | ✅ fastställt av Bengt 15/9 | kartan §7.8 — **KLAR** |
 

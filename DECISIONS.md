@@ -5615,6 +5615,8 @@ motorn ser fortfarande EN slippery_segment.
 en F1-uppgift) · `regn` som separat karta `{id: mm/h}` (skuggan behöver geometrin ändå). **Bengts ja på #154**
 togs som givet av ordern att köra NU-listan; eftersom nyckeln inte når någon port ändrar ett nej ingenting apparna gör.
 
+**Bevis 15/9:** publicera deployad 15:52Z; live.json 2026-09-15T16:00:01Z (manifest-sha STÄMMER): **`rain_segments` 34 st** — t.ex. segment 16010 E16, kod 1 "Torrt", `regn` 3,1 (= 2,0 rå); `segments` 0 st, som förut i september.
+
 ## #188 (15/9 2026) F1: skattarens råa indata i live.json — `regn_h` och `lutning15/30/60`; `radar_h` uppskjuten
 
 **Bedömning v3 N4 (kort #187, PR #270).** Varje väderpunkt bär nu `regn_h` (timmar sedan arkivet senast såg
@@ -5634,6 +5636,8 @@ bucket (30 min). S1:s skuggjämförelse är beviset som gäller, inte täcknings
 
 **Värdevakten:** innan fälten bär en tröskel (S2/S3) deklareras de i `scripts/vardevakten.ts` SPANN och knappen körs.
 
+**Bevis 15/9:** publicera deployad 15:52Z; live.json 2026-09-15T16:00:01Z: `weather` **tom** — ingen station ≤ 3 °C klarar givarvakten (lägsta riktiga yta 7,1 °C; Rovaniemi 0,0 °C mot luft 12,6 stoppas av #75). Fälten bevisas i CI:s PostGIS (integration.test.ts) men ÄNNU INTE på CDN.
+
 ## #189 (15/9 2026) Kamerafacit: den åttonde länken — `archiveFacit` fick aldrig positionen
 
 **Bedömning v3 N1 (kort #157, PR #270).** Två mätningar 15/9: facitradien (14 dygn) — **174 positionerade svenska
@@ -5646,7 +5650,7 @@ precis som före form A. "Ingen kamera inom 15 km" var sant för NaN, inte för 
 
 **Rättelse 4:** funktionen tar PUNKTER, uppslagna ur faran på samma sätt som loggen; segmentlarm ger ingen punkt
 (form A:s regel) och grenen säger det: "bara segmentlarm — ingen punkt att söka kamera från". **Bevis: ett objekt i
-bucketen efter deploy, räknat av tystnadsfelet — inte en commit.**
+bucketen efter deploy, räknat av tystnadsfelet — inte en commit.** Utfall 15/9: skuggmotor deployad 15:52Z; tystnadsfelet 16:02Z: **1 bild i `facit`**, senast 15/9 — första objektet någonsin.
 
 **Bifynd ur samma körning:** `situation_archive` är INTE tomt — **3 122 olyckor på 30 dygn** (S7 sa "mät"; nu mätt).
 `road_condition_history`: 0 omklassningar till halka på 30 dygn — moaten är tom, som väntat i september.
@@ -5663,4 +5667,7 @@ egen cykel, skrivs 06 UTC en gång om dygnet, färgar aldrig driftvakthunden rö
 
 **Rotationen själv är Axels** (senast 15/11, bevis = publicering med ny nyckel). Kalendern larmar 8/11 för PAT:en och
 24/11 för Supabase-tokenen — om ingen rört dem.
+
+**Bevis 15/9:** deployad 15:52Z; `nyckelprov` via dbknapp gav issue #272 15:53Z med PAT:ens datum läst live ur
+svarshuvudet: 2026-11-22 (67 dygn) — samma datum som kort #86 — och Supabase 2026-12-08 (83 dygn).
 

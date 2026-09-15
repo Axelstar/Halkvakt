@@ -1295,6 +1295,14 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   LÄGET I #53: 100 av de 100 senaste körningarna (15:11 → 21:17, alla workflows) röda,
   ~16 döda körningar i timmen, logg-API 404 även på den senaste. Kortet kan inte drivas
   vidare utan Billing-sidan, och den kräver Axel.
+- **S-2026-09-15em: NU-listan N1–N4 byggd, deployad och bevisad (bedömning v3, PR #270, DECISIONS #187–#190).**
+  N1 kamerafacit: åttonde länken — `archiveFacit` fick motorns Alert utan position (form A gav bara loggen
+  lon/lat) ⇒ NaN ⇒ 'ingen kamera'; facitradien 174 larm 100 % inom 15 km, hinken 0 ⇒ rättelse 4 ⇒ FÖRSTA BILDEN
+  I HINKEN 16:02Z. N2: `rain_segments` som EGEN nyckel (vidgad WHERE hade gett falsklarm i tre portar),
+  34 st i live.json 16:00Z, sha stämmer. N3: nyckelkalendern i vakthunden, PAT-datum läst live (2026-11-22),
+  issue #272 av provet. N4: `regn_h` + `lutning15/30/60` deployade, fältbevis väntar på första station ≤ 3 °C;
+  `radar_h` uppskjuten; regn-tackning 13 % (7 dygn) — måttet skiljer inte torrt från missat. N5 klar.
+  Spårning i bedömningens §0; kort #187 nytt; #154/#157/#86/#44/#185 med bevisrader.
 
 ## 2026-09-06 — 🛑 GitHub-pipelinen död sedan 5/9 13:12: Actions-minuterna slut (Bengts larm)
 Bengt: "vår lagring i GitHub har nått maxgräns och vi får inte längre data". MÄTT: det är inte
