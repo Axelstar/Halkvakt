@@ -207,6 +207,32 @@ async function archiveFacit(punkter: { lon: number; lat: number }[], route: stri
   return { saved, skal };
 }
 
+// STEG E — VATTENPLANINGENS SKUGGA (kort #154/#81, grind V-B, DECISIONS #191, Bengts ja 15/9).
+// `rain_segments` (#187) når ingen port; här får de tala för mätningens skull. Samma motor, EGEN
+// instans: korridor, försprång, 45 s och 10 min/5 km är motorns egna regler, inte en andra
+// implementation av dem. `code: 2` i den syntetiska faran betyder BARA "får tala" i den här
+// mätningen — evaluateSegment tiger på kod 1 — och den riktiga koden går med i loggraden.
+// Bara segment i ruttens ruta (+0,05° ≈ 5 km, mer än leadMaxM 3 km): CPU-taket (läxa 29/8).
+// Positionen är BILENS när rösten skulle talat (geo "bil") — det är där facitbilden ska tas.
+// Rör aldrig `alerts`: den listan är motorns ord. Loggas i egen kolumn `vb` (sql/019).
+type RainSeg = { id: string; line: [number, number][]; code: number | null; road: string | null; regn: number | null };
+function vbAlerts(lv: any, route: [number, number][], trace: Fix[]) {
+  const segs: RainSeg[] = Array.isArray(lv?.rain_segments) ? lv.rain_segments : [];
+  const M = 0.05;
+  const lons = route.map((p) => p[0]), lats = route.map((p) => p[1]);
+  const x0 = Math.min(...lons) - M, x1 = Math.max(...lons) + M, y0 = Math.min(...lats) - M, y1 = Math.max(...lats) + M;
+  const nara = segs.filter((s) => Array.isArray(s.line) && s.line.some(([x, y]) => x >= x0 && x <= x1 && y >= y0 && y <= y1));
+  if (!nara.length) return [];
+  const byId = new Map(nara.map((s) => [`vb:${s.id}`, s]));
+  const syntetiska: Hazard[] = nara.map((s) => ({ id: `vb:${s.id}`, kind: "slippery_segment", line: s.line, meta: { code: 2, info: [] } }));
+  const byT = new Map(trace.map((f) => [f.t, f]));
+  return new AlertEngine(syntetiska).run(trace).map((a) => {
+    const s = byId.get(a.hazardId)!, f = byT.get(a.t);
+    return { t: a.t, id: s.id, regn: s.regn, code: s.code, road: s.road, distanceM: a.distanceM,
+             geo: "bil", lon: f?.lon ?? null, lat: f?.lat ?? null };
+  });
+}
+
 Deno.serve(async (req) => {
   const k = Deno.env.get("INGEST_KEY");
   if (!k || req.headers.get("x-halkvakt-key") !== k) return new Response("forbidden", { status: 403 });
@@ -235,6 +261,7 @@ Deno.serve(async (req) => {
       {
       const trace = traceAlong(line);
       const alerts = new AlertEngine(hazards).run(trace);
+      const vb = land === "se" ? vbAlerts(lv, line, trace) : [];
       // Facit-bilder finns bara i Sverige (Trafikverkets väglagskameror). Punkterna slås upp ur
       // faran, inte ur larmet — motorns Alert bär ingen position (rättelse 4 ovan, DECISIONS #189).
       const farorById = new Map(hazards.map((h) => [h.id, h]));
@@ -242,11 +269,14 @@ Deno.serve(async (req) => {
         const h = farorById.get(a.hazardId) as any;
         return h && h.kind !== "slippery_segment" && typeof h.lon === "number" ? [{ lon: h.lon as number, lat: h.lat as number }] : [];
       });
-      const f = land === "se" ? await archiveFacit(punkter, name) : { saved: 0, skal: [] };
+      // Steg E: också bilens position vid en vattenplaningsvarning — en torr vägbana i bild fäller
+      // falsklarm enligt TROSKLAR-VATTENPLANING §2. Motorns punkter först; budgeten är gemensam.
+      const vbPunkter = vb.flatMap((v) => (v.lon != null && v.lat != null ? [{ lon: v.lon, lat: v.lat }] : []));
+      const f = land === "se" ? await archiveFacit([...punkter, ...vbPunkter], name) : { saved: 0, skal: [] };
       // En nolla utan skäl är omöjlig att skilja från "inga larm" (#173) — även den här grenen säger varför.
       if (land === "se" && alerts.length && !punkter.length) f.skal.push("bara segmentlarm — ingen punkt att söka kamera från");
       facitBudget -= f.saved; facitTotal += f.saved; facitSkal.push(...f.skal);
-      results[name] = { fixes: trace.length, alerts: alerts.length };
+      results[name] = { fixes: trace.length, alerts: alerts.length, vb: vb.length };
       // LARMETS POSITION (kort #158, DECISIONS #177/#179, Axels ja via Bengt 14/9).
       //
       // FÖRUT SKREVS `lon: a.lon` — OCH DET FÄLTET FINNS INTE. Motorns Alert bär `t`, `hazardId`,
@@ -269,7 +299,7 @@ Deno.serve(async (req) => {
       // Exakt punkt för segment kräver att motorns Alert bär den — det är form B och rör vektorerna.
       const body = JSON.stringify({
         route: name, land: land.toUpperCase(), snapshot_generated_at: lv.generated_at,
-        n_hazards: hazards.length, n_alerts: alerts.length,
+        n_hazards: hazards.length, n_alerts: alerts.length, vb,
         alerts: alerts.map((a) => {
           const h = farorById.get(a.hazardId) as any;
           const punkt = h && h.kind !== "slippery_segment" && typeof h.lon === "number";
