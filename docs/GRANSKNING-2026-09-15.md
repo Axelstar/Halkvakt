@@ -39,6 +39,10 @@ och grindar · DECISIONS #55, #79, #96, #103, #110, #116, #119, #134, #137, #153
 9. **Motorfel och datakvalitetsfel kartan aldrig nämnde:** #97 (halk-regexen blind för "Rimfrost"/
    "Halkrisk"), #156 (halkorden i tre versioner), #45:s lapse-konstant 0,71 mot #96:s mätta 0,63,
    regntäckningen omätt sedan ingest-live-bytet (#44), gallringens räckvidd ~55 dygn (#83).
+10. **Fjärde vändan (Bengts fråga om Skåne och dansk radar):** #15 kö-slut och #16 nowcast avfärdades som
+    "release-låsta" — fel klassning. **#16 är L3:s saknade framåtblickande halva**, utanför produkten av
+    beslut #25 (*observation, inte prognos*), och hör hemma i kartans §11 som namngiven gräns. **#15 är en
+    fjärde kandidat till ett nytt farslag** (§9). Båda låsta efter release; båda ska stå i kartan.
 
 ---
 
@@ -79,7 +83,8 @@ och grindar · DECISIONS #55, #79, #96, #103, #110, #116, #119, #134, #137, #153
 | ops, relevant | #146 | 27,6 MB byggutdata spårat — **klon faller på Windows** (260 tecken) |
 | ops | #50 · #152 · #160 | vakthunden på pulsen (dygnsbevis öppet) · kassavakten byggd, väntar deploy · måndagsserien 5–7 h sen |
 | historik | #53 · #85 | rotorsaken till kassaläget; ersatta av #152 |
-| nej | #15 · #16 · #21 · #23 · #25 · #26 · #27 | release-låsta, produkt, verktyg — en rad var |
+| **ja — omklassade i fjärde vändan** | **#15 · #16** | #16 nowcast = L3:s framåtblickande halva, utanför produkten av #25-lagen — gräns, inte bygge (R23) · #15 kö-slut = fjärde kandidat till nytt farslag (R24). Båda låsta efter release |
+| nej | #21 · #23 · #25 · #26 · #27 | produkt, verktyg — en rad var |
 
 ### 1.3 Två nummerkollisioner
 
@@ -258,13 +263,15 @@ som vill ha ett nytt `HazardKind`:
 | **#42** (#81 D) | `aquaplaning` | annan fara, annan handling (fart), eget förvillkor (yta > +4), egen text, "halkan vinner" | F5 |
 | **#32** | hinder / djur på vägbanan | DECISIONS #5 lovade "olyckor + hinder"; 173/vecka med riktig position | F5 |
 | **#45** | snö/slask — *om* meta inte räcker | våtbulb-klass per segment; #52:s vektor låser motsatsen | F5/F4 |
+| **#15** | kö-slut (TrafficFlow) | varken halka, is, vilt eller kamera — förarens handling är "bromsa, kö framför"; låst efter release som uppdatering 1 | F5 |
 
 §7.8 är en lärdom ur ett lyckat fall (#46), inte ett kriterium. **Förslag, att fastställas före något
 av de tre byggs:** ett nytt farslag är motiverat bara om **(1)** förarens handling skiljer sig från
 alla befintliga slag, **(2)** texten inte kan lånas från ett befintligt slag utan att ljuga, och
 **(3)** prioriteten mot varje befintligt slag är beslutad av Axel före vektorn skrivs. Mot det:
 **#42 ja** (1 och 2 klara, 3 öppen) · **#32 kanske** (1 klar) · **#45 nej** (handlingen är halkans,
-texten kan vara halkans, prioriteten är halkans).
+texten kan vara halkans, prioriteten är halkans) · **#15 troligen ja** (1 och 2 klara — men efter release,
+och prioriteten mot `accident` är öppen).
 
 ---
 
@@ -297,6 +304,8 @@ om helheten; ändringar där är hans).
 | R20 | bedömningen §5 | "inget att ta bort" | sluta kalla #96 och #94 borttagna |
 | R21 | bedömningen | #86, #97, #52, #83 steg 2, #44 saknas | tillagda |
 | R22 | bedömningen §1.7 | gallring "saknas" (v1-utkast) | finns (sql/014); räcker ~55 dygn |
+| **R23** | kartan §11, §7.2 | nowcast saknas helt | **#16 som namngiven gräns:** "vad som är på väg" ligger utanför produkten av beslut #25 (*observation, inte prognos*) tills #16 — L3 har i dag bara sin bakåtblickande halva. Radarn samplas bara över svenska segment; regn över Öresund tjugo minuter från Malmö kastas |
+| **R24** | kartan §7.8 · granskningen §9 | tre kandidater till nytt farslag | **fyra:** #15 kö-slut är den fjärde, prövad mot samma kriterium (troligen ja, efter release) |
 
 ---
 
@@ -328,7 +337,7 @@ om helheten; ändringar där är hans).
 | Höjden som varianspredikator — ny fråga, egen grind | Bengt | ja — kräver inte vinter |
 | E byggs på K2 | Bengt | ja |
 | #146: `git rm --cached` + `.gitignore` | Bengt/Axel | ja |
-| **Rätta kartan med R1–R15** | Bengt | på ditt ord |
+| **Rätta kartan med R1–R15 + R23–R24** | Bengt | på ditt ord |
 
 ---
 
@@ -341,4 +350,7 @@ om helheten; ändringar där är hans).
   integration", 4 var det, 3 rättade min egen granskning (#44, #83, #161).
 - **#51:s tal är från 5/9** och kursorhypotesen är otestbar före snö. **#52:s 31,7 % är ett tak.**
   **#44:s 44 % är från före ingest-live-bytet.**
-- "Alla öppna kort lästa" betyder att listan är **läst**, inte att den är **komplett**.
+- "Alla öppna kort lästa" betyder att listan är **läst**, inte att den är **komplett**. Fjärde vändan
+  bevisade det: två kort som lästs och avfärdats (#15, #16) visade sig höra till kartan när frågan
+  ställdes från Skåne i stället för från skuggan. Klassningen "inte integration" har nu fallit 5 av 7
+  gånger den prövats.
