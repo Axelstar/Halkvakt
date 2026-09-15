@@ -5671,3 +5671,33 @@ egen cykel, skrivs 06 UTC en gång om dygnet, färgar aldrig driftvakthunden rö
 **Bevis 15/9:** deployad 15:52Z; `nyckelprov` via dbknapp gav issue #272 15:53Z med PAT:ens datum läst live ur
 svarshuvudet: 2026-11-22 (67 dygn) — samma datum som kort #86 — och Supabase 2026-12-08 (83 dygn).
 
+## #191 (15/9 2026) Steg E byggt: vattenplaningens skugga i skuggmotorn — och Bengts ja på #154
+
+**Bengt 15/9: "ja på #154, bygg steg E."** #154 är därmed avgjord i sak (nyckeln `rain_segments`, DECISIONS #187),
+och kort #81:s steg E — *skuggan loggar vad rösten SKULLE sagt* — är byggt (PR #274).
+
+**Hur, och varför just så.** Skuggmotorn kör en EGEN `AlertEngine`-instans över samma spår med `rain_segments`
+som syntetiska segmentfaror. Motorns korridor, försprång, 45 s och 10 min/5 km gäller därmed ordagrant —
+ingen andra implementation av reglerna, vilket är fällan #89:s frostvakt uttryckligen undvek. Två saker att
+läsa rakt: (1) den syntetiska faran bär `code: 2`, eftersom `evaluateSegment` tiger på kod 1 — det betyder
+bara "får tala" i den här mätningen, och den riktiga koden går med i loggraden; (2) motorns `alerts` rörs
+inte alls — skuggvarningarna får en egen kolumn `vb` (sql/019), för `alerts` läses av skuggrapporten,
+tystnadsfelet och upprepningen, och en inblandad rad hade förfalskat alla tre. Bara segment i ruttens ruta
+(+5 km) matas in: CPU-taket (läxa 29/8) och korridoren når ändå inte längre. Positionen som loggas är
+BILENS när rösten skulle talat (`geo: "bil"`), och den går också till `archiveFacit`: en torr vägbana i bild
+fäller falsklarm enligt TROSKLAR-VATTENPLANING §2.
+
+**Rapporten:** skuggrapporten (publik JSON) får fältet `vattenplaning` — skuggvarningar totalt och per rutt
+senaste dygnet. Det är "skuggrapporten i Supabase" som kort #81 nämner som veckorapportens ena väg.
+
+**Vad som INTE byggs nu:** grind V-B:s dom-knapp (falsklarm mot stationens `rain_sum_mm` ±30 min, miss mot
+`situation_archive`) — den mäter ingenting förrän `vb`-rader finns, och instrumentets form ska följa datan,
+inte föregå den. Nästa länk när första regndygnet loggats. Domen fälls över V-C:s underlag (≥ 200 varningar,
+≥ 15 facit, ≥ 5 regndygn, ≥ 3 län) — inte förr.
+
+**Ordning vid driftsättning:** migrationen (sql/019) FÖRE deployen — PostgREST avvisar en okänd kolumn och
+hade annars fällt hela skuggloggningen, inte bara `vb`.
+
+**Bifynd:** kolumnen `shadow_log.suppressed` (sql/016, #127 a) skrivs aldrig av skuggmotorn — `onSuppressed`
+finns i motorn men ingen lyssnar. Kolumnen har stått tom sedan 13/9. Eget kort behövs innan någon "fixar" det.
+

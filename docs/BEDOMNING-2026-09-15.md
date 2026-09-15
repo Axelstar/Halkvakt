@@ -24,7 +24,7 @@ när beviset finns, inte när koden är skriven.
 | # | Läge | Kort | DECISIONS | PR / issue | Beviset som gäller |
 | :-- | :-- | :-- | :-- | :-- | :-- |
 | N1 | ✅ **KLAR** — tystnadsfelet 16:02Z: **1 bild i `facit`**, senast 15/9 — första objektet någonsin | #157 | #189 | PR #270 | ett objekt i `facit`, räknat av tystnadsfelet |
-| N2 | ✅ nyckeln i drift — live.json 2026-09-15T16:00:01Z (manifest-sha STÄMMER): **`rain_segments` 34 st** — t.ex. segment 16010 E16, kod 1 "Torrt", `regn` 3,1 (= 2,0 rå); `segments` 0 st, som förut i september. **Steg E (skuggan V-B) återstår** | #154, #42/#81 C | #187 | PR #270, issue #15 | nyckeln i `live.json`, manifest-sha stämmer; V-B-rader |
+| N2 | ✅ nyckeln i drift — live.json 2026-09-15T16:00:01Z (manifest-sha STÄMMER): **`rain_segments` 34 st** — t.ex. segment 16010 E16, kod 1 "Torrt", `regn` 3,1 (= 2,0 rå); `segments` 0 st, som förut i september. **Steg E byggt 15/9** (DECISIONS #191, PR #274): kolumn `vb` + skuggrapportens `vattenplaning`; bevis = första `vb`-raden | #154, #42/#81 C+E | #187, #191 | PR #270, #274, issue #15 | nyckeln i `live.json`, manifest-sha stämmer; V-B-rader |
 | N3 | ✅ kalendern i drift — deployad 15:52Z, prov gav issue #272 med PAT:ens datum läst LIVE (2026-11-22, 67 dygn) och Supabase 2026-12-08 (83 dygn); **rotationen är Axels, senast 15/11** | #86 | #190 | PR #270, issue #272 | publicering med ny nyckel |
 | N4 | 🔨 deployad 15:52Z, väntar på första kalla stationen — live.json 2026-09-15T16:00:01Z: `weather` **tom** — ingen station ≤ 3 °C klarar givarvakten (lägsta riktiga yta 7,1 °C; Rovaniemi 0,0 °C mot luft 12,6 stoppas av #75). Fälten bevisas i CI:s PostGIS (integration.test.ts) men ÄNNU INTE på CDN; `radar_h` uppskjuten | #187 (nytt) | #188 | PR #270 | fälten i `live.json`, manifest-sha stämmer |
 | N5 | ✅ klar | — | #186 | — | kartan §7.8 |
@@ -98,12 +98,12 @@ Fem rader. Inget annat är "nu".
 | Efterhalkan som märkt beta i november, före grinden; dom i januari på förarfacit | Bengt |
 | Grind A står (Axel rättade sig); E kan inte vänta (Axel rättade sig) | Axel |
 | Granskningen arkiveras; R1–R15 väntar i bilaga A tills en rör kod | Bengt |
+| #154: `regn` når normalklassade segment via `rain_segments`, och steg E byggs (DECISIONS #191) | Bengt, ja 15/9 |
 
 ### 4.2 Öppna
 
 | Beslut | Vem | Rekommendation |
 | :-- | :-- | :-- |
-| #154: vidga väglagsfrågan med `regn ≥ 2,0` (N2) | Bengt | ja — **byggt 15/9 som egen nyckel `rain_segments` (DECISIONS #187, PR #270); ett nej ändrar inget i apparna** |
 | #52-vektorn: ska kod 1 + "Packad snö" larma? (S8) | Bengt + Axel | avgör före #45 |
 | Facitknappens text och flöde (S4) | Axel | — |
 | Tröskelregeln till Axels lydelse (S10) | Bengt | ja, efter N1 |
