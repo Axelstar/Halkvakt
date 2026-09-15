@@ -5,15 +5,17 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { buildSnapshot, manifestFor, bridgesFromGeoJSON, WX_SANE, type Q } from "../publish/snapshot-core.ts";
+import { buildSnapshot, manifestFor, bridgesFromGeoJSON, WX_SANE, REGN_UTLOSARE_MMH, type Q } from "../publish/snapshot-core.ts";
 import { snapshotToHazards } from "../engine/src/snapshot.ts";
 
 /** Låtsasdatabas: svarar på frågorna efter vilken tabell de läser, och loggar frågetexten. */
 function fakeDb(rows: Partial<Record<string, any[]>>) {
   const asked: string[] = [];
+  const anyParams: unknown[] = [];   // parametrarna till regnsegmentens geometrifråga (#154)
   const q: Q = async (text, params) => {
     asked.push(text);
     if (text.includes("FROM cameras")) return rows.cameras ?? [];
+    if (text.includes("= ANY($1::text[])")) { anyParams.push(params); return rows.regnSegs ?? []; }
     if (text.includes("weather_latest f")) {
       if (rows.borderThrows) throw new Error(`schema "${text.includes("fi.") ? "fi" : "no"}" does not exist`);
       assert.deepEqual(params, [40_000]);
@@ -26,9 +28,11 @@ function fakeDb(rows: Partial<Record<string, any[]>>) {
     if (text.includes("FROM deviations")) return rows.deviations ?? [];
     if (text.includes("FROM polisen_events")) return rows.vilt ?? [];
     if (text.includes("FROM smhi_warnings")) return rows.smhi ?? [];
+    if (text.includes("FROM weather_observations")) return rows.regnH ?? [];
+    if (text.includes("FROM trend_kandidater")) return rows.lutning ?? [];
     throw new Error("okänd fråga: " + text.slice(0, 60));
   };
-  return { q, asked };
+  return { q, asked, anyParams };
 }
 
 const NOW = new Date("2026-11-20T06:30:00Z");
@@ -53,7 +57,7 @@ test("#74 format: olyckans gradering är gated på Accident, SMHI/vilt/kamera i 
 
   assert.equal(liveDoc.generated_at, "2026-11-20T06:30:00.000Z");
   assert.deepEqual(staticDoc.cameras, [{ id: "TV1", lon: 15, lat: 58.02, bearing: 180, road: "E4" }]);
-  assert.deepEqual(liveDoc.weather, [{ id: "W1", lon: 15, lat: 58.05, yta: -1.2, fukt: true }]);
+  assert.deepEqual(liveDoc.weather, [{ id: "W1", lon: 15, lat: 58.05, yta: -1.2, fukt: true, regn_h: null, lutning15: null, lutning30: null, lutning60: null }]);
   assert.deepEqual(liveDoc.deviations[0], { id: "D1", lon: 15, lat: 58.1, typ: "Olycka", road: "E4", sev: 4, slut: "09:15" }); // 08:15Z = 09:15 CET
   assert.deepEqual(liveDoc.deviations[1], { id: "D2", lon: 15, lat: 58.2, typ: "Vägarbete", road: "E4", sev: null, slut: null });
   assert.deepEqual(liveDoc.smhi, [{ id: 25, event: "Snöfall", niva: "YELLOW", geom: { type: "Polygon", coordinates: [] } }]);
@@ -201,4 +205,82 @@ test("en otillgänglig radartabell fäller INTE snapshoten — men den noteras",
   assert.equal(liveDoc.segments.length, 1, "snapshoten byggs ändå");
   assert.equal(liveDoc.segments[0].regn, null);
   assert.ok(notes.some((n) => n.includes("radar_precip ej läsbar")), "felet ska stå i noterna, inte försvinna");
+});
+
+// ── REGNSEGMENTEN (kort #154, bedömning v3 N2, DECISIONS #187) ──────────────────────────────
+// Radarns regn nådde bara halkklassade segment. Normalklassade segment med råradar ≥ utlösaren får
+// nu en EGEN nyckel — aldrig `segments`, för varje rad där blir en varning i tre portar.
+test("#154 regnsegmenten: normalklassat segment över utlösaren hamnar i rain_segments, inte i segments", async () => {
+  const { q, anyParams } = fakeDb({
+    segments: [{ segment_id: "S1", condition_code: 3, condition_info: ["Is"], road_number: "E4", g: { coordinates: [[15, 60], [15.1, 60.1]] } }],
+    radar: [
+      { segment_id: "S1", rate_mean_mmh: "2.0" },   // halkklassat: får regn i segments, aldrig dubbelt
+      { segment_id: "S2", rate_mean_mmh: "2.5" },   // normalklassat över 2,0 ⇒ regnsegment
+      { segment_id: "S3", rate_mean_mmh: "1.9" },   // under utlösaren ⇒ frågas aldrig efter
+    ],
+    regnSegs: [{ segment_id: "S2", condition_code: 1, condition_info: [], road_number: "E18", g: { coordinates: [[16, 59], [16.1, 59.1]] } }],
+  });
+  const { staticDoc, liveDoc } = await buildSnapshot(q, [], NOW);
+  assert.deepEqual(anyParams, [[["S2"]]], "bara S2 frågas efter: S1 finns redan, S3 ligger under 2,0");
+  assert.deepEqual(liveDoc.rain_segments, [{ id: "S2", line: [[16, 59], [16.1, 59.1]], code: 1, info: [], road: "E18", regn: 3.8 }]);
+  assert.deepEqual(liveDoc.segments.map((s) => s.id), ["S1"], "väglagsfrågan är orörd");
+  assert.equal(liveDoc.segments[0].regn, 3.1);
+  // Motorn ser fortfarande EN slippery_segment — nyckeln når ingen port.
+  const seg = snapshotToHazards(staticDoc, liveDoc).filter((h) => h.kind === "slippery_segment");
+  assert.deepEqual(seg.map((h) => h.id), ["seg:S1"]);
+});
+
+test("#154 utan råradar över utlösaren ställs ingen geometrifråga och rain_segments är tom", async () => {
+  const { q, anyParams } = fakeDb({ radar: [{ segment_id: "S9", rate_mean_mmh: "1.99" }] });
+  const { liveDoc } = await buildSnapshot(q, [], NOW);
+  assert.deepEqual(liveDoc.rain_segments, []);
+  assert.equal(anyParams.length, 0);
+  assert.equal(REGN_UTLOSARE_MMH, 2.0, "DECISIONS #155/#156: utlösaren är 2,0 mm/h råradar");
+});
+
+test("#154 en fallen geometrifråga fäller inte snapshoten — rain_segments tom och noterad", async () => {
+  const q: Q = async (text) => {
+    if (text.includes("= ANY($1::text[])")) throw new Error("boom");
+    if (text.includes("FROM radar_precip")) return [{ segment_id: "S2", rate_mean_mmh: "3" }];
+    return [];
+  };
+  const { liveDoc, notes } = await buildSnapshot(q, [], NOW);
+  assert.deepEqual(liveDoc.rain_segments, []);
+  assert.ok(notes.some((n) => n.startsWith("regnsegment:")), "felet ska stå i noterna");
+});
+
+// ── F1: SKATTARENS RÅA INDATA (kort #187, bedömning v3 N4, DECISIONS #188) ─────────────────
+test("#187 regn_h och lutning läggs bredvid fukt — null när fönstret är tomt, aldrig noll", async () => {
+  const { q, asked } = fakeDb({
+    wx: [
+      { station_id: "W1", surface_temp_c: "1.0", rain: false, snow: false, precipitation: "no", lon: 15, lat: 58 },
+      { station_id: "W2", surface_temp_c: "0.5", rain: false, snow: false, precipitation: "no", lon: 16, lat: 59 },
+    ],
+    regnH: [{ station_id: "W1", regn_h: "3.49" }],                                            // pg: numeric som sträng
+    lutning: [{ station_id: "W1", lutning15_c: "0.4", lutning30_c: null, lutning60_c: "1.2" }],
+  });
+  const { liveDoc } = await buildSnapshot(q, [], NOW);
+  const [w1, w2] = liveDoc.weather;
+  assert.deepEqual(w1, { id: "W1", lon: 15, lat: 58, yta: 1, fukt: false, regn_h: 3.5, lutning15: 0.4, lutning30: null, lutning60: 1.2 });
+  assert.deepEqual(w2, { id: "W2", lon: 16, lat: 59, yta: 0.5, fukt: false, regn_h: null, lutning15: null, lutning30: null, lutning60: null });
+  const rh = asked.find((t) => t.includes("FROM weather_observations"))!;
+  assert.match(rh, /rain_sum_mm > 0/); assert.match(rh, /48 hours/);
+  const tk = asked.find((t) => t.includes("FROM trend_kandidater"))!;
+  assert.match(tk, /60 minutes/); assert.match(tk, /DISTINCT ON \(station_id\)/);
+  // Motorn läser inget av det: samma hazard som förut.
+  const wx = snapshotToHazards({ schema: 1, cameras: [] }, liveDoc).find((h) => h.id === "wx:W1") as any;
+  assert.deepEqual(wx.meta, { surfaceTempC: 1, moisture: false });
+});
+
+test("#187 otillgängliga arkiv fäller inte snapshoten — regn_h/lutning blir null och noteras", async () => {
+  const q: Q = async (text) => {
+    if (text.includes("FROM weather_observations") || text.includes("FROM trend_kandidater")) throw new Error("saknas");
+    if (text.includes("FROM weather_latest") && text.includes("surface_temp_c <= 3"))
+      return [{ station_id: "W1", surface_temp_c: "-1", rain: true, snow: false, precipitation: "rain", lon: 15, lat: 58 }];
+    return [];
+  };
+  const { liveDoc, notes } = await buildSnapshot(q, [], NOW);
+  assert.equal(liveDoc.weather[0].regn_h, null);
+  assert.equal(liveDoc.weather[0].lutning60, null);
+  assert.ok(notes.some((n) => n.startsWith("regn_h:")) && notes.some((n) => n.startsWith("lutning:")), "båda felen ska stå i noterna");
 });

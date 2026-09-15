@@ -162,20 +162,27 @@ async function trvCameras(): Promise<{ id: string; lon: number; lat: number; url
 // det finns inget arkiv att hämta en passerad natt ur. Kamerafacit är därmed den enda källan i
 // hela projektet som INTE går att räkna om i efterhand — och den bärande facitkällan för T-B
 // (#88), tystnadsfelet (#98) och mars-domen (DECISIONS #94).
+//
+// RÄTTELSE 4 (15/9, bedömning v3 N1, DECISIONS #189): DEN ÅTTONDE LÄNKEN. Form A (#179) gav
+// skuggloggens rader en position — men den här funktionen fick fortfarande motorns Alert, som inte
+// bär någon (engine/src/types.ts), och räknade haversine på NaN precis som förut. Facitradien 15/9
+// mätte 174 positionerade larm, ALLA inom 13,4 km från en kamera, och bucketen stod ändå på noll.
+// Nu tar funktionen PUNKTER, uppslagna ur faran på samma sätt som loggen: punktfaror bär lon/lat,
+// segment får ingen punkt (form A:s regel — en centroid kan ligga milsvitt från larmet).
 const FACIT_PER_KORNING = 5;
 let facitBudget = FACIT_PER_KORNING;
 
-async function archiveFacit(alerts: Alert[], route: string): Promise<{ saved: number; skal: string[] }> {
+async function archiveFacit(punkter: { lon: number; lat: number }[], route: string): Promise<{ saved: number; skal: string[] }> {
   const skal: string[] = [];
   if (facitBudget <= 0) return { saved: 0, skal: ["budget slut"] };
-  if (!alerts.length) return { saved: 0, skal: [] };
+  if (!punkter.length) return { saved: 0, skal: [] };
   const cams = await trvCameras();
   if (!cams.length) return { saved: 0, skal: ["TRV gav noll väglagskameror"] };
   const bucket3h = Math.floor(Date.now() / 10_800_000);
   const day = new Date().toISOString().slice(0, 10);
   let saved = 0;
   const seen = new Set<string>();
-  for (const a of alerts) {
+  for (const a of punkter) {
     let best = null as null | typeof cams[0]; let bd = 15_000;
     for (const c of cams) {
       const d = haversineM({ lon: a.lon, lat: a.lat }, { lon: c.lon, lat: c.lat });
@@ -228,8 +235,16 @@ Deno.serve(async (req) => {
       {
       const trace = traceAlong(line);
       const alerts = new AlertEngine(hazards).run(trace);
-      // Facit-bilder finns bara i Sverige (Trafikverkets väglagskameror).
-      const f = land === "se" ? await archiveFacit(alerts, name) : { saved: 0, skal: [] };
+      // Facit-bilder finns bara i Sverige (Trafikverkets väglagskameror). Punkterna slås upp ur
+      // faran, inte ur larmet — motorns Alert bär ingen position (rättelse 4 ovan, DECISIONS #189).
+      const farorById = new Map(hazards.map((h) => [h.id, h]));
+      const punkter = alerts.flatMap((a) => {
+        const h = farorById.get(a.hazardId) as any;
+        return h && h.kind !== "slippery_segment" && typeof h.lon === "number" ? [{ lon: h.lon as number, lat: h.lat as number }] : [];
+      });
+      const f = land === "se" ? await archiveFacit(punkter, name) : { saved: 0, skal: [] };
+      // En nolla utan skäl är omöjlig att skilja från "inga larm" (#173) — även den här grenen säger varför.
+      if (land === "se" && alerts.length && !punkter.length) f.skal.push("bara segmentlarm — ingen punkt att söka kamera från");
       facitBudget -= f.saved; facitTotal += f.saved; facitSkal.push(...f.skal);
       results[name] = { fixes: trace.length, alerts: alerts.length };
       // LARMETS POSITION (kort #158, DECISIONS #177/#179, Axels ja via Bengt 14/9).
@@ -252,7 +267,6 @@ Deno.serve(async (req) => {
       // därför VARFÖR en koordinat saknas: "punkt" = den finns, "segment" = den finns inte och ska
       // inte finnas, "okänd" = faran hittades inte alls, vilket i sig är ett larm värt att se.
       // Exakt punkt för segment kräver att motorns Alert bär den — det är form B och rör vektorerna.
-      const farorById = new Map(hazards.map((h) => [h.id, h]));
       const body = JSON.stringify({
         route: name, land: land.toUpperCase(), snapshot_generated_at: lv.generated_at,
         n_hazards: hazards.length, n_alerts: alerts.length,

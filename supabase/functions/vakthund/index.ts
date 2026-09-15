@@ -37,6 +37,12 @@
 // Prov: ?paminnelseprov=1
 // Källvakten hade EN larmväg — ett issue tilldelat Bengt — och inget golv under den. Samma
 // egen etikett och egen cykel, samma regel om att aldrig färga driftvakthunden röd.
+//
+// Och EN vakt över NYCKLARNA (10, kort #86, bedömning v3 N3, Bengts order 15/9):
+//   10. NYCKELKALENDERN: går PAT:en eller Supabase-tokenen ut inom 14 dygn?
+// Prov: ?nyckelprov=1
+// PAT:ens datum läses LIVE ur GitHubs svarshuvud; Supabase-tokenens står i koden. Egen etikett,
+// egen cykel, skrivs en gång om dygnet.
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
 
 const sql = postgres(Deno.env.get("SUPABASE_DB_URL")!, { max: 1, prepare: false });
@@ -715,6 +721,58 @@ Deno.serve(async (req) => {
   } catch (e) {
     // Samma regel som de andra: en blind vakt är värre än ingen.
     problem.push(`**Healthcheckens kontroller (kort #87) kunde inte köras**: ${String(e)}`);
+  }
+
+  // 10. NYCKELKALENDERN (kort #86, bedömning v3 N3 — Bengts order 15/9).
+  //     Två nycklar går ut mitt i säsongen, och båda dör TYST: publicera får 401 ⇒ CDN fryser ⇒
+  //     appens åldersspärr tystnar vakten (5/9-läget), och den här vakthundens larmväg går på samma
+  //     PAT. Därför läses PAT:ens utgång LIVE ur GitHubs svarshuvud
+  //     (github-authentication-token-expiration): roterar Axel nyckeln flyttas datumet av sig självt,
+  //     och en rotation som INTE nått Supabase-hemligheten syns som ett datum som inte flyttat sig.
+  //     Supabase-tokenen (deploy-knappen) har inget sådant huvud och bär sitt datum här.
+  //     Egen etikett, egen cykel, aldrig problem.push() — samma regel som mätvakten. Issuen skrivs
+  //     en gång om dygnet (06 UTC), inte varje timme: ett datum ändras inte på en timme.
+  //     Varsel 14 dygn: rotationsläxan (CLAUDE.md) kräver ett BEVIS efter bytet, och det tar dagar
+  //     att få en publicering, en deploy och ett larm igenom med den nya nyckeln. Prov: ?nyckelprov=1
+  const NYCKEL_VARSEL_DYGN = 14;
+  const SUPABASE_TOKEN_UTGAR = "2026-12-08";   // GitHub Secret SUPABASE_ACCESS_TOKEN — flyttas när den roterats
+  try {
+    const nyckelprov = new URL(req.url).searchParams.get("nyckelprov") === "1";
+    const svar = await fetch(`https://api.github.com/repos/${REPO}`, {
+      headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" } });
+    await svar.text();   // kroppen används inte, men lämnas inte oläst
+    const pat = (svar.headers.get("github-authentication-token-expiration") ?? "").match(/^\d{4}-\d{2}-\d{2}/)?.[0] ?? null;
+    const nycklar = [
+      { namn: "PAT (publicera + vakthundens larmväg)", datum: pat },
+      { namn: "Supabase-token (deploy-knappen)", datum: SUPABASE_TOKEN_UTGAR },
+    ];
+    const sena: string[] = [];
+    const rader: string[] = [];
+    for (const n of nycklar) {
+      if (!n.datum) { rad.push(`nyckel ${n.namn}: utgång okänd (inget svarshuvud)`); rader.push(`- ${n.namn}: GitHub gav inget utgångsdatum — läs det i Settings`); continue; }
+      const dygn = Math.floor((new Date(n.datum).getTime() - Date.now()) / 86_400_000);
+      rad.push(`nyckel ${n.namn}: går ut ${n.datum} (${dygn} dygn, varsel ${NYCKEL_VARSEL_DYGN})`);
+      rader.push(`- ${n.namn}: går ut **${n.datum}** (${dygn} dygn)`);
+      if (dygn <= NYCKEL_VARSEL_DYGN) sena.push(`- ❌ **${n.namn} går ut ${n.datum} — om ${dygn} dygn.** Rotera nu; bytt är den först när en publicering gått igenom med den.`);
+    }
+    if (nyckelprov) sena.push("- ❌ **PROV** — påhittad rad för att bevisa nyckelkalenderns larmväg. Försvinner vid nästa 06 UTC-körning utan prov.");
+    const nuN = new Date();
+    if (nyckelprov || nuN.getUTCHours() === 6) {
+      const nKropp = `<!-- nyckelkalender -->\n**Nyckelkalendern ${nuN.toISOString()}**\n\n` +
+        (sena.length ? sena.join("\n") : "- ✅ ingen nyckel inom varsel") + `\n\n${rader.join("\n")}\n\n` +
+        `Varsel ${NYCKEL_VARSEL_DYGN} dygn. PAT:ens datum läses ur GitHubs svarshuvud vid varje körning; Supabase-tokenens står i vakthundens kod (kort #86).`;
+      const oppnaN = await gh(`/issues?state=open&labels=nyckelkalender`);
+      const minN = oppnaN.find((i: any) => (i.body ?? "").includes("<!-- nyckelkalender -->"));
+      if (sena.length) {
+        if (minN) await gh(`/issues/${minN.number}/comments`, "POST", { body: nKropp });
+        else await gh(`/issues`, "POST", { title: `🔑 Nyckelkalendern: en nyckel går ut inom ${NYCKEL_VARSEL_DYGN} dygn — rotera och bevisa (kort #86)`, body: nKropp, labels: ["nyckelkalender"], assignees: ["895845"] });
+      } else if (minN) {
+        await gh(`/issues/${minN.number}/comments`, "POST", { body: nKropp + "\n" + "\n" + "Stänger — ingen nyckel inom varsel." });
+        await gh(`/issues/${minN.number}`, "PATCH", { state: "closed" });
+      }
+    }
+  } catch (e) {
+    problem.push(`**Nyckelkalendern (kort #86) kunde inte köras**: ${String(e)}`);
   }
 
   const kropp = `${MARK}\n**Kontroll ${new Date().toISOString()}**\n\n` +
