@@ -748,6 +748,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   FINNS (sql/014), frågan är om den räcker · #161:s CRLF är åtgärdat, sex källvakter kan fortfarande aldrig larma.
   🔺 **#32 vill ha ett nytt `HazardKind`** — TREDJE kandidaten till ett sjätte farslag (med #42 D och #45).
   Kartans §7.8 är därmed en åsikt, inte en regel. Kriterium föreslaget: handling · text · prioritet före vektorn.
+  📎 **SAMMANSTÄLLD 15/9 (Bengts order före utskick till Axel):** tre vändor ihopvävda per ämne, bara fynd som
+  stått sig, rättat står i rättad form. 13 paragrafer, R1–R22, 18 beslut. Drive-kopia uppladdad.
 - [ ] 📋 **#185 BEDÖMNING 15/9 — förslag till åtgärder ur allt material, VÄNTAR PÅ BENGTS OCH AXELS BESLUT**
   (`docs/BEDOMNING-2026-09-15.md`, Bengts order: analys + förslag, inget byggt). Sorterat i I DAG (T1–T10),
   KORT SIKT (K1–K9), LÄNGRE SIKT (L1–L7), vad som tas bort ur schemat, och sju beslut med rekommendation.
@@ -758,6 +760,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   bredvid `fukt` (F1, noll vektorer). I skuggan: bevisa facit, läs `regn`/`smhi` vid sidan av motorn.
   📏 Grind A lever — 14/9: 2 881 p, MAE 0,81 / 5,0 % / 0,6 % = INGEN DOM. Axels brev är i otakt på
   sex punkter (dokumentets §0), och Drive-kopian han läste saknar §13.
+  🔄 **v2 15/9 (Bengts order före utskick till Axel):** granskningens rättelser R14–R22 införda. Nytt: alla tio
+  tröskeldokument · facitstacken två av tre tomma · `regn` bara på halkklassade segment · K2 som graderat mått ·
+  nycklarna #86 · **#42 som eget spår med höstfönster (T0)** · kriterium för sjätte farslag. 20 beslut. §8 = deltat mot v1.
+  Kartan orörd — R1–R15 väntar på Bengt. Drive-kopior: karta (nu main @ 0022d92), bedömning v2, granskning.
 - [ ] 🟠 **#160 MÅNDAGSSERIEN KOM 5–7 TIMMAR SENT 14/9 — och mätvakten kan inte se det förrän om tio dygn**
   (morgonavläsningen 14/9 08:00). **DET HÄR ÄR 7/9 OM IGEN, och den gången tog det fem dygn innan en
   människa råkade titta.**
