@@ -743,6 +743,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   **#86** PAT 22/11 + Supabase-token 8/12 — fäller allt tyst, vakthunden kan inte larma (samma PAT) · **#51** moaten
   är TOM (830 rader, nyaste 25/8) ⇒ **två av tre facitkällor tomma/stilla**, tredje omätt · **#52** ett test låser
   MOTSATSEN till #45:s vinterbaseline i tre portar (Norrland 31,7 % av sträckan) — "#45 som meta" är låst av en vektor.
+  📚 **§10 TREDJE VÄNDAN 15/9 — de nitton olästa korten lästa.** Fyra rör integrationen, tolv inte. **Tre rättar
+  min egen granskning:** #44:s 44 % är från FÖRE ingest-live-bytet 9/9 (#79), ny täckning omätt · #83:s gallring
+  FINNS (sql/014), frågan är om den räcker · #161:s CRLF är åtgärdat, sex källvakter kan fortfarande aldrig larma.
+  🔺 **#32 vill ha ett nytt `HazardKind`** — TREDJE kandidaten till ett sjätte farslag (med #42 D och #45).
+  Kartans §7.8 är därmed en åsikt, inte en regel. Kriterium föreslaget: handling · text · prioritet före vektorn.
 - [ ] 📋 **#185 BEDÖMNING 15/9 — förslag till åtgärder ur allt material, VÄNTAR PÅ BENGTS OCH AXELS BESLUT**
   (`docs/BEDOMNING-2026-09-15.md`, Bengts order: analys + förslag, inget byggt). Sorterat i I DAG (T1–T10),
   KORT SIKT (K1–K9), LÄNGRE SIKT (L1–L7), vad som tas bort ur schemat, och sju beslut med rekommendation.
