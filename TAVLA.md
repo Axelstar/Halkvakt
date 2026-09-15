@@ -748,6 +748,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   från missat (arkivdieten), S1 är beviset. VÄNTAR: deploy publicera + fälten i live.json med manifest-sha. Sedan
   S1 (skuggan läser fälten) och värdevakten på fälten före S2/S3.
   ⏳ DEPLOYAD 15:52Z, FÄLTBEVIS VÄNTAR: live.json 2026-09-15T16:00:01Z: `weather` **tom** — ingen station ≤ 3 °C klarar givarvakten (lägsta riktiga yta 7,1 °C; Rovaniemi 0,0 °C mot luft 12,6 stoppas av #75). Fälten bevisas i CI:s PostGIS (integration.test.ts) men ÄNNU INTE på CDN. Kontroll: första natten med en station ≤ 3 °C ⇒ läs `weather[0]` i live.json.
+  ✅ **VÄRDEVAKTEN PÅ TRENDFÄLTEN 15/9 (DECISIONS #192):** `trend_kandidater` skannades aldrig (saknades i vaktens
+  tabellista). Nu sex fält med spann, alla ✅ OK på 7 787 rader — lutning15/30/60 inom −1,7…2,2 °C per fönster.
+  Förkravet för S2/S3 uppfyllt. 🕳️ Bifynd: `lutning30_c` min −0,7999999999999998 — skrivaren avrundar inte (13/9-läxan).
 - [ ] 🔍 **#186 GRANSKNING 15/9 — de förkastade prövade på nytt, och allt bedömningen missade. VÄNTAR PÅ BESLUT**
   (`docs/GRANSKNING-2026-09-15.md`, Bengts order: genomgripande granskning, inget byggt).
   🕳️ **#42 är bedömningens största hål:** fick en rad, har egen byggordning (#81 A–F) där A, B och halva C
@@ -909,6 +912,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **BENGTS JA 15/9 + STEG E BYGGT (DECISIONS #191, PR #274):** skuggmotorn kör en egen motorinstans över
   `rain_segments` och loggar vad rösten SKULLE sagt i kolumnen `vb` (sql/019); bilens position går till facit.
   Skuggrapporten får `vattenplaning`. VÄNTAR: migration 019 → deploy skuggmotor + skuggrapport → första `vb`-raden.
+  ✅ STEG E I DRIFT 15/9: första `vb`-raderna 17:30Z: **5 skuggvarningar** (E18 Karlstad→Örebro, 5 st, regnsegment 18060/18065/18067) i skuggrapportens `vattenplaning`.
 - [ ] 💸 **#152 KASSAVAKTEN — check 8 i vakthunden: larmar innan Actions-taket slår i** (Bengts order
   13/9: "Kan man ha någon mätning på taket så man vet när man närmar sig gränsen. Automatisk alltså").
   💰 **RÄTTAD 13/9 (DECISIONS #160, Bengts order "gör kort 152 nu"):** prognosen räknade på

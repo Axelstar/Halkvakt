@@ -65,6 +65,13 @@ export const SPANN: Record<string, [number, number, string]> = {
   speed_limit_kmh: [0, 130, "km/h"], bearing: [0, 360, "grader — kameran TITTAR hit, kursen är +180"],
   n_hazards: [0, 10000, "st"], n_alerts: [0, 1000, "st"],
   county_no: [1, 25, "länskod"], area_id: [1, 1e12, "SMHI-id"], warning_id: [1, 1e12, "SMHI-id"],
+  // Trendens kandidatarkiv (#88 steg 2, sql/017), besiktigat 15/9 som förkrav för S2/S3 i bedömning v3:
+  // fälten bär redan `lutning` i live.json (N4, DECISIONS #188). Lutning = ytans fall per fönster,
+  // POSITIVT när ytan faller; svepet går till 1,2 °C (publish/trenden.ts LUTNING). ±20 per fönster är
+  // fysikens yttergräns — bortom det är ett givarhopp, som trendens egen vakt redan kastar mellan rader.
+  lutning15_c: [-20, 20, "°C per 15 min"], lutning30_c: [-20, 20, "°C per 30 min"], lutning60_c: [-20, 20, "°C per 60 min"],
+  dagg_gap_c: [-60, 60, "°C — yta minus daggpunkt"], min_yta_90min_c: [-60, 60, "°C"],
+  utfall_rader: [0, 200, "st mätningar i utfallsfönstret — 0 är okänt, inte torrt"],
 };
 
 /** Identifierare är inte mätvärden. De ska inte stå som obesiktigade — men de ska inte heller
@@ -163,6 +170,8 @@ const TID: Record<string, string> = {
   radar_precip: "observed_at", situation_archive: "last_seen", shadow_log: "run_at",
   polisen_events: "ingested_at", smhi_warnings: "published", smhi_warnings_history: "published",
   cameras: "modified_time", deviations: "start_time",
+  // 15/9: tabellen saknades här, så dess fält skannades aldrig — inte ens som OBESIKTIGADE.
+  trend_kandidater: "observed_at",
 };
 
 console.log(`Värdevakten — besiktning av arkivets numeriska fält (${DAGAR} dygns fönster)\n`);
