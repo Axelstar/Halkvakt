@@ -233,10 +233,42 @@ function vbAlerts(lv: any, route: [number, number][], trace: Fix[]) {
   });
 }
 
+/** S1: väderpunkter i ruttens ruta (+5 km, samma ruta som vbAlerts) med N4:s råa fält och motorns utfall. */
+function efterhalkaRader(lv: any, route: [number, number][], alerts: Alert[]) {
+  const wx: any[] = Array.isArray(lv?.weather) ? lv.weather : [];
+  if (!wx.length) return [];
+  const M = 0.05;
+  const lons = route.map((p) => p[0]), lats = route.map((p) => p[1]);
+  const x0 = Math.min(...lons) - M, x1 = Math.max(...lons) + M, y0 = Math.min(...lats) - M, y1 = Math.max(...lats) + M;
+  const larmade = new Set(alerts.map((a) => a.hazardId));
+  return wx.filter((w) => w.lon >= x0 && w.lon <= x1 && w.lat >= y0 && w.lat <= y1).map((w) => ({
+    id: String(w.id), yta: w.yta ?? null, fukt: w.fukt ?? null,
+    regn_h: w.regn_h ?? null, lutning15: w.lutning15 ?? null, lutning30: w.lutning30 ?? null, lutning60: w.lutning60 ?? null,
+    larm: larmade.has(`wx:${w.id}`),
+  }));
+}
+
 Deno.serve(async (req) => {
   const k = Deno.env.get("INGEST_KEY");
   if (!k || req.headers.get("x-halkvakt-key") !== k) return new Response("forbidden", { status: 403 });
   try {
+    // SPÄRRPROVET (kort #191 → bevis för #188, DECISIONS #197, Bengts ja 16/9). Två kameror 300 m isär på
+    // ett rakt spår österut i 80 km/h: den första talar, den andra når sin utlösning ~14 s senare och tystas
+    // av regel 1b (samma prioritet inom 45 s) — kroken ska då ge EN rad. Septembers farubild ger aldrig två
+    // larm inom 45 s, så beviset kan inte inväntas; det framkallas. Skriver INGET i shadow_log — en provrad
+    // hade förorenat tystnadsfelet och upprepningen — svaret läses av dbknapp ur net._http_response.
+    if (new URL(req.url).searchParams.get("sparrprov") === "1") {
+      const prov: Hazard[] = [
+        { id: "prov:kam1", kind: "camera", lon: 15.0105, lat: 59.0, bearing: null },   // ~600 m från start
+        { id: "prov:kam2", kind: "camera", lon: 15.0157, lat: 59.0, bearing: null },   // ~900 m
+      ];
+      const motor = new AlertEngine(prov);
+      const suppressed: unknown[] = [];
+      motor.onSuppressed = (c) => suppressed.push({ kind: c.kind, id: c.hazardId, distM: Math.round(c.distM), by: c.by, sinceS: c.sinceS });
+      const alerts = motor.run(traceAlong([[15.0, 59.0], [15.03, 59.0]]));
+      return new Response(JSON.stringify({ ok: true, prov: "sparr", alerts: alerts.map((a) => ({ t: a.t, id: a.hazardId, distanceM: a.distanceM })), suppressed }),
+        { headers: { "Content-Type": "application/json" } });
+    }
     const land = (new URL(req.url).searchParams.get("land") ?? "se").toLowerCase();
     const CDN = CDN_BY_LAND[land]; if (!CDN) return new Response("okänt land", { status: 400 });
     const routes = land === "fi" ? ROUTES_FI : land === "no" ? ROUTES_NO : land === "dk" ? ROUTES_DK : ROUTES;
@@ -268,6 +300,11 @@ Deno.serve(async (req) => {
       motor.onSuppressed = (c) => suppressed.push({ kind: c.kind, id: c.hazardId, distM: Math.round(c.distM), by: c.by, sinceS: c.sinceS });
       const alerts = motor.run(trace);
       const vb = land === "se" ? vbAlerts(lv, line, trace) : [];
+      // S1 — EFTERHALKANS INDATA (bedömning v3 S1, DECISIONS #198, Bengts "bygg S1 nu" 16/9). N4:s råa fält
+      // per station i korridoren + om motorn larmade på stationen. Inget villkor: S2 sätter det, och raden
+      // ska kunna spelas upp mot vilket villkor som helst. Axels grind (#196): regn_h döms här innan något
+      // mer byggs på det. Tom i september (weather[] saknar stationer ≤ 3 °C) — det är rätt, inte fel.
+      const efterhalka = land === "se" ? efterhalkaRader(lv, line, alerts) : [];
       // Facit-bilder finns bara i Sverige (Trafikverkets väglagskameror). Punkterna slås upp ur
       // faran, inte ur larmet — motorns Alert bär ingen position (rättelse 4 ovan, DECISIONS #189).
       const farorById = new Map(hazards.map((h) => [h.id, h]));
@@ -282,7 +319,7 @@ Deno.serve(async (req) => {
       // En nolla utan skäl är omöjlig att skilja från "inga larm" (#173) — även den här grenen säger varför.
       if (land === "se" && alerts.length && !punkter.length) f.skal.push("bara segmentlarm — ingen punkt att söka kamera från");
       facitBudget -= f.saved; facitTotal += f.saved; facitSkal.push(...f.skal);
-      results[name] = { fixes: trace.length, alerts: alerts.length, vb: vb.length, suppressed: suppressed.length };
+      results[name] = { fixes: trace.length, alerts: alerts.length, vb: vb.length, suppressed: suppressed.length, efterhalka: efterhalka.length };
       // LARMETS POSITION (kort #158, DECISIONS #177/#179, Axels ja via Bengt 14/9).
       //
       // FÖRUT SKREVS `lon: a.lon` — OCH DET FÄLTET FINNS INTE. Motorns Alert bär `t`, `hazardId`,
@@ -305,7 +342,7 @@ Deno.serve(async (req) => {
       // Exakt punkt för segment kräver att motorns Alert bär den — det är form B och rör vektorerna.
       const body = JSON.stringify({
         route: name, land: land.toUpperCase(), snapshot_generated_at: lv.generated_at,
-        n_hazards: hazards.length, n_alerts: alerts.length, vb, suppressed,
+        n_hazards: hazards.length, n_alerts: alerts.length, vb, suppressed, efterhalka,
         alerts: alerts.map((a) => {
           const h = farorById.get(a.hazardId) as any;
           const punkt = h && h.kind !== "slippery_segment" && typeof h.lon === "number";

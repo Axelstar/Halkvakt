@@ -748,6 +748,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [ ] 🧪 **#191 SPÄRRPROVET — beviset för #188 framkallas, inte inväntas** (Bengts ja 16/9, DECISIONS #197). Skuggmotorn
+  `?sparrprov=1`: två kameror 300 m isär, den andra tystas av regel 1b. dbknapp `sparrprov` läser nu funktionens SVAR ur
+  `net._http_response` (gäller alla prov — vakthundens `rad` var oläsbar förut). VÄNTAR: deploy skuggmotor + provet.
+- [ ] 🌡️ **#192 S1 — EFTERHALKANS INDATA I SKUGGLOGGEN** (Bengts "bygg S1 nu" 16/9, Axels grind #196, DECISIONS #198).
+  Kolumn `efterhalka` (sql/021): N4:s råa fält per station i korridoren + om motorn larmade. Inget villkor — S2 sätter
+  det. Skuggrapporten får `efterhalka`. VÄNTAR: migration 021 + deploy; bevis med innehåll kräver första kalla natten.
 - [ ] 🔇 **#188 SPÄRREN SYNLIG PÅ RIKTIGT — `shadow_log.suppressed` skrevs aldrig** (bifynd 15/9 i #191, Bengts ja).
   #127 a byggde kroken i motorn och kolumnen i sql/016, men skuggmotorn lyssnade aldrig: `[]` i varje rad sedan 13/9.
   BYGGT 15/9 (DECISIONS #193): kroken inkopplad, listan skrivs, skuggrapporten får `sparren`. VÄNTAR: deploy skuggmotor

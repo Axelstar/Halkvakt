@@ -5813,3 +5813,31 @@ Bedömningens §2.1 bär det som grind.
 **Läget på morgonen 16/9 (02:20Z):** `rain_segments` 38, `vb` 13 skuggvarningar på fyra rutter sedan 17:30Z,
 `sparren` 0, `weather` fortfarande tom (ingen station ≤ 3 °C) — N4:s fältbevis väntar.
 
+## #197 (16/9 2026) Spärrprovet — beviset framkallas i stället för att inväntas, och dbknapp läser äntligen svaret
+
+**Bengts ja 16/9 (kort #191, bevis för #188).** Regel 1b tystar bara när två larm konkurrerar inom 45 s, och
+septembers farubild ger aldrig det: 20:00–22:00Z 15/9 och natten gav 0 kastade. Ett bevis som vilar på vädret är
+inget bevis (Axel: "verifierat att något fanns, inte att det fungerade"). Skuggmotorn får `?sparrprov=1`: två
+kameror 300 m isär på ett rakt spår i 80 km/h — den första talar, den andra tystas ~14 s senare, kroken ger EN rad.
+Provet skriver INGET i shadow_log (en provrad hade förorenat tystnadsfelet och upprepningen); svaret returneras.
+
+**Och svaret blev läsbart.** dbknapp skrev ut pg_nets request-id, inte funktionens svar — varje prov bevisades via
+sitt utfall (en issue) och vakthundens `rad` var oläsbar utifrån (avvikelse 15/9). Nu väntar dbknapp in svaret ur
+`net._http_response` (högst 90 s) och skriver ut det kortat: `ok`, `problem`, `rad`, `suppressed`. Provet går till
+skuggmotorns svenska cron-jobb, hittat på URL (inte namn) och utan `land=fi|no|dk`; exakt ett jobb får matcha.
+
+**Bevis som gäller:** dbknapp `sparrprov` visar `suppressed: [{kind: camera, id: prov:kam2, by: camera, sinceS ≈ 15}]`.
+
+## #198 (16/9 2026) S1 byggt: efterhalkans indata per station i skuggloggen — inget villkor, bara underlag
+
+**Bengts "bygg S1 nu" 16/9, Axels grind (#196): S1 körs innan något mer byggs på `regn_h`.** Skuggmotorn loggar per
+körning kolumnen `efterhalka` (sql/021): varje väderpunkt i ruttens ruta (+5 km) med N4:s råa fält — `yta`, `fukt`,
+`regn_h`, `lutning15/30/60` — och `larm`: om motorn faktiskt larmade på stationen (`wx:<id>` bland larmen). Inget
+villkor: S2 (E på K2) sätter det senare, och varje rad ska kunna spelas upp mot vilket villkor som helst. Att lägga
+villkoret i loggen vore samma fel som V-B3 per regndygn (Axel, #196). Skuggrapporten får `efterhalka` (stationer,
+med regn_h, larmade).
+
+**Tom i september, och det är rätt:** `weather[]` bär bara stationer ≤ 3 °C som klarar givarvakten — 0 sedan 15/9.
+Första kalla natten i korridoren ger första raderna. **Bevis som gäller:** en `efterhalka`-rad med innehåll; tills
+dess bevisas kolumnen bara som skriven (`[]`) — vilket enligt #196 INTE räknas som bevis.
+
