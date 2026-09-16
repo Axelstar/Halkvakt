@@ -5906,3 +5906,34 @@ en policy.
 vakthundens rad "förarfacit: 1 svar" (läst via dbknapp, som nu visar `rad`). Steg 2–5: Android, iOS,
 PRODUKTBOK, Axels ja på flödet — med mellanstopp efter Android.
 
+**Utfall 16/9 03:08Z:** migration 022 (7 kolumner) · deploy facit-svar + vakthund gröna · curl: giltigt **204**,
+samma igen **204** (idempotent), `svar=kanske` **400**, GET **405**, t från 1/9 **400** · vakthundens rad
+**"förarfacit: 1 svar"** — läst ur larmprovets issue #289, INTE ur dbknapp-svaret: pg_net:s svarstimeout är 30 s
+och vakthundens hela varv tar längre, så `net._http_response` bar "Timeout of 30000 ms" (funktionen kör klart
+ändå; issuen bevisar det). Avvikelse att avgöra: höj vakthund-jobbets `timeout_milliseconds` så proven blir
+läsbara den vägen — rör cron-kommandot, alltså Bengts ord.
+
+## #202 (16/9 2026) S4 steg 2: facitknappen i Android — två knappar, en brytare, en kö som töms när bilen står stilla
+
+**Axels form (#196), byggd:** under "Senast sagt" två knappar, *Stämde* och *Stämde inte*, ingen fritext. Bara när
+betatestet är på (brytaren i Inställningar, AV tills föraren själv slår på den) och bara på en varning som bär ett
+id. Svaret loggas lokalt (`Facit.kt`, ren Kotlin, JVM-testad: ett svar per varning, ett ändrat svar ersätter och
+blir osänt igen, kroppen är exakt fem fält och inget annat). Skickas av `FacitSender` när bilen stått stilla 30 s
+(under 3 km/h, en gång per stopp) eller när appen öppnas — aldrig under körning, inga timers, ingen polling
+(skill §3). Nätet borta ⇒ nästa stopp.
+
+**Historiken bär nu varnings-id** (`AlertEntry.id`, fjärde kolumn, bakåtkompatibel med rader från före 16/9).
+**Om-avsnittet skriver om löftet ordagrant** (Axel #196): *"Undantaget är betatestet, om du själv slår på det: då
+skickas varningens id, klockslag och ditt svar — det säger ungefär var du var när rösten talade. Inget annat."*
+Brytartexten i Inställningar säger detsamma.
+
+**Rättat i förbifarten:** "Senast sagt" (#24) visade den ÄLDSTA raden — `firstOrNull` på en lista med nyaste sist.
+Nu `lastOrNull`. Syntes först när knappen skulle sitta på rätt varning.
+
+**Fotostudion:** `--ez fotostudio_facit true` (bara debug-byggen) slår på betatestet och lägger en påhittad
+kameravarning så skärmbilden visar knapparna; android.yml tar dessutom `shot-6-betatest.png` av brytaren.
+
+**Bevis som gäller:** android.yml grön på grenen (JVM-tester inkl. `FacitTest`, emulatorn), skärmbilderna i
+produktboken, och — det som räknas — ett svar från en riktig telefon i `driver_facit`. **Mellanstopp:** Axels ja på
+flödet innan iOS byggs (steg 3).
+

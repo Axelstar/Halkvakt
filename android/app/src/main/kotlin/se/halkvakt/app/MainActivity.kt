@@ -55,6 +55,14 @@ class MainActivity : ComponentActivity() {
                 }
         }
         if (intent?.getBooleanExtra("auto_start", false) == true && hasPermissions() && !GuardService.running) onToggle()
+        // S4: osända facitsvar går iväg när appen öppnas — bilen står stilla då.
+        lifecycleScope.launch(Dispatchers.IO) { runCatching { FacitSender.flush(this@MainActivity) } }
+        // Fotostudion (android.yml): visar facitknapparna på en påhittad varning. Bara debug-byggen.
+        val debug = (applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
+        if (debug && intent?.getBooleanExtra("fotostudio_facit", false) == true) lifecycleScope.launch {
+            Prefs.setFacitEnabled(this@MainActivity, true)
+            Prefs.appendAlert(this@MainActivity, AlertEntry(System.currentTimeMillis(), "camera", "Fartkamera om femhundra meter.", "cam:fotostudio"))
+        }
     }
 
     /**

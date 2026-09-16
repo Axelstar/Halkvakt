@@ -25,10 +25,19 @@ grundläget — pratar den, betyder det något.
 
 | Vakten | Inställningar | Om (nu sist i Inställningar) |
 |---|---|---|
-| ![Vakten](produktbok/shot-1-vakten.png) | ![Inställningar](produktbok/shot-2-installningar.png) | ![Om](produktbok/shot-3-om.png) |
+| ![Vakten](produktbok/shot-1-vakten.png) | ![Inställningar](produktbok/shot-2-installningar.png) | ![Om](produktbok/shot-6-betatest.png) |
 
-*(Bilderna är Android v0.3.0. iOS 0.3.5 har skinnet v3 — se avsnittet nedan. Om-fliken
-finns inte längre: två flikar, Om är sista avsnittet i Inställningar.)*
+*(Bilderna är Android, fotostudion 16/9. iOS 0.3.5 har skinnet v3 — se avsnittet nedan. Om-fliken
+finns inte längre: två flikar, Om är sista avsnittet i Inställningar — bilden visar slutet av
+Inställningar med betatest-brytaren och början av Om.)*
+
+### Facitknappen (betatestet, S4 — Android 16/9)
+
+| Senast sagt med knapparna | Betatest-brytaren i Inställningar |
+|---|---|
+| ![Senast sagt](produktbok/shot-1-vakten.png) | ![Betatest](produktbok/shot-6-betatest.png) |
+
+*(Fotostudion 16/9. Knapparna syns bara när betatestet är påslaget och varningen bär ett id.)*
 
 ## Skinnet (v3, iOS 0.3.3 →)
 
@@ -101,10 +110,15 @@ avstånd, med riktning. För nyfikenhet före avfärd — under körning sköter
 allt.
 
 **⚙️ Inställningar** — förvarningsavståndet (hur långt i förväg rösten ska
-tala, skjutreglage), röst av/på per kategori.
+tala, skjutreglage), röst av/på per kategori. Och betatestets brytare *Svara på varningarna*
+— **av tills du själv slår på den** — med texten om exakt vad som skickas (se Om).
 
 **ℹ️ Om** (sista avsnittet i Inställningar) — löftet i klartext: *"Din position lämnar
-aldrig telefonen. Vi samlar in: ingenting."* Plus ärlighetsraden: *"Varnar vid
+aldrig telefonen. All matchning mot vägdata sker lokalt i appen. Inget konto, ingen spårning."*
+Och sedan 16/9 undantaget, ordagrant som i appen (Axels krav, DECISIONS #196): *"Undantaget är
+betatestet, om du själv slår på det: då skickas varningens id, klockslag och ditt svar
+(Stämde / Stämde inte) — det säger ungefär var du var när rösten talade. Inget annat."*
+Plus ärlighetsraden: *"Varnar vid
 Trafikverkets mätstationer och rapporterade väglag — mellan stationerna är vägen
 oövervakad."* Och attributionen: Trafikverket (CC0), Polisen, SMHI, Fintraffic (CC BY 4.0),
 broar © OpenStreetMap-bidragsgivare (ODbL).
@@ -332,7 +346,8 @@ i stället för att det *fungerade*. Instrumenten är byggda. Vintern är facit.
 ## Vad appen inte gör
 
 Ingen prognos (varnar på uppmätt läge, inte gissningar), tyst mellan
-mätstationerna, ingen ködetektion ännu (kommer som uppdatering 1). Hela ärliga
+mätstationerna, ingen ködetektion ännu (kommer som uppdatering 1). Skickar ingenting om
+dig — med ett enda undantag som du själv slår på: betatestets facitsvar (se Om). Hela ärliga
 listan: [SYSTEM.md §4](SYSTEM.md).
 
 ## iOS då?
@@ -423,6 +438,16 @@ visas — säg ja, annars uteblir bannern (rösten talar ändå).
 Hemskärmen visar förra körningens sista replik med datum och tid, även när vakten är av.
 Har rösten aldrig behövt säga något står det så — tystnad är en funktion.
 
+**Facitknappen (betatestet, 16/9):** under repliken två knappar, *Stämde* och *Stämde inte*.
+Ingen fritext — inte i en bil. Svaret sparas i telefonen och skickas när bilen stått stilla en
+halv minut, eller när appen öppnas; aldrig under körning. Det som skickas är varningens id,
+klockslaget och svaret, inget annat. Knapparna finns bara om du slagit på betatestet i
+Inställningar. Ändrar du dig ersätter det nya svaret det gamla. (Facitet är beslutet i DECISIONS
+#186 — betatestare med samtycke i känd krets; löftet till allmänheten är orört.)
+
+*Rättat samtidigt:* kortet visade den äldsta sparade repliken, inte den senaste — synligt först
+när knappen skulle sitta på rätt varning.
+
 ## Versionerna (två veckor, sex byggen)
 
 | Version | Datum | Vad |
@@ -434,6 +459,7 @@ Har rösten aldrig behövt säga något står det så — tystnad är en funktio
 | 0.3.4 (7) | 2/9 | Kameratoleransen 60°, vägnumret i rösten. Byggd med rött kontrakt — *ogiltig*. |
 | 0.3.5 (8) | 2/9 | Kamerariktningen vänd 180°. Första bygget med grönt kontrakt i alla tre motorer. |
 | *nästa* | — | Prioritetsmedveten spärr, golv 10 s (#165). Ligger på main, väntar på arkivering. |
+| *nästa (Android)* | 16/9 | Facitknappen *Stämde / Stämde inte* + betatest-brytaren (S4, DECISIONS #202). Senast sagt visar rätt rad. |
 
 Android ligger kvar på 0.3.1 med gammalt skinn. Skinnet v3 är portat och bevisat i
 emulator; Play-lanseringen väntar på tolv testare.

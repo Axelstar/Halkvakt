@@ -61,14 +61,14 @@ jobs:
             adb install -r android/app/build/outputs/apk/debug/app-debug.apk
             adb shell pm grant se.halkvakt.app android.permission.ACCESS_FINE_LOCATION
             adb emu geo fix 18.063 59.334
-            adb shell am start -n se.halkvakt.app/.MainActivity
+            adb shell am start -n se.halkvakt.app/.MainActivity --ez fotostudio_facit true
             sleep 6
             adb emu geo fix 18.063 59.334
             sleep 2
             adb emu geo fix 18.064 59.335
-            adb shell am start -n se.halkvakt.app/.MainActivity
+            adb shell am start -n se.halkvakt.app/.MainActivity --ez fotostudio_facit true
             sleep 8
-            SZ=$(adb shell wm size | tr -d '\r' | awk '{print $NF}'); W=${SZ%x*}; H=${SZ#*x}; Y=$((H*95/100)); echo "skärm ${W}x${H} y=$Y"; adb exec-out screencap -p > /tmp/shot-1-vakten.png; adb shell input tap $((W/2)) $Y; sleep 3; adb exec-out screencap -p > /tmp/shot-2-installningar.png; adb shell input tap $((W*5/6)) $Y; sleep 3; adb exec-out screencap -p > /tmp/shot-3-om.png
+            SZ=$(adb shell wm size | tr -d '\r' | awk '{print $NF}'); W=${SZ%x*}; H=${SZ#*x}; Y=$((H*95/100)); echo "skärm ${W}x${H} y=$Y"; adb exec-out screencap -p > /tmp/shot-1-vakten.png; adb shell input tap $((W*3/4)) $Y; sleep 3; adb exec-out screencap -p > /tmp/shot-2-installningar.png; adb shell input tap $((W*5/6)) $Y; sleep 3; adb exec-out screencap -p > /tmp/shot-3-om.png; adb shell input swipe $((W/2)) $((H*85/100)) $((W/2)) $((H*15/100)) 600; sleep 1; adb shell input swipe $((W/2)) $((H*85/100)) $((W/2)) $((H*15/100)) 600; sleep 2; adb exec-out screencap -p > /tmp/shot-6-betatest.png
             # Fotostudion 3→5, tag 2 (läxa: flikbytestryck opålitligt — omstart landar alltid på Vakten)
             CAM=$(curl -s https://axelstar.github.io/halkvakt-karta/data/app/v1/static.json | python3 -c "import sys,json; c=json.load(sys.stdin)['cameras'][0]; print(c['lon'], c['lat'])")
             echo "ställer emulatorn vid fartkamera: $CAM"

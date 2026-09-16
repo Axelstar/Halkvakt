@@ -49,6 +49,8 @@ class GuardService : Service() {
 
     /** Skill-regel: asynkront arbete har en explicit ägare och livstid = tjänstens. */
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private var stillSinceMs = 0L
+    private var flushedThisStop = false
     @Volatile private var disabledKinds: Set<HazardKind> = emptySet()
     private var prevLon = Double.NaN; private var prevLat = Double.NaN
     private var guard: Guard? = null
@@ -120,7 +122,7 @@ class GuardService : Service() {
                             counts = s.counts + (a.kind to (s.counts[a.kind] ?: 0) + 1),
                             lastSaid = a.text to System.currentTimeMillis()) }
                         scope.launch {
-                            Prefs.appendAlert(this@GuardService, AlertEntry((a.t * 1000).toLong(), a.kind.wire, a.text)) } })
+                            Prefs.appendAlert(this@GuardService, AlertEntry((a.t * 1000).toLong(), a.kind.wire, a.text, a.hazardId)) } })
                 AlertBus.post("Vägdata laddad: ${hazards.size} faror i landet. Kör försiktigt.")
                 snapshotInfo.value = "${hazards.size} faror · väglag $dataTid"
             } else {
@@ -154,6 +156,14 @@ class GuardService : Service() {
             )
             guard?.onLocation(fix)
             retuneCadence(fix.lon, fix.lat)
+            // S4: facit skickas när bilen står stilla (≥ 30 s under 3 km/h), en gång per stopp — aldrig under körning.
+            val still = (fix.speedKmh ?: 99.0) < 3.0
+            if (!still) { stillSinceMs = 0L; flushedThisStop = false }
+            else if (stillSinceMs == 0L) stillSinceMs = loc.time
+            else if (!flushedThisStop && loc.time - stillSinceMs >= 30_000L) {
+                flushedThisStop = true
+                scope.launch(Dispatchers.IO) { runCatching { FacitSender.flush(this@GuardService) } }
+            }
         }
     }
 

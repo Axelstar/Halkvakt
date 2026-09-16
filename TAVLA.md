@@ -327,6 +327,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔨 **S4 PÅGÅR — steg 1 (backend) byggt 16/9 (DECISIONS #201):** tabell `driver_facit` (sql/022, dubbellåst), edge-funktionen
   `facit-svar` (öppen med flit: schema, 512 byte, tak 2 000/dygn, ingen IP), vakthundsraden "förarfacit". VÄNTAR: migration
   022 + deploy + curl-prov (204/400/405). Sedan steg 2 Android (skill först), 3 iOS, 4 PRODUKTBOK, 5 Axels ja.
+  ✅ **Steg 1 BEVISAT 03:08Z 16/9:** 204/204/400/405/400 mot `facit-svar`, vakthundsraden "förarfacit: 1 svar" (issue #289).
+  🔨 **Steg 2 Android BYGGT 16/9 (DECISIONS #202):** knapparna under Senast sagt, BETATEST-brytaren, `Facit.kt` (JVM-testad),
+  `FacitSender` (skickar vid stillastående 30 s / appstart), Om-texten omskriven ordagrant. Rättat: Senast sagt visade äldsta
+  raden. VÄNTAR: android.yml på grenen + skärmbilder → PRODUKTBOK → **Axels ja på flödet** → merge → iOS (steg 3).
 
 ### Axel — hösten (brainstorm 31/8)
 - [x] ⛔ **#92 Däcktyp och fordonstyp — STÄNGT 12/9, dokumenterat nej** (Bengts order när §2.5 togs ur
