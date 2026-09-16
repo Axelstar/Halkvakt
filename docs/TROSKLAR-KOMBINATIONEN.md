@@ -1,0 +1,326 @@
+# TROSKLAR-KOMBINATIONEN
+
+**Kort:** #197 — bedömningens **S10**, kartans **§8 C och D** och **§13.2**. Tre saker i ett dokument:
+**C** grinden för kombinationen, **D** regeln för gemensam kalibrering, **T** tröskelregeln i Axels lydelse.
+**Status:** 🔨 **UTKAST 2026-09-16**, skrivet av Claude på Bengts order *"kör grepp 2"* (DECISIONS #217).
+**Inget här gäller förrän det är fastställt:** C och D fastställs av Bengt (mätningen är hans) och kontrasigneras av
+Axel (samma form som DECISIONS #61/#68). **T** ändrar ett dokument Bengt fastställt, i Axels ordalydelse, och kräver
+därför båda.
+
+**Varför ett eget dokument.** Integrationskartan är fryst (DECISIONS #186) och säger själv att *"C och D är dokument
+och kan skrivas före frosten"*. Tröskelregeln var låst bakom N1: den saknade vittne (kartan §13.2). N1 är klar sedan
+15/9 — kamerafacit har objekt (DECISIONS #189, #196). Alla tre kan alltså skrivas nu, och de måste stå klara
+**före** första frostnatten, eftersom efterhalkan går ut som märkt beta i november (DECISIONS #186) och är den första
+kombination som når en förare.
+
+Husreglerna som gäller: tröskeldokument före kod · skuggkolumn före röst · punktkällor säger "framöver" · tystnad är
+en funktion · trösklar gissas inte, de faller ur mätning · trösklarna är daterade FÖRE mätningen och skrivs inte om
+när talen kommit (§10).
+
+---
+
+## 1. Vad som döms — och vad som INTE döms
+
+**En kombination** är en regel där minst två delar ur olika lager (kartan §2: L2 tillstånd, L3 utveckling, L4
+räckvidd, L5 allvar) måste tala **samtidigt** för att något ska hända. Den första är efterhalkan som märkt beta
+(bedömningens S3, DECISIONS #186):
+
+```
+frysrisk framöver  =  yta i frysbandet
+                      OCH blöt   (L2: regn inom N h, #89 — TROSKLAR-OVERGANGAR)
+                      OCH faller (L3: lutning över fönstret, #88 — TROSKLAR-TRENDEN)
+```
+
+Det är Axels *"En sak kan gå till röst i vinter"* (kartan §13.4). Senare kombinationer är allvar som
+försprång (#153), SMHI som räckviddsknapp (#95) och kallplatslagret (#91).
+
+**Problemet dokumentet löser** står i kartan och är två:
+
+1. **Varje grind dömer sin del ensam** (§7.3). En del kan vara svag ensam och avgörande i kombination — och vi har
+   redan underkänt en del på fel fråga: SMHI mättes som ankare, när dess roll var räckviddsknapp.
+2. **Trösklarna fryses per del** (§7.4). En kombination behöver kalibreras gemensamt, och ingen text säger hur. Som
+   reglerna står får den inte det alls.
+
+**Det här dokumentet dömer INTE:**
+
+| Sak | Var den döms |
+| :-- | :-- |
+| En dels egna trösklar | i delens eget tröskeldokument — de ändras aldrig av en kombination (D1) |
+| Rösten, texten, prioriteten | Axels. Betans text är beslutad: *"Halkvakt tror: frysrisk framöver"* (DECISIONS #186) |
+| Om något ska bli ett nytt farslag | kartan §7.8, kriteriet Bengt fastställde 15/9 |
+| Interpolation mellan två eniga stationer | #153 beslut 2 — varken tillåten eller förbjuden här (T5) |
+
+---
+
+## 2. Villkor varje kombination måste uppfylla — före grinden
+
+Villkoren nedan är inga mått. De är krav på **hur** en kombination får vara byggd. En kombination som bryter mot dem
+döms inte, den skickas tillbaka.
+
+| # | Villkor | Skäl |
+| :-- | :-- | :-- |
+| V1 | **Additiv.** Kombinationen får lägga till en varning, aldrig tysta en som dagens motor ger. En kombination som tystar är en egen fråga med egen grind | samma princip som TROSKLAR-OVERGANGAR §4: utvidgningen är en strikt superset |
+| V2 | **Graciös degradering.** Saknar en del åsikt — ingen station, ingen radar, för få mätningar i fönstret — gäller det som gäller utan kombinationen. Aldrig tystnad och aldrig larm på saknade data | täckningen multipliceras och krymper: station 18,5 %, radar 13,1 %, båda **8,2 %** (kartan §6.2). En kombination som kräver alla delar tiger annars nästan överallt |
+| V3 | **Delarnas vakter ärvs.** Givarvakten (#75) på varje yttemperatur, värdevakten på varje fält, kontraktsgrinden på varje kopierad tröskel | en kombination av vaktade delar är inte vaktad om den läser fältet på ett nytt sätt |
+| V4 | **Varje del bär sitt eget vittne** (regel T, §6) | annars kan kombinationen inte motbevisas, bara dess delar |
+| V5 | **Skugga före röst.** Undantaget är betan, som Bengt beslutat släppa före grinden (DECISIONS #186) — och som därför döms i januari, inte mars | husregeln |
+
+---
+
+## 3. Parametrar — kombinationen uppfinner inga nya
+
+Kombinationens parametrar är **delarnas redan fastställda svep**. Inget värde utanför dem får prövas (D1).
+
+**Efterhalkan, räknat ur de fastställda svepen:**
+
+| Parameter | Del | Svep | Punkter |
+| :-- | :-- | :-- | --: |
+| N | #89 (TROSKLAR-OVERGANGAR §2) | 1 · 2 · 3 · 4 h | 4 |
+| Minsta regn | #89 | > 0 · ≥ 0,2 · ≥ 0,5 mm/30 min | 3 |
+| r (radarproxy, `rate_mean_mmh`) | #89 | 0,1 · 0,5 · 2 mm/h | 3 |
+| Fönster | #88 (TROSKLAR-TRENDEN §2) | 15 · 30 · 60 min | 3 |
+| Lutningströskel | #88 | 0,4 · 0,6 · 0,8 · 1,2 °C per fönster | 4 |
+| Startband | #88 | +1…+3 · +1…+4 · +1…+6 °C | 3 |
+| **Rutnätet** | | | **1 296** |
+| *med N_varning (av · 2 · 4 · 6 h)* | #89 §2.3 | | *5 184* |
+
+**Den siffran är skälet till regel D.** En dels tröskel väljs i dag där nytta och pris korsar varandra på en kurva
+med 3–4 punkter (TROSKLAR-OVERGANGAR Ö-B, TROSKLAR-TRENDEN T-B). Det går, eftersom golven skyddar mot brus på en enda
+dimension. Väljer man den bästa av **1 296** punkter på samma nätter som man sedan dömer på finns alltid en vinnare,
+även i rent brus. Gemensam kalibrering på samma data är därför inte en lättare variant av delarnas metod — det är en
+annan och farligare metod, och den behöver egna regler.
+
+*Utvärderingsparametrarna — nära-miss-band och utfallsfönster (TROSKLAR-TRENDEN §2) — är inte kombinationens
+parametrar. De väljs i T-A och ärvs.*
+
+---
+
+## 4. Grindarna (C)
+
+### KB-A — Bär varje del sin roll i kombinationen? (döms i mars)
+
+**Frågan är kartans §7.3 och §9 omsatt i ett mått:** inte "klarar delen sig ensam", utan "blir kombinationen sämre
+utan den".
+
+För varje del P körs en **utan P-variant** på samma nätter, där P ersätts av det som gäller utan den (V2). För
+efterhalkan finns båda varianterna redan som skuggor:
+
+| Variant | Är samma sak som | Skuggas redan av |
+| :-- | :-- | :-- |
+| kombinationen | blöt × faller × frysband | betan (S3) |
+| utan *faller* | efterhalkan (a), regn inom N h | Ö-B (TROSKLAR-OVERGANGAR) |
+| utan *blöt* | fallande trend i startbandet | T-B (TROSKLAR-TRENDEN) |
+| utan båda | dagens `icing_point` | motorn själv |
+
+**Måttet** är B3-paret (TROSKLAR-TYSTNADSFEL §4–§5), räknat för kombinationen och för varje utan P-variant:
+
+| Utfall för P | Villkor |
+| :-- | :-- |
+| **BÄR** | utan P ger **lägre nettonytt eller högre pris** än kombinationen, utanför marginalvakten (±1,96 SE, TROSKLAR-SKUGGAN §3) |
+| **BÄR INTE** | ingen skillnad utanför marginalvakten — kombinationen är en omväg till den enklare regeln, och den enklare regeln döms i sitt eget dokument |
+| **OAVGJORT** | marginalvakten, eller KB-C:s underlag saknas |
+
+**En del som föll i sin egen grind får BÄRA här** — det är hela poängen med §7.3. Bromsen från kartan §9 gäller:
+rollen i kombinationen är en **ny fråga**, och det här dokumentet är den skrivna frågan. Ingen del återinförs på
+hopp, bara genom en grind som stod i repot före mätningen.
+
+### KB-B — Räddar kombinationen mer än den kostar? (döms i januari och i mars)
+
+Kombinationen mot **dagens motor** — inte mot delarna — med B3-paret och golv som står i kombinationens styrande
+dokument **före** mätningen.
+
+**Efterhalkan:** golven är TROSKLAR-OVERGANGAR Ö-B, fastställda av Bengt 12/9 och oförändrade (bedömningens S6):
+
+| # | Mått | Golv |
+| :-- | :-- | :-- |
+| KB-B1 | **Nettonytt:** facit-halttillfällen inom räckvidd som kombinationen räddar och dagens regel missade | **≥ 5 %** (Ö-B1) |
+| KB-B2 | **Priset:** tillkomna falsklarm | **≤ 25 %** av tillkomna fyrningar (Ö-B2) |
+
+**Två räkneregler, båda ärvda:**
+
+- **Risk är inte är.** Kombinationen innehåller L3 och säger *risk*. En fyrning där ytan kom inom nära-miss-bandet av
+  tröskeln inom utfallsfönstret är **risk som inte föll ut**, inte falsklarm (TROSKLAR-TRENDEN T-B).
+- **Räckviddsvillkoret.** En miss räknas bara där systemet hade en chans att tala (TROSKLAR-TYSTNADSFEL §6).
+
+**Tidsvinst redovisas bredvid, men räknas aldrig som nettonytt** (TROSKLAR-TRENDEN T-B): en kombination som bara är
+tidigare än punktregeln på tillfällen den ändå fångar klarar inte KB-B1.
+
+### KB-C — Domens giltighet (utan C fälls ingen dom alls)
+
+**Den strängaste delens underlagskrav gäller, vart och ett för sig.** För efterhalkan betyder det både Ö-C och T-C:
+
+| # | Villkor | Ärvt från |
+| :-- | :-- | :-- |
+| KB-C1 | ≥ 30 nätter med regn följt av frost, ≥ 20 stationer, båda halvorna av perioden | Ö-C1–C3 |
+| KB-C2 | ≥ 40 facit-halttillfällen inom räckvidd, ≥ 15 frostnätter, ≥ 3 län, ingen station > 25 % av underlaget | T-C |
+| KB-C3 | **Fysikkontrollen:** träffarna toppar efter midnatt och är vanligast klara, vindstilla nätter. Klarhetsdelen kräver att molntäckningen är mätt (TROSKLAR-TRENDEN T-A) — tills dess döms bara timfördelningen | Ö-C4, T-A |
+| KB-C4 | **Täckningen utskriven före tabellen:** andel segmenttimmar där alla delar hade åsikt, och där kombinationen föll tillbaka (V2) | kartan §6.2 |
+| KB-C5 | **Marginalvakten:** ett mått inom ±1,96 SE från sitt golv ⇒ OAVGJORT, aldrig KLARAR eller FALLER | TROSKLAR-SKUGGAN §3 |
+| KB-C6 | **Läsfönstret:** minutberoende avläsningar inom sju dygn, tills vinterdatan exporteras (grepp 3, #83 steg 2) | Ö-D |
+
+### KB-D — Förarfacit: en ny källa, och hur den får räknas
+
+Förarnas *Stämde* / *Stämde inte* (S4, `driver_facit`) finns inte i någon av de fastställda facitstackarna. Den ska
+in, för den är betans enda snabba facit — men den har två svagheter som måste stå skrivna före första svaret:
+
+1. **Urvalet går inte att mäta.** Servern ser bara svaren, aldrig vilka varningar som hördes utan svar — och ska inte
+   göra det (produktinvarianten). En förare som blev överraskad svarar troligen oftare än en som inte blev det.
+2. **Svartis syns inte heller för en förare.** *Stämde inte* kan betyda att vägen var torr — eller att isen inte märktes.
+
+Därför:
+
+| # | Regel |
+| :-- | :-- |
+| KB-D1 | *Stämde* **bekräftar** en träff |
+| KB-D2 | *Stämde inte* **fäller** en fyrning som falsklarm bara om ingen annan facitkälla bekräftar halka inom utfallsfönstret **och** ytan inte kom inom nära-miss-bandet |
+| KB-D3 | **Förarfacit ensamt fäller eller friar ingen dom.** KB-B redovisas två gånger, med och utan förarfacit. Pekar de åt olika håll är utfallet OAVGJORT |
+| KB-D4 | **Underlag (FÖRSLAG, fastställs av Bengt):** ≥ 30 svar på kombinationens varningar, från ≥ 5 förare, och ingen förare står för mer än 25 % |
+| KB-D5 | **Trafiklärarnas svar redovisas separat** (Skyltfonden AP3, DECISIONS #216) — som expertfacit, aldrig viktade in i samma tal |
+| KB-D6 | **Provrader räknas aldrig** — de två som finns i dag är prov (kort #196) |
+
+**Kamerabilden, och en motsägelse i facitstackarna som rättas här.** Tre fastställda dokument säger olika saker:
+
+| Dokument | Kamerabild får fälla falsklarm? |
+| :-- | :-- |
+| TROSKLAR-SKUGGAN §2 | **nej** — svartis syns inte i bild |
+| TROSKLAR-VATTENPLANING §2 | **ja**, när bilden visar torr vägbana — torr väg motbevisar stående vatten |
+| TROSKLAR-OVERGANGAR §8 | **ja**, utan förbehåll |
+
+**För kombinationer gäller (FÖRSLAG):** en kamerabild får fälla kombinationens **premiss** — *vägen är blöt* — när
+den visar torr vägbana. Den får **aldrig** fälla **utfallet** *det blev is*. Det är VATTENPLANING:s regel och
+SKUGGANS asymmetri på en gång, och skillnaden mot OVERGANGAR §8:s "ja" är att premiss och utfall hålls isär. Ändras
+OVERGANGAR §8 ska det ske som ett eget beslut vid fastställandet — inte som en glidning.
+
+---
+
+## 5. Regel D — gemensam kalibrering
+
+**Tillägg till ändringsparagrafen i varje tröskeldokument (§8/§9/§10 beroende på dokument).** Gäller bara parametrar
+som verkar i en kombination. En dels ensamma tröskel följer delens eget dokument, som i dag.
+
+| # | Regel |
+| :-- | :-- |
+| **D1** | **Delarnas trösklar ändras aldrig av en kombination.** Kombinationen har egna parametrar, och de får bara ta värden ur delarnas skrivna svep. En gemensam kalibrering väljer — den uppfinner inte |
+| **D2** | **Startvärden före första natten.** Kombinationens parametrar sätts innan dess första skuggkörning — för betan: innan den släpps — ur svepen, **utan facitutfall**, och skrivs i DECISIONS med datum och skäl |
+| **D3** | **Kalibrering och dom på skilda nätter.** En gemensam kalibrering görs högst en gång per säsong, vid en tidpunkt som står i DECISIONS innan den inträffar, och bara på data före den tidpunkten. Kombinationen döms därefter bara på data efter den. Samma natt får aldrig både välja parametrar och döma dem |
+| **D4** | **Målet skrivs före kalibreringen:** största nettonytt med priset under kombinationens tak (efterhalkan: Ö-B2, ≤ 25 %). Vinnaren ska hålla i **båda halvorna** av kalibreringsperioden (T-A:s tidsdelningskrav) — annars behålls startvärdena |
+| **D5** | **Alla prövade punkter redovisas,** inte bara vinnaren. Antalet står bredvid vinnarens tal. En vinnare ur 1 296 punkter och en ur fyra är inte samma påstående |
+| **D6** | **Frysning innan domdata läses:** värden, antal prövade punkter och datum i DECISIONS. Därefter gäller delarnas ändringsregim för kombinationen: ingen tröskel ändras, skärpning med en rad från Bengt, **lättnad utesluten när utfallet är sett** (TROSKLAR-SKUGGAN §5) |
+| **D7** | **En andra kalibrering är en ny fråga** (kartan §9): ny text skriven före mätning, nytt domfönster, egen grind. Aldrig två kalibreringar på samma domfönster |
+
+**Varför D3 är nödvändig och inte byråkrati:** se §3. Med 1 296 punkter hittar en kalibrering alltid något som ser
+bra ut. Det enda som skiljer ett fynd från en slump är att det håller på nätter som inte var med när det valdes.
+
+---
+
+## 6. Regel T — tröskelregeln i Axels lydelse
+
+### 6.1 Lydelsen
+
+> **En storhet som inte kan motbevisas av en mätning får inte utlösa en varning. Extrapolation faller. Minne av
+> mätningar består.**
+> — Axel, 14/9 (kartan §13.2, DECISIONS #184)
+
+Den ersätter den gamla meningen *"en modellerad storhet får aldrig vara en avtryckare"* (TROSKLAR-FRYSKLASSNINGEN §1
+och §7). Kartan §13.2 sade redan att Axels lydelse är bättre. Den gamla förbjöd bokstavligen varje integrerad
+storhet — också minne av mätningar, som aldrig var det regeln skrevs mot.
+
+### 6.2 Vad orden betyder, så att de går att tillämpa
+
+| # | Precisering |
+| :-- | :-- |
+| **T1** | **Motbevisbar** betyder att det finns en namngiven mätning som, på samma plats och inom utfallsfönstret, kan visa att påståendet var fel — och som inte själv är härledd ur samma indata som påståendet |
+| **T2** | **Vittnet ska finnas.** Varje utlösande storhet namnger sitt vittne i sitt tröskeldokument, och vittnet är bevisat med innehåll — minst ett objekt, inte en tom tabell — innan storheten når rösten. **En regel vars vittne är tomt är skriven men inte i kraft** |
+| **T3** | **Extrapolation** är ett värde för en plats där ingen mätt, som ingen mätning på platsen kan fälla — offsetmodellens temperatur långt från ankare. Den får inte utlösa. Den får fortsatt stärka eller försvaga en varning som vilar på en mätning (E1, TROSKLAR-SMHI-FORSTARKAREN §1.2) |
+| **T4** | **Minne av mätningar** är ett aggregat av uppmätta värden med känd kedja — regn inom N h, lutning över ett fönster. Det får utlösa, under sina egna grindar |
+| **T5** | **Vad regeln inte avgör:** interpolation mellan två eniga stationer (#153 beslut 2 b) är varken tillåten eller förbjuden här. Den avgörs i #153:s eget dokument. **Frysklassningen (#103) förblir en konfidenshöjare** — K-A2:s tak och "ingen egen avtryckare" för klassningen står orörda |
+
+### 6.3 Vittnena i dag, 16/9
+
+| Påstående | Vittne som kan fälla det | Läge |
+| :-- | :-- | :-- |
+| *vägen är blöt* (regn inom N h) | kamerabild som visar torr vägbana | ✅ kamerafacit har objekt — 26 vid Axels räkning 16/9 (DECISIONS #196) |
+| | operatörens klassning (torr/Våt) | ⚠️ 0 omklassningar på 30 dygn (DECISIONS #189) — tom i september |
+| *ytan faller* (lutning) | stationens egna mätningar efter fyrningen | ✅ minutdata på 848 stationer sedan 9/9 |
+| *det blev is* (utfallet) | omklassning till halka/is | ⚠️ tom i september |
+| | olycka i `situation_archive` (får bekräfta, aldrig fälla) | ✅ 3 122 olyckor på 30 dygn (DECISIONS #189) |
+| | förarfacit | ⚠️ 0 riktiga svar — två provrader (kort #196) |
+| *modellerad yta långt från station* | ingen | ⛔ faller som utlösare (T3) |
+
+**Betans två premisser har alltså var sitt levande vittne i dag.** Utfallet har bara ett levande som får bekräfta
+och inget levande som får fälla — de fylls när vintern kommer. T2 stoppar därför inte betan, men en dom i januari
+utan fällande vittne blir OAVGJORT enligt KB-C och KB-D3, inte KLARAR.
+
+### 6.4 Är det här en lättnad? — frågan som måste besvaras uttryckligen
+
+TROSKLAR-FRYSKLASSNINGEN §7 säger att *"ett modellerat värde får aldrig bli en avtryckare … får skärpas men aldrig
+mjukas upp — oavsett signaturer"*. En ny lydelse som tillåter något den gamla förbjöd vore just en sådan uppmjukning.
+
+**Mitt svar är nej, av ett skäl som går att pröva:** den nya lydelsen öppnar ingen utlösare som den gamla skrevs för
+att stoppa. Den gamla skrevs mot en **modellerad temperatur där ingen mätt** — grind A:s extrapolation — och den är
+fortsatt förbjuden (T3). Det lydelsen gör är att säga högt att minne av mätningar aldrig var "modellerat" i regelns
+mening (T4). **Om Bengt eller Axel läser det som en uppmjukning får ändringen inte göras.** Det ska avgöras som ett
+beslut med den här paragrafen framför sig, inte som en glidning när betan närmar sig.
+
+---
+
+## 7. Första tillämpningen: efterhalkan som märkt beta
+
+| Steg | Vad | Regel |
+| :-- | :-- | :-- |
+| Före första frostnatten | Betans startvärden ur §3:s svep, utan utfall, i DECISIONS (bedömningens S3) | D2 |
+| November | Betan i drift, *"Halkvakt tror: frysrisk framöver"*. Skuggorna Ö-B och T-B går bredvid, så att KB-A:s varianter finns | V1–V5 |
+| **Januari** | **KB-B** på betan som den släpptes, under KB-C och KB-D. Ingen kalibrering före | Ö-B:s golv |
+| **1 februari (FÖRSLAG)** | Den enda gemensamma kalibreringen, på data november–januari | D3–D6 |
+| **Mars** | **KB-A och KB-B** på data efter 1 februari. Mars-domen dömer alltså riktig, okalibrerad vinterdata (DECISIONS #186) | — |
+
+---
+
+## 8. Vad som skulle fälla kombinationen
+
+Skrivet före mätningen (DECISIONS #71):
+
+1. **KB-B1 under golvet eller KB-B2 över taket.** Kombinationen har inte rätt att tala. För betan betyder det att
+   grenen inte har stöd i mätning efter januari — beslutet om att ta ut den är Bengts och Axels.
+2. **Varje del BÄR INTE (KB-A).** Kombinationen är en omväg till en enklare regel. Den enklare regeln döms i sitt eget
+   dokument.
+3. **Fysikkontrollen faller (KB-C3).** Kombinationen är rätt av fel skäl, vilket inte är rätt.
+4. **Domen ändrar riktning när givarvakten slås på.** Då satt den i bruset (samma kontroll som
+   TROSKLAR-FRYSKLASSNINGEN §5 punkt 4).
+5. **Kalibreringens vinnare håller inte i båda halvorna (D4).** Inte en fällning av kombinationen, men
+   startvärdena står, och det ska stå i domen.
+
+---
+
+## 9. Ordning — vad görs när
+
+| Steg | Vad | När | Vem |
+| :-- | :-- | :-- | :-- |
+| 1 | **Detta dokument** | ✅ utkast 16/9 | Claude |
+| 2 | Fastställande av C och D | före första frostnatten | Bengt, Axel kontrasignerar |
+| 3 | Fastställande av T | samma varv som 2 | Bengt och Axel (§6.4) |
+| 4 | **I samma commit som 2–3:** en rad om D i ändringsparagrafen i varje tröskeldokument · T:s lydelse in i TROSKLAR-FRYSKLASSNINGEN §1 och §7 · kamerabildens rad (§4 KB-D) in i TROSKLAR-OVERGANGAR §8 om Bengt beslutar det | vid fastställandet | Claude |
+| 5 | Betans startvärden (D2) | före första frostnatten | S3: Bengt (värden), Axel (motorn) |
+| 6 | KB-B | januari | Claude mäter, Axel dömer |
+| 7 | Kalibreringen (D3–D6) | 1 februari (förslag) | Claude, Bengt fryser |
+| 8 | KB-A och KB-B | mars | Claude mäter, Axel dömer |
+
+---
+
+## 10. Ändring
+
+Fram till kombinationens första skuggkörning — för efterhalkan: betans första natt — får §2–§4 justeras av vem som
+helst av oss med en rad i DECISIONS. **Därefter gäller D6:** ingen tröskel ändras, skärpning med en rad från Bengt,
+lättnad utesluten när utfallet är sett.
+
+**Undantagen från all lättnad:** V1 (additiv), KB-D3 (förarfacit ensamt fäller ingen dom) och T3 (extrapolation
+faller). De får skärpas men aldrig mjukas upp.
+
+---
+
+*Källor: docs/INTEGRATIONSKARTAN.md §2, §6.2, §7.2–§7.4, §8, §9, §13.2, §13.4; docs/BEDOMNING-2026-09-15.md S1–S6,
+S10; docs/TROSKLAR-OVERGANGAR.md §2, §4 (Ö-B, Ö-C, Ö-D), §8; docs/TROSKLAR-TRENDEN.md §2, §4 (T-A, T-B, T-C);
+docs/TROSKLAR-TYSTNADSFEL.md §4–§6; docs/TROSKLAR-SKUGGAN.md §2, §3 (marginalvakten), §5;
+docs/TROSKLAR-VATTENPLANING.md §2; docs/TROSKLAR-FRYSKLASSNINGEN.md §1, §5, §7;
+docs/TROSKLAR-SMHI-FORSTARKAREN.md §1.2; TAVLA.md #153 (beslut 2), #196; DECISIONS #61, #68, #71, #184, #186,
+#189, #196, #198, #201, #216.*

@@ -6280,3 +6280,41 @@ tre nya invändningar/svar (vad det innebär, att läraren trycker, ingen ersät
 2. **AP3 kräver minst ett trafikskole-ja till lärare som testförare** senast 25/9 — annars skrivs AP3 om före sändning.
 3. Bengt och Axel omarbetar v6 fritt; siffrorna i kostnadsplanen summerar (kontrollerat: 363 200).
 
+## #217 (16/9 2026) Grepp 2 skrivet: TROSKLAR-KOMBINATIONEN — grinden för kombinationen, gemensam kalibrering, tröskelregeln (UTKAST)
+
+**Bengts order 16/9: "kör grepp 2"** (bedömningens S10, kartans §8 C och D, §13.2). Kartan är fryst, så C och D blev ett
+eget dokument: `docs/TROSKLAR-KOMBINATIONEN.md`. **Utkast — inget gäller förrän det är fastställt.** C och D fastställs
+av Bengt och kontrasigneras av Axel. T ändrar TROSKLAR-FRYSKLASSNINGEN i Axels lydelse och kräver båda.
+
+**C — fyra grindar för en kombination:** KB-A *bär varje del sin roll?* (varianter utan en del i taget, B3-paret,
+marginalvakten — svaret på kartans §7.3: en del som föll ensam får bära i kombination, men bara via en fråga skriven
+före mätning) · KB-B *räddar kombinationen mer än den kostar, mot dagens motor?* (efterhalkan: Ö-B:s golv 5 %/25 %,
+oförändrade) · KB-C *domens giltighet* (den strängaste delens underlag, vart och ett: Ö-C och T-C) · KB-D *förarfacit*
+(en ny källa: "Stämde" bekräftar, "Stämde inte" fäller bara utan annat facit och utanför nära-miss-bandet, ensamt
+fäller det ingen dom, trafiklärare separat, provrader aldrig). Plus fem byggvillkor före grinden: additiv, graciös
+degradering, ärvda vakter, eget vittne, skugga före röst.
+
+**D — sju regler för gemensam kalibrering.** Skälet är räknat, inte resonerat: efterhalkans parametrar ur de
+fastställda svepen bildar ett rutnät på **1 296 punkter** (5 184 med N_varning). En dels tröskel väljs i dag på en
+kurva med 3–4 punkter — med 1 296 finns alltid en vinnare, även i brus. Därför: delarnas trösklar rörs aldrig (D1) ·
+startvärden före första natten, utan utfall (D2) · **kalibrering och dom på skilda nätter** (D3) · målet skrivet före
+(D4) · alla prövade punkter redovisade (D5) · frysning innan domdata läses (D6) · en andra kalibrering är en ny fråga (D7).
+
+**T — Axels lydelse** (*"en storhet som inte kan motbevisas av en mätning får inte utlösa; extrapolation faller; minne
+av mätningar består"*) med fem preciseringar, bland dem **vittneskravet**: en regel vars vittne är tomt är skriven men
+inte i kraft. Vittnesläget 16/9: betans två premisser har var sitt levande vittne (kamerafacit 26 objekt; minutdata),
+utfallet har ett som får bekräfta (olyckor) och inget levande som får fälla — en januaridom utan det blir OAVGJORT.
+
+**Tre fynd på vägen:**
+1. **Facitstackarna säger emot varandra om kamerabilden:** SKUGGAN §2 *nej* (svartis syns inte), VATTENPLANING §2 *ja*
+   (torr väg motbevisar vatten), OVERGANGAR §8 *ja* utan förbehåll. Förslag: bilden får fälla **premissen** (blöt väg)
+   men aldrig **utfallet** (is). OVERGANGAR §8 ändras bara som eget beslut vid fastställandet.
+2. **FRYSKLASSNINGEN §7 säger att regeln "aldrig får mjukas upp — oavsett signaturer".** Dokumentets §6.4 svarar att
+   Axels lydelse inte öppnar någon utlösare den gamla skrevs för att stoppa — och att ändringen inte får göras om Bengt
+   eller Axel läser den som en uppmjukning. Det avgörs uttryckligen, inte i förbigående.
+3. **Bedömningens §4.2 bar ett avgjort beslut som öppet:** #52-vektorn (S8) avgjordes 16/9 med v24 (DECISIONS #214).
+   Flyttad till tagna.
+
+**Förslag som väntar på Bengt:** KB-D4 (≥ 30 förarsvar, ≥ 5 förare, ingen > 25 %) · kalibreringspunkten 1 februari
+(D3) · kamerabildens regel. **Inga byggminuter:** bara markdown.
+
