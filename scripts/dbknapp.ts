@@ -96,7 +96,7 @@ try {
       "paminnelseprov=1": "en issue med etiketten `kallvaktspaminnelse` ska finnas inom en minut, och stängas av nästa timkörning utan prov (#150).",
       "kassaprov=1": "en issue med etiketten `kassavakt` ska finnas inom en minut, och stängas av nästa körning 05/11/17/23 UTC som ligger under gränsen (#152).",
       "nyckelprov=1": "en issue med etiketten `nyckelkalender` ska finnas inom en minut, och stängas av nästa 06 UTC-körning utan prov (kort #86).",
-      "sparrprov=1": "svaret ovan ska visa `suppressed` med EN rad — kamera 2 tystad av kamera 1 inom 45 s (kort #188/#191). Inget skrivs i shadow_log.",
+      "sparrprov=1": "svaret ovan ska visa `suppressed` med EN rad — kamera 2 tystad av kamera 1 inom spärrens 10 s (#127; kort #188/#191). Inget skrivs i shadow_log.",
     };
     const fallback = "en issue med etiketten vakthund ska finnas inom en minut, och stängas av nästa gröna timkörning (xx:07).";
     console.log(`Beviset är INTE den här raden: ${BEVIS[flagga] ?? fallback}`);
