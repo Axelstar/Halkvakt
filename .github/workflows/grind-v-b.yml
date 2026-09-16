@@ -1,0 +1,28 @@
+# Grind V-B (kort #42 steg E, #81): dömer skuggans vattenplaningsvarningar (shadow_log.vb) mot
+# TROSKLAR-VATTENPLANING §3 — falsklarm ≤ 20 %, frekvens ≤ 3 per rutt och regndygn. Ingen tröskel
+# sätts här; utlösaren importeras ur snapshotkärnan. V-C:s domspärr gäller: under underlaget skrivs
+# ingen dom ut, bara tal. Knapp, inte cron (#85) — den kostar bara när någon vill veta.
+name: grind-v-b
+on:
+  workflow_dispatch:
+    inputs:
+      dagar:
+        description: "Dagar bakåt (vb-loggen börjar 15/9)"
+        default: "14"
+jobs:
+  grind-v-b:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types publish/grind-v-b.ts --sjalvtest
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types publish/grind-v-b.ts "${{ inputs.dagar || '14' }}" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }

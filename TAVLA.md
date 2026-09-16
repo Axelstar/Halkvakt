@@ -2981,6 +2981,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   12/9 på saklig grund — "regnar det alls" hade gjort påståendet mätbart och samtidigt värdelöst för
   faran. Kortet går därmed vidare enligt kort #81:s stegordning A→F, och steg A (kalibreringen in i
   dokumentet) är skrivet. 🔑 Axels kontrasignering i §3.4 innan steg B.
+- [ ] ⚖️ **#194 GRIND V-B SOM KNAPP — dömer skuggans vattenplaningsvarningar** (Bengts order 16/9, DECISIONS #211).
+  `publish/grind-v-b.ts` + knappen `grind-v-b`: V-B1 falsklarm mot närmaste stations `rain_sum_mm` (10 km, ±30 min,
+  tröskeln härledd 2,0/0,65 ≈ 3,1), V-B3 frekvens per rutt och regndygn, V-C:s domspärr. V-B2 säger ⊘ med skäl —
+  `situation_archive` bär ingen orsak. Självtest grönt (9 fall). VÄNTAR: första skarpa körningen.
 - [ ] 🧭 **#81 Byggordning efter radardomen 14/9 — så byggs #42 utan att upprepa 5–8/9** (Bengts
   beställning 9/9 00:05). 🔒 LÅST BAKOM 14/9: faller domen illa gäller #42:s alternativ a/b i
   stället, och det här kortet stängs oanvänt. Faller den väl ut byggs det i DEN HÄR ordningen,
