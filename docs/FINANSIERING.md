@@ -2,16 +2,22 @@
 
 Tre dokument i Bengts Drive-mapp (v3, 2026-08-29): ansökningsutkast Skyltfonden
 (400 200 kr, jan 2027–apr 2028), kontaktplan med talmanus, faktadokument.
+**Senaste 16/9:** ansökan v5 (3/9) och **kontaktplan v6 (16/9)** — tre samtal, muntligt ja räcker (DECISIONS #215).
 
 **Hårda datum:** förhandssamtal fonden v.36 · trafikövningsplats v.36 (utan den
-stryks halkbaneförsöket) · avsiktsförklaringar klara 25/9 · SKICKAS 28/9 ·
+stryks halkbaneförsöket) · muntliga ja klara 25/9 (v6; inga avsiktsförklaringar) · SKICKAS 28/9 ·
 deadline 1/10 · besked senast 15/12 · projektstart 2027-01-11.
 
 **Ansökans fyra delar ↔ vår teknik:** vinterutvärderingen = skuggmotor+facit+
 missknappen (#19/#20, LIVE); prognoslagret = #16 (blir finansierat); yrkes-
 piloten = B2B-fröet; halkbaneförsöket = kontrollgrupp, unikt.
 
-**Ringlistan (kontaktplanen v3):** 0 Skyltfonden förhandssamtal (v.36 först) ·
+**Ringlistan (kontaktplanen v6, 16/9 — GÄLLER):** 1 Bulltoftabanan, halkbanan (KRITISK för AP6) · 2 trafikskolor
+(fråga banan vilka som skickar flest) · 3 NTF Jönköping, som har Skåne i dag — skane.ntf.se leder dit (verksamhetschefen).
+Muntligt ja räcker; fonden kräver inga underskrivna intyg. Strukna: förhandssamtalet med fonden, skolskjuts,
+hemtjänst, åkeri — därmed saknar AP3 partner och måste strykas eller skrivas om i ansökan (DECISIONS #215).
+
+**Ringlistan (kontaktplanen v3, ERSATT av v6):** 0 Skyltfonden förhandssamtal (v.36 först) ·
 1 Trafikövningsplats/halkbanan (v.36, KRITISK — utan den stryks försöket) ·
 2 STR-trafikskola via HANDLEDARKURSEN (QR-blad till föräldrar = distribution) ·
 3 Skolskjuts (v.37, kommunerna längs referensrutterna) · 4 Privat hemtjänst
