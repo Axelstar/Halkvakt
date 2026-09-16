@@ -431,6 +431,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   punkter (minsta regn bara > 0, ingen radar-r, startband bara till +3 °C). Beslut före frosten: vidga loggen eller stryk punkterna.
   📏 **MÄTT 16/9 (DECISIONS #218):** utan radarn försvinner högst ~13 % av blöta kalla timmar (15 av 115), ingen för att mätare
   saknas — alla 160 kalla stationer har mätare. Stryk-rekommendationen står; mät om i första frostmånaden (snö).
+  ✏️ **AXELS LÄSNING 16/9 → SEX ÄNDRINGAR (DECISIONS #219).** Bengt: 1 248 punkter strukna (radarn inräknad), radarmätningen
+  om vid frost. Flytt i tid räknas som tillägg bara utan undanträngda varningar i `suppressed`. VÄNTAR: §6.4 (Bengt + Axel) ·
+  utfallet i januari (förslag: betan fortsätter vid OAVGJORT) · D2-principen för startvärden (S3) · fastställandet.
 - [ ] 🧩 **#159 INTEGRATIONSKARTAN — tre av våra egna regler står i vägen för produkten**
   📬 **AXELS FYRA INVÄNDNINGAR INARBETADE 14/9 (DECISIONS #184, kartans nya §13).** Han läste ett
   TIDIGT underlag, där grind A-rättelsen inte fanns. **Tre står, en föll på underlaget.**

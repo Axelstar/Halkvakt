@@ -55,6 +55,7 @@ beviset finns — inte när koden är skriven.
 | Förarfacit-hygien: klockslaget i vakthundsraden + två provrader som räknas som svar | ⏳ nytt 16/9 — radering av prov är Bengts beslut | #196 | #214 | raden visar tid; `forarfacit` räknar 0 prov |
 | Trafiklärare som testförare (Skyltfonden AP3, Bengt 16/9) | ⏳ beror på trafikskolornas ja senast 25/9; inbjudningsvägen (TestFlight extern = Beta App Review, Android APK/Play) är Axels — påverkar S5:s tolv testare | — | #216 | lärare med testversion i november och första lärarsvaret i `driver_facit` |
 | S10 grepp 2: TROSKLAR-KOMBINATIONEN (C, D, tröskelregeln) | 🔨 utkast 16/9 — väntar på fastställande före första frostnatten | #197 | #217 | fastställt dokument, D-raden i varje tröskeldokument och T i FRYSKLASSNINGEN §1/§7 — i samma commit |
+| Radarns bidrag mäts om i första frostmånaden (`scripts/matningar/radar-tackning-2026-09-16.sql`) | ⏳ vid frost, före januari-domen | #197 | #218/#219 | samma fråga på kalla timmar med snö |
 
 ---
 
@@ -82,7 +83,7 @@ Fem rader. Inget annat är "nu".
 | **S2** | **E på K2:** skattaren returnerar nivå + bevis, byggd på frysklassningens osäkerhetszon (±0 · ±0,5 · ±1,0 °C) — indata till försprånget. *Förkrav klart 15/9: trendfälten besiktigade av värdevakten (DECISIONS #192)* | F3 | — |
 | **S3** | **Regeln i motorn:** `icing_point` fyrar när det *inte* regnar men ytan är blöt (N4:s `regn_h` ≤ N) och faller (`lutning`). Märkt text: *"Halkvakt tror: frysrisk framöver"* — ny gren, inte nytt slag. Tre portar | F3 + F4 + text | **`v11_silent_drive` måste fortfarande tiga** — vektorn försvagas aldrig |
 | **S4** | **Facitknappen:** ~~efter varje varning *"stämde det?"*~~ **Axels ja 16/9: två knappar under "Senast sagt" — *Stämde* / *Stämde inte*, ingen fritext; loggas lokalt, skickas när bilen står stilla.** Skickar varnings-id + svar, inget spår. Bara betatestare, uttryckligt samtycke. **Produktbokens Om-avsnitt ("vi samlar in: ingenting") ändras i samma commit — ordagrant, frivilligt, synligt** (kort #21) | app, båda plattformarna | ~~Axels ja på text och flöde~~ ✅ 16/9; PRODUKTBOK i samma commit |
-| **S5** | **Betan till tolv testare i november.** Skuggloggen + förarsvaren + kamerafacit = tre facitkällor | — | — |
+| **S5** | **Betan till tolv testare i november.** Skuggloggen + förarsvaren + kamerafacit = tre facitkällor. Testförarna, också trafiklärarna, får veta att värdena är gissade till februari (TROSKLAR-KOMBINATIONEN §7) | — | — |
 | **S6** | **Dom i januari** på förarfacit + kamerafacit mot Ö-B:s golv (nettonytt ≥ 5 %, tillkomna falsklarm ≤ 25 %). Mars-domen blir en dom på riktig data | — | TROSKLAR-OVERGANGAR, oförändrad |
 
 ### 2.2 Det som måste finnas under tiden
@@ -133,6 +134,7 @@ Fem rader. Inget annat är "nu".
 | S1 körs före S2 — inget mer byggs på `regn_h` innan skuggjämförelsen | Axel, 16/9 |
 | Steg D: utgångspunkt given (under halka, över vilt; *"Vattenplaning framöver — sakta ner"*), beslut efter V-C | Axel, 16/9 |
 | #52-vektorn: kod 1 + "Packad snö" MÅSTE larma — v24 i tre portar (S8, DECISIONS #214) | Bengt + Axel, 16/9 |
+| Kombinationen: de 1 248 punkter som inte kan spelas upp stryks, radarn inräknad — radarns bidrag mätt till högst ~13 % (DECISIONS #218/#219) | Bengt, 16/9 |
 
 ### 4.2 Öppna
 
@@ -141,7 +143,8 @@ Fem rader. Inget annat är "nu".
 | Tröskelregeln till Axels lydelse (S10) — lydelse och vittneskrav i TROSKLAR-KOMBINATIONEN §6; §6.4 besvaras uttryckligen | Bengt + Axel | ja — N1 klar |
 | C och D fastställs (S10, TROSKLAR-KOMBINATIONEN §4–§5) | Bengt, Axel kontrasignerar | ja, före första frostnatten |
 | Förslagen i C och D: förarfacits underlag (KB-D4) · kalibreringspunkt 1/2 (D3) · kamerabilden fäller premiss, aldrig utfall | Bengt | ja |
-| S1:s logg bär 48 av kombinationens 1 296 punkter: vidga loggen (regnmängd, radar-r, stationer till +6 °C) eller stryk punkterna (TROSKLAR-KOMBINATIONEN §3) | Bengt | stryk nu, vidga i oktober om kassan tillåter |
+| Utfallet i januari: KLARAR eller OAVGJORT ⇒ betan fortsätter oförändrad till mars, FALLER ⇒ grenen tas bort (TROSKLAR-KOMBINATIONEN §7) | Bengt + Axel | ja |
+| Principen för betans startvärden (D2): mitt i svepen eller i den försiktiga änden (S3) | Bengt | före frosten |
 | #45 lapse 0,63 (S12) | Bengt + Axel | ja |
 | `marknadsforing.yml` | Axel + Bengt | ingen rekommendation |
 | TRV-anmälan om nio byvindgivare — brevet är klart | Bengt | ja |

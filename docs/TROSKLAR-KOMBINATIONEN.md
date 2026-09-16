@@ -7,6 +7,10 @@
 Axel (samma form som DECISIONS #61/#68). **T** ändrar ett dokument Bengt fastställt, i Axels ordalydelse, och kräver
 därför båda.
 
+**Ändrat 16/9 efter Axels läsning** (DECISIONS #219): V1 flytt i tid · V5 betan är facitinsamling och får stängas av ·
+§3 strykningen beslutad, med sitt pris · KB-D3 följden · §5 vilken regel skyddar vilken dom · §7 utfallet i januari och
+testförarnas information.
+
 **Varför ett eget dokument.** Integrationskartan är fryst (DECISIONS #186) och säger själv att *"C och D är dokument
 och kan skrivas före frosten"*. Tröskelregeln var låst bakom N1: den saknade vittne (kartan §13.2). N1 är klar sedan
 15/9 — kamerafacit har objekt (DECISIONS #189, #196). Alla tre kan alltså skrivas nu, och de måste stå klara
@@ -59,11 +63,11 @@ döms inte, den skickas tillbaka.
 
 | # | Villkor | Skäl |
 | :-- | :-- | :-- |
-| V1 | **Additiv.** Kombinationen får lägga till en varning, aldrig tysta en som dagens motor ger. En kombination som tystar är en egen fråga med egen grind | samma princip som TROSKLAR-OVERGANGAR §4: utvidgningen är en strikt superset |
+| V1 | **Additiv.** Kombinationen får lägga till en varning, aldrig tysta en som dagens motor ger. En kombination som tystar är en egen fråga med egen grind. **Flytt i tid** (försprång, #153): ett längre försprång räknas som tillägg bara om spärrloggen (`suppressed`) inte visar att den flyttade varningen trängt undan en annan — 10-sekundersspärren och upprepningsspärren (10 min / 5 km) kan tysta utan att någon regel gör det. Ett kortare försprång räknas aldrig som tillägg: det tar tid från föraren | samma princip som TROSKLAR-OVERGANGAR §4: utvidgningen är en strikt superset. Flytt i tid efter Axels fråga 16/9 |
 | V2 | **Graciös degradering.** Saknar en del åsikt — ingen station, ingen radar, för få mätningar i fönstret — gäller det som gäller utan kombinationen. Aldrig tystnad och aldrig larm på saknade data | täckningen multipliceras och krymper: station 18,5 %, radar 13,1 %, båda **8,2 %** (kartan §6.2). En kombination som kräver alla delar tiger annars nästan överallt |
 | V3 | **Delarnas vakter ärvs.** Givarvakten (#75) på varje yttemperatur, värdevakten på varje fält, kontraktsgrinden på varje kopierad tröskel | en kombination av vaktade delar är inte vaktad om den läser fältet på ett nytt sätt |
 | V4 | **Varje del bär sitt eget vittne** (regel T, §6) | annars kan kombinationen inte motbevisas, bara dess delar |
-| V5 | **Skugga före röst.** Undantaget är betan, som Bengt beslutat släppa före grinden (DECISIONS #186) — och som därför döms i januari, inte mars | husregeln |
+| V5 | **Skugga före röst.** Undantaget är betan, som Bengt beslutat släppa före grinden (DECISIONS #186) — och som därför döms i januari, inte mars. **Betan samlar in facit, den är inte produkten:** startvärdena är gissade (D2), och en dålig december är designen, inte ett fel. **D3 förbjuder finjustering — inte att stänga av betan.** Pratar den för mycket får Bengt och Axel stänga av den; det är ett produktbeslut, ingen kalibrering | husregeln |
 
 ---
 
@@ -105,11 +109,17 @@ råa logg (`efterhalka`, DECISIONS #198), inte ur nya skuggkolumner. Loggen bär
 | Startband | **bara upp till +3 °C** | `weather[]` bär bara stationer med yta ≤ 3 °C |
 
 **Av rutnätets 1 296 punkter kan 48 spelas upp** (N 4 × fönster 3 × lutning 4, med minsta regn > 0 och startband
-+1…+3). Resten kräver antingen att loggen vidgas — kod, deploy och byggminuter — eller att de sveppunkterna stryks för
-kombinationen **före första natten** (D2). Det är ett beslut, inte en detalj: det avgör vad D-kalibreringen alls kan välja
-mellan.
++1…+3). **Beslut (Bengt 16/9, DECISIONS #219): de övriga 1 248 punkterna stryks för kombinationen i
+vinter.** Loggen byggs inte ut. Strykningen är ett val med ett pris, och priset står här:
 
----
+| Struket | Vad det kostar |
+| :-- | :-- |
+| Radarn som tecken på blöt väg | kombinationen vet "blöt" bara där stationen har regnmätare. **Mätt 16/9 (DECISIONS #218): högst ~13 % av de blöta kalla timmarna (15 av 115) var kända bara av radarn**, ingen för att mätare saknades — alla 160 kalla stationer har mätare. September är regn; mätningen körs om inom första frostmånaden (snö) |
+| Minsta regn ≥ 0,2 och ≥ 0,5 mm | "blöt" betyder allt regn över 0 — ingen gräns mot enstaka droppar |
+| Startband över +3 °C | fallet syns först under +3 °C — kortare försprång än ett band till +4 eller +6 hade gett |
+
+**Att rutnätet är litet är inte skyddet.** 48 punkter prövade på samma tunna januaridata överanpassas också; det som
+skyddar är att nätterna skiljs åt (D3). Men 48 punkter går att kalibrera ärligt på, 1 296 gör det inte (Axel 16/9).
 
 ## 4. Grindarna (C)
 
@@ -191,7 +201,7 @@ Därför:
 | :-- | :-- |
 | KB-D1 | *Stämde* **bekräftar** en träff |
 | KB-D2 | *Stämde inte* **fäller** en fyrning som falsklarm bara om ingen annan facitkälla bekräftar halka inom utfallsfönstret **och** ytan inte kom inom nära-miss-bandet |
-| KB-D3 | **Förarfacit ensamt fäller eller friar ingen dom.** KB-B redovisas två gånger, med och utan förarfacit. Pekar de åt olika håll är utfallet OAVGJORT |
+| KB-D3 | **Förarfacit ensamt fäller eller friar ingen dom.** KB-B redovisas två gånger, med och utan förarfacit. Pekar de åt olika håll är utfallet OAVGJORT. **Följden ska man vara beredd på:** förblir omklassningarna tomma blir januari OAVGJORT även om hundratals förare svarat *Stämde* |
 | KB-D4 | **Underlag (FÖRSLAG, fastställs av Bengt):** ≥ 30 svar på kombinationens varningar, från ≥ 5 förare, och ingen förare står för mer än 25 % |
 | KB-D5 | **Trafiklärarnas svar redovisas separat** (Skyltfonden AP3, DECISIONS #216) — som expertfacit, aldrig viktade in i samma tal |
 | KB-D6 | **Provrader räknas aldrig** — de två som finns i dag är prov (kort #196) |
@@ -228,6 +238,10 @@ som verkar i en kombination. En dels ensamma tröskel följer delens eget dokume
 
 **Varför D3 är nödvändig och inte byråkrati:** se §3. Med 1 296 punkter hittar en kalibrering alltid något som ser
 bra ut. Det enda som skiljer ett fynd från en slump är att det håller på nätter som inte var med när det valdes.
+
+**Vilken regel skyddar vilken dom.** D2 skyddar **januari-domen**: utan startvärden satta före utfallet döms betan på
+värden som redan anpassats efter det den döms på. D3 skyddar **mars-domen** på samma sätt för kalibreringen. D4:s krav
+på båda halvorna är ett andra, billigare skydd inuti kalibreringen. D5 är redovisning, inget skydd.
 
 ---
 
@@ -287,8 +301,8 @@ beslut med den här paragrafen framför sig, inte som en glidning när betan nä
 | Steg | Vad | Regel |
 | :-- | :-- | :-- |
 | Före första frostnatten | Betans startvärden ur §3:s svep, utan utfall, i DECISIONS (bedömningens S3) | D2 |
-| November | Betan i drift, *"Halkvakt tror: frysrisk framöver"*. S1:s råa logg går bredvid, så att KB-A:s varianter kan spelas upp (§3) | V1–V5 |
-| **Januari** | **KB-B** på betan som den släpptes, under KB-C och KB-D. Ingen kalibrering före | Ö-B:s golv |
+| November | Betan i drift, *"Halkvakt tror: frysrisk framöver"*. S1:s råa logg går bredvid, så att KB-A:s varianter kan spelas upp (§3). Testförarna — också trafiklärarna — får veta att värdena är gissade fram till februari (betaplanen, S5) | V1–V5 |
+| **Januari** | **KB-B** på betan som den släpptes, under KB-C och KB-D. Ingen kalibrering före. **Utfall (FÖRSLAG — Bengt och Axel beslutar vid fastställandet):** KLARAR eller OAVGJORT ⇒ betan fortsätter oförändrad till mars · FALLER ⇒ grenen tas bort | Ö-B:s golv |
 | **1 februari (FÖRSLAG)** | Den enda gemensamma kalibreringen, på data november–januari | D3–D6 |
 | **Mars** | **KB-A och KB-B** på data efter 1 februari. Mars-domen dömer alltså riktig, okalibrerad vinterdata (DECISIONS #186) | — |
 
@@ -318,7 +332,7 @@ Skrivet före mätningen (DECISIONS #71):
 | 2 | Fastställande av C och D | före första frostnatten | Bengt, Axel kontrasignerar |
 | 3 | Fastställande av T | samma varv som 2 | Bengt och Axel (§6.4) |
 | 4 | **I samma commit som 2–3:** en rad om D i ändringsparagrafen i varje tröskeldokument · T:s lydelse in i TROSKLAR-FRYSKLASSNINGEN §1 och §7 · kamerabildens rad (§4 KB-D) in i TROSKLAR-OVERGANGAR §8 om Bengt beslutar det | vid fastställandet | Claude |
-| 4b | **Vidga S1:s logg** (regnmängd, radarns r, stationer upp till +6 °C) **eller stryk** de sveppunkter som inte kan spelas upp (§3) | före första frostnatten | Bengt beslutar; en vidgning är kod och kostar byggminuter |
+| 4b | ~~Vidga S1:s logg eller stryk~~ **Strykt — beslutat 16/9** (§3, DECISIONS #219). Mätningen av radarns bidrag körs om inom första frostmånaden | före januari-domen | Claude, en byggminut |
 | 5 | Betans startvärden (D2) | före första frostnatten | S3: Bengt (värden), Axel (motorn) |
 | 6 | KB-B | januari | Claude mäter, Axel dömer |
 | 7 | Kalibreringen (D3–D6) | 1 februari (förslag) | Claude, Bengt fryser |
