@@ -334,6 +334,11 @@ Deno.serve(async (req) => {
     const [rp] = await sql`SELECT max(observed_at) t FROM radar_precip`;
     const [vatt] = await sql`SELECT count(*)::int AS n FROM weather_observations
       WHERE sample_time > now() - interval '3 hours' AND (rain OR snow OR rain_sum_mm > 0)`;
+    // S4 (DECISIONS #201): förarfacit — betatestarnas svar. En rad, ingen dom; tom tills betan går i november.
+    try {
+      const [df] = await sql`SELECT count(*)::int AS n, max(received_at) AS senast FROM driver_facit`;
+      rad.push(`förarfacit: ${df.n} svar${df.senast ? ` (senast ${String(df.senast).slice(0, 16)})` : ""}`);
+    } catch { rad.push("förarfacit: tabellen saknas — hoppar"); }
     // 6c. VÄGLAGSARKIVET (#124, 12/9): samma korskontroll som radarn. En operatörsklassning
     //     står tills den ändras, så ren ålder säger inget — men står arkivet stilla MEDAN
     //     en väsentlig andel stationer ligger under noll är antingen ingesten trasig eller

@@ -5879,3 +5879,30 @@ ingen vektor rörd. **Axel sa ja till invarianttexten 16/9** — den är därmed
 
 **Utfall 16/9:** skuggrapport deployad 02:51Z; `takt` 02:52Z: tätaste följd 70 s (E4 Sundsvall→Umeå), följder inom 60 s: 0 av 110 yttranden på 24 h; per rutt 70 · 145 · 370 · 380 · 525 · 3 665 s.
 
+## #201 (16/9 2026) S4 steg 1: förarfacitets backend — öppen endpoint med flit, dubbellåst tabell, och ärligheten om vad ett svar är
+
+**Bengts "kör S4" 16/9, efter räkningen (≈ 80–100 Actions-minuter för hela S4, 4–5 % av kassan; arbete ≈ 3 dagar).**
+Steg 1 av fem: tabell `driver_facit` (sql/022), edge-funktionen `facit-svar`, vakthundsraden "förarfacit: n svar".
+
+**Vad som sparas:** varnings-id (motorns `hazardId`), när varningen talade, svaret ja/nej, plattform, appversion.
+Ingen identitet, ingen position, ingen resa. **Men ärligt:** ett varnings-id pekar på en fara med koordinat och
+tiden säger när — ett svar ÄR en plats och en tid, en gles resa. Beslut #186 tog det med öppna ögon för tolv
+testare med samtycke; Om-avsnittet i produktboken ska säga just det ordagrant (Axel, #196), inte "ingenting".
+
+**Öppen endpoint, med flit.** Appen kan inte bära en hemlighet (CLAUDE.md), så `facit-svar` kräver ingen nyckel.
+Skyddet är formen: strikt schema (id 1–64 tecken, ISO-tid inom ±48 h, svar ja|nej, app android|ios), 512 byte,
+tak 2 000 svar per dygn (tolv testare × 30 varningar är 360 — taket är mot flod, inte mot förare). Ingen IP
+sparas. Tabellen är dubbellåst som arkivet (RLS utan policy + REVOKE): inget kan läsas tillbaka via REST.
+Räcker för en beta i känd krets — inte för allmänheten, då krävs #21:s sensorbeslut.
+
+**Idempotent:** appen skickar när bilen står stilla och kan skicka om; nyckeln (id, t, app) gör omsändning
+ofarlig, och ett ÄNDRAT svar på samma varning ersätter det förra — förarens senaste ord gäller.
+
+**Förkastat:** att posta direkt till PostgREST med anon-nyckeln som väntelistan gör — det hade lagt en nyckel
+i appen och en INSERT-policy på en tabell som ska vara stum; funktionen validerar och begränsar, det gör inte
+en policy.
+
+**Bevis som gäller (steg 1):** efter deploy — POST med giltigt svar ⇒ 204, ogiltigt ⇒ 400, GET ⇒ 405, och
+vakthundens rad "förarfacit: 1 svar" (läst via dbknapp, som nu visar `rad`). Steg 2–5: Android, iOS,
+PRODUKTBOK, Axels ja på flödet — med mellanstopp efter Android.
+

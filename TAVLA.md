@@ -324,6 +324,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **AXELS JA 16/9 (DECISIONS #196, bedömning S4):** två knappar under "Senast sagt" — *Stämde* / *Stämde inte*, ingen
   fritext, loggas lokalt, skickas när bilen står stilla. KRAV: Om-avsnittets "vi samlar in: ingenting" skrivs om
   ordagrant, frivilligt och synligt i SAMMA commit — annars bryter knappen löftet. Bara betatestare med samtycke (#186).
+  🔨 **S4 PÅGÅR — steg 1 (backend) byggt 16/9 (DECISIONS #201):** tabell `driver_facit` (sql/022, dubbellåst), edge-funktionen
+  `facit-svar` (öppen med flit: schema, 512 byte, tak 2 000/dygn, ingen IP), vakthundsraden "förarfacit". VÄNTAR: migration
+  022 + deploy + curl-prov (204/400/405). Sedan steg 2 Android (skill först), 3 iOS, 4 PRODUKTBOK, 5 Axels ja.
 
 ### Axel — hösten (brainstorm 31/8)
 - [x] ⛔ **#92 Däcktyp och fordonstyp — STÄNGT 12/9, dokumenterat nej** (Bengts order när §2.5 togs ur
