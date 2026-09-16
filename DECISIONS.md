@@ -6248,3 +6248,35 @@ nästa app-bygge, appen finns ännu inte öppet i butikerna.
 3. "NTF Skåne" → "NTF Jönköping (verksamhet i bland annat Skåne)".
 4. YKB-raden i AP6 står bara om Bulltoftabanan säger ja till tung trafik.
 
+## #216 (16/9 2026) Trafiklärare som testförare, AP3 sänkt — ansökan v6 skriven (363 200 kr)
+
+**Bengts beslut 16/9:** *"trafiklärare får vara testförare om de vill. Vi sänker ap3. Du kan skriva v 6 men den kan
+klart bli omarbetad."*
+
+**Tolkningen av "sänker AP3" (Claudes, uttalad så den kan rättas):** AP3 finns kvar men krymper till det enda som har
+en partnerbas efter #215 — **trafiklärare som testförare**. Flottpiloten (hemtjänst, skolskjuts, distribution) och
+morgonöversikten för planerare lämnar ansökan; morgonöversikten lever kvar i B2B-spåret (egenfinansierad), inte i fonden.
+Alternativet — behålla en flottverksamhet utan partner — valdes bort: en pilot utan deltagare är det svagaste en
+beredningsgrupp kan läsa, och flottkontakterna är strukna. **AP3: 58 000 → 21 000 kr** (30 tim: rekrytering,
+instruktion, uppföljning, analys av svaren mot facit, gruppintervju). **Sökt belopp: 400 200 → 363 200 kr.**
+Lärarnas medverkan är frivillig och oersatt, i linje med kontaktplanens "utan kostnad för projektet".
+
+**Varför trafiklärarna bär AP3:** de kör dagligen i alla väder och är vana att bedöma både väglag och förare — deras
+"stämde / stämde inte" blir ett **expertfacit** i AP1 vid sidan av kamerafacit och vanliga testförares svar. Under
+lektioner svarar läraren, inte eleven vid ratten. Knappen finns redan (S4, egenfinansierad).
+
+**Ansökan v6** (https://docs.google.com/document/d/1xB6iLPuLCMp8SylrGaOLFNjpniXkYsAJIaIg-7GaT9c/edit): AP3 omskrivet; syfte punkt 3, H1, AP1:s facitlista, innovationsgrad punkt 5 (trafiklärare som
+expertfacit ersätter yrkestrafikens planering), personalplanen och sida 8 följer. Avsiktsförklaringar → muntligt
+bekräftad medverkan (#215). NTF Jönköping. Dataskydd säger ordagrant vad återkopplingen skickar (ett svar pekar ut en
+plats och en tid). **Fyndet i v5:** sida 8 sa "tre led" men hade fyra rubriker — nu tre. Byggt sedan v5 och beskrivet som
+förutsättning, inte sökt: förarnas återkoppling, kamerabild vid varning, efterhalkans indata i skuggan.
+
+**Kontaktplan v6.1** (https://docs.google.com/document/d/1avAw47OAtqKnTeUzDV6ODTR3iXJ6ttW3eaSXaeNVR7c/edit): trafiklärarfrågan är fast del av trafikskolesamtalet, står i meningen som läses upp, och
+tre nya invändningar/svar (vad det innebär, att läraren trycker, ingen ersättning). v6 märkt "ersatt av v6.1", inget raderat.
+
+**Följd som väntar:**
+1. **Inbjudningsvägen för lärarna (Axel):** iPhone — extern TestFlight-grupp kräver Beta App Review; intern kräver
+   teammedlemskap. Android — APK ur CI eller Play intern testning (Play-kontot finns inte än). Avgör före november.
+2. **AP3 kräver minst ett trafikskole-ja till lärare som testförare** senast 25/9 — annars skrivs AP3 om före sändning.
+3. Bengt och Axel omarbetar v6 fritt; siffrorna i kostnadsplanen summerar (kontrollerat: 363 200).
+

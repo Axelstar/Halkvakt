@@ -53,6 +53,7 @@ beviset finns — inte när koden är skriven.
 | Ordlistan vidgad — grepp 1 (#97 + S8, v24) | ✅ **backend i drift 16/9**: deploy 14:51Z, publicera-snapshot med sha STÄMMER, vakthundens `vinterprov` kör nya SQL:en ("nej", problem []), skuggmotorns `sparrprov` oförändrat. ⏳ **telefonerna:** app-bygge från main (iOS 0.3.7 (10) täcker även facit) | #97 | #214 | bygget ute hos testarna; innehåll vid första vinterordet |
 | Vektorgeneratorn i otakt med `engine/vectors/` | ⏳ nytt 16/9 | #195 | #214 | fullkörning ⇒ ingen diff i `engine/vectors/` |
 | Förarfacit-hygien: klockslaget i vakthundsraden + två provrader som räknas som svar | ⏳ nytt 16/9 — radering av prov är Bengts beslut | #196 | #214 | raden visar tid; `forarfacit` räknar 0 prov |
+| Trafiklärare som testförare (Skyltfonden AP3, Bengt 16/9) | ⏳ beror på trafikskolornas ja senast 25/9; inbjudningsvägen (TestFlight extern = Beta App Review, Android APK/Play) är Axels — påverkar S5:s tolv testare | — | #216 | lärare med testversion i november och första lärarsvaret i `driver_facit` |
 
 ---
 
