@@ -5636,7 +5636,7 @@ bucket (30 min). S1:s skuggjämförelse är beviset som gäller, inte täcknings
 
 **Värdevakten:** innan fälten bär en tröskel (S2/S3) deklareras de i `scripts/vardevakten.ts` SPANN och knappen körs.
 
-**Bevis 15/9:** publicera deployad 15:52Z; live.json 2026-09-15T16:00:01Z: `weather` **tom** — ingen station ≤ 3 °C klarar givarvakten (lägsta riktiga yta 7,1 °C; Rovaniemi 0,0 °C mot luft 12,6 stoppas av #75). Fälten bevisas i CI:s PostGIS (integration.test.ts) men ÄNNU INTE på CDN.
+**Bevis 16/9 (fältbeviset):** skuggrapporten 12:0xZ 16/9: `efterhalka` **{stationer: 1, med_regn_h: 1, larmade: 0}** — en station i en ruttkorridor bar ett `regn_h`-värde ur en publicerad `live.json`, och motorn larmade inte på den. Fälten kan bara läsas ur `weather[]`, alltså fanns de publicerade med värde — manifest-sha stämde vid avläsningen 12:00Z. Vägen dit: **Bevis 15/9:** publicera deployad 15:52Z; live.json 2026-09-15T16:00:01Z: `weather` **tom** — ingen station ≤ 3 °C klarar givarvakten (lägsta riktiga yta 7,1 °C; Rovaniemi 0,0 °C mot luft 12,6 stoppas av #75). Fälten bevisas i CI:s PostGIS (integration.test.ts) men ÄNNU INTE på CDN.
 
 ## #189 (15/9 2026) Kamerafacit: den åttonde länken — `archiveFacit` fick aldrig positionen
 
@@ -5843,7 +5843,7 @@ med regn_h, larmade).
 Första kalla natten i korridoren ger första raderna. **Bevis som gäller:** en `efterhalka`-rad med innehåll; tills
 dess bevisas kolumnen bara som skriven (`[]`) — vilket enligt #196 INTE räknas som bevis.
 
-**Utfall 16/9:** migration 021 (efterhalka jsonb, default []), deploy 02:36Z (skuggmotor + skuggrapport), 02:41Z (rättat prov); skuggrapportens `efterhalka` finns (0 stationer). Innehåll väntar på kylan.
+**Utfall 16/9:** migration 021 (efterhalka jsonb, default []), deploy 02:36Z (skuggmotor + skuggrapport), 02:41Z (rättat prov); skuggrapportens `efterhalka` finns (0 stationer). **Innehåll kom samma dygn:** skuggrapporten 12:0xZ 16/9: `efterhalka` **{stationer: 1, med_regn_h: 1, larmade: 0}** — en station i en ruttkorridor bar ett `regn_h`-värde ur en publicerad `live.json`, och motorn larmade inte på den — S1 mäter. En rad är dock ingen mätning: Axels grind (#196) är uppfylld först när `efterhalka` bär nätter, inte ögonblick.
 
 ## #199 (16/9 2026) Kartan öppnad en gång för R1–R16 — och fryst igen
 

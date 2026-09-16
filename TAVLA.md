@@ -783,6 +783,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   det. Skuggrapporten får `efterhalka`. VÄNTAR: migration 021 + deploy; bevis med innehåll kräver första kalla natten.
   ⏳ DEPLOYAD 16/9 (migration 021: efterhalka jsonb, default []; deploy 02:36Z (skuggmotor + skuggrapport), 02:41Z (rättat prov)). Skuggrapporten bär `efterhalka` (0 stationer i september).
   Bevis med innehåll kräver första station ≤ 3 °C i en korridor — samma natt som N4:s fältbevis.
+  ✅ **FÖRSTA RADEN MED INNEHÅLL 16/9** (1 station, `regn_h` satt, `larm: false`). S1 mäter. KVAR före S2: nätter, inte
+  ögonblick — Axels grind (#196) kräver att `regn_h` prövats mot verkligheten innan något byggs på det.
 - [ ] 🔢 **#189 TRENDARKIVETS FLYTTALSRESTER** (bifynd 15/9 i #192, Bengts ja): `lutning30_c` min −0,7999999999999998 —
   rader från 26 minuter 13/9 innan avrundningen fanns; `dagg_gap_c` var dessutom orundat i skrivaren. BYGGT 15/9
   (DECISIONS #194): gapet avrundas i `trendkandidat.ts`, sql/020 rundar arkivet. VÄNTAR: migration 020 via dbknapp,
@@ -797,6 +799,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **VÄRDEVAKTEN PÅ TRENDFÄLTEN 15/9 (DECISIONS #192):** `trend_kandidater` skannades aldrig (saknades i vaktens
   tabellista). Nu sex fält med spann, alla ✅ OK på 7 787 rader — lutning15/30/60 inom −1,7…2,2 °C per fönster.
   Förkravet för S2/S3 uppfyllt. 🕳️ Bifynd: `lutning30_c` min −0,7999999999999998 — skrivaren avrundar inte (13/9-läxan).
+  ✅ **FÄLTBEVISET 16/9:** skuggrapporten 12:0xZ 16/9: `efterhalka` **{stationer: 1, med_regn_h: 1, larmade: 0}** — en station i en ruttkorridor bar ett `regn_h`-värde ur en publicerad `live.json`, och motorn larmade inte på den. F1 är därmed bevisad hela vägen: fältet publiceras, når skuggan och loggas.
 - [ ] 🔍 **#186 GRANSKNING 15/9 — de förkastade prövade på nytt, och allt bedömningen missade. VÄNTAR PÅ BESLUT**
   (`docs/GRANSKNING-2026-09-15.md`, Bengts order: genomgripande granskning, inget byggt).
   🕳️ **#42 är bedömningens största hål:** fick en rad, har egen byggordning (#81 A–F) där A, B och halva C
