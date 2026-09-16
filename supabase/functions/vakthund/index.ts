@@ -159,7 +159,7 @@ Deno.serve(async (req) => {
   try {
     const [v] = await sql`SELECT EXISTS (
       SELECT 1 FROM road_condition_history h, unnest(h.condition_info) i
-      WHERE i ~* '(^|[^a-zåäö])(is|snö|halka|frost)') AS finns`;
+      WHERE i ~* '(^|[^a-zåäö])(is|halka|halkrisk|halkig|halt)|snö|frost') AS finns`;
     rad.push(`vinterord i väglagsarkivet: ${v.finns ? "JA" : "nej"}`);
     const prov = new URL(req.url).searchParams.get("vinterprov") === "1";
     if (v.finns || prov) {
@@ -170,7 +170,7 @@ Deno.serve(async (req) => {
         const brott = await sql`
           SELECT h.condition_code AS kod, i AS ord, count(*)::int AS n
           FROM road_condition_history h, unnest(h.condition_info) i
-          WHERE i ~* '(^|[^a-zåäö])(is|snö|halka|frost)'
+          WHERE i ~* '(^|[^a-zåäö])(is|halka|halkrisk|halkig|halt)|snö|frost'
           GROUP BY 1, 2 ORDER BY 1, 3 DESC LIMIT 40`;
         const tabell = brott.length
           ? brott.map((b: any) => `| ${b.kod} | ${b.ord} | ${b.n} |`).join("\n")

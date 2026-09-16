@@ -38,7 +38,9 @@ const MIN_FACIT = 20;       // under detta skrivs ⊘ OAVGJORT, aldrig ett tal
  *  saknar "mycket besvärligt", kodgrinden saknar dessutom "snö". Tre värden för vad som ser ut
  *  som en lista — mätt 14/9 när kontraktet skrevs. Kort #156 bär den frågan; den rörs inte här,
  *  eftersom en ändring i snapshoten ändrar vad appen varnar för. */
-const HALKORD = "is|snö|halka|frost|mycket besvärligt";
+const HALKORD = "is|halka|halkrisk|halkig|halt|mycket besvärligt";
+/** Stammarna som räknas även INUTI sammansättningar ("Nysnö", "Rimfrost") — speglar motorns SLIPPERY_STAM (kort #97). */
+const HALKSTAM = "snö|frost";
 
 /** Ursäktlig eller oursäktlig? Ren, testbar: hade systemet SIGNAL när det teg? (§3) */
 export type Signaler = {
@@ -122,7 +124,7 @@ await avsnitt("T1 FACIT", async () => {
     FROM road_condition_history h JOIN road_conditions c USING (segment_id)
     WHERE h.modified_time > now() - $1 * interval '1 day' AND NOT h.deleted AND c.geom IS NOT NULL
       AND EXISTS (SELECT 1 FROM unnest(h.condition_info) i
-                  WHERE i ~* ('(^|[^a-zåäö])(' || $2 || ')'))`, [DAGAR, HALKORD]);
+                  WHERE i ~* ('(^|[^a-zåäö])(' || $2 || ')') OR i ~* $3)`, [DAGAR, HALKORD, HALKSTAM]);
   console.log(`  (a) väglagets omklassningar till halka: ${vaglag.length}`);
   for (const r of vaglag) facit.push({ kalla: "väglag", lon: Number(r.lon), lat: Number(r.lat),
     tid: r.tid, etikett: `${r.segment_id} ${String(r.condition_info)}` });

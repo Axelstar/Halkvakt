@@ -2739,6 +2739,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   vektor i tre portar + buntad skuggmotor (CLAUDE.md), och Bengts beslut: vidga ordlistan, eller låta
   kodgrinden vakta (BLINDLISTA tom utöver "fläckvis …" i varje körning, annars larm). Verify: kodgrindens
   BLINDLISTA i nästa körning; en vektor med "Rimfrost" på kod 2 som larmar i alla tre portarna om ordlistan vidgas.
+  🔨 **BYGGT 16/9 (Bengts beslut "vidga ordlistan", DECISIONS #214):** ordbörjan `is|halka|halkrisk|halkig|halt` +
+  stammarna `snö|frost` även inuti ord. Mätt: Rimfrost, Halkrisk, **Nysnö**, **Halt** tystnade — nu talar de; Halkbekämpning
+  och fläckvis tiger. Elva ställen inkl. snapshotens SQL-filter. Vektor v24 (5-metersregeln: 0,65 m → 10,3 m). Kontrakts-
+  grinden fällde två gånger och hade rätt. VÄNTAR: Kotlin/Swift i CI · **Axels ja på v24** · merge · deploy skuggmotor +
+  publicera + vakthund · app-bygge (iOS 0.3.8).
 - [x] ✅ **#87 HEALTHCHECKENS KONTROLLER IN I VAKTHUNDEN — KLART 14/9, och filen blir KVAR** (Bengts beslut, DECISIONS #178)
   ⛔ **RADERINGEN AV `healthcheck.yml` ÄR INSTÄLLD — ett dokumenterat nej, inte en gloms bort.**
   Bengt 14/9: *"ta inte bort healthcheck eftersom den knappt kostar något"*. Skälet väger tyngre

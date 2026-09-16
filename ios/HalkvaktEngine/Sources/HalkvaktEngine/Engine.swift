@@ -204,8 +204,10 @@ public final class AlertEngine {
     private var fired: [String: (t: Double, odo: Double)] = [:]
 
     private let slipperyInfo = try! NSRegularExpression(
-        pattern: "(?<![a-zåäö])(is|snö|halka|frost|mycket besvärligt)",
+        pattern: "(?<![a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)",
         options: [.caseInsensitive])
+    // Snow/frost also count inside compounds — "Nysnö", "Rimfrost" (kort #97). Mirrors engine.ts SLIPPERY_STAM.
+    private let slipperyStam = try! NSRegularExpression(pattern: "(snö|frost)", options: [.caseInsensitive])
 
     public init(_ hazards: [Hazard], _ cfg: EngineConfig = EngineConfig()) {
         self.cfg = cfg
@@ -306,7 +308,8 @@ public final class AlertEngine {
         }
         for s in segments {
             let slippery = (s.meta.code ?? 0) >= 2 || s.meta.info.contains { info in
-                slipperyInfo.firstMatch(in: info, range: NSRange(info.startIndex..., in: info)) != nil
+                let r = NSRange(info.startIndex..., in: info)
+                return slipperyInfo.firstMatch(in: info, range: r) != nil || slipperyStam.firstMatch(in: info, range: r) != nil
             }
             if !slippery { continue }
             var best: Double?

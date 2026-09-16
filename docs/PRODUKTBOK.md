@@ -132,7 +132,7 @@ broar © OpenStreetMap-bidragsgivare (ODbL).
 | **Allvarlig olycka — tidigt ropet, ca 10 km** | "Allvarlig olycka **på E18**, 10 kilometer framför dig — stor påverkan på trafiken. Överväg annan väg. Beräknas röjd vid 14:20." |
 | **Allvarlig olycka — påminnelsen, ca 2 km** | "Sakta ner — olycksplats strax framför dig." |
 | **Allvarlig olycka du kom nära utan att höra det tidiga ropet** | "Allvarlig olycka 2 kilometer framför dig — stor påverkan. Sakta ner." |
-| Rapporterad halka på din väg | "Varning: halka rapporterad på vägen framför dig." |
+| Rapporterad halka på din väg — kod 2 eller högre, eller kod 1 med is, snö, frost, halka, halt eller halkrisk (sedan 16/9 även i sammansättningar: *Rimfrost*, *Nysnö*, *Blötsnö*; motåtgärder som *Halkbekämpning* tiger) | "Varning: halka rapporterad på vägen framför dig." |
 | Mätstation visar frysrisk | "Isrisk framöver — vägbanan nära noll grader." |
 | Färsk viltolycka i området | "Viltrisk — vanlig olycksplats för älg den här tiden." |
 | Fartkamera | "Fartkamera om 500 meter. Gränsen är 80." |

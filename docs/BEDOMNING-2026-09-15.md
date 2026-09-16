@@ -85,12 +85,12 @@ Fem rader. Inget annat är "nu".
 | # | Vad | Vems |
 | :-- | :-- | :-- |
 | **S7** | **Facitvakter:** vakthundsrad *"historiken växer"* (inte bara *"sync_state är färsk"*) · ~~mät `situation_archive`~~ (mätt 15/9: 3 122 olyckor/30 dygn, DECISIONS #189) · bevisa att `trv-bevakning` sparar 13 källor | Claude |
-| **S8** | **#52 före #45:** ett test i tre portar låser att kod 1 + "Packad snö" *måste* larma — motsatsen till vinterbaseline. Vektorn beslutas innan #45 rörs | Bengt + Axel |
+| **S8** | **#52 före #45:** ett test i tre portar låser att kod 1 + "Packad snö" *måste* larma — motsatsen till vinterbaseline. Vektorn beslutas innan #45 rörs. 🔨 **Byggd 16/9 som v24** tillsammans med #97 (DECISIONS #214) — väntar på Axels ja | Bengt + Axel |
 | **S9** | **T-A efter första frostnatten**, steg 0 inom sju dygn, #95(d):s F-B i samma varv | Claude |
 | **S10** | **C och D:** grinden för kombinationen (dokument) och regeln för gemensam kalibrering (ett stycke). Tröskelregeln till Axels lydelse — *efter N1*, annars saknar den vittne | Claude skriver, Bengt fastställer |
 | **S11** | **#153 → försprång** (Axel) · mät korridortillväxten 3 000 m mot 1 000 m | Axel · Claude |
 | **S14** | **V-B1:s jämförelse (DECISIONS #212):** tröskel eller "regnade det alls"? Radarns 5-min-topp mot stationens 30-min-summa gör tröskeljämförelsen sned åt ett håll. Underlaget är DELVIS-kolumnen; beslutet är Axels enligt §5 och tas när V-C är uppfyllt — inte förr | Axel, på Claudes mätning |
-| **S12** | **Drift:** #97 kodgrind för "Rimfrost"/"Halkrisk" · måndagsserien från naken cron till puls/knapp · #83 steg 2 (export/Pro) före första kalla veckan · #45 lapse 0,71 → 0,63 · #76 deploybevis · #146 klonfelet | Bengt / Axel / Claude |
+| **S12** | **Drift:** ~~#97 kodgrind för "Rimfrost"/"Halkrisk"~~ **(ordlistan vidgad 16/9, DECISIONS #214 — även Nysnö och Halt)** · måndagsserien från naken cron till puls/knapp · #83 steg 2 (export/Pro) före första kalla veckan · #45 lapse 0,71 → 0,63 · #76 deploybevis · #146 klonfelet | Bengt / Axel / Claude |
 | **S13** | Skattaren: en period **utan kodändring** under mätning — tre instrumentfel på tre körningar | Claude |
 
 ---

@@ -311,7 +311,12 @@ interface Candidate {
 // Swedish word-start boundary: "Isfläckar"/"Svår halka" match; "fläckvis Våt" must NOT
 // (the substring 'is' inside "fläckvis" produced 8 false halka-segments on real August
 // data — see test "fläckvis is not halka").
-const SLIPPERY_INFO = /(?<![a-zåäö])(is|snö|halka|frost|mycket besvärligt)/i;
+const SLIPPERY_INFO = /(?<![a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)/i;
+// Snow and frost count INSIDE compounds too (kort #97, Bengt 16/9): the word-start rule above made
+// "Nysnö", "Rimfrost", "Blötsnö" and "Nattfrost" silent on code 1 — the operator wrote the word, so
+// it speaks. "halk" is NOT a stem: "Halkbekämpning" and "Halkskydd" are countermeasures, not hazards,
+// so only halka/halkrisk/halkig are listed above. Vector v24 locks all of it in three ports.
+const SLIPPERY_STAM = /(snö|frost)/i;
 
 export class AlertEngine {
   private readonly cfg: EngineConfig;
@@ -526,7 +531,7 @@ export class AlertEngine {
     const meta = s.h.meta ?? {};
     const slippery =
       (meta.code != null && meta.code >= 2) ||
-      (meta.info ?? []).some((i) => SLIPPERY_INFO.test(i));
+      (meta.info ?? []).some((i) => SLIPPERY_INFO.test(i) || SLIPPERY_STAM.test(i));
     if (!slippery) return null; // "Normalt"/"Våt" segments make no sound — silence is default
 
     let best: number | null = null;

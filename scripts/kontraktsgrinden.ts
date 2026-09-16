@@ -226,29 +226,37 @@ export const KONTRAKT: Kontrakt[] = [
   {
     namn: "Snapshotens halkfilter — vilka ord släpper in ett segment till motorn",
     varfor: "publicera/index.ts är BUNTEN av snapshot-core.ts. Skiljer de sig kör driften en annan filtrering än proven.",
-    former: [/i ~\* '\(\^\|\[\^a-zåäö\]\)\(([^)]+)\)'/],
+    former: [/i ~\* '\(\^\|\[\^a-zåäö\]\)\(([^)]+)\)\|snö\|frost'/],   // sedan 16/9 (kort #97): snö/frost även i sammansättningar
     filer: /snapshot-core\.ts|functions\/publicera\//,
     golv: 2,
   },
   {
     namn: "Vinterorden i vakthunden — har vintern börjat synas i arkivet?",
     varfor: "Vakthunden bär listan TVÅ gånger i samma fil (rad 137 och 148): statusraden och tabellen i larmet. Driver de isär larmar den på ett ordförråd och redovisar ett annat.",
-    former: [/i ~\* '\(\^\|\[\^a-zåäö\]\)\(([^)]+)\)'/],
+    former: [/i ~\* '\(\^\|\[\^a-zåäö\]\)\(([^)]+)\)\|snö\|frost'/],   // sedan 16/9 (kort #97): snö/frost även i sammansättningar
     filer: /functions\/vakthund\//,
     golv: 2,
   },
   {
     namn: "Farlighetsorden i kodgrinden — kod 1 tillsammans med farlighetsord",
     varfor: "Bärs två gånger i samma fil (rad 198 och 201): urvalet och räkningen. Driver de isär räknar grinden andra rader än den visar.",
-    former: [/i ~\* '\(\^\|\[\^a-zåäö\]\)\(([^)]+)\)'/],
+    former: [/i ~\* '\(\^\|\[\^a-zåäö\]\)\(([^)]+)\)\|frost'/],   // sedan 16/9 (kort #97): frost även i sammansättningar; snö är YTA
     filer: /kodgrinden\.ts/,
     golv: 2,
   },
   {
-    namn: "Halkorden i MOTORN — vilka ConditionInfo-ord som får motorn att tala",
+    namn: "Halkorden i MOTORN — vilka ConditionInfo-ord som får motorn att tala (ordbörjan)",
     varfor: "Skuggmotorn är genererad ur engine.ts, och tystnadsfelet dömer mot samma lista. Glider de isär mäter måttet något annat än motorn säger.",
     former: [/SLIPPERY_INFO\s*=\s*\/\(\?<!\[a-zåäö\]\)\(([^)]+)\)/,
               /HALKORD\s*=\s*"([^"]+)"/],
+    golv: 3,
+  },
+  {
+    // Kort #97 (16/9): snö och frost räknas även INUTI sammansättningar ("Nysnö", "Rimfrost"). Egen lista,
+    // eget kontrakt — tas en stam bort i en kopia tystnar sammansättningarna där utan att något annat syns.
+    namn: "Halkstammarna i MOTORN — snö/frost räknas även inuti ord",
+    varfor: "Samma tre kopior som ordbörjanslistan. Driver de isär larmar skuggan på Nysnö medan tystnadsfelet mäter som om den teg.",
+    former: [/SLIPPERY_STAM\s*=\s*\/\(([^)]+)\)\/i/, /HALKSTAM\s*=\s*"([^"]+)"/],
     golv: 3,
   },
   {
