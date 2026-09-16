@@ -2,7 +2,8 @@
 
 Tre dokument i Bengts Drive-mapp (v3, 2026-08-29): ansökningsutkast Skyltfonden
 (400 200 kr, jan 2027–apr 2028), kontaktplan med talmanus, faktadokument.
-**Senaste 16/9:** ansökan v5 (3/9) och **kontaktplan v6 (16/9)** — tre samtal, muntligt ja räcker (DECISIONS #215).
+**Senaste 16/9:** **ansökan v6 (363 200 kr, AP3 sänkt till trafiklärare som testförare, DECISIONS #216)** och
+**kontaktplan v6.1** — tre samtal, muntligt ja räcker (DECISIONS #215).
 
 **Hårda datum:** förhandssamtal fonden v.36 · trafikövningsplats v.36 (utan den
 stryks halkbaneförsöket) · muntliga ja klara 25/9 (v6; inga avsiktsförklaringar) · SKICKAS 28/9 ·

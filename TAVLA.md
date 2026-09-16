@@ -774,6 +774,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ligger under NTF Jönköping (verksamhetschefen). Talmanus + tackmejl + uppföljningstabell: Drive "Kontaktplan
   Skyltfonden 2026-09-16 v6". VÄNTAR: samtalen (Bengt) · ansökan v6: AP3 saknar partner (58 000 kr), "avsiktsförklaring
   bifogas" → muntligt bekräftat, NTF-namnet, YKB-raden efter banans svar.
+  ✍️ **ANSÖKAN v6 + KONTAKTPLAN v6.1 16/9 (DECISIONS #216):** trafiklärare får vara testförare (Bengt) → frågan fast i
+  trafikskolesamtalet. **AP3 sänkt** till pilot med trafiklärare som expertfacit: 58 000 → 21 000 kr, sökt belopp
+  **363 200 kr** (flottpiloten och morgonöversikten ur ansökan). Båda i Drive; v6 av kontaktplanen märkt ersatt. VÄNTAR:
+  samtalen (Bengt) · minst ett trafikskole-ja till lärare som testförare, annars AP3 om · **Axel: inbjudningsväg för
+  lärarna** (TestFlight extern = Beta App Review; Android APK/Play) · Bengts och Axels omarbetning av v6.
 
 - [ ] ↩︎ **Kameravarningen i fel riktning — BEVISET SAKNAS ÄN** (återställt 10/9, föll av 8/9). Koden
   är bevisat rätt i alla tre motorerna (#55 tolerans 100°→60°, #57 riktningen vänd 180°, #59
