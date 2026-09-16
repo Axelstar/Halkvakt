@@ -19,7 +19,7 @@ Deno.serve(async (req) => {
     const raw = await r.json();
     if (!Array.isArray(raw)) return new Response("datafel: " + JSON.stringify(raw), { status: 500 });
     const rows: { route: string; run_at: string; n_hazards: number; n_alerts: number;
-      alerts: { kind: string; text: string }[]; vb?: { id: string; road: string | null; regn: number | null }[];
+      alerts: { kind: string; text: string; t?: number }[]; vb?: { id: string; road: string | null; regn: number | null }[];
       suppressed?: { kind: string; by: string }[]; efterhalka?: { regn_h: number | null; larm: boolean }[] }[] = raw;
 
     const byRoute = new Map<string, typeof rows>();
@@ -50,6 +50,29 @@ Deno.serve(async (req) => {
     const totWarns = rows.reduce((a, x) => a + x.n_alerts, 0);
     const bevakas = rows[0]?.n_hazards ?? 0;
 
+    // TAKTMÅTTEN (Bengt 16/9, DECISIONS #200). Invarianten skrevs om till motorns verkliga regel — 10 s
+    // prioritetsmedveten spärr (#127) — och ett eventuellt tak ska komma HÄRIFRÅN, inte från en siffra på
+    // känsla: tätaste följden mellan två yttranden i samma körning, och hur många följder som ligger
+    // inom 60 s. Loggen är rå (Axel #196); rapporten räknar.
+    const takt = { tatast_foljd_s: null as number | null, foljder_inom_60s: 0,
+      per_rutt: [] as { rutt: string; tatast_s: number; foljder_60s: number }[] };
+    for (const [route, rr] of byRoute.entries()) {
+      let tatast: number | null = null, n60 = 0;
+      for (const row of rr) {
+        const ts = (row.alerts ?? []).map((a) => a.t).filter((x): x is number => typeof x === "number").sort((a, b) => a - b);
+        for (let i = 1; i < ts.length; i++) {
+          const d = ts[i] - ts[i - 1];
+          if (tatast === null || d < tatast) tatast = d;
+          if (d <= 60) n60++;
+        }
+      }
+      if (tatast === null) continue;
+      takt.per_rutt.push({ rutt: route, tatast_s: tatast, foljder_60s: n60 });
+      takt.foljder_inom_60s += n60;
+      if (takt.tatast_foljd_s === null || tatast < takt.tatast_foljd_s) takt.tatast_foljd_s = tatast;
+    }
+    takt.per_rutt.sort((a, b) => a.tatast_s - b.tatast_s);
+
     const payload = {
       hamtad: new Date().toISOString(),
       provkorningar: runs,
@@ -58,6 +81,7 @@ Deno.serve(async (req) => {
       pratare: talkers.map((t) => ({ rutt: t.route, korningar: t.runs, varningar: t.warns,
         senast: t.latest, sagt: t.lines })),
       tysta: quiet.map((q) => q.route),
+      takt,
       // S1 (DECISIONS #198): efterhalkans indata per station i korridoren — tom tills weather[] har kalla stationer.
       efterhalka: {
         stationer: rows.reduce((a, x) => a + (x.efterhalka?.length ?? 0), 0),
