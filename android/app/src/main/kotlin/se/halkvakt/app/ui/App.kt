@@ -34,10 +34,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import se.halkvakt.app.AlertEntry
 import se.halkvakt.app.AppEvents
 import se.halkvakt.app.Facit
+import se.halkvakt.app.FacitSender
 import se.halkvakt.app.GuardService
 import se.halkvakt.app.MainActivity
 import se.halkvakt.app.Nearby
@@ -260,7 +263,12 @@ private fun RedoContent(activity: MainActivity) {
             // Nyaste SIST i historiken (AlertHistory.append) — firstOrNull visade den ÄLDSTA. Rättat 16/9 med S4.
             val senast = lastSaid.lastOrNull()
             LastSaidCard(senast, facitOn, senast?.let { Facit.answerFor(facit, it.id, it.t) }) { svar ->
-                senast?.let { e -> scope.launch { Prefs.answerFacit(ctx, e.id, e.t, svar) } }
+                senast?.let { e -> scope.launch {
+                    Prefs.answerFacit(ctx, e.id, e.t, svar)
+                    // Vakten av = bilen står stilla: skicka direkt (DECISIONS #208). Under körning
+                    // väntar svaret på stillastående i tjänsten, som förut.
+                    if (!GuardService.running) withContext(Dispatchers.IO) { runCatching { FacitSender.flush(ctx) } }
+                } }
             }
             Spacer(Modifier.height(20.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {

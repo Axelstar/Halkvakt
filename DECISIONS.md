@@ -6015,3 +6015,22 @@ en fara vi vet är sann, kräver ingen halka.
 Två veckor mellan byggena. 67 servercommits nådde telefonen utan deploy (lägg till, ersätt
 aldrig); 5 appcommits väntade. Läxa: motoränderingar och appändringar ska inte ligga på
 main i tre dygn utan bygge — skuggan kör då en annan motor än telefonen.
+
+## #208 (16/9 2026) Fälttestets första fynd: ett svar tryckt med vakten av skickades inte förrän nästa appstart
+
+**Bengts fälttest 16/9 med 0.3.6 (#207):** körde mot en fartkamera, tryckte *Stämde* — och svaret kom inte till
+`driver_facit`. Skälet är en lucka i sändningsreglerna, inte i trycket: knapparna sitter på hemskärmen, som visas när
+vakten är av, och sändningen triggades bara av stillastående *medan vakten kör*, av `stop()` och av att appen kommer i
+förgrunden. Trycker man efter att vakten stoppats händer inget av det förrän appen öppnas nästa gång — svaret låg
+kvar i telefonen.
+
+**Rättelse på båda plattformarna:** vakten av = bilen står stilla ⇒ svaret skickas direkt vid trycket. Under körning
+gäller den gamla regeln (stillastående 30 s i tjänsten). iOS bumpas till 0.3.7 (10); Android-APK:n byggs av CI.
+
+**Rättelse av mitt eget recept till Axel (#207 påpekade det):** "motorn är orörd sedan 0.3.5" var fel — spärren
+10 s (#127, 13/9) ligger i motorn och når telefonerna först nu. Bengt kommer höra tätare varningar när flera faror
+kvalificerar, och is får avbryta en kamera. Avsiktligt (DECISIONS #200).
+
+**Läxa:** "skickas när bilen står stilla" var rätt regel men fel villkor — stillastående mättes bara av en tjänst som
+inte körde. Beviset avslöjade det: rapportens `forarfacit` stod kvar på 1.
+
