@@ -37,6 +37,12 @@ final class Prefs {
     /// #24: senaste repliken, överlever omstart — hemskärmens "Senast sagt".
     var lastSaidText: String? { didSet { d.set(lastSaidText, forKey: "k.lastSaidText") } }
     var lastSaidAt: Date? { didSet { d.set(lastSaidAt, forKey: "k.lastSaidAt") } }
+    /// S4: vilken varning "Senast sagt" gäller — facitknappen behöver id:t (DECISIONS #203).
+    var lastSaidId: String? { didSet { d.set(lastSaidId, forKey: "k.lastSaidId") } }
+    /// S4: betatestets facitknapp (DECISIONS #186) — AV tills föraren själv slår på den.
+    var facitOn: Bool { didSet { d.set(facitOn, forKey: "k.facitOn") } }
+    /// S4: svaren, sända och osända. Ren Swift-logik i Facit.swift.
+    var facit: [FacitEntry] { didSet { d.set(try? JSONEncoder().encode(facit), forKey: "k.facit") } }
     /// Introduktionen visad? (DECISIONS #36) Kan nollställas från Inställningar.
     var onboardingDone: Bool { didSet { d.set(onboardingDone, forKey: "k.onboardingDone") } }
     /// Hur telefonen kopplas till bilen — styr vilka autostart-steg som visas (DECISIONS #37).
@@ -63,6 +69,9 @@ final class Prefs {
         leadMaxM = d.object(forKey: "k.leadMaxM") as? Double ?? 3000
         lastSaidText = d.string(forKey: "k.lastSaidText")
         lastSaidAt = d.object(forKey: "k.lastSaidAt") as? Date
+        lastSaidId = d.string(forKey: "k.lastSaidId")
+        facitOn = d.bool(forKey: "k.facitOn")
+        facit = d.data(forKey: "k.facit").flatMap { try? JSONDecoder().decode([FacitEntry].self, from: $0) } ?? []
         onboardingDone = d.bool(forKey: "k.onboardingDone")
         carSetup = d.string(forKey: "k.carSetup").flatMap(CarSetup.init(rawValue:))
         lastIntentStartAt = d.object(forKey: "k.lastIntentStartAt") as? Date

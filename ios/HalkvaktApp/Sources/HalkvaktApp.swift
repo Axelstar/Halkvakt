@@ -94,12 +94,25 @@ struct InstallningarView: View {
                             .font(Typo.sans(14)).foregroundStyle(Brand.dim)
                     }
 
+                    // S4 — BETATEST (Bengt #186, Axel #196): av tills föraren själv slår på den. Texten säger exakt vad som skickas.
+                    VStack(alignment: .leading, spacing: 10) {
+                        SectionHeader(text: "Betatest", color: Brand.dim)
+                        Panel {
+                            ToggleRow(title: "Svara på varningarna",
+                                      sub: "Efter en varning kan du trycka Stämde eller Stämde inte. Det som skickas är varningens id, klockslaget och ditt svar — inget konto, ingen resa, ingen position. Men ett varnings-id pekar på en fara på kartan, så vi ser ungefär var du var just då. Bara för betatestare.",
+                                      isOn: $prefs.facitOn)
+                        }
+                    }
+
                     VStack(alignment: .leading, spacing: 10) {
                         SectionHeader(text: "Om Halkvakt", color: Brand.dim)
                         Panel {
                             Text("Din position lämnar aldrig telefonen.")
                                 .font(Typo.sans(17, .semibold)).foregroundStyle(Brand.yellow)
                             Text("All matchning mot vägdata sker lokalt i appen. Inget konto, ingen spårning.")
+                                .font(Typo.sans(14)).foregroundStyle(Brand.dim)
+                            // S4: löftet skrivs om ordagrant (Axel #196) — samma mening som i Android.
+                            Text("Undantaget är betatestet, om du själv slår på det: då skickas varningens id, klockslag och ditt svar (Stämde / Stämde inte) — det säger ungefär var du var när rösten talade. Inget annat.")
                                 .font(Typo.sans(14)).foregroundStyle(Brand.dim)
                         }
                         LinkRow(title: "Livekartan — läget just nu", url: "https://axelstar.github.io/halkvakt-karta/karta.html")
@@ -144,6 +157,7 @@ private struct ToggleRow: View {
 @main
 struct HalkvaktApp: App {
     @State private var prefs = Prefs.shared
+    @Environment(\.scenePhase) private var scenePhase
 
     init() {
         // Måste finnas från första millisekunden: när iOS väcker oss i bakgrunden på
@@ -161,6 +175,10 @@ struct HalkvaktApp: App {
             }
             .tint(Brand.yellow)
             .preferredColorScheme(.dark)
+            // S4: osända facitsvar går iväg när appen blir aktiv — bilen står stilla då.
+            .onChange(of: scenePhase) { _, phase in
+                if phase == .active { Task { _ = await FacitSender.flush() } }
+            }
             // DECISIONS #36: introduktionen är det första man ser, en gång.
             .fullScreenCover(isPresented: Binding(
                 get: { !prefs.onboardingDone },

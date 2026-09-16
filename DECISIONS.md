@@ -5937,3 +5937,21 @@ kameravarning så skärmbilden visar knapparna; android.yml tar dessutom `shot-6
 produktboken, och — det som räknas — ett svar från en riktig telefon i `driver_facit`. **Mellanstopp:** Axels ja på
 flödet innan iOS byggs (steg 3).
 
+## #203 (16/9 2026) S4 steg 3: facitknappen i iOS — samma form, samma text, samma regler; kompileras av Axel
+
+**Axels ja på Android-flödet 16/9 ⇒ steg 3.** Spegel av Android (#202): `Facit.swift` (ren Swift: ett svar per
+varning, ändrat svar ersätter och blir osänt, kroppen är exakt fem fält), `FacitSender` (URLSession, skickar när
+bilen stått stilla 30 s under 3 km/h, vid `stop()` och när appen blir aktiv — aldrig under körning, inga timers),
+`Prefs.facitOn` (AV tills föraren själv slår på den), `Prefs.lastSaidId` (kortet vet vilken varning), knapparna i
+`LastSaidCard` som `FacitButton` (egen fil, skill-regeln), BETATEST-avsnittet i Inställningar med samma text som
+Android, Om-panelen med undantaget ordagrant, och introduktionens löfte: *"Vi samlar in: ingenting — om du inte
+själv slår på betatestets facit i Inställningar."*
+
+**En tillgänglighetsändring:** kortet "Senast sagt" hade `.accessibilityElement(children: .combine)` — med knappar
+i kortet måste VoiceOver kunna trycka dem var för sig, så `.contain`.
+
+**Vad som INTE är bevisat här:** Swift-appen kompileras inte i CI (ios-engine.yml testar bara motorpaketet på
+Linux) och inte på den här maskinen. Beviset är Axels Xcode-bygge — och ett svar från hans telefon i
+`driver_facit` (`app = 'ios'`). Regeln från 2/9 gäller: be aldrig Axel arkivera medan ios-engine är röd; den är
+grön (motorn orörd).
+
