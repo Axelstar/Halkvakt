@@ -5969,3 +5969,5 @@ skrivs aldrig ut. Kassavaktens tunga varv (05/11/17/23 UTC) ryms.
 **Bevis som gäller:** migrationens bevisrad visar `timeout_ms = 120000`, och nästa `larmprov` via dbknapp skriver ut
 vakthundens `rad` i stället för en timeout.
 
+**Utfall 16/9:** migration 023: `timeout_ms = 120000`; larmprov 03:43Z: vakthundens svar läst ur `net._http_response` — status 200, `larmvag: ok`, rad-raderna lästa: mätvakten 8 flöden/0 problem · förarfacit 1 svar · issue matvakt 0 öppna · nyckel PAT 2026-11-22 (66 dygn) · Supabase 2026-12-08 (82 dygn) · issue vakthund 1 öppna (larmprovet).
+
