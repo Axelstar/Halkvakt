@@ -5857,3 +5857,23 @@ kartan är fryst igen; bilaga A är struken och står kvar som historik.
 **Vad som inte ändrades:** inga tal, inga fogkostnader utöver R16, inga nya avsnitt. Kartan säger fortfarande
 *varför*; bedömningen säger *vad och när*.
 
+## #200 (16/9 2026) Invarianten skrivs om till motorns verkliga regel — och takten mäts i stället för antas
+
+**Bengts beslut 16/9 ("kör, skriv om invarianten och lägg in måtten").** Spärrprovet (#197) visade att CLAUDE.md:s
+produktinvariant "max 1 spoken alert / 45 s" inte stämde med motorn: sedan kort #127 (13/9) kör motorn en
+prioritetsmedveten spärr på 10 s. Valet stod mellan att backa motorn och att skriva om texten.
+
+**Beslut: motorn står, texten skrivs om.** 45 s var en gissning ur PLAN §1; 10 s är härlett ur kamerornas
+minimidistans (520 m ⇒ 15,6 s i 120 km/h) så att en fartkamera aldrig tystas av takten. Det verkliga felet 45 s
+gav var att en oviktigare fara tystade en viktigare — kameran talade, isen 20 s senare kastades, och när spärren
+släppte var isen 61 m bort (v23). "Silence is a feature" betyder inga *fel* ord, inte färre ord: inom 10 s får
+bara en viktigare fara tala, samma fara upprepas aldrig inom 10 min / 5 km, lägre prioritet kastas — köas aldrig.
+
+**Och inget nytt tidstal utan mätning.** Skuggrapporten får `takt`: tätaste följden i sekunder mellan två
+yttranden i samma körning (totalt och per rutt) och antalet följder inom 60 s. Om det talet någonsin visar att
+förare får för mycket i öronen är det där ett tak ska komma ifrån — som V-B3 — inte från en siffra som låter lagom.
+Loggen är rå (Axel, #196); rapporten räknar.
+
+**Reservation:** invarianten är Axels och vektorernas domän — hans ja på texten väntar. Ingen motorändring,
+ingen vektor rörd. Bevis: skuggrapporten bär `takt` efter deploy.
+

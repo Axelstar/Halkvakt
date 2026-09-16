@@ -751,6 +751,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [ ] ⏱️ **#193 INVARIANTEN OMSKRIVEN + TAKTMÅTTEN I SKUGGRAPPORTEN** (Bengts beslut 16/9, DECISIONS #200). CLAUDE.md sa
+  "max 1 spoken alert / 45 s", motorn kör 10 s prioritetsmedvetet sedan #127 — texten skrevs om till motorns regel.
+  Skuggrapporten får `takt` (tätaste följd, följder inom 60 s) så ett tak kan komma ur mätning. VÄNTAR: deploy
+  skuggrapport + `takt` i svaret; Axels ja på invarianttexten.
 - [ ] 🌡️ **#192 S1 — EFTERHALKANS INDATA I SKUGGLOGGEN** (Bengts "bygg S1 nu" 16/9, Axels grind #196, DECISIONS #198).
   Kolumn `efterhalka` (sql/021): N4:s råa fält per station i korridoren + om motorn larmade. Inget villkor — S2 sätter
   det. Skuggrapporten får `efterhalka`. VÄNTAR: migration 021 + deploy; bevis med innehåll kräver första kalla natten.
