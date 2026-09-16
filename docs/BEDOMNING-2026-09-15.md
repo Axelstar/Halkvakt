@@ -47,7 +47,7 @@ beviset finns — inte när koden är skriven.
 | `radar_h` | ⏳ uppskjuten (CPU-mätning) | #187 | #188 | — |
 | Kamerafacit-bilderna öppnas och läses | ⏳ mars | #157 | #196 | facit, inte bara bild |
 | Steg D (farslaget `aquaplaning`) | ⏳ beslut efter V-C, utgångspunkt given | #81 D | #196 | Axels ja på text + plats |
-| **CLAUDE.md-invarianten "max 1 spoken alert / 45 s" mot motorns `globalCooldownS = 10` (kort #127, 13/9)** | ✅ Bengt 16/9: motorn står, invarianten omskriven (DECISIONS #200); `takt` i skuggrapporten. **Axels ja på texten väntar** | #193 | #200 | Axel |
+| **CLAUDE.md-invarianten "max 1 spoken alert / 45 s" mot motorns `globalCooldownS = 10` (kort #127, 13/9)** | ✅ Bengt 16/9: motorn står, invarianten omskriven (DECISIONS #200); `takt` i drift (02:52Z). **Axels ja på texten väntar** | #193 | #200 | Axel |
 | trv-bevakning: veckokörningen (måndag 06:40Z) föll 7/9 och 14/9; mätvakten (#268) larmar tills en grön körning finns | 🔨 manuell körning beställd 16/9 02:4xZ — grön ⇒ #268 stängs av nästa timkörning | #161 | #185 | grön körning + #268 stängd |
 
 ---

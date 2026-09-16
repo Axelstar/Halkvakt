@@ -751,10 +751,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
-- [ ] ⏱️ **#193 INVARIANTEN OMSKRIVEN + TAKTMÅTTEN I SKUGGRAPPORTEN** (Bengts beslut 16/9, DECISIONS #200). CLAUDE.md sa
-  "max 1 spoken alert / 45 s", motorn kör 10 s prioritetsmedvetet sedan #127 — texten skrevs om till motorns regel.
-  Skuggrapporten får `takt` (tätaste följd, följder inom 60 s) så ett tak kan komma ur mätning. VÄNTAR: deploy
-  skuggrapport + `takt` i svaret; Axels ja på invarianttexten.
 - [ ] 🌡️ **#192 S1 — EFTERHALKANS INDATA I SKUGGLOGGEN** (Bengts "bygg S1 nu" 16/9, Axels grind #196, DECISIONS #198).
   Kolumn `efterhalka` (sql/021): N4:s råa fält per station i korridoren + om motorn larmade. Inget villkor — S2 sätter
   det. Skuggrapporten får `efterhalka`. VÄNTAR: migration 021 + deploy; bevis med innehåll kräver första kalla natten.
@@ -3040,6 +3036,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#193 INVARIANTEN OMSKRIVEN + TAKTMÅTTEN — KLART 16/9** (DECISIONS #200): CLAUDE.md sa 45 s, motorn kör 10 s prioritetsmedvetet (#127) — texten skrevs om till motorns regel; ett tak ska komma ur mätning. Bevis: skuggrapport deployad 02:51Z; `takt` 02:52Z: tätaste följd 70 s (E4 Sundsvall→Umeå), följder inom 60 s: 0 av 110 yttranden på 24 h; per rutt 70 · 145 · 370 · 380 · 525 · 3 665 s. Axels ja på texten väntar.
 - [x] ✅ **#191 SPÄRRPROVET — KLART 16/9** (DECISIONS #197): skuggmotorn `?sparrprov=1`, två kameror 300 m isär; dbknapp läser nu funktionens svar ur `net._http_response` (gällde alla prov — vakthundens `rad` var oläsbar). Bevis: dbknapp `sparrprov` 02:42Z: svaret läst ur `net._http_response` — `suppressed` med 1 rad: {kind: camera, id: prov:kam2, distM: 470, by: camera, sinceS: 5} — kam2 tystad 5 s efter kam1 och talad först vid t=15 när 10 s-spärren släppt. Första provet 02:38Z FÖLL: kamerorna 14 s isär, båda talade — spärren är 10 s sedan kort #127 (13/9), inte 45 s som CLAUDE.md:s invariant säger.
 - [x] ✅ **#188 SPÄRREN SYNLIG PÅ RIKTIGT — KLART 16/9** (DECISIONS #193/#196): `shadow_log.suppressed` stod `[]` sedan 13/9 — kroken hade skrivits i genererade index.ts (Axels fel, bekräftat). Inkopplad 15/9, bevisad med spärrprovet 16/9: dbknapp `sparrprov` 02:42Z: svaret läst ur `net._http_response` — `suppressed` med 1 rad: {kind: camera, id: prov:kam2, distM: 470, by: camera, sinceS: 5} — kam2 tystad 5 s efter kam1 och talad först vid t=15 när 10 s-spärren släppt. Första provet 02:38Z FÖLL: kamerorna 14 s isär, båda talade — spärren är 10 s sedan kort #127 (13/9), inte 45 s som CLAUDE.md:s invariant säger.
 - [x] ✅ **#190 EN ÖPPEN ISSUE PER ETIKETT — KLART 15/9** (DECISIONS #195): `enOppen()` i vakthundens fem egencykel-issuer — omfråga vid tomt svar, äldre dubbletter stängs, träffar i `rad`. #224 stängd som dubblett av #268. Bevis: vakthund deployad 21:41Z; `matvaktprov` 21:43Z: raden `issue matvakt: 1 öppna — bevisat via utfallet: provet kommenterade #268 (kommentar 9), ingen ny issue; själva raden ligger i pg_nets net._http_response och läses inte utifrån` i svaret, 1 öppen mätvaktsissue (#268), ingen ny skapad.

@@ -5877,3 +5877,5 @@ Loggen är rå (Axel, #196); rapporten räknar.
 **Reservation:** invarianten är Axels och vektorernas domän — hans ja på texten väntar. Ingen motorändring,
 ingen vektor rörd. Bevis: skuggrapporten bär `takt` efter deploy.
 
+**Utfall 16/9:** skuggrapport deployad 02:51Z; `takt` 02:52Z: tätaste följd 70 s (E4 Sundsvall→Umeå), följder inom 60 s: 0 av 110 yttranden på 24 h; per rutt 70 · 145 · 370 · 380 · 525 · 3 665 s.
+
