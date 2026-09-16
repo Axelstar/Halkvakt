@@ -2990,6 +2990,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   median 2,5 km till dömande station. **Nollan är fyndet:** ingen varning gick ut på torr väg — radar och station
   är eniga om ATT det regnar, oeniga om HUR MYCKET (§3.4:s kända grovhet, 5-min-bild mot 30-min-summa).
   Inget tal rörs (#154/#155/#156 är dubbelsignerade). Fråga till Axel när underlaget räcker: tröskel eller "regnar det alls"?
+  🗓️ **I MÅNDAGSSERIEN 16/9 (DECISIONS #213):** cron 07:40, sist efter grind-v-a — Bengts "kör den varje regnvecka".
+  Ingen skip-spärr (#85:s fälla i omvänd form); mätvakten bevakar att måndagen går. ~1 min/vecka.
 - [ ] 🧭 **#81 Byggordning efter radardomen 14/9 — så byggs #42 utan att upprepa 5–8/9** (Bengts
   beställning 9/9 00:05). 🔒 LÅST BAKOM 14/9: faller domen illa gäller #42:s alternativ a/b i
   stället, och det här kortet stängs oanvänt. Faller den väl ut byggs det i DEN HÄR ordningen,

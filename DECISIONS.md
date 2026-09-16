@@ -6137,3 +6137,19 @@ tröskeln eller mot "regnade det alls" — och i så fall, vad blir kvar av pås
 **Att läsa igen vid nästa körning:** ligger DELVIS kvar nära 10 av 14 när N passerar 200 är det tidsupplösningen,
 inte radarn. Faller TORRT-kolumnen från 0 är det däremot ett riktigt falsklarm och en helt annan fråga.
 
+## #213 (16/9 2026) Grind V-B in i måndagsserien — och varför den inte får hoppa över tomma veckor
+
+**Bengts order 16/9: "kör den varje regnvecka."** Knappen läggs sist i den befintliga mätserien, måndagar 07:40,
+efter grind-v-a 07:20 som mäter samma spår från andra hållet (grind-a 05:40 · smhi 06:00 · v3 06:20 · trv 06:40
+· höjd 07:00). Mätvakten (vakthundens check 6a) bevakar schemalagda flöden, så en missad måndag larmar själv —
+grinden får sin vakt utan extra arbete (#81 regel 5).
+
+**Det här öppnar inget som #85 stängde.** #85 gällde `bridges.yml`, en cron som körde var sjätte timme mot en fil
+som aldrig ändrades: 32 körningar som "hoppade över" och debiterades en hel minut var. Måndagsserien är motsatsen
+— sex grindar som mäter växande kurvor — och V-B hör hemma i den.
+
+**Ingen "hoppa över om inget nytt"-spärr, med flit.** Frestelsen är att spara minuten en torr vecka, men det är
+exakt #85:s fälla i omvänd form: checkout och `npm ci` kostar minuten oavsett, och ett jobb som tyst hoppar över
+ger en tidsserie med hål i. En vecka utan nya `vb`-rader är också ett svar. Kostnad: ~1 min/vecka ≈ 4 min/månad,
+mot dagens 130–278 min/dygn.
+
