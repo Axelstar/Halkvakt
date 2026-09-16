@@ -38,12 +38,8 @@ struct LastSaidCard: View {
             if prefs.facitOn, prefs.lastSaidText != nil, let id = prefs.lastSaidId, let at = prefs.lastSaidAt {
                 let svar = Facit.answerFor(prefs.facit, id: id, t: at)
                 HStack(spacing: 8) {
-                    FacitButton(title: "Stämde", selected: svar == true) {
-                        prefs.facit = Facit.answer(prefs.facit, id: id, t: at, svar: true)
-                    }
-                    FacitButton(title: "Stämde inte", selected: svar == false) {
-                        prefs.facit = Facit.answer(prefs.facit, id: id, t: at, svar: false)
-                    }
+                    FacitButton(title: "Stämde", selected: svar == true) { svara(id: id, at: at, true) }
+                    FacitButton(title: "Stämde inte", selected: svar == false) { svara(id: id, at: at, false) }
                 }
                 Text(svar == nil ? "Stämde det? Svaret skickas när bilen står stilla." : "Tack — skickas när bilen står stilla.")
                     .font(Typo.sans(12)).foregroundStyle(Brand.faint)
@@ -51,5 +47,12 @@ struct LastSaidCard: View {
         }
         // .contain i stället för .combine (16/9): med knappar i kortet måste VoiceOver kunna trycka dem var för sig.
         .accessibilityElement(children: .contain)
+    }
+
+    /// Vakten av = bilen står stilla: skicka direkt (DECISIONS #208). Under körning väntar svaret på
+    /// stillastående i GuardManager, som förut.
+    private func svara(id: String, at: Date, _ svar: Bool) {
+        prefs.facit = Facit.answer(prefs.facit, id: id, t: at, svar: svar)
+        if !GuardManager.shared.running { Task { _ = await FacitSender.flush() } }
     }
 }

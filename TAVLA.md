@@ -343,6 +343,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Android-debug-APK ur android.yml på main) + iOS-skärmbild till produktboken.
   📸 **Fotostudio-krok för iOS byggd 16/9 (DECISIONS #206):** `-fotostudio_facit` som startargument (bara debug) ⇒ knapparna
   syns i simulatorn utan körning; receptet i `ios/MAC-GUIDE.md`. VÄNTAR: Axels bygge + två simulatorbilder → produktboken (steg 4).
+  🔧 **FÄLTTESTET 16/9 hittade en lucka (DECISIONS #208):** Bengts svar tryckt med vakten av (0.3.6) skickades först vid
+  nästa appstart. Rättat på båda plattformarna (vakten av ⇒ skicka direkt); iOS 0.3.7 (10), Android-APK ur CI. VÄNTAR:
+  Bengts svar i `forarfacit` (öppna appen igen så går det första iväg) + Axels nästa bygge.
 
 ### Axel — hösten (brainstorm 31/8)
 - [x] ⛔ **#92 Däcktyp och fordonstyp — STÄNGT 12/9, dokumenterat nej** (Bengts order när §2.5 togs ur
