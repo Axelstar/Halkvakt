@@ -429,6 +429,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   fastställandet:** D-raden i varje tröskeldokuments ändringsparagraf, T i FRYSKLASSNINGEN §1/§7. Före första frostnatten.
   ⚠️ **RÄTTAT SAMMA VARV:** varianterna "skuggas" inte redan — de spelas upp ur S1:s logg, och den bär bara **48 av 1 296**
   punkter (minsta regn bara > 0, ingen radar-r, startband bara till +3 °C). Beslut före frosten: vidga loggen eller stryk punkterna.
+  📏 **MÄTT 16/9 (DECISIONS #218):** utan radarn försvinner högst ~13 % av blöta kalla timmar (15 av 115), ingen för att mätare
+  saknas — alla 160 kalla stationer har mätare. Stryk-rekommendationen står; mät om i första frostmånaden (snö).
 - [ ] 🧩 **#159 INTEGRATIONSKARTAN — tre av våra egna regler står i vägen för produkten**
   📬 **AXELS FYRA INVÄNDNINGAR INARBETADE 14/9 (DECISIONS #184, kartans nya §13).** Han läste ett
   TIDIGT underlag, där grind A-rättelsen inte fanns. **Tre står, en föll på underlaget.**

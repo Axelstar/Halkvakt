@@ -6325,3 +6325,31 @@ bara > 0), radarns r finns inte i loggen, och `weather[]` bär bara stationer me
 **Av rutnätets 1 296 punkter kan 48 spelas upp.** Nytt beslut för Bengt före första frostnatten: vidga loggen (kod,
 byggminuter) eller stryk de sveppunkterna för kombinationen (D2). Dokumentets §3, §4, §7 och §9 rättade.
 
+## #218 (16/9 2026) Mätt: utan radarn försvinner högst ~13 % av de blöta timmarna vid kalla stationer — ingen av dem för att mätare saknas
+
+**Bengts "kör mätningen" 16/9**, på reservationen i TROSKLAR-KOMBINATIONEN: vad kostar det att stryka radarn ur
+efterhalkans premiss "vägen är blöt"? Frågan i `scripts/matningar/radar-tackning-2026-09-16.sql`, körd via dbknapp
+(35135412610). Station-timmar, 14 dygn, blöt inom 4 h; mätare > 0 mm, radar > 0,1 mm/h på väg inom 5 km — båda i
+den generösa änden av sina svep, så radarns andel är en **övre gräns**.
+
+| | Alla station-timmar | Kalla (yta ≤ +5 °C, givarvakt) |
+| :-- | --: | --: |
+| Timmar | 71 702 | 2 592 |
+| Med mätardata | 90,0 % | **99,5 %** |
+| Väg inom 5 km (radar möjlig) | 90,7 % | 80,5 % |
+| Blöta timmar (mätare eller radar) | 36 718 | **115** |
+| Bara radarn visste | 5 374 (14,6 %) | **15 (13,0 %)** |
+| — varav station utan mätare | 1 211 | **0** |
+| — varav mätaren visade torrt | 4 163 | 15 |
+
+**Stationsnivå:** 755 av 848 stationer har mätare (89,0 % — övergångsdokumentets 89 % stämmer). **Alla 160 kalla
+stationer har mätare.** Förlusten vid frost handlar alltså inte om saknade mätare, utan om timmar där mätaren visade
+torrt men radarn såg regn inom 5 km — antingen duggregn mätaren missar, eller regn som föll bredvid stationen.
+
+**Reservationer:** 115 blöta kalla timmar är tunt (13 % ± 6 procentenheter). September är regn, inte snö — en
+vippskålsmätare fångar snö dåligt, så radarns bidrag kan växa i vinter. Radararkivet har 269 kompositer på 14 dygn
+(ungefär en i timmen), vilket kan dölja korta skurar och drar åt andra hållet. **Nettoriktningen är okänd.**
+
+**Följd:** rekommendationen att stryka radarn för kombinationen i vinter står — kostnaden är mätt och måttlig, inte
+försumbar. Samma fråga körs om inom första frostmånaden (en byggminut), innan januari-domen.
+
