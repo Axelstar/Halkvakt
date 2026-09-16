@@ -49,7 +49,7 @@ beviset finns — inte när koden är skriven.
 | Steg D (farslaget `aquaplaning`) | ⏳ beslut efter V-C, utgångspunkt given | #81 D | #196 | Axels ja på text + plats |
 | ~~**CLAUDE.md-invarianten "max 1 spoken alert / 45 s" mot motorns `globalCooldownS = 10` (kort #127, 13/9)**~~ | ✅ Bengt 16/9: motorn står, invarianten omskriven (DECISIONS #200); `takt` i drift (02:52Z); **Axels ja på texten 16/9** — struken | #193 | #200 | — |
 | ~~trv-bevakning: veckokörningen (måndag 06:40Z) föll 7/9 och 14/9; mätvakten (#268) larmar tills en grön körning finns~~ | ✅ manuell körning 02:44Z grön; mätvakten stängde #268 själv 03:07Z | #161 | #185 | grön körning + #268 stängd |
-| pg_net-timeouten 30 s gör vakthundens svar oläsbart för dbknapp | 🔨 sql/023 höjer till 120 s (Bengts ja 16/9) — migration + larmprov väntar | — | #204 | bevisrad `timeout_ms = 120000`; larmprov visar `rad` |
+| ~~pg_net-timeouten 30 s gör vakthundens svar oläsbart för dbknapp~~ | ✅ migration 023: `timeout_ms = 120000`; larmprov 03:43Z: vakthundens svar läst ur `net._http_response` — status 200, `larmvag: ok`, rad-raderna lästa: mätvakten 8 flöden/0 problem · förarfacit 1 svar · issue matvakt 0 öppna · nyckel PAT 2026-11-22 (66 dygn) · Supabase 2026-12-08 (82 dygn) · issue vakthund 1 öppna (larmprovet) | — | #204 | bevisrad `timeout_ms = 120000`; larmprov visar `rad` |
 
 ---
 
