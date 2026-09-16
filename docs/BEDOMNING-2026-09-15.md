@@ -41,7 +41,7 @@ beviset finns — inte när koden är skriven.
 | ~~R1–R16 in i kartan~~ | ✅ införda 16/9, kartan fryst igen | #159 | #199 | kartan §5.2/§5.6/§7.8/§14, bilaga A struken |
 | ~~N4:s fältbevis på CDN (`regn_h`, `lutning`)~~ | ✅ 16/9: skuggrapporten 12:0xZ 16/9: `efterhalka` **{stationer: 1, med_regn_h: 1, larmade: 0}** — en station i en ruttkorridor bar ett `regn_h`-värde ur en publicerad `live.json`, och motorn larmade inte på den | #187 | #188 | `weather[0]` bär fälten |
 | ~~#188 `suppressed` med innehåll~~ | ✅ 16/9 via spärrprovet | #188 | #193 | se raden ovan |
-| Grind V-B:s dom-knapp | 🔨 **byggd 16/9** (DECISIONS #211, kort #194): V-B1 + V-B3 mäts, V-B2 säger ⊘ med skäl, V-C:s domspärr. Väntar på första skarpa körningen | #81 E, #194 | #191, #211 | knappen med ⊘-disciplin |
+| ~~Grind V-B:s dom-knapp~~ | ✅ **byggd och körd 16/9** (DECISIONS #211/#212): ⊘ domspärr som väntat; underlaget säger TORRT 0 av 14 — radar och station eniga om att det regnar, oeniga om hur mycket. Knappen upprepas varje regnvecka | #81 E, #194 | #191, #211, #212 | knappen med ⊘-disciplin |
 | S4 facitknappen + produktbokens löfte | 🔨 **kör 16/9** — steg 1 backend ✅ bevisad (204/204/400/405/400, vakthundsrad "förarfacit: 1 svar"); steg 2 Android ✅ mergat med Axels ja (PR #290); steg 3 iOS ✅ Axels Xcode-bygge grönt, mergat (PR #291). **Kvar: steg 4 iOS-skärmbild (Axel) · steg 5 fälttest — ett riktigt svar i `driver_facit`**; fälttest 16/9 (0.3.6, DECISIONS #207): Bengt tryckte Stämde — knapparna syntes aldrig — `LastSaidCard` var död kod i iOS (rotorsak DECISIONS #210; #208/#209 kvar som förbättringar), rättat med `FacitRow`, kräver 0.3.7; steg 5 förberett 16/9: `forarfacit` i skuggrapporten (svar_7d 1 · ja 0 · nej 1 · android 1 · ios 0 · senast 03:07:58Z — provsvaret, som andra POST:en skrev om från ja till nej (senaste ord gäller)) + recept (DECISIONS #205) | #21 | #196, #201, #202 | android.yml grön; PRODUKTBOK med skärmbilder; svar från riktig telefon i `driver_facit` |
 | PAT-rotationen | ⏳ Axel, senast 15/11 | #86 | #190 | publicering med ny nyckel |
 | `radar_h` | ⏳ uppskjuten (CPU-mätning) | #187 | #188 | — |
@@ -89,6 +89,7 @@ Fem rader. Inget annat är "nu".
 | **S9** | **T-A efter första frostnatten**, steg 0 inom sju dygn, #95(d):s F-B i samma varv | Claude |
 | **S10** | **C och D:** grinden för kombinationen (dokument) och regeln för gemensam kalibrering (ett stycke). Tröskelregeln till Axels lydelse — *efter N1*, annars saknar den vittne | Claude skriver, Bengt fastställer |
 | **S11** | **#153 → försprång** (Axel) · mät korridortillväxten 3 000 m mot 1 000 m | Axel · Claude |
+| **S14** | **V-B1:s jämförelse (DECISIONS #212):** tröskel eller "regnade det alls"? Radarns 5-min-topp mot stationens 30-min-summa gör tröskeljämförelsen sned åt ett håll. Underlaget är DELVIS-kolumnen; beslutet är Axels enligt §5 och tas när V-C är uppfyllt — inte förr | Axel, på Claudes mätning |
 | **S12** | **Drift:** #97 kodgrind för "Rimfrost"/"Halkrisk" · måndagsserien från naken cron till puls/knapp · #83 steg 2 (export/Pro) före första kalla veckan · #45 lapse 0,71 → 0,63 · #76 deploybevis · #146 klonfelet | Bengt / Axel / Claude |
 | **S13** | Skattaren: en period **utan kodändring** under mätning — tre instrumentfel på tre körningar | Claude |
 
