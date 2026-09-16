@@ -6353,3 +6353,25 @@ vippskålsmätare fångar snö dåligt, så radarns bidrag kan växa i vinter. R
 **Följd:** rekommendationen att stryka radarn för kombinationen i vinter står — kostnaden är mätt och måttlig, inte
 försumbar. Samma fråga körs om inom första frostmånaden (en byggminut), innan januari-domen.
 
+## #219 (16/9 2026) Axels läsning av TROSKLAR-KOMBINATIONEN: sex ändringar, 1 248 punkter strukna
+
+**Axel läste utkastet i sin helhet** och skrev under på innehållet: C och D (dom mot dagens motor, en kalibrering per
+säsong på skilda nätter, alla prövade punkter redovisade) och T (en varning får bara bygga på något en mätning kan visa
+var fel). §6.4 lämnar han till Bengt — *"läser du det som uppmjukning görs ändringen inte"*.
+
+**Bengts beslut 16/9: "ja till alla tre, gör de sex ändringarna."**
+1. **De 1 248 punkter som inte kan spelas upp ur S1:s logg stryks för kombinationen i vinter**, radarn inräknad.
+   Priset står i dokumentets §3: radarns bidrag mätt till högst ~13 % av blöta kalla timmar (#218), "blöt" = allt regn
+   över 0, fallet syns först under +3 °C. Axel: 48 punkter går att kalibrera ärligt på, 1 296 gör det inte.
+2. **Radarmätningen körs om inom första frostmånaden**, före januari-domen — snö fångas sämre av mätarna.
+3. **Sex ändringar i dokumentet:** V1 flytt i tid · V5 betan är facitinsamling och får stängas av · §3 strykningen med
+   pris · KB-D3 följden (januari kan bli OAVGJORT trots många "stämde") · §5 D2 skyddar januari, D3 mars · §7 utfallet i
+   januari och testförarnas information.
+
+**Där jag skärpte Axels förslag — flytt i tid.** Axel ville att ett flyttat försprång (#153) ska räknas som tillägg. Det
+räknas nu så **bara om spärrloggen (`suppressed`) inte visar någon undanträngd varning**: 10-sekundersspärren och
+upprepningsspärren kan tysta en annan varning utan att någon regel "tystar". Kortare försprång räknas aldrig som tillägg.
+
+**Fortfarande öppet:** §6.4 (Bengt, med Axel) · utfallet i januari — förslaget KLARAR/OAVGJORT ⇒ betan fortsätter, FALLER
+⇒ ut (Bengt och Axel vid fastställandet) · principen för betans startvärden, D2 (S3, före frosten) · fastställandet.
+
