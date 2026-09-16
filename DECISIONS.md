@@ -6093,3 +6093,11 @@ det är skälet att bygga instrumentet nu: måttet ska inte formas av siffror ma
 
 **Bevis:** självtestet (nio fall med känd sanning, grönt) och första skarpa körningen.
 
+**Kontraktsgrinden fällde bygget — och hade rätt.** Radien hette först `MAX_KM = 10`, och det namnet bär redan
+husets **ankarradie** (50 km i sju filer: hur långt bort en station får vara och ändå räknas som GRANNE i en
+interpolation). Grinden såg en åttonde kopia som drivit isär och stoppade CI. Det var ett namnkrock, inte drift —
+två olika storheter med olika tal och olika dokument — men grinden kan ingenting om semantik (den säger det själv i
+sin egen huvudkommentar), och att lägga till ett `filer:`-undantag hade varit att böja husets kontrakt för min
+skull. Rätt åtgärd var att döpa om: `DOMANDE_STATION_KM`. **Läxa:** ett namn som redan bär en storhet i huset får
+inte återanvändas för en annan — grinden är namnblind, och nästa läsare är det också.
+

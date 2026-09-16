@@ -30,8 +30,11 @@ import { vaktdiagnos } from "./vaktdiagnos.ts";
 /** Tröskeln i STATIONENS skala — härledd ur de två fastställda talen, aldrig skriven för hand.
  *  Radarn utlöser på 2,0 mm/h rått; stationen mäter i sin egen skala, alltså 2,0 / 0,65 ≈ 3,1. */
 export const TROSKEL_STATION_MMH = REGN_UTLOSARE_MMH / RADAR_FAKTOR;
-/** Hur nära en station måste ligga för att få döma segmentet. V-A3:s domband, inte ett nytt tal. */
-const MAX_KM = 10;
+/** Hur nära en station måste ligga för att få DÖMA en varning. V-A3:s domband, inte ett nytt tal.
+ *  Heter INTE `MAX_KM`: det namnet bär husets ankarradie (50 km, sju filer) — hur långt bort en
+ *  station får vara och ändå räknas som GRANNE i en interpolation. En annan storhet, ett annat tal, och
+ *  kontraktsgrinden fällde bygget när namnen krockade (DECISIONS #211). Namnet säger vad det är. */
+const DOMANDE_STATION_KM = 10;
 const FONSTER_MIN = 30;                     // §2: "inom ±30 min"
 const V_B1 = 0.20, V_B3 = 3;                // fällda värden (Bengt 4/9, Axel DECISIONS #68)
 const MIN_VARNINGAR = 200, MIN_FACIT = 15;  // V-C1
@@ -62,7 +65,7 @@ export function dom(v: Varning, matningar: Matning[]): { utslag: Utslag; km: num
     const d = km(v, ms[0]);
     if (d < bastaKm) { bastaKm = d; bast = ms; }
   }
-  if (!bast.length || bastaKm > MAX_KM) return { utslag: "OMÄTBAR", km: bast.length ? bastaKm : null, mmh: null };
+  if (!bast.length || bastaKm > DOMANDE_STATION_KM) return { utslag: "OMÄTBAR", km: bast.length ? bastaKm : null, mmh: null };
   const t = v.tid.getTime();
   const inom = bast.filter((m) => Math.abs(m.bucket * 1800_000 + 900_000 - t) <= FONSTER_MIN * 60_000);
   if (!inom.length) return { utslag: "OMÄTBAR", km: bastaKm, mmh: null };
@@ -99,7 +102,7 @@ export function rapport(varningar: Varning[], matningar: Matning[], olyckor: num
   const bekraftad = antal("BEKRÄFTAD"), delvis = antal("DELVIS"), torrt = antal("TORRT"), omatbar = antal("OMÄTBAR");
   const matta = bekraftad + delvis + torrt;
 
-  console.log(`V-B1 FALSKLARM — vad sa närmaste station inom ${MAX_KM} km och ±${FONSTER_MIN} min?`);
+  console.log(`V-B1 FALSKLARM — vad sa närmaste station inom ${DOMANDE_STATION_KM} km och ±${FONSTER_MIN} min?`);
   console.log(`  skuggvarningar ${varningar.length}  ·  mätbara ${matta}  ·  OMÄTBARA ${omatbar} (ingen station inom räckhåll — räknas aldrig in)`);
   if (!matta) {
     console.log(`  ⊘ inget att döma: ingen varning hade en station inom räckhåll.\n`);
