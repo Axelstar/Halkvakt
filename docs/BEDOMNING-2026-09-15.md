@@ -38,7 +38,7 @@ beviset finns — inte när koden är skriven.
 | :-- | :-- | :-- | :-- | :-- |
 | Spärrprovet (`?sparrprov=1`) + dbknapp läser svaret | 🔨 byggt, deploy + prov väntar | #191 → #188 | #197 | `suppressed` med en rad i dbknapp-svaret |
 | S1: `efterhalka` i skuggloggen | 🔨 byggt, migration 021 + deploy väntar; innehåll kräver kall natt | #192 | #198 | rad med innehåll |
-| R1–R16 in i kartan | 🔨 pågår (Bengts ja 16/9) | #159 | — | kartan uppdaterad, bilaga A struken |
+| ~~R1–R16 in i kartan~~ | ✅ införda 16/9, kartan fryst igen | #159 | #199 | kartan §5.2/§5.6/§7.8/§14, bilaga A struken |
 | N4:s fältbevis på CDN (`regn_h`, `lutning`) | ⏳ väntar på första station ≤ 3 °C | #187 | #188 | `weather[0]` bär fälten |
 | #188 `suppressed` med innehåll | ⏳ via spärrprovet | #188 | #193 | se raden ovan |
 | Grind V-B:s dom-knapp | ⏳ efter första hela regndygnet med `vb`-rader (13 st sedan 17:30Z 15/9) | #81 E | #191 | knappen med ⊘-disciplin |
@@ -138,27 +138,28 @@ Fem rader. Inget annat är "nu".
 
 ## Bilaga A — rättelser till kartan som väntar tills en rör kod
 
-Kartan är fryst. Dessa femton är kända fel eller överspelade påståenden; de införs den dag någon
-av dem får konsekvens för kod, inte förr.
+~~Kartan är fryst. Dessa femton är kända fel eller överspelade påståenden; de införs den dag någon
+av dem får konsekvens för kod, inte förr.~~ **Införda i kartan 16/9 (DECISIONS #199), efter NU-listans byggen och
+mätningar — R1–R16 nedan är strukna och står kvar bara som historik.**
 
 | # | Var | Rätt |
 | :-- | :-- | :-- |
-| R1 | §7.8, §5.4 | #42 har egen byggordning, höstfönster, byggd radarhalva; motorsteget är F5 av konstruktion |
-| R2 | §5.2 | "radarn ligger redan i telefonen" gäller bara halkklassade segment (#154) |
-| R3 | §9.1, §2 | höjden underkänd som medelkorrektion på yta; #96 mäter varje måndag; lapse 0,63 |
-| R4 | §10.2 | oljefilm → #42 överspelad sedan #155 |
-| R5 | §10.2 | `rate_max`-kvoten spärrad tills fältet rensats |
-| R6 | §10.2 | K1 är en läxa om fönsterglapp, inte ett verktyg |
-| R7 | §10.1 | #94: spåret stängt, kortet öppet |
-| R8 | §2, §4 | #163, #165 är DECISIONS-nummer |
-| R9 | §10.2 | "Ord-per-resa (#103)" = DECISIONS #103; kort #103 är frysklassningen |
-| R10 | §9.1 | radarns bidrag: bär #168:s två reservationer |
-| R11 | §11 | #43 steg 4 öppnat — snöbyn är mätbar, inte kartans kant |
-| R12 | §2 | #95: reserven 2,36 °C, Verify 2, radien som öppna L4-frågor |
-| R13 | §7.8 | kriteriet — **infört 15/9** |
-| R14 | §12 | två av tre facitkällor tomma; ingen vakt mäter tillväxt |
-| R15 | §7.8 | #45 som meta efter #52 |
-| R16 | §5, fog-tabellen | **Fog-tabellen är läst, inte körd (§5.6):** #154:s steg stod som F1, men varje rad i `segments[]` blir en varning i motorn och båda portarna — F4/F5. Löst med egen nyckel (DECISIONS #187); tabellen ska märka vilka fogar som är verifierade i kod (Axel 16/9) |
+| ~~R1~~ | ~~§7.8, §5.4~~ | ~~#42 har egen byggordning, höstfönster, byggd radarhalva; motorsteget är F5 av konstruktion~~ |
+| ~~R2~~ | ~~§5.2~~ | ~~"radarn ligger redan i telefonen" gäller bara halkklassade segment (#154)~~ |
+| ~~R3~~ | ~~§9.1, §2~~ | ~~höjden underkänd som medelkorrektion på yta; #96 mäter varje måndag; lapse 0,63~~ |
+| ~~R4~~ | ~~§10.2~~ | ~~oljefilm → #42 överspelad sedan #155~~ |
+| ~~R5~~ | ~~§10.2~~ | ~~`rate_max`-kvoten spärrad tills fältet rensats~~ |
+| ~~R6~~ | ~~§10.2~~ | ~~K1 är en läxa om fönsterglapp, inte ett verktyg~~ |
+| ~~R7~~ | ~~§10.1~~ | ~~#94: spåret stängt, kortet öppet~~ |
+| ~~R8~~ | ~~§2, §4~~ | ~~#163, #165 är DECISIONS-nummer~~ |
+| ~~R9~~ | ~~§10.2~~ | ~~"Ord-per-resa (#103)" = DECISIONS #103; kort #103 är frysklassningen~~ |
+| ~~R10~~ | ~~§9.1~~ | ~~radarns bidrag: bär #168:s två reservationer~~ |
+| ~~R11~~ | ~~§11~~ | ~~#43 steg 4 öppnat — snöbyn är mätbar, inte kartans kant~~ |
+| ~~R12~~ | ~~§2~~ | ~~#95: reserven 2,36 °C, Verify 2, radien som öppna L4-frågor~~ |
+| ~~R13~~ | ~~§7.8~~ | ~~kriteriet — **infört 15/9**~~ |
+| ~~R14~~ | ~~§12~~ | ~~två av tre facitkällor tomma; ingen vakt mäter tillväxt~~ |
+| ~~R15~~ | ~~§7.8~~ | ~~#45 som meta efter #52~~ |
+| ~~R16~~ | ~~§5, fog-tabellen~~ | ~~**Fog-tabellen är läst, inte körd (§5.6):** #154:s steg stod som F1, men varje rad i `segments[]` blir en varning i motorn och båda portarna — F4/F5. Löst med egen nyckel (DECISIONS #187); tabellen ska märka vilka fogar som är verifierade i kod (Axel 16/9)~~ |
 
 (R16–R24 gällde bedömningen och granskningen och är införda här.)
 
