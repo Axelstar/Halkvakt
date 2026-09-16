@@ -171,6 +171,7 @@ struct HalkvaktApp: App {
         if CommandLine.arguments.contains("-fotostudio_facit") {
             Task { @MainActor in
                 let p = Prefs.shared
+                p.onboardingDone = true   // annars täcker introduktionen skärmen på en färsk simulator
                 p.facitOn = true
                 p.lastSaidText = "Fartkamera om femhundra meter."
                 p.lastSaidAt = .now
