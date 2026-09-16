@@ -23,7 +23,7 @@ när beviset finns, inte när koden är skriven.
 
 | # | Läge | Kort | DECISIONS | PR / issue | Beviset som gäller |
 | :-- | :-- | :-- | :-- | :-- | :-- |
-| N1 | ✅ **KLAR** — tystnadsfelet 16:02Z: **1 bild i `facit`**, senast 15/9 — första objektet någonsin | #157 | #189 | PR #270 | ett objekt i `facit`, räknat av tystnadsfelet |
+| N1 | ✅ **KLAR** — tystnadsfelet 16:02Z: **1 bild i `facit`**, senast 15/9 — första objektet någonsin; Axel 16/9: **26 objekt** sedan 16:00Z. *Reservation (Axel): 738 av 744 kameror står vid en station — radien säger nära, inte rätt sträcka; avgörs i mars när bilderna öppnas* | #157 | #189 | PR #270 | ett objekt i `facit`, räknat av tystnadsfelet |
 | N2 | ✅ nyckeln i drift — live.json 2026-09-15T16:00:01Z (manifest-sha STÄMMER): **`rain_segments` 34 st** — t.ex. segment 16010 E16, kod 1 "Torrt", `regn` 3,1 (= 2,0 rå); `segments` 0 st, som förut i september. **Steg E byggt 15/9** (DECISIONS #191, PR #274): kolumn `vb` + skuggrapportens `vattenplaning`; ✅ första `vb`-raderna 17:30Z: **5 skuggvarningar** (E18 Karlstad→Örebro, 5 st, regnsegment 18060/18065/18067) i skuggrapportens `vattenplaning` | #154, #42/#81 C+E | #187, #191 | PR #270, #274, issue #15 | nyckeln i `live.json`, manifest-sha stämmer; V-B-rader |
 | N3 | ✅ kalendern i drift — deployad 15:52Z, prov gav issue #272 med PAT:ens datum läst LIVE (2026-11-22, 67 dygn) och Supabase 2026-12-08 (83 dygn); **rotationen är Axels, senast 15/11** | #86 | #190 | PR #270, issue #272 | publicering med ny nyckel |
 | N4 | 🔨 deployad 15:52Z, väntar på första kalla stationen — live.json 2026-09-15T16:00:01Z: `weather` **tom** — ingen station ≤ 3 °C klarar givarvakten (lägsta riktiga yta 7,1 °C; Rovaniemi 0,0 °C mot luft 12,6 stoppas av #75). Fälten bevisas i CI:s PostGIS (integration.test.ts) men ÄNNU INTE på CDN; `radar_h` uppskjuten | #187 (nytt) | #188 | PR #270 | fälten i `live.json`, manifest-sha stämmer |
@@ -51,10 +51,10 @@ Fem rader. Inget annat är "nu".
 
 | # | Steg | Fog | Grind |
 | :-- | :-- | :-- | :-- |
-| **S1** | Skuggan läser N4:s fält vid sidan av motorn och loggar vad villkoret *skulle* ändrat | — | — |
+| **S1** | Skuggan läser N4:s fält vid sidan av motorn och loggar vad villkoret *skulle* ändrat. **GRIND (Axel 16/9): körs INNAN något mer byggs på `regn_h`** — regntäckningen 13 % gör `regn_h` till efterhalkans osäkra halva | — | S1 före S2 |
 | **S2** | **E på K2:** skattaren returnerar nivå + bevis, byggd på frysklassningens osäkerhetszon (±0 · ±0,5 · ±1,0 °C) — indata till försprånget. *Förkrav klart 15/9: trendfälten besiktigade av värdevakten (DECISIONS #192)* | F3 | — |
 | **S3** | **Regeln i motorn:** `icing_point` fyrar när det *inte* regnar men ytan är blöt (N4:s `regn_h` ≤ N) och faller (`lutning`). Märkt text: *"Halkvakt tror: frysrisk framöver"* — ny gren, inte nytt slag. Tre portar | F3 + F4 + text | **`v11_silent_drive` måste fortfarande tiga** — vektorn försvagas aldrig |
-| **S4** | **Facitknappen:** efter varje varning *"stämde det?"* — skickar varnings-id + svar, inget spår. Bara betatestare, uttryckligt samtycke. Löftet till allmänheten orört | app, båda plattformarna | Axels ja på text och flöde; PRODUKTBOK i samma commit |
+| **S4** | **Facitknappen:** ~~efter varje varning *"stämde det?"*~~ **Axels ja 16/9: två knappar under "Senast sagt" — *Stämde* / *Stämde inte*, ingen fritext; loggas lokalt, skickas när bilen står stilla.** Skickar varnings-id + svar, inget spår. Bara betatestare, uttryckligt samtycke. **Produktbokens Om-avsnitt ("vi samlar in: ingenting") ändras i samma commit — ordagrant, frivilligt, synligt** (kort #21) | app, båda plattformarna | ~~Axels ja på text och flöde~~ ✅ 16/9; PRODUKTBOK i samma commit |
 | **S5** | **Betan till tolv testare i november.** Skuggloggen + förarsvaren + kamerafacit = tre facitkällor | — | — |
 | **S6** | **Dom i januari** på förarfacit + kamerafacit mot Ö-B:s golv (nettonytt ≥ 5 %, tillkomna falsklarm ≤ 25 %). Mars-domen blir en dom på riktig data | — | TROSKLAR-OVERGANGAR, oförändrad |
 
@@ -99,13 +99,17 @@ Fem rader. Inget annat är "nu".
 | Grind A står (Axel rättade sig); E kan inte vänta (Axel rättade sig) | Axel |
 | Granskningen arkiveras; R1–R15 väntar i bilaga A tills en rör kod | Bengt |
 | #154: `regn` når normalklassade segment via `rain_segments`, och steg E byggs (DECISIONS #191) | Bengt, ja 15/9 |
+| `rain_segments` som egen nyckel, inte filter i motorn — apparna läser den inte förrän V-C dömt | Axel, 16/9 |
+| Facitknappen: två knappar *Stämde*/*Stämde inte*, ingen fritext; produktbokens löfte skrivs om ordagrant | Axel, 16/9 |
+| V-B-loggen är rå; dom-knappen räknar per regndygn | Axel, 16/9 |
+| S1 körs före S2 — inget mer byggs på `regn_h` innan skuggjämförelsen | Axel, 16/9 |
+| Steg D: utgångspunkt given (under halka, över vilt; *"Vattenplaning framöver — sakta ner"*), beslut efter V-C | Axel, 16/9 |
 
 ### 4.2 Öppna
 
 | Beslut | Vem | Rekommendation |
 | :-- | :-- | :-- |
 | #52-vektorn: ska kod 1 + "Packad snö" larma? (S8) | Bengt + Axel | avgör före #45 |
-| Facitknappens text och flöde (S4) | Axel | — |
 | Tröskelregeln till Axels lydelse (S10) | Bengt | ja, efter N1 |
 | #45 lapse 0,63 (S12) | Bengt + Axel | ja |
 | `marknadsforing.yml` | Axel + Bengt | ingen rekommendation |
@@ -135,6 +139,7 @@ av dem får konsekvens för kod, inte förr.
 | R13 | §7.8 | kriteriet — **infört 15/9** |
 | R14 | §12 | två av tre facitkällor tomma; ingen vakt mäter tillväxt |
 | R15 | §7.8 | #45 som meta efter #52 |
+| R16 | §5, fog-tabellen | **Fog-tabellen är läst, inte körd (§5.6):** #154:s steg stod som F1, men varje rad i `segments[]` blir en varning i motorn och båda portarna — F4/F5. Löst med egen nyckel (DECISIONS #187); tabellen ska märka vilka fogar som är verifierade i kod (Axel 16/9) |
 
 (R16–R24 gällde bedömningen och granskningen och är införda här.)
 

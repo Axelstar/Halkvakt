@@ -321,6 +321,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] **Skyltfonden-paketet (före 1/10):** (a) klartecken till pappas ringrunda (startar v.36!), (b) sökande: pappa privat eller ideell förening?, (c) rollfördelningen — allt hänger ihop. Underlag: `docs/FINANSIERING.md`
 - [ ] **Rollfördelningen**: efterfrågan/affärsmodell/B2B = Bengts ansvar? (hans förslag; vid ja uppdateras PLAN)
 - [ ] **#21 Anonym puls + feedback-knapp** — rör "samlar in: ingenting"-löftet; Claudes råd: paketera med sensorbeslutet våren 2027
+  ✅ **AXELS JA 16/9 (DECISIONS #196, bedömning S4):** två knappar under "Senast sagt" — *Stämde* / *Stämde inte*, ingen
+  fritext, loggas lokalt, skickas när bilen står stilla. KRAV: Om-avsnittets "vi samlar in: ingenting" skrivs om
+  ordagrant, frivilligt och synligt i SAMMA commit — annars bryter knappen löftet. Bara betatestare med samtycke (#186).
 
 ### Axel — hösten (brainstorm 31/8)
 - [x] ⛔ **#92 Däcktyp och fordonstyp — STÄNGT 12/9, dokumenterat nej** (Bengts order när §2.5 togs ur
@@ -495,6 +498,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   **C och D är dokument och kan skrivas före frosten.**
   ❄️ **FRYST 15/9 (DECISIONS #186, Axels förslag, Bengts beslut).** Nästa ändring efter bygge + mätning. Enda
   undantaget infört: kriteriet för nytt farslag i §7.8 (tre rader). R1–R15 väntar i bedömningens bilaga A.
+  📌 **R16 väntar i bilaga A (Axel 16/9):** fog-tabellen är läst, inte körd — #154:s F1 var F4/F5 i koden. Villkoret för
+  att öppna kartan (bygge + mätning) är nu uppfyllt; R1–R16 förs in när Bengt säger till.
 - [ ] 📍 **#158 SKUGGLOGGENS LARM SAKNAR POSITION — och tre mätningar hänger på det**
   ✅ **BYGGT OCH DEPLOYAT 14/9 — FORM A** (Axels ja via Bengt, DECISIONS #179, PR #248).
   Positionen tas ur FARAN, inte ur motorn: punktfaror bär lon/lat själva, så en uppslagning på
@@ -586,6 +591,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   gav bara loggen lon/lat) ⇒ NaN ⇒ "ingen kamera inom 15 km". Tar nu punkter ur faran. VÄNTAR: deploy skuggmotor +
   ett objekt i hinken räknat av tystnadsfelet.
   ✅ HINKEN FYLLS 15/9: skuggmotor deployad 15:52Z; tystnadsfelet 16:02Z: **1 bild i `facit`**, senast 15/9 — första objektet någonsin. Den åttonde länken var den sista.
+  📷 **AXEL 16/9: 26 objekt i hinken sedan 16:00Z** (verifierat i DB). Reservation: 738 av 744 kameror står vid en station —
+  radien säger att det finns en kamera nära, inte att bilden visar rätt sträcka. Avgörs i mars när någon öppnar bilderna.
 - [ ] 🧵 **#155 SNUBBELTRÅD: ändras #83:s kvarhållning måste #89 och #98 byta byggform**
   **Principen (skriven 14/9 i TROSKLAR-OVERGANGAR och TROSKLAR-TRENDEN, Bengts order):** spara det
   som inte går att räkna om, räkna om det som går — och vilket som är vilket är en MÄTNING, inte en
@@ -745,6 +752,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   #127 a byggde kroken i motorn och kolumnen i sql/016, men skuggmotorn lyssnade aldrig: `[]` i varje rad sedan 13/9.
   BYGGT 15/9 (DECISIONS #193): kroken inkopplad, listan skrivs, skuggrapporten får `sparren`. VÄNTAR: deploy skuggmotor
   + skuggrapport, bevis = `sparren.kastade > 0` i rapporten.
+  🧾 **AXEL 16/9 — ORSAKEN VAR HANS:** kroken skrevs i genererade index.ts, bunten skrev över den, deployen gick utan krok,
+  kolumnen verifierades tom och bokfördes som synlig. "Verifierat att något fanns, inte att det fungerade" — läxa i
+  CLAUDE.md (DECISIONS #196). Bevis med innehåll väntar fortfarande (0 kastade t.o.m. 02:20Z 16/9).
 - [ ] 🔢 **#189 TRENDARKIVETS FLYTTALSRESTER** (bifynd 15/9 i #192, Bengts ja): `lutning30_c` min −0,7999999999999998 —
   rader från 26 minuter 13/9 innan avrundningen fanns; `dagg_gap_c` var dessutom orundat i skrivaren. BYGGT 15/9
   (DECISIONS #194): gapet avrundas i `trendkandidat.ts`, sql/020 rundar arkivet. VÄNTAR: migration 020 via dbknapp,
@@ -3012,6 +3022,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   A-skalan) · **E BYGGT** (DECISIONS #191, PR #274): egen motorinstans, kolumn `vb`, skuggrapportens `vattenplaning`;
   dom-knappen grind-v-b byggs när första regndygnet loggats · F efter V-C och Axels ja.
   🕳️ BIFYND: `shadow_log.suppressed` (#127 a, sql/016) skrivs aldrig — kolumnen är tom sedan 13/9. Eget kort krävs.
+  🧭 **AXELS UTGÅNGSPUNKT FÖR D (16/9, DECISIONS #196, beslut efter V-C):** yta > +4 mot frysrisk < +1 utesluter varandra;
+  under halka (#68), över vilt. Text i frysriskens form: *"Vattenplaning framöver — sakta ner."* V-B-loggen hålls RÅ,
+  dom-knappen räknar per regndygn. S1 (skuggjämförelsen av `regn_h`) körs före allt annat på regn_h.
 
 ---
 
