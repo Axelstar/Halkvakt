@@ -5986,3 +5986,5 @@ eller när appen öppnas nästa gång. Bevis: `forarfacit.svar_7d` räknar upp i
 
 **Vad som INTE bevisas av receptet:** att svaret är sant. Det är dom-knappens sak i januari (S6), mot kamerafacit.
 
+**Utfall 16/9:** skuggrapport deployad 03:53Z; `forarfacit` 03:54Z: svar_7d 1 · ja 0 · nej 1 · android 1 · ios 0 · senast 03:07:58Z — provsvaret, som andra POST:en skrev om från ja till nej (senaste ord gäller).
+
