@@ -58,7 +58,7 @@ struct OnboardingView: View {
             text: "Halka, olyckor, frysrisk, vilt och fartkameror — från Trafikverket, i din högtalare, innan du är där. Inga knappar under körning. Tystnad betyder att vägen är lugn."
         ) {
             Panel {
-                Text("Din position lämnar aldrig telefonen. Vi samlar in: ingenting.")
+                Text("Din position lämnar aldrig telefonen. Vi samlar in: ingenting — om du inte själv slår på betatestets facit i Inställningar.")
                     .font(Typo.sans(15, .semibold))
                     .foregroundStyle(Brand.text)
             }

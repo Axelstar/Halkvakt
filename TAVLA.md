@@ -331,6 +331,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔨 **Steg 2 Android BYGGT 16/9 (DECISIONS #202):** knapparna under Senast sagt, BETATEST-brytaren, `Facit.kt` (JVM-testad),
   `FacitSender` (skickar vid stillastående 30 s / appstart), Om-texten omskriven ordagrant. Rättat: Senast sagt visade äldsta
   raden. VÄNTAR: android.yml på grenen + skärmbilder → PRODUKTBOK → **Axels ja på flödet** → merge → iOS (steg 3).
+  ✅ **Steg 2 Android MERGAT 16/9 med Axels ja (PR #290).** 🔨 **Steg 3 iOS BYGGT 16/9 (DECISIONS #203):** Facit.swift,
+  FacitSender, FacitButton, BETATEST-avsnittet, Om-undantaget, introduktionens löfte. VÄNTAR: **Axels Xcode-bygge** (appen
+  kompileras inte i CI) + ett svar från hans telefon i `driver_facit` (app = ios). Sedan steg 4 PRODUKTBOK-bild från iOS.
 
 ### Axel — hösten (brainstorm 31/8)
 - [x] ⛔ **#92 Däcktyp och fordonstyp — STÄNGT 12/9, dokumenterat nej** (Bengts order när §2.5 togs ur

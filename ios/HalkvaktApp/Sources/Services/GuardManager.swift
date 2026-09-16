@@ -48,6 +48,9 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     private static let idleStopAfter: TimeInterval = 15 * 60
     private static let movingKmh = 5.0
     private var lastMovedAt: Date?
+    // S4: facit skickas när bilen står stilla — en gång per stopp.
+    private var stillSince: Date?
+    private var flushedThisStop = false
 
     // Vakna själv (DECISIONS #40): med "Alltid" ber vi iOS väcka appen vid betydande
     // förflyttning (~500 m, även när appen är stängd — iOS startar om oss i bakgrunden).
@@ -239,6 +242,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     }
 
     func stop() {
+        Task { _ = await FacitSender.flush() }   // S4: resan är slut — osända svar går iväg
         if running, autoWoke, let t0 = startedAt {
             Prefs.shared.lastAutoWakeMinutes = max(1, Int(Date.now.timeIntervalSince(t0) / 60))
         }
@@ -299,6 +303,13 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         // Självstopp: räkna rörelse, stoppa efter en kvarts stillastående.
         let kmh = loc.speed >= 0 ? loc.speed * 3.6 : 0
         if kmh >= Self.movingKmh { lastMovedAt = loc.timestamp }
+        // S4: facit skickas när bilen står stilla (≥ 30 s under 3 km/h), en gång per stopp — aldrig under körning.
+        if kmh >= 3 { stillSince = nil; flushedThisStop = false }
+        else if stillSince == nil { stillSince = loc.timestamp }
+        else if !flushedThisStop, let s = stillSince, loc.timestamp.timeIntervalSince(s) >= 30 {
+            flushedThisStop = true
+            Task { _ = await FacitSender.flush() }
+        }
         if let moved = lastMovedAt, loc.timestamp.timeIntervalSince(moved) >= Self.idleStopAfter {
             stop()
             manualStoppedAt = nil   // självstopp ⇒ nästa resa får väcka oss direkt
@@ -318,6 +329,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         lastSaid = alert.text
         Prefs.shared.lastSaidText = alert.text   // #24: överlever omstart
         Prefs.shared.lastSaidAt = .now
+        Prefs.shared.lastSaidId = alert.hazardId   // S4: facitknappen vet vilken varning
         history.insert(alert, at: 0)
         if history.count > 50 { history.removeLast() }
         SpeechService.shared.speak(alert.text)
