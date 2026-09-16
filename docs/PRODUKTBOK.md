@@ -460,7 +460,7 @@ när knappen skulle sitta på rätt varning.
 | 0.3.5 (8) | 2/9 | Kamerariktningen vänd 180°. Första bygget med grönt kontrakt i alla tre motorer. |
 | *nästa* | — | Prioritetsmedveten spärr, golv 10 s (#165). Ligger på main, väntar på arkivering. |
 | *nästa (Android)* | 16/9 | Facitknappen *Stämde / Stämde inte* + betatest-brytaren (S4, DECISIONS #202). Senast sagt visar rätt rad. |
-| *nästa (iOS)* | 16/9 | Samma facitknapp och brytare i iOS (DECISIONS #203) — väntar på Axels Xcode-bygge; skärmbild från hans telefon läggs in då. |
+| 0.3.6 (9) | 16/9 | Facitknappen *Stämde / Stämde inte* + betatest-brytaren i iOS (DECISIONS #203), Om-undantaget ordagrant, spärren 10 s (#127), fotostudio-kroken. TestFlight-uppladdning: Axel. |
 
 Android ligger kvar på 0.3.1 med gammalt skinn. Skinnet v3 är portat och bevisat i
 emulator; Play-lanseringen väntar på tolv testare.
