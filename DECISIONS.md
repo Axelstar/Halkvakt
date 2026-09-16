@@ -6209,3 +6209,42 @@ app-bygge (iOS 0.3.8, Android ur CI).
 2. **"förarfacit: 2 svar" är två prov, inga riktiga svar:** id 1 = Android-provet 03:07Z (version `prov`), id 3 = mitt iOS-formade serverprov 11:47Z under felsökningen (`cam:prov-ios`, version `0.3.6`). Id 2 förbrukades av idempotensprovet (samma svar två gånger ⇒ ON CONFLICT). Det iOS-formade provet går INTE att skilja från ett riktigt svar på version eller plattform, bara på id:t — och skuggrapportens `forarfacit` räknar båda som svar i sju dygn. Kort #196.
 3. **Generatorn i otakt med vectors/** (se ovan) har nu eget kort: #195.
 
+## #215 (16/9 2026) Skyltfondsrundan krymper till tre samtal — och ett muntligt ja räcker
+
+**Bengts beslut 16/9:** kontaktrundan gäller bara **halkbanan, trafikskolorna och intresseorganisationen (NTF)**.
+Förhandssamtalet med fonden, skolskjuts, hemtjänst och åkeri stryks. **Ett muntligt ja räcker** för medverkan i
+vinterns tester, och det skrivs in i ansökan — inga avsiktsförklaringar att skriva under.
+
+**Kontrollerat innan planen skrevs om (16/9):**
+- **Skyltfonden kräver inga underskrivna intyg.** Trafikverkets sida om projektbidrag säger bara att fonden *"ser
+  positivt på projekt som genomförs i samverkan med samarbetspartner"*; formuläret (240909-f) frågar efter partnernas
+  roll och åtaganden. Beslutet står alltså i regelverket, inte bara i önskan.
+- **Riskutbildning del 2 är fortfarande obligatorisk.** Prop. 2025/26:127 tog bort introduktionsutbildningen, inget
+  annat. Halkbaneförsöket (AP6) vilar på oförändrad grund.
+- **NTF Skåne finns inte längre som eget förbund.** skane.ntf.se leder till NTF Jönköping, som har Jönköpings, Skåne,
+  Blekinge, Kalmar och Kronobergs län. Kontakten blir verksamhetschefen där — v5:s "länsförbundet, inte riksförbundet"
+  hade lett fel.
+
+**Leverans:** Kontaktplan v6 i Bengts Drive-mapp ("Kontaktplan Skyltfonden 2026-09-16 v6", https://docs.google.com/document/d/1qL3maskkfMqV1_hEbA2vyuyiVZdV-7I5H2O-R1sny9w/edit). Noggrant talmanus
+per samtal (öppning, varför just ni, frågor som låter dem berätta, idén, frågan, meningen som läses upp), svar på
+vanliga invändningar, röstbrevlåda, tackmejl och uppföljningstabell. v5 och Bengts kopia av v5 orörda. Två första
+uppladdningsförsök av v6 (samma namn, formateringsfel vid import) ligger i Drive-papperskorgen.
+
+**Så hanteras ett muntligt ja (Claudes utformning):** meningen som ska stå i ansökan läses upp och godkänns; villkoret
+("om bidraget beviljas, inte bindande") sägs högt; namn och titel antecknas; **tillstånd att nämnas med namn frågas
+uttryckligen** — ansökan är en offentlig handling hos Trafikverket. Ett kort tackmejl samma dag *rekommenderas men krävs
+inte*: det ger partnern chansen att rätta och projektet ett skriftligt spår om fonden frågar. I ansökan skrivs
+"muntligen bekräftat [datum] ([namn], [titel])".
+
+**Nytt sedan v5 som bärs in i samtalen:** Stämde det?-knappen (S4), rösten som inte tjatar (prioritet + spärr, #127),
+kamerabild som facit (N1), fler vinterord (#214), efterhalkan i skuggan (S1), tröskeldokumentet daterat 1/9, och
+testbilssidan som demonstration. Formulerat som det är: knappen når iPhone med nästa testversion, vinterorden med
+nästa app-bygge, appen finns ännu inte öppet i butikerna.
+
+**Följd som väntar på beslut — ansökan måste ändras (v5 → v6):**
+1. **AP3 (pilot med yrkestrafik) saknar partner** när skolskjuts, hemtjänst och åkeri stryks: stryk eller skriv om.
+   58 000 kr i kostnadsplanen och meningar i syfte, hypotes, innovationsgrad, personalplan och trafiksäkerhetsnytta.
+2. "Avsiktsförklaring bifogas" → "muntligen bekräftat"; bilaga 2 och checklistans underskriftskrav stryks.
+3. "NTF Skåne" → "NTF Jönköping (verksamhet i bland annat Skåne)".
+4. YKB-raden i AP6 står bara om Bulltoftabanan säger ja till tung trafik.
+

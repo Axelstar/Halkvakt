@@ -768,6 +768,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (c) grind A-infrastrukturen synliggjord som egenfinansierad indata (gränsdragningen);
   (d) konkreta kandidater: AB Bulltoftabanan Malmö (040-29 29 05) + 7 trafikskolor.
   ⏰ Förhandssamtalet till fonden = "första veckan i september" = NU.
+  📋 **KONTAKTPLAN v6 16/9 (Bengts order, DECISIONS #215): TRE SAMTAL, MUNTLIGT JA RÄCKER.** Bulltoftabanan tors–fre
+  17–18/9 → trafikskolor 18–22/9 (fråga banan vilka som skickar flest) → NTF 22–24/9 → muntliga ja senast fre 25/9 →
+  SKICKA mån 28/9. Fonden kräver inga underskrivna intyg (kontrollerat 16/9). NYTT LÄGE: NTF Skåne finns inte som eget förbund — Skåne
+  ligger under NTF Jönköping (verksamhetschefen). Talmanus + tackmejl + uppföljningstabell: Drive "Kontaktplan
+  Skyltfonden 2026-09-16 v6". VÄNTAR: samtalen (Bengt) · ansökan v6: AP3 saknar partner (58 000 kr), "avsiktsförklaring
+  bifogas" → muntligt bekräftat, NTF-namnet, YKB-raden efter banans svar.
 
 - [ ] ↩︎ **Kameravarningen i fel riktning — BEVISET SAKNAS ÄN** (återställt 10/9, föll av 8/9). Koden
   är bevisat rätt i alla tre motorerna (#55 tolerans 100°→60°, #57 riktningen vänd 180°, #59
