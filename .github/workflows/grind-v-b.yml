@@ -1,9 +1,20 @@
 # Grind V-B (kort #42 steg E, #81): dömer skuggans vattenplaningsvarningar (shadow_log.vb) mot
 # TROSKLAR-VATTENPLANING §3 — falsklarm ≤ 20 %, frekvens ≤ 3 per rutt och regndygn. Ingen tröskel
 # sätts här; utlösaren importeras ur snapshotkärnan. V-C:s domspärr gäller: under underlaget skrivs
-# ingen dom ut, bara tal. Knapp, inte cron (#85) — den kostar bara när någon vill veta.
+# ingen dom ut, bara tal.
+#
+# MÅNDAGSSERIEN (Bengts order 16/9 "kör den varje regnvecka"): sist i mätserien, efter grind-v-a som
+# mäter samma spår från andra hållet — grind-a 05:40 · smhi 06:00 · v3 06:20 · trv 06:40 · höjd 07:00
+# · V-A 07:20 · V-B 07:40. Mätvakten (vakthundens check 6a) bevakar schemalagda flöden, så en missad
+# måndag larmar av sig själv.
+#
+# INGEN "hoppa över om inget nytt"-spärr, med flit: #85:s bridges-cron hoppade över 32 gånger och
+# debiterades en hel minut varje gång. Kör den alltid och läs talen — en vecka utan nya vb-rader är
+# också ett svar, och den kostar lika mycket som en tom körning gjort.
 name: grind-v-b
 on:
+  schedule:
+    - cron: "40 7 * * 1"   # måndagar, sist i mätserien (efter grind-v-a 07:20)
   workflow_dispatch:
     inputs:
       dagar:
