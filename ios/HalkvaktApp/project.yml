@@ -20,8 +20,8 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: se.halkvakt.app
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         TARGETED_DEVICE_FAMILY: "1"   # iPhone-app — iPad-multitasking kräver annars alla vridningar (validering 31/8)
-        MARKETING_VERSION: 0.3.5
-        CURRENT_PROJECT_VERSION: 8
+        MARKETING_VERSION: 0.3.6
+        CURRENT_PROJECT_VERSION: 9
         SWIFT_VERSION: "5.0"
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_CFBundleDisplayName: Halkvakt
