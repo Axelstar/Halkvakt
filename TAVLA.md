@@ -334,6 +334,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **Steg 2 Android MERGAT 16/9 med Axels ja (PR #290).** 🔨 **Steg 3 iOS BYGGT 16/9 (DECISIONS #203):** Facit.swift,
   FacitSender, FacitButton, BETATEST-avsnittet, Om-undantaget, introduktionens löfte. VÄNTAR: **Axels Xcode-bygge** (appen
   kompileras inte i CI) + ett svar från hans telefon i `driver_facit` (app = ios). Sedan steg 4 PRODUKTBOK-bild från iOS.
+  ✅ **Steg 3 iOS: AXELS XCODE-BYGGE GRÖNT 16/9, MERGAT (PR #291).** KVAR I S4: steg 4 iOS-skärmbild till produktboken (från Axels
+  telefon: Senast sagt med knapparna + BETATEST-brytaren) · steg 5 fälttest — ett riktigt svar i `driver_facit` (vakthundens rad
+  "förarfacit: n svar" räknar det). Knappen är AV tills testaren slår på den själv.
 
 ### Axel — hösten (brainstorm 31/8)
 - [x] ⛔ **#92 Däcktyp och fordonstyp — STÄNGT 12/9, dokumenterat nej** (Bengts order när §2.5 togs ur

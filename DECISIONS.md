@@ -5955,3 +5955,6 @@ Linux) och inte på den här maskinen. Beviset är Axels Xcode-bygge — och ett
 `driver_facit` (`app = 'ios'`). Regeln från 2/9 gäller: be aldrig Axel arkivera medan ios-engine är röd; den är
 grön (motorn orörd).
 
+**Utfall 16/9:** Axel byggde grenen i Xcode — **gick igenom** — och PR #291 mergades (main @ 0239f03). Kvar för S4: en
+iOS-skärmbild till produktboken (steg 4) och ett riktigt svar från en telefon i `driver_facit` (steg 5, fälttest).
+
