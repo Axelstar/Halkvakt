@@ -5841,3 +5841,15 @@ med regn_h, larmade).
 Första kalla natten i korridoren ger första raderna. **Bevis som gäller:** en `efterhalka`-rad med innehåll; tills
 dess bevisas kolumnen bara som skriven (`[]`) — vilket enligt #196 INTE räknas som bevis.
 
+## #199 (16/9 2026) Kartan öppnad en gång för R1–R16 — och fryst igen
+
+**Bengts order 16/9 ("för in R1–R16 i kartan").** Frysvillkoret från 15/9 (#186) var "nästa ändring efter att något
+byggts och mätts". NU-listan är byggd och mätt (#187–#198), så villkoret är uppfyllt. R1–R15 (granskningens
+rättelser, sedan 15/9 i bedömningens bilaga A) och R16 (Axel 16/9: fog-tabellen läst, inte körd — #154:s F1 var
+F4/F5 i koden) är införda: §5.2 (regn-raden), §5.6 (R16 med regeln "F1 först när det är verifierat i kod att ingen
+port läser fältet"), §7.8 (kandidaterna prövade mot kriteriet, Axels utgångspunkt för D), §14. Bannern säger att
+kartan är fryst igen; bilaga A är struken och står kvar som historik.
+
+**Vad som inte ändrades:** inga tal, inga fogkostnader utöver R16, inga nya avsnitt. Kartan säger fortfarande
+*varför*; bedömningen säger *vad och när*.
+

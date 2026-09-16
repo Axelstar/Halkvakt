@@ -3,8 +3,9 @@
 **Hur delarna blir en produkt, var vi byggt emot den, hur det nya greppar i motorn som redan kör,
 och vad allt underkänt lämnade kvar.**
 
-**Kartan är fryst sedan 15/9** (Axels förslag, Bengts beslut): nästa ändring kommer efter att något
-byggts och mätts. *Vad som görs, och när, står i `docs/BEDOMNING-2026-09-15.md` — den enda listan.*
+**Kartan är fryst** (Axels förslag, Bengts beslut 15/9): en ändring kommer bara efter att något byggts och
+mätts. **Öppnad en gång, 16/9, för R1–R16** — efter NU-listans byggen och mätningar (DECISIONS #199) — och fryst
+igen. *Vad som görs, och när, står i `docs/BEDOMNING-2026-09-15.md` — den enda listan.*
 
 Det här är det enda dokumentet över hur Halkvakts delar hänger ihop. Allt som rör integrationen står
 här: lagren, multiplikationen, **motorn som den faktiskt ser ut**, **fogarna där en skuggdel kan
@@ -38,11 +39,11 @@ nämnaren, och den är också nyckeln till hur de ska sitta ihop.
 
 | Lager | Frågan lagret svarar på | Delar som bor här | Läge |
 | :-- | :-- | :-- | :-- |
-| **L1 TROVÄRDIGHET** | Får vi tro på mätvärdet? | #75 givarvakten · stationsvakten (#164) · G_tak (#163) · värdevakten · R-A5 | ✅ i drift |
+| **L1 TROVÄRDIGHET** | Får vi tro på mätvärdet? | #75 givarvakten · stationsvakten (#164) · G_tak (DECISIONS #163) · värdevakten · R-A5 | ✅ i drift |
 | **L2 TILLSTÅND** | Vad **är** ytan? | tillståndsskattaren (#89 steg 2) · radarns `regn` (#81 C) · operatörens klass · **#45 våtbulb → regn/slask/snö** · **#42 vattenfilm** | 🔨 blöt/torr byggt, resten kvar |
 | **L3 UTVECKLING** | Vart är den på **väg**? | trendarkivet (#88) · övergångarna (#89 a) · **#46 rimfrost** · N_varning (SMHI) | 🔨 mätt, ingen regel |
-| **L4 RÄCKVIDD** | Hur långt **gäller** mätningen? | grind A:s ankare (#38b) · SMHI molnmängd (#95) · **#91 kallplatslagret** | ⚠️ ankaret mätt och dugligt, **knappen saknas** |
-| **L5 ALLVAR & RÖST** | Vad **sägs**, och hur illa är det? | #153 allvar som **försprång** · spärren (#165) · **#90 roll B** | ⚠️ **formen beslutad (tid, inte ord), regeln obyggd** |
+| **L4 RÄCKVIDD** | Hur långt **gäller** mätningen? | grind A:s ankare (#38b) · SMHI molnmängd som räckviddsknapp (#95; Verify 2 och representativitetsradien omätta; SMHI som reserv när Trafikverket tystnar helt — uppmätt pris 2,36 °C) · **#91 kallplatslagret** | ⚠️ ankaret mätt och dugligt, **knappen saknas** |
+| **L5 ALLVAR & RÖST** | Vad **sägs**, och hur illa är det? | #153 allvar som **försprång** · spärren (DECISIONS #165) · **#90 roll B** | ⚠️ **formen beslutad (tid, inte ord), regeln obyggd** |
 
 **Ordningen är inte godtycklig.** L1 gatar allt. L2 och L3 multiplicerar varandra. L4 avgör hur långt
 produkten av L2×L3 får sträckas. L5 är det enda ställe där något når föraren.
@@ -153,7 +154,7 @@ formalitet, utan platsen där påståendet "det här är en förbättring" måst
 
 | Fält som publiceras | Läses av motorn? | Följd |
 | :-- | :-- | :-- |
-| **`segments[].regn`** — radarns mm/h per segment (#81 C) | **NEJ.** Finns inte ens i `LiveDoc`-typen | **Radarlagret ligger redan i telefonen och kastas vid adaptern** |
+| **`segments[].regn`** — radarns mm/h per segment (#81 C) | **NEJ.** Finns inte ens i `LiveDoc`-typen | **Radarlagret ligger redan i telefonen och kastas vid adaptern — men bara för halkklassade segment:** `snapshot-core.ts:101–102` sätter `regn` enbart på segment som redan passerat halkfiltret. En blöt, normalklassad väg — där vattenplaning uppstår — nådde aldrig `live.json` (#154). **Löst 15/9 med egen toppnyckel `rain_segments`** (DECISIONS #187): den vidgade väglagsfrågan stoppades, för varje rad i `segments[]` blir en varning i motorn och båda portarna — fogen var F4/F5, inte F1 (R16) |
 | `smhi[]` | NEJ — deklarerat `unknown[]`, *"map/UI layer"* | SMHI når appen men inte motorn |
 | `segments[].road` | deklarerat, men adaptern lägger det aldrig i `meta` | segmentrösten kan inte säga vägnummer |
 | `deviations[].typ` · `wildlife[].art` · `cameras[].road` | deklarerade, aldrig lästa | — |
@@ -162,7 +163,8 @@ formalitet, utan platsen där påståendet "det här är en förbättring" måst
 
 **Det här är den enskilt mest användbara upptäckten i hela kartan.** Den första riktiga
 integrationen — radarns väta × operatörens klass på samma segment — kräver **ingen ny publicering
-alls.** Fältet skrivs redan. Det som saknas är F2 + F3 + F4.
+alls.** Fältet skrivs redan. Det som saknas är F2 + F3 + F4. **För #42 gäller det inte:** vattenplaningens
+segment är normalklassade och bär inget `regn` förrän väglagsfrågan vidgas (#154, beslut Bengt).
 
 ### 5.3 Regeln som gör länkningen sömlös: lägg till, ersätt aldrig
 
@@ -191,8 +193,8 @@ syns inte av sig självt.**
 | **Trendarkivet** (#88) | L3 | F1 `weather[].lutning` + F3 + F4 | nej | 6 isvektorer |
 | **Grind A:s ankare** (#38b) | L4 | F1 `weather[].osakerhet` + F3 + F4 | nej | F4 — **och att `leadM` slutar vara motorns enda avståndsbegrepp** (§4.2) |
 | **#46 rimfrost** | L3 | F3+F4 — **redan gjort**, som andra gren i `icing_point` | nej | klar; förebilden (§7.8) |
-| **#45 snö/slask** | L2 | F1 + F3 + F4 | nej | 6 isvektorer — **och frestelsen att göra det till ett sjätte slag måste avvisas** (§7.8) |
-| **#42 vattenplaning** | L2 | F1 + F3 + F4 | nej | 6 isvektorer |
+| **#45 snö/slask** | L2 | F1 + F3 + F4 | nej | 6 isvektorer — **och frestelsen att göra det till ett sjätte slag måste avvisas** (§7.8). **Låst av #52:** ett test i tre portar säger att kod 1 + "Packad snö" MÅSTE larma — motsatsen till #45:s vinterbaseline. Vektorn beslutas före #45 |
+| **#42 vattenplaning** | L2 | egen byggordning **#81 A–F**: A, B och radarhalvan av C **byggda**, C:s stationshalva blockerad, **D = nytt farslag `aquaplaning`** | — | **F5 av konstruktion** — det prövade undantaget från §7.8 (kriteriet i §9). Skugga (E) i **höstregn** först; enda spåret med höstfönster |
 | **#91 kallplatslagret** | L4 | F1 på `weather[]` + F3 + F4 | nej | 6 isvektorer |
 | **SMHI `N_varning`** (#95) | L3/L4 | F2+F3+F4 — **`smhi[]` publiceras redan** | nej | 6 isvektorer |
 | **#153 allvar som FÖRSPRÅNG** | L5 | F4 — `leadM` per fara | nej | 6 is / 3 segment (§13.1) |
@@ -240,6 +242,14 @@ en svagare än en mätning, och skillnaden ska stå skriven här och inte upptä
 | §5.1 vektortalen 6/3/23 | filsökning efter `icing_point` respektive `slippery_segment` i `engine/vectors/` | **att alla sex faktiskt vänder.** En vektor som BÄR en fara kan mycket väl ge samma utfall efter ändringen. Talet är ett tak, inte en kostnad |
 | §5.2 oläst-listan | fält för fält mellan publiceraren och `LiveDoc`/adaptern | att inget ANNAT läses fel — listan är över det som publiceras, inte en revision av motorn |
 | §5.3 otypad läsning | `org.json.JSONObject` i `SnapshotRepo.kt`, `JSONSerialization` i `SnapshotRepo.swift` | att en FRAMTIDA port gör likadant. Byts någon port till typad avkodning faller §5.3:s premiss, och F1 slutar vara gratis |
+
+**R16 (Axel 16/9, DECISIONS #196/#199): fog-tabellen är läst, inte körd — och det bet 15/9.** #154:s steg stod som F1
+("lägg `regn` på fler segment"), men `snapshotToHazards` och båda portarna gör VARJE rad i `segments[]` till en
+`slippery_segment` — en vidgad väglagsfråga hade sagt "halka" på varje blöt normalväg i höstregn, F4/F5 utklädd
+till F1. Det fångades i koden före deploy och löstes med egen nyckel (`rain_segments`, DECISIONS #187). Regeln
+som följer: **en fog i tabellen räknas som F1 först när det är verifierat i kod att ingen port läser fältet.**
+Verifierade 15/9: `rain_segments`, `weather[].regn_h`, `weather[].lutning15/30/60` (nya nycklar, otypad läsning,
+§5.3). Allt annat i §5 är fortfarande läst.
 
 **Kostnadskolumnerna mäter FOG, inte arbete.** Att en del "bara" kostar F4 säger var den greppar —
 inte hur svår regeln är att formulera, och inte hur lång mätningen blir innan den får ändras.
@@ -397,8 +407,14 @@ till farslag.** Varje nytt slag gör regel 1a värre — fler konkurrenter om en
 
 **Kriteriet, fastställt av Bengt 15/9 (DECISIONS #186):** ett nytt farslag är motiverat bara om **(1)** förarens
 handling skiljer sig från alla befintliga slag, **(2)** texten inte kan lånas från ett befintligt slag utan att
-ljuga, och **(3)** prioriteten mot varje befintligt slag är beslutad av Axel före vektorn skrivs. Kandidaterna
-(#42, #32, #45, #15) prövas mot det — i bedömningen, inte här.
+ljuga, och **(3)** prioriteten mot varje befintligt slag är beslutad av Axel före vektorn skrivs.
+
+**Tre kort vill ha ett nytt slag, prövade mot kriteriet (R1/R15, 16/9):** **#42 ja** — annan fara, annan
+handling (fart), eget förvillkor (yta > +4 °C), egen text; som meta på segmentet ärver den "halka rapporterad",
+fel ord. Axels utgångspunkt 16/9 (DECISIONS #196): under halka (#68), över vilt, *"Vattenplaning framöver —
+sakta ner"* — beslut efter V-C. **#32 kanske.** **#45 nej** — handlingen är halkans, texten kan vara halkans,
+prioriteten är halkans; #45 byggs som meta, **efter att #52:s vektor beslutats**. Steg E (skugga) kommer före
+F (röst) i alla tre fallen — för #42 är E byggt (DECISIONS #191).
 
 ---
 
@@ -433,13 +449,13 @@ vilar på. Samma del, annan roll, avgörande värde.
 
 | Del | Vad som underkändes (mätt) | Obesvarad fråga i det sammanvägda |
 | :-- | :-- | :-- |
-| **SMHI** | som ANKARE: MAE 1,05 → 1,20 | som **räckviddsknapp** (L4): gör molnmängden grind A:s felkurva brantare klara nätter? Aldrig mätt |
-| **Höjden** | återvinner noll på YTtemperatur | (a) #45 använder **luft**, inte yta — annan storhet. (b) förutsäger höjden **var modellen är opålitlig** i stället för att korrigera medelvärdet? |
+| **SMHI** | som ANKARE: MAE 1,05 → 1,20; som **reserv när Trafikverket tystnar helt** kostar den uppmätt 2,36 °C på 352 punkter — en kvantifierad beredskap, ingen väg | som **räckviddsknapp** (L4): gör molnmängden grind A:s felkurva brantare klara nätter? Aldrig mätt |
+| **Höjden** | återvinner noll på YTtemperatur *som medelkorrektion* — men **#96 mäter fortfarande varje måndag**, och lapse **0,63 °/100 m ur 3 476 par** är ett stabilt fysiskt faktum (#45 använder det gamla 0,71) | (a) #45 använder **luft**, inte yta — annan storhet. (b) förutsäger höjden **var modellen är opålitlig** i stället för att korrigera medelvärdet? |
 | **Kamerorna** | som TÄCKNING: 6 av 744 ger nytt ankarläge | ✅ redan omrollad till **bildfacit** — prejudikatet |
 | **RH-guarden** | som FILTER: fuktigheten stiger efter regn | den **stigningen** är i sig ett tillstånd — förutsättningen för kondensation och rimfrost (#46) |
 | **Operatörens "Våt"** | som PROXY: omätbar eftersläpning | som **facit** i stället för indata — samma skifte som kamerorna gjorde |
 | **`rate_max`** | som VÄRDE: 727 mm/h, spärrat | **kvoten max/mean** är en formsignal: konvektiv skur mot frontregn. Exakt vad #45 behöver för att skilja lokal snöby från utbrett regn |
-| **Radarns bidrag** | växer inte med avståndet (platt ~1,5 %) | mätt där en station står **6,7 km** bort i median. Radarns roll är **upplösning per sträcka**, inte mer väta — aldrig mätt som det |
+| **Radarns bidrag** | växer inte med avståndet (platt ~1,5 %) — med #168:s två reservationer: yttre bandet bär 25 segment, och fönstret var 5,3 dygn frontregn; "inget nej till radarn som källa, 96 % precision" | mätt där en station står **6,7 km** bort i median. Radarns roll är **upplösning per sträcka**, inte mer väta — aldrig mätt som det |
 
 **Två av dem har en mätbar fråga som inte kräver vinter:** höjden som varianspredikator och radarns
 segmentupplösning. Båda kan ställas mot befintligt arkiv.
@@ -464,7 +480,7 @@ kvarlämnade faller i tre slag:
 | **#92 däck och fordonstyp** | kräver tröskeljustering i flera dokument, tre portar, nya produktboksbilder — och bär ingen egen fara | **Gränsen för hur precis en varning får vara.** Vi vet inget om däcken, alltså ska rösten tala om VÄGEN, aldrig om bromssträcka. Begreppet står kvar som **lager 2-riskmodifierare** (OVERGANGAR-ANALYS §1b.2) | gräns |
 | **#93 kommunala vägar** | inga givare där | **Räckviddsvillkoret** (#98 §6) finns tack vare det: en tyst miss räknas bara där systemet HADE en chans. Utan den gränsen drunknar varje tröskelsignal i täckningshål | gräns |
 | **#100 dämpning per fara** | kuren var tystare än sjukdomen: variant C ger **1 larm för 39 minuters halka** | Mätningen av hur rösten beter sig över långa sträckor — **4 larm på 59 km** — är indata till allvarsskalan (#153). Kärnan (TOTALEN när många OLIKA faror kvalificerar) flyttad dit | mätt faktum |
-| **#94 försäkringsbolagen** | samarbetet klarlagt otillgängligt | Tvingade fram att facitstacken definierades ur **vår egen** data. Det är skälet att T-B och #98 kan dömas i vinter i stället för nästa | villkor |
+| **#94 försäkringsspåret** (*kortet är öppet* — åkerier och NTF står kvar) | försäkringssamarbetet klarlagt otillgängligt | Tvingade fram att facitstacken definierades ur **vår egen** data. Det är skälet att T-B och #98 kan dömas i vinter i stället för nästa | villkor |
 
 ### 10.2 Strukna parametrar och regler
 
@@ -472,12 +488,12 @@ kvarlämnade faller i tre slag:
 | :-- | :-- | :-- | :-- |
 | **RH-guarden** (#89 §4.3) | fuktigheten STIGER efter regn: 90 % vid +1 h → 95 % vid +4 h | Själva mätningen är ett positivt faktum om efterregnstillståndet — **förutsättningen för kondensation och rimfrost** (#46) | mätt faktum |
 | **Operatörens "Våt"** (#89 §2.1) | 33 rader, noll med efterföljande klassning | Kandidat som **facit** i stället för indata (samma skifte som kamerorna) | mätt faktum |
-| **Oljefilmen, #89 (b)** | 55 torrperioder, 6 olyckor mot grindens 15 — inte nåbar i höst | **Torrdygnsräknaren är samma beräkning #42 behöver** för vattenfilmens ålder. Kortet säger att frågan börjar om från steg 0 — men koden är inte förlorad | mätt faktum |
-| **Ord-per-resa** (#103) | fel valuta | **Röst räknas i EPISODER, aldrig i rader.** Det är enheten allvarsskalan måste använda | villkor |
+| **Oljefilmen, #89 (b)** | 55 torrperioder, 6 olyckor mot grindens 15 — inte nåbar i höst | Torrdygnsräknaren finns kvar som beräkning — men **#42 använder den inte längre**: sedan #155 är vattenplaningens utlösare radarintensitet ≥ 2,0 mm/h, inte vattenfilmålder | mätt faktum |
+| **Ord-per-resa** (DECISIONS #103 — inte kort #103, frysklassningen) | fel valuta | **Röst räknas i EPISODER, aldrig i rader.** Det är enheten allvarsskalan måste använda | villkor |
 | **R3 hård åldersgräns** (vägens ålder) | avvisad FÖRE mätning | Principen *"ålder ≠ inaktualitet — en klassning står tills den ändras"* ärvs rakt av tillståndsskattaren | villkor |
 | **E3 högre prioritet** (#95 d) | skulle tysta en olycka | **Bindande villkor på #153:** kombinationen får ändra ordval och försprång — **aldrig prioritet**. I fogarnas språk: #153 får röra `alertText()`, aldrig `PRIORITY` | villkor |
-| **`rate_max`** (#134) | 727,54 mm/h, spärrat av värdevakten | **Kvoten max/mean** är en formsignal: konvektiv skur mot frontregn — precis vad #45 behöver | mätt faktum |
-| **K1, byvindkvot per rad** (#164) | 335 av 748 stationer | Kvoten per rad är en **fönsterglappsdetektor** — ett datakvalitetsmått för L1 | mätt faktum |
+| **`rate_max`** (#134) | 727,54 mm/h, spärrat av värdevakten | **Kvoten max/mean** är en formsignal: konvektiv skur mot frontregn — precis vad #45 behöver. **Men fältet är spärrat** tills spannet 0–200 rensats (#155) — kvoten kan inte räknas förrän dess | mätt faktum, spärrat |
+| **K1, byvindkvot per rad** (#164) | 335 av 748 stationer | Kvoten per rad detekterar ett **känt formatfaktum** (byvind = bakåtfönstrets max, medelvind = ögonblicksvärde), inte en trasig station. En läxa, inte ett verktyg | läxa |
 | **Per fordonstyp** (vind/sikt §2.1) | #92 stängt | Samma gräns som #92 | gräns |
 
 ### 10.3 Kärnor som flyttats — och vart
@@ -502,16 +518,17 @@ Tre saker blir synliga först när allt står på ett ställe:
    röras. #103 säger att enheten är episoder. #100 ger talen för hur rösten låter över en lång
    sträcka. **#153 behöver inte uppfinna sina ramar — de finns, i tre stängda kort.**
 
-3. **Flera strukna delar lämnade en BERÄKNING efter sig, inte bara en idé.** Torrdygnsräknaren
-   (#89 b) är #42:s vattenfilmålder. Kvoten max/mean (`rate_max`) är #45:s formsignal. K1:s
-   radkvot är en givarvaktsdetektor. Det är billigare att återanvända dem än att bygga om dem.
+3. **Några strukna delar lämnade en BERÄKNING efter sig — men färre än första utkastet påstod.**
+   Kvoten max/mean (`rate_max`) är #45:s formsignal, när fältet väl är rensat. Torrdygnsräknaren finns
+   men #42 behöver den inte längre (#155). K1:s radkvot är en läxa om fönsterglapp, inte ett verktyg.
 
 ---
 
 ## 11. Vad som förblir osynligt oavsett allt ovan
 
-En **snöby mellan stationerna** (bara radarn ser den, #43) och **om saltbilen passerat** (ingen öppen
-källa). Båda är kända och står i förstudierna. De hör till kartans kanter, inte till dess mitt.
+**Om saltbilen passerat** (ingen öppen källa) hör till kartans kant. **Snöbyn mellan stationerna** gör det
+inte längre: #43 steg 4 är öppnat sedan radardomen 13/9, och radarns roll som *upplösning per sträcka*
+är en mätbar fråga mot befintligt arkiv (§9.1) — omätt, inte osynlig.
 
 ---
 
@@ -529,6 +546,12 @@ villkoret. Radarn och SMHI publiceras **redan** och kastas först vid adaptern. 
 bokstavligen motorn, så varje länk kan mätas på riktig trafik innan den når en telefon. Det som
 återstår är alltså inte ett brobygge — det är sex vektorer, tre portar, och disciplinen i §5.3 och
 §5.5.
+
+**Och det som allt ska dömas mot är nästan tomt.** Två av tre facitkällor är tomma eller stillastående:
+kamerafacit **0 objekt** efter 5 657 skuggkörningar (form A deployad 14/9, sexton dygn förlorade);
+`road_condition_history` — husets *"winter archive (our moat)"* — **830 rader, nyaste 25/8**. Den tredje,
+`situation_archive`, är omätt. **Ingen vakt mäter om historiken växer.** Axels tröskelregel är rätt och
+saknar vittne (§13.2).
 
 **Men tre saker står i vägen, och två av dem är regler vi själva skrivit:** utgången kan inte uttrycka
 allvar (§7.1), modellerade storheter får inte utlösa (§7.2), och grindarna dömer delar i stället för
@@ -670,4 +693,5 @@ ingen läser en överspelad version någon annanstans.
 | 14/9 | **Motorn och fogarna inarbetade** (§4, §5) på Bengts fråga om kartan tar hänsyn till det som faktiskt kör. Läst ur koden, inte ur minnet | DECISIONS #182 |
 | 14/9 | **§5.6 tillagd:** metodförbehållen stod bara i chatten. Vektortalen 6/3/23 är ett **tak** (vektorer som BÄR faran), inte en uppmätt kostnad; §4–§5 är lästa, inte körda | DECISIONS #183 |
 | 15/9 | **Kartan fryst.** Kriteriet för nytt farslag infört i §7.8 (tre rader, Bengt fastställde). Femton kända rättelser väntar i bedömningens bilaga A tills en rör kod | DECISIONS #186 |
+| 16/9 | **Kartan öppnad för R1–R16 — efter bygge + mätning, enligt frysvillkoret — och fryst igen.** R1–R15 ur granskningen: #42 är ett eget spår med höstfönster och ett sjätte farslag av konstruktion (§5.4, §7.8) · `regn` bara på halkklassade segment, nu löst med `rain_segments` (§5.2) · höjden mäter fortfarande, lapse 0,63 (§9.1) · oljefilm→#42 överspelad, `rate_max` spärrat, K1 en läxa (§10.2, §10.4) · #94 öppet (§10.1) · #163/#165 är DECISIONS · #103-kollisionen · #168:s reservationer · #43 steg 4 öppnat (§11) · SMHI:s reserv, Verify 2, radien (§2, §9.1) · facitstacken två av tre tomma (§12) · #45 efter #52 (§5.4). **R16 (Axel):** fog-tabellen är läst, inte körd — #154:s F1 var F4/F5 i koden (§5.2, §5.6) | DECISIONS #199 |
 | 14/9 | **Axels fyra invändningar inarbetade (§13).** L5 var inte tomt — formen är beslutad som FÖRSPRÅNG (#90 roll B); #153 kostar därmed **F4, inte F5**; §7.5:s enum-resonemang var fel | DECISIONS #184 |

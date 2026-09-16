@@ -500,6 +500,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   undantaget infört: kriteriet för nytt farslag i §7.8 (tre rader). R1–R15 väntar i bedömningens bilaga A.
   📌 **R16 väntar i bilaga A (Axel 16/9):** fog-tabellen är läst, inte körd — #154:s F1 var F4/F5 i koden. Villkoret för
   att öppna kartan (bygge + mätning) är nu uppfyllt; R1–R16 förs in när Bengt säger till.
+  ✅ **R1–R16 INFÖRDA 16/9 (DECISIONS #199), kartan fryst igen:** §5.2 regn-raden löst med `rain_segments`, §5.6 R16 med
+  regeln "F1 först när det är verifierat i kod att ingen port läser fältet", §7.8 kandidaterna prövade + Axels D-utgångspunkt,
+  §14. Bilaga A i bedömningen struken. Nästa öppning efter nästa bygge + mätning.
 - [ ] 📍 **#158 SKUGGLOGGENS LARM SAKNAR POSITION — och tre mätningar hänger på det**
   ✅ **BYGGT OCH DEPLOYAT 14/9 — FORM A** (Axels ja via Bengt, DECISIONS #179, PR #248).
   Positionen tas ur FARAN, inte ur motorn: punktfaror bär lon/lat själva, så en uppslagning på
