@@ -42,7 +42,7 @@ beviset finns — inte när koden är skriven.
 | N4:s fältbevis på CDN (`regn_h`, `lutning`) | ⏳ väntar på första station ≤ 3 °C | #187 | #188 | `weather[0]` bär fälten |
 | ~~#188 `suppressed` med innehåll~~ | ✅ 16/9 via spärrprovet | #188 | #193 | se raden ovan |
 | Grind V-B:s dom-knapp | ⏳ efter första hela regndygnet med `vb`-rader (13 st sedan 17:30Z 15/9) | #81 E | #191 | knappen med ⊘-disciplin |
-| S4 facitknappen + produktbokens löfte | 🔨 **kör 16/9** — steg 1 backend ✅ bevisad (204/204/400/405/400, vakthundsrad "förarfacit: 1 svar"); steg 2 Android ✅ mergat med Axels ja (PR #290); steg 3 iOS ✅ Axels Xcode-bygge grönt, mergat (PR #291). **Kvar: steg 4 iOS-skärmbild (Axel) · steg 5 fälttest — ett riktigt svar i `driver_facit`** | #21 | #196, #201, #202 | android.yml grön; PRODUKTBOK med skärmbilder; svar från riktig telefon i `driver_facit` |
+| S4 facitknappen + produktbokens löfte | 🔨 **kör 16/9** — steg 1 backend ✅ bevisad (204/204/400/405/400, vakthundsrad "förarfacit: 1 svar"); steg 2 Android ✅ mergat med Axels ja (PR #290); steg 3 iOS ✅ Axels Xcode-bygge grönt, mergat (PR #291). **Kvar: steg 4 iOS-skärmbild (Axel) · steg 5 fälttest — ett riktigt svar i `driver_facit`**; steg 5 förberett 16/9: `forarfacit` i skuggrapporten + recept (DECISIONS #205) | #21 | #196, #201, #202 | android.yml grön; PRODUKTBOK med skärmbilder; svar från riktig telefon i `driver_facit` |
 | PAT-rotationen | ⏳ Axel, senast 15/11 | #86 | #190 | publicering med ny nyckel |
 | `radar_h` | ⏳ uppskjuten (CPU-mätning) | #187 | #188 | — |
 | Kamerafacit-bilderna öppnas och läses | ⏳ mars | #157 | #196 | facit, inte bara bild |
