@@ -18,6 +18,7 @@ object Prefs {
     private val KEY_HISTORY = stringPreferencesKey("alert_history")
     private val KEY_FACIT = stringPreferencesKey("facit")
     private val KEY_FACIT_ON = booleanPreferencesKey("facit_on")
+    private val KEY_FACIT_STATUS = stringPreferencesKey("facit_status")
     private val KEY_WARN_DIST = floatPreferencesKey("warn_distance_m")
     private fun kindKey(k: HazardKind) = booleanPreferencesKey("warn_${k.wire}")
 
@@ -47,6 +48,9 @@ object Prefs {
     suspend fun answerFacit(ctx: Context, id: String, t: Long, svar: Boolean) {
         ctx.dataStore.edit { p -> p[KEY_FACIT] = Facit.encode(Facit.answer(Facit.decode(p[KEY_FACIT] ?: ""), id, t, svar)) }
     }
+    /** S4: vad senaste sändningsförsöket gav — syns under knapparna (DECISIONS #209). */
+    fun facitStatus(ctx: Context): Flow<String?> = ctx.dataStore.data.map { it[KEY_FACIT_STATUS] }
+    suspend fun setFacitStatus(ctx: Context, s: String) { ctx.dataStore.edit { it[KEY_FACIT_STATUS] = s } }
     suspend fun markFacitSent(ctx: Context, sent: Collection<FacitEntry>) {
         ctx.dataStore.edit { p -> p[KEY_FACIT] = Facit.encode(Facit.markSent(Facit.decode(p[KEY_FACIT] ?: ""), sent)) }
     }

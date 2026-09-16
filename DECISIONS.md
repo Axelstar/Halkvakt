@@ -6034,3 +6034,16 @@ kvalificerar, och is får avbryta en kamera. Avsiktligt (DECISIONS #200).
 **Läxa:** "skickas när bilen står stilla" var rätt regel men fel villkor — stillastående mättes bara av en tjänst som
 inte körde. Beviset avslöjade det: rapportens `forarfacit` stod kvar på 1.
 
+## #209 (16/9 2026) Sändningsstatus under facitknapparna — fälttestets andra fynd: svaret nådde aldrig servern
+
+**Bengts fälttest, fortsättning:** efter #208 öppnade Bengt appen flera gånger — inget svar kom. Serversidan friades
+med ett iOS-format prov från Claude (204, `ios: 1` i rapporten); felet sitter i appen mellan knappen och nätet, och
+appen sa ingenting om det. Det är samma sorts tystnad som #157:s kamerafacit: en fail-soft-gren utan spår.
+
+**Rättelse på båda plattformarna:** sändaren skriver vad som hände i `facitStatus` — *"Skickat 12:03 (1 svar)"* eller
+*"Kunde inte skicka 12:03: HTTP 400 …"* / nätfelet — och kortet visar raden under knapparna (grön/gul). `try?` som
+svalde felet i iOS är borta. Nästa försök säger själv var det fastnar.
+
+**Diagnosen som återstår** (Bengt: blev knappen fylld och texten "Tack …"? Axel: `facit-svar`-loggen — anrop från
+telefonen och statuskod?) avgör om det är knappen, lagringen eller nätet. Ingår i 0.3.7 (10).
+

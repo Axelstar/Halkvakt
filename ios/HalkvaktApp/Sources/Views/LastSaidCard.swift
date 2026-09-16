@@ -43,6 +43,9 @@ struct LastSaidCard: View {
                 }
                 Text(svar == nil ? "Stämde det? Svaret skickas när bilen står stilla." : "Tack — skickas när bilen står stilla.")
                     .font(Typo.sans(12)).foregroundStyle(Brand.faint)
+                if let s = prefs.facitStatus {
+                    Text(s).font(Typo.mono(11)).foregroundStyle(s.hasPrefix("Skickat") ? Brand.green : Brand.yellow)
+                }
             }
         }
         // .contain i stället för .combine (16/9): med knappar i kortet måste VoiceOver kunna trycka dem var för sig.

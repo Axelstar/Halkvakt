@@ -346,6 +346,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔧 **FÄLTTESTET 16/9 hittade en lucka (DECISIONS #208):** Bengts svar tryckt med vakten av (0.3.6) skickades först vid
   nästa appstart. Rättat på båda plattformarna (vakten av ⇒ skicka direkt); iOS 0.3.7 (10), Android-APK ur CI. VÄNTAR:
   Bengts svar i `forarfacit` (öppna appen igen så går det första iväg) + Axels nästa bygge.
+  🔍 **Fälttestets andra fynd (DECISIONS #209):** svaret nådde aldrig servern trots omöppningar; serversidan friad (iOS-format
+  prov 204). Sändaren skriver nu status/fel under knapparna på båda plattformarna (0.3.7). VÄNTAR: Bengts svar på om knappen
+  blev fylld · Axels läsning av facit-svar-loggen · nästa bygge.
 
 ### Axel — hösten (brainstorm 31/8)
 - [x] ⛔ **#92 Däcktyp och fordonstyp — STÄNGT 12/9, dokumenterat nej** (Bengts order när §2.5 togs ur

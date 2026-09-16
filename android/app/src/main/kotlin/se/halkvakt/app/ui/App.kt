@@ -216,6 +216,7 @@ private fun RedoContent(activity: MainActivity) {
     val lastSaid by Prefs.history(ctx).collectAsStateWithLifecycle(initialValue = emptyList())   // #24
     val facitOn by Prefs.facitEnabled(ctx).collectAsStateWithLifecycle(initialValue = false)     // S4
     val facit by Prefs.facit(ctx).collectAsStateWithLifecycle(initialValue = emptyList())
+    val facitStatus by Prefs.facitStatus(ctx).collectAsStateWithLifecycle(initialValue = null)
     val scope = rememberCoroutineScope()
     val hazards by activity.hazards.collectAsStateWithLifecycle()
     val loc by activity.lastLoc.collectAsStateWithLifecycle()
@@ -262,7 +263,7 @@ private fun RedoContent(activity: MainActivity) {
             // tid, ur den persisterade historiken. Tomt läge säger vad tystnaden betyder.
             // Nyaste SIST i historiken (AlertHistory.append) — firstOrNull visade den ÄLDSTA. Rättat 16/9 med S4.
             val senast = lastSaid.lastOrNull()
-            LastSaidCard(senast, facitOn, senast?.let { Facit.answerFor(facit, it.id, it.t) }) { svar ->
+            LastSaidCard(senast, facitOn, senast?.let { Facit.answerFor(facit, it.id, it.t) }, facitStatus) { svar ->
                 senast?.let { e -> scope.launch {
                     Prefs.answerFacit(ctx, e.id, e.t, svar)
                     // Vakten av = bilen står stilla: skicka direkt (DECISIONS #208). Under körning
@@ -290,7 +291,7 @@ private fun RedoContent(activity: MainActivity) {
 }
 
 @Composable
-private fun LastSaidCard(e: AlertEntry?, facitOn: Boolean = false, svar: Boolean? = null, onSvar: (Boolean) -> Unit = {}) {
+private fun LastSaidCard(e: AlertEntry?, facitOn: Boolean = false, svar: Boolean? = null, status: String? = null, onSvar: (Boolean) -> Unit = {}) {
     Surface(shape = RoundedCornerShape(16.dp), color = Yta,
         border = BorderStroke(1.dp, Gul.copy(alpha = .25f)), modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(14.dp)) {
@@ -316,6 +317,7 @@ private fun LastSaidCard(e: AlertEntry?, facitOn: Boolean = false, svar: Boolean
                 }
                 Text(if (svar == null) "Stämde det? Svaret skickas när bilen står stilla." else "Tack — skickas när bilen står stilla.",
                     color = Dis, fontSize = 11.sp, modifier = Modifier.padding(top = 6.dp))
+                status?.let { Text(it, color = if (it.startsWith("Skickat")) Gron else Gul, fontSize = 11.sp, fontFamily = FontFamily.Monospace) }
             }
         }
     }
