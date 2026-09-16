@@ -6063,3 +6063,41 @@ märkt som död kod och lämnas (eget kort om den ska bort). Ingår i 0.3.7 (10)
 **Läxa:** en vy som finns i repot är inte en vy som visas. "Spegel av Android" var sant om koden, inte om skärmen.
 Skärmbilden hade avslöjat det — och iOS har ingen fotostudio i CI. Det är kostnaden för att iOS bara kompileras hos Axel.
 
+## #211 (16/9 2026) Grind V-B byggd som knapp — två mått mätbara, ett som säger nej i stället för att låtsas
+
+**Bengts "kör A" 16/9, efter att första regndygnet loggats** (17 skuggvarningar på 8 rutter sedan 15/9 17:30Z).
+`publish/grind-v-b.ts` + knappen `grind-v-b` dömer `shadow_log.vb` mot TROSKLAR-VATTENPLANING §3.
+
+**V-B1 (falsklarm ≤ 20 %) mäts** mot §2:s enda fällande källa: närmaste stations `rain_sum_mm` inom 10 km och
+±30 min, max över bucketarna (regnet behöver ha nått tröskeln en gång). Trippeldelning som i V-A —
+BEKRÄFTAD · DELVIS · TORRT — men §2:s definition styr talet: allt under tröskeln är falsklarm, och
+delvis-kolumnen står bredvid så att man ser vad man dömer. **Tröskeln skrivs inte, den härleds:**
+`REGN_UTLOSARE_MMH / RADAR_FAKTOR` = 2,0 / 0,65 ≈ 3,1 mm/h i stationens skala, importerat ur snapshotkärnan —
+ingen kopia att driva isär, inget nytt tal i kontraktsgrinden.
+
+**V-B3 (≤ 3 per rutt och regndygn) mäts**, med regndygn = dygn då rutten faktiskt hade något att varna för.
+Att räkna torra dygn i nämnaren hade dolt brus bakom soliga veckor.
+
+**V-B2 (miss ≤ 40 %) mäts INTE, och skriptet skriver ut varför** i stället för att producera ett tal:
+`situation_archive` bär ingen orsak (situations.ts:37) — en olycka är facit på att något hände, inte på att det
+var vattenplaning — och skuggan kör åtta rutter, inte hela landet, så en olycka utanför dem kunde aldrig ha fått
+en varning. Antalet redovisas som underlag. Måttet kräver testarlogg eller granskad kamerabild (§2): betans
+uppgift, inte knappens.
+
+**Nollpolitiken:** en varning utan station inom räckhåll är OMÄTBAR, aldrig "rätt" — de räknas separat och
+aldrig in i V-B1. Samma regel som radarns `regn: null`.
+
+**V-C:s domspärr gäller** (≥ 200 varningar, ≥ 15 facit, ≥ 5 regndygn, ≥ 3 län): under underlaget skrivs inga
+domar, bara tal och vad som saknas. Med dagens 17 varningar kommer knappen säga ⊘ i månader — det är rätt, och
+det är skälet att bygga instrumentet nu: måttet ska inte formas av siffror man redan sett.
+
+**Bevis:** självtestet (nio fall med känd sanning, grönt) och första skarpa körningen.
+
+**Kontraktsgrinden fällde bygget — och hade rätt.** Radien hette först `MAX_KM = 10`, och det namnet bär redan
+husets **ankarradie** (50 km i sju filer: hur långt bort en station får vara och ändå räknas som GRANNE i en
+interpolation). Grinden såg en åttonde kopia som drivit isär och stoppade CI. Det var ett namnkrock, inte drift —
+två olika storheter med olika tal och olika dokument — men grinden kan ingenting om semantik (den säger det själv i
+sin egen huvudkommentar), och att lägga till ett `filer:`-undantag hade varit att böja husets kontrakt för min
+skull. Rätt åtgärd var att döpa om: `DOMANDE_STATION_KM`. **Läxa:** ett namn som redan bär en storhet i huset får
+inte återanvändas för en annan — grinden är namnblind, och nästa läsare är det också.
+
