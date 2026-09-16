@@ -37,6 +37,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import se.halkvakt.app.AlertEntry
 import se.halkvakt.app.AppEvents
+import se.halkvakt.app.Facit
 import se.halkvakt.app.GuardService
 import se.halkvakt.app.MainActivity
 import se.halkvakt.app.Nearby
@@ -210,6 +211,9 @@ private fun RedoContent(activity: MainActivity) {
     val autostart by activity.autostartOn.collectAsStateWithLifecycle()
     val ctx = LocalContext.current
     val lastSaid by Prefs.history(ctx).collectAsStateWithLifecycle(initialValue = emptyList())   // #24
+    val facitOn by Prefs.facitEnabled(ctx).collectAsStateWithLifecycle(initialValue = false)     // S4
+    val facit by Prefs.facit(ctx).collectAsStateWithLifecycle(initialValue = emptyList())
+    val scope = rememberCoroutineScope()
     val hazards by activity.hazards.collectAsStateWithLifecycle()
     val loc by activity.lastLoc.collectAsStateWithLifecycle()
     val snapshot by GuardService.snapshotInfo.collectAsStateWithLifecycle()
@@ -253,7 +257,11 @@ private fun RedoContent(activity: MainActivity) {
             Spacer(Modifier.height(12.dp))
             // #24: senast sagt — även när vakten är av. Förra körningens sista replik med
             // tid, ur den persisterade historiken. Tomt läge säger vad tystnaden betyder.
-            LastSaidCard(lastSaid.firstOrNull())
+            // Nyaste SIST i historiken (AlertHistory.append) — firstOrNull visade den ÄLDSTA. Rättat 16/9 med S4.
+            val senast = lastSaid.lastOrNull()
+            LastSaidCard(senast, facitOn, senast?.let { Facit.answerFor(facit, it.id, it.t) }) { svar ->
+                senast?.let { e -> scope.launch { Prefs.answerFacit(ctx, e.id, e.t, svar) } }
+            }
             Spacer(Modifier.height(20.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Rubrik("I NÄRHETEN")
@@ -274,7 +282,7 @@ private fun RedoContent(activity: MainActivity) {
 }
 
 @Composable
-private fun LastSaidCard(e: AlertEntry?) {
+private fun LastSaidCard(e: AlertEntry?, facitOn: Boolean = false, svar: Boolean? = null, onSvar: (Boolean) -> Unit = {}) {
     Surface(shape = RoundedCornerShape(16.dp), color = Yta,
         border = BorderStroke(1.dp, Gul.copy(alpha = .25f)), modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(14.dp)) {
@@ -289,8 +297,27 @@ private fun LastSaidCard(e: AlertEntry?) {
             Spacer(Modifier.height(4.dp))
             Text(e?.let { "”${it.text}”" } ?: "Rösten har inte behövt säga något än.",
                 color = if (e != null) Text else Dis, fontSize = 15.sp, fontStyle = FontStyle.Italic)
+            // S4 (Axels form, DECISIONS #196): två knappar, ingen fritext. Bara betatestare, bara när varningen
+            // bär ett id. Svaret loggas lokalt och skickas när bilen står stilla.
+            if (facitOn && e != null && e.id.isNotEmpty()) {
+                Spacer(Modifier.height(10.dp))
+                Row {
+                    FacitKnapp("Stämde", vald = svar == true) { onSvar(true) }
+                    Spacer(Modifier.width(8.dp))
+                    FacitKnapp("Stämde inte", vald = svar == false) { onSvar(false) }
+                }
+                Text(if (svar == null) "Stämde det? Svaret skickas när bilen står stilla." else "Tack — skickas när bilen står stilla.",
+                    color = Dis, fontSize = 11.sp, modifier = Modifier.padding(top = 6.dp))
+            }
         }
     }
+}
+
+@Composable
+private fun FacitKnapp(label: String, vald: Boolean, onClick: () -> Unit) {
+    if (vald) Button(onClick = onClick, shape = RoundedCornerShape(50),
+        colors = ButtonDefaults.buttonColors(containerColor = Gul, contentColor = Natt)) { Text(label, fontFamily = Cond, fontSize = 15.sp) }
+    else OutlinedButton(onClick = onClick, shape = RoundedCornerShape(50), border = BorderStroke(1.dp, Gul)) { Text(label, color = Gul, fontFamily = Cond, fontSize = 15.sp) }
 }
 
 @Composable
@@ -504,6 +531,24 @@ private fun SettingsScreen(activity: MainActivity) {
             color = Dis, fontSize = 12.sp, modifier = Modifier.padding(top = 6.dp))
         Spacer(Modifier.height(16.dp))
 
+        // S4 — BETATEST (Bengt #186, Axel #196): av tills föraren själv slår på den. Texten säger exakt vad som skickas.
+        val facitOn by remember { Prefs.facitEnabled(ctx) }.collectAsStateWithLifecycle(initialValue = false)
+        Rubrik("BETATEST")
+        Spacer(Modifier.height(8.dp))
+        Surface(shape = RoundedCornerShape(18.dp), color = Yta,
+            border = BorderStroke(1.dp, Kant), modifier = Modifier.fillMaxWidth()) {
+            Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f)) {
+                    Text("Svara på varningarna", color = Text, fontSize = 15.sp)
+                    Text("Efter en varning kan du trycka Stämde eller Stämde inte. Det som skickas är varningens id, " +
+                        "klockslaget och ditt svar — inget konto, ingen resa, ingen position. Men ett varnings-id pekar på en " +
+                        "fara på kartan, så vi ser ungefär var du var just då. Bara för betatestare.",
+                        color = Dis, fontSize = 12.sp, lineHeight = 16.sp)
+                }
+                Switch(checked = facitOn, onCheckedChange = { on -> scope.launch { Prefs.setFacitEnabled(ctx, on) } },
+                    colors = SwitchDefaults.colors(checkedTrackColor = Gul, checkedThumbColor = Natt))
+            }
+        }
         Spacer(Modifier.height(28.dp))
         OmScreen()   // #48: Om-fliken borttagen — innehållet är sista avsnittet här
     }
@@ -530,6 +575,10 @@ private fun OmScreen() {
                 Text("Din position lämnar aldrig telefonen.", color = Gul, fontWeight = FontWeight.Bold)
                 Text("All matchning mot vägdata sker lokalt i appen. Inget konto, ingen spårning.",
                     color = Dis, fontSize = 13.sp, modifier = Modifier.padding(top = 4.dp))
+                // S4: löftet skrivs om ordagrant (Axel #196) — det som skickas, när, och bara om du valt det.
+                Text("Undantaget är betatestet, om du själv slår på det: då skickas varningens id, klockslag och ditt " +
+                    "svar (Stämde / Stämde inte) — det säger ungefär var du var när rösten talade. Inget annat.",
+                    color = Dis, fontSize = 13.sp, modifier = Modifier.padding(top = 8.dp))
             }
         }
         Spacer(Modifier.height(18.dp))

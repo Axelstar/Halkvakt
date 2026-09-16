@@ -24,4 +24,10 @@ class AlertHistoryTest {
         assertEquals(AlertHistory.MAX, l.size); assertEquals("n59", l.last().text); assertEquals("n10", l.first().text)
     }
     @Test fun emptyStringDecodesEmpty() { assertEquals(0, AlertHistory.decode("").size) }
+    @Test fun idRoundtripsAndOldThreeColumnRowsStillDecode() {
+        val e = AlertEntry(5, "icing_point", "Frysrisk framöver", "wx:2135")
+        assertEquals(e, AlertHistory.decode(AlertHistory.encode(listOf(e))).single())
+        val gammal = AlertHistory.decode("5\ticing_point\tFrysrisk framöver").single()   // rad från före 16/9
+        assertEquals("", gammal.id); assertEquals("Frysrisk framöver", gammal.text)
+    }
 }
