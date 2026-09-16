@@ -349,6 +349,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔍 **Fälttestets andra fynd (DECISIONS #209):** svaret nådde aldrig servern trots omöppningar; serversidan friad (iOS-format
   prov 204). Sändaren skriver nu status/fel under knapparna på båda plattformarna (0.3.7). VÄNTAR: Bengts svar på om knappen
   blev fylld · Axels läsning av facit-svar-loggen · nästa bygge.
+  🎯 **ROTORSAKEN (DECISIONS #210):** iOS-knapparna satt i `LastSaidCard` — död kod sedan skinnet v3, ingen vy visar den.
+  Bengt såg bara brytaren. Rättat: `FacitRow` under Senast sagt-raden i `VaktenView`. Kräver Axels nästa bygge (0.3.7).
 
 ### Axel — hösten (brainstorm 31/8)
 - [x] ⛔ **#92 Däcktyp och fordonstyp — STÄNGT 12/9, dokumenterat nej** (Bengts order när §2.5 togs ur

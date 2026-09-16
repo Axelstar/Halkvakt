@@ -6047,3 +6047,19 @@ svalde felet i iOS är borta. Nästa försök säger själv var det fastnar.
 **Diagnosen som återstår** (Bengt: blev knappen fylld och texten "Tack …"? Axel: `facit-svar`-loggen — anrop från
 telefonen och statuskod?) avgör om det är knappen, lagringen eller nätet. Ingår i 0.3.7 (10).
 
+## #210 (16/9 2026) Fälttestets rotorsak: iOS-knapparna satt i en vy som ingen ser
+
+**Bengt, efter körningen:** *"Det enda jag kunde göra var att trycka på Svara på varningarna. Sen kom jag inte vidare
+till något annat."* Han tryckte alltså aldrig på Stämde/Stämde inte — knapparna fanns inte på skärmen. `LastSaidCard`
+(#24) är **död kod sedan skinnet v3 (2/9)**: ingen vy refererar den; hemskärmen `VaktenView` visar "Senast sagt" som
+en textrad. Jag la knapparna i kortet utan att kontrollera att kortet visas — spegelbilden av Androids `LastSaidCard`,
+som faktiskt används, lurade mig. #208 och #209 var därför rättelser av fel som inte var det verkliga felet, även om
+båda står kvar som riktiga förbättringar (direktsändning, statusrad).
+
+**Rättelse:** `FacitRow` under "Senast sagt"-raden i `VaktenView` — knapparna, "Tack."-raden och statusraden. Bara
+betatestare, bara på en varning med id. Hemskärmen visas när vakten är av ⇒ svaret skickas direkt. `LastSaidCard` är
+märkt som död kod och lämnas (eget kort om den ska bort). Ingår i 0.3.7 (10) — Axels nästa bygge.
+
+**Läxa:** en vy som finns i repot är inte en vy som visas. "Spegel av Android" var sant om koden, inte om skärmen.
+Skärmbilden hade avslöjat det — och iOS har ingen fotostudio i CI. Det är kostnaden för att iOS bara kompileras hos Axel.
+

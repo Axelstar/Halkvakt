@@ -1,3 +1,5 @@
+// DÖD KOD sedan skinnet v3 (2/9): ingen vy använder LastSaidCard — hemskärmen (VaktenView) visar "Senast sagt"
+// som en rad, och facitknapparna sitter i FacitRow (DECISIONS #210). Kvar tills ett eget kort tar bort den.
 // #24 "Senast sagt" på hemskärmen. Spegel av Androids LastSaidCard: förra körningens
 // sista replik med datum och tid, ur Prefs så den överlever omstart. Tomt läge säger
 // vad tystnaden betyder — tystnad är en funktion, inte ett fel.
