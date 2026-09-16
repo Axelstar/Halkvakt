@@ -434,6 +434,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✏️ **AXELS LÄSNING 16/9 → SEX ÄNDRINGAR (DECISIONS #219).** Bengt: 1 248 punkter strukna (radarn inräknad), radarmätningen
   om vid frost. Flytt i tid räknas som tillägg bara utan undanträngda varningar i `suppressed`. VÄNTAR: §6.4 (Bengt + Axel) ·
   utfallet i januari (förslag: betan fortsätter vid OAVGJORT) · D2-principen för startvärden (S3) · fastställandet.
+  ✅ **T FASTSTÄLLD 16/9 (DECISIONS #220)** — Axels lydelse, tätad: T1 per tillstånd · T5 interpolation förbjuden, #153
+  beslut 2 utan egen öppning · T6 prognoser utlöser aldrig ensamma. Införd i FRYSKLASSNINGEN §1/§7; skyddet följer med.
+  ✅ **STARTVÄRDEN SKRIVNA 16/9 (DECISIONS #222):** N 2 h · fall ≥ 0,8 °C på 30 min · regn > 0 · yta +1…+3 °C · radar
+  och N_varning av. **VÄNTAR NU:** Axel läser tätningarna · utfallet i januari · fastställandet av C och D (med D-raden
+  i varje tröskeldokument).
 - [ ] 🧩 **#159 INTEGRATIONSKARTAN — tre av våra egna regler står i vägen för produkten**
   📬 **AXELS FYRA INVÄNDNINGAR INARBETADE 14/9 (DECISIONS #184, kartans nya §13).** Han läste ett
   TIDIGT underlag, där grind A-rättelsen inte fanns. **Tre står, en föll på underlaget.**
@@ -522,7 +527,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (1) **Utgången väljer på SLAG, inte ALLVAR** — halt+isrisk+kraftigt regn låter exakt som bara
   halt. En integration som inte kan sägas finns inte för föraren. (#153)
   (2) **"En modellerad storhet får aldrig vara en avtryckare"** — varje integrerad storhet ÄR
-  modellerad. Bokstavligt tolkad förbjuder regeln produkten.
+  modellerad. Bokstavligt tolkad förbjuder regeln produkten. → **Löst 16/9: regeln i Axels lydelse (DECISIONS #220).**
   (3) **Grindarna dömer delar, inte kombinationer** — och vi har redan gjort felet: SMHI mättes som
   ANKARE och underkändes, men dess roll i modellen är RÄCKVIDDSKNAPP. Fel fråga, och nejet står
   kvar som om saken vore avgjord.
@@ -705,46 +710,38 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   💡 **Varför det är värt att skicka:** vi har uteslutit stationerna ur vårt eget underlag, så vi är
   inte blockerade. Men felet ligger kvar för alla andra som läser samma öppna data — och svaret
   (givare, överföring eller aggregering?) avgör om konsumenter kan filtrera bort det själva.
-- [ ] ⚖️ **#153 SAMMANVÄGT ALLVAR + ETT SMALARE UNDANTAG — två beslut som är BENGTS, inte byggbara förrän vintern**
-  **Varifrån kortet kommer:** Bengts fråga 13/9, ordagrant: *"vi håller på att bygga ett antal olika
-  risker som ska definiera och förutsäga vägförhållanden framöver men de ska inte kunna kombineras
-  för att meddela trafikanten om den sammanlagda risken utan bara den största risken. Enligt dej är
-  det rätt väg att gå?"* — och dessförinnan: *"om radarn signalerar blött och offset signalerar under
-  noll, kommer motorn att generera en isrisk framöver?"* Svaret på den andra var **nej**, och det
-  gjorde den första till en riktig invändning i stället för ett missförstånd.
-  **TVÅ REGLER HADE TRASSLAT IHOP SIG, och de har olika skäl:**
-  · **Regel 1 — en röst i taget.** `engine.ts` rad 120–129: *"priority selects the single winner;
-  everything else is dropped"* och *"hard global throttle. Winner inside the window is dropped, not
-  queued."* Det är MÄNNISKOFAKTORER, inte modellering — man kan inte säga tre saker på 45 sekunder
-  till någon i 90 km/h. Regeln är rätt och ska inte röras.
-  · **Regel 2 — en modellerad storhet får aldrig vara en avtryckare** (TROSKLAR-FRYSKLASSNINGEN §1,
-  samma regel som SMHI-förstärkaren #95 d fick). Skyddar mot varningar som inte kan motbevisas av en
-  mätning. Rätt i princip.
-  **BESLUT 1 — SAMMANVÄGT ALLVARSMÅTT.** Motorn kan i dag säga VAD faran är men inte HUR ILLA det är:
-  prioriteten är en fast ordning mellan SLAG, inte ett mått på allvar. Ett segment som är halt OCH har
-  isrisk OCH kraftigt regn låter exakt likadant som ett som bara är halt. Förslaget är att
-  kombinationen ändrar **den enda varning vi säger** — ordval, framförhållning eller prioritet — i
-  stället för att lägga till en andra. *"Halka framöver"* mot *"kraftig halkrisk, flera tecken".*
-  Det bryter ingen av de två reglerna, och det uttrycker precis den sammanlagda risk Bengt efterlyste.
-  🔒 Kräver eget tröskeldokument med svep skrivna före mätning, och skuggsteg före röst.
-  **BESLUT 2 — ETT SMALARE UNDANTAG I §1.** Min tillämpning av regel 2 är trubbigare än verkligheten,
-  och det erkänns här: **(a) radarn är ingen modell** utan en mätning av nederbörd, kalibrerad med
-  faktorn 0,65 (#153/#154) — i kombinationen blött+kallt är alltså bara ena halvan modellerad; **(b)
-  interpolation mellan två mätningar är inte extrapolation från en.** Ligger vägen mellan en station
-  som mäter −3 °C och en som mäter −2 °C är *"här är det under noll"* inramat av två eniga mätningar.
-  Grind A:s egna tal säger samma sak: i bandet **0–7 km är MAE 0,33 °C och de grova felen 0,0 %**
-  (DECISIONS #131) — modellen är utmärkt nära och dålig långt bort, och §1 gör ingen skillnad på de två.
-  Förslaget: en modellerad temperatur får bära en avtryckare **ENDAST** när punkten ligger inramad
-  mellan mätande stationer inom kort avstånd som är **eniga om tecknet**. Egna trösklar, eget skuggsteg.
-  ⚠️ **Det kräver att Bengt ändrar ett dokument han själv fastställde 12/9.** §8 tillåter det fram till
-  första skuggkörningen — men det ska göras som ett BESLUT, inte som en glidning när talen ser bra ut.
-  **VARFÖR KORTET INTE KAN ARBETAS PÅ NU:** båda vilar på vinterdata. K-A står på ⊘ INGEN DOM med
-  **noll** uppmätta frysfall (DECISIONS #137), och Finland har det inte heller — mätt 13/9: 133
-  "frysrader" som alla är exakt 0,0 från EN station, alltså en fastnaglad givare och inte frost.
-  Grind A:s A2-rad är OAVGJORT och kan inte avgöras på septemberdata.
-  ⏭️ **STÄLLS TILL BENGT.** Inget byggs på det här kortet förrän vintern gett data. Det som ska göras
-  NU är ingenting — kortet finns för att frågan inte ska tappas bort, och för att den ska vara rätt
-  formulerad den dagen mätningarna kan svara på den.
+- [ ] ⚖️ **#153 ALLVAR SOM FÖRSPRÅNG + ETT SMALARE UNDANTAG — beslut 1 omformulerat 16/9 och väntar, beslut 2 öppet (Bengts)**
+  ✏️ **OMSKRIVET 16/9 på Bengts order *"gör 153 och omformulera 153"* (DECISIONS #221).** Det gamla kortet föreslog att
+  kombinationen ändrar varningen med *"ordval, framförhållning eller prioritet"*. Två av de tre är avvisade, och kortet
+  är omskrivet så att ingen bygger dem.
+  **Varifrån kortet kommer:** Bengts fråga 13/9 — ska riskerna kunna vägas ihop till en sammanlagd risk, eller bara den
+  största sägas? — och *"om radarn signalerar blött och offset signalerar under noll, kommer motorn att generera en
+  isrisk framöver?"* (svaret då: nej).
+  **TVÅ REGLER, olika skäl:** · **Regel 1 — en röst i taget.** Prioriteten väljer EN vinnare, resten droppas. Människo-
+  faktorer, inte modellering — rörs inte. · **Regel 2 — tröskelregeln**, sedan 16/9 i Axels lydelse: *"En storhet som
+  inte kan motbevisas av en mätning får inte utlösa en varning. Extrapolation faller. Minne av mätningar består."*
+  (TROSKLAR-KOMBINATIONEN §6, DECISIONS #220).
+  **BESLUT 1 — ALLVAR SOM FÖRSPRÅNG (beslutat 16/9, VÄNTAR).** Samma ord, tidigare: `leadM` per fara, 400–3 000 m
+  (16–120 s i 90 km/h). Formen är Axels egen (kartan §13.1) och redan beslutad för modifierare (#90 roll B, E1).
+  Kostar **F4, inte F5**. ✘ **Inte ordval** — *"en sammanvägd allvarsgrad är ett mätinstrument, inte en röst"* (Axel).
+  ✘ **Aldrig prioritet** — E3: det skulle tysta en olycka.
+  ⏭️ **ORDNINGEN, inget steg före det förra:** (1) grepp 2 fastställt (C och D, #197) → (2) betan i drift i november →
+  (3) S2: skattarens graderade nivå — utan graderat mått finns inget att sätta tiden efter (kartan §13.5) → (4) eget
+  tröskeldokument skrivet före mätning: svep för försprång per nivå + tak för undanträngda varningar i `suppressed`
+  (V1: ett längre försprång är tillägg bara om spärrloggen inte visar undanträngning) → (5) skugga → (6) dom, tidigast
+  mars → (7) F4 i tre portar. Rösten är Axels. Kartans hake: första försprånget att modulera är troligen segmentets,
+  inte ispunktens (A1 säger redan samma mening för kod 2 och 4).
+  **BESLUT 2 — ETT SMALARE UNDANTAG (ÖPPET, Bengts).** Min tillämpning av den gamla regeln var trubbigare än
+  verkligheten: **(a) radarn är ingen modell** utan en mätning av nederbörd, kalibrerad med faktorn 0,65 (#153/#154);
+  **(b) interpolation mellan två mätningar är inte extrapolation från en.** Mellan en station på −3 °C och en på −2 °C är
+  *"här är det under noll"* inramat av två eniga mätningar — grind A: **0–7 km MAE 0,33 °C, grova fel 0,0 %**
+  (DECISIONS #131). Förslaget var att en modellerad temperatur får utlösa **ENDAST** inramad mellan mätande stationer
+  inom kort avstånd som är **eniga om tecknet**.
+  🔒 **Sedan 16/9 är interpolation FÖRBJUDEN som utlösare, och beslut 2 har ingen egen öppning** (TROSKLAR-KOMBINATIONEN
+  §6 T5, §10). Beslutet måste klara T1–T3 som allt annat: ett vittne **på platsen** som kan fälla värdet. I de källor vi
+  har i dag finns inget sådant mellan stationerna — beslut 2 behöver alltså en ny källa innan det kan bära något.
+  **VARFÖR INGET GÅR ATT GÖRA NU:** båda besluten vilar på vinterdata. K-A står på ⊘ INGEN DOM med **noll** uppmätta
+  frysfall (DECISIONS #137); Finlands 133 "frysrader" 13/9 var en fastnaglad givare. Grind A:s A2-rad är OAVGJORT.
 - [ ] 🤝 **#94 Samarbeten vi inte prövat: ~~försäkringsbolag~~, åkerier, NTF/M Sverige** (ur Claudes
   systemanalys 10/9). 🛑 **FÖRSÄKRINGSSPÅRET STÄNGT 11/9 av Bengt (DECISIONS #94):** "det är klarlagt
   att vi inte kan få det samarbetet". Kortet bär det därmed varken som facitkälla eller som första
@@ -805,6 +802,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [ ] 📜 **#198 TROSKLAR-SKUGGAN §4 MOT TRÖSKELREGELN — rättas före domen i mars 2027** (fynd 16/9, DECISIONS #220).
+  Domslutet (a) TALAR och (b) TALAR NÄRA ANKARE låter segmentprognosen tala på *modellerade* segment. Det krockade redan
+  med den gamla meningen (FRYSKLASSNINGEN §1/§7) och krockar med T3: ett värde där ingen mätt och inget vittne på platsen
+  kan fälla det får inte utlösa. Texten ska säga vad (a)/(b) då får betyda — karta, konfidens, eller tal bara där T1–T3
+  klaras. Fastställt dokument ⇒ Bengts rad. Verify: §4 säger inget som regel T förbjuder.
 - [ ] 🧾 **#196 FÖRARFACIT-HYGIEN — klockslaget och provraderna** (fynd 16/9 vid #97:s deploy, DECISIONS #214).
   (1) Vakthundens rad skriver `String(df.senast).slice(0, 16)` ⇒ "Wed Sep 16 2026 " — datum utan tid (min rad, S4 steg 1).
   (2) `driver_facit` bär två PROV och noll riktiga svar: Android `prov` 03:07Z och ett iOS-format serverprov 11:47Z
@@ -1111,7 +1113,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   står uttryckligen att 1,1 % inte får åberopas som skäl för någon tröskel.
   🚧 **AVGRÄNSNINGEN SOM AVGÖR ALLT ANNAT:** en godkänd frysklassning ger INTE rätt att skapa en
   varning där motorn tiger. Den får bara stärka en bedömning som redan vilar på en uppmätt station.
-  **En modellerad storhet får aldrig vara en avtryckare** — samma regel som #95 (d) fick.
+  **En modellerad storhet får aldrig vara en avtryckare** — samma regel som #95 (d) fick. *(Sedan 16/9 i Axels
+  lydelse, DECISIONS #220: klassningen utlöser aldrig ensam — T6.)*
   🎯 **K2 är dokumentets egentliga idé:** grind A tvingade modellen att svara i varje punkt. En
   klassificerare får AVSTÅ nära gränsen — frågan blir hur bra den är på det den uttalar sig om, och
   hur mycket den då måste avstå. Därför har K-A både träffsäkerhets- OCH täckningskrav.

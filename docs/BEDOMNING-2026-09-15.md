@@ -54,8 +54,12 @@ beviset finns — inte när koden är skriven.
 | Vektorgeneratorn i otakt med `engine/vectors/` | ⏳ nytt 16/9 | #195 | #214 | fullkörning ⇒ ingen diff i `engine/vectors/` |
 | Förarfacit-hygien: klockslaget i vakthundsraden + två provrader som räknas som svar | ⏳ nytt 16/9 — radering av prov är Bengts beslut | #196 | #214 | raden visar tid; `forarfacit` räknar 0 prov |
 | Trafiklärare som testförare (Skyltfonden AP3, Bengt 16/9) | ⏳ beror på trafikskolornas ja senast 25/9; inbjudningsvägen (TestFlight extern = Beta App Review, Android APK/Play) är Axels — påverkar S5:s tolv testare | — | #216 | lärare med testversion i november och första lärarsvaret i `driver_facit` |
-| S10 grepp 2: TROSKLAR-KOMBINATIONEN (C, D, tröskelregeln) | 🔨 utkast 16/9 — väntar på fastställande före första frostnatten | #197 | #217 | fastställt dokument, D-raden i varje tröskeldokument och T i FRYSKLASSNINGEN §1/§7 — i samma commit |
+| S10 grepp 2: TROSKLAR-KOMBINATIONEN (C, D, tröskelregeln) | 🔨 utkast 16/9 · ✅ **T fastställd 16/9 (#220)** · startvärden skrivna (#222) — C och D väntar på fastställande före första frostnatten | #197 | #217 | fastställt dokument, D-raden i varje tröskeldokument och T i FRYSKLASSNINGEN §1/§7 — i samma commit |
 | Radarns bidrag mäts om i första frostmånaden (`scripts/matningar/radar-tackning-2026-09-16.sql`) | ⏳ vid frost, före januari-domen | #197 | #218/#219 | samma fråga på kalla timmar med snö |
+| Axel läser tätningarna i tröskelregeln (TROSKLAR-KOMBINATIONEN §6.4: T1, T5, T6 — skärpningar av hans lydelse) | ⏳ nytt 16/9 | #197 | #220 | Axels rad |
+| Betans startvärden in i motorn och `scripts/kontraktsgrinden.ts` när S3 byggs | ⏳ med S3 | #197 | #222 | grinden bär samma tal som DECISIONS #222 |
+| #153 försprång startar först efter grepp 2 fastställt, betan och S2 | ⏳ efter betan | #153 | #221 | eget tröskeldokument före kod |
+| TROSKLAR-SKUGGAN §4 (a)/(b) mot tröskelregeln | ⏳ före domen mars 2027 | #198 | #220 | §4 säger inget som regel T förbjuder |
 
 ---
 
@@ -81,7 +85,7 @@ Fem rader. Inget annat är "nu".
 | :-- | :-- | :-- | :-- |
 | **S1** | Skuggan läser N4:s fält vid sidan av motorn och loggar vad villkoret *skulle* ändrat. **GRIND (Axel 16/9): körs INNAN något mer byggs på `regn_h`** — regntäckningen 13 % gör `regn_h` till efterhalkans osäkra halva. **Byggt 16/9** (kolumn `efterhalka`, DECISIONS #198) — innehåll kräver första kalla natten | — | S1 före S2 |
 | **S2** | **E på K2:** skattaren returnerar nivå + bevis, byggd på frysklassningens osäkerhetszon (±0 · ±0,5 · ±1,0 °C) — indata till försprånget. *Förkrav klart 15/9: trendfälten besiktigade av värdevakten (DECISIONS #192)* | F3 | — |
-| **S3** | **Regeln i motorn:** `icing_point` fyrar när det *inte* regnar men ytan är blöt (N4:s `regn_h` ≤ N) och faller (`lutning`). Märkt text: *"Halkvakt tror: frysrisk framöver"* — ny gren, inte nytt slag. Tre portar | F3 + F4 + text | **`v11_silent_drive` måste fortfarande tiga** — vektorn försvagas aldrig |
+| **S3** | **Regeln i motorn:** `icing_point` fyrar när det *inte* regnar men ytan är blöt (N4:s `regn_h` ≤ N) och faller (`lutning`). Märkt text: *"Halkvakt tror: frysrisk framöver"* — ny gren, inte nytt slag. Tre portar **Startvärden skrivna 16/9 (DECISIONS #222).** | F3 + F4 + text | **`v11_silent_drive` måste fortfarande tiga** — vektorn försvagas aldrig |
 | **S4** | **Facitknappen:** ~~efter varje varning *"stämde det?"*~~ **Axels ja 16/9: två knappar under "Senast sagt" — *Stämde* / *Stämde inte*, ingen fritext; loggas lokalt, skickas när bilen står stilla.** Skickar varnings-id + svar, inget spår. Bara betatestare, uttryckligt samtycke. **Produktbokens Om-avsnitt ("vi samlar in: ingenting") ändras i samma commit — ordagrant, frivilligt, synligt** (kort #21) | app, båda plattformarna | ~~Axels ja på text och flöde~~ ✅ 16/9; PRODUKTBOK i samma commit |
 | **S5** | **Betan till tolv testare i november.** Skuggloggen + förarsvaren + kamerafacit = tre facitkällor. Testförarna, också trafiklärarna, får veta att värdena är gissade till februari (TROSKLAR-KOMBINATIONEN §7) | — | — |
 | **S6** | **Dom i januari** på förarfacit + kamerafacit mot Ö-B:s golv (nettonytt ≥ 5 %, tillkomna falsklarm ≤ 25 %). Mars-domen blir en dom på riktig data | — | TROSKLAR-OVERGANGAR, oförändrad |
@@ -93,8 +97,8 @@ Fem rader. Inget annat är "nu".
 | **S7** | **Facitvakter:** vakthundsrad *"historiken växer"* (inte bara *"sync_state är färsk"*) · ~~mät `situation_archive`~~ (mätt 15/9: 3 122 olyckor/30 dygn, DECISIONS #189) · bevisa att `trv-bevakning` sparar 13 källor | Claude |
 | **S8** | **#52 före #45:** ett test i tre portar låser att kod 1 + "Packad snö" *måste* larma — motsatsen till vinterbaseline. Vektorn beslutas innan #45 rörs. ✅ **Byggd, godkänd (Axel) och deployad 16/9 som v24** tillsammans med #97 (DECISIONS #214) — når telefonerna med nästa app-bygge | Bengt + Axel |
 | **S9** | **T-A efter första frostnatten**, steg 0 inom sju dygn, #95(d):s F-B i samma varv | Claude |
-| **S10** | **C och D:** grinden för kombinationen (dokument) och regeln för gemensam kalibrering (ett stycke). Tröskelregeln till Axels lydelse — *efter N1*, annars saknar den vittne. 🔨 **Utkast 16/9: `docs/TROSKLAR-KOMBINATIONEN.md`** (C = KB-A–D, D = D1–D7, T med vittneskrav; DECISIONS #217) — väntar på fastställande | Claude skriver, Bengt fastställer |
-| **S11** | **#153 → försprång** (Axel) · mät korridortillväxten 3 000 m mot 1 000 m | Axel · Claude |
+| **S10** | **C och D:** grinden för kombinationen (dokument) och regeln för gemensam kalibrering (ett stycke). Tröskelregeln till Axels lydelse — *efter N1*, annars saknar den vittne. 🔨 **Utkast 16/9: `docs/TROSKLAR-KOMBINATIONEN.md`** · ✅ **T fastställd 16/9 (#220)** (C = KB-A–D, D = D1–D7, T med vittneskrav; DECISIONS #217) — väntar på fastställande | Claude skriver, Bengt fastställer |
+| **S11** | **#153 → försprång** (Axel) · mät korridortillväxten 3 000 m mot 1 000 m. ✅ **Omformulerat 16/9 (DECISIONS #221)** — väntar på grepp 2 fastställt, betan och S2 | Axel · Claude |
 | **S14** | **V-B1:s jämförelse (DECISIONS #212):** tröskel eller "regnade det alls"? Radarns 5-min-topp mot stationens 30-min-summa gör tröskeljämförelsen sned åt ett håll. Underlaget är DELVIS-kolumnen; beslutet är Axels enligt §5 och tas när V-C är uppfyllt — inte förr | Axel, på Claudes mätning |
 | **S12** | **Drift:** ~~#97 kodgrind för "Rimfrost"/"Halkrisk"~~ **(ordlistan vidgad 16/9, DECISIONS #214 — även Nysnö och Halt)** · måndagsserien från naken cron till puls/knapp · #83 steg 2 (export/Pro) före första kalla veckan · #45 lapse 0,71 → 0,63 · #76 deploybevis · #146 klonfelet | Bengt / Axel / Claude |
 | **S13** | Skattaren: en period **utan kodändring** under mätning — tre instrumentfel på tre körningar | Claude |
@@ -135,16 +139,17 @@ Fem rader. Inget annat är "nu".
 | Steg D: utgångspunkt given (under halka, över vilt; *"Vattenplaning framöver — sakta ner"*), beslut efter V-C | Axel, 16/9 |
 | #52-vektorn: kod 1 + "Packad snö" MÅSTE larma — v24 i tre portar (S8, DECISIONS #214) | Bengt + Axel, 16/9 |
 | Kombinationen: de 1 248 punkter som inte kan spelas upp stryks, radarn inräknad — radarns bidrag mätt till högst ~13 % (DECISIONS #218/#219) | Bengt, 16/9 |
+| Tröskelregeln i Axels lydelse, tätad: T1 per tillstånd, T5 interpolation förbjuden (#153 beslut 2 utan egen öppning), T6 prognoser utlöser aldrig ensamma — inte en uppmjukning, skyddet följer med (DECISIONS #220) | Bengt, 16/9; Axel om lydelsen |
+| #153 omformulerat till försprång och väntar till efter grepp 2 och betan; ordval och prioritet strukna (DECISIONS #221) | Bengt, 16/9; formen Axels |
+| Betans startvärden (D2): mitten, den tystare av två mittpunkter — N 2 h, fall ≥ 0,8 °C på 30 min, regn > 0, yta +1…+3 °C (DECISIONS #222) | Claude på Bengts order, 16/9 — Bengt kan byta |
 
 ### 4.2 Öppna
 
 | Beslut | Vem | Rekommendation |
 | :-- | :-- | :-- |
-| Tröskelregeln till Axels lydelse (S10) — lydelse och vittneskrav i TROSKLAR-KOMBINATIONEN §6; §6.4 besvaras uttryckligen | Bengt + Axel | ja — N1 klar |
 | C och D fastställs (S10, TROSKLAR-KOMBINATIONEN §4–§5) | Bengt, Axel kontrasignerar | ja, före första frostnatten |
 | Förslagen i C och D: förarfacits underlag (KB-D4) · kalibreringspunkt 1/2 (D3) · kamerabilden fäller premiss, aldrig utfall | Bengt | ja |
 | Utfallet i januari: KLARAR eller OAVGJORT ⇒ betan fortsätter oförändrad till mars, FALLER ⇒ grenen tas bort (TROSKLAR-KOMBINATIONEN §7) | Bengt + Axel | ja |
-| Principen för betans startvärden (D2): mitt i svepen eller i den försiktiga änden (S3) | Bengt | före frosten |
 | #45 lapse 0,63 (S12) | Bengt + Axel | ja |
 | `marknadsforing.yml` | Axel + Bengt | ingen rekommendation |
 | TRV-anmälan om nio byvindgivare — brevet är klart | Bengt | ja |

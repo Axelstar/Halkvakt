@@ -6375,3 +6375,94 @@ upprepningsspärren kan tysta en annan varning utan att någon regel "tystar". K
 **Fortfarande öppet:** §6.4 (Bengt, med Axel) · utfallet i januari — förslaget KLARAR/OAVGJORT ⇒ betan fortsätter, FALLER
 ⇒ ut (Bengt och Axel vid fastställandet) · principen för betans startvärden, D2 (S3, före frosten) · fastställandet.
 
+## #220 (16/9 2026) Tröskelregeln i Axels lydelse fastställd — tätad i tre punkter, inte en uppmjukning
+
+**Bengts beslut 16/9:** *"täta 6 och ta axels lydelse först … Axel håller med gällande otätade text"*. TROSKLAR-KOMBINATIONEN
+§6.4 besvaras: **ingen uppmjukning, på villkor att tre hål täts** — tätade i samma commit.
+
+1. **T1 prövar per tillstånd, inte på utfallet.** Utkastet prövade *påståendet* inom utfallsfönstret. En prognos kan
+   alltid fällas i efterhand, så regeln hade släppt igenom varje prognos.
+2. **T5: interpolation är förbjuden som utlösare.** Utkastet sade "varken tillåten eller förbjuden", fast T3:s
+   definition — ett värde där ingen mätt — omfattar den.
+3. **T6, ny: prognoser och modellprodukter** (SMHI:s varningar, frysklassningen, en trend räknad framåt) får stärka,
+   försvaga eller förlänga (N_varning, E1) en varning som vilar på en mätning — aldrig ensamma utlösa.
+
+**Införd i TROSKLAR-FRYSKLASSNINGEN §1 och §7**, med den gamla meningen citerad. **Skyddet följer med:** regel T i sin
+helhet får skärpas men aldrig mjukas upp, oavsett signaturer — samma skydd som den gamla meningen hade. Ett smalare
+skydd hade i sig varit en uppmjukning.
+
+**Skärpt mot min rekommendation — #153 beslut 2 får ingen förbehållen öppning.** Jag rekommenderade "förbjuden tills
+#153 beslut 2 fattas". Men den gamla meningen förbjöd en modellerad temperatur som avtryckare *oavsett signaturer*; en
+öppning skriven i förväg hade gett den nya regeln något den gamla förbjöd — just den uppmjukning §6.4 frågade om. Beslut
+2 lever, men måste klara T1–T3 som allt annat: ett vittne **på platsen** som kan fälla värdet. I de källor vi har i dag
+finns inget sådant mellan stationerna.
+
+**Alternativ som valdes bort:** (a) behålla den gamla meningen — bokstavligt förbjuder den minne av mätningar, alltså
+betan (kartan §13.2); (b) Axels lydelse otätad — de tre hålen ovan; (c) skydda bara T3 — den gamla meningen var skyddad
+som helhet; (d) en förbehållen öppning för #153 beslut 2 — se ovan.
+
+**Avsteg från dokumentets §9:** T fastställs före C och D, inte i samma varv. D-raden i varje tröskeldokument och
+kamerabildens rad i OVERGANGAR §8 väntar på fastställandet av C och D. **Axel** har hållit med om den otätade lydelsen;
+tätningarna ändrar inte hans tre meningar, bara preciseringarna, och är alla skärpningar — han ska ha läst dem
+(bedömningen §0b). Kartan §13.6 (*"Om tröskelregeln ska skrivas om till Axels lydelse — öppet"*) är besvarad, men kartan
+är fryst (#186) och rättas efter bygge + mätning.
+
+**Funnet i samma genomgång:** TROSKLAR-SKUGGAN §4 (a)/(b) låter segmentprognosen *tala* efter domen i mars 2027 — på
+modellerade segment och nära ankare. Det krockade redan med den gamla meningen och krockar med T3. Inte rättat nu
+(fastställt dokument, domen ligger ett år bort); kort #198.
+
+## #221 (16/9 2026) #153: allvar som försprång — omformulerat, och väntar till efter grepp 2 och betan
+
+**Bengts beslut 16/9:** *"gör 153 och omformulera 153"* — på mina två rekommendationer: #153 väntar till efter grepp 2
+och betan, och omformuleras till försprång.
+
+1. **Beslut 1 heter nu "allvar som försprång":** samma ord, tidigare (`leadM` per fara, 400–3 000 m). Formen är Axels
+   egen (kartan §13.1: *"Rösten säger samma ord men tidigare"*) och redan beslutad för modifierare (#90 roll B, E1).
+   **Struket ur kortet:** ordval (Axel: *"ett mätinstrument, inte en röst"*) och prioritet (E3 — det skulle tysta en
+   olycka). Kostnaden blir F4, inte F5.
+2. **Ordningen:** grepp 2 fastställt (C och D) → betan i november → S2: skattarens graderade nivå (utan graderat mått
+   finns inget att sätta tiden efter, kartan §13.5) → eget tröskeldokument skrivet före mätning: svep för försprång per
+   nivå och ett tak för undanträngda varningar i `suppressed` (V1) → skugga → dom, tidigast mars → F4 i tre portar.
+   Rösten är Axels.
+3. **Inget byggs nu.** Kortet är omskrivet så att ingen bygger det avvisade.
+4. **Beslut 2** (interpolation mellan eniga stationer) är **fortfarande öppet** och skilt från beslut 1 — men utan egen
+   öppning i tröskelregeln (#220).
+
+**Alternativ som valdes bort:** bygga #153 före grepp 2 och betan — då döms betan i januari mot en motor vars försprång
+ändrats under den, och KB-B mäter två saker på en gång. Kartan §13.6 (*"Om #153 ska omformuleras till försprång —
+öppet"*) är besvarad; kartan är fryst och rättas efter bygge + mätning.
+
+## #222 (16/9 2026) Betans startvärden (D2) — skrivna före frosten, utan utfall
+
+**Bengts order 16/9:** *"startvärden för betan före frosten"*. Principfrågan — mitt i svepen eller i den försiktiga änden —
+var inte avgjord. **Jag valde mitten, och den tystare av de två där svepet har två mittpunkter.** Värdena gäller tills
+Bengt byter dem med en rad. Det får han göra fram till betans första natt, så länge ingen har läst facit eller räknat hur
+ofta punkterna fyrar i S1:s logg.
+
+**I klartext:** betan fyrar när ytan ligger mellan +1 och +3 °C, har fallit minst 0,8 °C de senaste 30 minuterna, och
+stationens mätare visat regn inom de senaste 2 timmarna.
+
+| Parameter | Svep | Startvärde | Varför |
+| :-- | :-- | :-- | :-- |
+| N | 1 · 2 · 3 · 4 h | **2 h** | mittpunkterna 2 och 3; 2 är tystare |
+| Fönster | 15 · 30 · 60 min | **30 min** | mitten |
+| Lutningströskel | 0,4 · 0,6 · 0,8 · 1,2 °C per fönster | **0,8 °C** (1,6 °C/h) | mittpunkterna 0,6 och 0,8; 0,8 är tystare |
+| Minsta regn | > 0 · ≥ 0,2 · ≥ 0,5 mm | **> 0** | enda värdet som går att spela upp (#219) |
+| Startband | +1…+3 · +1…+4 · +1…+6 °C | **+1…+3 °C** | enda värdet som går att spela upp (#219) |
+| r (radar) | 0,1 · 0,5 · 2 mm/h | **av** | struken (#219) |
+| N_varning | av · 2 · 4 · 6 h | **av** | mittpunkterna 2 och 4; 2 är tystare — och med N = 2 h är 2 h detsamma som av |
+
+**Skälen till principen:**
+1. **Betan samlar in facit** (V5). I den försiktiga änden fyrar den nästan aldrig — fall 1,2 °C på 15 minuter är
+   4,8 °C/h — och då finns inga förarsvar att döma i januari.
+2. **Januari kan ta bort grenen** (§7, förslag). Ett extremvärde riskerar att fälla idén för startvärdets skull: golvet
+   (≥ 5 % nettonytt) i den försiktiga änden, taket (≤ 25 % falsklarm) i den generösa.
+3. **Tystnad är en funktion.** Där svepet har två mittpunkter tas den tystare.
+4. **Regeln är mekanisk.** Ingen kurva, inget facit och ingen rad i S1:s efterhalka-logg lästes när värdena valdes (D2).
+
+**Punkten är en av de 48 som kan spelas upp** (§3), så KB-A:s varianter och kalibreringen har den i sitt rutnät.
+**N_varning:s övriga värden (4 och 6 h) finns inte bland de 48** — om de kan spelas upp mot SMHI-arkivet (`sql/015`) är
+inte prövat; tills dess står de utanför kalibreringen. **Vad punkten inte är:** en tröskel ur mätning. Den är gissad med
+flit, och en dålig december är designen, inte ett fel (V5). **När S3 byggs** skrivs värdena i motorn och i
+`scripts/kontraktsgrinden.ts` i samma commit (Axel, tre portar).
+
