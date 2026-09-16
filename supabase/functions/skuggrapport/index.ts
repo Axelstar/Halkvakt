@@ -18,6 +18,21 @@ Deno.serve(async (req) => {
     );
     const raw = await r.json();
     if (!Array.isArray(raw)) return new Response("datafel: " + JSON.stringify(raw), { status: 500 });
+    // S4 steg 5 (DECISIONS #205): förarfacit synligt för den som just tryckt — utan databas, utan Claude.
+    // Läses med service-nyckeln (tabellen är dubbellåst för anon); fail-soft, aldrig ett fall för rapporten.
+    const sedan7d = new Date(Date.now() - 7 * 24 * 3600e3).toISOString();
+    let forarfacit: Record<string, unknown> = { fel: "kunde inte läsas" };
+    try {
+      const fr = await fetch(`${SB}/rest/v1/driver_facit?select=svar,app,received_at&received_at=gte.${sedan7d}&order=received_at.desc&limit=500`,
+        { headers: { Authorization: `Bearer ${SRK}`, apikey: SRK } });
+      const f: { svar: string; app: string; received_at: string }[] = await fr.json();
+      if (Array.isArray(f)) forarfacit = {
+        svar_7d: f.length, ja: f.filter((x) => x.svar === "ja").length, nej: f.filter((x) => x.svar === "nej").length,
+        android: f.filter((x) => x.app === "android").length, ios: f.filter((x) => x.app === "ios").length,
+        senast: f[0]?.received_at ?? null,
+      };
+    } catch (e) { forarfacit = { fel: String(e).slice(0, 80) }; }
+
     const rows: { route: string; run_at: string; n_hazards: number; n_alerts: number;
       alerts: { kind: string; text: string; t?: number }[]; vb?: { id: string; road: string | null; regn: number | null }[];
       suppressed?: { kind: string; by: string }[]; efterhalka?: { regn_h: number | null; larm: boolean }[] }[] = raw;
@@ -82,6 +97,7 @@ Deno.serve(async (req) => {
         senast: t.latest, sagt: t.lines })),
       tysta: quiet.map((q) => q.route),
       takt,
+      forarfacit,
       // S1 (DECISIONS #198): efterhalkans indata per station i korridoren — tom tills weather[] har kalla stationer.
       efterhalka: {
         stationer: rows.reduce((a, x) => a + (x.efterhalka?.length ?? 0), 0),

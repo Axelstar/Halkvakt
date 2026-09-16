@@ -5971,3 +5971,18 @@ vakthundens `rad` i stället för en timeout.
 
 **Utfall 16/9:** migration 023: `timeout_ms = 120000`; larmprov 03:43Z: vakthundens svar läst ur `net._http_response` — status 200, `larmvag: ok`, rad-raderna lästa: mätvakten 8 flöden/0 problem · förarfacit 1 svar · issue matvakt 0 öppna · nyckel PAT 2026-11-22 (66 dygn) · Supabase 2026-12-08 (82 dygn) · issue vakthund 1 öppna (larmprovet).
 
+## #205 (16/9 2026) S4 steg 5 förberett: förarfacit syns i skuggrapporten, och fälttestets recept
+
+**Bengts "gör nummer 2" 16/9.** Steg 4 (iOS-bild) och 5 (fälttest) kräver en telefon och en förare — det jag kan
+göra är att beviset syns utan mig: skuggrapporten (publik JSON) får `forarfacit` — svar senaste 7 dygn, ja/nej,
+android/ios, senaste tidpunkt — läst med service-nyckeln ur den dubbellåsta tabellen, fail-soft. Provsvaret från
+03:08Z (android, ver "prov") ska räknas som 1 tills det första riktiga kommer.
+
+**Fälttestets recept (Android, debug-APK ur android.yml på main; iOS ur Axels bygge):** Inställningar → BETATEST →
+*Svara på varningarna* PÅ (läs texten — den säger vad som skickas). Kör tills rösten talar. Stanna, öppna appen:
+under "Senast sagt" står repliken med *Stämde* / *Stämde inte*. Tryck. Svaret går iväg när bilen stått stilla 30 s
+eller när appen öppnas nästa gång. Bevis: `forarfacit.svar_7d` räknar upp i skuggrapporten, och vakthundens rad
+"förarfacit: n svar" nästa timme.
+
+**Vad som INTE bevisas av receptet:** att svaret är sant. Det är dom-knappens sak i januari (S6), mot kamerafacit.
+
