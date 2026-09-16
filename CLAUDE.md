@@ -208,6 +208,12 @@ i samma commit när de överlappar.
   radslutsattribut följs av `git add --renormalize` i samma commit.
 - `Boolean(precipitation)` är en falsklarmsmaskin: Trafikverket skriver "no" vid uppehåll och
   de nordiska källorna "Dry". Nederbördsklasser är strängar med ordlista, aldrig sanningsvärden.
+- Ett bevis på att en KOLUMN skrivs är inte ett bevis på att den bär något. `shadow_log.suppressed`
+  verifierades som `[]` i varje rad i två dygn och bokfördes som "spärren synlig" (#127 a): kroken hade
+  skrivits i den GENERERADE `index.ts`, bunten skrev över den från `main.ts`, och deployen gick utan
+  krok. Fjärde gången på tio dagar som "fanns" togs för "fungerade" (Axel 16/9, DECISIONS #193/#196).
+  Regel: ändra aldrig en genererad fil (bundle-skriptets rad 4 säger det), och beviset för en ny logg
+  är en rad MED innehåll — framkallad med prov eller inväntad — aldrig att fältet finns.
 
 - En tavelsynk som ERSÄTTER en sektion måste diffas på kortantal före push. 99473c7 (8/9 20:43)
   skrev om "Axels nästa steg" och svalde 174 rader — hela #38b (stråket, grind A, ankar-

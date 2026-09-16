@@ -5735,6 +5735,13 @@ Skuggrapporten får fältet `sparren` (kastade totalt och per par "X tystad av Y
 **Bevis som gäller:** en körning med `sparren.kastade > 0` efter deploy — inte commit-hashen. Rutter med tät
 kameraföljd (E18 Örebro→Stockholm, 28 kameralarm/dygn) ger den inom några varv.
 
+**RÄTTELSE 16/9 (Axel):** orsaken är känd och var hans egen. Kroken skrevs i den GENERERADE `index.ts`
+(bundle-skuggmotor rad 4: "ändra aldrig här"), bunten skrev över den från `main.ts`, deployen gick utan krok,
+kolumnen verifierades som skriven — tom — och #127 bokförde spärren som synlig. "Det är fjärde gången samma fel
+på tio dagar: verifierat att något fanns, inte att det fungerade." Inte en regression: ett bygge som aldrig fanns.
+Läxan står i CLAUDE.md (#196). Beviset med innehåll väntar fortfarande: 20:00–22:00Z 15/9 och natten gav 0
+kastade — septembers farubild konkurrerar sällan inom 45 s.
+
 ## #194 (15/9 2026) Trendarkivets flyttalsrester: en 26-minuters lucka 13/9, rundad i efterhand — och gapet var orundat
 
 **Bengts ja 15/9 (kort #189).** Värdevakten (#192) visade `lutning30_c` min −0,7999999999999998. Källan: tabellen
@@ -5769,4 +5776,40 @@ list-API som svarar tunt utan felkod ser ut som sanning.
 i #268 och ingen ny issue.
 
 **Utfall 15/9:** vakthund deployad 21:41Z; `matvaktprov` 21:43Z: raden `issue matvakt: 1 öppna — bevisat via utfallet: provet kommenterade #268 (kommentar 9), ingen ny issue; själva raden ligger i pg_nets net._http_response och läses inte utifrån` i svaret, 1 öppen mätvaktsissue (#268), ingen ny skapad.
+
+## #196 (16/9 2026) Axels svar på eftermiddagsrapporten 15/9 — fem beslut, en rättelse, en omprioritering
+
+**Axel verifierade själv:** 27 `rain_segments` på CDN med rätt manifest-sha; **26 objekt i `facit`** sedan 16:00Z
+15/9 (från noll efter 5 657 körningar). Han bekräftade också att `suppressed`-felet var hans (rättelse i #193).
+
+**Fem svar, nu beslut:**
+1. **`rain_segments` som egen nyckel — rätt.** Det enda skälet för motorsidan vore om apparna skulle läsa den i vinter,
+   och det ska de inte förrän V-C dömt. Skuggans egen instans är billigare än risken.
+2. **Steg D, utgångspunkt (beslut först efter V-C):** vattenplaning gäller vid yta över +4, frysrisk under +1 — de
+   utesluter varandra i praktiken, prioriteten dem emellan är nästan teoretisk. **Under halka (#68), över vilt.**
+   Text i frysriskens form: *"Vattenplaning framöver — sakta ner."* Sex ord; punktkälla säger "framöver". Öppet att
+   avgöra då: `rain_segments` är en segmentkälla (radar per segment) — kort #81 D låter segmentkällan säga "på
+   vägen framöver". Kriteriet i kartans §7.8 (handling · text · prioritet före vektorn) är därmed förberett, inte uppfyllt.
+3. **PAT-rotationen:** Axels, senast 15/11; bevis = publicering med ny nyckel; kalendern larmar 8/11.
+4. **Facitknappen (S4) — ja:** två knappar under "Senast sagt", *Stämde* och *Stämde inte*. Inget annat — ingen fritext
+   i en bil. Loggas lokalt, skickas när bilen står stilla. **Krav i samma commit:** produktbokens Om-avsnitt säger
+   "vi samlar in: ingenting"; med knappen samlas larm-id + svar in — inte position, inte resa, men något. Det ska stå
+   ordagrant, frivilligt och synligt, annars bryter knappen löftet. Kort #21 bär detta.
+5. **V-B3 mot fem varningar på ett varv:** loggen ska vara RÅ. Räknar skuggan per regndygn redan i loggen är tröskeln
+   inbyggd i mätningen och antalet syns inte längre. Dom-knappen räknar — samma princip som spärrloggen: logga vad
+   som hände, låt domen tolka. Så är det byggt (#191).
+
+**Två synpunkter på det byggda:**
+- **Kamerafacit, reservation:** 100 % inom 15 km beror på att 738 av 744 väglagskameror står vid en station. Radien
+  säger att det finns en kamera nära — inte att bilden visar rätt sträcka. Det avgörs i mars när någon öppnar bilderna.
+- **Den stoppade väglagsfrågan är rapportens viktigaste fynd** — och den säger att kartans fog-tabell inte är
+  tillförlitlig som byggplan: den är läst, inte körd, precis som §5.6 varnar. Kartan är fryst; rättelsen (R16) läggs i
+  bedömningens bilaga A och förs in när kartan öppnas — vilket villkoret "efter bygge + mätning" nu tillåter.
+
+**Omprioritering:** regntäckningen 13 % oroar Axel mer än rapporten låter. `regn_h` vilar på arkivet, och `regn_h` är
+efterhalkans ena halva. **S1 (skuggjämförelsen) körs INNAN något mer byggs på `regn_h`** — före S2, inte efter.
+Bedömningens §2.1 bär det som grind.
+
+**Läget på morgonen 16/9 (02:20Z):** `rain_segments` 38, `vb` 13 skuggvarningar på fyra rutter sedan 17:30Z,
+`sparren` 0, `weather` fortfarande tom (ingen station ≤ 3 °C) — N4:s fältbevis väntar.
 
