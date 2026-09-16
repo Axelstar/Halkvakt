@@ -427,6 +427,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   vittneskrav; §6.4 måste besvaras: är det en uppmjukning av FRYSKLASSNINGEN §7? VÄNTAR: Bengt fastställer C, D ·
   Bengt + Axel avgör T · förslagen KB-D4, kalibrering 1/2, kamerabilden (premiss ja, utfall nej). **I samma commit som
   fastställandet:** D-raden i varje tröskeldokuments ändringsparagraf, T i FRYSKLASSNINGEN §1/§7. Före första frostnatten.
+  ⚠️ **RÄTTAT SAMMA VARV:** varianterna "skuggas" inte redan — de spelas upp ur S1:s logg, och den bär bara **48 av 1 296**
+  punkter (minsta regn bara > 0, ingen radar-r, startband bara till +3 °C). Beslut före frosten: vidga loggen eller stryk punkterna.
 - [ ] 🧩 **#159 INTEGRATIONSKARTAN — tre av våra egna regler står i vägen för produkten**
   📬 **AXELS FYRA INVÄNDNINGAR INARBETADE 14/9 (DECISIONS #184, kartans nya §13).** Han läste ett
   TIDIGT underlag, där grind A-rättelsen inte fanns. **Tre står, en föll på underlaget.**

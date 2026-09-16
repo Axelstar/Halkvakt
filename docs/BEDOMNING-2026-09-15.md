@@ -141,6 +141,7 @@ Fem rader. Inget annat är "nu".
 | Tröskelregeln till Axels lydelse (S10) — lydelse och vittneskrav i TROSKLAR-KOMBINATIONEN §6; §6.4 besvaras uttryckligen | Bengt + Axel | ja — N1 klar |
 | C och D fastställs (S10, TROSKLAR-KOMBINATIONEN §4–§5) | Bengt, Axel kontrasignerar | ja, före första frostnatten |
 | Förslagen i C och D: förarfacits underlag (KB-D4) · kalibreringspunkt 1/2 (D3) · kamerabilden fäller premiss, aldrig utfall | Bengt | ja |
+| S1:s logg bär 48 av kombinationens 1 296 punkter: vidga loggen (regnmängd, radar-r, stationer till +6 °C) eller stryk punkterna (TROSKLAR-KOMBINATIONEN §3) | Bengt | stryk nu, vidga i oktober om kassan tillåter |
 | #45 lapse 0,63 (S12) | Bengt + Axel | ja |
 | `marknadsforing.yml` | Axel + Bengt | ingen rekommendation |
 | TRV-anmälan om nio byvindgivare — brevet är klart | Bengt | ja |
