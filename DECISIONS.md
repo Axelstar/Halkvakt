@@ -5999,3 +5999,19 @@ release-byggen — ingen väg in i det som testarna får.
 **Bevis:** Axels nästa Xcode-bygge (kompilering) och de två bilderna i `docs/produktbok/`. Ett svar tryckt i
 simulatorn skickas på riktigt och syns i skuggrapportens `forarfacit` med app = ios.
 
+
+## #207 (16/9 2026) iOS 0.3.6 (9) arkiverad och uppladdad — första bygget sedan 0.3.5 (2/9)
+Axel arkiverade och laddade upp 12:21. Bygget bär tre saker som legat på main:
+ • Prioritetsmedveten spärr, golv 10 s (#127, 13/9). Motorn ÄR rörd sedan 0.3.5 — receptet
+   sa "orörd", det var fel. Bengt kommer höra skillnaden: tätare varningar när flera faror
+   kvalificerar, is får avbryta en kamera. Avsiktligt.
+ • Facitknappen Stämde/Stämde inte + betatest-brytaren (S4). Knappen är AV tills testaren
+   slår på den. Tabellen driver_facit: sju kolumner, ingen position, ingen resa.
+ • Fotostudio-kroken -fotostudio_facit (debug) för produktbokens bilder.
+Kontrakt: ios-engine, ci, android gröna på faac4ff. Inget rött — inte 0.3.4 om igen.
+BEVIS SOM VÄNTAR: första raden i driver_facit med app = ios. Det är beviset att hela kedjan
+håller — knapp → facit-svar → tabell → skuggrapport. Fartkameran är rätt första test:
+en fara vi vet är sann, kräver ingen halka.
+Två veckor mellan byggena. 67 servercommits nådde telefonen utan deploy (lägg till, ersätt
+aldrig); 5 appcommits väntade. Läxa: motoränderingar och appändringar ska inte ligga på
+main i tre dygn utan bygge — skuggan kör då en annan motor än telefonen.
