@@ -93,6 +93,22 @@ annan och farligare metod, och den behöver egna regler.
 *Utvärderingsparametrarna — nära-miss-band och utfallsfönster (TROSKLAR-TRENDEN §2) — är inte kombinationens
 parametrar. De väljs i T-A och ärvs.*
 
+**Vad som går att spela upp i dag — och vad som inte går.** Kombinationen och dess varianter (KB-A) ska räknas ur S1:s
+råa logg (`efterhalka`, DECISIONS #198), inte ur nya skuggkolumner. Loggen bär `yta`, `fukt`, `regn_h`,
+`lutning15/30/60` och om motorn larmade — men läst i koden 16/9 har den tre gränser:
+
+| Parameter | Går att spela upp? | Varför |
+| :-- | :-- | :-- |
+| N · fönster · lutningströskel | **ja** | `regn_h` är timmar sedan regn (48 h bakåt), lutningen finns per fönster |
+| Minsta regn | **bara > 0** | `regn_h` räknar varje mätning med `rain_sum_mm > 0`; mängden loggas inte |
+| r (radarproxyn) | **nej** | radarn finns i `rain_segments`, inte i loggens stationsrader |
+| Startband | **bara upp till +3 °C** | `weather[]` bär bara stationer med yta ≤ 3 °C |
+
+**Av rutnätets 1 296 punkter kan 48 spelas upp** (N 4 × fönster 3 × lutning 4, med minsta regn > 0 och startband
++1…+3). Resten kräver antingen att loggen vidgas — kod, deploy och byggminuter — eller att de sveppunkterna stryks för
+kombinationen **före första natten** (D2). Det är ett beslut, inte en detalj: det avgör vad D-kalibreringen alls kan välja
+mellan.
+
 ---
 
 ## 4. Grindarna (C)
@@ -105,12 +121,14 @@ utan den".
 För varje del P körs en **utan P-variant** på samma nätter, där P ersätts av det som gäller utan den (V2). För
 efterhalkan finns båda varianterna redan som skuggor:
 
-| Variant | Är samma sak som | Skuggas redan av |
+| Variant | Är samma sak som | Döms för sig i |
 | :-- | :-- | :-- |
-| kombinationen | blöt × faller × frysband | betan (S3) |
+| kombinationen | blöt × faller × frysband | — (betan, S3) |
 | utan *faller* | efterhalkan (a), regn inom N h | Ö-B (TROSKLAR-OVERGANGAR) |
 | utan *blöt* | fallande trend i startbandet | T-B (TROSKLAR-TRENDEN) |
 | utan båda | dagens `icing_point` | motorn själv |
+
+Ingen av de fyra kräver en egen skuggkolumn. Alla spelas upp ur S1:s råa logg — inom de gränser §3 räknar upp.
 
 **Måttet** är B3-paret (TROSKLAR-TYSTNADSFEL §4–§5), räknat för kombinationen och för varje utan P-variant:
 
@@ -269,7 +287,7 @@ beslut med den här paragrafen framför sig, inte som en glidning när betan nä
 | Steg | Vad | Regel |
 | :-- | :-- | :-- |
 | Före första frostnatten | Betans startvärden ur §3:s svep, utan utfall, i DECISIONS (bedömningens S3) | D2 |
-| November | Betan i drift, *"Halkvakt tror: frysrisk framöver"*. Skuggorna Ö-B och T-B går bredvid, så att KB-A:s varianter finns | V1–V5 |
+| November | Betan i drift, *"Halkvakt tror: frysrisk framöver"*. S1:s råa logg går bredvid, så att KB-A:s varianter kan spelas upp (§3) | V1–V5 |
 | **Januari** | **KB-B** på betan som den släpptes, under KB-C och KB-D. Ingen kalibrering före | Ö-B:s golv |
 | **1 februari (FÖRSLAG)** | Den enda gemensamma kalibreringen, på data november–januari | D3–D6 |
 | **Mars** | **KB-A och KB-B** på data efter 1 februari. Mars-domen dömer alltså riktig, okalibrerad vinterdata (DECISIONS #186) | — |
@@ -300,6 +318,7 @@ Skrivet före mätningen (DECISIONS #71):
 | 2 | Fastställande av C och D | före första frostnatten | Bengt, Axel kontrasignerar |
 | 3 | Fastställande av T | samma varv som 2 | Bengt och Axel (§6.4) |
 | 4 | **I samma commit som 2–3:** en rad om D i ändringsparagrafen i varje tröskeldokument · T:s lydelse in i TROSKLAR-FRYSKLASSNINGEN §1 och §7 · kamerabildens rad (§4 KB-D) in i TROSKLAR-OVERGANGAR §8 om Bengt beslutar det | vid fastställandet | Claude |
+| 4b | **Vidga S1:s logg** (regnmängd, radarns r, stationer upp till +6 °C) **eller stryk** de sveppunkter som inte kan spelas upp (§3) | före första frostnatten | Bengt beslutar; en vidgning är kod och kostar byggminuter |
 | 5 | Betans startvärden (D2) | före första frostnatten | S3: Bengt (värden), Axel (motorn) |
 | 6 | KB-B | januari | Claude mäter, Axel dömer |
 | 7 | Kalibreringen (D3–D6) | 1 februari (förslag) | Claude, Bengt fryser |

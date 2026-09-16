@@ -6318,3 +6318,10 @@ utfallet har ett som får bekräfta (olyckor) och inget levande som får fälla 
 **Förslag som väntar på Bengt:** KB-D4 (≥ 30 förarsvar, ≥ 5 förare, ingen > 25 %) · kalibreringspunkten 1 februari
 (D3) · kamerabildens regel. **Inga byggminuter:** bara markdown.
 
+**Rättelse samma varv, efter kodläsning:** första versionen sade att kombinationens varianter "skuggas redan" av Ö-B och
+T-B. Det gör de inte — de kolumnerna är inte byggda. Varianterna ska spelas upp ur S1:s råa logg, och den läst i koden
+(`publish/snapshot-core.ts`, `skuggmotor/main.ts`) har tre gränser: `regn_h` är timmar sedan *något* regn (minsta regn
+bara > 0), radarns r finns inte i loggen, och `weather[]` bär bara stationer med yta ≤ 3 °C (startband bara +1…+3).
+**Av rutnätets 1 296 punkter kan 48 spelas upp.** Nytt beslut för Bengt före första frostnatten: vidga loggen (kod,
+byggminuter) eller stryk de sveppunkterna för kombinationen (D2). Dokumentets §3, §4, §7 och §9 rättade.
+
