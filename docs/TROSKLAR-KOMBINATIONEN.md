@@ -119,7 +119,7 @@ mellan.
 utan den".
 
 För varje del P körs en **utan P-variant** på samma nätter, där P ersätts av det som gäller utan den (V2). För
-efterhalkan finns båda varianterna redan som skuggor:
+efterhalkan är varianterna:
 
 | Variant | Är samma sak som | Döms för sig i |
 | :-- | :-- | :-- |
