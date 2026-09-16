@@ -2,7 +2,8 @@
 
 **Kort:** #197 — bedömningens **S10**, kartans **§8 C och D** och **§13.2**. Tre saker i ett dokument:
 **C** grinden för kombinationen, **D** regeln för gemensam kalibrering, **T** tröskelregeln i Axels lydelse.
-**Status:** 🔨 **UTKAST 2026-09-16**, skrivet av Claude på Bengts order *"kör grepp 2"* (DECISIONS #217).
+**Status:** 🔨 **C och D: UTKAST 2026-09-16**, skrivet av Claude på Bengts order *"kör grepp 2"* (DECISIONS #217).
+✅ **T: FASTSTÄLLD 16/9** (Bengt; Axel håller med om lydelsen — DECISIONS #220).
 **Inget här gäller förrän det är fastställt:** C och D fastställs av Bengt (mätningen är hans) och kontrasigneras av
 Axel (samma form som DECISIONS #61/#68). **T** ändrar ett dokument Bengt fastställt, i Axels ordalydelse, och kräver
 därför båda.
@@ -10,6 +11,9 @@ därför båda.
 **Ändrat 16/9 efter Axels läsning** (DECISIONS #219): V1 flytt i tid · V5 betan är facitinsamling och får stängas av ·
 §3 strykningen beslutad, med sitt pris · KB-D3 följden · §5 vilken regel skyddar vilken dom · §7 utfallet i januari och
 testförarnas information.
+
+**Ändrat 16/9 igen** (DECISIONS #220, #222): §6 tätad i tre punkter och T fastställd · §1 och §10 samma
+tätning · §7 och §9 betans startvärden.
 
 **Varför ett eget dokument.** Integrationskartan är fryst (DECISIONS #186) och säger själv att *"C och D är dokument
 och kan skrivas före frosten"*. Tröskelregeln var låst bakom N1: den saknade vittne (kartan §13.2). N1 är klar sedan
@@ -52,7 +56,7 @@ försprång (#153), SMHI som räckviddsknapp (#95) och kallplatslagret (#91).
 | En dels egna trösklar | i delens eget tröskeldokument — de ändras aldrig av en kombination (D1) |
 | Rösten, texten, prioriteten | Axels. Betans text är beslutad: *"Halkvakt tror: frysrisk framöver"* (DECISIONS #186) |
 | Om något ska bli ett nytt farslag | kartan §7.8, kriteriet Bengt fastställde 15/9 |
-| Interpolation mellan två eniga stationer | #153 beslut 2 — varken tillåten eller förbjuden här (T5) |
+| Interpolation mellan två eniga stationer | #153 beslut 2 — och den måste klara regel T som allt annat. Tills dess **förbjuden som utlösare** (T5, tätat 16/9) |
 
 ---
 
@@ -253,6 +257,7 @@ på båda halvorna är ett andra, billigare skydd inuti kalibreringen. D5 är re
 > mätningar består.**
 > — Axel, 14/9 (kartan §13.2, DECISIONS #184)
 
+**Fastställd 16/9** (Bengt; Axel håller med om lydelsen — DECISIONS #220), införd i TROSKLAR-FRYSKLASSNINGEN §1 och §7.
 Den ersätter den gamla meningen *"en modellerad storhet får aldrig vara en avtryckare"* (TROSKLAR-FRYSKLASSNINGEN §1
 och §7). Kartan §13.2 sade redan att Axels lydelse är bättre. Den gamla förbjöd bokstavligen varje integrerad
 storhet — också minne av mätningar, som aldrig var det regeln skrevs mot.
@@ -261,11 +266,12 @@ storhet — också minne av mätningar, som aldrig var det regeln skrevs mot.
 
 | # | Precisering |
 | :-- | :-- |
-| **T1** | **Motbevisbar** betyder att det finns en namngiven mätning som, på samma plats och inom utfallsfönstret, kan visa att påståendet var fel — och som inte själv är härledd ur samma indata som påståendet |
+| **T1** | **Motbevisbar prövas per tillstånd, inte på varningens utfall.** Varje tillstånd som utlösningsvillkoret vilar på (*vägen är blöt*, *ytan faller*) ska ha en namngiven mätning som, på varningens plats och inom utfallsfönstret, kan visa att tillståndet inte rådde när varningen gavs — och som inte själv är härledd ur samma indata som påståendet. **Att utfallet (*det blev is*) kan kontrolleras efteråt räcker inte:** varje prognos kan fällas i efterhand, och prövades regeln där skulle den inte stänga något *(tätat 16/9)* |
 | **T2** | **Vittnet ska finnas.** Varje utlösande storhet namnger sitt vittne i sitt tröskeldokument, och vittnet är bevisat med innehåll — minst ett objekt, inte en tom tabell — innan storheten når rösten. **En regel vars vittne är tomt är skriven men inte i kraft** |
 | **T3** | **Extrapolation** är ett värde för en plats där ingen mätt, som ingen mätning på platsen kan fälla — offsetmodellens temperatur långt från ankare. Den får inte utlösa. Den får fortsatt stärka eller försvaga en varning som vilar på en mätning (E1, TROSKLAR-SMHI-FORSTARKAREN §1.2) |
 | **T4** | **Minne av mätningar** är ett aggregat av uppmätta värden med känd kedja — regn inom N h, lutning över ett fönster. Det får utlösa, under sina egna grindar |
-| **T5** | **Vad regeln inte avgör:** interpolation mellan två eniga stationer (#153 beslut 2 b) är varken tillåten eller förbjuden här. Den avgörs i #153:s eget dokument. **Frysklassningen (#103) förblir en konfidenshöjare** — K-A2:s tak och "ingen egen avtryckare" för klassningen står orörda |
+| **T5** | **Interpolation** mellan två eniga stationer (#153 beslut 2 b) är ett värde där ingen mätt och faller under T3: **förbjuden som utlösare.** #153 beslut 2 är **ingen öppning** i regeln — det fattas som eget beslut och får bara bära utlösning där ett vittne **på platsen** kan fälla värdet (T1–T2); då är det inte längre extrapolation i T3:s mening. **Frysklassningen (#103) förblir en konfidenshöjare** — K-A2:s tak och "ingen egen avtryckare" för klassningen står orörda *(tätat 16/9 — utkastet sade "varken tillåten eller förbjuden", fast T3:s definition omfattar den)* |
+| **T6** | **Prognoser och modellprodukter** — SMHI:s varningar och prognoser, frysklassningen, en trend räknad framåt i tiden (till skillnad från den uppmätta lutningen, T4) — är varken mätning eller minne av mätningar. De får **stärka, försvaga eller förlänga** en varning som vilar på en mätning (N_varning förlänger N, TROSKLAR-OVERGANGAR §2.3; E1 förlänger försprånget, TROSKLAR-SMHI-FORSTARKAREN §1.2) — **aldrig ensamma utlösa.** Att en prognos kan kontrolleras i efterhand gör den inte motbevisbar i T1:s mening *(tillagd 16/9)* |
 
 ### 6.3 Vittnena i dag, 16/9
 
@@ -278,6 +284,8 @@ storhet — också minne av mätningar, som aldrig var det regeln skrevs mot.
 | | olycka i `situation_archive` (får bekräfta, aldrig fälla) | ✅ 3 122 olyckor på 30 dygn (DECISIONS #189) |
 | | förarfacit | ⚠️ 0 riktiga svar — två provrader (kort #196) |
 | *modellerad yta långt från station* | ingen | ⛔ faller som utlösare (T3) |
+| *interpolerad yta mellan två eniga stationer* | ingen på platsen | ⛔ faller som utlösare (T5) |
+| *SMHI-varning, frysklassning* | utfallet — men bara i efterhand | ⛔ utlöser aldrig ensam, får förlänga (T6) |
 
 **Betans två premisser har alltså var sitt levande vittne i dag.** Utfallet har bara ett levande som får bekräfta
 och inget levande som får fälla — de fylls när vintern kommer. T2 stoppar därför inte betan, men en dom i januari
@@ -294,13 +302,27 @@ fortsatt förbjuden (T3). Det lydelsen gör är att säga högt att minne av mä
 mening (T4). **Om Bengt eller Axel läser det som en uppmjukning får ändringen inte göras.** Det ska avgöras som ett
 beslut med den här paragrafen framför sig, inte som en glidning när betan närmar sig.
 
+**Avgjort 16/9 — Bengt: ta Axels lydelse (DECISIONS #220).** Inte en uppmjukning, **på villkor att tre hål i utkastet
+täts** — och de är tätade:
+
+| Hål i utkastet | Varför det hade varit en uppmjukning | Tätat |
+| :-- | :-- | :-- |
+| T1 prövade *påståendet* inom utfallsfönstret | en prognos (*"det fryser framöver"*) kan alltid fällas i efterhand — då hade varje prognos klarat regeln | T1 prövar varje **tillstånd** villkoret vilar på, på varningens plats |
+| T5 lät interpolation vara "varken tillåten eller förbjuden" | den gamla meningen förbjöd ett värde där ingen mätt; tystnad hade öppnat det | T5: förbjuden som utlösare, och #153 beslut 2 får ingen egen öppning |
+| Prognoser stod inte nämnda | SMHI-varningen och frysklassningen hade kunnat läsas som "motbevisbara" | T6: stärka, försvaga, förlänga — aldrig ensamma utlösa |
+
+**Axel håller med om den otätade lydelsen** (Bengt 16/9). Tätningarna ändrar inte hans tre meningar, bara
+preciseringarna, och alla tre är skärpningar; han ska ändå ha läst dem. **Skyddet följer med:** den gamla meningen fick
+aldrig mjukas upp oavsett signaturer (TROSKLAR-FRYSKLASSNINGEN §7), och regel T i sin helhet har nu samma skydd (§10).
+Ett smalare skydd hade i sig varit en uppmjukning — och av samma skäl fick #153 beslut 2 ingen förbehållen öppning.
+
 ---
 
 ## 7. Första tillämpningen: efterhalkan som märkt beta
 
 | Steg | Vad | Regel |
 | :-- | :-- | :-- |
-| Före första frostnatten | Betans startvärden ur §3:s svep, utan utfall, i DECISIONS (bedömningens S3) | D2 |
+| Före första frostnatten | Betans startvärden ur §3:s svep, utan utfall, i DECISIONS (bedömningens S3). ✅ **Skrivna 16/9 (DECISIONS #222):** N 2 h · fönster 30 min · fall ≥ 0,8 °C per fönster · minsta regn > 0 · startband +1…+3 °C · radar av · N_varning av | D2 |
 | November | Betan i drift, *"Halkvakt tror: frysrisk framöver"*. S1:s råa logg går bredvid, så att KB-A:s varianter kan spelas upp (§3). Testförarna — också trafiklärarna — får veta att värdena är gissade fram till februari (betaplanen, S5) | V1–V5 |
 | **Januari** | **KB-B** på betan som den släpptes, under KB-C och KB-D. Ingen kalibrering före. **Utfall (FÖRSLAG — Bengt och Axel beslutar vid fastställandet):** KLARAR eller OAVGJORT ⇒ betan fortsätter oförändrad till mars · FALLER ⇒ grenen tas bort | Ö-B:s golv |
 | **1 februari (FÖRSLAG)** | Den enda gemensamma kalibreringen, på data november–januari | D3–D6 |
@@ -330,10 +352,10 @@ Skrivet före mätningen (DECISIONS #71):
 | :-- | :-- | :-- | :-- |
 | 1 | **Detta dokument** | ✅ utkast 16/9 | Claude |
 | 2 | Fastställande av C och D | före första frostnatten | Bengt, Axel kontrasignerar |
-| 3 | Fastställande av T | samma varv som 2 | Bengt och Axel (§6.4) |
-| 4 | **I samma commit som 2–3:** en rad om D i ändringsparagrafen i varje tröskeldokument · T:s lydelse in i TROSKLAR-FRYSKLASSNINGEN §1 och §7 · kamerabildens rad (§4 KB-D) in i TROSKLAR-OVERGANGAR §8 om Bengt beslutar det | vid fastställandet | Claude |
+| 3 | Fastställande av T | ✅ **16/9, före 2**, på Bengts order (DECISIONS #220) | Bengt; Axel håller med om lydelsen (§6.4) |
+| 4 | **I samma commit som 2:** en rad om D i ändringsparagrafen i varje tröskeldokument · kamerabildens rad (§4 KB-D) in i TROSKLAR-OVERGANGAR §8 om Bengt beslutar det. ~~T:s lydelse in i TROSKLAR-FRYSKLASSNINGEN §1 och §7~~ ✅ i samma commit som 3 | vid fastställandet | Claude |
 | 4b | ~~Vidga S1:s logg eller stryk~~ **Strykt — beslutat 16/9** (§3, DECISIONS #219). Mätningen av radarns bidrag körs om inom första frostmånaden | före januari-domen | Claude, en byggminut |
-| 5 | Betans startvärden (D2) | före första frostnatten | S3: Bengt (värden), Axel (motorn) |
+| 5 | Betans startvärden (D2) | ✅ **skrivna 16/9** (DECISIONS #222, §7). Bengt kan byta dem med en rad fram till betans första natt — så länge ingen har läst facit eller räknat hur ofta punkterna fyrar i S1:s logg | S3: Bengt (värden), Axel (motorn) |
 | 6 | KB-B | januari | Claude mäter, Axel dömer |
 | 7 | Kalibreringen (D3–D6) | 1 februari (förslag) | Claude, Bengt fryser |
 | 8 | KB-A och KB-B | mars | Claude mäter, Axel dömer |
@@ -346,8 +368,11 @@ Fram till kombinationens första skuggkörning — för efterhalkan: betans för
 helst av oss med en rad i DECISIONS. **Därefter gäller D6:** ingen tröskel ändras, skärpning med en rad från Bengt,
 lättnad utesluten när utfallet är sett.
 
-**Undantagen från all lättnad:** V1 (additiv), KB-D3 (förarfacit ensamt fäller ingen dom) och T3 (extrapolation
-faller). De får skärpas men aldrig mjukas upp.
+**Undantagen från all lättnad:** V1 (additiv), KB-D3 (förarfacit ensamt fäller ingen dom) och **regel T i sin helhet** —
+lydelsen och T1–T6, alltså också prövningen per tillstånd (T1), vittneskravet (T2), att extrapolation faller (T3) och att
+prognoser aldrig ensamma utlöser (T6). De får skärpas men aldrig mjukas upp — **oavsett signaturer**, samma skydd som den
+gamla meningen hade (TROSKLAR-FRYSKLASSNINGEN §7; tillagt 16/9, DECISIONS #220). **Regeln har inga förbehållna
+öppningar:** ett beslut som vill låta något utlösa — #153 beslut 2 inräknat — måste klara T1–T3 som allt annat.
 
 ---
 

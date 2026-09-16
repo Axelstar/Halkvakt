@@ -40,7 +40,10 @@ Det är en annan fråga än grind A, och den ska hållas isär från den på tre
 **Och den viktigaste avgränsningen, som avgör allt annat:** en godkänd frysklassning ger **inte**
 rätt att skapa en varning där motorn i dag tiger. Den får bara stärka eller försvaga en bedömning
 som redan vilar på en uppmätt station. Samma regel som SMHI-förstärkaren (#95 d) fick, och av samma
-skäl: en modellerad storhet får aldrig vara en avtryckare.
+skäl: **en storhet som inte kan motbevisas av en mätning får inte utlösa en varning.** Klassningen är en
+modellprodukt — varken mätning eller minne av mätningar — och får stärka eller försvaga, aldrig ensam utlösa
+(tröskelregeln i Axels lydelse, TROSKLAR-KOMBINATIONEN §6, T6). *Ändrat 16/9 (DECISIONS #220); tidigare: "en
+modellerad storhet får aldrig vara en avtryckare".*
 
 **Grind A:s dom står oavsett vad som händer här.** Om den här frågan besvaras ja betyder det inte
 att offsetmodellen klarade grind A — det betyder att den duger till något annat än det grind A
@@ -154,8 +157,10 @@ Fram till **första skuggkörningen** får §2:s svep och §4:s krav justeras av
 en rad i DECISIONS. **Därefter ändras ingen tröskel alls** — en ändring som lutar sig mot
 utfallet.
 
-**Undantaget från all lättnad är K-A2:s tak och §1:s avgränsning.** Ett modellerat värde får aldrig
-bli en avtryckare, och taket för farliga fel får skärpas men aldrig mjukas upp — oavsett signaturer.
+**Undantaget från all lättnad är K-A2:s tak, §1:s avgränsning och tröskelregeln** (TROSKLAR-KOMBINATIONEN §6, i sin
+helhet). En storhet som inte kan motbevisas av en mätning får inte utlösa en varning, klassningen utlöser aldrig ensam,
+och taket för farliga fel får skärpas men aldrig mjukas upp — oavsett signaturer. *Ändrat 16/9 (DECISIONS #220);
+tidigare: "Ett modellerat värde får aldrig bli en avtryckare".*
 
 ---
 
