@@ -5958,3 +5958,14 @@ grön (motorn orörd).
 **Utfall 16/9:** Axel byggde grenen i Xcode — **gick igenom** — och PR #291 mergades (main @ 0239f03). Kvar för S4: en
 iOS-skärmbild till produktboken (steg 4) och ett riktigt svar från en telefon i `driver_facit` (steg 5, fälttest).
 
+## #204 (16/9 2026) Vakthundens cron får vänta 120 s på svaret — proven blir läsbara
+
+**Bengts ja 16/9.** pg_net väntar som mest `timeout_milliseconds` på funktionens svar; vakthundens varv tar längre än
+de 30 s som stod i jobbet, så `net._http_response` bar "Timeout of 30000 ms reached" medan funktionen körde klart
+ändå (#197: skuggmotorns svar lästes, vakthundens blev timeout, och steg 1-beviset togs ur en issue). sql/023 höjer
+till **120 s** via `cron.alter_job` — bara timeouten, inget jobb öppnas eller stängs (kort #85), kommandot med nyckeln
+skrivs aldrig ut. Kassavaktens tunga varv (05/11/17/23 UTC) ryms.
+
+**Bevis som gäller:** migrationens bevisrad visar `timeout_ms = 120000`, och nästa `larmprov` via dbknapp skriver ut
+vakthundens `rad` i stället för en timeout.
+
