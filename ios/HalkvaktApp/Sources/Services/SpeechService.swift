@@ -43,6 +43,8 @@ final class Prefs {
     var facitOn: Bool { didSet { d.set(facitOn, forKey: "k.facitOn") } }
     /// S4: svaren, sända och osända. Ren Swift-logik i Facit.swift.
     var facit: [FacitEntry] { didSet { d.set(try? JSONEncoder().encode(facit), forKey: "k.facit") } }
+    /// S4: vad senaste sändningsförsöket gav — syns under knapparna så testaren ser vad som hände (DECISIONS #209).
+    var facitStatus: String? { didSet { d.set(facitStatus, forKey: "k.facitStatus") } }
     /// Introduktionen visad? (DECISIONS #36) Kan nollställas från Inställningar.
     var onboardingDone: Bool { didSet { d.set(onboardingDone, forKey: "k.onboardingDone") } }
     /// Hur telefonen kopplas till bilen — styr vilka autostart-steg som visas (DECISIONS #37).
@@ -72,6 +74,7 @@ final class Prefs {
         lastSaidId = d.string(forKey: "k.lastSaidId")
         facitOn = d.bool(forKey: "k.facitOn")
         facit = d.data(forKey: "k.facit").flatMap { try? JSONDecoder().decode([FacitEntry].self, from: $0) } ?? []
+        facitStatus = d.string(forKey: "k.facitStatus")
         onboardingDone = d.bool(forKey: "k.onboardingDone")
         carSetup = d.string(forKey: "k.carSetup").flatMap(CarSetup.init(rawValue:))
         lastIntentStartAt = d.object(forKey: "k.lastIntentStartAt") as? Date

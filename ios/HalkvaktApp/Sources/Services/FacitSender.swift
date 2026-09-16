@@ -13,17 +13,29 @@ enum FacitSender {
         if pending.isEmpty { return 0 }
         let ver = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?"
         var sent: [FacitEntry] = []
+        let klockan = Date.now.formatted(.dateTime.hour().minute())
         for e in pending {
             var req = URLRequest(url: Facit.url)
             req.httpMethod = "POST"
             req.timeoutInterval = 10
             req.setValue("application/json", forHTTPHeaderField: "Content-Type")
             req.httpBody = Facit.body(e, app: "ios", ver: ver)
-            guard let (_, resp) = try? await URLSession.shared.data(for: req),
-                  (resp as? HTTPURLResponse)?.statusCode == 204 else { break }
-            sent.append(e)
+            do {
+                let (data, resp) = try await URLSession.shared.data(for: req)
+                let code = (resp as? HTTPURLResponse)?.statusCode ?? 0
+                if code == 204 { sent.append(e); continue }
+                // Servern sa nej: skriv ut vad den sa, kortat — det är det testaren och Claude behöver se.
+                prefs.facitStatus = "Kunde inte skicka \(klockan): HTTP \(code) \(String(data: data, encoding: .utf8).map { String($0.prefix(80)) } ?? "")"
+                break
+            } catch {
+                prefs.facitStatus = "Kunde inte skicka \(klockan): \(error.localizedDescription.prefix(80))"
+                break
+            }
         }
-        if !sent.isEmpty { prefs.facit = Facit.markSent(prefs.facit, sent) }
+        if !sent.isEmpty {
+            prefs.facit = Facit.markSent(prefs.facit, sent)
+            prefs.facitStatus = "Skickat \(klockan) (\(sent.count) svar)"
+        }
         return sent.count
     }
 }

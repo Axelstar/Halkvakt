@@ -45,6 +45,11 @@ struct VaktenView: View {
                     Spacer()
                 }
                 .padding(.top, 16)
+                // S4 (DECISIONS #210): facitknapparna hör hemma där "Senast sagt" faktiskt visas — här, inte i
+                // LastSaidCard som ingen vy använder sedan skinnet v3. Bara betatestare, bara på en varning med id.
+                if prefs.facitOn, prefs.lastSaidText != nil, let id = prefs.lastSaidId, let at = prefs.lastSaidAt {
+                    FacitRow(id: id, at: at).padding(.top, 10)
+                }
             }
             .padding(.horizontal, 22).padding(.top, 10)
             .padding(.bottom, 96)

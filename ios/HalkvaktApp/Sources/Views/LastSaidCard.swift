@@ -1,3 +1,5 @@
+// DÖD KOD sedan skinnet v3 (2/9): ingen vy använder LastSaidCard — hemskärmen (VaktenView) visar "Senast sagt"
+// som en rad, och facitknapparna sitter i FacitRow (DECISIONS #210). Kvar tills ett eget kort tar bort den.
 // #24 "Senast sagt" på hemskärmen. Spegel av Androids LastSaidCard: förra körningens
 // sista replik med datum och tid, ur Prefs så den överlever omstart. Tomt läge säger
 // vad tystnaden betyder — tystnad är en funktion, inte ett fel.
@@ -43,6 +45,9 @@ struct LastSaidCard: View {
                 }
                 Text(svar == nil ? "Stämde det? Svaret skickas när bilen står stilla." : "Tack — skickas när bilen står stilla.")
                     .font(Typo.sans(12)).foregroundStyle(Brand.faint)
+                if let s = prefs.facitStatus {
+                    Text(s).font(Typo.mono(11)).foregroundStyle(s.hasPrefix("Skickat") ? Brand.green : Brand.yellow)
+                }
             }
         }
         // .contain i stället för .combine (16/9): med knappar i kortet måste VoiceOver kunna trycka dem var för sig.

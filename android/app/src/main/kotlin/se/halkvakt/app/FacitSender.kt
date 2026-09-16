@@ -16,8 +16,10 @@ object FacitSender {
         if (pending.isEmpty()) return 0
         val ver = runCatching { ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName }.getOrNull() ?: "?"
         val sent = mutableListOf<FacitEntry>()
+        val klockan = android.text.format.DateFormat.format("HH:mm", System.currentTimeMillis())
         for (e in pending) {
-            val ok = runCatching {
+            // Felet fångas och blir läsbart under knapparna — det är det testaren och Claude behöver se.
+            val fel = runCatching {
                 val conn = URL(Facit.URL).openConnection() as HttpURLConnection
                 conn.requestMethod = "POST"
                 conn.connectTimeout = 10_000; conn.readTimeout = 10_000
@@ -25,13 +27,14 @@ object FacitSender {
                 conn.setRequestProperty("Content-Type", "application/json")
                 conn.outputStream.use { it.write(Facit.body(e, "android", ver).toByteArray()) }
                 val code = conn.responseCode
+                val kropp = if (code == 204) "" else runCatching { conn.errorStream?.bufferedReader()?.readText() ?: "" }.getOrDefault("")
                 conn.disconnect()
-                code == 204
-            }.getOrDefault(false)
-            if (!ok) break
+                if (code == 204) null else "HTTP $code ${kropp.take(80)}"
+            }.getOrElse { "${it.javaClass.simpleName}: ${it.message?.take(60) ?: ""}" }
+            if (fel != null) { Prefs.setFacitStatus(ctx, "Kunde inte skicka $klockan: $fel"); break }
             sent += e
         }
-        if (sent.isNotEmpty()) Prefs.markFacitSent(ctx, sent)
+        if (sent.isNotEmpty()) { Prefs.markFacitSent(ctx, sent); Prefs.setFacitStatus(ctx, "Skickat $klockan (${sent.size} svar)") }
         return sent.size
     }
 }
