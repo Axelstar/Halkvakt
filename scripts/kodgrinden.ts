@@ -1,7 +1,8 @@
 // Kodgrinden (kort #52, Bengts order 11/9): håller Trafikverkets ConditionCode som grind?
 //
 // FRÅGAN. Motorn larmar i dag om ConditionCode >= 2 ELLER om någon ConditionInfo-sträng
-// matchar (is|snö|halka|frost|mycket besvärligt). Den andra grenen gör att ett segment som
+// matchar is/halka/halkrisk/halkig/halt/mycket besvärligt i ordbörjan eller snö/frost var som helst
+// (sedan 16/9, kort #97). Den andra grenen gör att ett segment som
 // Trafikverket klassat 1 (Normalt) ändå larmar, bara för att ordet "snö" står i infotexten.
 // Förslaget på kortet är att dela ordlistan: FARLIGHETSORD larmar oavsett kod, YTORD larmar
 // bara när koden är 2 eller högre. Då tystnar "Packad snö" på kod 1, och bara den.
@@ -25,8 +26,9 @@
 // Självtest utan DB: scripts/kodgrinden.ts --sjalvtest
 
 // Motorns ordlista, delad i de två nivåer förslaget bygger på. Lookbehind som engine/src/engine.ts:43.
-const FARLIGHET = /(?<![a-zåäö])(is|halka|frost)/i;
-const YTA = /(?<![a-zåäö])(snö)/i;
+// Sedan 16/9 (kort #97): halkrisk/halkig/halt står explicit, och snö/frost räknas även inuti ord.
+const FARLIGHET = /(?<![a-zåäö])(is|halka|halkrisk|halkig|halt)|frost/i;
+const YTA = /snö/i;
 const FEMTE_TERMEN = /(?<![a-zåäö])(mycket besvärligt)/i;   // finns i motorn, saknas i publish-filtret
 
 type Niva = "FARLIGHET" | "YTA" | "NEUTRAL";
@@ -37,11 +39,11 @@ export function niva(info: string): Niva {
 }
 
 // Motorns lookbehind sattes för att "fläckvis Våt" inte skulle läsas som halka (engine.ts:40,
-// åtta falsklarm på augustidata). Priset är att den är blind för SAMMANSÄTTNINGAR där faroordet
-// inte står först: "Rimfrost" matchar inte frost, "Halkrisk" matchar inte halka. Om sådana
-// strängar finns i väglagsdata är motorn tyst på dem redan i dag — en MISS, inte ett falsklarm,
-// och därmed tvärtemot kortets fråga. Listan är för mänsklig läsning: "fläckvis" är den kända
-// ofarliga träffen och ska ignoreras.
+// åtta falsklarm på augustidata). Priset VAR att den blev blind för SAMMANSÄTTNINGAR: "Rimfrost",
+// "Nysnö", "Halkrisk" och "Halt" tystnade. Sedan 16/9 (kort #97) räknas snö/frost även inuti ord och
+// halkrisk/halkig/halt står explicit. Blindlistan visar nu det som fortfarande delar en farostam
+// utan att vara en fara: "fläckvis …" (augustis falsklarm) och "Halkbekämpning"/"Halkskydd"
+// (motåtgärder). Allt ANNAT som dyker upp här är en ny miss och ska läsas.
 const STAM = /(is|snö|halk|frost)/i;
 export function blind(info: string): boolean {
   return niva(info) === "NEUTRAL" && STAM.test(info);
@@ -87,7 +89,7 @@ function rapportBlind(k: Kors) {
   console.log(`\n  BLINDLISTA — strängar med farostam som motorns regex INTE matchar:`);
   if (!b.size) { console.log(`    (inga) — lookbehinden döljer ingenting i det ordförråd som finns.`); return; }
   for (const [ord, n] of [...b].sort((x, y) => y[1] - x[1])) console.log(`    ${String(n).padStart(7)}  ${ord}`);
-  console.log(`    Läses för hand. "fläckvis …" är den kända ofarliga träffen (engine.ts:40).`);
+  console.log(`    Läses för hand. "fläckvis …" och "Halkbekämpning"/"Halkskydd" är de kända ofarliga träffarna.`);
   console.log(`    Övriga, om några, är MISSAR i dag — motorn är tyst på dem oavsett kod.`);
 }
 
@@ -112,11 +114,16 @@ if (process.argv.includes("--sjalvtest")) {
   // mot augustis åtta falsklarm på "fläckvis" och är rätt för sitt syfte.
   k('niva("fläckvis Våt")', niva("fläckvis Våt"), "NEUTRAL");
   k('niva("Diesel")', niva("Diesel"), "NEUTRAL");             // "is" inuti ordet
-  // Priset för lookbehinden: sammansättningar där faroordet inte står först blir osynliga.
-  // Det är motorns FAKTISKA beteende i dag, inte en önskan. Blindlistan fångar dem åt en läsare.
-  k('niva("Rimfrost")', niva("Rimfrost"), "NEUTRAL");
-  k('blind("Rimfrost")', blind("Rimfrost"), true);
-  k('blind("Halkrisk")', blind("Halkrisk"), true);
+  // Sammansättningarna lookbehinden tystade talar sedan 16/9 (kort #97).
+  k('niva("Rimfrost")', niva("Rimfrost"), "FARLIGHET");
+  k('niva("Nysnö")', niva("Nysnö"), "YTA");
+  k('niva("Halkrisk")', niva("Halkrisk"), "FARLIGHET");
+  k('niva("Halt")', niva("Halt"), "FARLIGHET");
+  k('blind("Rimfrost")', blind("Rimfrost"), false);
+  k('blind("Halkrisk")', blind("Halkrisk"), false);
+  // Det blindlistan fortfarande ska visa en läsare: farostam men ingen fara.
+  k('blind("Halkbekämpning")', blind("Halkbekämpning"), true);
+  k('blind("fläckvis Våt")', blind("fläckvis Våt"), true);
   k('blind("Torrt")', blind("Torrt"), false);
   k('blind("Isfläckar")', blind("Isfläckar"), false);         // matchas redan, alltså inte blind
   // Korstabellen summerar per kod och nivå.
@@ -133,7 +140,7 @@ if (process.argv.includes("--sjalvtest")) {
   k("vinterord i rikt arkiv", vinterord(kt), 10);
   k("vinterord i tomt arkiv", vinterord(korstabulera([{ code: 1, info: "Torrt", n: 99 }])), 0);
   rapportB(kt);
-  rapportBlind(korstabulera([{ code: 1, info: "Rimfrost", n: 2 }, { code: 1, info: "Torrt", n: 9 }]));
+  rapportBlind(korstabulera([{ code: 1, info: "Halkbekämpning", n: 2 }, { code: 1, info: "Torrt", n: 9 }]));
   if (!ok) { console.error("\nSJÄLVTEST FÄLLDE."); process.exit(1); }
   console.log("\nSJÄLVTEST OK: nivådelningen och korstabellen återfinner den kända sanningen.");
   process.exit(0);
@@ -195,10 +202,10 @@ const c = await q(`SELECT h.segment_id, h.condition_text AS text, h.condition_in
     CASE WHEN array_length(r.county_nos, 1) IS NULL THEN NULL ELSE r.county_nos[1] END AS lan
   FROM road_condition_history h LEFT JOIN road_conditions r USING (segment_id)
   WHERE h.condition_code = 1
-    AND EXISTS (SELECT 1 FROM unnest(h.condition_info) i WHERE i ~* '(^|[^a-zåäö])(is|halka|frost|mycket besvärligt)')
+    AND EXISTS (SELECT 1 FROM unnest(h.condition_info) i WHERE i ~* '(^|[^a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)|frost')
   ORDER BY h.modified_time DESC LIMIT 25`);
 const cAntal = (await q(`SELECT count(*)::int AS n FROM road_condition_history h WHERE h.condition_code = 1
-  AND EXISTS (SELECT 1 FROM unnest(h.condition_info) i WHERE i ~* '(^|[^a-zåäö])(is|halka|frost|mycket besvärligt)')`))[0].n;
+  AND EXISTS (SELECT 1 FROM unnest(h.condition_info) i WHERE i ~* '(^|[^a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)|frost')`))[0].n;
 // Falsifierbarhetsvakt (DECISIONS #71:s läxa): en mätning som inte KAN falsifiera hypotesen
 // med det underlag som finns får aldrig rapportera "premissen håller". Saknas vinterorden helt
 // är noll träffar i C ett utsagolöst noll, inte ett stöd.

@@ -112,7 +112,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
       -- OPRÖVAD tills Trafikverket satt en EndTime en gång: i dag har 0 av 818 segment det.
       AND (end_time IS NULL OR end_time > now())
       AND (condition_code >= 2 OR EXISTS (
-        SELECT 1 FROM unnest(condition_info) i WHERE i ~* '(^|[^a-zåäö])(is|snö|halka|frost)'))`);
+        SELECT 1 FROM unnest(condition_info) i WHERE i ~* '(^|[^a-zåäö])(is|halka|halkrisk|halkig|halt)|snö|frost'))`);
 
   // ---- live: radarns regn per segment (kort #81 steg C) ----
   // EN SKRIVARE: ingen annan sätter `regn`. Senaste raden per segment inom giltighetsfönstret.

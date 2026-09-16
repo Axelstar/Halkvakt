@@ -1,7 +1,7 @@
 // Vinterbältet (kort #52, Bengts order 5/9): hur stor är cry-wolf-ytan?
 //
 // FRÅGAN: motorn larmar i dag på ett segment klassat Normalt (code 1) om ConditionInfo
-// matchar (is|snö|halka|frost) — test/engine.test.ts låser fast att "Packad snö" MÅSTE
+// matchar ett halkord (sedan 16/9 även snö/frost i sammansättningar, kort #97) — test/engine.test.ts låser fast att "Packad snö" MÅSTE
 // larma. I norr är packad snöväg NORMALT vinterväglag, så samma regel som är rätt i Skåne
 // kan göra appen till en tjutande radiopratare i Norrbotten från november till april.
 //

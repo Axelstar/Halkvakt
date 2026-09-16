@@ -31,7 +31,9 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
     private var lastSpokenKind: HazardKind? = null
     private val fired = HashMap<String, Pair<Double, Double>>() // id -> (t, odometerM)
 
-    private val slipperyInfo = Regex("(?<![a-zåäö])(is|snö|halka|frost|mycket besvärligt)", RegexOption.IGNORE_CASE)
+    private val slipperyInfo = Regex("(?<![a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)", RegexOption.IGNORE_CASE)
+    // Snow/frost also count inside compounds — "Nysnö", "Rimfrost" (kort #97). Mirrors engine.ts SLIPPERY_STAM.
+    private val slipperyStam = Regex("(snö|frost)", RegexOption.IGNORE_CASE)
 
     /**
      * `alertKey` is what the repeat rules remember — normally the hazard id, but a SERIOUS
@@ -169,7 +171,7 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
     private fun evaluateSegment(
         fix: Fix, heading: Double, s: SegmentHazard, samples: List<DoubleArray>, leadM: Double,
     ): Candidate? {
-        val slippery = (s.meta.code ?: 0) >= 2 || s.meta.info.any { slipperyInfo.containsMatchIn(it) }
+        val slippery = (s.meta.code ?: 0) >= 2 || s.meta.info.any { slipperyInfo.containsMatchIn(it) || slipperyStam.containsMatchIn(it) }
         if (!slippery) return null
         var best: Double? = null
         for (pt in samples) {

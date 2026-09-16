@@ -6153,3 +6153,45 @@ exakt #85:s fälla i omvänd form: checkout och `npm ci` kostar minuten oavsett,
 ger en tidsserie med hål i. En vecka utan nya `vb`-rader är också ett svar. Kostnad: ~1 min/vecka ≈ 4 min/månad,
 mot dagens 130–278 min/dygn.
 
+## #214 (16/9 2026) Halkordlistan vidgad: sammansättningarna talar, motåtgärderna tiger (kort #97 + S8)
+
+**Bengts beslut 16/9: "kör grepp 1, vidga ordlistan."** Motorns halk-regex krävde att faroordet stod FÖRST i
+ordet — en regel satt för att "fläckv**is** Våt" gav åtta falsklarm i augusti. Priset var att sammansättningar
+tystnade. Mätt 16/9 mot motorns riktiga regex: på ett kod 1-segment tiger **Rimfrost** och **Halkrisk** (kortet
+visste) och **Nysnö** och **Halt** (nytt fynd). Arkivet har inga av dem i dag — men arkivet är från september.
+
+**Regeln, i två delar:**
+- `SLIPPERY_INFO = (?<![a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)` — ordbörjan, fläckvis-skyddet kvar.
+- `SLIPPERY_STAM = (snö|frost)` — räknas även INUTI ord: Nysnö, Rimfrost, Blötsnö, Nattfrost.
+
+**`halk` är medvetet INTE en stam:** "Halkbekämpning" och "Halkskydd" är motåtgärder, inte faror — därför står
+halka/halkrisk/halkig explicit. Designen prövades mot 37 ord innan en fil rördes: alla befintliga ord oförändrade,
+elva tysta börjar tala, fyra fällor (fläckvis, Halkbekämpning, Halkskydd, Salthalt) tiger.
+
+**Elva ställen, inte tre.** Motorn i TS/Kotlin/Swift, skuggmotorns bunt, tystnadsfelet (mäter mot motorn),
+**snapshotens SQL-filter** (avgör vad som ens NÅR motorn — utan det hade Nysnö tigit ändå, segmentet kommer aldrig
+med i live.json), publiceras bunt, vakthundens vinterkoll ×2 och kodgrinden (TS + SQL ×2). SQL-listorna saknar
+"mycket besvärligt" med flit — kod 3 passerar redan på `condition_code >= 2`.
+
+**Vektor v24_vinterord_kod1 (S8 + #97):** sju kod 1-segment. Packad snö (S8), Rimfrost, Nysnö, Halkrisk och Halt
+larmar; Halkbekämpning och fläckvis Våt tiger. v11_silent_drive oförändrad. **5-metersregeln bet:** på jämna
+kilometer låg gränsen **0,65 m** från en fix — samma fälla som v15 — så avstånden är förskjutna 11 m (marginal
+10,3 m på båda sidor, mätt före frysning).
+
+**Tre saker grindarna fångade som jag missat:**
+1. **Kontraktsgrinden fällde bygget** — två kontrakt jag inte hittat (*Snapshotens halkfilter*, *Vinterorden i
+   vakthunden*) sökte den gamla formen och fann noll kopior. Grinden gjorde exakt sitt jobb: en kopia som tyst
+   försvinner är lika farlig som en som tyst ändras.
+2. **Mitt nya SQL-kontrakt buntade ihop snapshot och vakthund** i ett — det grindens egen kommentar varnar för
+   (*"tvingat fram en falsk enighet"*). Borttaget; de tre befintliga, avgränsade kontrakten fick den nya formen.
+3. **Kodgrinden bar egna SQL-kopior** av farlighetsorden som nu var i otakt med dess TypeScript. Följer nu.
+Plus ett nytt kontrakt: *Halkstammarna i MOTORN* (engine.ts, skuggmotorns bunt, tystnadsfelet — golv 3).
+
+**Generatorn har glidit isär från vektorerna:** `gen-vectors.ts` kallar v05 `v05_throttle_45s` (filen heter
+`v05_throttle_floor_10s`) och saknar v18–v23. En fullkörning hade skrivit en spökfil. Den har nu ett filnamnsfilter
+och en varning; att synka listan är ett eget kort.
+
+**Rösten säger ingen ny fras** — "Varning: halka rapporterad på vägen framför dig." — men i fler lägen. PRODUKTBOK
+uppdaterad. **Mellanstopp:** Axels ja på v24 (S8 är Bengt + Axel) innan merge. Når telefonerna först med nästa
+app-bygge (iOS 0.3.8, Android ur CI).
+

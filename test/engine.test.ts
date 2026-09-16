@@ -144,4 +144,12 @@ test("fläckvis is not halka — Swedish word boundaries in slippery matching", 
   for (const info of [["Isfläckar"], ["Svår halka"], ["Packad snö"], ["Risk för halka"]]) {
     assert.equal(new AlertEngine([seg(info)]).run(trace).length, 1, info.join());
   }
+  // Compounds the word-start rule silenced (kort #97, 16/9) — the operator wrote the word:
+  for (const info of [["Rimfrost"], ["Nysnö"], ["Halkrisk"], ["Halt"], ["Blötsnö"], ["Nattfrost"], ["Halkigt"]]) {
+    assert.equal(new AlertEngine([seg(info)]).run(trace).length, 1, info.join());
+  }
+  // Countermeasures share a stem but are not hazards:
+  for (const info of [["Halkbekämpning"], ["Halkskydd"]]) {
+    assert.equal(new AlertEngine([seg(info)]).run(trace).length, 0, info.join());
+  }
 });

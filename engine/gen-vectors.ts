@@ -202,6 +202,22 @@ const scenarios: Scenario[] = [
     }],
     trace: northTrace(380, 90),
   },
+  {
+    file: "v24_vinterord_kod1", name: "Vinterord på kod 1 — sammansättningarna talar, motåtgärderna tiger",
+    description:
+      "Sju kod 1-segment (Trafikverket: Normalt), var och ett med ett ConditionInfo-ord, 1 km isär så varken " +
+      "spärren eller reprisregeln griper in. S8 (#52 före #45): 'Packad snö' på kod 1 MÅSTE larma. Kort #97 " +
+      "(Bengt 16/9): 'Rimfrost', 'Nysnö', 'Halkrisk' och 'Halt' tystnade av ordbörjansregeln och ska tala. " +
+      "'Halkbekämpning' är en motåtgärd och 'fläckvis Våt' augustis falsklarm — båda tiger. Avstånden är " +
+      "förskjutna 11 m: på jämna kilometer låg gränsen 0,65 m från en fix (5-metersregeln), nu 10,3 m.",
+    hazards: ([
+      ["w1_packad_sno", "Packad snö", 2011], ["w2_rimfrost", "Rimfrost", 3011], ["w3_halkbekampning", "Halkbekämpning", 4011],
+      ["w4_nysno", "Nysnö", 5011], ["w5_flackvis", "fläckvis Våt", 6011], ["w6_halkrisk", "Halkrisk", 7011], ["w7_halt", "Halt", 8011],
+    ] as [string, string, number][]).map(([id, info, m]): Hazard => ({
+      id, kind: "slippery_segment", line: [[LON0 - 0.01, northOf(m)], [LON0 + 0.01, northOf(m)]], meta: { code: 1, info: [info] },
+    })),
+    trace: northTrace(380, 80),
+  },
 ];
 
 /** Canonical replay-with-updates — the reference all three test runners mirror. */
@@ -222,7 +238,12 @@ function runWithUpdates(s: (typeof scenarios)[number]): Alert[] {
 }
 
 mkdirSync(new URL("./vectors/", import.meta.url), { recursive: true });
+// Regenerera EN vektor: node --experimental-strip-types engine/gen-vectors.ts v24_vinterord_kod1
+// Kör aldrig utan filnamn i dag: listan ovan har glidit isär från vectors/ (heter v05_throttle_45s men filen
+// är v05_throttle_floor_10s, och v18–v23 saknas här) — en fullkörning skriver en spökfil och rör inte de nya.
+const ONLY = process.argv[2];
 for (const s of scenarios) {
+  if (ONLY && s.file !== ONLY) continue;
   const alerts = runWithUpdates(s);
   const out = {
     name: s.name, description: s.description,
