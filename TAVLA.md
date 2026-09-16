@@ -351,6 +351,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   blev fylld · Axels läsning av facit-svar-loggen · nästa bygge.
   🎯 **ROTORSAKEN (DECISIONS #210):** iOS-knapparna satt i `LastSaidCard` — död kod sedan skinnet v3, ingen vy visar den.
   Bengt såg bara brytaren. Rättat: `FacitRow` under Senast sagt-raden i `VaktenView`. Kräver Axels nästa bygge (0.3.7).
+  🧩 **0.3.7 (10) bär nu även ordlistan** (kort #97, DECISIONS #214, deployad i backend 16/9): ETT bygge från main täcker
+  facitknappen och Nysnö/Rimfrost/Halkrisk/Halt. Är 0.3.7 redan uppladdad ⇒ bumpa till 0.3.8 (11).
 
 ### Axel — hösten (brainstorm 31/8)
 - [x] ⛔ **#92 Däcktyp och fordonstyp — STÄNGT 12/9, dokumenterat nej** (Bengts order när §2.5 togs ur
@@ -778,6 +780,17 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [ ] 🧾 **#196 FÖRARFACIT-HYGIEN — klockslaget och provraderna** (fynd 16/9 vid #97:s deploy, DECISIONS #214).
+  (1) Vakthundens rad skriver `String(df.senast).slice(0, 16)` ⇒ "Wed Sep 16 2026 " — datum utan tid (min rad, S4 steg 1).
+  (2) `driver_facit` bär två PROV och noll riktiga svar: Android `prov` 03:07Z och ett iOS-format serverprov 11:47Z
+  (`cam:prov-ios`, version 0.3.6) som INTE går att skilja från ett riktigt svar på version/plattform. Skuggrapportens
+  `forarfacit` räknar båda i sju dygn (till 23/9). FÖRSLAG: ISO-tid i raden; prov märks/utesluts (`alert_id` med `prov`)
+  eller raderas — radering är Bengts beslut. Bevis: raden visar klockslag; `forarfacit` räknar 0 prov. Kräver vakthund-
+  (och ev. skuggrapport-)deploy + prov.
+- [ ] 🧬 **#195 VEKTORGENERATORN I OTAKT MED `engine/vectors/`** (fynd 16/9 under #97, DECISIONS #214). `gen-vectors.ts`
+  kallar v05 `v05_throttle_45s` (filen heter `v05_throttle_floor_10s`) och saknar v18–v23; en fullkörning skriver en
+  spökfil. Nu filnamnsfilter + varning (bara v24 genererades). ÅTGÄRD: för in v18–v23 och rätt v05-namn så att
+  generatorn återskapar katalogen. Bevis: fullkörning ⇒ `git status engine/vectors/` tom. Rör inga vektorer.
 - [ ] 🌡️ **#192 S1 — EFTERHALKANS INDATA I SKUGGLOGGEN** (Bengts "bygg S1 nu" 16/9, Axels grind #196, DECISIONS #198).
   Kolumn `efterhalka` (sql/021): N4:s råa fält per station i korridoren + om motorn larmade. Inget villkor — S2 sätter
   det. Skuggrapporten får `efterhalka`. VÄNTAR: migration 021 + deploy; bevis med innehåll kräver första kalla natten.
@@ -2744,6 +2757,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   och fläckvis tiger. Elva ställen inkl. snapshotens SQL-filter. Vektor v24 (5-metersregeln: 0,65 m → 10,3 m). Kontrakts-
   grinden fällde två gånger och hade rätt. VÄNTAR: Kotlin/Swift i CI · **Axels ja på v24** · merge · deploy skuggmotor +
   publicera + vakthund · app-bygge (iOS 0.3.8).
+  ✅ **MERGAD OCH DEPLOYAD 16/9** (Axels ja på v24, PR #306, DECISIONS #214): deploy 14:51Z · publicera: första snapshoten
+  efter deploy med manifest-sha STÄMMER · vakthund `vinterprov`: "vinterord i väglagsarkivet: nej", problem [] · skuggmotor
+  `sparrprov` identiskt med 02:42Z. VÄNTAR: app-bygge från main (iOS **0.3.7 (10)**, inte 0.3.8 — ett bygge täcker facit
+  OCH ordlistan) · bevis med innehåll vid första vinterordet (vakthundens vinterkoll larmar).
 - [x] ✅ **#87 HEALTHCHECKENS KONTROLLER IN I VAKTHUNDEN — KLART 14/9, och filen blir KVAR** (Bengts beslut, DECISIONS #178)
   ⛔ **RADERINGEN AV `healthcheck.yml` ÄR INSTÄLLD — ett dokumenterat nej, inte en gloms bort.**
   Bengt 14/9: *"ta inte bort healthcheck eftersom den knappt kostar något"*. Skälet väger tyngre

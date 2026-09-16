@@ -50,6 +50,9 @@ beviset finns — inte när koden är skriven.
 | ~~**CLAUDE.md-invarianten "max 1 spoken alert / 45 s" mot motorns `globalCooldownS = 10` (kort #127, 13/9)**~~ | ✅ Bengt 16/9: motorn står, invarianten omskriven (DECISIONS #200); `takt` i drift (02:52Z); **Axels ja på texten 16/9** — struken | #193 | #200 | — |
 | ~~trv-bevakning: veckokörningen (måndag 06:40Z) föll 7/9 och 14/9; mätvakten (#268) larmar tills en grön körning finns~~ | ✅ manuell körning 02:44Z grön; mätvakten stängde #268 själv 03:07Z | #161 | #185 | grön körning + #268 stängd |
 | ~~pg_net-timeouten 30 s gör vakthundens svar oläsbart för dbknapp~~ | ✅ migration 023: `timeout_ms = 120000`; larmprov 03:43Z: vakthundens svar läst ur `net._http_response` — status 200, `larmvag: ok`, rad-raderna lästa: mätvakten 8 flöden/0 problem · förarfacit 1 svar · issue matvakt 0 öppna · nyckel PAT 2026-11-22 (66 dygn) · Supabase 2026-12-08 (82 dygn) · issue vakthund 1 öppna (larmprovet) | — | #204 | bevisrad `timeout_ms = 120000`; larmprov visar `rad` |
+| Ordlistan vidgad — grepp 1 (#97 + S8, v24) | ✅ **backend i drift 16/9**: deploy 14:51Z, publicera-snapshot med sha STÄMMER, vakthundens `vinterprov` kör nya SQL:en ("nej", problem []), skuggmotorns `sparrprov` oförändrat. ⏳ **telefonerna:** app-bygge från main (iOS 0.3.7 (10) täcker även facit) | #97 | #214 | bygget ute hos testarna; innehåll vid första vinterordet |
+| Vektorgeneratorn i otakt med `engine/vectors/` | ⏳ nytt 16/9 | #195 | #214 | fullkörning ⇒ ingen diff i `engine/vectors/` |
+| Förarfacit-hygien: klockslaget i vakthundsraden + två provrader som räknas som svar | ⏳ nytt 16/9 — radering av prov är Bengts beslut | #196 | #214 | raden visar tid; `forarfacit` räknar 0 prov |
 
 ---
 
@@ -85,7 +88,7 @@ Fem rader. Inget annat är "nu".
 | # | Vad | Vems |
 | :-- | :-- | :-- |
 | **S7** | **Facitvakter:** vakthundsrad *"historiken växer"* (inte bara *"sync_state är färsk"*) · ~~mät `situation_archive`~~ (mätt 15/9: 3 122 olyckor/30 dygn, DECISIONS #189) · bevisa att `trv-bevakning` sparar 13 källor | Claude |
-| **S8** | **#52 före #45:** ett test i tre portar låser att kod 1 + "Packad snö" *måste* larma — motsatsen till vinterbaseline. Vektorn beslutas innan #45 rörs. 🔨 **Byggd 16/9 som v24** tillsammans med #97 (DECISIONS #214) — väntar på Axels ja | Bengt + Axel |
+| **S8** | **#52 före #45:** ett test i tre portar låser att kod 1 + "Packad snö" *måste* larma — motsatsen till vinterbaseline. Vektorn beslutas innan #45 rörs. ✅ **Byggd, godkänd (Axel) och deployad 16/9 som v24** tillsammans med #97 (DECISIONS #214) — når telefonerna med nästa app-bygge | Bengt + Axel |
 | **S9** | **T-A efter första frostnatten**, steg 0 inom sju dygn, #95(d):s F-B i samma varv | Claude |
 | **S10** | **C och D:** grinden för kombinationen (dokument) och regeln för gemensam kalibrering (ett stycke). Tröskelregeln till Axels lydelse — *efter N1*, annars saknar den vittne | Claude skriver, Bengt fastställer |
 | **S11** | **#153 → försprång** (Axel) · mät korridortillväxten 3 000 m mot 1 000 m | Axel · Claude |
