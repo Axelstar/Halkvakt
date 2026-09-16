@@ -181,3 +181,18 @@ Väntat: rösten talar med släckt skärm. Stäng av bilen, vänta en kvart: vak
 
 Fallerar T3 eller T4 är det inställningen, inte koden. Fallerar T1 eller T2 är det koden
 — skicka skärmbild + Xcode-loggen, så rättar jag.
+
+## Fotostudion för facitknappen (S4 steg 4) — två bilder på en minut, utan bil
+
+1. Xcode: **Product → Scheme → Edit Scheme… → Run → Arguments** → under *Arguments Passed On Launch*
+   tryck **+** och skriv `-fotostudio_facit`. (Bara debug-byggen läser flaggan; den kompileras bort ur release.)
+2. Kör appen i simulatorn (iPhone 15/16). Fliken **Vakten**: kortet SENAST SAGT visar
+   *"Fartkamera om femhundra meter."* med knapparna **Stämde / Stämde inte**. ⌘S sparar en skärmbild
+   till skrivbordet → döp den `ios-1-senast-sagt.png`.
+3. Fliken **Inställningar**, skrolla till **BETATEST** (brytaren är redan på) → ⌘S → `ios-2-betatest.png`.
+4. Ta bort argumentet igen (annars ligger betatestet på i din simulator). Skicka bilderna till Bengt/Claude —
+   de läggs i `docs/produktbok/` och produktboken uppdateras.
+
+Tryck du på en knapp i simulatorn skickas svaret på riktigt (till `driver_facit`, app = ios, id
+`cam:fotostudio`) — ofarligt, men det räknas i skuggrapportens `forarfacit` tills det gallras.
+

@@ -163,6 +163,21 @@ struct HalkvaktApp: App {
         // Måste finnas från första millisekunden: när iOS väcker oss i bakgrunden på
         // betydande förflyttning levereras platsen till DEN delegat som skapas vid start.
         GuardManager.shared.armAutoWake()
+        #if DEBUG
+        // Fotostudion (S4 steg 4, DECISIONS #206), spegel av Androids fotostudio_facit: startargumentet
+        // -fotostudio_facit (Xcode: Edit Scheme → Run → Arguments) slår på betatestet och lägger in en
+        // påhittad kameravarning, så simulatorn visar knapparna under "Senast sagt" utan en körning.
+        // Kompileras bort ur release-byggen.
+        if CommandLine.arguments.contains("-fotostudio_facit") {
+            Task { @MainActor in
+                let p = Prefs.shared
+                p.facitOn = true
+                p.lastSaidText = "Fartkamera om femhundra meter."
+                p.lastSaidAt = .now
+                p.lastSaidId = "cam:fotostudio"
+            }
+        }
+        #endif
     }
 
     var body: some Scene {

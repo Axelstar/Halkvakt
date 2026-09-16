@@ -5988,3 +5988,14 @@ eller när appen öppnas nästa gång. Bevis: `forarfacit.svar_7d` räknar upp i
 
 **Utfall 16/9:** skuggrapport deployad 03:53Z; `forarfacit` 03:54Z: svar_7d 1 · ja 0 · nej 1 · android 1 · ios 0 · senast 03:07:58Z — provsvaret, som andra POST:en skrev om från ja till nej (senaste ord gäller).
 
+## #206 (16/9 2026) Fotostudio-krok för iOS — produktbokens bilder utan en körning
+
+**Bengts "gör fotostudio-kroken för iOS" 16/9.** Steg 4 kräver två skärmbilder av det nya iOS-bygget (Senast sagt med
+knapparna, Betatest-brytaren), och knapparna syns bara på en riktig varning. Android har `--ez fotostudio_facit`;
+iOS får startargumentet `-fotostudio_facit` i `HalkvaktApp.init()`, inuti `#if DEBUG`: slår på betatestet och lägger
+in *"Fartkamera om femhundra meter."* med id `cam:fotostudio`. Receptet står i `ios/MAC-GUIDE.md`. Kompileras bort ur
+release-byggen — ingen väg in i det som testarna får.
+
+**Bevis:** Axels nästa Xcode-bygge (kompilering) och de två bilderna i `docs/produktbok/`. Ett svar tryckt i
+simulatorn skickas på riktigt och syns i skuggrapportens `forarfacit` med app = ios.
+

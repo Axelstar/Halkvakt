@@ -341,6 +341,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   testaren ser sitt eget svar landa. RECEPT: Inställningar → BETATEST på → kör tills rösten talar → stanna → Senast sagt →
   Stämde/Stämde inte → skickas vid stillastående 30 s eller nästa appstart. VÄNTAR: första riktiga svaret (Axel iOS / Bengt
   Android-debug-APK ur android.yml på main) + iOS-skärmbild till produktboken.
+  📸 **Fotostudio-krok för iOS byggd 16/9 (DECISIONS #206):** `-fotostudio_facit` som startargument (bara debug) ⇒ knapparna
+  syns i simulatorn utan körning; receptet i `ios/MAC-GUIDE.md`. VÄNTAR: Axels bygge + två simulatorbilder → produktboken (steg 4).
 
 ### Axel — hösten (brainstorm 31/8)
 - [x] ⛔ **#92 Däcktyp och fordonstyp — STÄNGT 12/9, dokumenterat nej** (Bengts order när §2.5 togs ur
