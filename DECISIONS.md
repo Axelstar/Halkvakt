@@ -6195,3 +6195,17 @@ och en varning; att synka listan är ett eget kort.
 uppdaterad. **Mellanstopp:** Axels ja på v24 (S8 är Bengt + Axel) innan merge. Når telefonerna först med nästa
 app-bygge (iOS 0.3.8, Android ur CI).
 
+**Utfall 16/9:** PR #306 mergad (8026aa9) med Axels ja på v24 — Kotlin-vektorerna, Swift-vektorerna, CI och emulatorn gröna på grenen. Före deploy: `git diff origin/main` = 0 rader för alla tre funktionerna, buntarna i synk, skuggmotorns bunt bär `SLIPPERY_STAM`, publiceras bunt bär det nya SQL-filtret. **Deploy 14:51Z** från 8026aa9: skuggmotor (34 kB), publicera (790 kB), vakthund (715 kB). Funktionernas egna prov efteråt:
+- **publicera:** första snapshoten efter deploy, `live.json` 15:00:01Z (karta-commit 2589faf, 9 899 byte): manifestets sha256 = filens sha256 — STÄMMER. `segments` 0, precis som 14:40Z och 14:50Z före deployen (inget segment i september har kod ≥ 2 eller ett vinterord), `rain_segments` 2. Filtret kör alltså utan fel, men det finns ännu inget för det att släppa in.
+- **vakthund** (dbknapp `vinterprov` 14:54Z, svaret ur `net._http_response`): status 200, `problem: []`, raden *"vinterord i väglagsarkivet: nej"* — den nya SQL-satsen kör i drift över hela arkivet utan fel (ett fel hade blivit problemraden *"Vinterkollen kunde inte larma"*). Ingen ny provissue: `vinterord-prov` finns sedan #112 (11/9), engångslarm.
+- **skuggmotor** (dbknapp `sparrprov` 14:59Z): `suppressed` med EN rad {camera, prov:kam2, 470 m, by camera, 5 s} och kam2 talad vid t=15 — identiskt med provet 02:42Z, alltså motorn i den nya bunten beter sig som den gamla där inget ändrats.
+
+**Vad deployen INTE bevisar:** att driften faktiskt talar på Nysnö. Regeln är bevisad av v24 i tre portar; driften är bevisad av att funktionerna kör den nya bunten. Ett bevis MED innehåll (DECISIONS #196:s regel — inte kortet #196 nedan) kräver första vinterordet i väglagsdatan — arkivet har inget (vakthundens egen rad ovan). Vakthundens vinterkoll larmar när det kommer.
+
+**Vägen till telefonerna — rättelse av raden ovan:** det blir inte 0.3.8. Senast uppladdade iOS-bygge är 0.3.6 (9); main bär 0.3.7 (10) sedan faciträttelserna (#208–#210) och den är inte uppladdad. ETT bygge från main som 0.3.7 (10) täcker både facitknappen och ordlistan. Har Axel hunnit ladda upp 0.3.7 innan han läser detta: bumpa till 0.3.8 (11). Android-APK:n byggs av android.yml på main.
+
+**Tre fynd i samma varv:**
+1. **Vakthundens facitrad tappar klockslaget:** `String(df.senast).slice(0, 16)` på ett Date-objekt ger *"Wed Sep 16 2026 "* — datum utan tid. Min egen rad från S4 steg 1 (#201). Kort #196.
+2. **"förarfacit: 2 svar" är två prov, inga riktiga svar:** id 1 = Android-provet 03:07Z (version `prov`), id 3 = mitt iOS-formade serverprov 11:47Z under felsökningen (`cam:prov-ios`, version `0.3.6`). Id 2 förbrukades av idempotensprovet (samma svar två gånger ⇒ ON CONFLICT). Det iOS-formade provet går INTE att skilja från ett riktigt svar på version eller plattform, bara på id:t — och skuggrapportens `forarfacit` räknar båda som svar i sju dygn. Kort #196.
+3. **Generatorn i otakt med vectors/** (se ovan) har nu eget kort: #195.
+
