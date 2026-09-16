@@ -2985,6 +2985,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   `publish/grind-v-b.ts` + knappen `grind-v-b`: V-B1 falsklarm mot närmaste stations `rain_sum_mm` (10 km, ±30 min,
   tröskeln härledd 2,0/0,65 ≈ 3,1), V-B3 frekvens per rutt och regndygn, V-C:s domspärr. V-B2 säger ⊘ med skäl —
   `situation_archive` bär ingen orsak. Självtest grönt (9 fall). VÄNTAR: första skarpa körningen.
+  📊 **FÖRSTA KÖRNINGEN 16/9 12:19Z (DECISIONS #212): ⊘ DOMSPÄRR** (17 varningar mot 200, 0 facit, 2 regndygn mot 5).
+  Underlag: 14 mätbara · BEKRÄFTAD 4 · **DELVIS 10** · **TORRT 0** · V-B1 71±24 % · V-B3 2 av 8 rutter över 3 ·
+  median 2,5 km till dömande station. **Nollan är fyndet:** ingen varning gick ut på torr väg — radar och station
+  är eniga om ATT det regnar, oeniga om HUR MYCKET (§3.4:s kända grovhet, 5-min-bild mot 30-min-summa).
+  Inget tal rörs (#154/#155/#156 är dubbelsignerade). Fråga till Axel när underlaget räcker: tröskel eller "regnar det alls"?
 - [ ] 🧭 **#81 Byggordning efter radardomen 14/9 — så byggs #42 utan att upprepa 5–8/9** (Bengts
   beställning 9/9 00:05). 🔒 LÅST BAKOM 14/9: faller domen illa gäller #42:s alternativ a/b i
   stället, och det här kortet stängs oanvänt. Faller den väl ut byggs det i DEN HÄR ordningen,

@@ -6101,3 +6101,39 @@ sin egen huvudkommentar), och att lägga till ett `filer:`-undantag hade varit a
 skull. Rätt åtgärd var att döpa om: `DOMANDE_STATION_KM`. **Läxa:** ett namn som redan bär en storhet i huset får
 inte återanvändas för en annan — grinden är namnblind, och nästa läsare är det också.
 
+## #212 (16/9 2026) Grind V-B körd första gången: TORRT = 0, men bara fyra av fjorton nådde tröskeln
+
+**Första skarpa körningen 12:19Z** (14 dygn; `vb`-loggen börjar 15/9 17:30Z). **⊘ DOMSPÄRR — ingen dom**:
+17 varningar mot V-C1:s 200, 0 facitbekräftade händelser mot 15, 2 regndygn mot V-C2:s 5. Talen nedan är
+underlag, inget annat. Nio län är däremot redan uppfyllt (V-C2 kräver 3).
+
+| Mått | Utfall | Krav |
+| :-- | --: | --: |
+| Mätbara varningar | 14 av 17 (3 utan station inom 10 km — OMÄTBARA, aldrig inräknade) | — |
+| BEKRÄFTAD (station ≥ 3,1 mm/h) | 4 (29 %) | — |
+| DELVIS (blöt men under tröskeln) | **10** | — |
+| **TORRT (station = 0)** | **0** | — |
+| V-B1 falsklarm enligt §2 (allt under tröskeln) | **71 ± 24 %** | ≤ 20 % |
+| V-B3 frekvens | 2 av 8 rutter över (E18 Karlstad 5,0 · Väg 19 Ystad 5,0 per regndygn) | ≤ 3 |
+| Avstånd till dömande station | median **2,5 km**, längst 15,6 km | — |
+
+**Det som betyder något är inte 71 %, det är nollan.** Ingen enda varning gick ut på en väg där stationen var
+torr. Radarn och stationerna är alltså **eniga om att det regnar** i varje mätbart fall — de är oeniga om HUR
+MYCKET. Det är en annan sorts fel än falsklarm, och det syns bara för att trippeldelningen behölls: hade §2:s
+tvådelning använts rakt av hade raden lytt "71 % falsklarm" och dolt att noll av dem var grundlösa.
+
+**Sannolik orsak, och den står i tröskeldokumentet självt (§3.4):** *"Grovheten är känd och accepterad: en
+5-minutersbild ställs mot en 30-minuterssumma."* En radarbild fångar en topp; stationens 30-minuterssumma
+medelvärdesbildar samma skur. Radarn ska därför systematiskt ligga högre än stationens tal — och jämförelsen
+mot tröskeln straffar den skillnaden en gång till, eftersom tröskeln härletts ur radarns skala (2,0 / 0,65).
+Kalibreringsfaktorn 0,65 mättes på par där båda > 0, alltså på intensitet — inte på toppighet.
+
+**INGET ÄNDRAS PÅ DEN HÄR KÖRNINGEN.** Tröskeln är dubbelsignerad (#155/#156), faktorn likaså (#154), och §5
+kräver samma signaturer för att röra dem. Att flytta ett tal för att utfallet ser bättre ut på andra sidan är
+precis vad huset finns emot. **Frågan som ska ställas till Axel när underlaget räcker:** ska V-B1 jämföra mot
+tröskeln eller mot "regnade det alls" — och i så fall, vad blir kvar av påståendet? Underlaget för det beslutet
+är den här kolumnen (DELVIS), och den växer med varje regnvecka.
+
+**Att läsa igen vid nästa körning:** ligger DELVIS kvar nära 10 av 14 när N passerar 200 är det tidsupplösningen,
+inte radarn. Faller TORRT-kolumnen från 0 är det däremot ett riktigt falsklarm och en helt annan fråga.
+
