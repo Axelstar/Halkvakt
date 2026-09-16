@@ -54,6 +54,7 @@ beviset finns — inte när koden är skriven.
 | Vektorgeneratorn i otakt med `engine/vectors/` | ⏳ nytt 16/9 | #195 | #214 | fullkörning ⇒ ingen diff i `engine/vectors/` |
 | Förarfacit-hygien: klockslaget i vakthundsraden + två provrader som räknas som svar | ⏳ nytt 16/9 — radering av prov är Bengts beslut | #196 | #214 | raden visar tid; `forarfacit` räknar 0 prov |
 | Trafiklärare som testförare (Skyltfonden AP3, Bengt 16/9) | ⏳ beror på trafikskolornas ja senast 25/9; inbjudningsvägen (TestFlight extern = Beta App Review, Android APK/Play) är Axels — påverkar S5:s tolv testare | — | #216 | lärare med testversion i november och första lärarsvaret i `driver_facit` |
+| S10 grepp 2: TROSKLAR-KOMBINATIONEN (C, D, tröskelregeln) | 🔨 utkast 16/9 — väntar på fastställande före första frostnatten | #197 | #217 | fastställt dokument, D-raden i varje tröskeldokument och T i FRYSKLASSNINGEN §1/§7 — i samma commit |
 
 ---
 
@@ -91,7 +92,7 @@ Fem rader. Inget annat är "nu".
 | **S7** | **Facitvakter:** vakthundsrad *"historiken växer"* (inte bara *"sync_state är färsk"*) · ~~mät `situation_archive`~~ (mätt 15/9: 3 122 olyckor/30 dygn, DECISIONS #189) · bevisa att `trv-bevakning` sparar 13 källor | Claude |
 | **S8** | **#52 före #45:** ett test i tre portar låser att kod 1 + "Packad snö" *måste* larma — motsatsen till vinterbaseline. Vektorn beslutas innan #45 rörs. ✅ **Byggd, godkänd (Axel) och deployad 16/9 som v24** tillsammans med #97 (DECISIONS #214) — når telefonerna med nästa app-bygge | Bengt + Axel |
 | **S9** | **T-A efter första frostnatten**, steg 0 inom sju dygn, #95(d):s F-B i samma varv | Claude |
-| **S10** | **C och D:** grinden för kombinationen (dokument) och regeln för gemensam kalibrering (ett stycke). Tröskelregeln till Axels lydelse — *efter N1*, annars saknar den vittne | Claude skriver, Bengt fastställer |
+| **S10** | **C och D:** grinden för kombinationen (dokument) och regeln för gemensam kalibrering (ett stycke). Tröskelregeln till Axels lydelse — *efter N1*, annars saknar den vittne. 🔨 **Utkast 16/9: `docs/TROSKLAR-KOMBINATIONEN.md`** (C = KB-A–D, D = D1–D7, T med vittneskrav; DECISIONS #217) — väntar på fastställande | Claude skriver, Bengt fastställer |
 | **S11** | **#153 → försprång** (Axel) · mät korridortillväxten 3 000 m mot 1 000 m | Axel · Claude |
 | **S14** | **V-B1:s jämförelse (DECISIONS #212):** tröskel eller "regnade det alls"? Radarns 5-min-topp mot stationens 30-min-summa gör tröskeljämförelsen sned åt ett håll. Underlaget är DELVIS-kolumnen; beslutet är Axels enligt §5 och tas när V-C är uppfyllt — inte förr | Axel, på Claudes mätning |
 | **S12** | **Drift:** ~~#97 kodgrind för "Rimfrost"/"Halkrisk"~~ **(ordlistan vidgad 16/9, DECISIONS #214 — även Nysnö och Halt)** · måndagsserien från naken cron till puls/knapp · #83 steg 2 (export/Pro) före första kalla veckan · #45 lapse 0,71 → 0,63 · #76 deploybevis · #146 klonfelet | Bengt / Axel / Claude |
@@ -131,13 +132,15 @@ Fem rader. Inget annat är "nu".
 | V-B-loggen är rå; dom-knappen räknar per regndygn | Axel, 16/9 |
 | S1 körs före S2 — inget mer byggs på `regn_h` innan skuggjämförelsen | Axel, 16/9 |
 | Steg D: utgångspunkt given (under halka, över vilt; *"Vattenplaning framöver — sakta ner"*), beslut efter V-C | Axel, 16/9 |
+| #52-vektorn: kod 1 + "Packad snö" MÅSTE larma — v24 i tre portar (S8, DECISIONS #214) | Bengt + Axel, 16/9 |
 
 ### 4.2 Öppna
 
 | Beslut | Vem | Rekommendation |
 | :-- | :-- | :-- |
-| #52-vektorn: ska kod 1 + "Packad snö" larma? (S8) | Bengt + Axel | avgör före #45 |
-| Tröskelregeln till Axels lydelse (S10) | Bengt | ja, efter N1 |
+| Tröskelregeln till Axels lydelse (S10) — lydelse och vittneskrav i TROSKLAR-KOMBINATIONEN §6; §6.4 besvaras uttryckligen | Bengt + Axel | ja — N1 klar |
+| C och D fastställs (S10, TROSKLAR-KOMBINATIONEN §4–§5) | Bengt, Axel kontrasignerar | ja, före första frostnatten |
+| Förslagen i C och D: förarfacits underlag (KB-D4) · kalibreringspunkt 1/2 (D3) · kamerabilden fäller premiss, aldrig utfall | Bengt | ja |
 | #45 lapse 0,63 (S12) | Bengt + Axel | ja |
 | `marknadsforing.yml` | Axel + Bengt | ingen rekommendation |
 | TRV-anmälan om nio byvindgivare — brevet är klart | Bengt | ja |

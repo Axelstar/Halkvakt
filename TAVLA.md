@@ -420,6 +420,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] Fysisk Android-testenhet (pappas telefon? begagnad?)
 
 ### Bengt
+- [ ] 📐 **#197 GREPP 2: TROSKLAR-KOMBINATIONEN — fastställ C och D, avgör tröskelregeln** (Bengts "kör grepp 2" 16/9,
+  DECISIONS #217, bedömningens S10). UTKAST i `docs/TROSKLAR-KOMBINATIONEN.md`. **C:** KB-A bär varje del sin roll · KB-B
+  räddar mer än den kostar (efterhalkan: Ö-B 5 %/25 %) · KB-C giltighet (Ö-C + T-C) · KB-D förarfacit. **D:** sju regler —
+  kärnan är kalibrering och dom på skilda nätter, för efterhalkans rutnät är 1 296 punkter. **T:** Axels lydelse +
+  vittneskrav; §6.4 måste besvaras: är det en uppmjukning av FRYSKLASSNINGEN §7? VÄNTAR: Bengt fastställer C, D ·
+  Bengt + Axel avgör T · förslagen KB-D4, kalibrering 1/2, kamerabilden (premiss ja, utfall nej). **I samma commit som
+  fastställandet:** D-raden i varje tröskeldokuments ändringsparagraf, T i FRYSKLASSNINGEN §1/§7. Före första frostnatten.
 - [ ] 🧩 **#159 INTEGRATIONSKARTAN — tre av våra egna regler står i vägen för produkten**
   📬 **AXELS FYRA INVÄNDNINGAR INARBETADE 14/9 (DECISIONS #184, kartans nya §13).** Han läste ett
   TIDIGT underlag, där grind A-rättelsen inte fanns. **Tre står, en föll på underlaget.**
