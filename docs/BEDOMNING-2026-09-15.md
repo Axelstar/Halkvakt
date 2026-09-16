@@ -29,6 +29,25 @@ när beviset finns, inte när koden är skriven.
 | N4 | 🔨 deployad 15:52Z, väntar på första kalla stationen — live.json 2026-09-15T16:00:01Z: `weather` **tom** — ingen station ≤ 3 °C klarar givarvakten (lägsta riktiga yta 7,1 °C; Rovaniemi 0,0 °C mot luft 12,6 stoppas av #75). Fälten bevisas i CI:s PostGIS (integration.test.ts) men ÄNNU INTE på CDN; `radar_h` uppskjuten | #187 (nytt) | #188 | PR #270 | fälten i `live.json`, manifest-sha stämmer |
 | N5 | ✅ klar | — | #186 | — | kartan §7.8 |
 
+### 0b. Bevakning — öppna åtgärder ur 15–16/9, tills de är strukna
+
+Bengts krav 16/9: allt som beslutats ska stå här tills det är åtgärdat, markerat och struket. Raden stryks när
+beviset finns — inte när koden är skriven.
+
+| Åtgärd | Läge | Kort | DECISIONS | Beviset som gäller |
+| :-- | :-- | :-- | :-- | :-- |
+| Spärrprovet (`?sparrprov=1`) + dbknapp läser svaret | 🔨 byggt, deploy + prov väntar | #191 → #188 | #197 | `suppressed` med en rad i dbknapp-svaret |
+| S1: `efterhalka` i skuggloggen | 🔨 byggt, migration 021 + deploy väntar; innehåll kräver kall natt | #192 | #198 | rad med innehåll |
+| R1–R16 in i kartan | 🔨 pågår (Bengts ja 16/9) | #159 | — | kartan uppdaterad, bilaga A struken |
+| N4:s fältbevis på CDN (`regn_h`, `lutning`) | ⏳ väntar på första station ≤ 3 °C | #187 | #188 | `weather[0]` bär fälten |
+| #188 `suppressed` med innehåll | ⏳ via spärrprovet | #188 | #193 | se raden ovan |
+| Grind V-B:s dom-knapp | ⏳ efter första hela regndygnet med `vb`-rader (13 st sedan 17:30Z 15/9) | #81 E | #191 | knappen med ⊘-disciplin |
+| S4 facitknappen + produktbokens löfte | ⏳ app-bygge, Axels design given | #21 | #196 | PRODUKTBOK i samma commit |
+| PAT-rotationen | ⏳ Axel, senast 15/11 | #86 | #190 | publicering med ny nyckel |
+| `radar_h` | ⏳ uppskjuten (CPU-mätning) | #187 | #188 | — |
+| Kamerafacit-bilderna öppnas och läses | ⏳ mars | #157 | #196 | facit, inte bara bild |
+| Steg D (farslaget `aquaplaning`) | ⏳ beslut efter V-C, utgångspunkt given | #81 D | #196 | Axels ja på text + plats |
+
 ---
 
 ## 1. NU — före första frosten
@@ -51,7 +70,7 @@ Fem rader. Inget annat är "nu".
 
 | # | Steg | Fog | Grind |
 | :-- | :-- | :-- | :-- |
-| **S1** | Skuggan läser N4:s fält vid sidan av motorn och loggar vad villkoret *skulle* ändrat. **GRIND (Axel 16/9): körs INNAN något mer byggs på `regn_h`** — regntäckningen 13 % gör `regn_h` till efterhalkans osäkra halva | — | S1 före S2 |
+| **S1** | Skuggan läser N4:s fält vid sidan av motorn och loggar vad villkoret *skulle* ändrat. **GRIND (Axel 16/9): körs INNAN något mer byggs på `regn_h`** — regntäckningen 13 % gör `regn_h` till efterhalkans osäkra halva. **Byggt 16/9** (kolumn `efterhalka`, DECISIONS #198) — innehåll kräver första kalla natten | — | S1 före S2 |
 | **S2** | **E på K2:** skattaren returnerar nivå + bevis, byggd på frysklassningens osäkerhetszon (±0 · ±0,5 · ±1,0 °C) — indata till försprånget. *Förkrav klart 15/9: trendfälten besiktigade av värdevakten (DECISIONS #192)* | F3 | — |
 | **S3** | **Regeln i motorn:** `icing_point` fyrar när det *inte* regnar men ytan är blöt (N4:s `regn_h` ≤ N) och faller (`lutning`). Märkt text: *"Halkvakt tror: frysrisk framöver"* — ny gren, inte nytt slag. Tre portar | F3 + F4 + text | **`v11_silent_drive` måste fortfarande tiga** — vektorn försvagas aldrig |
 | **S4** | **Facitknappen:** ~~efter varje varning *"stämde det?"*~~ **Axels ja 16/9: två knappar under "Senast sagt" — *Stämde* / *Stämde inte*, ingen fritext; loggas lokalt, skickas när bilen står stilla.** Skickar varnings-id + svar, inget spår. Bara betatestare, uttryckligt samtycke. **Produktbokens Om-avsnitt ("vi samlar in: ingenting") ändras i samma commit — ordagrant, frivilligt, synligt** (kort #21) | app, båda plattformarna | ~~Axels ja på text och flöde~~ ✅ 16/9; PRODUKTBOK i samma commit |

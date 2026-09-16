@@ -13,14 +13,14 @@ Deno.serve(async (req) => {
     const land = (new URL(req.url).searchParams.get("land") ?? "se").toUpperCase();
     const since = new Date(Date.now() - 24 * 3600e3).toISOString();
     const r = await fetch(
-      `${SB}/rest/v1/shadow_log?select=route,run_at,n_hazards,n_alerts,alerts,vb,suppressed&land=eq.${land}&run_at=gte.${since}&order=run_at.desc&limit=2000`,
+      `${SB}/rest/v1/shadow_log?select=route,run_at,n_hazards,n_alerts,alerts,vb,suppressed,efterhalka&land=eq.${land}&run_at=gte.${since}&order=run_at.desc&limit=2000`,
       { headers: { Authorization: `Bearer ${SRK}`, apikey: SRK } },
     );
     const raw = await r.json();
     if (!Array.isArray(raw)) return new Response("datafel: " + JSON.stringify(raw), { status: 500 });
     const rows: { route: string; run_at: string; n_hazards: number; n_alerts: number;
       alerts: { kind: string; text: string }[]; vb?: { id: string; road: string | null; regn: number | null }[];
-      suppressed?: { kind: string; by: string }[] }[] = raw;
+      suppressed?: { kind: string; by: string }[]; efterhalka?: { regn_h: number | null; larm: boolean }[] }[] = raw;
 
     const byRoute = new Map<string, typeof rows>();
     for (const row of rows) {
@@ -58,6 +58,12 @@ Deno.serve(async (req) => {
       pratare: talkers.map((t) => ({ rutt: t.route, korningar: t.runs, varningar: t.warns,
         senast: t.latest, sagt: t.lines })),
       tysta: quiet.map((q) => q.route),
+      // S1 (DECISIONS #198): efterhalkans indata per station i korridoren — tom tills weather[] har kalla stationer.
+      efterhalka: {
+        stationer: rows.reduce((a, x) => a + (x.efterhalka?.length ?? 0), 0),
+        med_regn_h: rows.reduce((a, x) => a + (x.efterhalka ?? []).filter((s) => s.regn_h != null).length, 0),
+        larmade: rows.reduce((a, x) => a + (x.efterhalka ?? []).filter((s) => s.larm).length, 0),
+      },
       // Steg E (#154): vad vattenplaningsrösten SKULLE sagt — aldrig hörd, bara räknad (grind V-B).
       // #127 a (kort #188): vad regel 1b kastade — synligt först 15/9, kolumnen stod tom sedan 13/9.
       sparren: {

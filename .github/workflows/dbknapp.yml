@@ -5,10 +5,10 @@ on:
   workflow_dispatch:
     inputs:
       atgard:
-        description: "migrera (kör fil), larmprov, vinterprov (kort #52), frostprov (kort #89), matvaktprov (mätvakten, kort #101), paminnelseprov (källvaktspåminnelsen, #150), nyckelprov (nyckelkalendern, kort #86)"
+        description: "migrera (kör fil), larmprov, vinterprov (kort #52), frostprov (kort #89), matvaktprov (mätvakten, kort #101), paminnelseprov (källvaktspåminnelsen, #150), nyckelprov (nyckelkalendern, kort #86), sparrprov (skuggmotorns spärr, kort #191)"
         type: choice
         default: migrera
-        options: [migrera, larmprov, vinterprov, frostprov, matvaktprov, paminnelseprov, kassaprov, nyckelprov]
+        options: [migrera, larmprov, vinterprov, frostprov, matvaktprov, paminnelseprov, kassaprov, nyckelprov, sparrprov]
       fil:
         description: "SQL-fil (bara för migrera)"
         default: sql/014_gallring.sql
