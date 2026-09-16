@@ -851,15 +851,19 @@ Deno.serve(async (req) => {
   const k = Deno.env.get("INGEST_KEY");
   if (!k || req.headers.get("x-halkvakt-key") !== k) return new Response("forbidden", { status: 403 });
   try {
-    // SPÄRRPROVET (kort #191 → bevis för #188, DECISIONS #197, Bengts ja 16/9). Två kameror 300 m isär på
-    // ett rakt spår österut i 80 km/h: den första talar, den andra når sin utlösning ~14 s senare och tystas
-    // av regel 1b (samma prioritet inom 45 s) — kroken ska då ge EN rad. Septembers farubild ger aldrig två
-    // larm inom 45 s, så beviset kan inte inväntas; det framkallas. Skriver INGET i shadow_log — en provrad
-    // hade förorenat tystnadsfelet och upprepningen — svaret läses av dbknapp ur net._http_response.
+    // SPÄRRPROVET (kort #191 → bevis för #188, DECISIONS #197, Bengts ja 16/9). Två kameror på ett rakt spår
+    // österut i 80 km/h: den första talar vid t=5 s, den andra når sin utlösning fem sekunder senare och
+    // tystas av regel 1b (samma prioritet inom spärren) — kroken ska då ge EN rad. Septembers farubild ger
+    // aldrig två larm så tätt, så beviset kan inte inväntas; det framkallas.
+    // FÖRSTA PROVET 02:38Z 16/9 FÖLL: kamerorna stod 300 m isär (~14 s) och BÅDA talade — spärren är 10 s
+    // sedan #127 (13/9), inte 45 s som CLAUDE.md:s invariant fortfarande säger. Kamerornas verkliga
+    // minimidistans (520 m) ligger utanför spärren med flit; provet sätter dem 100 m isär just för att hamna
+    // innanför de 10 sekunderna. Skriver INGET i shadow_log — en provrad hade förorenat tystnadsfelet och
+    // upprepningen — svaret läses av dbknapp ur net._http_response.
     if (new URL(req.url).searchParams.get("sparrprov") === "1") {
       const prov: Hazard[] = [
-        { id: "prov:kam1", kind: "camera", lon: 15.0105, lat: 59.0, bearing: null },   // ~600 m från start
-        { id: "prov:kam2", kind: "camera", lon: 15.0157, lat: 59.0, bearing: null },   // ~900 m
+        { id: "prov:kam1", kind: "camera", lon: 15.0105, lat: 59.0, bearing: null },   // ~600 m från start: talar t=5
+        { id: "prov:kam2", kind: "camera", lon: 15.0122, lat: 59.0, bearing: null },   // ~700 m: kandidat t=10, 5 s < 10 ⇒ tystas
       ];
       const motor = new AlertEngine(prov);
       const suppressed: unknown[] = [];
