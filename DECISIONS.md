@@ -5828,6 +5828,8 @@ skuggmotorns svenska cron-jobb, hittat på URL (inte namn) och utan `land=fi|no|
 
 **Bevis som gäller:** dbknapp `sparrprov` visar `suppressed: [{kind: camera, id: prov:kam2, by: camera, sinceS ≈ 15}]`.
 
+**Utfall 16/9:** dbknapp `sparrprov` 02:42Z: svaret läst ur `net._http_response` — `suppressed` med 1 rad: {kind: camera, id: prov:kam2, distM: 470, by: camera, sinceS: 5} — kam2 tystad 5 s efter kam1 och talad först vid t=15 när 10 s-spärren släppt. Första provet 02:38Z FÖLL: kamerorna 14 s isär, båda talade — spärren är 10 s sedan kort #127 (13/9), inte 45 s som CLAUDE.md:s invariant säger.
+
 ## #198 (16/9 2026) S1 byggt: efterhalkans indata per station i skuggloggen — inget villkor, bara underlag
 
 **Bengts "bygg S1 nu" 16/9, Axels grind (#196): S1 körs innan något mer byggs på `regn_h`.** Skuggmotorn loggar per
@@ -5840,6 +5842,8 @@ med regn_h, larmade).
 **Tom i september, och det är rätt:** `weather[]` bär bara stationer ≤ 3 °C som klarar givarvakten — 0 sedan 15/9.
 Första kalla natten i korridoren ger första raderna. **Bevis som gäller:** en `efterhalka`-rad med innehåll; tills
 dess bevisas kolumnen bara som skriven (`[]`) — vilket enligt #196 INTE räknas som bevis.
+
+**Utfall 16/9:** migration 021 (efterhalka jsonb, default []), deploy 02:36Z (skuggmotor + skuggrapport), 02:41Z (rättat prov); skuggrapportens `efterhalka` finns (0 stationer). Innehåll väntar på kylan.
 
 ## #199 (16/9 2026) Kartan öppnad en gång för R1–R16 — och fryst igen
 

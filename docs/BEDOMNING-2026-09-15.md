@@ -36,17 +36,19 @@ beviset finns — inte när koden är skriven.
 
 | Åtgärd | Läge | Kort | DECISIONS | Beviset som gäller |
 | :-- | :-- | :-- | :-- | :-- |
-| Spärrprovet (`?sparrprov=1`) + dbknapp läser svaret | 🔨 byggt, deploy + prov väntar | #191 → #188 | #197 | `suppressed` med en rad i dbknapp-svaret |
-| S1: `efterhalka` i skuggloggen | 🔨 byggt, migration 021 + deploy väntar; innehåll kräver kall natt | #192 | #198 | rad med innehåll |
+| ~~Spärrprovet (`?sparrprov=1`) + dbknapp läser svaret~~ | ✅ 16/9: dbknapp `sparrprov` 02:42Z: svaret läst ur `net._http_response` — `suppressed` med 1 rad: {kind: camera, id: prov:kam2, distM: 470, by: camera, sinceS: 5} — kam2 tystad 5 s efter kam1 och talad först vid t=15 när 10 s-spärren släppt. Första provet 02:38Z FÖLL: kamerorna 14 s isär, båda talade — spärren är 10 s sedan kort #127 (13/9), inte 45 s som CLAUDE.md:s invariant säger | #191 → #188 | #197 | `suppressed` med en rad i dbknapp-svaret |
+| S1: `efterhalka` i skuggloggen | ⏳ deployad 16/9 (02:36Z (skuggmotor + skuggrapport), 02:41Z (rättat prov)); innehåll kräver kall natt | #192 | #198 | rad med innehåll |
 | ~~R1–R16 in i kartan~~ | ✅ införda 16/9, kartan fryst igen | #159 | #199 | kartan §5.2/§5.6/§7.8/§14, bilaga A struken |
 | N4:s fältbevis på CDN (`regn_h`, `lutning`) | ⏳ väntar på första station ≤ 3 °C | #187 | #188 | `weather[0]` bär fälten |
-| #188 `suppressed` med innehåll | ⏳ via spärrprovet | #188 | #193 | se raden ovan |
+| ~~#188 `suppressed` med innehåll~~ | ✅ 16/9 via spärrprovet | #188 | #193 | se raden ovan |
 | Grind V-B:s dom-knapp | ⏳ efter första hela regndygnet med `vb`-rader (13 st sedan 17:30Z 15/9) | #81 E | #191 | knappen med ⊘-disciplin |
 | S4 facitknappen + produktbokens löfte | ⏳ app-bygge, Axels design given | #21 | #196 | PRODUKTBOK i samma commit |
 | PAT-rotationen | ⏳ Axel, senast 15/11 | #86 | #190 | publicering med ny nyckel |
 | `radar_h` | ⏳ uppskjuten (CPU-mätning) | #187 | #188 | — |
 | Kamerafacit-bilderna öppnas och läses | ⏳ mars | #157 | #196 | facit, inte bara bild |
 | Steg D (farslaget `aquaplaning`) | ⏳ beslut efter V-C, utgångspunkt given | #81 D | #196 | Axels ja på text + plats |
+| **CLAUDE.md-invarianten "max 1 spoken alert / 45 s" mot motorns `globalCooldownS = 10` (kort #127, 13/9)** | ❓ BESLUT: en av dem är fel — invarianten skrivs om till "prioritetsmedveten spärr 10 s + upprepning 10 min/5 km", eller motorn backas. Hittad av spärrprovet 16/9 | #127 | #197 | Axel + Bengt |
+| trv-bevakning: veckokörningen (måndag 06:40Z) föll 7/9 och 14/9; mätvakten (#268) larmar tills en grön körning finns | 🔨 manuell körning beställd 16/9 02:4xZ — grön ⇒ #268 stängs av nästa timkörning | #161 | #185 | grön körning + #268 stängd |
 
 ---
 
