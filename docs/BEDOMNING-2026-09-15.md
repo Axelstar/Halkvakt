@@ -60,6 +60,9 @@ beviset finns — inte när koden är skriven.
 | Betans startvärden in i motorn och `scripts/kontraktsgrinden.ts` när S3 byggs | ⏳ med S3 | #197 | #222 | grinden bär samma tal som DECISIONS #222 |
 | #153 försprång startar först efter grepp 2 fastställt, betan och S2 | ⏳ efter betan | #153 | #221 | eget tröskeldokument före kod |
 | TROSKLAR-SKUGGAN §4 (a)/(b) mot tröskelregeln | ⏳ före domen mars 2027 | #198 | #220 | §4 säger inget som regel T förbjuder |
+| Radarvarianten: uppspelningen ur arkivet provkörs — kombinationen och radarn ur samma arkiv | ⏳ före januari | #197 | #223 | en körning med rader för båda |
+| Radar- och väderarkivet kvar till mars-domen — i dag 165 av 500 MB, räcker inte vintern ut | ⏳ oktober, grepp 3 (#83 steg 2) | #83 | #223 | arkivet täcker november–mars |
+| S1 ser bara stationer längs skuggrutterna: 5 station-ögonblick på ett septemberdygn — räcker det i vinter? | ⏳ mät i första frostmånaden | #197 | #223 | rader per frostnatt |
 
 ---
 
@@ -139,6 +142,7 @@ Fem rader. Inget annat är "nu".
 | Steg D: utgångspunkt given (under halka, över vilt; *"Vattenplaning framöver — sakta ner"*), beslut efter V-C | Axel, 16/9 |
 | #52-vektorn: kod 1 + "Packad snö" MÅSTE larma — v24 i tre portar (S8, DECISIONS #214) | Bengt + Axel, 16/9 |
 | Kombinationen: de 1 248 punkter som inte kan spelas upp stryks, radarn inräknad — radarns bidrag mätt till högst ~13 % (DECISIONS #218/#219) | Bengt, 16/9 |
+| Radarn stryks inte: betan och kalibreringen utan radar, radarn prövas i mars ur arkivet (väg C, DECISIONS #223) | Bengt, 17/9 |
 | Tröskelregeln i Axels lydelse, tätad: T1 per tillstånd, T5 interpolation förbjuden (#153 beslut 2 utan egen öppning), T6 prognoser utlöser aldrig ensamma — inte en uppmjukning, skyddet följer med (DECISIONS #220) | Bengt, 16/9; Axel om lydelsen |
 | #153 omformulerat till försprång och väntar till efter grepp 2 och betan; ordval och prioritet strukna (DECISIONS #221) | Bengt, 16/9; formen Axels |
 | Betans startvärden (D2): mitten, den tystare av två mittpunkter — N 2 h, fall ≥ 0,8 °C på 30 min, regn > 0, yta +1…+3 °C (DECISIONS #222) | Claude på Bengts order, 16/9 — Bengt kan byta |
@@ -148,6 +152,8 @@ Fem rader. Inget annat är "nu".
 | Beslut | Vem | Rekommendation |
 | :-- | :-- | :-- |
 | C och D fastställs (S10, TROSKLAR-KOMBINATIONEN §4–§5) | Bengt, Axel kontrasignerar | ja, före första frostnatten |
+| Regnmängden (minsta regn ≥ 0,2 / ≥ 0,5 mm) tillbaka som variant i efterhand, som radarn (DECISIONS #223) | Bengt | ja — samma väg som radarn |
+| Kopplingen station↔väg för radarvarianten: 5 km (TROSKLAR-KOMBINATIONEN §9, 4b) | Bengt | ja, före första frostnatten |
 | Förslagen i C och D: förarfacits underlag (KB-D4) · kalibreringspunkt 1/2 (D3) · kamerabilden fäller premiss, aldrig utfall | Bengt | ja |
 | Utfallet i januari: KLARAR eller OAVGJORT ⇒ betan fortsätter oförändrad till mars, FALLER ⇒ grenen tas bort (TROSKLAR-KOMBINATIONEN §7) | Bengt + Axel | ja |
 | #45 lapse 0,63 (S12) | Bengt + Axel | ja |

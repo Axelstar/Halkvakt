@@ -6466,3 +6466,46 @@ inte prövat; tills dess står de utanför kalibreringen. **Vad punkten inte är
 flit, och en dålig december är designen, inte ett fel (V5). **När S3 byggs** skrivs värdena i motorn och i
 `scripts/kontraktsgrinden.ts` i samma commit (Axel, tre portar).
 
+## #223 (17/9 2026) Radarn stryks inte — betan utan radar, radarn prövas i mars ur arkivet (väg C)
+
+**Bengts beslut 17/9:** *"jag vill inte så gärna stänga radarn"* och därefter *"ja"* — på min rekommendation (väg C)
+och på frågan om regnmängden skulle prövas. Jag läste "ja" som båda; menade Bengt bara provet räcker en rad.
+
+**Rättelse av underlaget till #219.** Jag skrev 16/9 att radarn inte går att spela upp. Det gäller S1:s logg. Radar-
+arkivet (`radar_precip`) gallras aldrig — ingen kod raderar i det — och kan kopplas till loggens stationer i efterhand,
+som mätningen #218 gjorde. Valet presenterades som "bygg ut loggen eller stryk"; en tredje väg fanns.
+
+**Beslutet (väg C):**
+1. **Betan och kalibreringen 1/2 är oförändrade:** 48 punkter, radar av (#222). En radarvinnare i februari kunde ändå
+   inte nå telefonerna: `radar_h` finns inte i live.json (uppskjuten #188, CPU) och apparna läser inte radarn förrän
+   V-C är dömd (Axel 16/9).
+2. **Radarn prövas i mars som egen variant i KB-A:** kombinationen i den kalibrerade punkten med radarn som tredje
+   tecken på blöt väg, r = 0,1 · 0,5 · 2 mm/h — tre varianter, redovisade enligt D5.
+3. **Samma källa på båda sidor.** Radarvarianten jämförs mot kombinationen räknad ur samma arkiv, inte mot loggen —
+   arkivet och loggen skilde sig i 1 av 5 station-ögonblick i provet nedan.
+4. **Går radarn igenom i mars** är det ett eget beslut om att bygga in den — inte en justering av betan.
+
+**Villkor som följer:** kopplingen station↔väg skrivs före första frostnatten (FÖRSLAG 5 km, samma som #218 — en
+definition, ingen inställning att kalibrera) · uppspelningen provkörs före januari · arkiven måste finnas kvar till
+mars, och det gör de inte på gratisnivån (grepp 3, #83 steg 2, oktober).
+
+**Provet 17/9** (`scripts/matningar/regnmangd-uppspelning-2026-09-17.sql`, dbknapp-körning 35182341540):
+
+| Fråga | Svar |
+| :-- | :-- |
+| Hur mycket bär S1:s logg? | 2 658 skuggkörningar på 7 dygn, **5 med efterhalka-rader — 5 station-ögonblick** (16/9 06:00Z–17/9 04:30Z) |
+| Går loggens `regn_h` att räkna om ur arkivet? | **4 av 5 lika** (±0,15 h); med simulerad gallring 4 av 5 lika och **5 av 5 inom en halvtimme** |
+| Största skillnad | **2,7 h** i full upplösning — arkivet har fått data efter publiceringen. Vid N = 2 h: loggen blöt på 2, arkivet på 3 |
+| Med minsta regn ≥ 0,2 eller ≥ 0,5 mm | blöt på **0 av 5** |
+| Regnrader vid kalla stationer (yta ≤ 5 °C, 7 dygn) | 145 rader på 7 stationer: **96 under 0,2** · 37 mellan 0,2 och 0,5 · 12 minst 0,5; minsta värde 0,1 mm |
+| Radarn mot loggens stationer | kopplingen fungerar: 5 av 5 har väg inom 5 km; ingen radar över 0,1 mm/h inom 2 h |
+| Arkiven | radar sedan 2/9, 4,4 MB · väder sedan 24/8, 70 MB · databasen **165 av 500 MB** |
+
+**Vad provet visar och inte visar.** Metoden fungerar, men fem station-ögonblick är ett funktionsprov, inte en
+mätning. Regnmängden går att räkna fram ur arkivet på samma sätt som radarn, och den biter hårt: två tredjedelar av
+regnraderna vid kalla stationer är under 0,2 mm. **Om regnmängden ska tillbaka som variant i efterhand är Bengts
+beslut** — inte fattat här.
+
+**Funnet:** S1 loggar bara stationer i skuggrutternas korridorer (`efterhalkaRader`, ±0,05°) och bara ytor ≤ 3 °C —
+5 rader på ett septemberdygn. Om det räcker i vinter är inte mätt; arkivet ser alla stationer.
+
