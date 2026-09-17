@@ -63,6 +63,10 @@ beviset finns — inte när koden är skriven.
 | Radarvarianten: uppspelningen ur arkivet provkörs — kombinationen och radarn ur samma arkiv | ⏳ före januari | #197 | #223 | en körning med rader för båda |
 | Radar- och väderarkivet kvar till mars-domen — i dag 165 av 500 MB, räcker inte vintern ut | ⏳ oktober, grepp 3 (#83 steg 2) | #83 | #223 | arkivet täcker november–mars |
 | S1 ser bara stationer längs skuggrutterna: 5 station-ögonblick på ett septemberdygn — räcker det i vinter? | ⏳ mät i första frostmånaden | #197 | #223 | rader per frostnatt |
+| SMHI-varningar som försvinner: `senast_sedd` + `smhi_synk` i ingesten (`sql/024`) | 🔨 byggt 17/9 — bevis efter nästa ingestkörning | #199 | #225 | rad med innehåll i båda |
+| `senast_sedd` deklareras i värdevakten innan SMHI-förlängningen mäts | ⏳ före mars | #199 | #225 | fältet i SPANN, knappen körd |
+| TRV-anmälan om nio byvindgivare — Bengt skickar själv | ⏳ Bengt | — | #225 | skickat |
+| Axels ja: kontrasignatur på C och D · utfallet i januari · #45 lapse 0,63 | ⏳ Axel | #197 | #225 | Axels rad i DECISIONS |
 
 ---
 
@@ -143,23 +147,25 @@ Fem rader. Inget annat är "nu".
 | #52-vektorn: kod 1 + "Packad snö" MÅSTE larma — v24 i tre portar (S8, DECISIONS #214) | Bengt + Axel, 16/9 |
 | Kombinationen: de 1 248 punkter som inte kan spelas upp stryks, radarn inräknad — radarns bidrag mätt till högst ~13 % (DECISIONS #218/#219) | Bengt, 16/9 |
 | Radarn stryks inte: betan och kalibreringen utan radar, radarn prövas i mars ur arkivet (väg C, DECISIONS #223) | Bengt, 17/9 |
+| Interpolationsidén (#153 beslut 2) får ingen egen öppning i tröskelregeln (DECISIONS #220) | Bengt, 17/9 (#225) |
+| Strukna inställningar prövas i mars som varianter — regnmängd, startband, SMHI-förlängningen när vintervarningar finns; kalibreringen står på 48 (DECISIONS #223/#224) | Bengt, 17/9 (#225) |
+| Kopplingen station↔väg för radarvarianten: 5 km | Bengt, 17/9 (#225) |
+| Förslagen i C och D: förarfacits underlag (KB-D4) · kalibreringen 1/2 (D3) · kamerabilden fäller premiss, aldrig utfall — gäller med C och D | Bengt, 17/9 (#225) |
+| Ingesten sparar när en SMHI-varning försvinner (kort #199) | Bengt, 17/9 (#225) |
+| TRV-anmälan om nio byvindgivare skickas — av Bengt själv | Bengt, 17/9 (#225) |
 | Tröskelregeln i Axels lydelse, tätad: T1 per tillstånd, T5 interpolation förbjuden (#153 beslut 2 utan egen öppning), T6 prognoser utlöser aldrig ensamma — inte en uppmjukning, skyddet följer med (DECISIONS #220) | Bengt, 16/9; Axel om lydelsen |
 | #153 omformulerat till försprång och väntar till efter grepp 2 och betan; ordval och prioritet strukna (DECISIONS #221) | Bengt, 16/9; formen Axels |
-| Betans startvärden (D2): mitten, den tystare av två mittpunkter — N 2 h, fall ≥ 0,8 °C på 30 min, regn > 0, yta +1…+3 °C (DECISIONS #222) | Claude på Bengts order, 16/9 — Bengt kan byta |
+| Betans startvärden (D2): mitten, den tystare av två mittpunkter — N 2 h, fall ≥ 0,8 °C på 30 min, regn > 0, yta +1…+3 °C (DECISIONS #222) | Claude på Bengts order 16/9 · Bengt ja 17/9 (#225) |
 
 ### 4.2 Öppna
 
 | Beslut | Vem | Rekommendation |
 | :-- | :-- | :-- |
-| C och D fastställs (S10, TROSKLAR-KOMBINATIONEN §4–§5) | Bengt, Axel kontrasignerar | ja, före första frostnatten |
-| Strukna inställningar som varianter i mars, som radarn: regnmängd, startband, SMHI-förlängningen (när vintervarningar finns) — alla går att räkna ur arkivet; kalibreringen står på 48 (DECISIONS #223/#224) | Bengt | ja |
+| C och D fastställs (S10, TROSKLAR-KOMBINATIONEN §4–§5) — **Bengt ja 17/9 (#225)**, i kraft när Axel kontrasignerat | Axel kontrasignerar | ja, före första frostnatten |
 | Varifrån uppspelningen räknas: skuggloggen (det telefonen såg, 5 station-ögonblick på ett dygn) eller arkivet (alla stationer, data i efterhand) (DECISIONS #224) | Bengt + Axel | före kalibreringen 1/2 |
-| Kopplingen station↔väg för radarvarianten: 5 km (TROSKLAR-KOMBINATIONEN §9, 4b) | Bengt | ja, före första frostnatten |
-| Förslagen i C och D: förarfacits underlag (KB-D4) · kalibreringspunkt 1/2 (D3) · kamerabilden fäller premiss, aldrig utfall | Bengt | ja |
-| Utfallet i januari: KLARAR eller OAVGJORT ⇒ betan fortsätter oförändrad till mars, FALLER ⇒ grenen tas bort (TROSKLAR-KOMBINATIONEN §7) | Bengt + Axel | ja |
-| #45 lapse 0,63 (S12) | Bengt + Axel | ja |
+| Utfallet i januari: KLARAR eller OAVGJORT ⇒ betan fortsätter oförändrad till mars, FALLER ⇒ grenen tas bort (TROSKLAR-KOMBINATIONEN §7) — **Bengt ja 17/9 (#225)** | Axel | ja |
+| #45 lapse 0,63 (S12) — **Bengt ja 17/9 (#225)** | Axel | ja |
 | `marknadsforing.yml` | Axel + Bengt | ingen rekommendation |
-| TRV-anmälan om nio byvindgivare — brevet är klart | Bengt | ja |
 
 ---
 

@@ -71,6 +71,10 @@ test("writeAll: migrate, insert, idempotent re-run", { skip: !url }, async () =>
   assert.equal(await n("SELECT count(*) FROM polisen_events"), 1);
   assert.equal(await n("SELECT count(*) FROM smhi_warnings"), 1);
   assert.equal(await n("SELECT count(*) FROM smhi_warnings_history"), 1);
+  // Kort #199 (sql/024): synken stämplar när varningen senast fanns i flödet. smhi_synk får en rad per
+  // körning — den är en klocka, inte data, så två körningar ger två rader utan att bryta idempotensen.
+  assert.equal(await n("SELECT count(*) FROM smhi_warnings_history WHERE senast_sedd IS NOT NULL"), 1);
+  assert.equal(await n("SELECT count(*) FROM smhi_synk WHERE varningar = 1"), 2);
   const wv = await pool.query("SELECT road_number, species FROM polisen_events WHERE event_id=999001");
   assert.equal(wv.rows[0].road_number, "E45");
   assert.equal(wv.rows[0].species, "älg");
