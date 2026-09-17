@@ -443,6 +443,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   radararkivet (gallras aldrig, 4,4 MB). Regnmängden går också att räkna fram ur arkivet — funktionsprov på 5
   station-ögonblick. **VÄNTAR:** Bengt om regnmängden ska tillbaka på samma sätt · kopplingen station↔väg (förslag
   5 km) före frosten · arkiven kvar till mars (grepp 3).
+  🧪 **STARTBAND OCH SMHI-FÖRLÄNGNING PRÖVADE 17/9 (DECISIONS #224):** startbandet går att räkna ur trend-tabellen (gallras
+  inte); SMHI-förlängningen går att koppla men arkivet har inga vintervarningar än. **Alla sex inställningar går nu att
+  räkna ur arkivet** — kvar som skäl för 48 är Axels ärlighetsargument. **VÄNTAR:** Bengt om strukna inställningar prövas
+  i mars · Bengt + Axel om uppspelningen räknas ur loggen eller arkivet.
 - [ ] 🧩 **#159 INTEGRATIONSKARTAN — tre av våra egna regler står i vägen för produkten**
   📬 **AXELS FYRA INVÄNDNINGAR INARBETADE 14/9 (DECISIONS #184, kartans nya §13).** Han läste ett
   TIDIGT underlag, där grind A-rättelsen inte fanns. **Tre står, en föll på underlaget.**

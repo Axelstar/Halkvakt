@@ -152,7 +152,8 @@ Fem rader. Inget annat är "nu".
 | Beslut | Vem | Rekommendation |
 | :-- | :-- | :-- |
 | C och D fastställs (S10, TROSKLAR-KOMBINATIONEN §4–§5) | Bengt, Axel kontrasignerar | ja, före första frostnatten |
-| Regnmängden (minsta regn ≥ 0,2 / ≥ 0,5 mm) tillbaka som variant i efterhand, som radarn (DECISIONS #223) | Bengt | ja — samma väg som radarn |
+| Strukna inställningar som varianter i mars, som radarn: regnmängd, startband, SMHI-förlängningen (när vintervarningar finns) — alla går att räkna ur arkivet; kalibreringen står på 48 (DECISIONS #223/#224) | Bengt | ja |
+| Varifrån uppspelningen räknas: skuggloggen (det telefonen såg, 5 station-ögonblick på ett dygn) eller arkivet (alla stationer, data i efterhand) (DECISIONS #224) | Bengt + Axel | före kalibreringen 1/2 |
 | Kopplingen station↔väg för radarvarianten: 5 km (TROSKLAR-KOMBINATIONEN §9, 4b) | Bengt | ja, före första frostnatten |
 | Förslagen i C och D: förarfacits underlag (KB-D4) · kalibreringspunkt 1/2 (D3) · kamerabilden fäller premiss, aldrig utfall | Bengt | ja |
 | Utfallet i januari: KLARAR eller OAVGJORT ⇒ betan fortsätter oförändrad till mars, FALLER ⇒ grenen tas bort (TROSKLAR-KOMBINATIONEN §7) | Bengt + Axel | ja |
