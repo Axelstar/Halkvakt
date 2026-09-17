@@ -6596,3 +6596,20 @@ kvar. Att ändra den vore en **lättnad** av (a):s grind (färre falsklarm räkn
 **Inga öppna beslut kvar i bedömningens lista.** Det som återstår är arbete: kort #196, #199 (bevis), #200, och
 uppföljningen med datum i bedömningen §0b.
 
+## #227 (17/9 2026) Kort #196: provraderna i förarfacit märks i databasen, vakthunden visar klockslag
+
+**Bengts order 17/9:** *"kör #196"* — på beslutet #226: provraderna märks och utesluts, raderas inte.
+
+**Valet: en genererad kolumn, inte ett filter i funktionerna.** `sql/025` lägger `prov boolean GENERATED ALWAYS AS
+(strpos(lower(alert_id), 'prov') > 0) STORED` på `driver_facit`. Definitionen finns på ett ställe och märker också
+framtida prov utan kod. Vakthunden räknar `WHERE NOT prov` och skriver hur många prov som uteslöts; skuggrapporten läser
+`prov=is.false`. **Alternativ som valdes bort:** samma villkor i båda funktionerna — två kopior av en regel som kan glida
+isär (läxan bakom kontraktsgrinden) · radera raderna — Bengts och Axels beslut var att inte radera.
+
+**Klockslaget:** vakthundsraden skrev `String(df.senast).slice(0, 16)`, alltså "Wed Sep 16 2026 " — datum utan tid. Nu
+ISO i UTC, t.ex. "2026-09-16 11:47Z".
+
+**Ordning i drift:** merge → `sql/025` med dbknapp (före deployen, annars saknar funktionerna kolumnen) → deploy av
+vakthund och skuggrapport, var för sig → bevis: skuggrapportens `forarfacit.svar_7d` = 0 och vakthundens rad säger
+"0 svar · 2 prov uteslutna".
+

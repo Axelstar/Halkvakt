@@ -335,9 +335,12 @@ Deno.serve(async (req) => {
     const [vatt] = await sql`SELECT count(*)::int AS n FROM weather_observations
       WHERE sample_time > now() - interval '3 hours' AND (rain OR snow OR rain_sum_mm > 0)`;
     // S4 (DECISIONS #201): förarfacit — betatestarnas svar. En rad, ingen dom; tom tills betan går i november.
+    // Kort #196 (sql/025): provrader räknas aldrig som svar, men antalet syns; klockslaget skrivs i UTC.
     try {
-      const [df] = await sql`SELECT count(*)::int AS n, max(received_at) AS senast FROM driver_facit`;
-      rad.push(`förarfacit: ${df.n} svar${df.senast ? ` (senast ${String(df.senast).slice(0, 16)})` : ""}`);
+      const [df] = await sql`SELECT count(*) FILTER (WHERE NOT prov)::int AS n, count(*) FILTER (WHERE prov)::int AS prov,
+        max(received_at) FILTER (WHERE NOT prov) AS senast FROM driver_facit`;
+      const senast = df.senast ? ` (senast ${new Date(df.senast).toISOString().slice(0, 16).replace("T", " ")}Z)` : "";
+      rad.push(`förarfacit: ${df.n} svar${senast}${df.prov ? ` · ${df.prov} prov uteslutna` : ""}`);
     } catch { rad.push("förarfacit: tabellen saknas — hoppar"); }
     // 6c. VÄGLAGSARKIVET (#124, 12/9): samma korskontroll som radarn. En operatörsklassning
     //     står tills den ändras, så ren ålder säger inget — men står arkivet stilla MEDAN
