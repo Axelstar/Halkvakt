@@ -6687,3 +6687,29 @@ nu: databasvakt, rensning av pg_crons logg, gallring av Finland och Norge (Bengt
 rullande export (2a) — sedan #226 läser domarna rådata över månader, och en export som fallerar skrivskyddar databasen.
 **Funnet:** ingen vakt larmar på databasens storlek i dag.
 
+## #232 (17/9 2026) Grepp 3, punkt 2: databasvakt, loggrensning och hård gallring av Finland och Norge
+
+**Bengts order 17/9:** *"gör punkt 2. Gallra de finska och norska hårt för vi använder inte dessa så mycket"* — och på
+frågan om rimfrostgrinden: *"Behåll kalla rader"*.
+
+**Byggt (sql/026, vakthunden, dbknapp, integrationstest):**
+1. **`gallra_arkiv(dagar)`** ersätter `gallra_vader` i nattjobbet 03:15 (samma jobb, nytt kommando): den svenska
+   gallringen oförändrad, sedan
+   - **Finland:** rader äldre än 7 dygn med yta över +3 °C eller utan yta raderas; kalla rader sparas i 60 dygn.
+   - **Norge:** allt äldre än 7 dygn raderas.
+   - **pg_crons logg:** körningar äldre än 7 dygn raderas.
+2. **Databasvakten** i vakthunden: raden *"databas: N MB av 500"* och larm vid 400 MB. Prov: `databasprov`.
+
+**Varför Finland inte gallras lika hårt som Norge.** Sökt i koden och dokumenten före radering: rimfrostgrinden R-A läser
+det finska arkivet med 30 dygns fönster, och planen att köra den på Lapplands frostnätter är fastställd
+(TROSKLAR-RIMFROST §8) och byggde på Bengts beslut #138 att spara luftfuktigheten. Det norska arkivet läses av ingen
+analys — ingesten läser bara senaste raden per station. Det norska skuggarkivet var Axels start 31/8 (BACKLOG #35);
+han informeras.
+
+**Funnet och låst i samma migration:** gallringsfunktionerna låg i `public` utan spärr, alltså anropsbara via Supabases
+REST-API. `gallra_vader(0)` hade tunnat ut även den senaste veckan. EXECUTE återkallas från PUBLIC, anon och
+authenticated för båda.
+
+**Storleken sjunker inte direkt:** en DELETE frigör inte disk förrän autovacuum återanvänt platsen (sql/014). Effekten
+syns som lägre tillväxt — mätningen 24/9 visar den.
+

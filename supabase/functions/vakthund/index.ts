@@ -342,6 +342,16 @@ Deno.serve(async (req) => {
       const senast = df.senast ? ` (senast ${new Date(df.senast).toISOString().slice(0, 16).replace("T", " ")}Z)` : "";
       rad.push(`förarfacit: ${df.n} svar${senast}${df.prov ? ` · ${df.prov} prov uteslutna` : ""}`);
     } catch { rad.push("förarfacit: tabellen saknas — hoppar"); }
+    // Grepp 3 (DECISIONS #231/#232): databasens storlek. Gratisnivån skrivskyddar databasen vid 500 MB — då stannar
+    // ingest-live och appen visar gammal data, utan att något annat larmar. Larm vid 400 MB (80 %).
+    // Prov: ?databasprov=1 sänker gränsen till 0 MB så att larmvägen syns.
+    try {
+      const [db] = await sql`SELECT pg_database_size(current_database())::bigint AS b`;
+      const mb = Math.round(Number(db.b) / 1048576);
+      const grans = new URL(req.url).searchParams.get("databasprov") === "1" ? 0 : 400;
+      rad.push(`databas: ${mb} MB av 500 (larm vid ${grans} MB)`);
+      if (mb >= grans) problem.push(`**DATABASEN ÄR ${mb} MB** — gratisnivån skrivskyddar vid 500 MB och då stannar ingest-live (grepp 3, docs/GREPP3-ARKIVEN.md)`);
+    } catch { rad.push("databas: storleken kunde inte läsas"); }
     // 6c. VÄGLAGSARKIVET (#124, 12/9): samma korskontroll som radarn. En operatörsklassning
     //     står tills den ändras, så ren ålder säger inget — men står arkivet stilla MEDAN
     //     en väsentlig andel stationer ligger under noll är antingen ingesten trasig eller

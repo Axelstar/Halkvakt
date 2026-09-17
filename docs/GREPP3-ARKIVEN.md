@@ -73,7 +73,8 @@ små veckoutfall — sedan #226 läser de rådata över månader, och exporten b
 
 ## 5. Rekommendation
 
-1. **Nu, gratis (Bengts ja):** tre småbyggen — en **databasvakt** i vakthunden som larmar vid 400 MB (80 %),
+1. ✅ **Beslutat och byggt 17/9 (DECISIONS #232):** tre småbyggen — med Finland gallrat så att rimfrostgrinden behåller sina
+   kalla rader i 60 dygn, och Norge allt efter 7 dygn — — en **databasvakt** i vakthunden som larmar vid 400 MB (80 %),
    **rensning av pg_crons logg** äldre än 7 dygn i gallringsjobbet, och **gallring av Finland och Norge** med samma regel
    som den svenska. Inget av dem rör domarna.
 2. **Beslut (Bengt + Axel):** **Supabase Pro senast när databasen passerar 400 MB eller 1 november**, det som kommer

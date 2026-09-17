@@ -14,7 +14,8 @@
 //                                    `vinterord-prov`), frostprov (framkallar frostlarmet,
 //                                    kort #89 ⇒ issue `frostlarm-prov`), matvaktprov (framkallar
 //                                    mätvaktens larm, kort #101 ⇒ issue `matvakt`) och kassaprov
-//                                    (framkallar kassavaktens larm, kort #152 ⇒ issue `kassavakt`).
+//                                    (framkallar kassavaktens larm, kort #152 ⇒ issue `kassavakt`) och databasprov
+//                                    (framkallar databasvaktens larm, grepp 3 ⇒ issue `vakthund`).
 //                                    Beviset är issuen, inte utskriften.
 import pg from "pg";
 import { readFileSync } from "node:fs";
@@ -47,7 +48,7 @@ try {
     // Vitlistan först, före FRÅGAN: en felstavad flagga ska falla på en rad, inte efter att ha
     // kört något mot databasen. (Rättat 12/9: kommentaren sa tidigare att den därmed gick att
     // prova helt utan DATABASE_URL — det stämmer inte, toppnivåvakten kräver den ändå.)
-    const FLAGGOR: Record<string, string> = { larmprov: "larmprov=1", vinterprov: "vinterprov=1", frostprov: "frostprov=1", matvaktprov: "matvaktprov=1", paminnelseprov: "paminnelseprov=1", kassaprov: "kassaprov=1", nyckelprov: "nyckelprov=1", sparrprov: "sparrprov=1" };
+    const FLAGGOR: Record<string, string> = { larmprov: "larmprov=1", vinterprov: "vinterprov=1", frostprov: "frostprov=1", matvaktprov: "matvaktprov=1", paminnelseprov: "paminnelseprov=1", kassaprov: "kassaprov=1", databasprov: "databasprov=1", nyckelprov: "nyckelprov=1", sparrprov: "sparrprov=1" };
     // Vilken funktion provet går till. Vakthunden är standard; spärrprovet (kort #191) går till skuggmotorn.
     const FUNKTION: Record<string, string> = { sparrprov: "skuggmotor" };
     const flagga = FLAGGOR[arg ?? "larmprov"];

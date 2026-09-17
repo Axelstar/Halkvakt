@@ -203,6 +203,37 @@ test("#83 gallra_vader: tunnar gammalt till 30 min, lämnar sista veckan, idempo
   } finally { await pool.end(); }
 });
 
+// Grepp 3 (sql/026, DECISIONS #232): gallra_arkiv kör den svenska gallringen och tar dessutom Finland (varma rader efter
+// sju dygn, allt efter 60), Norge (allt efter sju dygn) och pg_crons logg — loggen finns inte i CI och hoppas över.
+test("grepp 3 gallra_arkiv: Finland behåller kalla rader i 60 dygn, Norge sju dygn, idempotent", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  try {
+    for (const f of ["014_gallring.sql", "004_fi_schema.sql", "006_no_schema.sql", "026_gallring_grannar.sql"])
+      await pool.query(readFileSync(new URL("../sql/" + f, import.meta.url), "utf8"));
+    await pool.query("DELETE FROM fi.weather_observations WHERE station_id = 'GFI'");
+    await pool.query("DELETE FROM no.weather_observations WHERE station_id = 'GNO'");
+    const p = "ST_SetSRID(ST_MakePoint(25, 66), 4326)";
+    await pool.query(`INSERT INTO fi.weather_observations (station_id, name, geom, sample_time, surface_temp_c) VALUES
+      ('GFI', 'Varm gammal', ${p}, now() - interval '20 days', 5),
+      ('GFI', 'Kall gammal', ${p}, now() - interval '20 days' + interval '30 min', 1),
+      ('GFI', 'Utan yta', ${p}, now() - interval '20 days' + interval '60 min', NULL),
+      ('GFI', 'Kall uråldrig', ${p}, now() - interval '70 days', -2),
+      ('GFI', 'Varm färsk', ${p}, now() - interval '1 day', 6)`);
+    await pool.query(`INSERT INTO no.weather_observations (station_id, name, geom, sample_time, surface_temp_c) VALUES
+      ('GNO', 'Gammal', ${p}, now() - interval '20 days', -1),
+      ('GNO', 'Färsk', ${p}, now() - interval '1 day', -1)`);
+    await pool.query("SELECT gallra_arkiv(7)");
+    const fi = (await pool.query("SELECT name FROM fi.weather_observations WHERE station_id = 'GFI' ORDER BY sample_time")).rows.map((r) => r.name);
+    assert.deepEqual(fi, ["Kall gammal", "Varm färsk"], "varm och ytlös gammal rad bort, kall kvar, 70 dygn bort");
+    const no = (await pool.query("SELECT name FROM no.weather_observations WHERE station_id = 'GNO'")).rows.map((r) => r.name);
+    assert.deepEqual(no, ["Färsk"], "Norge: allt äldre än sju dygn bort");
+    const igen = (await pool.query("SELECT gallra_arkiv(7) AS n")).rows[0].n;
+    assert.equal(Number(igen), 0, "andra körningen har inget att ta");
+  } finally { await pool.end(); }
+});
+
 // #85 grannländernas batchade skrivare: samma kolumner och ON CONFLICT som de gamla enradiga
 // INSERT:arna, men en UNNEST-sats per tabell. Provas mot riktiga fi/no/dk-scheman (migrationerna
 // 004/010/012, 006/013, 007) — typkastningen i UNNEST (numeric[] med null, bool[], timestamptz[])
