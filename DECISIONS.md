@@ -6613,3 +6613,21 @@ ISO i UTC, t.ex. "2026-09-16 11:47Z".
 vakthund och skuggrapport, var för sig → bevis: skuggrapportens `forarfacit.svar_7d` = 0 och vakthundens rad säger
 "0 svar · 2 prov uteslutna".
 
+## #228 (17/9 2026) Sessionsregeln: orientera vid start, sök innan något stryks, inga trådar bara i chatten
+
+**Bengts order 17/9:** *"skriv in allt detta i claude.md som en handlingsregel för varje session"* — efter hans förslag
+att varje session läser integrationskartan och bedömningen, så att inga obesvarade trådar lämnas efter.
+
+**Regeln (CLAUDE.md, SESSIONSREGELN):** (1) vid start läses den senaste bedömningen hela, och kartan när den ändrats
+eller ett nytt grepp börjar; (2) innan något stryks eller sägs vara omöjligt söks tabeller och nyckelord i repot;
+(3) frågor och beslut från chatten skrivs in i bedömningen och DECISIONS i samma varv, med en kontroll före sessionens slut.
+
+**Justeringar mot Bengts förslag, och varför:** kartan läses vid ändring i stället för varje gång — den är fryst till
+efter bygge och mätning, och en omläsning kostar ~14 000 tokens utan ny information. Kontrollen i slutet lades till: trådar
+tappas i chatten, inte i dokumenten, så en läsning i början hittar bara det som redan skrivits in. Sökregeln lades till
+eftersom dagens största miss — radarn som "inte gick att spela upp" — inte stod i kartan eller bedömningen utan i
+TROSKLAR-OVERGANGAR §4 och `sql/017`. En tabellista är 19 namn, ungefär 100 tokens.
+
+**Ersatt:** sessionsprotokollets steg 1 sade att TAVLA, STATUS, BACKLOG och DECISIONS läses varje session — cirka 280 000
+tokens, som i praktiken inte lästes. Steg 1 pekar nu på regeln och säger att de stora filerna söks i.
+

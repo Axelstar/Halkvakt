@@ -72,13 +72,28 @@ first, English second.
 
 ## Session protocol (self-steering)
 Every session, in order:
-1. Read TAVLA.md (människolagret — hålls i synk varje varv) och STATUS.md, BACKLOG.md, DECISIONS.md, latest CI runs.
+1. Orient per SESSIONSREGELN below: the latest `docs/BEDOMNING-*.md` in full, `docs/INTEGRATIONSKARTAN.md` when it
+   changed or a new grepp starts, TAVLA.md's 🟡 section, DECISIONS added since last session, latest CI runs. Search
+   TAVLA, STATUS and DECISIONS — don't read them whole (~280 000 tokens together).
 2. Take the top unblocked BACKLOG item. Build against its *Verify* line.
 3. Prove it: tests/CI/logs — never claim done without evidence.
 4. Commit with a message explaining what + why. Update STATUS.md (state + session
    log) and BACKLOG.md. Log decisions in DECISIONS.md.
 5. End by telling Axel: what shipped, what's next, and ONLY the questions that
    block progress. Batch questions; never drip them.
+
+## SESSIONSREGELN (Bengts order 2026-09-17 — inga obesvarade trådar, DECISIONS #228)
+Repot är enda synken mellan sessioner (dator, webb, mobil). Det som bara stod i chatten finns inte nästa gång.
+1. **Vid start — orientera.** Läs den senaste bedömningen (`docs/BEDOMNING-*.md`) hela: den är den enda listan, med
+   bevakningen (§0b) och de öppna besluten (§4.2). Läs `docs/INTEGRATIONSKARTAN.md` när `git log` visar att den ändrats
+   sedan förra sessionen eller när ett nytt grepp börjar — den är fryst och ger annars inget nytt (~14 000 tokens).
+2. **Innan något stryks eller sägs vara omöjligt — sök i repot.** Lista tabellerna
+   (`grep -ho "CREATE TABLE[A-Z ]* [a-z_]*" sql/*.sql`) och sök nyckelordet i `docs/TROSKLAR-*.md` och i koden. Det
+   kostar några hundra tokens. Skälet: 16/9 ströks radarn för att den "inte gick att spela upp" — fast `radar_precip`
+   aldrig gallras och `trend_kandidater` sparar fallen. Missen kostade en dags omtag (DECISIONS #223/#224).
+3. **Inga trådar bara i chatten.** En fråga till Bengt eller Axel skrivs in i bedömningen (§4.2) i samma varv som den
+   ställs; ett beslut i chatten skrivs in i DECISIONS och bedömningen (§4.1, §0b) i samma varv som det fattas.
+   Kontroll före sessionens slut: frågorna i sista svaret ska finnas som rader i §4.2.
 
 ## Skills (obligatoriskt före app-kod)
 Före kod i `android/` eller `ios/`: läs relevant `skills/<namn>/SKILL.md` enligt
