@@ -828,6 +828,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   dygn för dygn via GitHubs API — troligen det som tar tid. **Okänt:** om funktionen hann klart efter att pg_net slutade vänta,
   och om kassavaktens larm då går ut. **Verify:** läs svaret 11:07Z; tar det över 120 s, mät körtiden och flytta kassavakten till
   en egen körning eller korta den — tills vakthundens svar kommer inom tidsgränsen i alla timmar.
+  🔍 **KONTROLLERAT 17/9:** timeout även 11:07Z — mönstret gäller kassavaktens timmar. **Larmet går ut:** kassavakten
+  kommenterade issue #210 05:08:15Z och 11:08:21Z, cirka 75 s in i körningen. Kvar: svaret oläsbart för dbknapp var sjätte
+  timme, och okänt om kontrollerna efter kassavakten hinner köras. Låg prioritet.
 - [ ] ⏰ **#200 MARKNADSFÖRINGEN PÅ PULSKLOCKAN — morgonutkasten ska nå pendlingen** (Bengt + Axel 17/9, DECISIONS #226).
   `marknadsforing.yml` är bokad 04:45 UTC ("före pendlingen") men GitHub-cronen levererade den 08:49–10:07 UTC (10–16/9).
   Kostnaden är liten, cirka 20 s per körning. **Åtgärd:** flytta till Supabase pg_cron som FI, DK och regn-30
