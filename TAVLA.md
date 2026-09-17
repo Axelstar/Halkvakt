@@ -724,6 +724,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⚠️ **Rättat 17/9:** Trafikverkets kontaktsida listar ingen e-postadress. Vägen är kundformuläret
   etjanster.trafikverket.se/kundfragor-trafikverket ("väg, järnväg, färja eller övrigt") eller ett ärende i
   Datautbytesportalen, inloggad med kontot bakom vår API-nyckel.
+  ✅ **Bättre väg, 17/9:** Datautbytesportalens kontaktformulär data.trafikverket.se/about-us/contact — ingen inloggning,
+  ärendetyp **API Öppna Data**.
   ✅ **Bengt ja 17/9 (DECISIONS #225): brevet ska skickas — Bengt skickar själv.**
   💡 **Varför det är värt att skicka:** vi har uteslutit stationerna ur vårt eget underlag, så vi är
   inte blockerade. Men felet ligger kvar för alla andra som läser samma öppna data — och svaret

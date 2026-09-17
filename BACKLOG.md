@@ -235,7 +235,8 @@
     crowd). Kräver: ny HazardKind (motorkontrakt ⇒ vektorer utökas), kö-slutslogik
     (slinga N långsam + N−1 snabb), falsklarmsskydd (vägarbete/väder). EFTER release.
     Stängda dörrar (bygg ALDRIG mot): friktionsdata (säljs via biltillverkare→entrepre-
-    nörer), plogåtgärder, Öresundsbrons driftstatus (inget API). SMHI-generationsskiftet
+    nörer; prövat 17/9, DECISIONS #230: Trafikverkets öppna SRTI-halkflöde är väglaget i DATEX-form, inga
+    fordonsdata — dörren står), plogåtgärder, Öresundsbrons driftstatus (inget API). SMHI-generationsskiftet
     (Mesan2gv3/SNOW1gv1) träffar oss inte — vi kör varnings-API:t (ibww), frysrisk via
     Trafikverkets stationer; väljs rätt generation den dag prognoslager byggs (MET Norge
     CC BY är då kandidat).

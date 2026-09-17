@@ -38,6 +38,12 @@
 - Revoke the unused second PAT (public-read-only one from 2026-08-24) — ej verifierad
 
 ## Session log
+- **S-2026-09-17** (Claude med Bengt, Axel via Bengt): **grepp 2 fastställt** — C, D och T underskrivna av Bengt och
+  Axel (DECISIONS #220–#228); betans startvärden beslutade; radar, regnmängd, startband och SMHI-förlängning prövas i
+  mars ur arkiven (#223–#226). **Byggt och bevisat i drift:** kort #196 (provraderna märkta, `sql/025`) och #199
+  (SMHI-varningar som försvinner, `sql/024`). **SESSIONSREGELN** i CLAUDE.md (#228/#229). Rekognosering: Trafikverkets
+  öppna halkflöde är väglaget, inga fordonsdata (#230). Öppet: #200, #201, mejl till Trafikverket och Malmö stad,
+  TRV-brevet. *"Current state" ovan är från 31/8 — läget står överst i `docs/BEDOMNING-2026-09-15.md`.*
 - **S-2026-08-25em**: Startsidan = scrollvärlden (4 filmscener). Kvittot v2 "Filmremsan":
   4 nya filmpaneler (3316/10076/17376/64) tänds i snabb takt efter världen; final =
   hård klippning till SVART med logotyp + Google Play/App Store centrerat och
