@@ -6714,3 +6714,34 @@ authenticated för båda.
 syns som lägre tillväxt — mätningen 24/9 visar den.
 
 **Utfall 17/9:** migration 12:3xZ: `gallra_arkiv(7)` raderade **97 472 rader** — Finland 97 379 → 58 130, Norge 68 972 → 45 828, pg_crons logg 39 312 → 12 691, resten svensk gallring · EXECUTE låst för anon och authenticated · nattjobbet kör `SELECT gallra_arkiv(7)` 03:15 · databasvakten 12:35Z: *databas: 168 MB av 500*, provlarmet gick (larmväg ok).
+
+## #233 (17/9 2026) Uppspelningen ur arkiven — grundversionen byggd och körd
+
+**Bengts order 17/9:** *"kör uppspelningen"* — på beslutet #226 att domarna räknas ur arkiven med skuggloggen som
+kontroll, och för att S1-grinden (Axel 16/9: inget mer byggs på `regn_h` före skuggjämförelsen) ska kunna passeras så
+fort frosten kommer.
+
+**Byggt:** `scripts/matningar/uppspelning-efterhalka.sql`, tre läsande satser via dbknapp (körning 35252328963). Talen står
+en gång per sats: regn inom 2 h · fall ≥ 0,8 °C på 30 min · yta +1…+3 °C (#222/#225).
+1. **Stationsdygn per dag:** i bandet · utan faller (regn i bandet) · utan blöt (fall i bandet) · kombinationen.
+2. **De tio senaste tillfällena** då kombinationen skulle ha varnat.
+3. **Kontrollen:** samma regel ur skuggloggen (det telefonen såg) mot arkiven, per station-ögonblick.
+
+**Utfallet läses medvetet inte.** Startvärdena står till kalibreringen 1/2 (D2/D3).
+
+**Resultat, 14 dygn i en mild september:**
+
+| | |
+| :-- | :-- |
+| Stationer i bandet per dygn | 1–31 |
+| Utan faller (regn inom 2 h i bandet) | 0–2 stationer per dygn |
+| Utan blöt (fall i bandet) | 0–1 station per dygn |
+| **Kombinationen** | **ett tillfälle:** station 2518, 14/9 06:25–06:35Z — yta 2,8–2,9 °C, fall 2,0–2,2 °C på 30 min, **regn samtidigt** |
+| Kontrollen mot skuggloggen | 7 station-ögonblick, loggen och arkivet eniga i alla 7 — men ingen varnade, så jämförelsen säger ännu inget om träffar |
+
+**Att den enda träffen kom under pågående regn** stämmer med definitionen: *blöt* är regn nu eller inom N h
+(TROSKLAR-OVERGANGAR §4, `blöt = fukt_nu ELLER …`). Trendkolumnerna finns först från 8/9, då trend-tabellen började.
+
+**Kvar:** radar-, regnmängds-, startbands- och SMHI-varianterna (#223–#225) och facit — de hör till domarna. **Nästa
+körning:** vid första frosten, som underlag för S1-grinden.
+
