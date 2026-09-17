@@ -21,7 +21,7 @@ november i stället för mars, för att facit kommer från en källa som faktisk
 
 ## Läget 17/9 — var vi är och vart vi är på väg
 
-**Var vi är.** **Två beslut om arkiven väntar (§4.2, grepp 3)**; fyra mejl om stadstrafiken ska skickas (§0b). Reglerna för efterhalkan är fastställda och underskrivna av Bengt och
+**Var vi är.** **Ett beslut om arkiven väntar (§4.2, grepp 3: Supabase Pro)**; fyra mejl om stadstrafiken ska skickas (§0b). Reglerna för efterhalkan är fastställda och underskrivna av Bengt och
 Axel: grinden för kombinationen (C), den gemensamma kalibreringen (D) och tröskelregeln (T). Betans startvärden är
 beslutade. **Det som återstår före november är bygge och bevis, inte beslut.**
 
@@ -105,6 +105,7 @@ beviset finns — inte när koden är skriven.
 | Radarvarianten: uppspelningen ur arkivet provkörs — kombinationen och radarn ur samma arkiv | ⏳ före januari | #197 | #223 | en körning med rader för båda |
 | Radar- och väderarkivet kvar till mars-domen — **168 av 500 MB 17/9, cirka 9 MB/dygn brutto redan i september**; gratisnivån skrivskyddar databasen vid 500 MB och har inga backuper | 🔨 **underlag 17/9: `docs/GREPP3-ARKIVEN.md`** — beslut Bengt + Axel (§4.2) | #83 | #223/#231 | arkivet täcker november–mars |
 | Databasens storlek mäts igen — nettotakten efter autovacuum avgör om 400 MB nås i oktober | ⏳ 24/9 | #83 | #231 | två mätpunkter minst ett dygn isär |
+| Grepp 3, småbyggena i drift: `gallra_arkiv` (sql/026) i nattjobbet och databasvakten i vakthunden | 🔨 byggt 17/9 — migration, deploy och prov | #83 | #232 | raderade rader i nattjobbet; vakthundsraden *databas: N MB*; provlarmet |
 | S1 ser bara stationer längs skuggrutterna: 5 station-ögonblick på ett septemberdygn — räcker det i vinter? | ⏳ mät i första frostmånaden | #197 | #223 | rader per frostnatt |
 | ~~SMHI-varningar som försvinner: `senast_sedd` + `smhi_synk` i ingesten (`sql/024`)~~ | ✅ **i drift 17/9:** ingestkörningen 06:11Z stämplade `senast_sedd` på exakt de 15 varningar som fanns i flödet (av 157 i arkivet), och `smhi_synk` fick sin första rad (15 varningar) | #199 | #225 | rad med innehåll i båda |
 | `senast_sedd` deklareras i värdevakten innan SMHI-förlängningen mäts | ⏳ före mars | #199 | #225 | fältet i SPANN, knappen körd |
@@ -213,6 +214,7 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 | marknadsforing.yml behålls och flyttas till pulsklockan (kort #200) | Bengt + Axel, 17/9 |
 | Provraderna i förarfacit märks och utesluts — raderas inte (kort #196) | Bengt + Axel, 17/9 |
 | Sessionsregeln i CLAUDE.md: bedömningen vid start, kartan vid ändring, sök innan något stryks, inga trådar bara i chatten (DECISIONS #228) | Bengt, 17/9 |
+| Grepp 3, småbyggena: databasvakt (larm vid 400 MB) · rensning av pg_crons logg · gallring av Norge (allt efter 7 dygn) och Finland (varma rader efter 7 dygn, kalla i 60 dygn för rimfrostgrinden) (DECISIONS #232) | Bengt, 17/9 |
 | Stadstrafiken: fråga Malmö, Stockholm och Göteborg om gatornas data och Trafikverket om fordonsdata — Bengt skickar mejlen (DECISIONS #230) | Bengt, 17/9 |
 | Bedömningen stryks fortlöpande och bär läget överst; kartan stryks inte löpande (DECISIONS #229) | Bengt, 17/9 |
 | Tröskelregeln i Axels lydelse, tätad: T1 per tillstånd, T5 interpolation förbjuden (#153 beslut 2 utan egen öppning), T6 prognoser utlöser aldrig ensamma — inte en uppmjukning, skyddet följer med (DECISIONS #220) | Bengt, 16/9; Axel om lydelsen |
@@ -224,7 +226,6 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 | Beslut | Vem | Rekommendation |
 | :-- | :-- | :-- |
 | **Grepp 3 — Supabase Pro** senast när databasen passerar 400 MB eller 1 november, det som kommer först. Cirka 25 USD/mån; 8 GB, dagliga backuper. Gratisnivån skrivskyddar vid 500 MB, och vintern kräver cirka 3 GB (`docs/GREPP3-ARKIVEN.md`, DECISIONS #231) | Bengt + Axel (Axel godkänner i DECISIONS) | ja |
-| **Grepp 3 — tre småbyggen, gratis:** databasvakt i vakthunden (larm vid 400 MB) · rensning av pg_crons logg äldre än 7 dygn · gallring av Finland och Norge med samma regel som Sverige | Bengt | ja — köper tid och behövs oavsett väg |
 
 ---
 
