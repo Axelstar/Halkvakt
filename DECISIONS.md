@@ -6713,3 +6713,4 @@ authenticated för båda.
 **Storleken sjunker inte direkt:** en DELETE frigör inte disk förrän autovacuum återanvänt platsen (sql/014). Effekten
 syns som lägre tillväxt — mätningen 24/9 visar den.
 
+**Utfall 17/9:** migration 12:3xZ: `gallra_arkiv(7)` raderade **97 472 rader** — Finland 97 379 → 58 130, Norge 68 972 → 45 828, pg_crons logg 39 312 → 12 691, resten svensk gallring · EXECUTE låst för anon och authenticated · nattjobbet kör `SELECT gallra_arkiv(7)` 03:15 · databasvakten 12:35Z: *databas: 168 MB av 500*, provlarmet gick (larmväg ok).
