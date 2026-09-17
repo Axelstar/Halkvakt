@@ -251,6 +251,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔨 **SMÅBYGGENA 17/9 (Bengt, DECISIONS #232):** `gallra_arkiv` (sql/026) i nattjobbet — Norge allt efter 7 dygn, Finland
   varma rader efter 7 dygn och kalla i 60 (rimfrostgrinden), pg_crons logg efter 7 dygn — plus databasvakten (larm 400 MB).
   Gallringsfunktionerna låsta för REST-API:t. **Kvar:** Pro-beslutet (Bengt + Axel).
+  ✅ **I DRIFT 17/9:** migration 12:3xZ: `gallra_arkiv(7)` raderade **97 472 rader** — Finland 97 379 → 58 130, Norge 68 972 → 45 828, pg_crons logg 39 312 → 12 691, resten svensk gallring · EXECUTE låst för anon och authenticated · nattjobbet kör `SELECT gallra_arkiv(7)` 03:15 · databasvakten 12:35Z: *databas: 168 MB av 500*, provlarmet gick (larmväg ok).
   **STEG 2 — VINTERN ÄR LÄNGRE ÄN 45 DYGN (beslut Axel + Bengt i oktober, EFTER mätning):**
   nov–mars ≈ 150 dygn × 11 MB ≈ 1,6 GB även efter steg 1. Tre vägar:
   · **2a Rullande export (gratis):** månadsvis CSV.gz av rader äldre än 60 dygn till Supabase
