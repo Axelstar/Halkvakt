@@ -275,3 +275,7 @@ i samma commit när de överlappar.
   jämförelsen mot tröskeln. Och bygg en jämförelse som kör båda sidorna över samma fönster —
   kontraktsgrinden vaktar att kopiorna bär samma TAL, men bara en jämförelse vaktar att de fattar
   samma BESLUT.
+- En kontaktuppgift — e-postadress, telefonnummer, formulär — som ges till Bengt eller Axel ska vara LÄST på
+  källsidan, inte tagen ur en automatisk sammanfattning (WebFetch). 17/9 fick Bengt `datex@trafikverket.se`, som
+  sammanfattningen av trafficdata.se hittade på: katalogposten har inga kontaktfält och Trafikverket ingen sådan
+  adress. Rätt väg var Datautbytesportalens kontaktformulär. En fel adress kostar ett utskick och ett varv.
