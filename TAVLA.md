@@ -447,6 +447,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   inte); SMHI-förlängningen går att koppla men arkivet har inga vintervarningar än. **Alla sex inställningar går nu att
   räkna ur arkivet** — kvar som skäl för 48 är Axels ärlighetsargument. **VÄNTAR:** Bengt om strukna inställningar prövas
   i mars · Bengt + Axel om uppspelningen räknas ur loggen eller arkivet.
+  ✅ **BENGTS JA 17/9 (DECISIONS #225):** startvärden · 5 km · strukna inställningar som varianter i mars · interpolations-
+  idén utan öppning · förslagen i C och D. **VÄNTAR:** Axels kontrasignatur på C och D + utfallet i januari · Bengt + Axel
+  om uppspelningens källa.
 - [ ] 🧩 **#159 INTEGRATIONSKARTAN — tre av våra egna regler står i vägen för produkten**
   📬 **AXELS FYRA INVÄNDNINGAR INARBETADE 14/9 (DECISIONS #184, kartans nya §13).** Han läste ett
   TIDIGT underlag, där grind A-rättelsen inte fanns. **Tre står, en föll på underlaget.**
@@ -715,6 +718,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⏭️ **VAD SOM ÅTERSTÅR:** fyll i kontaktuppgifter och skicka. Att skicka är Bengts beslut — jag
   skickar ingenting i hans namn. Vägen är Trafikverkets kontaktformulär för öppna data (eller
   trafikverket@trafikverket.se med ärendet "öppna data — WeatherMeasurepoint").
+  ✅ **Bengt ja 17/9 (DECISIONS #225): brevet ska skickas — Bengt skickar själv.**
   💡 **Varför det är värt att skicka:** vi har uteslutit stationerna ur vårt eget underlag, så vi är
   inte blockerade. Men felet ligger kvar för alla andra som läser samma öppna data — och svaret
   (givare, överföring eller aggregering?) avgör om konsumenter kan filtrera bort det själva.
@@ -810,6 +814,14 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [ ] 🛰️ **#199 SMHI-VARNINGAR SOM FÖRSVINNER — ingesten stämplar senast sedd** (Bengts ja 17/9, DECISIONS #224/#225).
+  Arkivet sparar varje publicering av en SMHI-varning men inte när den försvinner ur flödet. En varning som dras
+  tillbaka i förtid ser ut att gälla till sin sluttid, och SMHI-förlängningen (N_varning) skulle mätas fel. Går inte att
+  hämta i efterhand — SMHI:s API ger bara nuläget (samma läxa som sql/015).
+  🔨 **Bygget 17/9:** `sql/024` — `senast_sedd` på `smhi_warnings_history` (flyttas fram varje synk raden finns i
+  flödet) och tabellen `smhi_synk` (en rad per lyckad synk, så "borta" skiljs från "ingen synk" och "tomt flöde").
+  `ingest/db.ts` skriver båda; integrationstestet vaktar. **Verify:** efter nästa ingestkörning har aktuella varningar
+  `senast_sedd` satt och `smhi_synk` rader med innehåll. Innan N_varning mäts: fältet deklareras i värdevakten.
 - [ ] 📜 **#198 TROSKLAR-SKUGGAN §4 MOT TRÖSKELREGELN — rättas före domen i mars 2027** (fynd 16/9, DECISIONS #220).
   Domslutet (a) TALAR och (b) TALAR NÄRA ANKARE låter segmentprognosen tala på *modellerade* segment. Det krockade redan
   med den gamla meningen (FRYSKLASSNINGEN §1/§7) och krockar med T3: ett värde där ingen mätt och inget vittne på platsen

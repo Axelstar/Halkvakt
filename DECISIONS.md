@@ -6552,3 +6552,26 @@ mars byggs inte in direkt, den blir en ny fråga: med tio jämförelser kan någ
 **varifrån uppspelningen räknas.** Skuggloggen visar vad telefonen såg men bar 5 station-ögonblick på ett dygn (#223).
 Arkivet ser alla stationer men får data i efterhand och skilde sig från loggen i 1 av 5.
 
+## #225 (17/9 2026) Bengts ja på alla rekommendationer — vad det avgör och vad det inte täcker
+
+**Bengts beslut 17/9:** *"jag svarar ja på alla dina frågor där du rekomenderat ja i den här sessionen"*. Tolkat som
+frågorna i chatten 16–17/9 och bedömningens öppna beslutslista (§4.2) med rekommendationen ja.
+
+| # | Frågan | Läge efter ja:et |
+| :-- | :-- | :-- |
+| 1 | #153 beslut 2 (interpolation) får ingen egen öppning i tröskelregeln (#220) | **beslutat** |
+| 2 | Betans startvärden (#222) | **beslutade** |
+| 3 | Strukna inställningar prövas i mars som varianter — regnmängd, startband, SMHI-förlängningen när vintervarningar finns; kalibreringen står på 48 (#223, #224) | **beslutat** |
+| 4 | Kopplingen station↔väg för radarn: 5 km | **beslutat** |
+| 5 | Ingesten sparar när en SMHI-varning försvinner, före första vintervarningen | **beslutat** — kort #199, byggt i samma PR (`sql/024`) |
+| 6 | C och D fastställs | **Bengts del klar** — i kraft när Axel kontrasignerat. Då skrivs D-raden i varje tröskeldokument och kamerabildens rad i OVERGANGAR §8 (§9 steg 4) |
+| 7 | Förslagen i C och D: förarfacits underlag (KB-D4) · kalibreringen 1/2 (D3) · kamerabilden fäller premiss, aldrig utfall | **Bengts del klar** — gäller med C och D |
+| 8 | Utfallet i januari: KLARAR eller OAVGJORT ⇒ betan fortsätter, FALLER ⇒ grenen tas bort | **Bengts del klar** — väntar på Axel |
+| 9 | #45 lapse 0,63 (S12) | **Bengts del klar** — väntar på Axel |
+| 10 | TRV-anmälan om nio byvindgivare | **beslutat att skicka** — Bengt skickar själv; Claude skickar inget i hans namn |
+
+**Täcks inte av ja:et — ingen rekommendation gavs:** varifrån uppspelningen räknas, skuggloggen eller arkivet (Bengt +
+Axel, före 1/2, #224) · `marknadsforing.yml` (Axel + Bengt) · provraderna i förarfacit (kort #196, Bengt).
+
+**Väntar på Axel:** kontrasignatur på C och D · utfallet i januari · #45 · läsa tätningarna T1, T5, T6 (#220).
+

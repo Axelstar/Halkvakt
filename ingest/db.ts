@@ -49,6 +49,7 @@ export async function writeAll(data: {
     await client.query(readFileSync(new URL("../sql/008_rain_sum.sql", import.meta.url), "utf8"));
     await client.query(readFileSync(new URL("../sql/011_vind_sikt.sql", import.meta.url), "utf8"));
     await client.query(readFileSync(new URL("../sql/015_smhi_giltighet.sql", import.meta.url), "utf8"));
+    await client.query(readFileSync(new URL("../sql/024_smhi_senast_sedd.sql", import.meta.url), "utf8"));
 
     // Weather archive policy needs last stored temp per station — ONE query, not N.
     const lastTemps = new Map<string, number | null>();
@@ -270,6 +271,15 @@ export async function writeAll(data: {
            ON CONFLICT (area_id, published) DO NOTHING`, [col(c, x => x.areaId)]);
         counts.smhi += c.length;
       }
+      // Kort #199 (sql/024): när en varning FÖRSVINNER ur flödet. Arkivet ovan sparar publiceringar, inte
+      // försvinnanden — och SMHI:s API ger bara nuläget, så det går inte att hämta i efterhand. Varje rad som
+      // finns i flödet just nu får senast_sedd = synkens tid; synken själv lämnar en rad, så att "borta" går
+      // att skilja från "ingen synk kördes" och från "flödet var tomt".
+      await client.query(
+        `UPDATE smhi_warnings_history h SET senast_sedd = now()
+         FROM smhi_warnings w WHERE h.area_id = w.area_id AND h.published = w.published`);
+      await client.query(`INSERT INTO smhi_synk (synkad_at, varningar) VALUES (now(), $1) ON CONFLICT DO NOTHING`,
+        [data.smhi.items.length]);
     }
 
     for (const [source, id] of [
