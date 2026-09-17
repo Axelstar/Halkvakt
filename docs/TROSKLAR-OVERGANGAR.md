@@ -319,6 +319,10 @@ Ur den fastställda stacken (DECISIONS #94):
 | Kamerafacit (#20, bild i gryningen) | ja | ja |
 | Olycka i `situation_archive` inom räckvidd | ja | nej |
 
+**För kombinationer** (TROSKLAR-KOMBINATIONEN §4 KB-D, fastställt 17/9, DECISIONS #226): en kamerabild får fälla
+kombinationens **premiss** — *vägen är blöt* — när den visar torr vägbana, men **aldrig utfallet** *det blev is*. Raden
+ovan för (a) ensam står orörd: att ändra den vore en lättnad av (a):s grind.
+
 **Räckviddsvillkoret gäller** (TROSKLAR-TYSTNADSFEL §6): en miss räknas bara där systemet hade en
 chans att tala. Frånvaro av olycka är inte frånvaro av risk — samma asymmetri som i
 TROSKLAR-VATTENPLANING §2.
@@ -369,6 +373,11 @@ dag — **upphör ingången att vara återskapbar, och då måste måttet byta f
 ---
 
 ## 10. Ändring
+
+**Gemensam kalibrering — regel D** (fastställd 17/9, TROSKLAR-KOMBINATIONEN §5, DECISIONS #226). Verkar en parameter i
+det här dokumentet i en kombination, ändras den *för kombinationen* bara enligt D1–D7: värden ur detta dokuments svep,
+startvärden före första natten, kalibrering och dom på skilda nätter, alla prövade punkter redovisade. Parameterns egen
+tröskel följer detta dokument som förut.
 
 Fram till första skuggkörningen får §2:s svep och §4:s krav justeras av vem som helst av oss med en
 rad i DECISIONS. **Från första skuggkörningen ändras ingen tröskel alls** — varje motivering som inte lutar sig mot utfallet — att flytta målstolparna när siffrorna kommit är precis
