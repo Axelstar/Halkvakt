@@ -1,6 +1,6 @@
 # GREPP 3 — arkiven till mars (kort #83 steg 2)
 
-**Status:** 🔨 **BESLUTSUNDERLAG 2026-09-17**, skrivet av Claude på Bengts order *"kör grepp 3"*. Besluten är Bengts och
+**Status:** 🔨 **BESLUTSUNDERLAG 2026-09-17 — punkt 1 klar och i drift; Pro-beslutet återstår (larm vid 400 MB eller 1/11)**, skrivet av Claude på Bengts order *"kör grepp 3"*. Besluten är Bengts och
 Axels (bedömningen §4.2). En betald tjänst kräver en DECISIONS-post som Axel godkänt (CLAUDE.md, gratisnivåregeln).
 
 ---
@@ -73,10 +73,9 @@ små veckoutfall — sedan #226 läser de rådata över månader, och exporten b
 
 ## 5. Rekommendation
 
-1. ✅ **Beslutat och byggt 17/9 (DECISIONS #232):** tre småbyggen — med Finland gallrat så att rimfrostgrinden behåller sina
-   kalla rader i 60 dygn, och Norge allt efter 7 dygn — — en **databasvakt** i vakthunden som larmar vid 400 MB (80 %),
-   **rensning av pg_crons logg** äldre än 7 dygn i gallringsjobbet, och **gallring av Finland och Norge** med samma regel
-   som den svenska. Inget av dem rör domarna.
+1. ✅ **Beslutat, byggt och i drift 17/9 (DECISIONS #232):** en **databasvakt** i vakthunden som larmar vid 400 MB (80 %),
+   **rensning av pg_crons logg** äldre än 7 dygn, och **gallring av Norge** (allt efter 7 dygn) och **Finland** (varma rader
+   efter 7 dygn, kalla i 60 dygn för rimfrostgrinden). 97 472 rader raderades första gången. Inget av det rör domarna.
 2. **Beslut (Bengt + Axel):** **Supabase Pro senast när databasen passerar 400 MB eller 1 november**, det som kommer
    först. Cirka 25 USD/mån. Skälen: arkivet ryms till mars, backuper finns, och tiden läggs på motorregeln (S3) i stället
    för på ett exportsystem.
