@@ -842,7 +842,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   `forarfacit` räknar båda i sju dygn (till 23/9). FÖRSLAG: ISO-tid i raden; prov märks/utesluts (`alert_id` med `prov`)
   eller raderas — radering är Bengts beslut. Bevis: raden visar klockslag; `forarfacit` räknar 0 prov. Kräver vakthund-
   (och ev. skuggrapport-)deploy + prov.
-  ✅ **Beslutat 17/9 (Bengt + Axel, DECISIONS #226): märk och uteslut — radera inte.** Bygget kvar.
+  ✅ **Beslutat 17/9 (Bengt + Axel, DECISIONS #226): märk och uteslut — radera inte.**
+  🔨 **BYGGT 17/9 (DECISIONS #227):** genererad kolumn `prov` i `sql/025`; vakthunden räknar bara riktiga svar och visar
+  klockslag i UTC; skuggrapporten läser `prov=is.false`. Bevis väntar: migrationen, två deployer, raderna med innehåll.
 - [ ] 🧬 **#195 VEKTORGENERATORN I OTAKT MED `engine/vectors/`** (fynd 16/9 under #97, DECISIONS #214). `gen-vectors.ts`
   kallar v05 `v05_throttle_45s` (filen heter `v05_throttle_floor_10s`) och saknar v18–v23; en fullkörning skriver en
   spökfil. Nu filnamnsfilter + varning (bara v24 genererades). ÅTGÄRD: för in v18–v23 och rätt v05-namn så att

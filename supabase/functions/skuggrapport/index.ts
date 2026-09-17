@@ -20,10 +20,11 @@ Deno.serve(async (req) => {
     if (!Array.isArray(raw)) return new Response("datafel: " + JSON.stringify(raw), { status: 500 });
     // S4 steg 5 (DECISIONS #205): förarfacit synligt för den som just tryckt — utan databas, utan Claude.
     // Läses med service-nyckeln (tabellen är dubbellåst för anon); fail-soft, aldrig ett fall för rapporten.
+    // Kort #196 (sql/025): provrader räknas aldrig som svar.
     const sedan7d = new Date(Date.now() - 7 * 24 * 3600e3).toISOString();
     let forarfacit: Record<string, unknown> = { fel: "kunde inte läsas" };
     try {
-      const fr = await fetch(`${SB}/rest/v1/driver_facit?select=svar,app,received_at&received_at=gte.${sedan7d}&order=received_at.desc&limit=500`,
+      const fr = await fetch(`${SB}/rest/v1/driver_facit?select=svar,app,received_at&prov=is.false&received_at=gte.${sedan7d}&order=received_at.desc&limit=500`,
         { headers: { Authorization: `Bearer ${SRK}`, apikey: SRK } });
       const f: { svar: string; app: string; received_at: string }[] = await fr.json();
       if (Array.isArray(f)) forarfacit = {
