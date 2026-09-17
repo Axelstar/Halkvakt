@@ -244,6 +244,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Verify: rader/dygn äldre än 7 d ≤ 45 000 i SQL-editorn, grind-a #N ger samma n som veckan
   före (tunningen får inte synas i domen). OBS: DELETE frigör inte disk förrän autovacuum
   återanvänt den — pg_total_relation_size planar ut, sjunker inte; det är rätt utfall.
+  📐 **GREPP 3, UNDERLAG 17/9 (`docs/GREPP3-ARKIVEN.md`, DECISIONS #231):** databasen 168 MB, cirka 9 MB/dygn brutto
+  redan i september · Finland och Norge ogallrade (34 MB) · pg_crons logg 18 MB och rensas aldrig · gratisnivån
+  skrivskyddar vid 500 MB och har inga backuper · vintern kräver cirka 3 GB. **Rekommendation:** Supabase Pro senast vid
+  400 MB eller 1/11, plus tre gratis småbyggen nu (databasvakt, loggrensning, gallring FI/NO). Ny mätning 24/9.
   **STEG 2 — VINTERN ÄR LÄNGRE ÄN 45 DYGN (beslut Axel + Bengt i oktober, EFTER mätning):**
   nov–mars ≈ 150 dygn × 11 MB ≈ 1,6 GB även efter steg 1. Tre vägar:
   · **2a Rullande export (gratis):** månadsvis CSV.gz av rader äldre än 60 dygn till Supabase

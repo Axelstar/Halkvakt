@@ -6667,3 +6667,23 @@ mitt svar 17/9:** jag kallade det "halkflöde från fordon" innan källan var l�
 fordonsbaserade halkhändelser publiceras öppet någonstans. Ingen live-hämtning gjordes — nyckeln finns bara i GitHubs
 secrets, och dokumentationen besvarade frågan om källan.
 
+## #231 (17/9 2026) Grepp 3: arkiven till mars — mätt, och gratisnivån räcker inte till vintern
+
+**Bengts order 17/9:** *"kör grepp 3"*. Underlaget står i `docs/GREPP3-ARKIVEN.md`; mätfrågorna i
+`scripts/matningar/grepp3-databasen-2026-09-17.sql` (dbknapp-körningar 35220139396 och 35220310144).
+
+**Mätt:** databasen 168 MB (92 MB 9/9) — cirka 9 MB/dygn brutto i en mild september. Svenska väderdata 71 MB;
+finska 21 MB och norska 13 MB, **ogallrade**; **pg_crons körningslogg 18 MB och rensas aldrig**; 54 500 döda rader i
+det svenska väderarkivet. Gallringsjobbet lyckas varje natt.
+
+**Läst hos Supabase 17/9:** gratisnivån skrivskyddar databasen vid 500 MB — då stannar ingest-live och appen visar gammal
+data — och har inga backuper. Pro: 8 GB, dagliga backuper, funktioner 400 s i stället för 150 s, från 25 USD/mån.
+
+**Uppskattat:** vintern kräver cirka 3 GB (november–mars), och bruttotakten når 500 MB runt 24 oktober om inget
+återanvänds. Nettotakten mäts 24/9.
+
+**Rekommendation, inte beslut:** Supabase Pro senast vid 400 MB eller 1 november (Bengt + Axel) · tre gratis småbyggen
+nu: databasvakt, rensning av pg_crons logg, gallring av Finland och Norge (Bengt). **Bortvalt som förstahandsval:**
+rullande export (2a) — sedan #226 läser domarna rådata över månader, och en export som fallerar skrivskyddar databasen.
+**Funnet:** ingen vakt larmar på databasens storlek i dag.
+
