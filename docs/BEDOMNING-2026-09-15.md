@@ -162,6 +162,7 @@ Fem rader. Inget annat är "nu".
 | Uppspelningen räknas ur arkiven, med skuggloggen som kontroll | Bengt + Axel, 17/9 |
 | marknadsforing.yml behålls och flyttas till pulsklockan (kort #200) | Bengt + Axel, 17/9 |
 | Provraderna i förarfacit märks och utesluts — raderas inte (kort #196) | Bengt + Axel, 17/9 |
+| Sessionsregeln i CLAUDE.md: bedömningen vid start, kartan vid ändring, sök innan något stryks, inga trådar bara i chatten (DECISIONS #228) | Bengt, 17/9 |
 | Tröskelregeln i Axels lydelse, tätad: T1 per tillstånd, T5 interpolation förbjuden (#153 beslut 2 utan egen öppning), T6 prognoser utlöser aldrig ensamma — inte en uppmjukning, skyddet följer med (DECISIONS #220) | Bengt, 16/9; Axel om lydelsen |
 | #153 omformulerat till försprång och väntar till efter grepp 2 och betan; ordval och prioritet strukna (DECISIONS #221) | Bengt, 16/9; formen Axels |
 | Betans startvärden (D2): mitten, den tystare av två mittpunkter — N 2 h, fall ≥ 0,8 °C på 30 min, regn > 0, yta +1…+3 °C (DECISIONS #222) | Claude på Bengts order 16/9 · Bengt ja 17/9 (#225) |
