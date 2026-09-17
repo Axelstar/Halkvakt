@@ -2,7 +2,7 @@
 
 **Kort:** #197 — bedömningens **S10**, kartans **§8 C och D** och **§13.2**. Tre saker i ett dokument:
 **C** grinden för kombinationen, **D** regeln för gemensam kalibrering, **T** tröskelregeln i Axels lydelse.
-**Status:** 🔨 **C och D: UTKAST 2026-09-16 — Bengt ja 17/9 (#225), i kraft när Axel kontrasignerat**, skrivet av Claude på Bengts order *"kör grepp 2"* (DECISIONS #217).
+**Status:** ✅ **C och D: FASTSTÄLLDA 17/9** — Bengt (#225), kontrasignerat av Axel (#226). Utkast 16/9, skrivet av Claude på Bengts order *"kör grepp 2"* (DECISIONS #217).
 ✅ **T: FASTSTÄLLD 16/9** (Bengt; Axel håller med om lydelsen — DECISIONS #220).
 **Inget här gäller förrän det är fastställt:** C och D fastställs av Bengt (mätningen är hans) och kontrasigneras av
 Axel (samma form som DECISIONS #61/#68). **T** ändrar ett dokument Bengt fastställt, i Axels ordalydelse, och kräver
@@ -17,7 +17,8 @@ tätning · §7 och §9 betans startvärden.
 
 **Ändrat 17/9** (DECISIONS #223): radarn stryks inte — betan och kalibreringen utan radar, radarn prövas i mars ur
 arkivet (§3, §4 KB-A, §7, §9). Samma dag: startbandet och SMHI-förlängningen prövade (#224, §3). Bengts ja på rekommendationerna (#225): strukna
-inställningar prövas i mars, kopplingen 5 km, startvärdena, förslagen i C och D.
+inställningar prövas i mars, kopplingen 5 km, startvärdena, förslagen i C och D. **Fastställt 17/9 (#226):** C och D med
+Axels kontrasignatur · D-raden i tio tröskeldokument · uppspelningen ur arkiven med skuggloggen som kontroll (§3, §4).
 
 **Varför ett eget dokument.** Integrationskartan är fryst (DECISIONS #186) och säger själv att *"C och D är dokument
 och kan skrivas före frosten"*. Tröskelregeln var låst bakom N1: den saknade vittne (kartan §13.2). N1 är klar sedan
@@ -106,7 +107,8 @@ annan och farligare metod, och den behöver egna regler.
 parametrar. De väljs i T-A och ärvs.*
 
 **Vad som går att spela upp i dag — och vad som inte går.** Kombinationen och dess varianter (KB-A) ska räknas ur S1:s
-råa logg (`efterhalka`, DECISIONS #198), inte ur nya skuggkolumner. Loggen bär `yta`, `fukt`, `regn_h`,
+råa logg (`efterhalka`, DECISIONS #198), inte ur nya skuggkolumner. **Ändrat 17/9 (DECISIONS #226): uppspelningen räknas ur arkiven** — väderarkivet,
+radararkivet och trend-tabellen — **med S1:s logg som kontroll** av att arkivet räknar som telefonen såg. Loggen bär `yta`, `fukt`, `regn_h`,
 `lutning15/30/60` och om motorn larmade — men läst i koden 16/9 har den tre gränser:
 
 | Parameter | Går att spela upp? | Varför |
@@ -153,12 +155,12 @@ efterhalkan är varianterna:
 | **med bredare startband** (+1…+4 · +1…+6 °C) | kombinationen som får starta på varmare ytor | T-B (TROSKLAR-TRENDEN) — tillagd 17/9 (#225) |
 | **med SMHI-förlängningen** (N_varning 2 · 4 · 6 h, där längre än N) | kombinationen där *blöt* varar längre under en aktiv vintervarning | Ö-B §2.3 — tillagd 17/9 (#225), bara om vintervarningar finns |
 
-Ingen av dem kräver en egen skuggkolumn. De fyra första spelas upp ur S1:s råa logg — inom de gränser §3 räknar upp.
+Ingen av dem kräver en egen skuggkolumn. **Alla räknas ur arkiven** (DECISIONS #226).
 **Varianterna för de strukna inställningarna räknas ur arkiven** — radarn (#223), regnmängden, startbandet och
 SMHI-förlängningen (#225) — och de jämförs mot kombinationen räknad **ur
 samma arkiv**, inte mot loggen: arkivet får data efter publiceringen och skilde sig från loggen i 1 av 5
-station-ögonblick 17/9, så en jämförelse mellan källorna hade mätt källan och inte inställningen. Varifrån uppspelningen i övrigt räknas
-avgör Bengt och Axel före kalibreringen (#224).
+station-ögonblick 17/9, så en jämförelse mellan källorna hade mätt källan och inte inställningen. **S1:s logg är kontrollen:** överensstämmelsen
+mellan logg och arkiv mäts vid första frosten och redovisas i varje dom (#226).
 
 **Måttet** är B3-paret (TROSKLAR-TYSTNADSFEL §4–§5), räknat för kombinationen och för varje utan P-variant:
 
@@ -222,7 +224,7 @@ Därför:
 | KB-D1 | *Stämde* **bekräftar** en träff |
 | KB-D2 | *Stämde inte* **fäller** en fyrning som falsklarm bara om ingen annan facitkälla bekräftar halka inom utfallsfönstret **och** ytan inte kom inom nära-miss-bandet |
 | KB-D3 | **Förarfacit ensamt fäller eller friar ingen dom.** KB-B redovisas två gånger, med och utan förarfacit. Pekar de åt olika håll är utfallet OAVGJORT. **Följden ska man vara beredd på:** förblir omklassningarna tomma blir januari OAVGJORT även om hundratals förare svarat *Stämde* |
-| KB-D4 | **Underlag (Bengt ja 17/9, #225 — gäller med C och D):** ≥ 30 svar på kombinationens varningar, från ≥ 5 förare, och ingen förare står för mer än 25 % |
+| KB-D4 | **Underlag (fastställt 17/9, #225/#226):** ≥ 30 svar på kombinationens varningar, från ≥ 5 förare, och ingen förare står för mer än 25 % |
 | KB-D5 | **Trafiklärarnas svar redovisas separat** (Skyltfonden AP3, DECISIONS #216) — som expertfacit, aldrig viktade in i samma tal |
 | KB-D6 | **Provrader räknas aldrig** — de två som finns i dag är prov (kort #196) |
 
@@ -234,10 +236,11 @@ Därför:
 | TROSKLAR-VATTENPLANING §2 | **ja**, när bilden visar torr vägbana — torr väg motbevisar stående vatten |
 | TROSKLAR-OVERGANGAR §8 | **ja**, utan förbehåll |
 
-**För kombinationer gäller (Bengt ja 17/9, #225 — med C och D):** en kamerabild får fälla kombinationens **premiss** — *vägen är blöt* — när
+**För kombinationer gäller (fastställt 17/9, #225/#226):** en kamerabild får fälla kombinationens **premiss** — *vägen är blöt* — när
 den visar torr vägbana. Den får **aldrig** fälla **utfallet** *det blev is*. Det är VATTENPLANING:s regel och
 SKUGGANS asymmetri på en gång, och skillnaden mot OVERGANGAR §8:s "ja" är att premiss och utfall hålls isär. Ändras
-OVERGANGAR §8 ska det ske som ett eget beslut vid fastställandet — inte som en glidning.
+OVERGANGAR §8 ska det ske som ett eget beslut vid fastställandet — inte som en glidning. **Gjort 17/9:** regeln står för
+kombinationer i OVERGANGAR §8; (a):s egen rad är orörd — att ändra den vore en lättnad av (a):s grind.
 
 ---
 
@@ -340,8 +343,8 @@ Ett smalare skydd hade i sig varit en uppmjukning — och av samma skäl fick #1
 | :-- | :-- | :-- |
 | Före första frostnatten | Betans startvärden ur §3:s svep, utan utfall, i DECISIONS (bedömningens S3). ✅ **Skrivna 16/9 (DECISIONS #222):** N 2 h · fönster 30 min · fall ≥ 0,8 °C per fönster · minsta regn > 0 · startband +1…+3 °C · radar av · N_varning av | D2 |
 | November | Betan i drift, *"Halkvakt tror: frysrisk framöver"*. S1:s råa logg går bredvid, så att KB-A:s varianter kan spelas upp (§3). Testförarna — också trafiklärarna — får veta att värdena är gissade fram till februari (betaplanen, S5) | V1–V5 |
-| **Januari** | **KB-B** på betan som den släpptes, under KB-C och KB-D. Ingen kalibrering före. **Utfall (Bengt ja 17/9, #225 — väntar på Axel):** KLARAR eller OAVGJORT ⇒ betan fortsätter oförändrad till mars · FALLER ⇒ grenen tas bort | Ö-B:s golv |
-| **1 februari** (Bengt ja 17/9, #225) | Den enda gemensamma kalibreringen, på data november–januari | D3–D6 |
+| **Januari** | **KB-B** på betan som den släpptes, under KB-C och KB-D. Ingen kalibrering före. **Utfall (fastställt 17/9, #225/#226):** KLARAR eller OAVGJORT ⇒ betan fortsätter oförändrad till mars · FALLER ⇒ grenen tas bort | Ö-B:s golv |
+| **1 februari** (fastställt 17/9, #225/#226) | Den enda gemensamma kalibreringen, på data november–januari | D3–D6 |
 | **Mars** | **KB-A och KB-B** på data efter 1 februari — KB-A med varianterna för radar, regnmängd, startband och SMHI-förlängning ur arkiven (§4, #223, #225). Mars-domen dömer alltså riktig, okalibrerad vinterdata (DECISIONS #186) | — |
 
 ---
@@ -367,9 +370,9 @@ Skrivet före mätningen (DECISIONS #71):
 | Steg | Vad | När | Vem |
 | :-- | :-- | :-- | :-- |
 | 1 | **Detta dokument** | ✅ utkast 16/9 | Claude |
-| 2 | Fastställande av C och D | **Bengt ja 17/9** (#225) — väntar på Axels kontrasignatur, före första frostnatten | Bengt, Axel kontrasignerar |
+| 2 | Fastställande av C och D | ✅ **17/9** — Bengt (#225), Axel kontrasignerade (#226) | Bengt, Axel kontrasignerar |
 | 3 | Fastställande av T | ✅ **16/9, före 2**, på Bengts order (DECISIONS #220) | Bengt; Axel håller med om lydelsen (§6.4) |
-| 4 | **I samma commit som 2:** en rad om D i ändringsparagrafen i varje tröskeldokument · kamerabildens rad (§4 KB-D) in i TROSKLAR-OVERGANGAR §8 om Bengt beslutar det. ~~T:s lydelse in i TROSKLAR-FRYSKLASSNINGEN §1 och §7~~ ✅ i samma commit som 3 | vid fastställandet | Claude |
+| 4 | ✅ **I samma commit som 2 (17/9):** D-raden i ändringsparagrafen i tio tröskeldokument · kamerabildens regel för kombinationer i TROSKLAR-OVERGANGAR §8. T:s lydelse in i TROSKLAR-FRYSKLASSNINGEN §1 och §7 (16/9) | vid fastställandet | Claude |
 | 4b | ~~Vidga S1:s logg eller stryk~~ **Strykt — beslutat 16/9** (§3, DECISIONS #219), **radarn undantagen 17/9** (#223). Kopplingen station↔väg: **5 km** (Bengt 17/9, #225 — som mätningen #218). Före januari: uppspelningen ur arkivet provkörs. Mätningen av radarns bidrag körs om inom första frostmånaden. Radar- och väderarkivet måste finnas kvar till mars (grepp 3, #83 steg 2) | före januari-domen | Claude; kopplingen Bengt |
 | 5 | Betans startvärden (D2) | ✅ **skrivna 16/9, Bengt ja 17/9** (DECISIONS #222, #225, §7) | S3: Bengt (värden), Axel (motorn) |
 | 6 | KB-B | januari | Claude mäter, Axel dömer |

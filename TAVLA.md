@@ -420,7 +420,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] Fysisk Android-testenhet (pappas telefon? begagnad?)
 
 ### Bengt
-- [ ] 📐 **#197 GREPP 2: TROSKLAR-KOMBINATIONEN — fastställ C och D, avgör tröskelregeln** (Bengts "kör grepp 2" 16/9,
+- [x] 📐 **#197 GREPP 2: TROSKLAR-KOMBINATIONEN — ✅ KLART 17/9: C, D och T fastställda (DECISIONS #220/#225/#226)** (Bengts "kör grepp 2" 16/9,
   DECISIONS #217, bedömningens S10). UTKAST i `docs/TROSKLAR-KOMBINATIONEN.md`. **C:** KB-A bär varje del sin roll · KB-B
   räddar mer än den kostar (efterhalkan: Ö-B 5 %/25 %) · KB-C giltighet (Ö-C + T-C) · KB-D förarfacit. **D:** sju regler —
   kärnan är kalibrering och dom på skilda nätter, för efterhalkans rutnät är 1 296 punkter. **T:** Axels lydelse +
@@ -450,6 +450,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **BENGTS JA 17/9 (DECISIONS #225):** startvärden · 5 km · strukna inställningar som varianter i mars · interpolations-
   idén utan öppning · förslagen i C och D. **VÄNTAR:** Axels kontrasignatur på C och D + utfallet i januari · Bengt + Axel
   om uppspelningens källa.
+  ✅ **FASTSTÄLLT 17/9 — Axel kontrasignerade (DECISIONS #226):** C och D i kraft, D-raden i tio tröskeldokument,
+  uppspelningen ur arkiven med skuggloggen som kontroll. Uppföljningen — radarmätning vid frost, provkörning före januari,
+  arkiven till mars — står i bedömningen §0b.
 - [ ] 🧩 **#159 INTEGRATIONSKARTAN — tre av våra egna regler står i vägen för produkten**
   📬 **AXELS FYRA INVÄNDNINGAR INARBETADE 14/9 (DECISIONS #184, kartans nya §13).** Han läste ett
   TIDIGT underlag, där grind A-rättelsen inte fanns. **Tre står, en föll på underlaget.**
@@ -814,6 +817,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [ ] ⏰ **#200 MARKNADSFÖRINGEN PÅ PULSKLOCKAN — morgonutkasten ska nå pendlingen** (Bengt + Axel 17/9, DECISIONS #226).
+  `marknadsforing.yml` är bokad 04:45 UTC ("före pendlingen") men GitHub-cronen levererade den 08:49–10:07 UTC (10–16/9).
+  Kostnaden är liten, cirka 20 s per körning. **Åtgärd:** flytta till Supabase pg_cron som FI, DK och regn-30
+  (`pulsklocka.yml`, DECISIONS #26/#63) och ta bort `schedule` ur flödet. **Verify:** körningen startar inom 10 min från
+  bokad tid tre dagar i rad.
 - [ ] 🛰️ **#199 SMHI-VARNINGAR SOM FÖRSVINNER — ingesten stämplar senast sedd** (Bengts ja 17/9, DECISIONS #224/#225).
   Arkivet sparar varje publicering av en SMHI-varning men inte när den försvinner ur flödet. En varning som dras
   tillbaka i förtid ser ut att gälla till sin sluttid, och SMHI-förlängningen (N_varning) skulle mätas fel. Går inte att
@@ -834,6 +842,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   `forarfacit` räknar båda i sju dygn (till 23/9). FÖRSLAG: ISO-tid i raden; prov märks/utesluts (`alert_id` med `prov`)
   eller raderas — radering är Bengts beslut. Bevis: raden visar klockslag; `forarfacit` räknar 0 prov. Kräver vakthund-
   (och ev. skuggrapport-)deploy + prov.
+  ✅ **Beslutat 17/9 (Bengt + Axel, DECISIONS #226): märk och uteslut — radera inte.** Bygget kvar.
 - [ ] 🧬 **#195 VEKTORGENERATORN I OTAKT MED `engine/vectors/`** (fynd 16/9 under #97, DECISIONS #214). `gen-vectors.ts`
   kallar v05 `v05_throttle_45s` (filen heter `v05_throttle_floor_10s`) och saknar v18–v23; en fullkörning skriver en
   spökfil. Nu filnamnsfilter + varning (bara v24 genererades). ÅTGÄRD: för in v18–v23 och rätt v05-namn så att
@@ -869,7 +878,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (`snapshot-core.ts:101`). Vattenplaningens segment når det aldrig (#154, bekräftat i koden).
   📊 **Tio tröskeldokument: ett fallit (V-A), noll passerade, nio väntar.** §1.2 täckte fyra av tio.
   ⚖️ **Sjutton förkastanden prövade — alla rätt.** Fyra efterord i kartan fel/överspelade: #96 höjden MÄTER
-  fortfarande (lapse 0,63, #45 använder 0,71), `rate_max` SPÄRRAT, oljefilm→#42 överspelad (#155), #94 ÖPPET.
+  fortfarande (lapse 0,63, #45 använder 0,71 → 0,63 beslutat 17/9, #226), `rate_max` SPÄRRAT, oljefilm→#42 överspelad (#155), #94 ÖPPET.
   🐛 **Motorfel kartan missade:** #97 regexen blind för "Rimfrost"/"Halkrisk" · #156 · #44 regnmätarna
   fångar varannan bucket (44 %) · #83 gallringen före första kalla veckan.
   🔑 **Frysklassningens K2 (osäkerhetszon) är exakt det graderade mått E behöver** — redan fastställt.
@@ -2096,7 +2105,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   faller genom. Standard: VÅTBULBSTEMPERATUR (luft + fuktighet, båda finns per station):
   ≳ +1,5 °C regn · ≲ 0 °C snö · DÄREMELLAN SLASK — farligaste zonen, vattenplaning och
   blivande is samtidigt. Klassningen = våtbulb per segment (offsetmodell + höjdkorrektion,
-  höjden flyttar snögränsen — ankarbreddningens lapse 0,71°/100 m) × radarintensitet
+  höjden flyttar snögränsen — lapse **0,63 °C/100 m** — beslutat 17/9, DECISIONS #226; tidigare ankarbreddningens 0,71) × radarintensitet
   (radar_precip, redan per segment var 5:e min). ALLA ingredienser ligger redan i arkivet
   — detta är en beräkning, ingen ny källa.
   **Facit finns gratis:** SMHI:s stationer rapporterar observerad nederbördstyp, och

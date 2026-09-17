@@ -139,6 +139,11 @@ Bevisbördan ligger på skuggan. Vid tvekan: tystnad (produktinvarianten).
 
 ## 5. Ändringsregler
 
+**Gemensam kalibrering — regel D** (fastställd 17/9, TROSKLAR-KOMBINATIONEN §5, DECISIONS #226). Verkar en parameter i
+det här dokumentet i en kombination, ändras den *för kombinationen* bara enligt D1–D7: värden ur detta dokuments svep,
+startvärden före första natten, kalibrering och dom på skilda nätter, alla prövade punkter redovisade. Parameterns egen
+tröskel följer detta dokument som förut.
+
 Efter första skuggkörningen får detta dokument bara ändras genom en DECISIONS-post
 från Bengt, som äger mätningen. Skärpning kräver en rad; **lättnad är utesluten
 så snart utfallet är sett** —

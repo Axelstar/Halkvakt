@@ -145,6 +145,11 @@ en boolean per skuggrad. **0 kr/mån.**
 
 ## 7. Ordning och ändring
 
+**Gemensam kalibrering — regel D** (fastställd 17/9, TROSKLAR-KOMBINATIONEN §5, DECISIONS #226). Verkar en parameter i
+det här dokumentet i en kombination, ändras den *för kombinationen* bara enligt D1–D7: värden ur detta dokuments svep,
+startvärden före första natten, kalibrering och dom på skilda nätter, alla prövade punkter redovisade. Parameterns egen
+tröskel följer detta dokument som förut.
+
 1. Det här dokumentet fastställs av Bengt, som äger mätningen. Ingen kontrasignering behövs.
 2. **K-A körs på befintligt arkiv** — den kräver ingen ny data och kan köras i dag. I september
    väntas OAVGJORT på K-A4:s krav om 100 frysande punkter.

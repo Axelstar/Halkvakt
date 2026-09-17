@@ -204,6 +204,11 @@ inte på naken GitHub-cron, som #70 mätte till 40 % av bokad takt.
 
 ## 8. Ordning och ändring
 
+**Gemensam kalibrering — regel D** (fastställd 17/9, TROSKLAR-KOMBINATIONEN §5, DECISIONS #226). Verkar en parameter i
+det här dokumentet i en kombination, ändras den *för kombinationen* bara enligt D1–D7: värden ur detta dokuments svep,
+startvärden före första natten, kalibrering och dom på skilda nätter, alla prövade punkter redovisade. Parameterns egen
+tröskel följer detta dokument som förut.
+
 1. Dokumentet fastställs av **Bengt**, som äger mätningen och trösklarna. Ingen kontrasignering.
 2. **Inget mäts förrän vintern gett klassningar.** Körs Å-A i september blir svaret OAVGJORT på
    Å-A4, och det är rätt svar — inte ett misslyckande.

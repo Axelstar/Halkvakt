@@ -6575,3 +6575,24 @@ Axel, före 1/2, #224) · `marknadsforing.yml` (Axel + Bengt) · provraderna i f
 
 **Väntar på Axel:** kontrasignatur på C och D · utfallet i januari · #45 · läsa tätningarna T1, T5, T6 (#220).
 
+## #226 (17/9 2026) Axels ja: C och D fastställda, tröskelregeln kontrasignerad, uppspelningen ur arkiven
+
+**Axels beslut 17/9** (genom Bengt): *"Axel säger ja till alla rekommendationer"* — de sex punkterna i meddelandet till
+honom. Bengts del av de tre nya rekommendationerna följer hans stående ja (#225).
+
+| # | Beslut | Följd |
+| :-- | :-- | :-- |
+| 1 | **C och D fastställda** — Axel kontrasignerar Bengts ja (#225), med förslagen: förarfacits underlag (KB-D4) · den enda kalibreringen 1/2 på data november–januari (D3) · kamerabilden fäller premiss, aldrig utfall | **i kraft.** I samma commit (§9 steg 4): D-raden i ändringsparagrafen i tio tröskeldokument, och kamerabildens regel för kombinationer i TROSKLAR-OVERGANGAR §8 |
+| 2 | **Utfallet i januari:** KLARAR eller OAVGJORT ⇒ betan fortsätter oförändrad till mars · FALLER ⇒ grenen tas bort | fastställt |
+| 3 | **Tätningarna i tröskelregeln** (T1, T5, T6 — #220) | regel T kontrasignerad i sin tätade form |
+| 4 | **#45 lapse 0,63 °C/100 m** (tidigare 0,71) | kort #45 rättat; ingen kod bär värdet i dag |
+| 5 | **Uppspelningen räknas ur arkiven** — väderarkivet, radararkivet, trend-tabellen — **med skuggloggen som kontroll** | villkor: arkiven kvar till mars (grepp 3, oktober) · överensstämmelsen logg ↔ arkiv mäts vid första frosten och redovisas i varje dom |
+| 6 | **marknadsforing.yml behålls och flyttas till pulsklockan** — flödets syfte är morgonen ("före pendlingen"), och GitHub-cronen levererade den 08:49–10:07 UTC mot bokade 04:45 | kort #200 |
+| 7 | **Provraderna i förarfacit märks och utesluts — raderas inte** | kort #196: ISO-tid i vakthundsraden, filter på `alert_id` med `prov`, deploy och prov |
+
+**Kamerabilden i OVERGANGAR §8:** regeln gäller kombinationer. (a):s egen rad — kamerafacit får fälla falsklarm — står
+kvar. Att ändra den vore en **lättnad** av (a):s grind (färre falsklarm räknas), och betan behöver den inte.
+
+**Inga öppna beslut kvar i bedömningens lista.** Det som återstår är arbete: kort #196, #199 (bevis), #200, och
+uppföljningen med datum i bedömningen §0b.
+

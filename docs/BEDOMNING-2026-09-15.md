@@ -52,11 +52,11 @@ beviset finns — inte när koden är skriven.
 | ~~pg_net-timeouten 30 s gör vakthundens svar oläsbart för dbknapp~~ | ✅ migration 023: `timeout_ms = 120000`; larmprov 03:43Z: vakthundens svar läst ur `net._http_response` — status 200, `larmvag: ok`, rad-raderna lästa: mätvakten 8 flöden/0 problem · förarfacit 1 svar · issue matvakt 0 öppna · nyckel PAT 2026-11-22 (66 dygn) · Supabase 2026-12-08 (82 dygn) · issue vakthund 1 öppna (larmprovet) | — | #204 | bevisrad `timeout_ms = 120000`; larmprov visar `rad` |
 | Ordlistan vidgad — grepp 1 (#97 + S8, v24) | ✅ **backend i drift 16/9**: deploy 14:51Z, publicera-snapshot med sha STÄMMER, vakthundens `vinterprov` kör nya SQL:en ("nej", problem []), skuggmotorns `sparrprov` oförändrat. ⏳ **telefonerna:** app-bygge från main (iOS 0.3.7 (10) täcker även facit) | #97 | #214 | bygget ute hos testarna; innehåll vid första vinterordet |
 | Vektorgeneratorn i otakt med `engine/vectors/` | ⏳ nytt 16/9 | #195 | #214 | fullkörning ⇒ ingen diff i `engine/vectors/` |
-| Förarfacit-hygien: klockslaget i vakthundsraden + två provrader som räknas som svar | ⏳ nytt 16/9 — radering av prov är Bengts beslut | #196 | #214 | raden visar tid; `forarfacit` räknar 0 prov |
+| Förarfacit-hygien: klockslaget i vakthundsraden + två provrader som räknas som svar | ⏳ beslutat 17/9: märk och uteslut, radera inte (#226) — bygget kvar | #196 | #214 | raden visar tid; `forarfacit` räknar 0 prov |
 | Trafiklärare som testförare (Skyltfonden AP3, Bengt 16/9) | ⏳ beror på trafikskolornas ja senast 25/9; inbjudningsvägen (TestFlight extern = Beta App Review, Android APK/Play) är Axels — påverkar S5:s tolv testare | — | #216 | lärare med testversion i november och första lärarsvaret i `driver_facit` |
-| S10 grepp 2: TROSKLAR-KOMBINATIONEN (C, D, tröskelregeln) | 🔨 utkast 16/9 · ✅ **T fastställd 16/9 (#220)** · startvärden skrivna (#222) — C och D väntar på fastställande före första frostnatten | #197 | #217 | fastställt dokument, D-raden i varje tröskeldokument och T i FRYSKLASSNINGEN §1/§7 — i samma commit |
+| ~~S10 grepp 2: TROSKLAR-KOMBINATIONEN (C, D, tröskelregeln)~~ | ✅ **17/9: C, D och T fastställda, D-raden i tio tröskeldokument (#226)** | #197 | #217/#226 | fastställt dokument, D-raden i varje tröskeldokument |
 | Radarns bidrag mäts om i första frostmånaden (`scripts/matningar/radar-tackning-2026-09-16.sql`) | ⏳ vid frost, före januari-domen | #197 | #218/#219 | samma fråga på kalla timmar med snö |
-| Axel läser tätningarna i tröskelregeln (TROSKLAR-KOMBINATIONEN §6.4: T1, T5, T6 — skärpningar av hans lydelse) | ⏳ nytt 16/9 | #197 | #220 | Axels rad |
+| ~~Axel läser tätningarna i tröskelregeln (T1, T5, T6)~~ | ✅ Axel ja 17/9 (#226) | #197 | #220/#226 | Axels rad |
 | Betans startvärden in i motorn och `scripts/kontraktsgrinden.ts` när S3 byggs | ⏳ med S3 | #197 | #222 | grinden bär samma tal som DECISIONS #222 |
 | #153 försprång startar först efter grepp 2 fastställt, betan och S2 | ⏳ efter betan | #153 | #221 | eget tröskeldokument före kod |
 | TROSKLAR-SKUGGAN §4 (a)/(b) mot tröskelregeln | ⏳ före domen mars 2027 | #198 | #220 | §4 säger inget som regel T förbjuder |
@@ -66,7 +66,9 @@ beviset finns — inte när koden är skriven.
 | SMHI-varningar som försvinner: `senast_sedd` + `smhi_synk` i ingesten (`sql/024`) | 🔨 byggt 17/9 — bevis efter nästa ingestkörning | #199 | #225 | rad med innehåll i båda |
 | `senast_sedd` deklareras i värdevakten innan SMHI-förlängningen mäts | ⏳ före mars | #199 | #225 | fältet i SPANN, knappen körd |
 | TRV-anmälan om nio byvindgivare — Bengt skickar själv | ⏳ Bengt | — | #225 | skickat |
-| Axels ja: kontrasignatur på C och D · utfallet i januari · #45 lapse 0,63 | ⏳ Axel | #197 | #225 | Axels rad i DECISIONS |
+| ~~Axels ja: kontrasignatur på C och D · utfallet i januari · #45 lapse 0,63~~ | ✅ Axel ja 17/9 (#226) | #197 | #225/#226 | Axels rad i DECISIONS |
+| Överensstämmelsen skuggloggen ↔ arkivet mäts vid första frosten och redovisas i varje dom | ⏳ vid frost | #197 | #226 | andel lika över minst en frostnatt |
+| marknadsforing på pulsklockan (Supabase pg_cron) i stället för GitHub-cronen | ⏳ | kort #200 | #226 | start inom 10 min från bokad tid tre dagar i rad |
 
 ---
 
@@ -104,10 +106,10 @@ Fem rader. Inget annat är "nu".
 | **S7** | **Facitvakter:** vakthundsrad *"historiken växer"* (inte bara *"sync_state är färsk"*) · ~~mät `situation_archive`~~ (mätt 15/9: 3 122 olyckor/30 dygn, DECISIONS #189) · bevisa att `trv-bevakning` sparar 13 källor | Claude |
 | **S8** | **#52 före #45:** ett test i tre portar låser att kod 1 + "Packad snö" *måste* larma — motsatsen till vinterbaseline. Vektorn beslutas innan #45 rörs. ✅ **Byggd, godkänd (Axel) och deployad 16/9 som v24** tillsammans med #97 (DECISIONS #214) — når telefonerna med nästa app-bygge | Bengt + Axel |
 | **S9** | **T-A efter första frostnatten**, steg 0 inom sju dygn, #95(d):s F-B i samma varv | Claude |
-| **S10** | **C och D:** grinden för kombinationen (dokument) och regeln för gemensam kalibrering (ett stycke). Tröskelregeln till Axels lydelse — *efter N1*, annars saknar den vittne. 🔨 **Utkast 16/9: `docs/TROSKLAR-KOMBINATIONEN.md`** · ✅ **T fastställd 16/9 (#220)** (C = KB-A–D, D = D1–D7, T med vittneskrav; DECISIONS #217) — väntar på fastställande | Claude skriver, Bengt fastställer |
+| **S10** | **C och D:** grinden för kombinationen (dokument) och regeln för gemensam kalibrering (ett stycke). Tröskelregeln till Axels lydelse — *efter N1*, annars saknar den vittne. ✅ **Fastställt 17/9: `docs/TROSKLAR-KOMBINATIONEN.md`** — C, D och T (#220/#225/#226) (C = KB-A–D, D = D1–D7, T med vittneskrav; DECISIONS #217) — väntar på fastställande | Claude skriver, Bengt fastställer |
 | **S11** | **#153 → försprång** (Axel) · mät korridortillväxten 3 000 m mot 1 000 m. ✅ **Omformulerat 16/9 (DECISIONS #221)** — väntar på grepp 2 fastställt, betan och S2 | Axel · Claude |
 | **S14** | **V-B1:s jämförelse (DECISIONS #212):** tröskel eller "regnade det alls"? Radarns 5-min-topp mot stationens 30-min-summa gör tröskeljämförelsen sned åt ett håll. Underlaget är DELVIS-kolumnen; beslutet är Axels enligt §5 och tas när V-C är uppfyllt — inte förr | Axel, på Claudes mätning |
-| **S12** | **Drift:** ~~#97 kodgrind för "Rimfrost"/"Halkrisk"~~ **(ordlistan vidgad 16/9, DECISIONS #214 — även Nysnö och Halt)** · måndagsserien från naken cron till puls/knapp · #83 steg 2 (export/Pro) före första kalla veckan · #45 lapse 0,71 → 0,63 · #76 deploybevis · #146 klonfelet | Bengt / Axel / Claude |
+| **S12** | **Drift:** ~~#97 kodgrind för "Rimfrost"/"Halkrisk"~~ **(ordlistan vidgad 16/9, DECISIONS #214 — även Nysnö och Halt)** · måndagsserien från naken cron till puls/knapp · #83 steg 2 (export/Pro) före första kalla veckan · ~~#45 lapse 0,71 → 0,63~~ ✅ 17/9 (#226) · #76 deploybevis · #146 klonfelet | Bengt / Axel / Claude |
 | **S13** | Skattaren: en period **utan kodändring** under mätning — tre instrumentfel på tre körningar | Claude |
 
 ---
@@ -153,6 +155,13 @@ Fem rader. Inget annat är "nu".
 | Förslagen i C och D: förarfacits underlag (KB-D4) · kalibreringen 1/2 (D3) · kamerabilden fäller premiss, aldrig utfall — gäller med C och D | Bengt, 17/9 (#225) |
 | Ingesten sparar när en SMHI-varning försvinner (kort #199) | Bengt, 17/9 (#225) |
 | TRV-anmälan om nio byvindgivare skickas — av Bengt själv | Bengt, 17/9 (#225) |
+| C och D fastställda — Axel kontrasignerade, D-raden i tio tröskeldokument (DECISIONS #226) | Bengt + Axel, 17/9 |
+| Utfallet i januari: KLARAR eller OAVGJORT ⇒ betan fortsätter till mars, FALLER ⇒ grenen tas bort | Bengt + Axel, 17/9 |
+| Tröskelregeln kontrasignerad i tätad form (T1, T5, T6) | Axel, 17/9 |
+| #45 lapse 0,63 °C/100 m (tidigare 0,71) | Bengt + Axel, 17/9 |
+| Uppspelningen räknas ur arkiven, med skuggloggen som kontroll | Bengt + Axel, 17/9 |
+| marknadsforing.yml behålls och flyttas till pulsklockan (kort #200) | Bengt + Axel, 17/9 |
+| Provraderna i förarfacit märks och utesluts — raderas inte (kort #196) | Bengt + Axel, 17/9 |
 | Tröskelregeln i Axels lydelse, tätad: T1 per tillstånd, T5 interpolation förbjuden (#153 beslut 2 utan egen öppning), T6 prognoser utlöser aldrig ensamma — inte en uppmjukning, skyddet följer med (DECISIONS #220) | Bengt, 16/9; Axel om lydelsen |
 | #153 omformulerat till försprång och väntar till efter grepp 2 och betan; ordval och prioritet strukna (DECISIONS #221) | Bengt, 16/9; formen Axels |
 | Betans startvärden (D2): mitten, den tystare av två mittpunkter — N 2 h, fall ≥ 0,8 °C på 30 min, regn > 0, yta +1…+3 °C (DECISIONS #222) | Claude på Bengts order 16/9 · Bengt ja 17/9 (#225) |
@@ -161,11 +170,7 @@ Fem rader. Inget annat är "nu".
 
 | Beslut | Vem | Rekommendation |
 | :-- | :-- | :-- |
-| C och D fastställs (S10, TROSKLAR-KOMBINATIONEN §4–§5) — **Bengt ja 17/9 (#225)**, i kraft när Axel kontrasignerat | Axel kontrasignerar | ja, före första frostnatten |
-| Varifrån uppspelningen räknas: skuggloggen (det telefonen såg, 5 station-ögonblick på ett dygn) eller arkivet (alla stationer, data i efterhand) (DECISIONS #224) | Bengt + Axel | före kalibreringen 1/2 |
-| Utfallet i januari: KLARAR eller OAVGJORT ⇒ betan fortsätter oförändrad till mars, FALLER ⇒ grenen tas bort (TROSKLAR-KOMBINATIONEN §7) — **Bengt ja 17/9 (#225)** | Axel | ja |
-| #45 lapse 0,63 (S12) — **Bengt ja 17/9 (#225)** | Axel | ja |
-| `marknadsforing.yml` | Axel + Bengt | ingen rekommendation |
+| *Inga öppna beslut — alla avgjorda 17/9 (DECISIONS #225/#226)* | — | — |
 
 ---
 

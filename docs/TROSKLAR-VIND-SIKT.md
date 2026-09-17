@@ -334,6 +334,11 @@ mönster som #46 och framtida lager 2-regler ska ärva.
 
 ## 8. Ändring
 
+**Gemensam kalibrering — regel D** (fastställd 17/9, TROSKLAR-KOMBINATIONEN §5, DECISIONS #226). Verkar en parameter i
+det här dokumentet i en kombination, ändras den *för kombinationen* bara enligt D1–D7: värden ur detta dokuments svep,
+startvärden före första natten, kalibrering och dom på skilda nätter, alla prövade punkter redovisade. Parameterns egen
+tröskel följer detta dokument som förut.
+
 Fram till första skuggkörningen får §2:s svep och §4:s krav justeras av vem som helst av oss med en
 rad i DECISIONS. **Från första skuggkörningen ändras ingen tröskel alls** — varje motivering som inte lutar sig mot utfallet.
 

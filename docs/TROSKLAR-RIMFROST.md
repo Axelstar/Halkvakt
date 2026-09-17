@@ -246,6 +246,11 @@ Steg 2 kan göras före måndag och kräver ingen dom. Steg 4 och framåt gör d
 
 ## 9. Ändring
 
+**Gemensam kalibrering — regel D** (fastställd 17/9, TROSKLAR-KOMBINATIONEN §5, DECISIONS #226). Verkar en parameter i
+det här dokumentet i en kombination, ändras den *för kombinationen* bara enligt D1–D7: värden ur detta dokuments svep,
+startvärden före första natten, kalibrering och dom på skilda nätter, alla prövade punkter redovisade. Parameterns egen
+tröskel följer detta dokument som förut.
+
 Fram till **första skuggkörningen** får svepet i §2 och kraven i §4 justeras av vem som helst av oss
 med en rad i DECISIONS. **Därefter ändras ingen tröskel alls.** En ändring som lutar sig mot
 utfallet är värdelös — det är hela skälet till att dokumentet är daterat. Regimen är knuten till första skuggkörningen, inte till signaturen — samma form som
