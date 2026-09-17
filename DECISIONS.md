@@ -6509,3 +6509,46 @@ beslut** — inte fattat här.
 **Funnet:** S1 loggar bara stationer i skuggrutternas korridorer (`efterhalkaRader`, ±0,05°) och bara ytor ≤ 3 °C —
 5 rader på ett septemberdygn. Om det räcker i vinter är inte mätt; arkivet ser alla stationer.
 
+## #224 (17/9 2026) Startbandet och SMHI-förlängningen prövade — alla sex inställningar går att räkna ur arkivet
+
+**Bengts order 17/9:** *"pröva startbandet. går smhi-förlängningen att mäta"*. Bara tillgång räknades — rader, fönster,
+kopplingar — inte hur ofta någon variant skulle fyra (D2/D3). Mätfrågorna: `scripts/matningar/startband-smhi-uppspelning-2026-09-17.sql`,
+dbknapp-körningar 35183998393 och 35184101126.
+
+**Startbandet (+1…+4 och +1…+6 °C) går att spela upp i efterhand.**
+
+| Fråga | Svar |
+| :-- | :-- |
+| Bär trend-tabellen (`trend_kandidater`) de varmare ytorna? | ja — sedan 8/9 **3 062** fallande ögonblick vid 3–4 °C (87 stationer) och **3 354** vid 4–6 °C (126), mot 1 388 vid 1–3 °C (43). Fallet för 15, 30 och 60 min finns i nästan alla rader |
+| Tål den gallringen? | ja — fallen sparas färdigräknade, och tabellen gallras inte (sql/017) |
+| Finns regnet i arkivet för de varmare raderna? | regn inom 48 h för **1 685 av 2 491** (3–4 °C) och **1 911 av 2 720** (4–6 °C), senaste 7 dygnen. Resten hade inget regn i arkivet — torrt och saknat går inte att skilja |
+| Stämmer loggens fall med tabellen? | lika i 5 av 5 — **men alla fem var tomma** (inget fall), så jämförelsen säger inget om värdena |
+
+**Rättelse av mitt svar 17/9:** jag skrev att 15-minutersfallet försvinner i gallringen. Det gäller råraderna, men
+trend-tabellen byggdes 13/9 just för att spara fallen (#88).
+
+**SMHI-förlängningen (N_varning) går att koppla men inte att mäta än.**
+
+| Fråga | Svar |
+| :-- | :-- |
+| Finns vintervarningar i arkivet? | **nej** — inga `SNOW_ICE` eller `ICING`. Arkivet bär vind till sjöss, brand, vattenbrist, regn, översvämning |
+| Följer giltighetstiden med? | för varningar arkiverade efter 13/9: **gula 13 av 13**, meddelanden 1 av 7. Före sql/015 saknas den av konstruktion (15 av 157 rader totalt) |
+| Går kopplingen station × aktiv varning att köra? | ja — senaste 5 dygnen låg 15 av 747 stationer under brandmeddelande och 3 under vindvarning; inget av loggens 5 station-ögonblick |
+
+**Tre gränser som inte går att mäta bort:** (1) bara varningar arkiverade efter 12/9; (2) arkivet sparar varje
+publicering men inte när en varning försvinner (`ingest/db.ts`) — en varning som dras tillbaka i förtid ser ut att gälla
+till sin sluttid; (3) vilka varningstyper och nivåer som räknas är självt osatt (TROSKLAR-SMHI-FORSTARKAREN F1, F2).
+
+**Slutsatsen som ändrar läget.** Med #223 och den här mätningen går **alla sex inställningar att räkna fram ur
+arkivet**: N och regnmängd ur väderarkivet, radarn ur radararkivet, fönster, fall och startband ur trend-tabellen. Av
+de två skälen till strykningen #219 står alltså bara det ena kvar — **Axels: 1 296 punkter går inte att kalibrera
+ärligt, 48 gör det.** Att loggen inte bär dem är inte längre ett skäl.
+
+**Mitt förslag (inte beslutat):** kalibreringen står kvar på 48. Regnmängd, startband och SMHI-förlängningen prövas i
+mars som radarn (#223) — var för sig mot den kalibrerade punkten, högst tio varianter. En variant som ser bättre ut i
+mars byggs inte in direkt, den blir en ny fråga: med tio jämförelser kan någon se bra ut av en slump.
+
+**Två frågor före kalibreringen 1/2:** (a) Bengt — strukna inställningar som varianter i mars; (b) Bengt och Axel —
+**varifrån uppspelningen räknas.** Skuggloggen visar vad telefonen såg men bar 5 station-ögonblick på ett dygn (#223).
+Arkivet ser alla stationer men får data i efterhand och skilde sig från loggen i 1 av 5.
+

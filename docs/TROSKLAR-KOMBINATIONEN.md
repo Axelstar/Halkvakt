@@ -16,7 +16,7 @@ testförarnas information.
 tätning · §7 och §9 betans startvärden.
 
 **Ändrat 17/9** (DECISIONS #223): radarn stryks inte — betan och kalibreringen utan radar, radarn prövas i mars ur
-arkivet (§3, §4 KB-A, §7, §9).
+arkivet (§3, §4 KB-A, §7, §9). Samma dag: startbandet och SMHI-förlängningen prövade (#224, §3).
 
 **Varför ett eget dokument.** Integrationskartan är fryst (DECISIONS #186) och säger själv att *"C och D är dokument
 och kan skrivas före frosten"*. Tröskelregeln var låst bakom N1: den saknade vittne (kartan §13.2). N1 är klar sedan
@@ -113,7 +113,8 @@ råa logg (`efterhalka`, DECISIONS #198), inte ur nya skuggkolumner. Loggen bär
 | N · fönster · lutningströskel | **ja** | `regn_h` är timmar sedan regn (48 h bakåt), lutningen finns per fönster |
 | Minsta regn | **ur loggen bara > 0 — ur arkivet alla tre** | `regn_h` räknar varje mätning med `rain_sum_mm > 0`; mängden loggas inte, men arkivet sparar den. Omräkning 17/9 (#223): loggens `regn_h` återskapades i 4 av 5 station-ögonblick, 5 av 5 inom en halvtimme efter simulerad gallring. **Strykningen står tills Bengt beslutar** |
 | r (radarproxyn) | **i efterhand, ur arkivet** | inte ur loggen — radarn finns i `rain_segments`, inte i loggens stationsrader. Men radararkivet (`radar_precip`) gallras aldrig och kan kopplas till loggens stationer; kopplingen kördes 17/9 på loggens 5 station-ögonblick (#223). *Rättat 17/9 — stod "nej"* |
-| Startband | **bara upp till +3 °C** | `weather[]` bär bara stationer med yta ≤ 3 °C |
+| Startband | **ur loggen bara upp till +3 °C — ur trend-tabellen alla tre** | `weather[]` bär bara stationer med yta ≤ 3 °C. Men `trend_kandidater` (sql/017, gallras inte) sparar fallande ytor i hela bandet +1…+6 °C med fallen färdigräknade — prov 17/9 (#224): 3 062 ögonblick vid 3–4 °C och 3 354 vid 4–6 °C sedan 8/9. **Strykningen står tills Bengt beslutar** |
+| N_varning | **först när vintervarningar finns** | arkivet bär giltighetstid för varningar efter 12/9 (gula 13 av 13) och kopplingen station × aktiv varning går att köra, men arkivet har ännu inga vintervarningar, och en varning som dras tillbaka i förtid syns inte (#224). Står på av i betan (#222) |
 
 **Av rutnätets 1 296 punkter kan 48 spelas upp ur S1:s logg** (N 4 × fönster 3 × lutning 4, med minsta regn > 0 och startband
 +1…+3). **Beslut (Bengt 16/9, DECISIONS #219): de övriga 1 248 punkterna stryks för kombinationen i
@@ -125,7 +126,7 @@ ett val med ett pris, och priset står här:
 | :-- | :-- |
 | Radarn som tecken på blöt väg — **i betan** | betan vet "blöt" bara där stationen har regnmätare. **Mätt 16/9 (DECISIONS #218): högst ~13 % av de blöta kalla timmarna (15 av 115) var kända bara av radarn**, ingen för att mätare saknades — alla 160 kalla stationer har mätare. September är regn; mätningen körs om inom första frostmånaden (snö). **Radarn själv är inte struken** (17/9, #223): den prövas i mars |
 | Minsta regn ≥ 0,2 och ≥ 0,5 mm | "blöt" betyder allt regn över 0 — ingen gräns mot enstaka droppar. **Mätt 17/9 (#223): två tredjedelar av regnraderna vid kalla stationer är under 0,2 mm** (96 av 145, minsta värde 0,1 mm) |
-| Startband över +3 °C | fallet syns först under +3 °C — kortare försprång än ett band till +4 eller +6 hade gett |
+| Startband över +3 °C | fallet syns först under +3 °C — kortare försprång än ett band till +4 eller +6 hade gett. Går att pröva i efterhand ur trend-tabellen (#224) |
 
 **Att rutnätet är litet är inte skyddet.** 48 punkter prövade på samma tunna januaridata överanpassas också; det som
 skyddar är att nätterna skiljs åt (D3). Men 48 punkter går att kalibrera ärligt på, 1 296 gör det inte (Axel 16/9).
