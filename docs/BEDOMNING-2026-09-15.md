@@ -42,8 +42,8 @@ beslutade. **Det som återstår före november är bygge och bevis, inte beslut.
 
 | När | Vad | Vem |
 | :-- | :-- | :-- |
-| **September** | #200 marknadsföringen på pulsklockan · nya app-byggen till testarna (iOS 0.3.7 med facit och ordlistan) · Skyltfonden: trafikskolornas muntliga ja senast 25/9, ansökan skickas 28/9 (sista dag 1/10) · TRV-brevet om byvindgivarna · mejlen till Trafikverket (fordonsdata) och till Malmö, Stockholm och Göteborg (gatornas data) · #201 vakthundens körning i kassavaktens timme | Claude · Axel · Bengt |
-| **Oktober** | **grepp 3: arkiven kvar till mars** (export eller Pro, #83 steg 2) — villkor för domarna · **S3 regeln i motorn** med startvärdena, tre portar och kontraktsgrinden · S2 skattarens nivå · #195 vektorgeneratorn | Bengt + Axel · Axel · Claude |
+| **September** | #200 marknadsföringen på pulsklockan · nya app-byggen till testarna (iOS 0.3.7 med facit och ordlistan) · Skyltfonden: trafikskolornas muntliga ja senast 25/9, ansökan skickas 28/9 (sista dag 1/10) · TRV-brevet om byvindgivarna · mejlen till Trafikverket (fordonsdata) och till Malmö, Stockholm och Göteborg (gatornas data) · #201 vakthundens körning i kassavaktens timme · databasens storlek mäts 24/9 | Claude · Axel · Bengt |
+| **Oktober** | **grepp 3: Pro-beslutet** när databasvakten larmar (400 MB) eller senast 1/11 — villkor för domarna · **S3 regeln i motorn** med startvärdena, tre portar och kontraktsgrinden · S2 skattarens nivå · #195 vektorgeneratorn | Bengt + Axel · Axel · Claude |
 | **Första frosten** (datum okänt) | T-A steg 0 inom sju dygn (S9) · radarns bidrag mäts om, nu med snö · skuggloggen mot arkivet: räknar de lika? · S1:s första nätter | Claude |
 | **November** | **betan till tolv testare**, också trafiklärare (S5) · PAT roteras senast 15/11 | Axel |
 | **December** | betan samlar facit · Supabase-tokenen går ut 8/12 · uppspelningen ur arkiven provkörs före januari | Axel · Claude |
