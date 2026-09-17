@@ -439,6 +439,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **STARTVÄRDEN SKRIVNA 16/9 (DECISIONS #222):** N 2 h · fall ≥ 0,8 °C på 30 min · regn > 0 · yta +1…+3 °C · radar
   och N_varning av. **VÄNTAR NU:** Axel läser tätningarna · utfallet i januari · fastställandet av C och D (med D-raden
   i varje tröskeldokument).
+  📡 **RADARN STRYKS INTE (Bengt 17/9, DECISIONS #223):** betan och kalibreringen utan radar; radarn prövas i mars ur
+  radararkivet (gallras aldrig, 4,4 MB). Regnmängden går också att räkna fram ur arkivet — funktionsprov på 5
+  station-ögonblick. **VÄNTAR:** Bengt om regnmängden ska tillbaka på samma sätt · kopplingen station↔väg (förslag
+  5 km) före frosten · arkiven kvar till mars (grepp 3).
 - [ ] 🧩 **#159 INTEGRATIONSKARTAN — tre av våra egna regler står i vägen för produkten**
   📬 **AXELS FYRA INVÄNDNINGAR INARBETADE 14/9 (DECISIONS #184, kartans nya §13).** Han läste ett
   TIDIGT underlag, där grind A-rättelsen inte fanns. **Tre står, en föll på underlaget.**
