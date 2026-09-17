@@ -817,12 +817,18 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [ ] 🐕 **#201 VAKTHUNDEN SVARAR INTE INOM 120 S I KASSAVAKTENS TIMME** (fynd 17/9 vid beviset för #196).
+  `net._http_response` 05:07:00Z: *"Timeout of 120000 ms reached"* — vakthundens cron (`7 * * * *`) fick inget svar. Körningarna
+  04:07 och 06:07 svarade. Kassavakten körs bara när UTC-timmen är 05, 11, 17 eller 23 (`% 6 !== 5`) och räknar Actions-körningar
+  dygn för dygn via GitHubs API — troligen det som tar tid. **Okänt:** om funktionen hann klart efter att pg_net slutade vänta,
+  och om kassavaktens larm då går ut. **Verify:** läs svaret 11:07Z; tar det över 120 s, mät körtiden och flytta kassavakten till
+  en egen körning eller korta den — tills vakthundens svar kommer inom tidsgränsen i alla timmar.
 - [ ] ⏰ **#200 MARKNADSFÖRINGEN PÅ PULSKLOCKAN — morgonutkasten ska nå pendlingen** (Bengt + Axel 17/9, DECISIONS #226).
   `marknadsforing.yml` är bokad 04:45 UTC ("före pendlingen") men GitHub-cronen levererade den 08:49–10:07 UTC (10–16/9).
   Kostnaden är liten, cirka 20 s per körning. **Åtgärd:** flytta till Supabase pg_cron som FI, DK och regn-30
   (`pulsklocka.yml`, DECISIONS #26/#63) och ta bort `schedule` ur flödet. **Verify:** körningen startar inom 10 min från
   bokad tid tre dagar i rad.
-- [ ] 🛰️ **#199 SMHI-VARNINGAR SOM FÖRSVINNER — ingesten stämplar senast sedd** (Bengts ja 17/9, DECISIONS #224/#225).
+- [x] 🛰️ **#199 SMHI-VARNINGAR SOM FÖRSVINNER — ingesten stämplar senast sedd — ✅ KLART 17/9** (Bengts ja 17/9, DECISIONS #224/#225).
   Arkivet sparar varje publicering av en SMHI-varning men inte när den försvinner ur flödet. En varning som dras
   tillbaka i förtid ser ut att gälla till sin sluttid, och SMHI-förlängningen (N_varning) skulle mätas fel. Går inte att
   hämta i efterhand — SMHI:s API ger bara nuläget (samma läxa som sql/015).
@@ -830,12 +836,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   flödet) och tabellen `smhi_synk` (en rad per lyckad synk, så "borta" skiljs från "ingen synk" och "tomt flöde").
   `ingest/db.ts` skriver båda; integrationstestet vaktar. **Verify:** efter nästa ingestkörning har aktuella varningar
   `senast_sedd` satt och `smhi_synk` rader med innehåll. Innan N_varning mäts: fältet deklareras i värdevakten.
+  ✅ **I DRIFT 17/9:** ingestkörningen 06:11Z stämplade `senast_sedd` på exakt de 15 varningar som fanns i flödet (av 157 i arkivet), och `smhi_synk` fick sin första rad (15 varningar).
 - [ ] 📜 **#198 TROSKLAR-SKUGGAN §4 MOT TRÖSKELREGELN — rättas före domen i mars 2027** (fynd 16/9, DECISIONS #220).
   Domslutet (a) TALAR och (b) TALAR NÄRA ANKARE låter segmentprognosen tala på *modellerade* segment. Det krockade redan
   med den gamla meningen (FRYSKLASSNINGEN §1/§7) och krockar med T3: ett värde där ingen mätt och inget vittne på platsen
   kan fälla det får inte utlösa. Texten ska säga vad (a)/(b) då får betyda — karta, konfidens, eller tal bara där T1–T3
   klaras. Fastställt dokument ⇒ Bengts rad. Verify: §4 säger inget som regel T förbjuder.
-- [ ] 🧾 **#196 FÖRARFACIT-HYGIEN — klockslaget och provraderna** (fynd 16/9 vid #97:s deploy, DECISIONS #214).
+- [x] 🧾 **#196 FÖRARFACIT-HYGIEN — klockslaget och provraderna — ✅ KLART 17/9** (fynd 16/9 vid #97:s deploy, DECISIONS #214).
   (1) Vakthundens rad skriver `String(df.senast).slice(0, 16)` ⇒ "Wed Sep 16 2026 " — datum utan tid (min rad, S4 steg 1).
   (2) `driver_facit` bär två PROV och noll riktiga svar: Android `prov` 03:07Z och ett iOS-format serverprov 11:47Z
   (`cam:prov-ios`, version 0.3.6) som INTE går att skilja från ett riktigt svar på version/plattform. Skuggrapportens
@@ -844,7 +851,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (och ev. skuggrapport-)deploy + prov.
   ✅ **Beslutat 17/9 (Bengt + Axel, DECISIONS #226): märk och uteslut — radera inte.**
   🔨 **BYGGT 17/9 (DECISIONS #227):** genererad kolumn `prov` i `sql/025`; vakthunden räknar bara riktiga svar och visar
-  klockslag i UTC; skuggrapporten läser `prov=is.false`. Bevis väntar: migrationen, två deployer, raderna med innehåll.
+  klockslag i UTC; skuggrapporten läser `prov=is.false`.
+  ✅ **I DRIFT 17/9:** migrationen märkte exakt de två provraderna (id 1 `prov:kam1`, id 3 `cam:prov-ios`) · deploy av vakthund
+  och skuggrapport gröna · skuggrapporten `svar_7d` 2 → 0 · vakthundsraden 06:07Z: *förarfacit: 0 svar · 2 prov uteslutna*.
 - [ ] 🧬 **#195 VEKTORGENERATORN I OTAKT MED `engine/vectors/`** (fynd 16/9 under #97, DECISIONS #214). `gen-vectors.ts`
   kallar v05 `v05_throttle_45s` (filen heter `v05_throttle_floor_10s`) och saknar v18–v23; en fullkörning skriver en
   spökfil. Nu filnamnsfilter + varning (bara v24 genererades). ÅTGÄRD: för in v18–v23 och rätt v05-namn så att
