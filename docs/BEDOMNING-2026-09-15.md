@@ -21,7 +21,7 @@ november i stället för mars, för att facit kommer från en källa som faktisk
 
 ## Läget 17/9 — var vi är och vart vi är på väg
 
-**Var vi är.** Alla beslut är tagna (§4.2 är tom); två mejl om stadstrafiken ska skickas (§0b). Reglerna för efterhalkan är fastställda och underskrivna av Bengt och
+**Var vi är.** Alla beslut är tagna (§4.2 är tom); fyra mejl om stadstrafiken ska skickas (§0b). Reglerna för efterhalkan är fastställda och underskrivna av Bengt och
 Axel: grinden för kombinationen (C), den gemensamma kalibreringen (D) och tröskelregeln (T). Betans startvärden är
 beslutade. **Det som återstår före november är bygge och bevis, inte beslut.**
 
@@ -42,7 +42,7 @@ beslutade. **Det som återstår före november är bygge och bevis, inte beslut.
 
 | När | Vad | Vem |
 | :-- | :-- | :-- |
-| **September** | #200 marknadsföringen på pulsklockan · nya app-byggen till testarna (iOS 0.3.7 med facit och ordlistan) · Skyltfonden: trafikskolornas muntliga ja senast 25/9, ansökan skickas 28/9 (sista dag 1/10) · TRV-brevet om byvindgivarna · mejlen till Trafikverket (fordonsdata) och Malmö stad (gatornas väderstationer) · #201 vakthundens körning i kassavaktens timme | Claude · Axel · Bengt |
+| **September** | #200 marknadsföringen på pulsklockan · nya app-byggen till testarna (iOS 0.3.7 med facit och ordlistan) · Skyltfonden: trafikskolornas muntliga ja senast 25/9, ansökan skickas 28/9 (sista dag 1/10) · TRV-brevet om byvindgivarna · mejlen till Trafikverket (fordonsdata) och till Malmö, Stockholm och Göteborg (gatornas data) · #201 vakthundens körning i kassavaktens timme | Claude · Axel · Bengt |
 | **Oktober** | **grepp 3: arkiven kvar till mars** (export eller Pro, #83 steg 2) — villkor för domarna · **S3 regeln i motorn** med startvärdena, tre portar och kontraktsgrinden · S2 skattarens nivå · #195 vektorgeneratorn | Bengt + Axel · Axel · Claude |
 | **Första frosten** (datum okänt) | T-A steg 0 inom sju dygn (S9) · radarns bidrag mäts om, nu med snö · skuggloggen mot arkivet: räknar de lika? · S1:s första nätter | Claude |
 | **November** | **betan till tolv testare**, också trafiklärare (S5) · PAT roteras senast 15/11 | Axel |
@@ -112,6 +112,8 @@ beviset finns — inte när koden är skriven.
 | Överensstämmelsen skuggloggen ↔ arkivet mäts vid första frosten och redovisas i varje dom | ⏳ vid frost | #197 | #226 | andel lika över minst en frostnatt |
 | marknadsforing på pulsklockan (Supabase pg_cron) i stället för GitHub-cronen | ⏳ | kort #200 | #226 | start inom 10 min från bokad tid tre dagar i rad |
 | Mejl till Malmö stad, Fastighets- och gatukontoret: egna väderstationer eller halkdata på gatorna? Deras beredskapsgrupp följer vägarna via väderstationer — svaret avgör om kort #93 (a) öppnas igen | ⏳ Bengt skickar | #93 | #230 | svar från Malmö stad |
+| Mejl till Stockholms stad, trafikkontoret (trafikkontoret@stockholm.se, läst på stadens sida): väderstationer, givare eller fordonsdata på gatorna — och kan det delas? | ⏳ Bengt skickar (utkast 17/9) | #93 | — | svar från Stockholms stad |
+| Mejl till Göteborgs Stad, stadsmiljöförvaltningen (stadsmiljo@stadsmiljo.goteborg.se, läst på stadens sida): staden har prövat friktionsdata från bilar och väglagsprognoser (InfraSweden2030/Vinnova) — används det fortfarande, och kan det delas? | ⏳ Bengt skickar (utkast 17/9) | #93 | — | svar från Göteborgs Stad |
 | Fråga till Trafikverket: publiceras halkhändelser från fordon öppet någonstans? Skickas i Datautbytesportalens kontaktformulär (data.trafikverket.se/about-us/contact) — ingen inloggning, ärendetyp **Datex II**. Ingen e-postadress finns *(rättat 17/9: datex@trafikverket.se kom ur en automatisk sammanfattning)* | ⏳ Bengt skickar | — | #230 | svar från Trafikverket |
 | Vakthunden 05:07Z svarade inte inom 120 s (pg_net: *Timeout of 120000 ms reached*) — kassavaktens timme (05, 11, 17, 23 UTC); körningarna 04:07 och 06:07 svarade. Okänt om körningen hann klart och om kassavakten larmar | ⏳ nytt 17/9 — kontrollera 11:07Z | kort #201 | — | vakthundens svar inom 120 s i kassavaktens timme, eller kassavakten flyttad |
 | Läsbar version av TROSKLAR-KOMBINATIONEN på Skrivbordet och i Drive är från 16/9 — före Axels sex ändringar, radarn och fastställandet | ⏳ inaktuell; ny version när Bengt vill | #197 | — | aktuell version i Drive, eller den gamla borttagen |
@@ -210,7 +212,7 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 | marknadsforing.yml behålls och flyttas till pulsklockan (kort #200) | Bengt + Axel, 17/9 |
 | Provraderna i förarfacit märks och utesluts — raderas inte (kort #196) | Bengt + Axel, 17/9 |
 | Sessionsregeln i CLAUDE.md: bedömningen vid start, kartan vid ändring, sök innan något stryks, inga trådar bara i chatten (DECISIONS #228) | Bengt, 17/9 |
-| Stadstrafiken: fråga Malmö stad om gatornas väderstationer och Trafikverket om fordonsdata — Bengt skickar mejlen (DECISIONS #230) | Bengt, 17/9 |
+| Stadstrafiken: fråga Malmö, Stockholm och Göteborg om gatornas data och Trafikverket om fordonsdata — Bengt skickar mejlen (DECISIONS #230) | Bengt, 17/9 |
 | Bedömningen stryks fortlöpande och bär läget överst; kartan stryks inte löpande (DECISIONS #229) | Bengt, 17/9 |
 | Tröskelregeln i Axels lydelse, tätad: T1 per tillstånd, T5 interpolation förbjuden (#153 beslut 2 utan egen öppning), T6 prognoser utlöser aldrig ensamma — inte en uppmjukning, skyddet följer med (DECISIONS #220) | Bengt, 16/9; Axel om lydelsen |
 | #153 omformulerat till försprång och väntar till efter grepp 2 och betan; ordval och prioritet strukna (DECISIONS #221) | Bengt, 16/9; formen Axels |
