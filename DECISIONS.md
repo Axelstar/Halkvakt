@@ -6631,3 +6631,39 @@ TROSKLAR-OVERGANGAR §4 och `sql/017`. En tabellista är 19 namn, ungefär 100 t
 **Ersatt:** sessionsprotokollets steg 1 sade att TAVLA, STATUS, BACKLOG och DECISIONS läses varje session — cirka 280 000
 tokens, som i praktiken inte lästes. Steg 1 pekar nu på regeln och säger att de stora filerna söks i.
 
+## #229 (17/9 2026) Bedömningen bär läget överst och stryks fortlöpande — kartan gör det inte
+
+**Bengts order 17/9:** *"gör en uppdatering av bedömningen och bekräftar att strykningar som klar sker fortlöpande i det
+dokumentet. Strykningar i integrationskartan förutsätter kanske läsning och det blir dyrt"* — och en lista där han ser
+var vi är och vart vi är på väg.
+
+**Gjort:** `docs/BEDOMNING-2026-09-15.md` har en ny översta sektion, *Läget 17/9*: en tabell över var vi är och en
+tidslinje september–mars med vem som gör vad. Klara rader strukna: N4, S1, S10 och de rader i §0b som fått bevis.
+**Regeln** står som punkt 4 i SESSIONSREGELN (CLAUDE.md): en rad stryks i samma varv som beviset finns, läget överst hålls
+aktuellt, kartan stryks inte löpande. **Skäl:** kartan är fryst till efter bygge och mätning, och att stryka i den kräver
+att den läses (~14 000 tokens) — bedömningen är listan, kartan är analysen.
+
+## #230 (17/9 2026) Rekognosering: Trafikverkets öppna halkflöde är vårt väglag i annan form — inga fordonsdata
+
+**Bengts order 17/9:** *"ja, kör rekognoseringen nu"* — på frågan om Trafikverkets öppna halkflöde (SRTI *"Temporary
+slippery road"* på trafficdata.se) kunde täcka gatorna och ge januari-domen ett vittne.
+
+**Vad som lästes:** katalogposten på trafficdata.se (CKAN-API:t) och Trafikverkets datautbytesportal — datamodellen,
+situationssidan och frågesidan.
+
+| Fråga | Svar |
+| :-- | :-- |
+| Var finns flödet? | Katalogposten pekar bara på Trafikverkets DATEX II-datamodell; ingen egen adress |
+| Vilka datamängder finns? | Camera, LocationCode, Parking, RoadConditionSection, TrafficSafetyCamera, TrafficFlow, TravelTime, Truckparking, WeatherData och situationerna Accident, EmergencyInfo, Ferries, Frostdamage, Roadworks, **RoadSurfaceConditions**, Trafficmessage. **Ingen för fordonsdata eller SRTI särskilt** |
+| Varifrån kommer halkuppgifterna? | `RoadSurfaceConditions`: *"Trafikledningen använder sig av kamerabilder, väderprognoser och information som entreprenörerna rapporterar för att bedöma väglaget"* — samma väglag som vi redan hämtar som `RoadCondition` |
+| Åtkomst | POST till `https://api.trafikinfo.trafikverket.se/v2/datex.xml` med samma registrerade nyckel som vårt API |
+| Sökord på portalen | varken "SRTI", "halk", "fordon" eller "Data for Road Safety" på situationssidan |
+
+**Slutsats:** det öppna flödet ger inget nytt vittne och ingen täckning av gatorna. Bilarnas halkdetektering som
+Trafikverket köper (Volvo, Nira Dynamics) och delar i Data for Road Safety syns inte i något öppet dataset. **Rättelse av
+mitt svar 17/9:** jag kallade det "halkflöde från fordon" innan källan var läst.
+
+**Kvar, som frågor till Bengt (bedömningen §4.2):** fråga en stad om egna data, och fråga Trafikverket om
+fordonsbaserade halkhändelser publiceras öppet någonstans. Ingen live-hämtning gjordes — nyckeln finns bara i GitHubs
+secrets, och dokumentationen besvarade frågan om källan.
+

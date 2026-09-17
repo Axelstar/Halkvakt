@@ -94,6 +94,9 @@ Repot är enda synken mellan sessioner (dator, webb, mobil). Det som bara stod i
 3. **Inga trådar bara i chatten.** En fråga till Bengt eller Axel skrivs in i bedömningen (§4.2) i samma varv som den
    ställs; ett beslut i chatten skrivs in i DECISIONS och bedömningen (§4.1, §0b) i samma varv som det fattas.
    Kontroll före sessionens slut: frågorna i sista svaret ska finnas som rader i §4.2.
+4. **Stryk fortlöpande i bedömningen.** En rad stryks i samma varv som beviset finns, med beviset på raden, och
+   läget överst (var vi är, vart vi är på väg) hålls aktuellt. Integrationskartan stryks inte löpande — den är fryst
+   och ändras först efter bygge och mätning.
 
 ## Skills (obligatoriskt före app-kod)
 Före kod i `android/` eller `ios/`: läs relevant `skills/<namn>/SKILL.md` enligt
