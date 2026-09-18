@@ -1121,6 +1121,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   2 058 min = **16,46 USD av 35**. Släpande takt 200 oförändrad, månadssnittet ned 294 → 291,
   takdatum **26/9 oförändrat**. Nattens egen takt 17:08 → 23:08 (6,0 h): 32 min ⇒ **128 min/dygn**.
   05:08-raden hade inte kommit när avläsningen gjordes (vakthunden fyrar 05 UTC).
+  🔍 **OMRÄKNAT PER JOBB 18/9 (Claude, alla 3 359 körningar sedan 1/9):** GitHub debiterar varje JOBB uppåt till hel
+  minut; kassavakten räknar varje KÖRNING på `updated_at − run_started_at`. Felet går åt två håll: android.yml:s två
+  parallella jobb räknas som ett (16/9: 55 min mot 105), och driftens korta jobb räknas med körningens efterslöp
+  (healthchecks jobb tar 58 s men körningen 63 s ⇒ 2 min i stället för 1). Över månaden: **4 530 min mot 4 369 per jobb**,
+  alltså 161 min för mycket — talet är inget golv, som larmtexten säger. Kvar till taket per jobb: cirka 2 000 min;
+  driften ~74 min per dygn ⇒ bygget högst ~80 min per dygn till 1/10 (bedömningen §0b). GitHubs eget API för debiterbar
+  tid svarar 0 sedan faktureringen lades om, så Billing är enda facit (Axel, §4.2). **Ingen ändring nu:** att räkna per
+  jobb kostar ett API-anrop per körning (~180 per dygn) och skulle förlänga vakthundens redan för långa timme (#201) —
+  rättas i så fall ihop med #201, med dygnssummor som sparas.
 - [ ] 🧊 **#151 VÄGLAGETS ÅLDER — ska en stående vinterklassning tystas när mätningarna säger att vintern tagit slut?**
   📄 **TRÖSKELDOKUMENT FASTSTÄLLT 12/9 av Bengt** (`docs/TROSKLAR-VAGLAGETS-ALDER.md`, DECISIONS #151/#152).
   **Kortet kommer ur att Axel mätte i stället för att bygga det jag antog.** Jag flaggade att
