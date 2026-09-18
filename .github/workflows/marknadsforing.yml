@@ -1,7 +1,7 @@
 name: marknadsforing
 on:
-  schedule:
-    - cron: "45 4 * * *"   # varje morgon 05:45/06:45 svensk tid — före pendlingen
+  # Startas av pulsklockan (Supabase pg_cron, puls-marknadsforing 04:45 UTC = 05:45/06:45 svensk tid — före
+  # pendlingen). GitHub-cronen levererade 08:49–10:07 UTC 10–16/9 (kort #200, DECISIONS #226).
   workflow_dispatch:
 
 permissions:
