@@ -1029,7 +1029,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔨 **BYGGT OCH I DRIFT 18/9 (Bengts "kör", DECISIONS #237, PR #344):** (a) sju pulsjobb för måndagsserien, (b) fast
   frist kadens + 3 h, (c) mätvakten läser pulsklockan. Bevis: vakthunden 04:47Z *mätvakten: 11 schemalagda flöden (11 via
   pulsklockan), 0 med problem* (8 i morse). **Kvar: måndag 21/9 — alla sju ska starta inom minuten.**
-- [ ] 🧱 **#161 EN CRLF-FIL FÄLLER VARJE FLÖDE SOM COMMITTAR TILLBAKA — och sex källvakter har
+- [x] 🧱 **#161 EN CRLF-FIL FÄLLER VARJE FLÖDE SOM COMMITTAR TILLBAKA — ✅ KLART 18/9 — och sex källvakter har
   aldrig sparat sitt state** (fynd + rotorsak i kvällsavläsningen 14/9).
   **SYMTOM:** `trv-bevakning` och `marknadsforing` faller i sitt commit-steg med
   `error: cannot pull with rebase: You have unstaged changes.` — EFTER att deras egen commit gått
@@ -1084,6 +1084,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **(a) BEVISAT (upptäckt 18/9):** `ingest/trv-nyheter-state.json` bär 13 källor sedan den manuella körningen
   16/9 02:44 (commit 1284e82). **(b) ej gjort:** `marknadsforing.yml` och `trv-bevakning.yml` gör fortfarande naken
   `git pull --rebase` utan `--autostash` och utan `git status --porcelain` i fel-grenen — frågan i bedömningen §4.2.
+  ✅ **(b) KLART 18/9 (Bengts "kör S7", DECISIONS #239, PR #351):** båda flödena gör `git pull --rebase --autostash` och
+  skriver ut `git status --porcelain` när de faller. Provat lokalt: gamla raden exit 128 på en smutsig fil, nya raden
+  pushar, fel-grenen skriver ut filnamnet. Första skarpa körningen: marknadsföringen 19/9 04:45Z.
 - [ ] 🕳️ **#154 STEG C:s REGNFÄLT NÅR INTE DE SEGMENT VATTENPLANINGEN SITTER PÅ** (fynd i
   kvällsavläsningen 13/9, oprövat av mig i kod — lämnas till den som äger steg C).
   `publish/snapshot-core.ts` sätter `regn` på raderna ur väglagsfrågan, och den frågan hämtar bara
