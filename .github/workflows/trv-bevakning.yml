@@ -4,8 +4,8 @@
 # Öppna API:ets egna utskick täcks av Bengts medlemskap i Google-gruppen (mejl).
 name: trv-bevakning
 on:
-  schedule:
-    - cron: "40 6 * * 1"   # måndagar, efter grind-a/smhi/radar — hela vinterserien i följd
+  # Startas av pulsklockan (Supabase pg_cron, puls-trv-bevakning "40 6 * * 1" UTC) — kort #160: GitHub-cronen kom
+  # 5–7 h sent 14/9 och levererade 40 % i #70. Tiden: måndagar, efter grind-a/smhi/radar — hela vinterserien i följd
   workflow_dispatch:
     inputs:
       testlarm:

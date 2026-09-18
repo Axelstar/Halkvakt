@@ -4,8 +4,8 @@
 # klarar V-A1/V-A2 är svaret. Självtest med känd sanning före den skarpa körningen.
 name: grind-v-a
 on:
-  schedule:
-    - cron: "20 7 * * 1"   # måndagar, sist i mätserien (efter hojd-prov 07:00)
+  # Startas av pulsklockan (Supabase pg_cron, puls-grind-v-a "20 7 * * 1" UTC) — kort #160: GitHub-cronen kom
+  # 5–7 h sent 14/9 och levererade 40 % i #70. Tiden: måndagar, sist i mätserien (efter hojd-prov 07:00)
   workflow_dispatch:
     inputs:
       dagar:
