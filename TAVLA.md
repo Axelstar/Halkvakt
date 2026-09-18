@@ -879,10 +879,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   frysta filerna; v05:s kamera B och v23 byggdes för hand med 111 000 m per grad och återskapas så (`n9`). Generatorn
   skriver bara när innehållet ändrats (arton filer saknar radslut sist, v19 har `4.0`). Bevis: fullkörning ⇒ 24
   oförändrade, 0 skrivna, `git status engine/vectors/` tom; motprov v18 2,5 → 2,6 ⇒ SKRIVEN; `npm test` 109/0.
-- [ ] 🧬 **#202 VEKTORGENERATORN I CI — fäll när `engine/vectors/` och generatorn glider isär** (fynd 18/9 under #195,
+- [x] 🧬 **#202 VEKTORGENERATORN I CI — fäll när `engine/vectors/` och generatorn glider isär — ✅ KLART 18/9** (fynd 18/9 under #195,
   DECISIONS #234). Generatorn gled isär tre gånger (31/8, 2/9, 13/9) för att vektorfiler skrevs om för hand, och ingen
   vakt såg det. ÅTGÄRD: ett steg i `ci.yml` som kör `engine/gen-vectors.ts` och fäller om `git status engine/vectors/`
   inte är tom. Kostar någon sekund per CI-körning. Bevis: ett mutationsprov (en vektorfil ändrad för hand) ⇒ CI röd.
+  ✅ **KLART 18/9 (Bengts "kör", DECISIONS #235):** steget i `ci.yml` + generatorn fäller på vektorfil utan scenario.
+  Bevis i riktig CI: provcommiten på PR #341 (v22 handändrad) ⇒ körning 35305862118 röd i steget *Vektorgeneratorn
+  återskapar engine/vectors/ (#202)*; återställd ⇒ grön. Lokalt fyra fall (rent, handändrad, utan scenario, ändrat scenario).
 - [ ] 🌡️ **#192 S1 — EFTERHALKANS INDATA I SKUGGLOGGEN** (Bengts "bygg S1 nu" 16/9, Axels grind #196, DECISIONS #198).
   Kolumn `efterhalka` (sql/021): N4:s råa fält per station i korridoren + om motorn larmade. Inget villkor — S2 sätter
   det. Skuggrapporten får `efterhalka`. VÄNTAR: migration 021 + deploy; bevis med innehåll kräver första kalla natten.

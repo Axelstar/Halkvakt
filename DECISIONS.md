@@ -6770,3 +6770,23 @@ mätt, i stället för att skrivas för hand. Det var just handskrivningen som f
 **Kvar, nytt kort #202:** ett CI-steg som kör generatorn och fäller om `engine/vectors/` ändras. Utan det glider
 generatorn isär vid nästa handändring, som den gjort tre gånger.
 
+## #235 (18/9 2026) Kort #202: vektorgeneratorn i CI
+
+**Bengts order 18/9:** *"kör #202 också"*.
+
+**Skälet:** generatorn gled isär från vektorfilerna tre gånger (31/8, 2/9, 13/9), och ingen vakt såg det. Det upptäcktes
+16/9, och hela omfånget först 18/9 (#234).
+
+**Byggt:** ett steg i `ci.yml` kör `engine/gen-vectors.ts` och fäller om `engine/vectors/` ändras. Generatorn skriver
+bara filer vars innehåll ändrats (#234), så steget är tyst när allt stämmer. En vektorfil utan scenario syns inte i
+`git status`, så generatorn fäller själv på det när den körs utan filnamn.
+
+**Bevis:**
+- Lokalt, mot incheckad kod: rent läge grönt; handändrad vektorfil rött; vektorfil utan scenario rött (generatorns
+  eget fel); scenario ändrat utan ny vektorfil rött; rent igen grönt.
+- **I riktig CI:** provcommiten på PR #341 (v22 handändrad) gav röd körning 35305862118, fälld i steget *Vektorgeneratorn
+  återskapar engine/vectors/ (#202)* med felmeddelandet om glidning. Återställd i nästa commit ⇒ grön. Squash-merge, så
+  provet nådde aldrig main.
+
+**Kostnad:** någon sekund per CI-körning.
+
