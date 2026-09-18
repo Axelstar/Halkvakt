@@ -275,6 +275,10 @@ i samma commit när de överlappar.
   jämförelsen mot tröskeln. Och bygg en jämförelse som kör båda sidorna över samma fönster —
   kontraktsgrinden vaktar att kopiorna bär samma TAL, men bara en jämförelse vaktar att de fattar
   samma BESLUT.
+- Ett byggnummer som sätts FÖRE den sista ändringen bevisar inte vilket bygge som är ute. 16/9 sattes iOS 0.3.7 (10) kl.
+  13:45 och facitknapparna (`FacitRow`) kom 13:53 med samma nummer; bygget i TestFlight saknade knapparna, och två
+  provkörningar gick åt innan det syntes (18/9, DECISIONS #240). Regel: byggnumret höjs i samma commit som den sista
+  ändringen före ett bygge — eller efter den, aldrig före — och uppmaningen "arkivera nu" nämner commit-hashen.
 - En kontaktuppgift — e-postadress, telefonnummer, formulär — som ges till Bengt eller Axel ska vara LÄST på
   källsidan, inte tagen ur en automatisk sammanfattning (WebFetch). 17/9 fick Bengt `datex@trafikverket.se`, som
   sammanfattningen av trafficdata.se hittade på: katalogposten har inga kontaktfält och Trafikverket ingen sådan

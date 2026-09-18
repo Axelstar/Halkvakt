@@ -6895,3 +6895,31 @@ S7:s andra led, trv-bevakningens 13 källor, visade sig redan bevisat 16/9 02:44
 **Kvar av S7:** ett larm för förarfacit när betan går i november — i dag en rad utan dom, eftersom tabellen ska vara tom
 till dess.
 
+## #240 (18/9 2026) Fälttest 2: bygget 0.3.7 (10) i TestFlight saknar facitknapparna — main bumpad till 0.3.8 (11)
+
+**Bengt 18/9:** passerade en fartkamera (appen varnade), men kunde inte svara — bara brytaren *Svara på varningarna*
+gick att nå, som 16/9. Han har 0.3.7 (10) från TestFlight. (Claude antog först 0.3.6 — fel, rättat samma dag i PR #355.)
+
+**Bevisen:**
+- Skärmbild 09:40: *Redo.* med vakten avslutad, raden *Senaste tur · 18 Sep 08:25, 61 min, vaknade själv* — inga knappar.
+- Skärmbild 09:46: brytaren *Svara på varningarna* PÅ.
+- Kodens villkor för knapparna (`VaktenView`): brytaren på + senast sagd varning med text, id och klockslag. Varningar sägs
+  bara på ett ställe (`GuardManager`), och där sparas alla tre först; id-lagringen finns sedan 0.3.6 (0239f03).
+- `driver_facit` 07:37Z: bara de två provraderna från 16/9.
+
+**Trolig orsak:** versionsnumret 0.3.7 (10) sattes i #300 kl. 13:45 16/9, och rättelsen `FacitRow` kom i #301 kl. 13:53 med
+SAMMA nummer. Ett bygge från koden däremellan — eller från en äldre kopia — har rätt nummer men inga knappar. Axel kan
+bekräfta med arkivets tid i Xcode Organizer.
+
+**Åtgärd:** main bumpad till **0.3.8 (11)** (App Store tar inte samma byggnummer två gånger, och ett nytt nummer syns för
+testarna i TestFlight). Axel: `git pull`, `xcodegen generate`, Product → Archive, TestFlight. Kontrollen före
+"arkivera nu" körs på bumpen (ios-engine, ci; android oförändrad sedan sin gröna körning).
+
+**Förslag till samma bygge eller nästa (S4:s utformning är Axels):** (1) visa bygget i appen — version och commit under
+Inställningar/Om — då hade orsaken synts på en skärmbild; (2) visa varningens text ovanför knapparna — när det finns en
+*Senaste tur* döljer hemskärmen *Senast sagt*; (3) brytarens text säger var knapparna finns; (4) knapparna även i körläget
+när bilen står stilla — i dag syns de först när vakten är avslutad, och självstoppet kommer efter 15 min.
+
+**Läxa (CLAUDE.md):** ett byggnummer som sätts före den sista ändringen bevisar inte vilket bygge som är ute — 0.3.7 (10)
+fanns i två varianter i åtta minuter, och det räckte.
+
