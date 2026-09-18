@@ -6870,3 +6870,28 @@ när den förra var full. Räkningen är oförändrad — dygnssummorna sorteras
 **Kvar att veta:** vakthunden tar fortfarande cirka 70 s i kassavaktens timme. Kassavakten är nu några sekunder; resten
 är de andra kontrollerna. Marginalen till 120 s är cirka 50 s.
 
+## #239 (18/9 2026) S7: kamerafacit får en vakt, och flödena som committar tillbaka får --autostash (kort #161 b)
+
+**Bengts order 18/9:** *"kör S7"*.
+
+**Läget före:** kamerafacit — bilderna som ska döma betan i mars — flödade (31 · 97 · 107 · 27 bilder 15–18/9, skuggan
+103–137 larm per dygn), men ingen vakt såg efter det, och bucketen stod tom i 16 dygn en gång utan att någon märkte det.
+S7:s andra led, trv-bevakningens 13 källor, visade sig redan bevisat 16/9 02:44 (commit 1284e82) och ströks.
+
+**Byggt (PR #351):**
+- **Kamerafacit-vakten** i vakthundens 6b: larm i mätvaktens issue när skuggan gett minst 10 svenska larm de senaste
+  12 h men bucketen `facit` inte fått en bild — korskontroll som radarns, så ett lugnt dygn inte larmar. Raden *källor*
+  visar kamerafacits ålder och skuggans larm. Prov: `?facitprov=1` (dbknapp `facitprov`, i skriptet och i flödets lista).
+- **Kort #161 (b):** `marknadsforing.yml` och `trv-bevakning.yml` gör `git pull --rebase --autostash` och skriver ut
+  `git status --porcelain` när de faller, som läxan i CLAUDE.md kräver sedan 14/9.
+
+**Bevis:**
+- Vakthunden deployad 05:37Z från main (lokal fil identisk). `facitprov` 05:39Z: raden *kamerafacit 99.0 h (skuggans
+  svenska larm 12 h: 68)* och issue #352 med *KÄLLA · kamerafacit … PROV*. Nästa timkörning ska stänga det.
+- --autostash provat lokalt i två tillfälliga repon: gamla raden föll på en smutsig fil med *"Please commit or stash
+  them"* (exit 128) — felet från 14/9; nya raden pushade (autostash lagd undan och tillbakalagd, exit 0); fel-grenen
+  skrev ut ` M gradlew.bat` och gav exit 1. Första skarpa körningen med nya raden: marknadsföringen 19/9 04:45Z.
+
+**Kvar av S7:** ett larm för förarfacit när betan går i november — i dag en rad utan dom, eftersom tabellen ska vara tom
+till dess.
+
