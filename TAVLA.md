@@ -381,6 +381,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   knapparna finns. `driver_facit` 07:37Z: 0 riktiga svar. VÄNTAR: Bengts skärmbild av *Redo.* med vakten avslutad
   (bedömningen §4.2). Obs: versionen 0.3.7 (10) sattes i #300, en commit före `FacitRow` (#301) — byggdes det från #300
   saknas rättelsen trots rätt versionsnummer.
+  🎯 **ORSAKEN 18/9 (DECISIONS #240):** Bengts skärmbilder — brytaren PÅ, kameran varnade, *Redo.* med vakten avslutad och
+  inga knappar. Varningen sparas alltid innan den sägs, id-lagringen finns sedan 0.3.6 ⇒ bygget 0.3.7 (10) saknar
+  `FacitRow`. **Main bär 0.3.8 (11). AXEL: `git pull` · `xcodegen generate` · Product → Archive · TestFlight.** Bekräfta
+  gärna arkivets tid i Organizer (13:45–13:53 16/9 bekräftar orsaken). Förslagen till bygget står i bedömningen §4.2.
 
 ### Axel — hösten (brainstorm 31/8)
 - [x] ⛔ **#92 Däcktyp och fordonstyp — STÄNGT 12/9, dokumenterat nej** (Bengts order när §2.5 togs ur
