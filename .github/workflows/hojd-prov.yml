@@ -3,8 +3,8 @@
 # känd fysik FÖRE den skarpa körningen, resultatet på Summary-sidan (grind-a-mönstret).
 name: hojd-prov
 on:
-  schedule:
-    - cron: "0 7 * * 1"   # måndagar, sist i mätserien (grind-a 05:40 · smhi 06:00 · v3 06:20 · trv 06:40)
+  # Startas av pulsklockan (Supabase pg_cron, puls-hojd-prov "0 7 * * 1" UTC) — kort #160: GitHub-cronen kom
+  # 5–7 h sent 14/9 och levererade 40 % i #70. Tiden: måndagar, sist i mätserien (grind-a 05:40 · smhi 06:00 · v3 06:20 · trv 06:40)
   workflow_dispatch:
     inputs:
       dagar:

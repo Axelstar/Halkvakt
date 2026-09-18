@@ -4,8 +4,8 @@
 # provet upprepas på vinterdata och värderas i tröskeldokumentet.
 name: smhi-prov
 on:
-  schedule:
-    - cron: "0 6 * * 1"   # måndagar, 20 min efter grind-a — båda vinterkurvorna växer ihop
+  # Startas av pulsklockan (Supabase pg_cron, puls-smhi-prov "0 6 * * 1" UTC) — kort #160: GitHub-cronen kom
+  # 5–7 h sent 14/9 och levererade 40 % i #70. Tiden: måndagar, 20 min efter grind-a — båda vinterkurvorna växer ihop
   workflow_dispatch:
     inputs:
       dagar:

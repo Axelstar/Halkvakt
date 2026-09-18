@@ -13,8 +13,8 @@
 # också ett svar, och den kostar lika mycket som en tom körning gjort.
 name: grind-v-b
 on:
-  schedule:
-    - cron: "40 7 * * 1"   # måndagar, sist i mätserien (efter grind-v-a 07:20)
+  # Startas av pulsklockan (Supabase pg_cron, puls-grind-v-b "40 7 * * 1" UTC) — kort #160: GitHub-cronen kom
+  # 5–7 h sent 14/9 och levererade 40 % i #70. Tiden: måndagar, sist i mätserien (efter grind-v-a 07:20)
   workflow_dispatch:
     inputs:
       dagar:

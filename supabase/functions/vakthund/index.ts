@@ -274,10 +274,14 @@ Deno.serve(async (req) => {
   //    GitHub-cronen helt enkelt INTE LEVERERAR — #70 mätte att den levererade 40 % av bokad takt.
   //    Då finns ingen körning att sätta en flagga på, och bara ålderskontrollen ser det.
   //
-  //    SCHEMAT LÄSES UR REPOT, inte ur en lista här. En hårdkodad lista hade blivit inaktuell i
-  //    tysthet — exakt det fel vakten finns för att fånga. Ett nytt schemalagt flöde bevakas
-  //    därför automatiskt från första timmen.
+  //    SCHEMAT LÄSES DÄR DET BOR, inte ur en lista här: flödenas cron-rader OCH pulsklockans jobb i
+  //    pg_cron (kort #160, 18/9). När #200 flyttade marknadsföringen till pulsklockan försvann dess
+  //    cron-rad och vakten slutade bevaka den utan ett ord; ingest och grannar hade aldrig bevakats av
+  //    samma skäl. Ett nytt schemalagt flöde bevakas därför från första timmen, var schemat än står.
+  //    FRISTEN ÄR FAST, kadens + 3 h (kort #160 b): med × 1,5 fick ett veckojobb 10,5 dygn innan en
+  //    utebliven måndag syntes — ju sällsyntare mätningen, desto viktigare är varje körning.
   const MATVAKT = "<!-- matvakt -->";
+  const MATVAKT_FRIST_H = 3;
   try {
     const wfs = ((await gh(`/actions/workflows?per_page=100`)).workflows ?? [])
       .filter((w: any) => w.state === "active");
@@ -287,9 +291,15 @@ Deno.serve(async (req) => {
       gh(`/contents/${w.path}`)
         .then((f: any) => ({ w, yaml: atob(String(f.content).replace(/\n/g, "")) }))
         .catch(() => ({ w, yaml: "" }))));
+    const puls = await sql`SELECT schedule, substring(command from 'workflows/([A-Za-z0-9._-]+)/dispatches') AS fil
+      FROM cron.job WHERE jobname LIKE 'puls-%' AND active`;
     const schemalagda = filer
-      .map(({ w, yaml }) => ({ w, crons: [...yaml.matchAll(/^\s*-\s*cron:\s*["']([^"']+)["']/gm)].map((m) => m[1]) }))
+      .map(({ w, yaml }) => ({ w, crons: [
+        ...[...yaml.matchAll(/^\s*-\s*cron:\s*["']([^"']+)["']/gm)].map((m) => m[1]),
+        ...puls.filter((p) => String(w.path).endsWith(`/${p.fil}`)).map((p) => String(p.schedule)),
+      ] }))
       .filter((x) => x.crons.length);
+    const viaPuls = schemalagda.filter(({ w }) => puls.some((p) => String(w.path).endsWith(`/${p.fil}`))).length;
     const lagen = await Promise.all(schemalagda.map(async ({ w, crons }) => {
       const timmar = Math.min(...crons.map(kadensTimmar).filter((t): t is number => t !== null));
       const r = ((await gh(`/actions/workflows/${w.id}/runs?per_page=1`)).workflow_runs ?? [])[0];
@@ -302,12 +312,12 @@ Deno.serve(async (req) => {
       const alderH = (Date.now() - new Date(r.created_at).getTime()) / 3600000;
       if (r.conclusion && r.conclusion !== "success" && r.conclusion !== "skipped")
         sena.push(`**${namn}**: senaste körningen ${r.conclusion} (${String(r.created_at).slice(0, 16)})`);
-      else if (alderH > timmar * 1.5)
-        sena.push(`**${namn}**: ${alderH.toFixed(0)} h sedan senaste körning, kadens ${timmar} h`);
+      else if (alderH > timmar + MATVAKT_FRIST_H)
+        sena.push(`**${namn}**: ${alderH.toFixed(0)} h sedan senaste körning, kadens ${timmar} h (frist ${MATVAKT_FRIST_H} h)`);
     }
     if (new URL(req.url).searchParams.get("matvaktprov") === "1")
       sena.push("**PROV** — påhittad rad för att bevisa mätvaktens larmväg. Försvinner vid nästa gröna körning.");
-    rad.push(`mätvakten: ${schemalagda.length} schemalagda flöden, ${sena.length} med problem`);
+    rad.push(`mätvakten: ${schemalagda.length} schemalagda flöden (${viaPuls} via pulsklockan), ${sena.length} med problem`);
 
     // 6b. VÄXER KÄLLORNA? (kort #106, källkollen 12/9.) Tre tabeller bär varje dom vi ska
     //     fälla i vinter och ingen av dem hade en vakt: radarn är vattenplaningens enda
@@ -776,12 +786,29 @@ Deno.serve(async (req) => {
       headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" } });
     await svar.text();   // kroppen används inte, men lämnas inte oläst
     const pat = (svar.headers.get("github-authentication-token-expiration") ?? "").match(/^\d{4}-\d{2}-\d{2}/)?.[0] ?? null;
+    // Pulsklockans nyckel (kort #160, 18/9): pulsjobben i pg_cron bär en GitHub-nyckel i sina kommandon —
+    // rotationens fjärde ställe, som kort #86 inte räknade. Den läses i databasen och används bara för att fråga
+    // GitHub om sin utgång; den skrivs aldrig ut. Flera olika nycklar i pulsjobben är ett larm: då har ett byte
+    // bara nått en del av dem. Byts med pulsklocka.yml i läget nyckel.
+    const pn = await sql`SELECT DISTINCT substring(command from '(?:Bearer|token) +([A-Za-z0-9_]+)') AS n
+      FROM cron.job WHERE jobname LIKE 'puls-%'`;
+    let pulsDatum: string | null = null;
+    if (pn.length === 1 && pn[0].n) {
+      const ps = await fetch(`https://api.github.com/repos/${REPO}`, {
+        headers: { Authorization: `Bearer ${pn[0].n}`, Accept: "application/vnd.github+json" } });
+      await ps.text();
+      pulsDatum = (ps.headers.get("github-authentication-token-expiration") ?? "").match(/^\d{4}-\d{2}-\d{2}/)?.[0] ?? null;
+    }
+    rad.push(`nyckel pulsklockan: ${pn.length} olika i pulsjobben · samma som PAT: ${pn.length === 1 && pn[0].n === token ? "ja" : "nej"}`);
     const nycklar = [
       { namn: "PAT (publicera + vakthundens larmväg)", datum: pat },
+      { namn: "Pulsklockans nyckel (pg_cron)", datum: pulsDatum },
       { namn: "Supabase-token (deploy-knappen)", datum: SUPABASE_TOKEN_UTGAR },
     ];
     const sena: string[] = [];
     const rader: string[] = [];
+    if (pn.length !== 1)
+      sena.push(`- ❌ **Pulsjobben bär ${pn.length} olika nycklar** — ett byte har bara nått en del av dem. Kör pulsklocka.yml i läget nyckel.`);
     for (const n of nycklar) {
       if (!n.datum) { rad.push(`nyckel ${n.namn}: utgång okänd (inget svarshuvud)`); rader.push(`- ${n.namn}: GitHub gav inget utgångsdatum — läs det i Settings`); continue; }
       const dygn = Math.floor((new Date(n.datum).getTime() - Date.now()) / 86_400_000);
@@ -794,7 +821,8 @@ Deno.serve(async (req) => {
     if (nyckelprov || nuN.getUTCHours() === 6) {
       const nKropp = `<!-- nyckelkalender -->\n**Nyckelkalendern ${nuN.toISOString()}**\n\n` +
         (sena.length ? sena.join("\n") : "- ✅ ingen nyckel inom varsel") + `\n\n${rader.join("\n")}\n\n` +
-        `Varsel ${NYCKEL_VARSEL_DYGN} dygn. PAT:ens datum läses ur GitHubs svarshuvud vid varje körning; Supabase-tokenens står i vakthundens kod (kort #86).`;
+        `Varsel ${NYCKEL_VARSEL_DYGN} dygn. PAT:ens och pulsnyckelns datum läses ur GitHubs svarshuvud vid varje körning; Supabase-tokenens står i vakthundens kod (kort #86). ` +
+        `Pulsjobben får en ny nyckel med pulsklocka.yml i läget nyckel, efter att PUBLISH_TOKEN bytts i GitHub Secrets.`;
       const minN = await enOppen("nyckelkalender", "<!-- nyckelkalender -->", rad);
       if (sena.length) {
         if (minN) await gh(`/issues/${minN.number}/comments`, "POST", { body: nKropp });

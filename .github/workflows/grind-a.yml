@@ -1,7 +1,7 @@
 name: grind-a
 on:
-  schedule:
-    - cron: "40 5 * * 1"   # måndagar — underlaget växer med vintern
+  # Startas av pulsklockan (Supabase pg_cron, puls-grind-a "40 5 * * 1" UTC) — kort #160: GitHub-cronen kom
+  # 5–7 h sent 14/9 och levererade 40 % i #70. Tiden: måndagar — underlaget växer med vintern
   workflow_dispatch:
 jobs:
   test:

@@ -13,8 +13,12 @@
 // --inventering: visar cron-jobben maskerat (jobid, namn, schema, vilken workflow-fil
 //   kommandot pekar på, om Authorization-header finns) — formatet bevisas före bygget.
 // skarpt: skapar/uppdaterar pulsjobben i NYA ur mallen och läser tillbaka som bevis.
+// --nyckel (kort #86/#160, Bengt 18/9): byter nyckeln i ALLA pulsjobb mot NY_NYCKEL (GitHub-hemligheten
+//   PUBLISH_TOKEN) — rotationens fjärde ställe som en knapp i stället för SQL för hand. Provar först att den nya
+//   nyckeln får starta ett flöde, skriver den sedan och läser tillbaka fingeravtrycken. Nyckeln går som parameter
+//   in i SQL:en och skrivs aldrig ut; bara åtta tecken av dess md5 syns.
 //
-// Run: DATABASE_URL=... node --experimental-strip-types scripts/pulsklocka.ts [--inventering]
+// Run: DATABASE_URL=... node --experimental-strip-types scripts/pulsklocka.ts [--inventering | --nyckel]
 
 const NYA: { namn: string; schema: string; fil: string }[] = [
   // Kort #53: FI+DK+NO i ETT jobb. EN gång i timmen (Bengt + Axel 8/9, DECISIONS #82:s
@@ -35,6 +39,15 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
   // Kort #200 (Bengt + Axel 17/9, DECISIONS #226): marknadsföringens morgonutkast ska nå pendlingen. GitHub-cronen
   // var bokad 04:45 UTC men levererade 08:49–10:07 (10–16/9). ~20 s per körning.
   { namn: "puls-marknadsforing", schema: "45 4 * * *", fil: "marknadsforing.yml" },
+  // Kort #160 (Bengt 18/9): måndagsseriens sju mätningar, 20 min isär eftersom de bygger på varandra. GitHub-cronen
+  // levererade dem 5–7 h sent 14/9 och 40 % av bokad takt i #70; pulsklockan ligger på sekunden.
+  { namn: "puls-grind-a", schema: "40 5 * * 1", fil: "grind-a.yml" },
+  { namn: "puls-smhi-prov", schema: "0 6 * * 1", fil: "smhi-prov.yml" },
+  { namn: "puls-cell-matning-v3", schema: "20 6 * * 1", fil: "cell-matning-v3.yml" },
+  { namn: "puls-trv-bevakning", schema: "40 6 * * 1", fil: "trv-bevakning.yml" },
+  { namn: "puls-hojd-prov", schema: "0 7 * * 1", fil: "hojd-prov.yml" },
+  { namn: "puls-grind-v-a", schema: "20 7 * * 1", fil: "grind-v-a.yml" },
+  { namn: "puls-grind-v-b", schema: "40 7 * * 1", fil: "grind-v-b.yml" },
 ];
 
 // AVVECKLAS (kort #53): de tre grannjobben ersätts av ett. Utan borttagning skulle de
@@ -50,6 +63,7 @@ const AVVECKLA: string[] = ["puls-ingest-fi", "puls-ingest-dk", "puls-ingest-no"
 // bevisar det innan något kopieras. Byt mall INNAN dess föregångare avvecklas, aldrig efter.
 const MALLFIL = "ingest-grannar.yml";
 const INVENTERING = process.argv.includes("--inventering");
+const NYCKEL = process.argv.includes("--nyckel");
 
 const url = process.env.DATABASE_URL;
 if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
@@ -75,6 +89,42 @@ if (!mall) {
 }
 console.log(`\nMall: jobb #${mall.jobid} (${mall.jobname}) → ${MALLFIL}, token=${mall.har_token}`);
 if (!mall.har_token) { console.error("MALLVAKT: malljobbet saknar Authorization — fel jobb, avbryter."); await pool.end(); process.exit(1); }
+
+if (NYCKEL) {
+  const ny = process.env.NY_NYCKEL ?? "";
+  if (!/^[A-Za-z0-9_]{20,}$/.test(ny)) { console.error("NYCKELVAKT: NY_NYCKEL saknas eller har fel form — inget bytt."); await pool.end(); process.exit(1); }
+  const AVTRYCK = `left(md5(substring(command from '(?:Bearer|token) +([A-Za-z0-9_]+)')), 8)`;
+  const lasAvtryck = async () =>
+    (await pool.query(`SELECT jobname, ${AVTRYCK} AS avtryck FROM cron.job WHERE jobname LIKE 'puls-%' ORDER BY jobname`)).rows;
+  const nytt = (await pool.query(`SELECT left(md5($1), 8) AS a`, [ny])).rows[0].a;
+  const fore = await lasAvtryck();
+  console.log(`\nNyckelbyte — ${fore.length} pulsjobb, ny nyckel ${nytt}:`);
+  for (const r of fore) console.log(`  ${String(r.jobname).padEnd(22)} ${r.avtryck}${r.avtryck === nytt ? " (redan den nya)" : ""}`);
+  // Prov FÖRE bytet: får den nya nyckeln starta ett flöde? Inventeringsläget läser bara. Utan det provet kunde
+  // en nyckel utan Actions-behörighet tysta ingest, grannar och healthcheck i samma ögonblick.
+  const prov = await fetch("https://api.github.com/repos/Axelstar/Halkvakt/actions/workflows/pulsklocka.yml/dispatches", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${ny}`, Accept: "application/vnd.github+json", "User-Agent": "halkvakt-pulsklocka" },
+    body: JSON.stringify({ ref: "main", inputs: { lage: "inventering" } }),
+  });
+  if (prov.status !== 204) {
+    console.error(`NYCKELVAKT: den nya nyckeln fick inte starta ett flöde (HTTP ${prov.status}) — inget bytt.`);
+    await pool.end(); process.exit(1);
+  }
+  console.log("Prov: den nya nyckeln startade pulsklocka.yml i inventeringsläget (HTTP 204).");
+  await pool.query(`SELECT cron.alter_job(jobid, command := regexp_replace(command, '(Bearer|token) +[A-Za-z0-9_]+', 'Bearer ' || $1))
+    FROM cron.job WHERE jobname LIKE 'puls-%'`, [ny]);
+  const efter = await lasAvtryck();
+  let ok = efter.length === fore.length;
+  for (const r of efter) {
+    console.log(`  ${r.avtryck === nytt ? "OK " : "FEL"} ${r.jobname}: ${r.avtryck}`);
+    if (r.avtryck !== nytt) ok = false;
+  }
+  await pool.end();
+  if (!ok) { console.error("BEVISVAKT: minst ett pulsjobb bär inte den nya nyckeln."); process.exit(1); }
+  console.log(`\nAlla ${efter.length} pulsjobb bär nyckeln ${nytt}. Bytt är den först när nästa pulskörning startat med den (kort #86).`);
+  process.exit(0);
+}
 
 if (INVENTERING) {
   console.log(`\nINVENTERING — inget skrivet. Skulle skapa:`);

@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       lage:
-        description: "inventering (läser, maskerat) eller skarp"
+        description: "inventering (läser, maskerat), skarp, eller nyckel (byter pulsjobbens nyckel mot PUBLISH_TOKEN)"
         default: "inventering"
 jobs:
   pulsklocka:
@@ -24,8 +24,14 @@ jobs:
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           if [ "${{ inputs.lage || 'inventering' }}" = "skarp" ]; then
             node --experimental-strip-types scripts/pulsklocka.ts | tee -a "$GITHUB_STEP_SUMMARY"
+          elif [ "${{ inputs.lage }}" = "nyckel" ]; then
+            node --experimental-strip-types scripts/pulsklocka.ts --nyckel | tee -a "$GITHUB_STEP_SUMMARY"
           else
             node --experimental-strip-types scripts/pulsklocka.ts --inventering | tee -a "$GITHUB_STEP_SUMMARY"
           fi
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        env:
+          DATABASE_URL: "${{ secrets.DATABASE_URL }}"
+          # Bara i läget nyckel (kort #86/#160): rotationens fjärde ställe. Axel byter PUBLISH_TOKEN i GitHub Secrets
+          # och trycker pulsklocka.yml med lage=nyckel — nyckeln når då alla pulsjobb utan SQL för hand.
+          NY_NYCKEL: "${{ inputs.lage == 'nyckel' && secrets.PUBLISH_TOKEN || '' }}"

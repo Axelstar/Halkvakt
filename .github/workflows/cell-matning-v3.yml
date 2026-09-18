@@ -3,8 +3,8 @@
 # Byggd som kedjebevis före domen — domen kräver ~7 dygns radardata och fälls i eget varv.
 name: cell-matning-v3
 on:
-  schedule:
-    - cron: "20 6 * * 1"  # måndagar, efter grind-a 05:40 och smhi-prov 06:00 — mätkurvorna landar i följd
+  # Startas av pulsklockan (Supabase pg_cron, puls-cell-matning-v3 "20 6 * * 1" UTC) — kort #160: GitHub-cronen kom
+  # 5–7 h sent 14/9 och levererade 40 % i #70. Tiden: måndagar, efter grind-a 05:40 och smhi-prov 06:00 — mätkurvorna landar i följd
   workflow_dispatch:
     inputs:
       dagar:
