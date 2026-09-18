@@ -9,7 +9,7 @@
 //   4. test/engine.test.ts locks the frozen logs + independent invariants forever.
 // Regenerate only on a deliberate spec change: node --experimental-strip-types engine/gen-vectors.ts
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { AlertEngine } from "./src/engine.ts";
 import type { Fix, Hazard } from "./src/types.ts";
 
@@ -338,5 +338,15 @@ for (const s of scenarios) {
   if (alerts.length === 0) console.log("  (tystnad)");
   for (const a of alerts) {
     console.log(`  t=${a.t}s  ${a.kind}  ${a.distanceM} m  "${a.text}"`);
+  }
+}
+// Kort #202: en vektorfil utan scenario här (som v18–v23 före #195) syns inte i `git status` efter en fullkörning,
+// så generatorn fäller själv när den körs utan filnamn.
+if (!ONLY) {
+  const kanda = new Set(scenarios.map((s) => `${s.file}.json`));
+  const utan = readdirSync(new URL("./vectors/", import.meta.url)).filter((f) => f.endsWith(".json") && !kanda.has(f));
+  if (utan.length) {
+    console.error(`Vektorfiler utan scenario i generatorn: ${utan.join(", ")} — för in dem i scenarios (kort #202).`);
+    process.exit(1);
   }
 }
