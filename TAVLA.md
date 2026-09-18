@@ -375,10 +375,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🧩 **0.3.7 (10) bär nu även ordlistan** (kort #97, DECISIONS #214, deployad i backend 16/9): ETT bygge från main täcker
   facitknappen och Nysnö/Rimfrost/Halkrisk/Halt. Är 0.3.7 redan uppladdad ⇒ bumpa till 0.3.8 (11).
   🚗 **FÄLTTEST 2, 18/9 (Bengt):** fartkamera passerad — bara brytaren *Svara på varningarna* gick att nå, samma som 16/9.
-  Telefonen har 0.3.6; knapparna finns bara i 0.3.7. **Kontroll före "arkivera nu" (CLAUDE.md):** ios-engine och android
-  gröna på appkoden 8026aa9, ci grön 18/9 05:37Z, inget i `ios/`, `android/`, `engine/src` eller `engine/vectors` ändrat
-  sedan ⇒ **arkivera 0.3.7 (10) och ladda upp nu.** Så svarar man sedan: stanna, öppna fliken Vakten — under "Senast
-  sagt" står Stämde / Stämde inte; raden under blir grön *Skickat …* eller gul med felet.
+  ~~Telefonen har 0.3.6 — arkivera 0.3.7~~ **RÄTTAT samma dag: Bengt har 0.3.7 (10)** — mitt antagande var fel. I 0.3.7 sitter
+  knapparna längst ner på *Redo.* (fliken Vakten) och syns bara när vakten är AVSLUTAD: medan den kör täcker körläget
+  (`fullScreenCover`) allt, och självstoppet kommer först efter 15 min stillastående. Brytarens text säger inte var
+  knapparna finns. `driver_facit` 07:37Z: 0 riktiga svar. VÄNTAR: Bengts skärmbild av *Redo.* med vakten avslutad
+  (bedömningen §4.2). Obs: versionen 0.3.7 (10) sattes i #300, en commit före `FacitRow` (#301) — byggdes det från #300
+  saknas rättelsen trots rätt versionsnummer.
 
 ### Axel — hösten (brainstorm 31/8)
 - [x] ⛔ **#92 Däcktyp och fordonstyp — STÄNGT 12/9, dokumenterat nej** (Bengts order när §2.5 togs ur
