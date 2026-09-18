@@ -520,6 +520,7 @@ Deno.serve(async (req) => {
   const GRATIS_MIN = 2000;     // ingår per månad, nollställs den 1:a
   const LARM_ANDEL = 0.70;     // larma när FAKTISK förbrukning passerat denna andel av taket
   const SIDTAK = 10;           // max 10 sidor à 100 körningar PER DYGN — GitHub paginerar ändå bara till 1 000
+  const KASSA_SAMTIDIGA = 6;   // dygn som hämtas samtidigt (kort #201) — lågt nog för GitHubs gräns för samtidiga anrop
   try {
     const nu = new Date();
     const kassaprov = new URL(req.url).searchParams.get("kassaprov") === "1";
@@ -538,9 +539,14 @@ Deno.serve(async (req) => {
       // Dygnssummorna sparas medan vi ändå går igenom dygnen — den släpande takten nedan
       // kostar därför INGA extra API-anrop.
       const perDag = new Map<string, number>();
-      for (let d = new Date(start); d <= nu; d.setUTCDate(d.getUTCDate() + 1)) {
-        const dag = d.toISOString().slice(0, 10);
-        let dagMin = 0;
+      // DYGNEN HÄMTAS PARALLELLT, KASSA_SAMTIDIGA åt gången (kort #201, 18/9). I följd växte tiden med månaden —
+      // cirka 75 s dag 17 — och vakthunden hann inte svara inom pg_nets 120 s i kassavaktens timmar. Gratisnivån
+      // stoppar funktionen vid 150 s, och det hade drabbat sista septemberveckan, när taket är som trängst.
+      // Sidorna inom ett dygn hämtas fortfarande i följd: nästa sida behövs bara om den förra var full.
+      const dagar: string[] = [];
+      for (let d = new Date(start); d <= nu; d.setUTCDate(d.getUTCDate() + 1)) dagar.push(d.toISOString().slice(0, 10));
+      const raknaDag = async (dag: string) => {
+        let dagMin = 0, dagKorningar = 0, dagAvkortad = false;
         for (let sida = 1; sida <= SIDTAK; sida++) {
           const k = ((await gh(`/actions/runs?per_page=100&page=${sida}&created=${dag}`)).workflow_runs ?? []);
           for (const r of k) {
@@ -548,13 +554,20 @@ Deno.serve(async (req) => {
             if (r.status !== "completed" || !r.run_started_at) continue;
             const sek = (new Date(r.updated_at).getTime() - new Date(r.run_started_at).getTime()) / 1000;
             dagMin += Math.max(1, Math.ceil(sek / 60));
-            korningar++;
+            dagKorningar++;
           }
           if (k.length < 100) break;
-          if (sida === SIDTAK) avkortad = true;   // ett dygn med > 1 000 körningar: säg det
+          if (sida === SIDTAK) dagAvkortad = true;   // ett dygn med > 1 000 körningar: säg det
         }
-        perDag.set(dag, dagMin);
-        minuter += dagMin;
+        return { dag, dagMin, dagKorningar, dagAvkortad };
+      };
+      for (let i = 0; i < dagar.length; i += KASSA_SAMTIDIGA) {
+        for (const x of await Promise.all(dagar.slice(i, i + KASSA_SAMTIDIGA).map(raknaDag))) {
+          perDag.set(x.dag, x.dagMin);
+          minuter += x.dagMin;
+          korningar += x.dagKorningar;
+          if (x.dagAvkortad) avkortad = true;
+        }
       }
       const debiterat = Math.max(0, minuter - GRATIS_MIN);
       const kostnad = debiterat * PRIS_PER_MIN;
