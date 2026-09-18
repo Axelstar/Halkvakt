@@ -48,7 +48,7 @@ try {
     // Vitlistan först, före FRÅGAN: en felstavad flagga ska falla på en rad, inte efter att ha
     // kört något mot databasen. (Rättat 12/9: kommentaren sa tidigare att den därmed gick att
     // prova helt utan DATABASE_URL — det stämmer inte, toppnivåvakten kräver den ändå.)
-    const FLAGGOR: Record<string, string> = { larmprov: "larmprov=1", vinterprov: "vinterprov=1", frostprov: "frostprov=1", matvaktprov: "matvaktprov=1", paminnelseprov: "paminnelseprov=1", kassaprov: "kassaprov=1", databasprov: "databasprov=1", nyckelprov: "nyckelprov=1", sparrprov: "sparrprov=1" };
+    const FLAGGOR: Record<string, string> = { larmprov: "larmprov=1", vinterprov: "vinterprov=1", frostprov: "frostprov=1", matvaktprov: "matvaktprov=1", paminnelseprov: "paminnelseprov=1", kassaprov: "kassaprov=1", databasprov: "databasprov=1", facitprov: "facitprov=1", nyckelprov: "nyckelprov=1", sparrprov: "sparrprov=1" };
     // Vilken funktion provet går till. Vakthunden är standard; spärrprovet (kort #191) går till skuggmotorn.
     const FUNKTION: Record<string, string> = { sparrprov: "skuggmotor" };
     const flagga = FLAGGOR[arg ?? "larmprov"];
@@ -97,6 +97,7 @@ try {
       "paminnelseprov=1": "en issue med etiketten `kallvaktspaminnelse` ska finnas inom en minut, och stängas av nästa timkörning utan prov (#150).",
       "kassaprov=1": "en issue med etiketten `kassavakt` ska finnas inom en minut, och stängas av nästa körning 05/11/17/23 UTC som ligger under gränsen (#152).",
       "nyckelprov=1": "en issue med etiketten `nyckelkalender` ska finnas inom en minut, och stängas av nästa 06 UTC-körning utan prov (kort #86).",
+      "facitprov=1": "mätvaktens issue (etikett `matvakt`) ska få raden KÄLLA · kamerafacit … PROV inom en minut, och stängas av nästa timkörning när bilderna är färska (S7).",
       "sparrprov=1": "svaret ovan ska visa `suppressed` med EN rad — kamera 2 tystad av kamera 1 inom spärrens 10 s (#127; kort #188/#191). Inget skrivs i shadow_log.",
     };
     const fallback = "en issue med etiketten vakthund ska finnas inom en minut, och stängas av nästa gröna timkörning (xx:07).";

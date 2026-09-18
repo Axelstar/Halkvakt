@@ -344,6 +344,15 @@ Deno.serve(async (req) => {
     const [rp] = await sql`SELECT max(observed_at) t FROM radar_precip`;
     const [vatt] = await sql`SELECT count(*)::int AS n FROM weather_observations
       WHERE sample_time > now() - interval '3 hours' AND (rain OR snow OR rain_sum_mm > 0)`;
+    // S7 (Bengt 18/9): KAMERAFACIT — bilderna som ska döma betan i mars (kort #157). Skuggmotorn sparar en bild per
+    // kamera och tretimmarsperiod när ett svenskt larm med position ligger inom 15 km från en kamera. Bucketen stod tom
+    // i sexton dygn utan att någon såg det; därför korskontroll som radarn: larm bara när skuggan haft minst 10 svenska
+    // larm de senaste 12 h men inte en bild kommit in — ett lugnt dygn är inget fel. Prov: ?facitprov=1 låtsas att
+    // senaste bilden är 99 h gammal.
+    const facitprov = new URL(req.url).searchParams.get("facitprov") === "1";
+    const [fc] = await sql`SELECT max(created_at) t FROM storage.objects WHERE bucket_id = 'facit'`;
+    const [sl12] = await sql`SELECT coalesce(sum(n_alerts), 0)::int AS n FROM shadow_log
+      WHERE run_at > now() - interval '12 hours' AND land = 'SE'`;
     // S4 (DECISIONS #201): förarfacit — betatestarnas svar. En rad, ingen dom; tom tills betan går i november.
     // Kort #196 (sql/025): provrader räknas aldrig som svar, men antalet syns; klockslaget skrivs i UTC.
     try {
@@ -374,8 +383,9 @@ Deno.serve(async (req) => {
     const aRc = alderH(rc.t);
     const kallAndel = kallt.alla ? kallt.n / kallt.alla : 0;
     const aSl = alderH(sl.t), aSa = alderH(sa.t), aRp = alderH(rp.t);
+    const aFc = facitprov ? 99 : alderH(fc.t);
     const visa = (a: number | null) => a === null ? "tom" : a < 1 ? `${(a * 60).toFixed(0)} min` : `${a.toFixed(1)} h`;
-    rad.push(`källor: skuggloggen ${visa(aSl)} · olycksarkivet ${visa(aSa)} · radarn ${visa(aRp)} (stationsnederbörd 3 h: ${vatt.n}) · väglaget ${visa(aRc)} (kalla stationer 3 h: ${kallt.n}/${kallt.alla})`);
+    rad.push(`källor: skuggloggen ${visa(aSl)} · olycksarkivet ${visa(aSa)} · radarn ${visa(aRp)} (stationsnederbörd 3 h: ${vatt.n}) · väglaget ${visa(aRc)} (kalla stationer 3 h: ${kallt.n}/${kallt.alla}) · kamerafacit ${visa(aFc)} (skuggans svenska larm 12 h: ${sl12.n})`);
 
     const torra: string[] = [];
     if (aSl === null || aSl > 2)
@@ -384,6 +394,8 @@ Deno.serve(async (req) => {
       torra.push(`**situation_archive** har inte växt på ${visa(aSa)} (~240 rader/dygn normalt) — facit för varenda grind`);
     if ((aRp === null || aRp > 3) && vatt.n > 0)
       torra.push(`**radar_precip** tyst i ${visa(aRp)} MEDAN ${vatt.n} stationsmätningar visat nederbörd de senaste 3 h — radarsteget i ingest.yml kör med continue-on-error och fäller inte jobbet`);
+    if ((aFc === null || aFc > 12) && sl12.n >= 10)
+      torra.push(`**kamerafacit** (bucketen \`facit\`) har inte fått en bild på ${visa(aFc)} MEDAN skuggan gett ${sl12.n} svenska larm de senaste 12 h — bilderna ska döma betan i mars; skuggmotorns svar bär skälen (\`facitSkal\`)${facitprov ? " — PROV, försvinner nästa timme" : ""}`);
     if ((aRc === null || aRc > 48) && kallAndel >= 0.10)
       torra.push(`**road_conditions** står stilla sedan ${visa(aRc)} MEDAN ${kallt.n} av ${kallt.alla} stationer (${(kallAndel * 100).toFixed(0)} %) legat på eller under noll de senaste 3 h — operatören borde klassa om; antingen ingest-live:s roadconditions() eller Trafikverket är tyst (#124)`);
 

@@ -25,7 +25,9 @@ jobs:
           git config user.email "motor@halkvakt.dev"
           git add marknadsforing/utkast marknadsforing/state.json
           git diff --cached --quiet || git commit -m "Halkläget $(date +%F) [skip ci]"
-          git pull --rebase origin main && git push origin main
+          # Läxan 14/9 (kort #161 b): --autostash, och fel-grenen skriver ut vilka filer som är smutsiga —
+          # "You have unstaged changes" säger inte vilken fil, och 14/9 kostade det ett diagnosvarv.
+          git pull --rebase --autostash origin main && git push origin main || { git status --porcelain; exit 1; }
 
       - name: SNÖLARM → ärende per län
         env: { GH_TOKEN: "${{ github.token }}" }
