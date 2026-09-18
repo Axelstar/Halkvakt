@@ -870,10 +870,19 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   klockslag i UTC; skuggrapporten läser `prov=is.false`.
   ✅ **I DRIFT 17/9:** migrationen märkte exakt de två provraderna (id 1 `prov:kam1`, id 3 `cam:prov-ios`) · deploy av vakthund
   och skuggrapport gröna · skuggrapporten `svar_7d` 2 → 0 · vakthundsraden 06:07Z: *förarfacit: 0 svar · 2 prov uteslutna*.
-- [ ] 🧬 **#195 VEKTORGENERATORN I OTAKT MED `engine/vectors/`** (fynd 16/9 under #97, DECISIONS #214). `gen-vectors.ts`
+- [x] 🧬 **#195 VEKTORGENERATORN I OTAKT MED `engine/vectors/` — ✅ KLART 18/9** (fynd 16/9 under #97, DECISIONS #214). `gen-vectors.ts`
   kallar v05 `v05_throttle_45s` (filen heter `v05_throttle_floor_10s`) och saknar v18–v23; en fullkörning skriver en
   spökfil. Nu filnamnsfilter + varning (bara v24 genererades). ÅTGÄRD: för in v18–v23 och rätt v05-namn så att
   generatorn återskapar katalogen. Bevis: fullkörning ⇒ `git status engine/vectors/` tom. Rör inga vektorer.
+  ✅ **KLART 18/9 (Bengts "kör", DECISIONS #234):** driften var större än kortet — en fullkörning ändrade också ELVA
+  befintliga filer (v01–v04, v11–v17: bearing-vändningen 2/9, vägnumret 2/9, #127). Alla 24 scenarier skrivna ur de
+  frysta filerna; v05:s kamera B och v23 byggdes för hand med 111 000 m per grad och återskapas så (`n9`). Generatorn
+  skriver bara när innehållet ändrats (arton filer saknar radslut sist, v19 har `4.0`). Bevis: fullkörning ⇒ 24
+  oförändrade, 0 skrivna, `git status engine/vectors/` tom; motprov v18 2,5 → 2,6 ⇒ SKRIVEN; `npm test` 109/0.
+- [ ] 🧬 **#202 VEKTORGENERATORN I CI — fäll när `engine/vectors/` och generatorn glider isär** (fynd 18/9 under #195,
+  DECISIONS #234). Generatorn gled isär tre gånger (31/8, 2/9, 13/9) för att vektorfiler skrevs om för hand, och ingen
+  vakt såg det. ÅTGÄRD: ett steg i `ci.yml` som kör `engine/gen-vectors.ts` och fäller om `git status engine/vectors/`
+  inte är tom. Kostar någon sekund per CI-körning. Bevis: ett mutationsprov (en vektorfil ändrad för hand) ⇒ CI röd.
 - [ ] 🌡️ **#192 S1 — EFTERHALKANS INDATA I SKUGGLOGGEN** (Bengts "bygg S1 nu" 16/9, Axels grind #196, DECISIONS #198).
   Kolumn `efterhalka` (sql/021): N4:s råa fält per station i korridoren + om motorn larmade. Inget villkor — S2 sätter
   det. Skuggrapporten får `efterhalka`. VÄNTAR: migration 021 + deploy; bevis med innehåll kräver första kalla natten.

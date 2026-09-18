@@ -9,7 +9,7 @@
 //   4. test/engine.test.ts locks the frozen logs + independent invariants forever.
 // Regenerate only on a deliberate spec change: node --experimental-strip-types engine/gen-vectors.ts
 
-import { mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { AlertEngine } from "./src/engine.ts";
 import type { Fix, Hazard } from "./src/types.ts";
 
@@ -28,6 +28,9 @@ function northTrace(seconds: number, kmh: number, startNorthM = 0): Fix[] {
 }
 const northOf = (m: number) => LAT0 + m / M_PER_DEG_LAT;
 const eastOf = (m: number) => LON0 + m / (M_PER_DEG_LAT * Math.cos((LAT0 * Math.PI) / 180));
+// v05:s kamera B och hela v23 byggdes 13/9 för hand med 111 000 m per latitudgrad (v23 med nio decimaler), inte med
+// northOf:s 111 320. De återskapas exakt så: en frusen vektor ändras inte för att generatorn ska se prydligare ut (#195).
+const n9 = (m: number) => +(LAT0 + m / 111_000).toFixed(9);
 
 interface Scenario {
   file: string; name: string; description: string;
@@ -38,38 +41,56 @@ interface Scenario {
 const scenarios: Scenario[] = [
   {
     file: "v01_camera_simple", name: "Kamera rakt fram",
-    description: "80 km/h norrut, kamera 3 km fram (bearing 0 = fotar vår riktning). Exakt EN varning ~500 m före.",
-    hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(3000), bearing: 0 }],
+    description:
+      "80 km/h norrut, kamera 3 km fram (bearing 0 = fotar vår riktning). Exakt EN varning ~500 m före. " +
+      "RIKTNING 2/9: bearing 180 = kameran tittar söderut ⇒ fotar norrgående = vår riktning.",
+    hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(3000), bearing: 180 }],
     trace: northTrace(180, 80),
   },
   {
     file: "v02_camera_behind", name: "Kamera bakom oss",
-    description: "Kameran passerades innan start. Tystnad.",
-    hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(-300), bearing: 0 }],
+    description:
+      "Kameran passerades innan start. Tystnad. Kamerornas bearing vänd 180° 2/9: Trafikverkets värde är " +
+      "riktningen kameran TITTAR, färdriktningen den fotar är motsatt.",
+    hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(-300), bearing: 180 }],
     trace: northTrace(60, 80),
   },
   {
     file: "v03_camera_side", name: "Kamera på annan väg",
-    description: "Kamera 2 km öster om vår väg — utanför korridoren. Tystnad.",
-    hazards: [{ id: "cam1", kind: "camera", lon: eastOf(2000), lat: northOf(1500), bearing: 0 }],
+    description:
+      "Kamera 2 km öster om vår väg — utanför korridoren. Tystnad. Kamerornas bearing vänd 180° 2/9: " +
+      "Trafikverkets värde är riktningen kameran TITTAR, färdriktningen den fotar är motsatt.",
+    hazards: [{ id: "cam1", kind: "camera", lon: eastOf(2000), lat: northOf(1500), bearing: 180 }],
     trace: northTrace(120, 80),
   },
   {
     file: "v04_priority_drop", name: "Prioritet: olycka vinner, kamera SLÄPPS",
-    description: "Olycka 5 km fram + kamera 450 m fram blir kvalificerade samtidigt. Olyckan talar; kameran släpps (köas ej) och hinner passeras under 45 s-fönstret. Halksegment vid 2 km talar när fönstret öppnat.",
+    description:
+      "Olycka 5 km fram + kamera 450 m fram blir kvalificerade samtidigt. Olyckan talar; kameran släpps (köas " +
+      "ej) och hinner passeras under 45 s-fönstret. Halksegment vid 2 km talar när fönstret öppnat. Kamerornas " +
+      "bearing vänd 180° 2/9: Trafikverkets värde är riktningen kameran TITTAR, färdriktningen den fotar är " +
+      "motsatt. UPPDATERAD 13/9 (#127): spärren är nu prioritetsmedveten med 10 s golv. Olyckan talar t=1; " +
+      "kameran (lägre prioritet) tystas i 10 s och talar sedan t=11 — den är sann och aktuell. Halksegmentet " +
+      "t=61 som förr.",
     hazards: [
       { id: "acc1", kind: "accident", lon: LON0, lat: northOf(5000) },
-      { id: "cam1", kind: "camera", lon: LON0, lat: northOf(450), bearing: 0 },
+      { id: "cam1", kind: "camera", lon: LON0, lat: northOf(450), bearing: 180 },
       { id: "seg1", kind: "slippery_segment", line: [[LON0 - 0.01, northOf(2000)], [LON0 + 0.01, northOf(2000)]], meta: { code: 2, info: ["Is"] } },
     ],
     trace: northTrace(180, 80),
   },
   {
-    file: "v05_throttle_45s", name: "45-sekundersregeln",
-    description: "Två kameror 400 m isär i 80 km/h (18 s mellanrum). Första talar; andra faller i tystnadsfönstret, släpps, och passeras. EN varning totalt.",
+    file: "v05_throttle_floor_10s", name: "Golvet: andra kameran väntar 10 s, kastas inte (#127)",
+    description:
+      "OMSKRIVEN 13/9 (#127). Två kameror 200 m isär i 80 km/h = 9 s. camA talar t=113. camB kvalificerar t=122 " +
+      "(9 s senare, under golvet) och KASTAS den sekunden — men motorn omprövar varje sekund och camB är " +
+      "fortfarande kandidat, så vid t=123 (10 s) är golvet passerat och camB talar. Låser TVÅ saker: att golvet " +
+      "finns (t=123, inte t=122) och att en kamera aldrig tystas permanent av det — Bengts mätning: minsta " +
+      "avstånd 520 m i samma riktning ⇒ 15,6 s vid 120 km/h, alltid över golvet. Bearing 180 = fotar " +
+      "norrgående.",
     hazards: [
-      { id: "camA", kind: "camera", lon: LON0, lat: northOf(3000), bearing: 0 },
-      { id: "camB", kind: "camera", lon: LON0, lat: northOf(3400), bearing: 0 },
+      { id: "camA", kind: "camera", lon: LON0, lat: northOf(3000), bearing: 180 },
+      { id: "camB", kind: "camera", lon: LON0, lat: LAT0 + 3200 / 111_000, bearing: 180 },
     ],
     trace: northTrace(240, 80),
   },
@@ -114,11 +135,14 @@ const scenarios: Scenario[] = [
   },
   {
     file: "v11_silent_drive", name: "TYSTNADEN — viktigaste vektorn",
-    description: "Faror finns i världen men inte i vår korridor (20 km bort, bakom, avsides, varm station). En hel körning utan ett enda ljud.",
+    description:
+      "Faror finns i världen men inte i vår korridor (20 km bort, bakom, avsides, varm station). En hel körning " +
+      "utan ett enda ljud. Kamerornas bearing vänd 180° 2/9: Trafikverkets värde är riktningen kameran TITTAR, " +
+      "färdriktningen den fotar är motsatt.",
     hazards: [
-      { id: "cam_far", kind: "camera", lon: LON0, lat: northOf(20000), bearing: 0 },
-      { id: "acc_far", kind: "accident", lon: LON0, lat: northOf(15000) },
-      { id: "cam_side", kind: "camera", lon: eastOf(3000), lat: northOf(1000), bearing: 0 },
+      { id: "cam_far", kind: "camera", lon: LON0, lat: northOf(20_000), bearing: 180 },
+      { id: "acc_far", kind: "accident", lon: LON0, lat: northOf(15_000) },
+      { id: "cam_side", kind: "camera", lon: eastOf(3000), lat: northOf(1000), bearing: 180 },
       { id: "wx_warm", kind: "icing_point", lon: LON0, lat: northOf(800), meta: { surfaceTempC: 12, moisture: false } },
       { id: "seg_normal", kind: "slippery_segment", line: [[LON0 - 0.01, northOf(600)], [LON0 + 0.01, northOf(600)]], meta: { code: 1, info: ["Våt"] } },
       { id: "seg_flackvis", kind: "slippery_segment", line: [[LON0 - 0.01, northOf(900)], [LON0 + 0.01, northOf(900)]], meta: { code: 1, info: ["fläckvis Våt", "fläckvis Torrt"] } },
@@ -127,8 +151,12 @@ const scenarios: Scenario[] = [
   },
   {
     file: "v12_stationary_jitter", name: "Parkerad med GPS-brus",
-    description: "Stillastående; positionen hoppar ±3 m men telefonens dopplerfart är ~0 (KONTRAKT: appen skickar alltid med speedKmh när den finns — härledd fart ur jitter kan se ut som 20 km/h). Kamera 100 m bort. Fartspärren håller tyst.",
-    hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(100), bearing: 0 }],
+    description:
+      "Stillastående; positionen hoppar ±3 m men telefonens dopplerfart är ~0 (KONTRAKT: appen skickar alltid " +
+      "med speedKmh när den finns — härledd fart ur jitter kan se ut som 20 km/h). Kamera 100 m bort. " +
+      "Fartspärren håller tyst. Kamerornas bearing vänd 180° 2/9: Trafikverkets värde är riktningen kameran " +
+      "TITTAR, färdriktningen den fotar är motsatt.",
+    hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(100), bearing: 180 }],
     trace: Array.from({ length: 61 }, (_, t) => ({
       t, lon: LON0 + ((t % 3) - 1) * 0.00003, lat: LAT0 + ((t % 2) - 0.5) * 0.00005,
       speedKmh: t % 3, // 0–2 km/h — vad en parkerad telefon faktiskt rapporterar
@@ -136,26 +164,31 @@ const scenarios: Scenario[] = [
   },
   {
     file: "v13_wildlife_beats_camera", name: "Vilt slår kamera i prioritet",
-    description: "Aktiv viltzon 600 m fram + kamera 480 m fram, kvalificerade samtidigt. Viltet talar; kameran släpps och passeras. EN varning.",
+    description:
+      "Aktiv viltzon 600 m fram + kamera 480 m fram, kvalificerade samtidigt. Viltet talar; kameran släpps och " +
+      "passeras. EN varning. Kamerans bearing 180 = tittar söderut ⇒ fotar vår norrgående riktning " +
+      "(riktningsvändningen 2/9). UPPDATERAD 13/9 (#127): viltet talar t=1; kameran tystas 10 s (lägre " +
+      "prioritet) och talar t=11. Två varningar nu, båda sanna — en andra, annan, aktuell varning får plats.",
     hazards: [
       { id: "wild1", kind: "wildlife", lon: LON0, lat: northOf(600), meta: { active: true } },
-      { id: "cam1", kind: "camera", lon: LON0, lat: northOf(480), bearing: 0 },
+      { id: "cam1", kind: "camera", lon: LON0, lat: northOf(480), bearing: 180 },
     ],
     trace: northTrace(120, 80),
   },
   {
     file: "v14_snapshot_swap", name: "Databyte mitt i körning — minnet överlever (#9)",
     description:
-      "cam1 500 m fram fyrar t=1. Vid t=20 byts snapshoten (samma cam1 + ny cam2 2511 m fram). " +
-      "Minnet MÅSTE överleva bytet: cam1 får inte upprepas (repris-reglerna gäller via fired-kartan), " +
-      "cam2 fyrar först inom 500 m vid t=91. En motor som byggs om vid bytet fyrar cam1 igen vid t=20 — " +
-      "exakt det felet den här vektorn dödar. (2511, inte 2500: designregeln om gränsmarginal.)",
-    hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(500), bearing: 0 }],
+      "cam1 500 m fram fyrar t=1. Vid t=20 byts snapshoten (samma cam1 + ny cam2 2511 m fram). Minnet MÅSTE " +
+      "överleva bytet: cam1 får inte upprepas (repris-reglerna gäller via fired-kartan), cam2 fyrar först inom " +
+      "500 m vid t=91. En motor som byggs om vid bytet fyrar cam1 igen vid t=20 — exakt det felet den här " +
+      "vektorn dödar. (2511, inte 2500: designregeln om gränsmarginal.). Kamerornas bearing vänd 180° 2/9: " +
+      "Trafikverkets värde är riktningen kameran TITTAR, färdriktningen den fotar är motsatt.",
+    hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(500), bearing: 180 }],
     updates: [{
       atT: 20,
       hazards: [
-        { id: "cam1", kind: "camera", lon: LON0, lat: northOf(500), bearing: 0 },
-        { id: "cam2", kind: "camera", lon: LON0, lat: northOf(2511), bearing: 0 },
+        { id: "cam1", kind: "camera", lon: LON0, lat: northOf(500), bearing: 180 },
+        { id: "cam2", kind: "camera", lon: LON0, lat: northOf(2511), bearing: 180 },
       ],
     }],
     trace: northTrace(120, 80),
@@ -164,43 +197,89 @@ const scenarios: Scenario[] = [
   // above: the accident sits at 11 019 m so that neither the 10 km horizon nor the 2 km
   // reminder line falls within ~1 m of an integer-second fix (margins here are ~13 m).
   {
-    file: "v15_accident_serious_twostep",
-    name: "Allvarlig olycka: tidigt rop + påminnelse",
+    file: "v15_accident_serious_twostep", name: "Allvarlig olycka: tidigt rop + påminnelse",
     description:
       "90 km/h norrut, allvarlig olycka (severity 5, Mycket stor påverkan) 11 019 m fram med röjningstid 14:20. " +
-      "Två repliker: det tidiga ropet när 10 km-horisonten passeras (bär omvägsbeslutet) " +
-      "och påminnelsen innanför 2 km (bär bara farten). Samma hazardId, två varningsplatser.",
-    hazards: [{
-      id: "acc1", kind: "accident", lon: LON0, lat: northOf(11_019),
-      meta: { severityCode: 5, endTimeLocal: "14:20" },
-    }],
+      "Två repliker: det tidiga ropet när 10 km-horisonten passeras (bär omvägsbeslutet) och påminnelsen " +
+      "innanför 2 km (bär bara farten). Samma hazardId, två varningsplatser. Vägnummer E4 i rösten (2/9).",
+    hazards: [{ id: "acc1", kind: "accident", lon: LON0, lat: northOf(11_019), meta: { severityCode: 5, endTimeLocal: "14:20", road: "E4" } }],
     trace: northTrace(380, 90),
   },
   {
-    file: "v16_accident_serious_late_join",
-    name: "Allvarlig olycka: påhoppad innanför 2 km",
+    file: "v16_accident_serious_late_join", name: "Allvarlig olycka: påhoppad innanför 2 km",
     description:
-      "Föraren svänger ut 1 900 m före en allvarlig olycka och hörde aldrig det tidiga ropet. " +
-      "Påminnelsetexten vore ofullständig här, så nära-platsen talar late-repliken i stället: " +
-      "samma fakta, utan överväg-annan-väg — det finns ingen avfart kvar att ta.",
-    hazards: [{
-      id: "acc1", kind: "accident", lon: LON0, lat: northOf(1_900),
-      meta: { severityCode: 5 },
-    }],
+      "Föraren svänger ut 1 900 m före en allvarlig olycka och hörde aldrig det tidiga ropet. Påminnelsetexten " +
+      "vore ofullständig här, så nära-platsen talar late-repliken i stället: samma fakta, utan " +
+      "överväg-annan-väg — det finns ingen avfart kvar att ta. Vägnummer E4 i rösten (2/9).",
+    hazards: [{ id: "acc1", kind: "accident", lon: LON0, lat: northOf(1900), meta: { severityCode: 5, road: "E4" } }],
     trace: northTrace(60, 90),
   },
   {
-    file: "v17_accident_mild_unchanged",
-    name: "Olycka under tröskeln: oförändrad, talar EN gång",
+    file: "v17_accident_mild_unchanged", name: "Olycka under tröskeln: oförändrad, talar EN gång",
     description:
-      "Samma geometri som v15 men severity 4 (Stor påverkan) — precis UNDER tröskeln 5. " +
-      "Tröskeln är ett ägarbeslut (DECISIONS #30a): vid 4 blev tvåsteget normalfallet för " +
-      "två tredjedelar av alla olyckor. Den här vektorn låser att 4 ger gamla repliken, en gång.",
-    hazards: [{
-      id: "acc1", kind: "accident", lon: LON0, lat: northOf(11_019),
-      meta: { severityCode: 4 },
-    }],
+      "Samma geometri som v15 men severity 4 (Stor påverkan) — precis UNDER tröskeln 5. Tröskeln är ett " +
+      "ägarbeslut (DECISIONS #30a): vid 4 blev tvåsteget normalfallet för två tredjedelar av alla olyckor. Den " +
+      "här vektorn låser att 4 ger gamla repliken, en gång. Vägnummer 25 i rösten (2/9).",
+    hazards: [{ id: "acc1", kind: "accident", lon: LON0, lat: northOf(11_019), meta: { severityCode: 4, road: "25" } }],
     trace: northTrace(380, 90),
+  },
+  {
+    file: "v18_bridge_near_freezing", name: "Bro nära frysande station (#38, A2-bro)",
+    description:
+      "Bro 1,9 km fram. Närmaste station: yttemp +2,5 °C + fukt. Vägen själv skulle tiga (tröskel +1), men " +
+      "brobanan fryser först — tröskel +3 ⇒ varnar med bro-frasen. Samma trace som v08.",
+    hazards: [{ id: "bro1", kind: "icing_point", lon: LON0, lat: northOf(1900), meta: { surfaceTempC: 2.5, moisture: true, bridge: true } }],
+    trace: northTrace(120, 80),
+  },
+  {
+    file: "v19_bridge_warm_silent", name: "Bro vid varm station — tyst (#38)",
+    description:
+      "Samma bro, station +4,0 °C + fukt. Över brotröskeln +3 ⇒ tystnad. Låser att broregeln inte är 'alltid " +
+      "varna vid bro'.",
+    hazards: [{ id: "bro1", kind: "icing_point", lon: LON0, lat: northOf(1900), meta: { surfaceTempC: 4, moisture: true, bridge: true } }],
+    trace: northTrace(120, 80),
+  },
+  {
+    file: "v20_camera_opposite_silent", name: "Kamera i motsatt riktning — tyst (Bengt, E4 1/9)",
+    description:
+      "80 km/h norrut (kurs 0°), kamera 3 km fram men bearing 175° — den bevakar MÖTANDE trafik. Ska vara HELT " +
+      "tyst. Låser toleransen: med det gamla värdet 100° (fönster 200°) släpptes mötande kameror igenom så fort " +
+      "vägen svängde; 60° stänger dem ute. Mätt på publicerad data: 382 av 388 kamerapar inom 300 m pekar isär " +
+      ">135°. RIKTNING 2/9: bearing 0 = kameran tittar norrut ⇒ fotar SÖDERgående = mötande.",
+    hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(3000), bearing: 0 }],
+    trace: northTrace(180, 80),
+  },
+  {
+    file: "v21_camera_curve_still_speaks", name: "Kamera i egen riktning trots kurva — varnar (Bengt 1/9)",
+    description:
+      "Samma resa, kamera bearing 40° medan vi kör kurs 0°. Vägen svänger — kameran bevakar VÅR riktning och " +
+      "ska varna. Låser att 60° inte blev för snävt: en kamera 40° från vår kurs måste fortfarande höras. " +
+      "RIKTNING 2/9: bearing 220 ⇒ fotar färdriktning 40°, inom 60° från vår kurs 0°.",
+    hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(3000), bearing: 220 }],
+    trace: northTrace(180, 80),
+  },
+  {
+    file: "v22_accident_no_road", name: "Olycka utan vägnummer — frasen oförändrad (2/9)",
+    description:
+      "Samma olycka men Trafikverket saknar vägnummer. Låser att rösten inte säger 'på null' eller tappar " +
+      "meningen: utan väg är frasen exakt som före 2/9.",
+    hazards: [{ id: "acc1", kind: "accident", lon: LON0, lat: northOf(8000) }],
+    trace: northTrace(60, 80),
+  },
+  {
+    file: "v23_sequence_ice_after_camera", name: "Sekvensfallet: is efter kamera, spärren får inte tysta isen (#127)",
+    description:
+      "Bengts fynd 13/9. 50 km/h norrut. Fartkamera 3 000 m fram, ishalka 200 m bakom kameran. Kameran " +
+      "kvalificerar först (cameraTriggerM 500 fast), isen 283 m senare (leadM 417). Med den gamla " +
+      "prioritetsblinda 45-sekundersspärren talade kameran, isen kastades (20 s < 45) och när spärren öppnade " +
+      "var föraren 75 m från isen: 30 s framförhållning blev 5. Rätt: isen har HÖGRE prioritet än det som " +
+      "senast sades, så spärren får inte kasta den. Kameran först, isen strax efter, båda sanna. Låser att " +
+      "spärren är prioritetsmedveten och att golvet (10 s) inte hindrar en högre fara.",
+    hazards: [
+      { id: "cam1", kind: "camera", lon: LON0, lat: n9(3000), bearing: 180 },
+      { id: "is1", kind: "icing_point", lon: LON0, lat: n9(3200), meta: { surfaceTempC: -1, moisture: true } },
+    ],
+    trace: Array.from({ length: 300 }, (_, t) => ({ t, lon: LON0, lat: n9(t * ((50 * 1000) / 3600)) })),
   },
   {
     file: "v24_vinterord_kod1", name: "Vinterord på kod 1 — sammansättningarna talar, motåtgärderna tiger",
@@ -239,8 +318,8 @@ function runWithUpdates(s: (typeof scenarios)[number]): Alert[] {
 
 mkdirSync(new URL("./vectors/", import.meta.url), { recursive: true });
 // Regenerera EN vektor: node --experimental-strip-types engine/gen-vectors.ts v24_vinterord_kod1
-// Kör aldrig utan filnamn i dag: listan ovan har glidit isär från vectors/ (heter v05_throttle_45s men filen
-// är v05_throttle_floor_10s, och v18–v23 saknas här) — en fullkörning skriver en spökfil och rör inte de nya.
+// Listan ovan återskapar hela vectors/ (kort #195, 18/9): en fullkörning ska lämna `git status engine/vectors/` tom.
+// Ändras en vektorfil för hand ska dess scenario här ändras i samma commit — annars glider de isär igen.
 const ONLY = process.argv[2];
 for (const s of scenarios) {
   if (ONLY && s.file !== ONLY) continue;
@@ -249,8 +328,13 @@ for (const s of scenarios) {
     name: s.name, description: s.description,
     hazards: s.hazards, ...(s.updates ? { updates: s.updates } : {}), trace: s.trace, expected: alerts,
   };
-  writeFileSync(new URL(`./vectors/${s.file}.json`, import.meta.url), JSON.stringify(out, null, 1) + "\n");
-  console.log(`\n=== ${s.file}: ${s.name} ===`);
+  // Skriv bara när INNEHÅLLET ändrats (kort #195): arton filer skrevs om utanför generatorn och bär andra byte för
+  // samma värden — inget radslut sist, och v19:s 4.0 som JSON.stringify skriver 4. Samma tolkade JSON ⇒ filen orörd.
+  const fil = new URL(`./vectors/${s.file}.json`, import.meta.url);
+  const json = JSON.stringify(out, null, 1);
+  const orord = existsSync(fil) && JSON.stringify(JSON.parse(readFileSync(fil, "utf8")), null, 1) === json;
+  if (!orord) writeFileSync(fil, json + "\n");
+  console.log(`\n=== ${s.file}: ${s.name} === ${orord ? "(oförändrad)" : "(SKRIVEN)"}`);
   if (alerts.length === 0) console.log("  (tystnad)");
   for (const a of alerts) {
     console.log(`  t=${a.t}s  ${a.kind}  ${a.distanceM} m  "${a.text}"`);
