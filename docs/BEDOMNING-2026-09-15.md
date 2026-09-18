@@ -159,7 +159,7 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 
 | # | Vad | Vems |
 | :-- | :-- | :-- |
-| **S7** | **Facitvakter:** vakthundsrad *"historiken växer"* (inte bara *"sync_state är färsk"*) · ~~mät `situation_archive`~~ (mätt 15/9: 3 122 olyckor/30 dygn, DECISIONS #189) · bevisa att `trv-bevakning` sparar 13 källor | Claude |
+| **S7** | **Facitvakter:** vakthundsrad *"historiken växer"* (inte bara *"sync_state är färsk"*) · ~~mät `situation_archive`~~ (mätt 15/9: 3 122 olyckor/30 dygn, DECISIONS #189) · ~~bevisa att `trv-bevakning` sparar 13 källor~~ (✅ state med 13 källor sedan 16/9 02:44, commit 1284e82) · **kamerafacit har ingen vakt** — 262 bilder 15–18/9 och det flödar, men bucketen stod tom i 16 dygn en gång utan att någon såg det (18/9, §4.2) | Claude |
 | **S8** | **#52 före #45:** ett test i tre portar låser att kod 1 + "Packad snö" *måste* larma — motsatsen till vinterbaseline. Vektorn beslutas innan #45 rörs. ✅ **Byggd, godkänd (Axel) och deployad 16/9 som v24** tillsammans med #97 (DECISIONS #214) — når telefonerna med nästa app-bygge | Bengt + Axel |
 | **S9** | **T-A efter första frostnatten**, steg 0 inom sju dygn, #95(d):s F-B i samma varv | Claude |
 | ~~**S10**~~ | ~~**C och D** och tröskelregeln~~ ✅ **KLAR 17/9: `docs/TROSKLAR-KOMBINATIONEN.md` fastställt** — C (KB-A–D), D (D1–D7) och T, underskrivet av Bengt och Axel (DECISIONS #217–#228) | Claude skrev, Bengt och Axel fastställde |
@@ -235,6 +235,7 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 | :-- | :-- | :-- |
 | **Grepp 3 — Supabase Pro** senast när databasen passerar 400 MB eller 1 november, det som kommer först. Cirka 25 USD/mån; 8 GB, dagliga backuper. Gratisnivån skrivskyddar vid 500 MB, och vintern kräver cirka 3 GB (`docs/GREPP3-ARKIVEN.md`, DECISIONS #231) | Bengt + Axel (Axel godkänner i DECISIONS) | ja |
 | **Actions-kontot:** läs förbrukningen i Settings → Billing för hela kontot. Kassavakten ser bara Halkvakt, men taket 35 USD gäller alla repon på kontot. Ligger Billing klart över kassavaktens tal (20,09 USD 17/9 23:08Z) drar andra repon ur samma pott — då räcker september inte: höj taket några dollar (DECISIONS-post) eller bygg ännu snålare till 1/10 | Axel, före 24/9 | läs av; höj bara om Billing visar att det behövs |
+| **S7 + kort #161 (b) i ett grepp:** (1) kamerafacit-vakt i vakthunden — larm när skuggan haft larm men bucketen `facit` inte fått en bild på 12 h (korskontroll som radarns, så ett lugnt dygn inte larmar); (2) de två flöden som committar tillbaka (`marknadsforing.yml`, `trv-bevakning.yml`) får `git pull --rebase --autostash` och skriver ut `git status --porcelain` när de faller, som läxan i CLAUDE.md kräver sedan 14/9 | Bengt | ja |
 
 ---
 

@@ -1081,6 +1081,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     "TRV 400" utan svarskropp gjorde.
   Verify: (a) nästa trv-bevakning-körning pushar ett state med 13 källor; (b) ett framtvingat fel
   visar filnamnet i loggen.
+  ✅ **(a) BEVISAT (upptäckt 18/9):** `ingest/trv-nyheter-state.json` bär 13 källor sedan den manuella körningen
+  16/9 02:44 (commit 1284e82). **(b) ej gjort:** `marknadsforing.yml` och `trv-bevakning.yml` gör fortfarande naken
+  `git pull --rebase` utan `--autostash` och utan `git status --porcelain` i fel-grenen — frågan i bedömningen §4.2.
 - [ ] 🕳️ **#154 STEG C:s REGNFÄLT NÅR INTE DE SEGMENT VATTENPLANINGEN SITTER PÅ** (fynd i
   kvällsavläsningen 13/9, oprövat av mig i kod — lämnas till den som äger steg C).
   `publish/snapshot-core.ts` sätter `regn` på raderna ur väglagsfrågan, och den frågan hämtar bara
