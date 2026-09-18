@@ -881,10 +881,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Bevis med innehåll kräver första station ≤ 3 °C i en korridor — samma natt som N4:s fältbevis.
   ✅ **FÖRSTA RADEN MED INNEHÅLL 16/9** (1 station, `regn_h` satt, `larm: false`). S1 mäter. KVAR före S2: nätter, inte
   ögonblick — Axels grind (#196) kräver att `regn_h` prövats mot verkligheten innan något byggs på det.
-- [ ] 🔢 **#189 TRENDARKIVETS FLYTTALSRESTER** (bifynd 15/9 i #192, Bengts ja): `lutning30_c` min −0,7999999999999998 —
+- [x] 🔢 **#189 TRENDARKIVETS FLYTTALSRESTER — ✅ KLART (bevisat 18/9)** (bifynd 15/9 i #192, Bengts ja): `lutning30_c` min −0,7999999999999998 —
   rader från 26 minuter 13/9 innan avrundningen fanns; `dagg_gap_c` var dessutom orundat i skrivaren. BYGGT 15/9
   (DECISIONS #194): gapet avrundas i `trendkandidat.ts`, sql/020 rundar arkivet. VÄNTAR: migration 020 via dbknapp,
   bevis = 0 orundade rader efteråt.
+  ✅ **BEVISAT 18/9:** dbknapp 03:42Z (körning 35304213416): **0 orundade av 9 833 rader**, `lutning30_c` min **−0,800**,
+  äldsta rad 8/9 kvar. Arkivet är rundat — migrationen har körts, men beviset bokfördes aldrig och kortet stod kvar som väntande.
 - [ ] 🧪 **#187 F1: SKATTARENS RÅA INDATA I live.json — `regn_h`, `lutning15/30/60` bredvid `fukt`** (bedömning v3 N4,
   Bengts order 15/9, DECISIONS #188). BYGGT 15/9 i `publish/snapshot-core.ts` (PR #270): null när fönstret är tomt,
   aldrig noll; motorn läser inget; gränsstationer null. `radar_h` UPPSKJUTEN (LATERAL-koppling i publicera var 10:e

@@ -19,9 +19,10 @@ november i stället för mars, för att facit kommer från en källa som faktisk
 
 ---
 
-## Läget 17/9 — var vi är och vart vi är på väg
+## Läget 18/9 — var vi är och vart vi är på väg
 
-**Var vi är.** **Ett beslut om arkiven väntar (§4.2, grepp 3: Supabase Pro)**; fyra mejl om stadstrafiken ska skickas (§0b). Reglerna för efterhalkan är fastställda och underskrivna av Bengt och
+**Var vi är.** **Ett beslut om arkiven väntar (§4.2, grepp 3: Supabase Pro)**, och **Axel läser av Actions-kontot före 24/9**
+(§4.2) — september klarar Actions-taket bara om bygget hålls snålt till 1/10 (§0b); fyra mejl om stadstrafiken ska skickas (§0b). Reglerna för efterhalkan är fastställda och underskrivna av Bengt och
 Axel: grinden för kombinationen (C), den gemensamma kalibreringen (D) och tröskelregeln (T). Betans startvärden är
 beslutade. **Det som återstår före november är bygge och bevis, inte beslut.**
 
@@ -42,7 +43,7 @@ beslutade. **Det som återstår före november är bygge och bevis, inte beslut.
 
 | När | Vad | Vem |
 | :-- | :-- | :-- |
-| **September** | #200 marknadsföringen på pulsklockan · nya app-byggen till testarna (iOS 0.3.7 med facit och ordlistan) · Skyltfonden: trafikskolornas muntliga ja senast 25/9, ansökan skickas 28/9 (sista dag 1/10) · TRV-brevet om byvindgivarna · mejlen till Trafikverket (fordonsdata) och till Malmö, Stockholm och Göteborg (gatornas data) · #201 vakthundens körning i kassavaktens timme · databasens storlek mäts 24/9 | Claude · Axel · Bengt |
+| **September** | #200 marknadsföringen på pulsklockan · nya app-byggen till testarna (iOS 0.3.7 med facit och ordlistan) · Skyltfonden: trafikskolornas muntliga ja senast 25/9, ansökan skickas 28/9 (sista dag 1/10) · TRV-brevet om byvindgivarna · mejlen till Trafikverket (fordonsdata) och till Malmö, Stockholm och Göteborg (gatornas data) · #201 vakthundens körning i kassavaktens timme · databasens storlek mäts 24/9 · **Actions-taket: högst ~80 min bygge per dygn till 1/10** (§0b) | Claude · Axel · Bengt |
 | **Oktober** | **grepp 3: Pro-beslutet** när databasvakten larmar (400 MB) eller senast 1/11 — villkor för domarna · **S3 regeln i motorn** med startvärdena, tre portar och kontraktsgrinden · S2 skattarens nivå · #195 vektorgeneratorn | Bengt + Axel · Axel · Claude |
 | **Första frosten** (datum okänt) | T-A steg 0 inom sju dygn (S9) · radarns bidrag mäts om, nu med snö · skuggloggen mot arkivet: räknar de lika? · S1:s första nätter och uppspelningen (`uppspelning-efterhalka.sql`) — underlaget för S1-grinden före S3 | Claude |
 | **November** | **betan till tolv testare**, också trafiklärare (S5) · PAT roteras senast 15/11 | Axel |
@@ -104,7 +105,7 @@ beviset finns — inte när koden är skriven.
 | TROSKLAR-SKUGGAN §4 (a)/(b) mot tröskelregeln | ⏳ före domen mars 2027 | #198 | #220 | §4 säger inget som regel T förbjuder |
 | Uppspelningen ur arkiven: **grundversion byggd och körd 17/9** (`scripts/matningar/uppspelning-efterhalka.sql`, #233) — startpunkten, utan faller, utan blöt och kontrollen mot skuggloggen; september gav ett tillfälle (station 2518, 14/9). **Kvar:** radar-, regnmängds-, startbands- och SMHI-varianterna och facit | 🔨 17/9 — körs igen vid första frosten | #197 | #223/#233 | en körning med rader för båda |
 | Radar- och väderarkivet kvar till mars-domen — **168 av 500 MB 17/9, cirka 9 MB/dygn brutto redan i september**; gratisnivån skrivskyddar databasen vid 500 MB och har inga backuper | 🔨 **underlag 17/9: `docs/GREPP3-ARKIVEN.md`** — beslut Bengt + Axel (§4.2) | #83 | #223/#231 | arkivet täcker november–mars |
-| Databasens storlek mäts igen — nettotakten efter autovacuum avgör om 400 MB nås i oktober | ⏳ 24/9 | #83 | #231 | två mätpunkter minst ett dygn isär |
+| Databasens storlek mäts igen — nettotakten efter autovacuum avgör om 400 MB nås i oktober | ⏳ 24/9 · 18/9 03:42Z: **169 MB** (+1 MB på 15 h efter gallringen) | #83 | #231 | två mätpunkter minst ett dygn isär |
 | ~~Grepp 3, småbyggena i drift: `gallra_arkiv` (sql/026) i nattjobbet och databasvakten i vakthunden~~ | ✅ **17/9:** migration 12:3xZ: `gallra_arkiv(7)` raderade **97 472 rader** — Finland 97 379 → 58 130, Norge 68 972 → 45 828, pg_crons logg 39 312 → 12 691, resten svensk gallring · EXECUTE låst för anon och authenticated · nattjobbet kör `SELECT gallra_arkiv(7)` 03:15 · databasvakten 12:35Z: *databas: 168 MB av 500*, provlarmet gick (larmväg ok). Storleken står kvar på 168 MB tills autovacuum återanvänt platsen | #83 | #232 | raderade rader i nattjobbet; vakthundsraden *databas: N MB*; provlarmet |
 | S1 ser bara stationer längs skuggrutterna: 5 station-ögonblick på ett septemberdygn — räcker det i vinter? | ⏳ mät i första frostmånaden | #197 | #223 | rader per frostnatt |
 | ~~SMHI-varningar som försvinner: `senast_sedd` + `smhi_synk` i ingesten (`sql/024`)~~ | ✅ **i drift 17/9:** ingestkörningen 06:11Z stämplade `senast_sedd` på exakt de 15 varningar som fanns i flödet (av 157 i arkivet), och `smhi_synk` fick sin första rad (15 varningar) | #199 | #225 | rad med innehåll i båda |
@@ -120,6 +121,7 @@ beviset finns — inte när koden är skriven.
 | Vakthunden svarar inte inom 120 s i kassavaktens timmar (05, 11, 17, 23 UTC) — **bekräftat 11:07Z**, samma timeout som 05:07Z. **Larmet går ut:** kassavakten kommenterade issue #210 05:08:15Z och 11:08:21Z. Kvar: vakthundens svar är oläsbart var sjätte timme, och okänt om kontrollerna efter kassavakten hinner köras | 🔨 kontrollerat 17/9 — låg prioritet | kort #201 | — | vakthundens svar inom 120 s i kassavaktens timme, eller kassavakten i egen körning |
 | Läsbar version av TROSKLAR-KOMBINATIONEN på Skrivbordet och i Drive är från 16/9 — före Axels sex ändringar, radarn och fastställandet | ⏳ inaktuell; ny version när Bengt vill | #197 | — | aktuell version i Drive, eller den gamla borttagen |
 | ~~Trafikverkets öppna halkflöde (SRTI "Temporary slippery road") — rekognosering~~ | ✅ **17/9:** flödet är Trafikverkets väglag i DATEX-form (`RoadSurfaceConditions`) — trafikledningens bedömning ur kameror, väderprognoser och entreprenörsrapporter, samma källa som vår väglagsingest. Inga fordonsdata i den öppna datamodellen (DECISIONS #230) | — | #230 | Trafikverkets datamodell läst |
+| **Actions-taket i september** — 35 USD med hårt stopp: slår det i stannar ingest, grannar och healthcheck som 5/9. Kassavakten (issue #210) säger 28/9 i den släpande takten. **Omräknat per jobb 18/9:** 4 369 min sedan 1/9 ⇒ 18,95 USD, cirka 2 000 min kvar. Driften tar ~74 min per dygn ⇒ **bygget får ta högst ~80 min per dygn till 1/10** (16/9 tog 171, 17/9 23). Taket gäller hela kontot, och andra repon syns inte härifrån | 🔨 18/9 — bygg snålt till 1/10; Axel läser av kontot (§4.2) | #152 | #160 | ingen körning stoppad av taket i september; issue #210 stängd av kassavakten |
 
 ---
 
@@ -226,6 +228,7 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 | Beslut | Vem | Rekommendation |
 | :-- | :-- | :-- |
 | **Grepp 3 — Supabase Pro** senast när databasen passerar 400 MB eller 1 november, det som kommer först. Cirka 25 USD/mån; 8 GB, dagliga backuper. Gratisnivån skrivskyddar vid 500 MB, och vintern kräver cirka 3 GB (`docs/GREPP3-ARKIVEN.md`, DECISIONS #231) | Bengt + Axel (Axel godkänner i DECISIONS) | ja |
+| **Actions-kontot:** läs förbrukningen i Settings → Billing för hela kontot. Kassavakten ser bara Halkvakt, men taket 35 USD gäller alla repon på kontot. Ligger Billing klart över kassavaktens tal (20,09 USD 17/9 23:08Z) drar andra repon ur samma pott — då räcker september inte: höj taket några dollar (DECISIONS-post) eller bygg ännu snålare till 1/10 | Axel, före 24/9 | läs av; höj bara om Billing visar att det behövs |
 
 ---
 
