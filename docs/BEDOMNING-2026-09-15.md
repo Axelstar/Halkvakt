@@ -123,6 +123,7 @@ beviset finns — inte när koden är skriven.
 | ~~Trafikverkets öppna halkflöde (SRTI "Temporary slippery road") — rekognosering~~ | ✅ **17/9:** flödet är Trafikverkets väglag i DATEX-form (`RoadSurfaceConditions`) — trafikledningens bedömning ur kameror, väderprognoser och entreprenörsrapporter, samma källa som vår väglagsingest. Inga fordonsdata i den öppna datamodellen (DECISIONS #230) | — | #230 | Trafikverkets datamodell läst |
 | **Actions-taket i september** — 35 USD med hårt stopp: slår det i stannar ingest, grannar och healthcheck som 5/9. Kassavakten (issue #210) säger 28/9 i den släpande takten. **Omräknat per jobb 18/9:** 4 369 min sedan 1/9 ⇒ 18,95 USD, cirka 2 000 min kvar. Driften tar ~74 min per dygn ⇒ **bygget får ta högst ~80 min per dygn till 1/10** (16/9 tog 171, 17/9 23). Taket gäller hela kontot, och andra repon syns inte härifrån | 🔨 18/9 — bygg snålt till 1/10; Axel läser av kontot (§4.2) | #152 | #160 | ingen körning stoppad av taket i september; issue #210 stängd av kassavakten |
 | GitHub byter `ubuntu-latest` till Ubuntu 26 från 19/10 (notis i CI-körningen 18/9). Driftflödena (ingest, grannar, healthcheck, marknadsföringen) och ci går på `ubuntu-latest` — bytet sker mitt i S3-bygget | ⏳ 19/10 — läs de första körningarna efter bytet | — | — | gröna driftkörningar efter 19/10 |
+| **Mätvakten tappade marknadsföringen 18/9** — vakten läser schemat bara ur flödenas cron-rader, och #200 tog bort raden när pulsklockan tog över. Flöden som startas av pulsklockan (ingest, grannar, nu marknadsföringen) syns inte för den; samma sak händer måndagsserien om den flyttas utan att vakten ändras | 🔨 18/9 — rättas med kort #160 (§4.2) | #200, #160 | — | mätvaktens rad räknar marknadsföringen igen |
 
 ---
 
@@ -231,6 +232,7 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 | :-- | :-- | :-- |
 | **Grepp 3 — Supabase Pro** senast när databasen passerar 400 MB eller 1 november, det som kommer först. Cirka 25 USD/mån; 8 GB, dagliga backuper. Gratisnivån skrivskyddar vid 500 MB, och vintern kräver cirka 3 GB (`docs/GREPP3-ARKIVEN.md`, DECISIONS #231) | Bengt + Axel (Axel godkänner i DECISIONS) | ja |
 | **Actions-kontot:** läs förbrukningen i Settings → Billing för hela kontot. Kassavakten ser bara Halkvakt, men taket 35 USD gäller alla repon på kontot. Ligger Billing klart över kassavaktens tal (20,09 USD 17/9 23:08Z) drar andra repon ur samma pott — då räcker september inte: höj taket några dollar (DECISIONS-post) eller bygg ännu snålare till 1/10 | Axel, före 24/9 | läs av; höj bara om Billing visar att det behövs |
+| **Kort #160 i ett grepp, före måndag 21/9:** (1) mätvakten läser schemat också ur pulsklockan — rättar att marknadsföringen föll ur bevakningen 18/9; (2) måndagsseriens sju flöden på pulsklockan — de kom 5–7 h sent 14/9 och naken GitHub-cron levererade 40 % i #70; (3) mätvakten får fast frist, kadens + 3 h, i stället för × 1,5 — en utebliven måndag syns samma dag i stället för efter 10,5 dygn | Bengt | ja |
 
 ---
 
