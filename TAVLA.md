@@ -64,6 +64,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   sina kommandon (körningarna startas av *Axelstar*). Går den ut stannar ingest, grannar, healthcheck, marknadsföringen och
   måndagsserien (#160) samtidigt. Byts i malljobbet `puls-ingest-grannar`; `pulsklocka.yml` skarp kopierar till alla. Frågan
   till Axel står i bedömningen §4.2.
+  ✅ **KONTROLLERAT 18/9 (DECISIONS #237):** pulsjobben bär **samma PAT** som publicera och vakthunden (fingeravtryck
+  `a0880e9a` i alla elva jobb och i GitHub-hemligheten), och den går ut **2026-11-22 20:55:49 UTC**. Nyckelkalendern läser
+  nu pulsnyckelns datum och larmar om jobben bär olika nycklar. **Bytet är en knapp:** efter steg A och B ovan — tryck
+  `pulsklocka.yml` med läget **nyckel**; den provar att nyckeln får starta ett flöde, skriver den i alla pulsjobb och
+  läser tillbaka. Prövad skarpt 18/9 04:50Z med nuvarande nyckel.
   · **PAT:en (kartrepot/publicera + vakthundens larm) går ut 22/11.** · **Supabase-tokenen (deploy-knappen)
   går ut 8/12.** Båda slutar fungera utan att något ser trasigt ut: publicera får 401 ⇒ CDN fryser ⇒ appens
   åldersspärr tystnar vakten (5/9-läget), och vakthunden kan inte larma om det eftersom larmvägen använder
@@ -79,12 +84,16 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   med den). Missas det tredje dör fi/dk-publiceringen tyst 22/11. AXELS ORDNING (5 + 5 min):
   **A. PAT:** GitHub → Settings → Developer settings → Fine-grained tokens → ny: namn "Halkvakt publicera
   2027", utgång **2027-04-30** (efter marsdomen), resource owner Axelstar, repon halkvakt-karta + Halkvakt,
-  Repository permissions: **Contents Read and write** (kartrepot) + **Issues Read and write** (Halkvakt),
+  Repository permissions: **Contents Read and write** (kartrepot) + **Issues Read and write** (Halkvakt) +
+  **Actions Read and write** (pulsklockan startar flödena, vakthunden läser körningarna — tillagt 18/9, DECISIONS #237),
   inget annat. Klistra in som PUBLISH_TOKEN i (1) Supabase → Edge Functions → Secrets och (2) GitHub →
   Halkvakt → Settings → Secrets → Actions. Ta INTE bort den gamla än.
   **B. Supabase-token:** Supabase → Account → Access Tokens → ny "Halkvakt deploy 2027", utgång 2027-04-30,
   samma scope som 9/9 (projekt Halkvakt, ENDAST Edge Functions: Write). Ersätt SUPABASE_ACCESS_TOKEN i
   GitHub Secrets. Ta INTE bort den gamla än.
+  **C. Pulsjobben (tillagt 18/9):** efter A — GitHub → Halkvakt → Actions → pulsklocka → Run workflow, lage = **nyckel**.
+  Knappen provar att nya PUBLISH_TOKEN får starta ett flöde, skriver den i alla pulsjobb och läser tillbaka; utan
+  Actions-behörigheten i A fäller den på provet och byter inget.
   **BEVIS (Bengt/Claude kör, inom 15 min efter A och B):** (a) nästa "(Supabase)"-commit i kartrepot med
   manifest-sha = sha256(live.json) — publicera skriver med nya PAT:en; (b) DB-knappen larmprov ⇒ ny issue med
   etiketten vakthund, auto-stängd nästa timme — vakthunden larmar med nya PAT:en; (c) nästa grannar-körning
@@ -848,6 +857,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Kostnaden är liten, cirka 20 s per körning. **Åtgärd:** flytta till Supabase pg_cron som FI, DK och regn-30
   (`pulsklocka.yml`, DECISIONS #26/#63) och ta bort `schedule` ur flödet. **Verify:** körningen startar inom 10 min från
   bokad tid tre dagar i rad.
+  🔨 **I DRIFT 18/9 (Bengts "kör", DECISIONS #236):** `puls-marknadsforing` (`45 4 * * *`) skapat av pulsklockan 03:53Z
+  (fyra pulsjobb OK, alla med nyckel), `schedule` borttagen ur flödet (PR #339). **Morgon 1 (18/9):** start 04:45:09Z (9 s efter bokad tid), grön, utkastet committat 04:45:25.
+  Kvar: morgon 2 och 3 (19/9, 20/9).
 - [x] 🛰️ **#199 SMHI-VARNINGAR SOM FÖRSVINNER — ingesten stämplar senast sedd — ✅ KLART 17/9** (Bengts ja 17/9, DECISIONS #224/#225).
   Arkivet sparar varje publicering av en SMHI-varning men inte när den försvinner ur flödet. En varning som dras
   tillbaka i förtid ser ut att gälla till sin sluttid, och SMHI-förlängningen (N_varning) skulle mätas fel. Går inte att
@@ -1007,6 +1019,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   marknadsföringen till pulsklockan föll den ur bevakningen i tysthet, och flyttas måndagsserien likadant blir vakten
   blind för alla sju (grind-v-b kom till 16/9). (c) = vakten läser också pulsklockans jobb (`cron.job`, `puls-%`).
   Frågan står i bedömningen §4.2: (a)+(b)+(c) i ett grepp före måndag 21/9.
+  🔨 **BYGGT OCH I DRIFT 18/9 (Bengts "kör", DECISIONS #237, PR #344):** (a) sju pulsjobb för måndagsserien, (b) fast
+  frist kadens + 3 h, (c) mätvakten läser pulsklockan. Bevis: vakthunden 04:47Z *mätvakten: 11 schemalagda flöden (11 via
+  pulsklockan), 0 med problem* (8 i morse). **Kvar: måndag 21/9 — alla sju ska starta inom minuten.**
 - [ ] 🧱 **#161 EN CRLF-FIL FÄLLER VARJE FLÖDE SOM COMMITTAR TILLBAKA — och sex källvakter har
   aldrig sparat sitt state** (fynd + rotorsak i kvällsavläsningen 14/9).
   **SYMTOM:** `trv-bevakning` och `marknadsforing` faller i sitt commit-steg med

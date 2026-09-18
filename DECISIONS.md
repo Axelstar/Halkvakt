@@ -6790,3 +6790,60 @@ bara filer vars innehåll ändrats (#234), så steget är tyst när allt stämme
 
 **Kostnad:** någon sekund per CI-körning.
 
+## #236 (18/9 2026) Kort #200: marknadsföringen på pulsklockan
+
+**Bengts order 18/9:** *"kör #195 och #200"*, på beslutet 17/9 (Bengt + Axel, #226).
+
+**Gjort:** `scripts/pulsklocka.ts` fick pulsjobbet `puls-marknadsforing` (`45 4 * * *`), kopierat ur malljobbet som de
+andra pulsjobben, så att nyckeln aldrig passerar en logg. `schedule` togs bort ur `marknadsforing.yml`, så att flödet inte
+körs två gånger (PR #339). Pulsklockan kördes skarpt 03:53Z: fyra pulsjobb OK, alla med nyckel, och de tre befintliga
+oförändrade.
+
+**Första morgonen 18/9:** pulsklockan startade flödet **04:45:09Z**, 9 s efter bokad tid (GitHub-cronen levererade 08:49–10:07). Jobbet 04:45:12–04:45:31, alla steg gröna, och utkastet *Halkläget 2026-09-18* committades 04:45:25.
+
+**Verify:** start inom 10 min från 04:45 UTC tre morgnar i rad (18–20/9). Raden i bedömningen stryks när den tredje finns.
+
+**Obs vintertid:** pg_cron går i UTC. Från 25/10 blir 04:45 UTC 05:45 svensk tid i stället för 06:45 — samma två tider
+som flödets gamla kommentar ("05:45/06:45 svensk tid") redan räknade med. Actions-kostnaden är oförändrad, en minut per
+morgon.
+
+## #237 (18/9 2026) Kort #160: måndagsserien på pulsklockan, mätvakten läser pulsklockan — och pulsnyckeln är PAT:en
+
+**Bengts order 18/9:** *"kör #160 och kontrollera vilken nyckel pulsjobben har hos Axel och genomför bytet"*.
+
+**Byggt (PR #344):**
+- **(a)** De sju måndagsmätningarna (grind-a, smhi-prov, cell-matning-v3, trv-bevakning, hojd-prov, grind-v-a, grind-v-b)
+  startas av pulsklockan, samma tider som förut. GitHub-cronen levererade dem 5–7 h sent 14/9 och 40 % av bokad takt i #70.
+- **(c)** Mätvakten läser schemat också ur pulsklockans jobb i pg_cron. När #200 flyttade marknadsföringen dit föll den
+  ur bevakningen utan ett ord, och ingest och grannar hade aldrig bevakats av samma skäl.
+- **(b)** Fast frist, kadens + 3 h, i stället för × 1,5: en utebliven måndag syns samma dag, inte efter 10,5 dygn.
+- **Pulsnyckeln i nyckelkalendern:** vakthunden läser pulsnyckelns utgång ur GitHubs svarshuvud och larmar om pulsjobben
+  bär olika nycklar. Nyckeln används bara i databasen och i vakthunden och skrivs aldrig ut.
+- **Bytesknappen:** `pulsklocka.yml` med läget **nyckel** provar att `PUBLISH_TOKEN` får starta ett flöde, skriver den i
+  alla pulsjobb och läser tillbaka fingeravtrycken.
+
+**Bevis:**
+- Pulsklockan skarp 04:46Z: 11 pulsjobb OK, alla med nyckel, varav 7 nya för måndagsserien.
+- Vakthunden deployad 04:35Z från main (lokal fil identisk med main före deploy). `nyckelprov` 04:47Z:
+  *mätvakten: 11 schemalagda flöden (11 via pulsklockan), 0 med problem* (8 i morse, utan marknadsföringen) ·
+  *nyckel pulsklockan: 1 olika i pulsjobben · samma som PAT: ja* · PAT och pulsnyckel går båda ut **2026-11-22**.
+- Kontroll 04:28Z (dbknapp, pg_net mot GitHub): alla pulsjobb bär samma finkorniga PAT, som går ut
+  **2026-11-22 20:55:49 UTC**.
+- Bytesknappen 04:50Z: GitHub-hemligheten `PUBLISH_TOKEN` har samma fingeravtryck (`a0880e9a`) som pulsjobben — alla fyra
+  ställen bär samma PAT. Provet startade `pulsklocka.yml` som *Axelstar* (HTTP 204); alla 11 jobb lästes tillbaka rätt.
+  Första pulskörningen efter omskrivningen: ingest **05:11:01Z**, startad som *Axelstar*, grön — pulsjobben fungerar med den omskrivna nyckeln.
+- **Måndag 21/9** avgör (a): alla sju ska starta inom minuten från sin bokade tid.
+
+**Svaret på "vilken nyckel":** pulsjobben bär PAT:en från Axels konto — samma nyckel som publicera och vakthunden
+använder och som ingest-grannar pushar kartrepot med. Den går ut 22/11.
+
+**Bytet:** en ny nyckel kan bara skapas på Axels konto, och jag loggar inte in på någon annans konto. Därför är bytet nu
+en knapp i stället för SQL för hand. Rotationen senast 15/11 blir: (1) Axel skapar den nya PAT:en, (2) byter
+`PUBLISH_TOKEN` i Supabase, (3) byter `PUBLISH_TOKEN` i GitHub Secrets, (4) trycker `pulsklocka.yml` med läget **nyckel**.
+Nyckelkalendern visar sedan det nya datumet för båda, och *samma som PAT: ja*.
+
+**Rättelse i rotationslistan (kort #86, steg A):** listan från 9/9 gav den nya PAT:en *Contents* och *Issues*, "inget annat".
+Pulsjobben startar flöden med nyckeln och vakthunden läser körningarna — det kräver **Actions: Read and write**, som
+nuvarande nyckel har (provet gav 204). Hade listan följts ordagrant hade bytesknappen fällt på provet och pulsjobben stått
+kvar på den gamla nyckeln tills den dog 22/11. Steg A är rättat, och knappen är steg C.
+
