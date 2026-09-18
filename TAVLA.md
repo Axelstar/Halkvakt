@@ -852,6 +852,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔍 **KONTROLLERAT 17/9:** timeout även 11:07Z — mönstret gäller kassavaktens timmar. **Larmet går ut:** kassavakten
   kommenterade issue #210 05:08:15Z och 11:08:21Z, cirka 75 s in i körningen. Kvar: svaret oläsbart för dbknapp var sjätte
   timme, och okänt om kontrollerna efter kassavakten hinner köras. Låg prioritet.
+  ⚠️ **18/9 — prioriteten upp:** kassavakten räknar månaden dygn för dygn och sida för sida i följd, så tiden växer
+  med månaden (cirka 75 s dag 17, uppskattat 100 s eller mer dag 30). Gratisnivån stoppar funktionen vid 150 s. Sista
+  septemberveckan — när taket är som trängst — riskerar kassavakten att stoppas mitt i räkningen, och kontroll 9
+  (healthcheckens) och 10 (nyckelkalendern) går efter den. Förslag: hämta dygnen parallellt. Frågan i bedömningen §4.2.
 - [ ] ⏰ **#200 MARKNADSFÖRINGEN PÅ PULSKLOCKAN — morgonutkasten ska nå pendlingen** (Bengt + Axel 17/9, DECISIONS #226).
   `marknadsforing.yml` är bokad 04:45 UTC ("före pendlingen") men GitHub-cronen levererade den 08:49–10:07 UTC (10–16/9).
   Kostnaden är liten, cirka 20 s per körning. **Åtgärd:** flytta till Supabase pg_cron som FI, DK och regn-30
