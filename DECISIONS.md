@@ -6847,3 +6847,26 @@ Pulsjobben startar flöden med nyckeln och vakthunden läser körningarna — de
 nuvarande nyckel har (provet gav 204). Hade listan följts ordagrant hade bytesknappen fällt på provet och pulsjobben stått
 kvar på den gamla nyckeln tills den dog 22/11. Steg A är rättat, och knappen är steg C.
 
+## #238 (18/9 2026) Kort #201: kassavakten hämtar dygnen parallellt — vakthunden svarar också i kassavaktens timmar
+
+**Bengts order 18/9:** *"kör #201"*.
+
+**Problemet:** kassavakten hämtade månadens körningar dygn för dygn och sida för sida, i följd. Tiden växte därför med
+månaden, och vakthunden hann inte svara inom pg_nets 120 s i kassavaktens timmar (05, 11, 17, 23 UTC). Gratisnivån
+stoppar funktionen vid 150 s. Sista septemberveckan, när taket är som trängst, hade kassavakten riskerat att stoppas mitt
+i räkningen — och kontroll 9 (healthcheckens) och 10 (nyckelkalendern) går efter den.
+
+**Gjort (PR #348):** sex dygn hämtas samtidigt; sidorna inom ett dygn fortfarande i följd, eftersom nästa sida bara behövs
+när den förra var full. Räkningen är oförändrad — dygnssummorna sorteras innan den släpande takten räknas.
+
+**Bevis:**
+- **Före:** ordinarie körningen 05:07Z fick timeout vid 120 s. Kassaprovet 05:19Z svarade först efter 90–120 s
+  (efter databasknappens väntan, före pg_nets gräns).
+- **Efter** (deploy 05:23Z från main, lokal fil identisk): kassaprovet 05:24Z svarade med status 200 inom cirka 70 s, med
+  alla rader till och med nyckelkalendern. Kassaraden: 4 558 min sedan 1/9 över 3 385 körningar, 20,46 USD — samma
+  räkning som före (4 511 min över 3 346 körningar 23:08Z i går, plus nattens körningar).
+- Ordinarie körningen 11:07Z är den första i kassavaktens timme efter deployen; den ska svara utan timeout.
+
+**Kvar att veta:** vakthunden tar fortfarande cirka 70 s i kassavaktens timme. Kassavakten är nu några sekunder; resten
+är de andra kontrollerna. Marginalen till 120 s är cirka 50 s.
+

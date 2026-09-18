@@ -843,7 +843,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
-- [ ] 🐕 **#201 VAKTHUNDEN SVARAR INTE INOM 120 S I KASSAVAKTENS TIMME** (fynd 17/9 vid beviset för #196).
+- [x] 🐕 **#201 VAKTHUNDEN SVARAR INTE INOM 120 S I KASSAVAKTENS TIMME — ✅ KLART 18/9** (fynd 17/9 vid beviset för #196).
   `net._http_response` 05:07:00Z: *"Timeout of 120000 ms reached"* — vakthundens cron (`7 * * * *`) fick inget svar. Körningarna
   04:07 och 06:07 svarade. Kassavakten körs bara när UTC-timmen är 05, 11, 17 eller 23 (`% 6 !== 5`) och räknar Actions-körningar
   dygn för dygn via GitHubs API — troligen det som tar tid. **Okänt:** om funktionen hann klart efter att pg_net slutade vänta,
@@ -856,6 +856,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   med månaden (cirka 75 s dag 17, uppskattat 100 s eller mer dag 30). Gratisnivån stoppar funktionen vid 150 s. Sista
   septemberveckan — när taket är som trängst — riskerar kassavakten att stoppas mitt i räkningen, och kontroll 9
   (healthcheckens) och 10 (nyckelkalendern) går efter den. Förslag: hämta dygnen parallellt. Frågan i bedömningen §4.2.
+  ✅ **KLART 18/9 (Bengts "kör", DECISIONS #238, PR #348):** sex dygn hämtas samtidigt. Före: ordinarie 05:07Z timeout
+  vid 120 s, kassaprovet 05:19Z svarade efter 90–120 s. Efter deploy 05:23Z: kassaprovet svarade inom cirka 70 s med alla
+  rader, samma räkning (4 558 min, 3 385 körningar). Ordinarie 11:07Z ska svara utan timeout.
 - [ ] ⏰ **#200 MARKNADSFÖRINGEN PÅ PULSKLOCKAN — morgonutkasten ska nå pendlingen** (Bengt + Axel 17/9, DECISIONS #226).
   `marknadsforing.yml` är bokad 04:45 UTC ("före pendlingen") men GitHub-cronen levererade den 08:49–10:07 UTC (10–16/9).
   Kostnaden är liten, cirka 20 s per körning. **Åtgärd:** flytta till Supabase pg_cron som FI, DK och regn-30
