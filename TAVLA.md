@@ -999,6 +999,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     ju sällsyntare mätningen är, desto viktigare är varje enskild körning.
   Verify: (a) nästa måndag går alla sex utan knapptryck; (b) ett flöde vars körning uteblir en gång
   ger en rad i mätvakten inom ett dygn, prövat med matvaktprov.
+  🔍 **18/9 — ett tredje led krävs, (c):** mätvakten läser schemat bara ur flödenas cron-rader. När #200 flyttade
+  marknadsföringen till pulsklockan föll den ur bevakningen i tysthet, och flyttas måndagsserien likadant blir vakten
+  blind för alla sju (grind-v-b kom till 16/9). (c) = vakten läser också pulsklockans jobb (`cron.job`, `puls-%`).
+  Frågan står i bedömningen §4.2: (a)+(b)+(c) i ett grepp före måndag 21/9.
 - [ ] 🧱 **#161 EN CRLF-FIL FÄLLER VARJE FLÖDE SOM COMMITTAR TILLBAKA — och sex källvakter har
   aldrig sparat sitt state** (fynd + rotorsak i kvällsavläsningen 14/9).
   **SYMTOM:** `trv-bevakning` och `marknadsforing` faller i sitt commit-steg med
