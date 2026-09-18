@@ -6745,3 +6745,28 @@ en gång per sats: regn inom 2 h · fall ≥ 0,8 °C på 30 min · yta +1…+3 �
 **Kvar:** radar-, regnmängds-, startbands- och SMHI-varianterna (#223–#225) och facit — de hör till domarna. **Nästa
 körning:** vid första frosten, som underlag för S1-grinden.
 
+## #234 (18/9 2026) Kort #195: vektorgeneratorn återskapar hela `engine/vectors/` — ingen vektor rörd
+
+**Bengts order 18/9:** *"kör #195 och #200"*.
+
+**Fyndet var större än kortet.** Kortet (16/9) sa att v05 hade fel namn och att v18–v23 saknades. En fullkörning 18/9
+ändrade dessutom **elva** befintliga filer (v01–v04, v11–v17). Generatorn hade inte följt med när kamerornas bearing
+vändes 180° (2/9), när vägnumret kom in i olycksrösten (2/9) och när spärren blev prioritetsmedveten (#127, 13/9).
+Filerna hade alltså skrivits om utanför generatorn vid tre tillfällen.
+
+**Gjort:** alla scenarier skrivna ur de frysta filerna. Varje tal uttrycks bara med ett uttryck som ger exakt samma
+flyttal (`northOf(m)`, `northTrace(...)`). v05:s kamera B och hela v23 byggdes för hand med 111 000 m per latitudgrad
+(v23 med nio decimaler) och återskapas exakt så (`n9`). Generatorn skriver nu en fil **bara när innehållet ändrats**:
+arton filer bär andra byte för samma värden (inget radslut sist, v19:s `4.0`), och att skriva om dem hade rört
+vektorfilerna utan skäl och startat Android- och iOS-bygget (~17 Actions-minuter).
+
+**Bevis:** fullkörning ⇒ 24 *oförändrad*, 0 skrivna, `git status engine/vectors/` tom, ingen spökfil. Motprov: v18
+`surfaceTempC` 2,5 → 2,6 i generatorn ⇒ *SKRIVEN* och diffen visar talet; återställt ⇒ *oförändrad*. `npm test`:
+109 godkända, 0 fel.
+
+**Varför nu:** motorregeln för efterhalkan (S3) ska ha nya vektorer. De ska komma ur generatorn, med 5-metersregeln
+mätt, i stället för att skrivas för hand. Det var just handskrivningen som fick generatorn att glida isär.
+
+**Kvar, nytt kort #202:** ett CI-steg som kör generatorn och fäller om `engine/vectors/` ändras. Utan det glider
+generatorn isär vid nästa handändring, som den gjort tre gånger.
+
