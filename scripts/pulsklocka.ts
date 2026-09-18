@@ -32,6 +32,9 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
   // KVAR på Bengts beslut samma dag: den är den enda kontroll som körs utanför det den vaktar.
   // Bron är alltså inte längre en bro utan ett andra spår, och pulsen behövs permanent.
   { namn: "puls-healthcheck", schema: "23 */2 * * *", fil: "healthcheck.yml" },
+  // Kort #200 (Bengt + Axel 17/9, DECISIONS #226): marknadsföringens morgonutkast ska nå pendlingen. GitHub-cronen
+  // var bokad 04:45 UTC men levererade 08:49–10:07 (10–16/9). ~20 s per körning.
+  { namn: "puls-marknadsforing", schema: "45 4 * * *", fil: "marknadsforing.yml" },
 ];
 
 // AVVECKLAS (kort #53): de tre grannjobben ersätts av ett. Utan borttagning skulle de
