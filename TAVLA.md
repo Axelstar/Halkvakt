@@ -60,6 +60,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ### Axel — beslut att ta
 - [ ] ⏰ **#86 NYCKELKALENDERN — två nycklar går ut mitt i säsongen** (Axels fynd 9/9, kort av Claude):
+  ⚠️ **18/9 — ett fjärde ställe, okänt om samma nyckel:** pulsklockans jobb i Supabase pg_cron bär en GitHub-nyckel i
+  sina kommandon (körningarna startas av *Axelstar*). Går den ut stannar ingest, grannar, healthcheck, marknadsföringen och
+  måndagsserien (#160) samtidigt. Byts i malljobbet `puls-ingest-grannar`; `pulsklocka.yml` skarp kopierar till alla. Frågan
+  till Axel står i bedömningen §4.2.
   · **PAT:en (kartrepot/publicera + vakthundens larm) går ut 22/11.** · **Supabase-tokenen (deploy-knappen)
   går ut 8/12.** Båda slutar fungera utan att något ser trasigt ut: publicera får 401 ⇒ CDN fryser ⇒ appens
   åldersspärr tystnar vakten (5/9-läget), och vakthunden kan inte larma om det eftersom larmvägen använder
