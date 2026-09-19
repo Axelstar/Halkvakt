@@ -519,6 +519,23 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] Fysisk Android-testenhet (pappas telefon? begagnad?)
 
 ### Bengt
+- [ ] 🏷️ **#204 SKOLANS NAMN PÅ QR-SIDAN — synlig attribution på webben, inte banner i appen** (Bengts idé 19/9:
+  *"Halkvakt via Mårtenssons trafikskola … indirekt reklam för den som företag — tror du på det eller är det lull lull?"*).
+  **Kärnan håller, formen inte.** Att skolan syns som den som gav eleven appen är den billigaste valutan vi har och precis
+  det en trafikskola vill ha. Men en banner i appen ger skolan lite (eleven är redan deras kund), bryter mot *tyst app
+  utan reklam*, och går inte att bygga ärligt: iPhone ger appen ingen uppgift om vilken länk installationen kom från
+  (Android har Play Install Referrer, iOS saknar motsvarighet), och att märka en användare med "kom via skola X" är
+  data om användaren som löftet *vi samlar in: ingenting* inte täcker.
+  **Den starka versionen ligger på webben (halkvakt-karta, Pages):** (1) **en QR-sida per skola** — bladet med skolans
+  namn pekar på `…/via/martenssons`: *"Välkommen från Mårtenssons Trafikskola"* + butiksknapparna; (2) **en räknare per
+  sida** (ett besök, inte en person — inga uppgifter om vem) så att skolan får ett tal: *"143 av era elever hämtade
+  appen"*; (3) **partnerlistan** på startsidan: *"Trafikskolor som är med"*; (4) **ett märke till skolans egna kanaler**:
+  *Testpartner till Halkvakt* för deras hemsida och Instagram — det är där reklamen för skolan faktiskt syns; (5) i
+  appen bara Om-sidans rad *Testpartner: …*, gemensam för alla, ingen per-skola-märkning.
+  Ger oss det vi behöver till skolpaketet i vår: vilka skolor som faktiskt delar ut bladet. Kostnad: en statisk sida +
+  en liten räknarfunktion, ~1 h; byggs när bladet byggs (appen i butikerna), inte före. Inget lovas i septembersamtalen
+  utöver "bladet med ert namn på".
+  Verify: en skolas QR-sida visar skolans namn, räknaren stiger vid besök, och ingen uppgift om besökaren sparas.
 - [x] 📐 **#197 GREPP 2: TROSKLAR-KOMBINATIONEN — ✅ KLART 17/9: C, D och T fastställda (DECISIONS #220/#225/#226)** (Bengts "kör grepp 2" 16/9,
   DECISIONS #217, bedömningens S10). UTKAST i `docs/TROSKLAR-KOMBINATIONEN.md`. **C:** KB-A bär varje del sin roll · KB-B
   räddar mer än den kostar (efterhalkan: Ö-B 5 %/25 %) · KB-C giltighet (Ö-C + T-C) · KB-D förarfacit. **D:** sju regler —
