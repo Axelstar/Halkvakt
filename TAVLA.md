@@ -519,7 +519,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] Fysisk Android-testenhet (pappas telefon? begagnad?)
 
 ### Bengt
-- [ ] 🏷️ **#204 SKOLANS NAMN PÅ QR-SIDAN — synlig attribution på webben, inte banner i appen** (Bengts idé 19/9:
+- [ ] 🏷️ **#204 SKOLANS NAMN PÅ QR-SIDAN — synlig attribution på webben, inte banner i appen — ✅ BESLUTAT 19/9, förberett, byggs när bladet byggs** (Bengts idé 19/9:
   *"Halkvakt via Mårtenssons trafikskola … indirekt reklam för den som företag — tror du på det eller är det lull lull?"*).
   **Kärnan håller, formen inte.** Att skolan syns som den som gav eleven appen är den billigaste valutan vi har och precis
   det en trafikskola vill ha. Men en banner i appen ger skolan lite (eleven är redan deras kund), bryter mot *tyst app
@@ -538,6 +538,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Skiss (19/9): `docs/skisser/qr-sida-per-skola.svg` — bladet, sidan, listan och märket, och kedjan QR → räknare → sida →
   butik. Siffrorna offentliggörs inte: skolan får dem i ett mejl varje månad.
   Verify: en skolas QR-sida visar skolans namn, räknaren stiger vid besök, och ingen uppgift om besökaren sparas.
+  📄 **FÖRBERETT 19/9 (Bengts ja, DECISIONS #241): `docs/QR-SIDA-PER-SKOLA.md`** — delarna (register, sida, räknare,
+  månadsmejl, lista, märke, blad, Om-raden), kedjan, integriteten, det som måste finnas före tryck (domänen först — en
+  tryckt QR-kod går inte att ändra), Axels sju beslut, kostnad ~1 h, bevis. VÄNTAR: Axels bedömning av formen; bygget
+  när appen finns i butikerna.
 - [x] 📐 **#197 GREPP 2: TROSKLAR-KOMBINATIONEN — ✅ KLART 17/9: C, D och T fastställda (DECISIONS #220/#225/#226)** (Bengts "kör grepp 2" 16/9,
   DECISIONS #217, bedömningens S10). UTKAST i `docs/TROSKLAR-KOMBINATIONEN.md`. **C:** KB-A bär varje del sin roll · KB-B
   räddar mer än den kostar (efterhalkan: Ö-B 5 %/25 %) · KB-C giltighet (Ö-C + T-C) · KB-D förarfacit. **D:** sju regler —
