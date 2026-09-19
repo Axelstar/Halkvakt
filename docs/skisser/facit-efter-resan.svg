@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 660" width="980" height="660" font-family="Helvetica, Arial, sans-serif">
+  <!-- Skiss till kort #203 (19/9 2026): frågan kommer till föraren — föraren letar aldrig. Tre platser, en fråga, ett tryck. -->
+  <rect width="980" height="660" fill="#151515"/>
+  <text x="490" y="34" text-anchor="middle" fill="#ffffff" font-size="19" font-weight="bold">Facit efter resan — ett tryck, tre platser (kort #203)</text>
+  <text x="490" y="56" text-anchor="middle" fill="#9a9a9a" font-size="13">Frågan kommer till föraren. Svarad på en plats försvinner den från de andra. Tystnad räknas aldrig som ja.</text>
+
+  <!-- ===== Telefon 1: låsskärmen ===== -->
+  <text x="175" y="92" text-anchor="middle" fill="#dddddd" font-size="14" font-weight="bold">1. Låsskärmen — när resan är slut</text>
+  <rect x="40" y="104" width="270" height="470" rx="28" fill="#0b0b0b" stroke="#3a3a3a" stroke-width="2"/>
+  <text x="175" y="160" text-anchor="middle" fill="#ffffff" font-size="44" font-weight="bold">09:41</text>
+  <text x="175" y="182" text-anchor="middle" fill="#9a9a9a" font-size="12">fredag 19 september</text>
+  <rect x="58" y="214" width="234" height="150" rx="16" fill="#1c1c1e"/>
+  <text x="74" y="238" fill="#f5c400" font-size="10" font-weight="bold">▲ HALKVAKT · nu</text>
+  <text x="74" y="262" fill="#ffffff" font-size="15" font-weight="bold">Resan klar — 3 varningar</text>
+  <text x="74" y="282" fill="#dddddd" font-size="13">Stämde alla?</text>
+  <rect x="74" y="298" width="202" height="26" rx="13" fill="#22c55e"/>
+  <text x="175" y="316" text-anchor="middle" fill="#0b0b0b" font-size="12" font-weight="bold">Ja, alla stämde</text>
+  <rect x="74" y="330" width="202" height="24" rx="12" fill="none" stroke="#f5c400" stroke-width="1.5"/>
+  <text x="175" y="346" text-anchor="middle" fill="#f5c400" font-size="12">Något stämde inte</text>
+  <text x="175" y="410" text-anchor="middle" fill="#6f6f6f" font-size="11">Svaret skickas utan att appen öppnas.</text>
+  <text x="175" y="426" text-anchor="middle" fill="#6f6f6f" font-size="11">Kommer vid självstoppet eller Avsluta vakten.</text>
+
+  <!-- ===== Telefon 2: överst på Redo. ===== -->
+  <text x="490" y="92" text-anchor="middle" fill="#dddddd" font-size="14" font-weight="bold">2. Överst på Redo. — inte längst ner</text>
+  <rect x="355" y="104" width="270" height="470" rx="28" fill="#0b0b0b" stroke="#3a3a3a" stroke-width="2"/>
+  <text x="373" y="134" fill="#f5c400" font-size="10" font-weight="bold" letter-spacing="2">▲ HALKVAKT</text>
+  <rect x="520" y="121" width="90" height="18" rx="9" fill="none" stroke="#22c55e" stroke-width="1"/>
+  <text x="565" y="134" text-anchor="middle" fill="#22c55e" font-size="9">● Trafikverket live</text>
+  <rect x="371" y="152" width="238" height="112" rx="16" fill="#1c1c1e"/>
+  <text x="387" y="176" fill="#9a9a9a" font-size="10" letter-spacing="1">RESAN 08:25 · 61 MIN · 3 VARNINGAR</text>
+  <text x="387" y="200" fill="#ffffff" font-size="17" font-weight="bold">Stämde alla?</text>
+  <rect x="387" y="214" width="104" height="30" rx="15" fill="#22c55e"/>
+  <text x="439" y="234" text-anchor="middle" fill="#0b0b0b" font-size="12" font-weight="bold">Ja, alla stämde</text>
+  <rect x="499" y="214" width="94" height="30" rx="15" fill="none" stroke="#f5c400" stroke-width="1.5"/>
+  <text x="546" y="234" text-anchor="middle" fill="#f5c400" font-size="12">Visa listan</text>
+  <text x="373" y="334" fill="#ffffff" font-size="54" font-weight="bold" letter-spacing="-2">Redo.</text>
+  <text x="373" y="360" fill="#9a9a9a" font-size="11">Fem källor bevakade. Din position stannar i telefonen.</text>
+  <rect x="373" y="378" width="46" height="18" rx="9" fill="none" stroke="#f5c400" stroke-width="1"/>
+  <text x="396" y="391" text-anchor="middle" fill="#f5c400" font-size="8">HALKA</text>
+  <rect x="425" y="378" width="40" height="18" rx="9" fill="none" stroke="#f5c400" stroke-width="1"/>
+  <text x="445" y="391" text-anchor="middle" fill="#f5c400" font-size="8">VILT</text>
+  <rect x="471" y="378" width="58" height="18" rx="9" fill="none" stroke="#f5c400" stroke-width="1"/>
+  <text x="500" y="391" text-anchor="middle" fill="#f5c400" font-size="8">OLYCKOR</text>
+  <rect x="535" y="378" width="62" height="18" rx="9" fill="none" stroke="#f5c400" stroke-width="1"/>
+  <text x="566" y="391" text-anchor="middle" fill="#f5c400" font-size="8">FRYSRISK</text>
+  <rect x="373" y="470" width="234" height="40" rx="20" fill="#22c55e"/>
+  <text x="490" y="495" text-anchor="middle" fill="#0b0b0b" font-size="14" font-weight="bold">▶ Starta vakten</text>
+  <text x="373" y="535" fill="#6f6f6f" font-size="10">Senaste tur · 18 Sep 08:25, 61 min, vaknade själv</text>
+  <text x="490" y="600" text-anchor="middle" fill="#6f6f6f" font-size="11">Står kvar tills svaret finns eller ett dygn gått.</text>
+  <text x="490" y="616" text-anchor="middle" fill="#6f6f6f" font-size="11">Visas också direkt efter Avsluta vakten.</text>
+
+  <!-- ===== Telefon 3: listan ===== -->
+  <text x="805" y="92" text-anchor="middle" fill="#dddddd" font-size="14" font-weight="bold">3. Listan — bara när något inte stämde</text>
+  <rect x="670" y="104" width="270" height="470" rx="28" fill="#0b0b0b" stroke="#3a3a3a" stroke-width="2"/>
+  <text x="688" y="140" fill="#ffffff" font-size="15" font-weight="bold">Resan 08:25 · 3 varningar</text>
+  <text x="688" y="158" fill="#9a9a9a" font-size="11">Tryck på en rad för att ändra.</text>
+  <!-- rad 1 -->
+  <rect x="686" y="176" width="238" height="58" rx="12" fill="#1c1c1e"/>
+  <text x="700" y="196" fill="#9a9a9a" font-size="10">08:31</text>
+  <text x="700" y="214" fill="#ffffff" font-size="12">Fartkamera om 500 meter.</text>
+  <rect x="852" y="194" width="62" height="22" rx="11" fill="#22c55e"/>
+  <text x="883" y="209" text-anchor="middle" fill="#0b0b0b" font-size="10" font-weight="bold">Stämde</text>
+  <!-- rad 2 -->
+  <rect x="686" y="242" width="238" height="58" rx="12" fill="#1c1c1e"/>
+  <text x="700" y="262" fill="#9a9a9a" font-size="10">08:47</text>
+  <text x="700" y="280" fill="#ffffff" font-size="12">Halka på vägen framför dig.</text>
+  <rect x="836" y="260" width="78" height="22" rx="11" fill="#f5c400"/>
+  <text x="875" y="275" text-anchor="middle" fill="#0b0b0b" font-size="10" font-weight="bold">Stämde inte</text>
+  <!-- rad 3 -->
+  <rect x="686" y="308" width="238" height="58" rx="12" fill="#1c1c1e"/>
+  <text x="700" y="328" fill="#9a9a9a" font-size="10">09:02</text>
+  <text x="700" y="346" fill="#ffffff" font-size="12">Vilt i rörelse framöver.</text>
+  <rect x="852" y="326" width="62" height="22" rx="11" fill="none" stroke="#6f6f6f" stroke-width="1.5"/>
+  <text x="883" y="341" text-anchor="middle" fill="#9a9a9a" font-size="10">Vet inte</text>
+  <text x="688" y="396" fill="#6f6f6f" font-size="10">Vet inte skickas aldrig.</text>
+  <rect x="686" y="470" width="238" height="40" rx="20" fill="#22c55e"/>
+  <text x="805" y="495" text-anchor="middle" fill="#0b0b0b" font-size="14" font-weight="bold">Skicka 2 svar</text>
+  <text x="805" y="600" text-anchor="middle" fill="#6f6f6f" font-size="11">Det som skickas: varningens id, klockslag, svar.</text>
+  <text x="805" y="616" text-anchor="middle" fill="#6f6f6f" font-size="11">Ingen position, ingen resa.</text>
+
+  <!-- ===== Under resan ===== -->
+  <rect x="40" y="628" width="900" height="1" fill="#3a3a3a"/>
+  <text x="490" y="650" text-anchor="middle" fill="#dddddd" font-size="13">Under resan, händerna på ratten (iPhone): <tspan fill="#f5c400" font-weight="bold">”Hej Siri, stämde inte i Halkvakt”</tspan> — gäller senaste varningen. Rösttexten i varningarna rörs inte.</text>
+</svg>

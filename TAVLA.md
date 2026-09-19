@@ -76,6 +76,21 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (*Vet inte* — skickas aldrig). Skickas som i dag: id, klockslag, svar per varning. **Noll handgrepp i bilen, ett efter.**
   Obesvarade resor skickas aldrig. Bygger på Facit/FacitSender som finns; iOS har notisbehörigheten (HeadsUpService),
   Android POST_NOTIFICATIONS.
+  **VAR knappen sitter (Bengt 19/9: *"som det är i dag är det oerhört krångligt … det kommer inte många svar"*):**
+  frågan kommer till föraren — föraren letar aldrig. Tre platser, en fråga, ett tryck; svarad på en plats försvinner den
+  från de andra. Skiss: `docs/skisser/facit-efter-resan.svg`.
+  (a) **Låsskärmen:** notisen bär själva knapparna — *Ja, alla stämde* / *Något stämde inte* — och svaret skickas utan
+  att appen öppnas (iOS: notisåtgärd i bakgrunden; Android: notisåtgärd + WorkManager). Kommer vid självstoppet och vid
+  *Avsluta vakten*.
+  (b) **Överst på Redo.** — ett kort ovanför rubriken, inte en rad längst ner: *Resan 08:25 · 61 min · 3 varningar —
+  Stämde alla?* Står kvar tills svaret finns eller ett dygn gått; visas också direkt efter *Avsluta vakten*.
+  (c) **Listan** bara vid avvikelse: en rad per varning med klockslag och text; tryck på raden växlar Stämde / Stämde
+  inte / Vet inte; sedan *Skicka*.
+  Brytarens text skrivs om: *"Efter varje resa frågar appen om varningarna stämde — ett tryck. Det som skickas är …"*.
+  **(4) Missarna — det andra halva facit, eget beslut (Bengt + Axel):** *"Hej Siri, halka i Halkvakt"* när det är halt
+  UTAN varning ⇒ appen sparar klockslaget och närmaste segment/station som id (räknas på telefonen) och skickar id +
+  klockslag efter resan, som ett varnings-id. Nettonyttan (KB-B) behöver missarna lika mycket som träffarna. Integritet:
+  samma klass som ett varnings-id, men utlöst av föraren — brytarens text måste säga det.
   **Automatspåret för sanningen finns redan och bär huvuddelen — utan förare:** uppspelningen ur arkiven (mätte ytan
   under noll och blöt EFTER frysriskvarningen? — en senare mätning är en annan mätning, tillåten som facit), kamerabilden
   vid varningen (bildfacit), olycksarkivet, radar + station för vattenplaning (V-B). Föraren är den enda källan för det som
