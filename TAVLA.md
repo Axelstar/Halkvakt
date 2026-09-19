@@ -535,6 +535,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Ger oss det vi behöver till skolpaketet i vår: vilka skolor som faktiskt delar ut bladet. Kostnad: en statisk sida +
   en liten räknarfunktion, ~1 h; byggs när bladet byggs (appen i butikerna), inte före. Inget lovas i septembersamtalen
   utöver "bladet med ert namn på".
+  Skiss (19/9): `docs/skisser/qr-sida-per-skola.svg` — bladet, sidan, listan och märket, och kedjan QR → räknare → sida →
+  butik. Siffrorna offentliggörs inte: skolan får dem i ett mejl varje månad.
   Verify: en skolas QR-sida visar skolans namn, räknaren stiger vid besök, och ingen uppgift om besökaren sparas.
 - [x] 📐 **#197 GREPP 2: TROSKLAR-KOMBINATIONEN — ✅ KLART 17/9: C, D och T fastställda (DECISIONS #220/#225/#226)** (Bengts "kör grepp 2" 16/9,
   DECISIONS #217, bedömningens S10). UTKAST i `docs/TROSKLAR-KOMBINATIONEN.md`. **C:** KB-A bär varje del sin roll · KB-B
