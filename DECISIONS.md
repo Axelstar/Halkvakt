@@ -6923,3 +6923,25 @@ när bilen står stilla — i dag syns de först när vakten är avslutad, och s
 **Läxa (CLAUDE.md):** ett byggnummer som sätts före den sista ändringen bevisar inte vilket bygge som är ute — 0.3.7 (10)
 fanns i två varianter i åtta minuter, och det räckte.
 
+## #241 (19/9 2026) Skolans synlighet: QR-sida per skola på webben — ingen banner i appen (kort #204)
+
+**Bengts idé 19/9:** en banner per trafikskola i appen, *"Halkvakt via Mårtenssons trafikskola"*, som indirekt reklam
+för skolan. **Bengts beslut samma dag, på Claudes bedömning:** ja till webbversionen, nej till banner i appen.
+*"Förbered men bygg inte."*
+
+**Varför inte i appen:** eleven som ser bannern är redan skolans kund; det bryter mot *tyst app utan reklam*; iPhone
+ger appen ingen uppgift om vilken länk installationen kom från; och "kom via skola X" är en uppgift om användaren som
+löftet *vi samlar in: ingenting* inte täcker.
+
+**Webbversionen:** bladet med skolans namn och QR-kod → en räknare (+1 per skola och månad, inget om besökaren) → skolans
+egen sida *Välkommen från …* med butiksknapparna → App Store / Google Play. Partnerlista på startsidan utan siffror;
+talen till skolan i ett månadsmejl; ett märke *Testpartner 2026/27* till skolans egna kanaler; i appen bara Om-sidans
+gemensamma testpartner-rad.
+
+**Förberett:** `docs/QR-SIDA-PER-SKOLA.md` (delarna, kedjan, integriteten, det som måste finnas före tryck, Axels sju
+beslut, kostnad, bevis) och skissen `docs/skisser/qr-sida-per-skola.svg`. **Byggs när bladet byggs** — när appen finns i
+butikerna. Inget lovas i Skyltfondssamtalen utöver *bladet med ert namn på*.
+
+**Alternativ som valdes bort:** banner i appen (ovan) · per-skola-märkning i appen via installationslänk (går inte på
+iPhone utan spårningspaket) · offentliga besökstal (en skola med tolv besök bredvid en med 143).
+
