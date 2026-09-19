@@ -63,13 +63,30 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   fälttest 2: *"vi måste hitta något system som inte innebär att de ska stanna och bekräfta … ett automatspår"*).
   Dagens S4 kräver: stanna, avsluta vakten, öppna appen, hitta knapparna — och bara resans SISTA varning går att svara på.
   **Förslag i tre lager:**
-  **(1) Efter resan — grunden, båda plattformarna.** Appen sparar resans varningar (id, klockslag, text; högst 50, bara
-  lokalt). När vakten stannar (manuellt eller självstoppet efter 15 min) och det finns obesvarade varningar: en lokal notis
-  *"Resan klar — 3 varningar att bekräfta"* och en lista på hemskärmen — klockslag, texten, **Stämde / Stämde inte /
-  Minns inte** (tas bort, skickas aldrig). Skickas som i dag: id, klockslag, svar. **Noll handgrepp i bilen.** Bygger på
-  Facit/FacitSender som finns; iOS har notisbehörigheten (HeadsUpService), Android POST_NOTIFICATIONS.
+  **Bengts styrning 19/9 — undantagsprincipen:** *"vi tror att appen är så duktig att vi automatiserar svaren så att
+  människan bara ska meddela när maskinen avviker från det som maskinen har förutsett"* — för ALLA varningsslag, inte
+  bara kamerorna. Rätt om bördan, fel om tystnaden: **tystnad får aldrig räknas som "stämde".** Tystnad betyder lika
+  ofta "såg inte", "kunde inte bedöma", "telefonen låg i fickan" eller "appen var trasig" — 16/9 och 18/9 gav noll svar
+  för att knapparna saknades, och med tystnad = ja hade de resorna bokförts som bekräftelser. Ett facit som antar det
+  som ska prövas kan inte pröva det. Svaret ska vara en HANDLING, men handlingen kan vara EN per resa:
+  **(1) Efter resan — undantagsprincipen med underskrift, båda plattformarna.** Appen sparar resans varningar (id,
+  klockslag, text; bara lokalt). När vakten stannar (manuellt eller självstoppet efter 15 min) och det finns obesvarade
+  varningar: en lokal notis *"Resan klar — stämde alla 3 varningarna?"* och en lista på hemskärmen med **ett tryck för
+  normalfallet: "Ja, alla stämde"**, eller peka ut den som inte stämde (*Stämde inte*) och den man inte kunde bedöma
+  (*Vet inte* — skickas aldrig). Skickas som i dag: id, klockslag, svar per varning. **Noll handgrepp i bilen, ett efter.**
+  Obesvarade resor skickas aldrig. Bygger på Facit/FacitSender som finns; iOS har notisbehörigheten (HeadsUpService),
+  Android POST_NOTIFICATIONS.
+  **Automatspåret för sanningen finns redan och bär huvuddelen — utan förare:** uppspelningen ur arkiven (mätte ytan
+  under noll och blöt EFTER frysriskvarningen? — en senare mätning är en annan mätning, tillåten som facit), kamerabilden
+  vid varningen (bildfacit), olycksarkivet, radar + station för vattenplaning (V-B). Föraren är den enda källan för det som
+  bara syns från bilen — och avvikelsen (*stämde inte*) är det värdefullaste enskilda svaret, för det är falsklarmen som
+  bränner förtroendet (cry wolf).
+  **Kontroll i domen:** resor svarade med "Ja, alla" jämförs med resor svarade rad för rad — skiljer sig andelen
+  *stämde* markant är "Ja, alla" en vana, inte en iakttagelse, och räknas ner. KB-D4:s tak (ingen förare > 25 %) står.
+  **Förslag till KB-D (kräver Bengt + Axel, fastställt dokument): KB-D5 — ett svar är en handling; tystnad är inget svar.**
   **(2) Med rösten under resan — iOS, nästan gratis.** Två App Shortcuts bredvid Starta/Stoppa: *"Hej Siri, stämde i
   Halkvakt"* / *"stämde inte i Halkvakt"* ⇒ svar på senaste varningen om den är yngre än 10 min, Siri säger *"Tack."*.
+  Med undantagsprincipen räcker EN fras i praktiken: *"stämde inte i Halkvakt"* när maskinen hade fel, medan minnet är färskt.
   Händerna på ratten, fungerar via CarPlay och bilens Bluetooth, **ingen mikrofonbehörighet** — Siri lyssnar, inte appen.
   Android: Assistant/Gemini-stödet för egna app-fraser är osäkert — (1) först, rösten undersöks.
   **(3) Valfritt:** knapparna i körläget när bilen står stilla (≥ 5 s, varning < 10 min) — rött ljus, färskt minne, ett
@@ -86,7 +103,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (KB-D4: ≥ 30 svar från ≥ 5 förare).
   Kostnad: en Android-push ≈ 15 Actions-min (två jobb) + CI; iOS byggs av Axel — går i nästa bygge efter 0.3.8.
   Rösttexten rörs inte. S4:s utformning är Axels ⇒ hans ja på formen; Bengt beställer.
-  Verify: (1) ett riktigt svar i `driver_facit` på en varning som INTE var resans sista, utan att föraren stannat;
+  Verify: (1) en resa med ≥ 2 varningar besvarad med ett tryck ger lika många rader i `driver_facit`, utan att föraren
+  stannat; en resa utan tryck ger noll rader;
   (2) ett svar via Siri med `app = ios` och varningens klockslag.
 - [ ] ⏰ **#86 NYCKELKALENDERN — två nycklar går ut mitt i säsongen** (Axels fynd 9/9, kort av Claude):
   ⚠️ **18/9 — ett fjärde ställe, okänt om samma nyckel:** pulsklockans jobb i Supabase pg_cron bär en GitHub-nyckel i
