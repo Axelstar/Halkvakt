@@ -27,7 +27,7 @@ ingen banner och ingen märkning per skola. Bygget tar ungefär en timme och gö
 | # | Del | Innehåll | Var |
 | :-- | :-- | :-- | :-- |
 | 1 | **Skolregistret** | en fil med rad per skola: kortnamn (`martenssons`), namn, ort, kontaktperson, datum för muntligt ja | Halkvakt-repot, `docs/skolor.json` eller motsvarande |
-| 2 | **Skolans sida** | *Välkommen från [skola]* · appens budskap · **var den talar: ringvägar, infarter, landsväg och motorväg — i stan är den tyst** (mätt 19/9: inne i Malmö en mätstation, inga fartkameror) · knapparna App Store / Google Play · *gratis, ingen reklam, positionen lämnar aldrig telefonen* · länk till testbilarna | en statisk sida per skola, byggd ur registret, på Pages (halkvakt-karta): `via/martenssons.html` |
+| 2 | **Skolans sida** | *Välkommen från [skola]* · appens budskap · **var den talar: ringvägar, infarter, landsväg och motorväg — i stan är den tyst** (mätt 19/9: i Malmö kommun tre mätstationer, alla på statens vägar, inga fartkameror) · knapparna App Store / Google Play · *gratis, ingen reklam, positionen lämnar aldrig telefonen* · länk till testbilarna | en statisk sida per skola, byggd ur registret, på Pages (halkvakt-karta): `via/martenssons.html` |
 | 3 | **Räknaren** | QR-koden pekar på en liten funktion: `+1` på raden *(skola, månad)* och vidare till skolans sida. Sparar inget om besökaren | Supabase edge function `via` + tabell `via_besok(skola, manad, antal)` |
 | 4 | **Månadsmejlet** | *"143 besök på er sida i november"* — Bengt skickar, talen hämtas med en dbknapp-fråga | manuellt, en gång i månaden |
 | 5 | **Partnerlistan** | *Trafikskolor som är med* på startsidan, utan siffror | halkvakt-karta |
