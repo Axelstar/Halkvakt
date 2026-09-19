@@ -87,10 +87,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (c) **Listan** bara vid avvikelse: en rad per varning med klockslag och text; tryck på raden växlar Stämde / Stämde
   inte / Vet inte; sedan *Skicka*.
   Brytarens text skrivs om: *"Efter varje resa frågar appen om varningarna stämde — ett tryck. Det som skickas är …"*.
-  **(4) Missarna — det andra halva facit, eget beslut (Bengt + Axel):** *"Hej Siri, halka i Halkvakt"* när det är halt
+  **(4) Missarna — det andra halva facit, INGÅR i förslaget (Bengt 19/9: "det ska finnas en möjlighet att rapportera
+  missarna också"); integritetsbeslutet är Axels:** *"Hej Siri, appen missade i Halkvakt"* eller en stor knapp *Appen
+  missade* i körläget (Androids väg) när det är halt
   UTAN varning ⇒ appen sparar klockslaget och närmaste segment/station som id (räknas på telefonen) och skickar id +
-  klockslag efter resan, som ett varnings-id. Nettonyttan (KB-B) behöver missarna lika mycket som träffarna. Integritet:
-  samma klass som ett varnings-id, men utlöst av föraren — brytarens text måste säga det.
+  klockslag efter resan, som ett varnings-id; typen (Halka / Vatten / Vilt / Olycka / Annat) väljs i listan efter resan.
+  Ny tabell `driver_miss`. Nettonyttan (KB-B) behöver missarna lika mycket som träffarna. Integritet: samma klass som
+  ett varnings-id, men utlöst av föraren — brytarens text måste säga det.
+  📄 **BESLUTSUNDERLAG TILL AXEL 19/9: `docs/FACIT-EFTER-RESAN.md`** — hela förslaget, skissen, åtta beslut med
+  rekommendation, kostnad och bevis. Bengt skickar; inget byggs förrän Axel svarat.
   **Automatspåret för sanningen finns redan och bär huvuddelen — utan förare:** uppspelningen ur arkiven (mätte ytan
   under noll och blöt EFTER frysriskvarningen? — en senare mätning är en annan mätning, tillåten som facit), kamerabilden
   vid varningen (bildfacit), olycksarkivet, radar + station för vattenplaning (V-B). Föraren är den enda källan för det som
