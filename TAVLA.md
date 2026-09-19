@@ -895,7 +895,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   OCH B2B-marknad (kopplar till #92 fordonstyp och #90 sidvind). Nu första spåret. (2) NTF och
   M Sverige som kanaler till landsvägsföraren i mörker. Verify: ett möte bokat per kvarvarande spår.
 - [x] ⛔ **#93 Kommunala vägar — STÄNGT 12/9, men HALVA KORTET FLYTTADES** (Bengts order när §2.6 togs ur
-  📏 **STADEN I SIFFROR 19/9** (Bengts fråga: trafikskolorna kör mest i stan): Mätt 19/9 (dbknapp, radie från centrum): **Malmö 6 km: 1 mätstation (Malmö GBG), 0 fartkameror, 5 väglagssegment, 10 olyckor/30 d · Lund 4 km: 1/0/6/5 · Helsingborg 5 km: 1/0/2/4 · Göteborg 7 km: 1/8/20/142 · Stockholm 8 km: 7/13/10/625** — av 850 stationer, 2 791 kameror, 818 segment i landet. Inne på gatorna är appen tyst; det som finns ligger på ringvägar, infarter och genomfartsleder. Konsekvens för skolorna: lärarnas facit kommer från landsvägs- och motorvägspassen, inte stadspassen; sägs rakt ut i samtalen (kontaktplan v6.3). Städernas svar (Malmö, Stockholm, Göteborg) avgör om det ändras.
+  📏 **STADEN I SIFFROR 19/9** (Bengts fråga: trafikskolorna kör mest i stan): Mätt 19/9 (dbknapp, radie från centrum): **Malmö 6 km: 1 mätstation (Malmö GBG; i hela kommunen tre: Malmö GBG 1 km, Oxie 7 km, Malmö Ö 8 km — alla på statens vägar), 0 fartkameror, 5 väglagssegment, 10 olyckor/30 d · Lund 4 km: 1/0/6/5 · Helsingborg 5 km: 1/0/2/4 · Göteborg 7 km: 1/8/20/142 · Stockholm 8 km: 7/13/10/625** — av 850 stationer, 2 791 kameror, 818 segment i landet. Inne på gatorna är appen tyst; det som finns ligger på ringvägar, infarter och genomfartsleder. Konsekvens för skolorna: lärarnas facit kommer från landsvägs- och motorvägspassen, inte stadspassen; sägs rakt ut i samtalen (kontaktplan v6.3). Städernas svar (Malmö, Stockholm, Göteborg) avgör om det ändras.
+  📬 **MALMÖ SVARADE 18/9 16:49** (ärende 1255995, FGK via kundservice): egna väderstationer finns; de och Trafikverkets tre i
+  Malmö styr prognosen som utkallarna beslutar halkbekämpning och snöröjning på. *"I nuläget kan vi inte erbjuda datan som
+  öppen data."* ⇒ (a) förblir stängt. Två öppningar kvar: **avtal inom projektet** (inte öppen data) och **leverantörens väg**
+  (systemet bakom stationerna). Följdmejl utkast 19/9 (bedömningen §4.2). Stockholm och Göteborg: skickat 18/9, väntar.
   systemanalysen, DECISIONS #108).
   ✘ **(a) kommunernas stationsdata läggs ner:** det finns ingen öppen källa, ingen förhandling
   pågår, och att hålla ett kort öppet för något ingen arbetar på är att låtsas. Hålet i täckningen
