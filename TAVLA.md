@@ -904,6 +904,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ligger under NTF Jönköping (verksamhetschefen). Talmanus + tackmejl + uppföljningstabell: Drive "Kontaktplan
   Skyltfonden 2026-09-16 v6". VÄNTAR: samtalen (Bengt) · ansökan v6: AP3 saknar partner (58 000 kr), "avsiktsförklaring
   bifogas" → muntligt bekräftat, NTF-namnet, YKB-raden efter banans svar.
+  💬 **TILLÄGG v6.2 19/9 (Bengts fråga: "what's in it for me"; Axel föreslår partnerskap i appen):** *Vad de får* per
+  part, en mening per samtal, svar på ersättningsfrågan, reserv om ingen skola säger ja, och hållningen: **partner i
+  projektet, synlig i appen där det är naturligt (Om-sidan, elevbladet) — inte partner i appen; skolpaketet i vår 2027**
+  (FINANSIERING §B2B). Skrivbordet: `Kontaktplan-v6.2-tillagg-vad-de-far.html`. Beslutet Bengt + Axel i bedömningen §4.2.
   ✍️ **ANSÖKAN v6 + KONTAKTPLAN v6.1 16/9 (DECISIONS #216):** trafiklärare får vara testförare (Bengt) → frågan fast i
   trafikskolesamtalet. **AP3 sänkt** till pilot med trafiklärare som expertfacit: 58 000 → 21 000 kr, sökt belopp
   **363 200 kr** (flottpiloten och morgonöversikten ur ansökan). Båda i Drive; v6 av kontaktplanen märkt ersatt. VÄNTAR:
