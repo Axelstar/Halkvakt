@@ -59,6 +59,35 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 
 ### Axel — beslut att ta
+- [ ] 🗣️ **#203 FACIT UTAN ATT STANNA — svaret efter resan, och med rösten under den** (Bengts fråga 18/9 efter
+  fälttest 2: *"vi måste hitta något system som inte innebär att de ska stanna och bekräfta … ett automatspår"*).
+  Dagens S4 kräver: stanna, avsluta vakten, öppna appen, hitta knapparna — och bara resans SISTA varning går att svara på.
+  **Förslag i tre lager:**
+  **(1) Efter resan — grunden, båda plattformarna.** Appen sparar resans varningar (id, klockslag, text; högst 50, bara
+  lokalt). När vakten stannar (manuellt eller självstoppet efter 15 min) och det finns obesvarade varningar: en lokal notis
+  *"Resan klar — 3 varningar att bekräfta"* och en lista på hemskärmen — klockslag, texten, **Stämde / Stämde inte /
+  Minns inte** (tas bort, skickas aldrig). Skickas som i dag: id, klockslag, svar. **Noll handgrepp i bilen.** Bygger på
+  Facit/FacitSender som finns; iOS har notisbehörigheten (HeadsUpService), Android POST_NOTIFICATIONS.
+  **(2) Med rösten under resan — iOS, nästan gratis.** Två App Shortcuts bredvid Starta/Stoppa: *"Hej Siri, stämde i
+  Halkvakt"* / *"stämde inte i Halkvakt"* ⇒ svar på senaste varningen om den är yngre än 10 min, Siri säger *"Tack."*.
+  Händerna på ratten, fungerar via CarPlay och bilens Bluetooth, **ingen mikrofonbehörighet** — Siri lyssnar, inte appen.
+  Android: Assistant/Gemini-stödet för egna app-fraser är osäkert — (1) först, rösten undersöks.
+  **(3) Valfritt:** knapparna i körläget när bilen står stilla (≥ 5 s, varning < 10 min) — rött ljus, färskt minne, ett
+  tryck på en monterad telefon.
+  **Vad som INTE går:** att automatisera människans iakttagelse. Telefonen kan inte känna halka, och ett svar som ingen
+  mätning kan motbevisa får inte räknas (regel T). Det automatiska facit finns redan, utan förare: kamerabilderna
+  (bildfacit, bedömningen §4.2), uppspelningen ur arkiven, olycksarkivet. Förarkanalen ska bara bära det bara en
+  människa ser — och därför vara gratis att använda.
+  **Avvisat:** lyssning i appen efter varningen (mikrofonbehörighet; Bluetooth byter till samtalsläge och musiken tystnar;
+  svenskt stöd på enheten oklart) · rattens knappar (kräver att appen tar över musiken) · CarPlay-app (Apples tillstånd)
+  · klocka (få testare) · "passerad"-flagga ur positionen (rörelsedata — eget integritetsbeslut, inte nu).
+  **Kamerorna är kontrollfrågan:** Trafikverkets kameror är fältverifierade (2/9), så ett *stämde inte* på en kamera
+  säger att kanalen eller geometrin är fel — inte kameran. Domen i januari behöver svaren på halka och frysrisk
+  (KB-D4: ≥ 30 svar från ≥ 5 förare).
+  Kostnad: en Android-push ≈ 15 Actions-min (två jobb) + CI; iOS byggs av Axel — går i nästa bygge efter 0.3.8.
+  Rösttexten rörs inte. S4:s utformning är Axels ⇒ hans ja på formen; Bengt beställer.
+  Verify: (1) ett riktigt svar i `driver_facit` på en varning som INTE var resans sista, utan att föraren stannat;
+  (2) ett svar via Siri med `app = ios` och varningens klockslag.
 - [ ] ⏰ **#86 NYCKELKALENDERN — två nycklar går ut mitt i säsongen** (Axels fynd 9/9, kort av Claude):
   ⚠️ **18/9 — ett fjärde ställe, okänt om samma nyckel:** pulsklockans jobb i Supabase pg_cron bär en GitHub-nyckel i
   sina kommandon (körningarna startas av *Axelstar*). Går den ut stannar ingest, grannar, healthcheck, marknadsföringen och
@@ -877,7 +906,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   bokad tid tre dagar i rad.
   🔨 **I DRIFT 18/9 (Bengts "kör", DECISIONS #236):** `puls-marknadsforing` (`45 4 * * *`) skapat av pulsklockan 03:53Z
   (fyra pulsjobb OK, alla med nyckel), `schedule` borttagen ur flödet (PR #339). **Morgon 1 (18/9):** start 04:45:09Z (9 s efter bokad tid), grön, utkastet committat 04:45:25.
-  Kvar: morgon 2 och 3 (19/9, 20/9).
+  **Morgon 2 (19/9):** start 04:45:01Z (1 s efter bokad tid), grön. Kvar: morgon 3 (20/9).
 - [x] 🛰️ **#199 SMHI-VARNINGAR SOM FÖRSVINNER — ingesten stämplar senast sedd — ✅ KLART 17/9** (Bengts ja 17/9, DECISIONS #224/#225).
   Arkivet sparar varje publicering av en SMHI-varning men inte när den försvinner ur flödet. En varning som dras
   tillbaka i förtid ser ut att gälla till sin sluttid, och SMHI-förlängningen (N_varning) skulle mätas fel. Går inte att
