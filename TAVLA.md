@@ -1155,6 +1155,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   datatypen är **Location → Approximate location** (varnings-id + klockslag säger ungefär var och när), *Optional*,
   *Collected men inte Shared*, *inte kopplad till identitet*, ändamål App functionality + Analytics. Utgående trafik
   listad ur koden (GET snapshot utan parametrar · POST facit-svar bara vid tryck). CLAUDE.md:s invariant omskriven.
+  ➕ **FJÄRDE STÄLLET, hittat 20/9 när butiksmaterialet lästes:** `marknadsforing/butik/butikstext.md` sade
+  *"Vi samlar in: ingenting"* i integritetsstycket — Google läser butikstexten bredvid formuläret. **Rättad.**
+  Påståendet stod alltså på fyra ställen och ingen av dem rördes 16/9; det är därför regeln i CLAUDE.md nu namnger
+  alla fyra.
   🔑 **TVÅ SAKER KVAR, BÅDA ÄGARBESLUT:** (a) **raderingsfrågan** — formuläret frågar om användaren kan begära radering,
   och vi har ingen väg: inget i ett svar identifierar avsändaren. Tre alternativ i filen, rekommendation "svara Nej och
   förklara varför"; (b) **`integritet.html` i karta-repot ljuger också** — *"Kärnlöftet: din position lämnar aldrig
