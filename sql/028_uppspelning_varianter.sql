@@ -99,7 +99,7 @@ BEGIN
   ),
   f AS (SELECT m.sid, m.t, (m.t AT TIME ZONE 'UTC')::date AS d, ((m.t - interval '12 hours') AT TIME ZONE 'UTC')::date AS natt,
       m.min_efter, m.rader FROM m WHERE (NOT p_krav_blot) OR m.blot),
-  ep AS (SELECT DISTINCT ON (f.sid, f.natt) f.d, f.min_efter, f.rader FROM f ORDER BY f.sid, f.natt, f.t),
+  ep AS (SELECT DISTINCT ON (f.sid, f.d) f.d, f.min_efter, f.rader FROM f ORDER BY f.sid, f.d, f.t),
   a AS (SELECT f.d, count(DISTINCT f.sid)::int AS st, count(*)::int AS og FROM f GROUP BY f.d),
   u AS (SELECT ep.d,
       count(*) FILTER (WHERE ep.rader > 0)::int AS med,
