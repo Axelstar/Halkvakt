@@ -163,6 +163,8 @@ Den största enskilda risken är ändå att **arkivet saknar backup och inte gå
 
 ### P3 — Vakthunden kan tystna utan att någon märker det
 
+> ✅ **ÅTGÄRDAT 20/9** — dödmansgreppet och de tre checkarna av Bengts sessioner (#50, #222, DECISIONS #254/#255); arkivbackupens ålder vaktas i vakthunden (check 9j, kort #223, DECISIONS #262), larm och tystnad bevisade 15:54/16:07Z.
+
 - **Inget dödmansgrepp.** Inget utanför Supabase kontrollerar att vakthunden kört. Utgången nyckel, avaktiverat
   cron-jobb eller ett tidigt kast ⇒ total tystnad som ser ut som "allt grönt".
 - **Tre checkar kan i praktiken aldrig fyra** (verifierat i koden):
@@ -188,6 +190,8 @@ Den största enskilda risken är ändå att **arkivet saknar backup och inte gå
   delade dimensionerna är förvalda och att kombinationen bara kalibrerar de återstående.
 
 ### P4b — Vektorsviten certifierar inte de två regler produkten vilar på
+
+> ✅ **ÅTGÄRDAT 20/9** (kort #212, DECISIONS #263): korridoren 33,2–37,1°, reprisavståndet 4 510–5 990 m, repristiden 496–659 s, bäringen 55,5–64,5°, lägsta fart 14,1–16, förvarningen 395–405 m — nio vektorer (v28–v36), mätningen i `scripts/matningar/vektorkanslighet-2026-09-20.ts`, tre språk gröna.
 
 Granskaren varierade varje tröskel mot alla 24 vektorer plus den riktiga Skåneturen och mätte var utdatan ändras.
 Följande intervall passerar **utan att en enda vektor märker något**:
@@ -302,12 +306,12 @@ besvarade.
 | # | Beslut | Varför nu |
 | :-- | :-- | :-- |
 | 0 | ✅ **KLART 20/9** (9d3f56c, tre språk gröna, skuggmotorn deployad; iOS-raden väntar på ett bygge) — ~~Motorfixarna först: iOS `<null>`, det tredje olycksropet, och en vektor för prioritetsgenombrottet~~ | Hörs i bilen i dag; billiga; ett bygge till Axel bör bära dem |
-| 0b | **Mät marginalen på korridoren och reprisavståndet, och frys dem med vektorer** | De två reglerna produkten vilar på är i praktiken otestade |
+| 0b | ✅ **KLART 20/9** (#212, DECISIONS #263) — ~~Mät marginalen på korridoren och reprisavståndet, och frys dem med vektorer~~ | De två reglerna produkten vilar på är i praktiken otestade |
 | 1 | ✅ **KLART 20/9** — ~~Backup av arkivet, veckovis, från och med den här veckan~~ (#213, DECISIONS #257) | Enda oåterkalleliga risken. Kostar nära noll |
 | 2 | **Leveransfrys två veckor:** ingen ny mätfunktion, bara det som krävs för att appen ska nå en främling | Novemberfönstret stängs annars |
 | 3 | **Play-kontot köps i september** | Grind för Android-betan, ledtid okänd |
 | 4 | **Data Safety rättas före första uppladdningen** | Avslagsrisk mitt i facitfönstret |
-| 5 | **Vakthunden får dödmansgrepp och tre lagade checkar** | Tyst tystnad är det farligaste driftläget |
+| 5 | ✅ **KLART 20/9** (#50, #222 av Bengt; #223) — ~~Vakthunden får dödmansgrepp och tre lagade checkar~~ | Tyst tystnad är det farligaste driftläget |
 | 6 | **Blindningens förhållande till T-A skrivs ned före frosten** | Efter frosten är det för sent att välja |
 | 7 | **Bestäm januaridomens facitkälla** — omklassningar räcker sannolikt inte | Kamerabildsgranskningen tar tid att bygga |
 | 8 | **Viltrösten: läs arten eller sluta säga "älg"** | Bryter er egen regel om att inte överdriva |

@@ -7654,3 +7654,57 @@ beslut om VAR de hör hemma (väntar #151 på Bengt eller är det Claudes mätni
 genomgången hade bara flyttat felet. · bygga en maskinell vakt som läser sektionerna — avvisat tills vidare: etiketterna
 är prosa, inte fält, och en regex-vakt hade gett falsk trygghet av samma slag som den trubbiga gröntoleransvakten.
 
+
+## #262 (20/9 2026) Arkivbackupens ålder vaktas där Actions inte når — vakthundens check 9j (kort #223)
+
+**Varför:** veckodumpen (#213, DECISIONS #257) kör i GitHub Actions, och Actions dog tyst 5/9 när minuterna tog slut. Då
+tystnar dumpen och healthchecken samtidigt, och arkivet står oskyddat utan att någon säger till. Vakthunden i Supabase är det
+enda som kör utanför och redan pratar med GitHub.
+
+**Beslut:** check 9j i `supabase/functions/vakthund/index.ts`: `GET /releases`, senaste tagg `arkiv-`, ålder > 8 dygn eller ingen
+alls ⇒ `problem.push` i driftvakthunden (samma issue som led 1–3 — arkivet utan backup är ett driftfel, inte en händelse).
+Gränsen 8 = en missad söndag plus ett dygns marginal. Prov `?arkivprov=1` (dbknapp-flaggan `arkivprov`) låtsas 99 dygn.
+
+**Bevis, i ordning:** deploy-supabase #35520901208 *"Deployed Functions … vakthund"* · dbknapp `arkivprov` 15:54Z: svaret
+`arkivbackup: 1 dumpar, senaste 99.0 dygn (gräns 8) — PROV` + problemraden, larmväg ok · issue #411 skapad 15:54:35Z · **den
+schemalagda timkörningen 16:07:51Z stängde #411 med den riktiga raden** `arkivbackup: 1 dumpar, senaste 0.0 dygn (gräns 8)`.
+
+**Bifynd, rättat i samma varv:** deploy-knappen föll två gånger i rad (#35520704235, #35520805068) på `supabase/setup-cli@v1`
+med `version: latest` — uppslaget mot GitHubs API görs oautentiserat från runnerns delade IP och fick *rate limit exceeded*.
+Nu fast version 2.117.0 (273da5a); höjs medvetet. En deploy-knapp som faller på någon annans kvot är ingen knapp.
+
+## #263 (20/9 2026) Trösklarna är låsta: nio vektorer och en känslighetsmätning som bor i repot (kort #212)
+
+**Fyndet (genomlysningen, P4b):** korridorvinkeln 35° kunde vara allt mellan 5° och 90°, reprisavståndet 5 000 m allt mellan 0
+och 50 000, utan att en enda av 24 vektorer reagerade. "Grönt i tre språk" bevisade alltså inte det man trodde.
+
+**Beslut:** en vektor per regel som faller på ett steg åt vardera hållet, och mätningen som visar det görs i repot så att den
+kan köras om: `scripts/matningar/vektorkanslighet-2026-09-20.ts` sveper varje tröskel i DEFAULT_CONFIG mot alla vektorer +
+Skåneturen och skriver intervallet utan reaktion och vilken vektor som bryter först.
+
+| tröskel | standard | före | efter (bryter under / över) |
+|:--|--:|:--|:--|
+| korridorhalvvinkel | 35° | 5–90° | **33,2–37,1°** — v28 (33° talar) / v29 (37° tyst) |
+| reprisavstånd | 5 000 m | 0–50 000 | **4 510–5 990 m** — v30 |
+| repristid | 600 s | (omätt) | **496–659 s** — v31 |
+| bäringstolerans | 60° | 60–150° | **55,5–64,5°** — Skåneturen / v33 (65° tyst); v32 (55° talar) |
+| lägsta fart | 15 km/h | 5–50 | **14,1–16** — v34 / v35 |
+| kortaste förvarning | 400 m | 0–400 | **395–405 m** — v36 |
+
+**Hur v30 skiljer sträckan från tiden:** i konstant fart över 30 km/h passeras 5 km före 600 s, så reglerna går inte att skilja.
+v30 kör 80 km/h, förbi kameran, **står stilla 600 s med fart 0** (inget utvärderas, klockan går, vägmätaren står), och kör sedan
+fram och tillbaka: 690 s/2 000 m tyst, 4 000 m tyst, 6 000 m talar. v31 gör tvärtom i 120 km/h: 21 km körda, tyst tills 659 s.
+
+**Regler som följdes:** alla fixmarginaler mot en tröskel ≥ 5 m, uppmätta med motorns haversine (v36:s golv fick 5,43 / 5,67 m
+efter sökning — 20 km/h gav max 2,8 m och förkastades). Ingen befintlig vektor rörd. Kotlin och Swift läser nu `headingDeg` ur
+en vektor för första gången (v34/v35) — det fältet var oprövat i portarna.
+
+**Bevis:** `npm test` 40/40; ci #35521365300, ios-engine #35521365311, android #35521365360 gröna på 88dd32c — 36 vektorer byte
+för byte i tre språk. **Olåst med flit:** `leadMaxM` 3 000 (nås först över 360 km/h — ingen svensk väg), `warnLeadS` och
+`globalCooldownS` låg redan på ±1.
+
+**Läxa ur samma varv, mot mig själv:** tavelsynken som stängde #212 och #223 (ffea363) klippte "till nästa öppna kort" och
+hoppade därmed över det FÄRDIGA kort #222 som låg kvar i ATT GÖRA — 39 rader bevis borta i fyra minuter. Upptäckt av
+`git show --stat` (57 raderade rader mot väntade 18), återställt byte för byte ur HEAD~1 och kortmängden diffad: 118 = 118,
+inget borta, inget nytt. Exakt CLAUDE.md:s regel om att diffa kortantal före push — den gäller även den som just läst den.
+Numren #260/#261 i det första utkastet blev #262/#263: Bengts session tog #260 och #261 samtidigt, och `beslutsnumren.ts` sa ifrån — två gånger.

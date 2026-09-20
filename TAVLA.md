@@ -1021,6 +1021,45 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   återstår och vem som äger det.
 
 
+- [x] 🔇 **#222 TRE CHECKAR I VAKTHUNDEN KAN ALDRIG FYRA — ✅ KLART OCH I DRIFT 20/9** (ur genomlysningen
+  20/9, utbrutet ur #50 när dödmansgreppet stängde det, DECISIONS #254). Vakten är numera bevakad, men den ljuger
+  fortfarande om tre saker, och alla tre är verifierade i koden:
+  · **Check 9c** kräver färre än 4 källor i `sync_state` — men det finns minst 5 (`ingest/db.ts` + `ingest-live`) och
+    rader raderas aldrig. Villkoret kan alltså aldrig bli sant. Bortfall av en kursor larmar inte.
+  · **Check 9d** läser cron-jobbets status för `halkvakt-ingest-live`, men anropet är asynkront via pg_net —
+    *succeeded* betyder *lades i kö*. Ett 500-svar från ingest-live syns aldrig. (Samma läxa som dödmansgreppets
+    tredje fråga just löste för vakthunden — lösningen finns alltså redan, den ska bara tillämpas här.)
+  · **Check 1** mäter `synced_at`, som sätts vid varje lyckat anrop. En **fastfrusen kursor** (`last_change_id` som
+    står still) ser kärnfrisk ut. Ingen vakt mäter att kursorn rör sig.
+  · **Mätvakten (6a)** läser schemat ur YAML och `cron.job`, men jämför det aldrig mot `scripts/pulsklocka.ts:NYA`.
+    Ett `puls-`jobb som avaktiveras eller raderas faller **tyst ur bevakningslistan** — vakten ser en sen körning,
+    aldrig ett försvunnet schema. Dessutom: `runs?per_page=1` tar senaste körningen oavsett trigger, så en manuell
+    knapptryckning nollställer klockan, och en hängande körning (`conclusion === null`) passerar båda testen.
+  ⚠️ **Kräver deploy av vakthunden** — CLAUDE.md:s regel gäller: `git pull`, diffa mot main, deploya i samma varv,
+  och bevisa EFTER deployen med funktionens egna prov, inte med commit-hashen.
+  Verify: ett framkallat fel per check ger ett larm — en borttagen kursor i `sync_state`, ett 500-svar från
+  ingest-live, en kursor som står still, och ett avaktiverat `puls-`jobb. Fyra prov, fyra larm.
+  ✅ **BYGGT, DEPLOYAT OCH BEVISAT 20/9** (Bengts *"kör 222"*, DECISIONS #255, PR #402). Deploy 11:2xZ; beviset är
+  vakthundens EGET larmprov EFTER deployen, inte commit-hashen (CLAUDE.md:s regel), och lokala filen diffades mot
+  main före deploy — noll skillnad.
+  📊 **FYRA NYA RADER MED INNEHÅLL, ur det som faktiskt kör:**
+  · `kursorer road_conditions: live 848028 · arkiv 848028` — check 1b. Samma ström, två kursorer; faller livemotorns
+    bakom GitHub-ingestens har den slutat röra sig. Jämförelsen görs i SQL: changeid är 19 siffror och spräcker
+    JavaScripts heltal.
+  · `sync_state: 5 källor (väntade 5)` — 9c. Namngiven lista i stället för `< 4`, som aldrig kunde bli sant.
+  · `livemotorns effekt: situation_archive rörd för 3 min sedan (gräns 30)` — 9d (b). Cron-statusen står kvar men
+    säger nu i klartext att den bara bevisar att anropet köades.
+  · `pulsjobb: 11 aktiva (golv 11)` — mätvakten. Ett avaktiverat jobb faller inte längre tyst ur bevakningen.
+  🧪 **VARJE CHECK BEVISAD ATT DEN DISKRIMINERAR** (motfrågor mot drift, inget rört):
+  · kursorn: `larmar_nu = false`, men `true` om arkivet går ett enda steg före.
+  · 9c: `saknade = []`, men `[kalla_som_fallit_bort]` om en källa läggs till listan och inte finns.
+  · effekten: `1 min` nu · **`null` om arkivet vore tomt** (null-grenen larmar) · **`47` om inget rörts på 45 min**.
+  · pulsgolvet: `11 aktiva`, larmar inte vid golv 11 men larmar vid golv 12.
+  🔒 **PULS_GOLV under kontrakt** (39 kontrakt håller, värde 11). Motprov: 11→12 i vakthunden ⇒ grinden faller;
+  ett jobb struket ur `NYA` utan att `ANTAL_NYA` ändras ⇒ pulsklockans egen självkontroll faller.
+  ⏭️ **Kvar, som EGEN sak och inte här:** `runs?per_page=1` tar fortfarande senaste körningen oavsett trigger, så en
+  manuell knapptryckning kan nollställa mätvaktens klocka. Hängande körningar larmar nu, men triggertypen filtreras
+  inte. Litet, och det kräver en till deploy — tas när något annat ändå rör vakthunden.
 - [ ] 🔊 **#210 iOS SÄGER "PÅ VÄG <NULL>" — var tjugonde olycka** (genomlysningen 20/9). `SnapshotRepo.swift:117` gör JSON-`null`
   till strängen `"<null>"`, och `road` läses med just den funktionen (rad 68). Kotlin och TypeScript gör rätt — iOS är ensamt fel.
   **Uppmätt 20/9: 38 av 732 olyckor senaste 30 dygnen saknar vägnummer (5,2 %).** Vektor v22 låser bara FRÅNVARANDE `road`,
@@ -3635,8 +3674,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
-- [x] ✅ **#212 TRÖSKLARNA LÅSTA — KLART 20/9** (DECISIONS #261, 88dd32c): nio vektorer + `scripts/matningar/vektorkanslighet-2026-09-20.ts` (genomlysningens metod, i repot). **Uppmätt intervall utan reaktion, före → efter:** korridorvinkeln 5°–90° → **33,2°–37,1°** (v28/v29) · reprisavståndet 0–50 000 → **4 510–5 990 m** (v30: står stilla 600 s så tiden skiljs från sträckan) · repristiden → **496–659 s** (v31) · bäringstoleransen 60°–150° → **55,5°–64,5°** (v32/v33; det förkastade 100° faller nu) · lägsta fart 5–50 → **14,1–16** (v34/v35, första vektorerna med explicit headingDeg) · kortaste förvarning 0–400 → **395–405 m** (v36). Alla fixmarginaler ≥ 5 m, uppmätta. Prioritetsgenombrottet och testets motsägelse: klara tidigare i dag (v27, DECISIONS #258). ci #35521365300, ios-engine #35521365311, android #35521365360 gröna — 36 vektorer i tre språk. Olåst kvar, med skäl: `leadMaxM` 3 000 (nås först över 360 km/h) och `warnLeadS`/`globalCooldownS` som redan låg på ±1.
-- [x] ✅ **#223 ARKIVBACKUPENS ÅLDER VAKTAD UTANFÖR ACTIONS — KLART 20/9** (DECISIONS #260, 7310837): vakthundens check 9j frågar GitHub om senaste release med taggen `arkiv-` — saknas den eller är äldre än 8 dygn (en missad söndag + marginal) ⇒ larm i driftvakthunden. Prov `?arkivprov=1` via dbknapp. **Bevis:** deployad 15:5xZ (deploy-supabase #35520901208 — efter två fall på `setup-cli@latest`:s rate limit, nu fast version 2.117.0); dbknapp `arkivprov` 15:54Z: svaret bar `arkivbackup: 1 dumpar, senaste 99.0 dygn (gräns 8) — PROV` och problemraden; issue #411 skapad 15:54:35Z; **den schemalagda timkörningen 16:07:51Z stängde den med den riktiga raden `arkivbackup: 1 dumpar, senaste 0.0 dygn (gräns 8)`.** Larm och tystnad bevisade på verkligheten, samma timme.
+- [x] ✅ **#212 TRÖSKLARNA LÅSTA — KLART 20/9** (DECISIONS #263, 88dd32c): nio vektorer + `scripts/matningar/vektorkanslighet-2026-09-20.ts` (genomlysningens metod, i repot). **Uppmätt intervall utan reaktion, före → efter:** korridorvinkeln 5°–90° → **33,2°–37,1°** (v28/v29) · reprisavståndet 0–50 000 → **4 510–5 990 m** (v30: står stilla 600 s så tiden skiljs från sträckan) · repristiden → **496–659 s** (v31) · bäringstoleransen 60°–150° → **55,5°–64,5°** (v32/v33; det förkastade 100° faller nu) · lägsta fart 5–50 → **14,1–16** (v34/v35, första vektorerna med explicit headingDeg) · kortaste förvarning 0–400 → **395–405 m** (v36). Alla fixmarginaler ≥ 5 m, uppmätta. Prioritetsgenombrottet och testets motsägelse: klara tidigare i dag (v27, DECISIONS #258). ci #35521365300, ios-engine #35521365311, android #35521365360 gröna — 36 vektorer i tre språk. Olåst kvar, med skäl: `leadMaxM` 3 000 (nås först över 360 km/h) och `warnLeadS`/`globalCooldownS` som redan låg på ±1.
+- [x] ✅ **#223 ARKIVBACKUPENS ÅLDER VAKTAD UTANFÖR ACTIONS — KLART 20/9** (DECISIONS #262, 7310837): vakthundens check 9j frågar GitHub om senaste release med taggen `arkiv-` — saknas den eller är äldre än 8 dygn (en missad söndag + marginal) ⇒ larm i driftvakthunden. Prov `?arkivprov=1` via dbknapp. **Bevis:** deployad 15:5xZ (deploy-supabase #35520901208 — efter två fall på `setup-cli@latest`:s rate limit, nu fast version 2.117.0); dbknapp `arkivprov` 15:54Z: svaret bar `arkivbackup: 1 dumpar, senaste 99.0 dygn (gräns 8) — PROV` och problemraden; issue #411 skapad 15:54:35Z; **den schemalagda timkörningen 16:07:51Z stängde den med den riktiga raden `arkivbackup: 1 dumpar, senaste 0.0 dygn (gräns 8)`.** Larm och tystnad bevisade på verkligheten, samma timme.
 - [x] ✅ **#220 BESLUTSNUMREN UNIKA — KLART 20/9** (DECISIONS #259): 245 rubriker, 11 dubbla — sju var OLIKA beslut (#60 tre gånger), fyra var tillägg. Historiken skrivs inte om: de senare posterna bär bokstav (#55b, #60a/#60c, #72a, #73b, #78b, #124b, #126b; tilläggen #31a, #40a) och 27 hänvisningar i DECISIONS, TAVLA, STATUS, GOLVET och CLAUDE.md pekar nu på rätt bokstav (varje hänvisning läst i sitt sammanhang — #126 i CLAUDE.md var den överskrivna checken, #126 i grind-a.ts marginalvakten). Vakt: `scripts/beslutsnumren.ts` i ci.yml fäller dubbletter och skriver ut nästa lediga nummer — självtest + mutationsprov (påhittad dubblett ⇒ exit 1). Numreringsregeln står överst i DECISIONS.md och i CLAUDE.md. **Avvikelse från Verify:** inget K/D-prefix — husstilen `DECISIONS #NN` / `kort #NN` / `issue #NN` / `PR #NN` görs till regel i stället; den finns redan i nästan varje rad, prefixet i ingen. Kodkommentarer i `supabase/functions/` (tre st #73/#124) lämnade orörda — en ändrad funktionsfil kräver deploy.
 - [x] ✅ **#211 TREDJE OLYCKSROPET BORTA — KLART 20/9** (DECISIONS #258): det tidiga ropet är engångs per fara i TS, Kotlin och Swift (reprisregeln 600 s + 5 km återarmade det under 48 km/h innan 2 km nåddes). **Bevis:** v25 (44,5 km/h, olycka 10 945 m — enda geometrin i 30–47 km/h med ≥ 5 m marginal vid båda horisonterna, uppmätt med motorns haversine): gamla motorn t=76 + **t=676 "Överväg annan väg" igen med 2 586 m kvar** + t=724; nya motorn exakt två. ci #35519941072, android #35519579658 och ios-engine #35519579572 gröna på 9d3f56c — tre språk, byte för byte. Skuggmotorn buntad och deployad i samma varv (deploy-supabase #35519582721: "Deployed Functions … skuggmotor").
 - [x] ✅ **#213 ARKIVBACKUPEN — KLART 20/9** (DECISIONS #257): `arkivbackup.yml` — veckovis (söndag 03:17Z + knapp) `pg_dump` av alla fyra scheman (dk, fi, no, public) över sessionspoolern till en GitHub-release i repot, utanför Supabase; radantal per tabell i loggen; dumpen återläst i en PostGIS-container i SAMMA körning och radräknad mot källan; larm-issue med egen etikett `arkivbackup` vid fel; de 12 senaste behålls. **Bevis:** körning 35518932054 grön 15:15Z, 84 s: **30 av 30 tabeller, 601 712 rader i källan = 601 712 återlästa** (weather_observations 389 779, fi 64 105, radar_precip 50 292, no 50 056, trend_kandidater 11 879). Release `arkiv-2026-09-20T1515Z`, 22,3 MB, sha256 ffe70c82…bb322c — laddad ner oberoende på Axels dator: samma storlek, samma sha, huvudet `PGDMP`. Larmvägen bevisad på verkligheten: körning 2 föll och skapade issue #406, körning 3 stängde den 15:15:34Z. Första provet föll på att PostGIS ligger i `public` i arkivet, inte i `extensions` — 19 tabeller föll innan det mättes. Kvar som eget kort: #223 (åldersvakt utanför Actions).
