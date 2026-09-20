@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-15 09:40 av Claude (webben) — ✅ #161 BEKRÄFTAT I DRIFT: marknadsforing körde 09:35 och commit `3a3622f` av Marknadsmotorn ligger på main — första gången sedan 12/9. CRLF-rotorsaken var rätt. Kvar: trv-bevaknings sex källvakter kan tidigast bevisas 21/9. Cronen levererade 4 h 50 min sent (#160 igen). Kassan 16,46 USD av 35, takdatum 26/9.*
+*Uppdaterad: 2026-09-20 06:15 av Claude (webben) — ✅ **STEG B:s VERIFY UPPFYLLD**: 141 min/dygn i snitt över 13–19/9 mot baslinjens 202, ingest oförändrat (24 körningar, median 30–36 s mot 32 s), radarsteget 4–5 s, radar_precip 3 312 rader över 24 av 24 kompositer. Kassan 21,98 USD av 35 och takdatumet är BORTA ur larmet — släpande takt 106 min/dygn, månadsprognos 31 USD.*
   💰 **RÄTTAD 13/9 (DECISIONS #160, Bengts order):** prognosen räknade på månad-till-datum, och i
   det snittet låg fem flöden som lades ner 8–9/9 (`ingest-fi`, `-no`, `-dk`, `publish-map`,
   `regn-30`). Vakten sa **21 september**; uppmätt verklig takt var 232 min/dygn senaste dygnet och
@@ -2054,6 +2054,20 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   förkastad, bara inte nu; tätare i Actions förblir uteslutet (12/h = 288 min/dygn). Marginalen att känna
   till: timkadens ger rader som mest 60 min gamla mot regel 7:s krav ≤ 70 min — tunt men helt, och faller
   en körning bort tiger radarn, vilket är rätt utfall. 📅 Verify 20/9: Actions-min/dygn oförändrade.
+  ✅ **VERIFY 20/9 UPPFYLLT — radarn kostar fortfarande noll extra Actions-minuter.**
+  Per dygn över de sju kompletta dygnen 13–19/9: **188 · 138 · 122 · 218 · 112 · 123 · 88 ⇒ snitt
+  141 min/dygn**, mot baslinjens **202** (11/9 16:25 → 12/9 18:51). Toppdygnet 16/9 är ett
+  androidbygge (55 min på 7 körningar), inte drift.
+  **ingest-jobbet i detalj, för det är där radarn bor:** 33 · 24 · 24 · 24 · 28 · 24 · 28 debiterade
+  minuter på 24 körningar per dygn, och **mediantiden 30–36 s hela veckan mot baslinjens 32 s**.
+  Kortets tröskel — "ett ingest-jobb som vuxit förbi en minut per körning" — är alltså inte passerad.
+  De dygn som landar på 28 i stället för 24 beror på 3–4 körningar med en svans strax över
+  60-sekundersstrecket (max 71 s), inte på att jobbet blivit längre. Radarsteget mäts direkt i
+  loggen: **4–5 sekunder** (20/9 05:11:30 → 05:11:35, och 04:11:26 → 04:11:30).
+  📏 **radar_precip 20/9 05:11: 3 312 rader över 24 kompositer**, senaste kompositen 05:10 — alltså
+  1 minut gammal, 24 av 24 hämtade. Baslinjen 13/9 var 2 029 rader över 24. Inga bortfall, och
+  regel 7:s 70-minutersgräns aldrig i närheten. Radarn har tigit noll gånger av den orsaken.
+
 - [ ] 📏 **#44 Regntäckningen** (Bengts täthetsfråga 3/9: "räcker timhämtningen?") —
   stationerna summerar regn per 30 min, ingest hämtar per timme: tappar vi varannan
   bucket? KNAPPEN BYGGD 3/9: scripts/regn-tackning.ts + Actions → regn-tackning
@@ -3349,6 +3363,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     i bil av Bengt.
   **KOSTNAD OM ORDNINGEN HÅLLS:** noll nya Actions-minuter i drift; 1–3 min/vecka för grinden.
   Det som kan kosta är bara steg B om radarn tätas i Actions — därför regel 1.
+  ✅ **MÄTT 20/9, en vecka efter beslutet:** ordningen höll. 141 min/dygn i snitt över 13–19/9 mot
+  baslinjens 202, ingest oförändrat på 24 körningar med 30–36 s median (baslinje 32 s), radarsteget
+  4–5 s, radar_precip 3 312 rader över 24 av 24 kompositer. Steg B är därmed BEVISAT enligt kortets
+  egen Verify-rad, utan att någon rad i flödet ändrats.
   📋 **VAD DOMEN OCKSÅ LÅSER UPP — LÄS DEN HÄR LISTAN DEN 14/9** (Bengts order 11/9: "påminn mej om
   att detta ska byggas efter radardomen"). Kortet ovan bygger #42. Men domen är grind för FLERA kort,
   och de har inget eget datum som påminner om sig själva. Faller domen väl ut står kön så här:

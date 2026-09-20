@@ -6982,3 +6982,32 @@ innehåller *fotostudio*; genererad kolumn ⇒ DROP + ADD i samma transaktion.
 (trafiklärarnas svar) och KB-D6 (provrader) finns redan i TROSKLAR-KOMBINATIONEN. Förslaget heter **KB-D7**. Namngivet utan
 att söka i det fastställda dokumentet först (SESSIONSREGELN punkt 2).
 
+
+## #243 (20/9 2026) Steg B:s Verify uppfylld — radarn i timingesten kostar mätbart noll extra minuter
+
+**Bakgrund.** #156 avgjorde 13/9 att radarn INTE flyttas till en edge function utan ligger kvar som
+ett steg i timingesten (Bengt: "Vi flyttar inte nu"). Villkoret som skrevs in i kort #43 och #81 var
+ordagrant: *"Actions-minuter per dygn oförändrade efter en vecka."* Baslinjen vid beslutet var
+202 min/dygn, mätt över 26,5 h (11/9 16:25 → 12/9 18:51).
+
+**Utfall: villkoret är uppfyllt, med marginal åt rätt håll.** De sju kompletta dygnen 13–19/9 gav
+188 · 138 · 122 · 218 · 112 · 123 · 88 ⇒ **141 min/dygn i snitt**. Toppdygnet 16/9 är ett androidbygge
+(55 min på 7 körningar), inte drift.
+
+**Det avgörande talet är inte totalen utan ingest-jobbet**, för det är där radarn bor. Debiterade
+minuter per dygn: 33 · 24 · 24 · 24 · 28 · 24 · 28 på 24 körningar, och mediantiden **30–36 s hela
+veckan mot baslinjens 32 s**. Kortets tröskel ("ett ingest-jobb som vuxit förbi en minut per körning")
+är alltså inte passerad. De dygn som landar på 28 i stället för 24 beror på 3–4 körningar vars svans
+går strax över 60-sekundersstrecket (max 71 s) — inte på att jobbet blivit längre. Radarsteget mäts
+direkt i loggen: **4–5 sekunder**.
+
+**Datamängden bekräftar samtidigt att steget faktiskt kör.** 20/9 05:11: `radar_precip` 3 312 rader
+över **24 av 24 kompositer**, senaste 05:10 — en minut gammal. Baslinjen 13/9 var 2 029 rader över 24.
+Fler rader, samma kostnad: filtret är händelsestyrt, så ett regnigare dygn ger fler rader utan fler
+minuter. Regel 7:s 70-minutersgräns var aldrig i närheten, och radarn har inte tigit en enda gång av
+den orsaken.
+
+**Vad beslutet INTE säger.** Edge-flytten för 5-minuterskadens är fortfarande inte förkastad, bara
+inte aktuell. Tätare hämtning i Actions förblir uteslutet (12/h ≈ 288 min/dygn). Marginalen i timkadens
+— rader som mest 60 min gamla mot regel 7:s ≤ 70 min — är oförändrat tunn men hel; faller en körning
+bort tiger radarn, vilket är rätt utfall.

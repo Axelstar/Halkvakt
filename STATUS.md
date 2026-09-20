@@ -1825,3 +1825,22 @@ till dess är de sex källvakterna fortfarande blinda. Halva kortet klart, halva
 Sidomätning till #160: cronen levererade marknadsforing 4 h 50 min sent (bokad 04:45, levererad
 09:35); i går 5 h 22 min. Två dygn i rad i samma storleksordning.
 Byggt: inget detta varv. Nästa: kvällsavläsning 15/9 17:30 UTC.
+
+## 2026-09-20 06:15 — Steg B:s Verify uppfylld: radarn kostar mätbart noll extra minuter
+BOKAD MÄTNING (kort #81, beslutad 13/9 i DECISIONS #156) genomförd. Villkoret "Actions-minuter per
+dygn oförändrade efter en vecka" är uppfyllt: 13–19/9 gav 188 · 138 · 122 · 218 · 112 · 123 · 88 ⇒
+141 min/dygn i snitt mot baslinjens 202. 16/9:s topp är ett androidbygge (55 min på 7 körningar).
+INGEST I DETALJ, där radarn bor: 33 · 24 · 24 · 24 · 28 · 24 · 28 debiterade minuter på 24 körningar,
+median 30–36 s hela veckan mot baslinjens 32 s. Kortets tröskel (förbi en minut per körning) inte
+passerad; 28-dygnen beror på 3–4 körningar med svans strax över 60 s (max 71 s). Radarsteget självt:
+4–5 s i loggen. radar_precip 20/9 05:11: 3 312 rader över 24 av 24 kompositer, senaste 05:10 (1 min
+gammal); baslinjen 13/9 var 2 029 över 24. Inga bortfall, regel 7:s 70 min aldrig nära.
+Bockat på kort #43 och #81, DECISIONS #243.
+LÄGET I ÖVRIGT efter fem dygns uppehåll i den här sessionen: allt jag lämnade öppet 15/9 är löst av
+parallellsessionen — #161 (a) bevisat 18/9 (13 källor i state sedan 16/9), (b) byggt 18/9 med
+--autostash + git status (DECISIONS #239); #154 löst som egen nyckel rain_segments 15/9 (DECISIONS
+#187) med steg E i drift samma dygn (5 vb-rader, E18 Karlstad→Örebro). Kassan 20/9 05:07: 4 747 min
+över 3 531 körningar = 21,98 USD av 35, släpande takt 106 min/dygn, månadsprognos 31 USD — TAKDATUMET
+ÄR BORTA ur larmet. weather_obs 379 362 (04:58) mot 297 789 den 15/9 ⇒ ~16 200 rader/dygn, upp från
+12 100 i takt med kylan. HEALTHY.
+Byggt: inget detta varv. Nästa: ingen bokad avläsning — sessionen väntar på Bengt.
