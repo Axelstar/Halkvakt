@@ -1217,7 +1217,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   samma fråga sedan 4/9** — sexton dygn. De tre konkreta defekterna (dödmansgreppet, 9c/9d som aldrig kan fyra,
   pg_cron utan avstämning mot pulsklockans lista) är införda i #50 som avsnittet *GENOMLYSNINGEN 20/9*. Allt arbete
   bokförs där. Se även #87, som är #50:s slut.
-- [ ] 🙈 **#216 BLINDNINGSLÄCKAN I T-A** (genomlysningen 20/9). `scripts/grind-t-a.ts` skriver ut **hela svepet rangordnat på
+- [x] 🙈 **#216 BLINDNINGSLÄCKAN I T-A — ✅ KLART OCH BEVISAT 20/9** (genomlysningen 20/9). `scripts/grind-t-a.ts` skriver ut **hela svepet rangordnat på
   träffandel minus falsklarmsandel** även när domspärren håller, och flödet är tänkt att tryckas inom sju dygn efter varje
   frostnatt — alltså genom hela kalibreringsfönstret. T-A:s svep (fönster · lutning · startband) delar **tre av kombinationens
   sex dimensioner**. När kombinationen kalibreras 1/2 är de dimensionernas utfall redan avläst, rangordnat och loggat i CI.
@@ -1229,6 +1229,16 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   svepets tabell först när domspärren släpper. Tre rader kod, tätt. **Väntar på Bengts ja** innan det byggs (mätningen är hans);
   raden i TROSKLAR-KOMBINATIONEN skrivs i samma commit som koden.
 
+  ✅ **BYGGT OCH BEVISAT 20/9** (Axels val, Bengts ja — DECISIONS #265 och #275). Tabellen RÄKNAS alltid, så att
+  instrumentet är prövat, men **rangordningen trycks först när domspärren släpper**. Underlaget, täckningen och
+  fysikkontrollen skrivs som förut; klarhetsdelens kolumn *fyrade* bygger på svepets vinnare och hålls tillbaka på
+  samma sätt, medan antalet frostnätter per molnklass är underlag och står kvar.
+  📊 **BEVIS — skarp körning på grenen, domspärren håller (0 frostnätter):**
+  `⊘ INGEN DOM — domspärren i §4 håller` · `SVEPET — 3 × 4 × 4 × 3 = 144 kombinationer` ·
+  **`(rangordningen hålls tillbaka — 144 punkter räknade, ingen redovisad)`** · `FYSIKKONTROLLEN` skrevs som förut ·
+  `klass  frostnätter  (fyrade hålls tillbaka tills domspärren släpper)`.
+  📜 **TROSKLAR-KOMBINATIONEN bär nu regeln** om delgrindarnas körningar mot D3, i samma commit som bygget — så att
+  nästa delgrind som får ett svep vet vad som gäller innan den skriver sin första utskrift.
 - [ ] 🦌 **#217 PRODUKTBOKEN LOVAR SEX SAKER KODEN INTE GÖR** (genomlysningen 20/9). Hastighetsgränsen i kameratexten **kan aldrig
   sägas** — den publiceras inte, och grenen är död i alla tre motorerna · viltrösten säger "älg" och "den här tiden" fast arten
   läses av ingen adapter och säsongsfältet aldrig sätts (**överdriver vad datan bär — bryter CLAUDE.md**) · fyra flikar utlovas,

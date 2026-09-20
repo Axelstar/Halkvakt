@@ -8093,3 +8093,27 @@ obyggda, och att smyga in dem i ett bygge som ska bevisa en enda rad vore att g�
 **Beviset som stänger kort #227:** en resa med *Tillåt när appen används*, skärmen släckt, och en varning
 som hörs — plus den blå indikatorn i statusfältet, som är kvittot på att Core Location håller appen vid
 liv. Blir det tyst är fixen fel, och då vet vi det på en resa i stället för i november.
+
+## #276 (20/9 2026) Blindningsläckan tätad: svepets rangordning trycks först när domspärren släpper (kort #216)
+
+**Bengts ja 20/9** på Axels val från samma kväll (#265). Mätningen är Bengts, så bygget väntade på hans rad.
+
+**Byggt i `scripts/grind-t-a.ts`:** tabellen **räknas alltid** — instrumentet ska vara prövat, och en grind som inte
+räknar kan inte visa att den fungerar — men **rangordningen trycks först när domspärren släpper**. Klarhetsdelens kolumn
+*fyrade* bygger på svepets vinnare och hålls tillbaka på samma sätt; antalet frostnätter per molnklass är underlag och
+står kvar. Underlaget, täckningen och fysikkontrollen skrivs oförändrat.
+
+**Bevis — skarp körning på grenen, med domspärren hållande (0 frostnätter):**
+`⊘ INGEN DOM — domspärren i §4 håller` · `SVEPET — 3 × 4 × 4 × 3 = 144 kombinationer` ·
+**`(rangordningen hålls tillbaka — 144 punkter räknade, ingen redovisad)`** · `FYSIKKONTROLLEN` skrevs som förut ·
+`klass  frostnätter  (fyrade hålls tillbaka tills domspärren släpper)`.
+
+**Regeln skriven, inte bara koden.** TROSKLAR-KOMBINATIONEN bär nu ett stycke om hur delgrindarnas körningar förhåller
+sig till D3: *en delgrind får räkna sitt svep när som helst, men rangordningen trycks först när delgrindens egen
+domspärr släpper.* Det stod i Axels villkor att båda skulle ligga i samma commit, och skälet är gott — nästa delgrind
+som får ett svep ska veta vad som gäller innan den skriver sin första utskrift.
+
+**Varför strypning och inte deklaration.** Alternativet var en rad i TROSKLAR-KOMBINATIONEN om att de tre delade
+dimensionerna är förvalda. Den raden skyddar bara den som läser den; koden skyddar alla. Axels formulering: *"tre rader
+kod, och läckan är tät i stället för deklarerad"*.
+
