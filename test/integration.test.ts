@@ -234,6 +234,31 @@ test("grepp 3 gallra_arkiv: Finland behåller kalla rader i 60 dygn, Norge sju d
   } finally { await pool.end(); }
 });
 
+// Kort #196/#205 (sql/025, sql/027): provrader märks av en genererad kolumn och räknas aldrig (KB-D6). Fotostudio-kroken i
+// apparna skickar "cam:fotostudio" som ett riktigt anrop — utan 027 landade den som ett riktigt förarsvar.
+test("kort #205 prov-kolumnen: prov och fotostudio märks, riktiga id:n inte, omkörning ofarlig", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  try {
+    for (const f of ["022_driver_facit.sql", "025_driver_facit_prov.sql", "027_driver_facit_prov_fotostudio.sql"])
+      await pool.query(readFileSync(new URL("../sql/" + f, import.meta.url), "utf8"));
+    await pool.query("DELETE FROM driver_facit WHERE version = 'test205'");
+    await pool.query(`INSERT INTO driver_facit (alert_id, alert_t, svar, app, version) VALUES
+      ('cam:fotostudio', '2026-11-01T06:00:00Z', 'ja', 'ios', 'test205'),
+      ('cam:FOTOSTUDIO', '2026-11-01T06:01:00Z', 'ja', 'android', 'test205'),
+      ('prov:kam1', '2026-11-01T06:02:00Z', 'nej', 'android', 'test205'),
+      ('wx:2135', '2026-11-01T06:03:00Z', 'ja', 'ios', 'test205'),
+      ('seg:16010', '2026-11-01T06:04:00Z', 'nej', 'ios', 'test205')`);
+    const las = async () => (await pool.query(
+      "SELECT alert_id, prov FROM driver_facit WHERE version = 'test205' ORDER BY alert_t")).rows.map((r) => [r.alert_id, r.prov]);
+    const vantat = [["cam:fotostudio", true], ["cam:FOTOSTUDIO", true], ["prov:kam1", true], ["wx:2135", false], ["seg:16010", false]];
+    assert.deepEqual(await las(), vantat);
+    await pool.query(readFileSync(new URL("../sql/027_driver_facit_prov_fotostudio.sql", import.meta.url), "utf8"));
+    assert.deepEqual(await las(), vantat, "omkörning: samma kolumn, samma värden, inga rader förlorade");
+  } finally { await pool.end(); }
+});
+
 // #85 grannländernas batchade skrivare: samma kolumner och ON CONFLICT som de gamla enradiga
 // INSERT:arna, men en UNNEST-sats per tabell. Provas mot riktiga fi/no/dk-scheman (migrationerna
 // 004/010/012, 006/013, 007) — typkastningen i UNNEST (numeric[] med null, bool[], timestamptz[])
