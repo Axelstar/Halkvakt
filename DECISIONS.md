@@ -6945,3 +6945,40 @@ butikerna. Inget lovas i Skyltfondssamtalen utöver *bladet med ert namn på*.
 **Alternativ som valdes bort:** banner i appen (ovan) · per-skola-märkning i appen via installationslänk (går inte på
 iPhone utan spårningspaket) · offentliga besökstal (en skola med tolv besök bredvid en med 143).
 
+## #242 (20/9 2026) Byggordning C — ett sammanhållet iOS-bygge — och kort #205: fotostudions svar märks som prov
+
+**Bengts beslut 20/9:** *"kör 205 och ja till byggordning c"*. Bakgrunden var hans invändning samma dag: *"är det då inte
+bättre att avvakta hans svar och få en sammanhållen körning så att all uppdatering sker en gång och inte två"*.
+
+**Läget som beslutet vilar på:** Axel har inte svarat på de åtta frågorna om #203 — sökt 20/9 i DECISIONS, bedömningen,
+incheckningarna och GitHub-kommentarerna sedan 19/9. Hans ja 17/9 (#226) gällde C, D och T, två dygn före #203. Och 0.3.8
+(11) innehåller INTE #203: den bär de gamla knapparna (nu fungerande) och ordlistan.
+
+**Byggordning C:** ett iOS-bygge, med #203. Skälet för att arkivera 0.3.8 först — att sändningen från appen aldrig bevisats
+— löses utan TestFlight och utan provkörning: Axel kör simulatorn med `-fotostudio_facit` och TRYCKER *Stämde*; raden
+`cam:fotostudio` ska landa i `driver_facit` med `app = ios`, `version 0.3.8`. Det bevisar att knapparna syns (diagnosen
+#240), att appens sändning fungerar och att servern tar emot. **Stoppdatum 27/9:** har de åtta svaren inte kommit då
+arkiveras 0.3.8 ändå, till den interna gruppen. **Det som väntar till bygget:** det formella beviset från en riktig
+telefon (S4 steg 5) och ordlistan i telefonerna.
+*Alternativ:* A) 0.3.8 nu, #203 i 0.3.9 — två uppdateringar och en tredje provkörning på det gamla flödet; B) vänta utan
+att bevisa kanalen — ett fel i sändningen hade då hittats först i oktober, ovanpå ny kod.
+
+**Kort #205 — förutsättningen.** Kolumnen `prov` (sql/025, kort #196) matchade bara ordet *prov*. Fotostudio-kroken i
+båda apparna lägger in `cam:fotostudio`, och ett tryck skickar ett riktigt anrop — raden hade landat som ett RIKTIGT
+förarsvar, just den rad som ska bevisa S4 (KB-D6: provrader räknas aldrig). `sql/027`: `prov` också när `alert_id`
+innehåller *fotostudio*; genererad kolumn ⇒ DROP + ADD i samma transaktion.
+
+**Bevis:**
+- Integrationstestet kördes mot riktig Postgres i CI (`ok 36 - kort #205 …`): fotostudio i två skiftlägen och `prov:kam1`
+  märks, `wx:2135` och `seg:16010` inte, och en omkörning ger samma värden (PR #377).
+- Migrationen i drift 05:33Z (dbknapp): kolumnen GENERATED ALWAYS med uttrycket
+  `strpos(lower(alert_id),'prov') > 0 OR strpos(lower(alert_id),'fotostudio') > 0`; de två befintliga provraderna kvar och
+  märkta; 0 riktiga svar, 2 prov, 2 rader — inget förlorat.
+- Båda läsarna efter bytet: vakthundens fråga (samma SQL) ger 0 riktiga svar; skuggrapporten via REST svarar
+  `forarfacit: {svar_7d: 0}` utan fel.
+- **Kvar:** raden med innehåll — `cam:fotostudio` med `prov = true` — kommer med Axels tryck.
+
+**Rättelse i samma varv:** regeln *ett svar är en handling, tystnad är inget svar* föreslogs 19/9 som KB-D5, men KB-D5
+(trafiklärarnas svar) och KB-D6 (provrader) finns redan i TROSKLAR-KOMBINATIONEN. Förslaget heter **KB-D7**. Namngivet utan
+att söka i det fastställda dokumentet först (SESSIONSREGELN punkt 2).
+
