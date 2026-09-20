@@ -1757,7 +1757,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   healthcheck grön på cameras + road_conditions_arkiv, och arkivvakten visar omklassningar
   när väglaget ändras. Alternativet på sikt är minutplanens #13 (DB-trigger för arkivet)
   + vilt/SMHI i ingest-live — då behövs ingest.yml aldrig mer.
-- [ ] 🐕 **#76 Vakthunden i Supabase mäter fel led — ÅTGÄRDAD PÅ MAIN 8/9 17:24 (822d178), deploy ej bevisad härifrån.**
+- [x] 🐕 **#76 Vakthunden i Supabase mäter fel led — ✅ KLART, BEVISAT 20/9 (beviset fanns sedan 16/9)**
   Led 3 hämtar nu manifest.json och jämför sha256 med live.json. Stängs när vakthunden
   bevisligen larmat OCH tystnat på riktiga data (issue med etiketten vakthund), inte förr.
   URSPRUNGLIGT FYND (8/9 13:35,
@@ -1772,6 +1772,19 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   läge (mismatch) och tystna först när den nya publicera deployats.
   LÄGET 13:35: nya publicera (#74, mergad 12:55) är INTE deployad — kartrepots commits
   13:00–13:30 skriver fortfarande bara live.json, vädret är fortfarande enbart Storvik −10,7.
+  ✅ **BEVISET, hittat 20/9 på Bengts *"kör 76"* (DECISIONS #256) — det fanns redan, fyra dygn gammalt.**
+  Kortets villkor var *larmat OCH tystnat på RIKTIGA data (issue med etiketten vakthund), inte förr*. Det uppfylldes
+  **16/9**: **issue #317**, öppnad av den schemalagda timkörningen **21:07:49** med raden
+  *❌ **Appen får gammal data**: manifestet 47 min gammalt (publiceras var 10:e min)* — och **stängd 22:07** av nästa
+  gröna körning. Inget larmprov, ingen knapp: led 3 larmade på verkligheten och tystnade när den rättade sig.
+  Av tio vakthund-issuer i repots historia är #317 den enda som fällde på just led 3; #332 fällde på databasen
+  (168 MB) och #334 på väderdatan (137 min) — också riktiga, men andra led.
+  ✅ **Och deployen, som stod som obevisad sedan 8/9:** vakthundens eget larmprov 20/9 10:42 bär raden
+  `manifest: 2 min | sha stämmer` ur det som faktiskt kör. Båda grenarna finns i driftkoden: ålder på
+  `generated_at` OCH sha256-jämförelsen, plus svarskoderna för manifest.json och live.json.
+  ⚠️ **Fjärde gången samma dag:** kortet var stängbart 16/9 och stod öppet i fyra dygn. Samma mönster som de sex
+  överspelade korten (#250), de två dubbletterna (#252) och #50 (#254). TAVELREGELN punkt 3 säger att verkligheten
+  flyttar kortet utan att fråga — men ingen läser issue-historiken mot korten.
 - [x] ✅ **#74 Två skrivare till live.json — KLART 8/9 20:04, BEVISAT I KARTREPOT** (DECISIONS #74): Axel deployade
   ~17:18 (första commit med manifest.json: 4013689). Mätt 20:04: manifest och live.json båda
   generated_at 20:00:12, sha256 MATCH för live OCH static, SMHI-nycklar `niva`/`geom`, bundlen
