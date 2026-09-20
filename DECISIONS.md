@@ -7207,3 +7207,26 @@ oförändrat läge.
 §10.2), och en station med tre ögonblick samma natt hade räknat samma omklassning tre gånger · räkna olyckor i
 grundtalet — avvisat av samma skäl som tystnadsfelet: arkivet bär ingen orsak.
 
+## #248 (20/9 2026) Bildfacitbeslutet flyttas från 1 februari till efter första frosten
+
+**Bengts beslut 20/9:** *"ja skriv in det som egen rad"* — på Claudes förslag ur fyndet i #247.
+
+**Skälet är mätt, inte anat.** Uppspelningens facitkoppling (#207) visade att omklassningarna till halka är **0 på
+14 dygn**, och att hela `road_condition_history` bär **7 rader** (orden är *Torrt* och *fläckvis Våt*). I september är
+det korrekt — inget klassas om — men KB-D3 säger att förarfacit ensamt varken fäller eller friar. Är omklassningarna
+lika tomma i november–december står januaridomen och faller på kamerabilderna, och **granskningen av dem finns inte
+byggd**. Ett beslut i februari hade då kommit efter domen det skulle rädda.
+
+**Vad som ändras:** tidpunkten, ingenting annat. Beslutet fattas **inom sju dygn efter första frostnatten** i stället
+för före 1/2, så att bygget hinner göras om svaret blir ja.
+
+**Vad som INTE ändras — blindningen.** Beslutet gäller att BYGGA läsningen av bilderna, inte att läsa utfallet.
+Bilderna öppnas fortfarande i mars (D2/D3/D6). Ett bygge före dom 1 får inte visa vad bilderna säger.
+
+**Mätningen som avgör** körs i samma varv som T-A steg 0 vid första frosten: hur många omklassningar till halka som
+faller inom 5 km och utfallsfönstret från en episod. Blir talet noll också då är kamerabilden den enda källa som kan
+bära januari, och granskningen måste byggas i november.
+
+*Alternativ:* behåll 1/2 — avvisat: beslutet hade kommit efter den dom det ska försörja · bygg granskningen nu utan
+beslut — avvisat: den kostar, och första frosten kan visa att omklassningarna räcker.
+

@@ -973,6 +973,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [ ] 📷 **#209 BILDFACITBESLUTET FLYTTAT TILL EFTER FÖRSTA FROSTEN** (Bengts ja 20/9, DECISIONS #248, ur fyndet i #247).
+  **Mätt skäl:** omklassningar till halka **0 på 14 dygn**, hela arkivet 7 rader; olyckorna (504) bär ingen orsak. Är källan lika tom
+  i november–december står januaridomen på kamerabilderna — och granskningen finns inte byggd. Beslutet flyttas från *före 1/2* till
+  **inom sju dygn efter första frostnatten**. Blindningen orörd: det gäller att BYGGA läsningen, inte att läsa utfallet (bilderna
+  öppnas i mars). 🔑 **Väntar på första frosten** — mätningen körs i samma varv som T-A steg 0.
+  Verify: en sats som ger antal omklassningar till halka inom 5 km och utfallsfönstret från en episod under frostnätterna; talet
+  skrivet i bedömningen §4.2 tillsammans med Bengts och Axels beslut.
 - [x] 🌙 **#208 EPISODEN ÄR EN NATT, INTE ETT UTC-DYGN — ✅ KLART 20/9** (Bengts *"ompröva beslutet och byt"*, DECISIONS #245/#246,
   PR #384). Version 1 räknade stationens första ögonblick per UTC-dygn och delade **159 av 454 stationsnätter i två** — 66 % av fallen
   ligger 21–03 UTC. Nu: natt = middag till middag UTC, som T-A; inskrivet i TROSKLAR-KOMBINATIONEN §4 KB-B.
