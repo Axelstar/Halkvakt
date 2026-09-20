@@ -8072,3 +8072,24 @@ gjorde motsatsen: 21 kort strukna med bevisrad, i samma varv som arbetet. **Skil
 någon arbetar på ett kort samma dag det skrivs, flyttas det. Det är de gamla korten som ruttnar, och det är dem #224
 ska gå igenom.
 
+
+## #275 (20/9 2026) 0.3.9 (12) — bygget som bär iOS-fixen, och Team-id:t skrivs in så xcodegen slutar nollställa det
+
+**Axels ja 20/9 kväll:** *"vi kör fixen"*. `MARKETING_VERSION` 0.3.8 → **0.3.9**, `CURRENT_PROJECT_VERSION`
+11 → **12**. Bygget bär `allowsBackgroundLocationUpdates`-fixen (#273) ovanpå allt som låg i 0.3.8:
+`<null>`-raden (#210), det engångs tidiga olycksropet (#211) och de tolv nya vektorerna (#212).
+
+**I samma varv, en papperssnitt som kostat sedan 29/8:** `DEVELOPMENT_TEAM` stod som `""` i `project.yml`
+med kommentaren *"väljs manuellt i Xcode efter VARJE xcodegen"*. Det betydde att varje bygge började med
+ett handgrepp som går att glömma — och glöms det faller arkiveringen på signeringen. Värdet **R93LGMM343**
+lästes ur `Halkvakt.xcodeproj/project.pbxproj` efter Axels egen 0.3.8-arkivering, alltså ur det han själv
+valde, och står nu i `project.yml`. Ett team-id är ingen hemlighet; det ligger i varje signerat bygge.
+Läxan från 29/8 gäller fortfarande och står kvar i kommentaren: koden i *Lita på*-rutan på telefonen är
+CERTIFIKATETS id, inte teamets.
+
+**Vad 0.3.9 INTE bär:** #203 (facit efter resan) och #266 (viltrösten utan art). De är beslutade men
+obyggda, och att smyga in dem i ett bygge som ska bevisa en enda rad vore att göra provet otolkbart.
+
+**Beviset som stänger kort #227:** en resa med *Tillåt när appen används*, skärmen släckt, och en varning
+som hörs — plus den blå indikatorn i statusfältet, som är kvittot på att Core Location håller appen vid
+liv. Blir det tyst är fixen fel, och då vet vi det på en resa i stället för i november.
