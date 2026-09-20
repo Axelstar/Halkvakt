@@ -211,7 +211,16 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         tripEndedAt = nil
         staleAnnounced = false
         prevLoc = nil
-        manager.allowsBackgroundLocationUpdates = manager.authorizationStatus == .authorizedAlways
+        // ALLTID sant när vakten startas av föraren (#273). Apple: "When the value of this property is
+        // true and you start location updates while the app is in the foreground, Core Location configures
+        // the system to keep the app running to receive continuous background location updates … Updates
+        // continue even if the app subsequently enters the background." Och när den är false görs det INTE,
+        // uttryckligen "to extend the effectiveness of the authorizedWhenInUse authorization while the app
+        // is running in the background". Raden gjorde förut detta villkorat av .authorizedAlways — alltså
+        // tyst röst med släckt skärm för varje testare som svarade "Tillåt när appen används", vilket är
+        // det enda iOS erbjuder i första rutan. Always behövs för SJÄLVSTARTEN (betydande förflyttning),
+        // inte för resan föraren själv startar. Priset är den blå indikatorn, som Apple kräver — ärligt.
+        manager.allowsBackgroundLocationUpdates = true
         manager.startUpdatingLocation()
         Task {
             await HeadsUpService.shared.requestAuthorizationIfNeeded()   // #23, en gång
@@ -269,7 +278,8 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
             if status == .authorizedWhenInUse || status == .authorizedAlways {
                 self.locationDenied = false
                 if !self.running && self.startRequested { self.requestPermissionAndStart() }
-                else { self.manager.allowsBackgroundLocationUpdates = status == .authorizedAlways }
+                // Samma regel som i start() (#273): bakgrundsuppdateringar gäller båda lägena.
+                else if self.running { self.manager.allowsBackgroundLocationUpdates = true }
             }
         }
     }

@@ -7997,3 +7997,50 @@ ACCESS_BACKGROUND_LOCATION)` ingen ruta alls — anropet i `MainActivity.onAutos
 tyst, och användaren ser ingenting hända när han slår på Autostart. Googles föreskrivna väg är en egen
 förklaringsruta plus en resa till appens inställningssida, med alternativets namn hämtat ur
 `getBackgroundPermissionOptionLabel()` (API 30+) så texten stämmer med just den telefonens ordval.
+
+## #273 (20/9 2026) iOS tystnade med släckt skärm för varje testare som svarade "när appen används" — en rad, funnen av Axels prov
+
+**Axels prov 20/9 kväll, och rättelsen till mig själv:** han rapporterade *"man kan endast välja alltid då
+man väljer medans appen är igång"* — och jag antog Android, skrev DECISIONS #272 och kort #226 på det.
+**Provet var på iPhone.** Det som stod i #272 om Android är läst i Googles dokumentation och i koden och
+står kvar som riktigt, men det var inte det Axel såg. Att gissa plattform är samma fel som att gissa vad
+som helst annat.
+
+**Vad han faktiskt såg:** iOS erbjuder aldrig *Alltid* i första rutan — Apple ger *Tillåt en gång* och
+*Tillåt när appen används*. *Alltid* kommer som en senare uppföljningsfråga eller sätts i Inställningar.
+Samma form som på Android, andra skäl. **Varje ny testare landar alltså i `authorizedWhenInUse`.**
+
+**Och där satt felet.** `GuardManager` rad 214:
+`manager.allowsBackgroundLocationUpdates = manager.authorizationStatus == .authorizedAlways`
+— alltså **false** för precis det läge varje ny testare hamnar i. Apples dokumentation för egenskapen
+(läst 20/9) säger vad det betyder:
+
+> *"When the value of this property is true and you start location updates while the app is in the
+> foreground, Core Location configures the system to keep the app running to receive continuous background
+> location updates … Updates continue even if the app subsequently enters the background."*
+
+och, om `false`:
+
+> *"location updates may or may not continue in the background … Core Location doesn't configure the system
+> to keep the app running for delivery, or display the background location indicator **to extend the
+> effectiveness of the `authorizedWhenInUse` authorization while the app is running in the background**."*
+
+Egenskapen finns alltså till just för att göra *när appen används* användbar i bakgrunden. Vakten stängde
+av den för alla utom dem som redan hade Always. **Följden: rösten tystnar när skärmen låses** — för en
+app vars hela uppgift är att tala med släckt skärm under körning.
+
+**Fixen:** `allowsBackgroundLocationUpdates = true` när vakten startas, oavsett auktorisering. Villkoret är
+Apples eget — uppdateringarna ska startas medan appen är i förgrunden, och det är precis vad *Starta
+vakten* är. `UIBackgroundModes: [location, audio]` finns redan i `project.yml` (utan den är `true` ett
+fatalt fel). **Priset är den blå indikatorn**, som Apple visar för att vara ärlig om att appen läser
+platsen i bakgrunden — vilket den gör, och som vi inte har något skäl att dölja.
+**Always behövs fortfarande för SJÄLVSTARTEN** (betydande förflyttning, parkeringsstaketet) — de grenarna
+är separat vaktade på `.authorizedAlways` och är orörda.
+
+**Det obekväma:** 0.3.8 (11) laddades upp 18:38 i kväll och bär **inte** den här fixen. Ett fälttest med
+0.3.8 på en telefon som står på *när appen används* mäter alltså delvis fel app. Om Bengts telefon har
+Always sedan tidigare påverkas den inte — men det är inget vi vet, det är något vi antar, och just det
+antagandet har kostat huset ett varv förr.
+
+**Läxa, andra gången i kväll:** #271 var filnamn som såg ut som funktion, #272 var en plattform jag
+antog. Båda hade rättats av en fråga på en rad.
