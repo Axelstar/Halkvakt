@@ -148,7 +148,7 @@ BEGIN
           AND h.modified_time > ep.t AND h.modified_time <= ep.t + p_utfall
           AND ST_DWithin(c.geom::geography, wl.geom::geography, p_facit_km * 1000)
           AND EXISTS (SELECT 1 FROM unnest(h.condition_info) i
-                      WHERE i ~* '(^|[^a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)'
+                      WHERE i ~* '(is|halka|halkrisk|halkig|halt|mycket besvärligt)'
                          OR i ~* '(snö|frost)')))::int AS omk,
       count(*) FILTER (WHERE EXISTS (
         SELECT 1 FROM situation_archive sa
