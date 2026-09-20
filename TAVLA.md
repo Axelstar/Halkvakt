@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-20 20:10 av Claude (Cowork) — 🗣️ **Axels svar på #203:s åtta frågor** (sju avgjorda, byggordningen öppen mot Bengts C, DECISIONS #267), main bekräftat byggredo; 🔑 **tre beslut av Axel** (#214 invarianten, #216 blindningen — väntar Bengts ja, #217 viltrösten; DECISIONS #264–#266); 🧪 **#212 klart** (trösklarna låsta, 36 vektorer), 💾 **#223 klart** (backupens ålder vaktad i Supabase); 🔢 **#220 klart** (beslutsnumren unika + vakt i CI, DECISIONS #259); 🔁 **#211 klart** (tredje olycksropet borta), 🔊 #210 byggt (väntar på iOS-bygge), 🧪 #212 prioritetsdelen klar (DECISIONS #258); 💾 **#213 arkivbackupen klar och bevisad** (DECISIONS #257), nytt kort #223. Tidigare samma dag: ✅ **STEG B:s VERIFY UPPFYLLD**: 141 min/dygn i snitt över 13–19/9 mot baslinjens 202, ingest oförändrat (24 körningar, median 30–36 s mot 32 s), radarsteget 4–5 s, radar_precip 3 312 rader över 24 av 24 kompositer. Kassan 21,98 USD av 35 och takdatumet är BORTA ur larmet — släpande takt 106 min/dygn, månadsprognos 31 USD.*
+*Uppdaterad: 2026-09-20 20:40 av Claude (Cowork) — 🚀 **byggordning A avgjord, Axel arkiverar 0.3.8** (simulatorprovet föll på Xcode; DECISIONS #269); 🗣️ **Axels svar på #203:s åtta frågor** (sju avgjorda, byggordningen öppen mot Bengts C, DECISIONS #267), main bekräftat byggredo; 🔑 **tre beslut av Axel** (#214 invarianten, #216 blindningen — väntar Bengts ja, #217 viltrösten; DECISIONS #264–#266); 🧪 **#212 klart** (trösklarna låsta, 36 vektorer), 💾 **#223 klart** (backupens ålder vaktad i Supabase); 🔢 **#220 klart** (beslutsnumren unika + vakt i CI, DECISIONS #259); 🔁 **#211 klart** (tredje olycksropet borta), 🔊 #210 byggt (väntar på iOS-bygge), 🧪 #212 prioritetsdelen klar (DECISIONS #258); 💾 **#213 arkivbackupen klar och bevisad** (DECISIONS #257), nytt kort #223. Tidigare samma dag: ✅ **STEG B:s VERIFY UPPFYLLD**: 141 min/dygn i snitt över 13–19/9 mot baslinjens 202, ingest oförändrat (24 körningar, median 30–36 s mot 32 s), radarsteget 4–5 s, radar_precip 3 312 rader över 24 av 24 kompositer. Kassan 21,98 USD av 35 och takdatumet är BORTA ur larmet — släpande takt 106 min/dygn, månadsprognos 31 USD.*
   💰 **RÄTTAD 13/9 (DECISIONS #160, Bengts order):** prognosen räknade på månad-till-datum, och i
   det snittet låg fem flöden som lades ner 8–9/9 (`ingest-fi`, `-no`, `-dk`, `publish-map`,
   `regn-30`). Vakten sa **21 september**; uppmätt verklig takt var 232 min/dygn senaste dygnet och
@@ -165,7 +165,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   dag på ett TAL (*3 varningar*), inte på något föraren ser. Kortet på *Redo.* ska visa de tre raderna — klockslag och
   text — så att ett tryck är ett svar på något läst. Kostar en vy. **Gör inte KB-D7-kontrollen onödig** (vanan finns
   kvar att mäta, och kontrollen kostar ingenting i domen) men gör den mindre bärande.
-  ⚠️ **BESLUT 7 (byggordningen) ÄR INTE AVGJORT — Axel svarade A, Bengt beslutade C 20/9 (DECISIONS #242).** Axels skäl:
+  ✅ **BESLUT 7 AVGJORT 20/9 18:35 — A. AXEL ARKIVERAR 0.3.8 NU** (DECISIONS #269). Simulatorprovet försöktes och
+  föll på Xcodes egen infrastruktur (*"the system shell probably crashed"*, `host down`, efter 94 s) på en M1 Air med
+  8 GB och iOS 26.1-runtime. **Det är svaret på C:s premiss:** C valdes för att kanalen skulle bevisas BILLIGT utan
+  TestFlight, och beviset var inte billigt — det kostade mer än den fältrunda det skulle spara. #203 bygger på 0.3.9.
+  *Historik:* Axels skäl:
   sändkanalen från en riktig telefon har aldrig bevisats, och att lägga ny funktion ovanpå en obevisad kanal är fel
   ordning. Bengts skäl: en uppdatering i stället för två, och kanalen bevisas utan TestFlight med simulatorprovet.
   **Simulatorprovet är fortfarande ogjort** (`driver_facit` 20/9 16:07Z: 0 riktiga svar, 2 provrader — ingen
@@ -507,7 +511,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   `git pull` · `cd ios/HalkvaktApp && xcodegen` · Edit Scheme → Run → Arguments → `-fotostudio_facit` · kör i simulatorn ·
   fliken Vakten · **tryck *Stämde*** · raden under ska bli grön *Skickat …* (gul = felet står där, skicka texten). Ta bort
   argumentet. Claude läser raden i `driver_facit`. Två minuter, ingen arkivering.
-  📋 **ARKIVERA NU — OMKONTROLLERAT 20/9 kväll (Axels fråga: är main byggredo?):** **ja.** ci ✅, ios-engine ✅ och
+  🚀 **ARKIVERING PÅGÅR 20/9 18:35 (Axel, byggordning A).** Förkontrollen enligt CLAUDE.md gjord: ci ✅, ios-engine ✅,
+  android ✅ på 88dd32c. Bygget bär **#210** (`<null>`), **#211** (engångs tidigt rop) och **#212**:s vektorer.
+  Fotostudio-kroken är `#if DEBUG` ⇒ kompileras bort ur arkivet; scheme-argumentet rör bara Run, inte Archive.
+  **Innehåller INTE** #203 (facit efter resan), #264 (invarianten/Data Safety) eller #266 (viltrösten) — de går i 0.3.9.
+  **Efter uppladdningen, i ordning:** (1) Organizer visar 0.3.8 (11) · (2) intern grupp får bygget utan granskning ·
+  (3) **Bengts första resa bevisar led 1 och 2** — att knapparna syns och att appen skickar; misslyckas sändningen
+  skriver appen serverns svar under knapparna (*"Kunde inte skicka HH:MM: HTTP …"*), så felet blir en skärmbild och
+  inte en tyst runda · (4) **kort #210 stängs** när en olycka utan vägnummer sägs rätt (ingen *"på väg null"*).
+  📋 **BYGGREDO — OMKONTROLLERAT 20/9 kväll (Axels fråga):** **ja.** ci ✅, ios-engine ✅ och
   android ✅ på **88dd32c**, och allt som pushats därefter är dokument (`git diff --stat 88dd32c..HEAD` rör bara .md).
   ⚠️ **Raden ovanför gällde till i kväll och är nu fel:** `git diff 79e4195..HEAD -- ios/ android/ engine/` är INTE längre
   tom — den bär motorfixarna #210, #211, #212 (SnapshotRepo.swift, Engine.swift, Engine.kt, engine/src, tolv nya vektorer).

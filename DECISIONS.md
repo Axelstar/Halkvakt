@@ -7836,3 +7836,45 @@ i iCloud innan första uppladdningen: efter den är nyckeln bunden hos Google.
 **Vad Claude inte gör:** skapar inte kontot, godkänner inte avtalet, betalar inte avgiften, anger inga
 identitetsuppgifter och loggar inte in. Det är ägarens, och det är avsiktligt.
 
+
+## #269 (20/9 2026) Byggordning A efter allt — simulatorprovet föll på Xcode, och det avgjorde frågan (kort #203, Axel)
+
+**Axels beslut 20/9 18:35:** *"Jag gör en ny release."* 0.3.8 (11) arkiveras nu; #203 går i 0.3.9. Det ersätter
+byggordning C (Bengts beslut samma dag, #242).
+
+**Vad som hände, i ordning.** Axel svarade på §8 med A (#267). Han valde sedan själv att göra C:s simulatorprov först,
+så att valet skulle stå mellan två kända alternativ i stället för ett vad. Provet kördes: `xcodegen`, Team nollställd
+som alltid, destination bytt till iPhone 16e (iOS 26.1), `-fotostudio_facit` i schemat — och installationen föll på
+**Xcodes egen infrastruktur**: *"Simulator device failed to launch se.halkvakt.app … The system shell probably
+crashed"*, `BSErrorCodeDescription = host down`, `NSPOSIXErrorDomain 64`, efter 94 sekunder. Maskinen är en M1 Air med
+8 GB som kör Xcode 26.1 mot en färsk iOS 26.1-runtime.
+
+**Det är inte ett sidospår, det ÄR svaret.** C valdes framför A på premissen att kanalen kunde bevisas **billigt**,
+utan TestFlight, i simulatorn (#242). Premissen höll inte på den här maskinen: provet kostade en kvart och gav inget
+bevis, alltså mer än den fältrunda det skulle spara.
+
+**Vad som faktiskt är bevisat, och inte.** Kedjan har tre led:
+1. **Knapparna syns** — gick sönder i 0.3.7 (`FacitRow` saknades, #240); fixat i 0.3.8, obevisat på en telefon.
+2. **Appen skickar** — aldrig bevisat, på någon plattform.
+3. **Servern tar emot och skriver** — **bevisat 16/9, två gånger.** Tabellens två rader (`prov:kam1`, `cam:prov-ios`)
+   är serverprov i apparnas form, inte app-sändningar (#227). Ett nytt serveranrop i kväll hade därför bevisat noll.
+
+Simulatorprovets hela värde låg i led 2 — i en simulator. Bengts första resa bevisar led 1 OCH 2, i verkligheten, och
+den provkörningen måste ske ändå.
+
+**Det som gör A försvarbart, och det är kod, inte tillit:** appen skvallrar om sitt eget fel. `FacitSender.flush()`
+skriver serverns svar rakt in i gränssnittet under knapparna — `"Skickat HH:MM (n svar)"` eller
+`"Kunde inte skicka HH:MM: HTTP 400 …"` — och Android gör samma sak (`Prefs.setFacitStatus`, `FacitSender.kt:34`).
+Ett trasigt led 2 kostar alltså en skärmbild, inte en tyst fältrunda. **Tystnaden var faran i 0.3.7, inte felet.**
+
+**Bonus som inte fanns när C valdes:** 0.3.8 bär nu också kvällens motorfixar — #210 (`"på väg <null>"` vid var
+tjugonde olycka) och #211 (det tidiga olycksropet engångs). De når en telefon bara genom ett bygge. Kort #210 stängs
+när en olycka utan vägnummer sägs rätt i bilen.
+
+**Förkontroll enligt CLAUDE.md före uppmaningen att arkivera:** ci ✅, ios-engine ✅, android ✅ på 88dd32c; allt pushat
+därefter är dokument. Fotostudio-kroken är `#if DEBUG` och kompileras bort ur arkivet.
+**Oprövat, uttalat:** `SnapshotRepo.swift` ligger i app-målet, som inget CI-flöde kompilerar — arkiveringen är första
+gången kvällens rad kompileras.
+
+**Till Bengt:** C var rätt resonemang på fel maskin. Invändningen — en uppdatering i stället för två — står kvar och
+gäller nästa gång; det som föll var antagandet att simulatorn kunde ersätta en telefon till en låg kostnad.
