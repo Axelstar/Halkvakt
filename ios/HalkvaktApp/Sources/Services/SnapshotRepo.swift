@@ -117,7 +117,15 @@ enum SnapshotRepo {
 
     // MARK: - JSON-plockare (speglar org.json-anropens tolerans)
     private static func arr(_ d: [String: Any], _ k: String) -> [[String: Any]] { d[k] as? [[String: Any]] ?? [] }
-    private static func str(_ d: [String: Any], _ k: String) -> String { d[k] as? String ?? "\(d[k] ?? "")" }
+    // #210 löste `road`, men INTE den här raden: fallback-grenen stringifierar allt som inte är String —
+    // även NSNull, som blir "<null>". Fältet `road` läses inte längre med str(), så rösten är räddad; det här
+    // stänger dörren för NÄSTA nullbara fält som någon läser med str() utan att tänka på saken.
+    // Fallbacken finns kvar för id-fält som ibland kommer som tal — bara null undantas.
+    private static func str(_ d: [String: Any], _ k: String) -> String {
+        if let s = d[k] as? String { return s }
+        guard let v = d[k], !(v is NSNull) else { return "" }
+        return "\(v)"
+    }
     private static func dbl(_ d: [String: Any], _ k: String) -> Double { (d[k] as? NSNumber)?.doubleValue ?? 0 }
     private static func optDbl(_ d: [String: Any], _ k: String) -> Double? { (d[k] as? NSNumber)?.doubleValue }
     private static func optInt(_ d: [String: Any], _ k: String) -> Int? { (d[k] as? NSNumber)?.intValue }
