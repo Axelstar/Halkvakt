@@ -165,6 +165,9 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
                 if (earlySpoken) AccidentStep.REMINDER else AccidentStep.LATE,
             )
         }
+        // The early call is ONE-SHOT per hazard (#211, 20/9): rule 2 would re-arm it after
+        // 10 min + 5 km, which a slow approach passes before 2 km. Exactly two (DECISIONS #28).
+        if (fired.containsKey("${p.id}#early")) return null
         return Candidate(p, HazardKind.ACCIDENT, distM, "${p.id}#early", AccidentStep.EARLY)
     }
 

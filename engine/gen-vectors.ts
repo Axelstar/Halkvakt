@@ -297,6 +297,43 @@ const scenarios: Scenario[] = [
     })),
     trace: northTrace(380, 80),
   },
+  {
+    file: "v25_accident_serious_slow_approach", name: "Allvarlig olycka i låg fart — exakt två repliker (#211)",
+    description:
+      "Genomlysningen 20/9: under ~48 km/h tar de 8 km mellan horisonterna mer än 600 s, så reprisregeln (600 s OCH " +
+      "5 km) hann återarma det tidiga ropet medan mer än 2 km återstod — 'Överväg annan väg' sades TVÅ gånger före " +
+      "påminnelsen, tre repliker mot DECISIONS #28:s två. Nu är det tidiga ropet engångs per fara. 44,5 km/h " +
+      "(12,36 m/s) och olyckan 10 945 m fram (severity 5): de enda värdena i 30–47 km/h där BÅDA horisonterna får " +
+      "≥ 5 m marginal till närmaste fix (5-metersregeln, uppmätt med motorns haversine 20/9): 10 km-horisonten " +
+      "6,7 m före / 5,7 m efter fixen t=76, 2 km-horisonten 5,7 / 6,7 m kring t=724. Exakt två: t=76 tidigt, t=724 " +
+      "påminnelse. Motorn före fixen gav tre — det tidiga ropet igen vid t=676 med ~2 590 m kvar.",
+    hazards: [{ id: "acc1", kind: "accident", lon: LON0, lat: northOf(10_945), meta: { severityCode: 5, road: "E6" } }],
+    trace: northTrace(760, 44.5),
+  },
+  {
+    file: "v26_accident_road_null", name: "Olycka med road: null — rösten säger ingen väg (#210)",
+    description:
+      "Publiceraren skriver `road: null` när Trafikverket saknar vägnummer (38 av 732 olyckor på 30 dygn, 20/9). v22 " +
+      "låser bara FRÅNVARANDE road; den här låser JSON-null i alla tre vektorläsarna och motorerna: severity 5 så " +
+      "det är det tidiga ropet som prövas — exakt den replik som sade 'på väg <null>' i iOS-appen.",
+    hazards: [{ id: "acc1", kind: "accident", lon: LON0, lat: northOf(8000), meta: { severityCode: 5, road: null } }],
+    trace: northTrace(60, 80),
+  },
+  {
+    file: "v27_priority_breakthrough", name: "Prioritetsgenombrottet: is 6 s efter kamera talar ändå (#127)",
+    description:
+      "Genomlysningen 20/9: minsta avstånd mellan två varningar i sviten var exakt 10 s, så grenen 'viktigare släpps " +
+      "igenom spärren' kördes aldrig (v23:s is kom 20 s efter kameran). 80 km/h norrut = 22,2 m/s. Kamera 3 000 m " +
+      "(bearing 180 = fotar vår riktning) kvalificerar vid 500 m: t=113. Isstation 3 300 m, leadM 667 m ⇒ " +
+      "kvalificerar när 2 633 m passerats: t=119 (marginal 11 m åt båda hållen), 6 s efter kameran. Is är viktigare " +
+      "än kamera, så spärren får inte kasta den: två varningar 6 s isär. Ett motorfel som gör spärren blind igen " +
+      "ger isen först t=123.",
+    hazards: [
+      { id: "cam1", kind: "camera", lon: LON0, lat: northOf(3000), bearing: 180 },
+      { id: "is1", kind: "icing_point", lon: LON0, lat: northOf(3300), meta: { surfaceTempC: -1, moisture: true } },
+    ],
+    trace: northTrace(180, 80),
+  },
 ];
 
 /** Canonical replay-with-updates — the reference all three test runners mirror. */

@@ -65,7 +65,10 @@ enum SnapshotRepo {
                               lon: dbl(d, "lon"), lat: dbl(d, "lat"), bearing: nil,
                               meta: PointMeta(severityCode: optInt(d, "sev"),
                                               endTimeLocal: d["slut"] as? String,
-                                              road: str(d, "road"))))
+                                              // `road` is published as JSON null when Trafikverket has no
+                                              // number (5 % of accidents). str() turned NSNull into the
+                                              // string "<null>" and the voice said "på väg <null>" (#210).
+                                              road: d["road"] as? String)))
         }
         return Snapshot(hazards: out, generatedAt: gen)
     }

@@ -33,9 +33,14 @@ const REMINDER = "Sakta ner — olycksplats strax framför dig.";
 function assertInvariants(alerts: Alert[], trace: Fix[], label: string): void {
   const cfg = DEFAULT_CONFIG;
   for (let i = 1; i < alerts.length; i++) {
+    // The floor is PRIORITY-AWARE (#127): inside the window only a MORE important hazard may
+    // speak. Until 20/9 this check demanded ≥ 10 s between ALL alerts and would have failed the
+    // very vector that proves the breakthrough (v27) — test and engine contradicted each other.
+    const gapS = alerts[i].t - alerts[i - 1].t;
+    const moreImportant = PRIORITY.indexOf(alerts[i].kind) < PRIORITY.indexOf(alerts[i - 1].kind);
     assert.ok(
-      alerts[i].t - alerts[i - 1].t >= cfg.globalCooldownS,
-      `${label}: alerts ${i - 1}→${i} only ${alerts[i].t - alerts[i - 1].t}s apart (rule: ≥${cfg.globalCooldownS}s)`,
+      gapS >= cfg.globalCooldownS || moreImportant,
+      `${label}: alerts ${i - 1}→${i} only ${gapS}s apart (rule: ≥${cfg.globalCooldownS}s unless more important)`,
     );
   }
   const byHazard = new Map<string, Alert[]>();

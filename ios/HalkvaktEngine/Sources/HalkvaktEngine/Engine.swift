@@ -286,7 +286,9 @@ public final class AlertEngine {
                                                     alertKey: "\(p.id)#near",
                                                     step: earlySpoken ? .reminder : .late,
                                                     endTimeLocal: p.meta.endTimeLocal, road: p.meta.road))
-                    } else {
+                    } else if fired["\(p.id)#early"] == nil {
+                        // The early call is ONE-SHOT per hazard (#211, 20/9): rule 2 would re-arm it
+                        // after 10 min + 5 km, which a slow approach passes before 2 km. Exactly two.
                         candidates.append(Candidate(id: p.id, kind: p.kind, distM: distM, limit: nil,
                                                     alertKey: "\(p.id)#early", step: .early,
                                                     endTimeLocal: p.meta.endTimeLocal, road: p.meta.road))

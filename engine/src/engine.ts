@@ -251,6 +251,11 @@ export class AlertEngine {
         step: earlySpoken ? "reminder" : "late",
       };
     }
+    // The early call is ONE-SHOT per hazard (#211, 20/9). Rule 2 re-arms a key after 10 min AND
+    // 5 km — and a slow approach (≤ 45 km/h over the 8 km between the horizons) passes both
+    // before 2 km, so "Överväg annan väg" spoke twice and the reminder made three. DECISIONS
+    // #28 says exactly two; the early slot therefore never re-arms. Vector v25 locks it.
+    if (this.fired.has(`${p.id}#early`)) return null;
     return { hazard: p, kind: "accident", distM, alertKey: `${p.id}#early`, step: "early" };
   }
 
