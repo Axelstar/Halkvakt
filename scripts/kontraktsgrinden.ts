@@ -247,17 +247,21 @@ export const KONTRAKT: Kontrakt[] = [
   {
     namn: "Halkorden i MOTORN — vilka ConditionInfo-ord som får motorn att tala (ordbörjan)",
     varfor: "Skuggmotorn är genererad ur engine.ts, och tystnadsfelet dömer mot samma lista. Glider de isär mäter måttet något annat än motorn säger.",
+    // Fjärde kopian 20/9 (kort #207): uppspelningen läser omklassningarna i SQL. Postgres saknar lookbehind, så
+    // SQL-formen är tystnadsfelets — `(^|[^a-zåäö])(...)` — inte motorns `(?<![a-zåäö])(...)`. Orden ska ändå vara
+    // desamma tecken för tecken; "fläckvis Våt" får aldrig matcha på delsträngen 'is'.
     former: [/SLIPPERY_INFO\s*=\s*\/\(\?<!\[a-zåäö\]\)\(([^)]+)\)/,
-              /HALKORD\s*=\s*"([^"]+)"/],
-    golv: 3,
+              /HALKORD\s*=\s*"([^"]+)"/,
+              /~\* '\(\^\|\[\^a-zåäö\]\)\(([^)]+)\)'/],
+    golv: 5,
   },
   {
     // Kort #97 (16/9): snö och frost räknas även INUTI sammansättningar ("Nysnö", "Rimfrost"). Egen lista,
     // eget kontrakt — tas en stam bort i en kopia tystnar sammansättningarna där utan att något annat syns.
     namn: "Halkstammarna i MOTORN — snö/frost räknas även inuti ord",
     varfor: "Samma tre kopior som ordbörjanslistan. Driver de isär larmar skuggan på Nysnö medan tystnadsfelet mäter som om den teg.",
-    former: [/SLIPPERY_STAM\s*=\s*\/\(([^)]+)\)\/i/, /HALKSTAM\s*=\s*"([^"]+)"/],
-    golv: 3,
+    former: [/SLIPPERY_STAM\s*=\s*\/\(([^)]+)\)\/i/, /HALKSTAM\s*=\s*"([^"]+)"/, /OR i ~\* '\(([^)]+)\)'/],
+    golv: 5,
   },
   {
     namn: "Trendens minsta lutning — svepets lägsta steg (°C per fönster)",
@@ -397,6 +401,20 @@ export const KONTRAKT: Kontrakt[] = [
     former: [/- interval '(\d+) hours?'\)[^\n]{0,40}AS natt\b/],
     filer: /grind-t-a\.ts|grind-r-a\.ts|028_uppspelning_varianter\.sql/,
     golv: 3,
+  },
+  {
+    // Fönstret är T-A:s (TROSKLAR-TRENDEN §2), inte kombinationens — men det finns nu i tre filer: arkivets skrivare,
+    // dess rena hjälpfunktion, och uppspelningen som läser BÅDA facitkällorna över samma fönster (kort #207).
+    namn: "Utfallsfönstret — minuter efter fyrningen som facit får komma",
+    varfor: "Driver det isär mäter stationens egen facit ett fönster och omklassningarna ett annat, i samma tabellrad.",
+    former: [/UTFALLSFONSTER_MIN\s*=\s*(\d+)/, /minuter = (\d+)\)/, /p_utfall interval DEFAULT '(\d+) minutes'/],
+    golv: 3,
+  },
+  {
+    namn: "Räckvidden för facit — km från stationen (Bengt 20/9, DECISIONS #245)",
+    varfor: "Standardvärdet och vakten som avvisar andra tal måste bära samma km, annars släpper vakten igenom sitt eget fel.",
+    former: [/p_facit_km numeric DEFAULT (\d+)/, /p_facit_km <> (\d+) THEN/],
+    golv: 2,
   },
 ];
 

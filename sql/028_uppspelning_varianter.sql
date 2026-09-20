@@ -28,12 +28,37 @@
 --   NULL betyder bara "blindat". Klasserna är T-B:s: föll ut (yta <= 1 °C) · nära (inom nära-miss-bandet) · uteblev.
 --   Varianten "utan faller" har inget utfall här: den räknas ur väderarkivet, och trendarkivet bär bara fallande ytor.
 --
--- INTE MED ÄN, med skäl: SMHI-förlängningen (N_varning) — arkivet har inga vintervarningar och senast_sedd är inte
--- deklarerad i värdevakten · facitstackens tre andra källor (omklassning, kamerabild, olycka) — "nära stationen" har
--- ingen skriven radie, och den ska skrivas i tröskeldokumentet FÖRE mätningen · dagens icing_point som jämförelse
--- (KB-B) — hör till utfallsläsningen.
+-- FACITSTACKEN, TVÅ KÄLLOR TILL (kort #207, DECISIONS #247). Stationens egen yta säger att det BLEV kallt, aldrig att
+-- vägen blev hal. KB-B döms mot facitstacken, och KB-D3 säger att förarsvar ensamma varken fäller eller friar — blir
+-- omklassningarna tomma blir januari OAVGJORT hur många förare som än svarat. Därför läses de två källor som redan
+-- skrivs varje dygn, per episod, inom samma fönster som stationens eget utfall:
+--   * OMKLASSNING (road_condition_history × road_conditions): vägavsnitt inom p_facit_km där väglaget klassades om till
+--     halka. Halkorden är MOTORNS egna (engine.ts SLIPPERY_INFO, speglade i tystnadsfelet.ts) — kontraktsgrinden vaktar
+--     att kopiorna inte glider isär. "fläckvis Våt" får aldrig matcha på delsträngen 'is'; ordgränsen är därför med.
+--   * OLYCKA (situation_archive, Accident): räknas SEPARAT och läggs aldrig i grundtalet. Arkivet bär ingen orsak
+--     (ingest/sources/situations.ts) — en olycka är facit på att något hände, inte på att det var halt. Samma regel som
+--     tystnadsfelet (scripts/tystnadsfelet.ts T1 b).
+--   Radien: 5 km från stationen (Bengt 20/9, DECISIONS #245), samma koppling station↔väg som radarn — EN koppling.
+--   Stationens läge kommer ur weather_latest, samma källa som radarkopplingen. En station som saknas där får inget facit;
+--   täckningen mäts i scripts/matningar/uppspelning-varianter.sql sats 3.
+--   Fönstret: (t, t + p_utfall] — STRIKT efter episodens början, till och med slutet, exakt som publish/trendkandidat.ts
+--   räknar stationens egen facit. p_utfall ärvs från T-A (TROSKLAR-TRENDEN §2, svep 60 · 90 · 120 min); standardvärdet
+--   90 min är det arkivet redan räknar i min_yta_90min_c, så de två facitkällorna läses över samma fönster.
+--   Kamerabilden är INTE med: en bild är inte facit förrän någon läst den, och granskningen är ett öppet beslut
+--   (bedömningen §4.2, före 1/2). Förarsvaren har egna regler (KB-D1–D6) och är inte med här.
 --
--- Bara läsande. Idempotent (CREATE OR REPLACE). Låst som gallra_arkiv: ingen EXECUTE för PUBLIC, anon eller authenticated.
+-- KOLUMNEN `episoder` ÄR INTE BLINDAD. Den räknar fyrningar, inte utfall — samma sak som `stationer` och `ogonblick`,
+-- bara grupperat per natt. Den är facittalens nämnare, och den gör nattbytets (#246) verkan mätbar i drift.
+--
+-- SIGNATUREN SLÄPPS FÖRST. Både returtypen och antalet argument ändras med #207, och ett CREATE OR REPLACE hade då lagt
+-- en ANDRA överlagring bredvid den gamla — `uppspelning_efterhalka()` utan argument blir tvetydig och faller. DROP:en
+-- nedan är därför inte städning utan en förutsättning; migrationen bevisar efteråt att exakt EN signatur finns.
+--
+-- INTE MED ÄN, med skäl: SMHI-förlängningen (N_varning) — arkivet har inga vintervarningar och senast_sedd är inte
+-- deklarerad i värdevakten · dagens icing_point som jämförelse (KB-B) — hör till utfallsläsningen.
+--
+-- Bara läsande. Idempotent. Låst som gallra_arkiv: ingen EXECUTE för PUBLIC, anon eller authenticated.
+DROP FUNCTION IF EXISTS uppspelning_efterhalka(interval, interval, numeric, int, numeric, numeric, numeric, numeric, numeric, boolean, boolean, numeric, boolean);
 CREATE OR REPLACE FUNCTION uppspelning_efterhalka(
   p_fonster interval DEFAULT '14 days',
   p_n interval DEFAULT '2 hours',
@@ -47,8 +72,12 @@ CREATE OR REPLACE FUNCTION uppspelning_efterhalka(
   p_krav_faller boolean DEFAULT true,
   p_krav_blot boolean DEFAULT true,
   p_band numeric DEFAULT 0.5,
+  p_utfall interval DEFAULT '90 minutes',
+  p_facit_km numeric DEFAULT 5,
   p_blind boolean DEFAULT true
-) RETURNS TABLE (dag date, stationer int, ogonblick int, episoder_med_utfall int, foll_ut int, nara int, uteblev int)
+) RETURNS TABLE (dag date, stationer int, ogonblick int, episoder int,
+                 episoder_med_utfall int, foll_ut int, nara int, uteblev int,
+                 med_omklassning int, med_olycka int)
 LANGUAGE plpgsql STABLE AS $$
 BEGIN
   -- D1: bara värden ur de fastställda svepen.
@@ -61,6 +90,9 @@ BEGIN
   IF p_radar_r IS NOT NULL AND p_radar_r NOT IN (0.1, 0.5, 2) THEN RAISE EXCEPTION 'p_radar_r utanför svepet 0,1 · 0,5 · 2 mm/h: %', p_radar_r; END IF;
   IF p_radar_km <> 5 THEN RAISE EXCEPTION 'kopplingen station–väg är 5 km (Bengt 17/9, DECISIONS #225): %', p_radar_km; END IF;
   IF p_band NOT IN (0.3, 0.5, 1.0) THEN RAISE EXCEPTION 'p_band utanför svepet 0,3 · 0,5 · 1,0 °C: %', p_band; END IF;
+  IF p_utfall NOT IN (interval '60 minutes', interval '90 minutes', interval '120 minutes') THEN
+    RAISE EXCEPTION 'p_utfall utanför T-A:s svep 60 · 90 · 120 min (TROSKLAR-TRENDEN §2): %', p_utfall; END IF;
+  IF p_facit_km <> 5 THEN RAISE EXCEPTION 'räckvidden för facit är 5 km (Bengt 20/9, DECISIONS #245): %', p_facit_km; END IF;
 
   RETURN QUERY
   WITH bas AS (
@@ -99,29 +131,49 @@ BEGIN
   ),
   f AS (SELECT m.sid, m.t, (m.t AT TIME ZONE 'UTC')::date AS d, ((m.t - interval '12 hours') AT TIME ZONE 'UTC')::date AS natt,
       m.min_efter, m.rader FROM m WHERE (NOT p_krav_blot) OR m.blot),
-  ep AS (SELECT DISTINCT ON (f.sid, f.natt) f.d, f.min_efter, f.rader FROM f ORDER BY f.sid, f.natt, f.t),
+  ep AS (SELECT DISTINCT ON (f.sid, f.natt) f.sid, f.t, f.d, f.min_efter, f.rader FROM f ORDER BY f.sid, f.natt, f.t),
   a AS (SELECT f.d, count(DISTINCT f.sid)::int AS st, count(*)::int AS og FROM f GROUP BY f.d),
-  u AS (SELECT ep.d,
+  u AS (SELECT ep.d, count(*)::int AS ep_n,
       count(*) FILTER (WHERE ep.rader > 0)::int AS med,
       count(*) FILTER (WHERE ep.rader > 0 AND ep.min_efter <= 1.0)::int AS fo,
       count(*) FILTER (WHERE ep.rader > 0 AND ep.min_efter > 1.0 AND ep.min_efter <= 1.0 + p_band)::int AS na,
       count(*) FILTER (WHERE ep.rader > 0 AND ep.min_efter > 1.0 + p_band)::int AS ut
-    FROM ep GROUP BY ep.d)
-  SELECT a.d, a.st, a.og,
+    FROM ep GROUP BY ep.d),
+  fa AS (
+    -- Facitstackens två skrivna källor, per episod, i fönstret (t, t + p_utfall]. Stationens läge ur weather_latest.
+    SELECT ep.d,
+      count(*) FILTER (WHERE EXISTS (
+        SELECT 1 FROM road_condition_history h JOIN road_conditions c ON c.segment_id = h.segment_id
+        WHERE NOT h.deleted AND c.geom IS NOT NULL
+          AND h.modified_time > ep.t AND h.modified_time <= ep.t + p_utfall
+          AND ST_DWithin(c.geom::geography, wl.geom::geography, p_facit_km * 1000)
+          AND EXISTS (SELECT 1 FROM unnest(h.condition_info) i
+                      WHERE i ~* '(^|[^a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)'
+                         OR i ~* '(snö|frost)')))::int AS omk,
+      count(*) FILTER (WHERE EXISTS (
+        SELECT 1 FROM situation_archive sa
+        WHERE sa.message_type_value = 'Accident' AND sa.geom IS NOT NULL
+          AND sa.start_time > ep.t AND sa.start_time <= ep.t + p_utfall
+          AND ST_DWithin(sa.geom::geography, wl.geom::geography, p_facit_km * 1000)))::int AS oly
+    FROM ep JOIN weather_latest wl ON wl.station_id = ep.sid GROUP BY ep.d)
+  SELECT a.d, a.st, a.og, coalesce(u.ep_n, 0),
     CASE WHEN p_blind OR NOT p_krav_faller THEN NULL ELSE coalesce(u.med, 0) END,
     CASE WHEN p_blind OR NOT p_krav_faller THEN NULL ELSE coalesce(u.fo, 0) END,
     CASE WHEN p_blind OR NOT p_krav_faller THEN NULL ELSE coalesce(u.na, 0) END,
-    CASE WHEN p_blind OR NOT p_krav_faller THEN NULL ELSE coalesce(u.ut, 0) END
-  FROM a LEFT JOIN u ON u.d = a.d ORDER BY a.d;
+    CASE WHEN p_blind OR NOT p_krav_faller THEN NULL ELSE coalesce(u.ut, 0) END,
+    -- Facitkolumnerna blindas bara av p_blind: de läses ur egna arkiv och finns även utan fallkravet.
+    CASE WHEN p_blind THEN NULL ELSE coalesce(fa.omk, 0) END,
+    CASE WHEN p_blind THEN NULL ELSE coalesce(fa.oly, 0) END
+  FROM a LEFT JOIN u ON u.d = a.d LEFT JOIN fa ON fa.d = a.d ORDER BY a.d;
 END $$;
 
-REVOKE EXECUTE ON FUNCTION uppspelning_efterhalka(interval, interval, numeric, int, numeric, numeric, numeric, numeric, numeric, boolean, boolean, numeric, boolean) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION uppspelning_efterhalka(interval, interval, numeric, int, numeric, numeric, numeric, numeric, numeric, boolean, boolean, numeric, interval, numeric, boolean) FROM PUBLIC;
 DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'anon') THEN
-    REVOKE EXECUTE ON FUNCTION uppspelning_efterhalka(interval, interval, numeric, int, numeric, numeric, numeric, numeric, numeric, boolean, boolean, numeric, boolean) FROM anon;
+    REVOKE EXECUTE ON FUNCTION uppspelning_efterhalka(interval, interval, numeric, int, numeric, numeric, numeric, numeric, numeric, boolean, boolean, numeric, interval, numeric, boolean) FROM anon;
   END IF;
   IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticated') THEN
-    REVOKE EXECUTE ON FUNCTION uppspelning_efterhalka(interval, interval, numeric, int, numeric, numeric, numeric, numeric, numeric, boolean, boolean, numeric, boolean) FROM authenticated;
+    REVOKE EXECUTE ON FUNCTION uppspelning_efterhalka(interval, interval, numeric, int, numeric, numeric, numeric, numeric, numeric, boolean, boolean, numeric, interval, numeric, boolean) FROM authenticated;
   END IF;
 END $$;
