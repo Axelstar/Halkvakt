@@ -7618,3 +7618,39 @@ oförändrad, desto större risk att någon läser den som ett förhandlat undan
 **Vad som INTE föreslås:** grind A:s trösklar, banden eller minsta underlag · (c) · frysklassningens roll (#103, redan
 låst av T5) · något i TROSKLAR-KOMBINATIONEN. Det är skuggans text som ska följa regeln, inte tvärtom.
 
+## #261 (20/9 2026) Tavlans sektioner ljuger: 23 av 32 "olåsta" kort är det inte — kort #224 och #225
+
+**Bengts fråga 20/9:** *"kan du lista de 32 som kan göras nu"*. Svaret blev en rättelse: **nio kan göras nu, inte 32.**
+
+**Vad räkningen visade.** Sektionen *Claude — olåst* läses som *"det här kan Claude göra utan att fråga någon"*.
+Kort för kort stämmer det för nio. De övriga 23:
+- **7 kräver ett beslut av Bengt och Axel** — #214 (produktinvariantens lydelse), #216, #198, #151, #146, #32, och
+  #185/#186 vars **egen text** säger *"väntar på Bengts och Axels"*. De är inte olåsta; de är låsta av er, utan att stå
+  i någon av era sektioner.
+- **5 väntar på vädret** — #209, #192, #51, #46, #45. De hör hemma i *Claude — låst*, där väderlåsta kort redan står.
+- **4 väntar på en händelse** — #160, #152, #52, #44.
+- **4 är överspelade** — #53 (Actions-krisen 5/9), minutbantningen, #43, och delar av flera andra.
+- **3 ser byggda ut men står öppna** — #223, #210, #212, alla med commits från i dag.
+
+**Varför det spelar roll, och det är inte bokföring.** Frågan *vad kan göras nu* är den som avgör om ett arbetspass
+planeras på en dag eller en vecka. Svaret 32 hade gett fel plan. Och värre: **sju kort väntar i praktiken på er utan att
+synas i era listor** — ni kunde ha gått igenom era 26 respektive 13 kort och ändå missat sju beslut som blockerar mig.
+
+**Femte gången på ett dygn.** #250 sex överspelade kort · #252 två dubbletter · #254 kort #50 · #256 kort #76 · nu
+sektionerna. Alla har samma form: förutsättningen ändrades och kortet stod kvar. TAVELREGELN punkt 3 säger att
+verkligheten flyttar kortet utan att fråga — men **ingen rutin läser tavlan mot verkligheten**, och det är det som
+saknas, inte omsorg.
+
+**Två kort lagda:**
+- **#224** — omklassa alla 32, stäng de överspelade med bevisrad, och för in antalet i bedömningens §0b så att nästa
+  avvikelse syns.
+- **#225** — verifiera de tre som ser byggda ut mot sina commits och stäng dem, eller skriv på kortet exakt vad som
+  återstår. **#210 kan mycket väl vara avsiktligt öppet** — felet hörs i en telefon och ett bygge som bevisar det finns
+  inte än — men då ska kortet säga det. Kortet bär också en varning: rör dem inte utan att läsa commiten, eftersom
+  dubbelarbete på samma kort kostade två stängda PR:er tidigare samma dag (#407, #408).
+
+*Alternativ som valdes bort:* rätta sektionerna direkt i samma varv — avvisat, det är 23 kort och sju av dem kräver ett
+beslut om VAR de hör hemma (väntar #151 på Bengt eller är det Claudes mätning som saknas?). En omklassning utan den
+genomgången hade bara flyttat felet. · bygga en maskinell vakt som läser sektionerna — avvisat tills vidare: etiketterna
+är prosa, inte fält, och en regex-vakt hade gett falsk trygghet av samma slag som den trubbiga gröntoleransvakten.
+
