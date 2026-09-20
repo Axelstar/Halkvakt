@@ -30,8 +30,11 @@ jobs:
         run: |
           node --experimental-strip-types scripts/bundle-publicera.ts --check
           node --experimental-strip-types scripts/bundle-skuggmotor.ts --check
+      # Fast version, inte latest (20/9): `latest` slås upp med ett OAUTENTISERAT anrop mot GitHubs API från
+      # runnerns delade IP, och deploy-knappen föll två gånger i rad på "rate limit exceeded" (#35520704235,
+      # #35520805068). En fast version laddas rakt från releasen utan uppslag. Höj den medvetet.
       - uses: supabase/setup-cli@v1
-        with: { version: latest }
+        with: { version: 2.117.0 }
       - name: Deploy
         shell: bash
         env:
