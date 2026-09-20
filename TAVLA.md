@@ -1116,7 +1116,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   händelse, och inget är överspelat. De överspelade stängda med bevisraden. Antalet i sektionen står i bedömningen §0b
   så att nästa avvikelse syns.
 
-- [ ] 🔍 **#225 TRE KORT SER BYGGDA UT MEN STÅR ÖPPNA — verifiera och stäng eller skriv vad som fattas** (fynd 20/9,
+- [x] 🔍 **#225 TRE KORT SER BYGGDA UT MEN STÅR ÖPPNA — ✅ KLART 20/9, alla tre resolverade** (fynd 20/9,
   DECISIONS #261). Den parallella sessionen har commits för alla tre i dag, men korten är kvar som öppna:
   · **#223** arkivbackupens ålder — commit `7310837` *"vakthunden vaktar arkivbackupens ålder utanför Actions
     (check 9j, gräns 8 dygn, prov ?arkivprov=1)"*.
@@ -1128,6 +1128,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   är byggt — det kostade två stängda PR:er tidigare i dag (#407, #408).
   Verify: varje av de tre är antingen stängt med sin commit som bevis, eller bär en rad som säger exakt vad som
   återstår och vem som äger det.
+  ✅ **UTFALL 20/9 (DECISIONS #273):** **#223** stängt med DECISIONS #262 och commit `7310837` · **#212** stängt med
+  DECISIONS #263 och commit `88dd32c` · **#210** står öppet AVSIKTLIGT och bär nu både villkoret (*stängs när ett
+  iOS-bygge med 9d3f56c säger en olycka utan vägnummer rätt*) och ägaren (Axel). Farhågan att något byggts två gånger
+  besannades inte — den andra sessionen stängde sina kort i samma varv som den byggde.
 
 
 - [x] 🔇 **#222 TRE CHECKAR I VAKTHUNDEN KAN ALDRIG FYRA — ✅ KLART OCH I DRIFT 20/9** (ur genomlysningen
@@ -1181,6 +1185,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   vektorläsare gjorde redan rätt, felet satt bara i APPENS JSON-plockare, och appen har inget testmål. Raden är rättad
   och granskad, inte körd. **Stängs när ett iOS-bygge med 9d3f56c säger en olycka utan vägnummer rätt** (5 % av olyckorna —
   finns i arkivet varje vecka) eller Bengt hör en i bilen. Bygget bör tas innan nästa arkivering.
+  🔑 **Ägare: Axel** (arkiveringen är hans). Kortet är alltså inte glömt utan väntande — villkoret står ovan.
 
 - [ ] 📵 **#214 PLAY-DEKLARATIONEN ÄR OSANN SEDAN 16/9** (genomlysningen 20/9). `docs/PLAY-DATASAFETY.md` svarar **"No"** på
   Googles insamlingsfråga och påstår att enda utgående trafik är en GET utan parametrar. Filen rördes senast **27/8**. Sedan 16/9
@@ -1984,7 +1989,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   eller under närmaste grannars median) i publiceringsfrågan, i BÅDA skrivarna. Verify:
   live.json utan 2135 medan stationen fortfarande står på −10,7 i weather_latest, och en
   vektor i engine/vectors/ som visar att en spärrad station inte larmar.
-- [ ] 🛑 **#53 HELA PIPELINEN STÅR — Actions vägrar starta jobb** (upptäckt 5/9 ~15:40 via
+- [x] 🛑 **#53 HELA PIPELINEN STÅR — ✅ ÖVERSPELAT, STÄNGT 20/9** (upptäckt 5/9 ~15:40 via
   Bengts felmeddelande om regn-30; visade sig vara mycket större än regn-30).
   🧭 **DIAGNOS, mätt och inte gissad.** Felet är INTE vår kod:
   · ingest #275 kl **11:11 LYCKADES** (32 s) · ingest #276 kl **12:11 FÖLL** (4 s)
@@ -2112,6 +2117,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔗 SIFFERKROCK SOM INTE ÄR EN KROCK: terminalkortet säger "död sedan 5/9 13:12", jag
   säger 11:11–11:41. Det är samma ögonblick i olika tidszoner (13:12 CEST = 11:12 UTC).
   Husregeln är UTC — men båda skrivsätten står nu på tavlan, så ingen ska behöva räkna ut det.
+  ✅ **STÄNGT 20/9 SOM ÖVERSPELAT (DECISIONS #273).** Pipelinen står inte: **94 körningar senaste dygnet**, alla gröna
+  utom dagens medvetna motprov. Kortet var en DIAGNOS av ett avbrott 5–8/9, och avbrottet är över. Det som kortet
+  egentligen oroade sig för — att taket slår i osett — har fått en egen vakt: **#152 kassavakten** (check 8, larmar
+  innan taket nås) och den dagliga avläsningen i bedömningens lägesruta. Historiken står kvar som den skrevs.
 - [ ] 💸 **Minutbantning av GitHub-pipelinen** (6/9, följd av 🛑-kortet; byggs OAVSETT Axels val, släpps
   på först när minuter finns): mål ≤ 60 min/dygn (= 1 800/mån). Kandidater med uppskattad vinst:
   (1) publish-map bara kedjad efter ingest (timvis) i stället för egen 30-min-klocka: −300 min/mån

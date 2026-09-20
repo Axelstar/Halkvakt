@@ -8044,3 +8044,31 @@ antagandet har kostat huset ett varv förr.
 
 **Läxa, andra gången i kväll:** #271 var filnamn som såg ut som funktion, #272 var en plattform jag
 antog. Båda hade rättats av en fråga på en rad.
+
+## #274 (20/9 2026) Genomgång av dagens kort: 21 strukna, två till stängda, och farhågan om dubbelarbete besannades inte
+
+**Bengts order 20/9:** *"gå igenom och stäng alla kort som är gjorda och avklarade idag"*.
+
+**21 kort ströks i dag**, räknat ur tavlans egen historik (`git diff` från dagens första TAVLA-commit). Av dem stängde
+jag elva och den parallella sessionen tio. Listan står i svaret till Bengt.
+
+**Två till stängs nu:**
+- **#225** (*tre kort ser byggda ut men står öppna*) — dess Verify är uppfylld: #223 och #212 är stängda med sina
+  commits som bevis, och **#210 står öppet avsiktligt** med både villkoret och ägaren utskrivna. Kortet lades i eftermiddag
+  ur en farhåga att något byggts två gånger utan att synas. **Farhågan besannades inte** — den andra sessionen stängde
+  sina kort i samma varv som den byggde. Det är värt att notera, eftersom motsatsen var dagens återkommande fynd.
+- **#53** (*hela pipelinen står*) — överspelat. 94 körningar senaste dygnet, alla gröna utom dagens medvetna motprov.
+  Kortet var en diagnos av avbrottet 5–8/9. Det som det egentligen oroade sig för — att taket slår i osett — har fått en
+  egen vakt i **#152 kassavakten**.
+
+**Vad som INTE stängs, och skälen står på korten:** #210 (väntar på ett iOS-bygge, Axel) · #214 (Data Safety är rättad,
+men raderingsfrågan är ett ägarbeslut, #270) · #216 (Axels val finns, Bengts ja saknas, #265) · #217 (viltrösten klar i
+#266, fem av sex påståenden kvar) · #219 (Play-kontot skapat 18:51, men kedjan telefon → uppladdning → tolv testare
+löper) · #203 (sju av åtta svar, byggordning A vald, bygget kvar).
+
+**Iakttagelsen som är värd mer än siffran.** Dagen inleddes med fyndet att kort inte flyttas när förutsättningen ändras
+— sex överspelade (#250), två dubbletter (#252), #50 (#254), #76 (#256), sektionerna (#261). Den andra halvan av dagen
+gjorde motsatsen: 21 kort strukna med bevisrad, i samma varv som arbetet. **Skillnaden var inte omsorg utan takt** — när
+någon arbetar på ett kort samma dag det skrivs, flyttas det. Det är de gamla korten som ruttnar, och det är dem #224
+ska gå igenom.
+
