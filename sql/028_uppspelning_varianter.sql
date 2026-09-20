@@ -12,6 +12,8 @@
 --
 -- D1 I KOD. "En gemensam kalibrering väljer — den uppfinner inte." Varje argument prövas mot delarnas fastställda svep
 -- (TROSKLAR-KOMBINATIONEN §3) och ett värde utanför dem avvisas högljutt. Ingen kan pröva ett eget tal i smyg.
+-- Jämförelserna är dokumentens egna (TROSKLAR-OVERGANGAR §2 och §4): regn > 0 eller >= minsta regn, radar
+-- rate_mean_mmh > r — STRIKT. Första versionen (20/9 06:05Z) skrev >= r; rättad samma dag, med gränsprov i testet.
 --
 -- UTFALLET ÄR BLINDAT (p_blind, sant som standard). Trendarkivet sparar redan lägsta yta inom 90 min efter varje
 -- ögonblick (min_yta_90min_c, besiktigad av värdevakten) — det är stationens egen facit, och den behöver inte byggas.
@@ -88,7 +90,7 @@ BEGIN
           AND ((p_regn_min = 0 AND w.rain_sum_mm > 0) OR (p_regn_min > 0 AND w.rain_sum_mm >= p_regn_min))
           AND w.sample_time <= b.t AND w.sample_time > b.t - p_n)
        OR (p_radar_r IS NOT NULL AND EXISTS (SELECT 1 FROM seg_nara sn JOIN radar_precip rp ON rp.segment_id = sn.segment_id
-          WHERE sn.sid = b.sid AND rp.rate_mean_mmh >= p_radar_r
+          WHERE sn.sid = b.sid AND rp.rate_mean_mmh > p_radar_r
           AND rp.observed_at <= b.t AND rp.observed_at > b.t - p_n))) AS blot
     FROM bas b
   ),
