@@ -294,10 +294,12 @@ test("uppspelningen: varje variant ändrar en sak, utfallet är blindat, värden
     const [dagG1, dagG2] = (await pool.query(`SELECT (${G1} AT TIME ZONE 'UTC')::date::text AS a, (${G2} AT TIME ZONE 'UTC')::date::text AS b`)).rows.map((r) => [r.a, r.b])[0];
     assert.notEqual(dagG1, dagG2, "provet ska ligga på var sin sida om midnatt UTC");
     const foreG1 = await rad("p_blind := false", dagG1), foreG2 = await rad("p_blind := false", dagG2);
-    // H och I: facitstackens två skrivna källor (kort #207). Egen dag, så variantdeltan ovan inte rubbas.
+    // H och I: facitstackens två skrivna källor (kort #207). Egen dag, så variantdeltan ovan inte rubbas — 72 h, inte
+    // 48, eftersom 48 h hade landat på samma UTC-dygn som G1 (T − 36 h 30 min) och räknat tre stationer där.
     // H har facit inom 5 km OCH inom fönstret; I har bara facit utanför fönstret och utanför radien.
-    const T2 = `(${T} - interval '48 hours')`;
+    const T2 = `(${T} - interval '72 hours')`;
     const dagHI = (await pool.query(`SELECT (${T2} AT TIME ZONE 'UTC')::date::text AS d`)).rows[0].d;
+    assert.ok(dagHI !== dagG1 && dagHI !== dagG2 && dagHI !== dag, "H och I ligger på ett eget UTC-dygn");
     const foreHI = await rad("p_blind := false", dagHI);
     const g = "ST_SetSRID(ST_MakePoint(15.0, 60.0), 4326)";
     // A: faller, 0,3 mm regn, frös (0,4). B: faller, 0,1 mm, nära (1,3). C: bara i bredare band, uteblev (2,9).
