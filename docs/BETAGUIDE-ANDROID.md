@@ -3,6 +3,10 @@
 *Skriven 20/9 2026 mot koden i bygget, inte ur minnet. Samma guide används till novemberbetans tolv
 testare — ändras appen ändras den här filen i samma commit.*
 
+*Rättad 20/9 kväll: första versionen sade att rösten tystnar utan "Tillåt hela tiden". Det var fel —
+vakten är en förgrundstjänst med typen `location`, och då räcker "medan appen används" (Googles egen
+dokumentation, läst 20/9). "Tillåt hela tiden" behövs bara för Autostart. Se DECISIONS #272.*
+
 ---
 
 ## Till dig som ska testa
@@ -32,20 +36,28 @@ säger inget om appen, bara att Google inte har granskat den ännu.
 
 ---
 
-## 2. Första starten — fem frågor, och varför
+## 2. Första starten — fyra frågor, och varför
 
 Appen frågar om behörigheter i tur och ordning. Alla behövs för att den ska kunna göra sitt jobb:
 
 | Frågan | Varför |
 | :-- | :-- |
-| **Plats** | För att veta vad som ligger på vägen framför dig. Jämförelsen sker i telefonen. |
-| **Plats: "Tillåt alltid"** | Kommer som en **andra** fråga. Utan den tystnar rösten när skärmen släcks — och det är då du kör. |
+| **Plats** | För att veta vad som ligger på vägen framför dig. Jämförelsen sker i telefonen. **"Medan appen används" räcker** — se rutan nedan. |
 | **Aviseringar** | Vakten visar en pågående notis medan den är på. Android kräver det av appar som får jobba i bakgrunden. |
 | **Fysisk aktivitet** | Så att vakten kan starta sig själv när du börjar köra. Frivilligt i praktiken. |
 | **Bluetooth** | För att känna igen bilens ljudsystem och tala i rätt högtalare. |
 
-> **"Tillåt alltid" är den viktiga.** Säger du bara "medan appen används" fungerar appen i garaget
-> och tiger på vägen.
+> **Svara "Medan appen används". Det räcker.**
+>
+> Android 11 och senare visar med flit INTE "Tillåt hela tiden" i rutan — Google har flyttat det valet
+> till inställningarna. Och du behöver det inte för att köra: så länge vakten är igång kör den som en
+> förgrundstjänst (det är den pågående notisen du ser), och då fortsätter rösten tala med **släckt
+> skärm** hela resan.
+>
+> **"Tillåt hela tiden" behövs bara för Autostart** — att vakten startar sig själv när bilens Bluetooth
+> kopplar, utan att du öppnat appen. Vill du ha det: *Inställningar → Appar → Halkvakt → Behörigheter →
+> Plats → Tillåt hela tiden*. Hoppar du över det fungerar allt annat precis som vanligt; du trycker bara
+> **Starta vakten** själv.
 
 ---
 
@@ -121,7 +133,8 @@ standard och varje svar kräver ett tryck. Slår du av den slutar det direkt.
 
 | Det här händer | Gör så här |
 | :-- | :-- |
-| Rösten tystnar när skärmen släcks | Plats-behörigheten står på "medan appen används". Ändra till **Tillåt alltid** i telefonens inställningar. |
+| Rösten tystnar när skärmen släcks | Det ska den inte göra — vakten kör som förgrundstjänst. Titta först om den pågående notisen är kvar. Är den borta har telefonen dödat tjänsten: sätt Halkvakt till **obegränsad batterianvändning**. |
+| Autostart startar inte vakten | Autostart kräver *Tillåt hela tiden* för platsen, och det valet finns inte i rutan på Android 11+. Sätt det i *Inställningar → Appar → Halkvakt → Behörigheter → Plats*. |
 | Vakten stängs av när telefonen legat still | Vissa telefoner (särskilt Samsung, Xiaomi, Huawei) dödar bakgrundsappar. Sätt Halkvakt till **obegränsad batterianvändning**. |
 | Rösten kommer i telefonen, inte i bilen | Kontrollera att telefonen är kopplad till bilens Bluetooth **innan** du startar vakten. |
 | Appen säger version **0.3.1** | Stämmer — versionsnumret har halkat efter koden och rättas före Play-släppet. |

@@ -7962,3 +7962,38 @@ BETATEST-brytaren, autostart, körläget, inställningarna. **Tre verkliga hål:
 **Metodnot, värd att skriva ned:** första jämförelsen gjordes på FILNAMN och sa att körläget, autostartguiden och
 facitknappen saknades på Android. Fel — Android lägger hela gränssnittet i `ui/App.kt` medan iOS har nio vyfiler. En
 strukturskillnad såg ut som en funktionsskillnad. Mätt funktionellt i stället krympte listan från sex hål till tre.
+
+## #272 (20/9 2026) "Tillåt hela tiden" går inte att välja i rutan — och behövs inte heller för att köra (kort #219)
+
+**Axels fynd 20/9 kväll, när han satte upp appen på testtelefonen:** *"man kan endast välja alltid då man
+väljer medans appen är igång och inte endast en gång"* — alltså: systemrutan erbjuder bara *Medan appen
+används* och *Bara den här gången*, aldrig *Tillåt hela tiden*.
+
+**Det är inte ett fel i appen. Det är Androids dokumenterade beteende** (developer.android.com, läst 20/9):
+> *"On Android 11 (API level 30) and higher, however, the system dialog doesn't include the **Allow all the
+> time** option. Instead, users must enable background location on a settings page."*
+
+**Och det viktiga fyndet i samma andetag: vi behöver den inte för normalfallet.** `GuardService` är en
+förgrundstjänst med `android:foregroundServiceType="location"` som startas från aktiviteten. Googles regel:
+en sådan tjänst kräver bara `ACCESS_FINE_LOCATION` — `ACCESS_BACKGROUND_LOCATION` behövs enbart när appen
+läser platsen UTAN en aktiv förgrundstjänst. Koden gör redan rätt: `onToggle()` begär bara plats +
+aviseringar, och bakgrundsplatsen begärs enbart ur `onAutostartToggle()`, där den verkligen krävs (en
+BroadcastReceiver startar tjänsten när appen inte är i förgrunden).
+
+**Arkitekturen var alltså riktig. Det som var fel var GUIDEN — min, skriven samma kväll.** Den sade:
+*"Plats: Tillåt alltid … Utan den tystnar rösten när skärmen släcks — och det är då du kör."* Falskt på det
+sätt som kostar mest: en testare hade jagat en inställning som inte går att välja i rutan, och dragit
+slutsatsen att appen är trasig när den fungerar. **Rättad i samma varv**, i både `docs/BETAGUIDE-ANDROID.md`
+och den publicerade sidan: *medan appen används räcker; Tillåt hela tiden behövs bara för Autostart, och det
+valet bor i inställningarna.* Felsökningsraden om att rösten tystnar vid släckt skärm pekade också fel — rätt
+misstänkt är batterioptimeringen som dödar tjänsten, inte behörigheten.
+
+**Läxan, och den är husets egen:** guiden skrevs "mot koden" men jag läste behörighetsanropen utan att läsa
+vad `foregroundServiceType="location"` betyder för dem. Att läsa rätt fil är inte samma sak som att läsa
+färdigt. Samma mönster som filnamnsjämförelsen tidigare samma kväll (#271).
+
+**KVAR ATT BYGGA, litet men verkligt (eget kort):** på Android 11+ visar `requestPermissions(
+ACCESS_BACKGROUND_LOCATION)` ingen ruta alls — anropet i `MainActivity.onAutostartToggle()` faller därför
+tyst, och användaren ser ingenting hända när han slår på Autostart. Googles föreskrivna väg är en egen
+förklaringsruta plus en resa till appens inställningssida, med alternativets namn hämtat ur
+`getBackgroundPermissionOptionLabel()` (API 30+) så texten stämmer med just den telefonens ordval.
