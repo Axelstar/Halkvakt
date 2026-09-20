@@ -29,6 +29,37 @@ try {
       if (j.status === 'failed') problems.push(`livemotorns senaste cron-körning FAILED @ ${j.end_time}`);
     }
   } catch { console.log('livemotor cron: (job_run_details ej läsbar — hoppar pulsen)'); }
+
+  // DODMANSGREPPET (kort #50, DECISIONS #253). Den har filen ar den ENDA kontroll som kor UTANFOR
+  // det den vaktar - det var precis skalet till att healthcheck.yml beholls 14/9 (kort #87). Men den
+  // fragade aldrig om vakthunden sjalv, sa Supabase-vakten kunde tystna och se ut som "allt gront".
+  // TRE fragor, for tre olika dodssatt. Den tredje ar den 9d-laxan kraver: pg_net ar ASYNKRONT, sa
+  // "succeeded" i job_run_details betyder "lades i ko" - bara ett SVAR bevisar att vakthunden kort.
+  // Fristen ar 3 missade timkorningar; healthcheck sjalv kor varannan timme, sa den hinner se det.
+  // (Samma tal som matvaktens frist i vakthunden, men en ANNAN fraga - kort #156:s princip.)
+  const VAKTHUND_FRIST_MIN = 180;
+  const g = (await pool.query(
+    `SELECT to_regclass('cron.job') IS NOT NULL AS cron, to_regclass('net._http_response') IS NOT NULL AS net`)).rows[0];
+  if (!g.cron || !g.net) {
+    console.log("vakthunden: cron/net saknas (CI) - hoppar dodmansgreppet");
+  } else {
+    const v = (await pool.query(`SELECT
+      (SELECT count(*) FROM cron.job WHERE jobname = 'halkvakt-vakthund' AND active)::int AS aktiv,
+      (SELECT round(extract(epoch FROM now() - max(d.end_time)) / 60)
+         FROM cron.job_run_details d JOIN cron.job j USING (jobid)
+         WHERE j.jobname = 'halkvakt-vakthund') AS min_korning,
+      (SELECT round(extract(epoch FROM now() - max(created)) / 60) FROM net._http_response
+         WHERE created > now() - interval '24 hours' AND content LIKE '%"larmvag"%') AS min_svar`)).rows[0];
+    const kor = v.min_korning === null ? null : Number(v.min_korning);
+    const svar = v.min_svar === null ? null : Number(v.min_svar);
+    console.log(`vakthunden: aktiv=${v.aktiv} - senaste korning ${kor ?? "aldrig"} min - senaste svar ${svar ?? "inget pa 24 h"} min (frist ${VAKTHUND_FRIST_MIN})`);
+    if (!v.aktiv) problems.push(
+      `vakthundens cron-jobb saknas eller ar avaktiverat - INGEN vakt kor i Supabase (kort #50)`);
+    else if (kor === null || kor > VAKTHUND_FRIST_MIN) problems.push(
+      `vakthunden har inte kort pa ${kor ?? "okant antal"} min (frist ${VAKTHUND_FRIST_MIN}) - kort #50`);
+    else if (svar === null || svar > VAKTHUND_FRIST_MIN) problems.push(
+      `vakthundens cron kor men INGET SVAR har kommit pa ${svar ?? "24 h+"} min - anropen koas utan att na fram (kort #50, 9d-laxan)`);
+  }
   // FI/DK-stalehet (kort #48): grannländernas skuggarkiv vaktades INTE — bara svenska
   // sync_state lästes. Nu: schema-existens-vaktat (CI:s PostGIS saknar fi/dk, 003-läxan).
   // no (kort #35, 4/9): samma vakt — tyst tills no.sync_state har sin första rad.
