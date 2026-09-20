@@ -7296,3 +7296,32 @@ Av Bengts 13 är **4 exklusivt hans** (TRV-anmälan #154, Skyltfondsrundan, #94,
 
 **Slutsatsen som ändrar mötet:** 29 kort hos Axel såg ut som 29 blockeringar. Sex är det.
 
+## #251 (20/9 2026) Bedömningen uppdaterad smalt: det utelämnade in, det klara struket, korten per punkt
+
+**Bengts order 20/9, efter en rättelse mitt i arbetet:** först bad han om en total omskrivning i tidsordning, och tog
+sedan tillbaka det — *"Bedömning är en handling som är kopplad till integration av integrationskartan. Uppdatera bara
+med saker som har utelämnat och glömt att strykas. Sen vill jag se bedömningen i sin helhet och kort som hör hemma där
+listas under varje punkt."* Rättelsen var riktig: dokumentet har en roll mot kartan och ska inte byta form.
+
+**Tre ändringar, inget annat:**
+1. **Det utelämnade infört.** Genomlysningen (#249) fanns inte i bedömningen alls, trots SESSIONSREGELN punkt 3 — tolv
+   kort lagda på tavlan i morse utan en rad här. Nu två rader i §0b (fynden och de två dubbletterna), plus stängningen
+   av de sex överspelade korten (#250) och ägarskapslistan. §4.2 fick de två beslut som väntar: **#214** Play-deklarationen
+   och **#216** blindningsläckan i T-A.
+2. **Det klara struket.** S1 stod som öppet steg fast det byggdes 16/9.
+3. **Korten per punkt.** Läget, §1, §2.1, §2.2, §3 och §4.2 har nu en **Kort**-kolumn, så tavlan och bedömningen går att
+   läsa mot varandra. Ett kort utan rad här hör hemma på tavlan — bedömningen är kartans handling, inte hela tavlan.
+
+**Fyndet som ändringen tvingade fram: två av genomlysningens kort var inte nya.**
+- **#215 *vakthunden kan tystna utan att någon märker det*** är samma fråga som **#50 *Vakthunden är själv obevakad***,
+  som legat på tavlan sedan **4/9**. Sexton dygn, och fem granskare hittade den som ett nytt fynd.
+- **#51 *vinterarkivet skrivs nästan inte — moaten läcker*** (4/9) pekade redan på `road_condition_history`, samma tomhet
+  som #247 mätte 20/9 (0 omklassningar till halka på 14 dygn, 7 rader totalt).
+
+Det bekräftar genomlysningens egen slutsats om referensrymden och dokumentskulden (#220/#221) — på 96 öppna kort går det
+inte längre att veta vad som redan står där. **Följd:** #215 slås ihop med #50 och #51 kopplas till facitraden; båda står
+som åtgärd i §0b.
+
+**Vad som INTE gjordes, med skäl:** ingen omskrivning till tidsordning (kartans koppling går före), ingen flytt av
+klara rader till bilaga (historiken står struken på plats, som SESSIONSREGELN punkt 4 föreskriver), inga nya kort.
+

@@ -17,6 +17,11 @@ november i stället för mars, för att facit kommer från en källa som faktisk
 **Uppdaterad 17/9:** grepp 2 fastställt och alla beslut tagna. **Läget står överst** — var vi är och vart vi är på väg
 — och resten av listan stryks fortlöpande när beviset finns.
 
+**Uppdaterad 20/9 (DECISIONS #251):** dokumentet är kopplat till integrationskartan och byter inte form. Tre saker
+gjordes: det som var klart men inte struket ströks · det som utelämnats fördes in (genomlysningen #249 med korten
+#210–#221, och stängningen #250) · **varje punkt bär nu sina kort i en egen kolumn**, så att tavlan och listan går
+att läsa mot varandra. Kort utan rad här hör hemma på tavlan, inte i bedömningen.
+
 ---
 
 ## Läget 20/9 — var vi är och vart vi är på väg
@@ -28,22 +33,24 @@ mot noll* — det S1-grinden behöver. Inga förarsvar har kommit: bygget 0.3.7 
 Avstämt mot GitHub 20/9: inga öppna PR:er, 51 sammanslagna sedan 17/9 (alla från det här kontot), **ingen incheckning från
 Axel sedan 17/9**, alla byggen gröna.
 
-| Område | Läge 20/9 |
-| :-- | :-- |
-| Regler för efterhalkan — C, D, T | ✅ fastställda 17/9 (DECISIONS #220–#228) |
-| Betans startvärden | ✅ regn inom 2 h · fall ≥ 0,8 °C på 30 min · yta +1…+3 °C · allt regn > 0 räknas |
-| Radar, regnmängd, startband, SMHI-förlängning | prövas i mars som varianter ur arkiven (#223–#226) — ✅ radar, regnmängd och startband byggda och körda 20/9 (DECISIONS #244, utfallet blindat); SMHI-varianten väntar på vintervarningar i arkivet |
-| Skuggloggen för efterhalkan (S1) | ✅ byggd — tunn: 3–7 rader per dygn från 1–4 stationer 16–20/9, **noll träffar på kombinationen**; uppspelningen ur arkiven: en träff på 14 dygn (14/9, under regn) |
-| **Motorregeln för betan (S3)** | ⏳ **inte byggd — väntar på S1-grinden**, alltså på blöta frostnätter. Axels bygge |
-| Facitknappen (S4) | ✅ server, Android, iOS-kod · ❌ bygget 0.3.7 i TestFlight saknade knapparna (#240) · ⏳ 0.3.8 (11) ligger på main sedan 18/9 — **byggordning C beslutad 20/9 (#242): ett sammanhållet bygge med #203; kanalen bevisas i simulatorn — #205 i drift, väntar på Axels tryck; stoppdatum 27/9** · **0 riktiga förarsvar** |
-| Facit utan att stanna (#203) | 📄 underlaget klart (`docs/FACIT-EFTER-RESAN.md`), väntar på Axels åtta beslut |
-| Ordlistan vidgad (grepp 1) | ✅ på servern · ⏳ når telefonerna med 0.3.8 |
-| Facitstacken för domarna | ✅ uppspelningen läser omklassning + olycka per episod inom 5 km (#247) · ⚠️ **omklassningar till halka: 0 på 14 dygn** (hela arkivet 7 rader — september, inte läcka) · olyckor 504, men utan orsak · kamerabilden väntar på granskningsbeslutet, **flyttat från 1/2 till efter första frosten** (Bengt 20/9, §4.2) |
-| Vakter och drift byggda 18–20/9 | ✅ #200 marknadsföringen på pulsklockan (tre morgnar) · ✅ #201 vakthunden svarar i kassavaktens timme · ✅ #195/#202 vektorgeneratorn i fas och vaktad i CI · ✅ S7 kamerafacit-vakt · ✅ pulsnyckeln = PAT, bytesknapp prövad · ⏳ #160 måndagsserien på pulsklockan — bevisas måndag 21/9 |
-| Databasen | 177 MB av 500 (20/9 05:00Z; 169 den 18/9) — larm vid 400, Pro-beslut senast 1/11 (§4.2) |
-| Actions-kassan | 21,78 av 35 USD (19/9 23:07Z). Släpande takt 118 min/dygn ⇒ **taket nås inte i september i nuvarande takt**; bygg fortsatt snålt |
-| Skyltfonden | kontaktplan v6.4 klar · samtal 21–25/9 (Bengt) · ansökan skickas 28/9 |
-| Gatornas data | Malmö svarade 18/9: egna stationer, inte öppna data — följdmejl om avtal skickat 19/9 · Stockholm, Göteborg och Trafikverket (Datex II): skickat, väntar |
+| Område | Läge 20/9 | Kort |
+| :-- | :-- | :-- |
+| Regler för efterhalkan — C, D, T | ✅ fastställda 17/9 (DECISIONS #220–#228) | #197 |
+| Betans startvärden | ✅ regn inom 2 h · fall ≥ 0,8 °C på 30 min · yta +1…+3 °C · allt regn > 0 räknas | #197 |
+| Radar, regnmängd, startband, SMHI-förlängning | prövas i mars som varianter ur arkiven (#223–#226) — ✅ radar, regnmängd och startband byggda och körda 20/9 (DECISIONS #244, utfallet blindat); SMHI-varianten väntar på vintervarningar i arkivet | #197, #43 |
+| Skuggloggen för efterhalkan (S1) | ✅ byggd — tunn: 3–7 rader per dygn från 1–4 stationer 16–20/9, **noll träffar på kombinationen**; uppspelningen ur arkiven: en träff på 14 dygn (14/9, under regn) | #192, #89 |
+| **Motorregeln för betan (S3)** | ⏳ **inte byggd — väntar på S1-grinden**, alltså på blöta frostnätter. Axels bygge | #89, #88 |
+| Facitknappen (S4) | ✅ server, Android, iOS-kod · ❌ bygget 0.3.7 i TestFlight saknade knapparna (#240) · ⏳ 0.3.8 (11) ligger på main sedan 18/9 — **byggordning C beslutad 20/9 (#242): ett sammanhållet bygge med #203; kanalen bevisas i simulatorn — #205 i drift, väntar på Axels tryck; stoppdatum 27/9** · **0 riktiga förarsvar** | #21, #205 |
+| Facit utan att stanna (#203) | 📄 underlaget klart (`docs/FACIT-EFTER-RESAN.md`), väntar på Axels åtta beslut | #203 |
+| Ordlistan vidgad (grepp 1) | ✅ på servern · ⏳ når telefonerna med 0.3.8 | #97, #52 |
+| Facitstacken för domarna | ✅ uppspelningen läser omklassning + olycka per episod inom 5 km (#247) · ⚠️ **omklassningar till halka: 0 på 14 dygn** (hela arkivet 7 rader — september, inte läcka) · olyckor 504, men utan orsak · kamerabilden väntar på granskningsbeslutet, **flyttat från 1/2 till efter första frosten** (Bengt 20/9, §4.2) | #157, #209, #51 |
+| Vakter och drift byggda 18–20/9 | ✅ #200 marknadsföringen på pulsklockan (tre morgnar) · ✅ #201 vakthunden svarar i kassavaktens timme · ✅ #195/#202 vektorgeneratorn i fas och vaktad i CI · ✅ S7 kamerafacit-vakt · ✅ pulsnyckeln = PAT, bytesknapp prövad · ⏳ #160 måndagsserien på pulsklockan — bevisas måndag 21/9 | #200, #201, #160, #161 |
+| Databasen | 177 MB av 500 (20/9 05:00Z; 169 den 18/9) — larm vid 400, Pro-beslut senast 1/11 (§4.2) | #83, #213 |
+| Actions-kassan | 21,78 av 35 USD (19/9 23:07Z). Släpande takt 118 min/dygn ⇒ **taket nås inte i september i nuvarande takt**; bygg fortsatt snålt | #85, #152 |
+| Skyltfonden | kontaktplan v6.4 klar · samtal 21–25/9 (Bengt) · ansökan skickas 28/9 | #25, #26 |
+| **Produkten mot november** | ⚠️ **iOS säger "på väg &lt;null&gt;" vid 5,2 % av olyckorna** (38 av 732 på 30 dygn) · det tidiga olycksropet kan sägas tre gånger · Android står på 0.3.1 (4) mot iOS 0.3.8 (11) och **Play-kontot finns inte** · produktboken lovar sex saker koden inte gör · batteribudgeten aldrig mätt (genomlysningen 20/9, DECISIONS #249) | #210, #211, #217, #218, #219 |
+| **Arkivet och vakterna** | ⚠️ **ingen backup finns, och arkivet går inte att återskapa** (Trafikverket ger bara nuläge och delta) · vakthunden saknar dödmansgrepp och tre checkar kan aldrig fyra · vektorsviten certifierar inte korridorvinkeln (5°–90° omärkt) eller reprisavståndet (0–50 000 m omärkt) | #213, #215 *(= gamla #50)*, #212 |
+| Gatornas data | Malmö svarade 18/9: egna stationer, inte öppna data — följdmejl om avtal skickat 19/9 · Stockholm, Göteborg och Trafikverket (Datex II): skickat, väntar | #93 |
 
 **Kartans minimilista (§8) mot läget:** C grind för kombinationen ✅ · D gemensam kalibrering ✅ · E skattaren med nivå + bevis
 (S2) ⏳ väntar bakom S1-grinden · A allvar som försprång (#153) ⏳ efter betan · B bevisbärare i snapshoten ⏳ inte påbörjad.
@@ -139,6 +146,10 @@ beviset finns — inte när koden är skriven.
 | **Simulatorprovet av sändkanalen (byggordning C):** Axel kör `-fotostudio_facit` och trycker *Stämde*. ~~Förutsättningen kort #205~~ ✅ i drift 20/9 05:33Z: kolumnen bär *prov ELLER fotostudio*, de två gamla provraderna kvar, skuggrapporten läser utan fel | ⏳ Axel, två minuter — **stoppdatum 27/9:** utan de åtta svaren arkiveras 0.3.8 ändå | #205, #21 | #242 | rad `cam:fotostudio` i `driver_facit` med `app = ios`, `version 0.3.8`, `prov = true` — och `forarfacit` fortfarande 0 riktiga svar |
 | ~~Mätvakten tappade marknadsföringen 18/9 — vakten läste schemat bara ur flödenas cron-rader~~ | ✅ **18/9:** vakten läser pulsklockan (#160 c) — *mätvakten: 11 schemalagda flöden (11 via pulsklockan), 0 med problem* 04:47Z, 8 i morse | #200, #160 | #237 | mätvaktens rad räknar marknadsföringen igen |
 | Måndagsserien på pulsklockan (#160 a) och mätvaktens fasta frist, kadens + 3 h (#160 b) — i drift 18/9 | ⏳ **måndag 21/9**: alla sju ska starta inom minuten från sin bokade tid (05:40–07:40Z) | #160 | #237 | sju körningar i tid 21/9 |
+| **Genomlysningen 20/9 — tolv fynd, inget åtgärdat.** Fem granskare mot motor, drift, mätning, produkt och styrning, plus egna mätningar mot drift och den publicerade snapshoten. Rapport: `docs/GENOMLYSNING-2026-09-20.md`. **Tre fel hörs eller kan höras i bilen** (#210 iOS-null, #211 det tredje olycksropet, #212 otestad korridor). **Två är existentiella** (#213 ingen backup, #215 vakthunden utan dödmansgrepp). **Ett är formellt** (#214 Play-deklarationen osann sedan 16/9) | 🔴 **öppet — tolv kort lagda 20/9, noll åtgärdade.** Motorfixarna (#210/#211) bör sitta i bygget före nästa arkivering | #210–#221 | #249 | ett kort stängt med mätt bevis per fynd |
+| **Två av genomlysningens kort var inte nya.** #215 *vakthunden kan tystna* är samma sak som **#50 *Vakthunden är själv obevakad*** (4/9) — sexton dygn på tavlan utan att någon kopplat ihop dem. #51 *vinterarkivet skrivs nästan inte* (4/9) pekade på samma tomhet i `road_condition_history` som #247 mätte 20/9 (0 omklassningar till halka på 14 dygn, 7 rader totalt) | ⚠️ **slå ihop korten** — #215 med #50, och #51 med facitraden ovan | #50, #51, #215 | #249 | ett kort per fråga, inte två |
+| ~~Sex överspelade kort stod öppna på tavlan~~ | ✅ **stängda 20/9 med beviset på varje kort** (#250): TestFlight 0.3.5 (main bär 0.3.8) · #79 regn-30 (avvecklad 9/9) · gallringsregeln (i drift 17/9) · Vegvesen DATEX (beviljat 4/9) · #158 (byggd 14/9) · #157 (451 bilder i hinken 20/9). Öppna kort 102 → 96. **Fyra av de sex bar sitt eget bevis i brödtexten** | #157, #158 | #250 | kortet i 🟢 med en rads bevis |
+| Ägarskapet per kort: vad bara Axel kan göra, vad bara Bengt kan, och vad någon annan kan verkställa | ✅ **skrivet 20/9** (`docs/KORTLISTOR-2026-09-20.md`): av Axels 25 är **6 exklusivt hans**, 5 kräver er båda och **14 kan Claude eller Bengt verkställa**. Av Bengts 13 är 4 exklusivt hans | — | #250 | listan använd i riktlinjemötet |
 
 ---
 
@@ -146,13 +157,13 @@ beviset finns — inte när koden är skriven.
 
 Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (Axel, senast 15/11).**
 
-| # | Vad | Vems | Bevis |
-| :-- | :-- | :-- | :-- |
-| ~~**N1**~~ | ~~**Kamerafacit bevisat.** Kör skuggan mot ett känt svenskt spår som ger ett positionerat larm; ett objekt i hinken. *Noll objekt efter 5 657 körningar är ett trasigt instrument, inte väntan på data*~~ | Claude | **KLAR 15/9: 1 bild i hinken** (DECISIONS #189) |
-| ~~**N2**~~ | ~~**#42 i höstregn.**~~ ~~Vidga väglagsfrågan så `regn` når normalklassade segment (#154, en skrivare hålls)~~ **(klart 15/9 som `rain_segments`, DECISIONS #187)**, ~~sedan steg E: skuggan V-B loggar vad rösten *skulle* sagt~~ **(klart 15/9, DECISIONS #191)**. ~~Enda spåret med höstfönster~~ | Claude, Bengts ja på #154 — **KLAR 15/9**; det som återstår är grind V-B:s dom (kort #81 E, "inte förr") | ~~ett normalklassat segment med `regn` i `live.json`~~ ✅ 34 st 16:00Z; ~~V-B-rader i skuggloggen~~ ✅ 5 st 17:30Z |
-| **N3** | **Nycklarna.** PAT går ut 22/11, Supabase-tokenen 8/12. Rotera PAT senast **15/11**; en nyckel är bytt först när en publicering gått igenom med den. ~~Lägg datumen i vakthunden~~ **(klart 15/9: check 10, issue #272)** | Axel | publicering med ny nyckel; vakthundsrad |
-| ~~**N4**~~ | ~~**F1: skattarens råa indata i `live.json`** bredvid `fukt` — `regn_h`, `lutning`~~ **✅ KLAR 16/9:** första `regn_h` ur en publicerad `live.json`. `radar_h` uppskjuten, bevakas i §0b | Claude, Bengts ja | ✅ fältet i `live.json`, manifest-sha stämmer |
-| ~~**N5**~~ | ~~**Kriteriet för nytt farslag** i kartans §7.8 — handling · text · prioritet före vektorn~~ | ✅ fastställt av Bengt 15/9 | kartan §7.8 — **KLAR** |
+| # | Vad | Vems | Bevis | Kort |
+| :-- | :-- | :-- | :-- | :-- |
+| ~~**N1**~~ | ~~**Kamerafacit bevisat.** Kör skuggan mot ett känt svenskt spår som ger ett positionerat larm; ett objekt i hinken. *Noll objekt efter 5 657 körningar är ett trasigt instrument, inte väntan på data*~~ | Claude | **KLAR 15/9: 1 bild i hinken** (DECISIONS #189) | #157 |
+| ~~**N2**~~ | ~~**#42 i höstregn.**~~ ~~Vidga väglagsfrågan så `regn` når normalklassade segment (#154, en skrivare hålls)~~ **(klart 15/9 som `rain_segments`, DECISIONS #187)**, ~~sedan steg E: skuggan V-B loggar vad rösten *skulle* sagt~~ **(klart 15/9, DECISIONS #191)**. ~~Enda spåret med höstfönster~~ | Claude, Bengts ja på #154 — **KLAR 15/9**; det som återstår är grind V-B:s dom (kort #81 E, "inte förr") | ~~ett normalklassat segment med `regn` i `live.json`~~ ✅ 34 st 16:00Z; ~~V-B-rader i skuggloggen~~ ✅ 5 st 17:30Z | #42, #154, #81 |
+| **N3** | **Nycklarna.** PAT går ut 22/11, Supabase-tokenen 8/12. Rotera PAT senast **15/11**; en nyckel är bytt först när en publicering gått igenom med den. ~~Lägg datumen i vakthunden~~ **(klart 15/9: check 10, issue #272)** | Axel | publicering med ny nyckel; vakthundsrad | #86 |
+| ~~**N4**~~ | ~~**F1: skattarens råa indata i `live.json`** bredvid `fukt` — `regn_h`, `lutning`~~ **✅ KLAR 16/9:** första `regn_h` ur en publicerad `live.json`. `radar_h` uppskjuten, bevakas i §0b | Claude, Bengts ja | ✅ fältet i `live.json`, manifest-sha stämmer | #187 |
+| ~~**N5**~~ | ~~**Kriteriet för nytt farslag** i kartans §7.8 — handling · text · prioritet före vektorn~~ | ✅ fastställt av Bengt 15/9 | kartan §7.8 — **KLAR** | — |
 
 ---
 
@@ -160,41 +171,41 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 
 ### 2.1 Vägen till förare: efterhalkan som märkt beta
 
-| # | Steg | Fog | Grind |
-| :-- | :-- | :-- | :-- |
-| **S1** | Skuggan läser N4:s fält vid sidan av motorn och loggar vad villkoret *skulle* ändrat. **GRIND (Axel 16/9): körs INNAN något mer byggs på `regn_h`** — regntäckningen 13 % gör `regn_h` till efterhalkans osäkra halva. ✅ **Byggt 16/9** (kolumn `efterhalka`, DECISIONS #198), första rad med innehåll 16/9. **Uppspelningen räknas ur arkiven, loggen är kontroll (17/9, #226)** | — | S1 före S2 |
-| **S2** | **E på K2:** skattaren returnerar nivå + bevis, byggd på frysklassningens osäkerhetszon (±0 · ±0,5 · ±1,0 °C) — indata till försprånget. *Förkrav klart 15/9: trendfälten besiktigade av värdevakten (DECISIONS #192)* | F3 | — |
-| **S3** | **Regeln i motorn:** `icing_point` fyrar när det *inte* regnar men ytan är blöt (N4:s `regn_h` ≤ N) och faller (`lutning`). Märkt text: *"Halkvakt tror: frysrisk framöver"* — ny gren, inte nytt slag. Tre portar **Startvärden beslutade 17/9** (regn inom 2 h · fall ≥ 0,8 °C på 30 min · yta +1…+3 °C · regn > 0; DECISIONS #222/#225). | F3 + F4 + text | **`v11_silent_drive` måste fortfarande tiga** — vektorn försvagas aldrig |
-| **S4** | **Facitknappen:** ~~efter varje varning *"stämde det?"*~~ **Axels ja 16/9: två knappar under "Senast sagt" — *Stämde* / *Stämde inte*, ingen fritext; loggas lokalt, skickas när bilen står stilla.** Skickar varnings-id + svar, inget spår. Bara betatestare, uttryckligt samtycke. **Produktbokens Om-avsnitt ("vi samlar in: ingenting") ändras i samma commit — ordagrant, frivilligt, synligt** (kort #21) | app, båda plattformarna | ~~Axels ja på text och flöde~~ ✅ 16/9; PRODUKTBOK i samma commit |
-| **S5** | **Betan till tolv testare i november.** Skuggloggen + förarsvaren + kamerafacit = tre facitkällor. Testförarna, också trafiklärarna, får veta att värdena är gissade till februari (TROSKLAR-KOMBINATIONEN §7) | — | — |
-| **S6** | **Dom i januari** på förarfacit + kamerafacit mot Ö-B:s golv (nettonytt ≥ 5 %, tillkomna falsklarm ≤ 25 %). Mars-domen blir en dom på riktig data. **Utfallet fastställt 17/9:** godkänd eller oavgjord ⇒ betan fortsätter, underkänd ⇒ tas bort (#226) | — | TROSKLAR-OVERGANGAR, oförändrad |
+| # | Steg | Fog | Grind | Kort |
+| :-- | :-- | :-- | :-- | :-- |
+| ~~**S1**~~ | ~~Skuggan läser N4:s fält vid sidan av motorn och loggar vad villkoret *skulle* ändrat. **GRIND (Axel 16/9): körs INNAN något mer byggs på `regn_h`** — regntäckningen 13 % gör `regn_h` till efterhalkans osäkra halva. ✅ **Byggt 16/9** (kolumn `efterhalka`, DECISIONS #198), första rad med innehåll 16/9. **Uppspelningen räknas ur arkiven, loggen är kontroll (17/9, #226)**~~ ✅ **STEGET ÄR KLART** — grinden passerad som byggsteg; nätterna bevakas i §0b | — | S1 före S2 | #192, #89 |
+| **S2** | **E på K2:** skattaren returnerar nivå + bevis, byggd på frysklassningens osäkerhetszon (±0 · ±0,5 · ±1,0 °C) — indata till försprånget. *Förkrav klart 15/9: trendfälten besiktigade av värdevakten (DECISIONS #192)* | F3 | — | #103 |
+| **S3** | **Regeln i motorn:** `icing_point` fyrar när det *inte* regnar men ytan är blöt (N4:s `regn_h` ≤ N) och faller (`lutning`). Märkt text: *"Halkvakt tror: frysrisk framöver"* — ny gren, inte nytt slag. Tre portar **Startvärden beslutade 17/9** (regn inom 2 h · fall ≥ 0,8 °C på 30 min · yta +1…+3 °C · regn > 0; DECISIONS #222/#225). | F3 + F4 + text | **`v11_silent_drive` måste fortfarande tiga** — vektorn försvagas aldrig | #89, #88, #192 |
+| **S4** | **Facitknappen:** ~~efter varje varning *"stämde det?"*~~ **Axels ja 16/9: två knappar under "Senast sagt" — *Stämde* / *Stämde inte*, ingen fritext; loggas lokalt, skickas när bilen står stilla.** Skickar varnings-id + svar, inget spår. Bara betatestare, uttryckligt samtycke. **Produktbokens Om-avsnitt ("vi samlar in: ingenting") ändras i samma commit — ordagrant, frivilligt, synligt** (kort #21) | app, båda plattformarna | ~~Axels ja på text och flöde~~ ✅ 16/9; PRODUKTBOK i samma commit | #21, #203, #205 |
+| **S5** | **Betan till tolv testare i november.** Skuggloggen + förarsvaren + kamerafacit = tre facitkällor. Testförarna, också trafiklärarna, får veta att värdena är gissade till februari (TROSKLAR-KOMBINATIONEN §7) | — | — | #219, #214, #217, #218 |
+| **S6** | **Dom i januari** på förarfacit + kamerafacit mot Ö-B:s golv (nettonytt ≥ 5 %, tillkomna falsklarm ≤ 25 %). Mars-domen blir en dom på riktig data. **Utfallet fastställt 17/9:** godkänd eller oavgjord ⇒ betan fortsätter, underkänd ⇒ tas bort (#226) | — | TROSKLAR-OVERGANGAR, oförändrad | #209, #213 |
 
 ### 2.2 Det som måste finnas under tiden
 
-| # | Vad | Vems |
-| :-- | :-- | :-- |
-| **S7** | **Facitvakter:** vakthundsrad *"historiken växer"* (inte bara *"sync_state är färsk"*) · ~~mät `situation_archive`~~ (mätt 15/9: 3 122 olyckor/30 dygn, DECISIONS #189) · ~~bevisa att `trv-bevakning` sparar 13 källor~~ (✅ state med 13 källor sedan 16/9 02:44, commit 1284e82) · ~~kamerafacit har ingen vakt~~ ✅ **18/9 (#239):** vakthunden larmar när skuggan haft minst 10 svenska larm på 12 h men ingen bild kommit in; `facitprov` gav issue #352, stängd av timkörningen 06:07Z · **kvar:** larm för förarfacit när betan går i november | Claude |
-| **S8** | **#52 före #45:** ett test i tre portar låser att kod 1 + "Packad snö" *måste* larma — motsatsen till vinterbaseline. Vektorn beslutas innan #45 rörs. ✅ **Byggd, godkänd (Axel) och deployad 16/9 som v24** tillsammans med #97 (DECISIONS #214) — når telefonerna med nästa app-bygge | Bengt + Axel |
-| **S9** | **T-A efter första frostnatten**, steg 0 inom sju dygn, #95(d):s F-B i samma varv | Claude |
-| ~~**S10**~~ | ~~**C och D** och tröskelregeln~~ ✅ **KLAR 17/9: `docs/TROSKLAR-KOMBINATIONEN.md` fastställt** — C (KB-A–D), D (D1–D7) och T, underskrivet av Bengt och Axel (DECISIONS #217–#228) | Claude skrev, Bengt och Axel fastställde |
-| **S11** | **#153 → försprång** (Axel) · mät korridortillväxten 3 000 m mot 1 000 m. ✅ **Omformulerat 16/9 (DECISIONS #221)** — grepp 2 ✅ fastställt 17/9; väntar på betan och S2 | Axel · Claude |
-| **S14** | **V-B1:s jämförelse (DECISIONS #212):** tröskel eller "regnade det alls"? Radarns 5-min-topp mot stationens 30-min-summa gör tröskeljämförelsen sned åt ett håll. Underlaget är DELVIS-kolumnen; beslutet är Axels enligt §5 och tas när V-C är uppfyllt — inte förr | Axel, på Claudes mätning |
-| **S12** | **Drift:** ~~#97 kodgrind för "Rimfrost"/"Halkrisk"~~ **(ordlistan vidgad 16/9, DECISIONS #214 — även Nysnö och Halt)** · måndagsserien från naken cron till puls/knapp · **#83 steg 2 (export/Pro) i oktober — nu villkor för domarna (#226)** · ~~#45 lapse 0,71 → 0,63~~ ✅ 17/9 (#226) · #76 deploybevis · #146 klonfelet | Bengt / Axel / Claude |
-| **S13** | Skattaren: en period **utan kodändring** under mätning — tre instrumentfel på tre körningar | Claude |
+| # | Vad | Vems | Kort |
+| :-- | :-- | :-- | :-- |
+| **S7** | **Facitvakter:** vakthundsrad *"historiken växer"* (inte bara *"sync_state är färsk"*) · ~~mät `situation_archive`~~ (mätt 15/9: 3 122 olyckor/30 dygn, DECISIONS #189) · ~~bevisa att `trv-bevakning` sparar 13 källor~~ (✅ state med 13 källor sedan 16/9 02:44, commit 1284e82) · ~~kamerafacit har ingen vakt~~ ✅ **18/9 (#239):** vakthunden larmar när skuggan haft minst 10 svenska larm på 12 h men ingen bild kommit in; `facitprov` gav issue #352, stängd av timkörningen 06:07Z · **kvar:** larm för förarfacit när betan går i november | Claude | #215, #50, #161 |
+| **S8** | **#52 före #45:** ett test i tre portar låser att kod 1 + "Packad snö" *måste* larma — motsatsen till vinterbaseline. Vektorn beslutas innan #45 rörs. ✅ **Byggd, godkänd (Axel) och deployad 16/9 som v24** tillsammans med #97 (DECISIONS #214) — når telefonerna med nästa app-bygge | Bengt + Axel | #52, #45 |
+| **S9** | **T-A efter första frostnatten**, steg 0 inom sju dygn, #95(d):s F-B i samma varv | Claude | #88, #95 |
+| ~~**S10**~~ | ~~**C och D** och tröskelregeln~~ ✅ **KLAR 17/9: `docs/TROSKLAR-KOMBINATIONEN.md` fastställt** — C (KB-A–D), D (D1–D7) och T, underskrivet av Bengt och Axel (DECISIONS #217–#228) | Claude skrev, Bengt och Axel fastställde | #197 |
+| **S11** | **#153 → försprång** (Axel) · mät korridortillväxten 3 000 m mot 1 000 m. ✅ **Omformulerat 16/9 (DECISIONS #221)** — grepp 2 ✅ fastställt 17/9; väntar på betan och S2 | Axel · Claude | #153 |
+| **S14** | **V-B1:s jämförelse (DECISIONS #212):** tröskel eller "regnade det alls"? Radarns 5-min-topp mot stationens 30-min-summa gör tröskeljämförelsen sned åt ett håll. Underlaget är DELVIS-kolumnen; beslutet är Axels enligt §5 och tas när V-C är uppfyllt — inte förr | Axel, på Claudes mätning | #81, #194, #42 |
+| **S12** | **Drift:** ~~#97 kodgrind för "Rimfrost"/"Halkrisk"~~ **(ordlistan vidgad 16/9, DECISIONS #214 — även Nysnö och Halt)** · måndagsserien från naken cron till puls/knapp · **#83 steg 2 (export/Pro) i oktober — nu villkor för domarna (#226)** · ~~#45 lapse 0,71 → 0,63~~ ✅ 17/9 (#226) · #76 deploybevis · #146 klonfelet | Bengt / Axel / Claude | #97, #83, #76, #146, #152, #160 |
+| **S13** | Skattaren: en period **utan kodändring** under mätning — tre instrumentfel på tre körningar | Claude | — |
 
 ---
 
 ## 3. ÄNNU SENARE — mars och framåt
 
-| # | Vad | Villkor |
-| :-- | :-- | :-- |
-| **Ä1** | #42: sjätte farslag eller meta — avgörs på V-B:s data mot kriteriet | efter N2:s höst |
-| **Ä2** | #45 som meta, med lapse 0,63 | efter S8 |
-| **Ä3** | #32 hinder/djur och #15 kö-slut mot kriteriet | efter release |
-| **Ä4** | **Räckvidd (L4):** SMHI moln som knapp · Verify 2 · representativitetsradien. Axel: *"räckvidd kan vara den här vinterns"* — grind A:s kurva växer varje måndag; beslut på vinterdata | efter vinterns grind A-kurva |
-| **Ä5** | Höjden som varianspredikator — kräver inte vinter, kräver inte brådska | knapp när kassan tillåter |
-| **Ä6** | Radarns segmentupplösning · #43 steg 4 (snöbyar) · kombinationsgrinden i skuggan · #91 kallplatslagret · SMHI som reserv (2,36 °C) | mars |
-| **Ä7** | Nowcast #16 efter kö-slut #15 · Nordenprodukten (NO/FI/DK) | efter release |
+| # | Vad | Villkor | Kort |
+| :-- | :-- | :-- | :-- |
+| **Ä1** | #42: sjätte farslag eller meta — avgörs på V-B:s data mot kriteriet | efter N2:s höst | #42 |
+| **Ä2** | #45 som meta, med lapse 0,63 | efter S8 | #45 |
+| **Ä3** | #32 hinder/djur och #15 kö-slut mot kriteriet | efter release | #32, #15 |
+| **Ä4** | **Räckvidd (L4):** SMHI moln som knapp · Verify 2 · representativitetsradien. Axel: *"räckvidd kan vara den här vinterns"* — grind A:s kurva växer varje måndag; beslut på vinterdata | efter vinterns grind A-kurva | #95, #96 |
+| **Ä5** | Höjden som varianspredikator — kräver inte vinter, kräver inte brådska | knapp när kassan tillåter | #96 |
+| **Ä6** | Radarns segmentupplösning · #43 steg 4 (snöbyar) · kombinationsgrinden i skuggan · #91 kallplatslagret · SMHI som reserv (2,36 °C) | mars | #43, #91 |
+| **Ä7** | Nowcast #16 efter kö-slut #15 · Nordenprodukten (NO/FI/DK) | efter release | #16, #15 |
 
 ---
 
@@ -252,15 +263,16 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 
 ### 4.2 Öppna
 
-| Beslut | Vem | Rekommendation |
-| :-- | :-- | :-- |
-| **Grepp 3 — Supabase Pro** senast när databasen passerar 400 MB eller 1 november, det som kommer först. Cirka 25 USD/mån; 8 GB, dagliga backuper. Gratisnivån skrivskyddar vid 500 MB, och vintern kräver cirka 3 GB (`docs/GREPP3-ARKIVEN.md`, DECISIONS #231) | Bengt + Axel (Axel godkänner i DECISIONS) | ja |
-| **Actions-kontot:** läs förbrukningen i Settings → Billing för hela kontot. Kassavakten ser bara Halkvakt, men taket 35 USD gäller alla repon på kontot. Ligger Billing klart över kassavaktens tal (21,78 USD 19/9; 141 min/dygn i snitt 13–19/9, DECISIONS #243) drar andra repon ur samma pott — då räcker september inte: höj taket några dollar (DECISIONS-post) eller bygg ännu snålare till 1/10 | Axel, före 24/9 | läs av; höj bara om Billing visar att det behövs |
-| **Partnerskap i appen till Skyltfondsparterna?** (Axel 19/9; Bengt tvekar). Rekommendation: **partner i projektet, synlig i appen där det är naturligt** — testpartner på Om-sidan, skolans namn på elevbladet, namn i rapporten — **inte** ägande, andel, reklam eller inflytande över varningarna; septembersamtalen hålls icke-kommersiella (ansökan: *utan kostnad*), skolpaketet erbjuds våren 2027 med halkbanedatan som säljargument (FINANSIERING §B2B). Hållningen är inarbetad i kontaktplanen v6.4 (Skrivbordet, 20/9) | Bengt + Axel, före samtalen i veckan | ja till hållningen |
-| **#203 Facit utan att stanna — undantagsprincipen med underskrift** (Bengt 18–19/9: föraren ska bara meddela när maskinen hade fel): (1) **efter resan** — notis *"stämde alla 3?"* + lista, **ett tryck "Ja, alla stämde"** eller peka ut avvikelsen; *Vet inte* skickas aldrig; **tystnad räknas aldrig som ja** (16/9 och 18/9 hade annars bokförts som bekräftelser); (2) **Siri på iOS** — i praktiken en fras: *"Hej Siri, stämde inte i Halkvakt"*; (3) valfritt knapparna i körläget vid stillastående. **Placering (19/9):** knapparna i notisen på låsskärmen, kortet överst på *Redo.*, listan bara vid avvikelse — skiss `docs/skisser/facit-efter-resan.svg`; (4) **missarna ingår** (Bengt 19/9): Siri-fras eller stor knapp *Appen missade* i körläget, typen väljs efter resan, ny tabell `driver_miss` — integritetsbeslutet är Axels. **Beslutsunderlaget: `docs/FACIT-EFTER-RESAN.md`** (åtta beslut, §8). Automatspåret för sanningen finns redan utan förare (uppspelningen, bildfacit, olycksarkivet). **Förslag KB-D7:** ett svar är en handling, tystnad är inget svar — fastställt dokument ⇒ Bengt + Axel | Bengt beställer, Axel avgör formen (S4 är hans); KB-D7 Bengt + Axel | ja på (1), (2) och KB-D7; (3) valfritt |
-| **Bildfacit (förslag 18/9, ur Bengts fråga om skuggflottan kan svara):** flottan kan inte svara Stämde/Stämde inte — den har inga ögon på vägen, och ett påhittat svar kan inte motbevisas (regel T). Men den sparar redan en kamerabild vid varje varning nära en kamera (262 bilder 15–18/9). Förslag: bilderna läses automatiskt (torrt · vått · snö · is) och blir ett svar per varning, med ett stickprov som en människa kontrollerar — **först när blindningen släpper** (kalibreringen 1/2, bilderna i mars; D2/D3) | Bengt + Axel | beslut före 1/2 |
-| **Bildfacitbeslutet tidigareläggs till efter första frosten** (Bengts ja 20/9, ur fyndet i #247). **Skälet, mätt:** omklassningarna till halka är 0 på 14 dygn och hela `road_condition_history` har 7 rader; olyckorna (504) bär ingen orsak och får inte bära domen ensamma. Är omklassningarna lika tomma i november–december står januaridomen och faller på kamerabilderna — och **granskningen av dem finns inte byggd**. Beslutet flyttas därför från *före 1/2* till **inom sju dygn efter första frostnatten**, så att bygget hinner göras om det behövs. **Blindningen är orörd:** beslutet gäller att BYGGA läsningen, inte att läsa utfallet — bilderna öppnas fortfarande i mars (D2/D3/D6). **Mätningen som avgör** körs samma varv som T-A steg 0: omklassningar till halka under de första frostnätterna, inom 5 km och utfallsfönstret | Bengt + Axel | ja — förbered beslutet nu, fatta det när frosten mätt källan |
-
+| Beslut | Vem | Rekommendation | Kort |
+| :-- | :-- | :-- | :-- |
+| **Grepp 3 — Supabase Pro** senast när databasen passerar 400 MB eller 1 november, det som kommer först. Cirka 25 USD/mån; 8 GB, dagliga backuper. Gratisnivån skrivskyddar vid 500 MB, och vintern kräver cirka 3 GB (`docs/GREPP3-ARKIVEN.md`, DECISIONS #231) | Bengt + Axel (Axel godkänner i DECISIONS) | ja | #83, #213 |
+| **Actions-kontot:** läs förbrukningen i Settings → Billing för hela kontot. Kassavakten ser bara Halkvakt, men taket 35 USD gäller alla repon på kontot. Ligger Billing klart över kassavaktens tal (21,78 USD 19/9; 141 min/dygn i snitt 13–19/9, DECISIONS #243) drar andra repon ur samma pott — då räcker september inte: höj taket några dollar (DECISIONS-post) eller bygg ännu snålare till 1/10 | Axel, före 24/9 | läs av; höj bara om Billing visar att det behövs | #85, #152 |
+| **Partnerskap i appen till Skyltfondsparterna?** (Axel 19/9; Bengt tvekar). Rekommendation: **partner i projektet, synlig i appen där det är naturligt** — testpartner på Om-sidan, skolans namn på elevbladet, namn i rapporten — **inte** ägande, andel, reklam eller inflytande över varningarna; septembersamtalen hålls icke-kommersiella (ansökan: *utan kostnad*), skolpaketet erbjuds våren 2027 med halkbanedatan som säljargument (FINANSIERING §B2B). Hållningen är inarbetad i kontaktplanen v6.4 (Skrivbordet, 20/9) | Bengt + Axel, före samtalen i veckan | ja till hållningen | #204, #26 |
+| **#203 Facit utan att stanna — undantagsprincipen med underskrift** (Bengt 18–19/9: föraren ska bara meddela när maskinen hade fel): (1) **efter resan** — notis *"stämde alla 3?"* + lista, **ett tryck "Ja, alla stämde"** eller peka ut avvikelsen; *Vet inte* skickas aldrig; **tystnad räknas aldrig som ja** (16/9 och 18/9 hade annars bokförts som bekräftelser); (2) **Siri på iOS** — i praktiken en fras: *"Hej Siri, stämde inte i Halkvakt"*; (3) valfritt knapparna i körläget vid stillastående. **Placering (19/9):** knapparna i notisen på låsskärmen, kortet överst på *Redo.*, listan bara vid avvikelse — skiss `docs/skisser/facit-efter-resan.svg`; (4) **missarna ingår** (Bengt 19/9): Siri-fras eller stor knapp *Appen missade* i körläget, typen väljs efter resan, ny tabell `driver_miss` — integritetsbeslutet är Axels. **Beslutsunderlaget: `docs/FACIT-EFTER-RESAN.md`** (åtta beslut, §8). Automatspåret för sanningen finns redan utan förare (uppspelningen, bildfacit, olycksarkivet). **Förslag KB-D7:** ett svar är en handling, tystnad är inget svar — fastställt dokument ⇒ Bengt + Axel | Bengt beställer, Axel avgör formen (S4 är hans); KB-D7 Bengt + Axel | ja på (1), (2) och KB-D7; (3) valfritt | #203, #21 |
+| **Bildfacit (förslag 18/9, ur Bengts fråga om skuggflottan kan svara):** flottan kan inte svara Stämde/Stämde inte — den har inga ögon på vägen, och ett påhittat svar kan inte motbevisas (regel T). Men den sparar redan en kamerabild vid varje varning nära en kamera (262 bilder 15–18/9). Förslag: bilderna läses automatiskt (torrt · vått · snö · is) och blir ett svar per varning, med ett stickprov som en människa kontrollerar — **först när blindningen släpper** (kalibreringen 1/2, bilderna i mars; D2/D3) | Bengt + Axel | beslut före 1/2 | #157 |
+| **Bildfacitbeslutet tidigareläggs till efter första frosten** (Bengts ja 20/9, ur fyndet i #247). **Skälet, mätt:** omklassningarna till halka är 0 på 14 dygn och hela `road_condition_history` har 7 rader; olyckorna (504) bär ingen orsak och får inte bära domen ensamma. Är omklassningarna lika tomma i november–december står januaridomen och faller på kamerabilderna — och **granskningen av dem finns inte byggd**. Beslutet flyttas därför från *före 1/2* till **inom sju dygn efter första frostnatten**, så att bygget hinner göras om det behövs. **Blindningen är orörd:** beslutet gäller att BYGGA läsningen, inte att läsa utfallet — bilderna öppnas fortfarande i mars (D2/D3/D6). **Mätningen som avgör** körs samma varv som T-A steg 0: omklassningar till halka under de första frostnätterna, inom 5 km och utfallsfönstret | Bengt + Axel | ja — förbered beslutet nu, fatta det när frosten mätt källan | #209 |
+| **Play-deklarationen är osann sedan 16/9** (genomlysningen, DECISIONS #249). `docs/PLAY-DATASAFETY.md` svarar **"No"** på Googles insamlingsfråga och påstår att enda utgående trafik är en GET utan parametrar; filen rördes senast 27/8. Sedan 16/9 POSTar `FacitSender.kt` varnings-id, tid, app och version — och `sql/022` erkänner själv att *"ett svar är alltså en plats och en tid"*. En felaktig deklaration är grund för avslag eller nedtagning mitt i vinterns enda facitfönster. **Frågan:** ska produktinvariantens lydelse (*ingen positionsdata lämnar telefonen*) formuleras om, eller ska facitsvaret ändras? | Bengt + Axel, **före första uppladdningen** | formulera om lydelsen: svaret är frivilligt, opt-in och beskrivet i appen — men det ÄR en plats och en tid, och deklarationen måste säga det | #214 |
+| **Blindningsläckan i T-A** (genomlysningen, DECISIONS #249). `scripts/grind-t-a.ts` skriver ut **hela svepet rangordnat på träffandel minus falsklarmsandel** även när domspärren håller, och flödet trycks inom sju dygn efter varje frostnatt — alltså genom hela kalibreringsfönstret. T-A:s svep (fönster · lutning · startband) delar **tre av kombinationens sex dimensioner**, så när kombinationen kalibreras 1/2 är de dimensionernas utfall redan avläst och loggat i CI. Regel D3 ska hindra att samma nätter både väljer och dömer. **Frågan:** strypa T-A:s utskrift tills domspärren släpper, eller skriva i TROSKLAR-KOMBINATIONEN att de delade dimensionerna är förvalda? | Bengt + Axel, **före första frosten** | skriv in förvalet — T-A behövs som instrument, och en strypt utskrift döljer också instrumentfel | #216 |
 ---
 
 ## Bilaga A — rättelser till kartan som väntar tills en rör kod
