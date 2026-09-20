@@ -27,8 +27,13 @@ Define success criteria. Loop until verified.
 ## Project-Specific Rules
 
 **Product invariants (violating these is a bug, not a style issue):**
-- No user location, GPS trace, or movement data may ever be transmitted off-device.
-  Matching happens on the phone against downloaded snapshots. Full stop.
+- No user location, GPS trace, or movement data may ever leave the device AUTOMATICALLY.
+  Matching happens on the phone against downloaded snapshots. The ONLY thing ever transmitted is a
+  facit answer the driver presses themselves — warning id + timestamp, i.e. roughly where and when —
+  and only for beta testers who turned the switch on (off by default). Rewritten 20/9 by Axel
+  (DECISIONS #264) because the old wording ("Full stop") became untrue on 16/9 when S4 shipped, and
+  stayed in four documents for four days. Change what the app sends ⇒ this line, the Play Data Safety
+  file, integritet.html in the map repo and the product book change in the SAME commit.
 - Alert copy must never overstate the data: segment sources (RoadCondition) may say
   "on the road ahead"; point sources (weather stations) say "framöver", never a distance
   the data doesn't support.

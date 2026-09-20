@@ -7885,3 +7885,32 @@ resa — receptet står på kort #203.
 
 **Till Bengt:** C var rätt resonemang på fel maskin. Invändningen — en uppdatering i stället för två — står kvar och
 gäller nästa gång; det som föll var antagandet att simulatorn kunde ersätta en telefon till en låg kostnad.
+
+## #270 (20/9 2026) Data Safety sann igen — och fyndet att integritetspolicyn ljuger på samma sätt (kort #214)
+
+**Byggt på Axels beslut #264 samma kväll.** `docs/PLAY-DATASAFETY.md` svarade **"No"** på Googles insamlingsfråga.
+Det var sant 27/8 och osant från 16/9, när S4:s facitsvar började POSTa varnings-id och klockslag.
+
+**Deklarationen nu, läst ur koden och inte ur minnet:** insamlingsfrågan **Yes**; datatyp **Location → Approximate
+location** (vi skickar ingen koordinat, men varnings-id pekar på en fara som har en plats och `t` säger när — Googles
+fråga är vad som lämnar enheten och vad det säger, inte vilket format det har); **Collected** ja, **Shared** nej,
+**Processed ephemerally** nej, **Optional** (BETATEST är av som standard och varje svar kräver ett tryck), ändamål
+**App functionality + Analytics**, **inte kopplad till identitet**, **inte tracking**. Krypterad i transit: ja.
+Utgående trafik listad rad för rad ur `FacitSender.swift`/`.kt`, `Facit.body()`, `facit-svar/index.ts` och `sql/022`.
+
+**CLAUDE.md:s invariant omskriven** enligt #264, med en rad om att en ändring i utgående trafik måste röra fyra
+dokument i samma commit — det var precis det som inte hände 16/9.
+
+**FYNDET, som kortet inte kände till: den publicerade integritetspolicyn ljuger på samma sätt.**
+`integritet.html` i `Axelstar/halkvakt-karta` — den URL Google kräver i butiksfältet — säger fortfarande
+*"Kärnlöftet: din position lämnar aldrig telefonen"* och *"Vad vi samlar in: **Ingenting.** … skickar aldrig din
+position, dina resor eller något annat om dig till oss eller någon annan."* **Google jämför formuläret mot policyn.**
+Två dokument som säger olika saker är ett avslag som ser ut som slarv. Utkast till nytt stycke skrivet; texten är
+Axels att godkänna, för till skillnad från de andra tre är policyn ett publikt löfte.
+
+**KVAR SOM ÄGARBESLUT: raderingsfrågan.** Formuläret frågar om användaren kan begära radering av sin data. Vi har
+ingen väg — och kan inte ha en: ingenting i ett facitsvar identifierar avsändaren, så "mina rader" går inte att peka
+ut. Bra för integriteten, obekvämt för formuläret. Tre alternativ i filen: (1) svara Nej och förklara varför i policyn
+— testaren kan alltid slå av brytaren; (2) töm tabellen för perioden på begäran — trubbigt, förstör facit för alla
+andra; (3) slumpat facit-id per telefon — löser formuläret men **inför en identifierare där ingen finns i dag**, och
+det gör appen sämre på det den är bäst på. **Rekommendation: 1.** Bengt + Axel, före första uppladdningen.

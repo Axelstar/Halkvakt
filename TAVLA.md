@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-20 20:45 av Claude (Cowork) — ✅ **0.3.8 (11) uppladdad till Apple 18:38** (app-målet kompilerar, versionsspåret håller); 🚀 **byggordning A avgjord, Axel arkiverar 0.3.8** (simulatorprovet föll på Xcode; DECISIONS #269); 🗣️ **Axels svar på #203:s åtta frågor** (sju avgjorda, byggordningen öppen mot Bengts C, DECISIONS #267), main bekräftat byggredo; 🔑 **tre beslut av Axel** (#214 invarianten, #216 blindningen — väntar Bengts ja, #217 viltrösten; DECISIONS #264–#266); 🧪 **#212 klart** (trösklarna låsta, 36 vektorer), 💾 **#223 klart** (backupens ålder vaktad i Supabase); 🔢 **#220 klart** (beslutsnumren unika + vakt i CI, DECISIONS #259); 🔁 **#211 klart** (tredje olycksropet borta), 🔊 #210 byggt (väntar på iOS-bygge), 🧪 #212 prioritetsdelen klar (DECISIONS #258); 💾 **#213 arkivbackupen klar och bevisad** (DECISIONS #257), nytt kort #223. Tidigare samma dag: ✅ **STEG B:s VERIFY UPPFYLLD**: 141 min/dygn i snitt över 13–19/9 mot baslinjens 202, ingest oförändrat (24 körningar, median 30–36 s mot 32 s), radarsteget 4–5 s, radar_precip 3 312 rader över 24 av 24 kompositer. Kassan 21,98 USD av 35 och takdatumet är BORTA ur larmet — släpande takt 106 min/dygn, månadsprognos 31 USD.*
+*Uppdaterad: 2026-09-20 21:10 av Claude (Cowork) — 📵 **#214 Data Safety sann igen** (DECISIONS #270) + fyndet att integritetspolicyn ljuger likadant; ✅ **0.3.8 (11) uppladdad till Apple 18:38** (app-målet kompilerar, versionsspåret håller); 🚀 **byggordning A avgjord, Axel arkiverar 0.3.8** (simulatorprovet föll på Xcode; DECISIONS #269); 🗣️ **Axels svar på #203:s åtta frågor** (sju avgjorda, byggordningen öppen mot Bengts C, DECISIONS #267), main bekräftat byggredo; 🔑 **tre beslut av Axel** (#214 invarianten, #216 blindningen — väntar Bengts ja, #217 viltrösten; DECISIONS #264–#266); 🧪 **#212 klart** (trösklarna låsta, 36 vektorer), 💾 **#223 klart** (backupens ålder vaktad i Supabase); 🔢 **#220 klart** (beslutsnumren unika + vakt i CI, DECISIONS #259); 🔁 **#211 klart** (tredje olycksropet borta), 🔊 #210 byggt (väntar på iOS-bygge), 🧪 #212 prioritetsdelen klar (DECISIONS #258); 💾 **#213 arkivbackupen klar och bevisad** (DECISIONS #257), nytt kort #223. Tidigare samma dag: ✅ **STEG B:s VERIFY UPPFYLLD**: 141 min/dygn i snitt över 13–19/9 mot baslinjens 202, ingest oförändrat (24 körningar, median 30–36 s mot 32 s), radarsteget 4–5 s, radar_precip 3 312 rader över 24 av 24 kompositer. Kassan 21,98 USD av 35 och takdatumet är BORTA ur larmet — släpande takt 106 min/dygn, månadsprognos 31 USD.*
   💰 **RÄTTAD 13/9 (DECISIONS #160, Bengts order):** prognosen räknade på månad-till-datum, och i
   det snittet låg fem flöden som lades ner 8–9/9 (`ingest-fi`, `-no`, `-dk`, `publish-map`,
   `regn-30`). Vakten sa **21 september**; uppmätt verklig takt var 232 min/dygn senaste dygnet och
@@ -1151,7 +1151,16 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔑 **Kräver också ett beslut:** ska produktinvariantens lydelse ("ingen positionsdata lämnar telefonen") formuleras om, eller
   ska facitsvaret ändras? Bengt + Axel.
   Verify: filen rättad, formuläret ifyllt likadant, och båda i samma commit som nästa uppladdning.
-  🔑 **BESLUTAT 20/9 kväll (Axel via Cowork, DECISIONS #264):** invarianten skrivs om till *aldrig utan aktivt val* — ingen
+  🔨 **BYGGT 20/9 kväll (DECISIONS #270):** `docs/PLAY-DATASAFETY.md` omskriven — insamlingsfrågan svarar **Ja**,
+  datatypen är **Location → Approximate location** (varnings-id + klockslag säger ungefär var och när), *Optional*,
+  *Collected men inte Shared*, *inte kopplad till identitet*, ändamål App functionality + Analytics. Utgående trafik
+  listad ur koden (GET snapshot utan parametrar · POST facit-svar bara vid tryck). CLAUDE.md:s invariant omskriven.
+  🔑 **TVÅ SAKER KVAR, BÅDA ÄGARBESLUT:** (a) **raderingsfrågan** — formuläret frågar om användaren kan begära radering,
+  och vi har ingen väg: inget i ett svar identifierar avsändaren. Tre alternativ i filen, rekommendation "svara Nej och
+  förklara varför"; (b) **`integritet.html` i karta-repot ljuger också** — *"Kärnlöftet: din position lämnar aldrig
+  telefonen"* och *"Vad vi samlar in: Ingenting"*. Google jämför formuläret mot policyn, så den måste ändras i samma
+  veva. Utkast skrivet, väntar Axels ja — det är ett publikt löfte.
+  *Beslutet som bygget vilar på:* invarianten skrivs om till *aldrig utan aktivt val* — ingen
   positionsdata lämnar telefonen automatiskt; det enda som skickas är ett facitsvar föraren själv trycker på. Data Safety svarar
   sanningsenligt **Ja** (ändamål: förbättra varningarna; frivilligt; kan inte kopplas till person). **Bygg nästa varv:** CLAUDE.md:s
   invariant, `docs/PLAY-DATASAFETY.md` och produktboken i samma commit.
