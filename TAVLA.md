@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-20 20:40 av Claude (Cowork) — 🚀 **byggordning A avgjord, Axel arkiverar 0.3.8** (simulatorprovet föll på Xcode; DECISIONS #269); 🗣️ **Axels svar på #203:s åtta frågor** (sju avgjorda, byggordningen öppen mot Bengts C, DECISIONS #267), main bekräftat byggredo; 🔑 **tre beslut av Axel** (#214 invarianten, #216 blindningen — väntar Bengts ja, #217 viltrösten; DECISIONS #264–#266); 🧪 **#212 klart** (trösklarna låsta, 36 vektorer), 💾 **#223 klart** (backupens ålder vaktad i Supabase); 🔢 **#220 klart** (beslutsnumren unika + vakt i CI, DECISIONS #259); 🔁 **#211 klart** (tredje olycksropet borta), 🔊 #210 byggt (väntar på iOS-bygge), 🧪 #212 prioritetsdelen klar (DECISIONS #258); 💾 **#213 arkivbackupen klar och bevisad** (DECISIONS #257), nytt kort #223. Tidigare samma dag: ✅ **STEG B:s VERIFY UPPFYLLD**: 141 min/dygn i snitt över 13–19/9 mot baslinjens 202, ingest oförändrat (24 körningar, median 30–36 s mot 32 s), radarsteget 4–5 s, radar_precip 3 312 rader över 24 av 24 kompositer. Kassan 21,98 USD av 35 och takdatumet är BORTA ur larmet — släpande takt 106 min/dygn, månadsprognos 31 USD.*
+*Uppdaterad: 2026-09-20 20:45 av Claude (Cowork) — ✅ **0.3.8 (11) uppladdad till Apple 18:38** (app-målet kompilerar, versionsspåret håller); 🚀 **byggordning A avgjord, Axel arkiverar 0.3.8** (simulatorprovet föll på Xcode; DECISIONS #269); 🗣️ **Axels svar på #203:s åtta frågor** (sju avgjorda, byggordningen öppen mot Bengts C, DECISIONS #267), main bekräftat byggredo; 🔑 **tre beslut av Axel** (#214 invarianten, #216 blindningen — väntar Bengts ja, #217 viltrösten; DECISIONS #264–#266); 🧪 **#212 klart** (trösklarna låsta, 36 vektorer), 💾 **#223 klart** (backupens ålder vaktad i Supabase); 🔢 **#220 klart** (beslutsnumren unika + vakt i CI, DECISIONS #259); 🔁 **#211 klart** (tredje olycksropet borta), 🔊 #210 byggt (väntar på iOS-bygge), 🧪 #212 prioritetsdelen klar (DECISIONS #258); 💾 **#213 arkivbackupen klar och bevisad** (DECISIONS #257), nytt kort #223. Tidigare samma dag: ✅ **STEG B:s VERIFY UPPFYLLD**: 141 min/dygn i snitt över 13–19/9 mot baslinjens 202, ingest oförändrat (24 körningar, median 30–36 s mot 32 s), radarsteget 4–5 s, radar_precip 3 312 rader över 24 av 24 kompositer. Kassan 21,98 USD av 35 och takdatumet är BORTA ur larmet — släpande takt 106 min/dygn, månadsprognos 31 USD.*
   💰 **RÄTTAD 13/9 (DECISIONS #160, Bengts order):** prognosen räknade på månad-till-datum, och i
   det snittet låg fem flöden som lades ner 8–9/9 (`ingest-fi`, `-no`, `-dk`, `publish-map`,
   `regn-30`). Vakten sa **21 september**; uppmätt verklig takt var 232 min/dygn senaste dygnet och
@@ -511,7 +511,19 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   `git pull` · `cd ios/HalkvaktApp && xcodegen` · Edit Scheme → Run → Arguments → `-fotostudio_facit` · kör i simulatorn ·
   fliken Vakten · **tryck *Stämde*** · raden under ska bli grön *Skickat …* (gul = felet står där, skicka texten). Ta bort
   argumentet. Claude läser raden i `driver_facit`. Två minuter, ingen arkivering.
-  🚀 **ARKIVERING PÅGÅR 20/9 18:35 (Axel, byggordning A).** Förkontrollen enligt CLAUDE.md gjord: ci ✅, ios-engine ✅,
+  ✅ **0.3.8 (11) UPPLADDAD TILL APPLE 20/9 18:38** (Organizer: *Uploaded to Apple*, Team Axel Lagerlöf, arm64,
+  `se.halkvakt.app`). **Tre saker bevisade av själva arkiveringen:** app-målet KOMPILERAR med kvällens rad i
+  `SnapshotRepo.swift` (den enda biten inget CI-flöde bygger), versionsspåret håller (11 över 0.3.7:s 10), och
+  signeringen gick igenom efter att Team valts om. Exportdeklarationen `ITSAppUsesNonExemptEncryption: false` ligger i
+  `project.yml`, så bygget fastnar inte på *Missing Compliance* — interna gruppen får det när Apples bearbetning är klar.
+  **Ännu obevisat: led 1 och 2.** Uppladdat är inte kört.
+  🎯 **BENGTS PROV — det som stänger leden (och #210):** uppdatera till **0.3.8 (11)** i TestFlight · Inställningar →
+  **BETATEST på** · kör tills rösten talar · **avsluta vakten** (knapparna syns bara då — läxan från 18/9) · fliken
+  Vakten → *Senast sagt* → **Stämde / Stämde inte**. Under knapparna ska det stå **"Skickat HH:MM (1 svar)"**. Står det
+  *"Kunde inte skicka HH:MM: HTTP …"* är det SERVERNS eget svar — skärmbild räcker, felet är då läsbart. **Och för
+  #210:** talar en olycka UTAN vägnummer ska den säga *"Allvarlig olycka 8 kilometer framför dig"* — aldrig *"på väg
+  null"*. 5 % av olyckorna saknar vägnummer, så det är en iakttagelse att göra när den dyker upp, inte något att framkalla.
+  *Historik:* **ARKIVERING PÅGICK 20/9 18:35 (Axel, byggordning A).** Förkontrollen enligt CLAUDE.md gjord: ci ✅, ios-engine ✅,
   android ✅ på 88dd32c. Bygget bär **#210** (`<null>`), **#211** (engångs tidigt rop) och **#212**:s vektorer.
   Fotostudio-kroken är `#if DEBUG` ⇒ kompileras bort ur arkivet; scheme-argumentet rör bara Run, inte Archive.
   **Innehåller INTE** #203 (facit efter resan), #264 (invarianten/Data Safety) eller #266 (viltrösten) — de går i 0.3.9.

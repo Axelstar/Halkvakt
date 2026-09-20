@@ -7876,5 +7876,12 @@ därefter är dokument. Fotostudio-kroken är `#if DEBUG` och kompileras bort ur
 **Oprövat, uttalat:** `SnapshotRepo.swift` ligger i app-målet, som inget CI-flöde kompilerar — arkiveringen är första
 gången kvällens rad kompileras.
 
+**UTFALL 20/9 18:38: uppladdad.** Organizer: *Halkvakt 0.3.8 (11) — Uploaded to Apple*, Team Axel Lagerlöf, arm64,
+`se.halkvakt.app`, build number 11. Arkiveringen bevisade tre saker på en gång: app-målet **kompilerar** med kvällens
+rad (det oprövade ovan), versionsspåret håller (11 > 0.3.7:s 10), och signeringen gick igenom efter att `xcodegen`
+nollställt Team. Exportdeklarationen låg redan i `project.yml` (`ITSAppUsesNonExemptEncryption: false`), så bygget
+fastnar inte på *Missing Compliance*. **Kvar, och det är hela poängen med A:** led 1 och 2 bevisas av Bengts första
+resa — receptet står på kort #203.
+
 **Till Bengt:** C var rätt resonemang på fel maskin. Invändningen — en uppdatering i stället för två — står kvar och
 gäller nästa gång; det som föll var antagandet att simulatorn kunde ersätta en telefon till en låg kostnad.
