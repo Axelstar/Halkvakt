@@ -350,6 +350,39 @@ export const KONTRAKT: Kontrakt[] = [
     former: [/const BY_TAK\s*=\s*(\d+)/, /const G_TAK_SVEP\s*=\s*\[\s*(\d+)/],
     golv: 2,
   },
+  // BETANS STARTVÄRDEN (DECISIONS #222/#225, fastställda 17/9). Källan i SQL är standardvärdena i
+  // uppspelning_efterhalka() (sql/028); den äldre mätfilen bär samma tal i sin CTE `p`. Driver de isär räknar
+  // uppspelningen och kontrollen mot skuggloggen på olika regler — och domen i januari vilar på båda. När S3 för in
+  // talen i motorn ska motorns kopior in här (bedömningen §0b). De daterade engångsmätningarna 16–17/9 i
+  // scripts/matningar/ är historik och ingår inte.
+  {
+    namn: "Betans startvärde N — regn inom så här lång tid räknas som blöt",
+    varfor: "Uppspelningen (sql/028) och kontrollen mot skuggloggen ska räkna samma regel; domen i januari vilar på båda.",
+    former: [/interval '(\d+ hours?)' AS n\b/, /p_n interval DEFAULT '(\d+ hours?)'/],
+    filer: /uppspelning-efterhalka\.sql|028_uppspelning_varianter\.sql/,
+    golv: 4,
+  },
+  {
+    namn: "Betans startvärde fall — °C på trendfönstret",
+    varfor: "Samma som ovan: ett fallkrav som driver ändrar vilka nätter som räknas som fyrningar.",
+    former: [/([\d.]+)::numeric AS fall\b/, /p_fall numeric DEFAULT ([\d.]+)/],
+    filer: /uppspelning-efterhalka\.sql|028_uppspelning_varianter\.sql/,
+    golv: 4,
+  },
+  {
+    namn: "Betans startband, nedre gräns — °C",
+    varfor: "Samma som ovan.",
+    former: [/([\d.]+)::numeric AS lag\b/, /p_lag numeric DEFAULT ([\d.]+)/],
+    filer: /uppspelning-efterhalka\.sql|028_uppspelning_varianter\.sql/,
+    golv: 4,
+  },
+  {
+    namn: "Betans startband, övre gräns — °C",
+    varfor: "Samma som ovan.",
+    former: [/([\d.]+)::numeric AS hog\b/, /p_hog numeric DEFAULT ([\d.]+)/],
+    filer: /uppspelning-efterhalka\.sql|028_uppspelning_varianter\.sql/,
+    golv: 4,
+  },
 ];
 
 // ── SJÄLVTEST mot känd sanning, utan disk ──────────────────────────────────────────────
