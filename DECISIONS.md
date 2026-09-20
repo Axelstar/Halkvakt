@@ -7379,3 +7379,41 @@ ogjort. Det är tredje gången på ett dygn samma mönster syns: ett kort som ve
 flyttat det (#250 sex kort, #252 två dubbletter, nu #50). **TAVELREGELN punkt 3 följs inte, och det kostar nu
 dubbelarbete i granskningar, inte bara städning.**
 
+## #254 (20/9 2026) Dödmansgreppet byggt och bevisat — #50 stängt efter sexton dygn, resten till kort #222
+
+**Bengts order 20/9:** *"kör dödmansgreppet och stänger du därefter de kort som fortfarande står öppna men som ska
+stängas efter denna åtgärd"*.
+
+**Byggt (PR #400):** `ingest/healthcheck.ts` frågar nu om **vakthunden själv** — i den fil som redan kör varannan timme
+utanför Supabase, och som behölls 14/9 av exakt det skälet (#87). Ingen ny mekanism, inget nytt flöde, ingen ny hemlighet.
+
+**Tre frågor för tre dödssätt:**
+1. jobbet saknas eller är avaktiverat,
+2. det har inte kört inom **180 min** (tre missade timkörningar; healthcheck kör varannan timme och hinner se det),
+3. det kör men **inget svar** har kommit.
+
+Den tredje är 9d-läxan tillämpad på vakten själv: pg_net är asynkront, så `succeeded` i `job_run_details` betyder bara
+*lades i kö*. Bara en rad i `net._http_response` som bär markören `larmvag` bevisar att vakthunden verkligen körde.
+Existensvaktat med `to_regclass` i stället för en naken `catch`, så ett riktigt läsfel i drift faller högljutt medan CI
+hoppar rent — fail-soft-läxan tillämpad i förväg.
+
+**Bevis, båda hållen samma timme:**
+- Skarpt på main 10:4xZ: `vakthunden: aktiv=1 · senaste körning 21 min · senaste svar 21 min (frist 180)` ⇒ HEALTHY.
+  **Att *svar* och *körning* visar samma ålder är beviset** att markören spårar vakthundens egen körning och inget annat.
+- **Framkallat fel** (jobbnamnet bytt på en slängkopia, grenen raderad): `aktiv=0 · senaste körning aldrig` ⇒ UNHEALTHY
+  med rätt rad, och **issue #399 skapad**. Larmvägen är därmed bevisad hela vägen — detektion → exit 1 → issue. Issuen
+  är stängd med en kommentar som säger att den kom ur ett motprov.
+
+**Stängt: #50, efter sexton dygn.** Frågan kortet ställde 4/9 — *vem vaktar vakten* — är besvarad. Kortet hade redan
+formulerat svaret 5/9 (*pulsen gav en oberoende klocka, inte en oberoende löpare*) och löparen fanns sedan 14/9; det som
+saknades var frågan.
+
+**Nytt: kort #222** för det som INTE löstes och som är en annan fråga — checkar som inte kan fyra: 9c (villkoret kan
+aldrig bli sant), 9d (mäter fel led), check 1 (mäter `synced_at`, inte att kursorn rör sig) och mätvaktens schema som
+aldrig jämförs mot pulsklockans lista. **Kräver deploy av vakthunden**, till skillnad från dödmansgreppet — därför eget
+kort med fyra framkallade fel som Verify.
+
+*Alternativ som valdes bort:* låta vakthunden stämpla en egen hjärtslagsrad i databasen — hade gett en starkare signal,
+men kräver en deploy av funktionen och en ny tabell; `net._http_response` bär redan spåret. · behålla #50 öppet tills
+allt i genomlysningen är åtgärdat — avvisat: kortet är 130 rader från 4 september, och en fråga per kort är hela poängen.
+
