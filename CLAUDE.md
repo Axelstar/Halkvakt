@@ -55,7 +55,9 @@ Define success criteria. Loop until verified.
   release blockers.
 - Secrets (Trafikverket key etc.) live in GitHub Actions secrets / local `.env`; never
   in code, snapshots, or the client app.
-- Log significant choices in DECISIONS.md (date, decision, alternatives, why).
+- Log significant choices in DECISIONS.md (date, decision, alternatives, why). Ett beslut = ett
+  unikt nummer, nästa är högsta + 1 (`scripts/beslutsnumren.ts` i CI fäller dubbletter). Hänvisa
+  alltid med rymden utskriven: `DECISIONS #NN`, `kort #NN`, `issue #NN`, `PR #NN` (kort #220).
 - **VÄRDEVAKTEN (Bengts order 2026-09-12).** Ett fält får inte bära en mätning, en tröskel eller
   en varning förrän det passerat `scripts/vardevakten.ts`. Ett fält utan deklarerat spann
   rapporteras som **OBESIKTIGAT** — det är ett hinder, inte en varning, och det friskförklaras
@@ -253,7 +255,7 @@ i samma commit när de överlappar.
   är identisk med main (`git diff origin/main -- supabase/functions/X/`). 12/9 skrev jag över
   Bengts check 7 med en version som saknade den; main hade båda, driften bara min. Efter
   deploy: kör funktionens egna prov så varje check bevisligen finns i det som kör. En check
-  som tyst försvinner ur driften är värre än en som aldrig byggdes (DECISIONS #126).
+  som tyst försvinner ur driften är värre än en som aldrig byggdes (DECISIONS #126b).
 - En vitlista som finns på TVÅ ställen är en lista som glider isär. `scripts/dbknapp.ts` hade
   FLAGGOR och `dbknapp.yml` räknade upp samma flaggor i sin if-sats. 13/9 lades `kassaprov` till i
   skriptet men inte i YAML:en, och körningen föll TYST ned i else-grenen och körde en migration i

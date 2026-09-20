@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-20 18:00 av Claude (Cowork) — 🔁 **#211 klart** (tredje olycksropet borta), 🔊 #210 byggt (väntar på iOS-bygge), 🧪 #212 prioritetsdelen klar (DECISIONS #258); 💾 **#213 arkivbackupen klar och bevisad** (DECISIONS #257), nytt kort #223. Tidigare samma dag: ✅ **STEG B:s VERIFY UPPFYLLD**: 141 min/dygn i snitt över 13–19/9 mot baslinjens 202, ingest oförändrat (24 körningar, median 30–36 s mot 32 s), radarsteget 4–5 s, radar_precip 3 312 rader över 24 av 24 kompositer. Kassan 21,98 USD av 35 och takdatumet är BORTA ur larmet — släpande takt 106 min/dygn, månadsprognos 31 USD.*
+*Uppdaterad: 2026-09-20 18:40 av Claude (Cowork) — 🔢 **#220 klart** (beslutsnumren unika + vakt i CI, DECISIONS #259); 🔁 **#211 klart** (tredje olycksropet borta), 🔊 #210 byggt (väntar på iOS-bygge), 🧪 #212 prioritetsdelen klar (DECISIONS #258); 💾 **#213 arkivbackupen klar och bevisad** (DECISIONS #257), nytt kort #223. Tidigare samma dag: ✅ **STEG B:s VERIFY UPPFYLLD**: 141 min/dygn i snitt över 13–19/9 mot baslinjens 202, ingest oförändrat (24 körningar, median 30–36 s mot 32 s), radarsteget 4–5 s, radar_precip 3 312 rader över 24 av 24 kompositer. Kassan 21,98 USD av 35 och takdatumet är BORTA ur larmet — släpande takt 106 min/dygn, månadsprognos 31 USD.*
   💰 **RÄTTAD 13/9 (DECISIONS #160, Bengts order):** prognosen räknade på månad-till-datum, och i
   det snittet låg fem flöden som lades ner 8–9/9 (`ingest-fi`, `-no`, `-dk`, `publish-map`,
   `regn-30`). Vakten sa **21 september**; uppmätt verklig takt var 232 min/dygn senaste dygnet och
@@ -28,7 +28,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 ### AXELS NÄSTA STEG — i den här ordningen (uppdaterad 8/9 kväll)
 
 - [x] ~~1. Bevisa vakthunden~~ ✅ GJORT 8/9 — pg_cron kört 18:07/19:07/20:07, alla succeeded.
-  MEN fyndet: larmvägen var trasig (#78). Beviset att klistra till Bengt står i DECISIONS #78.
+  MEN fyndet: larmvägen var trasig (#78b). Beviset att klistra till Bengt står i DECISIONS #78b.
 - [x] ~~2. PAT:en behöver `Issues: Write`~~ ✅ BEVISAT 9/9 10:58 — larmprovet (dbknapp #2: vakthundens eget
   cron-kommando med ?larmprov=1) skapade issue #91 "🔴 Vakthunden: kedjan är bruten" med etiketten vakthund,
   10:58:40. Larmvägen fungerar; issuen ska stängas av nästa gröna timkörning (11:07). Axels "full behörighet"
@@ -833,7 +833,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   som SKA skilja sig. Mutationsprov: vakthundens ena kopia driven ⇒ exit 1, kodgrindens ⇒ exit 1.
   🚫 **INGEN ORDLISTA ÄNDRAD, ingen funktion deployad.** Dubbleringen inom vakthunden och
   kodgrinden är nu VAKTAD i stället för bortstädad — en deploy av vakthunden för en ren
-  refaktorering vore risk utan vinst (jfr #126, då en deploy tyst tog bort check 7).
+  refaktorering vore risk utan vinst (jfr #126b, då en deploy tyst tog bort check 7).
   ⏭️ **KVAR OCH BARA AXELS:** ska `mycket besvärligt` in i snapshotens filter, så att snapshoten
   blir ett superset av motorn? Underlaget ligger i `docs/TILL-AXEL-HALKORDEN.md`.
   🔬 **MÄTT 14/9 (DECISIONS #172): ⊘ KAN INTE AVGÖRAS PÅ DATA.** "mycket besvärligt" vid kod < 2:
@@ -976,7 +976,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   lärarna** (TestFlight extern = Beta App Review; Android APK/Play) · Bengts och Axels omarbetning av v6.
 
 - [ ] ↩︎ **Kameravarningen i fel riktning — BEVISET SAKNAS ÄN** (återställt 10/9, föll av 8/9). Koden
-  är bevisat rätt i alla tre motorerna (#55 tolerans 100°→60°, #57 riktningen vänd 180°, #59
+  är bevisat rätt i alla tre motorerna (#55b tolerans 100°→60°, #57 riktningen vänd 180°, #59
   Öjersjö ID 14102020; 0.3.5 (8) första bygget med grönt kontrakt). Kvar: Bengt kör 0.3.5 och
   noterar KLOCKSLAG + PLATS per larm och per kamera utan larm. Beskrivningar räcker inte, vi har
   gissat tre gånger.
@@ -1096,12 +1096,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   bygger en AAB som artefakt och där slutar det. Android saknar dessutom introduktionen helt och har autostart av som standard.
   Om tolv testare i november ska hålla är Play-kontot en grind som måste passeras i september.
   Verify: en Android-testare utanför projektet har appen installerad och har skickat ett facitsvar.
-
-- [ ] 🔢 **#220 REFERENSERNA ÄR INTE UNIKA** (genomlysningen 20/9). **11 DECISIONS-nummer är utdelade två gånger** (verifierat:
-  235 poster, 11 dubbletter). Fyra nummerrymder delar syntaxen `#NN` — tavelkort 15–220, beslut 1–248, issues och PR:er — och de
-  överlappar. En session som slår upp "#126" får två olika beslut. Repot är enda synken mellan dator, webb och mobil, så det här
-  kan tyst förfalska ett beslutsunderlag i stället för att bara kosta tid.
-  Verify: dubbletterna omnumrerade med hänvisningar rättade, och ett prefix infört (K för kort, D för beslut) i nya texter.
 
 - [ ] 🧹 **#221 STYRDOKUMENTEN HAR VUXIT FÖRBI ANVÄNDBARHET** (genomlysningen 20/9). DECISIONS 7 232 rader · TAVLA 3 550 ·
   STATUS 1 846 — **~315 000 tokens ihop**. Varje session betalar för att orientera sig, och motsägelser överlever därför länge:
@@ -1765,7 +1759,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   bevisligen larmat OCH tystnat på riktiga data (issue med etiketten vakthund), inte förr.
   URSPRUNGLIGT FYND (8/9 13:35,
   läst mot grunden vid bedömningen av Axels lägesrapport). Terminalvarvets `vakthund`
-  (DECISIONS #73, 8/9) kollar led 3 "når det appen?" genom live.json:s generated_at på CDN.
+  (DECISIONS #73b, 8/9) kollar led 3 "når det appen?" genom live.json:s generated_at på CDN.
   Men appen tar inte emot live.json, den tar emot live.json OM manifestets sha256 stämmer.
   Uppmätt 13:35 i kartrepot: live.json 6 min gammal, manifest.json från 5/9, sha MISMATCH ⇒
   båda apparna förkastar och behåller 5/9-snapshoten. Vakthundens "första körningen grön —
@@ -2149,19 +2143,19 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
    istället", PR #108). Mätningen kan inte falsifiera sin premiss förrän arkivet bär vinterord, så
    utlösaren är första vinterordet — inte en kalender. Den veckokadens jag föreslagit (nio måndags-
    körningar till 1/11) är **struken**: den hade betalat minuter för att mäta ingenting tills det snöar.
-   Vakthunden larmar via issue utan en enda Actions-minut (#73). Egen etikett `vinterord`, egen issue,
+   Vakthunden larmar via issue utan en enda Actions-minut (#73b). Egen etikett `vinterord`, egen issue,
    ENGÅNGSLARM (letas i state=all). Det är en HÄNDELSE, inte ett fel — den färgar aldrig vakthunden röd.
    Faller larmvägen hamnar DET i problem[], för ett vinterord som passerar obemärkt är just vad kortet
    ska förhindra. Issuens kropp bryter ner förekomsterna per kod, så det syns direkt om ett farlighetsord
    står på kod 1 (⇒ nivådelningen faller, regional gräns blir alternativet). Prov: `?vinterprov=1`, egen
-   etikett så provet inte förbrukar engångslarmet; båda etiketterna skapade i förväg (läxan från #73:s
+   etikett så provet inte förbrukar engångslarmet; båda etiketterna skapade i förväg (läxan från #73b:s
    första larmprov som gav 500). **BEVIS, inte deploy-kvittot:** vakthundens larmprov 04:53 (issue #109)
    visar raden `vinterord i väglagsarkivet: nej` bland mätvärdena — nya koden kör skarpt i Supabase.
    ⚠️ INTE samma sak som marknadsföringens `snolarm`, som fyrar på `code !== 1` ur CDN-snapshoten
    (säsongens första verkliga halka per län, ett säljtillfälle). Det här läser ARKIVET oavsett kod, och
    den intressanta cellen för #52 är kod 1 — den som snölarmet per konstruktion hoppar över.
    ✅ **VINTERPROVET KÖRT 11/9 05:02 — LARMVÄGEN BEVISAD FÖRE SNÖN** (Bengts "kör vinterprovet",
-   PR #111). Larmet fyrar EN gång per säsong; ett larm som aldrig fyrat är inte bevisat, och #73:s
+   PR #111). Larmet fyrar EN gång per säsong; ett larm som aldrig fyrat är inte bevisat, och #73b:s
    första larmprov gav 500 i stället för larm. Här hade ingen kunnat prova förrän snön kom, och då
    är signalen redan förbrukad. DB-knappen fick därför flaggan `vinterprov` (vitlistad, läggs på
    vakthundens EGET cron-kommando — nyckeln passerar aldrig en logg; vitlistan ligger FÖRE
@@ -2751,7 +2745,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   - [ ] **(3b) Ankarbreddningen** (Bengts fråga 1/9: "vad krymper avståndet?") — rangordningen
     står: FELKARTAN DÖMER (behöver luckan lagas alls?), LUFTANKARNA LAGAR, HÖJDEN FINJUSTERAR.
     · Grannländerna: FI MÄTT 1/9 (Norrland >20 km 12,6→11,5 %). NO/Frost KÖRT 2/9 (DECISIONS
-      #60): luckan RUBBAS INTE (9,1 km / 11,5 % i alla steg) — den är INLANDS, inte vid gränsen.
+      #60c): luckan RUBBAS INTE (9,1 km / 11,5 % i alla steg) — den är INLANDS, inte vid gränsen.
     · SMHI-luftankare: smhi-prov byggt + kört 1/9 (34 augustipunkter, INGEN dom): stör inte
       nära (2,56→2,50 °C), hjälper >20 km (5,83→4,37 °C, 4 nya punkter à 1,57 °C). Måndagar
       06:00. Vidgat 10/9 till pusselbit för "3 km fram" — se #95 (molnmängd = representativitets-
@@ -3652,6 +3646,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#220 BESLUTSNUMREN UNIKA — KLART 20/9** (DECISIONS #259): 245 rubriker, 11 dubbla — sju var OLIKA beslut (#60 tre gånger), fyra var tillägg. Historiken skrivs inte om: de senare posterna bär bokstav (#55b, #60a/#60c, #72a, #73b, #78b, #124b, #126b; tilläggen #31a, #40a) och 27 hänvisningar i DECISIONS, TAVLA, STATUS, GOLVET och CLAUDE.md pekar nu på rätt bokstav (varje hänvisning läst i sitt sammanhang — #126 i CLAUDE.md var den överskrivna checken, #126 i grind-a.ts marginalvakten). Vakt: `scripts/beslutsnumren.ts` i ci.yml fäller dubbletter och skriver ut nästa lediga nummer — självtest + mutationsprov (påhittad dubblett ⇒ exit 1). Numreringsregeln står överst i DECISIONS.md och i CLAUDE.md. **Avvikelse från Verify:** inget K/D-prefix — husstilen `DECISIONS #NN` / `kort #NN` / `issue #NN` / `PR #NN` görs till regel i stället; den finns redan i nästan varje rad, prefixet i ingen. Kodkommentarer i `supabase/functions/` (tre st #73/#124) lämnade orörda — en ändrad funktionsfil kräver deploy.
 - [x] ✅ **#211 TREDJE OLYCKSROPET BORTA — KLART 20/9** (DECISIONS #258): det tidiga ropet är engångs per fara i TS, Kotlin och Swift (reprisregeln 600 s + 5 km återarmade det under 48 km/h innan 2 km nåddes). **Bevis:** v25 (44,5 km/h, olycka 10 945 m — enda geometrin i 30–47 km/h med ≥ 5 m marginal vid båda horisonterna, uppmätt med motorns haversine): gamla motorn t=76 + **t=676 "Överväg annan väg" igen med 2 586 m kvar** + t=724; nya motorn exakt två. ci #35519941072, android #35519579658 och ios-engine #35519579572 gröna på 9d3f56c — tre språk, byte för byte. Skuggmotorn buntad och deployad i samma varv (deploy-supabase #35519582721: "Deployed Functions … skuggmotor").
 - [x] ✅ **#213 ARKIVBACKUPEN — KLART 20/9** (DECISIONS #257): `arkivbackup.yml` — veckovis (söndag 03:17Z + knapp) `pg_dump` av alla fyra scheman (dk, fi, no, public) över sessionspoolern till en GitHub-release i repot, utanför Supabase; radantal per tabell i loggen; dumpen återläst i en PostGIS-container i SAMMA körning och radräknad mot källan; larm-issue med egen etikett `arkivbackup` vid fel; de 12 senaste behålls. **Bevis:** körning 35518932054 grön 15:15Z, 84 s: **30 av 30 tabeller, 601 712 rader i källan = 601 712 återlästa** (weather_observations 389 779, fi 64 105, radar_precip 50 292, no 50 056, trend_kandidater 11 879). Release `arkiv-2026-09-20T1515Z`, 22,3 MB, sha256 ffe70c82…bb322c — laddad ner oberoende på Axels dator: samma storlek, samma sha, huvudet `PGDMP`. Larmvägen bevisad på verkligheten: körning 2 föll och skapade issue #406, körning 3 stängde den 15:15:34Z. Första provet föll på att PostGIS ligger i `public` i arkivet, inte i `extensions` — 19 tabeller föll innan det mättes. Kvar som eget kort: #223 (åldersvakt utanför Actions).
 - [x] ✅ **#193 INVARIANTEN OMSKRIVEN + TAKTMÅTTEN — KLART 16/9** (DECISIONS #200): CLAUDE.md sa 45 s, motorn kör 10 s prioritetsmedvetet (#127) — texten skrevs om till motorns regel; ett tak ska komma ur mätning. Bevis: skuggrapport deployad 02:51Z; `takt` 02:52Z: tätaste följd 70 s (E4 Sundsvall→Umeå), följder inom 60 s: 0 av 110 yttranden på 24 h; per rutt 70 · 145 · 370 · 380 · 525 · 3 665 s. **Axels ja på texten 16/9.**

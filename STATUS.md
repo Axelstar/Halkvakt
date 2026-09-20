@@ -681,18 +681,18 @@ parallellsessionen under varvet; #54-läxan ("ta kortet innan du bygger") gälle
 terminalen — ankaranalysen byggdes dubbelt för att ingen såg den andres pågår.
 
 ## 2026-09-02 11:28 — 🚀 0.3.3 (6) UPPLADDAT och installerat hos Bengt mitt i Bodenresan
-Tredje uppladdningen på tre dagar. Innehåll: kameratoleransen 100°→60° (#55, hans eget fynd
+Tredje uppladdningen på tre dagar. Innehåll: kameratoleransen 100°→60° (#55b, hans eget fynd
 på E4), resan håller ihop över pauser (#53, hans fynd), skinnet v3 med ikonsetet (#47–49),
 broarna vilande tills OSM svarar (#50). Han uppdaterade via TestFlight utan att radera —
 inställningar, platstillstånd och parkeringsstaket behållna mitt i en testresa.
 🔑 HEMRESAN ÄR BEVISET: han vet var kamerorna sitter och var 0.3.2 varnade fel. Tystnad på
-rätt ställen = #55 bevisad av den som hittade felet.
+rätt ställen = #55b bevisad av den som hittade felet.
 
 ## 2026-09-02 14:42 — 🚀 0.3.5 (8) uppladdad, första bygget idag med GRÖNT kontrakt
 Innehåll: kamerariktningen vänd + verifierad mot Öjersjö (#57, #59), vägnumret i
 olycksfrasen och nu även i EARLY-grenen i Swift OCH Kotlin (#56, #60), resan över
 pauser (#53), skinnet, broarna vilande.
-LÄRDOMEN FRÅN DAGEN (#60): 0.3.3 och 0.3.4 byggdes och deployades medan ios-engine låg
+LÄRDOMEN FRÅN DAGEN (#60a): 0.3.3 och 0.3.4 byggdes och deployades medan ios-engine låg
 RÖD — fyra körningar. Xcode kompilerade glatt; kontraktstestet gjorde inte det. Bengts
 fältrapporter från de byggena går inte att tolka i efterhand. Regeln nu i CLAUDE.md:
 aldrig be om arkivering utan grön ios-engine + android + ci.
@@ -700,7 +700,7 @@ aldrig be om arkivering utan grön ios-engine + android + ci.
 varje kamera som passeras utan larm. Beskrivningar räcker inte — vi har gissat tre gånger.
 Notera: max EN varning per 45 s, så tätt sittande ATK-kameror ger bara ett larm (avsiktligt).
 
-## 2026-09-02 kväll — Frost-varvet: nyckel → rekognosering → prov, allt bevisat live (DECISIONS #60)
+## 2026-09-02 kväll — Frost-varvet: nyckel → rekognosering → prov, allt bevisat live (DECISIONS #60c)
 Bengt registrerade FROST_CLIENT_ID (Bitwarden + Secrets, hemligheten aldrig genom Claude).
 frost-rekognosering #1–2 + frost-prov #1, alla gröna med resultat på Summary-sidorna.
 Fynden: Vegvesen bor i Frost (461 aktiva vägstationer, lufttemp, dataprov 8,6 °C
@@ -1178,7 +1178,7 @@ Veckans Norrlands-mätning (12,6→11,5 %) är nu FAKTISK produktnytta, inte bar
   förrän strömmen rör sig. Joinens semantik är prövad mot känd sanning i arkivlackans
   självtest. Kvar att besluta: den avgörande kursormätningen, som ändrar produktionsflödet.
 - **S-2026-09-05 04:38: kursormätningen körd — TRV som domare, pipelinen friad, läckan kvar
-  otestbar** (Bengts order, DECISIONS #72, PR #65). Jag hade lovat att mätningen skulle avgöra
+  otestbar** (Bengts order, DECISIONS #72a, PR #65). Jag hade lovat att mätningen skulle avgöra
   saken utan att vänta på snö. Löftet höll inte, och felet var mitt: starvation kräver ett
   flöde att svälta på, och strömmen står still.
   Byggdes därför om till en HELT LÄSANDE variant som låter Trafikverket vara domare i stället

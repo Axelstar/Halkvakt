@@ -253,6 +253,8 @@ Viltrösten är den allvarligaste: den **överdriver vad datan bär**, vilket ä
 
 ### P9 — Referenserna är inte unika
 
+> ✅ **ÅTGÄRDAT 20/9** (kort #220, DECISIONS #259): de senare posterna bär bokstav (#55b, #60a/#60c, #72a, #73b, #78b, #124b, #126b), 27 hänvisningar rättade, `scripts/beslutsnumren.ts` i CI fäller dubbletter. Skrivsättet `DECISIONS #NN` / `kort #NN` / `issue #NN` / `PR #NN` är regel.
+
 - **11 DECISIONS-nummer är utdelade två gånger** (verifierat: 235 poster, 11 dubbletter).
 - Fyra nummerrymder delar syntaxen `#NN` — tavelkort (15–209), beslut (1–248), issues och PR:er — och de överlappar.
 - En session som slår upp "#126" får två olika beslut. Repot är enda synken mellan dator, webb och mobil, så det här
@@ -310,7 +312,7 @@ besvarade.
 | 7 | **Bestäm januaridomens facitkälla** — omklassningar räcker sannolikt inte | Kamerabildsgranskningen tar tid att bygga |
 | 8 | **Viltrösten: läs arten eller sluta säga "älg"** | Bryter er egen regel om att inte överdriva |
 | 9 | **Ett batteriprov på ett känt bygge, skärmen av** | Ett krav utan mätning är inget krav |
-| 10 | **Dokumentstädning:** arkivera DECISIONS före 1/9, avveckla BACKLOG, städa nummerrymden, rensa 168 grenar | Varje session betalar annars |
+| 10 | **Dokumentstädning:** arkivera DECISIONS före 1/9, avveckla BACKLOG, ~~städa nummerrymden~~ ✅ 20/9 (#220), rensa 168 grenar | Varje session betalar annars |
 
 ---
 

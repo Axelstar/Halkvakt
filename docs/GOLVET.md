@@ -101,7 +101,7 @@ Live-fälten (id, datetime, name, summary, url, type, location{name,gps}) mot la
 allt av värde tas redan (typ/art parsas till species/road/place_hint). Länscentrum-
 begränsningen är källans, inte vår (DECISIONS #13).
 
-## 10. MET Frost (NO) — rekognoserad 2/9 (DECISIONS #60)
+## 10. MET Frost (NO) — rekognoserad 2/9 (DECISIONS #60c)
 
 461 Vegvesen-vägstationer med lufttemp arkiveras ännu inte alls (NO-ingest väntar på
 DATEX-beslutet). När NO-arkivet byggs: ta lufttemp + fukt + vind ur Frost från dag ett;

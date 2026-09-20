@@ -1,5 +1,7 @@
 # DECISIONS.md — Halkvakt
 
+**Numrering (20/9, kort #220):** ett beslut = ett unikt nummer, nästa är alltid högsta + 1 — `scripts/beslutsnumren.ts` i CI fäller dubbletter och skriver ut nästa lediga. Sju nummer delades ut två eller tre gånger 1–12/9; historiken skrivs inte om, men de senare posterna bär bokstav (#55b, #60a/#60c, #72a, #73b, #78b, #124b, #126b; tillägg heter #30a, #31a, #40a, #77-bevis) och hänvisningarna i md-filerna pekar på rätt bokstav. Fyra nummerrymder delar skrivsättet #NN — skriv alltid `DECISIONS #NN`, `kort #NN`, `issue #NN`, `PR #NN`.
+
 | # | Date | Decision | Alternatives considered | Why |
 |---|------|----------|------------------------|-----|
 | 1 | 2026-08-24 | App name: **Halkvakt** | Svartis, Vägvakt, Nordic RoadSafe | Axel's pick; instantly understood by Swedish drivers. "Nordic RoadSafe" retained as possible company/B2B umbrella. |
@@ -315,7 +317,7 @@ stor påverkan") sägs det när det är stopp på riktigt; severity 4 får fortf
 lindriga repliken. Låst i tre körtider och i v17, som nu bevisar att 4 är lindrig.
 Omprövas på betabevis — det är en siffra.
 
-## #31 — TILLÄGG: gravstenarna raderade + läckan var INTE tätad förrän deploy
+## #31a — TILLÄGG: gravstenarna raderade + läckan var INTE tätad förrän deploy
 Två saker hände efter första commiten. (a) Gravstenar fortsatte komma in i 20 minuter
 efter pushen: edge-funktionen ingest-live kör ur Supabase, inte ur repot — en ändrad
 fil är ingen deploy. Deployad 08:53, verifierad stillastående räknare + rullande kursor.
@@ -474,7 +476,7 @@ Byggt till 0.3.3 (6): Prefs.lastAutoWakeAt + lastAutoWakeMinutes stämplas vid s
 och självstopp; hemskärmens kort visar "Vaknade själv 18:42 · körde 23 min". Ikväll (0.3.2)
 är beviset: rösten förbi en kamera, eller öppna appen före kvarten och läsa knappen.
 
-## #40 — BEVISAT 31/8 16:00
+## #40a — BEVISAT 31/8 16:00
 Bengt, CarPlay, färsk installation, Alltid: vakten startade själv på första körningen.
 Ingen parkering känd ⇒ betydande förflyttning-vägen. Skärmbild: körläge 6:03 / 4,3 km.
 
@@ -587,7 +589,7 @@ systematiska svaret är healthcheckens nya CDN-vakt på kamerafilen (finns/≥50
 ≤7 dygn gammal, i den bevisade incident-larmvägen). En fail-soft utan extern vakt är
 gravstensläckan om igen: felet finns men syns inte förrän någon råkar titta.
 
-## #55 (1/9 2026) Kameratoleransen 100° → 60° (Bengts fynd på Bodenresan)
+## #55b (1/9 2026) Kameratoleransen 100° → 60° (Bengts fynd på Bodenresan)
 Bengt: "konsekvent fel på varning för fartkameror — den mäter alltid mot kameran som är i
 motsatt färdriktning." Riktigt sett, och rotorsaken var inte den han gissade. Riktningsdata
 FINNS och är tillförlitlig: alla 2 776 kameror har bearing, och 382 av 388 kamerapar inom
@@ -614,7 +616,7 @@ och frysrisk gäller sträckor/punkter där föraren redan ÄR, och "på E4" til
 ## #57 (2/9 2026) Kamerariktningen var 180° fel — och min #55-fix gjorde det synligt
 Bengt på E4 en timme efter 0.3.3: "Passerade precis en kamera på min sida. Ingen varning.
 20 sekunder senare varnade den, och då var det för motsatta sidan." Entydigt — och
-motsatsen till vad #55 skulle ge.
+motsatsen till vad #55b skulle ge.
 ROTORSAKEN: Trafikverkets Camera.Bearing är riktningen kameran TITTAR, alltså rakt MOT
 trafiken den fotograferar. Bekräftat av två oberoende källor: NVDB anger "vinkeln kameran
 tittar i", medan databaser som listar färdriktning använder "diametralt motsatt vinkel";
@@ -622,7 +624,7 @@ och en publicerad mätplats för NORRgående körriktning har bäring 158° (syd
 Vi jämförde bearing direkt med kursen — 180° fel sedan dag ett.
 VARFÖR DET INTE SYNTES FÖRRÄN NU: med den gamla toleransen 100° var fönstret 200° och båda
 kamerorna i ett par släpptes ofta igenom, så felet såg ut som "den varnar för fel kamera
-ibland". När #55 skärpte till 60° blev filtret precist — och började konsekvent filtrera
+ibland". När #55b skärpte till 60° blev filtret precist — och började konsekvent filtrera
 bort rätt kamera. Min fix gjorde alltså felet värre och därmed mätbart; Bengt mätte det på
 en timme. Rätt fix: angDiff((bearing + 180) % 360, heading) ≤ 60°.
 BEVIS PÅ RIKTIG DATA: Skåne-fixturen byter varnade kameror — paret Västra Vemmerlöv
@@ -657,10 +659,10 @@ beskrivning av SAMMA ID: "Öjersjö norrgående körriktning — riktad mot syds
 nordnordväst. Vändningen ger rätt övervakad färdriktning. BEKRÄFTAT.
 Slutsats: koden i 0.3.4 är korrekt. Kvarstående fältfel förklaras av att 0.3.4 ännu inte
 var uppladdad när testaren installerade om — han fick 0.3.3 igen.
-METODLÄXA: jag ändrade två saker samtidigt i #55 (tolerans 100→60) och #57 (vändning 180°).
+METODLÄXA: jag ändrade två saker samtidigt i #55b (tolerans 100→60) och #57 (vändning 180°).
 Det gjorde fältrapporterna svårtolkade. En variabel per bygge när något mäts i verkligheten.
 
-## #60 (2/9 2026) Vi deployade med rött kontraktstest — rutinfel, inte kodfel
+## #60a (2/9 2026) Vi deployade med rött kontraktstest — rutinfel, inte kodfel
 Axel: "ska vi inte bara göra det en gång till så vi vet att allt gått rätt till?" Rätt fråga.
 FYND: ios-engine (Swift-vektorerna) hade legat RÖD sedan 08:39 — fyra körningar — medan
 0.3.4 byggdes, laddades upp och testades i bil. Xcode kompilerade utan invändning; det är
@@ -691,7 +693,7 @@ strukturella luckan Tärnaby; cellmätningen (regnet dekorrelerar under ankaravs
 (fritier). Nästa: steg 3 pilotintag i skugga, bevisas med cellmätning v3 mot radar
 + uppmätt fritier efter en vecka.
 
-## #60 (2/9 2026 kväll) Frost-rekognoseringen + provet: Norge öppnar, men luckan är inlands
+## #60c (2/9 2026 kväll) Frost-rekognoseringen + provet: Norge öppnar, men luckan är inlands
 Bengt registrerade FROST_CLIENT_ID; rekognosering + prov byggda och körda mot levande API
 samma kväll (frost-rekognosering #1–2, frost-prov #1, allt på Summary-sidorna). TRE FYND:
 (a) VEGVESEN BOR I FROST: 473 av 1 606 norska stationer hålls av Statens vegvesen, 461
@@ -936,7 +938,7 @@ att ingenting hänt är inte ett svar, och att läsa den som ett svar hade varit
 inte ha mätt alls. Här räddades det av att tidsserien och arkivets ålder skrevs ut bredvid
 procenttalet; hade rapporten bara visat "0,0 %" hade kortet stängts på falska grunder.
 
-## #72 (5/9 2026) KURSORMÄTNINGEN: pipelinen frias av Trafikverket, läckan förblir otestbar
+## #72a (5/9 2026) KURSORMÄTNINGEN: pipelinen frias av Trafikverket, läckan förblir otestbar
 Bengts order "kör kursormätningen". Som jag beskrev den igår krävde den en produktionsändring
 — egen changeid-kursor åt GitHub-ingesten — och jag lovade att den skulle "fälla eller fria
 hypotesen UTAN att vänta på snö". DET LÖFTET HÖLL INTE, och felet var mitt: med tyst ström kan
@@ -963,7 +965,7 @@ LÄSANDE variant först, och man ska kunna säga i förväg vilket utfall som sk
 hypotesen. Kunde man inte det är det ingen mätning, det är en förhoppning.
 
 ## #73 (5/9 2026) EGEN KURSOR åt arkivspåret — och regnet som bevisade att strömmen är vinterbunden
-Bengts "ja bygg" efter #72, där kursorbytet omdefinierades från MÄTNING till FÖRBÄTTRING:
+Bengts "ja bygg" efter #72a, där kursorbytet omdefinierades från MÄTNING till FÖRBÄTTRING:
 det ger färre tappade rader när vintern kommer, men bevisar ingenting i dag.
 ÄNDRINGEN: GitHub-ingesten läser sync_state-nyckeln "road_conditions_arkiv" i stället för den
 delade "road_conditions". Livemotorns nyckel är orörd, dess minutkadens likaså. Arkivets enda
@@ -1054,7 +1056,7 @@ ALLA TRE filerna och manifestets sha = live.json:s — mät det, lita inte på d
 LÄXA: "filen på CDN är färsk" är inte "appen har den". Kontrollera alltid manifestet.
 
 
-## #73 (8/9 2026) Vakthunden flyttad till Supabase — en vakthund får inte dö med det den vaktar
+## #73b (8/9 2026) Vakthunden flyttad till Supabase — en vakthund får inte dö med det den vaktar
 healthcheck.yml låg i Actions. När minuterna tog slut 5/9 tystnade den SAMTIDIGT som kedjan
 gick sönder, och att live.json var 66 h gammal upptäcktes bara för att Bengt råkade titta.
 Ny edge function `vakthund`, pg_cron varje timme (jobid 20). Kollar tre led i den ordning de
@@ -1142,7 +1144,7 @@ släpper bara github.com). Två gick att göra:
     färdiga på main i timmar och en enda deploy-väg.
 
 
-## #78 (8/9 2026 kväll) Vakthundens larmväg var trasig — den kunde bara säga "allt bra"
+## #78b (8/9 2026 kväll) Vakthundens larmväg var trasig — den kunde bara säga "allt bra"
 Bengt ville se att vakthunden LEVER, inte bara att den kan anropas. Två fynd.
 LEVER: ja. pg_cron har kört den 18:07, 19:07, 20:07, alla succeeded, svar 200. Att ingen
 issue skapats var korrekt — allt har varit grönt.
@@ -1294,7 +1296,7 @@ project xmpfztykhyvhmrzsnjrc: vakthund", grönt. Bengt kan nu deploya utan Axels
 orsaken till att tre färdiga fixar låg odriftsatta i timmar 8/9.
 ⚠️ GÅR UT ~8 DECEMBER (90 dagar), mitt i vintersäsongen. Påminnelse behövs, annars är det
 nästa tysta fel: deployer slutar fungera utan att något ser trasigt ut.
-KVAR: PAT:en behöver Issues:Write, annars kan vakthunden inte larma (#78).
+KVAR: PAT:en behöver Issues:Write, annars kan vakthunden inte larma (#78b).
 
 ## #87 (9/9 2026) Kort #83 steg 1: arkivet tunnas till 30 min efter 7 dygn — Axels ja, byggt av Claude
 VARFÖR: Axels mätning 9/9 (183 B/rad, mest aktiva station 233 rader/dygn, 92 av 500 MB använda)
@@ -3951,7 +3953,7 @@ tvärtemot. Prövat mot fem rubriker, inklusive de två verkliga issuena i repot
 
 **Varför den inte testas i `npm test`:** vakthunden är en Deno-funktion som importerar postgresjs
 över nätet vid toppnivå och kan inte laddas av node:test. Det är därför `kadensTimmar` legat
-exporterad men otestad sedan #73. Logiken prövades i stället fristående, och larmvägen prövas
+exporterad men otestad sedan #73b. Logiken prövades i stället fristående, och larmvägen prövas
 skarpt med `?paminnelseprov=1` efter deployen — vilket är husets egen standard: beviset är en
 mätning EFTER deployen, inte commit-hashen.
 
@@ -4024,7 +4026,7 @@ Bengts uttryckliga ord, **E3 aldrig**.
 hans. Bengt äger mätning, grindar och trösklar — modellen är hans, och det här dokumentet är den.
 Ingen kontrasignering behövdes för att avgöra det.
 
-## #124 (12/9 2026) Väglagets ålder — end_time-klausul + vakt 6c, INGEN åldersgräns
+## #124b (12/9 2026) Väglagets ålder — end_time-klausul + vakt 6c, INGEN åldersgräns
 Bengts Claude fann att väderpunkterna har tre timmars åldersgräns men segmenten ingen.
 MÄTT före bygge: exponeringen är NOLL just nu — alla 818 segment står som kod 1 "Normalt"
 utan vinterord, inget i snapshoten. Men nollan är utsagolös (samma fälla som #71): arkivet
@@ -4082,13 +4084,13 @@ exponeringsmätningen (§2) om med `scripts/kodgrinden.ts` avsnitt D.
 
 **Tionde tröskeldokumentet, och noll utkast kvar.**
 
-## #126 (12/9 2026) Överskriven check: jag deployade vakthunden FÖRE rebasen mot main
+## #126b (12/9 2026) Överskriven check: jag deployade vakthunden FÖRE rebasen mot main
 Bengts fråga: "deployade du vakthunden efter 3f2a43a? vilken version kör den?" Svaret:
 nej. Jag deployade min lokala fil (med 6c) INNAN jag hämtade main, där Bengt samma dag lagt
 check 7 (källvaktspåminnelsen, 2ca4609). Resultat: main hade båda, driften hade bara min.
 BEVIS: ?paminnelseprov=1 gav inget svar från check 7. Efter omdeploy från main svarar
 både 7 och 6c. Mätvaktens #198 var alltså en ÖVERSKRIVEN CHECK, inte en missad takt.
-Detta är samma fel som 2/9 (#60: deployade med rött kontrakt) i ny form: jag deployade
+Detta är samma fel som 2/9 (#60a: deployade med rött kontrakt) i ny form: jag deployade
 utan att först säkerställa att det jag deployade var main. Två personer deployar samma
 funktion samma dag; den som deployar sist utan att ha pullat först raderar den andres jobb
 utan att något ser trasigt ut. En check som tyst försvinner är värre än en som aldrig
@@ -4253,7 +4255,7 @@ mot issue #198:
 | 19:07:04 | kommentar utan prov, **stängning** | takten slår, och den **stänger** |
 
 **Tystnaden 18:07 var en ÖVERSKRIVEN CHECK, inte en missad takt.** Axels Claude hade deployat sin
-lokala vakthundsfil före en pull, så driften fick 6c men tappade check 7 (#126). Main hade båda,
+lokala vakthundsfil före en pull, så driften fick 6c men tappade check 7 (#126b). Main hade båda,
 driften hade en. Efter omdeploy från main svarar båda.
 
 **MIN FELHYPOTES, och den skrivs ut i stället för att städas bort.** Jag konstaterade att 19:01
@@ -4353,7 +4355,7 @@ samma sak.
 **Prövat fristående mot tre fall innan deploy:** verkliga tal 13/9 (311 månad / 201 släpande /
 taket 26 sept / gungar), första dygnet i månaden (fallback till månadssnittet), och en halverad
 takt (gungar, taket nås inte inom månaden). Vakthunden är en Deno-funktion och kan inte laddas av
-`node:test` — samma skäl som `kadensTimmar` legat otestad sedan #73.
+`node:test` — samma skäl som `kadensTimmar` legat otestad sedan #73b.
 
 **Vad det INTE ändrar:** talet är fortfarande ett GOLV, inte fakturan. Taket är kontoomfattande
 men vakten ser ett repo, och GitHub avrundar per jobb medan vi avrundar per körning. Den exakta
@@ -5026,7 +5028,7 @@ kodgrindens ⇒ exit 1.
 
 **DUBBLERINGEN VAKTAS I STÄLLET FÖR ATT STÄDAS.** Både vakthunden och kodgrinden bär sin lista två
 gånger i samma fil. Att lyfta dem till en konstant hade krävt en **deploy av vakthunden för en ren
-refaktorering** — risk utan vinst, och #126 är läxan: en deploy tog då tyst bort check 7. Grinden ger
+refaktorering** — risk utan vinst, och #126b är läxan: en deploy tog då tyst bort check 7. Grinden ger
 samma skydd till noll risk.
 
 **VAD SOM ÄR KVAR OCH BARA AXELS:** ska `mycket besvärligt` in i snapshotens filter, så att snapshoten
@@ -5264,7 +5266,7 @@ det var precis den formen som löste #157 när `archiveFacit` tvingades säga va
 
 **MOTORKODEN OCH VEKTORERNA ÄR ORÖRDA:** `engine/` har noll ändrade rader, bunten är omgenererad och
 `bundle-skuggmotor --check` är grön. Deployad efter `git pull` och verifiering mot main, enligt
-Axels regel (#126).
+Axels regel (#126b).
 
 **VAD SOM LÅSES UPP NÄR POSITIONERNA BÖRJAR FLYTA:**
 1. **Kamerafacit (#157)** — `archiveFacit` kan äntligen hitta en kamera och spara en bild.
@@ -7555,3 +7557,27 @@ och www.postgresql.org; deklarerade som bygg i `publish/beroenden.ts` (93ed4e8).
 
 **Kvar av #212:** trösklarna (korridor 5°–90°, repris 0–50 000 m, bäring, lägsta fart, förvarning) och v03/v20 — mätning per
 tröskel och en vektor åt vardera hållet. Eget varv.
+
+## #259 (20/9 2026) Beslutsnumren görs unika utan att historiken skrivs om — och en vakt som håller dem så (kort #220)
+
+**Fyndet (genomlysningen, P9):** 245 rubriker, elva nummer utdelade mer än en gång. Sju var *olika* beslut under samma nummer
+— #55, #60 (tre gånger), #72, #73, #78, #124, #126 — och fyra var tillägg till samma beslut (#30a, #31, #40, #77-bevis).
+"Slå upp #126" gav marginalvakten i grind-a.ts och den överskrivna checken i CLAUDE.md.
+
+**Beslut:** numret behålls av den post som flest hänvisningar menar; den andra får bokstav. #55 ankarfyndet / #55b
+kameratoleransen · #60 källbeslutet radar / #60a rutinfelet med rött kontrakt / #60c frost-rekognoseringen · #72 livekedjan till
+Supabase / #72a kursormätningen · #73 egen kursor / #73b vakthunden till Supabase · #78 grannlandsfilerna + deploy-knappen / #78b
+larmvägen · #124 ruttberedskapen / #124b väglagets ålder · #126 marginalvakten / #126b överskriven check. Tilläggen #31a och #40a.
+Alternativet — omnumrera löpande — valdes bort: var och en av de här numren är citerad i tavla, status, tröskeldokument och kod,
+och #60-noten (2/9) sade redan *historik skrivs inte om*. **27 hänvisningar rättade,** var och en läst i sitt sammanhang (en
+"#73" i STATUS var ett healthcheck-körningsnummer, inte ett beslut, och lämnades). Kodkommentarer under `supabase/functions/`
+(vakthund #73/#124, publicera #124, snapshot-core #124) är orörda: en ändrad funktionsfil kräver deploy, och en kommentar är inte
+värd en deploy.
+
+**Vakten:** `scripts/beslutsnumren.ts` — läser rubrikerna `## #<id>`, fäller dubbletter, skriver ut nästa lediga nummer. Steg i
+ci.yml efter beroendekartan, med självtest. Mutationsprov 20/9: påhittad `## #100` ⇒ *✗ DUBBLA BESLUTSNUMMER: #100 (2 gånger)*,
+exit 1. Begränsning, uttalad i filen: ci hoppar över rena md-commits, så en dubblett i en md-commit fångas av nästa kodcommit.
+
+**Nummerrymderna:** kortets Verify bad om ett K/D-prefix. Valt i stället: husstilen som redan står i nästan varje rad —
+`DECISIONS #NN`, `kort #NN`, `issue #NN`, `PR #NN` — görs till regel i CLAUDE.md och överst i DECISIONS.md. Ett nytt prefix som
+ingen text använder hade blivit en femte rymd.
