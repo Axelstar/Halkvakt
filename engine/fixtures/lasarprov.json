@@ -1,0 +1,45 @@
+{
+ "_om": "LÄSARPROVET (kort #210, 20/9 2026). Vektorerna i engine/vectors/ börjar där faran redan är tolkad — de är ett kontrakt FÖR MOTORN och kan per konstruktion inte se ett fel i JSON-läsningen. Det var precis där #210 satt: iOS gjorde JSON-null till strängen \"<null>\" och rösten läste upp den. Den här filen är motsvarande kontrakt ETT LAGER NED: samma static+live som apparna hämtar, med de fall som är lätta att läsa fel, och det parsade utfall varje läsare ska ge. TS-läsaren prövas av test/lasarkontraktet.test.ts. Swift och Kotlin läser i dag i app-koden, utan testmål — se kortet.",
+ "static": {
+  "schema": 1,
+  "cameras": [
+   { "id": "k1", "lon": 15.0, "lat": 60.0, "bearing": 180, "road": "E4" },
+   { "id": "k2", "lon": 15.1, "lat": 60.1, "bearing": null, "road": null }
+  ]
+ },
+ "live": {
+  "schema": 1,
+  "generated_at": "2026-09-20T18:00:00.000Z",
+  "segments": [
+   { "id": "s1", "line": [[15.0, 60.0], [15.01, 60.01]], "code": 3, "info": ["Isbelagd"], "road": "E4" },
+   { "id": "s2", "line": [[15.2, 60.2], [15.21, 60.21]], "code": null, "info": [], "road": null }
+  ],
+  "weather": [
+   { "id": "w1", "lon": 15.3, "lat": 60.3, "yta": 0.4, "fukt": true },
+   { "id": "w2", "lon": 15.4, "lat": 60.4, "yta": null, "fukt": false }
+  ],
+  "deviations": [
+   { "id": "d1", "lon": 15.5, "lat": 60.5, "typ": "Accident", "road": "E4", "sev": 5, "slut": "14:20" },
+   { "id": "d2", "lon": 15.6, "lat": 60.6, "typ": "Accident", "road": null, "sev": 5, "slut": "15:00" },
+   { "id": "d3", "lon": 15.7, "lat": 60.7, "typ": "Accident", "sev": null },
+   { "id": 4711, "lon": 15.8, "lat": 60.8, "typ": "Accident", "road": "25", "sev": 4, "slut": null }
+  ],
+  "smhi": [],
+  "wildlife": [{ "id": "v1", "lon": 15.9, "lat": 60.9, "art": null }],
+  "bridges": [{ "id": "b1", "lon": 16.0, "lat": 61.0, "road": null, "yta": 2.5, "fukt": true }]
+ },
+ "vantat": [
+  { "id": "cam:k1", "kind": "camera", "bearing": 180 },
+  { "id": "cam:k2", "kind": "camera", "bearing": null, "_varfor": "bearing null får aldrig bli 0 — 0 är norrut, och en kamera som tros titta norrut filtreras på fel kurs" },
+  { "id": "seg:s1", "kind": "slippery_segment", "code": 3 },
+  { "id": "seg:s2", "kind": "slippery_segment", "code": null, "_varfor": "code null betyder OKÄNT väglag, inte klass 0" },
+  { "id": "wx:w1", "kind": "icing_point", "surfaceTempC": 0.4 },
+  { "id": "wx:w2", "kind": "icing_point", "surfaceTempC": null, "_varfor": "yta null får aldrig bli 0 °C — 0 ligger under fryströskeln och hade fyrat" },
+  { "id": "dev:d1", "kind": "accident", "road": "E4", "severityCode": 5, "endTimeLocal": "14:20" },
+  { "id": "dev:d2", "kind": "accident", "road": null, "severityCode": 5, "endTimeLocal": "15:00", "_varfor": "KORT #210: road som JSON-null. Får aldrig bli strängen \"<null>\", \"null\" eller tom sträng som läses upp" },
+  { "id": "dev:d3", "kind": "accident", "road": null, "severityCode": null, "endTimeLocal": null, "_varfor": "helt SAKNADE fält — samma utfall som null, och sev null får inte bli 0 (0 finns inte i SeverityCode)" },
+  { "id": "dev:4711", "kind": "accident", "road": "25", "severityCode": 4, "endTimeLocal": null, "_varfor": "id som TAL, inte sträng. Ska bli \"dev:4711\" — det är därför fallback-grenen i iOS str() finns kvar" },
+  { "id": "vilt:v1", "kind": "wildlife" },
+  { "id": "bro:b1", "kind": "icing_point", "surfaceTempC": 2.5, "bridge": true }
+ ]
+}

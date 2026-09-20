@@ -8185,3 +8185,34 @@ i #267 och #276, och det är tredje gången i dag den är skälet till ett förb
 dessutom inte prövas i simulatorn på ett trovärdigt sätt: låsskärmen och bakgrundsleveransen är
 poängen. **Verify står öppen tills en riktig resa på en riktig telefon ger rader i `driver_facit`
 utan att föraren stannat.**
+
+## #278 (20/9 2026) Svepet: blindningsläckan tätad (#216), portarnas flöden lagade, och läsarkontraktet byggt (#210)
+
+**Bengts order 20/9:** *"jag tycker att vi gör 210 409 och 416 i ett svep"*. Tre saker i en gren, en CI-körning.
+
+**1. #216 — blindningsläckan tätad.** Bengts ja på Axels val (#265). `scripts/grind-t-a.ts`: tabellen **räknas alltid**
+— en grind som inte räknar kan inte visa att den fungerar — men **rangordningen trycks först när domspärren släpper**.
+Klarhetsdelens kolumn *fyrade* bygger på svepets vinnare och hålls tillbaka likadant; antalet frostnätter per molnklass
+är underlag och står kvar. **Bevis, skarp körning med domspärren hållande:** `SVEPET — 144 kombinationer` följt av
+`(rangordningen hålls tillbaka — 144 punkter räknade, ingen redovisad)`, medan fysikkontrollen skrevs som förut.
+TROSKLAR-KOMBINATIONEN bär nu regeln om delgrindarnas körningar mot D3, i samma commit — Axels villkor.
+
+**2. Portarnas flöden lyssnade inte på `engine/src`.** `android.yml` och `ios-engine.yml` triggade på `engine/vectors`
+men inte på referensmotorn. En ren motorändring hade alltså passerat otestad i Kotlin och Swift. Dagens motorfixar
+råkade trigga portarna för att de också lade vektorer — skyddet hängde på tur. Rättat.
+
+**3. #210 — läsarkontraktet.** Kortets egen invändning var *"inget testmål"*, och den var riktig: vektorerna börjar där
+faran redan är TOLKAD. De är ett kontrakt för MOTORN och kan per konstruktion inte se ett fel i JSON-läsningen — vilket
+är exakt var #210 satt. Nu finns samma sorts kontrakt ett lager ned: `engine/fixtures/lasarprov.json` med de fall som
+är lätta att läsa fel, och `test/lasarkontraktet.test.ts` som prövar TS-läsaren mot dem.
+**Motprov:** `road: d.road ?? null` → `String(d.road)` ⇒ testet faller med `actual: 'null'` mot `expected: null`.
+**Nollpolitiken är hela poängen:** `bearing` null får inte bli 0 (0 är norrut, och kameran filtreras då på fel kurs) ·
+`yta` null får inte bli 0 °C (0 ligger under fryströskeln och hade fyrat) · `road` null får inte bli ett ord.
+**Kvar:** Swift och Kotlin läser i app-koden, som saknar testmål. Provfilen ligger färdig den dagen målet finns.
+**Kortet #210 stängs fortfarande av Axels bygge** — läsarkontraktet gör inte fixen bevisad, det gör nästa regression synlig.
+
+**Två PR:er stängda utan att slås ihop.** #409 hann bli halvt dubblerad — den parallella sessionen härdade `str()` i
+90b5223 — och #416 hade `[skip ci]` i sin huvudcommit, vilket fick GitHub att hoppa över PR-körningen. Innehållet
+ligger här i stället. **Läxa värd att skriva:** `[skip ci]` i en grens huvudcommit tystar också `pull_request`-körningen,
+så en gren som bara bär dokument kan inte granskas av CI — och en gren som bär kod får aldrig ha märket.
+
