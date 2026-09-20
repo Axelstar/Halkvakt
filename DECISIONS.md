@@ -7708,3 +7708,51 @@ hoppade därmed över det FÄRDIGA kort #222 som låg kvar i ATT GÖRA — 39 ra
 `git show --stat` (57 raderade rader mot väntade 18), återställt byte för byte ur HEAD~1 och kortmängden diffad: 118 = 118,
 inget borta, inget nytt. Exakt CLAUDE.md:s regel om att diffa kortantal före push — den gäller även den som just läst den.
 Numren #260/#261 i det första utkastet blev #262/#263: Bengts session tog #260 och #261 samtidigt, och `beslutsnumren.ts` sa ifrån — två gånger.
+
+## #264 (20/9 2026) Produktinvarianten skrivs om: ingen positionsdata lämnar telefonen UTAN AKTIVT VAL (kort #214, Axel)
+
+**Bakgrund:** sedan 16/9 POSTar facitsvaret (FacitSender.kt / Facit.swift) varnings-id, tid, app och version — och ett
+varnings-id är en plats och en tid (`sql/022`). CLAUDE.md:s invariant säger *"No user location, GPS trace, or movement data may
+ever be transmitted off-device. Full stop."* och `docs/PLAY-DATASAFETY.md` svarar **No** på Googles insamlingsfråga. Båda är
+osanna sedan 16/9, och en osann deklaration är grund för avslag eller nedtagning mitt i facitfönstret (genomlysningen P2).
+
+**Beslut (Axel, via Cowork 20/9 kväll):** invarianten lyder från och med nu: *ingen positionsdata lämnar telefonen automatiskt —
+matchningen sker på telefonen mot nedladdade snapshots; det enda som någonsin skickas är ett facitsvar som föraren själv trycker
+på, och det bär varnings-id och tid, inget spår.* Data Safety-formuläret svarar därmed **Ja** på insamling: kategori
+ungefärlig plats (via varnings-id) + app-info, ändamål *appfunktioner/analys* (förbättra varningarna), frivilligt, kan inte
+kopplas till person, delas inte.
+
+**Alternativ som valdes bort:** behålla invarianten och ta bort facitsvaret (januaridomen förlorar sin enda förarkälla) ·
+anonymisera svaret till bara Stämde/Stämde inte + grov tid (facit utan plats dömer ingenting).
+
+**Bygg, nästa varv, i EN commit:** CLAUDE.md:s invariant, `docs/PLAY-DATASAFETY.md` (svaren och trafiklistan: GET på snapshoten
++ POST på facitsvaret), produktbokens integritetsrad. Formuläret i Play Console fylls i likadant före första uppladdningen.
+
+## #265 (20/9 2026) Blindningsläckan i T-A: svepets tabell trycks inte förrän domspärren släpper — Axels val, väntar Bengts ja (kort #216)
+
+**Fyndet (genomlysningen P4):** `scripts/grind-t-a.ts` skriver hela svepet rangordnat på separation även när domspärren håller,
+och flödet ska köras inom sju dygn efter varje frostnatt — genom hela kalibreringsfönstret. Fönster, lutning och startband är
+tre av kombinationens sex dimensioner; när kombinationen kalibreras 1/2 är deras utfall redan avläst och loggat i CI. D3
+(kalibrering och dom på skilda nätter) skyddar då bara på papper.
+
+**Axels val (20/9 kväll):** strypa utskriften. UNDERLAGET och fysikkontrollen skrivs som förut; svepets tabell (och
+klarhetsdelens "bästa kombination", som bygger på den) skrivs först när domspärren släpper. Tre rader kod, och läckan är tät
+i stället för deklarerad. Alternativet — en rad i TROSKLAR-KOMBINATIONEN om att dimensionerna är förvalda — skyddar bara den
+som läser raden.
+
+**Villkor:** mätningen är Bengts, så det byggs först när han sagt ja. Bygget: `grind-t-a.ts` + raden i TROSKLAR-KOMBINATIONEN
+(hur delgrindarnas körningar förhåller sig till D3) i samma commit, före första frostnatten.
+
+## #266 (20/9 2026) Viltrösten säger vad datan bär: "Viltrisk framöver." — utan art (kort #217, Axel)
+
+**Fyndet (genomlysningen P7):** rösten säger *"Viltrisk — vanlig olycksplats för älg den här tiden"*, men källan är enskilda
+polishändelser inom 48 h och ingen adapter läser arten — "älg" sägs även vid rådjur. Alert copy får aldrig överdriva vad datan
+bär (CLAUDE.md, produktinvariant).
+
+**Beslut (Axel, via Cowork 20/9 kväll):** rösttexten blir *"Viltrisk framöver."* — punktkälla, därför "framöver" (texts.ts-regeln),
+ingen art, ingen "vanlig olycksplats". Arten kommer tillbaka den dag en adapter läser den ur polisens händelsetext (eget kort
+då). Alternativ som valdes bort: bygga artläsaren nu (större bygge före ett facitfönster) · låta rösten stå kvar.
+
+**Bygg, nästa varv, i EN commit:** `engine/src/texts.ts` + Kotlin + Swift, vektor v13 regenereras (den enda gången en frusen
+vektor ändras är när regeln själv ändras — det är det här), skuggmotorn buntas och deployas, produktboken uppdateras
+(PRODUKTBOKSREGELN) och vektorantalet där rättas till 36.

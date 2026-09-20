@@ -44,7 +44,8 @@
   stängt (tidiga ropet engångs, v25), #210 byggt (road:null i iOS, v26 — väntar på bygge), #212:s prioritetsdel klar (v27 +
   testet rättat); tre språk gröna, skuggmotorn deployad. **#220** (beslutsnumren unika + vakt, DECISIONS #259), **#223**
   (backupens ålder vaktad i vakthunden, DECISIONS #262), **#212** (trösklarna låsta, 36 vektorer, DECISIONS #263). Kvar av
-  genomlysningen: #210 (väntar iOS-bygge), #214, #216, #217, #218, #219, #221 — fyra kräver Axels/Bengts beslut.
+  genomlysningen: #210 (väntar iOS-bygge), #214, #216, #217, #218, #219, #221. **Axels beslut i kväll:** invarianten
+  *aldrig utan aktivt val* (#264), T-A:s utskrift stryps — väntar Bengts ja (#265), viltrösten utan art (#266). Byggs nästa varv.
 - **S-2026-09-17** (Claude med Bengt, Axel via Bengt): **grepp 2 fastställt** — C, D och T underskrivna av Bengt och
   Axel (DECISIONS #220–#228); betans startvärden beslutade; radar, regnmängd, startband och SMHI-förlängning prövas i
   mars ur arkiven (#223–#226). **Byggt och bevisat i drift:** kort #196 (provraderna märkta, `sql/025`) och #199

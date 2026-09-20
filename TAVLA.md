@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-20 19:15 av Claude (Cowork) — 🧪 **#212 klart** (trösklarna låsta, 36 vektorer), 💾 **#223 klart** (backupens ålder vaktad i Supabase); 🔢 **#220 klart** (beslutsnumren unika + vakt i CI, DECISIONS #259); 🔁 **#211 klart** (tredje olycksropet borta), 🔊 #210 byggt (väntar på iOS-bygge), 🧪 #212 prioritetsdelen klar (DECISIONS #258); 💾 **#213 arkivbackupen klar och bevisad** (DECISIONS #257), nytt kort #223. Tidigare samma dag: ✅ **STEG B:s VERIFY UPPFYLLD**: 141 min/dygn i snitt över 13–19/9 mot baslinjens 202, ingest oförändrat (24 körningar, median 30–36 s mot 32 s), radarsteget 4–5 s, radar_precip 3 312 rader över 24 av 24 kompositer. Kassan 21,98 USD av 35 och takdatumet är BORTA ur larmet — släpande takt 106 min/dygn, månadsprognos 31 USD.*
+*Uppdaterad: 2026-09-20 19:40 av Claude (Cowork) — 🔑 **tre beslut av Axel** (#214 invarianten, #216 blindningen — väntar Bengts ja, #217 viltrösten; DECISIONS #264–#266); 🧪 **#212 klart** (trösklarna låsta, 36 vektorer), 💾 **#223 klart** (backupens ålder vaktad i Supabase); 🔢 **#220 klart** (beslutsnumren unika + vakt i CI, DECISIONS #259); 🔁 **#211 klart** (tredje olycksropet borta), 🔊 #210 byggt (väntar på iOS-bygge), 🧪 #212 prioritetsdelen klar (DECISIONS #258); 💾 **#213 arkivbackupen klar och bevisad** (DECISIONS #257), nytt kort #223. Tidigare samma dag: ✅ **STEG B:s VERIFY UPPFYLLD**: 141 min/dygn i snitt över 13–19/9 mot baslinjens 202, ingest oförändrat (24 körningar, median 30–36 s mot 32 s), radarsteget 4–5 s, radar_precip 3 312 rader över 24 av 24 kompositer. Kassan 21,98 USD av 35 och takdatumet är BORTA ur larmet — släpande takt 106 min/dygn, månadsprognos 31 USD.*
   💰 **RÄTTAD 13/9 (DECISIONS #160, Bengts order):** prognosen räknade på månad-till-datum, och i
   det snittet låg fem flöden som lades ner 8–9/9 (`ingest-fi`, `-no`, `-dk`, `publish-map`,
   `regn-30`). Vakten sa **21 september**; uppmätt verklig takt var 232 min/dygn senaste dygnet och
@@ -1080,6 +1080,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔑 **Kräver också ett beslut:** ska produktinvariantens lydelse ("ingen positionsdata lämnar telefonen") formuleras om, eller
   ska facitsvaret ändras? Bengt + Axel.
   Verify: filen rättad, formuläret ifyllt likadant, och båda i samma commit som nästa uppladdning.
+  🔑 **BESLUTAT 20/9 kväll (Axel via Cowork, DECISIONS #264):** invarianten skrivs om till *aldrig utan aktivt val* — ingen
+  positionsdata lämnar telefonen automatiskt; det enda som skickas är ett facitsvar föraren själv trycker på. Data Safety svarar
+  sanningsenligt **Ja** (ändamål: förbättra varningarna; frivilligt; kan inte kopplas till person). **Bygg nästa varv:** CLAUDE.md:s
+  invariant, `docs/PLAY-DATASAFETY.md` och produktboken i samma commit.
 
 - [x] 🐕 **#215 VAKTHUNDEN KAN TYSTNA UTAN ATT NÅGON MÄRKER DET — ✅ SLAGET IHOP MED #50 20/9** (Bengts order,
   DECISIONS #252). Genomlysningen lade kortet som ett nytt fynd, men **#50 *Vakthunden är själv obevakad* har ställt
@@ -1094,6 +1098,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔑 **Beslut före frosten:** antingen strypa T-A:s utskrift tills domspärren släpper, eller skriva i TROSKLAR-KOMBINATIONEN att
   de delade dimensionerna är förvalda och att kombinationen bara kalibrerar de återstående. Bengt + Axel.
   Verify: raden står i tröskeldokumentet före första frostnatten.
+  🔑 **AXELS VAL 20/9 kväll (DECISIONS #265): strypa utskriften** — `grind-t-a.ts` skriver UNDERLAGET och fysikkontrollen men
+  svepets tabell först när domspärren släpper. Tre rader kod, tätt. **Väntar på Bengts ja** innan det byggs (mätningen är hans);
+  raden i TROSKLAR-KOMBINATIONEN skrivs i samma commit som koden.
 
 - [ ] 🦌 **#217 PRODUKTBOKEN LOVAR SEX SAKER KODEN INTE GÖR** (genomlysningen 20/9). Hastighetsgränsen i kameratexten **kan aldrig
   sägas** — den publiceras inte, och grenen är död i alla tre motorerna · viltrösten säger "älg" och "den här tiden" fast arten
@@ -1101,6 +1108,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   två finns · SMHI sägs gå till motorn men motorn läser den inte · introduktionen i fyra sidor **finns inte på Android** ·
   "23 vektorer" är 24. Dessutom: förvarningsreglaget har olika spann på iOS (400–3000) och Android (500–5000).
   Verify: varje rad i produktboken antingen bevisad i kod eller struken, med färsk skärmbild där det syns.
+  🔑 **BESLUTAT 20/9 kväll (Axel via Cowork, DECISIONS #266): viltrösten säger vad datan bär** — *"Viltrisk framöver."* utan
+  art, tills en adapter läser arten ur polisdatan. **Bygg nästa varv:** `texts.ts` + Kotlin + Swift, vektor v13 (vilt slår kamera)
+  får ny rösttext — den enda gången en frusen vektor får ändras är när regeln själv ändras, och det står här — produktboken i
+  samma commit. Vektorantalet i produktboken är 36 sedan i kväll, inte 24.
 
 - [ ] 🔋 **#218 BATTERIBUDGETEN HAR ALDRIG MÄTTS, OCH iOS KÖR FULL GAS** (genomlysningen 20/9). `< 8 %/h` står som krav på tre
   ställen med **noll motprov**. iOS kör `BestForNavigation` med avstängd automatisk paus och saknar motsvarighet till Androids
