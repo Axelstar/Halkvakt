@@ -121,7 +121,7 @@ vad visar närmaste kamerabild? Förarfacit ensamt fäller eller friar fortfaran
 | 4 | Missarna: klockslag + typ + station-id (+ segment-id) i `driver_miss`; brytarens text vidgas | ja — integritetsbeslutet är Axels |
 | 5 | Stor knapp *Appen missade* i körläget (Androids väg, iPhone reserv) | ja |
 | 6 | Lager 3 — svarsknapparna i körläget vid stillastående | nej i första bygget; låsskärmen + Siri räcker |
-| 7 | Byggordning: **A)** 0.3.8 (11) ut nu som det är, #203 i 0.3.9 · **B)** vänta, allt i 0.3.8 | **A** — 0.3.8 bevisar sändkanalen från en riktig telefon, vilket aldrig skett |
+| 7 | Byggordning: **A)** 0.3.8 (11) ut nu som det är, #203 i 0.3.9 · **B)** vänta, allt i 0.3.8. **OBS: 0.3.8 innehåller INTE #203** — den bär de gamla knapparna under *Senast sagt* (nu fungerande) och ordlistan. Lägg 0.3.8 bara i den INTERNA TestFlight-gruppen (Bengt, Axel): novembertestarna behöver aldrig se det gamla flödet | **A** — 0.3.8 bevisar sändkanalen från en riktig telefon, vilket aldrig skett, och bekräftar diagnosen av 0.3.7; #203 byggs ovanpå samma kanal, så ett fel där ska hittas nu, inte i oktober |
 | 8 | Android i samma varv (LastSaidCard har samma begränsning: bara sista varningen) | ja, en PR |
 
 ## 9. Kostnad och ordning
