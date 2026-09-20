@@ -50,6 +50,8 @@ const REPO = "Axelstar/Halkvakt";
 const token = Deno.env.get("PUBLISH_TOKEN")!;
 const CDN = "https://axelstar.github.io/halkvakt-karta/data/app/v1/live.json";
 const MARK = "<!-- vakthund -->";   // hittar vår egen issue igen
+// Veckodumpen (arkivbackup.yml) kör söndagar; 8 dygn = en missad söndag + ett dygns marginal (kort #223).
+const ARKIVBACKUP_MAX_DYGN = 8;
 
 async function gh(path: string, method = "GET", body?: unknown): Promise<any> {
   const r = await fetch(`https://api.github.com/repos/${REPO}${path}`, {
@@ -830,6 +832,21 @@ Deno.serve(async (req) => {
       if (antal < 500) problem.push(`**Kameralagret tunt**: ${antal} kameror (golv 500)`);
       if (dygn !== null && dygn > 7) problem.push(`**Kameralagret ${dygn.toFixed(1)} dygn gammalt** (gräns 7) — TRV-steget i publiceringen fallerar permanent?`);
     } catch (e) { problem.push(`**Kunde inte läsa kameror-vaglag.geojson**: ${String(e)}`); }
+
+    // 9j. ARKIVBACKUPEN (kort #223, 20/9). Veckodumpen av arkivet (arkivbackup.yml, kort #213) kör i
+    //     Actions — och Actions dog tyst 5/9. Då tystnar dumpen och healthchecken samtidigt, och den
+    //     här vakten är den enda som kör utanför. Frågar GitHub om senaste release med taggen `arkiv-`:
+    //     ingen alls, eller äldre än gränsen ⇒ larm. Prov: ?arkivprov=1 låtsas att den är 99 dygn.
+    try {
+      const rel: any[] = await gh(`/releases?per_page=30`);
+      const arkiv = rel.filter((r) => typeof r.tag_name === "string" && r.tag_name.startsWith("arkiv-"))
+        .map((r) => new Date(r.published_at ?? r.created_at).getTime());
+      const arkivprov = new URL(req.url).searchParams.get("arkivprov") === "1";
+      const aDygn = arkivprov ? 99 : arkiv.length ? (Date.now() - Math.max(...arkiv)) / 86_400_000 : null;
+      rad.push(`arkivbackup: ${arkiv.length} dumpar, senaste ${aDygn === null ? "saknas" : `${aDygn.toFixed(1)} dygn`} (gräns ${ARKIVBACKUP_MAX_DYGN})${arkivprov ? " — PROV" : ""}`);
+      if (aDygn === null || aDygn > ARKIVBACKUP_MAX_DYGN)
+        problem.push(`**Arkivet saknar färsk backup**: senaste dump ${aDygn === null ? "finns inte" : `${aDygn.toFixed(1)} dygn gammal`} (gräns ${ARKIVBACKUP_MAX_DYGN}) — kör arkivbackup.yml med knappen; står Actions stilla är arkivet oskyddat (kort #213/#223)${arkivprov ? " — PROV, försvinner nästa timme" : ""}`);
+    } catch (e) { problem.push(`**Kunde inte läsa arkivbackupens releaser**: ${String(e)}`); }
   } catch (e) {
     // Samma regel som de andra: en blind vakt är värre än ingen.
     problem.push(`**Healthcheckens kontroller (kort #87) kunde inte köras**: ${String(e)}`);
