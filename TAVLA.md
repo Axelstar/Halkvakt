@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-20 19:40 av Claude (Cowork) — 🔑 **tre beslut av Axel** (#214 invarianten, #216 blindningen — väntar Bengts ja, #217 viltrösten; DECISIONS #264–#266); 🧪 **#212 klart** (trösklarna låsta, 36 vektorer), 💾 **#223 klart** (backupens ålder vaktad i Supabase); 🔢 **#220 klart** (beslutsnumren unika + vakt i CI, DECISIONS #259); 🔁 **#211 klart** (tredje olycksropet borta), 🔊 #210 byggt (väntar på iOS-bygge), 🧪 #212 prioritetsdelen klar (DECISIONS #258); 💾 **#213 arkivbackupen klar och bevisad** (DECISIONS #257), nytt kort #223. Tidigare samma dag: ✅ **STEG B:s VERIFY UPPFYLLD**: 141 min/dygn i snitt över 13–19/9 mot baslinjens 202, ingest oförändrat (24 körningar, median 30–36 s mot 32 s), radarsteget 4–5 s, radar_precip 3 312 rader över 24 av 24 kompositer. Kassan 21,98 USD av 35 och takdatumet är BORTA ur larmet — släpande takt 106 min/dygn, månadsprognos 31 USD.*
+*Uppdaterad: 2026-09-20 20:10 av Claude (Cowork) — 🗣️ **Axels svar på #203:s åtta frågor** (sju avgjorda, byggordningen öppen mot Bengts C, DECISIONS #267), main bekräftat byggredo; 🔑 **tre beslut av Axel** (#214 invarianten, #216 blindningen — väntar Bengts ja, #217 viltrösten; DECISIONS #264–#266); 🧪 **#212 klart** (trösklarna låsta, 36 vektorer), 💾 **#223 klart** (backupens ålder vaktad i Supabase); 🔢 **#220 klart** (beslutsnumren unika + vakt i CI, DECISIONS #259); 🔁 **#211 klart** (tredje olycksropet borta), 🔊 #210 byggt (väntar på iOS-bygge), 🧪 #212 prioritetsdelen klar (DECISIONS #258); 💾 **#213 arkivbackupen klar och bevisad** (DECISIONS #257), nytt kort #223. Tidigare samma dag: ✅ **STEG B:s VERIFY UPPFYLLD**: 141 min/dygn i snitt över 13–19/9 mot baslinjens 202, ingest oförändrat (24 körningar, median 30–36 s mot 32 s), radarsteget 4–5 s, radar_precip 3 312 rader över 24 av 24 kompositer. Kassan 21,98 USD av 35 och takdatumet är BORTA ur larmet — släpande takt 106 min/dygn, månadsprognos 31 USD.*
   💰 **RÄTTAD 13/9 (DECISIONS #160, Bengts order):** prognosen räknade på månad-till-datum, och i
   det snittet låg fem flöden som lades ner 8–9/9 (`ingest-fi`, `-no`, `-dk`, `publish-map`,
   `regn-30`). Vakten sa **21 september**; uppmätt verklig takt var 232 min/dygn senaste dygnet och
@@ -132,6 +132,24 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Verify: (1) en resa med ≥ 2 varningar besvarad med ett tryck ger lika många rader i `driver_facit`, utan att föraren
   stannat; en resa utan tryck ger noll rader;
   (2) ett svar via Siri med `app = ios` och varningens klockslag.
+  🔑 **AXELS SVAR PÅ §8, 20/9 kväll (via Cowork, DECISIONS #267) — sju av åtta avgjorda:**
+  **1 ja** (undantagsprincipen med underskrift; KB-D7 till Bengt) · **2 ja, alla tre** (*"låsskärmen är det viktiga —
+  föraren ska aldrig behöva öppna appen för att svara ja"*) · **3 de två första** Siri-fraserna (*stämde inte*, *appen
+  missade*; *stämde* behövs inte under körning — det är vad låsskärmen är till för) · **4 ja, medvetet ja** —
+  station-id + klockslag skickas, *"det är inte en position, men det är en position i grova drag"*; brytarens text ska
+  säga det ordagrant och produktboken uppdateras samma dag · **5 ja** (stor knapp *Appen missade*) · **6 nej** (lager 3
+  utgår) · **8 ja** (Android i samma PR).
+  ➕ **NYTT KRAV ur Axels läsning — visa varningarna i kortet:** *"Ja, alla stämde"* efter tre timmars körning svarar i
+  dag på ett TAL (*3 varningar*), inte på något föraren ser. Kortet på *Redo.* ska visa de tre raderna — klockslag och
+  text — så att ett tryck är ett svar på något läst. Kostar en vy. **Gör inte KB-D7-kontrollen onödig** (vanan finns
+  kvar att mäta, och kontrollen kostar ingenting i domen) men gör den mindre bärande.
+  ⚠️ **BESLUT 7 (byggordningen) ÄR INTE AVGJORT — Axel svarade A, Bengt beslutade C 20/9 (DECISIONS #242).** Axels skäl:
+  sändkanalen från en riktig telefon har aldrig bevisats, och att lägga ny funktion ovanpå en obevisad kanal är fel
+  ordning. Bengts skäl: en uppdatering i stället för två, och kanalen bevisas utan TestFlight med simulatorprovet.
+  **Simulatorprovet är fortfarande ogjort** (`driver_facit` 20/9 16:07Z: 0 riktiga svar, 2 provrader — ingen
+  `cam:fotostudio`). **Nytt sedan båda svaren skrevs:** motorfixarna #210 (*"på väg &lt;null&gt;"*) och #211 (tredje
+  olycksropet) ligger i main sedan i kväll och når en telefon bara genom ett bygge — ett skäl för A som varken
+  underlaget eller #242 kände till. Se DECISIONS #267.
 - [ ] ⏰ **#86 NYCKELKALENDERN — två nycklar går ut mitt i säsongen** (Axels fynd 9/9, kort av Claude):
   ⚠️ **18/9 — ett fjärde ställe, okänt om samma nyckel:** pulsklockans jobb i Supabase pg_cron bär en GitHub-nyckel i
   sina kommandon (körningarna startas av *Axelstar*). Går den ut stannar ingest, grannar, healthcheck, marknadsföringen och
@@ -467,9 +485,16 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   `git pull` · `cd ios/HalkvaktApp && xcodegen` · Edit Scheme → Run → Arguments → `-fotostudio_facit` · kör i simulatorn ·
   fliken Vakten · **tryck *Stämde*** · raden under ska bli grön *Skickat …* (gul = felet står där, skicka texten). Ta bort
   argumentet. Claude läser raden i `driver_facit`. Två minuter, ingen arkivering.
-  📋 **ARKIVERA NU — kontrollerat 20/9 (Bengts fråga: vad behöver Axel göra?):** bygg från **main @ 79e4195 eller senare** —
-  `git diff 79e4195..origin/main -- ios/ android/ engine/` är TOM (bara text och serverkod sedan dess); ios-engine ✅ och ci ✅
-  på 79e4195, android ✅ på 8026aa9 (oförändrad). Steg: `git pull` · `cd ios/HalkvaktApp && xcodegen` · välj Team igen ·
+  📋 **ARKIVERA NU — OMKONTROLLERAT 20/9 kväll (Axels fråga: är main byggredo?):** **ja.** ci ✅, ios-engine ✅ och
+  android ✅ på **88dd32c**, och allt som pushats därefter är dokument (`git diff --stat 88dd32c..HEAD` rör bara .md).
+  ⚠️ **Raden ovanför gällde till i kväll och är nu fel:** `git diff 79e4195..HEAD -- ios/ android/ engine/` är INTE längre
+  tom — den bär motorfixarna #210, #211, #212 (SnapshotRepo.swift, Engine.swift, Engine.kt, engine/src, tolv nya vektorer).
+  Det är gott nytt: ett 0.3.8 som arkiveras nu **säger en olycka utan vägnummer rätt** och ropar det tidiga olycksropet
+  en gång i stället för två. Lägg till i tvåminuterskontrollen: en olycka utan vägnummer ska INTE säga *"på väg null"*.
+  ⚠️ **Enda oprövade biten:** `SnapshotRepo.swift` ligger i APP-målet, och inget flöde i CI kompilerar app-målet
+  (ios-engine kör `swift test` på motorpaketet, på Linux). Ändringen är en rad och typen stämmer (`road: String?` i
+  PointMeta ⇒ `d["road"] as? String`), men första kompileringen sker i din Xcode. Faller den: skicka felraden.
+  Steg: `git pull` · `cd ios/HalkvaktApp && xcodegen` · välj Team igen ·
   **TVÅMINUTERSKONTROLLEN som hade fångat 0.3.7:** Edit Scheme → Run → Arguments → `-fotostudio_facit`, kör i simulatorn,
   fliken Vakten ska visa *Stämde / Stämde inte* under raden längst ner — **TITTA, TRYCK INTE** (kort #205) — ta bort
   argumentet · Any iOS Device (arm64) → Product → Archive · Organizer ska visa **0.3.8 (11)** · Distribute → App Store

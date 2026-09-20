@@ -7756,3 +7756,50 @@ då). Alternativ som valdes bort: bygga artläsaren nu (större bygge före ett 
 **Bygg, nästa varv, i EN commit:** `engine/src/texts.ts` + Kotlin + Swift, vektor v13 regenereras (den enda gången en frusen
 vektor ändras är när regeln själv ändras — det är det här), skuggmotorn buntas och deployas, produktboken uppdateras
 (PRODUKTBOKSREGELN) och vektorantalet där rättas till 36.
+
+## #267 (20/9 2026) Axels svar på §8 i FACIT-EFTER-RESAN — sju av åtta avgjorda, byggordningen står öppen (kort #203)
+
+**Axel svarade 20/9 kväll via Cowork**, på beslutsunderlaget `docs/FACIT-EFTER-RESAN.md` (skrivet 19/9). Sju svar följer
+rekommendationen och är därmed avgjorda; ett krockar med ett beslut Bengt tog 20/9, och ett nytt krav tillkom.
+
+**Avgjort:**
+1. **Undantagsprincipen med underskrift — ja.** Axels skäl är fälttesterna, inte principen: *"med tystnad som ja hade
+   två resor med en trasig app bokförts som bekräftelser."* KB-D7 (*ett svar är en handling; tystnad är inget svar*)
+   går till Bengt för TROSKLAR-KOMBINATIONEN.
+2. **Placeringen — ja, alla tre.** *"Låsskärmen är det viktiga. Föraren ska aldrig behöva öppna appen för att svara ja."*
+3. **Siri — de två första fraserna.** *stämde inte* och *appen missade* kan inte vänta till efter resan; *stämde*
+   behövs inte under körning, det är vad låsskärmen är till för. (Underlaget föreslog samma.)
+4. **Missarna — ja, som ett medvetet integritetsbeslut.** Axel skrev ut vad han sa ja till: *"station-id plus klockslag
+   säger ungefär var föraren var … det är inte en position, men det är en position i grova drag."* Villkor: brytarens
+   text säger det ordagrant, och produktboken uppdateras samma dag. **Faller in under kvällens omskrivna invariant
+   (#264):** ingenting lämnar telefonen utan förarens aktiva val — missen är ett tryck, inte ett spår.
+5. **Stor knapp *Appen missade* — ja.** Androids enda väg, iPhones reserv.
+6. **Lager 3 (knappar i körläget vid stillastående) — nej.** Utgår ur första bygget.
+8. **Android i samma PR — ja.**
+
+**Nytt krav, Axels eget tillägg: kortet ska visa varningarna, inte räkna dem.** *"Ja, alla stämde" efter tre timmars
+körning — minns föraren de tre varningarna?* Kortet på *Redo.* visar i förslaget *"3 varningar"*; det ska i stället
+visa de tre raderna med klockslag och text, så att trycket är ett svar på något föraren läser. Kostar en vy.
+**Bedömning:** rätt, och det gör KB-D7-kontrollen mindre bärande — men inte onödig. Vanan att trycka *Ja, alla* utan
+att läsa finns kvar, kontrollen (jämför *Ja, alla*-resor mot rad-för-rad-resor) kostar ingenting i domen, och en
+kontroll som tas bort för att designen blev bättre är den sortens skydd huset redan förlorat en gång. Båda behålls.
+
+**Öppet — beslut 7, byggordningen.** Axel svarade **A** (0.3.8 ut nu, #203 i 0.3.9): *"sändkanalen från en riktig
+telefon har aldrig bevisats … att vänta och bygga allt i ett är att lägga en obevisad kanal under en ny funktion."*
+Bengt beslutade **C** samma dag (#242): ett sammanhållet bygge, kanalen bevisad utan TestFlight genom simulatorprovet.
+Underlaget Axel läste var 19/9-versionen — det rekommenderade C först efter Bengts invändning 20/9, och regeln hette
+då ännu KB-D5 (rättat till KB-D7 samma dag, #242). **Två fakta som ingen av de två svaren kände till:**
+- **Simulatorprovet är ogjort.** `driver_facit` 20/9 16:07Z: 0 riktiga svar, 2 provrader, ingen `cam:fotostudio`.
+  C:s billiga kanalbevis har alltså inte tagits ut, och C:s fördel framför A är så länge bara påstådd.
+- **Motorfixarna ligger i main sedan i kväll.** #210 (iOS sade *"på väg &lt;null&gt;"* vid var tjugonde olycka) och
+  #211 (tredje olycksropet) når en telefon bara genom ett bygge. Det gör A till mer än ett kanalprov: det är vägen som
+  får två hörbara fel ur Bengts bil före nästa fältrunda. Det skälet fanns inte när #242 skrevs.
+
+**Ingen byggordning ändras här** — Bengts beslut står tills han och Axel talat. Frågan ligger på kort #203 med båda
+skälen och de två nya fakta.
+
+**Byggredo, kontrollerat i samma varv (Axels fråga):** ci ✅, ios-engine ✅, android ✅ på 88dd32c; allt pushat därefter
+är dokument. Den gamla raden *"diffen mot 79e4195 är tom"* på tavlan är därmed osann sedan i kväll och är rättad.
+**Enda oprövade biten:** `SnapshotRepo.swift` ligger i app-målet, som inget CI-flöde kompilerar (ios-engine kör
+`swift test` på motorpaketet, på Linux). Typen stämmer (`PointMeta.road: String?`), men första kompileringen sker i
+Axels Xcode.
