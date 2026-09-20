@@ -7261,3 +7261,38 @@ ingen incheckning har kommit från honom sedan 17/9.
 **Följd:** korten #210–#221 lagda. Två av dem bär beslut som Bengt och Axel måste ta (#214 produktinvariantens
 lydelse, #216 blindningen mot T-A). Inget är åtgärdat i det här varvet — genomlysningen var läs-only.
 
+## #250 (20/9 2026) Sex överspelade kort stängs, och ägarskapet skrivs ut på varje kort
+
+**Bengts order 20/9:** *"ja stäng de sex korten och skriv en ny lista"* — efter genomlysningen (#249), som visade att
+tavlan bär kort verkligheten sprungit förbi.
+
+**Stängda, med beviset på varje kort:**
+| Kort | Varför det var överspelat | Ålder som falskt öppet |
+| :-- | :-- | --: |
+| 5. TestFlight 0.3.5 (8) | Main bär 0.3.8 (11) sedan 18/9; byggordning C (#242) säger ETT bygge med #203 | 12 dygn |
+| #79 regn-30 | Jobbet avvecklades 9/9 (pulsklocka #11); finns inte i pulsklockans elva jobb | 11 dygn |
+| Gallringsregel för weather_observations | `gallra_vader` + `gallra_arkiv` i drift sedan 17/9, 97 472 rader raderade | 3 dygn |
+| Vegvesen DATEX-konto | Beviljat 4/9; arkivet tickar. **Kortet bar sitt eget klarbesked i brödtexten** | 16 dygn |
+| #158 Skuggloggens larm saknar position | Form A byggd och deployad 14/9 | 6 dygn |
+| #157 Kamerafacit är tomt | Rotorsaken åtgärdad; **451 objekt i hinken 20/9** | 6 dygn |
+
+Öppna kort: **102 → 96.** Axel 29 → 25, Bengt 15 → 13.
+
+**Mönstret, inte bara raderna.** Fyra av de sex bar sitt eget bevis i brödtexten och stod ändå kvar som öppna —
+TAVELREGELN punkt 3 säger att verkligheten flyttar kortet utan att fråga, och det skedde inte. Det är samma brist
+genomlysningen mätte i stort: 41 klara kort låg kvar i ATT GÖRA och 🟡-sektionen var tom.
+
+**Följd på samma order: ägarskapet skrivs ut.** Varje öppet kort ska säga om det är EXKLUSIVT en persons (kräver hans
+konto, hans underskrift, hans telefon, hans relation) eller om någon annan kan verkställa det. Skälet är Bengts fråga
+inför riktlinjemötet: 29 kort hos Axel såg ut som 29 blockeringar, men bara en del av dem kan bara han göra.
+Listan ligger i `docs/KORTLISTOR-2026-09-20.md` (även på Bengts skrivbord).
+
+**Räknat ur den listan:** av Axels 25 kort är **6 exklusivt hans** — de kräver hans konto eller hans godkännande
+(Billing, #85, PAT-rotationen #86, Pro-godkännandet #83, Play-kontot, publikt repo/minuter). **5 kräver er båda**
+(#203 med undantaget att Bengt beslutar vid tystnad 27/9, helgsamtalet, Skyltfondspaketet, rollfördelningen, #21).
+**14 kan någon annan verkställa** — Claude skriver koden, Bengt rekryterar och registrerar.
+Av Bengts 13 är **4 exklusivt hans** (TRV-anmälan #154, Skyltfondsrundan, #94, B2B-spåret), **3 kräver er båda**
+(#159, #153, sensortrappan) och **6 kan någon annan göra**.
+
+**Slutsatsen som ändrar mötet:** 29 kort hos Axel såg ut som 29 blockeringar. Sex är det.
+
