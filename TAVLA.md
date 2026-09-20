@@ -1187,7 +1187,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   `ingest/db.ts` skriver båda; integrationstestet vaktar. **Verify:** efter nästa ingestkörning har aktuella varningar
   `senast_sedd` satt och `smhi_synk` rader med innehåll. Innan N_varning mäts: fältet deklareras i värdevakten.
   ✅ **I DRIFT 17/9:** ingestkörningen 06:11Z stämplade `senast_sedd` på exakt de 15 varningar som fanns i flödet (av 157 i arkivet), och `smhi_synk` fick sin första rad (15 varningar).
-- [ ] 📜 **#198 TROSKLAR-SKUGGAN §4 MOT TRÖSKELREGELN — rättas före domen i mars 2027** (fynd 16/9, DECISIONS #220).
+- [ ] 🔨 **PÅGÅR (Claude på datorn, 20/9 15:52Z, Bengts order) — beslutsunderlag, ingen textändring utan Bengts rad** 📜 **#198 TROSKLAR-SKUGGAN §4 MOT TRÖSKELREGELN — rättas före domen i mars 2027** (fynd 16/9, DECISIONS #220).
   Domslutet (a) TALAR och (b) TALAR NÄRA ANKARE låter segmentprognosen tala på *modellerade* segment. Det krockade redan
   med den gamla meningen (FRYSKLASSNINGEN §1/§7) och krockar med T3: ett värde där ingen mätt och inget vittne på platsen
   kan fälla det får inte utlösa. Texten ska säga vad (a)/(b) då får betyda — karta, konfidens, eller tal bara där T1–T3
