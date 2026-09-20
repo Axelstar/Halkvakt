@@ -45,6 +45,28 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Ersatt av: simulatorprovet nu, och arkiveringen av 0.3.8 senast 27/9.
 - [ ] 6. Tolv testare till väntelistan (fortfarande det som avgör vintern)
 - [ ] 7. Google Play-konto (signeringen är lagad, AAB:n grön — vägen är öppen)
+  📄 **UNDERLAG SKRIVET 20/9 — allt läst på Googles egna sidor samma dag, inte ur minnet** (Bengts order,
+  DECISIONS #268): `docs/PLAY-KONTO.md`.
+  🎯 **FYNDET SOM LÄTTAR, inte tynger:** Google kräver sedan 13/11 2023 att personliga konton kör ett slutet test med
+  **tolv testare löpande i 14 dygn** före produktion — men kravet låser bara *Produktion* och *Förhandsregistrering*.
+  **Slutet test kan startas så snart appen är konfigurerad.** Novemberbetan ÄR det slutna testet, och S5:s tolv
+  testare är samma tolv Google räknar. Kontot blockerar alltså inte betan — det sätter en klocka: publik release
+  tidigast fjorton löpande dygn efter att de tolv är på plats.
+  ⚖️ **VALET SOM MÅSTE GÖRAS FÖRE REGISTRERINGEN — kontotypen väljs en gång:**
+  · **Personligt:** direkt, ingen ledtid. Kräver tolv testare × 14 dygn före produktion. Visar en PRIVATPERSONS
+    juridiska namn och land på Google Play.
+  · **Organisation:** inget testkrav, men kräver **DUNS-nummer — upp till 30 dagar** — plus organisationens namn,
+    adress, telefon och **webbplats**. Föreningen finns inte än (Skyltfondspaketets obesvarade fråga), och 30 dagar
+    från i dag är 20 oktober, tio dagar före betan.
+  **Rekommendation: personligt konto nu.** Migrering till organisation senare är en öppen fråga jag INTE verifierat —
+  behandla den som okänd, inte som given.
+  💰 Avgiften är **25 USD en gång**, kredit- eller bankkort (läst på Googles sida 20/9).
+  ⛔ **FÖRE FÖRSTA UPPLADDNINGEN, inte före registreringen:** #214 Data Safety-deklarationen är osann sedan 16/9 —
+  en felaktig deklaration är grund för avslag mitt i facitfönstret. Och jks-filen ska ligga i iCloud INNAN första
+  uppladdningen: efter den är nyckeln bunden hos Google (CLAUDE.md).
+  🔑 **VÄNTAR PÅ ER:** vem äger kontot, och vilken typ. Frågan står i bedömningen §4.2.
+  Verify: konto registrerat, avgift betald, identitet verifierad — och ett internt test med en AAB ur CI som når en
+  telefon utanför projektet.
 
 **Beslut som väntar, inte brådskande (med Bengt):**
 - [x] ~~#79 regn-30: mät innan den väcks~~ **STÄNGT 20/9 SOM ÖVERSPELAT** (DECISIONS #250): jobbet AVVECKLADES 9/9

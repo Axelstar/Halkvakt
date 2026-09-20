@@ -7803,3 +7803,36 @@ skälen och de två nya fakta.
 **Enda oprövade biten:** `SnapshotRepo.swift` ligger i app-målet, som inget CI-flöde kompilerar (ios-engine kör
 `swift test` på motorpaketet, på Linux). Typen stämmer (`PointMeta.road: String?`), men första kompileringen sker i
 Axels Xcode.
+
+## #268 (20/9 2026) Play-kontot: underlaget skrivet ur källan — testkravet låser produktion, inte betan
+
+**Bengts order 20/9:** *"hjälp mej sätta upp ett google play konto"* och *"plocka upp kortet … och börja utföra"*.
+Underlaget ligger i `docs/PLAY-KONTO.md`. **Allt är läst på Googles egna hjälpsidor samma dag**, enligt CLAUDE.md:s läxa
+om att en instruktion till Bengt eller Axel ska vara läst på källsidan — reglerna ändrades 13/11 2023 och ett minne
+hade varit fel.
+
+**Fyndet som lättar i stället för att tynga.** Google kräver att personliga konton skapade efter 13/11 2023 kör ett
+slutet test med **minst tolv testare som deltagit löpande i minst 14 dagar** innan produktionskanalen öppnas. Men samma
+sida säger att kravet bara låser *Produktion* och *Förhandsregistrering*, och att **slutet test kan startas så snart
+appen är konfigurerad**. **Novemberbetan ÄR det slutna testet**, och S5:s tolv testare är samma tolv Google räknar.
+Kontot blockerar alltså inte betan. Det sätter en klocka: publik release tidigast fjorton löpande dygn efter att de
+tolv är på plats — och bara om alla tolv är kvar hela tiden.
+
+**Valet som måste göras före registreringen, för kontotypen väljs en gång:**
+- **Personligt:** ingen ledtid, 25 USD engångsavgift. Kräver tolv × 14 dygn före produktion. Visar en **privatpersons**
+  juridiska namn och land på Google Play.
+- **Organisation:** inget testkrav, men **DUNS-nummer tar upp till 30 dagar**, och kräver organisationens namn, adress,
+  telefon och webbplats. Föreningen finns inte än — det är samma obesvarade fråga som i Skyltfondspaketet, och 30 dagar
+  från i dag är 20 oktober, tio dagar före betan.
+
+**Rekommendation: personligt konto nu.** Organisationen finns inte, DUNS-ledtiden äter marginalen, och betan blockeras
+inte. **Migrering till organisation senare är INTE verifierad** — den behandlas som okänd, inte som given. Apple-kontot
+är Individual i Axels namn, så två olika säljare för samma app vore ett val, inte en slump.
+
+**Ordningen som följer:** kontot kan registreras i dag, men **första uppladdningen bör vänta tills #214 är rättad** —
+en osann Data Safety-deklaration är grund för avslag mitt i det enda facitfönster vintern ger. Och jks-filen ska ligga
+i iCloud innan första uppladdningen: efter den är nyckeln bunden hos Google.
+
+**Vad Claude inte gör:** skapar inte kontot, godkänner inte avtalet, betalar inte avgiften, anger inga
+identitetsuppgifter och loggar inte in. Det är ägarens, och det är avsiktligt.
+
