@@ -1052,6 +1052,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   för alltid, och både januari- och marsdomen vilar på arkivet. Supabase Pro är schemalagt till 1/11 och skyddar först därifrån.
   Verify: en veckovis dump som landar utanför Supabase (artefakt eller Bengts disk), med storlek och radantal i loggen, plus en
   bevisad återläsning av minst en tabell.
+  🔨 **PÅGÅR 20/9 (Claude via Cowork, Axels order: "vi börjar att göra backupen nu"):** flödet `arkivbackup.yml` — veckovis
+  pg_dump över sessionspoolern till en GitHub-release i repot (utanför Supabase), radantal per tabell i loggen, återläsning i en
+  PostGIS-container med radantalen jämförda mot källan, larm-issue vid fel. Första körningen görs för hand i dag.
 
 - [ ] 📵 **#214 PLAY-DEKLARATIONEN ÄR OSANN SEDAN 16/9** (genomlysningen 20/9). `docs/PLAY-DATASAFETY.md` svarar **"No"** på
   Googles insamlingsfråga och påstår att enda utgående trafik är en GET utan parametrar. Filen rördes senast **27/8**. Sedan 16/9
