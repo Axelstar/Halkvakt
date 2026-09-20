@@ -986,6 +986,40 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [ ] 🏷️ **#224 TAVLANS SEKTIONER STÄMMER INTE MED VERKLIGHETEN — 23 av 32 "olåsta" är det inte** (fynd 20/9 när
+  Bengt bad om listan på vad som kan göras nu, DECISIONS #261). Sektionen *Claude — olåst* läses som *"det här kan
+  Claude göra utan att fråga någon"*. Räknat kort för kort stämmer det för **nio**. Resten fördelar sig så här:
+  · **7 kräver ett beslut av er först** — #214 (invariantens lydelse), #216, #198, #151, #146, #32, och #185/#186 vars
+    EGEN text säger *"väntar på Bengts och Axels"*. De är alltså inte olåsta, de är låsta av er.
+  · **5 väntar på vädret** — #209, #192, #51, #46, #45. De hör hemma i *Claude — låst*, där väderlåsta kort redan står.
+  · **4 väntar på en händelse** — #160 (bevisas 21/9), #152 (bevakar taket till 1/10), #52 (når telefonerna med nästa
+    bygge), #44.
+  · **4 är överspelade** — #53 (Actions-krisen 5/9), minutbantningen, #43, och delar av flera andra.
+  · **3 ser byggda ut men står öppna** — se kort #225.
+  🎯 **VARFÖR DET SPELAR ROLL:** en sektion som ljuger gör listan obrukbar för planering. Frågan *"vad kan göras nu"*
+  fick svaret 32, och det rätta svaret var 9. Skillnaden är inte akademisk — den avgör om ett arbetspass planeras på
+  en dag eller på en vecka, och den döljer att **sju kort i praktiken väntar på Bengt och Axel** utan att stå i någon
+  av deras sektioner.
+  🧭 **MÖNSTRET, femte gången på ett dygn:** #250 sex överspelade kort · #252 två dubbletter · #254 #50 · #256 #76 ·
+  nu det här. Alla har samma form: förutsättningen ändrades och kortet stod kvar. TAVELREGELN punkt 3 säger att
+  verkligheten flyttar kortet utan att fråga — men ingen rutin läser sektionerna mot korten.
+  Verify: varje kort i *Claude — olåst* uppfyller sin egen etikett — inget väntar på ett beslut, på vädret eller på en
+  händelse, och inget är överspelat. De överspelade stängda med bevisraden. Antalet i sektionen står i bedömningen §0b
+  så att nästa avvikelse syns.
+
+- [ ] 🔍 **#225 TRE KORT SER BYGGDA UT MEN STÅR ÖPPNA — verifiera och stäng eller skriv vad som fattas** (fynd 20/9,
+  DECISIONS #261). Den parallella sessionen har commits för alla tre i dag, men korten är kvar som öppna:
+  · **#223** arkivbackupens ålder — commit `7310837` *"vakthunden vaktar arkivbackupens ålder utanför Actions
+    (check 9j, gräns 8 dygn, prov ?arkivprov=1)"*.
+  · **#210** iOS säger "på väg &lt;null&gt;" — commit `9d3f56c` bär fixen, och `73dca67` säger uttryckligen
+    *"#211 stängt, #210 byggt"*. Att det inte stängdes kan vara **avsiktligt**: felet hörs i en telefon, och ett
+    bygge som bevisar det finns inte än. Står det så ska kortet SÄGA det.
+  · **#212** vektorsviten — commit `88dd32c` *"trösklarna låsta med nio vektorer och en känslighetsmätning i repot"*.
+  ⚠️ **Rör dem inte utan att läsa commiten först.** Det här kortet finns för att INGEN ska bygga om något som redan
+  är byggt — det kostade två stängda PR:er tidigare i dag (#407, #408).
+  Verify: varje av de tre är antingen stängt med sin commit som bevis, eller bär en rad som säger exakt vad som
+  återstår och vem som äger det.
+
 
 - [ ] 🔊 **#210 iOS SÄGER "PÅ VÄG <NULL>" — var tjugonde olycka** (genomlysningen 20/9). `SnapshotRepo.swift:117` gör JSON-`null`
   till strängen `"<null>"`, och `road` läses med just den funktionen (rad 68). Kotlin och TypeScript gör rätt — iOS är ensamt fel.
