@@ -334,6 +334,110 @@ const scenarios: Scenario[] = [
     ],
     trace: northTrace(180, 80),
   },
+  // ── Trösklarna (kort #212, genomlysningen 20/9): känslighetsanalysen visade att korridorvinkeln kunde vara
+  // 5°–90°, reprisavståndet 0–50 000 m, bäringstoleransen 60°–150°, lägsta farten 5–50 och kortaste förvarningen
+  // 0–400 m utan att en enda vektor reagerade. Varje par nedan låser ett värde från båda hållen; marginalerna
+  // är uppmätta med scripts/matningar/vektorkanslighet-2026-09-20.ts, inte valda.
+  {
+    file: "v28_corridor_33deg_speaks", name: "Korridoren: 33° från kursen är framför oss (#212)",
+    description:
+      "80 km/h norrut. Olycka 3 000 m fram och 1 948 m österut = bäring 33,0° vid start, 33,2° vid t=1 — innanför " +
+      "korridorens 35°. Talar t=1. Bäringen växer sedan (39,8° vid t=30) men olyckan är redan sagd. Låser " +
+      "korridorhalvvinkeln underifrån: under 33,2° blir vektorn tyst.",
+    hazards: [{ id: "acc1", kind: "accident", lon: eastOf(1948), lat: northOf(3000) }],
+    trace: northTrace(60, 80),
+  },
+  {
+    file: "v29_corridor_37deg_silent", name: "Korridoren: 37° från kursen är INTE framför oss (#212)",
+    description:
+      "Samma resa, olyckan 2 261 m österut = bäring 37,0° vid start, 37,2° vid t=1 — utanför 35°, och bäringen " +
+      "växer bara när vi kör förbi. Helt tyst. Låser korridoren ovanifrån: från 37,2° skulle den tala.",
+    hazards: [{ id: "acc1", kind: "accident", lon: eastOf(2261), lat: northOf(3000) }],
+    trace: northTrace(120, 80),
+  },
+  {
+    file: "v30_repeat_needs_5km", name: "Reprisregeln: 10 minuter räcker inte, 5 km krävs också (#212)",
+    description:
+      "Kamera utan riktning 1 000 m norrut (bara reprisregeln skyddar, som v06). 80 km/h norr till 2 000 m, " +
+      "STÅR STILL 600 s (fart 0 — inget utvärderas, klockan går, vägmätaren står), söder till 0, norr till 2 000, " +
+      "söder till 0. Kameran talar t=23. Söderut t≈713: 690 s har gått men bara 2 000 m körts ⇒ tyst. Norrut " +
+      "t≈803: 4 000 m ⇒ tyst. Söderut t≈893: 6 000 m OCH 870 s ⇒ talar igen. Låser reprisavståndet mellan " +
+      "4 000 och 6 000 m; v06 låste bara att 3 minuter/4 km är tyst.",
+    hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(1000), bearing: null }],
+    trace: (() => {
+      const mps = (80 * 1000) / 3600;
+      const out: Fix[] = [];
+      let t = 0;
+      const leg = (fromM: number, toM: number) => {
+        const n = Math.round(Math.abs(toM - fromM) / mps);
+        for (let k = 1; k <= n; k++) out.push({ t: ++t, lon: LON0, lat: northOf(fromM + ((toM - fromM) * k) / n) });
+      };
+      out.push({ t: 0, lon: LON0, lat: northOf(0) });
+      leg(0, 2000);
+      const stopLat = out[out.length - 1].lat;
+      for (let k = 0; k < 600; k++) out.push({ t: ++t, lon: LON0, lat: stopLat, speedKmh: 0 });
+      leg(2000, 0); leg(0, 2000); leg(2000, 0);
+      return out;
+    })(),
+  },
+  {
+    file: "v31_repeat_needs_10min", name: "Reprisregeln: 5 km räcker inte, 10 minuter krävs också (#212)",
+    description:
+      "Samma kamera (1 017 m, utan riktning), 120 km/h fram och tillbaka över 4 km, sex vändor. Talar t=16. Sedan " +
+      "passeras kameran var 120:e sekund med tusentals meter på mätaren, men tyst tills 600 s gått: t≈195 (179 s), " +
+      "t≈256, t≈435, t≈496 tysta; t≈675 (659 s, 21 km körda) talar. Låser reprisTIDEN mellan 496 och 659 s.",
+    hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(1017), bearing: null }],
+    trace: (() => {
+      const mps = (120 * 1000) / 3600;
+      const out: Fix[] = [{ t: 0, lon: LON0, lat: northOf(0) }];
+      let t = 0;
+      const leg = (fromM: number, toM: number) => {
+        const n = Math.round(Math.abs(toM - fromM) / mps);
+        for (let k = 1; k <= n; k++) out.push({ t: ++t, lon: LON0, lat: northOf(fromM + ((toM - fromM) * k) / n) });
+      };
+      for (let i = 0; i < 3; i++) { leg(0, 4000); leg(4000, 0); }
+      return out;
+    })(),
+  },
+  {
+    file: "v32_camera_bearing_55deg_speaks", name: "Bäringstoleransen: 55° från kursen bevakar oss (#212)",
+    description:
+      "Som v21 men kameran bevakar färdriktning 55° (bearing 235 ⇒ fotar 55°). Inom 60° ⇒ talar t=113. v21:s " +
+      "40° låg 20° från gränsen; det här låser toleransen underifrån med 5° marginal.",
+    hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(3000), bearing: 235 }],
+    trace: northTrace(180, 80),
+  },
+  {
+    file: "v33_camera_bearing_65deg_silent", name: "Bäringstoleransen: 65° från kursen är en annan väg (#212)",
+    description:
+      "Kameran bevakar färdriktning 65° (bearing 245). Utanför 60° ⇒ tyst hela resan. v20:s 175° låg 115° från " +
+      "gränsen — det förkastade 100° passerade. Låser toleransen ovanifrån med 5° marginal.",
+    hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(3000), bearing: 245 }],
+    trace: northTrace(180, 80),
+  },
+  {
+    file: "v34_min_speed_14_silent", name: "Fartspärren: 14 km/h utvärderas inte (#212)",
+    description:
+      "Telefonen rapporterar 14 km/h och kurs 0 (KONTRAKT: speedKmh skickas alltid när den finns). Kamera 300 m " +
+      "rakt fram. Under 15 ⇒ tyst. v12 låste bara 0–2 km/h.",
+    hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(300), bearing: 180 }],
+    trace: Array.from({ length: 61 }, (_, t) => ({ t, lon: LON0, lat: northOf(t * (14 * 1000) / 3600), speedKmh: 14, headingDeg: 0 })),
+  },
+  {
+    file: "v35_min_speed_16_speaks", name: "Fartspärren: 16 km/h utvärderas (#212)",
+    description: "Samma som v34 i 16 km/h. Över 15 ⇒ kameran talar t=0. Låser lägsta farten mellan 14 och 16.",
+    hazards: [{ id: "cam1", kind: "camera", lon: LON0, lat: northOf(300), bearing: 180 }],
+    trace: Array.from({ length: 61 }, (_, t) => ({ t, lon: LON0, lat: northOf(t * (16 * 1000) / 3600), speedKmh: 16, headingDeg: 0 })),
+  },
+  {
+    file: "v36_lead_min_400m", name: "Kortaste förvarningen: 400 m även i låg fart (#212)",
+    description:
+      "40 km/h (11,1 m/s ⇒ 30 s = 333 m) mot isstation 1 017 m fram. Förvarningen klampas till golvet 400 m: " +
+      "talar t=56 vid 394 m (marginal 5,4 m före / 5,7 m efter fixen, uppmätt). Med golvet 333 eller lägre " +
+      "hade den talat t=62; med golvet 411 eller högre t=55. Låser leadMinM.",
+    hazards: [{ id: "wx1", kind: "icing_point", lon: LON0, lat: northOf(1017), meta: { surfaceTempC: -1, moisture: true } }],
+    trace: northTrace(120, 40),
+  },
 ];
 
 /** Canonical replay-with-updates — the reference all three test runners mirror. */
