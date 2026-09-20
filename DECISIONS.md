@@ -7417,3 +7417,41 @@ kort med fyra framkallade fel som Verify.
 men kräver en deploy av funktionen och en ny tabell; `net._http_response` bär redan spåret. · behålla #50 öppet tills
 allt i genomlysningen är åtgärdat — avvisat: kortet är 130 rader från 4 september, och en fråga per kort är hela poängen.
 
+## #255 (20/9 2026) Kort #222 byggt, deployat och bevisat — vakthunden ljuger inte längre om fyra saker
+
+**Bengts order 20/9:** *"kör 222 och stäng sedan vad som ska stängas"*.
+
+**Fyra tätningar (PR #402), alla i drift efter deploy 11:2xZ:**
+1. **Check 1 mätte bara `synced_at`**, som sätts vid varje lyckat ANROP — en fastfrusen `last_change_id` såg kärnfrisk
+   ut. Nu jämförs livemotorns kursor mot GitHub-ingestens: samma ström, två kursorer, och faller den snabba bakom den
+   långsamma har kursorn slutat röra sig. **Ingen historik behöver sparas.** Jämförelsen görs i SQL — changeid är 19
+   siffror och spräcker JavaScripts heltal.
+2. **Check 9c krävde färre än 4 källor** i `sync_state`, men det finns fem och rader raderas aldrig: villkoret kunde
+   aldrig bli sant. Nu en namngiven lista, så ett bortfall larmar med källans namn.
+3. **Check 9d läste cron-statusen** för ingest-live; pg_net är asynkront, så `succeeded` betyder *lades i kö*.
+   Kommentaren säger nu det rakt ut, och **effekten mäts bredvid**: rör sig `situation_archive` inom 30 min?
+4. **Mätvakten räknade aldrig pulsjobben mot listan** — ett avaktiverat jobb föll tyst ur bevakningen. Nu ett golv, och
+   en **hängande** körning (inget utfall än) larmar i stället för att passera både utfalls- och ålderstestet.
+
+**Bevis EFTER deploy, med funktionens eget larmprov — inte med commit-hashen.** Lokala filen diffades mot main före
+deploy (noll skillnad, CLAUDE.md:s regel). Fyra nya rader med innehåll: `kursorer road_conditions: live 848028 · arkiv
+848028` · `sync_state: 5 källor (väntade 5)` · `livemotorns effekt: situation_archive rörd för 3 min sedan (gräns 30)`
+· `pulsjobb: 11 aktiva (golv 11)`.
+
+**Varje check bevisad att den DISKRIMINERAR** (motfrågor mot drift, inget rört): kursorn larmar inte nu men larmar om
+arkivet går ett steg före · 9c ger tom lista nu men namnger en källa som saknas · effekten ger `1 min` nu, **`null` om
+arkivet vore tomt** och **`47` om inget rörts på 45 min** · pulsgolvet larmar vid 12 men inte vid 11.
+
+**`PULS_GOLV` är en kopia** — vakthunden kör i Deno hos Supabase och kan inte importera pulsklockans TypeScript. Därför
+under kontrakt (39 håller, värde 11), och pulsklockan vaktar dessutom själv att `ANTAL_NYA` stämmer med `NYA`. Två
+motprov: 11→12 fäller grinden; ett struket jobb utan ändrat tal fäller pulsklockans självkontroll.
+
+**Stängt: #222.** Öppna kort 95 → 94.
+
+**Inte stängt, med skäl: #76** (*vakthunden mäter fel led*). Manifest-sha-kontrollen är bevisligen i drift
+(`manifest: 2 min | sha stämmer`), men kortets egen Verify kräver att vakthunden **larmat OCH tystnat på RIKTIGA data**
+— inte på ett larmprov. Det villkoret är inte uppfyllt, och kortet säger uttryckligen *"inte förr"*.
+
+**Kvar som egen sak:** `runs?per_page=1` tar fortfarande senaste körningen oavsett trigger, så en manuell
+knapptryckning kan nollställa mätvaktens klocka. Litet, kräver en till deploy, tas när något annat ändå rör vakthunden.
+
