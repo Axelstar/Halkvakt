@@ -165,6 +165,10 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
                 if (earlySpoken) AccidentStep.REMINDER else AccidentStep.LATE,
             )
         }
+        // #211 (20/9): reprisregeln galler per alertKey, och vid lag fart hann "#early" ATERARMERAS innan
+        // 2 km-gransen nåddes — tre repliker vid 45 km/h over 11 km. Tvastegsropet ska vara exakt tva
+        // (DECISIONS #28). Det tidiga ropet bar omvagsbeslutet; ar det fattat ar en upprepning bara brus.
+        if (fired.containsKey("${p.id}#early")) return null
         return Candidate(p, HazardKind.ACCIDENT, distM, "${p.id}#early", AccidentStep.EARLY)
     }
 

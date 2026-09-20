@@ -206,6 +206,21 @@ const scenarios: Scenario[] = [
     trace: northTrace(380, 90),
   },
   {
+    // #211 (20/9): reprisregeln (10 min OCH 5 km) gäller per alertKey. Vid LÅG fart hann `#early`
+    // återarmeras innan 2 km-gränsen nåddes, och tvåstegsropet blev TRE repliker — i strid med
+    // DECISIONS #28 och med engine.test.ts:s egen invariant. Geometrin är v15:s, farten halverad.
+    // MARGINALEN, mätt som femmetersregeln kräver: early fyrar vid t=82 s (10 000 m), återarmningen
+    // hade inträffat vid t=682 s på 2 494 m — nästan 500 m INNANFÖR 2 km-gränsen, alltså inte ett
+    // gränsfall utan mitt i den gren som inte får upprepa sig.
+    file: "v25_accident_slow_drive_still_two", name: "Allvarlig olycka i låg fart: fortfarande EXAKT två repliker",
+    description:
+      "Samma olycka som v15 (severity 5, 11 019 m fram, E4) men 45 km/h i stället för 90. Resan tar 760 s, " +
+      "så repriskravet 10 min + 5 km hinner uppfyllas för det tidiga ropet medan föraren ännu är utanför 2 km. " +
+      "Vektorn låser att det ändå blir TVÅ repliker: det tidiga ropet en gång, och påminnelsen innanför 2 km.",
+    hazards: [{ id: "acc1", kind: "accident", lon: LON0, lat: northOf(11_019), meta: { severityCode: 5, endTimeLocal: "14:20", road: "E4" } }],
+    trace: northTrace(760, 45),
+  },
+  {
     file: "v16_accident_serious_late_join", name: "Allvarlig olycka: påhoppad innanför 2 km",
     description:
       "Föraren svänger ut 1 900 m före en allvarlig olycka och hörde aldrig det tidiga ropet. Påminnelsetexten " +

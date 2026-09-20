@@ -251,6 +251,11 @@ export class AlertEngine {
         step: earlySpoken ? "reminder" : "late",
       };
     }
+    // #211 (20/9): reprisregeln (10 min OCH 5 km) gäller per alertKey, och vid låg fart hann `#early`
+    // ÅTERARMERAS innan 2 km-gränsen nåddes — uppmätt: tre repliker vid 45 km/h över 11 km. Tvåstegsropet
+    // ska vara exakt två (DECISIONS #28), och det står redan i test/engine.test.ts. Det tidiga ropet bär
+    // omvägsbeslutet; har det sagts en gång är beslutet fattat, och en upprepning är bara brus.
+    if (this.fired.has(`${p.id}#early`)) return null;
     return { hazard: p, kind: "accident", distM, alertKey: `${p.id}#early`, step: "early" };
   }
 

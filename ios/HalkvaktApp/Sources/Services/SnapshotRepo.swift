@@ -65,7 +65,11 @@ enum SnapshotRepo {
                               lon: dbl(d, "lon"), lat: dbl(d, "lat"), bearing: nil,
                               meta: PointMeta(severityCode: optInt(d, "sev"),
                                               endTimeLocal: d["slut"] as? String,
-                                              road: str(d, "road"))))
+                                              // #210: LÄS ALDRIG road MED str(). JSON-null är NSNull, inte String,
+                                              // och str() gjorde den till strängen "<null>" ⇒ rösten sa "på väg <null>".
+                                              // `as? String` ger nil för både saknad och null — samma sak som Kotlins
+                                              // isNull-vakt, och typsystemet gör felet omöjligt i stället för osannolikt.
+                                              road: d["road"] as? String)))
         }
         return Snapshot(hazards: out, generatedAt: gen)
     }
@@ -114,7 +118,14 @@ enum SnapshotRepo {
 
     // MARK: - JSON-plockare (speglar org.json-anropens tolerans)
     private static func arr(_ d: [String: Any], _ k: String) -> [[String: Any]] { d[k] as? [[String: Any]] ?? [] }
-    private static func str(_ d: [String: Any], _ k: String) -> String { d[k] as? String ?? "\(d[k] ?? "")" }
+    // #210 (20/9): fallback-grenen stringifierade ALLT som inte var String — även NSNull, som blev "<null>".
+    // Den finns för att id-fält ibland kommer som tal. NSNull undantas nu uttryckligen: ett saknat eller
+    // nullat fält ska bli tomt, aldrig ett ord rösten kan läsa upp.
+    private static func str(_ d: [String: Any], _ k: String) -> String {
+        if let s = d[k] as? String { return s }
+        guard let v = d[k], !(v is NSNull) else { return "" }
+        return "\(v)"
+    }
     private static func dbl(_ d: [String: Any], _ k: String) -> Double { (d[k] as? NSNumber)?.doubleValue ?? 0 }
     private static func optDbl(_ d: [String: Any], _ k: String) -> Double? { (d[k] as? NSNumber)?.doubleValue }
     private static func optInt(_ d: [String: Any], _ k: String) -> Int? { (d[k] as? NSNumber)?.intValue }

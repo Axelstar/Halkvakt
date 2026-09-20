@@ -286,7 +286,11 @@ public final class AlertEngine {
                                                     alertKey: "\(p.id)#near",
                                                     step: earlySpoken ? .reminder : .late,
                                                     endTimeLocal: p.meta.endTimeLocal, road: p.meta.road))
-                    } else {
+                    } else if fired["\(p.id)#early"] == nil {
+                        // #211 (20/9): reprisregeln gäller per alertKey, och vid låg fart hann "#early"
+                        // ÅTERARMERAS innan 2 km-gränsen nåddes — tre repliker vid 45 km/h över 11 km.
+                        // Tvåstegsropet ska vara exakt två (DECISIONS #28). Har det tidiga ropet sagts
+                        // är omvägsbeslutet fattat, och en upprepning är bara brus.
                         candidates.append(Candidate(id: p.id, kind: p.kind, distM: distM, limit: nil,
                                                     alertKey: "\(p.id)#early", step: .early,
                                                     endTimeLocal: p.meta.endTimeLocal, road: p.meta.road))
