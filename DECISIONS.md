@@ -7914,3 +7914,34 @@ ut. Bra för integriteten, obekvämt för formuläret. Tre alternativ i filen: (
 — testaren kan alltid slå av brytaren; (2) töm tabellen för perioden på begäran — trubbigt, förstör facit för alla
 andra; (3) slumpat facit-id per telefon — löser formuläret men **inför en identifierare där ingen finns i dag**, och
 det gör appen sämre på det den är bäst på. **Rekommendation: 1.** Bengt + Axel, före första uppladdningen.
+
+## #271 (20/9 2026) Play-kontot skapat — och kravet som gör en begagnad Android-telefon till en grind (kort #219, punkt 7)
+
+**Axel registrerade och betalade 20/9 18:51.** **Lagerlöf Labs**, personligt konto (enligt #268:s rekommendation),
+konto-id `7591030412981889366`. Utgivarnamnet är detsamma som i App Store Connect — en säljare för samma app i båda
+butikerna, vilket var ett av skälen mot organisationsvägen.
+
+**Kontot är skapat men inte färdigt.** Play Console kräver tre verifieringar innan något kan publiceras:
+1. **Identiteten** — officiellt ID-dokument laddas upp; Google skriver *"Verifieringen kan ta några dagar"*.
+2. **Åtkomst till en fysisk Android-enhet** — bevisas genom inloggning i Play Console-mobilappen på en riktig telefon.
+3. **Kontakttelefonnumret** — kan inte göras förrän 1 är klar.
+
+**Fyndet: punkt 2 är en grind, inte en formalitet, och den har stått öppen i 26 dygn.** DECISIONS #16 (25/8) skrev
+redan: *"Axels enda telefon är en iPhone … fysisk Android-testenhet = öppen fråga (pappa? begagnad?)"*, med
+rekommendationen begagnad Samsung Galaxy A-serie för 800–1 500 kr. Då var den en bekvämlighet för fälttest. **Nu är
+den ett publiceringskrav:** utan en Android-telefon kan kontot inte slutföras, och utan ett slutfört konto kan
+ingenting laddas upp — oavsett hur färdig appen är. Det är den billigaste grinden i hela novemberkedjan och den
+blockerar alla andra.
+
+**Samma fråga, en storlek större.** Googles slutna test kräver **tolv testare med Android-telefoner** i fjorton
+löpande dygn. Väntelistans tolv (Axels åtagande 31/8) är inte sorterade på plattform, och **Android-appen har aldrig
+körts på hårdvara** — CI kör emulator, versionen står på 0.3.1 (versionCode 4) mot iOS 0.3.8 (11). Det är samma hål
+som genomlysningens P6, men med en deadline på sig.
+
+**Ledtiderna staplas och de är seriella:** ID-verifiering (några dagar) → telefonnumret → en Android-telefon som ska
+skaffas → första uppladdningen (som väntar på #214, nu rättad) → tolv testare × 14 löpande dygn. Det är den kedjan
+som bestämmer novemberdatumet, inte när koden blir klar.
+
+**Nästa steg som inte kräver telefonen:** identitetsverifieringen kan startas i kväll, och appposten i Play Console
+kan skapas med butiksmaterialet som redan finns (`marknadsforing/butik/`: text, feature graphic 1024×500, ikon 512,
+plus skärmbilderna i `docs/produktbok/`).

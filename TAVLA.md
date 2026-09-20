@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-20 21:10 av Claude (Cowork) — 📵 **#214 Data Safety sann igen** (DECISIONS #270) + fyndet att integritetspolicyn ljuger likadant; ✅ **0.3.8 (11) uppladdad till Apple 18:38** (app-målet kompilerar, versionsspåret håller); 🚀 **byggordning A avgjord, Axel arkiverar 0.3.8** (simulatorprovet föll på Xcode; DECISIONS #269); 🗣️ **Axels svar på #203:s åtta frågor** (sju avgjorda, byggordningen öppen mot Bengts C, DECISIONS #267), main bekräftat byggredo; 🔑 **tre beslut av Axel** (#214 invarianten, #216 blindningen — väntar Bengts ja, #217 viltrösten; DECISIONS #264–#266); 🧪 **#212 klart** (trösklarna låsta, 36 vektorer), 💾 **#223 klart** (backupens ålder vaktad i Supabase); 🔢 **#220 klart** (beslutsnumren unika + vakt i CI, DECISIONS #259); 🔁 **#211 klart** (tredje olycksropet borta), 🔊 #210 byggt (väntar på iOS-bygge), 🧪 #212 prioritetsdelen klar (DECISIONS #258); 💾 **#213 arkivbackupen klar och bevisad** (DECISIONS #257), nytt kort #223. Tidigare samma dag: ✅ **STEG B:s VERIFY UPPFYLLD**: 141 min/dygn i snitt över 13–19/9 mot baslinjens 202, ingest oförändrat (24 körningar, median 30–36 s mot 32 s), radarsteget 4–5 s, radar_precip 3 312 rader över 24 av 24 kompositer. Kassan 21,98 USD av 35 och takdatumet är BORTA ur larmet — släpande takt 106 min/dygn, månadsprognos 31 USD.*
+*Uppdaterad: 2026-09-20 21:25 av Claude (Cowork) — 🎉 **Play-kontot skapat** (Lagerlöf Labs, personligt) — men Google kräver en FYSISK Android-telefon för att slutföra det (DECISIONS #271); 📵 **#214 Data Safety sann igen** (DECISIONS #270) + fyndet att integritetspolicyn ljuger likadant; ✅ **0.3.8 (11) uppladdad till Apple 18:38** (app-målet kompilerar, versionsspåret håller); 🚀 **byggordning A avgjord, Axel arkiverar 0.3.8** (simulatorprovet föll på Xcode; DECISIONS #269); 🗣️ **Axels svar på #203:s åtta frågor** (sju avgjorda, byggordningen öppen mot Bengts C, DECISIONS #267), main bekräftat byggredo; 🔑 **tre beslut av Axel** (#214 invarianten, #216 blindningen — väntar Bengts ja, #217 viltrösten; DECISIONS #264–#266); 🧪 **#212 klart** (trösklarna låsta, 36 vektorer), 💾 **#223 klart** (backupens ålder vaktad i Supabase); 🔢 **#220 klart** (beslutsnumren unika + vakt i CI, DECISIONS #259); 🔁 **#211 klart** (tredje olycksropet borta), 🔊 #210 byggt (väntar på iOS-bygge), 🧪 #212 prioritetsdelen klar (DECISIONS #258); 💾 **#213 arkivbackupen klar och bevisad** (DECISIONS #257), nytt kort #223. Tidigare samma dag: ✅ **STEG B:s VERIFY UPPFYLLD**: 141 min/dygn i snitt över 13–19/9 mot baslinjens 202, ingest oförändrat (24 körningar, median 30–36 s mot 32 s), radarsteget 4–5 s, radar_precip 3 312 rader över 24 av 24 kompositer. Kassan 21,98 USD av 35 och takdatumet är BORTA ur larmet — släpande takt 106 min/dygn, månadsprognos 31 USD.*
   💰 **RÄTTAD 13/9 (DECISIONS #160, Bengts order):** prognosen räknade på månad-till-datum, och i
   det snittet låg fem flöden som lades ner 8–9/9 (`ingest-fi`, `-no`, `-dk`, `publish-map`,
   `regn-30`). Vakten sa **21 september**; uppmätt verklig takt var 232 min/dygn senaste dygnet och
@@ -44,7 +44,22 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   DECISIONS #250): main bär 0.3.8 (11) sedan 18/9, och byggordning C (#242) säger ETT bygge med #203.
   Ersatt av: simulatorprovet nu, och arkiveringen av 0.3.8 senast 27/9.
 - [ ] 6. Tolv testare till väntelistan (fortfarande det som avgör vintern)
-- [ ] 7. Google Play-konto (signeringen är lagad, AAB:n grön — vägen är öppen)
+- [x] ~~7. Google Play-konto~~ ✅ **SKAPAT OCH BETALT 20/9 18:51 (Axel)** — **Lagerlöf Labs**, personligt konto,
+  konto-id `7591030412981889366`. Samma utgivarnamn som i App Store Connect, alltså en säljare och inte två.
+  ⛔ **MEN KONTOT ÄR INTE FÄRDIGT, och den tredje raden är en RIKTIG GRIND:** Play Console kräver tre verifieringar —
+  (a) **identiteten** med officiellt ID-dokument (*"kan ta några dagar"*), (b) **åtkomst till en fysisk
+  Android-enhet**, bevisad genom inloggning i Play Console-mobilappen, (c) **kontakttelefonnumret**, som kräver att
+  (a) är klar först.
+  📱 **(b) ÄR DEN SOM BITER, och den har stått öppen sedan 25/8** (DECISIONS #16: *"Axels enda telefon är en iPhone …
+  fysisk Android-testenhet = öppen fråga (pappa? begagnad?)"*, rekommendation begagnad Samsung Galaxy A 800–1 500 kr).
+  **Google har nu gjort den till ett krav, inte en bekvämlighet:** utan en riktig Android-telefon går kontot inte att
+  slutföra, och då kan ingenting publiceras — hur färdig appen än är. Det är den billigaste grinden i hela kedjan och
+  den blockerar alla andra.
+  ➕ **Samma fråga, större:** de tolv testarna i Googles slutna test måste ha **Android**-telefoner, och Android-appen
+  har aldrig körts på hårdvara (CI kör emulator; 0.3.1 versionCode 4 mot iOS 0.3.8). Väntelistans tolv (kort 6) är
+  hittills inte sorterade på plattform.
+  ⏱️ **Ledtiderna staplas:** ID-verifiering några dagar + telefon som ska skaffas + tolv testare × 14 löpande dygn.
+  Det är kedjan som styr novemberdatumet, inte bygget.
   📄 **UNDERLAG SKRIVET 20/9 — allt läst på Googles egna sidor samma dag, inte ur minnet** (Bengts order,
   DECISIONS #268): `docs/PLAY-KONTO.md`.
   🎯 **FYNDET SOM LÄTTAR, inte tynger:** Google kräver sedan 13/11 2023 att personliga konton kör ett slutet test med
