@@ -197,7 +197,7 @@ if (!domFaller) {
 
 // ── Svepet.
 console.log(`\nSVEPET — ${FONSTER.length} × ${LUTNING.length} × ${DAGGGAP.length} × ${STARTBAND.length} = ${FONSTER.length * LUTNING.length * DAGGGAP.length * STARTBAND.length} kombinationer`);
-console.log(`  Visar de tio med störst separation (träffandel minus falsklarmsandel).\n`);
+if (domFaller) console.log(`  Visar de tio med störst separation (träffandel minus falsklarmsandel).\n`);
 type Rad2 = { p: Param; s: ReturnType<typeof separation>; sepA: number; sepB: number };
 const ut: Rad2[] = [];
 for (const fonster of FONSTER) for (const lut of LUTNING) for (const gap of DAGGGAP) for (const band of STARTBAND) {
@@ -211,6 +211,11 @@ ut.sort((x, y) => y.s.sep - x.s.sep);
 // MARGINALVAKTEN (DECISIONS #128). Separationen är en SKILLNAD mellan två andelar, så dess
 // brus är √(se_träff² + se_falsk²). En separation som inte går att skilja från NOLL skiljer
 // ingenting — och en sådan rad får inte se ut som en kandidat bara för att den ligger överst.
+// Kort #216 (Axels val, Bengts ja 20/9 — DECISIONS #265): tabellen RÄKNAS alltid, så att instrumentet
+// är prövat, men trycks först när domspärren släpper. Utan grinden lämnar varje körning ett avläst
+// utfall i CI-loggen — och flödet körs inom sju dygn efter varje frostnatt, alltså genom hela
+// kalibreringsfönstret. Fönster, lutning och startband är tre av kombinationens sex dimensioner.
+if (domFaller) {
 console.log(`  fönster  lutn  gap  band      träff        falsklarm     separation   halva A   halva B`);
 for (const { p, s, sepA, sepB } of ut.slice(0, 10)) {
   const badaHalvor = sepA > 0 && sepB > 0;
@@ -223,6 +228,9 @@ for (const { p, s, sepA, sepB } of ut.slice(0, 10)) {
 }
 console.log(`  ⊘ = separationen går inte att skilja från noll vid det här underlaget. En sådan`);
 console.log(`     kombination är ingen kandidat, hur högt den än hamnar i listan.`);
+} else {
+  console.log(`  (rangordningen hålls tillbaka — ${ut.length} punkter räknade, ingen redovisad)`);
+}
 
 // ── Fysikkontrollen, §4.
 console.log(`\nFYSIKKONTROLLEN (den som fällde #46:s första körning)`);
@@ -241,8 +249,10 @@ try {
   frostN.forEach((n, i) => { n.moln = klass[i]; });
 
   const klasser: Molnklass[] = ["klar", "mellan", "mulen", "skymd", "okänd"];
-  console.log(`  klass     frostnätter   fyrade (bästa kombinationen)`);
-  const basta = ut[0]?.p;
+  console.log(domFaller ? `  klass     frostnätter   fyrade (bästa kombinationen)`
+                        : `  klass     frostnätter   (fyrade hålls tillbaka tills domspärren släpper)`);
+  // Kort #216: kolumnen bygger på svepets vinnare och är samma avläsning som tabellen ovan.
+  const basta = domFaller ? ut[0]?.p : undefined;
   for (const kl of klasser) {
     const grupp = frostN.filter((n) => n.moln === kl);
     if (!grupp.length) continue;

@@ -278,6 +278,16 @@ som verkar i en kombination. En dels ensamma tröskel följer delens eget dokume
 **Varför D3 är nödvändig och inte byråkrati:** se §3. Med 1 296 punkter hittar en kalibrering alltid något som ser
 bra ut. Det enda som skiljer ett fynd från en slump är att det håller på nätter som inte var med när det valdes.
 
+**DELGRINDARNAS KÖRNINGAR OCH D3** (tillagt 20/9, kort #216, DECISIONS #265 — Axels val, Bengts ja).
+D3 säger att samma nätter aldrig får både välja parametrar och döma dem. Skyddet är poröst om en DELGRIND trycker
+sitt svep rangordnat på träffandel innan kombinationen kalibrerats: T-A:s svep är **fönster · lutning · startband**,
+alltså tre av kombinationens sex dimensioner, och `grind-t-a.ts` körs inom sju dygn efter varje frostnatt — genom hela
+kalibreringsfönstret. Vore rangordningen tryckt varje gång hade de tre dimensionernas utfall varit avläst och loggat i
+CI långt före 1/2.
+
+**Regeln:** en delgrind får räkna sitt svep när som helst — instrumentet ska vara prövat — men **rangordningen trycks först när delgrindens egen domspärr släpper**. Underlag, täckning och fysikkontroll skrivs som förut; det är
+ordningsföljden mellan punkterna som hålls tillbaka. Byggt i `grind-t-a.ts` 20/9.
+
 **Vilken regel skyddar vilken dom.** D2 skyddar **januari-domen**: utan startvärden satta före utfallet döms betan på
 värden som redan anpassats efter det den döms på. D3 skyddar **mars-domen** på samma sätt för kalibreringen. D4:s krav
 på båda halvorna är ett andra, billigare skydd inuti kalibreringen. D5 är redovisning, inget skydd.
