@@ -38,6 +38,10 @@
 - Revoke the unused second PAT (public-read-only one from 2026-08-24) — ej verifierad
 
 ## Session log
+- **S-2026-09-20** (Claude via Cowork, Axels order *"vi börjar att göra backupen nu"*): **kort #213 stängt** —
+  `arkivbackup.yml`, veckodump av arkivet till GitHub-release, återläst och radräknad i samma körning (30/30 tabeller,
+  601 712 rader, DECISIONS #257). Nytt kort #223 (åldersvakt utanför Actions). Nästa: de övriga öppna punkterna i
+  `docs/GENOMLYSNING-2026-09-20.md`.
 - **S-2026-09-17** (Claude med Bengt, Axel via Bengt): **grepp 2 fastställt** — C, D och T underskrivna av Bengt och
   Axel (DECISIONS #220–#228); betans startvärden beslutade; radar, regnmängd, startband och SMHI-förlängning prövas i
   mars ur arkiven (#223–#226). **Byggt och bevisat i drift:** kort #196 (provraderna märkta, `sql/025`) och #199

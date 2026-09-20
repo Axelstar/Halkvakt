@@ -7484,3 +7484,40 @@ en rad i månadens genomgång som läser stängda issuer mot öppna korts bevisk
 **Kvar öppet i samma familj, med skäl:** inget. #50, #76, #215 och #222 är alla stängda. Vaktkedjan är för första
 gången hel: healthchecken vaktar vakthunden (#50), vakthunden mäter rätt led (#76), och dess egna checkar kan fyra (#222).
 
+
+## #257 (20/9 2026) Arkivet har en backup — veckodump till GitHub-release, återläst och radräknad i varje körning (kort #213)
+
+**Axels order 20/9, efter genomlysningen:** *"vi börjar att göra backupen nu"*. P1 i `docs/GENOMLYSNING-2026-09-20.md`:
+178 MB på gratisnivån, inga backuper, och Trafikverket ger bara nuläge och delta — det som tappas är borta för alltid.
+
+**Beslut:** `.github/workflows/arkivbackup.yml`, söndag 03:17Z + knapp. `pg_dump` (custom-format) av alla scheman utom
+Postgres egna och Supabases förvaltade — i dag `dk fi no public`, ett nytt landsschema följer med av sig självt — över
+sessionspoolern (port 5432; 6543 är transaktionsläge). Dumpen läggs som release `arkiv-<tid>` i det här repot: utanför
+Supabase, synlig i repot, nedladdningsbar till vilken disk som helst. De 12 senaste behålls (≈ tre månader; gallras SIST i
+jobbet, så en fallen körning gallrar inget). Larm: issue med egen etikett `arkivbackup` — inte `incident`, som healthchecken
+auto-stänger vid nästa gröna körning.
+
+**Ett grönt jobb betyder återläst, inte bara sparad.** Radantalen räknas per tabell i källan före dumpen, dumpen läses
+tillbaka i en PostGIS-container i samma körning och räknas igen; varje tabell måste nå ≥ 97 % (arkivet växer och gallras
+mellan räkningen och dumpens ögonblicksbild).
+
+**Alternativ som valdes bort:** Actions-artefakt (max 90 dygn, räknas mot lagringskvoten, osynlig utanför körningen) ·
+eget backup-repo (växer utan gräns i git-historiken) · Bengts disk (handgrepp, inget larm) · vänta på Supabase Pro (1/11 —
+sex veckor utan skydd; Pro ger sedan dagliga backuper med 7 dygns fönster, och veckodumpen behålls ändå som kopia utanför
+leverantören).
+
+**Bevis (körning 35518932054, grön 15:15Z, 84 s):** servern Postgres 17.6; 30 av 30 tabeller, **601 712 rader i källan =
+601 712 återlästa**, alla ✅ — weather_observations 389 779, fi.weather_observations 64 105, radar_precip 50 292,
+no.weather_observations 50 056, trend_kandidater 11 879, spatial_ref_sys 8 500. Release `arkiv-2026-09-20T1515Z`,
+22 342 159 byte, sha256 `ffe70c8275a8a72108f6cd37e4b1b72b0a3d0700dcc743ea9075275884bb322c`; laddad ner oberoende på Axels
+dator: samma storlek, samma sha256, huvudet `PGDMP`. Larmvägen bevisad på verkligheten, inte med prov: körning 2 föll och
+skapade issue #406 15:12Z, körning 3 stängde den 15:15:34Z. Kostnad: cirka 1,5 debiterade minuter i veckan.
+
+**Två lärdomar ur de två fallna körningarna:** (1) PostGIS ligger i `public` i arkivet (sql/001 skapar den utan schema),
+inte i `extensions` som Supabases dokumentation antar — provet med PostGIS i `extensions` fällde 19 tabeller på
+`type "public.geometry" does not exist`. En återläsning på en annan maskin börjar alltså med `create extension postgis` i
+public. (2) `gh release` utan checkout kräver `--repo`; jobbet checkar medvetet inte ut repot.
+
+**Kvar, som eget kort (#223):** dumpen kör i Actions, och Actions dog tyst 5/9. Då tystnar dumpen och healthchecken
+samtidigt. Vakthunden i Supabase är det enda som kör utanför — den bör fråga GitHub om senaste `arkiv-`-releasen är yngre
+än 8 dygn.

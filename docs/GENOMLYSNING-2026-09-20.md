@@ -135,6 +135,8 @@ Den största enskilda risken är ändå att **arkivet saknar backup och inte gå
 
 ### P1 — Arkivet har ingen backup och kan inte återskapas
 
+> ✅ **ÅTGÄRDAT 20/9 15:15Z** (kort #213 stängt, DECISIONS #257): `arkivbackup.yml` — veckodump som GitHub-release, återläst och radräknad i samma körning. Första dumpen: 30 av 30 tabeller, 601 712 rader = 601 712 återlästa, 22,3 MB, sha256 ffe70c82…bb322c. Kvar: åldersvakt utanför Actions (kort #223).
+
 - 178 MB på Supabase gratisnivå. **Inga backuper.** Inget flöde, inget skript, inget kort — jag sökte.
 - Trafikverket levererar bara nuläge och delta. **Det som tappas är borta för alltid.**
 - Januari- och marsdomen vilar helt på det här arkivet. Supabase Pro är schemalagt till 1/11 — sex veckor bort, och
@@ -293,7 +295,7 @@ besvarade.
 | :-- | :-- | :-- |
 | 0 | **Motorfixarna först:** iOS `<null>`, det tredje olycksropet, och en vektor för prioritetsgenombrottet | Hörs i bilen i dag; billiga; ett bygge till Axel bör bära dem |
 | 0b | **Mät marginalen på korridoren och reprisavståndet, och frys dem med vektorer** | De två reglerna produkten vilar på är i praktiken otestade |
-| 1 | **Backup av arkivet, veckovis, från och med den här veckan** | Enda oåterkalleliga risken. Kostar nära noll |
+| 1 | ✅ **KLART 20/9** — ~~Backup av arkivet, veckovis, från och med den här veckan~~ (#213, DECISIONS #257) | Enda oåterkalleliga risken. Kostar nära noll |
 | 2 | **Leveransfrys två veckor:** ingen ny mätfunktion, bara det som krävs för att appen ska nå en främling | Novemberfönstret stängs annars |
 | 3 | **Play-kontot köps i september** | Grind för Android-betan, ledtid okänd |
 | 4 | **Data Safety rättas före första uppladdningen** | Avslagsrisk mitt i facitfönstret |
