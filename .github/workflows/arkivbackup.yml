@@ -141,17 +141,17 @@ jobs:
             echo
             echo 'Återläsning: `createdb x && psql x -c "create extension postgis" && pg_restore --dbname x --no-owner --no-privileges <fil>.dump` — fel om pg_net/pg_cron är väntade, tabellerna kommer med.'
           } > notes.md
-          gh release create "$TAG" "$FIL" --title "Arkivdump $(date -u +%Y-%m-%d)" --notes-file notes.md --latest=false
+          gh release create "$TAG" "$FIL" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Arkivdump $(date -u +%Y-%m-%d)" --notes-file notes.md --latest=false
           echo "release: $TAG ($FIL, $((BYTES / 1000000)) MB)"
           { echo "## Arkivdump $TAG — $((BYTES / 1000000)) MB, återläst ✅"; echo; cat tabell.md; } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Gallra äldre än de 12 senaste
         shell: bash
         run: |
-          gh release list --limit 200 --json tagName,createdAt \
+          gh release list --repo "$GITHUB_REPOSITORY" --limit 200 --json tagName,createdAt \
             --jq '[.[] | select(.tagName | startswith("arkiv-"))] | sort_by(.createdAt) | reverse | .[12:] | .[].tagName' \
-          | while read -r t; do gh release delete "$t" --cleanup-tag --yes && echo "gallrad: $t"; done
-          echo "kvar: $(gh release list --limit 200 --json tagName --jq '[.[] | select(.tagName | startswith("arkiv-"))] | length') arkivdumpar"
+          | while read -r t; do gh release delete "$t" --repo "$GITHUB_REPOSITORY" --cleanup-tag --yes && echo "gallrad: $t"; done
+          echo "kvar: $(gh release list --repo "$GITHUB_REPOSITORY" --limit 200 --json tagName --jq '[.[] | select(.tagName | startswith("arkiv-"))] | length') arkivdumpar"
 
       - name: Larm-issue vid fel
         if: failure()
