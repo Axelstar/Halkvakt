@@ -7230,3 +7230,34 @@ bära januari, och granskningen måste byggas i november.
 *Alternativ:* behåll 1/2 — avvisat: beslutet hade kommit efter den dom det ska försörja · bygg granskningen nu utan
 beslut — avvisat: den kostar, och första frosten kan visa att omklassningarna räcker.
 
+## #249 (20/9 2026) Total genomlysning av projektet — tolv nya kort, tre fel som hörs i bilen
+
+**Bengts order 20/9:** *"gör en total genomlysning av hela halkvaktprojektet"* inför riktlinjemötet med Axel. Fem
+parallella granskare (motor/paritet · drift/vakter · mätning/blindning · produkt/leverans · styrning) plus egna
+mätningar mot drift, GitHub-API och den publicerade snapshoten. Läs-only. Fullständig rapport:
+`docs/GENOMLYSNING-2026-09-20.md` (även på Bengts skrivbord).
+
+**Domen i tre meningar.** Mätinstrumentet är ovanligt hederligt: motorn är ren, den körs byte-för-byte i tre språk,
+trösklarna skrivs före mätning och blindningen är kodad. Men produkten har inte varit i en enda utomståendes hand,
+facitkällorna ger noll, och tre fel hörs eller kan höras i bilen. Största enskilda risken är att arkivet saknar backup
+och inte går att återskapa.
+
+**De tyngsta fynden, alla verifierade i kod eller mätning:**
+- **iOS säger "på väg <null>"** — `SnapshotRepo.swift:117` gör JSON-null till en sträng. Uppmätt: 38 av 732 olyckor
+  på 30 dygn saknar vägnummer (5,2 %). Kotlin och TypeScript gör rätt. Vektor v22 låser bara frånvarande `road`. (#210)
+- **Det tidiga olycksropet kan sägas tre gånger** vid låg fart — bryter #28 och motsägs av projektets eget test. (#211)
+- **Vektorsviten certifierar inte korridorvinkeln (5°–90° omärkt) eller reprisavståndet (0–50 000 m omärkt).**
+  Prioritetsgenombrottet (#127) har noll täckning, och testet skulle fälla en vektor som prövade det. (#212)
+- **Arkivet har ingen backup**, och Trafikverket ger bara nuläge och delta. (#213)
+- **Play-deklarationen är osann sedan 16/9.** (#214)
+- **Vakthunden saknar dödmansgrepp**, och tre checkar kan aldrig fyra. (#215)
+- **Blindningsläcka:** T-A skriver ut hela svepet rangordnat genom hela kalibreringsfönstret, och delar tre av
+  kombinationens sex dimensioner. (#216)
+
+**Strukturellt:** 593 rader beslutslogik bärs av 8 345 rader mätskript, 20 860 rader vektorer och 154 000 ord
+styrdokument. Senaste veckan: 9 087 dokumentrader mot 3 065 rader produktkod. 29 av 96 öppna kort väntar på Axel, och
+ingen incheckning har kommit från honom sedan 17/9.
+
+**Följd:** korten #210–#221 lagda. Två av dem bär beslut som Bengt och Axel måste ta (#214 produktinvariantens
+lydelse, #216 blindningen mot T-A). Inget är åtgärdat i det här varvet — genomlysningen var läs-only.
+
