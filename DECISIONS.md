@@ -8216,3 +8216,36 @@ faran redan är TOLKAD. De är ett kontrakt för MOTORN och kan per konstruktion
 ligger här i stället. **Läxa värd att skriva:** `[skip ci]` i en grens huvudcommit tystar också `pull_request`-körningen,
 så en gren som bara bär dokument kan inte granskas av CI — och en gren som bär kod får aldrig ha märket.
 
+## #279 (20/9 2026) Enhetsverifieringen kontrollerad mot källan: kravet stämmer, men en LÅNAD telefon räcker
+
+**Bengts fråga 20/9:** *"stämmer det att playkontot inte aktiveras förrän en telefon android bevisas genom inloggning
+på play console kontot"*. Frågan gällde ett påstående i #271, som kom ur Play Consoles gränssnitt och inte ur en läst
+källa. CLAUDE.md:s läxa säger att en uppgift som ges till Bengt eller Axel ska vara läst på källsidan — den tillämpades
+här, i efterhand.
+
+**Kravet stämmer, ordagrant** (support.google.com/googleplay/android-developer/answer/14316361, läst 20/9):
+*"Från och med början av 2024 måste utvecklare med nya personliga konton verifiera att de har åtkomst till en riktig
+mobil Android-enhet via Play Console-appen innan de kan göra appen tillgänglig på Google Play."*
+Google Play Console listar det som **steg 6** och märker det *(Endast personliga konton)*.
+
+**Två rättelser som gör grinden billig:**
+1. **Vilken telefon som helst duger.** FAQ, ordagrant: *"Du kan använda alla fysiska mobila Android-enheter som inte
+   är rotade och kör operativsystemet Android 10 eller senare."*
+2. **Den behöver inte behållas.** FAQ, ordagrant: *"Nej. Vi kan be dig om verifiering i framtiden, men du behöver inte
+   använda samma enhet."*
+
+**Följden:** #271:s rekommendation om en **begagnad Samsung för 800–1 500 kr** behövs INTE för verifieringen. Ett lån
+på tio minuter räcker — skanna QR-koden i Play Console, installera Play Console-appen på den lånade telefonen, logga in
+som kontoägare, tryck Verifiera, lämna tillbaka. En egen testtelefon är fortfarande motiverad för fälttest och för att
+faktiskt köra appen, men den är då en **bekvämlighet igen, inte publiceringsgrinden**.
+
+**Vad som INTE är klarlagt, och som därför inte påstås:** Googles formulering är *"göra appen tillgänglig på Google
+Play"*. Om ett SLUTET TEST räknas dit går inte att avgöra ur texten. Testkravssidan säger att slutet test kan startas
+*"när du är klar med konfigureringen av appen"*, vilket talar för att novemberbetan inte blockeras — men det är en
+slutsats av två sidor, inte ett citat, och redovisas som sådan.
+
+**Vad som ÄR klarlagt oavsett:** utvecklarens telefonnummer kan inte verifieras förrän identitet **och**
+enhetsverifiering är klara (*Verifiera uppgifter för utvecklaridentitet*: *"Du kan inte verifiera ditt telefonnummer
+förrän dessa förutsättningar är uppfyllda"*). Enhetsverifieringen ligger alltså i vägen för kontots färdigställande
+hur betan än klassas — men den kostar ett telefonsamtal, inte tusen kronor.
+
