@@ -7945,3 +7945,20 @@ som bestämmer novemberdatumet, inte när koden blir klar.
 **Nästa steg som inte kräver telefonen:** identitetsverifieringen kan startas i kväll, och appposten i Play Console
 kan skapas med butiksmaterialet som redan finns (`marknadsforing/butik/`: text, feature graphic 1024×500, ikon 512,
 plus skärmbilderna i `docs/produktbok/`).
+
+**LÖST SAMMA KVÄLL:** Axel — *"vi har en Android som vi kan använda"*. Grinden var alltså en fråga ingen hade ställt,
+inte en kostnad. Verifieringen görs genom att installera Play Console-appen på den telefonen och logga in med kontots
+Google-konto. **Följden som är större än bocken:** Android-appen kan för första gången köras på hårdvara —
+debug-APK:n byggs redan som artefakt i varje `android`-körning.
+
+**Vad Android faktiskt saknar, mätt 20/9 (inte gissat).** Kortet #219 säger "sju versioner efter", men versionsnumret
+mäter fel sak: Android 1 814 rader mot iOS 2 125, och funktionerna finns på båda — *Senast sagt*, facitknapparna,
+BETATEST-brytaren, autostart, körläget, inställningarna. **Tre verkliga hål:**
+1. **Introduktionen saknas helt** — noll träffar på onboarding i hela `android/`. iOS har fyra sidor (`OnboardingView`).
+2. **Versionsnumret står stilla** på 0.3.1 / versionCode 4 sedan 0.3.1, trots att koden följt med. Första
+   Play-uppladdningen låser versionCode-spåret, så det ska rättas FÖRE den, inte efter.
+3. **Förvarningsreglagets spann skiljer sig** mellan plattformarna (iOS 400–3 000, Android 500–5 000, genomlysningen P7).
+
+**Metodnot, värd att skriva ned:** första jämförelsen gjordes på FILNAMN och sa att körläget, autostartguiden och
+facitknappen saknades på Android. Fel — Android lägger hela gränssnittet i `ui/App.kt` medan iOS har nio vyfiler. En
+strukturskillnad såg ut som en funktionsskillnad. Mätt funktionellt i stället krympte listan från sex hål till tre.
