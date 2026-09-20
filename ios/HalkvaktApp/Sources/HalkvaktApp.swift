@@ -163,6 +163,9 @@ struct HalkvaktApp: App {
         // Måste finnas från första millisekunden: när iOS väcker oss i bakgrunden på
         // betydande förflyttning levereras platsen till DEN delegat som skapas vid start.
         GuardManager.shared.armAutoWake()
+        // Kort #203: kategorin med knapparna måste vara registrerad INNAN en notis kan levereras,
+        // och delegaten måste finnas när föraren trycker — även när trycket är det som startar appen.
+        EfterResanNotis.shared.register()
         #if DEBUG
         // Fotostudion (S4 steg 4, DECISIONS #206), spegel av Androids fotostudio_facit: startargumentet
         // -fotostudio_facit (Xcode: Edit Scheme → Run → Arguments) slår på betatestet och lägger in en
@@ -173,8 +176,19 @@ struct HalkvaktApp: App {
                 let p = Prefs.shared
                 p.onboardingDone = true   // annars täcker introduktionen skärmen på en färsk simulator
                 p.facitOn = true
+                // Kort #203: en påhittad RESA, inte bara en varning — så att efter-resan-kortet syns
+                // överst på Redo. utan en körning. Samma tidsstämplar i historiken och i "Senast sagt",
+                // annars pekar de två på olika facitrader.
+                let t0 = Date.now.addingTimeInterval(-1800)
+                let t1 = Date.now.addingTimeInterval(-600)
+                p.tripStart = t0
+                p.history = [
+                    AlertEntry(t: t0.addingTimeInterval(120), kind: "slippery_segment",
+                               text: "Halka rapporterad om åttahundra meter. Sänk farten.", id: "seg:fotostudio"),
+                    AlertEntry(t: t1, kind: "camera", text: "Fartkamera om femhundra meter.", id: "cam:fotostudio"),
+                ]
                 p.lastSaidText = "Fartkamera om femhundra meter."
-                p.lastSaidAt = .now
+                p.lastSaidAt = t1
                 p.lastSaidId = "cam:fotostudio"
             }
         }

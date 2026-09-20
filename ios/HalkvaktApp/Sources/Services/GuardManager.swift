@@ -207,6 +207,9 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
             distanceKm = 0; alertCount = 0; lastSaid = nil
             tripPausedSeconds = 0
             startedAt = .now
+            // Kort #203: NY resa ⇒ nytt facitfönster. Fortsätter samma resa efter ett mackstopp
+            // behålls det gamla — annars hade varningarna före macken fallit utanför "alla".
+            Prefs.shared.tripStart = startedAt
         }
         tripEndedAt = nil
         staleAnnounced = false
@@ -265,7 +268,18 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         manager.stopUpdatingLocation()
         dismissTask?.cancel()
         currentWarning = nil
+        efterResan()     // kort #203: frågan kommer till föraren, inte tvärtom
         fenceParking()   // nästa resa börjar här
+    }
+
+    /// Resan är slut. Lämnade den obesvarade varningar visas notisen med knapparna i sig.
+    /// Ingen notis alls om betatestet är av — knappen finns bara för den som själv slagit på den (#186).
+    private func efterResan() {
+        let p = Prefs.shared
+        guard p.facitOn, let sedan = p.tripStart else { return }
+        let obes = Resan.obesvarade(p.history, p.facit, sedan: sedan)
+        guard Resan.fragaKvar(sedan: sedan, nu: .now, obesvarade: obes.count) else { return }
+        Task { await EfterResanNotis.shared.visa(antal: obes.count) }
     }
 
     // MARK: - CLLocationManagerDelegate
@@ -337,9 +351,16 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
 
         alertCount += 1
         lastSaid = alert.text
+        // EN tidsstämpel för båda: facitsvaret nycklas på (id, t), och raden under "Senast sagt"
+        // och raden i efter-resan-kortet måste peka på SAMMA svar. Två .now hade gett två rader.
+        let nu = Date.now
         Prefs.shared.lastSaidText = alert.text   // #24: överlever omstart
-        Prefs.shared.lastSaidAt = .now
+        Prefs.shared.lastSaidAt = nu
         Prefs.shared.lastSaidId = alert.hazardId   // S4: facitknappen vet vilken varning
+        // Kort #203: hela resan, inte bara den sista. Persistent — notisknappen kan tryckas
+        // efter att appen dödats.
+        Prefs.shared.history = AlertLog.append(Prefs.shared.history,
+            AlertEntry(t: nu, kind: alert.kind.rawValue, text: alert.text, id: alert.hazardId))
         history.insert(alert, at: 0)
         if history.count > 50 { history.removeLast() }
         SpeechService.shared.speak(alert.text)

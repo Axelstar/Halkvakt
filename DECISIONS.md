@@ -8125,3 +8125,63 @@ byta det mot tom sträng vore att göra appen tystare om sina egna fel. Eget kor
 **Det strukturella som står kvar:** `SnapshotRepo` finns i app-målet på båda plattformarna, och **inget
 CI-flöde bygger eller testar app-målet**. Det är därför #210 kunde levas i fyra dygn, och det är därför den
 här rättelsen inte heller kan bevisas av ett test — bara av ett bygge. Samma rad står i #267.
+
+## #277 (20/9 2026) Efter resan — ett tryck från låsskärmen, byggt på båda plattformarna (kort #203, lager 1)
+
+**Beställningen.** Bengt 19/9: *"som det är i dag är det oerhört krångligt … det kommer inte många
+svar"*. Axels svar på §8 (DECISIONS #267): **2 ja, alla tre** — *"låsskärmen är det viktiga — föraren
+ska aldrig behöva öppna appen för att svara ja"* — plus tillägget ur hans läsning: kortet på *Redo.*
+ska visa **raderna**, klockslag och text, inte bara ett tal. Byggordning **8 ja**: Android i samma PR,
+och vald ordning Android först, iOS speglar.
+
+**Vad som byggdes (lager 1, "grunden"):** resans logg, låsskärmsnotisen med knapparna i sig, och
+kortet överst på *Redo.* med en rad per varning. **Siri-fraserna (lager 2) och missarna
+(`driver_miss`) ingår inte** — de står kvar på kortet, medvetet uppskjutna.
+
+**Räkningen är ren och delad.** `Resan` (Kotlin `Resan.kt`, Swift `Resan.swift`) svarar på fyra frågor
+och bara dem: vilka varningar i resan är obesvarade, vad blir facit om alla besvaras med ett tryck,
+står frågan fortfarande kvar (ett dygn), och hur lyder frågan (singular vid en varning — *"alla 1
+varningarna"* är inte svenska). Ingenting i filen skriver ett svar av sig själv: **tystnad är inget
+svar**, och den regeln bor i frånvaron av kod, inte i en kommentar. Åtta enhetstester på Android-sidan
+— de första i app-modulen — och de är gröna i CI.
+
+**Två fall som räkningen måste bära, och gör:** rader utan varnings-id (Androids historik före 16/9)
+räknas *inte* som obesvarade, annars hade varje sådan rad hållit frågan öppen för evigt. Och ett svar
+som ges igen ersätter det förra och blir osänt — förarens senaste ord gäller, precis som för ett
+enskilt svar.
+
+**Ordningen i notishanteraren är avsiktlig:** svaret sparas FÖRST, sändningen är det som får
+misslyckas. Androids `FacitSvarReceiver` har ~10 s via `goAsync()`, och en sändning med 10 s timeout
+per svar kan falla utanför fönstret. Misslyckas den ligger svaren kvar som osända och går iväg vid
+nästa stillastående eller appstart — samma seghet som `FacitSender` redan har.
+
+**"Något stämde inte" öppnar appen, med flit.** En avvikelse måste pekas ut på en RAD, och det går
+inte från en notisknapp. Kortet överst på *Redo.* bär resans rader, så föraren landar rätt.
+
+**iOS krävde mer än Android, och det var inte synligt förrän filerna lästes:**
+- **iOS hade ingen persistent varningshistorik.** Android har `AlertHistory` i DataStore; iOS hade
+  bara `lastSaidText/At/Id` — alltså *bara resans sista varning*. Ny `AlertEntry` + `AlertLog` i
+  `Resan.swift`, JSON i UserDefaults (samma väg som facit redan går; Androids tabbformat behövs inte).
+- **iOS registrerade inga notiskategorier och hade ingen delegat.** `HeadsUpService` bad om `[.alert]`
+  och visade en knapplös banner. Ny `EfterResanNotis` med kategori, två åtgärder och delegat,
+  registrerad i `HalkvaktApp.init()` — kategorin måste finnas *innan* en notis kan levereras, och
+  delegaten måste finnas när föraren trycker, även när trycket är det som startar appen.
+- **`willPresent` returnerar `[]`** — exakt som innan appen fick en delegat alls. Att lägga till en
+  delegat ändrar annars tyst beteendet för heads-up-bannern (#23).
+
+**En bugg som bara fanns på iOS och fångades när halvorna jämfördes:** `lastSaidAt` sattes till
+`.now` medan historikraden skulle ha en egen tidsstämpel. Facitsvar nycklas på `(id, t)` — två `.now`
+hade gett **två rader för samma varning**, så ett svar under "Senast sagt" hade inte släckt raden i
+efter-resan-kortet. Nu tas EN tidsstämpel och används på båda ställena.
+
+**Fotostudion utökad på båda plattformarna:** startargumentet lägger nu in en påhittad *resa* med två
+varningar, inte bara en varning, så kortet går att se utan en körning.
+
+**Det som INTE är bevisat, och måste sägas rakt:** Android-halvan är **grön i CI** — den kompilerar
+och de åtta testerna passerar. **iOS-halvan är skriven utan kompilator.** `Resan.swift`,
+`EfterResanNotis.swift`, `EfterResanKort.swift` och ändringarna i `GuardManager`, `Prefs` och
+`VaktenView` kompileras första gången i Axels Xcode. Inget CI-flöde bygger app-målet — samma rad står
+i #267 och #276, och det är tredje gången i dag den är skälet till ett förbehåll. Notisåtgärden kan
+dessutom inte prövas i simulatorn på ett trovärdigt sätt: låsskärmen och bakgrundsleveransen är
+poängen. **Verify står öppen tills en riktig resa på en riktig telefon ger rader i `driver_facit`
+utan att föraren stannat.**

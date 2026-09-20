@@ -448,6 +448,25 @@ Inställningar. Ändrar du dig ersätter det nya svaret det gamla. (Facitet är 
 *Rättat samtidigt:* kortet visade den äldsta sparade repliken, inte den senaste — synligt först
 när knappen skulle sitta på rätt varning.
 
+## Efter resan (20/9)
+
+**Frågan kommer till dig — du letar aldrig.** När vakten stannar, antingen för att du avslutar den
+eller för att bilen stått still en kvart, och resan lämnat varningar du inte svarat på, kommer en
+notis: *"Resan klar — stämde alla 3 varningarna?"* Den bär knapparna i sig. **Ett tryck på "Ja, alla
+stämde" räcker, direkt på låsskärmen — appen behöver aldrig öppnas.**
+
+*"Något stämde inte"* öppnar appen i stället, för en avvikelse måste pekas ut på en rad. Överst på
+*Redo.* ligger då ett kort med **resans varningar, en rad var med klockslag och text**, och *Stämde* /
+*Stämde inte* på varje. Kortet står kvar tills allt är besvarat, eller ett dygn — sedan tiger det. Ett
+svar på en resa man inte minns är inte ett facit, det är en gissning.
+
+**Svarar du inte skickas ingenting.** Tystnad räknas aldrig som ja. Det är hela skillnaden mot att
+automatisera svaret: tystnad betyder lika ofta *"såg inte"*, *"kunde inte bedöma"* eller *"telefonen
+låg i fickan"*.
+
+Det som skickas är som förut och inget mer: varningens id, klockslaget och ditt svar. Notisen finns
+bara om du själv slagit på betatestet i Inställningar.
+
 ## Versionerna (två veckor, sex byggen)
 
 | Version | Datum | Vad |
@@ -462,6 +481,7 @@ när knappen skulle sitta på rätt varning.
 | *nästa (Android)* | 16/9 | Facitknappen *Stämde / Stämde inte* + betatest-brytaren (S4, DECISIONS #202). Senast sagt visar rätt rad. |
 | 0.3.6 (9) | 16/9 | Facitknappen *Stämde / Stämde inte* + betatest-brytaren i iOS (DECISIONS #203), Om-undantaget ordagrant, spärren 10 s (#127), fotostudio-kroken. TestFlight-uppladdning: Axel. |
 | 0.3.7 (10) | 16/9 | Svaret skickas direkt när man trycker med vakten av (bilen står stilla) — förut väntade det på nästa appstart (DECISIONS #208). |
+| *nästa (båda)* | 20/9 | **Efter resan**: låsskärmsnotisen med *Ja, alla stämde* / *Något stämde inte*, och kortet överst på *Redo.* med en rad per varning — klockslag och text (DECISIONS #277). Android grön i CI; iOS kompileras vid nästa bygge. |
 
 Android ligger kvar på 0.3.1 med gammalt skinn. Skinnet v3 är portat och bevisat i
 emulator; Play-lanseringen väntar på tolv testare.

@@ -43,6 +43,12 @@ final class Prefs {
     var facitOn: Bool { didSet { d.set(facitOn, forKey: "k.facitOn") } }
     /// S4: svaren, sända och osända. Ren Swift-logik i Facit.swift.
     var facit: [FacitEntry] { didSet { d.set(try? JSONEncoder().encode(facit), forKey: "k.facit") } }
+    /// Kort #203: resans varningar, persistenta. iOS hade förut bara "senast sagt" — bara resans SISTA
+    /// varning gick att svara på. Nyast SIST, som Androids AlertHistory.
+    var history: [AlertEntry] { didSet { d.set(try? JSONEncoder().encode(history), forKey: "k.history") } }
+    /// Kort #203: när den pågående resan började. Fönstret som "alla" i "Ja, alla stämde" betyder.
+    /// Överlever omstart: notisens knapp kan tryckas långt efter att appen dödats.
+    var tripStart: Date? { didSet { d.set(tripStart, forKey: "k.tripStart") } }
     /// S4: vad senaste sändningsförsöket gav — syns under knapparna så testaren ser vad som hände (DECISIONS #209).
     var facitStatus: String? { didSet { d.set(facitStatus, forKey: "k.facitStatus") } }
     /// Introduktionen visad? (DECISIONS #36) Kan nollställas från Inställningar.
@@ -75,6 +81,8 @@ final class Prefs {
         facitOn = d.bool(forKey: "k.facitOn")
         facit = d.data(forKey: "k.facit").flatMap { try? JSONDecoder().decode([FacitEntry].self, from: $0) } ?? []
         facitStatus = d.string(forKey: "k.facitStatus")
+        history = d.data(forKey: "k.history").flatMap { try? JSONDecoder().decode([AlertEntry].self, from: $0) } ?? []
+        tripStart = d.object(forKey: "k.tripStart") as? Date
         onboardingDone = d.bool(forKey: "k.onboardingDone")
         carSetup = d.string(forKey: "k.carSetup").flatMap(CarSetup.init(rawValue:))
         lastIntentStartAt = d.object(forKey: "k.lastIntentStartAt") as? Date

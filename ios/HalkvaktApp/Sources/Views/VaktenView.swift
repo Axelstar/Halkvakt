@@ -15,6 +15,15 @@ struct VaktenView: View {
                 BrandHeader(trailing: guardM.snapshotInfo == nil ? "Hämtar" : "Trafikverket live",
                             trailingColor: guardM.snapshotInfo == nil ? Brand.faint : Brand.green)
 
+                // Kort #203: frågan om resan står överst, före allt annat — den som öppnar appen efter
+                // en körning ska se den utan att leta. Försvinner när allt är besvarat, och efter ett dygn.
+                if prefs.facitOn, let sedan = prefs.tripStart {
+                    let obes = Resan.obesvarade(prefs.history, prefs.facit, sedan: sedan)
+                    if Resan.fragaKvar(sedan: sedan, nu: .now, obesvarade: obes.count) {
+                        EfterResanKort(varningar: obes, sedan: sedan).padding(.top, 14)
+                    }
+                }
+
                 Spacer()
 
                 VStack(alignment: .leading, spacing: 18) {
