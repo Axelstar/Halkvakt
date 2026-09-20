@@ -383,6 +383,13 @@ export const KONTRAKT: Kontrakt[] = [
     filer: /uppspelning-efterhalka\.sql|028_uppspelning_varianter\.sql/,
     golv: 4,
   },
+  {
+    namn: "Kopplingen station–väg för radarn — km (Bengt 17/9, DECISIONS #225)",
+    varfor: "Täckningssatsen ska mäta samma koppling som uppspelningen räknar på — annars friskförklarar den ett annat rör.",
+    former: [/p_radar_km numeric DEFAULT (\d+)/, /p_radar_km <> (\d+) THEN/, /::geography, (\d+) \* 1000\)/],
+    filer: /uppspelning-varianter\.sql|028_uppspelning_varianter\.sql/,
+    golv: 3,
+  },
 ];
 
 // ── SJÄLVTEST mot känd sanning, utan disk ──────────────────────────────────────────────
