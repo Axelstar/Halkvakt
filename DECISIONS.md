@@ -7151,3 +7151,59 @@ räknade redan nätter middag till middag, och en grep på `AS natt` hade visat 
 timmar mitt på dagen då inget faller, och T-A är den del kombinationen ärver fallkravet från · hela redovisningen per natt
 i stället för per UTC-dygn — avstått: det hade brutit jämförelsen mot den gamla mätfilen utan att ändra någon dom.
 
+## #247 (20/9 2026) Kort #207: uppspelningen läser facitstackens två skrivna källor — och omklassningarna är TOMMA
+
+**Bengts beslut 20/9:** *"kör 207"*. Stationens egen yta säger att det BLEV kallt, aldrig att vägen blev hal. KB-B döms
+mot facitstacken, och KB-D3 säger att förarsvar ensamma varken fäller eller friar.
+
+**Byggt (PR #388):** `uppspelning_efterhalka()` får två kolumner per variant — episoder med **omklassning till halka**
+(`road_condition_history` × `road_conditions`) och episoder med **olycka** (`situation_archive`, Accident) — lästa inom
+`(t, t + p_utfall]` från episodens början, exakt det fönster `publish/trendkandidat.ts` använder för stationens egen
+facit. Halkorden är motorns egna. Olyckor räknas **separat och aldrig i grundtalet**: arkivet bär ingen orsak, så en
+olycka är facit på att något hände, inte på att det var halt (samma regel som tystnadsfelet T1 b).
+- Nya argument: `p_utfall` (ärvs från T-A, svep 60 · 90 · 120 min, standard 90 = det arkivet redan räknar) och
+  `p_facit_km` (5, #245). Båda med D1-vakt.
+- Ny **synlig** kolumn `episoder`. Den räknar fyrningar, inte utfall — nämnaren till facittalen, och den gör nattbytets
+  (#246) verkan mätbar i drift.
+- **Signaturen släpps före CREATE.** Returtyp och argumentantal ändras; ett `CREATE OR REPLACE` hade lagt en ANDRA
+  överlagring bredvid den gamla och gjort `uppspelning_efterhalka()` utan argument tvetydigt. Testet kräver exakt en
+  signatur, och migrationen bevisar den: `signaturer 1, argument 15`.
+- Mätfilens variantlista vänsterjoinas nu i stället för att fyllas ut med handräknade NULL:ar — en kolumn till hade
+  annars tyst skjutit utfyllnaden ur led.
+
+**Bevis:**
+- CI: `ok 37`, 117 av 117 mot riktig Postgres; 38 kontrakt håller.
+- **Två motprov i CI, båda stängda och raderade.** (1) Ordgränsen borttagen (PR #389) ⇒ **kontraktsgrinden** fäller
+  bygget innan testerna hinner köra (`✗ Halkorden i MOTORN`). (2) Facitradien vidgad till 500 km (PR #390) ⇒ grinden ser
+  inget (38 kontrakt håller) men **testet** faller på rätt rad: *"bara H: 'fläckvis Våt', halka 3 h senare och halka
+  50 km bort räknas inte"*. Grinden och provet vaktar alltså olika fel.
+- I drift 20/9 07:48Z: en signatur, 15 argument, facitkolumnerna NULL (blindade), varianttabellen oförändrad.
+
+**MÄTT OCH OVÄNTAT: omklassningarna till halka är NOLL — och arkivet har bara 7 rader på 14 dygn.** Hela
+`road_condition_history` fick 7 rader från 7 vägavsnitt, och orden i dem är *Torrt* (7) och *fläckvis Våt* (6). Noll
+halka. Det är **inte en läcka**: arkivvakten (#51, DECISIONS #71) frågar redan "finns ett nuvarande tillstånd som borde
+ha hunnit arkiveras och inte gjorde det", och samma tomhet mättes 5/9 (noll omklassningar på elva dygn). I september
+klassas inget om, och tystnad är då korrekt. Men det gör **KB-D3:s följd konkret**: förblir omklassningarna tomma blir
+januari OAVGJORT hur många förare som än svarat *Stämde*. Olyckor finns det gott om — 504 på 14 dygn — men de bär ingen
+orsak och får inte bära domen ensamma.
+
+**Kopplingen bär, till skillnad från källan:** alla 140 stationer i trendarkivet har ett läge i `weather_latest`, så
+facitkopplingen har 100 % täckning (radarkopplingen, som kräver väg inom 5 km, har 110 av 140).
+
+**Nattbytet blev mätbart samma varv.** `utan faller`: 9 stationsdygn ⇒ **7 episoder** — två nätter som spände över
+midnatt slogs ihop, precis det #246 rättade.
+
+**ÖVERRASKNING ÅT ANDRA HÅLLET: `startband +1…+6` ger 5 stationsdygn men 6 episoder.** En station kan alltså få FLER
+episoder än stationsdygn, när två fyrningar samma UTC-dygn ligger på var sin sida om **middag** — nattgränsen. Det är
+korrekt (två skilda dagtidshändelser är inte en natt) och samma konvention som T-A, men det är den spegelvända formen av
+midnattsproblemet och ska inte förvåna någon i januari. Det syns bara i det breda startbandet, eftersom varmare ytor
+faller också mitt på dagen; i kombinationen är timmarna 09–15 UTC i praktiken tomma (#245).
+
+**INTE MED, med skäl:** kamerabilden — en bild är inte facit förrän någon läst den, och granskningen är ett öppet beslut
+(bedömningen §4.2, före 1/2) · förarsvaren — egna regler (KB-D1–D6), och noll riktiga svar finns · SMHI-förlängningen —
+oförändrat läge.
+
+*Alternativ:* koppla facit till varje ÖGONBLICK i stället för till episoden — avvisat: röst räknas i episoder (kartan
+§10.2), och en station med tre ögonblick samma natt hade räknat samma omklassning tre gånger · räkna olyckor i
+grundtalet — avvisat av samma skäl som tystnadsfelet: arkivet bär ingen orsak.
+
