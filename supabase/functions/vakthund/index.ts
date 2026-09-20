@@ -110,6 +110,22 @@ Deno.serve(async (req) => {
       rad.push(`${r.source}: ${min.toFixed(0)} min${gräns ? ` (gräns ${gräns})` : " (GitHub-flödet, vilar)"}`);
       if (gräns && min > gräns) problem.push(`**${r.source}** hämtas inte: ${min.toFixed(0)} min sedan (gräns ${gräns})`);
     }
+    // 1b. RÖR SIG KURSORN? (kort #222) Raden ovan mäter `synced_at`, som sätts vid varje LYCKAT
+    //     ANROP — en fastfrusen `last_change_id` ser därför kärnfrisk ut. `road_conditions` och
+    //     `road_conditions_arkiv` är SAMMA ström med två kursorer: livemotorns (varje minut) och
+    //     GitHub-ingestens (varje timme). Faller den snabba bakom den långsamma har livemotorns
+    //     kursor slutat röra sig — och det syns utan att någon historik sparas.
+    //     Jämförelsen görs i SQL: changeid är 19 siffror och spräcker JavaScripts heltal.
+    const [kurs] = await sql`SELECT
+      (SELECT last_change_id FROM sync_state WHERE source = 'road_conditions') AS live,
+      (SELECT last_change_id FROM sync_state WHERE source = 'road_conditions_arkiv') AS arkiv,
+      (SELECT last_change_id FROM sync_state WHERE source = 'road_conditions')::numeric
+        < (SELECT last_change_id FROM sync_state WHERE source = 'road_conditions_arkiv')::numeric AS efter`;
+    if (kurs?.live && kurs?.arkiv) {
+      rad.push(`kursorer road_conditions: live ${String(kurs.live).slice(-6)} · arkiv ${String(kurs.arkiv).slice(-6)}`);
+      if (kurs.efter) problem.push(`**Livemotorns kursor står still**: \`road_conditions\` ligger BAKOM arkivkursorn — synced_at är färsk men changeid rör sig inte (kort #222)`);
+    }
+
     // 2. Sparar vi?
     const [w] = await sql`SELECT max(sample_time) t FROM weather_observations`;
     const wMin = w.t ? (Date.now() - new Date(w.t).getTime()) / 60000 : Infinity;
@@ -300,6 +316,13 @@ Deno.serve(async (req) => {
       ] }))
       .filter((x) => x.crons.length);
     const viaPuls = schemalagda.filter(({ w }) => puls.some((p) => String(w.path).endsWith(`/${p.fil}`))).length;
+    // Kort #222: ett puls-jobb som avaktiveras eller raderas föll TYST ur bevakningslistan — vakten
+    // såg en sen körning, aldrig ett försvunnet schema. Golvet är pulsklockans egen NYA-lista
+    // (scripts/pulsklocka.ts); kontraktsgrinden vaktar att de två talen inte glider isär.
+    const PULS_GOLV = 11;
+    rad.push(`pulsjobb: ${puls.length} aktiva (golv ${PULS_GOLV})`);
+    if (puls.length < PULS_GOLV) problem.push(
+      `**Pulsklockan har tappat jobb**: ${puls.length} aktiva av ${PULS_GOLV} — ett schema har avaktiverats eller raderats och faller tyst ur bevakningslistan (kort #222)`);
     const lagen = await Promise.all(schemalagda.map(async ({ w, crons }) => {
       const timmar = Math.min(...crons.map(kadensTimmar).filter((t): t is number => t !== null));
       const r = ((await gh(`/actions/workflows/${w.id}/runs?per_page=1`)).workflow_runs ?? [])[0];
@@ -312,6 +335,10 @@ Deno.serve(async (req) => {
       const alderH = (Date.now() - new Date(r.created_at).getTime()) / 3600000;
       if (r.conclusion && r.conclusion !== "success" && r.conclusion !== "skipped")
         sena.push(`**${namn}**: senaste körningen ${r.conclusion} (${String(r.created_at).slice(0, 16)})`);
+      // Kort #222: en HÄNGANDE körning (inget utfall än) passerade förut båda testen — den är varken
+      // misslyckad eller gammal, eftersom klockan nollställdes när den startade.
+      else if (!r.conclusion && alderH > timmar + MATVAKT_FRIST_H)
+        sena.push(`**${namn}**: körningen hänger — startad ${alderH.toFixed(0)} h sedan utan utfall (kadens ${timmar} h)`);
       else if (alderH > timmar + MATVAKT_FRIST_H)
         sena.push(`**${namn}**: ${alderH.toFixed(0)} h sedan senaste körning, kadens ${timmar} h (frist ${MATVAKT_FRIST_H} h)`);
     }
@@ -710,8 +737,14 @@ Deno.serve(async (req) => {
 
     // 9c. De VILANDE källorna. Check 1 ovan ger dem ingen gräns alls ("GitHub-flödet, vilar") —
     //     healthchecken hade 150 min, och utan den raden kan en kamerakursor frysa osett.
+    //     RÄTTAT 20/9 (kort #222): villkoret var `kallor.length < 4`, men det finns FEM källor och
+    //     rader raderas aldrig — det kunde alltså aldrig bli sant. Nu en NAMNGIVEN lista, så att
+    //     bortfallet av en enskild kursor larmar med sitt namn i stället för att döljas av antalet.
+    const VANTADE_KALLOR = ["cameras", "deviations", "road_conditions", "road_conditions_arkiv", "weather"];
     const kallor = await sql`SELECT source, synced_at FROM sync_state ORDER BY source`;
-    if (kallor.length < 4) problem.push(`**sync_state har ${kallor.length} av 4 källor** — en kursor har fallit bort`);
+    const saknade = VANTADE_KALLOR.filter((s) => !kallor.some((r: any) => r.source === s));
+    rad.push(`sync_state: ${kallor.length} källor (väntade ${VANTADE_KALLOR.length})`);
+    if (saknade.length) problem.push(`**sync_state saknar ${saknade.join(", ")}** — en kursor har fallit bort (kort #222)`);
     for (const r of kallor) {
       if (["deviations", "road_conditions", "weather"].includes(r.source)) continue;   // hårda i check 1
       const min = (Date.now() - new Date(r.synced_at).getTime()) / 60000;
@@ -720,6 +753,9 @@ Deno.serve(async (req) => {
     }
 
     // 9d. Livemotorns egen cron-puls. Tål att job_run_details inte är läsbar.
+    //     ⚠️ VAD DEN INTE BEVISAR (kort #222): pg_net är ASYNKRONT, så `succeeded` betyder att anropet
+    //     LADES I KÖ — inte att ingest-live svarade. Ett 500-svar syns aldrig här. Därför mäts också
+    //     EFFEKTEN nedan: rör sig arkivet? Det är det enda som bevisar att jobbet gjorde något.
     try {
       const c = await sql`SELECT status, end_time FROM cron.job_run_details
         WHERE jobid = (SELECT jobid FROM cron.job WHERE jobname = 'halkvakt-ingest-live')
@@ -729,6 +765,13 @@ Deno.serve(async (req) => {
         if (c[0].status === "failed") problem.push(`**Livemotorns senaste cron-körning FAILED** @ ${c[0].end_time}`);
       }
     } catch { rad.push("livemotorns cron: job_run_details ej läsbar — hoppar"); }
+    //     9d (b). EFFEKTEN. situation_archive rörs av livemotorn varje minut; står den still kör
+    //     cron men anropet når inte fram. Gränsen är generös mot en enstaka missad minut.
+    const LIVEMOTOR_EFFEKT_MIN = 30;
+    const [eff] = await sql`SELECT round(extract(epoch FROM now() - max(last_seen)) / 60) AS min FROM situation_archive`;
+    rad.push(`livemotorns effekt: situation_archive rörd för ${eff?.min ?? "aldrig"} min sedan (gräns ${LIVEMOTOR_EFFEKT_MIN})`);
+    if (eff?.min === null || eff?.min === undefined || Number(eff.min) > LIVEMOTOR_EFFEKT_MIN) problem.push(
+      `**Livemotorn kör men arkivet rör sig inte**: situation_archive ${eff?.min ?? "aldrig"} min gammal (gräns ${LIVEMOTOR_EFFEKT_MIN}) — cron säger succeeded, men pg_net köar bara anropet (kort #222)`);
 
     // 9e. Fältgolvet (kort #48). EXISTS-vaktat: larma aldrig på ett fält som aldrig funnits —
     //     en fail-soft-gren för något ofött är ett tyst ALDRIG åt andra hållet.
