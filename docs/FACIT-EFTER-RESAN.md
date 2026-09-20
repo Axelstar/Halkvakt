@@ -35,7 +35,7 @@ det, och skevheten går åt farligaste hållet: falsklarmen (KB-B:s tak 25 %) sk
 Därför: **svaret är en handling, men handlingen kan vara EN per resa.** *Ja, alla stämde* med ett tryck, eller peka ut
 avvikelsen. *Vet inte* skickas aldrig. En resa utan tryck ger inga rader.
 
-**Förslag till TROSKLAR-KOMBINATIONEN (fastställt dokument ⇒ Bengt + Axel): KB-D5 — ett svar är en handling; tystnad
+**Förslag till TROSKLAR-KOMBINATIONEN (fastställt dokument ⇒ Bengt + Axel): KB-D7** *(numret rättat 20/9 — KB-D5 och KB-D6 fanns redan: trafiklärarnas svar och provraderna)* **— ett svar är en handling; tystnad
 är inget svar.** Kontroll i domen: resor svarade med *Ja, alla* jämförs med resor svarade rad för rad; skiljer sig
 andelen *stämde* markant är *Ja, alla* en vana och räknas ner.
 
@@ -115,13 +115,13 @@ vad visar närmaste kamerabild? Förarfacit ensamt fäller eller friar fortfaran
 
 | # | Beslut | Claudes rekommendation |
 | :-- | :-- | :-- |
-| 1 | Undantagsprincipen med underskrift — ett tryck *Ja, alla stämde*; KB-D5 *tystnad är inget svar* | ja; KB-D5 kräver Bengt + Axel |
+| 1 | Undantagsprincipen med underskrift — ett tryck *Ja, alla stämde*; KB-D7 *tystnad är inget svar* | ja; KB-D7 kräver Bengt + Axel |
 | 2 | Placeringen: knapparna i notisen på låsskärmen · kortet överst på *Redo.* · listan vid avvikelse | ja, alla tre i första bygget |
 | 3 | Siri-fraser på iPhone: *stämde inte i Halkvakt* · *appen missade i Halkvakt* (+ *stämde i Halkvakt*?) | de två första |
 | 4 | Missarna: klockslag + typ + station-id (+ segment-id) i `driver_miss`; brytarens text vidgas | ja — integritetsbeslutet är Axels |
 | 5 | Stor knapp *Appen missade* i körläget (Androids väg, iPhone reserv) | ja |
 | 6 | Lager 3 — svarsknapparna i körläget vid stillastående | nej i första bygget; låsskärmen + Siri räcker |
-| 7 | Byggordning: **A)** 0.3.8 (11) ut nu som det är, #203 i 0.3.9 · **B)** vänta, allt i 0.3.8. **OBS: 0.3.8 innehåller INTE #203** — den bär de gamla knapparna under *Senast sagt* (nu fungerande) och ordlistan. Lägg 0.3.8 bara i den INTERNA TestFlight-gruppen (Bengt, Axel): novembertestarna behöver aldrig se det gamla flödet | **A** — 0.3.8 bevisar sändkanalen från en riktig telefon, vilket aldrig skett, och bekräftar diagnosen av 0.3.7; #203 byggs ovanpå samma kanal, så ett fel där ska hittas nu, inte i oktober |
+| 7 | Byggordning. **0.3.8 innehåller INTE #203** — den bär de gamla knapparna under *Senast sagt* (nu fungerande) och ordlistan. **A)** 0.3.8 ut nu, #203 i 0.3.9 — två uppdateringar · **B)** vänta, allt i ett bygge — sändkanalen obevisad till dess · **C) (Bengts invändning 20/9: en sammanhållen uppdatering)** ett bygge med #203, och kanalen bevisas NU utan TestFlight: Axel kör simulatorn med `-fotostudio_facit` och TRYCKER *Stämde* — raden `cam:fotostudio` ska landa i `driver_facit` med `app = ios`, `version 0.3.8`. Kräver kort #205 först (raden märks som prov). **Stoppdatum: har de åtta svaren inte kommit 27/9 arkiveras 0.3.8 ändå**, till den interna gruppen | **C** — samma riskminskning som A (knapparna syns, klientens sändning och servern bevisas), en uppdatering i stället för två, och ingen tredje provkörning för Bengt på det gamla flödet. Det som väntar till bygget: beviset från en riktig telefon, och ordlistan i telefonerna |
 | 8 | Android i samma varv (LastSaidCard har samma begränsning: bara sista varningen) | ja, en PR |
 
 ## 9. Kostnad och ordning

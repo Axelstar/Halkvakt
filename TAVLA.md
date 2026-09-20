@@ -103,7 +103,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   bränner förtroendet (cry wolf).
   **Kontroll i domen:** resor svarade med "Ja, alla" jämförs med resor svarade rad för rad — skiljer sig andelen
   *stämde* markant är "Ja, alla" en vana, inte en iakttagelse, och räknas ner. KB-D4:s tak (ingen förare > 25 %) står.
-  **Förslag till KB-D (kräver Bengt + Axel, fastställt dokument): KB-D5 — ett svar är en handling; tystnad är inget svar.**
+  **Förslag till KB-D (kräver Bengt + Axel, fastställt dokument): KB-D7 — ett svar är en handling; tystnad är inget svar.**
   **(2) Med rösten under resan — iOS, nästan gratis.** Två App Shortcuts bredvid Starta/Stoppa: *"Hej Siri, stämde i
   Halkvakt"* / *"stämde inte i Halkvakt"* ⇒ svar på senaste varningen om den är yngre än 10 min, Siri säger *"Tack."*.
   Med undantagsprincipen räcker EN fras i praktiken: *"stämde inte i Halkvakt"* när maskinen hade fel, medan minnet är färskt.
@@ -452,6 +452,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   inga knappar. Varningen sparas alltid innan den sägs, id-lagringen finns sedan 0.3.6 ⇒ bygget 0.3.7 (10) saknar
   `FacitRow`. **Main bär 0.3.8 (11). AXEL: `git pull` · `xcodegen generate` · Product → Archive · TestFlight.** Bekräfta
   gärna arkivets tid i Organizer (13:45–13:53 16/9 bekräftar orsaken). Förslagen till bygget står i bedömningen §4.2.
+  🔁 **LINJEN ÄNDRAD 20/9 (Bengts invändning: en sammanhållen uppdatering, inte två — bedömningen §4.2, byggordning C):** 0.3.8
+  innehåller INTE #203. Arkivera inte nu; **bevisa kanalen i simulatorn i stället:** efter kort #205 — kör `-fotostudio_facit`
+  och TRYCK *Stämde*; raden `cam:fotostudio` ska landa i `driver_facit` med `app = ios`, `version 0.3.8`, märkt prov. Det ger samma
+  besked som en arkivering (knapparna syns, sändningen fungerar, diagnosen #240 bekräftad) utan TestFlight och utan provkörning.
+  Arkiveringen sker EN gång, med #203. **Stoppdatum 27/9:** utan de åtta svaren arkiveras 0.3.8 ändå, enligt receptet nedan.
   📋 **ARKIVERA NU — kontrollerat 20/9 (Bengts fråga: vad behöver Axel göra?):** bygg från **main @ 79e4195 eller senare** —
   `git diff 79e4195..origin/main -- ios/ android/ engine/` är TOM (bara text och serverkod sedan dess); ios-engine ✅ och ci ✅
   på 79e4195, android ✅ på 8026aa9 (oförändrad). Steg: `git pull` · `cd ios/HalkvaktApp && xcodegen` · välj Team igen ·
