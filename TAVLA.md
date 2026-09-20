@@ -973,14 +973,16 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **KLART 18/9 (Bengts "kör", DECISIONS #238, PR #348):** sex dygn hämtas samtidigt. Före: ordinarie 05:07Z timeout
   vid 120 s, kassaprovet 05:19Z svarade efter 90–120 s. Efter deploy 05:23Z: kassaprovet svarade inom cirka 70 s med alla
   rader, samma räkning (4 558 min, 3 385 körningar). Ordinarie 11:07Z ska svara utan timeout.
-- [ ] ⏰ **#200 MARKNADSFÖRINGEN PÅ PULSKLOCKAN — morgonutkasten ska nå pendlingen** (Bengt + Axel 17/9, DECISIONS #226).
+- [x] ⏰ **#200 MARKNADSFÖRINGEN PÅ PULSKLOCKAN — morgonutkasten ska nå pendlingen — ✅ KLART 20/9** (Bengt + Axel 17/9, DECISIONS #226).
   `marknadsforing.yml` är bokad 04:45 UTC ("före pendlingen") men GitHub-cronen levererade den 08:49–10:07 UTC (10–16/9).
   Kostnaden är liten, cirka 20 s per körning. **Åtgärd:** flytta till Supabase pg_cron som FI, DK och regn-30
   (`pulsklocka.yml`, DECISIONS #26/#63) och ta bort `schedule` ur flödet. **Verify:** körningen startar inom 10 min från
   bokad tid tre dagar i rad.
   🔨 **I DRIFT 18/9 (Bengts "kör", DECISIONS #236):** `puls-marknadsforing` (`45 4 * * *`) skapat av pulsklockan 03:53Z
   (fyra pulsjobb OK, alla med nyckel), `schedule` borttagen ur flödet (PR #339). **Morgon 1 (18/9):** start 04:45:09Z (9 s efter bokad tid), grön, utkastet committat 04:45:25.
-  **Morgon 2 (19/9):** start 04:45:01Z (1 s efter bokad tid), grön. Kvar: morgon 3 (20/9).
+  **Morgon 2 (19/9):** start 04:45:01Z (1 s efter bokad tid), grön. **Morgon 3 (20/9):** start 04:45:01Z (1 s efter bokad tid), grön, utkastet *Halkläget 2026-09-20* incheckat 04:45:13 (f0053dd).
+  ✅ **KLART 20/9 — tre morgnar i rad inom 10 min från bokad tid** (9 s · 1 s · 1 s), mot GitHub-cronens 4–5 timmar. Första
+  avläsningen 04:45:30Z fångade körningen medan den pågick, så raden ströks först när slutsatsen fanns.
 - [x] 🛰️ **#199 SMHI-VARNINGAR SOM FÖRSVINNER — ingesten stämplar senast sedd — ✅ KLART 17/9** (Bengts ja 17/9, DECISIONS #224/#225).
   Arkivet sparar varje publicering av en SMHI-varning men inte när den försvinner ur flödet. En varning som dras
   tillbaka i förtid ser ut att gälla till sin sluttid, och SMHI-förlängningen (N_varning) skulle mätas fel. Går inte att
