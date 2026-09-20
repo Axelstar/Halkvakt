@@ -279,6 +279,14 @@ i samma commit när de överlappar.
   13:45 och facitknapparna (`FacitRow`) kom 13:53 med samma nummer; bygget i TestFlight saknade knapparna, och två
   provkörningar gick åt innan det syntes (18/9, DECISIONS #240). Regel: byggnumret höjs i samma commit som den sista
   ändringen före ett bygge — eller efter den, aldrig före — och uppmaningen "arkivera nu" nämner commit-hashen.
+- Ett motprov som fälls av KONTRAKTSGRINDEN bevisar inte att PROVET fångar felet — grinden kör före testerna och
+  stoppar bygget innan de startar. 20/9 (#207) såg motprovet grönt ut som bevis: ordgränsen i halkorden togs bort,
+  bygget blev rött, och det såg ut som om testet hade fångat fällan "fläckvis Våt". Det hade det inte. Ett andra
+  motprov, osynligt för grinden (facitradien vidgad till 500 km), krävdes för att fälla provet självt. Regel: när en
+  regel vaktas av BÅDE ett kontrakt och ett prov, mutera en gång per vakt — och läs VILKEN rad som föll.
+- En fälla i testdata måste ligga där den kan fälla något. Samma dag låg "fläckvis Våt" vid stationen som redan hade
+  ett riktigt fynd, och eftersom kolumnen räknar EPISODER och inte rader kunde fällan aldrig ändra ett tal. Regel:
+  lägg varje falsk-positiv-fälla vid ett fall som annars ger NOLL.
 - En kontaktuppgift — e-postadress, telefonnummer, formulär — som ges till Bengt eller Axel ska vara LÄST på
   källsidan, inte tagen ur en automatisk sammanfattning (WebFetch). 17/9 fick Bengt `datex@trafikverket.se`, som
   sammanfattningen av trafficdata.se hittade på: katalogposten har inga kontaktfält och Trafikverket ingen sådan
