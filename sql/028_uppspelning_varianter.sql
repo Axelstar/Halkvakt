@@ -146,7 +146,7 @@ BEGIN
         SELECT 1 FROM road_condition_history h JOIN road_conditions c ON c.segment_id = h.segment_id
         WHERE NOT h.deleted AND c.geom IS NOT NULL
           AND h.modified_time > ep.t AND h.modified_time <= ep.t + p_utfall
-          AND ST_DWithin(c.geom::geography, wl.geom::geography, p_facit_km * 1000)
+          AND ST_DWithin(c.geom::geography, wl.geom::geography, p_facit_km * 100000)
           AND EXISTS (SELECT 1 FROM unnest(h.condition_info) i
                       WHERE i ~* '(^|[^a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)'
                          OR i ~* '(snö|frost)')))::int AS omk,
