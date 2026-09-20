@@ -932,6 +932,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ligger under NTF Jönköping (verksamhetschefen). Talmanus + tackmejl + uppföljningstabell: Drive "Kontaktplan
   Skyltfonden 2026-09-16 v6". VÄNTAR: samtalen (Bengt) · ansökan v6: AP3 saknar partner (58 000 kr), "avsiktsförklaring
   bifogas" → muntligt bekräftat, NTF-namnet, YKB-raden efter banans svar.
+  🗂️ **KONTAKTPLAN v6.4 20/9** (Skrivbordet, ersätter v6.1–v6.3): hela talmanuset med *Vad ni får* i varje samtal, svaren om
+  stan (appen tyst på gatorna; tre stationer i Malmö kommun, alla på statens vägar), hållningen till partnerskap, och
+  **synligheten på hemsidan** (DECISIONS #241: skolans egen sida bakom QR-koden, listan, märket, månadssiffran — byggs när
+  appen finns i butikerna). Tidsplan 21–25/9. Underlag för Bengts samtal med Axel om upplägget.
   💬 **TILLÄGG v6.2 19/9 (Bengts fråga: "what's in it for me"; Axel föreslår partnerskap i appen):** *Vad de får* per
   part, en mening per samtal, svar på ersättningsfrågan, reserv om ingen skola säger ja, och hållningen: **partner i
   projektet, synlig i appen där det är naturligt (Om-sidan, elevbladet) — inte partner i appen; skolpaketet i vår 2027**
