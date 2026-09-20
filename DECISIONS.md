@@ -7455,3 +7455,32 @@ motprov: 11→12 fäller grinden; ett struket jobb utan ändrat tal fäller puls
 **Kvar som egen sak:** `runs?per_page=1` tar fortfarande senaste körningen oavsett trigger, så en manuell
 knapptryckning kan nollställa mätvaktens klocka. Litet, kräver en till deploy, tas när något annat ändå rör vakthunden.
 
+## #256 (20/9 2026) Kort #76 stängt — beviset fanns sedan 16/9, i issue-historiken ingen läste
+
+**Bengts order 20/9:** *"kör 76"*. Kortet *vakthunden i Supabase mäter fel led* hade fixen på main sedan **8/9** och
+stod öppet på ett beviskrav: *stängs när vakthunden bevisligen larmat OCH tystnat på RIKTIGA data (issue med etiketten
+vakthund), inte förr.*
+
+**Det fanns inget att bygga. Beviset var fyra dygn gammalt.** Av repots tio vakthund-issuer är **#317** den enda som
+fällde på just led 3: öppnad av den **schemalagda timkörningen 16/9 21:07:49** med raden *❌ **Appen får gammal data**:
+manifestet 47 min gammalt (publiceras var 10:e min)*, och **stängd 22:07** av nästa gröna körning. Inget larmprov,
+ingen knapp — led 3 larmade på verkligheten och tystnade när den rättade sig. Exakt kortets villkor.
+(#332 fällde på databasen, 168 MB, och #334 på väderdatan, 137 min — också riktiga larm, men andra led.)
+
+**Deployen, som stod som obevisad sedan 8/9, är också bevisad:** vakthundens eget larmprov 20/9 10:42 bär raden
+`manifest: 2 min | sha stämmer` ur det som faktiskt kör. Båda grenarna finns i driftkoden — åldern på `generated_at`
+och sha256-jämförelsen — plus svarskoderna för `manifest.json` och `live.json`.
+
+**Öppna kort 94 → 93.**
+
+**Mönstret, fjärde gången på ett dygn.** #250 sex överspelade kort · #252 två dubbletter · #254 #50 vars slutvillkor
+uppfylldes 14/9 · nu #76, stängbart sedan 16/9. Alla fyra hade sitt bevis i repot eller i GitHub, och inget av dem
+flyttades. **Slutsatsen är inte att någon slarvat, utan att beviskraven pekar på ställen ingen läser:** ett kort vars
+villkor är *"en issue med etiketten vakthund"* stängs bara om någon läser issue-historiken mot korten, och det gör
+ingen rutin i dag. TAVELREGELN punkt 3 förutsätter att verkligheten kommer till tavlan; här måste någon hämta den.
+**Följd att överväga (inte beslutad):** vakthunden kan själv stänga kort vars bevis är dess egna issuer — eller enklare,
+en rad i månadens genomgång som läser stängda issuer mot öppna korts beviskrav.
+
+**Kvar öppet i samma familj, med skäl:** inget. #50, #76, #215 och #222 är alla stängda. Vaktkedjan är för första
+gången hel: healthchecken vaktar vakthunden (#50), vakthunden mäter rätt led (#76), och dess egna checkar kan fyra (#222).
+
