@@ -50,6 +50,16 @@ const NYA: { namn: string; schema: string; fil: string }[] = [
   { namn: "puls-grind-v-b", schema: "40 7 * * 1", fil: "grind-v-b.yml" },
 ];
 
+// Vakthundens check 6a bär samma tal som golv (kort #222, DECISIONS #255): ett puls-jobb som
+// avaktiveras eller raderas ska larma, inte tyst falla ur bevakningslistan. Vakthunden kör i Deno
+// hos Supabase och kan inte importera den här filen, så talet är en KOPIA — kontraktsgrinden vaktar
+// att kopiorna bär samma värde, och raden under vaktar att värdet stämmer med listan ovan.
+const ANTAL_NYA = 11;
+if (NYA.length !== ANTAL_NYA) {
+  console.error(`NYA har ${NYA.length} jobb men ANTAL_NYA säger ${ANTAL_NYA} — uppdatera båda, och vakthundens PULS_GOLV.`);
+  process.exit(1);
+}
+
 // AVVECKLAS (kort #53): de tre grannjobben ersätts av ett. Utan borttagning skulle de
 // gamla fortsätta fyra mot de gamla filerna och besparingen bli noll — pulsklockan kunde
 // bara SKAPA, aldrig ta bort, och det hålet var osynligt tills merget krävde det.

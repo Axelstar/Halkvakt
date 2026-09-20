@@ -411,6 +411,15 @@ export const KONTRAKT: Kontrakt[] = [
     golv: 3,
   },
   {
+    // Vakthunden kan inte importera pulsklockans TypeScript — den kör i Deno hos Supabase. Talet är
+    // därför en kopia, och en kopia som glider isär gör vakten blind för exakt det den ska se.
+    namn: "Pulsjobbens antal — golvet i vakthunden mot pulsklockans egen lista (kort #222)",
+    varfor: "Driver de isär larmar vakthunden aldrig på ett tappat jobb, eller larmar varje timme på ett som aldrig fanns.",
+    former: [/const PULS_GOLV = (\d+)/, /const ANTAL_NYA = (\d+)/],
+    filer: /vakthund\/index\.ts|pulsklocka\.ts/,
+    golv: 2,
+  },
+  {
     namn: "Räckvidden för facit — km från stationen (Bengt 20/9, DECISIONS #245)",
     varfor: "Standardvärdet och vakten som avvisar andra tal måste bära samma km, annars släpper vakten igenom sitt eget fel.",
     former: [/p_facit_km numeric DEFAULT (\d+)/, /p_facit_km <> (\d+) THEN/],
