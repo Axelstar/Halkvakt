@@ -986,7 +986,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
-- [ ] 🔇 **#222 TRE CHECKAR I VAKTHUNDEN KAN ALDRIG FYRA — och schemat jämförs aldrig mot listan** (ur genomlysningen
+- [x] 🔇 **#222 TRE CHECKAR I VAKTHUNDEN KAN ALDRIG FYRA — ✅ KLART OCH I DRIFT 20/9** (ur genomlysningen
   20/9, utbrutet ur #50 när dödmansgreppet stängde det, DECISIONS #254). Vakten är numera bevakad, men den ljuger
   fortfarande om tre saker, och alla tre är verifierade i koden:
   · **Check 9c** kräver färre än 4 källor i `sync_state` — men det finns minst 5 (`ingest/db.ts` + `ingest-live`) och
@@ -1004,6 +1004,27 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   och bevisa EFTER deployen med funktionens egna prov, inte med commit-hashen.
   Verify: ett framkallat fel per check ger ett larm — en borttagen kursor i `sync_state`, ett 500-svar från
   ingest-live, en kursor som står still, och ett avaktiverat `puls-`jobb. Fyra prov, fyra larm.
+  ✅ **BYGGT, DEPLOYAT OCH BEVISAT 20/9** (Bengts *"kör 222"*, DECISIONS #255, PR #402). Deploy 11:2xZ; beviset är
+  vakthundens EGET larmprov EFTER deployen, inte commit-hashen (CLAUDE.md:s regel), och lokala filen diffades mot
+  main före deploy — noll skillnad.
+  📊 **FYRA NYA RADER MED INNEHÅLL, ur det som faktiskt kör:**
+  · `kursorer road_conditions: live 848028 · arkiv 848028` — check 1b. Samma ström, två kursorer; faller livemotorns
+    bakom GitHub-ingestens har den slutat röra sig. Jämförelsen görs i SQL: changeid är 19 siffror och spräcker
+    JavaScripts heltal.
+  · `sync_state: 5 källor (väntade 5)` — 9c. Namngiven lista i stället för `< 4`, som aldrig kunde bli sant.
+  · `livemotorns effekt: situation_archive rörd för 3 min sedan (gräns 30)` — 9d (b). Cron-statusen står kvar men
+    säger nu i klartext att den bara bevisar att anropet köades.
+  · `pulsjobb: 11 aktiva (golv 11)` — mätvakten. Ett avaktiverat jobb faller inte längre tyst ur bevakningen.
+  🧪 **VARJE CHECK BEVISAD ATT DEN DISKRIMINERAR** (motfrågor mot drift, inget rört):
+  · kursorn: `larmar_nu = false`, men `true` om arkivet går ett enda steg före.
+  · 9c: `saknade = []`, men `[kalla_som_fallit_bort]` om en källa läggs till listan och inte finns.
+  · effekten: `1 min` nu · **`null` om arkivet vore tomt** (null-grenen larmar) · **`47` om inget rörts på 45 min**.
+  · pulsgolvet: `11 aktiva`, larmar inte vid golv 11 men larmar vid golv 12.
+  🔒 **PULS_GOLV under kontrakt** (39 kontrakt håller, värde 11). Motprov: 11→12 i vakthunden ⇒ grinden faller;
+  ett jobb struket ur `NYA` utan att `ANTAL_NYA` ändras ⇒ pulsklockans egen självkontroll faller.
+  ⏭️ **Kvar, som EGEN sak och inte här:** `runs?per_page=1` tar fortfarande senaste körningen oavsett trigger, så en
+  manuell knapptryckning kan nollställa mätvaktens klocka. Hängande körningar larmar nu, men triggertypen filtreras
+  inte. Litet, och det kräver en till deploy — tas när något annat ändå rör vakthunden.
 - [ ] 🔊 **#210 iOS SÄGER "PÅ VÄG <NULL>" — var tjugonde olycka** (genomlysningen 20/9). `SnapshotRepo.swift:117` gör JSON-`null`
   till strängen `"<null>"`, och `road` läses med just den funktionen (rad 68). Kotlin och TypeScript gör rätt — iOS är ensamt fel.
   **Uppmätt 20/9: 38 av 732 olyckor senaste 30 dygnen saknar vägnummer (5,2 %).** Vektor v22 låser bara FRÅNVARANDE `road`,
