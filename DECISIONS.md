@@ -7112,3 +7112,42 @@ ligger i bedömningen §4.2 med Claudes rättade rekommendation: **natt = middag
 läst, så bytet kostar ingenting i blindning; det kostar en ändring i `ep`-steget i sql/028, ett testfall över midnatt och
 ett kontrakt för tolvtimmarsgränsen (den finns då i tre filer).
 
+## #246 (20/9 2026) Episoden är en natt, middag till middag UTC — Bengts omprövning av version 1
+
+**Bengts beslut 20/9:** *"ompröva beslutet och byt"* — efter mätningen i #245 (version 1 delar 159 av 454 stationsnätter i
+två, eftersom 66 % av fallen ligger 21–03 UTC). Beslutet *version 1* togs och omprövades samma förmiddag och hann aldrig
+läsa ett utfall.
+
+**Regeln:** en episod är stationens första ögonblick per natt, och en natt går från middag till middag UTC — tiden skiftas
+12 h, samma räknesätt som T-A (`scripts/grind-t-a.ts`: *"Natten tillhör det dygn den började"*). Inskriven i
+TROSKLAR-KOMBINATIONEN §4 KB-B (§10: en rad här räcker fram till betans första natt).
+
+**Byggt (PR #384):**
+- `sql/028`: `ep`-steget räknar per (station, natt). Episoden bokförs på det UTC-dygn den BÖRJADE; stationer och ögonblick
+  redovisas som förut per UTC-dygn, så jämförelsen mot den gamla mätfilen står kvar. **Följdändring:** öppnat
+  (`p_blind := false`) ger ett dygn där ingen episod började **0, inte NULL** — NULL ska bara betyda *blindat*. Förut hade
+  varje dygn med fyrning minst en episod, så frågan fanns inte.
+- Integrationstestet: station G med två ögonblick samma natt, 23:30 (frös) och 00:30 UTC (uteblev). En episod, bokförd där
+  natten började, och ingen andra efter midnatt.
+- Kontraktsgrinden: *Nattens gräns* — 12 h i tre filer (T-A, R-A, uppspelningen), formen bunden till `AS natt` så att
+  vakthundens tolvtimmarsfönster inte fångas. 36 kontrakt håller; motprov 12→6 ⇒ exit 1.
+
+**Bevis:**
+- CI på ändringen: `ok 37`, 117 av 117 mot riktig Postgres.
+- **Motprov i CI (PR #385, stängd och raderad):** samma test mot en slängkopia med episoden per UTC-dygn ⇒ `not ok 37`,
+  fälld på raden *"G: ingen andra episod efter midnatt UTC"*, 116 av 117. Testet fångar alltså den gamla räkningen.
+- **I drift 20/9 07:06Z:** `pg_proc.prosrc` för den körande funktionen bär `DISTINCT ON (f.sid, f.natt)`, tolvtimmarsskiftet
+  och `coalesce(u.med, 0)` — alla tre sanna. Varianttabellen oförändrad (kombinationen 1 · utan faller 9 · utan blöt 7 ·
+  startband +1…+6: 5), `utfall_synligt` = 0, utfallskolumnerna NULL.
+
+**Vad som INTE syns i drift, och varför:** bytets effekt på antalet episoder per variant. Episoderna räknas bara i
+utfallskolumnerna, och de är blindade till dom 1. Effekten på hela trendarkivet är mätt utan utfall (#245): 530 stationsdygn
+⇒ 454 stationsnätter.
+
+**Läxan** (samma som #242:s KB-D5/KB-D7): en rekommendation till Bengt ges EFTER sökningen i repot, inte före. Två grindar
+räknade redan nätter middag till middag, och en grep på `AS natt` hade visat det på sekunder.
+
+*Alternativ:* lokal tid som R-A (Europe/Stockholm) — avstått: uppspelningen är UTC rakt igenom, skillnaden är en till två
+timmar mitt på dagen då inget faller, och T-A är den del kombinationen ärver fallkravet från · hela redovisningen per natt
+i stället för per UTC-dygn — avstått: det hade brutit jämförelsen mot den gamla mätfilen utan att ändra någon dom.
+

@@ -973,12 +973,18 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [x] 🌙 **#208 EPISODEN ÄR EN NATT, INTE ETT UTC-DYGN — ✅ KLART 20/9** (Bengts *"ompröva beslutet och byt"*, DECISIONS #245/#246,
+  PR #384). Version 1 räknade stationens första ögonblick per UTC-dygn och delade **159 av 454 stationsnätter i två** — 66 % av fallen
+  ligger 21–03 UTC. Nu: natt = middag till middag UTC, som T-A; inskrivet i TROSKLAR-KOMBINATIONEN §4 KB-B.
+  ✅ **I DRIFT 20/9 07:06Z:** den körande funktionen bär `DISTINCT ON (f.sid, f.natt)` och tolvtimmarsskiftet (läst ur `pg_proc`);
+  varianttabellen oförändrad, utfallet blindat. CI `ok 37`; **motprov i CI (PR #385, stängd): per UTC-dygn ⇒ `not ok 37` på raden
+  *"G: ingen andra episod efter midnatt UTC"*.** Kontrakt *Nattens gräns* över T-A, R-A och uppspelningen — 36 kontrakt håller.
 - [ ] 🧷 **#207 FACITKOPPLINGEN I UPPSPELNINGEN — omklassning och olycka inom 5 km från stationen** (upptäckt 20/9 som #206:s rest;
   radien beslutad av Bengt samma dag, DECISIONS #245). Uppspelningen läser i dag bara stationens egen facit (lägsta yta inom 90 min).
   KB-B döms mot hela facitstacken: väglagets omklassningar (`road_condition_history`) och olyckor (`situation_archive`) inom 5 km och
   utfallsfönstret (svep 60 · 120 · 180 min). Kamerabilden väntar på bildfacit-beslutet (bedömningen §4.2, före 1/2).
-  🔑 **Väntar på episodbeskedet** (bedömningen §4.2: version 1 delar 35 % av nätterna i två — *byt* eller *behåll*), så att kopplingen
-  byggs på rätt episod från början. **Blindningen gäller:** utfallskolumnerna NULL som standard, inga andelar läses före dom 1.
+  ✅ **Olåst 20/9:** episodbeskedet kom — natt, middag till middag UTC (kort #208, DECISIONS #246) — så kopplingen byggs på rätt
+  episod från början. **Blindningen gäller:** utfallskolumnerna NULL som standard, inga andelar läses före dom 1.
   Verify: en sats som per variant ger antal episoder med facit per källa (blindat ⇒ NULL); integrationstest med påhittade omklassningar
   och olyckor innanför och utanför 5 km och fönstret; 5 km-kontraktet utvidgat till de nya förekomsterna.
 - [x] 🎞️ **#206 UPPSPELNINGENS VARIANTER — instrumentet för dom 1 och dom 2 — ✅ KLART 20/9** (Bengts *"ja gör uppspelningens varianter nu"*,

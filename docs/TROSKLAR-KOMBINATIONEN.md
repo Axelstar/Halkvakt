@@ -21,7 +21,8 @@ inställningar prövas i mars, kopplingen 5 km, startvärdena, förslagen i C oc
 Axels kontrasignatur · D-raden i tio tröskeldokument · uppspelningen ur arkiven med skuggloggen som kontroll (§3, §4).
 
 **Ändrat 20/9** (DECISIONS #245, Bengt): §4 KB-B — **räckvidden för kombinationens facit är 5 km från stationen.** Skrivet före
-första utfallsläsningen; §10 tillåter justering med en rad i DECISIONS fram till betans första natt.
+första utfallsläsningen; §10 tillåter justering med en rad i DECISIONS fram till betans första natt. **Samma dag (#246):**
+episoden definierad — stationens första ögonblick per natt, middag till middag UTC.
 
 **Varför ett eget dokument.** Integrationskartan är fryst (DECISIONS #186) och säger själv att *"C och D är dokument
 och kan skrivas före frosten"*. Tröskelregeln var låst bakom N1: den saknade vittne (kartan §13.2). N1 är klar sedan
@@ -200,6 +201,12 @@ dokument **före** mätningen.
   ett svep (15 · 20 · 50 km), inget tal — därför står talet här. **Priset, utskrivet:** en snäv radie ger färre
   facittillfällen mot KB-C2:s golv på 40; räcker de inte blir domen OAVGJORD, inte mjukare. Gäller kombinationens domar
   (januari, mars) och uppspelningen — inte tystnadsfelsmåttet i övrigt.
+- **Episoden.** Utfall räknas per episod, aldrig per rad (kartan §10.2). **En episod är stationens första ögonblick per
+  natt, och en natt går från middag till middag UTC** — tiden skiftas 12 h, samma räknesätt som T-A
+  (`scripts/grind-t-a.ts`), så att en natt inte delas av midnatt (Bengt 20/9, DECISIONS #246). Skälet är mätt: räknat per
+  UTC-dygn delades 159 av 454 stationsnätter i två, eftersom 66 % av fallen ligger 21–03 UTC (#245) — och varje delad
+  natt hade gett två utfall och blåst upp antalen mot golven i KB-C2 och KB-D4. Tolvtimmarsgränsen vaktas av
+  kontraktsgrinden över T-A, R-A och uppspelningen.
 
 **Tidsvinst redovisas bredvid, men räknas aldrig som nettonytt** (TROSKLAR-TRENDEN T-B): en kombination som bara är
 tidigare än punktregeln på tillfällen den ändå fångar klarar inte KB-B1.
