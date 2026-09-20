@@ -7581,3 +7581,40 @@ exit 1. Begränsning, uttalad i filen: ci hoppar över rena md-commits, så en d
 **Nummerrymderna:** kortets Verify bad om ett K/D-prefix. Valt i stället: husstilen som redan står i nästan varje rad —
 `DECISIONS #NN`, `kort #NN`, `issue #NN`, `PR #NN` — görs till regel i CLAUDE.md och överst i DECISIONS.md. Ett nytt prefix som
 ingen text använder hade blivit en femte rymd.
+
+## #260 (20/9 2026) Beslutsunderlag till kort #198: TROSKLAR-SKUGGAN §4 krockar med regel T — förslaget är en skärpning
+
+**Bengts order 20/9** att arbeta vidare i genomlysningens lista, med #198 valt eftersom den parallella sessionen arbetar
+uppifrån i samma lista. **PÅGÅR-kort satt före arbetet** — det steget missades tidigare samma dag och kostade två
+stängda PR:er i dubbelarbete.
+
+**Ingen text i det fastställda dokumentet är ändrad.** `TROSKLAR-SKUGGAN.md` §5 säger att dokumentet efter första
+skuggkörningen bara ändras genom en DECISIONS-post från Bengt, som äger mätningen. Underlaget ligger i
+`docs/SKUGGAN-PAR4-MOT-REGEL-T.md`; frågan står i bedömningen §4.2.
+
+**Krocken är inte en tolkningsfråga.** T3 nämner offsetmodellen **vid namn**: *"Extrapolation är ett värde för en plats
+där ingen mätt … offsetmodellens temperatur långt från ankare. Den får inte utlösa."* Segmentprognosen ÄR den storheten
+— grind A prövar den med leave-one-out mot grannarnas offsetmodell. T6 säger samma sak från andra hållet: modellprodukter
+får stärka, försvaga eller förlänga, aldrig ensamma utlösa. §4 (a) och (b) låter den tala.
+
+**Förslaget:**
+- **(a)** går från *"kopplas till app"* till **karta + konfidens**. Båda är uttryckligen tillåtna i regelns egen text —
+  T3 säger *"får fortsatt stärka eller försvaga en varning som vilar på en mätning"*, och T6 ger två färdiga förebilder
+  (`N_varning` som förlänger N, E1 som förlänger försprånget). En karta talar inte: föraren söker upp den.
+- **(b)** står kvar, och det är **T5:s egen carve-out** som räddar den: ett värde som ett vittne på platsen kan fälla är
+  *"inte längre extrapolation i T3:s mening"*. Men dagens lydelse villkorar på **grind A:s noggrannhet** (MAE ≤ 1,0 °C),
+  och regeln kräver ett **vittne**. De två sammanfaller inte — en modell kan vara noggrann på 6 km utan att någon mätning
+  på platsen kan fälla ett enskilt värde. Förslaget lägger till T1–T2 som andra villkor.
+- **(c)** orörd.
+
+**Det är en skärpning**, vilket är avgörande: §5 tillåter skärpning med en rad från Bengt, medan *lättnad är utesluten
+så snart utfallet är sett*.
+
+**Rekommendation: ta beslutet nu, inte i mars** (kortets formella frist). Skälet är inte formellt utan praktiskt: står
+(a) kvar som *"kopplas till app"* kan röstvägen hinna byggas under vintern på en text som inte får användas. Och
+TROSKLAR-KOMBINATIONEN §10 säger att regel T får skärpas men aldrig mjukas upp **oavsett signaturer** — ju längre §4 står
+oförändrad, desto större risk att någon läser den som ett förhandlat undantag i stället för en orättad text.
+
+**Vad som INTE föreslås:** grind A:s trösklar, banden eller minsta underlag · (c) · frysklassningens roll (#103, redan
+låst av T5) · något i TROSKLAR-KOMBINATIONEN. Det är skuggans text som ska följa regeln, inte tvärtom.
+

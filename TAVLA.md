@@ -1187,11 +1187,22 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   `ingest/db.ts` skriver båda; integrationstestet vaktar. **Verify:** efter nästa ingestkörning har aktuella varningar
   `senast_sedd` satt och `smhi_synk` rader med innehåll. Innan N_varning mäts: fältet deklareras i värdevakten.
   ✅ **I DRIFT 17/9:** ingestkörningen 06:11Z stämplade `senast_sedd` på exakt de 15 varningar som fanns i flödet (av 157 i arkivet), och `smhi_synk` fick sin första rad (15 varningar).
-- [ ] 🔨 **PÅGÅR (Claude på datorn, 20/9 15:52Z, Bengts order) — beslutsunderlag, ingen textändring utan Bengts rad** 📜 **#198 TROSKLAR-SKUGGAN §4 MOT TRÖSKELREGELN — rättas före domen i mars 2027** (fynd 16/9, DECISIONS #220).
+- [ ] 📜 **#198 TROSKLAR-SKUGGAN §4 MOT TRÖSKELREGELN — rättas före domen i mars 2027** (fynd 16/9, DECISIONS #220).
   Domslutet (a) TALAR och (b) TALAR NÄRA ANKARE låter segmentprognosen tala på *modellerade* segment. Det krockade redan
   med den gamla meningen (FRYSKLASSNINGEN §1/§7) och krockar med T3: ett värde där ingen mätt och inget vittne på platsen
   kan fälla det får inte utlösa. Texten ska säga vad (a)/(b) då får betyda — karta, konfidens, eller tal bara där T1–T3
   klaras. Fastställt dokument ⇒ Bengts rad. Verify: §4 säger inget som regel T förbjuder.
+  📄 **BESLUTSUNDERLAG SKRIVET 20/9** (Bengts order, DECISIONS #260): `docs/SKUGGAN-PAR4-MOT-REGEL-T.md`.
+  **Krocken är inte en tolkningsfråga:** T3 nämner offsetmodellen VID NAMN (*"offsetmodellens temperatur långt från
+  ankare … får inte utlösa"*), och segmentprognosen ÄR den storheten. T6 säger samma sak från andra hållet.
+  **(a) kan inte stå kvar som röst** — förslaget är karta + konfidens, båda uttryckligen tillåtna i regelns egen text
+  (T3: *får fortsatt stärka eller försvaga*; T6 med `N_varning` och E1 som förebilder).
+  **(b) är räddningsbar**, och det är T5:s egen carve-out som räddar den: ett värde med ett vittne på platsen är
+  *inte längre extrapolation i T3:s mening*. Men (b) villkorar i dag på grind A:s NOGGRANNHET, inte på VITTNET — och
+  de två sammanfaller inte. Förslaget lägger till T1–T2 som andra villkor.
+  Det är en **skärpning**, som §5 tillåter med en rad från Bengt; en lättnad hade varit utesluten.
+  🔑 **VÄNTAR PÅ BENGTS RAD** (bedömningen §4.2). Rekommendation: ta det nu, inte i mars — annars kan någon bygga
+  röstvägen under vintern och få veta först vid domen att den inte får användas.
 - [x] 🧾 **#196 FÖRARFACIT-HYGIEN — klockslaget och provraderna — ✅ KLART 17/9** (fynd 16/9 vid #97:s deploy, DECISIONS #214).
   (1) Vakthundens rad skriver `String(df.senast).slice(0, 16)` ⇒ "Wed Sep 16 2026 " — datum utan tid (min rad, S4 steg 1).
   (2) `driver_facit` bär två PROV och noll riktiga svar: Android `prov` 03:07Z och ett iOS-format serverprov 11:47Z
