@@ -4,7 +4,7 @@ Tre kolumner. Claude flyttar kort automatiskt varje arbetsvarv; Axel och Bengt
 flyttar genom att säga till i chatten ("flytta X till klart") eller redigera
 direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns det inte.
 
-*Uppdaterad: 2026-09-20 17:25 av Claude (Cowork) — 💾 **#213 arkivbackupen klar och bevisad** (DECISIONS #257), nytt kort #223. Tidigare samma dag: ✅ **STEG B:s VERIFY UPPFYLLD**: 141 min/dygn i snitt över 13–19/9 mot baslinjens 202, ingest oförändrat (24 körningar, median 30–36 s mot 32 s), radarsteget 4–5 s, radar_precip 3 312 rader över 24 av 24 kompositer. Kassan 21,98 USD av 35 och takdatumet är BORTA ur larmet — släpande takt 106 min/dygn, månadsprognos 31 USD.*
+*Uppdaterad: 2026-09-20 18:00 av Claude (Cowork) — 🔁 **#211 klart** (tredje olycksropet borta), 🔊 #210 byggt (väntar på iOS-bygge), 🧪 #212 prioritetsdelen klar (DECISIONS #258); 💾 **#213 arkivbackupen klar och bevisad** (DECISIONS #257), nytt kort #223. Tidigare samma dag: ✅ **STEG B:s VERIFY UPPFYLLD**: 141 min/dygn i snitt över 13–19/9 mot baslinjens 202, ingest oförändrat (24 körningar, median 30–36 s mot 32 s), radarsteget 4–5 s, radar_precip 3 312 rader över 24 av 24 kompositer. Kassan 21,98 USD av 35 och takdatumet är BORTA ur larmet — släpande takt 106 min/dygn, månadsprognos 31 USD.*
   💰 **RÄTTAD 13/9 (DECISIONS #160, Bengts order):** prognosen räknade på månad-till-datum, och i
   det snittet låg fem flöden som lades ner 8–9/9 (`ingest-fi`, `-no`, `-dk`, `publish-map`,
   `regn-30`). Vakten sa **21 september**; uppmätt verklig takt var 232 min/dygn senaste dygnet och
@@ -1036,14 +1036,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   inte `road: null`, så sviten kan inte se felet.
   Verify: ny vektor med `road: null` som faller före fixen och passerar efter; rösten säger "Allvarlig olycka 8 kilometer
   framför dig" utan vägled. Bör sitta i bygget INNAN nästa arkivering.
-  🔨 **PÅGÅR 20/9 (Claude via Cowork, Axels val "motorfixarna först"):** `SnapshotRepo.swift` läser `road` som `as? String` (nil vid null, som `slut` på raden ovan); ny vektor med `road: null` låser alla tre motorerna.
-
-- [ ] 🔁 **#211 DET TIDIGA OLYCKSROPET KAN SÄGAS TRE GÅNGER** (genomlysningen 20/9). `engine.ts:246-254`: vid låg fart
-  (uppmätt ≤ 45 km/h, 10,5 km, severity 5) blir det TRE repliker — "Överväg annan väg" två gånger plus påminnelsen. Den tidiga
-  grenen återarmeras när 600 s + 5 km passerats innan 2 km-gränsen nås. **Bryter DECISIONS #28**, och projektets eget test
-  påstår att tvåstegsropet är "exakt två". Alla tre plattformarna är identiskt fel — pariteten döljer felet.
-  Verify: vektor med låg fart över 10 km som låser exakt två repliker; fixen i engine/src, buntad och portad i samma varv.
-  🔨 **PÅGÅR 20/9 (Claude via Cowork):** det tidiga ropet blir engångs per fara i alla tre motorerna; vektor 45 km/h över 10 km.
+  🔨 **BYGGT 20/9 (Claude via Cowork, DECISIONS #258, commit 9d3f56c):** `SnapshotRepo.swift` läser `road` som `as? String` — nil vid
+  JSON-null, samma mönster som `slut` på raden ovan. v26 (severity 5, `road: null`) låser JSON-null i alla tre vektorläsarna och
+  motorerna (ci, android, ios-engine gröna). **Ärligt om beviset:** vektorn kunde inte falla före fixen — Swift-MOTORNS
+  vektorläsare gjorde redan rätt, felet satt bara i APPENS JSON-plockare, och appen har inget testmål. Raden är rättad
+  och granskad, inte körd. **Stängs när ett iOS-bygge med 9d3f56c säger en olycka utan vägnummer rätt** (5 % av olyckorna —
+  finns i arkivet varje vecka) eller Bengt hör en i bilen. Bygget bör tas innan nästa arkivering.
 
 - [ ] 🧪 **#212 VEKTORSVITEN CERTIFIERAR INTE KORRIDOREN ELLER 5 KM-REGELN** (genomlysningen 20/9). Känslighetsanalys mot alla
   24 vektorer + Skåneturen: **korridorvinkeln 35° kan vara allt mellan 5° och 90°** utan att ett enda prov reagerar, och
@@ -1053,7 +1051,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   `test/engine.test.ts` skulle FÄLLA en vektor som prövade det (kräver ≥ 10 s mellan alla varningar).
   Verify: mät marginalen per tröskel (repots egen 5-metersregel), skriv en vektor per regel som faller på ett steg åt vardera
   hållet, och rätta testets motsägelse mot prioritetsregeln.
-  🔨 **PÅGÅR 20/9, DELEN prioritetsgenombrottet (Claude via Cowork):** vektor där isen kvalificerar 6 s efter kameran och talar ändå; testets ≥ 10 s-krav skrivs om till motorns regel (bara viktigare får bryta). Trösklarna (korridor, repris) är kvar.
+  ✅ **DELEN prioritetsgenombrottet KLAR 20/9 (DECISIONS #258, 9d3f56c):** v27 — kamera t=113, is kvalificerar t=119 (6 s
+  senare, marginal 11 m åt båda hållen) och talar ändå; `test/engine.test.ts` kräver nu ≥ 10 s ELLER viktigare, som motorn. Tre
+  språk gröna. **KVAR:** trösklarna — korridorvinkeln, reprisavståndet, bäringstoleransen, lägsta fart, kortaste förvarning — och
+  v03/v20:s tandlöshet.
 
 - [ ] 📵 **#214 PLAY-DEKLARATIONEN ÄR OSANN SEDAN 16/9** (genomlysningen 20/9). `docs/PLAY-DATASAFETY.md` svarar **"No"** på
   Googles insamlingsfråga och påstår att enda utgående trafik är en GET utan parametrar. Filen rördes senast **27/8**. Sedan 16/9
@@ -3651,6 +3652,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#211 TREDJE OLYCKSROPET BORTA — KLART 20/9** (DECISIONS #258): det tidiga ropet är engångs per fara i TS, Kotlin och Swift (reprisregeln 600 s + 5 km återarmade det under 48 km/h innan 2 km nåddes). **Bevis:** v25 (44,5 km/h, olycka 10 945 m — enda geometrin i 30–47 km/h med ≥ 5 m marginal vid båda horisonterna, uppmätt med motorns haversine): gamla motorn t=76 + **t=676 "Överväg annan väg" igen med 2 586 m kvar** + t=724; nya motorn exakt två. ci #35519941072, android #35519579658 och ios-engine #35519579572 gröna på 9d3f56c — tre språk, byte för byte. Skuggmotorn buntad och deployad i samma varv (deploy-supabase #35519582721: "Deployed Functions … skuggmotor").
 - [x] ✅ **#213 ARKIVBACKUPEN — KLART 20/9** (DECISIONS #257): `arkivbackup.yml` — veckovis (söndag 03:17Z + knapp) `pg_dump` av alla fyra scheman (dk, fi, no, public) över sessionspoolern till en GitHub-release i repot, utanför Supabase; radantal per tabell i loggen; dumpen återläst i en PostGIS-container i SAMMA körning och radräknad mot källan; larm-issue med egen etikett `arkivbackup` vid fel; de 12 senaste behålls. **Bevis:** körning 35518932054 grön 15:15Z, 84 s: **30 av 30 tabeller, 601 712 rader i källan = 601 712 återlästa** (weather_observations 389 779, fi 64 105, radar_precip 50 292, no 50 056, trend_kandidater 11 879). Release `arkiv-2026-09-20T1515Z`, 22,3 MB, sha256 ffe70c82…bb322c — laddad ner oberoende på Axels dator: samma storlek, samma sha, huvudet `PGDMP`. Larmvägen bevisad på verkligheten: körning 2 föll och skapade issue #406, körning 3 stängde den 15:15:34Z. Första provet föll på att PostGIS ligger i `public` i arkivet, inte i `extensions` — 19 tabeller föll innan det mättes. Kvar som eget kort: #223 (åldersvakt utanför Actions).
 - [x] ✅ **#193 INVARIANTEN OMSKRIVEN + TAKTMÅTTEN — KLART 16/9** (DECISIONS #200): CLAUDE.md sa 45 s, motorn kör 10 s prioritetsmedvetet (#127) — texten skrevs om till motorns regel; ett tak ska komma ur mätning. Bevis: skuggrapport deployad 02:51Z; `takt` 02:52Z: tätaste följd 70 s (E4 Sundsvall→Umeå), följder inom 60 s: 0 av 110 yttranden på 24 h; per rutt 70 · 145 · 370 · 380 · 525 · 3 665 s. **Axels ja på texten 16/9.**
 - [x] ✅ **#191 SPÄRRPROVET — KLART 16/9** (DECISIONS #197): skuggmotorn `?sparrprov=1`, två kameror 300 m isär; dbknapp läser nu funktionens svar ur `net._http_response` (gällde alla prov — vakthundens `rad` var oläsbar). Bevis: dbknapp `sparrprov` 02:42Z: svaret läst ur `net._http_response` — `suppressed` med 1 rad: {kind: camera, id: prov:kam2, distM: 470, by: camera, sinceS: 5} — kam2 tystad 5 s efter kam1 och talad först vid t=15 när 10 s-spärren släppt. Första provet 02:38Z FÖLL: kamerorna 14 s isär, båda talade — spärren är 10 s sedan kort #127 (13/9), inte 45 s som CLAUDE.md:s invariant säger.

@@ -110,6 +110,8 @@ Den största enskilda risken är ändå att **arkivet saknar backup och inte gå
 
 ### P0 — iOS säger "på väg &lt;null&gt;" högt i bilen, och det gäller var tjugonde olycka
 
+> 🔨 **BYGGT 20/9** (kort #210, DECISIONS #258, 9d3f56c): `SnapshotRepo.swift` läser `road` som `as? String`; v26 (`road: null`) låser motorerna i tre språk. Stängs när ett iOS-bygge säger en olycka utan vägnummer rätt.
+
 - `SnapshotRepo.swift:117` gör JSON-`null` till **strängen** `"<null>"`. Fältet `road` läses med just den funktionen
   (rad 68). Kotlin och TypeScript hanterar null korrekt — **iOS är ensamt fel.**
 - Publiceraren skriver medvetet `road: null` när vägnumret saknas.
@@ -120,6 +122,8 @@ Den största enskilda risken är ändå att **arkivet saknar backup och inte gå
 
 ### P0b — Det tidiga olycksropet kan sägas tre gånger
 
+> ✅ **ÅTGÄRDAT 20/9** (kort #211, DECISIONS #258): det tidiga ropet är engångs per fara i tre språk; v25 låser exakt två (gamla motorn gav tre på samma vektor). Skuggmotorn deployad.
+
 - `engine.ts:246-254`: vid låg fart (uppmätt ≤ 45 km/h, 10,5 km, severity 5) blir det **tre repliker** —
   "Överväg annan väg" två gånger och sedan påminnelsen. Den tidiga grenen återarmeras när 600 s och 5 km passerats
   innan 2 km-gränsen nås.
@@ -127,6 +131,8 @@ Den största enskilda risken är ändå att **arkivet saknar backup och inte gå
 - Alla tre plattformarna är identiskt fel, så pariteten döljer felet i stället för att avslöja det.
 
 ### P0c — Prioritetsgenombrottet har noll testtäckning, och testet skulle fälla en vektor som prövade det
+
+> ✅ **ÅTGÄRDAT 20/9** (kort #212, delen; DECISIONS #258): v27 — is 6 s efter kamera talar; testets ≥ 10 s-krav är nu motorns regel (≥ 10 s eller viktigare).
 
 - Regeln från kort #127 — *inom 10 s får bara en VIKTIGARE fara tala* — är produktinvariant.
 - Minsta avstånd mellan två varningar i hela vektorsviten är exakt 10 s. Grenen "viktigare släpps igenom" körs aldrig.
@@ -293,7 +299,7 @@ besvarade.
 
 | # | Beslut | Varför nu |
 | :-- | :-- | :-- |
-| 0 | **Motorfixarna först:** iOS `<null>`, det tredje olycksropet, och en vektor för prioritetsgenombrottet | Hörs i bilen i dag; billiga; ett bygge till Axel bör bära dem |
+| 0 | ✅ **KLART 20/9** (9d3f56c, tre språk gröna, skuggmotorn deployad; iOS-raden väntar på ett bygge) — ~~Motorfixarna först: iOS `<null>`, det tredje olycksropet, och en vektor för prioritetsgenombrottet~~ | Hörs i bilen i dag; billiga; ett bygge till Axel bör bära dem |
 | 0b | **Mät marginalen på korridoren och reprisavståndet, och frys dem med vektorer** | De två reglerna produkten vilar på är i praktiken otestade |
 | 1 | ✅ **KLART 20/9** — ~~Backup av arkivet, veckovis, från och med den här veckan~~ (#213, DECISIONS #257) | Enda oåterkalleliga risken. Kostar nära noll |
 | 2 | **Leveransfrys två veckor:** ingen ny mätfunktion, bara det som krävs för att appen ska nå en främling | Novemberfönstret stängs annars |

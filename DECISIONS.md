@@ -7521,3 +7521,37 @@ public. (2) `gh release` utan checkout kräver `--repo`; jobbet checkar medvetet
 **Kvar, som eget kort (#223):** dumpen kör i Actions, och Actions dog tyst 5/9. Då tystnar dumpen och healthchecken
 samtidigt. Vakthunden i Supabase är det enda som kör utanför — den bör fråga GitHub om senaste `arkiv-`-releasen är yngre
 än 8 dygn.
+
+## #258 (20/9 2026) Motorfixarna ur genomlysningen: tidiga ropet engångs, road:null i iOS, prioritetsgenombrottet certifierat (kort #210, #211, #212-delen)
+
+**Axels val 20/9:** *"motorfixarna först"* — det som hörs i bilen, utan att kräva beslut.
+
+**#211 — det tidiga ropet är engångs per fara (engine/src + Kotlin + Swift).** Reprisregeln (600 s OCH 5 km) återarmade
+`<id>#early` när båda passerats; under ~48 km/h hinner det ske innan 2 km-horisonten nås, och "Överväg annan väg" sades två
+gånger före påminnelsen — tre repliker mot #28:s två. Alternativet, att göra reprisregeln undantagslös för olyckor, valdes
+bort: felet är inte reprisregeln utan att det tidiga ropet aldrig var tänkt att repriseras. Nu: har `#early` talat talar det
+aldrig igen för den faran; nära-platsen är orörd. **v25** låser det: 44,5 km/h och olyckan 10 945 m fram — sökt fram med
+motorns egen haversine som **enda kombination i 30–47 km/h (halvsteg) där båda horisonterna får ≥ 5 m marginal till närmaste
+fix** (5-metersregeln; 45 km/h jämnt gav 4,7 m). Gamla motorn på v25: t=76, **t=676 igen med 2 586 m kvar**, t=724. Nya:
+t=76 och t=724.
+
+**#210 — `road: null` i iOS-appen.** `SnapshotRepo.swift` plockade `road` med `str()`, som gör NSNull till strängen
+`"<null>"`; publiceraren skriver `road: null` för 38 av 732 olyckor på 30 dygn. Rättat till `d["road"] as? String` (nil), samma
+mönster som `slut` på raden ovan. **v26** (severity 5, `road: null`) låser JSON-null i alla tre vektorläsarna och motorerna.
+**Ärligt:** vektorn föll INTE före fixen — Swift-motorns vektorläsare (`as? String`) gjorde redan rätt; felet satt i appens
+plockare, som inget testmål täcker. Kortet stängs först när ett iOS-bygge säger en olycka utan vägnummer rätt.
+
+**#212, prioritetsdelen — genombrottet har täckning.** Minsta avstånd mellan två varningar i sviten var exakt 10 s (v23:s is
+kom 20 s efter kameran), så grenen "viktigare släpps igenom spärren" (#127) kördes aldrig. **v27:** kamera 3 000 m talar t=113,
+isstation 3 300 m kvalificerar t=119 (leadM 666 m, marginal 11 m åt båda hållen) och talar ändå, 6 s senare. Och
+`test/engine.test.ts` krävde ≥ 10 s mellan ALLA varningar — den hade fällt v27. Nu kräver den ≥ 10 s ELLER strikt viktigare,
+motorns regel. Test och motor säger samma sak igen.
+
+**Bevis:** `npm test` 31/31 lokalt; ci #35519941072 grön (kontraktsgrinden, beroendekartan, vektorgeneratorn återskapar sviten,
+27 vektorer); android #35519579658 och ios-engine #35519579572 gröna på 9d3f56c — samma tre vektorer byte för byte i Kotlin och
+Swift. Skuggmotorn buntad (`--check` i synk) och deployad i samma varv: deploy-supabase #35519582721, *"Deployed Functions on
+project …: skuggmotor"*. Första ci-körningen föll på beroendekartan — `arkivbackup.yml` (#213) hämtar från apt.postgresql.org
+och www.postgresql.org; deklarerade som bygg i `publish/beroenden.ts` (93ed4e8). Grinden gjorde sitt jobb.
+
+**Kvar av #212:** trösklarna (korridor 5°–90°, repris 0–50 000 m, bäring, lägsta fart, förvarning) och v03/v20 — mätning per
+tröskel och en vektor åt vardera hållet. Eget varv.

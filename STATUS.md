@@ -40,8 +40,9 @@
 ## Session log
 - **S-2026-09-20** (Claude via Cowork, Axels order *"vi börjar att göra backupen nu"*): **kort #213 stängt** —
   `arkivbackup.yml`, veckodump av arkivet till GitHub-release, återläst och radräknad i samma körning (30/30 tabeller,
-  601 712 rader, DECISIONS #257). Nytt kort #223 (åldersvakt utanför Actions). Nästa: de övriga öppna punkterna i
-  `docs/GENOMLYSNING-2026-09-20.md`.
+  601 712 rader, DECISIONS #257). Nytt kort #223 (åldersvakt utanför Actions). **Motorfixarna** (DECISIONS #258): #211
+  stängt (tidiga ropet engångs, v25), #210 byggt (road:null i iOS, v26 — väntar på bygge), #212:s prioritetsdel klar (v27 +
+  testet rättat); tre språk gröna, skuggmotorn deployad. Nästa: resten av `docs/GENOMLYSNING-2026-09-20.md`.
 - **S-2026-09-17** (Claude med Bengt, Axel via Bengt): **grepp 2 fastställt** — C, D och T underskrivna av Bengt och
   Axel (DECISIONS #220–#228); betans startvärden beslutade; radar, regnmängd, startband och SMHI-förlängning prövas i
   mars ur arkiven (#223–#226). **Byggt och bevisat i drift:** kort #196 (provraderna märkta, `sql/025`) och #199
