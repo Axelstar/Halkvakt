@@ -40,15 +40,21 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   en deploy-nyckel ska inte kunna röra databas eller nycklar). Bevis: deploy-supabase #1 grön 05:20:51,
   funktion=vakthund, "Deployed Functions: vakthund". Bengt och Claude kan deploya själva nu.
   ⚠️ Går ut ~8/12, mitt i vintern — Axel lägger påminnelse, tavlan bär datumet i kort #86.
-- [ ] 5. TestFlight-gruppen: lägg 0.3.5 (8) om det inte skett automatiskt
+- [x] ~~5. TestFlight-gruppen: lägg 0.3.5 (8)~~ **STÄNGT 20/9 SOM ÖVERSPELAT** (Bengts order efter genomlysningen,
+  DECISIONS #250): main bär 0.3.8 (11) sedan 18/9, och byggordning C (#242) säger ETT bygge med #203.
+  Ersatt av: simulatorprovet nu, och arkiveringen av 0.3.8 senast 27/9.
 - [ ] 6. Tolv testare till väntelistan (fortfarande det som avgör vintern)
 - [ ] 7. Google Play-konto (signeringen är lagad, AAB:n grön — vägen är öppen)
 
 **Beslut som väntar, inte brådskande (med Bengt):**
-- [ ] #79 regn-30: pulsas varje timme = 720 min/mån av oktobers 2 000. Sedan ingest-live
-  arkiverar vädret varje minut är den troligen överflödig. Mät innan den väcks.
+- [x] ~~#79 regn-30: mät innan den väcks~~ **STÄNGT 20/9 SOM ÖVERSPELAT** (DECISIONS #250): jobbet AVVECKLADES 9/9
+  (pulsklocka #11, `avvecklat: puls-regn-30`) och finns inte i pulsklockans lista över elva jobb. Kontrollerat 20/9.
+  Frågan om att väcka det är därmed inte ett väntande beslut utan ett nytt kort den dag någon vill ha det.
 - [ ] Publikt repo eller köpa minuter — appen behöver inte längre svaret (#72), ta det lugnt.
-- [ ] Gallringsregel för weather_observations före vintern — ~40 000 rader/dygn när alla 845
+- [x] ~~Gallringsregel för weather_observations före vintern~~ **STÄNGT 20/9 SOM ÖVERSPELAT** (DECISIONS #250):
+  `gallra_vader` (sql/014) och `gallra_arkiv` (sql/026) är i drift sedan 17/9 — 97 472 rader raderade i första
+  körningen. Det som faktiskt återstår är Pro-beslutet, och det bor i kort #83. Texten nedan är historik.
+  ~~— ~40 000 rader/dygn när alla 845~~
   stationer ligger under 5 °C fyller gratisnivån på ~2 månader. Får inte kasta det Grind A mäter.
   ⚠️ RÄKNAT OM 8/9 22:00 (Bengts Claude, ur vader.geojson): 809 av 848 stationer mäter på
   10-minutersslag, och livemotorn läser varje minut ⇒ **~120 000 rader/dygn**, inte 40 000
@@ -489,7 +495,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   per säsong är kandidatmodellen; B2B (hemtjänst, försäkring, åkerier) är taket.
 - [ ] **Norden efter facit:** Finland LIVE i arkivet (31/8). Norge sedan, Danmark sist.
   Tidigast vintern 2027/28 som produkt. Nordiskt namn vid det laget (Nordic RoadSafe, #1).
-- [ ] **Vegvesen DATEX-konto** — ✅ TILLSTÅNDET BEVILJAT 4/9 (Bengt): användarnamn
+- [x] **Vegvesen DATEX-konto — STÄNGT 20/9** (DECISIONS #250): tillståndet beviljades 4/9 och det norska arkivet
+  tickar (ingest-no #29, 468 stationer, puls-ingest-no i pg_cron, gränssnapshoten 4/9 15:47). Kortet stod öppet
+  i sexton dygn med sitt eget klarbesked i brödtexten. ~~TILLSTÅNDET BEVILJAT 4/9 (Bengt): användarnamn~~
   TjeDatexlagerlof. Koden härdad samma varv: ingest/no.ts gör en REKOGNOSERING vid
   första körningen med hemligheter (verklig XML + elementräkning på Summary), fel-
   loggen bär svarskroppen och skiljer 401 (fel par / ej aktiverat) från 403 (saknad
@@ -703,7 +711,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **R1–R16 INFÖRDA 16/9 (DECISIONS #199), kartan fryst igen:** §5.2 regn-raden löst med `rain_segments`, §5.6 R16 med
   regeln "F1 först när det är verifierat i kod att ingen port läser fältet", §7.8 kandidaterna prövade + Axels D-utgångspunkt,
   §14. Bilaga A i bedömningen struken. Nästa öppning efter nästa bygge + mätning.
-- [ ] 📍 **#158 SKUGGLOGGENS LARM SAKNAR POSITION — och tre mätningar hänger på det**
+- [x] 📍 **#158 SKUGGLOGGENS LARM SAKNAR POSITION — ✅ KLART 14/9, STÄNGT 20/9** (DECISIONS #250).
+  Form A byggd och deployad 14/9; `main.ts` tar punkten ur FARAN, och kommentaren på rad 329 bär rättelsen.
+  Bevis 20/9: kamerafacit har 451 objekt i hinken — uppslagningen fungerar i drift. Form B är ett senare val,
+  inte ett öppet åtagande.
   ✅ **BYGGT OCH DEPLOYAT 14/9 — FORM A** (Axels ja via Bengt, DECISIONS #179, PR #248).
   Positionen tas ur FARAN, inte ur motorn: punktfaror bär lon/lat själva, så en uppslagning på
   `hazardId` räcker — ingen motorlogik i edge-funktionen. `distanceM` skrivs också, som Alert
@@ -735,7 +746,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   mars-domens underlag. Formen ska Axel se på innan den skrivs.
   🕰️ **TIDSKRITISKT:** varje larm som loggas utan position är ett facit som inte går att återskapa
   — kamerabilden för en passerad natt finns inte kvar hos Trafikverket.
-- [ ] 📷 **#157 KAMERAFACIT ÄR TOMT — noll objekt efter 5 657 skuggkörningar**
+- [x] 📷 **#157 KAMERAFACIT ÄR TOMT — ✅ LÖST, STÄNGT 20/9** (DECISIONS #250). Rotorsaken (#158) åtgärdad 14/9.
+  **Bevis 20/9 08:05Z: 451 objekt i `facit`-hinken** (262 den 18/9, 438 den 20/9 tidigare samma dygn) — hinken
+  fylls. Kvar som EGEN fråga, inte här: granskningen av bilderna (kort #209, beslut inom sju dygn efter frosten).
   🎯 **ROTORSAKEN FUNNEN 14/9 (DECISIONS #177): SKUGGLOGGENS LARM HAR INGEN POSITION.**
   Bevisat på lagrad data: **2 103 larm på fjorton dygn, 0 med `lon`, 0 med `distanceM`**. En
   verklig rad: `{"t":1705,"id":"cam:22029010","kind":"camera","text":"Fartkamera om 500 meter."}`
