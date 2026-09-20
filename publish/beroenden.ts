@@ -169,6 +169,15 @@ export const KARTAN: Beroende[] = [
   { vard: "download.swift.org", roll: "bygg",
     matar: "Swift-verktygskedjan i ios-engine.yml",
     brister: "ios-engine slutar bygga", bevakad: "", signal: "OKÄND" },
+  // Arkivbackupen (kort #213, 20/9) installerar pg_dump 17 ur PostgreSQLs eget apt-arkiv: Ubuntus
+  // paket är äldre än servern, och en äldre pg_dump vägrar dumpa en nyare databas. Nyckeln hämtas
+  // från www.postgresql.org, paketen från apt.postgresql.org.
+  { vard: "apt.postgresql.org", roll: "bygg",
+    matar: "pg_dump 17 till arkivbackupens veckojobb",
+    brister: "backupen slutar tas — arkivet blir åter oåterskapbart (#213)", bevakad: "", signal: "OKÄND" },
+  { vard: "www.postgresql.org", roll: "bygg",
+    matar: "signeringsnyckeln till apt-arkivet ovan",
+    brister: "samma som ovan — apt vägrar installera utan nyckeln", bevakad: "", signal: "OKÄND" },
 ];
 
 // Värdar som är vår EGEN infrastruktur eller allmän verktygsinfrastruktur — inte beroenden
