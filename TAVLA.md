@@ -457,6 +457,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   och TRYCK *Stämde*; raden `cam:fotostudio` ska landa i `driver_facit` med `app = ios`, `version 0.3.8`, märkt prov. Det ger samma
   besked som en arkivering (knapparna syns, sändningen fungerar, diagnosen #240 bekräftad) utan TestFlight och utan provkörning.
   Arkiveringen sker EN gång, med #203. **Stoppdatum 27/9:** utan de åtta svaren arkiveras 0.3.8 ändå, enligt receptet nedan.
+  ✅ **BYGGORDNING C BESLUTAD AV BENGT 20/9 (DECISIONS #242), OCH #205 ÄR I DRIFT — GÖR SIMULATORPROVET NU, AXEL:**
+  `git pull` · `cd ios/HalkvaktApp && xcodegen` · Edit Scheme → Run → Arguments → `-fotostudio_facit` · kör i simulatorn ·
+  fliken Vakten · **tryck *Stämde*** · raden under ska bli grön *Skickat …* (gul = felet står där, skicka texten). Ta bort
+  argumentet. Claude läser raden i `driver_facit`. Två minuter, ingen arkivering.
   📋 **ARKIVERA NU — kontrollerat 20/9 (Bengts fråga: vad behöver Axel göra?):** bygg från **main @ 79e4195 eller senare** —
   `git diff 79e4195..origin/main -- ios/ android/ engine/` är TOM (bara text och serverkod sedan dess); ios-engine ✅ och ci ✅
   på 79e4195, android ✅ på 8026aa9 (oförändrad). Steg: `git pull` · `cd ios/HalkvaktApp && xcodegen` · välj Team igen ·
@@ -969,13 +973,16 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
-- [ ] 🎬 **#205 FOTOSTUDIONS SVAR RÄKNAS SOM RIKTIGT — vidga prov-märkningen** (fynd 20/9 när arkiveringsreceptet
+- [x] 🎬 **#205 FOTOSTUDIONS SVAR RÄKNAS SOM RIKTIGT — vidga prov-märkningen — ✅ KLART 20/9** (fynd 20/9 när arkiveringsreceptet
   kontrollerades). Kolumnen `prov` (sql/025, kort #196) matchar bara ordet *prov* i `alert_id`. Fotostudio-kroken på iOS och
   Android lägger in varningen `cam:fotostudio`; ett tryck i simulatorn skickar ett riktigt anrop och landar som ett RIKTIGT
   svar — just den rad som ska bevisa S4 ("ett riktigt svar från en riktig telefon"). Tills det är rättat: titta, tryck inte.
   ÅTGÄRD: sql/027 — `prov` också när `alert_id` innehåller *fotostudio* (genererad kolumn: DROP + ADD i samma migration;
   vakthunden och skuggrapporten läser bara `prov` och rörs inte). Kostnad: en migration via dbknapp + CI, ~3 Actions-min.
   Verify: en rad `cam:fotostudio` får `prov = true`; vakthundsraden räknar den som prov.
+  ✅ **I DRIFT 20/9 05:33Z (Bengts "kör", DECISIONS #242, PR #377):** `sql/027` via dbknapp — kolumnen GENERATED ALWAYS med
+  *prov ELLER fotostudio*; de två gamla provraderna kvar och märkta (0 riktiga, 2 prov); integrationstestet kört i CI
+  (`ok 36`); skuggrapporten läser via REST utan fel (`svar_7d: 0`). Raden med innehåll kommer med Axels tryck i simulatorn.
 - [x] 🐕 **#201 VAKTHUNDEN SVARAR INTE INOM 120 S I KASSAVAKTENS TIMME — ✅ KLART 18/9** (fynd 17/9 vid beviset för #196).
   `net._http_response` 05:07:00Z: *"Timeout of 120000 ms reached"* — vakthundens cron (`7 * * * *`) fick inget svar. Körningarna
   04:07 och 06:07 svarade. Kassavakten körs bara när UTC-timmen är 05, 11, 17 eller 23 (`% 6 !== 5`) och räknar Actions-körningar
