@@ -19,39 +19,51 @@ november i stället för mars, för att facit kommer från en källa som faktisk
 
 ---
 
-## Läget 18/9 — var vi är och vart vi är på väg
+## Läget 20/9 — var vi är och vart vi är på väg
 
-**Var vi är.** **Ett beslut om arkiven väntar (§4.2, grepp 3: Supabase Pro)**, och **Axel läser av Actions-kontot före 24/9**
-(§4.2) — september klarar Actions-taket bara om bygget hålls snålt till 1/10 (§0b); fyra mejl om stadstrafiken ska skickas (§0b). Reglerna för efterhalkan är fastställda och underskrivna av Bengt och
-Axel: grinden för kombinationen (C), den gemensamma kalibreringen (D) och tröskelregeln (T). Betans startvärden är
-beslutade. **Det som återstår före november är bygge och bevis, inte beslut.**
+**Var vi är.** Driften är tät och vaktad, och reglerna för efterhalkan är fastställda. **Flaskhalsen har flyttat från bygge
+till beslut och händer: fem saker ligger hos Axel (§4.2), och produktspåret väntar på vädret.** Frost finns på enstaka
+stationer sedan 14/9 (som mest 5 st 18/9; frostvakten larmar vid 50), men ingen natt har ännu haft *blöt väg som faller
+mot noll* — det S1-grinden behöver. Inga förarsvar har kommit: bygget 0.3.7 saknade knapparna, och 0.3.8 väntar på Axel.
+Avstämt mot GitHub 20/9: inga öppna PR:er, 51 sammanslagna sedan 17/9 (alla från det här kontot), **ingen incheckning från
+Axel sedan 17/9**, alla byggen gröna.
 
-| Område | Läge |
+| Område | Läge 20/9 |
 | :-- | :-- |
 | Regler för efterhalkan — C, D, T | ✅ fastställda 17/9 (DECISIONS #220–#228) |
-| Betans startvärden | ✅ beslutade: regn inom 2 h · fall ≥ 0,8 °C på 30 min · yta +1…+3 °C · allt regn > 0 räknas |
-| Radar, regnmängd, startband, SMHI-förlängning | prövas i mars som varianter, räknade ur arkiven (#223–#226) |
-| Skuggloggen för efterhalkan (S1) | ✅ byggd — tunn i september: 5 station-ögonblick på ett dygn |
-| Facitknappen (S4) | ✅ servern, Android, iOS-koden · ⏳ app-bygge 0.3.7 och ett första riktigt svar |
-| Ordlistan vidgad (grepp 1) | ✅ i drift på servern · ⏳ når telefonerna med nästa app-bygge |
-| Kamerafacit | ✅ objekt i hinken sedan 15/9 · bilderna öppnas och läses i mars |
-| Provraderna i förarfacit (kort #196) | ✅ i drift 17/9 — skuggrapporten 2 → 0 svar; vakthundsraden 06:07Z säger *förarfacit: 0 svar · 2 prov uteslutna* |
-| SMHI-varningar som försvinner (kort #199) | ✅ i drift 17/9 — ingestkörningen 06:11Z stämplade `senast_sedd` på exakt de 15 varningar som fanns i flödet (av 157 i arkivet), och `smhi_synk` fick sin första rad (15 varningar) |
-| **Motorregeln för betan (S3)** | ⏳ **inte byggd — nästa stora bygge** |
+| Betans startvärden | ✅ regn inom 2 h · fall ≥ 0,8 °C på 30 min · yta +1…+3 °C · allt regn > 0 räknas |
+| Radar, regnmängd, startband, SMHI-förlängning | prövas i mars som varianter ur arkiven (#223–#226) — varianterna är inte byggda än (§4.2) |
+| Skuggloggen för efterhalkan (S1) | ✅ byggd — tunn: 3–7 rader per dygn från 1–4 stationer 16–20/9, **noll träffar på kombinationen**; uppspelningen ur arkiven: en träff på 14 dygn (14/9, under regn) |
+| **Motorregeln för betan (S3)** | ⏳ **inte byggd — väntar på S1-grinden**, alltså på blöta frostnätter. Axels bygge |
+| Facitknappen (S4) | ✅ server, Android, iOS-kod · ❌ bygget 0.3.7 i TestFlight saknade knapparna (#240) · ⏳ **0.3.8 (11) ligger på main sedan 18/9 och väntar på Axels arkivering** · **0 riktiga förarsvar** |
+| Facit utan att stanna (#203) | 📄 underlaget klart (`docs/FACIT-EFTER-RESAN.md`), väntar på Axels åtta beslut |
+| Ordlistan vidgad (grepp 1) | ✅ på servern · ⏳ når telefonerna med 0.3.8 |
+| Kamerafacit | ✅ 438 bilder 20/9 (262 den 18/9), vakten i drift (#239) · bilderna öppnas i mars |
+| Vakter och drift byggda 18–20/9 | ✅ #200 marknadsföringen på pulsklockan (tre morgnar) · ✅ #201 vakthunden svarar i kassavaktens timme · ✅ #195/#202 vektorgeneratorn i fas och vaktad i CI · ✅ S7 kamerafacit-vakt · ✅ pulsnyckeln = PAT, bytesknapp prövad · ⏳ #160 måndagsserien på pulsklockan — bevisas måndag 21/9 |
+| Databasen | 177 MB av 500 (20/9 05:00Z; 169 den 18/9) — larm vid 400, Pro-beslut senast 1/11 (§4.2) |
+| Actions-kassan | 21,78 av 35 USD (19/9 23:07Z). Släpande takt 118 min/dygn ⇒ **taket nås inte i september i nuvarande takt**; bygg fortsatt snålt |
+| Skyltfonden | kontaktplan v6.4 klar · samtal 21–25/9 (Bengt) · ansökan skickas 28/9 |
+| Gatornas data | Malmö svarade 18/9: egna stationer, inte öppna data — följdmejl om avtal skickat 19/9 · Stockholm, Göteborg och Trafikverket (Datex II): skickat, väntar |
+
+**Kartans minimilista (§8) mot läget:** C grind för kombinationen ✅ · D gemensam kalibrering ✅ · E skattaren med nivå + bevis
+(S2) ⏳ väntar bakom S1-grinden · A allvar som försprång (#153) ⏳ efter betan · B bevisbärare i snapshoten ⏳ inte påbörjad.
+I kartans sekvens för en ny länk (§5.5) står efterhalkan på **steg 2 av 4: mäts i skuggan** — fältet är publicerat (N4),
+villkoret är inte ändrat (S3), portarna inte speglade.
 
 **Vart vi är på väg**
 
 | När | Vad | Vem |
 | :-- | :-- | :-- |
-| **September** | ~~#200 marknadsföringen på pulsklockan~~ (✅ 20/9) · nya app-byggen till testarna (iOS 0.3.7 med facit och ordlistan) · Skyltfonden: trafikskolornas muntliga ja senast 25/9, ansökan skickas 28/9 (sista dag 1/10) · TRV-brevet om byvindgivarna · mejlen till Trafikverket (fordonsdata) och till Malmö, Stockholm och Göteborg (gatornas data) · #201 vakthundens körning i kassavaktens timme · databasens storlek mäts 24/9 · **Actions-taket: högst ~80 min bygge per dygn till 1/10** (§0b) | Claude · Axel · Bengt |
-| **Oktober** | **grepp 3: Pro-beslutet** när databasvakten larmar (400 MB) eller senast 1/11 — villkor för domarna · **S3 regeln i motorn** med startvärdena, tre portar och kontraktsgrinden · S2 skattarens nivå · ~~#195 vektorgeneratorn~~ och ~~#202 generatorn i CI~~ (✅ 18/9) | Bengt + Axel · Axel · Claude |
-| **Första frosten** (datum okänt) | T-A steg 0 inom sju dygn (S9) · radarns bidrag mäts om, nu med snö · skuggloggen mot arkivet: räknar de lika? · S1:s första nätter och uppspelningen (`uppspelning-efterhalka.sql`) — underlaget för S1-grinden före S3 | Claude |
-| **November** | **betan till tolv testare**, också trafiklärare (S5) · PAT roteras senast 15/11 | Axel |
-| **December** | betan samlar facit · Supabase-tokenen går ut 8/12 · uppspelningen ur arkiven provkörs före januari | Axel · Claude |
+| **Vecka 39 (21–27/9)** | måndagsserien på pulsklockan bevisas 21/9 (#160) · **Skyltfondssamtalen 21–25/9** · databasen mäts 24/9 · Axel läser av Actions-kontot före 24/9 · **0.3.8 arkiveras och ett första riktigt förarsvar** · Axels besked om #203, QR-sidan och partnerskapshållningen · TRV-brevet om byvindgivarna (Bengt) | Claude · Bengt · Axel |
+| **28/9–1/10** | **ansökan till Skyltfonden skickas 28/9** (sista dag 1/10) — Claude för in de muntliga jaen i v6 | Bengt · Claude |
+| **Oktober** | **grepp 3: Pro-beslutet** när databasvakten larmar (400 MB) eller senast 1/11 — villkor för domarna · **#203 byggs** (båda plattformarna) efter Axels ja · **S3 regeln i motorn** med startvärdena, tre portar och kontraktsgrinden — när S1-grinden passerats · S2 skattarens nivå · ~~#195 vektorgeneratorn~~ och ~~#202 generatorn i CI~~ (✅ 18/9) · `ubuntu-latest` byts 19/10 | Bengt + Axel · Axel · Claude |
+| **Första frosten** (frostvakten: 50 stationer under noll; 20/9 som mest 5) | T-A steg 0 inom sju dygn (S9) · radarns bidrag mäts om, nu med snö · skuggloggen mot arkivet: räknar de lika? · S1:s första nätter och uppspelningen (`uppspelning-efterhalka.sql`) — underlaget för S1-grinden före S3 | Claude |
+| **November** | **betan till tolv testare**, också trafiklärare (S5) · PAT roteras senast 15/11, pulsjobben med knappen | Axel |
+| **December** | betan samlar facit · Supabase-tokenen går ut 8/12 · uppspelningen ur arkiven provkörs före januari · Skyltfondens besked senast 15/12 | Axel · Claude |
 | **Januari** | **dom 1 på betan** (S6): godkänd eller oavgjord ⇒ fortsätter, underkänd ⇒ tas bort | Claude mäter, Axel dömer |
-| **1 februari** | den enda justeringen — 48 punkter, på data från november–januari | Claude, Bengt fryser |
+| **1 februari** | den enda justeringen — 48 punkter, på data från november–januari · beslut om bildfacit före dess | Claude, Bengt fryser |
 | **Mars** | **dom 2** på data efter 1/2, med varianterna · kamerafacit-bilderna öppnas · skuggdokumentet §4 rättat (#198) | Claude mäter, Axel dömer |
-| **Efter mars** | #153 allvar som försprång · Ä1–Ä7 | — |
+| **Efter mars** | #153 allvar som försprång · Ä1–Ä7 · skolpaketet (våren 2027) | — |
 
 **Så hålls listan (SESSIONSREGELN i CLAUDE.md).** En rad stryks i samma varv som beviset finns, med beviset på raden,
 och läget ovan hålls aktuellt. Nya frågor skrivs in i §4.2 när de ställs. Kartan stryks inte löpande — den är fryst och
@@ -105,9 +117,9 @@ beviset finns — inte när koden är skriven.
 | TROSKLAR-SKUGGAN §4 (a)/(b) mot tröskelregeln | ⏳ före domen mars 2027 | #198 | #220 | §4 säger inget som regel T förbjuder |
 | Uppspelningen ur arkiven: **grundversion byggd och körd 17/9** (`scripts/matningar/uppspelning-efterhalka.sql`, #233) — startpunkten, utan faller, utan blöt och kontrollen mot skuggloggen; september gav ett tillfälle (station 2518, 14/9). **Kvar:** radar-, regnmängds-, startbands- och SMHI-varianterna och facit | 🔨 17/9 — körs igen vid första frosten | #197 | #223/#233 | en körning med rader för båda |
 | Radar- och väderarkivet kvar till mars-domen — **168 av 500 MB 17/9, cirka 9 MB/dygn brutto redan i september**; gratisnivån skrivskyddar databasen vid 500 MB och har inga backuper | 🔨 **underlag 17/9: `docs/GREPP3-ARKIVEN.md`** — beslut Bengt + Axel (§4.2) | #83 | #223/#231 | arkivet täcker november–mars |
-| Databasens storlek mäts igen — nettotakten efter autovacuum avgör om 400 MB nås i oktober | ⏳ 24/9 · 18/9 03:42Z: **169 MB** (+1 MB på 15 h efter gallringen) | #83 | #231 | två mätpunkter minst ett dygn isär |
+| Databasens storlek mäts igen — nettotakten efter autovacuum avgör om 400 MB nås i oktober | ⏳ 24/9 · 18/9 03:42Z: **169 MB** · 20/9 05:00Z: **177 MB** (+8 MB på 49 h ≈ 4 MB/dygn netto) | #83 | #231 | två mätpunkter minst ett dygn isär |
 | ~~Grepp 3, småbyggena i drift: `gallra_arkiv` (sql/026) i nattjobbet och databasvakten i vakthunden~~ | ✅ **17/9:** migration 12:3xZ: `gallra_arkiv(7)` raderade **97 472 rader** — Finland 97 379 → 58 130, Norge 68 972 → 45 828, pg_crons logg 39 312 → 12 691, resten svensk gallring · EXECUTE låst för anon och authenticated · nattjobbet kör `SELECT gallra_arkiv(7)` 03:15 · databasvakten 12:35Z: *databas: 168 MB av 500*, provlarmet gick (larmväg ok). Storleken står kvar på 168 MB tills autovacuum återanvänt platsen | #83 | #232 | raderade rader i nattjobbet; vakthundsraden *databas: N MB*; provlarmet |
-| S1 ser bara stationer längs skuggrutterna: 5 station-ögonblick på ett septemberdygn — räcker det i vinter? | ⏳ mät i första frostmånaden | #197 | #223 | rader per frostnatt |
+| S1 ser bara stationer längs skuggrutterna: 5 station-ögonblick på ett septemberdygn — räcker det i vinter? | ⏳ mät i första frostmånaden · 16–20/9: 3–7 rader per dygn från 1–4 stationer, en rad per dygn under noll som mest, noll träffar på kombinationen | #197 | #223 | rader per frostnatt |
 | ~~SMHI-varningar som försvinner: `senast_sedd` + `smhi_synk` i ingesten (`sql/024`)~~ | ✅ **i drift 17/9:** ingestkörningen 06:11Z stämplade `senast_sedd` på exakt de 15 varningar som fanns i flödet (av 157 i arkivet), och `smhi_synk` fick sin första rad (15 varningar) | #199 | #225 | rad med innehåll i båda |
 | `senast_sedd` deklareras i värdevakten innan SMHI-förlängningen mäts | ⏳ före mars | #199 | #225 | fältet i SPANN, knappen körd |
 | TRV-anmälan om nio byvindgivare — Bengt skickar själv i Datautbytesportalens kontaktformulär (data.trafikverket.se/about-us/contact) — ingen inloggning, ärendetyp **API Öppna Data** | ⏳ Bengt | — | #225 | skickat |
@@ -242,6 +254,7 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 | **#203 Facit utan att stanna — undantagsprincipen med underskrift** (Bengt 18–19/9: föraren ska bara meddela när maskinen hade fel): (1) **efter resan** — notis *"stämde alla 3?"* + lista, **ett tryck "Ja, alla stämde"** eller peka ut avvikelsen; *Vet inte* skickas aldrig; **tystnad räknas aldrig som ja** (16/9 och 18/9 hade annars bokförts som bekräftelser); (2) **Siri på iOS** — i praktiken en fras: *"Hej Siri, stämde inte i Halkvakt"*; (3) valfritt knapparna i körläget vid stillastående. **Placering (19/9):** knapparna i notisen på låsskärmen, kortet överst på *Redo.*, listan bara vid avvikelse — skiss `docs/skisser/facit-efter-resan.svg`; (4) **missarna ingår** (Bengt 19/9): Siri-fras eller stor knapp *Appen missade* i körläget, typen väljs efter resan, ny tabell `driver_miss` — integritetsbeslutet är Axels. **Beslutsunderlaget: `docs/FACIT-EFTER-RESAN.md`** (åtta beslut, §8). Automatspåret för sanningen finns redan utan förare (uppspelningen, bildfacit, olycksarkivet). **Förslag KB-D5:** ett svar är en handling, tystnad är inget svar — fastställt dokument ⇒ Bengt + Axel | Bengt beställer, Axel avgör formen (S4 är hans); KB-D5 Bengt + Axel | ja på (1), (2) och KB-D5; (3) valfritt |
 | **iOS 0.3.8 (11) — bygg från main och ladda upp** (DECISIONS #240). Fälttest 2: brytaren PÅ, kameran varnade, inga knappar ⇒ 0.3.7 (10) i TestFlight byggdes troligen före `FacitRow` (numret sattes 13:45 16/9, knapparna kom 13:53). Main bär 0.3.8 (11): `git pull` · `xcodegen generate` · Archive · TestFlight. Förslag till samma bygge: version och commit i appen (resten ersatt av #203) | Axel | ja, nu |
 | **Bildfacit (förslag 18/9, ur Bengts fråga om skuggflottan kan svara):** flottan kan inte svara Stämde/Stämde inte — den har inga ögon på vägen, och ett påhittat svar kan inte motbevisas (regel T). Men den sparar redan en kamerabild vid varje varning nära en kamera (262 bilder 15–18/9). Förslag: bilderna läses automatiskt (torrt · vått · snö · is) och blir ett svar per varning, med ett stickprov som en människa kontrollerar — **först när blindningen släpper** (kalibreringen 1/2, bilderna i mars; D2/D3) | Bengt + Axel | beslut före 1/2 |
+| **Uppspelningens varianter och facitkoppling — byggs de nu?** Instrumentet för dom 1 och dom 2 (radar-, regnmängds-, startbands- och SMHI-varianterna, och vad stationerna mätte *efter* varningen) är läsande SQL ur arkiven och bygger inget på `regn_h` i motorn, så S1-grinden hindrar det inte. **Förbehållet är blindningen (D2/D3):** instrumentet får byggas och provas, men träffandelar för startvärdena får inte läsas före 1/2. Förslag: bygg nu, redovisa bara att satserna ger rader — inga andelar | Bengt | ja — det enda större arbete Claude kan göra utan att vänta på Axel eller vädret |
 
 ---
 
