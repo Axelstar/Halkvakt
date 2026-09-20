@@ -169,6 +169,12 @@ export const KARTAN: Beroende[] = [
   { vard: "download.swift.org", roll: "bygg",
     matar: "Swift-verktygskedjan i ios-engine.yml",
     brister: "ios-engine slutar bygga", bevakad: "", signal: "OKÄND" },
+  { vard: "apt.postgresql.org", roll: "bygg",
+    matar: "pg_dump/pg_restore i serverns version (17) till arkivbackup.yml (#213)",
+    brister: "veckodumpen av arkivet slutar — larm-issue `arkivbackup` samma körning", bevakad: "", signal: "OKÄND" },
+  { vard: "www.postgresql.org", roll: "bygg",
+    matar: "signeringsnyckeln till apt.postgresql.org (arkivbackup.yml)",
+    brister: "samma som apt.postgresql.org", bevakad: "", signal: "OKÄND" },
 ];
 
 // Värdar som är vår EGEN infrastruktur eller allmän verktygsinfrastruktur — inte beroenden
