@@ -117,7 +117,18 @@ enum SnapshotRepo {
 
     // MARK: - JSON-plockare (speglar org.json-anropens tolerans)
     private static func arr(_ d: [String: Any], _ k: String) -> [[String: Any]] { d[k] as? [[String: Any]] ?? [] }
-    private static func str(_ d: [String: Any], _ k: String) -> String { d[k] as? String ?? "\(d[k] ?? "")" }
+    /// ROTFIXEN till #210 (20/9). Den gamla raden var `d[k] as? String ?? "\(d[k] ?? "")"`, och JSON-null
+    /// blir `NSNull` — inte `nil` — från JSONSerialization. `NSNull` överlevde alltså `??` och
+    /// stränginterpolerades till literalen **"<null>"**, som gick hela vägen ut i rösten: *"på väg <null>"*.
+    /// `road` rättades på sin egen rad; det här stänger klassen. Funktionen bär i dag sex id-fält
+    /// (cam/seg/wx/bro/vilt/dev) — ett null där hade gett `"cam:<null>"` som farans id, alltså en nyckel i
+    /// reprisspärren och i facitsvaret. Uppmätt 20/9 i publicerade static.json (2 791 kameror) och
+    /// live.json: inget id är null i dag. Latent, inte aktivt — och nu omöjligt.
+    private static func str(_ d: [String: Any], _ k: String) -> String {
+        if let s = d[k] as? String { return s }
+        guard let v = d[k], !(v is NSNull) else { return "" }
+        return "\(v)"
+    }
     private static func dbl(_ d: [String: Any], _ k: String) -> Double { (d[k] as? NSNumber)?.doubleValue ?? 0 }
     private static func optDbl(_ d: [String: Any], _ k: String) -> Double? { (d[k] as? NSNumber)?.doubleValue }
     private static func optInt(_ d: [String: Any], _ k: String) -> Int? { (d[k] as? NSNumber)?.intValue }

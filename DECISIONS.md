@@ -8093,3 +8093,35 @@ obyggda, och att smyga in dem i ett bygge som ska bevisa en enda rad vore att g�
 **Beviset som stänger kort #227:** en resa med *Tillåt när appen används*, skärmen släckt, och en varning
 som hörs — plus den blå indikatorn i statusfältet, som är kvittot på att Core Location håller appen vid
 liv. Blir det tyst är fixen fel, och då vet vi det på en resa i stället för i november.
+
+## #276 (20/9 2026) `<null>` stängs som klass, inte som fall — och mätningen som visar att hålet var latent (kort #210)
+
+**Axels fråga före deployen:** *"kan vi fixa kort 210?"*. Svaret har två halvor, och den första är att kortets
+FIX redan satt: `road` rättades i 9d3f56c och följer med i 0.3.9. Det som är kvar på kortet är ett **bevis**
+från en riktig telefon, inte en kodändring. Men frågan var ändå rätt ställd, för instansen var lagad och
+**klassen var det inte**.
+
+**Hålet:** `SnapshotRepo.str()` var `d[k] as? String ?? "\(d[k] ?? "")"`. JSONSerialization ger `NSNull` —
+inte `nil` — för JSON-null, så `NSNull` överlever `??` och stränginterpoleras till literalen `"<null>"`.
+`road` fick sin egen rad 9d3f56c, men helpern bär **sex id-fält**: `cam:`, `seg:`, `wx:`, `bro:`, `vilt:`,
+`dev:`. Ett null i något av dem hade gett `"cam:<null>"` som farans id — och farans id är inte kosmetika:
+det är nyckeln i reprisspärrens `fired`-karta och det som skickas i ett facitsvar. En korrupt nyckel hade
+alltså både kunnat tysta en riktig fara och landa som en oläsbar rad i `driver_facit`.
+
+**Mätt innan något ändrades, enligt husregeln:** publicerade `static.json` (2 791 kameror) och `live.json`
+hämtade 20/9 och räknade fält för fält. **Inget id är null i dag.** De enda null som faktiskt publiceras är
+`lutning15/30/60` på väderstationerna, och dem läser iOS-parsern inte alls. Hålet var alltså **latent, inte
+aktivt** — vilket är skälet att laga det nu och inte kalla det en incident.
+
+**Fixen:** `str()` returnerar tom sträng för `NSNull`, behåller strängar som strängar och stringifierar
+tal som förut. Fem rader, och "<null>" kan inte längre uppstå någonstans i appen.
+
+**Inte rättat, med skäl: Android.** `SnapshotRepo.kt` läser ids med `getString("id")`, som för ett JSON-null
+ger strängen `"null"` — samma form, samma sex ställen. Lämnad orörd i kväll av tre skäl: sex anropsställen
+i stället för en helper, inget testmål som kan fälla ett misstag, och `getString` **kastar** vid saknat fält,
+vilket avvisar hela snapshoten i stället för att skapa en trasig fara. Det är ett medvetet skydd, och att
+byta det mot tom sträng vore att göra appen tystare om sina egna fel. Eget kort när någon ändå rör filen.
+
+**Det strukturella som står kvar:** `SnapshotRepo` finns i app-målet på båda plattformarna, och **inget
+CI-flöde bygger eller testar app-målet**. Det är därför #210 kunde levas i fyra dygn, och det är därför den
+här rättelsen inte heller kan bevisas av ett test — bara av ett bygge. Samma rad står i #267.
