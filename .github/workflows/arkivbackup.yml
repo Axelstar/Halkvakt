@@ -97,10 +97,10 @@ jobs:
       - name: Läs tillbaka och jämför
         shell: bash
         run: |
-          # Tom databas från template0 (bildens egen postgres-databas har redan PostGIS i public).
-          # PostGIS bor i schemat extensions på Supabase; dumpen refererar extensions.geometry.
+          # Tom databas från template0, PostGIS i public — där bor den i arkivet (sql/001 utan schema),
+          # och dumpen refererar public.geometry. UPPMÄTT 20/9: med PostGIS i `extensions` föll 19 tabeller.
           psql "${PROV_URL%/prov}/postgres" -v ON_ERROR_STOP=1 -q -c "create database prov template template0"
-          psql "$PROV_URL" -v ON_ERROR_STOP=1 -q -c "create schema extensions" -c "create extension postgis with schema extensions"
+          psql "$PROV_URL" -v ON_ERROR_STOP=1 -q -c "create extension postgis"
           set +e
           pg_restore --dbname "$PROV_URL" --no-owner --no-privileges --jobs 2 "$FIL" 2> restore.err
           RC=$?
@@ -139,7 +139,7 @@ jobs:
             echo
             cat tabell.md
             echo
-            echo 'Återläsning: `createdb x && psql x -c "create schema extensions" -c "create extension postgis with schema extensions" && pg_restore --dbname x --no-owner --no-privileges <fil>.dump` — fel om pg_net/pg_cron är väntade, tabellerna kommer med.'
+            echo 'Återläsning: `createdb x && psql x -c "create extension postgis" && pg_restore --dbname x --no-owner --no-privileges <fil>.dump` — fel om pg_net/pg_cron är väntade, tabellerna kommer med.'
           } > notes.md
           gh release create "$TAG" "$FIL" --title "Arkivdump $(date -u +%Y-%m-%d)" --notes-file notes.md --latest=false
           echo "release: $TAG ($FIL, $((BYTES / 1000000)) MB)"
