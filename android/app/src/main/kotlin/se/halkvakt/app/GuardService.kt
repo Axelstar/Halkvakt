@@ -94,6 +94,9 @@ class GuardService : Service() {
         running = true
         prevLon = Double.NaN; prevLat = Double.NaN
         session.value = Session(startedAt = System.currentTimeMillis())
+        // Resans fönster överlever tjänsten (kort #203): notisens knapp trycks minuter senare,
+        // i en annan process, och måste veta vad "alla varningar" syftar på.
+        scope.launch { Prefs.setTripStart(this@GuardService, session.value.startedAt) }
         loadSnapshotAsync()
         startLocationUpdates()
         AlertBus.post("Tjänsten startad. Laddar vägdata …")
@@ -263,6 +266,7 @@ class GuardService : Service() {
     }
 
     override fun onDestroy() {
+        efterResan()          // FÖRE scope.cancel() — läser sitt eget, kortlivade scope
         scope.cancel()
         running = false
         fused.removeLocationUpdates(callback)
@@ -271,8 +275,71 @@ class GuardService : Service() {
         super.onDestroy()
     }
 
+    /**
+     * Frågan kommer till FÖRAREN — föraren letar aldrig (kort #203, Bengt 19/9: "som det är i dag är
+     * det oerhört krångligt … det kommer inte många svar"). När vakten stannar, manuellt eller av
+     * självstoppet, och resan lämnat obesvarade varningar: en notis med knapparna i sig, så att
+     * svaret kan ges från låsskärmen utan att appen öppnas.
+     *
+     * Egen kortlivad scope med flit: tjänstens egen cancelas på nästa rad i onDestroy, och det här
+     * är en läsning plus en notis. Ingen notis alls om betatestet är av — knappen finns bara för
+     * den som själv slagit på den (#186).
+     */
+    private fun efterResan() {
+        val sedan = session.value.startedAt
+        if (sedan <= 0L) return
+        val app = applicationContext
+        CoroutineScope(Dispatchers.IO).launch {
+            runCatching {
+                if (!Prefs.facitEnabled(app).first()) return@runCatching
+                val obes = Resan.obesvarade(Prefs.history(app).first(), Prefs.facit(app).first(), sedan)
+                if (obes.isEmpty()) return@runCatching
+                visaEfterResan(app, sedan, obes.size)
+            }
+        }
+    }
+
+    private fun visaEfterResan(ctx: Context, sedan: Long, antal: Int) {
+        val nm = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (Build.VERSION.SDK_INT >= 26 && nm.getNotificationChannel(EFTER_CH) == null) {
+            nm.createNotificationChannel(
+                NotificationChannel(EFTER_CH, "Efter resan", NotificationManager.IMPORTANCE_DEFAULT).apply {
+                    description = "Frågan om varningarna stämde. Kommer en gång per resa, aldrig under körning."
+                    setShowBadge(false)
+                }
+            )
+        }
+        val flaggor = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        val ja = PendingIntent.getBroadcast(
+            ctx, 3,
+            Intent(ctx, FacitSvarReceiver::class.java)
+                .setAction(FacitSvarReceiver.ACTION_JA)
+                .putExtra(FacitSvarReceiver.EXTRA_SEDAN, sedan),
+            flaggor)
+        // "Något stämde inte" öppnar appen — avvikelsen måste pekas ut på en rad, och det går inte
+        // från en notisknapp. Kortet överst på Redo. bär resans rader, så föraren landar rätt.
+        val avvikelse = PendingIntent.getActivity(
+            ctx, 4,
+            Intent(ctx, MainActivity::class.java)
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP),
+            flaggor)
+        nm.notify(
+            FacitSvarReceiver.NOTIF_ID,
+            Notification.Builder(ctx, EFTER_CH)
+                .setContentTitle(Resan.fraga(antal))
+                .setContentText("Ett tryck räcker. Tystnad räknas aldrig som ja.")
+                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setContentIntent(avvikelse)
+                .setAutoCancel(true)
+                .addAction(0, "Ja, alla stämde", ja)
+                .addAction(0, "Något stämde inte", avvikelse)
+                .build()
+        )
+    }
+
     companion object {
         private const val NOTIF_ID = 1
+        private const val EFTER_CH = "efter_resan"
         private const val HEADS_UP_CH = "heads_up"
         private const val HEADS_UP_ID = 2
         private const val HEADS_UP_MS = 8_000L  // samma 8 s som helskärmskortet

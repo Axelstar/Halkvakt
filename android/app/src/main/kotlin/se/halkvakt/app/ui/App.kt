@@ -47,6 +47,7 @@ import se.halkvakt.app.Nearby
 import se.halkvakt.app.NearbyItem
 import se.halkvakt.app.Prefs
 import se.halkvakt.app.R
+import se.halkvakt.app.Resan
 import se.halkvakt.engine.HazardKind
 
 // Skinnet v3 (DECISIONS #47): tokens bor i Theme.kt och speglar iOS Theme.swift exakt.
@@ -224,8 +225,31 @@ private fun RedoContent(activity: MainActivity) {
     val nearby = remember(hazards, loc) {
         loc?.let { (lon, lat) -> Nearby.nearest(hazards, lon, lat) } ?: emptyList()
     }
+    // Resan (kort #203): fönstret överlever tjänsten, så kortet vet vilka varningar som hör ihop.
+    val resanStart by Prefs.tripStart(ctx).collectAsStateWithLifecycle(initialValue = 0L)
+    val resansVarningar = remember(lastSaid, resanStart) {
+        lastSaid.filter { it.t >= resanStart && it.id.isNotEmpty() }
+    }
+    val obesvarade = remember(lastSaid, facit, resanStart) { Resan.obesvarade(lastSaid, facit, resanStart) }
 
     LazyColumn(Modifier.fillMaxSize().padding(horizontal = 20.dp)) {
+        // ÖVERST, ovanför rubriken — inte en rad längst ner. Frågan kommer till föraren.
+        if (facitOn && Resan.fragaKvar(resanStart, System.currentTimeMillis(), obesvarade.size)) item {
+            EfterResanKort(
+                varningar = resansVarningar,
+                svarFor = { e -> Facit.answerFor(facit, e.id, e.t) },
+                status = facitStatus,
+                onSvar = { e, svar -> scope.launch {
+                    Prefs.answerFacit(ctx, e.id, e.t, svar)
+                    if (!GuardService.running) runCatching { FacitSender.flush(ctx) }
+                } },
+                onAlla = { scope.launch {
+                    Prefs.svaraAllaFacit(ctx, resanStart, svar = true)
+                    if (!GuardService.running) runCatching { FacitSender.flush(ctx) }
+                } },
+            )
+            Spacer(Modifier.height(12.dp))
+        }
         item {
             Surface(shape = RoundedCornerShape(20.dp), color = Yta,
                 border = BorderStroke(1.dp, Kant), modifier = Modifier.fillMaxWidth()) {
@@ -287,6 +311,66 @@ private fun RedoContent(activity: MainActivity) {
         }
         items(nearby) { n -> NearbyCard(n); Spacer(Modifier.height(8.dp)) }
         item { Spacer(Modifier.height(12.dp)) }
+    }
+}
+
+/**
+ * Frågan efter resan, överst på Redo. (kort #203, Axels svar 2 och hans tillägg 20/9).
+ *
+ * Kortet visar resans varningar med KLOCKSLAG OCH TEXT — inte bara antalet. Axels invändning mot
+ * förslaget: *"Ja, alla stämde" efter tre timmars körning — minns föraren de tre varningarna?*
+ * Ett tryck ska vara ett svar på något föraren läser, inte på ett tal han ska minnas.
+ *
+ * AVVIKELSEN pekas ut genom att trycka på raden. Underlaget hade listan som ett eget läge "bara vid
+ * avvikelse"; när raderna ändå är synliga blir det ett läge för mycket (DECISIONS #277).
+ */
+@Composable
+private fun EfterResanKort(
+    varningar: List<AlertEntry>,
+    svarFor: (AlertEntry) -> Boolean?,
+    status: String?,
+    onSvar: (AlertEntry, Boolean) -> Unit,
+    onAlla: () -> Unit,
+) {
+    Surface(shape = RoundedCornerShape(20.dp), color = Yta,
+        border = BorderStroke(1.dp, Gul.copy(alpha = .45f)), modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(18.dp)) {
+            Rubrik("EFTER RESAN")
+            Spacer(Modifier.height(6.dp))
+            Text(Resan.fraga(varningar.size), color = Text, fontSize = 19.sp,
+                fontFamily = Typo.sans, fontWeight = FontWeight.Bold, lineHeight = 25.sp)
+            Spacer(Modifier.height(12.dp))
+            varningar.forEach { e ->
+                val svar = svarFor(e)
+                Column(Modifier.fillMaxWidth().padding(bottom = 10.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(android.text.format.DateFormat.format("HH:mm", e.t).toString(),
+                            color = Dis, fontSize = 12.sp, fontFamily = FontFamily.Monospace)
+                        Spacer(Modifier.width(10.dp))
+                        Text("”${e.text}”", color = if (svar == null) Text else Dis, fontSize = 14.sp,
+                            fontStyle = FontStyle.Italic, lineHeight = 19.sp, modifier = Modifier.weight(1f))
+                    }
+                    Spacer(Modifier.height(6.dp))
+                    Row {
+                        FacitKnapp("Stämde", vald = svar == true) { onSvar(e, true) }
+                        Spacer(Modifier.width(8.dp))
+                        FacitKnapp("Stämde inte", vald = svar == false) { onSvar(e, false) }
+                    }
+                }
+            }
+            Spacer(Modifier.height(4.dp))
+            Button(onClick = onAlla, shape = RoundedCornerShape(50),
+                colors = ButtonDefaults.buttonColors(containerColor = Gul, contentColor = Natt),
+                modifier = Modifier.fillMaxWidth().height(52.dp)) {
+                Text("Ja, alla stämde", fontSize = 17.sp, fontWeight = FontWeight.Bold)
+            }
+            Text("Svarar du inte skickas ingenting — tystnad räknas aldrig som ja.",
+                color = Dis, fontSize = 11.sp, modifier = Modifier.padding(top = 8.dp))
+            status?.let {
+                Text(it, color = if (it.startsWith("Skickat")) Gron else Gul, fontSize = 11.sp,
+                    fontFamily = FontFamily.Monospace, modifier = Modifier.padding(top = 4.dp))
+            }
+        }
     }
 }
 
