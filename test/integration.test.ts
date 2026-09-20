@@ -259,7 +259,7 @@ test("kort #205 prov-kolumnen: prov och fotostudio märks, riktiga id:n inte, om
   } finally { await pool.end(); }
 });
 
-// Uppspelningen ur arkiven (sql/028, DECISIONS #243): kombinationen och KB-A:s varianter i EN funktion, med betans
+// Uppspelningen ur arkiven (sql/028, DECISIONS #244): kombinationen och KB-A:s varianter i EN funktion, med betans
 // startvärden som standardvärden. Fem påhittade stationer med känt rätt svar per variant. Databasen delas med de andra
 // testen, så talen jämförs som SKILLNAD mot läget före insättningen. Dessutom: utfallet är blindat som standard, och ett
 // värde utanför de fastställda svepen avvisas (regel D1).

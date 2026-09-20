@@ -7011,3 +7011,72 @@ den orsaken.
 inte aktuell. Tätare hämtning i Actions förblir uteslutet (12/h ≈ 288 min/dygn). Marginalen i timkadens
 — rader som mest 60 min gamla mot regel 7:s ≤ 70 min — är oförändrat tunn men hel; faller en körning
 bort tiger radarn, vilket är rätt utfall.
+
+## #244 (20/9 2026) Uppspelningens varianter byggda: en funktion, betans startvärden som standard, D1 i kod, utfallet blindat
+
+**Bengts beslut 20/9:** *"ja gör uppspelningens varianter nu"* — svaret på frågan i bedömningen §4.2. Instrumentet för
+dom 1 (januari) och dom 2 (mars) är läsande SQL ur arkiven och bygger inget på `regn_h` i motorn, så S1-grinden (Axel 16/9)
+hindrar det inte.
+
+**Byggt (PR #379, #381):**
+- `sql/028_uppspelning_varianter.sql` — `uppspelning_efterhalka()`. Anropet utan argument ÄR kombinationen (regn inom 2 h ·
+  fall >= 0,8 °C på 30 min · yta +1…+3 °C · allt regn > 0); varje variant ändrar ETT argument. **D1 i kod:** ett värde
+  utanför delarnas fastställda svep avvisas med fel — ingen kan pröva ett eget tal i smyg. **Utfallet blindat:**
+  trendarkivet bär redan lägsta yta inom 90 min (`min_yta_90min_c`, besiktigad av värdevakten), men utfallskolumnerna ger
+  NULL tills `p_blind := false` anges, och det anropet syns i dbknapp-loggen. Låst som `gallra_arkiv`: ingen EXECUTE för
+  PUBLIC, anon eller authenticated.
+- `scripts/matningar/uppspelning-varianter.sql` — sats 1: tio varianter på en rad var; sats 2: kombinationen per dygn;
+  sats 3: bär radarkopplingen (skiljer vädret från röret utan att röra utfallet).
+- Kontraktsgrinden: fem nya kontrakt — N, fall, startbandets två gränser, kopplingen 5 km. 35 kontrakt håller. Motprov:
+  0,8→0,6 i den gamla mätfilen ⇒ exit 1; 5→6 km i täckningssatsen ⇒ exit 1; satsen borttagen ⇒ exit 1 (golvet).
+- Integrationstestet (riktig Postgres i CI, `ok 37`, 117 av 117): sex påhittade stationer med känt rätt svar per variant,
+  blindningen, åtta avvisade värden, och gränsprovet för radarn.
+
+**Körd i drift 20/9 06:17Z, 14 dygn (7–20/9) — BARA ANTAL FYRNINGAR, inga utfall lästa:**
+
+| Variant | Stationsdygn | Ögonblick | Dygn med fyrning |
+| :-- | --: | --: | --: |
+| kombinationen | 1 | 3 | 1 |
+| utan *faller* | 9 | 201 | 8 |
+| utan *blöt* | 7 | 10 | 5 |
+| med radarn r = 0,1 · 0,5 · 2 mm/h | 1 · 1 · 1 | 3 · 3 · 3 | 1 · 1 · 1 |
+| regnmängd >= 0,2 · >= 0,5 mm | 0 · 0 | 0 · 0 | 0 · 0 |
+| startband +1…+4 | 1 | 4 | 1 |
+| startband +1…+6 | 5 | 13 | 4 |
+
+`utfall_synligt` = 0 i varje rad, och sats 2 visar utfallskolumnerna som NULL — blindningen håller i drift.
+
+**Regressionen:** den gamla mätfilens sats 1 (`uppspelning-efterhalka.sql`, skriven 17/9 som CTE) kördes direkt efter och
+gav samma tre tal: utan faller 9, utan blöt 7, kombinationen 1 stationsdygn med 3 ögonblick (14/9). Två oberoende
+skrivningar av samma regel räknar lika.
+
+**Radarn lade inte till ett enda dygn — och det är vädret, inte röret.** Sats 3: 140 stationer i trendarkivet, **110 har
+ett vägavsnitt inom 5 km** (79 %; 16/9 mättes 80,5 % för kalla stationer, #218), 105 avsnitt, och **118 av 530**
+stationsdygn hade radarregn på ett sådant avsnitt samma dygn. Kopplingen ger alltså träffar; de sex torra stationsdygnen
+med fallande yta hade bara inget radarregn inom 2 h. Det är fysiken: ytan faller snabbast klara nätter, och då regnar det
+inte. **30 av 140 stationer saknar väg inom 5 km** — där kan radarvarianten aldrig bidra (känt sedan #218).
+
+**Rättat i samma varv (PR #381):** första versionen skrev `rate_mean_mmh >= r`. Den fastställda regeln säger `> r`
+(TROSKLAR-OVERGANGAR §4), och radartäckningsmätningen 16/9 räknade så. Hittat när radarvarianterna gav exakt
+kombinationens tal och regeln lästes om mot dokumentet. Talen i drift blev desamma före och efter — men vid r = 0,5 hade en
+mätning på exakt 0,5 räknats fel i mars. Gränsprovet (station F, radar exakt 0,5) låser det.
+
+**Numret:** filerna pekade först på #243, som parallellsessionen tog för Steg B (PR #380) medan bygget pågick. Rättat till #244.
+
+**Blindningen, rätt formulerad.** Frågan i §4.2 sa att träffandelar *"inte får läsas före 1/2"*. Det som står i reglerna
+(D2/D3/D6, TROSKLAR-KOMBINATIONEN §7) är: utfall läses första gången vid **dom 1 i januari**, därefter vid
+**kalibreringen 1/2** och **dom 2 i mars** — och aldrig däremellan.
+
+**INTE MED, med skäl:**
+- **SMHI-förlängningen (N_varning):** arkivet har inga vintervarningar, och `senast_sedd` är inte deklarerad i
+  värdevakten. Byggs när båda finns (bedömningen §0b).
+- **Facitstackens tre andra källor** (omklassning, kamerabild, olycka): *nära stationen* har ingen skriven radie —
+  TROSKLAR-TYSTNADSFEL §6 säger *"t.ex. inom ankaravståndet"*, och ankaravståndet är ett svep (15 · 20 · 50 km). Talet ska
+  stå i tröskeldokumentet FÖRE mätningen. Öppen fråga i bedömningen §4.2, tillsammans med episoddefinitionen (v1:
+  stationens första ögonblick per UTC-dygn).
+- **Dagens `icing_point` som jämförelse (KB-B):** hör till utfallsläsningen.
+
+*Alternativ som valdes bort:* tio separata SQL-satser med talen inskrivna (tio kopior av fyra trösklar — precis det
+kontraktsgrinden finns för att slippa) · varianterna som skuggkolumner i motorn (förbjudet av #226: alla räknas ur
+arkiven) · vänta till första frosten (instrumentet hade då byggts under tidspress, med utfallet synligt medan det byggdes).
+

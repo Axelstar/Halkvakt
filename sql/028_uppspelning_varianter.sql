@@ -1,5 +1,5 @@
 -- 028: uppspelningen ur arkiven som EN funktion — kombinationen och KB-A:s varianter (Bengts "gör uppspelningens
--- varianter nu" 20/9 2026, DECISIONS #243; TROSKLAR-KOMBINATIONEN §3–§4, DECISIONS #223–#226).
+-- varianter nu" 20/9 2026, DECISIONS #244; TROSKLAR-KOMBINATIONEN §3–§4, DECISIONS #223–#226).
 --
 -- VAD DEN SVARAR PÅ. När skulle efterhalkans beta ha varnat, per dygn — för kombinationen och för varje variant som
 -- KB-A ska döma i mars: utan faller, utan blöt, med radarn, med regnmängd, med bredare startband. Räknat ur arkiven

@@ -973,6 +973,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [x] 🎞️ **#206 UPPSPELNINGENS VARIANTER — instrumentet för dom 1 och dom 2 — ✅ KLART 20/9** (Bengts *"ja gör uppspelningens varianter nu"*,
+  DECISIONS #244, PR #379/#381). `uppspelning_efterhalka()` (sql/028): anropet utan argument är kombinationen, varje variant ändrar ETT
+  argument, värden utanför de fastställda svepen avvisas (D1 i kod), utfallet blindat tills dom 1 i januari.
+  ✅ **I DRIFT 20/9 06:17Z:** 14 dygn — kombinationen 1 stationsdygn · utan faller 9 · utan blöt 7 · radarn +0 · regnmängd ≥ 0,2 mm: 0 ·
+  startband +1…+6: 5; `utfall_synligt` = 0. Gamla mätfilen ger samma tre tal. Radarkopplingen bär (110 av 140 stationer har väg inom
+  5 km; 118 av 530 stationsdygn hade radarregn) — att radarn inte lade till något är vädret, inte röret. CI `ok 37`, 35 kontrakt.
+  🔧 Rättat i samma varv: `>= r` → `> r` som regeln är skriven (TROSKLAR-OVERGANGAR §4), med gränsprov.
+  **KVAR (egna trådar):** SMHI-varianten väntar på vintervarningar + `senast_sedd` i värdevakten (bedömningen §0b) · facitstackens tre
+  andra källor väntar på radien för *nära stationen* (Bengt, bedömningen §4.2).
 - [x] 🎬 **#205 FOTOSTUDIONS SVAR RÄKNAS SOM RIKTIGT — vidga prov-märkningen — ✅ KLART 20/9** (fynd 20/9 när arkiveringsreceptet
   kontrollerades). Kolumnen `prov` (sql/025, kort #196) matchar bara ordet *prov* i `alert_id`. Fotostudio-kroken på iOS och
   Android lägger in varningen `cam:fotostudio`; ett tryck i simulatorn skickar ett riktigt anrop och landar som ett RIKTIGT

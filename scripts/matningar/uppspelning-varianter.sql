@@ -1,4 +1,4 @@
--- Uppspelningens varianter — KB-A:s tabell räknad ur arkiven (DECISIONS #243, 2026-09-20, Bengts "gör uppspelningens varianter nu").
+-- Uppspelningens varianter — KB-A:s tabell räknad ur arkiven (DECISIONS #244, 2026-09-20, Bengts "gör uppspelningens varianter nu").
 -- Funktionen uppspelning_efterhalka() (sql/028) bär betans startvärden som standardvärden: anropet utan argument ÄR
 -- kombinationen, och varje variant ändrar ETT argument. Inga tal står här utom variantens eget. Ett värde utanför de
 -- fastställda svepen avvisas av funktionen (regel D1).
