@@ -973,6 +973,93 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [ ] 🔊 **#210 iOS SÄGER "PÅ VÄG <NULL>" — var tjugonde olycka** (genomlysningen 20/9). `SnapshotRepo.swift:117` gör JSON-`null`
+  till strängen `"<null>"`, och `road` läses med just den funktionen (rad 68). Kotlin och TypeScript gör rätt — iOS är ensamt fel.
+  **Uppmätt 20/9: 38 av 732 olyckor senaste 30 dygnen saknar vägnummer (5,2 %).** Vektor v22 låser bara FRÅNVARANDE `road`,
+  inte `road: null`, så sviten kan inte se felet.
+  Verify: ny vektor med `road: null` som faller före fixen och passerar efter; rösten säger "Allvarlig olycka 8 kilometer
+  framför dig" utan vägled. Bör sitta i bygget INNAN nästa arkivering.
+
+- [ ] 🔁 **#211 DET TIDIGA OLYCKSROPET KAN SÄGAS TRE GÅNGER** (genomlysningen 20/9). `engine.ts:246-254`: vid låg fart
+  (uppmätt ≤ 45 km/h, 10,5 km, severity 5) blir det TRE repliker — "Överväg annan väg" två gånger plus påminnelsen. Den tidiga
+  grenen återarmeras när 600 s + 5 km passerats innan 2 km-gränsen nås. **Bryter DECISIONS #28**, och projektets eget test
+  påstår att tvåstegsropet är "exakt två". Alla tre plattformarna är identiskt fel — pariteten döljer felet.
+  Verify: vektor med låg fart över 10 km som låser exakt två repliker; fixen i engine/src, buntad och portad i samma varv.
+
+- [ ] 🧪 **#212 VEKTORSVITEN CERTIFIERAR INTE KORRIDOREN ELLER 5 KM-REGELN** (genomlysningen 20/9). Känslighetsanalys mot alla
+  24 vektorer + Skåneturen: **korridorvinkeln 35° kan vara allt mellan 5° och 90°** utan att ett enda prov reagerar, och
+  **reprisavståndet 5 000 m allt mellan 0 och 50 000 m**. Korridoren är grinden VARJE fara passerar; reprisavståndet är halva
+  en produktinvariant. Även kamerans bäringstolerans (60–150°, det förkastade 100° passerar), lägsta fart (5–50) och kortaste
+  förvarning (0–400 m) är olåsta. v03 och v20 är tandlösa. Dessutom: prioritetsgenombrottet (#127) har NOLL täckning, och
+  `test/engine.test.ts` skulle FÄLLA en vektor som prövade det (kräver ≥ 10 s mellan alla varningar).
+  Verify: mät marginalen per tröskel (repots egen 5-metersregel), skriv en vektor per regel som faller på ett steg åt vardera
+  hållet, och rätta testets motsägelse mot prioritetsregeln.
+
+- [ ] 💾 **#213 ARKIVET HAR INGEN BACKUP OCH GÅR INTE ATT ÅTERSKAPA** (genomlysningen 20/9). 178 MB på gratisnivån, **inga
+  backuper**, inget flöde, inget skript — sökt i hela repot. Trafikverket ger bara nuläge och delta, så det som tappas är borta
+  för alltid, och både januari- och marsdomen vilar på arkivet. Supabase Pro är schemalagt till 1/11 och skyddar först därifrån.
+  Verify: en veckovis dump som landar utanför Supabase (artefakt eller Bengts disk), med storlek och radantal i loggen, plus en
+  bevisad återläsning av minst en tabell.
+
+- [ ] 📵 **#214 PLAY-DEKLARATIONEN ÄR OSANN SEDAN 16/9** (genomlysningen 20/9). `docs/PLAY-DATASAFETY.md` svarar **"No"** på
+  Googles insamlingsfråga och påstår att enda utgående trafik är en GET utan parametrar. Filen rördes senast **27/8**. Sedan 16/9
+  POSTar `FacitSender.kt` varnings-id, tid, app och version — och `sql/022` erkänner själv att "ett svar är alltså en plats och
+  en tid". En felaktig deklaration är grund för avslag eller nedtagning mitt i vinterns enda facitfönster.
+  🔑 **Kräver också ett beslut:** ska produktinvariantens lydelse ("ingen positionsdata lämnar telefonen") formuleras om, eller
+  ska facitsvaret ändras? Bengt + Axel.
+  Verify: filen rättad, formuläret ifyllt likadant, och båda i samma commit som nästa uppladdning.
+
+- [ ] 🐕 **#215 VAKTHUNDEN KAN TYSTNA UTAN ATT NÅGON MÄRKER DET** (genomlysningen 20/9). Inget dödmansgrepp: inget utanför
+  Supabase kontrollerar att den kört. Tre checkar kan i praktiken **aldrig fyra** (verifierat i koden): 9c kräver färre än 4
+  källor i `sync_state` men det finns minst 5 och rader raderas aldrig · 9d läser cron-jobbets status, men anropet är asynkront
+  så "lyckades" betyder "lades i kö" · check 1 mäter senast anropad, inte att kursorn rör sig. Dessutom faller ett försvunnet
+  `puls-`jobb tyst ur bevakningslistan, och en hängande körning passerar både utfalls- och ålderstestet.
+  Verify: healthcheck-flödet (som redan kör varannan timme utanför Supabase) larmar när vakthundens senaste körning är för
+  gammal; de tre checkarna provade med framkallat fel; pg_cron jämförd mot pulsklockans deklarerade lista.
+
+- [ ] 🙈 **#216 BLINDNINGSLÄCKAN I T-A** (genomlysningen 20/9). `scripts/grind-t-a.ts` skriver ut **hela svepet rangordnat på
+  träffandel minus falsklarmsandel** även när domspärren håller, och flödet är tänkt att tryckas inom sju dygn efter varje
+  frostnatt — alltså genom hela kalibreringsfönstret. T-A:s svep (fönster · lutning · startband) delar **tre av kombinationens
+  sex dimensioner**. När kombinationen kalibreras 1/2 är de dimensionernas utfall redan avläst, rangordnat och loggat i CI.
+  Regel D3 ska hindra att samma nätter både väljer och dömer; skyddet är poröst här, och ingen vakt ser det.
+  🔑 **Beslut före frosten:** antingen strypa T-A:s utskrift tills domspärren släpper, eller skriva i TROSKLAR-KOMBINATIONEN att
+  de delade dimensionerna är förvalda och att kombinationen bara kalibrerar de återstående. Bengt + Axel.
+  Verify: raden står i tröskeldokumentet före första frostnatten.
+
+- [ ] 🦌 **#217 PRODUKTBOKEN LOVAR SEX SAKER KODEN INTE GÖR** (genomlysningen 20/9). Hastighetsgränsen i kameratexten **kan aldrig
+  sägas** — den publiceras inte, och grenen är död i alla tre motorerna · viltrösten säger "älg" och "den här tiden" fast arten
+  läses av ingen adapter och säsongsfältet aldrig sätts (**överdriver vad datan bär — bryter CLAUDE.md**) · fyra flikar utlovas,
+  två finns · SMHI sägs gå till motorn men motorn läser den inte · introduktionen i fyra sidor **finns inte på Android** ·
+  "23 vektorer" är 24. Dessutom: förvarningsreglaget har olika spann på iOS (400–3000) och Android (500–5000).
+  Verify: varje rad i produktboken antingen bevisad i kod eller struken, med färsk skärmbild där det syns.
+
+- [ ] 🔋 **#218 BATTERIBUDGETEN HAR ALDRIG MÄTTS, OCH iOS KÖR FULL GAS** (genomlysningen 20/9). `< 8 %/h` står som krav på tre
+  ställen med **noll motprov**. iOS kör `BestForNavigation` med avstängd automatisk paus och saknar motsvarighet till Androids
+  kadensreglering. Androids kadenstest är tautologiskt (sänk gränsen tiofalt och det passerar ändå). Dessutom: en
+  snapshot-omladdningsloop i Androids vakttjänst kan ge **fyra HTTP-anrop per sekund utan tak** när nätet saknas och cachen är tom.
+  Verify: ett mätt prov med skärmen av, utan laddare, på ett namngivet bygge, på båda plattformarna.
+
+- [ ] 🤖 **#219 ANDROID ÄR SJU VERSIONER EFTER OCH HAR INGEN VÄG TILL EN TELEFON** (genomlysningen 20/9). Android står på
+  **0.3.1 (versionCode 4)**, iOS på 0.3.8 (11). **Google Play-kontot finns inte**, det finns inget uppladdningsflöde alls — CI
+  bygger en AAB som artefakt och där slutar det. Android saknar dessutom introduktionen helt och har autostart av som standard.
+  Om tolv testare i november ska hålla är Play-kontot en grind som måste passeras i september.
+  Verify: en Android-testare utanför projektet har appen installerad och har skickat ett facitsvar.
+
+- [ ] 🔢 **#220 REFERENSERNA ÄR INTE UNIKA** (genomlysningen 20/9). **11 DECISIONS-nummer är utdelade två gånger** (verifierat:
+  235 poster, 11 dubbletter). Fyra nummerrymder delar syntaxen `#NN` — tavelkort 15–220, beslut 1–248, issues och PR:er — och de
+  överlappar. En session som slår upp "#126" får två olika beslut. Repot är enda synken mellan dator, webb och mobil, så det här
+  kan tyst förfalska ett beslutsunderlag i stället för att bara kosta tid.
+  Verify: dubbletterna omnumrerade med hänvisningar rättade, och ett prefix infört (K för kort, D för beslut) i nya texter.
+
+- [ ] 🧹 **#221 STYRDOKUMENTEN HAR VUXIT FÖRBI ANVÄNDBARHET** (genomlysningen 20/9). DECISIONS 7 232 rader · TAVLA 3 550 ·
+  STATUS 1 846 — **~315 000 tokens ihop**. Varje session betalar för att orientera sig, och motsägelser överlever därför länge:
+  kort #79 står både öppet och avvecklat 9/9 · STATUS.md säger fortfarande "Actions-minuterna slut" och "iOS 0.3.0" (rubriken
+  orörd sedan 31/8) · lapse 0,71 och 0,63 står blandade. **Regler som bevisligen inte följs:** 41 klara kort ligger kvar i
+  ATT GÖRA, 🟡-sektionen är tom, STATUS.md uppdateras inte varje session, BACKLOG står kvar som order i CLAUDE.md men är dött
+  sedan 5/9. Dessutom: 169 fjärrgrenar där en behövs.
+  Verify: beslut äldre än 1/9 flyttade till eget arkiv, BACKLOG avvecklad eller återupplivad med en rad i CLAUDE.md, grenarna
+  rensade, och de fyra namngivna motsägelserna rättade.
+
 - [ ] 📷 **#209 BILDFACITBESLUTET FLYTTAT TILL EFTER FÖRSTA FROSTEN** (Bengts ja 20/9, DECISIONS #248, ur fyndet i #247).
   **Mätt skäl:** omklassningar till halka **0 på 14 dygn**, hela arkivet 7 rader; olyckorna (504) bär ingen orsak. Är källan lika tom
   i november–december står januaridomen på kamerabilderna — och granskningen finns inte byggd. Beslutet flyttas från *före 1/2* till
