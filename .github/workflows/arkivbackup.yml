@@ -1,0 +1,179 @@
+name: arkivbackup
+# ARKIVBACKUP (kort #213, 20/9): veckovis pg_dump av hela arkivet till en GitHub-release i det här
+# repot — utanför Supabase, vars gratisnivå inte säkerhetskopierar. Trafikverket ger bara nuläge
+# och delta, så det som tappas ur arkivet är borta för alltid, och januari- och marsdomen vilar på det.
+#
+# Ett grönt jobb betyder att dumpen BEVISLIGEN går att läsa tillbaka, inte bara att filen finns:
+# radantalen per tabell mäts i källan före dumpen, dumpen återläses i en PostGIS-container och
+# radantalen jämförs tabell för tabell (återläst ≥ 97 % av källan — arkivet växer och gallras
+# under de sekunder som går mellan räkningen och dumpens ögonblicksbild).
+#
+# Larm: en issue med etiketten `arkivbackup` när körningen faller. Egen etikett med flit —
+# healthcheckens `incident` auto-stängs av nästa gröna healthcheck och skulle tysta larmet.
+# Kvarhållning: de 12 senaste dumparna (≈ tre månader). Äldre tas bort SIST, efter att den nya
+# är uppladdad — en misslyckad körning gallrar ingenting.
+on:
+  schedule:
+    - cron: "17 3 * * 0" # söndag 03:17Z — en körning i veckan, ~5 min (minutdiet, beslut #22)
+  workflow_dispatch: {}
+permissions:
+  contents: write # releaser
+  issues: write # larm
+concurrency: arkivbackup
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      prov:
+        image: postgis/postgis:17-3.5
+        env: { POSTGRES_PASSWORD: prov }
+        ports: ["5433:5432"]
+        options: --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      DATABASE_URL: "${{ secrets.DATABASE_URL }}"
+      PROV_URL: postgresql://postgres:prov@localhost:5433/prov
+      GH_TOKEN: "${{ github.token }}"
+    steps:
+      - name: Klient som matchar servern
+        shell: bash
+        run: |
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          MAJOR=$(psql "$DATABASE_URL" -Atc "show server_version_num" | cut -c1-2)
+          echo "servern kör Postgres $MAJOR ($(psql "$DATABASE_URL" -Atc 'show server_version'))"
+          if ! grep -rqs apt.postgresql.org /etc/apt/sources.list.d/; then
+            curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/pgdg.gpg
+            echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list >/dev/null
+          fi
+          sudo apt-get -qq update >/dev/null
+          sudo apt-get -qq install -y "postgresql-client-$MAJOR" >/dev/null
+          echo "/usr/lib/postgresql/$MAJOR/bin" >> "$GITHUB_PATH"
+          "/usr/lib/postgresql/$MAJOR/bin/pg_dump" --version
+          # Sessionsläge: DATABASE_URL är transaktionspoolern (6543, RUNBOOK). pg_dump vill ha en
+          # session — samma pooler svarar i sessionsläge på 5432. Faller det, dumpa över URL:en som den är.
+          SESSION_URL="${DATABASE_URL/:6543\//:5432\/}"
+          echo "::add-mask::$SESSION_URL"
+          if psql "$SESSION_URL" -Atc "select 1" >/dev/null 2>&1; then
+            echo "dumpar i sessionsläge (port 5432)"; echo "DUMP_URL=$SESSION_URL" >> "$GITHUB_ENV"
+          else
+            echo "⚠️ sessionsläget svarade inte — dumpar över DATABASE_URL som den är"; echo "DUMP_URL=$DATABASE_URL" >> "$GITHUB_ENV"
+          fi
+
+      - name: Räkna källan
+        shell: bash
+        run: |
+          # Alla scheman utom Postgres egna och Supabases förvaltade — ett nytt landsschema följer med av sig självt.
+          SCHEMAS=$(psql "$DUMP_URL" -Atc "select string_agg(nspname, ' ' order by nspname) from pg_namespace
+            where nspname not like 'pg\_%' and nspname not in ('information_schema','auth','extensions','graphql',
+            'graphql_public','realtime','storage','supabase_functions','supabase_migrations','vault','pgsodium',
+            'pgsodium_masks','net','cron','pgbouncer','_realtime','_analytics','_supavisor','pgtle','repack',
+            'tiger','tiger_data','topology')")
+          [ -n "$SCHEMAS" ] || { echo "::error::inga scheman att dumpa"; exit 1; }
+          echo "scheman: $SCHEMAS"; echo "SCHEMAS=$SCHEMAS" >> "$GITHUB_ENV"
+          cat > rakna.sql <<'SQL'
+          select n.nspname || '.' || c.relname as tabell,
+                 (xpath('/row/c/text()', query_to_xml(format('select count(*) as c from %I.%I', n.nspname, c.relname), false, true, '')))[1]::text::bigint as rader
+          from pg_class c join pg_namespace n on n.oid = c.relnamespace
+          where c.relkind = 'r' and n.nspname = any(string_to_array(:'scheman', ' '))
+          order by 1;
+          SQL
+          psql "$DUMP_URL" -At -F $'\t' -v scheman="$SCHEMAS" -f rakna.sql > kalla.tsv
+          echo "$(wc -l < kalla.tsv) tabeller, $(awk -F'\t' '{s+=$2} END {print s}' kalla.tsv) rader i källan"
+          column -t -s $'\t' kalla.tsv
+
+      - name: Dumpa
+        shell: bash
+        run: |
+          FIL="halkvakt-arkiv-$(date -u +%Y-%m-%dT%H%MZ).dump"
+          ARGS=(); for s in $SCHEMAS; do ARGS+=("--schema=$s"); done
+          pg_dump "$DUMP_URL" --format=custom --no-owner --no-privileges "${ARGS[@]}" --file "$FIL"
+          BYTES=$(stat -c %s "$FIL")
+          TABELLDATA=$(pg_restore --list "$FIL" | grep -c 'TABLE DATA' || true)
+          echo "dump: $FIL — $((BYTES / 1000000)) MB, $TABELLDATA tabeller med data i innehållsförteckningen"
+          [ "$BYTES" -ge 1000000 ] || { echo "::error::dumpen är bara $BYTES byte — något är fel"; exit 1; }
+          [ "$TABELLDATA" -ge "$(wc -l < kalla.tsv)" ] || { echo "::error::$TABELLDATA TABLE DATA-poster mot $(wc -l < kalla.tsv) räknade tabeller"; exit 1; }
+          echo "FIL=$FIL" >> "$GITHUB_ENV"; echo "BYTES=$BYTES" >> "$GITHUB_ENV"
+
+      - name: Läs tillbaka och jämför
+        shell: bash
+        run: |
+          # Tom databas från template0 (bildens egen postgres-databas har redan PostGIS i public).
+          # PostGIS bor i schemat extensions på Supabase; dumpen refererar extensions.geometry.
+          psql "${PROV_URL%/prov}/postgres" -v ON_ERROR_STOP=1 -q -c "create database prov template template0"
+          psql "$PROV_URL" -v ON_ERROR_STOP=1 -q -c "create schema extensions" -c "create extension postgis with schema extensions"
+          set +e
+          pg_restore --dbname "$PROV_URL" --no-owner --no-privileges --jobs 2 "$FIL" 2> restore.err
+          RC=$?
+          set -e
+          FEL=$(grep -c 'ERROR' restore.err || true)
+          echo "pg_restore exit $RC, $FEL fel (förväntat: objekt som kräver pg_net eller pg_cron — de finns inte i provet, men tabellerna ska)"
+          grep 'ERROR' restore.err | sed 's/^/  /' | head -40 || true
+          psql "$PROV_URL" -At -F $'\t' -v scheman="$SCHEMAS" -f rakna.sql > prov.tsv
+          python3 - <<'PY'
+          import os
+          kalla = dict(l.rstrip('\n').split('\t') for l in open('kalla.tsv') if l.strip())
+          prov = dict(l.rstrip('\n').split('\t') for l in open('prov.tsv') if l.strip())
+          rader = ["| Tabell | Källan | Återläst | |", "|:--|--:|--:|:--|"]
+          fel = 0
+          for t, k in kalla.items():
+              k = int(k); p = int(prov.get(t, -1))
+              ok = p >= 0 and p >= int(k * 0.97)
+              fel += 0 if ok else 1
+              rader.append(f"| {t} | {k} | {p if p >= 0 else 'SAKNAS'} | {'✅' if ok else '❌'} |")
+          tabell = "\n".join(rader)
+          print(tabell)
+          with open('tabell.md', 'w') as f: f.write(tabell + "\n")
+          if fel:
+              print(f"::error::{fel} tabeller kunde inte läsas tillbaka fullständigt"); raise SystemExit(1)
+          print(f"alla {len(kalla)} tabeller återlästa: {sum(map(int, kalla.values()))} rader i källan, {sum(int(prov[t]) for t in kalla)} i provet")
+          PY
+
+      - name: Publicera som release
+        shell: bash
+        run: |
+          TAG="arkiv-$(date -u +%Y-%m-%dT%H%MZ)"
+          {
+            echo "Arkivdump $(date -u +'%Y-%m-%d %H:%MZ') — pg_dump custom-format, $((BYTES / 1000000)) MB, scheman: $SCHEMAS."
+            echo
+            echo "Återläst i en PostGIS-container i samma körning; radantal per tabell (källan före dumpen mot det återlästa):"
+            echo
+            cat tabell.md
+            echo
+            echo 'Återläsning: `createdb x && psql x -c "create schema extensions" -c "create extension postgis with schema extensions" && pg_restore --dbname x --no-owner --no-privileges <fil>.dump` — fel om pg_net/pg_cron är väntade, tabellerna kommer med.'
+          } > notes.md
+          gh release create "$TAG" "$FIL" --title "Arkivdump $(date -u +%Y-%m-%d)" --notes-file notes.md --latest=false
+          echo "release: $TAG ($FIL, $((BYTES / 1000000)) MB)"
+          { echo "## Arkivdump $TAG — $((BYTES / 1000000)) MB, återläst ✅"; echo; cat tabell.md; } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Gallra äldre än de 12 senaste
+        shell: bash
+        run: |
+          gh release list --limit 200 --json tagName,createdAt \
+            --jq '[.[] | select(.tagName | startswith("arkiv-"))] | sort_by(.createdAt) | reverse | .[12:] | .[].tagName' \
+          | while read -r t; do gh release delete "$t" --cleanup-tag --yes && echo "gallrad: $t"; done
+          echo "kvar: $(gh release list --limit 200 --json tagName --jq '[.[] | select(.tagName | startswith("arkiv-"))] | length') arkivdumpar"
+
+      - name: Larm-issue vid fel
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const url = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const body = `Arkivbackupen föll ${new Date().toISOString()} — ${url}\n\nArkivet har ingen annan backup (kort #213). Läs loggen och kör om med knappen när felet är lagat.`;
+            const open = await github.rest.issues.listForRepo({ ...context.repo, state: 'open', labels: 'arkivbackup' });
+            if (open.data.length) {
+              await github.rest.issues.createComment({ ...context.repo, issue_number: open.data[0].number, body });
+            } else {
+              await github.rest.issues.create({ ...context.repo, title: '💾 Arkivbackupen föll', labels: ['arkivbackup'], body });
+            }
+
+      - name: Stäng larmet när det lyckas igen
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const open = await github.rest.issues.listForRepo({ ...context.repo, state: 'open', labels: 'arkivbackup' });
+            for (const i of open.data) {
+              await github.rest.issues.createComment({ ...context.repo, issue_number: i.number, body: `✅ Arkivbackupen lyckades igen (${process.env.FIL}) — stänger.` });
+              await github.rest.issues.update({ ...context.repo, issue_number: i.number, state: 'closed' });
+            }
