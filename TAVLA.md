@@ -1036,12 +1036,14 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   inte `road: null`, så sviten kan inte se felet.
   Verify: ny vektor med `road: null` som faller före fixen och passerar efter; rösten säger "Allvarlig olycka 8 kilometer
   framför dig" utan vägled. Bör sitta i bygget INNAN nästa arkivering.
+  🔨 **PÅGÅR 20/9 (Claude via Cowork, Axels val "motorfixarna först"):** `SnapshotRepo.swift` läser `road` som `as? String` (nil vid null, som `slut` på raden ovan); ny vektor med `road: null` låser alla tre motorerna.
 
 - [ ] 🔁 **#211 DET TIDIGA OLYCKSROPET KAN SÄGAS TRE GÅNGER** (genomlysningen 20/9). `engine.ts:246-254`: vid låg fart
   (uppmätt ≤ 45 km/h, 10,5 km, severity 5) blir det TRE repliker — "Överväg annan väg" två gånger plus påminnelsen. Den tidiga
   grenen återarmeras när 600 s + 5 km passerats innan 2 km-gränsen nås. **Bryter DECISIONS #28**, och projektets eget test
   påstår att tvåstegsropet är "exakt två". Alla tre plattformarna är identiskt fel — pariteten döljer felet.
   Verify: vektor med låg fart över 10 km som låser exakt två repliker; fixen i engine/src, buntad och portad i samma varv.
+  🔨 **PÅGÅR 20/9 (Claude via Cowork):** det tidiga ropet blir engångs per fara i alla tre motorerna; vektor 45 km/h över 10 km.
 
 - [ ] 🧪 **#212 VEKTORSVITEN CERTIFIERAR INTE KORRIDOREN ELLER 5 KM-REGELN** (genomlysningen 20/9). Känslighetsanalys mot alla
   24 vektorer + Skåneturen: **korridorvinkeln 35° kan vara allt mellan 5° och 90°** utan att ett enda prov reagerar, och
@@ -1051,6 +1053,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   `test/engine.test.ts` skulle FÄLLA en vektor som prövade det (kräver ≥ 10 s mellan alla varningar).
   Verify: mät marginalen per tröskel (repots egen 5-metersregel), skriv en vektor per regel som faller på ett steg åt vardera
   hållet, och rätta testets motsägelse mot prioritetsregeln.
+  🔨 **PÅGÅR 20/9, DELEN prioritetsgenombrottet (Claude via Cowork):** vektor där isen kvalificerar 6 s efter kameran och talar ändå; testets ≥ 10 s-krav skrivs om till motorns regel (bara viktigare får bryta). Trösklarna (korridor, repris) är kvar.
 
 - [ ] 📵 **#214 PLAY-DEKLARATIONEN ÄR OSANN SEDAN 16/9** (genomlysningen 20/9). `docs/PLAY-DATASAFETY.md` svarar **"No"** på
   Googles insamlingsfråga och påstår att enda utgående trafik är en GET utan parametrar. Filen rördes senast **27/8**. Sedan 16/9
