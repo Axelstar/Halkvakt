@@ -20,6 +20,9 @@ arkivet (§3, §4 KB-A, §7, §9). Samma dag: startbandet och SMHI-förlängning
 inställningar prövas i mars, kopplingen 5 km, startvärdena, förslagen i C och D. **Fastställt 17/9 (#226):** C och D med
 Axels kontrasignatur · D-raden i tio tröskeldokument · uppspelningen ur arkiven med skuggloggen som kontroll (§3, §4).
 
+**Ändrat 20/9** (DECISIONS #245, Bengt): §4 KB-B — **räckvidden för kombinationens facit är 5 km från stationen.** Skrivet före
+första utfallsläsningen; §10 tillåter justering med en rad i DECISIONS fram till betans första natt.
+
 **Varför ett eget dokument.** Integrationskartan är fryst (DECISIONS #186) och säger själv att *"C och D är dokument
 och kan skrivas före frosten"*. Tröskelregeln var låst bakom N1: den saknade vittne (kartan §13.2). N1 är klar sedan
 15/9 — kamerafacit har objekt (DECISIONS #189, #196). Alla tre kan alltså skrivas nu, och de måste stå klara
@@ -191,6 +194,12 @@ dokument **före** mätningen.
 - **Risk är inte är.** Kombinationen innehåller L3 och säger *risk*. En fyrning där ytan kom inom nära-miss-bandet av
   tröskeln inom utfallsfönstret är **risk som inte föll ut**, inte falsklarm (TROSKLAR-TRENDEN T-B).
 - **Räckviddsvillkoret.** En miss räknas bara där systemet hade en chans att tala (TROSKLAR-TYSTNADSFEL §6).
+  **För kombinationen är räckvidden 5 km från stationen** (Bengt 20/9, DECISIONS #245): ett facittillfälle — omklassning,
+  kamerabild, olycka — hör till en station när det ligger inom 5 km från den. Samma koppling station↔väg som radarn fick
+  17/9 (#225), så att det finns EN koppling. Tystnadsfelets §6 säger *"t.ex. inom ankaravståndet"*, och ankaravståndet är
+  ett svep (15 · 20 · 50 km), inget tal — därför står talet här. **Priset, utskrivet:** en snäv radie ger färre
+  facittillfällen mot KB-C2:s golv på 40; räcker de inte blir domen OAVGJORD, inte mjukare. Gäller kombinationens domar
+  (januari, mars) och uppspelningen — inte tystnadsfelsmåttet i övrigt.
 
 **Tidsvinst redovisas bredvid, men räknas aldrig som nettonytt** (TROSKLAR-TRENDEN T-B): en kombination som bara är
 tidigare än punktregeln på tillfällen den ändå fångar klarar inte KB-B1.

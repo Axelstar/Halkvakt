@@ -973,6 +973,14 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [ ] 🧷 **#207 FACITKOPPLINGEN I UPPSPELNINGEN — omklassning och olycka inom 5 km från stationen** (upptäckt 20/9 som #206:s rest;
+  radien beslutad av Bengt samma dag, DECISIONS #245). Uppspelningen läser i dag bara stationens egen facit (lägsta yta inom 90 min).
+  KB-B döms mot hela facitstacken: väglagets omklassningar (`road_condition_history`) och olyckor (`situation_archive`) inom 5 km och
+  utfallsfönstret (svep 60 · 120 · 180 min). Kamerabilden väntar på bildfacit-beslutet (bedömningen §4.2, före 1/2).
+  🔑 **Väntar på episodbeskedet** (bedömningen §4.2: version 1 delar 35 % av nätterna i två — *byt* eller *behåll*), så att kopplingen
+  byggs på rätt episod från början. **Blindningen gäller:** utfallskolumnerna NULL som standard, inga andelar läses före dom 1.
+  Verify: en sats som per variant ger antal episoder med facit per källa (blindat ⇒ NULL); integrationstest med påhittade omklassningar
+  och olyckor innanför och utanför 5 km och fönstret; 5 km-kontraktet utvidgat till de nya förekomsterna.
 - [x] 🎞️ **#206 UPPSPELNINGENS VARIANTER — instrumentet för dom 1 och dom 2 — ✅ KLART 20/9** (Bengts *"ja gör uppspelningens varianter nu"*,
   DECISIONS #244, PR #379/#381). `uppspelning_efterhalka()` (sql/028): anropet utan argument är kombinationen, varje variant ändrar ETT
   argument, värden utanför de fastställda svepen avvisas (D1 i kod), utfallet blindat tills dom 1 i januari.
@@ -981,7 +989,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   5 km; 118 av 530 stationsdygn hade radarregn) — att radarn inte lade till något är vädret, inte röret. CI `ok 37`, 35 kontrakt.
   🔧 Rättat i samma varv: `>= r` → `> r` som regeln är skriven (TROSKLAR-OVERGANGAR §4), med gränsprov.
   **KVAR (egna trådar):** SMHI-varianten väntar på vintervarningar + `senast_sedd` i värdevakten (bedömningen §0b) · facitstackens tre
-  andra källor väntar på radien för *nära stationen* (Bengt, bedömningen §4.2).
+  andra källor — ~~väntar på radien~~ ✅ **5 km, Bengt 20/9 (DECISIONS #245)**, inskrivet i TROSKLAR-KOMBINATIONEN §4; bygget är kort #207.
 - [x] 🎬 **#205 FOTOSTUDIONS SVAR RÄKNAS SOM RIKTIGT — vidga prov-märkningen — ✅ KLART 20/9** (fynd 20/9 när arkiveringsreceptet
   kontrollerades). Kolumnen `prov` (sql/025, kort #196) matchar bara ordet *prov* i `alert_id`. Fotostudio-kroken på iOS och
   Android lägger in varningen `cam:fotostudio`; ett tryck i simulatorn skickar ett riktigt anrop och landar som ett RIKTIGT

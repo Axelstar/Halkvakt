@@ -7080,3 +7080,35 @@ mätning på exakt 0,5 räknats fel i mars. Gränsprovet (station F, radar exakt
 kontraktsgrinden finns för att slippa) · varianterna som skuggkolumner i motorn (förbjudet av #226: alla räknas ur
 arkiven) · vänta till första frosten (instrumentet hade då byggts under tidspress, med utfallet synligt medan det byggdes).
 
+## #245 (20/9 2026) Räckvidden för kombinationens facit: 5 km från stationen — och episoden: version 1, med en mätning som talar emot
+
+**Bengts beslut 20/9:** *"vi kör 5 km"* och *"och version 1"* — svaren på de två definitionerna i bedömningen §4.2 (#244).
+
+**(a) 5 km.** Ett facittillfälle (omklassning, kamerabild, olycka) hör till en station när det ligger inom 5 km från den.
+Samma koppling station↔väg som radarn fick 17/9 (#225) — en koppling, ett tal, och kontraktet för 5 km finns redan i
+kontraktsgrinden (#244). Inskrivet i TROSKLAR-KOMBINATIONEN §4 KB-B **före första utfallsläsningen**; §10 tillåter det med
+en rad här fram till betans första natt. **Priset:** färre facittillfällen mot KB-C2:s golv på 40 — räcker de inte blir
+domen OAVGJORD. **Gäller** kombinationens domar och uppspelningen, inte tystnadsfelsmåttet i övrigt (dess §6 rörs inte).
+*Alternativ:* ankaravståndet 15 · 20 · 50 km (ett svep, inget tal — och en punktkälla 50 km bort säger lite om stationens yta).
+
+**(b) Episoden: version 1** — stationens första ögonblick per UTC-dygn (som sql/028 räknar i dag). Bengt följde Claudes
+rekommendation i §4.2. **Rekommendationen var given utan att repot var genomsökt** (SESSIONSREGELN punkt 2), och
+sökningen — gjord minuterna innan beskedet kom — visade två saker:
+
+1. **De två grindar som redan räknar nätter gör det middag till middag,** inte per kalenderdygn: `scripts/grind-t-a.ts`
+   (`sample_time - interval '12 hours'`) och `scripts/grind-r-a.ts`. KB-C1 och KB-C2 räknar dessutom i *nätter*.
+2. **Mätt i drift 20/9 06:33Z, hela trendarkivet (8–20/9, 11 879 ögonblick), utan trösklar och utan utfall:** 530
+   stationsdygn blir **454 stationsnätter, och 159 av dem (35 %) delas i två av version 1.** Skälet syns i
+   timfördelningen: **66 % av ögonblicken ligger 21–03 UTC**, med toppen 00–03. Version 1 klyver alltså dygnet precis där
+   ytorna faller som mest — en natt vid en station blir två episoder med var sitt utfall, och antalen mot golven (KB-C2:s
+   40, KB-D4:s 30) blåses upp.
+
+   Satsen: `WITH r AS (SELECT station_id AS sid, (observed_at AT TIME ZONE 'UTC')::date AS d, ((observed_at - interval
+   '12 hours') AT TIME ZONE 'UTC')::date AS natt FROM trend_kandidater) SELECT count(DISTINCT (sid, d)), count(DISTINCT
+   (sid, natt)), (SELECT count(*) FROM (SELECT sid, natt FROM r GROUP BY sid, natt HAVING count(DISTINCT d) > 1) x) FROM r`.
+
+**Därför:** version 1 står som beslutad och är det koden gör — men den skrivs INTE in i tröskeldokumentet ännu. Omprövningen
+ligger i bedömningen §4.2 med Claudes rättade rekommendation: **natt = middag till middag UTC, som T-A.** Inget utfall är
+läst, så bytet kostar ingenting i blindning; det kostar en ändring i `ep`-steget i sql/028, ett testfall över midnatt och
+ett kontrakt för tolvtimmarsgränsen (den finns då i tre filer).
+
