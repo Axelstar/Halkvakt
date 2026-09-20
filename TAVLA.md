@@ -979,7 +979,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **I DRIFT 20/9 07:06Z:** den körande funktionen bär `DISTINCT ON (f.sid, f.natt)` och tolvtimmarsskiftet (läst ur `pg_proc`);
   varianttabellen oförändrad, utfallet blindat. CI `ok 37`; **motprov i CI (PR #385, stängd): per UTC-dygn ⇒ `not ok 37` på raden
   *"G: ingen andra episod efter midnatt UTC"*.** Kontrakt *Nattens gräns* över T-A, R-A och uppspelningen — 36 kontrakt håller.
-- [ ] 🔨 **PÅGÅR (Claude på datorn, 20/9 07:17Z, Bengts "kör 207")** 🧷 **#207 FACITKOPPLINGEN I UPPSPELNINGEN — omklassning och olycka inom 5 km från stationen** (upptäckt 20/9 som #206:s rest;
+- [x] 🧷 **#207 FACITKOPPLINGEN I UPPSPELNINGEN — omklassning och olycka inom 5 km från stationen** (upptäckt 20/9 som #206:s rest;
   radien beslutad av Bengt samma dag, DECISIONS #245). Uppspelningen läser i dag bara stationens egen facit (lägsta yta inom 90 min).
   KB-B döms mot hela facitstacken: väglagets omklassningar (`road_condition_history`) och olyckor (`situation_archive`) inom 5 km och
   utfallsfönstret (svep 60 · 120 · 180 min). Kamerabilden väntar på bildfacit-beslutet (bedömningen §4.2, före 1/2).
@@ -987,6 +987,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   episod från början. **Blindningen gäller:** utfallskolumnerna NULL som standard, inga andelar läses före dom 1.
   Verify: en sats som per variant ger antal episoder med facit per källa (blindat ⇒ NULL); integrationstest med påhittade omklassningar
   och olyckor innanför och utanför 5 km och fönstret; 5 km-kontraktet utvidgat till de nya förekomsterna.
+  ✅ **KLART 20/9, I DRIFT 07:48Z (DECISIONS #247, PR #388).** Två kolumner per variant, lästa i (t, t + 90 min] — samma fönster som
+  stationens egen facit. Olyckor räknas separat (arkivet bär ingen orsak). Ny synlig kolumn `episoder`. CI `ok 37`, 38 kontrakt.
+  **Två motprov:** ordgränsen borttagen ⇒ grinden fäller bygget; radien vidgad till 500 km ⇒ grinden ser inget men provet faller på
+  *"bara H"*. **FYND: omklassningarna till halka är NOLL** — hela arkivet har 7 rader på 14 dygn (*Torrt*, *fläckvis Våt*). Inte en
+  läcka (arkivvakten #51 frågar rätt fråga; samma tomhet 5/9) men KB-D3:s följd blir konkret. Olyckor: 504. Kopplingen bär: alla 140
+  stationer har läge i `weather_latest`. Nattbytet syns nu: *utan faller* 9 stationsdygn ⇒ 7 episoder.
 - [x] 🎞️ **#206 UPPSPELNINGENS VARIANTER — instrumentet för dom 1 och dom 2 — ✅ KLART 20/9** (Bengts *"ja gör uppspelningens varianter nu"*,
   DECISIONS #244, PR #379/#381). `uppspelning_efterhalka()` (sql/028): anropet utan argument är kombinationen, varje variant ändrar ETT
   argument, värden utanför de fastställda svepen avvisas (D1 i kod), utfallet blindat tills dom 1 i januari.
