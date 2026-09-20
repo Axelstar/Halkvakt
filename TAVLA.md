@@ -979,7 +979,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **I DRIFT 20/9 07:06Z:** den körande funktionen bär `DISTINCT ON (f.sid, f.natt)` och tolvtimmarsskiftet (läst ur `pg_proc`);
   varianttabellen oförändrad, utfallet blindat. CI `ok 37`; **motprov i CI (PR #385, stängd): per UTC-dygn ⇒ `not ok 37` på raden
   *"G: ingen andra episod efter midnatt UTC"*.** Kontrakt *Nattens gräns* över T-A, R-A och uppspelningen — 36 kontrakt håller.
-- [ ] 🧷 **#207 FACITKOPPLINGEN I UPPSPELNINGEN — omklassning och olycka inom 5 km från stationen** (upptäckt 20/9 som #206:s rest;
+- [ ] 🔨 **PÅGÅR (Claude på datorn, 20/9 07:17Z, Bengts "kör 207")** 🧷 **#207 FACITKOPPLINGEN I UPPSPELNINGEN — omklassning och olycka inom 5 km från stationen** (upptäckt 20/9 som #206:s rest;
   radien beslutad av Bengt samma dag, DECISIONS #245). Uppspelningen läser i dag bara stationens egen facit (lägsta yta inom 90 min).
   KB-B döms mot hela facitstacken: väglagets omklassningar (`road_condition_history`) och olyckor (`situation_archive`) inom 5 km och
   utfallsfönstret (svep 60 · 120 · 180 min). Kamerabilden väntar på bildfacit-beslutet (bedömningen §4.2, före 1/2).
