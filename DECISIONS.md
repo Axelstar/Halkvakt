@@ -7353,3 +7353,29 @@ sökte på tavlan efter en befintlig rad — och SESSIONSREGELN punkt 2 säger u
 vara nytt eller omöjligt*. Regeln skrevs för strykningar; den gäller lika mycket för fynd. **Följd: en granskning som
 lägger nya kort ska först söka på tavlan efter frågan, inte bara efter koden.**
 
+## #253 (20/9 2026) Kort #87 finns och är stängt — dödmansgreppet är en fråga till, inte ett flöde
+
+**Bengts fråga 20/9:** *"kolla om kort #87 finns"* — ställd efter att #50 pekat ut #87 som sitt slutvillkor.
+
+**Svaret: #87 finns, det är stängt sedan 14/9 (DECISIONS #178) — och beslutet blev motsatsen till vad #50 förutsatte.**
+`healthcheck.yml` skulle enligt #50 läggas ner när kontrollerna flyttat in i vakthunden. Det gjordes inte. Bengt 14/9:
+*"ta inte bort healthcheck eftersom den knappt kostar något"*, och kortets tyngre skäl: **den är den enda kontroll som
+körs UTANFÖR det den vaktar.** Löparen som saknades 5/9 — *pulsen gav en oberoende klocka, inte en oberoende löpare* —
+finns alltså redan, betald med 12 min/dygn och bevarad med flit.
+
+**Följden för #50/#215:s dödmansgrepp: åtgärden krymper från ett bygge till en fråga.** `ingest/healthcheck.ts` läser
+redan `cron.job_run_details` (rad 23–24), men bara för `halkvakt-ingest-live`. Den frågar aldrig om
+**`halkvakt-vakthund`** själv. Det behövs alltså ingen ny mekanism, inget nytt flöde och ingen ny hemlighet — en fråga
+till i en kontroll som redan kör varannan timme utanför Supabase, i en fil som redan är beslutad att stanna.
+
+**Driften kontrollerad samma varv (20/9 08:4xZ, läst ur `cron.job`):** `halkvakt-vakthund` aktiv, schema `7 * * * *`,
+senaste körning 6 min sedan, `succeeded`; `halkvakt-ingest-live` 0 min; `puls-healthcheck` 110 min; `halkvakt-gallring`
+418 min — alla succeeded. **De sju måndagsjobben har aldrig kört** (`null`), vilket är väntat: första avfyrningen är
+måndag 21/9 (#160).
+
+**Bristen som fyndet blottar:** #50 skulle ha stängts eller skrivits om 14/9. Dess eget slutvillkor uppfylldes då, men
+med motsatt utfall mot vad raden förutsatte, och kortet stod kvar i sex dygn och sa fortfarande att brons slut var
+ogjort. Det är tredje gången på ett dygn samma mönster syns: ett kort som verkligheten sprungit förbi utan att någon
+flyttat det (#250 sex kort, #252 två dubbletter, nu #50). **TAVELREGELN punkt 3 följs inte, och det kostar nu
+dubbelarbete i granskningar, inte bara städning.**
+
