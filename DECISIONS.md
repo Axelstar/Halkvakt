@@ -7325,3 +7325,31 @@ som åtgärd i §0b.
 **Vad som INTE gjordes, med skäl:** ingen omskrivning till tidsordning (kartans koppling går före), ingen flytt av
 klara rader till bilaga (historiken står struken på plats, som SESSIONSREGELN punkt 4 föreskriver), inga nya kort.
 
+## #252 (20/9 2026) #215 slås ihop med #50, och #51 kopplas till facitraden
+
+**Bengts order 20/9:** *"ja slå ihop 215 med 50 och koppla 51 till facitraden och uppdatera bedömning med detta"* —
+efter att uppdateringen av bedömningen (#251) avslöjat att två av genomlysningens tolv kort inte var nya.
+
+**#215 → #50.** Kortet *vakthunden kan tystna utan att någon märker det* ställer samma fråga som **#50 *Vakthunden är
+själv obevakad***, öppet sedan **4/9**. #215 är stängt med en pekare; de tre mätta defekterna är införda i #50 som
+avsnittet *GENOMLYSNINGEN 20/9*, med minsta åtgärd och Verify:
+- inget dödmansgrepp utanför Supabase — **samma felläge som 5/9, bara flyttat**: pulsen gav en oberoende klocka, inte
+  en oberoende löpare, och `larmvag: "TRASIG"` skrivs bara i ett HTTP-svar som pg_net kastar bort,
+- check 9c kan aldrig fyra (färre än 4 källor i `sync_state`, men det finns minst 5 och rader raderas aldrig),
+- check 9d mäter fel led (pg_net är asynkront — *lyckades* betyder *lades i kö*), check 1 mäter `synced_at` i stället
+  för att kursorn rör sig, och schemat jämförs aldrig mot pulsklockans deklarerade lista.
+
+**#51 → facitraden.** *Vinterarkivet skrivs nästan inte — moaten läcker* (4/9) bar redan frågan; 20/9 fick den ett tal:
+**0 omklassningar till halka på 14 dygn, hela arkivet 7 rader** (orden *Torrt* och *fläckvis Våt*), 504 olyckor utan
+orsak. Kortet är nu uttryckligen bedömningens rad *Facitstacken för domarna* och förutsättningen för **#209**, med ny
+Verify: omklassningar till halka inom 5 km och utfallsfönstret under de första frostnätterna, mätt i samma varv som
+T-A steg 0. Den gamla Verify-formuleringen (*nyttan går inte att mäta förrän strömmen lever*) var inte mätbar.
+
+**Bedömningen uppdaterad i samma varv:** §0b-raden om dubbletterna struken med åtgärden på raden; facitraden och S7
+pekar nu på #51 respektive #50 i stället för på de nya numren. Öppna kort 96 → 95.
+
+**Läxan, och den är obekväm.** Fem granskare läste repot i morse och lade ett kort som redan fanns. Ingen av dem
+sökte på tavlan efter en befintlig rad — och SESSIONSREGELN punkt 2 säger uttryckligen *sök i repot innan något sägs
+vara nytt eller omöjligt*. Regeln skrevs för strykningar; den gäller lika mycket för fynd. **Följd: en granskning som
+lägger nya kort ska först söka på tavlan efter frågan, inte bara efter koden.**
+

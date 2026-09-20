@@ -1022,14 +1022,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ska facitsvaret ändras? Bengt + Axel.
   Verify: filen rättad, formuläret ifyllt likadant, och båda i samma commit som nästa uppladdning.
 
-- [ ] 🐕 **#215 VAKTHUNDEN KAN TYSTNA UTAN ATT NÅGON MÄRKER DET** (genomlysningen 20/9). Inget dödmansgrepp: inget utanför
-  Supabase kontrollerar att den kört. Tre checkar kan i praktiken **aldrig fyra** (verifierat i koden): 9c kräver färre än 4
-  källor i `sync_state` men det finns minst 5 och rader raderas aldrig · 9d läser cron-jobbets status, men anropet är asynkront
-  så "lyckades" betyder "lades i kö" · check 1 mäter senast anropad, inte att kursorn rör sig. Dessutom faller ett försvunnet
-  `puls-`jobb tyst ur bevakningslistan, och en hängande körning passerar både utfalls- och ålderstestet.
-  Verify: healthcheck-flödet (som redan kör varannan timme utanför Supabase) larmar när vakthundens senaste körning är för
-  gammal; de tre checkarna provade med framkallat fel; pg_cron jämförd mot pulsklockans deklarerade lista.
-
+- [x] 🐕 **#215 VAKTHUNDEN KAN TYSTNA UTAN ATT NÅGON MÄRKER DET — ✅ SLAGET IHOP MED #50 20/9** (Bengts order,
+  DECISIONS #252). Genomlysningen lade kortet som ett nytt fynd, men **#50 *Vakthunden är själv obevakad* har ställt
+  samma fråga sedan 4/9** — sexton dygn. De tre konkreta defekterna (dödmansgreppet, 9c/9d som aldrig kan fyra,
+  pg_cron utan avstämning mot pulsklockans lista) är införda i #50 som avsnittet *GENOMLYSNINGEN 20/9*. Allt arbete
+  bokförs där. Se även #87, som är #50:s slut.
 - [ ] 🙈 **#216 BLINDNINGSLÄCKAN I T-A** (genomlysningen 20/9). `scripts/grind-t-a.ts` skriver ut **hela svepet rangordnat på
   träffandel minus falsklarmsandel** även när domspärren håller, och flödet är tänkt att tryckas inom sju dygn efter varje
   frostnatt — alltså genom hela kalibreringsfönstret. T-A:s svep (fönster · lutning · startband) delar **tre av kombinationens
@@ -2015,6 +2012,18 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   väntar vi med en bättre pipeline i stället för med en obesvarad fråga — arkivvakten läser
   var annan timme, kursormätningen sitter på knapp, och den egna kursorn ser till att det
   finns något att arkivera när vintern kommer.
+  📊 **MÄTT 20/9 (DECISIONS #247/#252) — tystnaden har nu ett tal, och kortet kopplas till facitraden.**
+  Uppspelningens facitkoppling räknade `road_condition_history` över 14 dygn: **0 omklassningar till halka**, och
+  **hela arkivet 7 rader från 7 vägavsnitt** — orden är *Torrt* (7) och *fläckvis Våt* (6). Olyckor finns det 504 av,
+  men de bär ingen orsak och får aldrig bära en dom ensamma. Det bekräftar kortets egen slutsats från 5/9:
+  omklassning är ett VINTERfenomen, och arkivet förblir tyst tills det fryser.
+  🔗 **KOPPLINGEN, som saknades:** det här kortet ÄR facitraden i bedömningen (*Facitstacken för domarna*) och
+  förutsättningen för **kort #209**. Regel KB-D3 säger att förarfacit ensamt varken fäller eller friar — **förblir
+  omklassningarna tomma blir januaridomen OAVGJORD hur många förare som än svarat *Stämde***. Därför flyttades
+  bildfacitbeslutet 20/9 från 1/2 till sju dygn efter första frosten (#248): är källan lika tom då måste
+  kamerabildsgranskningen byggas i november.
+  Verify (ny, ersätter *nyttan går inte att mäta förrän strömmen lever*): antal omklassningar till halka inom 5 km
+  och utfallsfönstret från en episod, mätt under de första frostnätterna i samma varv som T-A steg 0. Talet avgör #209.
 - [ ] ⚠️ **#52 Ett test låser fast motsatsen till vinterbaseline-principen** (samma svep,
   verifierat). test/engine.test.ts:143-146 hävdar att ett segment klassat **code 1 (Normalt)**
   med info **"Packad snö"** MÅSTE ge exakt ett larm — tillsammans med Isfläckar, Svår halka och
@@ -2380,6 +2389,25 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🌅 MORGON 14/9: 12 healthcheck-körningar sedan 13/9 16:23 — 8 puls, 4 cron, längsta mellanrum
   2,00 h. En av cron-körningarna kom 39 min sen (bokad 04:23, levererad 05:02); pulsen höll tiden.
   Det är samma leveransproblem som fällde måndagsserien i dag, se kort #160.
+  🔎 **GENOMLYSNINGEN 20/9 (DECISIONS #249/#252) — kortet får tre mätta defekter, och #215 slås in här.**
+  Frågan kortet ställde 4/9 — *vem vaktar vakten* — har flyttat från healthcheckens leveransväg till **Supabase-
+  vakthunden själv**, och där är den obesvarad:
+  · **Inget dödmansgrepp.** Inget utanför Supabase kontrollerar att vakthunden kört. Utgången nyckel, avaktiverat
+    cron-jobb eller ett tidigt kast ⇒ total tystnad som ser ut som allt grönt. `larmvag: "TRASIG"` skrivs bara i
+    HTTP-svaret, som pg_net kastar bort. **Samma felläge som 5/9, bara flyttat** — pulsen gav en oberoende klocka,
+    inte en oberoende löpare, och det gäller fortfarande.
+  · **Check 9c kan aldrig fyra:** villkoret är färre än 4 källor i `sync_state`, men det finns minst 5 och rader
+    raderas aldrig (verifierat i `ingest/db.ts` och `ingest-live/index.ts`).
+  · **Check 9d mäter fel led:** den läser cron-jobbets status, men anropet är asynkront via pg_net — *lyckades*
+    betyder *lades i kö*. Ett 500-svar från ingest-live syns aldrig. (Samma familj som #76:s fynd.)
+  · **Check 1 mäter `synced_at`, inte att kursorn rör sig** — en fastfrusen kursor ser kärnfrisk ut.
+  · **Schemat jämförs inte mot listan:** ett `puls-`jobb som avaktiveras eller raderas faller tyst ur mätvaktens
+    bevakningslista. Vakten ser en sen körning, aldrig ett försvunnet schema.
+  🔧 **MINSTA ÅTGÄRD (samma som 4/9:s logik, ny adress):** healthcheck-flödet kör redan varannan timme UTANFÖR
+  Supabase — låt det mäta vakthundens senaste `job_run_details` och larma när den är för gammal. Plus en
+  `puls-`avstämning mot `scripts/pulsklocka.ts:NYA` inne i check 6a, och de tre checkarna lagade var för sig.
+  Verify: en framkallad tystnad (vakthundens cron-jobb avaktiverat) ger ett larm från healthcheck inom 4 h; de tre
+  checkarna provade med framkallat fel; ett borttaget puls-jobb syns i mätvaktens rad.
 - [x] ~~⛏️ **#48 Golvbyggena**~~ ✅ KLART 4/9 (utom bygge 3) (Bengts order 4/9: "ta hela kortet, allt självförsörjande")
   — PÅGÅR (terminalen): GOLVET.md:s byggen 1–4 med automatiseringskrav: automigrering
   vid varje ingest (db.ts/fi.ts-mönstret), healthcheck-golv på varje ny fältfamilj
