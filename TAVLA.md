@@ -659,6 +659,26 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Väntelisterutan på kartan borttagen på hans beslut. Kvar i `docs/REKRYTERING.md` om det behövs.
 - [ ] Domänen halkvakt.se (vilande beslut)
 - [ ] Fysisk Android-testenhet (pappas telefon? begagnad?)
+  📖 **KONTROLLERAT MOT GOOGLES EGEN SIDA 20/9** (Bengts fråga; DECISIONS #279). Kravet finns, ordagrant:
+  *"Från och med början av 2024 måste utvecklare med nya personliga konton verifiera att de har åtkomst till en
+  riktig mobil Android-enhet via Play Console-appen innan de kan göra appen tillgänglig på Google Play."*
+  (support.google.com/googleplay/android-developer/answer/14316361)
+  ✅ **MEN NI BEHÖVER INTE KÖPA NÅGON.** Samma sidas FAQ: *"Du kan använda alla fysiska mobila Android-enheter som
+  inte är rotade och kör operativsystemet Android 10 eller senare"* — och på frågan om man måste behålla enheten:
+  *"Nej. Vi kan be dig om verifiering i framtiden, men du behöver inte använda samma enhet."*
+  **Ett lån räcker.** Vem som helst med en Android 10+ som inte är rotad: skanna QR-koden i Play Console, installera
+  Play Console-appen, logga in som kontoägare, tryck Verifiera. Telefonen lämnas tillbaka efteråt.
+  ⚠️ **Rättelse av DECISIONS #271:** rekommendationen *begagnad Samsung för 800–1 500 kr* behövs INTE för
+  verifieringen. En egen testtelefon är fortfarande bra för fälttest och för att köra appen — men den är då en
+  BEKVÄMLIGHET igen, inte publiceringsgrinden. Grinden kostar ett telefonsamtal, inte tusen kronor.
+  ❓ **OKLART OCH INTE PÅSTÅTT:** Googles formulering är *"göra appen tillgänglig på Google Play"*. Om ett SLUTET
+  TEST räknas dit går inte att avgöra ur texten. Testsidan säger att slutet test kan startas *"när du är klar med
+  konfigureringen av appen"*, vilket talar för att betan inte blockeras — men det är en slutsats, inte ett citat.
+  🔒 **Det som ÄR klarlagt:** utvecklarens telefonnummer kan inte verifieras förrän identitet OCH enhetsverifiering
+  är klara (samma hjälpcenter, *Verifiera uppgifter för utvecklaridentitet*). Enhetsverifieringen ligger alltså i
+  vägen för kontots färdigställande oavsett hur betan klassas.
+  Verify: uppgiften *Kontrollera att du har åtkomst till en mobil Android-enhet* försvinner från Play Consoles
+  startsida.
 
 ### Bengt
 - [ ] 🏷️ **#204 SKOLANS NAMN PÅ QR-SIDAN — synlig attribution på webben, inte banner i appen — ✅ BESLUTAT 19/9, förberett, byggs när bladet byggs** (Bengts idé 19/9:
