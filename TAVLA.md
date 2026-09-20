@@ -2408,6 +2408,21 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   `puls-`avstämning mot `scripts/pulsklocka.ts:NYA` inne i check 6a, och de tre checkarna lagade var för sig.
   Verify: en framkallad tystnad (vakthundens cron-jobb avaktiverat) ger ett larm från healthcheck inom 4 h; de tre
   checkarna provade med framkallat fel; ett borttaget puls-jobb syns i mätvaktens rad.
+  ✅ **KONTROLLERAT 20/9 (Bengts fråga): KORT #87 FINNS, OCH DET ÄR STÄNGT SEDAN 14/9 — svaret ändrar åtgärden.**
+  Kortet sa *BRONS SLUT = kort #87*, och #87 stängdes 14/9 (DECISIONS #178). Men beslutet blev **motsatsen** till
+  det #50 förutsatte: `healthcheck.yml` **raderas inte**. Bengts skäl, ordagrant 14/9: *"ta inte bort healthcheck
+  eftersom den knappt kostar något"* — och det tyngre argumentet i kortet: **den är den enda kontroll som körs
+  UTANFÖR det den vaktar.** Löparen som saknades 5/9 finns alltså redan, betald och bevarad med flit.
+  🔧 **DÄRMED KRYMPER ÅTGÄRDEN FRÅN ETT BYGGE TILL EN FRÅGA.** `ingest/healthcheck.ts` läser redan
+  `cron.job_run_details` — men bara för `halkvakt-ingest-live` (rad 23–24). Den frågar aldrig om
+  **`halkvakt-vakthund`** själv. Dödmansgreppet är alltså inte ett nytt flöde: det är en rad till i en kontroll
+  som redan kör varannan timme utanför Supabase, i en fil som redan är beslutad att stanna.
+  📊 **DRIFTEN 20/9 08:4xZ (läst ur `cron.job`):** `halkvakt-vakthund` aktiv, schema `7 * * * *`, senaste körning
+  6 min sedan, `succeeded`. `halkvakt-ingest-live` 0 min, `puls-healthcheck` 110 min, `halkvakt-gallring` 418 min —
+  alla succeeded. **De sju måndagsjobben har aldrig kört** (`null`), vilket är väntat: första avfyrningen är
+  måndag 21/9 (#160).
+  ⚠️ **Och kortet borde ha stängts eller skrivits om 14/9.** Dess egen slutvillkor uppfylldes då, men med motsatt
+  utfall mot vad raden förutsatte — kortet stod kvar i sex dygn och sa fortfarande att brons slut var ogjort.
 - [x] ~~⛏️ **#48 Golvbyggena**~~ ✅ KLART 4/9 (utom bygge 3) (Bengts order 4/9: "ta hela kortet, allt självförsörjande")
   — PÅGÅR (terminalen): GOLVET.md:s byggen 1–4 med automatiseringskrav: automigrering
   vid varje ingest (db.ts/fi.ts-mönstret), healthcheck-golv på varje ny fältfamilj
