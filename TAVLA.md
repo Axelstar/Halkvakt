@@ -986,6 +986,24 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [ ] 🔇 **#222 TRE CHECKAR I VAKTHUNDEN KAN ALDRIG FYRA — och schemat jämförs aldrig mot listan** (ur genomlysningen
+  20/9, utbrutet ur #50 när dödmansgreppet stängde det, DECISIONS #254). Vakten är numera bevakad, men den ljuger
+  fortfarande om tre saker, och alla tre är verifierade i koden:
+  · **Check 9c** kräver färre än 4 källor i `sync_state` — men det finns minst 5 (`ingest/db.ts` + `ingest-live`) och
+    rader raderas aldrig. Villkoret kan alltså aldrig bli sant. Bortfall av en kursor larmar inte.
+  · **Check 9d** läser cron-jobbets status för `halkvakt-ingest-live`, men anropet är asynkront via pg_net —
+    *succeeded* betyder *lades i kö*. Ett 500-svar från ingest-live syns aldrig. (Samma läxa som dödmansgreppets
+    tredje fråga just löste för vakthunden — lösningen finns alltså redan, den ska bara tillämpas här.)
+  · **Check 1** mäter `synced_at`, som sätts vid varje lyckat anrop. En **fastfrusen kursor** (`last_change_id` som
+    står still) ser kärnfrisk ut. Ingen vakt mäter att kursorn rör sig.
+  · **Mätvakten (6a)** läser schemat ur YAML och `cron.job`, men jämför det aldrig mot `scripts/pulsklocka.ts:NYA`.
+    Ett `puls-`jobb som avaktiveras eller raderas faller **tyst ur bevakningslistan** — vakten ser en sen körning,
+    aldrig ett försvunnet schema. Dessutom: `runs?per_page=1` tar senaste körningen oavsett trigger, så en manuell
+    knapptryckning nollställer klockan, och en hängande körning (`conclusion === null`) passerar båda testen.
+  ⚠️ **Kräver deploy av vakthunden** — CLAUDE.md:s regel gäller: `git pull`, diffa mot main, deploya i samma varv,
+  och bevisa EFTER deployen med funktionens egna prov, inte med commit-hashen.
+  Verify: ett framkallat fel per check ger ett larm — en borttagen kursor i `sync_state`, ett 500-svar från
+  ingest-live, en kursor som står still, och ett avaktiverat `puls-`jobb. Fyra prov, fyra larm.
 - [ ] 🔊 **#210 iOS SÄGER "PÅ VÄG <NULL>" — var tjugonde olycka** (genomlysningen 20/9). `SnapshotRepo.swift:117` gör JSON-`null`
   till strängen `"<null>"`, och `road` läses med just den funktionen (rad 68). Kotlin och TypeScript gör rätt — iOS är ensamt fel.
   **Uppmätt 20/9: 38 av 732 olyckor senaste 30 dygnen saknar vägnummer (5,2 %).** Vektor v22 låser bara FRÅNVARANDE `road`,
@@ -2277,7 +2295,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   1/2 7 %, 0/2 83 %, täckning **13 %** (44 % 3/9, 36 % 9/9). INTE jämförbart rakt av: nämnaren är alla station-
   körtimmar och arkivdieten sparar bara intressanta rader — måttet skiljer inte torrt från missat. Kortet döms inte
   på det här talet (DECISIONS #188).
-- [ ] 🐕 **#50 Vakthunden är själv obevakad** (fynd 4/9 kväll, läsvarvet inför
+- [x] 🐕 **#50 Vakthunden är själv obevakad — ✅ KLART 20/9, sexton dygn efter fyndet** (fynd 4/9 kväll, läsvarvet inför
   radardomen) — healthchecken är den enda som märker när något tystnar, och den går
   fortfarande på ren GitHub-cron. GENOMGÅNG av alla 15 cron-rader i repot: pulsklockan
   bär ingest/fi/dk/no/regn-30; publish-map räddas utan att någon tänkt på det, eftersom
@@ -2423,6 +2441,22 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   måndag 21/9 (#160).
   ⚠️ **Och kortet borde ha stängts eller skrivits om 14/9.** Dess egen slutvillkor uppfylldes då, men med motsatt
   utfall mot vad raden förutsatte — kortet stod kvar i sex dygn och sa fortfarande att brons slut var ogjort.
+  ✅ **DÖDMANSGREPPET BYGGT OCH BEVISAT 20/9** (Bengts *"kör dödmansgreppet"*, DECISIONS #254, PR #400).
+  `ingest/healthcheck.ts` frågar nu om **vakthunden själv**, i den fil som redan kör varannan timme utanför Supabase.
+  **Tre frågor för tre dödssätt:** (1) jobbet saknas eller är avaktiverat · (2) det har inte kört inom 180 min, tre
+  missade timkörningar · (3) det kör men **inget svar** har kommit. Den tredje är 9d-läxan tillämpad på vakten själv:
+  pg_net är asynkront, så `succeeded` betyder *lades i kö* — bara en rad i `net._http_response` med markören
+  `larmvag` bevisar att vakthunden verkligen körde. Existensvaktat med `to_regclass` i stället för en naken `catch`,
+  så ett riktigt läsfel i drift faller högljutt medan CI hoppar rent.
+  📊 **BEVIS, båda hållen samma timme:**
+  · skarpt på main 10:4xZ: `vakthunden: aktiv=1 · senaste körning 21 min · senaste svar 21 min (frist 180)` ⇒ HEALTHY.
+    Att *svar* och *körning* visar samma ålder är beviset att markören spårar vakthundens egen körning.
+  · **framkallat fel** (jobbnamnet bytt på en slängkopia, grenen raderad): `aktiv=0 · senaste körning aldrig` ⇒
+    **UNHEALTHY** med raden *vakthundens cron-jobb saknas eller är avaktiverat — INGEN vakt kör i Supabase* och
+    **issue #399** skapad. Larmvägen är alltså bevisad hela vägen: detektion → exit 1 → issue. Issue stängd och
+    förklarad i en kommentar.
+  🎯 **FRÅGAN KORTET STÄLLDE 4/9 ÄR DÄRMED BESVARAD.** Vakten är inte längre obevakad. Det som återstår är en ANNAN
+  fråga — checkar som inte kan fyra — och den bor i **kort #222**, inte här.
 - [x] ~~⛏️ **#48 Golvbyggena**~~ ✅ KLART 4/9 (utom bygge 3) (Bengts order 4/9: "ta hela kortet, allt självförsörjande")
   — PÅGÅR (terminalen): GOLVET.md:s byggen 1–4 med automatiseringskrav: automigrering
   vid varje ingest (db.ts/fi.ts-mönstret), healthcheck-golv på varje ny fältfamilj
