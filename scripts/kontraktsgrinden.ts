@@ -390,6 +390,14 @@ export const KONTRAKT: Kontrakt[] = [
     filer: /uppspelning-varianter\.sql|028_uppspelning_varianter\.sql/,
     golv: 3,
   },
+  {
+    // Formen är bunden till `AS natt`: ett naket "12 hours" fångar också vakthundens tolvtimmarsfönster, som är något annat.
+    namn: "Nattens gräns — timmar tiden skiftas så att en natt inte delas av midnatt (Bengt 20/9, DECISIONS #246)",
+    varfor: "T-A, R-A och uppspelningens episoder ska mena samma natt. Med UTC-dygn delades 159 av 454 stationsnätter i två (#245).",
+    former: [/- interval '(\d+) hours?'\)[^\n]{0,40}AS natt\b/],
+    filer: /grind-t-a\.ts|grind-r-a\.ts|028_uppspelning_varianter\.sql/,
+    golv: 3,
+  },
 ];
 
 // ── SJÄLVTEST mot känd sanning, utan disk ──────────────────────────────────────────────
