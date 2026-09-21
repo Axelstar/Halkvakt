@@ -8437,3 +8437,49 @@ håll — och det är just det som gör ett gott utfall trovärdigt för Nira, S
 **Begränsning:** skuggmotorn kör varje rutt var 3,5 timme. Minuterna före första bilen kommer därför ur uppspelningen per
 station, inte ur rutternas logg.
 
+## #286 (21/9 2026) Efterhandstestet på Niras exempeldag, låst före körningen: motorns regel och skuggmotorns kommande regel, med Niras material som indata
+
+**Bengts order 21/9:** *"vi hämtar inte niras data. Vad jag bad om var om man kunde göra en backtest på den dagen då Nira
+hade sin exempeldag den 15 januari 2024 och på det sättet få en bedömning av om vårt system hade larmat på de inlämnade
+materialet"* — och *"viktigt att komma ihåg är att du i den här testen ska tillämpa både motorns regler och skuggmotorns
+framtida regler"*.
+
+**Följd:** väg A och B i kort #230 stryks — ingen ny data begärs från Nira — och därmed förslaget i #285 om Niras friktion
+som tredje facitkälla. Testet körs på exempeldagens tre filer (#283).
+
+**Indata — ersättare, och det är den viktigaste reservationen.** Halkvakts regler läser vägytans temperatur och stationens
+nederbörd. Här används bilarnas mätningar på samma vägavsnitt i stället:
+- **yta** ≈ bilarnas lufttemperatur (luften, inte vägbanan)
+- **fukt** (motorns: nederbörd nu, `publish/snapshot-core.ts`) ≈ torkarna igång i samma tiominutersperiod
+- **regn inom 2 h** ≈ torkarna igång någon gång under de två senaste timmarna på avsnittet
+- **fall på 30 min** ≈ lufttemperaturens fall över 30 min, räknat som `publish/trenden.ts`: minst tre värden i fönstret,
+  inget hopp över 3 °C, positivt när den faller, avrundat till tusendels grad
+- **givarvakten** (`rimlig` — daggpunkten) går inte att tillämpa, eftersom materialet saknar daggpunkt. I stället en
+  värdevakt: lufttemperatur utanför −35…+15 °C sorteras bort.
+
+Varje vägavsnitt behandlas som en station.
+
+**Reglerna, låsta:**
+1. **Motorn** (`engine.ts:213–218`): yta ≤ +1 °C och fukt.
+2. **Skuggmotorns kommande regel, efterhalkan med startvärdena** (DECISIONS #222/#225, `sql/028`): yta +1…+3 °C · fall
+   ≥ 0,8 °C på 30 min · regn > 0 inom 2 h. En episod per avsnitt och natt (middag till middag UTC).
+
+**Kan inte tillämpas:** *skuggan* (prognosen mellan stationerna) bygger på stationsankare och klimatologiska förskjutningar,
+som materialet saknar. SMHI-förlängningen kräver SMHI:s varningar, som inte finns i materialet.
+
+**Facit:** Niras friktion på samma avsnitt inom (t, t + 90 min]. Gränsen för *halt* är 0,30 — Niras skala är
+odokumenterad i filerna, och därför redovisas känsligheten för 0,25 och 0,35.
+
+**Mått:**
+- antal varningar och episoder
+- träffandel mot basnivån — andelen tiominutersperioder med bilrapport som följs av låg friktion, alltså vad en regel som
+  larmar på allt hade fått
+- andel halkaepisoder som föregicks av en varning
+- försprånget i minuter
+- fördelningen per timme
+
+**Blindningen:** startvärdena prövas som de står, utan svep (D2, D6, D7). Materialet är från 2024, utanför säsongens
+kalibrerings- och domnätter, och resultatet får inte ändra startvärdena. **Redan sett före låsningen (#284):** dygnets
+lufttemperatur låg mellan −4 och −10 °C, så efterhalkans utfall är i praktiken förutsägbart — inga eller nästan inga
+fyrningar. Motorns utfall är inte räknat.
+

@@ -3017,7 +3017,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Bryter dokumentationsregeln. *(Delvis åtgärdad i detta varv — resten nästa.)*
 
 ### Claude — låst (väntar på nyckel)
-- [ ] 🧪 **#230 EFTERHANDSTEST: HALKVAKTS REGLER MOT NIRAS FRIKTION** (Bengts idé 21/9, DECISIONS #284). 🔑 **Nyckel:
+- [ ] 🧪 **#230 EFTERHANDSTEST: HALKVAKTS REGLER MOT NIRAS FRIKTION — ✂️ INGEN NY DATA FRÅN NIRA (Bengt 21/9); körs på exempeldagen** (Bengts idé 21/9, DECISIONS #284). 🔑 **Nyckel:
   friktionsdata från Nira för nätter som vårt arkiv också bär — och ett beslut om facitkällan INNAN nätterna mäts (D3).**
   Frågan: hade Halkvakt varnat *före* den första bilen, där och när Niras bilar sedan kände halka?
   ✘ **Inte med exempeldagen 15/1 2024.** (1) Halkvakts indata saknas: Trafikverkets öppna API räcker en vecka bakåt, vårt
@@ -3049,6 +3049,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   nattkriteriet — **före den första övergångsnatten**, som kan komma i oktober (D3; S6 har i dag förarfacit + kamerafacit).
   Verify: designen deklarerad i DECISIONS före första övergångsnatten · testet kört på de valda nätterna · försprånget och
   träffbilden redovisade PER LAGER i bedömningen, vid domarnas tidpunkter.
+  ✂️ **BENGT 21/9 (DECISIONS #286):** *"vi hämtar inte niras data"* — väg A och B ovan stryks, och med dem förslaget om Nira
+  som tredje facitkälla. Beställningen var ett efterhandstest på **exempeldagen 15/1 2024, med Niras eget material som indata**,
+  och med **både motorns regler och skuggmotorns kommande regler**. Upplägget är låst i DECISIONS #286 FÖRE körningen:
+  bilarnas lufttemperatur i stället för vägytan, torkarna i stället för nederbörden, varje vägavsnitt som en station, facit =
+  friktion under 0,30 på samma avsnitt inom 90 min (känslighet 0,25 och 0,35). Skuggan och SMHI-förlängningen kan inte
+  tillämpas — materialet saknar stationsankare och varningar.
 
 - [ ] 🧭 ↩︎ **#38b Stråket / skuggmotorn — ÅTERSTÄLLT 10/9** (föll av tavlan 8/9 20:43 i commit
   99473c7; #88, #91 och #95 hänvisar hit). Bengts byggplan v3 (31/8): segmentmotorn i november, i
