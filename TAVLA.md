@@ -684,6 +684,37 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   startsida.
 
 ### Bengt
+- [ ] 🧫 **#232 KUVÖSEN — HELA SYSTEMET BAKÅTPRÖVAT PÅ VINTERN 2024/25** (Bengts idé 21/9, DECISIONS #292). Motorn och ALLA
+  skuggregler i en gemensam testbädd, långt från appar och förare, körd mot en hel gången vinter — ett RIKTNINGSPROV: är vi på
+  rätt väg, och vad tillför varje del ovanpå de andra? Svarar på kartans §7.3: *"Varje grind dömer sin del ENSAM"*.
+  🔑 **Nyckeln är EN sak: stationernas mätvärden för den vintern.** Kontrollerat 21/9, på källorna: Trafikverkets API räcker
+  sju dygn bakåt · Lastkajen bär vägnätet, inte mätvärden (sidan *Hämta öppen data* läst — en söksammanfattning påstod
+  motsatsen) · Vintersidan har *"historisk väderdata från VViS och MESAN"* men är stängd för utomstående · Finland: Digitraffics
+  historik är 24 h, och FMI:s vägväderfrågor finns inte längre (151 lagrade frågor listade, ingen för väg) · Norge: Vegvesenets
+  flöde är realtid; MET:s Frost-arkiv kräver konto och är inte kontrollerat. **Vägen är alltså en förfrågan till Trafikverket.**
+  ✉️ **Steg 1 — Bengt skickar förfrågan** (samma kontaktformulär som Datex II-ärendet: data.trafikverket.se/about-us/contact;
+  be dem peka ut rätt mottagare). Utkast:
+  > Hej! Vi utvecklar Halkvakt, en svensk app som varnar bilförare för halka och bygger på era öppna data
+  > (WeatherMeasurepoint/WeatherObservation, RoadCondition, Situation). API:t ger observationer sju dygn bakåt. För att pröva
+  > våra varningsregler mot en hel vinter — innan de når förare — behöver vi ett historiskt uttag:
+  > 1. VViS-observationer 1 november 2024–31 mars 2025, alla stationer (eller ett urval län om volymen är ett hinder):
+  >    yttemperatur, lufttemperatur, daggpunkt, relativ fuktighet, nederbördstyp och -mängd, vind — i den upplösning ni lagrar.
+  > 2. Om möjligt för samma period: väglagsklassningarna (RoadCondition) och olyckshändelserna (Situation).
+  > Formatet spelar ingen roll (CSV går utmärkt). Samma data är redan öppen (CC0) i realtid; det vi saknar är bara historiken.
+  > Vem hos er hanterar sådana uttag? Med vänlig hälsning, Bengt Lagerlöf, Halkvakt
+  🛠️ **Steg 2 — Claude bygger kuvösen när datan finns** (eller på årets arkiv om svaret blir nej). Delarna finns: grindarnas
+  skript, uppspelningen (sql/028), `snapshot-core` → `snapshotToHazards` → `AlertEngine` längs skuggmotorns 20 rutter. Körs i en
+  slit-och-släng-databas som CI:s, ALDRIG i Supabase — en vinter ryms inte i gratisnivåns 500 MB.
+  ⚖️ **Regler, deklarerade FÖRE körningen:** startvärdena som de står, inget svep (D2, D6, D7) · hela vintern, inga handplockade
+  dygn · varje del redovisas ensam OCH ovanpå de andra (marginalnyttan) · facit = stationens egen yta efter varningen
+  (*det blev kallt*, inte *det blev halt* — sql/028:s egen reservation) plus väglag och olyckor om Trafikverket ger dem ·
+  resultatet ändrar ingen tröskel. **Ska vintern 2024/25 i stället få bli KALIBRERINGSDATA (D3: kalibrering och dom på skilda
+  nätter — en gången vinter uppfyller det bättre än årets) är det ett eget beslut för Bengt och Axel, taget före körningen.**
+  🎁 **Bonus:** en hel vinter avgör också grind A:s oavgjorda A2 (#131: *"kan inte avgöras på septemberdata"*) — alltså
+  novemberbeslutet om segmentmotorn.
+  Verify: svar från Trafikverket inskrivet här · upplägget i DECISIONS före körningen · tabellen *del × ensam × ovanpå de andra*
+  i bedömningen.
+
 - [ ] 🚗 **#229 NIRA — DATAN BAKOM GÖTEBORGS NEJ** (Göteborgs svar 21/9, DECISIONS #281). Göteborg köper friktionsdata
   från bilar av **NIRA Dynamics** (Linköping) och får inte dela den: datan är Niras, inte stadens. Nira säljer dessutom
   en färdig tjänst för halkvarningar till bilar och appar, **Road Surface Alerts** (läst på

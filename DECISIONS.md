@@ -8656,3 +8656,47 @@ förslag, inte ett beslut. Läsningen av bildfacit är Bengts och Axels gemensam
 **Axel 21/9, via Bengt:** *"Axel har inte några synpunkter"*. Beslutet står därmed hos båda. Definitionen av vädertyperna
 fastställs som planerat i samband med #209, före den första bilden.
 
+## #292 (21/9 2026) Kuvösen: hela systemet bakåtprövat på en gången vinter — möjligt, och det hänger på ett datauttag från Trafikverket (kort #232)
+
+**Bengts idé 21/9:** en testbädd där allt i motorn och allt i skuggmotorn körs tillsammans, *"i kuvös … långt från bilar och
+appar och människor"*, mot historiska dygn — *"säg 50 vinterdygn 2025"* — som ett prov på *"om det är på rätt väg eller fel
+väg"*. Skälet: *"Om vi inte gör det kommer vi ju bara få bevis för en efter en och inte sammantaget."*
+
+**Idén är kartans egen brist, uttalad.** Integrationskartan §7.3: *"Varje grind dömer sin del ENSAM. Det finns ingen grind för
+kombinationen … Vi riskerar att underkänna produktens ingredienser en och en."* TROSKLAR-KOMBINATIONEN täcker EN kombination
+(efterhalkan: blöt + faller + startband). Ingen mätning svarar i dag på vad helheten ger.
+
+**Delarna finns redan:** grindarnas skript (A, T-A, R-A, K-A, V-A, V-B), uppspelningen ur arkiven (sql/028), och kedjan
+`snapshot-core` → `snapshotToHazards` → `AlertEngine` längs skuggmotorns 20 rutter. Kuvösen är att mata dem med en annan vinter.
+Den körs i en slit-och-släng-databas som CI:s — aldrig i Supabase, där en vinter inte ryms (177 av 500 MB i dag).
+
+**Vad det hänger på — kontrollerat 21/9, på källorna och inte i sammanfattningar:**
+
+| Källa | Historik | Läst |
+| :-- | :-- | :-- |
+| Trafikverkets API (WeatherObservation) | sju dygn | källkartläggningen 26/8 (Trafiklabs notis 26/10 2023 säger detsamma enligt en söksammanfattning — notisen är inte läst) |
+| Lastkajen | vägnät och järnväg — inga mätvärden | trafikverket.se *Hämta öppen data* (en söksammanfattning påstod *"historiska data finns på Lastkajen"*; sidan säger det inte) |
+| Vintersidan | *"historisk väderdata från VViS och MESAN"* — bara Trafikverkets anställda och entreprenörer | bransch.trafikverket.se (#284) |
+| Finland, Digitraffic | *"Sensor history for the last 24 hours"* | digitraffic.fi |
+| Finland, FMI öppna data | vägväderfrågorna (`livi::observations::road`) finns inte längre | `listStoredQueries`: 151 frågor, ingen för väg |
+| Norge, Statens vegvesen | realtid, kräver konto | dataut.vegvesen.no |
+| Norge, MET Frost | arkiv, kräver konto — **inte kontrollerat** om vägbanetemperaturen finns | — |
+
+**Slutsats:** vägen till vintern 2024/25 är en förfrågan till Trafikverket. Forskare får sådana uttag; om vi får det vet
+ingen förrän vi frågat. Utkast och mottagare på kort #232. **Kartrepots historik** bär 2 606 versioner av `live.json` sedan
+24/8 (144 per dygn) — exakt det apparna såg — och blir kuvösens källa för ÅRETS vinter, om svaret blir nej.
+
+**Facit bakåt i tiden är lika gott som facit framåt — för det som stationen kan se.** Stationens egen yta efter varningen
+säger att det BLEV kallt, inte att vägen blev hal (sql/028:s egen reservation), och den ser inte saltet (#290). För
+övergångsreglerna — efterhalkan, trenden, rimfrosten — räcker det långt som riktningsprov. Väglag och olyckor för samma
+period stärker facit, om Trafikverket ger dem.
+
+**Blindningen:** vintern 2024/25 ligger utanför säsongens kalibrerings- och domnätter, så D3 bryts inte av ett riktningsprov
+med låsta startvärden. Två saker gäller ändå: upplägget skrivs i DECISIONS före körningen, och hela vintern körs — inga
+handplockade dygn. **Vill Bengt och Axel i stället låta den gångna vintern bli KALIBRERINGSDATA** — vilket uppfyller D3
+(*kalibrering och dom på skilda nätter*) bättre än att dela årets vinter i två — är det en ändring av planen (kalibreringen
+står i dag på 1/2) och ett eget beslut, taget före körningen.
+
+**Bonus:** en hel vinter avgör grind A:s oavgjorda A2 (#131: *"A2 kan inte avgöras på septemberdata, och vinterdata kommer
+efter november"*) — alltså novemberbeslutet om segmentmotorn.
+
