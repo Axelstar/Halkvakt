@@ -8487,6 +8487,8 @@ fyrningar. Motorns utfall är inte räknat.
 
 ## #287 (21/9 2026) Efterhandstestet på exempeldagen: motorn hade larmat mycket men sämre än slumpen — skuggmotorns regel kunde inte prövas
 
+> ⚠️ **Läs med #290 (second opinion samma dag):** testet prövade i praktiken torkarna, inte motorn — temperaturvillkoret var sant i 99,7 % av perioderna, *"sämre än slumpen"* är till 70 % en blandningseffekt, och halkan började före datans fönster, så försprånget går inte att läsa. Talen nedan står kvar; läsningen av dem är ändrad.
+
 **Körd enligt #286,** upplägget låst före körningen (PR #431). Skript `scripts/matningar/nira-efterhandstest-2026-09-21.py`.
 **Reservationen först:** bilarnas lufttemperatur och torkare ersätter vägytans temperatur och stationens nederbörd, och
 varje vägavsnitt behandlas som en station. Testet prövar reglernas logik, inte stationsnätet.
@@ -8548,6 +8550,8 @@ läge.
 
 ## #289 (21/9 2026) Övergångsregeln på exempeldagen: fångar mer halka och tidigare än motorn — men inte bättre än slumpen
 
+> ⚠️ **Läs med #290 (second opinion samma dag):** testet prövade i praktiken torkarna, inte motorn — temperaturvillkoret var sant i 99,7 % av perioderna, *"sämre än slumpen"* är till 70 % en blandningseffekt, och halkan började före datans fönster, så försprånget går inte att läsa. Talen nedan står kvar; läsningen av dem är ändrad.
+
 **Körd enligt #288,** som låstes före körningen (PR #433). Samma skript och ersättare som i #287. Motorns och
 efterhalkans tal blev exakt desamma vid omkörningen — inget annat har rörts.
 
@@ -8573,4 +8577,57 @@ nederbördsgivare. Det är inte mätt här.
 
 **Skuggsidans övriga isregler** (trenden, rimfrosten, SMHI-förstärkaren, väglagets ålder, frysklassningen, segmentmotorn)
 kunde inte köras på materialet (#288). Kort #230 står stängt.
+
+## #290 (21/9 2026) Second opinion på efterhandstestet: upplägget var ärligt, men två slutsatser håller inte — och dagen var Niras bästa sort, inte vår
+
+**Bengts order 21/9:** *"läs detta och ge mej en second opinion. Svara också på om du anser att det här var ett dygn när
+vårt system skulle vara som bäst"*. Granskningen är gjord av en annan modell (Fable 5.1) än den som körde testet (Opus 5).
+Kontrollerna är **explorativa och gjorda i efterhand** (`scripts/matningar/nira-efterhandstest-granskning-2026-09-21.py`).
+De får inte ändra någon tröskel eller något startvärde — bara hur #287 och #289 ska läsas.
+
+**Det som håller.** Upplägget låstes före körningen, reservationerna stod först, och omkörningen gav samma tal. Fynden om
+Niras data i #283 (tunn natt, framförda värden utan ålder, luft- i stället för yttemperatur) är materialets verkliga värde
+och berörs inte.
+
+**Det som inte håller:**
+1. **"Motorn" var inte motorn.** Testet prövade stationsregeln (A2, `icing_point`). Appens första vinterröst är
+   Trafikverkets väglag (A1, `slippery_segment`, `engine.ts:262–278`), som går före A2 och som inte finns i Niras material.
+   Talen säger alltså inget om vad appen hade sagt den dagen.
+2. **Temperaturvillkoret gjorde inget arbete.** 99,72 % av perioderna med bilrapport låg ≤ +1 °C. Det som prövades var i
+   praktiken *går torkarna?*. Meningen i #287 och utredningen §12 om att *Niras invändning mot temperaturvarningar
+   bekräftades* saknar grund — temperaturen korsade aldrig tröskeln — och stryks.
+3. **"Sämre än slumpen" är till 70 % en blandningseffekt.** Torkare > 0 fanns i 13,6 % av motorvägens perioder mot 3,5 % på
+   de mindre vägarna, och mest mitt på dagen — där basnivån var lägst (motorväg 19 % mot 50–56 % på vägklass 3–4). Med samma
+   blandning av vägklass och timme hade en regel helt utan information fått **36,8 %**, inte 44,2 %. Kvar inom samma vägklass
+   och timme: 3,0 procentenheter. På vägklass 3 och 4 låg regeln över dygnet i nivå med eller över referensen (57,1 mot 55,8 %
+   och 56,0 mot 50,1 %).
+4. **Torkare > 0 är ett dåligt nederbördsvittne — dagtid snarare ett saltstänksvittne.** Värdet är en andel (median 0,13,
+   max 1,10), och sannolikheten för *torkare* växer mekaniskt med trafiken: 2,4 % av perioderna med en delsträcksrad, 19,6 %
+   med tio eller fler. Dagtid hade avsnitt MED torkare medianfriktion **0,54** (11,8 % under 0,30); avsnitt UTAN hade 0,37
+   (30,9 %). Torkarna gick alltså där vägen var blöt, saltad och hade grepp. Med strängare tröskel stiger träffandelen stadigt
+   (max ≥ 0,5: 38,9 % · medel ≥ 0,5: 46,8 %); allra högst upp går den över förväntan, men på 62 respektive 12 ögonblick — för
+   lite för ett påstående.
+5. **Försprånget går inte att läsa.** 76,9 % av *halkaepisoderna* var redan hala vid avsnittets första friktionsmätning, och
+   datans första timme (01:00) har medianfriktion 0,27. Halkan började före fönstret. *Föregicks av en varning* och *50
+   respektive 70 minuter* mäter tiden till första MÄTNING, inte till halkans början. Övergångsregelns *"tidigare än motorn"*
+   (#289) faller på samma skäl.
+6. **Efterhalkans "ett falsklarm"** ska läsas *inte prövad*: +1…+3 °C en dag med −5 °C är bilar med varm givare, inte väder.
+
+**Var det ett dygn där vårt system borde vara som bäst? Nej — närmast tvärtom.** Skuggreglerna är byggda för övergången:
+blöt väg som faller genom noll, rimfrost under klar himmel, tidig morgon med få bilar. Den 15/1 2024 låg luften på −4 till
+−10 °C hela dygnet, det snöade lätt, och vägarna var redan hala när datan börjar. Det fanns ingen övergång att förutse. En
+sådan dag avgörs halkan av *var det är plogat och saltat* — det ser en friktionsmätning, och det kan ingen temperaturstation
+se. Det är Niras bästa sorts dag, och Nira har själva valt den som säljexempel *(det sista är en slutsats, inte ett belägg)*.
+Vårt bästa dygn ser ut så här: regn eller blöt väg på kvällen, uppklarnande, ytan från +3 genom noll mellan klockan 02 och 06.
+Då mäter stationerna som vanligt — och Niras egen data visar att bara 2–9 % av avsnitten har ett friktionsvärde från den
+senaste timmen klockan 05 (#283). Det dygnet finns inte i materialet.
+
+**Det obekväma som står kvar, och som gäller den riktiga regeln också.** På en stadigt kall snödag säger stationsregeln
+*kallt och nederbörd* överallt där det snöar — också på en saltad E4 med fullt grepp. Stationen kan inte se saltet
+(TROSKLAR-TYSTNADSFEL: *"saltbil som inte passerat (ingen öppen källa)"*). Jag hittade ingen grind som mäter
+produktionsregelns falsklarm uppdelat på vädertyp. Förslag i bedömningen §4.2: när bildfacit läses delas produktionsregelns
+varningar i *stadigt kallt* och *övergång* — deklarerat före datan, utan att någon tröskel rörs.
+
+**Hur #287 och #289 ska läsas härefter:** som ett prov av en ersättare (torkarna), inte av motorn — varken för eller emot
+Halkvakt. Rubrikerna står kvar för spårbarheten och har fått en pekare hit.
 

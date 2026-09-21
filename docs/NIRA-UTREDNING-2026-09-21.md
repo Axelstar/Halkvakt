@@ -289,10 +289,11 @@ bilarnas mätningar — inte vårt stationsnät.
 | Gränsen 0,25 / 0,35 | 20,8 % mot 26,4 % / 44,9 % mot 58,2 % | — | 21,0 % / 47,8 % |
 | Halkaepisoder som föregicks av en varning | 11,5 % (981 av 8 526), försprång median 50 min | — | **16,3 %** (1 391 av 8 526), försprång median **70 min** |
 
-**Vad det betyder.** Motorns regel hade larmat mycket, men den pekade inte ut halkan bättre än slumpen — sämre. Varningarna
+**Vad det betyder.** Motorns regel hade larmat mycket, men den pekade inte ut halkan bättre än slumpen — ~~sämre~~ *(granskningen nedan: till 70 % en blandningseffekt)*. Varningarna
 kom mitt på dagen när det snöade på redan behandlade vägar, medan halkan var värst natt och morgon (per timme: klockan 10–18
-följdes 11–20 % av varningarna av låg friktion, mot 26–45 % för basnivån). Det är Niras invändning mot temperaturvarningar,
-bekräftad på deras egen dag. **Skuggmotorns regel — den del som ska ge oss försprånget — kunde inte prövas:** dygnet låg
+följdes 11–20 % av varningarna av låg friktion, mot 26–45 % för basnivån).
+~~Det är Niras invändning mot temperaturvarningar, bekräftad på deras egen dag.~~ *(struket vid granskningen: 99,7 % av
+perioderna var kalla, så temperaturvillkoret prövades aldrig.)* **Skuggmotorns regel — den del som ska ge oss försprånget — kunde inte prövas:** dygnet låg
 mellan −4 och −10 °C hela tiden, och regeln är byggd för natten då en blöt väg fryser från plusgrader.
 
 **Övergångsregeln — skuggsidans andra tillämpbara regel, tillagd på Bengts fråga (#288).** Den förlänger motorns fukt från
@@ -304,6 +305,27 @@ rimfrosten behöver daggpunkt, SMHI-förstärkaren SMHI:s varningar och väglage
 **En iakttagelse, inte en slutsats:** motorns *fukt* betyder nederbörd *nu*. Den här dagen kom halkan efter snöfallet, inte
 under det. Ett dygn räcker inte för att ändra en regel, och motorns beteende vaktas av vektorerna; iakttagelsen bokförs
 för domarna i vinter, där den kan prövas på riktigt.
+
+### Granskningen 21/9 — second opinion (DECISIONS #290)
+
+Gjord av en annan modell än den som körde testet. Kontrollerna är explorativa och gjorda i efterhand
+(`scripts/matningar/nira-efterhandstest-granskning-2026-09-21.py`); de ändrar ingen tröskel, bara läsningen.
+
+| Fråga | Svar | Följd |
+| :-- | :-- | :-- |
+| Var det motorn som prövades? | Nej — bara stationsregeln (A2). Appens första vinterröst, Trafikverkets väglag (A1), finns inte i materialet | talen säger inget om vad appen hade sagt |
+| Gjorde temperaturvillkoret något arbete? | Nej — sant i 99,72 % av perioderna | det som prövades var *går torkarna?* |
+| Håller *sämre än slumpen*? | Till 70 % en blandningseffekt: torkarna gick mest på motorväg (13,6 % av perioderna mot 3,5 %) och mitt på dagen, där basnivån var lägst. En regel utan information hade fått 36,8 %, inte 44,2 %. Kvar: 3,0 procentenheter | på vägklass 3–4 låg regeln i nivå med eller över referensen |
+| Är torkarna ett nederbördsvittne? | Dåligt. Andelen med *torkare* växer med trafiken (2,4 % → 19,6 %), och dagtid hade avsnitt med torkare medianfriktion 0,54 mot 0,37 utan — blöt, saltad väg med grepp | ersättaren pekade ut de saltade vägarna |
+| Går försprånget att läsa? | Nej — 76,9 % av halkaepisoderna var hala redan vid första mätningen; datans första timme har medianfriktion 0,27 | *50 och 70 minuter* mäter tiden till första mätning, inte till halkans början |
+
+**Var det ett dygn där vårt system borde vara som bäst? Nej — närmast tvärtom.** Stadigt −4 till −10 °C, lätt snö, och
+vägarna redan hala när datan börjar: ingen övergång att förutse. En sådan dag avgörs halkan av var det är plogat och saltat,
+och det ser en friktionsmätning men ingen temperaturstation. Vårt bästa dygn är natten då en blöt väg faller genom noll mellan
+klockan 02 och 06 — då mäter stationerna, och Niras egen bild är som tunnast (§11). Det dygnet finns inte i materialet.
+
+**Det som står kvar mot oss:** på stadigt kalla snödagar säger stationsregeln *kallt och nederbörd* också på en saltad väg med
+fullt grepp. Det gäller den riktiga regeln, inte bara ersättaren, och det mäts inte i dag (förslag i bedömningen §4.2).
 
 ---
 
