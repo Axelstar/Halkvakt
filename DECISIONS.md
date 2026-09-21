@@ -8751,3 +8751,24 @@ sin inkorg. **Skärpt regel i CLAUDE.md:** att en adress står på en källsida 
 3. Reserv: e-tjänsten *Begär ut allmänna handlingar*.
 SMHI-adressen (kundtjanst@smhi.se) berörs inte — den är läst på SMHI:s kontaktsida, men inte heller den är prövad.
 
+## #295 (21/9 2026) Göteborg: följdfrågan skickas inte — stadens egen rapport har redan svarat, och vi har inga testare där
+
+**Bengts fråga 21/9:** är det värt att skriva igen till Göteborg, när vi inte har några testare där?
+
+**Bedömning: nej, inte nu.**
+1. **Frågan är besvarad.** Följdfrågan gällde om staden har egna vägväderstationer. Stadens slutrapport (InfraSweden 2025,
+   s. 8) säger att det före projektet fanns *"tre egna väderstationer som var utplacerade på väderkritiska platser"*, och att
+   Klimators system RSI samlar in *"IoT-stationer av olika tillverkare"* vid sidan av Trafikverkets VViS.
+2. **Svaret ändrar ingenting.** Tre punkter lyfter inte täckningen (inom 7 km från centrum finns en Trafikverksstation, #93),
+   och datan ligger sannolikt i samma avtalsbundna system som Petri Stjernvall redan sagt inte kan delas. Rapporten pekar
+   själv ut ägandet av datan som en olöst fråga (§4.3.3.4).
+3. **Ingen nytta på plats.** Inga testare i Göteborg (Bengt 21/9); Skyltfondsparterna — halkbanan och trafikskolorna — finns i Skåne. En ny källa kostar en avtalsfråga,
+   en egen inläsare och underhåll — för tre punkter ingen förare passerar.
+4. **Kraften gör mer nytta där svar väntas:** Malmö (följdmejl 19/9 — halkbanan och skolorna finns där), Trafikverkets
+   historikuttag (#232) och Skyltfondsansökan 28/9.
+
+**Vad som ÄR värt att behålla:** kontakten. Petri Stjernvall är planeringsledare för vinterväghållningen, svarade inom fyra
+dygn, och staden har drivit ett innovationsprojekt med just Nira och Klimator. Är förvarningen bevisad efter domarna är
+Göteborg en naturlig väghållare att återkomma till (#282:s rekommendation om en väghållare som tredje part). Ett kort tack
+utan fråga är valfritt och kostar ingenting; en ny fråga en vecka efter ett tydligt nej kostar lite förtroende och ger inget.
+
