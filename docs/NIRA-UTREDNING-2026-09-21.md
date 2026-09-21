@@ -187,7 +187,9 @@ Volkswagen-ägt, tjänsten säljs som premium, och de gamla villkoren förbjöd 
 
 ## 9. Rekommendation
 
-1. **Nu, gratis:** hämta Niras exempeldata (formuläret på produktsidan). Läs den mot fyra frågor: hur tät i en stad och på
+1. **Nu, gratis:** hämta Niras exempeldata — helst formuläret *Download sample data* på sidan Winter Road Insights
+   (friktion, torkarhastighet och lufttemperatur, Stockholm 15/1 2024); RSA-sidans formulär ger en dags halkvarningar
+   och produktguiden. Filerna visas som länkar direkt efter formuläret. Läs den mot fyra frågor: hur tät i en stad och på
    en landsväg, hur färsk, går det mätta att skilja från det modellerade, och syns eventbaserad mätning (jämn fart ger
    mindre data)? — kort #229 steg 1.
 2. **I vinter:** bevisa förvarningen. S1 → S3, domarna i januari och mars. Det Halkvakt kan visa utan Nira är att
