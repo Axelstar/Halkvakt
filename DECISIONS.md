@@ -8483,3 +8483,26 @@ kalibrerings- och domnätter, och resultatet får inte ändra startvärdena. **R
 lufttemperatur låg mellan −4 och −10 °C, så efterhalkans utfall är i praktiken förutsägbart — inga eller nästan inga
 fyrningar. Motorns utfall är inte räknat.
 
+## #287 (21/9 2026) Efterhandstestet på exempeldagen: motorn hade larmat mycket men sämre än slumpen — skuggmotorns regel kunde inte prövas
+
+**Körd enligt #286,** upplägget låst före körningen (PR #431). Skript `scripts/matningar/nira-efterhandstest-2026-09-21.py`.
+**Reservationen först:** bilarnas lufttemperatur och torkare ersätter vägytans temperatur och stationens nederbörd, och
+varje vägavsnitt behandlas som en station. Testet prövar reglernas logik, inte stationsnätet.
+
+**Motorn** (yta ≤ +1 °C och fukt): 21 767 varningsögonblick på 7 557 av 16 810 avsnitt. Andelen som följdes av friktion under
+0,30 inom 90 minuter var **33,7 % — mot basnivån 44,2 %**, alltså vad en regel som larmar på allt hade fått. Samma riktning vid
+0,25 (20,8 % mot 26,4 %) och vid 0,35 (44,9 % mot 58,2 %). 40 % av varningarna hade inget facit, eftersom ingen bil mätte
+friktion efteråt. Av 4 375 träffar kom 1 431 innan halkan fanns på avsnittet. Av 8 526 halkaepisoder föregicks 981 (11,5 %)
+av en varning, med ett försprång på 50 minuter i median. Per timme: klockan 03–08 låg motorn i nivå med basnivån, och
+klockan 09–19 klart under — varningarna följde snöfallet mitt på dagen, medan halkan var värst natt och morgon.
+
+**Skuggmotorns efterhalka** (startvärdena): 894 ögonblick i startbandet +1…+3 °C på en dag som låg −4 till −10 °C, 41 med
+räkningsbar lutning, 1 med fall ≥ 0,8 °C och regn inom 2 h — ett falsklarm. Regelns värde kan inte bedömas på materialet,
+eftersom dygnet inte innehöll någon övergångsnatt. Skuggan och SMHI-förlängningen kunde inte tillämpas (#286).
+
+**Följd:** på en jämnt kall snödag pekar en regel byggd på temperatur och nederbörd inte ut halkan — Niras invändning,
+bekräftad på deras egen dag. Den del av systemet som ska ge försprånget prövas inte av det här materialet. Övergångsnattens
+prov görs inte, eftersom ingen ny data hämtas från Nira (Bengt 21/9). **Iakttagelse, inte slutsats:** motorns *fukt* betyder
+nederbörd *nu*, och den här dagen kom halkan efter snöfallet, inte under det. Ett dygn ändrar ingen regel, och motorns
+beteende vaktas av vektorerna. Iakttagelsen bokförs till domarna. **Kort #230 stängt.**
+
