@@ -1,0 +1,11 @@
+-- UNDERLAG TILL ANMÄLAN OM YTGIVARE (docs/ANMALAN-TRV-YTGIVARE.md, kort #234, DECISIONS #298, 21/9 2026).
+-- De sju stationer vars yttemperatur ligger orimligt långt under lufttemperaturen. Bara läsande.
+-- Kör: varje sats på en rad i dbknapp (atgard migrera, fil sql/022_driver_facit.sql, bevis = satserna).
+
+SET statement_timeout = '300s'
+
+SELECT w.station_id, max(w.name) AS namn, round(max(ST_Y(w.geom))::numeric, 5) AS lat, round(max(ST_X(w.geom))::numeric, 5) AS lon, count(*) FILTER (WHERE w.air_temp_c - w.surface_temp_c >= 8) AS rader_gap_minst_8, count(DISTINCT (w.sample_time AT TIME ZONE 'UTC')::date) FILTER (WHERE w.air_temp_c - w.surface_temp_c >= 8) AS dagar_gap_minst_8, count(*) FILTER (WHERE w.surface_temp_c <= -40) AS rader_yta_under_minus_40, min(w.surface_temp_c) AS yta_min, max(w.air_temp_c) FILTER (WHERE w.air_temp_c - w.surface_temp_c >= 8) AS luft_max_vid_felet, to_char(min(w.sample_time) FILTER (WHERE w.air_temp_c - w.surface_temp_c >= 8), 'DD/MM') AS forsta, to_char(max(w.sample_time) FILTER (WHERE w.air_temp_c - w.surface_temp_c >= 8), 'DD/MM') AS senaste FROM weather_observations w WHERE w.sample_time > now() - interval '60 days' AND w.air_temp_c IS NOT NULL AND w.station_id IN ('1106', '2346', '2135', '2132', '1713', '1612', '1302') GROUP BY 1 ORDER BY 5 DESC
+
+SELECT station_id, to_char(sample_time AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI') AS utc, surface_temp_c AS yta, air_temp_c AS luft, dewpoint_c AS dagg, air_temp_c - surface_temp_c AS gap FROM (SELECT DISTINCT ON (station_id) * FROM weather_observations WHERE sample_time > now() - interval '60 days' AND air_temp_c >= 8 AND surface_temp_c > -40 AND station_id IN ('1106', '2346', '2135', '2132', '1713', '1612', '1302') ORDER BY station_id, air_temp_c - surface_temp_c DESC) x ORDER BY gap DESC
+
+SELECT count(DISTINCT station_id) AS stationer_totalt, count(*) AS rader_totalt, count(*) FILTER (WHERE air_temp_c >= 8 AND air_temp_c - surface_temp_c >= 8) AS rader_varm_luft_stort_gap, count(DISTINCT station_id) FILTER (WHERE air_temp_c >= 8 AND air_temp_c - surface_temp_c >= 8) AS stationer_med_sadana FROM weather_observations WHERE sample_time > now() - interval '60 days' AND air_temp_c IS NOT NULL AND surface_temp_c IS NOT NULL

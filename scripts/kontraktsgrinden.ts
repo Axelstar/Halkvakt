@@ -277,10 +277,12 @@ export const KONTRAKT: Kontrakt[] = [
     golv: 2,
   },
   {
+    // Den andra formen (`<`) är BROTTET mot samma gräns: karantänen i snapshotkärnan (kort #234, DECISIONS #298) räknar
+    // hur ofta en station legat under den. Glider de två isär tystar karantänen stationer som vakten själv släpper fram.
     namn: "#75 givarvakten — yta får ligga högst N grader under luften",
     varfor: "61 % av arkivets frostrader faller på den. Driver talet mäter grindarna olika arkiv.",
-    former: [/surface_temp_c\s*>=\s*air_temp_c\s*-\s*(\d+(?:\.\d+)?)/],
-    golv: 17,
+    former: [/surface_temp_c\s*>=\s*air_temp_c\s*-\s*(\d+(?:\.\d+)?)/, /surface_temp_c\s*<\s*air_temp_c\s*-\s*(\d+(?:\.\d+)?)/],
+    golv: 19,
   },
   {
     namn: "Fukten — vilka nederbördsord som betyder UPPEHÅLL",

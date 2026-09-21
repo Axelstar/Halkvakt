@@ -20,11 +20,27 @@ export type Q = (text: string, params?: unknown[]) => Promise<Record<string, any
 
 export interface Bridge { id: string; lon: number; lat: number; road: string | null }
 
-/** Givarvakten (#75). Gäller VARJE fråga mot weather_latest — svensk, gräns och bro. */
+/** RADVAKTEN (kort #234, DECISIONS #298): luft ≥ +10 °C och ytan ≥ 8 ° under luften = givarfel, inte kyla.
+ *  Ö Ljungby 1106 visade yta +1…+3 °C vid luft +13 °C och regn, ~12 ° fel — precis kring #75:s gräns — och 24 broar på
+ *  E4 fick frysrisk sex dygn i september. Mätt mot arkivet 21/9: varje rad med yta ≤ +3 °C och luft ≥ +8 °C var ett
+ *  givarfel (773 rader, 7 stationer), ingen äkta.
+ *  VARFÖR BARA VARM LUFT, och varför #75:s 12 inte sänks: varmfront med regn över frusen väg (yta −3, luft +4) ger ett
+ *  ÄKTA gap på 7–10 °C — blixthalkan, det farligaste väglaget — och blankis i töväder håller ytan vid 0 °C medan luften
+ *  är +8. Under +10 °C rör vakten därför ingenting, och en station den tystat talar igen så fort luften kyls av. */
+export const GIVARFEL_LUFT_MIN_C = 10;
+export const GIVARFEL_GAP_C = 8;
+/** KARANTÄNEN (kort #234): en station med ≥ 3 brott mot #75 de senaste 7 dygnen får inte tala alls. De stationer som
+ *  läcker förbi #75 är samma som andra stunder visar −46…−50 °C (urkopplad givare): de har själva bevisat att de är
+ *  trasiga. Tre brott, inte ett — en enstaka studs (Vassijaure, 1 rad på 29 dygn) ska inte tysta en frisk fjällstation. */
+export const KARANTAN_DYGN = 7;
+export const KARANTAN_BROTT = 3;
+
+/** Givarvakten (#75) och radvakten (#234). Gäller VARJE fråga mot weather_latest — svensk, gräns och bro. */
 export const WX_SANE =
   "surface_temp_c IS NOT NULL" +
   " AND sample_time > now() - interval '3 hours'" +
-  " AND (air_temp_c IS NULL OR surface_temp_c >= air_temp_c - 12)";
+  " AND (air_temp_c IS NULL OR surface_temp_c >= air_temp_c - 12)" +
+  ` AND (air_temp_c IS NULL OR air_temp_c < ${GIVARFEL_LUFT_MIN_C} OR air_temp_c - surface_temp_c < ${GIVARFEL_GAP_C})`;
 
 const BORDER_M = 40_000;
 const BORDER_LANDS = ["fi", "no"] as const;
@@ -168,11 +184,27 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
     }
   }
 
+  // ---- karantänen (kort #234): svenska stationer som nyligen brutit grovt mot #75 ----
+  // Fail-soft som arkivfrågorna nedan: går historiken inte att läsa publiceras stationerna som förut, och det noteras.
+  const karantan = new Set<string>();
+  try {
+    const k = await q(`
+      SELECT station_id FROM weather_observations
+      WHERE sample_time > now() - interval '${KARANTAN_DYGN} days'
+        AND air_temp_c IS NOT NULL AND surface_temp_c < air_temp_c - 12
+      GROUP BY station_id HAVING count(*) >= ${KARANTAN_BROTT}`);
+    for (const r of k) karantan.add(String(r.station_id));
+    if (karantan.size) notes.push(`karantän: ${karantan.size} station(er) tysta efter brott mot #75: ${[...karantan].sort().join(", ")}`);
+  } catch (e) {
+    notes.push(`karantän: weather_observations ej läsbar (${String((e as Error).message).slice(0, 80)}) — ingen station i karantän`);
+  }
+
   // ---- live: väderpunkter (svenska), med givarvakten ----
-  const wx = await q(`
+  // Karantänen gäller bara de svenska raderna: gränsstationerna nedan har egna id-rymder som kan krocka.
+  const wx = (await q(`
     SELECT station_id, surface_temp_c, rain, snow, precipitation, ST_X(geom) AS lon, ST_Y(geom) AS lat
     FROM weather_latest
-    WHERE ${WX_SANE} AND (surface_temp_c <= 3 OR snow)`);
+    WHERE ${WX_SANE} AND (surface_temp_c <= 3 OR snow)`)).filter((r) => !karantan.has(String(r.station_id)));
 
   // ---- #49 gränssnapshoten: grannländernas stationer inom 40 km av svenska vägar ----
   const border: Record<string, { reach: number; cold: number }> = {};
@@ -227,9 +259,10 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   const bridges: { id: string; lon: number; lat: number; road: string | null; yta: number | null; fukt: boolean }[] = [];
   if (bridgesIn.length) {
     const allWx = await q(`
-      SELECT surface_temp_c, rain, snow, precipitation, ST_X(geom) AS lon, ST_Y(geom) AS lat
+      SELECT station_id, surface_temp_c, rain, snow, precipitation, ST_X(geom) AS lon, ST_Y(geom) AS lat
       FROM weather_latest WHERE ${WX_SANE}`);
     const cold = allWx
+      .filter((r) => !karantan.has(String(r.station_id)))
       .map((r) => ({ lon: Number(r.lon), lat: Number(r.lat), yta: Number(r.surface_temp_c), fukt: fukt(r) }))
       .filter((w) => w.yta <= 3 && w.fukt);
     for (const b of bridgesIn) {

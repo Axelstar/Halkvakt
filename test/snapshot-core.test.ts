@@ -5,7 +5,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { buildSnapshot, manifestFor, bridgesFromGeoJSON, WX_SANE, REGN_UTLOSARE_MMH, type Q } from "../publish/snapshot-core.ts";
+import { buildSnapshot, manifestFor, bridgesFromGeoJSON, WX_SANE, REGN_UTLOSARE_MMH, GIVARFEL_LUFT_MIN_C, GIVARFEL_GAP_C, KARANTAN_DYGN, KARANTAN_BROTT, type Q } from "../publish/snapshot-core.ts";
 import { snapshotToHazards } from "../engine/src/snapshot.ts";
 
 /** Låtsasdatabas: svarar på frågorna efter vilken tabell de läser, och loggar frågetexten. */
@@ -28,6 +28,7 @@ function fakeDb(rows: Partial<Record<string, any[]>>) {
     if (text.includes("FROM deviations")) return rows.deviations ?? [];
     if (text.includes("FROM polisen_events")) return rows.vilt ?? [];
     if (text.includes("FROM smhi_warnings")) return rows.smhi ?? [];
+    if (text.includes("FROM weather_observations") && text.includes("HAVING count(*)")) return rows.karantan ?? [];
     if (text.includes("FROM weather_observations")) return rows.regnH ?? [];
     if (text.includes("FROM trend_kandidater")) return rows.lutning ?? [];
     throw new Error("okänd fråga: " + text.slice(0, 60));
@@ -99,6 +100,64 @@ test("#75 givarvakten sitter i VARJE väderfråga: svensk, gräns (fi/no) och br
   // Gränsstationen hamnar bland väderpunkterna, källmärkt i border-räkningen.
   assert.deepEqual(liveDoc.weather.map((w) => w.id), ["FI1"]);
   assert.deepEqual(border, { fi: { reach: 1, cold: 1 }, no: { reach: 0, cold: 0 } });
+});
+
+// ── #234 GIVARFELEN SOM SLANK FÖRBI #75 (DECISIONS #298) ────────────────────────────────────
+// Ö Ljungby 1106 visade yta +1…+3 °C vid luft +13 °C och regn — ~12 ° fel, precis kring #75:s gräns — och 24 broar på
+// E4 fick frysrisk. Två tillägg, och talet 12 står orört: RADVAKTEN (varm luft + stort gap = givarfel) och KARANTÄNEN
+// (en station som nyligen brutit grovt mot #75 får inte tala). SQL:en bevisas mot riktig PostGIS i integration.test.ts.
+test("#234 radvakten sitter i WX_SANE, bredvid #75 — och släpper rader utan lufttemperatur", () => {
+  assert.equal(GIVARFEL_LUFT_MIN_C, 10, "DECISIONS #298: bara varm luft — blixthalkan (luft under +10) får tala");
+  assert.equal(GIVARFEL_GAP_C, 8);
+  assert.ok(WX_SANE.includes("surface_temp_c >= air_temp_c - 12"), "#75 står kvar, orörd");
+  assert.ok(WX_SANE.includes("(air_temp_c IS NULL OR air_temp_c < 10 OR air_temp_c - surface_temp_c < 8)"),
+    "radvakten, nollsäker: okänd luft fäller aldrig (samma nollpolitik som #75)");
+});
+
+test("#234 karantänen: en station med brott mot #75 tystas — som väderpunkt OCH som broarnas källa", async () => {
+  const { q, asked } = fakeDb({
+    wx: [
+      { station_id: "FRISK", surface_temp_c: "0.5", rain: true, snow: false, precipitation: "rain", lon: 15.0, lat: 58.05 },
+      { station_id: "TRASIG", surface_temp_c: "0.2", rain: true, snow: false, precipitation: "rain", lon: 13.0, lat: 56.18 },
+    ],
+    allWx: [
+      { station_id: "FRISK", surface_temp_c: "0.5", rain: true, snow: false, precipitation: "rain", lon: 15.0, lat: 58.05 },
+      { station_id: "TRASIG", surface_temp_c: "0.2", rain: true, snow: false, precipitation: "rain", lon: 13.0, lat: 56.18 },
+    ],
+    karantan: [{ station_id: "TRASIG" }],
+  });
+  const bridges = bridgesFromGeoJSON({ features: [
+    { geometry: { coordinates: [15.0, 58.06] }, properties: { id: "B-FRISK", road: "E4" } },
+    { geometry: { coordinates: [13.0, 56.19] }, properties: { id: "B-TRASIG", road: "E4" } },   // ~1 km från den trasiga
+  ] });
+  const { liveDoc, notes } = await buildSnapshot(q, bridges, NOW);
+  assert.deepEqual(liveDoc.weather.map((w) => w.id), ["FRISK"]);
+  assert.deepEqual(liveDoc.bridges.map((b) => b.id), ["B-FRISK"], "bron vid den trasiga givaren får ingen frysrisk");
+  assert.ok(notes.some((n) => n.startsWith("karantän:") && n.includes("TRASIG")), "vem som tystats ska stå i noterna");
+  const f = asked.find((t) => t.includes("HAVING count(*)"))!;
+  assert.ok(f.includes(`interval '${KARANTAN_DYGN} days'`) && f.includes(`HAVING count(*) >= ${KARANTAN_BROTT}`));
+  assert.ok(f.includes("surface_temp_c < air_temp_c - 12"), "brottet ÄR #75:s gräns — inget nytt tal");
+});
+
+test("#234 gränsstationer rörs inte av karantänen — id:n kan krocka mellan länderna", async () => {
+  const { q } = fakeDb({
+    fi: [{ station_id: "1106", surface_temp_c: "-2", rain: false, snow: false, precipitation: null, lon: 24.1, lat: 65.9 }],
+    karantan: [{ station_id: "1106" }],
+  });
+  const { liveDoc } = await buildSnapshot(q, [], NOW);
+  assert.deepEqual(liveDoc.weather.map((w) => w.id), ["1106"], "den finska 1106 är inte Ö Ljungby");
+});
+
+test("#234 en oläsbar historik fäller inte snapshoten — ingen karantän, och det noteras", async () => {
+  const q: Q = async (text) => {
+    if (text.includes("HAVING count(*)")) throw new Error("saknas");
+    if (text.includes("FROM weather_latest") && text.includes("surface_temp_c <= 3"))
+      return [{ station_id: "W1", surface_temp_c: "-1", rain: true, snow: false, precipitation: "rain", lon: 15, lat: 58 }];
+    return [];
+  };
+  const { liveDoc, notes } = await buildSnapshot(q, [], NOW);
+  assert.deepEqual(liveDoc.weather.map((w) => w.id), ["W1"]);
+  assert.ok(notes.some((n) => n.startsWith("karantän:") && n.includes("ej läsbar")));
 });
 
 test("#75 fukt: \"no\" och \"Dry\" är torrt — bara regn, snö eller en våt klass ger fukt", async () => {
@@ -263,7 +322,7 @@ test("#187 regn_h och lutning läggs bredvid fukt — null när fönstret är to
   const [w1, w2] = liveDoc.weather;
   assert.deepEqual(w1, { id: "W1", lon: 15, lat: 58, yta: 1, fukt: false, regn_h: 3.5, lutning15: 0.4, lutning30: null, lutning60: 1.2 });
   assert.deepEqual(w2, { id: "W2", lon: 16, lat: 59, yta: 0.5, fukt: false, regn_h: null, lutning15: null, lutning30: null, lutning60: null });
-  const rh = asked.find((t) => t.includes("FROM weather_observations"))!;
+  const rh = asked.find((t) => t.includes("FROM weather_observations") && !t.includes("HAVING count(*)"))!;   // inte karantänfrågan (#234)
   assert.match(rh, /rain_sum_mm > 0/); assert.match(rh, /48 hours/);
   const tk = asked.find((t) => t.includes("FROM trend_kandidater"))!;
   assert.match(tk, /60 minutes/); assert.match(tk, /DISTINCT ON \(station_id\)/);
