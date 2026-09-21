@@ -273,6 +273,34 @@ just när Nira är svagast. Det är argumentet i ett framtida samtal, med Niras 
 
 ---
 
+## 12. Efterhandstestet på exempeldagen — körd 21/9
+
+**Bengts beställning:** hade vårt system larmat på Niras material — med både motorns regel och skuggmotorns kommande
+regel? Upplägget låstes i DECISIONS #286 innan något räknades; skript `scripts/matningar/nira-efterhandstest-2026-09-21.py`.
+
+**Reservationen först:** Halkvakts regler läser vägytans temperatur och stationens nederbörd. Här ersattes de av bilarnas
+lufttemperatur och torkarna, och varje vägavsnitt behandlades som en station. Testet prövar alltså reglernas logik på
+bilarnas mätningar — inte vårt stationsnät.
+
+| | Motorn (yta ≤ +1 °C och fukt) | Skuggmotorns efterhalka (startvärdena) |
+| :-- | :-- | :-- |
+| Varningar | 21 767 ögonblick på 7 557 av 16 810 avsnitt | 1 ögonblick (894 i startbandet, 1 med fall ≥ 0,8 och regn inom 2 h) |
+| Följdes av friktion < 0,30 inom 90 min | **33,7 %** — mot **44,2 %** för att larma på allt | 0 av 1 — ett falsklarm |
+| Gränsen 0,25 / 0,35 | 20,8 % mot 26,4 % / 44,9 % mot 58,2 % | — |
+| Halkaepisoder som föregicks av en varning | 11,5 % (981 av 8 526), försprång median 50 min | — |
+
+**Vad det betyder.** Motorns regel hade larmat mycket, men den pekade inte ut halkan bättre än slumpen — sämre. Varningarna
+kom mitt på dagen när det snöade på redan behandlade vägar, medan halkan var värst natt och morgon (per timme: klockan 10–18
+följdes 11–20 % av varningarna av låg friktion, mot 26–45 % för basnivån). Det är Niras invändning mot temperaturvarningar,
+bekräftad på deras egen dag. **Skuggmotorns regel — den del som ska ge oss försprånget — kunde inte prövas:** dygnet låg
+mellan −4 och −10 °C hela tiden, och regeln är byggd för natten då en blöt väg fryser från plusgrader.
+
+**En iakttagelse, inte en slutsats:** motorns *fukt* betyder nederbörd *nu*. Den här dagen kom halkan efter snöfallet, inte
+under det. Ett dygn räcker inte för att ändra en regel, och motorns beteende vaktas av vektorerna; iakttagelsen bokförs
+för domarna i vinter, där den kan prövas på riktigt.
+
+---
+
 ## Källor (lästa 21/9 2026)
 
 | ✔ | Källa |

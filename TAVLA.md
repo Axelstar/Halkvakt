@@ -3017,7 +3017,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Bryter dokumentationsregeln. *(Delvis åtgärdad i detta varv — resten nästa.)*
 
 ### Claude — låst (väntar på nyckel)
-- [ ] 🧪 **#230 EFTERHANDSTEST: HALKVAKTS REGLER MOT NIRAS FRIKTION — ✂️ INGEN NY DATA FRÅN NIRA (Bengt 21/9); körs på exempeldagen** (Bengts idé 21/9, DECISIONS #284). 🔑 **Nyckel:
+- [x] 🧪 **#230 EFTERHANDSTEST: HALKVAKTS REGLER MOT NIRAS FRIKTION — ✅ KÖRD 21/9 PÅ EXEMPELDAGEN (DECISIONS #287)** (Bengts idé 21/9, DECISIONS #284). 🔑 **Nyckel:
   friktionsdata från Nira för nätter som vårt arkiv också bär — och ett beslut om facitkällan INNAN nätterna mäts (D3).**
   Frågan: hade Halkvakt varnat *före* den första bilen, där och när Niras bilar sedan kände halka?
   ✘ **Inte med exempeldagen 15/1 2024.** (1) Halkvakts indata saknas: Trafikverkets öppna API räcker en vecka bakåt, vårt
@@ -3055,6 +3055,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   bilarnas lufttemperatur i stället för vägytan, torkarna i stället för nederbörden, varje vägavsnitt som en station, facit =
   friktion under 0,30 på samma avsnitt inom 90 min (känslighet 0,25 och 0,35). Skuggan och SMHI-förlängningen kan inte
   tillämpas — materialet saknar stationsankare och varningar.
+  ✅ **KÖRD 21/9 — `scripts/matningar/nira-efterhandstest-2026-09-21.py`, upplägget låst i #286 före körningen (PR #431).**
+  **Motorn** (lufttemp ≤ +1 °C och torkare): 21 767 varningsögonblick, på 7 557 av 16 810 avsnitt. Efter en varning kom
+  friktion under 0,30 inom 90 min i **33,7 %** av fallen — **basnivån, att larma på allt, gav 44,2 %**. Samma mönster vid 0,25
+  (20,8 % mot 26,4 %) och 0,35 (44,9 % mot 58,2 %). Varningarna låg mitt på dagen när det snöade på behandlade vägar;
+  halkan var värst natt och morgon. 11,5 % av halkaepisoderna föregicks av en varning, försprång median 50 min.
+  **Skuggmotorns efterhalka** (startvärdena): 894 ögonblick i startbandet, 1 fyrning — ett falsklarm. Dygnet var kallt och
+  jämnt, inte en övergångsnatt; regelns värde kan inte bedömas på materialet. Skuggan och SMHI-förlängningen: kunde inte
+  tillämpas. **Reservationen först:** lufttemperatur och torkare ersätter vägyta och nederbörd, varje avsnitt är en station.
+  Övergångsnattens prov görs inte — ingen ny data från Nira (Bengt 21/9).
 
 - [ ] 🧭 ↩︎ **#38b Stråket / skuggmotorn — ÅTERSTÄLLT 10/9** (föll av tavlan 8/9 20:43 i commit
   99473c7; #88, #91 och #95 hänvisar hit). Bengts byggplan v3 (31/8): segmentmotorn i november, i
