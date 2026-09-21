@@ -3114,7 +3114,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   fall. Kandidater, att mäta innan någon väljs: (a) gapvakten görs beroende av lufttemperaturen (en blöt yta nära noll vid
   luft ≥ +8 °C finns inte); (b) en kronikerlista — stationer som brutit mot fysiken N dagar spärras tills de mätt rätt;
   (c) båda. Tröskeln är fastställd (#75) och ligger i 17 kopior under kontraktsgrinden: ändringen är ett beslut, med motprov.
-  ✉️ **Bengt, valfritt:** anmäl de sex givarna till Trafikverket — förlagan finns i `docs/ANMALAN-TRV-BYVINDGIVARE.md`.
+  🔨 **BYGGT 21/9 (Bengts order *"välj den gräns du tycker är mest logisk"*, DECISIONS #298) — TVÅ TILLÄGG, TALET 12 ORÖRT:**
+  **(1) Radvakten** i `WX_SANE`: luft ≥ +10 °C och yta ≥ 8 °C under luften ⇒ givarfel. Bara varm luft — under +10 °C rör den
+  ingenting, så blixthalkan och blankisen i töväder får tala. **(2) Karantänen:** ≥ 3 brott mot #75 på 7 dygn ⇒ stationen
+  tyst, som väderpunkt och som broarnas källa. Mätt mot arkivet: **706 av 811 felrader tagna, och av de 105 som blir kvar
+  är EN fuktig** — alltså en enda som kan fyra. Ingen frisk station tystas (Vassijaures enstaka studs klarar sig).
+  **De 17 kopiorna av #75 är orörda** — tilläggen ligger bredvid, inte i stället. Kontraktsgrinden har fått brottets form
+  (`<`) bredvid vaktens (`>=`), så att karantänens 12 inte kan glida från vaktens 12. Mätsatserna: `scripts/matningar/givarvakt-*.sql`.
+  ✉️ **Anmälan skriven:** `docs/ANMALAN-TRV-YTGIVARE.md` — sju stationer, Ö Ljungby först. Bengt skickar via
+  Datautbytesportalens formulär (ärendetyp API Öppna Data).
   Verify: beslutet i DECISIONS · vakten byggd med motprov (1106:s rader som provdata) · skuggloggen utan brolarm från 1106
   en natt då givaren fortfarande visar fel.
 

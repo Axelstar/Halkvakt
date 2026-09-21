@@ -147,6 +147,42 @@ test("#75 givarvakten: frusen, orimlig och gammal station publiceras inte", { sk
   } finally { await pool.end(); }
 });
 
+// #234 RADVAKTEN OCH KARANTÄNEN mot riktig PostGIS (DECISIONS #298). Ö Ljungby 1106 visade yta +1,3 °C vid luft +13,3 °C
+// och regn — exakt på #75:s gräns — och 24 broar på E4 fick frysrisk. Provet bär fallet som det såg ut, och de två fall
+// vakten INTE får ta: blixthalkan (varmfront över frusen väg) och den enstaka studsen.
+test("#234 radvakten och karantänen: givarfelet tystas, blixthalkan och studsen får tala", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { buildSnapshot } = await import("../publish/snapshot-core.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  try {
+    await pool.query(`
+      INSERT INTO weather_latest (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, precipitation, rain, snow)
+      VALUES
+        ('LJUNGBY',   'Ö Ljungby-liknande: 12,0° under luften', ST_SetSRID(ST_MakePoint(13.02, 56.18), 4326), now() - interval '5 minutes',  1.3, 13.3, 'rain', true, false),
+        ('BLIXT',     'Varmfront över frusen väg',              ST_SetSRID(ST_MakePoint(16.00, 60.00), 4326), now() - interval '5 minutes', -5.0,  4.0, 'rain', true, false),
+        ('GRANS-UT',  'Luft +10, gap 8,0 — fälls',              ST_SetSRID(ST_MakePoint(16.10, 60.10), 4326), now() - interval '5 minutes',  2.0, 10.0, 'rain', true, false),
+        ('GRANS-IN',  'Luft +10, gap 7,9 — släpps',             ST_SetSRID(ST_MakePoint(16.20, 60.20), 4326), now() - interval '5 minutes',  2.1, 10.0, 'rain', true, false),
+        ('TOVADER',   'Blankis i töväder: luft +9,9, yta 0',    ST_SetSRID(ST_MakePoint(16.30, 60.30), 4326), now() - interval '5 minutes',  0.0,  9.9, 'rain', true, false),
+        ('URKOPPLAD', 'Rimlig NU, men tre brott i veckan',      ST_SetSRID(ST_MakePoint(16.40, 60.40), 4326), now() - interval '5 minutes',  0.5,  5.0, 'rain', true, false),
+        ('STUDS',     'Ett enda brott — ingen karantän',        ST_SetSRID(ST_MakePoint(16.50, 60.50), 4326), now() - interval '5 minutes', -0.5,  0.5, 'snow', false, true)
+      ON CONFLICT (station_id) DO UPDATE SET sample_time = EXCLUDED.sample_time, surface_temp_c = EXCLUDED.surface_temp_c,
+        air_temp_c = EXCLUDED.air_temp_c, precipitation = EXCLUDED.precipitation, rain = EXCLUDED.rain, snow = EXCLUDED.snow`);
+    await pool.query(`
+      INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c) VALUES
+        ('URKOPPLAD', 'x', ST_SetSRID(ST_MakePoint(16.40, 60.40), 4326), now() - interval '1 day',  -49.0, 10.0),
+        ('URKOPPLAD', 'x', ST_SetSRID(ST_MakePoint(16.40, 60.40), 4326), now() - interval '2 days', -48.0, 11.0),
+        ('URKOPPLAD', 'x', ST_SetSRID(ST_MakePoint(16.40, 60.40), 4326), now() - interval '6 days', -50.0,  9.0),
+        ('STUDS',     'x', ST_SetSRID(ST_MakePoint(16.50, 60.50), 4326), now() - interval '1 day',  -32.8,  0.7),
+        ('GAMMALT',   'x', ST_SetSRID(ST_MakePoint(16.60, 60.60), 4326), now() - interval '8 days', -49.0, 10.0)
+      ON CONFLICT DO NOTHING`);
+    const { liveDoc, notes } = await buildSnapshot(async (t, p) => (await pool.query(t, p as any[])).rows, []);
+    const ids = liveDoc.weather.map((w) => w.id);
+    for (const tyst of ["LJUNGBY", "GRANS-UT", "URKOPPLAD"]) assert.ok(!ids.includes(tyst), `${tyst} ska vara tyst`);
+    for (const talar of ["BLIXT", "GRANS-IN", "TOVADER", "STUDS"]) assert.ok(ids.includes(talar), `${talar} ska få tala`);
+    assert.ok(notes.some((n) => n.startsWith("karantän: 1 station(er)") && n.includes("URKOPPLAD")), "karantänen ska namnge stationen: " + notes.join(" | "));
+  } finally { await pool.end(); }
+});
+
 // #80: en källa som hoppas över (tom lastChangeId) får INTE röra sync_state — annars skulle
 // GitHub-ingesten flytta livemotorns kursor och stämpla "weather synced 0 min ago" utan att
 // ha hämtat något. Det är hela poängen med --skip.

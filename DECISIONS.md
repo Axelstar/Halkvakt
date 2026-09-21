@@ -8837,3 +8837,59 @@ beslut, och byggs med motprov (1106:s rader är färdiga provdata).
 är det första uppmätta exemplet — inte salt, utan en trasig givare — och det hittades av en mätning som letade efter något
 annat. CLAUDE.md:s värdevaktsläxa en gång till: *"Inget av dem hittades av en vakt."*
 
+## #298 (21/9 2026) Givarvakten får två tillägg — radvakten och karantänen — och talet 12 står orört (kort #234)
+
+**Bengts order 21/9:** *"gör 1-3. jag är helt inne på att vi måste sätta en annan typ av vakt. välj den gräns du tycker är mest
+logisk och kolla upp så vi inte förstör något annat i de 17 kopior i koden"*.
+
+**Vad mätningen visade** (fyra läsande körningar via dbknapp, satserna i `scripts/matningar/givarvakt-*.sql`):
+- Av de rader som i dag kan publiceras som kalla (yta ≤ +3 °C, förbi #75) har 5 343 ett gap luft − yta under 5 °C. **Alla 811
+  rader med gap ≥ 5 °C kommer från sju stationer** — 1106 Ö Ljungby, 2346 Ollsta, 2135 Storvik, 2132 Testeboån, 1713 Bolhyttan,
+  1612 Fagersanna, 1302 Kullavik. Ingen äkta rad ligger där.
+- Felen är av **två slag.** Sex av stationerna visar andra stunder **−46…−50 °C** — en urkopplad givare — och läcker förbi
+  vakten när värdet driver tillbaka. **Ö Ljungby** bryter aldrig grovt: ytan följer luften, ~12 °C för lågt, 24 av 29 dygn.
+
+**Varför inte bara sänka 12, och varför inte en ren gräns i (luft, gap):** varmfront med regn över frusen väg (yta −3, luft +4)
+ger ett ÄKTA gap på 7–10 °C, och blankis i töväder håller ytan vid 0 °C medan luften är +8…+10 °C. Det är de två farligaste
+väglagen. En gräns som tar givarfelen vid låg lufttemperatur tar också dem.
+
+**Beslutat (gränserna valda av Claude på Bengts order):**
+1. **Radvakten** — luft ≥ **+10 °C** och yta ≥ **8 °C** under luften ⇒ raden publiceras inte. Bara varm luft: under +10 °C rör
+   vakten ingenting, och en station den tystat talar igen så fort luften kyls av. +8 °C hade tagit 47 rader till men ligger
+   närmare töväderfallet; den försiktigare gränsen räcker (nedan).
+2. **Karantänen** — en station med ≥ **3** brott mot #75 (yta < luft − 12) de senaste **7** dygnen publiceras inte alls, varken
+   som väderpunkt eller som broarnas källa. Tre, inte ett: Vassijaure hade en enstaka studs (−32,8 °C, 1 rad på 29 dygn) och
+   är en frisk fjällstation. Fönstren 3, 7 och 14 dygn gav samma utfall; 7 valdes som mitten.
+
+| Mätt mot arkivet | Felrader tagna (av 811) | Äkta rader tystade | Kvar |
+| :-- | --: | --: | :-- |
+| Karantänen ensam (7 dygn, ≥ 3) | 597 | 4 — alla från Ollsta och Storvik, som själva är trasiga | 212 rader från Ö Ljungby |
+| Radvakten ensam (+10 °C, 8 °C) | 675 | 0 | — |
+| **Båda** | **706** | 4 (samma) | 105 rader, varav **1 fuktig** — alltså en enda som kan fyra |
+
+**De 17 kopiorna av #75 är orörda.** Tilläggen ligger BREDVID vakten, i `publish/snapshot-core.ts` (och därmed i den
+genererade `supabase/functions/publicera/index.ts`, som CI håller i synk). Genomgången av kopiorna:
+
+| Var | Vad den gör | Rörd? |
+| :-- | :-- | :-- |
+| `publish/snapshot-core.ts` + genererad `publicera/index.ts` | det appen hör | **ja — de två tilläggen** |
+| `supabase/functions/vakthund/index.ts` | frostvakten räknar kalla stationer | nej — sju felande stationer av 850 flyttar inte ett larm vid 50 |
+| grind A, K-A, R-A, T-A · `anomalin` · `ruttberedskap` · `overgangar-steg0` · `smhi-forstarkaren-steg0` · `publish/trenden.ts` · `sql/018` · `sql/028` | mätningar och domar | **nej — se nedan** |
+| `test/snapshot-core.test.ts`, `test/integration.test.ts` | bevisar vakten | utökade |
+
+**Kontraktsgrinden:** #75-kontraktet har fått en andra form — brottet, `surface_temp_c < air_temp_c - N` — bredvid vaktens
+`>=`, så att karantänens 12 inte kan glida från vaktens 12. Golvet höjt 17 → 19. De nya talen (10, 8, 7, 3) står på ETT ställe,
+som exporterade konstanter; testerna importerar dem. Kopieras de någon gång ska de in i grinden i samma commit.
+
+**Öppen fråga (bedömningen §4.2): ska MÄTNINGARNA ärva vakterna?** 13 av arkivets 21 frostepisoder är givarfel, och de hamnar i
+grindarnas och uppspelningens underlag. Att lägga till vakterna där ändrar talen — samma fråga som #129 — men utfallen är inte
+lästa, så det går att göra rent. Bengts och Axels beslut; rekommendation: ja, före första frostmånaden.
+
+**Bevis:** enhetstester (karantänen tystar väderpunkt OCH bro; gränsstationer med samma id rörs inte; oläsbar historik fäller
+inte snapshoten) och ett integrationstest mot riktig PostGIS med fallet som det såg ut (yta +1,3 °C, luft +13,3 °C) samt de fall
+vakten INTE får ta: blixthalkan (−5/+4), töväder (0/+9,9), gränsen (gap 7,9 vid +10) och den enstaka studsen. Motprov och
+mätning efter deploy redovisas på kortet.
+
+**Anmälan** om de sju stationerna är skriven: `docs/ANMALAN-TRV-YTGIVARE.md`. Bengt skickar den via Datautbytesportalens
+formulär. **Snöflingemätningen** (#297) står som bevakningsrad i bedömningen §0b och körs om efter första frostmånaden.
+
