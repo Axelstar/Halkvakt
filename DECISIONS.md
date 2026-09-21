@@ -8249,3 +8249,31 @@ enhetsverifiering är klara (*Verifiera uppgifter för utvecklaridentitet*: *"Du
 förrän dessa förutsättningar är uppfyllda"*). Enhetsverifieringen ligger alltså i vägen för kontots färdigställande
 hur betan än klassas — men den kostar ett telefonsamtal, inte tusen kronor.
 
+## #280 (21/9 2026) Kort #218 kontrollerat mot koden: loopen är vanligare än kortet säger — och #279:s lån behövs inte
+
+**Bengts fråga 21/9:** *"vad är 218"*. Kortet (genomlysningen P8, 20/9) lästes mot koden innan det förklarades.
+
+**Stämmer:** iOS `BestForNavigation` med pausen av, satt på ett ställe och aldrig ändrat (`GuardManager.swift:90–92`,
+inget `distanceFilter` någonstans) · Androids trappa 1 / 5 / 15 s efter avståndet till närmaste fara (`CadencePolicy.kt`)
+· `CadencePolicyTest.tiers()` jämför mot sina egna konstanter, så `NEAR_MS` 1 → 10 s och `FAR_MS` 15 → 150 s passerar
+hela sviten (läst, inte kört; motprovet görs i CI när testet lagas).
+
+**Rättat:** kortets *"fyra HTTP-anrop per sekund … när nätet saknas och cachen är tom"*. Utan nät faller första anropet
+och laddningen avbryts — ett försök per sekund. Fyra per sekund kräver att nätet FINNS och att en fil fäller utan sparad
+kopia; då laddas `static.json` om varje sekund, 274 kB/s med storlekarna hämtade 21/9 (static 251 391 byte, live 22 262,
+manifest 352) — ungefär 1 GB i timmen.
+
+**Nytt, samma rotorsak, och det vanliga fallet:** `lastSnapshotLoad` sätts bara vid lyckad laddning, och inget markerar
+att en pågår. Utan data går vakten i 1-sekundstakt, så varje GPS-punkt före den första lyckade laddningen startar en ny
+komplett laddning i en egen tråd — vid varje start och varje självväckning efter ett stopp. På ett segt nät trängs de och
+gör varandra långsammare. Kortets fall kräver ett tomt cacheminne; det här kräver bara ett segt nät. iOS har inte felet:
+vägdatan laddas vid start och när vyn visas, inte per GPS-punkt.
+
+**Mätningen:** Bodenresan 1/9 bad om batteriprocenten med laddare i bilen. Det enda försöket kunde alltså inte mäta
+budgeten. Frågorna står i bedömningen §4.2.
+
+**Rättelse av #279.** #279 skrev *"en LÅNAD telefon räcker"*, och svaret till Bengt rådde honom att fråga någon i
+närheten. Onödigt: #271 slutar med Axels *"vi har en Android som vi kan använda"*, och #272 beskriver appen uppsatt på den
+telefonen 20/9 kväll. Kvar för Play-grinden är bara inloggningen i Play Console-appen på den. **Läxa:** läs hela
+beslutsposten som rättas — #271:s sista stycke hade redan löst det #279 rättade.
+
