@@ -1,0 +1,14 @@
+-- SNÖFLINGEMÄTNINGENS DETALJ (kort #233, DECISIONS #297, 21/9 2026). Första körningen (35629700266) gav fyra fyrningar på
+-- 29 dygn — alla med luft +8,5…+11,5 °C och yta <= +1 °C. Det ser ut som givarfel som slinker förbi #75:s vakt
+-- (yta >= luft − 12), inte som frost. De här satserna svarar: VILKA stationer, och SA motorn det i skuggan?
+-- Bara läsande. Kör: varje sats på en rad i dbknapp (atgard migrera, fil sql/022_driver_facit.sql, bevis = satserna).
+
+SET statement_timeout = '300s'
+
+WITH f AS (SELECT station_id, name, sample_time, surface_temp_c AS yta, air_temp_c AS luft, precipitation, rain, snow, ((sample_time - interval '12 hours') AT TIME ZONE 'UTC')::date AS natt FROM weather_observations WHERE sample_time > now() - interval '60 days' AND surface_temp_c <= 1 AND air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12 AND (rain OR snow OR (precipitation IS NOT NULL AND precipitation <> '' AND lower(precipitation) NOT IN ('no', 'dry')))) SELECT station_id, name, natt, min(sample_time) AS forsta, count(*) AS rader, min(yta) AS yta_min, max(yta) AS yta_max, min(luft) AS luft_min, max(luft) AS luft_max, max(luft - yta) AS storsta_gap, string_agg(DISTINCT coalesce(precipitation, '-'), ',') AS nederbord FROM f GROUP BY 1, 2, 3 ORDER BY natt
+
+WITH f AS (SELECT station_id, name, sample_time, surface_temp_c AS yta, air_temp_c AS luft, ((sample_time - interval '12 hours') AT TIME ZONE 'UTC')::date AS natt FROM weather_observations WHERE sample_time > now() - interval '60 days' AND surface_temp_c <= 0 AND air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12), ep AS (SELECT DISTINCT ON (station_id, natt) station_id, name, natt, sample_time, yta, luft FROM f ORDER BY station_id, natt, sample_time) SELECT station_id, name, natt, to_char(sample_time AT TIME ZONE 'UTC', 'HH24:MI') AS utc, yta, luft, luft - yta AS gap FROM ep ORDER BY gap DESC
+
+WITH f AS (SELECT station_id, surface_temp_c AS yta, air_temp_c AS luft, ((sample_time - interval '12 hours') AT TIME ZONE 'UTC')::date AS natt, sample_time FROM weather_observations WHERE sample_time > now() - interval '60 days' AND surface_temp_c <= 0 AND air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12), ep AS (SELECT DISTINCT ON (station_id, natt) station_id, natt, yta, luft FROM f ORDER BY station_id, natt, sample_time) SELECT CASE WHEN luft - yta > 8 THEN 'gap over 8' WHEN luft - yta > 5 THEN 'gap 5-8' WHEN luft - yta > 3 THEN 'gap 3-5' ELSE 'gap hogst 3' END AS klass, count(*) AS episoder, count(*) FILTER (WHERE luft > 3) AS luft_over_3, round(avg(luft), 1) AS luft_medel, round(avg(yta), 1) AS yta_medel FROM ep GROUP BY 1 ORDER BY 1
+
+SELECT (s.run_at AT TIME ZONE 'UTC')::date AS dag, a->>'id' AS fara, count(*) AS ganger, min(a->>'text') AS text, min(s.route) AS rutt FROM shadow_log s, jsonb_array_elements(s.alerts) a WHERE s.land = 'SE' AND s.run_at > now() - interval '60 days' AND a->>'kind' = 'icing_point' GROUP BY 1, 2 ORDER BY 1, 2

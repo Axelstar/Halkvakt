@@ -1249,6 +1249,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Halkvakt-varning som bara kommer när snöflingan redan lyser tillför lite; värdet ligger där vägytan är kall fast luften
   inte är det — klara nätter med utstrålning — och det ser en station men ingen bil. **Mätbart nu, utan facit och utan att
   blindningen rörs:** hur stor andel av stationsregelns fyrningar sker med luft över +3 °C (och +4 °C — bilmärkena skiljer sig, båda redovisas)? En läsande sats via dbknapp.
+  ✅ **(2) KÖRD 21/9 (DECISIONS #297; körningarna 35629700266, 35629869303, 35630131080) — och svaret är: för tidigt, plus ett
+  fynd som är viktigare än frågan.** Arkivet 24/8–21/9: stationsregeln fyrade **4 episoder — alla fyra givarfel** (luft
+  +8,5…+11,5 °C, yta ≤ +1 °C). Äkta frost (gap luft−yta ≤ 3 °C): 7 episoder, alla i Norrland med luft ≤ +0,4 °C — snöflingan
+  lyste i samtliga. **Inget stöd än för att stationen ser det bilen inte ser; sju episoder i september avgör ingenting.** Körs
+  om efter första frostmånaden. Fyndet: kort #234.
   **(3) KÖSLUT — inte missat, parkerat.** Niras sjätte varningstyp är *"Slow traffic alert"*. Vi har kort #15 (TrafficFlow,
   43 s färsk, faktatestad 26/8), beslutad som uppdatering 1 efter release. Ingen ändring föreslås; bara noterat att en
   konkurrent räknar den till kärnan.
@@ -3095,6 +3100,24 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Bryter dokumentationsregeln. *(Delvis åtgärdad i detta varv — resten nästa.)*
 
 ### Claude — låst (väntar på nyckel)
+- [ ] 🚨 **#234 TRASIGA YTGIVARE SLINKER FÖRBI GIVARVAKTEN — FALSKA BROLARM PÅ E4 I SKÅNE, I DRIFT NU** (hittat av
+  snöflingemätningen 21/9, DECISIONS #297). 🔑 **Nyckel: Bengts och Axels beslut om hur vakten ska skärpas** (§4.2).
+  **Station 1106 Ö Ljungby** (E4, Skåne): yta +1,1…+3,5 °C medan luften är **+13…+15 °C**, daggpunkten +8…+13 °C och det
+  regnar — timme efter timme, dag som natt (19–21/9). Fysiskt omöjligt; givaren ligger ~12 °C fel. #75:s vakt släpper allt
+  med yta ≥ luft − 12, och felet pendlar precis kring den gränsen. **Följden i appen:** 24 broar inom 15 km publiceras med
+  frysrisk; skuggmotorn sa *"Frysrisk framöver — bro om 600 meter"* **sju gånger per varv** på E4 Helsingborg→Jönköping
+  5/9, 16/9, 17/9, 19/9, 20/9 och 21/9. Det är där testarna och Skyltfondsparterna finns.
+  **Fyra stationer till med samma mönster** (yta ≤ +1 °C vid luft ≥ +6 °C): Ollsta 2346 (8 dagar, fyrade 3 nätter), Storvik
+  2135 (5 dagar), Testeboån 2132, Kullavik 1302, Bolhyttan 1713. Av 21 *frostepisoder* i arkivet är 13 sådana givarfel.
+  ⚠️ **Skärp INTE genom att bara sänka 12:** varmfront med regn över frusen väg (yta −3, luft +4) ger ett ÄKTA gap på 7–10 °C
+  — blixthalkan, det farligaste fallet. Inte heller `rimlig()`-vakten ur trenden (yta − dagg < −5) rakt av: den tystar samma
+  fall. Kandidater, att mäta innan någon väljs: (a) gapvakten görs beroende av lufttemperaturen (en blöt yta nära noll vid
+  luft ≥ +8 °C finns inte); (b) en kronikerlista — stationer som brutit mot fysiken N dagar spärras tills de mätt rätt;
+  (c) båda. Tröskeln är fastställd (#75) och ligger i 17 kopior under kontraktsgrinden: ändringen är ett beslut, med motprov.
+  ✉️ **Bengt, valfritt:** anmäl de sex givarna till Trafikverket — förlagan finns i `docs/ANMALAN-TRV-BYVINDGIVARE.md`.
+  Verify: beslutet i DECISIONS · vakten byggd med motprov (1106:s rader som provdata) · skuggloggen utan brolarm från 1106
+  en natt då givaren fortfarande visar fel.
+
 - [ ] 🧂 **#231 PRODUKTIONSREGELNS FALSKLARM PER VÄDERTYP — en rad i bildfacitets läsning** (Bengts ja 21/9, Axel utan synpunkter samma dag, DECISIONS #291,
   ur second opinion #290). 🔑 **Nyckel: bildfacitets läsning (#209) — beslutet efter första frosten, bilderna öppnas i mars.**
   På en stadigt kall snödag säger stationsregeln *kallt och nederbörd* också på en saltad väg med fullt grepp; stationen ser

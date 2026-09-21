@@ -8802,3 +8802,38 @@ fyrningar, inte utfall, så blindningen rörs inte. Hög andel är ett säljargu
 
 Frågan om vad som ska utredas står i bedömningen §4.2; kort #233.
 
+## #297 (21/9 2026) Snöflingemätningen: för tidigt att säga — men den hittade trasiga ytgivare som ger falska brolarm på E4 i Skåne (kort #234)
+
+**Bengts order 21/9:** *"kör snöflingemätningen nu"* (kort #233, #296). Tre läsande körningar via dbknapp (35629700266,
+35629869303, 35630131080; satserna i `scripts/matningar/snoflingan-*.sql`). Arkivet 24/8–21/9: 393 803 rader, 850 stationer.
+Fyrningar lästes, inga utfall — blindningen är orörd.
+
+**Svaret på frågan: för tidigt.** Stationsregeln (yta ≤ +1 °C och fukt) fyrade 4 episoder på 29 dygn — alla med luft
++8,5…+11,5 °C, alltså givarfel och inte frost. Äkta frost (yta ≤ 0 °C med gap luft − yta ≤ 3 °C): 7 episoder, alla i Norrland
+(Kiruna, Nikkaluokta, Kätkesuando, Umasjö, Vassijaure, Bergfors, Ollsta 10/9) med luft ≤ +0,4 °C. Snöflingan lyste i
+samtliga. Inget stöd än för att stationen ser det bilen inte ser — och sju septemberepisoder avgör ingenting. Körs om efter
+första frostmånaden.
+
+**Fyndet som är viktigare än frågan: givarfel slinker förbi #75:s vakt, och det låter i appen.**
+
+| Station | Mönster | Följd |
+| :-- | :-- | :-- |
+| **1106 Ö Ljungby** (E4, Skåne) | yta +1,1…+3,5 °C vid luft +13…+15 °C, daggpunkt +8…+13 °C, regn — timme efter timme 19–21/9 | **24 broar** inom 0,3–14,6 km publiceras med frysrisk (brotröskeln +3 °C). Skuggmotorn: *"Frysrisk framöver — bro om 600 meter"* sju gånger per varv på E4 Helsingborg→Jönköping 5/9, 16/9, 17/9, 19/9, 20/9, 21/9 |
+| 2346 Ollsta (Jämtland) | yta −4,6…+0,7 °C vid luft +8…+10 °C, 8 dagar | stationsregeln fyrade 3 nätter, i regn |
+| 2135 Storvik · 2132 Testeboån · 1302 Kullavik · 1713 Bolhyttan | yta under noll vid luft +6…+11 °C | 1–5 dagar vardera |
+
+Vakten släpper allt med yta ≥ luft − 12. Felen ligger på 10,6–12,0 °C — de pendlar kring gränsen och går igenom de rader som
+råkar hamna under. 13 av arkivets 21 *frostepisoder* är sådana fel. (5/9 publicerades Storvik med yta −16,9 °C; det var före
+#75, som kom 8/9.)
+
+**Varför 12 inte bara ska sänkas:** varmfront med regn över frusen väg — yta −3 °C, luft +4 °C, daggpunkt +3 °C — ger ett ÄKTA
+gap på 7–10 °C. Det är blixthalkan, det farligaste fallet, och en lägre fast gräns tystar just den. Av samma skäl duger inte
+trendens `rimlig()`-vakt (yta − dagg < −5, `publish/trenden.ts`) rakt av i produktion. Kandidater att MÄTA innan någon väljs:
+(a) gapvakten görs beroende av lufttemperaturen — en blöt yta nära noll vid luft ≥ +8 °C finns inte; (b) kronikerlista;
+(c) båda. Tröskeln är fastställd (#75) och kopierad på 17 ställen under kontraktsgrinden: ändringen är Bengts och Axels
+beslut, och byggs med motprov (1106:s rader är färdiga provdata).
+
+**Kopplingen till #290:** second opinion pekade på produktionsregelns falsklarm som den svaghet som står kvar mot oss. Det här
+är det första uppmätta exemplet — inte salt, utan en trasig givare — och det hittades av en mätning som letade efter något
+annat. CLAUDE.md:s värdevaktsläxa en gång till: *"Inget av dem hittades av en vakt."*
+
