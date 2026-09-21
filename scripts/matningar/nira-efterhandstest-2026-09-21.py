@@ -12,6 +12,8 @@
 #   1. Motorn (engine.ts:213–218): yta ≤ +1 °C och fukt.
 #   2. Efterhalkan, startvärdena (DECISIONS #222/#225, sql/028): yta +1…+3 °C · fall ≥ 0,8 °C på 30 min · regn > 0 inom 2 h;
 #      en episod per avsnitt och natt (middag till middag UTC).
+#   3. Övergångsregeln #89 (a), tillagd i DECISIONS #288 (också låst före körningen): yta ≤ +1 °C och nederbörd inom
+#      2 h. Skuggsidans övriga isregler saknar indata i materialet (daggpunkt, SMHI:s varningar, väglag, ankare).
 # FACIT: friktion under gränsen på samma avsnitt inom (t, t + 90 min]. Gränsen 0,30; känslighet 0,25 och 0,35.
 #
 # INDATA LIGGER INTE I REPOT (Niras villkor). Skriptet skriver bara aggregat, och resultatfilen hamnar i Hämtade filer.
@@ -164,6 +166,69 @@ for h in range(24):
                   "bas": None if np.isnan(ab) else round(float(ab), 3), "torkare": round(tp, 3)})
     print(f"{h:>3}{int(mn):>17,}{am:>15.1%}{ab:>10.1%}{tp:>12.1%}")
 UT["per_timme"] = timme
+
+# ── Regel 3: övergångsregeln #89 (a) — tillagd och låst i DECISIONS #288 FÖRE körningen ─────────────────────
+# Frysriskens fuktvillkor förlängt: "en väg som nyligen var blöt är fortfarande blöt när den fryser". Samma yta-villkor
+# som motorn (≤ +1 °C), men nederbörd inom (t − 2 h, t] i stället för nu. N = 2 h = betans startvärde (#222); Ö-B:s
+# eget svep körs inte. Motorns och efterhalkans avsnitt ovan är orörda — deras tal ska bli desamma som i #287.
+rubrik("REGEL 3 — SKUGGMOTORN: ÖVERGÅNGSREGELN #89 (a) (yta ≤ +1 °C och nederbörd inom 2 h)")
+overg = rapport & (temp <= 1.0) & blot
+tillkomna = overg & ~motor                       # varningar som bara finns för att fukten fick ett minne
+print(f"varningsögonblick: {int(overg.sum()):,}, varav {int(tillkomna.sum()):,} tillkomna efter att nederbörden upphört · "
+      f"avsnitt: {int(overg.any(axis=1).sum()):,} (motorn: {int(motor.any(axis=1).sum()):,})")
+res_o = {}
+for g in GRANSER:
+    o, ti = facit(overg, g), facit(tillkomna, g)
+    res_o[g] = {"overgang": o, "tillkomna": ti}
+    print(f"gräns {g:.2f}: basnivå {res[g]['bas']['traffandel']:.1%} · motorn {res[g]['motor']['traffandel']:.1%} · "
+          f"övergångsregeln {o['traffandel']:.1%} ({o['traff']:,} träffar, {o['falsklarm']:,} falsklarm, "
+          f"{o['inget_facit']:,} utan facit) · de tillkomna ensamma {ti['traffandel']:.1%}")
+o30 = res_o[HUVUDGRANS]["overgang"]
+print(f"träffar där halkan INTE redan fanns de 90 min före (gräns 0,30): {o30['traff_dar_halkan_inte_redan_fanns']:,} "
+      f"av {o30['traff']:,}")
+UT["overgang"] = {str(g): {k: {kk: vv for kk, vv in v.items() if not kk.startswith('_')} for k, v in r.items()}
+                  for g, r in res_o.items()}
+
+def episoder(varn):
+    """Halkaepisoder (första friktion under gränsen per avsnitt och natt) — föregicks de av en varning inom 90 min?"""
+    ut_ = []
+    for g in GRANSER:
+        lag = ~np.isnan(fric) & (fric < g)
+        n = foregangen = 0; forsprang = []
+        for l in np.nonzero(lag.any(axis=1))[0]:
+            sedda = set()
+            for b in np.nonzero(lag[l])[0]:
+                if natt(b) in sedda: continue
+                sedda.add(natt(b)); n += 1
+                start = max(0, b - FONSTER)
+                v = np.nonzero(varn[l, start:b])[0]
+                if len(v): foregangen += 1; forsprang.append((b - (start + v[0])) * 10)
+        ut_.append({"grans": g, "episoder": n, "foregangna": foregangen, "andel": round(foregangen / max(n, 1), 3),
+                    "forsprang_median_min": float(np.median(forsprang)) if forsprang else None})
+    return ut_
+epi_o = episoder(overg)
+for r in epi_o:
+    print(f"gräns {r['grans']:.2f}: {r['episoder']:,} halkaepisoder · {r['foregangna']:,} föregicks av en varning från "
+          f"övergångsregeln ({r['andel']:.1%}) · försprång median {r['forsprang_median_min']} min")
+UT["halkaepisoder_overgang"] = epi_o
+
+rubrik("PER TIMME (svensk tid) — ÖVERGÅNGSREGELN MOT MOTORN OCH BASNIVÅN, GRÄNS 0,30")
+def andel_timme(r, bins):
+    sel = np.isin(r["_b"], bins)
+    l_, b_ = r["_l"][sel], r["_b"][sel]
+    if not len(l_): return 0, float("nan")
+    fram = np.stack([np.where(b_ + k < NB, fric[l_, np.minimum(b_ + k, NB - 1)], np.nan) for k in range(1, FONSTER + 1)], axis=1)
+    finns = ~np.all(np.isnan(fram), axis=1)
+    return int(sel.sum()), (r["_traff"][sel].sum() / finns.sum()) if finns.sum() else float("nan")
+timme_o = []
+print(f"{'kl':>3}{'varningar övg.':>16}{'övergång träff':>16}{'motor träff':>13}{'basnivå':>10}")
+for h in range(24):
+    bins = [b for b in range(NB) if (b // 6 + 1) % 24 == h]
+    no, ao = andel_timme(o30, bins); _, am = andel_timme(m30, bins); _, ab = andel_timme(b30, bins)
+    timme_o.append({"kl": h, "varningar": no, "overgang": None if np.isnan(ao) else round(float(ao), 3),
+                    "motor": None if np.isnan(am) else round(float(am), 3), "bas": None if np.isnan(ab) else round(float(ab), 3)})
+    print(f"{h:>3}{no:>16,}{ao:>16.1%}{am:>13.1%}{ab:>10.1%}")
+UT["per_timme_overgang"] = timme_o
 
 ut = D / "nira-efterhandstest-resultat.json" if len(sys.argv) < 2 else Path(sys.argv[1])   # aldrig i repot
 ut.write_text(json.dumps(UT, ensure_ascii=False, indent=1, default=str), encoding="utf-8")

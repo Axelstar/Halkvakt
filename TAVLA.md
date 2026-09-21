@@ -3068,6 +3068,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   trenden #88, rimfrosten #46, SMHI-förstärkaren #95 (d) och väglagets ålder #151 — plus frysklassningen #103 och
   segmentmotorn (skuggan). Tillämpbar på materialet utöver den körda: **övergångsregeln**. Övriga saknar indata (daggpunkt,
   SMHI:s varningar, Trafikverkets väglag, stationsankare). Övergångsregeln körs med N = 2 h, låst i DECISIONS #288.
+  ✅ **ÖVERGÅNGSREGELN KÖRD 21/9 (DECISIONS #289):** 95 646 varningsögonblick, 4,4 gånger motorns, varav 73 879 efter att
+  nederbörden upphört. Följdes av friktion under 0,30 i **35,5 %** — motorn 33,7 %, **basnivån 44,2 %**. Fångade **16,3 %** av
+  halkaepisoderna i förväg, mot motorns 11,5 %, med **70 min** försprång i median mot motorns 50. Bättre än motorn på
+  förmiddagen, fortfarande under basnivån. Motorns och efterhalkans tal oförändrade vid omkörningen.
   Övergångsnattens prov görs inte — ingen ny data från Nira (Bengt 21/9).
 
 - [ ] 🧭 ↩︎ **#38b Stråket / skuggmotorn — ÅTERSTÄLLT 10/9** (föll av tavlan 8/9 20:43 i commit
