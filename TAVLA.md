@@ -677,6 +677,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔒 **Det som ÄR klarlagt:** utvecklarens telefonnummer kan inte verifieras förrän identitet OCH enhetsverifiering
   är klara (samma hjälpcenter, *Verifiera uppgifter för utvecklaridentitet*). Enhetsverifieringen ligger alltså i
   vägen för kontots färdigställande oavsett hur betan klassas.
+  ⚠️ **RÄTTELSE 21/9 (DECISIONS #280): lånet behövs inte heller.** Raderna ovan skrevs utan att läsa #271 till slut —
+  där står Axels *"vi har en Android som vi kan använda"*, och #272 beskriver appen uppsatt på den 20/9 kväll.
+  Telefonen finns alltså redan. Kvar är bara inloggningen i Play Console-appen på den.
   Verify: uppgiften *Kontrollera att du har åtkomst till en mobil Android-enhet* försvinner från Play Consoles
   startsida.
 
@@ -1336,6 +1339,30 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   kadensreglering. Androids kadenstest är tautologiskt (sänk gränsen tiofalt och det passerar ändå). Dessutom: en
   snapshot-omladdningsloop i Androids vakttjänst kan ge **fyra HTTP-anrop per sekund utan tak** när nätet saknas och cachen är tom.
   Verify: ett mätt prov med skärmen av, utan laddare, på ett namngivet bygge, på båda plattformarna.
+  📖 **KONTROLLERAT MOT KODEN 21/9** (Bengts fråga *"vad är 218"*; DECISIONS #280). Tre av fyra påståenden stämmer:
+  iOS sätter `BestForNavigation` och stänger av pausen på ETT ställe (`GuardManager.swift:90–92`) och ändrar aldrig
+  noggrannheten eller sätter `distanceFilter` · Android växlar 1 s / 5 s / 15 s efter avståndet till närmaste fara
+  (`CadencePolicy.kt`) · testet `tiers()` jämför koden med sina egna konstanter: gör GPS:en tio gånger glesare nära en
+  fara (1 s → 10 s) och allt är grönt; `FAR_MS` 15 → 150 s passerar också marginaltestet (2 × 5,8 km < 15 km).
+  Läst, inte kört — motprovet görs i CI den dag testet lagas.
+  ⚠️ **RÄTTELSE AV KORTETS FJÄRDE PÅSTÅENDE:** helt UTAN nät blir det ett misslyckat försök per sekund, inte fyra —
+  första anropet faller och laddningen avbryts. **Fyra per sekund blir det när nätet FINNS** men en fil fäller
+  (kontrollsumma eller HTTP-fel) och ingen sparad kopia finns: då laddas `static.json` om varje sekund — 274 kB/s med
+  dagens storlekar (static 251 391 byte, live 22 262, manifest 352; hämtade 21/9), ungefär 1 GB i timmen.
+  🆕 **SAMMA ROTORSAK, INTE MED PÅ KORTET — och det vanliga fallet:** `lastSnapshotLoad` sätts bara när en laddning
+  LYCKAS, och ingenting säger *"laddning pågår"*. Utan data går vakten i 1-sekundstakt, så varje GPS-punkt före den
+  första lyckade laddningen startar en ny, komplett laddning i en egen tråd — vid varje start, också varje
+  självväckning efter ett stopp. På ett segt nät trängs de och gör varandra långsammare. Grov räkning: vid ~1 Mbit/s
+  ett knappt tiotal laddningar i onödan, och ännu segare växer det snabbt. Läst i koden, inte framkallat.
+  ✅ **iOS har inte loopen:** vägdatan laddas bara vid start och när vyn visas (två anropsställen).
+  📏 **Mätningen har aldrig gjorts, och det enda försöket kunde inte mäta:** Bodenresan 1/9 bad om batteriprocenten —
+  med laddare i bilen (`docs/TEST-BENGT-BODEN.md`). **Android-provet kräver inget köp:** testtelefonen finns och kör
+  appen (DECISIONS #271 *"LÖST SAMMA KVÄLL"*, #272).
+  🔑 **Väntar (bedömningen §4.2):** Bengts ja till att Claude lagar loopen och testet (Android-kod utan nyckel, bevisas
+  i CI, når telefonen med nästa bygge) · mätningen — en körning på minst en timme per plattform, skärmen av, ingen
+  sladd (kabel-CarPlay laddar telefonen), batteriprocent och byggnummer vid start och slut; iPhone kan Bengt eller
+  Axel köra, Android körs på testtelefonen · **iOS-regleringen avgörs FÖRST efter iPhone-mätningen**: glesare GPS är
+  en säkerhetsfråga, inte bara en batterifråga, och håller iPhone redan under 8 %/h finns inget att vinna.
 
 - [ ] 🤖 **#219 ANDROID ÄR SJU VERSIONER EFTER OCH HAR INGEN VÄG TILL EN TELEFON** (genomlysningen 20/9). Android står på
   **0.3.1 (versionCode 4)**, iOS på 0.3.8 (11). **Google Play-kontot finns inte**, det finns inget uppladdningsflöde alls — CI
