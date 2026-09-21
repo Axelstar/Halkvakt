@@ -8310,3 +8310,46 @@ villkor bara om exempeldatan håller, och varje betalväg kräver en DECISIONS-p
 *ingen position lämnar telefonen automatiskt* — facitsvaret som föraren själv trycker är undantaget. Nästa mejl, till
 Göteborg eller Nira, använder den lydelsen.
 
+## #282 (21/9 2026) Nira — konkurrent eller partner? Hypotesen håller för första bilen, inte för Nira som företag
+
+**Bengts fråga 21/9:** *"Är det enbart data från bilar så är de steget efter. Vi ger en prognos om vad som kommer att
+hända innan en bil kommer. Så vi kanske inte är konkurrenter utan partners."* Utredningen: `docs/NIRA-UTREDNING-2026-09-21.md`.
+Niras sidor lästa i webbläsaren, två agenter sökte utanför, och varje bärande uppgift kontrollerades mot källan.
+
+**Det som håller:** Niras egen signal kommer när bilar har kört — *"The first cars to encounter the black ice would have
+automatically registered the dramatic change in friction"* (Niras artikel om Enköping). På mindre vägar kommer *"ofta
+några mätningar per dygn"* (Trafikverket 10/11 2025), och 2021 kallade Trafikverket metoden *"främst eventbaserad"* —
+jämn fart på en landsväg ger mindre data.
+
+**Det som inte håller:** Nira är inte bara bildata. *"NIRA Dynamics AB is a part of the Volkswagen Group"*, och Nira har
+redan prognosdelen: med Klimator sedan 2018 (*"detaljerade prognoser av halka på vägavsnitt"*) och Vaisala Xweather sedan
+2024 (*"connects road weather forecasts … with real-time connected car data"*). Halkvakt är inte heller ensamt om att se
+före: Klimators halkprognos på Expressen visar *"det förväntade väglaget på Sveriges vägar de närmaste åtta timmarna"*.
+Nira ställer sig dessutom uttryckligen mot *"temperature thresholds"* — Halkvakts nuvarande varning (yta ≤ +1 °C och
+fuktig, `engine.ts:213–218`) är en sådan.
+
+**Nischen som återstår:** gratis, röst under körning, utlöst av mätning och inte modell, minuter till timmar före första
+bilen. Forskningen stöder horisonten: de första timmarna är en ren mätning lika bra som vägvädermodellen (Karsisto 2024,
+RoadSurf). Men förvarningen körs i skuggläge (S1), finns inte i motorn (S3) och är blindad till domarna.
+
+**Slutsats: konkurrent i varningsledet, inte partner i prognosledet — och förhållandet är skevt.** Road Surface Alerts
+säljs till *"third party applications used by drivers"*, alltså Halkvakts plats. Prognosplatsen hos Nira är upptagen.
+Halkvakt skulle få mycket av Nira — facit, ett vittne på platsen som genom ett eget beslut kan göra varningar mellan
+stationerna möjliga (T5), tystnad på saltad väg, gatorna — medan Nira i dag skulle få lite.
+
+**Rekommendation:** exempeldatan nu (gratis) · beviset i vinter · kontakt efter domarna med ett konkret facitförslag,
+gärna som innovationsprojekt med en väghållare · ingen förfrågan om partnerskap före beviset och ingen betalväg utan Axel.
+**Krav i varje samtal:** alla varningar som fil — tjänsten levereras annars till *"vehicles approaching the affected area"*,
+vilket kräver att positionen lämnar telefonen · det mätta skilt från det modellerade (regel T6) · licens för appen (de
+gamla villkoren: *"you will not redistribute or transfer the Service or the Content"*).
+
+**Sidofynd:**
+1. **Trafikverket delar inte sin fordonsdata:** *"Data kommer inte att delas vidare från Trafikverket till tredje part om
+   inte separat överenskommelse träffas"* (slutrapporten 2021). Frågan i bedömningen §0b får troligen svaret nej.
+2. **CLAUDE.md:s läxa om `datex@trafikverket.se` är för stark.** Den säger att en sammanfattning *"hittade på"* adressen och
+   att Trafikverket inte har någon sådan. Trafikverkets katalogpost *Temporary slippery road* på trafficdata.se anger just
+   den adressen som `contact_email`. Läxans poäng — läs kontaktuppgifter på källan — står sig. Förslag att rätta meningen
+   ligger hos Bengt.
+3. **FMI:s vägvädermodell RoadSurf är öppen källkod (MIT).** Den skulle kunna bli ett stärkande lager under T6 — aldrig en
+   utlösare.
+
