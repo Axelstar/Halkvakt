@@ -8403,3 +8403,37 @@ träff, falsklarm och försprånget i minuter före första låga friktionsvärd
 kräver att Niras friktion deklareras som facitkälla före nätterna, D3) eller väg B (en tidigare säsong — VViS-historik från
 Trafikverket och friktion från Nira). Rekommendation: väg A, som en förfrågan om data, inte om partnerskap.
 
+## #285 (21/9 2026) Efterhandstestet gäller hela systemet — motorn plus skuggmotorn — och blir därmed en del av domarna (kort #230)
+
+**Bengts precisering 21/9:** *"jag vill inte bara testa den mot motorn som den ser ut i dag. Det ger inte så mycket. Men att
+testa den mot motorn + skuggmotorn hade kunnat bevisa något till vår fördel för det är ju så vårt fullständiga system kommer
+att se ut"*.
+
+**Beslutat (Bengt):** testobjektet i kort #230 är hela systemet, redovisat lager för lager:
+1. **Motorn som i appen:** isvarningen vid yta ≤ +1 °C och fuktig (`engine.ts:213–218`).
+2. **Efterhalkan med startvärdena från 17/9.** Skuggmotorn loggar dess indata per station i ruttkorridoren sedan 16/9 (S1,
+   `efterhalkaRader` i `supabase/functions/skuggmotor/main.ts`), och uppspelningen kör regeln ur arkivet.
+3. **Skuggan, prognosen mellan stationerna** (TROSKLAR-SKUGGAN). Grind A prövar offsetmodellens matematik; koden skrivs i
+   november om den håller. I provet mäts den men talar inte (T3/T6).
+4. **SMHI-förlängningen** när vintervarningar finns.
+
+**Två anspråk prövas:**
+- **FÖRE:** minuter före första låga friktionen, där exempeldatan visar att Niras bild är tunnast, alltså natten (#283).
+- **MELLAN:** träffar skuggan de sträckor mellan stationerna där bilarna sedan mäter låg friktion? Det vore det första provet
+  av offsetmodellen mot ett vittne på platsen.
+
+**Följden som gör det tidskritiskt:** efterhalkans och skuggans utfall är blindade till domarna (D2, D3, D6). Ett prov mot
+Niras friktion är därför domarnas utfall med en ny facitkälla, och facitkällan måste deklareras **innan nätterna mäts** — före
+den första övergångsnatten, som kan komma i oktober. S6 har i dag förarfacit och kamerafacit. Att lägga till Niras friktion,
+och kriteriet för vilka nätter som prövas, är ett beslut för Bengt och Axel (bedömningen §4.2).
+
+**Varför kriteriet måste stå först:** ett prov som bara kan visa vår fördel bevisar ingenting. Nätterna väljs på ett kriterium
+som inte är vår egen regel. Skuggmotorns logg är skriven innan utfallet fanns, så det går inte att fuska i efterhand — åt något
+håll — och det är just det som gör ett gott utfall trovärdigt för Nira, Skyltfonden och testförarna.
+
+**Området:** Stockholm. Där finns Niras exempeldata, och skuggmotorns rutter *E4 Södertälje→Uppsala* och *E18
+Örebro→Stockholm* går genom det.
+
+**Begränsning:** skuggmotorn kör varje rutt var 3,5 timme. Minuterna före första bilen kommer därför ur uppspelningen per
+station, inte ur rutternas logg.
+
