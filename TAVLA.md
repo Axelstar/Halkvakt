@@ -3017,6 +3017,25 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Bryter dokumentationsregeln. *(Delvis åtgärdad i detta varv — resten nästa.)*
 
 ### Claude — låst (väntar på nyckel)
+- [ ] 🧪 **#230 EFTERHANDSTEST: HALKVAKTS REGLER MOT NIRAS FRIKTION** (Bengts idé 21/9, DECISIONS #284). 🔑 **Nyckel:
+  friktionsdata från Nira för nätter som vårt arkiv också bär — och ett beslut om facitkällan INNAN nätterna mäts (D3).**
+  Frågan: hade Halkvakt varnat *före* den första bilen, där och när Niras bilar sedan kände halka?
+  ✘ **Inte med exempeldagen 15/1 2024.** (1) Halkvakts indata saknas: Trafikverkets öppna API räcker en vecka bakåt, vårt
+  arkiv börjar 2026, Lastkajens *NVDB VVIS* är stationsregistret och inte mätningarna, och Vintersidan — där Trafikverket har
+  den gamla väderdatan — är stängd för utomstående. (2) Dagen kan inte skilja: luften höll −4 till −10 °C hela dygnet (0,5 %
+  av avläsningarna ≥ 0 °C) och det snöade. Efterhalkan hade aldrig fyrat; dagens isvarning hade legat på överallt.
+  ✅ **Designen, skriven före mätning:** en övergångsnatt (blöt väg, ytan faller genom +3…0 °C) · de låsta startvärdena, inget
+  svep (D2, D6, D7) · facit = Niras friktion under Niras egen gräns för *halt* (ur RSA-produktguiden) inom 5 km och 90 min —
+  samma radie och fönster som KB-B · mått: träff, falsklarm och **försprånget i minuter före första låga friktionsvärdet**.
+  **Två vägar:** (A) den här vintern — skuggloggen (S1) och `trend_kandidater` bär vår sida, eftersom råobservationerna gallras
+  efter sju dygn; Niras friktion för 2–3 namngivna nätter begärs när nätterna finns. Kräver att Niras friktion deklareras som
+  facitkälla före nätterna (D3 — samma fråga som #209). (B) en tidigare säsong — VViS-historik från Trafikverket och friktion
+  från Nira: två förfrågningar, men ett renare test utanför blindningen.
+  **Gratis nu:** RSA-formuläret på niradynamics.com/products/road-surface-alerts ger produktguiden (Niras gräns för *halt*)
+  och en dags halkvarningar.
+  Verify: designen deklarerad i DECISIONS före körningen, testet kört på minst en övergångsnatt, försprånget i minuter i
+  bedömningen.
+
 - [ ] 🧭 ↩︎ **#38b Stråket / skuggmotorn — ÅTERSTÄLLT 10/9** (föll av tavlan 8/9 20:43 i commit
   99473c7; #88, #91 och #95 hänvisar hit). Bengts byggplan v3 (31/8): segmentmotorn i november, i
   strikt skugga, dom i mars. Sekvensering mot lanseringen = Axels beslut.
