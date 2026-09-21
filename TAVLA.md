@@ -692,6 +692,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   motsatsen) · Vintersidan har *"historisk väderdata från VViS och MESAN"* men är stängd för utomstående · Finland: Digitraffics
   historik är 24 h, och FMI:s vägväderfrågor finns inte längre (151 lagrade frågor listade, ingen för väg) · Norge: Vegvesenets
   flöde är realtid; MET:s Frost-arkiv kräver konto och är inte kontrollerat. **Vägen är alltså en förfrågan till Trafikverket.**
+  ✅ **STEG 1 GJORT 21/9 — Bengt har skickat förfrågan via Datautbytesportalens kontaktformulär** (hans besked i chatten).
+  ⏳ Väntar svar. **Inget svar senast 28/9 ⇒ reserv 1** (formuläret *Frågor till Trafikverket*), därefter reserv 2. Det
+  tidigare Datex II-ärendet gick samma väg 17–19/9 och är fortfarande obesvarat — räkna med att det tar tid.
   ✉️ **Steg 1 — Bengt skickar förfrågan.** ⛔ **INTE till datex@trafikverket.se — adressen STUDSAR** (Bengts mejl 17/9 kom
   tillbaka med *"Adressen hittades inte"*; den gavs ändå ut en gång till 21/9, DECISIONS #293 → rättat i #294).
   📖 **Rätt väg, läst på källan 21/9:** Datautbytesportalens kontaktformulär, data.trafikverket.se/about-us/contact,
