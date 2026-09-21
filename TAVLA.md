@@ -710,6 +710,16 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   > ändras framöver hör vi gärna från er.
   > Med vänlig hälsning, Bengt Lagerlöf, Halkvakt
   Verify: exempeldatan läst, med svar på de tre frågorna i bedömningen §4.2 · Göteborgs svar på fråga 2 inskrivet på kort #93.
+  📖 **UTREDNINGEN 21/9** (Bengts fråga *konkurrent eller partner?*; `docs/NIRA-UTREDNING-2026-09-21.md`, DECISIONS #282).
+  **Hypotesen stämmer för första bilen och de glesa vägarna — inte för Nira som företag.** Nira ägs av Volkswagenkoncernen
+  och har redan prognosdelen: Klimator sedan 2018 (*"detaljerade prognoser av halka på vägavsnitt"*) och Vaisala sedan 2024.
+  Halkvakt är inte ensamt om att se före — Klimators halkprognos på Expressen visar åtta timmar framåt. Nischen som återstår:
+  gratis, röst under körning, utlöst av mätning, minuter till timmar före — **obevisad till domarna i januari och mars**.
+  Förhållandet är skevt: Halkvakt behöver Nira (facit, vittne på platsen mellan stationerna, tystnad på saltad väg, gatorna)
+  mer än Nira behöver Halkvakt.
+  ➡️ **Steg 2 ändrat:** ingen förfrågan om partnerskap före beviset. Efter domarna (februari–mars): ett konkret förslag —
+  Niras friktionsdata som facit, gärna som innovationsprojekt med en väghållare. Krav i varje samtal: alla varningar som fil
+  (positionen lämnar inte telefonen), det mätta skilt från det modellerade (regel T), licens för appen, Axels ja till varje krona.
 
 - [ ] 🏷️ **#204 SKOLANS NAMN PÅ QR-SIDAN — synlig attribution på webben, inte banner i appen — ✅ BESLUTAT 19/9, förberett, byggs när bladet byggs** (Bengts idé 19/9:
   *"Halkvakt via Mårtenssons trafikskola … indirekt reklam för den som företag — tror du på det eller är det lull lull?"*).
