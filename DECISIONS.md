@@ -8706,3 +8706,22 @@ till 2026-06-01, 24 timvärden för 15/1 2025) · **radarn** finns med 288 kompo
 15/3 2025 · **varningarna har inget öppet arkiv** — API:t bär bara de aktiva. SMHI-förstärkaren (#95 d) och N_varning kräver
 därför en egen fråga till SMHI, eller körs inte i kuvösen. Ingen ny förfrågan behövs för det övriga; det hämtas vid bygget.
 
+## #293 (21/9 2026) Kuvösens två förfrågningar: mottagarna lästa på källan — och läxan om datex-adressen rättad
+
+**Bengts order 21/9:** *"kan du kontrollera vilken som är rätt mejladress och skriva ett färdigt mejl till mej att skicka"*.
+
+| Mottagare | Adress | Läst var |
+| :-- | :-- | :-- |
+| Trafikverket, öppna trafikdata | **datex@trafikverket.se** | `contact_email` och `publisher_email` i Trafikverkets egna katalogposter på trafficdata.se (*Temporary slippery road*, *Exceptional weather conditions* — den senare ändrad 3/12 2025) |
+| Trafikverket, reserv 1 | formuläret *Frågor till Trafikverket*, etjanster.trafikverket.se/kundfragor-trafikverket | trafikverket.se/om-oss/kontakta-oss — sidan har **inga e-postadresser alls**, bara formulär |
+| Trafikverket, reserv 2 | e-tjänsten *Begär ut allmänna handlingar* | samma sida |
+| SMHI (varningarna, valfritt) | **kundtjanst@smhi.se** | smhi.se/kontakta-smhi: *"Vi tar emot och vidarebefordrar uppdrag och beställningar"* |
+
+VViS-sidan på bransch.trafikverket.se anger bara växeln (0771-921 921) och det allmänna formuläret. Att datex-adressen
+faktiskt tar emot post går inte att pröva härifrån — därför reserverna. Båda mejlen frågar efter kostnaden innan något
+arbete påbörjas (gratisnivån: ingen betalväg utan Axels godkännande).
+
+**CLAUDE.md rättad:** läxan från 17/9 sa att sammanfattningen *"hittade på"* adressen och att Trafikverket inte har någon
+sådan. Adressen finns (#282). Felet 17/9 var att den gavs vidare oläst — och felet därefter var att den kallades påhittad,
+också det oläst. Regeln gäller åt båda hållen.
+
