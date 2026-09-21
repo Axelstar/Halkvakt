@@ -298,3 +298,7 @@ i samma commit när de överlappar.
   källsidan, inte tagen ur en automatisk sammanfattning (WebFetch). 17/9 fick Bengt `datex@trafikverket.se`, som
   sammanfattningen av trafficdata.se hittade på: katalogposten har inga kontaktfält och Trafikverket ingen sådan
   adress. Rätt väg var Datautbytesportalens kontaktformulär. En fel adress kostar ett utskick och ett varv.
+- `[skip ci]` verkar på HELA commit-meddelandet, inte bara rubriken. 21/9 fick mätskriptets PR (#428) ingen körning
+  alls på nio minuter: kroppen sa *"Egen commit utan [skip ci]: den bär kod"*, och GitHub läste märket i meningen som
+  förnekade det. Regel: skriv aldrig märket i ett meddelande som ska testas, inte ens för att säga att det saknas — och
+  kontrollera direkt efter push att en körning har startat (`/actions/runs?head_sha=`) innan du väntar på den.
