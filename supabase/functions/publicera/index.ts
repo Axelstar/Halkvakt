@@ -44,7 +44,7 @@ export const WX_SANE =
   "surface_temp_c IS NOT NULL" +
   " AND sample_time > now() - interval '3 hours'" +
   " AND (air_temp_c IS NULL OR surface_temp_c >= air_temp_c - 12)" +
-  ` AND (air_temp_c IS NULL OR air_temp_c < ${GIVARFEL_LUFT_MIN_C} OR air_temp_c - surface_temp_c < ${GIVARFEL_GAP_C})`;
+  ` AND (air_temp_c IS NULL OR air_temp_c < 99 OR air_temp_c - surface_temp_c < ${GIVARFEL_GAP_C})`;
 
 const BORDER_M = 40_000;
 const BORDER_LANDS = ["fi", "no"] as const;
@@ -266,7 +266,6 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
       SELECT station_id, surface_temp_c, rain, snow, precipitation, ST_X(geom) AS lon, ST_Y(geom) AS lat
       FROM weather_latest WHERE ${WX_SANE}`);
     const cold = allWx
-      .filter((r) => !karantan.has(String(r.station_id)))
       .map((r) => ({ lon: Number(r.lon), lat: Number(r.lat), yta: Number(r.surface_temp_c), fukt: fukt(r) }))
       .filter((w) => w.yta <= 3 && w.fukt);
     for (const b of bridgesIn) {
