@@ -219,6 +219,60 @@ Volkswagen-ägt, tjänsten säljs som premium, och de gamla villkoren förbjöd 
 
 ---
 
+## 11. Exempeldatan — uppmätt 21/9
+
+**Vad Nira skickade:** tre filer från Winter Road Insights, Stockholm 15/1 2024 — friktion (305 316 rader), torkarhastighet
+och lufttemperatur (1 846 547 rader vardera, samma bilrapporter). Ett dygn i tiominutersperioder, 01:00–00:50 svensk tid,
+vägklass 1–4. **Vägklass 5, de minsta lokalgatorna, finns inte med alls.** Skript:
+`scripts/matningar/nira-exempeldata-2026-09-21.py`. Filerna ligger inte i repot — villkoren förbjuder vidarespridning.
+
+**1. Tätheten.** Under dygnet fick 2 275 km väg i Stockholmsregionen minst ett friktionsvärde (delsträckorna mäter 24,8 m i
+median; Nira säger 25). **Inom 8 km från Sergels torg: 408 km väg — där Halkvakt har 7 stationer** (kort #93). Över dygnet
+är Nira överlägset i stan.
+
+| Vägklass | km väg med friktion | vägavsnitt | tiominutersperioder med friktion per avsnitt, median (av 144) |
+| :-- | --: | --: | --: |
+| 1 — motorväg | 655 | 853 | 35 |
+| 2 | 307 | 1 164 | 22,5 |
+| 3 | 632 | 3 526 | 17 |
+| 4 | 681 | 3 414 | 8 |
+
+**2. Färskheten — och natten.** Klockan 02 och 03 fick 54 respektive 85 vägavsnitt ett friktionsvärde, mot 2 100–4 600 i
+timmen dagtid — under 1 % av dygnets 8 957. **Klockan 05 hade bara 2–9 % av vägavsnitten ett värde från den senaste
+timmen.** Bilden är tunnast just när frosten bildas och de första bilarna kör — då Halkvakts stationer mäter oavsett trafik.
+
+| Andel av vägavsnitten med ett värde från senaste timmen | vägklass 1 | 2 | 3 | 4 |
+| :-- | --: | --: | --: | --: |
+| klockan 05 | 5,5 % | 8,7 % | 2,4 % | 1,6 % |
+| klockan 07 | 53,9 % | 43,0 % | 30,1 % | 20,1 % |
+
+**3. Mätt eller modellerat — filen säger det inte, men visar att värden förs vidare.** Lufttemperaturen och torkarna har
+exakt samma rader, alltså samma bilrapporter. **22–56 % av friktionsvärdena (från motorväg till minsta vägklassen) ligger i en
+tiominutersperiod där ingen bil rapporterade på avsnittet.** I 80–89 % av de fallen hade en bil rapporterat på samma avsnitt
+inom 30 minuter före, i 98 % inom två timmar. Friktionsvärdet gäller alltså en tid efter att bilen passerat; följderna av
+perioder med friktion är i median 60 minuter långa, också på natten. Dessutom ligger medelvärdet i 6,4 % av raderna mer än
+0,05 utanför radens egen min–max (som mest 0,83) — det är inte ett enkelt medel av periodens mätningar.
+**Följd för regel T:** ett framfört värde är ett minne av en mätning (T4) och får bära en varning bara om åldern är känd.
+**Krav till Nira: varje värde måste bära tiden för den senaste mätningen under det.**
+
+**4. Händelsestyrt — kan inte avgöras.** När en bil rapporterar på ett avsnitt finns ett friktionsvärde i samma period i
+48 % av fallen på motorväg och i 15,5 % på minsta vägklassen. Vore friktionen händelsestyrd borde gatorna, med fler
+inbromsningar och svängar, ligga högre. De ligger lägre — men motorvägen har fler bilar per period, och det döljer
+effekten. Provet är för trubbigt för att fälla Trafikverkets ord från 2021.
+
+**Sidofynd.**
+- Lufttemperaturen är **luftens**, inte vägytans (filnamnet), och bär orimliga värden: **+29,5 °C en januaridag**, lägst
+  −30,5 °C, median −5,2 °C. Den kan inte ersätta stationernas yttemperatur — och den hade inte passerat värdevakten.
+- Torkarna gick i 8,2 % av avsnittsperioderna. Ett möjligt regnvittne på platsen för efterhalkans premiss *vägen är blöt*
+  (T1), där stationer saknas.
+- Friktionen den dagen: median 0,35, 35 % av värdena mellan 0,15 och 0,3 — vinterväglag. Skalan är inte dokumenterad i filen.
+
+**Vad det betyder.** Exempeldatan stärker Bengts hypotes på den punkt där den stämde. Niras bild är tät på dagen och tunn på
+natten, och den bär framförda värden utan ålder. Halkvakts stationer mäter vägytans temperatur oavsett trafik — starkast
+just när Nira är svagast. Det är argumentet i ett framtida samtal, med Niras egna siffror, när förvarningen är bevisad.
+
+---
+
 ## Källor (lästa 21/9 2026)
 
 | ✔ | Källa |

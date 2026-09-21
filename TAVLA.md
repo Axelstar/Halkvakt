@@ -725,6 +725,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ➡️ **Steg 2 ändrat:** ingen förfrågan om partnerskap före beviset. Efter domarna (februari–mars): ett konkret förslag —
   Niras friktionsdata som facit, gärna som innovationsprojekt med en väghållare. Krav i varje samtal: alla varningar som fil
   (positionen lämnar inte telefonen), det mätta skilt från det modellerade (regel T), licens för appen, Axels ja till varje krona.
+  ✅ **STEG 1 KLART 21/9 — exempeldatan läst** (`scripts/matningar/nira-exempeldata-2026-09-21.py`, utredningen §11,
+  DECISIONS #283; filerna ligger kvar hos Bengt, inte i repot). Stockholm 15/1 2024: **408 km väg med friktion inom 8 km från
+  Sergels torg, där Halkvakt har 7 stationer** — men **natten är tunn**: klockan 05 hade 2–9 % av vägavsnitten ett värde från
+  senaste timmen, och klockan 02–03 fick under 1 % av avsnitten något värde alls. **Värden förs vidare utan ålder:** 22–56 % av
+  friktionsvärdena ligger där ingen bil rapporterade samma tio minuter (en bil inom 30 min före i 80–89 %). Lufttemperaturen
+  är luftens, med +29,5 °C en januaridag. Händelsestyrt eller inte: provet kan inte avgöra. Vägklass 5 saknas helt.
+  **Nytt krav till Nira:** varje värde med tiden för den senaste mätningen under det (regel T1/T4).
 
 - [ ] 🏷️ **#204 SKOLANS NAMN PÅ QR-SIDAN — synlig attribution på webben, inte banner i appen — ✅ BESLUTAT 19/9, förberett, byggs när bladet byggs** (Bengts idé 19/9:
   *"Halkvakt via Mårtenssons trafikskola … indirekt reklam för den som företag — tror du på det eller är det lull lull?"*).

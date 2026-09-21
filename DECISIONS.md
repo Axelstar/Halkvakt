@@ -8353,3 +8353,28 @@ gamla villkoren: *"you will not redistribute or transfer the Service or the Cont
 3. **FMI:s vägvädermodell RoadSurf är öppen källkod (MIT).** Den skulle kunna bli ett stärkande lager under T6 — aldrig en
    utlösare.
 
+## #283 (21/9 2026) Niras exempeldata mätt: tät över dygnet, tunn på natten — och värdena förs vidare utan ålder
+
+**Bengt 21/9:** *"filerna är nedladdade nu"*. Exempeldatan lästes mot utredningens fyra frågor (§9, resultatet i §11).
+Winter Road Insights, Stockholm 15/1 2024: friktion 305 316 rader, torkare och lufttemperatur 1 846 547 rader vardera
+(samma bilrapporter), tiominutersperioder 01:00–00:50 svensk tid. Skript `scripts/matningar/nira-exempeldata-2026-09-21.py`;
+filerna ligger inte i repot (villkoren förbjuder vidarespridning).
+
+1. **Tätheten:** 2 275 km väg med minst ett friktionsvärde under dygnet; inom 8 km från Sergels torg 408 km — där Halkvakt
+   har 7 stationer. Vägklass 5, lokalgatorna, saknas helt.
+2. **Färskheten:** klockan 05 hade 2–9 % av vägavsnitten ett värde från den senaste timmen (klockan 07: 20–54 %); klockan
+   02–03 fick under 1 % av dygnets 8 957 avsnitt något värde.
+3. **Mätt eller modellerat:** ingen flagga. 22–56 % av friktionsvärdena ligger i en period utan bilrapport på avsnittet; i
+   80–89 % av dem fanns en rapport inom 30 min före, i 98 % inom två timmar. Värdena förs alltså vidare, i följder om 60 min
+   i median. Medelvärdet ligger i 6,4 % av raderna mer än 0,05 utanför radens egen min–max, som mest 0,83.
+4. **Händelsestyrt:** kan inte avgöras. Friktion finns i 48 % av motorvägens rapportperioder mot 15,5 % på minsta
+   vägklassen — men trafikmängden döljer effekten.
+
+**Sidofynd:** lufttemperaturen är luftens, inte vägytans, och bär +29,5 °C en januaridag — värdevakten hade stoppat fältet ·
+torkarna gick i 8,2 % av avsnittsperioderna, ett möjligt regnvittne på platsen (T1).
+
+**Följd:** Bengts hypotes stärks där den stämde. Niras bild är tunnast när frosten bildas; Halkvakts stationer mäter vägytan
+oavsett trafik. **Nytt krav i ett framtida samtal med Nira:** varje värde med tiden för den senaste mätningen under det — utan
+den kan ett framfört värde inte bära en varning (T1: vittnet inom utfallsfönstret; T4: minne av mätning med känd kedja).
+Repot är privat (kontrollerat 21/9: HTTP 404 utan inloggning), så utredningen och siffrorna syns inte utåt.
+
