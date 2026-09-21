@@ -3072,6 +3072,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   nederbörden upphört. Följdes av friktion under 0,30 i **35,5 %** — motorn 33,7 %, **basnivån 44,2 %**. Fångade **16,3 %** av
   halkaepisoderna i förväg, mot motorns 11,5 %, med **70 min** försprång i median mot motorns 50. Bättre än motorn på
   förmiddagen, fortfarande under basnivån. Motorns och efterhalkans tal oförändrade vid omkörningen.
+  🔎 **SECOND OPINION 21/9 (DECISIONS #290, annan modell):** upplägget var ärligt, men läsningen ändras. Testet prövade
+  stationsregeln (A2), inte motorn — väglaget (A1) finns inte i materialet. Temperaturvillkoret var sant i 99,72 % av
+  perioderna, så det som prövades var torkarna. *Sämre än slumpen* är till 70 % en blandningseffekt (torkarna gick på
+  motorväg mitt på dagen; förväntat utan information 36,8 %). Dagtid hade avsnitt med torkare medianfriktion 0,54 mot 0,37 —
+  saltstänk, inte snöfall. 76,9 % av halkan fanns redan vid första mätningen, så försprånget går inte att läsa. **Dagen var
+  Niras bästa sort, inte vår:** stadigt kallt, ingen övergång. Kvar mot oss: stationsregeln ser inte saltet (§4.2).
   Övergångsnattens prov görs inte — ingen ny data från Nira (Bengt 21/9).
 
 - [ ] 🧭 ↩︎ **#38b Stråket / skuggmotorn — ÅTERSTÄLLT 10/9** (föll av tavlan 8/9 20:43 i commit
