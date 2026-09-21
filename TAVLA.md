@@ -3033,8 +3033,22 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   från Nira: två förfrågningar, men ett renare test utanför blindningen.
   **Gratis nu:** RSA-formuläret på niradynamics.com/products/road-surface-alerts ger produktguiden (Niras gräns för *halt*)
   och en dags halkvarningar.
-  Verify: designen deklarerad i DECISIONS före körningen, testet kört på minst en övergångsnatt, försprånget i minuter i
-  bedömningen.
+  🎯 **BENGTS PRECISERING 21/9 (DECISIONS #285): testobjektet är HELA systemet — motorn plus skuggmotorn —** för det är så
+  det färdiga systemet ser ut. Motorn ensam säger i praktiken "kallt och fuktigt" överallt; försprånget ska finnas i skuggdelarna.
+  Lagren, vart och ett redovisat för sig: (1) **motorn** som i appen (yta ≤ +1 °C och fuktig) · (2) **efterhalkan** med startvärdena
+  — S1 loggar dess indata i skuggmotorn sedan 16/9, uppspelningen kör regeln ur arkivet · (3) **skuggan**, prognosen mellan
+  stationerna (TROSKLAR-SKUGGAN; grind A prövar matematiken, koden skrivs i november om den håller) — mäts, talar inte (T3/T6)
+  · (4) SMHI-förlängningen när vintervarningar finns. Två anspråk prövas: **FÖRE** (minuter före första låga friktionen, där
+  Niras bild är tunnast — natten) och **MELLAN** (träffar skuggan de sträckor mellan stationerna där bilarna sedan mäter låg
+  friktion? Det första prov av offsetmodellen med ett vittne på platsen).
+  📍 **Området: Stockholm** — Niras exempelområde, och skuggmotorns rutter *E4 Södertälje→Uppsala* och *E18 Örebro→Stockholm*
+  går igenom det. **Nätterna väljs i förväg på ett kriterium som inte är vår egen regel** (så att ingen natt kan plockas i
+  efterhand): t.ex. de första tre nätterna med yta ≤ +1 °C vid någon station i området före 1/2 och de tre första efter — dom 1
+  och dom 2. Skuggmotorns logg är skriven innan utfallet fanns; det går inte att fuska i efterhand, åt något håll.
+  ⏰ **Tidskritiskt:** resultatet ÄR domarnas utfall, så Niras friktion måste deklareras som facitkälla — tillsammans med
+  nattkriteriet — **före den första övergångsnatten**, som kan komma i oktober (D3; S6 har i dag förarfacit + kamerafacit).
+  Verify: designen deklarerad i DECISIONS före första övergångsnatten · testet kört på de valda nätterna · försprånget och
+  träffbilden redovisade PER LAGER i bedömningen, vid domarnas tidpunkter.
 
 - [ ] 🧭 ↩︎ **#38b Stråket / skuggmotorn — ÅTERSTÄLLT 10/9** (föll av tavlan 8/9 20:43 i commit
   99473c7; #88, #91 och #95 hänvisar hit). Bengts byggplan v3 (31/8): segmentmotorn i november, i
