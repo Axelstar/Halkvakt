@@ -753,6 +753,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Göteborg och produktguiden. Fälten: förnamn, efternamn, e-post, företag; rutan om utskick är frivillig.
   **Steg 2, beslut — bara om steg 1 håller:** fråga Nira om villkor för en liten svensk betatjänst. Varje betalväg kräver
   en DECISIONS-post som Axel godkänner.
+  ⏸️ **BEDÖMNING 21/9 (DECISIONS #295): skicka INTE följdfrågan nu.** Den är besvarad av stadens egen slutrapport (InfraSweden
+  2025, s. 8): *"tre egna väderstationer som var utplacerade på väderkritiska platser"*, därtill IoT-stationer som ligger i
+  Klimators system (RSI). Tre punkter ändrar inte täckningen, datan sitter sannolikt i samma avtal, vi har inga testare i
+  Göteborg, och Skyltfondsparterna finns i Skåne. Petri är rätt person att återkomma till EFTER domarna, med något att visa —
+  staden har drivit just den sortens innovationsprojekt. Valfritt nu: två rader tack, utan fråga. Utkastet nedan står kvar
+  som historik.
   **Göteborg, följdfrågan:** fråga 2 om egna vägväderstationer på gatunätet blev obesvarad — egna mätningar vore stadens,
   inte Niras. Utkast (Bengt skickar, svara alla — Evelyn fanns med):
   > Hej Petri,
@@ -1171,6 +1177,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   inte 18/9): friktionsdata från bilar levereras av **Nira**, prognoser via **Klimator och SMHI** i *BM Road Service
   Systems* — *"Allt detta hanteras av avtal och kan ej i dagsläget delas fritt."* ⇒ (a) stängt även här. Leverantörens
   väg: kort #229 (DECISIONS #281). Frågan om egna stationer på gatunätet blev obesvarad. Stockholm: väntar.
+  📖 **Fråga 2 besvarad ur stadens egen slutrapport 21/9 (DECISIONS #295):** *"tre egna väderstationer"* plus IoT-stationer i
+  Klimators system — för få för att ändra täckningen. Ingen ny fråga till Göteborg nu.
   systemanalysen, DECISIONS #108).
   ✘ **(a) kommunernas stationsdata läggs ner:** det finns ingen öppen källa, ingen förhandling
   pågår, och att hålla ett kort öppet för något ingen arbetar på är att låtsas. Hålet i täckningen
