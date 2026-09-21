@@ -3018,7 +3018,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Bryter dokumentationsregeln. *(Delvis åtgärdad i detta varv — resten nästa.)*
 
 ### Claude — låst (väntar på nyckel)
-- [ ] 🧂 **#231 PRODUKTIONSREGELNS FALSKLARM PER VÄDERTYP — en rad i bildfacitets läsning** (Bengts ja 21/9, DECISIONS #291,
+- [ ] 🧂 **#231 PRODUKTIONSREGELNS FALSKLARM PER VÄDERTYP — en rad i bildfacitets läsning** (Bengts ja 21/9, Axel utan synpunkter samma dag, DECISIONS #291,
   ur second opinion #290). 🔑 **Nyckel: bildfacitets läsning (#209) — beslutet efter första frosten, bilderna öppnas i mars.**
   På en stadigt kall snödag säger stationsregeln *kallt och nederbörd* också på en saltad väg med fullt grepp; stationen ser
   inte saltet, och ingen grind mäter det i dag. När bilderna läses delas produktionsregelns varningar (`icing_point`) i

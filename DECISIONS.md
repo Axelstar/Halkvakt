@@ -8653,3 +8653,6 @@ bär informationen.
 = ytan över +1 °C någon gång under de N timmarna före varningen, N redovisat för 3 · 6 · 12 h, alla tre utskrivna — är ett
 förslag, inte ett beslut. Läsningen av bildfacit är Bengts och Axels gemensamma beslut (#209), så raden följer med dit.
 
+**Axel 21/9, via Bengt:** *"Axel har inte några synpunkter"*. Beslutet står därmed hos båda. Definitionen av vädertyperna
+fastställs som planerat i samband med #209, före den första bilden.
+
