@@ -3123,6 +3123,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (`<`) bredvid vaktens (`>=`), så att karantänens 12 inte kan glida från vaktens 12. Mätsatserna: `scripts/matningar/givarvakt-*.sql`.
   ✉️ **Anmälan skriven:** `docs/ANMALAN-TRV-YTGIVARE.md` — sju stationer, Ö Ljungby först. Bengt skickar via
   Datautbytesportalens formulär (ärendetyp API Öppna Data).
+  ✅ **I DRIFT 21/9 18:19Z** (PR #446, deploy 35637540366 från 73688a4). CI 135/135, `ok 45` mot riktig PostGIS. **Motprov
+  (PR #447, stängd):** vakterna avslagna ⇒ `not ok 45` *'LJUNGBY ska vara tyst'*, `not ok 94`, `not ok 95` *bron vid den trasiga
+  givaren* — medan kontraktsgrinden var grön, alltså är det PROVEN som fångar felet. **Mätning efter deploy:** funktionens eget
+  svar 18:20:00 — *"karantän: 5 station(er) tysta efter brott mot #75: 1106, 1612, 2132, 2135, 2346"*; körningarna före har
+  ingen sådan rad.
+  ⏳ **KVAR innan kortet stängs:** en natt då Ö Ljungby visar fel OCH skuggloggen saknar brolarm på E4 Helsingborg→Jönköping
+  (i kväll låg ytan på 3,2 °C, så den gamla vakten hade inte heller publicerat). Läses 22/9 på morgonen.
   Verify: beslutet i DECISIONS · vakten byggd med motprov (1106:s rader som provdata) · skuggloggen utan brolarm från 1106
   en natt då givaren fortfarande visar fel.
 
