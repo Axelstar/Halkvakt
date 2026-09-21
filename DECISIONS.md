@@ -2494,6 +2494,8 @@ körd. Ett högt tal i Verify 1 är ett VILLKOR för reserven, aldrig ett kvitto
 
 ## #119 (12/9 2026) De fyra måndagsmätningarna återstartade — och grind A föll för första gången
 
+> ⚠️ **Överspelad samma dag — grind A föll INTE.** Med #75:s givarvakt och marginalvakten blev domen **INGEN DOM** (#129, #131; A1 klarar, A2 oavgjort, A3 klarar), uttryckligen *"inte ett nej"*. Rättat i #180 (14/9) och igen i #288 (21/9), efter att rubriken nedan lurat två sessioner. Läs aldrig den här rubriken ensam.
+
 BESLUT (Bengts "ta alla fem"): de fyra flöden som fallerade 7/9 trycktes igång manuellt.
 **Alla fyra gröna.** Felsignaturen visade sig inte vara en bugg: jobben hade **noll steg och två
 sekunders körtid**, alltså vägrade GitHub starta dem — kostnadstaket 7/9, inte kod. Det fanns
@@ -8505,4 +8507,42 @@ bekräftad på deras egen dag. Den del av systemet som ska ge försprånget prö
 prov görs inte, eftersom ingen ny data hämtas från Nira (Bengt 21/9). **Iakttagelse, inte slutsats:** motorns *fukt* betyder
 nederbörd *nu*, och den här dagen kom halkan efter snöfallet, inte under det. Ett dygn ändrar ingen regel, och motorns
 beteende vaktas av vektorerna. Iakttagelsen bokförs till domarna. **Kort #230 stängt.**
+
+## #288 (21/9 2026) Skuggsidan har sex isregler, inte en — övergångsregeln läggs till i efterhandstestet (låst före körningen); grind A föll inte
+
+**Bengts fråga 21/9:** *"men finns det bara en regel i skuggmotorn som det här testades mot"*. **Nej.** #286 låste två regler
+och räknade bara skuggan och SMHI-förlängningen som otillämpbara. Det var för smalt. Skuggsidans kommande isregler har var
+och en sitt tröskeldokument:
+
+| Regel | Vad den gör | Behöver | På Niras material |
+| :-- | :-- | :-- | :-- |
+| Kombinationen, efterhalkans beta (TROSKLAR-KOMBINATIONEN) | varnar före frysningen: yta +1…+3 °C som faller, blött inom 2 h | yta, lutning, regn | ✅ körd (#287) |
+| **Övergångsregeln #89 (a)** (TROSKLAR-OVERGANGAR) | förlänger frysriskens fuktvillkor: *"en väg som nyligen var blöt fortfarande är blöt när den fryser"* | yta, regn inom N h | ✅ **tillämpbar — läggs till här** |
+| Trenden #88 (TROSKLAR-TRENDEN) | fallande yta med daggpunkten strax under | yta, daggpunkt | ✘ daggpunkt saknas |
+| Rimfrosten #46 (TROSKLAR-RIMFROST) | svartis utan nederbörd: yta ≤ daggpunkt + M | yta, daggpunkt, moln | ✘ daggpunkt saknas |
+| SMHI-förstärkaren #95 (d) | vintervarning + yta nära noll förstärker | SMHI:s varningar | ✘ saknas |
+| Väglagets ålder #151 | tystar en stående vinterklassning när mätningarna säger att vintern är slut | Trafikverkets väglag | ✘ saknas |
+| Frysklassningen #103 och segmentmotorn (skuggan) | prognos mellan stationerna | stationsankare | ✘ saknas |
+
+Vattenplaningen och vind och sikt är skuggregler men inte isregler.
+
+**Övergångsregeln, låst före körningen:** yta ≤ +1 °C och nederbörd inom N h. N = **2 h**, samma som betans startvärde
+(#222); Ö-B:s eget svep körs inte. Samma ersättare som i #286: bilarnas lufttemperatur för ytan, torkarna igång inom
+(t − 2 h, t] för nederbörden. Samma facit och samma mått: friktion under 0,30 på samma avsnitt inom 90 min (känslighet 0,25
+och 0,35), basnivån, halkaepisoderna och fördelningen per timme. **Redan sett före låsningen:** dygnets temperatur och
+torkare per timme (#284), motorns utfall (#287) och att halkan kom efter snöfallet. Övergångsregelns utfall är inte räknat.
+
+**Rättelse — grind A föll inte.** I mitt svar 21/9 skrev jag att grind A föll 12/9. Det är fel, och det är andra gången
+samma fel görs (första gången rättades i #180). Med #75:s givarvakt och marginalvakten blev domen **INGEN DOM** (#129,
+#131): A1 0,85 mot 1,0 klarar, A2 5,1 % mot 5,0 % är oavgjort, A3 0,3 % klarar — uttryckligen *"inte ett nej"*. Segmentmotorn
+är inte byggd, eftersom grinden öppnar bara på KLARAR, och valet mellan att skjuta den och att bygga på en oklarerad modell
+är Bengts och Axels (#131). #285 och kort #230 skrev att *"koden skrivs i november om den håller"*. Det var också för enkelt:
+novemberbeslutet saknar underlag.
+
+**Källan till felet var tre texter som sa "föll" utan förbehåll:** rubriken på #119, raden *"DOMEN HAR FALLIT"* på kort #38b
+och inledningen till TROSKLAR-FRYSKLASSNINGEN. Alla tre har fått en rättelsenot i den här commiten. Ingen tröskel och inget
+beslut ändras; historiken står kvar.
+
+**Läxa (samma som #280, en gång till):** läs hela beslutskedjan fram till i dag innan ett läge påstås. En rubrik är inte ett
+läge.
 

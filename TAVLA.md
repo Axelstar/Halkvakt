@@ -3063,6 +3063,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   **Skuggmotorns efterhalka** (startvärdena): 894 ögonblick i startbandet, 1 fyrning — ett falsklarm. Dygnet var kallt och
   jämnt, inte en övergångsnatt; regelns värde kan inte bedömas på materialet. Skuggan och SMHI-förlängningen: kunde inte
   tillämpas. **Reservationen först:** lufttemperatur och torkare ersätter vägyta och nederbörd, varje avsnitt är en station.
+  ⚠️ **BENGTS FRÅGA 21/9: "finns det bara en regel i skuggmotorn?" — NEJ.** Skuggsidan har sex kommande isregler, var och en
+  med eget tröskeldokument: kombinationen/efterhalkan (körd), **övergångsregeln #89 (a)** (fukt inom N h i stället för nu),
+  trenden #88, rimfrosten #46, SMHI-förstärkaren #95 (d) och väglagets ålder #151 — plus frysklassningen #103 och
+  segmentmotorn (skuggan). Tillämpbar på materialet utöver den körda: **övergångsregeln**. Övriga saknar indata (daggpunkt,
+  SMHI:s varningar, Trafikverkets väglag, stationsankare). Övergångsregeln körs med N = 2 h, låst i DECISIONS #288.
   Övergångsnattens prov görs inte — ingen ny data från Nira (Bengt 21/9).
 
 - [ ] 🧭 ↩︎ **#38b Stråket / skuggmotorn — ÅTERSTÄLLT 10/9** (föll av tavlan 8/9 20:43 i commit
@@ -3075,7 +3080,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     leave-one-out mot A1–A3, domspärr under 500 punkter/20 stationer, larmväg bevisad 1/9.
     Rökprov 1/9 (43 punkter): felet växer med ankaravståndet (0,63 °C 0–7 km → 5,39 °C >20 km).
     AUTOMATISK måndagar 05:40. 🔑 Skarp prövning på vinterdata (≥ 500 punkter) före november.
-    🔴 **DOMEN HAR FALLIT 12/9 — OCH DEN ÄR ETT NEJ** (körning 06:51, 60 dygn, DECISIONS #119).
+    ~~🔴 **DOMEN HAR FALLIT 12/9 — OCH DEN ÄR ETT NEJ**~~ ⚠️ **överspelat samma dag: INGEN DOM med båda vakterna — grind A föll inte (#131, #180; påmint 21/9, #288).** Ursprungsraden, för spårbarheten: (körning 06:51, 60 dygn, DECISIONS #119).
     Den 1/9 höll domspärren på 57 punkter ("INGEN DOM"). Nu **2 042 punkter**, 36 gånger fler, och
     vakten släpper: **A1 MAE 1,06 °C mot kravets 1,0 ⇒ FALLER. A2 grova fel 10,7 % mot 5 % ⇒
     FALLER. A3 frysklassfel 1,1 % mot 10 % ⇒ KLARAR med bred marginal.** Skriptets egen rad:

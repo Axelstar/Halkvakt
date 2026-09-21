@@ -5,7 +5,7 @@ frysklassning? **Status:** ✅ **FASTSTÄLLT 2026-09-12 av Bengt** (DECISIONS #1
 Svepet i §2 och kraven i §4 är låsta enligt §7:s regim — och **inget tal i dem kommer ur A3:s
 utfall**, vilket är hela skälet till att kortet är legitimt.
 
-**Varifrån kortet kommer.** Grind A föll 12/9 (DECISIONS #119). Men A3 — frysklassningsfelet —
+**Varifrån kortet kommer.** Grind A föll 12/9 (DECISIONS #119) *[rättelsenot 21/9, #288: överspelat samma dag — med givarvakten och marginalvakten blev domen INGEN DOM, inte ett nej (#131, #180). Kortets fråga står sig ändå; ingen tröskel i dokumentet berörs]*. Men A3 — frysklassningsfelet —
 klarade med **1,1 % mot ett krav på 10 %**, alltså tio gånger bättre än vad som krävdes. Axels
 bedömning satte ord på vad det betyder:
 
