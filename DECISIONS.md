@@ -8348,7 +8348,7 @@ gamla villkoren: *"you will not redistribute or transfer the Service or the Cont
 **Sidofynd:**
 1. **Trafikverket delar inte sin fordonsdata:** *"Data kommer inte att delas vidare från Trafikverket till tredje part om
    inte separat överenskommelse träffas"* (slutrapporten 2021). Frågan i bedömningen §0b får troligen svaret nej.
-2. **CLAUDE.md:s läxa om `datex@trafikverket.se` är för stark.** Den säger att en sammanfattning *"hittade på"* adressen och
+2. *(se #294: adressen står i katalogposten men studsar — läxan hade rätt i sak)* **CLAUDE.md:s läxa om `datex@trafikverket.se` är för stark.** Den säger att en sammanfattning *"hittade på"* adressen och
    att Trafikverket inte har någon sådan. Trafikverkets katalogpost *Temporary slippery road* på trafficdata.se anger just
    den adressen som `contact_email`. Läxans poäng — läs kontaktuppgifter på källan — står sig. Förslag att rätta meningen
    ligger hos Bengt.
@@ -8708,6 +8708,9 @@ därför en egen fråga till SMHI, eller körs inte i kuvösen. Ingen ny förfr�
 
 ## #293 (21/9 2026) Kuvösens två förfrågningar: mottagarna lästa på källan — och läxan om datex-adressen rättad
 
+> ⚠️ **Fel samma dag, se #294:** datex@trafikverket.se studsar — Bengts mejl 17/9 kom tillbaka med *"Adressen hittades
+> inte"*. Trafikverket nås via formulär. SMHI-adressen nedan berörs inte.
+
 **Bengts order 21/9:** *"kan du kontrollera vilken som är rätt mejladress och skriva ett färdigt mejl till mej att skicka"*.
 
 | Mottagare | Adress | Läst var |
@@ -8724,4 +8727,27 @@ arbete påbörjas (gratisnivån: ingen betalväg utan Axels godkännande).
 **CLAUDE.md rättad:** läxan från 17/9 sa att sammanfattningen *"hittade på"* adressen och att Trafikverket inte har någon
 sådan. Adressen finns (#282). Felet 17/9 var att den gavs vidare oläst — och felet därefter var att den kallades påhittad,
 också det oläst. Regeln gäller åt båda hållen.
+
+## #294 (21/9 2026) datex@trafikverket.se studsar — #293:s mottagare var fel, och felet var mitt två gånger om
+
+**Bengts skärmbild 21/9:** hans mejl *"Publiceras halkhändelser från fordon som öppen data"* till datex@trafikverket.se
+17/9 08:12 kom tillbaka samma minut från Gmails Mail Delivery Subsystem: *"Adressen hittades inte. Meddelandet levererades
+inte eftersom adressen datex@trafikverket.se inte hittades eller inte kan ta emot e-post."*
+
+**Vad som är sant om adressen:** den STÅR som `contact_email` och `publisher_email` i Trafikverkets egna katalogposter på
+trafficdata.se (läst 21/9; en post ändrad så sent som 3/12 2025) — och den TAR INTE EMOT POST. Båda sakerna gäller samtidigt.
+CLAUDE.md:s läxa från 17/9 hade fel om varifrån adressen kom men rätt i det som räknas: den går inte att använda.
+
+**Mitt fel, två gånger:** (1) #282 och #293 kallade läxan *"för stark"* och *"rättade"* den, utan att fråga sig varför den
+skrivits — spåret fanns på raden: *"En fel adress kostar ett utskick och ett varv."* (2) Adressen gavs till Bengt en andra
+gång, med reservationen att leveransen inte gick att pröva. Den gick att pröva: genom att fråga Bengt, som hade studsen i
+sin inkorg. **Skärpt regel i CLAUDE.md:** att en adress står på en källsida bevisar inte att den fungerar.
+
+**Rätt väg för kuvösens förfrågan (kort #232), läst på källan 21/9:**
+1. **Datautbytesportalens kontaktformulär**, data.trafikverket.se/about-us/contact — ärendetyperna är *API Öppna Data ·
+   Datex II · Vägdata - NVDB · Öppna Data*; fälten är e-postadress, ämne och innehåll. Välj **API Öppna Data**:
+   WeatherObservation ligger i API:t. Samma väg som Bengts Datex II-ärende (skickat, bekräftat 19/9, obesvarat).
+2. Reserv: formuläret *Frågor till Trafikverket*, etjanster.trafikverket.se/kundfragor-trafikverket.
+3. Reserv: e-tjänsten *Begär ut allmänna handlingar*.
+SMHI-adressen (kundtjanst@smhi.se) berörs inte — den är läst på SMHI:s kontaktsida, men inte heller den är prövad.
 

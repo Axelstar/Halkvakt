@@ -298,9 +298,11 @@ i samma commit när de överlappar.
   källsidan, inte tagen ur en automatisk sammanfattning (WebFetch). 17/9 fick Bengt `datex@trafikverket.se`, som
   sammanfattningen av trafficdata.se hittade på: katalogposten har inga kontaktfält och Trafikverket ingen sådan
   adress. Rätt väg var Datautbytesportalens kontaktformulär. En fel adress kostar ett utskick och ett varv.
-  *(Rättelse 21/9, DECISIONS #282/#293: adressen FINNS — den står som `contact_email` i Trafikverkets egna katalogposter på
-  trafficdata.se. Det som var fel 17/9 var att den gavs vidare oläst. Regeln står: läs på källan, åt båda hållen — också
-  innan något kallas påhittat.)*
+  *(Not 21/9, DECISIONS #294: adressen STÅR i Trafikverkets egna katalogposter på trafficdata.se (`contact_email`) — men den
+  TAR INTE EMOT POST: Bengts mejl 17/9 08:12 studsade med "Adressen hittades inte". Samma dag, 21/9, gavs den ändå till Bengt en
+  gång till, nu "läst på källan". Skärpt regel: att en adress STÅR på en källsida bevisar inte att den FUNGERAR. Sök i repot
+  och fråga mottagaren av förra utskicket om adressen har prövats, innan den ges vidare. Formulär går före e-post hos
+  Trafikverket — deras kontaktsida har inga adresser alls.)*
 - `[skip ci]` verkar på HELA commit-meddelandet, inte bara rubriken. 21/9 fick mätskriptets PR (#428) ingen körning
   alls på nio minuter: kroppen sa *"Egen commit utan [skip ci]: den bär kod"*, och GitHub läste märket i meningen som
   förnekade det. Regel: skriv aldrig märket i ett meddelande som ska testas, inte ens för att säga att det saknas — och
