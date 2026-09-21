@@ -3128,6 +3128,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   givaren* — medan kontraktsgrinden var grön, alltså är det PROVEN som fångar felet. **Mätning efter deploy:** funktionens eget
   svar 18:20:00 — *"karantän: 5 station(er) tysta efter brott mot #75: 1106, 1612, 2132, 2135, 2346"*; körningarna före har
   ingen sådan rad.
+  🟡 **PÅGÅR 21/9 kväll (Claude, Bengts ja *"lägg in vakterna i mätningarna också"*):** radvakten och karantänen förs in i
+  varje mätning som läser yttemperatur med #75 — grind A, K-A, R-A, T-A, anomalin, ruttberedskapen, steg 0-skripten,
+  `publish/trenden.ts`, `sql/018` och `sql/028` — med kontrakt för de nya talen. Rör inte de filerna parallellt.
   ⏳ **KVAR innan kortet stängs:** en natt då Ö Ljungby visar fel OCH skuggloggen saknar brolarm på E4 Helsingborg→Jönköping
   (i kväll låg ytan på 3,2 °C, så den gamla vakten hade inte heller publicerat). Läses 22/9 på morgonen.
   Verify: beslutet i DECISIONS · vakten byggd med motprov (1106:s rader som provdata) · skuggloggen utan brolarm från 1106
