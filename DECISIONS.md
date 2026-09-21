@@ -8378,3 +8378,28 @@ oavsett trafik. **Nytt krav i ett framtida samtal med Nira:** varje värde med t
 den kan ett framfört värde inte bära en varning (T1: vittnet inom utfallsfönstret; T4: minne av mätning med känd kedja).
 Repot är privat (kontrollerat 21/9: HTTP 404 utan inloggning), så utredningen och siffrorna syns inte utåt.
 
+## #284 (21/9 2026) Efterhandstestet mot Niras exempeldag går inte — och skulle inte säga något; det riktiga testet är en övergångsnatt (kort #230)
+
+**Bengts fråga 21/9:** *"kan vi testa vår app mot denna mätning som ett backlog försök"*.
+
+**Hinder 1, indata.** Halkvakts regler läser vägytans temperatur och fukt från Trafikverkets stationer. För 15/1 2024 finns
+de inte öppet. API:ets observationer räcker en vecka bakåt (källkartläggningen 26/8). Vårt arkiv börjar 2026 och gallras
+efter sju dygn (sql/014; därför finns `trend_kandidater`, sql/017). Lastkajens post *NVDB VVIS* är stationsregistret och inte
+mätningarna (katalogposten läst 21/9). Vintersidan, där Trafikverket har *"historisk väderdata från VViS och MESAN"*, är bara
+för Trafikverkets anställda och entreprenörer på uppdrag (läst 21/9).
+
+**Hinder 2, dagen.** Niras egna bilar visar −4 till −10 °C hela dygnet: 0,5 % av avläsningarna ≥ 0 °C, torkarna igång i
+3–12 % av avsnittsperioderna per timme (snöfall). Efterhalkans startvärden (yta +1…+3 °C och fallande) hade aldrig fyrat;
+dagens isvarning (yta ≤ +1 °C och fuktig) hade legat på överallt. Friktionen var lägst klockan 01–08 (median 0,26–0,30) och
+steg under dagen till 0,46. Ett test den dagen kan inte skilja en bra regel från en dålig. **Sidonot:** en temperaturbaserad
+varning hade legat kvar hela eftermiddagen medan friktionen steg — Niras invändning i praktiken, men utan Niras gräns för
+*halt* går det inte att kalla det falsklarm.
+
+**Kort #230 skapat med designen skriven före mätning:** en övergångsnatt · de låsta startvärdena, inget svep (D2, D6, D7) ·
+facit = Niras friktion under Niras egen gräns för *halt* inom 5 km och 90 min (samma radie och fönster som KB-B) · mått:
+träff, falsklarm och försprånget i minuter före första låga friktionsvärdet.
+
+**Öppet (bedömningen §4.2):** väg A (den här vintern — skuggloggen och `trend_kandidater` mot Niras friktion för 2–3 nätter;
+kräver att Niras friktion deklareras som facitkälla före nätterna, D3) eller väg B (en tidigare säsong — VViS-historik från
+Trafikverket och friktion från Nira). Rekommendation: väg A, som en förfrågan om data, inte om partnerskap.
+
