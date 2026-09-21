@@ -692,11 +692,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   motsatsen) · Vintersidan har *"historisk väderdata från VViS och MESAN"* men är stängd för utomstående · Finland: Digitraffics
   historik är 24 h, och FMI:s vägväderfrågor finns inte längre (151 lagrade frågor listade, ingen för väg) · Norge: Vegvesenets
   flöde är realtid; MET:s Frost-arkiv kräver konto och är inte kontrollerat. **Vägen är alltså en förfrågan till Trafikverket.**
-  ✉️ **Steg 1 — Bengt skickar förfrågan.** 📖 **Mottagarna lästa på källan 21/9 (DECISIONS #293):** Trafikverket →
-  **datex@trafikverket.se** — adressen står som `contact_email` i Trafikverkets egna katalogposter på trafficdata.se (senast
-  ändrad 3/12 2025). Trafikverkets kontaktsida har INGA e-postadresser, bara formulär; reserv om mejlet studsar eller är
-  obesvarat efter en vecka: formuläret *Frågor till Trafikverket* (etjanster.trafikverket.se/kundfragor-trafikverket), och
-  därefter e-tjänsten *Begär ut allmänna handlingar*. SMHI (varningarna, valfritt) → **kundtjanst@smhi.se**, som enligt
+  ✉️ **Steg 1 — Bengt skickar förfrågan.** ⛔ **INTE till datex@trafikverket.se — adressen STUDSAR** (Bengts mejl 17/9 kom
+  tillbaka med *"Adressen hittades inte"*; den gavs ändå ut en gång till 21/9, DECISIONS #293 → rättat i #294).
+  📖 **Rätt väg, läst på källan 21/9:** Datautbytesportalens kontaktformulär, data.trafikverket.se/about-us/contact,
+  ärendetyp **API Öppna Data** (de fyra typerna: API Öppna Data · Datex II · Vägdata - NVDB · Öppna Data; fälten är e-post,
+  ämne, innehåll). Reserv efter en vecka utan svar: formuläret *Frågor till Trafikverket*
+  (etjanster.trafikverket.se/kundfragor-trafikverket), därefter e-tjänsten *Begär ut allmänna handlingar*. SMHI (varningarna, valfritt) → **kundtjanst@smhi.se**, som enligt
   smhi.se/kontakta-smhi *"tar emot och vidarebefordrar uppdrag och beställningar"*. De färdiga mejlen gavs till Bengt i
   chatten 21/9; båda frågar efter kostnaden INNAN något arbete påbörjas. Utkast:
   > Hej! Vi utvecklar Halkvakt, en svensk app som varnar bilförare för halka och bygger på era öppna data
