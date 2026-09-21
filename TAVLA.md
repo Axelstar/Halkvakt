@@ -684,6 +684,33 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   startsida.
 
 ### Bengt
+- [ ] 🚗 **#229 NIRA — DATAN BAKOM GÖTEBORGS NEJ** (Göteborgs svar 21/9, DECISIONS #281). Göteborg köper friktionsdata
+  från bilar av **NIRA Dynamics** (Linköping) och får inte dela den: datan är Niras, inte stadens. Nira säljer dessutom
+  en färdig tjänst för halkvarningar till bilar och appar, **Road Surface Alerts** (läst på
+  niradynamics.com/products/road-surface-alerts 21/9): *"Slippery road: Detects low-friction surfaces using real-time
+  vehicle data"* och *"Each alert is based on measured data"* — mätningar, inte prognoser, kartmatchade och möjliga att
+  hämta via API. Riktad till biltillverkare, underleverantörer och fordonsflottor; priset är inte publikt ("premium").
+  **Samma slutsats som källkartläggningen 26/8 punkt 10** (*"enda vägen att på sikt täcka blindpunkterna med faktiska
+  mätdata"*) — som aldrig fick något kort. Nu har den ett.
+  ⚠️ **Oläst på källan:** kartläggningens *gratis utvärderingskonto på roads.niradynamics.se* — adressen gick inte att
+  öppna 21/9. Det som går att läsa är RSA-sidans formulär för **exempeldata och produktguide** (namn, e-post, företag;
+  filerna skickas till e-posten) och ett kontaktformulär.
+  **Steg 1, gratis:** Bengt hämtar exempeldatan och produktguiden i formuläret *Download sample data & our Product Guide*
+  på RSA-sidan och lägger filerna på Skrivbordet. Claude läser dem mot tre frågor: hur tät är datan i stan, hur färsk,
+  och håller den för regel T (ett vittne på platsen, inte en modell)?
+  **Steg 2, beslut — bara om steg 1 håller:** fråga Nira om villkor för en liten svensk betatjänst. Varje betalväg kräver
+  en DECISIONS-post som Axel godkänner.
+  **Göteborg, följdfrågan:** fråga 2 om egna vägväderstationer på gatunätet blev obesvarad — egna mätningar vore stadens,
+  inte Niras. Utkast (Bengt skickar, svara alla — Evelyn fanns med):
+  > Hej Petri,
+  > Tack för ett snabbt och tydligt svar – det hjälper oss mycket att veta att friktionsdatan kommer från Nira och att
+  > prognoserna går via Klimator och SMHI.
+  > En följdfråga: har staden egna vägväderstationer eller yttemperaturgivare på gatunätet, utöver Trafikverkets?
+  > Mätningar som staden själv äger skulle kunna vara en annan väg än den avtalsbundna datan. Om förutsättningarna
+  > ändras framöver hör vi gärna från er.
+  > Med vänlig hälsning, Bengt Lagerlöf, Halkvakt
+  Verify: exempeldatan läst, med svar på de tre frågorna i bedömningen §4.2 · Göteborgs svar på fråga 2 inskrivet på kort #93.
+
 - [ ] 🏷️ **#204 SKOLANS NAMN PÅ QR-SIDAN — synlig attribution på webben, inte banner i appen — ✅ BESLUTAT 19/9, förberett, byggs när bladet byggs** (Bengts idé 19/9:
   *"Halkvakt via Mårtenssons trafikskola … indirekt reklam för den som företag — tror du på det eller är det lull lull?"*).
   **Kärnan håller, formen inte.** Att skolan syns som den som gav eleven appen är den billigaste valutan vi har och precis
@@ -1070,6 +1097,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Malmö styr prognosen som utkallarna beslutar halkbekämpning och snöröjning på. *"I nuläget kan vi inte erbjuda datan som
   öppen data."* ⇒ (a) förblir stängt. Två öppningar kvar: **avtal inom projektet** (inte öppen data) och **leverantörens väg**
   (systemet bakom stationerna). Följdmejl utkast 19/9 (bedömningen §4.2). Stockholm och Göteborg: skickat 18/9, väntar.
+  📬 **GÖTEBORG SVARADE 21/9 09:08** (Petri Stjernvall, planeringsledare vinterväghållning; Bengts mejl gick 17/9 09:48,
+  inte 18/9): friktionsdata från bilar levereras av **Nira**, prognoser via **Klimator och SMHI** i *BM Road Service
+  Systems* — *"Allt detta hanteras av avtal och kan ej i dagsläget delas fritt."* ⇒ (a) stängt även här. Leverantörens
+  väg: kort #229 (DECISIONS #281). Frågan om egna stationer på gatunätet blev obesvarad. Stockholm: väntar.
   systemanalysen, DECISIONS #108).
   ✘ **(a) kommunernas stationsdata läggs ner:** det finns ingen öppen källa, ingen förhandling
   pågår, och att hålla ett kort öppet för något ingen arbetar på är att låtsas. Hålet i täckningen
