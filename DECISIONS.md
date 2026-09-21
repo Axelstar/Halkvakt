@@ -8546,3 +8546,31 @@ beslut ändras; historiken står kvar.
 **Läxa (samma som #280, en gång till):** läs hela beslutskedjan fram till i dag innan ett läge påstås. En rubrik är inte ett
 läge.
 
+## #289 (21/9 2026) Övergångsregeln på exempeldagen: fångar mer halka och tidigare än motorn — men inte bättre än slumpen
+
+**Körd enligt #288,** som låstes före körningen (PR #433). Samma skript och ersättare som i #287. Motorns och
+efterhalkans tal blev exakt desamma vid omkörningen — inget annat har rörts.
+
+**Övergångsregeln #89 (a)** (yta ≤ +1 °C och nederbörd inom 2 h):
+
+| | Basnivå — larma på allt | Motorn | Övergångsregeln |
+| :-- | --: | --: | --: |
+| Varningsögonblick | — | 21 767 | **95 646**, varav 73 879 efter att nederbörden upphört |
+| Följdes av friktion < 0,30 inom 90 min | 44,2 % | 33,7 % | **35,5 %** |
+| — vid 0,25 / 0,35 | 26,4 % / 58,2 % | 20,8 % / 44,9 % | 21,0 % / 47,8 % |
+| Falsklarm vid 0,30 | — | 8 595 | 37 227 |
+| Halkaepisoder varnade i förväg | — | 11,5 % | **16,3 %** |
+| Försprång, median | — | 50 min | **70 min** |
+
+Per timme var övergångsregeln klart bättre än motorn på förmiddagen (kl. 9: 46,8 % mot 30,9 %; kl. 10: 30,2 % mot 15,3 %),
+men låg under basnivån. Natt och morgon låg alla tre i samma nivå.
+
+**Läsning:** minnet av nederbörd gör det testet pekade på — det fångar halka som kommer *efter* snöfallet, fler episoder och
+tidigare. Men på en jämnt kall snödag pekar ingen av reglerna ut halkan bättre än slumpen, och övergångsregeln betalar med
+fyra gånger så många varningar. **Reservationen som kan dra åt båda håll:** torkarna går också för stänk från blöta, saltade
+vägar, och saltade vägar är just de som inte är hala. Det kan sänka träffandelen för båda reglerna jämfört med en riktig
+nederbördsgivare. Det är inte mätt här.
+
+**Skuggsidans övriga isregler** (trenden, rimfrosten, SMHI-förstärkaren, väglagets ålder, frysklassningen, segmentmotorn)
+kunde inte köras på materialet (#288). Kort #230 står stängt.
+

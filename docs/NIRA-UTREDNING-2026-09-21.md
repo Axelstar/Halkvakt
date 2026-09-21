@@ -282,18 +282,24 @@ regel? Upplägget låstes i DECISIONS #286 innan något räknades; skript `scrip
 lufttemperatur och torkarna, och varje vägavsnitt behandlades som en station. Testet prövar alltså reglernas logik på
 bilarnas mätningar — inte vårt stationsnät.
 
-| | Motorn (yta ≤ +1 °C och fukt) | Skuggmotorns efterhalka (startvärdena) |
-| :-- | :-- | :-- |
-| Varningar | 21 767 ögonblick på 7 557 av 16 810 avsnitt | 1 ögonblick (894 i startbandet, 1 med fall ≥ 0,8 och regn inom 2 h) |
-| Följdes av friktion < 0,30 inom 90 min | **33,7 %** — mot **44,2 %** för att larma på allt | 0 av 1 — ett falsklarm |
-| Gränsen 0,25 / 0,35 | 20,8 % mot 26,4 % / 44,9 % mot 58,2 % | — |
-| Halkaepisoder som föregicks av en varning | 11,5 % (981 av 8 526), försprång median 50 min | — |
+| | Motorn (yta ≤ +1 °C och fukt) | Skuggmotorns efterhalka (startvärdena) | Skuggmotorns övergångsregel #89 (a) (#288) |
+| :-- | :-- | :-- | :-- |
+| Varningar | 21 767 ögonblick på 7 557 av 16 810 avsnitt | 1 ögonblick (894 i startbandet, 1 med fall ≥ 0,8 och regn inom 2 h) | 95 646 ögonblick, varav 73 879 efter att nederbörden upphört |
+| Följdes av friktion < 0,30 inom 90 min | **33,7 %** — mot **44,2 %** för att larma på allt | 0 av 1 — ett falsklarm | **35,5 %** |
+| Gränsen 0,25 / 0,35 | 20,8 % mot 26,4 % / 44,9 % mot 58,2 % | — | 21,0 % / 47,8 % |
+| Halkaepisoder som föregicks av en varning | 11,5 % (981 av 8 526), försprång median 50 min | — | **16,3 %** (1 391 av 8 526), försprång median **70 min** |
 
 **Vad det betyder.** Motorns regel hade larmat mycket, men den pekade inte ut halkan bättre än slumpen — sämre. Varningarna
 kom mitt på dagen när det snöade på redan behandlade vägar, medan halkan var värst natt och morgon (per timme: klockan 10–18
 följdes 11–20 % av varningarna av låg friktion, mot 26–45 % för basnivån). Det är Niras invändning mot temperaturvarningar,
 bekräftad på deras egen dag. **Skuggmotorns regel — den del som ska ge oss försprånget — kunde inte prövas:** dygnet låg
 mellan −4 och −10 °C hela tiden, och regeln är byggd för natten då en blöt väg fryser från plusgrader.
+
+**Övergångsregeln — skuggsidans andra tillämpbara regel, tillagd på Bengts fråga (#288).** Den förlänger motorns fukt från
+*nu* till *inom 2 h* och fångar därmed mer av halkan som kom efter snöfallet: 16,3 % av halkaepisoderna i förväg mot motorns
+11,5 %, med 70 minuters försprång mot 50. Träffandelen är lite bättre än motorns, 35,5 % mot 33,7 %, men fortfarande under
+basnivån 44,2 % — och den larmar 4,4 gånger så ofta. Skuggsidans övriga fyra isregler kunde inte köras: trenden och
+rimfrosten behöver daggpunkt, SMHI-förstärkaren SMHI:s varningar och väglagets ålder Trafikverkets väglag.
 
 **En iakttagelse, inte en slutsats:** motorns *fukt* betyder nederbörd *nu*. Den här dagen kom halkan efter snöfallet, inte
 under det. Ett dygn räcker inte för att ändra en regel, och motorns beteende vaktas av vektorerna; iakttagelsen bokförs
