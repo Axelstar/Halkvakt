@@ -8277,3 +8277,36 @@ närheten. Onödigt: #271 slutar med Axels *"vi har en Android som vi kan använ
 telefonen 20/9 kväll. Kvar för Play-grinden är bara inloggningen i Play Console-appen på den. **Läxa:** läs hela
 beslutsposten som rättas — #271:s sista stycke hade redan löst det #279 rättade.
 
+## #281 (21/9 2026) Göteborgs svar: stadens halkdata är köpt och avtalsbunden — vägen går via Nira, och Nira säljer halkvarningar
+
+**Svaret 21/9 09:08** från Petri Stjernvall, planeringsledare vinterväghållning, stadsmiljöförvaltningen, på Bengts mejl
+17/9 09:48 (repot sa 18/9): *"Vi använder friktionsdata från bilar och data levereras av Nira. Vi har också
+väglagsprognoser via Klimator och SMHI, som i sin tur kan hanteras i ett system som heter BM Road Service Systems. Allt
+detta hanteras av avtal och kan ej i dagsläget delas fritt."*
+
+**Vad det betyder.** Prognoserna (Klimator, SMHI) faller på vår egen regel: en varning utlöses bara av en mätning
+(regel T — Bengts mejl sa detsamma). Friktionsdatan är en mätning, men den är Niras och inte stadens, så stadens väg är
+stängd och leverantörens öppen — samma mönster som Malmö. Fråga 2 (egna vägväderstationer på gatunätet) blev obesvarad;
+fråga 4 (rätt person) besvarades i praktiken av avsändaren.
+
+**Läst på källan 21/9** (niradynamics.com/products/road-surface-alerts): Nira säljer *Road Surface Alerts*, kartmatchade
+varningar bland annat för *"Slippery road: Detects low-friction surfaces using real-time vehicle data"*, möjliga att
+hämta via API och riktade till biltillverkare, underleverantörer och fordonsflottor. Sidan: *"Each alert is based on
+measured data"*. Priset är inte publikt. Exempeldata och produktguide hämtas via ett formulär (namn, e-post, företag).
+**Oläst:** källkartläggningens *gratis utvärderingskonto på roads.niradynamics.se* — adressen gick inte att öppna.
+
+**Källkartläggningen 26/8 sa detsamma** (punkt 10: kontakta NIRA, *"enda vägen att på sikt täcka blindpunkterna med
+faktiska mätdata"*), men fick inget kort och gjordes aldrig. Nu kort #229.
+
+**Repot säger två saker om Trafikverkets fordonsdata:** #230 skriver att Trafikverket köper från *"Volvo, Nira
+Dynamics"*; källkartläggningens rättelse säger att köpet går direkt till biltillverkarna och att NIRA/Klimator bara
+figurerat i piloter. Inte avgjort här — det påverkar inte Göteborgs svar.
+
+**Rekommendation (bedömningen §4.2):** Bengt tackar och ställer den obesvarade fråga 2 (utkast på kort #229) · Bengt
+hämtar Niras exempeldata, gratis, och Claude läser den mot tre frågor: täthet i stan, färskhet, regel T · en fråga om
+villkor bara om exempeldatan håller, och varje betalväg kräver en DECISIONS-post som Axel godkänner.
+
+**Lydelsen i nästa utskick:** mejlet 17/9 skrev *"Användarens position lämnar aldrig telefonen"*. Sedan #264 gäller
+*ingen position lämnar telefonen automatiskt* — facitsvaret som föraren själv trycker är undantaget. Nästa mejl, till
+Göteborg eller Nira, använder den lydelsen.
+
