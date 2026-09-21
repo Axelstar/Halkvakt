@@ -3128,9 +3128,18 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   givaren* — medan kontraktsgrinden var grön, alltså är det PROVEN som fångar felet. **Mätning efter deploy:** funktionens eget
   svar 18:20:00 — *"karantän: 5 station(er) tysta efter brott mot #75: 1106, 1612, 2132, 2135, 2346"*; körningarna före har
   ingen sådan rad.
-  🟡 **PÅGÅR 21/9 kväll (Claude, Bengts ja *"lägg in vakterna i mätningarna också"*):** radvakten och karantänen förs in i
-  varje mätning som läser yttemperatur med #75 — grind A, K-A, R-A, T-A, anomalin, ruttberedskapen, steg 0-skripten,
-  `publish/trenden.ts`, `sql/018` och `sql/028` — med kontrakt för de nya talen. Rör inte de filerna parallellt.
+  ⏸️ **PAUSAT 21/9 kväll (Bengt: krediterna slut) — BESLUTAT MEN INTE BYGGT: vakterna i mätningarna** (Bengts ja *"lägg in
+  vakterna i mätningarna också"*, DECISIONS #298:s öppna fråga). **Ingen kod är rörd; filerna är fria.** Planen, läst ur koden:
+  (1) `snapshot-core.ts` exporterar radvakten och karantänen som SQL-fragment, så att TS-skripten IMPORTERAR talen i stället för
+  att kopiera dem: grind A, K-A, R-A (också finska schemat), anomalin, ruttberedskapen, övergångarnas och SMHI-förstärkarens
+  steg 0. (2) Karantänen i mätningar räknas PER RAD, sedd 7 dygn bakåt från radens egen tid — inte per station för hela
+  arkivet, annars tystas friska fjällstationer av tre studsar på en vinter. (3) TVILLINGARNA `publish/trenden.ts:rimlig()` och
+  `sql/018` ändras IHOP (driftvakten `trendarkivet.ts --jamfor` larmar annars), sedan `sql/028` och
+  `matningar/uppspelning-efterhalka.sql`; båda SQL-funktionerna körs in med dbknapp och bevisas ur `pg_proc`. (4) Literala tal i
+  SQL ⇒ kontrakt för 10, 8, 7 och 3 i samma commit. (5) **Säg det högt i redovisningen:** grind A:s A2 står OAVGJORT på 5,1 %
+  mot 5,0 % (#131) och kan flytta sig när givarfelen går bort — båda läsningarna redovisas, som i #125/#131.
+  Obs: trenden och rimfrosten bär redan daggpunktsvakten (yta − dagg ≥ −5), som tar de flesta av felen; mest utsatta är
+  grind A, K-A och uppspelningens variant *utan faller*.
   ⏳ **KVAR innan kortet stängs:** en natt då Ö Ljungby visar fel OCH skuggloggen saknar brolarm på E4 Helsingborg→Jönköping
   (i kväll låg ytan på 3,2 °C, så den gamla vakten hade inte heller publicerat). Läses 22/9 på morgonen.
   Verify: beslutet i DECISIONS · vakten byggd med motprov (1106:s rader som provdata) · skuggloggen utan brolarm från 1106
