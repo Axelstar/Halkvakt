@@ -8893,3 +8893,17 @@ mätning efter deploy redovisas på kortet.
 **Anmälan** om de sju stationerna är skriven: `docs/ANMALAN-TRV-YTGIVARE.md`. Bengt skickar den via Datautbytesportalens
 formulär. **Snöflingemätningen** (#297) står som bevakningsrad i bedömningen §0b och körs om efter första frostmånaden.
 
+**BEVIS, samma kväll (21/9):**
+- **CI på PR #446:** 135 av 135 tester, inget överhoppat. `ok 45` är integrationstestet mot riktig PostGIS; `ok 94–97` enhetstesterna.
+- **Motprov (PR #447, stängd utan sammanslagning):** radvaktens luftgräns satt till 99 och karantänfiltret borttaget ur broarnas
+  källa — två mutationer som kontraktsgrinden INTE ser (*ALLA 39 KONTRAKT HÅLLER* i samma körning). Domen: `not ok 45` på raden
+  *'LJUNGBY ska vara tyst'*, `not ok 94` på *radvakten, nollsäker*, `not ok 95` på *bron vid den trasiga givaren får ingen
+  frysrisk*. Tre fall, tre rätta rader, 132 av 135.
+- **Deploy:** `publicera` deployad 18:19:01Z från 73688a4 (körning 35637540366), efter `git pull` och noll rader diff mot main.
+- **Mätning EFTER deployen — en rad med innehåll:** funktionens eget svar i `net._http_response`. Körningarna 17:50, 18:00 och
+  18:10 har ingen karantänrad; **18:20:00, den första efter deployen, svarar** *"karantän: 5 station(er) tysta efter brott mot
+  #75: 1106, 1612, 2132, 2135, 2346"*. Manifestets sha = filens sha för samma `live.json` (generated_at 18:20:01Z).
+- **Vad som INTE är bevisat än:** i kväll ligger ingen av de sju under +3 °C med ett gap under 12 (Ö Ljungby: yta 3,2 °C, luft
+  11,2 °C), så den gamla vakten hade inte heller publicerat något just nu. Att brolarmen faktiskt uteblir en natt då givaren
+  visar fel läses ur skuggloggen i morgon (bevakningsrad i bedömningen §0b). Kortet står öppet till dess.
+
