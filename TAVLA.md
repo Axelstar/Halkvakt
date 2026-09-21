@@ -1236,6 +1236,27 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [ ] 🔭 **#233 UR NIRAS PRODUKTSIDA: TVÅ SAKER VI INTE HAR, EN VI HAR PARKERAT** (Bengts fråga 21/9, DECISIONS #296; sidan
+  niradynamics.com/products/road-surface-alerts läst mot repot). 🔑 Väntar på Bengts val av vad som ska utredas (§4.2).
+  **(1) FÖRE RESAN — saknas helt.** Nira säljer *"route planning that avoids known hazards"*. Halkvakt talar bara under
+  körning, men beslutet som betyder mest — åka tidigare, ta en annan väg, låta bli — fattas före avfärd. En ruttkoll för en
+  sparad sträcka använder samma vägdata och matchas i telefonen, så ingen position lämnar den. Och en vy som föraren själv
+  öppnar TALAR inte: regel T3/T6 förbjuder prognoser att UTLÖSA, inte att visas (samma skäl som i SKUGGAN-PAR4-MOT-REGEL-T).
+  Det är alltså platsen där förvarningen, SMHI:s varningar och *"Halkvakt tror"* får synas utan att regeln bryts. Formen är
+  Axels. Utredning: ett beslutsunderlag, ingen kod. Släkt med BACKLOG 16 (blixthalke-prognosen ur Bengts riskkarta).
+  **(2) SNÖFLINGAN SOM JÄMFÖRELSE — saknas helt.** Nira ställer sig mot bilens egen varning: *"Traditional vehicle warnings
+  often rely on temperature thresholds, such as a snowflake symbol"*. Varje bil varnar redan vid omkring +3 °C i luften. En
+  Halkvakt-varning som bara kommer när snöflingan redan lyser tillför lite; värdet ligger där vägytan är kall fast luften
+  inte är det — klara nätter med utstrålning — och det ser en station men ingen bil. **Mätbart nu, utan facit och utan att
+  blindningen rörs:** hur stor andel av stationsregelns fyrningar sker med luft över +3 °C (och +4 °C — bilmärkena skiljer sig, båda redovisas)? En läsande sats via dbknapp.
+  **(3) KÖSLUT — inte missat, parkerat.** Niras sjätte varningstyp är *"Slow traffic alert"*. Vi har kort #15 (TrafficFlow,
+  43 s färsk, faktatestad 26/8), beslutad som uppdatering 1 efter release. Ingen ändring föreslås; bara noterat att en
+  konkurrent räknar den till kärnan.
+  **Inte för oss nu:** gropar och ojämn väg (ingen öppen källa utom tjälskademeddelanden; fel säsong och fel produkt) ·
+  motorcyklar (Nira har en artikel; säsongen är inte vår). **Har vi redan:** vattenplaning och kraftigt regn (#42/#81),
+  flottor (#94), bekräftelse över flera källor (kartans bevisbärare, §8 B).
+  Verify: Bengts val inskrivet här · för (2): andelen i bedömningen · för (1): underlaget i docs/ med Axels besked.
+
 - [ ] 🧩 **#228 APP-SCHEMAT ÖVERLEVER INTE `xcodegen`** (uppmätt under 0.3.9-releasen 20/9). Efter `xcodegen` fanns bara
   schemat **HalkvaktEngine** i Xcode — app-schemat autoskapas av Xcode och bor i användardata, som den genererade
   projektfilen skriver över. Följden mitt i en release: *Product → Archive* är avstängt, destinationen visar paketets

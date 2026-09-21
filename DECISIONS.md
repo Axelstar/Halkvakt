@@ -8772,3 +8772,33 @@ dygn, och staden har drivit ett innovationsprojekt med just Nira och Klimator. �
 Göteborg en naturlig väghållare att återkomma till (#282:s rekommendation om en väghållare som tredje part). Ett kort tack
 utan fråga är valfritt och kostar ingenting; en ny fråga en vecka efter ett tydligt nej kostar lite förtroende och ger inget.
 
+## #296 (21/9 2026) Niras produktsida läst mot repot: två saker vi inte har — före resan och snöflingan — och en vi parkerat
+
+**Bengts fråga 21/9:** ser du på Niras sida *Road Surface Alerts* något vi tydligt missat i appen och borde utreda?
+Varje punkt på sidan söktes i TAVLA, BACKLOG, PLAN, produktboken och DECISIONS innan den kallades missad.
+
+| På Niras sida | Hos oss |
+| :-- | :-- |
+| *Slippery road* | kärnan: väglag (A1) och stationsregeln (A2) |
+| *Hydroplaning*, *Heavy rain* | #42/#81 vattenplaningen i skugga; vind och sikt (W-A) |
+| *Slow traffic alert* | **parkerat:** kort #15 köslut (TrafficFlow, 43 s färsk), beslutad som uppdatering 1 efter release |
+| *Very rough road*, *Pothole* | saknas — och ska saknas nu: ingen öppen källa utom tjälskademeddelanden, fel säsong, fel produkt |
+| *"route planning that avoids known hazards"* | **saknas helt** — appen talar bara under körning |
+| *"…temperature thresholds, such as a snowflake symbol"* | **saknas helt** som jämförelse — ingen mätning ställer oss mot bilens egen varning |
+| flottor, tredjepartsappar | #94 (åkerier), PLAN (B2B är Axels fil) |
+| bekräftelse över flera bilar | kartans bevisbärare (§8 B), inte byggd |
+
+**(1) Före resan.** Beslutet som betyder mest fattas före avfärd. En ruttkoll för en sparad sträcka använder samma vägdata
+och matchas i telefonen — produktinvarianten håller. Och den ger förvarningen en laglig plats: regel T3/T6 förbjuder
+modellprodukter att UTLÖSA, inte att visas i en vy föraren själv öppnar (samma resonemang som SKUGGAN-PAR4-MOT-REGEL-T om
+kartan). Formen är Axels; först ett beslutsunderlag.
+
+**(2) Snöflingan.** Varje bil varnar vid omkring +3 °C i luften. Second opinion (#290) visade att stationsregeln en stadigt
+kall dag säger *kallt och nederbörd* överallt — det gör snöflingan också. Värdet ligger där ytan är kall fast luften inte är
+det, och det ser en station men ingen bil. Andelen fyrningar med luft över +3 °C är mätbar ur arkivet i dag. Den läser
+fyrningar, inte utfall, så blindningen rörs inte. Hög andel är ett säljargument; låg andel är en varningsklocka inför vintern.
+
+**(3) Köslut** lämnas orört — noterat att en konkurrent räknar det till kärnan.
+
+Frågan om vad som ska utredas står i bedömningen §4.2; kort #233.
+
