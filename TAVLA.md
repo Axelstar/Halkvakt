@@ -702,6 +702,14 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   > 2. Om möjligt för samma period: väglagsklassningarna (RoadCondition) och olyckshändelserna (Situation).
   > Formatet spelar ingen roll (CSV går utmärkt). Samma data är redan öppen (CC0) i realtid; det vi saknar är bara historiken.
   > Vem hos er hanterar sådana uttag? Med vänlig hälsning, Bengt Lagerlöf, Halkvakt
+  🌦️ **SMHI FÖR SAMMA VINTER — kontrollerat 21/9 (Bengts fråga): tre av fyra finns öppet, ingen förfrågan behövs för dem.**
+  ✅ Molnmängd (metobs parameter 16, rimfrostens molnkontroll och T-A:s fysikkontroll): `corrected-archive` räcker 2010–juni 2026,
+  24 timvärden för 15/1 2025 · ✅ radarn (efterhalkans radarvariant, vattenplaningen): 288 kompositer per dygn finns för
+  15/11 2024, 15/1 och 15/3 2025 · ✅ lufttemperatur och nederbörd ur samma metobs-arkiv. Claude hämtar dem vid bygget.
+  ✘ **SMHI:s VARNINGAR har inget öppet arkiv** — API:t bär bara de aktiva (15 st i dag; resurserna är `warning`, `metadata`, `cap`).
+  De behövs för SMHI-förstärkaren (#95 d) och för N_varning. Antingen en fråga till SMHI om utfärdade varningar november
+  2024–mars 2025, eller så körs kuvösen utan de två delarna och säger det. En privat sida (rl.se) arkiverar varningar — inte en
+  källa att bygga ett prov på.
   🛠️ **Steg 2 — Claude bygger kuvösen när datan finns** (eller på årets arkiv om svaret blir nej). Delarna finns: grindarnas
   skript, uppspelningen (sql/028), `snapshot-core` → `snapshotToHazards` → `AlertEngine` längs skuggmotorns 20 rutter. Körs i en
   slit-och-släng-databas som CI:s, ALDRIG i Supabase — en vinter ryms inte i gratisnivåns 500 MB.
