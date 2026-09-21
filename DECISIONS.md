@@ -8700,3 +8700,9 @@ står i dag på 1/2) och ett eget beslut, taget före körningen.
 **Bonus:** en hel vinter avgör grind A:s oavgjorda A2 (#131: *"A2 kan inte avgöras på septemberdata, och vinterdata kommer
 efter november"*) — alltså novemberbeslutet om segmentmotorn.
 
+**Tillägg 21/9 — SMHI för samma vinter (Bengts fråga *"behöver vi mer smhi data för den perioden också"*).** Prövat mot SMHI:s
+tre öppna tjänster: **molnmängd, lufttemperatur och nederbörd** finns i metobs `corrected-archive` (parameter 16: 2010-03-01
+till 2026-06-01, 24 timvärden för 15/1 2025) · **radarn** finns med 288 kompositer per dygn för 15/11 2024, 15/1 2025 och
+15/3 2025 · **varningarna har inget öppet arkiv** — API:t bär bara de aktiva. SMHI-förstärkaren (#95 d) och N_varning kräver
+därför en egen fråga till SMHI, eller körs inte i kuvösen. Ingen ny förfrågan behövs för det övriga; det hämtas vid bygget.
+
