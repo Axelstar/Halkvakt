@@ -8631,3 +8631,25 @@ varningar i *stadigt kallt* och *övergång* — deklarerat före datan, utan at
 **Hur #287 och #289 ska läsas härefter:** som ett prov av en ersättare (torkarna), inte av motorn — varken för eller emot
 Halkvakt. Rubrikerna står kvar för spårbarheten och har fått en pekare hit.
 
+## #291 (21/9 2026) Produktionsregelns falsklarm mäts per vädertyp när bildfacit läses (kort #231)
+
+**Bengts ja 21/9:** *"ja till förslaget om bildfacit per vädertyp"* — förslaget ur second opinion på efterhandstestet (#290).
+
+**Beslutat:** när bildfacit läses (#209; beslutet efter första frosten, bilderna öppnas i mars enligt D2/D3/D6) delas
+produktionsregelns varningar (`icing_point`) i *stadigt kallt* och *övergång*, och andelen bilder med bar eller våt väg
+redovisas per grupp.
+
+**Varför:** på en stadigt kall snödag säger stationsregeln *kallt och nederbörd* också på en saltad väg med fullt grepp.
+Stationen ser inte saltet, och ingen grind mäter i dag hur ofta det händer. Efterhandstestet på Niras exempeldag visade
+mönstret med en ersättare (dagtid hade avsnitt med torkare medianfriktion 0,54 mot 0,37 utan, #290); det här mäter det med
+vår egen regel, våra egna stationer och en bild som facit.
+
+**Vad beslutet INTE är:** ingen tröskel rörs, ingen röst ändras, ingen ny kod före mars. Asymmetriregeln i TROSKLAR-SKUGGAN §2
+står orörd — en ren kamerabild fäller aldrig en VARNING, eftersom svartis inte syns i bild. Måttet är därför beskrivande: det
+säger hur ofta bilden visar bar eller våt väg, inte att varningen var falsk. Skillnaden MELLAN de två vädertyperna är det som
+bär informationen.
+
+**Villkor:** definitionen av vädertyperna skrivs i DECISIONS innan den första bilden öppnas. Förslaget på kortet — *övergång*
+= ytan över +1 °C någon gång under de N timmarna före varningen, N redovisat för 3 · 6 · 12 h, alla tre utskrivna — är ett
+förslag, inte ett beslut. Läsningen av bildfacit är Bengts och Axels gemensamma beslut (#209), så raden följer med dit.
+
