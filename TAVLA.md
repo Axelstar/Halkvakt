@@ -1439,6 +1439,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   öppnas i mars). 🔑 **Väntar på första frosten** — mätningen körs i samma varv som T-A steg 0.
   Verify: en sats som ger antal omklassningar till halka inom 5 km och utfallsfönstret från en episod under frostnätterna; talet
   skrivet i bedömningen §4.2 tillsammans med Bengts och Axels beslut.
+  🧂 **Följer med läsningen (Bengts ja 21/9, DECISIONS #291):** produktionsregelns varningar delas per vädertyp — kort #231.
 - [x] 🌙 **#208 EPISODEN ÄR EN NATT, INTE ETT UTC-DYGN — ✅ KLART 20/9** (Bengts *"ompröva beslutet och byt"*, DECISIONS #245/#246,
   PR #384). Version 1 räknade stationens första ögonblick per UTC-dygn och delade **159 av 454 stationsnätter i två** — 66 % av fallen
   ligger 21–03 UTC. Nu: natt = middag till middag UTC, som T-A; inskrivet i TROSKLAR-KOMBINATIONEN §4 KB-B.
@@ -3017,6 +3018,19 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Bryter dokumentationsregeln. *(Delvis åtgärdad i detta varv — resten nästa.)*
 
 ### Claude — låst (väntar på nyckel)
+- [ ] 🧂 **#231 PRODUKTIONSREGELNS FALSKLARM PER VÄDERTYP — en rad i bildfacitets läsning** (Bengts ja 21/9, DECISIONS #291,
+  ur second opinion #290). 🔑 **Nyckel: bildfacitets läsning (#209) — beslutet efter första frosten, bilderna öppnas i mars.**
+  På en stadigt kall snödag säger stationsregeln *kallt och nederbörd* också på en saltad väg med fullt grepp; stationen ser
+  inte saltet, och ingen grind mäter det i dag. När bilderna läses delas produktionsregelns varningar (`icing_point`) i
+  *stadigt kallt* och *övergång*, och andelen bilder med bar eller våt väg redovisas per grupp. **Ingen tröskel rörs, ingen
+  röst ändras** — det är en mätning av en känd svaghet.
+  📐 **Definitionen skrivs FÖRE läsningen** (in i DECISIONS innan den första bilden öppnas). Förslag att ta ställning till då:
+  *övergång* = stationens yta har legat över +1 °C någon gång under de N timmarna före varningen, annars *stadigt kallt*;
+  N redovisas för 3 · 6 · 12 h, alla tre utskrivna, ingen vald i efterhand.
+  ⚠️ Kontrollera när kortet byggs att arkivet bär stationens ythistorik för varningarnas tidpunkter (`weather_observations`
+  tunnas till halvtimmeshinkar efter sju dygn, sql/014) — annars måste historiken loggas vid varningen, och då i god tid.
+  Verify: definitionen i DECISIONS före första bilden · tabellen *vädertyp × bar/våt väg* i bedömningen vid mars-läsningen.
+
 - [x] 🧪 **#230 EFTERHANDSTEST: HALKVAKTS REGLER MOT NIRAS FRIKTION — ✅ KÖRD 21/9 PÅ EXEMPELDAGEN (DECISIONS #287)** (Bengts idé 21/9, DECISIONS #284). 🔑 **Nyckel:
   friktionsdata från Nira för nätter som vårt arkiv också bär — och ett beslut om facitkällan INNAN nätterna mäts (D3).**
   Frågan: hade Halkvakt varnat *före* den första bilen, där och när Niras bilar sedan kände halka?
