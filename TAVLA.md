@@ -694,10 +694,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   mätdata"*) — som aldrig fick något kort. Nu har den ett.
   ⚠️ **Oläst på källan:** kartläggningens *gratis utvärderingskonto på roads.niradynamics.se* — adressen gick inte att
   öppna 21/9. Det som går att läsa är RSA-sidans formulär för **exempeldata och produktguide** (namn, e-post, företag;
-  filerna skickas till e-posten) och ett kontaktformulär.
+  filerna visas som länkar direkt efter att formuläret skickats — inte med e-post, rättat 21/9) och ett kontaktformulär.
   **Steg 1, gratis:** Bengt hämtar exempeldatan och produktguiden i formuläret *Download sample data & our Product Guide*
   på RSA-sidan och lägger filerna på Skrivbordet. Claude läser dem mot tre frågor: hur tät är datan i stan, hur färsk,
   och håller den för regel T (ett vittne på platsen, inte en modell)?
+  📍 **Bättre exempeldata för oss (kontrollerat 21/9):** formuläret *Download sample data* på sidan Winter Road Insights
+  (niradynamics.com/products/winter-road-insights) ger tre filer från Stockholm 15/1 2024 — friktion, torkarhastighet och
+  lufttemperatur. Friktionen svarar på täthet och färskhet; torkarna är ett regnvittne; lufttemperaturen visar att bilarna
+  mäter luften, inte vägytan (enligt filnamnet). RSA-formuläret ger en dags halkvarningar (28/1 2024), ojämnheter i
+  Göteborg och produktguiden. Fälten: förnamn, efternamn, e-post, företag; rutan om utskick är frivillig.
   **Steg 2, beslut — bara om steg 1 håller:** fråga Nira om villkor för en liten svensk betatjänst. Varje betalväg kräver
   en DECISIONS-post som Axel godkänner.
   **Göteborg, följdfrågan:** fråga 2 om egna vägväderstationer på gatunätet blev obesvarad — egna mätningar vore stadens,
