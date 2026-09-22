@@ -21,9 +21,10 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 ### Beslutsgången
 Roller och ägarskap: `docs/BESLUTSGANGEN.md` (31/8). Tavlan är sanningen — en plan som inte
 står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett kort direkt.
-- [ ] **Ge Bengt egna händer i koden** — `docs/BENGT-CLAUDE-KODEN.md`: Claude Pro + Claude
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #303) — **Ge Bengt egna händer i koden** — `docs/BENGT-CLAUDE-KODEN.md`: Claude Pro + Claude
   Desktop mot Halkvakt-mappen, ingen terminal. Axel: skrivrättigheter till repot.
   Löser roten till 31/8 — han kan köra sina egna analyser i stället för att beskriva dem.
+  ✅ **Stängt 22/9, kortavstämningen (DECISIONS #303):** 491 commits från Bengt sedan 27/8; han pushar till main och kör Claude mot Halkvakt-mappen — det `docs/BENGT-CLAUDE-KODEN.md` beställde.
 
 ### AXELS NÄSTA STEG — i den här ordningen (uppdaterad 8/9 kväll)
 
@@ -43,7 +44,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [x] ~~5. TestFlight-gruppen: lägg 0.3.5 (8)~~ **STÄNGT 20/9 SOM ÖVERSPELAT** (Bengts order efter genomlysningen,
   DECISIONS #250): main bär 0.3.8 (11) sedan 18/9, och byggordning C (#242) säger ETT bygge med #203.
   Ersatt av: simulatorprovet nu, och arkiveringen av 0.3.8 senast 27/9.
-- [ ] 6. Tolv testare till väntelistan (fortfarande det som avgör vintern)
+- [x] ↪ **SAMMANSLAGET 22/9** i *Tolv testare till Play-perioden* (DECISIONS #303) — 6. Tolv testare till väntelistan (fortfarande det som avgör vintern)
+  ↪ **Sammanslaget 22/9 (DECISIONS #303):** samma tolv testare; Googles krav är tolv Android-testare i 14 löpande dygn (DECISIONS #271). Det som återstår bärs av *Tolv testare till Play-perioden*.
 - [x] ~~7. Google Play-konto~~ ✅ **SKAPAT OCH BETALT 20/9 18:51 (Axel)** — **Lagerlöf Labs**, personligt konto,
   konto-id `7591030412981889366`. Samma utgivarnamn som i App Store Connect, alltså en säljare och inte två.
   ⛔ **MEN KONTOT ÄR INTE FÄRDIGT, och den tredje raden är en RIKTIG GRIND:** Play Console kräver tre verifieringar —
@@ -92,7 +94,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [x] ~~#79 regn-30: mät innan den väcks~~ **STÄNGT 20/9 SOM ÖVERSPELAT** (DECISIONS #250): jobbet AVVECKLADES 9/9
   (pulsklocka #11, `avvecklat: puls-regn-30`) och finns inte i pulsklockans lista över elva jobb. Kontrollerat 20/9.
   Frågan om att väcka det är därmed inte ett väntande beslut utan ett nytt kort den dag någon vill ha det.
-- [ ] Publikt repo eller köpa minuter — appen behöver inte längre svaret (#72), ta det lugnt.
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #303) — Publikt repo eller köpa minuter — appen behöver inte längre svaret (#72), ta det lugnt.
+  ✅ **Stängt 22/9, kortavstämningen (DECISIONS #303):** minuterna köptes 8/9: DECISIONS #82 (35 USD/mån, Axels beslut), 29 minuter efter att kortraden skrevs.
 - [x] ~~Gallringsregel för weather_observations före vintern~~ **STÄNGT 20/9 SOM ÖVERSPELAT** (DECISIONS #250):
   `gallra_vader` (sql/014) och `gallra_arkiv` (sql/026) är i drift sedan 17/9 — 97 472 rader raderade i första
   körningen. Det som faktiskt återstår är Pro-beslutet, och det bor i kort #83. Texten nedan är historik.
@@ -265,7 +268,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   prov `nyckelprov` via dbknapp. VÄNTAR: deploy vakthund + prov. ROTATIONEN ÄR FORTFARANDE AXELS (senast 15/11).
   ✅ I DRIFT 15/9: vakthund deployad 15:52Z, `nyckelprov` gav issue #272 (15:53Z) — PAT:ens datum läst LIVE ur
   GitHubs svarshuvud: **2026-11-22** (67 dygn), Supabase **2026-12-08** (83 dygn). Provissuen stängs 06 UTC 16/9. Rotationen: Axel.
-- [ ] 💸 **#85 Actions-takten spränger 35 USD-gränsen före 1/10 — tre snitt räcker** (mätt 9/9
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #303) — 💸 **#85 Actions-takten spränger 35 USD-gränsen före 1/10 — tre snitt räcker** (mätt 9/9
   04:30 av morgonavläsningen, DECISIONS #82:s budget). UPPMÄTT sedan Actions vaknade 8/9 21:07
   → 9/9 04:31 (7,4 h): **59 körningar, ≈ 98 debiterade minuter** (varje jobb avrundas uppåt):
   ingest-grannar 8 × ~5,4 min = 43 · publish-map 14 × 1 = 14 (workflow_run efter varje ingest
@@ -359,6 +362,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   debiterat 1 976 min. Släpande takt **200 min/dygn** (upp från 169), månadssnitt 301, och takdatumet
   har flyttats fram två dygn till **26 september**. Issue #210 står kvar öppen. Takterna divergerar
   fortfarande, så hennes egen varning om gungande mark går.
+  ✅ **Stängt 22/9, kortavstämningen (DECISIONS #303):** alla tre snitten i drift (DECISIONS #88, #89); Verify ≤ 100 min/dygn nådd 10/9 (79 min/dygn). Kassabevakningen till 1/10 bärs av #152 (prognos 31 av 35 USD 20/9). Sagt högt: den släpande takten var 118 min/dygn 19/9 — över kortets mål, under taket.
 - [ ] 🗄️ **#83 GALLRING av weather_observations — måste finnas FÖRE första kalla veckan**
   (Bengts beställning 9/9 01:40; kort + förslag av Claude, mätt mot koden 9/9).
   **VARFÖR NU:** arkivdieten (DECISIONS #4: bara yta ≤ 5 °C eller nederbörd) finns i
@@ -486,9 +490,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   rekommendationen — HALKAN VINNER ALLTID, vattenplaningen vilar helt vid yttemp ≤ +4 °C
   och ligger under halkan i A-skalan. Bocken här är kontrasigneringen; vill du ändå
   justera går det fram till första skuggkörningen, sedan gäller §5 (båda signerar).
-- [ ] **Helgsamtalet med pappa — nu fyra punkter:** roller (B2B=Bengt?), föreningen, klartecken ringrundan, OCH intäktsmodellen (#27: din viljeinriktning → hans utformning)
+- [x] ↪ **SAMMANSLAGET 22/9** i *Skyltfonden-paketet före 1/10* (DECISIONS #303) — **Helgsamtalet med pappa — nu fyra punkter:** roller (B2B=Bengt?), föreningen, klartecken ringrundan, OCH intäktsmodellen (#27: din viljeinriktning → hans utformning)
+  ↪ **Sammanslaget 22/9 (DECISIONS #303):** samma frågor: sökande, roller och ringrundan (ringrundan håller Bengt, #215). Det som återstår bärs av *Skyltfonden-paketet före 1/10*.
 - [ ] **Skyltfonden-paketet (före 1/10):** (a) klartecken till pappas ringrunda (startar v.36!), (b) sökande: pappa privat eller ideell förening?, (c) rollfördelningen — allt hänger ihop. Underlag: `docs/FINANSIERING.md`
-- [ ] **Rollfördelningen**: efterfrågan/affärsmodell/B2B = Bengts ansvar? (hans förslag; vid ja uppdateras PLAN)
+  ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** #27 *Helgsamtalet* och *Rollfördelningen*. Kortet stängs när Axels val av sökande och besked om rollerna (DECISIONS #25e) står i DECISIONS, intäktsmodellen ur #27 är avgjord och PLAN.md är uppdaterad.
+- [x] ↪ **SAMMANSLAGET 22/9** i *Skyltfonden-paketet före 1/10* (DECISIONS #303) — **Rollfördelningen**: efterfrågan/affärsmodell/B2B = Bengts ansvar? (hans förslag; vid ja uppdateras PLAN)
+  ↪ **Sammanslaget 22/9 (DECISIONS #303):** rollfördelningen (DECISIONS #25e) avgörs i samma besked. Det som återstår bärs av *Skyltfonden-paketet före 1/10*.
 - [ ] **#21 Anonym puls + feedback-knapp** — rör "samlar in: ingenting"-löftet; Claudes råd: paketera med sensorbeslutet våren 2027
   ✅ **AXELS JA 16/9 (DECISIONS #196, bedömning S4):** två knappar under "Senast sagt" — *Stämde* / *Stämde inte*, ingen
   fritext, loggas lokalt, skickas när bilen står stilla. KRAV: Om-avsnittets "vi samlar in: ingenting" skrivs om
@@ -608,6 +615,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   trace ger varning med sommardäck och tystnad med dubb; texten säger inte "däck" utan bara varnar.
 - [ ] **Skydda namnet:** varumärket Halkvakt hos PRV + domänen halkvakt.se. Enda juridiska
   muren som finns i branschen; arkivet och relationerna är resten av försvaret.
+  ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** *Domänen halkvakt.se (vilande beslut)* — domänen blockerar QR-sidan (#204), så den är inte längre vilande.
 - [ ] **Betalvilja mäts i mars, inte gissas i augusti:** en fråga i appen ("N varningar i
   vinter — skulle du betala X för nästa?"). Ja/nej, inget insamlat utom räkningen. Vinterpass
   per säsong är kandidatmodellen; B2B (hemtjänst, försäkring, åkerier) är taket.
@@ -651,13 +659,16 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ritats om än. Android-spegeln (DECISIONS #36) efter att iOS-varianten testats.
 - [ ] ↩︎ **#23 heads-up** — bannern över kartappen, båda plattformarna. (#22 T3–T7 i bilen och
   #24-resten står under Claude — låst, Android-listan.)
+  ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** underpunkten #23 i DESIGNLYFTET, som stängdes 22/9.
 - [ ] ↩︎ Skinnet v3 på Android — del 1+2 committade 2/9 (5829d29, ee72f22: Theme.kt, fonter,
   fem ikoner, två flikar). Bevis på telefon saknas; bockas när Axel sett det.
 
 ### Axel — därefter
 - [ ] **Tolv testare till Play-perioden** — Axels åtagande 31/8: "hittar dem utan problem".
   Väntelisterutan på kartan borttagen på hans beslut. Kvar i `docs/REKRYTERING.md` om det behövs.
-- [ ] Domänen halkvakt.se (vilande beslut)
+  ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** kort 6 *Tolv testare till väntelistan* (samma tolv).
+- [x] ↪ **SAMMANSLAGET 22/9** i *Skydda namnet: PRV + domänen halkvakt.se* (DECISIONS #303) — Domänen halkvakt.se (vilande beslut)
+  ↪ **Sammanslaget 22/9 (DECISIONS #303):** samma domän; QR-sidan (#204) väntar på den, så den är inte längre vilande. Det som återstår bärs av *Skydda namnet: PRV + domänen halkvakt.se*.
 - [ ] Fysisk Android-testenhet (pappas telefon? begagnad?)
   📖 **KONTROLLERAT MOT GOOGLES EGEN SIDA 20/9** (Bengts fråga; DECISIONS #279). Kravet finns, ordagrant:
   *"Från och med början av 2024 måste utvecklare med nya personliga konton verifiera att de har åtkomst till en
@@ -732,7 +743,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Verify: svar från Trafikverket inskrivet här · upplägget i DECISIONS före körningen · tabellen *del × ensam × ovanpå de andra*
   i bedömningen.
 
-- [ ] 🚗 **#229 NIRA — DATAN BAKOM GÖTEBORGS NEJ** (Göteborgs svar 21/9, DECISIONS #281). Göteborg köper friktionsdata
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #303) — 🚗 **#229 NIRA — DATAN BAKOM GÖTEBORGS NEJ** (Göteborgs svar 21/9, DECISIONS #281). Göteborg köper friktionsdata
   från bilar av **NIRA Dynamics** (Linköping) och får inte dela den: datan är Niras, inte stadens. Nira säljer dessutom
   en färdig tjänst för halkvarningar till bilar och appar, **Road Surface Alerts** (läst på
   niradynamics.com/products/road-surface-alerts 21/9): *"Slippery road: Detects low-friction surfaces using real-time
@@ -786,6 +797,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   friktionsvärdena ligger där ingen bil rapporterade samma tio minuter (en bil inom 30 min före i 80–89 %). Lufttemperaturen
   är luftens, med +29,5 °C en januaridag. Händelsestyrt eller inte: provet kan inte avgöra. Vägklass 5 saknas helt.
   **Nytt krav till Nira:** varje värde med tiden för den senaste mätningen under det (regel T1/T4).
+  ✅ **Stängt 22/9, kortavstämningen (DECISIONS #303):** exempeldatan läst (DECISIONS #283, `scripts/matningar/nira-exempeldata-2026-09-21.py`), Göteborgs fråga 2 besvarad ur stadens slutrapport (DECISIONS #295). Steg 2 (facitförslag till Nira februari–mars) bor kvar i bedömningens §4.2 Nira-rad.
 
 - [ ] 🏷️ **#204 SKOLANS NAMN PÅ QR-SIDAN — synlig attribution på webben, inte banner i appen — ✅ BESLUTAT 19/9, förberett, byggs när bladet byggs** (Bengts idé 19/9:
   *"Halkvakt via Mårtenssons trafikskola … indirekt reklam för den som företag — tror du på det eller är det lull lull?"*).
@@ -843,7 +855,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **FASTSTÄLLT 17/9 — Axel kontrasignerade (DECISIONS #226):** C och D i kraft, D-raden i tio tröskeldokument,
   uppspelningen ur arkiven med skuggloggen som kontroll. Uppföljningen — radarmätning vid frost, provkörning före januari,
   arkiven till mars — står i bedömningen §0b.
-- [ ] 🧩 **#159 INTEGRATIONSKARTAN — tre av våra egna regler står i vägen för produkten**
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #303) — 🧩 **#159 INTEGRATIONSKARTAN — tre av våra egna regler står i vägen för produkten**
   📬 **AXELS FYRA INVÄNDNINGAR INARBETADE 14/9 (DECISIONS #184, kartans nya §13).** Han läste ett
   TIDIGT underlag, där grind A-rättelsen inte fanns. **Tre står, en föll på underlaget.**
   🎯 **1. Allvar som FÖRSPRÅNG, inte ord — han har RÄTT, och det är inget förslag utan ett FATTAT
@@ -955,6 +967,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **R1–R16 INFÖRDA 16/9 (DECISIONS #199), kartan fryst igen:** §5.2 regn-raden löst med `rain_segments`, §5.6 R16 med
   regeln "F1 först när det är verifierat i kod att ingen port läser fältet", §7.8 kandidaterna prövade + Axels D-utgångspunkt,
   §14. Bilaga A i bedömningen struken. Nästa öppning efter nästa bygge + mätning.
+  ✅ **Stängt 22/9, kortavstämningen (DECISIONS #303):** kartan fryst och R1–R16 införda (DECISIONS #199); alla fyra frågorna avgjorda (#186, #220, #221); A–E bärs av bedömningens minimilista (§8).
 - [x] 📍 **#158 SKUGGLOGGENS LARM SAKNAR POSITION — ✅ KLART 14/9, STÄNGT 20/9** (DECISIONS #250).
   Form A byggd och deployad 14/9; `main.ts` tar punkten ur FARAN, och kommentaren på rad 329 bär rättelsen.
   Bevis 20/9: kamerafacit har 451 objekt i hinken — uppslagningen fungerar i drift. Form B är ett senare val,
@@ -1196,7 +1209,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (b) skuggkolumn "smhi_forstarkt" mätt mot facit en vintermånad.
 - [ ] Läsa SYSTEM.md mot koden månadsvis — ✅ **första läsningen gjord 22/9** (Bengts order, underlag till Skyltfondens bilaga 3): regler, källor, vakter, skuggdrift, mätning och grannländer lästa mot koden; nästa läsning oktober
 - [ ] Samtal med Axel: sensortrappan — tidsättning av steg 2 (våren 2027?)
-- [ ] 🔗 **#237 PARKERAT: TELEFONKEDJAN — bil 1:s telefon varnar bil 2 (Bengts tanke 22/9, "inte nu, kanske en väg framåt").**
+  ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** #237 *Telefonkedjan* (parkerad 22/9) — avgörs i samma samtal.
+- [x] ↪ **SAMMANSLAGET 22/9** i *Samtal med Axel: sensortrappan* (DECISIONS #303) — 🔗 **#237 PARKERAT: TELEFONKEDJAN — bil 1:s telefon varnar bil 2 (Bengts tanke 22/9, "inte nu, kanske en väg framåt").**
   Nira bygger en kedja där bilens givare (ABS, antispinn, torkare) rapporterar bakåt till nästa bil via molnet. Kan telefonen
   göra samma sak? **Claudes bedömning 22/9, realistisk:** (1) värdet hos Nira är GIVAREN, inte kedjan — bilen mäter friktion
   hela tiden, telefonen ser bara händelser (inbromsning, sladd) i efterhand, glest och sent; (2) skalan avgör: kedjan kräver en
@@ -1206,6 +1220,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   "halka här"-knapp är Wazes modell och nästan byggd; automatisk sladdupptäckt som opt-in hör till sensorbeslutet våren 2027
   (#21); och fordonskedjan kan komma gratis om Trafikverket publicerar Niras händelser öppet (frågan skickad, §0b). Tas upp i
   samtalet om sensortrappan, inte före.
+  ↪ **Sammanslaget 22/9 (DECISIONS #303):** telefonkedjan avgörs i samma samtal: byggs, avvisas eller förs in i #21. Det som återstår bärs av *Samtal med Axel: sensortrappan*.
 - [ ] 💼 **B2B: skolpaketet som produkt** — per-elev-moment i körkortspaketen; STR som skalkanal; säljs våren 2027 med halkbanedata *(Axels idé, Bengts spår)*
 - [ ] 📞 **Skyltfondsrundan** (efter Axels klartecken): fonden + trafikövningsplats v.36 → avsiktsförklaringar 25/9 → SKICKA 28/9.
   ↳ **Plan B 22/9 (docs/FINANSIERING.md):** utan partner överlever AP1, AP2, AP4, AP5; AP6 stryks och sägs öppet; teknisk titel, egna testförare, ~300 kkr; Bengts Nira-argument (alla förare, inte bara betalande bilmärken) in i båda versionerna. v7-B skrivs parallellt om Bengt säger ja.
@@ -1533,6 +1548,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Verify: en sats som ger antal omklassningar till halka inom 5 km och utfallsfönstret från en episod under frostnätterna; talet
   skrivet i bedömningen §4.2 tillsammans med Bengts och Axels beslut.
   🧂 **Följer med läsningen (Bengts ja 21/9, DECISIONS #291):** produktionsregelns varningar delas per vädertyp — kort #231.
+  ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** #51 *Vinterarkivet* — dess Verify (DECISIONS #252) är samma mätning som den här.
 - [x] 🌙 **#208 EPISODEN ÄR EN NATT, INTE ETT UTC-DYGN — ✅ KLART 20/9** (Bengts *"ompröva beslutet och byt"*, DECISIONS #245/#246,
   PR #384). Version 1 räknade stationens första ögonblick per UTC-dygn och delade **159 av 454 stationsnätter i två** — 66 % av fallen
   ligger 21–03 UTC. Nu: natt = middag till middag UTC, som T-A; inskrivet i TROSKLAR-KOMBINATIONEN §4 KB-B.
@@ -1651,20 +1667,21 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **KLART 18/9 (Bengts "kör", DECISIONS #235):** steget i `ci.yml` + generatorn fäller på vektorfil utan scenario.
   Bevis i riktig CI: provcommiten på PR #341 (v22 handändrad) ⇒ körning 35305862118 röd i steget *Vektorgeneratorn
   återskapar engine/vectors/ (#202)*; återställd ⇒ grön. Lokalt fyra fall (rent, handändrad, utan scenario, ändrat scenario).
-- [ ] 🌡️ **#192 S1 — EFTERHALKANS INDATA I SKUGGLOGGEN** (Bengts "bygg S1 nu" 16/9, Axels grind #196, DECISIONS #198).
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #303) — 🌡️ **#192 S1 — EFTERHALKANS INDATA I SKUGGLOGGEN** (Bengts "bygg S1 nu" 16/9, Axels grind #196, DECISIONS #198).
   Kolumn `efterhalka` (sql/021): N4:s råa fält per station i korridoren + om motorn larmade. Inget villkor — S2 sätter
   det. Skuggrapporten får `efterhalka`. VÄNTAR: migration 021 + deploy; bevis med innehåll kräver första kalla natten.
   ⏳ DEPLOYAD 16/9 (migration 021: efterhalka jsonb, default []; deploy 02:36Z (skuggmotor + skuggrapport), 02:41Z (rättat prov)). Skuggrapporten bär `efterhalka` (0 stationer i september).
   Bevis med innehåll kräver första station ≤ 3 °C i en korridor — samma natt som N4:s fältbevis.
   ✅ **FÖRSTA RADEN MED INNEHÅLL 16/9** (1 station, `regn_h` satt, `larm: false`). S1 mäter. KVAR före S2: nätter, inte
   ögonblick — Axels grind (#196) kräver att `regn_h` prövats mot verkligheten innan något byggs på det.
+  ✅ **Stängt 22/9, kortavstämningen (DECISIONS #303):** S1 byggt (DECISIONS #198, `sql/021`) och struket i bedömningen §2.1; nätterna före S2 bevakas i §0b (kort #197) och i S3 (#89).
 - [x] 🔢 **#189 TRENDARKIVETS FLYTTALSRESTER — ✅ KLART (bevisat 18/9)** (bifynd 15/9 i #192, Bengts ja): `lutning30_c` min −0,7999999999999998 —
   rader från 26 minuter 13/9 innan avrundningen fanns; `dagg_gap_c` var dessutom orundat i skrivaren. BYGGT 15/9
   (DECISIONS #194): gapet avrundas i `trendkandidat.ts`, sql/020 rundar arkivet. VÄNTAR: migration 020 via dbknapp,
   bevis = 0 orundade rader efteråt.
   ✅ **BEVISAT 18/9:** dbknapp 03:42Z (körning 35304213416): **0 orundade av 9 833 rader**, `lutning30_c` min **−0,800**,
   äldsta rad 8/9 kvar. Arkivet är rundat — migrationen har körts, men beviset bokfördes aldrig och kortet stod kvar som väntande.
-- [ ] 🧪 **#187 F1: SKATTARENS RÅA INDATA I live.json — `regn_h`, `lutning15/30/60` bredvid `fukt`** (bedömning v3 N4,
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #303) — 🧪 **#187 F1: SKATTARENS RÅA INDATA I live.json — `regn_h`, `lutning15/30/60` bredvid `fukt`** (bedömning v3 N4,
   Bengts order 15/9, DECISIONS #188). BYGGT 15/9 i `publish/snapshot-core.ts` (PR #270): null när fönstret är tomt,
   aldrig noll; motorn läser inget; gränsstationer null. `radar_h` UPPSKJUTEN (LATERAL-koppling i publicera var 10:e
   min, ingen CPU-mätning, #176:s WORKER_LIMIT). Regntäckningen 15/9: 13 % på 7 dygn — måttet skiljer inte torrt
@@ -1675,7 +1692,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   tabellista). Nu sex fält med spann, alla ✅ OK på 7 787 rader — lutning15/30/60 inom −1,7…2,2 °C per fönster.
   Förkravet för S2/S3 uppfyllt. 🕳️ Bifynd: `lutning30_c` min −0,7999999999999998 — skrivaren avrundar inte (13/9-läxan).
   ✅ **FÄLTBEVISET 16/9:** skuggrapporten 12:0xZ 16/9: `efterhalka` **{stationer: 1, med_regn_h: 1, larmade: 0}** — en station i en ruttkorridor bar ett `regn_h`-värde ur en publicerad `live.json`, och motorn larmade inte på den. F1 är därmed bevisad hela vägen: fältet publiceras, når skuggan och loggas.
-- [ ] 🔍 **#186 GRANSKNING 15/9 — de förkastade prövade på nytt, och allt bedömningen missade. VÄNTAR PÅ BESLUT**
+  ✅ **Stängt 22/9, kortavstämningen (DECISIONS #303):** F1 klar 16/9 med fältbevis (DECISIONS #188), N4 struken i bedömningen; `radar_h` står kvar som egen §0b-rad.
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #303) — 🔍 **#186 GRANSKNING 15/9 — de förkastade prövade på nytt, och allt bedömningen missade. VÄNTAR PÅ BESLUT**
   (`docs/GRANSKNING-2026-09-15.md`, Bengts order: genomgripande granskning, inget byggt).
   🕳️ **#42 är bedömningens största hål:** fick en rad, har egen byggordning (#81 A–F) där A, B och halva C
   är BYGGDA, V-A föll ×3, radardomen höll, tröskeln 2,0 mm/h kontrasignerad — och motorsteget är ett
@@ -1702,7 +1720,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   📎 **SAMMANSTÄLLD 15/9 (Bengts order före utskick till Axel):** tre vändor ihopvävda per ämne, bara fynd som
   stått sig, rättat står i rättad form. 13 paragrafer, R1–R22, 18 beslut. Drive-kopia uppladdad.
   🗄️ **ARKIVERAD 15/9.** Fynden införda i bedömning v3; R1–R15 i dess bilaga A. Ändras inte mer.
-- [ ] 📋 **#185 BEDÖMNING 15/9 — förslag till åtgärder ur allt material, VÄNTAR PÅ BENGTS OCH AXELS BESLUT**
+  ✅ **Stängt 22/9, kortavstämningen (DECISIONS #303):** granskningen arkiverad 15/9 (`docs/GRANSKNING-2026-09-15.md` rad 1, DECISIONS #186 p.4); R1–R16 införda i kartan (#199).
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #303) — 📋 **#185 BEDÖMNING 15/9 — förslag till åtgärder ur allt material, VÄNTAR PÅ BENGTS OCH AXELS BESLUT**
   (`docs/BEDOMNING-2026-09-15.md`, Bengts order: analys + förslag, inget byggt). Sorterat i I DAG (T1–T10),
   KORT SIKT (K1–K9), LÄNGRE SIKT (L1–L7), vad som tas bort ur schemat, och sju beslut med rekommendation.
   🔑 **Bärande slutsats:** efterhalkan ligger INNANFÖR produktlöftet ("vid stationen") — stationen ser
@@ -1721,6 +1740,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (S1–S6), dom i januari. Ännu senare: mars. Bengts två beslut: facitknapp med samtycke · beta före grinden.
   ▶️ **NU-LISTAN I GÅNG 15/9 ("då gör vi nu nu"):** N1–N4 byggda i PR #270 (DECISIONS #187–#190), N5 klar. Spårningen
   står i bedömningens §0; deployer och bevis väntar och skrivs in där när de finns.
+  ✅ **Stängt 22/9, kortavstämningen (DECISIONS #303):** alla beslut tagna 17/9 (bedömningen v3, §4.1); kvar av NU-listan är N3, som bärs av #86.
 - [ ] 🟠 **#160 MÅNDAGSSERIEN KOM 5–7 TIMMAR SENT 14/9 — och mätvakten kan inte se det förrän om tio dygn**
   (morgonavläsningen 14/9 08:00). **DET HÄR ÄR 7/9 OM IGEN, och den gången tog det fem dygn innan en
   människa råkade titta.**
@@ -1829,7 +1849,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **(b) KLART 18/9 (Bengts "kör S7", DECISIONS #239, PR #351):** båda flödena gör `git pull --rebase --autostash` och
   skriver ut `git status --porcelain` när de faller. Provat lokalt: gamla raden exit 128 på en smutsig fil, nya raden
   pushar, fel-grenen skriver ut filnamnet. Första skarpa körningen: marknadsföringen 19/9 04:45Z.
-- [ ] 🕳️ **#154 STEG C:s REGNFÄLT NÅR INTE DE SEGMENT VATTENPLANINGEN SITTER PÅ** (fynd i
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #303) — 🕳️ **#154 STEG C:s REGNFÄLT NÅR INTE DE SEGMENT VATTENPLANINGEN SITTER PÅ** (fynd i
   kvällsavläsningen 13/9, oprövat av mig i kod — lämnas till den som äger steg C).
   `publish/snapshot-core.ts` sätter `regn` på raderna ur väglagsfrågan, och den frågan hämtar bara
   segment med `condition_code >= 2` ELLER ett is/snö/halka/frost-ord i info (rad ~101). Ett segment
@@ -1850,6 +1870,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   `rain_segments` och loggar vad rösten SKULLE sagt i kolumnen `vb` (sql/019); bilens position går till facit.
   Skuggrapporten får `vattenplaning`. VÄNTAR: migration 019 → deploy skuggmotor + skuggrapport → första `vb`-raden.
   ✅ STEG E I DRIFT 15/9: första `vb`-raderna 17:30Z: **5 skuggvarningar** (E18 Karlstad→Örebro, 5 st, regnsegment 18060/18065/18067) i skuggrapportens `vattenplaning`.
+  ✅ **Stängt 22/9, kortavstämningen (DECISIONS #303):** `rain_segments` i live.json 15/9 med rätt manifest-sha (DECISIONS #187), steg E i drift (#191); V-B:s dom bärs av #42.
 - [ ] 💸 **#152 KASSAVAKTEN — check 8 i vakthunden: larmar innan Actions-taket slår i** (Bengts order
   13/9: "Kan man ha någon mätning på taket så man vet när man närmar sig gränsen. Automatisk alltså").
   💰 **RÄTTAD 13/9 (DECISIONS #160, Bengts order "gör kort 152 nu"):** prognosen räknade på
@@ -2386,7 +2407,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   utom dagens medvetna motprov. Kortet var en DIAGNOS av ett avbrott 5–8/9, och avbrottet är över. Det som kortet
   egentligen oroade sig för — att taket slår i osett — har fått en egen vakt: **#152 kassavakten** (check 8, larmar
   innan taket nås) och den dagliga avläsningen i bedömningens lägesruta. Historiken står kvar som den skrevs.
-- [ ] 💸 **Minutbantning av GitHub-pipelinen** (6/9, följd av 🛑-kortet; byggs OAVSETT Axels val, släpps
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #303) — 💸 **Minutbantning av GitHub-pipelinen** (6/9, följd av 🛑-kortet; byggs OAVSETT Axels val, släpps
   på först när minuter finns): mål ≤ 60 min/dygn (= 1 800/mån). Kandidater med uppskattad vinst:
   (1) publish-map bara kedjad efter ingest (timvis) i stället för egen 30-min-klocka: −300 min/mån
   — webben blir högst 60 min gammal i stället för 30, livemotorn/appen rör det inte;
@@ -2397,7 +2418,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   flytta de tidskritiska jobben (ingest + publicering) till Supabase edge functions på pg_cron —
   noll GitHub-minuter, samma väg som livemotorn — men det är ett bygge på dagar, inte timmar.
   BEVISKRAV: Usage metrics per dygn efter bantningen, bokfört som tal på tavlan varje måndag.
-- [ ] 🚨 **#51 Vinterarkivet skrivs nästan inte — moaten läcker** (fynd 4/9 kväll, svep
+  ✅ **Stängt 22/9, kortavstämningen (DECISIONS #303):** överspelad (DECISIONS #261): publish-map och ingest-fi/no/dk borta, regn-30 utan cron, grannarna och publicera i Supabase (#301); kvarvarande oro bärs av #152.
+- [x] ↪ **SAMMANSLAGET 22/9** i *#209 Bildfacitbeslutet* (DECISIONS #303) — 🚨 **#51 Vinterarkivet skrivs nästan inte — moaten läcker** (fynd 4/9 kväll, svep
   inför kort #45; VERIFIERAT i koden, inte agentpåstående). `road_condition_history` är
   husets uttryckliga vinterarkiv — sql/001_init.sql:30 säger ordagrant *"Append-only: this
   is the winter archive (our moat)"*. MEN dess ENDA skrivare är GitHub-ingesten (ingest/db.ts:101).
@@ -2508,7 +2530,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   kamerabildsgranskningen byggas i november.
   Verify (ny, ersätter *nyttan går inte att mäta förrän strömmen lever*): antal omklassningar till halka inom 5 km
   och utfallsfönstret från en episod, mätt under de första frostnätterna i samma varv som T-A steg 0. Talet avgör #209.
-- [ ] ⚠️ **#52 Ett test låser fast motsatsen till vinterbaseline-principen** (samma svep,
+  ↪ **Sammanslaget 22/9 (DECISIONS #303):** samma mätning i båda Verify-raderna: omklassningarna till halka inom 5 km under de första frostnätterna. Det som återstår bärs av *#209 Bildfacitbeslutet*.
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #303) — ⚠️ **#52 Ett test låser fast motsatsen till vinterbaseline-principen** (samma svep,
   verifierat). test/engine.test.ts:143-146 hävdar att ett segment klassat **code 1 (Normalt)**
   med info **"Packad snö"** MÅSTE ge exakt ett larm — tillsammans med Isfläckar, Svår halka och
   Risk för halka. Det är ordagrant det vinterbaseline-fall som kort #45 säger *"larmar ALDRIG"*.
@@ -2600,7 +2623,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
    "(inga rader; detta är ett prov)", som den ska när arkivet saknar vinterord. #112 stängd.
    BONUSBEVIS i samma varv: larmprovets issue #109 stängdes automatiskt 05:00 av nästa gröna
    timkörning ("Stänger — allt grönt igen"), så även STÄNGvägen är bevisad, inte bara öppnandet.
-- [ ] 📡 **#43 Radarn som infrastruktur** (Bengts beställning 2/9, efter cellmätningens
+  ✅ **Stängt 22/9, kortavstämningen (DECISIONS #303):** v24 i tre portar, byggd, godkänd och deployad 16/9 (DECISIONS #214, PR #306); spak 2 förkastad (#103), spak 1 bärs av #45.
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #303) — 📡 **#43 Radarn som infrastruktur** (Bengts beställning 2/9, efter cellmätningens
   dom) — EN källa, SEX nyttor: vattenplaningens trigger (#42), blixthalkans pipeline
   (#16), marsdomens orsaksklassning, miss-/skuggfacit, vinterns snöbyar, Norden.
   PLAN: docs/RADAR-PLAN.md — observation inte prognos (#25-lagen), grids samplas mot
@@ -2696,8 +2720,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   📏 **radar_precip 20/9 05:11: 3 312 rader över 24 kompositer**, senaste kompositen 05:10 — alltså
   1 minut gammal, 24 av 24 hämtade. Baslinjen 13/9 var 2 029 rader över 24. Inga bortfall, och
   regel 7:s 70-minutersgräns aldrig i närheten. Radarn har tigit noll gånger av den orsaken.
+  ✅ **Stängt 22/9, kortavstämningen (DECISIONS #303):** steg 1–3 klara (#60, #153–#156), Verify uppfylld 20/9 (DECISIONS #243: 141 mot 202 min/dygn), överspelat enligt #261; steg 4 i kortens egen takt (#42, #45, #197).
 
-- [ ] 📏 **#44 Regntäckningen** (Bengts täthetsfråga 3/9: "räcker timhämtningen?") —
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #303) — 📏 **#44 Regntäckningen** (Bengts täthetsfråga 3/9: "räcker timhämtningen?") —
   stationerna summerar regn per 30 min, ingest hämtar per timme: tappar vi varannan
   bucket? KNAPPEN BYGGD 3/9: scripts/regn-tackning.ts + Actions → regn-tackning
   (histogram 2/1/0 buckets per station-timme + täckningsprocent, självtest med känd
@@ -2761,6 +2786,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   1/2 7 %, 0/2 83 %, täckning **13 %** (44 % 3/9, 36 % 9/9). INTE jämförbart rakt av: nämnaren är alla station-
   körtimmar och arkivdieten sparar bara intressanta rader — måttet skiljer inte torrt från missat. Kortet döms inte
   på det här talet (DECISIONS #188).
+  ✅ **Stängt 22/9, kortavstämningen (DECISIONS #303):** frågan är inaktuell: ingest-live skriver `rain_sum_mm` varje minut sedan 9/9 (#84), regn-30 avvecklad (#89); S1:s skuggjämförelse är beviset som gäller (#188).
 - [x] 🐕 **#50 Vakthunden är själv obevakad — ✅ KLART 20/9, sexton dygn efter fyndet** (fynd 4/9 kväll, läsvarvet inför
   radardomen) — healthchecken är den enda som märker när något tystnar, och den går
   fortfarande på ren GitHub-cron. GENOMGÅNG av alla 15 cron-rader i repot: pulsklockan
@@ -3105,10 +3131,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   utskick). KVITTERAT 3/9: Bengt bekräftade alla tre notiserna (#35–#37) mottagna; issues stängda.
   Google-gruppen visade sig DÖD sedan 2014 (Bengts koll) — portalvakten täcker API-
   utskicken. Kortet HELT stängt: larmkedjan bevisad källa→issue→notis→mottagare.
-- [ ] **Varvloggen ikapp:** STATUS.md:s sessionslogg slutar 2026-08-25 och "Current state"
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #303) — **Varvloggen ikapp:** STATUS.md:s sessionslogg slutar 2026-08-25 och "Current state"
   står kvar på 2026-08-24 — sex dygns arbete (Android-release, iOS-bygget, skuggflottan,
   Apple-kontot, uppladdningen) är bokfört i commits och på tavlan men inte i djuplagret.
   Bryter dokumentationsregeln. *(Delvis åtgärdad i detta varv — resten nästa.)*
+  ✅ **Stängt 22/9, kortavstämningen (DECISIONS #303):** gjort 31/8 (6f75f72); rollen som *Current state* har bedömningens läge tagit över (DECISIONS #228); den kvarvarande STATUS-rubriken bärs av #221.
 
 ### Claude — låst (väntar på nyckel)
 - [ ] 🧂 **#231 PRODUKTIONSREGELNS FALSKLARM PER VÄDERTYP — en rad i bildfacitets läsning** (Bengts ja 21/9, Axel utan synpunkter samma dag, DECISIONS #291,
@@ -3641,7 +3668,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   vartannat). Det är §4.7:s fråga och mäts i larm per timme, inte i upprepningar av en mening.
   🧰 `scripts/upprepningen.ts` och dess knapp behålls — de kostar ingenting och ger ett vintertal om
   frågan skulle komma tillbaka. Före-värdet är och förblir OAVGJORT.
-- [ ] ~~🔇 **#100 Dämpning per FARA och sträcka, inte per id — före vintern**~~ (följd av #99, kandidatkort
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #303) — ~~🔇 **#100 Dämpning per FARA och sträcka, inte per id — före vintern**~~ (följd av #99, kandidatkort
   enligt DECISIONS #99). Motorn tystar repriser av samma larm-id inom 10 min/5 km, men frysrisk från
   tio olika stationer längs samma väg är tio olika id och alla får tala. Vinterdagen hörde sex
   identiska meningar på en timme. Det är inte en ny fara — det är att befintliga faror inte ska
@@ -3676,6 +3703,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **KRAVET EFTER DÄMPNINGEN ÄR TVÅDELAT:** upprepningarna i tillståndsfarorna ska falla utan att
   antalet distinkta meningar gör det — OCH objektfarornas siffra ska stå still. Kamerorna ska låta
   exakt som de gör i dag.
+  ✅ **Stängt 22/9, kortavstämningen (DECISIONS #303):** redan stängd 12/9 (DECISIONS #103, kortet *⛔ #100 … STÄNGT 12/9* ovan) — det här var en kvarglömd kopia.
 - [ ] 🌬️ **#90 VIND OCH SIKT — AXELS JA GIVET 12/9, TRÖSKELDOKUMENT SKRIVET** (systemanalys
   ✅ **`docs/TROSKLAR-VIND-SIKT.md`** (utkast 12/9, DECISIONS #112). Axels ja öppnade halva nyckeln;
   **fastställt 12/9 av Bengt** (DECISIONS #135) — svepet och kraven är låsta.
@@ -3867,10 +3895,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Kvar (Axels hand, inte låst): testarinbjudningarna, internt + externt
 - [x] ~~Skarp support vid första Mac-bygget~~ ✅ KLART 29/8 — appen körde på Axels iPhone
   två dygn före schemat
-- [ ] 🎨 **DESIGNLYFTET** — startar samma dag releasen är inne; byggs under 14-dagarstestet, rullas till testarna som v0.3.1:
-  - [ ] **#24 Skinnet** (Claude Design: hemskärmens farokort, "senast sagt", typografin)
-  - [ ] **#22 Bluetooth-autostart** (vakten startar när bilen kopplar)
-  - [ ] **#23 Heads-up över Google Maps + "Testa rösten"** *(nyckel: releasen inskickad)*
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #303) — 🎨 **DESIGNLYFTET** — startar samma dag releasen är inne; byggs under 14-dagarstestet, rullas till testarna som v0.3.1:
+  - [x] **#24 Skinnet** (Claude Design: hemskärmens farokort, "senast sagt", typografin)
+  - [x] **#22 Bluetooth-autostart** (vakten startar när bilen kopplar)
+  - [x] **#23 Heads-up över Google Maps + "Testa rösten"** *(nyckel: releasen inskickad)*
+  ✅ **Stängt 22/9, kortavstämningen (DECISIONS #303):** levererat 31/8 (cb7d35c, 83145f5, 92c1e91, d056e42; 0.3.2 med heads-up, senast sagt och självväckning). Resterna har egna kort: skinnet v3 på Android, #226 (autostarten på Android) och #23 (heads-up-beviset).
 - [ ] **#25 Halkbaneläget** *(låst: halkbanans avsiktsförklaring)*
 - [ ] **#26 Skolpaketet** (QR-blad, manus, checklista) *(låst: trafikskolans avsiktsförklaring)*
 - [ ] **#15 Kö-slutsmotorn** (TrafficFlow) *(låst: efter release — uppdatering 1)*
@@ -4057,7 +4086,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   12/9 på saklig grund — "regnar det alls" hade gjort påståendet mätbart och samtidigt värdelöst för
   faran. Kortet går därmed vidare enligt kort #81:s stegordning A→F, och steg A (kalibreringen in i
   dokumentet) är skrivet. 🔑 Axels kontrasignering i §3.4 innan steg B.
-- [ ] ⚖️ **#194 GRIND V-B SOM KNAPP — dömer skuggans vattenplaningsvarningar** (Bengts order 16/9, DECISIONS #211).
+  ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** #81 *Byggordningen*. Kvar ur #81: C-station byggd eller struken, och E dömd över V-C:s underlag.
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #303) — ⚖️ **#194 GRIND V-B SOM KNAPP — dömer skuggans vattenplaningsvarningar** (Bengts order 16/9, DECISIONS #211).
   `publish/grind-v-b.ts` + knappen `grind-v-b`: V-B1 falsklarm mot närmaste stations `rain_sum_mm` (10 km, ±30 min,
   tröskeln härledd 2,0/0,65 ≈ 3,1), V-B3 frekvens per rutt och regndygn, V-C:s domspärr. V-B2 säger ⊘ med skäl —
   `situation_archive` bär ingen orsak. Självtest grönt (9 fall). VÄNTAR: första skarpa körningen.
@@ -4068,7 +4098,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Inget tal rörs (#154/#155/#156 är dubbelsignerade). Fråga till Axel när underlaget räcker: tröskel eller "regnar det alls"?
   🗓️ **I MÅNDAGSSERIEN 16/9 (DECISIONS #213):** cron 07:40, sist efter grind-v-a — Bengts "kör den varje regnvecka".
   Ingen skip-spärr (#85:s fälla i omvänd form); mätvakten bevakar att måndagen går. ~1 min/vecka.
-- [ ] 🧭 **#81 Byggordning efter radardomen 14/9 — så byggs #42 utan att upprepa 5–8/9** (Bengts
+  ✅ **Stängt 22/9, kortavstämningen (DECISIONS #303):** byggd och körd 16/9 (DECISIONS #211/#212, PR #303–#305), i måndagsserien (#213, #237); domen över V-C:s underlag bärs av #42.
+- [x] ↪ **SAMMANSLAGET 22/9** i *#42 Vattenplaningsvarningen* (DECISIONS #303) — 🧭 **#81 Byggordning efter radardomen 14/9 — så byggs #42 utan att upprepa 5–8/9** (Bengts
   beställning 9/9 00:05). 🔒 LÅST BAKOM 14/9: faller domen illa gäller #42:s alternativ a/b i
   stället, och det här kortet stängs oanvänt. Faller den väl ut byggs det i DEN HÄR ordningen,
   och varje steg har sitt eget bevis innan nästa börjar.
@@ -4149,6 +4180,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   dom-knappen räknar per regndygn. S1 (skuggjämförelsen av `regn_h`) körs före allt annat på regn_h.
 
 ---
+  ↪ **Sammanslaget 22/9 (DECISIONS #303):** byggordningen stängs samtidigt som #42; A, B, C-radar och E är klara, resten står nu på #42. Det som återstår bärs av *#42 Vattenplaningsvarningen*.
 
 ## 🟡 GÖRA (pågår just nu)
 
@@ -4156,6 +4188,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 ---
 
 ## 🟢 KLART (senaste vinsterna)
+
+- [x] ✅ **KORTAVSTÄMNINGEN 22/9 — 18 KORT STÄNGDA, SJU DUBBLETTER SAMMANSLAGNA, 94 → 69 ÖPPNA (DECISIONS #303)** (Bengts fråga *är det verkligen 94 som ska vara öppna*, hans ja samma dag). Alla 94 prövade mot repot (`docs/KORTAVSTAMNING-2026-09-22.md`); varje stängning bär sitt bevis på kortet. **Stängda:** Bengts egna händer i koden, #72, #85, #229, #159, #192, #187, #186, #185, #154 (regnfältet), minutbantningen, #52, #43, #44, varvloggen, #100 (kopian), designlyftet, #194. **Sammanslagna:** kort 6 → tolv testare till Play-perioden · domänen → skydda namnet · #27 och rollfördelningen → Skyltfonden-paketet · #237 → sensortrappan · #81 → #42 · #51 → #209 · designlyftets #23 → #23 heads-up. Kvar: 4 oklara (§4.2) och sorteringen av 25 kort i fel sektion (#224).
 
 - [x] ✅ **#235 DRIFTRÄKNINGEN KLARAR SJU DYGN IGEN — RAMAR I STÄLLET FÖR LATERALEN — KLART 22/9 (DECISIONS #302)** (fynd 22/9 när
   driftvakten kördes för kort #234). `berakna_trendkandidater` (sql/018) räknade fönstren med en `CROSS JOIN LATERAL` över den
