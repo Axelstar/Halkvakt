@@ -12,7 +12,8 @@ rösttext ändrar OCKSÅ denna fil. Bengt läser den mot koden en gång i månad
   används i mätningarna och radarn i snapshoten (nedan), ingen av dem talar i rösten.
 - **Grannländerna, i skuggarkivet:** Finland (Fintraffic Digitraffic, daggpunkt sedan 4/9), Norge (Vegvesen DATEX,
   eget konto), Danmark (DMI öppet + Vejdirektoratets trafikflöde; NAP-nyckel före produktion). Finska och norska
-  stationer inom 40 km av svenska vägar publiceras som gränspunkter (#49). Skuggflottan kör rutter i alla fyra länderna.
+  stationer inom 40 km av svenska vägar publiceras som gränspunkter (#49). Skuggflottan kör svenska, danska och finska
+  rutter; de norska är definierade men har aldrig körts (kort #238).
 - **Kadens:** `ingest-live` (Supabase, fail-closed nyckel) varje minut; `publicera` var tionde minut → `data/app/v1/
   {manifest,static,live}.json` på CDN med sha256 i manifestet; timvisa och dagliga flöden trycks igång av pulsklockan
   (Supabase pg_cron), eftersom GitHubs egen schemaläggare svälter jobb. Appen verifierar checksumman, behåller förra
@@ -79,9 +80,9 @@ rösttext ändrar OCKSÅ denna fil. Bengt läser den mot koden en gång i månad
 - **Mäter inte effekten på förare.** Inget säger i dag om förare sänker farten. Det är Skyltfondsansökans fråga.
 
 ## 5 · Mätning
-- **Skuggmotorn** (Supabase, varje varv): riktiga motorn mot färska snapshoten på 80 fasta rutter i Sverige, Norge,
-  Finland och Danmark (E4 i etapper Helsingborg→Luleå, E22, E18, E14, E10, E20/E39/E45/E47 i grannländerna), 20 bilar i
-  rotation per varv → `shadow_log` med indata, spärrade larm, efterhalkans indata och facit. Skuggrapporten visar
+- **Skuggmotorn** (Supabase, varje varv): riktiga motorn mot färska snapshoten på 60 körda fasta rutter i Sverige,
+  Danmark och Finland (80 definierade, de 20 norska har aldrig körts — kort #238; E4 i etapper Helsingborg→Luleå, E22,
+  E18, E14, E10, E20/E45/E47 i Danmark), 20 bilar i rotation per varv → `shadow_log` med indata, spärrade larm, efterhalkans indata och facit. Skuggrapporten visar
   takt, spärrar och kamerafacit.
 - **Facit:** väglagskamerabild vid varning, SMHI-varningar, rapporterade halkhändelser, stationernas egna serier och
   förarnas facitsvar. Kamerabilderna öppnas och läses i mars (#157); bildfacit per vädertyp (#231) efter första

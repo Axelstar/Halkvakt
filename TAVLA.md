@@ -1247,6 +1247,16 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [ ] 🇳🇴 **#238 NORGE KÖRS ALDRIG I SKUGGFLOTTAN** (fynd 22/9 när flottan utvärderades, `scripts/matningar/skuggflottan-hittills-2026-09-22.sql`).
+  Skuggmotorn har 20 norska rutter (`ROUTES_NO`), men `shadow_log` har inga rader med land NO på 25 dygn — bara SE (sedan 29/8),
+  DK och FI (sedan 31/8). Antingen anropas skuggmotorn aldrig med `land=no` (pulsklockan), eller så finns ingen norsk snapshot att
+  köra mot. Norge är live i arkivet (Vegvesen, konto) och publiceras som gränspunkter, så det är kedjan efter arkivet som saknas.
+  Verify: en rad med land NO i skuggloggen, och rutten i skuggrapporten.
+- [ ] 🇩🇰 **#239 DANMARKS OLYCKSFLÖDE KLASSAR TROLIGEN MER ÄN OLYCKOR SOM OLYCKA** (samma utvärdering). 642 danska varningar på 25 dygn,
+  alla "Olycka rapporterad N km": 447 från 63 händelser på 10 km, och 59 varningar från EN händelse på 5 km som hörts 59 varv —
+  det ser ut som vägarbeten eller "glat føre" som blivit olycka i mappningen (jfr #5/#32 för Sverige). Ingen användare hör det
+  (Danmark är skugga), men det ska rättas före NAP-steget och innan danska rutter räknas i någon mätning.
+  Verify: de 63 händelsernas typ i källan lästa, mappningen rättad, varningar per varv i Danmark efter rättningen.
 - [ ] ⏱️ **#235 DRIFTRÄKNINGEN (sql/018) KLARAR INTE SJU DYGN LÄNGRE — LATERAL ÖVER EN MATERIALISERAD CTE ÄR KVADRATISK** (fynd
   22/9 när driftvakten kördes för kort #234). `trendarkivet --jamfor` med 7 dygn: TypeScript räknade 11 061 kandidater ur 195 444
   arkivrader, men `berakna_trendkandidater(7 days)` föll på *statement timeout* (600 s). 13/9 gick samma körning på 118 054 rader
