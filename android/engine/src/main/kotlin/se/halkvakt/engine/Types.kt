@@ -157,7 +157,7 @@ object Texts {
                 val m = max(100L, Math.round(distanceM / 100.0) * 100)
                 "Frysrisk framöver — bro om $m meter."
             } else "Isrisk framöver — vägbanan nära noll grader."
-        HazardKind.WILDLIFE -> "Viltrisk — vanlig olycksplats för älg den här tiden."
+        HazardKind.WILDLIFE -> "Viltrisk framöver."
         HazardKind.CAMERA -> hazard?.meta?.speedLimitKmh?.let { "Fartkamera om 500 meter. Gränsen är $it." }
             ?: "Fartkamera om 500 meter."
     }

@@ -9369,3 +9369,45 @@ iOS-appen. Rutans text står i stället ordagrant i produktboken, och skärmbild
 (a) ska texten backas i samma varv som fixen lagas. (2) `docs/PLAY-BACKGROUND-LOCATION.md` rad 26 säger fortfarande *"Positionen
 lämnar aldrig enheten"* — det är Play-deklarationen, inte en app-text, och den rättas med Data Safety före första uppladdningen
 till Google, inte här. (3) Swift-ändringen är en strängliteral; den är inte kompilerad förrän (13) byggs.
+
+## #318 (22/9 2026) Viltvarningen byts: Trafikverkets *djur på vägen* ersätter polisens länspunkter — A–D byggt i ett (kort #241)
+
+**Beställningen.** Axel 22/9 kväll: *"Vi byter ut polisens viltvarning mot Trafikverkets. Trafikverket lämnar 10 ggr så många o på
+rätt plats … vi gör detta också, sen gör vi en deploy"* — alltså ja till skissen (`docs/SKISS-VILT-TRAFIKVERKET-2026-09-22.md`) och
+till att bygga A–D nu. De två öppna frågorna togs enligt skissens rekommendation: **texten exakt #266**, *"Viltrisk framöver."*,
+utan art; **punkten**, inte sträckan.
+
+**Steg 0, mätt först** (dbknapp, körning 35778427029, bara läsande): **487** djurhändelser på 14 dygn (~35/dygn), **alla** med punkt
+och sluttid, median giltighet **73 min**. **33 (7 %)** beskriver en sträcka (*"mellan Sävsjö och Vrigstad"*) — där ligger punkten vid
+ena änden; det räcker inte för att bygga sträcklogik nu. Fritexten bekräftar arten i de flesta, men visar också något skissen inte
+sa: **tamdjur ingår** — *"Flertalet lösa kor på vägen"*, *"En fårskock i närheten av körbanan"*, *"Ko i vägområdet"*. Rösten säger
+*"Viltrisk"* också då. Det är fel ord men rätt varning (ett djur på vägen är samma fara för föraren), och det är skälet att artbeslutet
+är Axels och kommer senare.
+
+**Byggt:**
+- **A. Hämtningen.** `AnimalPresenceObstruction` i `KEEP` i ingest-live och i spegeln `ingest/sources/situations.ts`. Djuren ligger
+  nu i `deviations`, så Trafikverkets radering släcker dem — arkivet ser aldrig en radering, och utan det här hade en bortplockad älg
+  varnat till sluttiden.
+- **B. Snapshoten.** Olycksfrågan får `message_type_value = 'Accident'` (samma rad som grannarna), annars hade en älg sagts som
+  *"olycka"*. Ny nyckel **`djur`** `[{id, lon, lat, art, slut}]`; **`wildlife` publiceras tom** — polisens fråga borttagen. Kartans
+  olyckslager fick samma Accident-rad (`publish/map-core.ts`), annars hade älgarna ritats som olyckor.
+- **C. Motorn.** Texten *"Viltrisk framöver."* i TS, Kotlin och Swift; v13 omgenererad till den; ny **v37** (djur framför talar t=38
+  vid 655 m med 11 m marginal åt båda håll, djur bakom tiger). Parsrarna (`engine/src/snapshot.ts`, `SnapshotRepo.kt`,
+  `SnapshotRepo.swift`) läser `djur` som viltfara med id `djur:<id>`. Skuggmotorn och publicera buntade om.
+- **Åldersvakten** (fynd under bygget, inte i skissen): vilt räknades som *statiskt* och överlevde gammal data för evigt — rätt för
+  en olycksplatsstatistik, fel för ett djur som står där nu. Viltfaror åldras nu som olyckorna (120 min) på båda plattformarna; test
+  i `AgeGateTest`.
+- **D. Visningen.** Android: *"Djur rapporterat på vägen"*, källan *"Trafikverket · läget nu"*, inställningen *"Djur på vägen enligt
+  Trafikverket"*; iOS samma inställningstext. Polisen struken ur attributionen i båda apparna — ingen polisdata når appen längre.
+  Produktboken: rösttabellen, attributionen och dataflödet.
+
+**Ingen prioritet, inget ledavstånd, ingen dämpning ändrad.** Invarianten, Data Safety och integritetssidan orörda — inget nytt lämnar
+telefonen.
+
+**Övergången, som skissen lovade:** gamla appar läser bara `wildlife`, som är tom ⇒ tysta för vilt (DECISIONS #13 uppfylld igen).
+Nya appar (Android efter CI, iOS i 0.3.9 (13)) läser `djur`. Skuggflottan talar på djuren direkt efter deployen.
+
+**Sagt högt.** (1) Det här gör djurhalvan av #32 nu, trots att kortet stängdes till våren (#315); övriga hinder och #15 ligger kvar.
+(2) Rader som fanns i arkivet före deployen kommer in i `deviations` först när Trafikverket ändrar dem; med median 73 min är det
+borta inom en timme eller två. (3) Android-versionen höjdes inte: inget har laddats upp till Play än, och testarna får APK:n ur CI.
+(4) `polisen_events` samlas fortfarande in till arkivet; bara appens väg är stängd.

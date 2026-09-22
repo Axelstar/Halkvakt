@@ -129,7 +129,7 @@ betatestet, om du själv slår på det: då skickas varningens id, klockslag och
 (Stämde / Stämde inte) — det säger ungefär var du var när rösten talade. Inget annat."*
 Plus ärlighetsraden: *"Varnar vid
 Trafikverkets mätstationer och rapporterade väglag — mellan stationerna är vägen
-oövervakad."* Och attributionen: Trafikverket (CC0), Polisen, SMHI, Fintraffic (CC BY 4.0),
+oövervakad."* Och attributionen: Trafikverket (CC0), SMHI, Fintraffic (CC BY 4.0),
 broar © OpenStreetMap-bidragsgivare (ODbL).
 
 ## Exakt vad rösten säger
@@ -143,7 +143,7 @@ broar © OpenStreetMap-bidragsgivare (ODbL).
 | **Allvarlig olycka du kom nära utan att höra det tidiga ropet** | "Allvarlig olycka 2 kilometer framför dig — stor påverkan. Sakta ner." |
 | Rapporterad halka på din väg — kod 2 eller högre, eller kod 1 med is, snö, frost, halka, halt, halkrisk, halkig eller *mycket besvärligt* (det sista sedan 22/9, kort #156; sedan 16/9 även i sammansättningar: *Rimfrost*, *Nysnö*, *Blötsnö*; motåtgärder som *Halkbekämpning* tiger) | "Varning: halka rapporterad på vägen framför dig." |
 | Mätstation visar frysrisk | "Isrisk framöver — vägbanan nära noll grader." |
-| Färsk viltolycka i området | "Viltrisk — vanlig olycksplats för älg den här tiden." |
+| Djur på vägen enligt Trafikverket — älg, hjort, vildsvin, men också lösa kor och får (sedan 22/9, DECISIONS #318; polisens länspunkter är borta) | "Viltrisk framöver." |
 | Fartkamera | "Fartkamera om 500 meter. Gränsen är 80." |
 | Väglagsdatat är gammalt (en gång per körning) | "Ingen färsk väglagsdata – kör som om det kan vara halt." |
 
@@ -210,8 +210,7 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    TV[Trafikverket<br/>väglag · stationer · olyckor] --> I[Insamling<br/>varje minut/timme]
-    PO[Polisen<br/>viltolyckor] --> I
+    TV[Trafikverket<br/>väglag · stationer · olyckor · djur på vägen] --> I[Insamling<br/>varje minut/timme]
     SM[SMHI<br/>varningar] --> I
     I --> S[Snapshot byggs<br/>var 10:e minut]
     S --> T[Telefonen hämtar<br/>+ verifierar äkthet]

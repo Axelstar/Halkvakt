@@ -61,7 +61,7 @@ export function alertText(
       }
       return "Isrisk framöver — vägbanan nära noll grader.";
     case "wildlife":
-      return "Viltrisk — vanlig olycksplats för älg den här tiden.";
+      return "Viltrisk framöver."; // DECISIONS #266/#318 — punktkälla ⇒ "framöver"
     case "camera": {
       const limit = hazard?.meta?.speedLimitKmh;
       return limit != null

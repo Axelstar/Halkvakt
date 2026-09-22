@@ -438,6 +438,19 @@ const scenarios: Scenario[] = [
     hazards: [{ id: "wx1", kind: "icing_point", lon: LON0, lat: northOf(1017), meta: { surfaceTempC: -1, moisture: true } }],
     trace: northTrace(120, 40),
   },
+  {
+    file: "v37_djur_trafikverket", name: "Djur på vägen (Trafikverket): framför talar, bakom tiger (#318)",
+    description:
+      "Två djur ur live.json:s nyckel `djur` (DECISIONS #318), 80 km/h norrut. djur:A1 1 500 m fram talar när det " +
+      "kommer inom förvarningen 667 m (30 s): t=38 vid 656 m (t=37 låg 678 m — marginal 11 m åt båda håll). " +
+      "Texten är #266:s utan art: \"Viltrisk framöver.\" (punktkälla ⇒ \"framöver\"). djur:A2 300 m BAKOM bilen " +
+      "tiger hela vägen — ett djur man redan passerat är ingen varning.",
+    hazards: [
+      { id: "djur:A1", kind: "wildlife", lon: LON0, lat: northOf(1500) },
+      { id: "djur:A2", kind: "wildlife", lon: LON0, lat: northOf(-300) },
+    ],
+    trace: northTrace(120, 80),
+  },
 ];
 
 /** Canonical replay-with-updates — the reference all three test runners mirror. */

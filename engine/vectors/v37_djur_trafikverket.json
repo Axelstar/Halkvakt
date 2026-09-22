@@ -1,22 +1,18 @@
 {
- "name": "Vilt slår kamera i prioritet",
- "description": "Aktiv viltzon 600 m fram + kamera 480 m fram, kvalificerade samtidigt. Viltet talar; kameran släpps och passeras. EN varning. Kamerans bearing 180 = tittar söderut ⇒ fotar vår norrgående riktning (riktningsvändningen 2/9). UPPDATERAD 13/9 (#127): viltet talar t=1; kameran tystas 10 s (lägre prioritet) och talar t=11. Två varningar nu, båda sanna — en andra, annan, aktuell varning får plats.",
+ "name": "Djur på vägen (Trafikverket): framför talar, bakom tiger (#318)",
+ "description": "Två djur ur live.json:s nyckel `djur` (DECISIONS #318), 80 km/h norrut. djur:A1 1 500 m fram talar när det kommer inom förvarningen 667 m (30 s): t=38 vid 656 m (t=37 låg 678 m — marginal 11 m åt båda håll). Texten är #266:s utan art: \"Viltrisk framöver.\" (punktkälla ⇒ \"framöver\"). djur:A2 300 m BAKOM bilen tiger hela vägen — ett djur man redan passerat är ingen varning.",
  "hazards": [
   {
-   "id": "wild1",
+   "id": "djur:A1",
    "kind": "wildlife",
    "lon": 15,
-   "lat": 58.00538986704995,
-   "meta": {
-    "active": true
-   }
+   "lat": 58.01347466762486
   },
   {
-   "id": "cam1",
-   "kind": "camera",
+   "id": "djur:A2",
+   "kind": "wildlife",
    "lon": 15,
-   "lat": 58.00431189363996,
-   "bearing": 180
+   "lat": 57.99730506647503
   }
  ],
  "trace": [
@@ -628,18 +624,11 @@
  ],
  "expected": [
   {
-   "t": 1,
-   "hazardId": "wild1",
+   "t": 38,
+   "hazardId": "djur:A1",
    "kind": "wildlife",
-   "distanceM": 577,
+   "distanceM": 655,
    "text": "Viltrisk framöver."
-  },
-  {
-   "t": 11,
-   "hazardId": "cam1",
-   "kind": "camera",
-   "distanceM": 235,
-   "text": "Fartkamera om 500 meter."
   }
  ]
 }

@@ -26,8 +26,8 @@ function fakeDb(rows: Partial<Record<string, any[]>>) {
     if (text.includes("FROM radar_precip")) return rows.radar ?? [];
     if (text.includes("FROM weather_latest") && text.includes("surface_temp_c <= 3")) return rows.wx ?? [];
     if (text.includes("FROM weather_latest")) return rows.allWx ?? [];
+    if (text.includes("AnimalPresenceObstruction")) return rows.djur ?? [];   // #318 — före olycksfrågan
     if (text.includes("FROM deviations")) return rows.deviations ?? [];
-    if (text.includes("FROM polisen_events")) return rows.vilt ?? [];
     if (text.includes("FROM smhi_warnings")) return rows.smhi ?? [];
     if (text.includes("FROM weather_observations") && text.includes("HAVING count(*)")) return rows.karantan ?? [];
     if (text.includes("FROM givarfel_dygn")) return rows.langsam ?? [];
@@ -41,7 +41,7 @@ function fakeDb(rows: Partial<Record<string, any[]>>) {
 const NOW = new Date("2026-11-20T06:30:00Z");
 
 test("#74 format: olyckans gradering är gated på Accident, SMHI/vilt/kamera i motorns vokabulär", async () => {
-  const { q } = fakeDb({
+  const { q, asked } = fakeDb({
     cameras: [{ camera_id: "TV1", road_number: "E4", bearing: "180", lon: 15, lat: 58.02 }],
     segments: [{ segment_id: "S1", condition_code: 2, condition_info: ["Is"], road_number: "E4", g: { coordinates: [[14.99, 58.08], [15.01, 58.08]] } }],
     // pg levererar numeric som STRÄNG — kärnan ska ge tal ut.
@@ -53,10 +53,13 @@ test("#74 format: olyckans gradering är gated på Accident, SMHI/vilt/kamera i 
       { deviation_id: "D2", message_type: "Vägarbete", message_type_value: "Roadworks", road_number: "E4",
         severity_code: "4", end_time: "2026-11-20T08:15:00Z", lon: 15, lat: 58.2 },
     ],
-    vilt: [{ event_id: 999001, lon: 14.9, lat: 63.1, species: "älg", datetime: NOW }],
+    djur: [{ deviation_id: "A1", message: "Älgar rör sig i vägområdet söder om Älmhult.", end_time: "2026-11-20T08:15:00Z", lon: 14.9, lat: 56.5 },
+           { deviation_id: "A2", message: "Lösa kor på vägen.", end_time: "2026-11-20T07:00:00Z", lon: 15.1, lat: 57.0 }],
     smhi: [{ area_id: "25", event_sv: "Snöfall", level_code: "YELLOW", g: { type: "Polygon", coordinates: [] } }],
   });
   const { staticDoc, liveDoc } = await buildSnapshot(q, [], NOW);
+  const olycksfragan = asked.find((t) => t.includes("FROM deviations") && !t.includes("AnimalPresenceObstruction"));
+  assert.match(olycksfragan!, /message_type_value = 'Accident'/, "#318: ett djur i deviations får aldrig bli en olycka");
 
   assert.equal(liveDoc.generated_at, "2026-11-20T06:30:00.000Z");
   assert.deepEqual(staticDoc.cameras, [{ id: "TV1", lon: 15, lat: 58.02, bearing: 180, road: "E4" }]);
@@ -64,12 +67,16 @@ test("#74 format: olyckans gradering är gated på Accident, SMHI/vilt/kamera i 
   assert.deepEqual(liveDoc.deviations[0], { id: "D1", lon: 15, lat: 58.1, typ: "Olycka", road: "E4", sev: 4, slut: "09:15" }); // 08:15Z = 09:15 CET
   assert.deepEqual(liveDoc.deviations[1], { id: "D2", lon: 15, lat: 58.2, typ: "Vägarbete", road: "E4", sev: null, slut: null });
   assert.deepEqual(liveDoc.smhi, [{ id: 25, event: "Snöfall", niva: "YELLOW", geom: { type: "Polygon", coordinates: [] } }]);
-  assert.deepEqual(liveDoc.wildlife, [{ id: "999001", lon: 14.9, lat: 63.1, art: "älg" }]);
+  assert.deepEqual(liveDoc.wildlife, [], "#318: polisens länspunkter bort");
+  assert.deepEqual(liveDoc.djur, [
+    { id: "A1", lon: 14.9, lat: 56.5, art: "älg", slut: "09:15" },
+    { id: "A2", lon: 15.1, lat: 57, art: null, slut: "08:00" },
+  ]);
   assert.deepEqual(liveDoc.segments[0].code, 2);
 
   // Och motorn läser det rakt av: exakt de hazards vi förväntar oss.
   const kinds = snapshotToHazards(staticDoc, liveDoc).map((h) => h.kind).sort();
-  assert.deepEqual(kinds, ["accident", "accident", "camera", "icing_point", "slippery_segment", "wildlife"]);
+  assert.deepEqual(kinds, ["accident", "accident", "camera", "icing_point", "slippery_segment", "wildlife", "wildlife"]);
 });
 
 test("#38 broarna: bara broar med en kall+våt station inom 15 km, med stationens yta", async () => {

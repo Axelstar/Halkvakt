@@ -27,7 +27,10 @@ const pt = (w?: string) => { const m = w?.match(/POINT \(([-\d.]+) ([-\d.]+)\)/)
 // MIRROR of ingest/sources/situations.ts — keep the two in step. Trafikverket's real
 // MessageTypeValue vocabulary has no "Obstruction"/"Incident"; the old set matched only
 // "Accident" in practice. Widening = product decision, see BACKLOG #32.
-const KEEP = new Set(["Accident"]);
+// AnimalPresenceObstruction added 22/9 (DECISIONS #318, kort #241): djuren måste ligga i
+// `deviations` för att Trafikverkets RADERINGAR ska nå dem — arkivet ser aldrig en radering.
+// Snapshoten skiljer typerna åt: bara Accident blir olycka, djuren går under `djur`.
+const KEEP = new Set(["Accident", "AnimalPresenceObstruction"]);
 // MIRROR of ARCHIVE in ingest/sources/situations.ts (#33). Live obstructions etc. go to
 // situation_archive — never to the live table, never deleted by ingest.
 const ARCHIVE = new Set([

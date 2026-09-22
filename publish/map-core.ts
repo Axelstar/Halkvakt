@@ -60,6 +60,7 @@ export async function buildMapData(q: Q, opts: { trvKey?: string; fetchFn?: type
     FROM deviations
     WHERE NOT deleted AND (geom IS NOT NULL OR line_geom IS NOT NULL)
       AND (end_time IS NULL OR end_time > now())
+      AND message_type_value = 'Accident'   -- #318: djuren ligger i samma tabell sedan 22/9
     UNION ALL
     SELECT 'FI', deviation_id, message_type, message, severity_text, road_number, start_time,
            ST_AsGeoJSON(geom)::json

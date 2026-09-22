@@ -27,7 +27,7 @@ struct InstallningarView: View {
                             Divider().overlay(Brand.stroke)
                             ToggleRow(title: "Frysrisk", sub: "Vägväderstationer nära noll och vått", isOn: $prefs.icing)
                             Divider().overlay(Brand.stroke)
-                            ToggleRow(title: "Vilt", sub: "Polisens viltolyckor senaste dygnen", isOn: $prefs.wildlife)
+                            ToggleRow(title: "Vilt", sub: "Djur på vägen enligt Trafikverket", isOn: $prefs.wildlife)
                             Divider().overlay(Brand.stroke)
                             ToggleRow(title: "Fartkameror", sub: "Fasta kameror på din väg", isOn: $prefs.camera)
                         }
@@ -119,7 +119,7 @@ struct InstallningarView: View {
                         LinkRow(title: "Om appen & vanliga frågor", url: "https://axelstar.github.io/halkvakt-karta/om.html")
                         LinkRow(title: "Press & material", url: "https://axelstar.github.io/halkvakt-karta/press.html")
                         LinkRow(title: "Integritetspolicy", url: "https://axelstar.github.io/halkvakt-karta/integritet.html")
-                        Text("Varnar vid Trafikverkets mätstationer och rapporterade väglag — mellan stationerna är vägen oövervakad. Data: Trafikverket (CC0), Polisen, SMHI, Fintraffic (CC BY 4.0), broar © OpenStreetMap-bidragsgivare (ODbL). Halkvakt är fristående och har ingen koppling till myndigheterna.")
+                        Text("Varnar vid Trafikverkets mätstationer och rapporterade väglag — mellan stationerna är vägen oövervakad. Data: Trafikverket (CC0), SMHI, Fintraffic (CC BY 4.0), broar © OpenStreetMap-bidragsgivare (ODbL). Halkvakt är fristående och har ingen koppling till myndigheterna.")
                             .font(Typo.sans(12)).foregroundStyle(Brand.faint)
                     }
                     .padding(.top, 8)

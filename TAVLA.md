@@ -2674,6 +2674,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔑 **Nyckel:** Bengts ja till (1). (2) är Axels text och vårens fråga.
   Verify (1): live.json utan polisens punkter efter deployen (manifestets sha stämmer), motorns prov och v13 gröna, och skuggloggen
   utan viltlarm från polisens punkter.
+  ✅ **22/9 kväll: A–D BYGGT** (DECISIONS #318, Axels *"vi gör detta också, sen gör vi en deploy"*): `wildlife` tom, Trafikverkets djur under `djur`, olycksfrågan bara Accident, *"Viltrisk framöver."* i tre portar, v13 + v37, åldersvakten åldrar vilt som olyckor. Kvar: deployens bevis (live.json med `djur`, skuggloggen med `djur:`-larm), skärmbilden ur Android-CI, iOS i 0.3.9 (13).
   📐 **22/9 — skiss för steg 1 och 2 i ett:** `docs/SKISS-VILT-TRAFIKVERKET-2026-09-22.md` (ny nyckel `djur`, djuren in i `deviations`, texten #266, v37, skuggmotorn först; bara iOS-bygget kräver Axel).
 
 - [ ] 🧂 **#231 PRODUKTIONSREGELNS FALSKLARM PER VÄDERTYP — en rad i bildfacitets läsning** (Bengts ja 21/9, Axel utan synpunkter samma dag, DECISIONS #291,

@@ -115,6 +115,15 @@ object SnapshotRepo {
                 ))
             }
         }
+        liveDoc.optJSONArray("djur")?.let { ds ->   // #318 — Trafikverkets djur på vägen
+            for (i in 0 until ds.length()) {
+                val v = ds.getJSONObject(i)
+                out.add(PointHazard(
+                    id = "djur:${v.getString("id")}", kind = HazardKind.WILDLIFE,
+                    lon = v.getDouble("lon"), lat = v.getDouble("lat"),
+                ))
+            }
+        }
         val devs = liveDoc.getJSONArray("deviations")
         for (i in 0 until devs.length()) {
             val d = devs.getJSONObject(i)

@@ -61,6 +61,12 @@ test("wildlife-array mappas till vilt-punkter (och tål att saknas)", () => {
   assert.ok(!snapshotToHazards(staticDoc, liveDoc).some((h) => h.kind === "wildlife"));
 });
 
+test("#318 djur-arrayen blir viltfaror med egna id, bredvid en tom wildlife", () => {
+  const med: LiveDoc = { ...liveDoc, wildlife: [], djur: [{ id: "SE_STA_1", lon: 14.9, lat: 56.5, art: "älg", slut: "09:15" }] };
+  const hz = snapshotToHazards(staticDoc, med).filter((h) => h.kind === "wildlife");
+  assert.deepEqual(hz.map((h) => h.id), ["djur:SE_STA_1"]);
+});
+
 test("olyckslyftet: sev/slut når motorn, och gammal snapshot utan fälten är ofarlig (#28)", () => {
   const serious: LiveDoc = {
     ...liveDoc,

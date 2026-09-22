@@ -112,6 +112,9 @@ test("#33 arkivlistan: bruset stängs ute, vinterfacit + olyckor tas med", () =>
   assert.equal(shouldArchive("Accident"), true);
   // Och kandidaterna för #32 (djur på vägbanan, stoppade fordon) sparas nu från dag ett:
   assert.equal(shouldArchive("AnimalPresenceObstruction"), true);
+  // #318: djuren i den levande tabellen, så att Trafikverkets radering släcker dem.
+  assert.equal(ingestAction("AnimalPresenceObstruction", false), "store");
+  assert.equal(ingestAction("AnimalPresenceObstruction", true), "mark-deleted");
   assert.equal(shouldArchive("VehicleObstruction"), true);
   // Arkivering är oberoende av livetabellen: ett hinder arkiveras men lagras aldrig live.
   assert.equal(ingestAction("VehicleObstruction", false), "skip");

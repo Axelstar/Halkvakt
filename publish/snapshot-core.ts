@@ -326,12 +326,19 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
            ST_Y(COALESCE(geom, ST_Centroid(line_geom))) AS lat
     FROM deviations
     WHERE NOT deleted AND (geom IS NOT NULL OR line_geom IS NOT NULL)
-      AND (end_time IS NULL OR end_time > now())`);
-  const vilt = await q(`
-    SELECT event_id, ST_X(geom::geometry) lon, ST_Y(geom::geometry) lat, species, datetime
-    FROM polisen_events
-    WHERE geom IS NOT NULL AND datetime > now() - interval '48 hours'
-    ORDER BY datetime DESC`);
+      AND (end_time IS NULL OR end_time > now())
+      AND message_type_value = 'Accident'`);
+  // Djur på vägen (kort #241, DECISIONS #318): Trafikverkets AnimalPresenceObstruction ersätter polisens
+  // länspunkter. Samma tabell som olyckorna, så en radering släcker djuret. Olycksfrågan ovan får bara
+  // Accident — utan den raden hade rösten sagt "olycka" om en älg.
+  const djurRader = await q(`
+    SELECT deviation_id, message, end_time,
+           ST_X(COALESCE(geom, ST_Centroid(line_geom))) AS lon,
+           ST_Y(COALESCE(geom, ST_Centroid(line_geom))) AS lat
+    FROM deviations
+    WHERE NOT deleted AND (geom IS NOT NULL OR line_geom IS NOT NULL)
+      AND end_time > now()
+      AND message_type_value = 'AnimalPresenceObstruction'`);
   const smhi = await q(`
     SELECT area_id, event_sv, level_code, ST_AsGeoJSON(ST_SimplifyPreserveTopology(geom, 0.01))::json AS g
     FROM smhi_warnings
@@ -368,10 +375,25 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
       slut: r.message_type_value === "Accident" ? hhmmStockholm(r.end_time) : null,
     })),
     smhi: smhi.map((r) => ({ id: Number(r.area_id), event: r.event_sv, niva: r.level_code, geom: r.g })),
-    wildlife: vilt.map((r) => ({ id: String(r.event_id), lon: Number(r.lon), lat: Number(r.lat), art: r.species ?? null })),
+    // Tom med flit (#318): polisens länspunkter bort (DECISIONS #13). Appar som bara läser `wildlife`
+    // tystnar för vilt; de nya läser `djur` och säger "Viltrisk framöver." (#266).
+    wildlife: [] as unknown[],
+    djur: djurRader.map((r) => ({
+      id: String(r.deviation_id), lon: Number(r.lon), lat: Number(r.lat),
+      art: djurart(r.message), slut: hhmmStockholm(r.end_time),
+    })),
     bridges,
   };
   return { staticDoc, liveDoc, border, notes };
+}
+
+/** Djurslaget ur Trafikverkets fritext ("Älg i vägområdet …"), grundform eller null. Samma artlista som
+ *  ingest/sources/polisen.ts. Visas inte och sägs inte i dag — rösten säger #266 utan art (DECISIONS #318). */
+const DJURART =
+  /(?<![a-zåäö])(älg|rådjur|vildsvin|kronhjort|dovhjort|hjort|ren|björn|varg|lodjur|utter|mufflonfår)(?:ar|en|et|arna|na)?(?![a-zåäö])/i;
+export function djurart(text: unknown): string | null {
+  const m = typeof text === "string" ? text.match(DJURART) : null;
+  return m ? m[1].toLowerCase() : null;
 }
 
 async function sha256Hex(s: string): Promise<string> {
@@ -429,6 +451,7 @@ export async function buildGrannSnapshot(q: Q, land: Granne, now: Date = new Dat
     })),
     smhi: [] as unknown[],
     wildlife: [] as unknown[],
+    djur: [] as unknown[],
   };
   return { staticDoc, liveDoc };
 }

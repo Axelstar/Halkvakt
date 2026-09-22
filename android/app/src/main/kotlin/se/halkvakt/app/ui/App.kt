@@ -98,14 +98,14 @@ private fun kindTitle(k: HazardKind) = when (k) {
     HazardKind.ACCIDENT -> "Olycka eller hinder på vägen"
     HazardKind.SLIPPERY_SEGMENT -> "Halt väglag rapporterat"
     HazardKind.ICING_POINT -> "Frysrisk vid vägväderstation"
-    HazardKind.WILDLIFE -> "Vilt rapporterat i området"
+    HazardKind.WILDLIFE -> "Djur rapporterat på vägen"
     HazardKind.CAMERA -> "Fartkamera"
 }
 private fun kindSource(k: HazardKind) = when (k) {
     HazardKind.ACCIDENT -> "Trafikverket · läget nu"
     HazardKind.SLIPPERY_SEGMENT -> "Trafikverket väglag"
     HazardKind.ICING_POINT -> "Vägväderstation"
-    HazardKind.WILDLIFE -> "Polisen"
+    HazardKind.WILDLIFE -> "Trafikverket · läget nu"
     HazardKind.CAMERA -> "Trafikverket kameror"
 }
 
@@ -540,7 +540,7 @@ private val KIND_LABEL = mapOf(
     HazardKind.ACCIDENT to ("Olyckor & hinder" to "Trafikverkets pågående lägen"),
     HazardKind.SLIPPERY_SEGMENT to ("Halt väglag" to "Rapporterade hala vägsträckor"),
     HazardKind.ICING_POINT to ("Frysrisk" to "Vägväderstationer nära noll och vått"),
-    HazardKind.WILDLIFE to ("Vilt" to "Polisens viltolyckor senaste dygnen"),
+    HazardKind.WILDLIFE to ("Vilt" to "Djur på vägen enligt Trafikverket"),
     HazardKind.CAMERA to ("Fartkameror" to "Fasta kameror på din väg"),
 )
 
@@ -681,7 +681,7 @@ private fun OmScreen() {
         LinkRow("Press & material") { uri.openUri("https://axelstar.github.io/halkvakt-karta/press.html") }
         LinkRow("Integritetspolicy") { uri.openUri("https://axelstar.github.io/halkvakt-karta/integritet.html") }
         Spacer(Modifier.height(24.dp))
-        Text("Version $version · Öppna data från Trafikverket (CC0) och Polisen",
+        Text("Version $version · Öppna data från Trafikverket (CC0)",
             color = Dis, fontSize = 12.sp, fontFamily = FontFamily.Monospace)
         Spacer(Modifier.height(8.dp))
     }

@@ -27,7 +27,9 @@ object AgeGate {
                 is PointHazard -> when (h.kind) {
                     HazardKind.ICING_POINT -> false             // frysrisk: bort
                     HazardKind.ACCIDENT -> keepAccidents
-                    else -> true                                // kameror/vilt: statiska
+                    // #318: djuren är läget nu (Trafikverket, median 73 min) — de åldras som olyckorna.
+                    HazardKind.WILDLIFE -> keepAccidents
+                    else -> true                                // kameror: statiska
                 }
             }
         }

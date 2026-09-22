@@ -178,7 +178,7 @@ enum Texts {
             }
             return "Isrisk framöver — vägbanan nära noll grader."
         case .wildlife:
-            return "Viltrisk — vanlig olycksplats för älg den här tiden."
+            return "Viltrisk framöver."
         case .camera:
             if let limit = speedLimitKmh { return "Fartkamera om 500 meter. Gränsen är \(limit)." }
             return "Fartkamera om 500 meter."

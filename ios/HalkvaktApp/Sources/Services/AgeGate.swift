@@ -20,6 +20,7 @@ enum AgeGate {
                 switch kind {
                 case .icing_point: return false
                 case .accident: return keepAccidents
+                case .wildlife: return keepAccidents   // #318: djuren är läget nu, åldras som olyckorna
                 default: return true
                 }
             }

@@ -57,6 +57,11 @@ enum SnapshotRepo {
                               lon: dbl(v, "lon"), lat: dbl(v, "lat"), bearing: nil,
                               meta: PointMeta()))
         }
+        for v in arr(liveDoc, "djur") {   // #318 — Trafikverkets djur på vägen
+            out.append(.point(id: "djur:\(str(v, "id"))", kind: .wildlife,
+                              lon: dbl(v, "lon"), lat: dbl(v, "lat"), bearing: nil,
+                              meta: PointMeta()))
+        }
         for d in arr(liveDoc, "deviations") {
             // Olyckslyftet (#28): sev/slut are absent in snapshots published before this
             // shipped, and absent for non-accident deviation types by design. Missing ⇒ nil

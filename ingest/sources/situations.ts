@@ -34,7 +34,13 @@ export interface Deviation {
 // parsers, so an unwidened voice would announce a stopped vehicle as "Olycka rapporterad
 // 3 kilometer framför dig" — a direct breach of the overstatement invariant in CLAUDE.md.
 // See BACKLOG #32 for that card. DECISIONS #5's original intent is preserved there.
-const KEEP = new Set(["Accident"]);
+//
+// 22/9 (DECISIONS #318, kort #241): AnimalPresenceObstruction widened INTO the live table, so
+// that Trafikverket's deletes clear a removed animal (the archive never sees a delete). The
+// overstatement risk above is closed in the snapshot, not here: publish/snapshot-core.ts sends
+// only Accident as `deviations` and the animals under their own key `djur`. MIRROR of
+// supabase/functions/ingest-live/index.ts.
+const KEEP = new Set(["Accident", "AnimalPresenceObstruction"]);
 
 /**
  * Types that go to `situation_archive` (BACKLOG #33) — the durable record the miss-

@@ -29,4 +29,10 @@ class AgeGateTest {
         assertTrue(r.stale)
         assertEquals(listOf("cam:1"), r.hazards.map { it.id })
     }
+
+    @Test fun `djuret åldras som olyckan (#318)`() {
+        val med = hazards + PointHazard("djur:1", HazardKind.WILDLIFE, 18.0, 59.0)
+        assertTrue(AgeGate.filter(med, t0, t0 + 50 * 60_000).hazards.any { it.id == "djur:1" })
+        assertFalse(AgeGate.filter(med, t0, t0 + 121 * 60_000).hazards.any { it.id == "djur:1" })
+    }
 }
