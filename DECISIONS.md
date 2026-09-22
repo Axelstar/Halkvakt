@@ -9014,3 +9014,10 @@ på flaggan; integrationstest mot riktig PostGIS: LV_FEL (7 ° under i 30 h) få
 sista tio timmarna) ett gammalt, omkörning ger identisk tabell, och snapshoten tystar bara LV_FEL; KAR_E i drifträkningen. Nio
 självtester, 44 kontrakt, bunten i synk. **Motprov:** tystnaden borttagen ur snapshoten ⇒ rött på rätt rad; `rimlig()` utan flaggan
 ⇒ rött. Driftsättningen och beviset ur driften redovisas på kortet och i §0b.
+
+**I DRIFT 22/9, bevis:** `sql/030` körd med backfill (28 stationsdygn: 1106 tjugo, 2135 fyra, 2346 två, 1612 och 2132 ett — mätningens
+fem, ingen annan), tysta med fristen 3 h just nu: 1106; livekörningen 60 ms. `sql/018` in via trendarkivet, driftvakten ENSE 5 767 = 5 767.
+`sql/028`: `pg_proc` visar dygnsflaggan i `berakna_trendkandidater`, `uppspelning_efterhalka` och `langsam_vakt`. `ingest-live`
+deployad 05:44:03Z — svaren 05:53–05:55Z bär *langsam_vakt: 1 stationsdygn*. `publicera` deployad 05:45:01Z — publiceringen 05:50:02Z
+bär noten *"långsam vakt: 1 station(er) tysta, ytan ≥ 6 ° under luften ett helt dygn: 1106"* (05:30 och 05:40 saknar den), manifestets
+sha = filens, 57 stationer, ingen av de sju, noll broar. Kort #236 stängt. Omkörning av formen efter första frostmånaden står i §0b.

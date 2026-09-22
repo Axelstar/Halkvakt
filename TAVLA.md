@@ -1246,29 +1246,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
-- [ ] 🩹 **#236 DEN LÅNGSAMMA VAKTEN — LÄKER Ö LJUNGBY TILLS TRAFIKVERKET LAGAR GIVAREN** (Bengts order 22/9: *"bygg den
-  långsamma vakten nu och gör den klar"*, DECISIONS #300; alternativ (d) ur §4.2, mätt innan den byggdes). **Problemet:** Ö Ljungby
-  1106 ligger 6–8 ° under luften också i sval luft, där varken #75 (gap < 12) eller radvakten (luft < +10) fyrar; karantänen
-  höll den tyst på brott från de varma dagarna, och de åldras ut runt 28/9. Anmälan är skickad, men ingen vet när de lagar den.
-  **Mätningen (`scripts/matningar/langsam-vakt-d-2026-09-22.sql`):** formen *≥ 90 % av det senaste dygnets rader (minst 24)
-  med ytan ≥ 6 ° under luften* tar exakt fem stationer i hela arkivet (711), alla bland de sju anmälda — 1106 (20 dygn), 2135,
-  2346, 2132, 1612 — och ingen frisk vid gränsen 5, 6 eller 8 °. Ö Ljungby har haft felet sedan 30/8 med gap under 12, så #75
-  såg det inte förrän 18/9.
-  🔨 **BYGGT 22/9 — regeln bor på ETT ställe och läker åt båda håll av sig själv:** `sql/030` skapar tabellen `givarfel_dygn`
-  (station, dygn, första och senaste ögonblick i felet) och funktionen `langsam_vakt()`, som räknar om det senaste fönstret med
-  ett dygns historia och skriver dygnen idempotent (least/greatest). `ingest-live` kör den varje varv, fail-soft som trenden.
-  **Snapshoten** (`LANGSAM_FRIST_H = 3`) tystar stationer vars senaste ögonblick i felet är färskare än tre timmar — samma tystnad
-  som karantänen, väderpunkt och broarnas källa — och noterar vilka. **Mätningarna** utesluter stationens rader det dygnet
-  (`givarfelSql`, i `karantanSql`; `rimlig()` och `sql/018` fäller på dygnsflaggan; `sql/028` och efterhalkans mätsats med).
-  In ~22 h efter att felet börjat, ut några timmar efter att givaren mäter rätt: ingen lista att hålla, ingen som måste
-  minnas när Trafikverket lagat. Inga nya tal i TypeScript; fristen har kontrakt (44 håller). **Bevis:** 142 tester (nya:
-  tabellen tystar väderpunkt och bro med not, oläsbar tabell fäller inte, fragmenten; integrationstest mot PostGIS: LV_FEL får
-  ett färskt dygn, LV_FRISK inget, LV_KORT ett gammalt, omkörning ger samma tabell, snapshoten tystar bara LV_FEL; KAR_E i
-  drifträkningen), nio självtester, motprov: tystnaden borttagen ⇒ rött, `rimlig()` utan flaggan ⇒ rött.
-  ⏳ **KVAR:** driftsättning — `sql/030` med backfill 60 dygn (dbknapp), `sql/018` via `trendarkivet --jamfor`, `sql/028`
-  (dbknapp), `ingest-live` och `publicera` deployade; beviset är `givarfel_dygn` med 1106 och färskt `senast`, ingest-lives svar
-  med `langsam_vakt`, och publiceringens not *långsam vakt: … 1106*. Mät om formen efter första frostmånaden (arkivet är
-  augusti–september). Verify: 1106 tyst i live.json tills givaren mäter rätt, sedan tillbaka av sig själv.
 - [ ] ⏱️ **#235 DRIFTRÄKNINGEN (sql/018) KLARAR INTE SJU DYGN LÄNGRE — LATERAL ÖVER EN MATERIALISERAD CTE ÄR KVADRATISK** (fynd
   22/9 när driftvakten kördes för kort #234). `trendarkivet --jamfor` med 7 dygn: TypeScript räknade 11 061 kandidater ur 195 444
   arkivrader, men `berakna_trendkandidater(7 days)` föll på *statement timeout* (600 s). 13/9 gick samma körning på 118 054 rader
@@ -4189,6 +4166,36 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 ---
 
 ## 🟢 KLART (senaste vinsterna)
+
+- [x] ✅ **#236 DEN LÅNGSAMMA VAKTEN — LÄKER Ö LJUNGBY TILLS TRAFIKVERKET LAGAR GIVAREN — KLART 22/9 (DECISIONS #300)** (Bengts order 22/9: *"bygg den
+  långsamma vakten nu och gör den klar"*, DECISIONS #300; alternativ (d) ur §4.2, mätt innan den byggdes). **Problemet:** Ö Ljungby
+  1106 ligger 6–8 ° under luften också i sval luft, där varken #75 (gap < 12) eller radvakten (luft < +10) fyrar; karantänen
+  höll den tyst på brott från de varma dagarna, och de åldras ut runt 28/9. Anmälan är skickad, men ingen vet när de lagar den.
+  **Mätningen (`scripts/matningar/langsam-vakt-d-2026-09-22.sql`):** formen *≥ 90 % av det senaste dygnets rader (minst 24)
+  med ytan ≥ 6 ° under luften* tar exakt fem stationer i hela arkivet (711), alla bland de sju anmälda — 1106 (20 dygn), 2135,
+  2346, 2132, 1612 — och ingen frisk vid gränsen 5, 6 eller 8 °. Ö Ljungby har haft felet sedan 30/8 med gap under 12, så #75
+  såg det inte förrän 18/9.
+  🔨 **BYGGT 22/9 — regeln bor på ETT ställe och läker åt båda håll av sig själv:** `sql/030` skapar tabellen `givarfel_dygn`
+  (station, dygn, första och senaste ögonblick i felet) och funktionen `langsam_vakt()`, som räknar om det senaste fönstret med
+  ett dygns historia och skriver dygnen idempotent (least/greatest). `ingest-live` kör den varje varv, fail-soft som trenden.
+  **Snapshoten** (`LANGSAM_FRIST_H = 3`) tystar stationer vars senaste ögonblick i felet är färskare än tre timmar — samma tystnad
+  som karantänen, väderpunkt och broarnas källa — och noterar vilka. **Mätningarna** utesluter stationens rader det dygnet
+  (`givarfelSql`, i `karantanSql`; `rimlig()` och `sql/018` fäller på dygnsflaggan; `sql/028` och efterhalkans mätsats med).
+  In ~22 h efter att felet börjat, ut några timmar efter att givaren mäter rätt: ingen lista att hålla, ingen som måste
+  minnas när Trafikverket lagat. Inga nya tal i TypeScript; fristen har kontrakt (44 håller). **Bevis:** 142 tester (nya:
+  tabellen tystar väderpunkt och bro med not, oläsbar tabell fäller inte, fragmenten; integrationstest mot PostGIS: LV_FEL får
+  ett färskt dygn, LV_FRISK inget, LV_KORT ett gammalt, omkörning ger samma tabell, snapshoten tystar bara LV_FEL; KAR_E i
+  drifträkningen), nio självtester, motprov: tystnaden borttagen ⇒ rött, `rimlig()` utan flaggan ⇒ rött.
+  ✅ **I DRIFT 22/9, ALLT BEVISAT** (PR #459 sammanslagen som 235ee57; CI `ok 53` = integrationstestet mot PostGIS). **`sql/030`**
+  körd 05:4xZ (körning 35691818301, `scripts/matningar/langsam-vakt-idrift-030-2026-09-22.sql`): backfillen skrev **28 stationsdygn** —
+  1106 Ö Ljungby 20 dygn (1/9–22/9), 2135 Storvik 4, 2346 Ollsta 2, 1612 Fagersanna 1, 2132 Testeboån 1 — exakt mätningens fem;
+  tysta just nu med fristen 3 h: **1106**; det anrop ingest-live gör varje varv tar **60 ms**. **`sql/018`** körd in av trendarkivet
+  (35691895150) — driftvakten ENSE OM VARJE RAD, 5 767 = 5 767. **`sql/028`** (35692627260): `pg_proc` visar dygnsflaggan i alla tre
+  funktionskropparna. **`ingest-live`** deployad 05:44:03Z (35691827591): svaren 05:53, 05:54, 05:55Z bär *langsam_vakt: 1 stationsdygn*.
+  **`publicera`** deployad 05:45:01Z (35691886010): publiceringen 05:50:02Z bär noten *"långsam vakt: 1 station(er) tysta, ytan ≥ 6 °
+  under luften ett helt dygn: 1106"* bredvid karantännoten — körningarna 05:30 och 05:40 har ingen sådan rad; manifestets sha =
+  filens, 57 väderstationer, ingen av de sju, noll broar. Mätsatserna: `langsam-vakt-idrift-030-…` och `-028-2026-09-22.sql`.
+  **Kvar utanför kortet:** mät om formen efter första frostmånaden (§0b); Trafikverkets svar på anmälan (§0b).
 
 - [x] ✅ **#234 TRASIGA YTGIVARE SLINKER FÖRBI GIVARVAKTEN — FALSKA BROLARM PÅ E4 I SKÅNE — KLART 22/9 (DECISIONS #298/#299)** (hittat av
   snöflingemätningen 21/9, DECISIONS #297). 🔑 **Nyckel: Bengts och Axels beslut om hur vakten ska skärpas** (§4.2).
