@@ -9295,3 +9295,13 @@ PRV + domänen* står kvar öppet. Tavlan 55 → 53 öppna.
 ett kommando, och testarfeedback hämtad av CI) stängs. Det är ett bekvämlighetsverktyg som ingen bett om sedan 31/8, och uppladdning via
 Xcodes Organizer fungerar. Idén står kvar i BACKLOG.md punkt 27. Tavlan 53 → 52 öppna.
 
+## #314 (22/9 2026) Live Activity och startknappen på låsskärmen stängs
+
+**Beslut (Bengt 22/9: *"stäng live activity och startknappen också"*).** Två iOS-kort från Axels höstlista stängs utan att byggas:
+**Live Activity** (varningskortet i Dynamic Island och på låsskärmen) och **startknappen** (widget på låsskärmen, knapp i Kontrollcenter,
+åtgärdsknappen). Inget av dem är byggt (ingen ActivityKit, WidgetKit eller ControlWidget i ios/), och produktboken lovar inget av dem.
+Vakten startas redan av självväckningen och Siri (DECISIONS #38/#40).
+
+**Sagt högt.** Båda var Axels idéer (31/8), och startknappen var beställd i DECISIONS #38/#39(3). Designen för Live Activity ligger kvar i
+`docs/design/Halkvakt-Live-Activity.dc.html`. Tavlan 52 → 50 öppna.
+

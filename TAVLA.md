@@ -529,13 +529,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [x] ~~Mejl till Vejdirektoratet om VejVejr~~ ✅ SKICKAT 31/8 16:05 via kontaktformuläret
   (ämne "Forespørgsel om en sag eller et projekt" — vinterdriftens formulär var stängt).
   Väntar svar. Tills dess: grästemp i arkivet, rösten tyst om frysrisk i DK (#45).
-- [ ] ↩︎ **Live Activity — varningskortet i Dynamic Island och på låsskärmen** (Axel 31/8: "ska den
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #314) — ↩︎ **Live Activity — varningskortet i Dynamic Island och på låsskärmen** (Axel 31/8: "ska den
   ligga över Maps?"). Ingen app får rita över en annan; Live Activity är det Apple tillåter:
   gul rad "Vakten på · 42 min" under körning, blossar upp "▲ Halt väglag · 2,0 km" när rösten
   talar, synlig över kartan och på låst skärm. Bannern (#23) kvar som textvariant. DECISIONS #38.
-- [ ] ↩︎ **Startknapp på låsskärmen + i Kontrollcenter + åtgärdsknappen** — widget (iOS 17),
+  ✅ **Stängt 22/9 (DECISIONS #314, Bengts beslut):** inte byggt (ingen ActivityKit i ios/), och produktboken lovar det inte. Designen ligger kvar i `docs/design/Halkvakt-Live-Activity.dc.html` om det tas upp igen.
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #314) — ↩︎ **Startknapp på låsskärmen + i Kontrollcenter + åtgärdsknappen** — widget (iOS 17),
   Control (iOS 18), och en rad i guiden om Åtgärdsknapp → Genväg → Starta vakten (iPhone 15
   Pro+). Ett tryck, ingen Genvägar. DECISIONS #39.
+  ✅ **Stängt 22/9 (DECISIONS #314, Bengts beslut):** inte byggt (ingen WidgetKit/ControlWidget i ios/). Självväckningen och Siri startar vakten redan (DECISIONS #38/#40), och produktboken lovar ingen startknapp. Beställningen står kvar i DECISIONS #38/#39(3).
 - [x] ✅ **STÄNGT 22/9** (DECISIONS #309) — ↩︎ **Guiden med bilder + film** — skärmbild per steg (ringad knapp) inbakade i appen;
   15 s film per spår på kartsajten. Råmaterial: Axels inspelningar 31/8 (Inte alls), Bengt
   filmar CarPlay-spåret.
@@ -4252,6 +4254,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 ---
 
 ## 🟢 KLART (senaste vinsterna)
+
+- [x] ✅ **LIVE ACTIVITY OCH STARTKNAPPEN STÄNGDA 22/9 (DECISIONS #314)** — Bengts beslut; inget byggt, inget lovat i produktboken, designen och beställningen kvar. Tavlan 52 → 50 öppna.
 
 - [x] ✅ **#27 ASC-CLI:T STÄNGT 22/9 (DECISIONS #313)** — Bengts beslut; idén kvar i BACKLOG.md. Tavlan 53 → 52 öppna.
 
