@@ -589,3 +589,27 @@ test("#236 den långsamma vakten: sql/030 skriver dygnen i felet, och snapshoten
     assert.ok(notes.some((n) => n.startsWith("långsam vakt:") && n.includes("LV_FEL") && !n.includes("LV_KORT")));
   } finally { await pool.end(); }
 });
+
+// KORT #156 (Bengt 22/9): serverns halkfilter släpper in allt motorn kan varna för. "Mycket besvärligt" vid kod 1 nådde
+// förut aldrig telefonen, fast motorn räknar det som halt; "Halkigt" prövar halkig. Fällorna ska stå utanför: "fläckvis Våt"
+// (is inuti ett ord, 8 falska halksegment i augusti) och "Halkbekämpning" (en motåtgärd, inte en fara).
+test("#156 serverns halkfilter: kod 1 med mycket besvärligt och halkigt når motorn, fällorna gör det inte", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const { buildSnapshot } = await import("../publish/snapshot-core.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  try {
+    for (const f of ["001_init.sql", "009_radar_precip.sql", "030_langsam_vakt.sql"])
+      await pool.query(readFileSync(new URL("../sql/" + f, import.meta.url), "utf8"));
+    const seg = (id: string, info: string, x: number) =>
+      `('${id}', 1, 'Normalt', ARRAY['${info}'], ST_SetSRID(ST_MakeLine(ST_MakePoint(${x}, 61.0), ST_MakePoint(${x + 0.01}, 61.01)), 4326))`;
+    await pool.query(`INSERT INTO road_conditions (segment_id, condition_code, condition_text, condition_info, geom) VALUES
+      ${seg("H156_MB", "Mycket besvärligt", 16.1)}, ${seg("H156_HK", "Halkigt", 16.2)},
+      ${seg("H156_FV", "fläckvis Våt", 16.3)}, ${seg("H156_HB", "Halkbekämpning", 16.4)}
+      ON CONFLICT (segment_id) DO UPDATE SET condition_code = 1, condition_info = EXCLUDED.condition_info,
+        deleted = false, end_time = NULL, geom = EXCLUDED.geom`);
+    const { liveDoc } = await buildSnapshot(async (t, p) => (await pool.query(t, p as any[])).rows, []);
+    const inne = liveDoc.segments.map((s) => s.id).filter((id) => id.startsWith("H156_")).sort();
+    assert.deepEqual(inne, ["H156_HK", "H156_MB"], "mycket besvärligt och halkigt in; fläckvis Våt och Halkbekämpning ute");
+  } finally { await pool.end(); }
+});
