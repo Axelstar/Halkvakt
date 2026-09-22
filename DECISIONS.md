@@ -9084,7 +9084,10 @@ lateralen (körning 35729309079) och mot ramarna (35729454227), 144 prov, 0 öve
 SQL 0 — ENSE OM VARJE RAD, inga rader undantagna, knappsteget 10 s mot 605 s.
 
 **Sagt högt.** Hoppvakten prövades inte av arkivets data (0 rader med hopp > 3 °C på dygnet), bara av integrationsprovet — därför
-kördes provet mot båda formerna. En lokal commit `bffd225` med texten "Create driftrakningen-ramar-idrift-2026-09-22.sql" (GitHub
-Desktops standardförslag) dök upp på grenen 12:49:50Z, samma sekund som bevisfilen skrevs. Den pushades aldrig och ingår inte i
-PR #473; filen togs tillbaka ur den och checkas in med stängningen.
+kördes provet mot båda formerna. En lokal commit `bffd225` med texten "Create driftrakningen-ramar-idrift-2026-09-22.sql" dök upp
+på grenen 12:49:50Z, samma sekund som bevisfilen skrevs. Den pushades aldrig och ingår inte i PR #473; filen togs tillbaka ur den
+och checkades in med stängningen. *(Förklarad 22/9: Bengt tryckte på Commit i GitHub Desktop av misstag — samma arbetsträd som
+sessionen. Läxa: `git log` mot grenens väntade topp före varje push.)* Generatorn bakom mätfilen checkades in i efterhand
+(`scripts/matningar/driftrakningen-ramar-generator-2026-09-22.py`, Bengts ja 22/9); den återskapar mätfilens satser byte för byte
+ur `8a9eca9:sql/018` och main:s 018.
 
