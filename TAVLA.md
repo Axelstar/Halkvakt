@@ -1196,6 +1196,16 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (b) skuggkolumn "smhi_forstarkt" mätt mot facit en vintermånad.
 - [ ] Läsa SYSTEM.md mot koden månadsvis (första: september)
 - [ ] Samtal med Axel: sensortrappan — tidsättning av steg 2 (våren 2027?)
+- [ ] 🔗 **#237 PARKERAT: TELEFONKEDJAN — bil 1:s telefon varnar bil 2 (Bengts tanke 22/9, "inte nu, kanske en väg framåt").**
+  Nira bygger en kedja där bilens givare (ABS, antispinn, torkare) rapporterar bakåt till nästa bil via molnet. Kan telefonen
+  göra samma sak? **Claudes bedömning 22/9, realistisk:** (1) värdet hos Nira är GIVAREN, inte kedjan — bilen mäter friktion
+  hela tiden, telefonen ser bara händelser (inbromsning, sladd) i efterhand, glest och sent; (2) skalan avgör: kedjan kräver en
+  Halkvakt-telefon minuter före nästa på samma väg — Nira har miljoner bilar, vi tolv testare; (3) bryter invarianten (position
+  lämnar telefonen automatiskt, DECISIONS #264) och arkitekturen (snapshots var tionde minut mot sekundsnabb push för en bil
+  2 km bakom). **Det som fångar tanken:** förartryckta rapporter i nästa snapshot — facitknappen (S4) är samma väg, en
+  "halka här"-knapp är Wazes modell och nästan byggd; automatisk sladdupptäckt som opt-in hör till sensorbeslutet våren 2027
+  (#21); och fordonskedjan kan komma gratis om Trafikverket publicerar Niras händelser öppet (frågan skickad, §0b). Tas upp i
+  samtalet om sensortrappan, inte före.
 - [ ] 💼 **B2B: skolpaketet som produkt** — per-elev-moment i körkortspaketen; STR som skalkanal; säljs våren 2027 med halkbanedata *(Axels idé, Bengts spår)*
 - [ ] 📞 **Skyltfondsrundan** (efter Axels klartecken): fonden + trafikövningsplats v.36 → avsiktsförklaringar 25/9 → SKICKA 28/9.
   UNDERLAGEN UPPDATERADE 3/9 (Bengts order, terminalsessionen): ansökan v5 + kontaktplan v5
