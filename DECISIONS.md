@@ -8978,3 +8978,39 @@ vad som ska bära hösten står i bedömningen §4.2 (rekommendation: låt karan
 - **Fynd, eget kort #235:** `berakna_trendkandidater` över 7 dygn faller på statement timeout (600 s) — TypeScript-sidan räknade
   11 061 kandidater ur 195 444 rader, funktionen hann inte. 13/9 gick 118 054 rader. Orsaken är den materialiserade CTE:n `bas`
   och lateralen över den, kvadratisk i arkivets storlek — inte karantänens delfråga (0,7 s, mätt). Driften (2 h) berörs inte.
+
+## #300 (22/9 2026) Den långsamma vakten byggs — alternativ (d), regeln på ett ställe, självläkande tills Trafikverket lagar givaren (kort #236)
+
+**Beslut (Bengt 22/9: *"jag har anmält det till trafikverket. ingen vet när det fixas hos dem. vi måste ha något som läker detta
+till de fixar"* — och sedan *"bygg den långsamma vakten nu och gör den klar"*).** Alternativ (d) ur bedömningen §4.2 byggs i den form
+som mättes samma dag: en station vars yta legat ≥ 6 ° under luften i ≥ 90 % av det senaste dygnets rader (minst 24) mäter fel.
+
+**Varför (d) och inte de andra.** (a) anmälan gäller alltid men lagar inget i appen. (b) en längre karantän skjuter bara problemet och
+tystar en lagad station en månad. (c) radvaktens brott i karantänen hjälper bara så länge varma dagar återkommer — i sval luft fyrar
+varken #75 eller radvakten. (d) håller i sval luft, och mätningen (`scripts/matningar/langsam-vakt-d-2026-09-22.sql`) visade att den
+tar exakt fem stationer i hela arkivet, alla bland de sju anmälda, och ingen frisk vid gränsen 5, 6 eller 8 °. Ö Ljungby har haft
+felet sedan 30/8 med gap under 12; (d) hade tystat den från dag ett.
+
+**Formen — fyra val:**
+1. **Regeln bor på ETT ställe:** `sql/030`:s `langsam_vakt(sedan)`. Talen 6, 0,9 och 24 finns bara där. Ingen kopia i TypeScript,
+   inget kontrakt behövs för dem; fristen som snapshoten läser tabellen med (`LANGSAM_FRIST_H = 3`) kopieras av bunten och har kontrakt.
+2. **En liten tabell, `givarfel_dygn`** (station, UTC-dygn, första och senaste ögonblick i felet), skriven idempotent med least/greatest.
+   Backfill är samma funktion med långt fönster. Tabellen är också listan Bengt kan visa Trafikverket: vilka stationer, sedan när.
+3. **ingest-live kör funktionen** varje varv, fail-soft som trenden i sql/018: ett fel här kan bara tysta vakten, aldrig ingesten.
+   Inget nytt cron-jobb (kort #85), noll Actions-minuter.
+4. **Läser, inte räknar:** snapshoten tystar stationer vars `senast` är färskare än tre timmar (väderpunkt och broarnas källa, med not);
+   mätningarna utesluter stationens rader det dygnet (`givarfelSql`, i `karantanSql`; `rimlig()` och `sql/018` som tvillingar, `sql/028`
+   och efterhalkans mätsats). Dygnsupplösning i mätningarna med flit — en trasig givare är trasig hela dagen.
+
+**Självläkande åt båda håll.** In ~22 h efter att felet börjat (90 % av ett dygn), ut några timmar efter att givaren mäter rätt igen
+(andelen faller under 90 % efter ~2,4 h, fristen 3 h därefter). Ingen lista att hålla, ingen som måste minnas när Trafikverket lagat.
+
+**Reservation.** Arkivet är augusti–september. Formen mäts om efter första frostmånaden innan den räknas som vinterbeprövad
+(bevakningsrad i §0b). Det finska arkivet omfattas inte (id-krock, funktionen räknar bara det svenska).
+
+**Bevis (PR:n 22/9):** 142 tester — nya: tabellen tystar väderpunkt OCH bro med not och utan att regeln står i snapshoten, en
+oläsbar tabell fäller inte snapshoten, fragmenten bär dygnsflaggan för det svenska arkivet men inte det finska, `rimlig()` fäller
+på flaggan; integrationstest mot riktig PostGIS: LV_FEL (7 ° under i 30 h) får ett färskt dygn, LV_FRISK inget, LV_KORT (rätt de
+sista tio timmarna) ett gammalt, omkörning ger identisk tabell, och snapshoten tystar bara LV_FEL; KAR_E i drifträkningen. Nio
+självtester, 44 kontrakt, bunten i synk. **Motprov:** tystnaden borttagen ur snapshoten ⇒ rött på rätt rad; `rimlig()` utan flaggan
+⇒ rött. Driftsättningen och beviset ur driften redovisas på kortet och i §0b.

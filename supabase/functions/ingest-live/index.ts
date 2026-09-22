@@ -198,6 +198,17 @@ async function trend(): Promise<string> {
   }
 }
 
+// DEN LÅNGSAMMA VAKTEN (kort #236, DECISIONS #300) rider på samma anrop: sql/030:s langsam_vakt() räknar om det senaste
+// fönstret och skriver stationsdygnen i felet. Fail-soft av samma skäl som trenden — ett fel här får aldrig stoppa ingesten.
+async function langsamVakt(): Promise<string> {
+  try {
+    const r = await sql`SELECT langsam_vakt(interval '2 hours') AS n`;
+    return `${r[0].n} stationsdygn`;
+  } catch (e) {
+    return `FEL: ${String(e).slice(0, 120)}`;
+  }
+}
+
 Deno.serve(async (req) => {
   // Fail-closed: kräver delad hemlighet (sätts som secret INGEST_KEY; cron skickar headern).
   const k = Deno.env.get("INGEST_KEY");
@@ -208,7 +219,8 @@ Deno.serve(async (req) => {
     const [s, r, w] = await Promise.all([situations(), roadconditions(), weather()]);
     // Efter vädret, aldrig parallellt med det: trenden räknar på raderna weather() nyss skrev.
     const tr = await trend();
-    return new Response(JSON.stringify({ ok: true, situations: s, roadconditions: r, weather: w, trend: tr }), {
+    const lv = await langsamVakt();
+    return new Response(JSON.stringify({ ok: true, situations: s, roadconditions: r, weather: w, trend: tr, langsam_vakt: lv }), {
       headers: { "Content-Type": "application/json" } });
   } catch (e) {
     return new Response(JSON.stringify({ ok: false, error: String(e) }), { status: 500 });

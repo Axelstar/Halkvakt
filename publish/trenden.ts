@@ -25,6 +25,7 @@ export type Rad = {
   rh: number | null;
   luft: number | null;
   brott: number;    // brott mot #75 hos stationen de 7 dygnen före raden — karantänen (kort #234)
+  givarfel: boolean; // stationen hade ett dygn i den långsamma vaktens fel (givarfel_dygn, kort #236)
 };
 
 /** Givarvakterna ur §3, alla tre — och kort #234:s två (DECISIONS #299), samma tal som driften. En station som faller
@@ -36,6 +37,7 @@ export function rimlig(r: Rad): boolean {
   if (r.luft !== null && r.luft >= GIVARFEL_LUFT_MIN_C
       && Math.round((r.luft - r.yta) * 1000) / 1000 >= GIVARFEL_GAP_C) return false;
   if (r.brott >= KARANTAN_BROTT) return false;                    // #234 karantänen
+  if (r.givarfel) return false;                                   // #236 den långsamma vakten (sql/030:s tabell)
   if (r.dagg === null) return false;                              // trenden behöver daggpunkten
   if (r.yta - r.dagg < -5) return false;                          // #46, daggpunktsgivaren
   if (r.rh !== null && r.rh < 90 && r.yta - r.dagg <= 0) return false; // #46:s korsgivare

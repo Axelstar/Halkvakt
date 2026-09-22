@@ -304,7 +304,7 @@ test("uppspelningen: varje variant ändrar en sak, utfallet är blindat, värden
   const { readFileSync } = await import("node:fs");
   const pool = new pg.Pool({ connectionString: url, max: 1 });
   try {
-    for (const f of ["001_init.sql", "003_situation_archive.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "029_brott_index.sql", "028_uppspelning_varianter.sql"])
+    for (const f of ["001_init.sql", "003_situation_archive.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "029_brott_index.sql", "030_langsam_vakt.sql", "028_uppspelning_varianter.sql"])
       await pool.query(readFileSync(new URL("../sql/" + f, import.meta.url), "utf8"));
     for (const t of ["trend_kandidater", "weather_observations", "weather_latest"]) await pool.query(`DELETE FROM ${t} WHERE station_id LIKE 'UPPSP_%'`);
     for (const t of ["radar_precip", "road_condition_history", "road_conditions"]) await pool.query(`DELETE FROM ${t} WHERE segment_id LIKE 'UPPSP_SEG%'`);
@@ -464,9 +464,9 @@ test("#234 drifträkningen: radvakten och karantänen väljer bort samma rader s
   const { readFileSync } = await import("node:fs");
   const pool = new pg.Pool({ connectionString: url, max: 1 });
   try {
-    for (const f of ["001_init.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql", "029_brott_index.sql"])
+    for (const f of ["001_init.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql", "029_brott_index.sql", "030_langsam_vakt.sql"])
       await pool.query(readFileSync(new URL("../sql/" + f, import.meta.url), "utf8"));
-    for (const t of ["trend_kandidater", "weather_observations"]) await pool.query(`DELETE FROM ${t} WHERE station_id LIKE 'KAR_%'`);
+    for (const t of ["trend_kandidater", "weather_observations", "givarfel_dygn"]) await pool.query(`DELETE FROM ${t} WHERE station_id LIKE 'KAR_%'`);
     const g = (x: number) => `ST_SetSRID(ST_MakePoint(${x}, 60.0), 4326)`;
     const fall = (st: string, x: number, luftOver: number) => [50, 40, 30, 20].map((min, i) => {
       const yta = 3.0 - i * 0.4;
@@ -479,10 +479,66 @@ test("#234 drifträkningen: radvakten och karantänen väljer bort samma rader s
         ${fall("KAR_A", 15.1, 1)},
         ${fall("KAR_B", 15.2, 12)},
         ${fall("KAR_C", 15.3, 1)}, ${brott("KAR_C", 15.3, 3)},
-        ${fall("KAR_D", 15.4, 1)}, ${brott("KAR_D", 15.4, 2)}
+        ${fall("KAR_D", 15.4, 1)}, ${brott("KAR_D", 15.4, 2)},
+        ${fall("KAR_E", 15.5, 1)}
+      ON CONFLICT DO NOTHING`);
+    // KAR_E: samma vackra fall, men stationen har ett dygn i den långsamma vaktens fel (kort #236) — tabellen räcker.
+    await pool.query(`INSERT INTO givarfel_dygn (station_id, dag, forst, senast)
+      VALUES ('KAR_E', (now() AT TIME ZONE 'UTC')::date, now() - interval '20 hours', now() - interval '10 minutes')
       ON CONFLICT DO NOTHING`);
     await pool.query("SELECT * FROM berakna_trendkandidater()");
     const valda = (await pool.query("SELECT DISTINCT station_id FROM trend_kandidater WHERE station_id LIKE 'KAR_%' ORDER BY 1")).rows.map((r) => r.station_id);
-    assert.deepEqual(valda, ["KAR_A", "KAR_D"], "A (frisk) och D (två brott) räknas; B (radvakten) och C (karantänen) är tysta");
+    assert.deepEqual(valda, ["KAR_A", "KAR_D"], "A (frisk) och D (två brott) räknas; B (radvakten), C (karantänen) och E (den långsamma vakten) är tysta");
+  } finally { await pool.end(); }
+});
+
+// DEN LÅNGSAMMA VAKTEN mot riktig PostGIS (sql/030, kort #236, DECISIONS #300). Tre stationer med 30 timmars rader var
+// tionde minut: LV_FEL ligger 7 ° under luften hela tiden (Ö Ljungby-felet under #75:s 12), LV_FRISK 1 ° under, LV_KORT
+// 7 ° under de första 20 timmarna och rätt de sista 10. Funktionen ska ge LV_FEL ett färskt dygn i felet, LV_FRISK inget,
+// och LV_KORT ett dygn vars senaste ögonblick är gammalt — så snapshoten tystar LV_FEL men inte LV_KORT.
+test("#236 den långsamma vakten: sql/030 skriver dygnen i felet, och snapshoten tystar bara det färska", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const { buildSnapshot } = await import("../publish/snapshot-core.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  try {
+    for (const f of ["001_init.sql", "030_langsam_vakt.sql"])
+      await pool.query(readFileSync(new URL("../sql/" + f, import.meta.url), "utf8"));
+    for (const t of ["givarfel_dygn", "weather_observations", "weather_latest"]) await pool.query(`DELETE FROM ${t} WHERE station_id LIKE 'LV_%'`);
+    const g = (x: number) => `ST_SetSRID(ST_MakePoint(${x}, 60.0), 4326)`;
+    const serie = (st: string, x: number, gap: (min: number) => number) => Array.from({ length: 180 }, (_, i) => {
+      const min = 1800 - i * 10;   // 30 h bakåt, var tionde minut, fram till för 10 min sedan
+      return `('${st}', 'x', ${g(x)}, now() - interval '${min} minutes', 2.0, ${(2.0 + gap(min)).toFixed(1)})`;
+    }).join(",\n");
+    await pool.query(`
+      INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c) VALUES
+        ${serie("LV_FEL", 15.1, () => 7)},
+        ${serie("LV_FRISK", 15.2, () => 1)},
+        ${serie("LV_KORT", 15.3, (min) => (min > 600 ? 7 : 1))}
+      ON CONFLICT DO NOTHING`);
+    const n = (await pool.query("SELECT langsam_vakt(interval '2 days') AS n")).rows[0].n;
+    assert.ok(Number(n) >= 1, `funktionen ska skriva minst ett stationsdygn, skrev ${n}`);
+    const dygn = (await pool.query(`SELECT station_id, max(senast) AS senast FROM givarfel_dygn WHERE station_id LIKE 'LV_%' GROUP BY 1 ORDER BY 1`)).rows;
+    assert.deepEqual(dygn.map((r) => r.station_id), ["LV_FEL", "LV_KORT"], "den friska stationen får inget dygn i felet");
+    const alder = (s: Date) => (Date.now() - new Date(s).getTime()) / 3_600_000;
+    assert.ok(alder(dygn[0].senast) < 1, "LV_FEL:s senaste ögonblick i felet är färskt");
+    assert.ok(alder(dygn[1].senast) > 3, "LV_KORT mätte rätt de sista tio timmarna — dess senaste ögonblick i felet är gammalt");
+    // Idempotent: ett andra anrop ändrar ingenting.
+    const fore = (await pool.query("SELECT station_id, dag, forst, senast FROM givarfel_dygn WHERE station_id LIKE 'LV_%' ORDER BY 1, 2")).rows;
+    await pool.query("SELECT langsam_vakt(interval '2 days')");
+    const efter = (await pool.query("SELECT station_id, dag, forst, senast FROM givarfel_dygn WHERE station_id LIKE 'LV_%' ORDER BY 1, 2")).rows;
+    assert.deepEqual(JSON.stringify(efter), JSON.stringify(fore), "omkörning ger samma tabell");
+    // Snapshoten: LV_FEL och LV_KORT står kalla och blöta i weather_latest; bara LV_FEL ska tystas.
+    await pool.query(`
+      INSERT INTO weather_latest (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, precipitation, rain, snow) VALUES
+        ('LV_FEL',   'Ö Ljungby-felet under 12', ${g(15.1)}, now() - interval '5 minutes', -1.0, 6.0, 'rain', true, false),
+        ('LV_KORT',  'mätte rätt igen',          ${g(15.3)}, now() - interval '5 minutes', -1.0, 0.0, 'rain', true, false),
+        ('LV_FRISK', 'frisk',                    ${g(15.2)}, now() - interval '5 minutes', -1.0, 0.0, 'rain', true, false)
+      ON CONFLICT DO NOTHING`);
+    const q = async (text: string, params?: unknown[]) => (await pool.query(text, params as any[])).rows;
+    const { liveDoc, notes } = await buildSnapshot(q, [], new Date());
+    const ids = liveDoc.weather.map((w) => w.id).filter((id) => id.startsWith("LV_")).sort();
+    assert.deepEqual(ids, ["LV_FRISK", "LV_KORT"], "LV_FEL ska vara tyst, LV_KORT talar igen");
+    assert.ok(notes.some((n) => n.startsWith("långsam vakt:") && n.includes("LV_FEL") && !n.includes("LV_KORT")));
   } finally { await pool.end(); }
 });
