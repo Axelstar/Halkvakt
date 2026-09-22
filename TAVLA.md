@@ -507,8 +507,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] **Betalvilja mäts i mars, inte gissas i augusti:** en fråga i appen ("N varningar i
   vinter — skulle du betala X för nästa?"). Ja/nej, inget insamlat utom räkningen. Vinterpass
   per säsong är kandidatmodellen; B2B (hemtjänst, försäkring, åkerier) är taket.
-- [ ] **Norden efter facit:** Finland LIVE i arkivet (31/8). Norge sedan, Danmark sist.
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #309) — **Norden efter facit:** Finland LIVE i arkivet (31/8). Norge sedan, Danmark sist.
   Tidigast vintern 2027/28 som produkt. Nordiskt namn vid det laget (Nordic RoadSafe, #1).
+  ✅ **Stängt 22/9 (DECISIONS #309, Bengts ja):** dubblett. Arkivdelen är mer än klar — Finland, Norge och Danmark i arkivet, Norge i skuggflottan och grannsnapshoten i Supabase sedan 22/9 (DECISIONS #301). Produktdelen står som Ä7 i bedömningen (*Nordenprodukten efter release*).
 - [x] **Vegvesen DATEX-konto — STÄNGT 20/9** (DECISIONS #250): tillståndet beviljades 4/9 och det norska arkivet
   tickar (ingest-no #29, 468 stationer, puls-ingest-no i pg_cron, gränssnapshoten 4/9 15:47). Kortet stod öppet
   i sexton dygn med sitt eget klarbesked i brödtexten. ~~TILLSTÅNDET BEVILJAT 4/9 (Bengt): användarnamn~~
@@ -534,9 +535,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] ↩︎ **Startknapp på låsskärmen + i Kontrollcenter + åtgärdsknappen** — widget (iOS 17),
   Control (iOS 18), och en rad i guiden om Åtgärdsknapp → Genväg → Starta vakten (iPhone 15
   Pro+). Ett tryck, ingen Genvägar. DECISIONS #39.
-- [ ] ↩︎ **Guiden med bilder + film** — skärmbild per steg (ringad knapp) inbakade i appen;
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #309) — ↩︎ **Guiden med bilder + film** — skärmbild per steg (ringad knapp) inbakade i appen;
   15 s film per spår på kartsajten. Råmaterial: Axels inspelningar 31/8 (Inte alls), Bengt
   filmar CarPlay-spåret.
+  ✅ **Stängt 22/9 (DECISIONS #309, Bengts ja):** struket. Sedan DECISIONS #38/#40 är Siri och självväckningen huvudvägen och Genvägar valfritt, så guidens bilder och filmer bär inte längre startvägen. Råmaterialet (Axels inspelningar 31/8) ligger kvar om behovet kommer tillbaka.
 - [ ] ↩︎ **Introduktionen** (iOS) — bevis saknas: radera appen → installera → intron ska komma
   först; "Visa igen" i Inställningar. Introduktionen i Claude Design är enda skärmen som inte
   ritats om än. Android-spegeln (DECISIONS #36) efter att iOS-varianten testats.
@@ -1123,6 +1125,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   flottor (#94), bekräftelse över flera källor (kartans bevisbärare, §8 B).
   Verify: Bengts val inskrivet här · för (2): andelen i bedömningen · för (1): underlaget i docs/ med Axels besked.
   ↦ **Sorterat 22/9 (kort #224):** nästa steg är ditt val av vad som ska utredas (§4.2); del (2) körs om vid frost.
+  ↪ **Hit 22/9 (DECISIONS #309):** idén ur #16 *Blixthalke-prognos* (MET Nowcast). I *före resan*-vyn får den visas — regel T6 förbjuder en prognos att utlösa, inte att synas. Utreds med (1).
 
 - [ ] 🔋 **#218 BATTERIBUDGETEN HAR ALDRIG MÄTTS, OCH iOS KÖR FULL GAS** (genomlysningen 20/9). `< 8 %/h` står som krav på tre
   ställen med **noll motprov**. iOS kör `BestForNavigation` med avstängd automatisk paus och saknar motsvarighet till Androids
@@ -3411,7 +3414,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] **#25 Halkbaneläget** *(låst: halkbanans avsiktsförklaring)*
 - [ ] **#26 Skolpaketet** (QR-blad, manus, checklista) *(låst: trafikskolans avsiktsförklaring)*
 - [ ] **#15 Kö-slutsmotorn** (TrafficFlow) *(låst: efter release — uppdatering 1)*
-- [ ] **#16 Blixthalke-prognos** (MET Nowcast) *(låst: efter kö-slut — uppdatering 2)*
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #309) — **#16 Blixthalke-prognos** (MET Nowcast) *(låst: efter kö-slut — uppdatering 2)*
+  ✅ **Stängt 22/9 (DECISIONS #309, Bengts ja):** kortets form — en prognos som varnar — krockar med regel T6 (TROSKLAR-KOMBINATIONEN, fastställd 17/9: prognoser får aldrig ensamma utlösa). Idén lever vidare som en rad i #233:s *före resan*-vy, där en prognos får visas men inte talas.
 - [x] ✅ **#101 MÄTVAKTEN — KLART 12/9, och den hittade fyra döda mätningar till**
   (upptäckt 12/9 under vattenplaningsgenomgången). Grind V-A:s måndagskörning 7/9 fallerade i
   minutkrisens svallvågor, ingen larmade, och DECISIONS #69:s uttryckliga omkörning uteblev i åtta
@@ -4240,6 +4244,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 ---
 
 ## 🟢 KLART (senaste vinsterna)
+
+- [x] ✅ **TRE KORT STÄNGDA PÅ BENGTS JA 22/9 (DECISIONS #309)**: *Norden efter facit* (dubblett av Ä7), #16 *Nowcast* (krockar med T6; idén flyttad till #233) och *Guiden med bilder + film* (struken, Siri och självväckningen är huvudvägen). Tavlan 62 → 59 öppna.
 
 - [x] ✅ **KORT 3 BILLING STÄNGT 22/9 (DECISIONS #308)** — Bengt: bevakas genom mätning (kassavakten, #152). Tavlan 63 → 62 öppna.
 

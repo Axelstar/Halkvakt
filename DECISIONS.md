@@ -9233,3 +9233,16 @@ vakthundens check 8, räknar fyra gånger om dygnet) och av §0b-raden *Actions-
 repon på kontot syns alltså inte i mätningen. Bengts bedömning är att det är tillräckligt; skulle taket slå i ser vakthunden det som
 stoppade körningar. Tavlan 63 → 62 öppna.
 
+## #309 (22/9 2026) Tre kort stängda på Bengts ja: Norden efter facit, #16 Nowcast och guiden med bilder + film
+
+**Beslut (Bengt 22/9: *"stäng 3, 4 och 5"*, ur förslaget *Fem nya att slutföra* i §4.2).**
+(3) **Norden efter facit** stängs som dubblett: arkivdelen är klar (FI, NO och DK i arkivet; Norge i skuggflottan och grannsnapshoten
+i Supabase sedan 22/9, DECISIONS #301), och produktdelen står ordagrant som Ä7 i bedömningen.
+(4) **#16 Blixthalke-prognos (MET Nowcast)** stängs: kortets form, en prognos som varnar, krockar med regel T6 (TROSKLAR-KOMBINATIONEN,
+fastställd 17/9, DECISIONS #220/#226 — prognoser får aldrig ensamma utlösa). Idén förs som en rad till #233:s *före resan*-vy, där en
+prognos får visas men inte talas. Ä7 bär nu bara Nordenprodukten.
+(5) **Guiden med bilder + film** stryks: sedan DECISIONS #38/#40 är Siri och självväckningen huvudvägen och Genvägar valfritt.
+
+**Sagt högt.** Guidens råmaterial (Axels inspelningar 31/8) finns kvar om behovet kommer tillbaka; ingen film raderad. #16 var
+Axels idé i ordningen *efter kö-slut*; Bengt stänger den, och idén är flyttad, inte borta. Tavlan 62 → 59 öppna.
+
