@@ -1208,6 +1208,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   samtalet om sensortrappan, inte före.
 - [ ] 💼 **B2B: skolpaketet som produkt** — per-elev-moment i körkortspaketen; STR som skalkanal; säljs våren 2027 med halkbanedata *(Axels idé, Bengts spår)*
 - [ ] 📞 **Skyltfondsrundan** (efter Axels klartecken): fonden + trafikövningsplats v.36 → avsiktsförklaringar 25/9 → SKICKA 28/9.
+  ↳ **Plan B 22/9 (docs/FINANSIERING.md):** utan partner överlever AP1, AP2, AP4, AP5; AP6 stryks och sägs öppet; teknisk titel, egna testförare, ~300 kkr; Bengts Nira-argument (alla förare, inte bara betalande bilmärken) in i båda versionerna. v7-B skrivs parallellt om Bengt säger ja.
   UNDERLAGEN UPPDATERADE 3/9 (Bengts order, terminalsessionen): ansökan v5 + kontaktplan v5
   i Drive-mappen. Nytt däri: (a) VERIFIERAT att handledarkursen slopades 2026-08-01
   (prop. 2025/26:127) — trafikskole-pitchen omskriven; (b) prognoslagrets beskrivning i
