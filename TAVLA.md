@@ -1054,7 +1054,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (#21); och fordonskedjan kan komma gratis om Trafikverket publicerar Niras händelser öppet (frågan skickad, §0b). Tas upp i
   samtalet om sensortrappan, inte före.
   ↪ **Sammanslaget 22/9 (DECISIONS #303):** telefonkedjan avgörs i samma samtal: byggs, avvisas eller förs in i #21. Det som återstår bärs av *Samtal med Axel: sensortrappan*.
-- [ ] 💼 **B2B: skolpaketet som produkt** — per-elev-moment i körkortspaketen; STR som skalkanal; säljs våren 2027 med halkbanedata *(Axels idé, Bengts spår)*
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #311) — 💼 **B2B: skolpaketet som produkt** — per-elev-moment i körkortspaketen; STR som skalkanal; säljs våren 2027 med halkbanedata *(Axels idé, Bengts spår)*
+  ✅ **Stängt 22/9 (DECISIONS #311, Bengt: *"ta upp våren 2027"*):** säljstart våren 2027 med halkbanedata; står i bedömningens rad *Efter mars* (skolpaketet som produkt och dess material).
 - [ ] 📞 **Skyltfondsrundan** (efter Axels klartecken): fonden + trafikövningsplats v.36 → avsiktsförklaringar 25/9 → SKICKA 28/9.
   ↳ **Plan B 22/9 (docs/FINANSIERING.md):** utan partner överlever AP1, AP2, AP4, AP5; AP6 stryks och sägs öppet; teknisk titel, egna testförare, ~300 kkr; Bengts Nira-argument (alla förare, inte bara betalande bilmärken) in i båda versionerna. v7-B skrivs parallellt om Bengt säger ja.
   UNDERLAGEN UPPDATERADE 3/9 (Bengts order, terminalsessionen): ansökan v5 + kontaktplan v5
@@ -1094,12 +1095,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (kameratoleransen). Jämförelsen "Bengts logg bredvid testbilarnas rapport" gjordes aldrig;
   facit-frågan bor i #16/#38b.
 
-- [ ] **Danmark — NAP-nyckel** (gratis registrering) före produktion: trafikkort-flödet vi
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #311) — **Danmark — NAP-nyckel** (gratis registrering) före produktion: trafikkort-flödet vi
   läser nu är publikt men odokumenterat.
 
 *↩︎ = ÅTERSTÄLLT 10/9. Korten nedan föll av tavlan 8/9 20:43 (commit 99473c7: Claudes tavelsynk av
 "Axels nästa steg" svalde 174 rader, inkl. tre Claude-sektioner). Inget av dem har bevis på klart sedan dess.*
   ↦ **Sorterat 22/9 (kort #224):** registreringar är Bengts (BESLUTSGANGEN §1); Claude lägger om `ingest/dk.ts` när nyckeln finns. Ingen brådska före 2027/28.
+  ✅ **Stängt 22/9 (DECISIONS #311, Bengt: *"ta upp våren 2027"*):** behövs först före dansk produktion, tidigast 2027/28. Står nu under Nordenprodukten i Ä7 (bedömningen §3): nyckeln registreras av Bengt och `ingest/dk.ts` läggs om före produktion.
 
 - [ ] 🔭 **#233 UR NIRAS PRODUKTSIDA: TVÅ SAKER VI INTE HAR, EN VI HAR PARKERAT** (Bengts fråga 21/9, DECISIONS #296; sidan
   niradynamics.com/products/road-surface-alerts läst mot repot). 🔑 Väntar på Bengts val av vad som ska utredas (§4.2).
@@ -3414,7 +3416,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   - [x] **#23 Heads-up över Google Maps + "Testa rösten"** *(nyckel: releasen inskickad)*
   ✅ **Stängt 22/9, kortavstämningen (DECISIONS #303):** levererat 31/8 (cb7d35c, 83145f5, 92c1e91, d056e42; 0.3.2 med heads-up, senast sagt och självväckning). Resterna har egna kort: skinnet v3 på Android, #226 (autostarten på Android) och #23 (heads-up-beviset).
 - [ ] **#25 Halkbaneläget** *(låst: halkbanans avsiktsförklaring)*
-- [ ] **#26 Skolpaketet** (QR-blad, manus, checklista) *(låst: trafikskolans avsiktsförklaring)*
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #311) — **#26 Skolpaketet** (QR-blad, manus, checklista) *(låst: trafikskolans avsiktsförklaring)*
+  ✅ **Stängt 22/9 (DECISIONS #311, Bengt: *"ta upp våren 2027"*):** hör till skolpaketet våren 2027 och står i bedömningens rad *Efter mars*. **Öppnas igen** om Skyltfonden beviljar ansökan med trafikskolorna (besked senast 15/12) — villkoret står i decemberraden.
 - [ ] **#15 Kö-slutsmotorn** (TrafficFlow) *(låst: efter release — uppdatering 1)*
 - [x] ✅ **STÄNGT 22/9** (DECISIONS #309) — **#16 Blixthalke-prognos** (MET Nowcast) *(låst: efter kö-slut — uppdatering 2)*
   ✅ **Stängt 22/9 (DECISIONS #309, Bengts ja):** kortets form — en prognos som varnar — krockar med regel T6 (TROSKLAR-KOMBINATIONEN, fastställd 17/9: prognoser får aldrig ensamma utlösa). Idén lever vidare som en rad i #233:s *före resan*-vy, där en prognos får visas men inte talas.
@@ -4246,6 +4249,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 ---
 
 ## 🟢 KLART (senaste vinsterna)
+
+- [x] ✅ **TRE FRAMTIDSKORT TILL VÅREN 2027 (DECISIONS #311)** — Bengts ord 22/9: *B2B: skolpaketet som produkt*, *#26 skolpaketets material* och *Danmarks NAP-nyckel* stängda och upptagna i bedömningens vårlista (*Efter mars*, Ä7); #26 öppnas igen om Skyltfonden beviljar 15/12. Tavlan 58 → 55 öppna.
 
 - [x] ✅ **SENSORTRAPPANS STEG 2 TIDSATT: VÅREN 2027 (DECISIONS #310)** — Bengts beslut 22/9; telefonkedjan (#237) avgörs i samma prövning, som bärs av Ä8 i bedömningen. Tavlan 59 → 58 öppna.
 
