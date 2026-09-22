@@ -28,6 +28,17 @@
 -- LUTNINGENS EGEN VAKT: minst 3 mätningar i fönstret, och inget givarhopp > 3 °C MELLAN rader som
 -- båda ligger i fönstret. Den sista preciseringen är inte kosmetisk — tas den bort räknar SQL ett
 -- hopp som TypeScript inte räknar, och de två väljer olika rader utan att någon ser det.
+--
+-- RAMAR, INTE EN LATERAL (kort #235, 22/9). Fönstren räknades förut med en CROSS JOIN LATERAL över `bas`. `bas`
+-- materialiserades (den lästes två gånger), och en CTE har inget index — så lateralen läste HELA underlaget en gång per
+-- kandidatrad. Kostnaden växte med kvadraten på arkivet: sju dygn gick 13/9 på 118 054 rader och föll 22/9 på
+-- statement timeout (600 s) på 195 444. Driften (2 h) märkte inget. Nu räknas samma tal med fönsterfunktioner över
+-- stationens rader i tidsordning: `RANGE BETWEEN '15 minutes' PRECEDING AND CURRENT ROW` är exakt lateralens villkor
+-- (b.sample_time >= r.sample_time − 15 min och <= r.sample_time; primärnyckeln gör att ingen rad delar tid med en annan).
+-- Hoppet bokförs på den TIDIGARE raden i paret (lead i stället för lag): ett hopp ligger då i fönstret precis när paret
+-- gör det, och ramen utan den egna raden (EXCLUDE CURRENT ROW) tar med varje hopp inom fönstret men inte hoppet in i
+-- det. Samma rader, samma tal (mätt mot lateralen över ett dygn, scripts/matningar/driftrakningen-ramar-2026-09-22.sql);
+-- `trendarkivet --jamfor` är beviset mot TypeScript.
 
 CREATE OR REPLACE FUNCTION berakna_trendkandidater(sedan interval DEFAULT interval '2 hours')
 RETURNS TABLE(nya int, utfall int) AS $$
@@ -37,36 +48,32 @@ DECLARE
 BEGIN
   WITH bas AS (
     SELECT station_id, sample_time, surface_temp_c, air_temp_c, dewpoint_c, humidity_pct,
-           lag(surface_temp_c) OVER w AS prev_yta,
-           lag(sample_time)    OVER w AS prev_tid
+           abs(lead(surface_temp_c) OVER s - surface_temp_c) AS hopp_fram
     FROM weather_observations
     WHERE sample_time > now() - sedan - interval '60 minutes' AND surface_temp_c IS NOT NULL
-    WINDOW w AS (PARTITION BY station_id ORDER BY sample_time)
+    WINDOW s AS (PARTITION BY station_id ORDER BY sample_time)
+  ),
+  ramar AS (
+    SELECT *,
+      (count(*) OVER w15)::int AS n15, (count(*) OVER w30)::int AS n30, (count(*) OVER w60)::int AS n60,
+      first_value(surface_temp_c) OVER w15 AS f15,
+      first_value(surface_temp_c) OVER w30 AS f30,
+      first_value(surface_temp_c) OVER w60 AS f60,
+      max(hopp_fram) OVER x15 AS h15, max(hopp_fram) OVER x30 AS h30, max(hopp_fram) OVER x60 AS h60
+    FROM bas
+    WINDOW s   AS (PARTITION BY station_id ORDER BY sample_time),
+           w15 AS (s RANGE BETWEEN interval '15 minutes' PRECEDING AND CURRENT ROW),
+           w30 AS (s RANGE BETWEEN interval '30 minutes' PRECEDING AND CURRENT ROW),
+           w60 AS (s RANGE BETWEEN interval '60 minutes' PRECEDING AND CURRENT ROW),
+           x15 AS (s RANGE BETWEEN interval '15 minutes' PRECEDING AND CURRENT ROW EXCLUDE CURRENT ROW),
+           x30 AS (s RANGE BETWEEN interval '30 minutes' PRECEDING AND CURRENT ROW EXCLUDE CURRENT ROW),
+           x60 AS (s RANGE BETWEEN interval '60 minutes' PRECEDING AND CURRENT ROW EXCLUDE CURRENT ROW)
   ),
   kandidat AS (
-    SELECT r.*, f.*
-    FROM bas r
-    CROSS JOIN LATERAL (
-      SELECT
-        count(*) FILTER (WHERE b.sample_time >= r.sample_time - interval '15 minutes')::int AS n15,
-        count(*) FILTER (WHERE b.sample_time >= r.sample_time - interval '30 minutes')::int AS n30,
-        count(*)::int AS n60,
-        (array_agg(b.surface_temp_c ORDER BY b.sample_time)
-           FILTER (WHERE b.sample_time >= r.sample_time - interval '15 minutes'))[1] AS f15,
-        (array_agg(b.surface_temp_c ORDER BY b.sample_time)
-           FILTER (WHERE b.sample_time >= r.sample_time - interval '30 minutes'))[1] AS f30,
-        (array_agg(b.surface_temp_c ORDER BY b.sample_time))[1] AS f60,
-        max(abs(b.surface_temp_c - b.prev_yta)) FILTER (
-          WHERE b.prev_tid IS NOT NULL AND b.prev_tid >= r.sample_time - interval '15 minutes') AS h15,
-        max(abs(b.surface_temp_c - b.prev_yta)) FILTER (
-          WHERE b.prev_tid IS NOT NULL AND b.prev_tid >= r.sample_time - interval '30 minutes') AS h30,
-        max(abs(b.surface_temp_c - b.prev_yta)) FILTER (
-          WHERE b.prev_tid IS NOT NULL AND b.prev_tid >= r.sample_time - interval '60 minutes') AS h60
-      FROM bas b
-      WHERE b.station_id = r.station_id
-        AND b.sample_time >= r.sample_time - interval '60 minutes'
-        AND b.sample_time <= r.sample_time
-    ) f
+    -- Ramarna räknas över HELA `bas` först och filtreras sedan: ett filter före fönsterfunktionerna hade tagit rader ur
+    -- fönstren.
+    SELECT r.*
+    FROM ramar r
     WHERE r.sample_time > now() - sedan
       -- Givarvakterna, §3.
       AND r.air_temp_c IS NOT NULL AND r.surface_temp_c >= r.air_temp_c - 12
