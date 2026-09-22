@@ -388,14 +388,51 @@ async function gzipBytes(s: string): Promise<number> {
 
 /** manifest.json — apparna vägrar en fil vars sha256 inte stämmer och behåller den förra.
  *  Skrivs ALLTID ihop med static.json och live.json, aldrig separat. */
-export async function manifestFor(generated_at: string, files: { static: string; live: string }) {
+export async function manifestFor(generated_at: string, files: { static: string; live: string }, prefix = "app/v1") {
   const entry = async (name: "static" | "live") => ({
-    path: `app/v1/${name}.json`,
+    path: `${prefix}/${name}.json`,
     sha256: await sha256Hex(files[name]),
     bytes: new TextEncoder().encode(files[name]).byteLength,
     gz_bytes: await gzipBytes(files[name]),
   });
   return { schema: 1, generated_at, files: { static: await entry("static"), live: await entry("live") } };
+}
+
+/** GRANNLÄNDERNAS SNAPSHOT (kort #238; Bengts princip 22/9: återkommande körningar bor i Supabase, inte i Actions).
+ *  Samma form som Sverige, ur schema fi/no/dk: väderpunkter (yta ≤ 3 °C eller snö) och olyckor — bara Accident, samma regel
+ *  som Sverige: rösten säger "olycka" bara om det ÄR en (#32). Inga kameror, ingen SMHI, inget vilt, inga broar, ingen
+ *  radar och inga givarvakter utöver ytan: det är en skuggsnapshot som skuggmotorn läser oförändrad. Ersätter
+ *  publish/build-snapshot-{fi,dk}.ts, som byggde samma sak i ett Actions-jobb varje timme. `publicera?land=no` bygger en,
+ *  `?land=grannar` alla tre i en commit. */
+export const GRANNAR = ["fi", "no", "dk"] as const;
+export type Granne = (typeof GRANNAR)[number];
+export async function buildGrannSnapshot(q: Q, land: Granne, now: Date = new Date()) {
+  const num = (v: unknown) => (v == null ? null : Number(v));
+  const wx = await q(`
+    SELECT station_id, surface_temp_c, rain, snow, ST_X(geom) AS lon, ST_Y(geom) AS lat
+    FROM ${land}.weather_latest
+    WHERE surface_temp_c IS NOT NULL AND (surface_temp_c <= 3 OR snow)`);
+  const devs = await q(`
+    SELECT deviation_id, message_type, message_type_value, road_number, severity_code,
+           ST_X(geom) AS lon, ST_Y(geom) AS lat
+    FROM ${land}.deviations
+    WHERE NOT deleted AND geom IS NOT NULL AND (end_time IS NULL OR end_time > now())
+      AND message_type_value = 'Accident'`);
+  const staticDoc = { schema: 1, cameras: [] as unknown[] };
+  const liveDoc = {
+    schema: 1,
+    generated_at: now.toISOString(),
+    segments: [] as unknown[],
+    weather: wx.map((r) => ({ id: String(r.station_id), lon: Number(r.lon), lat: Number(r.lat), yta: num(r.surface_temp_c), fukt: Boolean(r.rain || r.snow) })),
+    deviations: devs.map((r) => ({
+      id: String(r.deviation_id), lon: Number(r.lon), lat: Number(r.lat), typ: r.message_type, road: r.road_number ?? null,
+      sev: r.message_type_value === "Accident" && r.severity_code != null ? Number(r.severity_code) : null,
+      slut: null,
+    })),
+    smhi: [] as unknown[],
+    wildlife: [] as unknown[],
+  };
+  return { staticDoc, liveDoc };
 }
 
 
@@ -607,6 +644,28 @@ Deno.serve(async (req) => {
   if (!k || req.headers.get("x-halkvakt-key") !== k) return new Response("forbidden", { status: 403 });
   const t0 = Date.now();
   try {
+    // GRANNLÄNDERNA (kort #238; Bengts princip 22/9: återkommande körningar i Supabase, inte i Actions): ?land=fi|no|dk
+    // bygger ett lands skuggsnapshot, ?land=grannar alla tre i EN commit. Samma skrivare som Sverige, noll Actions-minuter.
+    const land = new URL(req.url).searchParams.get("land");
+    if (land) {
+      const lander = land === "grannar" ? [...GRANNAR] : [land as Granne];
+      if (!lander.every((l) => (GRANNAR as readonly string[]).includes(l)))
+        return new Response(JSON.stringify({ ok: false, error: `okänt land: ${land}` }), { status: 400 });
+      const q: Q = (text, params) => sql.unsafe(text, (params ?? []) as any[]) as unknown as Promise<Record<string, any>[]>;
+      const files: Record<string, string> = {};
+      const ut: Record<string, unknown> = {};
+      for (const l of lander) {
+        const { staticDoc, liveDoc } = await buildGrannSnapshot(q, l);
+        const sStatic = JSON.stringify(staticDoc), sLive = JSON.stringify(liveDoc);
+        const manifest = await manifestFor(liveDoc.generated_at, { static: sStatic, live: sLive }, `app/${l}/v1`);
+        files[`data/app/${l}/v1/static.json`] = sStatic;
+        files[`data/app/${l}/v1/live.json`] = sLive;
+        files[`data/app/${l}/v1/manifest.json`] = JSON.stringify(manifest);
+        ut[l] = { generated_at: liveDoc.generated_at, weather: liveDoc.weather.length, deviations: liveDoc.deviations.length };
+      }
+      const sha = await publicera(files);
+      return new Response(JSON.stringify({ ok: true, land, sha, ...ut, ms: Date.now() - t0 }), { headers: { "Content-Type": "application/json" } });
+    }
     const { staticDoc, liveDoc, border, notes } = await buildSnapshot(
       (text, params) => sql.unsafe(text, (params ?? []) as any[]) as unknown as Promise<Record<string, any>[]>,
       BRIDGES);

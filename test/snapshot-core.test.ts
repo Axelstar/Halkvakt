@@ -5,7 +5,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { buildSnapshot, manifestFor, bridgesFromGeoJSON, WX_SANE, REGN_UTLOSARE_MMH, GIVARFEL_LUFT_MIN_C, GIVARFEL_GAP_C, KARANTAN_DYGN, KARANTAN_BROTT, RADVAKT_SQL, brottSql, karantanSql, givarfelSql, LANGSAM_FRIST_H, type Q } from "../publish/snapshot-core.ts";
+import { buildSnapshot, manifestFor, bridgesFromGeoJSON, WX_SANE, REGN_UTLOSARE_MMH, GIVARFEL_LUFT_MIN_C, GIVARFEL_GAP_C, KARANTAN_DYGN, KARANTAN_BROTT, RADVAKT_SQL, brottSql, karantanSql, givarfelSql, LANGSAM_FRIST_H, buildGrannSnapshot, GRANNAR, type Q } from "../publish/snapshot-core.ts";
 import { snapshotToHazards } from "../engine/src/snapshot.ts";
 
 /** Låtsasdatabas: svarar på frågorna efter vilken tabell de läser, och loggar frågetexten. */
@@ -399,4 +399,26 @@ test("#236 fragmenten: karantanSql bär dygnsflaggan för det svenska arkivet, i
   assert.ok(g.startsWith("EXISTS (SELECT 1 FROM givarfel_dygn g WHERE g.station_id = w.station_id") && g.includes("(w.sample_time AT TIME ZONE 'UTC')::date"));
   assert.ok(karantanSql("w").endsWith(` AND NOT ${g}`), "det svenska arkivet: karantänen OCH dygnet i felet");
   assert.ok(!karantanSql("w", "fi.weather_observations").includes("givarfel_dygn"), "det finska arkivet: id:n kan krocka, tabellen gäller inte där");
+});
+
+test("grannländernas snapshot byggs i Supabase (kort #238): väder ≤ 3 °C eller snö, bara olyckor, samma form som Sverige", async () => {
+  const asked: string[] = [];
+  const q: Q = async (text) => {
+    asked.push(text);
+    if (text.includes("weather_latest")) return [{ station_id: "N1", surface_temp_c: "-1.5", rain: true, snow: false, lon: 10.5, lat: 60.1 }];
+    if (text.includes("deviations")) return [{ deviation_id: "NO:1", message_type: "Olycka", message_type_value: "Accident", road_number: "E6", severity_code: 4, lon: 10.6, lat: 60.2 }];
+    return [];
+  };
+  const { staticDoc, liveDoc } = await buildGrannSnapshot(q, "no", new Date("2026-09-22T10:00:00Z"));
+  assert.deepEqual(staticDoc, { schema: 1, cameras: [] });
+  assert.equal(liveDoc.generated_at, "2026-09-22T10:00:00.000Z");
+  assert.deepEqual(liveDoc.weather, [{ id: "N1", lon: 10.5, lat: 60.1, yta: -1.5, fukt: true }]);
+  assert.deepEqual(liveDoc.deviations, [{ id: "NO:1", lon: 10.6, lat: 60.2, typ: "Olycka", road: "E6", sev: 4, slut: null }]);
+  assert.deepEqual(liveDoc.segments, []); assert.deepEqual(liveDoc.smhi, []); assert.deepEqual(liveDoc.wildlife, []);
+  assert.ok(asked.some((s) => s.includes("FROM no.weather_latest") && s.includes("surface_temp_c <= 3 OR snow")), "landets schema, snapshotens tröskel");
+  assert.ok(asked.some((s) => s.includes("FROM no.deviations") && s.includes("message_type_value = 'Accident'")), "rösten säger olycka bara om det ÄR en (#32)");
+  assert.deepEqual([...GRANNAR], ["fi", "no", "dk"]);
+  const m = await manifestFor(liveDoc.generated_at, { static: JSON.stringify(staticDoc), live: JSON.stringify(liveDoc) }, "app/no/v1");
+  assert.equal(m.files.live.path, "app/no/v1/live.json");
+  assert.equal((await manifestFor("x", { static: "{}", live: "{}" })).files.static.path, "app/v1/static.json", "Sveriges manifest oförändrat");
 });
