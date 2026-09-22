@@ -511,6 +511,34 @@ test("#234 drifträkningen: radvakten och karantänen väljer bort samma rader s
   } finally { await pool.end(); }
 });
 
+// LUTNINGENS HOPPVAKT I RAMARNA (kort #235). sql/018 räknade fönstren med en lateral och räknar dem nu med fönsterfunktioner;
+// den enda punkt där formerna kan skilja sig är hoppvakten: ett hopp > 3 °C MELLAN två rader som båda ligger i fönstret fäller
+// lutningen, men hoppet IN i fönstret (från raden före) gör det inte. HOPP_A: 9,0 → 4,0 (hopp 5) och sedan ett jämnt fall.
+// Raden −20 min har hoppet utanför sitt 60-minutersfönster [−80, −20] och ska få lutning60 = 4,0 − 2,8 = 1,2; raden −35 min har
+// hoppet inuti sitt fönster [−95, −35] och får ingen lutning alls. En ram som räknar hoppet in i fönstret gav −20 min lutning60
+// NULL; en ram utan hoppvakt gav −35 min en kandidat.
+test("#235 drifträkningen i ramar: hoppet in i fönstret räknas inte, hoppet inuti fäller lutningen", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  try {
+    for (const f of ["001_init.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql", "029_brott_index.sql", "030_langsam_vakt.sql"])
+      await pool.query(readFileSync(new URL("../sql/" + f, import.meta.url), "utf8"));
+    for (const t of ["trend_kandidater", "weather_observations", "givarfel_dygn"]) await pool.query(`DELETE FROM ${t} WHERE station_id LIKE 'HOPP_%'`);
+    const rad = (min: number, yta: number) =>
+      `('HOPP_A', 'x', ST_SetSRID(ST_MakePoint(15.9, 60.0), 4326), now() - interval '${min} minutes', ${yta.toFixed(1)}, ${(yta + 1).toFixed(1)}, ${(yta - 0.3).toFixed(1)}, 95)`;
+    await pool.query(`
+      INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, dewpoint_c, humidity_pct) VALUES
+        ${[[90, 9.0], [70, 4.0], [50, 3.6], [35, 3.2], [20, 2.8]].map(([m, y]) => rad(m, y)).join(",\n")}
+      ON CONFLICT DO NOTHING`);
+    await pool.query("SELECT * FROM berakna_trendkandidater()");
+    const valda = (await pool.query(`SELECT round(extract(epoch FROM now() - observed_at) / 60) AS min, lutning15_c, lutning30_c, lutning60_c
+      FROM trend_kandidater WHERE station_id = 'HOPP_A' ORDER BY observed_at`)).rows
+      .map((r) => [Number(r.min), r.lutning15_c === null ? null : Number(r.lutning15_c), Number(r.lutning30_c), Number(r.lutning60_c)]);
+    assert.deepEqual(valda, [[20, null, 0.8, 1.2]], "bara −20 min: 15 min har två rader, 30 min 3,6 − 2,8, 60 min 4,0 − 2,8 trots hoppet före fönstret");
+  } finally { await pool.end(); }
+});
+
 // DEN LÅNGSAMMA VAKTEN mot riktig PostGIS (sql/030, kort #236, DECISIONS #300). Tre stationer med 30 timmars rader var
 // tionde minut: LV_FEL ligger 7 ° under luften hela tiden (Ö Ljungby-felet under #75:s 12), LV_FRISK 1 ° under, LV_KORT
 // 7 ° under de första 20 timmarna och rätt de sista 10. Funktionen ska ge LV_FEL ett färskt dygn i felet, LV_FRISK inget,
