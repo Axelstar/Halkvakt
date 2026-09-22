@@ -1171,7 +1171,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   röstvägen under vintern och få veta först vid domen att den inte får användas.
   ↦ **Sorterat 22/9 (kort #224):** nästa steg är din DECISIONS-rad om förslaget (a)/(b) (§4.2).
 
-- [ ] 🗑️ **#146 27,6 MB SWIFT-BYGGUTDATA LIGGER SPÅRAT I REPOT — beslut krävs innan något tas bort**
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #306) — 🗑️ **#146 27,6 MB SWIFT-BYGGUTDATA LIGGER SPÅRAT I REPOT — beslut krävs innan något tas bort**
   Upptäckt 12/9 under CRLF-arbetet (#145): `ios/HalkvaktEngine/.build/` är spårad med **504 filer,
   27,6 MB** — Linux-byggutdata (`.o`, `.swiftmodule`, `.pcm`, `master.priors`, `debug.yaml`) från en
   CI-körning som blivit incheckad. `.gitignore` täcker `android/build/` och `android/*/build/` men
@@ -1185,6 +1185,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   igenom först med `-c core.longpaths=true`. Det är alltså inte bara 27,6 MB — det är en repo som
   inte går att klona normalt på Windows, och orsaken är uteslutande byggartefakterna.
   ↦ **Sorterat 22/9 (kort #224):** nästa steg är ditt (eller Axels) ja — sedan en commit: `git rm -r --cached ios/HalkvaktEngine/.build` och raden i `.gitignore`.
+  ✅ **Stängt 22/9 (DECISIONS #306):** Bengts ja 22/9. PR #481 (0c2d92a): 504 filer ur git, `ios/HalkvaktEngine/.build/` i `.gitignore`, inga referenser utanför mappen. **Före:** en kloning utan `core.longpaths` föll 22/9 på *Filename too long* (291 tecken, *checkout failed*). **Efter:** samma kloning av 0c2d92a går igenom, 0 saknade filer. ci och ios-engine gröna på main (35739390674, 35739390740). Historiken är oförändrad, och en `git pull` tar bort de gamla byggfilerna ur andras arbetskopior; nästa Swift-bygge skapar dem igen.
 
 ### Claude — olåst
 - [x] 🔇 **#227 iOS TYSTNADE MED SLÄCKT SKÄRM PÅ "NÄR APPEN ANVÄNDS" — FIXAT 20/9** (Axels prov på iPhone, DECISIONS #273).
@@ -1513,7 +1514,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ▶️ **NU-LISTAN I GÅNG 15/9 ("då gör vi nu nu"):** N1–N4 byggda i PR #270 (DECISIONS #187–#190), N5 klar. Spårningen
   står i bedömningens §0; deployer och bevis väntar och skrivs in där när de finns.
   ✅ **Stängt 22/9, kortavstämningen (DECISIONS #303):** alla beslut tagna 17/9 (bedömningen v3, §4.1); kvar av NU-listan är N3, som bärs av #86.
-- [ ] 🟠 **#160 MÅNDAGSSERIEN KOM 5–7 TIMMAR SENT 14/9 — och mätvakten kan inte se det förrän om tio dygn**
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #306) — 🟠 **#160 MÅNDAGSSERIEN KOM 5–7 TIMMAR SENT 14/9 — och mätvakten kan inte se det förrän om tio dygn**
   (morgonavläsningen 14/9 08:00). **DET HÄR ÄR 7/9 OM IGEN, och den gången tog det fem dygn innan en
   människa råkade titta.**
   📏 **RÄTTAT I KVÄLLSAVLÄSNINGEN 14/9 17:30 — DE KÖRDE, DE KOM SENT.** Morgonens dom "körde inte"
@@ -1563,6 +1564,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔨 **BYGGT OCH I DRIFT 18/9 (Bengts "kör", DECISIONS #237, PR #344):** (a) sju pulsjobb för måndagsserien, (b) fast
   frist kadens + 3 h, (c) mätvakten läser pulsklockan. Bevis: vakthunden 04:47Z *mätvakten: 11 schemalagda flöden (11 via
   pulsklockan), 0 med problem* (8 i morse). **Kvar: måndag 21/9 — alla sju ska starta inom minuten.**
+  ✅ **Stängt 22/9 (DECISIONS #306):** **(a)** 21/9 startade alla sju 1–45 s efter bokad minut, alla gröna, via pulsklockan: grind-a 05:40:43 · smhi-prov 06:00:01 · cell-matning-v3 06:20:01 · trv-bevakning 06:40:45 · hojd-prov 07:00:01 · grind-v-a 07:20:43 · grind-v-b 07:40:44 (`scripts/matningar/mandagsserien-2026-09-22.py`). **(b)** `matvaktprov` 22/9 14:16Z (körning 35739124629): issue #482 öppnad 14:16:29Z med provraden, stängd 15:07:04Z av nästa gröna timkörning (`scripts/matningar/matvaktprov-issue-2026-09-22.py`). Fristen är fast 3 h (`MATVAKT_FRIST_H`), så en utebliven måndag syns 3 h efter sin bokade tid. **(c)** i drift sedan 18/9: *mätvakten: 12 schemalagda flöden (11 via pulsklockan)*.
 - [x] 🧱 **#161 EN CRLF-FIL FÄLLER VARJE FLÖDE SOM COMMITTAR TILLBAKA — ✅ KLART 18/9 — och sex källvakter har
   aldrig sparat sitt state** (fynd + rotorsak i kvällsavläsningen 14/9).
   **SYMTOM:** `trv-bevakning` och `marknadsforing` faller i sitt commit-steg med
@@ -3792,6 +3794,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   argumentet · Any iOS Device (arm64) → Product → Archive · Organizer ska visa **0.3.8 (11)** · Distribute → App Store
   Connect → Upload · intern grupp får bygget utan granskning. Bevis: Bengts svar som rad i `driver_facit` med `version 0.3.8`.
   🔑 **Nyckel, sorterat 22/9 (kort #224):** iOS-bygget med knapparna ute hos testarna — då skärmbilden i PRODUKTBOK och det första riktiga svaret i `driver_facit`.
+  📝 **22/9 (DECISIONS #306):** vakthunden räknar nu **1 riktigt facitsvar** (senast 21/9 22:13Z, 2 prov uteslutna) — steg 5 kan alltså vara uppfyllt. Kontrollera att svaret kom från en riktig telefon innan det räknas; kvar är iOS-skärmbilden.
 
 - [ ] ⚖️ **#153 ALLVAR SOM FÖRSPRÅNG + ETT SMALARE UNDANTAG — beslut 1 omformulerat 16/9 och väntar, beslut 2 öppet (Bengts)**
   ✏️ **OMSKRIVET 16/9 på Bengts order *"gör 153 och omformulera 153"* (DECISIONS #221).** Det gamla kortet föreslog att
@@ -4235,6 +4238,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 ---
 
 ## 🟢 KLART (senaste vinsterna)
+
+- [x] ✅ **#146 OCH #160 KLARA 22/9 (DECISIONS #306)** — två av de fem enklaste: Swifts byggutdata ur repot (kloningen på Windows går igenom igen) och måndagsserien bevisad (sju av sju i tid 21/9, mätvaktens larmväg provad). Tavlan 66 → 64 öppna.
 
 - [x] ✅ **#224 TAVLANS SEKTIONER SORTERADE — KLART 22/9 (DECISIONS #305)**: 22 kort flyttade dit nästa steg finns, *Claude — olåst* 7 kort som alla kan startas nu, låsta kort med nyckeln utskriven. Tavlan 67 → 66 öppna.
 

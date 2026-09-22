@@ -9167,3 +9167,30 @@ nyckelns ordalydelse är gammal.
 
 **De fem enklaste att slutföra** (§4.2): #160 (Claude, nu) · #146 (Bengts ja, sedan en commit) · #156 (Axels rad) · skinnet v3 på
 Android (Axels skärmbild) · Billing (Axel, före 24/9).
+
+## #306 (22/9 2026) Kort #146 och #160 stängda — Swifts byggutdata ur repot, måndagsserien bevisad
+
+**Beslut (Bengt 22/9: *"ja gör 146 och kör 160"*).** Två av de fem enklaste korten i §4.2.
+
+**#146 — Swifts byggutdata ur repot (PR #481, 0c2d92a).** `ios/HalkvaktEngine/.build/` bar 504 filer (27,6 MB) från en CI-körning,
+incheckade av misstag i början av september. Nu borttagna ur git (`git rm -r --cached`) och mappen i `.gitignore`. Ingenting i repot
+läser mappen: sökt utanför den, inga träffar; ios-engine bygger sina egna. **Före:** `git -c core.longpaths=false clone --depth 1` på
+Bengts Windowsdator gav *"Filename too long"* och *"Clone succeeded, but checkout failed"* (djupaste sökvägen 291 tecken, gränsen
+260). **Efter:** samma kloning av 0c2d92a går igenom, med 0 saknade filer. ci (35739390674) och ios-engine (35739390740) gröna på main.
+
+**#160 — måndagsserien.** **(a)** 21/9 startade alla sju pulsjobb 1–45 s efter sin bokade minut, alla gröna, som `workflow_dispatch`
+från pulsklockan: grind-a 05:40:43 · smhi-prov 06:00:01 · cell-matning-v3 06:20:01 · trv-bevakning 06:40:45 · hojd-prov 07:00:01 ·
+grind-v-a 07:20:43 · grind-v-b 07:40:44 (`scripts/matningar/mandagsserien-2026-09-22.py`, läser bara GitHubs API). 14/9 kom samma
+serie 5–7 timmar sent på naken cron. **(b)** `matvaktprov` 22/9 14:16Z (körning 35739124629): issue #482 med etiketten `matvakt`
+öppnades 14:16:29Z med provraden och stängdes 15:07:04Z av nästa gröna timkörning. Fristen är fast 3 h (`MATVAKT_FRIST_H` i
+vakthunden), så en utebliven måndag syns 3 h efter sin bokade tid i stället för efter 10,5 dygn. **(c)** i drift sedan 18/9 (#237):
+*mätvakten: 12 schemalagda flöden (11 via pulsklockan)*.
+
+**Sagt högt.** (1) Commitmeddelandet för #146 säger att filerna *"inte raderas från någons disk"*. Det gäller den som gör ändringen
+(`--cached`), men en `git pull` på en annan dator tar bort de gamla byggfilerna ur arbetskopian. Det är ofarligt: nästa Swift-bygge
+skapar dem igen, och de var värdelösa utanför maskinen som byggde dem. Här tog pullen bort dem ur Bengts arbetskopia. (2) Historiken
+är oförändrad; en ny kloning laddar fortfarande ner filerna men packar inte ut dem. (3) Provet visar larmvägen, inte fristen själv.
+Fristen är kod (kadens + 3 h), och det första verkliga provet är en måndag som uteblir. (4) På vägen syntes att vakthunden räknar
+**1 riktigt facitsvar** (senast 21/9 22:13Z, 2 prov uteslutna). Kortavstämningen byggde på DECISIONS #267 (20/9: 0 riktiga).
+Kort #21:s steg 5 kan alltså vara uppfyllt; en rad om det står på kortet. (5) `matvaktprov` kostade en dbknapp-körning (cirka en
+minut); mätningen av måndagen läste bara API:t.
