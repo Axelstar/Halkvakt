@@ -9116,3 +9116,29 @@ min/dygn 19/9 mot kortets mål 100: kortets tre snitt är gjorda, och kassabevak
 (3) Bedömningens rader om Actions-kassan och Actions-kontot pekar nu på #152 i stället för #85; `radar_h`-raden i §0b bär sin egen
 bevakning sedan #187 stängts. (4) Kvar ur avstämningen: fyra oklara kort (§4.2, frågor till Bengt och Axel), 0.3.9 (12) som bär
 okompilerad #203-kod, och produktbokens rader 21 och 82 mot invarianten (#264).
+
+## #304 (22/9 2026) Bengts svar ur kortavstämningen: två kort stängda, 0.3.9 höjs till (13), produktboken i linje med invarianten
+
+**Beslut (Bengt 22/9: *"2 skickade stäng och 3 ja"* och *"kameravarningen är klar"*).**
+(1) **#154 Byvindgivarna** stängs: anmälningarna är skickade. (2) **Kameravarningen i fel riktning** stängs: Bengt bekräftar att
+den är klar; beviset är fältdomen Malmö–Boden (DECISIONS #102), som kortet aldrig tog upp. Tavlan 69 → 67 öppna.
+(3) **`CURRENT_PROJECT_VERSION` 12 → 13** i `ios/HalkvaktApp/project.yml`, och **produktboken rad 21 och 82** säger nu samma sak
+som invarianten (#264).
+
+**Varför numret höjs.** 0.3.9 (12) sattes 20/9 17:37 (0451016), och förkontrollen gjordes på 90b5223 (17:42). Kort #203:s iOS-kod
+kom 18:17 (eb81b50) utan ny höjning. DECISIONS #275 och arkiveringsinstruktionen säger att 0.3.9 *inte* bär #203 — men ett arkiv
+från main gör det, med kod som aldrig kompilerats. Det är fällan från 0.3.7 (CLAUDE.md, 18/9): ett byggnummer som sätts före den
+sista ändringen bevisar inte vilket bygge som är ute. #269 (*"#203 går i 0.3.9"*) och #275 säger emot varandra; det här rättar
+läget, inte besluten. **Axels val (§4.2 (d)):** (a) arkivera från main som **(13)**, med #203 lager 1, där Xcode kompilerar #203 för
+första gången; eller (b) den rena fixen som **(12)** från `90b5223`. Instruktionen på tavlan bär båda vägarna.
+
+**Produktboken.** Rad 21 sa *"ingen position som lämnar telefonen"* och rad 82 *"att positionen aldrig lämnar telefonen"*.
+Invarianten skrevs om 20/9, och regeln är att invarianten, Data Safety, integritet.html och produktboken ändras i samma commit;
+produktboken kom inte med. Nu: *"ingen position lämnar telefonen av sig själv — det enda som någonsin skickas är betatestets
+facitsvar, som du själv slår på"*, och rad 82 citerar introduktionens text ordagrant. Ingen apptext ändrad.
+
+**Sagt högt.** (1) Samma löfte utan undantag står i iOS behörighetsruta (`project.yml` rad 47 och 50: *"Positionen lämnar aldrig
+enheten"*). Introduktionen och Om säger undantaget; behörighetsrutan gör det inte. Det är en text användaren ser och Axels text
+(#196), så den rördes inte — frågan står i §4.2 (d). (2) Höjningen gör inte #203:s iOS-kod kompilerad: ingen CI bygger iOS-appen
+(ios-engine prövar bara Swift-motorn på Linux). Det första provet är Axels Xcode. (3) *"2 skickade"* tolkades som att anmälningarna
+är skickade (fråga 1 i listan); datum och väg är inte angivna.
