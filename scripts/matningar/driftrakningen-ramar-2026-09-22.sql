@@ -1,9 +1,9 @@
--- KORT #235 (22/9 2026): drifträkningens lateral mot ramarna. Genererad av en engångsgenerator ur origin/main:sql/018
--- (lateralen) och grenens sql/018 (ramarna), så att mätningen prövar exakt den text som checkas in. Bara läsande: satserna
--- är SELECT över CTE:erna, ingen INSERT, ingen funktion ändras. Bärare: sql/029_brott_index.sql (CREATE INDEX IF NOT EXISTS).
--- Sats 2: två timmar (livets fönster), båda formerna, varje kolumn åt båda hållen. Sats 3: ett dygn, samma sak.
--- Sats 4–5: tiden i livets fönster, lateralen och ramarna var för sig. Sats 6: ramarna över sju dygn — lateralen föll där.
--- Kör: varje sats på en rad i dbknapp (atgard migrera, fil sql/029_brott_index.sql, bevis = satserna).
+-- KORT #235 (22/9 2026): drifträkningens lateral mot ramarna. Genererad av driftrakningen-ramar-generator-2026-09-22.py ur
+-- 8a9eca9:sql/018 (lateralen) och arbetsträdets sql/018 (ramarna), så att mätningen prövar exakt den text som checkas in.
+-- Bara läsande: satserna är SELECT över CTE:erna, ingen INSERT, ingen funktion ändras. Bärare: sql/029_brott_index.sql
+-- (CREATE INDEX IF NOT EXISTS). Sats 2: två timmar (livets fönster), båda formerna, varje kolumn åt båda hållen. Sats 3: ett
+-- dygn, samma sak. Sats 4–5: tiden i livets fönster, lateralen och ramarna var för sig. Sats 6: ramarna över sju dygn —
+-- lateralen föll där. Kör: varje sats på en rad i dbknapp (atgard migrera, fil sql/029_brott_index.sql, bevis = satserna).
 
 SET statement_timeout = '600s'
 
