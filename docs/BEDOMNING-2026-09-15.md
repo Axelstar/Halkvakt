@@ -215,7 +215,7 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 | :-- | :-- | :-- | :-- |
 | **Ä1** | #42: sjätte farslag eller meta — avgörs på V-B:s data mot kriteriet | efter N2:s höst | #42 |
 | **Ä2** | #45 som meta, med lapse 0,63 | efter S8 | #45 |
-| **Ä3** | #32 hinder (djur på vägbanan först) och #15 kö-slut (TrafficFlow) mot kriteriet — korten stängda 22/9, **öppnas våren 2027** (DECISIONS #315) | våren 2027 | #32, #15 |
+| **Ä3** | #32 hinder (djur på vägbanan först) och #15 kö-slut (TrafficFlow) mot kriteriet — korten stängda 22/9, **öppnas våren 2027** (DECISIONS #315) · **Mätt 22/9 (DECISIONS #316):** Trafikverkets *djur på vägen* 480 händelser på 14 dygn, hos oss median 1,8 min efter starttiden (p90 3,0), 91 % namnger djurslaget; polisen bara 11 viltolyckor på 14 dygn | våren 2027 | #32, #15 |
 | **Ä4** | **Räckvidd (L4):** SMHI moln som knapp · Verify 2 · representativitetsradien. Axel: *"räckvidd kan vara den här vinterns"* — grind A:s kurva växer varje måndag; beslut på vinterdata | efter vinterns grind A-kurva | #95, #96 |
 | **Ä5** | Höjden som varianspredikator — kräver inte vinter, kräver inte brådska | knapp när kassan tillåter | #96 |
 | **Ä6** | Radarns segmentupplösning · #43 steg 4 (snöbyar) · kombinationsgrinden i skuggan · #91 kallplatslagret · SMHI som reserv (2,36 °C) | mars | #43, #91 |
