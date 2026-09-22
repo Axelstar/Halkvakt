@@ -9053,3 +9053,38 @@ tabellerna) i CI; i drift: sql/031 körd 22/9 (körning 35714435556): första k�
 
 **Sagt högt:** databasen växer ~4,5 MB/dygn netto ⇒ 400 MB runt 9/11 och 500 MB (skrivskydd) runt 1/12. Pro-beslutet i §4.2 ("senast
 1 november") håller, utan marginal. Bevakningsrad i §0b med veckovis mätning.
+
+## #302 (22/9 2026) Drifträkningen räknar fönstren i ramar i stället för en lateral — sju dygn på 8,6 s (kort #235)
+
+**Beslut (Bengts order 22/9: *"gör kort 235 och stäng det när det är klart"*).** `berakna_trendkandidater` (sql/018) räknar lutningens
+fönster med fönsterfunktioner över stationens rader i tidsordning. Vilka rader som väljs och vilka tal som skrivs är oförändrat;
+vakterna, trösklarna och tvillingen `publish/trenden.ts` är orörda.
+
+**Varför.** Lateralen läste den materialiserade CTE:n `bas`, som saknar index, en gång per kandidatrad, så kostnaden växte med
+kvadraten på arkivet. Sju dygn gick 13/9 på 118 054 rader och föll 22/9 på statement timeout vid 195 444. Driftvakten, det enda
+beviset för att SQL och TypeScript väljer samma rader, kunde bara köras på ett dygn.
+
+**Alternativ.** (a) Höja timeouten: döljer tillväxten, och arkivet växer. (b) En lateral mot tabellen med `(station_id,
+sample_time)`-index: linjär, men hoppvaktens lag-kolumner måste räknas om per rad, alltså mer SQL för samma sak. (c) Driftvakten på
+ett dygn för alltid: knappen skriver sju dygn, så vakten hade vaktat ett annat fönster än det som skrivs. (d) Fönsterfunktioner —
+valt: en sortering per station och lateralens villkor ordagrant.
+
+**Formen.** `RANGE BETWEEN interval 'N minutes' PRECEDING AND CURRENT ROW` är lateralens `b.sample_time >= r.sample_time − N` och
+`<= r.sample_time`; primärnyckeln `(station_id, sample_time)` ger inga delade tider. Hoppvakten: hoppet bokförs på den tidigare raden i
+paret (`lead` i stället för `lag`) och läses i en ram utan den egna raden (`EXCLUDE CURRENT ROW`). Då räknas varje hopp mellan två
+rader i fönstret men inte hoppet in i det, som i lateralen. Ramarna räknas över hela `bas` innan kandidaterna filtreras.
+
+**Bevis.** (1) Före incheckningen, bara läsande (körning 35729035969, `scripts/matningar/driftrakningen-ramar-2026-09-22.sql`, genererad
+ur origin/main:s och grenens sql/018): 2 h — 9 rader efter vakterna, 0 skillnader; 1 dygn — 15 635 rader och 5 797 kandidater i båda,
+0 skillnader i 14 kolumner åt båda hållen; livets fönster 0,01 s (lateralen) mot 0,00 s; sju dygn med ramarna 8,6 s (31 668 rader,
+11 317 kandidater). (2) Integrationsprovet `#235` (hoppet in i fönstret räknas inte, hoppet inuti fäller lutningen) grönt mot
+lateralen (körning 35729309079) och mot ramarna (35729454227), 144 prov, 0 överhoppade. (3) I drift: sql/018 körd 12:50Z (körning
+35729702635), `pg_proc` bär `EXCLUDE CURRENT ROW` och inte `CROSS JOIN LATERAL`, livets anrop 0,01 s, ingest-lives svar 12:52Z
+`0 nya, 0 utfall`. (4) Driftvakten 7 dygn från main (körning 35729913535): TypeScript 11 317, SQL 11 317, bara TypeScript 0, bara
+SQL 0 — ENSE OM VARJE RAD, inga rader undantagna, knappsteget 10 s mot 605 s.
+
+**Sagt högt.** Hoppvakten prövades inte av arkivets data (0 rader med hopp > 3 °C på dygnet), bara av integrationsprovet — därför
+kördes provet mot båda formerna. En lokal commit `bffd225` med texten "Create driftrakningen-ramar-idrift-2026-09-22.sql" (GitHub
+Desktops standardförslag) dök upp på grenen 12:49:50Z, samma sekund som bevisfilen skrevs. Den pushades aldrig och ingår inte i
+PR #473; filen togs tillbaka ur den och checkas in med stängningen.
+

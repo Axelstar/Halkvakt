@@ -1247,17 +1247,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
-- [ ] ⏱️ **#235 DRIFTRÄKNINGEN (sql/018) KLARAR INTE SJU DYGN LÄNGRE — LATERAL ÖVER EN MATERIALISERAD CTE ÄR KVADRATISK** (fynd
-  22/9 när driftvakten kördes för kort #234). `trendarkivet --jamfor` med 7 dygn: TypeScript räknade 11 061 kandidater ur 195 444
-  arkivrader, men `berakna_trendkandidater(7 days)` föll på *statement timeout* (600 s). 13/9 gick samma körning på 118 054 rader
-  (4 713 kandidater). Orsaken är inte kort #234:s delfråga (0,7 s över samma rader, mätt): `bas` refereras två gånger och
-  materialiseras, och `CROSS JOIN LATERAL` läser hela CTE:n per kandidatrad — kostnaden växer med kvadraten på arkivet, och
-  arkivet är 1,7× större än 13/9. **Driften rörs inte:** ingest-live kallar funktionen med 2 timmar, där `bas` är några tusen
-  rader. **Följd:** driftvakten (SQL mot TypeScript, ense om varje rad) kan bara köras på korta fönster tills lateralen är
-  index-vänlig — t.ex. `bas` per station via tabellen med ett `(station_id, sample_time)`-index, eller fönsterfunktioner i stället
-  för lateralen (raderna är redan sorterade per station). Ändringen rör tvillingen `publish/trenden.ts` inte alls (samma rader ska
-  väljas), så driftvakten är själva beviset. Kort, inte fix: rätt form väljs med en mätning, inte en gissning.
-  Verify: `trendarkivet --jamfor` med 7 dygn under 600 s, *ENSE OM VARJE RAD*, och funktionens tid i live-anropet oförändrad.
 - [ ] 🔭 **#233 UR NIRAS PRODUKTSIDA: TVÅ SAKER VI INTE HAR, EN VI HAR PARKERAT** (Bengts fråga 21/9, DECISIONS #296; sidan
   niradynamics.com/products/road-surface-alerts läst mot repot). 🔑 Väntar på Bengts val av vad som ska utredas (§4.2).
   **(1) FÖRE RESAN — saknas helt.** Nira säljer *"route planning that avoids known hazards"*. Halkvakt talar bara under
@@ -4167,6 +4156,19 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 ---
 
 ## 🟢 KLART (senaste vinsterna)
+
+- [x] ✅ **#235 DRIFTRÄKNINGEN KLARAR SJU DYGN IGEN — RAMAR I STÄLLET FÖR LATERALEN — KLART 22/9 (DECISIONS #302)** (fynd 22/9 när
+  driftvakten kördes för kort #234). `berakna_trendkandidater` (sql/018) räknade fönstren med en `CROSS JOIN LATERAL` över den
+  materialiserade CTE:n `bas`, som saknar index: hela underlaget lästes en gång per kandidatrad, kvadratiskt i arkivet, och sju dygn
+  föll på statement timeout (knappsteget 605 s). **Byggt (PR #473):** fönstren räknas med fönsterfunktioner (`RANGE BETWEEN
+  '15/30/60 minutes' PRECEDING AND CURRENT ROW`), hoppet bokförs på den tidigare raden i paret (`lead`) och läses utan den egna raden
+  (`EXCLUDE CURRENT ROW`); vakter och trösklar orörda, 44 kontrakt håller. **Mätt före incheckningen** (körning 35729035969,
+  `scripts/matningar/driftrakningen-ramar-2026-09-22.sql`): 2 h och 1 dygn gav samma rader och samma tal i alla 14 kolumner åt båda
+  hållen (15 635 rader, 5 797 kandidater på dygnet); sju dygn 8,6 s. Dygnets data bar inget hopp > 3 °C, så integrationsprovet `#235`
+  checkades in först och var grönt mot lateralen (körning 35729309079), sedan mot ramarna (35729454227). **Bevis i drift:** sql/018
+  körd 22/9 12:50Z (körning 35729702635): `pg_proc` bär ramarna och inte lateralen, livets anrop (2 h) 0,01 s som förut, ingest-lives
+  svar 12:52Z `0 nya, 0 utfall`, inget FEL; driftvakten 7 dygn från main (körning 35729913535): TypeScript 11 317, SQL 11 317, bara
+  TypeScript 0, bara SQL 0 — **ENSE OM VARJE RAD**, inga rader undantagna, knappsteget 10 s.
 
 - [x] ✅ **#240 GALLRINGEN FÅR DANMARK, GRAVSTENARNA OCH EN TIDSVAKT — KLART 22/9 (DECISIONS #301)** (Bengts fråga 22/9: *"du har
   gallring på grannar som på sverige"*). Svaret var nej: Sverige tunnas till halvtimme efter sju dygn och raderas aldrig, Finland
