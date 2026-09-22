@@ -578,6 +578,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Telefonen finns alltså redan. Kvar är bara inloggningen i Play Console-appen på den.
   Verify: uppgiften *Kontrollera att du har åtkomst till en mobil Android-enhet* försvinner från Play Consoles
   startsida.
+  📖 **LÄST IGEN 22/9 (Bengts fråga: gäller det i testfasen?):** stegen börjar på **webben** — Play Console som kontots ägare, startsidan, uppgiften *Kontrollera att du har åtkomst till en mobil Android-enhet*, QR-koden, Play Console-appen på telefonen, Verifiera. Under en minut; telefonens nummer samlas inte in. Testsidan (answer 14151465) säger att *internt test* kan startas innan appen är färdigkonfigurerad och *slutet test* när den är det — ingen av sidorna säger att testerna kräver enhetsverifieringen. Sidan *Verifiera uppgifter för utvecklaridentitet* (answer 10841920) säger ordagrant att kontaktnumret inte kan verifieras förrän identiteten och *enhetsverifiering (för enskilda konton)* är klara. **Alltså:** gör den när uppgiften syns på startsidan; syns den inte finns inget att göra än.
 
 - [ ] 🔊 **#210 iOS SÄGER "PÅ VÄG <NULL>" — var tjugonde olycka** (genomlysningen 20/9). `SnapshotRepo.swift:117` gör JSON-`null`
   till strängen `"<null>"`, och `road` läses med just den funktionen (rad 68). Kotlin och TypeScript gör rätt — iOS är ensamt fel.
