@@ -110,107 +110,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 
 ### Axel — beslut att ta
-- [ ] 🗣️ **#203 FACIT UTAN ATT STANNA — svaret efter resan, och med rösten under den** (Bengts fråga 18/9 efter
-  fälttest 2: *"vi måste hitta något system som inte innebär att de ska stanna och bekräfta … ett automatspår"*).
-  Dagens S4 kräver: stanna, avsluta vakten, öppna appen, hitta knapparna — och bara resans SISTA varning går att svara på.
-  **Förslag i tre lager:**
-  **Bengts styrning 19/9 — undantagsprincipen:** *"vi tror att appen är så duktig att vi automatiserar svaren så att
-  människan bara ska meddela när maskinen avviker från det som maskinen har förutsett"* — för ALLA varningsslag, inte
-  bara kamerorna. Rätt om bördan, fel om tystnaden: **tystnad får aldrig räknas som "stämde".** Tystnad betyder lika
-  ofta "såg inte", "kunde inte bedöma", "telefonen låg i fickan" eller "appen var trasig" — 16/9 och 18/9 gav noll svar
-  för att knapparna saknades, och med tystnad = ja hade de resorna bokförts som bekräftelser. Ett facit som antar det
-  som ska prövas kan inte pröva det. Svaret ska vara en HANDLING, men handlingen kan vara EN per resa:
-  **(1) Efter resan — undantagsprincipen med underskrift, båda plattformarna.** Appen sparar resans varningar (id,
-  klockslag, text; bara lokalt). När vakten stannar (manuellt eller självstoppet efter 15 min) och det finns obesvarade
-  varningar: en lokal notis *"Resan klar — stämde alla 3 varningarna?"* och en lista på hemskärmen med **ett tryck för
-  normalfallet: "Ja, alla stämde"**, eller peka ut den som inte stämde (*Stämde inte*) och den man inte kunde bedöma
-  (*Vet inte* — skickas aldrig). Skickas som i dag: id, klockslag, svar per varning. **Noll handgrepp i bilen, ett efter.**
-  Obesvarade resor skickas aldrig. Bygger på Facit/FacitSender som finns; iOS har notisbehörigheten (HeadsUpService),
-  Android POST_NOTIFICATIONS.
-  **VAR knappen sitter (Bengt 19/9: *"som det är i dag är det oerhört krångligt … det kommer inte många svar"*):**
-  frågan kommer till föraren — föraren letar aldrig. Tre platser, en fråga, ett tryck; svarad på en plats försvinner den
-  från de andra. Skiss: `docs/skisser/facit-efter-resan.svg`.
-  (a) **Låsskärmen:** notisen bär själva knapparna — *Ja, alla stämde* / *Något stämde inte* — och svaret skickas utan
-  att appen öppnas (iOS: notisåtgärd i bakgrunden; Android: notisåtgärd + WorkManager). Kommer vid självstoppet och vid
-  *Avsluta vakten*.
-  (b) **Överst på Redo.** — ett kort ovanför rubriken, inte en rad längst ner: *Resan 08:25 · 61 min · 3 varningar —
-  Stämde alla?* Står kvar tills svaret finns eller ett dygn gått; visas också direkt efter *Avsluta vakten*.
-  (c) **Listan** bara vid avvikelse: en rad per varning med klockslag och text; tryck på raden växlar Stämde / Stämde
-  inte / Vet inte; sedan *Skicka*.
-  Brytarens text skrivs om: *"Efter varje resa frågar appen om varningarna stämde — ett tryck. Det som skickas är …"*.
-  **(4) Missarna — det andra halva facit, INGÅR i förslaget (Bengt 19/9: "det ska finnas en möjlighet att rapportera
-  missarna också"); integritetsbeslutet är Axels:** *"Hej Siri, appen missade i Halkvakt"* eller en stor knapp *Appen
-  missade* i körläget (Androids väg) när det är halt
-  UTAN varning ⇒ appen sparar klockslaget och närmaste segment/station som id (räknas på telefonen) och skickar id +
-  klockslag efter resan, som ett varnings-id; typen (Halka / Vatten / Vilt / Olycka / Annat) väljs i listan efter resan.
-  Ny tabell `driver_miss`. Nettonyttan (KB-B) behöver missarna lika mycket som träffarna. Integritet: samma klass som
-  ett varnings-id, men utlöst av föraren — brytarens text måste säga det.
-  📄 **BESLUTSUNDERLAG TILL AXEL 19/9: `docs/FACIT-EFTER-RESAN.md`** — hela förslaget, skissen, åtta beslut med
-  rekommendation, kostnad och bevis. Bengt skickar; inget byggs förrän Axel svarat.
-  **Automatspåret för sanningen finns redan och bär huvuddelen — utan förare:** uppspelningen ur arkiven (mätte ytan
-  under noll och blöt EFTER frysriskvarningen? — en senare mätning är en annan mätning, tillåten som facit), kamerabilden
-  vid varningen (bildfacit), olycksarkivet, radar + station för vattenplaning (V-B). Föraren är den enda källan för det som
-  bara syns från bilen — och avvikelsen (*stämde inte*) är det värdefullaste enskilda svaret, för det är falsklarmen som
-  bränner förtroendet (cry wolf).
-  **Kontroll i domen:** resor svarade med "Ja, alla" jämförs med resor svarade rad för rad — skiljer sig andelen
-  *stämde* markant är "Ja, alla" en vana, inte en iakttagelse, och räknas ner. KB-D4:s tak (ingen förare > 25 %) står.
-  **Förslag till KB-D (kräver Bengt + Axel, fastställt dokument): KB-D7 — ett svar är en handling; tystnad är inget svar.**
-  **(2) Med rösten under resan — iOS, nästan gratis.** Två App Shortcuts bredvid Starta/Stoppa: *"Hej Siri, stämde i
-  Halkvakt"* / *"stämde inte i Halkvakt"* ⇒ svar på senaste varningen om den är yngre än 10 min, Siri säger *"Tack."*.
-  Med undantagsprincipen räcker EN fras i praktiken: *"stämde inte i Halkvakt"* när maskinen hade fel, medan minnet är färskt.
-  Händerna på ratten, fungerar via CarPlay och bilens Bluetooth, **ingen mikrofonbehörighet** — Siri lyssnar, inte appen.
-  Android: Assistant/Gemini-stödet för egna app-fraser är osäkert — (1) först, rösten undersöks.
-  **(3) Valfritt:** knapparna i körläget när bilen står stilla (≥ 5 s, varning < 10 min) — rött ljus, färskt minne, ett
-  tryck på en monterad telefon.
-  **Vad som INTE går:** att automatisera människans iakttagelse. Telefonen kan inte känna halka, och ett svar som ingen
-  mätning kan motbevisa får inte räknas (regel T). Det automatiska facit finns redan, utan förare: kamerabilderna
-  (bildfacit, bedömningen §4.2), uppspelningen ur arkiven, olycksarkivet. Förarkanalen ska bara bära det bara en
-  människa ser — och därför vara gratis att använda.
-  **Avvisat:** lyssning i appen efter varningen (mikrofonbehörighet; Bluetooth byter till samtalsläge och musiken tystnar;
-  svenskt stöd på enheten oklart) · rattens knappar (kräver att appen tar över musiken) · CarPlay-app (Apples tillstånd)
-  · klocka (få testare) · "passerad"-flagga ur positionen (rörelsedata — eget integritetsbeslut, inte nu).
-  **Kamerorna är kontrollfrågan:** Trafikverkets kameror är fältverifierade (2/9), så ett *stämde inte* på en kamera
-  säger att kanalen eller geometrin är fel — inte kameran. Domen i januari behöver svaren på halka och frysrisk
-  (KB-D4: ≥ 30 svar från ≥ 5 förare).
-  Kostnad: en Android-push ≈ 15 Actions-min (två jobb) + CI; iOS byggs av Axel — går i nästa bygge efter 0.3.8.
-  Rösttexten rörs inte. S4:s utformning är Axels ⇒ hans ja på formen; Bengt beställer.
-  Verify: (1) en resa med ≥ 2 varningar besvarad med ett tryck ger lika många rader i `driver_facit`, utan att föraren
-  stannat; en resa utan tryck ger noll rader;
-  (2) ett svar via Siri med `app = ios` och varningens klockslag.
-  🔑 **AXELS SVAR PÅ §8, 20/9 kväll (via Cowork, DECISIONS #267) — sju av åtta avgjorda:**
-  **1 ja** (undantagsprincipen med underskrift; KB-D7 till Bengt) · **2 ja, alla tre** (*"låsskärmen är det viktiga —
-  föraren ska aldrig behöva öppna appen för att svara ja"*) · **3 de två första** Siri-fraserna (*stämde inte*, *appen
-  missade*; *stämde* behövs inte under körning — det är vad låsskärmen är till för) · **4 ja, medvetet ja** —
-  station-id + klockslag skickas, *"det är inte en position, men det är en position i grova drag"*; brytarens text ska
-  säga det ordagrant och produktboken uppdateras samma dag · **5 ja** (stor knapp *Appen missade*) · **6 nej** (lager 3
-  utgår) · **8 ja** (Android i samma PR).
-  ➕ **NYTT KRAV ur Axels läsning — visa varningarna i kortet:** *"Ja, alla stämde"* efter tre timmars körning svarar i
-  dag på ett TAL (*3 varningar*), inte på något föraren ser. Kortet på *Redo.* ska visa de tre raderna — klockslag och
-  text — så att ett tryck är ett svar på något läst. Kostar en vy. **Gör inte KB-D7-kontrollen onödig** (vanan finns
-  kvar att mäta, och kontrollen kostar ingenting i domen) men gör den mindre bärande.
-  ✅ **BESLUT 7 AVGJORT 20/9 18:35 — A. AXEL ARKIVERAR 0.3.8 NU** (DECISIONS #269). Simulatorprovet försöktes och
-  föll på Xcodes egen infrastruktur (*"the system shell probably crashed"*, `host down`, efter 94 s) på en M1 Air med
-  8 GB och iOS 26.1-runtime. **Det är svaret på C:s premiss:** C valdes för att kanalen skulle bevisas BILLIGT utan
-  TestFlight, och beviset var inte billigt — det kostade mer än den fältrunda det skulle spara. #203 bygger på 0.3.9.
-  *Historik:* Axels skäl:
-  sändkanalen från en riktig telefon har aldrig bevisats, och att lägga ny funktion ovanpå en obevisad kanal är fel
-  ordning. Bengts skäl: en uppdatering i stället för två, och kanalen bevisas utan TestFlight med simulatorprovet.
-  **Simulatorprovet är fortfarande ogjort** (`driver_facit` 20/9 16:07Z: 0 riktiga svar, 2 provrader — ingen
-  `cam:fotostudio`). **Nytt sedan båda svaren skrevs:** motorfixarna #210 (*"på väg &lt;null&gt;"*) och #211 (tredje
-  olycksropet) ligger i main sedan i kväll och når en telefon bara genom ett bygge — ett skäl för A som varken
-  underlaget eller #242 kände till. Se DECISIONS #267.
-  🔨 **LAGER 1 BYGGT 20/9 kväll (DECISIONS #277) — "grunden", båda plattformarna.** Resans logg, låsskärmsnotisen
-  med knapparna i sig (*Ja, alla stämde* / *Något stämde inte*) och kortet överst på *Redo.* med **en rad per
-  varning: klockslag + text** (Axels tillägg). Delad ren räkning: `Resan.kt` / `Resan.swift`. Tystnad skriver
-  aldrig ett svar — ingen kod i filen gör det. Åtta enhetstester på Android (de första i app-modulen), **gröna i
-  CI**; **iOS-halvan är skriven utan kompilator** och kompileras första gången i Axels Xcode (inget CI-flöde bygger
-  app-målet — samma rad som #267/#276). iOS krävde tre saker Android redan hade: persistent varningshistorik,
-  notiskategori + delegat, och en gemensam tidsstämpel för "Senast sagt" och historikraden (annars två facitrader
-  för samma varning). Fotostudion lägger nu in en påhittad **resa**, inte en varning — kortet går att se utan körning.
-  ⏭️ **STÅR KVAR PÅ KORTET (lager 2):** Siri-fraserna *"stämde inte i Halkvakt"* / *"appen missade i Halkvakt"* och
-  missarna (`driver_miss` + stor knapp *Appen missade* i körläget). Verify står **öppen**: en riktig resa på en
-  riktig telefon som ger rader i `driver_facit` utan att föraren stannat.
-  ⚠️ **22/9 (DECISIONS #304):** lager 1:s iOS-kod (eb81b50, 20/9 18:17) ligger på main och följer därför med i ett arkiv från main — alltså i **0.3.9 (13)**, inte i (12), som sattes 17:37 före koden. Koden har aldrig kompilerats; Xcode är första provet.
 - [ ] ⏰ **#86 NYCKELKALENDERN — två nycklar går ut mitt i säsongen** (Axels fynd 9/9, kort av Claude):
   ⚠️ **18/9 — ett fjärde ställe, okänt om samma nyckel:** pulsklockans jobb i Supabase pg_cron bär en GitHub-nyckel i
   sina kommandon (körningarna startas av *Axelstar*). Går den ut stannar ingest, grannar, healthcheck, marknadsföringen och
@@ -497,114 +396,96 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** #27 *Helgsamtalet* och *Rollfördelningen*. Kortet stängs när Axels val av sökande och besked om rollerna (DECISIONS #25e) står i DECISIONS, intäktsmodellen ur #27 är avgjord och PLAN.md är uppdaterad.
 - [x] ↪ **SAMMANSLAGET 22/9** i *Skyltfonden-paketet före 1/10* (DECISIONS #303) — **Rollfördelningen**: efterfrågan/affärsmodell/B2B = Bengts ansvar? (hans förslag; vid ja uppdateras PLAN)
   ↪ **Sammanslaget 22/9 (DECISIONS #303):** rollfördelningen (DECISIONS #25e) avgörs i samma besked. Det som återstår bärs av *Skyltfonden-paketet före 1/10*.
-- [ ] **#21 Anonym puls + feedback-knapp** — rör "samlar in: ingenting"-löftet; Claudes råd: paketera med sensorbeslutet våren 2027
-  ✅ **AXELS JA 16/9 (DECISIONS #196, bedömning S4):** två knappar under "Senast sagt" — *Stämde* / *Stämde inte*, ingen
-  fritext, loggas lokalt, skickas när bilen står stilla. KRAV: Om-avsnittets "vi samlar in: ingenting" skrivs om
-  ordagrant, frivilligt och synligt i SAMMA commit — annars bryter knappen löftet. Bara betatestare med samtycke (#186).
-  🔨 **S4 PÅGÅR — steg 1 (backend) byggt 16/9 (DECISIONS #201):** tabell `driver_facit` (sql/022, dubbellåst), edge-funktionen
-  `facit-svar` (öppen med flit: schema, 512 byte, tak 2 000/dygn, ingen IP), vakthundsraden "förarfacit". VÄNTAR: migration
-  022 + deploy + curl-prov (204/400/405). Sedan steg 2 Android (skill först), 3 iOS, 4 PRODUKTBOK, 5 Axels ja.
-  ✅ **Steg 1 BEVISAT 03:08Z 16/9:** 204/204/400/405/400 mot `facit-svar`, vakthundsraden "förarfacit: 1 svar" (issue #289).
-  🔨 **Steg 2 Android BYGGT 16/9 (DECISIONS #202):** knapparna under Senast sagt, BETATEST-brytaren, `Facit.kt` (JVM-testad),
-  `FacitSender` (skickar vid stillastående 30 s / appstart), Om-texten omskriven ordagrant. Rättat: Senast sagt visade äldsta
-  raden. VÄNTAR: android.yml på grenen + skärmbilder → PRODUKTBOK → **Axels ja på flödet** → merge → iOS (steg 3).
-  ✅ **Steg 2 Android MERGAT 16/9 med Axels ja (PR #290).** 🔨 **Steg 3 iOS BYGGT 16/9 (DECISIONS #203):** Facit.swift,
-  FacitSender, FacitButton, BETATEST-avsnittet, Om-undantaget, introduktionens löfte. VÄNTAR: **Axels Xcode-bygge** (appen
-  kompileras inte i CI) + ett svar från hans telefon i `driver_facit` (app = ios). Sedan steg 4 PRODUKTBOK-bild från iOS.
-  ✅ **Steg 3 iOS: AXELS XCODE-BYGGE GRÖNT 16/9, MERGAT (PR #291).** KVAR I S4: steg 4 iOS-skärmbild till produktboken (från Axels
-  telefon: Senast sagt med knapparna + BETATEST-brytaren) · steg 5 fälttest — ett riktigt svar i `driver_facit` (vakthundens rad
-  "förarfacit: n svar" räknar det). Knappen är AV tills testaren slår på den själv.
-  🧪 **Steg 5 FÖRBERETT 16/9 (DECISIONS #205):** skuggrapporten bär `forarfacit` (svar 7 dygn, ja/nej, android/ios, senast) så
-  testaren ser sitt eget svar landa. RECEPT: Inställningar → BETATEST på → kör tills rösten talar → stanna → Senast sagt →
-  Stämde/Stämde inte → skickas vid stillastående 30 s eller nästa appstart. VÄNTAR: första riktiga svaret (Axel iOS / Bengt
-  Android-debug-APK ur android.yml på main) + iOS-skärmbild till produktboken.
-  📸 **Fotostudio-krok för iOS byggd 16/9 (DECISIONS #206):** `-fotostudio_facit` som startargument (bara debug) ⇒ knapparna
-  syns i simulatorn utan körning; receptet i `ios/MAC-GUIDE.md`. VÄNTAR: Axels bygge + två simulatorbilder → produktboken (steg 4).
-  🔧 **FÄLTTESTET 16/9 hittade en lucka (DECISIONS #208):** Bengts svar tryckt med vakten av (0.3.6) skickades först vid
-  nästa appstart. Rättat på båda plattformarna (vakten av ⇒ skicka direkt); iOS 0.3.7 (10), Android-APK ur CI. VÄNTAR:
-  Bengts svar i `forarfacit` (öppna appen igen så går det första iväg) + Axels nästa bygge.
-  🔍 **Fälttestets andra fynd (DECISIONS #209):** svaret nådde aldrig servern trots omöppningar; serversidan friad (iOS-format
-  prov 204). Sändaren skriver nu status/fel under knapparna på båda plattformarna (0.3.7). VÄNTAR: Bengts svar på om knappen
-  blev fylld · Axels läsning av facit-svar-loggen · nästa bygge.
-  🎯 **ROTORSAKEN (DECISIONS #210):** iOS-knapparna satt i `LastSaidCard` — död kod sedan skinnet v3, ingen vy visar den.
-  Bengt såg bara brytaren. Rättat: `FacitRow` under Senast sagt-raden i `VaktenView`. Kräver Axels nästa bygge (0.3.7).
-  🧩 **0.3.7 (10) bär nu även ordlistan** (kort #97, DECISIONS #214, deployad i backend 16/9): ETT bygge från main täcker
-  facitknappen och Nysnö/Rimfrost/Halkrisk/Halt. Är 0.3.7 redan uppladdad ⇒ bumpa till 0.3.8 (11).
-  🚗 **FÄLTTEST 2, 18/9 (Bengt):** fartkamera passerad — bara brytaren *Svara på varningarna* gick att nå, samma som 16/9.
-  ~~Telefonen har 0.3.6 — arkivera 0.3.7~~ **RÄTTAT samma dag: Bengt har 0.3.7 (10)** — mitt antagande var fel. I 0.3.7 sitter
-  knapparna längst ner på *Redo.* (fliken Vakten) och syns bara när vakten är AVSLUTAD: medan den kör täcker körläget
-  (`fullScreenCover`) allt, och självstoppet kommer först efter 15 min stillastående. Brytarens text säger inte var
-  knapparna finns. `driver_facit` 07:37Z: 0 riktiga svar. VÄNTAR: Bengts skärmbild av *Redo.* med vakten avslutad
-  (bedömningen §4.2). Obs: versionen 0.3.7 (10) sattes i #300, en commit före `FacitRow` (#301) — byggdes det från #300
-  saknas rättelsen trots rätt versionsnummer.
-  🎯 **ORSAKEN 18/9 (DECISIONS #240):** Bengts skärmbilder — brytaren PÅ, kameran varnade, *Redo.* med vakten avslutad och
-  inga knappar. Varningen sparas alltid innan den sägs, id-lagringen finns sedan 0.3.6 ⇒ bygget 0.3.7 (10) saknar
-  `FacitRow`. **Main bär 0.3.8 (11). AXEL: `git pull` · `xcodegen generate` · Product → Archive · TestFlight.** Bekräfta
-  gärna arkivets tid i Organizer (13:45–13:53 16/9 bekräftar orsaken). Förslagen till bygget står i bedömningen §4.2.
-  🔁 **LINJEN ÄNDRAD 20/9 (Bengts invändning: en sammanhållen uppdatering, inte två — bedömningen §4.2, byggordning C):** 0.3.8
-  innehåller INTE #203. Arkivera inte nu; **bevisa kanalen i simulatorn i stället:** efter kort #205 — kör `-fotostudio_facit`
-  och TRYCK *Stämde*; raden `cam:fotostudio` ska landa i `driver_facit` med `app = ios`, `version 0.3.8`, märkt prov. Det ger samma
-  besked som en arkivering (knapparna syns, sändningen fungerar, diagnosen #240 bekräftad) utan TestFlight och utan provkörning.
-  Arkiveringen sker EN gång, med #203. **Stoppdatum 27/9:** utan de åtta svaren arkiveras 0.3.8 ändå, enligt receptet nedan.
-  ✅ **BYGGORDNING C BESLUTAD AV BENGT 20/9 (DECISIONS #242), OCH #205 ÄR I DRIFT — GÖR SIMULATORPROVET NU, AXEL:**
-  `git pull` · `cd ios/HalkvaktApp && xcodegen` · Edit Scheme → Run → Arguments → `-fotostudio_facit` · kör i simulatorn ·
-  fliken Vakten · **tryck *Stämde*** · raden under ska bli grön *Skickat …* (gul = felet står där, skicka texten). Ta bort
-  argumentet. Claude läser raden i `driver_facit`. Två minuter, ingen arkivering.
-  ✅ **0.3.8 (11) UPPLADDAD TILL APPLE 20/9 18:38** (Organizer: *Uploaded to Apple*, Team Axel Lagerlöf, arm64,
-  `se.halkvakt.app`). **Tre saker bevisade av själva arkiveringen:** app-målet KOMPILERAR med kvällens rad i
-  `SnapshotRepo.swift` (den enda biten inget CI-flöde bygger), versionsspåret håller (11 över 0.3.7:s 10), och
-  signeringen gick igenom efter att Team valts om. Exportdeklarationen `ITSAppUsesNonExemptEncryption: false` ligger i
-  `project.yml`, så bygget fastnar inte på *Missing Compliance* — interna gruppen får det när Apples bearbetning är klar.
-  **Ännu obevisat: led 1 och 2.** Uppladdat är inte kört.
-  🎯 **BENGTS PROV — det som stänger leden (och #210):** uppdatera till **0.3.8 (11)** i TestFlight · Inställningar →
-  **BETATEST på** · kör tills rösten talar · **avsluta vakten** (knapparna syns bara då — läxan från 18/9) · fliken
-  Vakten → *Senast sagt* → **Stämde / Stämde inte**. Under knapparna ska det stå **"Skickat HH:MM (1 svar)"**. Står det
-  *"Kunde inte skicka HH:MM: HTTP …"* är det SERVERNS eget svar — skärmbild räcker, felet är då läsbart. **Och för
-  #210:** talar en olycka UTAN vägnummer ska den säga *"Allvarlig olycka 8 kilometer framför dig"* — aldrig *"på väg
-  null"*. 5 % av olyckorna saknar vägnummer, så det är en iakttagelse att göra när den dyker upp, inte något att framkalla.
-  ⚠️ **22/9: NUMRET HÖJT TILL 0.3.9 (13)** (DECISIONS #304, Bengts ja). #203:s iOS-kod (eb81b50, 20/9 18:17) kom in på main EFTER att (12)
-  sattes, så ett arkiv från main bär den — okompilerad — och raden *Bär INTE: #203* nedan gäller inte längre för main. **Axels val:**
-  **(a)** arkivera från main som **0.3.9 (13)**: allt nedan plus #203 lager 1, och Xcode kompilerar #203 för första gången; eller
-  **(b)** arkivera den rena fixen som **0.3.9 (12)** från `90b5223` (`git checkout 90b5223` före steg 2), som förkontrollen gjordes på.
-  🚀 **NÄSTA ARKIVERING: 0.3.9 (12) — REDO 20/9 23:05.** Förkontroll enligt CLAUDE.md gjord på `90b5223`: ci ✅ och
-  ios-engine ✅, inga lokala ändringar. **DEVELOPMENT_TEAM ligger nu i `project.yml`** (R93LGMM343, DECISIONS #275) så
-  `xcodegen` slutar nollställa den — steget "välj Team igen" är borta.
-  **Steg:** (1) `cd ~/Halkvakt && git pull` · (2) `cd ios/HalkvaktApp && xcodegen` · (3) har Xcode projektet öppet:
-  stäng och öppna `Halkvakt.xcodeproj` på nytt, annars håller Xcode kvar den gamla projektfilen · (4) **Signing &
-  Capabilities**: Team ska stå som *Lagerlöf Labs* utan röd rad — står den tom har `project.yml`-raden inte gått igenom ·
-  (5) destination **Any iOS Device (arm64)** · (6) **Product → Archive** · (7) Organizer ska visa **0.3.9 (13)** på väg (a) eller **0.3.9 (12)** på väg (b) — visar
-  den något annat, AVBRYT, för Apple tillåter aldrig ett lägre versionsspår efteråt · (8) **Distribute App → App Store
-  Connect → Upload**.
-  **Bär:** iOS-fixen (#273 — rösten tystnade med släckt skärm på *när appen används*) · `<null>`-raden och hela dess klass
-  (#210/#276) · det engångs tidiga olycksropet (#211) · de tolv nya vektorerna (#212).
-  **Bär INTE (bara väg b):** #203, #264:s apptexter, #266 (viltrösten) — medvetet, så att provet går att tolka. Väg (a) bär #203 lager 1.
-  **Provet efteråt, i ordning:** (a) en resa med **"Tillåt när appen används"** och **släckt skärm** — en varning ska
-  höras, och **den blå indikatorn i statusfältet** är kvittot på att Core Location håller appen vid liv ⇒ stänger #227 ·
-  (b) facitknapparna under *Senast sagt* med vakten avslutad ⇒ leden 1 och 2 · (c) en olycka utan vägnummer sagd utan
-  *"på väg null"* ⇒ stänger #210.
-  *Historik:* **ARKIVERING PÅGICK 20/9 18:35 (Axel, byggordning A).** Förkontrollen enligt CLAUDE.md gjord: ci ✅, ios-engine ✅,
-  android ✅ på 88dd32c. Bygget bär **#210** (`<null>`), **#211** (engångs tidigt rop) och **#212**:s vektorer.
-  Fotostudio-kroken är `#if DEBUG` ⇒ kompileras bort ur arkivet; scheme-argumentet rör bara Run, inte Archive.
-  **Innehåller INTE** #203 (facit efter resan), #264 (invarianten/Data Safety) eller #266 (viltrösten) — de går i 0.3.9.
-  **Efter uppladdningen, i ordning:** (1) Organizer visar 0.3.8 (11) · (2) intern grupp får bygget utan granskning ·
-  (3) **Bengts första resa bevisar led 1 och 2** — att knapparna syns och att appen skickar; misslyckas sändningen
-  skriver appen serverns svar under knapparna (*"Kunde inte skicka HH:MM: HTTP …"*), så felet blir en skärmbild och
-  inte en tyst runda · (4) **kort #210 stängs** när en olycka utan vägnummer sägs rätt (ingen *"på väg null"*).
-  📋 **BYGGREDO — OMKONTROLLERAT 20/9 kväll (Axels fråga):** **ja.** ci ✅, ios-engine ✅ och
-  android ✅ på **88dd32c**, och allt som pushats därefter är dokument (`git diff --stat 88dd32c..HEAD` rör bara .md).
-  ⚠️ **Raden ovanför gällde till i kväll och är nu fel:** `git diff 79e4195..HEAD -- ios/ android/ engine/` är INTE längre
-  tom — den bär motorfixarna #210, #211, #212 (SnapshotRepo.swift, Engine.swift, Engine.kt, engine/src, tolv nya vektorer).
-  Det är gott nytt: ett 0.3.8 som arkiveras nu **säger en olycka utan vägnummer rätt** och ropar det tidiga olycksropet
-  en gång i stället för två. Lägg till i tvåminuterskontrollen: en olycka utan vägnummer ska INTE säga *"på väg null"*.
-  ⚠️ **Enda oprövade biten:** `SnapshotRepo.swift` ligger i APP-målet, och inget flöde i CI kompilerar app-målet
-  (ios-engine kör `swift test` på motorpaketet, på Linux). Ändringen är en rad och typen stämmer (`road: String?` i
-  PointMeta ⇒ `d["road"] as? String`), men första kompileringen sker i din Xcode. Faller den: skicka felraden.
-  Steg: `git pull` · `cd ios/HalkvaktApp && xcodegen` · välj Team igen ·
-  **TVÅMINUTERSKONTROLLEN som hade fångat 0.3.7:** Edit Scheme → Run → Arguments → `-fotostudio_facit`, kör i simulatorn,
-  fliken Vakten ska visa *Stämde / Stämde inte* under raden längst ner — **TITTA, TRYCK INTE** (kort #205) — ta bort
-  argumentet · Any iOS Device (arm64) → Product → Archive · Organizer ska visa **0.3.8 (11)** · Distribute → App Store
-  Connect → Upload · intern grupp får bygget utan granskning. Bevis: Bengts svar som rad i `driver_facit` med `version 0.3.8`.
 
+- [ ] 🏷️ **#204 SKOLANS NAMN PÅ QR-SIDAN — synlig attribution på webben, inte banner i appen — ✅ BESLUTAT 19/9, förberett, byggs när bladet byggs** (Bengts idé 19/9:
+  *"Halkvakt via Mårtenssons trafikskola … indirekt reklam för den som företag — tror du på det eller är det lull lull?"*).
+  **Kärnan håller, formen inte.** Att skolan syns som den som gav eleven appen är den billigaste valutan vi har och precis
+  det en trafikskola vill ha. Men en banner i appen ger skolan lite (eleven är redan deras kund), bryter mot *tyst app
+  utan reklam*, och går inte att bygga ärligt: iPhone ger appen ingen uppgift om vilken länk installationen kom från
+  (Android har Play Install Referrer, iOS saknar motsvarighet), och att märka en användare med "kom via skola X" är
+  data om användaren som löftet *vi samlar in: ingenting* inte täcker.
+  **Den starka versionen ligger på webben (halkvakt-karta, Pages):** (1) **en QR-sida per skola** — bladet med skolans
+  namn pekar på `…/via/martenssons`: *"Välkommen från Mårtenssons Trafikskola"* + butiksknapparna; (2) **en räknare per
+  sida** (ett besök, inte en person — inga uppgifter om vem) så att skolan får ett tal: *"143 av era elever hämtade
+  appen"*; (3) **partnerlistan** på startsidan: *"Trafikskolor som är med"*; (4) **ett märke till skolans egna kanaler**:
+  *Testpartner till Halkvakt* för deras hemsida och Instagram — det är där reklamen för skolan faktiskt syns; (5) i
+  appen bara Om-sidans rad *Testpartner: …*, gemensam för alla, ingen per-skola-märkning.
+  Ger oss det vi behöver till skolpaketet i vår: vilka skolor som faktiskt delar ut bladet. Kostnad: en statisk sida +
+  en liten räknarfunktion, ~1 h; byggs när bladet byggs (appen i butikerna), inte före. Inget lovas i septembersamtalen
+  utöver "bladet med ert namn på".
+  Skiss (19/9): `docs/skisser/qr-sida-per-skola.svg` — bladet, sidan, listan och märket, och kedjan QR → räknare → sida →
+  butik. Siffrorna offentliggörs inte: skolan får dem i ett mejl varje månad.
+  Verify: en skolas QR-sida visar skolans namn, räknaren stiger vid besök, och ingen uppgift om besökaren sparas.
+  📄 **FÖRBERETT 19/9 (Bengts ja, DECISIONS #241): `docs/QR-SIDA-PER-SKOLA.md`** — delarna (register, sida, räknare,
+  månadsmejl, lista, märke, blad, Om-raden), kedjan, integriteten, det som måste finnas före tryck (domänen först — en
+  tryckt QR-kod går inte att ändra), Axels sju beslut, kostnad ~1 h, bevis. VÄNTAR: Axels bedömning av formen; bygget
+  när appen finns i butikerna.
+  ↦ **Sorterat 22/9 (kort #224):** nästa steg är Axels bedömning av formen (§6 i `docs/QR-SIDA-PER-SKOLA.md`) och domänen före tryck.
+
+- [ ] 🔤 **#156 HALKORDEN FINNS I TRE OLIKA VERSIONER — upptäckt 14/9 av en ny kontraktsgrind**
+  ✅ **VÅR HALVA ÅTGÄRDAD 14/9** (Bengts order, DECISIONS #174). Fyra frågor ⇒ **fyra namngivna
+  kontrakt**, vart och ett med sitt eget `varfor`, så att skillnaderna står som BESLUT i stället
+  för som slarv — precis vad grindens egen feltext föreskriver.
+  · *Snapshotens halkfilter* (snapshot-core + publiceras bunt, golv 2)
+  · *Vinterorden i vakthunden* (två kopior i samma fil, rad 137 och 148, golv 2)
+  · *Farlighetsorden i kodgrinden* (två kopior i samma fil, rad 198 och 201, golv 2)
+  · *Halkorden i motorn* (engine.ts + skuggmotorns bunt + tystnadsfelet, golv 3)
+  🔧 **GRINDEN FICK ETT NYTT FÄLT, `filer`,** för utan det gick frågorna inte att skilja: raderna
+  ser likadana ut och ett gemensamt kontrakt hade tvingat fram falsk enighet mellan fyra frågor
+  som SKA skilja sig. Mutationsprov: vakthundens ena kopia driven ⇒ exit 1, kodgrindens ⇒ exit 1.
+  🚫 **INGEN ORDLISTA ÄNDRAD, ingen funktion deployad.** Dubbleringen inom vakthunden och
+  kodgrinden är nu VAKTAD i stället för bortstädad — en deploy av vakthunden för en ren
+  refaktorering vore risk utan vinst (jfr #126b, då en deploy tyst tog bort check 7).
+  ⏭️ **KVAR OCH BARA AXELS:** ska `mycket besvärligt` in i snapshotens filter, så att snapshoten
+  blir ett superset av motorn? Underlaget ligger i `docs/TILL-AXEL-HALKORDEN.md`.
+  🔬 **MÄTT 14/9 (DECISIONS #172): ⊘ KAN INTE AVGÖRAS PÅ DATA.** "mycket besvärligt" vid kod < 2:
+  **0** i arkivet och **0** live. "snö" vid kod 1: **0** och **0**. Skälet är att inget vinterord
+  någonsin förekommit — hela materialet är kod 1 med Torrt (799), Våt (25), fläckvis Våt (8),
+  fläckvis Torrt (6). Arkivet börjar 21/2, efter förra vinterns slut.
+  ⚖️ **Skillnaden är alltså utan verkan I DAG — men inte ofarlig:** den blir verksam i samma stund
+  operatören klassar om i vinter. Beslutet måste fattas på semantik, eller skjutas till vintern
+  med en omkörning inbokad. Ingen lista rörd.
+  **Fyndet:** listan över vilka ConditionInfo-ord som betyder HALT finns på **nio ställen i sju
+  filer**, med **tre olika värden**. Ingen hade någonsin jämförts mot en annan.
+  · `is|snö|halka|frost|mycket besvärligt` — **motorn** (engine.ts:43) och skuggmotorn
+  · `is|snö|halka|frost` — **snapshoten** (publish/snapshot-core.ts:102), **publicera**, **vakthunden** (×2)
+  · `is|halka|frost|mycket besvärligt` — **kodgrinden** (×2), utan "snö"
+  ⚖️ **DET KAN VARA TRE OLIKA FRÅGOR, inte en lista på drift** — och det är därför kortet ställs i
+  stället för att jag rättar: snapshotens rad är en ELLER-gren ovanpå `condition_code >= 2`, så
+  "mycket besvärligt" kan komma in den vägen ändå. Kodgrindens saknade "snö" kan vara medvetet:
+  packad snö vid kod 1 är normalt vinterväglag i norr, inte en avvikelse.
+  ❓ **MEN INGEN VET, för ingen har mätt det.** Frågan som avgör: finns det segment med "mycket
+  besvärligt" och kod < 2, och segment med "snö" vid kod 1? Det är en läsande fråga till arkivet.
+  ⚠️ **RÖRS INTE AV MIG:** en ändring i snapshoten ändrar vad appen varnar för, alltså Axels märke
+  och produktboksregeln. Den nya grinden vaktar tills vidare bara motorns egen lista (motor +
+  skuggmotor + tystnadsfelet, tre filer, samma värde).
+  ↦ **Sorterat 22/9 (kort #224):** nästa steg är Axels rad: är #214:s *"med flit"* hans svar? (§4.2)
+
+- [ ] 📵 **#214 PLAY-DEKLARATIONEN ÄR OSANN SEDAN 16/9** (genomlysningen 20/9). `docs/PLAY-DATASAFETY.md` svarar **"No"** på
+  Googles insamlingsfråga och påstår att enda utgående trafik är en GET utan parametrar. Filen rördes senast **27/8**. Sedan 16/9
+  POSTar `FacitSender.kt` varnings-id, tid, app och version — och `sql/022` erkänner själv att "ett svar är alltså en plats och
+  en tid". En felaktig deklaration är grund för avslag eller nedtagning mitt i vinterns enda facitfönster.
+  🔑 **Kräver också ett beslut:** ska produktinvariantens lydelse ("ingen positionsdata lämnar telefonen") formuleras om, eller
+  ska facitsvaret ändras? Bengt + Axel.
+  Verify: filen rättad, formuläret ifyllt likadant, och båda i samma commit som nästa uppladdning.
+  🔨 **BYGGT 20/9 kväll (DECISIONS #270):** `docs/PLAY-DATASAFETY.md` omskriven — insamlingsfrågan svarar **Ja**,
+  datatypen är **Location → Approximate location** (varnings-id + klockslag säger ungefär var och när), *Optional*,
+  *Collected men inte Shared*, *inte kopplad till identitet*, ändamål App functionality + Analytics. Utgående trafik
+  listad ur koden (GET snapshot utan parametrar · POST facit-svar bara vid tryck). CLAUDE.md:s invariant omskriven.
+  ➕ **FJÄRDE STÄLLET, hittat 20/9 när butiksmaterialet lästes:** `marknadsforing/butik/butikstext.md` sade
+  *"Vi samlar in: ingenting"* i integritetsstycket — Google läser butikstexten bredvid formuläret. **Rättad.**
+  Påståendet stod alltså på fyra ställen och ingen av dem rördes 16/9; det är därför regeln i CLAUDE.md nu namnger
+  alla fyra.
+  🔑 **TVÅ SAKER KVAR, BÅDA ÄGARBESLUT:** (a) **raderingsfrågan** — formuläret frågar om användaren kan begära radering,
+  och vi har ingen väg: inget i ett svar identifierar avsändaren. Tre alternativ i filen, rekommendation "svara Nej och
+  förklara varför"; (b) **`integritet.html` i karta-repot ljuger också** — *"Kärnlöftet: din position lämnar aldrig
+  telefonen"* och *"Vad vi samlar in: Ingenting"*. Google jämför formuläret mot policyn, så den måste ändras i samma
+  veva. Utkast skrivet, väntar Axels ja — det är ett publikt löfte.
+  *Beslutet som bygget vilar på:* invarianten skrivs om till *aldrig utan aktivt val* — ingen
+  positionsdata lämnar telefonen automatiskt; det enda som skickas är ett facitsvar föraren själv trycker på. Data Safety svarar
+  sanningsenligt **Ja** (ändamål: förbättra varningarna; frivilligt; kan inte kopplas till person). **Bygg nästa varv:** CLAUDE.md:s
+  invariant, `docs/PLAY-DATASAFETY.md` och produktboken i samma commit.
+  ↦ **Sorterat 22/9 (kort #224):** kvar är ägarbeslut — raderingsfrågan och integritet.html; produktbokens rad 21 och 82 rättades 22/9 (DECISIONS #304).
 ### Axel — hösten (brainstorm 31/8)
 - [x] ⛔ **#92 Däcktyp och fordonstyp — STÄNGT 12/9, dokumenterat nej** (Bengts order när §2.5 togs ur
   systemanalysen, DECISIONS #108). Idén är inte fel — den är rätt formulerad som **lager
@@ -644,11 +525,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [x] ~~Mejl till Vejdirektoratet om VejVejr~~ ✅ SKICKAT 31/8 16:05 via kontaktformuläret
   (ämne "Forespørgsel om en sag eller et projekt" — vinterdriftens formulär var stängt).
   Väntar svar. Tills dess: grästemp i arkivet, rösten tyst om frysrisk i DK (#45).
-- [ ] **Danmark — NAP-nyckel** (gratis registrering) före produktion: trafikkort-flödet vi
-  läser nu är publikt men odokumenterat.
-
-*↩︎ = ÅTERSTÄLLT 10/9. Korten nedan föll av tavlan 8/9 20:43 (commit 99473c7: Claudes tavelsynk av
-"Axels nästa steg" svalde 174 rader, inkl. tre Claude-sektioner). Inget av dem har bevis på klart sedan dess.*
 - [ ] ↩︎ **Live Activity — varningskortet i Dynamic Island och på låsskärmen** (Axel 31/8: "ska den
   ligga över Maps?"). Ingen app får rita över en annan; Live Activity är det Apple tillåter:
   gul rad "Vakten på · 42 min" under körning, blossar upp "▲ Halt väglag · 2,0 km" när rösten
@@ -698,6 +574,43 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Telefonen finns alltså redan. Kvar är bara inloggningen i Play Console-appen på den.
   Verify: uppgiften *Kontrollera att du har åtkomst till en mobil Android-enhet* försvinner från Play Consoles
   startsida.
+
+- [ ] 🔊 **#210 iOS SÄGER "PÅ VÄG <NULL>" — var tjugonde olycka** (genomlysningen 20/9). `SnapshotRepo.swift:117` gör JSON-`null`
+  till strängen `"<null>"`, och `road` läses med just den funktionen (rad 68). Kotlin och TypeScript gör rätt — iOS är ensamt fel.
+  **Uppmätt 20/9: 38 av 732 olyckor senaste 30 dygnen saknar vägnummer (5,2 %).** Vektor v22 låser bara FRÅNVARANDE `road`,
+  inte `road: null`, så sviten kan inte se felet.
+  Verify: ny vektor med `road: null` som faller före fixen och passerar efter; rösten säger "Allvarlig olycka 8 kilometer
+  framför dig" utan vägled. Bör sitta i bygget INNAN nästa arkivering.
+  🔨 **BYGGT 20/9 (Claude via Cowork, DECISIONS #258, commit 9d3f56c):** `SnapshotRepo.swift` läser `road` som `as? String` — nil vid
+  JSON-null, samma mönster som `slut` på raden ovan. v26 (severity 5, `road: null`) låser JSON-null i alla tre vektorläsarna och
+  motorerna (ci, android, ios-engine gröna). **Ärligt om beviset:** vektorn kunde inte falla före fixen — Swift-MOTORNS
+  vektorläsare gjorde redan rätt, felet satt bara i APPENS JSON-plockare, och appen har inget testmål. Raden är rättad
+  och granskad, inte körd. **Stängs när ett iOS-bygge säger en olycka utan vägnummer rätt** (5 % av olyckorna — finns i
+  arkivet varje vecka) eller Bengt hör en i bilen. **Fixen följer med i 0.3.9 (12).**
+  🔒 **KLASSEN STÄNGD 20/9 kväll (Axels *"kan vi fixa kort 210"*, DECISIONS #276):** `road` rättades på sin egen rad, men
+  `str()` kunde fortfarande göra JSON-null till literalen `"<null>"` — och funktionen bär **sex id-fält**
+  (cam/seg/wx/bro/vilt/dev). Ett null där hade gett `"cam:<null>"` som farans id, alltså en nyckel i reprisspärren OCH i
+  facitsvaret. Helpern returnerar nu tom sträng för `NSNull`. **Uppmätt, inte antaget:** publicerade `static.json`
+  (2 791 kameror) och `live.json` lästa 20/9 — inget id är null i dag, så hålet var latent. De enda null som faktiskt
+  publiceras är `lutning15/30/60` på väderstationerna, och dem läser iOS inte alls.
+  ➕ **Samma form finns i Android, oprövad:** `SnapshotRepo.kt` läser ids med `getString("id")`, som ger strängen `"null"`
+  för ett JSON-null. Inte rättad — sex anropsställen, inget testmål, och till skillnad från iOS kastar den vid SAKNAT
+  fält, vilket är ett medvetet skydd jag inte river i mörkret. Eget kort när någon rör filen.
+  🔑 **Ägare: Axel** (arkiveringen är hans). Kortet är alltså inte glömt utan väntande — villkoret står ovan.
+
+  🧪 **LÄSARKONTRAKTET BYGGT 20/9 (DECISIONS #278) — kortets egen invändning *"inget testmål"* är halvt besvarad.**
+  Vektorerna börjar där faran redan är TOLKAD; de är ett kontrakt för MOTORN och kan per konstruktion inte se ett fel
+  i JSON-läsningen. Därför finns nu samma sorts kontrakt ett lager ned: `engine/fixtures/lasarprov.json` bär en
+  static + live med de fall som är lätta att läsa fel — `road` som null OCH som saknat, `bearing` null, `yta` null,
+  `code` null, `sev` null, och ett `id` som TAL — plus det parsade utfall varje läsare ska ge.
+  ✅ **TS-läsaren prövas** av `test/lasarkontraktet.test.ts`. **Motprov:** `road: d.road ?? null` → `String(d.road)`
+  ⇒ testet faller med `actual: 'null'` mot `expected: null`. Provet ser alltså exakt det fel #210 var.
+  🎯 **NOLLPOLITIKEN, som är hela poängen:** `bearing` null får inte bli 0 (0 är norrut — en kamera som tros titta
+  norrut filtreras på fel kurs) · `yta` null får inte bli 0 °C (0 ligger under fryströskeln och hade fyrat) · `road`
+  null får inte bli ett ord. Tre fält, tre olika sätt att tyst bli fel.
+  ⏭️ **KVAR:** Swift och Kotlin läser i app-koden, som saknar testmål. Provfilen ligger färdig den dagen målet finns.
+  Kortet stängs fortfarande av Axels bygge — läsarkontraktet gör inte fixen bevisad, det gör NÄSTA regression synlig.
+  ↦ **Sorterat 22/9 (kort #224):** fixen är byggd; kvar är att höra en olycka utan vägnummer i ett iOS-bygge med fixen (0.3.9 (12) eller (13)). Ägare Axel.
 
 ### Bengt
 - [ ] 🧫 **#232 KUVÖSEN — HELA SYSTEMET BAKÅTPRÖVAT PÅ VINTERN 2024/25** (Bengts idé 21/9, DECISIONS #292). Motorn och ALLA
@@ -804,29 +717,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   **Nytt krav till Nira:** varje värde med tiden för den senaste mätningen under det (regel T1/T4).
   ✅ **Stängt 22/9, kortavstämningen (DECISIONS #303):** exempeldatan läst (DECISIONS #283, `scripts/matningar/nira-exempeldata-2026-09-21.py`), Göteborgs fråga 2 besvarad ur stadens slutrapport (DECISIONS #295). Steg 2 (facitförslag till Nira februari–mars) bor kvar i bedömningens §4.2 Nira-rad.
 
-- [ ] 🏷️ **#204 SKOLANS NAMN PÅ QR-SIDAN — synlig attribution på webben, inte banner i appen — ✅ BESLUTAT 19/9, förberett, byggs när bladet byggs** (Bengts idé 19/9:
-  *"Halkvakt via Mårtenssons trafikskola … indirekt reklam för den som företag — tror du på det eller är det lull lull?"*).
-  **Kärnan håller, formen inte.** Att skolan syns som den som gav eleven appen är den billigaste valutan vi har och precis
-  det en trafikskola vill ha. Men en banner i appen ger skolan lite (eleven är redan deras kund), bryter mot *tyst app
-  utan reklam*, och går inte att bygga ärligt: iPhone ger appen ingen uppgift om vilken länk installationen kom från
-  (Android har Play Install Referrer, iOS saknar motsvarighet), och att märka en användare med "kom via skola X" är
-  data om användaren som löftet *vi samlar in: ingenting* inte täcker.
-  **Den starka versionen ligger på webben (halkvakt-karta, Pages):** (1) **en QR-sida per skola** — bladet med skolans
-  namn pekar på `…/via/martenssons`: *"Välkommen från Mårtenssons Trafikskola"* + butiksknapparna; (2) **en räknare per
-  sida** (ett besök, inte en person — inga uppgifter om vem) så att skolan får ett tal: *"143 av era elever hämtade
-  appen"*; (3) **partnerlistan** på startsidan: *"Trafikskolor som är med"*; (4) **ett märke till skolans egna kanaler**:
-  *Testpartner till Halkvakt* för deras hemsida och Instagram — det är där reklamen för skolan faktiskt syns; (5) i
-  appen bara Om-sidans rad *Testpartner: …*, gemensam för alla, ingen per-skola-märkning.
-  Ger oss det vi behöver till skolpaketet i vår: vilka skolor som faktiskt delar ut bladet. Kostnad: en statisk sida +
-  en liten räknarfunktion, ~1 h; byggs när bladet byggs (appen i butikerna), inte före. Inget lovas i septembersamtalen
-  utöver "bladet med ert namn på".
-  Skiss (19/9): `docs/skisser/qr-sida-per-skola.svg` — bladet, sidan, listan och märket, och kedjan QR → räknare → sida →
-  butik. Siffrorna offentliggörs inte: skolan får dem i ett mejl varje månad.
-  Verify: en skolas QR-sida visar skolans namn, räknaren stiger vid besök, och ingen uppgift om besökaren sparas.
-  📄 **FÖRBERETT 19/9 (Bengts ja, DECISIONS #241): `docs/QR-SIDA-PER-SKOLA.md`** — delarna (register, sida, räknare,
-  månadsmejl, lista, märke, blad, Om-raden), kedjan, integriteten, det som måste finnas före tryck (domänen först — en
-  tryckt QR-kod går inte att ändra), Axels sju beslut, kostnad ~1 h, bevis. VÄNTAR: Axels bedömning av formen; bygget
-  när appen finns i butikerna.
 - [x] 📐 **#197 GREPP 2: TROSKLAR-KOMBINATIONEN — ✅ KLART 17/9: C, D och T fastställda (DECISIONS #220/#225/#226)** (Bengts "kör grepp 2" 16/9,
   DECISIONS #217, bedömningens S10). UTKAST i `docs/TROSKLAR-KOMBINATIONEN.md`. **C:** KB-A bär varje del sin roll · KB-B
   räddar mer än den kostar (efterhalkan: Ö-B 5 %/25 %) · KB-C giltighet (Ö-C + T-C) · KB-D förarfacit. **D:** sju regler —
@@ -1082,43 +972,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   dag), upphör ingången att vara återskapbar och båda måtten måste byta till #88:s form.
   ⏭️ **VAD SOM SKA GÖRAS NU: ingenting.** Kortet finns för att beslutet i oktober ska veta att det
   rör mer än lagringsutrymme — det avgör två mätinstruments byggform.
-- [ ] 🔤 **#156 HALKORDEN FINNS I TRE OLIKA VERSIONER — upptäckt 14/9 av en ny kontraktsgrind**
-  ✅ **VÅR HALVA ÅTGÄRDAD 14/9** (Bengts order, DECISIONS #174). Fyra frågor ⇒ **fyra namngivna
-  kontrakt**, vart och ett med sitt eget `varfor`, så att skillnaderna står som BESLUT i stället
-  för som slarv — precis vad grindens egen feltext föreskriver.
-  · *Snapshotens halkfilter* (snapshot-core + publiceras bunt, golv 2)
-  · *Vinterorden i vakthunden* (två kopior i samma fil, rad 137 och 148, golv 2)
-  · *Farlighetsorden i kodgrinden* (två kopior i samma fil, rad 198 och 201, golv 2)
-  · *Halkorden i motorn* (engine.ts + skuggmotorns bunt + tystnadsfelet, golv 3)
-  🔧 **GRINDEN FICK ETT NYTT FÄLT, `filer`,** för utan det gick frågorna inte att skilja: raderna
-  ser likadana ut och ett gemensamt kontrakt hade tvingat fram falsk enighet mellan fyra frågor
-  som SKA skilja sig. Mutationsprov: vakthundens ena kopia driven ⇒ exit 1, kodgrindens ⇒ exit 1.
-  🚫 **INGEN ORDLISTA ÄNDRAD, ingen funktion deployad.** Dubbleringen inom vakthunden och
-  kodgrinden är nu VAKTAD i stället för bortstädad — en deploy av vakthunden för en ren
-  refaktorering vore risk utan vinst (jfr #126b, då en deploy tyst tog bort check 7).
-  ⏭️ **KVAR OCH BARA AXELS:** ska `mycket besvärligt` in i snapshotens filter, så att snapshoten
-  blir ett superset av motorn? Underlaget ligger i `docs/TILL-AXEL-HALKORDEN.md`.
-  🔬 **MÄTT 14/9 (DECISIONS #172): ⊘ KAN INTE AVGÖRAS PÅ DATA.** "mycket besvärligt" vid kod < 2:
-  **0** i arkivet och **0** live. "snö" vid kod 1: **0** och **0**. Skälet är att inget vinterord
-  någonsin förekommit — hela materialet är kod 1 med Torrt (799), Våt (25), fläckvis Våt (8),
-  fläckvis Torrt (6). Arkivet börjar 21/2, efter förra vinterns slut.
-  ⚖️ **Skillnaden är alltså utan verkan I DAG — men inte ofarlig:** den blir verksam i samma stund
-  operatören klassar om i vinter. Beslutet måste fattas på semantik, eller skjutas till vintern
-  med en omkörning inbokad. Ingen lista rörd.
-  **Fyndet:** listan över vilka ConditionInfo-ord som betyder HALT finns på **nio ställen i sju
-  filer**, med **tre olika värden**. Ingen hade någonsin jämförts mot en annan.
-  · `is|snö|halka|frost|mycket besvärligt` — **motorn** (engine.ts:43) och skuggmotorn
-  · `is|snö|halka|frost` — **snapshoten** (publish/snapshot-core.ts:102), **publicera**, **vakthunden** (×2)
-  · `is|halka|frost|mycket besvärligt` — **kodgrinden** (×2), utan "snö"
-  ⚖️ **DET KAN VARA TRE OLIKA FRÅGOR, inte en lista på drift** — och det är därför kortet ställs i
-  stället för att jag rättar: snapshotens rad är en ELLER-gren ovanpå `condition_code >= 2`, så
-  "mycket besvärligt" kan komma in den vägen ändå. Kodgrindens saknade "snö" kan vara medvetet:
-  packad snö vid kod 1 är normalt vinterväglag i norr, inte en avvikelse.
-  ❓ **MEN INGEN VET, för ingen har mätt det.** Frågan som avgör: finns det segment med "mycket
-  besvärligt" och kod < 2, och segment med "snö" vid kod 1? Det är en läsande fråga till arkivet.
-  ⚠️ **RÖRS INTE AV MIG:** en ändring i snapshoten ändrar vad appen varnar för, alltså Axels märke
-  och produktboksregeln. Den nya grinden vaktar tills vidare bara motorns egen lista (motor +
-  skuggmotor + tystnadsfelet, tre filer, samma värde).
 - [x] ✅ **STÄNGT 22/9** (DECISIONS #304) — 📮 **#154 ANMÄL NIO TRASIGA BYVINDGIVARE TILL TRAFIKVERKET — skriven och klar, skickas av Bengt**
   **Beställd av Bengt 13/9** ("gör 1 och 2") efter att stationsvakten (#90, DECISIONS #164) hittat dem.
   **Brevet ligger i `docs/ANMALAN-TRV-BYVINDGIVARE.md`** — komplett med stations-id, namn, WGS84,
@@ -1144,38 +997,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   inte blockerade. Men felet ligger kvar för alla andra som läser samma öppna data — och svaret
   (givare, överföring eller aggregering?) avgör om konsumenter kan filtrera bort det själva.
   ✅ **Stängt 22/9 (DECISIONS #304):** Bengt 22/9: *"skickade"* — anmälningarna om de trasiga givarna är skickade. Trafikverkets svar bevakas i bedömningens läge ("två anmälningar om trasiga givare").
-- [ ] ⚖️ **#153 ALLVAR SOM FÖRSPRÅNG + ETT SMALARE UNDANTAG — beslut 1 omformulerat 16/9 och väntar, beslut 2 öppet (Bengts)**
-  ✏️ **OMSKRIVET 16/9 på Bengts order *"gör 153 och omformulera 153"* (DECISIONS #221).** Det gamla kortet föreslog att
-  kombinationen ändrar varningen med *"ordval, framförhållning eller prioritet"*. Två av de tre är avvisade, och kortet
-  är omskrivet så att ingen bygger dem.
-  **Varifrån kortet kommer:** Bengts fråga 13/9 — ska riskerna kunna vägas ihop till en sammanlagd risk, eller bara den
-  största sägas? — och *"om radarn signalerar blött och offset signalerar under noll, kommer motorn att generera en
-  isrisk framöver?"* (svaret då: nej).
-  **TVÅ REGLER, olika skäl:** · **Regel 1 — en röst i taget.** Prioriteten väljer EN vinnare, resten droppas. Människo-
-  faktorer, inte modellering — rörs inte. · **Regel 2 — tröskelregeln**, sedan 16/9 i Axels lydelse: *"En storhet som
-  inte kan motbevisas av en mätning får inte utlösa en varning. Extrapolation faller. Minne av mätningar består."*
-  (TROSKLAR-KOMBINATIONEN §6, DECISIONS #220).
-  **BESLUT 1 — ALLVAR SOM FÖRSPRÅNG (beslutat 16/9, VÄNTAR).** Samma ord, tidigare: `leadM` per fara, 400–3 000 m
-  (16–120 s i 90 km/h). Formen är Axels egen (kartan §13.1) och redan beslutad för modifierare (#90 roll B, E1).
-  Kostar **F4, inte F5**. ✘ **Inte ordval** — *"en sammanvägd allvarsgrad är ett mätinstrument, inte en röst"* (Axel).
-  ✘ **Aldrig prioritet** — E3: det skulle tysta en olycka.
-  ⏭️ **ORDNINGEN, inget steg före det förra:** (1) grepp 2 fastställt (C och D, #197) → (2) betan i drift i november →
-  (3) S2: skattarens graderade nivå — utan graderat mått finns inget att sätta tiden efter (kartan §13.5) → (4) eget
-  tröskeldokument skrivet före mätning: svep för försprång per nivå + tak för undanträngda varningar i `suppressed`
-  (V1: ett längre försprång är tillägg bara om spärrloggen inte visar undanträngning) → (5) skugga → (6) dom, tidigast
-  mars → (7) F4 i tre portar. Rösten är Axels. Kartans hake: första försprånget att modulera är troligen segmentets,
-  inte ispunktens (A1 säger redan samma mening för kod 2 och 4).
-  **BESLUT 2 — ETT SMALARE UNDANTAG (ÖPPET, Bengts).** Min tillämpning av den gamla regeln var trubbigare än
-  verkligheten: **(a) radarn är ingen modell** utan en mätning av nederbörd, kalibrerad med faktorn 0,65 (#153/#154);
-  **(b) interpolation mellan två mätningar är inte extrapolation från en.** Mellan en station på −3 °C och en på −2 °C är
-  *"här är det under noll"* inramat av två eniga mätningar — grind A: **0–7 km MAE 0,33 °C, grova fel 0,0 %**
-  (DECISIONS #131). Förslaget var att en modellerad temperatur får utlösa **ENDAST** inramad mellan mätande stationer
-  inom kort avstånd som är **eniga om tecknet**.
-  🔒 **Sedan 16/9 är interpolation FÖRBJUDEN som utlösare, och beslut 2 har ingen egen öppning** (TROSKLAR-KOMBINATIONEN
-  §6 T5, §10). Beslutet måste klara T1–T3 som allt annat: ett vittne **på platsen** som kan fälla värdet. I de källor vi
-  har i dag finns inget sådant mellan stationerna — beslut 2 behöver alltså en ny källa innan det kan bära något.
-  **VARFÖR INGET GÅR ATT GÖRA NU:** båda besluten vilar på vinterdata. K-A står på ⊘ INGEN DOM med **noll** uppmätta
-  frysfall (DECISIONS #137); Finlands 133 "frysrader" 13/9 var en fastnaglad givare. Grind A:s A2-rad är OAVGJORT.
 - [ ] 🤝 **#94 Samarbeten vi inte prövat: ~~försäkringsbolag~~, åkerier, NTF/M Sverige** (ur Claudes
   systemanalys 10/9). 🛑 **FÖRSÄKRINGSSPÅRET STÄNGT 11/9 av Bengt (DECISIONS #94):** "det är klarlagt
   att vi inte kan få det samarbetet". Kortet bär det därmed varken som facitkälla eller som första
@@ -1263,12 +1084,17 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   noterar KLOCKSLAG + PLATS per larm och per kamera utan larm. Beskrivningar räcker inte, vi har
   gissat tre gånger.
   ✅ **Stängt 22/9 (DECISIONS #304):** Bengt 22/9: *"kameravarningen är klar"*. Beviset är fältdomen Malmö–Boden (DECISIONS #102: en varning 500 m före varje verklig kamera, *"helt perfekt"*), som kortet aldrig hann ta upp.
-- [ ] ↩︎ Välkomsttext + testinstruktion till kompisarna (extern TestFlight-grupp = Beta App Review).
 - [x] ↩︎ ~~Bodenresan 1/9~~ ✅ GENOMFÖRD — gav DECISIONS #53 (resan håller över pauser) och #55
   (kameratoleransen). Jämförelsen "Bengts logg bredvid testbilarnas rapport" gjordes aldrig;
   facit-frågan bor i #16/#38b.
 
-### Claude — olåst
+- [ ] **Danmark — NAP-nyckel** (gratis registrering) före produktion: trafikkort-flödet vi
+  läser nu är publikt men odokumenterat.
+
+*↩︎ = ÅTERSTÄLLT 10/9. Korten nedan föll av tavlan 8/9 20:43 (commit 99473c7: Claudes tavelsynk av
+"Axels nästa steg" svalde 174 rader, inkl. tre Claude-sektioner). Inget av dem har bevis på klart sedan dess.*
+  ↦ **Sorterat 22/9 (kort #224):** registreringar är Bengts (BESLUTSGANGEN §1); Claude lägger om `ingest/dk.ts` när nyckeln finns. Ingen brådska före 2027/28.
+
 - [ ] 🔭 **#233 UR NIRAS PRODUKTSIDA: TVÅ SAKER VI INTE HAR, EN VI HAR PARKERAT** (Bengts fråga 21/9, DECISIONS #296; sidan
   niradynamics.com/products/road-surface-alerts läst mot repot). 🔑 Väntar på Bengts val av vad som ska utredas (§4.2).
   **(1) FÖRE RESAN — saknas helt.** Nira säljer *"route planning that avoids known hazards"*. Halkvakt talar bara under
@@ -1294,20 +1120,73 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   motorcyklar (Nira har en artikel; säsongen är inte vår). **Har vi redan:** vattenplaning och kraftigt regn (#42/#81),
   flottor (#94), bekräftelse över flera källor (kartans bevisbärare, §8 B).
   Verify: Bengts val inskrivet här · för (2): andelen i bedömningen · för (1): underlaget i docs/ med Axels besked.
+  ↦ **Sorterat 22/9 (kort #224):** nästa steg är ditt val av vad som ska utredas (§4.2); del (2) körs om vid frost.
 
-- [ ] 🧩 **#228 APP-SCHEMAT ÖVERLEVER INTE `xcodegen`** (uppmätt under 0.3.9-releasen 20/9). Efter `xcodegen` fanns bara
-  schemat **HalkvaktEngine** i Xcode — app-schemat autoskapas av Xcode och bor i användardata, som den genererade
-  projektfilen skriver över. Följden mitt i en release: *Product → Archive* är avstängt, destinationen visar paketets
-  `arm64, arm64_32, x86_64` i stället för appens `arm64`, och ingenting förklarar varför. Axel löste det med
-  *Manage Schemes → Autocreate Schemes Now*, men det är samma klass som DEVELOPMENT_TEAM-fältet (#275): ett handgrepp
-  efter varje generering, som går att glömma och som kostar mest när man har bråttom.
-  Fix: deklarera schemat i `ios/HalkvaktApp/project.yml` så att `xcodegen` genererar det, delat och deterministiskt.
-  ⚠️ **Får INTE skrivas blint** — jag kan inte köra `xcodegen` från den här sessionen (device_bash är en Linux-VM,
-  inte macOS-skalet), så en felaktig YAML-nyckel upptäcks först när Axel kör kommandot. Ändringen görs när han är vid
-  datorn och kan köra `xcodegen` direkt efteråt.
-  Verify: `xcodegen` på en ren klon ⇒ **Halkvakt** finns i schemamenyn, är **Shared**, och destinationen visar bara
-  `arm64` — utan att någon rört Manage Schemes.
+- [ ] 🔋 **#218 BATTERIBUDGETEN HAR ALDRIG MÄTTS, OCH iOS KÖR FULL GAS** (genomlysningen 20/9). `< 8 %/h` står som krav på tre
+  ställen med **noll motprov**. iOS kör `BestForNavigation` med avstängd automatisk paus och saknar motsvarighet till Androids
+  kadensreglering. Androids kadenstest är tautologiskt (sänk gränsen tiofalt och det passerar ändå). Dessutom: en
+  snapshot-omladdningsloop i Androids vakttjänst kan ge **fyra HTTP-anrop per sekund utan tak** när nätet saknas och cachen är tom.
+  Verify: ett mätt prov med skärmen av, utan laddare, på ett namngivet bygge, på båda plattformarna.
+  📖 **KONTROLLERAT MOT KODEN 21/9** (Bengts fråga *"vad är 218"*; DECISIONS #280). Tre av fyra påståenden stämmer:
+  iOS sätter `BestForNavigation` och stänger av pausen på ETT ställe (`GuardManager.swift:90–92`) och ändrar aldrig
+  noggrannheten eller sätter `distanceFilter` · Android växlar 1 s / 5 s / 15 s efter avståndet till närmaste fara
+  (`CadencePolicy.kt`) · testet `tiers()` jämför koden med sina egna konstanter: gör GPS:en tio gånger glesare nära en
+  fara (1 s → 10 s) och allt är grönt; `FAR_MS` 15 → 150 s passerar också marginaltestet (2 × 5,8 km < 15 km).
+  Läst, inte kört — motprovet görs i CI den dag testet lagas.
+  ⚠️ **RÄTTELSE AV KORTETS FJÄRDE PÅSTÅENDE:** helt UTAN nät blir det ett misslyckat försök per sekund, inte fyra —
+  första anropet faller och laddningen avbryts. **Fyra per sekund blir det när nätet FINNS** men en fil fäller
+  (kontrollsumma eller HTTP-fel) och ingen sparad kopia finns: då laddas `static.json` om varje sekund — 274 kB/s med
+  dagens storlekar (static 251 391 byte, live 22 262, manifest 352; hämtade 21/9), ungefär 1 GB i timmen.
+  🆕 **SAMMA ROTORSAK, INTE MED PÅ KORTET — och det vanliga fallet:** `lastSnapshotLoad` sätts bara när en laddning
+  LYCKAS, och ingenting säger *"laddning pågår"*. Utan data går vakten i 1-sekundstakt, så varje GPS-punkt före den
+  första lyckade laddningen startar en ny, komplett laddning i en egen tråd — vid varje start, också varje
+  självväckning efter ett stopp. På ett segt nät trängs de och gör varandra långsammare. Grov räkning: vid ~1 Mbit/s
+  ett knappt tiotal laddningar i onödan, och ännu segare växer det snabbt. Läst i koden, inte framkallat.
+  ✅ **iOS har inte loopen:** vägdatan laddas bara vid start och när vyn visas (två anropsställen).
+  📏 **Mätningen har aldrig gjorts, och det enda försöket kunde inte mäta:** Bodenresan 1/9 bad om batteriprocenten —
+  med laddare i bilen (`docs/TEST-BENGT-BODEN.md`). **Android-provet kräver inget köp:** testtelefonen finns och kör
+  appen (DECISIONS #271 *"LÖST SAMMA KVÄLL"*, #272).
+  🔑 **Väntar (bedömningen §4.2):** Bengts ja till att Claude lagar loopen och testet (Android-kod utan nyckel, bevisas
+  i CI, når telefonen med nästa bygge) · mätningen — en körning på minst en timme per plattform, skärmen av, ingen
+  sladd (kabel-CarPlay laddar telefonen), batteriprocent och byggnummer vid start och slut; iPhone kan Bengt eller
+  Axel köra, Android körs på testtelefonen · **iOS-regleringen avgörs FÖRST efter iPhone-mätningen**: glesare GPS är
+  en säkerhetsfråga, inte bara en batterifråga, och håller iPhone redan under 8 %/h finns inget att vinna.
+  ↦ **Sorterat 22/9 (kort #224):** nästa steg är ditt ja till lagningen av loopen; mätningen görs sedan per plattform (§4.2).
 
+- [ ] 📜 **#198 TROSKLAR-SKUGGAN §4 MOT TRÖSKELREGELN — rättas före domen i mars 2027** (fynd 16/9, DECISIONS #220).
+  Domslutet (a) TALAR och (b) TALAR NÄRA ANKARE låter segmentprognosen tala på *modellerade* segment. Det krockade redan
+  med den gamla meningen (FRYSKLASSNINGEN §1/§7) och krockar med T3: ett värde där ingen mätt och inget vittne på platsen
+  kan fälla det får inte utlösa. Texten ska säga vad (a)/(b) då får betyda — karta, konfidens, eller tal bara där T1–T3
+  klaras. Fastställt dokument ⇒ Bengts rad. Verify: §4 säger inget som regel T förbjuder.
+  📄 **BESLUTSUNDERLAG SKRIVET 20/9** (Bengts order, DECISIONS #260): `docs/SKUGGAN-PAR4-MOT-REGEL-T.md`.
+  **Krocken är inte en tolkningsfråga:** T3 nämner offsetmodellen VID NAMN (*"offsetmodellens temperatur långt från
+  ankare … får inte utlösa"*), och segmentprognosen ÄR den storheten. T6 säger samma sak från andra hållet.
+  **(a) kan inte stå kvar som röst** — förslaget är karta + konfidens, båda uttryckligen tillåtna i regelns egen text
+  (T3: *får fortsatt stärka eller försvaga*; T6 med `N_varning` och E1 som förebilder).
+  **(b) är räddningsbar**, och det är T5:s egen carve-out som räddar den: ett värde med ett vittne på platsen är
+  *inte längre extrapolation i T3:s mening*. Men (b) villkorar i dag på grind A:s NOGGRANNHET, inte på VITTNET — och
+  de två sammanfaller inte. Förslaget lägger till T1–T2 som andra villkor.
+  Det är en **skärpning**, som §5 tillåter med en rad från Bengt; en lättnad hade varit utesluten.
+  🔑 **VÄNTAR PÅ BENGTS RAD** (bedömningen §4.2). Rekommendation: ta det nu, inte i mars — annars kan någon bygga
+  röstvägen under vintern och få veta först vid domen att den inte får användas.
+  ↦ **Sorterat 22/9 (kort #224):** nästa steg är din DECISIONS-rad om förslaget (a)/(b) (§4.2).
+
+- [ ] 🗑️ **#146 27,6 MB SWIFT-BYGGUTDATA LIGGER SPÅRAT I REPOT — beslut krävs innan något tas bort**
+  Upptäckt 12/9 under CRLF-arbetet (#145): `ios/HalkvaktEngine/.build/` är spårad med **504 filer,
+  27,6 MB** — Linux-byggutdata (`.o`, `.swiftmodule`, `.pcm`, `master.priors`, `debug.yaml`) från en
+  CI-körning som blivit incheckad. `.gitignore` täcker `android/build/` och `android/*/build/` men
+  **inte Swifts `.build/`**. Varje klon betalar för det, och filerna är värdelösa på en annan maskin
+  än den som byggde dem. Åtgärden är två rader (`git rm -r --cached` + rad i `.gitignore`) men att ta
+  bort spårade filer är ett medvetet beslut, inte städning — **Bengt eller Axel säger till först**.
+  Historiken blir inte mindre av det; bara nya kloner slutar hämta dem på nytt.
+  **Bevisad skada, inte bara vikt (12/9):** en klon till en nästlad katalog FALLER på Windows
+  260-teckengräns — `fatal: cannot create directory at 'ios/HalkvaktEngine/.build/x86_64-unknown-
+  linux-gnu/debug/HalkvaktEnginePackageDiscoveredTests.build': Filename too long`. Klonen gick
+  igenom först med `-c core.longpaths=true`. Det är alltså inte bara 27,6 MB — det är en repo som
+  inte går att klona normalt på Windows, och orsaken är uteslutande byggartefakterna.
+  ↦ **Sorterat 22/9 (kort #224):** nästa steg är ditt (eller Axels) ja — sedan en commit: `git rm -r --cached ios/HalkvaktEngine/.build` och raden i `.gitignore`.
+
+### Claude — olåst
 - [x] 🔇 **#227 iOS TYSTNADE MED SLÄCKT SKÄRM PÅ "NÄR APPEN ANVÄNDS" — FIXAT 20/9** (Axels prov på iPhone, DECISIONS #273).
   `GuardManager` satte `allowsBackgroundLocationUpdates` till sant **bara vid Always** — och iOS erbjuder aldrig Always i
   första rutan, så varje ny testare landade i `whenInUse` och fick en vakt som slutade se vägen när skärmen låstes. Apples
@@ -1326,7 +1205,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   krävs och en knapp som öppnar appens inställningssida; alternativets namn hämtat ur `getBackgroundPermissionOptionLabel()`
   så texten matchar telefonens eget ordval. Avböjer användaren ska Autostart stanna av utan att något annat går sönder.
 
-- [ ] 🏷️ **#224 TAVLANS SEKTIONER STÄMMER INTE MED VERKLIGHETEN — 23 av 32 "olåsta" är det inte** (fynd 20/9 när
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #305) — 🏷️ **#224 TAVLANS SEKTIONER STÄMMER INTE MED VERKLIGHETEN — 23 av 32 "olåsta" är det inte** (fynd 20/9 när
   Bengt bad om listan på vad som kan göras nu, DECISIONS #261). Sektionen *Claude — olåst* läses som *"det här kan
   Claude göra utan att fråga någon"*. Räknat kort för kort stämmer det för **nio**. Resten fördelar sig så här:
   · **7 kräver ett beslut av er först** — #214 (invariantens lydelse), #216, #198, #151, #146, #32, och #185/#186 vars
@@ -1346,6 +1225,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Verify: varje kort i *Claude — olåst* uppfyller sin egen etikett — inget väntar på ett beslut, på vädret eller på en
   händelse, och inget är överspelat. De överspelade stängda med bevisraden. Antalet i sektionen står i bedömningen §0b
   så att nästa avvikelse syns.
+  ✅ **Stängt 22/9 (DECISIONS #305, Bengts "sortera korten som står i fel sektion"):** 22 kort flyttade dit nästa steg finns — 2 till *Claude — olåst* (#203 lager 2, välkomsttexten), 11 till *Claude — låst* med nyckeln utskriven (frosten, 1/10, Axel vid Macen, releasen, betan), 5 till *Bengt* (#233, #218, #198, #146, Danmark-nyckeln), 3 till *Axel — beslut att ta* (#204, #156, #214), 1 till *Axel — därefter* (#210). Varje flyttat kort bär en rad om varför. *Claude — olåst* har nu **7 kort**, alla startbara utan att vänta på någon: #226, #217, #219, #221, #160, #203, välkomsttexten. Inga rader försvann (kontrollerat rad för rad); de överspelade stängdes redan i kortavstämningen (DECISIONS #303).
 
 - [x] 🔍 **#225 TRE KORT SER BYGGDA UT MEN STÅR ÖPPNA — ✅ KLART 20/9, alla tre resolverade** (fynd 20/9,
   DECISIONS #261). Den parallella sessionen har commits för alla tre i dag, men korten är kvar som öppna:
@@ -1404,66 +1284,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⏭️ **Kvar, som EGEN sak och inte här:** `runs?per_page=1` tar fortfarande senaste körningen oavsett trigger, så en
   manuell knapptryckning kan nollställa mätvaktens klocka. Hängande körningar larmar nu, men triggertypen filtreras
   inte. Litet, och det kräver en till deploy — tas när något annat ändå rör vakthunden.
-- [ ] 🔊 **#210 iOS SÄGER "PÅ VÄG <NULL>" — var tjugonde olycka** (genomlysningen 20/9). `SnapshotRepo.swift:117` gör JSON-`null`
-  till strängen `"<null>"`, och `road` läses med just den funktionen (rad 68). Kotlin och TypeScript gör rätt — iOS är ensamt fel.
-  **Uppmätt 20/9: 38 av 732 olyckor senaste 30 dygnen saknar vägnummer (5,2 %).** Vektor v22 låser bara FRÅNVARANDE `road`,
-  inte `road: null`, så sviten kan inte se felet.
-  Verify: ny vektor med `road: null` som faller före fixen och passerar efter; rösten säger "Allvarlig olycka 8 kilometer
-  framför dig" utan vägled. Bör sitta i bygget INNAN nästa arkivering.
-  🔨 **BYGGT 20/9 (Claude via Cowork, DECISIONS #258, commit 9d3f56c):** `SnapshotRepo.swift` läser `road` som `as? String` — nil vid
-  JSON-null, samma mönster som `slut` på raden ovan. v26 (severity 5, `road: null`) låser JSON-null i alla tre vektorläsarna och
-  motorerna (ci, android, ios-engine gröna). **Ärligt om beviset:** vektorn kunde inte falla före fixen — Swift-MOTORNS
-  vektorläsare gjorde redan rätt, felet satt bara i APPENS JSON-plockare, och appen har inget testmål. Raden är rättad
-  och granskad, inte körd. **Stängs när ett iOS-bygge säger en olycka utan vägnummer rätt** (5 % av olyckorna — finns i
-  arkivet varje vecka) eller Bengt hör en i bilen. **Fixen följer med i 0.3.9 (12).**
-  🔒 **KLASSEN STÄNGD 20/9 kväll (Axels *"kan vi fixa kort 210"*, DECISIONS #276):** `road` rättades på sin egen rad, men
-  `str()` kunde fortfarande göra JSON-null till literalen `"<null>"` — och funktionen bär **sex id-fält**
-  (cam/seg/wx/bro/vilt/dev). Ett null där hade gett `"cam:<null>"` som farans id, alltså en nyckel i reprisspärren OCH i
-  facitsvaret. Helpern returnerar nu tom sträng för `NSNull`. **Uppmätt, inte antaget:** publicerade `static.json`
-  (2 791 kameror) och `live.json` lästa 20/9 — inget id är null i dag, så hålet var latent. De enda null som faktiskt
-  publiceras är `lutning15/30/60` på väderstationerna, och dem läser iOS inte alls.
-  ➕ **Samma form finns i Android, oprövad:** `SnapshotRepo.kt` läser ids med `getString("id")`, som ger strängen `"null"`
-  för ett JSON-null. Inte rättad — sex anropsställen, inget testmål, och till skillnad från iOS kastar den vid SAKNAT
-  fält, vilket är ett medvetet skydd jag inte river i mörkret. Eget kort när någon rör filen.
-  🔑 **Ägare: Axel** (arkiveringen är hans). Kortet är alltså inte glömt utan väntande — villkoret står ovan.
-
-  🧪 **LÄSARKONTRAKTET BYGGT 20/9 (DECISIONS #278) — kortets egen invändning *"inget testmål"* är halvt besvarad.**
-  Vektorerna börjar där faran redan är TOLKAD; de är ett kontrakt för MOTORN och kan per konstruktion inte se ett fel
-  i JSON-läsningen. Därför finns nu samma sorts kontrakt ett lager ned: `engine/fixtures/lasarprov.json` bär en
-  static + live med de fall som är lätta att läsa fel — `road` som null OCH som saknat, `bearing` null, `yta` null,
-  `code` null, `sev` null, och ett `id` som TAL — plus det parsade utfall varje läsare ska ge.
-  ✅ **TS-läsaren prövas** av `test/lasarkontraktet.test.ts`. **Motprov:** `road: d.road ?? null` → `String(d.road)`
-  ⇒ testet faller med `actual: 'null'` mot `expected: null`. Provet ser alltså exakt det fel #210 var.
-  🎯 **NOLLPOLITIKEN, som är hela poängen:** `bearing` null får inte bli 0 (0 är norrut — en kamera som tros titta
-  norrut filtreras på fel kurs) · `yta` null får inte bli 0 °C (0 ligger under fryströskeln och hade fyrat) · `road`
-  null får inte bli ett ord. Tre fält, tre olika sätt att tyst bli fel.
-  ⏭️ **KVAR:** Swift och Kotlin läser i app-koden, som saknar testmål. Provfilen ligger färdig den dagen målet finns.
-  Kortet stängs fortfarande av Axels bygge — läsarkontraktet gör inte fixen bevisad, det gör NÄSTA regression synlig.
-- [ ] 📵 **#214 PLAY-DEKLARATIONEN ÄR OSANN SEDAN 16/9** (genomlysningen 20/9). `docs/PLAY-DATASAFETY.md` svarar **"No"** på
-  Googles insamlingsfråga och påstår att enda utgående trafik är en GET utan parametrar. Filen rördes senast **27/8**. Sedan 16/9
-  POSTar `FacitSender.kt` varnings-id, tid, app och version — och `sql/022` erkänner själv att "ett svar är alltså en plats och
-  en tid". En felaktig deklaration är grund för avslag eller nedtagning mitt i vinterns enda facitfönster.
-  🔑 **Kräver också ett beslut:** ska produktinvariantens lydelse ("ingen positionsdata lämnar telefonen") formuleras om, eller
-  ska facitsvaret ändras? Bengt + Axel.
-  Verify: filen rättad, formuläret ifyllt likadant, och båda i samma commit som nästa uppladdning.
-  🔨 **BYGGT 20/9 kväll (DECISIONS #270):** `docs/PLAY-DATASAFETY.md` omskriven — insamlingsfrågan svarar **Ja**,
-  datatypen är **Location → Approximate location** (varnings-id + klockslag säger ungefär var och när), *Optional*,
-  *Collected men inte Shared*, *inte kopplad till identitet*, ändamål App functionality + Analytics. Utgående trafik
-  listad ur koden (GET snapshot utan parametrar · POST facit-svar bara vid tryck). CLAUDE.md:s invariant omskriven.
-  ➕ **FJÄRDE STÄLLET, hittat 20/9 när butiksmaterialet lästes:** `marknadsforing/butik/butikstext.md` sade
-  *"Vi samlar in: ingenting"* i integritetsstycket — Google läser butikstexten bredvid formuläret. **Rättad.**
-  Påståendet stod alltså på fyra ställen och ingen av dem rördes 16/9; det är därför regeln i CLAUDE.md nu namnger
-  alla fyra.
-  🔑 **TVÅ SAKER KVAR, BÅDA ÄGARBESLUT:** (a) **raderingsfrågan** — formuläret frågar om användaren kan begära radering,
-  och vi har ingen väg: inget i ett svar identifierar avsändaren. Tre alternativ i filen, rekommendation "svara Nej och
-  förklara varför"; (b) **`integritet.html` i karta-repot ljuger också** — *"Kärnlöftet: din position lämnar aldrig
-  telefonen"* och *"Vad vi samlar in: Ingenting"*. Google jämför formuläret mot policyn, så den måste ändras i samma
-  veva. Utkast skrivet, väntar Axels ja — det är ett publikt löfte.
-  *Beslutet som bygget vilar på:* invarianten skrivs om till *aldrig utan aktivt val* — ingen
-  positionsdata lämnar telefonen automatiskt; det enda som skickas är ett facitsvar föraren själv trycker på. Data Safety svarar
-  sanningsenligt **Ja** (ändamål: förbättra varningarna; frivilligt; kan inte kopplas till person). **Bygg nästa varv:** CLAUDE.md:s
-  invariant, `docs/PLAY-DATASAFETY.md` och produktboken i samma commit.
-
 - [x] 🐕 **#215 VAKTHUNDEN KAN TYSTNA UTAN ATT NÅGON MÄRKER DET — ✅ SLAGET IHOP MED #50 20/9** (Bengts order,
   DECISIONS #252). Genomlysningen lade kortet som ett nytt fynd, men **#50 *Vakthunden är själv obevakad* har ställt
   samma fråga sedan 4/9** — sexton dygn. De tre konkreta defekterna (dödmansgreppet, 9c/9d som aldrig kan fyra,
@@ -1502,36 +1322,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   får ny rösttext — den enda gången en frusen vektor får ändras är när regeln själv ändras, och det står här — produktboken i
   samma commit. Vektorantalet i produktboken är 36 sedan i kväll, inte 24.
 
-- [ ] 🔋 **#218 BATTERIBUDGETEN HAR ALDRIG MÄTTS, OCH iOS KÖR FULL GAS** (genomlysningen 20/9). `< 8 %/h` står som krav på tre
-  ställen med **noll motprov**. iOS kör `BestForNavigation` med avstängd automatisk paus och saknar motsvarighet till Androids
-  kadensreglering. Androids kadenstest är tautologiskt (sänk gränsen tiofalt och det passerar ändå). Dessutom: en
-  snapshot-omladdningsloop i Androids vakttjänst kan ge **fyra HTTP-anrop per sekund utan tak** när nätet saknas och cachen är tom.
-  Verify: ett mätt prov med skärmen av, utan laddare, på ett namngivet bygge, på båda plattformarna.
-  📖 **KONTROLLERAT MOT KODEN 21/9** (Bengts fråga *"vad är 218"*; DECISIONS #280). Tre av fyra påståenden stämmer:
-  iOS sätter `BestForNavigation` och stänger av pausen på ETT ställe (`GuardManager.swift:90–92`) och ändrar aldrig
-  noggrannheten eller sätter `distanceFilter` · Android växlar 1 s / 5 s / 15 s efter avståndet till närmaste fara
-  (`CadencePolicy.kt`) · testet `tiers()` jämför koden med sina egna konstanter: gör GPS:en tio gånger glesare nära en
-  fara (1 s → 10 s) och allt är grönt; `FAR_MS` 15 → 150 s passerar också marginaltestet (2 × 5,8 km < 15 km).
-  Läst, inte kört — motprovet görs i CI den dag testet lagas.
-  ⚠️ **RÄTTELSE AV KORTETS FJÄRDE PÅSTÅENDE:** helt UTAN nät blir det ett misslyckat försök per sekund, inte fyra —
-  första anropet faller och laddningen avbryts. **Fyra per sekund blir det när nätet FINNS** men en fil fäller
-  (kontrollsumma eller HTTP-fel) och ingen sparad kopia finns: då laddas `static.json` om varje sekund — 274 kB/s med
-  dagens storlekar (static 251 391 byte, live 22 262, manifest 352; hämtade 21/9), ungefär 1 GB i timmen.
-  🆕 **SAMMA ROTORSAK, INTE MED PÅ KORTET — och det vanliga fallet:** `lastSnapshotLoad` sätts bara när en laddning
-  LYCKAS, och ingenting säger *"laddning pågår"*. Utan data går vakten i 1-sekundstakt, så varje GPS-punkt före den
-  första lyckade laddningen startar en ny, komplett laddning i en egen tråd — vid varje start, också varje
-  självväckning efter ett stopp. På ett segt nät trängs de och gör varandra långsammare. Grov räkning: vid ~1 Mbit/s
-  ett knappt tiotal laddningar i onödan, och ännu segare växer det snabbt. Läst i koden, inte framkallat.
-  ✅ **iOS har inte loopen:** vägdatan laddas bara vid start och när vyn visas (två anropsställen).
-  📏 **Mätningen har aldrig gjorts, och det enda försöket kunde inte mäta:** Bodenresan 1/9 bad om batteriprocenten —
-  med laddare i bilen (`docs/TEST-BENGT-BODEN.md`). **Android-provet kräver inget köp:** testtelefonen finns och kör
-  appen (DECISIONS #271 *"LÖST SAMMA KVÄLL"*, #272).
-  🔑 **Väntar (bedömningen §4.2):** Bengts ja till att Claude lagar loopen och testet (Android-kod utan nyckel, bevisas
-  i CI, når telefonen med nästa bygge) · mätningen — en körning på minst en timme per plattform, skärmen av, ingen
-  sladd (kabel-CarPlay laddar telefonen), batteriprocent och byggnummer vid start och slut; iPhone kan Bengt eller
-  Axel köra, Android körs på testtelefonen · **iOS-regleringen avgörs FÖRST efter iPhone-mätningen**: glesare GPS är
-  en säkerhetsfråga, inte bara en batterifråga, och håller iPhone redan under 8 %/h finns inget att vinna.
-
 - [ ] 🤖 **#219 ANDROID ÄR SJU VERSIONER EFTER OCH HAR INGEN VÄG TILL EN TELEFON** (genomlysningen 20/9). Android står på
   **0.3.1 (versionCode 4)**, iOS på 0.3.8 (11). **Google Play-kontot finns inte**, det finns inget uppladdningsflöde alls — CI
   bygger en AAB som artefakt och där slutar det. Android saknar dessutom introduktionen helt och har autostart av som standard.
@@ -1547,15 +1337,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Verify: beslut äldre än 1/9 flyttade till eget arkiv, BACKLOG avvecklad eller återupplivad med en rad i CLAUDE.md, grenarna
   rensade, och de fyra namngivna motsägelserna rättade.
 
-- [ ] 📷 **#209 BILDFACITBESLUTET FLYTTAT TILL EFTER FÖRSTA FROSTEN** (Bengts ja 20/9, DECISIONS #248, ur fyndet i #247).
-  **Mätt skäl:** omklassningar till halka **0 på 14 dygn**, hela arkivet 7 rader; olyckorna (504) bär ingen orsak. Är källan lika tom
-  i november–december står januaridomen på kamerabilderna — och granskningen finns inte byggd. Beslutet flyttas från *före 1/2* till
-  **inom sju dygn efter första frostnatten**. Blindningen orörd: det gäller att BYGGA läsningen, inte att läsa utfallet (bilderna
-  öppnas i mars). 🔑 **Väntar på första frosten** — mätningen körs i samma varv som T-A steg 0.
-  Verify: en sats som ger antal omklassningar till halka inom 5 km och utfallsfönstret från en episod under frostnätterna; talet
-  skrivet i bedömningen §4.2 tillsammans med Bengts och Axels beslut.
-  🧂 **Följer med läsningen (Bengts ja 21/9, DECISIONS #291):** produktionsregelns varningar delas per vädertyp — kort #231.
-  ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** #51 *Vinterarkivet* — dess Verify (DECISIONS #252) är samma mätning som den här.
 - [x] 🌙 **#208 EPISODEN ÄR EN NATT, INTE ETT UTC-DYGN — ✅ KLART 20/9** (Bengts *"ompröva beslutet och byt"*, DECISIONS #245/#246,
   PR #384). Version 1 räknade stationens första ögonblick per UTC-dygn och delade **159 av 454 stationsnätter i två** — 66 % av fallen
   ligger 21–03 UTC. Nu: natt = middag till middag UTC, som T-A; inskrivet i TROSKLAR-KOMBINATIONEN §4 KB-B.
@@ -1630,22 +1411,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   `ingest/db.ts` skriver båda; integrationstestet vaktar. **Verify:** efter nästa ingestkörning har aktuella varningar
   `senast_sedd` satt och `smhi_synk` rader med innehåll. Innan N_varning mäts: fältet deklareras i värdevakten.
   ✅ **I DRIFT 17/9:** ingestkörningen 06:11Z stämplade `senast_sedd` på exakt de 15 varningar som fanns i flödet (av 157 i arkivet), och `smhi_synk` fick sin första rad (15 varningar).
-- [ ] 📜 **#198 TROSKLAR-SKUGGAN §4 MOT TRÖSKELREGELN — rättas före domen i mars 2027** (fynd 16/9, DECISIONS #220).
-  Domslutet (a) TALAR och (b) TALAR NÄRA ANKARE låter segmentprognosen tala på *modellerade* segment. Det krockade redan
-  med den gamla meningen (FRYSKLASSNINGEN §1/§7) och krockar med T3: ett värde där ingen mätt och inget vittne på platsen
-  kan fälla det får inte utlösa. Texten ska säga vad (a)/(b) då får betyda — karta, konfidens, eller tal bara där T1–T3
-  klaras. Fastställt dokument ⇒ Bengts rad. Verify: §4 säger inget som regel T förbjuder.
-  📄 **BESLUTSUNDERLAG SKRIVET 20/9** (Bengts order, DECISIONS #260): `docs/SKUGGAN-PAR4-MOT-REGEL-T.md`.
-  **Krocken är inte en tolkningsfråga:** T3 nämner offsetmodellen VID NAMN (*"offsetmodellens temperatur långt från
-  ankare … får inte utlösa"*), och segmentprognosen ÄR den storheten. T6 säger samma sak från andra hållet.
-  **(a) kan inte stå kvar som röst** — förslaget är karta + konfidens, båda uttryckligen tillåtna i regelns egen text
-  (T3: *får fortsatt stärka eller försvaga*; T6 med `N_varning` och E1 som förebilder).
-  **(b) är räddningsbar**, och det är T5:s egen carve-out som räddar den: ett värde med ett vittne på platsen är
-  *inte längre extrapolation i T3:s mening*. Men (b) villkorar i dag på grind A:s NOGGRANNHET, inte på VITTNET — och
-  de två sammanfaller inte. Förslaget lägger till T1–T2 som andra villkor.
-  Det är en **skärpning**, som §5 tillåter med en rad från Bengt; en lättnad hade varit utesluten.
-  🔑 **VÄNTAR PÅ BENGTS RAD** (bedömningen §4.2). Rekommendation: ta det nu, inte i mars — annars kan någon bygga
-  röstvägen under vintern och få veta först vid domen att den inte får användas.
 - [x] 🧾 **#196 FÖRARFACIT-HYGIEN — klockslaget och provraderna — ✅ KLART 17/9** (fynd 16/9 vid #97:s deploy, DECISIONS #214).
   (1) Vakthundens rad skriver `String(df.senast).slice(0, 16)` ⇒ "Wed Sep 16 2026 " — datum utan tid (min rad, S4 steg 1).
   (2) `driver_facit` bär två PROV och noll riktiga svar: Android `prov` 03:07Z och ett iOS-format serverprov 11:47Z
@@ -1878,138 +1643,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Skuggrapporten får `vattenplaning`. VÄNTAR: migration 019 → deploy skuggmotor + skuggrapport → första `vb`-raden.
   ✅ STEG E I DRIFT 15/9: första `vb`-raderna 17:30Z: **5 skuggvarningar** (E18 Karlstad→Örebro, 5 st, regnsegment 18060/18065/18067) i skuggrapportens `vattenplaning`.
   ✅ **Stängt 22/9, kortavstämningen (DECISIONS #303):** `rain_segments` i live.json 15/9 med rätt manifest-sha (DECISIONS #187), steg E i drift (#191); V-B:s dom bärs av #42.
-- [ ] 💸 **#152 KASSAVAKTEN — check 8 i vakthunden: larmar innan Actions-taket slår i** (Bengts order
-  13/9: "Kan man ha någon mätning på taket så man vet när man närmar sig gränsen. Automatisk alltså").
-  💰 **RÄTTAD 13/9 (DECISIONS #160, Bengts order "gör kort 152 nu"):** prognosen räknade på
-  månad-till-datum, och i det snittet låg fem flöden som lades ner 8–9/9 (`ingest-fi`, `-no`,
-  `-dk`, `publish-map`, `regn-30`). Vakten sa **21 september**; uppmätt verklig takt var
-  **232 min/dygn** senaste dygnet och **180** de två senaste, mot snittets 311 — och driften ensam
-  (ingest + grannar + healthcheck) är **81**, resten är bygge. **Förbrukningen läses nu ur
-  månadstalet, prognosen ur en SLÄPANDE takt** över de två senaste kompletta dygnen; taket flyttas
-  därmed till **26 september** på verkliga tal. Båda talen står i varje larm — månadssnittet låser
-  fast en takt som kan ha upphört, det släpande är känsligt för en byggskur — och avviker de mer än
-  25 % säger larmet **TAKTEN ÄNDRAS**. Kostar noll extra API-anrop: dygnsloopen fanns redan.
-  🔨 BYGGD 13/9, väntar på deploy + bevis. Bakgrunden är 5/9: minuterna tog slut mitt i drift, appen
-  serverade 66 h gammal data, och det upptäcktes bara för att en människa råkade titta. Taket har HÅRT
-  STOPP, så det är en vägg och inte en försämring. Ligger i vakthunden (Supabase, noll Actions-minuter)
-  med samma nyckel som mätvakten redan använder för att läsa Actions-API:t.
-  RÄKNINGEN: körningar sedan den 1:a, avrundade uppåt per körning, minus gratispotten 2 000 min,
-  gånger 0,008 USD. Larmar när (a) faktisk förbrukning passerat 70 % av taket, eller (b) prognosen når
-  taket före månadsskiftet — och det är (b) som är poängen: "i dagens takt slår taket i den 25:e" går
-  att agera på, "62 % förbrukat" gör det inte.
-  TVÅ KÄNDA FEL, utskrivna i varje larm i stället för dolda: taket är KONTOOMFATTANDE men vi ser ett
-  repo, och GitHub avrundar per jobb medan vi avrundar per körning (android.yml har två jobb). Talet är
-  därför ett GOLV, aldrig fakturan. Exakta siffran kräver kontobehörighet ⇒ Axels handgrepp, eget kort
-  om vi vill ha den.
-  KÖRS 05/11/17/23 UTC, inte varje timme: en räkning är ~30 API-anrop och budgeten rör sig 1–2 USD/dygn.
-  FÄRGAR ALDRIG DRIFTVAKTHUNDEN RÖD (egen etikett `kassavakt`, egen öppna/uppdatera/stäng-cykel) — samma
-  regel som mätvakten: rött ska betyda "kedjan till appen är bruten NU".
-  ✅ ARITMETIKEN BEVISAD fristående mot sex handräknade fall (husets konvention för vakthundslogik, som
-  kadensTimmar): gratispotten ej förbrukad ⇒ 0 USD; 6 375 min ⇒ exakt 35,00; 202 min/dygn ⇒ taket nås
-  INTE i september; 261 min/dygn ⇒ taket slår i 25/9; noll minuter ⇒ inget datum; första halvtimmen i
-  månaden ⇒ ändlig takt. Testet checkades medvetet INTE in: det hade blivit en andra kopia av tre
-  trösklar och utlöst kontraktsgrinden för noll nytta — konstanterna finns i EN fil.
-  Verify: deploy-supabase grön, sedan `?kassaprov=1` ⇒ issue med etiketten `kassavakt` som stängs av
-  nästa körning under gränsen. Och en riktig kassarad i nästa vakthundskörning 05/11/17/23.
-  ✅ **KLAR OCH BEVISAD 13/9 02:08.** Deployad (vakthund, 705 kB) och larmvägen prövad skarpt med
-  `?kassaprov=1` via DB-knappen ⇒ **issue #210 med etiketten `kassavakt`**. Den larmade på EGEN grund,
-  inte bara på provraden: *"I dagens takt (311 min/dygn) slår taket i den 2026-09-21."*
-  **FÖRSTA SKARPA MÄTNINGEN, och den är värre än fönsterskattningen:** 3 761 min sedan 1/9 över
-  2 798 körningar ⇒ debiterat 1 761 min = **14,09 av 35 USD**, takt **311 min/dygn**, prognos för
-  månaden **59 USD**. Fönstermätningen 12/9 gav 202 min/dygn — den fönstret var alltså lugnare än
-  månadssnittet, och 31–40 USD var för lågt räknat.
-  🩹 **TVÅ FEL AV MIG PÅ VÄGEN, båda bokförda för att de är lärorika:**
-  · Jag dispatchade deploy-supabase UTAN `funktion` och fick standardvärdet `publicera`. Jobbet blev
-    grönt, jag läste grönt som "rätt sak deployad", och första provet kunde inte fungera. Läxan är den
-    gamla: en grön körning bevisar att NÅGOT gick bra, inte att det var det man tänkt.
-  · Första skarpa körningen räknade exakt 1 000 körningar och rapporterade 94 min/dygn — halva
-    sanningen, utan felmeddelande. `/actions/runs` paginerar bara till 1 000 träffar. Lagat: räkningen
-    går ett dygn i taget, och dygnsloopen är självtestad. Läxa i CLAUDE.md.
-  · (Ett tredje, ofarligt: `kassaprov` lades i skriptets vitlista men inte i dbknapp.yml:s if-sats, så
-    en körning föll tyst i migrera-grenen och körde om gallringsmigrationen. Idempotent, inga rader
-    rörda, bevisraderna visade alla tio cron-jobb intakta. Villkoret är nu inverterat så att det bara
-    finns EN lista. Läxa i CLAUDE.md.)
-  📏 **AVLÄST 14/9 17:08 (kassavaktens egen rad, issue #210):** förbrukat sedan 1/9 **4 026 min över
-  3 006 körningar** ⇒ debiterat 2 026 min = **16,21 USD av taket 35**. Släpande takt **200 min/dygn**
-  (oförändrad sedan 05:08), månadssnittet sjunker (301 → 294). Takdatum **26/9, oförändrat sedan i
-  morse** — det går alltså inte åt fel håll. **Dygnets EGEN takt är lägre än båda:** 05:08 → 17:08
-  (12,0 h) gav 50 debiterade min över 38 körningar ⇒ **100 min/dygn**. Raderna 05:08, 11:08 och 17:08
-  finns alla; vakten fyrar som den ska.
-  📏 **15/9 04:45:** raden 23:08 finns — förbrukat **4 058 min över 3 025 körningar** ⇒ debiterat
-  2 058 min = **16,46 USD av 35**. Släpande takt 200 oförändrad, månadssnittet ned 294 → 291,
-  takdatum **26/9 oförändrat**. Nattens egen takt 17:08 → 23:08 (6,0 h): 32 min ⇒ **128 min/dygn**.
-  05:08-raden hade inte kommit när avläsningen gjordes (vakthunden fyrar 05 UTC).
-  🔍 **OMRÄKNAT PER JOBB 18/9 (Claude, alla 3 359 körningar sedan 1/9):** GitHub debiterar varje JOBB uppåt till hel
-  minut; kassavakten räknar varje KÖRNING på `updated_at − run_started_at`. Felet går åt två håll: android.yml:s två
-  parallella jobb räknas som ett (16/9: 55 min mot 105), och driftens korta jobb räknas med körningens efterslöp
-  (healthchecks jobb tar 58 s men körningen 63 s ⇒ 2 min i stället för 1). Över månaden: **4 530 min mot 4 369 per jobb**,
-  alltså 161 min för mycket — talet är inget golv, som larmtexten säger. Kvar till taket per jobb: cirka 2 000 min;
-  driften ~74 min per dygn ⇒ bygget högst ~80 min per dygn till 1/10 (bedömningen §0b). GitHubs eget API för debiterbar
-  tid svarar 0 sedan faktureringen lades om, så Billing är enda facit (Axel, §4.2). **Ingen ändring nu:** att räkna per
-  jobb kostar ett API-anrop per körning (~180 per dygn) och skulle förlänga vakthundens redan för långa timme (#201) —
-  rättas i så fall ihop med #201, med dygnssummor som sparas.
-- [ ] 🧊 **#151 VÄGLAGETS ÅLDER — ska en stående vinterklassning tystas när mätningarna säger att vintern tagit slut?**
-  📄 **TRÖSKELDOKUMENT FASTSTÄLLT 12/9 av Bengt** (`docs/TROSKLAR-VAGLAGETS-ALDER.md`, DECISIONS #151/#152).
-  **Kortet kommer ur att Axel mätte i stället för att bygga det jag antog.** Jag flaggade att
-  `road_conditions` saknar väderpunkternas tretimmarsgräns; Axel mätte och upphävde antagandet:
-  818 segment, alla kod 1, **exponering noll i september**, senaste ändring 25/8, **inget segment
-  har end_time**. Operatören skriver bara vid FÖRÄNDRING — alltså kan en gammal klassning vara sann,
-  och en hård åldersgräns skulle tysta en halkvarning på en väg som varit hal i tre dygn. Precis det
-  fel dämpningen (#100) fälldes för.
-  **Frågan är omformulerad:** inte *"är klassningen gammal?"* utan *"motsäger världen den?"*.
-  Ålder är på sin höjd en förstärkning, aldrig en grund.
-  **Tre regler i §3:** R0 ingen regel (förvalet) · R1 ytan motsäger · R2 ytan motsäger + ålder ·
-  **R3 hård åldersgräns FÖRKASTAD före mätning** — felet ligger i formen, inte i tröskeln, och
-  skälet står skrivet så att nästa förslag möts av det.
-  **Nollan är ett utsagolöst noll** (#71): arkivet har inga vinterord alls i september, så mätningen
-  KAN inte falsifiera. Körs om vid första vinterklassningen — med `kodgrinden` avsnitt D, som redan
-  mäter exakt den frågan.
-  **Taket är hårdare än vanligt och skälet står i §5:** alla andra tröskeldokument reglerar när vi
-  får SÄGA något. Det här reglerar när vi får TIGA, och ett fel åt det hållet syns inte i en logg —
-  det syns i att en förare inte fick veta. E3 (tysta utan skuggkörning) = **aldrig**.
-  ⏭️ **Väntar på VINTERN.** Inget mäts förrän arkivet fått vinterklassningar — körs Å-A i september
-  blir svaret OAVGJORT på Å-A4:s krav om 100 fall, och det är rätt svar, inte ett misslyckande.
-  Fram till första skuggkörningen får §4:s svep och §5:s krav justeras med en rad i DECISIONS;
-  därefter inte alls.
-  🔧 **Axels två, utanför det här kortet:** `end_time`-filtret på segmenten (en rad — kolumnen finns
-  i sql/001:24 och ingesten skriver den redan, men den är OPRÖVAD tills TRV satt en EndTime en gång)
-  och stillaståendevakten (återanvänd mätvaktens 6b-form: larma inte på tystnad, larma på tystnad
-  MEDAN stationerna säger vinter — och "alla 848 stationer" inträffar aldrig).
-- [ ] 🗑️ **#146 27,6 MB SWIFT-BYGGUTDATA LIGGER SPÅRAT I REPOT — beslut krävs innan något tas bort**
-  Upptäckt 12/9 under CRLF-arbetet (#145): `ios/HalkvaktEngine/.build/` är spårad med **504 filer,
-  27,6 MB** — Linux-byggutdata (`.o`, `.swiftmodule`, `.pcm`, `master.priors`, `debug.yaml`) från en
-  CI-körning som blivit incheckad. `.gitignore` täcker `android/build/` och `android/*/build/` men
-  **inte Swifts `.build/`**. Varje klon betalar för det, och filerna är värdelösa på en annan maskin
-  än den som byggde dem. Åtgärden är två rader (`git rm -r --cached` + rad i `.gitignore`) men att ta
-  bort spårade filer är ett medvetet beslut, inte städning — **Bengt eller Axel säger till först**.
-  Historiken blir inte mindre av det; bara nya kloner slutar hämta dem på nytt.
-  **Bevisad skada, inte bara vikt (12/9):** en klon till en nästlad katalog FALLER på Windows
-  260-teckengräns — `fatal: cannot create directory at 'ios/HalkvaktEngine/.build/x86_64-unknown-
-  linux-gnu/debug/HalkvaktEnginePackageDiscoveredTests.build': Filename too long`. Klonen gick
-  igenom först med `-c core.longpaths=true`. Det är alltså inte bara 27,6 MB — det är en repo som
-  inte går att klona normalt på Windows, och orsaken är uteslutande byggartefakterna.
-- [ ] 🧊 **#103 FRYSKLASSNINGEN — kan en modell som är opålitlig på grader ändå bära en klass?**
-  📄 **TRÖSKELDOKUMENT SKRIVET 12/9** (`docs/TROSKLAR-FRYSKLASSNINGEN.md`, **FASTSTÄLLT 12/9**, DECISIONS #130/#135).
-  **Frågan är Axels, ordagrant**, ur hans bedömning av grind A: grind A föll, men A3
-  frysklassningsfelet klarade med **1,1 % mot ett krav på 10** — modellen är dålig på GRADER men
-  nästan aldrig fel om VILKEN SIDA AV NOLL, och det är den fråga motorn faktiskt ställer.
-  ⚖️ **Legitim, inte en efterhandsräddning** — hans egen formulering: *samma data, ny fråga, ärlig
-  ordning*. Dokumentet är skrivet så att **inget tal i §2 eller §4 kommer ur A3:s utfall**, och det
-  står uttryckligen att 1,1 % inte får åberopas som skäl för någon tröskel.
-  🚧 **AVGRÄNSNINGEN SOM AVGÖR ALLT ANNAT:** en godkänd frysklassning ger INTE rätt att skapa en
-  varning där motorn tiger. Den får bara stärka en bedömning som redan vilar på en uppmätt station.
-  **En modellerad storhet får aldrig vara en avtryckare** — samma regel som #95 (d) fick. *(Sedan 16/9 i Axels
-  lydelse, DECISIONS #220: klassningen utlöser aldrig ensam — T6.)*
-  🎯 **K2 är dokumentets egentliga idé:** grind A tvingade modellen att svara i varje punkt. En
-  klassificerare får AVSTÅ nära gränsen — frågan blir hur bra den är på det den uttalar sig om, och
-  hur mycket den då måste avstå. Därför har K-A både träffsäkerhets- OCH täckningskrav.
-  ⚠️ **K-A2 är asymmetrisk med flit och undantagen från all lättnad:** att säga "fryser" om en torr
-  väg kostar ett onödigt larm, att säga "fryser inte" om en isig väg kostar löftet produkten vilar
-  på. Taket för det felet är tio gånger hårdare (≤ 1 % mot ≥ 95 %).
-  🍂 **Vakt mot september:** K-A4 kräver ≥ 100 punkter med UPPMÄTT frys. Annars kan ett
-  septemberunderlag ge 99 % rätt klass genom att alltid svara "fryser inte".
-  ✅ **FASTSTÄLLT 12/9 av Bengt** (DECISIONS #135). Svepet och kraven är låsta.
-  ➡️ **NÄSTA: K-A på befintligt arkiv** — kräver ingen ny data och ingen frost.
 - [x] 🗺️ **#102 RUTTBEREDSKAPEN — vilken av skuggflottans tjugo bilar kan pröva vilken grind**
   ✅ **KLART 12/9 kväll** (Bengts order "gör beredskapstabellen", DECISIONS #124).
   `scripts/ruttberedskap.ts` + knapp, helt läsande. **Rutterna läses UR skuggmotorn, kopieras
@@ -2033,115 +1666,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   årstiden — men det är just de tre förstärkaren (#95 d) behöver. Skillnaden mellan "inga
   varningar ännu" och "polygonerna matchar inte däruppe" syns först vid första snövarningen.
   🔁 Kör om när vintern satt sig: ankarbanden vandrar med stationsbortfall.
-- [ ] 🪢 **#95 Plan B för Trafikverket-beroendet — mät SMHI som reserv** (systemanalys 10/9). Allt
-  🔓 **BLOCKERARFYNDET 12/9 (DECISIONS #114): kortet blockerar #88:s dom.** T-A:s fysikkontroll
-  kräver "vanligast klara nätter", och molnmängd finns inte i arkivet. #95 är alltså inte en
-  förstärkare som kan vänta till våren — den står i vägen för den enda punkten med naturens deadline.
-  💰 **MEN MOLNET BEHÖVER INTE ARKIVERAS, och det river kortets dyraste rad.** SMHI metobs
-  **parameter 16** (total molnmängd, timvärde) har `latest-months` som räcker **130 dygn bakåt**,
-  plus `corrected-archive`. Molnet hämtas I EFTERHAND vid körning, som smhi-prov redan gör med
-  lufttemperaturen. Ingen tabell, ingen ingest, noll lagring. Kortets "+25 MB/mån och oktoberbeslutet
-  fem dagar närmare" gäller ANKARROLLEN, inte molnet.
-  📐 **TÄCKNINGEN MÄTT** (`scripts/smhi-tackning.ts` + knapp, körning 34676483898): bara 108 av 459
-  SMHI-stationer rapporterar molnmängd, men **91 % av VViS-stationerna och 94 % av vägsegmenten har
-  en molnobservation inom 50 km** (median 29 km). Molnet är en STORSKALIG storhet — ett molntäcke
-  sträcker sig tiotals mil — så 50 km är en helt annan sak här än för en yttemperatur. Hur långt det
-  FÅR sträckas är dock inte mätt, bara hur långt det MÅSTE.
-  ✅ **BLOCKERINGEN LYFT 12/9** (PR #163, DECISIONS #115): hämtningen är inkopplad i
-  `scripts/grind-t-a.ts` och fysikkontrollen kör båda halvorna. Första utfallet: klara nätter 29 %
-  fyrning mot mulna 0 %. **Sentinelfynd i formatet:** enheten heter procent men värdena är octas
-  omräknade, och **113 % är inte molnmängd utan SMHI:s kod för HIMLEN SKYMD** — fysikaliskt
-  motsatsen till klar natt. Klassas som skymd, räknas med de mulna.
-  ➡️ ~~**KVAR AV #95:** ankarrollen (SMHI som extra ankare i grind A)~~ ⛔ **ANKARROLLEN BESVARAD
-  12/9 — OCH SVARET ÄR NEJ** (DECISIONS #119, smhi-prov omkört på 60 dygn). På 1 918 jämförbara
-  punkter: bas 1,05 °C → **+SMHI 1,20 °C, sämre i varje band**. Verify 3 ("sjunker MAE i banden över
-  15 km?") är därmed besvarad negativt: den STIGER (1,02 → 1,35 i > 20 km). SMHI duger inte som
-  förtätning där VViS finns. Kvar av reservtanken är bara det ursprungliga fallet: vad vi har när
-  Trafikverket tystnar HELT — och där är priset uppmätt till 2,36 °C på de 352 punkter som bara
-  finns tack vare SMHI.
-  📐 **VERIFY 1 SKILD FRÅN MOLNFRÅGAN 12/9** (DECISIONS #118): molnkörningen svarade på
-  representativitetsradien (50 km, 108 stationer) men lämnade §2.8:s EGEN Verify 1 obesvarad — "hur
-  många av de 818 segmenten får en SMHI-station inom **15 km**", alltså luftens 235 stationer.
-  `scripts/smhi-tackning.ts` mäter nu båda och håller isär dem i utskriften.
-  📊 **VERIFY 1 — SVARET 12/9 (DECISIONS #120): 331 av 818 segment (40 %) har en SMHI-luftstation
-  inom 15 km.** Median 17 km, 88 % inom 30 km, 100 % inom 50 km; 235 aktiva luftstationer av 1 003 i
-  registret. **Vid den gräns §2.8 själv satte räcker täckningen alltså inte.** Var gränsen FÅR ligga
-  är inte mätt — det är Verify 2, och den har redan fått ett svagt förhandsbesked samma kväll
-  (SMHI-ankaret försämrar modellen, 2,36 °C på de punkter som bara SMHI ger).
-  ➡️ **KVAR AV #95:** Verify 2 (luft→yta-korrelationen vintertid — den enda som kan avgöra reserven),
-  representativitetsradien (hur långt molnet FÅR sträckas) och SMHI-förstärkaren nedan. Ingetdera
-  blockerar längre något.
-  🔨 **(d) FÖRSTÄRKAREN BYGGD 12/9 kväll** (Bengts "vi bygger smhi förstärkaren", DECISIONS #121).
-  📄 `docs/TROSKLAR-SMHI-FORSTARKAREN.md` — ✅ **FASTSTÄLLT 12/9 av Bengt** (DECISIONS #135).
-  ⚖️ **SPÄNNINGEN I KORTET LÖST FÖRE SVEPET:** "yta nära noll" är BREDARE än motorns `yta ≤ 1 °C
-  OCH fukt`, men kortet förbjuder uttryckligen att regeln skapar en varning. Därför får parametern
-  F3 ett **tak vid motorns egen tröskel** — regeln får skära bort, aldrig lägga till.
-  ✅ **AVGJORT AV BENGT 12/9: DEN SMALA** (DECISIONS #123). Skälet som fällde den breda: **ett län är
-  ingen punkt och ingen sträcka.** Snöar det verkligen över länet rapporterar de flesta stationerna
-  där redan nederbörd och motorn varnar; de som är TORRA under en aktiv länsvarning är just de där
-  varningen är lokalt fel — alltså exakt falsklarmen. Och hålet ägs redan av ett bättre kort:
-  **#89 (a) gör samma sak med en PUNKTKÄLLA** (stationens egen regnhistorik, 76 % av regnstoppen).
-  Den breda förstärkaren var inte en bättre förstärkare, den var en sämre #89 (a).
-  ➡️ **DEN BREDA IDÉNS KÄRNA FLYTTAD TILL #89, inte slängd:** ny parameter **`N_varning`** i
-  TROSKLAR-OVERGANGAR §2.3 — en aktiv vintervarning **förlänger N** (hur länge efter uppmätt regn
-  frysrisken lever vidare) utan att uppfinna väta ur en polygon. Utlösaren förblir stationens eget
-  uppmätta regn. Svep av · 2 · 4 · 6 h, gatad med och utan i B3.
-  🎚️ **MOTORN HAR INGET KONFIDENSFÄLT**, så effekten är namngiven: **E0 skuggkolumn (startläget)**
-  · E1 längre försprång (samma form som #90:s roll B) · E2 annan text (Axels) · **E3 högre
-  prioritet ALDRIG** — det skulle tysta en olycka.
-  🕳️ **FYNDET UNDER BYGGET, dyrare än regeln själv: arkivet saknade varningens GILTIGHETSFÖNSTER.**
-  `smhi_warnings` bär `approx_start`/`approx_end`, men töms vid varje synk; historiken har sedan
-  `001_init` burit allt utom just de två fälten. Arkivet visste **när en varning publicerades, inte
-  när den gällde** — och SMHI publicerar i förväg (publicerad 14, gäller 22–06). **Går inte att laga
-  i efterhand.** ✅ `sql/015_smhi_giltighet.sql` + automigrationen i `ingest/db.ts` + historik-
-  skrivningen bär fälten framåt. Varje dygn utan den migrationen hade varit ett dygn vinterunderlag
-  som aldrig kan lagas — samma logik som T-A:s frostnätter.
-  🚪 **GRIND F-A HAR BÅDE GOLV OCH TAK:** ≥ 200 förstärkta stationstimmar, ≥ 20 områden, andelen
-  **mellan 5 % och 80 %**, inget område över 25 %. Över taket säger regeln bara "det är vinter".
-  ⚠️ **Ett län är inte en väg** — varningsområdena är länspolygoner, så stor träffyta är inget bevis.
-  🔬 `scripts/smhi-forstarkaren-steg0.ts` + knapp. F-B är en VINTERGRIND: facit
-  (`road_condition_history`) står stilla sedan 25/8 och kan inte döma i september.
-  ⊘ **FÖRSTA KÖRNINGEN 12/9: OAVGJORT, som väntat** (DECISIONS #122). 126 historikrader, 41 områden,
-  geom i 97,6 %, **giltighetsfönster i 0,0 %** (alla skrivna före sql/015). Bara **3 kvalificerande
-  stationstimmar** på 30 dygn, och **0 förstärkta i alla nio F1 × F2-rutor**. Varningstyperna:
-  WIND_SEA 85 · FIRE 25 · WATER_SHORTAGE 10 · RAIN 3 · FLOODING 3 — **noll SNOW_ICE, noll ICING.**
-  🐟 **BIFYND: `isWinterRelevant()` räknar kuling till havs som vinter.** Ingestens regex matchar
-  `WIND`, och därmed `WIND_SEA`. Ofarligt i drift (flaggan används bara i en loggrad, inget
-  filtreras på den) men loggraden "winter-relevant: N" betyder inte vad den ser ut att betyda.
-  Vakten i skriptet räknar nu per kodmängd i stället för ett enda tal.
-  🧱 **BIFYND 2: en migration i automigrationslistan är inte en körd migration.** Första försöket
-  föll på `column "approx_start" does not exist` — `sql/015` körs först när INGESTEN kör, och
-  mätskriptet kördes emellan. Samma form som "en ändrad fil under supabase/functions/ är INTE en
-  deploy". **Regel: efter en migration som ett mätskript beror på, tryck dbknappen i samma varv.**
-  ➕ **ÖVERTAGET FRÅN #93 den 12/9 (DECISIONS #108): SMHI-FÖRSTÄRKAREN.** `smhi_warnings` hämtas
-  redan och ligger i arkivet (tiotals kB/dygn), så regeln **snöfallsvarning + yta nära noll = högre
-  konfidens** kostar 0 kr och kräver ingen ny källa. Förstärkare av frysrisken, ALDRIG en egen fara
-  — den får höja konfidensen i en varning som redan kvalificerar, inte skapa en varning. Verify:
-  skuggkolumn `smhi_forstarkt` mätt mot facit en vintermånad. Detta är den billigaste delen av hela
-  #95 och kan göras före täckningstabellen.
-  hänger på ETT API (WeatherMeasurepoint). Givarvakten fångar trasiga sensorer, inte ett flöde som byter
-  schema eller stänger; FI/NO/DK ger ingen redundans i Sverige. SMHI metobs (lufttemp, daggpunkt, moln,
-  sikt, vind — GOLVET §7) har provats (smhi-prov) men aldrig mätts som RESERV: hur många av de 818
-  segmenten får en SMHI-station inom 15 km, och hur väl följer SMHI:s lufttemp VViS-ytan vintertid?
-  Ren mätning ur arkivet + smhi-provet, ingen ny hämtning i drift. Verify: en tabell segment ×
-  närmaste SMHI-station (avstånd, täckning %) och en korrelationsrad luft→yta ur en kall vecka.
-  🧩 **BREDDAT 10/9 (Bengt: "inte bara backup — en pusselbit för 3 km längre fram"):** SMHI mäter
-  inte ytan, men mäter det som avgör hur långt en VViS-yta får sträckas ut: (a) MOLNMÄNGD — klar
-  natt ger stor lokal spridning (dalgångar 3–5 °C kallare), mulet/blåsigt gör stationen representativ
-  milen runt; VViS saknar molnmängd helt (GOLVET §7). (b) VIND + DAGGPUNKT som andra givare på
-  utstrålningen. (c) FÖRTÄTNING — SMHI:s automatstationer som extra ankare i offsetmodellen där VViS
-  är glest (inlandet), med egen luft→yta-överföring per station. (d) NEDERBÖRDSTYP/-mängd per timme
-  till #89:s övergångar. Den bild vi vill ha men inte kan mäta — ytan 3 km fram — blir då ett lager:
-  närmaste VViS-ankare (#38b) × representativitetsradie ur moln/vind (SMHI) × terrängkorrektion (#91)
-  × trend (#88), märkt MODELLERAT, sagt som risk, dömt i mars mot grind A/B/C. "Okänt" förblir ett
-  giltigt svar. Verify (utöver ovan): grind A körd med SMHI-ankare inlagda — sjunker MAE i bandet
-  15–20 km och >20 km? Och: felet i leave-one-out som funktion av SMHI-molnmängd (klar/halvklar/
-  mulet) — är spridningen 2× större klara nätter? Om ja är molnmängden representativitetsknappen
-  TROSKLAR-SKUGGAN:s trenivåmärkning saknar. FORTFARANDE OSYNLIGT oavsett SMHI: en snöby mellan
-  stationerna (bara radarn, #43) och om saltbilen passerat (ingen öppen källa, RISKKARTA-BENGT).
-  Blir svaret ja på molnfrågan är SMHI inte en reserv utan en del av motorn — då skrivs kortet om
-  till ett byggkort med tröskelrad i TROSKLAR-SKUGGAN (§5, båda signerar). Resonemanget i sin helhet:
-  Drive, "Framtida utvecklingsmöjligheter — systemanalys varningssystemen 2026-09-10 v2 (läsbar)", §2.8.
 - [x] ✅ **#72 Livekedjan i Supabase — KONTROLLERAD 8/9 11:56 (Bengts "fungerar den?")**
   Terminalvarvets bygge (DECISIONS #72, commit f15f8cc): edge function `publicera` bygger
   appens snapshot ur databasen och committar den till kartrepot via Git Data API på
@@ -2993,139 +2517,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   finns för kartan, appen är Axels kolumn). v1 = FI (äkta vägyta TIE_1); DK HÅLLS
   (grästemp-ärligheten #45, Bengt/Axel), NO faller in med kontot. 🔑 Attribution i
   app-copyn = Axels beslut; grässtemp-DK = Bengt/Axel.
-- [ ] 🔨 ❄️ **#46 Rimfrosten — svartis utan nederbörd** (Bengts hål A, 4/9) — PÅGÅR:
-  📄 **TRÖSKELDOKUMENT SKRIVET 12/9** (`docs/TROSKLAR-RIMFROST.md`, **FASTSTÄLLT 12/9**, DECISIONS #117/#135).
-  Skälet: #89:s överlämning nedan pekade på "#46:s eget tröskeldokument" — som inte fanns. En
-  överlämning till ett dokument som inte finns är en tappad idé med kvitto (samma form som den
-  dinglande TROSKLAR-TYSTNADSFEL 11/9). **Formen avgjord före svepet:** rimfrosten blir en ANDRA
-  GREN i `icing_point`, inte en sjätte farotyp — en sjätte kind skulle röra varje vektor och hela
-  prioritetsstegen. Fyra grindar R-A…R-D, sex osatta parametrar med svep, och en givarvakt som är
-  **undantagen från all lättnad** (får skärpas, aldrig mjukas upp) med kortets egna tal som skäl:
-  53 av 58 kandidater från TRE stationer, 0 av 53 överlevde äkthetsvillkoret. R-A5 gör läxan till
-  ett krav: ingen station får stå för mer än 20 % av träffarna. **Billigaste vägen till underlag är
-  det FINSKA arkivet** — KASTEPISTE sedan 4/9, Lapplands septemberfrost ger äkta rimfrostnätter
-  veckor före Sverige, och den körningen kräver ingen svensk frost och ingen dom.
-  ✅ **FASTSTÄLLT 12/9 av Bengt** (DECISIONS #135). Svepet och kraven är låsta.
-  📥 **ÖVERLÄMNAT FRÅN #89 den 12/9** (TROSKLAR-OVERGANGAR §6, DECISIONS #109). Två saker ska in i
-  #46:s eget tröskeldokument. **(1) Dimma är en ÖVERGÅNGSORSAK, inte en interaktion:** dimma är luft
-  vid ~100 % RH, alltså daggpunkt ≈ lufttemperatur, så kondensationsvillkoret (yta ≤ daggpunkt) blir
-  uppfyllt så fort ytan är kallare än luften. Sikt < X m hör därför hemma som **konfidenshöjare för
-  kondensationsvillkoret** — ingen egen fara, ingen egen prioritet. **(2) PARTITIONEN mot efterhalkan:**
-  **#46 äger fallet när yta ≤ daggpunkt** (kondensation pågår), **#89 (a) när yta > daggpunkt men
-  regn inom N h** (kvarvarande regnvatten fryser i torr luft). Utan den gränsen dubbelräknar
-  tystnadsfelet samma miss.
-  ANALYSFAS (Bengt + Claude, terminalen 4/9). Fyndet: motorns fuktvillkor är enbart
-  nederbörd, men dewpoint_c ligger oanvänd i varje arkivrad sedan 24/8. Rimfrost
-  (klar natt, yta ≤ daggpunkt, ingen nederbörd) = höstens klassiska svartis — motorn
-  tiger. Analysen backtestar villkoret mot arkivet INNAN någon metodändring föreslås:
-  hur många stationstimmar skulle nya grenen fånga (marginaler 0/0,5/1 °C × yttröskel
-  0/1 °C), överlappar den befintlig fukt, och toppar den kl 03–07 (fysikens signatur —
-  gör den inte det är villkoret brus)? KÖRNING #1 (4/9, 6 min): fysikkontrollen FÄLLDE
-  resultatet — platt dygnsprofil, och topp-3-stationerna hade yta−dagg −28…−49° =
-  TRASIGA DAGGPUNKTSGIVARE (53/58 kandidater från 3 stationer). STORT BIFYND: frost-
-  grenen kräver GIVARVAKT innan den byggs, annars falsklarmsmaskin. v2 med äkthetsvillkor (RH ≥ 90
-  korsgivare + yta−dagg ≥ −5°) KÖRD (#2, 2m58s): 0 av 53 kandidater överlevde — ALLA
-  var givarfel (57 rader < −10°, stationerna Ollsta 2346, Storvik 2135, Bolhyttan 1713).
-  ANALYSFASENS DOM: (a) arkivet saknar ännu äkta rimfrostnätter — kvantifieringen görs
-  om vid höstens första riktiga frostnätter (knappen redo); (b) ETABLERAT: givarvakten
-  är obligatorisk del av varje framtida frostgren — utan den hade rimfrostvarningar
-  avfyrats på skrot från tre stationer; (c) felet är isolerat till daggpunkten —
-  offsetmodellen/grind A använder bara yttemp och är opåverkad. KANDIDAT (Bengts
-  kolumn): påtala de tre stationernas orimliga daggpunkter för Trafikverket (mejlutkast
-  levererat i chatten 4/9).
-  ANALYSFAS DEL 2 (beslutad 4/9, Bengt: "gör 1,2,3") — metodgenomgångens tre spår:
-  (1) ✅ FI-DAGGPUNKTEN IN I INGESTEN 4/9: KASTEPISTE fanns i källan men släpptes på
-  golvet (verifierat live: 505/528 stationer, ex. station 1001 = 7,5°). Lapplands
-  septemberfrost ger äkta rimfrostnätter VECKOR före Sverige — samma analys, finskt
-  arkiv. ✅ BEVISAT 4/9: körning #24 föll på 42703 (latest-tabellen saknade kolumnen —
-  rotationsläxan fångade det på minuter), sql/010 + automigrering i fi.ts, körning #25
-  GRÖN med loggraden "daggpunkt 505 st". Finska daggpunkter arkiveras från och med nu.
-  (2) HÖSTENS OMKÖRNING GÖRS UTFALLSDRIVEN, inte villkorsräknande: starta i FACIT
-  (väglagets frost-omklassningar en klar morgon + gryningsbilder ur kamerafacit) och
-  fråga bakåt om daggpunktsgrenen såg det 1–3 h innan där nederbördsgrenen var blind.
-  Missmätningens (#19) riktning; bevis per händelse i stället för timstatistik.
-  (3) NOTERADE, DRIVS EJ: historik bakåt är stängd väg (TRV live-only, SMHI saknar
-  vägyta — begränsning, inte slarv); fysisk mikrovalidering (frostplatta/termometer)
-  är trevlig men ger aldrig statistik.
-  🔑 Motoränring + vektor är ETT SENARE beslut på höstens siffror; rösten är Axels.
-- [ ] 🌨️ **#45 Nederbördstypen — regn, snö eller slask?** (Bengts fråga 3/9: "hur mäter
-  vi snö, snöslask etc som är lika riskabla?") 🔒 LÅST BAKOM RADARDOMEN 14/9.
-  **Läget när kortet skrevs:** snö och slask PÅ vägen talas redan — men bara indirekt:
-  (a) VViS-stationernas snow-flagga räknas som fukt i frysriskmotorn ("frysrisk framöver"),
-  (b) väglagets operatörsklasser ("Snöigt", "Is och snö", "Slask") blir slippery_segment
-  och rösten säger "halt väglag". Hålet är eftersläpningen (operatören måste hinna klassa)
-  och att radarn — som ser nederbörd i realtid MELLAN stationerna — inte vet SORTEN.
-  **Metoden (det som ska mätas, inte gissas):** sorten avgörs av temperaturen nederbörden
-  faller genom. Standard: VÅTBULBSTEMPERATUR (luft + fuktighet, båda finns per station):
-  ≳ +1,5 °C regn · ≲ 0 °C snö · DÄREMELLAN SLASK — farligaste zonen, vattenplaning och
-  blivande is samtidigt. Klassningen = våtbulb per segment (offsetmodell + höjdkorrektion,
-  höjden flyttar snögränsen — lapse **0,63 °C/100 m** — beslutat 17/9, DECISIONS #226; tidigare ankarbreddningens 0,71) × radarintensitet
-  (radar_precip, redan per segment var 5:e min). ALLA ingredienser ligger redan i arkivet
-  — detta är en beräkning, ingen ny källa.
-  **Facit finns gratis:** SMHI:s stationer rapporterar observerad nederbördstyp, och
-  väglagets operatörsklasser är andra domaren. Klassningen körs i skugga och döms mot
-  båda innan något får synas — tröskeldokumentets princip, samma som allt annat.
-  **Varför låst till 14/9:** typklassning ovanpå en radarkälla som inte bestått sitt
-  eget kedjebevis vore våning två före grunden. Klarar radarn domen: bygg klassningen
-  som skuggkolumn i radarspåret (litet steg). Faller radarn: kortet omprövas — våtbulben
-   enbart kan fortfarande klassa nederbörd SOM STATIONERNA ser, men inte mellan dem.
-  **BENGTS MATRIS (4/9) — kortets egentliga mål är ÖVERGÅNGARNA, inte vädertyperna:**
-  vägytan är ett TILLSTÅND (torr → blöt → slask/modd → snöbelagd → packad snöväg) och
-  nederbörden en ÖVERGÅNG ovanpå det. Farligast är korsningarna: SNÖ PÅ SNÖ (nysnö på
-  packad bana) och framför allt REGN PÅ SNÖ (polerar snövägen till is — fönstret innan
-  operatören klassat om är där varningen är värd mest). Klassningen ska därför korsas
-  med segmentets NUVARANDE väglagsstate (finns i arkivet), inte bara klassa det som
-  faller. VIKTIG PRINCIP: snöväg som VINTERBASELINE i norr larmar ALDRIG — TRV kodar
-  packad snöväg som normalt vinterväglag, och en app som ropar halt nov–april i Norrland
-  avinstalleras (H2/cry wolf). Värdet är AVVIKELSEN från segmentets säsongsbaseline,
-  som nu är mätbar ur väglagshistoriken + segment_id-tidsserien (issue #4). OVERIFIERAT
-  tills vintern: exakt hur norrlandsetiketterna faller ut i vår data — prövas mot
-  arkivets första vintermånad innan någon regel fryses.
-  🔓 **GRINDEN KOPPLAD 4/9 kväll** (Bengts fråga "hur gick det med vad som faller på vad"):
-  kortet stod låst bakom radardomen 14/9 — men avläsningen den dagen var skriven för att
-  lyfta tre frågor (#43, #42:s trigger, #42:s beslutsläge) och nämnde INTE #45. Kortet hade
-  alltså blivit liggande låst utan att någon öppnat grinden. Avläsningen heter nu
-  "Radardomen + #42-inkopplingen + #45-grinden" och bär #45 som fjärde fråga, med båda
-  utfallen och snöbaseline-spärren inskrivna.
-  📏 **MÄTT LÄGE I KODEN 4/9** (läst, inte antaget): motorn kan i dag inte skilja de här
-  fallen åt alls. `icing_point` avgörs av `surfaceTempC <= tröskel && moisture === true`, och
-  `moisture` är en hopslagen bit — `rain OR snow OR COALESCE(precipitation,'') <> ''`
-  (publish/missar.ts). Regn på torrt, regn på snö och snö på snö ger alla samma `true`.
-  Matrisens farligaste korsning är alltså osynlig för motorn i dag; det är exakt luckan
-  kortet finns för att stänga.
-  🛑 **INGREDIENSPÅSTÅENDET ÖVERDREV — rättat 4/9 kväll efter svep** (Bengts fråga om
-  baseline och Norrland). Kortet ovan säger "ALLA ingredienser ligger redan i arkivet". Det
-  stämmer inte, och tre saker fattas:
-  (1) `weather_latest` — tabellen snapshoten byggs ur — bär VARKEN fuktighet ELLER daggpunkt
-  (sql/001_init.sql: bara surface_temp_c, air_temp_c, precipitation, rain, snow). De finns
-  bara i `weather_observations`, som är händelsefiltrerat (DECISIONS #4). Ingen tät serie.
-  (2) HÖJD lagras inte alls — ingen höjdkolumn finns i sql/; scripts/hojd-prov.ts hämtar
-  höjderna live från opentopodata vid varje körning. Lapse-korrektionen (0,0065) finns bara
-  i det provskriptet, aldrig i ingest, publish, snapshot eller motor.
-  (3) Ingen VÅTBULBSFORMEL finns någonstans i koden — ordet står bara i TAVLA och STATUS.
-  DET SOM FAKTISKT FINNS per segment: radarns nederbördsintensitet (radar_precip, 2 km-sampling
-  mot 818-skelettet). Halva metoden är alltså verklig; andra halvan är obyggd.
-  🚨 OCH baseline-halvan står på #51: vinterarkivet som säsongsbaselinen ska räknas ur
-  skrivs nästan inte. Kort #45 kan inte bli sant förrän #51 är löst — den kopplingen är ny
-  och gjordes inte när kortet skrevs.
-  🗺️ "NORRLAND" DEFINIERAS INTE, och ska inte göra det (svaret på Bengts fråga 4/9):
-  produkten är helt regionblind — inga läns-, latitud-, zon- eller gränsbegrepp finns i
-  motorn, snapshoten eller ingesten, i någon av de tre portarna. Repots enda Norrland är
-  `new Set([21,22,23,24,25])` i TVÅ MÄTSKRIPT (scripts/ankaranalys.ts:13, scripts/frost-prov.ts:16),
-  där det bara delar statistik i "Nationellt" / "Norrland" och aldrig rör larmlogik.
-  Det är rätt: en geografisk gräns vore fel på tre sätt samtidigt — packad snöväg i Dalarna
-  i mars är lika normal som i Norrbotten (gränsen måste flytta med årstiden), en bar blöt väg
-  i Kiruna i november är en avvikelse VÄRD att varna för som en Norrlandsspärr hade tystat,
-  och baseline skiftar inom samma län (kustens E4 plogas till barmark, inlandsvägen ligger
-  snöpackad). Per segment löser alla tre utan att någon ritar en linje på kartan.
-  **Rösten är ett SEPARAT beslut (Axels kolumn, som #32):** om "snöfall framöver" eller
-  "slask på vägen" blir egna rösthändelser avgör Axel; tystnadsdisciplinen gäller —
-  ett slask-larm som har fel är värre än inget. Prognos av KOMMANDE snöfall är #16,
-  fortsatt medvetet parkerat. *(Bengt + Claude, terminalen 3–4/9)*
-- [ ] **#32 Hindren in i rösten** — vi har aldrig skeppat annat än olyckor trots att
-  DECISIONS #5 sade "olyckor + hinder". Kräver ny HazardKind + egen röstfras + Axels
-  beslut om vad rösten säger. Bäst kandidat: **djur på vägbanan** (173 på en vecka, med
-  RIKTIG position — vida bättre än polisens länscentrum som vi underkände i #13).
 - [x] ~~**#31 Bevakning av Trafikverkets nyheter**~~ ✅ KLART 3/9 (Bengt + Claude, terminalen):
   KÄLLVAKT måndagar 06:40 (scripts/trv-bevakning.ts) över ALLA sju källor ur issue #2
   (Visualping-ersättaren): TRV bransch-RSS + portalens nyheter (CMS-GraphQL, 125 poster —
@@ -3143,6 +2534,112 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Apple-kontot, uppladdningen) är bokfört i commits och på tavlan men inte i djuplagret.
   Bryter dokumentationsregeln. *(Delvis åtgärdad i detta varv — resten nästa.)*
   ✅ **Stängt 22/9, kortavstämningen (DECISIONS #303):** gjort 31/8 (6f75f72); rollen som *Current state* har bedömningens läge tagit över (DECISIONS #228); den kvarvarande STATUS-rubriken bärs av #221.
+
+- [ ] 🗣️ **#203 FACIT UTAN ATT STANNA — svaret efter resan, och med rösten under den** (Bengts fråga 18/9 efter
+  fälttest 2: *"vi måste hitta något system som inte innebär att de ska stanna och bekräfta … ett automatspår"*).
+  Dagens S4 kräver: stanna, avsluta vakten, öppna appen, hitta knapparna — och bara resans SISTA varning går att svara på.
+  **Förslag i tre lager:**
+  **Bengts styrning 19/9 — undantagsprincipen:** *"vi tror att appen är så duktig att vi automatiserar svaren så att
+  människan bara ska meddela när maskinen avviker från det som maskinen har förutsett"* — för ALLA varningsslag, inte
+  bara kamerorna. Rätt om bördan, fel om tystnaden: **tystnad får aldrig räknas som "stämde".** Tystnad betyder lika
+  ofta "såg inte", "kunde inte bedöma", "telefonen låg i fickan" eller "appen var trasig" — 16/9 och 18/9 gav noll svar
+  för att knapparna saknades, och med tystnad = ja hade de resorna bokförts som bekräftelser. Ett facit som antar det
+  som ska prövas kan inte pröva det. Svaret ska vara en HANDLING, men handlingen kan vara EN per resa:
+  **(1) Efter resan — undantagsprincipen med underskrift, båda plattformarna.** Appen sparar resans varningar (id,
+  klockslag, text; bara lokalt). När vakten stannar (manuellt eller självstoppet efter 15 min) och det finns obesvarade
+  varningar: en lokal notis *"Resan klar — stämde alla 3 varningarna?"* och en lista på hemskärmen med **ett tryck för
+  normalfallet: "Ja, alla stämde"**, eller peka ut den som inte stämde (*Stämde inte*) och den man inte kunde bedöma
+  (*Vet inte* — skickas aldrig). Skickas som i dag: id, klockslag, svar per varning. **Noll handgrepp i bilen, ett efter.**
+  Obesvarade resor skickas aldrig. Bygger på Facit/FacitSender som finns; iOS har notisbehörigheten (HeadsUpService),
+  Android POST_NOTIFICATIONS.
+  **VAR knappen sitter (Bengt 19/9: *"som det är i dag är det oerhört krångligt … det kommer inte många svar"*):**
+  frågan kommer till föraren — föraren letar aldrig. Tre platser, en fråga, ett tryck; svarad på en plats försvinner den
+  från de andra. Skiss: `docs/skisser/facit-efter-resan.svg`.
+  (a) **Låsskärmen:** notisen bär själva knapparna — *Ja, alla stämde* / *Något stämde inte* — och svaret skickas utan
+  att appen öppnas (iOS: notisåtgärd i bakgrunden; Android: notisåtgärd + WorkManager). Kommer vid självstoppet och vid
+  *Avsluta vakten*.
+  (b) **Överst på Redo.** — ett kort ovanför rubriken, inte en rad längst ner: *Resan 08:25 · 61 min · 3 varningar —
+  Stämde alla?* Står kvar tills svaret finns eller ett dygn gått; visas också direkt efter *Avsluta vakten*.
+  (c) **Listan** bara vid avvikelse: en rad per varning med klockslag och text; tryck på raden växlar Stämde / Stämde
+  inte / Vet inte; sedan *Skicka*.
+  Brytarens text skrivs om: *"Efter varje resa frågar appen om varningarna stämde — ett tryck. Det som skickas är …"*.
+  **(4) Missarna — det andra halva facit, INGÅR i förslaget (Bengt 19/9: "det ska finnas en möjlighet att rapportera
+  missarna också"); integritetsbeslutet är Axels:** *"Hej Siri, appen missade i Halkvakt"* eller en stor knapp *Appen
+  missade* i körläget (Androids väg) när det är halt
+  UTAN varning ⇒ appen sparar klockslaget och närmaste segment/station som id (räknas på telefonen) och skickar id +
+  klockslag efter resan, som ett varnings-id; typen (Halka / Vatten / Vilt / Olycka / Annat) väljs i listan efter resan.
+  Ny tabell `driver_miss`. Nettonyttan (KB-B) behöver missarna lika mycket som träffarna. Integritet: samma klass som
+  ett varnings-id, men utlöst av föraren — brytarens text måste säga det.
+  📄 **BESLUTSUNDERLAG TILL AXEL 19/9: `docs/FACIT-EFTER-RESAN.md`** — hela förslaget, skissen, åtta beslut med
+  rekommendation, kostnad och bevis. Bengt skickar; inget byggs förrän Axel svarat.
+  **Automatspåret för sanningen finns redan och bär huvuddelen — utan förare:** uppspelningen ur arkiven (mätte ytan
+  under noll och blöt EFTER frysriskvarningen? — en senare mätning är en annan mätning, tillåten som facit), kamerabilden
+  vid varningen (bildfacit), olycksarkivet, radar + station för vattenplaning (V-B). Föraren är den enda källan för det som
+  bara syns från bilen — och avvikelsen (*stämde inte*) är det värdefullaste enskilda svaret, för det är falsklarmen som
+  bränner förtroendet (cry wolf).
+  **Kontroll i domen:** resor svarade med "Ja, alla" jämförs med resor svarade rad för rad — skiljer sig andelen
+  *stämde* markant är "Ja, alla" en vana, inte en iakttagelse, och räknas ner. KB-D4:s tak (ingen förare > 25 %) står.
+  **Förslag till KB-D (kräver Bengt + Axel, fastställt dokument): KB-D7 — ett svar är en handling; tystnad är inget svar.**
+  **(2) Med rösten under resan — iOS, nästan gratis.** Två App Shortcuts bredvid Starta/Stoppa: *"Hej Siri, stämde i
+  Halkvakt"* / *"stämde inte i Halkvakt"* ⇒ svar på senaste varningen om den är yngre än 10 min, Siri säger *"Tack."*.
+  Med undantagsprincipen räcker EN fras i praktiken: *"stämde inte i Halkvakt"* när maskinen hade fel, medan minnet är färskt.
+  Händerna på ratten, fungerar via CarPlay och bilens Bluetooth, **ingen mikrofonbehörighet** — Siri lyssnar, inte appen.
+  Android: Assistant/Gemini-stödet för egna app-fraser är osäkert — (1) först, rösten undersöks.
+  **(3) Valfritt:** knapparna i körläget när bilen står stilla (≥ 5 s, varning < 10 min) — rött ljus, färskt minne, ett
+  tryck på en monterad telefon.
+  **Vad som INTE går:** att automatisera människans iakttagelse. Telefonen kan inte känna halka, och ett svar som ingen
+  mätning kan motbevisa får inte räknas (regel T). Det automatiska facit finns redan, utan förare: kamerabilderna
+  (bildfacit, bedömningen §4.2), uppspelningen ur arkiven, olycksarkivet. Förarkanalen ska bara bära det bara en
+  människa ser — och därför vara gratis att använda.
+  **Avvisat:** lyssning i appen efter varningen (mikrofonbehörighet; Bluetooth byter till samtalsläge och musiken tystnar;
+  svenskt stöd på enheten oklart) · rattens knappar (kräver att appen tar över musiken) · CarPlay-app (Apples tillstånd)
+  · klocka (få testare) · "passerad"-flagga ur positionen (rörelsedata — eget integritetsbeslut, inte nu).
+  **Kamerorna är kontrollfrågan:** Trafikverkets kameror är fältverifierade (2/9), så ett *stämde inte* på en kamera
+  säger att kanalen eller geometrin är fel — inte kameran. Domen i januari behöver svaren på halka och frysrisk
+  (KB-D4: ≥ 30 svar från ≥ 5 förare).
+  Kostnad: en Android-push ≈ 15 Actions-min (två jobb) + CI; iOS byggs av Axel — går i nästa bygge efter 0.3.8.
+  Rösttexten rörs inte. S4:s utformning är Axels ⇒ hans ja på formen; Bengt beställer.
+  Verify: (1) en resa med ≥ 2 varningar besvarad med ett tryck ger lika många rader i `driver_facit`, utan att föraren
+  stannat; en resa utan tryck ger noll rader;
+  (2) ett svar via Siri med `app = ios` och varningens klockslag.
+  🔑 **AXELS SVAR PÅ §8, 20/9 kväll (via Cowork, DECISIONS #267) — sju av åtta avgjorda:**
+  **1 ja** (undantagsprincipen med underskrift; KB-D7 till Bengt) · **2 ja, alla tre** (*"låsskärmen är det viktiga —
+  föraren ska aldrig behöva öppna appen för att svara ja"*) · **3 de två första** Siri-fraserna (*stämde inte*, *appen
+  missade*; *stämde* behövs inte under körning — det är vad låsskärmen är till för) · **4 ja, medvetet ja** —
+  station-id + klockslag skickas, *"det är inte en position, men det är en position i grova drag"*; brytarens text ska
+  säga det ordagrant och produktboken uppdateras samma dag · **5 ja** (stor knapp *Appen missade*) · **6 nej** (lager 3
+  utgår) · **8 ja** (Android i samma PR).
+  ➕ **NYTT KRAV ur Axels läsning — visa varningarna i kortet:** *"Ja, alla stämde"* efter tre timmars körning svarar i
+  dag på ett TAL (*3 varningar*), inte på något föraren ser. Kortet på *Redo.* ska visa de tre raderna — klockslag och
+  text — så att ett tryck är ett svar på något läst. Kostar en vy. **Gör inte KB-D7-kontrollen onödig** (vanan finns
+  kvar att mäta, och kontrollen kostar ingenting i domen) men gör den mindre bärande.
+  ✅ **BESLUT 7 AVGJORT 20/9 18:35 — A. AXEL ARKIVERAR 0.3.8 NU** (DECISIONS #269). Simulatorprovet försöktes och
+  föll på Xcodes egen infrastruktur (*"the system shell probably crashed"*, `host down`, efter 94 s) på en M1 Air med
+  8 GB och iOS 26.1-runtime. **Det är svaret på C:s premiss:** C valdes för att kanalen skulle bevisas BILLIGT utan
+  TestFlight, och beviset var inte billigt — det kostade mer än den fältrunda det skulle spara. #203 bygger på 0.3.9.
+  *Historik:* Axels skäl:
+  sändkanalen från en riktig telefon har aldrig bevisats, och att lägga ny funktion ovanpå en obevisad kanal är fel
+  ordning. Bengts skäl: en uppdatering i stället för två, och kanalen bevisas utan TestFlight med simulatorprovet.
+  **Simulatorprovet är fortfarande ogjort** (`driver_facit` 20/9 16:07Z: 0 riktiga svar, 2 provrader — ingen
+  `cam:fotostudio`). **Nytt sedan båda svaren skrevs:** motorfixarna #210 (*"på väg &lt;null&gt;"*) och #211 (tredje
+  olycksropet) ligger i main sedan i kväll och når en telefon bara genom ett bygge — ett skäl för A som varken
+  underlaget eller #242 kände till. Se DECISIONS #267.
+  🔨 **LAGER 1 BYGGT 20/9 kväll (DECISIONS #277) — "grunden", båda plattformarna.** Resans logg, låsskärmsnotisen
+  med knapparna i sig (*Ja, alla stämde* / *Något stämde inte*) och kortet överst på *Redo.* med **en rad per
+  varning: klockslag + text** (Axels tillägg). Delad ren räkning: `Resan.kt` / `Resan.swift`. Tystnad skriver
+  aldrig ett svar — ingen kod i filen gör det. Åtta enhetstester på Android (de första i app-modulen), **gröna i
+  CI**; **iOS-halvan är skriven utan kompilator** och kompileras första gången i Axels Xcode (inget CI-flöde bygger
+  app-målet — samma rad som #267/#276). iOS krävde tre saker Android redan hade: persistent varningshistorik,
+  notiskategori + delegat, och en gemensam tidsstämpel för "Senast sagt" och historikraden (annars två facitrader
+  för samma varning). Fotostudion lägger nu in en påhittad **resa**, inte en varning — kortet går att se utan körning.
+  ⏭️ **STÅR KVAR PÅ KORTET (lager 2):** Siri-fraserna *"stämde inte i Halkvakt"* / *"appen missade i Halkvakt"* och
+  missarna (`driver_miss` + stor knapp *Appen missade* i körläget). Verify står **öppen**: en riktig resa på en
+  riktig telefon som ger rader i `driver_facit` utan att föraren stannat.
+  ⚠️ **22/9 (DECISIONS #304):** lager 1:s iOS-kod (eb81b50, 20/9 18:17) ligger på main och följer därför med i ett arkiv från main — alltså i **0.3.9 (13)**, inte i (12), som sattes 17:37 före koden. Koden har aldrig kompilerats; Xcode är första provet.
+  ↦ **Sorterat 22/9 (kort #224):** Axels beslut är tagna (#267, #269) — lager 2 (Siri-fraserna, `driver_miss`, *Appen missade*) kan byggas nu. iOS-koden kompileras först i Axels Xcode.
+
+- [ ] ↩︎ Välkomsttext + testinstruktion till kompisarna (extern TestFlight-grupp = Beta App Review).
+  ↦ **Sorterat 22/9 (kort #224):** texten för iOS-testarna skriver Claude nu; utskicket med en extern TestFlight-grupp är Axels.
 
 ### Claude — låst (väntar på nyckel)
 - [ ] 🧂 **#231 PRODUKTIONSREGELNS FALSKLARM PER VÄDERTYP — en rad i bildfacitets läsning** (Bengts ja 21/9, Axel utan synpunkter samma dag, DECISIONS #291,
@@ -4185,9 +3682,552 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🧭 **AXELS UTGÅNGSPUNKT FÖR D (16/9, DECISIONS #196, beslut efter V-C):** yta > +4 mot frysrisk < +1 utesluter varandra;
   under halka (#68), över vilt. Text i frysriskens form: *"Vattenplaning framöver — sakta ner."* V-B-loggen hålls RÅ,
   dom-knappen räknar per regndygn. S1 (skuggjämförelsen av `regn_h`) körs före allt annat på regn_h.
+  ↪ **Sammanslaget 22/9 (DECISIONS #303):** byggordningen stängs samtidigt som #42; A, B, C-radar och E är klara, resten står nu på #42. Det som återstår bärs av *#42 Vattenplaningsvarningen*.
+
+- [ ] **#21 Anonym puls + feedback-knapp** — rör "samlar in: ingenting"-löftet; Claudes råd: paketera med sensorbeslutet våren 2027
+  ✅ **AXELS JA 16/9 (DECISIONS #196, bedömning S4):** två knappar under "Senast sagt" — *Stämde* / *Stämde inte*, ingen
+  fritext, loggas lokalt, skickas när bilen står stilla. KRAV: Om-avsnittets "vi samlar in: ingenting" skrivs om
+  ordagrant, frivilligt och synligt i SAMMA commit — annars bryter knappen löftet. Bara betatestare med samtycke (#186).
+  🔨 **S4 PÅGÅR — steg 1 (backend) byggt 16/9 (DECISIONS #201):** tabell `driver_facit` (sql/022, dubbellåst), edge-funktionen
+  `facit-svar` (öppen med flit: schema, 512 byte, tak 2 000/dygn, ingen IP), vakthundsraden "förarfacit". VÄNTAR: migration
+  022 + deploy + curl-prov (204/400/405). Sedan steg 2 Android (skill först), 3 iOS, 4 PRODUKTBOK, 5 Axels ja.
+  ✅ **Steg 1 BEVISAT 03:08Z 16/9:** 204/204/400/405/400 mot `facit-svar`, vakthundsraden "förarfacit: 1 svar" (issue #289).
+  🔨 **Steg 2 Android BYGGT 16/9 (DECISIONS #202):** knapparna under Senast sagt, BETATEST-brytaren, `Facit.kt` (JVM-testad),
+  `FacitSender` (skickar vid stillastående 30 s / appstart), Om-texten omskriven ordagrant. Rättat: Senast sagt visade äldsta
+  raden. VÄNTAR: android.yml på grenen + skärmbilder → PRODUKTBOK → **Axels ja på flödet** → merge → iOS (steg 3).
+  ✅ **Steg 2 Android MERGAT 16/9 med Axels ja (PR #290).** 🔨 **Steg 3 iOS BYGGT 16/9 (DECISIONS #203):** Facit.swift,
+  FacitSender, FacitButton, BETATEST-avsnittet, Om-undantaget, introduktionens löfte. VÄNTAR: **Axels Xcode-bygge** (appen
+  kompileras inte i CI) + ett svar från hans telefon i `driver_facit` (app = ios). Sedan steg 4 PRODUKTBOK-bild från iOS.
+  ✅ **Steg 3 iOS: AXELS XCODE-BYGGE GRÖNT 16/9, MERGAT (PR #291).** KVAR I S4: steg 4 iOS-skärmbild till produktboken (från Axels
+  telefon: Senast sagt med knapparna + BETATEST-brytaren) · steg 5 fälttest — ett riktigt svar i `driver_facit` (vakthundens rad
+  "förarfacit: n svar" räknar det). Knappen är AV tills testaren slår på den själv.
+  🧪 **Steg 5 FÖRBERETT 16/9 (DECISIONS #205):** skuggrapporten bär `forarfacit` (svar 7 dygn, ja/nej, android/ios, senast) så
+  testaren ser sitt eget svar landa. RECEPT: Inställningar → BETATEST på → kör tills rösten talar → stanna → Senast sagt →
+  Stämde/Stämde inte → skickas vid stillastående 30 s eller nästa appstart. VÄNTAR: första riktiga svaret (Axel iOS / Bengt
+  Android-debug-APK ur android.yml på main) + iOS-skärmbild till produktboken.
+  📸 **Fotostudio-krok för iOS byggd 16/9 (DECISIONS #206):** `-fotostudio_facit` som startargument (bara debug) ⇒ knapparna
+  syns i simulatorn utan körning; receptet i `ios/MAC-GUIDE.md`. VÄNTAR: Axels bygge + två simulatorbilder → produktboken (steg 4).
+  🔧 **FÄLTTESTET 16/9 hittade en lucka (DECISIONS #208):** Bengts svar tryckt med vakten av (0.3.6) skickades först vid
+  nästa appstart. Rättat på båda plattformarna (vakten av ⇒ skicka direkt); iOS 0.3.7 (10), Android-APK ur CI. VÄNTAR:
+  Bengts svar i `forarfacit` (öppna appen igen så går det första iväg) + Axels nästa bygge.
+  🔍 **Fälttestets andra fynd (DECISIONS #209):** svaret nådde aldrig servern trots omöppningar; serversidan friad (iOS-format
+  prov 204). Sändaren skriver nu status/fel under knapparna på båda plattformarna (0.3.7). VÄNTAR: Bengts svar på om knappen
+  blev fylld · Axels läsning av facit-svar-loggen · nästa bygge.
+  🎯 **ROTORSAKEN (DECISIONS #210):** iOS-knapparna satt i `LastSaidCard` — död kod sedan skinnet v3, ingen vy visar den.
+  Bengt såg bara brytaren. Rättat: `FacitRow` under Senast sagt-raden i `VaktenView`. Kräver Axels nästa bygge (0.3.7).
+  🧩 **0.3.7 (10) bär nu även ordlistan** (kort #97, DECISIONS #214, deployad i backend 16/9): ETT bygge från main täcker
+  facitknappen och Nysnö/Rimfrost/Halkrisk/Halt. Är 0.3.7 redan uppladdad ⇒ bumpa till 0.3.8 (11).
+  🚗 **FÄLTTEST 2, 18/9 (Bengt):** fartkamera passerad — bara brytaren *Svara på varningarna* gick att nå, samma som 16/9.
+  ~~Telefonen har 0.3.6 — arkivera 0.3.7~~ **RÄTTAT samma dag: Bengt har 0.3.7 (10)** — mitt antagande var fel. I 0.3.7 sitter
+  knapparna längst ner på *Redo.* (fliken Vakten) och syns bara när vakten är AVSLUTAD: medan den kör täcker körläget
+  (`fullScreenCover`) allt, och självstoppet kommer först efter 15 min stillastående. Brytarens text säger inte var
+  knapparna finns. `driver_facit` 07:37Z: 0 riktiga svar. VÄNTAR: Bengts skärmbild av *Redo.* med vakten avslutad
+  (bedömningen §4.2). Obs: versionen 0.3.7 (10) sattes i #300, en commit före `FacitRow` (#301) — byggdes det från #300
+  saknas rättelsen trots rätt versionsnummer.
+  🎯 **ORSAKEN 18/9 (DECISIONS #240):** Bengts skärmbilder — brytaren PÅ, kameran varnade, *Redo.* med vakten avslutad och
+  inga knappar. Varningen sparas alltid innan den sägs, id-lagringen finns sedan 0.3.6 ⇒ bygget 0.3.7 (10) saknar
+  `FacitRow`. **Main bär 0.3.8 (11). AXEL: `git pull` · `xcodegen generate` · Product → Archive · TestFlight.** Bekräfta
+  gärna arkivets tid i Organizer (13:45–13:53 16/9 bekräftar orsaken). Förslagen till bygget står i bedömningen §4.2.
+  🔁 **LINJEN ÄNDRAD 20/9 (Bengts invändning: en sammanhållen uppdatering, inte två — bedömningen §4.2, byggordning C):** 0.3.8
+  innehåller INTE #203. Arkivera inte nu; **bevisa kanalen i simulatorn i stället:** efter kort #205 — kör `-fotostudio_facit`
+  och TRYCK *Stämde*; raden `cam:fotostudio` ska landa i `driver_facit` med `app = ios`, `version 0.3.8`, märkt prov. Det ger samma
+  besked som en arkivering (knapparna syns, sändningen fungerar, diagnosen #240 bekräftad) utan TestFlight och utan provkörning.
+  Arkiveringen sker EN gång, med #203. **Stoppdatum 27/9:** utan de åtta svaren arkiveras 0.3.8 ändå, enligt receptet nedan.
+  ✅ **BYGGORDNING C BESLUTAD AV BENGT 20/9 (DECISIONS #242), OCH #205 ÄR I DRIFT — GÖR SIMULATORPROVET NU, AXEL:**
+  `git pull` · `cd ios/HalkvaktApp && xcodegen` · Edit Scheme → Run → Arguments → `-fotostudio_facit` · kör i simulatorn ·
+  fliken Vakten · **tryck *Stämde*** · raden under ska bli grön *Skickat …* (gul = felet står där, skicka texten). Ta bort
+  argumentet. Claude läser raden i `driver_facit`. Två minuter, ingen arkivering.
+  ✅ **0.3.8 (11) UPPLADDAD TILL APPLE 20/9 18:38** (Organizer: *Uploaded to Apple*, Team Axel Lagerlöf, arm64,
+  `se.halkvakt.app`). **Tre saker bevisade av själva arkiveringen:** app-målet KOMPILERAR med kvällens rad i
+  `SnapshotRepo.swift` (den enda biten inget CI-flöde bygger), versionsspåret håller (11 över 0.3.7:s 10), och
+  signeringen gick igenom efter att Team valts om. Exportdeklarationen `ITSAppUsesNonExemptEncryption: false` ligger i
+  `project.yml`, så bygget fastnar inte på *Missing Compliance* — interna gruppen får det när Apples bearbetning är klar.
+  **Ännu obevisat: led 1 och 2.** Uppladdat är inte kört.
+  🎯 **BENGTS PROV — det som stänger leden (och #210):** uppdatera till **0.3.8 (11)** i TestFlight · Inställningar →
+  **BETATEST på** · kör tills rösten talar · **avsluta vakten** (knapparna syns bara då — läxan från 18/9) · fliken
+  Vakten → *Senast sagt* → **Stämde / Stämde inte**. Under knapparna ska det stå **"Skickat HH:MM (1 svar)"**. Står det
+  *"Kunde inte skicka HH:MM: HTTP …"* är det SERVERNS eget svar — skärmbild räcker, felet är då läsbart. **Och för
+  #210:** talar en olycka UTAN vägnummer ska den säga *"Allvarlig olycka 8 kilometer framför dig"* — aldrig *"på väg
+  null"*. 5 % av olyckorna saknar vägnummer, så det är en iakttagelse att göra när den dyker upp, inte något att framkalla.
+  ⚠️ **22/9: NUMRET HÖJT TILL 0.3.9 (13)** (DECISIONS #304, Bengts ja). #203:s iOS-kod (eb81b50, 20/9 18:17) kom in på main EFTER att (12)
+  sattes, så ett arkiv från main bär den — okompilerad — och raden *Bär INTE: #203* nedan gäller inte längre för main. **Axels val:**
+  **(a)** arkivera från main som **0.3.9 (13)**: allt nedan plus #203 lager 1, och Xcode kompilerar #203 för första gången; eller
+  **(b)** arkivera den rena fixen som **0.3.9 (12)** från `90b5223` (`git checkout 90b5223` före steg 2), som förkontrollen gjordes på.
+  🚀 **NÄSTA ARKIVERING: 0.3.9 (12) — REDO 20/9 23:05.** Förkontroll enligt CLAUDE.md gjord på `90b5223`: ci ✅ och
+  ios-engine ✅, inga lokala ändringar. **DEVELOPMENT_TEAM ligger nu i `project.yml`** (R93LGMM343, DECISIONS #275) så
+  `xcodegen` slutar nollställa den — steget "välj Team igen" är borta.
+  **Steg:** (1) `cd ~/Halkvakt && git pull` · (2) `cd ios/HalkvaktApp && xcodegen` · (3) har Xcode projektet öppet:
+  stäng och öppna `Halkvakt.xcodeproj` på nytt, annars håller Xcode kvar den gamla projektfilen · (4) **Signing &
+  Capabilities**: Team ska stå som *Lagerlöf Labs* utan röd rad — står den tom har `project.yml`-raden inte gått igenom ·
+  (5) destination **Any iOS Device (arm64)** · (6) **Product → Archive** · (7) Organizer ska visa **0.3.9 (13)** på väg (a) eller **0.3.9 (12)** på väg (b) — visar
+  den något annat, AVBRYT, för Apple tillåter aldrig ett lägre versionsspår efteråt · (8) **Distribute App → App Store
+  Connect → Upload**.
+  **Bär:** iOS-fixen (#273 — rösten tystnade med släckt skärm på *när appen används*) · `<null>`-raden och hela dess klass
+  (#210/#276) · det engångs tidiga olycksropet (#211) · de tolv nya vektorerna (#212).
+  **Bär INTE (bara väg b):** #203, #264:s apptexter, #266 (viltrösten) — medvetet, så att provet går att tolka. Väg (a) bär #203 lager 1.
+  **Provet efteråt, i ordning:** (a) en resa med **"Tillåt när appen används"** och **släckt skärm** — en varning ska
+  höras, och **den blå indikatorn i statusfältet** är kvittot på att Core Location håller appen vid liv ⇒ stänger #227 ·
+  (b) facitknapparna under *Senast sagt* med vakten avslutad ⇒ leden 1 och 2 · (c) en olycka utan vägnummer sagd utan
+  *"på väg null"* ⇒ stänger #210.
+  *Historik:* **ARKIVERING PÅGICK 20/9 18:35 (Axel, byggordning A).** Förkontrollen enligt CLAUDE.md gjord: ci ✅, ios-engine ✅,
+  android ✅ på 88dd32c. Bygget bär **#210** (`<null>`), **#211** (engångs tidigt rop) och **#212**:s vektorer.
+  Fotostudio-kroken är `#if DEBUG` ⇒ kompileras bort ur arkivet; scheme-argumentet rör bara Run, inte Archive.
+  **Innehåller INTE** #203 (facit efter resan), #264 (invarianten/Data Safety) eller #266 (viltrösten) — de går i 0.3.9.
+  **Efter uppladdningen, i ordning:** (1) Organizer visar 0.3.8 (11) · (2) intern grupp får bygget utan granskning ·
+  (3) **Bengts första resa bevisar led 1 och 2** — att knapparna syns och att appen skickar; misslyckas sändningen
+  skriver appen serverns svar under knapparna (*"Kunde inte skicka HH:MM: HTTP …"*), så felet blir en skärmbild och
+  inte en tyst runda · (4) **kort #210 stängs** när en olycka utan vägnummer sägs rätt (ingen *"på väg null"*).
+  📋 **BYGGREDO — OMKONTROLLERAT 20/9 kväll (Axels fråga):** **ja.** ci ✅, ios-engine ✅ och
+  android ✅ på **88dd32c**, och allt som pushats därefter är dokument (`git diff --stat 88dd32c..HEAD` rör bara .md).
+  ⚠️ **Raden ovanför gällde till i kväll och är nu fel:** `git diff 79e4195..HEAD -- ios/ android/ engine/` är INTE längre
+  tom — den bär motorfixarna #210, #211, #212 (SnapshotRepo.swift, Engine.swift, Engine.kt, engine/src, tolv nya vektorer).
+  Det är gott nytt: ett 0.3.8 som arkiveras nu **säger en olycka utan vägnummer rätt** och ropar det tidiga olycksropet
+  en gång i stället för två. Lägg till i tvåminuterskontrollen: en olycka utan vägnummer ska INTE säga *"på väg null"*.
+  ⚠️ **Enda oprövade biten:** `SnapshotRepo.swift` ligger i APP-målet, och inget flöde i CI kompilerar app-målet
+  (ios-engine kör `swift test` på motorpaketet, på Linux). Ändringen är en rad och typen stämmer (`road: String?` i
+  PointMeta ⇒ `d["road"] as? String`), men första kompileringen sker i din Xcode. Faller den: skicka felraden.
+  Steg: `git pull` · `cd ios/HalkvaktApp && xcodegen` · välj Team igen ·
+  **TVÅMINUTERSKONTROLLEN som hade fångat 0.3.7:** Edit Scheme → Run → Arguments → `-fotostudio_facit`, kör i simulatorn,
+  fliken Vakten ska visa *Stämde / Stämde inte* under raden längst ner — **TITTA, TRYCK INTE** (kort #205) — ta bort
+  argumentet · Any iOS Device (arm64) → Product → Archive · Organizer ska visa **0.3.8 (11)** · Distribute → App Store
+  Connect → Upload · intern grupp får bygget utan granskning. Bevis: Bengts svar som rad i `driver_facit` med `version 0.3.8`.
+  🔑 **Nyckel, sorterat 22/9 (kort #224):** iOS-bygget med knapparna ute hos testarna — då skärmbilden i PRODUKTBOK och det första riktiga svaret i `driver_facit`.
+
+- [ ] ⚖️ **#153 ALLVAR SOM FÖRSPRÅNG + ETT SMALARE UNDANTAG — beslut 1 omformulerat 16/9 och väntar, beslut 2 öppet (Bengts)**
+  ✏️ **OMSKRIVET 16/9 på Bengts order *"gör 153 och omformulera 153"* (DECISIONS #221).** Det gamla kortet föreslog att
+  kombinationen ändrar varningen med *"ordval, framförhållning eller prioritet"*. Två av de tre är avvisade, och kortet
+  är omskrivet så att ingen bygger dem.
+  **Varifrån kortet kommer:** Bengts fråga 13/9 — ska riskerna kunna vägas ihop till en sammanlagd risk, eller bara den
+  största sägas? — och *"om radarn signalerar blött och offset signalerar under noll, kommer motorn att generera en
+  isrisk framöver?"* (svaret då: nej).
+  **TVÅ REGLER, olika skäl:** · **Regel 1 — en röst i taget.** Prioriteten väljer EN vinnare, resten droppas. Människo-
+  faktorer, inte modellering — rörs inte. · **Regel 2 — tröskelregeln**, sedan 16/9 i Axels lydelse: *"En storhet som
+  inte kan motbevisas av en mätning får inte utlösa en varning. Extrapolation faller. Minne av mätningar består."*
+  (TROSKLAR-KOMBINATIONEN §6, DECISIONS #220).
+  **BESLUT 1 — ALLVAR SOM FÖRSPRÅNG (beslutat 16/9, VÄNTAR).** Samma ord, tidigare: `leadM` per fara, 400–3 000 m
+  (16–120 s i 90 km/h). Formen är Axels egen (kartan §13.1) och redan beslutad för modifierare (#90 roll B, E1).
+  Kostar **F4, inte F5**. ✘ **Inte ordval** — *"en sammanvägd allvarsgrad är ett mätinstrument, inte en röst"* (Axel).
+  ✘ **Aldrig prioritet** — E3: det skulle tysta en olycka.
+  ⏭️ **ORDNINGEN, inget steg före det förra:** (1) grepp 2 fastställt (C och D, #197) → (2) betan i drift i november →
+  (3) S2: skattarens graderade nivå — utan graderat mått finns inget att sätta tiden efter (kartan §13.5) → (4) eget
+  tröskeldokument skrivet före mätning: svep för försprång per nivå + tak för undanträngda varningar i `suppressed`
+  (V1: ett längre försprång är tillägg bara om spärrloggen inte visar undanträngning) → (5) skugga → (6) dom, tidigast
+  mars → (7) F4 i tre portar. Rösten är Axels. Kartans hake: första försprånget att modulera är troligen segmentets,
+  inte ispunktens (A1 säger redan samma mening för kod 2 och 4).
+  **BESLUT 2 — ETT SMALARE UNDANTAG (ÖPPET, Bengts).** Min tillämpning av den gamla regeln var trubbigare än
+  verkligheten: **(a) radarn är ingen modell** utan en mätning av nederbörd, kalibrerad med faktorn 0,65 (#153/#154);
+  **(b) interpolation mellan två mätningar är inte extrapolation från en.** Mellan en station på −3 °C och en på −2 °C är
+  *"här är det under noll"* inramat av två eniga mätningar — grind A: **0–7 km MAE 0,33 °C, grova fel 0,0 %**
+  (DECISIONS #131). Förslaget var att en modellerad temperatur får utlösa **ENDAST** inramad mellan mätande stationer
+  inom kort avstånd som är **eniga om tecknet**.
+  🔒 **Sedan 16/9 är interpolation FÖRBJUDEN som utlösare, och beslut 2 har ingen egen öppning** (TROSKLAR-KOMBINATIONEN
+  §6 T5, §10). Beslutet måste klara T1–T3 som allt annat: ett vittne **på platsen** som kan fälla värdet. I de källor vi
+  har i dag finns inget sådant mellan stationerna — beslut 2 behöver alltså en ny källa innan det kan bära något.
+  **VARFÖR INGET GÅR ATT GÖRA NU:** båda besluten vilar på vinterdata. K-A står på ⊘ INGEN DOM med **noll** uppmätta
+  frysfall (DECISIONS #137); Finlands 133 "frysrader" 13/9 var en fastnaglad givare. Grind A:s A2-rad är OAVGJORT.
+  🔑 **Nyckel, sorterat 22/9 (kort #224):** betan i drift och S2 (DECISIONS #221) — inget väntar på Bengt; i praktiken parkerat till efter betan.
+
+- [ ] 🧩 **#228 APP-SCHEMAT ÖVERLEVER INTE `xcodegen`** (uppmätt under 0.3.9-releasen 20/9). Efter `xcodegen` fanns bara
+  schemat **HalkvaktEngine** i Xcode — app-schemat autoskapas av Xcode och bor i användardata, som den genererade
+  projektfilen skriver över. Följden mitt i en release: *Product → Archive* är avstängt, destinationen visar paketets
+  `arm64, arm64_32, x86_64` i stället för appens `arm64`, och ingenting förklarar varför. Axel löste det med
+  *Manage Schemes → Autocreate Schemes Now*, men det är samma klass som DEVELOPMENT_TEAM-fältet (#275): ett handgrepp
+  efter varje generering, som går att glömma och som kostar mest när man har bråttom.
+  Fix: deklarera schemat i `ios/HalkvaktApp/project.yml` så att `xcodegen` genererar det, delat och deterministiskt.
+  ⚠️ **Får INTE skrivas blint** — jag kan inte köra `xcodegen` från den här sessionen (device_bash är en Linux-VM,
+  inte macOS-skalet), så en felaktig YAML-nyckel upptäcks först när Axel kör kommandot. Ändringen görs när han är vid
+  datorn och kan köra `xcodegen` direkt efteråt.
+  Verify: `xcodegen` på en ren klon ⇒ **Halkvakt** finns i schemamenyn, är **Shared**, och destinationen visar bara
+  `arm64` — utan att någon rört Manage Schemes.
+  🔑 **Nyckel, sorterat 22/9 (kort #224):** Axel vid Macen — ändringen får inte skrivas blint, `xcodegen` går inte att köra härifrån.
+
+- [ ] 📷 **#209 BILDFACITBESLUTET FLYTTAT TILL EFTER FÖRSTA FROSTEN** (Bengts ja 20/9, DECISIONS #248, ur fyndet i #247).
+  **Mätt skäl:** omklassningar till halka **0 på 14 dygn**, hela arkivet 7 rader; olyckorna (504) bär ingen orsak. Är källan lika tom
+  i november–december står januaridomen på kamerabilderna — och granskningen finns inte byggd. Beslutet flyttas från *före 1/2* till
+  **inom sju dygn efter första frostnatten**. Blindningen orörd: det gäller att BYGGA läsningen, inte att läsa utfallet (bilderna
+  öppnas i mars). 🔑 **Väntar på första frosten** — mätningen körs i samma varv som T-A steg 0.
+  Verify: en sats som ger antal omklassningar till halka inom 5 km och utfallsfönstret från en episod under frostnätterna; talet
+  skrivet i bedömningen §4.2 tillsammans med Bengts och Axels beslut.
+  🧂 **Följer med läsningen (Bengts ja 21/9, DECISIONS #291):** produktionsregelns varningar delas per vädertyp — kort #231.
+  ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** #51 *Vinterarkivet* — dess Verify (DECISIONS #252) är samma mätning som den här.
+  🔑 **Nyckel, sorterat 22/9 (kort #224):** första frosten — sedan mätningen, därefter Bengts och Axels beslut.
+
+- [ ] 💸 **#152 KASSAVAKTEN — check 8 i vakthunden: larmar innan Actions-taket slår i** (Bengts order
+  13/9: "Kan man ha någon mätning på taket så man vet när man närmar sig gränsen. Automatisk alltså").
+  💰 **RÄTTAD 13/9 (DECISIONS #160, Bengts order "gör kort 152 nu"):** prognosen räknade på
+  månad-till-datum, och i det snittet låg fem flöden som lades ner 8–9/9 (`ingest-fi`, `-no`,
+  `-dk`, `publish-map`, `regn-30`). Vakten sa **21 september**; uppmätt verklig takt var
+  **232 min/dygn** senaste dygnet och **180** de två senaste, mot snittets 311 — och driften ensam
+  (ingest + grannar + healthcheck) är **81**, resten är bygge. **Förbrukningen läses nu ur
+  månadstalet, prognosen ur en SLÄPANDE takt** över de två senaste kompletta dygnen; taket flyttas
+  därmed till **26 september** på verkliga tal. Båda talen står i varje larm — månadssnittet låser
+  fast en takt som kan ha upphört, det släpande är känsligt för en byggskur — och avviker de mer än
+  25 % säger larmet **TAKTEN ÄNDRAS**. Kostar noll extra API-anrop: dygnsloopen fanns redan.
+  🔨 BYGGD 13/9, väntar på deploy + bevis. Bakgrunden är 5/9: minuterna tog slut mitt i drift, appen
+  serverade 66 h gammal data, och det upptäcktes bara för att en människa råkade titta. Taket har HÅRT
+  STOPP, så det är en vägg och inte en försämring. Ligger i vakthunden (Supabase, noll Actions-minuter)
+  med samma nyckel som mätvakten redan använder för att läsa Actions-API:t.
+  RÄKNINGEN: körningar sedan den 1:a, avrundade uppåt per körning, minus gratispotten 2 000 min,
+  gånger 0,008 USD. Larmar när (a) faktisk förbrukning passerat 70 % av taket, eller (b) prognosen når
+  taket före månadsskiftet — och det är (b) som är poängen: "i dagens takt slår taket i den 25:e" går
+  att agera på, "62 % förbrukat" gör det inte.
+  TVÅ KÄNDA FEL, utskrivna i varje larm i stället för dolda: taket är KONTOOMFATTANDE men vi ser ett
+  repo, och GitHub avrundar per jobb medan vi avrundar per körning (android.yml har två jobb). Talet är
+  därför ett GOLV, aldrig fakturan. Exakta siffran kräver kontobehörighet ⇒ Axels handgrepp, eget kort
+  om vi vill ha den.
+  KÖRS 05/11/17/23 UTC, inte varje timme: en räkning är ~30 API-anrop och budgeten rör sig 1–2 USD/dygn.
+  FÄRGAR ALDRIG DRIFTVAKTHUNDEN RÖD (egen etikett `kassavakt`, egen öppna/uppdatera/stäng-cykel) — samma
+  regel som mätvakten: rött ska betyda "kedjan till appen är bruten NU".
+  ✅ ARITMETIKEN BEVISAD fristående mot sex handräknade fall (husets konvention för vakthundslogik, som
+  kadensTimmar): gratispotten ej förbrukad ⇒ 0 USD; 6 375 min ⇒ exakt 35,00; 202 min/dygn ⇒ taket nås
+  INTE i september; 261 min/dygn ⇒ taket slår i 25/9; noll minuter ⇒ inget datum; första halvtimmen i
+  månaden ⇒ ändlig takt. Testet checkades medvetet INTE in: det hade blivit en andra kopia av tre
+  trösklar och utlöst kontraktsgrinden för noll nytta — konstanterna finns i EN fil.
+  Verify: deploy-supabase grön, sedan `?kassaprov=1` ⇒ issue med etiketten `kassavakt` som stängs av
+  nästa körning under gränsen. Och en riktig kassarad i nästa vakthundskörning 05/11/17/23.
+  ✅ **KLAR OCH BEVISAD 13/9 02:08.** Deployad (vakthund, 705 kB) och larmvägen prövad skarpt med
+  `?kassaprov=1` via DB-knappen ⇒ **issue #210 med etiketten `kassavakt`**. Den larmade på EGEN grund,
+  inte bara på provraden: *"I dagens takt (311 min/dygn) slår taket i den 2026-09-21."*
+  **FÖRSTA SKARPA MÄTNINGEN, och den är värre än fönsterskattningen:** 3 761 min sedan 1/9 över
+  2 798 körningar ⇒ debiterat 1 761 min = **14,09 av 35 USD**, takt **311 min/dygn**, prognos för
+  månaden **59 USD**. Fönstermätningen 12/9 gav 202 min/dygn — den fönstret var alltså lugnare än
+  månadssnittet, och 31–40 USD var för lågt räknat.
+  🩹 **TVÅ FEL AV MIG PÅ VÄGEN, båda bokförda för att de är lärorika:**
+  · Jag dispatchade deploy-supabase UTAN `funktion` och fick standardvärdet `publicera`. Jobbet blev
+    grönt, jag läste grönt som "rätt sak deployad", och första provet kunde inte fungera. Läxan är den
+    gamla: en grön körning bevisar att NÅGOT gick bra, inte att det var det man tänkt.
+  · Första skarpa körningen räknade exakt 1 000 körningar och rapporterade 94 min/dygn — halva
+    sanningen, utan felmeddelande. `/actions/runs` paginerar bara till 1 000 träffar. Lagat: räkningen
+    går ett dygn i taget, och dygnsloopen är självtestad. Läxa i CLAUDE.md.
+  · (Ett tredje, ofarligt: `kassaprov` lades i skriptets vitlista men inte i dbknapp.yml:s if-sats, så
+    en körning föll tyst i migrera-grenen och körde om gallringsmigrationen. Idempotent, inga rader
+    rörda, bevisraderna visade alla tio cron-jobb intakta. Villkoret är nu inverterat så att det bara
+    finns EN lista. Läxa i CLAUDE.md.)
+  📏 **AVLÄST 14/9 17:08 (kassavaktens egen rad, issue #210):** förbrukat sedan 1/9 **4 026 min över
+  3 006 körningar** ⇒ debiterat 2 026 min = **16,21 USD av taket 35**. Släpande takt **200 min/dygn**
+  (oförändrad sedan 05:08), månadssnittet sjunker (301 → 294). Takdatum **26/9, oförändrat sedan i
+  morse** — det går alltså inte åt fel håll. **Dygnets EGEN takt är lägre än båda:** 05:08 → 17:08
+  (12,0 h) gav 50 debiterade min över 38 körningar ⇒ **100 min/dygn**. Raderna 05:08, 11:08 och 17:08
+  finns alla; vakten fyrar som den ska.
+  📏 **15/9 04:45:** raden 23:08 finns — förbrukat **4 058 min över 3 025 körningar** ⇒ debiterat
+  2 058 min = **16,46 USD av 35**. Släpande takt 200 oförändrad, månadssnittet ned 294 → 291,
+  takdatum **26/9 oförändrat**. Nattens egen takt 17:08 → 23:08 (6,0 h): 32 min ⇒ **128 min/dygn**.
+  05:08-raden hade inte kommit när avläsningen gjordes (vakthunden fyrar 05 UTC).
+  🔍 **OMRÄKNAT PER JOBB 18/9 (Claude, alla 3 359 körningar sedan 1/9):** GitHub debiterar varje JOBB uppåt till hel
+  minut; kassavakten räknar varje KÖRNING på `updated_at − run_started_at`. Felet går åt två håll: android.yml:s två
+  parallella jobb räknas som ett (16/9: 55 min mot 105), och driftens korta jobb räknas med körningens efterslöp
+  (healthchecks jobb tar 58 s men körningen 63 s ⇒ 2 min i stället för 1). Över månaden: **4 530 min mot 4 369 per jobb**,
+  alltså 161 min för mycket — talet är inget golv, som larmtexten säger. Kvar till taket per jobb: cirka 2 000 min;
+  driften ~74 min per dygn ⇒ bygget högst ~80 min per dygn till 1/10 (bedömningen §0b). GitHubs eget API för debiterbar
+  tid svarar 0 sedan faktureringen lades om, så Billing är enda facit (Axel, §4.2). **Ingen ändring nu:** att räkna per
+  jobb kostar ett API-anrop per körning (~180 per dygn) och skulle förlänga vakthundens redan för långa timme (#201) —
+  rättas i så fall ihop med #201, med dygnssummor som sparas.
+  🔑 **Nyckel, sorterat 22/9 (kort #224):** 1/10 — ingen körning stoppad i september och issue #210 stängd av kassavakten; Axels Billing-avläsning.
+
+- [ ] 🧊 **#151 VÄGLAGETS ÅLDER — ska en stående vinterklassning tystas när mätningarna säger att vintern tagit slut?**
+  📄 **TRÖSKELDOKUMENT FASTSTÄLLT 12/9 av Bengt** (`docs/TROSKLAR-VAGLAGETS-ALDER.md`, DECISIONS #151/#152).
+  **Kortet kommer ur att Axel mätte i stället för att bygga det jag antog.** Jag flaggade att
+  `road_conditions` saknar väderpunkternas tretimmarsgräns; Axel mätte och upphävde antagandet:
+  818 segment, alla kod 1, **exponering noll i september**, senaste ändring 25/8, **inget segment
+  har end_time**. Operatören skriver bara vid FÖRÄNDRING — alltså kan en gammal klassning vara sann,
+  och en hård åldersgräns skulle tysta en halkvarning på en väg som varit hal i tre dygn. Precis det
+  fel dämpningen (#100) fälldes för.
+  **Frågan är omformulerad:** inte *"är klassningen gammal?"* utan *"motsäger världen den?"*.
+  Ålder är på sin höjd en förstärkning, aldrig en grund.
+  **Tre regler i §3:** R0 ingen regel (förvalet) · R1 ytan motsäger · R2 ytan motsäger + ålder ·
+  **R3 hård åldersgräns FÖRKASTAD före mätning** — felet ligger i formen, inte i tröskeln, och
+  skälet står skrivet så att nästa förslag möts av det.
+  **Nollan är ett utsagolöst noll** (#71): arkivet har inga vinterord alls i september, så mätningen
+  KAN inte falsifiera. Körs om vid första vinterklassningen — med `kodgrinden` avsnitt D, som redan
+  mäter exakt den frågan.
+  **Taket är hårdare än vanligt och skälet står i §5:** alla andra tröskeldokument reglerar när vi
+  får SÄGA något. Det här reglerar när vi får TIGA, och ett fel åt det hållet syns inte i en logg —
+  det syns i att en förare inte fick veta. E3 (tysta utan skuggkörning) = **aldrig**.
+  ⏭️ **Väntar på VINTERN.** Inget mäts förrän arkivet fått vinterklassningar — körs Å-A i september
+  blir svaret OAVGJORT på Å-A4:s krav om 100 fall, och det är rätt svar, inte ett misslyckande.
+  Fram till första skuggkörningen får §4:s svep och §5:s krav justeras med en rad i DECISIONS;
+  därefter inte alls.
+  🔧 **Axels två, utanför det här kortet:** `end_time`-filtret på segmenten (en rad — kolumnen finns
+  i sql/001:24 och ingesten skriver den redan, men den är OPRÖVAD tills TRV satt en EndTime en gång)
+  och stillaståendevakten (återanvänd mätvaktens 6b-form: larma inte på tystnad, larma på tystnad
+  MEDAN stationerna säger vinter — och "alla 848 stationer" inträffar aldrig).
+  🔑 **Nyckel, sorterat 22/9 (kort #224):** vinterklassningar i arkivet (Å-A4 kräver minst 100 med motsägelse; 7 rader på 14 dygn 20/9).
+
+- [ ] 🧊 **#103 FRYSKLASSNINGEN — kan en modell som är opålitlig på grader ändå bära en klass?**
+  📄 **TRÖSKELDOKUMENT SKRIVET 12/9** (`docs/TROSKLAR-FRYSKLASSNINGEN.md`, **FASTSTÄLLT 12/9**, DECISIONS #130/#135).
+  **Frågan är Axels, ordagrant**, ur hans bedömning av grind A: grind A föll, men A3
+  frysklassningsfelet klarade med **1,1 % mot ett krav på 10** — modellen är dålig på GRADER men
+  nästan aldrig fel om VILKEN SIDA AV NOLL, och det är den fråga motorn faktiskt ställer.
+  ⚖️ **Legitim, inte en efterhandsräddning** — hans egen formulering: *samma data, ny fråga, ärlig
+  ordning*. Dokumentet är skrivet så att **inget tal i §2 eller §4 kommer ur A3:s utfall**, och det
+  står uttryckligen att 1,1 % inte får åberopas som skäl för någon tröskel.
+  🚧 **AVGRÄNSNINGEN SOM AVGÖR ALLT ANNAT:** en godkänd frysklassning ger INTE rätt att skapa en
+  varning där motorn tiger. Den får bara stärka en bedömning som redan vilar på en uppmätt station.
+  **En modellerad storhet får aldrig vara en avtryckare** — samma regel som #95 (d) fick. *(Sedan 16/9 i Axels
+  lydelse, DECISIONS #220: klassningen utlöser aldrig ensam — T6.)*
+  🎯 **K2 är dokumentets egentliga idé:** grind A tvingade modellen att svara i varje punkt. En
+  klassificerare får AVSTÅ nära gränsen — frågan blir hur bra den är på det den uttalar sig om, och
+  hur mycket den då måste avstå. Därför har K-A både träffsäkerhets- OCH täckningskrav.
+  ⚠️ **K-A2 är asymmetrisk med flit och undantagen från all lättnad:** att säga "fryser" om en torr
+  väg kostar ett onödigt larm, att säga "fryser inte" om en isig väg kostar löftet produkten vilar
+  på. Taket för det felet är tio gånger hårdare (≤ 1 % mot ≥ 95 %).
+  🍂 **Vakt mot september:** K-A4 kräver ≥ 100 punkter med UPPMÄTT frys. Annars kan ett
+  septemberunderlag ge 99 % rätt klass genom att alltid svara "fryser inte".
+  ✅ **FASTSTÄLLT 12/9 av Bengt** (DECISIONS #135). Svepet och kraven är låsta.
+  ➡️ **NÄSTA: K-A på befintligt arkiv** — kräver ingen ny data och ingen frost.
+  🔑 **Nyckel, sorterat 22/9 (kort #224):** frostnätter — K-A körs om när minst 100 punkter med uppmätt frys finns (K-A4).
+
+- [ ] 🪢 **#95 Plan B för Trafikverket-beroendet — mät SMHI som reserv** (systemanalys 10/9). Allt
+  🔓 **BLOCKERARFYNDET 12/9 (DECISIONS #114): kortet blockerar #88:s dom.** T-A:s fysikkontroll
+  kräver "vanligast klara nätter", och molnmängd finns inte i arkivet. #95 är alltså inte en
+  förstärkare som kan vänta till våren — den står i vägen för den enda punkten med naturens deadline.
+  💰 **MEN MOLNET BEHÖVER INTE ARKIVERAS, och det river kortets dyraste rad.** SMHI metobs
+  **parameter 16** (total molnmängd, timvärde) har `latest-months` som räcker **130 dygn bakåt**,
+  plus `corrected-archive`. Molnet hämtas I EFTERHAND vid körning, som smhi-prov redan gör med
+  lufttemperaturen. Ingen tabell, ingen ingest, noll lagring. Kortets "+25 MB/mån och oktoberbeslutet
+  fem dagar närmare" gäller ANKARROLLEN, inte molnet.
+  📐 **TÄCKNINGEN MÄTT** (`scripts/smhi-tackning.ts` + knapp, körning 34676483898): bara 108 av 459
+  SMHI-stationer rapporterar molnmängd, men **91 % av VViS-stationerna och 94 % av vägsegmenten har
+  en molnobservation inom 50 km** (median 29 km). Molnet är en STORSKALIG storhet — ett molntäcke
+  sträcker sig tiotals mil — så 50 km är en helt annan sak här än för en yttemperatur. Hur långt det
+  FÅR sträckas är dock inte mätt, bara hur långt det MÅSTE.
+  ✅ **BLOCKERINGEN LYFT 12/9** (PR #163, DECISIONS #115): hämtningen är inkopplad i
+  `scripts/grind-t-a.ts` och fysikkontrollen kör båda halvorna. Första utfallet: klara nätter 29 %
+  fyrning mot mulna 0 %. **Sentinelfynd i formatet:** enheten heter procent men värdena är octas
+  omräknade, och **113 % är inte molnmängd utan SMHI:s kod för HIMLEN SKYMD** — fysikaliskt
+  motsatsen till klar natt. Klassas som skymd, räknas med de mulna.
+  ➡️ ~~**KVAR AV #95:** ankarrollen (SMHI som extra ankare i grind A)~~ ⛔ **ANKARROLLEN BESVARAD
+  12/9 — OCH SVARET ÄR NEJ** (DECISIONS #119, smhi-prov omkört på 60 dygn). På 1 918 jämförbara
+  punkter: bas 1,05 °C → **+SMHI 1,20 °C, sämre i varje band**. Verify 3 ("sjunker MAE i banden över
+  15 km?") är därmed besvarad negativt: den STIGER (1,02 → 1,35 i > 20 km). SMHI duger inte som
+  förtätning där VViS finns. Kvar av reservtanken är bara det ursprungliga fallet: vad vi har när
+  Trafikverket tystnar HELT — och där är priset uppmätt till 2,36 °C på de 352 punkter som bara
+  finns tack vare SMHI.
+  📐 **VERIFY 1 SKILD FRÅN MOLNFRÅGAN 12/9** (DECISIONS #118): molnkörningen svarade på
+  representativitetsradien (50 km, 108 stationer) men lämnade §2.8:s EGEN Verify 1 obesvarad — "hur
+  många av de 818 segmenten får en SMHI-station inom **15 km**", alltså luftens 235 stationer.
+  `scripts/smhi-tackning.ts` mäter nu båda och håller isär dem i utskriften.
+  📊 **VERIFY 1 — SVARET 12/9 (DECISIONS #120): 331 av 818 segment (40 %) har en SMHI-luftstation
+  inom 15 km.** Median 17 km, 88 % inom 30 km, 100 % inom 50 km; 235 aktiva luftstationer av 1 003 i
+  registret. **Vid den gräns §2.8 själv satte räcker täckningen alltså inte.** Var gränsen FÅR ligga
+  är inte mätt — det är Verify 2, och den har redan fått ett svagt förhandsbesked samma kväll
+  (SMHI-ankaret försämrar modellen, 2,36 °C på de punkter som bara SMHI ger).
+  ➡️ **KVAR AV #95:** Verify 2 (luft→yta-korrelationen vintertid — den enda som kan avgöra reserven),
+  representativitetsradien (hur långt molnet FÅR sträckas) och SMHI-förstärkaren nedan. Ingetdera
+  blockerar längre något.
+  🔨 **(d) FÖRSTÄRKAREN BYGGD 12/9 kväll** (Bengts "vi bygger smhi förstärkaren", DECISIONS #121).
+  📄 `docs/TROSKLAR-SMHI-FORSTARKAREN.md` — ✅ **FASTSTÄLLT 12/9 av Bengt** (DECISIONS #135).
+  ⚖️ **SPÄNNINGEN I KORTET LÖST FÖRE SVEPET:** "yta nära noll" är BREDARE än motorns `yta ≤ 1 °C
+  OCH fukt`, men kortet förbjuder uttryckligen att regeln skapar en varning. Därför får parametern
+  F3 ett **tak vid motorns egen tröskel** — regeln får skära bort, aldrig lägga till.
+  ✅ **AVGJORT AV BENGT 12/9: DEN SMALA** (DECISIONS #123). Skälet som fällde den breda: **ett län är
+  ingen punkt och ingen sträcka.** Snöar det verkligen över länet rapporterar de flesta stationerna
+  där redan nederbörd och motorn varnar; de som är TORRA under en aktiv länsvarning är just de där
+  varningen är lokalt fel — alltså exakt falsklarmen. Och hålet ägs redan av ett bättre kort:
+  **#89 (a) gör samma sak med en PUNKTKÄLLA** (stationens egen regnhistorik, 76 % av regnstoppen).
+  Den breda förstärkaren var inte en bättre förstärkare, den var en sämre #89 (a).
+  ➡️ **DEN BREDA IDÉNS KÄRNA FLYTTAD TILL #89, inte slängd:** ny parameter **`N_varning`** i
+  TROSKLAR-OVERGANGAR §2.3 — en aktiv vintervarning **förlänger N** (hur länge efter uppmätt regn
+  frysrisken lever vidare) utan att uppfinna väta ur en polygon. Utlösaren förblir stationens eget
+  uppmätta regn. Svep av · 2 · 4 · 6 h, gatad med och utan i B3.
+  🎚️ **MOTORN HAR INGET KONFIDENSFÄLT**, så effekten är namngiven: **E0 skuggkolumn (startläget)**
+  · E1 längre försprång (samma form som #90:s roll B) · E2 annan text (Axels) · **E3 högre
+  prioritet ALDRIG** — det skulle tysta en olycka.
+  🕳️ **FYNDET UNDER BYGGET, dyrare än regeln själv: arkivet saknade varningens GILTIGHETSFÖNSTER.**
+  `smhi_warnings` bär `approx_start`/`approx_end`, men töms vid varje synk; historiken har sedan
+  `001_init` burit allt utom just de två fälten. Arkivet visste **när en varning publicerades, inte
+  när den gällde** — och SMHI publicerar i förväg (publicerad 14, gäller 22–06). **Går inte att laga
+  i efterhand.** ✅ `sql/015_smhi_giltighet.sql` + automigrationen i `ingest/db.ts` + historik-
+  skrivningen bär fälten framåt. Varje dygn utan den migrationen hade varit ett dygn vinterunderlag
+  som aldrig kan lagas — samma logik som T-A:s frostnätter.
+  🚪 **GRIND F-A HAR BÅDE GOLV OCH TAK:** ≥ 200 förstärkta stationstimmar, ≥ 20 områden, andelen
+  **mellan 5 % och 80 %**, inget område över 25 %. Över taket säger regeln bara "det är vinter".
+  ⚠️ **Ett län är inte en väg** — varningsområdena är länspolygoner, så stor träffyta är inget bevis.
+  🔬 `scripts/smhi-forstarkaren-steg0.ts` + knapp. F-B är en VINTERGRIND: facit
+  (`road_condition_history`) står stilla sedan 25/8 och kan inte döma i september.
+  ⊘ **FÖRSTA KÖRNINGEN 12/9: OAVGJORT, som väntat** (DECISIONS #122). 126 historikrader, 41 områden,
+  geom i 97,6 %, **giltighetsfönster i 0,0 %** (alla skrivna före sql/015). Bara **3 kvalificerande
+  stationstimmar** på 30 dygn, och **0 förstärkta i alla nio F1 × F2-rutor**. Varningstyperna:
+  WIND_SEA 85 · FIRE 25 · WATER_SHORTAGE 10 · RAIN 3 · FLOODING 3 — **noll SNOW_ICE, noll ICING.**
+  🐟 **BIFYND: `isWinterRelevant()` räknar kuling till havs som vinter.** Ingestens regex matchar
+  `WIND`, och därmed `WIND_SEA`. Ofarligt i drift (flaggan används bara i en loggrad, inget
+  filtreras på den) men loggraden "winter-relevant: N" betyder inte vad den ser ut att betyda.
+  Vakten i skriptet räknar nu per kodmängd i stället för ett enda tal.
+  🧱 **BIFYND 2: en migration i automigrationslistan är inte en körd migration.** Första försöket
+  föll på `column "approx_start" does not exist` — `sql/015` körs först när INGESTEN kör, och
+  mätskriptet kördes emellan. Samma form som "en ändrad fil under supabase/functions/ är INTE en
+  deploy". **Regel: efter en migration som ett mätskript beror på, tryck dbknappen i samma varv.**
+  ➕ **ÖVERTAGET FRÅN #93 den 12/9 (DECISIONS #108): SMHI-FÖRSTÄRKAREN.** `smhi_warnings` hämtas
+  redan och ligger i arkivet (tiotals kB/dygn), så regeln **snöfallsvarning + yta nära noll = högre
+  konfidens** kostar 0 kr och kräver ingen ny källa. Förstärkare av frysrisken, ALDRIG en egen fara
+  — den får höja konfidensen i en varning som redan kvalificerar, inte skapa en varning. Verify:
+  skuggkolumn `smhi_forstarkt` mätt mot facit en vintermånad. Detta är den billigaste delen av hela
+  #95 och kan göras före täckningstabellen.
+  hänger på ETT API (WeatherMeasurepoint). Givarvakten fångar trasiga sensorer, inte ett flöde som byter
+  schema eller stänger; FI/NO/DK ger ingen redundans i Sverige. SMHI metobs (lufttemp, daggpunkt, moln,
+  sikt, vind — GOLVET §7) har provats (smhi-prov) men aldrig mätts som RESERV: hur många av de 818
+  segmenten får en SMHI-station inom 15 km, och hur väl följer SMHI:s lufttemp VViS-ytan vintertid?
+  Ren mätning ur arkivet + smhi-provet, ingen ny hämtning i drift. Verify: en tabell segment ×
+  närmaste SMHI-station (avstånd, täckning %) och en korrelationsrad luft→yta ur en kall vecka.
+  🧩 **BREDDAT 10/9 (Bengt: "inte bara backup — en pusselbit för 3 km längre fram"):** SMHI mäter
+  inte ytan, men mäter det som avgör hur långt en VViS-yta får sträckas ut: (a) MOLNMÄNGD — klar
+  natt ger stor lokal spridning (dalgångar 3–5 °C kallare), mulet/blåsigt gör stationen representativ
+  milen runt; VViS saknar molnmängd helt (GOLVET §7). (b) VIND + DAGGPUNKT som andra givare på
+  utstrålningen. (c) FÖRTÄTNING — SMHI:s automatstationer som extra ankare i offsetmodellen där VViS
+  är glest (inlandet), med egen luft→yta-överföring per station. (d) NEDERBÖRDSTYP/-mängd per timme
+  till #89:s övergångar. Den bild vi vill ha men inte kan mäta — ytan 3 km fram — blir då ett lager:
+  närmaste VViS-ankare (#38b) × representativitetsradie ur moln/vind (SMHI) × terrängkorrektion (#91)
+  × trend (#88), märkt MODELLERAT, sagt som risk, dömt i mars mot grind A/B/C. "Okänt" förblir ett
+  giltigt svar. Verify (utöver ovan): grind A körd med SMHI-ankare inlagda — sjunker MAE i bandet
+  15–20 km och >20 km? Och: felet i leave-one-out som funktion av SMHI-molnmängd (klar/halvklar/
+  mulet) — är spridningen 2× större klara nätter? Om ja är molnmängden representativitetsknappen
+  TROSKLAR-SKUGGAN:s trenivåmärkning saknar. FORTFARANDE OSYNLIGT oavsett SMHI: en snöby mellan
+  stationerna (bara radarn, #43) och om saltbilen passerat (ingen öppen källa, RISKKARTA-BENGT).
+  Blir svaret ja på molnfrågan är SMHI inte en reserv utan en del av motorn — då skrivs kortet om
+  till ett byggkort med tröskelrad i TROSKLAR-SKUGGAN (§5, båda signerar). Resonemanget i sin helhet:
+  Drive, "Framtida utvecklingsmöjligheter — systemanalys varningssystemen 2026-09-10 v2 (läsbar)", §2.8.
+  🔑 **Nyckel, sorterat 22/9 (kort #224):** första frosten (F-B i samma varv som T-A steg 0), vinterdata för Verify 2 (Ä4, mars).
+
+- [ ] 🔨 ❄️ **#46 Rimfrosten — svartis utan nederbörd** (Bengts hål A, 4/9) — PÅGÅR:
+  📄 **TRÖSKELDOKUMENT SKRIVET 12/9** (`docs/TROSKLAR-RIMFROST.md`, **FASTSTÄLLT 12/9**, DECISIONS #117/#135).
+  Skälet: #89:s överlämning nedan pekade på "#46:s eget tröskeldokument" — som inte fanns. En
+  överlämning till ett dokument som inte finns är en tappad idé med kvitto (samma form som den
+  dinglande TROSKLAR-TYSTNADSFEL 11/9). **Formen avgjord före svepet:** rimfrosten blir en ANDRA
+  GREN i `icing_point`, inte en sjätte farotyp — en sjätte kind skulle röra varje vektor och hela
+  prioritetsstegen. Fyra grindar R-A…R-D, sex osatta parametrar med svep, och en givarvakt som är
+  **undantagen från all lättnad** (får skärpas, aldrig mjukas upp) med kortets egna tal som skäl:
+  53 av 58 kandidater från TRE stationer, 0 av 53 överlevde äkthetsvillkoret. R-A5 gör läxan till
+  ett krav: ingen station får stå för mer än 20 % av träffarna. **Billigaste vägen till underlag är
+  det FINSKA arkivet** — KASTEPISTE sedan 4/9, Lapplands septemberfrost ger äkta rimfrostnätter
+  veckor före Sverige, och den körningen kräver ingen svensk frost och ingen dom.
+  ✅ **FASTSTÄLLT 12/9 av Bengt** (DECISIONS #135). Svepet och kraven är låsta.
+  📥 **ÖVERLÄMNAT FRÅN #89 den 12/9** (TROSKLAR-OVERGANGAR §6, DECISIONS #109). Två saker ska in i
+  #46:s eget tröskeldokument. **(1) Dimma är en ÖVERGÅNGSORSAK, inte en interaktion:** dimma är luft
+  vid ~100 % RH, alltså daggpunkt ≈ lufttemperatur, så kondensationsvillkoret (yta ≤ daggpunkt) blir
+  uppfyllt så fort ytan är kallare än luften. Sikt < X m hör därför hemma som **konfidenshöjare för
+  kondensationsvillkoret** — ingen egen fara, ingen egen prioritet. **(2) PARTITIONEN mot efterhalkan:**
+  **#46 äger fallet när yta ≤ daggpunkt** (kondensation pågår), **#89 (a) när yta > daggpunkt men
+  regn inom N h** (kvarvarande regnvatten fryser i torr luft). Utan den gränsen dubbelräknar
+  tystnadsfelet samma miss.
+  ANALYSFAS (Bengt + Claude, terminalen 4/9). Fyndet: motorns fuktvillkor är enbart
+  nederbörd, men dewpoint_c ligger oanvänd i varje arkivrad sedan 24/8. Rimfrost
+  (klar natt, yta ≤ daggpunkt, ingen nederbörd) = höstens klassiska svartis — motorn
+  tiger. Analysen backtestar villkoret mot arkivet INNAN någon metodändring föreslås:
+  hur många stationstimmar skulle nya grenen fånga (marginaler 0/0,5/1 °C × yttröskel
+  0/1 °C), överlappar den befintlig fukt, och toppar den kl 03–07 (fysikens signatur —
+  gör den inte det är villkoret brus)? KÖRNING #1 (4/9, 6 min): fysikkontrollen FÄLLDE
+  resultatet — platt dygnsprofil, och topp-3-stationerna hade yta−dagg −28…−49° =
+  TRASIGA DAGGPUNKTSGIVARE (53/58 kandidater från 3 stationer). STORT BIFYND: frost-
+  grenen kräver GIVARVAKT innan den byggs, annars falsklarmsmaskin. v2 med äkthetsvillkor (RH ≥ 90
+  korsgivare + yta−dagg ≥ −5°) KÖRD (#2, 2m58s): 0 av 53 kandidater överlevde — ALLA
+  var givarfel (57 rader < −10°, stationerna Ollsta 2346, Storvik 2135, Bolhyttan 1713).
+  ANALYSFASENS DOM: (a) arkivet saknar ännu äkta rimfrostnätter — kvantifieringen görs
+  om vid höstens första riktiga frostnätter (knappen redo); (b) ETABLERAT: givarvakten
+  är obligatorisk del av varje framtida frostgren — utan den hade rimfrostvarningar
+  avfyrats på skrot från tre stationer; (c) felet är isolerat till daggpunkten —
+  offsetmodellen/grind A använder bara yttemp och är opåverkad. KANDIDAT (Bengts
+  kolumn): påtala de tre stationernas orimliga daggpunkter för Trafikverket (mejlutkast
+  levererat i chatten 4/9).
+  ANALYSFAS DEL 2 (beslutad 4/9, Bengt: "gör 1,2,3") — metodgenomgångens tre spår:
+  (1) ✅ FI-DAGGPUNKTEN IN I INGESTEN 4/9: KASTEPISTE fanns i källan men släpptes på
+  golvet (verifierat live: 505/528 stationer, ex. station 1001 = 7,5°). Lapplands
+  septemberfrost ger äkta rimfrostnätter VECKOR före Sverige — samma analys, finskt
+  arkiv. ✅ BEVISAT 4/9: körning #24 föll på 42703 (latest-tabellen saknade kolumnen —
+  rotationsläxan fångade det på minuter), sql/010 + automigrering i fi.ts, körning #25
+  GRÖN med loggraden "daggpunkt 505 st". Finska daggpunkter arkiveras från och med nu.
+  (2) HÖSTENS OMKÖRNING GÖRS UTFALLSDRIVEN, inte villkorsräknande: starta i FACIT
+  (väglagets frost-omklassningar en klar morgon + gryningsbilder ur kamerafacit) och
+  fråga bakåt om daggpunktsgrenen såg det 1–3 h innan där nederbördsgrenen var blind.
+  Missmätningens (#19) riktning; bevis per händelse i stället för timstatistik.
+  (3) NOTERADE, DRIVS EJ: historik bakåt är stängd väg (TRV live-only, SMHI saknar
+  vägyta — begränsning, inte slarv); fysisk mikrovalidering (frostplatta/termometer)
+  är trevlig men ger aldrig statistik.
+  🔑 Motoränring + vektor är ETT SENARE beslut på höstens siffror; rösten är Axels.
+  🔑 **Nyckel, sorterat 22/9 (kort #224):** äkta frostnätter — R-A vid full vaktstyrka; därefter Bengts och Axels beslut om grenen.
+
+- [ ] 🌨️ **#45 Nederbördstypen — regn, snö eller slask?** (Bengts fråga 3/9: "hur mäter
+  vi snö, snöslask etc som är lika riskabla?") 🔒 LÅST BAKOM RADARDOMEN 14/9.
+  **Läget när kortet skrevs:** snö och slask PÅ vägen talas redan — men bara indirekt:
+  (a) VViS-stationernas snow-flagga räknas som fukt i frysriskmotorn ("frysrisk framöver"),
+  (b) väglagets operatörsklasser ("Snöigt", "Is och snö", "Slask") blir slippery_segment
+  och rösten säger "halt väglag". Hålet är eftersläpningen (operatören måste hinna klassa)
+  och att radarn — som ser nederbörd i realtid MELLAN stationerna — inte vet SORTEN.
+  **Metoden (det som ska mätas, inte gissas):** sorten avgörs av temperaturen nederbörden
+  faller genom. Standard: VÅTBULBSTEMPERATUR (luft + fuktighet, båda finns per station):
+  ≳ +1,5 °C regn · ≲ 0 °C snö · DÄREMELLAN SLASK — farligaste zonen, vattenplaning och
+  blivande is samtidigt. Klassningen = våtbulb per segment (offsetmodell + höjdkorrektion,
+  höjden flyttar snögränsen — lapse **0,63 °C/100 m** — beslutat 17/9, DECISIONS #226; tidigare ankarbreddningens 0,71) × radarintensitet
+  (radar_precip, redan per segment var 5:e min). ALLA ingredienser ligger redan i arkivet
+  — detta är en beräkning, ingen ny källa.
+  **Facit finns gratis:** SMHI:s stationer rapporterar observerad nederbördstyp, och
+  väglagets operatörsklasser är andra domaren. Klassningen körs i skugga och döms mot
+  båda innan något får synas — tröskeldokumentets princip, samma som allt annat.
+  **Varför låst till 14/9:** typklassning ovanpå en radarkälla som inte bestått sitt
+  eget kedjebevis vore våning två före grunden. Klarar radarn domen: bygg klassningen
+  som skuggkolumn i radarspåret (litet steg). Faller radarn: kortet omprövas — våtbulben
+   enbart kan fortfarande klassa nederbörd SOM STATIONERNA ser, men inte mellan dem.
+  **BENGTS MATRIS (4/9) — kortets egentliga mål är ÖVERGÅNGARNA, inte vädertyperna:**
+  vägytan är ett TILLSTÅND (torr → blöt → slask/modd → snöbelagd → packad snöväg) och
+  nederbörden en ÖVERGÅNG ovanpå det. Farligast är korsningarna: SNÖ PÅ SNÖ (nysnö på
+  packad bana) och framför allt REGN PÅ SNÖ (polerar snövägen till is — fönstret innan
+  operatören klassat om är där varningen är värd mest). Klassningen ska därför korsas
+  med segmentets NUVARANDE väglagsstate (finns i arkivet), inte bara klassa det som
+  faller. VIKTIG PRINCIP: snöväg som VINTERBASELINE i norr larmar ALDRIG — TRV kodar
+  packad snöväg som normalt vinterväglag, och en app som ropar halt nov–april i Norrland
+  avinstalleras (H2/cry wolf). Värdet är AVVIKELSEN från segmentets säsongsbaseline,
+  som nu är mätbar ur väglagshistoriken + segment_id-tidsserien (issue #4). OVERIFIERAT
+  tills vintern: exakt hur norrlandsetiketterna faller ut i vår data — prövas mot
+  arkivets första vintermånad innan någon regel fryses.
+  🔓 **GRINDEN KOPPLAD 4/9 kväll** (Bengts fråga "hur gick det med vad som faller på vad"):
+  kortet stod låst bakom radardomen 14/9 — men avläsningen den dagen var skriven för att
+  lyfta tre frågor (#43, #42:s trigger, #42:s beslutsläge) och nämnde INTE #45. Kortet hade
+  alltså blivit liggande låst utan att någon öppnat grinden. Avläsningen heter nu
+  "Radardomen + #42-inkopplingen + #45-grinden" och bär #45 som fjärde fråga, med båda
+  utfallen och snöbaseline-spärren inskrivna.
+  📏 **MÄTT LÄGE I KODEN 4/9** (läst, inte antaget): motorn kan i dag inte skilja de här
+  fallen åt alls. `icing_point` avgörs av `surfaceTempC <= tröskel && moisture === true`, och
+  `moisture` är en hopslagen bit — `rain OR snow OR COALESCE(precipitation,'') <> ''`
+  (publish/missar.ts). Regn på torrt, regn på snö och snö på snö ger alla samma `true`.
+  Matrisens farligaste korsning är alltså osynlig för motorn i dag; det är exakt luckan
+  kortet finns för att stänga.
+  🛑 **INGREDIENSPÅSTÅENDET ÖVERDREV — rättat 4/9 kväll efter svep** (Bengts fråga om
+  baseline och Norrland). Kortet ovan säger "ALLA ingredienser ligger redan i arkivet". Det
+  stämmer inte, och tre saker fattas:
+  (1) `weather_latest` — tabellen snapshoten byggs ur — bär VARKEN fuktighet ELLER daggpunkt
+  (sql/001_init.sql: bara surface_temp_c, air_temp_c, precipitation, rain, snow). De finns
+  bara i `weather_observations`, som är händelsefiltrerat (DECISIONS #4). Ingen tät serie.
+  (2) HÖJD lagras inte alls — ingen höjdkolumn finns i sql/; scripts/hojd-prov.ts hämtar
+  höjderna live från opentopodata vid varje körning. Lapse-korrektionen (0,0065) finns bara
+  i det provskriptet, aldrig i ingest, publish, snapshot eller motor.
+  (3) Ingen VÅTBULBSFORMEL finns någonstans i koden — ordet står bara i TAVLA och STATUS.
+  DET SOM FAKTISKT FINNS per segment: radarns nederbördsintensitet (radar_precip, 2 km-sampling
+  mot 818-skelettet). Halva metoden är alltså verklig; andra halvan är obyggd.
+  🚨 OCH baseline-halvan står på #51: vinterarkivet som säsongsbaselinen ska räknas ur
+  skrivs nästan inte. Kort #45 kan inte bli sant förrän #51 är löst — den kopplingen är ny
+  och gjordes inte när kortet skrevs.
+  🗺️ "NORRLAND" DEFINIERAS INTE, och ska inte göra det (svaret på Bengts fråga 4/9):
+  produkten är helt regionblind — inga läns-, latitud-, zon- eller gränsbegrepp finns i
+  motorn, snapshoten eller ingesten, i någon av de tre portarna. Repots enda Norrland är
+  `new Set([21,22,23,24,25])` i TVÅ MÄTSKRIPT (scripts/ankaranalys.ts:13, scripts/frost-prov.ts:16),
+  där det bara delar statistik i "Nationellt" / "Norrland" och aldrig rör larmlogik.
+  Det är rätt: en geografisk gräns vore fel på tre sätt samtidigt — packad snöväg i Dalarna
+  i mars är lika normal som i Norrbotten (gränsen måste flytta med årstiden), en bar blöt väg
+  i Kiruna i november är en avvikelse VÄRD att varna för som en Norrlandsspärr hade tystat,
+  och baseline skiftar inom samma län (kustens E4 plogas till barmark, inlandsvägen ligger
+  snöpackad). Per segment löser alla tre utan att någon ritar en linje på kartan.
+  **Rösten är ett SEPARAT beslut (Axels kolumn, som #32):** om "snöfall framöver" eller
+  "slask på vägen" blir egna rösthändelser avgör Axel; tystnadsdisciplinen gäller —
+  ett slask-larm som har fel är värre än inget. Prognos av KOMMANDE snöfall är #16,
+  fortsatt medvetet parkerat. *(Bengt + Claude, terminalen 3–4/9)*
+  🔑 **Nyckel, sorterat 22/9 (kort #224):** vinterdata och #51:s mätning (nu i #209) — våtbulben döms på en vintermånad (Ä2, mars).
+
+- [ ] **#32 Hindren in i rösten** — vi har aldrig skeppat annat än olyckor trots att
+  DECISIONS #5 sade "olyckor + hinder". Kräver ny HazardKind + egen röstfras + Axels
+  beslut om vad rösten säger. Bäst kandidat: **djur på vägbanan** (173 på en vecka, med
+  RIKTIG position — vida bättre än polisens länscentrum som vi underkände i #13).
+  🔑 **Nyckel, sorterat 22/9 (kort #224):** publik release och Axels beslut om HazardKind och röstfras (Ä3).
 
 ---
-  ↪ **Sammanslaget 22/9 (DECISIONS #303):** byggordningen stängs samtidigt som #42; A, B, C-radar och E är klara, resten står nu på #42. Det som återstår bärs av *#42 Vattenplaningsvarningen*.
 
 ## 🟡 GÖRA (pågår just nu)
 
@@ -4195,6 +4235,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 ---
 
 ## 🟢 KLART (senaste vinsterna)
+
+- [x] ✅ **#224 TAVLANS SEKTIONER SORTERADE — KLART 22/9 (DECISIONS #305)**: 22 kort flyttade dit nästa steg finns, *Claude — olåst* 7 kort som alla kan startas nu, låsta kort med nyckeln utskriven. Tavlan 67 → 66 öppna.
 
 - [x] ✅ **#154 BYVINDGIVARNA OCH KAMERAVARNINGEN I FEL RIKTNING — STÄNGDA 22/9 PÅ BENGTS ORD (DECISIONS #304)**: *"skickade"* och *"kameravarningen är klar"* (de två oklara korten från kortavstämningen som var hans). Tavlan 69 → 67 öppna.
 
