@@ -2674,6 +2674,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔑 **Nyckel:** Bengts ja till (1). (2) är Axels text och vårens fråga.
   Verify (1): live.json utan polisens punkter efter deployen (manifestets sha stämmer), motorns prov och v13 gröna, och skuggloggen
   utan viltlarm från polisens punkter.
+  📐 **22/9 — skiss för steg 1 och 2 i ett:** `docs/SKISS-VILT-TRAFIKVERKET-2026-09-22.md` (ny nyckel `djur`, djuren in i `deviations`, texten #266, v37, skuggmotorn först; bara iOS-bygget kräver Axel).
 
 - [ ] 🧂 **#231 PRODUKTIONSREGELNS FALSKLARM PER VÄDERTYP — en rad i bildfacitets läsning** (Bengts ja 21/9, Axel utan synpunkter samma dag, DECISIONS #291,
   ur second opinion #290). 🔑 **Nyckel: bildfacitets läsning (#209) — beslutet efter första frosten, bilderna öppnas i mars.**
