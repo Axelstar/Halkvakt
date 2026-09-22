@@ -61,6 +61,19 @@ förstudie", ser positivt på (kräver inte) samarbetspartner, max två år, ans
 adresser trafikverket@trafikverket.se och skyltfonden@trafikverket.se, beredningsgrupp Trafikverket, Polisen, SKR. Valet 25/9:
 v7A med muntliga ja, annars v7B; en trafikskola utan halkbana ⇒ v7B med AP3 från v7A.
 
+## Ideell förening som sökande — så bildas den, läst på skatteverket.se 22/9 (Bengts fråga)
+
+**Skatteverkets sida "Starta en ideell förening":** *"Ni måste vara minst tre personer för att starta en ideell förening."* Stadgar
+(utförligt ideellt ändamål, namn, beslutsordning) + konstituerande möte med protokoll (föreningen bildad, stadgarna antagna, styrelsen
+vald med poster; underskrivet av minst två) — därmed finns föreningen som juridisk person, ingen registrering krävs. **Organisations-
+nummer** krävs för bankkonto och *"ansöka om bidrag"*: blankett **SKV 8400 per post** med kopior av protokoll och stadgar — *"Ni kan
+alltså inte mejla in handlingarna eller ansöka via någon tjänst."* Handläggningstid anges inte på sidan; räkna med veckor. Bankkonto
+kräver organisationsnummer och tar ytterligare veckor; bankgiro därefter. **Följd för 28/9:** föreningen kan bildas på en kväll, men
+numret hinner sannolikt inte. Alternativ: (a) sökande = föreningen *under bildande*, stadgar och protokoll bifogade,
+"organisationsnummer ansökt hos Skatteverket [datum], kompletteras", bankkonto "meddelas före utbetalning" (besked 15/12); (b) fråga
+skyltfonden@trafikverket.se en rad om (a) godtas — Bengt strök förhandskontakten 16/9, hans val; (c) privatperson som i v7. Claude
+kan skriva stadgar och protokoll för konstituerande möte på Bengts ja.
+
 ## B2B-idé (Axel 2026-08-29): skolpaketet som produkt
 Trafikskolor säljer allt som paket och betalar redan per elev för innehåll
 (digitala teoritjänster m.m.). Säljbart: UTBILDNINGSMOMENTET (handledarmodul,
