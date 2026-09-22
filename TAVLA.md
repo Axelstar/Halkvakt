@@ -1040,8 +1040,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   högre konfidens), aldrig som egen fara. Verify: (a) tre kommuner tillfrågade om stationsdata,
   (b) skuggkolumn "smhi_forstarkt" mätt mot facit en vintermånad.
 - [ ] Läsa SYSTEM.md mot koden månadsvis — ✅ **första läsningen gjord 22/9** (Bengts order, underlag till Skyltfondens bilaga 3): regler, källor, vakter, skuggdrift, mätning och grannländer lästa mot koden; nästa läsning oktober
-- [ ] Samtal med Axel: sensortrappan — tidsättning av steg 2 (våren 2027?)
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #310) — Samtal med Axel: sensortrappan — tidsättning av steg 2 (våren 2027?)
   ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** #237 *Telefonkedjan* (parkerad 22/9) — avgörs i samma samtal.
+  ✅ **Stängt 22/9 (DECISIONS #310, Bengts beslut):** tiden är satt — **steg 2 (telefonens sensorer, opt-in) prövas våren 2027**, efter vinterns domar, och telefonkedjan (#237) avgörs i samma prövning. Samma ordning som Axels beslut 28/8 (*v1 utan datainsamling, sensortrappan är strategi*). Frågan bärs nu av **Ä8** i bedömningens §3 (mars och framåt), så den kommer tillbaka i mars.
 - [x] ↪ **SAMMANSLAGET 22/9** i *Samtal med Axel: sensortrappan* (DECISIONS #303) — 🔗 **#237 PARKERAT: TELEFONKEDJAN — bil 1:s telefon varnar bil 2 (Bengts tanke 22/9, "inte nu, kanske en väg framåt").**
   Nira bygger en kedja där bilens givare (ABS, antispinn, torkare) rapporterar bakåt till nästa bil via molnet. Kan telefonen
   göra samma sak? **Claudes bedömning 22/9, realistisk:** (1) värdet hos Nira är GIVAREN, inte kedjan — bilen mäter friktion
@@ -4245,6 +4246,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 ---
 
 ## 🟢 KLART (senaste vinsterna)
+
+- [x] ✅ **SENSORTRAPPANS STEG 2 TIDSATT: VÅREN 2027 (DECISIONS #310)** — Bengts beslut 22/9; telefonkedjan (#237) avgörs i samma prövning, som bärs av Ä8 i bedömningen. Tavlan 59 → 58 öppna.
 
 - [x] ✅ **TRE KORT STÄNGDA PÅ BENGTS JA 22/9 (DECISIONS #309)**: *Norden efter facit* (dubblett av Ä7), #16 *Nowcast* (krockar med T6; idén flyttad till #233) och *Guiden med bilder + film* (struken, Siri och självväckningen är huvudvägen). Tavlan 62 → 59 öppna.
 

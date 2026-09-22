@@ -9246,3 +9246,19 @@ prognos får visas men inte talas. Ä7 bär nu bara Nordenprodukten.
 **Sagt högt.** Guidens råmaterial (Axels inspelningar 31/8) finns kvar om behovet kommer tillbaka; ingen film raderad. #16 var
 Axels idé i ordningen *efter kö-slut*; Bengt stänger den, och idén är flyttad, inte borta. Tavlan 62 → 59 öppna.
 
+## #310 (22/9 2026) Sensortrappans steg 2 tidsätts till våren 2027 — telefonkedjan avgörs i samma prövning
+
+**Beslut (Bengt 22/9: *"stäng den med våren 2027 som beslut"*).** Kortet *Samtal med Axel: sensortrappan* stängs med tiden satt:
+**steg 2 i sensortrappan** (synergianalysen 27/8 — telefonens egna sensorer som egen datamängd, bara opt-in) **prövas våren 2027**,
+efter vinterns domar. **Telefonkedjan (#237)**, bil 1:s telefon som varnar bil 2, avgörs i samma prövning: byggs, avvisas eller blir
+en del av #21. Frågan bärs av **Ä8** i bedömningens §3, så den kommer tillbaka i mars.
+
+**Varför nu och inte i ett samtal.** Tiden var i praktiken redan satt: Axel beslutade 28/8 att v1 lanseras utan datainsamling och
+att sensortrappan är strategi, inte MVP, med sensorspåret som eget opt-in-beslut *tidigast våren 2027*; SYSTEM.md säger *"samtalet
+våren 2027, inte före"*. Ett kort som väntar på att någon ska bekräfta en tid som redan står i tre dokument är ett kort som ljuger om
+att något återstår nu.
+
+**Sagt högt.** Steg 2 krockar med invarianten (ingen position lämnar telefonen automatiskt, DECISIONS #264); prövningen i vår måste
+ändra invarianten, Data Safety, integritet.html och produktboken i samma commit om den säger ja. Axel var part i kortets namn; beslutet
+följer hans egen ordning från 28/8. Tavlan 59 → 58 öppna.
+
