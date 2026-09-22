@@ -9305,3 +9305,13 @@ Vakten startas redan av självväckningen och Siri (DECISIONS #38/#40).
 **Sagt högt.** Båda var Axels idéer (31/8), och startknappen var beställd i DECISIONS #38/#39(3). Designen för Live Activity ligger kvar i
 `docs/design/Halkvakt-Live-Activity.dc.html`. Tavlan 52 → 50 öppna.
 
+## #315 (22/9 2026) #15 kö-slut och #32 hinder stängs som kort och öppnas våren 2027
+
+**Beslut (Bengt 22/9: *"stäng 15 och 32 också men öppna våren 2027"*).** Kort **#15 Kö-slutsmotorn** (TrafficFlow: *"Kö framför dig,
+bromsa lugnt"*, Bengts idé, faktatestad 26/8) och **#32 Hindren in i rösten** (först djur på vägbanan) stängs på tavlan. Ä3 i bedömningens
+§3 bär dem och säger nu **våren 2027** i stället för *efter release*.
+
+**Sagt högt.** Inget arbete går förlorat: #15:s villkor står i BACKLOG.md punkt 15, och #32:s underlag samlas redan i arkivet
+(`AnimalPresenceObstruction` arkiveras, rösten talar bara om olyckor). Att vidga filtret släpper in vägarbeten, som DECISIONS #5
+stängde ute; rösttexten för hinder är Axels beslut. Tavlan 50 → 48 öppna.
+
