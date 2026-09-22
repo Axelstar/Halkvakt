@@ -1236,6 +1236,17 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
+- [ ] ⏱️ **#235 DRIFTRÄKNINGEN (sql/018) KLARAR INTE SJU DYGN LÄNGRE — LATERAL ÖVER EN MATERIALISERAD CTE ÄR KVADRATISK** (fynd
+  22/9 när driftvakten kördes för kort #234). `trendarkivet --jamfor` med 7 dygn: TypeScript räknade 11 061 kandidater ur 195 444
+  arkivrader, men `berakna_trendkandidater(7 days)` föll på *statement timeout* (600 s). 13/9 gick samma körning på 118 054 rader
+  (4 713 kandidater). Orsaken är inte kort #234:s delfråga (0,7 s över samma rader, mätt): `bas` refereras två gånger och
+  materialiseras, och `CROSS JOIN LATERAL` läser hela CTE:n per kandidatrad — kostnaden växer med kvadraten på arkivet, och
+  arkivet är 1,7× större än 13/9. **Driften rörs inte:** ingest-live kallar funktionen med 2 timmar, där `bas` är några tusen
+  rader. **Följd:** driftvakten (SQL mot TypeScript, ense om varje rad) kan bara köras på korta fönster tills lateralen är
+  index-vänlig — t.ex. `bas` per station via tabellen med ett `(station_id, sample_time)`-index, eller fönsterfunktioner i stället
+  för lateralen (raderna är redan sorterade per station). Ändringen rör tvillingen `publish/trenden.ts` inte alls (samma rader ska
+  väljas), så driftvakten är själva beviset. Kort, inte fix: rätt form väljs med en mätning, inte en gissning.
+  Verify: `trendarkivet --jamfor` med 7 dygn under 600 s, *ENSE OM VARJE RAD*, och funktionens tid i live-anropet oförändrad.
 - [ ] 🔭 **#233 UR NIRAS PRODUKTSIDA: TVÅ SAKER VI INTE HAR, EN VI HAR PARKERAT** (Bengts fråga 21/9, DECISIONS #296; sidan
   niradynamics.com/products/road-surface-alerts läst mot repot). 🔑 Väntar på Bengts val av vad som ska utredas (§4.2).
   **(1) FÖRE RESAN — saknas helt.** Nira säljer *"route planning that avoids known hazards"*. Halkvakt talar bara under
@@ -3100,57 +3111,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Bryter dokumentationsregeln. *(Delvis åtgärdad i detta varv — resten nästa.)*
 
 ### Claude — låst (väntar på nyckel)
-- [ ] 🚨 **#234 TRASIGA YTGIVARE SLINKER FÖRBI GIVARVAKTEN — FALSKA BROLARM PÅ E4 I SKÅNE, I DRIFT NU** (hittat av
-  snöflingemätningen 21/9, DECISIONS #297). 🔑 **Nyckel: Bengts och Axels beslut om hur vakten ska skärpas** (§4.2).
-  **Station 1106 Ö Ljungby** (E4, Skåne): yta +1,1…+3,5 °C medan luften är **+13…+15 °C**, daggpunkten +8…+13 °C och det
-  regnar — timme efter timme, dag som natt (19–21/9). Fysiskt omöjligt; givaren ligger ~12 °C fel. #75:s vakt släpper allt
-  med yta ≥ luft − 12, och felet pendlar precis kring den gränsen. **Följden i appen:** 24 broar inom 15 km publiceras med
-  frysrisk; skuggmotorn sa *"Frysrisk framöver — bro om 600 meter"* **sju gånger per varv** på E4 Helsingborg→Jönköping
-  5/9, 16/9, 17/9, 19/9, 20/9 och 21/9. Det är där testarna och Skyltfondsparterna finns.
-  **Fyra stationer till med samma mönster** (yta ≤ +1 °C vid luft ≥ +6 °C): Ollsta 2346 (8 dagar, fyrade 3 nätter), Storvik
-  2135 (5 dagar), Testeboån 2132, Kullavik 1302, Bolhyttan 1713. Av 21 *frostepisoder* i arkivet är 13 sådana givarfel.
-  ⚠️ **Skärp INTE genom att bara sänka 12:** varmfront med regn över frusen väg (yta −3, luft +4) ger ett ÄKTA gap på 7–10 °C
-  — blixthalkan, det farligaste fallet. Inte heller `rimlig()`-vakten ur trenden (yta − dagg < −5) rakt av: den tystar samma
-  fall. Kandidater, att mäta innan någon väljs: (a) gapvakten görs beroende av lufttemperaturen (en blöt yta nära noll vid
-  luft ≥ +8 °C finns inte); (b) en kronikerlista — stationer som brutit mot fysiken N dagar spärras tills de mätt rätt;
-  (c) båda. Tröskeln är fastställd (#75) och ligger i 17 kopior under kontraktsgrinden: ändringen är ett beslut, med motprov.
-  🔨 **BYGGT 21/9 (Bengts order *"välj den gräns du tycker är mest logisk"*, DECISIONS #298) — TVÅ TILLÄGG, TALET 12 ORÖRT:**
-  **(1) Radvakten** i `WX_SANE`: luft ≥ +10 °C och yta ≥ 8 °C under luften ⇒ givarfel. Bara varm luft — under +10 °C rör den
-  ingenting, så blixthalkan och blankisen i töväder får tala. **(2) Karantänen:** ≥ 3 brott mot #75 på 7 dygn ⇒ stationen
-  tyst, som väderpunkt och som broarnas källa. Mätt mot arkivet: **706 av 811 felrader tagna, och av de 105 som blir kvar
-  är EN fuktig** — alltså en enda som kan fyra. Ingen frisk station tystas (Vassijaures enstaka studs klarar sig).
-  **De 17 kopiorna av #75 är orörda** — tilläggen ligger bredvid, inte i stället. Kontraktsgrinden har fått brottets form
-  (`<`) bredvid vaktens (`>=`), så att karantänens 12 inte kan glida från vaktens 12. Mätsatserna: `scripts/matningar/givarvakt-*.sql`.
-  ✉️ **Anmälan skriven:** `docs/ANMALAN-TRV-YTGIVARE.md` — sju stationer, Ö Ljungby först. Bengt skickar via
-  Datautbytesportalens formulär (ärendetyp API Öppna Data).
-  ✅ **I DRIFT 21/9 18:19Z** (PR #446, deploy 35637540366 från 73688a4). CI 135/135, `ok 45` mot riktig PostGIS. **Motprov
-  (PR #447, stängd):** vakterna avslagna ⇒ `not ok 45` *'LJUNGBY ska vara tyst'*, `not ok 94`, `not ok 95` *bron vid den trasiga
-  givaren* — medan kontraktsgrinden var grön, alltså är det PROVEN som fångar felet. **Mätning efter deploy:** funktionens eget
-  svar 18:20:00 — *"karantän: 5 station(er) tysta efter brott mot #75: 1106, 1612, 2132, 2135, 2346"*; körningarna före har
-  ingen sådan rad.
-  🔨 **BYGGT 22/9 (Bengts ja 21/9, DECISIONS #299) — VAKTERNA I MÄTNINGARNA, samma tal ur samma källa:** `snapshot-core.ts`
-  exporterar `RADVAKT_SQL` (som `WX_SANE` själv bär) och `karantanSql()`/`brottSql()`; grind A, K-A, R-A (även finska arkivet),
-  T-A, trendarkivet, anomalin, ruttberedskapen, övergångarnas och SMHI-förstärkarens steg 0 IMPORTERAR dem — noll nya kopior
-  av talen i TypeScript. `rimlig()` i trenden bär de två vakterna och raden bär `brott`. **Karantänen räknas PER RAD**, 7 dygn
-  bakåt från radens egen tid; `sql/029` ger delfrågan ett delindex över just brotten (utan det: miljarder radbesök på 60
-  dygn). SQL-tvillingarna `sql/018` och `sql/028` och mätsatsen `uppspelning-efterhalka.sql` bär talen literalt ⇒ fyra nya
-  kontrakt (10, 8, 7, 3), 43 håller. **Fynd på vägen:** #75:s form räknade inte KVALIFICERADE kopior (`r.surface_temp_c >=
-  r.air_temp_c - 12` i 018/028) — formen vidgad, 55 kopior, alla 12. **Bevis:** 138 tester (128 lokalt + 10 integration i
-  CI), nio självtester gröna, motprov: radvakten avslagen ⇒ trendtestet rött, karantänen avslagen ⇒ rött; nytt integrationstest
-  mot PostGIS (KAR_A frisk och KAR_D med två brott räknas; KAR_B med Ö Ljungby-felet och KAR_C med tre brott är tysta).
-  🌙 **NATTBEVISET LÄST 22/9** (`scripts/matningar/givarvakt-nattbevis-2026-09-22.sql`): Ö Ljungby 1106 visade 21/9 18–19Z yta
-  1,8–3,3 °C vid luft 9,6–11,6 °C (16 felrader) och gled sedan till −2 °C vid luft +4…+6 °C, regn hela natten. Skuggloggen på
-  E4 Helsingborg→Jönköping: 7 brolarm 20/9 21Z och 21/9 04Z (före deployen), **0 brolarm 21/9 18Z, 22Z och 22/9 01Z** — medan
-  stationen visade −0,2…−1,1 °C. 36 av 36 publiceringar 22:40–04:30Z bar karantännoten, 1106 i alla. ⚠️ **Det var KARANTÄNEN
-  som bar natten:** från 20Z låg luften under +10 °C, där radvakten inte gäller, och gapet 6–8 ° släpps av #75. Brotten som
-  håller 1106 i karantän är från 19–21/9 och åldras ut runt 28/9 — se DECISIONS #299 och §4.2.
-  ⏳ **KVAR innan kortet stängs:** körs in i driften efter sammanslagningen — `sql/029` (dbknapp; bevis: `pg_indexes` och att
-  EXPLAIN väljer indexet), `sql/018` via `trendarkivet --jamfor` (driftvakten: SQL och TypeScript ense om varje rad), `sql/028`
-  (dbknapp; bevis ur `pg_proc`), bunten deployad, och **grind A i båda läsningarna** (måndagens körning 21/9 utan vakterna mot
-  en ny körning med dem — A2 stod OAVGJORT 5,1 % mot 5,0 %, #131).
-  Verify: beslutet i DECISIONS · vakten byggd med motprov (1106:s rader som provdata) · skuggloggen utan brolarm från 1106
-  en natt då givaren fortfarande visar fel.
-
 - [ ] 🧂 **#231 PRODUKTIONSREGELNS FALSKLARM PER VÄDERTYP — en rad i bildfacitets läsning** (Bengts ja 21/9, Axel utan synpunkter samma dag, DECISIONS #291,
   ur second opinion #290). 🔑 **Nyckel: bildfacitets läsning (#209) — beslutet efter första frosten, bilderna öppnas i mars.**
   På en stadigt kall snödag säger stationsregeln *kallt och nederbörd* också på en saltad väg med fullt grepp; stationen ser
@@ -4196,6 +4156,66 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 ---
 
 ## 🟢 KLART (senaste vinsterna)
+
+- [x] ✅ **#234 TRASIGA YTGIVARE SLINKER FÖRBI GIVARVAKTEN — FALSKA BROLARM PÅ E4 I SKÅNE — KLART 22/9 (DECISIONS #298/#299)** (hittat av
+  snöflingemätningen 21/9, DECISIONS #297). 🔑 **Nyckel: Bengts och Axels beslut om hur vakten ska skärpas** (§4.2).
+  **Station 1106 Ö Ljungby** (E4, Skåne): yta +1,1…+3,5 °C medan luften är **+13…+15 °C**, daggpunkten +8…+13 °C och det
+  regnar — timme efter timme, dag som natt (19–21/9). Fysiskt omöjligt; givaren ligger ~12 °C fel. #75:s vakt släpper allt
+  med yta ≥ luft − 12, och felet pendlar precis kring den gränsen. **Följden i appen:** 24 broar inom 15 km publiceras med
+  frysrisk; skuggmotorn sa *"Frysrisk framöver — bro om 600 meter"* **sju gånger per varv** på E4 Helsingborg→Jönköping
+  5/9, 16/9, 17/9, 19/9, 20/9 och 21/9. Det är där testarna och Skyltfondsparterna finns.
+  **Fyra stationer till med samma mönster** (yta ≤ +1 °C vid luft ≥ +6 °C): Ollsta 2346 (8 dagar, fyrade 3 nätter), Storvik
+  2135 (5 dagar), Testeboån 2132, Kullavik 1302, Bolhyttan 1713. Av 21 *frostepisoder* i arkivet är 13 sådana givarfel.
+  ⚠️ **Skärp INTE genom att bara sänka 12:** varmfront med regn över frusen väg (yta −3, luft +4) ger ett ÄKTA gap på 7–10 °C
+  — blixthalkan, det farligaste fallet. Inte heller `rimlig()`-vakten ur trenden (yta − dagg < −5) rakt av: den tystar samma
+  fall. Kandidater, att mäta innan någon väljs: (a) gapvakten görs beroende av lufttemperaturen (en blöt yta nära noll vid
+  luft ≥ +8 °C finns inte); (b) en kronikerlista — stationer som brutit mot fysiken N dagar spärras tills de mätt rätt;
+  (c) båda. Tröskeln är fastställd (#75) och ligger i 17 kopior under kontraktsgrinden: ändringen är ett beslut, med motprov.
+  🔨 **BYGGT 21/9 (Bengts order *"välj den gräns du tycker är mest logisk"*, DECISIONS #298) — TVÅ TILLÄGG, TALET 12 ORÖRT:**
+  **(1) Radvakten** i `WX_SANE`: luft ≥ +10 °C och yta ≥ 8 °C under luften ⇒ givarfel. Bara varm luft — under +10 °C rör den
+  ingenting, så blixthalkan och blankisen i töväder får tala. **(2) Karantänen:** ≥ 3 brott mot #75 på 7 dygn ⇒ stationen
+  tyst, som väderpunkt och som broarnas källa. Mätt mot arkivet: **706 av 811 felrader tagna, och av de 105 som blir kvar
+  är EN fuktig** — alltså en enda som kan fyra. Ingen frisk station tystas (Vassijaures enstaka studs klarar sig).
+  **De 17 kopiorna av #75 är orörda** — tilläggen ligger bredvid, inte i stället. Kontraktsgrinden har fått brottets form
+  (`<`) bredvid vaktens (`>=`), så att karantänens 12 inte kan glida från vaktens 12. Mätsatserna: `scripts/matningar/givarvakt-*.sql`.
+  ✉️ **Anmälan skriven:** `docs/ANMALAN-TRV-YTGIVARE.md` — sju stationer, Ö Ljungby först. Bengt skickar via
+  Datautbytesportalens formulär (ärendetyp API Öppna Data).
+  ✅ **I DRIFT 21/9 18:19Z** (PR #446, deploy 35637540366 från 73688a4). CI 135/135, `ok 45` mot riktig PostGIS. **Motprov
+  (PR #447, stängd):** vakterna avslagna ⇒ `not ok 45` *'LJUNGBY ska vara tyst'*, `not ok 94`, `not ok 95` *bron vid den trasiga
+  givaren* — medan kontraktsgrinden var grön, alltså är det PROVEN som fångar felet. **Mätning efter deploy:** funktionens eget
+  svar 18:20:00 — *"karantän: 5 station(er) tysta efter brott mot #75: 1106, 1612, 2132, 2135, 2346"*; körningarna före har
+  ingen sådan rad.
+  🔨 **BYGGT 22/9 (Bengts ja 21/9, DECISIONS #299) — VAKTERNA I MÄTNINGARNA, samma tal ur samma källa:** `snapshot-core.ts`
+  exporterar `RADVAKT_SQL` (som `WX_SANE` själv bär) och `karantanSql()`/`brottSql()`; grind A, K-A, R-A (även finska arkivet),
+  T-A, trendarkivet, anomalin, ruttberedskapen, övergångarnas och SMHI-förstärkarens steg 0 IMPORTERAR dem — noll nya kopior
+  av talen i TypeScript. `rimlig()` i trenden bär de två vakterna och raden bär `brott`. **Karantänen räknas PER RAD**, 7 dygn
+  bakåt från radens egen tid; `sql/029` ger delfrågan ett delindex över just brotten (utan det: miljarder radbesök på 60
+  dygn). SQL-tvillingarna `sql/018` och `sql/028` och mätsatsen `uppspelning-efterhalka.sql` bär talen literalt ⇒ fyra nya
+  kontrakt (10, 8, 7, 3), 43 håller. **Fynd på vägen:** #75:s form räknade inte KVALIFICERADE kopior (`r.surface_temp_c >=
+  r.air_temp_c - 12` i 018/028) — formen vidgad, 55 kopior, alla 12. **Bevis:** 138 tester (128 lokalt + 10 integration i
+  CI), nio självtester gröna, motprov: radvakten avslagen ⇒ trendtestet rött, karantänen avslagen ⇒ rött; nytt integrationstest
+  mot PostGIS (KAR_A frisk och KAR_D med två brott räknas; KAR_B med Ö Ljungby-felet och KAR_C med tre brott är tysta).
+  🌙 **NATTBEVISET LÄST 22/9** (`scripts/matningar/givarvakt-nattbevis-2026-09-22.sql`): Ö Ljungby 1106 visade 21/9 18–19Z yta
+  1,8–3,3 °C vid luft 9,6–11,6 °C (16 felrader) och gled sedan till −2 °C vid luft +4…+6 °C, regn hela natten. Skuggloggen på
+  E4 Helsingborg→Jönköping: 7 brolarm 20/9 21Z och 21/9 04Z (före deployen), **0 brolarm 21/9 18Z, 22Z och 22/9 01Z** — medan
+  stationen visade −0,2…−1,1 °C. 36 av 36 publiceringar 22:40–04:30Z bar karantännoten, 1106 i alla. ⚠️ **Det var KARANTÄNEN
+  som bar natten:** från 20Z låg luften under +10 °C, där radvakten inte gäller, och gapet 6–8 ° släpps av #75. Brotten som
+  håller 1106 i karantän är från 19–21/9 och åldras ut runt 28/9 — se DECISIONS #299 och §4.2.
+  ✅ **I DRIFT 22/9, ALLT BEVISAT** (PR #455 sammanslagen 04:46Z som b567bf6): **`sql/029`** körd 04:47Z — indexet i `pg_indexes` på
+  public och fi, EXPLAIN väljer *Index Only Scan using weather_obs_brott_idx*, hela karantänräkningen över 7 dygn (195 442 rader)
+  tar **0,7 s**; i dag 1 670 rader/5 stationer i karantän och 1 468 rader tagna av radvakten. **`sql/018`** körd in av trendarkivet
+  04:48Z; **`sql/028`** 04:59Z — `pg_proc` visar båda funktionskropparna med karantän per rad, radvakt och tre-brott-gränsen, och
+  varianten *utan faller* kör. **Bunten** deployad 04:48:22Z (b567bf6, noll diff mot main); nästa publicering 04:50:01Z: manifestets
+  sha = filens, 79 väderstationer, ingen av de sju, noll broar, och funktionens eget svar bär karantännoten (1106, 1713, 2132,
+  2135, 2346). **Grind A i båda läsningarna:** 21/9 utan vakterna 714 stationer, A1 0,75 °C (5 745 punkter), A2 3,8 % [±0,5],
+  A3 0,3 % — KLARAD; 22/9 med vakterna 711 stationer, A1 0,71 °C (7 356 punkter), **A2 3,5 % [±0,4], A3 0,0 %** — KLARAD;
+  vaktdiagnosen: radvakten tar 1 965 och karantänen 1 993 av 361 443 rader på 60 dygn. Fönstren skiljer ett dygn, och natten
+  emellan var kall, så skillnaden är riktning, inte ett rent vaktresultat. **Driftvakten** (`trendarkivet --jamfor`): 1 dygn från grenen (körning 35689485866, 05:08Z): TypeScript valde 5 687 rader, SQL 5 687, bara TypeScript 0, bara SQL 0 — **ENSE OM VARJE RAD**, inga rader undantagna. Sju dygn faller på funktionens timeout (kort #235).
+  Kvar utanför kortet: anmälan (§0b, Bengt) och frågan om karantänens åldrande (§4.2).
+  Mätsatserna: `scripts/matningar/givarvakt-nattbevis-2026-09-22.sql`, `karantan-idrift-029-2026-09-22.sql`, `karantan-idrift-028-2026-09-22.sql`.
+  Verify: beslutet i DECISIONS · vakten byggd med motprov (1106:s rader som provdata) · skuggloggen utan brolarm från 1106
+  en natt då givaren fortfarande visar fel.
+
 
 - [x] ✅ **#212 TRÖSKLARNA LÅSTA — KLART 20/9** (DECISIONS #263, 88dd32c): nio vektorer + `scripts/matningar/vektorkanslighet-2026-09-20.ts` (genomlysningens metod, i repot). **Uppmätt intervall utan reaktion, före → efter:** korridorvinkeln 5°–90° → **33,2°–37,1°** (v28/v29) · reprisavståndet 0–50 000 → **4 510–5 990 m** (v30: står stilla 600 s så tiden skiljs från sträckan) · repristiden → **496–659 s** (v31) · bäringstoleransen 60°–150° → **55,5°–64,5°** (v32/v33; det förkastade 100° faller nu) · lägsta fart 5–50 → **14,1–16** (v34/v35, första vektorerna med explicit headingDeg) · kortaste förvarning 0–400 → **395–405 m** (v36). Alla fixmarginaler ≥ 5 m, uppmätta. Prioritetsgenombrottet och testets motsägelse: klara tidigare i dag (v27, DECISIONS #258). ci #35521365300, ios-engine #35521365311, android #35521365360 gröna — 36 vektorer i tre språk. Olåst kvar, med skäl: `leadMaxM` 3 000 (nås först över 360 km/h) och `warnLeadS`/`globalCooldownS` som redan låg på ±1.
 - [x] ✅ **#223 ARKIVBACKUPENS ÅLDER VAKTAD UTANFÖR ACTIONS — KLART 20/9** (DECISIONS #262, 7310837): vakthundens check 9j frågar GitHub om senaste release med taggen `arkiv-` — saknas den eller är äldre än 8 dygn (en missad söndag + marginal) ⇒ larm i driftvakthunden. Prov `?arkivprov=1` via dbknapp. **Bevis:** deployad 15:5xZ (deploy-supabase #35520901208 — efter två fall på `setup-cli@latest`:s rate limit, nu fast version 2.117.0); dbknapp `arkivprov` 15:54Z: svaret bar `arkivbackup: 1 dumpar, senaste 99.0 dygn (gräns 8) — PROV` och problemraden; issue #411 skapad 15:54:35Z; **den schemalagda timkörningen 16:07:51Z stängde den med den riktiga raden `arkivbackup: 1 dumpar, senaste 0.0 dygn (gräns 8)`.** Larm och tystnad bevisade på verkligheten, samma timme.

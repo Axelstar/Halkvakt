@@ -8952,3 +8952,29 @@ och 22/9 01Z**, medan stationen visade −0,2…−1,1 °C. 36 av 36 publicering
 från 20Z låg luften under +10 °C, där radvakten inte gäller, och gapet 6–8 ° släpps av #75. Brotten som håller 1106 i karantän
 är från de varma dagarna 19–21/9 och åldras ut runt 28/9; håller sig luften sval till dess publiceras stationen igen. Frågan om
 vad som ska bära hösten står i bedömningen §4.2 (rekommendation: låt karantänen räkna radvaktens brott också — inget nytt tal).
+
+**IDRIFTTAGNING 22/9, bevis:**
+- **PR #455** sammanslagen 04:46Z (b567bf6); CI: `ok 52` är det nya integrationstestet mot PostGIS, `ok 132` enhetstestet, 43 kontrakt.
+- **`sql/029`** (dbknapp 04:47Z, `scripts/matningar/karantan-idrift-029-2026-09-22.sql`): indexet i `pg_indexes` på public och fi;
+  EXPLAIN för delfrågan: *Index Only Scan using weather_obs_brott_idx*; hela karantänräkningen över 7 dygn (195 442 rader) tar
+  0,7 s; i dag är 1 670 rader hos 5 stationer i karantän och 1 468 rader tas av radvakten.
+- **`sql/018`** körd in av `trendarkivet --jamfor` 04:48Z; **`sql/028`** av dbknapp 04:59Z (`karantan-idrift-028-2026-09-22.sql`):
+  `pg_proc` visar båda funktionskropparna med karantänen per rad, radvakten och tre-brott-gränsen; varianten *utan faller* kör.
+- **Bunten** deployad 04:48:22Z från b567bf6 efter `git pull` och noll diff mot main. Publiceringen 04:50:01Z: manifestets sha =
+  filens, 79 väderstationer, ingen av de sju, noll broar; funktionens eget svar bär karantännoten (1106, 1713, 2132, 2135, 2346).
+- **Grind A i båda läsningarna.** Utan vakterna (måndagskörningen 21/9 05:40Z): 714 stationer, 199 742 avläsningar, A1 0,75 °C på
+  5 745 punkter, A2 3,8 % [±0,5], A3 0,3 % — KLARAD. Med vakterna (22/9 04:49Z): 711 stationer, 202 087 avläsningar, A1 0,71 °C på
+  7 356 punkter, **A2 3,5 % [±0,4], A3 0,0 %** — KLARAD. Vaktdiagnosen på 60 dygn: radvakten tar 1 965 rader, karantänen 1 993.
+  Sagt högt: fönstren skiljer ett dygn och natten emellan var kall i Skåne, så skillnaden är en riktning, inte ett rent
+  vaktresultat. A2 står inte längre oavgjort (5,1 % 13/9 var en äldre läsning).
+- **Driftvakten** (SQL mot TypeScript) dömde först drift två gånger utan att kopiorna glidit — och båda var driftvaktens egna fel.
+  (1) 23 rader, alla med arkivets nyaste tidsstämpel: ingest-live skrev dem mellan TypeScript-laddningen (05:00:09Z) och
+  funktionen (05:00:10–47Z); omkörningen hade dem på båda sidor. (2) 17 rader i fönstrets första kvart: sql/018:s `bas` läser
+  en timme FÖRE fönstret för lutningens historia, TypeScript-sidan gjorde det inte, så fönstrets första rader var kandidater
+  bara i SQL — ett fel i trendarkivets skrivläge också, sedan 13/9 (7-dygnsfönstrets kant låg i gallrat material och syntes
+  aldrig). Rättat i `scripts/trendarkivet.ts` (PR #456): timmen läses som historia, kanten sätts en gång, kandidater bara inom
+  fönstret, och rader som bara kan finnas på ena sidan (ingest under körningen, kantminuten) sägs högt i stället för att dömas.
+  **Domen, 1 dygn från grenen:** 1 dygn från grenen (körning 35689485866, 05:08Z): TypeScript valde 5 687 rader, SQL 5 687, bara TypeScript 0, bara SQL 0 — **ENSE OM VARJE RAD**, inga rader undantagna. Sju dygn faller på funktionens timeout (kort #235).
+- **Fynd, eget kort #235:** `berakna_trendkandidater` över 7 dygn faller på statement timeout (600 s) — TypeScript-sidan räknade
+  11 061 kandidater ur 195 444 rader, funktionen hann inte. 13/9 gick 118 054 rader. Orsaken är den materialiserade CTE:n `bas`
+  och lateralen över den, kvadratisk i arkivets storlek — inte karantänens delfråga (0,7 s, mätt). Driften (2 h) berörs inte.

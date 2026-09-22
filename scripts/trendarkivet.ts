@@ -79,12 +79,17 @@ if (!TORRKOR) {
   console.log("  sql/017 + sql/018 körda (idempotenta)" + "\n");
 }
 
+// FÖNSTRETS KANT sätts en gång och används både i laddningen och i urvalet. Som sql/018:s `bas` läses en timme FÖRE
+// fönstret med, så att lutningen har sin historia även för fönstrets första rader; kandidater tas bara INOM fönstret,
+// som 018:s `kandidat`. Utan timmen var fönstrets första rader kandidater i SQL men inte här (uppmätt 22/9: 17 rader,
+// alla i fönstrets första kvart), och driftvakten dömde det som drift.
+const KANT = new Date(Date.now() - DAGAR * 86_400_000);
 const rader = await q(`
   SELECT station_id, sample_time, surface_temp_c, air_temp_c, dewpoint_c, humidity_pct,
          ${brottSql("weather_observations")} AS brott
   FROM weather_observations
-  WHERE sample_time > now() - $1 * interval '1 day' AND surface_temp_c IS NOT NULL
-  ORDER BY station_id, sample_time`, [DAGAR]);
+  WHERE sample_time > $1::timestamptz - interval '60 minutes' AND surface_temp_c IS NOT NULL
+  ORDER BY station_id, sample_time`, [KANT.toISOString()]);
 console.log(`  ${rader.length} arkivrader med yttemperatur, ${new Set(rader.map((r) => r.station_id)).size} stationer`);
 if (!rader.length) { console.error("\nUNDERLAGSVAKT: arkivet är tomt i fönstret. Avbryter."); await pool.end(); process.exit(1); }
 
@@ -96,6 +101,7 @@ let station = "", grupp: { r: Rad; tid: Date }[] = [];
 const tomGruppen = () => {
   const rad = grupp.map((g) => g.r);
   for (let i = 0; i < rad.length; i++) {
+    if (new Date(grupp[i].tid).getTime() <= KANT.getTime()) continue;   // timmen före fönstret är bara historia
     const kand = arKandidat(rad, i);
     if (!kand) continue;
     const u = utfall(rad, i, UTFALLSFONSTER_MIN);
@@ -143,10 +149,25 @@ if (process.argv.includes("--jamfor")) {
     "SELECT station_id, observed_at FROM trend_kandidater WHERE observed_at > now() - $1 * interval '1 day'", [DAGAR]);
   await pool.query("ROLLBACK");
   const sq = new Set(sqlRader.map((r) => nyckel(r.station_id, r.observed_at)));
+  // KAPPLÖPNINGEN MED INGESTEN (22/9, kort #234:s idrifttagning): rader som ingest-live skrev EFTER laddningen ovan men
+  // FÖRE funktionen finns bara på SQL-sidan. 23 rader, alla med arkivets nyaste tidsstämpel, såg ut som drift. Jämförelsen
+  // stannar därför vid den nyaste rad TypeScript läste, och det som ligger bortom sägs högt i stället för att räknas åt
+  // något håll. (Fönstrets nedre kant vandrar också några sekunder, men där tunnar gallringen materialet.)
+  let senast = 0;
+  for (const r of rader) senast = Math.max(senast, new Date(r.sample_time).getTime());
+  const nyare = [...sq].filter((x) => new Date(x.split("|")[1]).getTime() > senast);
+  for (const x of nyare) sq.delete(x);
+  // Nedre kanten: funktionens now() ligger några sekunder efter KANT, så en rad med tidsstämpel i den springan finns bara
+  // här. En minuts marginal på BÅDA sidor, och antalet sägs.
+  const tid = (x: string) => new Date(x.split("|")[1]).getTime();
+  const kantmarginal = [...ts, ...sq].filter((x) => tid(x) <= KANT.getTime() + 60_000);
+  for (const x of kantmarginal) { ts.delete(x); sq.delete(x); }
   const baraTs = [...ts].filter((x) => !sq.has(x));
   const baraSql = [...sq].filter((x) => !ts.has(x));
   console.log(`\n  DRIFTVAKTEN — SQL-funktionen mot TypeScript, ${DAGAR} dygn (transaktionen rullad tillbaka)`);
-  console.log(`    TypeScript valde ${ts.size} rader · SQL valde ${sq.size} · funktionen rapporterade ${rakning.nya} nya`);
+  console.log(`    TypeScript valde ${ts.size} rader · SQL valde ${sq.size} · funktionen rapporterade ${rakning.nya} nya` +
+    (nyare.length ? ` · ${nyare.length} rader nyare än laddningen (ingest under körningen) jämförs inte` : "") +
+    (kantmarginal.length ? ` · ${kantmarginal.length} rader i kantminuten jämförs inte` : ""));
   console.log(`    bara TypeScript: ${baraTs.length}`);
   console.log(`    bara SQL:        ${baraSql.length}`);
   for (const x of [...baraTs.slice(0, 5), ...baraSql.slice(0, 5)]) console.log(`      avvikelse: ${x}`);
