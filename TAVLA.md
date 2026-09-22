@@ -34,8 +34,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   cron-kommando med ?larmprov=1) skapade issue #91 "🔴 Vakthunden: kedjan är bruten" med etiketten vakthund,
   10:58:40. Larmvägen fungerar; issuen ska stängas av nästa gröna timkörning (11:07). Axels "full behörighet"
   stämmer.
-- [ ] **3. Skärmklipp av Billing till Bengt** — du har redan bilden (2000/2000 min, reset om
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #308) — **3. Skärmklipp av Billing till Bengt** — du har redan bilden (2000/2000 min, reset om
   23 dagar ⇒ 1/10, spending limit noll). Vidarebefordra den bara.
+  ✅ **Stängt 22/9 (DECISIONS #308, Bengt: *"den har vi koll på genom mätning"*):** kassavakten (#152, vakthundens check 8) räknar Actions-förbrukningen fyra gånger om dygnet och larmar före taket; bevakningen till 1/10 bärs av #152 och §0b-raden *Actions-taket i september*. Ingen Billing-avläsning behövs.
 - [x] ~~4. Supabase-token som `SUPABASE_ACCESS_TOKEN` i GitHub Secrets~~ ✅ GJORT 9/9 05:20 (Axel,
   DECISIONS #86) — tokenen är projekt-scopad till Halkvakt med ENDAST Edge Functions: Write (Axels val:
   en deploy-nyckel ska inte kunna röra databas eller nycklar). Bevis: deploy-supabase #1 grön 05:20:51,
@@ -4239,6 +4240,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 ---
 
 ## 🟢 KLART (senaste vinsterna)
+
+- [x] ✅ **KORT 3 BILLING STÄNGT 22/9 (DECISIONS #308)** — Bengt: bevakas genom mätning (kassavakten, #152). Tavlan 63 → 62 öppna.
 
 - [x] ✅ **#156 HALKORDEN — SERVERNS FILTER ETT SUPERSET AV MOTORN, KLART 22/9 (DECISIONS #307)**: *mycket besvärligt* in i snapshotens filter, prov i två led, publicera deployad och bevisad. Tavlan 64 → 63 öppna.
 
