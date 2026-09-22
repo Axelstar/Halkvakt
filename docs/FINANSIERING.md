@@ -33,6 +33,26 @@ rollfördelningskortet.
 i appen ✓), Vinnova mars 2027 (kräver AB + vintersiffror), föreningsbidrag TrV.
 
 
+## Plan B — teknisk ansökan utan utomstående (Bengts skräckscenario 22/9, Claudes bedömning)
+
+**Frågan:** om halkbanan, trafikskolorna och NTF inte ger ja före 25/9 — är vi chanslösa? **Nej.** AP1, AP2, AP4 och AP5 bär
+sig själva och är de tekniskt starkaste. Det som faller är AP6 (enda effektbeviset med kontrollgrupp, innovationsgradens punkt 6)
+och AP3:s expertfacit — och det ska sägas öppet, inte döljas. **Upplägget:** titeln byts från pilot till kunskap (*"Räcker
+Trafikverkets öppna väglagsdata för att varna alla förare i tid, och hur mycket tillför ett prognoslager mellan mätstationerna?"*),
+H2 och H3 blir huvudhypoteser, H1 sekundär med egna data; AP3 byts mot egna testförare med facitknappen (30–50, presentkort); AP6
+ersätts av litteraturbaserad effektskattning plus hastighetsdata från egna testförare vid varnade avsnitt, utan kontrollgrupp;
+AP4 (VTI/LTH) väger tyngre; spridningen är rapporten, metoden öppen och appen själv (gratis i båda butikerna). Belopp cirka
+300 000 kr. **Sökandefrågan blir viktigare utan partner:** ideell förening flyttar ansökan från produktutveckling till
+kunskapsprojekt (Axels öppna fråga). **En trafikskola räcker för AP3** — släpp den inte förrän 25/9.
+
+**Bengts argument 22/9, in i BÅDA versionerna (Innovationsgrad punkt 2):** fordonsburna halkvarningar är i dag betaltjänster
+knutna till bilmärken (Nira Dynamics till biltillverkare och flottor, datan stängd även för kommuner som köper den, DECISIONS #281);
+den som kör en äldre bil, en ny förare eller en som inte betalar får ingenting — den halva av bilparken som har störst risk.
+Halkvakt bygger på data staten redan samlar in, når varje förare med en telefon och kostar inget. Ton: komplement, inte angrepp.
+
+**Nästa steg:** plan B skrivs klar parallellt (v7-B på Skrivbordet) så att valet 25/9 bara är vilken version som skickas 28/9.
+Väntar på Bengts ja.
+
 ## B2B-idé (Axel 2026-08-29): skolpaketet som produkt
 Trafikskolor säljer allt som paket och betalar redan per elev för innehåll
 (digitala teoritjänster m.m.). Säljbart: UTBILDNINGSMOMENTET (handledarmodul,
