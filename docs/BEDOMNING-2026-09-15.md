@@ -26,12 +26,14 @@ att läsa mot varandra. Kort utan rad här hör hemma på tavlan, inte i bedömn
 
 ## Läget 20/9 — var vi är och vart vi är på väg
 
-**Var vi är.** Driften är tät och vaktad, och reglerna för efterhalkan är fastställda. **Flaskhalsen har flyttat från bygge
-till beslut och händer: fem saker ligger hos Axel (§4.2), och produktspåret väntar på vädret.** Frost finns på enstaka
-stationer sedan 14/9 (som mest 5 st 18/9; frostvakten larmar vid 50), men ingen natt har ännu haft *blöt väg som faller
-mot noll* — det S1-grinden behöver. Inga förarsvar har kommit: bygget 0.3.7 saknade knapparna, och 0.3.8 väntar på Axel.
-Avstämt mot GitHub 20/9: inga öppna PR:er, 51 sammanslagna sedan 17/9 (alla från det här kontot), **ingen incheckning från
-Axel sedan 17/9**, alla byggen gröna.
+**Var vi är (22/9).** Driften är tät och vaktad, reglerna för efterhalkan är fastställda, och givarvakten har fått sina två
+tillägg i både appen och mätningarna (kort #234 stängt 22/9 med nattbevis och idrifttagning, DECISIONS #298/#299). **Flaskhalsen
+är beslut och händer, inte bygge: §4.2 bär fjorton öppna beslut** — sju hos Axel (Supabase Pro, #203, Play-deklarationen,
+skuggan §4, batteriprovet, partnerskapet, Play-kontot), resten hos Bengt eller båda — och tavlan har 94 öppna kort, varav kort
+#224 säger att sektionerna inte stämmer. Utifrån väntar vi på Trafikverket (historiskt uttag för kuvösen, två anmälningar om
+trasiga givare), Stockholms stad och trafikskolornas ja 25/9. Vädret: frost på enstaka stationer sedan 14/9 och en riktigt
+kall natt i Skåne 21–22/9, men ännu ingen natt med *blöt väg som faller mot noll* — det S1-grinden behöver. Inga förarsvar
+har kommit; 0.3.8 väntar på Axel. **Tidskritiskt just nu:** karantänen som håller Ö Ljungby tyst åldras ut runt 28/9 (§4.2).
 
 | Område | Läge 20/9 | Kort |
 | :-- | :-- | :-- |
@@ -140,7 +142,8 @@ beviset finns — inte när koden är skriven.
 | Förfrågan till Trafikverket om historiskt uttag för kuvösen: VViS-observationer 1/11 2024–31/3 2025, plus väglag och olyckor för samma period om möjligt. Skickad via Datautbytesportalens kontaktformulär (datex@trafikverket.se studsar, DECISIONS #294) | ⏳ skickad av Bengt 21/9, väntar svar · inget svar 28/9 ⇒ formuläret *Frågor till Trafikverket*, därefter *Begär ut allmänna handlingar* | #232 | #292, #294 | svar från Trafikverket — och vid ja: datan mottagen |
 | Snöflingemätningen körs om när arkivet bär den första frostmånaden: hur stor andel av stationsregelns fyrningar sker med luft över +3 °C respektive +4 °C? (`scripts/matningar/snoflingan-2026-09-21.sql`) | ⏳ vid frost — första körningen 21/9 gav 7 äkta episoder, alla med luft ≤ +0,4 °C | #233 | #296, #297 | andelen i bedömningen, på minst 50 äkta episoder |
 | ~~Givarvaktens två tillägg i drift (radvakten, karantänen): bevisa att brolarmen på E4 uteblir en natt då Ö Ljungby 1106 fortfarande visar fel~~ | ✅ **22/9:** nattbeviset läst (`scripts/matningar/givarvakt-nattbevis-2026-09-22.sql`) — E4 Helsingborg→Jönköping 7 brolarm 20/9 21Z och 21/9 04Z (före), **0 brolarm 21/9 18Z, 22Z och 22/9 01Z** medan 1106 visade −0,2…−1,1 °C; 36/36 publiceringar med karantännot. Karantänen bar natten — luften låg under +10 °C från 20Z, så radvakten gällde inte | #234 | #298, #299 | skuggloggen utan `bro:`-larm från 1106 en natt då stationen visar yta ≤ +3 °C vid luft ≥ +10 °C |
-| Vakterna i mätningarna körs in i driften: `sql/029` (delindexet), `sql/018` (via `trendarkivet --jamfor`), `sql/028`; bunten deployad; grind A läst i båda läsningarna (21/9 utan vakterna, ny körning med) | ⏳ byggt 22/9, körs in samma dag efter sammanslagningen | #234 | #299 | `pg_indexes` och `pg_proc` bär talen, EXPLAIN väljer indexet, driftvakten ense, funktionens svar efter deploy, A1–A3 i båda läsningarna |
+| ~~Vakterna i mätningarna körs in i driften: `sql/029` (delindexet), `sql/018` (via `trendarkivet --jamfor`), `sql/028`; bunten deployad; grind A läst i båda läsningarna (21/9 utan vakterna, ny körning med)~~ | ✅ **22/9:** 029 i `pg_indexes` (public + fi), EXPLAIN väljer indexet, 7 dygn på 0,7 s · 018 och 028 i `pg_proc` med karantän per rad, radvakt och tre brott · bunten deployad 04:48Z, publiceringen 04:50Z med rätt sha och karantännot · grind A 21/9 utan: A2 3,8 %, A3 0,3 %; 22/9 med: A2 3,5 %, A3 0,0 %, KLARAD båda · driftvakten: 1 dygn från grenen (körning 35689485866, 05:08Z): TypeScript valde 5 687 rader, SQL 5 687, bara TypeScript 0, bara SQL 0 — **ENSE OM VARJE RAD**, inga rader undantagna. Sju dygn faller på funktionens timeout (kort #235). | #234 | #299 |
+| Trendarkivets driftvakt körs på 1 dygn — 7 dygn faller på statement timeout i `berakna_trendkandidater` (lateralen är kvadratisk, kort #235) | ⏳ tills 018:s lateral är index-vänlig; driften (2 h) berörs inte | #235 | #299 | `--jamfor` 7 dygn under 600 s, ENSE OM VARJE RAD | `pg_indexes` och `pg_proc` bär talen, EXPLAIN väljer indexet, driftvakten ense, funktionens svar efter deploy, A1–A3 i båda läsningarna |
 | Anmälan till Trafikverket om sju felande ytgivare (`docs/ANMALAN-TRV-YTGIVARE.md`) — Ö Ljungby 1106 först | ⏳ skriven 21/9, Bengt skickar via Datautbytesportalens formulär (API Öppna Data) | #234 | #298 | skickad · svar från Trafikverket |
 | ~~Vakthunden svarar inte inom 120 s i kassavaktens timmar (05, 11, 17, 23 UTC) — **bekräftat 11:07Z**, samma timeout som 05:07Z. **Larmet går ut:** kassavakten kommenterade issue #210 05:08:15Z och 11:08:21Z. Kvar: vakthundens svar är oläsbart var sjätte timme, och okänt om kontrollerna efter kassavakten hinner köras~~ | ✅ **18/9 (#238, PR #348):** kassavakten hämtar sex dygn samtidigt. Före: ordinarie 05:07Z timeout vid 120 s; efter deploy svarade kassaprovet inom cirka 70 s med alla rader och samma räkning. Ordinarie 11:07Z ska svara utan timeout | kort #201 | #238 | vakthundens svar inom 120 s i kassavaktens timme |
 | Läsbar version av TROSKLAR-KOMBINATIONEN på Skrivbordet och i Drive är från 16/9 — före Axels sex ändringar, radarn och fastställandet | ⏳ inaktuell; ny version när Bengt vill | #197 | — | aktuell version i Drive, eller den gamla borttagen |
