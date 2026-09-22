@@ -50,8 +50,16 @@ knutna till bilmärken (Nira Dynamics till biltillverkare och flottor, datan st�
 den som kör en äldre bil, en ny förare eller en som inte betalar får ingenting — den halva av bilparken som har störst risk.
 Halkvakt bygger på data staten redan samlar in, når varje förare med en telefon och kostar inget. Ton: komplement, inte angrepp.
 
-**Nästa steg:** plan B skrivs klar parallellt (v7-B på Skrivbordet) så att valet 25/9 bara är vilken version som skickas 28/9.
-Väntar på Bengts ja.
+**SKRIVET 22/9 (Bengts order):** båda versionerna ligger på Skrivbordet — `Halkvakt-Skyltfonden-ansokan-v7A-2026-09-22.md`
+(partnerversionen, v6 uppdaterad: Nira-argumentet i innovationsgrad 2 och kunskapsläget, gränsdragningen med fondens egna ord,
+363 200 kr) och `Halkvakt-Skyltfonden-ansokan-v7B-2026-09-22.md` (teknisk, utan partner: ny titel, tre saker i stället för fyra,
+H3 om beteende sekundär och mätt utan kontrollgrupp, AP3 = 30–50 egna testförare med presentkort, AP4 förstärkt med
+beteendestudie, AP6 struket och sagt öppet, samverkan = Trafikverket som dataägare, 363 000 kr eller 343 000 utan förstärkt AP4).
+**Fondens regel, läst på trafikverket.se 22/9** (sidan "Projektbidrag från Skyltfonden", uppdaterad 5 sep 2024): *"Bidrag ges ej till
+patentkostnader eller till redan slutförda arbeten"* — slutförda, inte påbörjade; fonden stödjer gärna "en första prototyp eller en
+förstudie", ser positivt på (kräver inte) samarbetspartner, max två år, ansökan senast 1 oktober, besked senast 15 december,
+adresser trafikverket@trafikverket.se och skyltfonden@trafikverket.se, beredningsgrupp Trafikverket, Polisen, SKR. Valet 25/9:
+v7A med muntliga ja, annars v7B; en trafikskola utan halkbana ⇒ v7B med AP3 från v7A.
 
 ## B2B-idé (Axel 2026-08-29): skolpaketet som produkt
 Trafikskolor säljer allt som paket och betalar redan per elev för innehåll
