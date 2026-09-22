@@ -9338,3 +9338,34 @@ röst som säger vad datan bär (*"Älg på vägen framöver"*), till skillnad f
 tiden syns i ingen källa. (2) Ett enda par säger inget statistiskt om vem som är snabbast; det som väger är att polisen har 11
 händelser mot 480. (3) Polisen hämtas en gång i timmen, så deras tid till oss (median 24,5 min) är inte jämförbar och används inte.
 
+
+## #317 (22/9 2026) 0.3.9 arkiveras som den rena fixen (12) från `90b5223`; behörighetsrutans text rättas i main och följer med (13)
+
+**Frågan (§4.2 (d), DECISIONS #304).** Axel lämnade de två frågorna till Claude 22/9 kväll: *"fråga din code om detta ska göras och kör
+den i så fall klar"*.
+
+**(1) Väg (b): 0.3.9 (12) från `90b5223`.** Skälen, i vikt: (i) bygget finns för att bevisa EN rad (#273, släckt skärm på *när appen
+används*) — #275 säger det ordagrant, och provet är bara tolkningsbart om inget annat rör sig. #203 lager 1 rör just det som provet
+tittar på: en ny notisdelegat, `willPresent`, `GuardManager` och talvägen i `SpeechService`. Blir det tyst på väg (a) vet ingen om det
+är #273 som inte håller eller #203 som tystat något. (ii) #203:s iOS-kod har aldrig kompilerats; faller den i Xcode står releasen
+stilla i kväll för en funktion som inte är det kvällen gäller. (iii) Förkontrollen (ci, ios-engine) gjordes på exakt `90b5223`, och
+ett arkiv från den commiten är det enda som bevisar vilket bygge som är ute — läxan från 0.3.7 och #304. (12) är inte uppladdat,
+så numret är ledigt. **(13) blir nästa bygge från main** och bär #203 lager 1 + texterna nedan; där kompileras #203 första gången,
+med ett eget prov.
+Taggen `ios-0.3.9-12` sitter på `90b5223` så steget blir `git checkout ios-0.3.9-12` i stället för ett hash att skriva av.
+
+**(2) Behörighetsrutan: ja, rättas — i main, inte i (12).** Texterna var osanna på två sätt, inte ett: (a) *"Positionen lämnar
+aldrig enheten"* utan betatestets undantag bryter invarianten (#264), medan introduktionen och Om säger undantaget; (b) *"Med
+"Alltid" kan vakten varna även när skärmen är släckt"* är fel sedan #273 — släckt skärm fungerar på *Vid användning*, och Alltid
+behövs bara för självstarten. Samma fel (b) stod i introduktionens sida två, i en kommentar i `GuardManager` och i produktbokens
+rad 85–86; alla rättade i samma commit. Formuleringen följer produktbokens rad 21 (#304) ordagrant, så appen, rutan och boken
+säger samma mening.
+
+**Skärmbilden: inte i samma commit, och skälet är mekaniskt.** Produktboksregeln tar skärmbilder ur fotostudions artefakt, och
+fotostudion är Android-CI; iOS egen behörighetsruta är en systemdialog som ingen fotostudio kan fotografera, och inget CI bygger
+iOS-appen. Rutans text står i stället ordagrant i produktboken, och skärmbilden tas ur första bygget som bär den — 0.3.9 (13).
+
+**Sagt högt.** (1) Texten *"även med släckt skärm"* vilar på #273, som är byggd men ännu inte hörd på en resa. Faller (12):s prov
+(a) ska texten backas i samma varv som fixen lagas. (2) `docs/PLAY-BACKGROUND-LOCATION.md` rad 26 säger fortfarande *"Positionen
+lämnar aldrig enheten"* — det är Play-deklarationen, inte en app-text, och den rättas med Data Safety före första uppladdningen
+till Google, inte här. (3) Swift-ändringen är en strängliteral; den är inte kompilerad förrän (13) byggs.

@@ -143,7 +143,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         case .notDetermined:
             manager.requestWhenInUseAuthorization()
         case .authorizedWhenInUse:
-            // Trappan: be om Alltid för släckt skärm; körning funkar redan nu.
+            // Trappan: be om Alltid för självstarten; körning med släckt skärm funkar redan nu (#273).
             manager.requestAlwaysAuthorization()
             start()
         case .authorizedAlways:

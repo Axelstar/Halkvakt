@@ -82,8 +82,15 @@ den kan visas igen från Inställningar.
 
 1. **Löftet** — vad Halkvakt gör, och ordagrant: *"Din position lämnar aldrig telefonen. Vi samlar in:
    ingenting — om du inte själv slår på betatestets facit i Inställningar."*
-2. **Platsen** — *Tillåt plats* ("Vid användning"). Nästa gång du kör frågar iOS om
-   "Alltid", som behövs för att rösten ska tala med släckt skärm.
+2. **Platsen** — *Tillåt plats* ("Vid användning") — det räcker för att rösten ska tala
+   med släckt skärm. Nästa gång du kör frågar iOS om "Alltid", som behövs för att vakten
+   ska starta av sig själv.
+   **iOS egen ruta** säger (ordagrant, `project.yml`): *"Halkvakt jämför din position med
+   vägfaror lokalt i telefonen och varnar med rösten, även med släckt skärm under körning.
+   Ingen position lämnar telefonen av sig själv — det enda som skickas är betatestets
+   facitsvar, som du själv slår på."* Och vid *Alltid*: *"Med "Alltid" startar vakten av sig
+   själv när du börjar köra. Matchningen sker lokalt i telefonen — ingen position lämnar den
+   av sig själv."* Skärmbild av rutan kommer ur första bygget som bär texten (0.3.9 (13)).
 3. **Bannern** — *Tillåt notiser*, så att varningen syns över kartappen.
 4. **Du är klar** — två sätt att starta: knappen i appen, eller *"Hej Siri, starta
    Halkvakt"* med telefonen i facket. Inget mer att ställa in. Vakten stoppar sig själv

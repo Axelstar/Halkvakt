@@ -69,7 +69,7 @@ struct OnboardingView: View {
         OnboardingPage(
             icon: "location.fill",
             title: "Platsen — bara i telefonen",
-            text: "Vakten jämför din position med vägfarorna lokalt. Välj \"Vid användning\" nu. Strax frågar iOS om \"Alltid\" — säg ja: då startar vakten av sig själv när du kör och talar med släckt skärm."
+            text: "Vakten jämför din position med vägfarorna lokalt. Välj \"Vid användning\" nu — det räcker för att vakten ska tala med släckt skärm. Strax frågar iOS om \"Alltid\" — säg ja, så startar vakten av sig själv när du kör."
         ) {
             switch guardM.authStatus {
             case .notDetermined:

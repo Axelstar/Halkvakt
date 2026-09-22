@@ -43,11 +43,13 @@ targets:
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         UIBackgroundModes: [location, audio]
         NSLocationWhenInUseUsageDescription: >-
-          Halkvakt jämför din position med vägfaror lokalt i telefonen för att
-          kunna varna med rösten. Positionen lämnar aldrig enheten.
+          Halkvakt jämför din position med vägfaror lokalt i telefonen och varnar
+          med rösten, även med släckt skärm under körning. Ingen position lämnar
+          telefonen av sig själv — det enda som skickas är betatestets facitsvar,
+          som du själv slår på.
         NSLocationAlwaysAndWhenInUseUsageDescription: >-
-          Med "Alltid" kan vakten varna även när skärmen är släckt under körning.
-          All matchning sker lokalt — positionen lämnar aldrig enheten.
+          Med "Alltid" startar vakten av sig själv när du börjar köra. Matchningen
+          sker lokalt i telefonen — ingen position lämnar den av sig själv.
         ITSAppUsesNonExemptEncryption: false
         UIAppFonts:   # skinnet v3 — Instrument Sans + IBM Plex Mono (OFL), Sources/Fonts
           - InstrumentSans.ttf
