@@ -241,30 +241,49 @@ test("#83 gallra_vader: tunnar gammalt till 30 min, lämnar sista veckan, idempo
 
 // Grepp 3 (sql/026, DECISIONS #232): gallra_arkiv kör den svenska gallringen och tar dessutom Finland (varma rader efter
 // sju dygn, allt efter 60), Norge (allt efter sju dygn) och pg_crons logg — loggen finns inte i CI och hoppas över.
-test("grepp 3 gallra_arkiv: Finland behåller kalla rader i 60 dygn, Norge sju dygn, idempotent", { skip: !url }, async () => {
+test("grepp 3 gallra_arkiv: Finland behåller kalla rader i 60 dygn, Norge och Danmark sju dygn, epoknoll och gravstenar bort, idempotent", { skip: !url }, async () => {
   const { default: pg } = await import("pg");
   const { readFileSync } = await import("node:fs");
   const pool = new pg.Pool({ connectionString: url, max: 1 });
   try {
-    for (const f of ["014_gallring.sql", "004_fi_schema.sql", "006_no_schema.sql", "026_gallring_grannar.sql"])
+    for (const f of ["014_gallring.sql", "004_fi_schema.sql", "006_no_schema.sql", "007_dk_schema.sql", "026_gallring_grannar.sql", "031_gallring_dk_gravstenar_tid.sql"])
       await pool.query(readFileSync(new URL("../sql/" + f, import.meta.url), "utf8"));
     await pool.query("DELETE FROM fi.weather_observations WHERE station_id = 'GFI'");
     await pool.query("DELETE FROM no.weather_observations WHERE station_id = 'GNO'");
+    await pool.query("DELETE FROM dk.weather_observations WHERE station_id = 'GDK'");
+    await pool.query("DELETE FROM deviations WHERE deviation_id LIKE 'GRAV_%'");
+    await pool.query("DELETE FROM dk.deviations WHERE deviation_id LIKE 'GRAV_%'");
     const p = "ST_SetSRID(ST_MakePoint(25, 66), 4326)";
     await pool.query(`INSERT INTO fi.weather_observations (station_id, name, geom, sample_time, surface_temp_c) VALUES
       ('GFI', 'Varm gammal', ${p}, now() - interval '20 days', 5),
       ('GFI', 'Kall gammal', ${p}, now() - interval '20 days' + interval '30 min', 1),
       ('GFI', 'Utan yta', ${p}, now() - interval '20 days' + interval '60 min', NULL),
       ('GFI', 'Kall uråldrig', ${p}, now() - interval '70 days', -2),
-      ('GFI', 'Varm färsk', ${p}, now() - interval '1 day', 6)`);
+      ('GFI', 'Varm färsk', ${p}, now() - interval '1 day', 6),
+      ('GFI', 'Epoknoll', ${p}, '1970-01-01T00:00:00Z', -2)`);
+    // Kort #240: Danmark får Norges regel; gravstenar (raderade i 30 dygn) tas bort, färska gravstenar och levande rader står kvar.
+    await pool.query(`INSERT INTO dk.weather_observations (station_id, name, geom, sample_time, surface_temp_c) VALUES
+      ('GDK', 'Gammal', ${p}, now() - interval '20 days', -1),
+      ('GDK', 'Färsk', ${p}, now() - interval '1 day', -1)`);
+    const grav = (tabell: string) => pool.query(`INSERT INTO ${tabell} (deviation_id, situation_id, message_type, message_type_value, message, geom, start_time, modified_time, deleted) VALUES
+      ('GRAV_GAMMAL', 's', 'Olycka', 'Accident', 'x', ${p}, now() - interval '40 days', now() - interval '35 days', true),
+      ('GRAV_FARSK',  's', 'Olycka', 'Accident', 'x', ${p}, now() - interval '5 days',  now() - interval '2 days',  true),
+      ('GRAV_LEVER',  's', 'Olycka', 'Accident', 'x', ${p}, now() - interval '40 days', now() - interval '35 days', false)`);
+    await grav("deviations"); await grav("dk.deviations");
     await pool.query(`INSERT INTO no.weather_observations (station_id, name, geom, sample_time, surface_temp_c) VALUES
       ('GNO', 'Gammal', ${p}, now() - interval '20 days', -1),
       ('GNO', 'Färsk', ${p}, now() - interval '1 day', -1)`);
     await pool.query("SELECT gallra_arkiv(7)");
     const fi = (await pool.query("SELECT name FROM fi.weather_observations WHERE station_id = 'GFI' ORDER BY sample_time")).rows.map((r) => r.name);
-    assert.deepEqual(fi, ["Kall gammal", "Varm färsk"], "varm och ytlös gammal rad bort, kall kvar, 70 dygn bort");
+    assert.deepEqual(fi, ["Kall gammal", "Varm färsk"], "varm och ytlös gammal rad bort, kall kvar, 70 dygn bort, epoknoll bort");
     const no = (await pool.query("SELECT name FROM no.weather_observations WHERE station_id = 'GNO'")).rows.map((r) => r.name);
     assert.deepEqual(no, ["Färsk"], "Norge: allt äldre än sju dygn bort");
+    const dk = (await pool.query("SELECT name FROM dk.weather_observations WHERE station_id = 'GDK'")).rows.map((r) => r.name);
+    assert.deepEqual(dk, ["Färsk"], "Danmark: Norges regel (kort #240)");
+    for (const tabell of ["deviations", "dk.deviations"]) {
+      const kvar = (await pool.query(`SELECT deviation_id FROM ${tabell} WHERE deviation_id LIKE 'GRAV_%' ORDER BY 1`)).rows.map((r) => r.deviation_id);
+      assert.deepEqual(kvar, ["GRAV_FARSK", "GRAV_LEVER"], `${tabell}: gravstenen från 35 dygn bort, den färska och den levande kvar`);
+    }
     const igen = (await pool.query("SELECT gallra_arkiv(7) AS n")).rows[0].n;
     assert.equal(Number(igen), 0, "andra körningen har inget att ta");
   } finally { await pool.end(); }
