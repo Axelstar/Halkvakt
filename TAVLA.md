@@ -2657,6 +2657,24 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↦ **Sorterat 22/9 (kort #224):** texten för iOS-testarna skriver Claude nu; utskicket med en extern TestFlight-grupp är Axels.
 
 ### Claude — låst (väntar på nyckel)
+- [ ] 🦌 **#241 VILTRÖSTEN TALAR PÅ LÄNETS MITTPUNKT — mot DECISIONS #13** (fynd 22/9, Bengts fråga *"vad har vi för mätning i appen,
+  polisen eller trafikverket"*; `scripts/matningar/viltrosten-polisen-2026-09-22.sql`, körning 35761967231).
+  **Läget:** appens viltvarning kommer ur **polisens** data, inte Trafikverkets. `publish/snapshot-core.ts` skickar polisens viltolyckor
+  från senaste 48 h som `wildlife` i live.json; Android och iOS läser in dem som viltfaror, och motorn talar inom 400–3 000 m:
+  *"Viltrisk — vanlig olycksplats för älg den här tiden."* Men polisens koordinat är **länets mittpunkt**: 60 dygns data ger exakt
+  en punkt per län (Norrbotten: 10 händelser, 1 punkt). Skuggflottan fick **11 viltvarningar** 9–10/9.
+  **Varför det är fel:** DECISIONS #13 (25/8) beslutade *röstvarning A4 vilande* — *"vanlig olycksplats"* på länsnivå förbjuds av
+  regeln att bara säga vad datan bär. Kort #17 (29/8, 7aae951) lade in punkterna i snapshoten och i alla tre parsrarna fyra dagar
+  senare utan att #13 ändrades. Ingen vakt såg det.
+  **Förslag:** (1) **nu:** sluta skicka polisens punkter i `wildlife` (serverändring i snapshot-core + publicera, deploy med bevis) —
+  A4 tyst igen, som #13 säger; ingen app behöver byggas. (2) **när #266:s text** (*"Viltrisk framöver."*) finns i apparna: mata
+  `wildlife` med Trafikverkets *djur på vägen* — riktig position, publicerat inom ~2 min, 91 % med djurslag (DECISIONS #316). Det är
+  i praktiken #32 (Ä3, våren 2027). Att mata Trafikverkets punkter i dag skulle få den gamla texten att säga *"vanlig olycksplats för
+  älg"* om en hjort som står där nu.
+  🔑 **Nyckel:** Bengts ja till (1). (2) är Axels text och vårens fråga.
+  Verify (1): live.json utan polisens punkter efter deployen (manifestets sha stämmer), motorns prov och v13 gröna, och skuggloggen
+  utan viltlarm från polisens punkter.
+
 - [ ] 🧂 **#231 PRODUKTIONSREGELNS FALSKLARM PER VÄDERTYP — en rad i bildfacitets läsning** (Bengts ja 21/9, Axel utan synpunkter samma dag, DECISIONS #291,
   ur second opinion #290). 🔑 **Nyckel: bildfacitets läsning (#209) — beslutet efter första frosten, bilderna öppnas i mars.**
   På en stadigt kall snödag säger stationsregeln *kallt och nederbörd* också på en saltad väg med fullt grepp; stationen ser
