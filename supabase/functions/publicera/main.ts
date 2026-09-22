@@ -53,6 +53,28 @@ Deno.serve(async (req) => {
   if (!k || req.headers.get("x-halkvakt-key") !== k) return new Response("forbidden", { status: 403 });
   const t0 = Date.now();
   try {
+    // GRANNLÄNDERNA (kort #238; Bengts princip 22/9: återkommande körningar i Supabase, inte i Actions): ?land=fi|no|dk
+    // bygger ett lands skuggsnapshot, ?land=grannar alla tre i EN commit. Samma skrivare som Sverige, noll Actions-minuter.
+    const land = new URL(req.url).searchParams.get("land");
+    if (land) {
+      const lander = land === "grannar" ? [...GRANNAR] : [land as Granne];
+      if (!lander.every((l) => (GRANNAR as readonly string[]).includes(l)))
+        return new Response(JSON.stringify({ ok: false, error: `okänt land: ${land}` }), { status: 400 });
+      const q: Q = (text, params) => sql.unsafe(text, (params ?? []) as any[]) as unknown as Promise<Record<string, any>[]>;
+      const files: Record<string, string> = {};
+      const ut: Record<string, unknown> = {};
+      for (const l of lander) {
+        const { staticDoc, liveDoc } = await buildGrannSnapshot(q, l);
+        const sStatic = JSON.stringify(staticDoc), sLive = JSON.stringify(liveDoc);
+        const manifest = await manifestFor(liveDoc.generated_at, { static: sStatic, live: sLive }, `app/${l}/v1`);
+        files[`data/app/${l}/v1/static.json`] = sStatic;
+        files[`data/app/${l}/v1/live.json`] = sLive;
+        files[`data/app/${l}/v1/manifest.json`] = JSON.stringify(manifest);
+        ut[l] = { generated_at: liveDoc.generated_at, weather: liveDoc.weather.length, deviations: liveDoc.deviations.length };
+      }
+      const sha = await publicera(files);
+      return new Response(JSON.stringify({ ok: true, land, sha, ...ut, ms: Date.now() - t0 }), { headers: { "Content-Type": "application/json" } });
+    }
     const { staticDoc, liveDoc, border, notes } = await buildSnapshot(
       (text, params) => sql.unsafe(text, (params ?? []) as any[]) as unknown as Promise<Record<string, any>[]>,
       BRIDGES);

@@ -63,7 +63,7 @@ jobs:
           node --experimental-strip-types ingest/no.ts | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: 🗺️ fi/dk/no-snapshoterna → kartrepot (ersätter publish-map.yml, kort #85; Norge sedan 22/9, kort #238)
+      - name: 🗺️ fi/dk-snapshoterna → kartrepot (ersätter publish-map.yml, kort #85) — flyttas till publicera?land=grannar (kort #238)
         shell: bash
         env:
           DATABASE_URL: "${{ secrets.DATABASE_URL }}"
@@ -71,5 +71,4 @@ jobs:
         run: |
           node --experimental-strip-types publish/build-snapshot-fi.ts out
           node --experimental-strip-types publish/build-snapshot-dk.ts out
-          node --experimental-strip-types publish/build-snapshot-no.ts out
           node --experimental-strip-types publish/push-data.ts out | tee -a "$GITHUB_STEP_SUMMARY"
