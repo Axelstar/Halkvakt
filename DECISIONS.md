@@ -9142,3 +9142,28 @@ enheten"*). Introduktionen och Om säger undantaget; behörighetsrutan gör det 
 (#196), så den rördes inte — frågan står i §4.2 (d). (2) Höjningen gör inte #203:s iOS-kod kompilerad: ingen CI bygger iOS-appen
 (ios-engine prövar bara Swift-motorn på Linux). Det första provet är Axels Xcode. (3) *"2 skickade"* tolkades som att anmälningarna
 är skickade (fråga 1 i listan); datum och väg är inte angivna.
+
+## #305 (22/9 2026) Tavlans sektioner sorterade: 22 kort flyttade dit nästa steg finns, Claude — olåst 7 kort (kort #224)
+
+**Beslut (Bengt 22/9: *"sortera korten som står i fel sektion och lämna förslag på de 5 enklaste att slutföra"*).** Regeln är #224:s
+egen: *Claude — olåst* betyder *"det här kan Claude börja på utan att vänta på någon"*. Ett kort som väntar på vädret, en händelse
+eller en persons beslut innan Claude bygger står i *Claude — låst* med nyckeln utskriven. Ett kort där allt som återstår är en
+persons handling eller beslut står i den personens sektion. Varje flyttat kort bär en rad om varför.
+
+**Flyttat (22):** till *Claude — olåst* #203 (lager 2; Axels beslut är tagna) och välkomsttexten · till *Claude — låst* #228 (Axel vid
+Macen), #209, #151, #103, #95, #46, #45 (frosten eller vintern), #152 (1/10), #32 (releasen), #21 (iOS-bygget ute), #153 (betan och S2) ·
+till *Bengt* #233, #218, #198, #146 och Danmark-nyckeln · till *Axel — beslut att ta* #204, #156, #214 · till *Axel — därefter* #210.
+**Kvar i Claude — olåst (7):** #226, #217, #219, #221, #160, #203, välkomsttexten. #224 stängs: dess Verify är uppfylld. Tavlan 67 → 66.
+
+**Varför.** En sektion som ljuger gör tavlan obrukbar för planering: 20/9 gav *"vad kan göras nu"* svaret 32, när det rätta var 9.
+
+**Sagt högt.** (1) Kontrollen var att inga rader försvann: flyttningen jämfördes rad för rad mot originalet, och de enda nya raderna
+är de 22 förklaringsraderna. Diffen ser stor ut (cirka 900 rader) eftersom hela block flyttats. (2) Ett fel från DECISIONS #303
+rättades på vägen: sammanslagningsraden för #81 hade hamnat efter avgränsaren `---` i slutet av *Claude — låst*. (3) Två kort i
+*Claude — olåst* är gränsfall. #221 kräver Bengts eller Axels ja för ändringen i CLAUDE.md och grenraderingen, men arkivet och
+motsägelserna kan göras nu. #219:s konto och uppladdning är Axels, men versionshöjningen och introduktionen på Android kan byggas
+nu. (4) Kort som redan stod i *Claude — låst* men med föråldrad nyckeltext (#89, #90, #97) flyttades inte — sektionen är rätt, bara
+nyckelns ordalydelse är gammal.
+
+**De fem enklaste att slutföra** (§4.2): #160 (Claude, nu) · #146 (Bengts ja, sedan en commit) · #156 (Axels rad) · skinnet v3 på
+Android (Axels skärmbild) · Billing (Axel, före 24/9).
