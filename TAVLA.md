@@ -1194,7 +1194,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   hämtar men bara ritar på kartan — som FÖRSTÄRKARE av frysrisken (snöfallsvarning + yta nära noll =
   högre konfidens), aldrig som egen fara. Verify: (a) tre kommuner tillfrågade om stationsdata,
   (b) skuggkolumn "smhi_forstarkt" mätt mot facit en vintermånad.
-- [ ] Läsa SYSTEM.md mot koden månadsvis (första: september)
+- [ ] Läsa SYSTEM.md mot koden månadsvis — ✅ **första läsningen gjord 22/9** (Bengts order, underlag till Skyltfondens bilaga 3): regler, källor, vakter, skuggdrift, mätning och grannländer lästa mot koden; nästa läsning oktober
 - [ ] Samtal med Axel: sensortrappan — tidsättning av steg 2 (våren 2027?)
 - [ ] 🔗 **#237 PARKERAT: TELEFONKEDJAN — bil 1:s telefon varnar bil 2 (Bengts tanke 22/9, "inte nu, kanske en väg framåt").**
   Nira bygger en kedja där bilens givare (ABS, antispinn, torkare) rapporterar bakåt till nästa bil via molnet. Kan telefonen
