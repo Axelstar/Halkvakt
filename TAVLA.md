@@ -3423,7 +3423,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] **#25 Halkbaneläget** *(låst: halkbanans avsiktsförklaring)*
 - [x] ✅ **STÄNGT 22/9** (DECISIONS #311) — **#26 Skolpaketet** (QR-blad, manus, checklista) *(låst: trafikskolans avsiktsförklaring)*
   ✅ **Stängt 22/9 (DECISIONS #311, Bengt: *"ta upp våren 2027"*):** hör till skolpaketet våren 2027 och står i bedömningens rad *Efter mars*. **Öppnas igen** om Skyltfonden beviljar ansökan med trafikskolorna (besked senast 15/12) — villkoret står i decemberraden.
-- [ ] **#15 Kö-slutsmotorn** (TrafficFlow) *(låst: efter release — uppdatering 1)*
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #315) — **#15 Kö-slutsmotorn** (TrafficFlow) *(låst: efter release — uppdatering 1)*
+  ✅ **Stängt 22/9 (DECISIONS #315, Bengt: *"öppna våren 2027"*):** bärs av Ä3 i bedömningens §3 och **öppnas våren 2027**. Idén och villkoren (ny HazardKind med vektorer, slinglogik, falsklarmsskydd) står kvar i BACKLOG.md punkt 15.
 - [x] ✅ **STÄNGT 22/9** (DECISIONS #309) — **#16 Blixthalke-prognos** (MET Nowcast) *(låst: efter kö-slut — uppdatering 2)*
   ✅ **Stängt 22/9 (DECISIONS #309, Bengts ja):** kortets form — en prognos som varnar — krockar med regel T6 (TROSKLAR-KOMBINATIONEN, fastställd 17/9: prognoser får aldrig ensamma utlösa). Idén lever vidare som en rad i #233:s *före resan*-vy, där en prognos får visas men inte talas.
 - [x] ✅ **#101 MÄTVAKTEN — KLART 12/9, och den hittade fyra döda mätningar till**
@@ -4240,11 +4241,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   fortsatt medvetet parkerat. *(Bengt + Claude, terminalen 3–4/9)*
   🔑 **Nyckel, sorterat 22/9 (kort #224):** vinterdata och #51:s mätning (nu i #209) — våtbulben döms på en vintermånad (Ä2, mars).
 
-- [ ] **#32 Hindren in i rösten** — vi har aldrig skeppat annat än olyckor trots att
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #315) — **#32 Hindren in i rösten** — vi har aldrig skeppat annat än olyckor trots att
   DECISIONS #5 sade "olyckor + hinder". Kräver ny HazardKind + egen röstfras + Axels
   beslut om vad rösten säger. Bäst kandidat: **djur på vägbanan** (173 på en vecka, med
   RIKTIG position — vida bättre än polisens länscentrum som vi underkände i #13).
   🔑 **Nyckel, sorterat 22/9 (kort #224):** publik release och Axels beslut om HazardKind och röstfras (Ä3).
+  ✅ **Stängt 22/9 (DECISIONS #315, Bengt: *"öppna våren 2027"*):** bärs av Ä3 i bedömningens §3 och **öppnas våren 2027**. Underlaget samlas redan: `AnimalPresenceObstruction` arkiveras (ARCHIVE), fast rösten bara talar om olyckor (KEEP). Rösttexten är Axels beslut.
 
 ---
 
@@ -4254,6 +4256,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 ---
 
 ## 🟢 KLART (senaste vinsterna)
+
+- [x] ✅ **#15 KÖ-SLUT OCH #32 HINDER TILL VÅREN 2027 (DECISIONS #315)** — Bengts ord 22/9: stängda som kort, Ä3 bär dem och de öppnas våren 2027. Tavlan 50 → 48 öppna.
 
 - [x] ✅ **LIVE ACTIVITY OCH STARTKNAPPEN STÄNGDA 22/9 (DECISIONS #314)** — Bengts beslut; inget byggt, inget lovat i produktboken, designen och beställningen kvar. Tavlan 52 → 50 öppna.
 
