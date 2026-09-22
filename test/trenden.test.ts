@@ -9,7 +9,7 @@ const natt = (): Rad[] => {
   const ut: Rad[] = [];
   for (let k = 0; k <= 12; k++) {
     const yta = 5 - k * 0.4;
-    ut.push({ t: k * 5, yta, dagg: yta - 0.3, rh: 95, luft: yta + 1, brott: 0 });
+    ut.push({ t: k * 5, yta, dagg: yta - 0.3, rh: 95, luft: yta + 1, brott: 0, givarfel: false });
   }
   return ut;
 };
@@ -60,7 +60,7 @@ test("kandidat kräver att ytan ligger i bredaste bandet", () => {
 
 test("kandidat kräver att någon lutning når svepets lägsta steg", () => {
   // Platt natt mitt i bandet: rätt temperatur, ingen lutning.
-  const platt: Rad[] = Array.from({ length: 13 }, (_, k) => ({ t: k * 5, yta: 3, dagg: 2.8, rh: 95, luft: 4, brott: 0 }));
+  const platt: Rad[] = Array.from({ length: 13 }, (_, k) => ({ t: k * 5, yta: 3, dagg: 2.8, rh: 95, luft: 4, brott: 0, givarfel: false }));
   assert.equal(platt.every((_, i) => arKandidat(platt, i) === null), true);
 });
 
@@ -78,9 +78,12 @@ test("kort #234 (DECISIONS #299): radvakten och karantänen gör raden till icke
   const blixt = natt().map((r) => ({ ...r, luft: r.yta + 7 }));
   assert.equal(blixt.some((_, i) => arKandidat(blixt, i) !== null), true, "det äkta gapet får tala");
   // Tre brott mot #75 de sju dygnen före raden tystar stationen; två gör det inte.
-  const tre = natt().map((r) => ({ ...r, brott: 3 })), tva = natt().map((r) => ({ ...r, brott: 2 }));
+  const tre = natt().map((r) => ({ ...r, brott: 3, givarfel: false })), tva = natt().map((r) => ({ ...r, brott: 2, givarfel: false }));
   assert.equal(tre.every((_, i) => arKandidat(tre, i) === null), true, "karantänen");
   assert.equal(tva.some((_, i) => arKandidat(tva, i) !== null), true, "två brott räcker inte");
+  // Kort #236: ett dygn i den långsamma vaktens fel (givarfel_dygn) tystar raden, hur vacker den än ser ut.
+  const dygn = natt().map((r) => ({ ...r, givarfel: true }));
+  assert.equal(dygn.every((_, i) => arKandidat(dygn, i) === null), true, "den långsamma vakten");
 });
 
 test("utfallet räknar bara framåt, och noll rader är OKÄNT — aldrig 'blev inte kallare'", () => {

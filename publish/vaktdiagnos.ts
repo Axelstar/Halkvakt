@@ -15,7 +15,7 @@
 // En nolla utan den uppdelningen är inte ett svar. Därför räknar varje grind numera sina vaktled
 // FÖR SIG, före allt annat, och skriver ut dem.
 
-import { RADVAKT_SQL, karantanSql, GIVARFEL_LUFT_MIN_C, GIVARFEL_GAP_C, KARANTAN_DYGN, KARANTAN_BROTT }
+import { RADVAKT_SQL, brottSql, givarfelSql, GIVARFEL_LUFT_MIN_C, GIVARFEL_GAP_C, KARANTAN_DYGN, KARANTAN_BROTT }
   from "./snapshot-core.ts";
 
 export type Led = {
@@ -95,6 +95,10 @@ export function led234(tabell = "weather_observations"): Led[] {
     { namn: `#234 radvakt: luft>=${GIVARFEL_LUFT_MIN_C}, gap<${GIVARFEL_GAP_C}`,
       bar: "surface_temp_c IS NOT NULL AND air_temp_c IS NOT NULL", villkor: RADVAKT_SQL },
     { namn: `#234 karantän: <${KARANTAN_BROTT} brott/${KARANTAN_DYGN} dygn`,
-      bar: "surface_temp_c IS NOT NULL", villkor: karantanSql(tabell, tabell) },
+      bar: "surface_temp_c IS NOT NULL", villkor: `${brottSql(tabell, tabell)} < ${KARANTAN_BROTT}` },
+    // Den långsamma vakten (kort #236) finns bara för det svenska arkivet — sql/030 räknar bara det.
+    ...(tabell === "weather_observations"
+      ? [{ namn: "#236 långsam vakt: dygn i felet", bar: "surface_temp_c IS NOT NULL", villkor: `NOT ${givarfelSql(tabell)}` }]
+      : []),
   ];
 }

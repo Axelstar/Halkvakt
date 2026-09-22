@@ -113,6 +113,7 @@ BEGIN
       AND (SELECT count(*) FROM weather_observations k WHERE k.station_id = w.station_id
              AND k.sample_time <= w.sample_time AND k.sample_time > w.sample_time - interval '7 days'
              AND k.air_temp_c IS NOT NULL AND k.surface_temp_c < k.air_temp_c - 12) < 3
+      AND NOT EXISTS (SELECT 1 FROM givarfel_dygn g WHERE g.station_id = w.station_id AND g.dag = (w.sample_time AT TIME ZONE 'UTC')::date)
   ),
   seg_nara AS (
     -- Radarvarianten: vägavsnitt inom 5 km från stationen. Räknas en gång per station, inte per ögonblick.

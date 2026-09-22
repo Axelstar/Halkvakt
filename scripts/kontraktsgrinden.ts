@@ -316,6 +316,14 @@ export const KONTRAKT: Kontrakt[] = [
     golv: 5,
   },
   {
+    // Den långsamma vaktens regel (6 °, 90 %, 24 rader) bor bara i sql/030 och behöver inget kontrakt; fristen som
+    // snapshoten läser tabellen med kopieras av bunten (kort #236).
+    namn: "Den långsamma vaktens frist — timmar sedan stationens senaste ögonblick i felet",
+    varfor: "Driver den talar en trasig station tidigare i bunten än i källan, eller tvärtom.",
+    former: [/LANGSAM_FRIST_H = (\d+)/],
+    golv: 2,
+  },
+  {
     namn: "Fukten — vilka nederbördsord som betyder UPPEHÅLL",
     varfor: "Definierad i TypeScript och i SQL. Glider de isär larmar motorn på annat än grindarna mäter.",
     former: [

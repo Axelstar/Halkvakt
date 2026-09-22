@@ -38,6 +38,13 @@ export const GIVARFEL_GAP_C = 8;
  *  trasiga. Tre brott, inte ett — en enstaka studs (Vassijaure, 1 rad på 29 dygn) ska inte tysta en frisk fjällstation. */
 export const KARANTAN_DYGN = 7;
 export const KARANTAN_BROTT = 3;
+/** DEN LÅNGSAMMA VAKTEN (kort #236, DECISIONS #300). Regeln — ytan ≥ 6 ° under luften i ≥ 90 % av det senaste dygnets rader,
+ *  minst 24 — bor på ETT ställe: sql/030:s `langsam_vakt()`, som ingest-live kör varje varv och som skriver stationens dygn i
+ *  felet till `givarfel_dygn`. Snapshoten läser bara tabellen: en station vars senaste ögonblick i felet är färskare än så
+ *  här många timmar är tyst. Tre timmar täcker ingestens kadens och ett uteblivet varv; efter att givaren mäter rätt igen
+ *  talar stationen några timmar senare, utan att någon gör något. Mätt 22/9 innan den byggdes: fem stationer i hela
+ *  arkivet, alla bland de sju anmälda, ingen frisk (scripts/matningar/langsam-vakt-d-2026-09-22.sql). */
+export const LANGSAM_FRIST_H = 3;
 
 /** RADVAKTEN som SQL-led. WX_SANE bär den, och mätningarna importerar den härifrån (DECISIONS #299) — talen kopieras inte. */
 export const RADVAKT_SQL =
@@ -54,8 +61,14 @@ export function brottSql(rad: string, tabell = "weather_observations"): string {
     ` AND k.sample_time <= ${rad}.sample_time AND k.sample_time > ${rad}.sample_time - interval '${KARANTAN_DYGN} days'` +
     ` AND k.air_temp_c IS NOT NULL AND k.surface_temp_c < k.air_temp_c - 12)`;
 }
+/** DEN LÅNGSAMMA VAKTEN i mätningarna (kort #236): sann när stationen hade ett dygn i felet (`givarfel_dygn`, sql/030) det
+ *  UTC-dygn raden hör till. Dygnsupplösning med flit — tabellen bär dygn, och en trasig givare är trasig hela dagen. Bara det
+ *  svenska arkivet: funktionen räknar bara det, och gränsstationernas id:n kan krocka. */
+export function givarfelSql(rad: string): string {
+  return `EXISTS (SELECT 1 FROM givarfel_dygn g WHERE g.station_id = ${rad}.station_id AND g.dag = (${rad}.sample_time AT TIME ZONE 'UTC')::date)`;
+}
 export function karantanSql(rad: string, tabell = "weather_observations"): string {
-  return `${brottSql(rad, tabell)} < ${KARANTAN_BROTT}`;
+  return `${brottSql(rad, tabell)} < ${KARANTAN_BROTT}` + (tabell === "weather_observations" ? ` AND NOT ${givarfelSql(rad)}` : "");
 }
 
 /** Givarvakten (#75) och radvakten (#234). Gäller VARJE fråga mot weather_latest — svensk, gräns och bro. */
@@ -220,6 +233,16 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
     if (karantan.size) notes.push(`karantän: ${karantan.size} station(er) tysta efter brott mot #75: ${[...karantan].sort().join(", ")}`);
   } catch (e) {
     notes.push(`karantän: weather_observations ej läsbar (${String((e as Error).message).slice(0, 80)}) — ingen station i karantän`);
+  }
+  // ---- den långsamma vakten (kort #236, DECISIONS #300): stationer med ett färskt dygn i felet, ur sql/030:s tabell ----
+  // Samma tystnad som karantänen (väderpunkt och broarnas källa), samma fail-soft. Regeln själv står inte här.
+  try {
+    const l = await q(`SELECT station_id FROM givarfel_dygn WHERE senast > now() - interval '${LANGSAM_FRIST_H} hours'`);
+    const tysta = [...new Set(l.map((r) => String(r.station_id)))].sort();
+    for (const s of tysta) karantan.add(s);
+    if (tysta.length) notes.push(`långsam vakt: ${tysta.length} station(er) tysta, ytan ≥ 6 ° under luften ett helt dygn: ${tysta.join(", ")}`);
+  } catch (e) {
+    notes.push(`långsam vakt: givarfel_dygn ej läsbar (${String((e as Error).message).slice(0, 80)}) — ingen station tystad av den`);
   }
 
   // ---- live: väderpunkter (svenska), med givarvakten ----

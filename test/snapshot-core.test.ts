@@ -5,7 +5,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { buildSnapshot, manifestFor, bridgesFromGeoJSON, WX_SANE, REGN_UTLOSARE_MMH, GIVARFEL_LUFT_MIN_C, GIVARFEL_GAP_C, KARANTAN_DYGN, KARANTAN_BROTT, RADVAKT_SQL, brottSql, karantanSql, type Q } from "../publish/snapshot-core.ts";
+import { buildSnapshot, manifestFor, bridgesFromGeoJSON, WX_SANE, REGN_UTLOSARE_MMH, GIVARFEL_LUFT_MIN_C, GIVARFEL_GAP_C, KARANTAN_DYGN, KARANTAN_BROTT, RADVAKT_SQL, brottSql, karantanSql, givarfelSql, LANGSAM_FRIST_H, type Q } from "../publish/snapshot-core.ts";
 import { snapshotToHazards } from "../engine/src/snapshot.ts";
 
 /** Låtsasdatabas: svarar på frågorna efter vilken tabell de läser, och loggar frågetexten. */
@@ -29,6 +29,7 @@ function fakeDb(rows: Partial<Record<string, any[]>>) {
     if (text.includes("FROM polisen_events")) return rows.vilt ?? [];
     if (text.includes("FROM smhi_warnings")) return rows.smhi ?? [];
     if (text.includes("FROM weather_observations") && text.includes("HAVING count(*)")) return rows.karantan ?? [];
+    if (text.includes("FROM givarfel_dygn")) return rows.langsam ?? [];
     if (text.includes("FROM weather_observations")) return rows.regnH ?? [];
     if (text.includes("FROM trend_kandidater")) return rows.lutning ?? [];
     throw new Error("okänd fråga: " + text.slice(0, 60));
@@ -348,9 +349,54 @@ test("#234 fragmenten för mätningarna (DECISIONS #299): radvakten är WX_SANE:
   assert.ok(WX_SANE.endsWith(` AND ${RADVAKT_SQL}`), "driften och mätningarna bär SAMMA radvakt — en sträng, inte två");
   assert.equal(RADVAKT_SQL, `(air_temp_c IS NULL OR air_temp_c < ${GIVARFEL_LUFT_MIN_C} OR air_temp_c - surface_temp_c < ${GIVARFEL_GAP_C})`);
   const k = karantanSql("w");
-  assert.ok(k.startsWith(brottSql("w")) && k.endsWith(` < ${KARANTAN_BROTT}`), "karantänen = brotten under gränsen");
+  assert.ok(k.startsWith(`${brottSql("w")} < ${KARANTAN_BROTT}`), "karantänen = brotten under gränsen");
   assert.ok(k.includes("k.station_id = w.station_id") && k.includes("k.sample_time <= w.sample_time"), "radens egen station och tid");
   assert.ok(k.includes(`w.sample_time - interval '${KARANTAN_DYGN} days'`), "fönstret räknas bakåt från raden, inte från nu");
   assert.ok(k.includes("k.surface_temp_c < k.air_temp_c - 12"), "brottet ÄR #75:s gräns — inget nytt tal");
   assert.ok(karantanSql("r", "fi.weather_observations").includes("FROM fi.weather_observations k WHERE k.station_id = r.station_id"), "det finska arkivet");
+});
+
+test("#236 den långsamma vakten: en station med ett färskt dygn i felet tystas — väderpunkt och bro — utan att regeln står här", async () => {
+  const { q, asked } = fakeDb({
+    wx: [
+      { station_id: "FRISK", surface_temp_c: "0.5", rain: true, snow: false, precipitation: "rain", lon: 15.0, lat: 58.05 },
+      { station_id: "LJUNGBY", surface_temp_c: "-1.0", rain: true, snow: false, precipitation: "rain", lon: 13.0, lat: 56.18 },
+    ],
+    allWx: [
+      { station_id: "FRISK", surface_temp_c: "0.5", rain: true, snow: false, precipitation: "rain", lon: 15.0, lat: 58.05 },
+      { station_id: "LJUNGBY", surface_temp_c: "-1.0", rain: true, snow: false, precipitation: "rain", lon: 13.0, lat: 56.18 },
+    ],
+    langsam: [{ station_id: "LJUNGBY" }],
+  });
+  const bridges = bridgesFromGeoJSON({ features: [
+    { geometry: { coordinates: [15.0, 58.06] }, properties: { id: "B-FRISK", road: "E4" } },
+    { geometry: { coordinates: [13.0, 56.19] }, properties: { id: "B-LJUNGBY", road: "E4" } },
+  ] });
+  const { liveDoc, notes } = await buildSnapshot(q, bridges, NOW);
+  assert.deepEqual(liveDoc.weather.map((w) => w.id), ["FRISK"], "gap under 12 och sval luft: bara den långsamma vakten tar den");
+  assert.deepEqual(liveDoc.bridges.map((b) => b.id), ["B-FRISK"], "broarna vid den trasiga givaren får ingen frysrisk");
+  assert.ok(notes.some((n) => n.startsWith("långsam vakt:") && n.includes("LJUNGBY")), "vem som tystats ska stå i noterna");
+  const f = asked.find((t) => t.includes("FROM givarfel_dygn"))!;
+  assert.ok(f.includes(`senast > now() - interval '${LANGSAM_FRIST_H} hours'`), "snapshoten läser tabellen med fristen");
+  assert.ok(!f.includes(">= 6") && !f.includes("0.9"), "regeln själv står i sql/030, inte här");
+});
+
+test("#236 en oläsbar givarfel_dygn fäller inte snapshoten — stationen talar, och det noteras", async () => {
+  const q: Q = async (text) => {
+    if (text.includes("FROM givarfel_dygn")) throw new Error("finns inte");
+    if (text.includes("FROM weather_latest") && text.includes("surface_temp_c <= 3"))
+      return [{ station_id: "W1", surface_temp_c: "-1", rain: true, snow: false, precipitation: "rain", lon: 15, lat: 58 }];
+    return [];
+  };
+  const { liveDoc, notes } = await buildSnapshot(q, [], NOW);
+  assert.deepEqual(liveDoc.weather.map((w) => w.id), ["W1"]);
+  assert.ok(notes.some((n) => n.startsWith("långsam vakt:") && n.includes("ej läsbar")));
+});
+
+test("#236 fragmenten: karantanSql bär dygnsflaggan för det svenska arkivet, inte för det finska", () => {
+  assert.equal(LANGSAM_FRIST_H, 3);
+  const g = givarfelSql("w");
+  assert.ok(g.startsWith("EXISTS (SELECT 1 FROM givarfel_dygn g WHERE g.station_id = w.station_id") && g.includes("(w.sample_time AT TIME ZONE 'UTC')::date"));
+  assert.ok(karantanSql("w").endsWith(` AND NOT ${g}`), "det svenska arkivet: karantänen OCH dygnet i felet");
+  assert.ok(!karantanSql("w", "fi.weather_observations").includes("givarfel_dygn"), "det finska arkivet: id:n kan krocka, tabellen gäller inte där");
 });

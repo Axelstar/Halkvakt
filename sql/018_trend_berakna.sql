@@ -23,6 +23,7 @@
 --   · #46:s korsgivare: RH < 90 % samtidigt som yta ≤ daggpunkt är motsägelsefullt
 --   · kort #234 (DECISIONS #299), radvakten: luft ≥ 10 °C och ytan ≥ 8 ° under luften är givarfel, inte kyla
 --   · kort #234, karantänen: högst 2 brott mot #75 hos stationen de 7 dygnen före raden (sql/029 bär delindexet)
+--   · kort #236 (DECISIONS #300), den långsamma vakten: stationens dygn i felet (givarfel_dygn, sql/030) utesluter dygnets rader
 --
 -- LUTNINGENS EGEN VAKT: minst 3 mätningar i fönstret, och inget givarhopp > 3 °C MELLAN rader som
 -- båda ligger i fönstret. Den sista preciseringen är inte kosmetisk — tas den bort räknar SQL ett
@@ -73,6 +74,7 @@ BEGIN
       AND (SELECT count(*) FROM weather_observations k WHERE k.station_id = r.station_id
              AND k.sample_time <= r.sample_time AND k.sample_time > r.sample_time - interval '7 days'
              AND k.air_temp_c IS NOT NULL AND k.surface_temp_c < k.air_temp_c - 12) < 3
+      AND NOT EXISTS (SELECT 1 FROM givarfel_dygn g WHERE g.station_id = r.station_id AND g.dag = (r.sample_time AT TIME ZONE 'UTC')::date)
       AND r.dewpoint_c IS NOT NULL AND r.surface_temp_c - r.dewpoint_c >= -5
       AND NOT (r.humidity_pct IS NOT NULL AND r.humidity_pct < 90
                AND r.surface_temp_c - r.dewpoint_c <= 0)
