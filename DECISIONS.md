@@ -9289,3 +9289,9 @@ valde ut tre. Tavlan 58 → 55 öppna.
 (2) Domänen halkvakt.se krävdes före tryck av QR-bladet. Med QR-sidan på våren är domänen mindre bråttom, men kortet *Skydda namnet:
 PRV + domänen* står kvar öppet. Tavlan 55 → 53 öppna.
 
+## #313 (22/9 2026) Kort #27 asc-CLI:t stängs
+
+**Beslut (Bengt 22/9: *"asc cli kan du stänga"*).** Kortet om App Store Connect-kommandoradsverktyget (en uppladdning till TestFlight i
+ett kommando, och testarfeedback hämtad av CI) stängs. Det är ett bekvämlighetsverktyg som ingen bett om sedan 31/8, och uppladdning via
+Xcodes Organizer fungerar. Idén står kvar i BACKLOG.md punkt 27. Tavlan 53 → 52 öppna.
+
