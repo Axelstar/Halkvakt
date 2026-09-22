@@ -84,6 +84,9 @@ try {
     const snow = wintry;
     const id = `FI:${st.id}`;
     const t = st.dataUpdatedTime ?? data.dataUpdatedTime;
+    // Tidsvakten (kort #240): en station utan färsk mätning kan bära epoknoll (1970-01-01) i dataUpdatedTime — det är ett
+    // tomt fält som blivit ett datum, ingen mätning. En sådan rad överlevde 60-dygnsregeln för evigt (uppmätt 22/9).
+    if (!t || !(Date.parse(t) >= Date.parse("2020-01-01T00:00:00Z"))) continue;
 
     const row: FiRow = { id, name: m.name, lon: m.lon, lat: m.lat, t, surface, air, dewpoint, humidity, keli, rain, snow, ...brett };
     latestRows.push(row);
