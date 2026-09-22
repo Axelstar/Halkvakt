@@ -9262,3 +9262,18 @@ att något återstår nu.
 ändra invarianten, Data Safety, integritet.html och produktboken i samma commit om den säger ja. Axel var part i kortets namn; beslutet
 följer hans egen ordning från 28/8. Tavlan 59 → 58 öppna.
 
+## #311 (22/9 2026) Tre framtidskort stängs och tas upp våren 2027: skolpaketet som produkt, dess material och Danmarks NAP-nyckel
+
+**Beslut (Bengt 22/9: *"lägg B2B skolpaketet, skolpaketets material och Danmark som stäng och ta upp våren 2027"*).** Tre av de nio
+framtidskorten i §4.2 stängs, och frågorna bärs av bedömningens vårlista i stället för tavlan:
+- **B2B: skolpaketet som produkt** och **#26 skolpaketets material** (QR-blad, manus, checklista) → raden *Efter mars*: säljs våren
+  2027 med halkbanedata.
+- **Danmarks NAP-nyckel** → Ä7 under Nordenprodukten: registreras av Bengt och `ingest/dk.ts` läggs om före dansk produktion,
+  tidigast 2027/28.
+
+**Villkor.** #26 kan behövas tidigare: beviljar Skyltfonden ansökan med trafikskolorna (besked senast 15/12) öppnas kortet igen.
+Villkoret står i bedömningens decemberrad, så att det syns när beskedet kommer.
+
+**Sagt högt.** De övriga sex framtidskorten (#15, #32, #91, #96, #153, betalviljan) och gränsfallen står kvar öppna, eftersom Bengt
+valde ut tre. Tavlan 58 → 55 öppna.
+
