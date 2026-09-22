@@ -9277,3 +9277,15 @@ Villkoret står i bedömningens decemberrad, så att det syns när beskedet komm
 **Sagt högt.** De övriga sex framtidskorten (#15, #32, #91, #96, #153, betalviljan) och gränsfallen står kvar öppna, eftersom Bengt
 valde ut tre. Tavlan 58 → 55 öppna.
 
+## #312 (22/9 2026) Samarbetena #94 stängs; QR-sidan per skola (#204) blir en vårfråga
+
+**Beslut (Bengt 22/9: *"du kan stänga samarbetena 94 också och göra qr sidan till en vårfråga"*).**
+- **#94 Samarbeten vi inte prövat** stängs. NTF-delen bärs av Skyltfondsrundan, där samtalen pågår 21–25/9; åkerierna ströks ur
+  rundan (DECISIONS #215) och försäkringsbolagen tidigare. Inget möte bokas nu.
+- **#204 Skolans namn på QR-sidan** stängs som kort och tas upp våren 2027 i bedömningens rad *Efter mars*, bredvid skolpaketet.
+  Underlaget (`docs/QR-SIDA-PER-SKOLA.md`, Axels sju beslut i §6) ligger kvar. §0b-raden struken.
+
+**Sagt högt.** (1) Åkeri- och bussbolagsspåret bärs inte längre av något kort; det finns kvar i DECISIONS #94 och i det stängda kortet.
+(2) Domänen halkvakt.se krävdes före tryck av QR-bladet. Med QR-sidan på våren är domänen mindre bråttom, men kortet *Skydda namnet:
+PRV + domänen* står kvar öppet. Tavlan 55 → 53 öppna.
+

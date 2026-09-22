@@ -398,7 +398,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [x] ↪ **SAMMANSLAGET 22/9** i *Skyltfonden-paketet före 1/10* (DECISIONS #303) — **Rollfördelningen**: efterfrågan/affärsmodell/B2B = Bengts ansvar? (hans förslag; vid ja uppdateras PLAN)
   ↪ **Sammanslaget 22/9 (DECISIONS #303):** rollfördelningen (DECISIONS #25e) avgörs i samma besked. Det som återstår bärs av *Skyltfonden-paketet före 1/10*.
 
-- [ ] 🏷️ **#204 SKOLANS NAMN PÅ QR-SIDAN — synlig attribution på webben, inte banner i appen — ✅ BESLUTAT 19/9, förberett, byggs när bladet byggs** (Bengts idé 19/9:
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #312) — 🏷️ **#204 SKOLANS NAMN PÅ QR-SIDAN — synlig attribution på webben, inte banner i appen — ✅ BESLUTAT 19/9, förberett, byggs när bladet byggs** (Bengts idé 19/9:
   *"Halkvakt via Mårtenssons trafikskola … indirekt reklam för den som företag — tror du på det eller är det lull lull?"*).
   **Kärnan håller, formen inte.** Att skolan syns som den som gav eleven appen är den billigaste valutan vi har och precis
   det en trafikskola vill ha. Men en banner i appen ger skolan lite (eleven är redan deras kund), bryter mot *tyst app
@@ -422,6 +422,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   tryckt QR-kod går inte att ändra), Axels sju beslut, kostnad ~1 h, bevis. VÄNTAR: Axels bedömning av formen; bygget
   när appen finns i butikerna.
   ↦ **Sorterat 22/9 (kort #224):** nästa steg är Axels bedömning av formen (§6 i `docs/QR-SIDA-PER-SKOLA.md`) och domänen före tryck.
+  ✅ **Stängt 22/9 (DECISIONS #312, Bengt: *vårfråga*):** QR-sidan hör till skolpaketet och står i bedömningens rad *Efter mars*. Underlaget ligger kvar i `docs/QR-SIDA-PER-SKOLA.md` med Axels sju beslut (§6), och domänen måste fortfarande finnas före tryck (kortet *Skydda namnet*).
 
 - [x] ✅ **STÄNGT 22/9** (DECISIONS #307) — 🔤 **#156 HALKORDEN FINNS I TRE OLIKA VERSIONER — upptäckt 14/9 av en ny kontraktsgrind**
   ✅ **VÅR HALVA ÅTGÄRDAD 14/9** (Bengts order, DECISIONS #174). Fyra frågor ⇒ **fyra namngivna
@@ -1002,7 +1003,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   inte blockerade. Men felet ligger kvar för alla andra som läser samma öppna data — och svaret
   (givare, överföring eller aggregering?) avgör om konsumenter kan filtrera bort det själva.
   ✅ **Stängt 22/9 (DECISIONS #304):** Bengt 22/9: *"skickade"* — anmälningarna om de trasiga givarna är skickade. Trafikverkets svar bevakas i bedömningens läge ("två anmälningar om trasiga givare").
-- [ ] 🤝 **#94 Samarbeten vi inte prövat: ~~försäkringsbolag~~, åkerier, NTF/M Sverige** (ur Claudes
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #312) — 🤝 **#94 Samarbeten vi inte prövat: ~~försäkringsbolag~~, åkerier, NTF/M Sverige** (ur Claudes
   systemanalys 10/9). 🛑 **FÖRSÄKRINGSSPÅRET STÄNGT 11/9 av Bengt (DECISIONS #94):** "det är klarlagt
   att vi inte kan få det samarbetet". Kortet bär det därmed varken som facitkälla eller som första
   spår. Konsekvens: skadedata är inte längre en väg till facit — grind T-B (#88) och tystnadsfelet
@@ -1012,6 +1013,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   **KVAR, i ny ordning:** (1) Åkerier och bussbolag kör samma sträckor varje dag — perfekta testbilar
   OCH B2B-marknad (kopplar till #92 fordonstyp och #90 sidvind). Nu första spåret. (2) NTF och
   M Sverige som kanaler till landsvägsföraren i mörker. Verify: ett möte bokat per kvarvarande spår.
+  ✅ **Stängt 22/9 (DECISIONS #312, Bengts beslut):** NTF-delen bärs av Skyltfondsrundan, där samtalen pågår; åkerierna ströks ur rundan (DECISIONS #215) och försäkringsbolagen redan tidigare. Inget möte bokas nu.
 - [x] ⛔ **#93 Kommunala vägar — STÄNGT 12/9, men HALVA KORTET FLYTTADES** (Bengts order när §2.6 togs ur
   📏 **STADEN I SIFFROR 19/9** (Bengts fråga: trafikskolorna kör mest i stan): Mätt 19/9 (dbknapp, radie från centrum): **Malmö 6 km: 1 mätstation (Malmö GBG; i hela kommunen tre: Malmö GBG 1 km, Oxie 7 km, Malmö Ö 8 km — alla på statens vägar), 0 fartkameror, 5 väglagssegment, 10 olyckor/30 d · Lund 4 km: 1/0/6/5 · Helsingborg 5 km: 1/0/2/4 · Göteborg 7 km: 1/8/20/142 · Stockholm 8 km: 7/13/10/625** — av 850 stationer, 2 791 kameror, 818 segment i landet. Inne på gatorna är appen tyst; det som finns ligger på ringvägar, infarter och genomfartsleder. Konsekvens för skolorna: lärarnas facit kommer från landsvägs- och motorvägspassen, inte stadspassen; sägs rakt ut i samtalen (kontaktplan v6.3). Städernas svar (Malmö, Stockholm, Göteborg) avgör om det ändras.
   📬 **MALMÖ SVARADE 18/9 16:49** (ärende 1255995, FGK via kundservice): egna väderstationer finns; de och Trafikverkets tre i
@@ -4249,6 +4251,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 ---
 
 ## 🟢 KLART (senaste vinsterna)
+
+- [x] ✅ **#94 STÄNGT OCH #204 TILL VÅREN 2027 (DECISIONS #312)** — Bengts ord 22/9: samarbetena stängda (NTF i Skyltfondsrundan), QR-sidan per skola upptagen i *Efter mars* bredvid skolpaketet. Tavlan 55 → 53 öppna.
 
 - [x] ✅ **TRE FRAMTIDSKORT TILL VÅREN 2027 (DECISIONS #311)** — Bengts ord 22/9: *B2B: skolpaketet som produkt*, *#26 skolpaketets material* och *Danmarks NAP-nyckel* stängda och upptagna i bedömningens vårlista (*Efter mars*, Ä7); #26 öppnas igen om Skyltfonden beviljar 15/12. Tavlan 58 → 55 öppna.
 
