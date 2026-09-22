@@ -422,7 +422,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   när appen finns i butikerna.
   ↦ **Sorterat 22/9 (kort #224):** nästa steg är Axels bedömning av formen (§6 i `docs/QR-SIDA-PER-SKOLA.md`) och domänen före tryck.
 
-- [ ] 🔤 **#156 HALKORDEN FINNS I TRE OLIKA VERSIONER — upptäckt 14/9 av en ny kontraktsgrind**
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #307) — 🔤 **#156 HALKORDEN FINNS I TRE OLIKA VERSIONER — upptäckt 14/9 av en ny kontraktsgrind**
   ✅ **VÅR HALVA ÅTGÄRDAD 14/9** (Bengts order, DECISIONS #174). Fyra frågor ⇒ **fyra namngivna
   kontrakt**, vart och ett med sitt eget `varfor`, så att skillnaderna står som BESLUT i stället
   för som slarv — precis vad grindens egen feltext föreskriver.
@@ -460,6 +460,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   och produktboksregeln. Den nya grinden vaktar tills vidare bara motorns egen lista (motor +
   skuggmotor + tystnadsfelet, tre filer, samma värde).
   ↦ **Sorterat 22/9 (kort #224):** nästa steg är Axels rad: är #214:s *"med flit"* hans svar? (§4.2)
+  ✅ **Stängt 22/9 (DECISIONS #307, Bengts beslut i Axels ställe: alternativ b):** snapshotens filter bär nu *mycket besvärligt* (PR #484, 0bb2ae3) och är ett superset av motorns ord. Enhetsprovet kräver det (motprov: ordet bort ⇒ provet faller), integrationsprovet mot PostGIS släpper in *Mycket besvärligt* och *Halkigt* vid kod 1 och håller *fläckvis Våt* och *Halkbekämpning* ute. publicera deployad 15:38Z från main; första live.json efter deployen 15:40:01Z med manifestets sha lika med filens. I dag 0 halksegment alls (september), så ändringen syns först i vinter. Vakthundens och kodgrindens listor ställer andra frågor och är orörda.
 
 - [ ] 📵 **#214 PLAY-DEKLARATIONEN ÄR OSANN SEDAN 16/9** (genomlysningen 20/9). `docs/PLAY-DATASAFETY.md` svarar **"No"** på
   Googles insamlingsfråga och påstår att enda utgående trafik är en GET utan parametrar. Filen rördes senast **27/8**. Sedan 16/9
@@ -4238,6 +4239,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 ---
 
 ## 🟢 KLART (senaste vinsterna)
+
+- [x] ✅ **#156 HALKORDEN — SERVERNS FILTER ETT SUPERSET AV MOTORN, KLART 22/9 (DECISIONS #307)**: *mycket besvärligt* in i snapshotens filter, prov i två led, publicera deployad och bevisad. Tavlan 64 → 63 öppna.
 
 - [x] ✅ **#146 OCH #160 KLARA 22/9 (DECISIONS #306)** — två av de fem enklaste: Swifts byggutdata ur repot (kloningen på Windows går igenom igen) och måndagsserien bevisad (sju av sju i tid 21/9, mätvaktens larmväg provad). Tavlan 66 → 64 öppna.
 

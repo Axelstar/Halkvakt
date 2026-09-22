@@ -9194,3 +9194,31 @@ Fristen är kod (kadens + 3 h), och det första verkliga provet är en måndag s
 **1 riktigt facitsvar** (senast 21/9 22:13Z, 2 prov uteslutna). Kortavstämningen byggde på DECISIONS #267 (20/9: 0 riktiga).
 Kort #21:s steg 5 kan alltså vara uppfyllt; en rad om det står på kortet. (5) `matvaktprov` kostade en dbknapp-körning (cirka en
 minut); mätningen av måndagen läste bara API:t.
+
+## #307 (22/9 2026) Snapshotens halkfilter får "mycket besvärligt" — servern släpper in allt motorn kan varna för (kort #156)
+
+**Beslut (Bengt 22/9: *"gör b"*).** Frågan var ställd till Axel (kort #156, `docs/TILL-AXEL-HALKORDEN.md`): lämna luckan *"med flit"*
+(DECISIONS #214) eller lägga till ordet. Bengt avgjorde den i Axels ställe och valde att lägga till. `publish/snapshot-core.ts`:s
+filter är nu `(is|halka|halkrisk|halkig|halt|mycket besvärligt)|snö|frost`, samma ord som motorns `SLIPPERY_INFO` och samma stammar
+som `SLIPPERY_STAM`.
+
+**Varför.** Servern bestämmer vad motorn över huvud taget får se; motorn bestämmer vad som sägs. Servern måste då släppa in minst
+allt motorn kan varna för. Före ändringen nådde ett segment med kod 1 och texten *"mycket besvärligt"* aldrig telefonen, fast motorn
+skulle ha kallat det halt. #214:s skäl (texten kommer i praktiken med kod 3, som släpps in på koden) var rimligt, men 0 fall av 830
+rader bevisar lite när arkivet saknar vinter. Ändringen kostar en rad och tar bort en lucka som annars bara vilar på ett antagande.
+
+**Alternativ.** (a) Lämna som det var, med #214 som svar — förkastat av Bengt. (c) Vänta på vintern och mäta — förkastat, eftersom
+en lucka som bara syns när den redan kostat en varning inte kan mätas i tid.
+
+**Bevis.** Enhetsprovet (`test/snapshot-core.test.ts`) läser motorns ordlista och stammar och kräver att snapshotens filter bär
+vartenda ord. Motprov: ordet bort ur filtret ⇒ just det provet faller (25 gröna, 1 fel), filen återställd. Integrationsprovet
+mot PostGIS: kod 1 med *Mycket besvärligt* och *Halkigt* når live.json, *fläckvis Våt* och *Halkbekämpning* gör det inte. CI 146
+gröna. 44 kontrakt håller (snapshot-core och bunten bär samma värde). publicera ombuntad, PR #484 (0bb2ae3), deployad 15:38Z från
+main (körning 35748665010) efter `git diff origin/main` utan skillnad. Första live.json efter deployen: 15:40:01Z, manifestets sha
+lika med filens (`scripts/matningar/halkfiltret-156-2026-09-22.py`).
+
+**Sagt högt.** (1) Beslutet var märkt som Axels, eftersom det ändrar vad appen kan varna för. Bengt tog det; Axel ser det här och
+på kortet. (2) I dag har live.json 0 halksegment alls — september — så ändringen syns först när vintern kommer. Deploybeviset visar
+att funktionen kör den kod som ligger på main, inte att ordet redan släppt in något. (3) Produktboken rad 137 hade inte heller
+*halkig*, som motorn talat på sedan 16/9; båda står nu med. (4) Vakthundens vinterkoll och kodgrinden ställer andra frågor och är
+orörda, som brevet till Axel föreslog.

@@ -1,5 +1,7 @@
 # Till Axel: halkorden finns i fyra versioner — en av skillnaderna är fel
 
+> **AVGJORT 22/9 (Bengt, DECISIONS #307):** snapshotens filter fick *mycket besvärligt* (PR #484) och är nu ett superset av motorn. De tre andra listorna är orörda, som dokumentet föreslår.
+
 **Från:** Bengt (mätning och underlag: Claude, 14/9 2026)
 **Gäller:** kort #156, DECISIONS #172
 **Vad som behövs av dig:** ett beslut om **snapshotens** filter. De tre andra listorna rör
