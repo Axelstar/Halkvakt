@@ -3403,10 +3403,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   körningar där vakthunden larmat på ett framkallat fel i VARJE av de fem (?larmprov räcker inte — fem
   riktiga trösklar sänkta tillfälligt i ett prov). Sparar 12 min/dygn = 360 min/mån = hela oktoberpotten
   för iOS-vektorerna och Android-byggena.
-- [ ] **#27 asc-CLI:t** — enkommandos-TestFlight + CI-hämtad testarfeedback.
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #313) — **#27 asc-CLI:t** — enkommandos-TestFlight + CI-hämtad testarfeedback.
   🔓 **Halvöppnad 31/8:** Apple-kontot finns. Kvarvarande nyckel = en ASC API-nyckel
   som Axel skapar i App Store Connect → Users and Access → Integrations. Säg till så
   skriver jag stegen.
+  ✅ **Stängt 22/9 (DECISIONS #313, Bengts beslut):** ett bekvämlighetsverktyg som ingen bett om sedan 31/8; uppladdning via Xcodes Organizer fungerar. Idén står kvar i BACKLOG.md (punkt 27) om behovet kommer.
 - [ ] Butiksuppladdning + Data safety-inklistring *(låst: Play-kontot)*
 - [x] ~~TestFlight-UPPLADDNING~~ ✅ KLART 31/8 — 0.3.0 (3) inne hos Apple.
   Kvar (Axels hand, inte låst): testarinbjudningarna, internt + externt
@@ -4251,6 +4252,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 ---
 
 ## 🟢 KLART (senaste vinsterna)
+
+- [x] ✅ **#27 ASC-CLI:T STÄNGT 22/9 (DECISIONS #313)** — Bengts beslut; idén kvar i BACKLOG.md. Tavlan 53 → 52 öppna.
 
 - [x] ✅ **#94 STÄNGT OCH #204 TILL VÅREN 2027 (DECISIONS #312)** — Bengts ord 22/9: samarbetena stängda (NTF i Skyltfondsrundan), QR-sidan per skola upptagen i *Efter mars* bredvid skolpaketet. Tavlan 55 → 53 öppna.
 
