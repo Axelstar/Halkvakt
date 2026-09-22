@@ -30,13 +30,14 @@
 import { readFileSync } from "node:fs";
 import { andelSe, utfallGolv, utfallTak, grindutfall, marginalPe, type Utfall }
   from "../publish/marginal.ts";
-import { vaktdiagnos } from "../publish/vaktdiagnos.ts";
+import { vaktdiagnos, led234 } from "../publish/vaktdiagnos.ts";
+import { RADVAKT_SQL, karantanSql } from "../publish/snapshot-core.ts";
 
 // ── Speglar publish/grind-a.ts. ÄNDRA DÄR FÖRST — driftvakten fäller annars.
 const K_NEIGHBOURS = 5;
 const MIN_SHARED = 20;
 const BUCKET_S = 1800;
-const GIVARVAKT = "air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12"; // #75
+const GIVARVAKT = `air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12 AND ${RADVAKT_SQL} AND ${karantanSql("weather_observations")}`; // #75 + kort #234
 
 // ── Svepet ur TROSKLAR-FRYSKLASSNINGEN §2. Inget av talen är valt ur ett utfall.
 export const K1_GRANS = [0, 0.5, 1.0];        // klassgränsen, °C
@@ -132,6 +133,7 @@ if (process.argv.includes("--sjalvtest")) {
   k("MIN_SHARED = grind A:s", MIN_SHARED, tal("MIN_SHARED"));
   k("BUCKET_S = grind A:s", BUCKET_S, tal("BUCKET_S"));
   k("givarvakten finns i grind A:s fråga", ga.includes("surface_temp_c >= air_temp_c - 12"), true);
+  k("radvakten och karantänen finns i grind A:s fråga (kort #234)", ga.includes('${RADVAKT_SQL} AND ${karantanSql("weather_observations")}'), true);
   if (!ok) { console.error("\nSJÄLVTEST FÄLLDE."); process.exit(1); }
   console.log("\nSJÄLVTEST OK: det farliga felet räknas åt rätt håll, avståendet sänker täckningen,");
   console.log("septembervakten kräver frysande punkter, och modellen är grind A:s.");
@@ -154,6 +156,7 @@ await vaktdiagnos((s, p) => pool.query(s, p as any[]).then((r) => r.rows),
     { namn: "#75: lufttemperatur finns", bar: "air_temp_c IS NOT NULL", villkor: "true" },
     { namn: "#75: yta - luft >= -12 grader", bar: "surface_temp_c IS NOT NULL AND air_temp_c IS NOT NULL", villkor: "surface_temp_c >= air_temp_c - 12" },
     { namn: "vintertimme (yta <= 5 grader)", bar: "surface_temp_c IS NOT NULL", villkor: "surface_temp_c <= 5" },
+    ...led234(),
   ]);
 const res = await pool.query(`
   SELECT DISTINCT ON (station_id, b) station_id,

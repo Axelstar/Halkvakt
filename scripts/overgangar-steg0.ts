@@ -28,6 +28,7 @@
 // Självtest utan DB: scripts/overgangar-steg0.ts --sjalvtest
 
 import { andelSe, marginalPe } from "../publish/marginal.ts";
+import { RADVAKT_SQL, karantanSql } from "../publish/snapshot-core.ts";
 
 const MIN_HANDELSER = 20;   // förstudiens underlagsvakt: färre än så ⇒ OAVGJORT
 const UTHALL_MIN = 30;      // ett regnstopp måste hålla i sig så länge, annars är det flimmer
@@ -294,7 +295,8 @@ await avsnitt("0c — UNDERLAG (a)", async () => {
   const fr = await q(`
     WITH frost AS (
       SELECT station_id, sample_time, surface_temp_c, air_temp_c, ${FUKT_SQL} AS fukt,
-             (air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12) AS rimlig
+             (air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12
+              AND ${RADVAKT_SQL} AND ${karantanSql("weather_observations")}) AS rimlig   -- #75 + kort #234
       FROM weather_observations
       WHERE sample_time > now() - $1 * interval '1 day' AND surface_temp_c <= 1
     ),

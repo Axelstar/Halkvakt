@@ -31,13 +31,14 @@
 // Självtest utan DB: scripts/ruttberedskap.ts --sjalvtest
 
 import { readFileSync } from "node:fs";
+import { RADVAKT_SQL, karantanSql } from "../publish/snapshot-core.ts";
 
 const STEG_KM = 2;               // provpunkt var annan kilometer längs rutten
 const RACKVIDD_KM = 15;          // station räknas till rutten inom detta avstånd
 const MIN_STATIONER = 5;         // underlagsvakt per rutt
 const MIN_FROSTRADER = 20;       // underlagsvakt för T-A-domen — se nedan
 const BY_TAK = 30;               // m/s, lägsta steget i TROSKLAR-VIND-SIKT:s G_tak-svep
-const GIVARVAKT = "air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12"; // #75
+const GIVARVAKT = `air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12 AND ${RADVAKT_SQL} AND ${karantanSql("weather_observations")}`; // #75 + kort #234
 
 // TVÅ VAKTER SOM KOM UR FÖRSTA KÖRNINGEN 12/9, och båda fällde en dom jag själv hade skrivit:
 //

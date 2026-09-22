@@ -52,7 +52,8 @@ export function separation(natter: Natt[], p: Param) {
 }
 
 import { andelSe, skiljbar, marginalPe } from "../publish/marginal.ts";
-import { vaktdiagnos } from "../publish/vaktdiagnos.ts";
+import { vaktdiagnos, led234 } from "../publish/vaktdiagnos.ts";
+import { brottSql } from "../publish/snapshot-core.ts";
 import { klassaMoln, haversineKm, narmastITid, molnForPunkter, type Molnklass }
   from "../publish/moln.ts";
 
@@ -72,14 +73,20 @@ if (process.argv.includes("--sjalvtest")) {
     else console.log(`  ok: ${namn} = ${fick}`);
   };
   const r = (t: number, yta: number, dagg: number | null = 0, rh: number | null = 95, luft: number | null = 3): Rad =>
-    ({ t, yta, dagg, rh, luft });
+    ({ t, yta, dagg, rh, luft, brott: 0 });
 
   // Givarvakterna, var och en för sig.
   k("rimlig: normal rad", rimlig(r(0, 2)), true);
-  k("rimlig: yta 13 under luften (#75)", rimlig({ t: 0, yta: -10, dagg: -11, rh: 95, luft: 3 }), false);
-  k("rimlig: daggpunkt saknas", rimlig({ t: 0, yta: 2, dagg: null, rh: 95, luft: 3 }), false);
-  k("rimlig: yta − dagg = −28 (#46)", rimlig({ t: 0, yta: 2, dagg: 30, rh: 95, luft: 3 }), false);
-  k("rimlig: torr luft men gap slutet", rimlig({ t: 0, yta: 2, dagg: 2, rh: 40, luft: 3 }), false);
+  k("rimlig: yta 13 under luften (#75)", rimlig({ t: 0, yta: -10, dagg: -11, rh: 95, luft: 3, brott: 0 }), false);
+  k("rimlig: daggpunkt saknas", rimlig({ t: 0, yta: 2, dagg: null, rh: 95, luft: 3, brott: 0 }), false);
+  k("rimlig: yta − dagg = −28 (#46)", rimlig({ t: 0, yta: 2, dagg: 30, rh: 95, luft: 3, brott: 0 }), false);
+  k("rimlig: torr luft men gap slutet", rimlig({ t: 0, yta: 2, dagg: 2, rh: 40, luft: 3, brott: 0 }), false);
+  // Kort #234:s två (DECISIONS #299): radvakten tar bara varm luft, karantänen kräver tre brott.
+  k("rimlig: radvakten — yta 1,3 vid luft 13,3 (Ö Ljungby)", rimlig({ t: 0, yta: 1.3, dagg: 1, rh: 95, luft: 13.3, brott: 0 }), false);
+  k("rimlig: blixthalkan får tala — yta −5 vid luft 4", rimlig({ t: 0, yta: -5, dagg: -5.5, rh: 95, luft: 4, brott: 0 }), true);
+  k("rimlig: töväder får tala — yta 0 vid luft 9,9", rimlig({ t: 0, yta: 0, dagg: -0.5, rh: 95, luft: 9.9, brott: 0 }), true);
+  k("rimlig: karantänen — tre brott på sju dygn", rimlig({ t: 0, yta: 2, dagg: 1.5, rh: 95, luft: 3, brott: 3 }), false);
+  k("rimlig: två brott räcker inte", rimlig({ t: 0, yta: 2, dagg: 1.5, rh: 95, luft: 3, brott: 2 }), true);
 
   // Lutningen och trendens egen vakt. Daggpunkten följer ytan 0,5 ° under — annars faller
   // triggern på gapvillkoret i stället för på lutningen, och testet mäter fel sak.
@@ -145,6 +152,7 @@ await vaktdiagnos((q2, p2) => pool.query(q2, p2 as any[]).then((r) => r.rows),
     { namn: "#75: yta - luft >= -12 grader", bar: "surface_temp_c IS NOT NULL AND air_temp_c IS NOT NULL", villkor: "surface_temp_c >= air_temp_c - 12" },
     { namn: "#46: daggpunkt finns", bar: "dewpoint_c IS NOT NULL", villkor: "true" },
     { namn: "#46: yta - dagg >= -5 grader", bar: "surface_temp_c IS NOT NULL AND dewpoint_c IS NOT NULL", villkor: "surface_temp_c - dewpoint_c >= -5" },
+    ...led234(),
   ]);
 
 // Natten tillhör det dygn den började: skifta 12 h så att en natt inte delas av midnatt.
@@ -154,7 +162,8 @@ const rows = await pool.query(`
          EXTRACT(epoch FROM sample_time) / 60 AS t,
          EXTRACT(hour FROM sample_time) AS tim,
          surface_temp_c AS yta, dewpoint_c AS dagg, humidity_pct AS rh, air_temp_c AS luft,
-         ST_X(geom) AS lon, ST_Y(geom) AS lat
+         ST_X(geom) AS lon, ST_Y(geom) AS lat,
+         ${brottSql("weather_observations")} AS brott
   FROM weather_observations
   WHERE sample_time > now() - $1 * interval '1 day' AND surface_temp_c IS NOT NULL
   ORDER BY station_id, sample_time`, [DAGAR]);
@@ -165,7 +174,7 @@ for (const r of rows.rows as any[]) {
   const nyckel = `${r.station_id}|${String(r.natt).slice(0, 10)}`;
   let g = kartan.get(nyckel);
   if (!g) { g = { station: r.station_id, natt: String(r.natt).slice(0, 10), rader: [], timmar: [], lon: Number(r.lon), lat: Number(r.lat) }; kartan.set(nyckel, g); }
-  g.rader.push({ t: Number(r.t), yta: Number(r.yta), dagg: r.dagg === null ? null : Number(r.dagg), rh: r.rh === null ? null : Number(r.rh), luft: r.luft === null ? null : Number(r.luft) });
+  g.rader.push({ t: Number(r.t), yta: Number(r.yta), dagg: r.dagg === null ? null : Number(r.dagg), rh: r.rh === null ? null : Number(r.rh), luft: r.luft === null ? null : Number(r.luft), brott: Number(r.brott) });
   g.timmar.push(Number(r.tim));
 }
 

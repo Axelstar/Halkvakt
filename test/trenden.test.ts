@@ -9,7 +9,7 @@ const natt = (): Rad[] => {
   const ut: Rad[] = [];
   for (let k = 0; k <= 12; k++) {
     const yta = 5 - k * 0.4;
-    ut.push({ t: k * 5, yta, dagg: yta - 0.3, rh: 95, luft: yta + 1 });
+    ut.push({ t: k * 5, yta, dagg: yta - 0.3, rh: 95, luft: yta + 1, brott: 0 });
   }
   return ut;
 };
@@ -60,13 +60,27 @@ test("kandidat kräver att ytan ligger i bredaste bandet", () => {
 
 test("kandidat kräver att någon lutning når svepets lägsta steg", () => {
   // Platt natt mitt i bandet: rätt temperatur, ingen lutning.
-  const platt: Rad[] = Array.from({ length: 13 }, (_, k) => ({ t: k * 5, yta: 3, dagg: 2.8, rh: 95, luft: 4 }));
+  const platt: Rad[] = Array.from({ length: 13 }, (_, k) => ({ t: k * 5, yta: 3, dagg: 2.8, rh: 95, luft: 4, brott: 0 }));
   assert.equal(platt.every((_, i) => arKandidat(platt, i) === null), true);
 });
 
 test("en fallen givarvakt gör raden till icke-kandidat, inte till ett utfall", () => {
   const rader = natt().map((r) => ({ ...r, luft: r.yta + 20 }));   // #75: ytan 20 ° under luften
   assert.equal(rader.every((_, i) => arKandidat(rader, i) === null), true);
+});
+
+test("kort #234 (DECISIONS #299): radvakten och karantänen gör raden till icke-kandidat — men blixthalkan får tala", () => {
+  // Ö Ljungby 1106 som det såg ut 19–21/9: ytan faller vackert i bandet, men luften ligger 12 ° över — givarfel, inte kyla.
+  // #75 släpper (gapet är exakt 12), så det är ENBART radvakten som tar raderna.
+  const ljungby = natt().map((r) => ({ ...r, luft: r.yta + 12 }));
+  assert.equal(ljungby.every((_, i) => arKandidat(ljungby, i) === null), true, "radvakten");
+  // Ett äkta gap på 7 ° (varmfronten över frusen väg) rör radvakten inte — gapet är under 8, och under +10 °C gäller den inte alls.
+  const blixt = natt().map((r) => ({ ...r, luft: r.yta + 7 }));
+  assert.equal(blixt.some((_, i) => arKandidat(blixt, i) !== null), true, "det äkta gapet får tala");
+  // Tre brott mot #75 de sju dygnen före raden tystar stationen; två gör det inte.
+  const tre = natt().map((r) => ({ ...r, brott: 3 })), tva = natt().map((r) => ({ ...r, brott: 2 }));
+  assert.equal(tre.every((_, i) => arKandidat(tre, i) === null), true, "karantänen");
+  assert.equal(tva.some((_, i) => arKandidat(tva, i) !== null), true, "två brott räcker inte");
 });
 
 test("utfallet räknar bara framåt, och noll rader är OKÄNT — aldrig 'blev inte kallare'", () => {

@@ -10,6 +10,8 @@
 //
 // Konstanterna exporteras med `export` (de var lokala i T-A) — i övrigt ordagrant flyttade.
 
+import { GIVARFEL_LUFT_MIN_C, GIVARFEL_GAP_C, KARANTAN_BROTT } from "./snapshot-core.ts";
+
 // ── Svepet, ordagrant ur TROSKLAR-TRENDEN §2. Ändras BARA där, aldrig här.
 export const FONSTER = [15, 30, 60];                  // minuter
 export const LUTNING = [0.4, 0.6, 0.8, 1.2];          // °C per fönster, fallande
@@ -22,11 +24,18 @@ export type Rad = {
   dagg: number | null;
   rh: number | null;
   luft: number | null;
+  brott: number;    // brott mot #75 hos stationen de 7 dygnen före raden — karantänen (kort #234)
 };
 
-/** Givarvakterna ur §3, alla tre. En station som faller på någon ger INGET utfall — tystnad. */
+/** Givarvakterna ur §3, alla tre — och kort #234:s två (DECISIONS #299), samma tal som driften. En station som faller
+ *  på någon ger INGET utfall — tystnad. sql/018 bär samma fem, ordagrant: driftvakten `trendarkivet.ts --jamfor`. */
 export function rimlig(r: Rad): boolean {
   if (r.luft !== null && r.yta < r.luft - 12) return false;       // #75, yttemperaturen
+  // #234 radvakten: bara varm luft. Gapet avrundas till tusendelen före jämförelsen (13/9-läxan: 13,3 − 5,3 är inte
+  // exakt 8 i binär flyttal, men är det i Postgres numeric — utan avrundning väljer SQL och TypeScript olika rader).
+  if (r.luft !== null && r.luft >= GIVARFEL_LUFT_MIN_C
+      && Math.round((r.luft - r.yta) * 1000) / 1000 >= GIVARFEL_GAP_C) return false;
+  if (r.brott >= KARANTAN_BROTT) return false;                    // #234 karantänen
   if (r.dagg === null) return false;                              // trenden behöver daggpunkten
   if (r.yta - r.dagg < -5) return false;                          // #46, daggpunktsgivaren
   if (r.rh !== null && r.rh < 90 && r.yta - r.dagg <= 0) return false; // #46:s korsgivare

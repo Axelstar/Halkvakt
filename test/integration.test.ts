@@ -304,7 +304,7 @@ test("uppspelningen: varje variant ändrar en sak, utfallet är blindat, värden
   const { readFileSync } = await import("node:fs");
   const pool = new pg.Pool({ connectionString: url, max: 1 });
   try {
-    for (const f of ["001_init.sql", "003_situation_archive.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "028_uppspelning_varianter.sql"])
+    for (const f of ["001_init.sql", "003_situation_archive.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "029_brott_index.sql", "028_uppspelning_varianter.sql"])
       await pool.query(readFileSync(new URL("../sql/" + f, import.meta.url), "utf8"));
     for (const t of ["trend_kandidater", "weather_observations", "weather_latest"]) await pool.query(`DELETE FROM ${t} WHERE station_id LIKE 'UPPSP_%'`);
     for (const t of ["radar_precip", "road_condition_history", "road_conditions"]) await pool.query(`DELETE FROM ${t} WHERE segment_id LIKE 'UPPSP_SEG%'`);
@@ -451,5 +451,38 @@ test("#85 writeFi/writeNo/writeDk: batchat, upsert på latest, DO NOTHING i arki
     assert.deepEqual({ ...tom, air_temp_c: Number(tom.air_temp_c) }, { surface_temp_c: null, air_temp_c: 7, precipitation: null });
     const g = (await pool.query(`SELECT precipitation, dewpoint_c FROM dk.weather_observations WHERE station_id = 'DK:1'`)).rows[0];
     assert.deepEqual({ precipitation: g.precipitation, dewpoint_c: Number(g.dewpoint_c) }, { precipitation: "grass", dewpoint_c: -1 });
+  } finally { await pool.end(); }
+});
+
+// Kort #234 i drifträkningen (sql/018, DECISIONS #299): radvakten och karantänen räknas PER RAD mot riktig PostGIS, med
+// sql/029:s delindex på plats. Fyra stationer med samma vackra fall i bandet (3,0 → 1,8 °C på en halvtimme): KAR_A är
+// frisk och blir kandidat; KAR_B har luften 12 ° över ytan (Ö Ljungby-felet — #75 släpper, gapet är exakt 12) och tas
+// av radvakten ENSAM; KAR_C har tre brott mot #75 två dygn tidigare och sitter i karantän; KAR_D har två brott, och två
+// räcker inte. Samma fyra fall som rimlig() prövas på i trenden.test.ts — tvillingarna ska välja lika.
+test("#234 drifträkningen: radvakten och karantänen väljer bort samma rader som rimlig()", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  try {
+    for (const f of ["001_init.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql", "029_brott_index.sql"])
+      await pool.query(readFileSync(new URL("../sql/" + f, import.meta.url), "utf8"));
+    for (const t of ["trend_kandidater", "weather_observations"]) await pool.query(`DELETE FROM ${t} WHERE station_id LIKE 'KAR_%'`);
+    const g = (x: number) => `ST_SetSRID(ST_MakePoint(${x}, 60.0), 4326)`;
+    const fall = (st: string, x: number, luftOver: number) => [50, 40, 30, 20].map((min, i) => {
+      const yta = 3.0 - i * 0.4;
+      return `('${st}', 'x', ${g(x)}, now() - interval '${min} minutes', ${yta.toFixed(1)}, ${(yta + luftOver).toFixed(1)}, ${(yta - 0.3).toFixed(1)}, 95)`;
+    }).join(",\n");
+    const brott = (st: string, x: number, n: number) => Array.from({ length: n }, (_, i) =>
+      `('${st}', 'x', ${g(x)}, now() - interval '2 days' - interval '${i * 10} minutes', -20.0, 5.0, NULL, NULL)`).join(",\n");
+    await pool.query(`
+      INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, dewpoint_c, humidity_pct) VALUES
+        ${fall("KAR_A", 15.1, 1)},
+        ${fall("KAR_B", 15.2, 12)},
+        ${fall("KAR_C", 15.3, 1)}, ${brott("KAR_C", 15.3, 3)},
+        ${fall("KAR_D", 15.4, 1)}, ${brott("KAR_D", 15.4, 2)}
+      ON CONFLICT DO NOTHING`);
+    await pool.query("SELECT * FROM berakna_trendkandidater()");
+    const valda = (await pool.query("SELECT DISTINCT station_id FROM trend_kandidater WHERE station_id LIKE 'KAR_%' ORDER BY 1")).rows.map((r) => r.station_id);
+    assert.deepEqual(valda, ["KAR_A", "KAR_D"], "A (frisk) och D (två brott) räknas; B (radvakten) och C (karantänen) är tysta");
   } finally { await pool.end(); }
 });

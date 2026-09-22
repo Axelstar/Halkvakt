@@ -100,7 +100,8 @@ function evaluate(stations: Map<string, Station>): Eval[] {
 // DEN KAN ALDRIG ÖPPNA EN STÄNGD GRIND. Ett KLARAR inom bruset blir OAVGJORT (skärpning), och
 // ett FALLER inom bruset blir OAVGJORT (mät igen) — grinden öppnar bara på KLARAR.
 import { Z, andelSe, medelSe, skiljbar, utfallTak, grindutfall } from "./marginal.ts";
-import { vaktdiagnos } from "./vaktdiagnos.ts";
+import { vaktdiagnos, led234 } from "./vaktdiagnos.ts";
+import { RADVAKT_SQL, karantanSql } from "./snapshot-core.ts";
 
 function stats(rows: Eval[]) {
   const dec = rows.filter((r) => r.measured >= -5);      // decision band −5…+5 (≤5 already)
@@ -212,6 +213,7 @@ await vaktdiagnos((s, p) => pool.query(s, p as any[]).then((r) => r.rows),
     { namn: "yttemperatur finns", bar: "surface_temp_c IS NOT NULL", villkor: "true" },
     { namn: "#75: lufttemperatur finns", bar: "air_temp_c IS NOT NULL", villkor: "true" },
     { namn: "#75: yta - luft >= -12 grader", bar: "surface_temp_c IS NOT NULL AND air_temp_c IS NOT NULL", villkor: "surface_temp_c >= air_temp_c - 12" },
+    ...led234(),
   ]);
 
 // Latest surface reading per (station, 30-min bucket). numeric arrives as string — cast.
@@ -230,6 +232,8 @@ const res = await pool.query(`
     -- bandet 7–15 km sämst av alla fyra (1,41 °C / 18,4 %), med den är det näst bäst
     -- (0,78 °C / 3,1 %) och felet stiger monotont med ankaravståndet som fysiken kräver.
     AND air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12
+    -- Kort #234 (DECISIONS #299): radvakten och karantänen, importerade ur snapshotkärnan — inte kopierade.
+    AND ${RADVAKT_SQL} AND ${karantanSql("weather_observations")}
   ORDER BY station_id, b, sample_time DESC`, [DAYS]);
 const stations = new Map<string, Station>();
 for (const r of res.rows) {

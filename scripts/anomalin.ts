@@ -36,6 +36,7 @@
 // Självtest utan nät/DB: scripts/anomalin.ts --sjalvtest
 
 import { readFileSync } from "node:fs";
+import { RADVAKT_SQL, karantanSql } from "../publish/snapshot-core.ts";
 
 // ── Speglar publish/grind-a.ts. ÄNDRA DÄR FÖRST — driftvakten i självtestet fäller annars.
 const K_NEIGHBOURS = 5;
@@ -211,7 +212,7 @@ await pool.query("SET statement_timeout = '300s'");
 // Frågan är grind A:s, rad för rad — DISTINCT ON ger SENASTE avläsningen per hink, precis som
 // där. Den enda skillnaden är den valfria givarvakten, som grind A INTE har (se nedan).
 async function hamta(medGivarvakt: boolean): Promise<Map<string, Station>> {
-  const vakt = medGivarvakt ? "AND air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12" : "";
+  const vakt = medGivarvakt ? `AND air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12 AND ${RADVAKT_SQL} AND ${karantanSql("weather_observations")}` : "";
   const res = await pool.query(`
     SELECT DISTINCT ON (station_id, b) station_id,
       ST_X(geom::geometry) lon, ST_Y(geom::geometry) lat,

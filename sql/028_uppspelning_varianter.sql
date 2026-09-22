@@ -103,12 +103,16 @@ BEGIN
       AND tk.surface_temp_c BETWEEN p_lag AND p_hog
       AND (CASE p_trendfonster WHEN 15 THEN tk.lutning15_c WHEN 60 THEN tk.lutning60_c ELSE tk.lutning30_c END) >= p_fall
     UNION ALL
-    -- Utan fallkravet: väderarkivet i bandet, med givarvakten (#75). Inget utfall — se huvudet.
+    -- Utan fallkravet: väderarkivet i bandet, med givarvakten (#75) och kort #234:s två. Inget utfall — se huvudet.
     SELECT w.station_id, w.sample_time, NULL::numeric, NULL::int
     FROM weather_observations w
     WHERE NOT p_krav_faller AND w.sample_time > now() - p_fonster
       AND w.surface_temp_c BETWEEN p_lag AND p_hog
       AND w.air_temp_c IS NOT NULL AND w.surface_temp_c >= w.air_temp_c - 12
+      AND (w.air_temp_c < 10 OR w.air_temp_c - w.surface_temp_c < 8)
+      AND (SELECT count(*) FROM weather_observations k WHERE k.station_id = w.station_id
+             AND k.sample_time <= w.sample_time AND k.sample_time > w.sample_time - interval '7 days'
+             AND k.air_temp_c IS NOT NULL AND k.surface_temp_c < k.air_temp_c - 12) < 3
   ),
   seg_nara AS (
     -- Radarvarianten: vägavsnitt inom 5 km från stationen. Räknas en gång per station, inte per ögonblick.

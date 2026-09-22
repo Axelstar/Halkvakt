@@ -24,7 +24,8 @@
 // Självtest utan DB: scripts/smhi-forstarkaren-steg0.ts --sjalvtest
 
 import { andelSe, utfallGolv, utfallTak, grindutfall, marginalPe } from "../publish/marginal.ts";
-import { vaktdiagnos } from "../publish/vaktdiagnos.ts";
+import { vaktdiagnos, led234 } from "../publish/vaktdiagnos.ts";
+import { RADVAKT_SQL, karantanSql } from "../publish/snapshot-core.ts";
 
 const MIN_TIMMAR = 200;          // F-A1
 const MIN_OMRADEN = 20;          // F-A2
@@ -32,7 +33,7 @@ const ANDEL_GOLV = 0.05;         // F-A3 golv
 const ANDEL_TAK = 0.80;          // F-A3 tak
 const MAX_EN_VARNING = 0.25;     // F-A4
 const OKAND_FONSTER_H = 12;      // schablon för rader utan giltighetsfönster — en gissning, se huvudet
-const GIVARVAKT = "air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12"; // #75, DECISIONS #106
+const GIVARVAKT = `air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12 AND ${RADVAKT_SQL} AND ${karantanSql("weather_observations")}`; // #75 (DECISIONS #106) + kort #234
 
 // Fukten är en KOPIA av motorns (publish/snapshot-core.ts:41). Driftvakten i självtestet fäller om
 // de glider isär — samma form som #89:s steg 0.
@@ -140,6 +141,7 @@ await vaktdiagnos(q, "weather_observations",
     { namn: "yttemperatur finns", bar: "surface_temp_c IS NOT NULL", villkor: "true" },
     { namn: "#75: lufttemperatur finns", bar: "air_temp_c IS NOT NULL", villkor: "true" },
     { namn: "#75: yta - luft >= -12 grader", bar: "surface_temp_c IS NOT NULL AND air_temp_c IS NOT NULL", villkor: "surface_temp_c >= air_temp_c - 12" },
+    ...led234(),
     { namn: "fukt: nederbordsklass finns", bar: "precipitation IS NOT NULL OR rain OR snow", villkor: "true" },
   ]);
 

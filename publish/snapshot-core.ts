@@ -35,12 +35,31 @@ export const GIVARFEL_GAP_C = 8;
 export const KARANTAN_DYGN = 7;
 export const KARANTAN_BROTT = 3;
 
+/** RADVAKTEN som SQL-led. WX_SANE bär den, och mätningarna importerar den härifrån (DECISIONS #299) — talen kopieras inte. */
+export const RADVAKT_SQL =
+  `(air_temp_c IS NULL OR air_temp_c < ${GIVARFEL_LUFT_MIN_C} OR air_temp_c - surface_temp_c < ${GIVARFEL_GAP_C})`;
+
+/** KARANTÄNEN PER RAD, för mätningarna (DECISIONS #299). Snapshoten räknar brotten från NU (buildSnapshot nedan); en
+ *  mätning över ett arkiv räknar dem från VARJE RADS EGEN TID, annars tystar tre studsar en vinter en frisk fjällstation
+ *  för hela fönstret. `brottSql` är antalet brott mot #75 hos radens station de KARANTAN_DYGN dygnen före raden (raden
+ *  inräknad); `karantanSql` är sann när raden får tala. `rad` är radens alias i frågan (tabellnamnet när FROM saknar
+ *  alias), `tabell` arkivet — det finska har eget schema. Delfrågan bär sql/029:s delindex; utan det läser den varje
+ *  rad hos stationen i sju dygn, för varje rad. */
+export function brottSql(rad: string, tabell = "weather_observations"): string {
+  return `(SELECT count(*) FROM ${tabell} k WHERE k.station_id = ${rad}.station_id` +
+    ` AND k.sample_time <= ${rad}.sample_time AND k.sample_time > ${rad}.sample_time - interval '${KARANTAN_DYGN} days'` +
+    ` AND k.air_temp_c IS NOT NULL AND k.surface_temp_c < k.air_temp_c - 12)`;
+}
+export function karantanSql(rad: string, tabell = "weather_observations"): string {
+  return `${brottSql(rad, tabell)} < ${KARANTAN_BROTT}`;
+}
+
 /** Givarvakten (#75) och radvakten (#234). Gäller VARJE fråga mot weather_latest — svensk, gräns och bro. */
 export const WX_SANE =
   "surface_temp_c IS NOT NULL" +
   " AND sample_time > now() - interval '3 hours'" +
   " AND (air_temp_c IS NULL OR surface_temp_c >= air_temp_c - 12)" +
-  ` AND (air_temp_c IS NULL OR air_temp_c < ${GIVARFEL_LUFT_MIN_C} OR air_temp_c - surface_temp_c < ${GIVARFEL_GAP_C})`;
+  ` AND ${RADVAKT_SQL}`;
 
 const BORDER_M = 40_000;
 const BORDER_LANDS = ["fi", "no"] as const;
