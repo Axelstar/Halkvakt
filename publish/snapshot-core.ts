@@ -155,8 +155,10 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
       -- så ålder ≠ inaktualitet (Bengts dämpningsdom #103: tysta aldrig en sann varning).
       -- OPRÖVAD tills Trafikverket satt en EndTime en gång: i dag har 0 av 818 segment det.
       AND (end_time IS NULL OR end_time > now())
+      -- Kort #156 (Bengt 22/9): samma ord som motorns SLIPPERY_INFO, så att snapshoten är ett superset av motorn. Förut
+      -- saknades "mycket besvärligt": ett segment med kod 1 och den texten nådde aldrig telefonen fast motorn räknar det som halt.
       AND (condition_code >= 2 OR EXISTS (
-        SELECT 1 FROM unnest(condition_info) i WHERE i ~* '(^|[^a-zåäö])(is|halka|halkrisk|halkig|halt)|snö|frost'))`);
+        SELECT 1 FROM unnest(condition_info) i WHERE i ~* '(^|[^a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)|snö|frost'))`);
 
   // ---- live: radarns regn per segment (kort #81 steg C) ----
   // EN SKRIVARE: ingen annan sätter `regn`. Senaste raden per segment inom giltighetsfönstret.

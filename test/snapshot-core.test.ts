@@ -5,6 +5,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 import { buildSnapshot, manifestFor, bridgesFromGeoJSON, WX_SANE, REGN_UTLOSARE_MMH, GIVARFEL_LUFT_MIN_C, GIVARFEL_GAP_C, KARANTAN_DYGN, KARANTAN_BROTT, RADVAKT_SQL, brottSql, karantanSql, givarfelSql, LANGSAM_FRIST_H, buildGrannSnapshot, GRANNAR, type Q } from "../publish/snapshot-core.ts";
 import { snapshotToHazards } from "../engine/src/snapshot.ts";
 
@@ -421,4 +422,16 @@ test("grannländernas snapshot byggs i Supabase (kort #238): väder ≤ 3 °C el
   const m = await manifestFor(liveDoc.generated_at, { static: JSON.stringify(staticDoc), live: JSON.stringify(liveDoc) }, "app/no/v1");
   assert.equal(m.files.live.path, "app/no/v1/live.json");
   assert.equal((await manifestFor("x", { static: "{}", live: "{}" })).files.static.path, "app/v1/static.json", "Sveriges manifest oförändrat");
+});
+
+test("#156 snapshotens halkfilter är ett superset av motorns halkord: allt motorn kan varna för når telefonen", () => {
+  const motor = readFileSync(new URL("../engine/src/engine.ts", import.meta.url), "utf8");
+  const snap = readFileSync(new URL("../publish/snapshot-core.ts", import.meta.url), "utf8");
+  const info = motor.match(/const SLIPPERY_INFO = \/\(\?<!\[a-zåäö\]\)\(([^)]+)\)\/i/)?.[1].split("|");
+  const stam = motor.match(/const SLIPPERY_STAM = \/\(([^)]+)\)\/i/)?.[1].split("|");
+  const m = snap.match(/i ~\* '\(\^\|\[\^a-zåäö\]\)\(([^)]+)\)\|([^']+)'/);
+  assert.ok(info && stam && m, "formerna har ändrats — provet måste läsa om dem, inte tystna");
+  const ord = m[1].split("|"), stammar = m[2].split("|");
+  for (const w of info) assert.ok(ord.includes(w), `motorns ord "${w}" saknas i snapshotens filter — ett sådant segment med kod 1 når aldrig motorn`);
+  for (const s of stam) assert.ok(stammar.includes(s), `motorns stam "${s}" saknas i snapshotens filter`);
 });
