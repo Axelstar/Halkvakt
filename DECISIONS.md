@@ -9222,3 +9222,14 @@ på kortet. (2) I dag har live.json 0 halksegment alls — september — så än
 att funktionen kör den kod som ligger på main, inte att ordet redan släppt in något. (3) Produktboken rad 137 hade inte heller
 *halkig*, som motorn talat på sedan 16/9; båda står nu med. (4) Vakthundens vinterkoll och kodgrinden ställer andra frågor och är
 orörda, som brevet till Axel föreslog.
+
+## #308 (22/9 2026) Kort 3 (Billing) stängs — Actions-förbrukningen bevakas genom mätning, inte genom avläsning
+
+**Beslut (Bengt 22/9: *"du kan stänga billings. Den har vi koll på genom mätning"*).** Kort 3 (Axels skärmklipp av Settings → Billing)
+och §4.2-raden *Actions-kontot* (Axel, före 24/9) stängs. Bevakningen av Actions-taket till 1/10 bärs av kassavakten (#152,
+vakthundens check 8, räknar fyra gånger om dygnet) och av §0b-raden *Actions-taket i september*.
+
+**Sagt högt.** Kortets skäl var att kassavakten bara ser Halkvakts körningar, medan taket på 35 USD gäller hela Axels konto. Andra
+repon på kontot syns alltså inte i mätningen. Bengts bedömning är att det är tillräckligt; skulle taket slå i ser vakthunden det som
+stoppade körningar. Tavlan 63 → 62 öppna.
+
