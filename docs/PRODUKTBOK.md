@@ -18,7 +18,8 @@ En app du startar när du sätter dig i bilen — sedan lägger du undan telefon
 Halkvakt lyssnar på Trafikverkets mätstationer och rapporterade väglag och
 **säger till med rösten** (i högtalaren eller bilens Bluetooth) när något farligt
 finns framför dig: halka, frysrisk, olyckor, vilt, fartkameror. Ingen skärm att
-titta på, inget konto, ingen position som lämnar telefonen. Tystnad är
+titta på, inget konto, och ingen position lämnar telefonen av sig själv — det enda som
+någonsin skickas är betatestets facitsvar, som du själv slår på (se Om). Tystnad är
 grundläget — pratar den, betyder det något.
 
 ## Så ser den ut
@@ -79,7 +80,8 @@ introduktionen igen finns *Visa introduktionen igen* längst ner i Inställninga
 Introduktionen visas en gång, fyra sidor. Allt går att hoppa över och ändra senare;
 den kan visas igen från Inställningar.
 
-1. **Löftet** — vad Halkvakt gör, och att positionen aldrig lämnar telefonen.
+1. **Löftet** — vad Halkvakt gör, och ordagrant: *"Din position lämnar aldrig telefonen. Vi samlar in:
+   ingenting — om du inte själv slår på betatestets facit i Inställningar."*
 2. **Platsen** — *Tillåt plats* ("Vid användning"). Nästa gång du kör frågar iOS om
    "Alltid", som behövs för att rösten ska tala med släckt skärm.
 3. **Bannern** — *Tillåt notiser*, så att varningen syns över kartappen.

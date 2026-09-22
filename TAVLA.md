@@ -210,6 +210,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⏭️ **STÅR KVAR PÅ KORTET (lager 2):** Siri-fraserna *"stämde inte i Halkvakt"* / *"appen missade i Halkvakt"* och
   missarna (`driver_miss` + stor knapp *Appen missade* i körläget). Verify står **öppen**: en riktig resa på en
   riktig telefon som ger rader i `driver_facit` utan att föraren stannat.
+  ⚠️ **22/9 (DECISIONS #304):** lager 1:s iOS-kod (eb81b50, 20/9 18:17) ligger på main och följer därför med i ett arkiv från main — alltså i **0.3.9 (13)**, inte i (12), som sattes 17:37 före koden. Koden har aldrig kompilerats; Xcode är första provet.
 - [ ] ⏰ **#86 NYCKELKALENDERN — två nycklar går ut mitt i säsongen** (Axels fynd 9/9, kort av Claude):
   ⚠️ **18/9 — ett fjärde ställe, okänt om samma nyckel:** pulsklockans jobb i Supabase pg_cron bär en GitHub-nyckel i
   sina kommandon (körningarna startas av *Axelstar*). Går den ut stannar ingest, grannar, healthcheck, marknadsföringen och
@@ -561,18 +562,22 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   *"Kunde inte skicka HH:MM: HTTP …"* är det SERVERNS eget svar — skärmbild räcker, felet är då läsbart. **Och för
   #210:** talar en olycka UTAN vägnummer ska den säga *"Allvarlig olycka 8 kilometer framför dig"* — aldrig *"på väg
   null"*. 5 % av olyckorna saknar vägnummer, så det är en iakttagelse att göra när den dyker upp, inte något att framkalla.
+  ⚠️ **22/9: NUMRET HÖJT TILL 0.3.9 (13)** (DECISIONS #304, Bengts ja). #203:s iOS-kod (eb81b50, 20/9 18:17) kom in på main EFTER att (12)
+  sattes, så ett arkiv från main bär den — okompilerad — och raden *Bär INTE: #203* nedan gäller inte längre för main. **Axels val:**
+  **(a)** arkivera från main som **0.3.9 (13)**: allt nedan plus #203 lager 1, och Xcode kompilerar #203 för första gången; eller
+  **(b)** arkivera den rena fixen som **0.3.9 (12)** från `90b5223` (`git checkout 90b5223` före steg 2), som förkontrollen gjordes på.
   🚀 **NÄSTA ARKIVERING: 0.3.9 (12) — REDO 20/9 23:05.** Förkontroll enligt CLAUDE.md gjord på `90b5223`: ci ✅ och
   ios-engine ✅, inga lokala ändringar. **DEVELOPMENT_TEAM ligger nu i `project.yml`** (R93LGMM343, DECISIONS #275) så
   `xcodegen` slutar nollställa den — steget "välj Team igen" är borta.
   **Steg:** (1) `cd ~/Halkvakt && git pull` · (2) `cd ios/HalkvaktApp && xcodegen` · (3) har Xcode projektet öppet:
   stäng och öppna `Halkvakt.xcodeproj` på nytt, annars håller Xcode kvar den gamla projektfilen · (4) **Signing &
   Capabilities**: Team ska stå som *Lagerlöf Labs* utan röd rad — står den tom har `project.yml`-raden inte gått igenom ·
-  (5) destination **Any iOS Device (arm64)** · (6) **Product → Archive** · (7) Organizer ska visa **0.3.9 (12)** — visar
+  (5) destination **Any iOS Device (arm64)** · (6) **Product → Archive** · (7) Organizer ska visa **0.3.9 (13)** på väg (a) eller **0.3.9 (12)** på väg (b) — visar
   den något annat, AVBRYT, för Apple tillåter aldrig ett lägre versionsspår efteråt · (8) **Distribute App → App Store
   Connect → Upload**.
   **Bär:** iOS-fixen (#273 — rösten tystnade med släckt skärm på *när appen används*) · `<null>`-raden och hela dess klass
   (#210/#276) · det engångs tidiga olycksropet (#211) · de tolv nya vektorerna (#212).
-  **Bär INTE:** #203, #264:s apptexter, #266 (viltrösten) — medvetet, så att provet går att tolka.
+  **Bär INTE (bara väg b):** #203, #264:s apptexter, #266 (viltrösten) — medvetet, så att provet går att tolka. Väg (a) bär #203 lager 1.
   **Provet efteråt, i ordning:** (a) en resa med **"Tillåt när appen används"** och **släckt skärm** — en varning ska
   höras, och **den blå indikatorn i statusfältet** är kvittot på att Core Location håller appen vid liv ⇒ stänger #227 ·
   (b) facitknapparna under *Senast sagt* med vakten avslutad ⇒ leden 1 och 2 · (c) en olycka utan vägnummer sagd utan
@@ -1114,7 +1119,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⚠️ **RÖRS INTE AV MIG:** en ändring i snapshoten ändrar vad appen varnar för, alltså Axels märke
   och produktboksregeln. Den nya grinden vaktar tills vidare bara motorns egen lista (motor +
   skuggmotor + tystnadsfelet, tre filer, samma värde).
-- [ ] 📮 **#154 ANMÄL NIO TRASIGA BYVINDGIVARE TILL TRAFIKVERKET — skriven och klar, skickas av Bengt**
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #304) — 📮 **#154 ANMÄL NIO TRASIGA BYVINDGIVARE TILL TRAFIKVERKET — skriven och klar, skickas av Bengt**
   **Beställd av Bengt 13/9** ("gör 1 och 2") efter att stationsvakten (#90, DECISIONS #164) hittat dem.
   **Brevet ligger i `docs/ANMALAN-TRV-BYVINDGIVARE.md`** — komplett med stations-id, namn, WGS84,
   antal omöjliga timmar, värsta kvot, median byvind och den tydligaste enskilda observationen per
@@ -1138,6 +1143,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   💡 **Varför det är värt att skicka:** vi har uteslutit stationerna ur vårt eget underlag, så vi är
   inte blockerade. Men felet ligger kvar för alla andra som läser samma öppna data — och svaret
   (givare, överföring eller aggregering?) avgör om konsumenter kan filtrera bort det själva.
+  ✅ **Stängt 22/9 (DECISIONS #304):** Bengt 22/9: *"skickade"* — anmälningarna om de trasiga givarna är skickade. Trafikverkets svar bevakas i bedömningens läge ("två anmälningar om trasiga givare").
 - [ ] ⚖️ **#153 ALLVAR SOM FÖRSPRÅNG + ETT SMALARE UNDANTAG — beslut 1 omformulerat 16/9 och väntar, beslut 2 öppet (Bengts)**
   ✏️ **OMSKRIVET 16/9 på Bengts order *"gör 153 och omformulera 153"* (DECISIONS #221).** Det gamla kortet föreslog att
   kombinationen ändrar varningen med *"ordval, framförhållning eller prioritet"*. Två av de tre är avvisade, och kortet
@@ -1251,11 +1257,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   samtalen (Bengt) · minst ett trafikskole-ja till lärare som testförare, annars AP3 om · **Axel: inbjudningsväg för
   lärarna** (TestFlight extern = Beta App Review; Android APK/Play) · Bengts och Axels omarbetning av v6.
 
-- [ ] ↩︎ **Kameravarningen i fel riktning — BEVISET SAKNAS ÄN** (återställt 10/9, föll av 8/9). Koden
+- [x] ✅ **STÄNGT 22/9** (DECISIONS #304) — ↩︎ **Kameravarningen i fel riktning — BEVISET SAKNAS ÄN** (återställt 10/9, föll av 8/9). Koden
   är bevisat rätt i alla tre motorerna (#55b tolerans 100°→60°, #57 riktningen vänd 180°, #59
   Öjersjö ID 14102020; 0.3.5 (8) första bygget med grönt kontrakt). Kvar: Bengt kör 0.3.5 och
   noterar KLOCKSLAG + PLATS per larm och per kamera utan larm. Beskrivningar räcker inte, vi har
   gissat tre gånger.
+  ✅ **Stängt 22/9 (DECISIONS #304):** Bengt 22/9: *"kameravarningen är klar"*. Beviset är fältdomen Malmö–Boden (DECISIONS #102: en varning 500 m före varje verklig kamera, *"helt perfekt"*), som kortet aldrig hann ta upp.
 - [ ] ↩︎ Välkomsttext + testinstruktion till kompisarna (extern TestFlight-grupp = Beta App Review).
 - [x] ↩︎ ~~Bodenresan 1/9~~ ✅ GENOMFÖRD — gav DECISIONS #53 (resan håller över pauser) och #55
   (kameratoleransen). Jämförelsen "Bengts logg bredvid testbilarnas rapport" gjordes aldrig;
@@ -4188,6 +4195,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 ---
 
 ## 🟢 KLART (senaste vinsterna)
+
+- [x] ✅ **#154 BYVINDGIVARNA OCH KAMERAVARNINGEN I FEL RIKTNING — STÄNGDA 22/9 PÅ BENGTS ORD (DECISIONS #304)**: *"skickade"* och *"kameravarningen är klar"* (de två oklara korten från kortavstämningen som var hans). Tavlan 69 → 67 öppna.
 
 - [x] ✅ **KORTAVSTÄMNINGEN 22/9 — 18 KORT STÄNGDA, SJU DUBBLETTER SAMMANSLAGNA, 94 → 69 ÖPPNA (DECISIONS #303)** (Bengts fråga *är det verkligen 94 som ska vara öppna*, hans ja samma dag). Alla 94 prövade mot repot (`docs/KORTAVSTAMNING-2026-09-22.md`); varje stängning bär sitt bevis på kortet. **Stängda:** Bengts egna händer i koden, #72, #85, #229, #159, #192, #187, #186, #185, #154 (regnfältet), minutbantningen, #52, #43, #44, varvloggen, #100 (kopian), designlyftet, #194. **Sammanslagna:** kort 6 → tolv testare till Play-perioden · domänen → skydda namnet · #27 och rollfördelningen → Skyltfonden-paketet · #237 → sensortrappan · #81 → #42 · #51 → #209 · designlyftets #23 → #23 heads-up. Kvar: 4 oklara (§4.2) och sorteringen av 25 kort i fel sektion (#224).
 
