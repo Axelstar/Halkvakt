@@ -12,10 +12,10 @@
 # jobbet blir ändå rött. Ett gemensamt jobb får inte betyda att ett lands fel tystar de
 # andras insamling — det var priset Bengt varnades för, och det här är hur vi slipper det.
 #
-# Kort #85 (9/9): fi/dk-snapshoterna publiceras som SISTA STEG här i stället för via
-# publish-map.yml, som kedjades (workflow_run) efter både ingest och grannar ⇒ 48 jobbstarter
-# per dygn à en debiterad minut för 20 sekunders arbete. Steget körs bara om alla tre länder
-# lyckades — exakt publish-map:s gamla villkor (conclusion == success).
+# Kort #85 (9/9): fi/dk-snapshoterna publicerades som SISTA STEG här i stället för via
+# publish-map.yml. Kort #238 (22/9, Bengts princip: återkommande körningar tar inga Actions-
+# minuter): steget är borta — publicera?land=grannar (Supabase, pg_cron :05/:35) bygger fi/no/dk
+# ur arkivet. Det här flödet ingesterar bara.
 name: ingest-grannar
 on:
   workflow_dispatch:
@@ -62,13 +62,3 @@ jobs:
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           node --experimental-strip-types ingest/no.ts | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-
-      - name: 🗺️ fi/dk-snapshoterna → kartrepot (ersätter publish-map.yml, kort #85) — flyttas till publicera?land=grannar (kort #238)
-        shell: bash
-        env:
-          DATABASE_URL: "${{ secrets.DATABASE_URL }}"
-          PUBLISH_TOKEN: "${{ secrets.PUBLISH_TOKEN }}"
-        run: |
-          node --experimental-strip-types publish/build-snapshot-fi.ts out
-          node --experimental-strip-types publish/build-snapshot-dk.ts out
-          node --experimental-strip-types publish/push-data.ts out | tee -a "$GITHUB_STEP_SUMMARY"
