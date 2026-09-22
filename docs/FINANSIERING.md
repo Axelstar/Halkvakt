@@ -58,7 +58,13 @@ beteendestudie, AP6 struket och sagt öppet, samverkan = Trafikverket som dataä
 **Fondens regel, läst på trafikverket.se 22/9** (sidan "Projektbidrag från Skyltfonden", uppdaterad 5 sep 2024): *"Bidrag ges ej till
 patentkostnader eller till redan slutförda arbeten"* — slutförda, inte påbörjade; fonden stödjer gärna "en första prototyp eller en
 förstudie", ser positivt på (kräver inte) samarbetspartner, max två år, ansökan senast 1 oktober, besked senast 15 december,
-adresser trafikverket@trafikverket.se och skyltfonden@trafikverket.se, beredningsgrupp Trafikverket, Polisen, SKR. Valet 25/9:
+adresser trafikverket@trafikverket.se och skyltfonden@trafikverket.se, beredningsgrupp Trafikverket, Polisen, SKR. **Läst igen 22/9
+(Bengts fråga "skickas den per email"):** ja — *"Skicka din ansökan till trafikverket@trafikverket.se och till skyltfonden@trafikverket.se"*,
+ifylld i fondens mall (länken är fortfarande `ansokningsformular-skyltfonden-240909-f.pdf`, samma version som v7A/v7B), alla poster
+besvarade. Nytt mot repot: bidrag ges inte till sökande med aktuella skulder hos Kronofogden eller i likvidation, rekonstruktion eller
+konkurs; beskedet kommer per brev. **Ingen av adresserna är prövad av oss** — förhandsfrågan 7/9 skickades aldrig. Därför: skicka
+28/9 (inte 1/10), läs inkorgen en halvtimme efteråt efter studs; studsar en adress gäller den andra, och sidans kontaktformulär
+"Skriv meddelande" är reserven. Valet 25/9:
 v7A med muntliga ja, annars v7B; en trafikskola utan halkbana ⇒ v7B med AP3 från v7A.
 
 ## Ideell förening som sökande — så bildas den, läst på skatteverket.se 22/9 (Bengts fråga)
