@@ -9315,3 +9315,26 @@ bromsa lugnt"*, Bengts idé, faktatestad 26/8) och **#32 Hindren in i rösten** 
 (`AnimalPresenceObstruction` arkiveras, rösten talar bara om olyckor). Att vidga filtret släpper in vägarbeten, som DECISIONS #5
 stängde ute; rösttexten för hinder är Axels beslut. Tavlan 50 → 48 öppna.
 
+## #316 (22/9 2026) Djur på vägen: Trafikverket publicerar inom två minuter, polisen publicerar nästan inget — underlag för #32
+
+**Fråga (Bengt 22/9):** hur snabbt rapporterar Trafikverket djur på vägen, var rapporteras det, och är polisen snabbare för samma händelse?
+
+**Var.** Trafikverket publicerar öppet, inte bara internt: i sitt öppna API (som ingest-live läser varje minut) och på trafikverket.se
+under Trafikinformation → Textmeddelanden, läst 22/9: t.ex. *"Djur på vägen - E18 … En hjort rör sig i närheten av körbanan. Starttid
+18:37"*, uppdaterad 18:39.
+
+**Mätt (körning 35757322550, `scripts/matningar/djur-trv-mot-polisen-2026-09-22.sql`, 14 dygn):**
+- **Trafikverket, djur på vägen:** 480 händelser (~34/dygn). Hos oss median **1,8 min** efter Trafikverkets starttid, p90 3,0 min,
+  0 över 30 min. Giltiga i median 72 min. **437 av 480 (91 %) namnger djurslaget** (älg, hjort, rådjur …); 474 har vägnummer.
+- **Polisen, "Trafikolycka, vilt":** bara **11** händelser på 14 dygn, 6 med vägnummer. Samma nivå som i augusti (5 i veckan), alltså
+  polisens urval och inte ett fel hos oss. Polisen anger länets mittpunkt, inte platsen (DECISIONS #13).
+- **Samma händelse:** ett par gick att para ihop (samma väg, inom 150 km och 3 h). Där var Trafikverket först, 45 min före polisen.
+
+**Slutsats för #32 (Ä3, våren 2027).** Trafikverkets flöde är det enda som duger för en varning: snabbt, med riktig position och
+djurslaget i texten. Polisen rapporterar krockar som redan hänt och publicerar för få. Djurslaget i Trafikverkets text öppnar för en
+röst som säger vad datan bär (*"Älg på vägen framöver"*), till skillnad från viltrösten ur polisens data (#266).
+
+**Sagt högt.** (1) 1,8 min mäter från Trafikverkets starttid, som är när händelsen lades in — inte när djuret kom ut på vägen; den
+tiden syns i ingen källa. (2) Ett enda par säger inget statistiskt om vem som är snabbast; det som väger är att polisen har 11
+händelser mot 480. (3) Polisen hämtas en gång i timmen, så deras tid till oss (median 24,5 min) är inte jämförbar och används inte.
+
