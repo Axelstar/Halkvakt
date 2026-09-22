@@ -1247,16 +1247,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-frågan bor i #16/#38b.
 
 ### Claude — olåst
-- [ ] 🇳🇴 **#238 NORGE KÖRS ALDRIG I SKUGGFLOTTAN** (fynd 22/9 när flottan utvärderades, `scripts/matningar/skuggflottan-hittills-2026-09-22.sql`).
-  Skuggmotorn har 20 norska rutter (`ROUTES_NO`), men `shadow_log` har inga rader med land NO på 25 dygn — bara SE (sedan 29/8),
-  DK och FI (sedan 31/8). Antingen anropas skuggmotorn aldrig med `land=no` (pulsklockan), eller så finns ingen norsk snapshot att
-  köra mot. Norge är live i arkivet (Vegvesen, konto) och publiceras som gränspunkter, så det är kedjan efter arkivet som saknas.
-  Verify: en rad med land NO i skuggloggen, och rutten i skuggrapporten.
-- [ ] 🇩🇰 **#239 DANMARKS OLYCKSFLÖDE KLASSAR TROLIGEN MER ÄN OLYCKOR SOM OLYCKA** (samma utvärdering). 642 danska varningar på 25 dygn,
-  alla "Olycka rapporterad N km": 447 från 63 händelser på 10 km, och 59 varningar från EN händelse på 5 km som hörts 59 varv —
-  det ser ut som vägarbeten eller "glat føre" som blivit olycka i mappningen (jfr #5/#32 för Sverige). Ingen användare hör det
-  (Danmark är skugga), men det ska rättas före NAP-steget och innan danska rutter räknas i någon mätning.
-  Verify: de 63 händelsernas typ i källan lästa, mappningen rättad, varningar per varv i Danmark efter rättningen.
 - [ ] ⏱️ **#235 DRIFTRÄKNINGEN (sql/018) KLARAR INTE SJU DYGN LÄNGRE — LATERAL ÖVER EN MATERIALISERAD CTE ÄR KVADRATISK** (fynd
   22/9 när driftvakten kördes för kort #234). `trendarkivet --jamfor` med 7 dygn: TypeScript räknade 11 061 kandidater ur 195 444
   arkivrader, men `berakna_trendkandidater(7 days)` föll på *statement timeout* (600 s). 13/9 gick samma körning på 118 054 rader
@@ -4177,6 +4167,38 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 ---
 
 ## 🟢 KLART (senaste vinsterna)
+
+- [x] ✅ **#240 GALLRINGEN FÅR DANMARK, GRAVSTENARNA OCH EN TIDSVAKT — KLART 22/9 (DECISIONS #301)** (Bengts fråga 22/9: *"du har
+  gallring på grannar som på sverige"*). Svaret var nej: Sverige tunnas till halvtimme efter sju dygn och raderas aldrig, Finland
+  raderar varma rader efter sju dygn och allt efter 60, Norge allt efter sju — och Danmark gallrades inte alls. Mätt 22/9: databasen
+  **190 MB** (169 den 18/9, ~4,5 MB/dygn netto ⇒ 400 MB runt 9/11, 500 MB runt 1/12), Sverige 84 MB, Finland 22, Norge 13, Danmark 1,3
+  utan gallring sedan 31/8; händelsetabellerna bär gravstenar för evigt (Sverige 1 118 av 1 122 rader raderade, Danmark 986 av 1 055);
+  en rad i det finska arkivet har tidsstämpeln 1970-01-01 (epoknoll). **Byggt (PR #471):** `sql/031` — Danmark får Norges regel,
+  tidsstämplar före 2020 raderas i alla fyra väderarkiv varje natt, gravstenar raderade i 30 dygn tas bort ur alla länders
+  händelsetabeller (situation-arkivet rörs inte); Sveriges, Finlands och Norges regler orörda. `ingest/fi.ts` släpper inte in tom
+  eller epoknoll-tid. Integrationstestet för gallringen täcker Danmark, epoknoll och gravstenar. **Bevis i drift:** sql/031 körd 22/9 (körning 35714435556): första körningen raderade 12 184 rader; Danmark 2 480 rader kvar, 0 äldre än sju dygn (äldsta 15/9); 0 rader före 2020 i något arkiv, 1970-raden borta; inga gravstenar äldre än 30 dygn ännu (regeln biter från 24/9, arkivet började 24/8); pg_proc bär Danmark, tidsvakten och gravstensregeln; databasen 190 MB tills autovacuum frigör
+
+- [x] ✅ **#238 NORGE KÖRS ALDRIG I SKUGGFLOTTAN — KLART 22/9 (DECISIONS #301)** (fynd 22/9 när flottan utvärderades, `scripts/matningar/skuggflottan-hittills-2026-09-22.sql`).
+  Skuggmotorn har 20 norska rutter (`ROUTES_NO`), men `shadow_log` har inga rader med land NO på 25 dygn — bara SE (sedan 29/8),
+  DK och FI (sedan 31/8). Antingen anropas skuggmotorn aldrig med `land=no` (pulsklockan), eller så finns ingen norsk snapshot att
+  köra mot. Norge är live i arkivet (Vegvesen, konto) och publiceras som gränspunkter, så det är kedjan efter arkivet som saknas.
+  ✅ **KLART 22/9.** Orsaken var kedjan efter arkivet: ingen byggde `data/app/no/v1` (CDN 404) och inget cron-jobb anropade
+  `land=no`. Första lösningen (PR #468, Norges byggare i grannflödet) drogs tillbaka samma dag på Bengts ord — *"det ska ligga i
+  supabase"* — och ersattes av **`publicera?land=fi|no|dk|grannar`** (PR #469): snapshotkärnan bygger grannländernas skuggsnapshot
+  ur schema fi/no/dk (samma form, samma olycksregel), publicera skriver alla tre i EN commit, cron-jobbet `halkvakt-publicera-grannar`
+  (:05/:35, jobid 46) och `halkvakt-skuggmotor-no` (:25/:55, jobid 47) skapades med `replace()` ur befintliga jobb så nyckeln aldrig
+  syntes. Actions-steget för fi/dk och de två byggarna borta (PR #470). **Bevis:** publicera?land=grannar körde 09:35:00Z och 10:05:00Z (jobid 46, commit f9dbf12 och 136c0ef i kartrepot, cirka 6 s per varv): Norge 10 väderpunkter, Finland 1 väderpunkt och 1 olycka, Danmark 3 olyckor (körning 35714295337) · skuggmotor?land=no körde 09:55:00Z (jobid 47) och skuggloggen fick sina första norska rader: 3 varv på 3 rutter mot snapshoten 09:35, noll larm — efter 25 dygn med noll
+  Mätsatserna: `scripts/matningar/grannar-i-supabase-2026-09-22.sql`, `grannar-i-supabase-bevis-2026-09-22.sql`.
+
+- [x] ✅ **#239 DANMARKS OLYCKSFLÖDE — FRIAT, KLART 22/9 (DECISIONS #301)** (samma utvärdering). 642 danska varningar på 25 dygn,
+  alla "Olycka rapporterad N km": 447 från 63 händelser på 10 km, och 59 varningar från EN händelse på 5 km som hörts 59 varv —
+  det ser ut som vägarbeten eller "glat føre" som blivit olycka i mappningen (jfr #5/#32 för Sverige). Ingen användare hör det
+  (Danmark är skugga), men det ska rättas före NAP-steget och innan danska rutter räknas i någon mätning.
+  ✅ **FRIAT 22/9, ingen ändring** (körningar 35709925639 och 35710174627). Ingesten släpper bara `TrafficMan2_Type` Accident till
+  Olycka och byggaren publicerar bara Accident; de 200 danska olyckorna är "Uheld", lever 0,8–1 dygn och raderas när flödet
+  släpper dem (60 utan sluttid, 6 aktiva nu, ingen äldre än tre dygn). Den mest hörda (88 varv) var en olycka på Rute 16 den 4/9,
+  hörd 4–5/9. Snapshoten byggs om varje timme (24 per dygn). Volymen kommer av att fem rutter går genom Köpenhamn och att olyckor
+  hörs på 10 km — samma sak väntar Stockholm. Larm per varv i Danmark har fallit från 0,22 till 0,10 sedan 15/9.
 
 - [x] ✅ **#236 DEN LÅNGSAMMA VAKTEN — LÄKER Ö LJUNGBY TILLS TRAFIKVERKET LAGAR GIVAREN — KLART 22/9 (DECISIONS #300)** (Bengts order 22/9: *"bygg den
   långsamma vakten nu och gör den klar"*, DECISIONS #300; alternativ (d) ur §4.2, mätt innan den byggdes). **Problemet:** Ö Ljungby

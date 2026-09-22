@@ -9021,3 +9021,35 @@ fem, ingen annan), tysta med fristen 3 h just nu: 1106; livekörningen 60 ms. `s
 deployad 05:44:03Z — svaren 05:53–05:55Z bär *langsam_vakt: 1 stationsdygn*. `publicera` deployad 05:45:01Z — publiceringen 05:50:02Z
 bär noten *"långsam vakt: 1 station(er) tysta, ytan ≥ 6 ° under luften ett helt dygn: 1106"* (05:30 och 05:40 saknar den), manifestets
 sha = filens, 57 stationer, ingen av de sju, noll broar. Kort #236 stängt. Omkörning av formen efter första frostmånaden står i §0b.
+
+## #301 (22/9 2026) Grannländerna i Supabase, Norge i skuggflottan, Danmark friat, gallringen får Danmark, gravstenarna och en tidsvakt (kort #238, #239, #240)
+
+**Bengts order 22/9:** *"gör kort 238 och 239"*, sedan *"det är viktigt att de här körningarna inte tar actionsminuter för oss så det
+ska ligga i supabase"*, och *"gör 240 efter 238 och stäng det när det är klart"*.
+
+**#238 — Norge körs aldrig.** Utvärderingen av skuggflottan (samma dag) visade 20 norska rutter i koden och noll norska rader i loggen på
+25 dygn. Orsak: ingen byggde `data/app/no/v1` (CDN 404) och inget cron-jobb anropade `land=no`; det norska arkivet var live (469
+stationer). **Beslut:** grannländernas skuggsnapshot byggs i Supabase av `publicera?land=fi|no|dk|grannar` (snapshotkärnan,
+`buildGrannSnapshot`: väder ≤ 3 °C eller snö, bara Accident — samma form och regel som de gamla byggarna), alla tre i EN commit
+var 30:e minut (`halkvakt-publicera-grannar`, :05/:35), och `halkvakt-skuggmotor-no` (:25/:55). Jobben skapades med `replace()` ur
+befintliga jobb inne i databasen, så nyckeln aldrig skrevs ut. Actions-steget för fi/dk och `build-snapshot-{fi,dk}.ts` togs bort;
+`push-data.ts` behålls (RUNBOOK, planerad för QR-sidorna). **Alternativet som valdes bort:** Norges byggare i grannflödet på Actions
+(PR #468, sammanslagen och tillbakadragen samma dag) — några sekunder på ett timjobb, men fel riktning: återkommande körningar tar
+inga Actions-minuter. **Bevis:** publicera?land=grannar körde 09:35:00Z och 10:05:00Z (jobid 46, commit f9dbf12 och 136c0ef i kartrepot, cirka 6 s per varv): Norge 10 väderpunkter, Finland 1 väderpunkt och 1 olycka, Danmark 3 olyckor (körning 35714295337) · skuggmotor?land=no körde 09:55:00Z (jobid 47) och skuggloggen fick sina första norska rader: 3 varv på 3 rutter mot snapshoten 09:35, noll larm — efter 25 dygn med noll
+
+**#239 — Danmarks olyckor, friat.** Hypotesen var att mappningen släppte vägarbeten som olycka. Mätt: ingesten släpper bara klassen
+Accident till Olycka, byggaren publicerar bara Accident, de 200 danska olyckorna är "Uheld" som lever 0,8–1 dygn och raderas när
+flödet släpper dem, snapshoten byggs om varje timme. Volymen (642 varningar) kommer av fem rutter genom Köpenhamn och olyckshorisonten
+10 km. Ingen ändring. Samma sak väntar Stockholm när svenska rutter förtätas.
+
+**#240 — gallringen.** Bengts fråga: har grannarna gallring som Sverige? Nej — Sverige tunnas till halvtimme efter sju dygn och raderas
+aldrig; Finland raderar varma rader efter sju dygn och allt efter 60; Norge allt efter sju; Danmark inget. Mätt 22/9: databasen 190 MB
+(169 den 18/9, ~4,5 MB/dygn netto), Danmark 1,3 MB, gravstenar i händelsetabellerna (Sverige 1 118 av 1 122, Danmark 986 av 1 055),
+en rad med tidsstämpeln 1970-01-01 i det finska arkivet. **Beslut:** `sql/031` — Danmark får Norges regel; tidsstämplar före 2020
+raderas i alla fyra väderarkiv; gravstenar raderade i 30 dygn tas bort ur alla länders händelsetabeller (situation-arkivet, som
+uppspelningen läser, rörs inte; en sen radering skapar ändå aldrig en rad — raderingar är UPDATE). Sveriges, Finlands och Norges regler
+orörda. `ingest/fi.ts` släpper inte in tom eller epoknoll-tid. **Bevis:** integrationstestet (Danmark, epoknoll, gravstenar i båda
+tabellerna) i CI; i drift: sql/031 körd 22/9 (körning 35714435556): första körningen raderade 12 184 rader; Danmark 2 480 rader kvar, 0 äldre än sju dygn (äldsta 15/9); 0 rader före 2020 i något arkiv, 1970-raden borta; inga gravstenar äldre än 30 dygn ännu (regeln biter från 24/9, arkivet började 24/8); pg_proc bär Danmark, tidsvakten och gravstensregeln; databasen 190 MB tills autovacuum frigör
+
+**Sagt högt:** databasen växer ~4,5 MB/dygn netto ⇒ 400 MB runt 9/11 och 500 MB (skrivskydd) runt 1/12. Pro-beslutet i §4.2 ("senast
+1 november") håller, utan marginal. Bevakningsrad i §0b med veckovis mätning.
