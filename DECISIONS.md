@@ -9091,3 +9091,28 @@ sessionen. Läxa: `git log` mot grenens väntade topp före varje push.)* Genera
 (`scripts/matningar/driftrakningen-ramar-generator-2026-09-22.py`, Bengts ja 22/9); den återskapar mätfilens satser byte för byte
 ur `8a9eca9:sql/018` och main:s 018.
 
+## #303 (22/9 2026) Kortavstämningen: 18 kort stängda med bevis, sju dubbletter sammanslagna — tavlan 94 → 69 öppna
+
+**Beslut (Bengt 22/9: *"ja stäng de 18 och slå ihop paren"*).** Efter avstämningen av alla 94 öppna kort mot repot
+(`docs/KORTAVSTAMNING-2026-09-22.md`, bedömningen §4.2) stängs de 18 vars bevis höll, och sju dubbletter slås ihop. Varje stängning
+bär sitt bevis på kortet, och varje sammanslaget kort pekar på det kort som bär resten. Korten stängs på plats med `- [x]`, som
+#100 och gallringsregeln tidigare; texten blir kvar och går att läsa. Sorteringen av de 25 korten i fel sektion (#224) görs separat.
+
+**Varför.** Tavlan hade bara uppdaterats kort för kort sedan 20/9, och ingen hade prövat helheten. Kort som blivit klara i andra
+varv stod kvar som öppna, och tre kort ställde samma fråga till Axel. En tavla där en femtedel av korten är gjorda ljuger om var
+arbetet finns (TAVELREGELN: *"finns det inte på tavlan finns det inte"* gäller åt båda håll).
+
+**Stängda (18):** Bengts egna händer i koden · #72 · #85 · #229 · #159 · #192 · #187 · #186 · #185 · #154 (regnfältet) ·
+minutbantningen · #52 · #43 · #44 · varvloggen · #100 (en kvarglömd kopia av det stängda kortet) · designlyftet (med
+underpunkterna #22–#24) · #194.
+
+**Sammanslagna (7):** kort 6 *Tolv testare till väntelistan* → *Tolv testare till Play-perioden* · *Domänen halkvakt.se* →
+*Skydda namnet: PRV + domänen* · #27 *Helgsamtalet* och *Rollfördelningen* → *Skyltfonden-paketet före 1/10* · #237 → *Samtal med
+Axel: sensortrappan* · #81 → #42 · #51 → #209 · designlyftets #23 → #23 heads-up.
+
+**Sagt högt.** (1) Två sammanslagningar gick åt andra hållet än i listan: domänkortet slogs in i *Skydda namnet* (inte tvärtom),
+eftersom det bredare kortet också bär PRV-ansökan och inget då går förlorat. (2) #85 stängs fast den släpande takten var 118
+min/dygn 19/9 mot kortets mål 100: kortets tre snitt är gjorda, och kassabevakningen till 1/10 bärs av #152 (prognos 31 av 35 USD).
+(3) Bedömningens rader om Actions-kassan och Actions-kontot pekar nu på #152 i stället för #85; `radar_h`-raden i §0b bär sin egen
+bevakning sedan #187 stängts. (4) Kvar ur avstämningen: fyra oklara kort (§4.2, frågor till Bengt och Axel), 0.3.9 (12) som bär
+okompilerad #203-kod, och produktbokens rader 21 och 82 mot invarianten (#264).
