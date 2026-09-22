@@ -36,7 +36,8 @@
 // Självtest utan DB: scripts/grind-r-a.ts --sjalvtest
 
 import { andelSe, utfallGolv, utfallTak, marginalPe } from "../publish/marginal.ts";
-import { vaktdiagnos } from "../publish/vaktdiagnos.ts";
+import { vaktdiagnos, led234 } from "../publish/vaktdiagnos.ts";
+import { RADVAKT_SQL, karantanSql } from "../publish/snapshot-core.ts";
 import { molnForPunkter, type Molnklass } from "../publish/moln.ts";
 
 // ── Svepet ur TROSKLAR-RIMFROST §2. Inget tal är valt ur ett utfall.
@@ -185,6 +186,7 @@ const vd = await vaktdiagnos((q2, p2) => pool.query(q2, p2 as any[]).then((r) =>
     { namn: "#75: yta - luft >= -12 grader", bar: "surface_temp_c IS NOT NULL AND air_temp_c IS NOT NULL", villkor: "surface_temp_c >= air_temp_c - 12" },
     { namn: "daggpunktens: yta - dagg >= -5", bar: "surface_temp_c IS NOT NULL AND dewpoint_c IS NOT NULL", villkor: "surface_temp_c - dewpoint_c >= -5" },
     { namn: "korsgivare: luftfuktighet >= 90 %", bar: "humidity_pct IS NOT NULL", villkor: "humidity_pct >= 90" },
+    ...led234(SCHEMA),
   ]);
 const harRh = vd.utfall[4] !== "SAKNAS" && vd.utfall[4] !== "TOMT ARKIV";
 
@@ -196,10 +198,11 @@ const rader = (await pool.query(`
     ST_X(geom) AS lon, ST_Y(geom) AS lat,
     extract(hour FROM sample_time AT TIME ZONE $2)::int AS timme,
     ((sample_time AT TIME ZONE $2) - interval '12 hours')::date::text AS natt
-  FROM ${SCHEMA}
+  FROM ${SCHEMA} w
   WHERE sample_time > now() - $1 * interval '1 day'
     AND surface_temp_c IS NOT NULL AND dewpoint_c IS NOT NULL
     AND air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12   -- #75:s vakt
+    AND ${RADVAKT_SQL} AND ${karantanSql("w", SCHEMA)}                 -- kort #234: radvakten och karantänen
     AND surface_temp_c - dewpoint_c >= -5                               -- daggpunktens egen (4/9)
     ${harRh ? "AND humidity_pct IS NOT NULL AND humidity_pct >= 90" : ""}  -- korsgivarkontrollen
   ORDER BY station_id, t`, [DAGAR, TZ])).rows as any[];
@@ -207,8 +210,8 @@ const data: Rad[] = rader.map((r) => ({
   station: r.station_id, t: Number(r.t), yta: Number(r.yta), dagg: Number(r.dagg),
   rh: Number(r.rh), timme: Number(r.timme), natt: r.natt,
   lon: Number(r.lon), lat: Number(r.lat) }));
-console.log(`Efter den tredelade givarvakten: ${data.length} rader, ${new Set(data.map((d) => d.station)).size} stationer.`);
-console.log(`  (#75:s vakt · yta − daggpunkt ≥ −5 °C · ${harRh ? "luftfuktighet >= 90 %" : "RH SAKNAS I ARKIVET"}. Tidszon ${TZ}.)`);
+console.log(`Efter den femdelade givarvakten: ${data.length} rader, ${new Set(data.map((d) => d.station)).size} stationer.`);
+console.log(`  (#75:s vakt · radvakten · karantänen · yta − daggpunkt ≥ −5 °C · ${harRh ? "luftfuktighet >= 90 %" : "RH SAKNAS I ARKIVET"}. Tidszon ${TZ}.)`);
 if (!data.length) {
   console.log(`\n⊘ OAVGJORT — inga rader överlever vakten i fönstret.`);
   console.log(`  Läs vaktdiagnosen ovan för VILKET led som tömde materialet: ett fält som saknas`);

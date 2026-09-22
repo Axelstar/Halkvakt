@@ -3128,20 +3128,26 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   givaren* — medan kontraktsgrinden var grön, alltså är det PROVEN som fångar felet. **Mätning efter deploy:** funktionens eget
   svar 18:20:00 — *"karantän: 5 station(er) tysta efter brott mot #75: 1106, 1612, 2132, 2135, 2346"*; körningarna före har
   ingen sådan rad.
-  ⏸️ **PAUSAT 21/9 kväll (Bengt: krediterna slut) — BESLUTAT MEN INTE BYGGT: vakterna i mätningarna** (Bengts ja *"lägg in
-  vakterna i mätningarna också"*, DECISIONS #298:s öppna fråga). **Ingen kod är rörd; filerna är fria.** Planen, läst ur koden:
-  (1) `snapshot-core.ts` exporterar radvakten och karantänen som SQL-fragment, så att TS-skripten IMPORTERAR talen i stället för
-  att kopiera dem: grind A, K-A, R-A (också finska schemat), anomalin, ruttberedskapen, övergångarnas och SMHI-förstärkarens
-  steg 0. (2) Karantänen i mätningar räknas PER RAD, sedd 7 dygn bakåt från radens egen tid — inte per station för hela
-  arkivet, annars tystas friska fjällstationer av tre studsar på en vinter. (3) TVILLINGARNA `publish/trenden.ts:rimlig()` och
-  `sql/018` ändras IHOP (driftvakten `trendarkivet.ts --jamfor` larmar annars), sedan `sql/028` och
-  `matningar/uppspelning-efterhalka.sql`; båda SQL-funktionerna körs in med dbknapp och bevisas ur `pg_proc`. (4) Literala tal i
-  SQL ⇒ kontrakt för 10, 8, 7 och 3 i samma commit. (5) **Säg det högt i redovisningen:** grind A:s A2 står OAVGJORT på 5,1 %
-  mot 5,0 % (#131) och kan flytta sig när givarfelen går bort — båda läsningarna redovisas, som i #125/#131.
-  Obs: trenden och rimfrosten bär redan daggpunktsvakten (yta − dagg ≥ −5), som tar de flesta av felen; mest utsatta är
-  grind A, K-A och uppspelningens variant *utan faller*.
-  ⏳ **KVAR innan kortet stängs:** en natt då Ö Ljungby visar fel OCH skuggloggen saknar brolarm på E4 Helsingborg→Jönköping
-  (i kväll låg ytan på 3,2 °C, så den gamla vakten hade inte heller publicerat). Läses 22/9 på morgonen.
+  🔨 **BYGGT 22/9 (Bengts ja 21/9, DECISIONS #299) — VAKTERNA I MÄTNINGARNA, samma tal ur samma källa:** `snapshot-core.ts`
+  exporterar `RADVAKT_SQL` (som `WX_SANE` själv bär) och `karantanSql()`/`brottSql()`; grind A, K-A, R-A (även finska arkivet),
+  T-A, trendarkivet, anomalin, ruttberedskapen, övergångarnas och SMHI-förstärkarens steg 0 IMPORTERAR dem — noll nya kopior
+  av talen i TypeScript. `rimlig()` i trenden bär de två vakterna och raden bär `brott`. **Karantänen räknas PER RAD**, 7 dygn
+  bakåt från radens egen tid; `sql/029` ger delfrågan ett delindex över just brotten (utan det: miljarder radbesök på 60
+  dygn). SQL-tvillingarna `sql/018` och `sql/028` och mätsatsen `uppspelning-efterhalka.sql` bär talen literalt ⇒ fyra nya
+  kontrakt (10, 8, 7, 3), 43 håller. **Fynd på vägen:** #75:s form räknade inte KVALIFICERADE kopior (`r.surface_temp_c >=
+  r.air_temp_c - 12` i 018/028) — formen vidgad, 55 kopior, alla 12. **Bevis:** 138 tester (128 lokalt + 10 integration i
+  CI), nio självtester gröna, motprov: radvakten avslagen ⇒ trendtestet rött, karantänen avslagen ⇒ rött; nytt integrationstest
+  mot PostGIS (KAR_A frisk och KAR_D med två brott räknas; KAR_B med Ö Ljungby-felet och KAR_C med tre brott är tysta).
+  🌙 **NATTBEVISET LÄST 22/9** (`scripts/matningar/givarvakt-nattbevis-2026-09-22.sql`): Ö Ljungby 1106 visade 21/9 18–19Z yta
+  1,8–3,3 °C vid luft 9,6–11,6 °C (16 felrader) och gled sedan till −2 °C vid luft +4…+6 °C, regn hela natten. Skuggloggen på
+  E4 Helsingborg→Jönköping: 7 brolarm 20/9 21Z och 21/9 04Z (före deployen), **0 brolarm 21/9 18Z, 22Z och 22/9 01Z** — medan
+  stationen visade −0,2…−1,1 °C. 36 av 36 publiceringar 22:40–04:30Z bar karantännoten, 1106 i alla. ⚠️ **Det var KARANTÄNEN
+  som bar natten:** från 20Z låg luften under +10 °C, där radvakten inte gäller, och gapet 6–8 ° släpps av #75. Brotten som
+  håller 1106 i karantän är från 19–21/9 och åldras ut runt 28/9 — se DECISIONS #299 och §4.2.
+  ⏳ **KVAR innan kortet stängs:** körs in i driften efter sammanslagningen — `sql/029` (dbknapp; bevis: `pg_indexes` och att
+  EXPLAIN väljer indexet), `sql/018` via `trendarkivet --jamfor` (driftvakten: SQL och TypeScript ense om varje rad), `sql/028`
+  (dbknapp; bevis ur `pg_proc`), bunten deployad, och **grind A i båda läsningarna** (måndagens körning 21/9 utan vakterna mot
+  en ny körning med dem — A2 stod OAVGJORT 5,1 % mot 5,0 %, #131).
   Verify: beslutet i DECISIONS · vakten byggd med motprov (1106:s rader som provdata) · skuggloggen utan brolarm från 1106
   en natt då givaren fortfarande visar fel.
 

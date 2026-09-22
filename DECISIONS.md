@@ -8907,3 +8907,48 @@ formulär. **Snöflingemätningen** (#297) står som bevakningsrad i bedömninge
   11,2 °C), så den gamla vakten hade inte heller publicerat något just nu. Att brolarmen faktiskt uteblir en natt då givaren
   visar fel läses ur skuggloggen i morgon (bevakningsrad i bedömningen §0b). Kortet står öppet till dess.
 
+## #299 (22/9 2026) Mätningarna ärver radvakten och karantänen — samma tal ur samma källa, karantänen per rad (kort #234)
+
+**Beslut (Bengt 21/9: *"ja lägg in vakterna i mätningarna också"*; formen Claudes 22/9).** Kort #234:s två vakter (DECISIONS #298)
+gäller nu VARJE mätning som läser yttemperatur med #75, inte bara det appen hör.
+
+**Hur — fyra val:**
+1. **En källa, inga nya kopior i TypeScript.** `publish/snapshot-core.ts` exporterar `RADVAKT_SQL` (samma sträng som `WX_SANE`
+   bär — testet kräver att `WX_SANE` slutar med den), `brottSql(rad, tabell)` och `karantanSql(rad, tabell)`. Grind A, K-A, R-A
+   (svenska och finska arkivet), T-A, trendarkivet, anomalin, ruttberedskapen, övergångarnas och SMHI-förstärkarens steg 0
+   importerar dem. Vaktdiagnosen (`led234()`) visar i varje grind hur många rader de två vakterna tar, så en nolla aldrig blir
+   tvetydig (DECISIONS #141). `rimlig()` i trenden bär vakterna i TypeScript (gapet avrundat till tusendelen, 13/9-läxan) och
+   raden bär `brott` ur arkivet.
+2. **Karantänen räknas PER RAD**, sju dygn bakåt från radens egen tid — inte per station för hela fönstret, som snapshoten gör
+   från nu. Skälet: en mätning över 60 dygn ska inte tysta en frisk fjällstation hela vintern för tre studsar en vecka.
+3. **Ett delindex (`sql/029`) över just brotten.** Delfrågan per rad läser annars varje rad hos stationen i sju dygn, för varje
+   rad i fönstret — miljarder radbesök på 60 dygn (enda indexet var på `sample_time`). Brotten är sällsynta (811 rader på 60 dygn),
+   så indexet är litet; predikatet är ordagrant delfrågans, och kontraktsgrinden vaktar talet 12 i båda. Samma index på det
+   finska arkivet när schemat finns.
+4. **SQL-tvillingarna bär talen literalt, under kontrakt.** `sql/018` (drifträkningen, tvilling till `rimlig()`), `sql/028`
+   (uppspelningens variant *utan faller*) och mätsatsen `uppspelning-efterhalka.sql` får radvakten och karantänen ordagrant, och
+   fyra nya kontrakt (10, 8, 7, 3) i `scripts/kontraktsgrinden.ts` håller ihop dem med konstanterna. 43 kontrakt håller.
+
+**Alternativ som valdes bort:** att kopiera talen till varje skript (det var precis så #75 blev sjutton kopior); att låta
+snapshotkärnans stationslista (från nu) gälla mätningarna (fel för långa fönster, punkt 2); en CTE per fråga i stället för
+indexet (åtta frågor att bygga om, och vaktdiagnosen hade inte kunnat bära ledet).
+
+**Fynd på vägen:** #75:s kontraktsform räknade inte KVALIFICERADE kopior — `r.surface_temp_c >= r.air_temp_c - 12` i sql/018
+och `w.…` i sql/028 stod utanför grinden sedan de skrevs. Formen tar nu en valfri kvalificerare; 55 kopior, alla 12, golvet
+satt till 29 (utanför de daterade mätfilerna).
+
+**Bevis (PR:n 22/9):** 138 tester (128 lokalt, 10 integrationstester i CI mot PostGIS), nio självtester gröna, kontraktsgrinden 43/43,
+bunten i synk (`--check`). **Motprov:** radvakten avslagen i `rimlig()` ⇒ trendtestet rött på rätt rad; karantänen avslagen ⇒ rött
+på samma rad. **Nytt integrationstest** för sql/018: fyra stationer med samma fall i bandet — KAR_A frisk och KAR_D med två brott
+räknas, KAR_B med Ö Ljungby-felet (luften 12 ° över, #75 släpper, radvakten ensam tar) och KAR_C med tre brott är tysta.
+Idrifttagningen (029, 018 via `trendarkivet --jamfor`, 028, deploy av bunten) och grind A i båda läsningarna redovisas på kortet
+och i bedömningen §0b.
+
+**Nattbeviset för #298, läst 22/9** (`scripts/matningar/givarvakt-nattbevis-2026-09-22.sql`): Ö Ljungby 1106 visade 21/9 18–19Z
+yta 1,8–3,3 °C vid luft 9,6–11,6 °C (16 felrader med yta ≤ 3 vid luft ≥ 10) och gled sedan till −2 °C vid luft +4…+6 °C, regn
+hela natten. Skuggloggen på E4 Helsingborg→Jönköping: 7 brolarm 20/9 21Z och 21/9 04Z (före deployen); **0 brolarm 21/9 18Z, 22Z
+och 22/9 01Z**, medan stationen visade −0,2…−1,1 °C. 36 av 36 publiceringar 22:40–04:30Z bar karantännoten (1106, 1713, 2132,
+2135, 2346 — 1612 har lämnat, 1713 kommit till). **Avvikelse, sagd högt:** det var karantänen som bar natten, inte radvakten —
+från 20Z låg luften under +10 °C, där radvakten inte gäller, och gapet 6–8 ° släpps av #75. Brotten som håller 1106 i karantän
+är från de varma dagarna 19–21/9 och åldras ut runt 28/9; håller sig luften sval till dess publiceras stationen igen. Frågan om
+vad som ska bära hösten står i bedömningen §4.2 (rekommendation: låt karantänen räkna radvaktens brott också — inget nytt tal).

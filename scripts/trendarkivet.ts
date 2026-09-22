@@ -25,6 +25,7 @@
 // Självtest utan DB: scripts/trendarkivet.ts --sjalvtest
 
 import { FONSTER, BREDASTE_BAND, MINSTA_LUTNING, type Rad } from "../publish/trenden.ts";
+import { brottSql } from "../publish/snapshot-core.ts";
 import { arKandidat, utfall } from "../publish/trendkandidat.ts";
 
 const UTFALLSFONSTER_MIN = 90;   // §2:s utfallsfönster, mitt i svepet 60·120·180
@@ -39,12 +40,12 @@ if (process.argv.includes("--sjalvtest")) {
   };
   const natt: Rad[] = Array.from({ length: 13 }, (_, i) => {
     const yta = 5 - i * 0.4;
-    return { t: i * 5, yta, dagg: yta - 0.3, rh: 95, luft: yta + 1 };
+    return { t: i * 5, yta, dagg: yta - 0.3, rh: 95, luft: yta + 1, brott: 0 };
   });
   k("fallande natt ger kandidat i bandet", arKandidat(natt, 10) !== null, true);
   k("under bandets golv är ingen kandidat", arKandidat(natt, 12), null);
   k("platt natt ger ingen kandidat",
-    arKandidat(Array.from({ length: 13 }, (_, i) => ({ t: i * 5, yta: 3, dagg: 2.8, rh: 95, luft: 4 })), 12), null);
+    arKandidat(Array.from({ length: 13 }, (_, i) => ({ t: i * 5, yta: 3, dagg: 2.8, rh: 95, luft: 4, brott: 0 })), 12), null);
   k("utfallet utan efterföljande rader är okänt", utfall(natt, 12, 90).min, null);
   k("supersetets band är svepets bredaste", BREDASTE_BAND.join("–"), "1–6");
   k("supersetets lutning är svepets minsta", MINSTA_LUTNING, 0.4);
@@ -79,7 +80,8 @@ if (!TORRKOR) {
 }
 
 const rader = await q(`
-  SELECT station_id, sample_time, surface_temp_c, air_temp_c, dewpoint_c, humidity_pct
+  SELECT station_id, sample_time, surface_temp_c, air_temp_c, dewpoint_c, humidity_pct,
+         ${brottSql("weather_observations")} AS brott
   FROM weather_observations
   WHERE sample_time > now() - $1 * interval '1 day' AND surface_temp_c IS NOT NULL
   ORDER BY station_id, sample_time`, [DAGAR]);
@@ -108,7 +110,7 @@ for (const r of rader) {
     r: { t: new Date(r.sample_time).getTime() / 60000, yta: Number(r.surface_temp_c),
          dagg: r.dewpoint_c === null ? null : Number(r.dewpoint_c),
          rh: r.humidity_pct === null ? null : Number(r.humidity_pct),
-         luft: r.air_temp_c === null ? null : Number(r.air_temp_c) },
+         luft: r.air_temp_c === null ? null : Number(r.air_temp_c), brott: Number(r.brott) },
   });
 }
 tomGruppen();

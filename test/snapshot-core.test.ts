@@ -5,7 +5,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { buildSnapshot, manifestFor, bridgesFromGeoJSON, WX_SANE, REGN_UTLOSARE_MMH, GIVARFEL_LUFT_MIN_C, GIVARFEL_GAP_C, KARANTAN_DYGN, KARANTAN_BROTT, type Q } from "../publish/snapshot-core.ts";
+import { buildSnapshot, manifestFor, bridgesFromGeoJSON, WX_SANE, REGN_UTLOSARE_MMH, GIVARFEL_LUFT_MIN_C, GIVARFEL_GAP_C, KARANTAN_DYGN, KARANTAN_BROTT, RADVAKT_SQL, brottSql, karantanSql, type Q } from "../publish/snapshot-core.ts";
 import { snapshotToHazards } from "../engine/src/snapshot.ts";
 
 /** Låtsasdatabas: svarar på frågorna efter vilken tabell de läser, och loggar frågetexten. */
@@ -342,4 +342,15 @@ test("#187 otillgängliga arkiv fäller inte snapshoten — regn_h/lutning blir 
   assert.equal(liveDoc.weather[0].regn_h, null);
   assert.equal(liveDoc.weather[0].lutning60, null);
   assert.ok(notes.some((n) => n.startsWith("regn_h:")) && notes.some((n) => n.startsWith("lutning:")), "båda felen ska stå i noterna");
+});
+
+test("#234 fragmenten för mätningarna (DECISIONS #299): radvakten är WX_SANE:s, karantänen räknas från radens egen tid", () => {
+  assert.ok(WX_SANE.endsWith(` AND ${RADVAKT_SQL}`), "driften och mätningarna bär SAMMA radvakt — en sträng, inte två");
+  assert.equal(RADVAKT_SQL, `(air_temp_c IS NULL OR air_temp_c < ${GIVARFEL_LUFT_MIN_C} OR air_temp_c - surface_temp_c < ${GIVARFEL_GAP_C})`);
+  const k = karantanSql("w");
+  assert.ok(k.startsWith(brottSql("w")) && k.endsWith(` < ${KARANTAN_BROTT}`), "karantänen = brotten under gränsen");
+  assert.ok(k.includes("k.station_id = w.station_id") && k.includes("k.sample_time <= w.sample_time"), "radens egen station och tid");
+  assert.ok(k.includes(`w.sample_time - interval '${KARANTAN_DYGN} days'`), "fönstret räknas bakåt från raden, inte från nu");
+  assert.ok(k.includes("k.surface_temp_c < k.air_temp_c - 12"), "brottet ÄR #75:s gräns — inget nytt tal");
+  assert.ok(karantanSql("r", "fi.weather_observations").includes("FROM fi.weather_observations k WHERE k.station_id = r.station_id"), "det finska arkivet");
 });

@@ -15,6 +15,9 @@
 // En nolla utan den uppdelningen är inte ett svar. Därför räknar varje grind numera sina vaktled
 // FÖR SIG, före allt annat, och skriver ut dem.
 
+import { RADVAKT_SQL, karantanSql, GIVARFEL_LUFT_MIN_C, GIVARFEL_GAP_C, KARANTAN_DYGN, KARANTAN_BROTT }
+  from "./snapshot-core.ts";
+
 export type Led = {
   namn: string;
   /** Bär raden fältet alls? T.ex. "humidity_pct IS NOT NULL". */
@@ -83,4 +86,15 @@ export async function vaktdiagnos(
   if (!ok) console.log(`  ⇒ GRINDEN GÅR INTE ATT UTVÄRDERA: minst ett vaktled saknar sitt fält.`);
   console.log("");
   return { alla, utfall, garAttUtvardera: ok };
+}
+
+/** Kort #234:s två vakter som diagnosled (DECISIONS #299), så att varje grind visar hur många rader de tar. Talen
+ *  importeras ur snapshotkärnan — samma källa som driften. `tabell` är arkivet (det finska har eget schema). */
+export function led234(tabell = "weather_observations"): Led[] {
+  return [
+    { namn: `#234 radvakt: luft>=${GIVARFEL_LUFT_MIN_C}, gap<${GIVARFEL_GAP_C}`,
+      bar: "surface_temp_c IS NOT NULL AND air_temp_c IS NOT NULL", villkor: RADVAKT_SQL },
+    { namn: `#234 karantän: <${KARANTAN_BROTT} brott/${KARANTAN_DYGN} dygn`,
+      bar: "surface_temp_c IS NOT NULL", villkor: karantanSql(tabell, tabell) },
+  ];
 }

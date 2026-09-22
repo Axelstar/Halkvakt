@@ -281,8 +281,39 @@ export const KONTRAKT: Kontrakt[] = [
     // hur ofta en station legat under den. Glider de två isär tystar karantänen stationer som vakten själv släpper fram.
     namn: "#75 givarvakten — yta får ligga högst N grader under luften",
     varfor: "61 % av arkivets frostrader faller på den. Driver talet mäter grindarna olika arkiv.",
-    former: [/surface_temp_c\s*>=\s*air_temp_c\s*-\s*(\d+(?:\.\d+)?)/, /surface_temp_c\s*<\s*air_temp_c\s*-\s*(\d+(?:\.\d+)?)/],
-    golv: 19,
+    // Kvalificerade kopior (`r.surface_temp_c >= r.air_temp_c - 12` i sql/018 och sql/028) stod UTANFÖR formen till
+    // 22/9 — sett när karantänens delfråga fick samma form (DECISIONS #299). Kvalificeraren är valfri sedan dess.
+    former: [/surface_temp_c\s*>=\s*(?:\w+\.)?air_temp_c\s*-\s*(\d+(?:\.\d+)?)/, /surface_temp_c\s*<\s*(?:\w+\.)?air_temp_c\s*-\s*(\d+(?:\.\d+)?)/],
+    golv: 29,   // uppmätt 22/9 utanför de daterade mätfilerna (55 med dem)
+  },
+  // KORT #234:S TVÅ TILLÄGG (DECISIONS #298/#299). Källan är publish/snapshot-core.ts, och mätskripten IMPORTERAR
+  // fragmenten därifrån — så de literala kopiorna är SQL:ens: drifträkningen (sql/018), uppspelningen (sql/028) och
+  // mätsatsen uppspelning-efterhalka.sql, som dbknapp bär. Bunten (publicera/index.ts) är TypeScript-konstantens kopia.
+  {
+    namn: "Radvakten — lufttemperaturen (°C) från vilken ett stort gap är givarfel, inte kyla",
+    varfor: "Under gränsen får blixthalkan tala. Driver den tystar en kopia äkta halka, eller släpper igenom givarfel.",
+    former: [/GIVARFEL_LUFT_MIN_C = (\d+)/, /air_temp_c < (\d+) OR (?:\w+\.)?air_temp_c - (?:\w+\.)?surface_temp_c < \d+\)/],
+    golv: 6,
+  },
+  {
+    namn: "Radvakten — gapet (°C) yta under luft som är givarfel vid varm luft",
+    varfor: "Samma kopior. Driver gapet mäter grindarna och driften olika arkiv.",
+    former: [/GIVARFEL_GAP_C = (\d+)/, /air_temp_c - (?:\w+\.)?surface_temp_c < (\d+)\)/],
+    golv: 6,
+  },
+  {
+    namn: "Karantänen — dygn bakåt som brotten räknas",
+    varfor: "Snapshoten räknar från nu, mätningarna från raden. Olika fönster = olika stationer tysta.",
+    // Formen är delfrågans egen (`k.sample_time <= rad.sample_time AND k.sample_time > rad.sample_time - …`): den daterade
+    // mätfilen givarvakt-karantan-2026-09-21.sql sveper 3/7/14 dygn med ett annat alias och ska inte räknas.
+    former: [/KARANTAN_DYGN = (\d+)/, /k\.sample_time <= \w+\.sample_time AND k\.sample_time > \w+\.sample_time - interval '(\d+) days'/],
+    golv: 5,
+  },
+  {
+    namn: "Karantänen — antal brott mot #75 som tystar stationen",
+    varfor: "Tre, inte ett: en enstaka studs får inte tysta en frisk fjällstation. Driver talet tystas olika stationer.",
+    former: [/KARANTAN_BROTT = (\d+)/, /surface_temp_c < (?:\w+\.)?air_temp_c - \d+\) < (\d+)/],
+    golv: 5,
   },
   {
     namn: "Fukten — vilka nederbördsord som betyder UPPEHÅLL",
