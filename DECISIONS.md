@@ -9411,3 +9411,31 @@ Nya appar (Android efter CI, iOS i 0.3.9 (13)) läser `djur`. Skuggflottan talar
 (2) Rader som fanns i arkivet före deployen kommer in i `deviations` först när Trafikverket ändrar dem; med median 73 min är det
 borta inom en timme eller två. (3) Android-versionen höjdes inte: inget har laddats upp till Play än, och testarna får APK:n ur CI.
 (4) `polisen_events` samlas fortfarande in till arkivet; bara appens väg är stängd.
+
+## #319 (23/9 2026) TROSKLAR-SKUGGAN §4 rättad mot regel T: prognosen blir karta och förstärkare, aldrig röst ensam (kort #198)
+
+**Beslut (Bengt 23/9: *"ja anta förslaget med B3-meningen i raden"*).** §4 i `docs/TROSKLAR-SKUGGAN.md` ändras enligt
+`docs/SKUGGAN-PAR4-MOT-REGEL-T.md` §4: **(a)** klarar segmentprognosen A + B + C blir den ett kartlager (trenivåmärkt,
+"risk"-språk) som får stärka, försvaga eller förlänga en varning som vilar på en mätning — **den utlöser aldrig röst ensam**;
+**(b)** nära ankare talar den bara om **både** bandet är godkänt **och** T1–T2 uppfyllda, alltså en namngiven mätning som på
+varningens plats och inom utfallsfönstret kan visa att tillståndet inte rådde; **(c)** orörd. **B3-meningen:** en B3-träff är
+att prognosen visade rätt på kartan eller förlängde/stärkte en mätt varning — inte att den talade där punktmotorn teg; talet
+i B3 är oförändrat. Grind A, B och C oförändrade.
+
+**Varför.** §4 (1/9) lät ett modellerat värde starta rösten. Regel T (16–17/9, DECISIONS #220/#226) förbjuder det och nämner
+offsetmodellen vid namn (T3), och regeln får skärpas men aldrig mjukas upp, oavsett signaturer (TROSKLAR-KOMBINATIONEN §10).
+Två fastställda dokument sa emot varandra; det här är rättelsen av det svagare. Skärpning enligt §5 — en rad från Bengt, som
+äger mätningen; ingen kontrasignatur. Gjord nu, före prognosens första skuggkörning (#38b steg 4, oktober), så att vintern
+loggas under ett dokument som stämmer.
+
+**Alternativ.** Vänta till mars (kortets frist): risk att röstvägen byggs på en text som inte får användas. Stryka (b) helt:
+enklare men oåterkalleligt (att öppna igen vore en lättnad). Valt: förslaget som det står, med B3-meningen.
+
+**Vad som inte ändras.** Produktionsmotorn, skuggmotorn (flottan), skuggreglerna, #153 beslut 2 (styrs av T5), #103
+frysklassningen (konfidenshöjare), något i TROSKLAR-KOMBINATIONEN.
+
+**Sagt högt.** (1) (b) kan visa sig nästan tom: ett vittne på platsen är i praktiken en station inom några kilometer, och då
+är stationens mätning redan utlösaren. Prognosens värde blir försprång, längd och karttäckning. (2) Ingen kod ändras:
+prognoskolumnen är inte byggd. (3) Genomlysningen ligger på Bengts skrivbord (`Halkvakt-198-genomlysning-2026-09-23.md`) och
+underlagets §7 bär tilläggen. Tavlan 49 → 48 öppna.
+

@@ -6,6 +6,8 @@ DECISIONS-post från Bengt. Det här är underlaget till den posten.**
 
 Frist: **före domen i mars 2027**. Men se §5 nedan — det finns ett skäl att ta det tidigare.
 
+> **AVGJORT 23/9 2026 (DECISIONS #319, Bengt: *"ja anta förslaget med B3-meningen i raden"*):** §4 i `TROSKLAR-SKUGGAN.md` bär nu lydelsen i §4 nedan, med B3-meningen ur §7. Kort #198 stängt.
+
 ---
 
 ## 1. Vad som krockar

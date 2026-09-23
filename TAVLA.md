@@ -1166,7 +1166,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   en säkerhetsfråga, inte bara en batterifråga, och håller iPhone redan under 8 %/h finns inget att vinna.
   ↦ **Sorterat 22/9 (kort #224):** nästa steg är ditt ja till lagningen av loopen; mätningen görs sedan per plattform (§4.2).
 
-- [ ] 📜 **#198 TROSKLAR-SKUGGAN §4 MOT TRÖSKELREGELN — rättas före domen i mars 2027** (fynd 16/9, DECISIONS #220).
+- [x] ✅ **STÄNGT 23/9** (DECISIONS #319) — 📜 **#198 TROSKLAR-SKUGGAN §4 MOT TRÖSKELREGELN — rättas före domen i mars 2027** (fynd 16/9, DECISIONS #220).
   Domslutet (a) TALAR och (b) TALAR NÄRA ANKARE låter segmentprognosen tala på *modellerade* segment. Det krockade redan
   med den gamla meningen (FRYSKLASSNINGEN §1/§7) och krockar med T3: ett värde där ingen mätt och inget vittne på platsen
   kan fälla det får inte utlösa. Texten ska säga vad (a)/(b) då får betyda — karta, konfidens, eller tal bara där T1–T3
@@ -1184,6 +1184,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   röstvägen under vintern och få veta först vid domen att den inte får användas.
   ↦ **Sorterat 22/9 (kort #224):** nästa steg är din DECISIONS-rad om förslaget (a)/(b) (§4.2).
   🔍 **Genomlysning 23/9 (Bengts fråga):** kortet gäller bara segmentprognosen (#38b), inte skuggmotorn eller skuggreglerna; inga trösklar ändras. Skärpningen: (a) från röst till karta + förstärkare, (b) från noggrannhetskrav till vittneskrav. Två tillägg i underlagets §7: B3:s innebörd måste sägas i DECISIONS-raden, och (b) kan bli nästan tom. Rekommendation: anta förslaget nu, före #38b steg 4 i oktober. Fullständig text på Bengts skrivbord (`Halkvakt-198-genomlysning-2026-09-23.md`).
+  ✅ **Stängt 23/9 (DECISIONS #319, Bengt: *"ja anta förslaget med B3-meningen i raden"*):** §4 i `TROSKLAR-SKUGGAN.md` omskriven — (a) karta och konfidens, aldrig röst ensam; (b) band **och** vittne (T1–T2); (c) orörd; B3-träff = rätt på kartan eller mätt varning förlängd, talet oförändrat. SYSTEM.md rad om prognoslagret i samma commit. Verify uppfylld: §4 säger inget som regel T förbjuder.
 
 - [x] ✅ **STÄNGT 22/9** (DECISIONS #306) — 🗑️ **#146 27,6 MB SWIFT-BYGGUTDATA LIGGER SPÅRAT I REPOT — beslut krävs innan något tas bort**
   Upptäckt 12/9 under CRLF-arbetet (#145): `ios/HalkvaktEngine/.build/` är spårad med **504 filer,
@@ -4279,6 +4280,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 ---
 
 ## 🟢 KLART (senaste vinsterna)
+
+- [x] ✅ **#198 TROSKLAR-SKUGGAN §4 RÄTTAD MOT REGEL T — KLART 23/9 (DECISIONS #319)**: Bengts ja; prognosen blir karta och förstärkare, aldrig röst ensam, (b) kräver vittne; B3:s innebörd inskriven. Tavlan 49 → 48 öppna.
 
 - [x] ✅ **#15 KÖ-SLUT OCH #32 HINDER TILL VÅREN 2027 (DECISIONS #315)** — Bengts ord 22/9: stängda som kort, Ä3 bär dem och de öppnas våren 2027. Tavlan 50 → 48 öppna.
 
