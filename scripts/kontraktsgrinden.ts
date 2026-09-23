@@ -167,6 +167,44 @@ export const KONTRAKT: Kontrakt[] = [
     filer: /healthcheck\.ts|functions\/vakthund\//,
     golv: 2,
   },
+  // Grind A:s trösklar och domspärr (TROSKLAR-SKUGGAN §3) fick en andra kopia 23/9 när vägpunkts-
+  // grinden lades i hojd-prov.ts (DECISIONS #323). Två grindar som dömer mot OLIKA tal vore två
+  // sanningar om samma dokument.
+  {
+    namn: "Grind A — A1 MAE-taket",
+    varfor: "Vägpunktsgrinden (hojd-prov.ts) ska döma mot exakt grind A:s tal; driver kopian öppnar den på en lägre ribba.",
+    former: [/A1_MAX_MAE = ([\d.]+)/],
+    filer: /grind-a\.ts|hojd-prov\.ts/,
+    golv: 2,
+  },
+  {
+    namn: "Grind A — A2 grova fel",
+    varfor: "Samma sak för andelen grova fel.",
+    former: [/A2_MAX_GROSS = ([\d.]+)/],
+    filer: /grind-a\.ts|hojd-prov\.ts/,
+    golv: 2,
+  },
+  {
+    namn: "Grind A — A3 frysklassfel",
+    varfor: "Samma sak för frysklassningsfelet.",
+    former: [/A3_MAX_FREEZE = ([\d.]+)/],
+    filer: /grind-a\.ts|hojd-prov\.ts/,
+    golv: 2,
+  },
+  {
+    namn: "Grind A — domspärrens punkter",
+    varfor: "Minsta underlag (≥ 500 punkter) — en lägre spärr i ena grinden fäller eller friar på urvalsartefakter.",
+    former: [/MIN_POINTS_FOR_VERDICT = (\d+)/],
+    filer: /grind-a\.ts|hojd-prov\.ts/,
+    golv: 2,
+  },
+  {
+    namn: "Grind A — domspärrens stationer",
+    varfor: "Minsta spridning (≥ 20 stationer), samma skäl.",
+    former: [/MIN_STATIONS_FOR_VERDICT = (\d+)/],
+    filer: /grind-a\.ts|hojd-prov\.ts/,
+    golv: 2,
+  },
   {
     namn: "Fältgolvet vind — stationer med vindfält",
     varfor: "Larmar bara om fältet NÅGONSIN skördats. Driver golvet dör fältet tyst i den ena.",

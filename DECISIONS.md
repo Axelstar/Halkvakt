@@ -9512,3 +9512,41 @@ Höjden (#96) och kallplatslagret (#91) läggs in bara om vinterdata ger dem en 
 (2) Bengts söndagsrutin får en kolumn till att läsa. (3) Byggnumret och deployen följer bundle-läxan: bunta, `--check` i CI,
 deploya, bevisa med en rad MED innehåll i `shadow_log`.
 
+## #323 (23/9 2026) Vägpunktsgrinden före bygget, och holdout-stationer på skuggrutterna (kort #38b delsteg 4b, 4c)
+
+**Beslut (Bengt 23/9: *"ja till ändringarna. kör på"*, på Claudes bedömning av planen).** Två skärpningar av segmentmotorns plan:
+1. **Vägpunktsgrinden (4b).** Grind A:s tre mått, trösklar, underlags- och marginalvakt prövas mot arkivet en gång till — men på
+   kandidater som INTE får låna målets egen historik: rå avståndsviktning, offset interpolerad ur grannparen, höjdkorrigerad.
+   Grinden öppnar om minst en kandidat klarar A1–A3; den kandidaten är svaret på 4a (offsetens väg till vägpunkten). Öppnar den
+   inte byggs ingen skuggkörning i oktober (DECISIONS #322). Provet bor i `scripts/hojd-prov.ts`, som redan räknade två av
+   kandidaterna, och går på måndagsklockan utan nya Actions-minuter. Första körningen på knapp i dag.
+2. **Holdout-stationer (4c).** Skuggrutterna ska ha stationer mitt på sträckan som hålls utanför modellen: prognosen för platsen
+   räknas ur grannarna, facit är stationens egen mätning. Det ger vägen en domare hela vintern (TROSKLAR-SKUGGAN §2: bara en
+   station eller en testarlogg får fälla) och grind C sina händelser.
+
+**Varför.** Grind A dömde taket (DECISIONS #321): vid en station lärs offseten ur stationens egen historik, en vägpunkt har ingen.
+Byggplanens "gratis tidiga nej" (DECISIONS #51) krävdes för stationerna men aldrig för vägen. Och facit mellan stationerna är tunt
+av samma skäl som problemet finns; utan holdouts kan mars sluta i "obedömbar" och fortsatt skugga utan att någon vet mer än nu.
+
+**Mätt i dag** (`scripts/matningar/holdout-kandidater-2026-09-23.ts`: CDN-stationerna mot skuggmotorns rutter, station ≤ 5 km
+från linjen, band = avstånd till närmaste ANDRA station, alltså det band platsen hamnar i när stationen tas bort):
+
+| | på rutterna | 0–7 km | 7–15 km | 15–20 km | > 20 km |
+| :-- | --: | --: | --: | --: | --: |
+| Sverige, 20 rutter | 227 | 133 | 79 | 11 | 4 |
+| Finland, 20 rutter | 246 | 166 | 40 | 19 | 21 |
+
+**Nittio svenska stationer** på rutterna hamnar i 7–20 km-banden — där prognosen ska bevisa sig. Flest på E4 Helsingborg→Jönköping
+(10), Rv70 Enköping→Mora (8), E6 Halmstad→Göteborg och E4 Gävle→Sundsvall (7 var). **Avvikelse:** E4 Umeå→Luleå fick noll
+stationer inom 5 km — rutten är fyra brytpunkter på 218 km, så den riktiga vägen ligger längre från linjen. Talen är en undre gräns.
+
+**Vad det inte ändrar.** Grind A:s dom, trösklarna i TROSKLAR-SKUGGAN (4b är en grind till med samma tal — en skärpning enligt §5),
+grind B och C, §4. Höjden (#96) och kallplatslagret (#91) är fortsatt villkorade grenar. Trösklarna och domspärren finns nu i två
+filer och vaktas av fem nya kontrakt i `scripts/kontraktsgrinden.ts` (49 kontrakt).
+
+**Sagt högt.** (1) Interpolationskandidaten viktar målets grannar med 1/km² från målet, inte 1/km som grind A:s grannvikt:
+självtestet visade att 1/km gav stationer 20 km bort en tredjedel av vikten och drog offseten fel. Ett val i provet, inte en
+tröskel. (2) Två kandidater hade tal redan 12/9: rå 1,65 °C och rå+höjd 1,65 °C, båda över A1. Grinden hänger på
+interpolationen. (3) Holdout-urvalet — vilka stationer, hur de tas ur modellen — görs i bygget och skrivs in i
+tröskeldokumentet tillsammans med 4a. (4) Självtestet "två byar": rå 0,111 °C → interp 0,007 °C på 1 040 punkter.
+

@@ -1,6 +1,8 @@
 # Höjdprovet (Bengts order 1/9, ankarbreddningen 3b): vad återvinner en enkel
 # höjdkorrektion där historik saknas (segmentfallet)? Körs på knapp; självtest med
 # känd fysik FÖRE den skarpa körningen, resultatet på Summary-sidan (grind-a-mönstret).
+# Sedan 23/9 bär skriptet också VÄGPUNKTSGRINDEN (DECISIONS #323): grind A:s mått utan målets
+# egen historik, tre kandidater — domen står sist i utskriften.
 name: hojd-prov
 on:
   # Startas av pulsklockan (Supabase pg_cron, puls-hojd-prov "0 7 * * 1" UTC) — kort #160: GitHub-cronen kom
