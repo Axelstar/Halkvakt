@@ -37,7 +37,12 @@ object Facit {
     fun answerFor(list: List<FacitEntry>, id: String, t: Long): Boolean? =
         list.lastOrNull { it.id == id && it.t == t }?.svar
 
-    fun pending(list: List<FacitEntry>): List<FacitEntry> = list.filter { !it.sent }
+    /** Servern tar bara emot svar inom ±48 h (facit-svar). 47 h = en timmes marginal. Äldre svar skickas inte och
+     *  frågas inte om — ett svar på en gammal varning gav HTTP 400 vid varje försök och stoppade kön (fynd 23/9). */
+    const val MAX_AGE_MS = 47L * 3600 * 1000
+
+    fun pending(list: List<FacitEntry>, now: Long = System.currentTimeMillis()): List<FacitEntry> =
+        list.filter { !it.sent && now - it.t < MAX_AGE_MS }
 
     /** Markerar exakt de svar som gick iväg — ett svar som hunnit ändras under sändningen förblir osänt. */
     fun markSent(list: List<FacitEntry>, sent: Collection<FacitEntry>): List<FacitEntry> =

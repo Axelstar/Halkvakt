@@ -107,7 +107,7 @@ struct InstallningarView: View {
                     VStack(alignment: .leading, spacing: 10) {
                         SectionHeader(text: "Om Halkvakt", color: Brand.dim)
                         Panel {
-                            Text("Din position lämnar aldrig telefonen.")
+                            Text("Din position lämnar inte telefonen av sig själv.")
                                 .font(Typo.sans(17, .semibold)).foregroundStyle(Brand.yellow)
                             Text("All matchning mot vägdata sker lokalt i appen. Inget konto, ingen spårning.")
                                 .font(Typo.sans(14)).foregroundStyle(Brand.dim)

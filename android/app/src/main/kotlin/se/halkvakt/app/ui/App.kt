@@ -392,7 +392,7 @@ private fun LastSaidCard(e: AlertEntry?, facitOn: Boolean = false, svar: Boolean
                 color = if (e != null) Text else Dis, fontSize = 15.sp, fontStyle = FontStyle.Italic)
             // S4 (Axels form, DECISIONS #196): två knappar, ingen fritext. Bara betatestare, bara när varningen
             // bär ett id. Svaret loggas lokalt och skickas när bilen står stilla.
-            if (facitOn && e != null && e.id.isNotEmpty()) {
+            if (facitOn && e != null && e.id.isNotEmpty() && System.currentTimeMillis() - e.t < Facit.MAX_AGE_MS) {
                 Spacer(Modifier.height(10.dp))
                 Row {
                     FacitKnapp("Stämde", vald = svar == true) { onSvar(true) }
@@ -666,7 +666,7 @@ private fun OmScreen() {
         Surface(shape = RoundedCornerShape(18.dp), color = Yta,
             border = BorderStroke(1.dp, Kant), modifier = Modifier.fillMaxWidth()) {
             Column(Modifier.padding(14.dp)) {
-                Text("Din position lämnar aldrig telefonen.", color = Gul, fontWeight = FontWeight.Bold)
+                Text("Din position lämnar inte telefonen av sig själv.", color = Gul, fontWeight = FontWeight.Bold)
                 Text("All matchning mot vägdata sker lokalt i appen. Inget konto, ingen spårning.",
                     color = Dis, fontSize = 13.sp, modifier = Modifier.padding(top = 4.dp))
                 // S4: löftet skrivs om ordagrant (Axel #196) — det som skickas, när, och bara om du valt det.

@@ -29,7 +29,12 @@ class FacitTest {
         val changed = Facit.answer(l, "wx:1", 10, false)   // ändrat under sändningen
         val after = Facit.markSent(changed, l)              // det som gick iväg var "ja"
         assertFalse(after.single().sent)                    // "nej" är fortfarande osänt
-        assertEquals(1, Facit.pending(after).size)
+        assertEquals(1, Facit.pending(after, now = 10).size)
+    }
+    @Test fun answersOlderThanTheServerWindowAreNotSent() {
+        val l = Facit.answer(emptyList(), "wx:1", 0, true)
+        assertEquals(1, Facit.pending(l, now = Facit.MAX_AGE_MS - 1).size)
+        assertEquals(0, Facit.pending(l, now = Facit.MAX_AGE_MS).size)
     }
     @Test fun capIsKept() {
         var l = emptyList<FacitEntry>()

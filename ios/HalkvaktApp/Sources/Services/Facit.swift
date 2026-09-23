@@ -30,7 +30,14 @@ enum Facit {
         list.last { $0.id == id && $0.t == t }?.svar
     }
 
-    static func pending(_ list: [FacitEntry]) -> [FacitEntry] { list.filter { !$0.sent } }
+    /// Servern tar bara emot svar på varningar inom ±48 h (facit-svar, FONSTER_H). 47 h ger en timmes marginal för
+    /// klockor och köer. Äldre svar är inget facit längre: de skickas inte och frågas inte om (fynd 23/9 — ett svar på
+    /// en tre dygn gammal varning gav HTTP 400 vid varje försök och stoppade kön framför nyare svar).
+    static let maxAge: TimeInterval = 47 * 3600
+
+    static func pending(_ list: [FacitEntry], now: Date = .now) -> [FacitEntry] {
+        list.filter { !$0.sent && now.timeIntervalSince($0.t) < maxAge }
+    }
 
     /// Markerar exakt de svar som gick iväg — ett svar som hunnit ändras under sändningen förblir osänt.
     static func markSent(_ list: [FacitEntry], _ sent: [FacitEntry]) -> [FacitEntry] {

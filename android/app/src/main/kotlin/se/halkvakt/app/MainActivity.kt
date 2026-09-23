@@ -128,7 +128,7 @@ class MainActivity : ComponentActivity() {
     private fun requestStartPermissions() {
         val wanted = mutableListOf(Manifest.permission.ACCESS_FINE_LOCATION)
         if (Build.VERSION.SDK_INT >= 33) wanted.add(Manifest.permission.POST_NOTIFICATIONS)
-        AppEvents.post("Halkvakt behöver din plats för att veta vad som finns på vägen framför dig. Positionen lämnar aldrig telefonen.")
+        AppEvents.post("Halkvakt behöver din plats för att veta vad som finns på vägen framför dig. Positionen lämnar inte telefonen av sig själv.")
         requestPermissions(wanted.toTypedArray(), 1)
     }
 

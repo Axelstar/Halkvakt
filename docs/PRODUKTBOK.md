@@ -80,7 +80,7 @@ introduktionen igen finns *Visa introduktionen igen* längst ner i Inställninga
 Introduktionen visas en gång, fyra sidor. Allt går att hoppa över och ändra senare;
 den kan visas igen från Inställningar.
 
-1. **Löftet** — vad Halkvakt gör, och ordagrant: *"Din position lämnar aldrig telefonen. Vi samlar in:
+1. **Löftet** — vad Halkvakt gör, och ordagrant: *"Din position lämnar inte telefonen av sig själv. Vi samlar in:
    ingenting — om du inte själv slår på betatestets facit i Inställningar."*
 2. **Platsen** — *Tillåt plats* ("Vid användning") — det räcker för att rösten ska tala
    med släckt skärm. Nästa gång du kör frågar iOS om "Alltid", som behövs för att vakten
