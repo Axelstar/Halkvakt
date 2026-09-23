@@ -2860,8 +2860,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     ✅ **I DRIFT 23/9:** migrationen körd (744 ankare), bunten och rapporten deployade 20:51–20:52Z från a894f01. **Första raden MED innehåll:** 2 rader med innehåll i `shadow_log.prognos` efter varvet 2026-09-23T21:00:02Z; t.ex. E14 Sundsvall→Åre: 130 provpunkter, 7 uppmätta, 123 modellerade, 0 okända, 0 frysflaggade, 1465 byte; skuggmotorns svar: ankare 5 bidragande per provpunkt (744 i funktionen); E4 Linköping→Södertälje 77 punkter, 970 byte, ankareSkal det svenska svaret hann rulla ur net._http_response före läsningen; det norska varvet svarade ankare 0, "bara Sverige", som avsett.
     Kvar: facitkopplingen, dom-knappen, holdout-urvalet (4c), Finland, radstorleken mätt efter första dygnet.
     🔨 **FACITKOPPLINGEN OCH DOM-KNAPPEN BYGGDA 23/9 (DECISIONS #327):** `publish/grind-s-b.ts` + `grind-s-b.yml`, två lägen (underlag = bara
-    antal, dom = andelar vid utsatt tid). Självtest med känd sanning grönt. Kamerafacit saknar tabell — kort #242. Kvar: Finland,
-    radstorleken efter första dygnet, första underlagskörningen.
+    antal, dom = andelar vid utsatt tid). Självtest med känd sanning grönt. Kamerafacit saknar tabell — kort #242.
+    ✅ **Första underlagskörningen:** körning 35923243716, 21:34Z, läge underlag, 1 dygn: självtestet grönt först; skarpt 4 varv på 4 rutter, 371 provpunkter, 5 holdout-rader, 0 episoder, 0 facithändelser, 0 halkperioder, C1 0/20, C2 0/30 — och inte en enda procentsats i utskriften. Kvar i (4): Finland (det finska arkivet saknar `vagpunkt_ankare`),
+    radstorleken efter första dygnet (§4.2), och sedan vintern: loggning, söndagar, måndagsserien. Domen i mars.
   - [x] ✅ **(4a) SVARAT 23/9 (DECISIONS #324): rå avståndsviktning, ingen offset, på grind A:s population — inskrivet i TROSKLAR-SKUGGAN §3, Bengts rad bekräftar lydelsen (§4.2). Offsettabellen utgår ur bygget.** Var: TROSKLAR-SKUGGAN §3 säger hur offseten når en vägpunkt utan historik (rå avståndsviktning,
     interpolerad offset ur grannparen, eller terrängkorrigerad) — Claude skriver förslaget, Bengts rad enligt §5.
     Villkoret 23/9 nedan (🛣️).
@@ -2869,7 +2870,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     låna målets historik (rå · interpolerad offset · höjdkorrigerad), i `scripts/hojd-prov.ts` på måndagsklockan. Öppnar
     bara om en kandidat klarar A1–A3; den blir svaret på 4a. Öppnar den inte byggs inget i oktober. Två kandidater hade tal
     12/9: rå 1,65 °C, rå+höjd 1,65 — grinden hänger på interpolationen. Första körningen 23/9 på knapp.
-  - [ ] (4c) **Holdout-stationer på skuggrutterna** (DECISIONS #323) — 🔨 **BYGGT 23/9 (DECISIONS #326): leave-one-out varje varv för varje station inom 2 km av rutten, loggad i `prognos.h` med egen mätning; inget tas bort ur prognosen. Bevis: första raden med `h` efter deploy.** stationer mitt på sträckan hålls utanför modellen så vägen
+  - [ ] (4c) **Holdout-stationer på skuggrutterna** (DECISIONS #323) — 🔨 **BYGGT 23/9 (DECISIONS #326): leave-one-out varje varv för varje station inom 2 km av rutten, loggad i `prognos.h` med egen mätning; inget tas bort ur prognosen. Bevis 23/9: varvet 21:30Z: E4 Sundsvall→Umeå 2 holdout-rader (station 2244 vid km 1,1: mätt 11,0 °C, skattad 9,7, närmaste övriga ankare 4,7 km, fem ankare), E18 Karlstad→Örebro 3 (1712 vid km 45,7: 12,3 mot 13,8; 1830 vid km 63,3: 13,3 mot 13,4); 798 och 1 315 byte per rad.** ✅ stationer mitt på sträckan hålls utanför modellen så vägen
     får en domare hela vintern (§2). Mätt 23/9 (`scripts/matningar/holdout-kandidater-2026-09-23.ts`): 227 svenska stationer
     inom 5 km av rutterna, **90 i 7–20 km-banden** när de tas bort (E4 Helsingborg→Jönköping 10, Rv70 8, E6 Halmstad→Göteborg 7,
     E4 Gävle→Sundsvall 7); Finland 59. E4 Umeå→Luleå noll inom 5 km — linjen är för grov. Urvalet och uteslutningen ur
