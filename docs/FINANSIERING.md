@@ -67,6 +67,10 @@ konkurs; beskedet kommer per brev. **Ingen av adresserna är prövad av oss** �
 "Skriv meddelande" är reserven. Valet 25/9:
 v7A med muntliga ja, annars v7B; en trafikskola utan halkbana ⇒ v7B med AP3 från v7A.
 
+## Malmö stad — läget 23/9
+
+Anna Axberg, systemförvaltare på Fastighets- och gatukontoret (kommunikation och digitalisering), ringde Bengt 23/9 efter följdmejlet 19/9 (ärende 1255995): staden planerar **12 väderstationer nedfrästa i asfalten under hösten** och undersöker om datan kan lämnas via API; hon ber om en påminnelse mot årets slut och lovar att prioritera upp. Det är exakt den datatyp appen varnar på (yttemperatur mätt i vägen), och en ny källa i Trafikverkets form är dagar av ingest-arbete, inte veckor. **Svaret** (Bengt): tack och en sammanfattning av samtalet, vad vi behöver (yta, luft, nederbörd per station, under avtal, inga personuppgifter), erbjudande att vara första externa testkonsument av API:et, frågan om vi får skriva i Skyltfondsansökan att samtal förs med FGK, och vinterns resultat i Malmö som motprestation. Bildspelet skickas som kort bilaga. Allt som skickas till kommunen är allmän handling — inga partnernamn före deras ja, inga opublicerade trösklar. Påminnelse: **början av december**, före fondens besked 15/12.
+
 ## Ideell förening som sökande — så bildas den, läst på skatteverket.se 22/9 (Bengts fråga)
 
 **Skatteverkets sida "Starta en ideell förening":** *"Ni måste vara minst tre personer för att starta en ideell förening."* Stadgar
