@@ -9463,3 +9463,52 @@ bygge.
 
 **Sagt högt.** (1) Policyn lovar ingen lagringstid för facitsvaren — ingen är beslutad. Det är Axels fråga när betatestet avslutas.
 (2) Butikstexten för Play (`marknadsforing/butik/butikstext.md`) nämner fortfarande Polisen; rättas före Play-uppladdningen.
+
+## #321 (23/9 2026) Grind A dömd: KLARAD — offsetmodellen håller vid stationerna (kort #38b steg 3)
+
+**Beslut (Bengt 23/9: *"Döm grind A"*).** Grind A i `docs/TROSKLAR-SKUGGAN.md` §3 är **KLARAD**. Domen fälls på körningen 22/9
+04:49Z med radvakten och karantänen (DECISIONS #298/#299): 711 stationer, 202 087 avläsningar, 7 356 punkter — **A1 0,71 °C**
+(krav ≤ 1,0), **A2 3,5 % ± 0,4** (krav ≤ 5; marginalvaktens övre gräns 3,9), **A3 0,0 %** (krav ≤ 10). Måndagskörningen 21/9 utan
+vakterna säger samma sak: A1 0,75, A2 3,8 ± 0,5, A3 0,3 på 5 745 punkter. Underlagsvakten (≥ 500 punkter, ≥ 20 stationer) och
+marginalvakten (DECISIONS #126) är uppfyllda. Felet stiger monotont med ankaravståndet, som fysiken säger.
+
+**Varför nu.** Talen har stått i två läsningar sedan 22/9, Axel har redan sagt att grind A står (bedömningen §4.1), och steg 4
+(DECISIONS #322) förutsätter en dom. Historiken: 1/9 INGEN DOM (57 punkter); 12/9 FALLEN i rubriken men INGEN DOM med vakterna
+(#119/#129/#131, A2 5,1 % ± 1,0); 21–22/9 KLARAD.
+
+**Alternativ.** Vänta på Axels formella rad — Axel fäller marsdomen (§4, §6), men grind A är byggets förgrind och Bengt äger
+mätningen; Axel ser domen här. Förlängd mätning — underlaget är fjorton gånger vaktens golv, det finns inget att vänta på.
+
+**Vad domen säger, och inte.** Den gäller leave-one-out vid stationerna, där en offset kan läras ur stationens egen historik: det
+är modellens tak. En vägpunkt mellan stationerna har ingen historik (kort #38b, raden 23/9); vad vägen får döms av grind B och C i
+mars. Ingen röst, inget till användaren: §4 (DECISIONS #319) gäller. Måndagsserien fortsätter som bevakning; faller ett mått på
+vinterdata tas det upp i bedömningen §4.2 — domen är fälld på höstdata (60 dygn, yta ≤ +5 °C).
+
+## #322 (23/9 2026) Novemberbeslutet: segmentmotorn byggs i skugga i vinter (kort #38b steg 4)
+
+**Beslut (Bengt 23/9: *"gör novemberbeslutet nu"*).** Segmentmotorn (offsetmodell + ankarklippning, TROSKLAR-SKUGGAN §1) byggs i
+**strikt skugga** den här vintern: en prognoskolumn i `shadow_log`, buntad ur `engine/src` som allt annat (DECISIONS #43/#51),
+körd på skuggrutterna från mitten av oktober när halkan kommer till Skåne. Ungefär tre veckors bygge. Varje segment loggas
+uppmätt / modellerat / okänt. Inget når användaren — ingen röst, ingen karta — före domen i mars 2027 (§4, DECISIONS #319).
+
+**Villkor före bygget (delsteg 4a).** Hur offseten når en vägpunkt utan historik (rå avståndsviktning, offset interpolerad ur
+grannparen, eller terrängkorrigerad) ska stå i TROSKLAR-SKUGGAN innan första raden kod skrivs. Annars loggar vintern rå-modellen
+(1,65 °C mot offsetens 1,06 i höjdprovet 12/9) och grind B mäter något annat än grind A godkände. Claude skriver förslaget;
+Bengts rad enligt §5.
+
+**Varför.** Grind A är klarad (DECISIONS #321). Skugga kostar ingen risk för förare, ingen ny tjänst och inga Actions-minuter
+(skuggmotorn kör redan i Supabase) — bara arbete och Bengts söndagsläsning. Skjuts bygget till 2027/28 förloras en hel vinters
+facit, och kartlagret kommer tidigast 2028/29. Frågan ställdes 12/9 när A2 var oavgjord; sedan 22/9 är den avgjord med marginal.
+
+**Alternativ som valdes bort.** Skjuta till 2027/28 (vintern förlorad). Bygga direkt mot appen (förbjudet av regel T och §4).
+Vänta på Axels novemberrad: kortet sa att sekvenseringen mot lanseringen är Axels. Bengt fattade beslutet att bygga; Axel äger
+fortfarande NÄR i förhållande till App Store-lanseringen (DECISIONS #320) — flyttar lanseringen bygget säger han till, annars
+står starten. Raden står i bedömningen §4.2.
+
+**Vad det inte är.** Ingen prognos bortom två timmar, ingen blixthalka (#16), ingen ersättning för SMHI, inga nya trösklar.
+Höjden (#96) och kallplatslagret (#91) läggs in bara om vinterdata ger dem en rad (#96) eller de förklarar residualer (#91).
+
+**Sagt högt.** (1) Skuggmotorns körtid med prognoskolumnen är inte mätt; den mäts efter första varvet och skrivs på kortet.
+(2) Bengts söndagsrutin får en kolumn till att läsa. (3) Byggnumret och deployen följer bundle-läxan: bunta, `--check` i CI,
+deploya, bevisa med en rad MED innehåll i `shadow_log`.
+
