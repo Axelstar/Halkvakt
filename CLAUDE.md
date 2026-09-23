@@ -307,3 +307,10 @@ i samma commit när de överlappar.
   alls på nio minuter: kroppen sa *"Egen commit utan [skip ci]: den bär kod"*, och GitHub läste märket i meningen som
   förnekade det. Regel: skriv aldrig märket i ett meddelande som ska testas, inte ens för att säga att det saknas — och
   kontrollera direkt efter push att en körning har startat (`/actions/runs?head_sha=`) innan du väntar på den.
+- En grind som LÅNAR en annan grinds trösklar måste låna dess VAKTER också. 23/9 föll vägpunktsgrinden på alla tre kandidater
+  (A2 9–18 %, 7–15 km-bandet 25 % grova fel) och domen var färdig att bokföras — men höjdprovet läste arkivet utan #75, radvakten
+  och karantänen, som grind A bär sedan 22/9 (DECISIONS #299 räknade upp nio mätningar; höjdprovet stod inte med). Med vakterna:
+  0,71 °C och 3,8 %, grinden ÖPPEN (DECISIONS #324). Vakterna tar under två procent av raderna och bar hela skillnaden. Regel: när
+  en mätning lyfts från diagnos till grind, kopiera hela WHERE-satsen från grinden den speglar, inte bara talen. Kontraktsgrinden
+  vaktar talen; ingen vakt ser populationen. Och en dom som ser förkrossande ut på första körningen är ett skäl att läsa
+  populationen, inte att skriva DECISIONS.

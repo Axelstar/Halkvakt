@@ -9550,3 +9550,41 @@ tröskel. (2) Två kandidater hade tal redan 12/9: rå 1,65 °C och rå+höjd 1,
 interpolationen. (3) Holdout-urvalet — vilka stationer, hur de tas ur modellen — görs i bygget och skrivs in i
 tröskeldokumentet tillsammans med 4a. (4) Självtestet "två byar": rå 0,111 °C → interp 0,007 °C på 1 040 punkter.
 
+## #324 (23/9 2026) Vägpunktsgrinden ÖPPEN: rå avståndsviktning, ingen offset, är prognosens väg till vägpunkten (kort #38b 4a/4b)
+
+**Utfall (två körningar 23/9 på Bengts "kör på", DECISIONS #323).** Grind A:s tre mått på kandidater som inte får låna målets
+egen historik, 60 dygn, samma leave-one-out som grind A.
+
+| Körning | Population | RÅ | INTERP | RÅ+HÖJD | OFFSET (taket) |
+| :-- | :-- | :-- | :-- | :-- | --: |
+| 20:20Z (35915159831) | **utan** vakterna: 768 stationer, 8 432 p | 1,11 °C · 9,1 % · 3,1 % ⇒ FALLER | 1,42 · 17,7 % · 4,5 % ⇒ FALLER | 1,16 · 10,1 % · 3,1 % ⇒ FALLER | 0,86 °C |
+| 20:25Z (35915703198) | **med** #75, radvakten, karantänen: 712 stationer, 8 132 p | **0,71 °C [±0,01] · 3,8 % [±0,4] · 0,0 % ⇒ KLARAR** | 0,88 · 9,5 % · 0,0 % ⇒ FALLER | 0,74 · 4,7 % [±0,5] · 0,0 % ⇒ OAVGJORT | 0,72 °C |
+
+**DOM: ÖPPEN.** RÅ — grannarnas yttemperatur avståndsviktad, upp till fem ankare inom 50 km, vikt 1/km, ingen offset — klarar
+A1–A3 utan målets historik, och lika bra som grind A:s lärda offset (0,71 mot 0,72 °C). Per band (RÅ, med vakterna): 0–7 km
+0,73 °C / 0,9 %, 7–15 km 0,55 / 1,1 %, 15–20 km 0,73 / 5,0 %, > 20 km 0,72 / 4,0 %.
+
+**Vad det svarar på.** Delsteg 4a (DECISIONS #322): prognosen räknas som RÅ på grind A:s population. Texten står i
+`docs/TROSKLAR-SKUGGAN.md` §3, skriven under mandatet i DECISIONS #323 ("den kandidaten är svaret på 4a"); Bengts rad
+bekräftar eller ändrar lydelsen (bedömningen §4.2). Bygget i oktober står (DECISIONS #322). **Offsettabellen utgår ur bygget:**
+prognoskolumnen behöver ingen lärd offset, bara stationerna, vakterna och avstånden. Interpolerad offset ur grannparen är
+underkänd (A2 9,5 %): offsetarna är lokala, inte en jämn karta, som #96 och #119 redan antydde. Höjden är oavgjord: hjälper
+inom 7 km (0,59 mot 0,73), stjälper bortom 20 (0,79 mot 0,72, 5,7 % grova); #96 mäter vidare på måndagsklockan.
+
+**Den första körningen föll på fel population — och det är läxan.** Höjdprovet läste arkivet utan #75:s givarvakt, radvakten och
+karantänen, som grind A bär sedan 22/9 (DECISIONS #298/#299; höjdprovet stod inte i den listan). Vakterna tar under två procent
+av raderna (874 + 1 961 + 2 553 av 337 096) men bar hela skillnaden: 7–15 km-bandet gick från 2,68 °C och 24,9 % grova till
+0,55 °C och 1,1 %. Det säger också något om DECISIONS #119:s "7–15 km-anomali": den var trasiga givare, inte terräng. Rättat
+i PR #511 innan domen bokfördes. Regel, nu i CLAUDE.md: en grind som lånar en annan grinds trösklar måste låna dess vakter;
+kontraktsgrinden vaktar talen, ingen vaktar populationen.
+
+**Vad det inte ändrar.** Grind A:s dom (#321), trösklarna, grind B och C, §4 (aldrig röst ensam). Holdout-stationerna (4c) står:
+med RÅ som prognos är en holdout exakt grind A:s leave-one-out, så måndagskörningen ÄR vinterns vägpunktsprov för alla 712
+stationer; rutternas holdouts ger dessutom facit för grind B på just skuggrutterna.
+
+**Sagt högt.** (1) Grinden är klarad på höstdata (60 dygn, yta ≤ +5 °C); vinterkurvan är bevakningen, faller RÅ tas frågan upp i
+§4.2. (2) 15–20 km-bandet ligger på 5,0 % grova, exakt på tröskeln — bandet står, men det är där vintern kan vända. (3) Att RÅ
+och OFFSET är lika bra betyder att grind A:s "tak" inte var något tak: modellens värde ligger i vakterna och ankartätheten,
+inte i den lärda offseten. Det förenklar bygget och gör höjden och terrängen till precis vad Bengt frågade om i morse —
+delar av samma modell, som läggs in bara om de förklarar något.
+
