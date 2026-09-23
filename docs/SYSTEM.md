@@ -60,7 +60,9 @@ rösttext ändrar OCKSÅ denna fil. Bengt läser den mot koden en gång i månad
 - **Ingen prognos når användaren.** Prognoslagret för halka mellan stationerna (offsetmodell, grind A klarad 21/9
   och 22/9) och skuggreglerna (efterhalka, trend, rimfrost, övergångar, vind/sikt) körs i SKUGGDRIFT: de loggar vad de
   skulle ha sagt. Trösklarna fastställdes och daterades 1/9, före all skuggkod; utfall läses först vid dom 1 januari,
-  kalibrering 1 februari, dom 2 mars (regel D1–D7). Regel T: en prognos talar aldrig ensam.
+  kalibrering 1 februari, dom 2 mars (regel D1–D7). Regel T: en prognos talar aldrig ensam. Klarar prognoslagret
+  sina grindar i mars blir det ett kartlager och en förstärkare av mätta varningar — aldrig en egen röst
+  (TROSKLAR-SKUGGAN §4, ändrat 23/9, DECISIONS #319).
 - **Tyst mellan mätpunkterna.** Medianavståndet från huvudvägnätet till närmaste station är 7 km; 13 % av Norrlands
   vägnät ligger mer än 20 km bort. Där ser motorn ingenting, och löftet följer källans täckning.
 - **Tyst i stan.** I Malmö kommun finns tre stationer, alla på statens vägar. Kommunens egna stationer är inte öppna data

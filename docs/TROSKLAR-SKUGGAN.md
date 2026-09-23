@@ -125,15 +125,27 @@ Uppströmsledtiden (1.2/3.4, danska stationerna) redovisas som underlag men är
 
 ## 4. Domslutet (mars 2027, Axel fäller mot Bengts mätning)
 
-- **(a) TALAR:** A + B + C klaras nationellt → segmentprognosen kopplas till app
-  och karta som säsong 2-funktion, trenivåmärkt, "risk"-språk (aldrig "uppmätt"),
-  SYSTEM.md skrivs om i samma commit.
+- **(a) KARTA OCH KONFIDENS:** A + B + C klaras nationellt → segmentprognosen kopplas till
+  **kartan** som säsong 2-funktion, trenivåmärkt, "risk"-språk (aldrig "uppmätt"), och får
+  **stärka, försvaga eller förlänga** en varning som vilar på en mätning (regel T3, T6).
+  **Den utlöser aldrig röst ensam.** SYSTEM.md skrivs om i samma commit.
 - **(b) TALAR NÄRA ANKARE:** A + B klaras i banden 0–7 km (ev. 7–15) men inte
-  längre ut → skuggan talar endast på segment vars maxavstånd till ankare ligger
-  i godkänt band; resten skrivs ut som okänt.
+  längre ut → skuggan talar endast på segment som uppfyller **båda**: maxavstånd till
+  ankare i godkänt band, **och** T1–T2 — ankarstationens mätning kan på varningens plats
+  och inom utfallsfönstret visa att tillståndet inte rådde. Är vittnet inte namngivet och
+  bevisat med innehåll (T2) talar skuggan inte. Resten skrivs ut som okänt.
 - **(c) TYST:** något av A/B faller, eller C uppfylls inte → skuggan skrotas
   eller får en vinter till i tystnad. Vid otillräckligt underlag (C) är utfallet
   ALLTID fortsatt skugga — aldrig tal på tunn dom.
+
+**B3 efter denna lydelse:** en B3-träff (mervärde där punktmotorn var tyst eller > 30 min
+senare) är att prognosen visade rätt på kartan, eller förlängde eller stärkte en varning som
+vilade på en mätning — inte att den talade där punktmotorn teg. Talet i B3 är oförändrat.
+
+*Ändrat 23/9 2026 (DECISIONS #319, Bengts rad — skärpning enligt §5): (a) och (b) ovan ersatte
+lydelsen från 1/9, som lät prognosen tala på modellerade värden i strid med regel T3/T6
+(TROSKLAR-KOMBINATIONEN §6, fastställd 16–17/9). Grind A, B och C oförändrade. Underlag:
+`docs/SKUGGAN-PAR4-MOT-REGEL-T.md`.*
 
 Bevisbördan ligger på skuggan. Vid tvekan: tystnad (produktinvarianten).
 
