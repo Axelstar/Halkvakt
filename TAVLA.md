@@ -2846,6 +2846,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     🟢 **BESLUTAT 23/9 (Bengt, DECISIONS #322): bygg i skugga i vinter.** Start mitten av oktober, ~tre veckor: prognoskolumn i
     `shadow_log`, buntad ur `engine/src`, varje segment uppmätt / modellerat / okänt. Ingen röst, inget till användaren
     före mars 2027. Axel äger sekvenseringen mot App Store-lanseringen (DECISIONS #320).
+    🔨 **PÅGÅR 23/9 (Bengt: *"bygg nu"*, DECISIONS #325): starten flyttad från oktober till nu.** Byggt 23/9: `sql/032` (kolumnen
+    `prognos`, funktionen `vagpunkt_ankare`), `engine/src/segment.ts` (rå avståndsviktning, provpunkt var 2 km, status och
+    frysflagga i raden, tio tester), skuggmotorn loggar per rutt med `ankare`/`ankareSkal` i svaret, skuggrapporten räknar.
+    Tidsdelen utelämnad med flit. Kvar: migrationen körd, bunten deployad, första raden MED innehåll, facitkopplingen
+    (`publish/missar.ts`), dom-knappen för grind B/C, holdout-urvalet (4c), Finland.
   - [x] ✅ **(4a) SVARAT 23/9 (DECISIONS #324): rå avståndsviktning, ingen offset, på grind A:s population — inskrivet i TROSKLAR-SKUGGAN §3, Bengts rad bekräftar lydelsen (§4.2). Offsettabellen utgår ur bygget.** Var: TROSKLAR-SKUGGAN §3 säger hur offseten når en vägpunkt utan historik (rå avståndsviktning,
     interpolerad offset ur grannparen, eller terrängkorrigerad) — Claude skriver förslaget, Bengts rad enligt §5.
     Villkoret 23/9 nedan (🛣️).

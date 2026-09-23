@@ -248,6 +248,21 @@ function efterhalkaRader(lv: any, route: [number, number][], alerts: Alert[]) {
   }));
 }
 
+/** SEGMENTPROGNOSENS ANKARE (sql/032 vagpunkt_ankare, DECISIONS #324/#325): vaktade, färska svenska stationer med
+ *  yttemperatur — samma population som det appen hör och som grind A dömdes på. Fail-soft med skäl: en tom prognos
+ *  utan orsak är omöjlig att skilja från "inga ankare", samma läxa som facit-hinken (#173). */
+async function vagpunktAnkare(): Promise<{ lista: Ankare[]; skal: string | null }> {
+  try {
+    const r = await fetch(`${SB}/rest/v1/rpc/vagpunkt_ankare`, { method: "POST",
+      headers: { Authorization: `Bearer ${SRK}`, apikey: SRK, "Content-Type": "application/json" }, body: "{}" });
+    if (!r.ok) return { lista: [], skal: `vagpunkt_ankare ${r.status}: ${(await r.text().catch(() => "")).slice(0, 120)}` };
+    const rows: any[] = await r.json();
+    const lista = rows.flatMap((x) => (typeof x.lon === "number" && typeof x.lat === "number" && x.yta != null
+      ? [{ id: String(x.id), lon: x.lon, lat: x.lat, yta: Number(x.yta) }] : []));
+    return { lista, skal: lista.length ? null : "vagpunkt_ankare gav noll ankare" };
+  } catch (e) { return { lista: [], skal: `vagpunkt_ankare kastade: ${String(e).slice(0, 120)}` }; }
+}
+
 Deno.serve(async (req) => {
   const k = Deno.env.get("INGEST_KEY");
   if (!k || req.headers.get("x-halkvakt-key") !== k) return new Response("forbidden", { status: 403 });
@@ -282,6 +297,8 @@ Deno.serve(async (req) => {
       fetch(CDN + "live.json" + bust).then((r) => r.json()),
     ]);
     const hazards = snapshotToHazards(st, lv);
+    // Ankarna hämtas en gång per anrop, inte per rutt. Bara Sverige: funktionen läser det svenska arkivet.
+    const ankare = land === "se" ? await vagpunktAnkare() : { lista: [] as Ankare[], skal: "bara Sverige" };
     const results: Record<string, unknown> = {};
     let facitTotal = 0;
     const facitSkal: string[] = [];
@@ -309,6 +326,10 @@ Deno.serve(async (req) => {
       // ska kunna spelas upp mot vilket villkor som helst. Axels grind (#196): regn_h döms här innan något
       // mer byggs på det. Tom i september (weather[] saknar stationer ≤ 3 °C) — det är rätt, inte fel.
       const efterhalka = land === "se" ? efterhalkaRader(lv, line, alerts) : [];
+      // SEGMENTPROGNOSEN (kort #38b steg 4, DECISIONS #324/#325, Bengts "bygg nu" 23/9): rå avståndsviktning av de
+      // vaktade stationerna per provpunkt längs rutten (engine/src/segment.ts). Loggad, aldrig hörd — grind B och C
+      // dömer i mars. Tom utan ankare, och skälet står i svaret (ankareSkal), så en tom kolumn aldrig är tvetydig.
+      const prognos = ankare.lista.length ? segmentPrognos(line, ankare.lista) : {};
       // Facit-bilder finns bara i Sverige (Trafikverkets väglagskameror). Punkterna slås upp ur
       // faran, inte ur larmet — motorns Alert bär ingen position (rättelse 4 ovan, DECISIONS #189).
       const farorById = new Map(hazards.map((h) => [h.id, h]));
@@ -323,7 +344,8 @@ Deno.serve(async (req) => {
       // En nolla utan skäl är omöjlig att skilja från "inga larm" (#173) — även den här grenen säger varför.
       if (land === "se" && alerts.length && !punkter.length) f.skal.push("bara segmentlarm — ingen punkt att söka kamera från");
       facitBudget -= f.saved; facitTotal += f.saved; facitSkal.push(...f.skal);
-      results[name] = { fixes: trace.length, alerts: alerts.length, vb: vb.length, suppressed: suppressed.length, efterhalka: efterhalka.length };
+      results[name] = { fixes: trace.length, alerts: alerts.length, vb: vb.length, suppressed: suppressed.length, efterhalka: efterhalka.length,
+        prognos: (prognos as Prognos).p?.length ?? 0 };
       // LARMETS POSITION (kort #158, DECISIONS #177/#179, Axels ja via Bengt 14/9).
       //
       // FÖRUT SKREVS `lon: a.lon` — OCH DET FÄLTET FINNS INTE. Motorns Alert bär `t`, `hazardId`,
@@ -346,7 +368,7 @@ Deno.serve(async (req) => {
       // Exakt punkt för segment kräver att motorns Alert bär den — det är form B och rör vektorerna.
       const body = JSON.stringify({
         route: name, land: land.toUpperCase(), snapshot_generated_at: lv.generated_at,
-        n_hazards: hazards.length, n_alerts: alerts.length, vb, suppressed, efterhalka,
+        n_hazards: hazards.length, n_alerts: alerts.length, vb, suppressed, efterhalka, prognos,
         alerts: alerts.map((a) => {
           const h = farorById.get(a.hazardId) as any;
           const punkt = h && h.kind !== "slippery_segment" && typeof h.lon === "number";
@@ -365,7 +387,7 @@ Deno.serve(async (req) => {
     }
     // Skälen går med i svaret. En nolla utan skäl är omöjlig att skilja från "inga larm",
     // och det var precis det som lät bucketen stå tom i sexton dygn utan att någon såg det.
-    return new Response(JSON.stringify({ ok: true, results, facit: facitTotal,
+    return new Response(JSON.stringify({ ok: true, results, ankare: ankare.lista.length, ankareSkal: ankare.skal, facit: facitTotal,
       facitSkal: [...new Set(facitSkal)].slice(0, 8) }), {
       headers: { "Content-Type": "application/json" } });
   } catch (e) {
