@@ -2845,6 +2845,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   - [ ] (4) Skuggkörningen — startar när det finns halka att skugga (~mitten av oktober, Skåne).
   - [x] ~~Skuggmotorns prognoskolumn buntas ur engine/src~~ ✅ scripts/bundle-skuggmotor.ts,
     ci.yml kör --check (läxan i CLAUDE.md).
+  📏 **23/9 — kortets grind A-text ovan är inaktuell:** grind A är **KLARAD** 21/9 utan vakterna (A1 0,75 °C, A2 3,8 % ± 0,5, A3 0,3 % på 5 745 punkter) och 22/9 med radvakt och karantän (A1 0,71, A2 3,5 % ± 0,4, A3 0,0 % på 7 356; DECISIONS #299). Kvar i (3): Bengts och Axels formella dom. (3b) är i praktiken avgjord (FI/NO mätta, SMHI som förtätning sämre, höjden #96, GIS #91). §4 i tröskeldokumentet rättad 23/9 (#198, DECISIONS #319): prognosen blir karta och förstärkare, aldrig röst ensam. Novemberbeslutet står som egen rad i bedömningens §4.2. Beskrivning i sin helhet: `Halkvakt-38b-strak-2026-09-23.md` på Bengts skrivbord.
 - [ ] ↩︎ Play: uppladdningsguide för den CI-signerade AAB:n + fotostudion tag 2 (facit ur CI +
   produktboken) *(låst: Play-kontot)*.
 - [ ] 📈 **#88 TRENDEN — vi mäter var minut men använder bara sista värdet** (systemanalys 10/9;
