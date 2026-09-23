@@ -33,6 +33,8 @@
 // Trösklarna och vakterna är kopior av grind A:s (publish/grind-a.ts), vaktade av kontraktsgrinden.
 
 import { Z, andelSe, medelSe, utfallTak, grindutfall, type Utfall } from "../publish/marginal.ts";
+import { vaktdiagnos, led234 } from "../publish/vaktdiagnos.ts";
+import { RADVAKT_SQL, karantanSql } from "../publish/snapshot-core.ts";
 
 const K_NEIGHBOURS = 5;
 const MAX_KM = 50;
@@ -249,12 +251,27 @@ const pg = (await import("pg")).default;
 const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });
 const DAYS = Number(process.argv[2] ?? 60);
 
+// VAKTDIAGNOSEN FÖRST (DECISIONS #141), som i grind A: en nolla ska aldrig vara tvetydig mellan
+// "fältet saknas", "vakten fäller allt" och "arkivet är tomt".
+await vaktdiagnos((s, p) => pool.query(s, p as any[]).then((r) => r.rows),
+  "weather_observations", `WHERE sample_time > now() - ${DAYS} * interval '1 day'`, [
+    { namn: "yttemperatur finns", bar: "surface_temp_c IS NOT NULL", villkor: "true" },
+    { namn: "#75: lufttemperatur finns", bar: "air_temp_c IS NOT NULL", villkor: "true" },
+    { namn: "#75: yta - luft >= -12 grader", bar: "surface_temp_c IS NOT NULL AND air_temp_c IS NOT NULL", villkor: "surface_temp_c >= air_temp_c - 12" },
+    ...led234(),
+  ]);
+
+// Samma population som grind A (publish/grind-a.ts): #75:s givarvakt, radvakten och karantänen
+// (DECISIONS #298/#299). Första körningen av vägpunktsgrinden 23/9 gick UTAN dem — en grind som
+// dömer mot grind A:s trösklar måste läsa grind A:s arkiv, annars jämförs två populationer.
 const res = await pool.query(`
   SELECT DISTINCT ON (station_id, b) station_id,
     ST_X(geom::geometry) lon, ST_Y(geom::geometry) lat,
     floor(extract(epoch FROM sample_time) / ${BUCKET_S})::bigint AS b, surface_temp_c
   FROM weather_observations
   WHERE surface_temp_c IS NOT NULL AND sample_time > now() - $1 * interval '1 day'
+    AND air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12
+    AND ${RADVAKT_SQL} AND ${karantanSql("weather_observations")}
   ORDER BY station_id, b, sample_time DESC`, [DAYS]);
 await pool.end();
 const stations = new Map<string, Station>();
