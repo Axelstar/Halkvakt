@@ -9655,6 +9655,8 @@ löpande — samma regel som för alla skuggmått (inga träffandelar före utsa
 hamnade i. (3) `publish/missar.ts` bär en egen kopia av tre rutter ("håll i takt") — den ska läsa rutterna ur skuggmotorn som
 ruttberedskapen gör, i samma varv som facitkopplingen byggs.
 
+**Bevis (PR #516, deploy 21:24Z från cdd7889):** varvet 21:30Z: E4 Sundsvall→Umeå 2 holdout-rader (station 2244 vid km 1,1: mätt 11,0 °C, skattad 9,7, närmaste övriga ankare 4,7 km, fem ankare), E18 Karlstad→Örebro 3 (1712 vid km 45,7: 12,3 mot 13,8; 1830 vid km 63,3: 13,3 mot 13,4); 798 och 1 315 byte per rad. Raderna före deployen bär `p` utan `h`, som avsett.
+
 ## #327 (23/9 2026) Facitkopplingen och dom-knappen för grind B och C: `publish/grind-s-b.ts`, två lägen (kort #38b steg 4)
 
 **Beslut (Claude på Bengts "kör vidare" 23/9; formen enligt TROSKLAR-SKUGGAN §2–§3 och grind V-B:s mönster).** Segmentprognosens
@@ -9687,4 +9689,6 @@ enda bekräftad episod ger binomialfelet noll bredd och B3 läser KLARAR på 1 a
 att det aldrig blir en dom. (4) SMHI-varningar är områden; centroiden kan ligga långt från rutten, så de flesta faller utanför
 2 km — samma begränsning som i `publish/missar.ts`. (5) `missar.ts` bär fortfarande sin egen kopia av tre rutter; dom-knappen
 läser skuggmotorns tjugo. Rättas när missar.ts nästa gång rörs.
+
+**Bevis, första skarpa körningen:** körning 35923243716, 21:34Z, läge underlag, 1 dygn: självtestet grönt först; skarpt 4 varv på 4 rutter, 371 provpunkter, 5 holdout-rader, 0 episoder, 0 facithändelser, 0 halkperioder, C1 0/20, C2 0/30 — och inte en enda procentsats i utskriften. Blindningen höll i drift, inte bara i självtestet.
 
