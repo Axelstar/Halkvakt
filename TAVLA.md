@@ -1183,6 +1183,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔑 **VÄNTAR PÅ BENGTS RAD** (bedömningen §4.2). Rekommendation: ta det nu, inte i mars — annars kan någon bygga
   röstvägen under vintern och få veta först vid domen att den inte får användas.
   ↦ **Sorterat 22/9 (kort #224):** nästa steg är din DECISIONS-rad om förslaget (a)/(b) (§4.2).
+  🔍 **Genomlysning 23/9 (Bengts fråga):** kortet gäller bara segmentprognosen (#38b), inte skuggmotorn eller skuggreglerna; inga trösklar ändras. Skärpningen: (a) från röst till karta + förstärkare, (b) från noggrannhetskrav till vittneskrav. Två tillägg i underlagets §7: B3:s innebörd måste sägas i DECISIONS-raden, och (b) kan bli nästan tom. Rekommendation: anta förslaget nu, före #38b steg 4 i oktober. Fullständig text på Bengts skrivbord (`Halkvakt-198-genomlysning-2026-09-23.md`).
 
 - [x] ✅ **STÄNGT 22/9** (DECISIONS #306) — 🗑️ **#146 27,6 MB SWIFT-BYGGUTDATA LIGGER SPÅRAT I REPOT — beslut krävs innan något tas bort**
   Upptäckt 12/9 under CRLF-arbetet (#145): `ios/HalkvaktEngine/.build/` är spårad med **504 filer,
