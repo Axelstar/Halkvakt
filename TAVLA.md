@@ -2846,10 +2846,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     🟢 **BESLUTAT 23/9 (Bengt, DECISIONS #322): bygg i skugga i vinter.** Start mitten av oktober, ~tre veckor: prognoskolumn i
     `shadow_log`, buntad ur `engine/src`, varje segment uppmätt / modellerat / okänt. Ingen röst, inget till användaren
     före mars 2027. Axel äger sekvenseringen mot App Store-lanseringen (DECISIONS #320).
-  - [ ] (4a) **Först:** TROSKLAR-SKUGGAN §3 säger hur offseten når en vägpunkt utan historik (rå avståndsviktning,
+  - [x] ✅ **(4a) SVARAT 23/9 (DECISIONS #324): rå avståndsviktning, ingen offset, på grind A:s population — inskrivet i TROSKLAR-SKUGGAN §3, Bengts rad bekräftar lydelsen (§4.2). Offsettabellen utgår ur bygget.** Var: TROSKLAR-SKUGGAN §3 säger hur offseten når en vägpunkt utan historik (rå avståndsviktning,
     interpolerad offset ur grannparen, eller terrängkorrigerad) — Claude skriver förslaget, Bengts rad enligt §5.
     Villkoret 23/9 nedan (🛣️).
-  - [ ] (4b) **Vägpunktsgrinden** (Bengts ja 23/9, DECISIONS #323): grind A:s mått, trösklar och vakter på kandidater som inte får
+  - [x] ✅ **(4b) ÖPPEN 23/9 (DECISIONS #324): RÅ klarar A1 0,71 °C · A2 3,8 % ± 0,4 · A3 0,0 % på 8 132 punkter med vakterna, lika bra som offseten (0,72). INTERP faller (9,5 %), höjden oavgjord (4,7 %). Första körningen utan vakterna föll (RÅ 1,11 °C, 9,1 %) — fel population, rättad i PR #511 före domen. Körs vidare måndagar.** Vägpunktsgrinden (Bengts ja 23/9, DECISIONS #323): grind A:s mått, trösklar och vakter på kandidater som inte får
     låna målets historik (rå · interpolerad offset · höjdkorrigerad), i `scripts/hojd-prov.ts` på måndagsklockan. Öppnar
     bara om en kandidat klarar A1–A3; den blir svaret på 4a. Öppnar den inte byggs inget i oktober. Två kandidater hade tal
     12/9: rå 1,65 °C, rå+höjd 1,65 — grinden hänger på interpolationen. Första körningen 23/9 på knapp.
@@ -4301,6 +4301,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **VÄGPUNKTSGRINDEN ÖPPEN 23/9 (DECISIONS #324)**: rå avståndsviktning utan offset klarar grind A:s mått utan målets historik (0,71 °C · 3,8 % · 0,0 %), lika bra som den lärda offseten. 4a svarat, offsettabellen utgår, bygget i oktober står. Första körningen föll på fel population — läxan i CLAUDE.md.
 - [x] ✅ **GRIND A DÖMD: KLARAD — 23/9 (Bengt, DECISIONS #321)**: offsetmodellen håller vid stationerna, A1 0,71 °C · A2 3,5 % ± 0,4 · A3 0,0 % på 7 356 punkter (22/9 med vakterna). Taket, inte vägen — vägen döms i mars.
 - [x] ✅ **NOVEMBERBESLUTET FATTAT 23/9 (Bengt, DECISIONS #322)**: segmentmotorn byggs i skugga i vinter, start mitten av oktober; först offsetens väg till vägpunkten i TROSKLAR-SKUGGAN (kort #38b 4a). Ingen röst, inget till användaren före mars 2027.
 - [x] ✅ **#198 TROSKLAR-SKUGGAN §4 RÄTTAD MOT REGEL T — KLART 23/9 (DECISIONS #319)**: Bengts ja; prognosen blir karta och förstärkare, aldrig röst ensam, (b) kräver vittne; B3:s innebörd inskriven. Tavlan 49 → 48 öppna.
