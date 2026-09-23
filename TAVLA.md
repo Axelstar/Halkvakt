@@ -2762,7 +2762,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   - [x] ~~(1) Tröskeldokumentet~~ ✅ 1/9 (DECISIONS #52): docs/TROSKLAR-SKUGGAN.md, grind A/B/C.
   - [x] ~~(2) Ankarklippningen~~ ✅ 1/9 (DECISIONS #55): kamerorna ger ingen ny ankartäthet
     (738/744 står vid en VViS); Norrland 9,2 km / 12,6 % oförändrat. Knappen ankaranalys.yml.
-  - [ ] **(3) Offsetmodellen mot arkivdata (grind A)** — publish/grind-a.ts, knappen grind-a,
+  - [x] ~~**(3) Offsetmodellen mot arkivdata (grind A)**~~ ✅ **DÖMD KLARAD 23/9 (Bengt, DECISIONS #321)** — publish/grind-a.ts, knappen grind-a,
     leave-one-out mot A1–A3, domspärr under 500 punkter/20 stationer, larmväg bevisad 1/9.
     Rökprov 1/9 (43 punkter): felet växer med ankaravståndet (0,63 °C 0–7 km → 5,39 °C >20 km).
     AUTOMATISK måndagar 05:40. 🔑 Skarp prövning på vinterdata (≥ 500 punkter) före november.
@@ -2843,9 +2843,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     · GIS-svansen (dalgångar/skuggning) = kort #91 kallplatslagret. Rörs inte förrän vinterns
       höjdprov motiverar den.
   - [ ] (4) Skuggkörningen — startar när det finns halka att skugga (~mitten av oktober, Skåne).
+    🟢 **BESLUTAT 23/9 (Bengt, DECISIONS #322): bygg i skugga i vinter.** Start mitten av oktober, ~tre veckor: prognoskolumn i
+    `shadow_log`, buntad ur `engine/src`, varje segment uppmätt / modellerat / okänt. Ingen röst, inget till användaren
+    före mars 2027. Axel äger sekvenseringen mot App Store-lanseringen (DECISIONS #320).
+  - [ ] (4a) **Först:** TROSKLAR-SKUGGAN §3 säger hur offseten når en vägpunkt utan historik (rå avståndsviktning,
+    interpolerad offset ur grannparen, eller terrängkorrigerad) — Claude skriver förslaget, Bengts rad enligt §5.
+    Villkoret 23/9 nedan (🛣️).
   - [x] ~~Skuggmotorns prognoskolumn buntas ur engine/src~~ ✅ scripts/bundle-skuggmotor.ts,
     ci.yml kör --check (läxan i CLAUDE.md).
-  📏 **23/9 — kortets grind A-text ovan är inaktuell:** grind A är **KLARAD** 21/9 utan vakterna (A1 0,75 °C, A2 3,8 % ± 0,5, A3 0,3 % på 5 745 punkter) och 22/9 med radvakt och karantän (A1 0,71, A2 3,5 % ± 0,4, A3 0,0 % på 7 356; DECISIONS #299). Kvar i (3): Bengts och Axels formella dom. (3b) är i praktiken avgjord (FI/NO mätta, SMHI som förtätning sämre, höjden #96, GIS #91). §4 i tröskeldokumentet rättad 23/9 (#198, DECISIONS #319): prognosen blir karta och förstärkare, aldrig röst ensam. Novemberbeslutet står som egen rad i bedömningens §4.2. Beskrivning i sin helhet: `Halkvakt-38b-strak-2026-09-23.md` på Bengts skrivbord.
+  📏 **23/9 — kortets grind A-text ovan är inaktuell:** grind A är **KLARAD** 21/9 utan vakterna (A1 0,75 °C, A2 3,8 % ± 0,5, A3 0,3 % på 5 745 punkter) och 22/9 med radvakt och karantän (A1 0,71, A2 3,5 % ± 0,4, A3 0,0 % på 7 356; DECISIONS #299). ~~Kvar i (3): Bengts och Axels formella dom.~~ Dömd 23/9 (DECISIONS #321). (3b) är i praktiken avgjord (FI/NO mätta, SMHI som förtätning sämre, höjden #96, GIS #91). §4 i tröskeldokumentet rättad 23/9 (#198, DECISIONS #319): prognosen blir karta och förstärkare, aldrig röst ensam. Novemberbeslutet står som egen rad i bedömningens §4.2. Beskrivning i sin helhet: `Halkvakt-38b-strak-2026-09-23.md` på Bengts skrivbord.
   🛣️ **23/9 — vägpunkten utan historik (Bengts fråga: är höjden och terrängen egna ben? Nej, delar av samma modell):** grind A förutsäger en **station** ur grannarna plus en offset lärd ur stationens egen historik (`publish/grind-a.ts`). En vägpunkt mellan stationerna har ingen historik och därmed ingen lärd offset. Det är det fall höjden (#96) och kallplatslagret (#91) ska lösa, och där de hittills inte levererat: höjdprovet 12/9 på 1 962 punkter gav rå 1,65 °C, rå+höjd 1,65, offset 1,06 (`scripts/hojd-prov.ts`, huvudet bär designfyndet: offseten absorberar redan höjden, så höjd ovanpå offset är dubbelräkning). **Grind A:s 0,71 °C är alltså taket vid stationerna, inte vad vägen får.** **Villkor före (4):** hur offseten når en vägpunkt (rå avståndsviktning, offset interpolerad ur grannparen, eller terrängkorrigerad) ska stå i TROSKLAR-SKUGGAN innan skuggkörningen byggs i oktober, annars loggar vintern rå-modellen. Grind C3 (backtest och skuggdrift åt samma håll) är vakten som fäller om vägen blir sämre än stationerna. Höjden läggs in bara om vinterdata ger den en tröskelrad (#96), kallplatslagret bara om det förklarar residualer (#91 Verify).
 - [ ] ↩︎ Play: uppladdningsguide för den CI-signerade AAB:n + fotostudion tag 2 (facit ur CI +
   produktboken) *(låst: Play-kontot)*.
@@ -4286,6 +4292,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **GRIND A DÖMD: KLARAD — 23/9 (Bengt, DECISIONS #321)**: offsetmodellen håller vid stationerna, A1 0,71 °C · A2 3,5 % ± 0,4 · A3 0,0 % på 7 356 punkter (22/9 med vakterna). Taket, inte vägen — vägen döms i mars.
+- [x] ✅ **NOVEMBERBESLUTET FATTAT 23/9 (Bengt, DECISIONS #322)**: segmentmotorn byggs i skugga i vinter, start mitten av oktober; först offsetens väg till vägpunkten i TROSKLAR-SKUGGAN (kort #38b 4a). Ingen röst, inget till användaren före mars 2027.
 - [x] ✅ **#198 TROSKLAR-SKUGGAN §4 RÄTTAD MOT REGEL T — KLART 23/9 (DECISIONS #319)**: Bengts ja; prognosen blir karta och förstärkare, aldrig röst ensam, (b) kräver vittne; B3:s innebörd inskriven. Tavlan 49 → 48 öppna.
 
 - [x] ✅ **#15 KÖ-SLUT OCH #32 HINDER TILL VÅREN 2027 (DECISIONS #315)** — Bengts ord 22/9: stängda som kort, Ä3 bär dem och de öppnas våren 2027. Tavlan 50 → 48 öppna.

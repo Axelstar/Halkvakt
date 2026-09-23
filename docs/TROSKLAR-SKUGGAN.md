@@ -101,6 +101,11 @@ mätvärden**. Den standande domen berörs inte — 10,7 % mot 5,0 % ligger lån
 kan aldrig öppna en stängd grind, men §5 nedan gör dokumentet till bådas. Ingen dom som vilar
 på marginalvakten får fällas innan han läst den.
 
+*Grind A dömd 23/9 2026: **KLARAD** (Bengt, DECISIONS #321) på körningen 22/9 med radvakten och karantänen — A1 0,71 °C,
+A2 3,5 % ± 0,4, A3 0,0 % på 7 356 punkter från 711 stationer; 21/9 utan vakterna A1 0,75, A2 3,8 ± 0,5, A3 0,3 på 5 745.
+Domen gäller leave-one-out vid stationerna, där offseten lärs ur stationens egen historik. Hur offseten når en vägpunkt
+utan historik ska stå i detta dokument innan skuggkörningen byggs (kort #38b, delsteg 4a; DECISIONS #322).*
+
 ### Grind B — skuggdriften (hela vintern, dom i mars)
 
 | # | Mått | Tröskel |
