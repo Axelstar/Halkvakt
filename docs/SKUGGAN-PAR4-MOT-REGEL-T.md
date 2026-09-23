@@ -121,3 +121,28 @@ ingen ännu byggt kod mot.
 - **Frysklassningen (#103)** — T5 säger redan att den förblir en konfidenshöjare; ingenting här ändrar det.
 - **Något i TROSKLAR-KOMBINATIONEN** — regel T är fastställd och skärps inte här. Det är skuggans text
   som ska följa regeln, inte tvärtom.
+
+---
+
+## 7. Tillägg 23/9 — två saker ovan inte sa (Bengts fråga om vad skärpningen betyder i sin helhet)
+
+**Vad kortet INTE gäller.** Ordet *skugga* används om tre saker: skuggmotorn (flottan som kör den riktiga motorn på 80 rutter),
+skuggreglerna (efterhalka, trend, rimfrost, övergångar, vind/sikt) och *skuggan* i detta dokuments mening — segmentprognosen
+(#38b), som ännu inte är byggd (ingen prognoskolumn i `shadow_log`, ingen prognoskod i skuggmotorn). Kort #198 rör bara den
+sista. Produktionsmotorn, skuggmotorn och skuggreglerna berörs inte; grind A:s, B:s och C:s tal berörs inte.
+
+**1. Grind B3 byter innebörd.** B3 (*mervärde ≥ 25 %: träffar där punktmotorn var tyst eller > 30 min senare*) är skrivet
+som existensvillkor för en skugga som *talar*. Får prognosen aldrig tala ensam kan den inte träffa "där punktmotorn var tyst"
+med rösten — bara på kartan eller genom att förlänga en mätt varning i tid. Talet behöver inte ändras, men DECISIONS-raden bör
+säga vad en B3-träff *är* efter skärpningen: prognosen visade rätt på kartan, eller förlängde en varning som vilade på en
+mätning. Annars mäts B3 i mars mot en rätt som inte längre finns.
+
+**2. (b) kan visa sig nästan tom.** Ett vittne på platsen inom utfallsfönstret är i praktiken en station inom några kilometer
+som mäter samma tillstånd — och då är stationens mätning redan utlösaren; prognosen tillför försprång och längd, inte en ny
+varning. Det är vad regel T menar, men det ska sägas öppet så att ingen i mars väntar sig att (b) ger rösten nya platser.
+Alternativet att stryka (b) helt är enklare men **oåterkalleligt** (att öppna den igen vore en lättnad, utesluten när utfallet
+är sett) — därför rekommenderas förslaget i §4 som det står, med B3-meningen i samma rad.
+
+**Tidpunkt.** Före första skuggkörningen av prognosen (#38b steg 4, mitten av oktober), så att vintern loggas under ett
+dokument som stämmer. Fullständig genomlysning: `Halkvakt-198-genomlysning-2026-09-23.md` på Bengts skrivbord.
+
