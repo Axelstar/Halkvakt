@@ -117,6 +117,8 @@ bortom 20. Bandet per segment är avståndet till närmaste bidragande ankare; b
 Status per provpunkt (DECISIONS #325): *uppmätt* när närmaste ankare ligger inom 2 km (facitradien i §2), *modellerat* inom
 50 km, annars *okänt*; *flaggad* när skattningen är ≤ 1 °C (A3:s klassgräns). Provpunkt var 2 km längs rutten. Tidsdelen
 (risk vid ankomsttid) loggas inte förrän något prövat den — kolumnen bär nuläget.
+Holdout (DECISIONS #326): varje station inom 2 km av rutten skattas varje varv ur de övriga ankarna och loggas med sin egen
+mätning (`prognos.h`) — det är §2:s stationsfacit, utan att något tas bort ur prognosen.
 Faller RÅ på vinterdata tas frågan upp i bedömningen §4.2 — grinden körs om varje måndag.
 
 ### Grind B — skuggdriften (hela vintern, dom i mars)

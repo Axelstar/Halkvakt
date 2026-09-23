@@ -329,7 +329,8 @@ Deno.serve(async (req) => {
       // SEGMENTPROGNOSEN (kort #38b steg 4, DECISIONS #324/#325, Bengts "bygg nu" 23/9): rå avståndsviktning av de
       // vaktade stationerna per provpunkt längs rutten (engine/src/segment.ts). Loggad, aldrig hörd — grind B och C
       // dömer i mars. Tom utan ankare, och skälet står i svaret (ankareSkal), så en tom kolumn aldrig är tvetydig.
-      const prognos = ankare.lista.length ? segmentPrognos(line, ankare.lista) : {};
+      // h = HOLDOUT (4c, DECISIONS #326): varje station inom 2 km av rutten skattad ur de övriga, med sin egen mätning.
+      const prognos = ankare.lista.length ? { ...segmentPrognos(line, ankare.lista), h: holdoutRader(line, ankare.lista) } : {};
       // Facit-bilder finns bara i Sverige (Trafikverkets väglagskameror). Punkterna slås upp ur
       // faran, inte ur larmet — motorns Alert bär ingen position (rättelse 4 ovan, DECISIONS #189).
       const farorById = new Map(hazards.map((h) => [h.id, h]));

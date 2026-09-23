@@ -269,6 +269,42 @@ export function skatta(p: { lon: number; lat: number }, ankare: Ankare[]): { yta
   return { yta: s / w, narm: k[0].km, n: k.length };
 }
 
+export type Holdout = [number, string, number, number | null, number | null, number];
+
+/** Närmaste punkt på linjen: avstånd (km) och läge längs linjen (km), i en lokal planprojektion per delsträcka. */
+export function narmastLangs(p: { lon: number; lat: number }, line: [number, number][]): { km: number; vid: number } {
+  let best = Infinity, vid = 0, kum = 0;
+  for (let i = 0; i < line.length - 1; i++) {
+    const [ax, ay] = line[i], [bx, by] = line[i + 1];
+    const c = Math.cos(((ay + by) / 2) * Math.PI / 180);
+    const X = (x: number, y: number): [number, number] => [(x - ax) * c * 111.32, (y - ay) * 110.57];
+    const B = X(bx, by), P = X(p.lon, p.lat);
+    const l2 = B[0] ** 2 + B[1] ** 2;
+    const t = l2 > 0 ? Math.max(0, Math.min(1, (P[0] * B[0] + P[1] * B[1]) / l2)) : 0;
+    const d = Math.hypot(P[0] - t * B[0], P[1] - t * B[1]);
+    const seg = haversineM({ lon: ax, lat: ay }, { lon: bx, lat: by }) / 1000;
+    if (d < best) { best = d; vid = kum + t * seg; }
+    kum += seg;
+  }
+  return { km: best, vid };
+}
+
+/** HOLDOUT (kort #38b 4c, DECISIONS #326): varje ankare inom UPPMATT_KM av rutten skattas ur de ÖVRIGA ankarna — samma
+ *  leave-one-out som grind A, varje varv — och loggas med sin egen mätning. Inget tas bort ur prognosen ovan: stationen
+ *  bär prognosen för alla andra punkter och är facit för sin egen (TROSKLAR-SKUGGAN §2: stationen får fälla).
+ *  Rad: [km längs rutten, id, mätt yta, skattad yta, avstånd till närmaste övriga ankare, antal ankare]. */
+export function holdoutRader(line: [number, number][], ankare: Ankare[]): Holdout[] {
+  const ut: Holdout[] = [];
+  for (const a of ankare) {
+    const n = narmastLangs(a, line);
+    if (n.km > UPPMATT_KM) continue;
+    const s = skatta(a, ankare.filter((o) => o.id !== a.id));
+    ut.push([r1(n.vid), a.id, a.yta, s.yta === null ? null : r1(s.yta), s.narm === null ? null : r1(s.narm), s.n]);
+  }
+  ut.sort((x, y) => x[0] - y[0]);
+  return ut;
+}
+
 /** Hela rutten: en rad per provpunkt. Flaggan sätts på den oavrundade skattningen. */
 export function segmentPrognos(line: [number, number][], ankare: Ankare[], stegKm = STEG_KM): Prognos {
   const p: Provpunkt[] = provpunkter(line, stegKm).map((pp) => {
@@ -1024,7 +1060,8 @@ Deno.serve(async (req) => {
       // SEGMENTPROGNOSEN (kort #38b steg 4, DECISIONS #324/#325, Bengts "bygg nu" 23/9): rå avståndsviktning av de
       // vaktade stationerna per provpunkt längs rutten (engine/src/segment.ts). Loggad, aldrig hörd — grind B och C
       // dömer i mars. Tom utan ankare, och skälet står i svaret (ankareSkal), så en tom kolumn aldrig är tvetydig.
-      const prognos = ankare.lista.length ? segmentPrognos(line, ankare.lista) : {};
+      // h = HOLDOUT (4c, DECISIONS #326): varje station inom 2 km av rutten skattad ur de övriga, med sin egen mätning.
+      const prognos = ankare.lista.length ? { ...segmentPrognos(line, ankare.lista), h: holdoutRader(line, ankare.lista) } : {};
       // Facit-bilder finns bara i Sverige (Trafikverkets väglagskameror). Punkterna slås upp ur
       // faran, inte ur larmet — motorns Alert bär ingen position (rättelse 4 ovan, DECISIONS #189).
       const farorById = new Map(hazards.map((h) => [h.id, h]));
