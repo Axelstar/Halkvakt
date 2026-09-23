@@ -2851,6 +2851,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     frysflagga i raden, tio tester), skuggmotorn loggar per rutt med `ankare`/`ankareSkal` i svaret, skuggrapporten räknar.
     Tidsdelen utelämnad med flit. Kvar: migrationen körd, bunten deployad, första raden MED innehåll, facitkopplingen
     (`publish/missar.ts`), dom-knappen för grind B/C, holdout-urvalet (4c), Finland.
+    ✅ **I DRIFT 23/9:** migrationen körd (744 ankare), bunten och rapporten deployade 20:51–20:52Z från a894f01. **Första raden MED innehåll:** 2 rader med innehåll i `shadow_log.prognos` efter varvet 2026-09-23T21:00:02Z; t.ex. E14 Sundsvall→Åre: 130 provpunkter, 7 uppmätta, 123 modellerade, 0 okända, 0 frysflaggade, 1465 byte; skuggmotorns svar: ankare 5 bidragande per provpunkt (744 i funktionen); E4 Linköping→Södertälje 77 punkter, 970 byte, ankareSkal det svenska svaret hann rulla ur net._http_response före läsningen; det norska varvet svarade ankare 0, "bara Sverige", som avsett.
+    Kvar: facitkopplingen, dom-knappen, holdout-urvalet (4c), Finland, radstorleken mätt efter första dygnet.
   - [x] ✅ **(4a) SVARAT 23/9 (DECISIONS #324): rå avståndsviktning, ingen offset, på grind A:s population — inskrivet i TROSKLAR-SKUGGAN §3, Bengts rad bekräftar lydelsen (§4.2). Offsettabellen utgår ur bygget.** Var: TROSKLAR-SKUGGAN §3 säger hur offseten når en vägpunkt utan historik (rå avståndsviktning,
     interpolerad offset ur grannparen, eller terrängkorrigerad) — Claude skriver förslaget, Bengts rad enligt §5.
     Villkoret 23/9 nedan (🛣️).

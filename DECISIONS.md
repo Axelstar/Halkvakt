@@ -9622,3 +9622,10 @@ per varv) mäts efter första dygnet mot databasvakten.
 **Alternativ som valdes bort.** Vänta till oktober (perioder förlorade). Läsa ankarna ur live.json (bär bara stationer ≤ 3 °C).
 Publicera en ny CDN-fil (kartrepot växer var tionde minut). Höjdkorrigering i prognosen (oavgjord i grinden, stjälper bortom 20 km).
 
+**IDRIFTTAGNING 23/9, bevis:**
+- **PR #514** sammanslagen (a894f01); CI grön inklusive integrationstestet som körde sql/032 mot PostGIS.
+- **`sql/032`** körd via dbknapp: kolumnen `prognos` (jsonb, `{}`) i `information_schema.columns`; `vagpunkt_ankare()` gav **744 ankare**
+  av 747 färska stationer (5,2–17,4 °C); EXECUTE bara för postgres och service_role.
+- **Deploy** 20:51:52Z (skuggmotor, 37 kB) och 20:52:33Z (skuggrapport) från a894f01 efter `git pull` och noll diff mot main.
+- **Första raden MED innehåll:** 2 rader med innehåll i `shadow_log.prognos` efter varvet 2026-09-23T21:00:02Z; t.ex. E14 Sundsvall→Åre: 130 provpunkter, 7 uppmätta, 123 modellerade, 0 okända, 0 frysflaggade, 1465 byte; skuggmotorns svar: ankare 5 bidragande per provpunkt (744 i funktionen); E4 Linköping→Södertälje 77 punkter, 970 byte, ankareSkal det svenska svaret hann rulla ur net._http_response före läsningen; det norska varvet svarade ankare 0, "bara Sverige", som avsett.
+
