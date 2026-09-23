@@ -2849,6 +2849,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   - [ ] (4a) **Först:** TROSKLAR-SKUGGAN §3 säger hur offseten når en vägpunkt utan historik (rå avståndsviktning,
     interpolerad offset ur grannparen, eller terrängkorrigerad) — Claude skriver förslaget, Bengts rad enligt §5.
     Villkoret 23/9 nedan (🛣️).
+  - [ ] (4b) **Vägpunktsgrinden** (Bengts ja 23/9, DECISIONS #323): grind A:s mått, trösklar och vakter på kandidater som inte får
+    låna målets historik (rå · interpolerad offset · höjdkorrigerad), i `scripts/hojd-prov.ts` på måndagsklockan. Öppnar
+    bara om en kandidat klarar A1–A3; den blir svaret på 4a. Öppnar den inte byggs inget i oktober. Två kandidater hade tal
+    12/9: rå 1,65 °C, rå+höjd 1,65 — grinden hänger på interpolationen. Första körningen 23/9 på knapp.
+  - [ ] (4c) **Holdout-stationer på skuggrutterna** (DECISIONS #323): stationer mitt på sträckan hålls utanför modellen så vägen
+    får en domare hela vintern (§2). Mätt 23/9 (`scripts/matningar/holdout-kandidater-2026-09-23.ts`): 227 svenska stationer
+    inom 5 km av rutterna, **90 i 7–20 km-banden** när de tas bort (E4 Helsingborg→Jönköping 10, Rv70 8, E6 Halmstad→Göteborg 7,
+    E4 Gävle→Sundsvall 7); Finland 59. E4 Umeå→Luleå noll inom 5 km — linjen är för grov. Urvalet och uteslutningen ur
+    modellen skrivs in i tröskeldokumentet med 4a.
   - [x] ~~Skuggmotorns prognoskolumn buntas ur engine/src~~ ✅ scripts/bundle-skuggmotor.ts,
     ci.yml kör --check (läxan i CLAUDE.md).
   📏 **23/9 — kortets grind A-text ovan är inaktuell:** grind A är **KLARAD** 21/9 utan vakterna (A1 0,75 °C, A2 3,8 % ± 0,5, A3 0,3 % på 5 745 punkter) och 22/9 med radvakt och karantän (A1 0,71, A2 3,5 % ± 0,4, A3 0,0 % på 7 356; DECISIONS #299). ~~Kvar i (3): Bengts och Axels formella dom.~~ Dömd 23/9 (DECISIONS #321). (3b) är i praktiken avgjord (FI/NO mätta, SMHI som förtätning sämre, höjden #96, GIS #91). §4 i tröskeldokumentet rättad 23/9 (#198, DECISIONS #319): prognosen blir karta och förstärkare, aldrig röst ensam. Novemberbeslutet står som egen rad i bedömningens §4.2. Beskrivning i sin helhet: `Halkvakt-38b-strak-2026-09-23.md` på Bengts skrivbord.

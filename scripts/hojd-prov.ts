@@ -17,17 +17,38 @@
 // publika API:t: ≤100 punkter/anrop, ~1 anrop/s — 845 stationer = 9 anrop).
 // Run: DATABASE_URL=... node --experimental-strip-types scripts/hojd-prov.ts [dagar=60]
 // Självtest utan nät/DB: scripts/hojd-prov.ts --sjalvtest
+//
+// VÄGPUNKTSGRINDEN (Bengts ja 23/9, DECISIONS #323, kort #38b delsteg 4b). Grind A dömde taket:
+// vid en station lärs offseten ur stationens egen historik. En vägpunkt har ingen. Därför prövas
+// här grind A:s tre mått (A1 MAE, A2 grova fel, A3 frysklassfel — samma trösklar, samma underlags-
+// och marginalvakt) på tre kandidater som INTE får låna målets historik:
+//   RÅ       = som ovan
+//   INTERP   = offset interpolerad ur grannparen: off(S−N) skattas som avståndsviktat medel av
+//              off(M−N) för målets övriga grannar M — hur stationer NÄRA målet skiljer sig från N.
+//              Vikten är 1/km² från målet (inte 1/km som grind A:s grannvikt): med 1/km fick
+//              stationer 20 km bort en tredjedel av vikten i självtestet och drog offseten fel.
+//   RÅ+HÖJD  = som ovan (terrängkorrigerad, höjden som första faktor)
+// Grinden öppnar om minst en kandidat KLARAR alla tre. Öppnar den inte byggs ingen skuggkörning
+// i oktober (DECISIONS #322, villkor 4a). OFFSET redovisas bredvid som taket.
+// Trösklarna och vakterna är kopior av grind A:s (publish/grind-a.ts), vaktade av kontraktsgrinden.
+
+import { Z, andelSe, medelSe, utfallTak, grindutfall, type Utfall } from "../publish/marginal.ts";
 
 const K_NEIGHBOURS = 5;
 const MAX_KM = 50;
 const MIN_SHARED = 20;
 const BUCKET_S = 1800;
 const LAPSE = 0.0065; // °C per meter (standardatmosfär 0,65 °C / 100 m)
+// Grind A:s trösklar och domspärr — kopior av publish/grind-a.ts, vaktade av scripts/kontraktsgrinden.ts.
+// Ändra i docs/TROSKLAR-SKUGGAN.md §3 först, sedan varje kopia i samma commit.
+const A1_MAX_MAE = 1.0, A2_MAX_GROSS = 0.05, A3_MAX_FREEZE = 0.10;
+const MIN_POINTS_FOR_VERDICT = 500;
+const MIN_STATIONS_FOR_VERDICT = 20;
 const BANDS: [string, number, number][] = [
   ["0–7 km", 0, 7], ["7–15 km", 7, 15], ["15–20 km", 15, 20], [">20 km", 20, Infinity]];
 
 type Station = { id: string; lon: number; lat: number; elev: number | null; series: Map<number, number> };
-type Row = { measured: number; raw: number | null; hojd: number | null; offset: number | null; ankKm: number };
+type Row = { measured: number; raw: number | null; hojd: number | null; interp: number | null; offset: number | null; ankKm: number; station: string };
 
 function haversineKm(lon1: number, lat1: number, lon2: number, lat2: number): number {
   const R = 6371, dLa = (lat2 - lat1) * Math.PI / 180, dLo = (lon2 - lon1) * Math.PI / 180;
@@ -50,6 +71,14 @@ function evaluate(stations: Map<string, Station>): { rows: Row[]; lapseFit: { sl
   const rows: Row[] = [];
   // För lapse-diagnosen: (Δh, lärd offset) per par med känd höjd och nog historik.
   const fitX: number[] = [], fitY: number[] = [];
+  // Parvisa offsets mellan GRANNAR, för INTERP: off(M−N) över delade buckets. Målet S är inte
+  // inblandat i paret, så ingen bucket behöver uteslutas.
+  const parOff = new Map<string, number | null>();
+  const offMN = (m: Station, n: Station): number | null => {
+    const k = `${m.id}|${n.id}`;
+    if (!parOff.has(k)) { const p = pairStats(m.series, n.series); parOff.set(k, p.n >= MIN_SHARED ? p.sum / p.n : null); }
+    return parOff.get(k)!;
+  };
   for (const s of arr) {
     const nbs = arr
       .filter((a) => a.id !== s.id)
@@ -64,7 +93,7 @@ function evaluate(stations: Map<string, Station>): { rows: Row[]; lapseFit: { sl
       }
     for (const [t, measured] of s.series) {
       if (measured > 5) continue; // vintertimmar, samma urval som grind A
-      let wR = 0, pR = 0, wH = 0, pH = 0, wO = 0, pO = 0, ank = Infinity;
+      let wR = 0, pR = 0, wH = 0, pH = 0, wI = 0, pI = 0, wO = 0, pO = 0, ank = Infinity;
       for (const { a, km, p } of nbs) {
         const av = a.series.get(t);
         if (av === undefined) continue;
@@ -77,10 +106,18 @@ function evaluate(stations: Map<string, Station>): { rows: Row[]; lapseFit: { sl
           const offsetExcl = (p.sum - (measured - av)) / (p.n - 1);
           wO += w; pO += w * (av + offsetExcl);
         }
+        // INTERP: målets offset mot N lånad från målets ÖVRIGA grannar M, viktade 1/km² från målet.
+        let wm = 0, om = 0;
+        for (const m of nbs) if (m.a.id !== a.id) {
+          const o = offMN(m.a, a);
+          if (o !== null) { const v = 1 / Math.max(m.km, 1) ** 2; wm += v; om += v * o; }
+        }
+        if (wm > 0) { wI += w; pI += w * (av + om / wm); }
         if (km < ank) ank = km;
       }
       if (wR > 0)
-        rows.push({ measured, raw: pR / wR, hojd: wH > 0 ? pH / wH : null, offset: wO > 0 ? pO / wO : null, ankKm: ank });
+        rows.push({ measured, raw: pR / wR, hojd: wH > 0 ? pH / wH : null, interp: wI > 0 ? pI / wI : null,
+          offset: wO > 0 ? pO / wO : null, ankKm: ank, station: s.id });
     }
   }
   // Minsta-kvadrat-lutning genom origo vore fel (offset har egen bias) — full regression.
@@ -100,22 +137,73 @@ function mae(rows: Row[], pick: (r: Row) => number | null): { n: number; mae: nu
   return { n: xs.length, mae: xs.length ? xs.reduce((a, r) => a + Math.abs(pick(r)! - r.measured), 0) / xs.length : NaN };
 }
 
-function report(rows: Row[], lapseFit: { slope: number; nPairs: number }, label: string) {
+function report(rows: Row[], lapseFit: { slope: number; nPairs: number }, label: string, selftest = false) {
   console.log(`Höjdprovet — vad höjdkorrektion återvinner där historik saknas (${label})`);
   console.log(`MAE i beslutsbandet (−5…+5 °C), band = närmaste bidragande ankare. LAPSE ${(LAPSE * 100).toFixed(2)} °C/100 m.`);
-  console.log("band       n(rå)   MAE(rå)  MAE(rå+höjd)  MAE(offset=taket)");
+  console.log("band       n(rå)   MAE(rå)  MAE(interp)  MAE(rå+höjd)  MAE(offset=taket)");
   const f = (s: { n: number; mae: number }, w: number) => s.n ? s.mae.toFixed(2).padStart(w) + " °C" : "—".padStart(w + 3);
   for (const [name, lo, hi] of [...BANDS, ["ALLA", 0, Infinity] as [string, number, number]]) {
     const b = rows.filter((r) => r.ankKm >= lo && r.ankKm < hi);
-    const raw = mae(b, (r) => r.raw), hojd = mae(b, (r) => r.hojd), off = mae(b, (r) => r.offset);
-    console.log(`${name.padEnd(10)} ${String(raw.n).padStart(6)} ${f(raw, 6)} ${f(hojd, 10)} ${f(off, 14)}`);
+    const raw = mae(b, (r) => r.raw), int = mae(b, (r) => r.interp), hojd = mae(b, (r) => r.hojd), off = mae(b, (r) => r.offset);
+    console.log(`${name.padEnd(10)} ${String(raw.n).padStart(6)} ${f(raw, 6)} ${f(int, 9)} ${f(hojd, 10)} ${f(off, 14)}`);
   }
   if (Number.isFinite(lapseFit.slope))
     // Lutningen offset(S−N) mot (h_S−h_N) är −lapse (högre = kallare) — redovisa avkylningen.
     console.log(`\nEmpirisk lapse ur ${lapseFit.nPairs} par: ${(-lapseFit.slope * 100).toFixed(2)} °C avkylning/100 m (standard: 0,65). ` +
       `Nära standard ⇒ höjden bär systematiken; långt ifrån ⇒ annat dominerar (kustnärhet, dalgångar).`);
   console.log(`\nHöjder: Copernicus EU-DEM (© Europeiska unionen, Copernicus) via opentopodata.org.`);
-  console.log(`Ingen dom fälls här — provet upprepas på vinterdata och värderas i tröskeldokumentet.`);
+  vagpunktsgrinden(rows, selftest);
+}
+
+// ── VÄGPUNKTSGRINDEN: grind A:s tre mått per kandidat, utan målets egen historik (DECISIONS #323).
+const KANDIDATER: { namn: string; pick: (r: Row) => number | null }[] = [
+  { namn: "RÅ", pick: (r) => r.raw }, { namn: "INTERP", pick: (r) => r.interp }, { namn: "RÅ+HÖJD", pick: (r) => r.hojd }];
+
+/** Samma mått som publish/grind-a.ts stats(): MAE i beslutsbandet, grova fel och frysklassfel på alla vinterrader. */
+function matt(rows: Row[], pick: (r: Row) => number | null) {
+  const xs = rows.filter((r) => pick(r) !== null);
+  const dec = xs.filter((r) => r.measured >= -5);
+  const absDec = dec.map((r) => Math.abs(pick(r)! - r.measured));
+  const mae = dec.length ? absDec.reduce((a, b) => a + b, 0) / dec.length : NaN;
+  const gross = xs.length ? xs.filter((r) => Math.abs(pick(r)! - r.measured) > 2).length / xs.length : NaN;
+  const freeze = xs.length ? xs.filter((r) => (r.measured < 0 && pick(r)! > 2) || (r.measured > 2 && pick(r)! < 0)).length / xs.length : NaN;
+  return { n: xs.length, nDec: dec.length, stationer: new Set(xs.map((r) => r.station)).size, mae, gross, freeze,
+    maeSe: medelSe(absDec), grossSe: andelSe(gross, xs.length), freezeSe: andelSe(freeze, xs.length) };
+}
+
+function vagpunktsgrinden(rows: Row[], selftest: boolean): Utfall {
+  console.log(`\nVÄGPUNKTSGRINDEN — grind A:s mått utan målets egen historik (DECISIONS #323). ` +
+    `Trösklar: A1 ≤ ${A1_MAX_MAE.toFixed(1)} °C · A2 ≤ ${A2_MAX_GROSS * 100} % · A3 ≤ ${A3_MAX_FREEZE * 100} %.`);
+  console.log("kandidat  band            n  MAE(beslutsband)  grova >2°C  frysklassfel");
+  const domar: Utfall[] = [];
+  for (const k of KANDIDATER) {
+    for (const [name, lo, hi] of [...BANDS, ["ALLA", 0, Infinity] as [string, number, number]]) {
+      const m = matt(rows.filter((r) => r.ankKm >= lo && r.ankKm < hi), k.pick);
+      console.log(`${k.namn.padEnd(9)} ${name.padEnd(10)} ${String(m.n).padStart(6)}  ${m.n ? m.mae.toFixed(2).padStart(13) + " °C" : "—".padStart(16)}` +
+        `  ${m.n ? (m.gross * 100).toFixed(1).padStart(9) + "%" : "—".padStart(10)}  ${m.n ? (m.freeze * 100).toFixed(1).padStart(11) + "%" : "—".padStart(12)}`);
+    }
+    const t = matt(rows, k.pick);
+    if (!t.n) { console.log(`  ${k.namn}: inga punkter ⇒ OAVGJORT`); domar.push("OAVGJORT"); continue; }
+    // Domspärren och marginalvakten, som i grind A. Självtestet har sex syntetiska stationer och egen kontroll.
+    const nog = selftest || (t.n >= MIN_POINTS_FOR_VERDICT && t.stationer >= MIN_STATIONS_FOR_VERDICT);
+    const u = (v: number, tr: number, se: number): Utfall | "—" => nog ? utfallTak(v, tr, se) : "—";
+    const a1 = u(t.mae, A1_MAX_MAE, t.maeSe), a2 = u(t.gross, A2_MAX_GROSS, t.grossSe), a3 = u(t.freeze, A3_MAX_FREEZE, t.freezeSe);
+    const dom: Utfall = nog ? grindutfall([a1, a2, a3] as Utfall[]) : "OAVGJORT";
+    console.log(`  ${k.namn}: A1 ${t.mae.toFixed(2)} °C [±${(Z * t.maeSe).toFixed(2)}] → ${a1} · A2 ${(t.gross * 100).toFixed(1)} % [±${(Z * t.grossSe * 100).toFixed(1)} pe] → ${a2}` +
+      ` · A3 ${(t.freeze * 100).toFixed(1)} % [±${(Z * t.freezeSe * 100).toFixed(1)} pe] → ${a3}` +
+      (nog ? "" : ` · underlag ${t.n} punkter / ${t.stationer} stationer under spärren (≥ ${MIN_POINTS_FOR_VERDICT} / ≥ ${MIN_STATIONS_FOR_VERDICT})`) + ` ⇒ ${dom}`);
+    domar.push(dom);
+  }
+  // Grinden öppnar om NÅGON kandidat klarar alla tre; en oavgjord kandidat håller den öppen för omprövning.
+  const grind: Utfall = domar.includes("KLARAR") ? "KLARAR" : domar.includes("OAVGJORT") ? "OAVGJORT" : "FALLER";
+  if (selftest) return grind;
+  if (grind === "KLARAR")
+    console.log(`\nDOM: VÄGPUNKTSGRINDEN ÖPPEN — ${KANDIDATER.filter((_, i) => domar[i] === "KLARAR").map((k) => k.namn).join(", ")} klarar A1–A3 utan målets historik. Den kandidaten är offsetens väg till vägpunkten (TROSKLAR-SKUGGAN §3, kort #38b 4a).`);
+  else if (grind === "OAVGJORT")
+    console.log(`\n⏳ INGEN DOM — ingen kandidat klarar, minst en ligger inom bruset eller under underlagsspärren. Mät vidare; bygg inget på den.`);
+  else
+    console.log(`\nDOM: VÄGPUNKTSGRINDEN FALLEN — ingen kandidat klarar A1–A3 utan målets historik. Bygg ingen skuggkörning i oktober (DECISIONS #322, villkor 4a); det som saknas är data om vägen, inte kod.`);
+  return grind;
 }
 
 // ── Självtest utan nät/DB: sex stationer på en sluttning, 100 m höjdsteg, serier =
@@ -132,8 +220,21 @@ if (process.argv.includes("--sjalvtest")) {
     stations.set(`v${i}`, { id: `v${i}`, lon: 13 + i * 0.08, lat: 56, elev: h, series });
   }
   const { rows, lapseFit } = evaluate(stations);
-  report(rows, lapseFit, "SJÄLVTEST — sluttning med känd fysik");
+  report(rows, lapseFit, "SJÄLVTEST — sluttning med känd fysik", true);
   const mR = mae(rows, (r) => r.raw), mH = mae(rows, (r) => r.hojd), mO = mae(rows, (r) => r.offset);
+  // Två byar (INTERP, DECISIONS #323): tre kalla stationer (offset −1) inom 1,3 km och tre varma (+1)
+  // 31 km bort, olika serielängder. RÅ blandar byarna; INTERP lånar offset från målets egna grannar
+  // och ska ligga nära noll. Höjden är noll överallt, så lapse-diagnosen är avsiktligt tom här.
+  const byar = new Map<string, Station>();
+  for (let i = 0; i < 6; i++) {
+    const series = new Map<number, number>();
+    for (let t = 0; t < 200 - i * 10; t++) series.set(t, base(t) + (i < 3 ? -1 : 1));
+    byar.set(`b${i}`, { id: `b${i}`, lon: 13 + (i < 3 ? i : 50 + i - 3) * 0.01, lat: 56, elev: 0, series });
+  }
+  const by = evaluate(byar).rows;
+  const bR = mae(by, (r) => r.raw), bI = mae(by, (r) => r.interp);
+  if (!(by.length > 100 && bR.mae > 0.05 && bI.mae < 0.03)) { console.error(`SJÄLVTEST FALLERAR (två byar): n=${by.length}, rå=${bR.mae}, interp=${bI.mae}`); process.exit(1); }
+  console.log(`Två byar: rå ${bR.mae.toFixed(3)} °C → interp ${bI.mae.toFixed(3)} °C på ${by.length} punkter (INTERP lånar rätt grannars offset)`);
   const ok = rows.length > 400 && mR.mae > 0.3 && mH.mae < 0.05 && mO.mae < 0.05
     && Math.abs(lapseFit.slope + LAPSE) < 0.0005;
   if (!ok) { console.error(`SJÄLVTEST FALLERAR: n=${rows.length}, rå=${mR.mae}, höjd=${mH.mae}, offset=${mO.mae}, lapse=${lapseFit.slope}`); process.exit(1); }

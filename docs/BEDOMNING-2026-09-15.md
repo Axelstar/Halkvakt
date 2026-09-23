@@ -29,7 +29,7 @@ att läsa mot varandra. Kort utan rad här hör hemma på tavlan, inte i bedömn
 **Var vi är (22/9).** Driften är tät och vaktad, reglerna för efterhalkan är fastställda, och givarvakten har fått sina två
 tillägg i både appen och mätningarna (kort #234 stängt 22/9 med nattbevis och idrifttagning, DECISIONS #298/#299). **Flaskhalsen
 är beslut och händer, inte bygge: §4.2 bär fjorton öppna beslut** — sju hos Axel (Supabase Pro, #203, Play-deklarationen,
-skuggan §4, batteriprovet, partnerskapet, Play-kontot), resten hos Bengt eller båda — och tavlan har 48 öppna kort (94 före kortavstämningen 22/9, DECISIONS #303–#322; kort #241 nytt), varav kort
+skuggan §4, batteriprovet, partnerskapet, Play-kontot), resten hos Bengt eller båda — och tavlan har 48 öppna kort (94 före kortavstämningen 22/9, DECISIONS #303–#323; kort #241 nytt), varav kort
 #224 säger att sektionerna inte stämmer. Utifrån väntar vi på Trafikverket (historiskt uttag för kuvösen, två anmälningar om
 trasiga givare), Stockholms stad och trafikskolornas ja 25/9. Vädret: frost på enstaka stationer sedan 14/9 och en riktigt
 kall natt i Skåne 21–22/9, men ännu ingen natt med *blöt väg som faller mot noll* — det S1-grinden behöver. Inga förarsvar
@@ -100,6 +100,7 @@ beviset finns — inte när koden är skriven.
 
 | Åtgärd | Läge | Kort | DECISIONS | Beviset som gäller |
 | :-- | :-- | :-- | :-- | :-- |
+| **Vägpunktsgrinden (kort #38b 4b): första körningen 23/9 på knapp; svaret på 4a (offsetens väg) och holdout-urvalet (4c) in i TROSKLAR-SKUGGAN §3 med Bengts rad** | ⏳ körd 23/9, domen läses ur körningens Summary; sedan varje måndag 07:00 på pulsklockan | #38b | #323 | grinden öppen med en namngiven kandidat (KLARAR A1–A3 utan målets historik), annars inget bygge i oktober |
 | ~~Spärrprovet (`?sparrprov=1`) + dbknapp läser svaret~~ | ✅ 16/9: dbknapp `sparrprov` 02:42Z: svaret läst ur `net._http_response` — `suppressed` med 1 rad: {kind: camera, id: prov:kam2, distM: 470, by: camera, sinceS: 5} — kam2 tystad 5 s efter kam1 och talad först vid t=15 när 10 s-spärren släppt. Första provet 02:38Z FÖLL: kamerorna 14 s isär, båda talade — spärren är 10 s sedan kort #127 (13/9), inte 45 s som CLAUDE.md:s invariant säger | #191 → #188 | #197 | `suppressed` med en rad i dbknapp-svaret |
 | ~~S1: `efterhalka` i skuggloggen~~ | ✅ **första raden med innehåll 16/9** (1 station, regn_h satt, inget larm). Nätterna bevakas i raden om skuggloggen vid första frosten | #192 | #198 | rad med innehåll |
 | ~~R1–R16 in i kartan~~ | ✅ införda 16/9, kartan fryst igen | #159 | #199 | kartan §5.2/§5.6/§7.8/§14, bilaga A struken |
@@ -282,6 +283,7 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 | **Mätningarna ärver de två vakterna, med samma tal ur samma källa** (kort #234, DECISIONS #299): fragmenten exporteras ur `snapshot-core.ts` och importeras av grindarna; karantänen räknas PER RAD sju dygn bakåt från radens egen tid, och ett delindex (`sql/029`) bär delfrågan; SQL-tvillingarna 018/028 och mätsatsen bär talen literalt under fyra nya kontrakt. Grind A redovisas i båda läsningarna | Bengt ja 21/9 (*"lägg in vakterna i mätningarna också"*); formen Claudes 22/9 |
 | **Grind A dömd: KLARAD** (kort #38b steg 3, DECISIONS #321) — 22/9 med vakterna A1 0,71 °C, A2 3,5 % ± 0,4, A3 0,0 % på 7 356 punkter; 21/9 utan A1 0,75, A2 3,8 ± 0,5, A3 0,3 på 5 745. Domen gäller stationerna (taket); vägen döms av grind B och C i mars | Bengt, 23/9 |
 | **Novemberbeslutet: segmentmotorn byggs i skugga i vinter** (kort #38b steg 4, DECISIONS #322) — start mitten av oktober, ~tre veckor, prognoskolumn i skuggloggen, ingen röst; först (4a) offsetens väg till vägpunkten i TROSKLAR-SKUGGAN. Axel äger sekvenseringen mot App Store-lanseringen (#320) | Bengt, 23/9; Axel sekvenseringen |
+| **Vägpunktsgrinden före bygget och holdout-stationer på skuggrutterna** (kort #38b 4b/4c, DECISIONS #323) — grind A:s mått utan målets historik; grinden öppnar bara på en klarad kandidat, annars inget bygge i oktober. 90 svenska holdout-kandidater i 7–20 km mätta | Bengt, 23/9 (ja på Claudes bedömning) |
 
 ### 4.2 Öppna
 
