@@ -1,0 +1,41 @@
+# Grind S-B/S-C (kort #38b steg 4, DECISIONS #327): segmentprognosens skuggdrift dömd mot TROSKLAR-SKUGGAN §2–§3.
+# KNAPP, INTE SCHEMA — återkommande körningar hör hemma i Supabase (Bengt 22/9), och den här ska inte återkomma:
+# läget "underlag" visar bara antal (C1/C2:s framfart), läget "dom" visar andelarna och körs vid domens tidpunkt
+# (mars 2027) eller på Bengts uttryckliga order. Blindningen: inga träffandelar före utsatt tid.
+name: grind-s-b
+on:
+  workflow_dispatch:
+    inputs:
+      dagar:
+        description: "Dagar bakåt"
+        default: "14"
+      lage:
+        description: "underlag (bara antal) eller dom (andelar — bara vid utsatt tid)"
+        type: choice
+        default: underlag
+        options: [underlag, dom]
+      grindA2:
+        description: "Grind A:s A2 i procent (för C3), t.ex. 3.5 — tom = OAVGJORT"
+        required: false
+        default: ""
+jobs:
+  grind-s-b:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types publish/grind-s-b.ts --sjalvtest
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        env:
+          DATABASE_URL: "${{ secrets.DATABASE_URL }}"
+          DAGAR: "${{ inputs.dagar || '14' }}"
+          LAGE: "${{ inputs.lage || 'underlag' }}"
+          GA2: "${{ inputs.grindA2 }}"
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types publish/grind-s-b.ts "$DAGAR" "--$LAGE" ${GA2:+--grindA2 "$GA2"} | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
