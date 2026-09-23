@@ -9629,3 +9629,29 @@ Publicera en ny CDN-fil (kartrepot växer var tionde minut). Höjdkorrigering i 
 - **Deploy** 20:51:52Z (skuggmotor, 37 kB) och 20:52:33Z (skuggrapport) från a894f01 efter `git pull` och noll diff mot main.
 - **Första raden MED innehåll:** 2 rader med innehåll i `shadow_log.prognos` efter varvet 2026-09-23T21:00:02Z; t.ex. E14 Sundsvall→Åre: 130 provpunkter, 7 uppmätta, 123 modellerade, 0 okända, 0 frysflaggade, 1465 byte; skuggmotorns svar: ankare 5 bidragande per provpunkt (744 i funktionen); E4 Linköping→Södertälje 77 punkter, 970 byte, ankareSkal det svenska svaret hann rulla ur net._http_response före läsningen; det norska varvet svarade ankare 0, "bara Sverige", som avsett.
 
+## #326 (23/9 2026) Holdout-urvalet: varje station på rutten är holdout varje varv — inget tas bort ur prognosen (kort #38b 4c)
+
+**Beslut (Claude på Bengts "kör vidare" 23/9, inom DECISIONS #323:s ram).** Holdout blir inte ett urval av stationer som hålls
+utanför modellen för vintern, utan **leave-one-out varje varv**: varje ankare inom 2 km av skuggrutten (facitradien i §2) skattas
+ur de övriga ankarna, precis som grind A gör för alla stationer varje måndag, och loggas bredvid sin egen mätning i
+`shadow_log.prognos.h` som `[km längs rutten, id, mätt yta, skattad yta, avstånd till närmaste övriga ankare, antal ankare]`.
+Stationen bär prognosen för alla andra punkter och är facit för sin egen.
+
+**Varför så, i stället för ett fast urval.** (1) Med rå avståndsviktning (DECISIONS #324) finns ingen inlärning att hålla stationen
+utanför — att ta bort den ur ankarna hade bara försämrat prognosen längs rutten. (2) Alla 227 svenska stationer på rutterna
+(DECISIONS #323) blir facit, var trettionde minut, i stället för ett handplockat tiotal. (3) Det är exakt §2:s stationsfacit
+("VViS-station på segmentet, holdout eller kant: får bekräfta träff, får fälla falsklarm") — utan att någon behöver välja.
+(4) Grind C3 (backtest och skuggdrift åt samma håll) får ett direkt jämförbart tal: samma leave-one-out i båda.
+
+**Vad som INTE ändras.** Prognoskolumnen `p` (DECISIONS #325), grindarna, §2:s facitkällor. Kamerafacit, RoadCondition,
+situation_archive och testarloggen kopplas i facitkopplingen (`publish/missar.ts`, nästa delsteg).
+
+**Blindningen.** Skuggrapporten visar BARA antalet holdout-rader. Träffar och fel läses vid domens tidpunkt av dom-knappen, inte
+löpande — samma regel som för alla skuggmått (inga träffandelar före utsatt tid).
+
+**Sagt högt.** (1) Rutlinjerna är grova: E14 hade 7 stationer inom 2 km av linjen mot 10 inom 5 km (DECISIONS #323). Talet
+2 km står för att det är §2:s facitradie; vill vi ha fler holdouts är det linjerna som ska förtätas, inte radien som ska vidgas.
+(2) Skattningen för en holdout använder ankare upp till 50 km bort som alla andra punkter; `narm` i raden säger vilket band den
+hamnade i. (3) `publish/missar.ts` bär en egen kopia av tre rutter ("håll i takt") — den ska läsa rutterna ur skuggmotorn som
+ruttberedskapen gör, i samma varv som facitkopplingen byggs.
+

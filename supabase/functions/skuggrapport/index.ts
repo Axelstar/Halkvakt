@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
     const rows: { route: string; run_at: string; n_hazards: number; n_alerts: number;
       alerts: { kind: string; text: string; t?: number }[]; vb?: { id: string; road: string | null; regn: number | null }[];
       suppressed?: { kind: string; by: string }[]; efterhalka?: { regn_h: number | null; larm: boolean }[];
-      prognos?: { p?: [number, number | null, number | null, number, number, number][] } }[] = raw;
+      prognos?: { p?: [number, number | null, number | null, number, number, number][]; h?: unknown[] } }[] = raw;
 
     const byRoute = new Map<string, typeof rows>();
     for (const row of rows) {
@@ -115,6 +115,8 @@ Deno.serve(async (req) => {
           korningar: med.length, punkter: pts.length,
           uppmatta: pts.filter((q) => q[4] === 2).length, modellerade: pts.filter((q) => q[4] === 1).length,
           okanda: pts.filter((q) => q[4] === 0).length, frys: pts.filter((q) => q[5] === 1).length,
+          // Holdout-raderna (4c): BARA antalet. Träffar och fel läses vid domens tidpunkt, inte här (blindningen).
+          holdouts: rows.reduce((a, x) => a + (x.prognos?.h?.length ?? 0), 0),
           senast: med[0]?.run_at ?? null,
         };
       })(),

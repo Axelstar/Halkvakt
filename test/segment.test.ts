@@ -2,7 +2,7 @@
 // Proven är små och geometriska med känd sanning — samma anda som grind A:s självtest.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { segmentPrognos, provpunkter, skatta, STEG_KM, UPPMATT_KM, FRYS_C, type Ankare } from "../engine/src/segment.ts";
+import { segmentPrognos, provpunkter, skatta, holdoutRader, narmastLangs, STEG_KM, UPPMATT_KM, FRYS_C, type Ankare } from "../engine/src/segment.ts";
 
 // Rak linje österut vid 56° N: 0,01° lon ≈ 0,62 km. Linjen är ≈ 31 km.
 const LINE: [number, number][] = [[13.0, 56.0], [13.5, 56.0]];
@@ -73,6 +73,34 @@ test("raden är kompakt och avrundad: km, yta och avstånd med högst en decimal
     assert.equal(q.length, 6);
     for (const v of [q[1], q[2]]) if (v !== null) assert.equal(v, Math.round(v * 10) / 10);
   }
+});
+
+test("närmaste punkt på linjen: avstånd och läge längs rutten", () => {
+  // Mitt på LINE (13,25) ⇒ avstånd ≈ 0, läge ≈ halva längden; 0,05° norr om ⇒ ≈ 5,6 km bort.
+  const mitt = narmastLangs({ lon: 13.25, lat: 56.0 }, LINE);
+  assert.ok(mitt.km < 0.01, `avstånd ${mitt.km}`); assert.ok(mitt.vid > 15 && mitt.vid < 16, `läge ${mitt.vid}`);
+  const norr = narmastLangs({ lon: 13.25, lat: 56.05 }, LINE);
+  assert.ok(norr.km > 5.4 && norr.km < 5.8, `avstånd ${norr.km}`);
+  // Bortom ändpunkten klipps läget till ändpunkten.
+  const efter = narmastLangs({ lon: 13.6, lat: 56.0 }, LINE);
+  assert.ok(efter.vid > 30 && efter.vid < 32, `läge ${efter.vid}`); assert.ok(efter.km > 6, `avstånd ${efter.km}`);
+});
+
+test("holdout: stationer inom facitradien skattas ur de ÖVRIGA och loggas med sin egen mätning, sorterade efter läge", () => {
+  const a = [ank("mitt", 13.25, 3), ank("nara", 13.1, 1), ank("norr", 13.25, 0, 56.05), ank("langt", 13.25, 9, 56.1)];   // norr 5,6 km, langt 11 km från linjen
+  const h = holdoutRader(LINE, a);
+  assert.deepEqual(h.map((r) => r[1]), ["nara", "mitt"]);                 // bara de två på linjen, i km-ordning
+  const mitt = h[1];
+  assert.equal(mitt[2], 3);                                               // egen mätning
+  // Skattningen är exakt vad de ÖVRIGA tre ger (1 på 9 km, 0 på 5,6 km, 9 på 11 km) — aldrig den egna trean.
+  const utanSig = skatta({ lon: 13.25, lat: 56.0 }, a.filter((x) => x.id !== "mitt"));
+  assert.equal(mitt[3], Math.round(utanSig.yta! * 10) / 10);
+  assert.notEqual(mitt[3], 3);
+  assert.equal(mitt[5], 3);                                               // tre övriga ankare bidrar
+  assert.ok(mitt[0] > 15 && mitt[0] < 16, `läge ${mitt[0]}`);
+  // Ensam station på linjen utan grannar inom 50 km ⇒ skattning null, inte sin egen mätning.
+  const ensam = holdoutRader(LINE, [ank("ensam", 13.25, -1)]);
+  assert.equal(ensam.length, 1); assert.equal(ensam[0][3], null); assert.equal(ensam[0][5], 0);
 });
 
 test("determinism: samma indata ⇒ byte-identisk rad", () => {

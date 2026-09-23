@@ -29,7 +29,7 @@ att läsa mot varandra. Kort utan rad här hör hemma på tavlan, inte i bedömn
 **Var vi är (22/9).** Driften är tät och vaktad, reglerna för efterhalkan är fastställda, och givarvakten har fått sina två
 tillägg i både appen och mätningarna (kort #234 stängt 22/9 med nattbevis och idrifttagning, DECISIONS #298/#299). **Flaskhalsen
 är beslut och händer, inte bygge: §4.2 bär fjorton öppna beslut** — sju hos Axel (Supabase Pro, #203, Play-deklarationen,
-skuggan §4, batteriprovet, partnerskapet, Play-kontot), resten hos Bengt eller båda — och tavlan har 48 öppna kort (94 före kortavstämningen 22/9, DECISIONS #303–#325; kort #241 nytt), varav kort
+skuggan §4, batteriprovet, partnerskapet, Play-kontot), resten hos Bengt eller båda — och tavlan har 48 öppna kort (94 före kortavstämningen 22/9, DECISIONS #303–#326; kort #241 nytt), varav kort
 #224 säger att sektionerna inte stämmer. Utifrån väntar vi på Trafikverket (historiskt uttag för kuvösen, två anmälningar om
 trasiga givare), Stockholms stad och trafikskolornas ja 25/9. Vädret: frost på enstaka stationer sedan 14/9 och en riktigt
 kall natt i Skåne 21–22/9, men ännu ingen natt med *blöt väg som faller mot noll* — det S1-grinden behöver. Inga förarsvar

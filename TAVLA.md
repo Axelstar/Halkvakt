@@ -2860,7 +2860,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     låna målets historik (rå · interpolerad offset · höjdkorrigerad), i `scripts/hojd-prov.ts` på måndagsklockan. Öppnar
     bara om en kandidat klarar A1–A3; den blir svaret på 4a. Öppnar den inte byggs inget i oktober. Två kandidater hade tal
     12/9: rå 1,65 °C, rå+höjd 1,65 — grinden hänger på interpolationen. Första körningen 23/9 på knapp.
-  - [ ] (4c) **Holdout-stationer på skuggrutterna** (DECISIONS #323): stationer mitt på sträckan hålls utanför modellen så vägen
+  - [ ] (4c) **Holdout-stationer på skuggrutterna** (DECISIONS #323) — 🔨 **BYGGT 23/9 (DECISIONS #326): leave-one-out varje varv för varje station inom 2 km av rutten, loggad i `prognos.h` med egen mätning; inget tas bort ur prognosen. Bevis: första raden med `h` efter deploy.** stationer mitt på sträckan hålls utanför modellen så vägen
     får en domare hela vintern (§2). Mätt 23/9 (`scripts/matningar/holdout-kandidater-2026-09-23.ts`): 227 svenska stationer
     inom 5 km av rutterna, **90 i 7–20 km-banden** när de tas bort (E4 Helsingborg→Jönköping 10, Rv70 8, E6 Halmstad→Göteborg 7,
     E4 Gävle→Sundsvall 7); Finland 59. E4 Umeå→Luleå noll inom 5 km — linjen är för grov. Urvalet och uteslutningen ur
