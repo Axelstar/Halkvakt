@@ -2659,6 +2659,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↦ **Sorterat 22/9 (kort #224):** texten för iOS-testarna skriver Claude nu; utskicket med en extern TestFlight-grupp är Axels.
 
 ### Claude — låst (väntar på nyckel)
+- [ ] 📷 **#242 KAMERAFACITETS KLASSNING FÅR EN TABELL** (upptäckt 23/9 när dom-knappen för grind B byggdes, DECISIONS #327). Bengt klassar
+  facit-hinkens bilder veckovis (TROSKLAR-SKUGGAN §6), men klassningen har ingen plats i databasen — ingen knapp kan läsa den, och
+  §2:s kamerakälla (får bekräfta träff, aldrig fälla) är därför noll i grind S-B tills det finns en. Förslag: tabell `kamerafacit`
+  (bildväg, station, tid, klass: is/snö/slask/våt/bar/okänd, av, när) med RLS som `driver_facit`, matad via dbknapp tills en enkel
+  sida finns; dom-knappen läser den som femte källa. Kostar inget i drift. 🔒 NYCKEL: Bengts ja på formen (klasserna) och var
+  klassningen ska göras. Verify: en klassad bild i tabellen och grind S-B räknar den som händelse.
 - [ ] 🦌 **#241 VILTRÖSTEN TALAR PÅ LÄNETS MITTPUNKT — mot DECISIONS #13** (fynd 22/9, Bengts fråga *"vad har vi för mätning i appen,
   polisen eller trafikverket"*; `scripts/matningar/viltrosten-polisen-2026-09-22.sql`, körning 35761967231).
   **Läget:** appens viltvarning kommer ur **polisens** data, inte Trafikverkets. `publish/snapshot-core.ts` skickar polisens viltolyckor
@@ -2853,6 +2859,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     (`publish/missar.ts`), dom-knappen för grind B/C, holdout-urvalet (4c), Finland.
     ✅ **I DRIFT 23/9:** migrationen körd (744 ankare), bunten och rapporten deployade 20:51–20:52Z från a894f01. **Första raden MED innehåll:** 2 rader med innehåll i `shadow_log.prognos` efter varvet 2026-09-23T21:00:02Z; t.ex. E14 Sundsvall→Åre: 130 provpunkter, 7 uppmätta, 123 modellerade, 0 okända, 0 frysflaggade, 1465 byte; skuggmotorns svar: ankare 5 bidragande per provpunkt (744 i funktionen); E4 Linköping→Södertälje 77 punkter, 970 byte, ankareSkal det svenska svaret hann rulla ur net._http_response före läsningen; det norska varvet svarade ankare 0, "bara Sverige", som avsett.
     Kvar: facitkopplingen, dom-knappen, holdout-urvalet (4c), Finland, radstorleken mätt efter första dygnet.
+    🔨 **FACITKOPPLINGEN OCH DOM-KNAPPEN BYGGDA 23/9 (DECISIONS #327):** `publish/grind-s-b.ts` + `grind-s-b.yml`, två lägen (underlag = bara
+    antal, dom = andelar vid utsatt tid). Självtest med känd sanning grönt. Kamerafacit saknar tabell — kort #242. Kvar: Finland,
+    radstorleken efter första dygnet, första underlagskörningen.
   - [x] ✅ **(4a) SVARAT 23/9 (DECISIONS #324): rå avståndsviktning, ingen offset, på grind A:s population — inskrivet i TROSKLAR-SKUGGAN §3, Bengts rad bekräftar lydelsen (§4.2). Offsettabellen utgår ur bygget.** Var: TROSKLAR-SKUGGAN §3 säger hur offseten når en vägpunkt utan historik (rå avståndsviktning,
     interpolerad offset ur grannparen, eller terrängkorrigerad) — Claude skriver förslaget, Bengts rad enligt §5.
     Villkoret 23/9 nedan (🛣️).

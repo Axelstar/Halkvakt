@@ -9655,3 +9655,36 @@ löpande — samma regel som för alla skuggmått (inga träffandelar före utsa
 hamnade i. (3) `publish/missar.ts` bär en egen kopia av tre rutter ("håll i takt") — den ska läsa rutterna ur skuggmotorn som
 ruttberedskapen gör, i samma varv som facitkopplingen byggs.
 
+## #327 (23/9 2026) Facitkopplingen och dom-knappen för grind B och C: `publish/grind-s-b.ts`, två lägen (kort #38b steg 4)
+
+**Beslut (Claude på Bengts "kör vidare" 23/9; formen enligt TROSKLAR-SKUGGAN §2–§3 och grind V-B:s mönster).** Segmentprognosens
+skuggdrift döms av en knapp, `publish/grind-s-b.ts` (`grind-s-b.yml`, dispatch, inget schema), som läser `shadow_log.prognos`
+(p och h, DECISIONS #325/#326) och `alerts`:
+- **Skuggvarning = episod:** samma provpunkt flaggad i varv som ligger ≤ 2 h isär. Ett varv var trettionde minut är inte en ny
+  varning var trettionde minut.
+- **B1** döms av holdout-stationen inom facitradien (2 km, importerad ur segmentmotorn) i episodens egna varv: mätt yta > +2 °C
+  ⇒ FALSK, ≤ frysgränsen ⇒ BEKRÄFTAD, annars OMÄTBAR och aldrig i B1. Kamerabild fäller aldrig (§2).
+- **B2** ur facithändelser inom 2 km av rutterna: SMHI-isvarningar, halka i `situation_archive`, operatörens väglag kod ≥ 2
+  (`road_condition_history`, närmaste punkt på segmentet mot rutten i PostGIS), förarens *stämde* (`driver_facit`). På täckta
+  segment (närmaste provpunkt status ≥ 1); miss när ingen provpunkt inom 2 km var flaggad de 2 h före. Orsaksklassad: nederbörd
+  vid närmaste station inom ±1 h ⇒ NEDERBÖRDSDRIVEN, redovisad för #16, aldrig i B2.
+- **B3** bland bekräftade episoder: punktmotorn (samma rads `alerts`, punktfaror med position inom 2 km) tyst hela episoden eller
+  > 30 min efter starten. Läsningen enligt DECISIONS #319, talet oförändrat.
+- **C1** ≥ 20 bedömbara händelser över ≥ 3 halkperioder (> 2 dygn isär), **C2** ≥ 30 bedömbara episoder, **C3** holdout-radernas
+  grova fel mot grind A:s A2 ≤ 10 pe (`--grindA2`), annars OAVGJORT. Utan C: ingen dom, alltid fortsatt skugga.
+- **Två lägen — blindningen:** `--underlag` (standard) skriver bara antal och C1/C2:s framfart; `--dom` skriver andelarna med
+  marginalvakten, vid domens tidpunkt eller på Bengts uttryckliga order. Självtestet fäller om underlagsläget nämner en procent.
+
+**Bevis:** självtestet — en rutt, sju varv, fem händelser med känd sanning: tre episoder (bekräftad, falsk, omätbar), mervärde
+när punktmotorn kom 60 min senare, en träff, en utstrålningsmiss, en nederbördsmiss, två obedömbara; B1 50 %, B2 50 %, B3 100 %;
+C1/C2 inte uppfyllda; ruttparsern läser skuggmotorns 20 rutter. Kontraktsgrinden 49/49. Första skarpa körningen i underlagsläge
+efter sammanslagningen (bara antal).
+
+**Sagt högt.** (1) **Kamerabildernas klassning har ingen tabell.** Bengt klassar facit-hinkens bilder veckovis, men ingenstans
+läsbart för en knapp. Källan är noll tills den får en plats — nytt kort #242, rad i bedömningen §4.2. (2) Punktmotorns
+segmentlarm utan position (`geo: "segment"`) räknas inte i B3; det är form B (Alert bär position) och rör vektorerna. (3) Med en
+enda bekräftad episod ger binomialfelet noll bredd och B3 läser KLARAR på 1 av 1 — C2:s trettio episoder är spärren som gör
+att det aldrig blir en dom. (4) SMHI-varningar är områden; centroiden kan ligga långt från rutten, så de flesta faller utanför
+2 km — samma begränsning som i `publish/missar.ts`. (5) `missar.ts` bär fortfarande sin egen kopia av tre rutter; dom-knappen
+läser skuggmotorns tjugo. Rättas när missar.ts nästa gång rörs.
+
