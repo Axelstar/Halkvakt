@@ -114,6 +114,9 @@ på grind A:s population: #75:s givarvakt, radvakten och karantänen (DECISIONS 
 A2 3,8 % ± 0,4, A3 0,0 % på 8 132 punkter från 712 stationer), lika bra som grind A:s lärda offset (0,72 °C). Interpolerad
 offset ur grannparen är underkänd (A2 9,5 %); höjdkorrigering oavgjord (A2 4,7 % ± 0,5), hjälper inom 7 km och stjälper
 bortom 20. Bandet per segment är avståndet till närmaste bidragande ankare; bortom yttersta bandet alltid *okänt*.
+Status per provpunkt (DECISIONS #325): *uppmätt* när närmaste ankare ligger inom 2 km (facitradien i §2), *modellerat* inom
+50 km, annars *okänt*; *flaggad* när skattningen är ≤ 1 °C (A3:s klassgräns). Provpunkt var 2 km längs rutten. Tidsdelen
+(risk vid ankomsttid) loggas inte förrän något prövat den — kolumnen bär nuläget.
 Faller RÅ på vinterdata tas frågan upp i bedömningen §4.2 — grinden körs om varje måndag.
 
 ### Grind B — skuggdriften (hela vintern, dom i mars)

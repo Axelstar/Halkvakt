@@ -13,7 +13,7 @@ Deno.serve(async (req) => {
     const land = (new URL(req.url).searchParams.get("land") ?? "se").toUpperCase();
     const since = new Date(Date.now() - 24 * 3600e3).toISOString();
     const r = await fetch(
-      `${SB}/rest/v1/shadow_log?select=route,run_at,n_hazards,n_alerts,alerts,vb,suppressed,efterhalka&land=eq.${land}&run_at=gte.${since}&order=run_at.desc&limit=2000`,
+      `${SB}/rest/v1/shadow_log?select=route,run_at,n_hazards,n_alerts,alerts,vb,suppressed,efterhalka,prognos&land=eq.${land}&run_at=gte.${since}&order=run_at.desc&limit=2000`,
       { headers: { Authorization: `Bearer ${SRK}`, apikey: SRK } },
     );
     const raw = await r.json();
@@ -36,7 +36,8 @@ Deno.serve(async (req) => {
 
     const rows: { route: string; run_at: string; n_hazards: number; n_alerts: number;
       alerts: { kind: string; text: string; t?: number }[]; vb?: { id: string; road: string | null; regn: number | null }[];
-      suppressed?: { kind: string; by: string }[]; efterhalka?: { regn_h: number | null; larm: boolean }[] }[] = raw;
+      suppressed?: { kind: string; by: string }[]; efterhalka?: { regn_h: number | null; larm: boolean }[];
+      prognos?: { p?: [number, number | null, number | null, number, number, number][] } }[] = raw;
 
     const byRoute = new Map<string, typeof rows>();
     for (const row of rows) {
@@ -105,6 +106,18 @@ Deno.serve(async (req) => {
         med_regn_h: rows.reduce((a, x) => a + (x.efterhalka ?? []).filter((s) => s.regn_h != null).length, 0),
         larmade: rows.reduce((a, x) => a + (x.efterhalka ?? []).filter((s) => s.larm).length, 0),
       },
+      // SEGMENTPROGNOSEN (kort #38b steg 4, DECISIONS #324/#325): rå avståndsviktning per provpunkt, loggad — aldrig hörd.
+      // Status (2 uppmätt · 1 modellerat · 0 okänt) och frysflaggan står i raden — inga trösklar här.
+      prognos: (() => {
+        const pts = rows.flatMap((x) => x.prognos?.p ?? []);
+        const med = rows.filter((x) => x.prognos?.p?.length);
+        return {
+          korningar: med.length, punkter: pts.length,
+          uppmatta: pts.filter((q) => q[4] === 2).length, modellerade: pts.filter((q) => q[4] === 1).length,
+          okanda: pts.filter((q) => q[4] === 0).length, frys: pts.filter((q) => q[5] === 1).length,
+          senast: med[0]?.run_at ?? null,
+        };
+      })(),
       // Steg E (#154): vad vattenplaningsrösten SKULLE sagt — aldrig hörd, bara räknad (grind V-B).
       // #127 a (kort #188): vad regel 1b kastade — synligt först 15/9, kolumnen stod tom sedan 13/9.
       sparren: {

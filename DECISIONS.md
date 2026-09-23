@@ -9588,3 +9588,37 @@ och OFFSET är lika bra betyder att grind A:s "tak" inte var något tak: modelle
 inte i den lärda offseten. Det förenklar bygget och gör höjden och terrängen till precis vad Bengt frågade om i morse —
 delar av samma modell, som läggs in bara om de förklarar något.
 
+## #325 (23/9 2026) Bygg nu: segmentprognosen byggs och körs från 23/9, inte från mitten av oktober (kort #38b steg 4)
+
+**Beslut (Bengt 23/9: *"bygg nu"*, på frågan *"vad vinner vi på att inte gå vidare nu"*).** Starten i DECISIONS #322 (mitten av
+oktober) flyttas till nu. Skälet till oktober i DECISIONS #51 gällde körningen — ingen halka att skugga i augusti — inte bygget,
+och bygget krympte 23/9 när offsettabellen utgick (DECISIONS #324). Vad vi förlorar på att vänta: höstens första halkperioder
+(grind C1 kräver tre skilda), ett oprövat facitmaskineri, inga holdouts på rutterna. Kolumnen kostar ingen röst och ingen
+användare oavsett när den startar. Axel äger fortfarande sekvenseringen mot App Store (DECISIONS #320/#322).
+
+**Byggt samma kväll (PR:n bär koden):**
+- `sql/032_prognos.sql`: kolumnen `shadow_log.prognos` (jsonb, `{}`) och funktionen `vagpunkt_ankare()` — alla vaktade, färska
+  svenska stationer med yttemperatur, "från nu" som snapshoten: 3 h färskhet, #75, radvakten, karantänen (≥ 3 brott/7 dygn),
+  långsamma vakten (dygn i felet inom 3 h). Bara service-rollen får köra den; rättigheterna guardade mot CI:s PostGIS.
+- `engine/src/segment.ts`: rå avståndsviktning — upp till fem ankare inom 50 km, vikt 1/max(km, 1), grind A:s grannvikt
+  ordagrant. Provpunkt var 2 km längs rutten (facitradien i §2). Rad per punkt: `[km, yta, narm, n, status, frys]` — status
+  2 uppmätt (ankare ≤ 2 km) · 1 modellerat (≤ 50 km) · 0 okänt; frys = skattning ≤ 1 °C (A3:s klassgräns), satt på det
+  oavrundade talet. Rent, plattformsfritt, buntat in i skuggmotorn som allt annat; tio tester i `test/segment.test.ts`.
+- Skuggmotorn hämtar ankarna en gång per anrop (RPC), räknar per rutt och loggar `prognos`; svaret bär `ankare` och `ankareSkal`
+  så en tom kolumn aldrig är tvetydig. Bara Sverige tills det finska arkivet får samma funktion.
+- Skuggrapporten räknar körningar, punkter, uppmätta, modellerade, okända och frysflaggade ur raden — inga trösklar i rapporten.
+- Kontraktsgrinden: tre nya former så att SQL-kopiorna av karantänens tal och den långsamma vaktens frist vaktas.
+
+**Vad som INTE är med, sagt högt.** (1) **Tidsdelen.** TROSKLAR-SKUGGAN §1 säger *risk vid beräknad ankomsttid, högst två timmar
+fram*. Vägpunktsgrinden bevisade den rumsliga delen; inget har prövat den tidsliga. Kolumnen loggar nuläget per segment; tiden
+väntar på trendregeln (kort #88). Att logga en gissning på en gissning vore att förfalska grind B. (2) Fukt: prognosen bär
+temperatur, inte fukt — punktmotorns fuktvillkor finns inte mellan stationerna. Frysflaggan är en temperaturflagga. (3)
+Värdevakten: prognosens yta ärver `surface_temp_c`:s spann; jsonb-vägen besiktigas när dom-knappen för grind B byggs.
+
+**Kvar i steg 4:** migrationen körd (dbknapp), bunten deployad, **första raden MED innehåll**, facitkopplingen
+(`publish/missar.ts`), dom-knappen för grind B och C, holdout-urvalet (4c), Finland. Radstorleken (≈ 1–4 kB per rutt, tre rutter
+per varv) mäts efter första dygnet mot databasvakten.
+
+**Alternativ som valdes bort.** Vänta till oktober (perioder förlorade). Läsa ankarna ur live.json (bär bara stationer ≤ 3 °C).
+Publicera en ny CDN-fil (kartrepot växer var tionde minut). Höjdkorrigering i prognosen (oavgjord i grinden, stjälper bortom 20 km).
+

@@ -344,21 +344,24 @@ export const KONTRAKT: Kontrakt[] = [
     varfor: "Snapshoten räknar från nu, mätningarna från raden. Olika fönster = olika stationer tysta.",
     // Formen är delfrågans egen (`k.sample_time <= rad.sample_time AND k.sample_time > rad.sample_time - …`): den daterade
     // mätfilen givarvakt-karantan-2026-09-21.sql sveper 3/7/14 dygn med ett annat alias och ska inte räknas.
-    former: [/KARANTAN_DYGN = (\d+)/, /k\.sample_time <= \w+\.sample_time AND k\.sample_time > \w+\.sample_time - interval '(\d+) days'/],
-    golv: 5,
+    // Tredje formen (23/9): sql/032:s "från nu"-karantän för segmentprognosens ankare, märkt på raden (DECISIONS #325).
+    former: [/KARANTAN_DYGN = (\d+)/, /k\.sample_time <= \w+\.sample_time AND k\.sample_time > \w+\.sample_time - interval '(\d+) days'/,
+      /interval '(\d+) days'\s+-- KARANTAN_DYGN/],
+    golv: 6,
   },
   {
     namn: "Karantänen — antal brott mot #75 som tystar stationen",
     varfor: "Tre, inte ett: en enstaka studs får inte tysta en frisk fjällstation. Driver talet tystas olika stationer.",
-    former: [/KARANTAN_BROTT = (\d+)/, /surface_temp_c < (?:\w+\.)?air_temp_c - \d+\) < (\d+)/],
-    golv: 5,
+    former: [/KARANTAN_BROTT = (\d+)/, /surface_temp_c < (?:\w+\.)?air_temp_c - \d+\) < (\d+)/,
+      /HAVING count\(\*\) >= (\d+)\s+-- KARANTAN_BROTT/],
+    golv: 6,
   },
   {
     // Den långsamma vaktens regel (6 °, 90 %, 24 rader) bor bara i sql/030 och behöver inget kontrakt; fristen som
     // snapshoten läser tabellen med kopieras av bunten (kort #236).
     namn: "Den långsamma vaktens frist — timmar sedan stationens senaste ögonblick i felet",
     varfor: "Driver den talar en trasig station tidigare i bunten än i källan, eller tvärtom.",
-    former: [/LANGSAM_FRIST_H = (\d+)/],
+    former: [/LANGSAM_FRIST_H = (\d+)/, /interval '(\d+) hours'\s+-- LANGSAM_FRIST_H/],   // andra formen: sql/032 (DECISIONS #325)
     golv: 2,
   },
   {
