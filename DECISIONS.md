@@ -9439,3 +9439,27 @@ frysklassningen (konfidenshöjare), något i TROSKLAR-KOMBINATIONEN.
 prognoskolumnen är inte byggd. (3) Genomlysningen ligger på Bengts skrivbord (`Halkvakt-198-genomlysning-2026-09-23.md`) och
 underlagets §7 bär tilläggen. Tavlan 49 → 48 öppna.
 
+
+## #320 (23/9 2026) Halkvakt till App Store: iOS först, 0.3.9 (13) är kandidaten, ingen näringsidkare — och integritetspolicyn rättad
+
+**Axels svar 23/9 kväll** på frågorna i dokumentet *Halkvakt till App Store*:
+(1) **Kontakt** för supportsidan och granskningen: axel.lagerlof.45@gmail.com.
+(2) **EU:s näringsidkarstatus (DSA): inte näringsidkare** — gratisapp utan verksamhet bakom; adress och telefon visas då inte i butiken.
+(3) **iOS släpps före Android.** Det ändrar DECISIONS #23 (samtidig lansering). Android följer när Googles stängda test (12 testare,
+14 dygn) är klart.
+(4) **Versionsnumret spelar ingen roll** — butiken visar 0.3.9. Kandidaten är **0.3.9 (13)**, uppladdad 23/9 20:53, efter en provresa.
+
+**Gjort samma kväll (halkvakt-karta a2b7981, live efter Pages-bygget 88f5dfd):**
+- **`integritet.html` omskriven** — den gamla sa *"Vi samlar in: ingenting"*, osant sedan facitsvaret 16/9, och #264 krävde att sidan
+  ändrades i samma commit som invarianten; det blev aldrig gjort. Nu: ingen position lämnar telefonen av sig själv; undantaget
+  betatestets facitsvar, med vad det bär (varnings-id, klockslag, svar, plattform, version) och vad det inte bär. Polisen struken
+  som källa (#318), Androids behörigheter märkta som Android, utgivare och kontakt utskrivna. Gäller från 2026-09-23.
+- **Ny `support.html`** (Hjälp & kontakt) — App Store Connects support-URL.
+- `om.html` (appens *Om appen*-länk) och `index.html` sa också *"positionen lämnar aldrig telefonen"* och nämnde Polisen; i linje nu.
+
+**App Privacy-etiketten:** Coarse Location + Product Interaction, inte kopplat till identitet, ingen spårning, ändamål App
+Functionality + Analytics. Integritetsmanifestet i bygge 13 deklarerar bara Coarse Location; Product Interaction läggs till i nästa
+bygge.
+
+**Sagt högt.** (1) Policyn lovar ingen lagringstid för facitsvaren — ingen är beslutad. Det är Axels fråga när betatestet avslutas.
+(2) Butikstexten för Play (`marknadsforing/butik/butikstext.md`) nämner fortfarande Polisen; rättas före Play-uppladdningen.
