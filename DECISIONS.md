@@ -9751,3 +9751,23 @@ eller förarens nej. (3) SMHI-varningar är områden — centroiden ligger oftas
 
 **Bevis, första skarpa körningen (PR #524, c25f6bd):** körning 35948719580, 24/9 02:47Z, underlagsläge, 14 dygn: 2 bekräftade tillfällen (situation-halka), båda inom 7 km (median 4,2 km), skuggloggen 1 360 larm med position av 1 847, båda tysta, båda OKÄNDA i alla 16 celler (ingen signal vid stationen, ingen radar), trenden okänd för båda (äldre än sju dygn), 2/20 tillfällen och 2/3 perioder — inga andelar skrivna. Alla fem avsnitt körde utan fel mot databasen; paret läses först i vinter.
 
+## #331 (24/9 2026) Skuggmotorns ordning: Bengts "2, 3, 5, 6" — fyra knappar tryckta, S3 väntar bakom S1-grinden, #83 hos Axel
+
+**Beslut (Bengt 24/9: *"då gör vi 2,3,5,6"* på ordningen i bedömningen §4.2).** Av de sex: (1) #83 gallringens steg 2 lämnas
+till Axel (Pro eller export); (4) #98 gjort tidigare samma natt (DECISIONS #330). De fyra beställda:
+
+- **(2) T-A steg 0 (#88) och bildfacitets definition (#209/#231).** Förfaller först vid första frosten — frostvakten (50 stationer under noll) har inte larmat: senaste tio nätterna som mest 4 stationer under noll (17/9), kallast −5,6 °C (22/9). Knappen
+  trycktes ändå som prov: T-A steg 0, 7 dygn (körning 35949108311): 3 765 station-nätter, 47 frostnätter (yta ≤ 1 °C) på 26 stationer, 3 718 icke-frostnätter; separationen går inte att skilja från noll; kallaste stunden 03–07 i 70 % av frostnätterna; molnet hämtat för 34 av 47 punkter. Bildfacitets definition skrivs in i DECISIONS när första frosten kommit, som kortet säger.
+- **(3) #89 S2/S3 efterhalkan.** Kan inte byggas nu: S3 är Axels bygge och väntar bakom S1-grinden (Axel 16/9, DECISIONS #196:
+  regn_h döms innan något mer byggs på det), som kräver blöta frostnätter. S1-kolumnen bär 35 rader med innehåll (senast 22/9
+  06:30Z) och trendarkivet 19 469 kandidater, 1 följd av frost. Förberett, inte byggt.
+- **(5) #46 rimfrosten.** R-A på det finska arkivet, 30 dygn (körning 35949100922): 39 244 rader, 419 stationer efter vakten — 0 episoder på 0 stationer, OAVGJORT (spärren 200 stationstimmar / 20 stationer); molnkontrollen R-A4 kan inte köras på Finland (SMHI:s moln når inte dit).
+- **(6) #103 och #90.** K-A, 60 dygn (körning 35949104486): 712 stationer, 207 647 avläsningar; 1 099 punkter över 44 stationer men 0 frysande vid gränsen 0 °C — INGEN DOM (septembervakten K-A4). W-A steg 0, 14 dygn (körning 35949166508): 209 834 rader, byvind i 99,3 % (750 stationer), sikt i 99,9 %; täckningsgrad 17,9 % av möjliga stationstimmar; 11 stationer med omöjliga timmar (byvind ≥ 15 m/s och kvot > 5) tas av stationsvakten; högsta byvind 87,7 m/s bakom taket 30; W-A OAVGJORT — underlagsvakten W-A4 håller (16 respektive 243 stationstimmar i högsta bandet).
+
+**Vad det säger.** Alla fyra knappar fungerar mot databasen med de fem vakterna; ingen har underlag än. Vintern är inte här:
+frostvakten har inte larmat, Finland har inga rimfrostnätter, ingen station har frusit vid nollgränsen på 60 dygn. Det är
+rätt utfall i september. Kvar i ordningen: knapparna trycks om vid första frosten (T-A inom sju dygn, K-A, R-A på båda
+arkiven, W-A), S3 när S1-grinden passerats, #83 när Axel valt.
+
+**Frågan om måndagsklockan** (K-A, R-A, T-A, W-A är knappar, inte på pulsklockan) står kvar i §4.2 — Bengt sa inget om den.
+
