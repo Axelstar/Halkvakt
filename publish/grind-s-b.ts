@@ -27,8 +27,10 @@
 //    C2 ≥ 30 bedömbara episoder · C3 backtest och drift åt samma håll: holdout-radernas grova fel mot grind A:s A2 ≤ 10 pe
 //    (grind A:s tal ges med --grindA2 <procent>, annars OAVGJORT).
 //
-// VAD SOM INTE FINNS ÄN, sagt rakt: Bengts klassning av kamerabilderna har ingen tabell. Den källan är noll här tills den
-// har en plats (bedömningen §4.2). Segmentlarm från punktmotorn utan position (`geo: "segment"`) räknas inte i B3.
+//  · KAMERA (`kamerafacit`, sql/033, DECISIONS #329): en bild klassad is/snö/slask inom facitradien är en FACITHÄNDELSE (B2)
+//    och BEKRÄFTAR en episod som pågick när bilden togs (B1:s täljare påverkas aldrig — kameran fäller inte, §2). Våt, bar
+//    och okänd gör ingenting i domen.
+// Segmentlarm från punktmotorn utan position (`geo: "segment"`) räknas inte i B3.
 //
 // Run: DATABASE_URL=... node --experimental-strip-types publish/grind-s-b.ts [dagar=14] [--underlag|--dom] [--grindA2 3.5]
 // Självtest utan DB: publish/grind-s-b.ts --sjalvtest
@@ -89,15 +91,28 @@ export function episoder(varv: Varv[]): Episod[] {
 }
 
 export type Stationsdom = "BEKRÄFTAD" | "FALSK" | "OMÄTBAR";
-/** B1: vad mätte holdout-stationen inom facitradien av punkten under episoden? Varm ⇒ FALSK; frusen ⇒ BEKRÄFTAD. */
-export function stationsdom(ep: Episod): Stationsdom {
+export type Lage = { rutt: string; km: number; t: Date };
+/** Var på rutterna en händelse ligger (inom facitradien), annars null. */
+export function lage(e: { lon: number; lat: number; t: Date }, rutter: Rutter): Lage | null {
+  let bast: Lage & { d: number } | null = null;
+  for (const [rutt, line] of Object.entries(rutter)) {
+    const n = narmastLangs(e, line);
+    if (n.km <= FACIT_KM && (!bast || n.km < bast.d)) bast = { rutt, km: n.vid, t: e.t, d: n.km };
+  }
+  return bast;
+}
+/** B1: vad mätte holdout-stationen inom facitradien av punkten under episoden? Varm ⇒ FALSK; frusen ⇒ BEKRÄFTAD.
+ *  En kamerabild med halka inom facitradien, tagen medan episoden pågick (±30 min), bekräftar också — men fäller aldrig (§2). */
+export function stationsdom(ep: Episod, kameror: Lage[] = []): Stationsdom {
   let varm = false, frusen = false;
   for (const v of ep.varv)
     for (const h of v.h) if (Math.abs(h[0] - ep.km) <= FACIT_KM) {
       if (h[2] > FALSK_YTA_C) varm = true;
       else if (h[2] <= FRYS_C) frusen = true;
     }
-  return varm ? "FALSK" : frusen ? "BEKRÄFTAD" : "OMÄTBAR";
+  const kamera = kameror.some((k) => k.rutt === ep.rutt && Math.abs(k.km - ep.km) <= FACIT_KM
+    && +k.t >= +ep.start - 30 * 60_000 && +k.t <= +ep.slut + 30 * 60_000);
+  return varm ? "FALSK" : frusen || kamera ? "BEKRÄFTAD" : "OMÄTBAR";
 }
 
 /** B3: var punktmotorn tyst under episoden, eller kom den > B3_SEN_MIN efter starten? Bara punktfaror med position. */
@@ -151,7 +166,8 @@ export function holdoutGrova(varv: Varv[]): { n: number; grova: number } {
 
 export function rakna(varv: Varv[], handelser: Handelse[], rutter: Rutter) {
   const eps = episoder(varv);
-  const domar = eps.map((ep) => ({ ep, dom: stationsdom(ep) }));
+  const kameror = handelser.filter((e) => e.kalla === "kamera").map((e) => lage(e, rutter)).filter((x): x is Lage => x !== null);
+  const domar = eps.map((ep) => ({ ep, dom: stationsdom(ep, kameror) }));
   const bekraftade = domar.filter((d) => d.dom === "BEKRÄFTAD"), falska = domar.filter((d) => d.dom === "FALSK"), omatbara = domar.filter((d) => d.dom === "OMÄTBAR");
   const merv = bekraftade.filter((d) => mervarde(d.ep, rutter));
   const hd = handelser.map((e) => ({ e, d: handelsedom(e, varv, rutter) }));
@@ -223,22 +239,24 @@ if (process.argv.includes("--sjalvtest")) {
     { id: "E3", t: tid(80),  lon: lonVid(5.1),  lat: 56.0,   kalla: "väglag",    nederbord: true },    // täckt, aldrig flaggad, regn ⇒ MISS nederbörd (inte B2)
     { id: "E4", t: tid(80),  lon: lonVid(25.2), lat: 56.0,   kalla: "förare",    nederbord: false },   // km 25 okänd ⇒ OBEDÖMBAR
     { id: "E5", t: tid(80),  lon: lonVid(15.0), lat: 56.06,  kalla: "smhi",      nederbord: false },   // 6,7 km från rutten ⇒ OBEDÖMBAR
+    { id: "E6", t: tid(615), lon: lonVid(30.4), lat: 56.0,   kalla: "kamera",    nederbord: false },   // snö i bild vid km 30 medan episoden pågår ⇒ bekräftar den (utan station) och är en TRÄFF
+    { id: "E7", t: tid(15),  lon: lonVid(20.6), lat: 56.0,   kalla: "kamera",    nederbord: false },   // snö i bild vid km 20 — stationen där mätte +4: stationen fäller, kameran får inte rädda
   ];
   const r = rakna(varv, handelser, rutter);
   const k = (namn: string, fick: unknown, vantat: unknown) => { if (fick !== vantat) { console.error(`  FEL: ${namn} = ${fick}, väntat ${vantat}`); process.exit(1); } console.log(`  ok: ${namn} = ${fick}`); };
   k("episoder", r.eps.length, 3);                       // km 10 (0–60), km 20 (0–30), km 30 (600–630); varv 600 ligger > 2 h efter ⇒ egen episod
-  k("bekräftade", r.bekraftade.length, 1);
-  k("falska", r.falska.length, 1);
-  k("omätbara", r.omatbara.length, 1);
-  k("mervärde (punktmotorn 60 min sen)", r.merv.length, 1);
-  k("träffar", r.traffar.length, 1);
+  k("bekräftade (station km 10 + kamera km 30)", r.bekraftade.length, 2);
+  k("falska (stationen vid km 20 fäller trots kamerabilden)", r.falska.length, 1);
+  k("omätbara", r.omatbara.length, 0);
+  k("mervärde (punktmotorn 60 min sen vid km 10, tyst vid km 30)", r.merv.length, 2);
+  k("träffar (E1 + kamerorna E6, E7 flaggade före)", r.traffar.length, 3);
   k("missar utstrålning", r.missUtstr.length, 1);
   k("missar nederbörd", r.missNed.length, 1);
   k("obedömbara händelser", r.obed.length, 2);
-  k("halkperioder", r.perioder, 1);
+  k("halkperioder", r.perioder, 1);                     // minut 15–615 ligger inom ett dygn: en period, inte två
   const ut = rapport(varv, handelser, rutter, "dom", 3.5, "SJÄLVTEST", true)!;
-  k("B1 = 50 %", ut.b1, 0.5);
-  k("B2 = 50 %", ut.b2, 0.5);
+  k("B1 = 1/3", ut.b1, 1 / 3);
+  k("B2 = 1/4", ut.b2, 1 / 4);
   k("B3 = 100 %", ut.b3, 1);
   k("C1 inte uppfylld på fem händelser", ut.c1, false);
   k("C2 inte uppfylld på två episoder", ut.c2, false);
@@ -292,7 +310,12 @@ const hRows = await pool.query(`
   UNION ALL
   SELECT 'forare:' || f.id, f.alert_t, ST_X(w.geom::geometry), ST_Y(w.geom::geometry), 'förare'
   FROM driver_facit f JOIN weather_latest w ON f.alert_id = 'wx:' || w.station_id, r
-  WHERE f.svar = 'ja' AND f.alert_t > now() - $1 * interval '1 day' AND ST_DWithin(w.geom::geography, r.g::geography, $3)`,
+  WHERE f.svar = 'ja' AND f.alert_t > now() - $1 * interval '1 day' AND ST_DWithin(w.geom::geography, r.g::geography, $3)
+  UNION ALL
+  SELECT 'kamera:' || k.id, k.bild_tid, k.lon, k.lat, 'kamera'
+  FROM kamerafacit k, r
+  WHERE k.klass IN ('is', 'snö', 'slask') AND k.bild_tid > now() - $1 * interval '1 day'
+    AND ST_DWithin(ST_SetSRID(ST_MakePoint(k.lon, k.lat), 4326)::geography, r.g::geography, $3)`,
   [DAYS, wkt, FACIT_KM * 1000]);
 const handelser: Handelse[] = [];
 for (const e of hRows.rows) {

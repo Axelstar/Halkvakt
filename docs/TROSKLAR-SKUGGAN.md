@@ -107,7 +107,7 @@ Domen gäller leave-one-out vid stationerna, där offseten lärs ur stationens e
 utan historik ska stå i detta dokument innan skuggkörningen byggs (kort #38b, delsteg 4a; DECISIONS #322).*
 
 **Vägpunkten — hur prognosen räknas där ingen station står** (delsteg 4a, 23/9 2026, DECISIONS #324, skriven under
-mandatet i DECISIONS #323; Bengts rad bekräftar lydelsen): segmentprognosen räknas som **rå avståndsviktning** av de
+mandatet i DECISIONS #323; bekräftad av Bengt 24/9, DECISIONS #328): segmentprognosen räknas som **rå avståndsviktning** av de
 närmaste stationernas yttemperatur — upp till fem ankare inom 50 km, vikt 1/km som grind A:s grannvikt, **ingen offset** —
 på grind A:s population: #75:s givarvakt, radvakten och karantänen (DECISIONS #298/#299). Vägpunktsgrinden
 (`scripts/hojd-prov.ts`, måndagar 07:00) visade 23/9 att den räkningen klarar A1–A3 utan målets historik (A1 0,71 °C,
