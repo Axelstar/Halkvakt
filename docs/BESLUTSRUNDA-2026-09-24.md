@@ -25,10 +25,28 @@ döms i vinter läser arkivet: T-A, K-A, R-A, W-A, uppspelningen, tystnadsfelet,
 vilket som kommer först — inte kalendern. Pris: Supabase Pro 25 USD/mån ⇒ ~125 USD för vintern (8 GB databas). Kräver
 DECISIONS-post med Axels ja (husregeln om betaltjänster) och att Axel slår på det i panelen.
 
-**Alternativ: export.** Nattlig dump till lagring utanför databasen och gallring av äldre rader. Priset är inte pengar utan
-funktion: uppspelningen, tystnadsfelet och grindarna räknar OM ur arkivet (kort #155:s princip) — gallras raderna ur databasen
-måste tre instrument byggas om till trendarkivets form (spara i stället för räkna om), mitt i vintern. Det är det kort #155
-varnade för.
+**Alternativ: export (kort #83 steg 2a).** Rader äldre än N dygn packas och flyttas ut, sedan raderas de ur databasen.
+Sparar ~1 400 kr. *Rättat 24/9 på Bengts fråga — första lydelsen sa att tre instrument måste byggas om; det var för starkt.*
+Det verkliga priset är tre saker:
+- **Fönstret krymper.** Efter gallringens steg 1 växer vinterarkivet 7,4–11 MB/dygn (kortets mätningar). 60 dygn i
+  databasen är då 450–660 MB — över skrivskyddet vid 500 MB. Bara ~30 dygn ryms. Grind A kör 60 dygns fönster.
+- **Marsdomarna körs på en återläst kopia**, inte i databasen: exporten läses tillbaka i en PostGIS-container och grindarna,
+  uppspelningen och tystnadsfelet körs där. Det är genomförbart — arkivbackupen gör redan exakt den återläsningen varje
+  vecka som prov — men det är ett steg som måste byggas och provas före mars.
+- **Svansrisken.** Gratisnivån skrivskyddar vid 500 MB; då stannar livemotorns skrivningar. Databasvakten larmar vid 400.
+  Med export är marginalen mot väggen en körning som inte får utebli; med Pro är den 7,5 GB.
+
+**Vart exporten skulle gå — två ställen som redan finns i huset:**
+
+| | Supabase Storage (kortets förslag 2a) | GitHub-release i repot (som arkivbackupen) |
+| :-- | :-- | :-- |
+| Pris | gratis upp till 1 GB (vintern ~150 MB packad; kamerabilderna delar kvoten) | gratis |
+| Byggt | nej — en edge function som skriver CSV.gz | ja — veckovis pg_dump med återläsningsprov sedan 20/9 |
+| Utanför Supabase | nej, samma konto: ingen reserv om kontot tappas | ja |
+| Bengts regel 22/9 | följer den (pg_cron + edge function) | kräver undantag: några Actions-minuter i månaden |
+
+Om det blir export: **GitHub-release**, för att den redan är byggd och återläsningsprovad och ligger utanför Supabase —
+med ett uttryckligt undantag från regeln 22/9.
 
 **Rekommendation: Pro.** Det är den enda vägen som håller marsdomarna räknbara utan ombyggen. Export som reserv om Axel säger nej.
 
