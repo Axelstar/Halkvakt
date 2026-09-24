@@ -2678,6 +2678,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ändras. 🔒 NYCKEL: S2 byggd. Verify: ett fält per väderpunkt i live.json som bär nivå och källor, oläst av apparna (otypad läsning),
   manifestets sha stämmer.
   🔓 **Nyckeln given 24/9 (DECISIONS #341):** S2 byggd — `skattaNiva()` är innehållet fältet ska bära. Nästa: fältet bredvid `fukt` i live.json (F1), bevisat oläst av apparna och med manifestets sha.
+  🔨 **BYGGT 24/9 (Bengt: *"gör steg 4"*, DECISIONS #342):** `weather[].bevis = {vata, mangd, radar}` bredvid `fukt`, ur `skattaNiva()`; F1 verifierat i kod (Android, iOS, adaptern läser id/lon/lat/yta/fukt); publiceringens bunt bär skattaren. Radarn null tills stationen kopplas till radarsegment. Kvar för Verify: deploy av publicera och en live.json med fältet och manifestets sha.
 - [x] ✅ **STÄNGT 24/9** (DECISIONS #340) — 🖼️ **#246 BILDLÄSNINGSSPÅRET — klassning i mars, byggt och provat nu** (Bengts fråga 24/9: *"kan Axel ok:a ett automatiserat
   spår där du sköter genomgången"*). DECISIONS #248: hinkens bilder öppnas i mars — spåret byggs nu och provas på Trafikverkets
   DIREKTBILDER (publika, dagens, inte facit). Formen: Axel exporterar hinken till en plats Claude når · kontaktark om 20 bilder ·

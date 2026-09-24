@@ -63,7 +63,8 @@ test("#74 format: olyckans gradering är gated på Accident, SMHI/vilt/kamera i 
 
   assert.equal(liveDoc.generated_at, "2026-11-20T06:30:00.000Z");
   assert.deepEqual(staticDoc.cameras, [{ id: "TV1", lon: 15, lat: 58.02, bearing: 180, road: "E4" }]);
-  assert.deepEqual(liveDoc.weather, [{ id: "W1", lon: 15, lat: 58.05, yta: -1.2, fukt: true, regn_h: null, lutning15: null, lutning30: null, lutning60: null }]);
+  assert.deepEqual(liveDoc.weather, [{ id: "W1", lon: 15, lat: 58.05, yta: -1.2, fukt: true, regn_h: null, lutning15: null, lutning30: null, lutning60: null,
+    bevis: { vata: 0, mangd: null, radar: null } }]);
   assert.deepEqual(liveDoc.deviations[0], { id: "D1", lon: 15, lat: 58.1, typ: "Olycka", road: "E4", sev: 4, slut: "09:15" }); // 08:15Z = 09:15 CET
   assert.deepEqual(liveDoc.deviations[1], { id: "D2", lon: 15, lat: 58.2, typ: "Vägarbete", road: "E4", sev: null, slut: null });
   assert.deepEqual(liveDoc.smhi, [{ id: 25, event: "Snöfall", niva: "YELLOW", geom: { type: "Polygon", coordinates: [] } }]);
@@ -329,8 +330,10 @@ test("#187 regn_h och lutning läggs bredvid fukt — null när fönstret är to
   });
   const { liveDoc } = await buildSnapshot(q, [], NOW);
   const [w1, w2] = liveDoc.weather;
-  assert.deepEqual(w1, { id: "W1", lon: 15, lat: 58, yta: 1, fukt: false, regn_h: 3.5, lutning15: 0.4, lutning30: null, lutning60: 1.2 });
-  assert.deepEqual(w2, { id: "W2", lon: 16, lat: 59, yta: 0.5, fukt: false, regn_h: null, lutning15: null, lutning30: null, lutning60: null });
+  assert.deepEqual(w1, { id: "W1", lon: 15, lat: 58, yta: 1, fukt: false, regn_h: 3.5, lutning15: 0.4, lutning30: null, lutning60: 1.2,
+    bevis: { vata: 1, mangd: null, radar: null } });
+  assert.deepEqual(w2, { id: "W2", lon: 16, lat: 59, yta: 0.5, fukt: false, regn_h: null, lutning15: null, lutning30: null, lutning60: null,
+    bevis: { vata: 0, mangd: null, radar: null } });
   const rh = asked.find((t) => t.includes("FROM weather_observations") && !t.includes("HAVING count(*)"))!;   // inte karantänfrågan (#234)
   assert.match(rh, /rain_sum_mm > 0/); assert.match(rh, /48 hours/);
   const tk = asked.find((t) => t.includes("FROM trend_kandidater"))!;
@@ -441,4 +444,24 @@ test("#156 snapshotens halkfilter är ett superset av motorns halkord: allt moto
   const ord = m[1].split("|"), stammar = m[2].split("|");
   for (const w of info) assert.ok(ord.includes(w), `motorns ord "${w}" saknas i snapshotens filter — ett sådant segment med kod 1 når aldrig motorn`);
   for (const s of stam) assert.ok(stammar.includes(s), `motorns stam "${s}" saknas i snapshotens filter`);
+});
+
+// Kort #245 (DECISIONS #342): bevisbäraren. Nivåerna ur skattaren (S2), bredvid fukt; motorns adapter ser samma hazard.
+test("#245 bevisbäraren: väta och mängd ur skattaren bredvid fukt — radarn null, adaptern orörd", async () => {
+  const { q } = fakeDb({
+    wx: [
+      { station_id: "B1", surface_temp_c: "0.4", rain: true, snow: false, precipitation: "rain", lon: 15, lat: 58 },
+      { station_id: "B2", surface_temp_c: "2.0", rain: false, snow: false, precipitation: "no", lon: 16, lat: 59 },
+      { station_id: "B3", surface_temp_c: "1.5", rain: false, snow: false, precipitation: "no", lon: 17, lat: 60 },
+    ],
+    regnH: [{ station_id: "B1", regn_h: "0.4", mm: "0.3" }, { station_id: "B2", regn_h: "2.9", mm: "0.1" }],
+  });
+  const { liveDoc } = await buildSnapshot(q, [], NOW);
+  const by = Object.fromEntries(liveDoc.weather.map((w: any) => [w.id, w]));
+  assert.deepEqual(by.B1.bevis, { vata: 4, mangd: 2, radar: null }, "regn för 0,4 h sedan, 0,3 mm");
+  assert.deepEqual(by.B2.bevis, { vata: 2, mangd: 1, radar: null }, "regn för 2,9 h sedan, 0,1 mm");
+  assert.deepEqual(by.B3.bevis, { vata: 0, mangd: null, radar: null }, "inget regn i fönstret: mängden okänd, inte noll");
+  assert.equal(by.B1.fukt, true, "fukt orört — lägg till, ersätt aldrig");
+  const hz = snapshotToHazards({ schema: 1, cameras: [] }, liveDoc).find((h) => h.id === "wx:B1") as any;
+  assert.deepEqual(hz.meta, { surfaceTempC: 0.4, moisture: true }, "motorns adapter läser inte bevis");
 });

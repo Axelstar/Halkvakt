@@ -9940,3 +9940,22 @@ K1- och K2-svepen står nu i två filer (`scripts/grind-k-a.ts` och `publish/til
 nivån är indata, inte en varning. Integrationskartan är fryst och säger fortfarande att E inte är byggd; det rättas nästa gång
 den öppnas efter mätning (bedömningen §5.2 bär läget).
 
+## #342 (24/9 2026) Bevisbäraren: varje väderpunkt i live.json bär `bevis` bredvid `fukt` (kort #245, steg 4 i ordningen)
+
+**Beslut (Bengt 24/9: *"gör steg 4"*).** Integrationskartans §8 B, fog F1: ett nytt fält, aldrig i stället för ett gammalt (§5.3).
+`weather[].bevis = { vata, mangd, radar }` ur skattarens nivå (S2, DECISIONS #341): väta 0–4 (antal N i N_SVEP som ger blött),
+mängd 0–3 (steg i REGN_SVEP för regnet vid stationens senaste regn, null = okänd), radar 0–3 (null = ingen rad). Alla tre är
+oberoende av N och av K1/K2, så inget startvärde kopieras in i snapshoten.
+
+**F1 verifierat i kod, som R16 kräver (kartans §5.6):** Android `SnapshotRepo.kt` läser `id`, `lon`, `lat`, `yta`, `fukt`
+(`optBoolean`), iOS `SnapshotRepo.swift` samma nycklar, motorns adapter `engine/src/snapshot.ts` samma. Ingen itererar över
+nycklarna. Ett nytt fält kan inte fälla en installerad app.
+
+**Byggt:** `publish/snapshot-core.ts` (regnfrågan bär också mängden vid senaste regnet; `bevisRad`), `scripts/bundle-publicera.ts`
+buntar `publish/tillstand.ts` före kärnan, `supabase/functions/publicera/index.ts` genererad om. Två tester fick fältet i sitt
+facit, ett nytt (#245) prövar väta och mängd, null för okänd mängd, `fukt` orört och att adaptern ger samma hazard.
+
+**Sagt högt.** Radarn per station finns inte i snapshoten — `radar` är null tills en koppling station→radarsegment byggs.
+Fältet står ändå, så formen är stabil när det fylls (att lägga till nu och fylla senare är additivt; att ändra form senare vore
+det inte). Ingen läser `bevis` i dag: det är indata till försprånget (#153) och till S3.
+
