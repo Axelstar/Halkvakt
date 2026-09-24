@@ -30,6 +30,9 @@ att läsa mot varandra. Kort utan rad här hör hemma på tavlan, inte i bedömn
 > sekvenseringen mot lanseringen är din: **starten står om du inte säger annat** — säg till bara om App Store-lanseringen (#320)
 > eller betan kräver att bygget flyttas. Skuggan rör inte appen. Raden i §4.2 stryks när du sagt ditt eller lanseringen passerat.
 
+**Integrationsläget 24/9, mätt mot kartan — se §5.** Steg två av fyra i kartans sekvens för varje vinterlänk (publicerat, mätt i
+skuggan; villkoret i motorn orört). Stoppen i ordning: vädret, facit, S3 (Axels bygge bakom S1-grinden), E och B, lagringen.
+
 **Var vi är (22/9).** Driften är tät och vaktad, reglerna för efterhalkan är fastställda, och givarvakten har fått sina två
 tillägg i både appen och mätningarna (kort #234 stängt 22/9 med nattbevis och idrifttagning, DECISIONS #298/#299). **Flaskhalsen
 är beslut och händer, inte bygge: §4.2 bär fjorton öppna beslut** — sju hos Axel (Supabase Pro, #203, Play-deklarationen,
@@ -330,6 +333,59 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 | **De fem enklaste att slutföra (Bengts fråga 22/9, DECISIONS #305).** ~~(1) **#160 Måndagsserien** — Claude ensam, nu: läs starttiderna för de sju körningarna 21/9 och bokför (b)-provet. (2) **#146 Swift-byggutdata** — ditt ja, sedan en commit (27,6 MB ur repot).~~ ✅ **(1) och (2) KLARA 22/9** (DECISIONS #306). ~~(3) **#156 Halkorden** — Axels rad: är #214:s *"med flit"* svaret?~~ ✅ **KLAR 22/9** (Bengt valde (b), DECISIONS #307). (4) **Skinnet v3 på Android** — Axels skärmbild från testtelefonen. ~~(5) **Billing (kort 3)** — Axel läser Settings → Billing före 24/9.~~ ✅ stängt av Bengt (DECISIONS #308). Tre av fem är Axels tvåminutersuppgifter och går i ett meddelande. Närmast efter: Android-testenhetens verifiering i Play Console (Axel) | (1) Claude · (2) Bengt · (3)–(5) Axel | (1) och (2) nu; (3)–(5) i ett meddelande till Axel | #160, #146, #156, #3 |
 | **Kortavstämningen 22/9 (Bengts fråga *är det verkligen 94 som ska vara öppna*, `docs/KORTAVSTAMNING-2026-09-22.md`).** Alla 94 öppna kort prövade mot repot. **18 kan stängas med bevis** (varje bevis kontrollerat av Claude), 72 behålls (29 väntar på Axel, 17 på Bengt, 25 på Claude, varav de flesta på frosten, 1 på extern part), 4 är oklara. Dessutom sju dubblettpar som kan slås ihop, och 25 kort i fel sektion (kort #224). ~~(a) Stänga de 18 och slå ihop de sju paren i en PR?~~ ✅ **BESLUTAT 22/9: ja (Bengt), gjort** (DECISIONS #303). ~~(b) Bengt: är brevet om de nio byvindgivarna skickat (kort #154, rad 1104)? Gällde fältdomen Malmö–Boden (DECISIONS #102) ett bygge 0.3.5 eller senare, utan larm i fel riktning (kameran i fel riktning, rad 1239)?~~ ✅ **BESVARAT 22/9:** brevet skickat, kameravarningen klar — båda korten stängda (DECISIONS #304). ~~(c) Axel: är #214:s "med flit" ditt svar om halkorden (kort #156)?~~ ✅ **AVGJORT 22/9 av Bengt: (b), ordet in i filtret** (DECISIONS #307). ~~Och Nowcast-kortet (#16) mot regel T6: skriv om, flytta till före-resan (#233) eller stäng?~~ ✅ **AVGJORT 22/9 av Bengt:** stängt, idén i #233 (DECISIONS #309). **Två fynd före nästa bygge:** iOS 0.3.9 (12) på main bär #203:s okompilerade kod, så numret höjs innan något arkiveras; och produktboken rad 21 och 82 bryter invarianten (#264).  ~~**(d) Axel, före nästa arkivering:** 0.3.9 som **(13)** från main (bär #203 lager 1, okompilerat) eller som **(12)** från `90b5223` (den rena fixen)? Och behörighetstexterna i `ios/HalkvaktApp/project.yml` (rad 47 och 50) säger *"Positionen lämnar aldrig enheten"* utan betatestets undantag — introduktionen och Om säger undantaget, iOS behörighetsruta inte. Rättas de (texten Axels, #196), med produktboken och skärmbild i samma commit?~~ ✅ **AVGJORT 22/9 (Axel lämnade valet till Claude, DECISIONS #317):** (12) från `90b5223` (tagg `ios-0.3.9-12`); rutans text rättad i main, följer med (13), skärmbilden ur (13). | (a)(b) Bengt · (c)(d) Axel | (a) ja; de 18 har ett bevis som håller. Sammanslagningarna tar inget arbete bort, bara dubbletterna | #224 |
 | **Kuvösen — hela systemet bakåtprövat på vintern 2024/25 (kort #232, DECISIONS #292).** Bengts idé 21/9: motorn och alla skuggregler i en gemensam testbädd mot en gången vinter, som riktningsprov — svaret på kartans §7.3 (*varje grind dömer sin del ensam*). **Det hänger på en sak:** stationernas mätvärden för den vintern finns inte öppet (API sju dygn · Lastkajen bär inte mätvärden · Vintersidan stängd · Finland 24 h · Norge realtid). Vägen är en förfrågan till Trafikverket — **via Datautbytesportalens kontaktformulär, ärendetyp *API Öppna Data*** (datex@trafikverket.se studsar, DECISIONS #294); färdig text given till Bengt 21/9. SMHI:s varningar (valfritt): kundtjanst@smhi.se. **Två beslut:** (1) ~~skicka förfrågan~~ ✅ **skickad av Bengt 21/9 via formuläret — väntar svar, reserv 28/9**; (2) får vintern 2024/25 bara vara riktningsprov, eller också kalibreringsdata (D3) — avgörs före körningen. Bonus: en hel vinter avgör grind A:s oavgjorda A2 och därmed novemberbeslutet | Bengt (förfrågan) · Bengt + Axel (riktningsprov eller kalibrering) | ~~skicka förfrågan nu~~ ✅ gjort 21/9 · beslut (2) kan vänta tills datan finns | #232, #38b |
+---
+
+## 5. Integrationsläget — mätt mot kartan (24/9, Bengts fråga *"hur långt i integrationen har vi kommit"*)
+
+Kartan (`docs/INTEGRATIONSKARTAN.md`, fryst) är måttstocken: fem lager (§2), fem fogar (§5.1), sekvensen per länk (§5.5) och
+minimilistan A–E (§8). Det här är läget mätt mot den, inte mot minnet. Uppdateras när något byggts och mätts.
+
+### 5.1 Lagren
+
+| Lager | Kartan 14/9 | 24/9 |
+| :-- | :-- | :-- |
+| L1 trovärdighet | i drift | starkare: radvakten, karantänen, långsamma vakten (22/9, DECISIONS #298/#300) |
+| L2 tillstånd | blöt/torr byggt, resten kvar | oförändrat i motorn; skattaren finns, S1 loggar råfälten sedan 16/9 (35 rader), S2 och S3 inte byggda |
+| L3 utveckling | mätt, ingen regel | oförändrat; trendarkivet (19 469 kandidater), rimfrosten och T-A väntar på frost |
+| L4 räckvidd | ankaret mätt, knappen saknas | grind A KLARAD (#321), vägpunkten svarad (#324), segmentprognosen i skugga sedan 23/9 med holdouts (#325/#326); knappen (molnet) omätt |
+| L5 allvar och röst | formen beslutad, regeln obyggd | oförändrat; #153 omformulerat till försprång (#221), väntar efter betan och S2 |
+
+### 5.2 Minimilistan (§8)
+
+| Krav | Läge 24/9 |
+| :-- | :-- |
+| A allvar som försprång | form beslutad, regel obyggd — Axels |
+| B bevisbärare i snapshoten | inte påbörjad |
+| C grind för kombinationen | ✅ skriven 17/9 (TROSKLAR-KOMBINATIONEN KB-A–D) |
+| D gemensam kalibrering | ✅ regel D1–D7, 17/9 |
+| E skattaren ger nivå och bevis | inte byggd — väntar bakom S1-grinden |
+
+### 5.3 Sekvensen per länk (§5.5: publicera · mät i skuggan · ändra villkoret · tre portar)
+
+| Länk | 1 publicera | 2 mät i skuggan | 3 villkoret | 4 portar |
+| :-- | :-- | :-- | :-- | :-- |
+| Efterhalkan — vinterns enda röstlänk (§13.4) | ✅ 15/9 (`regn_h`, `lutning`) | ✅ S1 sedan 16/9 | ⏳ S3, Axel, bakom S1-grinden | ⏳ |
+| Segmentprognosen (#38b) | ingen publicering med flit (§4: karta och förstärkare, aldrig röst ensam) | ✅ `prognos` sedan 23/9 | inte förrän domen i mars | — |
+| Radarn / vattenplaningen (#42, #81) | ✅ `rain_segments` 15/9 | ✅ V-B sedan 15/9 | ⏳ steg D efter V-C, Axel | — |
+| Rimfrosten (#46) | fogen vald (andra gren i `icing_point`) | ⏳ R-A saknar data (Finland 0 episoder 24/9) | — | — |
+
+**Räknat i länkar:** ingen vinterlänk har nått steg tre. Allt som byggts 23–24/9 ligger i steg två, och det är rätt enligt kartan.
+
+### 5.4 De stora stoppen, i ordning
+
+1. **Vädret.** S1-grinden, T-A steg 0, R-A, K-A och W-A väntar på första frosten (frostvakten: 50 stationer under noll; 24/9 som mest 4).
+2. **Facit.** Kamerabilder 790 sedan 15/9 men bara Axel når hinken, en klassad; väglagsarkivet nästan stilla (7 rader på 14 dygn);
+   ett förarsvar; betan inte igång. Utan facit blir mars *fortsatt skugga* av brist på domare, inte av dåliga regler.
+3. **Steg tre är Axels.** S3 är ett motorbygge i tre portar med v11 som måste förbli tyst — den enda röstlänken i vinter, i konkurrens
+   med App Store och betan om hans tid.
+4. **E och B.** Utan nivå från skattaren kan försprånget inte sättas; utan bevisbärare syns inte varför en varning kom.
+5. **Lagringen.** #83 steg 2 (Pro eller export) i oktober avgör om vinterarkivet räcker och om #89/#98 måste byta form.
+
+### 5.5 Kartan är överspelad på fyra ställen
+
+§6.1 (grind A *ingen dom*), §5.4 (prognosens fog som `weather[].osakerhet`), §12 (kamerafacit 0 objekt, ingen vakt) och §7.2–7.4
+(motkrafter som är avgjorda sedan 17/9). Förslaget R17–R20 står i §4.2; kartans frysvillkor tillåter öppningen.
+
 ---
 
 ## Bilaga A — rättelser till kartan som väntar tills en rör kod
