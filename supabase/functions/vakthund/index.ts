@@ -810,9 +810,12 @@ Deno.serve(async (req) => {
         if (c[0].status === "failed") problem.push(`**Livemotorns senaste cron-körning FAILED** @ ${c[0].end_time}`);
       }
     } catch { rad.push("livemotorns cron: job_run_details ej läsbar — hoppar"); }
-    //     9d (b). EFFEKTEN. situation_archive rörs av livemotorn varje minut; står den still kör
-    //     cron men anropet når inte fram. Gränsen är generös mot en enstaka missad minut.
-    const LIVEMOTOR_EFFEKT_MIN = 30;
+    //     9d (b). EFFEKTEN. Står situation_archive still kör cron men anropet når inte fram.
+    //     GRÄNSEN 3 h, inte 30 min (kort #243, DECISIONS #343, Bengts ja 24/9): arkivet rörs bara när Trafikverket ÄNDRAR en
+    //     avvikelse, inte varje minut som kommentaren här förut sa. Mätt 24/9: 32 gluggar > 30 min på sju dygn, medel 54 min,
+    //     största 128 min — issue #528 (24/9 03:07Z) var ett sådant falsklarm, medan livemotorn svarade varje minut. Tre timmar
+    //     ger 52 minuters marginal mot den största uppmätta gluggen och fångar ett riktigt stopp (kort #222) inom tre timmar.
+    const LIVEMOTOR_EFFEKT_MIN = 180;
     const [eff] = await sql`SELECT round(extract(epoch FROM now() - max(last_seen)) / 60) AS min FROM situation_archive`;
     rad.push(`livemotorns effekt: situation_archive rörd för ${eff?.min ?? "aldrig"} min sedan (gräns ${LIVEMOTOR_EFFEKT_MIN})`);
     if (eff?.min === null || eff?.min === undefined || Number(eff.min) > LIVEMOTOR_EFFEKT_MIN) problem.push(

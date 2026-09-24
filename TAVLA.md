@@ -2702,6 +2702,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   och road_conditions 1 min färska. Issue #528 (03:07Z) stängdes av vakthunden själv 04:07Z. Förslag: gränsen till 3 h, eller
   mät att funktionen SKREV (deviations färska) i stället för att arkivet ÄNDRADES. 🔒 NYCKEL: Bengts ja på gräns eller mått.
   Verify: sju dygn utan falsklarm ur den checken, och ett riktigt stopp (kort #222:s fall) fångas fortfarande.
+  🔨 **Bengts ja 24/9 (DECISIONS #343):** gränsen 30 → 180 min, kommentaren rättad. Kvar: deploy, sedan sju dygn utan falsklarm ur checken.
 - [ ] 🧯 **#244 "FÖR LITE DATORKRAFT" PÅ HEL- OCH HALVTIMMEN SEDAN 24/9 00:30** (fynd 24/9 i samma genomlysning). `net._http_response`
   bär fyra svar 546 WORKER_RESOURCE_LIMIT — 00:30, 01:00, 02:00, 04:00 den 24/9 — och **inget de tre dygnen före**. Alla
   schemalagda funktioner levererade ändå de minuterna (publicera-commit i kartrepot 02:00:51 och 04:00:54, skuggrader 02:00:03 och
@@ -2711,6 +2712,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   normala 3–5 s medan grindarna K-A/T-A/W-A läste arkivet. Förslag: Axel läser loggen; är det skuggmotorn flyttas dess schema två
   minuter (pg_cron, i Supabase — Bengts regel 22/9) så att den inte startar samtidigt som publicera och livemotorn. 🔒 NYCKEL:
   funktionsloggen (Axel). Verify: noll 546 på tre dygn efter åtgärden.
+  🔨 **Bengts ja 24/9 (DECISIONS #344):** `sql/036` flyttar skuggmotorns svenska schema till :02/:32. Nya 546 i dag före flytten: 11:00 och 14:30. Kvar: tre dygn utan 546.
 - [ ] 🦌 **#241 VILTRÖSTEN TALAR PÅ LÄNETS MITTPUNKT — mot DECISIONS #13** (fynd 22/9, Bengts fråga *"vad har vi för mätning i appen,
   polisen eller trafikverket"*; `scripts/matningar/viltrosten-polisen-2026-09-22.sql`, körning 35761967231).
   **Läget:** appens viltvarning kommer ur **polisens** data, inte Trafikverkets. `publish/snapshot-core.ts` skickar polisens viltolyckor
