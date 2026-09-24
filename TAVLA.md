@@ -395,8 +395,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   justera går det fram till första skuggkörningen, sedan gäller §5 (båda signerar).
 - [x] ↪ **SAMMANSLAGET 22/9** i *Skyltfonden-paketet före 1/10* (DECISIONS #303) — **Helgsamtalet med pappa — nu fyra punkter:** roller (B2B=Bengt?), föreningen, klartecken ringrundan, OCH intäktsmodellen (#27: din viljeinriktning → hans utformning)
   ↪ **Sammanslaget 22/9 (DECISIONS #303):** samma frågor: sökande, roller och ringrundan (ringrundan håller Bengt, #215). Det som återstår bärs av *Skyltfonden-paketet före 1/10*.
-- [ ] **Skyltfonden-paketet (före 1/10):** (a) klartecken till pappas ringrunda (startar v.36!), (b) sökande: pappa privat eller ideell förening?, (c) rollfördelningen — allt hänger ihop. Underlag: `docs/FINANSIERING.md`
+- [x] ✅ **STÄNGT 24/9** (DECISIONS #345) — **Skyltfonden-paketet (före 1/10):** (a) klartecken till pappas ringrunda (startar v.36!), (b) sökande: pappa privat eller ideell förening?, (c) rollfördelningen — allt hänger ihop. Underlag: `docs/FINANSIERING.md`
   ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** #27 *Helgsamtalet* och *Rollfördelningen*. Kortet stängs när Axels val av sökande och besked om rollerna (DECISIONS #25e) står i DECISIONS, intäktsmodellen ur #27 är avgjord och PLAN.md är uppdaterad.
+  ✅ **Stängt 24/9 (DECISIONS #345, Bengt: *"vi har koll på dessa på annat sätt"*):** följs utanför tavlan. Underlaget står kvar i `docs/FINANSIERING.md`.
 - [x] ↪ **SAMMANSLAGET 22/9** i *Skyltfonden-paketet före 1/10* (DECISIONS #303) — **Rollfördelningen**: efterfrågan/affärsmodell/B2B = Bengts ansvar? (hans förslag; vid ja uppdateras PLAN)
   ↪ **Sammanslaget 22/9 (DECISIONS #303):** rollfördelningen (DECISIONS #25e) avgörs i samma besked. Det som återstår bärs av *Skyltfonden-paketet före 1/10*.
 
@@ -1063,7 +1064,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **Sammanslaget 22/9 (DECISIONS #303):** telefonkedjan avgörs i samma samtal: byggs, avvisas eller förs in i #21. Det som återstår bärs av *Samtal med Axel: sensortrappan*.
 - [x] ✅ **STÄNGT 22/9** (DECISIONS #311) — 💼 **B2B: skolpaketet som produkt** — per-elev-moment i körkortspaketen; STR som skalkanal; säljs våren 2027 med halkbanedata *(Axels idé, Bengts spår)*
   ✅ **Stängt 22/9 (DECISIONS #311, Bengt: *"ta upp våren 2027"*):** säljstart våren 2027 med halkbanedata; står i bedömningens rad *Efter mars* (skolpaketet som produkt och dess material).
-- [ ] 📞 **Skyltfondsrundan** (efter Axels klartecken): fonden + trafikövningsplats v.36 → avsiktsförklaringar 25/9 → SKICKA 28/9.
+- [x] ✅ **STÄNGT 24/9** (DECISIONS #345) — 📞 **Skyltfondsrundan** (efter Axels klartecken): fonden + trafikövningsplats v.36 → avsiktsförklaringar 25/9 → SKICKA 28/9.
   ↳ **Plan B 22/9 (docs/FINANSIERING.md):** utan partner överlever AP1, AP2, AP4, AP5; AP6 stryks och sägs öppet; teknisk titel, egna testförare, ~300 kkr; Bengts Nira-argument (alla förare, inte bara betalande bilmärken) in i båda versionerna. v7-B skrivs parallellt om Bengt säger ja.
   UNDERLAGEN UPPDATERADE 3/9 (Bengts order, terminalsessionen): ansökan v5 + kontaktplan v5
   i Drive-mappen. Nytt däri: (a) VERIFIERAT att handledarkursen slopades 2026-08-01
@@ -1091,6 +1092,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   **363 200 kr** (flottpiloten och morgonöversikten ur ansökan). Båda i Drive; v6 av kontaktplanen märkt ersatt. VÄNTAR:
   samtalen (Bengt) · minst ett trafikskole-ja till lärare som testförare, annars AP3 om · **Axel: inbjudningsväg för
   lärarna** (TestFlight extern = Beta App Review; Android APK/Play) · Bengts och Axels omarbetning av v6.
+  ✅ **Stängt 24/9 (DECISIONS #345, Bengt: *"vi har koll på dessa på annat sätt"*):** följs utanför tavlan; ansökan skickas 28/9 enligt Bengts och Axels plan. Underlaget i `docs/FINANSIERING.md`.
 
 - [x] ✅ **STÄNGT 22/9** (DECISIONS #304) — ↩︎ **Kameravarningen i fel riktning — BEVISET SAKNAS ÄN** (återställt 10/9, föll av 8/9). Koden
   är bevisat rätt i alla tre motorerna (#55b tolerans 100°→60°, #57 riktningen vänd 180°, #59
@@ -3534,7 +3536,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   - [x] **#22 Bluetooth-autostart** (vakten startar när bilen kopplar)
   - [x] **#23 Heads-up över Google Maps + "Testa rösten"** *(nyckel: releasen inskickad)*
   ✅ **Stängt 22/9, kortavstämningen (DECISIONS #303):** levererat 31/8 (cb7d35c, 83145f5, 92c1e91, d056e42; 0.3.2 med heads-up, senast sagt och självväckning). Resterna har egna kort: skinnet v3 på Android, #226 (autostarten på Android) och #23 (heads-up-beviset).
-- [ ] **#25 Halkbaneläget** *(låst: halkbanans avsiktsförklaring)*
+- [x] ✅ **STÄNGT 24/9** (DECISIONS #345) — **#25 Halkbaneläget** *(låst: halkbanans avsiktsförklaring)*
+  ✅ **Stängt 24/9 (DECISIONS #345, Bengt: *"vi har koll på dessa på annat sätt"*):** följs utanför tavlan. Formen står kvar i BACKLOG punkt 25; beviljas halkbaneförsöket får bygget ett nytt kort.
 - [x] ✅ **STÄNGT 22/9** (DECISIONS #311) — **#26 Skolpaketet** (QR-blad, manus, checklista) *(låst: trafikskolans avsiktsförklaring)*
   ✅ **Stängt 22/9 (DECISIONS #311, Bengt: *"ta upp våren 2027"*):** hör till skolpaketet våren 2027 och står i bedömningens rad *Efter mars*. **Öppnas igen** om Skyltfonden beviljar ansökan med trafikskolorna (besked senast 15/12) — villkoret står i decemberraden.
 - [x] ✅ **STÄNGT 22/9** (DECISIONS #315) — **#15 Kö-slutsmotorn** (TrafficFlow) *(låst: efter release — uppdatering 1)*
@@ -4377,6 +4380,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **SKYLTFONDSRUNDAN, SKYLTFONDEN-PAKETET OCH #25 HALKBANELÄGET — STÄNGDA 24/9 (DECISIONS #345)**: följs av Bengt och Axel utanför tavlan; underlaget kvar i FINANSIERING.md och BACKLOG. Tavlan 50 → 47.
 - [x] ✅ **#246 BILDLÄSNINGSSPÅRET — STÄNGT 24/9 (DECISIONS #340)**: kontaktark, blind klassning, stickprov och ok-spärr; första arket ok:at av Axel, 20 rader i kamerafacit. Andra arket vid regn eller mörker → #247.
 - [x] ✅ **#242 KAMERAFACIT — STÄNGT 24/9 (DECISIONS #333)**: tabellen, källan i dom-knappen och första klassningen (Tierp, våt, direktbilden). Tavlan 47 → 46.
 - [x] ✅ **#97 HALK-REGEXEN — STÄNGT 24/9 (DECISIONS #332)**: ordlistan vidgad 16/9, vektor v24 grön i tre portar, i apparna sedan 0.3.9. Tavlan 49 → 48.
