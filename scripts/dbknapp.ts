@@ -48,7 +48,7 @@ try {
     // Vitlistan först, före FRÅGAN: en felstavad flagga ska falla på en rad, inte efter att ha
     // kört något mot databasen. (Rättat 12/9: kommentaren sa tidigare att den därmed gick att
     // prova helt utan DATABASE_URL — det stämmer inte, toppnivåvakten kräver den ändå.)
-    const FLAGGOR: Record<string, string> = { larmprov: "larmprov=1", vinterprov: "vinterprov=1", frostprov: "frostprov=1", matvaktprov: "matvaktprov=1", paminnelseprov: "paminnelseprov=1", kassaprov: "kassaprov=1", databasprov: "databasprov=1", facitprov: "facitprov=1", nyckelprov: "nyckelprov=1", sparrprov: "sparrprov=1", arkivprov: "arkivprov=1" };
+    const FLAGGOR: Record<string, string> = { larmprov: "larmprov=1", vinterprov: "vinterprov=1", frostprov: "frostprov=1", matvaktprov: "matvaktprov=1", paminnelseprov: "paminnelseprov=1", kassaprov: "kassaprov=1", databasprov: "databasprov=1", facitprov: "facitprov=1", nyckelprov: "nyckelprov=1", sparrprov: "sparrprov=1", arkivprov: "arkivprov=1", utlosarprov: "utlosarprov=1" };
     // Vilken funktion provet går till. Vakthunden är standard; spärrprovet (kort #191) går till skuggmotorn.
     const FUNKTION: Record<string, string> = { sparrprov: "skuggmotor" };
     const flagga = FLAGGOR[arg ?? "larmprov"];
@@ -93,6 +93,7 @@ try {
     const BEVIS: Record<string, string> = {
       "vinterprov=1": "en issue med etiketten `vinterord-prov` ska finnas inom en minut. Den bär EGEN etikett, så provet inte förbrukar det riktiga engångslarmet.",
       "frostprov=1": "en issue med etiketten `frost-prov` ska finnas inom en minut, av samma skäl som vinterprovet.",
+      "utlosarprov=1": "svaret ovan ska säga ✅ vindsikt-steg0 → 204, och en körning av vindsikt-steg0 ska synas i Actions inom en minut — beviset att frosttriggern får trycka flöden (DECISIONS #338).",
       "matvaktprov=1": "en issue med etiketten `matvakt` ska finnas inom en minut, och stängas av nästa gröna timkörning.",
       "paminnelseprov=1": "en issue med etiketten `kallvaktspaminnelse` ska finnas inom en minut, och stängas av nästa timkörning utan prov (#150).",
       "kassaprov=1": "en issue med etiketten `kassavakt` ska finnas inom en minut, och stängas av nästa körning 05/11/17/23 UTC som ligger under gränsen (#152).",

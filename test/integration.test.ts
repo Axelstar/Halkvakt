@@ -242,6 +242,65 @@ test("#83 gallra_vader: tunnar gammalt till 30 min, lämnar sista veckan, idempo
   } finally { await pool.end(); }
 });
 
+// Kort #83 steg 2a (sql/034, DECISIONS #334): arkivexporten. Dygnet packas som rubrikrad + en JSON-lista per rad, bokförs bara
+// om filen bär exakt dygnets radantal, och raderingen tar bara det äldsta bokförda dygnet, bara över gränsen, aldrig yngre än
+// min_dygn, och aldrig om databasen bär fler rader än filen.
+test("#83 arkivexporten: dygnet som text, bokföringen räknar om, raderingen är försiktig", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  try {
+    await pool.query(readFileSync(new URL("../sql/034_arkivexport.sql", import.meta.url), "utf8"));
+    await pool.query(`DELETE FROM weather_observations WHERE station_id IN ('X1', 'X2')`);
+    await pool.query(`DELETE FROM arkiv_export`);
+    // Ett dygn 40 dygn sedan: X1 tre rader, X2 två. Plus en rad i går (för ung att exportera).
+    await pool.query(`
+      INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, precipitation)
+      SELECT 'X1', 'Ex, ett', ST_SetSRID(ST_MakePoint(15.5, 60.25), 4326), date_trunc('day', now() - interval '40 days') + i * interval '30 min', -i, 'no' FROM generate_series(0, 2) i
+      UNION ALL SELECT 'X2', 'Ex "två"', ST_SetSRID(ST_MakePoint(16, 61), 4326), date_trunc('day', now() - interval '40 days') + i * interval '1 hour', null, null FROM generate_series(0, 1) i
+      UNION ALL SELECT 'X1', 'Ex, ett', ST_SetSRID(ST_MakePoint(15.5, 60.25), 4326), now() - interval '1 day', 1, null`);
+    const dag = (await pool.query(`SELECT ((now() - interval '40 days') AT TIME ZONE 'UTC')::date::text AS d`)).rows[0].d;
+    const att = (await pool.query(`SELECT arkiv_att_exportera(100)::text AS d`)).rows.map((r) => r.d);
+    assert.ok(att.includes(dag), `dygnet ${dag} står i kö`);
+    const igar = (await pool.query(`SELECT ((now() - interval '1 day') AT TIME ZONE 'UTC')::date::text AS d`)).rows[0].d;
+    assert.ok(!att.includes(igar), "gårdagen är för ung — gallringen har inte tunnat den");
+    const text: string = (await pool.query(`SELECT arkiv_dygn($1::date) AS t`, [dag])).rows[0].t;
+    const rader = text.split("\n");
+    const hdr = JSON.parse(rader[0]);
+    assert.ok(hdr.includes("lon") && hdr.includes("lat") && !hdr.includes("geom"), "geom blir lon, lat");
+    assert.equal(rader.length - 1, 5, "fem rader efter rubriken");
+    const forsta = JSON.parse(rader[1]);
+    assert.equal(forsta[hdr.indexOf("station_id")], "X1");
+    assert.equal(forsta[hdr.indexOf("name")], "Ex, ett", "kommatecken i ett värde bryter inget");
+    assert.equal(JSON.parse(rader[5])[hdr.indexOf("name")], 'Ex "två"', "citattecken bryter inget");
+    assert.equal(forsta[hdr.indexOf("lon")], 15.5);
+    // Fel radantal bokförs inte.
+    await assert.rejects(pool.query(`SELECT arkiv_export_klar($1::date, 4, 100, 'x', 'v')`, [dag]), /har 5 rader i databasen men filen bär 4/);
+    assert.equal((await pool.query(`SELECT count(*)::int AS n FROM arkiv_export`)).rows[0].n, 0);
+    assert.equal((await pool.query(`SELECT arkiv_export_klar($1::date, 5, 100, 'x', 'v') AS n`, [dag])).rows[0].n, 5);
+    assert.ok(!(await pool.query(`SELECT arkiv_att_exportera(100)::text AS d`)).rows.some((r) => r.d === dag), "bokfört dygn lämnar kön");
+    // Under gränsen raderas ingenting.
+    assert.match((await pool.query(`SELECT arkiv_radera_exporterat(100000, 30) AS s`)).rows[0].s, /inget raderas/);
+    // För ungt: min_dygn 50 skyddar ett dygn som är 40 dygn gammalt.
+    assert.match((await pool.query(`SELECT arkiv_radera_exporterat(0, 50) AS s`)).rows[0].s, /inget exporterat dygn äldre än 50/);
+    // En sen rad i dygnet stoppar raderingen högljutt.
+    await pool.query(`INSERT INTO weather_observations (station_id, name, geom, sample_time) VALUES ('X2', 'Ex "två"', ST_SetSRID(ST_MakePoint(16, 61), 4326), $1::date + interval '23 hours')`, [dag]);
+    await assert.rejects(pool.query(`SELECT arkiv_radera_exporterat(0, 30)`), /har 6 rader, filen bara 5/);
+    await pool.query(`DELETE FROM weather_observations WHERE station_id = 'X2' AND sample_time = $1::date + interval '23 hours'`, [dag]);
+    assert.match((await pool.query(`SELECT arkiv_radera_exporterat(0, 30) AS s`)).rows[0].s, /raderade 5 rader/);
+    const kvar = (await pool.query(`SELECT count(*)::int AS n FROM weather_observations WHERE station_id IN ('X1', 'X2')`)).rows[0].n;
+    assert.equal(kvar, 1, "bara gårdagens rad står kvar");
+    const e = (await pool.query(`SELECT raderad IS NOT NULL AS raderad, raderade_rader FROM arkiv_export WHERE dag = $1::date`, [dag])).rows[0];
+    assert.deepEqual(e, { raderad: true, raderade_rader: 5 });
+    // Ett raderat dygn skrivs aldrig över av en ny bokföring (dygnet är nu tomt, så 0 rader "stämmer").
+    await pool.query(`SELECT arkiv_export_klar($1::date, 0, 1, 'y', 'v')`, [dag]);
+    assert.equal((await pool.query(`SELECT rader FROM arkiv_export WHERE dag = $1::date`, [dag])).rows[0].rader, 5);
+  } finally {
+    await pool.query(`DELETE FROM weather_observations WHERE station_id IN ('X1', 'X2')`).catch(() => {});
+    await pool.end();
+  }
+});
+
 // Grepp 3 (sql/026, DECISIONS #232): gallra_arkiv kör den svenska gallringen och tar dessutom Finland (varma rader efter
 // sju dygn, allt efter 60), Norge (allt efter sju dygn) och pg_crons logg — loggen finns inte i CI och hoppas över.
 test("grepp 3 gallra_arkiv: Finland behåller kalla rader i 60 dygn, Norge och Danmark sju dygn, epoknoll och gravstenar bort, idempotent", { skip: !url }, async () => {
