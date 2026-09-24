@@ -5,6 +5,10 @@ Bengt 2026-09-11 i chatten, Axel samma dag via Bengt (samma form som DECISIONS #
 Fastställda: måttets definition (§2–§4), räckviddsvillkoret (§6) och facitstacken (§8). Ingen kod,
 ingen röst före grind-A/B/C-dom. Skuggkolumnen byggs efter radardomen 14/9 (kort #81:s ordning).
 
+*Ändrat 24/9 2026 (DECISIONS #330, Bengts rad *"gör förslaget"* — en skärpning: talen in, ingen gräns flyttad): §3 fick mätbara
+signaler, tre klasser och en orsakskolumn; §4 tre andelar; §5 svepet; §6 talen; §6b minsta underlag. Instrumentet är
+`scripts/tystnadsfelet.ts` (byggt 14/9, PR #236; ändrat 24/9) med två lägen. Underlag: `docs/TYSTNADSFEL-KLASSNING-2026-09-24.md`.*
+
 *Skrivet 2026-09-10 21:09 som förslag (föreslaget kortnummer #97, sedan upptaget av regex-blindfläcken
 — numret är nu #98). Fastställt 11/9 på Bengts order. Formateringen återställd vid incheckningen:
 dokumentet hade rundgått via Drive, som escapar markdown och plattar tabeller. Innehållet är oförändrat
@@ -47,43 +51,51 @@ helt. Stor ⇒ tröskeln för hög. Nära noll ⇒ systemet fångar redan det f�
 Grundtalet räcker inte, eftersom frågan har en riktning: missar vi sådant vi hade grund att fånga?
 Varje tyst miss klassas därför som en av två:
 
-**Oursäktlig tyst miss — systemet teg TROTS signal:**
+**Signalerna, med tal** (DECISIONS #330; varje tal är ett annat dokuments, inget är nytt). Mätta vid närmaste station inom
+räckvidd (§6), de två timmarna före tillfället:
 
-- daggpunktsgapet slöt sig, eller trenden (#88) pekade mot nollgenomgång,
-- eller en VViS-station inom räckvidd visade risk och representativitetsradien den natten (klart,
-  vindstilla — SMHI-moln, #95) sträckte sig till platsen,
-- **eller det regnade inom N timmar vid stationen** (tillagd 2026-09-12, TROSKLAR-OVERGANGAR §9
-  steg 5, kort #89). Utan den signalen klassas efterhalkans missar på de tre ovan — ofta
-  oursäktliga ändå, eftersom daggpunkten är hög efter regn — men **utan att orsaken syns**, och då
-  kan tystnadsfelet inte skilja "för hög tröskel" från "hål i fuktvillkoret". N hämtas ur
-  TROSKLAR-OVERGANGAR §2 och är samma tal som grind Ö-B väljer; innan Ö-B dömt används hela svepet
-  och utfallet redovisas per N.
+| Signal | Mätbar definition | Talet kommer ur |
+| :-- | :-- | :-- |
+| **Kondensation** | yta − daggpunkt ≤ gap; gap över svepet 0 · 0,5 · 1 · 2 °C | TROSKLAR-TRENDEN §2; TROSKLAR-RIMFROST §2 (kondensationsvillkoret) |
+| **Trend mot noll** | lutning30 ≥ 0,8 °C och yta ≤ +3 °C, och yta − 4 × lutning30 ≤ 1 °C (når frysgränsen inom 2 h) | betans startvärden, DECISIONS #222; trendkandidaterna (#88) |
+| **Station visade risk** | motorns egen regel: yta ≤ 1 °C **och** fukt | engine.ts, DECISIONS #4 |
+| **Regn nyss** | regn eller snö inom N h; N över svepet 1 · 2 · 3 · 4 h tills Ö-B dömt | TROSKLAR-OVERGANGAR §2 |
 
-Detta är rena tröskelfel: en sänkt tröskel fångar dem utan ny datakälla. Det är scenariot "svartis
-3 km fram medan systemet teg".
+**Oursäktlig tyst miss — systemet teg TROTS signal:** någon av de fyra ovan, eller stationen låg mellan frysgränsen och
++3 °C med fukt inom facitradien (yttröskeln själv). Detta är tröskelfel — men **fyra olika trösklar**, och orsaken skrivs
+per miss, eftersom priset i §5 är ett annat för var och en:
 
-**Ursäktlig tyst miss — systemet teg UTAN signal:**
+| Signal | Tröskeln som teg | Vad en "sänkning" betyder |
+| :-- | :-- | :-- |
+| Kondensation | fuktvillkoret — rimfrostgrenen (#46) | en ny gren, inte lägre yttröskel |
+| Trend mot noll | tidsvillkoret (#88) | trenden in i motorn |
+| Station visade risk, tillfället > 2 km från stationen | avståndet (räckvidden) | vidare räckvidd, oförändrad temperatur |
+| Regn nyss | fuktvillkoret — efterhalkan (#89) | fuktdefinitionen, inte temperaturen |
+| Station 1–3 °C med fukt inom 2 km | **yttröskeln** | här, och bara här, betyder det 1 → 1,5 → 2 °C |
 
-- snöby som bara radarn ser (#43),
-- saltbil som inte passerat (ingen öppen källa),
-- is på kommunal gata utan givare (#93).
+**Ursäktlig tyst miss — bevisad yttre orsak:** radarn såg nederbörd (≥ utlösaren) i ett segment inom 5 km inom ±1 h
+medan stationen var torr — snöbyn som bara radarn ser (#43). Ingen tröskeljustering fångar den; den pekar mot radarn.
 
-Ingen tröskeljustering fångar dessa; de pekar mot nya källor, inte mot en lägre tröskel.
+**Okänd tyst miss — ingen signal, ingen bevisad orsak.** Saltbilen som inte passerat och allt annat som ingen källa ser.
+Det är inte "ursäktligt", det är okänt (§9), och det räknas som en egen andel — annars summerar §4 till 100 % på en lögn.
+Is på kommunal gata utan givare (#93) klassas inte alls: den utesluts redan av räckviddsvillkoret (§6).
 
 ## 4. Måttet är ett par, inte ett tal
 
-- **Andel oursäktliga tysta missar** = hur mycket en tröskelsänkning skulle vinna. Varje sådan är ett
-  tillfälle systemet kunde ha varnat för gratis, på grund det redan hade.
-- **Andel ursäktliga tysta missar** = taket för vad tröskeln kan lösa; pekar mot radar (#43) och
-  kommunala stationer (#93) i stället.
+- **Andel oursäktliga tysta missar** = hur mycket en tröskelsänkning skulle vinna — redovisad **per orsak** (fukt, tid,
+  avstånd, yttröskel), eftersom bara den sista svarar på §5:s kurva.
+- **Andel ursäktliga tysta missar** = det radarn (#43) ska lösa.
+- **Andel okända tysta missar** = det ingen källa ser. Tre andelar, inte två (DECISIONS #330).
 
 ## 5. Priset måste stå bredvid
 
 För varje kandidattröskel räknas också antalet **nya falsklarm** den skulle ha genererat på torra,
 ofarliga tillfällen. Det är avtrubbningskostnaden i konkret form.
 
-Rita två kurvor mot tröskeln (från dagens strikta ned mot 50 %-nivån): oursäktliga tysta missar som
-räddas, och falsklarm som tillkommer. **Där marginalen korsar** — där nästa räddade miss kostar mer i
+Rita två kurvor mot yttröskeln över svepet **1,0 · 1,5 · 2,0 · 2,5 °C** (bara orsaken *yttröskel* svarar på den kurvan;
+fukt, tid och avstånd har sina egna kort): oursäktliga tysta missar som räddas, och tillfällen som tillkommer.
+Priset räknas som **tillkomna varningstillfällen** vid stationer inom räckvidd (DECISIONS #330); om de var falska kan bara
+kamerafacit (bar/våt) och förarens *nej* säga, och det står bredvid talet. **Där marginalen korsar** — där nästa räddade miss kostar mer i
 avtrubbning än den är värd — sitter rätt tröskel.
 
 Hypotesen är att dagens tröskel ligger till vänster om den punkten (för konservativt); kurvan avgör
@@ -95,6 +107,17 @@ En tyst miss räknas **endast** när facit-halkan låg inom systemets räckvidd 
 nära en VViS-station (t.ex. inom ankaravståndet #38b), inte på en kommunal gata mils från närmaste
 givare. Annars drunknar tröskelsignalen i täckningshål som handlar om något annat (#93). Tröskeln
 mäts där systemet faktiskt hade en chans.
+
+**Talen (DECISIONS #330):** räckvidd = närmaste vaktade station inom **7 km** (grind A:s skarpaste band; inte ankarradien 50 km,
+som säger hur långt bort en station får vara som *granne*). Tyst = inget larm av slaget frysrisk eller halt väglag inom
+**2 km** av tillfället i det senaste skuggvarvet på en rutt som passerar inom 2 km, högst **4 h** före (flottan besöker
+varje rutt var 3,5:e timme); inget sådant varv ⇒ okänt, aldrig tyst. Facitradien 2 km är TROSKLAR-SKUGGAN §2:s.
+
+### 6b. Minsta underlag
+
+Paret i §4 och priset i §5 läses först vid **≥ 20 tillfällen inom räckvidd över ≥ 3 halkperioder** (tillfällen mer än
+två dygn isär är olika perioder) — samma golv som grind C1. Antalen (tillfällen, tysta, per klass och orsak) får läsas
+löpande som underlag; andelarna vid utsatt tid eller på Bengts order (blindningen, DECISIONS #330).
 
 ## 7. Utfallsmening
 

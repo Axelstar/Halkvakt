@@ -384,7 +384,9 @@ export const KONTRAKT: Kontrakt[] = [
     namn: "Ankarradien — hur långt bort en station får vara och ändå räknas",
     varfor: "Radien avgör vad som är granne och vad som bara är väder. Olika radie = olika population.",
     former: [/const MAX_KM\s*=\s*(\d+)/],
-    golv: 5,
+    // Golvet sänkt 5 → 4 den 24/9 (DECISIONS #330): tystnadsfelet bytte ankarradien mot en egen räckvidd (RACKVIDD_KM 7,
+    // §6 "nära en VViS-station") — annan storhet, eget namn, precis som grind V-B:s DOMANDE_STATION_KM. Ingen kopia försvann i smyg.
+    golv: 4,
   },
   {
     namn: "Grannantalet — hur många stationer en förutsägelse vilar på",

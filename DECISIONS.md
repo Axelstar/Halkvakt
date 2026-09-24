@@ -9721,3 +9721,32 @@ ingen bättre tid finns; ±30 min-fönstret i bekräftelsen är därför generö
 
 **IDRIFTTAGNING 24/9, bevis:** `sql/033` körd via dbknapp — kolumnerna id, bild, kamera_id, lon, lat, bild_tid, klass, av, klassad; rättigheter bara postgres och service_role; 0 klassade bilder. Grind S-B i underlagsläge (1 dygn, 02:0xZ): 26 varv på 18 rutter, 2 118 provpunkter, 90 holdout-rader, 0 episoder, 0 händelser (kamerakällan läst utan fel), C1 0/20, C2 0/30, inga andelar.
 
+## #330 (24/9 2026) Tystnadsfelet: §3 gjord mätbar — tal ur fastställda dokument, tre klasser, orsak per tröskel, två lägen (kort #98)
+
+**Beslut (Bengt 24/9: *"vi gör 98 först"* → *"gör förslaget"*, på `docs/TYSTNADSFEL-KLASSNING-2026-09-24.md`).** Skärpning av
+det fastställda och kontrasignerade dokumentet (talen in, ingen gräns flyttad): (1) signalerna får tal — kondensation ur
+TROSKLAR-TRENDEN/RIMFROST, trend ur betans startvärden (#222), risk = motorns egen regel med fukt, regn ur OVERGANGAR §2;
+(2) tre klasser: oursäktlig (signal), ursäktlig (bevisad yttre orsak — radarn såg nederbörd inom 5 km medan stationen var torr),
+okänd (resten, saltbilen); (3) orsak per tyst miss — fukt, tid, avstånd eller yttröskel — så att §5:s kurva ritas mot rätt
+tröskel; (4) räckvidd 7 km, tyst avgjort mot flottans kadens (senaste varvet inom 4 h, larm inom 2 km), facitradie 2 km;
+(5) minsta underlag 20 tillfällen i 3 halkperioder; (6) priset som tillkomna varningstillfällen över svepet 1,0–2,5 °C;
+(7) två lägen — underlag (antal) och dom (andelar, paret, priset).
+
+**Byggt i samma varv:** `scripts/tystnadsfelet.ts` (instrumentet från 14/9, PR #236) bär allt ovan; facit ur den delade
+händelselistan `publish/skuggfacit.ts` (ny modul: SMHI, situation-halka, väglag kod ≥ 2 eller motorns halkord, förarens
+*stämde*, kamerafacit) — samma lista som grind S-B (`publish/grind-s-b.ts` omskriven att läsa den). Kontraktsgrindens
+ankarradiegolv 5 → 4 med skäl (tystnadsfelet bytte MAX_KM mot RACKVIDD_KM, egen storhet). Knappen `tystnadsfelet.yml`
+fick lägesvalet. Självtester: tre klasser, orsakskolumnen, svepen är andras, halkperioder, prisets episoder, rutterna.
+
+**Avvikelse, sagd högt.** Bedömningen 24/9 sa att #98 saknade kod. Fel: instrumentet fanns sedan 14/9 (PR #236,
+`scripts/tystnadsfelet.ts`, 280 rader) med signalerna, okänt-utfallet och underlagsvakten. Jag upptäckte det när Write sa
+*updated* om knappfilen. Förslaget fördes därför in i det befintliga skriptet i stället för i ett nytt; det som var nytt i
+förslaget var talen, tre klasser med bevisad orsak, orsakskolumnen, räckvidden 7 km, flottans kadens, fukten i
+riskvillkoret, den delade listan, lägena och priset. Läxan står i CLAUDE.md redan (sök i repot innan något sägs saknas);
+den bröts ändå, och det är värt att säga.
+
+**Sagt högt.** (1) Trendsignalen kan bara prövas inom sju dygn (trend_kandidater gallras) — instrumentet skriver ut hur
+många tysta missar som är okända på tid. (2) Priset är tillfällen, inte falsklarm; falskheten kräver kamerafacit (#242)
+eller förarens nej. (3) SMHI-varningar är områden — centroiden ligger oftast utanför 2 km. (4) Första underlagskörningen
+efter sammanslagningen; paret läses först i vinter.
+

@@ -79,8 +79,9 @@ Måttet (§1–§2), räckviddsvillkoret som princip (§6), facitstacken (§8), 
 (dokumentet är fastställt och kontrasignerat; talen ovan är en skärpning — de gör dokumentet mätbart, de flyttar ingen
 gräns).
 
-## 7. Bygget, om förslaget antas
+## 7. Bygget — RÄTTELSE 24/9 (DECISIONS #330)
 
-Ett skript, `publish/tystnadsfelet.ts`, på samma händelselista som grind S-B: för varje bekräftad händelse inom
-räckvidd — var punktmotorn tyst (shadow_log.alerts)? vilka signaler fanns vid stationerna (3.1)? klass och orsak (3.2–3.3).
-Underlagsläge räknar; domläge ritar paret och priset via uppspelningen. Tre dagars arbete, inget nytt i databasen.
+**Instrumentet fanns redan:** `scripts/tystnadsfelet.ts` (14/9, PR #236) med signalerna, okänt-utfallet och underlagsvakten.
+Den här bedömningen missade det. Förslaget fördes in i det befintliga skriptet samma dag: talen, tre klasser med bevisad
+orsak, orsakskolumnen, räckvidd 7 km, flottans kadens för "tyst", fukten i riskvillkoret, den delade händelselistan
+(`publish/skuggfacit.ts`), två lägen och priset som tillkomna tillfällen. Antaget av Bengt 24/9.

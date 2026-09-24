@@ -12,6 +12,11 @@ on:
         description: "Fönster i dygn (facit är append-only, inget hårt tak)"
         required: false
         default: "30"
+      lage:
+        description: "underlag (bara antal) eller dom (andelar, paret i §4 och priset i §5 — bara vid utsatt tid, DECISIONS #330)"
+        type: choice
+        default: underlag
+        options: [underlag, dom]
 jobs:
   tystnadsfelet:
     runs-on: ubuntu-latest
@@ -22,10 +27,14 @@ jobs:
         with: { node-version: 22, cache: npm }
       - run: npm ci
       - run: node --experimental-strip-types scripts/tystnadsfelet.ts --sjalvtest
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
       - name: Mät
+        shell: bash
         env:
           DATABASE_URL: "${{ secrets.DATABASE_URL }}"
+          DAGAR: "${{ inputs.dagar || '30' }}"
+          LAGE: "${{ inputs.lage || 'underlag' }}"
         run: |
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-          node --experimental-strip-types scripts/tystnadsfelet.ts "${{ inputs.dagar || '30' }}" | tee -a "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/tystnadsfelet.ts "$DAGAR" "--$LAGE" | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"

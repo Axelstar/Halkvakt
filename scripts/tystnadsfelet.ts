@@ -1,69 +1,116 @@
-// TYSTNADSFELET — kort #98 (TROSKLAR-TYSTNADSFEL, Bengts order 14/9, issue #119 steg 4–5).
+// TYSTNADSFELET — kort #98 (docs/TROSKLAR-TYSTNADSFEL.md; Bengts order 14/9, issue #119 steg 4–5; §3 gjord mätbar 24/9,
+// DECISIONS #330 på Bengts "gör förslaget").
 //
-// MÅTTET VÄNDER PÅ VANLIG UTVÄRDERING: det räknar TYSTNADENS FEL, inte larmens träff. Enheten är
-// ett bekräftat halttillfälle ur facit, med plats och tid, och frågan är vad systemet sa där och då.
+// MÅTTET VÄNDER PÅ VANLIG UTVÄRDERING: det räknar TYSTNADENS FEL, inte larmens träff. Enheten är ett bekräftat
+// halttillfälle ur facit, med plats och tid, och frågan är vad systemet sa där och då — och om det hade signal.
 //
-// BYGGFORMEN ÄR PRINCIPENS, inte ett val: spara det som inte går att räkna om, räkna om det som går.
-// Allt det här måttet behöver är durabelt — facit (`road_condition_history`, `situation_archive`,
-// kamerabilderna) är append-only, skuggloggen likaså, och signalerna finns i `trend_kandidater`
-// (sparad av #88) plus väderarkivets timupplösning, som överlever gallringen. Alltså: en LÄSANDE
-// knapp som räknar om vid behov. Ingen tabell, ingen deploy, inget cron-jobb, noll kostnad tills den
-// trycks. Snubbeltråden står på kort #155: skärps kvarhållningen måste också det här måttet byta form.
+// BYGGFORMEN ÄR PRINCIPENS, inte ett val: spara det som inte går att räkna om, räkna om det som går. Facit och
+// skuggloggen är append-only, signalerna finns i väderarkivet (timupplösning efter sju dygn) — utom TRENDEN, som bara
+// lever sju dygn i trend_kandidater: den signalen är okänd för äldre händelser, och det sägs i utskriften. En läsande
+// knapp, ingen tabell, ingen deploy. Snubbeltråden står på kort #155.
 //
-// TRÖSKLARNA ÄR ANDRAS, INGEN ÄR NY. Daggpunktsgapet kommer ur TROSKLAR-TRENDEN §2, regnfönstret N
-// ur TROSKLAR-OVERGANGAR §2, ankaravståndet ur grind A. Skriptet väljer ingen punkt — det skriver ut
-// hela svepet, precis som §3 kräver innan Ö-B dömt.
+// VAD SOM ÄNDRADES 24/9 (DECISIONS #330), och varför:
+//  · FACIT läses ur den delade händelselistan (publish/skuggfacit.ts) — samma lista som grind S-B dömer segmentprognosen
+//    mot: SMHI, halka i situation_archive, väglag (kod ≥ 2 eller motorns halkord), förarens "stämde", kamerafacit.
+//    Två mått på två listor vore två sanningar.
+//  · RÄCKVIDDEN är 7 km (grind A:s skarpaste band; "nära en VViS-station", §6) — inte ankarradien 50 km, som säger
+//    hur långt bort en station får vara som GRANNE i en interpolation. Annan storhet, annat tal, eget namn.
+//  · TYST avgörs mot flottans kadens: varje rutt körs var 3,5:e timme (7 slots × 30 min), så "inget larm inom ±60 min"
+//    hade kallat nästan allt tyst. Nu: det senaste skuggvarvet på en rutt som passerar inom facitradien, högst 4 h före
+//    händelsen; inget varv ⇒ OKÄNT, aldrig tyst.
+//  · SIGNALERNA har tal ur redan fastställda dokument: kondensation yta − dagg ≤ gap (TROSKLAR-TRENDEN §2:s svep),
+//    trend lutning30 ≥ 0,8 °C och yta ≤ +3 som når 1 °C inom 2 h (betans startvärden, DECISIONS #222), station visade
+//    risk = motorns egen regel yta ≤ 1 °C OCH fukt, regn inom N h (TROSKLAR-OVERGANGAR §2:s svep).
+//  · ORSAKSKOLUMN: en tyst miss med signal säger vilken tröskel som teg — fukt (#46 kondensation / #89 regn), tid (#88),
+//    avstånd (risken fanns vid stationen men händelsen låg > 2 km bort) eller yttröskeln (stationen 1–3 °C och fuktig,
+//    inom 2 km). Bara den sista betyder "sänk yttröskeln".
+//  · TRE KLASSER: oursäktlig (signal i data) · ursäktlig (BEVISAD yttre orsak: radarn såg nederbörd i ett segment inom
+//    5 km inom ±1 h medan stationen var torr — snöbyn) · okänd (ingen signal, ingen bevisad orsak — saltbilen bor här).
+//  · TVÅ LÄGEN (blindningen): --underlag (standard) skriver antal; --dom skriver andelar, paret i §4 och priset i §5.
 //
-// VAD DEN INTE GÖR: §5:s PRISKURVA. Priset — nya falsklarm per kandidattröskel — kräver att motorn
-// körs om med andra trösklar över skuggrutterna, alltså ett bygge i motorkedjan. Och det går inte
-// att öva på ett material där antalet oursäktliga missar är noll. Den halvan är ett eget steg, och
-// den utelämnas HÖGLJUTT här nere i utskriften i stället för att tigas ihjäl.
+// §5:s PRIS i domläget: tillkomna varningstillfällen per kandidattröskel — episoder vid stationer inom räckvidd med yta
+// ≤ X och fukt, utöver dagens 1 °C. Om de var FALSKA kan bara kamerafacit (bar/våt) och förarens "nej" säga; talet är
+// tillkomna tillfällen, inte falsklarm, och det står så.
 //
-// Helt läsande. Run: DATABASE_URL=... node --experimental-strip-types scripts/tystnadsfelet.ts [dagar=30]
+// Run: DATABASE_URL=... node --experimental-strip-types scripts/tystnadsfelet.ts [dagar=30] [--underlag|--dom]
 // Självtest utan DB: scripts/tystnadsfelet.ts --sjalvtest
 
 import { DAGGGAP } from "../publish/trenden.ts";
 import { N_SVEP } from "../publish/tillstand.ts";
+import { REGN_UTLOSARE_MMH } from "../publish/snapshot-core.ts";
+import { narmastLangs, FRYS_C } from "../engine/src/segment.ts";
+import { skuggmotornsRutter, hamtaHandelser, FACIT_KM, type Rutter, type Handelse } from "../publish/skuggfacit.ts";
 
-const MAX_KM = 50;          // ankaravståndet, grind A (publish/grind-a.ts:14) — §6:s räckviddsvillkor
-const FROSTYTA = 1;         // °C — "stationen visade risk", samma tal som #89:s steg 0 använder
-const NARA_M = 5000;        // m — hur nära skuggans larm måste ligga facit för att räknas som röst
-const NARA_MIN = 60;        // min — och hur nära i tid
-const MIN_FACIT = 20;       // under detta skrivs ⊘ OAVGJORT, aldrig ett tal
+const RACKVIDD_KM = 7;       // §6: nära en VViS-station — grind A:s skarpaste band. INTE ankarradien (MAX_KM 50).
+const FLOTTA_H = 4;          // skuggflottan besöker varje rutt var 3,5:e h — inom den tiden finns ett varv att fråga
+const TREND_FALL = 0.8;      // °C per 30 min, betans startvärde (DECISIONS #222)
+const TREND_YTA_MAX = 3;     // °C, betans startband (DECISIONS #222)
+const TREND_H = 2;           // når frysgränsen inom två timmar (4 × 30 min)
+const YTA_NARA_MAX = 3;      // °C: "yttröskeln teg" = stationen låg mellan frysgränsen och +3 med fukt
+const RADAR_KM = 5;          // snöbyn: radarsegment inom detta avstånd
+const MIN_FACIT = 20, MIN_PERIODER = 3, PERIOD_GAP_D = 2;   // minsta underlag — samma golv som grind C1
+const PRIS_SVEP = [1.0, 1.5, 2.0, 2.5];                    // §5: kandidattrösklar för ytan
+const FUKT_SQL =
+  "(rain OR snow OR (precipitation IS NOT NULL AND precipitation <> ''" +
+  " AND lower(precipitation) NOT IN ('no','dry')))";
 
-/** MOTORNS egen halklista, ordagrant ur engine.ts:43 (SLIPPERY_INFO). Måttet dömer mot det
- *  motorn FAKTISKT kallar halt — en egen lista hade mätt något annat än det som sägs.
- *  Kontraktsgrinden jämför den här strängen tecken för tecken mot motorns.
- *  ⚠️ OCH DEN SKILJER SIG I DAG FRÅN SNAPSHOTENS: `publish/snapshot-core.ts` och vakthunden
- *  saknar "mycket besvärligt", kodgrinden saknar dessutom "snö". Tre värden för vad som ser ut
- *  som en lista — mätt 14/9 när kontraktet skrevs. Kort #156 bär den frågan; den rörs inte här,
- *  eftersom en ändring i snapshoten ändrar vad appen varnar för. */
+/** MOTORNS egen halklista, ordagrant ur engine.ts (SLIPPERY_INFO); kontraktsgrinden jämför strängen tecken för tecken. */
 const HALKORD = "is|halka|halkrisk|halkig|halt|mycket besvärligt";
 /** Stammarna som räknas även INUTI sammansättningar ("Nysnö", "Rimfrost") — speglar motorns SLIPPERY_STAM (kort #97). */
 const HALKSTAM = "snö|frost";
 
-/** Ursäktlig eller oursäktlig? Ren, testbar: hade systemet SIGNAL när det teg? (§3) */
 export type Signaler = {
-  daggpunktsgapSlots: boolean;   // yta − dagg ≤ gap
-  trendenPekade: boolean;        // en trendkandidat vid stationen inom fönstret (#88)
-  stationenVisadeRisk: boolean;  // yta ≤ FROSTYTA inom räckvidd
-  regnInomN: boolean;            // det regnade inom N timmar vid stationen (#89, §3:s fjärde)
+  daggpunktsgapSlots: boolean;   // yta − dagg ≤ gap vid närmaste station inom räckvidd
+  trendenPekade: boolean;        // lutning30 ≥ 0,8, yta ≤ 3, når 1 °C inom 2 h (#88)
+  stationenVisadeRisk: boolean;  // yta ≤ 1 °C OCH fukt — motorns egen regel
+  regnInomN: boolean;            // regn inom N h (#89)
+  stationNaraKm: number | null;  // avstånd händelse → station som bar signalen
+  ytaNara: boolean;              // stationen 1–3 °C med fukt: yttröskeln själv
 };
+export type Klass = "oursäktlig" | "ursäktlig" | "okänd";
+export type Orsak = "fukt" | "tid" | "avstånd" | "yttröskel";
 
-/** OURSÄKTLIG = systemet teg TROTS signal. Ett rent tröskelfel: en sänkt tröskel fångar det
- *  utan ny datakälla. URSÄKTLIG = ingen signal fanns; då pekar missen mot nya källor (#43, #93),
- *  inte mot en lägre tröskel. */
 export function oursaktlig(s: Signaler): boolean {
-  return s.daggpunktsgapSlots || s.trendenPekade || s.stationenVisadeRisk || s.regnInomN;
+  return s.daggpunktsgapSlots || s.trendenPekade || s.stationenVisadeRisk || s.regnInomN || s.ytaNara;
 }
-
-/** §9: "Okänt" förblir ett giltigt utfall. Saknas underlaget för att ens ställa frågan är svaret
- *  varken ursäktligt eller oursäktligt — det är okänt, och får aldrig tvingas till en gissning. */
-export function klassa(s: Signaler | null): "oursäktlig" | "ursäktlig" | "okänt" {
-  if (s === null) return "okänt";
-  return oursaktlig(s) ? "oursäktlig" : "ursäktlig";
+/** Vilken tröskel teg? Flera kan gälla; alla skrivs. */
+export function orsaker(s: Signaler): Orsak[] {
+  const ut: Orsak[] = [];
+  if (s.daggpunktsgapSlots || s.regnInomN) ut.push("fukt");
+  if (s.trendenPekade) ut.push("tid");
+  if (s.stationenVisadeRisk) ut.push(s.stationNaraKm !== null && s.stationNaraKm > FACIT_KM ? "avstånd" : "yttröskel");
+  else if (s.ytaNara) ut.push("yttröskel");
+  return ut;
 }
-
+/** Tre klasser (§3, DECISIONS #330). `radar` = bevisad yttre orsak; `null` signaler = inget underlag alls. */
+export function klassa(s: Signaler | null, radar: boolean): Klass {
+  if (s === null) return "okänd";
+  if (oursaktlig(s)) return "oursäktlig";
+  return radar ? "ursäktlig" : "okänd";
+}
+/** Halkperioder: händelser mer än PERIOD_GAP_D dygn isär är olika perioder (samma regel som grind S-C). */
+export function halkperioder(tider: Date[]): number {
+  const ts = [...tider].sort((a, b) => +a - +b);
+  let n = 0;
+  for (let i = 0; i < ts.length; i++) if (i === 0 || +ts[i] - +ts[i - 1] > PERIOD_GAP_D * 86400_000) n++;
+  return n;
+}
+/** §5: episoder per kandidattröskel ur rader (station, tid, yta, fukt) — sammanhängande rader ≤ X med fukt, gap > 2 h bryter. */
+export function episoderPerTroskel(rader: { st: string; t: Date; yta: number; fukt: boolean }[]): Map<number, number> {
+  const ut = new Map<number, number>();
+  const sorted = [...rader].sort((a, b) => a.st.localeCompare(b.st) || +a.t - +b.t);
+  for (const X of PRIS_SVEP) {
+    let n = 0; let cur: { st: string; t: Date } | null = null;
+    for (const r of sorted) {
+      const inne = r.fukt && r.yta <= X;
+      if (!inne) continue;
+      if (!cur || cur.st !== r.st || +r.t - +cur.t > 2 * 3600_000) n++;
+      cur = { st: r.st, t: r.t };
+    }
+    ut.set(X, n);
+  }
+  return ut;
+}
 const pct = (a: number, b: number) => (b ? `${((100 * a) / b).toFixed(1)} %` : "–");
 
 if (process.argv.includes("--sjalvtest")) {
@@ -73,208 +120,202 @@ if (process.argv.includes("--sjalvtest")) {
     if (fick !== vantat) { console.error(`  FEL: ${namn} = ${fick}, väntat ${vantat}`); ok = false; }
     else console.log(`  ok: ${namn} = ${fick}`);
   };
-  const ingen: Signaler = { daggpunktsgapSlots: false, trendenPekade: false,
-    stationenVisadeRisk: false, regnInomN: false };
-  k("ingen signal alls är ursäktlig", klassa(ingen), "ursäktlig");
-  k("daggpunktsgapet ensamt gör den oursäktlig", klassa({ ...ingen, daggpunktsgapSlots: true }), "oursäktlig");
-  k("trenden ensam räcker", klassa({ ...ingen, trendenPekade: true }), "oursäktlig");
-  k("stationens risk ensam räcker", klassa({ ...ingen, stationenVisadeRisk: true }), "oursäktlig");
-  // Den fjärde signalen är hela skälet att #89 och #98 hänger ihop: utan den klassas efterhalkans
-  // missar på de tre andra utan att ORSAKEN syns, och då går "för hög tröskel" inte att skilja
-  // från "hål i fuktvillkoret".
-  k("regn inom N ensamt räcker — §3:s fjärde signal", klassa({ ...ingen, regnInomN: true }), "oursäktlig");
-  k("utan underlag är svaret okänt, aldrig en gissning", klassa(null), "okänt");
-  // Svepen ska vara andras.
+  const ingen: Signaler = { daggpunktsgapSlots: false, trendenPekade: false, stationenVisadeRisk: false, regnInomN: false, stationNaraKm: 1.0, ytaNara: false };
+  k("ingen signal och ingen radar är OKÄND, inte ursäktlig", klassa(ingen, false), "okänd");
+  k("ingen signal men radarn såg nederbörd är ursäktlig (snöbyn)", klassa(ingen, true), "ursäktlig");
+  k("daggpunktsgapet ensamt gör den oursäktlig", klassa({ ...ingen, daggpunktsgapSlots: true }, false), "oursäktlig");
+  k("trenden ensam räcker", klassa({ ...ingen, trendenPekade: true }, false), "oursäktlig");
+  k("stationens risk ensam räcker", klassa({ ...ingen, stationenVisadeRisk: true }, false), "oursäktlig");
+  k("regn inom N ensamt räcker — §3:s fjärde signal", klassa({ ...ingen, regnInomN: true }, false), "oursäktlig");
+  k("yttröskeln själv (1–3 °C fuktigt inom 2 km) räcker", klassa({ ...ingen, ytaNara: true }, false), "oursäktlig");
+  k("signal slår radar: oursäktlig även om radarn såg något", klassa({ ...ingen, regnInomN: true }, true), "oursäktlig");
+  k("utan underlag är svaret okänt, aldrig en gissning", klassa(null, true), "okänd");
+  k("orsak: kondensation ⇒ fukt", orsaker({ ...ingen, daggpunktsgapSlots: true }).join(","), "fukt");
+  k("orsak: risk vid station 5 km bort ⇒ avstånd", orsaker({ ...ingen, stationenVisadeRisk: true, stationNaraKm: 5 }).join(","), "avstånd");
+  k("orsak: risk vid station 1 km bort ⇒ yttröskel", orsaker({ ...ingen, stationenVisadeRisk: true, stationNaraKm: 1 }).join(","), "yttröskel");
+  k("orsak: regn + trend ⇒ fukt,tid", orsaker({ ...ingen, regnInomN: true, trendenPekade: true }).join(","), "fukt,tid");
   k("daggpunktssvepet är TROSKLAR-TRENDEN §2:s", DAGGGAP.join("·"), "0·0.5·1·2");
   k("regnfönstret är TROSKLAR-OVERGANGAR §2:s", N_SVEP.join("·"), "1·2·3·4");
+  const d = (h: number) => new Date(Date.UTC(2026, 11, 1, h));
+  k("halkperioder: tre dygn i rad är en period", halkperioder([d(0), d(24), d(48)]), 1);
+  k("halkperioder: hopp på tre dygn ger två", halkperioder([d(0), d(24), d(24 * 5)]), 2);
+  const rader = [
+    { st: "a", t: d(0), yta: 0.5, fukt: true }, { st: "a", t: d(1), yta: 0.8, fukt: true },     // en episod ≤ 1
+    { st: "a", t: d(10), yta: 1.8, fukt: true },                                                // en till vid ≤ 2
+    { st: "b", t: d(0), yta: 2.4, fukt: true }, { st: "b", t: d(0.5), yta: 2.3, fukt: false },  // en vid ≤ 2,5; torr rad räknas inte
+  ];
+  const ep = episoderPerTroskel(rader);
+  k("pris: episoder vid 1,0 °C", ep.get(1.0), 1);
+  k("pris: episoder vid 2,0 °C", ep.get(2.0), 2);
+  k("pris: episoder vid 2,5 °C", ep.get(2.5), 3);
+  k("skuggmotorns rutter lästa (20)", Object.keys(skuggmotornsRutter()).length, 20);
   if (!ok) { console.error("\nSJÄLVTEST FÄLLDE."); process.exit(1); }
-  console.log("\nSJÄLVTEST OK: fyra signaler, var och en tillräcklig, och okänt är ett giltigt utfall.");
+  console.log("\nSJÄLVTEST OK: tre klasser, orsakskolumnen, svepen är andras, halkperioder, prisets episoder, rutterna.");
   process.exit(0);
 }
 
 const url = process.env.DATABASE_URL;
 if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
 const DAGAR = Number(process.argv.slice(2).find((a) => /^\d+$/.test(a)) ?? 30);
+const LAGE: "underlag" | "dom" = process.argv.includes("--dom") ? "dom" : "underlag";
 const pg = (await import("pg")).default;
 const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });
 await pool.query("SET statement_timeout = '600s'");
 const q = async (sql: string, p: unknown[] = []) => (await pool.query(sql, p)).rows as any[];
+const rutter: Rutter = skuggmotornsRutter();
+const H = 3600_000;
 
 async function avsnitt(namn: string, fn: () => Promise<void>) {
   try { await fn(); }
   catch (e) { console.log(`\n${namn}\n  ✗ FRÅGAN KUNDE INTE STÄLLAS: ${(e as Error).message}`); }
 }
 
-console.log(`TYSTNADSFELET — kort #98 mot facitstacken (${DAGAR} dygns fönster)\n`);
-console.log(`  Fönstret har inget hårt tak: facit är append-only och gallras inte. Signalerna läses`);
-console.log(`  ur väderarkivet, som efter sju dygn bara har en rad per halvtimme — punktvärden som`);
-console.log(`  daggpunktsgap och yttemperatur överlever det, och regnet räknas per timme.\n`);
+console.log(`TYSTNADSFELET — kort #98 mot facitstacken (${DAGAR} dygns fönster) · läge: ${LAGE.toUpperCase()}\n`);
 
-// ── T1 FACIT: tre källor, var för sig. De slås ALDRIG ihop till ett tal utan att sägas.
-let facit: { kalla: string; lon: number; lat: number; tid: Date; etikett: string }[] = [];
+// ── T1 FACIT: den delade händelselistan (publish/skuggfacit.ts), per källa.
+let facit: Handelse[] = [];
 await avsnitt("T1 FACIT", async () => {
-  console.log("T1 FACIT — bekräftade halttillfällen, per källa");
-
-  // (a) Väglagets omklassningar. Halkorden är MOTORNS egna (engine.ts:43, SLIPPERY_INFO) speglade
-  // i SQL; kontraktsgrinden vaktar att de inte glider isär. "fläckvis Våt" får aldrig matcha —
-  // delsträngen 'is' inuti "fläckvis" gav åtta falska halksegment på riktig augustidata.
-  const vaglag = await q(`
-    SELECT h.segment_id, h.modified_time AS tid, h.condition_info,
-           ST_X(ST_Centroid(c.geom)) AS lon, ST_Y(ST_Centroid(c.geom)) AS lat
-    FROM road_condition_history h JOIN road_conditions c USING (segment_id)
-    WHERE h.modified_time > now() - $1 * interval '1 day' AND NOT h.deleted AND c.geom IS NOT NULL
-      AND EXISTS (SELECT 1 FROM unnest(h.condition_info) i
-                  WHERE i ~* ('(^|[^a-zåäö])(' || $2 || ')') OR i ~* $3)`, [DAGAR, HALKORD, HALKSTAM]);
-  console.log(`  (a) väglagets omklassningar till halka: ${vaglag.length}`);
-  for (const r of vaglag) facit.push({ kalla: "väglag", lon: Number(r.lon), lat: Number(r.lat),
-    tid: r.tid, etikett: `${r.segment_id} ${String(r.condition_info)}` });
-
-  // (b) situation_archive. VIKTIGT: arkivet bär ingen ORSAK (situations.ts:37). En olycka är facit
-  // på att NÅGOT hände, inte på att det var halt. Räknas därför separat och slås aldrig ihop med
-  // (a) utan att skillnaden står bredvid.
-  const olyckor = (await q(`SELECT count(*)::int AS n FROM situation_archive
-    WHERE start_time > now() - $1 * interval '1 day' AND geom IS NOT NULL`, [DAGAR]))[0];
-  console.log(`  (b) olyckor i situation_archive: ${olyckor.n}`);
-  console.log(`      ⚠️ UTAN ORSAK. En olycka är facit på att något hände, inte på att det var halt.`);
-  console.log(`      Den räknas därför inte in i grundtalet nedan — bara (a) och granskade bilder gör det.`);
-
-  // (c) Kamerafacit. Bilderna finns, men en bild är facit först när någon läst den.
-  const bilder = await q(`SELECT count(*)::int AS n, max(created_at) AS senast
-    FROM storage.objects WHERE bucket_id = 'facit'`).catch(() => [{ n: null, senast: null }]);
-  console.log(`  (c) arkiverade kamerabilder: ${bilder[0]?.n ?? "kunde inte läsas"}`
-    + (bilder[0]?.senast ? ` · senast ${String(bilder[0].senast).slice(0, 16)}` : ""));
-  console.log(`      ⚠️ EN BILD ÄR INTE FACIT FÖRRÄN NÅGON LÄST DEN. Ingen granskning finns byggd,`);
-  console.log(`      så de räknas här som TILLGÄNGLIGT UNDERLAG, inte som bekräftade tillfällen.`);
-
-  console.log(`  GRUNDTALETS underlag (bara (a)): ${facit.length} tillfällen`);
-  if (facit.length < MIN_FACIT) {
-    console.log(`  ⊘ OAVGJORT — under ${MIN_FACIT} bekräftade tillfällen. Allt nedan körs ändå, så`);
-    console.log(`    instrumentet är prövat, men INGET tal härifrån får bära en dom.`);
-  }
+  console.log("T1 FACIT — bekräftade halttillfällen inom facitradien av skuggrutterna, per källa (publish/skuggfacit.ts)");
+  facit = await hamtaHandelser(q, rutter, DAGAR, { ord: HALKORD, stam: HALKSTAM });
+  const per = new Map<string, number>();
+  for (const f of facit) per.set(f.kalla, (per.get(f.kalla) ?? 0) + 1);
+  console.log(`  ${facit.length} tillfällen — ${[...per].map(([k, n]) => `${k} ${n}`).join(" · ") || "inga"}`);
+  console.log(`  ⚠️ olyckor utan halkord räknas inte: en olycka är facit på att något hände, inte på att det var halt.`);
 });
 
-// ── T2 RÄCKVIDDSVILLKORET (§6): bara tillfällen där systemet hade en chans.
-let inomRackvidd: typeof facit = [];
+// ── T2 RÄCKVIDDSVILLKORET (§6): nära en VViS-station — 7 km, inte ankarradien.
+type Inom = Handelse & { stationId: string; stationKm: number };
+let inomRackvidd: Inom[] = [];
 await avsnitt("T2 RÄCKVIDDSVILLKORET", async () => {
-  console.log(`\nT2 RÄCKVIDDSVILLKORET — bara där systemet HADE en chans (§6, ${MAX_KM} km)`);
+  console.log(`\nT2 RÄCKVIDDSVILLKORET — bara där systemet HADE en chans (§6, ${RACKVIDD_KM} km till närmaste station)`);
   if (!facit.length) { console.log("  ⊘ inget facit att pröva."); return; }
   const km: number[] = [];
   for (const f of facit) {
-    const d = (await q(`SELECT round((ST_Distance(
+    const [d] = await q(`SELECT w.station_id, round((ST_Distance(
         ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography, w.geom::geography) / 1000)::numeric, 1) AS km
-      FROM weather_latest w ORDER BY w.geom <-> ST_SetSRID(ST_MakePoint($1, $2), 4326) LIMIT 1`,
-      [f.lon, f.lat]))[0];
+      FROM weather_latest w ORDER BY w.geom <-> ST_SetSRID(ST_MakePoint($1, $2), 4326) LIMIT 1`, [f.lon, f.lat]);
+    if (!d) continue;
     km.push(Number(d.km));
-    if (Number(d.km) <= MAX_KM) inomRackvidd.push(f);
+    if (Number(d.km) <= RACKVIDD_KM) inomRackvidd.push({ ...f, stationId: String(d.station_id), stationKm: Number(d.km) });
   }
   km.sort((a, b) => a - b);
-  console.log(`  ${inomRackvidd.length} av ${facit.length} inom ${MAX_KM} km från en VViS-station`
-    + ` · median ${km[Math.floor(km.length / 2)]} km`);
-  console.log(`  Utanför räckvidd är ett TÄCKNINGSproblem (#93), inte ett tröskelproblem, och`);
-  console.log(`  utesluts med flit — annars drunknar tröskelsignalen i hål som handlar om annat.`);
+  console.log(`  ${inomRackvidd.length} av ${facit.length} inom ${RACKVIDD_KM} km · median ${km.length ? km[Math.floor(km.length / 2)] : "–"} km`);
+  console.log(`  Utanför räckvidd är ett TÄCKNINGSproblem (#93), inte ett tröskelproblem, och utesluts med flit.`);
 });
 
-// ── T3 VAD SYSTEMET SA: röst, skugga eller tyst?
-let tystaMissar: typeof facit = [];
+// ── T3 VAD SYSTEMET SA: det senaste skuggvarvet på en rutt som passerar händelsen, högst FLOTTA_H timmar före.
+let tysta: Inom[] = [], okantTyst = 0;
 await avsnitt("T3 VAD SYSTEMET SA", async () => {
-  console.log(`\nT3 VAD SYSTEMET SA — röst, skugga eller tyst? (${NARA_M} m, ${NARA_MIN} min)`);
-  const sl = (await q(`SELECT count(*)::int AS rader, min(run_at) AS forst, max(run_at) AS sist,
-      count(DISTINCT route)::int AS rutter FROM shadow_log
-    WHERE run_at > now() - $1 * interval '1 day'`, [DAGAR]))[0];
-  console.log(`  skuggloggen: ${sl.rader} körningar · ${sl.rutter} rutter · `
-    + `${String(sl.forst).slice(0, 16)} → ${String(sl.sist).slice(0, 16)}`);
-  console.log(`  ⚠️ SKUGGAN TÄCKER RUTTER, INTE LANDET. Ett facit-tillfälle som inte ligger vid en`);
-  console.log(`     skuggrutt har ingen skuggdom alls — det är "okänt", inte "tyst".`);
-
-  // VAKT MOT ETT SYSTEMATISKT FEL SVAR (kort #157, mätt 14/9): skuggloggens larm saknar
-  // POSITION. 2 103 larm på fjorton dygn, noll med lon — motorns Alert-typ bär `t`, `hazardId`,
-  // `kind`, `distanceM` och `text`, men ingen koordinat, och skuggmotorn skriver `lon: a.lon`
-  // på ett fält som inte finns. Utan den här vakten hittar frågan nedan aldrig något larm och
-  // klassar därför VARJE facit-tillfälle som en tyst miss — ett svar som ser ut som en mätning
-  // men är en artefakt. Hellre ⊘ än ett tal som pekar åt fel håll.
-  const [pos] = await q(`SELECT count(*) FILTER (WHERE a ? 'lon')::int AS med_pos,
-      count(*)::int AS alla
-    FROM shadow_log s, jsonb_array_elements(s.alerts) a
-    WHERE s.run_at > now() - $1 * interval '1 day'`, [DAGAR]);
-  console.log(`  larm med position: ${pos.med_pos} av ${pos.alla}`);
-  if (!Number(pos.med_pos)) {
-    console.log(`  ⊘ KAN INTE AVGÖRAS — INGET larm i skuggloggen bär en position (kort #157).`);
-    console.log(`     Frågan "teg systemet?" går inte att ställa mot larm utan koordinater, och`);
-    console.log(`     att räkna alla som tysta vore ett svar som ser ut som en mätning.`);
-    return;
+  console.log(`\nT3 VAD SYSTEMET SA — tyst eller inte? (senaste varvet inom ${FLOTTA_H} h på en rutt inom ${FACIT_KM} km; larm inom ${FACIT_KM} km)`);
+  const [pos] = await q(`SELECT count(*) FILTER (WHERE a ? 'lon')::int AS med_pos, count(*)::int AS alla
+    FROM shadow_log s, jsonb_array_elements(s.alerts) a WHERE s.run_at > now() - $1 * interval '1 day'`, [DAGAR]);
+  console.log(`  larm med position i skuggloggen: ${pos.med_pos} av ${pos.alla}`);
+  if (Number(pos.alla) && !Number(pos.med_pos)) {
+    console.log(`  ⊘ KAN INTE AVGÖRAS — inget larm bär position (kort #157). Att räkna alla som tysta vore en artefakt.`); return;
   }
-  if (!inomRackvidd.length) { console.log("  ⊘ inget facit inom räckvidd att pröva."); return; }
   for (const f of inomRackvidd) {
-    const sa = (await q(`SELECT count(*)::int AS n FROM shadow_log s, jsonb_array_elements(s.alerts) a
-      WHERE s.run_at BETWEEN $3::timestamptz - $4 * interval '1 minute'
-                         AND $3::timestamptz + $4 * interval '1 minute'
+    const passerar = Object.entries(rutter).filter(([, line]) => narmastLangs(f, line).km <= FACIT_KM).map(([namn]) => namn);
+    if (!passerar.length) { okantTyst++; continue; }
+    const [v] = await q(`SELECT max(run_at) AS senast FROM shadow_log
+      WHERE land = 'SE' AND route = ANY($1::text[]) AND run_at BETWEEN $2::timestamptz - interval '${FLOTTA_H} hours' AND $2::timestamptz`,
+      [passerar, f.t]);
+    if (!v?.senast) { okantTyst++; continue; }
+    const [sa] = await q(`SELECT count(*)::int AS n FROM shadow_log s, jsonb_array_elements(s.alerts) a
+      WHERE s.land = 'SE' AND s.route = ANY($1::text[]) AND s.run_at BETWEEN $2::timestamptz - interval '${FLOTTA_H} hours' AND $2::timestamptz
+        AND a->>'kind' IN ('icing_point', 'slippery_segment') AND a ? 'lon'
         AND ST_DWithin(ST_SetSRID(ST_MakePoint((a->>'lon')::float8, (a->>'lat')::float8), 4326)::geography,
-                       ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography, $5)`,
-      [f.lon, f.lat, f.tid, NARA_MIN, NARA_M]))[0];
-    if (!Number(sa.n)) tystaMissar.push(f);
+                       ST_SetSRID(ST_MakePoint($3, $4), 4326)::geography, $5)`, [passerar, f.t, f.lon, f.lat, FACIT_KM * 1000]);
+    if (!Number(sa.n)) tysta.push(f);
   }
-  console.log(`  TYSTA MISSAR inom räckvidd: ${tystaMissar.length} av ${inomRackvidd.length}`
-    + ` (${pct(tystaMissar.length, inomRackvidd.length)})`);
+  console.log(`  TYSTA MISSAR inom räckvidd: ${tysta.length} av ${inomRackvidd.length}${okantTyst ? ` · OKÄNT (inget varv på en rutt inom ${FACIT_KM} km inom ${FLOTTA_H} h): ${okantTyst}` : ""}`);
 });
 
-// ── T4 SIGNALERNA (§3): var missen ursäktlig eller oursäktlig?
+// ── T4 SIGNALERNA (§3): tre klasser och orsakskolumnen, över svepen.
+type Rad = { f: Inom; klass: Klass; orsak: Orsak[]; trendOkand: boolean };
+const perCell = new Map<string, Rad[]>();
 await avsnitt("T4 SIGNALERNA", async () => {
-  console.log(`\nT4 SIGNALERNA — teg systemet TROTS signal? (§3, fyra signaler)`);
-  if (!tystaMissar.length) {
+  console.log(`\nT4 SIGNALERNA — teg systemet TROTS signal? (§3, fyra signaler med tal, tre klasser, orsak per tröskel)`);
+  if (!tysta.length) {
     console.log("  ⊘ inga tysta missar att klassa. Instrumentet är kört, men utan material.");
-    console.log(`  Svepen som skulle ha skrivits ut: daggpunktsgap ${DAGGGAP.join(" · ")} °C,`);
-    console.log(`  regnfönster N ${N_SVEP.join(" · ")} h. Ingen punkt väljs förrän Ö-B dömt.`);
+    console.log(`  Svepen: daggpunktsgap ${DAGGGAP.join(" · ")} °C, regnfönster N ${N_SVEP.join(" · ")} h. Ingen punkt väljs förrän Ö-B dömt.`);
     return;
   }
-  console.log("  gap \\ N   " + N_SVEP.map((n) => `N = ${n} h`.padStart(14)).join(""));
-  for (const gap of DAGGGAP) {
-    const celler: string[] = [];
-    for (const N of N_SVEP) {
-      let oursakt = 0, okant = 0;
-      for (const f of tystaMissar) {
-        const s = (await q(`
-          WITH st AS (SELECT station_id, geom FROM weather_latest
-                      ORDER BY geom <-> ST_SetSRID(ST_MakePoint($1, $2), 4326) LIMIT 1)
-          SELECT
-            (SELECT bool_or(w.surface_temp_c - w.dewpoint_c <= $4) FROM weather_observations w, st
-              WHERE w.station_id = st.station_id AND w.dewpoint_c IS NOT NULL
-                AND w.sample_time BETWEEN $3::timestamptz - interval '1 hour' AND $3::timestamptz) AS gap,
-            (SELECT bool_or(w.surface_temp_c <= $6) FROM weather_observations w, st
-              WHERE w.station_id = st.station_id
-                AND w.sample_time BETWEEN $3::timestamptz - interval '1 hour' AND $3::timestamptz) AS risk,
-            (SELECT bool_or(w.rain_sum_mm > 0) FROM weather_observations w, st
-              WHERE w.station_id = st.station_id AND w.rain_sum_mm IS NOT NULL
-                AND w.sample_time BETWEEN $3::timestamptz - $5 * interval '1 hour' AND $3::timestamptz) AS regn,
-            (SELECT count(*) > 0 FROM trend_kandidater t, st
-              WHERE t.station_id = st.station_id
-                AND t.observed_at BETWEEN $3::timestamptz - interval '2 hours' AND $3::timestamptz) AS trend,
-            (SELECT count(*) > 0 FROM weather_observations w, st
-              WHERE w.station_id = st.station_id
-                AND w.sample_time BETWEEN $3::timestamptz - interval '1 hour' AND $3::timestamptz) AS underlag
-          `, [f.lon, f.lat, f.tid, gap, N, FROSTYTA]))[0];
-        if (!s.underlag) { okant++; continue; }
-        if (oursaktlig({ daggpunktsgapSlots: !!s.gap, trendenPekade: !!s.trend,
-                         stationenVisadeRisk: !!s.risk, regnInomN: !!s.regn })) oursakt++;
-      }
-      celler.push(`${oursakt}${okant ? ` (+${okant} okänt)` : ""}`.padStart(14));
+  for (const gap of DAGGGAP) for (const N of N_SVEP) {
+    const rader: Rad[] = [];
+    for (const f of tysta) {
+      const [s] = await q(`
+        WITH st AS (SELECT station_id, geom FROM weather_latest WHERE station_id = $7),
+        w AS (SELECT * FROM weather_observations w, st WHERE w.station_id = st.station_id
+              AND w.sample_time BETWEEN $3::timestamptz - interval '2 hours' AND $3::timestamptz)
+        SELECT
+          (SELECT bool_or(surface_temp_c - dewpoint_c <= $4) FROM w WHERE dewpoint_c IS NOT NULL) AS gap,
+          (SELECT bool_or(surface_temp_c <= $6 AND ${FUKT_SQL}) FROM w) AS risk,
+          (SELECT bool_or(surface_temp_c > $6 AND surface_temp_c <= $8 AND ${FUKT_SQL}) FROM w) AS nara,
+          (SELECT bool_or(rain OR snow OR rain_sum_mm > 0) FROM weather_observations w2, st WHERE w2.station_id = st.station_id
+             AND w2.sample_time BETWEEN $3::timestamptz - $5 * interval '1 hour' AND $3::timestamptz) AS regn,
+          (SELECT count(*) > 0 FROM trend_kandidater t, st WHERE t.station_id = st.station_id
+             AND t.observed_at BETWEEN $3::timestamptz - interval '${TREND_H} hours' AND $3::timestamptz
+             AND t.lutning30_c >= $9 AND t.surface_temp_c <= $10 AND t.surface_temp_c - 4 * t.lutning30_c <= $6) AS trend,
+          (SELECT count(*) > 0 FROM trend_kandidater t, st WHERE t.station_id = st.station_id
+             AND t.observed_at BETWEEN $3::timestamptz - interval '${TREND_H} hours' AND $3::timestamptz) AS trend_underlag,
+          (SELECT count(*) > 0 FROM w) AS underlag,
+          (SELECT bool_or(rp.rate_mean_mmh >= $11) FROM radar_precip rp JOIN road_conditions c USING (segment_id)
+             WHERE rp.observed_at BETWEEN $3::timestamptz - interval '1 hour' AND $3::timestamptz + interval '1 hour'
+               AND c.geom IS NOT NULL AND ST_DWithin(c.geom::geography, ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography, $12)) AS radar
+        `, [f.lon, f.lat, f.t, gap, N, FRYS_C, f.stationId, YTA_NARA_MAX, TREND_FALL, TREND_YTA_MAX, REGN_UTLOSARE_MMH, RADAR_KM * 1000]);
+      if (!s.underlag) { rader.push({ f, klass: "okänd", orsak: [], trendOkand: !s.trend_underlag }); continue; }
+      const sig: Signaler = { daggpunktsgapSlots: !!s.gap, trendenPekade: !!s.trend, stationenVisadeRisk: !!s.risk,
+        regnInomN: !!s.regn, stationNaraKm: f.stationKm, ytaNara: !!s.nara };
+      rader.push({ f, klass: klassa(sig, !!s.radar && !s.regn), orsak: orsaker(sig), trendOkand: !s.trend_underlag });
     }
+    perCell.set(`${gap}|${N}`, rader);
+  }
+  console.log("  gap \\ N   " + N_SVEP.map((n) => `N = ${n} h`.padStart(22)).join(""));
+  for (const gap of DAGGGAP) {
+    const celler = N_SVEP.map((N) => {
+      const r = perCell.get(`${gap}|${N}`)!;
+      const o = r.filter((x) => x.klass === "oursäktlig").length, u = r.filter((x) => x.klass === "ursäktlig").length, k = r.length - o - u;
+      return `${o} / ${u} / ${k}`.padStart(22);
+    });
     console.log(`  ${String(gap).padEnd(8)} ` + celler.join(""));
   }
-  console.log(`  Talen är ANTAL OURSÄKTLIGA av ${tystaMissar.length} tysta missar.`);
+  console.log(`  Cellerna är ANTAL oursäktliga / ursäktliga / okända av ${tysta.length} tysta missar.`);
+  const bas = perCell.get(`${DAGGGAP[0]}|${N_SVEP[0]}`)!;
+  const orsakN = new Map<Orsak, number>();
+  for (const r of bas) for (const o of r.orsak) orsakN.set(o, (orsakN.get(o) ?? 0) + 1);
+  console.log(`  Orsak (gap ${DAGGGAP[0]}, N ${N_SVEP[0]} h; flera kan gälla): ${[...orsakN].map(([o, n]) => `${o} ${n}`).join(" · ") || "inga"}`);
+  const trendOkand = bas.filter((r) => r.trendOkand).length;
+  if (trendOkand) console.log(`  ⚠️ trendsignalen okänd för ${trendOkand} — trend_kandidater bär sju dygn; äldre händelser kan inte prövas på tid.`);
 });
 
-// ── T5 UTFALLSMENINGEN (§7).
-console.log(`\nT5 UTFALLSMENINGEN (§7)`);
-console.log(`  "Under fönstret teg systemet vid ${tystaMissar.length} bekräftade halttillfällen inom`);
-console.log(`   räckvidd. Av dem hade det signal i M fall (oursäktliga). En tröskelsänkning till nivå`);
-console.log(`   X hade fångat dem, till priset av Y nya falsklarm."`);
-console.log(`  N = ${tystaMissar.length} · M står i T4:s rutnät · X och Y saknas, se nedan.`);
-
-console.log(`\nVAD DEN HÄR KNAPPEN INTE GÖR — §5:s PRISKURVA`);
-console.log(`  Priset (Y) är antalet NYA falsklarm varje kandidattröskel skulle ha gett på torra,`);
-console.log(`  ofarliga tillfällen. Att räkna det kräver att motorn körs om med andra trösklar över`);
-console.log(`  skuggrutterna — ett bygge i motorkedjan, inte en fråga till arkivet. Och det går inte`);
-console.log(`  att öva på ett material där M är noll. Den halvan är ett eget steg, och den står här`);
-console.log(`  utskriven i stället för att tigas ihjäl: utan priset är måttet en halva, inte ett par.`);
-
+// ── T5 UNDERLAG, PARET (§4) OCH PRISET (§5).
+const perioder = halkperioder(inomRackvidd.map((f) => f.t));
+console.log(`\nT5 UNDERLAGET — ${inomRackvidd.length}/${MIN_FACIT} tillfällen inom räckvidd, ${perioder}/${MIN_PERIODER} halkperioder`
+  + ` → ${inomRackvidd.length >= MIN_FACIT && perioder >= MIN_PERIODER ? "uppfyllt" : "inte än"}`);
+if (LAGE === "underlag") {
+  console.log(`\nUNDERLAG, INGA ANDELAR: paret i §4 och priset i §5 läses vid utsatt tid, eller med --dom på Bengts order.`);
+} else {
+  const bas = perCell.get(`${DAGGGAP[0]}|${N_SVEP[0]}`) ?? [];
+  const o = bas.filter((x) => x.klass === "oursäktlig").length, u = bas.filter((x) => x.klass === "ursäktlig").length, k = bas.length - o - u;
+  console.log(`\nPARET (§4, gap ${DAGGGAP[0]}, N ${N_SVEP[0]} h): tyst miss-frekvens ${pct(tysta.length, inomRackvidd.length)} ·`
+    + ` oursäktliga ${pct(o, bas.length)} · ursäktliga ${pct(u, bas.length)} · okända ${pct(k, bas.length)}`);
+  await avsnitt("PRISET", async () => {
+    const rader = await q(`
+      WITH r AS (SELECT ST_GeomFromText($2, 4326) AS g),
+      st AS (SELECT station_id FROM weather_latest w, r WHERE ST_DWithin(w.geom::geography, r.g::geography, $3))
+      SELECT w.station_id AS st, w.sample_time AS t, w.surface_temp_c AS yta, ${FUKT_SQL} AS fukt
+      FROM weather_observations w JOIN st USING (station_id)
+      WHERE w.sample_time > now() - $1 * interval '1 day' AND w.surface_temp_c IS NOT NULL AND w.surface_temp_c <= $4
+        AND w.air_temp_c IS NOT NULL AND w.surface_temp_c >= w.air_temp_c - 12`,
+      [DAGAR, ruttWktLokal(rutter), RACKVIDD_KM * 1000, Math.max(...PRIS_SVEP)]);
+    const ep = episoderPerTroskel(rader.map((r) => ({ st: String(r.st), t: new Date(r.t), yta: Number(r.yta), fukt: !!r.fukt })));
+    const bas1 = ep.get(PRIS_SVEP[0]) ?? 0;
+    console.log(`\nPRISET (§5) — tillkomna varningstillfällen vid stationer inom ${RACKVIDD_KM} km av rutterna, ${DAGAR} dygn:`);
+    for (const X of PRIS_SVEP) console.log(`  yta ≤ ${X.toFixed(1)} °C med fukt: ${ep.get(X)} episoder${X === PRIS_SVEP[0] ? " (dagens tröskel)" : ` — ${(ep.get(X) ?? 0) - bas1} tillkomna`}`);
+    console.log(`  Om de tillkomna var FALSKA kan bara kamerafacit (bar/våt) och förarens "nej" säga — talet är tillfällen, inte falsklarm.`);
+  });
+}
+function ruttWktLokal(r: Rutter): string {
+  return "MULTILINESTRING(" + Object.values(r).map((l) => "(" + l.map(([x, y]) => `${x} ${y}`).join(",") + ")").join(",") + ")";
+}
 await pool.end();
