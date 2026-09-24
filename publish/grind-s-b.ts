@@ -34,38 +34,23 @@
 //
 // Run: DATABASE_URL=... node --experimental-strip-types publish/grind-s-b.ts [dagar=14] [--underlag|--dom] [--grindA2 3.5]
 // Självtest utan DB: publish/grind-s-b.ts --sjalvtest
-import { readFileSync } from "node:fs";
 import { Z, andelSe, utfallTak, utfallGolv, grindutfall, type Utfall } from "./marginal.ts";
-import { narmastLangs, UPPMATT_KM, FRYS_C } from "../engine/src/segment.ts";
+import { narmastLangs, FRYS_C } from "../engine/src/segment.ts";
+import { skuggmotornsRutter, hamtaHandelser, FACIT_KM, type Rutter, type Handelse } from "./skuggfacit.ts";
 
 const B1_MAX = 0.20, B2_MAX = 0.30, B3_MIN = 0.25;                        // §3 grind B
 const C1_MIN_HANDELSER = 20, C1_MIN_PERIODER = 3, C2_MIN_EPISODER = 30, C3_MAX_PE = 10;   // §3 grind C
-const FACIT_KM = UPPMATT_KM;      // §2: händelse matchas till segment inom 2 km — samma tal som "uppmätt"
 const FALSK_YTA_C = 2;            // §2: station > +2 °C fäller
 const MISS_FONSTER_H = 2;         // §2: flaggad inom 2 h före händelsen
 const B3_SEN_MIN = 30;            // §3: punktmotorn tyst eller > 30 min senare
 const EPISOD_GAP_H = 2;           // flaggade varv närmare än så på samma punkt är samma varning
-const NEDERBORD_FONSTER_H = 1;    // §2 orsaksklassning
 const PERIOD_GAP_D = 2;           // halkperioder
 
 export type Punkt = [number, number | null, number | null, number, number, number];
 export type HoldoutRad = [number, string, number, number | null, number | null, number];
 export type Larm = { kind: string; geo?: string; lon?: number; lat?: number };
 export type Varv = { t: Date; rutt: string; p: Punkt[]; h: HoldoutRad[]; alerts: Larm[] };
-export type Handelse = { id: string; t: Date; lon: number; lat: number; kalla: string; nederbord: boolean | null };
 export type Episod = { rutt: string; km: number; start: Date; slut: Date; varv: Varv[] };
-export type Rutter = Record<string, [number, number][]>;
-
-/** Läser ROUTES ur skuggmotorns källa (kommentarrader strippade). Kastar hellre än gissar. */
-export function lasRutter(kod: string): Rutter {
-  const start = kod.indexOf("const ROUTES: Record<string, [number, number][]> = {");
-  if (start < 0) throw new Error("hittar inte ROUTES i skuggmotorn");
-  const slut = kod.indexOf("\n};", start);
-  const kropp = kod.slice(kod.indexOf("{", start), slut + 2).replace(/^\s*\/\/.*$/gm, "").replace(/,(\s*})/g, "$1");
-  const o = JSON.parse(kropp) as Rutter;
-  if (!Object.keys(o).length) throw new Error("ROUTES tolkades som tom");
-  return o;
-}
 
 const H = 3600_000;
 
@@ -266,7 +251,7 @@ if (process.argv.includes("--sjalvtest")) {
   console.log = orig;
   k("underlag nämner inga procent", skrivet.some((s) => /\d %|\d+\.\d %/.test(s)), false);
   // Ruttparsern mot skuggmotorns riktiga källa.
-  const rutterSkarpt = lasRutter(readFileSync(new URL("../supabase/functions/skuggmotor/main.ts", import.meta.url), "utf8"));
+  const rutterSkarpt = skuggmotornsRutter();
   k("skuggmotorns rutter lästa (20)", Object.keys(rutterSkarpt).length, 20);
   console.log("SJÄLVTEST OK: episoder, stationsdom, mervärde, händelsedom, orsaksklassning, blindning, ruttparsern");
   process.exit(0);
@@ -281,53 +266,14 @@ const gaIdx = process.argv.indexOf("--grindA2");
 const GRIND_A2 = gaIdx > 0 ? Number(process.argv[gaIdx + 1]) : null;
 const pg = (await import("pg")).default;
 const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });
-const rutter = lasRutter(readFileSync(new URL("../supabase/functions/skuggmotor/main.ts", import.meta.url), "utf8"));
-const wkt = "MULTILINESTRING(" + Object.values(rutter).map((l) => "(" + l.map(([x, y]) => `${x} ${y}`).join(",") + ")").join(",") + ")";
-
+const rutter = skuggmotornsRutter();
 const rader = await pool.query(`
   SELECT run_at, route, prognos, alerts FROM shadow_log
   WHERE land = 'SE' AND run_at > now() - $1 * interval '1 day' AND prognos ? 'p'
   ORDER BY run_at`, [DAYS]);
 const varv: Varv[] = rader.rows.map((r) => ({ t: new Date(r.run_at), rutt: r.route, p: r.prognos.p ?? [], h: r.prognos.h ?? [], alerts: Array.isArray(r.alerts) ? r.alerts : [] }));
-
-// Facithändelser inom facitradien av rutterna (§2). Kamerabilderna saknar tabell — se huvudet.
-const hRows = await pool.query(`
-  WITH r AS (SELECT ST_GeomFromText($2, 4326) AS g)
-  SELECT 'smhi:' || warning_id AS id, archived_at AS t, ST_X(ST_Centroid(geom::geometry)) lon, ST_Y(ST_Centroid(geom::geometry)) lat, 'smhi' AS kalla
-  FROM smhi_warnings_history, r WHERE geom IS NOT NULL AND archived_at > now() - $1 * interval '1 day'
-    AND event_code ~* 'ice|icing|snow|glaze|frost|slip' AND ST_DWithin(geom::geography, r.g::geography, $3)
-  UNION ALL
-  SELECT 'dev:' || deviation_id, COALESCE(start_time, first_seen), ST_X(geom::geometry), ST_Y(geom::geometry), 'situation'
-  FROM situation_archive, r WHERE geom IS NOT NULL AND COALESCE(start_time, first_seen) > now() - $1 * interval '1 day'
-    AND (message ~* 'halk|ishalka|\\mis\\M|\\misig\\M|\\msnö|snöfall|glatt|\\mhalt\\M' OR icon_id ~* 'ice|slip')
-    AND ST_DWithin(geom::geography, r.g::geography, $3)
-  UNION ALL
-  SELECT 'seg:' || h.segment_id || '@' || to_char(h.modified_time, 'YYYYMMDDHH24MI'), h.modified_time,
-         ST_X(ST_ClosestPoint(c.geom::geometry, r.g)), ST_Y(ST_ClosestPoint(c.geom::geometry, r.g)), 'väglag'
-  FROM road_condition_history h JOIN road_conditions c USING (segment_id), r
-  WHERE h.modified_time > now() - $1 * interval '1 day' AND NOT h.deleted AND h.condition_code >= 2
-    AND c.geom IS NOT NULL AND ST_DWithin(c.geom::geography, r.g::geography, $3)
-  UNION ALL
-  SELECT 'forare:' || f.id, f.alert_t, ST_X(w.geom::geometry), ST_Y(w.geom::geometry), 'förare'
-  FROM driver_facit f JOIN weather_latest w ON f.alert_id = 'wx:' || w.station_id, r
-  WHERE f.svar = 'ja' AND f.alert_t > now() - $1 * interval '1 day' AND ST_DWithin(w.geom::geography, r.g::geography, $3)
-  UNION ALL
-  SELECT 'kamera:' || k.id, k.bild_tid, k.lon, k.lat, 'kamera'
-  FROM kamerafacit k, r
-  WHERE k.klass IN ('is', 'snö', 'slask') AND k.bild_tid > now() - $1 * interval '1 day'
-    AND ST_DWithin(ST_SetSRID(ST_MakePoint(k.lon, k.lat), 4326)::geography, r.g::geography, $3)`,
-  [DAYS, wkt, FACIT_KM * 1000]);
-const handelser: Handelse[] = [];
-for (const e of hRows.rows) {
-  // Orsaksklassning (§2): nederbörd vid närmaste station inom ±1 h. Nollpolitik: ingen station ⇒ null (räknas som utstrålning i B2,
-  // och det sägs i utskriften genom att andelen med okänd nederbörd står bredvid).
-  const n = await pool.query(`
-    SELECT bool_or(rain OR snow) AS ned FROM (
-      SELECT rain, snow FROM weather_observations
-      WHERE sample_time BETWEEN $1::timestamptz - interval '${NEDERBORD_FONSTER_H} hours' AND $1::timestamptz + interval '${NEDERBORD_FONSTER_H} hours'
-        AND geom IS NOT NULL ORDER BY geom <-> ST_SetSRID(ST_MakePoint($2, $3), 4326) LIMIT 8) s`, [e.t, +e.lon, +e.lat]);
-  handelser.push({ id: e.id, t: new Date(e.t), lon: +e.lon, lat: +e.lat, kalla: e.kalla, nederbord: n.rows[0]?.ned ?? null });
-}
+// Facithändelserna (§2) ur den delade listan — samma som tystnadsfelet läser (publish/skuggfacit.ts).
+const handelser = await hamtaHandelser((s, p) => pool.query(s, p as any[]).then((r) => r.rows), rutter, DAYS);
 await pool.end();
 const okandNed = handelser.filter((e) => e.nederbord === null).length;
 if (okandNed) console.log(`(${okandNed} händelser utan station inom räckhåll för orsaksklassning — räknas som utstrålning)`);
