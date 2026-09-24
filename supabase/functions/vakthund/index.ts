@@ -187,6 +187,15 @@ Deno.serve(async (req) => {
         problem.push(`**Manifestets sha256 stämmer inte med live.json** — apparna förkastar filen och kör vidare på förra snapshoten. Det här är felet som INTE syns på CDN.`);
       if (cdnMin > 45)
         problem.push(`**Appen får gammal data**: manifestet ${cdnMin.toFixed(0)} min gammalt (publiceras var 10:e min)`);
+      // BEVISBÄRAREN (kort #245, DECISIONS #342): bär varje väderpunkt fältet bredvid fukt? Noll punkter (varm dag) är inget
+      // att mäta — raden säger det i stället för att tiga. Larm bara när punkter finns och någon saknar fältet.
+      try {
+        const wx: any[] = (await lRes.json())?.weather ?? [];
+        const med = wx.filter((w) => w && typeof w.bevis === "object" && w.bevis !== null).length;
+        const vata = wx.filter((w) => (w?.bevis?.vata ?? 0) > 0).length;
+        rad.push(`bevis: ${med} av ${wx.length} väderpunkter${wx.length ? ` · väta > 0 hos ${vata}` : " (inga kalla stationer — inget att mäta)"}`);
+        if (wx.length && med < wx.length) problem.push(`**Bevisbäraren saknas på ${wx.length - med} av ${wx.length} väderpunkter** i live.json (kort #245)`);
+      } catch (e) { problem.push(`**Kunde inte läsa bevisbäraren i live.json**: ${String(e).slice(0, 120)}`); }
     }
   } catch (e) {
     problem.push(`Vakthunden kunde inte slutföra kontrollen: ${String(e)}`);
