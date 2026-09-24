@@ -2661,7 +2661,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↦ **Sorterat 22/9 (kort #224):** texten för iOS-testarna skriver Claude nu; utskicket med en extern TestFlight-grupp är Axels.
 
 ### Claude — låst (väntar på nyckel)
-- [ ] 📷 **#242 KAMERAFACITETS KLASSNING FÅR EN TABELL** (upptäckt 23/9 när dom-knappen för grind B byggdes, DECISIONS #327). Bengt klassar
+- [x] ✅ **STÄNGT 24/9** (DECISIONS #333) — 📷 **#242 KAMERAFACITETS KLASSNING FÅR EN TABELL** (upptäckt 23/9 när dom-knappen för grind B byggdes, DECISIONS #327). Bengt klassar
   facit-hinkens bilder veckovis (TROSKLAR-SKUGGAN §6), men klassningen har ingen plats i databasen — ingen knapp kan läsa den, och
   §2:s kamerakälla (får bekräfta träff, aldrig fälla) är därför noll i grind S-B tills det finns en. Förslag: tabell `kamerafacit`
   (bildväg, station, tid, klass: is/snö/slask/våt/bar/okänd, av, när) med RLS som `driver_facit`, matad via dbknapp tills en enkel
@@ -2669,6 +2669,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   `sql/033_kamerafacit.sql` (dubbellåst), femte källan i `publish/grind-s-b.ts` — bekräftar, fäller aldrig; självtestet bevisar båda.
   Kvar: första riktiga klassningen (Verify). Verify: en klassad bild i tabellen och grind S-B räknar den som händelse.
   📷 **Bild framlagd 24/9 (DECISIONS #332):** `2026-09-24/SE_STA_CAMERA_VViS_329_K1-165760.jpg` (arkiverad 02:30:02Z, kamera VViS 329 K1). Bengt klassar i Supabase-panelen (Storage → facit); klassningen går in via dbknapp; grind S-B räknar. Då stängs kortet.
+  ✅ **Stängt 24/9 (DECISIONS #333, Bengt: *"klassa som våt"*):** första raden i `kamerafacit` — Trafikverkets direktbild Tierp 03:11Z, sparad i `docs/kamerafacit/`, klass våt, raden bär vem som läste. Hinkens bild nås bara av Axel (§4.2). Grind S-B läser källan; händelseräkningen bevisad i självtestet, skarpt vid första halkbilden.
 - [ ] 🦌 **#241 VILTRÖSTEN TALAR PÅ LÄNETS MITTPUNKT — mot DECISIONS #13** (fynd 22/9, Bengts fråga *"vad har vi för mätning i appen,
   polisen eller trafikverket"*; `scripts/matningar/viltrosten-polisen-2026-09-22.sql`, körning 35761967231).
   **Läget:** appens viltvarning kommer ur **polisens** data, inte Trafikverkets. `publish/snapshot-core.ts` skickar polisens viltolyckor
@@ -4330,6 +4331,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#242 KAMERAFACIT — STÄNGT 24/9 (DECISIONS #333)**: tabellen, källan i dom-knappen och första klassningen (Tierp, våt, direktbilden). Tavlan 47 → 46.
 - [x] ✅ **#97 HALK-REGEXEN — STÄNGT 24/9 (DECISIONS #332)**: ordlistan vidgad 16/9, vektor v24 grön i tre portar, i apparna sedan 0.3.9. Tavlan 49 → 48.
 - [x] ↪ **#155 SNUBBELTRÅDEN — SAMMANSLAGEN I #83 24/9 (DECISIONS #332)**: villkoret på kvarhållningen bor där beslutet tas. Tavlan 48 → 47.
 - [x] ✅ **VÄGPUNKTSGRINDEN ÖPPEN 23/9 (DECISIONS #324)**: rå avståndsviktning utan offset klarar grind A:s mått utan målets historik (0,71 °C · 3,8 % · 0,0 %), lika bra som den lärda offseten. 4a svarat, offsettabellen utgår, bygget i oktober står. Första körningen föll på fel population — läxan i CLAUDE.md.

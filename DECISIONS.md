@@ -9787,3 +9787,29 @@ arkiven, W-A), S3 när S1-grinden passerats, #83 när Axel valt.
 
 Tavlan 49 → 47 öppna (#242 kvar tills bilden är klassad).
 
+## #333 (24/9 2026) Kamerafacit: första klassningen — Trafikverkets direktbild, inte hinkens; kort #242 stängt
+
+**Beslut (Bengt 24/9: *"klassa som våt"*, efter att båda vägarna till den arkiverade bilden stoppats — bedömningen §4.2).**
+Den första raden i `kamerafacit` gäller **Trafikverkets direktbild** från kameran Tierp (E4, VViS 329 K1) 2026-09-24 03:11:34Z,
+hämtad ur det publika API:et 03:18:51Z och sparad i repot som `docs/kamerafacit/2026-09-24T0311Z_SE_STA_CAMERA_VViS_329_K1.jpg`
+— inte den arkiverade bilden i hinken (02:30Z), som bara Axel når. Läsningen var Claudes (*mörk, blöt lins, våt vägbana,
+ingen snö*), klassen Bengts: **våt**. Raden bär det: `av = 'Bengt (på Claudes läsning av direktbilden)'`.
+
+**Vad som därmed ändras i tabellens mening.** `bild` är en sökväg i hinken ELLER i repot under `docs/kamerafacit/` för bilder
+hämtade direkt från Trafikverket och sparade där. Dom-knappen bryr sig bara om position, tid och klass; sökvägen är
+spårbarheten. Ingen kolumn ändras.
+
+**Bevis.** raden id 1: bild docs/kamerafacit/2026-09-24T0311Z_SE_STA_CAMERA_VViS_329_K1.jpg, kamera VViS 329 K1, 17,511/60,324, bild_tid 03:11:34Z, klass våt, av Bengt (på Claudes läsning av direktbilden), klassad 03:29:56Z; 1 klassad bild, 0 halkbilder. Grind S-B i underlagsläge efter klassningen: 1 dygn, 03:3xZ: 31 varv på 18 rutter, 2 488 provpunkter, 117 holdout-rader, 0 facithändelser, C1 0/20, C2 0/30 — kamerakällan läst utan fel; en våt väg är ingen
+halkhändelse, så den räknas inte som händelse (rätt), och det är precis vad §2 säger: kameran får bekräfta halka, aldrig
+fälla, och våt/bar/okänd gör ingenting.
+
+**Kort #242 stängs.** Verify löd *en klassad bild i tabellen och grind S-B räknar den som händelse*. Första halvan är uppfylld
+med en riktig bild; andra halvan är bevisad i självtestet (kamerahändelsen E6 i `publish/grind-s-b.ts`) och syns skarpt
+först vid första is/snö/slask-bilden — kortets syfte, en plats för klassningarna, är fyllt. Tavlan 47 → 46.
+
+**Sagt högt.** (1) Vägen till hinkens bilder är fortfarande stängd för alla utom Axel — söndagsklassningen i vinter kräver
+antingen panelinloggning för Bengt eller att Axel hämtar bilder; raden i §4.2 står kvar. (2) En klassning per INSERT-fil
+i repot är spårbar men tung — sidan är nästa steg när bilderna blir många. (3) dbknapp migrera tar bara `sql/NNN`-filer som
+bärare, så INSERT-filen i `scripts/matningar/` kunde inte köras som fil: klassningen gick in som BEVISRAD (enradsform) med
+`sql/033` som bärare. Fungerar, men det är fel kanal på sikt — sidan i (2) ska skriva direkt.
+
