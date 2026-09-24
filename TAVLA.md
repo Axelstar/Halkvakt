@@ -2971,6 +2971,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⚠️ Bocken ändrar INTE §8:s regim: den är knuten till första skuggkörningen, inte till signaturen.
   Fram till dess får svepet i §2 och kraven i §4 justeras av vem som helst av oss med en rad i
   DECISIONS; därefter krävs båda signaturer och en motivering som inte lutar sig mot utfallet.
+  📏 **Tryckt 24/9 (DECISIONS #331):** T-A steg 0, 7 dygn (körning 35949108311): 3 765 station-nätter, 47 frostnätter (yta ≤ 1 °C) på 26 stationer, 3 718 icke-frostnätter; separationen går inte att skilja från noll; kallaste stunden 03–07 i 70 % av frostnätterna; molnet hämtat för 34 av 47 punkter. frostvakten (50 stationer under noll) har inte larmat: senaste tio nätterna som mest 4 stationer under noll (17/9), kallast −5,6 °C (22/9). Steg 0 förfaller inom sju dygn efter frostvaktens larm; bildfacitets definition (#209/#231) skrivs in i DECISIONS då.
 - [ ] 🤐 **#98 TYSTNADSFELET — mät tystnadens fel, inte larmens träff** (B3-syskon till #88; skrivet
   10/9 21:09, hittat i Bengts Drive 11/9, FASTSTÄLLT 11/9 på Bengts order, DECISIONS #93).
   `docs/TROSKLAR-TYSTNADSFEL.md`. Avgör Bengts egen tvist från 10/9 med data i stället för princip:
@@ -3217,6 +3218,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   lufttemperaturen måste finnas, så att rimligheten alls går att pröva. Bevis efter deployen
   (f964dd6): `frost: 1 stationer` mot provets 4 — tre av fyra var givare vi inte kan lita på.
   Passiv påminnelse finns kvar som issue #127 (`efter-frosten`) och som minnesfil.
+  🔒 **Läget 24/9 (DECISIONS #331, Bengts "gör 3"):** S3 är Axels bygge bakom S1-grinden (DECISIONS #196), som kräver blöta frostnätter. S1 bär 35 rader med innehåll (senast 22/9 06:30Z); trendarkivet 19 469 kandidater, 1 följd av frost. Förberett: uppspelningen och S1-loggen finns; S2 skattarens nivå väntar på samma grind. Inget byggt.
 - [x] ✅ **#99 VINTERDAGEN — fem påhittade resor genom den riktiga motorn — KLART 11/9**
   (parallell session, DECISIONS #99, `scripts/vinterdag.ts`). Riktiga referensrutter ur skuggflottan,
   PÅHITTADE väderlägen. Dömer INGENTING och skriver ingenting — inte weather_observations, inte
@@ -3367,6 +3369,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Båda är PUNKTKÄLLOR ⇒ "framöver", aldrig "på vägen". 🔒 NYCKEL: Axels ja + tröskeldokument (byvind
   m/s per fordonstyp, sikt m), plats i A-skalan under halkan, vektorer i tre portar. Skugga först.
   Verify: skuggkolumn med facit ur situation_archive (vindrelaterade olyckor) en höstmånad.
+  📏 **Tryckt 24/9 (DECISIONS #331):** W-A steg 0, 14 dygn (körning 35949166508): 209 834 rader, byvind i 99,3 % (750 stationer), sikt i 99,9 %; täckningsgrad 17,9 % av möjliga stationstimmar; 11 stationer med omöjliga timmar (byvind ≥ 15 m/s och kvot > 5) tas av stationsvakten; högsta byvind 87,7 m/s bakom taket 30; W-A OAVGJORT — underlagsvakten W-A4 håller (16 respektive 243 stationstimmar i högsta bandet).
 - [ ] 🏔️ **#91 KALLPLATSLAGRET — bron är ett specialfall av "strukturellt kallare platser"**
   🔓 **NYCKELN ÄR LÄST 12/9, OCH SVARET ÄR TVETYDIGT** (DECISIONS #119). Grind A kördes om och
   **FÖLL för första gången** (2 042 punkter mot 57 den 1/9): MAE 1,06 °C mot kravets 1,0, grova fel
@@ -4060,6 +4063,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **FASTSTÄLLT 12/9 av Bengt** (DECISIONS #135). Svepet och kraven är låsta.
   ➡️ **NÄSTA: K-A på befintligt arkiv** — kräver ingen ny data och ingen frost.
   🔑 **Nyckel, sorterat 22/9 (kort #224):** frostnätter — K-A körs om när minst 100 punkter med uppmätt frys finns (K-A4).
+  📏 **Tryckt 24/9 (DECISIONS #331):** K-A, 60 dygn (körning 35949104486): 712 stationer, 207 647 avläsningar; 1 099 punkter över 44 stationer men 0 frysande vid gränsen 0 °C — INGEN DOM (septembervakten K-A4). Tryck om vid första frosten.
 
 - [ ] 🪢 **#95 Plan B för Trafikverket-beroendet — mät SMHI som reserv** (systemanalys 10/9). Allt
   🔓 **BLOCKERARFYNDET 12/9 (DECISIONS #114): kortet blockerar #88:s dom.** T-A:s fysikkontroll
@@ -4228,6 +4232,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   är trevlig men ger aldrig statistik.
   🔑 Motoränring + vektor är ETT SENARE beslut på höstens siffror; rösten är Axels.
   🔑 **Nyckel, sorterat 22/9 (kort #224):** äkta frostnätter — R-A vid full vaktstyrka; därefter Bengts och Axels beslut om grenen.
+  📏 **Tryckt 24/9 (Bengt: *"gör 5"*, DECISIONS #331):** R-A på det finska arkivet, 30 dygn (körning 35949100922): 39 244 rader, 419 stationer efter vakten — 0 episoder på 0 stationer, OAVGJORT (spärren 200 stationstimmar / 20 stationer); molnkontrollen R-A4 kan inte köras på Finland (SMHI:s moln når inte dit). Tryck om vid Lapplands första frost.
 
 - [ ] 🌨️ **#45 Nederbördstypen — regn, snö eller slask?** (Bengts fråga 3/9: "hur mäter
   vi snö, snöslask etc som är lika riskabla?") 🔒 LÅST BAKOM RADARDOMEN 14/9.
