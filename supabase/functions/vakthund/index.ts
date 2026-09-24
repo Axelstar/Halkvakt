@@ -61,6 +61,30 @@ async function gh(path: string, method = "GET", body?: unknown): Promise<any> {
   return r.json();
 }
 
+/** FROSTTRIGGERN (DECISIONS #338, Bengts ja 24/9): mätningarna som bara första frostnätterna kan ge trycks av vakthunden
+ *  själv, EN gång, i samma ögonblick som frostlarmet skapas — i stället för en veckoklocka i Actions (regeln 22/9) och i
+ *  stället för att hänga på att någon läser issuen inom sju dygn. Dispatch svarar 204 utan kropp, därför egen fetch.
+ *  Utfallet per flöde skrivs i issuen: ett nekat anrop (PAT:en saknar actions:write) ska synas, inte tiga. */
+const FROSTFLODEN: { fil: string; inputs: Record<string, string> }[] = [
+  { fil: "overgangar-steg0.yml", inputs: { dagar: "7" } },   // #89 0c
+  { fil: "grind-t-a.yml", inputs: { dagar: "7" } },          // #88 trenden, steg 0 inom sju dygn
+  { fil: "grind-r-a.yml", inputs: { dagar: "30", land: "se" } }, // #46 rimfrosten, svensk körning (R-A4 molnkontrollen)
+  { fil: "grind-k-a.yml", inputs: { dagar: "60" } },         // #103 frysklassningen
+  { fil: "vindsikt-steg0.yml", inputs: { dagar: "14" } },    // #90 W-A
+];
+async function utlos(floden: { fil: string; inputs: Record<string, string> }[]): Promise<string[]> {
+  const ut: string[] = [];
+  for (const f of floden) {
+    try {
+      const r = await fetch(`https://api.github.com/repos/${REPO}/actions/workflows/${f.fil}/dispatches`, {
+        method: "POST", headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" },
+        body: JSON.stringify({ ref: "main", inputs: f.inputs }) });
+      ut.push(`${r.status === 204 ? "✅" : "❌"} ${f.fil} ${JSON.stringify(f.inputs)} → ${r.status}${r.ok ? "" : ` ${(await r.text()).slice(0, 120)}`}`);
+    } catch (e) { ut.push(`❌ ${f.fil} → ${String(e).slice(0, 120)}`); }
+  }
+  return ut;
+}
+
 /** EN öppen issue per etikett (kort #190, DECISIONS #195). 15/9 14:07Z gav listanropet en tom lista
  *  medan #224 stod öppen med rätt etikett och markör; mätvakten skapade #268 och kommenterade sedan
  *  alltid i den nyaste — #224 stod övergiven i sju timmar. Orsaken syntes inte, för sökningen loggades
@@ -101,6 +125,12 @@ Deno.serve(async (req) => {
 
   const problem: string[] = [];
   if (new URL(req.url).searchParams.get("larmprov") === "1") problem.push("**LARMPROV** — medvetet framkallat fel för att bevisa larmvägen. Ska stängas automatiskt vid nästa gröna körning.");
+  // UTLÖSARPROVET (DECISIONS #338): bevisar att PAT:en får trycka ett flöde, innan frosten kommer och det inte går att ta om.
+  // Trycker bara det billigaste av de fem (vindsikt-steg0, ett dygn) och svarar med utfallet — skriver ingen issue.
+  if (new URL(req.url).searchParams.get("utlosarprov") === "1") {
+    const ut = await utlos([{ fil: "vindsikt-steg0.yml", inputs: { dagar: "1" } }]);
+    return new Response(JSON.stringify({ ok: ut.every((x) => x.startsWith("✅")), utlosarprov: ut }), { headers: { "Content-Type": "application/json" } });
+  }
   const rad: string[] = [];
   try {
     // 1. Hämtar vi? Livemotorns källor har hård tröskel, GitHub-flödets mjuk (de väntar
@@ -247,13 +277,17 @@ Deno.serve(async (req) => {
       const etikett = prov && f.n < FROST_STATIONER ? "frostlarm-prov" : "frostlarm";
       const tidigare = await gh(`/issues?state=all&labels=${etikett}&per_page=1`);
       if (!tidigare.length) {
+        // Frosttriggern (DECISIONS #338): bara vid det RIKTIGA larmet — provet trycker inga flöden (det gör ?utlosarprov=1).
+        const tryckt = etikett === "frostlarm" ? await utlos(FROSTFLODEN) : [];
         await gh(`/issues`, "POST", {
           title: `🥶 Frosten är här — kör steg 0 inom sju dygn (kort #89)${prov && f.n < FROST_STATIONER ? " [PROV]" : ""}`,
           labels: [etikett],
           assignees: ["895845"],
           body: `${f.n} stationer har haft vägyta ≤ 0 °C det senaste dygnet` +
             `${f.kallast != null ? ` (kallast ${Number(f.kallast).toFixed(1)} °C)` : ""}. Tröskeln är ${FROST_STATIONER}.\n\n` +
-            `**Att göra nu:** tryck knappen \`overgangar-steg0\` i Actions med \`dagar = 7\`.\n\n` +
+            (tryckt.length ? `**Vakthunden har tryckt mätningarna själv (DECISIONS #338):**\n${tryckt.map((t) => `- ${t}`).join("\n")}\n\n` +
+              `Står något ❌ ovan: tryck det flödet för hand i Actions med samma värden.\n\n` : "") +
+            `**Att göra nu:** tryck knappen \`overgangar-steg0\` i Actions med \`dagar = 7\`${tryckt.length ? " — om den inte står ✅ ovan" : ""}.\n\n` +
             `**Varför det brådskar — sju dygn, inte "när det passar":** gallringen (kort #83, sql/014) ` +
             `tunnar allt äldre än sju dygn till EN rad per station och halvtimme. Steg 0:s gap-vakt kastar ` +
             `varje omslag med mer än 20 minuters lucka, så en gallrad vecka är obrukbar per konstruktion. ` +
@@ -847,6 +881,18 @@ Deno.serve(async (req) => {
       if (aDygn === null || aDygn > ARKIVBACKUP_MAX_DYGN)
         problem.push(`**Arkivet saknar färsk backup**: senaste dump ${aDygn === null ? "finns inte" : `${aDygn.toFixed(1)} dygn gammal`} (gräns ${ARKIVBACKUP_MAX_DYGN}) — kör arkivbackup.yml med knappen; står Actions stilla är arkivet oskyddat (kort #213/#223)${arkivprov ? " — PROV, försvinner nästa timme" : ""}`);
     } catch (e) { problem.push(`**Kunde inte läsa arkivbackupens releaser**: ${String(e)}`); }
+    // 9k. ARKIVEXPORTEN (kort #83 steg 2a, DECISIONS #334). Exporten får ligga efter medan den beta av eftersläpningen, men
+    //     inte STÅ STILLA: färdiga dygn som inte exporterats OCH ingen export på tre timmar ⇒ larm. Står exporten stilla
+    //     raderas heller ingenting (bara bokförda dygn får tas), så databasvakten vid 400 MB är den andra vakten.
+    try {
+      const [x] = await sql`SELECT arkiv_efterslap() AS efter, (SELECT count(*)::int FROM arkiv_export) AS dygn,
+        (SELECT max(dag)::text FROM arkiv_export) AS senast_dag,
+        (SELECT round(extract(epoch FROM now() - max(exporterad)) / 3600, 1) FROM arkiv_export) AS timmar,
+        (SELECT count(*)::int FROM arkiv_export WHERE raderad IS NOT NULL) AS raderade`;
+      rad.push(`arkivexport: ${x.dygn} dygn exporterade (senast ${x.senast_dag ?? "–"}, ${x.timmar ?? "–"} h sedan), ${x.efter} väntar, ${x.raderade} raderade ur databasen`);
+      if (x.efter > 3 && (x.timmar === null || Number(x.timmar) > 3))
+        problem.push(`**Arkivexporten står still**: ${x.efter} färdiga dygn väntar och ingen export på ${x.timmar ?? "–"} h — läs net._http_response för arkivexport (kort #83, DECISIONS #334)`);
+    } catch (e) { problem.push(`**Kunde inte läsa arkivexporten**: ${String(e).slice(0, 160)}`); }
   } catch (e) {
     // Samma regel som de andra: en blind vakt är värre än ingen.
     problem.push(`**Healthcheckens kontroller (kort #87) kunde inte köras**: ${String(e)}`);
