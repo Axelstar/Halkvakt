@@ -2670,6 +2670,22 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Kvar: första riktiga klassningen (Verify). Verify: en klassad bild i tabellen och grind S-B räknar den som händelse.
   📷 **Bild framlagd 24/9 (DECISIONS #332):** `2026-09-24/SE_STA_CAMERA_VViS_329_K1-165760.jpg` (arkiverad 02:30:02Z, kamera VViS 329 K1). Bengt klassar i Supabase-panelen (Storage → facit); klassningen går in via dbknapp; grind S-B räknar. Då stängs kortet.
   ✅ **Stängt 24/9 (DECISIONS #333, Bengt: *"klassa som våt"*):** första raden i `kamerafacit` — Trafikverkets direktbild Tierp 03:11Z, sparad i `docs/kamerafacit/`, klass våt, raden bär vem som läste. Hinkens bild nås bara av Axel (§4.2). Grind S-B läser källan; händelseräkningen bevisad i självtestet, skarpt vid första halkbilden.
+- [ ] 🐕 **#243 VAKTHUNDENS ARKIVGRÄNS ÄR FÖR SNÄV — issue #528 var ett falsklarm** (fynd 24/9 på Bengts fråga *"vad betyder detta"*).
+  Checken *livemotorns effekt* larmar när `situation_archive` inte rörts på 30 min, men arkivet skrivs bara när Trafikverket
+  ändrar något: mätt 24/9 04:12Z — 4 gluggar > 30 min senaste dygnet (största 102 min), **32 på sju dygn, medel 54 min, största
+  128 min**. Livemotorn svarade varje minut hela natten (360 av 360 cron-körningar, 61 svar per timme med innehåll), deviations
+  och road_conditions 1 min färska. Issue #528 (03:07Z) stängdes av vakthunden själv 04:07Z. Förslag: gränsen till 3 h, eller
+  mät att funktionen SKREV (deviations färska) i stället för att arkivet ÄNDRADES. 🔒 NYCKEL: Bengts ja på gräns eller mått.
+  Verify: sju dygn utan falsklarm ur den checken, och ett riktigt stopp (kort #222:s fall) fångas fortfarande.
+- [ ] 🧯 **#244 "FÖR LITE DATORKRAFT" PÅ HEL- OCH HALVTIMMEN SEDAN 24/9 00:30** (fynd 24/9 i samma genomlysning). `net._http_response`
+  bär fyra svar 546 WORKER_RESOURCE_LIMIT — 00:30, 01:00, 02:00, 04:00 den 24/9 — och **inget de tre dygnen före**. Alla
+  schemalagda funktioner levererade ändå de minuterna (publicera-commit i kartrepot 02:00:51 och 04:00:54, skuggrader 02:00:03 och
+  04:00:04, livemotorn varje minut), så vilket anrop som föll går inte att se ur databasen — bara Supabases funktionsloggar säger
+  det (Axel). Tidsmässigt sammanfaller starten med kvällens deployer (skuggmotorn 20:51Z och 21:24Z bär nu prognosen: 744
+  ankare hämtas och räknas per varv) och med att tre funktioner startar samma sekund på :00/:30. Skuggvarvet 03:00 tog 50 s mot
+  normala 3–5 s medan grindarna K-A/T-A/W-A läste arkivet. Förslag: Axel läser loggen; är det skuggmotorn flyttas dess schema två
+  minuter (pg_cron, i Supabase — Bengts regel 22/9) så att den inte startar samtidigt som publicera och livemotorn. 🔒 NYCKEL:
+  funktionsloggen (Axel). Verify: noll 546 på tre dygn efter åtgärden.
 - [ ] 🦌 **#241 VILTRÖSTEN TALAR PÅ LÄNETS MITTPUNKT — mot DECISIONS #13** (fynd 22/9, Bengts fråga *"vad har vi för mätning i appen,
   polisen eller trafikverket"*; `scripts/matningar/viltrosten-polisen-2026-09-22.sql`, körning 35761967231).
   **Läget:** appens viltvarning kommer ur **polisens** data, inte Trafikverkets. `publish/snapshot-core.ts` skickar polisens viltolyckor
