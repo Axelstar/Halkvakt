@@ -14,7 +14,8 @@
 // var appens enda halkpunkt. "Silence is a feature": en station vi inte litar på är tyst.
 //
 // Inga Node- eller Deno-importer här. Web Crypto (sha256) och CompressionStream (gzip)
-// finns i båda körtiderna.
+// finns i båda körtiderna. Skattaren (./tillstand.ts) är ren TypeScript och buntas med (bundle-publicera).
+import { skattaNiva, N_SVEP, K1_GRANS, K2_ZON } from "./tillstand.ts";
 
 export type Q = (text: string, params?: unknown[]) => Promise<Record<string, any>[]>;
 
@@ -275,13 +276,18 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   // läser inget av det ännu — F1 ligger ett varv före F4 så att skuggan kan mäta först (S1).
   // Null betyder "inget i fönstret" eller "okänt", aldrig noll. Fail-soft som radarn.
   const regnH = new Map<string, number>();
+  const regnMm = new Map<string, number>();
   try {
     const rh = await q(`
-      SELECT station_id, EXTRACT(EPOCH FROM (now() - max(sample_time))) / 3600 AS regn_h
+      SELECT station_id, EXTRACT(EPOCH FROM (now() - max(sample_time))) / 3600 AS regn_h,
+             (array_agg(rain_sum_mm ORDER BY sample_time DESC))[1] AS mm
       FROM weather_observations
       WHERE rain_sum_mm > 0 AND sample_time > now() - interval '${REGN_H_FONSTER_H} hours'
       GROUP BY station_id`);
-    for (const r of rh) regnH.set(String(r.station_id), Math.round(Number(r.regn_h) * 10) / 10);
+    for (const r of rh) {
+      regnH.set(String(r.station_id), Math.round(Number(r.regn_h) * 10) / 10);
+      if (r.mm != null) regnMm.set(String(r.station_id), Number(r.mm));   // mängden vid det senaste regnet (#245)
+    }
   } catch (e) {
     notes.push(`regn_h: weather_observations ej läsbar (${String((e as Error).message).slice(0, 80)}) — regn_h blir null`);
   }
@@ -344,6 +350,17 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
     FROM smhi_warnings
     WHERE geom IS NOT NULL AND event_code ~* 'SNOW|ICE|ICING|COLD|WIND'`);
 
+  // BEVISBÄRAREN (kort #245, integrationskartan §8 B, DECISIONS #342): hur starkt varje lager talar, ur skattarens nivå
+  // (S2, DECISIONS #341). BREDVID fukt, aldrig i stället (§5.3). Ingen port läser nyckeln — verifierat 24/9: Android
+  // (SnapshotRepo.kt), iOS (SnapshotRepo.swift) och motorns adapter (engine/src/snapshot.ts) läser id, lon, lat, yta och fukt.
+  // Tre nivåer, alla oberoende av N och av K1/K2, så inget startvärde kopieras hit: väta 0–4 (hur nyligen), mängd 0–3 (hur
+  // mycket, null = okänd), radar 0–3 (null = ingen rad — radarn per station finns inte i snapshoten än; fältet fylls när den
+  // kopplingen byggs). Argumenten till skattaNiva tas ur svepen själva; de påverkar inte de tre fälten.
+  const bevisRad = (h: number | null, mm: number | null) => {
+    const n = skattaNiva({ timmarSedanStationsregn: h, timmarSedanRadarregn: null, stationenTacker: false, mmSenaste: mm },
+      N_SVEP[N_SVEP.length - 1], K1_GRANS[K1_GRANS.length - 1], K2_ZON[0]);
+    return { vata: n.vata, mangd: n.mangd, radar: n.radar };
+  };
   const segRow = (r: Record<string, any>) => ({
     id: String(r.segment_id), line: r.g.coordinates as [number, number][],
     code: num(r.condition_code), info: (r.condition_info ?? []) as string[], road: r.road_number ?? null,
@@ -363,6 +380,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
         // F1 (#187): råa indata bredvid fukt. Motorn läser dem inte; skuggan mäter (S1).
         regn_h: regnH.get(id) ?? null,
         lutning15: l?.l15 ?? null, lutning30: l?.l30 ?? null, lutning60: l?.l60 ?? null,
+        bevis: bevisRad(regnH.get(id) ?? null, regnMm.get(id) ?? null),
       };
     }),
     deviations: devs.map((r) => ({
