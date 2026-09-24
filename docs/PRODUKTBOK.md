@@ -5,10 +5,9 @@ gör, uppdateras den här boken i samma varv** — med färska skärmbilder frå
 fotostudion (CI fotar tre skärmar vid varje push). Teknikens djup bor i
 SYSTEM.md; här bor upplevelsen.
 
-*Uppdaterad 2026-09-13 · speglar iOS 0.3.5 (8) med skinnet v3, självväckningen, fyra
-länder, broarna och den prioritetsmedvetna rösten. Android (0.3.1) släpar efter på skinnet
-— Play-lanseringen väntar på tolv testare. Skärmbilderna nedan är från Android v0.3.0 och
-visar gårdagens utseende; iOS ser ut som avsnittet "Skinnet" beskriver.*
+*Uppdaterad 2026-09-24 · läst rad för rad mot koden (kort #217, DECISIONS #347). Speglar iOS 0.3.9 (14) på main och
+Android ur main (CI-bygget 23/9; versionsnumret står kvar på 0.3.1). Skärmbilderna är Android ur fotostudion 23/9.
+Där plattformarna skiljer sig står det utskrivet — oftast bär iOS skinnet fullt ut och Android ligger efter.*
 
 ---
 
@@ -28,9 +27,9 @@ grundläget — pratar den, betyder det något.
 |---|---|---|
 | ![Vakten](produktbok/shot-1-vakten.png) | ![Inställningar](produktbok/shot-2-installningar.png) | ![Om](produktbok/shot-6-betatest.png) |
 
-*(Bilderna är Android, fotostudion 16/9. iOS 0.3.5 har skinnet v3 — se avsnittet nedan. Om-fliken
-finns inte längre: två flikar, Om är sista avsnittet i Inställningar — bilden visar slutet av
-Inställningar med betatest-brytaren och början av Om.)*
+*(Android ur fotostudion 23/9, bygget från main. Repliken under Senast sagt är fotostudions provrad — rösten
+säger "Fartkamera om 500 meter.". Två flikar: Om är sista avsnittet i Inställningar — bilden visar slutet av
+Inställningar med betatest-brytaren, som fotostudion slagit på, och början av Om.)*
 
 ### Facitknappen (betatestet, S4 — Android 16/9)
 
@@ -38,99 +37,106 @@ Inställningar med betatest-brytaren och början av Om.)*
 |---|---|
 | ![Senast sagt](produktbok/shot-1-vakten.png) | ![Betatest](produktbok/shot-6-betatest.png) |
 
-*(Fotostudion 16/9. Knapparna syns bara när betatestet är påslaget och varningen bär ett id.)*
+*(Fotostudion 23/9. Knapparna syns bara när betatestet är påslaget och varningen bär ett id.)*
 
 ## Skinnet (v3, iOS 0.3.3 →)
 
-Ritat om från grunden 31/8 och portat till iOS samma kväll. Mörkt, tyst, ett ord i taget.
+Ritat om från grunden 31/8 och portat till iOS samma kväll. Mörkt, tyst, ett ord i taget. Beskrivningen är iOS;
+Android bär samma färger, typsnitt och hemskärmsord men skiljer sig på punkterna under *Android i dag*.
 
 **Hemskärmen säger ett ord: "Redo."** — i stort, i Instrument Sans. Under det en grön knapp,
 *Starta vakten*. Ingen karta, inga siffror att tolka. Under knappen ett litet kvitto:
-*"Ingen tur än."* eller *"Vaknade själv 07:14 · körde 38 min"* — det senare är
-självväckningens spår (se nedan).
+*"Ingen tur än."*, *"Senast sagt · ”…”"* eller, efter en självväckning, *"Senaste tur · 24 sep. 07:14,
+38 min, vaknade själv"* — självväckningens spår (se nedan).
 
 **Körläget:** *PÅ VAKT* i grönt, resan i siffror (*"42 min · 38 km"*), tre räknare
-(varningar, halka, vilt), en gul panel *Senast sagt*, och listan *På din väg*. Längst ner
-en konturknapp *Avsluta vakten*. Håll fingret på *PÅ VAKT* en sekund så visas ett
-demo-varningskort — så du kan se hur det ser ut utan att vänta på is.
+(varningar, halka, vilt), en gul panel *Senast sagt* när rösten har talat (annars *"Tyst så länge"*),
+och listan *På din väg* med de tre närmaste. Längst ner en konturknapp *Avsluta vakten*. Håll fingret
+på *PÅ VAKT* en halv sekund så visas ett demo-varningskort (*"Halt väglag om två kilometer."*) — så du
+kan se hur det ser ut utan att vänta på is.
 
 **Varningskortet:** helgult. Överst triangeln — Halkvakts märke, aldrig farans ikon.
 Under den farans namn i 64 punkter med farans egen ikon intill, avståndet i monospace,
-rösten i kursiv, och en stapel som rinner ner under åtta sekunder. **Ingen knapp** — du ska
+rösten i kursiv, och en stapel som fylls under åtta sekunder. **Ingen knapp** — du ska
 inte trycka på något i en bil.
 
 **Ikonsetet:** fem faror, fem former, en linje. *Halt väglag* är bilen som tappar greppet
 (vågspåren redan gjorda — det ÄR halt). *Frysrisk* är termometer och iskristall (det KAN
 bli halt). *Olycka* är samma bilkropp med en islagsstjärna. *Vilt* är ett hjorthuvud
 framifrån, hornen bär igenkänningen. *Fartkamera* är en låda på stolpe, den enda på stolpe.
-Samma fem på iOS och Android.
+Samma fem ritningar finns i Android-koden, men där visas de ännu inte på någon skärm.
 
 **Två flikar, inte tre.** Om-innehållet — löftet, ärlighetsraden, dataattributionen — är
 sista avsnittet i Inställningar. Inget att leta efter, inget att missa.
 
-## Första gången (2 minuter) — introduktionen
+**Android i dag** (fotostudion 23/9 och koden på main):
+- Hemskärmen har *Redo.* och *Starta vakten*, och direkt under knappen brytaren *Autostart* — men inget
+  kvitto. Under den står *Senast sagt* med datum och tid, och avsnittet *I närheten*: upp till sex faror
+  inom 60 km, sorterade på avstånd, med väglagets klockslag.
+- Körlägets rubrik är *PASSAGERAREN ÄR VAKEN*, panelen *Senast sagt* är mörk med gul kant, och det finns
+  inget demokort.
+- Varningskortet är helgult men har rubriken *HALKVAKT VARNAR* i stället för triangeln, ingen ikon, rösten
+  utan kursiv och ingen stapel — och en knapp, *Uppfattat*. Kortet stänger sig självt efter åtta sekunder.
+- Statuspillen överst säger *LIVEDATA* i vila och *VAKTEN PÅ* under körning. På iOS säger den
+  *Trafikverket live* (eller *Hämtar*) och *Vakten på*.
 
-Fyra sidor, helskärm, en gång. Sida två ber om plats och trappar upp till *Tillåt alltid*
-(iOS visar "medan appen används" först — Halkvakt frågar en gång till). Sida tre ber om
-notiser för bannern. **Båda sidorna kvittar**: en grön bock när det är klart, en gul rad
-med vägen till Inställningar om du sa nej. Sida fyra: *"Du är klar."* — Siri och
-självväckningen är huvudvägen; Genvägar är valfritt under Inställningar. Vill du se
-introduktionen igen finns *Visa introduktionen igen* längst ner i Inställningar.
+## Första gången (2 minuter) — introduktionen (iOS)
 
-Introduktionen visas en gång, fyra sidor. Allt går att hoppa över och ändra senare;
-den kan visas igen från Inställningar.
+Fyra sidor, helskärm, en gång. Allt går att hoppa över och ändra senare, och *Visa introduktionen igen*
+finns i Inställningar, ovanför Betatest och Om.
 
 1. **Löftet** — vad Halkvakt gör, och ordagrant: *"Din position lämnar inte telefonen av sig själv. Vi samlar in:
    ingenting — om du inte själv slår på betatestets facit i Inställningar."*
-2. **Platsen** — *Tillåt plats* ("Vid användning") — det räcker för att rösten ska tala
-   med släckt skärm. Nästa gång du kör frågar iOS om "Alltid", som behövs för att vakten
-   ska starta av sig själv.
+2. **Platsen** — *Tillåt plats* ber om "Vid användning", som räcker för att rösten ska tala med släckt skärm.
+   På samma sida ber knappen *Tillåt Alltid* sedan om "Alltid", som behövs för att vakten ska starta av sig
+   själv. Har du bara gett "Vid användning" frågar appen igen när du startar vakten. Kommer ingen fråga visar
+   sidan vägen: *Inställningar → Halkvakt → Plats → Alltid*.
    **iOS egen ruta** säger (ordagrant, `project.yml`): *"Halkvakt jämför din position med
    vägfaror lokalt i telefonen och varnar med rösten, även med släckt skärm under körning.
    Ingen position lämnar telefonen av sig själv — det enda som skickas är betatestets
    facitsvar, som du själv slår på."* Och vid *Alltid*: *"Med "Alltid" startar vakten av sig
    själv när du börjar köra. Matchningen sker lokalt i telefonen — ingen position lämnar den
    av sig själv."* Skärmbild av rutan kommer ur första bygget som bär texten (0.3.9 (13)).
-3. **Bannern** — *Tillåt notiser*, så att varningen syns över kartappen.
-4. **Du är klar** — två sätt att starta: knappen i appen, eller *"Hej Siri, starta
-   Halkvakt"* med telefonen i facket. Inget mer att ställa in. Vakten stoppar sig själv
-   när bilen stått still en kvart. Helautomatisk start i bilen är valfritt och finns
-   under Inställningar → Autostart i bilen.
+3. **Bannern** — *Tillåt notiser*, så att varningen syns över kartappen. En grön bock när det är klart, en gul
+   rad med vägen till Inställningar om du sa nej: rösten talar ändå, bara bannern uteblir.
+4. **Du är klar** — *"Vakten startar av sig själv när du kör, om platsen är Alltid. Inget mer att ställa in."*
+   Vill du starta direkt: knappen i appen, eller *"Hej Siri, starta Halkvakt"* med telefonen i facket.
+   Vakten stoppar sig själv när bilen stått still en kvart. Genvägar nämns inte här; den valfria guiden
+   finns under Inställningar → *Starta direkt (valfritt)*.
 
 Klar. Inga konton, ingen e-post, inga fler frågor.
 
-*(Android: behörigheterna frågas i trappa första gången man trycker Starta; autostarten
-lär sig bilen själv. Samma introduktion byggs där i nästa varv.)*
+*(Android har ingen introduktion. Första trycket på Starta ber om plats och — på Android 13 och senare —
+notiser. Brytaren Autostart ber om resten: rörelseigenkänning, Bluetooth och plats "Tillåt hela tiden".)*
 
 ## Flikarna (två sedan 31/8)
 
-**🛡 Vakten** — hjärtat. En stor knapp startar/stoppar vakten. Under den:
-LIVEDATA-pillen och raden **"N faror · väglag 06:10"** — tiden är *datans*
-ålder, inte nedladdningens (så du ser om underlaget är färskt). Kategoriswitchar
-låter dig stänga av t.ex. fartkameror; av-slagen kategori varnar aldrig.
+**🛡 Vakten** — hjärtat. En stor knapp startar vakten; under den *Senast sagt* (se nedan). Överst en
+statuspill som visar att datan är levande. På Android står dessutom brytaren *Autostart* och listan
+*I närheten* här.
 
-**🚗 Körläge** — det du ser om telefonen sitter i hållaren: mörk skärm, stora
-siffror (hastighet, avverkad sträcka, antal varningar) och när något händer ett
-**varningskort i 8 sekunder** med samma text som rösten just sa. Byggd för att
+**🚗 Körläget** — ingen egen flik: det ersätter Vakten medan vakten går. Mörk skärm, resans tid och
+sträcka, tre räknare (varningar, halka, vilt), *Senast sagt*, *På din väg* och *Avsluta vakten*. När
+något händer visas ett **varningskort i 8 sekunder** med samma text som rösten just sa. Byggt för att
 ögonen ska stanna på vägen.
 
-**📍 Nära dig** — listan över faror inom närområdet just nu, sorterade på
-avstånd, med riktning. För nyfikenhet före avfärd — under körning sköter rösten
-allt.
+**⚙️ Inställningar** — *Varna för*: fem brytare, en per fara (olyckor och hinder, halt väglag, frysrisk,
+vilt, fartkameror), alla på från början; en avslagen fara varnar aldrig. *Varna på avstånd*: ett
+skjutreglage för hur långt i förväg rösten ska tala — 400–3 000 m i steg om 100 på iOS, 500–5 000 m
+steglöst på Android, 3 000 m från början på båda. På iOS också *Vaknar själv när du kör* (på från
+början) och guiden *Starta direkt (valfritt)*. Och betatestets brytare *Svara på varningarna* — **av
+tills du själv slår på den** — med texten om exakt vad som skickas (se Om).
 
-**⚙️ Inställningar** — förvarningsavståndet (hur långt i förväg rösten ska
-tala, skjutreglage), röst av/på per kategori. Och betatestets brytare *Svara på varningarna*
-— **av tills du själv slår på den** — med texten om exakt vad som skickas (se Om).
-
-**ℹ️ Om** (sista avsnittet i Inställningar) — löftet i klartext: *"Din position lämnar
-aldrig telefonen. All matchning mot vägdata sker lokalt i appen. Inget konto, ingen spårning."*
-Och sedan 16/9 undantaget, ordagrant som i appen (Axels krav, DECISIONS #196): *"Undantaget är
+**ℹ️ Om** (sista avsnittet i Inställningar) — löftet i klartext, ordagrant som i appen på båda
+plattformarna: *"Din position lämnar inte telefonen av sig själv. All matchning mot vägdata sker lokalt
+i appen. Inget konto, ingen spårning."* Och sedan 16/9 undantaget (Axels krav, DECISIONS #196): *"Undantaget är
 betatestet, om du själv slår på det: då skickas varningens id, klockslag och ditt svar
 (Stämde / Stämde inte) — det säger ungefär var du var när rösten talade. Inget annat."*
-Plus ärlighetsraden: *"Varnar vid
-Trafikverkets mätstationer och rapporterade väglag — mellan stationerna är vägen
-oövervakad."* Och attributionen: Trafikverket (CC0), SMHI, Fintraffic (CC BY 4.0),
-broar © OpenStreetMap-bidragsgivare (ODbL).
+*(Svaret bär också appens namn och version, som texten inte nämner — kort #249.)*
+På iOS följer ärlighetsraden: *"Varnar vid Trafikverkets mätstationer och rapporterade väglag — mellan
+stationerna är vägen oövervakad."* Och attributionen: Trafikverket (CC0), SMHI, Fintraffic (CC BY 4.0),
+broar © OpenStreetMap-bidragsgivare (ODbL). Android visar i dag bara *"Öppna data från Trafikverket
+(CC0)"*; ärlighetsraden och de andra källorna saknas där (kort #249).
 
 ## Exakt vad rösten säger
 
@@ -144,7 +150,7 @@ broar © OpenStreetMap-bidragsgivare (ODbL).
 | Rapporterad halka på din väg — kod 2 eller högre, eller kod 1 med is, snö, frost, halka, halt, halkrisk, halkig eller *mycket besvärligt* (det sista sedan 22/9, kort #156; sedan 16/9 även i sammansättningar: *Rimfrost*, *Nysnö*, *Blötsnö*; motåtgärder som *Halkbekämpning* tiger) | "Varning: halka rapporterad på vägen framför dig." |
 | Mätstation visar frysrisk | "Isrisk framöver — vägbanan nära noll grader." |
 | Djur på vägen enligt Trafikverket — älg, hjort, vildsvin, men också lösa kor och får (sedan 22/9, DECISIONS #318; polisens länspunkter är borta) | "Viltrisk framöver." |
-| Fartkamera | "Fartkamera om 500 meter. Gränsen är 80." |
+| Fartkamera (hastighetsgränsen sägs inte: Trafikverkets kameradata bär ingen) | "Fartkamera om 500 meter." |
 | Väglagsdatat är gammalt (en gång per körning) | "Ingen färsk väglagsdata – kör som om det kan vara halt." |
 
 **Allvarlig olycka — varför två gånger?** Trafikverket klassar varje olycka efter
@@ -187,8 +193,9 @@ OpenStreetMap) och säger till när närmaste vägväderstation ligger nära nol
 vått: *"Frysrisk framöver — bro om sjuhundra meter."* Tröskeln för bron är +3 grader,
 högre än vägens +1, för att brobanan kyls från två håll. Det är en mätning plus ett
 faktum — ingen prognos. Är stationen varmare än tre grader tiger vakten om bron.
-2 476 broar ligger i appen (OpenStreetMap, ODbL). I september är listan tom i snapshoten —
-ingen station är nära noll — så du hör dem först i höst.
+2 476 broar ligger i publiceringen (OpenStreetMap, ODbL). Snapshoten till telefonen bär bara de broar
+vars närmaste station inom 15 km är +3 grader eller kallare och våt — så länge ingen station är nära noll
+är listan tom.
 
 ## Flöde 1 — en körning
 
@@ -202,7 +209,7 @@ flowchart TD
     E --> F{Fara i korridoren<br/>framför dig?}
     F -- nej --> E
     F -- ja --> G["🔊 Rösten talar<br/>+ varningskort 8 s i körläget"]
-    G --> H[45 s garanterad tystnad]
+    G --> H[Minst 10 s spärr —<br/>bara en viktigare fara bryter den]
     H --> E
 ```
 
@@ -211,7 +218,7 @@ flowchart TD
 ```mermaid
 flowchart LR
     TV[Trafikverket<br/>väglag · stationer · olyckor · djur på vägen] --> I[Insamling<br/>varje minut/timme]
-    SM[SMHI<br/>varningar] --> I
+    SM[SMHI<br/>varningar — följer med,<br/>motorn läser dem inte] --> I
     I --> S[Snapshot byggs<br/>var 10:e minut]
     S --> T[Telefonen hämtar<br/>+ verifierar äkthet]
     T --> Å{Åldersvakten:<br/>är datat färskt?}
@@ -222,7 +229,8 @@ flowchart LR
 ```
 
 Allt till höger om "Telefonen hämtar" sker **lokalt i din telefon** — därav
-löftet: positionen möter faroläget hos dig, aldrig hos oss.
+löftet: positionen möter faroläget hos dig, aldrig hos oss. SMHI:s varningar följer med i snapshoten
+men motorn läser dem inte: rösten talar aldrig på en SMHI-varning. De mäts i skuggan (förstärkaren F nedan).
 
 **Sedan 8/9 går hela kedjan utanför GitHub.** Insamling varje minut, snapshot var tionde,
 kartsajt var trettionde — allt i Supabase. Det hände efter att appen serverat tre dygn
@@ -231,11 +239,10 @@ väglagsdata"* i stället för att hitta på. Men den hade inget att säga. Nu f
 vakthund som varje timme kontrollerar att datan faktiskt når telefonen — inte bara att den
 ligger på servern. Skillnaden lät liten. Den var tre dygn.
 
-**Fyra länder (31/8):** Finland (Fintraffic, 526 stationer) och Danmark (DMI) hämtas
-löpande; Norge är förberett i väntan på Vegvesens konto. Kör du E8, E10, E12 eller E14 mot
-gränsen ser motorn de finska och norska stationerna inom 40 km av svenska vägar —
-frysrisken slutar inte vid gränsen. Rösten säger inget om frysrisk i Danmark ännu; det
-väntar på beslut.
+**Fyra länder (31/8, Norge sedan 22/9):** Finland (Fintraffic), Norge (Vegvesen) och Danmark (DMI) hämtas
+löpande. Kör du E8, E10, E12 eller E14 mot gränsen ser motorn de finska och norska stationerna inom 40 km
+av svenska vägar — frysrisken slutar inte vid gränsen. De danska stationerna följer inte med: rösten säger
+inget om frysrisk i Danmark ännu, det väntar på beslut.
 
 ## Hur vi vet att rösten har rätt — mätapparaten
 
@@ -260,8 +267,9 @@ flowchart LR
 
 Det viktiga är ordningen. **Trösklarna skrivs innan någon vet hur talen ser ut.** Det är det
 enda som gör att en dom går att lita på — och det enda som gör att ett nej inte kan
-förhandlas bort i efterhand. Grind A skrevs den 1 september på 57 mätpunkter. Den föll den
-12 september på 2 042. Ingen flyttade målstolparna, för de var daterade.
+förhandlas bort i efterhand. Grind A skrevs den 1 september på 57 mätpunkter och dömdes den 23 september
+på 7 356 — klarad. Den 12 september såg den ut att falla, tills det visade sig att mätningen saknade vakterna
+mot trasiga givare; med dem stod det INGEN DOM samma dag. Ingen flyttade målstolparna, för de var daterade.
 
 En dom har tre utfall, aldrig två. **OAVGJORT** är ett riktigt svar: instrumentet vägrar
 döma under ett minsta underlag (till exempel 500 punkter över 20 stationer) och skriver
@@ -270,22 +278,22 @@ nästan alla kalla mätningar från samma tre stationer.
 
 ### Grindarna — vad som mäts, hur, och var det står
 
-| Grind | Frågan | Måttet | Facit | Status 13/9 |
+| Grind | Frågan | Måttet | Facit | Läge 24/9 |
 |---|---|---|---|---|
-| **A — Skuggmotorn** | Kan en stations yttemp förutsägas ur grannarnas? | MAE ≤ 1,0 °C · grova fel ≤ 5 % · frysklassfel ≤ 10 % | Stationen själv, leave-one-out | **FALLEN** 12/9: 1,06 °C, 10,7 %. Men frysklassfel 1,1 % ⇒ ny grind |
-| **Frysklassningen** | Kan en modell dålig på grader ändå bära *vilken sida av noll*? | Egna trösklar, skrivna före mätning | Samma leave-one-out | Fastställd 12/9, väntar på körning |
+| **A — Skuggmotorn** | Kan en stations yttemp förutsägas ur grannarnas? | MAE ≤ 1,0 °C · grova fel ≤ 5 % · frysklassfel ≤ 10 % | Stationen själv, leave-one-out | **KLARAD** 23/9: 0,71 °C, grova fel 3,5 %, frysklassfel 0,0 % på 7 356 punkter (DECISIONS #321). Vägpunkten utan egen historik: grinden öppen (#324) |
+| **Frysklassningen** | Kan en modell dålig på grader ändå bära *vilken sida av noll*? | Egna trösklar, skrivna före mätning | Samma leave-one-out | Körd 24/9: **INGEN DOM** — ingen station har frusit vid nollgränsen på 60 dygn |
 | **V — Vattenplaning** | Kan stationsregn förutsäga intensitet där du kör? | Träff ≥ 70 % · falsklarm ≤ 20 % | Radar + olyckor | **NEJ** (61 % på 3 594 punkter). Stationsspåret nedlagt |
-| **Radardomen** | Duger radarn som segmentkälla för regn? | Bekräftelse mot station per intensitetsband | Stationerna | Din och Bengts, 14/9. Underlag: 14 583 par |
-| **T — Trenden** | Varnar "ytan faller mot noll" i tid? | T-A fysik (klara nätter) · T-B träff/miss/falsklarm | Omklassning till halka, kameror | **OAVGJORT** — 17 frostnätter av 30 |
-| **Ö — Övergångarna** | Fryser en blöt väg efter regnet som slutat? | B3-paret: räddade missar mot tillkomna falsklarm, per proxy | Omklassning, kameror, olyckor | Ö-A passerad (hålet finns: 35 min, inte 10). Ö-B väntar på frost |
-| **W — Vind och sikt** | Är byvind/sikt en egen fara, eller förvärrar de halka? | Två roller, dömda var för sig | Olyckor per exponeringsband | **OAVGJORT** — 36 stationstimmar av 500 |
-| **F — SMHI-förstärkaren** | Höjer en snövarning konfidensen? | Golv OCH tak (5–80 %) | Omklassning | **OAVGJORT** — 3 stationstimmar |
-| **Rimfrost** | Svartis utan nederbörd, yta under daggpunkt? | Andra gren i frysrisken, inte sjätte fara | Finska arkivet, Lapplands septemberfrost | Fastställd 12/9 |
-| **Tystnadsfelet** | Hur ofta tiger rösten när den borde tala? | Oursäktlig miss (signal fanns) mot ursäktlig | Hela facitstacken | Fastställd, ingen kod förrän skuggan går |
+| **Radardomen** | Duger radarn som segmentkälla för regn? | Bekräftelse mot station per intensitetsband | Stationerna | Prövas i mars ur arkivet; betan kör utan radar (DECISIONS #223) |
+| **T — Trenden** | Varnar "ytan faller mot noll" i tid? | T-A fysik (klara nätter) · T-B träff/miss/falsklarm | Omklassning till halka, kameror | **OAVGJORT** — steg 0 körd 24/9: 47 frostnätter på 26 stationer, ingen separation än. Körs om av sig själv vid första frosten |
+| **Ö — Övergångarna** | Fryser en blöt väg efter regnet som slutat? | B3-paret: räddade missar mot tillkomna falsklarm, per proxy | Omklassning, kameror, olyckor | Ö-A passerad (hålet finns: 35 min, inte 10). Skattaren med nivå och bevis byggd 24/9. Ö-B väntar på frost |
+| **W — Vind och sikt** | Är byvind/sikt en egen fara, eller förvärrar de halka? | Två roller, dömda var för sig | Olyckor per exponeringsband | **OAVGJORT** — steg 0 körd 24/9, underlaget räcker inte än |
+| **F — SMHI-förstärkaren** | Höjer en snövarning konfidensen? | Golv OCH tak (5–80 %) | Omklassning | **OAVGJORT** — 3 stationstimmar (13/9) |
+| **Rimfrost** | Svartis utan nederbörd, yta under daggpunkt? | Andra gren i frysrisken, inte sjätte fara | Finska arkivet, Lapplands septemberfrost | Fastställd 12/9. Körd 24/9: 0 episoder, **OAVGJORT** |
+| **Tystnadsfelet** | Hur ofta tiger rösten när den borde tala? | Oursäktlig miss (signal fanns) mot ursäktlig | Hela facitstacken | Instrumentet byggt 24/9 (DECISIONS #330); dom när halkperioderna finns |
 | **Väglagets ålder** | Ska ett stående "Is och snö" tystas när vintern tagit slut? | Världen motsäger klassningen, inte ålder | Stationer mot segment | Fastställd 12/9. INGEN åldersgräns byggd |
 
-Alla tio ligger i `docs/TROSKLAR-*.md`. Tre kort har stängts som dokumenterade nej på
-två veckor: vattenplaningens stationsspår, dämpningen, och däcktyp. Ett nej som skrivs ner
+Trösklarna ligger i `docs/TROSKLAR-*.md`, elva dokument. Tre kort stängdes som dokumenterade nej på de
+första två veckorna: vattenplaningens stationsspår, dämpningen, och däcktyp. Ett nej som skrivs ner
 är värt lika mycket som ett ja — det hindrar att samma idé kommer tillbaka om tre veckor.
 
 ### Instrumenten — vad som mäter vad
@@ -293,14 +301,14 @@ två veckor: vattenplaningens stationsspår, dämpningen, och däcktyp. Ett nej 
 ```mermaid
 flowchart TB
     subgraph K[KONSISTENS — gör motorn vad vi sagt?]
-        V[23 vektorer<br/>byte-för-byte i TS, Kotlin, Swift]
+        V[37 vektorer<br/>byte-för-byte i TS, Kotlin, Swift]
         B[Buntkontroll<br/>skuggmotorn = engine/src]
         MS[Manifest + sha256<br/>appen förkastar trasig snapshot]
         KG[Kodgrinden<br/>farlighetsord i kod]
     end
     subgraph S[SANNING — stämmer det med vägen?]
-        SM[Skuggmotorn<br/>3+20 rutter var 30:e min<br/>loggar vad rösten SKULLE sagt]
-        FH[Facit-hinken<br/>kamerabild vid varje varning<br/>+ gryningsbild]
+        SM[Skuggmotorn<br/>20 rutter per land, 3 per varv<br/>var 30:e min · loggar vad<br/>rösten SKULLE sagt]
+        FH[Facit-hinken<br/>kamerabild vid skuggvarningarna<br/>en per station och 3 h]
         MI[missar.ts<br/>träffar och missar<br/>mot arkivhändelser]
         SU[Spärrloggen<br/>vad rösten INTE fick säga<br/>ny 13/9]
     end
@@ -320,7 +328,7 @@ flowchart TB
     style V2 fill:#0F1518,color:#E9EFF2,stroke:#6EC9E8
 ```
 
-**Konsistensvakterna** svarar på om motorn gör vad vi sagt. De 23 vektorerna är den
+**Konsistensvakterna** svarar på om motorn gör vad vi sagt. De 37 vektorerna är den
 viktigaste: en fil per scenario med spår, faror och exakt förväntad röstlogg, och alla
 tre motorerna — TypeScript, Kotlin, Swift — måste ge samma svar byte för byte. Ändras en
 regel måste vektorn ändras med, synligt, i samma commit. De kan köras i augusti.
@@ -328,8 +336,8 @@ regel måste vektorn ändras med, synligt, i samma commit. De kan köras i augus
 **Sanningsvakterna** svarar på om det motorn säger stämmer med vägen. De kräver facit,
 och facit finns bara på vintern. Skuggmotorn kör referensrutter var trettionde minut mot
 riktig data och loggar vad rösten *skulle* ha sagt — utan att någon förare hör det.
-Facit-hinken arkiverar en kamerabild från Trafikverkets väglagskameror vid varje
-skuggvarning, så vi i mars kan öppna bilden och se: sa vi halka, och *var* det halt?
+Facit-hinken arkiverar en kamerabild från Trafikverkets väglagskameror vid
+skuggvarningarna — en per station och tre timmar — så vi i mars kan öppna bilden och se: sa vi halka, och *var* det halt?
 
 **Spärrloggen** är nyast. Det rösten inte fick säga — kastat av spärren — loggades
 ingenstans förrän 13/9. Nu står det i skuggloggen: vad, tystat av vad, med vilken marginal.
@@ -344,8 +352,9 @@ Första gången vi provade kunde vakthunden bara säga "allt bra" — larmvägen
 
 Det korta svaret: **motorn är bevisat konsekvent och oprövat sann.** Vektorerna bevisar
 att den gör vad vi sagt. Ingen sanningsvakt har haft en enda vinterdag att mäta mot.
-Grind A föll på septemberdata som redan var 36 gånger större än vid skrivningen. Trenden,
-vinden, förstärkaren står alla på OAVGJORT av samma skäl: för lite frost.
+Grind A klarade sig på septemberdata 23/9 — men septemberdata är inte vinterdata. Trenden,
+vinden, frysklassningen, rimfrosten och förstärkaren står alla på OAVGJORT av samma skäl:
+för lite frost.
 
 Det som gör oss lugna är att apparaten kunde säga nej till oss själva när den fick data.
 Det som gör oss vaksamma är att tre gånger på två veckor verifierade vi att något *fanns*
@@ -354,37 +363,31 @@ i stället för att det *fungerade*. Instrumenten är byggda. Vintern är facit.
 ## Vad appen inte gör
 
 Ingen prognos (varnar på uppmätt läge, inte gissningar), tyst mellan
-mätstationerna, ingen ködetektion ännu (kommer som uppdatering 1). Skickar ingenting om
+mätstationerna, ingen ködetektion ännu. Skickar ingenting om
 dig — med ett enda undantag som du själv slår på: betatestets facitsvar (se Om). Hela ärliga
 listan: [SYSTEM.md §4](SYSTEM.md).
 
-## iOS då?
-
-Samma app, samma röst, samma löfte — skriven och väntar på sitt första bygge
-på Axels Mac (måndag). Produktboken gäller båda; skiljer sig något kommer det
-stå här.
-
-
 ## iOS-utgåvan (byggd 29/8 2026)
 
-Samma tre flikar, samma texter, samma motor — skillnaderna är plattformens:
-flikraden är iOS 26:s svävande "glaspill" i stället för Androids fasta rad,
-och överst på varje flik sitter varumärkesraden **⚠ HALKVAKT** med en liten
-statuspill till höger på Vakten-fliken (LIVEDATA i vila, VAKTEN PÅ under
-körning). Skärmbilder tas från Axels iPhone (CI:n kan bara fota Android).
+Samma två flikar, samma röst, samma motor — skillnaderna står utskrivna ovan där de finns. Flikraden är
+systemets egen (iOS 26 ritar den som svävande glas). Överst på Vakten och i körläget sitter varumärkesraden
+**⚠ HALKVAKT** med statuspillen till höger: *Trafikverket live* i vila, *Vakten på* under körning.
+Skärmbilder från iOS tas på Axels iPhone eller i simulatorn med fotostudio-kroken (CI:n fotar bara Android).
 
 ## Autostart i bilen
 
-**Android:** vakten startar själv. Första gången du kör med Halkvakt igång lär sig
-appen vilken Bluetooth-enhet som är bilen; nästa gång bilen kopplar upp startar vakten
-utan att du gör något, och stannar när bilen kopplas från. Rörelseigenkänning täcker
-även bilar utan Bluetooth. Inget att ställa in.
+**Android:** slå på brytaren *Autostart* på hemskärmen. Den ber om fyra behörigheter i tur och ordning:
+plats, rörelseigenkänning, Bluetooth och plats *Tillåt hela tiden* (som Android 11 och senare bara ger i
+inställningarna, kort #226). Sedan lär sig appen varje Bluetooth-enhet som kopplas medan vakten går — även
+hörlurar — och startar vakten när en av dem kopplar upp igen. Rörelseigenkänningen startar vakten i bilar
+utan Bluetooth. **Att stoppa fungerar inte i dag:** vakten stannar varken när bilen kopplas från eller när
+bilen står still, utan går tills du avslutar den (kort #248).
 
 **iPhone — vakten vaknar själv (0.3.2):** ge Halkvakt platsen **Alltid**. Då ber appen iOS
-väcka den när telefonen lämnar platsen där bilen senast stod (ett par hundra meter), kollar
-farten, och startar vakten om det är bilfart. Första resan efter installation, när ingen
-parkering är känd, väcks den efter ungefär 500 meter i stället. Kostar nästan inget batteri. Inget mer att ställa in. Kan stängas av under Inställningar → *Vakna själv när
-du kör*.
+väcka den när telefonen lämnar platsen där bilen senast stod (150 meter), följer farten i upp till en och en
+halv minut och startar vakten vid 15 km/h. Första resan efter installation, när ingen parkering är känd,
+väcks den i stället av iOS större platsbyten (Apple anger ungefär 500 meter). Kostar nästan inget batteri.
+Inget mer att ställa in. Kan stängas av under Inställningar → *Vaknar själv när du kör*.
 
 **Bevisat på pappas telefon 31/8** — vakten startade själv utan att han rörde telefonen,
 och körläget visade fyra fartkameror sex kilometer fram. Sedan Malmö–Boden 1/9: 100 mil
@@ -402,8 +405,8 @@ kör. Vi läste den bakvänt sedan dag ett. Verifierat mot Öjersjö-kameran, ID
 "norrgående körriktning, bäring 158°". Nu vänd, och toleransen 60 grader.
 
 **Vill du att den startar i första metern** finns två snabbare vägar: säg *"Hej Siri,
-starta Halkvakt"*, eller bygg en automation i Genvägar en gång. Guiden — i introduktionen och under Inställningar →
-*Autostart i bilen* — ställer först **en fråga: hur kopplar du telefonen i bilen?** och
+starta Halkvakt"*, eller bygg en automation i Genvägar en gång. Guiden — under Inställningar →
+*Starta direkt (valfritt)* — ställer först **en fråga: hur kopplar du telefonen i bilen?** och
 visar sedan bara de steg som gäller dig:
 
 Knappen *Öppna Genvägar på Ny automation* kommer först och landar på listan över
@@ -428,7 +431,7 @@ själv när bilen stått still i en kvart. Svaret går att byta i Inställningar
 Ge Halkvakt platsen **"Alltid"** så startar vakten tyst i bakgrunden och kartan stannar
 kvar på skärmen. Med "Vid användning" visas Halkvakt en kort stund vid starten och du
 växlar tillbaka till kartan. Siri fungerar också: *"Starta Halkvakt"*. Appen lämnar
-aldrig din position ifrån sig — det gäller precis lika vid autostart.
+aldrig ifrån sig din position av sig själv — det gäller precis lika vid autostart.
 
 ## Bannern över kartappen
 
@@ -438,20 +441,24 @@ sekunder, sedan försvinner den själv. Ingen knapp, inget att trycka på, inget
 utöver rösten. Bannern är ögats kvitto; rösten är budskapet.
 
 Har du Halkvakt framme visas i stället varningskortet i appen. På iPhone bryter bannern
-igenom Fokus-läget "Kör". Första gången vakten startar frågar telefonen om notiser får
-visas — säg ja, annars uteblir bannern (rösten talar ändå).
+igenom Fokus-läget "Kör"; på Android bryter den inte igenom Stör ej. Telefonen frågar om notiser får
+visas — på iPhone i introduktionen eller vid första starten, på Android första gången du trycker Starta.
+Säg ja, annars uteblir bannern (rösten talar ändå).
 
 ## Senast sagt
 
-Hemskärmen visar förra körningens sista replik med datum och tid, även när vakten är av.
-Har rösten aldrig behövt säga något står det så — tystnad är en funktion.
+På Android visar hemskärmen den senaste repliken med datum och tid, även när vakten är av. Har rösten
+aldrig behövt säga något står det *"Rösten har inte behövt säga något än."* — tystnad är en funktion.
+På iPhone är det raden under knappen, *"Senast sagt · ”…”"* utan klockslag, och efter en självväckning
+visar raden resan i stället (se Skinnet).
 
 **Facitknappen (betatestet, 16/9):** under repliken två knappar, *Stämde* och *Stämde inte*.
 Ingen fritext — inte i en bil. Svaret sparas i telefonen och skickas när bilen stått stilla en
-halv minut, eller när appen öppnas; aldrig under körning. Det som skickas är varningens id,
-klockslaget och svaret, inget annat. Knapparna finns bara om du slagit på betatestet i
-Inställningar. Ändrar du dig ersätter det nya svaret det gamla. (Facitet är beslutet i DECISIONS
-#186 — betatestare med samtycke i känd krets; löftet till allmänheten är orört.)
+halv minut, direkt om vakten är av, eller när appen öppnas; aldrig medan bilen rullar. Det som
+skickas är varningens id, klockslaget, svaret och appens namn och version — inget annat. Knapparna
+finns bara om du slagit på betatestet i Inställningar. Ändrar du dig ersätter det nya svaret det
+gamla. (Facitet är beslutet i DECISIONS #186 — betatestare med samtycke i känd krets; löftet till
+allmänheten är orört.)
 
 *Rättat samtidigt:* kortet visade den äldsta sparade repliken, inte den senaste — synligt först
 när knappen skulle sitta på rätt varning.
@@ -464,7 +471,8 @@ notis: *"Resan klar — stämde alla 3 varningarna?"* Den bär knapparna i sig. 
 stämde" räcker, direkt på låsskärmen — appen behöver aldrig öppnas.**
 
 *"Något stämde inte"* öppnar appen i stället, för en avvikelse måste pekas ut på en rad. Överst på
-*Redo.* ligger då ett kort med **resans varningar, en rad var med klockslag och text**, och *Stämde* /
+*Redo.* ligger då ett kort med **resans varningar, en rad var med klockslag och text** (på iPhone bara
+de obesvarade), och *Stämde* /
 *Stämde inte* på varje. Kortet står kvar tills allt är besvarat, eller ett dygn — sedan tiger det. Ett
 svar på en resa man inte minns är inte ett facit, det är en gissning.
 
@@ -472,10 +480,10 @@ svar på en resa man inte minns är inte ett facit, det är en gissning.
 automatisera svaret: tystnad betyder lika ofta *"såg inte"*, *"kunde inte bedöma"* eller *"telefonen
 låg i fickan"*.
 
-Det som skickas är som förut och inget mer: varningens id, klockslaget och ditt svar. Notisen finns
-bara om du själv slagit på betatestet i Inställningar.
+Det som skickas är som förut och inget mer: varningens id, klockslaget, ditt svar och appens namn och
+version. Notisen finns bara om du själv slagit på betatestet i Inställningar.
 
-## Versionerna (två veckor, sex byggen)
+## Versionerna
 
 | Version | Datum | Vad |
 |---|---|---|
@@ -485,14 +493,17 @@ bara om du själv slagit på betatestet i Inställningar.
 | 0.3.3 (6) | 2/9 | Skinnet v3, ikonsetet, Om-fliken bort, resan över pauser, broarna vilande. |
 | 0.3.4 (7) | 2/9 | Kameratoleransen 60°, vägnumret i rösten. Byggd med rött kontrakt — *ogiltig*. |
 | 0.3.5 (8) | 2/9 | Kamerariktningen vänd 180°. Första bygget med grönt kontrakt i alla tre motorer. |
-| *nästa* | — | Prioritetsmedveten spärr, golv 10 s (#165). Ligger på main, väntar på arkivering. |
-| *nästa (Android)* | 16/9 | Facitknappen *Stämde / Stämde inte* + betatest-brytaren (S4, DECISIONS #202). Senast sagt visar rätt rad. |
 | 0.3.6 (9) | 16/9 | Facitknappen *Stämde / Stämde inte* + betatest-brytaren i iOS (DECISIONS #203), Om-undantaget ordagrant, spärren 10 s (#127), fotostudio-kroken. TestFlight-uppladdning: Axel. |
 | 0.3.7 (10) | 16/9 | Svaret skickas direkt när man trycker med vakten av (bilen står stilla) — förut väntade det på nästa appstart (DECISIONS #208). |
-| *nästa (båda)* | 20/9 | **Efter resan**: låsskärmsnotisen med *Ja, alla stämde* / *Något stämde inte*, och kortet överst på *Redo.* med en rad per varning — klockslag och text (DECISIONS #277). Android grön i CI; iOS kompileras vid nästa bygge. |
+| 0.3.8 (11) | 18/9 | Nytt bygge med facitknapparna — 0.3.7 (10) i TestFlight saknade dem (DECISIONS #240). |
+| 0.3.9 (12) | 20/9 | Rösten tystnar inte längre med släckt skärm för den som svarat "när appen används" (DECISIONS #273, #275). |
+| 0.3.9 (13) | 23/9 | **Efter resan** (DECISIONS #277), rättad behörighetsruta, viltvarningen på Trafikverkets djur (#318), integritetsmanifestet. Uppladdad till Apple 23/9 — App Store-kandidaten. |
+| 0.3.9 (14) | 23/9 | Gamla facitsvar stoppar inte kön längre; löftet i appen = integritetspolicyn. På main, inte arkiverad än. |
+| Android (CI) | 16/9 → | Facitknappen och betatest-brytaren (S4, DECISIONS #202), Efter resan (20/9), viltvarningen på Trafikverkets djur (22/9). Versionsnumret står på 0.3.1 (4). |
 
-Android ligger kvar på 0.3.1 med gammalt skinn. Skinnet v3 är portat och bevisat i
-emulator; Play-lanseringen väntar på tolv testare.
+Android bär fortfarande versionsnumret 0.3.1 (4), men CI bygger den ur main med skinnet v3, facitknappen
+och Efter resan — det är de byggena skärmbilderna kommer från. Ingen Android-version har gått ut via Play än
+(kort #219).
 
 ## Vad vi lärde oss om oss själva (13/9)
 
