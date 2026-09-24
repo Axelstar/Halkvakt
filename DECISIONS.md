@@ -9959,3 +9959,10 @@ facit, ett nytt (#245) prövar väta och mängd, null för okänd mängd, `fukt`
 Fältet står ändå, så formen är stabil när det fylls (att lägga till nu och fylla senare är additivt; att ändra form senare vore
 det inte). Ingen läser `bevis` i dag: det är indata till försprånget (#153) och till S3.
 
+**Idrifttagning 24/9:** PR #547 (a00435d), CI grön — integrationstestet körde den nya regnfrågan mot PostGIS efter att dess facit
+fått fältet. Deploy av publicera 14:09Z från main, noll diff. Publiceringarna 14:10 och 14:20 svarade `ok` och kartrepot fick sina
+commits; manifestets sha stämmer med live.json. **Men live.json bär noll väderpunkter** i eftermiddagssolen (ingen station ≤ +3 °C),
+så fältet har ingen rad att sitta på. Beviset med innehåll kommer när stationerna kallnar: vakthunden fick raden
+`bevis: N av M väderpunkter` (larm om punkter finns och någon saknar fältet), så beviset skrivs i timkontrollen utan att någon
+behöver titta.
+
