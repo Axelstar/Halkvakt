@@ -382,6 +382,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   📉 MORGON 14/9, mätt över 14,0 h enligt regeln (aldrig under 12): weather_obs 282 370 (13/9 16:23)
   → 289 958 (14/9 06:23) = 7 588 rader ⇒ **~13 000/dygn**. Kalla stationer 3 (var 1 i går). Takten
   ligger kvar långt under vinterprojektionens 41 000.
+  ↪ **Hit sammanslaget 24/9 (DECISIONS #332): #155 snubbeltråden.** Beslutet om kvarhållningen (steg 2, export eller Pro) avgör två mätinstruments byggform: trendarkivet (#88) SPARAR för att gallringen förstör dess 15-minutersfönster; tillståndsskattaren (#89) och tystnadsfelet (#98) RÄKNAR OM för att deras ingångar överlever. Skärps kvarhållningen, eller börjar `radar_precip` gallras (inget gör det i dag), upphör ingången att vara återskapbar och båda måtten måste byta till #88:s form. Gratisnivån räcker ~55 dygn in i vintern (sql/014). Principen står i TROSKLAR-OVERGANGAR och TROSKLAR-TRENDEN (Bengts order 14/9).
 - [x] ~~Fastställ trösklarna för skuggan~~ ✅ FASTSTÄLLT 2/9 (DECISIONS #61): Axels
   "kör" relayerat av Bengt i chatten, värdena oförändrade från Bengts 1/9-version inkl.
   §2-orsaksklassningen. Kvitto: huvudet i docs/TROSKLAR-SKUGGAN.md. Bocken här är
@@ -969,7 +970,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ HINKEN FYLLS 15/9: skuggmotor deployad 15:52Z; tystnadsfelet 16:02Z: **1 bild i `facit`**, senast 15/9 — första objektet någonsin. Den åttonde länken var den sista.
   📷 **AXEL 16/9: 26 objekt i hinken sedan 16:00Z** (verifierat i DB). Reservation: 738 av 744 kameror står vid en station —
   radien säger att det finns en kamera nära, inte att bilden visar rätt sträcka. Avgörs i mars när någon öppnar bilderna.
-- [ ] 🧵 **#155 SNUBBELTRÅD: ändras #83:s kvarhållning måste #89 och #98 byta byggform**
+- [x] ↪ **SAMMANSLAGET 24/9 i #83** (DECISIONS #332) — 🧵 **#155 SNUBBELTRÅD: ändras #83:s kvarhållning måste #89 och #98 byta byggform**
   **Principen (skriven 14/9 i TROSKLAR-OVERGANGAR och TROSKLAR-TRENDEN, Bengts order):** spara det
   som inte går att räkna om, räkna om det som går — och vilket som är vilket är en MÄTNING, inte en
   smaksak. Trendarkivet (#88) sparar för att gallringen förstör dess 15-minutersfönster.
@@ -980,6 +981,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   dag), upphör ingången att vara återskapbar och båda måtten måste byta till #88:s form.
   ⏭️ **VAD SOM SKA GÖRAS NU: ingenting.** Kortet finns för att beslutet i oktober ska veta att det
   rör mer än lagringsutrymme — det avgör två mätinstruments byggform.
+  ↪ **SAMMANSLAGET 24/9 i #83** (DECISIONS #332): villkoret står som stycke på #83, där oktoberbeslutet tas.
 - [x] ✅ **STÄNGT 22/9** (DECISIONS #304) — 📮 **#154 ANMÄL NIO TRASIGA BYVINDGIVARE TILL TRAFIKVERKET — skriven och klar, skickas av Bengt**
   **Beställd av Bengt 13/9** ("gör 1 och 2") efter att stationsvakten (#90, DECISIONS #164) hittat dem.
   **Brevet ligger i `docs/ANMALAN-TRV-BYVINDGIVARE.md`** — komplett med stations-id, namn, WGS84,
@@ -2666,6 +2668,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   sida finns; dom-knappen läser den som femte källa. Kostar inget i drift. ✅ Bengts ja 24/9 (*"gör kamerafacit"*): sex klasser, dbknapp tills en sida finns. 🔨 **BYGGT 24/9 (DECISIONS #329):**
   `sql/033_kamerafacit.sql` (dubbellåst), femte källan i `publish/grind-s-b.ts` — bekräftar, fäller aldrig; självtestet bevisar båda.
   Kvar: första riktiga klassningen (Verify). Verify: en klassad bild i tabellen och grind S-B räknar den som händelse.
+  📷 **Bild framlagd 24/9 (DECISIONS #332):** `2026-09-24/SE_STA_CAMERA_VViS_329_K1-165760.jpg` (arkiverad 02:30:02Z, kamera VViS 329 K1). Bengt klassar i Supabase-panelen (Storage → facit); klassningen går in via dbknapp; grind S-B räknar. Då stängs kortet.
 - [ ] 🦌 **#241 VILTRÖSTEN TALAR PÅ LÄNETS MITTPUNKT — mot DECISIONS #13** (fynd 22/9, Bengts fråga *"vad har vi för mätning i appen,
   polisen eller trafikverket"*; `scripts/matningar/viltrosten-polisen-2026-09-22.sql`, körning 35761967231).
   **Läget:** appens viltvarning kommer ur **polisens** data, inte Trafikverkets. `publish/snapshot-core.ts` skickar polisens viltolyckor
@@ -3409,7 +3412,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Den hjälper bara nära ankaret (0–7 km: 2,58 → 2,31) och i 15–20 km (1,52 → 1,38). Offsetmodellen
   slår båda överallt (1,06 °C). **Rangordningen står — men "felkartan dömer" dömer nu emot sig själv,
   se grind A i #38b.** 751 av 761 stationer fick EU-DEM-höjd.
-- [ ] 🕳️ **#97 Motorns halk-regex är blind för sammansättningar — "Rimfrost", "Halkrisk"** (kodgrindens
+- [x] ✅ **STÄNGT 24/9** (DECISIONS #332) — 🕳️ **#97 Motorns halk-regex är blind för sammansättningar — "Rimfrost", "Halkrisk"** (kodgrindens
   självtest 11/9, PR #104). Lookbehind-regexen i engine.ts:40 matchar faroordet bara när det står först i
   ordet; "Rimfrost" och "Halkrisk" passerar tysta oavsett kod. I arkivets 838 infosträngar förekommer ingen av
   dem — ingen miss i dag, men en tyst ALDRIG den dag Trafikverket skriver så. 🔒 NYCKEL: motorändring =
@@ -3425,6 +3428,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   efter deploy med manifest-sha STÄMMER · vakthund `vinterprov`: "vinterord i väglagsarkivet: nej", problem [] · skuggmotor
   `sparrprov` identiskt med 02:42Z. VÄNTAR: app-bygge från main (iOS **0.3.7 (10)**, inte 0.3.8 — ett bygge täcker facit
   OCH ordlistan) · bevis med innehåll vid första vinterordet (vakthundens vinterkoll larmar).
+  ✅ **Stängt 24/9 (DECISIONS #332, Bengt: *"tre ja"*):** vektorn `v24_vinterord_kod1.json` grön i alla tre portar (android + ios-engine gröna på main cdd7889 23/9), deployad 16/9, i apparna sedan 0.3.9. Vakthundens check 4 larmar vid första vinterordet — bevakning, inte villkor.
 - [x] ✅ **#87 HEALTHCHECKENS KONTROLLER IN I VAKTHUNDEN — KLART 14/9, och filen blir KVAR** (Bengts beslut, DECISIONS #178)
   ⛔ **RADERINGEN AV `healthcheck.yml` ÄR INSTÄLLD — ett dokumenterat nej, inte en gloms bort.**
   Bengt 14/9: *"ta inte bort healthcheck eftersom den knappt kostar något"*. Skälet väger tyngre
@@ -4326,6 +4330,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#97 HALK-REGEXEN — STÄNGT 24/9 (DECISIONS #332)**: ordlistan vidgad 16/9, vektor v24 grön i tre portar, i apparna sedan 0.3.9. Tavlan 49 → 48.
+- [x] ↪ **#155 SNUBBELTRÅDEN — SAMMANSLAGEN I #83 24/9 (DECISIONS #332)**: villkoret på kvarhållningen bor där beslutet tas. Tavlan 48 → 47.
 - [x] ✅ **VÄGPUNKTSGRINDEN ÖPPEN 23/9 (DECISIONS #324)**: rå avståndsviktning utan offset klarar grind A:s mått utan målets historik (0,71 °C · 3,8 % · 0,0 %), lika bra som den lärda offseten. 4a svarat, offsettabellen utgår, bygget i oktober står. Första körningen föll på fel population — läxan i CLAUDE.md.
 - [x] ✅ **GRIND A DÖMD: KLARAD — 23/9 (Bengt, DECISIONS #321)**: offsetmodellen håller vid stationerna, A1 0,71 °C · A2 3,5 % ± 0,4 · A3 0,0 % på 7 356 punkter (22/9 med vakterna). Taket, inte vägen — vägen döms i mars.
 - [x] ✅ **NOVEMBERBESLUTET FATTAT 23/9 (Bengt, DECISIONS #322)**: segmentmotorn byggs i skugga i vinter, start mitten av oktober; först offsetens väg till vägpunkten i TROSKLAR-SKUGGAN (kort #38b 4a). Ingen röst, inget till användaren före mars 2027.

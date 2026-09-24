@@ -9771,3 +9771,19 @@ arkiven, W-A), S3 när S1-grinden passerats, #83 när Axel valt.
 
 **Frågan om måndagsklockan** (K-A, R-A, T-A, W-A är knappar, inte på pulsklockan) står kvar i §4.2 — Bengt sa inget om den.
 
+## #332 (24/9 2026) Tre stängningar på Bengts "tre ja": #97 stängt, #155 sammanslaget i #83, #242 stängs på första klassade bilden
+
+**Beslut (Bengt 24/9: *"tre ja"* på förslagen i bedömningen §4.2).**
+1. **#97 halk-regexen STÄNGT.** Byggt 16/9 (DECISIONS #214): ordbörjan `is|halka|halkrisk|halkig|halt|mycket besvärligt` +
+   stammarna `snö|frost`, elva ställen, vektorn `v24_vinterord_kod1.json`. Bevis: android och ios-engine gröna på main
+   (cdd7889, 23/9 21:23Z), deployad 16/9, i apparna sedan 0.3.9. Vakthundens check 4 (första vinterordet i väglagsarkivet) är
+   bevakning, inte ett villkor för kortet — den larmar när Trafikverket skriver ordet, oavsett om kortet står öppet.
+2. **#155 snubbeltråden SAMMANSLAGEN i #83.** Kortet sa "vad som ska göras nu: ingenting" och fanns för att oktoberbeslutet
+   om kvarhållningen ska veta att det avgör två mätinstruments byggform (#89 räknar om, #98 räknar om; #88 sparar). Det står
+   nu som stycke på #83, där beslutet tas. Ingen tråd tappad.
+3. **#242 kamerafacit stängs på första klassade bilden.** Hinken bär 790 bilder sedan 15/9 16:00Z. Bengt får den senaste:
+   `2026-09-24/SE_STA_CAMERA_VViS_329_K1-165760.jpg` (arkiverad 02:30:02Z, kamera VViS 329 K1, position ur kamerafilen), klassar den i sex-klasserna, klassningen
+   går in via dbknapp och grind S-B räknar den som händelse. Kortet stängs när det skett — tillägg här.
+
+Tavlan 49 → 47 öppna (#242 kvar tills bilden är klassad).
+
