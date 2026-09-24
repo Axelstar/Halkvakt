@@ -380,6 +380,24 @@ export const KONTRAKT: Kontrakt[] = [
     former: [/const BUCKET_S\s*=\s*(\d+)/],
     golv: 7,
   },
+  // Frysklassningens svep (TROSKLAR-FRYSKLASSNINGEN §2) fick en andra kopia 24/9 när skattarens nivå (S2, publish/tillstand.ts,
+  // DECISIONS #341) byggdes på K2-zonen. Importen gick inte: grind-k-a.ts kör hela grinden vid import.
+  {
+    namn: "Frysklassningens klassgräns K1 — svepet",
+    varfor: "Skattarens frys-nivå och grind K-A ska svepa samma gränser; driver kopian dömer K-A en annan skattare än den som byggs.",
+    former: [/K1_GRANS = \[([^\]]*)\]/],
+    filer: /grind-k-a\.ts|tillstand\.ts/,
+    golv: 2,
+    lista: true,
+  },
+  {
+    namn: "Frysklassningens osäkerhetszon K2 — svepet",
+    varfor: "Samma sak för zonen där skattaren får säga att den inte vet.",
+    former: [/K2_ZON = \[([^\]]*)\]/],
+    filer: /grind-k-a\.ts|tillstand\.ts/,
+    golv: 2,
+    lista: true,
+  },
   {
     namn: "Ankarradien — hur långt bort en station får vara och ändå räknas",
     varfor: "Radien avgör vad som är granne och vad som bara är väder. Olika radie = olika population.",

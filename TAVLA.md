@@ -2677,6 +2677,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   stället (§5.3 *lägg till, ersätt aldrig*). Kan byggas när S2 (#89) ger nivå + bevis — det är innehållet fältet ska bära. Ingen röst
   ändras. 🔒 NYCKEL: S2 byggd. Verify: ett fält per väderpunkt i live.json som bär nivå och källor, oläst av apparna (otypad läsning),
   manifestets sha stämmer.
+  🔓 **Nyckeln given 24/9 (DECISIONS #341):** S2 byggd — `skattaNiva()` är innehållet fältet ska bära. Nästa: fältet bredvid `fukt` i live.json (F1), bevisat oläst av apparna och med manifestets sha.
 - [x] ✅ **STÄNGT 24/9** (DECISIONS #340) — 🖼️ **#246 BILDLÄSNINGSSPÅRET — klassning i mars, byggt och provat nu** (Bengts fråga 24/9: *"kan Axel ok:a ett automatiserat
   spår där du sköter genomgången"*). DECISIONS #248: hinkens bilder öppnas i mars — spåret byggs nu och provas på Trafikverkets
   DIREKTBILDER (publika, dagens, inte facit). Formen: Axel exporterar hinken till en plats Claude når · kontaktark om 20 bilder ·
@@ -3263,6 +3264,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (f964dd6): `frost: 1 stationer` mot provets 4 — tre av fyra var givare vi inte kan lita på.
   Passiv påminnelse finns kvar som issue #127 (`efter-frosten`) och som minnesfil.
   🔒 **Läget 24/9 (DECISIONS #331, Bengts "gör 3"):** S3 är Axels bygge bakom S1-grinden (DECISIONS #196), som kräver blöta frostnätter. S1 bär 35 rader med innehåll (senast 22/9 06:30Z); trendarkivet 19 469 kandidater, 1 följd av frost. Förberett: uppspelningen och S1-loggen finns; S2 skattarens nivå väntar på samma grind. Inget byggt.
+  ✅ **S2 BYGGT 24/9 (Bengt: *"gör steg 3"*, DECISIONS #341):** `skattaNiva()` i `publish/tillstand.ts` bredvid `skatta()` — väta, mängd och radar som svepsteg, frys mot K1 med zonen K2, källor och en läsbar bevisrad; inget nytt tal, D1 i kod, okänt är null. Åtta tester, steg 2-självtestet. S3 väntar kvar bakom S1-grinden.
 - [x] ✅ **#99 VINTERDAGEN — fem påhittade resor genom den riktiga motorn — KLART 11/9**
   (parallell session, DECISIONS #99, `scripts/vinterdag.ts`). Riktiga referensrutter ur skuggflottan,
   PÅHITTADE väderlägen. Dömer INGENTING och skriver ingenting — inte weather_observations, inte
