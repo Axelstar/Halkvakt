@@ -9906,3 +9906,16 @@ behövs innan mars (kortet bär det).
 **I mars:** bara arken, klassningen och ok-sidan går in i repot; bilderna stannar i hinken och i Axels export. Provets 1,2 MB
 bilder ligger i repot med flit, så att Axel kan öppna stickprovet direkt på GitHub.
 
+## #340 (24/9 2026) Axels ok på bildläsningsspårets första ark — 20 rader in i kamerafacit, kort #246 stängt
+
+**Beslut (Axel, framfört av Bengt i chatten 24/9: *"Axel okayar"* — samma form som DECISIONS #61).** Arket
+`docs/kamerafacit/prov-2026-09-24/` godkänt utan rättelser. `klassning.json` bär `"ok": {"av": "Axel (framfört av Bengt i chatten)",
+"nar": "2026-09-24T13:49Z"}`; `python scripts/kontaktark.py sql` skrev 20 INSERT-satser (`scripts/matningar/kamerafacit-prov-2026-09-24.sql`,
+genererad), körda via dbknapp som bevisrader.
+
+**Bevis:** `kamerafacit` bär **21 rader** — de 20 nya, alla `bar`, med `av = 'Claude (ok: Axel (framfört av Bengt i chatten) …)'`,
+plus Tierp-raden från 03:11Z (`våt`, #333). Ingen av dem är halka, så grind S-B räknar ingen händelse — rätt.
+
+**Kort #246 stängt:** Verify (*ett kontaktark ur direktbilderna klassat och ok:at, med tabellrader*) uppfylld. Det andra provet —
+ett ark vid regn eller i mörker, som prövar att klassningen skiljer våt från bar — är nytt arbete och har eget kort, #247.
+

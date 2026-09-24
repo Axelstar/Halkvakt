@@ -2677,7 +2677,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   stället (§5.3 *lägg till, ersätt aldrig*). Kan byggas när S2 (#89) ger nivå + bevis — det är innehållet fältet ska bära. Ingen röst
   ändras. 🔒 NYCKEL: S2 byggd. Verify: ett fält per väderpunkt i live.json som bär nivå och källor, oläst av apparna (otypad läsning),
   manifestets sha stämmer.
-- [ ] 🖼️ **#246 BILDLÄSNINGSSPÅRET — klassning i mars, byggt och provat nu** (Bengts fråga 24/9: *"kan Axel ok:a ett automatiserat
+- [x] ✅ **STÄNGT 24/9** (DECISIONS #340) — 🖼️ **#246 BILDLÄSNINGSSPÅRET — klassning i mars, byggt och provat nu** (Bengts fråga 24/9: *"kan Axel ok:a ett automatiserat
   spår där du sköter genomgången"*). DECISIONS #248: hinkens bilder öppnas i mars — spåret byggs nu och provas på Trafikverkets
   DIREKTBILDER (publika, dagens, inte facit). Formen: Axel exporterar hinken till en plats Claude når · kontaktark om 20 bilder ·
   Claude klassar var och en (is/snö/slask/våt/bar/okänd, säkerhet, anteckning) BLINT — sökvägen visar kamera och tid, aldrig
@@ -2686,6 +2686,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   stickprovar). 🔒 NYCKEL: Bengts och Axels ja (§4.2). Verify: ett kontaktark ur direktbilderna klassat och ok:at, med tabellrader.
   🔑 **Bengts ja 24/9 (DECISIONS #335/#336):** mars står, §6 omskriven, #231:s definition skriven. Kvar av nyckeln: Axels export av hinken och hans ok-roll. Provet på direktbilderna kan byggas nu.
   🔨 **BYGGT OCH PROVAT 24/9 (Bengt: *"gör steg 2"*, DECISIONS #339):** `scripts/kontaktark.py` (direkt · mapp · stickprov · sql). Provet: 20 direktbilder 13:33–13:44Z längs rutterna, klassade blint — bar 20, hög säkerhet (sol). Stickprov nr 6 och 16. `sql` vägrar utan ok. **Kvar: Axels ok på `docs/kamerafacit/prov-2026-09-24/ok.md`** (då går raderna in och Verify är uppfylld), och ett andra prov vid regn eller i mörker — soligt ark bevisar kedjan, inte att klassningen skiljer våt från bar.
+  ✅ **Stängt 24/9 (DECISIONS #340, Axels ok framfört av Bengt):** arket godkänt utan rättelser, 20 rader in i `kamerafacit` (tabellen bär 21), var och en med Axels ok i `av`. Andra provet (regn eller mörker) → kort #247.
+- [ ] 🌧️ **#247 BILDLÄSNINGSSPÅRETS ANDRA ARK — vid regn eller i mörker** (ur #246, DECISIONS #340). Första arket (24/9 13:43Z) var sol och
+  torr väg: 20 × bar, hög säkerhet. Det bevisar kedjan, inte att klassningen skiljer våt från bar, eller att mörkret ger *okänd* i
+  stället för en gissning. `python scripts/kontaktark.py direkt --antal 20 --ut docs/kamerafacit/prov-<datum>` vid regn över
+  rutterna (radarn visar det) eller efter mörkrets inbrott; samma stickprov och ok. Kostar en kvart plus Axels blick.
+  🔒 NYCKEL: vädret. Verify: ett ark med minst fem *våt* eller *okänd*, ok:at, och en rättelse från Axel om klassningen tagit fel.
 - [ ] 🐕 **#243 VAKTHUNDENS ARKIVGRÄNS ÄR FÖR SNÄV — issue #528 var ett falsklarm** (fynd 24/9 på Bengts fråga *"vad betyder detta"*).
   Checken *livemotorns effekt* larmar när `situation_archive` inte rörts på 30 min, men arkivet skrivs bara när Trafikverket
   ändrar något: mätt 24/9 04:12Z — 4 gluggar > 30 min senaste dygnet (största 102 min), **32 på sju dygn, medel 54 min, största
@@ -4365,6 +4371,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#246 BILDLÄSNINGSSPÅRET — STÄNGT 24/9 (DECISIONS #340)**: kontaktark, blind klassning, stickprov och ok-spärr; första arket ok:at av Axel, 20 rader i kamerafacit. Andra arket vid regn eller mörker → #247.
 - [x] ✅ **#242 KAMERAFACIT — STÄNGT 24/9 (DECISIONS #333)**: tabellen, källan i dom-knappen och första klassningen (Tierp, våt, direktbilden). Tavlan 47 → 46.
 - [x] ✅ **#97 HALK-REGEXEN — STÄNGT 24/9 (DECISIONS #332)**: ordlistan vidgad 16/9, vektor v24 grön i tre portar, i apparna sedan 0.3.9. Tavlan 49 → 48.
 - [x] ↪ **#155 SNUBBELTRÅDEN — SAMMANSLAGEN I #83 24/9 (DECISIONS #332)**: villkoret på kvarhållningen bor där beslutet tas. Tavlan 48 → 47.
