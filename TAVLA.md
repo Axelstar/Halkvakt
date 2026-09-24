@@ -554,6 +554,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** underpunkten #23 i DESIGNLYFTET, som stängdes 22/9.
 - [ ] ↩︎ Skinnet v3 på Android — del 1+2 committade 2/9 (5829d29, ee72f22: Theme.kt, fonter,
   fem ikoner, två flikar). Bevis på telefon saknas; bockas när Axel sett det.
+  📏 **Läst mot koden 24/9 (kort #217, DECISIONS #347):** Android skiljer sig från iOS på fem punkter — ikonerna finns men visas inte · varningskortet har rubriken *HALKVAKT VARNAR*, ingen stapel och knappen *Uppfattat* · körläget heter *PASSAGERAREN ÄR VAKEN* och saknar demokortet · inget kvitto under *Starta vakten* · statuspillen säger *LIVEDATA* där iOS säger *Trafikverket live*. Vilka som ska bli som iOS är Axels beslut; produktboken beskriver båda.
 
 ### Axel — därefter
 - [ ] **Tolv testare till Play-perioden** — Axels åtagande 31/8: "hittar dem utan problem".
@@ -1334,7 +1335,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   släpper)`.
   📜 **TROSKLAR-KOMBINATIONEN bär nu regeln** om delgrindarnas körningar mot D3, i samma commit som bygget — så att
   nästa delgrind som får ett svep vet vad som gäller innan den skriver sin första utskrift.
-- [ ] 🦌 **#217 PRODUKTBOKEN LOVAR SEX SAKER KODEN INTE GÖR** (genomlysningen 20/9). Hastighetsgränsen i kameratexten **kan aldrig
+- [x] ✅ **KLART 24/9** (DECISIONS #347) — 🦌 **#217 PRODUKTBOKEN LOVAR SEX SAKER KODEN INTE GÖR** (genomlysningen 20/9). Hastighetsgränsen i kameratexten **kan aldrig
   sägas** — den publiceras inte, och grenen är död i alla tre motorerna · viltrösten säger "älg" och "den här tiden" fast arten
   läses av ingen adapter och säsongsfältet aldrig sätts (**överdriver vad datan bär — bryter CLAUDE.md**) · fyra flikar utlovas,
   två finns · SMHI sägs gå till motorn men motorn läser den inte · introduktionen i fyra sidor **finns inte på Android** ·
@@ -1344,6 +1345,33 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   art, tills en adapter läser arten ur polisdatan. **Bygg nästa varv:** `texts.ts` + Kotlin + Swift, vektor v13 (vilt slår kamera)
   får ny rösttext — den enda gången en frusen vektor får ändras är när regeln själv ändras, och det står här — produktboken i
   samma commit. Vektorantalet i produktboken är 36 sedan i kväll, inte 24.
+  ✅ **KLART 24/9 (DECISIONS #347, Bengt: *"gör kort 217"*):** boken läst rad för rad mot koden och apparna — de sex löftena rättade, plus elva fel till (45 s-spärren, grind A *fallen*, Om-citatet, Androids autostart, versionstabellen m.fl.). Skärmbilderna ur fotostudion 23/9 (artefakt 10778151609). Fynden i apparna blev kort #248, #249 och #250.
+
+- [ ] 🔁 **#248 ANDROID-AUTOSTARTEN STOPPAR ALDRIG VAKTEN** (fynd 24/9 under kort #217, DECISIONS #347). `AutostartManager` skapar en ny
+  `AutostartController` för varje systemhändelse, och den nya styrningen har `autoStarted = false`. Därför blir *Bluetooth kopplas
+  från* och *bilen lämnas* alltid *gör ingenting* (`onAclDisconnected`, `onVehicleExit`). Android har dessutom ingen tomgångsstopp
+  efter en kvart stilla, som iOS har. En autostartad vakt går alltså tills föraren stoppar den — batteribudgeten (< 8 %/h) är ett
+  släppstopp enligt CLAUDE.md. Läs `skills/halkvakt-android/SKILL.md` före koden.
+  Verify: ett JVM-prov som skapar styrningen på nytt mellan start- och stopphändelsen faller före lagningen och passerar efter;
+  på en riktig telefon stannar en autostartad vakt när bilens Bluetooth kopplas från.
+
+- [ ] 📜 **#249 OM-AVSNITTET SÄGER MINDRE ÄN SANNINGEN** (fynd 24/9 under kort #217, DECISIONS #347). (a) **Android** visar bara
+  *"Öppna data från Trafikverket (CC0)"*. Ärlighetsraden (*mellan stationerna är vägen oövervakad*) och källorna SMHI, Fintraffic
+  (CC BY 4.0) och OpenStreetMap (ODbL) saknas — och Fintraffics gränsstationer och OSM:s broar når Android-motorn, så de två
+  licenserna kräver att källan anges. iOS har hela raden. (b) **Båda plattformarna** säger i undantagstexten *"Inget annat"*, men
+  facitsvaret bär också appens namn och version (`app`, `ver`). Play-filen deklarerar redan båda; texten i appen gör det inte.
+  🔑 (b) är Axels ordval: skriv om texten eller ta bort fälten ur svaret. Ändras texten gäller invariantregeln — Play-filen,
+  integritet.html och produktboken i samma commit. (a) kan Claude bygga när Bengt sagt ja.
+  Verify: Androids Om bär samma ärlighetsrad och attribution som iOS (skärmbild ur fotostudion); undantagstexten och kroppen
+  som skickas säger samma sak.
+
+- [ ] 🪛 **#250 TRE SMÅFEL SOM PRODUKTBOKENS GENOMLÄSNING HITTADE** (24/9, DECISIONS #347). (a) **Android säger *"Ingen färsk
+  väglagsdata"* två gånger per körning:** flaggan sätts och nollställs direkt i första laddningen (`GuardService.kt`, raden
+  `staleAnnounced = staleAnnounced && g != null` i grenen där `g == null`), så nästa laddning med gammal data talar igen. (b) **iOS
+  körläge visar klockan nu vid *Senast sagt*,** inte när det sades (`KorlageView.swift`, `now.formatted`). (c) **Fotostudion tar
+  sex bilder men bara tre skiljer sig:** Om, Nära dig och Körläget är inga egna skärmar längre, så tre bilder är dubbletter.
+  Verify: (a) ett JVM-prov med två laddningar av gammal data ger en replik, inte två; (b) tiden är repliken tidsstämpel;
+  (c) fotostudions bilder är olika eller färre.
 
 - [ ] 🤖 **#219 ANDROID ÄR SJU VERSIONER EFTER OCH HAR INGEN VÄG TILL EN TELEFON** (genomlysningen 20/9). Android står på
   **0.3.1 (versionCode 4)**, iOS på 0.3.8 (11). **Google Play-kontot finns inte**, det finns inget uppladdningsflöde alls — CI
@@ -4387,6 +4415,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#217 PRODUKTBOKEN MOT KODEN — KLART 24/9 (DECISIONS #347)**: läst rad för rad, sex löften och elva fel till rättade, skärmbilderna ur fotostudion 23/9; tre nya kort ur fynden (#248 autostarten stoppar aldrig, #249 Om-texten, #250 småfel). Tavlan 44 → 46.
 - [x] ✅ **DE ÄLDSTA KORTEN — TVÅ HOPSLAGNA, ETT STÄNGT 24/9 (DECISIONS #346)**: *Fysisk Android-testenhet* in i #219, *Butiksuppladdning + Data safety-inklistring* in i #214, #21 stängt (knappen finns sedan 16/9, pulsen till Ä8). Tavlan 47 → 44.
 - [x] ✅ **SKYLTFONDSRUNDAN, SKYLTFONDEN-PAKETET OCH #25 HALKBANELÄGET — STÄNGDA 24/9 (DECISIONS #345)**: följs av Bengt och Axel utanför tavlan; underlaget kvar i FINANSIERING.md och BACKLOG. Tavlan 50 → 47.
 - [x] ✅ **#246 BILDLÄSNINGSSPÅRET — STÄNGT 24/9 (DECISIONS #340)**: kontaktark, blind klassning, stickprov och ok-spärr; första arket ok:at av Axel, 20 rader i kamerafacit. Andra arket vid regn eller mörker → #247.

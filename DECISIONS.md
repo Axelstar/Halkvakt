@@ -10012,3 +10012,35 @@ vårlistan i bedömningen (*Efter mars*) bredvid betalviljan, så att den inte s
 
 **Sagt högt.** Inget arbete är gjort på korten — de byter bara hemvist. Tavlan 47 → 44 öppna.
 
+## #347 (24/9 2026) Produktboken läst rad för rad mot koden — kort #217 klart, tre nya kort ur fynden
+
+**Uppdraget (Bengt 24/9: *"gör kort 217"*).** Kortets Verify: varje rad i produktboken bevisad i kod eller struken, med färsk
+skärmbild där det syns. Boken lästes hel (507 rader) mot motorn, publiceringen, skuggmotorn och båda apparna; skärmpåståendena
+lästes av en sökagent och varje fynd som ändrade texten kontrollerades i koden innan det skrevs.
+
+**De sex löftena från 20/9:** hastighetsgränsen i kameratexten struken (kamerafilen bär ingen gräns, grenen i motorn talar
+aldrig) · viltrösten var redan rättad (#318) · "fyra flikar" skrivet om till två flikar och ett körläge — *Nära dig* finns inte ·
+SMHI-pilen säger nu att varningarna följer med i snapshoten men att motorn inte läser dem · introduktionen märkt iOS, Androids
+behörighetsväg beskriven · vektorerna 37, inte 23. Förvarningsreglaget beskrivs per plattform (iOS 400–3 000 m i steg om 100,
+Android 500–5 000 m steglöst).
+
+**Fler fel än kortet visste om:** flödesbilden lovade 45 s tystnad (10 s sedan 13/9) · grind A stod som *FALLEN* (klarad 23/9,
+#321) och grindtabellen var från 13/9 · Om-citatet var det gamla löftet · Androids autostart beskrevs som *inget att ställa in* fast
+den står av och ber om fyra behörigheter · guiden sades finnas i introduktionen · "Vakna själv" heter *Vaknar själv* · Norge stod
+som väntande på Vegvesens konto · broarna sades ligga i appen · facitsvaret sades bära bara id, tid och svar (appens namn och
+version följer med, som Play-filen redan deklarerar) · versionstabellen slutade vid 0.3.7 · avsnittet *iOS då?* var från 29/8.
+Beskrivningen av skinnet gällde bara iOS; Androids avvikelser står nu i ett eget stycke.
+
+**Skärmbilder:** de tre i boken bytta mot fotostudions artefakt 10778151609 (android.yml-körning 35922113783, cdd7889, 23/9 —
+efter senaste Android-ändringen c1483be). Fotostudion tar sex bilder men bara tre skiljer sig: Om, Nära dig och Körläget är
+inte längre egna skärmar.
+
+**Tre nya kort ur fynden (TAVELREGELN):** #248 Android-autostarten stoppar aldrig vakten (en ny styrning skapas per händelse och
+glömmer att vakten startades automatiskt; ingen tomgångsstopp heller) · #249 Om-avsnittet säger mindre än sanningen (Android
+saknar ärlighetsraden och källorna, där Fintraffic och OpenStreetMap kräver att de anges; båda plattformarnas undantagstext säger
+*"Inget annat"*) · #250 tre småfel (Android säger raden om gammal data två gånger, iOS körläge visar klockan nu vid Senast sagt,
+fotostudions dubbletter). Androids skinnavvikelser skrivna på kortet *Skinnet v3 på Android*.
+
+**Inte omprövat:** stegen i Genvägar-guiden (de beskriver Apples app, inte vår) och de historiska raderna i versionstabellen och
+lärdomsavsnittet. Tavlan 44 − 1 + 3 = 46 öppna.
+
