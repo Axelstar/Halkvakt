@@ -9747,6 +9747,7 @@ den bröts ändå, och det är värt att säga.
 
 **Sagt högt.** (1) Trendsignalen kan bara prövas inom sju dygn (trend_kandidater gallras) — instrumentet skriver ut hur
 många tysta missar som är okända på tid. (2) Priset är tillfällen, inte falsklarm; falskheten kräver kamerafacit (#242)
-eller förarens nej. (3) SMHI-varningar är områden — centroiden ligger oftast utanför 2 km. (4) Första underlagskörningen
-efter sammanslagningen; paret läses först i vinter.
+eller förarens nej. (3) SMHI-varningar är områden — centroiden ligger oftast utanför 2 km.
+
+**Bevis, första skarpa körningen (PR #524, c25f6bd):** körning 35948719580, 24/9 02:47Z, underlagsläge, 14 dygn: 2 bekräftade tillfällen (situation-halka), båda inom 7 km (median 4,2 km), skuggloggen 1 360 larm med position av 1 847, båda tysta, båda OKÄNDA i alla 16 celler (ingen signal vid stationen, ingen radar), trenden okänd för båda (äldre än sju dygn), 2/20 tillfällen och 2/3 perioder — inga andelar skrivna. Alla fem avsnitt körde utan fel mot databasen; paret läses först i vinter.
 
