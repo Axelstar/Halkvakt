@@ -61,6 +61,7 @@ class GuardService : Service() {
     private var focusRequest: AudioFocusRequest? = null
     private var lastSnapshotLoad = 0L
     private var staleAnnounced = false
+    private val idleStop = IdleStop()   // #248: samma kvart som iOS
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -94,6 +95,7 @@ class GuardService : Service() {
         running = true
         prevLon = Double.NaN; prevLat = Double.NaN
         session.value = Session(startedAt = System.currentTimeMillis())
+        staleAnnounced = false   // #250 (a): EN rad om gammal data per körning — nollställs här, inte vid laddningen
         // Resans fönster överlever tjänsten (kort #203): notisens knapp trycks minuter senare,
         // i en annan process, och måste veta vad "alla varningar" syftar på.
         scope.launch { Prefs.setTripStart(this@GuardService, session.value.startedAt) }
@@ -114,7 +116,6 @@ class GuardService : Service() {
             val g = guard
             if (g == null) {
                 val warnM = kotlinx.coroutines.runBlocking { Prefs.warnDistanceM(this@GuardService).first() }.toDouble()
-                staleAnnounced = staleAnnounced && g != null  // ny session ⇒ nollställ
                 guard = Guard(hazards, cfg = EngineConfig(leadMaxM = warnM), speak = ::speak, notify = ::updateNotification, onEvent = AlertBus::post,
                     isEnabled = { it !in disabledKinds },
                     onAlert = { a ->
@@ -157,6 +158,12 @@ class GuardService : Service() {
                 speedKmh = if (loc.hasSpeed()) loc.speed * 3.6 else null,
                 headingDeg = if (loc.hasBearing()) bearingToDouble(loc.bearing) else null,
             )
+            if (idleStop.onFix(loc.time, fix.speedKmh)) {
+                AlertBus.post("Stillastående en kvart — vakten stoppar själv.")
+                AutostartManager.clearAutoStarted(this@GuardService)
+                stopSelf()
+                return
+            }
             guard?.onLocation(fix)
             retuneCadence(fix.lon, fix.lat)
             // S4: facit skickas när bilen står stilla (≥ 30 s under 3 km/h), en gång per stopp — aldrig under körning.

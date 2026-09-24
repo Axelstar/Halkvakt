@@ -68,17 +68,8 @@ jobs:
             adb emu geo fix 18.064 59.335
             adb shell am start -n se.halkvakt.app/.MainActivity --ez fotostudio_facit true
             sleep 8
-            SZ=$(adb shell wm size | tr -d '\r' | awk '{print $NF}'); W=${SZ%x*}; H=${SZ#*x}; Y=$((H*95/100)); echo "skärm ${W}x${H} y=$Y"; adb exec-out screencap -p > /tmp/shot-1-vakten.png; adb shell input tap $((W*3/4)) $Y; sleep 3; adb exec-out screencap -p > /tmp/shot-2-installningar.png; adb shell input tap $((W*5/6)) $Y; sleep 3; adb exec-out screencap -p > /tmp/shot-3-om.png; adb shell input swipe $((W/2)) $((H*85/100)) $((W/2)) $((H*15/100)) 600; sleep 1; adb shell input swipe $((W/2)) $((H*85/100)) $((W/2)) $((H*15/100)) 600; sleep 2; adb exec-out screencap -p > /tmp/shot-6-betatest.png
-            # Fotostudion 3→5, tag 2 (läxa: flikbytestryck opålitligt — omstart landar alltid på Vakten)
-            CAM=$(curl -s https://axelstar.github.io/halkvakt-karta/data/app/v1/static.json | python3 -c "import sys,json; c=json.load(sys.stdin)['cameras'][0]; print(c['lon'], c['lat'])")
-            echo "ställer emulatorn vid fartkamera: $CAM"
-            adb shell am force-stop se.halkvakt.app; sleep 2
-            adb shell monkey -p se.halkvakt.app 1; sleep 7
-            adb emu geo fix $CAM; sleep 10
-            adb exec-out screencap -p > /tmp/shot-4-nara-dig.png
-            adb shell input tap $((W/2)) $((H*38/100)); sleep 2
-            adb shell input tap $((W/2)) $((H*43/100)); sleep 5
-            adb exec-out screencap -p > /tmp/shot-5-korlaget.png
+            SZ=$(adb shell wm size | tr -d '\r' | awk '{print $NF}'); W=${SZ%x*}; H=${SZ#*x}; Y=$((H*95/100)); echo "skärm ${W}x${H} y=$Y"; adb exec-out screencap -p > /tmp/shot-1-vakten.png; adb shell input tap $((W*3/4)) $Y; sleep 3; adb exec-out screencap -p > /tmp/shot-2-installningar.png; adb shell input swipe $((W/2)) $((H*85/100)) $((W/2)) $((H*15/100)) 600; sleep 1; adb shell input swipe $((W/2)) $((H*85/100)) $((W/2)) $((H*15/100)) 600; sleep 2; adb exec-out screencap -p > /tmp/shot-6-betatest.png
+            # #250 (c) 24/9: Om, Nära dig och Körläget är inga egna skärmar längre — de tre bilderna var dubbletter och är borta.
       - name: Upload app screenshots
         if: always()
         uses: actions/upload-artifact@v4

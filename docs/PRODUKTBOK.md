@@ -131,12 +131,11 @@ tills du själv slår på den** — med texten om exakt vad som skickas (se Om).
 plattformarna: *"Din position lämnar inte telefonen av sig själv. All matchning mot vägdata sker lokalt
 i appen. Inget konto, ingen spårning."* Och sedan 16/9 undantaget (Axels krav, DECISIONS #196): *"Undantaget är
 betatestet, om du själv slår på det: då skickas varningens id, klockslag och ditt svar
-(Stämde / Stämde inte) — det säger ungefär var du var när rösten talade. Inget annat."*
-*(Svaret bär också appens namn och version, som texten inte nämner — kort #249.)*
-På iOS följer ärlighetsraden: *"Varnar vid Trafikverkets mätstationer och rapporterade väglag — mellan
+(Stämde / Stämde inte), plus appens namn och version — det säger ungefär var du var när rösten talade. Inget annat."*
+(Sedan 24/9, kort #249: texten nämner nu allt svaret bär.)
+Sedan följer ärlighetsraden, på båda plattformarna (Android sedan 24/9, kort #249): *"Varnar vid Trafikverkets mätstationer och rapporterade väglag — mellan
 stationerna är vägen oövervakad."* Och attributionen: Trafikverket (CC0), SMHI, Fintraffic (CC BY 4.0),
-broar © OpenStreetMap-bidragsgivare (ODbL). Android visar i dag bara *"Öppna data från Trafikverket
-(CC0)"*; ärlighetsraden och de andra källorna saknas där (kort #249).
+broar © OpenStreetMap-bidragsgivare (ODbL).
 
 ## Exakt vad rösten säger
 
@@ -380,8 +379,8 @@ Skärmbilder från iOS tas på Axels iPhone eller i simulatorn med fotostudio-kr
 plats, rörelseigenkänning, Bluetooth och plats *Tillåt hela tiden* (som Android 11 och senare bara ger i
 inställningarna, kort #226). Sedan lär sig appen varje Bluetooth-enhet som kopplas medan vakten går — även
 hörlurar — och startar vakten när en av dem kopplar upp igen. Rörelseigenkänningen startar vakten i bilar
-utan Bluetooth. **Att stoppa fungerar inte i dag:** vakten stannar varken när bilen kopplas från eller när
-bilen står still, utan går tills du avslutar den (kort #248).
+utan Bluetooth. En vakt som startat av sig själv stannar när bilen kopplas från eller rörelseigenkänningen ser att du
+lämnat bilen, och varje vakt stannar efter en kvart stilla, som på iPhone (kort #248, 24/9).
 
 **iPhone — vakten vaknar själv (0.3.2):** ge Halkvakt platsen **Alltid**. Då ber appen iOS
 väcka den när telefonen lämnar platsen där bilen senast stod (150 meter), följer farten i upp till en och en

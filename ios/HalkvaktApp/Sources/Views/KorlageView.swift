@@ -44,7 +44,8 @@ struct KorlageView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
                             SectionHeader(text: "Senast sagt")
-                            Text(now.formatted(.dateTime.hour().minute())).font(Typo.mono(11)).foregroundStyle(Brand.faint)
+                            // #250 (b): när repliken sades, inte klockan nu
+                            Text((Prefs.shared.lastSaidAt ?? now).formatted(.dateTime.hour().minute())).font(Typo.mono(11)).foregroundStyle(Brand.faint)
                         }
                         Text("”\(said)”").font(Typo.sans(16)).italic().foregroundStyle(Brand.text)
                     }

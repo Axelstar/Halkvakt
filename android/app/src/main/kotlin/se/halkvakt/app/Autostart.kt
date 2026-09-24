@@ -15,11 +15,15 @@ package se.halkvakt.app
 
 enum class AutoCmd { START, STOP, LEARN, NONE }
 
-class AutostartController(learnedCars: Set<String> = emptySet()) {
+// #248 (24/9): the glue builds a NEW controller for every system event, so `autoStarted` must come in from
+// persistence and go back out after each command — otherwise every STOP event met a fresh `false` and the
+// guard never stopped. The flag is state, not a field of one object's lifetime.
+class AutostartController(learnedCars: Set<String> = emptySet(), autoStarted: Boolean = false) {
     private val cars = learnedCars.toMutableSet()
-    private var autoStarted = false
+    private var autoStarted = autoStarted
 
     fun learnedCars(): Set<String> = cars.toSet()
+    fun isAutoStarted(): Boolean = autoStarted
 
     fun onVehicleEnter(): AutoCmd {
         autoStarted = true
@@ -52,4 +56,17 @@ class AutostartController(learnedCars: Set<String> = emptySet()) {
 
     /** Manual stop from the UI must also disarm auto-stop bookkeeping. */
     fun onManualStop() { autoStarted = false }
+}
+
+/**
+ * Idle stop, the same rule as iOS (GuardManager.idleStopAfter): a guard whose car has stood still for
+ * fifteen minutes has finished its trip. "Moving" = at least 5 km/h. Pure, so the JVM proves it (#248).
+ */
+class IdleStop(private val afterMs: Long = 15 * 60 * 1000L, private val movingKmh: Double = 5.0) {
+    private var lastMovedMs = -1L
+    /** true = stop now. A fix without speed counts as not moving; the clock starts at the first fix. */
+    fun onFix(timeMs: Long, speedKmh: Double?): Boolean {
+        if (lastMovedMs < 0 || (speedKmh ?: 0.0) >= movingKmh) lastMovedMs = timeMs
+        return timeMs - lastMovedMs >= afterMs
+    }
 }

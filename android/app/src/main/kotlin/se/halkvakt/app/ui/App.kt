@@ -671,7 +671,7 @@ private fun OmScreen() {
                     color = Dis, fontSize = 13.sp, modifier = Modifier.padding(top = 4.dp))
                 // S4: löftet skrivs om ordagrant (Axel #196) — det som skickas, när, och bara om du valt det.
                 Text("Undantaget är betatestet, om du själv slår på det: då skickas varningens id, klockslag och ditt " +
-                    "svar (Stämde / Stämde inte) — det säger ungefär var du var när rösten talade. Inget annat.",
+                    "svar (Stämde / Stämde inte), plus appens namn och version — det säger ungefär var du var när rösten talade. Inget annat.",
                     color = Dis, fontSize = 13.sp, modifier = Modifier.padding(top = 8.dp))
             }
         }
@@ -681,8 +681,13 @@ private fun OmScreen() {
         LinkRow("Press & material") { uri.openUri("https://axelstar.github.io/halkvakt-karta/press.html") }
         LinkRow("Integritetspolicy") { uri.openUri("https://axelstar.github.io/halkvakt-karta/integritet.html") }
         Spacer(Modifier.height(24.dp))
-        Text("Version $version · Öppna data från Trafikverket (CC0)",
-            color = Dis, fontSize = 12.sp, fontFamily = FontFamily.Monospace)
+        // #249 (a): samma ärlighetsrad och attribution som iOS — Fintraffic (CC BY 4.0) och OSM (ODbL) kräver källan.
+        Text("Varnar vid Trafikverkets mätstationer och rapporterade väglag — mellan stationerna är vägen oövervakad. " +
+            "Data: Trafikverket (CC0), SMHI, Fintraffic (CC BY 4.0), broar © OpenStreetMap-bidragsgivare (ODbL). " +
+            "Halkvakt är fristående och har ingen koppling till myndigheterna.",
+            color = Dis, fontSize = 12.sp)
+        Spacer(Modifier.height(8.dp))
+        Text("Version $version", color = Dis, fontSize = 12.sp, fontFamily = FontFamily.Monospace)
         Spacer(Modifier.height(8.dp))
     }
 }

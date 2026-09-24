@@ -1354,6 +1354,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   släppstopp enligt CLAUDE.md. Läs `skills/halkvakt-android/SKILL.md` före koden.
   Verify: ett JVM-prov som skapar styrningen på nytt mellan start- och stopphändelsen faller före lagningen och passerar efter;
   på en riktig telefon stannar en autostartad vakt när bilens Bluetooth kopplas från.
+  ✅ **BYGGT 24/9 (DECISIONS #348):** flaggan sparas mellan styrningarna, självstopp efter en kvart stilla (`IdleStop`), tre JVM-prov. Kvar: verify i bil på Android.
 
 - [ ] 📜 **#249 OM-AVSNITTET SÄGER MINDRE ÄN SANNINGEN** (fynd 24/9 under kort #217, DECISIONS #347). (a) **Android** visar bara
   *"Öppna data från Trafikverket (CC0)"*. Ärlighetsraden (*mellan stationerna är vägen oövervakad*) och källorna SMHI, Fintraffic
@@ -1364,6 +1365,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   integritet.html och produktboken i samma commit. (a) kan Claude bygga när Bengt sagt ja.
   Verify: Androids Om bär samma ärlighetsrad och attribution som iOS (skärmbild ur fotostudion); undantagstexten och kroppen
   som skickas säger samma sak.
+  ✅ **KLART 24/9 (DECISIONS #348, Axel via Claude):** (b) texten nämner nu appens namn och version, fälten stannar; (a) ärlighetsraden och källorna i Androids Om. Verify: fotostudions bild av Om efter nästa android-körning.
 
 - [ ] 🪛 **#250 TRE SMÅFEL SOM PRODUKTBOKENS GENOMLÄSNING HITTADE** (24/9, DECISIONS #347). (a) **Android säger *"Ingen färsk
   väglagsdata"* två gånger per körning:** flaggan sätts och nollställs direkt i första laddningen (`GuardService.kt`, raden
@@ -1372,6 +1374,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   sex bilder men bara tre skiljer sig:** Om, Nära dig och Körläget är inga egna skärmar längre, så tre bilder är dubbletter.
   Verify: (a) ett JVM-prov med två laddningar av gammal data ger en replik, inte två; (b) tiden är repliken tidsstämpel;
   (c) fotostudions bilder är olika eller färre.
+  ✅ **KLART 24/9 (DECISIONS #348):** (a) nollställs vid start, (b) `lastSaidAt`, (c) tre bilder i stället för sex.
 
 - [ ] 🤖 **#219 ANDROID ÄR SJU VERSIONER EFTER OCH HAR INGEN VÄG TILL EN TELEFON** (genomlysningen 20/9). Android står på
   **0.3.1 (versionCode 4)**, iOS på 0.3.8 (11). **Google Play-kontot finns inte**, det finns inget uppladdningsflöde alls — CI

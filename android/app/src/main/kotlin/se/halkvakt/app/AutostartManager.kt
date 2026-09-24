@@ -29,6 +29,7 @@ object AutostartManager {
     private const val PREFS = "autostart"
     private const val KEY_ENABLED = "enabled"
     private const val KEY_CARS = "cars"
+    private const val KEY_AUTO = "auto_started"   // #248: survives the per-event controller
 
     fun isEnabled(ctx: Context): Boolean =
         ctx.getSharedPreferences(PREFS, 0).getBoolean(KEY_ENABLED, false)
@@ -38,14 +39,22 @@ object AutostartManager {
         if (on) registerTransitions(ctx) else unregisterTransitions(ctx)
     }
 
-    fun controller(ctx: Context): AutostartController =
-        AutostartController(ctx.getSharedPreferences(PREFS, 0).getStringSet(KEY_CARS, emptySet()) ?: emptySet())
+    fun controller(ctx: Context): AutostartController {
+        val p = ctx.getSharedPreferences(PREFS, 0)
+        return AutostartController(p.getStringSet(KEY_CARS, emptySet()) ?: emptySet(), p.getBoolean(KEY_AUTO, false))
+    }
+
+    /** Manual stop, or the guard stopping itself: the next STOP event must not act on an old start. */
+    fun clearAutoStarted(ctx: Context) {
+        ctx.getSharedPreferences(PREFS, 0).edit().putBoolean(KEY_AUTO, false).apply()
+    }
 
     fun persistCars(ctx: Context, c: AutostartController) {
         ctx.getSharedPreferences(PREFS, 0).edit().putStringSet(KEY_CARS, c.learnedCars()).apply()
     }
 
     fun execute(ctx: Context, cmd: AutoCmd, c: AutostartController) {
+        ctx.getSharedPreferences(PREFS, 0).edit().putBoolean(KEY_AUTO, c.isAutoStarted()).apply()
         when (cmd) {
             AutoCmd.START -> safeStartGuard(ctx)
             AutoCmd.STOP -> ctx.stopService(Intent(ctx, GuardService::class.java))

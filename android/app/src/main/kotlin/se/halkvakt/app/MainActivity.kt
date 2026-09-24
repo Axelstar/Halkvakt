@@ -105,7 +105,7 @@ class MainActivity : ComponentActivity() {
             GuardService.start(this)
         } else {
             GuardService.stop(this)
-            AutostartManager.controller(this).onManualStop()
+            AutostartManager.clearAutoStarted(this)   // #248: persisted, not a throwaway controller
         }
     }
 

@@ -60,4 +60,29 @@ class AutostartControllerTest {
         assertEquals(AutoCmd.STOP, c.onAclDisconnected("CA:FE"))
         assertEquals(AutoCmd.NONE, c.onVehicleExit())        // already stopped: no double stop
     }
+
+    /** #248: the glue recreates the controller per system event; the start must survive that. */
+    @Test fun autoStartSurvivesANewController() {
+        val first = AutostartController(learnedCars = setOf("AA:BB"))
+        assertEquals(AutoCmd.START, first.onAclConnected("AA:BB", guardRunning = false))
+        val second = AutostartController(first.learnedCars(), first.isAutoStarted())
+        assertEquals(AutoCmd.STOP, second.onAclDisconnected("AA:BB"))
+        val third = AutostartController(autoStarted = AutostartController().also { it.onVehicleEnter() }.isAutoStarted())
+        assertEquals(AutoCmd.STOP, third.onVehicleExit())
+    }
+
+    @Test fun idleStopAfterFifteenStillMinutes() {
+        val s = IdleStop()
+        assertEquals(false, s.onFix(0, 60.0))
+        assertEquals(false, s.onFix(14 * 60_000L, 1.0))
+        assertEquals(true, s.onFix(15 * 60_000L, 0.0))
+    }
+
+    @Test fun idleStopClockRestartsWhenMoving() {
+        val s = IdleStop()
+        s.onFix(0, 0.0)
+        assertEquals(false, s.onFix(10 * 60_000L, 30.0))      // rolled again
+        assertEquals(false, s.onFix(24 * 60_000L, 0.0))
+        assertEquals(true, s.onFix(25 * 60_000L, null))
+    }
 }

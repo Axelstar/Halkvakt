@@ -10044,3 +10044,23 @@ fotostudions dubbletter). Androids skinnavvikelser skrivna på kortet *Skinnet v
 **Inte omprövat:** stegen i Genvägar-guiden (de beskriver Apples app, inte vår) och de historiska raderna i versionstabellen och
 lärdomsavsnittet. Tavlan 44 − 1 + 3 = 46 öppna.
 
+
+## #348 (24/9 2026) Axels beslut på #347:s frågor — texten skrivs om, källorna in i Androids Om, #248 och #250 byggda
+
+**Axel 24/9 kväll:** *"Be din Claude gå igenom detta. Besluta att köra det han säger."* Claudes beslut, på Axels uppdrag:
+
+1. **#249 (b): texten skrivs om, fälten stannar.** Appens namn och version gör facitsvaret tolkningsbart per bygge (vilken motor
+   talade?), och de bär ingen plats. Undantagstexten säger nu *"… och ditt svar (Stämde / Stämde inte), plus appens namn och
+   version …"* på båda plattformarna. Invariantregeln: integritet.html (23/9, #320) och PLAY-DATASAFETY.md nämner redan plattform och
+   version; produktboken rättad i samma commit.
+2. **#249 (a): ja — källorna och ärlighetsraden in i Androids Om,** ordagrant som iOS. Fintraffic (CC BY 4.0) och OSM (ODbL) kräver
+   attribution när deras data når appen, så det är en licensplikt och inte ett val; frågan var ställd till Bengt men Axel äger besluten.
+3. **#248 byggt.** Autostartens flagga (`autoStarted`) sparas nu i SharedPreferences och följer med varje ny styrning, så
+   *Bluetooth kopplas från* och *bilen lämnas* stoppar en autostartad vakt. Manuellt stopp och självstopp nollställer den.
+   Nytt: **självstopp efter en kvart stilla** (under 5 km/h), samma regel som iOS (`IdleStop`, ren klass). Tre nya JVM-prov.
+4. **#250 byggt.** (a) Raden om gammal data nollställs vid vaktens start, inte vid första laddningen ⇒ en gång per körning.
+   (b) iOS körläge visar när repliken sades (`lastSaidAt`). (c) Fotostudion tar tre bilder, inte sex; de tre borttagna var dubbletter.
+
+**iOS-bygget höjt till 0.3.9 (15)** — texterna och körlägets klocka ändrade. **Sagt högt:** #248 är bevisat på JVM, inte i bil;
+verify på en riktig Android-telefon (autostartad vakt stannar när bilens Bluetooth kopplas från) står kvar. Android-versionen är
+inte höjd (inget uppladdat till Play). #250 (a) har inget JVM-prov: raden sitter i tjänsten, och flytten är två rader.

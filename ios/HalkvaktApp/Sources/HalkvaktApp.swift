@@ -112,7 +112,7 @@ struct InstallningarView: View {
                             Text("All matchning mot vägdata sker lokalt i appen. Inget konto, ingen spårning.")
                                 .font(Typo.sans(14)).foregroundStyle(Brand.dim)
                             // S4: löftet skrivs om ordagrant (Axel #196) — samma mening som i Android.
-                            Text("Undantaget är betatestet, om du själv slår på det: då skickas varningens id, klockslag och ditt svar (Stämde / Stämde inte) — det säger ungefär var du var när rösten talade. Inget annat.")
+                            Text("Undantaget är betatestet, om du själv slår på det: då skickas varningens id, klockslag och ditt svar (Stämde / Stämde inte), plus appens namn och version — det säger ungefär var du var när rösten talade. Inget annat.")
                                 .font(Typo.sans(14)).foregroundStyle(Brand.dim)
                         }
                         LinkRow(title: "Livekartan — läget just nu", url: "https://axelstar.github.io/halkvakt-karta/karta.html")
