@@ -9995,3 +9995,20 @@ sändningen 28/9) och halkbaneförsöket på annat sätt än genom tavlan. Kvar 
 Kommer ett besked eller en fråga som rör koden — till exempel att halkbaneförsöket beviljas och halkbaneläget ska byggas —
 får det ett nytt kort då. Tavlan 50 → 47 öppna.
 
+## #346 (24/9 2026) De äldsta korten: Android-testenheten in i #219, butiksuppladdningen in i #214, #21 stängt
+
+**Beslut (Bengt 24/9: *"ja till de äldsta korten, slå ihop och stäng"*, ur förslaget i bedömningen §4.2).**
+(1) **Fysisk Android-testenhet** (29/8) slås ihop i #219 *Android har ingen väg till en telefon*. Telefonen finns: Axels Android
+med appen uppsatt sedan 20/9 (DECISIONS #280). Kvar är bara enhetsverifieringen i Play Console, och den följer med till #219
+tillsammans med kortets Verify-rad (uppgiften *Kontrollera att du har åtkomst till en mobil Android-enhet* försvinner).
+(2) **Butiksuppladdning + Data safety-inklistring** (29/8) slås ihop i #214 *Play-deklarationen*. Inklistringen är sista steget där
+(formuläret likadant som filen, i samma commit som nästa uppladdning). Uppladdningen står redan i *Play: uppladdningsguide*, och
+iOS går före Android (DECISIONS #320).
+(3) **#21 Anonym puls + feedback-knapp** stängs. Feedback-knappen finns sedan 16/9 (S4, *Stämde/Stämde inte*, PR #290/#291). Den
+anonyma pulsen förs till sensortrappan, Ä8 i bedömningen (mars 2027, efter vinterns domar), där telefonkedjan #237 tidigare
+hänvisade till #21.
+(4) **Intäktsmodellen**, som låg i Skyltfonden-paketet (stängt samma dag, DECISIONS #345), är ingen Skyltfondsfråga. Den förs till
+vårlistan i bedömningen (*Efter mars*) bredvid betalviljan, så att den inte stängs med paketet.
+
+**Sagt högt.** Inget arbete är gjort på korten — de byter bara hemvist. Tavlan 47 → 44 öppna.
+

@@ -492,6 +492,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   sanningsenligt **Ja** (ändamål: förbättra varningarna; frivilligt; kan inte kopplas till person). **Bygg nästa varv:** CLAUDE.md:s
   invariant, `docs/PLAY-DATASAFETY.md` och produktboken i samma commit.
   ↦ **Sorterat 22/9 (kort #224):** kvar är ägarbeslut — raderingsfrågan och integritet.html; produktbokens rad 21 och 82 rättades 22/9 (DECISIONS #304).
+  ↪ **Hit 24/9 (DECISIONS #346):** ur *Butiksuppladdning + Data safety-inklistring* (29/8, låst: Play-kontot). Inklistringen av formuläret är sista steget här och följer Verify-raden ovan. Själva uppladdningen står i *Play: uppladdningsguide*, och iOS går före Android (DECISIONS #320).
 ### Axel — hösten (brainstorm 31/8)
 - [x] ⛔ **#92 Däcktyp och fordonstyp — STÄNGT 12/9, dokumenterat nej** (Bengts order när §2.5 togs ur
   systemanalysen, DECISIONS #108). Idén är inte fel — den är rätt formulerad som **lager
@@ -560,7 +561,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** kort 6 *Tolv testare till väntelistan* (samma tolv).
 - [x] ↪ **SAMMANSLAGET 22/9** i *Skydda namnet: PRV + domänen halkvakt.se* (DECISIONS #303) — Domänen halkvakt.se (vilande beslut)
   ↪ **Sammanslaget 22/9 (DECISIONS #303):** samma domän; QR-sidan (#204) väntar på den, så den är inte längre vilande. Det som återstår bärs av *Skydda namnet: PRV + domänen halkvakt.se*.
-- [ ] Fysisk Android-testenhet (pappas telefon? begagnad?)
+- [x] ↪ **HOPSLAGET I #219 24/9** (DECISIONS #346) — Fysisk Android-testenhet (pappas telefon? begagnad?)
   📖 **KONTROLLERAT MOT GOOGLES EGEN SIDA 20/9** (Bengts fråga; DECISIONS #279). Kravet finns, ordagrant:
   *"Från och med början av 2024 måste utvecklare med nya personliga konton verifiera att de har åtkomst till en
   riktig mobil Android-enhet via Play Console-appen innan de kan göra appen tillgänglig på Google Play."*
@@ -585,6 +586,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Verify: uppgiften *Kontrollera att du har åtkomst till en mobil Android-enhet* försvinner från Play Consoles
   startsida.
   📖 **LÄST IGEN 22/9 (Bengts fråga: gäller det i testfasen?):** stegen börjar på **webben** — Play Console som kontots ägare, startsidan, uppgiften *Kontrollera att du har åtkomst till en mobil Android-enhet*, QR-koden, Play Console-appen på telefonen, Verifiera. Under en minut; telefonens nummer samlas inte in. Testsidan (answer 14151465) säger att *internt test* kan startas innan appen är färdigkonfigurerad och *slutet test* när den är det — ingen av sidorna säger att testerna kräver enhetsverifieringen. Sidan *Verifiera uppgifter för utvecklaridentitet* (answer 10841920) säger ordagrant att kontaktnumret inte kan verifieras förrän identiteten och *enhetsverifiering (för enskilda konton)* är klara. **Alltså:** gör den när uppgiften syns på startsidan; syns den inte finns inget att göra än.
+  ↪ **Hopslaget i #219 24/9 (DECISIONS #346, Bengts ja):** telefonen finns (Axels Android, appen uppsatt 20/9, DECISIONS #280). Kvar är bara enhetsverifieringen i Play Console; den och Verify-raden står nu i #219.
 
 - [ ] 🔊 **#210 iOS SÄGER "PÅ VÄG <NULL>" — var tjugonde olycka** (genomlysningen 20/9). `SnapshotRepo.swift:117` gör JSON-`null`
   till strängen `"<null>"`, och `road` läses med just den funktionen (rad 68). Kotlin och TypeScript gör rätt — iOS är ensamt fel.
@@ -1348,6 +1350,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   bygger en AAB som artefakt och där slutar det. Android saknar dessutom introduktionen helt och har autostart av som standard.
   Om tolv testare i november ska hålla är Play-kontot en grind som måste passeras i september.
   Verify: en Android-testare utanför projektet har appen installerad och har skickat ett facitsvar.
+  ↪ **Hit 24/9 (DECISIONS #346):** ur *Fysisk Android-testenhet* (29/8). Telefonen finns: Axels Android med appen sedan 20/9 (DECISIONS #280). Kvar är enhetsverifieringen i Play Console: webben som kontots ägare, uppgiften *Kontrollera att du har åtkomst till en mobil Android-enhet* på startsidan, sedan Play Console-appen på telefonen (Googles sida läst 20/9 och 22/9, DECISIONS #279). Verify: uppgiften försvinner från Play Consoles startsida.
 
 - [ ] 🧹 **#221 STYRDOKUMENTEN HAR VUXIT FÖRBI ANVÄNDBARHET** (genomlysningen 20/9). DECISIONS 7 232 rader · TAVLA 3 550 ·
   STATUS 1 846 — **~315 000 tokens ihop**. Varje session betalar för att orientera sig, och motsägelser överlever därför länge:
@@ -3526,7 +3529,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   som Axel skapar i App Store Connect → Users and Access → Integrations. Säg till så
   skriver jag stegen.
   ✅ **Stängt 22/9 (DECISIONS #313, Bengts beslut):** ett bekvämlighetsverktyg som ingen bett om sedan 31/8; uppladdning via Xcodes Organizer fungerar. Idén står kvar i BACKLOG.md (punkt 27) om behovet kommer.
-- [ ] Butiksuppladdning + Data safety-inklistring *(låst: Play-kontot)*
+- [x] ↪ **HOPSLAGET I #214 24/9** (DECISIONS #346) — Butiksuppladdning + Data safety-inklistring *(låst: Play-kontot)*
+  ↪ **Hopslaget i #214 24/9 (DECISIONS #346, Bengts ja):** inklistringen är sista steget i #214; uppladdningen står i *Play: uppladdningsguide*, och iOS går före Android (DECISIONS #320).
 - [x] ~~TestFlight-UPPLADDNING~~ ✅ KLART 31/8 — 0.3.0 (3) inne hos Apple.
   Kvar (Axels hand, inte låst): testarinbjudningarna, internt + externt
 - [x] ~~Skarp support vid första Mac-bygget~~ ✅ KLART 29/8 — appen körde på Axels iPhone
@@ -3820,7 +3824,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   dom-knappen räknar per regndygn. S1 (skuggjämförelsen av `regn_h`) körs före allt annat på regn_h.
   ↪ **Sammanslaget 22/9 (DECISIONS #303):** byggordningen stängs samtidigt som #42; A, B, C-radar och E är klara, resten står nu på #42. Det som återstår bärs av *#42 Vattenplaningsvarningen*.
 
-- [ ] **#21 Anonym puls + feedback-knapp** — rör "samlar in: ingenting"-löftet; Claudes råd: paketera med sensorbeslutet våren 2027
+- [x] ✅ **STÄNGT 24/9** (DECISIONS #346) — **#21 Anonym puls + feedback-knapp** — rör "samlar in: ingenting"-löftet; Claudes råd: paketera med sensorbeslutet våren 2027
   ✅ **AXELS JA 16/9 (DECISIONS #196, bedömning S4):** två knappar under "Senast sagt" — *Stämde* / *Stämde inte*, ingen
   fritext, loggas lokalt, skickas när bilen står stilla. KRAV: Om-avsnittets "vi samlar in: ingenting" skrivs om
   ordagrant, frivilligt och synligt i SAMMA commit — annars bryter knappen löftet. Bara betatestare med samtycke (#186).
@@ -3933,6 +3937,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Connect → Upload · intern grupp får bygget utan granskning. Bevis: Bengts svar som rad i `driver_facit` med `version 0.3.8`.
   🔑 **Nyckel, sorterat 22/9 (kort #224):** iOS-bygget med knapparna ute hos testarna — då skärmbilden i PRODUKTBOK och det första riktiga svaret i `driver_facit`.
   📝 **22/9 (DECISIONS #306):** vakthunden räknar nu **1 riktigt facitsvar** (senast 21/9 22:13Z, 2 prov uteslutna) — steg 5 kan alltså vara uppfyllt. Kontrollera att svaret kom från en riktig telefon innan det räknas; kvar är iOS-skärmbilden.
+  ✅ **Stängt 24/9 (DECISIONS #346, Bengts ja):** feedback-knappen finns sedan 16/9 (S4, *Stämde/Stämde inte*, PR #290/#291). Den anonyma pulsen förs till sensortrappan, Ä8 i bedömningen (mars 2027, efter vinterns domar).
 
 - [ ] ⚖️ **#153 ALLVAR SOM FÖRSPRÅNG + ETT SMALARE UNDANTAG — beslut 1 omformulerat 16/9 och väntar, beslut 2 öppet (Bengts)**
   ✏️ **OMSKRIVET 16/9 på Bengts order *"gör 153 och omformulera 153"* (DECISIONS #221).** Det gamla kortet föreslog att
@@ -4380,6 +4385,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **DE ÄLDSTA KORTEN — TVÅ HOPSLAGNA, ETT STÄNGT 24/9 (DECISIONS #346)**: *Fysisk Android-testenhet* in i #219, *Butiksuppladdning + Data safety-inklistring* in i #214, #21 stängt (knappen finns sedan 16/9, pulsen till Ä8). Tavlan 47 → 44.
 - [x] ✅ **SKYLTFONDSRUNDAN, SKYLTFONDEN-PAKETET OCH #25 HALKBANELÄGET — STÄNGDA 24/9 (DECISIONS #345)**: följs av Bengt och Axel utanför tavlan; underlaget kvar i FINANSIERING.md och BACKLOG. Tavlan 50 → 47.
 - [x] ✅ **#246 BILDLÄSNINGSSPÅRET — STÄNGT 24/9 (DECISIONS #340)**: kontaktark, blind klassning, stickprov och ok-spärr; första arket ok:at av Axel, 20 rader i kamerafacit. Andra arket vid regn eller mörker → #247.
 - [x] ✅ **#242 KAMERAFACIT — STÄNGT 24/9 (DECISIONS #333)**: tabellen, källan i dom-knappen och första klassningen (Tierp, våt, direktbilden). Tavlan 47 → 46.
