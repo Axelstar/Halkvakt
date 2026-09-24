@@ -2708,6 +2708,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   mät att funktionen SKREV (deviations färska) i stället för att arkivet ÄNDRADES. 🔒 NYCKEL: Bengts ja på gräns eller mått.
   Verify: sju dygn utan falsklarm ur den checken, och ett riktigt stopp (kort #222:s fall) fångas fortfarande.
   🔨 **Bengts ja 24/9 (DECISIONS #343):** gränsen 30 → 180 min, kommentaren rättad. Kvar: deploy, sedan sju dygn utan falsklarm ur checken.
+  📏 **Läst 24/9 15:09Z:** i drift: vakthundens körning 15:07Z skriver *situation_archive rörd för 3 min sedan (gräns 180)* och inga problem. Kortet stängs efter sju dygn utan falsklarm.
 - [ ] 🧯 **#244 "FÖR LITE DATORKRAFT" PÅ HEL- OCH HALVTIMMEN SEDAN 24/9 00:30** (fynd 24/9 i samma genomlysning). `net._http_response`
   bär fyra svar 546 WORKER_RESOURCE_LIMIT — 00:30, 01:00, 02:00, 04:00 den 24/9 — och **inget de tre dygnen före**. Alla
   schemalagda funktioner levererade ändå de minuterna (publicera-commit i kartrepot 02:00:51 och 04:00:54, skuggrader 02:00:03 och
@@ -2718,6 +2719,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   minuter (pg_cron, i Supabase — Bengts regel 22/9) så att den inte startar samtidigt som publicera och livemotorn. 🔒 NYCKEL:
   funktionsloggen (Axel). Verify: noll 546 på tre dygn efter åtgärden.
   🔨 **Bengts ja 24/9 (DECISIONS #344):** `sql/036` flyttar skuggmotorns svenska schema till :02/:32. Nya 546 i dag före flytten: 11:00 och 14:30. Kvar: tre dygn utan 546.
+  📏 **Läst 24/9 15:09Z:** första varvet på den nya tiden 15:02:02–04Z (E18 Karlstad→Örebro, E4 Sundsvall→Umeå, Rv40 Göteborg→Jönköping, prognosen med i alla tre); 0 av 28 svar i `net._http_response` var 546 mellan 14:49 och 15:09Z. Tjugo minuter bevisar inget ännu: felen kom med timmars mellanrum (sex gånger på femton timmar). Kortet stängs efter tre dygn utan 546.
 - [ ] 🦌 **#241 VILTRÖSTEN TALAR PÅ LÄNETS MITTPUNKT — mot DECISIONS #13** (fynd 22/9, Bengts fråga *"vad har vi för mätning i appen,
   polisen eller trafikverket"*; `scripts/matningar/viltrosten-polisen-2026-09-22.sql`, körning 35761967231).
   **Läget:** appens viltvarning kommer ur **polisens** data, inte Trafikverkets. `publish/snapshot-core.ts` skickar polisens viltolyckor
