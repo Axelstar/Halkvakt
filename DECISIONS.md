@@ -9919,3 +9919,24 @@ plus Tierp-raden från 03:11Z (`våt`, #333). Ingen av dem är halka, så grind 
 **Kort #246 stängt:** Verify (*ett kontaktark ur direktbilderna klassat och ok:at, med tabellrader*) uppfylld. Det andra provet —
 ett ark vid regn eller i mörker, som prövar att klassningen skiljer våt från bar — är nytt arbete och har eget kort, #247.
 
+## #341 (24/9 2026) S2 byggt: skattaren ger nivå och bevis bredvid ordet — före S1-grinden (kort #89, steg 3 i ordningen)
+
+**Beslut (Bengt 24/9: *"gör steg 3"*, på förslaget i bedömningen §4.2 att bygga S2 nu).** Bedömningen hade lagt S2 bakom
+S1-grinden. Grinden (Axel 16/9, DECISIONS #196) gäller regnfältets tillförlitlighet innan S3 bygger en REGEL på det; S2 är
+skattarens FORM, och den rör varken motorn, rösten eller någon tröskel. Därför nu, S3 väntar kvar bakom grinden.
+
+**Byggt:** `skattaNiva(bevis, N, K1, K2)` i `publish/tillstand.ts`, bredvid `skatta()` som är orörd (kartans §5.3: lägg till,
+ersätt aldrig). Svaret: `tillstand` (alltid exakt `skatta()`s), `vata` (antal N i N_SVEP som ger blött — hur nyligen),
+`mangd` (antal steg i REGN_SVEP stationens regn klarar), `radar` (antal steg i R_SVEP), `kallor` (station/radar inom N),
+`frys` (ytan mot K1 med zonen K2: under · nära · över — frysklassningens idé att få avstå nära gränsen), `bevis` (läsbar rad).
+**Inget nytt tal:** varje nivå är ett antal steg i ett svep som står i TROSKLAR-OVERGANGAR §2 eller TROSKLAR-FRYSKLASSNINGEN §2,
+och argumenten prövas mot svepen (D1) — ett eget tal avvisas. Frånvaro är inte noll: okänd mängd och saknad radarrad är null.
+
+**Bevis:** åtta nya tester (kontraktet `tillstand = skatta()` över 64 fall × fyra N, väta, mängd med null, radar, frys med
+K2 = 0 som alltid svarar, källor, beviset som text, D1), steg 2-knappens självtest med fem S2-rader, 155 enhetstester gröna.
+K1- och K2-svepen står nu i två filer (`scripts/grind-k-a.ts` och `publish/tillstand.ts`) — två nya kontrakt, 51 håller.
+
+**Vad det låser upp:** kort #245 (bevisbäraren, nyckeln var S2) och indata till #153:s försprång. Ingen konsument i drift än:
+nivån är indata, inte en varning. Integrationskartan är fryst och säger fortfarande att E inte är byggd; det rättas nästa gång
+den öppnas efter mätning (bedömningen §5.2 bär läget).
+

@@ -39,7 +39,7 @@
 // Run: DATABASE_URL=... node --experimental-strip-types scripts/tillstand-steg2.ts [dagar=7]
 // Självtest utan DB: scripts/tillstand-steg2.ts --sjalvtest
 
-import { skatta, samstammiga, N_SVEP, REGN_SVEP, R_SVEP } from "../publish/tillstand.ts";
+import { skatta, skattaNiva, samstammiga, N_SVEP, REGN_SVEP, R_SVEP } from "../publish/tillstand.ts";
 
 const MAX_DAGAR = 14;            // hårt tak, inte bara en varning
 const MIN_SEGMENTTIMMAR = 500;   // under detta skrivs OAVGJORT, aldrig ett tal
@@ -72,6 +72,13 @@ if (process.argv.includes("--sjalvtest")) {
   k("N-svepet är §2:s", N_SVEP.join("·"), "1·2·3·4");
   k("r-svepet är §2:s", R_SVEP.join("·"), "0.1·0.5·2");
   k("regnsvepet är §2:s", REGN_SVEP.join("·"), "0·0.2·0.5");
+  // S2 (DECISIONS #341): nivån bredvid ordet — tillståndet orört, väta och mängd i svepsteg, okänt är null.
+  const nv = skattaNiva({ ...u(0.5, null), mmSenaste: 0.3, yta: 0.8 }, 1, 1.0, 0.5);
+  k("S2: tillståndet är skatta()s", nv.tillstand, skatta(u(0.5, null), 1));
+  k("S2: väta 4 av 4 för regn en halvtimme sedan", nv.vata, 4);
+  k("S2: mängd 2 av 3 för 0,3 mm", nv.mangd, 2);
+  k("S2: okänd radar är null, inte noll", nv.radar, null);
+  k("S2: 0,8 °C ligger nära 1,0 ±0,5", nv.frys, "nära");
   if (!ok) { console.error("\nSJÄLVTEST FÄLLDE."); process.exit(1); }
   console.log("\nSJÄLVTEST OK: skattaren håller, och svepen är fortfarande dokumentets.");
   process.exit(0);
