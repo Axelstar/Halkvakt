@@ -183,8 +183,9 @@ det är hela poängen med att dokumentet är daterat före första körningen.
 
 ## 6. Mätansvar
 
-Claude räknar (missar.ts utökas med prognoskolumnen; felkartan skriptas som
-engångsskript i repot). Bengt läser skuggloggen i söndagsrutinen och klassar
-facit-hinkens bilder veckovis. Axel fäller domen. Prognoskolumnen buntas ur
+Claude räknar (dom-knappen `publish/grind-s-b.ts` på den delade händelselistan `publish/skuggfacit.ts`,
+DECISIONS #327/#330). Bengt läser skuggloggen i söndagsrutinen. **Facit-hinkens bilder** (ändrat 24/9, DECISIONS #335):
+öppnas vid domens tidpunkt (DECISIONS #248) — Claude klassar dem blint ur kontaktark (kort #246; sökvägen visar kamera
+och tid, aldrig skuggans larm), Axel ok:ar (stickprov ≥ 10 % och varje is/snö/slask), Bengt stickprovar. Axel fäller domen. Prognoskolumnen buntas ur
 `engine/src` som allt annat (DECISIONS #43/#51) — en handklistrad kolumn driver
 isär på ett dygn.

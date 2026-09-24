@@ -383,6 +383,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   → 289 958 (14/9 06:23) = 7 588 rader ⇒ **~13 000/dygn**. Kalla stationer 3 (var 1 i går). Takten
   ligger kvar långt under vinterprojektionens 41 000.
   ↪ **Hit sammanslaget 24/9 (DECISIONS #332): #155 snubbeltråden.** Beslutet om kvarhållningen (steg 2, export eller Pro) avgör två mätinstruments byggform: trendarkivet (#88) SPARAR för att gallringen förstör dess 15-minutersfönster; tillståndsskattaren (#89) och tystnadsfelet (#98) RÄKNAR OM för att deras ingångar överlever. Skärps kvarhållningen, eller börjar `radar_precip` gallras (inget gör det i dag), upphör ingången att vara återskapbar och båda måtten måste byta till #88:s form. Gratisnivån räcker ~55 dygn in i vintern (sql/014). Principen står i TROSKLAR-OVERGANGAR och TROSKLAR-TRENDEN (Bengts order 14/9).
+  🔨 **STEG 2 BESLUTAT OCH I DRIFT 24/9 (Bengt: *"ja till alla fem, kör export till supabase storage"*, DECISIONS #334):** export, inte Pro. `sql/034` + `sql/035`, edge-funktionen `arkivexport`, jobben :40 och 03:45. Första varvet 05:40Z: 24/8 (4 711 rader, 70 kB) och 25/8 (17 843 rader, 236 kB) packade, återlästa, sha-verifierade och bokförda; 19 dygn väntar, två per timme. Raderingen först när databasen passerar 350 MB, äldsta bokförda dygnet, ett per natt, aldrig yngre än 30 dygn. Kvar: återläsningssteget för marsdomarna (behövs när raderingen börjat).
 - [x] ~~Fastställ trösklarna för skuggan~~ ✅ FASTSTÄLLT 2/9 (DECISIONS #61): Axels
   "kör" relayerat av Bengt i chatten, värdena oförändrade från Bengts 1/9-version inkl.
   §2-orsaksklassningen. Kvitto: huvudet i docs/TROSKLAR-SKUGGAN.md. Bocken här är
@@ -2683,6 +2684,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   skuggans larm · Axel ok:ar: stickprov ≥ 10 % plus varje is/snö/slask · satsen in i `kamerafacit` i ett svep. Förkrav: #231:s
   definition i DECISIONS före första hinkbilden, och TROSKLAR-SKUGGAN §6 omskriven (Claude klassar, Axel ok:ar, Bengt
   stickprovar). 🔒 NYCKEL: Bengts och Axels ja (§4.2). Verify: ett kontaktark ur direktbilderna klassat och ok:at, med tabellrader.
+  🔑 **Bengts ja 24/9 (DECISIONS #335/#336):** mars står, §6 omskriven, #231:s definition skriven. Kvar av nyckeln: Axels export av hinken och hans ok-roll. Provet på direktbilderna kan byggas nu.
 - [ ] 🐕 **#243 VAKTHUNDENS ARKIVGRÄNS ÄR FÖR SNÄV — issue #528 var ett falsklarm** (fynd 24/9 på Bengts fråga *"vad betyder detta"*).
   Checken *livemotorns effekt* larmar när `situation_archive` inte rörts på 30 min, men arkivet skrivs bara när Trafikverket
   ändrar något: mätt 24/9 04:12Z — 4 gluggar > 30 min senaste dygnet (största 102 min), **32 på sju dygn, medel 54 min, största
@@ -2732,6 +2734,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⚠️ Kontrollera när kortet byggs att arkivet bär stationens ythistorik för varningarnas tidpunkter (`weather_observations`
   tunnas till halvtimmeshinkar efter sju dygn, sql/014) — annars måste historiken loggas vid varningen, och då i god tid.
   Verify: definitionen i DECISIONS före första bilden · tabellen *vädertyp × bar/våt väg* i bedömningen vid mars-läsningen.
+  ✅ **Definitionen skriven 24/9 (DECISIONS #336), före första hinkbilden:** övergång = yta > +1 °C någon gång de 6 h före varningen, annars stadigt kallt; redovisas också vid 3 och 12 h.
 
 - [x] 🧪 **#230 EFTERHANDSTEST: HALKVAKTS REGLER MOT NIRAS FRIKTION — ✅ KÖRD 21/9 PÅ EXEMPELDAGEN (DECISIONS #287)** (Bengts idé 21/9, DECISIONS #284). 🔑 **Nyckel:
   friktionsdata från Nira för nätter som vårt arkiv också bär — och ett beslut om facitkällan INNAN nätterna mäts (D3).**
@@ -3005,6 +3008,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Fram till dess får svepet i §2 och kraven i §4 justeras av vem som helst av oss med en rad i
   DECISIONS; därefter krävs båda signaturer och en motivering som inte lutar sig mot utfallet.
   📏 **Tryckt 24/9 (DECISIONS #331):** T-A steg 0, 7 dygn (körning 35949108311): 3 765 station-nätter, 47 frostnätter (yta ≤ 1 °C) på 26 stationer, 3 718 icke-frostnätter; separationen går inte att skilja från noll; kallaste stunden 03–07 i 70 % av frostnätterna; molnet hämtat för 34 av 47 punkter. frostvakten (50 stationer under noll) har inte larmat: senaste tio nätterna som mest 4 stationer under noll (17/9), kallast −5,6 °C (22/9). Steg 0 förfaller inom sju dygn efter frostvaktens larm; bildfacitets definition (#209/#231) skrivs in i DECISIONS då.
+  🥶 **Frosttriggern i drift 24/9 (DECISIONS #338):** vakthunden trycker T-A steg 0 (och de fyra andra frostmätningarna) själv när frostlarmet skapas; utlösarprovet 05:38Z gav en grön körning av vindsikt-steg0. Sju-dygnsfönstret hänger inte längre på att någon läser issuen.
 - [ ] 🤐 **#98 TYSTNADSFELET — mät tystnadens fel, inte larmens träff** (B3-syskon till #88; skrivet
   10/9 21:09, hittat i Bengts Drive 11/9, FASTSTÄLLT 11/9 på Bengts order, DECISIONS #93).
   `docs/TROSKLAR-TYSTNADSFEL.md`. Avgör Bengts egen tvist från 10/9 med data i stället för princip:

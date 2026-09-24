@@ -4,8 +4,8 @@
 och vad allt underkänt lämnade kvar.**
 
 **Kartan är fryst** (Axels förslag, Bengts beslut 15/9): en ändring kommer bara efter att något byggts och
-mätts. **Öppnad en gång, 16/9, för R1–R16** — efter NU-listans byggen och mätningar (DECISIONS #199) — och fryst
-igen. *Vad som görs, och när, står i `docs/BEDOMNING-2026-09-15.md` — den enda listan.*
+mätts. **Öppnad två gånger: 16/9 för R1–R16** (DECISIONS #199) **och 24/9 för R17–R20** (DECISIONS #337) — båda gångerna
+efter bygge och mätning, och fryst igen. *Vad som görs, och när, står i `docs/BEDOMNING-2026-09-15.md` — den enda listan.*
 
 Det här är det enda dokumentet över hur Halkvakts delar hänger ihop. Allt som rör integrationen står
 här: lagren, multiplikationen, **motorn som den faktiskt ser ut**, **fogarna där en skuggdel kan
@@ -42,7 +42,7 @@ nämnaren, och den är också nyckeln till hur de ska sitta ihop.
 | **L1 TROVÄRDIGHET** | Får vi tro på mätvärdet? | #75 givarvakten · stationsvakten (#164) · G_tak (DECISIONS #163) · värdevakten · R-A5 | ✅ i drift |
 | **L2 TILLSTÅND** | Vad **är** ytan? | tillståndsskattaren (#89 steg 2) · radarns `regn` (#81 C) · operatörens klass · **#45 våtbulb → regn/slask/snö** · **#42 vattenfilm** | 🔨 blöt/torr byggt, resten kvar |
 | **L3 UTVECKLING** | Vart är den på **väg**? | trendarkivet (#88) · övergångarna (#89 a) · **#46 rimfrost** · N_varning (SMHI) | 🔨 mätt, ingen regel |
-| **L4 RÄCKVIDD** | Hur långt **gäller** mätningen? | grind A:s ankare (#38b) · SMHI molnmängd som räckviddsknapp (#95; Verify 2 och representativitetsradien omätta; SMHI som reserv när Trafikverket tystnar helt — uppmätt pris 2,36 °C) · **#91 kallplatslagret** | ⚠️ ankaret mätt och dugligt, **knappen saknas** |
+| **L4 RÄCKVIDD** | Hur långt **gäller** mätningen? | grind A:s ankare (#38b) · SMHI molnmängd som räckviddsknapp (#95; Verify 2 och representativitetsradien omätta; SMHI som reserv när Trafikverket tystnar helt — uppmätt pris 2,36 °C) · **#91 kallplatslagret** | ✅ **grind A KLARAD** (#321); segmentprognosen i skugga sedan 23/9 (#325) · ⚠️ **knappen saknas** |
 | **L5 ALLVAR & RÖST** | Vad **sägs**, och hur illa är det? | #153 allvar som **försprång** · spärren (DECISIONS #165) · **#90 roll B** | ⚠️ **formen beslutad (tid, inte ord), regeln obyggd** |
 
 **Ordningen är inte godtycklig.** L1 gatar allt. L2 och L3 multiplicerar varandra. L4 avgör hur långt
@@ -191,7 +191,7 @@ syns inte av sig självt.**
 | **Radarns `regn`** (#81 C) | L2 | F2+F3+F4 — **redan publicerat** | nej, nytt villkor vid sidan | 3 segmentvektorer |
 | **Tillståndsskattaren** (#89 steg 2) | L2 | F1 `weather[].tillstand` + F3 + F4 | **nej — bredvid `fukt`** | 6 isvektorer, **v11 är grinden** |
 | **Trendarkivet** (#88) | L3 | F1 `weather[].lutning` + F3 + F4 | nej | 6 isvektorer |
-| **Grind A:s ankare** (#38b) | L4 | F1 `weather[].osakerhet` + F3 + F4 | nej | F4 — **och att `leadM` slutar vara motorns enda avståndsbegrepp** (§4.2) |
+| **Segmentprognosen** (#38b) | L4 | **ingen fog i motorn i vinter:** loggas i `shadow_log.prognos` (rå avståndsviktning, #324); vid dom (a) i mars karta och förstärkare, aldrig röst ensam (TROSKLAR-SKUGGAN §4, #319) — förstärkningen går då genom F1 + F3 + F4 | nej | F4 vid (a) — **och att `leadM` slutar vara motorns enda avståndsbegrepp** (§4.2) |
 | **#46 rimfrost** | L3 | F3+F4 — **redan gjort**, som andra gren i `icing_point` | nej | klar; förebilden (§7.8) |
 | **#45 snö/slask** | L2 | F1 + F3 + F4 | nej | 6 isvektorer — **och frestelsen att göra det till ett sjätte slag måste avvisas** (§7.8). **Låst av #52:** ett test i tre portar säger att kod 1 + "Packad snö" MÅSTE larma — motsatsen till #45:s vinterbaseline. Vektorn beslutas före #45 |
 | **#42 vattenplaning** | L2 | egen byggordning **#81 A–F**: A, B och radarhalvan av C **byggda**, C:s stationshalva blockerad, **D = nytt farslag `aquaplaning`** | — | **F5 av konstruktion** — det prövade undantaget från §7.8 (kriteriet i §9). Skugga (E) i **höstregn** först; enda spåret med höstfönster |
@@ -263,22 +263,22 @@ byråkrati: den är stället där "sex vektorer" blir ett verkligt tal i ställe
 
 ### 6.1 L4 är inte tomt — ankaret är en mätt osäkerhetskurva
 
-Grind A (offsetmodellen) med både givarvakten (#129) och marginalvakten (#126/#128), DECISIONS #131,
-1 943 punkter:
+Grind A (offsetmodellen) med givarvakten, radvakten och karantänen (DECISIONS #298/#299), dömd 23/9 (#321): **A1 0,71 °C ·
+A2 3,5 % ± 0,4 · A3 0,0 %** på 7 356 punkter från 711 stationer — **KLARAD**. Vägpunktsgrinden (#324) prövade samma mått utan
+målets egen historik, alltså det fall vägen mellan stationerna har, och rå avståndsviktning klarar dem lika bra som den lärda
+offseten (0,71 mot 0,72 °C):
 
-| band | MAE | grova > 2 °C | frysklassfel |
+| band (rå avståndsviktning, 8 132 punkter) | MAE | grova > 2 °C | frysklassfel |
 | :-- | --: | --: | --: |
-| 0–7 km | **0,33 °C** | 0,0 % | 0,0 % |
-| 7–15 km | 0,78 | 3,1 % | 0,0 % |
-| 15–20 km | 0,85 | 6,4 % | 0,0 % |
-| > 20 km | 0,89 | 5,4 % | 0,4 % |
-| **totalt** | **0,85** | **5,1 %** | **0,3 %** |
+| 0–7 km | 0,73 °C | 0,9 % | 0,0 % |
+| 7–15 km | 0,55 | 1,1 % | 0,0 % |
+| 15–20 km | 0,73 | **5,0 %** | 0,0 % |
+| > 20 km | 0,72 | 4,0 % | 0,0 % |
+| **totalt** | **0,71** | **3,8 %** | **0,0 %** |
 
-**A1 KLARAR** (0,85 mot 1,0, marginal ±0,05) · **A2 OAVGJORT** (5,1 mot 5,0) · **A3 KLARAR**
-(0,3 mot 10). Domen är ⏳ **INGEN DOM** — uttryckligen *inte ett nej*.
-
-**Talen stiger monotont med ankaravståndet:** 0,33 · 0,78 · 0,85 · 0,89 — som fysiken kräver. Det
-bandet som en gång var sämst av alla fyra är nu näst bäst.
+**7–15 km-anomalin var trasiga givare, inte terräng:** utan vakterna låg bandet på 2,68 °C och 25 % grova fel, med dem 0,55 °C och
+1,1 % (#324). Felet är i stort sett platt med avståndet efter vakterna; 15–20 km ligger exakt på A2:s tröskel och är där vintern
+kan vända. Segmentprognosen loggar sedan 23/9 i skugga på denna modell, med varje station på rutten som holdout (#325/#326).
 
 Det betyder att räckviddslagret inte saknar en mekanism. Det har **en avståndsberoende felkurva som
 faktiskt är uppmätt** — precis den storhet L4 behöver. Vad som saknas är **knappen**: vad som gör
@@ -338,7 +338,12 @@ utveckling × räckvidd ÄR en modell.
 
 Tolkad bokstavligt förbjuder regeln alltså produkten. Den ser ut som stringens och är i själva verket
 ett principiellt stopp. Kort #153 beslut 2 öppnade ett smalare undantag (radarn är en mätning;
-interpolation mellan två eniga mätningar är inte extrapolation) — **men det är inte avgjort.**
+interpolation mellan två eniga mätningar är inte extrapolation) — **avgjort 16–17/9:**
+
+**Regel T (TROSKLAR-KOMBINATIONEN §6, DECISIONS #220/#226)** — Axels lydelse, tätad: T3 extrapolation utlöser aldrig,
+T5 interpolation bara där ett vittne på platsen kan fälla värdet, T6 prognoser och modellprodukter aldrig ensamma.
+#153 beslut 2 styrs av T5 och har ingen egen öppning. Segmentprognosens domslut (TROSKLAR-SKUGGAN §4) rättades mot
+regeln 23/9 (#319).
 
 ### 7.3 Varje grind dömer sin del ENSAM. Det finns ingen grind för kombinationen
 
@@ -353,7 +358,8 @@ nejet ligger nu på kortet som om SMHI vore avgjort.
 > **Vi riskerar att underkänna produktens ingredienser en och en, på prov som ställer fel fråga.**
 
 Motmedlet är §9 — och den grind för kombinationen som §8 C beställer. Grinden för kombinationen har
-dessutom en färdig mätplats: **skuggmotorn** (§5.5).
+dessutom en färdig mätplats: **skuggmotorn** (§5.5). **Avgjort 17/9:** kombinationsgrinden KB-A–D står i
+`docs/TROSKLAR-KOMBINATIONEN.md` (DECISIONS #217–#228).
 
 ### 7.4 Trösklarna fryses per del — gemensam kalibrering är inte tillåten
 
@@ -361,8 +367,9 @@ dessutom en färdig mätplats: **skuggmotorn** (§5.5).
 att flytta målstolparna när siffrorna kommit — rätt regel.
 
 **Men en kombinerad modell behöver kalibreras GEMENSAMT.** N (#89), fönstret (#88), gapet (#46) och
-r (#42) väljs var för sig, för solo-prestanda. Ingen text säger hur en kombination får kalibreras,
-och som reglerna står i dag får den inte det.
+r (#42) väljs var för sig, för solo-prestanda. **Avgjort 17/9:** regel D (D1–D7, TROSKLAR-KOMBINATIONEN §5, DECISIONS
+#226) säger hur en kombination får kalibreras — värden ur delarnas svep, startvärden före första natten, kalibrering
+och dom på skilda nätter, alla prövade punkter redovisade.
 
 ### 7.5 Skattaren kastar bort bevisets STYRKA
 
@@ -423,12 +430,12 @@ F (röst) i alla tre fallen — för #42 är E byggt (DECISIONS #191).
 | # | Vad | Vems | Fog | Kostnad |
 | :-- | :-- | :-- | :-- | :-- |
 | **A** | **Allvar som FÖRSPRÅNG** — samma ord, tidigare. Formen beslutad (#90 roll B); regeln saknas | Axels (rösten) | **F4** | kort #153, ej byggt |
-| **B** | **Bevisbärare i snapshoten** — varje fara bär vilka lager som talade och hur starkt, inte en boolean | delad | F1+F3 | additiv |
-| **C** | **En grind för KOMBINATIONEN** vid sidan av per-delsgrindarna | mätningen, alltså vår | — | ett dokument |
-| **D** | **En skriven regel för gemensam kalibrering** — tillägg till §8-regimerna | Bengt fastställer | — | ett stycke |
+| **B** | **Bevisbärare i snapshoten** — varje fara bär vilka lager som talade och hur starkt, inte en boolean | delad | F1+F3 | additiv — kort #245 |
+| **C** | **En grind för KOMBINATIONEN** vid sidan av per-delsgrindarna | mätningen, alltså vår | — | ✅ skriven 17/9 (KB-A–D) |
+| **D** | **En skriven regel för gemensam kalibrering** — tillägg till §8-regimerna | Bengt fastställer | — | ✅ regel D, 17/9 |
 | **E** | **Graciös degradering** — skattaren returnerar nivå + bevis i stället för enum | min kod | F3 | liten |
 
-**C och D är dokument och kan skrivas före frosten.** E är en liten ändring i min egen modul — och
+**C och D är skrivna (17/9, TROSKLAR-KOMBINATIONEN).** E är en liten ändring i min egen modul — och
 enligt §7.5 **indata till A**, inte en förfining. A är Axels; sedan hans invändning (§13.1) kostar
 den **F4, inte F5**, vilket flyttar den från nästa vinter till den här.
 
@@ -547,16 +554,17 @@ bokstavligen motorn, så varje länk kan mätas på riktig trafik innan den når
 återstår är alltså inte ett brobygge — det är sex vektorer, tre portar, och disciplinen i §5.3 och
 §5.5.
 
-**Och det som allt ska dömas mot är nästan tomt.** Två av tre facitkällor är tomma eller stillastående:
-kamerafacit **0 objekt** efter 5 657 skuggkörningar (form A deployad 14/9, sexton dygn förlorade);
-`road_condition_history` — husets *"winter archive (our moat)"* — **830 rader, nyaste 25/8**. Den tredje,
-`situation_archive`, är omätt. **Ingen vakt mäter om historiken växer.** Axels tröskelregel är rätt och
-saknar vittne (§13.2).
+**Och det som allt ska dömas mot är fortfarande tunt — men inte längre tomt eller obevakat.** Kamerafacit: 790 bilder
+i hinken sedan 15/9, tabellen `kamerafacit` och en första klassad bild (#329/#333), läsning i mars (#248, #335) med
+ett spår för blind klassning och Axels ok (kort #246). `road_condition_history` står nästan stilla (rätt i september).
+`situation_archive` är mätt (3 122 olyckor på 30 dygn, #189) men bär ingen orsak. Förarfacit: ett svar. Mätvakten
+(S7) mäter att facitkällorna växer, och alla läses genom en delad händelselista (`publish/skuggfacit.ts`, #327/#330).
+Axels tröskelregel har vittnen på väg, inte i hand (§13.2).
 
-**Men tre saker står i vägen, och två av dem är regler vi själva skrivit:** utgången kan inte uttrycka
-allvar (§7.1), modellerade storheter får inte utlösa (§7.2), och grindarna dömer delar i stället för
-kombinationer (§7.3). Ingen av dem är ett kodfel. Alla tre är beslut, och alla tre är Bengts och Axels
-att ompröva.
+**Tre saker stod i vägen, och alla tre är nu avgjorda som beslut:** allvar uttrycks som försprång (§7.1, #221), en
+modellerad storhet utlöser aldrig ensam — regel T (§7.2, #220), och kombinationen har en egen grind och en regel för
+gemensam kalibrering (§7.3–7.4, TROSKLAR-KOMBINATIONEN, #217–#228). Kvar är att bygga dem, i den ordning bedömningen
+§5 säger.
 
 **Skillnaden mellan det vi har och produkten Bengt beskriver sitter alltså i L4:s knapp och i L5** —
 och L5 är billigare än kartan först påstod: som **försprång** kostar den F4 (§13.1). Att kartan mätte
@@ -670,10 +678,10 @@ Hans invändning avslöjade dessutom ett tankefel i kartans eget §7.5 — se r�
 | :-- | :-- |
 | L5:s form är **försprång**, inte ord | **redan beslutat** (#90 roll B, E1) — kartan säger det nu |
 | #153 som försprång kostar **F4**, inte F5 | **mätt** (§5.1, §5.4) |
-| Grind A står | **mätt** (#131) |
+| Grind A | **KLARAD 23/9** (#321) |
 | #157 är bärande för vinterleveransen | **följer av 13.2** |
-| Om #153 **ska** omformuleras till försprång | **öppet — Bengts och Axels** |
-| Om tröskelregeln ska skrivas om till Axels lydelse | **öppet — Bengts och Axels** |
+| Om #153 **ska** omformuleras till försprång | **avgjort 16/9** (#221) |
+| Om tröskelregeln ska skrivas om till Axels lydelse | **avgjort 16/9** (#220), tätad |
 | Om E byggs före vintern | **öppet** — jag rekommenderar ja (13.5) |
 | Om vinterns röstleverans begränsas till Axels "en sak" | **öppet** — jag rekommenderar ja |
 
@@ -695,3 +703,4 @@ ingen läser en överspelad version någon annanstans.
 | 15/9 | **Kartan fryst.** Kriteriet för nytt farslag infört i §7.8 (tre rader, Bengt fastställde). Femton kända rättelser väntar i bedömningens bilaga A tills en rör kod | DECISIONS #186 |
 | 16/9 | **Kartan öppnad för R1–R16 — efter bygge + mätning, enligt frysvillkoret — och fryst igen.** R1–R15 ur granskningen: #42 är ett eget spår med höstfönster och ett sjätte farslag av konstruktion (§5.4, §7.8) · `regn` bara på halkklassade segment, nu löst med `rain_segments` (§5.2) · höjden mäter fortfarande, lapse 0,63 (§9.1) · oljefilm→#42 överspelad, `rate_max` spärrat, K1 en läxa (§10.2, §10.4) · #94 öppet (§10.1) · #163/#165 är DECISIONS · #103-kollisionen · #168:s reservationer · #43 steg 4 öppnat (§11) · SMHI:s reserv, Verify 2, radien (§2, §9.1) · facitstacken två av tre tomma (§12) · #45 efter #52 (§5.4). **R16 (Axel):** fog-tabellen är läst, inte körd — #154:s F1 var F4/F5 i koden (§5.2, §5.6) | DECISIONS #199 |
 | 14/9 | **Axels fyra invändningar inarbetade (§13).** L5 var inte tomt — formen är beslutad som FÖRSPRÅNG (#90 roll B); #153 kostar därmed **F4, inte F5**; §7.5:s enum-resonemang var fel | DECISIONS #184 |
+| 24/9 | **Kartan öppnad för R17–R20 — efter bygge + mätning (segmentprognosen och facitkopplingen) — och fryst igen.** R17 grind A klarad, 7–15 km-anomalin var givarfel (§2, §6.1) · R18 segmentprognosen: ingen fog i motorn i vinter, karta och förstärkare vid dom (§5.4) · R19 facitstacken tunn men inte tom eller obevakad (§12) · R20 motkrafterna §7.2–7.4 avgjorda 16–17/9, §8 B/C/D, §13.6 | DECISIONS #337 |

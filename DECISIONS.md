@@ -9813,3 +9813,76 @@ i repot är spårbar men tung — sidan är nästa steg när bilderna blir mång
 bärare, så INSERT-filen i `scripts/matningar/` kunde inte köras som fil: klassningen gick in som BEVISRAD (enradsform) med
 `sql/033` som bärare. Fungerar, men det är fel kanal på sikt — sidan i (2) ska skriva direkt.
 
+## #334 (24/9 2026) Kort #83 steg 2: vinterarkivet exporteras till Supabase Storage — inte Pro
+
+**Beslut (Bengt 24/9: *"ja till alla fem, kör export till supabase storage"*, på beslutsrundan `docs/BESLUTSRUNDA-2026-09-24.md` §1).** Gratisvägen 2a i stället för Pro
+(25 USD/mån). Ingen betaltjänst, alltså ingen DECISIONS-post med Axels ja krävs enligt gratisnivåregeln; Axel ser beslutet här.
+
+**Byggt och i drift samma morgon (PR #540, #541):**
+- `sql/034_arkivexport.sql`: `arkiv_export` (bokföringen), `arkiv_att_exportera` (färdiga, gallrade dygn äldre än 8 dygn),
+  `arkiv_dygn` (rubrikrad + en JSON-lista per rad; kolumnerna ur katalogen, geom som lon/lat), `arkiv_export_klar` (räknar
+  dygnet en gång till och bokför bara vid exakt radantal; ett raderat dygn skrivs aldrig över), `arkiv_radera_exporterat`
+  (bara över **350 MB**, bara äldsta bokförda dygnet, **ett per natt**, aldrig yngre än **30 dygn**, aldrig om databasen bär
+  fler rader än filen), `arkiv_efterslap`. Privat hink `arkiv`. Jobb `halkvakt-arkivexport` varje timme :40 (kommandot
+  kopierat ur skuggmotorns jobb inne i databasen med replace(), aldrig i en fil) och `halkvakt-arkivradering` 03:45.
+- `supabase/functions/arkivexport`: två dygn per anrop — packar, laddar upp, **läser tillbaka ur hinken**, jämför sha256
+  och radantal, bokför. Raderar aldrig.
+- Vakthundens check 9k: exporten får ligga efter, inte stå still (> 3 dygn väntar och ingen export på 3 h ⇒ larm).
+- Integrationstest mot PostGIS (ok 49): text med kommatecken och citattecken, fel radantal bokförs inte, gränsen, min_dygn,
+  en sen rad stoppar raderingen högljutt, ett raderat dygn skrivs inte över.
+
+**Bevis.** Första varvet 05:40Z: **24/8 (4 711 rader, 70 157 byte) och 25/8 (17 843 rader, 236 388 byte)** bokförda, samma
+storlek i `storage.objects`, sha `929c8d1a…` och `ce8f7031…`; 19 dygn väntar. Torrkörd radering: *"databasen 193 MB, under
+350 MB — inget raderas"*. 25/8 gav 2,74 MB text (153 byte/rad) och 236 kB packad (11,6 ×) — ett vinterdygn (848 stationer
+× 48) blir ~6 MB text och ~0,5 MB packat, vintern ~80 MB i hinken (1 GB gratis; kamerabilderna 18 MB).
+
+**Fynd på vägen, sagt högt.** Bevisraden efter sql/034 visade `anon` och `authenticated` med EXECUTE på raderingen: Supabase ger
+nya funktioner i public-schemat EXECUTE genom standardrättigheter, och `REVOKE FROM PUBLIC` tar inte bort dem. RLS hindrade att
+något kunde raderas, men huset låser dubbelt — `sql/035` samma timme; nu postgres + service_role, raderingen bara postgres.
+
+**Kvar, före mars:** återläsningssteget — marsdomarna ska kunna köras på exporten återläst i en PostGIS-container (som
+arkivbackupen provar varje vecka). Behövs först när raderingen börjat, alltså när databasen passerat 350 MB. Så länge den är
+under räknas grind A:s 60-dygnsfönster i databasen som förut.
+
+## #335 (24/9 2026) Kamerabilderna öppnas i mars (DECISIONS #248 står); TROSKLAR-SKUGGAN §6 omskriven: Claude klassar, Axel ok:ar
+
+**Beslut (Bengt 24/9: *"ja till alla fem, kör export till supabase storage"*, beslutsrundan §2).** #248 står — bilderna i hinken öppnas vid domens tidpunkt, blindningen är värd
+mer än en tidigare läsning. §6 i `docs/TROSKLAR-SKUGGAN.md` skrivs om: Claude klassar blint ur kontaktark (kort #246; sökvägen
+visar kamera och tid, aldrig skuggans larm), Axel ok:ar (stickprov ≥ 10 % plus varje is/snö/slask, de enda som räknas som
+händelse), Bengt stickprovar. Spåret byggs och provas nu på Trafikverkets direktbilder, som är publika och inte facit. Den
+motsägelse som stod mellan §6 (veckovis, 1/9) och #248 (mars, 20/9) är därmed borta. Beslutet var Bengts och Axels i rundan;
+Bengt svarade, Axel ser det här — hans del är exporten av hinken och ok:et.
+
+## #336 (24/9 2026) Kort #231:s definition: *övergång* = ytan över +1 °C någon gång de sex timmarna före varningen
+
+**Beslut (Bengt 24/9: *"ja till alla fem, kör export till supabase storage"*, beslutsrundan §3).** Skrivet FÖRE första hinkbilden öppnas, som kortet kräver. När bildfacit läses
+delas produktionsregelns varningar (`icing_point`) i **övergång** — stationens yttemperatur låg över **+1 °C** någon gång under de
+**6 timmarna** före varningen — och **stadigt kallt** för resten. Andelen bilder med bar eller våt väg redovisas per grupp. Sex
+timmar täcker en kvällsavkylning från plus till frost; två hade kallat de flesta nattvarningar stadigt kalla fast vägen saltats
+på eftermiddagen. Talet sveps inte — det är en läsning, inte en tröskel — men redovisas också vid 3 och 12 h så att valet syns.
+Ingen tröskel rörs, ingen röst ändras.
+
+## #337 (24/9 2026) Integrationskartan öppnad för R17–R20 — och fryst igen
+
+**Beslut (Bengt 24/9: *"ja till alla fem, kör export till supabase storage"*, beslutsrundan §4).** Frysvillkoret ("efter bygge + mätning") är uppfyllt av segmentprognosen och
+facitkopplingen. Införda: **R17** §6.1 och §2 — grind A KLARAD (#321), 7–15 km-anomalin var givarfel (#324); **R18** §5.4 —
+segmentprognosen går ingen fog i motorn i vinter, den loggas i skuggan och blir karta och förstärkare vid dom (#319, #325);
+**R19** §12 — facitstacken är tunn men inte tom eller obevakad (#327, #329, #330, #333); **R20** §7.2–7.4, §8 C/D och §13.6 —
+motkrafterna avgjorda 16–17/9 (#220, #221, #226), kombinationsgrinden och regel D skrivna. Bevisbäraren (§8 B) fick kortet #245.
+Inga fogar och ingen sekvens ändras. Kartan fryst igen i samma commit; §14 har raden.
+
+## #338 (24/9 2026) Frosttriggern: vakthunden trycker de fem frostmätningarna själv — ingen veckoklocka
+
+**Beslut (Bengt 24/9: *"ja till alla fem, kör export till supabase storage"*, beslutsrundan §5).** I stället för att sätta K-A, R-A, T-A och W-A på måndagsklockan (Actions-minuter,
+mot regeln 22/9) trycker vakthunden flödena **en gång**, i samma ögonblick som det riktiga frostlarmet (≥ 50 stationer under noll)
+skapas: `overgangar-steg0` (7 dygn), `grind-t-a` (7), `grind-r-a` med `land = se` (30), `grind-k-a` (60), `vindsikt-steg0` (14).
+Utfallet per flöde skrivs i frostissuen; ett ❌ säger att det flödet ska tryckas för hand. Provet trycker inga flöden. Därefter
+knapp på Bengts order, som förut. Kostar ~20 Actions-minuter en gång.
+
+**Bevis.** Deploy 05:36:53Z (PR #540). Utlösarprovet via dbknapp (`utlosarprov`, ny flagga) 05:38Z: vakthunden svarade 200,
+och en körning av `vindsikt-steg0` skapades 05:38:35Z av repots nyckel och blev grön — PAT:en får trycka flöden. Det riktiga
+larmet kan inte provas utan att förbruka engångslarmet; grenen är samma `utlos()` som provet.
+
+**Sagt högt.** Mitt hjälpskript skickade först provet som en migration med filnamnet *utlosarprov*; dbknapp avvisade det
+(*"ange en fil som sql/014…"*) innan något kördes. Lärdom i skriptet: prov går genom `flode_kor.py`, inte `dbknapp_kor.py`.
+
