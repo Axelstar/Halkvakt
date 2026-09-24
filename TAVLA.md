@@ -2863,7 +2863,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     🔨 **FACITKOPPLINGEN OCH DOM-KNAPPEN BYGGDA 23/9 (DECISIONS #327):** `publish/grind-s-b.ts` + `grind-s-b.yml`, två lägen (underlag = bara
     antal, dom = andelar vid utsatt tid). Självtest med känd sanning grönt. Kamerafacit saknar tabell — kort #242.
     ✅ **Första underlagskörningen:** körning 35923243716, 21:34Z, läge underlag, 1 dygn: självtestet grönt först; skarpt 4 varv på 4 rutter, 371 provpunkter, 5 holdout-rader, 0 episoder, 0 facithändelser, 0 halkperioder, C1 0/20, C2 0/30 — och inte en enda procentsats i utskriften. Kvar i (4): Finland (det finska arkivet saknar `vagpunkt_ankare`),
-    radstorleken efter första dygnet (§4.2), och sedan vintern: loggning, söndagar, måndagsserien. Domen i mars.
+    och sedan vintern: loggning, söndagar, måndagsserien. Domen i mars. ✅ **Radstorleken mätt 24/9:** 26 rader med prognos 21:00Z–02:00Z, 1 098 byte i snitt, 28 kB totalt, 5,2 rader per timme ⇒ ≈ 125 rader och ≈ 140 kB per dygn, ≈ 4 MB per månad; skuggloggen 2,4 MB på 9 896 rader, databasen 193 MB (24/9 02:00Z) — 2 km står.
   - [x] ✅ **(4a) SVARAT 23/9 (DECISIONS #324): rå avståndsviktning, ingen offset, på grind A:s population — inskrivet i TROSKLAR-SKUGGAN §3, bekräftad av Bengt 24/9 (DECISIONS #328). Offsettabellen utgår ur bygget.** Var: TROSKLAR-SKUGGAN §3 säger hur offseten når en vägpunkt utan historik (rå avståndsviktning,
     interpolerad offset ur grannparen, eller terrängkorrigerad) — Claude skriver förslaget, Bengts rad enligt §5.
     Villkoret 23/9 nedan (🛣️).

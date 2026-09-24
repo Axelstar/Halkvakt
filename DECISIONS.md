@@ -9627,6 +9627,7 @@ Publicera en ny CDN-fil (kartrepot växer var tionde minut). Höjdkorrigering i 
 - **`sql/032`** körd via dbknapp: kolumnen `prognos` (jsonb, `{}`) i `information_schema.columns`; `vagpunkt_ankare()` gav **744 ankare**
   av 747 färska stationer (5,2–17,4 °C); EXECUTE bara för postgres och service_role.
 - **Deploy** 20:51:52Z (skuggmotor, 37 kB) och 20:52:33Z (skuggrapport) från a894f01 efter `git pull` och noll diff mot main.
+- **Radstorleken, mätt 24/9 02:00Z (Bengt: *"gör radstorleken"*):** 26 rader med prognos 21:00Z–02:00Z, 1 098 byte i snitt, 28 kB totalt, 5,2 rader per timme ⇒ ≈ 125 rader och ≈ 140 kB per dygn, ≈ 4 MB per månad; skuggloggen 2,4 MB på 9 896 rader, databasen 193 MB (24/9 02:00Z). Provpunkterna står kvar var 2 km — inget att krympa.
 - **Första raden MED innehåll:** 2 rader med innehåll i `shadow_log.prognos` efter varvet 2026-09-23T21:00:02Z; t.ex. E14 Sundsvall→Åre: 130 provpunkter, 7 uppmätta, 123 modellerade, 0 okända, 0 frysflaggade, 1465 byte; skuggmotorns svar: ankare 5 bidragande per provpunkt (744 i funktionen); E4 Linköping→Södertälje 77 punkter, 970 byte, ankareSkal det svenska svaret hann rulla ur net._http_response före läsningen; det norska varvet svarade ankare 0, "bara Sverige", som avsett.
 
 ## #326 (23/9 2026) Holdout-urvalet: varje station på rutten är holdout varje varv — inget tas bort ur prognosen (kort #38b 4c)
@@ -9717,4 +9718,6 @@ hundra gör det inte; sidan är nästa steg när bilderna kommer. (2) Bildens ti
 ingen bättre tid finns; ±30 min-fönstret i bekräftelsen är därför generöst i kamerans favör, men kameran kan bara bekräfta.
 (3) **Axels ord** (Bengt: *"gör axels ord"*): jag kan inte tala för Axel och skickar inget i någons namn. Frågan står i stället
 överst i bedömningens läge, som hans session läser först: starten står om han inte säger annat (DECISIONS #322/#325).
+
+**IDRIFTTAGNING 24/9, bevis:** `sql/033` körd via dbknapp — kolumnerna id, bild, kamera_id, lon, lat, bild_tid, klass, av, klassad; rättigheter bara postgres och service_role; 0 klassade bilder. Grind S-B i underlagsläge (1 dygn, 02:0xZ): 26 varv på 18 rutter, 2 118 provpunkter, 90 holdout-rader, 0 episoder, 0 händelser (kamerakällan läst utan fel), C1 0/20, C2 0/30, inga andelar.
 
