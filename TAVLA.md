@@ -2993,6 +2993,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   som därmed skuggar från första frosten i stället för att vänta på mars.
   Verify: korsningskurvan ritad över hela svepet, med räckviddsvillkoret tillämpat och binomialbrus
   redovisat; utfallsmeningen i §7 ifylld med riktiga N, M, X och Y.
+  🔍 **BEDÖMNING 24/9 (Bengt: *"vi gör 98 först"*):** klassningen i §3 är rätt tänkt men inte mätbar — signalerna saknar tal, "ursäktlig" definieras av data vi inte har, och en tyst miss kan bero på fyra olika trösklar (fukt, tid, avstånd, temperatur) som ger fyra olika priskurvor. Förslag i `docs/TYSTNADSFEL-KLASSNING-2026-09-24.md`: fyra mätbara signaler med tal ur redan fastställda dokument, tre klasser (oursäktlig/ursäktlig/okänd), orsakskolumn per tröskel, räckvidd 7 km, fönster som TROSKLAR-SKUGGAN §2, underlagsvakt 20 händelser i 3 perioder, priset via uppspelningen. Händelselistan finns sedan 23/9 i `publish/grind-s-b.ts`. Bygget: ett skript, ~tre dagar, ingen ny data. 🔒 Väntar på Bengts rad (skärpning av fastställt dokument).
 - [ ] 🔀 **#89 ÖVERGÅNGARNA mellan faror — regn→frost, torka→första regnet** (systemanalys 10/9;
   syskon till #45 som redan har snö-på-snö/regn-på-snö). (a) Regn som slutar och yta som faller under
   noll inom 2 h = efterhalka: regnsumma + yttemp + trend (#88) finns alla, inget sitter ihop. (b) Första
