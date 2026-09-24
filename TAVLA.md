@@ -2670,6 +2670,19 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Kvar: första riktiga klassningen (Verify). Verify: en klassad bild i tabellen och grind S-B räknar den som händelse.
   📷 **Bild framlagd 24/9 (DECISIONS #332):** `2026-09-24/SE_STA_CAMERA_VViS_329_K1-165760.jpg` (arkiverad 02:30:02Z, kamera VViS 329 K1). Bengt klassar i Supabase-panelen (Storage → facit); klassningen går in via dbknapp; grind S-B räknar. Då stängs kortet.
   ✅ **Stängt 24/9 (DECISIONS #333, Bengt: *"klassa som våt"*):** första raden i `kamerafacit` — Trafikverkets direktbild Tierp 03:11Z, sparad i `docs/kamerafacit/`, klass våt, raden bär vem som läste. Hinkens bild nås bara av Axel (§4.2). Grind S-B läser källan; händelseräkningen bevisad i självtestet, skarpt vid första halkbilden.
+- [ ] 🧾 **#245 BEVISBÄRAREN I SNAPSHOTEN — kartans §8 B, som aldrig fick ett kort** (upptäckt 24/9 när integrationsläget lades i
+  bedömningen §5). Varje fara i `live.json` ska bära VILKA lager som talade och hur starkt — inte en boolean — så att rösten kan
+  sätta försprånget (§8 A, #153) och så att en varning går att förklara i efterhand. Fog F1 + F3: nytt fält bredvid `fukt`, aldrig i
+  stället (§5.3 *lägg till, ersätt aldrig*). Kan byggas när S2 (#89) ger nivå + bevis — det är innehållet fältet ska bära. Ingen röst
+  ändras. 🔒 NYCKEL: S2 byggd. Verify: ett fält per väderpunkt i live.json som bär nivå och källor, oläst av apparna (otypad läsning),
+  manifestets sha stämmer.
+- [ ] 🖼️ **#246 BILDLÄSNINGSSPÅRET — klassning i mars, byggt och provat nu** (Bengts fråga 24/9: *"kan Axel ok:a ett automatiserat
+  spår där du sköter genomgången"*). DECISIONS #248: hinkens bilder öppnas i mars — spåret byggs nu och provas på Trafikverkets
+  DIREKTBILDER (publika, dagens, inte facit). Formen: Axel exporterar hinken till en plats Claude når · kontaktark om 20 bilder ·
+  Claude klassar var och en (is/snö/slask/våt/bar/okänd, säkerhet, anteckning) BLINT — sökvägen visar kamera och tid, aldrig
+  skuggans larm · Axel ok:ar: stickprov ≥ 10 % plus varje is/snö/slask · satsen in i `kamerafacit` i ett svep. Förkrav: #231:s
+  definition i DECISIONS före första hinkbilden, och TROSKLAR-SKUGGAN §6 omskriven (Claude klassar, Axel ok:ar, Bengt
+  stickprovar). 🔒 NYCKEL: Bengts och Axels ja (§4.2). Verify: ett kontaktark ur direktbilderna klassat och ok:at, med tabellrader.
 - [ ] 🐕 **#243 VAKTHUNDENS ARKIVGRÄNS ÄR FÖR SNÄV — issue #528 var ett falsklarm** (fynd 24/9 på Bengts fråga *"vad betyder detta"*).
   Checken *livemotorns effekt* larmar när `situation_archive` inte rörts på 30 min, men arkivet skrivs bara när Trafikverket
   ändrar något: mätt 24/9 04:12Z — 4 gluggar > 30 min senaste dygnet (största 102 min), **32 på sju dygn, medel 54 min, största
