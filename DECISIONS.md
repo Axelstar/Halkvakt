@@ -9692,3 +9692,29 @@ läser skuggmotorns tjugo. Rättas när missar.ts nästa gång rörs.
 
 **Bevis, första skarpa körningen:** körning 35923243716, 21:34Z, läge underlag, 1 dygn: självtestet grönt först; skarpt 4 varv på 4 rutter, 371 provpunkter, 5 holdout-rader, 0 episoder, 0 facithändelser, 0 halkperioder, C1 0/20, C2 0/30 — och inte en enda procentsats i utskriften. Blindningen höll i drift, inte bara i självtestet.
 
+## #328 (24/9 2026) Vägpunktstexten i TROSKLAR-SKUGGAN §3 bekräftad av Bengt (kort #38b 4a)
+
+**Beslut (Bengt 24/9: *"gör vägpunkt"*).** Lydelsen som skrevs 23/9 under mandatet i DECISIONS #323 (DECISIONS #324/#325/#326)
+står som Bengts rad enligt §5: rå avståndsviktning av upp till fem ankare inom 50 km, vikt 1/km, ingen offset, på grind A:s
+population; status per provpunkt (uppmätt ≤ 2 km, modellerat ≤ 50 km, annars okänt; flaggad ≤ 1 °C); provpunkt var 2 km;
+holdout = varje station inom 2 km av rutten, varje varv. Tidsdelen loggas inte förrän något prövat den. Ingen kod ändras.
+
+## #329 (24/9 2026) Kamerafacit får en tabell och blir femte källan i grind S-B — kameran bekräftar, fäller aldrig (kort #242)
+
+**Beslut (Bengt 24/9: *"gör kamerafacit"*, på förslaget i bedömningen §4.2).** `sql/033_kamerafacit.sql`: tabellen `kamerafacit`
+(bild, kamera_id, lon, lat, bild_tid, klass, av, klassad) med sex klasser — is · snö · slask · våt · bar · okänd — en klassning
+per bild, dubbellåst som förarfacitet (RLS utan policy + REVOKE). Matas via dbknapp (INSERT-fil) tills en enkel sida finns.
+`publish/grind-s-b.ts` läser den som femte källa: en bild klassad is/snö/slask inom facitradien är en facithändelse (B2) och
+bekräftar en episod som pågick när bilden togs (±30 min); våt, bar och okänd gör ingenting. **Kameran fäller aldrig** (§2): i
+självtestet mäter stationen vid km 20 +4 °C medan kamerabilden visar snö, och episoden döms FALSK ändå.
+
+**Bevis:** självtestet (två kamerahändelser: en bekräftar en episod utan station, en får inte rädda en varm station; B1 1/3,
+B2 1/4, B3 100 %); migrationen och den skarpa körningen i underlagsläge redovisas nedan. Kortet #242 stängs först när en riktig
+bild är klassad och räknad — Verify på kortet.
+
+**Sagt högt.** (1) Klassningen görs i dag genom att skriva en INSERT-fil till dbknapp — en söndagsrutin på tio bilder tål det,
+hundra gör det inte; sidan är nästa steg när bilderna kommer. (2) Bildens tid tas ur hinkens sökväg (3-timmarsbucket) om
+ingen bättre tid finns; ±30 min-fönstret i bekräftelsen är därför generöst i kamerans favör, men kameran kan bara bekräfta.
+(3) **Axels ord** (Bengt: *"gör axels ord"*): jag kan inte tala för Axel och skickar inget i någons namn. Frågan står i stället
+överst i bedömningens läge, som hans session läser först: starten står om han inte säger annat (DECISIONS #322/#325).
+

@@ -2663,8 +2663,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   facit-hinkens bilder veckovis (TROSKLAR-SKUGGAN §6), men klassningen har ingen plats i databasen — ingen knapp kan läsa den, och
   §2:s kamerakälla (får bekräfta träff, aldrig fälla) är därför noll i grind S-B tills det finns en. Förslag: tabell `kamerafacit`
   (bildväg, station, tid, klass: is/snö/slask/våt/bar/okänd, av, när) med RLS som `driver_facit`, matad via dbknapp tills en enkel
-  sida finns; dom-knappen läser den som femte källa. Kostar inget i drift. 🔒 NYCKEL: Bengts ja på formen (klasserna) och var
-  klassningen ska göras. Verify: en klassad bild i tabellen och grind S-B räknar den som händelse.
+  sida finns; dom-knappen läser den som femte källa. Kostar inget i drift. ✅ Bengts ja 24/9 (*"gör kamerafacit"*): sex klasser, dbknapp tills en sida finns. 🔨 **BYGGT 24/9 (DECISIONS #329):**
+  `sql/033_kamerafacit.sql` (dubbellåst), femte källan i `publish/grind-s-b.ts` — bekräftar, fäller aldrig; självtestet bevisar båda.
+  Kvar: första riktiga klassningen (Verify). Verify: en klassad bild i tabellen och grind S-B räknar den som händelse.
 - [ ] 🦌 **#241 VILTRÖSTEN TALAR PÅ LÄNETS MITTPUNKT — mot DECISIONS #13** (fynd 22/9, Bengts fråga *"vad har vi för mätning i appen,
   polisen eller trafikverket"*; `scripts/matningar/viltrosten-polisen-2026-09-22.sql`, körning 35761967231).
   **Läget:** appens viltvarning kommer ur **polisens** data, inte Trafikverkets. `publish/snapshot-core.ts` skickar polisens viltolyckor
@@ -2863,7 +2864,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     antal, dom = andelar vid utsatt tid). Självtest med känd sanning grönt. Kamerafacit saknar tabell — kort #242.
     ✅ **Första underlagskörningen:** körning 35923243716, 21:34Z, läge underlag, 1 dygn: självtestet grönt först; skarpt 4 varv på 4 rutter, 371 provpunkter, 5 holdout-rader, 0 episoder, 0 facithändelser, 0 halkperioder, C1 0/20, C2 0/30 — och inte en enda procentsats i utskriften. Kvar i (4): Finland (det finska arkivet saknar `vagpunkt_ankare`),
     radstorleken efter första dygnet (§4.2), och sedan vintern: loggning, söndagar, måndagsserien. Domen i mars.
-  - [x] ✅ **(4a) SVARAT 23/9 (DECISIONS #324): rå avståndsviktning, ingen offset, på grind A:s population — inskrivet i TROSKLAR-SKUGGAN §3, Bengts rad bekräftar lydelsen (§4.2). Offsettabellen utgår ur bygget.** Var: TROSKLAR-SKUGGAN §3 säger hur offseten når en vägpunkt utan historik (rå avståndsviktning,
+  - [x] ✅ **(4a) SVARAT 23/9 (DECISIONS #324): rå avståndsviktning, ingen offset, på grind A:s population — inskrivet i TROSKLAR-SKUGGAN §3, bekräftad av Bengt 24/9 (DECISIONS #328). Offsettabellen utgår ur bygget.** Var: TROSKLAR-SKUGGAN §3 säger hur offseten når en vägpunkt utan historik (rå avståndsviktning,
     interpolerad offset ur grannparen, eller terrängkorrigerad) — Claude skriver förslaget, Bengts rad enligt §5.
     Villkoret 23/9 nedan (🛣️).
   - [x] ✅ **(4b) ÖPPEN 23/9 (DECISIONS #324): RÅ klarar A1 0,71 °C · A2 3,8 % ± 0,4 · A3 0,0 % på 8 132 punkter med vakterna, lika bra som offseten (0,72). INTERP faller (9,5 %), höjden oavgjord (4,7 %). Första körningen utan vakterna föll (RÅ 1,11 °C, 9,1 %) — fel population, rättad i PR #511 före domen. Körs vidare måndagar.** Vägpunktsgrinden (Bengts ja 23/9, DECISIONS #323): grind A:s mått, trösklar och vakter på kandidater som inte får
