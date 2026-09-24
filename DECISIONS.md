@@ -9966,3 +9966,21 @@ så fältet har ingen rad att sitta på. Beviset med innehåll kommer när stati
 `bevis: N av M väderpunkter` (larm om punkter finns och någon saknar fältet), så beviset skrivs i timkontrollen utan att någon
 behöver titta.
 
+## #343 (24/9 2026) Vakthundens arkivgräns: 3 timmar i stället för 30 minuter (kort #243)
+
+**Beslut (Bengt 24/9: *"ja till 3 och 4"*, femma nummer fem).** `LIVEMOTOR_EFFEKT_MIN` i vakthundens check 9d (b) går från 30 till
+**180** minuter. Kommentarens premiss var fel: `situation_archive` rörs inte varje minut, bara när Trafikverket ändrar en avvikelse.
+Mätt 24/9: 32 gluggar över 30 min på sju dygn, medel 54 min, största 128 min. Issue #528 (24/9 03:07Z) var ett sådant falsklarm
+medan livemotorn svarade 360 av 360 minuter. Tre timmar ger 52 minuters marginal mot den största uppmätta gluggen och fångar
+ett riktigt stopp (kort #222:s fall) inom tre timmar. Kortet stängs efter sju dygn utan falsklarm ur checken.
+
+## #344 (24/9 2026) Skuggmotorns svenska schema flyttat till :02/:32 — lagning och prov för 546 på hel- och halvtimmen (kort #244)
+
+**Beslut (Bengt 24/9: *"ja till 3 och 4"*).** `sql/036`: `cron.alter_job` för `halkvakt-skuggmotor`, `*/30` → `2,32 * * * *`. Sedan
+24/9 00:30 har en funktion svarat 546 WORKER_RESOURCE_LIMIT på :00/:30 (00:30, 01:00, 02:00, 04:00, 11:00, 14:30), aldrig de tre
+dygnen före; på :00/:30 startade publicera, livemotorn och skuggmotorn samma sekund, och skuggmotorn räknar sedan 23/9 kväll 744
+ankare per varv. Försvinner 546 efter flytten är orsaken bevisad utan Axels funktionslogg; finns de kvar läser Axel loggen.
+Rotationen påverkas inte (halvtimmen avgör rutterna). Backas med samma rad och `*/30`. Kortet stängs efter tre dygn utan 546.
+Sagt högt: svarstabellen (`net._http_response`) sparar bara sex timmar, så tre dygn läses som tre dygns stickprov — beviset tas
+vid varje läsning, och vakthunden får en rad om 546 om de kommer tillbaka.
+
