@@ -2685,6 +2685,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   definition i DECISIONS före första hinkbilden, och TROSKLAR-SKUGGAN §6 omskriven (Claude klassar, Axel ok:ar, Bengt
   stickprovar). 🔒 NYCKEL: Bengts och Axels ja (§4.2). Verify: ett kontaktark ur direktbilderna klassat och ok:at, med tabellrader.
   🔑 **Bengts ja 24/9 (DECISIONS #335/#336):** mars står, §6 omskriven, #231:s definition skriven. Kvar av nyckeln: Axels export av hinken och hans ok-roll. Provet på direktbilderna kan byggas nu.
+  🔨 **BYGGT OCH PROVAT 24/9 (Bengt: *"gör steg 2"*, DECISIONS #339):** `scripts/kontaktark.py` (direkt · mapp · stickprov · sql). Provet: 20 direktbilder 13:33–13:44Z längs rutterna, klassade blint — bar 20, hög säkerhet (sol). Stickprov nr 6 och 16. `sql` vägrar utan ok. **Kvar: Axels ok på `docs/kamerafacit/prov-2026-09-24/ok.md`** (då går raderna in och Verify är uppfylld), och ett andra prov vid regn eller i mörker — soligt ark bevisar kedjan, inte att klassningen skiljer våt från bar.
 - [ ] 🐕 **#243 VAKTHUNDENS ARKIVGRÄNS ÄR FÖR SNÄV — issue #528 var ett falsklarm** (fynd 24/9 på Bengts fråga *"vad betyder detta"*).
   Checken *livemotorns effekt* larmar när `situation_archive` inte rörts på 30 min, men arkivet skrivs bara när Trafikverket
   ändrar något: mätt 24/9 04:12Z — 4 gluggar > 30 min senaste dygnet (största 102 min), **32 på sju dygn, medel 54 min, största

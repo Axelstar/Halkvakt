@@ -9886,3 +9886,23 @@ larmet kan inte provas utan att förbruka engångslarmet; grenen är samma `utlo
 **Sagt högt.** Mitt hjälpskript skickade först provet som en migration med filnamnet *utlosarprov*; dbknapp avvisade det
 (*"ange en fil som sql/014…"*) innan något kördes. Lärdom i skriptet: prov går genom `flode_kor.py`, inte `dbknapp_kor.py`.
 
+## #339 (24/9 2026) Bildläsningsspåret byggt och provat på direktbilder — väntar på Axels ok (kort #246, steg 2 i ordningen)
+
+**Beslut (Bengt 24/9: *"gör steg 2 bildläsningsspåret"*; formen enligt DECISIONS #335).** `scripts/kontaktark.py`, fyra steg:
+`direkt` (Trafikverkets direktbilder från väglagskameror inom 2 km av skuggrutterna, jämnt spridda längs rutterna — hinken rörs
+inte) eller `mapp` (Axels export av hinken, i mars) · kontaktark 4 × 5 rutor med nummer, kameranamn och UTC-tid, aldrig skuggans
+larm · `stickprov` (varje is/snö/slask plus minst 10 % av resten, valt på filnamnets sha så att valet inte går att styra) och
+ok-sidan för Axel · `sql`, som skriver en INSERT per bild **bara om** klassningen bär Axels ok, och annars vägrar.
+
+**Provet 24/9 13:33–13:44Z:** 20 bilder på 20 kameror längs rutterna (`docs/kamerafacit/prov-2026-09-24/`: arket, bilderna, manifest, klassning, ok-sida).
+Klassade blint av Claude: **bar 20, hög säkerhet** — sol och torr vägbana i hela landet. Två rutor granskades i full storlek
+(Drälinge: mörka bågar är däckspår; Ristjärn: mörkt körfält är skugga). Stickprov för Axel: nr 6 Helsingborg N och nr 16
+Sandsjöbacka. `sql` vägrade utan ok, som den ska.
+
+**Vad provet bevisar, och inte.** Kedjan fungerar från kamera till en rad som väntar på ok. Det bevisar INTE att klassningen skiljer
+våt från bar eller snö från slask — ett soligt septembereftermiddagsark har bara ett svar. Ett andra prov vid regn eller i mörker
+behövs innan mars (kortet bär det).
+
+**I mars:** bara arken, klassningen och ok-sidan går in i repot; bilderna stannar i hinken och i Axels export. Provets 1,2 MB
+bilder ligger i repot med flit, så att Axel kan öppna stickprovet direkt på GitHub.
+
