@@ -9982,5 +9982,5 @@ dygnen före; på :00/:30 startade publicera, livemotorn och skuggmotorn samma s
 ankare per varv. Försvinner 546 efter flytten är orsaken bevisad utan Axels funktionslogg; finns de kvar läser Axel loggen.
 Rotationen påverkas inte (halvtimmen avgör rutterna). Backas med samma rad och `*/30`. Kortet stängs efter tre dygn utan 546.
 Sagt högt: svarstabellen (`net._http_response`) sparar bara sex timmar, så tre dygn läses som tre dygns stickprov — beviset tas
-vid varje läsning, och vakthunden får en rad om 546 om de kommer tillbaka.
+vid varje läsning (en dbknapp-fråga per dygn räcker). Ingen vakt räknar 546 i dag.
 
