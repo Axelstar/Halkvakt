@@ -9984,3 +9984,14 @@ Rotationen påverkas inte (halvtimmen avgör rutterna). Backas med samma rad och
 Sagt högt: svarstabellen (`net._http_response`) sparar bara sex timmar, så tre dygn läses som tre dygns stickprov — beviset tas
 vid varje läsning (en dbknapp-fråga per dygn räcker). Ingen vakt räknar 546 i dag.
 
+## #345 (24/9 2026) Skyltfondsrundan, Skyltfonden-paketet och #25 Halkbaneläget stängda på tavlan — följs utanför repot
+
+**Beslut (Bengt 24/9: *"stäng skyltfondsrundan och skyltfondspaketet. Vi har koll på dessa på annat sätt. Stäng halkbaneläget vi har koll på den på annat sätt"*).** De tre korten stängs. Bengt och Axel följer Skyltfondsansökan (samtalen, sökande och roller,
+sändningen 28/9) och halkbaneförsöket på annat sätt än genom tavlan. Kvar i repot som underlag, orört: `docs/FINANSIERING.md`
+(ansökan, plan B, adresserna, föreningen som sökande) och BACKLOG punkt 25 (halkbanelägets form). Bedömningens datumrader för
+28/9 och Skyltfondens besked står kvar som kalender, märkta att de följs utanför repot.
+
+**Vad som inte längre bevakas här:** att ansökan faktiskt skickas 28/9, att ingen adress studsar, och vem som står som sökande.
+Kommer ett besked eller en fråga som rör koden — till exempel att halkbaneförsöket beviljas och halkbaneläget ska byggas —
+får det ett nytt kort då. Tavlan 50 → 47 öppna.
+
