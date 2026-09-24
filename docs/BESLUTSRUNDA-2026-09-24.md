@@ -1,5 +1,8 @@
 # Beslutsrunda 24/9 — steg 1 i ordningen: fem beslut som inte kostar kod
 
+> **BESLUTAD 24/9 (Bengt: *"ja till alla fem, kör export till supabase storage"*) — DECISIONS #334–#338.** §1 blev export till Supabase Storage, inte Pro; byggd och i
+> drift samma morgon. §2–§5 enligt förslagen.
+
 *Bengts order 24/9: "gör förslag till hur 1 ska handläggas". Underlag: bedömningen §5 och §4.2, kort #83, #209, #231, #246,
 DECISIONS #248, #291, TROSKLAR-SKUGGAN §6, integrationskartan §5.5 och §14, sql/014 (gallringen), Bengts regel 22/9 om
 återkommande körningar. Varje beslut har ett förslag, ett alternativ och ett pris. Svaret är en rad per beslut i DECISIONS;
