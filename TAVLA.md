@@ -1386,6 +1386,17 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Verify: självtest med en station som har rader före och efter men ingen inom ±30 min ⇒ TORRT, och en station utan rader alls ⇒
   OMÄTBAR; beslutet i DECISIONS före första dom.
   ✅ **KLART 25/9 (DECISIONS #351, Bengt: *"ja till 251, ±3 timmar"*):** igång men tyst i ±30 min ⇒ TORRT, tyst i ±3 h ⇒ OMÄTBAR. Självtestet fyra nya fall, två motprov fällda på rätt rad, noten i TROSKLAR-VATTENPLANING §2. Syns i drift på måndagens körning 28/9.
+  ⚠️ **Rättelse 25/9 (kort #252):** premissen *kalla, blöta eller ändrade* är fel — den levande ingesten sparar inte ändrade avläsningar. Regeln fångar bara en torr station med en kall eller blöt rad inom ±3 h. Rättat i DECISIONS #351 och TROSKLAR §2.
+
+- [ ] 🔍 **#252 GRANSKNINGEN AV GRINDARNA 25/9 — fem mätningar har V-B:s sorts fel** (Bengts fråga 25/9; `docs/GRANSKNING-GRINDAR-2026-09-25.md`).
+  Inget är en hårdkodad nolla, men: (1) **grind A och vägpunktsgrinden** har prövat en snällare prognos än driftens — varma, torra
+  grannar har inga arkivrader och kommer aldrig med, så KLARAD (#321) och ÖPPEN (#324) kan vara för optimistiska; (2) **frostgrindarna**
+  (T-A, K-A, R-A, övergångarna, vind och sikt) trycks EN gång vid första frosten och aldrig igen; (3) **S-B** kan inte bli godkänd:
+  14-dygnsfönster, C3 kräver ett inmatat tal, B1 cirkulär; (4) **tystnadsfelet** räknar segmentvarningar som tystnad; (5) **raderingen**
+  krymper 60-dygnsfönstren tyst när databasen passerar 350 MB (i dag 182 MB). Mätt: vakterna tog ingen äkta frost i september.
+  Äldre fel av samma sort: R-A:s spärr i episoder mot stationstimmar, V-A och övergångarnas 0d döljer torrt, andelar under
+  spärren i K-A, R-A, W-A och F-A. Förslagen i ordning står i dokumentet och i bedömningen §4.2; inget byggs före Bengts ja.
+  Verify: varje förslag antingen byggt med självtest och motprov, eller avskrivet med skäl i DECISIONS.
 
 - [ ] 🤖 **#219 ANDROID ÄR SJU VERSIONER EFTER OCH HAR INGEN VÄG TILL EN TELEFON** (genomlysningen 20/9). Android står på
   **0.3.1 (versionCode 4)**, iOS på 0.3.8 (11). **Google Play-kontot finns inte**, det finns inget uppladdningsflöde alls — CI
