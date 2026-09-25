@@ -506,6 +506,16 @@ export const KONTRAKT: Kontrakt[] = [
     golv: 3,
   },
   {
+    // Kort #256 (DECISIONS #366): talet 12 räckte inte. Uppspelningen skiftade natten i UTC medan T-A och R-A skiftade i svensk
+    // tid — samma tolv timmar, två olika nätter, och kontraktet ovan såg inget. R-A:s form är den svenska grenen av dess val.
+    namn: "Nattens zon — natten räknas i Sveriges tid",
+    varfor: "T-A, R-A och uppspelningens episoder ska mena samma natt (#246). Samma skift i olika zoner delar natten på olika ställen.",
+    former: [/const ZON = "([^"]+)"/, /const TZ = LAND === "fi" \? "[^"]+" : "([^"]+)"/,
+              /AT TIME ZONE '([^']+)'\) - interval '\d+ hours?'\)::date AS natt/],
+    filer: /grind-t-a\.ts|grind-r-a\.ts|028_uppspelning_varianter\.sql/,
+    golv: 3,
+  },
+  {
     // Fönstret är T-A:s (TROSKLAR-TRENDEN §2), inte kombinationens — men det finns nu i tre filer: arkivets skrivare,
     // dess rena hjälpfunktion, och uppspelningen som läser BÅDA facitkällorna över samma fönster (kort #207).
     namn: "Utfallsfönstret — minuter efter fyrningen som facit får komma",
