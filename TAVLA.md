@@ -2803,6 +2803,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   funktionsloggen (Axel). Verify: noll 546 på tre dygn efter åtgärden.
   🔨 **Bengts ja 24/9 (DECISIONS #344):** `sql/036` flyttar skuggmotorns svenska schema till :02/:32. Nya 546 i dag före flytten: 11:00 och 14:30. Kvar: tre dygn utan 546.
   📏 **Läst 24/9 15:09Z:** första varvet på den nya tiden 15:02:02–04Z (E18 Karlstad→Örebro, E4 Sundsvall→Umeå, Rv40 Göteborg→Jönköping, prognosen med i alla tre); 0 av 28 svar i `net._http_response` var 546 mellan 14:49 och 15:09Z. Tjugo minuter bevisar inget ännu: felen kom med timmars mellanrum (sex gånger på femton timmar). Kortet stängs efter tre dygn utan 546.
+  ⚠️ **25/9 — flytten löste det inte (DECISIONS #359):** 546 kom **04:32 och 05:02Z**, på skuggmotorns nya minuter :02/:32. Felet följer skuggmotorn, så det är dess eget arbete (segmentprognosen och holdout sedan 23/9) som slår i taket, inte krocken med andra jobb. Verify står kvar; lagningen är en ny fråga (dela upp huvudvarvet, t.ex. prognos och holdout i eget anrop). Försprånget lades därför i ett eget anrop.
 - [ ] 🦌 **#241 VILTRÖSTEN TALAR PÅ LÄNETS MITTPUNKT — mot DECISIONS #13** (fynd 22/9, Bengts fråga *"vad har vi för mätning i appen,
   polisen eller trafikverket"*; `scripts/matningar/viltrosten-polisen-2026-09-22.sql`, körning 35761967231).
   **Läget:** appens viltvarning kommer ur **polisens** data, inte Trafikverkets. `publish/snapshot-core.ts` skickar polisens viltolyckor
@@ -4065,6 +4066,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   **VARFÖR INGET GÅR ATT GÖRA NU:** båda besluten vilar på vinterdata. K-A står på ⊘ INGEN DOM med **noll** uppmätta
   frysfall (DECISIONS #137); Finlands 133 "frysrader" 13/9 var en fastnaglad givare. Grind A:s A2-rad är OAVGJORT.
   🔑 **Nyckel, sorterat 22/9 (kort #224):** betan i drift och S2 (DECISIONS #221) — inget väntar på Bengt; i praktiken parkerat till efter betan.
+  ✅ **STEG 4 OCH 5 KLARA 25/9 (DECISIONS #359, Bengt och Axel):** `docs/TROSKLAR-FORSPRANG.md` fastställt; motorn fick kroken (utan den byte för byte densamma, vektorerna orörda); nivåer och svep i `engine/src/forsprang.ts`; skuggan körs som eget anrop `?lage=forsprang` på :12/:42 och loggar i `forsprang_log`. 7 tester, 3 motprov. **Kvar:** FS-A väntar på vintern (bara kod 1 i arkivet), dom-knappen före mars, dom i mars, steg 7 efter domen.
 
 - [ ] 🧩 **#228 APP-SCHEMAT ÖVERLEVER INTE `xcodegen`** (uppmätt under 0.3.9-releasen 20/9). Efter `xcodegen` fanns bara
   schemat **HalkvaktEngine** i Xcode — app-schemat autoskapas av Xcode och bor i användardata, som den genererade

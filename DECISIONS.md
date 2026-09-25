@@ -10240,3 +10240,31 @@ sensortrappan, vars telefonsensorer är just ett sådant vittne.
 (uppmätt/modellerat) är språket som gör en modellerad varning säker, så 1 före 2, aldrig tvärtom. Taket för undanträngda varningar i
 beslut 1:s steg 4 ska gälla båda, och beslut 2:s 0,33 °C (grind A inom 7 km) mäts om på de varma grannarna (#353) innan det tas upp.
 
+## #359 (25/9 2026) TROSKLAR-FORSPRANG fastställt, och försprångets skugga byggd (kort #153 beslut 1, steg 4 och 5)
+
+**Beslut (Bengt 25/9: *"ja, skriv tröskeldokumentet för beslut 1 nu och Axel ger ok till allt som behövs för att göra beslut 1 färdigt
+idag"*).** `docs/TROSKLAR-FORSPRANG.md` är fastställt av Bengt och kontrasignerat av Axel (via Bengt) samma dag, innan någon mätning finns.
+**Färdigt i dag är steg 4 och 5.** Steg 6 (domen) kräver vinterns data och steg 7 (tre portar) kräver domen — husets egen regel, inte
+en fråga om ok.
+
+**Vad dokumentet slår fast.** Försprång gäller bara A1 halt väglag och A2 frysrisk — inte olyckor, kameror eller vilt. **Nivå 2:** A1 med
+väglagskod 3 eller 4; A2 med ytan ≤ 0 °C och stationen blöt inom 2 h (väta ≥ 3 av 4). Allt annat är nivå 1 med dagens 30 s. **Svep för
+nivå 2:** 45 · 60 · 90 s, klämt till samma 400–3 000 m; valregeln är det kortaste värde som klarar grindarna. **Grindar:** FS-A (nivå 2
+i 5–50 % av varningarna; kod 3 eller 4 ska finnas i arkivet), FS-B (vinst ≥ 15 s i median · undanträngning ≤ 2 % och noll olyckor ·
+takten inom 60 s ökar högst 5 procentenheter · högst 1 % nya varningar), FS-C (≥ 60 nivå 2-varningar per svepvärde, ≥ 3 halkperioder,
+≥ 3 län). Bara räkningar under spärren.
+
+**Vad som byggdes.** Motorn fick en valfri krok för förvarningsavståndet per fara, klämd till 400–3 000 m; utan kroken är motorn byte för
+byte densamma (vektorerna oförändrade, generatorn ren). Nivåer och svep bor i `engine/src/forsprang.ts`. Skuggmotorn har läget
+`?lage=forsprang`, på **:12/:42** som eget jobb (sql/037, kommandot kopierat inne i databasen), med loggen `forsprang_log`. Provet
+`forsprangprov` i mätknappen visar bas mot variant på ett påhittat spår. **Bevis före sammanslagning:** 7 tester och 3 motprov (taket,
+att nivå 1 är orörd, nivågränsen), alla fällda på rätt test.
+
+**Varför eget anrop — fyndet som ändrar kort #244.** CPU-felen 546 kom **04:32 och 05:02Z 25/9**, på skuggmotorns nya minuter. Flytten
+från :00/:30 till :02/:32 (DECISIONS #344) löste alltså inte felet: det är skuggmotorns eget arbete (segmentprognosen och holdout sedan
+23/9) som slår i taket, inte en krock med andra jobb. Försprånget läggs därför i ett eget, lätt anrop. Huvudvarvets tak är en egen fråga
+på kort #244.
+
+**Kvar:** FS-A kräver vinter (arkivet har bara kod 1, och ingen yta under noll med färskt regn i september). Dom-knappen byggs före
+mars. Steg 7 efter domen, med Axels röst oförändrad.
+
