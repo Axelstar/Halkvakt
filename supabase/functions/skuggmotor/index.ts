@@ -1,5 +1,5 @@
 // ═══ GENERERAD av scripts/bundle-skuggmotor.ts — ÄNDRA INTE HÄR ═══
-// Källor: engine/src/{types,geo,segment,texts,engine,forsprang,snapshot}.ts + supabase/functions/skuggmotor/main.ts
+// Källor: engine/src/{types,geo,segment,texts,engine,forsprang,rutfilter,snapshot}.ts + supabase/functions/skuggmotor/main.ts
 
 // ═══ engine/src/types.ts ═══
 // Alert engine v0 — pure, deterministic, platform-free (PLAN §1, §2).
@@ -227,7 +227,7 @@ export type Prognos = { steg_km: number; p: Provpunkt[] };
 
 export const STEG_KM = 2;        // provpunkt var annan kilometer — facit matchas inom 2 km (§2)
 const K_NEIGHBOURS = 5;          // som grind A (publish/grind-a.ts) — kontraktsgrinden vaktar
-const MAX_KM = 50;               // bortom det är en station väder, inte ankare — som grind A
+export const MAX_KM = 50;        // bortom det är en station väder, inte ankare — som grind A (rutfiltret läser den, #360)
 export const UPPMATT_KM = 2;     // §2:s facitradie: ett ankare så nära är en mätning, inte en modell
 export const FRYS_C = 1;         // A3:s klassgräns (TROSKLAR-SKUGGAN §3)
 
@@ -713,6 +713,55 @@ export function forsprangKrok(nivaer: Map<string, ForsprangNiva>, svepS: number)
 }
 
 
+// ═══ engine/src/rutfilter.ts ═══
+// Rutfiltret (kort #244, DECISIONS #360). Ren logik, inget I/O.
+//
+// Skuggmotorns huvudvarv slog i datorkraftens tak (546 kl 04:32 och 05:02Z 25/9, på :02/:32 — flytten från :00/:30 löste det inte).
+// Arbetet låg i två loopar som prövade HELA Sverige för varje rutt: motorn prövar varje fara i varje fix (tusentals kameror, olyckor
+// och stationer, några tusen fixar per rutt), och segmentprognosen mäter avståndet från varje provpunkt till alla ankare. En fara
+// längre från rutten än motorns längsta räckvidd kan aldrig tala, och ett ankare längre bort än MAX_KM kan aldrig väga in. Filtret
+// tar bort bara sådana, så utfallet är detsamma byte för byte — test/rutfilter.test.ts låser det.
+
+/** Motorns längsta räckvidd (olyckornas tidiga rop, 10 km) plus fem km slack — härledd, aldrig skriven för hand. */
+export const FARA_MARGINAL_KM =
+  Math.max(DEFAULT_CONFIG.accidentMaxAheadM, DEFAULT_CONFIG.leadMaxM, DEFAULT_CONFIG.cameraTriggerM) / 1000 + 5;
+/** Prognosens grannradie plus holdoutens avstånd till rutten plus tre km slack. */
+export const ANKARE_MARGINAL_KM = MAX_KM + UPPMATT_KM + 3;
+
+export type Ruta = { x0: number; x1: number; y0: number; y1: number };
+
+/** Rutans ruta, vidgad med `marginalKm` åt alla håll. Försiktig: longitudgraden räknas vid den nordligaste punkten, där den är
+ *  kortast i km, och latitudgraden som 110 km — rutan blir hellre för stor än för liten. */
+export function rutaKring(line: [number, number][], marginalKm: number): Ruta {
+  const lons = line.map((p) => p[0]), lats = line.map((p) => p[1]);
+  const nord = Math.max(...lats.map((y) => Math.abs(y)));
+  const dLat = marginalKm / 110, dLon = marginalKm / (111.32 * Math.cos((nord * Math.PI) / 180));
+  return { x0: Math.min(...lons) - dLon, x1: Math.max(...lons) + dLon, y0: Math.min(...lats) - dLat, y1: Math.max(...lats) + dLat };
+}
+
+const iRutan = (x: number, y: number, r: Ruta) => x >= r.x0 && x <= r.x1 && y >= r.y0 && y <= r.y1;
+
+/** Farorna som kan tala på rutten. En punkt ska ligga i rutan; ett segment räcker att dess egen ruta skär rutans — ett långt
+ *  segment kan korsa rutten utan att någon av dess brytpunkter ligger nära. */
+export function farorNaraRutten(hazards: Hazard[], line: [number, number][], marginalKm = FARA_MARGINAL_KM): Hazard[] {
+  const r = rutaKring(line, marginalKm);
+  return hazards.filter((h) => {
+    if (h.kind === "slippery_segment") {
+      const xs = h.line.map((p) => p[0]), ys = h.line.map((p) => p[1]);
+      return Math.max(...xs) >= r.x0 && Math.min(...xs) <= r.x1 && Math.max(...ys) >= r.y0 && Math.min(...ys) <= r.y1;
+    }
+    return iRutan((h as { lon: number }).lon, (h as { lat: number }).lat, r);
+  });
+}
+
+/** Ankarna som kan väga in i prognosen eller holdouten längs rutten. */
+export function ankareNaraRutten<T extends { lon: number; lat: number }>(ankare: T[], line: [number, number][],
+  marginalKm = ANKARE_MARGINAL_KM): T[] {
+  const r = rutaKring(line, marginalKm);
+  return ankare.filter((a) => iRutan(a.lon, a.lat, r));
+}
+
+
 // ═══ engine/src/snapshot.ts ═══
 // Snapshot → Hazard adapter. THE reference mapping from the published app files
 // (data/app/v1/{static,live}.json) into the engine's hazard vocabulary. The Kotlin
@@ -1094,7 +1143,8 @@ async function forsprangVarv(prov: boolean): Promise<Response> {
     const niva2 = hazards.filter((h) => nivaer.get(h.id) === 2 && iRutan(h, x0, x1, y0, y1)).length;
     if (!niva2) continue;
     const trace = traceAlong(line);
-    const bas = kor(hazards, trace, nivaer, false), variant = kor(hazards, trace, nivaer, true);
+    const naraFaror = farorNaraRutten(hazards, line);   // rutfiltret (kort #244, DECISIONS #360) — samma utfall, mindre arbete
+    const bas = kor(naraFaror, trace, nivaer, false), variant = kor(naraFaror, trace, nivaer, true);
     // FS-B4: en varning i varianten om en fara baskörningen aldrig talade om. Avståndet kvar till rutans slut följer med, så att
     // faror där baskörningens spår tog slut före faran kan redovisas för sig.
     const basIds = new Set(bas.alerts.map((a) => a.id));
@@ -1167,6 +1217,8 @@ Deno.serve(async (req) => {
     const allNames = Object.keys(routes).sort();
     const slots = 7;
     const slot = Math.floor(Date.now() / 1800e3) % slots;
+    // TIDMÄTNING PER STEG (kort #244, DECISIONS #360): funktionsloggen är Axels panel, så svaret bär själv var tiden går.
+    const ms = { motor: 0, prognos: 0, facit: 0, t0: performance.now() };
     const batch = allNames.filter((_, i) => i % slots === slot);
     for (const name of batch) {
       const line = routes[name];
@@ -1175,10 +1227,14 @@ Deno.serve(async (req) => {
       // SPÄRREN SYNLIG (#127 a, kort #188, DECISIONS #193, Bengts ja 15/9). Kroken fanns i motorn och
       // kolumnen i sql/016 sedan 13/9 — men ingen lyssnade, så kolumnen stod tom. Nu: det regel 1b
       // kastar loggas per körning, med vad som tystade det och med vilken marginal.
-      const motor = new AlertEngine(hazards);
+      // RUTFILTRET (kort #244, DECISIONS #360): motorn prövar bara faror inom sin längsta räckvidd från rutten — utfallet är
+      // detsamma byte för byte (test/rutfilter.test.ts), arbetet en bråkdel. n_hazards nedan är fortsatt hela snapshotens antal.
+      const t1 = performance.now();
+      const motor = new AlertEngine(farorNaraRutten(hazards, line));
       const suppressed: { kind: string; id: string; distM: number; by: string; sinceS: number }[] = [];
       motor.onSuppressed = (c) => suppressed.push({ kind: c.kind, id: c.hazardId, distM: Math.round(c.distM), by: c.by, sinceS: c.sinceS });
       const alerts = motor.run(trace);
+      ms.motor += performance.now() - t1;
       const vb = land === "se" ? vbAlerts(lv, line, trace) : [];
       // S1 — EFTERHALKANS INDATA (bedömning v3 S1, DECISIONS #198, Bengts "bygg S1 nu" 16/9). N4:s råa fält
       // per station i korridoren + om motorn larmade på stationen. Inget villkor: S2 sätter det, och raden
@@ -1189,7 +1245,11 @@ Deno.serve(async (req) => {
       // vaktade stationerna per provpunkt längs rutten (engine/src/segment.ts). Loggad, aldrig hörd — grind B och C
       // dömer i mars. Tom utan ankare, och skälet står i svaret (ankareSkal), så en tom kolumn aldrig är tvetydig.
       // h = HOLDOUT (4c, DECISIONS #326): varje station inom 2 km av rutten skattad ur de övriga, med sin egen mätning.
-      const prognos = ankare.lista.length ? { ...segmentPrognos(line, ankare.lista), h: holdoutRader(line, ankare.lista) } : {};
+      // Samma filter för ankarna: bara de inom prognosens grannradie plus holdoutens 2 km kan väga in (#360).
+      const t2 = performance.now();
+      const ankRutt = ankareNaraRutten(ankare.lista, line);
+      const prognos = ankare.lista.length ? { ...segmentPrognos(line, ankRutt), h: holdoutRader(line, ankRutt) } : {};
+      ms.prognos += performance.now() - t2;
       // Facit-bilder finns bara i Sverige (Trafikverkets väglagskameror). Punkterna slås upp ur
       // faran, inte ur larmet — motorns Alert bär ingen position (rättelse 4 ovan, DECISIONS #189).
       const farorById = new Map(hazards.map((h) => [h.id, h]));
@@ -1200,7 +1260,9 @@ Deno.serve(async (req) => {
       // Steg E: också bilens position vid en vattenplaningsvarning — en torr vägbana i bild fäller
       // falsklarm enligt TROSKLAR-VATTENPLANING §2. Motorns punkter först; budgeten är gemensam.
       const vbPunkter = vb.flatMap((v) => (v.lon != null && v.lat != null ? [{ lon: v.lon, lat: v.lat }] : []));
+      const t3 = performance.now();
       const f = land === "se" ? await archiveFacit([...punkter, ...vbPunkter], name) : { saved: 0, skal: [] };
+      ms.facit += performance.now() - t3;
       // En nolla utan skäl är omöjlig att skilja från "inga larm" (#173) — även den här grenen säger varför.
       if (land === "se" && alerts.length && !punkter.length) f.skal.push("bara segmentlarm — ingen punkt att söka kamera från");
       facitBudget -= f.saved; facitTotal += f.saved; facitSkal.push(...f.skal);
@@ -1247,8 +1309,9 @@ Deno.serve(async (req) => {
     }
     // Skälen går med i svaret. En nolla utan skäl är omöjlig att skilja från "inga larm",
     // och det var precis det som lät bucketen stå tom i sexton dygn utan att någon såg det.
+    const tid = { motor: Math.round(ms.motor), prognos: Math.round(ms.prognos), facit: Math.round(ms.facit), totalt: Math.round(performance.now() - ms.t0) };
     return new Response(JSON.stringify({ ok: true, results, ankare: ankare.lista.length, ankareSkal: ankare.skal, facit: facitTotal,
-      facitSkal: [...new Set(facitSkal)].slice(0, 8) }), {
+      facitSkal: [...new Set(facitSkal)].slice(0, 8), ms: tid }), {
       headers: { "Content-Type": "application/json" } });
   } catch (e) {
     return new Response(JSON.stringify({ ok: false, error: String(e) }), { status: 500 });

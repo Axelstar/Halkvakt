@@ -25,7 +25,7 @@ export type Prognos = { steg_km: number; p: Provpunkt[] };
 
 export const STEG_KM = 2;        // provpunkt var annan kilometer — facit matchas inom 2 km (§2)
 const K_NEIGHBOURS = 5;          // som grind A (publish/grind-a.ts) — kontraktsgrinden vaktar
-const MAX_KM = 50;               // bortom det är en station väder, inte ankare — som grind A
+export const MAX_KM = 50;        // bortom det är en station väder, inte ankare — som grind A (rutfiltret läser den, #360)
 export const UPPMATT_KM = 2;     // §2:s facitradie: ett ankare så nära är en mätning, inte en modell
 export const FRYS_C = 1;         // A3:s klassgräns (TROSKLAR-SKUGGAN §3)
 
