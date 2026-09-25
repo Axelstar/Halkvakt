@@ -4032,6 +4032,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **Stängt 24/9 (DECISIONS #346, Bengts ja):** feedback-knappen finns sedan 16/9 (S4, *Stämde/Stämde inte*, PR #290/#291). Den anonyma pulsen förs till sensortrappan, Ä8 i bedömningen (mars 2027, efter vinterns domar).
 
 - [ ] ⚖️ **#153 ALLVAR SOM FÖRSPRÅNG + ETT SMALARE UNDANTAG — beslut 1 omformulerat 16/9 och väntar, beslut 2 öppet (Bengts)**
+  ✂️ **DELAT 25/9 (DECISIONS #358, Bengts ja): kortet bär nu bara BESLUT 1.** Datum: senast när betan startar i november skrivs tröskeldokumentet (steg 4 nedan), så att skuggan går december–februari och domen kan falla i mars 2027. Steg 3 (S2) är klart sedan 24/9. **Beslut 2** står i vårlistan (Ä8) bredvid sensortrappan, med beroendet inskrivet: det bygger på beslut 1:s gradering och behöver telefonsensorerna som vittne på platsen.
   ✏️ **OMSKRIVET 16/9 på Bengts order *"gör 153 och omformulera 153"* (DECISIONS #221).** Det gamla kortet föreslog att
   kombinationen ändrar varningen med *"ordval, framförhållning eller prioritet"*. Två av de tre är avvisade, och kortet
   är omskrivet så att ingen bygger dem.
