@@ -114,6 +114,20 @@ export function dom<T>(timmar: number, stationer: number, svar: T): T | null {
 
 const pct = (x: number) => `${(100 * x).toFixed(0)} %`;
 
+/** Svepets rad (kort #254 c, R-C4): under domspärren bara räkningar — andelen kl 03–07 (R-A3) och den största stationens
+ *  andel (R-A5) är utfallet och visas först när spärren släppt, som V-B:s (DECISIONS #350). */
+function raRad(m: number, y: number, u: number, ep: Episod[], oppen: boolean): string {
+  const st = new Set(ep.map((e) => e.station)).size;
+  const langder = ep.map((e) => e.minuter).sort((a, b) => a - b);
+  const median = langder.length ? langder[Math.floor(langder.length / 2)] : 0;
+  const natt = ep.filter((e) => e.kallastTimme >= 3 && e.kallastTimme <= 7).length;
+  const d = dominans(ep);
+  const andel = (x: number) => (!ep.length ? "–" : oppen ? pct(x) : "spärrad");
+  return `  ${m.toFixed(1)}  ${y.toFixed(1)}  ${String(u).padStart(3)}  ` +
+    `${String(ep.length).padStart(8)}  ${String(st).padStart(9)}  ${String(median).padStart(9)} min  ` +
+    `${andel(natt / (ep.length || 1)).padStart(8)}  ${andel(d.andel).padStart(8)}`;
+}
+
 // ── Självtest med känd sanning.
 if (process.argv.includes("--sjalvtest")) {
   console.log("SJÄLVTEST — villkoret, episoderna, uthålligheten och vakterna mot känd sanning\n");
@@ -162,6 +176,9 @@ if (process.argv.includes("--sjalvtest")) {
   // Svepen är dokumentets.
   k("R1 är dokumentets", R1_MARGINAL.join(","), "0,0.5,1");
   k("R3 är dokumentets", R3_UTHALL.join(","), "30,60");
+  // Kort #254 c: under spärren visar svepets rad inga andelar, bara räkningar.
+  k("spärrad rad visar ingen andel", raRad(0, 0, 30, [epi(90), epi(45)], false).includes("%"), false);
+  k("öppen rad visar andelarna", raRad(0, 0, 30, [epi(90), epi(45)], true).includes("%"), true);
   if (!ok) { console.error("\nSJÄLVTEST FÄLLDE."); process.exit(1); }
   console.log("\nSJÄLVTEST OK: villkoret kräver BÅDA leden, uthålligheten räknar spann och inte");
   console.log("antal rader, luckan bryter episoden, och en dominerande station fastnar.");
@@ -228,37 +245,31 @@ if (!data.length) {
   await pool.end(); process.exit(0);
 }
 
-console.log(`\nSVEPET — R1 marginal × R2 yttröskel × R3 uthållighet`);
-console.log(`  Domspärr (R-A1/R-A2): ≥ ${R_A1_TIMMAR} stationstimmar och ≥ ${R_A2_STATIONER} stationer.`);
-console.log(`\n  R1    R2    R3   episoder  stationer  medianlängd   kl 03–07  största station`);
 type Ut = { m: number; y: number; u: number; ep: Episod[] };
 const alla: Ut[] = [];
-for (const m of R1_MARGINAL) for (const y of R2_YTA) for (const u of R3_UTHALL) {
-  const ep = episoder(data, m, y, u);
-  alla.push({ m, y, u, ep });
-  const st = new Set(ep.map((e) => e.station)).size;
-  const langder = ep.map((e) => e.minuter).sort((a, b) => a - b);
-  const median = langder.length ? langder[Math.floor(langder.length / 2)] : 0;
-  const natt = ep.filter((e) => e.kallastTimme >= 3 && e.kallastTimme <= 7).length;
-  const d = dominans(ep);
-  console.log(`  ${m.toFixed(1)}  ${y.toFixed(1)}  ${String(u).padStart(3)}  ` +
-    `${String(ep.length).padStart(8)}  ${String(st).padStart(9)}  ${String(median).padStart(9)} min  ` +
-    `${(ep.length ? pct(natt / ep.length) : "–").padStart(8)}  ${(ep.length ? pct(d.andel) : "–").padStart(8)}`);
-}
+for (const m of R1_MARGINAL) for (const y of R2_YTA) for (const u of R3_UTHALL) alla.push({ m, y, u, ep: episoder(data, m, y, u) });
 
-// ── Domen, med domspärren FÖRE tabellen i anda (R-C4) och marginalvakten på R-A3.
+// ── Domspärren FÖRE tabellen (R-C4, kort #254 c) och marginalvakten på R-A3. Under spärren visar tabellen bara räkningar.
 const bast = alla.reduce((a, b) => (b.ep.length > a.ep.length ? b : a));
 const stationer = new Set(bast.ep.map((e) => e.station)).size;
+const oppen = harRh && !!dom(stationstimmar(bast.ep), stationer, true);
 console.log(`\nGRIND R-A`);
 if (!harRh) {
   console.log(`  OAVGJORT — korsgivarkontrollen (§3, tredje ledet) går inte att utvärdera i det`);
-  console.log(`  här arkivet. Talen ovan är ett FÖRHANDSBESKED och får inte läsas som ett`);
+  console.log(`  här arkivet. Talen nedan är ett FÖRHANDSBESKED och får inte läsas som ett`);
   console.log(`  grindutfall. Kör om med --land=se när svensk frost kommer, där RH finns.`);
-} else if (!dom(stationstimmar(bast.ep), stationer, true)) {
+} else if (!oppen) {
   console.log(`  ⊘ OAVGJORT — domspärren håller. Bästa kombinationen gav ${stationstimmar(bast.ep)} stationstimmar`);
   console.log(`    (${bast.ep.length} episoder) på ${stationer} stationer, kravet är ${R_A1_TIMMAR} stationstimmar och ${R_A2_STATIONER} stationer.`);
   console.log(`    Det är ett UNDERLAGSBESKED, inte ett nej. Frosten har inte kommit än.`);
-} else {
+}
+
+console.log(`\nSVEPET — R1 marginal × R2 yttröskel × R3 uthållighet`);
+console.log(`  Domspärr (R-A1/R-A2): ≥ ${R_A1_TIMMAR} stationstimmar och ≥ ${R_A2_STATIONER} stationer.`);
+console.log(`\n  R1    R2    R3   episoder  stationer  medianlängd   kl 03–07  största station`);
+for (const a of alla) console.log(raRad(a.m, a.y, a.u, a.ep, oppen));
+
+if (oppen) {
   const natt = bast.ep.filter((e) => e.kallastTimme >= 3 && e.kallastTimme <= 7).length;
   const andel = natt / bast.ep.length;
   const se = andelSe(andel, bast.ep.length);
@@ -286,6 +297,8 @@ if (LAND === "se") {
     console.log(`  klar ${klara} · mellan ${n - klara - mulna - okand} · mulen/skymd ${mulna} · okänd ${okand}`);
     if (klara < R_A4_MIN || mulna < R_A4_MIN) {
       console.log(`  ⊘ OAVGJORT — för få nätter i endera klassen (kräver ${R_A4_MIN} vardera för att jämföra).`);
+    } else if (!oppen) {
+      console.log(`  ⊘ Kvoten klara mot mulna visas när domspärren släppt (kort #254 c) — ovan bara räkningar.`);
     } else {
       const kvot = klara / mulna;
       console.log(`  klara mot mulna: ${kvot.toFixed(2)} × (krav ≥ ${R_A4_KVOT})`);

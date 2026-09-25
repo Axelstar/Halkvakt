@@ -88,6 +88,17 @@ export function grind(u: Utvardering): { utfall: Utfall; a1: Utfall; a2: Utfall;
 
 const pct = (x: number) => `${(100 * x).toFixed(1)} %`;
 
+/** Svepets rad (kort #254 c, K-C3): under domspärren bara räkningar och täckning — träff och farliga fel är utfallet och visas
+ *  först när K-A4 är uppfylld, som V-B:s spärr (DECISIONS #350). */
+function kaRad(km: number, grans: number, zon: number,
+  u: { uttalade: number; avstod: number; tackning: number; traff: number; farligtAndel: number }, utfall: string, nog: boolean): string {
+  const dolt = (s: string) => (nog ? s : "spärrad");
+  return `  ${String(km).padStart(2)} km  ${grans.toFixed(1)}  ±${zon.toFixed(1)}  ` +
+    `${String(u.uttalade + u.avstod).padStart(8)}  ${String(u.uttalade).padStart(8)}  ` +
+    `${pct(u.tackning).padStart(8)}  ${dolt(pct(u.traff)).padStart(8)}  ${dolt(pct(u.farligtAndel)).padStart(8)}   ` +
+    `${nog ? utfall : "—"}`;
+}
+
 // ── Självtest med känd sanning + driftvakt mot grind A.
 if (process.argv.includes("--sjalvtest")) {
   console.log("SJÄLVTEST — klassningen, avståendet och vakterna mot känd sanning\n");
@@ -134,6 +145,11 @@ if (process.argv.includes("--sjalvtest")) {
   k("BUCKET_S = grind A:s", BUCKET_S, tal("BUCKET_S"));
   k("givarvakten finns i grind A:s fråga", ga.includes("surface_temp_c >= air_temp_c - 12"), true);
   k("radvakten och karantänen finns i grind A:s fråga (kort #234)", ga.includes('${RADVAKT_SQL} AND ${karantanSql("weather_observations")}'), true);
+  // Kort #254 c: under spärren visar svepets rad ingen träff och inga farliga fel.
+  const u0 = { uttalade: 90, avstod: 10, tackning: 0.9, traff: 0.987, farligtAndel: 0.004 };
+  k("spärrad rad visar ingen träff", kaRad(15, 0, 0, u0, "KLARAR", false).includes("98.7"), false);
+  k("spärrad rad visar inga farliga fel", kaRad(15, 0, 0, u0, "KLARAR", false).includes("0.4 %"), false);
+  k("öppen rad visar träffen", kaRad(15, 0, 0, u0, "KLARAR", true).includes("98.7 %"), true);
   if (!ok) { console.error("\nSJÄLVTEST FÄLLDE."); process.exit(1); }
   console.log("\nSJÄLVTEST OK: det farliga felet räknas åt rätt håll, avståendet sänker täckningen,");
   console.log("septembervakten kräver frysande punkter, och modellen är grind A:s.");
@@ -252,17 +268,11 @@ if (!nog) {
   console.log(`  Har:  ${bast.u.uttalade + bast.u.avstod} punkter över ${bast.stationer} stationer, ${bast.frys} frysande vid gränsen 0 °C.`);
   console.log(`  Septembervakten är den som biter: en klassificerare som aldrig sett ett positivt`);
   console.log(`  fall kan svara "fryser inte" varje gång och ändå få nästan allt rätt.`);
-  console.log(`  Talen nedan redovisas, men ingen dom går att läsa av dem.`);
+  console.log(`  Under spärren visas bara räkningar och täckning; träff och farliga fel visas när K-A4 är uppfylld (kort #254 c).`);
 }
 
 console.log(`\n  K3    K1     K2    punkter  uttalade  täckning     träff   farliga   utfall`);
-for (const r of rader) {
-  const u = r.u;
-  console.log(`  ${String(r.km).padStart(2)} km  ${r.grans.toFixed(1)}  ±${r.zon.toFixed(1)}  ` +
-    `${String(u.uttalade + u.avstod).padStart(8)}  ${String(u.uttalade).padStart(8)}  ` +
-    `${pct(u.tackning).padStart(8)}  ${pct(u.traff).padStart(8)}  ${pct(u.farligtAndel).padStart(8)}   ` +
-    `${nog ? r.g.utfall : "—"}`);
-}
+for (const r of rader) console.log(kaRad(r.km, r.grans, r.zon, r.u, r.g.utfall, nog));
 
 if (nog) {
   const klarar = rader.filter((r) => r.g.utfall === "KLARAR");

@@ -140,6 +140,13 @@ export function dom<T>(sistaBandTimmar: number, olyckorTotalt: number, svar: T):
 const tal = (x: number, d = 2) => x.toFixed(d);
 const pct = (a: number, b: number) => b ? `${((100 * a) / b).toFixed(1)} %` : "–";
 
+/** Bandets rad (kort #254 c): under underlagsvakten bara räkningar — frekvensen per 1 000 timmar och kvoten är utfallet, och
+ *  visas först när W-A4 är uppfylld (som V-B:s spärr, DECISIONS #350). */
+function waRad(r: { namn: string; timmar: number; olyckor: number; per1000: number; kvot: number }, oppen: boolean): string {
+  const dolt = (s: string) => (oppen ? s : "spärrad");
+  return `  ${r.namn.padEnd(12)} ${String(r.timmar).padStart(14)} ${String(r.olyckor).padStart(18)} ${dolt(tal(r.per1000)).padStart(15)} ${dolt(tal(r.kvot)).padStart(17)}`;
+}
+
 // ── Självtest med känd sanning, utan DB.
 if (process.argv.includes("--sjalvtest")) {
   console.log("SJÄLVTEST — frekvens, monotoni och underlagsvakt mot känd sanning\n");
@@ -193,6 +200,11 @@ if (process.argv.includes("--sjalvtest")) {
   k("kravet är kravsvepets lägsta", OMOJLIGA_TIMMAR, Math.min(...OMOJLIGA_TIMMAR_SVEP));
   k("en enda omöjlig timme räcker", diskvalificera(1), true);
   k("noll omöjliga timmar diskar inte", diskvalificera(0), false);
+  // Kort #254 c: under spärren visar bandets rad ingen frekvens och ingen kvot.
+  const br = { namn: "≥ 15 m/s", timmar: 120, olyckor: 3, per1000: 25, kvot: 1.87 };
+  k("spärrad rad visar ingen kvot", waRad(br, false).includes("1.87"), false);
+  k("spärrad rad visar ingen frekvens", waRad(br, false).includes("25.00"), false);
+  k("öppen rad visar kvoten", waRad(br, true).includes("1.87"), true);
   if (!ok) { console.error("\nSJÄLVTEST FÄLLDE."); process.exit(1); }
   console.log("\nSJÄLVTEST OK: frekvensen delar med exponeringen, monotonin fångar ett fall, vakten håller.");
   process.exit(0);
@@ -377,19 +389,20 @@ for (const [rubrik, kolumn, banden, riktning, uteslut] of [
 ] as [string, string, [string, number, number][], "hog" | "lag", string[]][]) {
   console.log(`\n${rubrik}: stiger olycksfrekvensen?`);
   const rader = frekvens(await band(kolumn, banden, riktning, uteslut));
-  console.log(`  band          stationstimmar   timmar m. olycka   per 1 000 tim   kvot mot första`);
-  for (const r of rader) {
-    console.log(`  ${r.namn.padEnd(12)} ${String(r.timmar).padStart(14)} ${String(r.olyckor).padStart(18)} ${tal(r.per1000).padStart(15)} ${tal(r.kvot).padStart(17)}`);
-  }
   const sista = rader[rader.length - 1];
   const olyckorTot = rader.reduce((s, r) => s + r.olyckor, 0);
   const mono = monoton(rader);
   const kvot = sista.kvot;
-  if (!dom(sista.timmar, olyckorTot, true)) {
+  // Underlagsvakten FÖRE tabellen (kort #254 c): under spärren visar tabellen bara räkningar.
+  const oppen = !!dom(sista.timmar, olyckorTot, true);
+  if (!oppen) {
     console.log(`  ⊘ OAVGJORT — underlagsvakten (W-A4) håller: ${sista.timmar} stationstimmar i högsta bandet`);
     console.log(`    (kräver ${MIN_STATIONSTIMMAR}) och ${olyckorTot} olyckor totalt (kräver ${MIN_OLYCKOR}).`);
     console.log(`    September är inte blåsigast på året. Det här är ett underlagsbesked, inte ett nej.`);
-  } else {
+  }
+  console.log(`  band          stationstimmar   timmar m. olycka   per 1 000 tim   kvot mot första`);
+  for (const r of rader) console.log(waRad(r, oppen));
+  if (oppen) {
     // MARGINALVAKTEN (DECISIONS #128). En KVOT av två olycksfrekvenser får inte binomialfel —
     // osäkerheten sitter i logaritmen och domineras av det minsta antalet olyckor.
     const skilj = skiljbarKvot(kvot, 1.5, sista.olyckor, rader[0].olyckor);

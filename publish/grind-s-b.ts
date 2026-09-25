@@ -163,6 +163,8 @@ export function handelsedom(e: Handelse, varv: Varv[], rutter: Rutter): Handelse
   if (!tackt) return { utfall: "OBEDÖMBAR", orsak: null, rutt: bast.rutt, km: bast.km };
   const flaggad = fore.some((v) => v.p.some((q) => nara(q) && q[5] === 1 && q[4] >= 1));
   if (flaggad) return { utfall: "TRÄFF", orsak: null, rutt: bast.rutt, km: bast.km };
+  // En okänd orsak (null: ingen station inom NEDERBORD_KM) är INGEN ursäkt — den bokförs på utstrålningen, den stränga läsningen
+  // av §2 (kort #254 g). Antalet okända skrivs ut för sig.
   return { utfall: "MISS", orsak: e.nederbord ? "NEDERBÖRD" : "UTSTRÅLNING", rutt: bast.rutt, km: bast.km };
 }
 

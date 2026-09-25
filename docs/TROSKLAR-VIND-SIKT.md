@@ -245,7 +245,7 @@ hastighetsrelaterad olycka i blåst räknas som "vindolycka" här. W-A mäter sa
 
 **Uppspelning ur arkivet**, ingen röst. Roll B:s W-B4 räknas per halkfall ur arkivet (byvind och sikt vid närmaste station när
 faran fanns). W-B5 och roll A mäts per rutt: motorn körs längs referensrutterna med farorna återskapade ur arkivet — samma
-rekonstruktion som missmätningen (`publish/missar.ts`, efter kort #255:s rättelse). *Ändrat 25/9 (DECISIONS #363); tidigare:
+rekonstruktion som missmätningen använde (`publish/rekonstruktion.ts`, rättad i kort #255 och #254 h). *Ändrat 25/9 (DECISIONS #363); tidigare:
 skuggkolumn i skuggmotorn.* Rollerna mäts **var för sig**:
 
 | # | Mått | Fällt värde (Bengt) |
