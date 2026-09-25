@@ -419,6 +419,13 @@ test("uppspelningen: varje variant ändrar en sak, utfallet är blindat, värden
     const dagHI = (await pool.query(`SELECT (${T2} AT TIME ZONE 'UTC')::date::text AS d`)).rows[0].d;
     assert.ok(dagHI !== dagG1 && dagHI !== dagG2 && dagHI !== dag, "H och I ligger på ett eget UTC-dygn");
     const foreHI = await rad("p_blind := false", dagHI);
+    // J: NATTEN ÄR SVENSK (kort #256, DECISIONS #366). Två ögonblick en halvtimme före och efter lokal middag är två nätter i
+    // svensk tid men EN i UTC — lokal middag är kl 10 eller 11 UTC, och en UTC-natt bryts först kl 12 UTC. Egen dag, 5 dygn bort.
+    const JN = `((date_trunc('day', (${T} - interval '5 days') AT TIME ZONE 'Europe/Stockholm') + interval '12 hours') AT TIME ZONE 'Europe/Stockholm')`;
+    const J1 = `(${JN} - interval '30 min')`, J2 = `(${JN} + interval '30 min')`;
+    const [dagJ, dagJ2] = (await pool.query(`SELECT (${J1} AT TIME ZONE 'UTC')::date::text AS a, (${J2} AT TIME ZONE 'UTC')::date::text AS b`)).rows.map((r) => [r.a, r.b])[0];
+    assert.ok(dagJ === dagJ2 && ![dag, dagG1, dagG2, dagHI].includes(dagJ), "J: båda ögonblicken på samma, egna UTC-dygn");
+    const foreJ = await rad("", dagJ);
     const g = "ST_SetSRID(ST_MakePoint(15.0, 60.0), 4326)";
     // A: faller, 0,3 mm regn, frös (0,4). B: faller, 0,1 mm, nära (1,3). C: bara i bredare band, uteblev (2,9).
     // D: faller, inget stationsregn men radar 0,6 mm/h inom 5 km. E: regn i bandet utan fall — bara "utan faller".
@@ -460,6 +467,10 @@ test("uppspelningen: varje variant ändrar en sak, utfallet är blindat, värden
       ('UPPSP_OLY3', 'VehicleObstruction', ST_SetSRID(ST_MakePoint(18.01, 60.0), 4326), ${T2} + interval '20 min')`);
     await pool.query(`INSERT INTO radar_precip (segment_id, observed_at, rate_max_mmh, rate_mean_mmh) VALUES
       ('UPPSP_SEG', ${T} - interval '10 min', 0.9, 0.6), ('UPPSP_SEG2', ${T} - interval '10 min', 0.8, 0.5)`);
+    await pool.query(`INSERT INTO trend_kandidater (station_id, observed_at, surface_temp_c, lutning15_c, lutning30_c, lutning60_c, min_yta_90min_c, utfall_rader) VALUES
+      ('UPPSP_J', ${J1}, 2.0, 0.5, 1.0, 1.4, 1.8, 4), ('UPPSP_J', ${J2}, 1.8, 0.5, 1.0, 1.4, 1.9, 4)`);
+    await pool.query(`INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, rain_sum_mm) VALUES
+      ('UPPSP_J', 'J', ${g}, ${J1} - interval '30 min', NULL, NULL, 0.3)`);
     for (const [namn, arg, vantat] of VARIANTER)
       assert.equal((await rad(arg)).st - fore.get(namn)!, vantat, `${namn}: stationer den dagen`);
     // Blindat som standard: utfallskolumnerna är NULL. Öppnat: A föll ut, B nära; med bredare band uteblev C.
@@ -475,6 +486,8 @@ test("uppspelningen: varje variant ändrar en sak, utfallet är blindat, värden
     assert.deepEqual([(efterG1.med ?? 0) - (foreG1.med ?? 0), (efterG1.fo ?? 0) - (foreG1.fo ?? 0)], [1, 1], "G: en episod, bokförd där natten började, och den föll ut");
     assert.deepEqual([(efterG2.med ?? 0) - (foreG2.med ?? 0), (efterG2.ut ?? 0) - (foreG2.ut ?? 0)], [0, 0], "G: ingen andra episod efter midnatt UTC");
     assert.equal(efterG2.med === null, false, "öppnat ger 0, inte NULL, på ett dygn där ingen episod började — NULL betyder blindat");
+    // J (kort #256): lokal middag skiljer två nätter. Med natten i UTC hade det blivit en episod.
+    assert.equal((await rad("", dagJ)).ep - foreJ.ep, 2, "J: en halvtimme före och efter lokal middag är två nätter i svensk tid");
     // #207 FACITSTACKEN: H har halka inom 5 km inom fönstret och en olycka likaså; I har bara fällorna.
     const efterHI = await rad("p_blind := false", dagHI);
     assert.equal(efterHI.ep - foreHI.ep, 2, "H och I ger var sin episod");

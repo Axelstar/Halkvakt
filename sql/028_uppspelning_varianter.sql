@@ -21,9 +21,10 @@
 -- kalibreringen 1/2, dom 2 i mars; regel D2/D3/D6). Tills dess ger utfallskolumnerna NULL. Den som anropar med
 -- p_blind := false lämnar ett spår i dbknapp-loggen.
 --   Utfallet räknas per EPISOD = stationens första ögonblick per NATT (röst räknas i episoder, aldrig i rader —
---   kartan §10.2). En natt går från middag till middag UTC: tiden skiftas 12 h, samma räknesätt som T-A
---   (scripts/grind-t-a.ts), så att en natt inte delas av midnatt. Bengt 20/9, DECISIONS #246 — första versionen räknade
---   per UTC-dygn och delade 159 av 454 stationsnätter i två (#245). Episoden bokförs på det UTC-dygn då den BÖRJADE;
+--   kartan §10.2). En natt går från middag till middag i SVENSK TID: tiden skiftas 12 h i Europe/Stockholm, samma räknesätt
+--   som T-A och R-A, så att en natt inte delas av midnatt. Bengt 20/9, DECISIONS #246 — första versionen räknade per
+--   UTC-dygn och delade 159 av 454 stationsnätter i två (#245); den andra räknade natten i UTC medan T-A och R-A räknade i
+--   svensk tid (kort #256, DECISIONS #366 — nu samma zon, och kontraktet "Nattens zon" vaktar den). Episoden bokförs på det UTC-dygn då den BÖRJADE;
 --   stationer och ögonblick redovisas som förut per UTC-dygn. Ett dygn där ingen episod började ger 0, inte NULL —
 --   NULL betyder bara "blindat". Klasserna är T-B:s: föll ut (yta <= 1 °C) · nära (inom nära-miss-bandet) · uteblev.
 --   Varianten "utan faller" har inget utfall här: den räknas ur väderarkivet, och trendarkivet bär bara fallande ytor.
@@ -134,7 +135,7 @@ BEGIN
           AND rp.observed_at <= b.t AND rp.observed_at > b.t - p_n))) AS blot
     FROM bas b
   ),
-  f AS (SELECT m.sid, m.t, (m.t AT TIME ZONE 'UTC')::date AS d, ((m.t - interval '12 hours') AT TIME ZONE 'UTC')::date AS natt,
+  f AS (SELECT m.sid, m.t, (m.t AT TIME ZONE 'UTC')::date AS d, ((m.t AT TIME ZONE 'Europe/Stockholm') - interval '12 hours')::date AS natt,
       m.min_efter, m.rader FROM m WHERE (NOT p_krav_blot) OR m.blot),
   ep AS (SELECT DISTINCT ON (f.sid, f.natt) f.sid, f.t, f.d, f.min_efter, f.rader FROM f ORDER BY f.sid, f.natt, f.t),
   a AS (SELECT f.d, count(DISTINCT f.sid)::int AS st, count(*)::int AS og FROM f GROUP BY f.d),
