@@ -20,6 +20,10 @@
 //
 // EN VARNING UTAN STATION INOM RÄCKHÅLL ÄR OMÄTBAR, aldrig "rätt". Samma nollpolitik som radarns
 // `regn: null`: frånvaro av mätning är inte frånvaro av regn. De räknas separat och aldrig in i V-B1.
+// MEN EN TYST STATION ÄR INTE ALLTID EN FRÅNVARANDE (kort #251, DECISIONS #351, Bengts ja 25/9): arkivet sparar bara
+// kalla, blöta eller ändrade avläsningar (DECISIONS #4), så en varm, torr och stilla station lämnar ingen rad. Har den
+// dömande stationen rader inom ±3 h men ingen inom ±30 min var den igång och torr — TORRT, alltså falsklarm enligt §2.
+// Utan rader inom ±3 h förblir den OMÄTBAR. Regn sparas alltid (varje avläsning under regnet har regnflaggan på).
 //
 // FACIT FÖR V-C1 (DECISIONS #349, Bengts ja 25/9 — definitionen skriven före första räkningen): en olycka i
 // situation_archive inom FACIT_KM (2 km, samma radie som den delade facitlistan) från en svensk skuggrutt, där den
@@ -45,6 +49,7 @@ export const TROSKEL_STATION_MMH = REGN_UTLOSARE_MMH / RADAR_FAKTOR;
  *  kontraktsgrinden fällde bygget när namnen krockade (DECISIONS #211). Namnet säger vad det är. */
 const DOMANDE_STATION_KM = 10;
 const FONSTER_MIN = 30;                     // §2: "inom ±30 min"
+const IGANG_H = 3;                          // #351: rader inom ±3 h bevisar att stationen var igång
 const V_B1 = 0.20, V_B3 = 3;                // fällda värden (Bengt 4/9, Axel DECISIONS #68)
 const MIN_VARNINGAR = 200, MIN_FACIT = 15;  // V-C1
 const MIN_REGNDYGN = 5, MIN_LAN = 3;        // V-C2
@@ -93,7 +98,11 @@ export function dom(v: Varning, matningar: Matning[]): { utslag: Utslag; km: num
   if (!bast.length || bastaKm > DOMANDE_STATION_KM) return { utslag: "OMÄTBAR", km: bast.length ? bastaKm : null, mmh: null };
   const t = v.tid.getTime();
   const inom = bast.filter((m) => Math.abs(m.bucket * 1800_000 + 900_000 - t) <= FONSTER_MIN * 60_000);
-  if (!inom.length) return { utslag: "OMÄTBAR", km: bastaKm, mmh: null };
+  if (!inom.length) {
+    // #351: igång men tyst ⇒ torr (arkivdieten sparar inte en varm, torr och stilla avläsning); helt tyst ⇒ omätbar.
+    const igang = bast.some((m) => Math.abs(m.bucket * 1800_000 + 900_000 - t) <= IGANG_H * 3600_000);
+    return igang ? { utslag: "TORRT", km: bastaKm, mmh: 0 } : { utslag: "OMÄTBAR", km: bastaKm, mmh: null };
+  }
   const mmh = Math.max(...inom.map((m) => m.mmh));
   return { utslag: mmh >= TROSKEL_STATION_MMH ? "BEKRÄFTAD" : mmh > 0 ? "DELVIS" : "TORRT", km: bastaKm, mmh };
 }
@@ -206,7 +215,11 @@ if (process.argv.includes("--sjalvtest")) {
   k("ingen station inom räckhåll", dom(v(15.0), [{ lon: 15.6, lat: 59.0, bucket: b, mmh: 9 }]).utslag, "OMÄTBAR");
   k("rätt station vinner (närmast, inte högst)", dom(v(15.0), [
     { lon: 15.01, lat: 59.0, bucket: b, mmh: 0 }, { lon: 15.08, lat: 59.0, bucket: b, mmh: 9 }]).utslag, "TORRT");
-  k("utanför tidsfönstret är omätbart", dom(v(15.0), [{ lon: 15.0, lat: 59.0, bucket: b - 4, mmh: 9 }]).utslag, "OMÄTBAR");
+  // #351 (ändrat 25/9 på Bengts beslut, inte för att få testet grönt): en station med rader inom ±3 h men ingen inom
+  // ±30 min var igång och torr. Helt tyst i ±3 h är fortfarande omätbart.
+  k("igång men tyst i ±30 min är torrt", dom(v(15.0), [{ lon: 15.0, lat: 59.0, bucket: b - 4, mmh: 9 }]).utslag, "TORRT");
+  k("tyst i ±3 h är omätbart", dom(v(15.0), [{ lon: 15.0, lat: 59.0, bucket: b - 8, mmh: 9 }]).utslag, "OMÄTBAR");
+  k("igång efteråt räknas också", dom(v(15.0), [{ lon: 15.0, lat: 59.0, bucket: b + 5, mmh: 0 }]).utslag, "TORRT");
   // Max över fönstret: regnet behöver ha nått tröskeln EN gång inom ±30 min.
   k("max över fönstret gäller", dom(v(15.0), [
     { lon: 15.0, lat: 59.0, bucket: b, mmh: 0 }, { lon: 15.0, lat: 59.0, bucket: b - 1, mmh: 5 }]).utslag, "BEKRÄFTAD");
@@ -222,6 +235,9 @@ if (process.argv.includes("--sjalvtest")) {
     { olyckor: 1, facit: 0, torra: 1, omatbara: 0 });
   k("facit: olycka utan station inom räckhåll är omätbar", facit([o(15.0)], [{ lon: 15.6, lat: 59.0, bucket: b, mmh: 9 }]),
     { olyckor: 1, facit: 0, torra: 0, omatbara: 1 });
+  // Fällan ligger där den annars ger noll torra: stationen har bara en rad två timmar före (#351).
+  k("facit: station igång men tyst i ±30 min ger en torr olycka", facit([o(15.0)], [{ lon: 15.0, lat: 59.0, bucket: b - 4, mmh: 0 }]),
+    { olyckor: 1, facit: 0, torra: 1, omatbara: 0 });
   k("fönstret: 25/9 12:00 är 11 dygn sedan 15/9", dagarSedanStart(new Date("2026-09-25T12:00:00Z")), 11);
 
   // Blindningen (DECISIONS #350): under spärren får ingen andel skrivas; när V-C är uppfylld ska domen komma.
@@ -239,7 +255,7 @@ if (process.argv.includes("--sjalvtest")) {
   const mangaStationer = [0, 1, 2, 3, 4].map((d) => ({ ...station, bucket: b + d * 48 }));
   const over = fanga(() => rapport(manga, mangaStationer, { olyckor: 20, facit: 15, torra: 5, omatbara: 0 }, 3, "prov"));
   k("V-C uppfylld: domen skrivs", over.includes("DOM: V-B"), true);
-  console.log(ok ? "\nSJÄLVTEST OK: utslagen och facit följer §2, nämnaren är regndygn, och under spärren syns inga andelar." : "\nSJÄLVTEST FALLERAR");
+  console.log(ok ? "\nSJÄLVTEST OK: utslagen och facit följer §2, en tyst men igång station är torr, nämnaren är regndygn, och under spärren syns inga andelar." : "\nSJÄLVTEST FALLERAR");
   process.exit(ok ? 0 : 1);
 }
 

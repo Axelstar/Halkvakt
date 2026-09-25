@@ -1376,7 +1376,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (c) fotostudions bilder är olika eller färre.
   ✅ **KLART 24/9 (DECISIONS #348):** (a) nollställs vid start, (b) `lastSaidAt`, (c) tre bilder i stället för sex.
 
-- [ ] 🌵 **#251 GRIND V-B RÄKNAR EN TORR STATION SOM OMÄTBAR — falsklarmen kan vara för få** (fynd 25/9 under kort #42). Väderarkivet
+- [x] ✅ **KLART 25/9** (DECISIONS #351) — 🌵 **#251 GRIND V-B RÄKNAR EN TORR STATION SOM OMÄTBAR — falsklarmen kan vara för få** (fynd 25/9 under kort #42). Väderarkivet
   sparar bara intressanta rader (DECISIONS #4: yta ≤ 5 °C, nederbörd, eller yttemperaturen ändrad ≥ 0,5 °C). En varm, torr och stilla
   station lämnar alltså ingen rad, och V-B1 kallar varningen OMÄTBAR — fast en torr station är just ett falsklarm enligt §2. Första
   körningen 16/9 visade *TORRT = 0* (DECISIONS #212); 25/9 är 16 av 57 varningar och 84 av 98 olyckor omätbara. Regn sparas alltid,
@@ -1385,6 +1385,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   och det ska tas medan V-C är spärrad, innan någon sett en andel.
   Verify: självtest med en station som har rader före och efter men ingen inom ±30 min ⇒ TORRT, och en station utan rader alls ⇒
   OMÄTBAR; beslutet i DECISIONS före första dom.
+  ✅ **KLART 25/9 (DECISIONS #351, Bengt: *"ja till 251, ±3 timmar"*):** igång men tyst i ±30 min ⇒ TORRT, tyst i ±3 h ⇒ OMÄTBAR. Självtestet fyra nya fall, två motprov fällda på rätt rad, noten i TROSKLAR-VATTENPLANING §2. Syns i drift på måndagens körning 28/9.
 
 - [ ] 🤖 **#219 ANDROID ÄR SJU VERSIONER EFTER OCH HAR INGEN VÄG TILL EN TELEFON** (genomlysningen 20/9). Android står på
   **0.3.1 (versionCode 4)**, iOS på 0.3.8 (11). **Google Play-kontot finns inte**, det finns inget uppladdningsflöde alls — CI
@@ -3778,6 +3779,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔑 **Bengts ja 25/9 (DECISIONS #349):** (1) knappen räknar §2:s facit — olycka inom 2 km från en skuggrutt, regn hos dömande station inom ±30 min; (2) V-C från 15/9; (3) **C-station struken**. Definitionerna står i DECISIONS före första räkningen. Kvar före bygget: Bengts svar på om knappen bara ska visa räkningar under spärren (§4.2).
   🔨 **BYGGT 25/9 (Bengt: *"ja, bara räkningar under spärren"*, DECISIONS #350):** grind V-B räknar facit enligt §2, fönstret är hela perioden sedan 15/9, och under spärren skrivs bara räkningar. Självtestet sju nya fall, två motprov fällda på rätt rad, och testet körs nu i CI. Kvar: första körningen mot databasen som bevis.
   📏 **BEVISAT MOT DATABASEN 25/9 05:55Z** (körning 36100583870, Bengts order): fönstret från 15/9 (11 dygn), självtestet grönt, och utskriften bär bara räkningar — **57 varningar (41 mätbara, 16 omätbara) · 98 olyckor inom 2 km från rutterna, 10 i regn, 4 torra, 84 omätbara · 7 regndygn · 21 län**. Spärren står på 57 av 200 varningar och 10 av 15 facit. Fyndet om de omätbara blev kort #251.
+  ✅ **#251 byggt 25/9 (DECISIONS #351):** en dömande station som är igång men tyst räknas som torr, så V-B1 inte längre gömmer falsklarm bland de omätbara. Kvar för domen: 200 varningar och 15 facit.
 - [x] ✅ **STÄNGT 22/9** (DECISIONS #303) — ⚖️ **#194 GRIND V-B SOM KNAPP — dömer skuggans vattenplaningsvarningar** (Bengts order 16/9, DECISIONS #211).
   `publish/grind-v-b.ts` + knappen `grind-v-b`: V-B1 falsklarm mot närmaste stations `rain_sum_mm` (10 km, ±30 min,
   tröskeln härledd 2,0/0,65 ≈ 3,1), V-B3 frekvens per rutt och regndygn, V-C:s domspärr. V-B2 säger ⊘ med skäl —
@@ -4432,6 +4434,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#251 TORR STATION RÄKNAS SOM TORR — KLART 25/9 (DECISIONS #351)**: grind V-B räknar en dömande station som är igång men tyst som torr, beslutat före första andelen. Tavlan 47 → 46.
 - [x] ✅ **#217 PRODUKTBOKEN MOT KODEN — KLART 24/9 (DECISIONS #347)**: läst rad för rad, sex löften och elva fel till rättade, skärmbilderna ur fotostudion 23/9; tre nya kort ur fynden (#248 autostarten stoppar aldrig, #249 Om-texten, #250 småfel). Tavlan 44 → 46.
 - [x] ✅ **DE ÄLDSTA KORTEN — TVÅ HOPSLAGNA, ETT STÄNGT 24/9 (DECISIONS #346)**: *Fysisk Android-testenhet* in i #219, *Butiksuppladdning + Data safety-inklistring* in i #214, #21 stängt (knappen finns sedan 16/9, pulsen till Ä8). Tavlan 47 → 44.
 - [x] ✅ **SKYLTFONDSRUNDAN, SKYLTFONDEN-PAKETET OCH #25 HALKBANELÄGET — STÄNGDA 24/9 (DECISIONS #345)**: följs av Bengt och Axel utanför tavlan; underlaget kvar i FINANSIERING.md och BACKLOG. Tavlan 50 → 47.
