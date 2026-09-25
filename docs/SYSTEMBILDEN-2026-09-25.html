@@ -55,16 +55,35 @@
   td:first-child { white-space: nowrap; }
   td .lagerkod { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12px; color: var(--gul); }
   .lager { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; border: 1px solid var(--linje); }
-  .lager > div { padding: 12px 12px 14px; border-right: 1px solid var(--linje); display: grid; gap: 4px; align-content: start; }
-  .lager > div:last-child { border-right: 0; }
+  .lager > button { padding: 12px 12px 14px; border: 0; border-right: 1px solid var(--linje); display: grid; gap: 4px; align-content: start;
+                    background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+  .lager > button:nth-of-type(5) { border-right: 0; }
+  .lager > button:hover { background: var(--frost-yta); }
+  .lager > button:focus-visible { outline: 2px solid var(--frost); outline-offset: -2px; }
+  .lager > button[aria-expanded="true"] { background: var(--frost-yta); box-shadow: inset 0 -3px 0 var(--frost); }
   .lager .idag { background: var(--gul-yta); }
   .lager b { font-size: 13px; font-weight: 700; }
   .lager .kod { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12px; color: var(--gul); }
-  .lager span { font-size: 14px; line-height: 1.4; color: var(--dampad); }
+  .lager button > span { font-size: 14px; line-height: 1.4; color: var(--dampad); }
+  .lager .mer { font-family: "Instrument Sans", "Helvetica Neue", Arial, sans-serif; font-size: 12px; font-weight: 600; color: var(--frost); }
+  .lager .mer::after { content: " +"; }
+  .lager button[aria-expanded="true"] .mer::after { content: " −"; }
+  .lager .panel { grid-column: 1 / -1; grid-row: 2; border-top: 1px solid var(--linje); background: var(--frost-yta);
+                  padding: 14px 16px 16px; display: grid; gap: 10px; }
+  .lager .panel[hidden] { display: none; }
+  .panel .rader { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 12px 22px; }
+  .panel .rader > div { display: grid; gap: 4px; align-content: start; }
+  .panel h4 { font: 600 12px/1.3 "Instrument Sans", "Helvetica Neue", Arial, sans-serif; letter-spacing: 0.1em; text-transform: uppercase;
+              color: var(--frost); margin: 0; }
+  .panel p, .panel li { font-size: 14.5px; line-height: 1.45; }
+  .panel ul { gap: 3px; }
   @media (max-width: 640px) {
     .lager { grid-template-columns: 1fr; }
-    .lager > div { border-right: 0; border-bottom: 1px solid var(--linje); }
-    .lager > div:last-child { border-bottom: 0; }
+    .lager > button, .lager > button:nth-of-type(5) { border-right: 0; border-bottom: 1px solid var(--linje); }
+    .lager > button:last-of-type[aria-expanded="false"] { border-bottom: 0; }
+    .lager .panel { grid-row: auto; border-top: 0; border-bottom: 1px solid var(--linje); }
+    .lager .panel:last-child { border-bottom: 0; }
+    .panel .rader { grid-template-columns: 1fr; }
   }
   .fot { font-size: 13px; color: var(--dampad); border-top: 1px solid var(--linje); padding-top: 12px; }
   @page { size: A4; margin: 16mm 15mm; }
@@ -74,6 +93,7 @@
     h2 { break-after: avoid; }
     .ny-sida { break-before: page; }
     .tabell, table, tr, .lager, .grans { break-inside: avoid; }
+    .lager .mer { display: none; }
   }
 </style>
 
@@ -163,14 +183,91 @@
   <section style="display:grid;gap:14px">
     <h2>3. Det färdiga systemet</h2>
     <p>När delarna är på plats svarar varje lager på en egen fråga om vägen. Mätningar och minne av mätningar får utlösa en varning;
-      prognoser och modeller får bara stärka, försvaga eller förlänga den.</p>
-    <div class="lager" role="list" aria-label="Lagren från trovärdighet till allvar och röst">
-      <div class="idag" role="listitem"><span class="kod">L1 · i drift</span><b>Trovärdighet</b><span>Får vi tro på mätvärdet? Vakter mot trasiga givare.</span></div>
-      <div role="listitem"><span class="kod">L2</span><b>Tillstånd</b><span>Vad är ytan? Blöt eller torr, regn, slask eller snö, vattenfilm.</span></div>
-      <div role="listitem"><span class="kod">L3</span><b>Utveckling</b><span>Vart är den på väg? Ytan som faller, regnet som slutat, rimfrost.</span></div>
-      <div role="listitem"><span class="kod">L4</span><b>Räckvidd</b><span>Hur långt gäller mätningen? Vägen mellan stationerna.</span></div>
-      <div role="listitem"><span class="kod">L5</span><b>Allvar och röst</b><span>Vad sägs? Samma ord, tidigare när faran är större.</span></div>
+      prognoser och modeller får bara stärka, försvaga eller förlänga den. Klicka på ett lager för delarna och läget i dag.</p>
+    <div class="lager" role="group" aria-label="Lagren från trovärdighet till allvar och röst">
+      <button type="button" class="idag" aria-expanded="false" aria-controls="lager-1"><span class="kod">L1 · i drift</span><b>Trovärdighet</b><span>Får vi tro på mätvärdet? Vakter mot trasiga givare.</span><span class="mer">Visa mer</span></button>
+      <div class="panel" id="lager-1" role="region" aria-label="L1 Trovärdighet" hidden>
+        <div class="rader">
+          <div><h4>Delar</h4><ul>
+            <li>Givarvakten sorterar bort värden som en trasig givare ger <span class="mono">#75</span>.</li>
+            <li>Radvakten stoppar en enskild felaktig rad, och karantänen tystar en station som nyligen visat grova fel.</li>
+            <li>Värdevakten ger varje fält ett tillåtet spann innan det får bära en tröskel.</li>
+          </ul></div>
+          <div><h4>Läge i dag</h4><p>I drift. Lägesbilden till apparna och varje grind läser mätningarna genom vakterna.</p></div>
+          <div><h4>Vad det ger</h4><p>Det som sorteras bort når varken rösten eller en dom. Alla andra lager står på det här.</p></div>
+        </div>
+      </div>
+      <button type="button" aria-expanded="false" aria-controls="lager-2"><span class="kod">L2</span><b>Tillstånd</b><span>Vad är ytan? Blöt eller torr, regn, slask eller snö, vattenfilm.</span><span class="mer">Visa mer</span></button>
+      <div class="panel" id="lager-2" role="region" aria-label="L2 Tillstånd" hidden>
+        <div class="rader">
+          <div><h4>Delar</h4><ul>
+            <li>Tillståndsskattaren: blöt eller torr, ur givarnas väta.</li>
+            <li>Radarns regn längs vägen och operatörernas väglagsklass.</li>
+            <li>Nederbördstypen: regn, slask eller snö <span class="mono">#45</span>.</li>
+            <li>Vattenfilmen: regnet som ger vattenplaning <span class="mono">#42</span>.</li>
+          </ul></div>
+          <div><h4>Läge i dag</h4><p>Blöt eller torr är byggt och körs i skuggan. Vattenplaningen mäts i skuggan, och bara antal visas fram till domen.
+            Nederbördstypen är inte byggd än.</p></div>
+          <div><h4>Vad det ger</h4><p>Rätt fara i rätt väder: halka i snöfall och slask, vattenplaning i skyfall.</p></div>
+        </div>
+      </div>
+      <button type="button" aria-expanded="false" aria-controls="lager-3"><span class="kod">L3</span><b>Utveckling</b><span>Vart är den på väg? Ytan som faller, regnet som slutat, rimfrost.</span><span class="mer">Visa mer</span></button>
+      <div class="panel" id="lager-3" role="region" aria-label="L3 Utveckling" hidden>
+        <div class="rader">
+          <div><h4>Delar</h4><ul>
+            <li>Trenden: hur fort ytan faller över 15, 30 och 60 minuter <span class="mono">#88</span>.</li>
+            <li>Efterhalkan: regnet har slutat och ytan faller mot noll inom två timmar <span class="mono">#89</span>.</li>
+            <li>Rimfrosten: ytan under daggpunkten en klar natt <span class="mono">#46</span>.</li>
+            <li>SMHI:s varningar, som förstärkare.</li>
+          </ul></div>
+          <div><h4>Läge i dag</h4><p>Mätt, men ingen regel ännu. Trendarkivet sparar fallen sedan 13/9, efterhalkan loggas i skuggan och rimfrostens
+            trösklar är fastställda. Domarna kräver vinterns data.</p></div>
+          <div><h4>Vad det ger</h4><p>Varningen kommer medan det fryser, inte när det redan har frusit.</p></div>
+        </div>
+      </div>
+      <button type="button" aria-expanded="false" aria-controls="lager-4"><span class="kod">L4</span><b>Räckvidd</b><span>Hur långt gäller mätningen? Vägen mellan stationerna.</span><span class="mer">Visa mer</span></button>
+      <div class="panel" id="lager-4" role="region" aria-label="L4 Räckvidd" hidden>
+        <div class="rader">
+          <div><h4>Delar</h4><ul>
+            <li>Segmentprognosen: yttemperaturen var andra kilometer ur närliggande stationer <span class="mono">#38b</span>.</li>
+            <li>Höjden: uppmätt <span class="mono">0,71 °C</span> per 100 m mellan stationspar <span class="mono">#96</span>.</li>
+            <li>SMHI:s molnmängd, och SMHI som reserv om Trafikverket tystnar <span class="mono">#95</span>.</li>
+            <li>Kallplatserna: broar och andra platser som är kallare än stationen visar <span class="mono">#91</span>.</li>
+          </ul></div>
+          <div><h4>Läge i dag</h4><p>Grind A klarades 23/9, och segmentprognosen körs i skuggan sedan dess. Höjden avgörs 23/10, kallplatserna våren 2027.</p></div>
+          <div><h4>Vad det ger</h4><p>Vägen mellan stationerna syns. En varning som vilar på en mätning kan förlängas dit mätningen bär, men prognosen
+            talar aldrig ensam.</p></div>
+        </div>
+      </div>
+      <button type="button" aria-expanded="false" aria-controls="lager-5"><span class="kod">L5</span><b>Allvar och röst</b><span>Vad sägs? Samma ord, tidigare när faran är större.</span><span class="mer">Visa mer</span></button>
+      <div class="panel" id="lager-5" role="region" aria-label="L5 Allvar och röst" hidden>
+        <div class="rader">
+          <div><h4>Delar</h4><ul>
+            <li>Försprånget: halt väglag och frysrisk på den svårare nivån varnas <span class="mono">45–90 s</span> före, i stället för <span class="mono">30 s</span> <span class="mono">#153</span>.</li>
+            <li>Spärren: inom <span class="mono">10 s</span> efter ett rop får bara en viktigare fara tala.</li>
+            <li>Vind och sikt förlänger försprånget men höjer aldrig prioriteten <span class="mono">#90</span>.</li>
+          </ul></div>
+          <div><h4>Läge i dag</h4><p>Spärren är i drift. Försprångets trösklar fastställdes och skuggan startade 25/9, och domen faller i mars 2027.
+            Undantaget för en modellerad temperatur mellan två eniga stationer väntar till våren 2027.</p></div>
+          <div><h4>Vad det ger</h4><p>Allvar blir tid: samma ord, tidigare. Aldrig fler ord och aldrig högre prioritet.</p></div>
+        </div>
+      </div>
     </div>
+    <script>
+      document.querySelectorAll(".lager > button").forEach((knapp) => {
+        knapp.addEventListener("click", () => {
+          const oppen = knapp.getAttribute("aria-expanded") === "true";
+          document.querySelectorAll(".lager > button").forEach((k) => {
+            k.setAttribute("aria-expanded", "false");
+            document.getElementById(k.getAttribute("aria-controls")).hidden = true;
+          });
+          if (!oppen) {
+            knapp.setAttribute("aria-expanded", "true");
+            document.getElementById(knapp.getAttribute("aria-controls")).hidden = false;
+          }
+        });
+      });
+    </script>
     <div class="spalter">
       <div>
         <h3>Vad föraren märker</h3>
