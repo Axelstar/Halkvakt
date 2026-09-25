@@ -135,9 +135,9 @@ BEGIN
           AND rp.observed_at <= b.t AND rp.observed_at > b.t - p_n))) AS blot
     FROM bas b
   ),
-  f AS (SELECT m.sid, m.t, (m.t AT TIME ZONE 'UTC')::date AS d, ((m.t AT TIME ZONE 'Europe/Stockholm') - interval '12 hours')::date AS natt,
+  f AS (SELECT m.sid, m.t, (m.t AT TIME ZONE 'UTC')::date AS d, ((m.t AT TIME ZONE 'Europe/Stockholm') - interval '12 hours')::date AS natt, ((m.t - interval '12 hours') AT TIME ZONE 'UTC')::date AS natt_utc,
       m.min_efter, m.rader FROM m WHERE (NOT p_krav_blot) OR m.blot),
-  ep AS (SELECT DISTINCT ON (f.sid, f.natt) f.sid, f.t, f.d, f.min_efter, f.rader FROM f ORDER BY f.sid, f.natt, f.t),
+  ep AS (SELECT DISTINCT ON (f.sid, f.natt_utc) f.sid, f.t, f.d, f.min_efter, f.rader FROM f ORDER BY f.sid, f.natt_utc, f.t),
   a AS (SELECT f.d, count(DISTINCT f.sid)::int AS st, count(*)::int AS og FROM f GROUP BY f.d),
   u AS (SELECT ep.d, count(*)::int AS ep_n,
       count(*) FILTER (WHERE ep.rader > 0)::int AS med,
