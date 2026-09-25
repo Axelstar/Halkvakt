@@ -10333,3 +10333,28 @@ senaste rad, 4:57 före hel timme (`scripts/matningar/nederbordstyp-tidsparning-
 fastställt av Bengt och kontrasignerat av Axel, oförändrat — gränserna, svepet, facit, grindarna NT-A–D och domspärren gäller som
 skrivna. Inget utfall är läst: den enda körningen mot data (25/9 13:07Z) var spärrad och skrev bara räkningar. Ändringar före domen
 följer dokumentets §8. **Nästa punkt är domen, tidigast 1 mars 2027** (`grind-nt`, läget `dom`); inget mer väntar före den.
+
+## #363 (25/9 2026) Rimfrosten och förstärkarna döms ur arkivet, inte i skuggkolumner (kort #46, #90, #95 d, #103)
+
+**Beslut (Bengt 25/9: *"ja till 1 och 2"*)** på rekommendationen i bedömningen §4.2, efter hans iakttagelse i systembilden att
+rimfrosten och förstärkarna ligger efter. **Läget:** A-grindarna R-A, W-A, F-A och K-A är byggda, kördes 24/9 utan underlag (#331) och
+startas av frostflödet; ingen B-mätning var byggd, och alla fyra dokument byggde skuggkolumnen först när A passerat — vid sen frost mitt
+i vintern, med tunt underlag i mars. **Läsningen per kort** (bara läsning):
+
+| Kort | B-grinden mäts per | Fälten i arkivet | Uppspelning |
+| :-- | :-- | :-- | :-- |
+| #46 rimfrosten | station och halvtimme (R-B1, R-B2) | yta, daggpunkt, luft, fuktighet, sikt, nederbörd; molnet ur SMHI i efterhand (130 dygn) | **ja** — R-B3 redovisas per station och frostdygn |
+| #90 vind och sikt | halkfall (W-B4) · rutt (W-B5, roll A) | vind, byvind, sikt; halksträckorna ur `road_condition_history` | **ja** — W-B4 per fall; rutterna körs med farorna återskapade ur arkivet som i missmätningen (efter #255) |
+| #95 d SMHI-förstärkaren | stationstimme | varningarna med område och giltighetsfönster sedan 12/9 (sql/015) | **ja** |
+| #103 frysklassningen | bekräftat halktillfälle | grind A:s population, samma lämna-en-ute som K-A redan kör | **ja** |
+
+**Ändrat i de fyra dokumenten**, enligt deras ändringsregel (före första skuggkörningen, en rad här): "skuggkolumnen byggs" blir
+"uppspelningen byggs, spärrad som grind NT", E0 heter "bara mätning". **Låsankaret flyttas:** regimen var knuten till *första
+skuggkörningen*, som nu aldrig inträffar — ankaret är i stället den första körning som läser ett B-utfall. Utan den flytten hade
+trösklarna i praktiken aldrig låsts. Rimfrostens uthållighet R3 räknas i halvtimmar i uppspelningen (30 min = två följande rader),
+eftersom gallringen lämnar en rad per halvtimme efter 7 dygn. **Inga trösklar, svep eller facit är ändrade.**
+
+**Vad som följer:** inget behöver byggas i skuggmotorn före frosten. Uppspelningarna byggs när respektive A-grind passerat, före domen.
+Beroenden: arkivet eller exporten måste gå att läsa vid domen (#334); W-B5 och roll A kräver kort #255:s rättelse av missmätningen.
+Facit är fortfarande den svaga länken (`road_condition_history` står nästan still till vintern, kamerafacit öppnas i mars) — oavsett
+om B mäts i skugga eller ur arkivet.

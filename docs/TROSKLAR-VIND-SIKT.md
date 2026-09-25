@@ -243,7 +243,10 @@ hastighetsrelaterad olycka i blåst räknas som "vindolycka" här. W-A mäter sa
 
 ### W-B — Skuggdriften (döms efter en höst- eller vintermånad)
 
-Skuggkolumn i skuggmotorn, ingen röst. Rollerna mäts **var för sig**:
+**Uppspelning ur arkivet**, ingen röst. Roll B:s W-B4 räknas per halkfall ur arkivet (byvind och sikt vid närmaste station när
+faran fanns). W-B5 och roll A mäts per rutt: motorn körs längs referensrutterna med farorna återskapade ur arkivet — samma
+rekonstruktion som missmätningen (`publish/missar.ts`, efter kort #255:s rättelse). *Ändrat 25/9 (DECISIONS #363); tidigare:
+skuggkolumn i skuggmotorn.* Rollerna mäts **var för sig**:
 
 | # | Mått | Fällt värde (Bengt) |
 | :-- | :-- | :-- |
@@ -318,8 +321,8 @@ riskvarning följs oftast av att ingenting händer.
 | :-- | :-- | :-- | :-- |
 | 0 | **Givarkollen + W-A**, läsande knapp mot arkivet | **kan göras nu** — kräver inte radardomen | W-A |
 | 1 | Detta dokument fastställs | efter steg 0:s tal | Bengt (äger mätningen) |
-| 2 | Roll B som skuggkolumn (billigast, ingen ny fara) | efter 14/9 | W-B4/W-B5 |
-| 3 | Roll A som skuggkolumn | efter 14/9 | W-B1–W-B3 |
+| 2 | Roll B som uppspelning ur arkivet (billigast, ingen ny fara) | före domen (#363) | W-B4/W-B5 |
+| 3 | Roll A som uppspelning längs rutterna | före domen (#363) | W-B1–W-B3 |
 | 4 | Röst | efter W-C och Axels ja — rösttext, A-skalan, PRODUKTBOK | — |
 
 **Steg 0 kan göras i helgen.** Det kräver ingen ny källa, ingen skuggkolumn och ingen deploy — bara
@@ -341,6 +344,8 @@ tröskel följer detta dokument som förut.
 
 Fram till första skuggkörningen får §2:s svep och §4:s krav justeras av vem som helst av oss med en
 rad i DECISIONS. **Från första skuggkörningen ändras ingen tröskel alls** — varje motivering som inte lutar sig mot utfallet.
+
+**Ankaret flyttat 25/9 (DECISIONS #363):** B döms genom uppspelning ur arkivet, inte i en skuggkolumn, så "första skuggkörningen" inträffar aldrig. Ankaret är i stället **den första körning som läser ett B-utfall** — fram till dess gäller lättnaden ovan, därefter ändras ingen tröskel.
 
 **Tillägg 2026-09-13 (Bengts order "bygg stationsvakten"):** §3.3 lägger till stationsvakten —
 byvindgolv 15 m/s, kvottak 5, krav ≥ 1 omöjlig timme, bara B1. Tillägget rör givarvakten (§3),

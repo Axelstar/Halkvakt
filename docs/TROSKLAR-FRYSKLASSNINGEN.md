@@ -60,7 +60,7 @@ Inget tal nedan är valt ur ett utfall. Svepet körs, kurvan ritas, Bengt sätte
 | K1 | **Klassgränsen** — vid vilken modellerad yta klassen slår om | **0 · +0,5 · +1,0 °C** | Motorns egen frysrisk går vid ≤ 1 °C (bro +3). Under 0 är det redan is; över +1 talar motorn inte. |
 | K2 | **Osäkerhetszonen** — hur nära gränsen modellen får säga "vet inte" | **±0 · ±0,5 · ±1,0 °C** | En modell som får avstå nära gränsen blir träffsäkrare på det den uttalar sig om. Priset är täckning, och det priset ska synas. |
 | K3 | **Ankaravstånd** — längsta avstånd till bidragande granne | **15 · 20 · 50 km** | Grind A visade att felet beror av avståndet. En frysklassning kan få vara snävare än temperaturmodellen. |
-| K4 | **Konfidenseffekten** — vad ett ja gör | **E0 skuggkolumn · E1 längre försprång** | Startläget är E0. Aldrig egen prioritet, aldrig egen text utan Axel. Samma stege som #95 (d) §1.2. |
+| K4 | **Konfidenseffekten** — vad ett ja gör | **E0 bara mätning · E1 längre försprång** | Startläget är E0. Aldrig egen prioritet, aldrig egen text utan Axel. Samma stege som #95 (d) §1.2. |
 
 **K2 är dokumentets egentliga idé.** Grind A tvingade modellen att svara i varje punkt. En
 klassificerare får avstå, och frågan är om den blir tillräckligt bra på de punkter där den inte
@@ -154,13 +154,16 @@ tröskel följer detta dokument som förut.
 2. **K-A körs på befintligt arkiv** — den kräver ingen ny data och kan köras i dag. I september
    väntas OAVGJORT på K-A4:s krav om 100 frysande punkter.
 3. Vid första frostperioden: K-A om, skarpt.
-4. Passerar K-A: skuggkolumnen byggs, **efter radardomen** enligt kort #81:s ordning.
+4. Passerar K-A: uppspelningen för K-B byggs — klassningen på grind A:s population (lämna-en-ute) vid varje bekräftat
+   halktillfälle, ur arkivet och spärrad som grind NT (DECISIONS #363; tidigare: skuggkolumnen byggs). Radardomen är avklarad.
 5. Efter en vintermånad: K-B.
 6. Först därefter en effekt i motorn (K4 = E1). **Rösten är Axels.**
 
 Fram till **första skuggkörningen** får §2:s svep och §4:s krav justeras av vem som helst av oss med
 en rad i DECISIONS. **Därefter ändras ingen tröskel alls** — en ändring som lutar sig mot
 utfallet.
+
+**Ankaret flyttat 25/9 (DECISIONS #363):** B döms genom uppspelning ur arkivet, inte i en skuggkolumn, så "första skuggkörningen" inträffar aldrig. Ankaret är i stället **den första körning som läser ett B-utfall** — fram till dess gäller lättnaden ovan, därefter ändras ingen tröskel.
 
 **Undantaget från all lättnad är K-A2:s tak, §1:s avgränsning och tröskelregeln** (TROSKLAR-KOMBINATIONEN §6, i sin
 helhet). En storhet som inte kan motbevisas av en mätning får inte utlösa en varning, klassningen utlöser aldrig ensam,
