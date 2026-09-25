@@ -10168,3 +10168,23 @@ nedan är skriven innan någon kod eller något tal finns, och ingen av dem läs
 **Sagt högt.** (3) ändrar vad B1 räknar och därmed C2:s nämnare; det är ett byte av mätning, inte av tröskel, och det görs innan
 någon andel lästs. (2) gör fler Actions-körningar i vinter — fem flöden en gång i veckan medan frosten varar, någon minut vardera.
 
+## #353 (25/9 2026) Arkivet sparar en rad per station och halvtimme även när stationen är varm och torr (kort #253)
+
+**Beslut (Bengt 25/9: *"ja till 253"*).** Axel äger ingesten och informeras genom bedömningen §4.2; ändringen backas med en rad.
+Mätt samma dag (kort #252): i kalla halvtimmar saknade 49,5 % av grind A:s grannplatser en arkivrad, eftersom den levande ingesten
+bara sparade kalla eller blöta avläsningar (DECISIONS #4). Driftens prognos tar med de varma ur `weather_latest`; grindarna gjorde det
+inte. Domarna #321 och #324 gäller därför ett snällare underlag än driften.
+
+**Regeln i `supabase/functions/ingest-live`:** en kall eller blöt avläsning (yta ≤ 5 °C, regn, snö eller nederbörd) sparas alltid, som
+förut. En varm och torr avläsning sparas bara om stationen saknar en arkivrad i samma halvtimme (`floor(epok / 1800)`, grindarnas
+hink). Vilka stationer som redan har en rad i sina halvtimmar läses med EN fråga per körning över de tre senaste timmarna; en rad som
+skrivs i körningen räknas in direkt, så att två varma avläsningar i samma halvtimme aldrig blir två rader. Fallerar frågan faller
+ingesten tillbaka till den gamla regeln och skriver felet i svaret — ingesten är livemotorns och får aldrig stanna för en mätfråga.
+Logiken bor i `arkivpolicy.ts` och prövas i `test/arkivpolicy.test.ts`.
+
+**Vad det kostar och ger.** Ungefär dubbelt så många rader den första veckan (≈ 4,5 → ≈ 10 MB/dygn), sedan gallrar sql/014 allt
+äldre än sju dygn till en rad per station och halvtimme ändå, så de äldre dygnen växer mindre. Exporten och raderingen (sql/034) tar
+resten; gratisnivån påverkas inte. Varma rader hjälper också den långsamma vakten (ett varmt dygn döms inte längre på nattraderna
+ensamma), #351:s torra station och V-A. Den gamla ingesten (`ingest/sources/weather.ts`) skriver inget väder sedan 8/9 och följer
+inte med. Grindarna mäter från och med nu samma värld som driften; novembers skarpa prövning får veckor av ocensurerat underlag.
+

@@ -1410,6 +1410,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   före mars: de är S-B:s C3 och blindade. 🔑 Bengt och Axel (ingesten är driftens).
   Verify: efter ändringen visar samma mätning (`scripts/matningar/censur-grind-a-2026-09-25.sql`) < 5 % saknade grannplatser
   för halvtimmar efter ändringen, och arkivets tillväxt per dygn står i bedömningen.
+  🔨 **BYGGT 25/9 (Bengt: *"ja till 253"*, DECISIONS #353):** den levande ingesten sparar en varm och torr avläsning EN gång per station och halvtimme (`arkivpolicy.ts`, `test/arkivpolicy.test.ts`, 7 fall, 2 motprov); en fråga per körning, fallerar den gäller den gamla regeln och felet står i svaret (`arkivpolicy`). Kvar för Verify: deploy, täckningen i en halvtimme efter deployen, och samma censurmätning på halvtimmar efter ändringen.
 
 - [ ] 🤖 **#219 ANDROID ÄR SJU VERSIONER EFTER OCH HAR INGEN VÄG TILL EN TELEFON** (genomlysningen 20/9). Android står på
   **0.3.1 (versionCode 4)**, iOS på 0.3.8 (11). **Google Play-kontot finns inte**, det finns inget uppladdningsflöde alls — CI
