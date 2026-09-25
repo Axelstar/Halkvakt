@@ -27,13 +27,10 @@ export const NEDERBORD_KM = MAX_KM;
  *  station inom NEDERBORD_KM har en rad i fönstret. */
 export async function nederbordVid(fraga: Fraga, t: Date | string, lon: number, lat: number): Promise<boolean | null> {
   const n = await fraga(`
-    WITH narmast AS (
-      SELECT station_id FROM weather_observations
+    SELECT bool_or(rain OR snow) AS ned FROM (
+      SELECT rain, snow FROM weather_observations
       WHERE sample_time BETWEEN $1::timestamptz - interval '${NEDERBORD_FONSTER_H} hours' AND $1::timestamptz + interval '${NEDERBORD_FONSTER_H} hours'
-        AND geom IS NOT NULL AND ST_DWithin(geom::geography, ST_SetSRID(ST_MakePoint($2, $3), 4326)::geography, $4)
-      ORDER BY geom <-> ST_SetSRID(ST_MakePoint($2, $3), 4326) LIMIT 1)
-    SELECT bool_or(w.rain OR w.snow) AS ned FROM weather_observations w JOIN narmast USING (station_id)
-    WHERE w.sample_time BETWEEN $1::timestamptz - interval '${NEDERBORD_FONSTER_H} hours' AND $1::timestamptz + interval '${NEDERBORD_FONSTER_H} hours'`,
+        AND geom IS NOT NULL AND $4::float8 > 0 ORDER BY geom <-> ST_SetSRID(ST_MakePoint($2, $3), 4326) LIMIT 8) s`,
     [t, lon, lat, NEDERBORD_KM * 1000]);
   return n[0]?.ned ?? null;
 }

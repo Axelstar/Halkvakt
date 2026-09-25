@@ -27,8 +27,6 @@ export async function hazardsAt(fraga: Fraga, t: Date): Promise<Hazard[]> {
     FROM weather_observations w
     WHERE sample_time BETWEEN $1::timestamptz - interval '45 min' AND $1::timestamptz
       AND geom IS NOT NULL AND surface_temp_c IS NOT NULL
-      AND (air_temp_c IS NULL OR surface_temp_c >= air_temp_c - 12)   -- #75:s vakt
-      AND ${RADVAKT_SQL} AND ${karantanSql("w")}                      -- radvakten, karantänen och den långsamma vakten
     ORDER BY station_id, sample_time DESC`, [t]);
   for (const r of wx)
     out.push({ id: `wx:${r.station_id}`, kind: "icing_point", lon: +r.lon, lat: +r.lat,
