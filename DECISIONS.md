@@ -10268,3 +10268,22 @@ på kort #244.
 **Kvar:** FS-A kräver vinter (arkivet har bara kod 1, och ingen yta under noll med färskt regn i september). Dom-knappen byggs före
 mars. Steg 7 efter domen, med Axels röst oförändrad.
 
+## #360 (25/9 2026) Skuggmotorns huvudvarv lagat med rutfiltret — samma utfall, en bråkdel av arbetet (kort #244)
+
+**Beslut (Bengt 25/9: *"laga skuggmotorns huvudvarv på kort 244"*).** Flytten till :02/:32 (DECISIONS #344) löste inte CPU-felet 546 —
+det kom 04:32 och 05:02Z 25/9, på de nya minuterna (DECISIONS #359). Felet följer alltså skuggmotorns eget arbete. Två loopar prövade
+hela Sverige för varje rutt: **motorn** prövade varje fara (tusentals kameror, olyckor och stationer) i varje fix (några tusen per rutt),
+och **segmentprognosen** mätte avståndet från varje provpunkt till alla ~744 ankare. Prognosen och holdouten kom 23/9, och 546 började
+24/9 00:30 — det var droppen, inte hela kärlet.
+
+**Lagningen — rutfiltret (`engine/src/rutfilter.ts`).** Före motorn tas faror bort som ligger längre från rutans ruta än motorns längsta
+räckvidd (olyckornas 10 km, härledd ur `DEFAULT_CONFIG`) plus 5 km; ett segment behålls om dess egen ruta skär rutans, så ett långt
+segment som korsar rutten aldrig tappas. Före prognosen tas ankare bort som ligger längre bort än prognosens grannradie (`MAX_KM` 50 km)
+plus holdoutens 2 km plus 3 km. **Utfallet är detsamma byte för byte:** en fara bortom räckvidden kan aldrig tala, och ett ankare bortom
+50 km kan aldrig väga in. `n_hazards` i skuggloggen är fortsatt hela snapshotens antal. Försprångets anrop använder samma filter. Svaret
+bär nu tiden per steg (`ms`: motor, prognos, facit, totalt), eftersom funktionsloggen bara finns i Axels panel.
+
+**Bevis före sammanslagning:** tre tester — samma varningar och samma undanträngda med och utan filtret (med minst tre varningar i
+jämförelsen, bland dem ett långt segment vars brytpunkter ligger över 100 km bort), olyckan 9 km från rutten kvar, samma prognos och
+holdout — och **tre motprov**, ett per vakt, fällda på rätt test. Vektorerna oförändrade. **Verify står kvar:** tre dygn utan 546.
+
