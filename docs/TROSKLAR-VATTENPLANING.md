@@ -56,6 +56,11 @@ aldrig nåddes inom ±30 min, eller där en kamerabild/testarlogg visar torr vä
 **Miss** = facitbekräftad vattenplaningshändelse (olycka i regn, testarlogg) på ett
 segment där ingen varning gick ut under 30 min före händelsen.
 
+*Operationalisering för V-C1 (DECISIONS #349, 25/9, skriven före första räkningen — inget tal i §3 ändrat):* en facitbekräftad
+händelse är en olycka i `situation_archive` inom 2 km från en svensk skuggrutt, där den dömande stationen (närmaste inom 10 km, som
+i V-B1) mätte regn > 0 inom ±30 min från olyckans start. *Blindning (DECISIONS #350):* under V-C:s spärr redovisar knappen bara
+räkningar, aldrig andelar.
+
 ## 3. Trösklarna
 
 ### Grind V-A — går påståendet alls att göra? (mätbart NU, före all skuggkod)
