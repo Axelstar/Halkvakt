@@ -21,11 +21,20 @@
 // EN VARNING UTAN STATION INOM RÄCKHÅLL ÄR OMÄTBAR, aldrig "rätt". Samma nollpolitik som radarns
 // `regn: null`: frånvaro av mätning är inte frånvaro av regn. De räknas separat och aldrig in i V-B1.
 //
-// Run: DATABASE_URL=... node --experimental-strip-types publish/grind-v-b.ts [dagar=14]
+// FACIT FÖR V-C1 (DECISIONS #349, Bengts ja 25/9 — definitionen skriven före första räkningen): en olycka i
+// situation_archive inom FACIT_KM (2 km, samma radie som den delade facitlistan) från en svensk skuggrutt, där den
+// dömande stationen — samma som V-B1 — mätte regn (> 0) inom ±30 min från olyckans start. Olyckan får bara bekräfta,
+// aldrig fälla (§2). Till 25/9 skrev knappen alltid 0 här, och eftersom testarlogg kräver en röst som i sin tur väntar
+// på V-C kunde spärren aldrig släppa. FÖNSTRET är hela perioden sedan vb-loggens start 15/9: §3 har inget fönster.
+// BLINDNINGEN (DECISIONS #350): under domspärren skrivs bara räkningar ut, aldrig en andel. Andelarna för V-B1 och V-B3
+// syns först när V-C är uppfylld, så att måttet inte formas av siffror man redan sett.
+//
+// Run: DATABASE_URL=... node --experimental-strip-types publish/grind-v-b.ts [dagar — utan: hela perioden sedan 15/9]
 // Självtest utan DB: publish/grind-v-b.ts --sjalvtest
 import { REGN_UTLOSARE_MMH, RADAR_FAKTOR } from "./snapshot-core.ts";
 import { Z, andelSe, utfallTak, grindutfall, type Utfall } from "./marginal.ts";
 import { vaktdiagnos } from "./vaktdiagnos.ts";
+import { FACIT_KM, skuggmotornsRutter, ruttWkt } from "./skuggfacit.ts";
 
 /** Tröskeln i STATIONENS skala — härledd ur de två fastställda talen, aldrig skriven för hand.
  *  Radarn utlöser på 2,0 mm/h rått; stationen mäter i sin egen skala, alltså 2,0 / 0,65 ≈ 3,1. */
@@ -39,9 +48,16 @@ const FONSTER_MIN = 30;                     // §2: "inom ±30 min"
 const V_B1 = 0.20, V_B3 = 3;                // fällda värden (Bengt 4/9, Axel DECISIONS #68)
 const MIN_VARNINGAR = 200, MIN_FACIT = 15;  // V-C1
 const MIN_REGNDYGN = 5, MIN_LAN = 3;        // V-C2
+/** vb-loggens första dygn (DECISIONS #191) — fönstret för V-C och alla mått (DECISIONS #349). */
+export const VB_START = "2026-09-15";
+export function dagarSedanStart(nu: Date = new Date()): number {
+  return Math.ceil((nu.getTime() - Date.parse(`${VB_START}T00:00:00Z`)) / 86_400_000);
+}
 
 export type Varning = { tid: Date; rutt: string; segment: string; lon: number; lat: number };
 export type Matning = { lon: number; lat: number; bucket: number; mmh: number };
+export type Olycka = { tid: Date; lon: number; lat: number };
+export type FacitUtfall = { olyckor: number; facit: number; torra: number; omatbara: number };
 
 export function km(a: { lon: number; lat: number }, b: { lon: number; lat: number }): number {
   const R = 6371, rad = Math.PI / 180;
@@ -54,14 +70,23 @@ export type Utslag = "BEKRÄFTAD" | "DELVIS" | "TORRT" | "OMÄTBAR";
 
 /** Vad säger närmaste station om varningen? Max över bucketarna i fönstret — regnet behöver bara
  *  ha nått tröskeln en gång inom ±30 min för att varningen ska ha haft fog för sig. */
+const stationsindex = new WeakMap<Matning[], Map<string, Matning[]>>();
+function perStation(matningar: Matning[]): Map<string, Matning[]> {
+  let index = stationsindex.get(matningar);
+  if (!index) {
+    index = new Map();
+    for (const m of matningar) {
+      const nyckel = `${m.lon},${m.lat}`;
+      (index.get(nyckel) ?? index.set(nyckel, []).get(nyckel)!).push(m);
+    }
+    stationsindex.set(matningar, index);
+  }
+  return index;
+}
+
 export function dom(v: Varning, matningar: Matning[]): { utslag: Utslag; km: number | null; mmh: number | null } {
   let bastaKm = Infinity, bast: Matning[] = [];
-  const perStation = new Map<string, Matning[]>();
-  for (const m of matningar) {
-    const nyckel = `${m.lon},${m.lat}`;
-    (perStation.get(nyckel) ?? perStation.set(nyckel, []).get(nyckel)!).push(m);
-  }
-  for (const [, ms] of perStation) {
+  for (const [, ms] of perStation(matningar)) {
     const d = km(v, ms[0]);
     if (d < bastaKm) { bastaKm = d; bast = ms; }
   }
@@ -71,6 +96,20 @@ export function dom(v: Varning, matningar: Matning[]): { utslag: Utslag; km: num
   if (!inom.length) return { utslag: "OMÄTBAR", km: bastaKm, mmh: null };
   const mmh = Math.max(...inom.map((m) => m.mmh));
   return { utslag: mmh >= TROSKEL_STATION_MMH ? "BEKRÄFTAD" : mmh > 0 ? "DELVIS" : "TORRT", km: bastaKm, mmh };
+}
+
+/** V-C1:s facit (DECISIONS #349): regnade det hos den dömande stationen när olyckan inträffade? Samma station, samma
+ *  ±30 min och samma nollpolitik som V-B1 — men gränsen är regn > 0, inte utlösarens tröskel: §2 säger *olycka i
+ *  regnväder*. Olyckorna kommer redan filtrerade på avståndet till rutterna (SQL, FACIT_KM). */
+export function facit(olyckor: Olycka[], matningar: Matning[]): FacitUtfall {
+  const ut: FacitUtfall = { olyckor: olyckor.length, facit: 0, torra: 0, omatbara: 0 };
+  for (const o of olyckor) {
+    const u = dom({ tid: o.tid, rutt: "", segment: "", lon: o.lon, lat: o.lat }, matningar).utslag;
+    if (u === "OMÄTBAR") ut.omatbara++;
+    else if (u === "TORRT") ut.torra++;
+    else ut.facit++;
+  }
+  return ut;
 }
 
 /** V-B3: varningar per rutt och regndygn. Ett regndygn för en rutt är ett dygn då rutten hade minst
@@ -91,7 +130,7 @@ export function frekvens(varningar: Varning[]): { rutt: string; dygn: number; n:
 
 const brus = (p: number, n: number) => (n > 0 ? Z * andelSe(p, n) : NaN);
 
-export function rapport(varningar: Varning[], matningar: Matning[], olyckor: number, lan: number, label: string) {
+export function rapport(varningar: Varning[], matningar: Matning[], f: FacitUtfall, lan: number, label: string, saknade: string[] = []) {
   console.log(`Grind V-B — talar skuggan för ofta, och talar den om ingenting? (${label})`);
   console.log(`Krav ur TROSKLAR-VATTENPLANING §3: V-B1 falsklarm ≤ ${(100 * V_B1).toFixed(0)} %, V-B2 miss ≤ 40 %,`);
   console.log(`V-B3 ≤ ${V_B3} varningar per rutt och regndygn. Tröskeln i stationens skala:`);
@@ -101,50 +140,51 @@ export function rapport(varningar: Varning[], matningar: Matning[], olyckor: num
   const antal = (u: Utslag) => utslag.filter((x) => x.utslag === u).length;
   const bekraftad = antal("BEKRÄFTAD"), delvis = antal("DELVIS"), torrt = antal("TORRT"), omatbar = antal("OMÄTBAR");
   const matta = bekraftad + delvis + torrt;
-
-  console.log(`V-B1 FALSKLARM — vad sa närmaste station inom ${DOMANDE_STATION_KM} km och ±${FONSTER_MIN} min?`);
-  console.log(`  skuggvarningar ${varningar.length}  ·  mätbara ${matta}  ·  OMÄTBARA ${omatbar} (ingen station inom räckhåll — räknas aldrig in)`);
-  if (!matta) {
-    console.log(`  ⊘ inget att döma: ingen varning hade en station inom räckhåll.\n`);
-  } else {
-    const falska = delvis + torrt, p = falska / matta;
-    console.log(`  BEKRÄFTAD ${bekraftad} (${(100 * bekraftad / matta).toFixed(0)} %)  ·  DELVIS ${delvis} (blöt men under tröskeln)  ·  TORRT ${torrt}`);
-    console.log(`  falsklarm enligt §2 (allt under tröskeln): ${(100 * p).toFixed(0)}±${(100 * brus(p, matta)).toFixed(0)} %  (krav ≤ ${(100 * V_B1).toFixed(0)} %)`);
-    const km = utslag.filter((x) => x.km != null).map((x) => x.km!).sort((a, b) => a - b);
-    if (km.length) console.log(`  avstånd till dömande station: median ${km[km.length >> 1].toFixed(1)} km, längst ${km[km.length - 1].toFixed(1)} km\n`);
-  }
-
-  console.log(`V-B3 FREKVENS — varningar per rutt och regndygn (dygn med minst en varning)`);
-  const f = frekvens(varningar);
-  for (const r of f) console.log(`  ${r.rutt.padEnd(28)} ${String(r.n).padStart(4)} varningar / ${r.dygn} dygn = ${r.snitt.toFixed(1)}${r.snitt > V_B3 ? "  ⚠ över " + V_B3 : ""}`);
-  const over = f.filter((r) => r.snitt > V_B3).length;
-  console.log(`  ${over} av ${f.length} rutter över ${V_B3}\n`);
-
-  console.log(`V-B2 MISSANDEL — ⊘ GÅR INTE ATT MÄTA HÄR, och det är inte en brist i underlaget:`);
-  console.log(`  situation_archive bär ingen ORSAK (situations.ts:37) — en olycka är facit på att något`);
-  console.log(`  hände, inte på att det var vattenplaning. Och skuggan kör åtta rutter, inte hela landet:`);
-  console.log(`  en olycka utanför dem kunde aldrig ha fått en varning. UNDERLAG: ${olyckor} olyckor i fönstret.`);
-  console.log(`  Måttet kräver testarlogg eller granskad kamerabild (§2) — det är betans uppgift, inte knappens.\n`);
-
-  // ── V-C: domens giltighet. Utan C fälls ingen dom alls.
   const regndygn = new Set(varningar.map((v) => v.tid.toISOString().slice(0, 10))).size;
+
+  // ── UNDERLAGET: bara räkningar. Inget här får avslöja utfallet (DECISIONS #350).
+  console.log(`UNDERLAG — bara räkningar`);
+  console.log(`  skuggvarningar ${varningar.length}  ·  mätbara ${matta}  ·  OMÄTBARA ${omatbar} (ingen station inom ${DOMANDE_STATION_KM} km och ±${FONSTER_MIN} min — räknas aldrig in)`);
+  console.log(`  olyckor inom ${FACIT_KM} km från skuggrutterna ${f.olyckor}  ·  i regn (facit) ${f.facit}  ·  torrt ${f.torra}  ·  omätbara ${f.omatbara}`);
+  console.log(`  regndygn ${regndygn}  ·  län ${lan}`);
+  if (saknade.length)
+    console.log(`  ⚠ väderarkivet saknar ${saknade.length} dygn i fönstret (${saknade.join(", ")}): varningar och olyckor de dygnen blir omätbara, aldrig torra — läs tillbaka ur exporten före en dom`);
+
+  // ── V-C: domens giltighet. Utan C fälls ingen dom och skrivs ingen andel.
   const sparr: string[] = [];
   if (varningar.length < MIN_VARNINGAR) sparr.push(`${varningar.length} varningar (kräver ≥ ${MIN_VARNINGAR})`);
-  sparr.push(`0 facitbekräftade händelser (kräver ≥ ${MIN_FACIT}) — se V-B2`);
+  if (f.facit < MIN_FACIT) sparr.push(`${f.facit} facitbekräftade händelser (kräver ≥ ${MIN_FACIT})`);
   if (regndygn < MIN_REGNDYGN) sparr.push(`${regndygn} regndygn (kräver ≥ ${MIN_REGNDYGN})`);
   if (lan < MIN_LAN) sparr.push(`${lan} län (kräver ≥ ${MIN_LAN})`);
-
-  console.log(`V-C GILTIGHET: ${varningar.length} varningar · ${regndygn} regndygn · ${lan} län`);
+  console.log(`\nV-C GILTIGHET: ${varningar.length} varningar · ${f.facit} facit · ${regndygn} regndygn · ${lan} län`);
   if (sparr.length) {
     console.log(`\n⊘ DOMSPÄRR — ingen dom går att läsa av:`);
     for (const s of sparr) console.log(`   · ${s}`);
-    console.log(`\nTalen ovan är underlag, inte dom. Kurvan växer med varje regnvecka; mätningen upprepas.`);
-    console.log(`Att fälla en dom på det här underlaget vore precis vad §3:s V-C finns för att hindra.`);
+    console.log(`\nUnder spärren skrivs bara räkningarna ut (DECISIONS #350): måttet ska inte formas av siffror man redan`);
+    console.log(`sett. V-B1 och V-B3 visas första gången när V-C är uppfylld. Mätningen upprepas varje måndag.`);
     return;
   }
-  const p = matta ? (delvis + torrt) / matta : 1;
+
+  // ── DOMEN: V-C uppfylld — nu, och först nu, andelarna.
+  console.log(`\nV-B1 FALSKLARM — vad sa närmaste station inom ${DOMANDE_STATION_KM} km och ±${FONSTER_MIN} min?`);
+  const falska = delvis + torrt, p = matta ? falska / matta : 1;
+  console.log(`  BEKRÄFTAD ${bekraftad} (${(100 * bekraftad / Math.max(matta, 1)).toFixed(0)} %)  ·  DELVIS ${delvis} (blöt men under tröskeln)  ·  TORRT ${torrt}`);
+  console.log(`  falsklarm enligt §2 (allt under tröskeln): ${(100 * p).toFixed(0)}±${(100 * brus(p, matta)).toFixed(0)} %  (krav ≤ ${(100 * V_B1).toFixed(0)} %)`);
+  const avst = utslag.filter((x) => x.km != null).map((x) => x.km!).sort((a, b) => a - b);
+  if (avst.length) console.log(`  avstånd till dömande station: median ${avst[avst.length >> 1].toFixed(1)} km, längst ${avst[avst.length - 1].toFixed(1)} km\n`);
+
+  console.log(`V-B3 FREKVENS — varningar per rutt och regndygn (dygn med minst en varning)`);
+  const fr = frekvens(varningar);
+  for (const r of fr) console.log(`  ${r.rutt.padEnd(28)} ${String(r.n).padStart(4)} varningar / ${r.dygn} dygn = ${r.snitt.toFixed(1)}${r.snitt > V_B3 ? "  ⚠ över " + V_B3 : ""}`);
+  const over = fr.filter((r) => r.snitt > V_B3).length;
+  console.log(`  ${over} av ${fr.length} rutter över ${V_B3}\n`);
+
+  console.log(`V-B2 MISSANDEL — ⊘ GÅR INTE ATT MÄTA HÄR: en olycka i regn bekräftar att något hände, inte att det var`);
+  console.log(`  vattenplaning, och skuggan kör tjugo rutter, inte hela landet. Måttet kräver testarlogg eller granskad`);
+  console.log(`  kamerabild (§2) — det är betans uppgift, inte knappens.\n`);
+
   const utf: Utfall = grindutfall([utfallTak(p, V_B1, andelSe(p, matta)), over ? "FALLER" : "KLARAR"]);
-  console.log(`\nDOM: V-B ${utf === "KLARAR" ? "KLARAS" : utf === "OAVGJORT" ? "OAVGJORT (inom bruset)" : "FALLER"} på V-B1 och V-B3. V-B2 saknas fortfarande (se ovan).`);
+  console.log(`DOM: V-B ${utf === "KLARAR" ? "KLARAS" : utf === "OAVGJORT" ? "OAVGJORT (inom bruset)" : "FALLER"} på V-B1 och V-B3. V-B2 saknas fortfarande (se ovan).`);
 }
 
 // ── Självtest med känd sanning: två poler som måste ge motsatta svar ────────────────────────
@@ -172,7 +212,34 @@ if (process.argv.includes("--sjalvtest")) {
     { lon: 15.0, lat: 59.0, bucket: b, mmh: 0 }, { lon: 15.0, lat: 59.0, bucket: b - 1, mmh: 5 }]).utslag, "BEKRÄFTAD");
   const f = frekvens([v(15), v(15), { ...v(15), tid: new Date("2026-09-17T12:15:00Z") }]);
   k("frekvens: 3 varningar på 2 dygn = 1,5", f[0].snitt, 1.5);
-  console.log(ok ? "\nSJÄLVTEST OK: utslagen följer §2, och nämnaren är regndygn — inte kalenderdygn." : "\nSJÄLVTEST FALLERAR");
+
+  // V-C1:s facit (DECISIONS #349). Fällan: duggregn UNDER utlösarens tröskel är ändå regnväder — räknas den inte
+  // har någon bytt gränsen mot tröskeln, och §2 säger "olycka i regnväder", inte "olycka över tröskeln".
+  const o = (lon: number): Olycka => ({ tid: t0, lon, lat: 59.0 });
+  k("facit: olycka i duggregn under tröskeln räknas", facit([o(15.0)], [{ lon: 15.0, lat: 59.0, bucket: b, mmh: 1 }]),
+    { olyckor: 1, facit: 1, torra: 0, omatbara: 0 });
+  k("facit: olycka i torrt räknas inte", facit([o(15.0)], [{ lon: 15.0, lat: 59.0, bucket: b, mmh: 0 }]),
+    { olyckor: 1, facit: 0, torra: 1, omatbara: 0 });
+  k("facit: olycka utan station inom räckhåll är omätbar", facit([o(15.0)], [{ lon: 15.6, lat: 59.0, bucket: b, mmh: 9 }]),
+    { olyckor: 1, facit: 0, torra: 0, omatbara: 1 });
+  k("fönstret: 25/9 12:00 är 11 dygn sedan 15/9", dagarSedanStart(new Date("2026-09-25T12:00:00Z")), 11);
+
+  // Blindningen (DECISIONS #350): under spärren får ingen andel skrivas; när V-C är uppfylld ska domen komma.
+  const fanga = (fn: () => void) => {
+    const rader: string[] = [], orig = console.log;
+    console.log = (...a: unknown[]) => { rader.push(a.join(" ")); };
+    try { fn(); } finally { console.log = orig; }
+    return rader.join("\n");
+  };
+  const station: Matning = { lon: 15.0, lat: 59.0, bucket: b, mmh: 4 };
+  const under = fanga(() => rapport([v(15.0), v(15.0)], [station], { olyckor: 3, facit: 1, torra: 1, omatbara: 1 }, 1, "prov"));
+  k("under spärren: ingen procentsats efter kraven", /%/.test(under.slice(under.indexOf("UNDERLAG"))), false);
+  k("under spärren: ingen dom", under.includes("DOM: V-B"), false);
+  const manga = Array.from({ length: 200 }, (_, i) => ({ ...v(15.0), tid: new Date(t0.getTime() + (i % 5) * 86_400_000) }));
+  const mangaStationer = [0, 1, 2, 3, 4].map((d) => ({ ...station, bucket: b + d * 48 }));
+  const over = fanga(() => rapport(manga, mangaStationer, { olyckor: 20, facit: 15, torra: 5, omatbara: 0 }, 3, "prov"));
+  k("V-C uppfylld: domen skrivs", over.includes("DOM: V-B"), true);
+  console.log(ok ? "\nSJÄLVTEST OK: utslagen och facit följer §2, nämnaren är regndygn, och under spärren syns inga andelar." : "\nSJÄLVTEST FALLERAR");
   process.exit(ok ? 0 : 1);
 }
 
@@ -182,7 +249,9 @@ if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
 const pg = (await import("pg")).default;
 const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });
 const q = (s: string, p?: unknown[]) => pool.query(s, p as any[]).then((r) => r.rows);
-const DAGAR = Number(process.argv[2] ?? 14);
+const arg = process.argv[2];
+const DAGAR = arg ? Number(arg) : dagarSedanStart();
+if (!Number.isFinite(DAGAR) || DAGAR <= 0) { console.error(`ogiltigt antal dagar: ${arg}`); process.exit(1); }
 
 // Vaktdiagnosen först (DECISIONS #141): bär raderna fälten alls?
 await vaktdiagnos(q, "shadow_log", `WHERE run_at > now() - ${DAGAR} * interval '1 day' AND land = 'SE'`, [
@@ -208,12 +277,28 @@ const mat = await q(`
   ORDER BY station_id, b, sample_time DESC`, [DAGAR]);
 const matningar: Matning[] = mat.map((r) => ({ lon: +r.lon, lat: +r.lat, bucket: Number(r.b), mmh: Number(r.mmh) }));
 
-const [ol] = await q(`SELECT count(*)::int AS n FROM situation_archive
-  WHERE start_time > now() - $1 * interval '1 day' AND geom IS NOT NULL`, [DAGAR]);
+// Olyckorna inom FACIT_KM från de svenska skuggrutterna (DECISIONS #349) — samma radie och samma rutter som den
+// delade facitlistan, lästa ur skuggmotorns källa.
+const olyckor: Olycka[] = (await q(`
+  SELECT COALESCE(start_time, first_seen) AS t, ST_X(geom::geometry) AS lon, ST_Y(geom::geometry) AS lat
+  FROM situation_archive
+  WHERE geom IS NOT NULL AND message_type_value = 'Accident'
+    AND COALESCE(start_time, first_seen) > now() - $1 * interval '1 day'
+    AND ST_DWithin(geom::geography, ST_GeomFromText($2, 4326)::geography, $3)`,
+  [DAGAR, ruttWkt(skuggmotornsRutter()), FACIT_KM * 1000])).map((r) => ({ tid: new Date(r.t), lon: +r.lon, lat: +r.lat }));
 // Län: grov spridningsmätning på varningarnas positioner — en cell om ~1° ≈ ett län i storlek.
 const lan = new Set(varningar.map((v) => `${Math.floor(v.lon)},${Math.floor(v.lat * 2)}`)).size;
 await pool.end();
 
-console.log(`Skuggloggen: ${rader.length} körningar med varningar, ${varningar.length} skuggvarningar, ${DAGAR} dygn bakåt`);
+// Arkivets hål: ett dygn helt utan väderrader är exporterat och raderat (eller aldrig hämtat) — inte torrt.
+const medData = new Set(matningar.map((m) => new Date(m.bucket * 1800_000).toISOString().slice(0, 10)));
+const fran = new Date(Date.now() - DAGAR * 86_400_000);
+const saknade: string[] = [];
+for (let d = new Date(`${fran.toISOString().slice(0, 10)}T00:00:00Z`); d.getTime() < Date.now(); d = new Date(d.getTime() + 86_400_000)) {
+  const dag = d.toISOString().slice(0, 10);
+  if (dag >= VB_START && !medData.has(dag)) saknade.push(dag);
+}
+
+console.log(`Skuggloggen: ${rader.length} körningar med varningar, ${DAGAR} dygn bakåt`);
 console.log(`Regnarkivet: ${matningar.length} bucketade avläsningar\n`);
-rapport(varningar, matningar, Number(ol.n), lan, `senaste ${DAGAR} dygnen`);
+rapport(varningar, matningar, facit(olyckor, matningar), lan, `från ${fran.toISOString().slice(0, 10)}, ${DAGAR} dygn`, saknade);

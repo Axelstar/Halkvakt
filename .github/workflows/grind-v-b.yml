@@ -1,7 +1,7 @@
 # Grind V-B (kort #42 steg E, #81): dömer skuggans vattenplaningsvarningar (shadow_log.vb) mot
 # TROSKLAR-VATTENPLANING §3 — falsklarm ≤ 20 %, frekvens ≤ 3 per rutt och regndygn. Ingen tröskel
 # sätts här; utlösaren importeras ur snapshotkärnan. V-C:s domspärr gäller: under underlaget skrivs
-# ingen dom ut, bara tal.
+# ingen dom ut och ingen andel, bara räkningar (DECISIONS #350). Fönstret är hela perioden sedan 15/9 (#349).
 #
 # MÅNDAGSSERIEN (Bengts order 16/9 "kör den varje regnvecka"): sist i mätserien, efter grind-v-a som
 # mäter samma spår från andra hållet — grind-a 05:40 · smhi 06:00 · v3 06:20 · trv 06:40 · höjd 07:00
@@ -18,8 +18,8 @@ on:
   workflow_dispatch:
     inputs:
       dagar:
-        description: "Dagar bakåt (vb-loggen börjar 15/9)"
-        default: "14"
+        description: "Dagar bakåt — tomt ger hela perioden sedan 15/9 (DECISIONS #349)"
+        default: ""
 jobs:
   grind-v-b:
     runs-on: ubuntu-latest
@@ -34,6 +34,6 @@ jobs:
       - shell: bash
         run: |
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-          node --experimental-strip-types publish/grind-v-b.ts "${{ inputs.dagar || '14' }}" | tee -a "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types publish/grind-v-b.ts "${{ inputs.dagar }}" | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
