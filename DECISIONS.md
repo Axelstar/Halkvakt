@@ -10474,3 +10474,18 @@ Två motprov i CI (PR #605 och #606, stängda), osynliga för kontraktsgrinden: 
 utfallet fylldes STIG_B aldrig. **I drift** (run 36152132908): tabellen finns med RLS, den fallande halvan orörd (201 rader före och
 efter, funktionen gav 0 nya), och de senaste 12 timmarna gav **654 stigande kandidater vid 41 stationer**, alla med utfall — med
 toppen kl 05–08 svensk tid, morgonuppvärmningen, där tystnadsriktningen ska verka.
+
+## #369 (25/9 2026) De tre andra luckorna i L3: planen fastställd — inget behöver göras före frosten
+
+**Beslut (Bengt 25/9: *"ja till planen för de tre luckorna om det inte är så att de ska göras redan nu"*).** Villkoret är prövat:
+**inget av de tre behöver göras nu**, eftersom datan de döms på sparas redan och aldrig raderas. Gallring och radering rör bara
+väderarkivet (halvtimme efter 7 dygn; export och radering efter 30 dygn först över 350 MB, i dag 182 MB) samt grannländernas väder,
+gravstenar och cron-loggar (sql/014, 026, 031, 034). Väglagshistoriken, radarn, skuggloggen, trendtabellerna åt båda håll och SMHI:s
+varningar raderas aldrig. **Planen**, nu i bedömningens kalender:
+- **Regn som börjar på frusen väg** (Ä9): i mars läses S-B:s nederbördsdrivna missar — hålets storlek — och NT:s räkning av SMHI:s
+  underkylda regn; därefter beslut om en förstärkare eller #233:s *före resan*-vy. T6 gäller: en modell utlöser aldrig ensam.
+- **Segmentprognosens tidsdel** (Ä10): risk vid ankomst som uppspelning ur arkivet, med ankarnas lutning åt båda håll (sedan #368),
+  efter T-A:s dom (trendregeln). Spåras på #38b.
+- **Regn på snö, snö på snö** (S15, Ä11): vinterns väglagsordlista mäts i första vintermånaden (december) i väglagshistoriken; #45:s
+  steg 2 skrivs innan något utfall läses; domen ur arkivet i mars mot vinterbaselinen (#51/#209).
+Det enda gemensamma villkoret är detsamma som för alla marsdomar: arkivet eller exporten måste gå att läsa (återläsningssteget, #334).
