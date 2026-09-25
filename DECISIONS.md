@@ -10105,3 +10105,24 @@ inte, fönstret, och blindningen i båda riktningarna) och **två motprov, ett p
 regn > 0 fäller *"olycka i duggregn under tröskeln räknas"*; utan spärrens `return` fäller *"under spärren: ingen procentsats"* och
 *"ingen dom"*. Självtestet körs nu också i CI, inte bara i flödet självt.
 
+## #351 (25/9 2026) Grind V-B: en station som är igång men tyst räknas som torr (kort #251)
+
+**Beslut (Bengt 25/9: *"ja till 251, ±3 timmar"*), fattat medan V-C är spärrad och innan någon andel lästs.** Arkivet sparar bara
+kalla, blöta eller ändrade avläsningar (DECISIONS #4), så en varm, torr och stilla station lämnade ingen rad, och V-B1 kallade
+varningen OMÄTBAR fast en torr station är just ett falsklarm enligt §2. Första körningen 16/9 visade *TORRT = 0* (#212); 25/9 var 16
+av 57 varningar och 84 av 98 olyckor omätbara. **Nu:** har den dömande stationen arkivrader inom ±3 h men ingen inom ±30 min var den
+igång och torr — TORRT. Utan rader inom ±3 h förblir den OMÄTBAR. Rör §2:s mätning, inte §3:s tal; noten står i
+TROSKLAR-VATTENPLANING §2. Axel kontrasignerade dokumentet (#68) och kan invända före första dom.
+
+**Varför regeln inte gör en blöt station torr:** den levande ingesten sparar varje avläsning med regnflaggan på (regn de senaste tio
+minuterna), så regn inom fönstret lämnar alltid rader. Kanteffekten som återstår: regn som slutade strax före fönstrets början kan ge en
+30-minuterssumma över noll på en avläsning som inte sparades. En station som var igång före och efter men nere just i ±30 min räknas
+också som torr — det är priset för ±3 h, valt av Bengt.
+
+**Bevis:** självtestet med fyra nya fall (igång men tyst ⇒ TORRT, före och efter; tyst i ±3 h ⇒ OMÄTBAR; en olycka vid en tyst men
+igång station blir torr — fällan ligger där den annars ger noll) och **två motprov:** utan tak på ±3 h fäller *"tyst i ±3 h är
+omätbart"*; med tyst alltid omätbar fäller *"igång men tyst i ±30 min är torrt"*, *"igång efteråt"* och facitfällan. Ett gammalt fall
+ändrades med beslutet, inte för bygget: *"utanför tidsfönstret är omätbart"* (en rad två timmar före) heter nu *"igång men tyst i ±30
+min är torrt"*. Kortet stängs: Verify är självtestet och beslutet före första dom. I drift syns det på måndagens körning 28/9 som fler
+mätbara varningar och fler torra olyckor.
+
