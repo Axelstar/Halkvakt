@@ -1213,6 +1213,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **Stängt 22/9 (DECISIONS #306):** Bengts ja 22/9. PR #481 (0c2d92a): 504 filer ur git, `ios/HalkvaktEngine/.build/` i `.gitignore`, inga referenser utanför mappen. **Före:** en kloning utan `core.longpaths` föll 22/9 på *Filename too long* (291 tecken, *checkout failed*). **Efter:** samma kloning av 0c2d92a går igenom, 0 saknade filer. ci och ios-engine gröna på main (35739390674, 35739390740). Historiken är oförändrad, och en `git pull` tar bort de gamla byggfilerna ur andras arbetskopior; nästa Swift-bygge skapar dem igen.
 
 ### Claude — olåst
+- [ ] 🌙 **#256 UPPSPELNINGENS NATT RÄKNAS I UTC** (fynd 25/9 under kort #254, DECISIONS #365). `sql/028_uppspelning_varianter.sql:137`
+  skiftar natten 12 h i `AT TIME ZONE 'UTC'`, medan R-A och sedan #254 d även T-A räknar i `Europe/Stockholm`. DECISIONS #246 säger att
+  T-A, R-A och uppspelningens episoder ska mena samma natt; kontraktet "Nattens gräns" vaktar bara talet 12, inte zonen.
+  **Verify:** uppspelningen räknar natten i svensk tid (ny migration, uppspelningen körd om och jämförd), och kontraktet vaktar zonen.
 - [x] ✅ **KLART 25/9** (DECISIONS #364) — 🧪 **#255 MISSMÄTNINGEN RÄKNAR UPPEHÅLL SOM FUKT** (fynd 25/9 under läsningen av #45). `publish/missar.ts:59` bygger
   `moisture` som `COALESCE(precipitation,'') <> ''` — Trafikverkets "no" (uppehåll) blir fukt, samma fälla som `Boolean(precipitation)`
   (CLAUDE.md). Rekonstruktionen får då frysrisk vid torra stationer, motorn "hade varnat" oftare än den skulle, och missandelen
@@ -1425,7 +1429,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **Axels ja 25/9 (via Bengt, DECISIONS #353). I DRIFT:** deployad 07:20Z (PR #567); varvet 07:24Z skrev 146 väderrader, varav 132 varma halvtimmesrader, `ok: true`, ingen tillbakagång till den gamla regeln. Kvar för Verify: täckningen per halvtimme och censurmätningen på kalla halvtimmar efter ändringen (tidigast 26/9 på morgonen).
   📏 **Läst 25/9 08:01Z (`scripts/matningar/tackning-halvtimme-2026-09-25.sql`):** täckningen per halvtimme mot 837 aktiva stationer — före deployen **63–84** stationer med rad (05:00–06:30Z, en varm förmiddag), halvtimmen 07:30–08:00Z **830 av 837 (99 %)**; rader per halvtimme 259–320 → 963, alltså ungefär tre gånger så många en varm dag (≈ 46 000 rader/dygn mot ≈ 17 000). Kvar för Verify: censurmätningen på kalla halvtimmar efter ändringen (< 5 % saknade), tidigast 26/9 på morgonen, och arkivets tillväxt per dygn.
 
-- [ ] 🧰 **#254 GRANSKNINGENS ÄLDRE FEL — de som inte ingick i de sex förslagen** (ur kort #252, `docs/GRANSKNING-GRINDAR-2026-09-25.md` §7;
+- [x] ✅ **KLART 25/9** (DECISIONS #365) — 🧰 **#254 GRANSKNINGENS ÄLDRE FEL — de som inte ingick i de sex förslagen** (ur kort #252, `docs/GRANSKNING-GRINDAR-2026-09-25.md` §7;
   ingen av dem orsakad 21–24/9). (a) **V-A** prövar bara timmar där målstationen har en rad och döljer falsklarm (`publish/grind-v-a.ts:48`) —
   nej-domen står ändå, V-A föll på träffen. (b) **Övergångarnas 0d** kastar tysta torra perioder (`scripts/overgangar-steg0.ts:401–408`).
   (c) **Andelar under spärren** i K-A, R-A, vind och sikt och SMHI-förstärkaren; R- och F-dokumenten har egna blindningsklausuler (C4).
@@ -1437,6 +1441,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   rättad (#255, rekonstruktionen i `publish/rekonstruktion.ts`). Flera av (a), (b) och (e) mildras redan av #353, eftersom de varma stationerna nu
   har rader — det bör mätas innan något byggs.
   Verify: varje punkt byggd med självtest och motprov, eller avskriven med skäl i DECISIONS.
+  ✅ **BEVIS 25/9 (PR #595, motprov PR #596):** byggda (d) T-A i svensk tid, (c) spärren före tabellen i K-A, R-A, vind och sikt och
+  SMHI-förstärkaren, (g) orsaken från närmaste station inom 50 km, (h) vakterna i rekonstruktionen och missmätningens knapp stängd —
+  självtest och prov mot PostGIS för varje, nio motprov fällda på rätt rad. Avskrivna med skäl: (a), (b), (e), (f). Segmentfyndet
+  i (h) från #364 var fel: motorn tystar själv kod 1 utan halkord.
 
 - [ ] 🤖 **#219 ANDROID ÄR SJU VERSIONER EFTER OCH HAR INGEN VÄG TILL EN TELEFON** (genomlysningen 20/9). Android står på
   **0.3.1 (versionCode 4)**, iOS på 0.3.8 (11). **Google Play-kontot finns inte**, det finns inget uppladdningsflöde alls — CI
@@ -4517,6 +4525,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#254 GRANSKNINGENS ÄLDRE FEL — KLART 25/9 (DECISIONS #365)**: fyra byggda med självtest, prov mot PostGIS och nio motprov; fyra avskrivna med skäl; missmätningens knapp stängd. Nytt kort #256. Tavlan 44 → 44.
 - [x] ✅ **#255 MISSMÄTNINGENS FUKT — KLART 25/9 (DECISIONS #364)**: rekonstruktionen i egen modul med snapshotkärnans torrord, prov mot PostGIS grönt och motprov fällt på rätt rader. Tavlan 45 → 44.
 - [x] ✅ **SYSTEM.md-LÄSNINGEN STÄNGD SOM KORT 25/9 (DECISIONS #356)**: en rutin i bedömningens kalender, nästa i oktober. Tavlan 45 → 44.
 - [x] ✅ **#91 KALLPLATSLAGRET STÄNGT 25/9, ÖPPNAS VÅREN 2027 (DECISIONS #355)**: står i vårlistan Ä6. Tavlan 46 → 45.
