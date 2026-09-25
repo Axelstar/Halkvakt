@@ -10209,3 +10209,10 @@ prövat som ett kallplatsindex mot grind A:s residualer (leave-one-out), annars 
 grannplatserna saknades i kalla halvtimmar (#352), vilket #353 lagar från och med nu. Residualerna som #91 ska förklaras mot blir
 alltså först meningsfulla på vinterdata med de varma grannarna; våren är rätt tid. Kvar i grupp A: #96, #153 och SYSTEM.md-läsningen.
 
+## #356 (25/9 2026) SYSTEM.md-läsningen stängs som kort och blir en rutin i kalendern
+
+**Beslut (Bengt 25/9: *"stäng system.md-läsningen som kort"*).** Att läsa `docs/SYSTEM.md` mot koden varje månad är en rutin, inte en
+uppgift som kan bli klar, och ett kort som aldrig kan stängas gör tavlan otydlig. Kortet stängs; läsningen står i bedömningens
+kalender som en rad *Varje månad*, med nästa läsning i oktober (den första gjordes 22/9, underlag till Skyltfondens bilaga 3). Kvar i
+grupp A: #96 och #153.
+

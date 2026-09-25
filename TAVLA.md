@@ -1051,7 +1051,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   hämtar men bara ritar på kartan — som FÖRSTÄRKARE av frysrisken (snöfallsvarning + yta nära noll =
   högre konfidens), aldrig som egen fara. Verify: (a) tre kommuner tillfrågade om stationsdata,
   (b) skuggkolumn "smhi_forstarkt" mätt mot facit en vintermånad.
-- [ ] Läsa SYSTEM.md mot koden månadsvis — ✅ **första läsningen gjord 22/9** (Bengts order, underlag till Skyltfondens bilaga 3): regler, källor, vakter, skuggdrift, mätning och grannländer lästa mot koden; nästa läsning oktober
+- [x] ✅ **STÄNGT SOM KORT 25/9, RUTIN I KALENDERN** (DECISIONS #356) — Läsa SYSTEM.md mot koden månadsvis — ✅ **första läsningen gjord 22/9** (Bengts order, underlag till Skyltfondens bilaga 3): regler, källor, vakter, skuggdrift, mätning och grannländer lästa mot koden; nästa läsning oktober
+  ✅ **Stängt som kort 25/9 (DECISIONS #356, Bengt):** läsningen är en rutin och står i bedömningens kalender (*Varje månad*), nästa i oktober.
 - [x] ✅ **STÄNGT 22/9** (DECISIONS #310) — Samtal med Axel: sensortrappan — tidsättning av steg 2 (våren 2027?)
   ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** #237 *Telefonkedjan* (parkerad 22/9) — avgörs i samma samtal.
   ✅ **Stängt 22/9 (DECISIONS #310, Bengts beslut):** tiden är satt — **steg 2 (telefonens sensorer, opt-in) prövas våren 2027**, efter vinterns domar, och telefonkedjan (#237) avgörs i samma prövning. Samma ordning som Axels beslut 28/8 (*v1 utan datainsamling, sensortrappan är strategi*). Frågan bärs nu av **Ä8** i bedömningens §3 (mars och framåt), så den kommer tillbaka i mars.
@@ -4474,6 +4475,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **SYSTEM.md-LÄSNINGEN STÄNGD SOM KORT 25/9 (DECISIONS #356)**: en rutin i bedömningens kalender, nästa i oktober. Tavlan 45 → 44.
 - [x] ✅ **#91 KALLPLATSLAGRET STÄNGT 25/9, ÖPPNAS VÅREN 2027 (DECISIONS #355)**: står i vårlistan Ä6. Tavlan 46 → 45.
 - [x] ✅ **BETALVILJAN STÄNGD 25/9, ÖPPNAS VÅREN 2027 (DECISIONS #354)**: står i vårlistan bredvid intäktsmodellen. Tavlan 47 → 46.
 - [x] ✅ **#245 BEVISBÄRAREN — KLART 25/9 (DECISIONS #342)**: varje väderpunkt i live.json bär `bevis` i vakthundens timkontroller hela natten (26 av 26 kl 02:07Z). Tavlan 47 → 46.
