@@ -10188,3 +10188,5 @@ resten; gratisnivån påverkas inte. Varma rader hjälper också den långsamma 
 ensamma), #351:s torra station och V-A. Den gamla ingesten (`ingest/sources/weather.ts`) skriver inget väder sedan 8/9 och följer
 inte med. Grindarna mäter från och med nu samma värld som driften; novembers skarpa prövning får veckor av ocensurerat underlag.
 
+**Axels ja 25/9 (via Bengt: *"Axel säger ja"*):** ingesten är hans, och ändringen står nu på båda signaturerna.
+
