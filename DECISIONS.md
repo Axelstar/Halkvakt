@@ -10318,3 +10318,11 @@ och episodluckan. Torrordsprovet missade först, eftersom kontraktsgrinden bara 
 
 **Kända luckor, sagda nu:** underkylt regn syns inte i våtbulben och saknar eget ord hos Trafikverket; SMHI:s kod 156 är underkylt enligt
 WMO fast listan säger "Tätt duggregn"; Norge viker in `sleet` i `snow`.
+
+**Bevis efter sammanslagningen (spärrkörning 25/9 13:07Z, run 36138915848, 30 dygn):** knappen går mot riktiga data och skriver bara
+räkningar. Givarklasser per station och halvtimme: regn 62 628 rader (745 stationer), slask 17 (11), snö 1; 596 rader i bandet, varav 244
+med minst två grannar; 757 stationer med luft och fuktighet, 756 med typsträng; **43 SMHI-par inom 5 km**; 2 057 partimmar med en vägrad
+inom ±10 minuter. NT-D står på 1/100 snöepisoder och 14/40 slaskepisoder — september, som väntat. **Två räkningar är låga av en känd
+orsak, inte av skriptet:** före #353 (25/9 07:20Z) sparades inga varma torra rader, så grannar och vägrader saknas i septemberdata. Vintern
+sparar kalla rader alltid. Tidsparningen håller efter gallringen: stationerna mäter var 5:e minut och gallringen behåller halvtimmens
+senaste rad, 4:57 före hel timme (`scripts/matningar/nederbordstyp-tidsparning-2026-09-25.sql`).

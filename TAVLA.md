@@ -4484,8 +4484,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   `no` 177 888 på 30 dygn — vid en station är sorten en mätning, våtbulben behövs bara där ingen givare ser. (2)
   `docs/TROSKLAR-NEDERBORDSTYPEN.md` fastställt av Bengt (psykrometerekvationen — Stull föll på sin egen kontroll), grindarna
   NT-A–D. (3) `engine/src/nederbord.ts` + `scripts/grind-nt.ts`, spärrad till 1 mars 2027, allt ur arkivet och SMHI:s API — inget
-  nytt jobb. **Kvar:** Axels kontrasignatur · beviset att knappen `grind-nt` går mot riktiga data (spärrkörning efter merge) ·
-  domen 1 mars 2027 · steg 2 (vägytans tillstånd, #51/#209) med eget dokument.
+  nytt jobb. ✅ **Knappen bevisad 25/9 13:07Z** (spärrkörning, run 36138915848): 43 SMHI-par, 596 rader i bandet, bara räkningar
+  utskrivna. **Kvar:** Axels kontrasignatur · domen 1 mars 2027 · steg 2 (vägytans tillstånd, #51/#209) med eget dokument.
 
 - [x] ✅ **STÄNGT 22/9** (DECISIONS #315) — **#32 Hindren in i rösten** — vi har aldrig skeppat annat än olyckor trots att
   DECISIONS #5 sade "olyckor + hinder". Kräver ny HazardKind + egen röstfras + Axels
