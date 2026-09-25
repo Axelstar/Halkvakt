@@ -10064,3 +10064,24 @@ lärdomsavsnittet. Tavlan 44 − 1 + 3 = 46 öppna.
 **iOS-bygget höjt till 0.3.9 (15)** — texterna och körlägets klocka ändrade. **Sagt högt:** #248 är bevisat på JVM, inte i bil;
 verify på en riktig Android-telefon (autostartad vakt stannar när bilens Bluetooth kopplas från) står kvar. Android-versionen är
 inte höjd (inget uppladdat till Play). #250 (a) har inget JVM-prov: raden sitter i tjänsten, och flytten är två rader.
+
+## #349 (25/9 2026) Kort #42: facit enligt §2, V-C från 15/9, C-station struken — definitionerna skrivna före första räkningen
+
+**Beslut (Bengt 25/9: *"ja till 1, 2 och 3"*, ur förslaget i bedömningen §4.2).**
+(1) **Grind V-B räknar facit så som TROSKLAR-VATTENPLANING §2 säger.** Knappen har sedan 16/9 skrivit *0 facitbekräftade händelser*
+som en fast rad, och eftersom testarlogg kräver en röst som i sin tur väntar på V-C kunde domspärren aldrig släppa.
+(2) **V-C räknas från 15/9**, vb-loggens start. §3 har inget fönster; måndagskörningen räknade 14 dygn.
+(3) **Steg C:s stationshalva stryks** (kvar ur #81). V-A visade att stationerna inte bär intensiteten, och domen läser stationerna direkt
+ur arkivet — ett stationsfält i snapshoten skulle inte läsas av någon.
+
+**Definitionerna, skrivna innan något tal räknats (så att de inte formas av utfallet):**
+- **Facitbekräftad händelse (V-C1):** en olycka i `situation_archive` (`message_type_value = 'Accident'`) som startar inom fönstret,
+  ligger inom **2 km** från en svensk skuggrutt (`FACIT_KM`, samma radie som den delade facitlistan) och där den **dömande stationen**
+  — närmaste station inom 10 km, samma som V-B1 — mätte regn (`rain_sum_mm > 0`) inom **±30 min** från olyckans start. Olyckan får
+  bara bekräfta, aldrig fälla (§2:s asymmetri). Utan station inom 10 km är olyckan omätbar och räknas inte.
+- **Fönstret** för V-C och för alla mått i knappen: från 15/9 till körningen.
+
+**Sagt högt.** Det här är en operationalisering av §2, inte en ändring: inga tal i §3 rörs. Men dokumentet är kontrasignerat av Axel
+(DECISIONS #68), så hans invändning tas upp före första dom. Antalet olyckor i regn längs rutterna är okänt; räcker det inte till 15
+före domfönstret i nov/dec är nästa facitkälla kamerabilderna i hinken, som öppnas i mars (DECISIONS #248) — det blir en egen fråga då.
+
