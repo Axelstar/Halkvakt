@@ -449,6 +449,7 @@ mätningar — R1–R16 nedan är strukna och står kvar bara som historik.**
 | ~~R14~~ | ~~§12~~ | ~~två av tre facitkällor tomma; ingen vakt mäter tillväxt~~ |
 | ~~R15~~ | ~~§7.8~~ | ~~#45 som meta efter #52~~ |
 | ~~R16~~ | ~~§5, fog-tabellen~~ | ~~**Fog-tabellen är läst, inte körd (§5.6):** #154:s steg stod som F1, men varje rad i `segments[]` blir en varning i motorn och båda portarna — F4/F5. Löst med egen nyckel (DECISIONS #187); tabellen ska märka vilka fogar som är verifierade i kod (Axel 16/9)~~ |
+| **R25** | §3 | **"blöt × faller mot noll × mätningen gäller hit = en FÖRUTSÄGELSE" — ordet är fel sedan tröskelregeln (17/9).** En trend räknad framåt i tiden är en modellprodukt (T6) och får aldrig ensam utlösa; det kedjan bär vid en station är mätningar och minnet av dem (T4, lutningen över ett fönster), och ska sägas som *risk framöver* (TROSKLAR-TRENDEN §1: *"ingen prognos — en observerad trend"*). Mellan stationerna, där L4 är modellerad, får den bara stärka (T3). Rättat i systembilden 25/9 (Bengts fråga); i kartan nästa gång den öppnas |
 
 (R16–R24 gällde bedömningen och granskningen och är införda här.)
 
