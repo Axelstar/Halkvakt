@@ -516,6 +516,15 @@ export const KONTRAKT: Kontrakt[] = [
     golv: 3,
   },
   {
+    // Bengts ja 25/9 (DECISIONS #367). Den långsamma vakten SKRIVER givarfelets dygn (sql/030); snapshotkärnan, bunten,
+    // trendberäkningen (sql/018) och uppspelningen (sql/028) SLÅR UPP det. Det är en parning på en dygnsetikett — räknar en sida
+    // dygnet i en annan zon än skrivaren talar en trasig givare 1–2 timmar per dygn, och ingen annan vakt ser det.
+    namn: "Givarfelsdygnets zon — skrivaren och läsarna räknar samma dygn",
+    varfor: "givarfel_dygn paras på en dygnsetikett. Olika zoner på två sidor ger ett glapp vid midnatt där en trasig givare talar.",
+    former: [/\(sample_time AT TIME ZONE '([^']+)'\)::date AS dag/, /g\.dag = \([^)]*sample_time AT TIME ZONE '([^']+)'\)::date/],
+    golv: 5,
+  },
+  {
     // Fönstret är T-A:s (TROSKLAR-TRENDEN §2), inte kombinationens — men det finns nu i tre filer: arkivets skrivare,
     // dess rena hjälpfunktion, och uppspelningen som läser BÅDA facitkällorna över samma fönster (kort #207).
     namn: "Utfallsfönstret — minuter efter fyrningen som facit får komma",

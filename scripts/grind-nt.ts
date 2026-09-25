@@ -35,6 +35,14 @@ const BAND_GRANSER = [57.5, 60, 63];                  // breddgradsbanden i NT-D
 const DOM_FRAN = "2027-03-01T00:00:00Z", FONSTER_FRAN = "2026-12-01T00:00:00Z", MARS_TILL = "2027-04-01T00:00:00Z";
 const VINTERMANADER = ["2026-12", "2027-01", "2027-02"];
 
+// DYGN OCH MÅNADER I SVENSK TID (Bengts ja 25/9, DECISIONS #367). I UTC räknades en slasknatt över midnatt UTC (01–02 svensk tid)
+// som två dygn i NT-D, och månadsgränsen låg en–två timmar fel. Samma zon som T-A:s och R-A:s nätter.
+const ZONDAG = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Stockholm", year: "numeric", month: "2-digit", day: "2-digit" });
+export function lokalDag(epochS: number): string {
+  const d = Object.fromEntries(ZONDAG.formatToParts(new Date(epochS * 1000)).map((x) => [x.type, x.value]));
+  return `${d.year}-${d.month}-${d.day}`;
+}
+
 export type Rad = { station: string; hink: number; t: number; lon: number; lat: number; tw: number | null; givare: Givarklass };
 export type Smhi = { id: string; lon: number; lat: number };
 const arKlass = (g: string): g is Klass => g === "regn" || g === "slask" || g === "sno";
@@ -161,6 +169,9 @@ if (process.argv.includes("--sjalvtest")) {
   k("raden 5 min före timmen väljs", radVid(hinkar, H)?.t, H - 300);
   const langt = new Map<number, Rad>([[Math.floor((H - 1200) / BUCKET_S), { ...rad("V", 0, "sno"), t: H - 1200 }]]);
   k("raden 20 min före timmen väljs inte", radVid(langt, H), null);
+  // DECISIONS #367: dygn och månader i svensk tid.
+  k("22:30Z 24/9 är 25/9 i Sverige (sommartid)", lokalDag(Date.UTC(2026, 8, 24, 22, 30) / 1000), "2026-09-25");
+  k("23:30Z 31/12 är januari i Sverige (vintertid)", lokalDag(Date.UTC(2026, 11, 31, 23, 30) / 1000).slice(0, 7), "2027-01");
   const s: Stat = { ordlista: new Map([["rain", 5], ["freezingRain", 1]]), klassRader: { regn: 5, slask: 0, sno: 0 },
     klassStationer: { regn: new Set(["V"]), slask: new Set(), sno: new Set() }, ep: { regn: 1, slask: 0, sno: 0 }, band: new Set([2]),
     slaskDygn: new Set(), iBandet: 3, medGrannar: 2, medFalt: 10, medTyp: 8, par: 1, parKm: 5, smhiTimmar: { regn: 4 }, partimmar: 3, snoSlaskPartimmar: 0 };
@@ -261,7 +272,7 @@ for (let d = FRAN; d < TILL; d += 864e5) {
     if (!arKlass(r.givare)) continue;
     stat.klassRader[r.givare]++; stat.klassStationer[r.givare].add(r.station);
     if (r.givare !== "regn") stat.band.add(bandFor(r.lat));
-    if (r.givare === "slask") stat.slaskDygn.add(new Date(r.t * 1000).toISOString().slice(0, 10));
+    if (r.givare === "slask") stat.slaskDygn.add(lokalDag(r.t));
   }
   for (const [, ihink] of perHink) {
     const ankare = ihink.filter((r) => r.tw !== null).map((r) => ({ id: r.station, lon: r.lon, lat: r.lat, yta: r.tw as number }));
@@ -271,7 +282,7 @@ for (let d = FRAN; d < TILL; d += 864e5) {
       const g = skatta(r, ankare.filter((a) => a.id !== r.station));
       const skattad = g.n >= GRANNAR_MIN && g.yta !== null ? g.yta : null;
       if (skattad !== null) stat.medGrannar++;
-      tupler.push({ manad: new Date(r.t * 1000).toISOString().slice(0, 7), egen: r.tw, skattad, facit: r.givare });
+      tupler.push({ manad: lokalDag(r.t).slice(0, 7), egen: r.tw, skattad, facit: r.givare });
     }
   }
 }
@@ -298,7 +309,7 @@ for (const [vid, s] of par) {
     if (!r || !arKlass(klass)) continue;
     stat.partimmar++;
     if (klass !== "regn") stat.snoSlaskPartimmar++;
-    if (arKlass(r.givare)) parTimmar.push({ vag: r.givare, smhi: klass, tw: r.tw, manad: new Date(H * 1000).toISOString().slice(0, 7) });
+    if (arKlass(r.givare)) parTimmar.push({ vag: r.givare, smhi: klass, tw: r.tw, manad: lokalDag(H).slice(0, 7) });
   }
 }
 if (smhiStationFel) console.log(`SMHI: ${smhiStationFel} av ${par.size} parstationer gick inte att hämta — deras timmar saknas, de är inte noll.`);
