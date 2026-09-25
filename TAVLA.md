@@ -3527,6 +3527,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   läggs det ner.
   ✅ **Stängt 25/9 (DECISIONS #355, Bengt):** öppnas våren 2027 (vårlistan Ä6). Inledningen ovan är inaktuell: grind A klarades 23/9 (#321), och residualerna blir meningsfulla först på vinterdata med de varma grannarna (#353).
 - [ ] ⛰️ **#96 HÖJDPROVET — terrängens första faktor, mäter redan** (utlyft ur #38b 10/9 på Bengts order:
+  📅 **DATUM 23/10 (Bengt 25/9, DECISIONS #357) — står kvar, stängs inte:** efter fyra veckor med de varma grannarna i arkivet (#353) läser Claude vägpunktsgrindens RÅ mot RÅ+HÖJD ur måndagskörningen, och beslutet om höjden i segmentprognosen tas före novembers skarpa prövning. Skälet: 23/9:s RÅ+HÖJD (A2 4,7 %, oavgjord) mättes på ett arkiv utan hälften av grannarna — just de varma, där höjden spelar roll. Verify (från 25/9): utfallet på fyra veckors ocensurerat underlag inskrivet här och beslutet i DECISIONS.
   "höjdmätningar o nivåskillnader är väl också en del av detta" — ja: terrängfaktorn i #95:s lager och
   grunden för #91). scripts/hojd-prov.ts + knappen Actions → hojd-prov: EU-DEM 25 m via opentopodata,
   747/757 stationer, tre varianter RÅ / RÅ+HÖJD / OFFSET=taket mot arkivet. FYND 1 (starkt, 3 455 par):

@@ -10216,3 +10216,14 @@ uppgift som kan bli klar, och ett kort som aldrig kan stängas gör tavlan otydl
 kalender som en rad *Varje månad*, med nästa läsning i oktober (den första gjordes 22/9, underlag till Skyltfondens bilaga 3). Kvar i
 grupp A: #96 och #153.
 
+## #357 (25/9 2026) #96 höjdprovet står kvar — med datum 23/10
+
+**Beslut (Bengt 25/9: *"ja, behåll 96 med datum 23/10"*).** Kortet stängs inte. Mätningen hade inte gått förlorad (måndagsschemat,
+#324, TROSKLAR-SKUGGAN §3, vårlistan Ä5), men frågan — ska höjden in i segmentprognosen? — hade inget datum och ingen ägare utanför
+kortet. Och den blev viktigare 25/9: höjdvarianten (A2 4,7 %, oavgjord, hjälper inom 7 km och stjälper längre bort) prövades på ett arkiv
+där hälften av grannarna saknades, just de varma (#352) — där höjdskillnaden spelar roll.
+
+**Datumet:** omkring **23/10**, efter fyra veckor med de varma grannarna i arkivet (#353, i drift 25/9), läser Claude vägpunktsgrindens
+RÅ mot RÅ+HÖJD ur måndagskörningen, och beslutet om höjden tas före novembers skarpa prövning. Datumet står på kortet, i kalendern under
+oktober och i vårlistan Ä5. Kvar i grupp A: #153.
+
