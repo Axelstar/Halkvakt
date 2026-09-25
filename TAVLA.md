@@ -4480,6 +4480,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (5) Omätt: vilka värden Trafikverkets `precipitation` faktiskt bär i arkivet — kan bära typen direkt; Norges källa läser
   `precipitationType` men viker in sleet i `snow`. (6) Tidsfällan (bedömningen §4.2): Ä2 säger mars, men domen kräver en vinter
   med skuggkolumn — samma läge som #153 beslut 1 (DECISIONS #358). Frågan till Bengt står i §4.2.
+  ✅ **STEG 1–3 GJORDA 25/9 (Bengts ja, DECISIONS #361).** (1) Trafikverket MÄTER typen: `rain` 144 908 rader, `sleet` 32, `snow` 7,
+  `no` 177 888 på 30 dygn — vid en station är sorten en mätning, våtbulben behövs bara där ingen givare ser. (2)
+  `docs/TROSKLAR-NEDERBORDSTYPEN.md` fastställt av Bengt (psykrometerekvationen — Stull föll på sin egen kontroll), grindarna
+  NT-A–D. (3) `engine/src/nederbord.ts` + `scripts/grind-nt.ts`, spärrad till 1 mars 2027, allt ur arkivet och SMHI:s API — inget
+  nytt jobb. **Kvar:** Axels kontrasignatur · beviset att knappen `grind-nt` går mot riktiga data (spärrkörning efter merge) ·
+  domen 1 mars 2027 · steg 2 (vägytans tillstånd, #51/#209) med eget dokument.
 
 - [x] ✅ **STÄNGT 22/9** (DECISIONS #315) — **#32 Hindren in i rösten** — vi har aldrig skeppat annat än olyckor trots att
   DECISIONS #5 sade "olyckor + hinder". Kräver ny HazardKind + egen röstfras + Axels

@@ -10287,3 +10287,34 @@ bär nu tiden per steg (`ms`: motor, prognos, facit, totalt), eftersom funktions
 jämförelsen, bland dem ett långt segment vars brytpunkter ligger över 100 km bort), olyckan 9 km från rutten kvar, samma prognos och
 holdout — och **tre motprov**, ett per vakt, fällda på rätt test. Vektorerna oförändrade. **Verify står kvar:** tre dygn utan 546.
 
+
+## #361 (25/9 2026) Nederbördstypen: mätningen finns redan, tröskeldokumentet fastställt, domen byggd och spärrad (kort #45)
+
+**Beslut (Bengt 25/9: *"ja till 1, 2 och 3"*)** på rekommendationen i bedömningen §4.2: (1) mät premissen, (2) skriv tröskeldokumentet
+innan någon siffra läses, (3) bygg klassningen per station före december. **Axels kontrasignatur på dokumentet väntar** (§4.2).
+
+**Steg 1 ändrade formen** (`scripts/matningar/nederbordstyp-ordlista-2026-09-25.sql`). Trafikverkets `precipitation` är en UPPMÄTT typ,
+inte ett ja/nej: på 30 dygn `no` 177 888 rader, `rain` 144 908, null 17 269 (134 stationer), `sleet` 32 (14 stationer, 8–24/9) och `snow`
+7 (18/9). Luft och fuktighet finns i 99,98 % av nederbördsraderna och hos 752 av 844 stationer; spannen håller. Vid en station med
+typgivare är sorten alltså en mätning (T4). Våtbulben behövs bara där ingen givare ser och får där bara stärka (T3/T6), och givaren blir
+modellens facit på samma plats. Kortets invändning från 4/9 (ingen tät serie av fuktighet) är överspelad sedan #353.
+
+**Steg 2: `docs/TROSKLAR-NEDERBORDSTYPEN.md`.** Våtbulb ur WMO:s psykrometerekvation. Klass: Tw ≤ L snö, däremellan slask, Tw ≥ U regn;
+svep L {0; +0,5} × U {+1,5; +2,0}, kortets 0/+1,5 primärt, valregel lägst farligt fel. Facit: stationens givare och SMHI:s rådande väder
+(parameter 13, 162 aktiva stationer, läst i SMHI:s API 25/9), par inom 5 km. Grindarna: **NT-A** givaren mot SMHI · **NT-B** modellen vid
+stationen (träff ≥ 80 %, det farliga felet ≤ 10 %, slask ≥ 40 %, två av tre vintermånader) · **NT-C** lämna-en-ute med segmentprognosens
+grannmodell · **NT-D** giltighet (≥ 100 snö- och ≥ 40 slaskepisoder, 30 stationer, tre av fyra breddgradsband, 10 slaskdygn, 50
+SMHI-partimmar). Domspärr: bara räkningar på facitsidan till 1 mars 2027. Inget utfall når rösten — #45 är meta (kartan §7.8).
+
+**Stulls formel föll på sin egen kontroll** innan dokumentet checkades in: den ligger 0,2–0,7 °C för lågt nära 0 °C (vid +2 °C och 80 %
+gav den +0,25 mot psykrometerns +0,77) — just där gränserna ligger. Psykrometerekvationen valdes; ingen mätning var läst.
+
+**Steg 3: byggt och spärrat.** `engine/src/nederbord.ts` (våtbulb, klass, givarens ordlista, SMHI:s koder; 6 tester) och
+`scripts/grind-nt.ts` (knappen `grind-nt`, självtest i CI; läser arkivet en dag i taget genom #75, radvakten och karantänen). **Ingen
+skuggkolumn och inget nytt jobb:** allt domen behöver ligger redan i arkivet, och SMHI hämtas vid domen ur `latest-months` (≈ 130 dygn) och
+`corrected-archive` — samma väg C som radarn (#223). Beroendet som följer: arkivet eller dess export måste gå att läsa i mars
+(återläsningssteget, #334). Fyra motprov, ett per vakt, fällde på rätt rad: klassgränsen, torrorden i kontraktsgrinden, spärrens utskrift
+och episodluckan. Torrordsprovet missade först, eftersom kontraktsgrinden bara läser `git ls-files` och modulen var ospårad.
+
+**Kända luckor, sagda nu:** underkylt regn syns inte i våtbulben och saknar eget ord hos Trafikverket; SMHI:s kod 156 är underkylt enligt
+WMO fast listan säger "Tätt duggregn"; Norge viker in `sleet` i `snow`.

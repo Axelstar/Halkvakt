@@ -1,0 +1,33 @@
+# Grind NT — nederbördstypen (kort #45). Läsande knapp; se skriptets huvud. Spärrad till 1 mars 2027:
+# utan dom-läget skriver den bara räkningar på facitsidan (TROSKLAR-NEDERBORDSTYPEN §5).
+name: grind-nt
+on:
+  workflow_dispatch:
+    inputs:
+      dagar:
+        description: "Fönster i dygn (spärrat läge)"
+        required: false
+        default: "30"
+      lage:
+        description: "sparr (standard) eller dom (låst till 2027-03-01)"
+        type: choice
+        default: sparr
+        options: [sparr, dom]
+jobs:
+  grind-nt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types scripts/grind-nt.ts --sjalvtest
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          if [ "${{ inputs.lage }}" = dom ]; then FLAGGA=--dom; else FLAGGA=; fi
+          node --experimental-strip-types scripts/grind-nt.ts "${{ inputs.dagar || '30' }}" $FLAGGA | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
