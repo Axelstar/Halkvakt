@@ -10126,3 +10126,9 @@ omätbart"*; med tyst alltid omätbar fäller *"igång men tyst i ±30 min är t
 min är torrt"*. Kortet stängs: Verify är självtestet och beslutet före första dom. I drift syns det på måndagens körning 28/9 som fler
 mätbara varningar och fler torra olyckor.
 
+**Rättelse 25/9 (granskningen av grindarna, kort #252):** premissen ovan är fel i ett led. Den levande ingesten, som ensam
+skriver det svenska väderarkivet sedan 8/9, sparar en avläsning bara om ytan är ≤ 5 °C eller det regnar eller snöar
+(`supabase/functions/ingest-live/index.ts:144`). Regeln om ändrad temperatur finns bara i den gamla ingesten. Regeln ovan
+fångar därför bara en torr station som haft en kall eller blöt rad inom ±3 h; den gör inget fel, men hjälper mindre än
+beslutet säger. Noten i TROSKLAR-VATTENPLANING §2 rättad i samma varv.
+
