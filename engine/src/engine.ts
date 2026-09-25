@@ -60,6 +60,10 @@ export class AlertEngine {
   private lastSpokenKind: HazardKind | null = null;
   /** Skuggmotorn lyssnar här (#127 a): vad spärren kastar syns annars ingenstans. */
   onSuppressed?: (c: { kind: HazardKind; hazardId: string; distM: number; by: HazardKind; sinceS: number }) => void;
+  /** FÖRSPRÅNGET (kort #153 beslut 1, docs/TROSKLAR-FORSPRANG.md §4): valfri krok som ger förvarningsavståndet per fara. Utan
+   *  krok är motorn byte för byte densamma — vektorerna rörs inte. Svaret klämms till leadMinM–leadMaxM, så spannet aldrig
+   *  ändras. Bara skuggan sätter den i vinter; portarna får den först vid steg 7, efter domen. */
+  leadFor?: (h: Hazard, leadM: number, speedMps: number) => number;
   private fired = new Map<string, FiredState>();
 
   constructor(hazards: Hazard[], cfg: Partial<EngineConfig> = {}) {
@@ -105,13 +109,16 @@ export class AlertEngine {
     const speedMps = (speedKmh * 1000) / 3600;
     const leadM = Math.min(this.cfg.leadMaxM, Math.max(this.cfg.leadMinM, speedMps * this.cfg.warnLeadS));
 
+    const lead = (h: Hazard) => this.leadFor
+      ? Math.min(this.cfg.leadMaxM, Math.max(this.cfg.leadMinM, this.leadFor(h, leadM, speedMps)))
+      : leadM;
     const candidates: Candidate[] = [];
     for (const p of this.points) {
-      const c = this.evaluatePoint(fix, heading, p, leadM);
+      const c = this.evaluatePoint(fix, heading, p, lead(p));
       if (c) candidates.push(c);
     }
     for (const s of this.segments) {
-      const c = this.evaluateSegment(fix, heading, s, leadM);
+      const c = this.evaluateSegment(fix, heading, s, lead(s.h));
       if (c) candidates.push(c);
     }
     if (candidates.length === 0) return null;

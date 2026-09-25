@@ -6,7 +6,7 @@
 // CI (ci.yml) kör samma sak och fallerar om index.ts inte matchar källorna.
 import { readFileSync, writeFileSync } from "node:fs";
 
-const ORDER = ["types", "geo", "segment", "texts", "engine", "snapshot"];   // segment (kort #38b steg 4) efter geo, som den importerar
+const ORDER = ["types", "geo", "segment", "texts", "engine", "forsprang", "snapshot"];   // segment (kort #38b steg 4) efter geo, som den importerar
 let out = `// ═══ GENERERAD av scripts/bundle-skuggmotor.ts — ÄNDRA INTE HÄR ═══\n` +
           `// Källor: engine/src/{${ORDER.join(",")}}.ts + supabase/functions/skuggmotor/main.ts\n\n`;
 for (const f of ORDER) {

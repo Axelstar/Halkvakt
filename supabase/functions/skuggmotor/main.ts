@@ -263,6 +263,86 @@ async function vagpunktAnkare(): Promise<{ lista: Ankare[]; skal: string | null 
   } catch (e) { return { lista: [], skal: `vagpunkt_ankare kastade: ${String(e).slice(0, 120)}` }; }
 }
 
+// FÖRSPRÅNGET (kort #153 beslut 1, docs/TROSKLAR-FORSPRANG.md §4, DECISIONS #359). Eget anrop på :12/:42 — huvudvarvet slår redan i
+// datorkraftens tak (546 kl 04:32 och 05:02Z 25/9, på :02/:32). Samma halvtimmes rutter som huvudvarvet; bara rutter med en nivå 2-fara
+// i rutan körs, och där körs motorn två gånger på samma spår: baskörningen (dagens motor) och varianten (nivå 2 med halvtimmens
+// svepvärde). Båda körningarnas varningar och undanträngda loggas i forsprang_log. Aldrig hört. `prov` skriver inget.
+async function forsprangVarv(prov: boolean): Promise<Response> {
+  const svar = (x: unknown) => new Response(JSON.stringify(x), { headers: { "Content-Type": "application/json" } });
+  const halvtimme = Math.floor(Date.now() / 1800e3);
+  const svepS = prov ? FORSPRANG_SVEP_S[1] : FORSPRANG_SVEP_S[halvtimme % FORSPRANG_SVEP_S.length];
+  const kor = (hazards: Hazard[], trace: Fix[], nivaer: Map<string, ForsprangNiva>, krok: boolean) => {
+    const motor = new AlertEngine(hazards);
+    if (krok) motor.leadFor = forsprangKrok(nivaer, svepS);
+    const suppressed: { kind: string; id: string; distM: number; by: string }[] = [];
+    motor.onSuppressed = (c) => suppressed.push({ kind: c.kind, id: c.hazardId, distM: Math.round(c.distM), by: c.by });
+    const alerts = motor.run(trace).map((a) => ({ t: a.t, id: a.hazardId, kind: a.kind, distanceM: Math.round(a.distanceM),
+      niva: nivaer.get(a.hazardId) ?? null }));
+    return { alerts, suppressed };
+  };
+  if (prov) {
+    // Ett rakt spår österut i 80 km/h: ett nivå 1-segment (kod 2) vid ~2 km och ett nivå 2-segment (kod 4) vid ~4 km. Nivå 1 ska tala
+    // på samma avstånd i båda körningarna; nivå 2 ska tala tidigare i varianten (60 s mot 30 s ⇒ ungefär dubbla avståndet).
+    const hazards: Hazard[] = [
+      { id: "prov:niva1", kind: "slippery_segment", line: [[15.035, 59.0], [15.040, 59.0]], meta: { code: 2, info: [] } },
+      { id: "prov:niva2", kind: "slippery_segment", line: [[15.070, 59.0], [15.078, 59.0]], meta: { code: 4, info: [] } },
+    ];
+    const nivaer = new Map<string, ForsprangNiva>(hazards.map((h) => [h.id, forsprangNiva(h, new Map())!]));
+    const trace = traceAlong([[15.0, 59.0], [15.1, 59.0]]);
+    return svar({ ok: true, prov: "forsprang", svep_s: svepS, bas: kor(hazards, trace, nivaer, false), variant: kor(hazards, trace, nivaer, true) });
+  }
+  const CDN = CDN_BY_LAND["se"];
+  const bust = `?t=${Date.now()}`;
+  const [st, lv] = await Promise.all([
+    fetch(CDN + "static.json" + bust).then((r) => r.json()),
+    fetch(CDN + "live.json" + bust).then((r) => r.json()),
+  ]);
+  const hazards = snapshotToHazards(st, lv);
+  const vata = new Map<string, number>();
+  for (const w of (Array.isArray(lv?.weather) ? lv.weather : [])) if (typeof w?.bevis?.vata === "number") vata.set(`wx:${w.id}`, w.bevis.vata);
+  const nivaer = new Map<string, ForsprangNiva>();
+  for (const h of hazards) { const n = forsprangNiva(h, vata); if (n !== null) nivaer.set(h.id, n); }
+  const iRutan = (h: Hazard, x0: number, x1: number, y0: number, y1: number) => {
+    const pts: [number, number][] = h.kind === "slippery_segment" ? h.line : [[(h as any).lon, (h as any).lat]];
+    return pts.some(([x, y]) => x >= x0 && x <= x1 && y >= y0 && y <= y1);
+  };
+  const allNames = Object.keys(ROUTES).sort();
+  const slots = 7;
+  const batch = allNames.filter((_, i) => i % slots === halvtimme % slots);   // samma halvtimmes rutter som huvudvarvet
+  const rader: Record<string, unknown>[] = [];
+  for (const name of batch) {
+    const line = ROUTES[name];
+    const M = 0.05, lons = line.map((q) => q[0]), lats = line.map((q) => q[1]);
+    const x0 = Math.min(...lons) - M, x1 = Math.max(...lons) + M, y0 = Math.min(...lats) - M, y1 = Math.max(...lats) + M;
+    const niva2 = hazards.filter((h) => nivaer.get(h.id) === 2 && iRutan(h, x0, x1, y0, y1)).length;
+    if (!niva2) continue;
+    const trace = traceAlong(line);
+    const bas = kor(hazards, trace, nivaer, false), variant = kor(hazards, trace, nivaer, true);
+    // FS-B4: en varning i varianten om en fara baskörningen aldrig talade om. Avståndet kvar till rutans slut följer med, så att
+    // faror där baskörningens spår tog slut före faran kan redovisas för sig.
+    const basIds = new Set(bas.alerts.map((a) => a.id));
+    const langdKm = narmastLangs({ lon: line[line.length - 1][0], lat: line[line.length - 1][1] }, line).vid;
+    const byId = new Map(hazards.map((h) => [h.id, h]));
+    const nytt = variant.alerts.filter((a) => !basIds.has(a.id)).map((a) => {
+      const h = byId.get(a.id) as any;
+      const pt = h?.kind === "slippery_segment" ? { lon: h.line[0][0], lat: h.line[0][1] } : { lon: h?.lon, lat: h?.lat };
+      const vid = typeof pt.lon === "number" ? narmastLangs(pt, line).vid : null;
+      return { id: a.id, kind: a.kind, niva: a.niva, kvarKm: vid === null ? null : Math.round((langdKm - vid) * 10) / 10 };
+    });
+    rader.push({ route: name, svep_s: svepS, niva2, bas: bas.alerts, variant: variant.alerts,
+      bas_suppressed: bas.suppressed, variant_suppressed: variant.suppressed, nytt });
+  }
+  let skrivet = "inget att skriva";
+  if (rader.length) {
+    const r = await fetch(`${SB}/rest/v1/forsprang_log`, { method: "POST",
+      headers: { Authorization: `Bearer ${SRK}`, apikey: SRK, "Content-Type": "application/json", Prefer: "return=minimal" },
+      body: JSON.stringify(rader) });
+    skrivet = r.ok ? `${rader.length} rader` : `forsprang_log ${r.status}: ${(await r.text().catch(() => "")).slice(0, 120)}`;
+  }
+  return svar({ ok: true, lage: "forsprang", svep_s: svepS, rutter: batch.length, med_niva2: rader.length,
+    niva2_i_snapshoten: [...nivaer.values()].filter((n) => n === 2).length, skrivet });
+}
+
 Deno.serve(async (req) => {
   const k = Deno.env.get("INGEST_KEY");
   if (!k || req.headers.get("x-halkvakt-key") !== k) return new Response("forbidden", { status: 403 });
@@ -276,6 +356,8 @@ Deno.serve(async (req) => {
     // minimidistans (520 m) ligger utanför spärren med flit; provet sätter dem 100 m isär just för att hamna
     // innanför de 10 sekunderna. Skriver INGET i shadow_log — en provrad hade förorenat tystnadsfelet och
     // upprepningen — svaret läses av dbknapp ur net._http_response.
+    // Försprångets eget läge (kort #153 beslut 1) — före allt annat, så att huvudvarvets arbete aldrig körs i samma anrop.
+    if (new URL(req.url).searchParams.get("lage") === "forsprang") return await forsprangVarv(new URL(req.url).searchParams.get("prov") === "1");
     if (new URL(req.url).searchParams.get("sparrprov") === "1") {
       const prov: Hazard[] = [
         { id: "prov:kam1", kind: "camera", lon: 15.0105, lat: 59.0, bearing: null },   // ~600 m från start: talar t=5

@@ -48,15 +48,15 @@ try {
     // Vitlistan först, före FRÅGAN: en felstavad flagga ska falla på en rad, inte efter att ha
     // kört något mot databasen. (Rättat 12/9: kommentaren sa tidigare att den därmed gick att
     // prova helt utan DATABASE_URL — det stämmer inte, toppnivåvakten kräver den ändå.)
-    const FLAGGOR: Record<string, string> = { larmprov: "larmprov=1", vinterprov: "vinterprov=1", frostprov: "frostprov=1", matvaktprov: "matvaktprov=1", paminnelseprov: "paminnelseprov=1", kassaprov: "kassaprov=1", databasprov: "databasprov=1", facitprov: "facitprov=1", nyckelprov: "nyckelprov=1", sparrprov: "sparrprov=1", arkivprov: "arkivprov=1", utlosarprov: "utlosarprov=1" };
+    const FLAGGOR: Record<string, string> = { larmprov: "larmprov=1", vinterprov: "vinterprov=1", frostprov: "frostprov=1", matvaktprov: "matvaktprov=1", paminnelseprov: "paminnelseprov=1", kassaprov: "kassaprov=1", databasprov: "databasprov=1", facitprov: "facitprov=1", nyckelprov: "nyckelprov=1", sparrprov: "sparrprov=1", arkivprov: "arkivprov=1", utlosarprov: "utlosarprov=1" , forsprangprov: "lage=forsprang&prov=1" };
     // Vilken funktion provet går till. Vakthunden är standard; spärrprovet (kort #191) går till skuggmotorn.
-    const FUNKTION: Record<string, string> = { sparrprov: "skuggmotor" };
+    const FUNKTION: Record<string, string> = { sparrprov: "skuggmotor", forsprangprov: "skuggmotor" };
     const flagga = FLAGGOR[arg ?? "larmprov"];
     if (!flagga) { console.error(`larmprov: okänd flagga "${arg}" — tillåtna: ${Object.keys(FLAGGOR).join(", ")}`); process.exit(1); }
     const fn = FUNKTION[arg ?? ""] ?? "vakthund";
     // Jobbet hittas på sin URL, inte på namnet: skuggmotorn har ett jobb per land, och det svenska är det
     // som saknar land=fi/no/dk. Exakt ETT jobb får matcha, annars avbryts provet högljutt.
-    const j = await pool.query(`SELECT jobid, jobname, command FROM cron.job WHERE command LIKE $1 AND command !~ 'land=(fi|no|dk)'`, [`%functions/v1/${fn}%`]);
+    const j = await pool.query(`SELECT jobid, jobname, command FROM cron.job WHERE command LIKE $1 AND command !~ 'land=(fi|no|dk)|lage='`, [`%functions/v1/${fn}%`]);
     if (j.rows.length !== 1) { console.error(`larmprov: hittade ${j.rows.length} jobb för functions/v1/${fn} — avbryter`); process.exit(1); }
     const kommando: string = j.rows[0].command;
     const urlForm = new RegExp(`functions\\/v1\\/${fn}(?=['"?])`, "g");
@@ -99,6 +99,7 @@ try {
       "kassaprov=1": "en issue med etiketten `kassavakt` ska finnas inom en minut, och stängas av nästa körning 05/11/17/23 UTC som ligger under gränsen (#152).",
       "nyckelprov=1": "en issue med etiketten `nyckelkalender` ska finnas inom en minut, och stängas av nästa 06 UTC-körning utan prov (kort #86).",
       "facitprov=1": "mätvaktens issue (etikett `matvakt`) ska få raden KÄLLA · kamerafacit … PROV inom en minut, och stängas av nästa timkörning när bilderna är färska (S7).",
+      "lage=forsprang&prov=1": "svaret ovan ska visa bas och variant: prov:niva1 talar på samma avstånd i båda, prov:niva2 talar tidigare i varianten (60 s mot 30 s, ungefär dubbla avståndet) — kroken i motorn och nivåerna i drift (kort #153 beslut 1). Inget skrivs i forsprang_log.",
       "sparrprov=1": "svaret ovan ska visa `suppressed` med EN rad — kamera 2 tystad av kamera 1 inom spärrens 10 s (#127; kort #188/#191). Inget skrivs i shadow_log.",
     };
     const fallback = "en issue med etiketten vakthund ska finnas inom en minut, och stängas av nästa gröna timkörning (xx:07).";
