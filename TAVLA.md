@@ -3519,6 +3519,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   m/s per fordonstyp, sikt m), plats i A-skalan under halkan, vektorer i tre portar. Skugga först.
   Verify: skuggkolumn med facit ur situation_archive (vindrelaterade olyckor) en höstmånad.
   📏 **Tryckt 24/9 (DECISIONS #331):** W-A steg 0, 14 dygn (körning 35949166508): 209 834 rader, byvind i 99,3 % (750 stationer), sikt i 99,9 %; täckningsgrad 17,9 % av möjliga stationstimmar; 11 stationer med omöjliga timmar (byvind ≥ 15 m/s och kvot > 5) tas av stationsvakten; högsta byvind 87,7 m/s bakom taket 30; W-A OAVGJORT — underlagsvakten W-A4 håller (16 respektive 243 stationstimmar i högsta bandet).
+  ⏭️ **B-GRINDEN UR ARKIVET 25/9 (DECISIONS #363, Bengts ja):** skuggkolumnen byggs inte — B spelas upp ur arkivet när A passerat,
+  spärrad som grind NT. Inget behöver byggas i skuggmotorn före frosten. Låsankaret är första körning som läser ett B-utfall.
 - [x] ✅ **STÄNGT 25/9, ÖPPNAS VÅREN 2027** (DECISIONS #355) — 🏔️ **#91 KALLPLATSLAGRET — bron är ett specialfall av "strukturellt kallare platser"**
   🔓 **NYCKELN ÄR LÄST 12/9, OCH SVARET ÄR TVETYDIGT** (DECISIONS #119). Grind A kördes om och
   **FÖLL för första gången** (2 042 punkter mot 57 den 1/9): MAE 1,06 °C mot kravets 1,0, grova fel
@@ -4226,6 +4228,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ➡️ **NÄSTA: K-A på befintligt arkiv** — kräver ingen ny data och ingen frost.
   🔑 **Nyckel, sorterat 22/9 (kort #224):** frostnätter — K-A körs om när minst 100 punkter med uppmätt frys finns (K-A4).
   📏 **Tryckt 24/9 (DECISIONS #331):** K-A, 60 dygn (körning 35949104486): 712 stationer, 207 647 avläsningar; 1 099 punkter över 44 stationer men 0 frysande vid gränsen 0 °C — INGEN DOM (septembervakten K-A4). Tryck om vid första frosten.
+  ⏭️ **B-GRINDEN UR ARKIVET 25/9 (DECISIONS #363, Bengts ja):** skuggkolumnen byggs inte — B spelas upp ur arkivet när A passerat,
+  spärrad som grind NT. Inget behöver byggas i skuggmotorn före frosten. Låsankaret är första körning som läser ett B-utfall.
 
 - [ ] 🪢 **#95 Plan B för Trafikverket-beroendet — mät SMHI som reserv** (systemanalys 10/9). Allt
   🔓 **BLOCKERARFYNDET 12/9 (DECISIONS #114): kortet blockerar #88:s dom.** T-A:s fysikkontroll
@@ -4337,6 +4341,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   till ett byggkort med tröskelrad i TROSKLAR-SKUGGAN (§5, båda signerar). Resonemanget i sin helhet:
   Drive, "Framtida utvecklingsmöjligheter — systemanalys varningssystemen 2026-09-10 v2 (läsbar)", §2.8.
   🔑 **Nyckel, sorterat 22/9 (kort #224):** första frosten (F-B i samma varv som T-A steg 0), vinterdata för Verify 2 (Ä4, mars).
+  ⏭️ **B-GRINDEN UR ARKIVET 25/9 (DECISIONS #363, Bengts ja):** skuggkolumnen byggs inte — B spelas upp ur arkivet när A passerat,
+  spärrad som grind NT. Inget behöver byggas i skuggmotorn före frosten. Låsankaret är första körning som läser ett B-utfall.
 
 - [ ] 🔨 ❄️ **#46 Rimfrosten — svartis utan nederbörd** (Bengts hål A, 4/9) — PÅGÅR:
   📄 **TRÖSKELDOKUMENT SKRIVET 12/9** (`docs/TROSKLAR-RIMFROST.md`, **FASTSTÄLLT 12/9**, DECISIONS #117/#135).
@@ -4395,6 +4401,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔑 Motoränring + vektor är ETT SENARE beslut på höstens siffror; rösten är Axels.
   🔑 **Nyckel, sorterat 22/9 (kort #224):** äkta frostnätter — R-A vid full vaktstyrka; därefter Bengts och Axels beslut om grenen.
   📏 **Tryckt 24/9 (Bengt: *"gör 5"*, DECISIONS #331):** R-A på det finska arkivet, 30 dygn (körning 35949100922): 39 244 rader, 419 stationer efter vakten — 0 episoder på 0 stationer, OAVGJORT (spärren 200 stationstimmar / 20 stationer); molnkontrollen R-A4 kan inte köras på Finland (SMHI:s moln når inte dit). Tryck om vid Lapplands första frost.
+  ⏭️ **B-GRINDEN UR ARKIVET 25/9 (DECISIONS #363, Bengts ja):** skuggkolumnen byggs inte — B spelas upp ur arkivet när A passerat,
+  spärrad som grind NT. Inget behöver byggas i skuggmotorn före frosten. Låsankaret är första körning som läser ett B-utfall.
 
 - [ ] 🌨️ **#45 Nederbördstypen — regn, snö eller slask?** (Bengts fråga 3/9: "hur mäter
   vi snö, snöslask etc som är lika riskabla?") 🔒 LÅST BAKOM RADARDOMEN 14/9.

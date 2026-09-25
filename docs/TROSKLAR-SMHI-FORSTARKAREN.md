@@ -56,7 +56,7 @@ effekten måste namnges före svepet. Tre kandidater, och bara två är tillåtn
 
 | Effekt | Tillåten? | Kommentar |
 | :-- | :-- | :-- |
-| **E0 — bara skuggkolumn** | **ja, och det är startläget** | `smhi_forstarkt` i skuggloggen. Ingen förarupplevelse alls. |
+| **E0 — bara mätning** | **ja, och det är startläget** | Uppspelning ur arkivet (DECISIONS #363; tidigare `smhi_forstarkt` i skuggloggen). Ingen förarupplevelse alls. |
 | **E1 — längre försprång** | ja, om F-B passerar | Samma form som #90:s roll B: modifieraren **förlänger försprånget**, den höjer aldrig prioriteten (prioritetsstegen droppar förloraren). |
 | **E2 — annan rösttext** | **nej, inte av mig** | Rösten är Axels, och PRODUKTBOKSREGELN gäller i samma varv. Föreslås först om F-B passerar med marginal. |
 | E3 — högre prioritet | **aldrig** | Skulle tysta en olycka eller en halksträcka. Prioritetsstegen rörs inte. |
@@ -76,7 +76,7 @@ Inget tal nedan är valt. Svepet körs, kurvan ritas, Bengt sätter värdet.
 | F3 | **"Yta nära noll"** | `≤ 0` · `≤ 1` (motorns egen) | **Tak: aldrig över motorns tröskel** (§1.1). Regeln får skära, aldrig lägga till. |
 | F4 | **Tidsmatchning** | giltighetsfönstret · +0/−0 h · ±1 h · ±3 h | SMHI publicerar i förväg. Se §3.1 — fönstret finns inte i arkivet ännu. |
 | F5 | **Rumslig matchning** | stationen **inuti** området · ≤ 10 km utanför · ≤ 25 km | Varningsområdena är **län**. Se §3.2. |
-| F6 | **Effekten** (§1.2) | E0 skuggkolumn · E1 försprång × 1,5 · E1 försprång × 2 | E0 är startläget. E1 byggs bara om F-B passerar. |
+| F6 | **Effekten** (§1.2) | E0 bara mätning · E1 försprång × 1,5 · E1 försprång × 2 | E0 är startläget. E1 byggs bara om F-B passerar. |
 
 ---
 
@@ -138,8 +138,9 @@ Norrbotten kan ensam skapa tusentals stationstimmar.
 
 ### F-B — Skiljer den? (döms efter en vintermånad)
 
-Skuggkolumn `smhi_forstarkt` i skuggmotorn, aldrig röst. Jämförelsen är **förstärkta mot oförstärkta
-kvalificerande stationstimmar**, mot facitstacken:
+**Uppspelning ur arkivet**, aldrig röst: stationstimmarna ur `weather_observations`, varningarna ur `smhi_warnings_history` med
+område och giltighetsfönster (sql/015). *Ändrat 25/9 (DECISIONS #363); tidigare: skuggkolumn `smhi_forstarkt` i skuggmotorn.*
+Jämförelsen är **förstärkta mot oförstärkta kvalificerande stationstimmar**, mot facitstacken:
 
 | # | Mått | Krav |
 | :-- | :-- | :-- |
@@ -209,8 +210,7 @@ tusental. Skuggkolumnen `smhi_forstarkt` är en boolean per skuggrad. **0 kr/må
 3. ✅ **Steg 0 / grind F-A** — `scripts/smhi-forstarkaren-steg0.ts`, läsande knapp. Kan köras i dag;
    i september väntas OAVGJORT, och det är ett underlagsbesked.
 4. **Vid första vintervarningarna:** F-A körs om skarpt.
-5. **Passerar F-A:** skuggkolumnen `smhi_forstarkt` byggs — **efter radardomen 14/9**, kort #81:s
-   ordning.
+5. **Passerar F-A:** uppspelningen för F-B byggs, spärrad som grind NT (DECISIONS #363). Radardomen är avklarad (13/9).
 6. **Efter en vintermånad:** F-B döms mot facitstacken.
 7. **Först därefter** en effekt i motorn (F6 = E1), vektorer i tre portar, PRODUKTBOKEN i samma varv.
    **Rösten är Axels.**
@@ -228,6 +228,8 @@ Fram till **första skuggkörningen** får svepet i §2 och kraven i §4 justera
 med en rad i DECISIONS. **Därefter ändras ingen tröskel alls.** En ändring som lutar sig mot
 utfallet är värdelös — det är hela skälet till att dokumentet är daterat. Regimen är knuten till första skuggkörningen, inte till signaturen — samma form som
 TROSKLAR-TRENDEN §8, TROSKLAR-OVERGANGAR §10 och TROSKLAR-RIMFROST §9.
+
+**Ankaret flyttat 25/9 (DECISIONS #363):** B döms genom uppspelning ur arkivet, inte i en skuggkolumn, så "första skuggkörningen" inträffar aldrig. Ankaret är i stället **den första körning som läser ett B-utfall** — fram till dess gäller lättnaden ovan, därefter ändras ingen tröskel.
 
 **Undantaget från all lättnad är §1.1:s tak.** F3 får aldrig sättas över motorns egen tröskel,
 oavsett signaturer — den dagen regeln får skapa varningar är den ett annat kort med en egen

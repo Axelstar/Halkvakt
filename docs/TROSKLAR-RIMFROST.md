@@ -143,13 +143,16 @@ och det är precis därför R-A ska köras på höstens riktiga frostnätter, in
 
 ### R-B — Skuggdriften: räddar grenen mer än den kostar? (döms efter en frostmånad)
 
-Skuggkolumn `rimfrost_kandidat` i skuggmotorn, aldrig röst. Döms som B3, samma mått som #88 och #89:
+**Uppspelning ur arkivet**, aldrig röst: villkoret räknas per station och halvtimme ur `weather_observations` (yta, daggpunkt, luft,
+fuktighet, sikt, nederbörd — genom §3:s vakter) och molnet hämtas i efterhand ur SMHI (R5), så inget behöver byggas i skuggmotorn
+före frosten. I uppspelningen räknas R3 i halvtimmar: 30 min = två följande halvtimmesrader, 60 min = tre. *Ändrat 25/9 (DECISIONS
+#363); tidigare: skuggkolumn `rimfrost_kandidat` i skuggmotorn.* Döms som B3, samma mått som #88 och #89:
 
 | # | Mått | Golv |
 | :-- | :-- | :-- |
 | R-B1 | **Nettonytt:** halttillfällen grenen fångar **där punktmotorn teg eller kom > 30 min senare** | **≥ 5 %** av bekräftade tillfällen |
 | R-B2 | **Falsklarm:** kandidattimmar utan något halt utfall inom 90 min | **≤ 25 %** |
-| R-B3 | Extra röst per resa mot dagens motor | redovisas, **fäller inte** |
+| R-B3 | Extra röst mot dagens motor — per station och frostdygn (per resa kräver att motorn körs längs rutterna) | redovisas, **fäller inte** |
 
 **R-B3 fäller inte — det är DECISIONS #103.** Bengts fältdom river ord-per-resa som fällande
 kriterium: cry wolf handlar om *falska* varningar, och en sann varning som upprepas är redundans.
@@ -234,8 +237,8 @@ som trendens. Mätkörningarna är knappar, ett par Actions-minuter styck. **0 k
    septemberfrost är äkta. Instrumentet är en läsande knapp i samma form som grind T-A.
 3. **Vid första svenska frostlarmet** (vakthundens check 5): kör R-A på svenska arkivet **inom sju
    dygn** (R-D). Samma natt som #89:s steg 0 körs om — issue #127.
-4. **Passerar R-A:** skuggkolumnen `rimfrost_kandidat` byggs. **Efter radardomen 14/9**, enligt kort
-   #81:s ordning.
+4. **Passerar R-A:** uppspelningen för R-B byggs, spärrad som grind NT — bara räkningar tills domen (DECISIONS #363).
+   Radardomen 14/9 är avklarad (13/9).
 5. **Efter en frostmånad:** R-B döms mot facitstacken.
 6. **Först därefter** en motorändring: andra grenen i `icing_point`, vektorer i tre portar,
    PRODUKTBOKEN i samma varv. **Rösten är Axels.**
@@ -255,6 +258,8 @@ Fram till **första skuggkörningen** får svepet i §2 och kraven i §4 justera
 med en rad i DECISIONS. **Därefter ändras ingen tröskel alls.** En ändring som lutar sig mot
 utfallet är värdelös — det är hela skälet till att dokumentet är daterat. Regimen är knuten till första skuggkörningen, inte till signaturen — samma form som
 TROSKLAR-TRENDEN §8 och TROSKLAR-OVERGANGAR §10.
+
+**Ankaret flyttat 25/9 (DECISIONS #363):** B döms genom uppspelning ur arkivet, inte i en skuggkolumn, så "första skuggkörningen" inträffar aldrig. Ankaret är i stället **den första körning som läser ett B-utfall** — fram till dess gäller lättnaden ovan, därefter ändras ingen tröskel.
 
 **Givarvakten i §3 är undantagen från all lättnad.** Den får skärpas men aldrig mjukas upp, oavsett
 signaturer. Skälet står i §3 och heter Ollsta, Storvik och Bolhyttan.
