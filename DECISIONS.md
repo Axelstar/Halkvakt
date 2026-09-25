@@ -10326,3 +10326,10 @@ inom ±10 minuter. NT-D står på 1/100 snöepisoder och 14/40 slaskepisoder —
 orsak, inte av skriptet:** före #353 (25/9 07:20Z) sparades inga varma torra rader, så grannar och vägrader saknas i septemberdata. Vintern
 sparar kalla rader alltid. Tidsparningen håller efter gallringen: stationerna mäter var 5:e minut och gallringen behåller halvtimmens
 senaste rad, 4:57 före hel timme (`scripts/matningar/nederbordstyp-tidsparning-2026-09-25.sql`).
+
+## #362 (25/9 2026) Axel kontrasignerar TROSKLAR-NEDERBORDSTYPEN (kort #45)
+
+**Beslut (Axel 25/9, via Bengt: *"Axel säger ja till tröskeldokumentet"*).** `docs/TROSKLAR-NEDERBORDSTYPEN.md` (DECISIONS #361) är
+fastställt av Bengt och kontrasignerat av Axel, oförändrat — gränserna, svepet, facit, grindarna NT-A–D och domspärren gäller som
+skrivna. Inget utfall är läst: den enda körningen mot data (25/9 13:07Z) var spärrad och skrev bara räkningar. Ändringar före domen
+följer dokumentets §8. **Nästa punkt är domen, tidigast 1 mars 2027** (`grind-nt`, läget `dom`); inget mer väntar före den.
