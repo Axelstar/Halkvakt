@@ -44,6 +44,7 @@
 // PAT:ens datum läses LIVE ur GitHubs svarshuvud; Supabase-tokenens står i koden. Egen etikett,
 // egen cykel, skrivs en gång om dygnet.
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
+import { skaTrycka, senasteTryck, FROSTTRYCK_MARK } from "./frosttryck.ts";
 
 const sql = postgres(Deno.env.get("SUPABASE_DB_URL")!, { max: 1, prepare: false });
 const REPO = "Axelstar/Halkvakt";
@@ -61,9 +62,10 @@ async function gh(path: string, method = "GET", body?: unknown): Promise<any> {
   return r.json();
 }
 
-/** FROSTTRIGGERN (DECISIONS #338, Bengts ja 24/9): mätningarna som bara första frostnätterna kan ge trycks av vakthunden
- *  själv, EN gång, i samma ögonblick som frostlarmet skapas — i stället för en veckoklocka i Actions (regeln 22/9) och i
- *  stället för att hänga på att någon läser issuen inom sju dygn. Dispatch svarar 204 utan kropp, därför egen fetch.
+/** FROSTTRIGGERN (DECISIONS #338, Bengts ja 24/9; omtryckningen #352, 25/9): mätningarna som frostnätterna ger trycks av
+ *  vakthunden själv — kl 09 UTC, efter morgonen, ett dygn då frosten når tröskeln, och sedan högst var sjunde dygn så länge
+ *  den varar (frosttryck.ts). Före 25/9 trycktes de EN gång, mitt i första frostnatten, och stod sedan stilla. I stället för
+ *  en veckoklocka i Actions (regeln 22/9) och i stället för att hänga på att någon läser issuen. Dispatch svarar 204 utan kropp, därför egen fetch.
  *  Utfallet per flöde skrivs i issuen: ett nekat anrop (PAT:en saknar actions:write) ska synas, inte tiga. */
 const FROSTFLODEN: { fil: string; inputs: Record<string, string> }[] = [
   { fil: "overgangar-steg0.yml", inputs: { dagar: "7" } },   // #89 0c
@@ -285,18 +287,21 @@ Deno.serve(async (req) => {
       // Provet bär egen etikett, annars förbrukar det det riktiga engångslarmet.
       const etikett = prov && f.n < FROST_STATIONER ? "frostlarm-prov" : "frostlarm";
       const tidigare = await gh(`/issues?state=all&labels=${etikett}&per_page=1`);
+      const nu = new Date();
       if (!tidigare.length) {
-        // Frosttriggern (DECISIONS #338): bara vid det RIKTIGA larmet — provet trycker inga flöden (det gör ?utlosarprov=1).
-        const tryckt = etikett === "frostlarm" ? await utlos(FROSTFLODEN) : [];
+        // Frosttriggern (DECISIONS #338, #352): bara vid det RIKTIGA larmet och bara kl 09 UTC — annars trycker nästa
+        // 09-varv via grenen nedan. Provet trycker inga flöden (det gör ?utlosarprov=1).
+        const tryckt = etikett === "frostlarm" && skaTrycka(nu, null) ? await utlos(FROSTFLODEN) : [];
         await gh(`/issues`, "POST", {
           title: `🥶 Frosten är här — kör steg 0 inom sju dygn (kort #89)${prov && f.n < FROST_STATIONER ? " [PROV]" : ""}`,
           labels: [etikett],
           assignees: ["895845"],
           body: `${f.n} stationer har haft vägyta ≤ 0 °C det senaste dygnet` +
             `${f.kallast != null ? ` (kallast ${Number(f.kallast).toFixed(1)} °C)` : ""}. Tröskeln är ${FROST_STATIONER}.\n\n` +
-            (tryckt.length ? `**Vakthunden har tryckt mätningarna själv (DECISIONS #338):**\n${tryckt.map((t) => `- ${t}`).join("\n")}\n\n` +
+            (tryckt.length ? `${FROSTTRYCK_MARK}\n**Vakthunden har tryckt mätningarna själv (DECISIONS #338):**\n${tryckt.map((t) => `- ${t}`).join("\n")}\n\n` +
               `Står något ❌ ovan: tryck det flödet för hand i Actions med samma värden.\n\n` : "") +
-            `**Att göra nu:** tryck knappen \`overgangar-steg0\` i Actions med \`dagar = 7\`${tryckt.length ? " — om den inte står ✅ ovan" : ""}.\n\n` +
+            `**Tryckningarna (DECISIONS #352):** vakthunden trycker de fem mätningarna kl 09 UTC och sedan var sjunde dygn så ` +
+            `länge frosten varar; varje tryckning blir en kommentar här. **Att göra nu:** ${tryckt.length ? "inget, om allt står ✅ ovan" : "inget — första tryckningen kommer kl 09 UTC"}.\n\n` +
             `**Varför det brådskar — sju dygn, inte "när det passar":** gallringen (kort #83, sql/014) ` +
             `tunnar allt äldre än sju dygn till EN rad per station och halvtimme. Steg 0:s gap-vakt kastar ` +
             `varje omslag med mer än 20 minuters lucka, så en gallrad vecka är obrukbar per konstruktion. ` +
@@ -315,6 +320,20 @@ Deno.serve(async (req) => {
             `Bakgrund: #127, \`docs/OVERGANGAR-ANALYS.md\` §9, DECISIONS #96 och #97, kort #89.\n\n` +
             `Engångslarm: den här issuen skapas aldrig igen, öppen eller stängd.`,
         });
+      } else if (etikett === "frostlarm" && skaTrycka(nu, null)) {
+        // Omtryckningen (DECISIONS #352): kl 09 UTC, högst var sjunde dygn, medan frosten når tröskeln. Klockan är den senaste
+        // markerade tryckningen på issuen; `since` håller listan kort så att den nyaste alltid kommer med.
+        const issue = tidigare[0];
+        const kommentarer = await gh(`/issues/${issue.number}/comments?per_page=100&since=${new Date(+nu - 8 * 86_400_000).toISOString()}`);
+        if (skaTrycka(nu, senasteTryck(issue, kommentarer))) {
+          const tryckt = await utlos(FROSTFLODEN);
+          await gh(`/issues/${issue.number}/comments`, "POST", {
+            body: `${FROSTTRYCK_MARK}\n🔁 **Frosten varar — mätningarna tryckta igen** (${f.n} stationer med vägyta ≤ 0 °C senaste dygnet, ` +
+              `DECISIONS #352):\n${tryckt.map((x) => `- ${x}`).join("\n")}\n\nStår något ❌: tryck det flödet för hand i Actions med ` +
+              `samma värden. Nästa tryckning tidigast om sju dygn, kl 09 UTC.`,
+          });
+          rad.push(`frost: ${tryckt.filter((x) => x.startsWith("✅")).length} av ${tryckt.length} frostflöden tryckta igen`);
+        }
       }
     }
   } catch (e) {
