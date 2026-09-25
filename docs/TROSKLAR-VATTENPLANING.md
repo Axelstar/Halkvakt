@@ -59,7 +59,9 @@ segment där ingen varning gick ut under 30 min före händelsen.
 *Operationalisering för V-C1 (DECISIONS #349, 25/9, skriven före första räkningen — inget tal i §3 ändrat):* en facitbekräftad
 händelse är en olycka i `situation_archive` inom 2 km från en svensk skuggrutt, där den dömande stationen (närmaste inom 10 km, som
 i V-B1) mätte regn > 0 inom ±30 min från olyckans start. *Blindning (DECISIONS #350):* under V-C:s spärr redovisar knappen bara
-räkningar, aldrig andelar.
+räkningar, aldrig andelar. *Torr station (DECISIONS #351, 25/9, före första andelen):* arkivet sparar bara kalla, blöta eller ändrade
+avläsningar, så en dömande station med arkivrader inom ±3 h men ingen inom ±30 min räknas som torr — i V-B1 ett falsklarm. Utan rader
+inom ±3 h är den omätbar.
 
 ## 3. Trösklarna
 
