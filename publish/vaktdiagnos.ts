@@ -102,3 +102,37 @@ export function led234(tabell = "weather_observations"): Led[] {
       : []),
   ];
 }
+
+/** SAKNADE DYGN (kort #252, DECISIONS #352). Sedan 24/9 raderas exporterade dygn äldre än 30 dagar när databasen passerar
+ *  350 MB (sql/034). En mätning över ett längre fönster krymper då tyst — ett dygn utan rader räknas aldrig som ett lugnt dygn,
+ *  det skrivs ut. Dygn före arkivets början saknas inte; början är det tidigaste av första exporterade dygnet och första raden,
+ *  så att raderade dygn inte tas för dygn före arkivet. */
+export function saknadeDagar(medData: Set<string>, dagar: number, arkivetsBorjan: string | null, nu: Date = new Date()): string[] {
+  const ut: string[] = [];
+  const start = new Date(nu.getTime() - dagar * 86_400_000).toISOString().slice(0, 10), idag = nu.toISOString().slice(0, 10);
+  for (let d = new Date(`${start}T00:00:00Z`); d.toISOString().slice(0, 10) <= idag; d = new Date(d.getTime() + 86_400_000)) {
+    const dag = d.toISOString().slice(0, 10);
+    if (arkivetsBorjan !== null && dag < arkivetsBorjan) continue;
+    if (!medData.has(dag)) ut.push(dag);
+  }
+  return ut;
+}
+export async function saknadeDygn(q: (s: string, p?: unknown[]) => Promise<any[]>, tabell: string, dagar: number): Promise<string[]> {
+  const med = await q(`SELECT DISTINCT (sample_time AT TIME ZONE 'UTC')::date::text AS d FROM ${tabell}
+    WHERE sample_time > now() - $1 * interval '1 day'`, [dagar]);
+  let borjan: string | null = null;
+  try {
+    const [b] = await q(`SELECT least((SELECT min(dag) FROM arkiv_export), (SELECT min(sample_time) FROM ${tabell})::date)::text AS b`);
+    borjan = b?.b ?? null;
+  } catch {
+    const [b] = await q(`SELECT (SELECT min(sample_time) FROM ${tabell})::date::text AS b`);   // arkiv_export finns bara i Supabase
+    borjan = b?.b ?? null;
+  }
+  return saknadeDagar(new Set(med.map((r) => String(r.d))), dagar, borjan);
+}
+export function skrivSaknade(saknade: string[]): void {
+  if (!saknade.length) return;
+  console.log(`⚠ SAKNADE DYGN: väderarkivet har inga rader för ${saknade.length} dygn i fönstret (${saknade.join(", ")}) — exporterade`
+    + ` och raderade (sql/034) eller aldrig hämtade. De räknas inte; läs tillbaka ur exporten (arkiv/weather_observations/) före en dom.\n`);
+}
+

@@ -30,7 +30,7 @@
 import { readFileSync } from "node:fs";
 import { andelSe, utfallGolv, utfallTak, grindutfall, marginalPe, type Utfall }
   from "../publish/marginal.ts";
-import { vaktdiagnos, led234 } from "../publish/vaktdiagnos.ts";
+import { vaktdiagnos, led234, saknadeDygn, skrivSaknade } from "../publish/vaktdiagnos.ts";
 import { RADVAKT_SQL, karantanSql } from "../publish/snapshot-core.ts";
 
 // ── Speglar publish/grind-a.ts. ÄNDRA DÄR FÖRST — driftvakten fäller annars.
@@ -147,6 +147,8 @@ const DAGAR = Number(process.argv.slice(2).find((a) => /^\d+$/.test(a)) ?? 60);
 const pg = (await import("pg")).default;
 const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });
 await pool.query("SET statement_timeout = '600s'");
+// Saknade dygn (kort #252, DECISIONS #352): raderingen i sql/034 får aldrig krympa fönstret tyst.
+skrivSaknade(await saknadeDygn((s, p) => pool.query(s, p as any[]).then((r) => r.rows), "weather_observations", DAGAR));
 
 type Station = { id: string; lon: number; lat: number; series: Map<number, number> };
 // VAKTDIAGNOSEN FÖRST (DECISIONS #141).

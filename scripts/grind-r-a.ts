@@ -101,6 +101,12 @@ export function dominans(ep: Episod[]): { storsta: number; andel: number; statio
   return { storsta, andel: ep.length ? storsta / ep.length : 0, station };
 }
 
+/** R-A1 i STATIONSTIMMAR, som dokumentet säger (kort #252, DECISIONS #352): episodernas sammanlagda längd i timmar. Längden är
+ *  sista minus första raden, så talet är något försiktigt. Före 25/9 jämfördes antalet EPISODER med kravet — flera gånger strängare. */
+export function stationstimmar(ep: Episod[]): number {
+  return Math.floor(ep.reduce((a, e) => a + e.minuter, 0) / 60);
+}
+
 /** Underlagsvakten R-A1/R-A2. null = ingen dom. */
 export function dom<T>(timmar: number, stationer: number, svar: T): T | null {
   return timmar >= R_A1_TIMMAR && stationer >= R_A2_STATIONER ? svar : null;
@@ -150,6 +156,9 @@ if (process.argv.includes("--sjalvtest")) {
   k("för få timmar", dom(199, 100, "x"), null);
   k("för få stationer", dom(5000, 19, "x"), null);
   k("båda räcker", dom(200, 20, "x"), "x");
+  // R-A1 räknar timmar, inte episoder (DECISIONS #352): 90 + 45 + 30 minuter = 2,75 h ⇒ 2 stationstimmar, fast episoderna är 3.
+  const epi = (minuter: number) => ({ station: "s", natt: "n", minuter, kallastTimme: 4, kallastT: 0, lon: 0, lat: 0 });
+  k("stationstimmar är episodernas längd, inte deras antal", stationstimmar([epi(90), epi(45), epi(30)]), 2);
   // Svepen är dokumentets.
   k("R1 är dokumentets", R1_MARGINAL.join(","), "0,0.5,1");
   k("R3 är dokumentets", R3_UTHALL.join(","), "30,60");
@@ -245,16 +254,16 @@ if (!harRh) {
   console.log(`  OAVGJORT — korsgivarkontrollen (§3, tredje ledet) går inte att utvärdera i det`);
   console.log(`  här arkivet. Talen ovan är ett FÖRHANDSBESKED och får inte läsas som ett`);
   console.log(`  grindutfall. Kör om med --land=se när svensk frost kommer, där RH finns.`);
-} else if (!dom(bast.ep.length, stationer, true)) {
-  console.log(`  ⊘ OAVGJORT — domspärren håller. Bästa kombinationen gav ${bast.ep.length} episoder`);
-  console.log(`    på ${stationer} stationer, kravet är ${R_A1_TIMMAR} och ${R_A2_STATIONER}.`);
+} else if (!dom(stationstimmar(bast.ep), stationer, true)) {
+  console.log(`  ⊘ OAVGJORT — domspärren håller. Bästa kombinationen gav ${stationstimmar(bast.ep)} stationstimmar`);
+  console.log(`    (${bast.ep.length} episoder) på ${stationer} stationer, kravet är ${R_A1_TIMMAR} stationstimmar och ${R_A2_STATIONER} stationer.`);
   console.log(`    Det är ett UNDERLAGSBESKED, inte ett nej. Frosten har inte kommit än.`);
 } else {
   const natt = bast.ep.filter((e) => e.kallastTimme >= 3 && e.kallastTimme <= 7).length;
   const andel = natt / bast.ep.length;
   const se = andelSe(andel, bast.ep.length);
   const d = dominans(bast.ep);
-  console.log(`  Bästa kombinationen: R1 ${bast.m}, R2 ${bast.y}, R3 ${bast.u} min — ${bast.ep.length} episoder, ${stationer} stationer.`);
+  console.log(`  Bästa kombinationen: R1 ${bast.m}, R2 ${bast.y}, R3 ${bast.u} min — ${bast.ep.length} episoder, ${stationstimmar(bast.ep)} stationstimmar, ${stationer} stationer.`);
   console.log(`  R-A3 fysikkontroll (dygnsprofil): ${pct(andel)}${marginalPe(se)} har kallaste stunden kl 03–07 (krav ${pct(R_A3_NATT)})`);
   console.log(`     ⇒ ${utfallGolv(andel, R_A3_NATT, se)}`);
   console.log(`  R-A5 dominans: största stationen bär ${pct(d.andel)} av träffarna (tak ${pct(R_A5_DOMINANS)})`);
