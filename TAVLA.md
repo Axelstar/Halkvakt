@@ -1213,10 +1213,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **Stängt 22/9 (DECISIONS #306):** Bengts ja 22/9. PR #481 (0c2d92a): 504 filer ur git, `ios/HalkvaktEngine/.build/` i `.gitignore`, inga referenser utanför mappen. **Före:** en kloning utan `core.longpaths` föll 22/9 på *Filename too long* (291 tecken, *checkout failed*). **Efter:** samma kloning av 0c2d92a går igenom, 0 saknade filer. ci och ios-engine gröna på main (35739390674, 35739390740). Historiken är oförändrad, och en `git pull` tar bort de gamla byggfilerna ur andras arbetskopior; nästa Swift-bygge skapar dem igen.
 
 ### Claude — olåst
-- [ ] 🌙 **#256 UPPSPELNINGENS NATT RÄKNAS I UTC** (fynd 25/9 under kort #254, DECISIONS #365). `sql/028_uppspelning_varianter.sql:137`
+- [x] ✅ **KLART 25/9** (DECISIONS #366) — 🌙 **#256 UPPSPELNINGENS NATT RÄKNAS I UTC** (fynd 25/9 under kort #254, DECISIONS #365). `sql/028_uppspelning_varianter.sql:137`
   skiftar natten 12 h i `AT TIME ZONE 'UTC'`, medan R-A och sedan #254 d även T-A räknar i `Europe/Stockholm`. DECISIONS #246 säger att
   T-A, R-A och uppspelningens episoder ska mena samma natt; kontraktet "Nattens gräns" vaktar bara talet 12, inte zonen.
   **Verify:** uppspelningen räknar natten i svensk tid (ny migration, uppspelningen körd om och jämförd), och kontraktet vaktar zonen.
+  ✅ **BEVIS 25/9:** `sql/028` räknar natten i Europe/Stockholm (redigerad på plats — idempotent — och körd i drift, run 36147121022:
+  en signatur, svensk natt i funktionen). Kontraktet "Nattens zon" vaktar zonen i tre kopior. Fall J grönt i PR #597; motprovet i
+  PR #598 föll på J. Uppspelningen före och efter identisk (2/4/2, 12/27/7, 204/7 380/12) — septembers kandidater ligger på natten.
 - [x] ✅ **KLART 25/9** (DECISIONS #364) — 🧪 **#255 MISSMÄTNINGEN RÄKNAR UPPEHÅLL SOM FUKT** (fynd 25/9 under läsningen av #45). `publish/missar.ts:59` bygger
   `moisture` som `COALESCE(precipitation,'') <> ''` — Trafikverkets "no" (uppehåll) blir fukt, samma fälla som `Boolean(precipitation)`
   (CLAUDE.md). Rekonstruktionen får då frysrisk vid torra stationer, motorn "hade varnat" oftare än den skulle, och missandelen
@@ -4525,6 +4528,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#256 UPPSPELNINGENS NATT — KLART 25/9 (DECISIONS #366)**: svensk tid som T-A och R-A, kontraktet "Nattens zon", körd i drift och jämförd (oförändrat i september). Tavlan 44 → 43.
 - [x] ✅ **#254 GRANSKNINGENS ÄLDRE FEL — KLART 25/9 (DECISIONS #365)**: fyra byggda med självtest, prov mot PostGIS och nio motprov; fyra avskrivna med skäl; missmätningens knapp stängd. Nytt kort #256. Tavlan 44 → 44.
 - [x] ✅ **#255 MISSMÄTNINGENS FUKT — KLART 25/9 (DECISIONS #364)**: rekonstruktionen i egen modul med snapshotkärnans torrord, prov mot PostGIS grönt och motprov fällt på rätt rader. Tavlan 45 → 44.
 - [x] ✅ **SYSTEM.md-LÄSNINGEN STÄNGD SOM KORT 25/9 (DECISIONS #356)**: en rutin i bedömningens kalender, nästa i oktober. Tavlan 45 → 44.
