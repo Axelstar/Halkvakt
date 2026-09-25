@@ -108,3 +108,19 @@ fångar därför bara en torr station som haft en kall eller blöt rad inom ±3 
 5. **Varningen om saknade dygn** (som V-B:s) i grind A, vägpunktsgrinden och K-A.
 6. **R-A:s spärr i stationstimmar**, som dokumentet säger.
 7. **Rättelsen av #351** är redan skriven i DECISIONS.
+
+## Utfallet 25/9 (Bengts ja till alla sex, Axel inget att invända — DECISIONS #352)
+
+| Förslag | Utfall | Bevis |
+|---|---|---|
+| 1. Censuren mätt | **10 947 kalla målhalvtimmar** (yta ≤ 5 °C, 60 dygn): av 41 079 grannplatser saknade **20 319 en arkivrad — 49,5 %**; bland de frysnära (yta ≤ 1 °C, 232 halvtimmar) **50,4 %**. Av 5 785 mål med fem grannar hade bara **573 alla fem**, och 966 ingen. En granne som saknas i en kall halvtimme är varm och torr eller nere, så talet är ett tak — men ett högt tak. | `scripts/matningar/censur-grind-a-2026-09-25.sql`, dbknapp 25/9 |
+| 2. Frostgrindarna trycks om | kl 09 UTC, högst var sjunde dygn medan frosten varar; issuen skapas som förut | `test/frosttryck.test.ts` (7 fall, 2 motprov), deploy 06:45Z, vakthundens varv 07:07Z svarade 200 utan problem |
+| 3. S-B | B1 och C2 på leave-one-out, C3 mot 3,5 %, fönstret från 23/9, andelar efter C | självtest + 2 motprov; körd mot databasen 25/9: bara antal |
+| 4. Tystnadsfelet | segmentvarningarna räknas via segmentets linje (1 504 av 3 681 larm har nu plats eller segment); T5 stoppar dom-läget | körd mot databasen 25/9 |
+| 5. Saknade dygn | grind A, vägpunktsgrinden och K-A skriver ut hål efter arkivets början (24/8) | `test/saknade-dygn.test.ts` + motprov; arkivet saknar **6/9 och 7/9** (minutkrisen, före den levande ingesten) |
+| 6. R-A i stationstimmar | R-A1 räknar episodernas längd i timmar | självtest + motprov |
+
+**Vad mätningen betyder.** Grind A:s KLARAD (#321) och vägpunktens ÖPPEN (#324) vilar i hälften av grannplatserna på de kalla
+och blöta grannarna; driftens prognos tar med de varma. Domarna ska läsas som *klarade på ett underlag där de varma grannarna
+saknas*. Vad som behövs för att laga det är kort #253.
+
