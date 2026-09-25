@@ -9,7 +9,7 @@ type Fraga = (sql: string, params?: unknown[]) => Promise<any[]>;
  *  källornas "Dry" är uppehåll. Den tidigare formen `COALESCE(precipitation,'') <> ''` gjorde varje torr station blöt (#255),
  *  så rekonstruktionen fick frysrisk vid uppehåll och motorn "hade varnat" oftare än den skulle. */
 export const FUKT_SQL =
-  "(rain OR snow OR (precipitation IS NOT NULL AND precipitation <> '' AND lower(precipitation) NOT IN ('no', 'dry')))";
+  "(rain OR snow OR COALESCE(precipitation,'') <> '')";
 
 /** Frysriskpunkterna (varje stations senaste rad de 45 minuterna före t) och halksträckorna (varje segments senaste ändring de
  *  12 timmarna före t). */
