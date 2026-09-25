@@ -509,9 +509,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] **Skydda namnet:** varumärket Halkvakt hos PRV + domänen halkvakt.se. Enda juridiska
   muren som finns i branschen; arkivet och relationerna är resten av försvaret.
   ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** *Domänen halkvakt.se (vilande beslut)* — domänen blockerar QR-sidan (#204), så den är inte längre vilande.
-- [ ] **Betalvilja mäts i mars, inte gissas i augusti:** en fråga i appen ("N varningar i
+- [x] ✅ **STÄNGT 25/9, ÖPPNAS VÅREN 2027** (DECISIONS #354) — **Betalvilja mäts i mars, inte gissas i augusti:** en fråga i appen ("N varningar i
   vinter — skulle du betala X för nästa?"). Ja/nej, inget insamlat utom räkningen. Vinterpass
   per säsong är kandidatmodellen; B2B (hemtjänst, försäkring, åkerier) är taket.
+  ✅ **Stängt 25/9 (DECISIONS #354, Bengt):** öppnas våren 2027, står i vårlistan bredvid intäktsmodellen. Frågan i appen ändrar invarianten; ska den ställas i mars 2027 ligger beslutet och bygget i februari.
 - [x] ✅ **STÄNGT 22/9** (DECISIONS #309) — **Norden efter facit:** Finland LIVE i arkivet (31/8). Norge sedan, Danmark sist.
   Tidigast vintern 2027/28 som produkt. Nordiskt namn vid det laget (Nordic RoadSafe, #1).
   ✅ **Stängt 22/9 (DECISIONS #309, Bengts ja):** dubblett. Arkivdelen är mer än klar — Finland, Norge och Danmark i arkivet, Norge i skuggflottan och grannsnapshoten i Supabase sedan 22/9 (DECISIONS #301). Produktdelen står som Ä7 i bedömningen (*Nordenprodukten efter release*).
@@ -4472,6 +4473,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **BETALVILJAN STÄNGD 25/9, ÖPPNAS VÅREN 2027 (DECISIONS #354)**: står i vårlistan bredvid intäktsmodellen. Tavlan 47 → 46.
 - [x] ✅ **#245 BEVISBÄRAREN — KLART 25/9 (DECISIONS #342)**: varje väderpunkt i live.json bär `bevis` i vakthundens timkontroller hela natten (26 av 26 kl 02:07Z). Tavlan 47 → 46.
 - [x] ✅ **#252 GRANSKNINGENS SEX FÖRSLAG — KLART 25/9 (DECISIONS #352)**: S-B på leave-one-out och från 23/9, tystnadsfelet ser segmentvarningar, saknade dygn, R-A i stationstimmar, frostgrindarna trycks om kl 09 UTC var sjunde dygn; censuren mätt till 49,5 % saknade grannplatser ⇒ kort #253. Tavlan oförändrad (47).
 - [x] ✅ **#251 TORR STATION RÄKNAS SOM TORR — KLART 25/9 (DECISIONS #351)**: grind V-B räknar en dömande station som är igång men tyst som torr, beslutat före första andelen. Tavlan 47 → 46.
