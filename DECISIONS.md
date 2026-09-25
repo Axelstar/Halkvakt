@@ -10085,3 +10085,23 @@ ur arkivet — ett stationsfält i snapshoten skulle inte läsas av någon.
 (DECISIONS #68), så hans invändning tas upp före första dom. Antalet olyckor i regn längs rutterna är okänt; räcker det inte till 15
 före domfönstret i nov/dec är nästa facitkälla kamerabilderna i hinken, som öppnas i mars (DECISIONS #248) — det blir en egen fråga då.
 
+## #350 (25/9 2026) Grind V-B visar bara räkningar under spärren — och #349 byggt
+
+**Beslut (Bengt 25/9: *"ja, bara räkningar under spärren"*).** När fönstret blev hela perioden (#349) skulle måndagskörningen visa
+V-B:s andelar över allt som loggats, varje vecka, långt före domen. Nu skriver knappen under V-C:s spärr bara räkningar: varningar,
+mätbara och omätbara, olyckor längs rutterna och hur många av dem som föll i regn, regndygn och län. Andelarna för V-B1 och V-B3 och
+domraden skrivs första gången när V-C är uppfylld. Samma princip som dom-knappen för S-B. Körningarna 16/9 och 21/9 skrev andelar
+över 14 dygn i Actions-loggen; de läses inte.
+
+**Byggt i samma varv (`publish/grind-v-b.ts`, kort #42):** facit enligt #349 (`facit()`, samma dömande station och ±30 min som V-B1,
+gränsen regn > 0), olyckorna hämtade inom 2 km från skuggrutterna med den delade facitlistans radie och rutter, fönstret från 15/9
+(`dagarSedanStart()`, flödets standard är nu tomt), och en rad om väderarkivets hål: ett dygn helt utan väderrader i fönstret
+redovisas som saknat — varningar och olyckor de dygnen blir omätbara, aldrig torra — så att en export och radering aldrig tyst
+förvandlas till torka. Stationsindexet byggs en gång per körning i stället för en gång per fall, eftersom fönstret nu växer hela
+vintern.
+
+**Bevis före sammanslagning:** självtestet med sju nya fall (duggregn under tröskeln räknas som facit, torrt och omätbart gör det
+inte, fönstret, och blindningen i båda riktningarna) och **två motprov, ett per vakt:** facit mot utlösarens tröskel i stället för
+regn > 0 fäller *"olycka i duggregn under tröskeln räknas"*; utan spärrens `return` fäller *"under spärren: ingen procentsats"* och
+*"ingen dom"*. Självtestet körs nu också i CI, inte bara i flödet självt.
+

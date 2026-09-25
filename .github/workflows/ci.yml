@@ -51,6 +51,8 @@ jobs:
         run: |
           node --experimental-strip-types scripts/beslutsnumren.ts --sjalvtest
           node --experimental-strip-types scripts/beslutsnumren.ts
+      - name: Grind V-B:s självtest — facit enligt §2 och bara räkningar under spärren (#349, #350)
+        run: node --experimental-strip-types publish/grind-v-b.ts --sjalvtest
       # Generatorn gled isär från vektorfilerna tre gånger (31/8, 2/9, 13/9) utan att någon vakt såg det (#195).
       # Den skriver bara filer vars innehåll ändrats och fäller själv på en vektorfil utan scenario.
       - name: Vektorgeneratorn återskapar engine/vectors/ (#202)
