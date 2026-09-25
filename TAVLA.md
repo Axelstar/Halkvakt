@@ -1213,7 +1213,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **Stängt 22/9 (DECISIONS #306):** Bengts ja 22/9. PR #481 (0c2d92a): 504 filer ur git, `ios/HalkvaktEngine/.build/` i `.gitignore`, inga referenser utanför mappen. **Före:** en kloning utan `core.longpaths` föll 22/9 på *Filename too long* (291 tecken, *checkout failed*). **Efter:** samma kloning av 0c2d92a går igenom, 0 saknade filer. ci och ios-engine gröna på main (35739390674, 35739390740). Historiken är oförändrad, och en `git pull` tar bort de gamla byggfilerna ur andras arbetskopior; nästa Swift-bygge skapar dem igen.
 
 ### Claude — olåst
-- [ ] 🌅 **#257 TRENDENS STIGANDE HALVA SPARAS INTE — OCH GÅR INTE ATT RÄKNA OM** (fynd 25/9, Bengts fråga om en lucka i L3).
+- [x] ✅ **KLART 25/9** (DECISIONS #368) — 🌅 **#257 TRENDENS STIGANDE HALVA SPARAS INTE — OCH GÅR INTE ATT RÄKNA OM** (fynd 25/9, Bengts fråga om en lucka i L3).
   TROSKLAR-TRENDEN mäter två riktningar (§1): fallande = förvarning, **stigande = tystna tidigare** när ytan värms genom +1 °C på
   morgonen. Svepet är fastställt (§2: +0,4 · +0,8 °C per fönster, yta > +1) och T-B dömer tystnadsriktningen hela vintern. Men
   `berakna_trendkandidater()` (sql/018) sparar bara FALLANDE kandidater (`greatest(lutning) >= 0,4`, yta +1…+6), och efter sju dygn
@@ -1223,6 +1223,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   lutning, samma band och fönster, samma utfall 90 min efter), och låt läsarna som bara vill ha fallande filtrera på tecknet.
   **Verify:** stigande rader i trendarkivet efter en morgon, läsarnas tal oförändrade (tystnadsfelets `trend_underlag` inräknat), prov
   och motprov.
+  ✅ **BEVIS 25/9:** `trend_stigande` (sql/018) i drift — egen tabell, eftersom snapshoten läser `trend_kandidater`. Prov grönt i
+  PR #604, två motprov föll (PR #605/#606). Drift: 654 stigande kandidater vid 41 stationer på 12 h, toppen kl 05–08; den fallande
+  halvan orörd (201 före och efter).
 - [x] ✅ **KLART 25/9** (DECISIONS #366) — 🌙 **#256 UPPSPELNINGENS NATT RÄKNAS I UTC** (fynd 25/9 under kort #254, DECISIONS #365). `sql/028_uppspelning_varianter.sql:137`
   skiftar natten 12 h i `AT TIME ZONE 'UTC'`, medan R-A och sedan #254 d även T-A räknar i `Europe/Stockholm`. DECISIONS #246 säger att
   T-A, R-A och uppspelningens episoder ska mena samma natt; kontraktet "Nattens gräns" vaktar bara talet 12, inte zonen.
@@ -4538,6 +4541,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#257 TRENDENS STIGANDE HALVA — KLART 25/9 (DECISIONS #368)**: sparas i `trend_stigande` före frosten; 654 kandidater vid 41 stationer första halvdygnet, toppen kl 05–08. Tavlan 44 → 43.
 - [x] ✅ **TIDEN I SYSTEMET — KLART 25/9 (DECISIONS #367)**: kartlagt UTC mot svensk tid; grind NT räknar dygn och månader i svensk tid, och kontraktet "Givarfelsdygnets zon" vaktar etikettparningen som saknade vakt. Båda med motprov. Tavlan 43 → 43.
 - [x] ✅ **#256 UPPSPELNINGENS NATT — KLART 25/9 (DECISIONS #366)**: svensk tid som T-A och R-A, kontraktet "Nattens zon", körd i drift och jämförd (oförändrat i september). Tavlan 44 → 43.
 - [x] ✅ **#254 GRANSKNINGENS ÄLDRE FEL — KLART 25/9 (DECISIONS #365)**: fyra byggda med självtest, prov mot PostGIS och nio motprov; fyra avskrivna med skäl; missmätningens knapp stängd. Nytt kort #256. Tavlan 44 → 44.

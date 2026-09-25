@@ -10456,3 +10456,21 @@ en rad här, Bengts ja) — före första domläsningen. Självtest för sommar-
 (sql/030) och snapshotkärnan, bunten, trendberäkningen (sql/018) och uppspelningen (sql/028) slår upp det på samma etikett. Kontraktet
 kräver samma zon hos skrivaren och alla läsare, golv 5 (15 förekomster i 8 filer med mätfilerna). Motprovet (sql/018 i svensk tid) föll.
 Den långsamma vakten själv står kvar i UTC-dygn: en frostnatt delas av midnatt i båda zonerna.
+
+## #368 (25/9 2026) Kort #257: trendens stigande halva sparas — i en egen tabell, i drift samma dag
+
+**Beslut (Bengt 25/9: *"ja, bygg 257 före frosten"*).** TROSKLAR-TRENDEN mäter två riktningar — fallande (förvarning) och stigande
+(tystna tidigare när ytan värms) — men bara den fallande sparades, och gallringen gör den stigande omöjlig att räkna fram i
+efterhand (lutningens vakt kräver tre rader i fönstret; efter sju dygn finns en per halvtimme). **Byggt:**
+`berakna_trendkandidater()` (sql/018) skriver även stigande kandidater — samma vakter, band (+1…+6 °C) och fönster, lutning ≤ −0,4 i
+något fönster, samma utfall 90 min efter — i tabellen **`trend_stigande`** (samma kolumner, RLS, dubbellåst). **Egen tabell, inte
+tecknet i samma** (kortets förslag): snapshotkärnan läser `trend_kandidater` och publicerar lutningen i live.json; en stigande rad där
+hade ändrat vad skuggan ser. Tecknet är detsamma i båda tabellerna. Returvärdet och alla befintliga läsare är oförändrade; värdevakten
+besiktigar den nya tabellen från start. En rad kan hamna i båda tabellerna när fönstren är oeniga (föll på 30 min men steg på 60) —
+varje tabell är sin riktnings superset.
+
+**Bevis:** prov mot PostGIS (PR #604, 208 av 208): stigande och fallande hamnar var för sig, platt yta ingenstans, utfallet fylls.
+Två motprov i CI (PR #605 och #606, stängda), osynliga för kontraktsgrinden: utan skrivningen fick STIG_A 0 i stället för 2, utan
+utfallet fylldes STIG_B aldrig. **I drift** (run 36152132908): tabellen finns med RLS, den fallande halvan orörd (201 rader före och
+efter, funktionen gav 0 nya), och de senaste 12 timmarna gav **654 stigande kandidater vid 41 stationer**, alla med utfall — med
+toppen kl 05–08 svensk tid, morgonuppvärmningen, där tystnadsriktningen ska verka.
