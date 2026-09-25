@@ -1413,6 +1413,17 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔨 **BYGGT 25/9 (Bengt: *"ja till 253"*, DECISIONS #353):** den levande ingesten sparar en varm och torr avläsning EN gång per station och halvtimme (`arkivpolicy.ts`, `test/arkivpolicy.test.ts`, 7 fall, 2 motprov); en fråga per körning, fallerar den gäller den gamla regeln och felet står i svaret (`arkivpolicy`). Kvar för Verify: deploy, täckningen i en halvtimme efter deployen, och samma censurmätning på halvtimmar efter ändringen.
   ✅ **Axels ja 25/9 (via Bengt, DECISIONS #353). I DRIFT:** deployad 07:20Z (PR #567); varvet 07:24Z skrev 146 väderrader, varav 132 varma halvtimmesrader, `ok: true`, ingen tillbakagång till den gamla regeln. Kvar för Verify: täckningen per halvtimme och censurmätningen på kalla halvtimmar efter ändringen (tidigast 26/9 på morgonen).
 
+- [ ] 🧰 **#254 GRANSKNINGENS ÄLDRE FEL — de som inte ingick i de sex förslagen** (ur kort #252, `docs/GRANSKNING-GRINDAR-2026-09-25.md` §7;
+  ingen av dem orsakad 21–24/9). (a) **V-A** prövar bara timmar där målstationen har en rad och döljer falsklarm (`publish/grind-v-a.ts:48`) —
+  nej-domen står ändå, V-A föll på träffen. (b) **Övergångarnas 0d** kastar tysta torra perioder (`scripts/overgangar-steg0.ts:401–408`).
+  (c) **Andelar under spärren** i K-A, R-A, vind och sikt och SMHI-förstärkaren; R- och F-dokumenten har egna blindningsklausuler (C4).
+  (d) **T-A:s kl 03–07 i UTC-timmar** (`scripts/grind-t-a.ts:164`). (e) **Tystnadsfelet:** en station utan rader gör missen *okänd* och
+  radarn prövas aldrig. (f) **S-B:s missfönster** 2 h mot flottans 3,5 h mellan varven. (g) **Den delade facitlistan** orsaksklassar mot
+  de åtta närmaste raderna utan avståndsgräns, och en saknad orsak blir utstrålning. (h) **missar.ts** är gammal: egen kopia av tre
+  rutter, inga vakter, träff var som helst på rutten. Flera av (a), (b) och (e) mildras redan av #353, eftersom de varma stationerna nu
+  har rader — det bör mätas innan något byggs.
+  Verify: varje punkt byggd med självtest och motprov, eller avskriven med skäl i DECISIONS.
+
 - [ ] 🤖 **#219 ANDROID ÄR SJU VERSIONER EFTER OCH HAR INGEN VÄG TILL EN TELEFON** (genomlysningen 20/9). Android står på
   **0.3.1 (versionCode 4)**, iOS på 0.3.8 (11). **Google Play-kontot finns inte**, det finns inget uppladdningsflöde alls — CI
   bygger en AAB som artefakt och där slutar det. Android saknar dessutom introduktionen helt och har autostart av som standard.
