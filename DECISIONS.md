@@ -10416,3 +10416,25 @@ sträcka med "Normalt" talar lika lite i uppspelningen som i bilen. Upptäckt n�
 
 **Nytt fynd, eget kort #256:** uppspelningen av efterhalkan (`sql/028`) räknar natten i UTC (`AT TIME ZONE 'UTC'`), medan R-A och
 nu T-A räknar i svensk tid. Kontraktet "Nattens gräns" vaktar bara att talet 12 är detsamma, inte zonen.
+
+## #366 (25/9 2026) Kort #256: uppspelningens natt räknas i svensk tid — samma natt som T-A och R-A, och kontraktet vaktar zonen
+
+**Beslut (Bengt 25/9: *"gör kort 256"*).** `uppspelning_efterhalka()` (`sql/028`) skiftade natten 12 h i UTC, medan R-A och sedan
+#254 d även T-A skiftar i `Europe/Stockholm`. DECISIONS #246 säger att de tre ska mena samma natt; kontraktet "Nattens gräns" vaktade
+bara talet 12. **Lagat:** natten är `((t AT TIME ZONE 'Europe/Stockholm') - interval '12 hours')::date`. Episoden bokförs som förut på
+det UTC-dygn den började, och stationer och ögonblick redovisas per UTC-dygn — bara nattindelningen är ändrad. Nytt kontrakt **"Nattens
+zon"** vaktar zonen i alla tre kopiorna (T-A:s `ZON`, R-A:s svenska `TZ`, uppspelningens `AT TIME ZONE`), golv 3.
+
+**Migrationen redigerad på plats, inte en ny fil** (kortets Verify sa "ny migration"). `sql/028` är idempotent (släpper signaturen och
+skapar om), CI:s prov läser den filen, och en `sql/038` bredvid hade lämnat två definitioner i repot, där den gamla med UTC-natten
+hade fällt det nya kontraktet. Körd i drift med databasknappen 25/9 (run 36147121022): en signatur, den svenska natten finns i funktionen
+och UTC-natten är borta.
+
+**Bevis:** fall J i uppspelningsprovet — två ögonblick en halvtimme före och efter lokal middag — är två nätter i svensk tid men en i
+UTC. Grönt i PR #597 (207 av 207). **Motprov:** kontraktet fällde både den gamla UTC-formen och den nya formen med zonen UTC; och i CI
+(PR #598, stängd) fällde fall J en mutation som kontraktsgrinden inte såg (episoden vald på en extra UTC-natt): väntat 2, fick 1.
+
+**Uppspelningen körd om och jämförd** (`scripts/matningar/uppspelning-natt-2026-09-25.sql`, före och efter): kombinationen 2
+episoder · 4 ögonblick · 2 dygn, utan blöt 12 · 27 · 7, utan faller och utan blöt 204 · 7 380 · 12 — **identiskt**. Ögonblicken lika
+bekräftar samma population. Episoderna lika är väntat: de två zonerna delar natten olika bara för ögonblick mellan kl 12 och 14 svensk
+tid, och septembers kandidater i bandet +1…+3 °C ligger på natten. Skillnaden kan synas en mild vinterdag med töväder mitt på dagen.
