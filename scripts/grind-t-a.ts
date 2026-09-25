@@ -59,6 +59,20 @@ import { klassaMoln, haversineKm, narmastITid, molnForPunkter, type Molnklass }
 
 const pct = (x: number) => `${(100 * x).toFixed(0)} %`;
 
+// KL 03–07 ÄR LOKAL TID (kort #254 d, DECISIONS #365). `EXTRACT(hour FROM sample_time)` ger sessionens zon, alltså UTC: i
+// september föll svensk 03–07 på 01–05 UTC, och nattens kallaste stund räknades två timmar fel — R-A räknar i landets zon
+// sedan 12/9, T-A gjorde det aldrig. Timmen och natten räknas därför här, i Sveriges zon, där självtestet kan pröva dem.
+const ZON = "Europe/Stockholm";
+const ZONDELAR = new Intl.DateTimeFormat("sv-SE", { timeZone: ZON, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", hourCycle: "h23" });
+function lokalt(epochS: number): { dag: string; timme: number } {
+  const d = Object.fromEntries(ZONDELAR.formatToParts(new Date(epochS * 1000)).map((x) => [x.type, x.value]));
+  return { dag: `${d.year}-${d.month}-${d.day}`, timme: Number(d.hour) };
+}
+export const lokalTimme = (epochS: number) => lokalt(epochS).timme;
+/** Natten tillhör det lokala dygn den började: skifta 12 h så att en natt inte delas av midnatt (kontraktsgrinden vaktar talet). */
+const NATT_SKIFT_H = 12;
+export const lokalNatt = (epochS: number) => lokalt(epochS - NATT_SKIFT_H * 3600).dag;
+
 // ── MOLNET bor numera i publish/moln.ts (DECISIONS #143) — samma fysikkontroll behövs i
 //    grind R-A (#46), och en kopia hade varit precis den drift vi vaktat mot. Sentinelen 113 %
 //    (himlen skymd) och octas-skalan hanteras där.
@@ -122,6 +136,11 @@ if (process.argv.includes("--sjalvtest")) {
   k("närmast i tid väljer rätt", narmastITid(serie, 150, 90), 88);
   k("närmast i tid utanför fönstret", narmastITid(serie, 500, 90), null);
   k("en breddgrad ≈ 111 km", Math.round(haversineKm(15, 60, 15, 61)), 111);
+  // Kort #254 d: kl 03–07 i Sveriges zon, inte i UTC — sommartid och vintertid.
+  k("02:30Z 24/9 är kl 04 i Sverige (sommartid)", lokalTimme(Date.UTC(2026, 8, 24, 2, 30) / 1000), 4);
+  k("02:30Z 15/1 är kl 03 i Sverige (vintertid)", lokalTimme(Date.UTC(2027, 0, 15, 2, 30) / 1000), 3);
+  k("04:30 lokal 24/9 hör till natten mot 24/9, som började 23/9", lokalNatt(Date.UTC(2026, 8, 24, 2, 30) / 1000), "2026-09-23");
+  k("23:00 lokal 24/9 hör till natten som börjar 24/9", lokalNatt(Date.UTC(2026, 8, 24, 21, 0) / 1000), "2026-09-24");
   if (!ok) { console.error("\nSJÄLVTEST FÄLLDE."); process.exit(1); }
   console.log("\nSJÄLVTEST OK: vakterna fäller rätt rader, lutningen räknar rätt håll, triggern kräver alla tre villkoren,\noch molnets sentinel 113 klassas som skymd i stället för som 113 procent.");
   process.exit(0);
@@ -159,9 +178,8 @@ await vaktdiagnos((q2, p2) => pool.query(q2, p2 as any[]).then((r) => r.rows),
 // Natten tillhör det dygn den började: skifta 12 h så att en natt inte delas av midnatt.
 const rows = await pool.query(`
   SELECT station_id,
-         (date_trunc('day', sample_time - interval '12 hours'))::date AS natt,
+         EXTRACT(epoch FROM sample_time)::bigint AS s,
          EXTRACT(epoch FROM sample_time) / 60 AS t,
-         EXTRACT(hour FROM sample_time) AS tim,
          surface_temp_c AS yta, dewpoint_c AS dagg, humidity_pct AS rh, air_temp_c AS luft,
          ST_X(geom) AS lon, ST_Y(geom) AS lat,
          ${brottSql("weather_observations")} AS brott,
@@ -173,11 +191,12 @@ const rows = await pool.query(`
 // Gruppera till station-nätter.
 const kartan = new Map<string, { station: string; natt: string; rader: Rad[]; timmar: number[]; lon: number; lat: number }>();
 for (const r of rows.rows as any[]) {
-  const nyckel = `${r.station_id}|${String(r.natt).slice(0, 10)}`;
+  const natt = lokalNatt(Number(r.s));
+  const nyckel = `${r.station_id}|${natt}`;
   let g = kartan.get(nyckel);
-  if (!g) { g = { station: r.station_id, natt: String(r.natt).slice(0, 10), rader: [], timmar: [], lon: Number(r.lon), lat: Number(r.lat) }; kartan.set(nyckel, g); }
+  if (!g) { g = { station: r.station_id, natt, rader: [], timmar: [], lon: Number(r.lon), lat: Number(r.lat) }; kartan.set(nyckel, g); }
   g.rader.push({ t: Number(r.t), yta: Number(r.yta), dagg: r.dagg === null ? null : Number(r.dagg), rh: r.rh === null ? null : Number(r.rh), luft: r.luft === null ? null : Number(r.luft), brott: Number(r.brott), givarfel: Boolean(r.givarfel) });
-  g.timmar.push(Number(r.tim));
+  g.timmar.push(lokalTimme(Number(r.s)));
 }
 
 const alla = [...kartan.values()];

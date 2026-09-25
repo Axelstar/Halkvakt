@@ -308,7 +308,7 @@ flowchart TB
     subgraph S[SANNING — stämmer det med vägen?]
         SM[Skuggmotorn<br/>20 rutter per land, 3 per varv<br/>var 30:e min · loggar vad<br/>rösten SKULLE sagt]
         FH[Facit-hinken<br/>kamerabild vid skuggvarningarna<br/>en per station och 3 h]
-        MI[missar.ts<br/>träffar och missar<br/>mot arkivhändelser]
+        MI[Tystnadsfelet och grind S-B<br/>träffar och missar<br/>mot den delade facitlistan]
         SU[Spärrloggen<br/>vad rösten INTE fick säga<br/>ny 13/9]
     end
     subgraph V2[VAKTER — lever apparaten?]

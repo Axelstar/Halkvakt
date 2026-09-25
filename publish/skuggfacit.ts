@@ -5,11 +5,11 @@
 // VAD EN FACITHÄNDELSE ÄR (TROSKLAR-SKUGGAN §2, TROSKLAR-TYSTNADSFEL §8): halka bekräftad av någon av källorna,
 // inom facitradien av skuggrutterna — SMHI:s isvarningar, halka i situation_archive, operatörens väglag kod ≥ 2,
 // förarens "stämde" (driver_facit), Bengts kamerafacit (is/snö/slask). Varje händelse orsaksklassas mot nederbörd
-// vid närmaste station inom ±1 h (nollpolitik: ingen station ⇒ null).
+// vid närmaste station inom ±1 h och NEDERBORD_KM (nollpolitik: ingen station ⇒ null).
 //
 // Rutterna läses ur skuggmotorns källa, aldrig ur en kopia — ändras flottan följer båda måtten med.
 import { readFileSync } from "node:fs";
-import { UPPMATT_KM } from "../engine/src/segment.ts";
+import { UPPMATT_KM, MAX_KM } from "../engine/src/segment.ts";
 
 export type Rutter = Record<string, [number, number][]>;
 export type Handelse = { id: string; t: Date; lon: number; lat: number; kalla: string; nederbord: boolean | null };
@@ -17,6 +17,26 @@ export type Fraga = (sql: string, params: unknown[]) => Promise<any[]>;
 
 export const FACIT_KM = UPPMATT_KM;      // §2: händelse matchas till segment inom 2 km — samma tal som "uppmätt"
 export const NEDERBORD_FONSTER_H = 1;    // §2 orsaksklassning: nederbörd inom ±1 h
+/** Längst bort en station får ursäkta en miss med nederbörd — prognosens grannradie: bortom den är en station väder, inte
+ *  underlag (kort #254 g, DECISIONS #365). Skärpning: utan station inom radien är orsaken okänd, och en okänd orsak bokförs
+ *  som förut på utstrålningen (B2), aldrig som en ursäkt. */
+export const NEDERBORD_KM = MAX_KM;
+
+/** §2: "närmaste stations regn/snö-flagga inom ±1 h" — den NÄRMASTE STATIONEN, inte de åtta närmaste raderna. Förut valdes åtta
+ *  rader utan avståndsgräns, så en station med glesa rader kunde överröstas av en längre bort (kort #254 g). null när ingen
+ *  station inom NEDERBORD_KM har en rad i fönstret. */
+export async function nederbordVid(fraga: Fraga, t: Date | string, lon: number, lat: number): Promise<boolean | null> {
+  const n = await fraga(`
+    WITH narmast AS (
+      SELECT station_id FROM weather_observations
+      WHERE sample_time BETWEEN $1::timestamptz - interval '${NEDERBORD_FONSTER_H} hours' AND $1::timestamptz + interval '${NEDERBORD_FONSTER_H} hours'
+        AND geom IS NOT NULL AND ST_DWithin(geom::geography, ST_SetSRID(ST_MakePoint($2, $3), 4326)::geography, $4)
+      ORDER BY geom <-> ST_SetSRID(ST_MakePoint($2, $3), 4326) LIMIT 1)
+    SELECT bool_or(w.rain OR w.snow) AS ned FROM weather_observations w JOIN narmast USING (station_id)
+    WHERE w.sample_time BETWEEN $1::timestamptz - interval '${NEDERBORD_FONSTER_H} hours' AND $1::timestamptz + interval '${NEDERBORD_FONSTER_H} hours'`,
+    [t, lon, lat, NEDERBORD_KM * 1000]);
+  return n[0]?.ned ?? null;
+}
 
 /** Läser ROUTES ur skuggmotorns källa (kommentarrader strippade). Kastar hellre än gissar. */
 export function lasRutter(kod: string): Rutter {
@@ -70,13 +90,7 @@ export const HANDELSE_SQL = `
 export async function hamtaHandelser(fraga: Fraga, rutter: Rutter, dagar: number, halkord?: { ord: string; stam: string }): Promise<Handelse[]> {
   const rows = await fraga(HANDELSE_SQL, [dagar, ruttWkt(rutter), FACIT_KM * 1000, halkord?.ord ?? null, halkord?.stam ?? null]);
   const ut: Handelse[] = [];
-  for (const e of rows) {
-    const n = await fraga(`
-      SELECT bool_or(rain OR snow) AS ned FROM (
-        SELECT rain, snow FROM weather_observations
-        WHERE sample_time BETWEEN $1::timestamptz - interval '${NEDERBORD_FONSTER_H} hours' AND $1::timestamptz + interval '${NEDERBORD_FONSTER_H} hours'
-          AND geom IS NOT NULL ORDER BY geom <-> ST_SetSRID(ST_MakePoint($2, $3), 4326) LIMIT 8) s`, [e.t, +e.lon, +e.lat]);
-    ut.push({ id: e.id, t: new Date(e.t), lon: +e.lon, lat: +e.lat, kalla: e.kalla, nederbord: n[0]?.ned ?? null });
-  }
+  for (const e of rows)
+    ut.push({ id: e.id, t: new Date(e.t), lon: +e.lon, lat: +e.lat, kalla: e.kalla, nederbord: await nederbordVid(fraga, e.t, +e.lon, +e.lat) });
   return ut;
 }

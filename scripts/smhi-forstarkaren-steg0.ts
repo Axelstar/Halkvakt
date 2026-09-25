@@ -81,6 +81,15 @@ export function enVarningDominerar(storsta: number, totalt: number): boolean {
 
 const pct = (a: number, b: number) => (b ? `${((100 * a) / b).toFixed(1)} %` : "–");
 
+/** Svepets rad (kort #254 c, F-C4): under underlagsvakten bara räkningar — andelen och dess läge mot golv och tak är
+ *  utfallet och visas först när spärren släppt (som V-B:s, DECISIONS #350). */
+function faRad(kod: string, niva: string, t: { n: number; traff: number }, oppen: boolean): string {
+  const andel = t.n ? t.traff / t.n : 0;
+  const flagga = !oppen ? "spärrad" : t.traff === 0 ? "—" : andelOk(andel) ? "inom" : andel < ANDEL_GOLV ? "UNDER golv" : "ÖVER tak";
+  return `  ${kod.padEnd(17)} ${niva.padEnd(11)} ${String(t.n).padStart(14)} ${String(t.traff).padStart(12)} ` +
+    `${(oppen ? pct(t.traff, t.n) : "spärrad").padStart(8)}   ${flagga}`;
+}
+
 // ── Självtest med känd sanning, utan DB.
 if (process.argv.includes("--sjalvtest")) {
   console.log("SJÄLVTEST — fukt (driftvakt), svepen, andelsfönstret och underlagsvakten\n");
@@ -118,6 +127,10 @@ if (process.argv.includes("--sjalvtest")) {
   k("en varning med 26 % dominerar", enVarningDominerar(26, 100), true);
   k("en varning med 25 % gör det inte", enVarningDominerar(25, 100), false);
   k("noll träffar dominerar inte", enVarningDominerar(0, 0), false);
+  // Kort #254 c: under spärren visar svepets rad ingen andel och inget läge mot golv och tak.
+  k("spärrad rad visar ingen andel", faRad("SNOW|ICE", "YELLOW+", { n: 400, traff: 37 }, false).includes("%"), false);
+  k("spärrad rad visar inget läge", /inom|golv|tak/.test(faRad("SNOW|ICE", "YELLOW+", { n: 400, traff: 37 }, false)), false);
+  k("öppen rad visar andelen", faRad("SNOW|ICE", "YELLOW+", { n: 400, traff: 37 }, true).includes("%"), true);
   if (!ok) { console.error("\nSJÄLVTEST FÄLLDE."); process.exit(1); }
   console.log("\nSJÄLVTEST OK: fukten är motorns, WIND syns bara i den breda kodmängden,");
   console.log("andelen har både golv och tak, och vakten släpper inte igenom tunt underlag.");
@@ -228,28 +241,7 @@ async function traffar(kodRe: string, nivaer: string[], yta: number, fonsterH: n
   return { n: Number(r.n), traff: Number(r.traff) };
 }
 
-console.log(`\n  F1 × F2 vid yta ≤ 1 °C, fönster ±1 h, stationen INUTI området:`);
-console.log(`  kodmängd          nivå        kvalificerande   förstärkta   andel   F-A3`);
-for (const [kodNamn, kodRe] of KODSVEP) {
-  for (const [nivaNamn, nivaer] of NIVASVEP) {
-    const t = await traffar(kodRe, nivaer, 1, 1, 0);
-    const andel = t.n ? t.traff / t.n : 0;
-    const flagga = t.traff === 0 ? "—" : andelOk(andel) ? "inom" : andel < ANDEL_GOLV ? "UNDER golv" : "ÖVER tak";
-    console.log(`  ${kodNamn.padEnd(17)} ${nivaNamn.padEnd(11)} ${String(t.n).padStart(14)} ${String(t.traff).padStart(12)} ${pct(t.traff, t.n).padStart(8)}   ${flagga}`);
-  }
-}
-
-console.log(`\n  Känslighet i F4 (tidsfönster) och F5 (avstånd), vid ${KODSVEP[1][0]} / ${NIVASVEP[1][0]}:`);
-for (const h of FONSTERSVEP) {
-  const t = await traffar(KODSVEP[1][1], NIVASVEP[1][1], 1, h, 0);
-  console.log(`    fönster ±${h} h, inuti området        ${String(t.traff).padStart(8)} av ${t.n}  (${pct(t.traff, t.n)})`);
-}
-for (const m of AVSTANDSVEP) {
-  const t = await traffar(KODSVEP[1][1], NIVASVEP[1][1], 1, 1, m);
-  console.log(`    fönster ±1 h, ≤ ${String(m / 1000).padStart(2)} km utanför  ${String(t.traff).padStart(8)} av ${t.n}  (${pct(t.traff, t.n)})`);
-}
-
-// ── C. GRIND F-A — underlagsvakten skrivs ut FÖRE domen (F-C4).
+// ── C. GRIND F-A — underlagsvakten skrivs ut FÖRE tabellen (F-C4, kort #254 c); under spärren visar tabellen bara räkningar.
 const bast = await traffar(KODSVEP[1][1], NIVASVEP[1][1], 1, 1, 0);
 // Vilka områden bär träffarna, och bär ett enda område för mycket (F-A4)? En stationstimme kan
 // täckas av flera överlappande områden, så summan per område kan överstiga antalet träffar —
@@ -281,11 +273,33 @@ if (enVarningDominerar(storsta, bast.traff)) {
   console.log(`     (> ${100 * MAX_EN_VARNING} %) — då mäts en varning, inte en regel.`);
 }
 const utfall = dom(bast.traff, omraden, true);
+const oppen = !!utfall;
 if (!utfall) {
   console.log(`\n⊘ OAVGJORT — underlagsvakten håller. Det är ett underlagsbesked, inte ett nej.`);
   console.log(`  September har varken vintervarningar eller frostnätter i mängd. Grinden körs om`);
   console.log(`  vid de första vintervarningarna, och då bär varningarna sitt giltighetsfönster.`);
-} else {
+}
+
+console.log(`\n  F1 × F2 vid yta ≤ 1 °C, fönster ±1 h, stationen INUTI området:`);
+console.log(`  kodmängd          nivå        kvalificerande   förstärkta   andel   F-A3`);
+for (const [kodNamn, kodRe] of KODSVEP) {
+  for (const [nivaNamn, nivaer] of NIVASVEP) {
+    const t = await traffar(kodRe, nivaer, 1, 1, 0);
+    console.log(faRad(kodNamn, nivaNamn, t, oppen));
+  }
+}
+
+console.log(`\n  Känslighet i F4 (tidsfönster) och F5 (avstånd), vid ${KODSVEP[1][0]} / ${NIVASVEP[1][0]}:`);
+for (const h of FONSTERSVEP) {
+  const t = await traffar(KODSVEP[1][1], NIVASVEP[1][1], 1, h, 0);
+  console.log(`    fönster ±${h} h, inuti området        ${String(t.traff).padStart(8)} av ${t.n}  ${oppen ? `(${pct(t.traff, t.n)})` : "(andel spärrad)"}`);
+}
+for (const m of AVSTANDSVEP) {
+  const t = await traffar(KODSVEP[1][1], NIVASVEP[1][1], 1, 1, m);
+  console.log(`    fönster ±1 h, ≤ ${String(m / 1000).padStart(2)} km utanför  ${String(t.traff).padStart(8)} av ${t.n}  ${oppen ? `(${pct(t.traff, t.n)})` : "(andel spärrad)"}`);
+}
+
+if (utfall) {
   const andel = bast.traff / bast.n;
   const se = andelSe(andel, bast.n);
   console.log(`  Andel förstärkta: ${pct(bast.traff, bast.n)}${marginalPe(se)} (golv ${100 * ANDEL_GOLV} %, tak ${100 * ANDEL_TAK} %)`);

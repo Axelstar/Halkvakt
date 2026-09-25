@@ -1,7 +1,12 @@
-// Rekonstruktionen — motorns faror vid en given tid, återskapade ur arkivet (kort #19; rättad i kort #255). Missmätningen
-// (publish/missar.ts) kör motorn på dem, och uppspelningen av vind och sikt längs rutterna (W-B5, roll A) ska göra detsamma
-// (DECISIONS #363). Frågefunktionen tas som argument, så att modulen kan provas mot riktig PostGIS utan att köra något.
+// Rekonstruktionen — motorns faror vid en given tid, återskapade ur arkivet (kort #19; fukten rättad i #255, vakterna i #254 h).
+// Uppspelningen av vind och sikt längs rutterna (W-B5, roll A) kör motorn på dem (DECISIONS #363); missmätningen som föddes med
+// den är stängd (DECISIONS #365). Frågefunktionen tas som argument, så att modulen kan provas mot riktig PostGIS utan att köra något.
+//
+// SAMMA POPULATION SOM TELEFONEN SÅG (kort #254 h): frysriskpunkterna läses genom snapshotens vakter — #75, radvakten och
+// karantänen med den långsamma vakten, importerade, aldrig kopierade (läxan 23/9). Halksträckorna behöver ingen vakt här: motorn
+// tystar själv kod 1 utan halkord (`evaluateSegment`), så en sträcka med "Normalt" i uppspelningen talar lika lite som i bilen.
 import type { Hazard } from "../engine/src/types.ts";
+import { RADVAKT_SQL, karantanSql } from "./snapshot-core.ts";
 
 type Fraga = (sql: string, params?: unknown[]) => Promise<any[]>;
 
@@ -19,9 +24,11 @@ export async function hazardsAt(fraga: Fraga, t: Date): Promise<Hazard[]> {
     SELECT DISTINCT ON (station_id) station_id,
       ST_X(geom::geometry) lon, ST_Y(geom::geometry) lat, surface_temp_c,
       ${FUKT_SQL} AS moisture
-    FROM weather_observations
+    FROM weather_observations w
     WHERE sample_time BETWEEN $1::timestamptz - interval '45 min' AND $1::timestamptz
-      AND geom IS NOT NULL
+      AND geom IS NOT NULL AND surface_temp_c IS NOT NULL
+      AND (air_temp_c IS NULL OR surface_temp_c >= air_temp_c - 12)   -- #75:s vakt
+      AND ${RADVAKT_SQL} AND ${karantanSql("w")}                      -- radvakten, karantänen och den långsamma vakten
     ORDER BY station_id, sample_time DESC`, [t]);
   for (const r of wx)
     out.push({ id: `wx:${r.station_id}`, kind: "icing_point", lon: +r.lon, lat: +r.lat,

@@ -10379,3 +10379,40 @@ kort #254 (h).
 **Kvar i #254 (h), nu villkor för #363:s W-B5 och roll A:** rekonstruktionen saknar vakterna (#75, radvakten, karantänen, den
 långsamma vakten), och — **nytt fynd 25/9** — den släpper in varje segment ur väglagshistoriken oavsett kod, även kod 1 utan halkord
 som snapshoten aldrig publicerar (kort #97:s kodgrind). Båda gör uppspelningen mer larmbenägen än motorn.
+
+## #365 (25/9 2026) Kort #254: granskningens äldre fel — fyra byggda, fyra avskrivna med skäl; rättelse av #364
+
+**Beslut (Bengt 25/9: *"gör kort 254"*).** Kortets Verify: varje punkt byggd med självtest och motprov, eller avskriven med skäl här.
+Först mätt, som kortet sa: täckningen sedan #353 är **829–833 av 834** aktiva stationer per halvtimme (11:00–13:00Z,
+`scripts/matningar/tackning-halvtimme-2026-09-25.sql`) — de varma och torra stationerna har rader nu.
+
+**Byggda:**
+
+| | Fel | Lagning | Bevis |
+| :-- | :-- | :-- | :-- |
+| **(d)** | T-A:s *kl 03–07* och natten räknades i UTC (`EXTRACT(hour)` i sessionens zon) | timmen och natten i `Europe/Stockholm`, i TypeScript; natten skiftas 12 h som förut (`NATT_SKIFT_H`, nu i kontraktet "Nattens gräns") | självtest sommar- och vintertid; motprov (zonen UTC) föll på "kl 04 i Sverige" |
+| **(c)** | K-A, R-A, vind och sikt och SMHI-förstärkaren skrev andelar under spärren; R och F tabellen före spärren (C4) | spärren skrivs FÖRE tabellen; under den visar tabellen bara räkningar (och K-A täckningen) — som V-B (#350) | en radfunktion per knapp med självtest; fyra motprov, ett per knapp, föll på "spärrad rad visar ingen …" |
+| **(g)** | orsaksklassningen tog de åtta närmaste RADERNA utan avståndsgräns — en glest mätande närmaste station kunde överröstas | `nederbordVid`: den närmaste STATIONEN (TROSKLAR-SKUGGAN §2 ordagrant), inom `MAX_KM` 50 km — ingen ny siffra. **Skärpning** (§5): utan station inom radien är orsaken okänd och bokförs som förut på utstrålningen (B2), aldrig som ursäkt | prov mot PostGIS (torr närmaste station avgör; 60 km bort ger null); motprovet (åtta rader) föll |
+| **(h)** | rekonstruktionen läste frysriskpunkter utan vakterna | #75, radvakten och karantänen med den långsamma vakten, importerade ur snapshotkärnan; **missmätningens knapp stängd** (`publish/missar.ts`, `missar.yml` borttagna — kördes senast 29/8, ersatt av tystnadsfelet #98 och grind S-B, som mäter missar mot den delade facitlistan med skuggmotorns egna rutter); modulen står kvar för #363 | prov mot PostGIS (givarfel, radvakt och karantän tysta, blixthalkan talar); motprovet (vakterna bort) föll |
+
+Motproven för (g) och (h) kördes i CI (PR #596, stängd) och var osynliga för kontraktsgrinden — alla 51 kontrakt höll, så det
+var proven som föll. Hela sviten 207 av 207 i PR #595.
+
+**Avskrivna med skäl:**
+- **(a) V-A** prövade bara timmar där målstationen hade en rad och dolde falsklarm. Snedvridningen gynnade V-A, som ändå föll på
+  träffen — nej-domen står. Orsaken är borta vid källan sedan #353 (täckningen ovan), så V-A:s veckokörningar räknar rätt framåt.
+- **(b) Övergångarnas 0d** kastade tysta torra perioder. Det var rätt beteende: tyst är inte torrt. Med #353 har de torra
+  perioderna rader, och den första torrperioden på fem dygn som helt ligger efter 25/9 07:20Z går att döma från 30/9.
+- **(e) Tystnadsfelet:** en miss vid en station utan rader blir *okänd*. Det är dokumentets egen klass — en ursäktlig miss
+  kräver att radarn såg nederbörd **medan stationen var torr** (TROSKLAR-TYSTNADSFEL), och det går inte att fastställa utan
+  rader. Efter #353 händer det bara när en station är nere.
+- **(f) S-B:s missfönster 2 h** mot flottans 3,5 h mellan varven snedvrider inte B2: utan körning inom 2 h blir händelsen
+  OBEDÖMBAR, inte en miss, och räknas redan för sig. Priset är underlag, inte riktning — och 2 h är dokumentets egen definition
+  (TROSKLAR-SKUGGAN §2); ett längre fönster skulle döma prognosen på äldre körningar.
+
+**Rättelse av #364:** där stod att rekonstruktionen "släpper in varje segment oavsett kod … och gör uppspelningen mer
+larmbenägen än motorn". **Det är fel.** Motorn tystar själv kod 1 utan halkord (`engine/src/engine.ts`, `evaluateSegment`), så en
+sträcka med "Normalt" talar lika lite i uppspelningen som i bilen. Upptäckt när lagningen skulle skrivas.
+
+**Nytt fynd, eget kort #256:** uppspelningen av efterhalkan (`sql/028`) räknar natten i UTC (`AT TIME ZONE 'UTC'`), medan R-A och
+nu T-A räknar i svensk tid. Kontraktet "Nattens gräns" vaktar bara att talet 12 är detsamma, inte zonen.

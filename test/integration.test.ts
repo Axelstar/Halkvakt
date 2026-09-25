@@ -701,3 +701,50 @@ test("#255 rekonstruktionen: uppehåll är torrt, nederbörd är blött", { skip
     assert.deepEqual(fukt, { "R255-NO": false, "R255-DRY": false, "R255-NULL": false, "R255-RAIN": true, "R255-SNOW": true, "R255-SUMMA": true });
   } finally { await pool.end(); }
 });
+
+// KORT #254 g: orsaksklassningen ska läsa den NÄRMASTE STATIONEN (TROSKLAR-SKUGGAN §2), inte de åtta närmaste raderna, och
+// en station bortom NEDERBORD_KM får inte ursäkta en miss. Fällan: den närmaste stationen är torr med två rader, en station
+// 20 km bort regnar med tio — åtta rader hade låtit den längre bort avgöra.
+test("#254 g orsaken: närmaste station, inom 50 km — annars okänd", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { nederbordVid } = await import("../publish/skuggfacit.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const fraga = async (s: string, p: unknown[]) => (await pool.query(s, p as any[])).rows;
+  try {
+    const rader: string[] = [];
+    const rad = (id: string, lon: number, lat: number, min: number, regn: boolean) =>
+      rader.push(`('${id}', 'x', ST_SetSRID(ST_MakePoint(${lon}, ${lat}), 4326), '2026-02-10T06:00:00Z'::timestamptz + interval '${min} minutes', -1, 0, ${regn}, false)`);
+    rad("G254-NARA", 16.0, 61.0, -20, false); rad("G254-NARA", 16.0, 61.0, 20, false);
+    for (let i = 0; i < 10; i++) rad("G254-20KM", 16.0, 61.18, -50 + 10 * i, true);        // ~20 km norrut
+    for (let i = 0; i < 10; i++) rad("G254-60KM", 20.0, 66.54, -50 + 10 * i, true);        // ensam och ~60 km från provpunkt 2
+    await pool.query(`INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, rain, snow)
+      VALUES ${rader.join(",")} ON CONFLICT DO NOTHING`);
+    assert.equal(await nederbordVid(fraga, "2026-02-10T06:00:00Z", 16.0, 61.0), false, "den närmaste stationen är torr — den avgör");
+    assert.equal(await nederbordVid(fraga, "2026-02-10T06:00:00Z", 16.0, 61.18), true, "vid den regnande stationen regnar det");
+    assert.equal(await nederbordVid(fraga, "2026-02-10T06:00:00Z", 20.0, 66.0), null, "60 km bort ursäktar ingenting");
+  } finally { await pool.end(); }
+});
+
+// KORT #254 h: rekonstruktionen ska se samma stationer som telefonen såg — genom #75, radvakten och karantänen. Utan vakterna
+// hade en fastfrusen givare på −10,7 °C gett frysrisk i varje uppspelning (Storvik 5/9).
+test("#254 h rekonstruktionen: trasiga givare ger ingen frysrisk i uppspelningen", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { hazardsAt } = await import("../publish/rekonstruktion.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  try {
+    await pool.query(`
+      INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, precipitation, rain, snow) VALUES
+        ('H254-GIVAR',   '#75: 22,7° under luften',   ST_SetSRID(ST_MakePoint(16.0, 62.0), 4326), '2027-01-20T05:50:00Z', -10.7, 12.0, 'rain', true, false),
+        ('H254-RADVAKT', 'luft +13,3, gap 12,0',       ST_SetSRID(ST_MakePoint(16.1, 62.0), 4326), '2027-01-20T05:50:00Z',   1.3, 13.3, 'rain', true, false),
+        ('H254-KARANT',  'rimlig nu, tre brott förut', ST_SetSRID(ST_MakePoint(16.2, 62.0), 4326), '2027-01-20T05:50:00Z',   0.5,  5.0, 'rain', true, false),
+        ('H254-KARANT',  'x', ST_SetSRID(ST_MakePoint(16.2, 62.0), 4326), '2027-01-18T05:50:00Z', -49.0, 10.0, NULL, false, false),
+        ('H254-KARANT',  'x', ST_SetSRID(ST_MakePoint(16.2, 62.0), 4326), '2027-01-17T05:50:00Z', -48.0, 11.0, NULL, false, false),
+        ('H254-KARANT',  'x', ST_SetSRID(ST_MakePoint(16.2, 62.0), 4326), '2027-01-15T05:50:00Z', -50.0,  9.0, NULL, false, false),
+        ('H254-BLIXT',   'varmfront över frusen väg',  ST_SetSRID(ST_MakePoint(16.3, 62.0), 4326), '2027-01-20T05:50:00Z',  -5.0,  4.0, 'rain', true, false),
+        ('H254-FRISK',   'rimlig',                     ST_SetSRID(ST_MakePoint(16.4, 62.0), 4326), '2027-01-20T05:50:00Z',  -1.0,  0.5, 'snow', false, true)
+      ON CONFLICT DO NOTHING`);
+    const faror = await hazardsAt(async (s, p) => (await pool.query(s, p as any[])).rows, new Date("2027-01-20T06:00:00Z"));
+    const ids = faror.map((h) => h.id).filter((id) => id.startsWith("wx:H254-")).sort();
+    assert.deepEqual(ids, ["wx:H254-BLIXT", "wx:H254-FRISK"], "givarfelet, radvaktens fall och karantänen tystas; blixthalkan talar");
+  } finally { await pool.end(); }
+});
