@@ -2744,7 +2744,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Kvar: första riktiga klassningen (Verify). Verify: en klassad bild i tabellen och grind S-B räknar den som händelse.
   📷 **Bild framlagd 24/9 (DECISIONS #332):** `2026-09-24/SE_STA_CAMERA_VViS_329_K1-165760.jpg` (arkiverad 02:30:02Z, kamera VViS 329 K1). Bengt klassar i Supabase-panelen (Storage → facit); klassningen går in via dbknapp; grind S-B räknar. Då stängs kortet.
   ✅ **Stängt 24/9 (DECISIONS #333, Bengt: *"klassa som våt"*):** första raden i `kamerafacit` — Trafikverkets direktbild Tierp 03:11Z, sparad i `docs/kamerafacit/`, klass våt, raden bär vem som läste. Hinkens bild nås bara av Axel (§4.2). Grind S-B läser källan; händelseräkningen bevisad i självtestet, skarpt vid första halkbilden.
-- [ ] 🧾 **#245 BEVISBÄRAREN I SNAPSHOTEN — kartans §8 B, som aldrig fick ett kort** (upptäckt 24/9 när integrationsläget lades i
+- [x] ✅ **KLART 25/9** (DECISIONS #342) — 🧾 **#245 BEVISBÄRAREN I SNAPSHOTEN — kartans §8 B, som aldrig fick ett kort** (upptäckt 24/9 när integrationsläget lades i
   bedömningen §5). Varje fara i `live.json` ska bära VILKA lager som talade och hur starkt — inte en boolean — så att rösten kan
   sätta försprånget (§8 A, #153) och så att en varning går att förklara i efterhand. Fog F1 + F3: nytt fält bredvid `fukt`, aldrig i
   stället (§5.3 *lägg till, ersätt aldrig*). Kan byggas när S2 (#89) ger nivå + bevis — det är innehållet fältet ska bära. Ingen röst
@@ -2753,6 +2753,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔓 **Nyckeln given 24/9 (DECISIONS #341):** S2 byggd — `skattaNiva()` är innehållet fältet ska bära. Nästa: fältet bredvid `fukt` i live.json (F1), bevisat oläst av apparna och med manifestets sha.
   🔨 **BYGGT 24/9 (Bengt: *"gör steg 4"*, DECISIONS #342):** `weather[].bevis = {vata, mangd, radar}` bredvid `fukt`, ur `skattaNiva()`; F1 verifierat i kod (Android, iOS, adaptern läser id/lon/lat/yta/fukt); publiceringens bunt bär skattaren. Radarn null tills stationen kopplas till radarsegment. Deploy 14:09Z, publiceringarna ok, sha stämmer — men noll väderpunkter i eftermiddagssolen. Vakthunden räknar `bevis: N av M`
   varje timme. **Kvar för Verify:** första timkontrollen med väderpunkter och N = M.
+  ✅ **KLART 25/9 (Verify uppfylld, DECISIONS #342):** vakthundens timkontroller 25/9 bär *bevis: N av N väderpunkter* varje timme — 26 av 26 (02:07Z), 24 av 24 (03:07Z), 17 av 17 (04–05:07Z), 11 av 11 (06:07Z), 3 av 3 (07:07Z); väta > 0 hos 0, en torr natt.
 - [x] ✅ **STÄNGT 24/9** (DECISIONS #340) — 🖼️ **#246 BILDLÄSNINGSSPÅRET — klassning i mars, byggt och provat nu** (Bengts fråga 24/9: *"kan Axel ok:a ett automatiserat
   spår där du sköter genomgången"*). DECISIONS #248: hinkens bilder öppnas i mars — spåret byggs nu och provas på Trafikverkets
   DIREKTBILDER (publika, dagens, inte facit). Formen: Axel exporterar hinken till en plats Claude når · kontaktark om 20 bilder ·
@@ -4460,6 +4461,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#245 BEVISBÄRAREN — KLART 25/9 (DECISIONS #342)**: varje väderpunkt i live.json bär `bevis` i vakthundens timkontroller hela natten (26 av 26 kl 02:07Z). Tavlan 47 → 46.
 - [x] ✅ **#252 GRANSKNINGENS SEX FÖRSLAG — KLART 25/9 (DECISIONS #352)**: S-B på leave-one-out och från 23/9, tystnadsfelet ser segmentvarningar, saknade dygn, R-A i stationstimmar, frostgrindarna trycks om kl 09 UTC var sjunde dygn; censuren mätt till 49,5 % saknade grannplatser ⇒ kort #253. Tavlan oförändrad (47).
 - [x] ✅ **#251 TORR STATION RÄKNAS SOM TORR — KLART 25/9 (DECISIONS #351)**: grind V-B räknar en dömande station som är igång men tyst som torr, beslutat före första andelen. Tavlan 47 → 46.
 - [x] ✅ **#217 PRODUKTBOKEN MOT KODEN — KLART 24/9 (DECISIONS #347)**: läst rad för rad, sex löften och elva fel till rättade, skärmbilderna ur fotostudion 23/9; tre nya kort ur fynden (#248 autostarten stoppar aldrig, #249 Om-texten, #250 småfel). Tavlan 44 → 46.
