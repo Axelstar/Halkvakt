@@ -1,7 +1,7 @@
 # TROSKLAR-NEDERBORDSTYPEN — regn, slask eller snö (kort #45)
 
-**Fastställt 25/9 2026 av Bengt** (*"ja till 1, 2 och 3"* — steg 2 är det här dokumentet), DECISIONS #361. **Axels kontrasignatur
-väntar** (bedömningen §4.2). Skrivet efter steg 1:s premissmätning (ordlistan och fälten, `scripts/matningar/nederbordstyp-ordlista-
+**Fastställt 25/9 2026 av Bengt** (*"ja till 1, 2 och 3"* — steg 2 är det här dokumentet), DECISIONS #361. **Kontrasignerat av Axel
+25/9** (via Bengt: *"Axel säger ja till tröskeldokumentet"*, DECISIONS #362). Skrivet efter steg 1:s premissmätning (ordlistan och fälten, `scripts/matningar/nederbordstyp-ordlista-
 2026-09-25.sql`) och **innan något utfall är läst**: ingen sats har korsat nederbördstypen mot temperaturen.
 
 ## 1. Frågan — och vad den INTE är
