@@ -3764,6 +3764,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   faran. Kortet går därmed vidare enligt kort #81:s stegordning A→F, och steg A (kalibreringen in i
   dokumentet) är skrivet. 🔑 Axels kontrasignering i §3.4 innan steg B.
   ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** #81 *Byggordningen*. Kvar ur #81: C-station byggd eller struken, och E dömd över V-C:s underlag.
+  📏 **Läst 25/9 (Bengts fråga: går det att göra mer?), bara räkningar, inga andelar:** skuggan V-B har loggat **57 varningar på 7 regndygn i 21 län-rutor** sedan 15/9 (V-C: 200 · 5 · 3). Veckan 21–24/9 gav **1** varning på 108 radarutlösta segment, mot 28 på 693 veckan före — lågt men inte bevisat fel. **Två hinder för domen:** (1) måndagsknappen räknar V-C på 14 dygn, fast §3 inte har något fönster; (2) `grind-v-b.ts` skriver alltid *0 facitbekräftade händelser*, fast §2 godtar *olycka i regnväder* som bekräftelse — och testarlogg kan inte finnas förrän rösten finns, som i sin tur väntar på V-C. Förslagen står i bedömningen §4.2.
 - [x] ✅ **STÄNGT 22/9** (DECISIONS #303) — ⚖️ **#194 GRIND V-B SOM KNAPP — dömer skuggans vattenplaningsvarningar** (Bengts order 16/9, DECISIONS #211).
   `publish/grind-v-b.ts` + knappen `grind-v-b`: V-B1 falsklarm mot närmaste stations `rain_sum_mm` (10 km, ±30 min,
   tröskeln härledd 2,0/0,65 ≈ 3,1), V-B3 frekvens per rutt och regndygn, V-C:s domspärr. V-B2 säger ⊘ med skäl —
