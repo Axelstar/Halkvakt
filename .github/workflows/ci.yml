@@ -54,7 +54,7 @@ jobs:
       - name: Grind V-B:s självtest — facit enligt §2 och bara räkningar under spärren (#349, #350)
         run: node --experimental-strip-types publish/grind-v-b.ts --sjalvtest
       # Knapparna som granskningen 25/9 ändrade (kort #252, DECISIONS #352) prövas i varje PR, inte bara när de körs.
-      - name: Grindarnas självtester — A, vägpunkten, K-A, R-A, S-B, tystnadsfelet (#352)
+      - name: Grindarnas självtester — A, vägpunkten, K-A, R-A, S-B, tystnadsfelet (#352), NT (#361)
         run: |
           node --experimental-strip-types publish/grind-a.ts --sjalvtest
           node --experimental-strip-types scripts/hojd-prov.ts --sjalvtest
@@ -62,6 +62,7 @@ jobs:
           node --experimental-strip-types scripts/grind-r-a.ts --sjalvtest
           node --experimental-strip-types publish/grind-s-b.ts --sjalvtest
           node --experimental-strip-types scripts/tystnadsfelet.ts --sjalvtest
+          node --experimental-strip-types scripts/grind-nt.ts --sjalvtest
       # Generatorn gled isär från vektorfilerna tre gånger (31/8, 2/9, 13/9) utan att någon vakt såg det (#195).
       # Den skriver bara filer vars innehåll ändrats och fäller själv på en vektorfil utan scenario.
       - name: Vektorgeneratorn återskapar engine/vectors/ (#202)
