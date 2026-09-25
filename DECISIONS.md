@@ -10358,3 +10358,24 @@ eftersom gallringen lämnar en rad per halvtimme efter 7 dygn. **Inga trösklar,
 Beroenden: arkivet eller exporten måste gå att läsa vid domen (#334); W-B5 och roll A kräver kort #255:s rättelse av missmätningen.
 Facit är fortfarande den svaga länken (`road_condition_history` står nästan still till vintern, kamerafacit öppnas i mars) — oavsett
 om B mäts i skugga eller ur arkivet.
+
+## #364 (25/9 2026) Kort #255: rekonstruktionens fukt rättad och flyttad till en egen modul — missmätningen stängs inte
+
+**Beslut (Bengt 25/9: *"gör kort 255"*).** `publish/missar.ts` byggde fukten som `COALESCE(precipitation,'') <> ''`, så Trafikverkets
+"no" blev fukt och varje torr station fick frysrisk i rekonstruktionen — samma fälla som `Boolean(precipitation)`. **Lagningen:**
+`hazardsAt` flyttas till `publish/rekonstruktion.ts` med `FUKT_SQL`, snapshotkärnans torrord i kontraktsgrindens form, så att en lista
+som glider isär fälls i CI. Missmätningen importerar modulen; i övrigt är skriptet orört.
+
+**Bevis:** provet `#255 rekonstruktionen` i `test/integration.test.ts` kör den riktiga frågan mot PostGIS i CI — "no", "Dry" och null
+torra; regn, snö och en tiominuterssumma med regn blöta, som snapshotkärnans `fukt`. Grönt i PR #593 (205 av 205, inget hoppat över).
+**Motprov** (PR #594, stängd): den gamla formen återinsatt, osynlig för kontraktsgrinden (alla 51 kontrakt höll). Provet föll på
+rätt rader, `R255-NO` och `R255-DRY` blöta, 204 av 205.
+
+**Körs `missar.yml`?** Nej: sex gånger 29/8 (tre fel innan det gick), aldrig sedan. Kortets verify sa "annars stängs skriptet i stället".
+**Det stängs inte**, eftersom rekonstruktionen sedan DECISIONS #363 är det W-B5 och roll A ska spelas upp med — och flytten till en egen
+modul är just för den användningen. Om själva veckomätningen (#19) ska stå kvar bredvid tystnadsfelet (#98) och grind S-B hör till
+kort #254 (h).
+
+**Kvar i #254 (h), nu villkor för #363:s W-B5 och roll A:** rekonstruktionen saknar vakterna (#75, radvakten, karantänen, den
+långsamma vakten), och — **nytt fynd 25/9** — den släpper in varje segment ur väglagshistoriken oavsett kod, även kod 1 utan halkord
+som snapshoten aldrig publicerar (kort #97:s kodgrind). Båda gör uppspelningen mer larmbenägen än motorn.

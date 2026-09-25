@@ -1213,12 +1213,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **Stängt 22/9 (DECISIONS #306):** Bengts ja 22/9. PR #481 (0c2d92a): 504 filer ur git, `ios/HalkvaktEngine/.build/` i `.gitignore`, inga referenser utanför mappen. **Före:** en kloning utan `core.longpaths` föll 22/9 på *Filename too long* (291 tecken, *checkout failed*). **Efter:** samma kloning av 0c2d92a går igenom, 0 saknade filer. ci och ios-engine gröna på main (35739390674, 35739390740). Historiken är oförändrad, och en `git pull` tar bort de gamla byggfilerna ur andras arbetskopior; nästa Swift-bygge skapar dem igen.
 
 ### Claude — olåst
-- [ ] 🧪 **#255 MISSMÄTNINGEN RÄKNAR UPPEHÅLL SOM FUKT** (fynd 25/9 under läsningen av #45). `publish/missar.ts:59` bygger
+- [x] ✅ **KLART 25/9** (DECISIONS #364) — 🧪 **#255 MISSMÄTNINGEN RÄKNAR UPPEHÅLL SOM FUKT** (fynd 25/9 under läsningen av #45). `publish/missar.ts:59` bygger
   `moisture` som `COALESCE(precipitation,'') <> ''` — Trafikverkets "no" (uppehåll) blir fukt, samma fälla som `Boolean(precipitation)`
   (CLAUDE.md). Rekonstruktionen får då frysrisk vid torra stationer, motorn "hade varnat" oftare än den skulle, och missandelen
   ser bättre ut än den är. Enda kvarvarande stället i repot: snapshotkärnan, publicera och mätskripten har DRY-listan. Senast
   ändrad 31/8, före läxan. **Verify:** samma DRY-lista som `publish/snapshot-core.ts`, ett test som fäller "no", och besked om
   `missar.yml` alls körs i dag (annars stängs skriptet i stället).
+  ✅ **BEVIS 25/9:** `publish/rekonstruktion.ts` bär `hazardsAt` med snapshotkärnans torrord; provet `#255 rekonstruktionen` grönt
+  mot PostGIS i PR #593, och motprovet (PR #594, den gamla formen, osynlig för kontraktsgrinden) föll på `R255-NO`/`R255-DRY`.
+  `missar.yml` har inte körts sedan 29/8, men skriptet stängs inte — rekonstruktionen behövs av #363. Resten är #254 (h).
 - [x] 🔇 **#227 iOS TYSTNADE MED SLÄCKT SKÄRM PÅ "NÄR APPEN ANVÄNDS" — FIXAT 20/9** (Axels prov på iPhone, DECISIONS #273).
   `GuardManager` satte `allowsBackgroundLocationUpdates` till sant **bara vid Always** — och iOS erbjuder aldrig Always i
   första rutan, så varje ny testare landade i `whenInUse` och fick en vakt som slutade se vägen när skärmen låstes. Apples
@@ -1429,7 +1432,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (d) **T-A:s kl 03–07 i UTC-timmar** (`scripts/grind-t-a.ts:164`). (e) **Tystnadsfelet:** en station utan rader gör missen *okänd* och
   radarn prövas aldrig. (f) **S-B:s missfönster** 2 h mot flottans 3,5 h mellan varven. (g) **Den delade facitlistan** orsaksklassar mot
   de åtta närmaste raderna utan avståndsgräns, och en saknad orsak blir utstrålning. (h) **missar.ts** är gammal: egen kopia av tre
-  rutter, inga vakter, träff var som helst på rutten. Flera av (a), (b) och (e) mildras redan av #353, eftersom de varma stationerna nu
+  rutter, inga vakter, träff var som helst på rutten — och (nytt 25/9, DECISIONS #364) varje segment oavsett kod, även kod 1 utan
+  halkord som snapshoten aldrig publicerar. **(h) är sedan #363 villkor för uppspelningen av W-B5 och roll A**; fukten är redan
+  rättad (#255, rekonstruktionen i `publish/rekonstruktion.ts`). Flera av (a), (b) och (e) mildras redan av #353, eftersom de varma stationerna nu
   har rader — det bör mätas innan något byggs.
   Verify: varje punkt byggd med självtest och motprov, eller avskriven med skäl i DECISIONS.
 
@@ -4512,6 +4517,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#255 MISSMÄTNINGENS FUKT — KLART 25/9 (DECISIONS #364)**: rekonstruktionen i egen modul med snapshotkärnans torrord, prov mot PostGIS grönt och motprov fällt på rätt rader. Tavlan 45 → 44.
 - [x] ✅ **SYSTEM.md-LÄSNINGEN STÄNGD SOM KORT 25/9 (DECISIONS #356)**: en rutin i bedömningens kalender, nästa i oktober. Tavlan 45 → 44.
 - [x] ✅ **#91 KALLPLATSLAGRET STÄNGT 25/9, ÖPPNAS VÅREN 2027 (DECISIONS #355)**: står i vårlistan Ä6. Tavlan 46 → 45.
 - [x] ✅ **BETALVILJAN STÄNGD 25/9, ÖPPNAS VÅREN 2027 (DECISIONS #354)**: står i vårlistan bredvid intäktsmodellen. Tavlan 47 → 46.

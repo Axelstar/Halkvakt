@@ -676,3 +676,28 @@ test("#156 serverns halkfilter: kod 1 med mycket besvärligt och halkigt når mo
     assert.deepEqual(inne, ["H156_HK", "H156_MB"], "mycket besvärligt och halkigt in; fläckvis Våt och Halkbekämpning ute");
   } finally { await pool.end(); }
 });
+
+// KORT #255: rekonstruktionen (publish/rekonstruktion.ts) räknade Trafikverkets "no" som fukt — `COALESCE(precipitation,'') <> ''`
+// — och gav frysrisk vid varje torr station. Samma fälla som `Boolean(precipitation)` (CLAUDE.md). Provet kör den riktiga frågan
+// mot PostGIS, vid en tid långt från de andra provens rader: uppehåll ("no", "Dry", null) är torrt; regn, snö och en tiominuterssumma
+// med regn är blött — exakt som snapshotkärnans `fukt`.
+test("#255 rekonstruktionen: uppehåll är torrt, nederbörd är blött", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { hazardsAt } = await import("../publish/rekonstruktion.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  try {
+    await pool.query(`
+      INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, precipitation, rain, snow) VALUES
+        ('R255-NO',    'uppehåll',          ST_SetSRID(ST_MakePoint(15.0, 60.0), 4326), '2026-01-15T05:50:00Z', -1.0, 0.0, 'no',   false, false),
+        ('R255-DRY',   'nordiskt uppehåll', ST_SetSRID(ST_MakePoint(15.1, 60.0), 4326), '2026-01-15T05:50:00Z', -1.0, 0.0, 'Dry',  false, false),
+        ('R255-NULL',  'ingen typgivare',   ST_SetSRID(ST_MakePoint(15.2, 60.0), 4326), '2026-01-15T05:50:00Z', -1.0, 0.0, NULL,   false, false),
+        ('R255-RAIN',  'regn',              ST_SetSRID(ST_MakePoint(15.3, 60.0), 4326), '2026-01-15T05:50:00Z', -1.0, 0.0, 'rain', true,  false),
+        ('R255-SNOW',  'snö',               ST_SetSRID(ST_MakePoint(15.4, 60.0), 4326), '2026-01-15T05:50:00Z', -1.0, 0.0, 'snow', false, true),
+        ('R255-SUMMA', 'no, men regn i tiominuterssumman', ST_SetSRID(ST_MakePoint(15.5, 60.0), 4326), '2026-01-15T05:50:00Z', -1.0, 0.0, 'no', true, false)
+      ON CONFLICT DO NOTHING`);
+    const faror = await hazardsAt(async (s, p) => (await pool.query(s, p as any[])).rows, new Date("2026-01-15T06:00:00Z"));
+    const fukt = Object.fromEntries(faror.filter((h) => h.id.startsWith("wx:R255-"))
+      .map((h) => [h.id.slice(3), (h as { meta: { moisture: boolean } }).meta.moisture]));
+    assert.deepEqual(fukt, { "R255-NO": false, "R255-DRY": false, "R255-NULL": false, "R255-RAIN": true, "R255-SNOW": true, "R255-SUMMA": true });
+  } finally { await pool.end(); }
+});

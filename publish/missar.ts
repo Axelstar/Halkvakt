@@ -8,7 +8,8 @@
 // --experimental-strip-types publish/missar.ts [dagar-bakåt, default 30]
 import pg from "pg";
 import { AlertEngine } from "../engine/src/engine.ts";
-import type { Fix, Hazard } from "../engine/src/types.ts";
+import type { Fix } from "../engine/src/types.ts";
+import { hazardsAt } from "./rekonstruktion.ts";
 
 const url = process.env.DATABASE_URL;
 if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
@@ -50,35 +51,6 @@ function traceAlong(line: [number, number][], kmh = 80, stepS = 2): Fix[] {
   return fixes;
 }
 
-/** Rekonstruera motorns hazards vid tidpunkt T ur arkivet (frysrisk + halksträckor). */
-async function hazardsAt(t: Date): Promise<Hazard[]> {
-  const out: Hazard[] = [];
-  const wx = await pool.query(`
-    SELECT DISTINCT ON (station_id) station_id,
-      ST_X(geom::geometry) lon, ST_Y(geom::geometry) lat, surface_temp_c,
-      (rain OR snow OR COALESCE(precipitation,'') <> '') AS moisture
-    FROM weather_observations
-    WHERE sample_time BETWEEN $1::timestamptz - interval '45 min' AND $1::timestamptz
-      AND geom IS NOT NULL
-    ORDER BY station_id, sample_time DESC`, [t]);
-  for (const r of wx.rows)
-    out.push({ id: `wx:${r.station_id}`, kind: "icing_point", lon: +r.lon, lat: +r.lat,
-      meta: { surfaceTempC: r.surface_temp_c === null ? null : +r.surface_temp_c, moisture: !!r.moisture } });
-  const seg = await pool.query(`
-    SELECT DISTINCT ON (h.segment_id) h.segment_id, h.condition_code, h.condition_info,
-      ST_AsGeoJSON(c.geom::geometry) gj
-    FROM road_condition_history h
-    JOIN road_conditions c USING (segment_id)
-    WHERE h.modified_time <= $1 AND h.modified_time > $1::timestamptz - interval '12 hours'
-      AND NOT h.deleted AND c.geom IS NOT NULL
-    ORDER BY h.segment_id, h.modified_time DESC`, [t]);  for (const r of seg.rows) {
-    const line = JSON.parse(r.gj)?.coordinates as [number, number][] | undefined;
-    if (line?.length) out.push({ id: `seg:${r.segment_id}`, kind: "slippery_segment", line,
-      meta: { code: r.condition_code, info: r.condition_info ?? [] } });
-  }
-  return out;
-}
-
 // Händelser: SMHI-halkvarningar + Situation-halka, nära rutterna, i fönstret.
 const events = await pool.query(`
   SELECT 'smhi:' || warning_id AS id, archived_at AS t,
@@ -97,7 +69,7 @@ const rows: Row[] = [];
 for (const e of events.rows) {
   const route = nearAnyRoute(+e.lon, +e.lat);
   if (!route) continue;
-  const hazards = await hazardsAt(e.t);
+  const hazards = await hazardsAt(async (s, p) => (await pool.query(s, p as any[])).rows, e.t);
   const alerts = new AlertEngine(hazards).run(traceAlong(ROUTES[route]));
   const hit = alerts.some((a) => a.kind === "icing_point" || a.kind === "slippery_segment");
   const wk = new Date(e.t); const week = `${wk.getUTCFullYear()}-v${String(Math.ceil(((+wk - +new Date(Date.UTC(wk.getUTCFullYear(),0,1))) / 86400000 + 1) / 7)).padStart(2,"0")}`;
