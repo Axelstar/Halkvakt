@@ -1397,6 +1397,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Äldre fel av samma sort: R-A:s spärr i episoder mot stationstimmar, V-A och övergångarnas 0d döljer torrt, andelar under
   spärren i K-A, R-A, W-A och F-A. Förslagen i ordning står i dokumentet och i bedömningen §4.2; inget byggs före Bengts ja.
   Verify: varje förslag antingen byggt med självtest och motprov, eller avskrivet med skäl i DECISIONS.
+  🔑 **Bengts ja 25/9 till (1)–(6), Axel inget att invända (DECISIONS #352):** definitionerna står i beslutet före bygget. Byggs i tre PR:er: knapparna (3)–(6), vakthunden (2) med deploy, och mätningen (1).
 
 - [ ] 🤖 **#219 ANDROID ÄR SJU VERSIONER EFTER OCH HAR INGEN VÄG TILL EN TELEFON** (genomlysningen 20/9). Android står på
   **0.3.1 (versionCode 4)**, iOS på 0.3.8 (11). **Google Play-kontot finns inte**, det finns inget uppladdningsflöde alls — CI

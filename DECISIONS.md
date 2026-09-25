@@ -10132,3 +10132,39 @@ skriver det svenska väderarkivet sedan 8/9, sparar en avläsning bara om ytan �
 fångar därför bara en torr station som haft en kall eller blöt rad inom ±3 h; den gör inget fel, men hjälper mindre än
 beslutet säger. Noten i TROSKLAR-VATTENPLANING §2 rättad i samma varv.
 
+## #352 (25/9 2026) Granskningens sex förslag (kort #252) — definitionerna skrivna före bygget
+
+**Beslut (Bengt 25/9: *"ja till 1 till 6"*; Axel via Bengt samma dag: *"har inget att invända"*).** Alla sex byggs. Varje definition
+nedan är skriven innan någon kod eller något tal finns, och ingen av dem läser en andel.
+
+1. **Censuren i grind A och vägpunktsgrinden mäts — bara antal.** För varje kall målhalvtimme (yta ≤ 5 °C, #75 och radvakten) i
+   60 dygn: hur många av målets fem närmaste stationer inom 50 km (grindarnas grannval) har en arkivrad i samma halvtimme, och hur
+   många saknar. En granne som saknas i en kall halvtimme är varm och torr eller nere — arkivet kan inte skilja dem, så talet är
+   ett tak för censuren. Karantänen och den långsamma vakten tas inte med i räkningen (de rör 1–3 stationer per dygn och gör frågan
+   tung). Ingen felkvot räknas. Resultatet avgör om nästa steg behövs: en rad i timmen per station i arkivet, eller en grind som
+   prövar ankare ur nuläget.
+2. **Frostgrindarna trycks om.** Vakthunden trycker de fem flödena (T-A 7 dygn, R-A 30 dygn Sverige, K-A 60, övergångarna 7, vind och
+   sikt 14) **kl 09 UTC** ett dygn då minst 50 stationer haft ytan ≤ 0 °C det senaste dygnet, och **högst en gång per sju dygn**.
+   Issuen om frosten skapas som förut vid första larmet, vilken timme det än är; tryckningarna skrivs som kommentarer på den, och
+   den senaste kommentaren är klockan som räknar de sju dygnen. Kl 09 UTC ligger efter morgonen, så T-A ser hela natten. Frosten
+   upphör ⇒ tryckningarna upphör av sig själva.
+3. **S-B:** fönstret från 23/9 (prognosloggens start) i stället för 14 rullande dygn. C3 jämför med grind A:s dömda A2, **3,5 %**
+   (DECISIONS #321, dokumentets *offsetbacktest 3.3*), utan inmatning; `--grindA2` får fortfarande ersätta talet. **B1 och C2 döms
+   på holdoutens leave-one-out:** en *holdout-episod* är en station inom 2 km av rutten vars skattning ur de ÖVRIGA ankarna
+   (`prognos.h`, fjärde fältet) är ≤ 1 °C i varv som ligger högst 2 h isär; stationens egen mätning i samma varv dömer — över +2 °C
+   i något varv ⇒ FALSK, ≤ 1 °C ⇒ BEKRÄFTAD (en kamerabild med halka inom 2 km under episoden bekräftar också, fäller aldrig), annars
+   OMÄTBAR. §2:s regel (stationen fäller, kameran bara bekräftar) står kvar; det som ändras är att stationen dömer en prognos som
+   inte redan innehåller den. B3 och B2 döms som förut. I dom-läget skrivs andelarna först när C1 och C2 är uppfyllda, och
+   underlagsläget slutar skriva antalet nederbördsmissar (det är ett utfall).
+4. **Tystnadsfelet:** en halkvarning på ett segment (`seg:<id>`, sparad utan position) räknas som att systemet talade om
+   segmentets linje i `road_conditions` ligger inom 2 km från händelsen. I dom-läget skrivs paret och priset bara när T5-underlaget
+   (20 tillfällen i 3 halkperioder) är uppfyllt.
+5. **Saknade dygn:** grind A, vägpunktsgrinden och K-A skriver ut dygn i fönstret som saknar arkivrader efter arkivets början —
+   exporterade och raderade eller aldrig hämtade — och räknar inte dem som lugna. Arkivets början är det tidigaste av första
+   exporterade dygnet och första raden, så att raderade dygn inte tas för dygn före arkivet.
+6. **R-A:s spärr i stationstimmar:** R-A1 räknar episodernas sammanlagda längd i timmar (Σ minuter / 60) i den bästa kombinationen,
+   inte antalet episoder. Episodlängden är sista minus första raden, så talet är något försiktigt.
+
+**Sagt högt.** (3) ändrar vad B1 räknar och därmed C2:s nämnare; det är ett byte av mätning, inte av tröskel, och det görs innan
+någon andel lästs. (2) gör fler Actions-körningar i vinter — fem flöden en gång i veckan medan frosten varar, någon minut vardera.
+
