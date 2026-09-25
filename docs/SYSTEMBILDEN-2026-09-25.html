@@ -1,0 +1,202 @@
+<title>Halkvaktens systembild</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+  :root {
+    --papper: #F6F7F5;
+    --blad: #FFFFFF;
+    --black: #16202A;
+    --dampad: #4A5763;
+    --linje: #D9DFE3;
+    --gul: #A8720A;
+    --gul-yta: #FFF3D6;
+    --gron: #1F7A45;
+    --frost: #2F6E92;
+    --frost-yta: #E6F0F5;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --papper: #0B1014; --blad: #121A20; --black: #E6ECEF; --dampad: #9DAAB3; --linje: #26323B;
+      --gul: #FFC94A; --gul-yta: #2A2310; --gron: #4CC382; --frost: #7FC0E0; --frost-yta: #13232C;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --papper: #0B1014; --blad: #121A20; --black: #E6ECEF; --dampad: #9DAAB3; --linje: #26323B;
+    --gul: #FFC94A; --gul-yta: #2A2310; --gron: #4CC382; --frost: #7FC0E0; --frost-yta: #13232C;
+    color-scheme: dark;
+  }
+  body { background: var(--papper); color: var(--black); padding-inline: 16px; padding-block: 28px 48px;
+         font: 400 16px/1.6 "Source Serif 4", Georgia, "Times New Roman", serif; }
+  .blad { max-width: 800px; margin: 0 auto; background: var(--blad); border: 1px solid var(--linje);
+          padding: clamp(20px, 5vw, 56px); display: grid; gap: 22px; }
+  h1, h2, h3, .etikett, .lager b, th { font-family: "Instrument Sans", "Helvetica Neue", Arial, sans-serif; }
+  h1 { font-size: clamp(30px, 5vw, 42px); line-height: 1.08; font-weight: 700; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+  h2 { font-size: 21px; font-weight: 700; margin: 8px 0 0; text-wrap: balance; }
+  h3 { font-size: 16px; font-weight: 600; margin: 0; }
+  p { margin: 0; max-width: 68ch; }
+  .etikett { font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gul); }
+  .ingress { font-size: 18px; color: var(--dampad); }
+  .mono { font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; font-size: 0.86em; font-variant-numeric: tabular-nums; }
+  .rost { font-style: italic; }
+  .spalter { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px 28px; }
+  .spalter > div { display: grid; gap: 6px; align-content: start; }
+  ul { margin: 0; padding-left: 1.1em; display: grid; gap: 4px; }
+  li { max-width: 66ch; }
+  .grans { background: var(--frost-yta); border-left: 3px solid var(--frost); padding: 12px 16px; display: grid; gap: 6px; }
+  .grans h3 { color: var(--frost); }
+  .tabell { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 15px; }
+  th { text-align: left; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad); font-weight: 600;
+       border-bottom: 1px solid var(--linje); padding: 6px 10px 6px 0; }
+  td { border-bottom: 1px solid var(--linje); padding: 9px 10px 9px 0; vertical-align: top; }
+  td:first-child { white-space: nowrap; }
+  td .lagerkod { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12px; color: var(--gul); }
+  .lager { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; border: 1px solid var(--linje); }
+  .lager > div { padding: 12px 12px 14px; border-right: 1px solid var(--linje); display: grid; gap: 4px; align-content: start; }
+  .lager > div:last-child { border-right: 0; }
+  .lager .idag { background: var(--gul-yta); }
+  .lager b { font-size: 13px; font-weight: 700; }
+  .lager .kod { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12px; color: var(--gul); }
+  .lager span { font-size: 14px; line-height: 1.4; color: var(--dampad); }
+  @media (max-width: 640px) {
+    .lager { grid-template-columns: 1fr; }
+    .lager > div { border-right: 0; border-bottom: 1px solid var(--linje); }
+    .lager > div:last-child { border-bottom: 0; }
+  }
+  .fot { font-size: 13px; color: var(--dampad); border-top: 1px solid var(--linje); padding-top: 12px; }
+  @page { size: A4; margin: 16mm 15mm; }
+  @media print {
+    body { background: #fff; padding: 0; font-size: 10.5pt; }
+    .blad { border: 0; padding: 0; max-width: none; gap: 12px; }
+    h2 { break-after: avoid; }
+    .ny-sida { break-before: page; }
+    .tabell, table, tr, .lager, .grans { break-inside: avoid; }
+  }
+</style>
+
+<main class="blad">
+  <header style="display:grid;gap:10px">
+    <div class="etikett">Halkvakt · systembild 25 september 2026</div>
+    <h1>Motorn i dag, och systemet när skuggmotorns delar klarat sina prov</h1>
+    <p class="ingress">Halkvakt är en röst som säger till när något farligt finns på vägen framför bilen. Den här sidan beskriver
+      motorn som kör i telefonen i dag, och hur helheten ser ut den dag varje del i skuggmotorn har klarat de prov den är byggd för.</p>
+  </header>
+
+  <section style="display:grid;gap:14px">
+    <h2>1. Motorn i dag</h2>
+    <div class="spalter">
+      <div>
+        <h3>Vad den lyssnar på</h3>
+        <ul>
+          <li>Trafikverkets väglag, sträcka för sträcka.</li>
+          <li>Drygt 800 vägväderstationer: vägytans temperatur och om vägen är fuktig.</li>
+          <li>Olyckor, djur på vägen och fartkameror.</li>
+          <li>Stationer i Finland och Norge inom 40 km från svenska vägar.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Vad den säger</h3>
+        <ul>
+          <li class="rost">”Varning: halka rapporterad på vägen framför dig.”</li>
+          <li class="rost">”Isrisk framöver — vägbanan nära noll grader.”</li>
+          <li class="rost">”Allvarlig olycka på E18, 10 kilometer framför dig — stor påverkan på trafiken. Överväg annan väg.”</li>
+          <li class="rost">”Viltrisk framöver.” · ”Fartkamera om 500 meter.”</li>
+        </ul>
+      </div>
+    </div>
+    <div class="spalter">
+      <div>
+        <h3>Hur den bestämmer</h3>
+        <ul>
+          <li>En röst i taget: olycka går före halka, halka före frysrisk, sedan vilt och kamera.</li>
+          <li>Samma fara upprepas först efter <span class="mono">10 min</span> och <span class="mono">5 km</span>.</li>
+          <li>Varningen kommer omkring <span class="mono">30 s</span> före faran vid bilens fart, <span class="mono">400–3 000 m</span>.</li>
+          <li>En allvarlig olycka ropas två gånger: på en mil, och igen på två kilometer.</li>
+          <li>Tyst under <span class="mono">15 km/h</span>. Tystnad är grundläget.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Hur den är byggd</h3>
+        <ul>
+          <li>Matchningen sker i telefonen. Ingen position lämnar telefonen av sig själv.</li>
+          <li>Ny lägesbild var tionde minut, med kontrollsumma. En trasig fil vägras.</li>
+          <li>Samma motor i tre språk, låst av <span class="mono">37</span> testfall som alla tre måste klara byte för byte.</li>
+          <li>Vakter sorterar bort trasiga givare, och en vakthund kontrollerar kedjan varje timme.</li>
+          <li>Öppna data och gratisnivåer, ingen licenskostnad.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="grans">
+      <h3>Var gränsen går i dag</h3>
+      <p>Motorn varnar där det mäts. Mellan stationerna är vägen oövervakad. Den ser läget nu men inte vart ytan är på väg, och den
+        säger varje varning lika tidigt, hur allvarlig faran än är.</p>
+    </div>
+  </section>
+
+  <section class="ny-sida" style="display:grid;gap:14px">
+    <h2>2. Skuggmotorn och vad dess delar ger</h2>
+    <p>Skuggmotorn kör samma motor mot riktiga data på tjugo referensrutter per land, var trettionde minut, och loggar vad rösten
+      <em>skulle</em> ha sagt. Ingen förare hör något. Varje del döms mot trösklar som skrevs innan någon mätning fanns, och bara det som
+      klarar sina prov når rösten. Nedan antas att alla delar klarar dem.</p>
+    <div class="tabell">
+      <table>
+        <thead><tr><th>Del</th><th>Vad den gör</th><th>Vad systemet vinner</th></tr></thead>
+        <tbody>
+          <tr><td><span class="lagerkod">L3</span> Efterhalkan</td><td>Känner igen en blöt väg vars yta sjunker mot noll efter att regnet slutat.</td><td>Varnar för den vanligaste svartisen innan den syns i väglaget.</td></tr>
+          <tr><td><span class="lagerkod">L3</span> Rimfrosten</td><td>Ser när ytan blir kallare än daggpunkten en klar natt.</td><td>Svartis utan nederbörd, som i dag är osynlig.</td></tr>
+          <tr><td><span class="lagerkod">L3</span> Trenden</td><td>Mäter hur fort ytan faller över 15, 30 och 60 minuter.</td><td>Varningen kommer medan det fryser, inte när det redan har frusit.</td></tr>
+          <tr><td><span class="lagerkod">L2</span> Nederbördstypen</td><td>Skiljer regn, slask och snö ur luftens och ytans fukt.</td><td>Rätt fara i snöfall och slask, inte bara ”blött”.</td></tr>
+          <tr><td><span class="lagerkod">L2</span> Vattenplaning</td><td>Läser radarns regnintensitet längs vägen.</td><td>En sjätte fara: <span class="rost">”Vattenplaning framöver — sakta ner.”</span></td></tr>
+          <tr><td><span class="lagerkod">L4</span> Segmentprognosen</td><td>Skattar yttemperaturen var andra kilometer ur närliggande stationer, med höjden inräknad.</td><td>Vägen mellan stationerna syns på kartan, och en varning som vilar på en mätning kan stärkas eller förlängas.</td></tr>
+          <tr><td><span class="lagerkod">L5</span> Allvar som försprång</td><td>Ger en allvarligare fara längre förvarning: <span class="mono">45–90 s</span> i stället för <span class="mono">30 s</span>.</td><td>Samma ord, tidigare, när väglaget är mycket besvärligt eller ytan under noll med färskt regn.</td></tr>
+          <tr><td><span class="lagerkod">L3–L5</span> Förstärkarna</td><td>Vind och sikt, SMHI:s varningar och frysklassningen.</td><td>De förlänger eller stärker en varning, men utlöser aldrig en egen.</td></tr>
+          <tr><td><span class="lagerkod">B</span> Bevisbäraren</td><td>Varje punkt bär vad som talade och hur starkt: väta, regnmängd, temperatur.</td><td>Varje varning går att förklara, på kartan och i efterhand.</td></tr>
+          <tr><td><span class="lagerkod">M</span> Mätapparaten</td><td>Tystnadsfelet, facit ur väglagskameror och vakter som ser att kedjan lever.</td><td>Systemet vet hur ofta det har rätt, och när det tiger fel.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section style="display:grid;gap:14px">
+    <h2>3. Det färdiga systemet</h2>
+    <p>När delarna är på plats svarar varje lager på en egen fråga om vägen. Mätningar och minne av mätningar får utlösa en varning;
+      prognoser och modeller får bara stärka, försvaga eller förlänga den.</p>
+    <div class="lager" role="list" aria-label="Lagren från trovärdighet till allvar och röst">
+      <div class="idag" role="listitem"><span class="kod">L1 · i drift</span><b>Trovärdighet</b><span>Får vi tro på mätvärdet? Vakter mot trasiga givare.</span></div>
+      <div role="listitem"><span class="kod">L2</span><b>Tillstånd</b><span>Vad är ytan? Blöt eller torr, regn, slask eller snö, vattenfilm.</span></div>
+      <div role="listitem"><span class="kod">L3</span><b>Utveckling</b><span>Vart är den på väg? Ytan som faller, regnet som slutat, rimfrost.</span></div>
+      <div role="listitem"><span class="kod">L4</span><b>Räckvidd</b><span>Hur långt gäller mätningen? Vägen mellan stationerna.</span></div>
+      <div role="listitem"><span class="kod">L5</span><b>Allvar och röst</b><span>Vad sägs? Samma ord, tidigare när faran är större.</span></div>
+    </div>
+    <div class="spalter">
+      <div>
+        <h3>Vad föraren märker</h3>
+        <ul>
+          <li>Varningen kommer tidigare där det spelar roll, och lika sällan som i dag.</li>
+          <li>Den farligaste halkan, svartis efter regn och en klar natt, varnas innan den finns i väglaget.</li>
+          <li>Kartan visar risken längs hela vägen, inte bara vid stationerna.</li>
+          <li>Vattenplaning blir en egen varning i kraftigt regn.</li>
+          <li>Rösten tiger fortfarande när inget är fel.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Principerna som håller det pålitligt</h3>
+        <ul>
+          <li><b>Tröskelregeln.</b> En storhet som inte kan motbevisas av en mätning får inte utlösa en varning. Prognoser syns och stärker, men talar aldrig ensamma.</li>
+          <li><b>En röst i taget.</b> Allvar blir tid, aldrig högre prioritet och aldrig fler ord.</li>
+          <li><b>Mätning före röst.</b> Inget når föraren innan det dömts mot trösklar som skrevs först.</li>
+          <li><b>Integritet.</b> Positionen stannar i telefonen.</li>
+          <li><b>En motor.</b> Samma regler i tre appar, låsta av samma testfall.</li>
+        </ul>
+      </div>
+    </div>
+    <p>Sammantaget går Halkvakt från att säga vad som redan har hänt vid en station till att varna för det som är på väg att hända
+      längs hela vägen, lika tyst som förut och med ett mätt skäl bakom varje ord.</p>
+  </section>
+
+  <p class="fot">Byggd ur repot Axelstar/Halkvakt: integrationskartan, bedömningen och tröskeldokumenten för varje del. Beskrivningen utgår
+    från att varje del klarar sina prov i skuggan; vilka som gör det avgörs vid domarna i januari och mars 2027.</p>
+</main>
