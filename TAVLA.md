@@ -1376,6 +1376,16 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   (c) fotostudions bilder är olika eller färre.
   ✅ **KLART 24/9 (DECISIONS #348):** (a) nollställs vid start, (b) `lastSaidAt`, (c) tre bilder i stället för sex.
 
+- [ ] 🌵 **#251 GRIND V-B RÄKNAR EN TORR STATION SOM OMÄTBAR — falsklarmen kan vara för få** (fynd 25/9 under kort #42). Väderarkivet
+  sparar bara intressanta rader (DECISIONS #4: yta ≤ 5 °C, nederbörd, eller yttemperaturen ändrad ≥ 0,5 °C). En varm, torr och stilla
+  station lämnar alltså ingen rad, och V-B1 kallar varningen OMÄTBAR — fast en torr station är just ett falsklarm enligt §2. Första
+  körningen 16/9 visade *TORRT = 0* (DECISIONS #212); 25/9 är 16 av 57 varningar och 84 av 98 olyckor omätbara. Regn sparas alltid,
+  så facit (#349) påverkas inte. **Förslag, före domen och inte efter:** en station som har arkivrader inom ±3 h men ingen nederbörd
+  inom ±30 min räknas som torr; utan rader alls förblir den omätbar. Det rör §2:s mätning, så beslutet är Bengts och Axels enligt §5 —
+  och det ska tas medan V-C är spärrad, innan någon sett en andel.
+  Verify: självtest med en station som har rader före och efter men ingen inom ±30 min ⇒ TORRT, och en station utan rader alls ⇒
+  OMÄTBAR; beslutet i DECISIONS före första dom.
+
 - [ ] 🤖 **#219 ANDROID ÄR SJU VERSIONER EFTER OCH HAR INGEN VÄG TILL EN TELEFON** (genomlysningen 20/9). Android står på
   **0.3.1 (versionCode 4)**, iOS på 0.3.8 (11). **Google Play-kontot finns inte**, det finns inget uppladdningsflöde alls — CI
   bygger en AAB som artefakt och där slutar det. Android saknar dessutom introduktionen helt och har autostart av som standard.
@@ -3767,6 +3777,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   📏 **Läst 25/9 (Bengts fråga: går det att göra mer?), bara räkningar, inga andelar:** skuggan V-B har loggat **57 varningar på 7 regndygn i 21 län-rutor** sedan 15/9 (V-C: 200 · 5 · 3). Veckan 21–24/9 gav **1** varning på 108 radarutlösta segment, mot 28 på 693 veckan före — lågt men inte bevisat fel. **Två hinder för domen:** (1) måndagsknappen räknar V-C på 14 dygn, fast §3 inte har något fönster; (2) `grind-v-b.ts` skriver alltid *0 facitbekräftade händelser*, fast §2 godtar *olycka i regnväder* som bekräftelse — och testarlogg kan inte finnas förrän rösten finns, som i sin tur väntar på V-C. Förslagen står i bedömningen §4.2.
   🔑 **Bengts ja 25/9 (DECISIONS #349):** (1) knappen räknar §2:s facit — olycka inom 2 km från en skuggrutt, regn hos dömande station inom ±30 min; (2) V-C från 15/9; (3) **C-station struken**. Definitionerna står i DECISIONS före första räkningen. Kvar före bygget: Bengts svar på om knappen bara ska visa räkningar under spärren (§4.2).
   🔨 **BYGGT 25/9 (Bengt: *"ja, bara räkningar under spärren"*, DECISIONS #350):** grind V-B räknar facit enligt §2, fönstret är hela perioden sedan 15/9, och under spärren skrivs bara räkningar. Självtestet sju nya fall, två motprov fällda på rätt rad, och testet körs nu i CI. Kvar: första körningen mot databasen som bevis.
+  📏 **BEVISAT MOT DATABASEN 25/9 05:55Z** (körning 36100583870, Bengts order): fönstret från 15/9 (11 dygn), självtestet grönt, och utskriften bär bara räkningar — **57 varningar (41 mätbara, 16 omätbara) · 98 olyckor inom 2 km från rutterna, 10 i regn, 4 torra, 84 omätbara · 7 regndygn · 21 län**. Spärren står på 57 av 200 varningar och 10 av 15 facit. Fyndet om de omätbara blev kort #251.
 - [x] ✅ **STÄNGT 22/9** (DECISIONS #303) — ⚖️ **#194 GRIND V-B SOM KNAPP — dömer skuggans vattenplaningsvarningar** (Bengts order 16/9, DECISIONS #211).
   `publish/grind-v-b.ts` + knappen `grind-v-b`: V-B1 falsklarm mot närmaste stations `rain_sum_mm` (10 km, ±30 min,
   tröskeln härledd 2,0/0,65 ≈ 3,1), V-B3 frekvens per rutt och regndygn, V-C:s domspärr. V-B2 säger ⊘ med skäl —
