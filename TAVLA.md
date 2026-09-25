@@ -3508,7 +3508,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   m/s per fordonstyp, sikt m), plats i A-skalan under halkan, vektorer i tre portar. Skugga först.
   Verify: skuggkolumn med facit ur situation_archive (vindrelaterade olyckor) en höstmånad.
   📏 **Tryckt 24/9 (DECISIONS #331):** W-A steg 0, 14 dygn (körning 35949166508): 209 834 rader, byvind i 99,3 % (750 stationer), sikt i 99,9 %; täckningsgrad 17,9 % av möjliga stationstimmar; 11 stationer med omöjliga timmar (byvind ≥ 15 m/s och kvot > 5) tas av stationsvakten; högsta byvind 87,7 m/s bakom taket 30; W-A OAVGJORT — underlagsvakten W-A4 håller (16 respektive 243 stationstimmar i högsta bandet).
-- [ ] 🏔️ **#91 KALLPLATSLAGRET — bron är ett specialfall av "strukturellt kallare platser"**
+- [x] ✅ **STÄNGT 25/9, ÖPPNAS VÅREN 2027** (DECISIONS #355) — 🏔️ **#91 KALLPLATSLAGRET — bron är ett specialfall av "strukturellt kallare platser"**
   🔓 **NYCKELN ÄR LÄST 12/9, OCH SVARET ÄR TVETYDIGT** (DECISIONS #119). Grind A kördes om och
   **FÖLL för första gången** (2 042 punkter mot 57 den 1/9): MAE 1,06 °C mot kravets 1,0, grova fel
   10,7 % mot 5 %. Residualer finns alltså i överflöd — kortets villkor "det ska finnas något kvar att
@@ -3524,6 +3524,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   #38b (stråket) och grind A — lagret är en förklaringsvariabel i felkartan innan det är en fara.
   Verify: kallplats-index förklarar en mätbar del av grind A:s residualer (leave-one-out) — annars
   läggs det ner.
+  ✅ **Stängt 25/9 (DECISIONS #355, Bengt):** öppnas våren 2027 (vårlistan Ä6). Inledningen ovan är inaktuell: grind A klarades 23/9 (#321), och residualerna blir meningsfulla först på vinterdata med de varma grannarna (#353).
 - [ ] ⛰️ **#96 HÖJDPROVET — terrängens första faktor, mäter redan** (utlyft ur #38b 10/9 på Bengts order:
   "höjdmätningar o nivåskillnader är väl också en del av detta" — ja: terrängfaktorn i #95:s lager och
   grunden för #91). scripts/hojd-prov.ts + knappen Actions → hojd-prov: EU-DEM 25 m via opentopodata,
@@ -4473,6 +4474,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#91 KALLPLATSLAGRET STÄNGT 25/9, ÖPPNAS VÅREN 2027 (DECISIONS #355)**: står i vårlistan Ä6. Tavlan 46 → 45.
 - [x] ✅ **BETALVILJAN STÄNGD 25/9, ÖPPNAS VÅREN 2027 (DECISIONS #354)**: står i vårlistan bredvid intäktsmodellen. Tavlan 47 → 46.
 - [x] ✅ **#245 BEVISBÄRAREN — KLART 25/9 (DECISIONS #342)**: varje väderpunkt i live.json bär `bevis` i vakthundens timkontroller hela natten (26 av 26 kl 02:07Z). Tavlan 47 → 46.
 - [x] ✅ **#252 GRANSKNINGENS SEX FÖRSLAG — KLART 25/9 (DECISIONS #352)**: S-B på leave-one-out och från 23/9, tystnadsfelet ser segmentvarningar, saknade dygn, R-A i stationstimmar, frostgrindarna trycks om kl 09 UTC var sjunde dygn; censuren mätt till 49,5 % saknade grannplatser ⇒ kort #253. Tavlan oförändrad (47).

@@ -10200,3 +10200,12 @@ B2B som tak) stängs och står i vårlistan (bedömningen, *Efter mars*) bredvid
 Play-deklarationen, integritet.html och produktboken ändras i samma commit. Ska den ställas redan i mars 2027 måste beslutet och bygget
 ligga i februari; öppnas kortet senare flyttas mätningen till nästa säsong. Övriga fyra i grupp A (#91, #96, #153, SYSTEM.md) står kvar.
 
+## #355 (25/9 2026) #91 Kallplatslagret stängs på tavlan och öppnas våren 2027
+
+**Beslut (Bengt 25/9: *"stäng 91 och flytta den till våren 2027"*).** Kortet — broar som specialfall av strukturellt kallare platser,
+prövat som ett kallplatsindex mot grind A:s residualer (leave-one-out), annars läggs det ner — stängs och står i vårlistan (Ä6, mars).
+
+**Sagt högt:** kortets inledning (grind A *föll* 12/9) är inaktuell — grind A klarades 23/9 (#321), och 25/9 mättes att hälften av
+grannplatserna saknades i kalla halvtimmar (#352), vilket #353 lagar från och med nu. Residualerna som #91 ska förklaras mot blir
+alltså först meningsfulla på vinterdata med de varma grannarna; våren är rätt tid. Kvar i grupp A: #96, #153 och SYSTEM.md-läsningen.
+
