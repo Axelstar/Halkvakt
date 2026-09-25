@@ -1,0 +1,4 @@
+-- Kort #45 (DECISIONS #361): var i halvtimmen ligger arkivets rader, före och efter gallringen? Grind NT parar SMHI:s hela timme med
+-- vägstationens rad inom ±10 min; gallringen (sql/014) behåller den SENASTE raden per halvtimme efter 7 dygn. Premiss, inget utfall.
+SELECT CASE WHEN sample_time > now() - interval '6 days' THEN 'farsk' ELSE 'gallrad' END AS del, (extract(epoch FROM sample_time)::bigint % 1800) / 60 AS minut_i_hinken, count(*) AS rader FROM weather_observations WHERE sample_time > now() - interval '20 days' AND lower(precipitation) = 'rain' GROUP BY 1, 2 ORDER BY 1, 2
+SELECT CASE WHEN sample_time > now() - interval '6 days' THEN 'farsk' ELSE 'gallrad' END AS del, extract(second FROM sample_time)::int AS sekund, count(*) AS rader FROM weather_observations WHERE sample_time > now() - interval '20 days' AND lower(precipitation) = 'rain' GROUP BY 1, 2 ORDER BY 3 DESC LIMIT 12
