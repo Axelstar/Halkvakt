@@ -171,7 +171,7 @@ BEGIN
     FROM trend_stigande t
     WHERE t.utfall_rader IS NULL AND t.observed_at <= now() - interval '90 minutes'
   )
-  UPDATE trend_stigande t SET min_yta_90min_c = m.min_yta, utfall_rader = m.n
+  UPDATE trend_stigande t SET skriven_at = t.skriven_at
   FROM moget m WHERE t.station_id = m.station_id AND t.observed_at = m.observed_at;
 
   RETURN QUERY SELECT v_nya, v_utfall;
