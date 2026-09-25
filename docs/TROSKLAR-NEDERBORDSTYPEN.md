@@ -95,7 +95,7 @@ annan grinds population lånar dess vakter).
 - **B1 träff:** modellens klass = givarens i ≥ **80 %** av raderna i bandet.
 - **B2 det farliga felet:** modellen säger regn när givaren säger snö eller slask i ≤ **10 %** av givarens snö- och slaskrader.
 - **B3 slasket syns:** av givarens slaskrader klassar modellen ≥ **40 %** som slask — annars är tredelningen i praktiken tvådelad.
-- **B4 stabilitet:** B1 håller i minst två av de tre månaderna december, januari, februari.
+- **B4 stabilitet:** B1 håller i minst två av de tre månaderna december, januari, februari (svenska månader, DECISIONS #367).
 
 ### NT-C — modellen mellan stationerna (lämna-en-ute)
 Varje stations Tw skattas ur de **andra** stationernas rader i samma halvtimme (30-minutershinken som grind A och skuggmotorn
@@ -105,7 +105,8 @@ på samma rader. **C1** träff ≥ **75 %** · **C2** det farliga felet ≤ **15
 ### NT-D — domens giltighet (utan D fälls ingen dom)
 En **episod** är en stations följd av rader med samma givarklass och högst 60 minuters lucka. Under domfönstret:
 ≥ **100** snöepisoder och ≥ **40** slaskepisoder · ≥ **30** stationer med snö eller slask · stationer i minst **tre av fyra**
-breddgradsband (< 57,5 · 57,5–60 · 60–63 · ≥ 63 °N) · slask på ≥ **10** skilda dygn · för A2: ≥ **50** partimmar med snö eller
+breddgradsband (< 57,5 · 57,5–60 · 60–63 · ≥ 63 °N) · slask på ≥ **10** skilda dygn, räknade i svensk tid (*ändrat 25/9 före första
+domläsningen, §8, DECISIONS #367; tidigare UTC-dygn, där en slasknatt över midnatt UTC blev två*) · för A2: ≥ **50** partimmar med snö eller
 slask enligt SMHI. *Faller D:* OAVGJORT, fönstret förlängs med mars — räcker inte heller det bärs domen till nästa vinter.
 
 **Domspärren.** Fram till domen visar skriptet **bara räkningar på facitsidan**: rader, episoder, stationer, band och dygn per

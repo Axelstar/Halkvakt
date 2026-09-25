@@ -10438,3 +10438,21 @@ UTC. Grönt i PR #597 (207 av 207). **Motprov:** kontraktet fällde både den ga
 episoder · 4 ögonblick · 2 dygn, utan blöt 12 · 27 · 7, utan faller och utan blöt 204 · 7 380 · 12 — **identiskt**. Ögonblicken lika
 bekräftar samma population. Episoderna lika är väntat: de två zonerna delar natten olika bara för ögonblick mellan kl 12 och 14 svensk
 tid, och septembers kandidater i bandet +1…+3 °C ligger på natten. Skillnaden kan synas en mild vinterdag med töväder mitt på dagen.
+
+## #367 (25/9 2026) Tiden i systemet: NT:s dygn i svensk tid, och kontraktet "Givarfelsdygnets zon"
+
+**Beslut (Bengt 25/9: *"ja till a och b"*)** på kartläggningen i bedömningen §4.2 (Bengts frågor samma dag: *"mäter de utc eller svensk
+tid och har det någon betydelse"* och *"kan det uppstå problem om de olika sakerna sammanförs"*). **Svaret som ligger till grund:**
+lagring, källor, scheman och bokföringsdygn räknar i UTC med flit; fysiken som följer dygnet (T-A, R-A, rimfrostanalysen, uppspelningens
+natt) i svensk tid; apparna visar enhetens tid och skickar UTC. Problem kan bara uppstå där två delar paras på en ETIKETT (dygn, natt,
+timme) räknad i olika zoner — aldrig där de paras på exakta tidpunkter och fönster. Databasens sessionszon mätt till UTC.
+
+**(a) Grind NT räknar dygn och månader i svensk tid** (`scripts/grind-nt.ts`, `lokalDag`): NT-D:s slaskdygn och B4:s vintermånader.
+I UTC blev en slasknatt över midnatt UTC två dygn, och kravet ≥ 10 skilda dygn nåddes lättare. Dokumentet ändrat enligt §8 (skriftligt,
+en rad här, Bengts ja) — före första domläsningen. Självtest för sommar- och vintertid; motprovet (zonen UTC) föll på "22:30Z 24/9 är
+25/9 i Sverige".
+
+**(b) Kontraktet "Givarfelsdygnets zon"** (`scripts/kontraktsgrinden.ts`): den långsamma vakten skriver `givarfel_dygn` per UTC-dygn
+(sql/030) och snapshotkärnan, bunten, trendberäkningen (sql/018) och uppspelningen (sql/028) slår upp det på samma etikett. Kontraktet
+kräver samma zon hos skrivaren och alla läsare, golv 5 (15 förekomster i 8 filer med mätfilerna). Motprovet (sql/018 i svensk tid) föll.
+Den långsamma vakten själv står kvar i UTC-dygn: en frostnatt delas av midnatt i båda zonerna.

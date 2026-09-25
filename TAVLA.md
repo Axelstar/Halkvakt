@@ -4528,6 +4528,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **TIDEN I SYSTEMET — KLART 25/9 (DECISIONS #367)**: kartlagt UTC mot svensk tid; grind NT räknar dygn och månader i svensk tid, och kontraktet "Givarfelsdygnets zon" vaktar etikettparningen som saknade vakt. Båda med motprov. Tavlan 43 → 43.
 - [x] ✅ **#256 UPPSPELNINGENS NATT — KLART 25/9 (DECISIONS #366)**: svensk tid som T-A och R-A, kontraktet "Nattens zon", körd i drift och jämförd (oförändrat i september). Tavlan 44 → 43.
 - [x] ✅ **#254 GRANSKNINGENS ÄLDRE FEL — KLART 25/9 (DECISIONS #365)**: fyra byggda med självtest, prov mot PostGIS och nio motprov; fyra avskrivna med skäl; missmätningens knapp stängd. Nytt kort #256. Tavlan 44 → 44.
 - [x] ✅ **#255 MISSMÄTNINGENS FUKT — KLART 25/9 (DECISIONS #364)**: rekonstruktionen i egen modul med snapshotkärnans torrord, prov mot PostGIS grönt och motprov fällt på rätt rader. Tavlan 45 → 44.
