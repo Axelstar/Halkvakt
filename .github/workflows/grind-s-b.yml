@@ -8,7 +8,7 @@ on:
     inputs:
       dagar:
         description: "Dagar bakåt"
-        default: "14"
+        default: ""
       lage:
         description: "underlag (bara antal) eller dom (andelar — bara vid utsatt tid)"
         type: choice
@@ -32,7 +32,7 @@ jobs:
       - shell: bash
         env:
           DATABASE_URL: "${{ secrets.DATABASE_URL }}"
-          DAGAR: "${{ inputs.dagar || '14' }}"
+          DAGAR: "${{ inputs.dagar }}"
           LAGE: "${{ inputs.lage || 'underlag' }}"
           GA2: "${{ inputs.grindA2 }}"
         run: |

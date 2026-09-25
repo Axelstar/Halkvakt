@@ -33,7 +33,7 @@
 // Trösklarna och vakterna är kopior av grind A:s (publish/grind-a.ts), vaktade av kontraktsgrinden.
 
 import { Z, andelSe, medelSe, utfallTak, grindutfall, type Utfall } from "../publish/marginal.ts";
-import { vaktdiagnos, led234 } from "../publish/vaktdiagnos.ts";
+import { vaktdiagnos, led234, saknadeDygn, skrivSaknade } from "../publish/vaktdiagnos.ts";
 import { RADVAKT_SQL, karantanSql } from "../publish/snapshot-core.ts";
 
 const K_NEIGHBOURS = 5;
@@ -250,6 +250,8 @@ if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
 const pg = (await import("pg")).default;
 const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });
 const DAYS = Number(process.argv[2] ?? 60);
+// Saknade dygn (kort #252, DECISIONS #352): raderingen i sql/034 får aldrig krympa fönstret tyst.
+skrivSaknade(await saknadeDygn((s, p) => pool.query(s, p as any[]).then((r) => r.rows), "weather_observations", DAYS));
 
 // VAKTDIAGNOSEN FÖRST (DECISIONS #141), som i grind A: en nolla ska aldrig vara tvetydig mellan
 // "fältet saknas", "vakten fäller allt" och "arkivet är tomt".

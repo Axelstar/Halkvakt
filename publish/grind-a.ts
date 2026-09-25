@@ -100,7 +100,7 @@ function evaluate(stations: Map<string, Station>): Eval[] {
 // DEN KAN ALDRIG ÖPPNA EN STÄNGD GRIND. Ett KLARAR inom bruset blir OAVGJORT (skärpning), och
 // ett FALLER inom bruset blir OAVGJORT (mät igen) — grinden öppnar bara på KLARAR.
 import { Z, andelSe, medelSe, skiljbar, utfallTak, grindutfall } from "./marginal.ts";
-import { vaktdiagnos, led234 } from "./vaktdiagnos.ts";
+import { vaktdiagnos, led234, saknadeDygn, skrivSaknade } from "./vaktdiagnos.ts";
 import { RADVAKT_SQL, karantanSql } from "./snapshot-core.ts";
 
 function stats(rows: Eval[]) {
@@ -205,6 +205,8 @@ if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
 const pg = (await import("pg")).default;
 const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });
 const DAYS = Number(process.argv[2] ?? 60);
+// Saknade dygn (kort #252, DECISIONS #352): raderingen i sql/034 får aldrig krympa fönstret tyst.
+skrivSaknade(await saknadeDygn((s, p) => pool.query(s, p as any[]).then((r) => r.rows), "weather_observations", DAYS));
 
 // VAKTDIAGNOSEN FÖRST (DECISIONS #141): en nolla ska aldrig vara tvetydig mellan "fältet
 // saknas", "vakten fäller allt" och "arkivet är tomt".

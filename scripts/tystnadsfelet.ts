@@ -207,9 +207,9 @@ await avsnitt("T2 RÄCKVIDDSVILLKORET", async () => {
 let tysta: Inom[] = [], okantTyst = 0;
 await avsnitt("T3 VAD SYSTEMET SA", async () => {
   console.log(`\nT3 VAD SYSTEMET SA — tyst eller inte? (senaste varvet inom ${FLOTTA_H} h på en rutt inom ${FACIT_KM} km; larm inom ${FACIT_KM} km)`);
-  const [pos] = await q(`SELECT count(*) FILTER (WHERE a ? 'lon')::int AS med_pos, count(*)::int AS alla
+  const [pos] = await q(`SELECT count(*) FILTER (WHERE a ? 'lon' OR a->>'id' LIKE 'seg:%')::int AS med_pos, count(*)::int AS alla
     FROM shadow_log s, jsonb_array_elements(s.alerts) a WHERE s.run_at > now() - $1 * interval '1 day'`, [DAGAR]);
-  console.log(`  larm med position i skuggloggen: ${pos.med_pos} av ${pos.alla}`);
+  console.log(`  larm med position eller segment i skuggloggen: ${pos.med_pos} av ${pos.alla}`);
   if (Number(pos.alla) && !Number(pos.med_pos)) {
     console.log(`  ⊘ KAN INTE AVGÖRAS — inget larm bär position (kort #157). Att räkna alla som tysta vore en artefakt.`); return;
   }
@@ -222,9 +222,14 @@ await avsnitt("T3 VAD SYSTEMET SA", async () => {
     if (!v?.senast) { okantTyst++; continue; }
     const [sa] = await q(`SELECT count(*)::int AS n FROM shadow_log s, jsonb_array_elements(s.alerts) a
       WHERE s.land = 'SE' AND s.route = ANY($1::text[]) AND s.run_at BETWEEN $2::timestamptz - interval '${FLOTTA_H} hours' AND $2::timestamptz
-        AND a->>'kind' IN ('icing_point', 'slippery_segment') AND a ? 'lon'
-        AND ST_DWithin(ST_SetSRID(ST_MakePoint((a->>'lon')::float8, (a->>'lat')::float8), 4326)::geography,
-                       ST_SetSRID(ST_MakePoint($3, $4), 4326)::geography, $5)`, [passerar, f.t, f.lon, f.lat, FACIT_KM * 1000]);
+        AND a->>'kind' IN ('icing_point', 'slippery_segment')
+        AND ((a ? 'lon' AND ST_DWithin(ST_SetSRID(ST_MakePoint((a->>'lon')::float8, (a->>'lat')::float8), 4326)::geography,
+                                       ST_SetSRID(ST_MakePoint($3, $4), 4326)::geography, $5))
+          -- Segmentvarningar sparas utan position (skuggmotorn); de räknas via segmentets linje (kort #252, DECISIONS #352).
+          OR (NOT a ? 'lon' AND a->>'id' LIKE 'seg:%' AND EXISTS (SELECT 1 FROM road_conditions c
+                WHERE c.segment_id = substr(a->>'id', 5) AND c.geom IS NOT NULL
+                  AND ST_DWithin(c.geom::geography, ST_SetSRID(ST_MakePoint($3, $4), 4326)::geography, $5))))`,
+      [passerar, f.t, f.lon, f.lat, FACIT_KM * 1000]);
     if (!Number(sa.n)) tysta.push(f);
   }
   console.log(`  TYSTA MISSAR inom räckvidd: ${tysta.length} av ${inomRackvidd.length}${okantTyst ? ` · OKÄNT (inget varv på en rutt inom ${FACIT_KM} km inom ${FLOTTA_H} h): ${okantTyst}` : ""}`);
@@ -294,6 +299,10 @@ console.log(`\nT5 UNDERLAGET — ${inomRackvidd.length}/${MIN_FACIT} tillfällen
   + ` → ${inomRackvidd.length >= MIN_FACIT && perioder >= MIN_PERIODER ? "uppfyllt" : "inte än"}`);
 if (LAGE === "underlag") {
   console.log(`\nUNDERLAG, INGA ANDELAR: paret i §4 och priset i §5 läses vid utsatt tid, eller med --dom på Bengts order.`);
+} else if (inomRackvidd.length < MIN_FACIT || perioder < MIN_PERIODER) {
+  // T5-spärren stoppar också dom-läget (§6b, kort #252, DECISIONS #352): inga tal på tunt underlag.
+  console.log(`\n⊘ INGEN DOM — T5-underlaget är inte uppfyllt. Paret och priset skrivs först när ${MIN_FACIT} tillfällen i`
+    + ` ${MIN_PERIODER} halkperioder finns (§6b).`);
 } else {
   const bas = perCell.get(`${DAGGGAP[0]}|${N_SVEP[0]}`) ?? [];
   const o = bas.filter((x) => x.klass === "oursäktlig").length, u = bas.filter((x) => x.klass === "ursäktlig").length, k = bas.length - o - u;

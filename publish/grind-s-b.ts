@@ -13,9 +13,11 @@
 // VAD VARJE MÅTT VILAR PÅ (§2):
 //  · SKUGGVARNING = en EPISOD: samma provpunkt (rutt, km) flaggad (frys, status ≥ 1) i varv som ligger högst EPISOD_GAP_H
 //    isär. Ett varv var trettionde minut får inte räknas som en ny varning var trettionde minut.
-//  · B1 FALSKLARM: en episod döms av en HOLDOUT-STATION inom facitradien av punkten (h-raden bär stationens egen mätning
-//    i samma varv, alltså inom ±30 min — snävare än §2:s ±45): mätt yta > +2 °C i något av episodens varv ⇒ FALSK;
-//    mätt yta ≤ frysgränsen ⇒ BEKRÄFTAD; annars OMÄTBAR och aldrig med i B1. Kamerabild fäller aldrig (§2).
+//  · B1 FALSKLARM (DECISIONS #352): en HOLDOUT-EPISOD — en station inom facitradien av rutten vars skattning ur de ÖVRIGA
+//    ankarna (h[3], leave-one-out) är ≤ frysgränsen i varv ≤ EPISOD_GAP_H isär — döms av stationens egen mätning i samma
+//    varv (±30 min, snävare än §2:s ±45): > +2 °C i något varv ⇒ FALSK; ≤ frysgränsen ⇒ BEKRÄFTAD; annars OMÄTBAR och aldrig
+//    med i B1. Kamerabild bekräftar men fäller aldrig (§2). Före 25/9 dömde stationen episoder i prognosen PÅ rutten, som
+//    stationen själv vägde tyngst i — falsklarm nära en station kunde då inte uppstå. Episoderna på rutten bär B3.
 //  · B2 MISS: en FACITHÄNDELSE (SMHI-isvarning, halka i situation_archive, väglag kod ≥ 2 från operatören, förarens "stämde")
 //    inom facitradien av rutten, på ett TÄCKT segment (närmaste provpunkt hade status ≥ 1), där ingen provpunkt inom
 //    facitradien var flaggad i något varv de MISS_FONSTER_H timmarna före händelsen. Orsaksklassad: nederbörd vid närmaste
@@ -24,15 +26,16 @@
 //    facitradien) var tyst hela episoden eller talade först > B3_SEN_MIN efter episodens start. Läses sedan 23/9 som "rätt
 //    på kartan eller mätt varning förlängd" (DECISIONS #319) — talet är oförändrat.
 //  · C1 ≥ 20 bedömbara händelser över ≥ 3 halkperioder (händelser mer än PERIOD_GAP_D dygn isär är olika perioder) ·
-//    C2 ≥ 30 bedömbara episoder · C3 backtest och drift åt samma håll: holdout-radernas grova fel mot grind A:s A2 ≤ 10 pe
-//    (grind A:s tal ges med --grindA2 <procent>, annars OAVGJORT).
+//    C2 ≥ 30 bedömbara holdout-episoder · C3 backtest och drift åt samma håll: holdout-radernas grova fel mot grind A:s dömda
+//    A2 (3,5 %, DECISIONS #321) ≤ 10 pe; `--grindA2 <procent>` ersätter talet. FÖNSTRET är hela perioden sedan prognosloggens
+//    start 23/9 (DECISIONS #352) — dokumentet dömer hela vintern. I dom-läget skrivs andelarna först när C1 och C2 är uppfyllda.
 //
 //  · KAMERA (`kamerafacit`, sql/033, DECISIONS #329): en bild klassad is/snö/slask inom facitradien är en FACITHÄNDELSE (B2)
 //    och BEKRÄFTAR en episod som pågick när bilden togs (B1:s täljare påverkas aldrig — kameran fäller inte, §2). Våt, bar
 //    och okänd gör ingenting i domen.
 // Segmentlarm från punktmotorn utan position (`geo: "segment"`) räknas inte i B3.
 //
-// Run: DATABASE_URL=... node --experimental-strip-types publish/grind-s-b.ts [dagar=14] [--underlag|--dom] [--grindA2 3.5]
+// Run: DATABASE_URL=... node --experimental-strip-types publish/grind-s-b.ts [dagar — utan: sedan 23/9] [--underlag|--dom] [--grindA2 3.5]
 // Självtest utan DB: publish/grind-s-b.ts --sjalvtest
 import { Z, andelSe, utfallTak, utfallGolv, grindutfall, type Utfall } from "./marginal.ts";
 import { narmastLangs, FRYS_C } from "../engine/src/segment.ts";
@@ -45,6 +48,8 @@ const MISS_FONSTER_H = 2;         // §2: flaggad inom 2 h före händelsen
 const B3_SEN_MIN = 30;            // §3: punktmotorn tyst eller > 30 min senare
 const EPISOD_GAP_H = 2;           // flaggade varv närmare än så på samma punkt är samma varning
 const PERIOD_GAP_D = 2;           // halkperioder
+const PROGNOS_START = "2026-09-23";  // prognosloggens första dygn (DECISIONS #325) — fönstret (#352)
+const GRIND_A2_DOMD = 3.5;        // grind A:s dömda A2 i procent (DECISIONS #321) — C3:s backtestsida (#352)
 
 export type Punkt = [number, number | null, number | null, number, number, number];
 export type HoldoutRad = [number, string, number, number | null, number | null, number];
@@ -98,6 +103,33 @@ export function stationsdom(ep: Episod, kameror: Lage[] = []): Stationsdom {
   const kamera = kameror.some((k) => k.rutt === ep.rutt && Math.abs(k.km - ep.km) <= FACIT_KM
     && +k.t >= +ep.start - 30 * 60_000 && +k.t <= +ep.slut + 30 * 60_000);
   return varm ? "FALSK" : frusen || kamera ? "BEKRÄFTAD" : "OMÄTBAR";
+}
+
+/** B1 och C2 (DECISIONS #352): HOLDOUT-EPISODER — stationens leave-one-out-skattning ≤ frysgränsen i varv ≤ EPISOD_GAP_H isär. */
+export type HoldoutEpisod = { rutt: string; station: string; km: number; start: Date; slut: Date; matt: number[] };
+export function holdoutEpisoder(varv: Varv[]): HoldoutEpisod[] {
+  const per = new Map<string, { t: Date; km: number; matt: number }[]>();
+  for (const v of [...varv].sort((a, b) => +a.t - +b.t))
+    for (const h of v.h) if (h[3] !== null && h[3] <= FRYS_C) {
+      const k = `${v.rutt}\u0001${h[1]}`;
+      (per.get(k) ?? per.set(k, []).get(k)!).push({ t: v.t, km: h[0], matt: h[2] });
+    }
+  const ut: HoldoutEpisod[] = [];
+  for (const [k, rs] of per) {
+    const [rutt, station] = k.split("\u0001");
+    let cur: typeof rs = [];
+    const stang = () => { if (cur.length) ut.push({ rutt, station, km: cur[0].km, start: cur[0].t, slut: cur[cur.length - 1].t, matt: cur.map((c) => c.matt) }); cur = []; };
+    for (const r of rs) { if (cur.length && +r.t - +cur[cur.length - 1].t > EPISOD_GAP_H * H) stang(); cur.push(r); }
+    stang();
+  }
+  return ut.sort((a, b) => +a.start - +b.start || a.rutt.localeCompare(b.rutt) || a.km - b.km);
+}
+/** Stationen dömer en prognos som inte innehåller den: > +2 °C ⇒ FALSK, ≤ frysgränsen (eller halka i bild) ⇒ BEKRÄFTAD. */
+export function holdoutDom(ep: HoldoutEpisod, kameror: Lage[] = []): Stationsdom {
+  if (ep.matt.some((m) => m > FALSK_YTA_C)) return "FALSK";
+  const kamera = kameror.some((k) => k.rutt === ep.rutt && Math.abs(k.km - ep.km) <= FACIT_KM
+    && +k.t >= +ep.start - 30 * 60_000 && +k.t <= +ep.slut + 30 * 60_000);
+  return ep.matt.some((m) => m <= FRYS_C) || kamera ? "BEKRÄFTAD" : "OMÄTBAR";
 }
 
 /** B3: var punktmotorn tyst under episoden, eller kom den > B3_SEN_MIN efter starten? Bara punktfaror med position. */
@@ -160,7 +192,11 @@ export function rakna(varv: Varv[], handelser: Handelse[], rutter: Rutter) {
   const missUtstr = missar.filter((x) => x.d.orsak === "UTSTRÅLNING"), missNed = missar.filter((x) => x.d.orsak === "NEDERBÖRD");
   const bedomda = traffar.length + missUtstr.length;   // nederbördsmissar står bredvid, aldrig i B2
   const perioder = halkperioder([...traffar, ...missar].map((x) => x.e.t));
-  return { eps, bekraftade, falska, omatbara, merv, traffar, missar, missUtstr, missNed, obed, bedomda, perioder, grova: holdoutGrova(varv) };
+  const heps = holdoutEpisoder(varv);
+  const hdomar = heps.map((ep) => ({ ep, dom: holdoutDom(ep, kameror) }));
+  const b1Bekr = hdomar.filter((d) => d.dom === "BEKRÄFTAD"), b1Falska = hdomar.filter((d) => d.dom === "FALSK"), b1Omat = hdomar.filter((d) => d.dom === "OMÄTBAR");
+  return { eps, bekraftade, falska, omatbara, merv, traffar, missar, missUtstr, missNed, obed, bedomda, perioder, grova: holdoutGrova(varv),
+           heps, b1Bekr, b1Falska, b1Omat };
 }
 
 export function rapport(varv: Varv[], handelser: Handelse[], rutter: Rutter, lage: "underlag" | "dom", grindA2: number | null, label: string, selftest = false) {
@@ -169,30 +205,36 @@ export function rapport(varv: Varv[], handelser: Handelse[], rutter: Rutter, lag
   for (const e of handelser) kallor.set(e.kalla, (kallor.get(e.kalla) ?? 0) + 1);
   console.log(`Grind S-B/S-C — segmentprognosens skuggdrift (${label}) · läge: ${lage.toUpperCase()}`);
   console.log(`Varv med prognos ${varv.length} på ${new Set(varv.map((v) => v.rutt)).size} rutter · provpunkter ${varv.reduce((a, v) => a + v.p.length, 0)} · holdout-rader ${varv.reduce((a, v) => a + v.h.length, 0)}`);
-  console.log(`Episoder (skuggvarningar) ${r.eps.length}: bedömbara ${r.bekraftade.length + r.falska.length}, OMÄTBARA ${r.omatbara.length} (ingen holdout inom ${FACIT_KM} km)`);
-  console.log(`Facithändelser ${handelser.length} — ${[...kallor].map(([k, n]) => `${k} ${n}`).join(" · ") || "inga"}; på täckta segment ${r.traffar.length + r.missar.length}, OBEDÖMBARA ${r.obed.length}; nederbördsdrivna missar ${r.missNed.length} (till #16, inte B2)`);
+  console.log(`Holdout-episoder (B1, leave-one-out) ${r.heps.length}: bedömbara ${r.b1Bekr.length + r.b1Falska.length}, OMÄTBARA ${r.b1Omat.length} (stationen mellan ${FRYS_C} och ${FALSK_YTA_C} °C)`);
+  console.log(`Episoder på rutten (B3) ${r.eps.length}: med station eller kamera ${r.bekraftade.length + r.falska.length}, OMÄTBARA ${r.omatbara.length} (ingen holdout inom ${FACIT_KM} km)`);
+  console.log(`Facithändelser ${handelser.length} — ${[...kallor].map(([k, n]) => `${k} ${n}`).join(" · ") || "inga"}; på täckta segment ${r.traffar.length + r.missar.length}, OBEDÖMBARA ${r.obed.length}`);
   console.log(`Halkperioder ${r.perioder}`);
   const c1 = r.traffar.length + r.missar.length >= C1_MIN_HANDELSER && r.perioder >= C1_MIN_PERIODER;
-  const c2 = r.bekraftade.length + r.falska.length >= C2_MIN_EPISODER;
-  console.log(`C1 ${r.traffar.length + r.missar.length}/${C1_MIN_HANDELSER} händelser, ${r.perioder}/${C1_MIN_PERIODER} perioder → ${c1 ? "uppfyllt" : "inte än"} · C2 ${r.bekraftade.length + r.falska.length}/${C2_MIN_EPISODER} bedömbara episoder → ${c2 ? "uppfyllt" : "inte än"}`);
+  const c2 = r.b1Bekr.length + r.b1Falska.length >= C2_MIN_EPISODER;
+  console.log(`C1 ${r.traffar.length + r.missar.length}/${C1_MIN_HANDELSER} händelser, ${r.perioder}/${C1_MIN_PERIODER} perioder → ${c1 ? "uppfyllt" : "inte än"} · C2 ${r.b1Bekr.length + r.b1Falska.length}/${C2_MIN_EPISODER} bedömbara holdout-episoder → ${c2 ? "uppfyllt" : "inte än"}`);
   if (lage === "underlag") {
     console.log(`\nUNDERLAG, INGA ANDELAR: blindningen gäller till domens tidpunkt (mars 2027). Kör med --dom på Bengts order.`);
     return null;
   }
-  const b1n = r.bekraftade.length + r.falska.length, b1 = b1n ? r.falska.length / b1n : NaN;
+  // Andelarna först när C1 och C2 är uppfyllda (DECISIONS #352) — självtestet räknar dem ändå, utan att det är en läsning.
+  if ((!c1 || !c2) && !selftest) {
+    console.log(`\n⏳ INGEN DOM — grind C inte uppfylld. Andelarna skrivs först när C1 och C2 är uppfyllda; utfallet är ALLTID fortsatt skugga (§4 c).`);
+    return null;
+  }
+  const b1n = r.b1Bekr.length + r.b1Falska.length, b1 = b1n ? r.b1Falska.length / b1n : NaN;
   const b2 = r.bedomda ? r.missUtstr.length / r.bedomda : NaN;
   const b3 = r.bekraftade.length ? r.merv.length / r.bekraftade.length : NaN;
   const u = (v: number, n: number, tr: number, golv: boolean): Utfall | "—" => n ? (golv ? utfallGolv(v, tr, andelSe(v, n)) : utfallTak(v, tr, andelSe(v, n))) : "—";
   const pe = (v: number, n: number) => n ? ` [±${(Z * andelSe(v, n) * 100).toFixed(1)} pe]` : "";
   const uB1 = u(b1, b1n, B1_MAX, false), uB2 = u(b2, r.bedomda, B2_MAX, false), uB3 = u(b3, r.bekraftade.length, B3_MIN, true);
-  console.log(`\nB1 falsklarm ≤ ${B1_MAX * 100} %: ${b1n ? (b1 * 100).toFixed(1) + " %" : "—"}${pe(b1, b1n)} (${r.falska.length} falska av ${b1n}) → ${uB1}`);
+  console.log(`\nB1 falsklarm ≤ ${B1_MAX * 100} %: ${b1n ? (b1 * 100).toFixed(1) + " %" : "—"}${pe(b1, b1n)} (${r.b1Falska.length} falska holdout-episoder av ${b1n}) → ${uB1}`);
   console.log(`B2 utstrålningsmissar ≤ ${B2_MAX * 100} %: ${r.bedomda ? (b2 * 100).toFixed(1) + " %" : "—"}${pe(b2, r.bedomda)} (${r.missUtstr.length} av ${r.bedomda}) → ${uB2}`);
   console.log(`B3 mervärde ≥ ${B3_MIN * 100} %: ${r.bekraftade.length ? (b3 * 100).toFixed(1) + " %" : "—"}${pe(b3, r.bekraftade.length)} (${r.merv.length} av ${r.bekraftade.length} bekräftade där punktmotorn var tyst eller > ${B3_SEN_MIN} min senare) → ${uB3}`);
   const a2 = r.grova.n ? r.grova.grova / r.grova.n : NaN;
   const c3 = grindA2 === null || !r.grova.n ? "OAVGJORT" : Math.abs(a2 * 100 - grindA2) <= C3_MAX_PE ? "KLARAR" : "FALLER";
   console.log(`C3 drift mot backtest: holdout-radernas grova fel ${r.grova.n ? (a2 * 100).toFixed(1) + " %" : "—"} på ${r.grova.n} rader${grindA2 === null ? " — grind A:s A2 ej given (--grindA2)" : ` mot grind A ${grindA2} %`} → ${c3}`);
+  console.log(`Nederbördsdrivna missar ${r.missNed.length} (till #16, inte B2)`);
   if (selftest) return { b1, b2, b3, uB1, uB2, uB3, c1, c2, c3 };
-  if (!c1 || !c2) { console.log(`\n⏳ INGEN DOM — grind C inte uppfylld. Utfallet är ALLTID fortsatt skugga (§4 c), aldrig tal på tunn dom.`); return null; }
   const dom = grindutfall([uB1, uB2, uB3, c3] as Utfall[]);
   console.log(`\nDOM: GRIND B ${dom === "KLARAR" ? "KLARAD — §4 (a)/(b) avgörs av banden" : dom === "FALLER" ? "FALLEN — tyst (§4 c)" : "OAVGJORD — mät vidare"}`);
   return dom;
@@ -209,7 +251,9 @@ if (process.argv.includes("--sjalvtest")) {
   // Provpunkter var 5 km; km 25 är okänd (status 0) i alla varv.
   const p = (flagg: number[]): Punkt[] => [0, 5, 10, 15, 20, 25, 30].map((km) => pt(km, flagg.includes(km) ? 1 : 0, km === 25 ? 0 : 1));
   const varv: Varv[] = [
-    { t: tid(0),   rutt: "Provrutt", p: p([10, 20]), h: [[10.5, "kall", -1, -0.5, 6, 4], [20.8, "varm", 4, 0.2, 7, 4]], alerts: [] },
+    // "tyst" vid km 5,2: prognosen UTAN stationen säger 0,5, stationen mäter +3 — ett falsklarm som prognosen PÅ rutten (km 5
+    // aldrig flaggad) aldrig visade. Fällan ligger där den gamla B1 gav noll (DECISIONS #352).
+    { t: tid(0),   rutt: "Provrutt", p: p([10, 20]), h: [[5.2, "tyst", 3, 0.5, 5, 4], [10.5, "kall", -1, -0.5, 6, 4], [20.8, "varm", 4, 0.2, 7, 4]], alerts: [] },
     { t: tid(30),  rutt: "Provrutt", p: p([10, 20]), h: [[10.5, "kall", -1.2, -0.4, 6, 4], [20.8, "varm", 3.5, 0.1, 7, 4]], alerts: [] },
     { t: tid(60),  rutt: "Provrutt", p: p([10]),     h: [[10.5, "kall", -0.8, -0.3, 6, 4], [20.8, "varm", 3.9, 1.5, 7, 4]],
       alerts: [{ kind: "icing_point", geo: "punkt", lon: lonVid(10.2), lat: 56.0 }] },                     // punktmotorn 60 min efter start ⇒ mervärde
@@ -239,8 +283,11 @@ if (process.argv.includes("--sjalvtest")) {
   k("missar nederbörd", r.missNed.length, 1);
   k("obedömbara händelser", r.obed.length, 2);
   k("halkperioder", r.perioder, 1);                     // minut 15–615 ligger inom ett dygn: en period, inte två
+  k("holdout-episoder (tyst, kall, varm)", r.heps.length, 3);
+  k("holdout: falska (varm + tyst, där rutten aldrig flaggade)", r.b1Falska.length, 2);
+  k("holdout: bekräftade (kall)", r.b1Bekr.length, 1);
   const ut = rapport(varv, handelser, rutter, "dom", 3.5, "SJÄLVTEST", true)!;
-  k("B1 = 1/3", ut.b1, 1 / 3);
+  k("B1 på leave-one-out = 2/3", ut.b1, 2 / 3);
   k("B2 = 1/4", ut.b2, 1 / 4);
   k("B3 = 100 %", ut.b3, 1);
   k("C1 inte uppfylld på fem händelser", ut.c1, false);
@@ -250,6 +297,12 @@ if (process.argv.includes("--sjalvtest")) {
   rapport(varv, handelser, rutter, "underlag", null, "SJÄLVTEST", true);
   console.log = orig;
   k("underlag nämner inga procent", skrivet.some((s) => /\d %|\d+\.\d %/.test(s)), false);
+  // Blindningen i dom-läget (DECISIONS #352): C1/C2 inte uppfyllda ⇒ inga andelar och ingen dom.
+  const domskrivet: string[] = []; console.log = (s?: unknown) => { domskrivet.push(String(s)); };
+  const domut = rapport(varv, handelser, rutter, "dom", 3.5, "SJÄLVTEST");
+  console.log = orig;
+  k("dom-läget under C nämner inga procent", domskrivet.some((s) => /\d %|\d+\.\d %/.test(s)), false);
+  k("dom-läget under C fäller ingen dom", domut, null);
   // Ruttparsern mot skuggmotorns riktiga källa.
   const rutterSkarpt = skuggmotornsRutter();
   k("skuggmotorns rutter lästa (20)", Object.keys(rutterSkarpt).length, 20);
@@ -260,10 +313,10 @@ if (process.argv.includes("--sjalvtest")) {
 // ── Skarpt.
 const url = process.env.DATABASE_URL;
 if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
-const DAYS = Number(process.argv.find((a) => /^\d+$/.test(a)) ?? 14);
+const DAYS = Number(process.argv.find((a) => /^\d+$/.test(a)) ?? Math.ceil((Date.now() - Date.parse(`${PROGNOS_START}T00:00:00Z`)) / 86_400_000));
 const LAGE: "underlag" | "dom" = process.argv.includes("--dom") ? "dom" : "underlag";
 const gaIdx = process.argv.indexOf("--grindA2");
-const GRIND_A2 = gaIdx > 0 ? Number(process.argv[gaIdx + 1]) : null;
+const GRIND_A2 = gaIdx > 0 ? Number(process.argv[gaIdx + 1]) : GRIND_A2_DOMD;
 const pg = (await import("pg")).default;
 const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });
 const rutter = skuggmotornsRutter();
@@ -277,4 +330,4 @@ const handelser = await hamtaHandelser((s, p) => pool.query(s, p as any[]).then(
 await pool.end();
 const okandNed = handelser.filter((e) => e.nederbord === null).length;
 if (okandNed) console.log(`(${okandNed} händelser utan station inom räckhåll för orsaksklassning — räknas som utstrålning)`);
-rapport(varv, handelser, rutter, LAGE, GRIND_A2, `senaste ${DAYS} dygnen`);
+rapport(varv, handelser, rutter, LAGE, GRIND_A2, `från ${PROGNOS_START}, ${DAYS} dygn`);
