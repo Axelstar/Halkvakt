@@ -10190,3 +10190,13 @@ inte med. Grindarna mäter från och med nu samma värld som driften; novembers 
 
 **Axels ja 25/9 (via Bengt: *"Axel säger ja"*):** ingesten är hans, och ändringen står nu på båda signaturerna.
 
+## #354 (25/9 2026) Betalviljan stängs på tavlan och öppnas våren 2027
+
+**Beslut (Bengt 25/9: *"stäng betalningsviljan och flytta kortet till att öppnas våren 2027"*).** Kortet *Betalvilja mäts i mars, inte
+gissas i augusti* (en fråga i appen: *"N varningar i vinter — skulle du betala X för nästa?"*; vinterpass per säsong som kandidatmodell,
+B2B som tak) stängs och står i vårlistan (bedömningen, *Efter mars*) bredvid intäktsmodellen.
+
+**Sagt högt, så att det inte glöms i vår:** frågan i appen skickar ett svar och ändrar därmed produktinvarianten — CLAUDE.md:s rad,
+Play-deklarationen, integritet.html och produktboken ändras i samma commit. Ska den ställas redan i mars 2027 måste beslutet och bygget
+ligga i februari; öppnas kortet senare flyttas mätningen till nästa säsong. Övriga fyra i grupp A (#91, #96, #153, SYSTEM.md) står kvar.
+
