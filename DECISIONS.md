@@ -10227,3 +10227,16 @@ där hälften av grannarna saknades, just de varma (#352) — där höjdskillnad
 RÅ mot RÅ+HÖJD ur måndagskörningen, och beslutet om höjden tas före novembers skarpa prövning. Datumet står på kortet, i kalendern under
 oktober och i vårlistan Ä5. Kvar i grupp A: #153.
 
+## #358 (25/9 2026) #153 delas: beslut 1 står kvar med datum, beslut 2 flyttas till våren 2027
+
+**Beslut (Bengt 25/9: *"ja, dela 153"*).** **Beslut 1 — allvar som försprång** (eget `leadM` per fara, 400–3 000 m; aldrig ordval, aldrig
+prioritet) står kvar på kortet, nu med datum: senast när betan startar i november skrivs dess tröskeldokument (steg 4), så att skuggan
+går december–februari och domen kan falla i mars 2027; stängt till våren hade domen flyttats ett år. Steg 3 (skattarens nivå, S2) är
+klart sedan 24/9. **Beslut 2 — det smalare undantaget** (en modellerad temperatur får utlösa bara mellan två närliggande stationer som
+är eniga om tecknet) är blockerat av tröskelregeln T5 och saknar ett vittne på platsen; det flyttas till vårlistan (Ä8) bredvid
+sensortrappan, vars telefonsensorer är just ett sådant vittne.
+
+**Beroendet som följer med beslut 2 (Bengts fråga samma dag):** det strider inte mot beslut 1 utan bygger på det — beslut 1:s gradering
+(uppmätt/modellerat) är språket som gör en modellerad varning säker, så 1 före 2, aldrig tvärtom. Taket för undanträngda varningar i
+beslut 1:s steg 4 ska gälla båda, och beslut 2:s 0,33 °C (grind A inom 7 km) mäts om på de varma grannarna (#353) innan det tas upp.
+
