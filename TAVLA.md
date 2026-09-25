@@ -1388,7 +1388,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **KLART 25/9 (DECISIONS #351, Bengt: *"ja till 251, ±3 timmar"*):** igång men tyst i ±30 min ⇒ TORRT, tyst i ±3 h ⇒ OMÄTBAR. Självtestet fyra nya fall, två motprov fällda på rätt rad, noten i TROSKLAR-VATTENPLANING §2. Syns i drift på måndagens körning 28/9.
   ⚠️ **Rättelse 25/9 (kort #252):** premissen *kalla, blöta eller ändrade* är fel — den levande ingesten sparar inte ändrade avläsningar. Regeln fångar bara en torr station med en kall eller blöt rad inom ±3 h. Rättat i DECISIONS #351 och TROSKLAR §2.
 
-- [ ] 🔍 **#252 GRANSKNINGEN AV GRINDARNA 25/9 — fem mätningar har V-B:s sorts fel** (Bengts fråga 25/9; `docs/GRANSKNING-GRINDAR-2026-09-25.md`).
+- [x] ✅ **KLART 25/9** (DECISIONS #352) — 🔍 **#252 GRANSKNINGEN AV GRINDARNA 25/9 — fem mätningar har V-B:s sorts fel** (Bengts fråga 25/9; `docs/GRANSKNING-GRINDAR-2026-09-25.md`).
   Inget är en hårdkodad nolla, men: (1) **grind A och vägpunktsgrinden** har prövat en snällare prognos än driftens — varma, torra
   grannar har inga arkivrader och kommer aldrig med, så KLARAD (#321) och ÖPPEN (#324) kan vara för optimistiska; (2) **frostgrindarna**
   (T-A, K-A, R-A, övergångarna, vind och sikt) trycks EN gång vid första frosten och aldrig igen; (3) **S-B** kan inte bli godkänd:
@@ -1398,6 +1398,18 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   spärren i K-A, R-A, W-A och F-A. Förslagen i ordning står i dokumentet och i bedömningen §4.2; inget byggs före Bengts ja.
   Verify: varje förslag antingen byggt med självtest och motprov, eller avskrivet med skäl i DECISIONS.
   🔑 **Bengts ja 25/9 till (1)–(6), Axel inget att invända (DECISIONS #352):** definitionerna står i beslutet före bygget. Byggs i tre PR:er: knapparna (3)–(6), vakthunden (2) med deploy, och mätningen (1).
+  ✅ **KLART 25/9 (DECISIONS #352):** (2)–(6) byggda med självtest och motprov (PR #564, #565), S-B och tystnadsfelet körda mot databasen, vakthunden deployad 06:45Z och varvet 07:07Z svarade 200 utan problem. (1) mätt: **10 947 kalla målhalvtimmar** (yta ≤ 5 °C, 60 dygn): av 41 079 grannplatser saknade **20 319 en arkivrad — 49,5 %**; bland de frysnära (yta ≤ 1 °C, 232 halvtimmar) **50,4 %**. Av 5 785 mål med fem grannar hade bara **573 alla fem**, och 966 ingen. Arkivet saknar 6/9 och 7/9. Lagningen av censuren är kort #253.
+
+- [ ] 🌡️ **#253 GRIND A OCH VÄGPUNKTEN SAKNAR HÄLFTEN AV GRANNARNA — de varma** (mätt 25/9 under kort #252, `docs/GRANSKNING-GRINDAR-2026-09-25.md`).
+  **10 947 kalla målhalvtimmar** (yta ≤ 5 °C, 60 dygn): av 41 079 grannplatser saknade **20 319 en arkivrad — 49,5 %**; bland de frysnära (yta ≤ 1 °C, 232 halvtimmar) **50,4 %**. Av 5 785 mål med fem grannar hade bara **573 alla fem**, och 966 ingen. Orsaken: den levande ingesten sparar bara en avläsning med yta ≤ 5 °C eller nederbörd
+  (`supabase/functions/ingest-live/index.ts:144`), så en varm, torr granne finns inte i arkivet, medan driftens prognos tar med den
+  ur `weather_latest`. Domarna #321 (KLARAD) och #324 (ÖPPEN) gäller alltså ett snällare underlag än driften. **Förslag:** låt
+  ingesten spara EN rad per station och halvtimme även när den är varm och torr (ungefär dubbelt så många rader: ~4,5 → ~9 MB/dygn,
+  exporten och raderingen i sql/034 tar resten), så att grind A, vägpunktsgrinden och K-A mäter samma värld som driften från och med
+  nu — novembers skarpa prövning får då veckor av ocensurerat underlag. Att i stället pröva på holdout-raderna i skuggloggen går inte
+  före mars: de är S-B:s C3 och blindade. 🔑 Bengt och Axel (ingesten är driftens).
+  Verify: efter ändringen visar samma mätning (`scripts/matningar/censur-grind-a-2026-09-25.sql`) < 5 % saknade grannplatser
+  för halvtimmar efter ändringen, och arkivets tillväxt per dygn står i bedömningen.
 
 - [ ] 🤖 **#219 ANDROID ÄR SJU VERSIONER EFTER OCH HAR INGEN VÄG TILL EN TELEFON** (genomlysningen 20/9). Android står på
   **0.3.1 (versionCode 4)**, iOS på 0.3.8 (11). **Google Play-kontot finns inte**, det finns inget uppladdningsflöde alls — CI
@@ -4446,6 +4458,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#252 GRANSKNINGENS SEX FÖRSLAG — KLART 25/9 (DECISIONS #352)**: S-B på leave-one-out och från 23/9, tystnadsfelet ser segmentvarningar, saknade dygn, R-A i stationstimmar, frostgrindarna trycks om kl 09 UTC var sjunde dygn; censuren mätt till 49,5 % saknade grannplatser ⇒ kort #253. Tavlan oförändrad (47).
 - [x] ✅ **#251 TORR STATION RÄKNAS SOM TORR — KLART 25/9 (DECISIONS #351)**: grind V-B räknar en dömande station som är igång men tyst som torr, beslutat före första andelen. Tavlan 47 → 46.
 - [x] ✅ **#217 PRODUKTBOKEN MOT KODEN — KLART 24/9 (DECISIONS #347)**: läst rad för rad, sex löften och elva fel till rättade, skärmbilderna ur fotostudion 23/9; tre nya kort ur fynden (#248 autostarten stoppar aldrig, #249 Om-texten, #250 småfel). Tavlan 44 → 46.
 - [x] ✅ **DE ÄLDSTA KORTEN — TVÅ HOPSLAGNA, ETT STÄNGT 24/9 (DECISIONS #346)**: *Fysisk Android-testenhet* in i #219, *Butiksuppladdning + Data safety-inklistring* in i #214, #21 stängt (knappen finns sedan 16/9, pulsen till Ä8). Tavlan 47 → 44.
