@@ -761,3 +761,43 @@ test("#254 h rekonstruktionen: trasiga givare ger ingen frysrisk i uppspelningen
     assert.deepEqual(ids, ["wx:H254-BLIXT", "wx:H254-FRISK"], "givarfelet, radvaktens fall och karantänen tystas; blixthalkan talar");
   } finally { await pool.end(); }
 });
+
+// KORT #257: trendens STIGANDE halva sparas i en egen tabell, med samma vakter, band, fönster och utfall som den fallande.
+// STIG_A stiger 0,6 → 1,8 °C på 30 min (lutning30 −1,2 vid −20 min), FALL_A faller 3,0 → 1,8 (lutning30 +1,2), PLATT_A står
+// still. STIG_B stiger för tre timmar sedan och fryser sedan om till 0,8 — utfallet ska fyllas som den fallande halvans.
+test("#257 den stigande halvan: egen tabell, samma vakter, fallande orörd, utfallet fylls", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  try {
+    for (const f of ["001_init.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql", "029_brott_index.sql", "030_langsam_vakt.sql"])
+      await pool.query(readFileSync(new URL("../sql/" + f, import.meta.url), "utf8"));
+    for (const t of ["trend_kandidater", "trend_stigande", "weather_observations"]) await pool.query(`DELETE FROM ${t} WHERE station_id LIKE '%_257'`);
+    const rad = (st: string, x: number, min: number, yta: number) =>
+      `('${st}', 'x', ST_SetSRID(ST_MakePoint(${x}, 61.0), 4326), now() - interval '${min} minutes', ${yta.toFixed(1)}, ${(yta + 1).toFixed(1)}, ${(yta - 0.3).toFixed(1)}, 95)`;
+    const serie = (st: string, x: number, pts: [number, number][]) => pts.map(([min, yta]) => rad(st, x, min, yta)).join(",\n");
+    await pool.query(`
+      INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, dewpoint_c, humidity_pct) VALUES
+        ${serie("STIG_A_257", 15.1, [[50, 0.6], [40, 1.0], [30, 1.4], [20, 1.8]])},
+        ${serie("FALL_A_257", 15.2, [[50, 3.0], [40, 2.6], [30, 2.2], [20, 1.8]])},
+        ${serie("PLATT_A_257", 15.3, [[50, 2.0], [40, 2.0], [30, 2.0], [20, 2.0]])},
+        ${serie("STIG_B_257", 15.4, [[210, 0.6], [200, 1.0], [190, 1.4], [180, 1.8], [150, 1.2], [120, 0.8]])}
+      ON CONFLICT DO NOTHING`);
+    await pool.query("SELECT * FROM berakna_trendkandidater(interval '5 hours')");
+    const i = async (tabell: string, st: string) =>
+      (await pool.query(`SELECT to_char(observed_at, 'HH24:MI') AS t, lutning30_c::float8 AS l30, min_yta_90min_c::float8 AS min, utfall_rader AS n
+                         FROM ${tabell} WHERE station_id = $1 ORDER BY observed_at`, [st])).rows;
+    const stigA = await i("trend_stigande", "STIG_A_257");
+    assert.equal(stigA.length, 2, "STIG_A: två stigande kandidater (−30 och −20 min) — raden −40 har för få rader i fönstret");
+    assert.ok(stigA.every((r) => r.l30 <= -0.4), "stigningen bär negativ lutning — samma tecken som i trend_kandidater");
+    assert.equal((await i("trend_kandidater", "STIG_A_257")).length, 0, "en stigning hamnar aldrig bland de fallande");
+    assert.ok((await i("trend_kandidater", "FALL_A_257")).length >= 1, "den fallande halvan skrivs som förut");
+    assert.equal((await i("trend_stigande", "FALL_A_257")).length, 0, "ett fall hamnar aldrig bland de stigande");
+    assert.equal((await i("trend_stigande", "PLATT_A_257")).length + (await i("trend_kandidater", "PLATT_A_257")).length, 0, "platt yta: ingen kandidat");
+    // STIG_B ger tre stigande rader: −190 och −180 min, och −150 — där har ytan fallit sedan −180 men 60-minutersfönstret
+    // [−210, −150] har ändå stigit 0,6. Raden −180 har utfallet i (−180, −90]: 1,2 och 0,8.
+    const bs = await i("trend_stigande", "STIG_B_257");
+    assert.equal(bs.length, 3, "STIG_B: −190, −180 och −150 min");
+    assert.deepEqual([bs[1].min, bs[1].n], [0.8, 2], "STIG_B: utfallet fylls — ytan frös om till 0,8 inom 90 min, på två mätningar");
+  } finally { await pool.end(); }
+});

@@ -257,6 +257,11 @@ veckorapport. Varje steg med eget bevis innan nästa.
 är vilket är en MÄTNING, inte en smaksak**: frågan är om gallringen (#83, sql/014) förstör den
 upplösning måttet behöver.
 
+**Den stigande halvan sparas sedan 25/9** (kort #257, DECISIONS #368): `berakna_trendkandidater()` skriver stigande kandidater —
+samma vakter, band och fönster, lutning ≤ −0,4 i något fönster, samma utfall 90 min efter — i en egen tabell, `trend_stigande`.
+Förut sparades bara den fallande, och gallringen gjorde stigningen omöjlig att räkna fram i efterhand, så tystnadsriktningen i T-B
+hade inte kunnat dömas. Egen tabell därför att snapshotkärnan läser `trend_kandidater`.
+
 Gallringen behåller sista raden per station och 30-minutershink för allt äldre än sju dygn.
 
 | Mått | Ingång | Upplösning måttet kräver | Överlever gallringen? | ⇒ byggform |

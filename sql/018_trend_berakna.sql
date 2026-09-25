@@ -39,6 +39,21 @@
 -- gör det, och ramen utan den egna raden (EXCLUDE CURRENT ROW) tar med varje hopp inom fönstret men inte hoppet in i
 -- det. Samma rader, samma tal (mätt mot lateralen över ett dygn, scripts/matningar/driftrakningen-ramar-2026-09-22.sql);
 -- `trendarkivet --jamfor` är beviset mot TypeScript.
+--
+-- DEN STIGANDE HALVAN (kort #257, DECISIONS #368, Bengts ja 25/9). TROSKLAR-TRENDEN mäter två riktningar: fallande (förvarning)
+-- och STIGANDE (tystna tidigare när ytan värms genom +1 °C). Den stigande sparades aldrig, och efter sju dygn gallras arkivet till
+-- en rad per halvtimme — lutningens vakt kräver tre rader i fönstret, så den går inte att räkna fram i efterhand (§7: spara det
+-- som inte går att räkna om). Den skrivs därför här, i samma varv och med samma vakter, band, fönster och utfall, men i en EGEN
+-- tabell: snapshotkärnan läser trend_kandidater (lutningen i live.json), och en stigande rad där hade ändrat vad skuggan ser.
+-- Tecknet är detsamma i båda tabellerna — lutning = ytans FALL per fönster, alltså negativ när ytan stiger. Ingen TypeScript-kopia:
+-- stigningen har en enda skrivare, och returvärdet (nya, utfall) räknar som förut bara den fallande halvan.
+CREATE TABLE IF NOT EXISTS trend_stigande (LIKE trend_kandidater INCLUDING ALL);
+ALTER TABLE trend_stigande ENABLE ROW LEVEL SECURITY;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'anon') THEN REVOKE ALL ON trend_stigande FROM anon; END IF;
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticated') THEN REVOKE ALL ON trend_stigande FROM authenticated; END IF;
+END $$;
 
 CREATE OR REPLACE FUNCTION berakna_trendkandidater(sedan interval DEFAULT interval '2 hours')
 RETURNS TABLE(nya int, utfall int) AS $$
@@ -105,8 +120,19 @@ BEGIN
     WHERE greatest(coalesce(lut15, -99), coalesce(lut30, -99), coalesce(lut60, -99)) >= 0.4
     ON CONFLICT (station_id, observed_at) DO NOTHING
     RETURNING 1
+  ),
+  -- Den stigande halvan (kort #257): samma rader, samma svep åt andra hållet — stigningen når svepets lägsta steg +0,4.
+  skriv_stigande AS (
+    INSERT INTO trend_stigande (station_id, observed_at, surface_temp_c, air_temp_c, dewpoint_c,
+        humidity_pct, dagg_gap_c, lutning15_c, lutning30_c, lutning60_c)
+    SELECT station_id, sample_time, surface_temp_c, air_temp_c, dewpoint_c, humidity_pct,
+           surface_temp_c - dewpoint_c, lut15, lut30, lut60
+    FROM med_lutning
+    WHERE least(coalesce(lut15, 99), coalesce(lut30, 99), coalesce(lut60, 99)) <= -0.4
+    ON CONFLICT (station_id, observed_at) DO NOTHING
+    RETURNING 1
   )
-  SELECT count(*)::int INTO v_nya FROM skriv;
+  SELECT (SELECT count(*)::int FROM skriv) INTO v_nya;
 
   -- Utfallet fylls i efterhand: vid skrivtillfället har de 90 minuterna inte hänt än.
   -- NULL = ännu inte räknat. 0 = räknat och tomt, alltså OKÄNT — aldrig "blev inte kallare".
@@ -129,6 +155,24 @@ BEGIN
     RETURNING 1
   )
   SELECT count(*)::int INTO v_utfall FROM fyll;
+
+  -- Den stigande halvans utfall (kort #257): samma 90 minuter och samma "0 = okänt". Lägsta ytan efter en stigning säger om ytan
+  -- frös om — det tystnadsriktningen döms på (TROSKLAR-TRENDEN T-B). Räknas inte in i v_utfall: returvärdet är oförändrat.
+  WITH moget AS (
+    SELECT t.station_id, t.observed_at,
+           (SELECT min(w.surface_temp_c) FROM weather_observations w
+             WHERE w.station_id = t.station_id AND w.surface_temp_c IS NOT NULL
+               AND w.sample_time > t.observed_at
+               AND w.sample_time <= t.observed_at + interval '90 minutes') AS min_yta,
+           (SELECT count(*)::int FROM weather_observations w
+             WHERE w.station_id = t.station_id AND w.surface_temp_c IS NOT NULL
+               AND w.sample_time > t.observed_at
+               AND w.sample_time <= t.observed_at + interval '90 minutes') AS n
+    FROM trend_stigande t
+    WHERE t.utfall_rader IS NULL AND t.observed_at <= now() - interval '90 minutes'
+  )
+  UPDATE trend_stigande t SET min_yta_90min_c = m.min_yta, utfall_rader = m.n
+  FROM moget m WHERE t.station_id = m.station_id AND t.observed_at = m.observed_at;
 
   RETURN QUERY SELECT v_nya, v_utfall;
 END;

@@ -172,6 +172,8 @@ const TID: Record<string, string> = {
   cameras: "modified_time", deviations: "start_time",
   // 15/9: tabellen saknades här, så dess fält skannades aldrig — inte ens som OBESIKTIGADE.
   trend_kandidater: "observed_at",
+  // Kort #257: den stigande halvan, samma kolumner och spann — fött besiktigad, inte upptäckt i efterhand som trend_kandidater.
+  trend_stigande: "observed_at",
 };
 
 console.log(`Värdevakten — besiktning av arkivets numeriska fält (${DAGAR} dygns fönster)\n`);
