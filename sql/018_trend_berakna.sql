@@ -128,7 +128,7 @@ BEGIN
     SELECT station_id, sample_time, surface_temp_c, air_temp_c, dewpoint_c, humidity_pct,
            surface_temp_c - dewpoint_c, lut15, lut30, lut60
     FROM med_lutning
-    WHERE least(coalesce(lut15, 99), coalesce(lut30, 99), coalesce(lut60, 99)) <= -0.4
+    WHERE false
     ON CONFLICT (station_id, observed_at) DO NOTHING
     RETURNING 1
   )
