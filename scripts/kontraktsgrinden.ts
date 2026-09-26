@@ -556,6 +556,20 @@ export const KONTRAKT: Kontrakt[] = [
     golv: 2,
   },
   {
+    // Kort #203 lager 2 (DECISIONS #379): driver_miss (sql/038) märker provrader som driver_facit (sql/027). Två ord, två kontrakt
+    // — grinden jämför ett fångat värde per förekomst. Driver märkningen isär räknas prov som riktiga missar, eller tvärtom.
+    namn: "Provmärkningen i förarfacit, första ordet — samma i svaren och missarna",
+    varfor: "Ett prov som märks i den ena tabellen men inte den andra räknas som ett riktigt förarsvar (KB-D6).",
+    former: [/GENERATED ALWAYS AS \(strpos\(lower\(\w+\), '(\w+)'\) > 0 OR strpos/],
+    golv: 2,
+  },
+  {
+    namn: "Provmärkningen i förarfacit, andra ordet — samma i svaren och missarna",
+    varfor: "Fotostudions krok skickar riktiga anrop; utan ordet landar de som riktiga svar eller missar (#205).",
+    former: [/> 0 OR strpos\(lower\(\w+\), '(\w+)'\) > 0\) STORED/],
+    golv: 2,
+  },
+  {
     namn: "Förvarningens golv — reglagets undre gräns på båda plattformarna (motorns leadMinM)",
     varfor: "Under motorns leadMinM (400 m) kortar reglaget försprånget under det motorn själv tillåter.",
     former: [/const val WARN_MIN_M = (\d+)f/, /static let leadRange: ClosedRange<Double> = (\d+)\.\.\./],
