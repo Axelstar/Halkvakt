@@ -307,13 +307,14 @@ class GuardService : Service() {
             runCatching {
                 if (!Prefs.facitEnabled(app).first()) return@runCatching
                 val obes = Resan.obesvarade(Prefs.history(app).first(), Prefs.facit(app).first(), sedan)
-                if (obes.isEmpty()) return@runCatching
-                visaEfterResan(app, sedan, obes.size)
+                val missar = Missar.omarkerade(Prefs.missar(app).first(), sedan)   // #203 lager 2
+                if (obes.isEmpty() && missar.isEmpty()) return@runCatching
+                visaEfterResan(app, sedan, obes.size, missar.size)
             }
         }
     }
 
-    private fun visaEfterResan(ctx: Context, sedan: Long, antal: Int) {
+    private fun visaEfterResan(ctx: Context, sedan: Long, antal: Int, missar: Int = 0) {
         val nm = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= 26 && nm.getNotificationChannel(EFTER_CH) == null) {
             nm.createNotificationChannel(
@@ -337,18 +338,15 @@ class GuardService : Service() {
             Intent(ctx, MainActivity::class.java)
                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP),
             flaggor)
-        nm.notify(
-            FacitSvarReceiver.NOTIF_ID,
-            Notification.Builder(ctx, EFTER_CH)
-                .setContentTitle(Resan.fraga(antal))
-                .setContentText("Ett tryck räcker. Tystnad räknas aldrig som ja.")
-                .setSmallIcon(android.R.drawable.ic_dialog_info)
-                .setContentIntent(avvikelse)
-                .setAutoCancel(true)
-                .addAction(0, "Ja, alla stämde", ja)
-                .addAction(0, "Något stämde inte", avvikelse)
-                .build()
-        )
+        // #203 lager 2: bara missar ⇒ ingen "Ja, alla stämde" (det finns inget att bekräfta) — notisen öppnar kortet.
+        val notis = Notification.Builder(ctx, EFTER_CH)
+            .setContentTitle(if (antal > 0) Resan.fraga(antal) else Missar.fraga(missar))
+            .setContentText(if (antal > 0) "Ett tryck räcker. Tystnad räknas aldrig som ja." else "Välj i appen — utan val skickas ingenting.")
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setContentIntent(avvikelse)
+            .setAutoCancel(true)
+        if (antal > 0) notis.addAction(0, "Ja, alla stämde", ja).addAction(0, "Något stämde inte", avvikelse)
+        nm.notify(FacitSvarReceiver.NOTIF_ID, notis.build())
     }
 
     companion object {

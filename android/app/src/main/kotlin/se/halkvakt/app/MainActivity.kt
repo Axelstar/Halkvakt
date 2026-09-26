@@ -34,6 +34,7 @@ class MainActivity : ComponentActivity() {
     val autostartOn = MutableStateFlow(false)
     /** Snapshotten för "I närheten" — UI-läsning, tjänsten har sin egen kopia. */
     val hazards = MutableStateFlow<List<Hazard>>(emptyList())
+    val stations = MutableStateFlow<List<Station>>(emptyList())
     val lastLoc = MutableStateFlow<Pair<Double, Double>?>(null)
     private var testTts: TextToSpeech? = null
 
@@ -48,6 +49,7 @@ class MainActivity : ComponentActivity() {
                 .onSuccess { snap ->
                     val gate = AgeGate.filter(snap.hazards, snap.generatedAtMs, System.currentTimeMillis())
                     hazards.value = gate.hazards
+                    stations.value = snap.stations   // #203 lager 2: missknappens plats
                     // Datans tid (generated_at) — inte nedladdningens (Bengts granskning).
                     val tid = if (snap.generatedAtMs > 0)
                         android.text.format.DateFormat.format("HH:mm", snap.generatedAtMs) else "okänd tid"

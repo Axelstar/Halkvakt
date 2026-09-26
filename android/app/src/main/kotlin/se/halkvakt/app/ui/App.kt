@@ -43,6 +43,8 @@ import se.halkvakt.app.Facit
 import se.halkvakt.app.FacitSender
 import se.halkvakt.app.GuardService
 import se.halkvakt.app.MainActivity
+import se.halkvakt.app.MissEntry
+import se.halkvakt.app.Missar
 import se.halkvakt.app.Nearby
 import se.halkvakt.app.NearbyItem
 import se.halkvakt.app.Prefs
@@ -231,12 +233,17 @@ private fun RedoContent(activity: MainActivity) {
         lastSaid.filter { it.t >= resanStart && it.id.isNotEmpty() }
     }
     val obesvarade = remember(lastSaid, facit, resanStart) { Resan.obesvarade(lastSaid, facit, resanStart) }
+    // Kort #203 lager 2: resans missar — kortet frågar också om dem, tills föraren valt vad det var.
+    val missar by Prefs.missar(ctx).collectAsStateWithLifecycle(initialValue = emptyList())
+    val resansMissar = remember(missar, resanStart) { missar.filter { it.t >= resanStart } }
+    val omarkerade = remember(missar, resanStart) { Missar.omarkerade(missar, resanStart) }
 
     LazyColumn(Modifier.fillMaxSize().padding(horizontal = 20.dp)) {
         // ÖVERST, ovanför rubriken — inte en rad längst ner. Frågan kommer till föraren.
-        if (facitOn && Resan.fragaKvar(resanStart, System.currentTimeMillis(), obesvarade.size)) item {
+        if (facitOn && Resan.fragaKvar(resanStart, System.currentTimeMillis(), obesvarade.size + omarkerade.size)) item {
             EfterResanKort(
                 varningar = resansVarningar,
+                missar = resansMissar,
                 svarFor = { e -> Facit.answerFor(facit, e.id, e.t) },
                 status = facitStatus,
                 onSvar = { e, svar -> scope.launch {
@@ -245,6 +252,10 @@ private fun RedoContent(activity: MainActivity) {
                 } },
                 onAlla = { scope.launch {
                     Prefs.svaraAllaFacit(ctx, resanStart, svar = true)
+                    if (!GuardService.running) runCatching { FacitSender.flush(ctx) }
+                } },
+                onVal = { m, vad -> scope.launch {
+                    Prefs.valjMiss(ctx, m.t, vad)
                     if (!GuardService.running) runCatching { FacitSender.flush(ctx) }
                 } },
             )
@@ -327,17 +338,19 @@ private fun RedoContent(activity: MainActivity) {
 @Composable
 private fun EfterResanKort(
     varningar: List<AlertEntry>,
+    missar: List<MissEntry>,
     svarFor: (AlertEntry) -> Boolean?,
     status: String?,
     onSvar: (AlertEntry, Boolean) -> Unit,
     onAlla: () -> Unit,
+    onVal: (MissEntry, String) -> Unit,
 ) {
     Surface(shape = RoundedCornerShape(20.dp), color = Yta,
         border = BorderStroke(1.dp, Gul.copy(alpha = .45f)), modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(18.dp)) {
             Rubrik("EFTER RESAN")
             Spacer(Modifier.height(6.dp))
-            Text(Resan.fraga(varningar.size), color = Text, fontSize = 19.sp,
+            Text(if (varningar.isNotEmpty()) Resan.fraga(varningar.size) else Missar.fraga(missar.size), color = Text, fontSize = 19.sp,
                 fontFamily = Typo.sans, fontWeight = FontWeight.Bold, lineHeight = 25.sp)
             Spacer(Modifier.height(12.dp))
             varningar.forEach { e ->
@@ -358,8 +371,29 @@ private fun EfterResanKort(
                     }
                 }
             }
+            // Kort #203 lager 2: missarna. Ordet i bilen var ett tryck; tanken kommer här — och först då skickas något.
+            missar.forEach { m ->
+                Column(Modifier.fillMaxWidth().padding(bottom = 10.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(android.text.format.DateFormat.format("HH:mm", m.t).toString(),
+                            color = Dis, fontSize = 12.sp, fontFamily = FontFamily.Monospace)
+                        Spacer(Modifier.width(10.dp))
+                        Text("Du markerade: appen missade — vad?", color = if (m.vad == null) Text else Dis, fontSize = 14.sp,
+                            modifier = Modifier.weight(1f))
+                    }
+                    Spacer(Modifier.height(6.dp))
+                    Missar.VAD.chunked(3).forEach { rad ->
+                        Row(Modifier.padding(bottom = 6.dp)) {
+                            rad.forEach { vad ->
+                                FacitKnapp(vad.replaceFirstChar { it.uppercase() }, vald = m.vad == vad) { onVal(m, vad) }
+                                Spacer(Modifier.width(8.dp))
+                            }
+                        }
+                    }
+                }
+            }
             Spacer(Modifier.height(4.dp))
-            Button(onClick = onAlla, shape = RoundedCornerShape(50),
+            if (varningar.isNotEmpty()) Button(onClick = onAlla, shape = RoundedCornerShape(50),
                 colors = ButtonDefaults.buttonColors(containerColor = Gul, contentColor = Natt),
                 modifier = Modifier.fillMaxWidth().height(52.dp)) {
                 Text("Ja, alla stämde", fontSize = 17.sp, fontWeight = FontWeight.Bold)
@@ -448,7 +482,11 @@ private fun KindChip(k: HazardKind) {
 private fun AktivContent(activity: MainActivity) {
     val session by GuardService.session.collectAsStateWithLifecycle()
     val hazards by activity.hazards.collectAsStateWithLifecycle()
+    val stations by activity.stations.collectAsStateWithLifecycle()
     val ctx = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val facitOn by Prefs.facitEnabled(ctx).collectAsStateWithLifecycle(initialValue = false)
+    var missKvitto by remember { mutableStateOf<String?>(null) }
     val warnM by remember { Prefs.warnDistanceM(ctx) }.collectAsStateWithLifecycle(initialValue = Prefs.WARN_MAX_M)
     var now by remember { mutableStateOf(System.currentTimeMillis()) }
     LaunchedEffect(Unit) { while (true) { delay(1000); now = System.currentTimeMillis() } }
@@ -495,6 +533,24 @@ private fun AktivContent(activity: MainActivity) {
                     color = if (session.lastSaid != null) Text else Dis,
                     fontSize = 15.sp, fontStyle = FontStyle.Italic)
             }
+        }
+        // Kort #203 lager 2 (Axels ja, DECISIONS #267 p. 5): Androids väg för en miss — ett tryck på en monterad telefon, stort.
+        // Sparar klockslag, närmaste station och halkavsnitt inom 2 km; vad det var väljs efter resan. Bara med betatestet på.
+        if (facitOn) {
+            Spacer(Modifier.height(12.dp))
+            OutlinedButton(onClick = { scope.launch {
+                val lon = session.lon; val lat = session.lat
+                val st = if (lon != null && lat != null) Missar.narmasteStation(stations, lon, lat) else null
+                val seg = if (lon != null && lat != null) Missar.narmasteSegment(hazards, lon, lat) else null
+                val t = System.currentTimeMillis()
+                Prefs.markeraMiss(ctx, t, st, seg)
+                missKvitto = if (st != null) "Markerat ${android.text.format.DateFormat.format("HH:mm", t)} — du väljer vad det var efter resan."
+                    else "Kunde inte markera: appen har ingen position eller stationslista än."
+            } }, shape = RoundedCornerShape(50), border = BorderStroke(1.dp, Gul),
+                modifier = Modifier.fillMaxWidth().height(64.dp)) {
+                Text("Appen missade", color = Gul, fontFamily = Cond, fontSize = 20.sp, letterSpacing = 1.sp)
+            }
+            missKvitto?.let { Text(it, color = Dis, fontSize = 12.sp, modifier = Modifier.padding(top = 6.dp)) }
         }
         Spacer(Modifier.height(18.dp))
         Rubrik("PÅ DIN VÄG")
@@ -636,7 +692,8 @@ private fun SettingsScreen(activity: MainActivity) {
                     Text("Svara på varningarna", color = Text, fontSize = 15.sp)
                     Text("Efter en varning kan du trycka Stämde eller Stämde inte. Det som skickas är varningens id, " +
                         "klockslaget och ditt svar — inget konto, ingen resa, ingen position. Men ett varnings-id pekar på en " +
-                        "fara på kartan, så vi ser ungefär var du var just då. Bara för betatestare.",
+                        "fara på kartan, så vi ser ungefär var du var just då. Markerar du att appen missade något skickas också " +
+                        "klockslaget och närmaste mätstation — det säger ungefär var du var just då. Bara för betatestare.",
                         color = Dis, fontSize = 12.sp, lineHeight = 16.sp)
                 }
                 Switch(checked = facitOn, onCheckedChange = { on -> scope.launch { Prefs.setFacitEnabled(ctx, on) } },
@@ -671,7 +728,8 @@ private fun OmScreen() {
                     color = Dis, fontSize = 13.sp, modifier = Modifier.padding(top = 4.dp))
                 // S4: löftet skrivs om ordagrant (Axel #196) — det som skickas, när, och bara om du valt det.
                 Text("Undantaget är betatestet, om du själv slår på det: då skickas varningens id, klockslag och ditt " +
-                    "svar (Stämde / Stämde inte), plus appens namn och version — det säger ungefär var du var när rösten talade. Inget annat.",
+                    "svar (Stämde / Stämde inte), och när du markerat att appen missade något: klockslaget, närmaste mätstation " +
+                    "och vad det var — plus appens namn och version. Det säger ungefär var du var just då. Inget annat.",
                     color = Dis, fontSize = 13.sp, modifier = Modifier.padding(top = 8.dp))
             }
         }
