@@ -96,12 +96,26 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
 
     private var staleAnnounced = false
 
-    func refreshSnapshot() async {
+    // Kort #258 (DECISIONS #371): under resan laddas vägdatan om var 30:e minut, som på Android (SnapshotSchedule) —
+    // en laddning i taget, och efter ett fel väntar nästa försök en minut. Förut laddades den bara vid start och när
+    // Vakten-vyn visades, så åldersvakten prövades aldrig igen under en lång resa.
+    private static let refreshEvery: TimeInterval = 30 * 60
+    private static let retryAfter: TimeInterval = 60
+    private var loading = false
+    private var nextLoadAt = Date.distantPast
+
+    /// `fresh`: vakten startar — ny motor, nytt minne. Annars behåller en körande vakt minnet (v14: aldrig säga om).
+    func refreshSnapshot(fresh: Bool = false) async {
+        guard !loading else { return }
+        loading = true
+        defer { loading = false }
         do {
             let snap = try await SnapshotRepo.loadSnapshot()
             let gate = AgeGate.filter(snap.hazards, generatedAt: snap.generatedAt, now: .now)
             hazards = gate.hazards
-            engine = AlertEngine(gate.hazards, EngineConfig.withPrefs())
+            if !fresh, running, let engine { engine.updateHazards(gate.hazards) }
+            else { engine = AlertEngine(gate.hazards, EngineConfig.withPrefs()) }
+            nextLoadAt = .now.addingTimeInterval(Self.refreshEvery)
             if gate.stale && running && !staleAnnounced {
                 staleAnnounced = true
                 SpeechService.shared.speak(AgeGate.staleLine)
@@ -112,6 +126,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
             recomputeNearby()
         } catch {
             // Behåll förra snapshoten; UI visar gammal info-rad tills nästa lyckade.
+            nextLoadAt = .now.addingTimeInterval(Self.retryAfter)
         }
     }
 
@@ -227,7 +242,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         manager.startUpdatingLocation()
         Task {
             await HeadsUpService.shared.requestAuthorizationIfNeeded()   // #23, en gång
-            await refreshSnapshot()
+            await refreshSnapshot(fresh: true)
         }
     }
 
@@ -322,7 +337,9 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
             return
         }
 
-        guard running, let engine else { return }
+        guard running else { return }
+        if !loading, Date.now >= nextLoadAt { Task { await refreshSnapshot() } }   // #258: också när första laddningen föll
+        guard let engine else { return }
 
         // Självstopp: räkna rörelse, stoppa efter en kvarts stillastående.
         let kmh = loc.speed >= 0 ? loc.speed * 3.6 : 0

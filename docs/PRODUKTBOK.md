@@ -227,6 +227,10 @@ flowchart LR
     M --> R[🔊 Din högtalare]
 ```
 
+Under resan hämtar telefonen ny vägdata var 30:e minut och prövar den mot åldersvakten igen. Utan nät gäller den senast
+verifierade, och den åldras likadant: väglaget faller bort efter 45 minuter, olyckor och djur efter två timmar. Android har
+gjort så från början; iPhone från 0.3.9 (16) — innan dess laddade den bara när vakten startade (kort #258).
+
 Allt till höger om "Telefonen hämtar" sker **lokalt i din telefon** — därav
 löftet: positionen möter faroläget hos dig, aldrig hos oss. SMHI:s varningar följer med i snapshoten
 men motorn läser dem inte: rösten talar aldrig på en SMHI-varning. De mäts i skuggan (förstärkaren F nedan).

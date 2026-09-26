@@ -13,7 +13,9 @@ enum SnapshotRepo {
     struct Snapshot { let hazards: [Hazard]; let generatedAt: Date }
 
     static func loadSnapshot() async throws -> Snapshot {
-        let manifest = try await fetchJSON("manifest.json")
+        // Kort #258: utan nät faller manifestet — då ska den sparade snapshoten gälla (fetchVerified), inte hela laddningen
+        // falla. Tomt manifest ⇒ kontrollsumman fäller varje hämtning ⇒ cachen, som Androids SnapshotRepo gör.
+        let manifest = (try? await fetchJSON("manifest.json")) ?? [:]
         let files = manifest["files"] as? [String: Any] ?? [:]
         let staticDoc = try await fetchVerified("static.json", manifestFiles: files)
         let liveDoc = try await fetchVerified("live.json", manifestFiles: files)
