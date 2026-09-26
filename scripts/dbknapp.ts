@@ -84,7 +84,7 @@ try {
         console.log(`svar (request ${reqId}): status ${svar.status_code}${svar.error_msg ? ` fel ${svar.error_msg}` : ""}`);
         try {
           const d = JSON.parse(svar.content ?? "");
-          for (const nyckel of ["ok", "prov", "problem", "larmvag", "suppressed", "alerts", "facit", "facitSkal"]) if (nyckel in d) console.log(`  ${nyckel}: ${JSON.stringify(d[nyckel]).slice(0, 600)}`);
+          for (const nyckel of ["ok", "prov", "problem", "larmvag", "suppressed", "alerts", "facit", "facitSkal", "faror", "kalla_stationer", "v2", "v3", "utfall"]) if (nyckel in d) console.log(`  ${nyckel}: ${JSON.stringify(d[nyckel]).slice(0, 600)}`);
           if (Array.isArray(d.rad)) for (const x of d.rad) console.log(`  rad: ${x}`);
         } catch { console.log(`  ${String(svar.content ?? "").slice(0, 800)}`); }
       } else console.log(`svar (request ${reqId}): inget svar inom 90 s — funktionen kan fortfarande köra; läs beviset via utfallet`);
@@ -100,6 +100,7 @@ try {
       "nyckelprov=1": "en issue med etiketten `nyckelkalender` ska finnas inom en minut, och stängas av nästa 06 UTC-körning utan prov (kort #86).",
       "facitprov=1": "mätvaktens issue (etikett `matvakt`) ska få raden KÄLLA · kamerafacit … PROV inom en minut, och stängas av nästa timkörning när bilderna är färska (S7).",
       "lage=forsprang&prov=1": "svaret ovan ska visa bas och variant: prov:niva1 talar på samma avstånd i båda, prov:niva2 talar tidigare i varianten (60 s mot 30 s, ungefär dubbla avståndet) — kroken i motorn och nivåerna i drift (kort #153 beslut 1). Inget skrivs i forsprang_log.",
+      "torrt=1": "svaret ovan ska visa kamerafacitets urval — `faror`, `kalla_stationer`, `v2` och `v3` — utan att något hämtas eller sparas (`utfall` tomt; DECISIONS #380).",
       "sparrprov=1": "svaret ovan ska visa `suppressed` med EN rad — kamera 2 tystad av kamera 1 inom spärrens 10 s (#127; kort #188/#191). Inget skrivs i shadow_log.",
     };
     const fallback = "en issue med etiketten vakthund ska finnas inom en minut, och stängas av nästa gröna timkörning (xx:07).";

@@ -179,6 +179,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     produktboken) *(låst: Play-kontot)*.
   ↪ **Flyttat 26/9 från *Claude — olåst*** (femma åtta, DECISIONS #377): nästa steg är Play-kontot och testtelefonen.
 ### Bengt
+- [ ] ⏱️ **#261 REGLAGETS TAK 1 200 m KLIPPER FÖRSPRÅNGET (L5)** (fynd 26/9 vid Bengts fråga *"har uppdateringarna någon påverkan
+  på systembilden"*). Motorn klämmer även försprånget till `leadMaxM` (`engine.ts:113`), och appens reglage sätter `leadMaxM` till
+  högst **1 200 m** sedan #259 (DECISIONS #374). Skuggan mäter försprånget med motorns **3 000 m**. Med reglaget på fullt räcker 90 s
+  bara upp till 48 km/h, 60 s till 72 km/h och 45 s till 96 km/h — i 110 km/h blir 45–90 s samma 1 200 m (≈ 39 s). #374 skrev att
+  taket *"under 144 km/h betyder ingenting"*; det stämmer för grundvarningens 30 s men inte för försprånget. Inget är fel i drift i dag:
+  försprånget når inte rösten före domen i mars 2027. Tre vägar före domen: (a) reglaget tar bara grundvarningen, försprånget kläms av
+  motorns 3 000 m; (b) taket höjs den dag försprånget går till rösten; (c) domen mäts med taket 1 200 m, så att den mäter det föraren
+  skulle höra. 🔑 Bengts och Axels val (§4.2), före domen. Verify: skuggan och appen klämmer försprånget till samma tak, och
+  systembilden säger vilket.
 - [ ] 🧫 **#232 KUVÖSEN — HELA SYSTEMET BAKÅTPRÖVAT PÅ VINTERN 2024/25** (Bengts idé 21/9, DECISIONS #292). Motorn och ALLA
   skuggregler i en gemensam testbädd, långt från appar och förare, körd mot en hel gången vinter — ett RIKTNINGSPROV: är vi på
   rätt väg, och vad tillför varje del ovanpå de andra? Svarar på kartans §7.3: *"Varje grind dömer sin del ENSAM"*.
