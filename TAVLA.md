@@ -429,6 +429,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⚠️ **22/9 (DECISIONS #304):** lager 1:s iOS-kod (eb81b50, 20/9 18:17) ligger på main och följer därför med i ett arkiv från main — alltså i **0.3.9 (13)**, inte i (12), som sattes 17:37 före koden. Koden har aldrig kompilerats; Xcode är första provet.
   ↦ **Sorterat 22/9 (kort #224):** Axels beslut är tagna (#267, #269) — lager 2 (Siri-fraserna, `driver_miss`, *Appen missade*) kan byggas nu. iOS-koden kompileras först i Axels Xcode.
   ↪ **26/9: flyttat till Axel och tillbaka i samma varv** (DECISIONS #377): Axels beslut är tagna (#267, #269) — nästa steg är lager 2, Claudes bygge (Siri-fraserna, `driver_miss`, *Appen missade*); iOS-delen kompileras i Axels Xcode.
+  ⛔ **26/9, fynd innan bygget (Bengts *"gör 203"*):** missen ska bära *närmaste mätstation (finns alltid)* — men telefonen HAR ingen stationslista. `static.json` bär bara 2 794 kameror, och `live.json` bara stationerna som är nära noll och våta (26/9: en). Missknappen kan alltså inte byggas som Axel godkände den utan att stationerna först läggs i snapshoten. Val i §4.2.
 
 ### Claude — låst (väntar på nyckel)
 - [ ] 🐕 **#243 VAKTHUNDENS ARKIVGRÄNS ÄR FÖR SNÄV — issue #528 var ett falsklarm** (fynd 24/9 på Bengts fråga *"vad betyder detta"*).
