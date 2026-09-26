@@ -5064,3 +5064,12 @@ Axels bygge av (17) är första kompileringen.
 över kartappen, per plattform. Bannern är byggd på båda (Android `GuardService.headsUp()`, iOS `HeadsUpService.show()`) och **rörs
 inte** — den står kvar som den är. Det som stängs är kravet på bildbeviset; ingen *Prova bannern*-knapp byggs, och ingen passagerare
 behöver ta bilden. Frågan i §4.2 (väg 1 eller 2) är därmed besvarad utan att någon av dem valts. Kortet flyttat till `TAVLA-ARKIV.md`.
+
+## #376 (26/9 2026) Kort #210 stängt på kodbeviset — "på väg <null>" hörs inte längre, men har inte hörts rätt heller
+
+**Beslut (Bengt 26/9: *"stäng 210 och slå ihop"*, på förslaget i §4.2).** Kortets villkor — att ett iOS-bygge med fixen hörs säga en
+olycka utan vägnummer rätt — släpps. Beviset som stänger är kodens: `SnapshotRepo.swift:78` läser `road` som `as? String` (JSON-null ⇒
+nil, #258), `str()` gör aldrig NSNull till `"<null>"` i något av de sex id-fälten (#276), vektor v26 och läsarkontraktet (TS, med
+motprov) låser fallet, och 0.3.9 (13) med fixen laddades upp 23/9 (#320). **Sagt högt:** appens JSON-läsare har inget testmål, så
+raden är granskad, inte körd, och ingen har hört en olycka utan vägnummer i ett bygge med fixen — fallet är ungefär en om dagen i hela
+landet. Står ett fel kvar hörs det i betan. Android-sidans latenta id-form (`getString("id")` ger `"null"`) står kvar som anteckning.

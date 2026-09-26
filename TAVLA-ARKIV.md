@@ -2946,3 +2946,43 @@
   kan inte heller: emulatorns vakt får ingen riktig varning. Två vägar i §4.2: en knapp *Prova bannern* (fem sekunders fördröjning,
   byt till kartan — Android-beviset tas då av fotostudion), eller en passagerare som tar bilden under en riktig varning.
   ✅ **STÄNGT 26/9 (Bengt: *"överspelat"*, DECISIONS #375):** bannern står kvar i koden på båda plattformarna; beviset efterfrågas inte.
+
+### Axel — därefter
+
+- [x] ✅ **STÄNGT 26/9** (DECISIONS #376) — 🔊 **#210 iOS SÄGER "PÅ VÄG <NULL>" — var tjugonde olycka** (genomlysningen 20/9). `SnapshotRepo.swift:117` gör JSON-`null`
+  till strängen `"<null>"`, och `road` läses med just den funktionen (rad 68). Kotlin och TypeScript gör rätt — iOS är ensamt fel.
+  **Uppmätt 20/9: 38 av 732 olyckor senaste 30 dygnen saknar vägnummer (5,2 %).** Vektor v22 låser bara FRÅNVARANDE `road`,
+  inte `road: null`, så sviten kan inte se felet.
+  Verify: ny vektor med `road: null` som faller före fixen och passerar efter; rösten säger "Allvarlig olycka 8 kilometer
+  framför dig" utan vägled. Bör sitta i bygget INNAN nästa arkivering.
+  🔨 **BYGGT 20/9 (Claude via Cowork, DECISIONS #258, commit 9d3f56c):** `SnapshotRepo.swift` läser `road` som `as? String` — nil vid
+  JSON-null, samma mönster som `slut` på raden ovan. v26 (severity 5, `road: null`) låser JSON-null i alla tre vektorläsarna och
+  motorerna (ci, android, ios-engine gröna). **Ärligt om beviset:** vektorn kunde inte falla före fixen — Swift-MOTORNS
+  vektorläsare gjorde redan rätt, felet satt bara i APPENS JSON-plockare, och appen har inget testmål. Raden är rättad
+  och granskad, inte körd. **Stängs när ett iOS-bygge säger en olycka utan vägnummer rätt** (5 % av olyckorna — finns i
+  arkivet varje vecka) eller Bengt hör en i bilen. **Fixen följer med i 0.3.9 (12).**
+  🔒 **KLASSEN STÄNGD 20/9 kväll (Axels *"kan vi fixa kort 210"*, DECISIONS #276):** `road` rättades på sin egen rad, men
+  `str()` kunde fortfarande göra JSON-null till literalen `"<null>"` — och funktionen bär **sex id-fält**
+  (cam/seg/wx/bro/vilt/dev). Ett null där hade gett `"cam:<null>"` som farans id, alltså en nyckel i reprisspärren OCH i
+  facitsvaret. Helpern returnerar nu tom sträng för `NSNull`. **Uppmätt, inte antaget:** publicerade `static.json`
+  (2 791 kameror) och `live.json` lästa 20/9 — inget id är null i dag, så hålet var latent. De enda null som faktiskt
+  publiceras är `lutning15/30/60` på väderstationerna, och dem läser iOS inte alls.
+  ➕ **Samma form finns i Android, oprövad:** `SnapshotRepo.kt` läser ids med `getString("id")`, som ger strängen `"null"`
+  för ett JSON-null. Inte rättad — sex anropsställen, inget testmål, och till skillnad från iOS kastar den vid SAKNAT
+  fält, vilket är ett medvetet skydd jag inte river i mörkret. Eget kort när någon rör filen.
+  🔑 **Ägare: Axel** (arkiveringen är hans). Kortet är alltså inte glömt utan väntande — villkoret står ovan.
+
+  🧪 **LÄSARKONTRAKTET BYGGT 20/9 (DECISIONS #278) — kortets egen invändning *"inget testmål"* är halvt besvarad.**
+  Vektorerna börjar där faran redan är TOLKAD; de är ett kontrakt för MOTORN och kan per konstruktion inte se ett fel
+  i JSON-läsningen. Därför finns nu samma sorts kontrakt ett lager ned: `engine/fixtures/lasarprov.json` bär en
+  static + live med de fall som är lätta att läsa fel — `road` som null OCH som saknat, `bearing` null, `yta` null,
+  `code` null, `sev` null, och ett `id` som TAL — plus det parsade utfall varje läsare ska ge.
+  ✅ **TS-läsaren prövas** av `test/lasarkontraktet.test.ts`. **Motprov:** `road: d.road ?? null` → `String(d.road)`
+  ⇒ testet faller med `actual: 'null'` mot `expected: null`. Provet ser alltså exakt det fel #210 var.
+  🎯 **NOLLPOLITIKEN, som är hela poängen:** `bearing` null får inte bli 0 (0 är norrut — en kamera som tros titta
+  norrut filtreras på fel kurs) · `yta` null får inte bli 0 °C (0 ligger under fryströskeln och hade fyrat) · `road`
+  null får inte bli ett ord. Tre fält, tre olika sätt att tyst bli fel.
+  ⏭️ **KVAR:** Swift och Kotlin läser i app-koden, som saknar testmål. Provfilen ligger färdig den dagen målet finns.
+  Kortet stängs fortfarande av Axels bygge — läsarkontraktet gör inte fixen bevisad, det gör NÄSTA regression synlig.
+  ↦ **Sorterat 22/9 (kort #224):** fixen är byggd; kvar är att höra en olycka utan vägnummer i ett iOS-bygge med fixen (0.3.9 (12) eller (13)). Ägare Axel.
+  ✅ **STÄNGT 26/9 PÅ KODBEVISET (Bengt, DECISIONS #376):** fixen i main sedan 20/9 och i 0.3.9 (13) uppladdad 23/9; hörd rätt har den inte — villkoret släppt.
