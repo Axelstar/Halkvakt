@@ -118,50 +118,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] ↩︎ **Introduktionen** (iOS) — bevis saknas: radera appen → installera → intron ska komma
   först; "Visa igen" i Inställningar. Introduktionen i Claude Design är enda skärmen som inte
   ritats om än. Android-spegeln (DECISIONS #36) efter att iOS-varianten testats.
-- [ ] ↩︎ **#23 heads-up** — bannern över kartappen, båda plattformarna. (#22 T3–T7 i bilen och
-  #24-resten står under Claude — låst, Android-listan.)
-  ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** underpunkten #23 i DESIGNLYFTET, som stängdes 22/9.
 ### Axel — därefter
 - [ ] **Tolv testare till Play-perioden** — Axels åtagande 31/8: "hittar dem utan problem".
   Väntelisterutan på kartan borttagen på hans beslut. Kvar i `docs/REKRYTERING.md` om det behövs.
   ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** kort 6 *Tolv testare till väntelistan* (samma tolv).
-- [ ] 🔊 **#210 iOS SÄGER "PÅ VÄG <NULL>" — var tjugonde olycka** (genomlysningen 20/9). `SnapshotRepo.swift:117` gör JSON-`null`
-  till strängen `"<null>"`, och `road` läses med just den funktionen (rad 68). Kotlin och TypeScript gör rätt — iOS är ensamt fel.
-  **Uppmätt 20/9: 38 av 732 olyckor senaste 30 dygnen saknar vägnummer (5,2 %).** Vektor v22 låser bara FRÅNVARANDE `road`,
-  inte `road: null`, så sviten kan inte se felet.
-  Verify: ny vektor med `road: null` som faller före fixen och passerar efter; rösten säger "Allvarlig olycka 8 kilometer
-  framför dig" utan vägled. Bör sitta i bygget INNAN nästa arkivering.
-  🔨 **BYGGT 20/9 (Claude via Cowork, DECISIONS #258, commit 9d3f56c):** `SnapshotRepo.swift` läser `road` som `as? String` — nil vid
-  JSON-null, samma mönster som `slut` på raden ovan. v26 (severity 5, `road: null`) låser JSON-null i alla tre vektorläsarna och
-  motorerna (ci, android, ios-engine gröna). **Ärligt om beviset:** vektorn kunde inte falla före fixen — Swift-MOTORNS
-  vektorläsare gjorde redan rätt, felet satt bara i APPENS JSON-plockare, och appen har inget testmål. Raden är rättad
-  och granskad, inte körd. **Stängs när ett iOS-bygge säger en olycka utan vägnummer rätt** (5 % av olyckorna — finns i
-  arkivet varje vecka) eller Bengt hör en i bilen. **Fixen följer med i 0.3.9 (12).**
-  🔒 **KLASSEN STÄNGD 20/9 kväll (Axels *"kan vi fixa kort 210"*, DECISIONS #276):** `road` rättades på sin egen rad, men
-  `str()` kunde fortfarande göra JSON-null till literalen `"<null>"` — och funktionen bär **sex id-fält**
-  (cam/seg/wx/bro/vilt/dev). Ett null där hade gett `"cam:<null>"` som farans id, alltså en nyckel i reprisspärren OCH i
-  facitsvaret. Helpern returnerar nu tom sträng för `NSNull`. **Uppmätt, inte antaget:** publicerade `static.json`
-  (2 791 kameror) och `live.json` lästa 20/9 — inget id är null i dag, så hålet var latent. De enda null som faktiskt
-  publiceras är `lutning15/30/60` på väderstationerna, och dem läser iOS inte alls.
-  ➕ **Samma form finns i Android, oprövad:** `SnapshotRepo.kt` läser ids med `getString("id")`, som ger strängen `"null"`
-  för ett JSON-null. Inte rättad — sex anropsställen, inget testmål, och till skillnad från iOS kastar den vid SAKNAT
-  fält, vilket är ett medvetet skydd jag inte river i mörkret. Eget kort när någon rör filen.
-  🔑 **Ägare: Axel** (arkiveringen är hans). Kortet är alltså inte glömt utan väntande — villkoret står ovan.
-
-  🧪 **LÄSARKONTRAKTET BYGGT 20/9 (DECISIONS #278) — kortets egen invändning *"inget testmål"* är halvt besvarad.**
-  Vektorerna börjar där faran redan är TOLKAD; de är ett kontrakt för MOTORN och kan per konstruktion inte se ett fel
-  i JSON-läsningen. Därför finns nu samma sorts kontrakt ett lager ned: `engine/fixtures/lasarprov.json` bär en
-  static + live med de fall som är lätta att läsa fel — `road` som null OCH som saknat, `bearing` null, `yta` null,
-  `code` null, `sev` null, och ett `id` som TAL — plus det parsade utfall varje läsare ska ge.
-  ✅ **TS-läsaren prövas** av `test/lasarkontraktet.test.ts`. **Motprov:** `road: d.road ?? null` → `String(d.road)`
-  ⇒ testet faller med `actual: 'null'` mot `expected: null`. Provet ser alltså exakt det fel #210 var.
-  🎯 **NOLLPOLITIKEN, som är hela poängen:** `bearing` null får inte bli 0 (0 är norrut — en kamera som tros titta
-  norrut filtreras på fel kurs) · `yta` null får inte bli 0 °C (0 ligger under fryströskeln och hade fyrat) · `road`
-  null får inte bli ett ord. Tre fält, tre olika sätt att tyst bli fel.
-  ⏭️ **KVAR:** Swift och Kotlin läser i app-koden, som saknar testmål. Provfilen ligger färdig den dagen målet finns.
-  Kortet stängs fortfarande av Axels bygge — läsarkontraktet gör inte fixen bevisad, det gör NÄSTA regression synlig.
-  ↦ **Sorterat 22/9 (kort #224):** fixen är byggd; kvar är att höra en olycka utan vägnummer i ett iOS-bygge med fixen (0.3.9 (12) eller (13)). Ägare Axel.
-
 ### Bengt
 - [ ] 🧫 **#232 KUVÖSEN — HELA SYSTEMET BAKÅTPRÖVAT PÅ VINTERN 2024/25** (Bengts idé 21/9, DECISIONS #292). Motorn och ALLA
   skuggregler i en gemensam testbädd, långt från appar och förare, körd mot en hel gången vinter — ett RIKTNINGSPROV: är vi på
@@ -297,6 +257,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   spannet som faktiskt verkar, eller låt reglaget styra tiden (sekunder) i stället för metern — det senare ändrar vad rösten
   säger och kräver vektorer. 🔑 Bengts och Axels val (§4.2). Verify: reglagets text och spann säger vad motorn gör, på båda
   plattformarna, och produktboken likaså.
+  🔨 **VÄG (a) BYGGD 26/9** (Bengts ja, DECISIONS #374): *Längsta förvarning*, 400–1 200 m på båda, 1 200 från början, texten säger 30
+  sekunder före; körläget säger *som längst* i stället för *inom 3 km*. Två kontrakt i kontraktsgrinden. android.yml 36219380753 grön på grenen (JVM-prov, emulator, release-AAB); fotostudions shot-3 visar Längsta förvarning 1,2 km, Kortare — 400 m / Fullt — 1,2 km och texten om 30 sekunder.
+  🔑 Kvar: iOS-bygget 0.3.9 (17) hos Axel (första kompileringen) — sedan stängs kortet.
 
 ### Claude — olåst
 - [ ] 📍 **#226 AUTOSTARTENS BEHÖRIGHET FALLER TYST PÅ ANDROID 11+** (Axels fynd på testtelefonen 20/9, DECISIONS #272).
@@ -318,18 +281,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Verify: ett JVM-prov som skapar styrningen på nytt mellan start- och stopphändelsen faller före lagningen och passerar efter;
   på en riktig telefon stannar en autostartad vakt när bilens Bluetooth kopplas från.
   ✅ **BYGGT 24/9 (DECISIONS #348):** flaggan sparas mellan styrningarna, självstopp efter en kvart stilla (`IdleStop`), tre JVM-prov. Kvar: verify i bil på Android.
-
-- [ ] 📜 **#249 OM-AVSNITTET SÄGER MINDRE ÄN SANNINGEN** (fynd 24/9 under kort #217, DECISIONS #347). (a) **Android** visar bara
-  *"Öppna data från Trafikverket (CC0)"*. Ärlighetsraden (*mellan stationerna är vägen oövervakad*) och källorna SMHI, Fintraffic
-  (CC BY 4.0) och OpenStreetMap (ODbL) saknas — och Fintraffics gränsstationer och OSM:s broar når Android-motorn, så de två
-  licenserna kräver att källan anges. iOS har hela raden. (b) **Båda plattformarna** säger i undantagstexten *"Inget annat"*, men
-  facitsvaret bär också appens namn och version (`app`, `ver`). Play-filen deklarerar redan båda; texten i appen gör det inte.
-  🔑 (b) är Axels ordval: skriv om texten eller ta bort fälten ur svaret. Ändras texten gäller invariantregeln — Play-filen,
-  integritet.html och produktboken i samma commit. (a) kan Claude bygga när Bengt sagt ja.
-  Verify: Androids Om bär samma ärlighetsrad och attribution som iOS (skärmbild ur fotostudion); undantagstexten och kroppen
-  som skickas säger samma sak.
-  ✅ **KLART 24/9 (DECISIONS #348, Axel via Claude):** (b) texten nämner nu appens namn och version, fälten stannar; (a) ärlighetsraden och källorna i Androids Om. Verify: fotostudions bild av Om efter nästa android-körning.
-  📸 **26/9: beviset räckte inte.** Fotostudions `shot-6-betatest.png` (android.yml 36214202433) slutar vid Om-avsnittets första ruta — ärlighetsraden och källorna syns inte. Verify kräver en svepning till i fotostudion (en rad i android.yml) eller en skärmbild av Om från testtelefonen.
 
 - [ ] 🌡️ **#253 GRIND A OCH VÄGPUNKTEN SAKNAR HÄLFTEN AV GRANNARNA — de varma** (mätt 25/9 under kort #252, `docs/GRANSKNING-GRINDAR-2026-09-25.md`).
   **10 947 kalla målhalvtimmar** (yta ≤ 5 °C, 60 dygn): av 41 079 grannplatser saknade **20 319 en arkivrad — 49,5 %**; bland de frysnära (yta ≤ 1 °C, 232 halvtimmar) **50,4 %**. Av 5 785 mål med fem grannar hade bara **573 alla fem**, och 966 ingen. Orsaken: den levande ingesten sparar bara en avläsning med yta ≤ 5 °C eller nederbörd
@@ -1698,6 +1649,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#210 "PÅ VÄG <NULL>" — STÄNGT 26/9 PÅ KODBEVISET (DECISIONS #376)**: fixen i main sedan 20/9 och i 0.3.9 (13); aldrig hörd rätt i bil, villkoret släppt. Tavlan 37 → 36.
+- [x] ✅ **#23 BANNERN ÖVER KARTAPPEN — STÄNGT SOM ÖVERSPELAT 26/9 (DECISIONS #375)**: byggd på båda plattformarna, står kvar; bildbeviset efterfrågas inte längre. Tavlan 38 → 37.
+- [x] ✅ **#249 OM-AVSNITTET — KLART 26/9 (DECISIONS #374)**: byggt 24/9; fotostudion fångar nu resten av Om (shot-7), ärlighetsraden och källorna ordagrant som iOS. Tavlan 39 → 38.
 - [x] ✅ **#83 GALLRINGEN — KLART 26/9 (DECISIONS #373)**: i drift sedan 9/9 och exporten sedan 24/9; Verify mätt: högst 17 978 rader/dygn i det gallrade (gräns 45 000), en rad per halvtimme, grind A oberörd utom 3 av 49 372 halvtimmar.
 - [x] ✅ **#221 STYRDOKUMENTEN — KLART 26/9 (DECISIONS #371/#373)**: tavlan och besluten halverade i arkiv, BACKLOG avvecklad, STATUS-rubriken fryst, motsägelserna rättade, 273 av 279 grenar raderade.
 - [x] ✅ **#250 TRE SMÅFEL — KLART 26/9 (DECISIONS #373)**: byggt 24/9 (#348), stängt på Bengts ja; del (a) bevisad genom läsning.

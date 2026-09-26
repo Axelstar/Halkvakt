@@ -32,7 +32,9 @@ final class Prefs {
     var icing: Bool { didSet { d.set(icing, forKey: "k.icing") } }
     var wildlife: Bool { didSet { d.set(wildlife, forKey: "k.wildlife") } }
     var camera: Bool { didSet { d.set(camera, forKey: "k.camera") } }
-    /// Längsta förvarning i meter (motorns leadMaxM).
+    /// Längsta förvarning i meter (motorns leadMaxM) — ett tak. Kort #259: motorn talar vid fart × 30 s, så över 1 200 m
+    /// (≈ 30 s i 140 km/h) gjorde reglaget ingenting. Äldre sparade värden upp till 3 000 läses som 1 200: samma beteende.
+    static let leadRange: ClosedRange<Double> = 400...1200
     var leadMaxM: Double { didSet { d.set(leadMaxM, forKey: "k.leadMaxM") } }
     /// #24: senaste repliken, överlever omstart — hemskärmens "Senast sagt".
     var lastSaidText: String? { didSet { d.set(lastSaidText, forKey: "k.lastSaidText") } }
@@ -74,7 +76,8 @@ final class Prefs {
         icing = d.object(forKey: "k.icing") as? Bool ?? true
         wildlife = d.object(forKey: "k.wildlife") as? Bool ?? true
         camera = d.object(forKey: "k.camera") as? Bool ?? true
-        leadMaxM = d.object(forKey: "k.leadMaxM") as? Double ?? 3000
+        leadMaxM = min(max(d.object(forKey: "k.leadMaxM") as? Double ?? Prefs.leadRange.upperBound,
+                           Prefs.leadRange.lowerBound), Prefs.leadRange.upperBound)
         lastSaidText = d.string(forKey: "k.lastSaidText")
         lastSaidAt = d.object(forKey: "k.lastSaidAt") as? Date
         lastSaidId = d.string(forKey: "k.lastSaidId")

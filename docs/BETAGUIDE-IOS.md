@@ -1,6 +1,6 @@
 # Halkvakt på iPhone — guide till testaren
 
-*Skriven 26/9 2026 mot koden i 0.3.9 (16), inte ur minnet (kort *Välkomsttext + testinstruktion*, DECISIONS #371). Samma
+*Skriven 26/9 2026 mot koden i 0.3.9 (16), rättad samma dag för (17) — reglaget, kort #259 — inte ur minnet (kort *Välkomsttext + testinstruktion*, DECISIONS #371). Samma
 guide går till novemberbetans testare — ändras appen ändras den här filen i samma commit. Android-guiden är
 `docs/BETAGUIDE-ANDROID.md`; de två ska säga samma sak där apparna gör samma sak.*
 
@@ -42,7 +42,7 @@ Du behöver inte titta på skärmen. Starta vakten, lås telefonen, kör.
 
 1. Hämta **TestFlight** från App Store (Apples egen app för testversioner).
 2. Öppna inbjudan du fått — mejlet eller länken — och tryck **Acceptera** och sedan **Installera** i TestFlight.
-3. Halkvakt ligger nu på hemskärmen. Versionen står i TestFlight; den här guiden gäller **0.3.9 (16)** och senare.
+3. Halkvakt ligger nu på hemskärmen. Versionen står i TestFlight; den här guiden gäller **0.3.9 (17)** och senare.
 
 En testversion slutar fungera efter 90 dagar. Kommer en ny version meddelar TestFlight dig — installera den.
 
@@ -76,8 +76,8 @@ Appen har två flikar: **Vakten** och **Inställningar**.
 - Med platsen **Alltid** vaknar vakten själv några hundra meter in i resan.
 
 I **Inställningar** kan du stänga av varningsslag du inte vill höra (**Halt väglag**, **Frysrisk**, **Olyckor & hinder**,
-**Vilt**, **Fartkameror**), välja hur tidigt rösten varnar (från **Sent — 400 m** till **Tidigt — 3 km**) och trycka
-**Testa rösten**. Rösten är iOS egen: *Inställningar → Tillgänglighet → Talat innehåll → Röster*.
+**Vilt**, **Fartkameror**), korta förvarningen med **Längsta förvarning** (från **Kortare — 400 m** till **Fullt — 1,2 km**;
+rösten varnar annars ungefär 30 sekunder före, 750 m i 90 km/h) och trycka **Testa rösten**. Rösten är iOS egen: *Inställningar → Tillgänglighet → Talat innehåll → Röster*.
 
 ---
 

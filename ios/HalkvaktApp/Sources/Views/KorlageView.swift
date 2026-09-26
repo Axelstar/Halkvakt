@@ -30,7 +30,7 @@ struct KorlageView: View {
                         Text("\(elapsedMin) min · \(distKm) km")
                             .font(Typo.sans(34, .semibold)).tracking(-1)
                             .foregroundStyle(Brand.text)
-                        Text("Rösten talar när något dyker upp inom \(Int(Prefs.shared.leadMaxM / 1000)) km framför dig.")
+                        Text("Rösten talar ungefär 30 sekunder före, som längst \(String(format: "%.1f", Prefs.shared.leadMaxM / 1000).replacingOccurrences(of: ".", with: ",")) km. En olycka längre fram kan nämnas tidigare.")
                             .font(Typo.sans(13)).foregroundStyle(Brand.dim)
                     }
                     HStack(spacing: 10) {

@@ -32,12 +32,17 @@ object Prefs {
         ctx.dataStore.edit { it[kindKey(k)] = on }
     }
 
-    /** Hur tidigt rösten får tala (motorns leadMaxM). 500–5000 m, default = motorns 3000. */
+    /** Kort #259: the engine speaks at speed × 30 s, clamped to leadMinM…leadMaxM, so the slider is a CAP. 1 200 m ≈ 30 s at
+     *  140 km/h — above that it changed nothing. Values stored before (up to 5 000) read as 1 200: same behaviour below 144 km/h. */
+    const val WARN_MIN_M = 400f
+    const val WARN_MAX_M = 1200f
+
+    /** Längsta förvarning (motorns leadMaxM), ett tak på WARN_MIN_M–WARN_MAX_M. */
     fun warnDistanceM(ctx: Context): Flow<Float> =
-        ctx.dataStore.data.map { it[KEY_WARN_DIST] ?: 3000f }
+        ctx.dataStore.data.map { (it[KEY_WARN_DIST] ?: WARN_MAX_M).coerceIn(WARN_MIN_M, WARN_MAX_M) }
 
     suspend fun setWarnDistanceM(ctx: Context, m: Float) {
-        ctx.dataStore.edit { it[KEY_WARN_DIST] = m.coerceIn(500f, 5000f) }
+        ctx.dataStore.edit { it[KEY_WARN_DIST] = m.coerceIn(WARN_MIN_M, WARN_MAX_M) }
     }
 
     fun history(ctx: Context): Flow<List<AlertEntry>> =

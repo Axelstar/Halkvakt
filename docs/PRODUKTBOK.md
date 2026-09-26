@@ -23,11 +23,15 @@ grundläget — pratar den, betyder det något.
 
 ## Så ser den ut
 
-| Vakten | Inställningar | Om (nu sist i Inställningar) |
+| Vakten | Inställningar | Rösten och längsta förvarning |
 |---|---|---|
-| ![Vakten](produktbok/shot-1-vakten.png) | ![Inställningar](produktbok/shot-2-installningar.png) | ![Om](produktbok/shot-6-betatest.png) |
+| ![Vakten](produktbok/shot-1-vakten.png) | ![Inställningar](produktbok/shot-2-installningar.png) | ![Reglaget](produktbok/shot-3-reglaget.png) |
 
-*(Android ur fotostudion 23/9, bygget från main. Repliken under Senast sagt är fotostudions provrad — rösten
+| Betatest och början av Om | Resten av Om — ärlighetsraden och källorna |
+|---|---|
+| ![Om](produktbok/shot-6-betatest.png) | ![Om, slutet](produktbok/shot-7-om.png) |
+
+*(Android ur fotostudion 26/9, android.yml 36219380753 på kort #259:s gren — reglaget *Längsta förvarning* 400–1 200 m och Om-sidans ärlighetsrad, som fotostudion inte fångade före 26/9. Bilderna 1, 2 och 6 i övrigt som 23/9. Repliken under Senast sagt är fotostudions provrad — rösten
 säger "Fartkamera om 500 meter.". Två flikar: Om är sista avsnittet i Inställningar — bilden visar slutet av
 Inställningar med betatest-brytaren, som fotostudion slagit på, och början av Om.)*
 
@@ -121,9 +125,13 @@ något händer visas ett **varningskort i 8 sekunder** med samma text som röste
 ögonen ska stanna på vägen.
 
 **⚙️ Inställningar** — *Varna för*: fem brytare, en per fara (olyckor och hinder, halt väglag, frysrisk,
-vilt, fartkameror), alla på från början; en avslagen fara varnar aldrig. *Varna på avstånd*: ett
-skjutreglage för hur långt i förväg rösten ska tala — 400–3 000 m i steg om 100 på iOS, 500–5 000 m
-steglöst på Android, 3 000 m från början på båda. På iOS också *Vaknar själv när du kör* (på från
+vilt, fartkameror), alla på från början; en avslagen fara varnar aldrig. *Längsta förvarning*: rösten
+talar ungefär 30 sekunder före (750 m i 90 km/h, 1 167 m i 140 km/h), och reglaget är ett tak på det —
+400–1 200 m på båda plattformarna, i steg om 100 på iOS och steglöst på Android, 1 200 m från början.
+Det kan korta förvarningen, aldrig förlänga den. *(Före 26/9 hette det "Varna på avstånd" och gick till
+3 km på iOS och 5 km på Android — över fart × 30 s gjorde det ingenting, kort #259.)* Körläget säger
+samma sak: *"Rösten talar ungefär 30 sekunder före, som längst 1,2 km. En olycka längre fram kan nämnas
+tidigare."* På iOS också *Vaknar själv när du kör* (på från
 början) och guiden *Starta direkt (valfritt)*. Och betatestets brytare *Svara på varningarna* — **av
 tills du själv slår på den** — med texten om exakt vad som skickas (se Om).
 
