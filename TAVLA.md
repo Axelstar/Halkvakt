@@ -443,6 +443,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Verify: Androids Om bär samma ärlighetsrad och attribution som iOS (skärmbild ur fotostudion); undantagstexten och kroppen
   som skickas säger samma sak.
   ✅ **KLART 24/9 (DECISIONS #348, Axel via Claude):** (b) texten nämner nu appens namn och version, fälten stannar; (a) ärlighetsraden och källorna i Androids Om. Verify: fotostudions bild av Om efter nästa android-körning.
+  📸 **26/9: beviset räckte inte.** Fotostudions `shot-6-betatest.png` (android.yml 36214202433) slutar vid Om-avsnittets första ruta — ärlighetsraden och källorna syns inte. Verify kräver en svepning till i fotostudion (en rad i android.yml) eller en skärmbild av Om från testtelefonen.
 
 - [ ] 🪛 **#250 TRE SMÅFEL SOM PRODUKTBOKENS GENOMLÄSNING HITTADE** (24/9, DECISIONS #347). (a) **Android säger *"Ingen färsk
   väglagsdata"* två gånger per körning:** flaggan sätts och nollställs direkt i första laddningen (`GuardService.kt`, raden
