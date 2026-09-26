@@ -25,7 +25,9 @@ if (process.argv[2] === "--sjalvtest") {
   process.exit(0);
 }
 
-const { ids, dubbla, hogsta } = granskaBeslut(readFileSync(new URL("../DECISIONS.md", import.meta.url), "utf8"));
+// Kort #221 (26/9): #1–#185 står i DECISIONS-ARKIV.md. Båda läses, annars kunde ett arkiverat nummer delas ut igen.
+const text = ["../DECISIONS-ARKIV.md", "../DECISIONS.md"].map((f) => readFileSync(new URL(f, import.meta.url), "utf8")).join("\n");
+const { ids, dubbla, hogsta } = granskaBeslut(text);
 if (dubbla.length) {
   console.error(`✗ DUBBLA BESLUTSNUMMER: ${dubbla.join(", ")} — ge den senare posten en bokstav (#60c) och nästa nya beslut #${hogsta + 1}.`);
   process.exit(1);
