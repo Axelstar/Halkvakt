@@ -59,7 +59,7 @@ class GuardService : Service() {
     private var ttsReady = false
     private lateinit var audio: AudioManager
     private var focusRequest: AudioFocusRequest? = null
-    private var lastSnapshotLoad = 0L
+    private val snapshotSchedule = SnapshotSchedule()   // #218: one load at a time, a minute's wait after a failure
     private var staleAnnounced = false
     private val idleStop = IdleStop()   // #248: samma kvart som iOS
 
@@ -99,13 +99,18 @@ class GuardService : Service() {
         // Resans fönster överlever tjänsten (kort #203): notisens knapp trycks minuter senare,
         // i en annan process, och måste veta vad "alla varningar" syftar på.
         scope.launch { Prefs.setTripStart(this@GuardService, session.value.startedAt) }
-        loadSnapshotAsync()
+        loadSnapshotAsync(force = true)
         startLocationUpdates()
         AlertBus.post("Tjänsten startad. Laddar vägdata …")
         return START_STICKY
     }
 
-    private fun loadSnapshotAsync() = thread {
+    private fun loadSnapshotAsync(force: Boolean = false) {
+        if (snapshotSchedule.tryBegin(System.currentTimeMillis(), force)) thread { loadSnapshot() }
+    }
+
+    private fun loadSnapshot() {
+        var ok = false
         try {
             val snap = SnapshotRepo.loadSnapshot(this)
             val gate = AgeGate.filter(snap.hazards, snap.generatedAtMs, System.currentTimeMillis())
@@ -135,9 +140,11 @@ class GuardService : Service() {
                 AlertBus.post("Vägdata uppdaterad: ${hazards.size} faror.")
                 snapshotInfo.value = "${hazards.size} faror · väglag $dataTid"
             }
-            lastSnapshotLoad = System.currentTimeMillis()
+            ok = true
         } catch (e: Exception) {
             AlertBus.post("Kunde inte ladda vägdata: ${e.message}")
+        } finally {
+            snapshotSchedule.done(System.currentTimeMillis(), ok)
         }
     }
 
@@ -151,7 +158,7 @@ class GuardService : Service() {
                 else session.value = session.value.copy(lon = loc.longitude, lat = loc.latitude)
             } else session.value = session.value.copy(lon = loc.longitude, lat = loc.latitude)
             prevLon = loc.longitude; prevLat = loc.latitude
-            if (System.currentTimeMillis() - lastSnapshotLoad > 30 * 60 * 1000L) loadSnapshotAsync()
+            loadSnapshotAsync()   // the schedule decides; most fixes start nothing
             val fix = Fix(
                 t = loc.time / 1000.0,
                 lon = loc.longitude, lat = loc.latitude,

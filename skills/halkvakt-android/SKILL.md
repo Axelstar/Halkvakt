@@ -61,6 +61,9 @@ Allt nedan är destillat av projektets beslut (DECISIONS.md) och Play-dossiern.
   pixel_5` bootar inte alls med default-imagen — standard-AVD + UI-knack i PROCENT av
   `wm size` är det stabila mönstret för skärmdumpar.
 
+- android.yml körs bara vid push till main (och workflow_dispatch) — PR:ens CI (`ci.yml`) bygger inte Android alls. Beviset
+  före sammanslagning tas med workflow_dispatch på grenen, och motprovet likadant på en egen gren (kort #218, 26/9).
+
 ## 6 · Innan du kodar
 1. Läs `STATUS.md` + relevant BACKLOG-punkt.
 2. UI-arbete → läs `skills/compose-state-and-effects/SKILL.md`.

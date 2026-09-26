@@ -1175,6 +1175,16 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Axel köra, Android körs på testtelefonen · **iOS-regleringen avgörs FÖRST efter iPhone-mätningen**: glesare GPS är
   en säkerhetsfråga, inte bara en batterifråga, och håller iPhone redan under 8 %/h finns inget att vinna.
   ↦ **Sorterat 22/9 (kort #224):** nästa steg är ditt ja till lagningen av loopen; mätningen görs sedan per plattform (§4.2).
+  🔨 **LOOPEN LAGAD 26/9** (Bengts ja, DECISIONS #370): `SnapshotSchedule` — en laddning i taget, 60 s paus efter fel, 30 min
+  förnyelse som förut; fem JVM-prov (tio minuter utan nät: 10 laddningar, inte 600). android.yml-körningen 36214202433 (workflow_dispatch på grenen, 16e2e3f) grön: JVM-proven, emulatorn och release-AAB. Motprovet 36214221026 (c27dcce, båda vakterna borttagna) rött med exakt de tre väntade proven fällda — oneLoadAtATime (rad 15), aFailedLoadWaitsAMinute (rad 22) och tiominutersräkningen (rad 50), 46 prov, 3 fällda; halvtimmesförnyelsen och startens förbikoppling höll. Kvar på kortet:
+  **mätningen** (iPhone: Bengt, nästa resa över en timme · Android: testtelefonen) och **kadenstestet** (nämnt i samma fråga, inget ja).
+
+- [ ] 🔄 **#258 iOS LADDAR ALDRIG OM VÄGDATAN UNDER RESAN** (fynd 26/9 under #218, DECISIONS #370). Vägdatan laddas när vakten
+  startar och när Vakten-vyn visas (`GuardManager.swift:230`, `VaktenView.swift:68`); under resan ligger körläget som helskärm över
+  vyn, så ingenting laddas om. Åldersvakten (45 min väder, 120 min olyckor och djur) prövas bara vid laddningen ⇒ en tre timmars
+  resa varnar på starttidens is och olyckor, och nya olyckor når aldrig telefonen. Android förnyar var 30:e minut (`SnapshotSchedule`).
+  Läst i koden, inte framkallat. Nyckel: Bengts ja till bygget (§4.2) · Axels Xcode-bygge. Verify: en resa längre än 30 min där
+  körlägets rad *väglag HH:mm* flyttar sig framåt utan att appen öppnats.
 
 - [x] ✅ **STÄNGT 23/9** (DECISIONS #319) — 📜 **#198 TROSKLAR-SKUGGAN §4 MOT TRÖSKELREGELN — rättas före domen i mars 2027** (fynd 16/9, DECISIONS #220).
   Domslutet (a) TALAR och (b) TALAR NÄRA ANKARE låter segmentprognosen tala på *modellerade* segment. Det krockade redan

@@ -10489,3 +10489,30 @@ varningar raderas aldrig. **Planen**, nu i bedömningens kalender:
 - **Regn på snö, snö på snö** (S15, Ä11): vinterns väglagsordlista mäts i första vintermånaden (december) i väglagshistoriken; #45:s
   steg 2 skrivs innan något utfall läses; domen ur arkivet i mars mot vinterbaselinen (#51/#209).
 Det enda gemensamma villkoret är detsamma som för alla marsdomar: arkivet eller exporten måste gå att läsa (återläsningssteget, #334).
+
+## #370 (26/9 2026) Kort #218: Androids omladdningsloop lagad — en laddning i taget, en minuts paus efter fel; iOS laddar aldrig om under resan (kort #258)
+
+**Beslut (Bengt 26/9: *"ja till att du lagar omladdningsloopen"*).** Svaret gällde loopen. Kadenstestet (`CadencePolicyTest.tiers()`, som
+jämför koden med sina egna konstanter) nämndes i samma fråga men fick inget ja och står kvar på kortet.
+
+**Byggt.** `SnapshotSchedule` (ny, ren klass) bestämmer när vakten får ladda vägdata: en laddning i taget, och efter ett misslyckande
+väntar nästa försök **60 s**; en lyckad laddning förnyas efter 30 min som förut. `GuardService` frågar klassen vid varje GPS-punkt och
+vid start (start hoppar över väntan, aldrig en pågående laddning). Förut satte bara en LYCKAD laddning klockan, så varje GPS-punkt utan
+data startade en ny, komplett laddning i en egen tråd — en per sekund tills den första lyckades (#280). Startens dubbla laddning
+(`onStartCommand` plus första GPS-punkten) försvann på köpet. Fem JVM-prov, ett per påstående; kortets fall som räkning: tio minuter
+utan nät i 1-sekundstakt, tre sekunder per misslyckat försök, ger **10 laddningar, inte 600**.
+
+**Varför 60 s.** Utan nät faller försöket på sekunder, och en minut räcker för att vakten ska få data strax efter att täckningen kommer
+tillbaka. I kortets värsta fall — nätet finns, filen fäller kontrollsumman och ingen sparad kopia finns — blir det `static.json`
+(251 kB) en gång i minuten, ungefär 15 MB i timmen i stället för ungefär 1 GB. Ett enda tal i en fil, så kontraktsgrinden berörs inte.
+
+**Bevis.** android.yml-körningen 36214202433 (workflow_dispatch på grenen, 16e2e3f) grön: JVM-proven, emulatorn och release-AAB. Motprovet 36214221026 (c27dcce, båda vakterna borttagna) rött med exakt de tre väntade proven fällda — oneLoadAtATime (rad 15), aFailedLoadWaitsAMinute (rad 22) och tiominutersräkningen (rad 50), 46 prov, 3 fällda; halvtimmesförnyelsen och startens förbikoppling höll. **Motprovet** tog bort båda vakterna i en körning: den pågående laddningen och väntan efter fel. De två första proven
+lutar sig var på EN vakt och fälls var av sin mutation (det första anropar aldrig `done()`, det andra har ingen laddning igång när
+väntan prövas), så en körning räckte för att läsa vilken rad som föll. android.yml körs bara vid push till main; beviset före
+sammanslagning togs därför med workflow_dispatch på grenen (läxa i `skills/halkvakt-android/SKILL.md` §5).
+
+**Fynd på vägen, kort #258:** iOS laddar vägdata när vakten startar och när Vakten-vyn visas (`GuardManager.swift:230`,
+`VaktenView.swift:68`) — och körläget ligger som helskärm över vyn medan vakten går. Under en resa laddas alltså ingenting om, och
+åldersvakten (`AgeGate`, 45 min för väder, 120 min för olyckor och djur) prövas bara vid laddningen. En tre timmars resa varnar på
+starttidens is och olyckor hela vägen, och en ny olycka når aldrig telefonen. Android förnyar var 30:e minut. Läst i koden, inte
+framkallat. **Sagt högt:** lagningen är bevisad på JVM, inte på en telefon; den når testtelefonen med nästa Android-bygge.
