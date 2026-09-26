@@ -106,6 +106,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   telefonen"* och *"Vad vi samlar in: Ingenting"*. Google jämför formuläret mot policyn, så den måste ändras i samma
   veva. Utkast skrivet, väntar Axels ja — det är ett publikt löfte.
   📏 **26/9: (b) är klar** — `integritet.html` skrevs om 23/9 (DECISIONS #320). **Kvar bara (a) raderingsfrågan**, Axels ja.
+  🔨 **26/9: (a) avgjord — Nej** (Bengts *"gör 214"*, DECISIONS #378). Filen besvarad; policymeningen färdig i filen men inte
+  publicerad (Bengts konto saknar skrivrätt i karta-repot). 🔑 Kvar: Axel klistrar in meningen i `integritet.html` och fyller i
+  formuläret i Play Console vid första uppladdningen.
   *Beslutet som bygget vilar på:* invarianten skrivs om till *aldrig utan aktivt val* — ingen
   positionsdata lämnar telefonen automatiskt; det enda som skickas är ett facitsvar föraren själv trycker på. Data Safety svarar
   sanningsenligt **Ja** (ändamål: förbättra varningarna; frivilligt; kan inte kopplas till person). **Bygg nästa varv:** CLAUDE.md:s
