@@ -188,6 +188,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   motorns 3 000 m; (b) taket höjs den dag försprånget går till rösten; (c) domen mäts med taket 1 200 m, så att den mäter det föraren
   skulle höra. 🔑 Bengts och Axels val (§4.2), före domen. Verify: skuggan och appen klämmer försprånget till samma tak, och
   systembilden säger vilket.
+  ✅ **BESLUTAT OCH BYGGT 26/9 — väg (a)** (Bengt: *"a på 261"*, DECISIONS #381): krokens svar kläms till motorns 3 000 m i `engine/src` (skuggan oförändrad, vektorerna orörda), nytt prov + motprov (*"fick 435"*), TROSKLAR-FORSPRANG §6 bär regeln till steg 7, systembilden säger *upp till 3 000 m*. Kortet stängs när PR:en är sammanslagen och skuggmotorn deployad.
 - [ ] 🧫 **#232 KUVÖSEN — HELA SYSTEMET BAKÅTPRÖVAT PÅ VINTERN 2024/25** (Bengts idé 21/9, DECISIONS #292). Motorn och ALLA
   skuggregler i en gemensam testbädd, långt från appar och förare, körd mot en hel gången vinter — ett RIKTNINGSPROV: är vi på
   rätt väg, och vad tillför varje del ovanpå de andra? Svarar på kartans §7.3: *"Varje grind dömer sin del ENSAM"*.

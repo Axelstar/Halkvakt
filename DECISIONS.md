@@ -5175,3 +5175,28 @@ septemberdygn — 231 kalla halvtimmar, två frysnära.
 **Kvar efter sammanslagningen:** deploy av `skuggmotor`, `kamerafacit` och `vakthund` från main; `sql/039` via dbknapp; beviset —
 `kamerafacitprov` (torrt urval), `lagringsprov` (larmet går), vakthundens skarpa rad och första timkörningens svar. Efter sju dygn: bilder
 och MB per dygn mot taket, i bedömningen.
+
+## #381 (26/9 2026) Kort #261 väg (a): försprånget kläms till motorns tak, reglaget tar bara grundvarningen · systembilden rättad
+
+**Fyndet** (Bengts fråga *"har uppdateringarna någon påverkan på systembilden"*). Motorn klämde försprångskrokens svar till
+`cfg.leadMaxM` (`engine.ts:113`), och i apparna är det reglaget *Längsta förvarning* — högst **1 200 m** sedan #259 (DECISIONS #374).
+Skuggan mäter med motorns **3 000 m**. Med reglaget på fullt hade 90 s bara räckt till 48 km/h, 60 s till 72 km/h och 45 s till 96 km/h;
+i 110 km/h hade 45–90 s blivit samma 1 200 m (≈ 39 s). #374 skrev att taket *"under 144 km/h betyder ingenting"* — sant för 30 s, inte
+för försprånget. Inget var fel i drift: kroken sitter bara i skuggan, och portarna får den vid steg 7, efter domen i mars 2027.
+
+**Beslut (Bengt 26/9: *"ja till systembilden och a på 261"*).** Väg (a): reglaget tar bara grundvarningen, försprånget kläms till motorns
+tak (`DEFAULT_CONFIG.leadMaxM`, 3 000 m). Alternativen: (b) höja reglagets tak den dag försprånget når rösten — reglaget hade då bytt
+betydelse; (c) döma försprånget med 1 200 m — domen hade mätt något annat än TROSKLAR-FORSPRANG §3 fastställt. (a) är det enda där
+reglaget betyder samma sak som i dag och domen gäller det som sedan når föraren. **Ingen tröskel ändras:** §3 klämmer redan till
+400–3 000 m (båda signaturerna); (a) gör att appen följer §3. Androids GPS-täthet (`CadencePolicy`) är bevisad för 3 000 m och håller.
+
+**Byggt.** `engine/src/engine.ts`: krokens svar kläms till `DEFAULT_CONFIG.leadMaxM`, inte `cfg.leadMaxM` — i skuggan samma tal (den kör
+standardkonfigurationen), och motorn utan krok är byte för byte densamma, så vektorerna rörs inte. Nytt prov i `test/forsprang.test.ts`:
+med reglaget på 500 m talar grundvarningen på 440 m och nivå 2 med 90 s på 1 989 m (80 km/h). **Motprov:** den gamla klämningen fäller
+exakt det provet — *"försprånget på 2 000 m — fick 435"*. Skuggmotorns bunt omgjord. TROSKLAR-FORSPRANG §6: steg 7 för över klämningen
+som den står i `engine/src`.
+
+**Systembilden** (`docs/SYSTEMBILDEN-2026-09-25.html`, rättad 26/9): spannet *400–1 200 m* med reglaget; försprånget *upp till 3 000 m*,
+reglagets tak gäller bara grundvarningen (två ställen); mätapparaten med kamerafacit i hela landet och vid tysta kalla stationer (#380)
+och förarnas svar och missar (#379); principen *Integritet* säger vad föraren själv kan skicka, som invarianten; L4:s grind A mättes på ett
+arkiv där hälften av grannarna saknades — sedan 25/9 är arkivet helt (#253).
