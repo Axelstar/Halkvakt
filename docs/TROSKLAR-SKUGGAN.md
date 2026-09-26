@@ -186,6 +186,10 @@ det är hela poängen med att dokumentet är daterat före första körningen.
 Claude räknar (dom-knappen `publish/grind-s-b.ts` på den delade händelselistan `publish/skuggfacit.ts`,
 DECISIONS #327/#330). Bengt läser skuggloggen i söndagsrutinen. **Facit-hinkens bilder** (ändrat 24/9, DECISIONS #335):
 öppnas vid domens tidpunkt (DECISIONS #248) — Claude klassar dem blint ur kontaktark (kort #246; sökvägen visar kamera
-och tid, aldrig skuggans larm), Axel ok:ar (stickprov ≥ 10 % och varje is/snö/slask), Bengt stickprovar. Axel fäller domen. Prognoskolumnen buntas ur
+och tid, aldrig skuggans larm), Axel ok:ar (stickprov ≥ 10 % och varje is/snö/slask), Bengt stickprovar. Axel fäller domen.
+Från 26/9 (DECISIONS #380) fylls hinken på tre vägar: skuggmotorn (`facit/`, larmpunkter längs rutterna, **inte längre
+fartkameror** — V1), kamerafacitet V2 (`v2/`, kameran närmast varje aktuell frysrisk i hela landet, tak 150 om dygnet) och V3
+(`v3/`, två stickprov i timmen vid kalla stationer utan larm, i dagsljus — tystnadsfelets bildfacit). Alla tre klassas i samma
+blinda kontaktark, och §2:s asymmetriregel gäller alla: en bild bekräftar, fäller aldrig. Prognoskolumnen buntas ur
 `engine/src` som allt annat (DECISIONS #43/#51) — en handklistrad kolumn driver
 isär på ett dygn.

@@ -3010,3 +3010,20 @@
   📐 **22/9 — skiss för steg 1 och 2 i ett:** `docs/SKISS-VILT-TRAFIKVERKET-2026-09-22.md` (ny nyckel `djur`, djuren in i `deviations`, texten #266, v37, skuggmotorn först; bara iOS-bygget kräver Axel).
   📏 **BEVISAT I DRIFT 23/9:** live.json 2026-09-23T14:50Z (manifestets sha stämmer) bär `djur` med en älg (`SE_STA_TRISSID_1_19674114`, slut 17:00), `wildlife` tom, bara olyckor bland `deviations`. Kvar för att stänga: del E — iOS 0.3.9 (13) från main ute hos testarna (Axel).
   ✅ **STÄNGT 26/9 (femma åtta, Bengts ja, DECISIONS #377):** del E uppfylld — 0.3.9 (13) från main uppladdad 23/9 20:53 (DECISIONS #320).
+
+### Claude — olåst
+
+- [x] ✅ **STÄNGT 26/9** (DECISIONS #380) — 🌡️ **#253 GRIND A OCH VÄGPUNKTEN SAKNAR HÄLFTEN AV GRANNARNA — de varma** (mätt 25/9 under kort #252, `docs/GRANSKNING-GRINDAR-2026-09-25.md`).
+  **10 947 kalla målhalvtimmar** (yta ≤ 5 °C, 60 dygn): av 41 079 grannplatser saknade **20 319 en arkivrad — 49,5 %**; bland de frysnära (yta ≤ 1 °C, 232 halvtimmar) **50,4 %**. Av 5 785 mål med fem grannar hade bara **573 alla fem**, och 966 ingen. Orsaken: den levande ingesten sparar bara en avläsning med yta ≤ 5 °C eller nederbörd
+  (`supabase/functions/ingest-live/index.ts:144`), så en varm, torr granne finns inte i arkivet, medan driftens prognos tar med den
+  ur `weather_latest`. Domarna #321 (KLARAD) och #324 (ÖPPEN) gäller alltså ett snällare underlag än driften. **Förslag:** låt
+  ingesten spara EN rad per station och halvtimme även när den är varm och torr (ungefär dubbelt så många rader: ~4,5 → ~9 MB/dygn,
+  exporten och raderingen i sql/034 tar resten), så att grind A, vägpunktsgrinden och K-A mäter samma värld som driften från och med
+  nu — novembers skarpa prövning får då veckor av ocensurerat underlag. Att i stället pröva på holdout-raderna i skuggloggen går inte
+  före mars: de är S-B:s C3 och blindade. 🔑 Bengt och Axel (ingesten är driftens).
+  Verify: efter ändringen visar samma mätning (`scripts/matningar/censur-grind-a-2026-09-25.sql`) < 5 % saknade grannplatser
+  för halvtimmar efter ändringen, och arkivets tillväxt per dygn står i bedömningen.
+  🔨 **BYGGT 25/9 (Bengt: *"ja till 253"*, DECISIONS #353):** den levande ingesten sparar en varm och torr avläsning EN gång per station och halvtimme (`arkivpolicy.ts`, `test/arkivpolicy.test.ts`, 7 fall, 2 motprov); en fråga per körning, fallerar den gäller den gamla regeln och felet står i svaret (`arkivpolicy`). Kvar för Verify: deploy, täckningen i en halvtimme efter deployen, och samma censurmätning på halvtimmar efter ändringen.
+  ✅ **Axels ja 25/9 (via Bengt, DECISIONS #353). I DRIFT:** deployad 07:20Z (PR #567); varvet 07:24Z skrev 146 väderrader, varav 132 varma halvtimmesrader, `ok: true`, ingen tillbakagång till den gamla regeln. Kvar för Verify: täckningen per halvtimme och censurmätningen på kalla halvtimmar efter ändringen (tidigast 26/9 på morgonen).
+  📏 **Läst 25/9 08:01Z (`scripts/matningar/tackning-halvtimme-2026-09-25.sql`):** täckningen per halvtimme mot 837 aktiva stationer — före deployen **63–84** stationer med rad (05:00–06:30Z, en varm förmiddag), halvtimmen 07:30–08:00Z **830 av 837 (99 %)**; rader per halvtimme 259–320 → 963, alltså ungefär tre gånger så många en varm dag (≈ 46 000 rader/dygn mot ≈ 17 000). Kvar för Verify: censurmätningen på kalla halvtimmar efter ändringen (< 5 % saknade), tidigast 26/9 på morgonen, och arkivets tillväxt per dygn.
+  ✅ **STÄNGT 26/9 (femma sju (1), DECISIONS #380):** Verify uppfylld — censurmätningen (`scripts/matningar/censur-grind-a-2026-09-26.sql`, dbknapp 36227029454) över första hela dygnet efter ändringen, 25/9 07:30Z–26/9 07:30Z: kalla halvtimmar (yta ≤ 5 °C) 231 mål, 452 grannplatser, **2 saknas — 0,4 %** (var 49,5 %; gränsen 5 %); frysnära (≤ 1 °C) 2 mål, 7 av 7 grannplatser. Tillväxten: **10 796 → 63 095 rader per dygn** (814 → 836 stationer), väderarkivet 88 MB, databasen 186 MB av 500.

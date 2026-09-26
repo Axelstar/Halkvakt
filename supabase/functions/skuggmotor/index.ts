@@ -1253,9 +1253,12 @@ Deno.serve(async (req) => {
       // Facit-bilder finns bara i Sverige (Trafikverkets väglagskameror). Punkterna slås upp ur
       // faran, inte ur larmet — motorns Alert bär ingen position (rättelse 4 ovan, DECISIONS #189).
       const farorById = new Map(hazards.map((h) => [h.id, h]));
+      // V1 (Bengts ja 26/9, DECISIONS #380): ingen facitbild vid en fartkameravarning. 94 % av hinkens bilder togs där — torra
+      // vägar som ingen dom behöver, ≈ 2 MB/dygn av lagringen och en femtedel av körningens tid.
       const punkter = alerts.flatMap((a) => {
         const h = farorById.get(a.hazardId) as any;
-        return h && h.kind !== "slippery_segment" && typeof h.lon === "number" ? [{ lon: h.lon as number, lat: h.lat as number }] : [];
+        return h && h.kind !== "slippery_segment" && h.kind !== "camera" && typeof h.lon === "number"
+          ? [{ lon: h.lon as number, lat: h.lat as number }] : [];
       });
       // Steg E: också bilens position vid en vattenplaningsvarning — en torr vägbana i bild fäller
       // falsklarm enligt TROSKLAR-VATTENPLANING §2. Motorns punkter först; budgeten är gemensam.
@@ -1264,7 +1267,7 @@ Deno.serve(async (req) => {
       const f = land === "se" ? await archiveFacit([...punkter, ...vbPunkter], name) : { saved: 0, skal: [] };
       ms.facit += performance.now() - t3;
       // En nolla utan skäl är omöjlig att skilja från "inga larm" (#173) — även den här grenen säger varför.
-      if (land === "se" && alerts.length && !punkter.length) f.skal.push("bara segmentlarm — ingen punkt att söka kamera från");
+      if (land === "se" && alerts.length && !punkter.length) f.skal.push("bara segment- eller fartkameralarm — inget som behöver väglagsfacit");
       facitBudget -= f.saved; facitTotal += f.saved; facitSkal.push(...f.skal);
       results[name] = { fixes: trace.length, alerts: alerts.length, vb: vb.length, suppressed: suppressed.length, efterhalka: efterhalka.length,
         prognos: (prognos as Prognos).p?.length ?? 0 };

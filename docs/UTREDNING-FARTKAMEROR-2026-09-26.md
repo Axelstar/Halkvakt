@@ -120,3 +120,8 @@ värde är att bekräfta snö och slask, att visa *bar och torr* där appen sa f
 
 **V1 nu** (en rad i skuggmotorn, ingen förlust, sparar lagring och tid), **V2 före frosten** med gryningsbilden och ett dygnstak,
 **V3 först om TROSKLAR-TYSTNADSFEL behöver kamerafacit.** Inget av dem rör rösten. Frågan i bedömningen §4.2.
+
+**Beslutat 26/9 (DECISIONS #380):** Bengt sa ja till **alla tre** och till ett larm vid **800 MB** lagring. Byggt samma dag:
+V1 i skuggmotorn (`facitSkal` hoppar över fartkameralarm), V2 och V3 i `supabase/functions/kamerafacit` (urvalet i `urval.ts`,
+prövat i `test/kamerafacit.test.ts`), timjobbet i `sql/039` (minut 17), vakthundens lagringskontroll (larm vid 800 MB av
+1 024). Facitradien 15 km vaktas av kontraktsgrinden i skuggmotorn och kamerafacitet.

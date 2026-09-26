@@ -575,6 +575,14 @@ export const KONTRAKT: Kontrakt[] = [
     former: [/const val WARN_MIN_M = (\d+)f/, /static let leadRange: ClosedRange<Double> = (\d+)\.\.\./],
     golv: 2,
   },
+  {
+    // Bengts ja 26/9 (DECISIONS #380): kamerafacitets V2 tar bilden vid kameran närmast varje fara i hela landet, skuggmotorn vid
+    // larmpunkterna längs rutterna. Båda läggs i samma hink och döms av samma kontaktark i mars.
+    namn: "Facitradien — kameran närmast faran, i skuggmotorn och i kamerafacitet",
+    varfor: "Olika radie ger två bildpopulationer i samma hink; kontaktarket kan inte se vilken som gällde för en bild.",
+    former: [/typeof cams\[0\]; let bd = ([\d_]+);/, /export const FARA_M = ([\d_]+);/],
+    golv: 3,
+  },
 ];
 
 // ── SJÄLVTEST mot känd sanning, utan disk ──────────────────────────────────────────────

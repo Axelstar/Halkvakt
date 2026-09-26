@@ -48,9 +48,9 @@ try {
     // Vitlistan först, före FRÅGAN: en felstavad flagga ska falla på en rad, inte efter att ha
     // kört något mot databasen. (Rättat 12/9: kommentaren sa tidigare att den därmed gick att
     // prova helt utan DATABASE_URL — det stämmer inte, toppnivåvakten kräver den ändå.)
-    const FLAGGOR: Record<string, string> = { larmprov: "larmprov=1", vinterprov: "vinterprov=1", frostprov: "frostprov=1", matvaktprov: "matvaktprov=1", paminnelseprov: "paminnelseprov=1", kassaprov: "kassaprov=1", databasprov: "databasprov=1", facitprov: "facitprov=1", nyckelprov: "nyckelprov=1", sparrprov: "sparrprov=1", arkivprov: "arkivprov=1", utlosarprov: "utlosarprov=1" , forsprangprov: "lage=forsprang&prov=1" };
+    const FLAGGOR: Record<string, string> = { larmprov: "larmprov=1", vinterprov: "vinterprov=1", frostprov: "frostprov=1", matvaktprov: "matvaktprov=1", paminnelseprov: "paminnelseprov=1", kassaprov: "kassaprov=1", databasprov: "databasprov=1", facitprov: "facitprov=1", nyckelprov: "nyckelprov=1", sparrprov: "sparrprov=1", arkivprov: "arkivprov=1", utlosarprov: "utlosarprov=1" , forsprangprov: "lage=forsprang&prov=1", lagringsprov: "lagringsprov=1", kamerafacitprov: "torrt=1" };
     // Vilken funktion provet går till. Vakthunden är standard; spärrprovet (kort #191) går till skuggmotorn.
-    const FUNKTION: Record<string, string> = { sparrprov: "skuggmotor", forsprangprov: "skuggmotor" };
+    const FUNKTION: Record<string, string> = { sparrprov: "skuggmotor", forsprangprov: "skuggmotor", kamerafacitprov: "kamerafacit" };
     const flagga = FLAGGOR[arg ?? "larmprov"];
     if (!flagga) { console.error(`larmprov: okänd flagga "${arg}" — tillåtna: ${Object.keys(FLAGGOR).join(", ")}`); process.exit(1); }
     const fn = FUNKTION[arg ?? ""] ?? "vakthund";
