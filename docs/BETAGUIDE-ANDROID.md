@@ -140,7 +140,7 @@ standard och varje svar kräver ett tryck. Slår du av den slutar det direkt.
 | Autostart startar inte vakten | Autostart kräver *Tillåt hela tiden* för platsen, och det valet finns inte i rutan på Android 11+. Sätt det i *Inställningar → Appar → Halkvakt → Behörigheter → Plats*. |
 | Vakten stängs av när telefonen legat still | Vissa telefoner (särskilt Samsung, Xiaomi, Huawei) dödar bakgrundsappar. Sätt Halkvakt till **obegränsad batterianvändning**. |
 | Rösten kommer i telefonen, inte i bilen | Kontrollera att telefonen är kopplad till bilens Bluetooth **innan** du startar vakten. |
-| Appen säger version **0.3.1** | Stämmer — versionsnumret har halkat efter koden och rättas före Play-släppet. |
+| Appen säger en äldre version än **0.3.9** | Du har ett bygge från före 26/9 — hämta det senaste. Sedan 26/9 bär Android samma versionsnummer som iPhone. |
 | Något annat | Skärmbild + vad du gjorde. Gissa inte åt oss. |
 
 ---

@@ -6,7 +6,7 @@ fotostudion (CI fotar tre skärmar vid varje push). Teknikens djup bor i
 SYSTEM.md; här bor upplevelsen.
 
 *Uppdaterad 2026-09-24 · läst rad för rad mot koden (kort #217, DECISIONS #347). Speglar iOS 0.3.9 (14) på main och
-Android ur main (CI-bygget 23/9; versionsnumret står kvar på 0.3.1). Skärmbilderna är Android ur fotostudion 23/9.
+Android ur main (CI-bygget 23/9; versionsnumret i takt med iOS sedan 26/9). Skärmbilderna är Android ur fotostudion 26/9.
 Där plattformarna skiljer sig står det utskrivet — oftast bär iOS skinnet fullt ut och Android ligger efter.*
 
 ---
@@ -509,11 +509,14 @@ version. Notisen finns bara om du själv slagit på betatestet i Inställningar.
 | 0.3.8 (11) | 18/9 | Nytt bygge med facitknapparna — 0.3.7 (10) i TestFlight saknade dem (DECISIONS #240). |
 | 0.3.9 (12) | 20/9 | Rösten tystnar inte längre med släckt skärm för den som svarat "när appen används" (DECISIONS #273, #275). |
 | 0.3.9 (13) | 23/9 | **Efter resan** (DECISIONS #277), rättad behörighetsruta, viltvarningen på Trafikverkets djur (#318), integritetsmanifestet. Uppladdad till Apple 23/9 — App Store-kandidaten. |
-| 0.3.9 (14) | 23/9 | Gamla facitsvar stoppar inte kön längre; löftet i appen = integritetspolicyn. På main, inte arkiverad än. |
-| Android (CI) | 16/9 → | Facitknappen och betatest-brytaren (S4, DECISIONS #202), Efter resan (20/9), viltvarningen på Trafikverkets djur (22/9). Versionsnumret står på 0.3.1 (4). |
+| 0.3.9 (14) | 23/9 | Gamla facitsvar stoppar inte kön längre; löftet i appen = integritetspolicyn. |
+| 0.3.9 (15) | 24/9 | Undantagstexten nämner appens namn och version, körläget visar när repliken sades (DECISIONS #348). |
+| 0.3.9 (16) | 26/9 | Vägdatan laddas om var 30:e minut under resan, också utan nät (kort #258, DECISIONS #371). |
+| 0.3.9 (17) | 26/9 | Reglaget *Längsta förvarning* 400–1 200 m, körläget säger *som längst* (kort #259, DECISIONS #374). På main, inte arkiverad än. |
+| Android (CI) | 16/9 → | Facitknappen och betatest-brytaren (S4, DECISIONS #202), Efter resan (20/9), viltvarningen på Trafikverkets djur (22/9), omladdningsloopen lagad och reglaget (26/9). **0.3.9 (17) sedan 26/9**, samma nummer som iOS (DECISIONS #377). |
 
-Android bär fortfarande versionsnumret 0.3.1 (4), men CI bygger den ur main med skinnet v3, facitknappen
-och Efter resan — det är de byggena skärmbilderna kommer från. Ingen Android-version har gått ut via Play än
+Android bar versionsnumret 0.3.1 (4) från 31/8 till 26/9, fast CI byggde den ur main med skinnet v3, facitknappen
+och Efter resan; sedan 26/9 bär den 0.3.9 (17) som iOS, rättat före första Play-uppladdningen som låser spåret. Ingen Android-version har gått ut via Play än
 (kort #219).
 
 ## Vad vi lärde oss om oss själva (13/9)
