@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 import se.halkvakt.engine.Hazard
 import androidx.activity.compose.setContent
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import se.halkvakt.app.ui.HalkvaktApp
 import java.util.Locale
 
@@ -64,6 +65,13 @@ class MainActivity : ComponentActivity() {
         if (debug && intent?.getBooleanExtra("fotostudio_facit", false) == true) lifecycleScope.launch {
             Prefs.setFacitEnabled(this@MainActivity, true)
             Prefs.appendAlert(this@MainActivity, AlertEntry(System.currentTimeMillis(), "camera", "Fartkamera om femhundra meter.", "cam:fotostudio"))
+            // #203 lager 2: en resa med en miss, så att Efter resan-kortet och missraden syns i bilden. En gång — kroken körs två
+            // gånger per fotostudio. "wx:fotostudio" märks som prov i driver_miss (sql/038) om den någonsin skickas.
+            if (Prefs.missar(this@MainActivity).first().isEmpty()) {
+                val nu = System.currentTimeMillis()
+                Prefs.setTripStart(this@MainActivity, nu - 10 * 60_000L)
+                Prefs.markeraMiss(this@MainActivity, nu - 5 * 60_000L, "wx:fotostudio", null)
+            }
         }
     }
 

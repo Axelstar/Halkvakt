@@ -117,6 +117,10 @@ Svarar du inte skickas ingenting — **tystnad räknas aldrig som ja**. Frågan 
 **"Stämde inte" är det mest värdefulla du kan ge oss.** En app som varnar för halka på torr väg förlorar förtroendet på en
 vecka. Nästan allt annat kan vi mäta själva ur arkiven — men bara du kan säga att vägen faktiskt var torr.
 
+**När appen var tyst fast det var halt** — säg *"Hej Siri, appen missade i Halkvakt"*, eller tryck **Appen missade** i körläget
+när du stannat. Efter resan väljer du vad det var (Halka / Vatten / Vilt / Olycka / Annat); först då skickas något. Och direkt
+efter en varning som inte stämde: *"Hej Siri, stämde inte i Halkvakt"*.
+
 **Och det vi inte kan se alls:** när appen var **tyst fast den borde ha sagt något**. Var det halt och rösten teg? Berätta —
 klockslag och ungefär var räcker.
 
@@ -128,7 +132,7 @@ Din position lämnar aldrig telefonen av sig själv. All jämförelse mot vägda
 inloggning, inga annonser, ingen spårning.
 
 **Undantaget är betatestet, om du själv slår på det.** Då skickas, när du trycker på en knapp: varningens id, klockslaget,
-ditt svar och appens namn och version. Ingen koordinat, ingen resa, inget om dig.
+ditt svar och appens namn och version — och för en miss du markerat, först när du valt vad det var: klockslaget, närmaste mätstation och ditt val. Ingen koordinat, ingen resa, inget om dig.
 
 Men var ärliga med vad det betyder: **varningens id pekar på en fara som har en plats, och klockslaget säger när.** Ett svar
 säger alltså ungefär var du var och när. Det är därför brytaren är av som standard och varje svar kräver ett tryck. Slår du
