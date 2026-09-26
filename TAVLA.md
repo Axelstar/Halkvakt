@@ -179,6 +179,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     produktboken) *(låst: Play-kontot)*.
   ↪ **Flyttat 26/9 från *Claude — olåst*** (femma åtta, DECISIONS #377): nästa steg är Play-kontot och testtelefonen.
 ### Bengt
+- [ ] 🛢️ **#262 OLJA PÅ VÄGEN — HALKA SOM RÖSTEN INTE SÄGER** (fynd 26/9 under vägarbetsmätningen, DECISIONS #382). `NonWeatherRelatedRoadConditions` i `situation_archive` (dbknapp 36232854353, `scripts/matningar/icke-vaderhalka-arkivet-2026-09-26.sql`): **99 händelser 31/8–25/9** (≈ 3,8 om dygnet), alla *Trafikmeddelande*, 24 med stor eller mycket stor påverkan; de flesta av de 25 vanligaste texterna är **olja, diesel eller hydraulolja på vägbanan — *risk för halka*** (några potthål, en vägskada, grus i en rondell).
+  Snapshoten skickar bara olyckor (`deviations`) och djur (`djur`), så appen tiger om dem — fast det är halka i appens egen mening, rapporterad
+  av Trafikverket (en observation, inte en prognos: regel T tillåter att den utlöser). Tre vägar: (a) skuggan först nu — skuggmotorn loggar
+  var rösten skulle ha talat, ingen text i appen; (b) vårlistan tillsammans med #32 hinder; (c) låta bli. 🔑 Bengts och Axels val (§4.2);
+  rösttexten är Axels. Verify för (a): skuggloggen bär rader med oljefaror, och en mätning visar hur ofta rösten skulle ha talat per varv.
+
 - [ ] ⏱️ **#261 REGLAGETS TAK 1 200 m KLIPPER FÖRSPRÅNGET (L5)** (fynd 26/9 vid Bengts fråga *"har uppdateringarna någon påverkan
   på systembilden"*). Motorn klämmer även försprånget till `leadMaxM` (`engine.ts:113`), och appens reglage sätter `leadMaxM` till
   högst **1 200 m** sedan #259 (DECISIONS #374). Skuggan mäter försprånget med motorns **3 000 m**. Med reglaget på fullt räcker 90 s

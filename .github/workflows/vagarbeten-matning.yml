@@ -1,0 +1,20 @@
+# Vägarbeten i appen? (Bengts ja 26/9, DECISIONS #382): engångsknapp — läs-only räkning av Trafikverkets aktiva vägarbeten och
+# hur ofta rösten skulle tala på skuggrutterna. Talen på Summary. Inget sparas.
+name: vagarbeten-matning
+on:
+  workflow_dispatch: {}
+jobs:
+  matning:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      # shell: bash ger pipefail (tee-läxan, DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/matningar/vagarbeten-2026-09-26.ts | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env: { TRAFIKVERKET_API_KEY: "${{ secrets.TRAFIKVERKET_API_KEY }}" }

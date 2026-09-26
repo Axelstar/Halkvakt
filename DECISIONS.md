@@ -5202,3 +5202,20 @@ som den står i `engine/src`.
 reglagets tak gäller bara grundvarningen (två ställen); mätapparaten med kamerafacit i hela landet och vid tysta kalla stationer (#380)
 och förarnas svar och missar (#379); principen *Integritet* säger vad föraren själv kan skicka, som invarianten; L4:s grind A mättes på ett
 arkiv där hälften av grannarna saknades — sedan 25/9 är arkivet helt (#253).
+
+## #382 (26/9 2026) Vägarbeten: smal variant till vårlistan, läsmätningen byggd · fynd: olja på vägen är halka som rösten inte säger (kort #262)
+
+**Beslut (Bengt 26/9: *"ja till läsmätning och ja till vårlistan"*).** DECISIONS #5 (24/8) stängde ute vägarbeten som *kroniskt brus*;
+det står sig för vägarbeten i allmänhet. Till vårlistan (Ä3, våren 2027, bredvid #32 hinder och #15 kö-slut — samma flöde och samma
+filter) går en **smal variant**: stor eller mycket stor påverkan (körfält avstängt, kö) och sådant som sänker friktionen (ny beläggning,
+grus). Prövas i skuggan först, aldrig alla vägarbeten, och rösttexten är Axels. PLAN.md:s A3 hade från början *"roadwork with lane
+closure"*; #5 stängde den smala varianten utan att pröva den för sig.
+
+**Läsmätningen, två delar.** (1) **Friktionen ur vårt eget arkiv** — `NonWeatherRelatedRoadConditions` i `situation_archive` (dbknapp 36232854353, `scripts/matningar/icke-vaderhalka-arkivet-2026-09-26.sql`): **99 händelser 31/8–25/9** (≈ 3,8 om dygnet), alla *Trafikmeddelande*, 24 med stor eller mycket stor påverkan; de flesta av de 25 vanligaste texterna är **olja, diesel eller hydraulolja på vägbanan — *risk för halka*** (några potthål, en vägskada, grus i en rondell). Det är inte vägarbeten: det är väglag som inte beror på
+väder, och det mesta är halka i appens egen mening. Rösten säger ingenting om det i dag (snapshoten skickar bara olyckor och djur).
+⇒ **nytt kort #262**. (2) **Vägarbetena ur Trafikverkets API** — `scripts/matningar/vagarbeten-2026-09-26.ts` och engångsknappen
+`vagarbeten-matning.yml`: aktiva avvikelser per typ; vägarbetena per påverkan, varaktighet, MessageCode, TrafficRestrictionType och
+friktionsord, med fälten räknade som de finns; och **motorn i `engine/src` körd längs de 20 svenska skuggrutterna** (3 107 km) med
+vägarbetena som punktfaror — antal rop per varv, för alla och för de smala urvalen. Provkört lokalt mot påhittade data (rutterna lästa,
+ett vägarbete på E22 ger rop, ett utanför rutten inget). Körs efter sammanslagningen; ett flöde måste finnas på main för att kunna tryckas.
+Läs-only, inget sparas, en körning ≈ en minut Actions.
