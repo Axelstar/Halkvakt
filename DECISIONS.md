@@ -5110,3 +5110,31 @@ publicerad:** PR:en i `Axelstar/halkvakt-karta` gick inte att skapa — GitHub s
 konto. Axel klistrar in den (en mening och ett datum).
 
 **Kvar på #214:** meningen i policyn (Axel) och formuläret ifyllt i Play Console vid första uppladdningen, likadant som filen (Verify).
+
+## #379 (26/9 2026) Kort #203 lager 2 byggt: stationerna i snapshoten, missarna och Siri-fraserna på båda plattformarna
+
+**Beslut (Bengt 26/9: *"gör 203"*, *"ja till A"*, *"fortsätt med lager 2"*).** Axels beslut från 20/9 (#267) byggs: Siri-fraserna
+*stämde inte* och *appen missade* (punkt 3), missarna som ett medvetet integritetsbeslut (punkt 4), den stora knappen *Appen missade*
+(punkt 5), Android i samma PR (punkt 8). **Fyndet som krävde (A):** underlaget sa att närmaste station *finns alltid* i telefonen —
+den fanns inte; `static.json` bar bara kamerorna. Väg (A) valdes framför närmaste kamera (B, en annan uppgift än Axel godkänt) och
+bara Siri (C).
+
+**(A) Stationerna, i drift 26/9 08:20Z** (PR #620): `static.json` bär `stations: [{id, lon, lat}]` ur `weather_latest` — **851
+stationer**, 288 949 byte (+37 kB), manifestets sha lika med filens. Referenspunkter, inga mätvärden. #75-provet fick ett namngivet
+undantag för en fråga utan mätkolumner (motprov: en mätkolumn fäller det).
+
+**Servern:** `driver_miss` (sql/038) — t, vad (halka/vatten/vilt/olycka/annat, CHECK), station_id, segment_id, app, version; dubbellåst,
+nyckel (t, station_id, app), samma provmärkning som driver_facit (två kontrakt i kontraktsgrinden, motprov lokalt). `facit-svar` tar
+emot `{miss: true, t, vad, station, segment?, app, ver}`, eget dygnstak, ±48 h. Integrationsprov för tabellen.
+
+**Apparna:** knappen *Appen missade* i körläget (bara med betatestet på) sparar klockslaget, närmaste station och halkavsnitt inom
+2 km; efter resan väljer föraren vad det var — **först då skickas missen**, en omarkerad miss skickas aldrig. Kortet och notisen frågar
+om missar; bara missar ⇒ inga notisknappar. iPhone: *"Hej Siri, stämde inte i Halkvakt"* (senaste varningen, yngre än tio minuter) och
+*"appen missade i Halkvakt"* / *"halt här i Halkvakt"*. Brytarens text bär Axels mening ordagrant; Om säger vad som skickas. 0.3.9 (18)
+på båda. **Bevis Android:** android.yml 36224074048 (Android-steget, JVM-prov inkl. sju nya i MissarTest) och 36224807598 (hela grenen, emulator och fotostudio) gröna på grenen; motprovet 36224079213 rött på exakt de två väntade proven (en omarkerad miss skickas, segmentgränsen 40 km) — 53 prov, 2 fällda. **iOS** skrivet utan kompilator — Axels Xcode är första kompileringen.
+
+**Invariantregeln i samma varv:** CLAUDE.md:s rad, Play-filen (missens rad, `driver_miss`), produktboken och båda guiderna. **Undantaget:**
+`integritet.html` — Bengts konto saknar skrivrätt i karta-repot (#378); meningen står färdig i Play-filen för Axel.
+
+**Kvar efter sammanslagningen:** migrationen `sql/038` via dbknapp, deploy av `facit-svar`, och beviset — en provmiss (`wx:prov-…`) som
+ger 204 och en rad med `prov = true`. Sedan Axels bygge 0.3.9 (18) och Verify 2–3 i bil (ett Siri-svar och en klassad miss).

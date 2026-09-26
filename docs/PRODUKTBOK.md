@@ -31,17 +31,17 @@ grundläget — pratar den, betyder det något.
 |---|---|
 | ![Om](produktbok/shot-6-betatest.png) | ![Om, slutet](produktbok/shot-7-om.png) |
 
-*(Android ur fotostudion 26/9, android.yml 36219380753 på kort #259:s gren — reglaget *Längsta förvarning* 400–1 200 m och Om-sidans ärlighetsrad, som fotostudion inte fångade före 26/9. Bilderna 1, 2 och 6 i övrigt som 23/9. Repliken under Senast sagt är fotostudions provrad — rösten
+*(Android ur fotostudion 26/9, android.yml 36224807598 på kort #203:s gren — *Vakten* visar kortet *Efter resan* med en varning och en miss, *Inställningar* reglaget *Längsta förvarning* 400–1 200 m och brytarens text om missarna, och Om-sidans ärlighetsrad.)*
 säger "Fartkamera om 500 meter.". Två flikar: Om är sista avsnittet i Inställningar — bilden visar slutet av
 Inställningar med betatest-brytaren, som fotostudion slagit på, och början av Om.)*
 
 ### Facitknappen (betatestet, S4 — Android 16/9)
 
-| Senast sagt med knapparna | Betatest-brytaren i Inställningar |
+| Efter resan: en varning och en miss | Betatest-brytaren i Inställningar |
 |---|---|
 | ![Senast sagt](produktbok/shot-1-vakten.png) | ![Betatest](produktbok/shot-6-betatest.png) |
 
-*(Fotostudion 23/9. Knapparna syns bara när betatestet är påslaget och varningen bär ett id.)*
+*(Fotostudion 26/9, en påhittad resa: varningen *"Fartkamera om femhundra meter"* och en miss markerad fem minuter tidigare. Knapparna syns bara när betatestet är påslaget och varningen bär ett id; missen skickas först när ett av de fem valen är gjort.)*
 
 ## Skinnet (v3, iOS 0.3.3 →)
 
