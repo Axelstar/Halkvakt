@@ -30,7 +30,7 @@ den själv.
 | :-- | :-- | :-- |
 | Does your app collect or share any of the required user data types? | **Yes** | Facitsvaret. Allt annat i appen samlar fortfarande ingenting. |
 | Is all of the user data collected by your app encrypted in transit? | **Yes** | HTTPS hela vägen (`https://…supabase.co/functions/v1/facit-svar`). |
-| Do you provide a way for users to request that their data is deleted? | **🔑 OBESVARAD — se nedan** | Kräver ett beslut, och möjligen ett bygge. |
+| Do you provide a way for users to request that their data is deleted? | **No** | Ingen identifierare finns, så ingens svar kan pekas ut. Beslutat 26/9 (DECISIONS #378) — se nedan. |
 
 ## Datatypen, rad för rad i formuläret
 
@@ -48,13 +48,13 @@ den själv.
 **App version** (`ver`) skickas också. Den är inte en av Googles obligatoriska datatyper i sig och deklareras
 inte separat — den bär ingenting om användaren. Nämns här så att granskaren ser att den är känd, inte glömd.
 
-## 🔑 Den enda frågan som inte är besvarad — radering
+## ✅ Radering — besvarad 26/9: Nej (väg 1, DECISIONS #378)
 
 Formuläret frågar om användaren kan begära radering av sin data. **Vi har ingen sådan väg, och vi kan inte ha
 en i dag:** ingenting i ett facitsvar identifierar avsändaren, så det går inte att peka ut "mina rader".
 Det är bra för integriteten och obekvämt för formuläret.
 
-Tre vägar, ingen vald (Bengt + Axel, före första uppladdningen):
+Tre vägar prövades (Bengt + Axel, före första uppladdningen) — **väg 1 vald 26/9** (Bengts *"gör 214"*):
 1. **Svara "Nej"** och förklara i policyn varför: det finns ingen identifierare, alltså inget att peka på.
    Ärligt, och Google tillåter Nej. Testaren kan när som helst slå av BETATEST och sluta skicka.
 2. **Radera allt på begäran** — en testare hör av sig, vi tömmer hela tabellen för den perioden. Trubbigt;
@@ -62,9 +62,16 @@ Tre vägar, ingen vald (Bengt + Axel, före första uppladdningen):
 3. **Ge varje telefon ett slumpat facit-id** så att radering blir möjlig. Löser formuläret men **inför en
    identifierare där det i dag inte finns någon** — det gör appen sämre på det den är bäst på. Avråds.
 
-**Rekommendation: 1.** Men det är ett ägarbeslut, och det ska stå i policyn samtidigt som det står i formuläret.
+**Vald: 1.** Det ska stå i policyn samtidigt som i formuläret. Policyn sade redan *"vi kan inte heller plocka fram just dina"*; den
+ska säga vad det betyder för radering. **Färdig text för `integritet.html`** (karta-repot — Bengts konto har ingen skrivrätt där, så
+det är Axels att klistra in, och att slå ihop publicerar sidan):
 
-## Måste ändras i SAMMA veva — integritetspolicyn ljuger också
+- Byt meningen *"Svaren kan därför inte kopplas till dig, och vi kan inte heller plocka fram just dina."* mot:
+  > Svaren kan därför inte kopplas till dig, och vi kan inte heller plocka fram just dina — alltså inte heller radera just dina på begäran. Du bestämmer ändå: slår du av <i>Betatest</i> slutar appen skicka direkt, och det som sparats i telefonen försvinner när du avinstallerar appen.
+- Byt datumraden *"GÄLLER FRÅN 2026-09-23 · FÖREGÅENDE VERSION 2026-08-26"* mot *"GÄLLER FRÅN 2026-09-26 · FÖREGÅENDE VERSION
+  2026-09-23"* — policyn lovar själv att datumet flyttas när den ändras.
+
+## ✅ Integritetspolicyn — omskriven 23/9 (DECISIONS #320); raderingsmeningen ovan återstår
 
 `integritet.html` i `Axelstar/halkvakt-karta` (publicerad, och den URL Google kräver i butiksfältet) säger
 fortfarande:

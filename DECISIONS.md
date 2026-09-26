@@ -5096,3 +5096,17 @@ kvar under *Claude — olåst*. Och #214:s del (b), integritet.html, var klar se
 **(4) Android 0.3.9 (17).** `versionCode` 4 → 17, `versionName` 0.3.1 → 0.3.9, samma nummer som iOS på main. Googles första uppladdning
 låser versionCode-spåret (#347 p. 2), och ingen uppladdning har skett. Produktbokens versionstabell fick iOS (15)–(17) och Android-raden;
 Android-guidens rad om 0.3.1 rättad. **Bevis:** android.yml 36220665196 (workflow_dispatch på grenen, 8ac0303) grön — JVM-prov, emulator och signerad release-AAB med det nya numret.
+
+## #378 (26/9 2026) Kort #214: Play-formulärets raderingsfråga besvaras Nej — policytexten färdig, Axel klistrar in den
+
+**Beslut (Bengt 26/9: *"gör 203 och 214"*).** Väg 1 av de tre i `docs/PLAY-DATASAFETY.md`: **Nej**, med förklaringen att ett facitsvar
+inte bär någon identifierare — inget konto, inget enhets-id, ingen IP i databasen — så ingens svar kan pekas ut och alltså inte raderas
+för sig. Väg 2 (tömma hela tabellen på begäran) förstör facit för alla; väg 3 (ett slumpat facit-id per telefon) inför en identifierare
+där det i dag inte finns någon. Ett ägarbeslut enligt kortet; Bengt fattade det, Axel kan invända före första uppladdningen.
+
+**Policyn.** `integritet.html` skrevs om 23/9 (#320) och säger redan *"vi kan inte heller plocka fram just dina"*, men inte vad det
+betyder för radering. Den färdiga meningen står i `docs/PLAY-DATASAFETY.md`: *"Svaren kan därför inte kopplas till dig, och vi kan inte heller plocka fram just dina — alltså inte heller radera just dina på begäran. Du bestämmer ändå: slår du av <i>Betatest</i> slutar appen skicka direkt, och det som sparats i telefonen försvinner när du avinstallerar appen."* — plus datumraden 2026-09-26. **Den är inte
+publicerad:** PR:en i `Axelstar/halkvakt-karta` gick inte att skapa — GitHub svarade 404 på grenen, alltså ingen skrivrätt för Bengts
+konto. Axel klistrar in den (en mening och ett datum).
+
+**Kvar på #214:** meningen i policyn (Axel) och formuläret ifyllt i Play Console vid första uppladdningen, likadant som filen (Verify).
