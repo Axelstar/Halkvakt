@@ -65,7 +65,7 @@ Allt nedan är destillat av projektets beslut (DECISIONS.md) och Play-dossiern.
   före sammanslagning tas med workflow_dispatch på grenen, och motprovet likadant på en egen gren (kort #218, 26/9).
 
 ## 6 · Innan du kodar
-1. Läs `STATUS.md` + relevant BACKLOG-punkt.
+1. Läs bedömningen (`docs/BEDOMNING-*.md`) + relevant kort på tavlan (BACKLOG avvecklad 26/9).
 2. UI-arbete → läs `skills/compose-state-and-effects/SKILL.md`.
 3. Coroutines/Flow-arbete → läs `skills/kotlin-concurrency-and-flow/SKILL.md`.
 4. Motorändring → kör replay-vektorerna, uppdatera vid avsiktlig beteendeändring.

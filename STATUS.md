@@ -1,7 +1,11 @@
 # STATUS — Halkvakt
 *Updated by Claude at the end of every session. Read this first.*
 
-## Current state (2026-08-31, verifierat live i STATUS-varvet)
+**Läget i dag står överst i bedömningen** (`docs/BEDOMNING-*.md`). Avsnittet nedan skrevs 31/8–6/9 och uppdateras inte: iOS är
+0.3.9 (16) och Android 0.3.1 (4), och Actions-stoppet 6/9 är löst (kvot med tak, kassavakten #152). Sessionsloggen längre ned
+fortsätter. *(Fryst 26/9, kort #221.)*
+
+## Läget 31/8–6/9 — FRUSET, historik (var: *Current state 2026-08-31*)
 - **Fas 0 avslutad i praktiken — vi är i TestFlight-fönstret.** iOS 0.3.0 (3) uppladdat
   till App Store Connect 31/8 ~10:10, 90 min efter kontoköpet. Android 0.3.0 är
   släppfärdig (signerad AAB byggs i CI vid varje push); Play-kontot ännu inte köpt.

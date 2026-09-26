@@ -81,11 +81,13 @@ first, English second.
 Every session, in order:
 1. Orient per SESSIONSREGELN below: the latest `docs/BEDOMNING-*.md` in full, `docs/INTEGRATIONSKARTAN.md` when it
    changed or a new grepp starts, TAVLA.md's 🟡 section, DECISIONS added since last session, latest CI runs. Search
-   TAVLA, STATUS and DECISIONS — don't read them whole (~280 000 tokens together).
-2. Take the top unblocked BACKLOG item. Build against its *Verify* line.
+   TAVLA, STATUS and DECISIONS — don't read them whole (halved 26/9; the older half is in TAVLA-ARKIV.md and
+   DECISIONS-ARKIV.md — search there too).
+2. Take the top unblocked item in the bedömning (§1 NU, then its calendar) or the TAVLA card it names. Build against its
+   *Verify* line. (BACKLOG.md avvecklad 26/9, kort #221 — kön bor i bedömningen och på tavlan.)
 3. Prove it: tests/CI/logs — never claim done without evidence.
-4. Commit with a message explaining what + why. Update STATUS.md (state + session
-   log) and BACKLOG.md. Log decisions in DECISIONS.md.
+4. Commit with a message explaining what + why. Update the bedömning (läget överst,
+   §4.2) and TAVLA; a session-log line in STATUS.md. Log decisions in DECISIONS.md.
 5. End by telling Axel: what shipped, what's next, and ONLY the questions that
    block progress. Batch questions; never drip them.
 
@@ -120,7 +122,7 @@ Varje arbetsvarv AVSLUTAS med att TAVLA.md synkas mot verkligheten:
 3. Verkligheten bevisar något (commit, kvitto, skärmbild) → kortet flyttas
    utan att fråga.
 4. Finns det inte på tavlan finns det inte. Idéer utan kort = tappade idéer.
-Tavlan är människolagret; BACKLOG/STATUS/DECISIONS är djuplagren.
+Tavlan är människolagret; bedömningen, STATUS och DECISIONS är djuplagren.
 
 ## PRODUKTBOKSREGELN (Axels order 2026-08-29)
 Ändras något användaren SER, HÖR eller GÖR (skärm, rösttext, flöde, behörighet)
