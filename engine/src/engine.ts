@@ -61,8 +61,8 @@ export class AlertEngine {
   /** Skuggmotorn lyssnar här (#127 a): vad spärren kastar syns annars ingenstans. */
   onSuppressed?: (c: { kind: HazardKind; hazardId: string; distM: number; by: HazardKind; sinceS: number }) => void;
   /** FÖRSPRÅNGET (kort #153 beslut 1, docs/TROSKLAR-FORSPRANG.md §4): valfri krok som ger förvarningsavståndet per fara. Utan
-   *  krok är motorn byte för byte densamma — vektorerna rörs inte. Svaret klämms till leadMinM–leadMaxM, så spannet aldrig
-   *  ändras. Bara skuggan sätter den i vinter; portarna får den först vid steg 7, efter domen. */
+   *  krok är motorn byte för byte densamma — vektorerna rörs inte. Svaret klämms till leadMinM och MOTORNS leadMaxM (3 000 m),
+   *  inte till appens reglage (kort #261 väg (a)). Bara skuggan sätter den i vinter; portarna får den först vid steg 7, efter domen. */
   leadFor?: (h: Hazard, leadM: number, speedMps: number) => number;
   private fired = new Map<string, FiredState>();
 
@@ -109,8 +109,11 @@ export class AlertEngine {
     const speedMps = (speedKmh * 1000) / 3600;
     const leadM = Math.min(this.cfg.leadMaxM, Math.max(this.cfg.leadMinM, speedMps * this.cfg.warnLeadS));
 
+    // Kort #261 väg (a) (Bengt 26/9, DECISIONS #381): försprånget kläms till MOTORNS tak, aldrig till cfg.leadMaxM — i apparna
+    // är det reglaget Längsta förvarning (400–1 200 m, #259), som bara tar grundvarningen. Med reglagets tak räckte 90 s bara
+    // till 48 km/h. Skuggan kör motorns standard, så där är talet detsamma.
     const lead = (h: Hazard) => this.leadFor
-      ? Math.min(this.cfg.leadMaxM, Math.max(this.cfg.leadMinM, this.leadFor(h, leadM, speedMps)))
+      ? Math.min(DEFAULT_CONFIG.leadMaxM, Math.max(this.cfg.leadMinM, this.leadFor(h, leadM, speedMps)))
       : leadM;
     const candidates: Candidate[] = [];
     for (const p of this.points) {

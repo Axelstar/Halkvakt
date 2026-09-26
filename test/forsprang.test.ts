@@ -63,6 +63,16 @@ test("spannet ändras inte: 90 s i 80 km/h klämms till högst 3 000 m", () => {
   assert.ok(a && a.distanceM <= 3000 && a.distanceM >= 2500, `vid taket, högst 3 000 m — fick ${a?.distanceM}`);
 });
 
+test("reglagets tak tar bara grundvarningen, försprånget går till motorns tak (kort #261 väg (a), DECISIONS #381)", () => {
+  // Appen sätter leadMaxM ur reglaget. 500 m här: grundvarningen (80 km/h × 30 s = 667 m) kläms till 500, men nivå 2 med 90 s
+  // (2 000 m) ska tala på 2 000 m — med reglagets tak hade den också tystnat till 500.
+  const m = new AlertEngine([seg("niva1", 15.06, 15.065, 2), seg("niva2", 15.12, 15.125, 4)], { leadMaxM: 500 });
+  m.leadFor = forsprangKrok(new Map([["niva2", 2]]), 90);
+  const d = new Map(m.run(spar()).map((a) => [a.hazardId, a.distanceM]));
+  assert.ok((d.get("niva1") ?? 9e9) <= 500, `grundvarningen under reglagets tak — fick ${d.get("niva1")}`);
+  assert.ok((d.get("niva2") ?? 0) >= 1800 && (d.get("niva2") ?? 0) <= 2000, `försprånget på 2 000 m — fick ${d.get("niva2")}`);
+});
+
 test("svepet är dokumentets", () => {
   assert.deepEqual([...FORSPRANG_SVEP_S], [45, 60, 90]);
 });
