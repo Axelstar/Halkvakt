@@ -4993,3 +4993,44 @@ S-B räknar ingen händelse.
 eftersom ingen klass var fel. Det kortet ville pröva — att mörker ger *okänd* i stället för en gissning — höll: ingen nattbild fick *våt*.
 Det som inte prövades är *våt* mot *bar* i regn; kortet bad om regn ELLER mörker, och ett regnark är inte längre ett villkor för något.
 Fyndet om spindelväven (#371) står kvar till bildfacitbeslutet (#209). Kortet flyttat till `TAVLA-ARKIV.md` som det första efter #221.
+
+## #373 (26/9 2026) Femma sju: #83 och #221 och #250 stängda, två kort in i #219, kadenstestet mäter beteendet, nytt kort #259
+
+**Beslut (Bengt 26/9: *"ja till 1-5"*, ur femma nummer sju i bedömningen §4.2).** (1) #253 mäts om efter första hela dygnet
+(bokförs separat efter 07:20Z) · (2) #83 mäts och stängs · (3) #221 steg 2 · (4) kadenstestet · (5) *Skinnet v3 på Android* och
+*Play: uppladdningsguide* in i #219, och #250 stängs.
+
+**(2) #83 stängt — Verify mätt 26/9** (dbknapp 36217996390, läsfrågor, bärare sql/033): högst **17 978** rader per dygn äldre än
+8 dagar (gränsen 45 000; vintern kan inte överskrida 848 × 48 = 40 704 efter gallringen) · **0 av 179 461** halvtimmar med mer än en
+rad · `halkvakt-gallring` kör 03:15 varje natt, senast i natt, **0 fel på 30 dygn**. Verify:s andra halva (*grind A ger samma n*):
+grind A väljer senaste raden MED yta per halvtimme, gallringen senaste raden oavsett; i det ogallrade fönstret skulle grind A tappa
+**3 av 49 372** halvtimmar (0,006 %). Inte *samma* n, men långt under vad något av grind A:s mått kan känna; ingen ändring.
+Pro-frågan står kvar i §4.2 som grepp 3. Luckan 6–7/9 i dygnsraderna är Actions-stoppet, inte gallringen.
+
+**(3) #221 stängt — steg 2:** `BACKLOG.md` avvecklad — CLAUDE.md:s sessionsprotokoll pekar nu på bedömningen och tavlan (steg 2 och
+4, TAVELREGELNS sista rad), halkvakt-android §6 likaså, och filen bär en rad överst. `STATUS.md`:s rubrik *Current state 31/8* fryst
+som historik med pekare till bedömningen. De fyra motsägelserna: #79 var redan stängd på båda ställena efter steg 1; STATUS:s
+"iOS 0.3.0" och "Actions-minuterna slut" står nu under den frysta rubriken; lapse 0,71 märkt som rättad på de två ställen i tavlan där
+den stod omärkt (0,63 gäller sedan 17/9, #226). **Grenarna:** 279 → 6. 273 raderade, bara de vars sammanslagna PR bar exakt grenens
+topp; kvar är main, en gren med öppen PR, tre utan sammanslagen PR och en med commits efter sin PR. Återställbara från PR-sidan.
+
+**(4) Kadenstestet — beteendet, inte konstanterna.** `CadencePolicyTest.tiers()` jämförde `intervalMs` med `CadencePolicy`:s egna
+konstanter. Ersatt av `fullCadenceBeforeAnyHazardCanSpeak()`: en körning i 140 km/h rakt mot en fara, samplad som `GuardService`
+samplar, från varje start 3,6–60 km i steg om 50 m; inom motorns räckvidd (`leadMaxM + cameraTriggerM` ur `EngineConfig`) ska varje
+GPS-punkt komma högst 1 s efter förra. `noSnapshotMeansFullAlertness` prövar ≤ 1 s i stället för `== NEAR_MS`. **Bevis:** android.yml
+36217938454 grön på grenen; motprovet 36217945802 (NEAR_MS 1 → 10 s) rött på exakt de två — det gamla testet hade hållit. En
+Python-modell av provet (i sessionen, före Kotlin) fällde också NEAR-gränsen 5 → 3 km och FAR 15 → 450 s, men **inte** FAR 15 → 150 s:
+kortets exempel är fortfarande säkert (5,8 km per steg mot ett mellanband på 15 km), och ett prov som fällde det hade mätt batteri, inte
+säkerhet. Kvar på #218: mätningen.
+
+**(5)** Korten in i #219 ordagrant; #250 stängt med del (a) bevisad genom läsning (raden sitter i tjänsten).
+
+**Fynd på vägen — kort #259.** Motorn talar vid `min(leadMaxM, max(400 m, fart × 30 s))` (`engine.ts:110`), och reglaget *Varna på
+avstånd* sätter bara `leadMaxM`. I 140 km/h blir försprånget högst 1 167 m, i 90 km/h 750 m, så *Tidigt — 3 km* (iOS) och 5 km
+(Android) ändrar ingenting på en svensk väg. #263 visste att 3 000 m nås först över 360 km/h men drog inte slutsatsen att reglaget
+därmed lovar något appen inte gör; produktboken säger *"hur långt i förväg rösten ska tala"*. Frågan i §4.2. **Och kadenshuvudet:**
+`CadencePolicy.kt` säger att motorn aldrig behöver mer än 3 500 m — den tidiga olycksrepliken talar på upp till 10 km
+(`accidentMaxAheadM`), i mellanbandets 5 s-takt, alltså högst 195 m sent i 140 km/h. Ofarligt för en replik på 10 km, men huvudet
+säger fel; noterat, inte ändrat.
+
+**Tavlan:** 43 → 39 öppna kort (#83, #221, #250 stängda till arkivet, två in i #219, #259 nytt).

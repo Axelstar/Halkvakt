@@ -1,3 +1,6 @@
+> **AVVECKLAD 26/9 2026 (kort #221, DECISIONS #373).** Kön bor sedan 15/9 i bedömningen (`docs/BEDOMNING-*.md`) och på
+> tavlan. Filen uppdaterades senast 17/9 och står kvar som historik — lägg inget nytt här.
+
 35. **Norskt skuggarkiv** (Axel 31/8: "vi börjar med Norge nu"): DATEX-konto begärt hos
     Vegvesen 15:43 (Lagerlöf Labs, Axel). FÖRBERETT samma kväll: schema no (fött låst),
     ingest/no.ts som rekognoserar XML:et första gången, ingest-no.yml (hoppar över tills

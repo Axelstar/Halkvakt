@@ -85,126 +85,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   prov `nyckelprov` via dbknapp. VÄNTAR: deploy vakthund + prov. ROTATIONEN ÄR FORTFARANDE AXELS (senast 15/11).
   ✅ I DRIFT 15/9: vakthund deployad 15:52Z, `nyckelprov` gav issue #272 (15:53Z) — PAT:ens datum läst LIVE ur
   GitHubs svarshuvud: **2026-11-22** (67 dygn), Supabase **2026-12-08** (83 dygn). Provissuen stängs 06 UTC 16/9. Rotationen: Axel.
-- [ ] 🗄️ **#83 GALLRING av weather_observations — måste finnas FÖRE första kalla veckan**
-  (Bengts beställning 9/9 01:40; kort + förslag av Claude, mätt mot koden 9/9).
-  **VARFÖR NU:** arkivdieten (DECISIONS #4: bara yta ≤ 5 °C eller nederbörd) finns i
-  ingest-live, men vintern upphäver den — under 5 °C är ALLA 848 stationer intressanta,
-  var 10:e minut, dygnet runt: 848 × 144 ≈ 122 000 rader/dygn. Axel mätte 175 000 (8/9).
-  Uppskattat ~260 B/rad inkl. index ⇒ 30–45 MB/dygn ⇒ gratisnivåns 500 MB är full på
-  **11–16 dygn** räknat från första kalla veckan. 📏 UPPMÄTT 9/9 ur healthcheckens egna
-  räknare: weather_obs 187 582 (8/9 21:13) → 195 500 (9/9 00:18) = 7 918 rader på 3 h 05 ⇒
-  **~62 000 rader/dygn i september MED dieten** (mild natt, få stationer under 5 °C). Vintern
-  släpper alla 848 stationer genom dieten ⇒ 2× det, i linje med 122 000-uppskattningen. 📏 DAGTAKT
-  9/9: weather_obs 205 275 (04:49) → 213 630 (16:43) = +8 355 netto på 11 h 54 med gallringens 3 551
-  borträknade ⇒ **~24 000 rader/dygn brutto på dagen**, ~62 000 på natten. Dieten gör sitt jobb i
-  september; vintern upphäver den. NATTEN 9–10/9: 213 630 (16:43) → 228 364 (02:23) → 231 421 (04:23)
-  ⇒ **~36 600 rader/dygn**, jämn kurva, inget synligt fall vid nattjobbet 03:15 — VÄNTAT: allt äldre än
-  7 dygn är fortfarande GitHub-ingestens 30-minutersrader, så jobbet hade inget att ta. Om jobbet
-  faktiskt kördes kan bara databasen svara: `SELECT start_time, status, return_message FROM
-  cron.job_run_details WHERE command LIKE '%gallra_vader%' ORDER BY start_time DESC LIMIT 3;` (Axel,
-  SQL-editorn — eller Claude via DB-knappen om den får en ren bevis-åtgärd). Första synliga effekten
-  i räknaren: natten till 16/9. Full databas = ingest-live dör tyst =
-  appen serverar gammal data igen (5/9-läget, fast utan Actions-larm).
-  📏 **UPPMÄTT 14/9 ur healthcheckens räknare, 16,0 h isär (över #83:s 12-timmarsgräns):**
-  weather_obs 284 090 (00:23) → 291 757 (16:23) = +7 667 netto ⇒ **~11 500 rader/dygn** i september
-  med dieten, efter gallringen. Raden bredvid de två föregående: 13 000/dygn (morgonen 14/9, 14 h)
-  och 21 281/dygn (hela dygnet 13/9). Kurvan pekar nedåt och ligger långt under septembertoppen
-  62 000 — milda dygn släpper få stationer genom dieten. Vintern upphäver den; talet säger ingenting
-  om november. Sidofynd samma körningar: road_conditions-arkivet står stilla
-  (830 rader, nyaste 472 h → 488 h gammal, 0 omklassningar) — väntat i en mild september, men värt
-  ett öga när första kalla veckan kommer.
-  📏 **15/9, 12,0 h isär:** weather_obs 291 757 (14/9 16:23) → 297 789 (15/9 04:23) = +6 032 ⇒
-  **~12 100 rader/dygn**, i linje med gårdagens 11 500. Och nu börjar det som gallringen byggdes för:
-  meta.json visar **4 kalla stationer** (2 i går), och live-snapshoten bär sin första minusgrad —
-  FI:14047 **−0,3 °C** yta, med 2566 0,3 · 1106 0,5 · FI:14018 0,6 · FI:14049 0,8 strax över.
-  Dieten släpper igenom fler stationer för varje kall natt; kurvan vänder uppåt härifrån.
-  **VAD SOM FÅR SLÄNGAS UTAN ATT DOMEN RÖRS (mätt i koden):** grind A och grind V-A läser
-  båda i 30-minutershinkar och tar SENASTE mätningen per hink (BUCKET_S = 1800,
-  ORDER BY sample_time DESC). missar.ts läser 45-minutersfönster. Ingen dom läser
-  10-minutersupplösningen. Det var exakt GitHub-ingestens takt (2×/h) när grind A byggdes.
-  **STEG 1 — TUNNA TILL 30 MIN EFTER 7 DYGN (Claude bygger, Axel kör; noll beslut om pengar):**
-  pg_cron-jobb 03:15 UTC som per station och 30-min-hink behåller senaste raden och raderar
-  resten för allt äldre än 7 dygn. Sista veckan behåller full upplösning (missar, felsökning).
-  Effekt: vintern ≈ 848 × 48 ≈ 41 000 rader/dygn ≈ 11 MB/dygn ⇒ ~45 dygn på 500 MB.
-  Migration sql/014_gallring.sql (funktion `gallra_vader(dagar)` + cron.schedule vaktad med
-  IF EXISTS pg_extension, CI:s PostGIS saknar pg_cron — samma läxa som rollerna i 003).
-  Verify: rader/dygn äldre än 7 d ≤ 45 000 i SQL-editorn, grind-a #N ger samma n som veckan
-  före (tunningen får inte synas i domen). OBS: DELETE frigör inte disk förrän autovacuum
-  återanvänt den — pg_total_relation_size planar ut, sjunker inte; det är rätt utfall.
-  📐 **GREPP 3, UNDERLAG 17/9 (`docs/GREPP3-ARKIVEN.md`, DECISIONS #231):** databasen 168 MB, cirka 9 MB/dygn brutto
-  redan i september · Finland och Norge ogallrade (34 MB) · pg_crons logg 18 MB och rensas aldrig · gratisnivån
-  skrivskyddar vid 500 MB och har inga backuper · vintern kräver cirka 3 GB. **Rekommendation:** Supabase Pro senast vid
-  400 MB eller 1/11, plus tre gratis småbyggen nu (databasvakt, loggrensning, gallring FI/NO). Ny mätning 24/9.
-  🔨 **SMÅBYGGENA 17/9 (Bengt, DECISIONS #232):** `gallra_arkiv` (sql/026) i nattjobbet — Norge allt efter 7 dygn, Finland
-  varma rader efter 7 dygn och kalla i 60 (rimfrostgrinden), pg_crons logg efter 7 dygn — plus databasvakten (larm 400 MB).
-  Gallringsfunktionerna låsta för REST-API:t. **Kvar:** Pro-beslutet (Bengt + Axel).
-  ✅ **I DRIFT 17/9:** migration 12:3xZ: `gallra_arkiv(7)` raderade **97 472 rader** — Finland 97 379 → 58 130, Norge 68 972 → 45 828, pg_crons logg 39 312 → 12 691, resten svensk gallring · EXECUTE låst för anon och authenticated · nattjobbet kör `SELECT gallra_arkiv(7)` 03:15 · databasvakten 12:35Z: *databas: 168 MB av 500*, provlarmet gick (larmväg ok).
-  **STEG 2 — VINTERN ÄR LÄNGRE ÄN 45 DYGN (beslut Axel + Bengt i oktober, EFTER mätning):**
-  nov–mars ≈ 150 dygn × 11 MB ≈ 1,6 GB även efter steg 1. Tre vägar:
-  · **2a Rullande export (gratis):** månadsvis CSV.gz av rader äldre än 60 dygn till Supabase
-    Storage (1 GB gratis; gzip ~10× ⇒ hela vintern ~150 MB), sedan DELETE. Grind A/V-A körs
-    redan varje måndag på 30-dygnsfönster och deras utfall är små tabeller; marsdomen läser
-    veckoutfallen + exporten. Kostar ~2 h kod + en edge function. Rekommenderad.
-  · **2b Supabase Pro** (25 USD/mån, 8 GB): ~1 400 kr för nov–mars. Kräver DECISIONS-post
-    (gratisnivåregeln) som #82 för Actions. Snabbast, men pengar för att slippa 2 h kod.
-  · **2c Färre stationer:** nej — TROSKLAR-SKUGGAN §3 kräver grind A "nationellt över alla
-    845 stationer".
-  **MÄT FÖRST (Axel, SQL-editorn, 30 s) — svaret avgör om steg 1 räcker till oktober:**
-  `SELECT pg_size_pretty(pg_total_relation_size('weather_observations')) AS vader,
-  pg_size_pretty(pg_database_size(current_database())) AS totalt, count(*) AS rader,
-  (SELECT count(*) FROM weather_observations WHERE sample_time > now() - interval '1 day')
-  AS senaste_dygnet FROM weather_observations;` — totalt/rader = verklig byte per rad,
-  senaste_dygnet × byte = verklig MB/dygn. Klistra till Bengt; kortet räknas om på riktiga tal.
-  📏 **AXELS MÄTNING 9/9 ~05:30:** vader 36 MB · totalt 92 MB · 205 763 rader · 42 582 senaste dygnet ·
-  **183 B/rad** · mest aktiva station **233 rader/dygn**, p90 109, median 54. Axels poäng, och den är rätt:
-  dygnssnittet (42 582) underskattar vintern — nu är stationerna intressanta bara tidvis; i vinter ligger
-  alla 848 i det övre läget dygnet runt. 233 > 144 betyder dessutom att vissa stationer mäter var 5–6:e
-  minut, inte var 10:e. ÖVRE GRÄNS: 848 × 233 ≈ 198 000 rader = 36 MB/dygn ⇒ (500 − 92) / 36 ≈ **11 dygn**;
-  nedre (alla på 10 min): 122 000 = 22 MB ⇒ 18 dygn. Sanningen ligger emellan, 11–16 står sig.
-  ✅ **JA TILL STEG 1 FRÅN AXEL 9/9** ("bygg migrationen så körs den"). Omräknat med 183 B/rad: efter
-  tunning 848 × 48 = 40 700 rader = **7,4 MB/dygn ⇒ ~55 dygn** på återstående 408 MB (stationer med tätare
-  takt tunnas till samma 48). Steg 2 kvarstår: nov–mars ≈ 150 × 7,4 ≈ **1,1 GB** ⇒ export eller Pro.
-  ✅ **STEG 1 BYGGT 9/9 07:15 (DECISIONS #87):** sql/014_gallring.sql — `gallra_vader(dagar)` + pg_cron
-  `halkvakt-gallring` 03:15 UTC (vaktad, CI saknar pg_cron). Bevis lokalt: 576 → 336 raderade (144→48,
-  288→48, gårdagen orörd), hink 0 behåller 00:20/00:25 = senaste, andra körningen 0. Integrationstest
-  #83 i CI. 🔑 **AXEL KÖR:** klistra hela sql/014_gallring.sql i SQL-editorn (deploy-tokenen får inte röra
-  databasen, #86). Första körningen: `SELECT gallra_vader(7);` direkt efteråt ger svaret hur många rader
-  som togs — klistra talet till Bengt. Bevis därefter: `SELECT count(*) FROM weather_observations WHERE
-  sample_time BETWEEN now() - interval '9 days' AND now() - interval '8 days';` ≤ 45 000, och grind-a
-  14/9 med samma n som 7/9-körningen hade gett. Steg 2 (1,1 GB-vintern) kvarstår som oktoberbeslut.
-  ✅ **STEG 1 KÖRD 9/9 10:58 (dbknapp #1, DECISIONS #90) — Bengts "vi gör halkvakt gallring jobb":** migrationen
-  körd i transaktion, `gallra_vader(7)` → **3 551 raderade**, cron-jobbet `halkvakt-gallring 15 3 * * * active=true`
-  finns, rader 8–9 dygn gamla **15 744** (≤ 45 000), tabellen 37 MB / 207 587 rader. VARFÖR BARA 3 551: allt
-  äldre än 7 dygn skrevs av GitHub-ingesten 2×/h — redan 30-minutersupplösning — och 5–8/9 finns ingen data.
-  Minutupplösningen (ingest-live sedan 8/9) blir 7 dygn gammal **15/9**; första nattkörningen som tunnar på
-  riktigt är 16/9 03:15. Bevis då: rader/dygn för 8/9 ≤ 45 000 i morgonavläsningen 16/9.
-   📈 KVÄLL 10/9: weather_obs 232 028 (04:49) → 242 351 (16:28) = 10 323 rader på 11,65 h ⇒ **~21 300/dygn
-   dagtid** (natten 36 600 väntas igen). Nattjobbet 03:15 syns inte från Actions; första riktiga bevis 16/9.
-   🌙 NATT 11/9: weather_obs 242 351 (16:28) → 242 495 (18:23) → 246 339 (04:23): **144 rader på 1,9 h
-   kvällen, 3 844 på 10 h natten ⇒ ~9 200/dygn** (mot 36 600 natten innan). Inte ett fel: dieten (#4) släpper
-   bara stationer ≤ 5 °C eller nederbörd, och SE live.json hade 33 väderposter 04:30 mot hundratals kalla
-   natten 9/9. weather: synced 0 min i varje healthcheck. Takten är väderstyrd — läs den mot antalet kalla stationer.
-   📈 **12/9:** weather_obs 246 339 (11/9 04:23) → 254 129 (12/9 04:23) → 258 197 (12/9 18:27) ⇒
-   **7 790 rader på dygnet, ~6 900/dygn dagtid**. meta.json: 1 kall station. Mild vecka, dieten håller
-   takten nere — tredjedelen av septembersnittet. Gallringens första riktiga natt är fortfarande 16/9.
-  📈 **MORGON 13/9: takten har fyrdubblats över natten.** weather_obs 268 613 (00:23) → 275 410
-  (04:25) = 6 797 rader på 4,0 h ⇒ **~40 500/dygn**, mot 9 200 i går. meta.json säger ändå bara
-  **1 kall station** — det är alltså NEDERBÖRDEN och inte kylan som driver, dieten (#4) släpper
-  igenom båda. Talet ligger redan på vinterprojektionens 41 000/dygn som gallringen dimensionerades
-  för, i mitten av september. Värt att läsa om vid nästa avläsning innan man drar slutsatser av ett
-  enda dygn.
-  📉 **KVÄLL 13/9 — RÄTTELSE AV MITT MORGONTAL.** weather_obs 275 410 (04:25) → 282 370 (16:23) =
-  6 960 rader på 12,0 h ⇒ **~13 950/dygn dagtid**. Helt dygn 12/9 04:23 → 13/9 04:25: 254 129 →
-  275 410 = **21 281/dygn**. Mitt morgontal 40 500 var en extrapolering av FYRA timmar och höll inte
-  — nattskuren var en skur. Vinterprojektionens 41 000 är alltså inte nådd; vi ligger på halva.
-  ⚠️ Samma feltyp som mitt 311-tal i natt: kort fönster utsträckt till ett dygn. Två gånger på ett
-  dygn. Regel för kommande avläsningar: extrapolera aldrig ett arkivtal från under 12 timmar, och
-  sätt alltid helt-dygn-talet bredvid.
-  📉 MORGON 14/9, mätt över 14,0 h enligt regeln (aldrig under 12): weather_obs 282 370 (13/9 16:23)
-  → 289 958 (14/9 06:23) = 7 588 rader ⇒ **~13 000/dygn**. Kalla stationer 3 (var 1 i går). Takten
-  ligger kvar långt under vinterprojektionens 41 000.
-  ↪ **Hit sammanslaget 24/9 (DECISIONS #332): #155 snubbeltråden.** Beslutet om kvarhållningen (steg 2, export eller Pro) avgör två mätinstruments byggform: trendarkivet (#88) SPARAR för att gallringen förstör dess 15-minutersfönster; tillståndsskattaren (#89) och tystnadsfelet (#98) RÄKNAR OM för att deras ingångar överlever. Skärps kvarhållningen, eller börjar `radar_precip` gallras (inget gör det i dag), upphör ingången att vara återskapbar och båda måtten måste byta till #88:s form. Gratisnivån räcker ~55 dygn in i vintern (sql/014). Principen står i TROSKLAR-OVERGANGAR och TROSKLAR-TRENDEN (Bengts order 14/9).
-  🔨 **STEG 2 BESLUTAT OCH I DRIFT 24/9 (Bengt: *"ja till alla fem, kör export till supabase storage"*, DECISIONS #334):** export, inte Pro. `sql/034` + `sql/035`, edge-funktionen `arkivexport`, jobben :40 och 03:45. Första varvet 05:40Z: 24/8 (4 711 rader, 70 kB) och 25/8 (17 843 rader, 236 kB) packade, återlästa, sha-verifierade och bokförda; 19 dygn väntar, två per timme. Raderingen först när databasen passerar 350 MB, äldsta bokförda dygnet, ett per natt, aldrig yngre än 30 dygn. Kvar: återläsningssteget för marsdomarna (behövs när raderingen börjat).
 - [ ] 📵 **#214 PLAY-DEKLARATIONEN ÄR OSANN SEDAN 16/9** (genomlysningen 20/9). `docs/PLAY-DATASAFETY.md` svarar **"No"** på
   Googles insamlingsfråga och påstår att enda utgående trafik är en GET utan parametrar. Filen rördes senast **27/8**. Sedan 16/9
   POSTar `FacitSender.kt` varnings-id, tid, app och version — och `sql/022` erkänner själv att "ett svar är alltså en plats och
@@ -241,10 +121,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] ↩︎ **#23 heads-up** — bannern över kartappen, båda plattformarna. (#22 T3–T7 i bilen och
   #24-resten står under Claude — låst, Android-listan.)
   ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** underpunkten #23 i DESIGNLYFTET, som stängdes 22/9.
-- [ ] ↩︎ Skinnet v3 på Android — del 1+2 committade 2/9 (5829d29, ee72f22: Theme.kt, fonter,
-  fem ikoner, två flikar). Bevis på telefon saknas; bockas när Axel sett det.
-  📏 **Läst mot koden 24/9 (kort #217, DECISIONS #347):** Android skiljer sig från iOS på fem punkter — ikonerna finns men visas inte · varningskortet har rubriken *HALKVAKT VARNAR*, ingen stapel och knappen *Uppfattat* · körläget heter *PASSAGERAREN ÄR VAKEN* och saknar demokortet · inget kvitto under *Starta vakten* · statuspillen säger *LIVEDATA* där iOS säger *Trafikverket live*. Vilka som ska bli som iOS är Axels beslut; produktboken beskriver båda.
-
 ### Axel — därefter
 - [ ] **Tolv testare till Play-perioden** — Axels åtagande 31/8: "hittar dem utan problem".
   Väntelisterutan på kartan borttagen på hans beslut. Kvar i `docs/REKRYTERING.md` om det behövs.
@@ -401,6 +277,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔨 **LOOPEN LAGAD 26/9** (Bengts ja, DECISIONS #370): `SnapshotSchedule` — en laddning i taget, 60 s paus efter fel, 30 min
   förnyelse som förut; fem JVM-prov (tio minuter utan nät: 10 laddningar, inte 600). android.yml-körningen 36214202433 (workflow_dispatch på grenen, 16e2e3f) grön: JVM-proven, emulatorn och release-AAB. Motprovet 36214221026 (c27dcce, båda vakterna borttagna) rött med exakt de tre väntade proven fällda — oneLoadAtATime (rad 15), aFailedLoadWaitsAMinute (rad 22) och tiominutersräkningen (rad 50), 46 prov, 3 fällda; halvtimmesförnyelsen och startens förbikoppling höll. Kvar på kortet:
   **mätningen** (iPhone: Bengt, nästa resa över en timme · Android: testtelefonen) och **kadenstestet** (nämnt i samma fråga, inget ja).
+  🔨 **KADENSTESTET LAGAT 26/9** (femma sju, DECISIONS #373): `tiers()` ersatt av ett körprov i 140 km/h rakt mot en fara från varje start 3,6–60 km; inom motorns räckvidd (leadMaxM + cameraTriggerM) ska varje GPS-punkt komma högst 1 s efter förra. android.yml 36217938454 grön på grenen; motprovet 36217945802 (NEAR_MS 1 → 10 s) rött på exakt två prov — körprovet och `noSnapshotMeansFullAlertness` — där det gamla testet höll. Enligt en modell av provet fäller det också FAR 15 → 450 s men inte 15 → 150 s, som fortfarande är säkert. Kvar på kortet: **mätningen** (iPhone: Bengt · Android: testtelefonen).
 
 - [ ] 🔄 **#258 iOS LADDAR ALDRIG OM VÄGDATAN UNDER RESAN** (fynd 26/9 under #218, DECISIONS #370). Vägdatan laddas när vakten
   startar och när Vakten-vyn visas (`GuardManager.swift:230`, `VaktenView.swift:68`); under resan ligger körläget som helskärm över
@@ -411,6 +288,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔨 **BYGGT 26/9, 0.3.9 (16)** (Bengts ja, DECISIONS #371): var 30:e minut under resan, en laddning i taget, en minuts paus
   efter fel, minnet behålls mitt i resan (`updateHazards`); utan nät gäller cachen och åldras. Skrivet utan kompilator.
   🔑 Kvar: Axels Xcode-bygge (första kompileringen) och Verify i bil.
+
+- [ ] 🎚️ **#259 REGLAGET "VARNA PÅ AVSTÅND" LOVAR MER ÄN MOTORN GÖR** (fynd 26/9 under kadenstestet, DECISIONS #373). Motorn
+  talar vid `min(leadMaxM, max(400 m, fart × 30 s))` (`engine.ts:110`), och reglaget sätter bara `leadMaxM`. I 140 km/h blir det
+  högst 1 167 m, i 90 km/h 750 m — så *Tidigt — 3 km* (iOS) och 5 km (Android) gör ingen skillnad på en svensk väg; bara ett
+  värde UNDER fart × 30 s ändrar något. DECISIONS #263 visste att 3 000 m nås först över 360 km/h, men inte att reglaget därmed
+  lovar något. Produktboken säger *"hur långt i förväg rösten ska tala"*. Två vägar: skriv reglaget som ett tak (*Senast …*) med
+  spannet som faktiskt verkar, eller låt reglaget styra tiden (sekunder) i stället för metern — det senare ändrar vad rösten
+  säger och kräver vektorer. 🔑 Bengts och Axels val (§4.2). Verify: reglagets text och spann säger vad motorn gör, på båda
+  plattformarna, och produktboken likaså.
 
 ### Claude — olåst
 - [ ] 📍 **#226 AUTOSTARTENS BEHÖRIGHET FALLER TYST PÅ ANDROID 11+** (Axels fynd på testtelefonen 20/9, DECISIONS #272).
@@ -445,15 +331,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **KLART 24/9 (DECISIONS #348, Axel via Claude):** (b) texten nämner nu appens namn och version, fälten stannar; (a) ärlighetsraden och källorna i Androids Om. Verify: fotostudions bild av Om efter nästa android-körning.
   📸 **26/9: beviset räckte inte.** Fotostudions `shot-6-betatest.png` (android.yml 36214202433) slutar vid Om-avsnittets första ruta — ärlighetsraden och källorna syns inte. Verify kräver en svepning till i fotostudion (en rad i android.yml) eller en skärmbild av Om från testtelefonen.
 
-- [ ] 🪛 **#250 TRE SMÅFEL SOM PRODUKTBOKENS GENOMLÄSNING HITTADE** (24/9, DECISIONS #347). (a) **Android säger *"Ingen färsk
-  väglagsdata"* två gånger per körning:** flaggan sätts och nollställs direkt i första laddningen (`GuardService.kt`, raden
-  `staleAnnounced = staleAnnounced && g != null` i grenen där `g == null`), så nästa laddning med gammal data talar igen. (b) **iOS
-  körläge visar klockan nu vid *Senast sagt*,** inte när det sades (`KorlageView.swift`, `now.formatted`). (c) **Fotostudion tar
-  sex bilder men bara tre skiljer sig:** Om, Nära dig och Körläget är inga egna skärmar längre, så tre bilder är dubbletter.
-  Verify: (a) ett JVM-prov med två laddningar av gammal data ger en replik, inte två; (b) tiden är repliken tidsstämpel;
-  (c) fotostudions bilder är olika eller färre.
-  ✅ **KLART 24/9 (DECISIONS #348):** (a) nollställs vid start, (b) `lastSaidAt`, (c) tre bilder i stället för sex.
-
 - [ ] 🌡️ **#253 GRIND A OCH VÄGPUNKTEN SAKNAR HÄLFTEN AV GRANNARNA — de varma** (mätt 25/9 under kort #252, `docs/GRANSKNING-GRINDAR-2026-09-25.md`).
   **10 947 kalla målhalvtimmar** (yta ≤ 5 °C, 60 dygn): av 41 079 grannplatser saknade **20 319 en arkivrad — 49,5 %**; bland de frysnära (yta ≤ 1 °C, 232 halvtimmar) **50,4 %**. Av 5 785 mål med fem grannar hade bara **573 alla fem**, och 966 ingen. Orsaken: den levande ingesten sparar bara en avläsning med yta ≤ 5 °C eller nederbörd
   (`supabase/functions/ingest-live/index.ts:144`), så en varm, torr granne finns inte i arkivet, medan driftens prognos tar med den
@@ -474,19 +351,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Om tolv testare i november ska hålla är Play-kontot en grind som måste passeras i september.
   Verify: en Android-testare utanför projektet har appen installerad och har skickat ett facitsvar.
   ↪ **Hit 24/9 (DECISIONS #346):** ur *Fysisk Android-testenhet* (29/8). Telefonen finns: Axels Android med appen sedan 20/9 (DECISIONS #280). Kvar är enhetsverifieringen i Play Console: webben som kontots ägare, uppgiften *Kontrollera att du har åtkomst till en mobil Android-enhet* på startsidan, sedan Play Console-appen på telefonen (Googles sida läst 20/9 och 22/9, DECISIONS #279). Verify: uppgiften försvinner från Play Consoles startsida.
-
-- [ ] 🧹 **#221 STYRDOKUMENTEN HAR VUXIT FÖRBI ANVÄNDBARHET** (genomlysningen 20/9). DECISIONS 7 232 rader · TAVLA 3 550 ·
-  STATUS 1 846 — **~315 000 tokens ihop**. Varje session betalar för att orientera sig, och motsägelser överlever därför länge:
-  kort #79 står både öppet och avvecklat 9/9 · STATUS.md säger fortfarande "Actions-minuterna slut" och "iOS 0.3.0" (rubriken
-  orörd sedan 31/8) · lapse 0,71 och 0,63 står blandade. **Regler som bevisligen inte följs:** 41 klara kort ligger kvar i
-  ATT GÖRA, 🟡-sektionen är tom, STATUS.md uppdateras inte varje session, BACKLOG står kvar som order i CLAUDE.md men är dött
-  sedan 5/9. Dessutom: 169 fjärrgrenar där en behövs.
-  Verify: beslut äldre än 1/9 flyttade till eget arkiv, BACKLOG avvecklad eller återupplivad med en rad i CLAUDE.md, grenarna
-  rensade, och de fyra namngivna motsägelserna rättade.
-  ✅ **Bengts ja 26/9 till steg 1** (femma sex, DECISIONS #371). Mätt 26/9: TAVLA 4 842 rader, varav 122 stängda kort (2 736
-  rader) bland de öppna; DECISIONS 10 491, varav 328 före 1/9 och 5 365 före 15/9 — gränsen 1/9 hade flyttat 3 %. Steget:
-  stängda kort till tavelarkiv, beslut före 15/9 till beslutsarkiv som beslutsnumrens vakt läser. Grenarna rörs inte.
-  🔨 **STEG 1 KLART 26/9:** TAVLA 4 864 → 2 137 rader (122 stängda kort till `TAVLA-ARKIV.md`; öppna kort 44 före och 44 efter, inga öppna i arkivet), DECISIONS 10 550 → 4 981 rader (#1–#185 till `DECISIONS-ARKIV.md`, ordagrant; 358 rubriker före och efter). De två filerna gick från 1 384 kB till 693 kB — hälften. `scripts/beslutsnumren.ts` läser båda; motprov lokalt: en påhittad `## #58` fälls med arkivet och slinker igenom när vakten bara läser DECISIONS.md. Kvar av Verify: BACKLOG, grenarna och de fyra motsägelserna.
+  ↪ **Hit sammanslaget 26/9 (Bengts ja, femma sju, DECISIONS #373):** *Skinnet v3 på Android* och *Play: uppladdningsguide* — samma Play-konto och samma telefon som #219. Ordagrant:
+    ↩︎ Skinnet v3 på Android — del 1+2 committade 2/9 (5829d29, ee72f22: Theme.kt, fonter,
+    fem ikoner, två flikar). Bevis på telefon saknas; bockas när Axel sett det.
+    📏 **Läst mot koden 24/9 (kort #217, DECISIONS #347):** Android skiljer sig från iOS på fem punkter — ikonerna finns men visas inte · varningskortet har rubriken *HALKVAKT VARNAR*, ingen stapel och knappen *Uppfattat* · körläget heter *PASSAGERAREN ÄR VAKEN* och saknar demokortet · inget kvitto under *Starta vakten* · statuspillen säger *LIVEDATA* där iOS säger *Trafikverket live*. Vilka som ska bli som iOS är Axels beslut; produktboken beskriver båda.
+    ↩︎ Play: uppladdningsguide för den CI-signerade AAB:n + fotostudion tag 2 (facit ur CI +
+    produktboken) *(låst: Play-kontot)*.
 
 - [ ] 🗣️ **#203 FACIT UTAN ATT STANNA — svaret efter resan, och med rösten under den** (Bengts fråga 18/9 efter
   fälttest 2: *"vi måste hitta något system som inte innebär att de ska stanna och bekräfta … ett automatspår"*).
@@ -737,7 +607,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
       nej — luftankaret stör. Som RESERV där VViS saknas helt är 2,36 °C priset, och det är en
       annan fråga (§2.8 Verify 2). **§2.8:s ankarroll är därmed i praktiken avgjord utan att en rad
       byggts.** Läxa: ett fynd på 34 punkter är en riktning, inte ett resultat.
-    · Höjden: UTLYFT 10/9 till eget kort #96 (Bengts order) — lapse 0,71 °C/100 m, räcker inte ensam,
+    · Höjden: UTLYFT 10/9 till eget kort #96 (Bengts order) — lapse 0,71 °C/100 m (rättat till 0,63 17/9, DECISIONS #226), räcker inte ensam,
       måndagar 07:00. Här kvar bara som led i rangordningen ovan.
     · GIS-svansen (dalgångar/skuggning) = kort #91 kallplatslagret. Rörs inte förrän vinterns
       höjdprov motiverar den.
@@ -772,8 +642,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     ci.yml kör --check (läxan i CLAUDE.md).
   📏 **23/9 — kortets grind A-text ovan är inaktuell:** grind A är **KLARAD** 21/9 utan vakterna (A1 0,75 °C, A2 3,8 % ± 0,5, A3 0,3 % på 5 745 punkter) och 22/9 med radvakt och karantän (A1 0,71, A2 3,5 % ± 0,4, A3 0,0 % på 7 356; DECISIONS #299). ~~Kvar i (3): Bengts och Axels formella dom.~~ Dömd 23/9 (DECISIONS #321). (3b) är i praktiken avgjord (FI/NO mätta, SMHI som förtätning sämre, höjden #96, GIS #91). §4 i tröskeldokumentet rättad 23/9 (#198, DECISIONS #319): prognosen blir karta och förstärkare, aldrig röst ensam. Novemberbeslutet står som egen rad i bedömningens §4.2. Beskrivning i sin helhet: `Halkvakt-38b-strak-2026-09-23.md` på Bengts skrivbord.
   🛣️ **23/9 — vägpunkten utan historik (Bengts fråga: är höjden och terrängen egna ben? Nej, delar av samma modell):** grind A förutsäger en **station** ur grannarna plus en offset lärd ur stationens egen historik (`publish/grind-a.ts`). En vägpunkt mellan stationerna har ingen historik och därmed ingen lärd offset. Det är det fall höjden (#96) och kallplatslagret (#91) ska lösa, och där de hittills inte levererat: höjdprovet 12/9 på 1 962 punkter gav rå 1,65 °C, rå+höjd 1,65, offset 1,06 (`scripts/hojd-prov.ts`, huvudet bär designfyndet: offseten absorberar redan höjden, så höjd ovanpå offset är dubbelräkning). **Grind A:s 0,71 °C är alltså taket vid stationerna, inte vad vägen får.** **Villkor före (4):** hur offseten når en vägpunkt (rå avståndsviktning, offset interpolerad ur grannparen, eller terrängkorrigerad) ska stå i TROSKLAR-SKUGGAN innan skuggkörningen byggs i oktober, annars loggar vintern rå-modellen. Grind C3 (backtest och skuggdrift åt samma håll) är vakten som fäller om vägen blir sämre än stationerna. Höjden läggs in bara om vinterdata ger den en tröskelrad (#96), kallplatslagret bara om det förklarar residualer (#91 Verify).
-- [ ] ↩︎ Play: uppladdningsguide för den CI-signerade AAB:n + fotostudion tag 2 (facit ur CI +
-  produktboken) *(låst: Play-kontot)*.
 - [ ] 📈 **#88 TRENDEN — vi mäter var minut men använder bara sista värdet** (systemanalys 10/9;
   ✅ **STEG 2 BYGGT OCH KÖRT 13/9 — TRENDARKIVET** (Bengts order, issue #119, DECISIONS #169,
   PR #230). `sql/017_trend_kandidater.sql` + `scripts/trendarkivet.ts` med knapp och torrkörning.
@@ -1205,7 +1073,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   "höjdmätningar o nivåskillnader är väl också en del av detta" — ja: terrängfaktorn i #95:s lager och
   grunden för #91). scripts/hojd-prov.ts + knappen Actions → hojd-prov: EU-DEM 25 m via opentopodata,
   747/757 stationer, tre varianter RÅ / RÅ+HÖJD / OFFSET=taket mot arkivet. FYND 1 (starkt, 3 455 par):
-  empirisk lapse **0,71 °C/100 m** (standard 0,65) — höjden bär en äkta del av parsystematiken.
+  empirisk lapse **0,71 °C/100 m** (standard 0,65; *rättat till 0,63 nedan, FYND 1, DECISIONS #226*) — höjden bär en äkta del av parsystematiken.
   FYND 2 (ärligt, 40 augustipunkter): rå+höjd 8,36 ≈ rå 8,36 mot offsetens 2,50 °C — i utstrålningslägen
   räcker höjden INTE ensam, den vänder t.o.m. tecken i inversionsnätter (kalluft i dalen). Aldrig
   fristående: felkartan dömer, luftankarna lagar, höjden finjusterar. AUTOMATISK måndagar 07:00 UTC
@@ -1830,6 +1698,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#83 GALLRINGEN — KLART 26/9 (DECISIONS #373)**: i drift sedan 9/9 och exporten sedan 24/9; Verify mätt: högst 17 978 rader/dygn i det gallrade (gräns 45 000), en rad per halvtimme, grind A oberörd utom 3 av 49 372 halvtimmar.
+- [x] ✅ **#221 STYRDOKUMENTEN — KLART 26/9 (DECISIONS #371/#373)**: tavlan och besluten halverade i arkiv, BACKLOG avvecklad, STATUS-rubriken fryst, motsägelserna rättade, 273 av 279 grenar raderade.
+- [x] ✅ **#250 TRE SMÅFEL — KLART 26/9 (DECISIONS #373)**: byggt 24/9 (#348), stängt på Bengts ja; del (a) bevisad genom läsning.
 - [x] ✅ **#247 BILDLÄSNINGENS ANDRA ARK — KLART 26/9 (DECISIONS #372)**: 20 nattbilder, 12 bar och 8 okänd, ingen gissning på våt; Bengts ok, 20 rader i kamerafacit (41 totalt). Kortet i `TAVLA-ARKIV.md`. Tavlan 44 → 43.
 - [x] ✅ **#257 TRENDENS STIGANDE HALVA — KLART 25/9 (DECISIONS #368)**: sparas i `trend_stigande` före frosten; 654 kandidater vid 41 stationer första halvdygnet, toppen kl 05–08. Tavlan 44 → 43.
 - [x] ✅ **TIDEN I SYSTEMET — KLART 25/9 (DECISIONS #367)**: kartlagt UTC mot svensk tid; grind NT räknar dygn och månader i svensk tid, och kontraktet "Givarfelsdygnets zon" vaktar etikettparningen som saknade vakt. Båda med motprov. Tavlan 43 → 43.
