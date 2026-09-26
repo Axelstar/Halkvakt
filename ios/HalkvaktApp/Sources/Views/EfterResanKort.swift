@@ -58,7 +58,8 @@ struct EfterResanKort: View {
                             .foregroundStyle(vald == nil ? Brand.text : Brand.dim)
                         Spacer(minLength: 0)
                     }
-                    ForEach([Array(Missar.vad.prefix(3)), Array(Missar.vad.suffix(2))], id: \.self) { rad in
+                    // Två per rad, som Android — tre fick inte plats på en smal telefon (fotostudion 26/9).
+                    ForEach(stride(from: 0, to: Missar.vad.count, by: 2).map { Array(Missar.vad[$0..<min($0 + 2, Missar.vad.count)]) }, id: \.self) { rad in
                         HStack(spacing: 8) {
                             ForEach(rad, id: \.self) { v in
                                 FacitButton(title: v.prefix(1).uppercased() + v.dropFirst(), selected: vald == v) { valj(m, v) }

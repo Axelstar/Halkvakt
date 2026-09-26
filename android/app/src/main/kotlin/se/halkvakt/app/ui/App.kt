@@ -382,7 +382,7 @@ private fun EfterResanKort(
                             modifier = Modifier.weight(1f))
                     }
                     Spacer(Modifier.height(6.dp))
-                    Missar.VAD.chunked(3).forEach { rad ->
+                    Missar.VAD.chunked(2).forEach { rad ->   // två per rad: tre fick inte plats på en smal telefon (fotostudion 26/9)
                         Row(Modifier.padding(bottom = 6.dp)) {
                             rad.forEach { vad ->
                                 FacitKnapp(vad.replaceFirstChar { it.uppercase() }, vald = m.vad == vad) { onVal(m, vad) }
