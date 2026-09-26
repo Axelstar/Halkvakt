@@ -121,6 +121,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] ↩︎ **#23 heads-up** — bannern över kartappen, båda plattformarna. (#22 T3–T7 i bilen och
   #24-resten står under Claude — låst, Android-listan.)
   ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** underpunkten #23 i DESIGNLYFTET, som stängdes 22/9.
+  📏 **Läst mot koden 26/9 (Bengts fråga *"kan du ta upp kort 23"*):** bannern är BYGGD på båda — Android `GuardService.headsUp()`
+  (egen kanal, IMPORTANCE_HIGH, tyst, 8 s), iOS `HeadsUpService.show()` (time-sensitive, 8 s). Kvar är bara beviset: en skärmbild
+  av bannern över kartappen när rösten talar. Det går inte stillastående i dag — *Testa rösten* talar men visar ingen banner på
+  någon av plattformarna, och iOS visar den med flit bara när Halkvakt ligger BAKOM kartan (`willPresent` ger `[]`). Fotostudion
+  kan inte heller: emulatorns vakt får ingen riktig varning. Två vägar i §4.2: en knapp *Prova bannern* (fem sekunders fördröjning,
+  byt till kartan — Android-beviset tas då av fotostudion), eller en passagerare som tar bilden under en riktig varning.
 ### Axel — därefter
 - [ ] **Tolv testare till Play-perioden** — Axels åtagande 31/8: "hittar dem utan problem".
   Väntelisterutan på kartan borttagen på hans beslut. Kvar i `docs/REKRYTERING.md` om det behövs.
