@@ -120,8 +120,10 @@ och rösten teg? Berätta — klockslag och ungefär var räcker.
 Din position lämnar aldrig telefonen av sig själv. All jämförelse mot vägdata sker lokalt i appen.
 Inga konton, ingen inloggning, inga annonser, ingen spårning.
 
-**Undantaget är betatestet, om du själv slår på det.** Då skickas tre saker när du trycker på en
-knapp: varningens id, klockslaget och ditt svar. Ingen koordinat, ingen resa, inget om dig.
+**Undantaget är betatestet, om du själv slår på det.** Då skickas, när du trycker på en knapp:
+varningens id, klockslaget, ditt svar och appens namn och version. Ingen koordinat, ingen resa, inget
+om dig. *(Rättat 26/9: guiden sa "tre saker" — namn och version har alltid följt med, och appens Om
+säger det sedan 24/9, DECISIONS #348.)*
 
 Men var ärliga med vad det betyder: **varningens id pekar på en fara som har en plats, och klockslaget
 säger när.** Ett svar säger alltså ungefär var du var och när. Det är därför brytaren är av som
