@@ -2986,3 +2986,27 @@
   Kortet stängs fortfarande av Axels bygge — läsarkontraktet gör inte fixen bevisad, det gör NÄSTA regression synlig.
   ↦ **Sorterat 22/9 (kort #224):** fixen är byggd; kvar är att höra en olycka utan vägnummer i ett iOS-bygge med fixen (0.3.9 (12) eller (13)). Ägare Axel.
   ✅ **STÄNGT 26/9 PÅ KODBEVISET (Bengt, DECISIONS #376):** fixen i main sedan 20/9 och i 0.3.9 (13) uppladdad 23/9; hörd rätt har den inte — villkoret släppt.
+
+### Claude — låst (väntar på nyckel)
+
+- [x] ✅ **STÄNGT 26/9** (DECISIONS #377) — 🦌 **#241 VILTRÖSTEN TALAR PÅ LÄNETS MITTPUNKT — mot DECISIONS #13** (fynd 22/9, Bengts fråga *"vad har vi för mätning i appen,
+  polisen eller trafikverket"*; `scripts/matningar/viltrosten-polisen-2026-09-22.sql`, körning 35761967231).
+  **Läget:** appens viltvarning kommer ur **polisens** data, inte Trafikverkets. `publish/snapshot-core.ts` skickar polisens viltolyckor
+  från senaste 48 h som `wildlife` i live.json; Android och iOS läser in dem som viltfaror, och motorn talar inom 400–3 000 m:
+  *"Viltrisk — vanlig olycksplats för älg den här tiden."* Men polisens koordinat är **länets mittpunkt**: 60 dygns data ger exakt
+  en punkt per län (Norrbotten: 10 händelser, 1 punkt). Skuggflottan fick **11 viltvarningar** 9–10/9.
+  **Varför det är fel:** DECISIONS #13 (25/8) beslutade *röstvarning A4 vilande* — *"vanlig olycksplats"* på länsnivå förbjuds av
+  regeln att bara säga vad datan bär. Kort #17 (29/8, 7aae951) lade in punkterna i snapshoten och i alla tre parsrarna fyra dagar
+  senare utan att #13 ändrades. Ingen vakt såg det.
+  **Förslag:** (1) **nu:** sluta skicka polisens punkter i `wildlife` (serverändring i snapshot-core + publicera, deploy med bevis) —
+  A4 tyst igen, som #13 säger; ingen app behöver byggas. (2) **när #266:s text** (*"Viltrisk framöver."*) finns i apparna: mata
+  `wildlife` med Trafikverkets *djur på vägen* — riktig position, publicerat inom ~2 min, 91 % med djurslag (DECISIONS #316). Det är
+  i praktiken #32 (Ä3, våren 2027). Att mata Trafikverkets punkter i dag skulle få den gamla texten att säga *"vanlig olycksplats för
+  älg"* om en hjort som står där nu.
+  🔑 **Nyckel:** Bengts ja till (1). (2) är Axels text och vårens fråga.
+  Verify (1): live.json utan polisens punkter efter deployen (manifestets sha stämmer), motorns prov och v13 gröna, och skuggloggen
+  utan viltlarm från polisens punkter.
+  ✅ **22/9 kväll: A–D BYGGT** (DECISIONS #318, Axels *"vi gör detta också, sen gör vi en deploy"*): `wildlife` tom, Trafikverkets djur under `djur`, olycksfrågan bara Accident, *"Viltrisk framöver."* i tre portar, v13 + v37, åldersvakten åldrar vilt som olyckor. ✅ **Deployens bevis 22/9 20:50Z:** live.json har **3 djur** under `djur` (alla älg, Trafikverkets id, sluttid satt), `wildlife` 0, manifestets sha = filens sha; `deviations` har 3 levande `AnimalPresenceObstruction` (lika många som arkivet sett sedan deployen — inget tappas), och `deviations` i live.json är bara *Olycka*. Skärmbilden ur Android-CI committad (cae5de5). **Kvar:** första `djur:`-larmet i skuggloggen (inget än — tre djur mot tre rutter per varv; bevakas), och iOS i 0.3.9 (13).
+  📐 **22/9 — skiss för steg 1 och 2 i ett:** `docs/SKISS-VILT-TRAFIKVERKET-2026-09-22.md` (ny nyckel `djur`, djuren in i `deviations`, texten #266, v37, skuggmotorn först; bara iOS-bygget kräver Axel).
+  📏 **BEVISAT I DRIFT 23/9:** live.json 2026-09-23T14:50Z (manifestets sha stämmer) bär `djur` med en älg (`SE_STA_TRISSID_1_19674114`, slut 17:00), `wildlife` tom, bara olyckor bland `deviations`. Kvar för att stänga: del E — iOS 0.3.9 (13) från main ute hos testarna (Axel).
+  ✅ **STÄNGT 26/9 (femma åtta, Bengts ja, DECISIONS #377):** del E uppfylld — 0.3.9 (13) från main uppladdad 23/9 20:53 (DECISIONS #320).

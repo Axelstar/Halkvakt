@@ -5073,3 +5073,24 @@ nil, #258), `str()` gör aldrig NSNull till `"<null>"` i något av de sex id-fä
 motprov) låser fallet, och 0.3.9 (13) med fixen laddades upp 23/9 (#320). **Sagt högt:** appens JSON-läsare har inget testmål, så
 raden är granskad, inte körd, och ingen har hört en olycka utan vägnummer i ett bygge med fixen — fallet är ungefär en om dagen i hela
 landet. Står ett fel kvar hörs det i betan. Android-sidans latenta id-form (`getString("id")` ger `"null"`) står kvar som anteckning.
+
+## #377 (26/9 2026) Femma åtta: #241 stängt, läget skrivet om, korten hos den som har nästa steg, Android 0.3.9 (17)
+
+**Beslut (Bengt 26/9: *"ja till 1-4 och slå ihop 617"*).** Punkt (5), #228:s schema förberett för Axels bygge, fick inget ja och är inte
+gjord.
+
+**(1) #241 viltrösten stängd.** A–D i drift sedan 22/9 och bevisade 23/9; del E (*iOS 0.3.9 (13) från main ute hos testarna*) uppfylldes
+när (13) laddades upp 23/9 20:53 (#320). Kortet hade stått tre dygn med villkoret uppfyllt.
+
+**(2) Läget överst i bedömningen skrivet om till 26/9** (SESSIONSREGELN punkt 4) — *Läget 20/9* med 44 kort och fjorton beslut. Nu: 35
+kort, arton rader i §4.2 med ett obesvarat led, flaskhalsen Axels händer. Tabellens rader om facitknappen, ordlistan, databasen och
+produkten aktualiserade; kalenderns vecka 39 och 28/9–1/10 likaså. Fyra §4.2-rader avgjorda i samma varv: femma åtta, #241, Om-texten
+(#249, klar 24/9 men aldrig struken) och femma fem.
+
+**(3) Sju kort flyttade till den som har nästa steg** — *Introduktionen* till Bengt; #258, #259, välkomsttexten, #248, #219 till *Axel —
+därefter*; #203 till *Axel — beslut att ta*. Varje kort bär en rad om varifrån och varför. Öppna kort 36 → 35 (bara #241 stängt): Axel
+10, Bengt 4, Claude olåst 2, Claude låst 19.
+
+**(4) Android 0.3.9 (17).** `versionCode` 4 → 17, `versionName` 0.3.1 → 0.3.9, samma nummer som iOS på main. Googles första uppladdning
+låser versionCode-spåret (#347 p. 2), och ingen uppladdning har skett. Produktbokens versionstabell fick iOS (15)–(17) och Android-raden;
+Android-guidens rad om 0.3.1 rättad. **Bevis:** android.yml 36220665196 (workflow_dispatch på grenen, 8ac0303) grön — JVM-prov, emulator och signerad release-AAB med det nya numret.
