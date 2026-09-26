@@ -136,10 +136,11 @@ def mapp(a):
     kam = kameror()
     manifest = []
     for nr, namn in enumerate(sorted(f for f in os.listdir(a.mapp) if f.endswith(".jpg")), 1):
-        m = re.match(r"(.+)-(\d+)\.jpg$", namn)
+        # Skuggmotorns bilder: <kamera>-<tretimmarsperiod>.jpg. Kamerafacit V2/V3 (DECISIONS #380): <kamera>-h<timme>.jpg.
+        m = re.match(r"(.+)-(h?)(\d+)\.jpg$", namn)
         if not m or m.group(1) not in kam: print(f"hoppar över {namn}: okänd kamera eller form"); continue
         k = kam[m.group(1)]
-        tid = dt.datetime.fromtimestamp(int(m.group(2)) * 10800, dt.timezone.utc)
+        tid = dt.datetime.fromtimestamp(int(m.group(3)) * (3600 if m.group(2) else 10800), dt.timezone.utc)
         data = open(os.path.join(a.mapp, namn), "rb").read()
         manifest.append({"nr": nr, "kamera_id": k["id"], "namn": k["namn"], "lon": k["lon"], "lat": k["lat"],
                          "bild_tid": tid.strftime("%Y-%m-%dT%H:%M:%SZ"), "fil": os.path.join(a.mapp, namn),

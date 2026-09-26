@@ -1,0 +1,11 @@
+-- Steg 0 i utredningen om fartkamerorna (Bengt 26/9: "gör bara en analys över vad steg 0 skulle innebära — effekt och kostnad").
+-- Läsfrågor mot facit-hinken och skuggmotorns svar: hur många väglagsbilder sparas i dag, när, hur stora, hur mycket lagring
+-- används redan, och hur lång tid bildsparandet tar i skuggmotorn. Bara antal. Körs med dbknapp: en sats per rad.
+SELECT count(*) AS bilder, count(DISTINCT split_part(split_part(name, '/', 2), '-', 1)) AS kameror, min(created_at)::text AS forsta, max(created_at)::text AS senaste, round(avg((metadata->>'size')::bigint) / 1024.0, 1) AS kb_snitt, round(sum((metadata->>'size')::bigint) / 1048576.0, 1) AS mb_totalt FROM storage.objects WHERE bucket_id = 'facit'
+SELECT left(name, 10) AS dag, count(*) AS bilder, count(DISTINCT split_part(split_part(name, '/', 2), '-', 1)) AS kameror FROM storage.objects WHERE bucket_id = 'facit' GROUP BY 1 ORDER BY 1
+SELECT extract(hour FROM created_at AT TIME ZONE 'Europe/Stockholm')::int AS timme_svensk, count(*) AS bilder FROM storage.objects WHERE bucket_id = 'facit' GROUP BY 1 ORDER BY 1
+SELECT bucket_id, count(*) AS objekt, round(sum((metadata->>'size')::bigint) / 1048576.0, 1) AS mb FROM storage.objects GROUP BY 1 ORDER BY 1
+SELECT run_at::date AS dag, count(*) AS korningar, coalesce(sum(n_alerts), 0)::int AS larm FROM shadow_log WHERE land = 'SE' AND run_at > now() - interval '12 days' GROUP BY 1 ORDER BY 1
+SELECT count(*) AS svar, round(avg((content::json -> 'ms' ->> 'facit')::numeric)) AS facit_ms_snitt, max((content::json -> 'ms' ->> 'facit')::numeric) AS facit_ms_max, round(avg((content::json -> 'ms' ->> 'totalt')::numeric)) AS totalt_ms_snitt, sum((content::json ->> 'facit')::int) AS sparade FROM net._http_response WHERE content LIKE '{"ok":true,"results":%' AND content LIKE '%"ms":%'
+SELECT count(*) AS svar_med_facit, count(*) FILTER (WHERE content LIKE '%409 fanns redan%') AS med_tretimmarsspärr, count(*) FILTER (WHERE content LIKE '%budget slut%') AS med_budget_slut, count(*) FILTER (WHERE content LIKE '%ingen kamera inom 15 km%') AS utan_kamera FROM net._http_response WHERE content LIKE '{"ok":true,"results":%'
+SELECT kind, count(*) AS larm FROM (SELECT jsonb_array_elements(alerts) ->> 'kind' AS kind FROM shadow_log WHERE land = 'SE' AND run_at > now() - interval '7 days' AND alerts IS NOT NULL) a GROUP BY 1 ORDER BY 2 DESC

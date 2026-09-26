@@ -5138,3 +5138,40 @@ på båda. **Bevis Android:** android.yml 36224074048 (Android-steget, JVM-prov 
 
 **Kvar efter sammanslagningen:** migrationen `sql/038` via dbknapp, deploy av `facit-svar`, och beviset — en provmiss (`wx:prov-…`) som
 ger 204 och en rad med `prov = true`. Sedan Axels bygge 0.3.9 (18) och Verify 2–3 i bil (ett Siri-svar och en klassad miss).
+
+## #380 (26/9 2026) Bildfacit i hela landet (V1–V3) och lagringslarmet vid 800 MB · #253 stängt · #203 lager 2 i drift på servern · två idéer till vårlistan
+
+**Beslut (Bengt 26/9).** (1) *"ja, lägg in det i vårlistan"* — **fartfall som stöd för halka** (Ä3): samma TrafficFlow-data som #15;
+sjunker medelhastigheten på en mätpunkt en kall natt kan vägen vara hal. Prövas i skuggan mot kalla, blöta stationer och är aldrig
+ensam utlösare (regel T). Täckningen är bara Stockholms och Göteborgs motorvägar. (2) **Fartkamerorna som väglagsbild** (Bengts idé: ett
+samarbete med Trafikverket, en bild i timmen utan bil) — till vårlistan (Ä3). Trafiksäkerhetskamerorna fotograferar bara vid överträdelse
+och krypterar bilden i kameran (Trafikverkets sida, läst 26/9), och ändamålet är reglerat; billigare först är de 744 öppna
+väglagskamerorna (`docs/UTREDNING-FARTKAMEROR-2026-09-26.md`). (3) *"ja till V1–V3 och larmet vid 800 MB"* — efter analysen av steg 0
+(§7 i utredningen): tretimmarsspärren träffade 0 av 48 körningar, bilderna följde skuggrutterna (68 av 744 kameror) och 94 % togs vid
+fartkameravarningar.
+
+**Byggt, kort #260.** **V1:** skuggmotorn tar ingen facitbild vid ett fartkameralarm (`skuggmotor/main.ts`, bunten omgjord). **V2:** en
+ny funktion, `kamerafacit`, tar varje timme bilden vid väglagskameran närmast varje aktuell frysrisk i `live.json` (väderpunkter och
+broar) i hela landet — i dagsljus varje timme, i mörker en per kamera och natt (den första; gryningsbilden kommer då av sig själv), tak
+**150 om dygnet**. **V3:** två stickprov i timmen vid kalla stationer (yta ≤ 3 °C, #75:s vakt, färsk inom 3 h) som inte är en fara, med en
+kamera inom 1 km, bara i dagsljus — det enda kamerafacitet för tystnadsfelet (#98). Urvalet är ren logik i `kamerafacit/urval.ts` (solhöjden
+efter NOAA:s förenklade formel), prövat i `test/kamerafacit.test.ts`; bilderna läggs i facit-hinken under `v2/` och `v3/` med timmen i
+namnet (`<kamera>-h<epoch/3600>.jpg`), och kontaktarket läser båda namnformerna. Timjobbet `sql/039` på minut 17, kommandot kopierat ur
+skuggmotorns jobb med `replace()` inne i databasen. **Larmet:** vakthunden summerar `storage.objects` och larmar vid **800 MB av 1 024**
+(`lagringsprov` i dbknappen sätter gränsen till 0); raden *lagring: X MB* står i varje körning. **Följdändring:** vakthundens bildkontroll
+krävde ≥ 10 svenska larm på 12 h utan bild — efter V1 hade den larmat varje dygn, eftersom fartkameralarmen var 94 % av larmen. Den räknar
+nu bara larm med punkt som inte är fartkameror. **Kontraktet:** facitradien 15 km står i skuggmotorn (två filer, källa och bunt) och i
+urvalet; kontraktsgrinden vaktar den (motprov: 14 km i urvalet fäller grinden på rätt kontrakt). Inga Actions-minuter, inget betalbeslut.
+Rösten, apparna och det apparna skickar är orörda.
+
+**#253 stängt** (femma sju (1), DECISIONS #373): censurmätningen (`scripts/matningar/censur-grind-a-2026-09-26.sql`, dbknapp 36227029454) över första hela dygnet efter ändringen, 25/9 07:30Z–26/9 07:30Z: kalla halvtimmar (yta ≤ 5 °C) 231 mål, 452 grannplatser, **2 saknas — 0,4 %** (var 49,5 %; gränsen 5 %); frysnära (≤ 1 °C) 2 mål, 7 av 7 grannplatser. Tillväxten: **10 796 → 63 095 rader per dygn** (814 → 836 stationer), väderarkivet 88 MB, databasen 186 MB av 500. Verify uppfylld. Tillväxten är 5,8 gånger — mer än de ≈ 46 000 rader om dygnet
+som lästes ur en enda halvtimme 25/9, eftersom kalla och blöta stationer sparas i varje varv och de varma en gång per halvtimme. Gallringen
+tunnar allt äldre än sju dygn till en rad per station och halvtimme (högst 836 × 48 = 40 128 om dygnet), så databasen bär det; exporten
+packar vart gallrat dygn till ≈ 1 MB i samma 1 GB som bilderna (beräknat ur sql/034:s mätning, inte mätt). Reservation: ett varmt
+septemberdygn — 231 kalla halvtimmar, två frysnära.
+
+**#203 lager 2 i drift på servern 26/9 07:00Z:** migrationen sql/038 via dbknapp 36225368861 (tabellen finns, RLS på, anon utan SELECT och INSERT), deploy av `facit-svar` 36225396540 från main, provmiss mot den riktiga funktionen ⇒ 204 och en rad med `prov = true` (dbknapp 36225453047; 0 riktiga), två felaktiga missar ⇒ 400, och ett provsvar på den gamla vägen ⇒ fortfarande 204.
+
+**Kvar efter sammanslagningen:** deploy av `skuggmotor`, `kamerafacit` och `vakthund` från main; `sql/039` via dbknapp; beviset —
+`kamerafacitprov` (torrt urval), `lagringsprov` (larmet går), vakthundens skarpa rad och första timkörningens svar. Efter sju dygn: bilder
+och MB per dygn mot taket, i bedömningen.

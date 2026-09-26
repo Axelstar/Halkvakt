@@ -442,8 +442,10 @@ Deno.serve(async (req) => {
     // senaste bilden är 99 h gammal.
     const facitprov = new URL(req.url).searchParams.get("facitprov") === "1";
     const [fc] = await sql`SELECT max(created_at) t FROM storage.objects WHERE bucket_id = 'facit'`;
-    const [sl12] = await sql`SELECT coalesce(sum(n_alerts), 0)::int AS n FROM shadow_log
-      WHERE run_at > now() - interval '12 hours' AND land = 'SE'`;
+    // V1 (Bengts ja 26/9, DECISIONS #380): fartkameralarm ger ingen facitbild längre — de var 94 % av larmen. Räknas de med här larmar
+    // kontrollen på varje lugnt dygn. Bara larm med plats som INTE är fartkameror räknas; V2/V3:s bilder räknas i hinken som förut.
+    const [sl12] = await sql`SELECT count(*)::int AS n FROM shadow_log s, jsonb_array_elements(s.alerts::jsonb) a
+      WHERE s.run_at > now() - interval '12 hours' AND s.land = 'SE' AND a ->> 'geo' = 'punkt' AND a ->> 'kind' <> 'camera'`;
     // S4 (DECISIONS #201): förarfacit — betatestarnas svar. En rad, ingen dom; tom tills betan går i november.
     // Kort #196 (sql/025): provrader räknas aldrig som svar, men antalet syns; klockslaget skrivs i UTC.
     try {
@@ -462,6 +464,16 @@ Deno.serve(async (req) => {
       rad.push(`databas: ${mb} MB av 500 (larm vid ${grans} MB)`);
       if (mb >= grans) problem.push(`**DATABASEN ÄR ${mb} MB** — gratisnivån skrivskyddar vid 500 MB och då stannar ingest-live (grepp 3, docs/GREPP3-ARKIVEN.md)`);
     } catch { rad.push("databas: storleken kunde inte läsas"); }
+    // Lagringen (Bengts ja 26/9, DECISIONS #380): facit-hinkens bilder och arkivexporten delar gratisnivåns 1 GB fillagring, och
+    // bilderna ska ligga kvar till mars (blindningen). Kamerafacit V2/V3 räknades till högst ≈ 760 MB till 1 mars. Larm vid 800 MB.
+    // Prov: ?lagringsprov=1 sänker gränsen till 0 MB så att larmvägen syns.
+    try {
+      const [st] = await sql`SELECT coalesce(sum((metadata->>'size')::bigint), 0)::bigint AS b FROM storage.objects`;
+      const mb = Math.round(Number(st.b) / 1048576);
+      const grans = new URL(req.url).searchParams.get("lagringsprov") === "1" ? 0 : 800;
+      rad.push(`lagring: ${mb} MB av 1 024 (larm vid ${grans} MB)`);
+      if (mb >= grans) problem.push(`**LAGRINGEN ÄR ${mb} MB** — gratisnivån har 1 GB, och facit-hinkens bilder ska ligga kvar till mars (DECISIONS #380, docs/UTREDNING-FARTKAMEROR-2026-09-26.md §7)`);
+    } catch { rad.push("lagring: storleken kunde inte läsas"); }
     // 6c. VÄGLAGSARKIVET (#124, 12/9): samma korskontroll som radarn. En operatörsklassning
     //     står tills den ändras, så ren ålder säger inget — men står arkivet stilla MEDAN
     //     en väsentlig andel stationer ligger under noll är antingen ingesten trasig eller
@@ -486,7 +498,7 @@ Deno.serve(async (req) => {
     if ((aRp === null || aRp > 3) && vatt.n > 0)
       torra.push(`**radar_precip** tyst i ${visa(aRp)} MEDAN ${vatt.n} stationsmätningar visat nederbörd de senaste 3 h — radarsteget i ingest.yml kör med continue-on-error och fäller inte jobbet`);
     if ((aFc === null || aFc > 12) && sl12.n >= 10)
-      torra.push(`**kamerafacit** (bucketen \`facit\`) har inte fått en bild på ${visa(aFc)} MEDAN skuggan gett ${sl12.n} svenska larm de senaste 12 h — bilderna ska döma betan i mars; skuggmotorns svar bär skälen (\`facitSkal\`)${facitprov ? " — PROV, försvinner nästa timme" : ""}`);
+      torra.push(`**kamerafacit** (bucketen \`facit\`) har inte fått en bild på ${visa(aFc)} MEDAN skuggan gett ${sl12.n} svenska larm med plats (fartkameror oräknade) de senaste 12 h — bilderna ska döma betan i mars; skuggmotorns svar bär skälen (\`facitSkal\`)${facitprov ? " — PROV, försvinner nästa timme" : ""}`);
     if ((aRc === null || aRc > 48) && kallAndel >= 0.10)
       torra.push(`**road_conditions** står stilla sedan ${visa(aRc)} MEDAN ${kallt.n} av ${kallt.alla} stationer (${(kallAndel * 100).toFixed(0)} %) legat på eller under noll de senaste 3 h — operatören borde klassa om; antingen ingest-live:s roadconditions() eller Trafikverket är tyst (#124)`);
 

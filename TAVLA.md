@@ -312,19 +312,18 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   krävs och en knapp som öppnar appens inställningssida; alternativets namn hämtat ur `getBackgroundPermissionOptionLabel()`
   så texten matchar telefonens eget ordval. Avböjer användaren ska Autostart stanna av utan att något annat går sönder.
 
-- [ ] 🌡️ **#253 GRIND A OCH VÄGPUNKTEN SAKNAR HÄLFTEN AV GRANNARNA — de varma** (mätt 25/9 under kort #252, `docs/GRANSKNING-GRINDAR-2026-09-25.md`).
-  **10 947 kalla målhalvtimmar** (yta ≤ 5 °C, 60 dygn): av 41 079 grannplatser saknade **20 319 en arkivrad — 49,5 %**; bland de frysnära (yta ≤ 1 °C, 232 halvtimmar) **50,4 %**. Av 5 785 mål med fem grannar hade bara **573 alla fem**, och 966 ingen. Orsaken: den levande ingesten sparar bara en avläsning med yta ≤ 5 °C eller nederbörd
-  (`supabase/functions/ingest-live/index.ts:144`), så en varm, torr granne finns inte i arkivet, medan driftens prognos tar med den
-  ur `weather_latest`. Domarna #321 (KLARAD) och #324 (ÖPPEN) gäller alltså ett snällare underlag än driften. **Förslag:** låt
-  ingesten spara EN rad per station och halvtimme även när den är varm och torr (ungefär dubbelt så många rader: ~4,5 → ~9 MB/dygn,
-  exporten och raderingen i sql/034 tar resten), så att grind A, vägpunktsgrinden och K-A mäter samma värld som driften från och med
-  nu — novembers skarpa prövning får då veckor av ocensurerat underlag. Att i stället pröva på holdout-raderna i skuggloggen går inte
-  före mars: de är S-B:s C3 och blindade. 🔑 Bengt och Axel (ingesten är driftens).
-  Verify: efter ändringen visar samma mätning (`scripts/matningar/censur-grind-a-2026-09-25.sql`) < 5 % saknade grannplatser
-  för halvtimmar efter ändringen, och arkivets tillväxt per dygn står i bedömningen.
-  🔨 **BYGGT 25/9 (Bengt: *"ja till 253"*, DECISIONS #353):** den levande ingesten sparar en varm och torr avläsning EN gång per station och halvtimme (`arkivpolicy.ts`, `test/arkivpolicy.test.ts`, 7 fall, 2 motprov); en fråga per körning, fallerar den gäller den gamla regeln och felet står i svaret (`arkivpolicy`). Kvar för Verify: deploy, täckningen i en halvtimme efter deployen, och samma censurmätning på halvtimmar efter ändringen.
-  ✅ **Axels ja 25/9 (via Bengt, DECISIONS #353). I DRIFT:** deployad 07:20Z (PR #567); varvet 07:24Z skrev 146 väderrader, varav 132 varma halvtimmesrader, `ok: true`, ingen tillbakagång till den gamla regeln. Kvar för Verify: täckningen per halvtimme och censurmätningen på kalla halvtimmar efter ändringen (tidigast 26/9 på morgonen).
-  📏 **Läst 25/9 08:01Z (`scripts/matningar/tackning-halvtimme-2026-09-25.sql`):** täckningen per halvtimme mot 837 aktiva stationer — före deployen **63–84** stationer med rad (05:00–06:30Z, en varm förmiddag), halvtimmen 07:30–08:00Z **830 av 837 (99 %)**; rader per halvtimme 259–320 → 963, alltså ungefär tre gånger så många en varm dag (≈ 46 000 rader/dygn mot ≈ 17 000). Kvar för Verify: censurmätningen på kalla halvtimmar efter ändringen (< 5 % saknade), tidigast 26/9 på morgonen, och arkivets tillväxt per dygn.
+- [ ] 📷 **#260 BILDFACIT I HELA LANDET — V1, V2, V3 och lagringslarmet** (Bengts ja 26/9: *"ja till V1–V3 och larmet vid 800 MB"*,
+  DECISIONS #380, `docs/UTREDNING-FARTKAMEROR-2026-09-26.md` §7). Facitbilderna följde skuggrutterna (68 av 744 kameror) och 94 % togs vid
+  fartkameravarningar. (V1) ingen facitbild vid fartkameralarm; (V2) varje timme bilden vid väglagskameran närmast varje aktuell frysrisk
+  i hela landet — i dagsljus varje timme, i mörker en per kamera och natt, tak 150 om dygnet; (V3) två stickprov i timmen vid kalla
+  stationer utan larm, i dagsljus; vakthunden larmar vid 800 MB av 1 024 i lagringen. Inga Actions-minuter, inget betalbeslut.
+  Verify: efter deployen (1) skuggmotorns svar tar inga nya bilder vid fartkameralarm, (2) timkörningen svarar `ok` och sparar V2- eller
+  V3-bilder med timmen i sökvägen när det finns kyla, eller säger i svaret varför inte, (3) lagringsprovet larmar och den skarpa vakthunden
+  skriver lagringsraden, (4) efter sju dygn står bilder och MB per dygn i bedömningen, under taket.
+  🔨 **BYGGT 26/9:** V1 i `skuggmotor/main.ts` (bunten omgjord), V2/V3 i `supabase/functions/kamerafacit` (urvalet i `urval.ts`, fem prov i
+  `test/kamerafacit.test.ts`), timjobbet `sql/039` (minut 17), vakthundens lagringskontroll; bildkontrollen räknar bara larm som inte är
+  fartkameror; kontaktarket läser timvägen; facitradien 15 km i kontraktsgrinden (motprov: 14 km fäller). 🔑 Kvar: Bengts *"slå ihop"*,
+  deploy av tre funktioner, sql/039 via dbknapp, beviset.
 
 - [ ] 🗣️ **#203 FACIT UTAN ATT STANNA — svaret efter resan, och med rösten under den** (Bengts fråga 18/9 efter
   fälttest 2: *"vi måste hitta något system som inte innebär att de ska stanna och bekräfta … ett automatspår"*).
@@ -431,6 +430,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **26/9: flyttat till Axel och tillbaka i samma varv** (DECISIONS #377): Axels beslut är tagna (#267, #269) — nästa steg är lager 2, Claudes bygge (Siri-fraserna, `driver_miss`, *Appen missade*); iOS-delen kompileras i Axels Xcode.
   ⛔ **26/9, fynd innan bygget (Bengts *"gör 203"*):** missen ska bära *närmaste mätstation (finns alltid)* — men telefonen HAR ingen stationslista. `static.json` bär bara 2 794 kameror, och `live.json` bara stationerna som är nära noll och våta (26/9: en). Missknappen kan alltså inte byggas som Axel godkände den utan att stationerna först läggs i snapshoten. Val i §4.2.
   🔨 **LAGER 2 BYGGT 26/9** (Bengts *"ja till A"* + *"fortsätt med lager 2"*, DECISIONS #379): stationerna i `static.json` i drift (851, 08:20Z); `driver_miss` + `facit-svar`; *Appen missade* och missraderna efter resan på båda, Siri-fraserna på iPhone; 0.3.9 (18). android.yml 36224074048 (Android-steget, JVM-prov inkl. sju nya i MissarTest) och 36224807598 (hela grenen, emulator och fotostudio) gröna på grenen; motprovet 36224079213 rött på exakt de två väntade proven (en omarkerad miss skickas, segmentgränsen 40 km) — 53 prov, 2 fällda. 🔑 Kvar: migration + deploy efter sammanslagningen, Axels Xcode-bygge (18), Verify 2–3 i bil, policymeningen (Axel).
+  ✅ **SERVERN I DRIFT 26/9 07:00Z** (DECISIONS #380): migrationen sql/038 via dbknapp 36225368861 (tabellen finns, RLS på, anon utan SELECT och INSERT), deploy av `facit-svar` 36225396540 från main, provmiss mot den riktiga funktionen ⇒ 204 och en rad med `prov = true` (dbknapp 36225453047; 0 riktiga), två felaktiga missar ⇒ 400, och ett provsvar på den gamla vägen ⇒ fortfarande 204.
 
 ### Claude — låst (väntar på nyckel)
 - [ ] 🐕 **#243 VAKTHUNDENS ARKIVGRÄNS ÄR FÖR SNÄV — issue #528 var ett falsklarm** (fynd 24/9 på Bengts fråga *"vad betyder detta"*).
@@ -1643,6 +1643,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#253 DE VARMA GRANNARNA — KLART 26/9 (DECISIONS #380)**: den levande ingesten sparar en varm avläsning per station och halvtimme sedan 25/9; 0,4 % saknade grannplatser i kalla halvtimmar (var 49,5 %, gränsen 5 %), 10 796 → 63 095 rader per dygn. Tavlan 35 → 34, och nytt kort #260 (V1–V3) ⇒ 35.
 - [x] ✅ **#241 VILTRÖSTEN — KLART 26/9 (DECISIONS #377)**: Trafikverkets djur i stället för polisens länscentrum, i drift sedan 22/9; del E uppfylld när 0.3.9 (13) laddades upp 23/9. Tavlan 36 → 35.
 - [x] ✅ **#210 "PÅ VÄG <NULL>" — STÄNGT 26/9 PÅ KODBEVISET (DECISIONS #376)**: fixen i main sedan 20/9 och i 0.3.9 (13); aldrig hörd rätt i bil, villkoret släppt. Tavlan 37 → 36.
 - [x] ✅ **#23 BANNERN ÖVER KARTAPPEN — STÄNGT SOM ÖVERSPELAT 26/9 (DECISIONS #375)**: byggd på båda plattformarna, står kvar; bildbeviset efterfrågas inte längre. Tavlan 38 → 37.
