@@ -31,17 +31,17 @@ grundläget — pratar den, betyder det något.
 |---|---|
 | ![Om](produktbok/shot-6-betatest.png) | ![Om, slutet](produktbok/shot-7-om.png) |
 
-*(Android ur fotostudion 26/9, android.yml 36219380753 på kort #259:s gren — reglaget *Längsta förvarning* 400–1 200 m och Om-sidans ärlighetsrad, som fotostudion inte fångade före 26/9. Bilderna 1, 2 och 6 i övrigt som 23/9. Repliken under Senast sagt är fotostudions provrad — rösten
+*(Android ur fotostudion 26/9, android.yml 36224807598 på kort #203:s gren — *Vakten* visar kortet *Efter resan* med en varning och en miss, *Inställningar* reglaget *Längsta förvarning* 400–1 200 m och brytarens text om missarna, och Om-sidans ärlighetsrad.)*
 säger "Fartkamera om 500 meter.". Två flikar: Om är sista avsnittet i Inställningar — bilden visar slutet av
 Inställningar med betatest-brytaren, som fotostudion slagit på, och början av Om.)*
 
 ### Facitknappen (betatestet, S4 — Android 16/9)
 
-| Senast sagt med knapparna | Betatest-brytaren i Inställningar |
+| Efter resan: en varning och en miss | Betatest-brytaren i Inställningar |
 |---|---|
 | ![Senast sagt](produktbok/shot-1-vakten.png) | ![Betatest](produktbok/shot-6-betatest.png) |
 
-*(Fotostudion 23/9. Knapparna syns bara när betatestet är påslaget och varningen bär ett id.)*
+*(Fotostudion 26/9, en påhittad resa: varningen *"Fartkamera om femhundra meter"* och en miss markerad fem minuter tidigare. Knapparna syns bara när betatestet är påslaget och varningen bär ett id; missen skickas först när ett av de fem valen är gjort.)*
 
 ## Skinnet (v3, iOS 0.3.3 →)
 
@@ -494,6 +494,24 @@ låg i fickan"*.
 Det som skickas är som förut och inget mer: varningens id, klockslaget, ditt svar och appens namn och
 version. Notisen finns bara om du själv slagit på betatestet i Inställningar.
 
+### När appen var tyst — missarna (26/9, kort #203 lager 2)
+
+Det maskinen inte kan se är sina egna missar: det var halt och rösten teg. **I bilen räcker ett ord eller ett tryck.** På iPhone:
+*"Hej Siri, appen missade i Halkvakt"* (eller *"halt här i Halkvakt"*). På båda plattformarna finns en stor knapp i körläget,
+**Appen missade** — Androids väg, iPhones reserv. Appen sparar klockslaget, **närmaste mätstation** och närmaste halkavsnitt inom
+2 km, som id:n; ingen koordinat. Stationerna finns i telefonen sedan 26/9 (alla 851, i samma anonyma hämtning som kamerorna).
+
+**Efter resan** står missen som en rad i kortet: *"08:52 · Du markerade: appen missade — vad?"* med **Halka / Vatten / Vilt /
+Olycka / Annat**. Först när du valt skickas den — en omarkerad miss skickas aldrig. Bar resan bara missar frågar notisen *"Du
+markerade att appen missade något — vad var det?"*, utan knappar: valet görs i appen.
+
+Under resan kan du också säga *"Hej Siri, stämde inte i Halkvakt"* — svaret gäller den senaste varningen om den är yngre än tio
+minuter, och Siri säger *"Tack."* Siri lyssnar, inte appen: ingen mikrofonbehörighet.
+
+**Det som skickas för en miss:** klockslaget, ditt val, stationens och halkavsnittets id och appens namn och version. Brytarens
+text säger det: *"Markerar du att appen missade något skickas också klockslaget och närmaste mätstation — det säger ungefär var
+du var just då."* (Axels villkor för ja:et, DECISIONS #267.)
+
 ## Versionerna
 
 | Version | Datum | Vad |
@@ -512,8 +530,9 @@ version. Notisen finns bara om du själv slagit på betatestet i Inställningar.
 | 0.3.9 (14) | 23/9 | Gamla facitsvar stoppar inte kön längre; löftet i appen = integritetspolicyn. |
 | 0.3.9 (15) | 24/9 | Undantagstexten nämner appens namn och version, körläget visar när repliken sades (DECISIONS #348). |
 | 0.3.9 (16) | 26/9 | Vägdatan laddas om var 30:e minut under resan, också utan nät (kort #258, DECISIONS #371). |
-| 0.3.9 (17) | 26/9 | Reglaget *Längsta förvarning* 400–1 200 m, körläget säger *som längst* (kort #259, DECISIONS #374). På main, inte arkiverad än. |
-| Android (CI) | 16/9 → | Facitknappen och betatest-brytaren (S4, DECISIONS #202), Efter resan (20/9), viltvarningen på Trafikverkets djur (22/9), omladdningsloopen lagad och reglaget (26/9). **0.3.9 (17) sedan 26/9**, samma nummer som iOS (DECISIONS #377). |
+| 0.3.9 (17) | 26/9 | Reglaget *Längsta förvarning* 400–1 200 m, körläget säger *som längst* (kort #259, DECISIONS #374). |
+| 0.3.9 (18) | 26/9 | Missarna: *Appen missade* i körläget, Siri-fraserna *stämde inte* och *appen missade*, missraderna efter resan (kort #203 lager 2, DECISIONS #379). På main, inte arkiverad än. |
+| Android (CI) | 16/9 → | Facitknappen och betatest-brytaren (S4, DECISIONS #202), Efter resan (20/9), viltvarningen på Trafikverkets djur (22/9), omladdningsloopen lagad och reglaget (26/9), missarna (26/9). **0.3.9 (18)**, samma nummer som iOS (DECISIONS #377). |
 
 Android bar versionsnumret 0.3.1 (4) från 31/8 till 26/9, fast CI byggde den ur main med skinnet v3, facitknappen
 och Efter resan; sedan 26/9 bär den 0.3.9 (17) som iOS, rättat före första Play-uppladdningen som låser spåret. Ingen Android-version har gått ut via Play än

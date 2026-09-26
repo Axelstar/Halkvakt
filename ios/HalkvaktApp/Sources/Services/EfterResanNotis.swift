@@ -42,11 +42,12 @@ final class EfterResanNotis: NSObject, UNUserNotificationCenterDelegate {
     }
 
     /// Visa frågan. En åt gången — en ny resa ersätter den förra, aldrig en kö.
-    func visa(antal: Int) async {
+    /// Kort #203 lager 2: bara missar ⇒ ingen kategori, alltså inga knappar — det finns inget att bekräfta; notisen öppnar kortet.
+    func visa(antal: Int, missar: Int = 0) async {
         let c = UNMutableNotificationContent()
-        c.title = Resan.fraga(antal)
-        c.body = "Ett tryck räcker. Tystnad räknas aldrig som ja."
-        c.categoryIdentifier = Self.categoryId
+        c.title = antal > 0 ? Resan.fraga(antal) : Missar.fraga(missar)
+        c.body = antal > 0 ? "Ett tryck räcker. Tystnad räknas aldrig som ja." : "Välj i appen — utan val skickas ingenting."
+        if antal > 0 { c.categoryIdentifier = Self.categoryId }
         c.threadIdentifier = Self.notisId
         center.removeDeliveredNotifications(withIdentifiers: [Self.notisId])
         try? await center.add(UNNotificationRequest(identifier: Self.notisId, content: c, trigger: nil))

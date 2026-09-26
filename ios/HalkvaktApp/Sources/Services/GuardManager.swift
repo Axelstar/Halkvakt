@@ -36,6 +36,8 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     private let manager = CLLocationManager()
     private var engine: AlertEngine?
     private var hazards: [Hazard] = []
+    /// Kort #203 lager 2: alla stationer ur static.json — missens plats. Den förra listan står kvar om en laddning saknar den.
+    private var stations: [Station] = []
     private var prevLoc: CLLocation?
     private var dismissTask: Task<Void, Never>?
     private var headsUpTask: Task<Void, Never>?
@@ -113,6 +115,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
             let snap = try await SnapshotRepo.loadSnapshot()
             let gate = AgeGate.filter(snap.hazards, generatedAt: snap.generatedAt, now: .now)
             hazards = gate.hazards
+            if !snap.stations.isEmpty { stations = snap.stations }
             if !fresh, running, let engine { engine.updateHazards(gate.hazards) }
             else { engine = AlertEngine(gate.hazards, EngineConfig.withPrefs()) }
             nextLoadAt = .now.addingTimeInterval(Self.refreshEvery)
@@ -293,8 +296,20 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         let p = Prefs.shared
         guard p.facitOn, let sedan = p.tripStart else { return }
         let obes = Resan.obesvarade(p.history, p.facit, sedan: sedan)
-        guard Resan.fragaKvar(sedan: sedan, nu: .now, obesvarade: obes.count) else { return }
-        Task { await EfterResanNotis.shared.visa(antal: obes.count) }
+        let missar = Missar.omarkerade(p.missar, sedan: sedan)   // #203 lager 2
+        guard Resan.fragaKvar(sedan: sedan, nu: .now, obesvarade: obes.count + missar.count) else { return }
+        Task { await EfterResanNotis.shared.visa(antal: obes.count, missar: missar.count) }
+    }
+
+    /// Kort #203 lager 2: "appen missade" — knappen i körläget och Siri-frasen. Sparar klockslaget, närmaste station och
+    /// halkavsnitt inom 2 km; vad det var väljs efter resan. Utan betatest, position eller stationslista sparas ingenting.
+    @discardableResult
+    func markeraMiss() -> Bool {
+        guard Prefs.shared.facitOn, let l = lastLoc,
+              let st = Missar.narmasteStation(stations, lon: l.lon, lat: l.lat) else { return false }
+        Prefs.shared.missar = Missar.markera(Prefs.shared.missar, t: .now, station: st,
+                                             segment: Missar.narmasteSegment(hazards, lon: l.lon, lat: l.lat))
+        return true
     }
 
     // MARK: - CLLocationManagerDelegate

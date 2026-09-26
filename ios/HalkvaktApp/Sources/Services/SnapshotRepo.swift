@@ -10,7 +10,7 @@ enum SnapshotError: Error { case checksum(String), http(Int) }
 enum SnapshotRepo {
     static let base = "https://axelstar.github.io/halkvakt-karta/data/app/v1/"
 
-    struct Snapshot { let hazards: [Hazard]; let generatedAt: Date }
+    struct Snapshot { let hazards: [Hazard]; let generatedAt: Date; var stations: [Station] = [] }
 
     static func loadSnapshot() async throws -> Snapshot {
         // Kort #258: utan nät faller manifestet — då ska den sparade snapshoten gälla (fetchVerified), inte hela laddningen
@@ -77,7 +77,10 @@ enum SnapshotRepo {
                                               // string "<null>" and the voice said "på väg <null>" (#210).
                                               road: d["road"] as? String)))
         }
-        return Snapshot(hazards: out, generatedAt: gen)
+        // Kort #203 lager 2: alla stationers id och position (static.json sedan 26/9) — missens plats. Inga faror.
+        let stations = arr(staticDoc, "stations").map { Station(id: str($0, "id"), lon: dbl($0, "lon"), lat: dbl($0, "lat")) }
+            .filter { !$0.id.isEmpty }
+        return Snapshot(hazards: out, generatedAt: gen, stations: stations)
     }
 
     // MARK: - Hämtning med verifiering + cache

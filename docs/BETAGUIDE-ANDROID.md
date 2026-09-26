@@ -111,6 +111,9 @@ den skärmbilden är mer värd än svaret.
 förlorar förtroendet på en vecka. Vi kan mäta nästan allt annat själva ur arkiven — men bara du kan
 säga att vägen faktiskt var torr.
 
+**När appen var tyst fast det var halt** — tryck den stora knappen **Appen missade** i körläget (be passageraren, eller gör det
+när du stannat). Efter resan väljer du vad det var (Halka / Vatten / Vilt / Olycka / Annat); först då skickas något.
+
 **Och det vi inte kan se alls:** när appen var **tyst fast den borde ha sagt något**. Var det halt
 och rösten teg? Berätta — klockslag och ungefär var räcker.
 
@@ -122,7 +125,7 @@ Din position lämnar aldrig telefonen av sig själv. All jämförelse mot vägda
 Inga konton, ingen inloggning, inga annonser, ingen spårning.
 
 **Undantaget är betatestet, om du själv slår på det.** Då skickas, när du trycker på en knapp:
-varningens id, klockslaget, ditt svar och appens namn och version. Ingen koordinat, ingen resa, inget
+varningens id, klockslaget, ditt svar och appens namn och version — och för en miss du markerat, först när du valt vad det var: klockslaget, närmaste mätstation och ditt val. Ingen koordinat, ingen resa, inget
 om dig. *(Rättat 26/9: guiden sa "tre saker" — namn och version har alltid följt med, och appens Om
 säger det sedan 24/9, DECISIONS #348.)*
 

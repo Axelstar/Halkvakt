@@ -17,6 +17,7 @@ Syfte: den dag kontot är godkänt ska formuläret kunna fyllas i på fem minute
 | :-- | :-- | :-- | :-- |
 | `GET` snapshot + `manifest.json` (GitHub Pages) | var tionde minut när vakten är på | inget — ingen query, ingen identifierare | alla |
 | `POST` facit-svar (Supabase edge function) | **bara** när föraren tryckt *Stämde/Stämde inte*, och bara när bilen står stilla eller appen öppnas | `{id, t, svar, app, ver}` — varningens id (`wx:2135`, `seg:16010`, `cam:…`), varningens klockslag, ja/nej, plattform, appversion | **bara betatestare som själva slagit på BETATEST** |
+| `POST` facit-svar — **miss** (kort #203 lager 2) | **bara** när föraren markerat *Appen missade* (knapp eller Siri) OCH efter resan valt vad det var, och bara när bilen står stilla eller appen öppnas | `{miss, t, vad, station, segment, app, ver}` — klockslaget, förarens val (halka/vatten/vilt/olycka/annat), närmaste mätstation (`wx:2135`), närmaste halkavsnitt inom 2 km (`seg:16010` eller null), plattform, appversion | **bara betatestare som själva slagit på BETATEST** |
 
 `FacitSender.swift` / `FacitSender.kt`, `Facit.body()`, `supabase/functions/facit-svar/index.ts`, `sql/022`.
 **Ingen identitet, ingen kontonyckel, ingen resa, ingen koordinat.** Men ärligt: ett varnings-id pekar på en
@@ -37,7 +38,7 @@ den själv.
 | Fält | Svar | Motivering |
 | :-- | :-- | :-- |
 | Data type | **Location → Approximate location** | Varnings-id + klockslag pekar ut ungefär var föraren var. Vi skickar ingen koordinat, men Googles fråga är vad som lämnar enheten och vad det säger — inte vilket format det har. **Precise location: Nej.** |
-| Collected | **Ja** | Det lagras i `driver_facit`. |
+| Collected | **Ja** | Det lagras i `driver_facit` (svaren) och `driver_miss` (missarna, sedan 26/9 — samma uppgiftsklass: ungefär var och när). |
 | Shared | **Nej** | Lämnar aldrig vår databas; tabellen är dubbellåst (RLS utan policy + REVOKE, `sql/022`) och läses aldrig via REST. |
 | Processed ephemerally | **Nej** | Det sparas — det är hela poängen med facit. |
 | Required or optional | **Optional** | Brytaren BETATEST är AV som standard; svaret kräver dessutom ett tryck per varning. |
@@ -68,6 +69,9 @@ det är Axels att klistra in, och att slå ihop publicerar sidan):
 
 - Byt meningen *"Svaren kan därför inte kopplas till dig, och vi kan inte heller plocka fram just dina."* mot:
   > Svaren kan därför inte kopplas till dig, och vi kan inte heller plocka fram just dina — alltså inte heller radera just dina på begäran. Du bestämmer ändå: slår du av <i>Betatest</i> slutar appen skicka direkt, och det som sparats i telefonen försvinner när du avinstallerar appen.
+- **Missarna (kort #203 lager 2, DECISIONS #379)** — i listan under *"Då skickas:"*, efter punkten om svaret, en punkt till:
+  > när du markerat att appen missade något och sedan valt vad det var: klockslaget, närmaste mätstation (och vägsträcka inom 2 km)
+  > och ditt val. <b>Det säger också ungefär var du var och när.</b>
 - Byt datumraden *"GÄLLER FRÅN 2026-09-23 · FÖREGÅENDE VERSION 2026-08-26"* mot *"GÄLLER FRÅN 2026-09-26 · FÖREGÅENDE VERSION
   2026-09-23"* — policyn lovar själv att datumet flyttas när den ändras.
 

@@ -15,7 +15,7 @@ object SnapshotRepo {
 
     private const val BASE = "https://axelstar.github.io/halkvakt-karta/data/app/v1/"
 
-    data class Snapshot(val hazards: List<Hazard>, val generatedAtMs: Long)
+    data class Snapshot(val hazards: List<Hazard>, val generatedAtMs: Long, val stations: List<Station> = emptyList())
 
     fun loadSnapshot(ctx: Context): Snapshot {
         val staticDoc = fetchVerified(ctx, "static.json")
@@ -23,7 +23,13 @@ object SnapshotRepo {
         val gen = try {
             java.time.Instant.parse(liveDoc.getString("generated_at")).toEpochMilli()
         } catch (e: Exception) { 0L }  // saknad tidsstämpel = maximalt gammal ⇒ vakten fäller
-        return Snapshot(toHazards(staticDoc, liveDoc), gen)
+        return Snapshot(toHazards(staticDoc, liveDoc), gen, stations(staticDoc))
+    }
+
+    /** Kort #203 lager 2: alla stationers id och position (static.json sedan 26/9) — missknappens plats. Inga faror. */
+    fun stations(staticDoc: JSONObject): List<Station> {
+        val a = staticDoc.optJSONArray("stations") ?: return emptyList()
+        return (0 until a.length()).map { i -> a.getJSONObject(i).let { Station(it.getString("id"), it.getDouble("lon"), it.getDouble("lat")) } }
     }
 
     fun loadHazards(ctx: Context): List<Hazard> = loadSnapshot(ctx).hazards

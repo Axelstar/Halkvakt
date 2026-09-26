@@ -22,6 +22,7 @@ object Prefs {
     private val KEY_FACIT_STATUS = stringPreferencesKey("facit_status")
     private val KEY_WARN_DIST = floatPreferencesKey("warn_distance_m")
     private val KEY_TRIP_START = longPreferencesKey("trip_start")
+    private val KEY_MISSAR = stringPreferencesKey("missar")
     private fun kindKey(k: HazardKind) = booleanPreferencesKey("warn_${k.wire}")
 
     /** Kategorier föraren stängt av (default: allt PÅ). */
@@ -83,6 +84,18 @@ object Prefs {
             if (n > 0) p[KEY_FACIT] = Facit.encode(Resan.svaraAlla(facit, obes, svar))
         }
         return n
+    }
+
+    // ── Missarna (kort #203 lager 2) ──────────────────────────────────────────────────────────
+    fun missar(ctx: Context): Flow<List<MissEntry>> = ctx.dataStore.data.map { Missar.decode(it[KEY_MISSAR] ?: "") }
+    suspend fun markeraMiss(ctx: Context, t: Long, station: String?, segment: String?) {
+        ctx.dataStore.edit { p -> p[KEY_MISSAR] = Missar.encode(Missar.markera(Missar.decode(p[KEY_MISSAR] ?: ""), t, station, segment)) }
+    }
+    suspend fun valjMiss(ctx: Context, t: Long, vad: String) {
+        ctx.dataStore.edit { p -> p[KEY_MISSAR] = Missar.encode(Missar.valj(Missar.decode(p[KEY_MISSAR] ?: ""), t, vad)) }
+    }
+    suspend fun markMissarSent(ctx: Context, sent: Collection<MissEntry>) {
+        ctx.dataStore.edit { p -> p[KEY_MISSAR] = Missar.encode(Missar.markSent(Missar.decode(p[KEY_MISSAR] ?: ""), sent)) }
     }
 
     suspend fun appendAlert(ctx: Context, e: AlertEntry) {

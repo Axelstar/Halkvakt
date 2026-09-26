@@ -101,7 +101,7 @@ struct InstallningarView: View {
                         SectionHeader(text: "Betatest", color: Brand.dim)
                         Panel {
                             ToggleRow(title: "Svara på varningarna",
-                                      sub: "Efter en varning kan du trycka Stämde eller Stämde inte. Det som skickas är varningens id, klockslaget och ditt svar — inget konto, ingen resa, ingen position. Men ett varnings-id pekar på en fara på kartan, så vi ser ungefär var du var just då. Bara för betatestare.",
+                                      sub: "Efter en varning kan du trycka Stämde eller Stämde inte. Det som skickas är varningens id, klockslaget och ditt svar — inget konto, ingen resa, ingen position. Men ett varnings-id pekar på en fara på kartan, så vi ser ungefär var du var just då. Markerar du att appen missade något skickas också klockslaget och närmaste mätstation — det säger ungefär var du var just då. Bara för betatestare.",
                                       isOn: $prefs.facitOn)
                         }
                     }
@@ -114,7 +114,7 @@ struct InstallningarView: View {
                             Text("All matchning mot vägdata sker lokalt i appen. Inget konto, ingen spårning.")
                                 .font(Typo.sans(14)).foregroundStyle(Brand.dim)
                             // S4: löftet skrivs om ordagrant (Axel #196) — samma mening som i Android.
-                            Text("Undantaget är betatestet, om du själv slår på det: då skickas varningens id, klockslag och ditt svar (Stämde / Stämde inte), plus appens namn och version — det säger ungefär var du var när rösten talade. Inget annat.")
+                            Text("Undantaget är betatestet, om du själv slår på det: då skickas varningens id, klockslag och ditt svar (Stämde / Stämde inte), och när du markerat att appen missade något: klockslaget, närmaste mätstation och vad det var — plus appens namn och version. Det säger ungefär var du var just då. Inget annat.")
                                 .font(Typo.sans(14)).foregroundStyle(Brand.dim)
                         }
                         LinkRow(title: "Livekartan — läget just nu", url: "https://axelstar.github.io/halkvakt-karta/karta.html")

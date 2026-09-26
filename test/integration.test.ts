@@ -377,6 +377,34 @@ test("kort #205 prov-kolumnen: prov och fotostudio märks, riktiga id:n inte, om
   } finally { await pool.end(); }
 });
 
+// Kort #203 lager 2 (sql/038, DECISIONS #379): förarens missar. Samma provmärkning som svaren, omsändning ersätter i stället
+// för att dubblera, och ett "vad" utanför de fem avvisas av tabellen själv — inte bara av funktionen.
+test("#203 driver_miss: provmärkning, omsändning ersätter, okänt vad avvisas, omkörning ofarlig", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const mig = () => pool.query(readFileSync(new URL("../sql/038_driver_miss.sql", import.meta.url), "utf8"));
+  try {
+    await mig();
+    await pool.query("DELETE FROM driver_miss WHERE version = 'test203'");
+    const in_ = (t: string, vad: string, st: string, seg: string | null, app: string) => pool.query(
+      `INSERT INTO driver_miss (t, vad, station_id, segment_id, app, version) VALUES ($1, $2, $3, $4, $5, 'test203')
+       ON CONFLICT (t, station_id, app) DO UPDATE SET vad = EXCLUDED.vad, segment_id = EXCLUDED.segment_id`, [t, vad, st, seg, app]);
+    await in_("2026-11-01T06:00:00Z", "halka", "wx:2135", "seg:16010", "ios");
+    await in_("2026-11-01T06:05:00Z", "vilt", "wx:fotostudio", null, "android");
+    await in_("2026-11-01T06:10:00Z", "annat", "wx:prov-ios", null, "ios");
+    await in_("2026-11-01T06:00:00Z", "vatten", "wx:2135", "seg:16010", "ios");      // omsändning med ändrat svar
+    const rader = (await pool.query("SELECT station_id, vad, prov FROM driver_miss WHERE version = 'test203' ORDER BY t")).rows
+      .map((r) => [r.station_id, r.vad, r.prov]);
+    assert.deepEqual(rader, [["wx:2135", "vatten", false], ["wx:fotostudio", "vilt", true], ["wx:prov-ios", "annat", true]],
+      "tre rader, inte fyra; förarens senaste ord gäller; prov och fotostudio märks");
+    await assert.rejects(in_("2026-11-01T06:15:00Z", "is", "wx:2135", null, "ios"), /check constraint/i, "vad utanför de fem avvisas");
+    await mig();
+    assert.equal((await pool.query("SELECT count(*)::int AS n FROM driver_miss WHERE version = 'test203'")).rows[0].n, 3,
+      "omkörning av migrationen tappar inga rader");
+  } finally { await pool.end(); }
+});
+
 // Uppspelningen ur arkiven (sql/028, DECISIONS #244): kombinationen och KB-A:s varianter i EN funktion, med betans
 // startvärden som standardvärden. Fem påhittade stationer med känt rätt svar per variant. Databasen delas med de andra
 // testen, så talen jämförs som SKILLNAD mot läget före insättningen. Dessutom: utfallet är blindat som standard, och ett

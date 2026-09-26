@@ -19,8 +19,9 @@ struct VaktenView: View {
                 // en körning ska se den utan att leta. Försvinner när allt är besvarat, och efter ett dygn.
                 if prefs.facitOn, let sedan = prefs.tripStart {
                     let obes = Resan.obesvarade(prefs.history, prefs.facit, sedan: sedan)
-                    if Resan.fragaKvar(sedan: sedan, nu: .now, obesvarade: obes.count) {
-                        EfterResanKort(varningar: obes, sedan: sedan).padding(.top, 14)
+                    let omarkerade = Missar.omarkerade(prefs.missar, sedan: sedan)   // #203 lager 2
+                    if Resan.fragaKvar(sedan: sedan, nu: .now, obesvarade: obes.count + omarkerade.count) {
+                        EfterResanKort(varningar: obes, missar: prefs.missar.filter { $0.t >= sedan }, sedan: sedan).padding(.top, 14)
                     }
                 }
 
