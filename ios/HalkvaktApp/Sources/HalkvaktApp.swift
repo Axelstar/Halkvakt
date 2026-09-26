@@ -43,15 +43,17 @@ struct InstallningarView: View {
                             }
                             Divider().overlay(Brand.stroke)
                             HStack {
-                                Text("Varna på avstånd").font(Typo.sans(15, .semibold)).foregroundStyle(Brand.text2)
+                                Text("Längsta förvarning").font(Typo.sans(15, .semibold)).foregroundStyle(Brand.text2)
                                 Spacer()
                                 Text(leadText).font(Typo.mono(13, .medium)).foregroundStyle(Brand.yellow)
                             }
-                            Slider(value: $prefs.leadMaxM, in: 400...3000, step: 100).tint(Brand.yellow)
+                            Slider(value: $prefs.leadMaxM, in: Prefs.leadRange, step: 100).tint(Brand.yellow)
                             HStack {
-                                Text("Sent — 400 m"); Spacer(); Text("Tidigt — 3 km")
+                                Text("Kortare — 400 m"); Spacer(); Text("Fullt — 1,2 km")
                             }
                             .font(Typo.sans(12)).foregroundStyle(Brand.faint)
+                            Text("Rösten varnar ungefär 30 sekunder före — 750 m i 90 km/h. Reglaget kan korta det, aldrig förlänga.")
+                                .font(Typo.sans(12)).foregroundStyle(Brand.faint)
                         }
                     }
 

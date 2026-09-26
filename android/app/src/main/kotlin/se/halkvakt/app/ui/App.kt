@@ -449,7 +449,7 @@ private fun AktivContent(activity: MainActivity) {
     val session by GuardService.session.collectAsStateWithLifecycle()
     val hazards by activity.hazards.collectAsStateWithLifecycle()
     val ctx = LocalContext.current
-    val warnM by remember { Prefs.warnDistanceM(ctx) }.collectAsStateWithLifecycle(initialValue = 3000f)
+    val warnM by remember { Prefs.warnDistanceM(ctx) }.collectAsStateWithLifecycle(initialValue = Prefs.WARN_MAX_M)
     var now by remember { mutableStateOf(System.currentTimeMillis()) }
     LaunchedEffect(Unit) { while (true) { delay(1000); now = System.currentTimeMillis() } }
 
@@ -467,7 +467,7 @@ private fun AktivContent(activity: MainActivity) {
                 Text("$minutes min · ${"%.0f".format(session.km)} km",
                     color = Text, fontSize = 34.sp, fontFamily = Cond,
                     modifier = Modifier.padding(top = 4.dp))
-                Text("Rösten talar när något dyker upp inom ${"%.1f".format(warnM / 1000).replace('.', ',')} km framför dig.",
+                Text("Rösten talar ungefär 30 sekunder före, som längst ${"%.1f".format(warnM / 1000).replace('.', ',')} km. En olycka längre fram kan nämnas tidigare.",
                     color = Dis, fontSize = 13.sp, modifier = Modifier.padding(top = 2.dp))
                 Spacer(Modifier.height(12.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -549,7 +549,7 @@ private fun SettingsScreen(activity: MainActivity) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
     val disabled by remember { Prefs.disabledKinds(ctx) }.collectAsStateWithLifecycle(initialValue = emptySet())
-    val warnPref by remember { Prefs.warnDistanceM(ctx) }.collectAsStateWithLifecycle(initialValue = 3000f)
+    val warnPref by remember { Prefs.warnDistanceM(ctx) }.collectAsStateWithLifecycle(initialValue = Prefs.WARN_MAX_M)
     var slider by remember(warnPref) { mutableStateOf(warnPref) }
 
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp)) {
@@ -598,21 +598,21 @@ private fun SettingsScreen(activity: MainActivity) {
                 }
                 HorizontalDivider(color = Kant, modifier = Modifier.padding(vertical = 10.dp))
                 Row {
-                    Text("Varna på avstånd", color = Text, fontSize = 15.sp)
+                    Text("Längsta förvarning", color = Text, fontSize = 15.sp)
                     Spacer(Modifier.weight(1f))
                     Text("${"%.1f".format(slider / 1000).replace('.', ',')} km",
                         color = Gul, fontSize = 14.sp, fontWeight = FontWeight.Bold)
                 }
                 Slider(value = slider, onValueChange = { slider = it },
                     onValueChangeFinished = { scope.launch { Prefs.setWarnDistanceM(ctx, slider) } },
-                    valueRange = 500f..5000f,
+                    valueRange = Prefs.WARN_MIN_M..Prefs.WARN_MAX_M,
                     colors = SliderDefaults.colors(thumbColor = Gul, activeTrackColor = Gul, inactiveTrackColor = Kant))
                 Row {
-                    Text("Sent — 500 m", color = Dis, fontSize = 11.sp)
+                    Text("Kortare — 400 m", color = Dis, fontSize = 11.sp)
                     Spacer(Modifier.weight(1f))
-                    Text("Tidigt — 5 km", color = Dis, fontSize = 11.sp)
+                    Text("Fullt — 1,2 km", color = Dis, fontSize = 11.sp)
                 }
-                Text("Gäller från nästa start av vakten.", color = Dis, fontSize = 11.sp,
+                Text("Rösten varnar ungefär 30 sekunder före — 750 m i 90 km/h. Reglaget kan korta det, aldrig förlänga. Gäller från nästa start av vakten.", color = Dis, fontSize = 11.sp,
                     modifier = Modifier.padding(top = 4.dp))
             }
         }

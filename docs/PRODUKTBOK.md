@@ -121,9 +121,13 @@ något händer visas ett **varningskort i 8 sekunder** med samma text som röste
 ögonen ska stanna på vägen.
 
 **⚙️ Inställningar** — *Varna för*: fem brytare, en per fara (olyckor och hinder, halt väglag, frysrisk,
-vilt, fartkameror), alla på från början; en avslagen fara varnar aldrig. *Varna på avstånd*: ett
-skjutreglage för hur långt i förväg rösten ska tala — 400–3 000 m i steg om 100 på iOS, 500–5 000 m
-steglöst på Android, 3 000 m från början på båda. På iOS också *Vaknar själv när du kör* (på från
+vilt, fartkameror), alla på från början; en avslagen fara varnar aldrig. *Längsta förvarning*: rösten
+talar ungefär 30 sekunder före (750 m i 90 km/h, 1 167 m i 140 km/h), och reglaget är ett tak på det —
+400–1 200 m på båda plattformarna, i steg om 100 på iOS och steglöst på Android, 1 200 m från början.
+Det kan korta förvarningen, aldrig förlänga den. *(Före 26/9 hette det "Varna på avstånd" och gick till
+3 km på iOS och 5 km på Android — över fart × 30 s gjorde det ingenting, kort #259.)* Körläget säger
+samma sak: *"Rösten talar ungefär 30 sekunder före, som längst 1,2 km. En olycka längre fram kan nämnas
+tidigare."* På iOS också *Vaknar själv när du kör* (på från
 början) och guiden *Starta direkt (valfritt)*. Och betatestets brytare *Svara på varningarna* — **av
 tills du själv slår på den** — med texten om exakt vad som skickas (se Om).
 

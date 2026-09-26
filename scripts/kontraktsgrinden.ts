@@ -547,6 +547,20 @@ export const KONTRAKT: Kontrakt[] = [
     former: [/p_facit_km numeric DEFAULT (\d+)/, /p_facit_km <> (\d+) THEN/],
     golv: 2,
   },
+  {
+    // Kort #259 (Bengts ja 26/9, DECISIONS #374): reglaget var 400–3 000 på iOS och 500–5 000 på Android, och ovanför fart × 30 s
+    // gjorde det ingenting. Nu samma tak på båda — och ett tak som bara står på en plattform är ett löfte som bara den andra bryter.
+    namn: "Förvarningens tak — reglagets övre gräns på båda plattformarna",
+    varfor: "Driver de isär lovar appen olika förvarning på iPhone och Android, och produktboken kan bara stämma med en av dem.",
+    former: [/const val WARN_MAX_M = (\d+)f/, /static let leadRange: ClosedRange<Double> = \d+\.\.\.(\d+)/],
+    golv: 2,
+  },
+  {
+    namn: "Förvarningens golv — reglagets undre gräns på båda plattformarna (motorns leadMinM)",
+    varfor: "Under motorns leadMinM (400 m) kortar reglaget försprånget under det motorn själv tillåter.",
+    former: [/const val WARN_MIN_M = (\d+)f/, /static let leadRange: ClosedRange<Double> = (\d+)\.\.\./],
+    golv: 2,
+  },
 ];
 
 // ── SJÄLVTEST mot känd sanning, utan disk ──────────────────────────────────────────────

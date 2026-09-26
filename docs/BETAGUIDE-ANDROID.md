@@ -71,7 +71,8 @@ Appen har två flikar: **Vakten** och **Inställningar**.
 - Klart för dagen: **Avsluta vakten**.
 
 I **Inställningar** kan du stänga av varningsslag du inte vill höra (fartkameror har egen brytare),
-byta hur tidigt rösten varnar (500 m till 5 km), och läsa vad appen gör.
+korta förvarningen med **Längsta förvarning** (400 m till 1,2 km — rösten varnar annars ungefär 30 sekunder före, 750 m
+i 90 km/h), och läsa vad appen gör.
 
 ---
 
