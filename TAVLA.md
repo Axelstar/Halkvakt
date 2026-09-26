@@ -597,14 +597,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↦ **Sorterat 22/9 (kort #224):** texten för iOS-testarna skriver Claude nu; utskicket med en extern TestFlight-grupp är Axels.
 
 ### Claude — låst (väntar på nyckel)
-- [ ] 🌧️ **#247 BILDLÄSNINGSSPÅRETS ANDRA ARK — vid regn eller i mörker** (ur #246, DECISIONS #340). Första arket (24/9 13:43Z) var sol och
-  torr väg: 20 × bar, hög säkerhet. Det bevisar kedjan, inte att klassningen skiljer våt från bar, eller att mörkret ger *okänd* i
-  stället för en gissning. `python scripts/kontaktark.py direkt --antal 20 --ut docs/kamerafacit/prov-<datum>` vid regn över
-  rutterna (radarn visar det) eller efter mörkrets inbrott; samma stickprov och ok. Kostar en kvart plus Axels blick.
-  🔒 NYCKEL: vädret. Verify: ett ark med minst fem *våt* eller *okänd*, ok:at, och en rättelse från Axel om klassningen tagit fel.
-  📸 **ANDRA ARKET 26/9 03:22Z, i mörker** (Bengts ja, DECISIONS #371): 12 bar, 8 okänd, ingen gissning på våt — sju okända är
-  spindelväv över linsen i IR-ljuset, en för mörk. Verify:s första halva uppfylld. 🔑 Kvar: Axels ok på
-  `docs/kamerafacit/prov-2026-09-26/ok.md` (två bilder i stickprovet).
 - [ ] 🐕 **#243 VAKTHUNDENS ARKIVGRÄNS ÄR FÖR SNÄV — issue #528 var ett falsklarm** (fynd 24/9 på Bengts fråga *"vad betyder detta"*).
   Checken *livemotorns effekt* larmar när `situation_archive` inte rörts på 30 min, men arkivet skrivs bara när Trafikverket
   ändrar något: mätt 24/9 04:12Z — 4 gluggar > 30 min senaste dygnet (största 102 min), **32 på sju dygn, medel 54 min, största
@@ -1838,6 +1830,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#247 BILDLÄSNINGENS ANDRA ARK — KLART 26/9 (DECISIONS #372)**: 20 nattbilder, 12 bar och 8 okänd, ingen gissning på våt; Bengts ok, 20 rader i kamerafacit (41 totalt). Kortet i `TAVLA-ARKIV.md`. Tavlan 44 → 43.
 - [x] ✅ **#257 TRENDENS STIGANDE HALVA — KLART 25/9 (DECISIONS #368)**: sparas i `trend_stigande` före frosten; 654 kandidater vid 41 stationer första halvdygnet, toppen kl 05–08. Tavlan 44 → 43.
 - [x] ✅ **TIDEN I SYSTEMET — KLART 25/9 (DECISIONS #367)**: kartlagt UTC mot svensk tid; grind NT räknar dygn och månader i svensk tid, och kontraktet "Givarfelsdygnets zon" vaktar etikettparningen som saknade vakt. Båda med motprov. Tavlan 43 → 43.
 - [x] ✅ **#256 UPPSPELNINGENS NATT — KLART 25/9 (DECISIONS #366)**: svensk tid som T-A och R-A, kontraktet "Nattens zon", körd i drift och jämförd (oförändrat i september). Tavlan 44 → 43.

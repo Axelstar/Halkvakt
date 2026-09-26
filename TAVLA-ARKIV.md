@@ -2753,3 +2753,16 @@
   🔑 **Nyckel, sorterat 22/9 (kort #224):** publik release och Axels beslut om HazardKind och röstfras (Ä3).
   ✅ **Stängt 22/9 (DECISIONS #315, Bengt: *"öppna våren 2027"*):** bärs av Ä3 i bedömningens §3 och **öppnas våren 2027**. Underlaget samlas redan: `AnimalPresenceObstruction` arkiveras (ARCHIVE), fast rösten bara talar om olyckor (KEEP). Rösttexten är Axels beslut.
 
+## Stängda efter flytten 26/9
+
+### Claude — låst (väntar på nyckel)
+
+- [x] ✅ **STÄNGT 26/9** (DECISIONS #372) — 🌧️ **#247 BILDLÄSNINGSSPÅRETS ANDRA ARK — vid regn eller i mörker** (ur #246, DECISIONS #340). Första arket (24/9 13:43Z) var sol och
+  torr väg: 20 × bar, hög säkerhet. Det bevisar kedjan, inte att klassningen skiljer våt från bar, eller att mörkret ger *okänd* i
+  stället för en gissning. `python scripts/kontaktark.py direkt --antal 20 --ut docs/kamerafacit/prov-<datum>` vid regn över
+  rutterna (radarn visar det) eller efter mörkrets inbrott; samma stickprov och ok. Kostar en kvart plus Axels blick.
+  🔒 NYCKEL: vädret. Verify: ett ark med minst fem *våt* eller *okänd*, ok:at, och en rättelse från Axel om klassningen tagit fel.
+  📸 **ANDRA ARKET 26/9 03:22Z, i mörker** (Bengts ja, DECISIONS #371): 12 bar, 8 okänd, ingen gissning på våt — sju okända är
+  spindelväv över linsen i IR-ljuset, en för mörk. Verify:s första halva uppfylld. 🔑 Kvar: Axels ok på
+  `docs/kamerafacit/prov-2026-09-26/ok.md` (två bilder i stickprovet).
+  ✅ **STÄNGT 26/9 (DECISIONS #372):** Bengts ok 04:12Z, utan rättelser. dbknapp 36217165040 (bärare sql/033, 20 INSERT som bevisrader): arkets rader i `kamerafacit` 12 bar och 8 okänd, tabellen 41 rader (21 före).
