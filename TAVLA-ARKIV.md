@@ -2918,3 +2918,18 @@
   (c) fotostudions bilder är olika eller färre.
   ✅ **KLART 24/9 (DECISIONS #348):** (a) nollställs vid start, (b) `lastSaidAt`, (c) tre bilder i stället för sex.
   ✅ **STÄNGT 26/9 (femma sju, Bengts ja, DECISIONS #373):** byggt 24/9 (#348); del (a) bevisad genom läsning — raden sitter i vakttjänsten, som saknar JVM-prov.
+
+### Claude — olåst
+
+- [x] ✅ **STÄNGT 26/9** (DECISIONS #374) — 📜 **#249 OM-AVSNITTET SÄGER MINDRE ÄN SANNINGEN** (fynd 24/9 under kort #217, DECISIONS #347). (a) **Android** visar bara
+  *"Öppna data från Trafikverket (CC0)"*. Ärlighetsraden (*mellan stationerna är vägen oövervakad*) och källorna SMHI, Fintraffic
+  (CC BY 4.0) och OpenStreetMap (ODbL) saknas — och Fintraffics gränsstationer och OSM:s broar når Android-motorn, så de två
+  licenserna kräver att källan anges. iOS har hela raden. (b) **Båda plattformarna** säger i undantagstexten *"Inget annat"*, men
+  facitsvaret bär också appens namn och version (`app`, `ver`). Play-filen deklarerar redan båda; texten i appen gör det inte.
+  🔑 (b) är Axels ordval: skriv om texten eller ta bort fälten ur svaret. Ändras texten gäller invariantregeln — Play-filen,
+  integritet.html och produktboken i samma commit. (a) kan Claude bygga när Bengt sagt ja.
+  Verify: Androids Om bär samma ärlighetsrad och attribution som iOS (skärmbild ur fotostudion); undantagstexten och kroppen
+  som skickas säger samma sak.
+  ✅ **KLART 24/9 (DECISIONS #348, Axel via Claude):** (b) texten nämner nu appens namn och version, fälten stannar; (a) ärlighetsraden och källorna i Androids Om. Verify: fotostudions bild av Om efter nästa android-körning.
+  📸 **26/9: beviset räckte inte.** Fotostudions `shot-6-betatest.png` (android.yml 36214202433) slutar vid Om-avsnittets första ruta — ärlighetsraden och källorna syns inte. Verify kräver en svepning till i fotostudion (en rad i android.yml) eller en skärmbild av Om från testtelefonen.
+  ✅ **STÄNGT 26/9 (DECISIONS #374):** Verify uppfylld — fotostudions nya `shot-7-om.png` (android.yml 36219380753, i produktboken) visar Androids ärlighetsrad och källraden fram till *Fintraffic (CC*; resten läst i koden, `App.kt:686` — *Fintraffic (CC BY 4.0), broar © OpenStreetMap-bidragsgivare (ODbL)*, ordagrant som iOS `HalkvaktApp.swift:124`.

@@ -5034,3 +5034,26 @@ därmed lovar något appen inte gör; produktboken säger *"hur långt i förvä
 säger fel; noterat, inte ändrat.
 
 **Tavlan:** 43 → 39 öppna kort (#83, #221, #250 stängda till arkivet, två in i #219, #259 nytt).
+
+## #374 (26/9 2026) Kort #259 väg (a): reglaget heter *Längsta förvarning* och går 400–1 200 m på båda plattformarna — rösten orörd
+
+**Beslut (Bengt 26/9: *"slå ihop och ja till a"*).** Reglaget ska säga vad det gör, inte styra något nytt. Motorn talar vid
+`min(leadMaxM, max(leadMinM, fart × 30 s))`; reglaget sätter `leadMaxM` och är alltså ett **tak**. Väg (b), att låta reglaget styra
+sekunderna, är inte vald — den ändrar vad rösten säger och kräver vektorer; den kan prövas i skuggan efter mars om förare ber om det.
+
+**Byggt.** Samma spann på båda: **400–1 200 m**, 1 200 från början (1 200 m ≈ 30 s i 140 km/h; under 144 km/h betyder taket
+ingenting, precis som 3 000 gjorde). Android `Prefs.WARN_MIN_M`/`WARN_MAX_M`, iOS `Prefs.leadRange`. Sparade värden över taket
+(Android upp till 5 000, iOS upp till 3 000) läses som 1 200 — samma beteende i varje laglig hastighet. Golvet 400 = motorns
+`leadMinM` (Android hade 500). Texterna: *Längsta förvarning*, *Kortare — 400 m* / *Fullt — 1,2 km*, och under reglaget *"Rösten
+varnar ungefär 30 sekunder före — 750 m i 90 km/h. Reglaget kan korta det, aldrig förlänga."* Körläget sa *"Rösten talar när något
+dyker upp inom 3 km framför dig"* — samma överdrift — och säger nu *"Rösten talar ungefär 30 sekunder före, som längst 1,2 km. En
+olycka längre fram kan nämnas tidigare."* (den tidiga olycksrepliken talar på upp till 10 km, #373). Produktboken och båda
+testarguiderna rättade i samma commit. iOS 0.3.9 (17).
+
+**Vakter.** Två nya kontrakt i kontraktsgrinden, *Förvarningens tak* och *Förvarningens golv*, som läser Kotlin och Swift — 55 kontrakt
+håller; motprov lokalt: iOS-taket 1 300 fälls på taket, golvet håller. **Bevis Android:** android.yml 36219380753 grön på grenen (JVM-prov, emulator, release-AAB); fotostudions shot-3 visar Längsta förvarning 1,2 km, Kortare — 400 m / Fullt — 1,2 km och texten om 30 sekunder. **iOS** är skrivet utan kompilator;
+Axels bygge av (17) är första kompileringen.
+
+**Ingen vektor rörd:** motorns `leadMaxM` 3 000 i `EngineConfig` står kvar; det är appens reglage som ändrats.
+
+**Också — fotostudion och #249.** Fotostudion svepte förbi reglaget och slutade före Om-sidans ärlighetsrad, så varken #259 eller #249 kunde bevisas med bild. `android.yml` tar nu `shot-3-reglaget` efter första svepningen och `shot-7-om` efter en tredje; alla fem bilder in i `docs/produktbok/` (PRODUKTBOKSREGELN). **#249 stängt:** fotostudions nya `shot-7-om.png` (android.yml 36219380753, i produktboken) visar Androids ärlighetsrad och källraden fram till *Fintraffic (CC*; resten läst i koden, `App.kt:686` — *Fintraffic (CC BY 4.0), broar © OpenStreetMap-bidragsgivare (ODbL)*, ordagrant som iOS `HalkvaktApp.swift:124`.

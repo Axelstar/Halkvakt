@@ -23,11 +23,15 @@ grundläget — pratar den, betyder det något.
 
 ## Så ser den ut
 
-| Vakten | Inställningar | Om (nu sist i Inställningar) |
+| Vakten | Inställningar | Rösten och längsta förvarning |
 |---|---|---|
-| ![Vakten](produktbok/shot-1-vakten.png) | ![Inställningar](produktbok/shot-2-installningar.png) | ![Om](produktbok/shot-6-betatest.png) |
+| ![Vakten](produktbok/shot-1-vakten.png) | ![Inställningar](produktbok/shot-2-installningar.png) | ![Reglaget](produktbok/shot-3-reglaget.png) |
 
-*(Android ur fotostudion 23/9, bygget från main. Repliken under Senast sagt är fotostudions provrad — rösten
+| Betatest och början av Om | Resten av Om — ärlighetsraden och källorna |
+|---|---|
+| ![Om](produktbok/shot-6-betatest.png) | ![Om, slutet](produktbok/shot-7-om.png) |
+
+*(Android ur fotostudion 26/9, android.yml 36219380753 på kort #259:s gren — reglaget *Längsta förvarning* 400–1 200 m och Om-sidans ärlighetsrad, som fotostudion inte fångade före 26/9. Bilderna 1, 2 och 6 i övrigt som 23/9. Repliken under Senast sagt är fotostudions provrad — rösten
 säger "Fartkamera om 500 meter.". Två flikar: Om är sista avsnittet i Inställningar — bilden visar slutet av
 Inställningar med betatest-brytaren, som fotostudion slagit på, och början av Om.)*
 

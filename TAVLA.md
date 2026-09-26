@@ -297,6 +297,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   spannet som faktiskt verkar, eller låt reglaget styra tiden (sekunder) i stället för metern — det senare ändrar vad rösten
   säger och kräver vektorer. 🔑 Bengts och Axels val (§4.2). Verify: reglagets text och spann säger vad motorn gör, på båda
   plattformarna, och produktboken likaså.
+  🔨 **VÄG (a) BYGGD 26/9** (Bengts ja, DECISIONS #374): *Längsta förvarning*, 400–1 200 m på båda, 1 200 från början, texten säger 30
+  sekunder före; körläget säger *som längst* i stället för *inom 3 km*. Två kontrakt i kontraktsgrinden. android.yml 36219380753 grön på grenen (JVM-prov, emulator, release-AAB); fotostudions shot-3 visar Längsta förvarning 1,2 km, Kortare — 400 m / Fullt — 1,2 km och texten om 30 sekunder.
+  🔑 Kvar: iOS-bygget 0.3.9 (17) hos Axel (första kompileringen) — sedan stängs kortet.
 
 ### Claude — olåst
 - [ ] 📍 **#226 AUTOSTARTENS BEHÖRIGHET FALLER TYST PÅ ANDROID 11+** (Axels fynd på testtelefonen 20/9, DECISIONS #272).
@@ -318,18 +321,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Verify: ett JVM-prov som skapar styrningen på nytt mellan start- och stopphändelsen faller före lagningen och passerar efter;
   på en riktig telefon stannar en autostartad vakt när bilens Bluetooth kopplas från.
   ✅ **BYGGT 24/9 (DECISIONS #348):** flaggan sparas mellan styrningarna, självstopp efter en kvart stilla (`IdleStop`), tre JVM-prov. Kvar: verify i bil på Android.
-
-- [ ] 📜 **#249 OM-AVSNITTET SÄGER MINDRE ÄN SANNINGEN** (fynd 24/9 under kort #217, DECISIONS #347). (a) **Android** visar bara
-  *"Öppna data från Trafikverket (CC0)"*. Ärlighetsraden (*mellan stationerna är vägen oövervakad*) och källorna SMHI, Fintraffic
-  (CC BY 4.0) och OpenStreetMap (ODbL) saknas — och Fintraffics gränsstationer och OSM:s broar når Android-motorn, så de två
-  licenserna kräver att källan anges. iOS har hela raden. (b) **Båda plattformarna** säger i undantagstexten *"Inget annat"*, men
-  facitsvaret bär också appens namn och version (`app`, `ver`). Play-filen deklarerar redan båda; texten i appen gör det inte.
-  🔑 (b) är Axels ordval: skriv om texten eller ta bort fälten ur svaret. Ändras texten gäller invariantregeln — Play-filen,
-  integritet.html och produktboken i samma commit. (a) kan Claude bygga när Bengt sagt ja.
-  Verify: Androids Om bär samma ärlighetsrad och attribution som iOS (skärmbild ur fotostudion); undantagstexten och kroppen
-  som skickas säger samma sak.
-  ✅ **KLART 24/9 (DECISIONS #348, Axel via Claude):** (b) texten nämner nu appens namn och version, fälten stannar; (a) ärlighetsraden och källorna i Androids Om. Verify: fotostudions bild av Om efter nästa android-körning.
-  📸 **26/9: beviset räckte inte.** Fotostudions `shot-6-betatest.png` (android.yml 36214202433) slutar vid Om-avsnittets första ruta — ärlighetsraden och källorna syns inte. Verify kräver en svepning till i fotostudion (en rad i android.yml) eller en skärmbild av Om från testtelefonen.
 
 - [ ] 🌡️ **#253 GRIND A OCH VÄGPUNKTEN SAKNAR HÄLFTEN AV GRANNARNA — de varma** (mätt 25/9 under kort #252, `docs/GRANSKNING-GRINDAR-2026-09-25.md`).
   **10 947 kalla målhalvtimmar** (yta ≤ 5 °C, 60 dygn): av 41 079 grannplatser saknade **20 319 en arkivrad — 49,5 %**; bland de frysnära (yta ≤ 1 °C, 232 halvtimmar) **50,4 %**. Av 5 785 mål med fem grannar hade bara **573 alla fem**, och 966 ingen. Orsaken: den levande ingesten sparar bara en avläsning med yta ≤ 5 °C eller nederbörd
@@ -1698,6 +1689,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#249 OM-AVSNITTET — KLART 26/9 (DECISIONS #374)**: byggt 24/9; fotostudion fångar nu resten av Om (shot-7), ärlighetsraden och källorna ordagrant som iOS. Tavlan 39 → 38.
 - [x] ✅ **#83 GALLRINGEN — KLART 26/9 (DECISIONS #373)**: i drift sedan 9/9 och exporten sedan 24/9; Verify mätt: högst 17 978 rader/dygn i det gallrade (gräns 45 000), en rad per halvtimme, grind A oberörd utom 3 av 49 372 halvtimmar.
 - [x] ✅ **#221 STYRDOKUMENTEN — KLART 26/9 (DECISIONS #371/#373)**: tavlan och besluten halverade i arkiv, BACKLOG avvecklad, STATUS-rubriken fryst, motsägelserna rättade, 273 av 279 grenar raderade.
 - [x] ✅ **#250 TRE SMÅFEL — KLART 26/9 (DECISIONS #373)**: byggt 24/9 (#348), stängt på Bengts ja; del (a) bevisad genom läsning.
