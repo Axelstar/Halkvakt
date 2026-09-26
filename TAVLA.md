@@ -105,6 +105,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   förklara varför"; (b) **`integritet.html` i karta-repot ljuger också** — *"Kärnlöftet: din position lämnar aldrig
   telefonen"* och *"Vad vi samlar in: Ingenting"*. Google jämför formuläret mot policyn, så den måste ändras i samma
   veva. Utkast skrivet, väntar Axels ja — det är ett publikt löfte.
+  📏 **26/9: (b) är klar** — `integritet.html` skrevs om 23/9 (DECISIONS #320). **Kvar bara (a) raderingsfrågan**, Axels ja.
   *Beslutet som bygget vilar på:* invarianten skrivs om till *aldrig utan aktivt val* — ingen
   positionsdata lämnar telefonen automatiskt; det enda som skickas är ett facitsvar föraren själv trycker på. Data Safety svarar
   sanningsenligt **Ja** (ändamål: förbättra varningarna; frivilligt; kan inte kopplas till person). **Bygg nästa varv:** CLAUDE.md:s
@@ -112,109 +113,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↦ **Sorterat 22/9 (kort #224):** kvar är ägarbeslut — raderingsfrågan och integritet.html; produktbokens rad 21 och 82 rättades 22/9 (DECISIONS #304).
   ↪ **Hit 24/9 (DECISIONS #346):** ur *Butiksuppladdning + Data safety-inklistring* (29/8, låst: Play-kontot). Inklistringen av formuläret är sista steget här och följer Verify-raden ovan. Själva uppladdningen står i *Play: uppladdningsguide*, och iOS går före Android (DECISIONS #320).
 
-- [ ] 🗣️ **#203 FACIT UTAN ATT STANNA — svaret efter resan, och med rösten under den** (Bengts fråga 18/9 efter
-  fälttest 2: *"vi måste hitta något system som inte innebär att de ska stanna och bekräfta … ett automatspår"*).
-  Dagens S4 kräver: stanna, avsluta vakten, öppna appen, hitta knapparna — och bara resans SISTA varning går att svara på.
-  **Förslag i tre lager:**
-  **Bengts styrning 19/9 — undantagsprincipen:** *"vi tror att appen är så duktig att vi automatiserar svaren så att
-  människan bara ska meddela när maskinen avviker från det som maskinen har förutsett"* — för ALLA varningsslag, inte
-  bara kamerorna. Rätt om bördan, fel om tystnaden: **tystnad får aldrig räknas som "stämde".** Tystnad betyder lika
-  ofta "såg inte", "kunde inte bedöma", "telefonen låg i fickan" eller "appen var trasig" — 16/9 och 18/9 gav noll svar
-  för att knapparna saknades, och med tystnad = ja hade de resorna bokförts som bekräftelser. Ett facit som antar det
-  som ska prövas kan inte pröva det. Svaret ska vara en HANDLING, men handlingen kan vara EN per resa:
-  **(1) Efter resan — undantagsprincipen med underskrift, båda plattformarna.** Appen sparar resans varningar (id,
-  klockslag, text; bara lokalt). När vakten stannar (manuellt eller självstoppet efter 15 min) och det finns obesvarade
-  varningar: en lokal notis *"Resan klar — stämde alla 3 varningarna?"* och en lista på hemskärmen med **ett tryck för
-  normalfallet: "Ja, alla stämde"**, eller peka ut den som inte stämde (*Stämde inte*) och den man inte kunde bedöma
-  (*Vet inte* — skickas aldrig). Skickas som i dag: id, klockslag, svar per varning. **Noll handgrepp i bilen, ett efter.**
-  Obesvarade resor skickas aldrig. Bygger på Facit/FacitSender som finns; iOS har notisbehörigheten (HeadsUpService),
-  Android POST_NOTIFICATIONS.
-  **VAR knappen sitter (Bengt 19/9: *"som det är i dag är det oerhört krångligt … det kommer inte många svar"*):**
-  frågan kommer till föraren — föraren letar aldrig. Tre platser, en fråga, ett tryck; svarad på en plats försvinner den
-  från de andra. Skiss: `docs/skisser/facit-efter-resan.svg`.
-  (a) **Låsskärmen:** notisen bär själva knapparna — *Ja, alla stämde* / *Något stämde inte* — och svaret skickas utan
-  att appen öppnas (iOS: notisåtgärd i bakgrunden; Android: notisåtgärd + WorkManager). Kommer vid självstoppet och vid
-  *Avsluta vakten*.
-  (b) **Överst på Redo.** — ett kort ovanför rubriken, inte en rad längst ner: *Resan 08:25 · 61 min · 3 varningar —
-  Stämde alla?* Står kvar tills svaret finns eller ett dygn gått; visas också direkt efter *Avsluta vakten*.
-  (c) **Listan** bara vid avvikelse: en rad per varning med klockslag och text; tryck på raden växlar Stämde / Stämde
-  inte / Vet inte; sedan *Skicka*.
-  Brytarens text skrivs om: *"Efter varje resa frågar appen om varningarna stämde — ett tryck. Det som skickas är …"*.
-  **(4) Missarna — det andra halva facit, INGÅR i förslaget (Bengt 19/9: "det ska finnas en möjlighet att rapportera
-  missarna också"); integritetsbeslutet är Axels:** *"Hej Siri, appen missade i Halkvakt"* eller en stor knapp *Appen
-  missade* i körläget (Androids väg) när det är halt
-  UTAN varning ⇒ appen sparar klockslaget och närmaste segment/station som id (räknas på telefonen) och skickar id +
-  klockslag efter resan, som ett varnings-id; typen (Halka / Vatten / Vilt / Olycka / Annat) väljs i listan efter resan.
-  Ny tabell `driver_miss`. Nettonyttan (KB-B) behöver missarna lika mycket som träffarna. Integritet: samma klass som
-  ett varnings-id, men utlöst av föraren — brytarens text måste säga det.
-  📄 **BESLUTSUNDERLAG TILL AXEL 19/9: `docs/FACIT-EFTER-RESAN.md`** — hela förslaget, skissen, åtta beslut med
-  rekommendation, kostnad och bevis. Bengt skickar; inget byggs förrän Axel svarat.
-  **Automatspåret för sanningen finns redan och bär huvuddelen — utan förare:** uppspelningen ur arkiven (mätte ytan
-  under noll och blöt EFTER frysriskvarningen? — en senare mätning är en annan mätning, tillåten som facit), kamerabilden
-  vid varningen (bildfacit), olycksarkivet, radar + station för vattenplaning (V-B). Föraren är den enda källan för det som
-  bara syns från bilen — och avvikelsen (*stämde inte*) är det värdefullaste enskilda svaret, för det är falsklarmen som
-  bränner förtroendet (cry wolf).
-  **Kontroll i domen:** resor svarade med "Ja, alla" jämförs med resor svarade rad för rad — skiljer sig andelen
-  *stämde* markant är "Ja, alla" en vana, inte en iakttagelse, och räknas ner. KB-D4:s tak (ingen förare > 25 %) står.
-  **Förslag till KB-D (kräver Bengt + Axel, fastställt dokument): KB-D7 — ett svar är en handling; tystnad är inget svar.**
-  **(2) Med rösten under resan — iOS, nästan gratis.** Två App Shortcuts bredvid Starta/Stoppa: *"Hej Siri, stämde i
-  Halkvakt"* / *"stämde inte i Halkvakt"* ⇒ svar på senaste varningen om den är yngre än 10 min, Siri säger *"Tack."*.
-  Med undantagsprincipen räcker EN fras i praktiken: *"stämde inte i Halkvakt"* när maskinen hade fel, medan minnet är färskt.
-  Händerna på ratten, fungerar via CarPlay och bilens Bluetooth, **ingen mikrofonbehörighet** — Siri lyssnar, inte appen.
-  Android: Assistant/Gemini-stödet för egna app-fraser är osäkert — (1) först, rösten undersöks.
-  **(3) Valfritt:** knapparna i körläget när bilen står stilla (≥ 5 s, varning < 10 min) — rött ljus, färskt minne, ett
-  tryck på en monterad telefon.
-  **Vad som INTE går:** att automatisera människans iakttagelse. Telefonen kan inte känna halka, och ett svar som ingen
-  mätning kan motbevisa får inte räknas (regel T). Det automatiska facit finns redan, utan förare: kamerabilderna
-  (bildfacit, bedömningen §4.2), uppspelningen ur arkiven, olycksarkivet. Förarkanalen ska bara bära det bara en
-  människa ser — och därför vara gratis att använda.
-  **Avvisat:** lyssning i appen efter varningen (mikrofonbehörighet; Bluetooth byter till samtalsläge och musiken tystnar;
-  svenskt stöd på enheten oklart) · rattens knappar (kräver att appen tar över musiken) · CarPlay-app (Apples tillstånd)
-  · klocka (få testare) · "passerad"-flagga ur positionen (rörelsedata — eget integritetsbeslut, inte nu).
-  **Kamerorna är kontrollfrågan:** Trafikverkets kameror är fältverifierade (2/9), så ett *stämde inte* på en kamera
-  säger att kanalen eller geometrin är fel — inte kameran. Domen i januari behöver svaren på halka och frysrisk
-  (KB-D4: ≥ 30 svar från ≥ 5 förare).
-  Kostnad: en Android-push ≈ 15 Actions-min (två jobb) + CI; iOS byggs av Axel — går i nästa bygge efter 0.3.8.
-  Rösttexten rörs inte. S4:s utformning är Axels ⇒ hans ja på formen; Bengt beställer.
-  Verify: (1) en resa med ≥ 2 varningar besvarad med ett tryck ger lika många rader i `driver_facit`, utan att föraren
-  stannat; en resa utan tryck ger noll rader;
-  (2) ett svar via Siri med `app = ios` och varningens klockslag.
-  🔑 **AXELS SVAR PÅ §8, 20/9 kväll (via Cowork, DECISIONS #267) — sju av åtta avgjorda:**
-  **1 ja** (undantagsprincipen med underskrift; KB-D7 till Bengt) · **2 ja, alla tre** (*"låsskärmen är det viktiga —
-  föraren ska aldrig behöva öppna appen för att svara ja"*) · **3 de två första** Siri-fraserna (*stämde inte*, *appen
-  missade*; *stämde* behövs inte under körning — det är vad låsskärmen är till för) · **4 ja, medvetet ja** —
-  station-id + klockslag skickas, *"det är inte en position, men det är en position i grova drag"*; brytarens text ska
-  säga det ordagrant och produktboken uppdateras samma dag · **5 ja** (stor knapp *Appen missade*) · **6 nej** (lager 3
-  utgår) · **8 ja** (Android i samma PR).
-  ➕ **NYTT KRAV ur Axels läsning — visa varningarna i kortet:** *"Ja, alla stämde"* efter tre timmars körning svarar i
-  dag på ett TAL (*3 varningar*), inte på något föraren ser. Kortet på *Redo.* ska visa de tre raderna — klockslag och
-  text — så att ett tryck är ett svar på något läst. Kostar en vy. **Gör inte KB-D7-kontrollen onödig** (vanan finns
-  kvar att mäta, och kontrollen kostar ingenting i domen) men gör den mindre bärande.
-  ✅ **BESLUT 7 AVGJORT 20/9 18:35 — A. AXEL ARKIVERAR 0.3.8 NU** (DECISIONS #269). Simulatorprovet försöktes och
-  föll på Xcodes egen infrastruktur (*"the system shell probably crashed"*, `host down`, efter 94 s) på en M1 Air med
-  8 GB och iOS 26.1-runtime. **Det är svaret på C:s premiss:** C valdes för att kanalen skulle bevisas BILLIGT utan
-  TestFlight, och beviset var inte billigt — det kostade mer än den fältrunda det skulle spara. #203 bygger på 0.3.9.
-  *Historik:* Axels skäl:
-  sändkanalen från en riktig telefon har aldrig bevisats, och att lägga ny funktion ovanpå en obevisad kanal är fel
-  ordning. Bengts skäl: en uppdatering i stället för två, och kanalen bevisas utan TestFlight med simulatorprovet.
-  **Simulatorprovet är fortfarande ogjort** (`driver_facit` 20/9 16:07Z: 0 riktiga svar, 2 provrader — ingen
-  `cam:fotostudio`). **Nytt sedan båda svaren skrevs:** motorfixarna #210 (*"på väg &lt;null&gt;"*) och #211 (tredje
-  olycksropet) ligger i main sedan i kväll och når en telefon bara genom ett bygge — ett skäl för A som varken
-  underlaget eller #242 kände till. Se DECISIONS #267.
-  🔨 **LAGER 1 BYGGT 20/9 kväll (DECISIONS #277) — "grunden", båda plattformarna.** Resans logg, låsskärmsnotisen
-  med knapparna i sig (*Ja, alla stämde* / *Något stämde inte*) och kortet överst på *Redo.* med **en rad per
-  varning: klockslag + text** (Axels tillägg). Delad ren räkning: `Resan.kt` / `Resan.swift`. Tystnad skriver
-  aldrig ett svar — ingen kod i filen gör det. Åtta enhetstester på Android (de första i app-modulen), **gröna i
-  CI**; **iOS-halvan är skriven utan kompilator** och kompileras första gången i Axels Xcode (inget CI-flöde bygger
-  app-målet — samma rad som #267/#276). iOS krävde tre saker Android redan hade: persistent varningshistorik,
-  notiskategori + delegat, och en gemensam tidsstämpel för "Senast sagt" och historikraden (annars två facitrader
-  för samma varning). Fotostudion lägger nu in en påhittad **resa**, inte en varning — kortet går att se utan körning.
-  ⏭️ **STÅR KVAR PÅ KORTET (lager 2):** Siri-fraserna *"stämde inte i Halkvakt"* / *"appen missade i Halkvakt"* och
-  missarna (`driver_miss` + stor knapp *Appen missade* i körläget). Verify står **öppen**: en riktig resa på en
-  riktig telefon som ger rader i `driver_facit` utan att föraren stannat.
-  ⚠️ **22/9 (DECISIONS #304):** lager 1:s iOS-kod (eb81b50, 20/9 18:17) ligger på main och följer därför med i ett arkiv från main — alltså i **0.3.9 (13)**, inte i (12), som sattes 17:37 före koden. Koden har aldrig kompilerats; Xcode är första provet.
-  ↦ **Sorterat 22/9 (kort #224):** Axels beslut är tagna (#267, #269) — lager 2 (Siri-fraserna, `driver_miss`, *Appen missade*) kan byggas nu. iOS-koden kompileras först i Axels Xcode.
-  ↪ **Flyttat 26/9 från *Claude — olåst*** (femma åtta, DECISIONS #377): nästa steg är Axels beslut om formen.
 ### Axel — hösten (brainstorm 31/8)
 - [ ] **Skydda namnet:** varumärket Halkvakt hos PRV + domänen halkvakt.se. Enda juridiska
   muren som finns i branschen; arkivet och relationerna är resten av försvaret.
@@ -424,6 +322,110 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔨 **BYGGT 25/9 (Bengt: *"ja till 253"*, DECISIONS #353):** den levande ingesten sparar en varm och torr avläsning EN gång per station och halvtimme (`arkivpolicy.ts`, `test/arkivpolicy.test.ts`, 7 fall, 2 motprov); en fråga per körning, fallerar den gäller den gamla regeln och felet står i svaret (`arkivpolicy`). Kvar för Verify: deploy, täckningen i en halvtimme efter deployen, och samma censurmätning på halvtimmar efter ändringen.
   ✅ **Axels ja 25/9 (via Bengt, DECISIONS #353). I DRIFT:** deployad 07:20Z (PR #567); varvet 07:24Z skrev 146 väderrader, varav 132 varma halvtimmesrader, `ok: true`, ingen tillbakagång till den gamla regeln. Kvar för Verify: täckningen per halvtimme och censurmätningen på kalla halvtimmar efter ändringen (tidigast 26/9 på morgonen).
   📏 **Läst 25/9 08:01Z (`scripts/matningar/tackning-halvtimme-2026-09-25.sql`):** täckningen per halvtimme mot 837 aktiva stationer — före deployen **63–84** stationer med rad (05:00–06:30Z, en varm förmiddag), halvtimmen 07:30–08:00Z **830 av 837 (99 %)**; rader per halvtimme 259–320 → 963, alltså ungefär tre gånger så många en varm dag (≈ 46 000 rader/dygn mot ≈ 17 000). Kvar för Verify: censurmätningen på kalla halvtimmar efter ändringen (< 5 % saknade), tidigast 26/9 på morgonen, och arkivets tillväxt per dygn.
+
+- [ ] 🗣️ **#203 FACIT UTAN ATT STANNA — svaret efter resan, och med rösten under den** (Bengts fråga 18/9 efter
+  fälttest 2: *"vi måste hitta något system som inte innebär att de ska stanna och bekräfta … ett automatspår"*).
+  Dagens S4 kräver: stanna, avsluta vakten, öppna appen, hitta knapparna — och bara resans SISTA varning går att svara på.
+  **Förslag i tre lager:**
+  **Bengts styrning 19/9 — undantagsprincipen:** *"vi tror att appen är så duktig att vi automatiserar svaren så att
+  människan bara ska meddela när maskinen avviker från det som maskinen har förutsett"* — för ALLA varningsslag, inte
+  bara kamerorna. Rätt om bördan, fel om tystnaden: **tystnad får aldrig räknas som "stämde".** Tystnad betyder lika
+  ofta "såg inte", "kunde inte bedöma", "telefonen låg i fickan" eller "appen var trasig" — 16/9 och 18/9 gav noll svar
+  för att knapparna saknades, och med tystnad = ja hade de resorna bokförts som bekräftelser. Ett facit som antar det
+  som ska prövas kan inte pröva det. Svaret ska vara en HANDLING, men handlingen kan vara EN per resa:
+  **(1) Efter resan — undantagsprincipen med underskrift, båda plattformarna.** Appen sparar resans varningar (id,
+  klockslag, text; bara lokalt). När vakten stannar (manuellt eller självstoppet efter 15 min) och det finns obesvarade
+  varningar: en lokal notis *"Resan klar — stämde alla 3 varningarna?"* och en lista på hemskärmen med **ett tryck för
+  normalfallet: "Ja, alla stämde"**, eller peka ut den som inte stämde (*Stämde inte*) och den man inte kunde bedöma
+  (*Vet inte* — skickas aldrig). Skickas som i dag: id, klockslag, svar per varning. **Noll handgrepp i bilen, ett efter.**
+  Obesvarade resor skickas aldrig. Bygger på Facit/FacitSender som finns; iOS har notisbehörigheten (HeadsUpService),
+  Android POST_NOTIFICATIONS.
+  **VAR knappen sitter (Bengt 19/9: *"som det är i dag är det oerhört krångligt … det kommer inte många svar"*):**
+  frågan kommer till föraren — föraren letar aldrig. Tre platser, en fråga, ett tryck; svarad på en plats försvinner den
+  från de andra. Skiss: `docs/skisser/facit-efter-resan.svg`.
+  (a) **Låsskärmen:** notisen bär själva knapparna — *Ja, alla stämde* / *Något stämde inte* — och svaret skickas utan
+  att appen öppnas (iOS: notisåtgärd i bakgrunden; Android: notisåtgärd + WorkManager). Kommer vid självstoppet och vid
+  *Avsluta vakten*.
+  (b) **Överst på Redo.** — ett kort ovanför rubriken, inte en rad längst ner: *Resan 08:25 · 61 min · 3 varningar —
+  Stämde alla?* Står kvar tills svaret finns eller ett dygn gått; visas också direkt efter *Avsluta vakten*.
+  (c) **Listan** bara vid avvikelse: en rad per varning med klockslag och text; tryck på raden växlar Stämde / Stämde
+  inte / Vet inte; sedan *Skicka*.
+  Brytarens text skrivs om: *"Efter varje resa frågar appen om varningarna stämde — ett tryck. Det som skickas är …"*.
+  **(4) Missarna — det andra halva facit, INGÅR i förslaget (Bengt 19/9: "det ska finnas en möjlighet att rapportera
+  missarna också"); integritetsbeslutet är Axels:** *"Hej Siri, appen missade i Halkvakt"* eller en stor knapp *Appen
+  missade* i körläget (Androids väg) när det är halt
+  UTAN varning ⇒ appen sparar klockslaget och närmaste segment/station som id (räknas på telefonen) och skickar id +
+  klockslag efter resan, som ett varnings-id; typen (Halka / Vatten / Vilt / Olycka / Annat) väljs i listan efter resan.
+  Ny tabell `driver_miss`. Nettonyttan (KB-B) behöver missarna lika mycket som träffarna. Integritet: samma klass som
+  ett varnings-id, men utlöst av föraren — brytarens text måste säga det.
+  📄 **BESLUTSUNDERLAG TILL AXEL 19/9: `docs/FACIT-EFTER-RESAN.md`** — hela förslaget, skissen, åtta beslut med
+  rekommendation, kostnad och bevis. Bengt skickar; inget byggs förrän Axel svarat.
+  **Automatspåret för sanningen finns redan och bär huvuddelen — utan förare:** uppspelningen ur arkiven (mätte ytan
+  under noll och blöt EFTER frysriskvarningen? — en senare mätning är en annan mätning, tillåten som facit), kamerabilden
+  vid varningen (bildfacit), olycksarkivet, radar + station för vattenplaning (V-B). Föraren är den enda källan för det som
+  bara syns från bilen — och avvikelsen (*stämde inte*) är det värdefullaste enskilda svaret, för det är falsklarmen som
+  bränner förtroendet (cry wolf).
+  **Kontroll i domen:** resor svarade med "Ja, alla" jämförs med resor svarade rad för rad — skiljer sig andelen
+  *stämde* markant är "Ja, alla" en vana, inte en iakttagelse, och räknas ner. KB-D4:s tak (ingen förare > 25 %) står.
+  **Förslag till KB-D (kräver Bengt + Axel, fastställt dokument): KB-D7 — ett svar är en handling; tystnad är inget svar.**
+  **(2) Med rösten under resan — iOS, nästan gratis.** Två App Shortcuts bredvid Starta/Stoppa: *"Hej Siri, stämde i
+  Halkvakt"* / *"stämde inte i Halkvakt"* ⇒ svar på senaste varningen om den är yngre än 10 min, Siri säger *"Tack."*.
+  Med undantagsprincipen räcker EN fras i praktiken: *"stämde inte i Halkvakt"* när maskinen hade fel, medan minnet är färskt.
+  Händerna på ratten, fungerar via CarPlay och bilens Bluetooth, **ingen mikrofonbehörighet** — Siri lyssnar, inte appen.
+  Android: Assistant/Gemini-stödet för egna app-fraser är osäkert — (1) först, rösten undersöks.
+  **(3) Valfritt:** knapparna i körläget när bilen står stilla (≥ 5 s, varning < 10 min) — rött ljus, färskt minne, ett
+  tryck på en monterad telefon.
+  **Vad som INTE går:** att automatisera människans iakttagelse. Telefonen kan inte känna halka, och ett svar som ingen
+  mätning kan motbevisa får inte räknas (regel T). Det automatiska facit finns redan, utan förare: kamerabilderna
+  (bildfacit, bedömningen §4.2), uppspelningen ur arkiven, olycksarkivet. Förarkanalen ska bara bära det bara en
+  människa ser — och därför vara gratis att använda.
+  **Avvisat:** lyssning i appen efter varningen (mikrofonbehörighet; Bluetooth byter till samtalsläge och musiken tystnar;
+  svenskt stöd på enheten oklart) · rattens knappar (kräver att appen tar över musiken) · CarPlay-app (Apples tillstånd)
+  · klocka (få testare) · "passerad"-flagga ur positionen (rörelsedata — eget integritetsbeslut, inte nu).
+  **Kamerorna är kontrollfrågan:** Trafikverkets kameror är fältverifierade (2/9), så ett *stämde inte* på en kamera
+  säger att kanalen eller geometrin är fel — inte kameran. Domen i januari behöver svaren på halka och frysrisk
+  (KB-D4: ≥ 30 svar från ≥ 5 förare).
+  Kostnad: en Android-push ≈ 15 Actions-min (två jobb) + CI; iOS byggs av Axel — går i nästa bygge efter 0.3.8.
+  Rösttexten rörs inte. S4:s utformning är Axels ⇒ hans ja på formen; Bengt beställer.
+  Verify: (1) en resa med ≥ 2 varningar besvarad med ett tryck ger lika många rader i `driver_facit`, utan att föraren
+  stannat; en resa utan tryck ger noll rader;
+  (2) ett svar via Siri med `app = ios` och varningens klockslag.
+  🔑 **AXELS SVAR PÅ §8, 20/9 kväll (via Cowork, DECISIONS #267) — sju av åtta avgjorda:**
+  **1 ja** (undantagsprincipen med underskrift; KB-D7 till Bengt) · **2 ja, alla tre** (*"låsskärmen är det viktiga —
+  föraren ska aldrig behöva öppna appen för att svara ja"*) · **3 de två första** Siri-fraserna (*stämde inte*, *appen
+  missade*; *stämde* behövs inte under körning — det är vad låsskärmen är till för) · **4 ja, medvetet ja** —
+  station-id + klockslag skickas, *"det är inte en position, men det är en position i grova drag"*; brytarens text ska
+  säga det ordagrant och produktboken uppdateras samma dag · **5 ja** (stor knapp *Appen missade*) · **6 nej** (lager 3
+  utgår) · **8 ja** (Android i samma PR).
+  ➕ **NYTT KRAV ur Axels läsning — visa varningarna i kortet:** *"Ja, alla stämde"* efter tre timmars körning svarar i
+  dag på ett TAL (*3 varningar*), inte på något föraren ser. Kortet på *Redo.* ska visa de tre raderna — klockslag och
+  text — så att ett tryck är ett svar på något läst. Kostar en vy. **Gör inte KB-D7-kontrollen onödig** (vanan finns
+  kvar att mäta, och kontrollen kostar ingenting i domen) men gör den mindre bärande.
+  ✅ **BESLUT 7 AVGJORT 20/9 18:35 — A. AXEL ARKIVERAR 0.3.8 NU** (DECISIONS #269). Simulatorprovet försöktes och
+  föll på Xcodes egen infrastruktur (*"the system shell probably crashed"*, `host down`, efter 94 s) på en M1 Air med
+  8 GB och iOS 26.1-runtime. **Det är svaret på C:s premiss:** C valdes för att kanalen skulle bevisas BILLIGT utan
+  TestFlight, och beviset var inte billigt — det kostade mer än den fältrunda det skulle spara. #203 bygger på 0.3.9.
+  *Historik:* Axels skäl:
+  sändkanalen från en riktig telefon har aldrig bevisats, och att lägga ny funktion ovanpå en obevisad kanal är fel
+  ordning. Bengts skäl: en uppdatering i stället för två, och kanalen bevisas utan TestFlight med simulatorprovet.
+  **Simulatorprovet är fortfarande ogjort** (`driver_facit` 20/9 16:07Z: 0 riktiga svar, 2 provrader — ingen
+  `cam:fotostudio`). **Nytt sedan båda svaren skrevs:** motorfixarna #210 (*"på väg &lt;null&gt;"*) och #211 (tredje
+  olycksropet) ligger i main sedan i kväll och når en telefon bara genom ett bygge — ett skäl för A som varken
+  underlaget eller #242 kände till. Se DECISIONS #267.
+  🔨 **LAGER 1 BYGGT 20/9 kväll (DECISIONS #277) — "grunden", båda plattformarna.** Resans logg, låsskärmsnotisen
+  med knapparna i sig (*Ja, alla stämde* / *Något stämde inte*) och kortet överst på *Redo.* med **en rad per
+  varning: klockslag + text** (Axels tillägg). Delad ren räkning: `Resan.kt` / `Resan.swift`. Tystnad skriver
+  aldrig ett svar — ingen kod i filen gör det. Åtta enhetstester på Android (de första i app-modulen), **gröna i
+  CI**; **iOS-halvan är skriven utan kompilator** och kompileras första gången i Axels Xcode (inget CI-flöde bygger
+  app-målet — samma rad som #267/#276). iOS krävde tre saker Android redan hade: persistent varningshistorik,
+  notiskategori + delegat, och en gemensam tidsstämpel för "Senast sagt" och historikraden (annars två facitrader
+  för samma varning). Fotostudion lägger nu in en påhittad **resa**, inte en varning — kortet går att se utan körning.
+  ⏭️ **STÅR KVAR PÅ KORTET (lager 2):** Siri-fraserna *"stämde inte i Halkvakt"* / *"appen missade i Halkvakt"* och
+  missarna (`driver_miss` + stor knapp *Appen missade* i körläget). Verify står **öppen**: en riktig resa på en
+  riktig telefon som ger rader i `driver_facit` utan att föraren stannat.
+  ⚠️ **22/9 (DECISIONS #304):** lager 1:s iOS-kod (eb81b50, 20/9 18:17) ligger på main och följer därför med i ett arkiv från main — alltså i **0.3.9 (13)**, inte i (12), som sattes 17:37 före koden. Koden har aldrig kompilerats; Xcode är första provet.
+  ↦ **Sorterat 22/9 (kort #224):** Axels beslut är tagna (#267, #269) — lager 2 (Siri-fraserna, `driver_miss`, *Appen missade*) kan byggas nu. iOS-koden kompileras först i Axels Xcode.
+  ↪ **26/9: flyttat till Axel och tillbaka i samma varv** (DECISIONS #377): Axels beslut är tagna (#267, #269) — nästa steg är lager 2, Claudes bygge (Siri-fraserna, `driver_miss`, *Appen missade*); iOS-delen kompileras i Axels Xcode.
 
 ### Claude — låst (väntar på nyckel)
 - [ ] 🐕 **#243 VAKTHUNDENS ARKIVGRÄNS ÄR FÖR SNÄV — issue #528 var ett falsklarm** (fynd 24/9 på Bengts fråga *"vad betyder detta"*).

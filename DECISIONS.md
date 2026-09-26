@@ -5087,9 +5087,11 @@ kort, arton rader i §4.2 med ett obesvarat led, flaskhalsen Axels händer. Tabe
 produkten aktualiserade; kalenderns vecka 39 och 28/9–1/10 likaså. Fyra §4.2-rader avgjorda i samma varv: femma åtta, #241, Om-texten
 (#249, klar 24/9 men aldrig struken) och femma fem.
 
-**(3) Sju kort flyttade till den som har nästa steg** — *Introduktionen* till Bengt; #258, #259, välkomsttexten, #248, #219 till *Axel —
-därefter*; #203 till *Axel — beslut att ta*. Varje kort bär en rad om varifrån och varför. Öppna kort 36 → 35 (bara #241 stängt): Axel
-10, Bengt 4, Claude olåst 2, Claude låst 19.
+**(3) Sex kort flyttade till den som har nästa steg** — *Introduktionen* till Bengt; #258, #259, välkomsttexten, #248, #219 till *Axel —
+därefter*. Varje kort bär en rad om varifrån och varför. **Rättat samma varv:** #203 flyttades först till Axel med motiveringen
+*"Axels beslut om formen"* — men kortet säger själv att besluten är tagna (#267, #269) och att lager 2 är Claudes att bygga; det står
+kvar under *Claude — olåst*. Och #214:s del (b), integritet.html, var klar sedan 23/9 (#320) — bara raderingsfrågan är kvar. Öppna kort
+36 → 35 (bara #241 stängt): Axel 9, Bengt 4, Claude olåst 3, Claude låst 19.
 
 **(4) Android 0.3.9 (17).** `versionCode` 4 → 17, `versionName` 0.3.1 → 0.3.9, samma nummer som iOS på main. Googles första uppladdning
 låser versionCode-spåret (#347 p. 2), och ingen uppladdning har skett. Produktbokens versionstabell fick iOS (15)–(17) och Android-raden;
