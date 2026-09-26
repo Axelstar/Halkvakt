@@ -1185,6 +1185,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   resa varnar på starttidens is och olyckor, och nya olyckor når aldrig telefonen. Android förnyar var 30:e minut (`SnapshotSchedule`).
   Läst i koden, inte framkallat. Nyckel: Bengts ja till bygget (§4.2) · Axels Xcode-bygge. Verify: en resa längre än 30 min där
   körlägets rad *väglag HH:mm* flyttar sig framåt utan att appen öppnats.
+  🔨 **BYGGT 26/9, 0.3.9 (16)** (Bengts ja, DECISIONS #371): var 30:e minut under resan, en laddning i taget, en minuts paus
+  efter fel, minnet behålls mitt i resan (`updateHazards`); utan nät gäller cachen och åldras. Skrivet utan kompilator.
+  🔑 Kvar: Axels Xcode-bygge (första kompileringen) och Verify i bil.
 
 - [x] ✅ **STÄNGT 23/9** (DECISIONS #319) — 📜 **#198 TROSKLAR-SKUGGAN §4 MOT TRÖSKELREGELN — rättas före domen i mars 2027** (fynd 16/9, DECISIONS #220).
   Domslutet (a) TALAR och (b) TALAR NÄRA ANKARE låter segmentprognosen tala på *modellerade* segment. Det krockade redan
@@ -1487,6 +1490,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   sedan 5/9. Dessutom: 169 fjärrgrenar där en behövs.
   Verify: beslut äldre än 1/9 flyttade till eget arkiv, BACKLOG avvecklad eller återupplivad med en rad i CLAUDE.md, grenarna
   rensade, och de fyra namngivna motsägelserna rättade.
+  ✅ **Bengts ja 26/9 till steg 1** (femma sex, DECISIONS #371). Mätt 26/9: TAVLA 4 842 rader, varav 122 stängda kort (2 736
+  rader) bland de öppna; DECISIONS 10 491, varav 328 före 1/9 och 5 365 före 15/9 — gränsen 1/9 hade flyttat 3 %. Steget:
+  stängda kort till tavelarkiv, beslut före 15/9 till beslutsarkiv som beslutsnumrens vakt läser. Grenarna rörs inte.
 
 - [x] 🌙 **#208 EPISODEN ÄR EN NATT, INTE ETT UTC-DYGN — ✅ KLART 20/9** (Bengts *"ompröva beslutet och byt"*, DECISIONS #245/#246,
   PR #384). Version 1 räknade stationens första ögonblick per UTC-dygn och delade **159 av 454 stationsnätter i två** — 66 % av fallen
@@ -2791,6 +2797,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↦ **Sorterat 22/9 (kort #224):** Axels beslut är tagna (#267, #269) — lager 2 (Siri-fraserna, `driver_miss`, *Appen missade*) kan byggas nu. iOS-koden kompileras först i Axels Xcode.
 
 - [ ] ↩︎ Välkomsttext + testinstruktion till kompisarna (extern TestFlight-grupp = Beta App Review).
+  🔨 **SKRIVEN 26/9** (Bengts ja, DECISIONS #371): `docs/BETAGUIDE-IOS.md` — TestFlight-texten överst, guiden i Android-guidens
+  åtta avsnitt, mot koden i 0.3.9 (16). 🔑 Kvar: utskicket med en extern TestFlight-grupp (Axel, Beta App Review).
   ↦ **Sorterat 22/9 (kort #224):** texten för iOS-testarna skriver Claude nu; utskicket med en extern TestFlight-grupp är Axels.
 
 ### Claude — låst (väntar på nyckel)
@@ -2828,6 +2836,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   stället för en gissning. `python scripts/kontaktark.py direkt --antal 20 --ut docs/kamerafacit/prov-<datum>` vid regn över
   rutterna (radarn visar det) eller efter mörkrets inbrott; samma stickprov och ok. Kostar en kvart plus Axels blick.
   🔒 NYCKEL: vädret. Verify: ett ark med minst fem *våt* eller *okänd*, ok:at, och en rättelse från Axel om klassningen tagit fel.
+  📸 **ANDRA ARKET 26/9 03:22Z, i mörker** (Bengts ja, DECISIONS #371): 12 bar, 8 okänd, ingen gissning på våt — sju okända är
+  spindelväv över linsen i IR-ljuset, en för mörk. Verify:s första halva uppfylld. 🔑 Kvar: Axels ok på
+  `docs/kamerafacit/prov-2026-09-26/ok.md` (två bilder i stickprovet).
 - [ ] 🐕 **#243 VAKTHUNDENS ARKIVGRÄNS ÄR FÖR SNÄV — issue #528 var ett falsklarm** (fynd 24/9 på Bengts fråga *"vad betyder detta"*).
   Checken *livemotorns effekt* larmar när `situation_archive` inte rörts på 30 min, men arkivet skrivs bara när Trafikverket
   ändrar något: mätt 24/9 04:12Z — 4 gluggar > 30 min senaste dygnet (största 102 min), **32 på sju dygn, medel 54 min, största

@@ -10516,3 +10516,34 @@ sammanslagning togs därför med workflow_dispatch på grenen (läxa i `skills/h
 åldersvakten (`AgeGate`, 45 min för väder, 120 min för olyckor och djur) prövas bara vid laddningen. En tre timmars resa varnar på
 starttidens is och olyckor hela vägen, och en ny olycka når aldrig telefonen. Android förnyar var 30:e minut. Läst i koden, inte
 framkallat. **Sagt högt:** lagningen är bevisad på JVM, inte på en telefon; den når testtelefonen med nästa Android-bygge.
+
+## #371 (26/9 2026) Bengts ja till #258 och femma sex (1)–(3): iOS laddar om under resan, andra arket i mörker, guiden till iOS-testarna
+
+**Beslut (Bengt 26/9: *"ja till 258 och till 1–3"*).** (1) #247:s andra ark i mörker · (2) välkomsttexten och testinstruktionen
+till iOS-testarna · (3) #221 steg 1, styrdokumenten · och #258, att iPhone laddar om vägdatan under resan som Android gör.
+
+**(1) #247, andra arket — 20 direktbilder 26/9 03:22–03:24Z, alla i mörker, blint klassade 03:40Z.** 12 *bar* (ingen synlig
+beläggning, säkerhet medel eller låg), 8 *okänd*, ingen gissning på *våt*. Sju av de okända har **spindelväv över linsen** som lyser
+i kamerans IR-ljus och skymmer vägbanan; den åttonde är för mörk. Kortets Verify (minst fem våt eller okänd) är uppfylld till
+första halvan; stickprovet (2 bilder) står i `docs/kamerafacit/prov-2026-09-26/ok.md` och väntar på Axels ok. **Fynd:** ungefär en
+tredjedel av nattbilderna går i september inte att läsa alls, av ett skäl som inte har med väder eller mörker att göra. Det gäller
+facit-hinken lika mycket som direktbilderna, och bör stå med när bildfacitbeslutet (#209) fattas efter första frosten.
+
+**#258 — byggt, 0.3.9 (16), skrivet utan kompilator.** `GuardManager.refreshSnapshot` har samma schema som Androids
+`SnapshotSchedule`: var 30:e minut under resan, en laddning i taget, en minuts paus efter fel. Mitt i resan byts farorna med
+`updateHazards`, så motorns minne består (v14: aldrig säga om); vid vaktens start byggs en ny motor som förut (`fresh: true`).
+Anropet sitter i platsflödet efter `guard running`, så också en första laddning som föll prövas igen. **Och utan nät:**
+`SnapshotRepo.loadSnapshot` föll förut helt på manifestet, så den sparade snapshoten prövades aldrig mot åldersvakten; nu ger ett
+fallet manifest tomma kontrollsummor, varje fil faller till cachen, och cachen åldras — samma väg som Androids `fetchVerified`.
+Byggnumret höjt till 16 i samma varv (läxan 16/9). Produktboken fick meningen om förnyelsen i flöde 2. **Sagt högt:** inget av
+detta är kompilerat; `ios-engine` testar bara motorpaketet. Axels Xcode-bygge är första kompileringen, och Verify är en resa längre
+än 30 min där körlägets *väglag HH:mm* flyttar sig.
+
+**(2) Välkomsttexten — `docs/BETAGUIDE-IOS.md`.** TestFlight-texten (*Vad ska testas*, knappt 1 000 av 4 000 tecken) och guiden i
+Android-guidens åtta avsnitt, skriven mot koden: *Tillåt plats* räcker för att köra (#273), *Alltid* bara för självväckningen,
+efter-resan-notisen (*Ja, alla stämde* / *Något stämde inte*, kortet står ett dygn), Siri-frasen, självstoppet efter en kvart.
+**Rättat i Android-guiden:** integritetsraden sa "tre saker"; svaret bär också appens namn och version (appens Om säger det sedan
+24/9, #348). Utskicket till en extern TestFlight-grupp är Axels (Beta App Review).
+
+**(3) #221 steg 1** byggs i nästa PR: de stängda korten ur tavlans öppna sektioner till ett tavelarkiv och beslut före 15/9 till
+ett beslutsarkiv som beslutsnumrens vakt också läser — öppna kort räknade före och efter.
