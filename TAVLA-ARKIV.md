@@ -2933,3 +2933,16 @@
   ✅ **KLART 24/9 (DECISIONS #348, Axel via Claude):** (b) texten nämner nu appens namn och version, fälten stannar; (a) ärlighetsraden och källorna i Androids Om. Verify: fotostudions bild av Om efter nästa android-körning.
   📸 **26/9: beviset räckte inte.** Fotostudions `shot-6-betatest.png` (android.yml 36214202433) slutar vid Om-avsnittets första ruta — ärlighetsraden och källorna syns inte. Verify kräver en svepning till i fotostudion (en rad i android.yml) eller en skärmbild av Om från testtelefonen.
   ✅ **STÄNGT 26/9 (DECISIONS #374):** Verify uppfylld — fotostudions nya `shot-7-om.png` (android.yml 36219380753, i produktboken) visar Androids ärlighetsrad och källraden fram till *Fintraffic (CC*; resten läst i koden, `App.kt:686` — *Fintraffic (CC BY 4.0), broar © OpenStreetMap-bidragsgivare (ODbL)*, ordagrant som iOS `HalkvaktApp.swift:124`.
+
+### Axel — hösten (brainstorm 31/8)
+
+- [x] ✅ **STÄNGT 26/9 SOM ÖVERSPELAT** (DECISIONS #375) — ↩︎ **#23 heads-up** — bannern över kartappen, båda plattformarna. (#22 T3–T7 i bilen och
+  #24-resten står under Claude — låst, Android-listan.)
+  ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** underpunkten #23 i DESIGNLYFTET, som stängdes 22/9.
+  📏 **Läst mot koden 26/9 (Bengts fråga *"kan du ta upp kort 23"*):** bannern är BYGGD på båda — Android `GuardService.headsUp()`
+  (egen kanal, IMPORTANCE_HIGH, tyst, 8 s), iOS `HeadsUpService.show()` (time-sensitive, 8 s). Kvar är bara beviset: en skärmbild
+  av bannern över kartappen när rösten talar. Det går inte stillastående i dag — *Testa rösten* talar men visar ingen banner på
+  någon av plattformarna, och iOS visar den med flit bara när Halkvakt ligger BAKOM kartan (`willPresent` ger `[]`). Fotostudion
+  kan inte heller: emulatorns vakt får ingen riktig varning. Två vägar i §4.2: en knapp *Prova bannern* (fem sekunders fördröjning,
+  byt till kartan — Android-beviset tas då av fotostudion), eller en passagerare som tar bilden under en riktig varning.
+  ✅ **STÄNGT 26/9 (Bengt: *"överspelat"*, DECISIONS #375):** bannern står kvar i koden på båda plattformarna; beviset efterfrågas inte.

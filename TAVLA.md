@@ -118,15 +118,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] ↩︎ **Introduktionen** (iOS) — bevis saknas: radera appen → installera → intron ska komma
   först; "Visa igen" i Inställningar. Introduktionen i Claude Design är enda skärmen som inte
   ritats om än. Android-spegeln (DECISIONS #36) efter att iOS-varianten testats.
-- [ ] ↩︎ **#23 heads-up** — bannern över kartappen, båda plattformarna. (#22 T3–T7 i bilen och
-  #24-resten står under Claude — låst, Android-listan.)
-  ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** underpunkten #23 i DESIGNLYFTET, som stängdes 22/9.
-  📏 **Läst mot koden 26/9 (Bengts fråga *"kan du ta upp kort 23"*):** bannern är BYGGD på båda — Android `GuardService.headsUp()`
-  (egen kanal, IMPORTANCE_HIGH, tyst, 8 s), iOS `HeadsUpService.show()` (time-sensitive, 8 s). Kvar är bara beviset: en skärmbild
-  av bannern över kartappen när rösten talar. Det går inte stillastående i dag — *Testa rösten* talar men visar ingen banner på
-  någon av plattformarna, och iOS visar den med flit bara när Halkvakt ligger BAKOM kartan (`willPresent` ger `[]`). Fotostudion
-  kan inte heller: emulatorns vakt får ingen riktig varning. Två vägar i §4.2: en knapp *Prova bannern* (fem sekunders fördröjning,
-  byt till kartan — Android-beviset tas då av fotostudion), eller en passagerare som tar bilden under en riktig varning.
 ### Axel — därefter
 - [ ] **Tolv testare till Play-perioden** — Axels åtagande 31/8: "hittar dem utan problem".
   Väntelisterutan på kartan borttagen på hans beslut. Kvar i `docs/REKRYTERING.md` om det behövs.
@@ -1695,6 +1686,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#23 BANNERN ÖVER KARTAPPEN — STÄNGT SOM ÖVERSPELAT 26/9 (DECISIONS #375)**: byggd på båda plattformarna, står kvar; bildbeviset efterfrågas inte längre. Tavlan 38 → 37.
 - [x] ✅ **#249 OM-AVSNITTET — KLART 26/9 (DECISIONS #374)**: byggt 24/9; fotostudion fångar nu resten av Om (shot-7), ärlighetsraden och källorna ordagrant som iOS. Tavlan 39 → 38.
 - [x] ✅ **#83 GALLRINGEN — KLART 26/9 (DECISIONS #373)**: i drift sedan 9/9 och exporten sedan 24/9; Verify mätt: högst 17 978 rader/dygn i det gallrade (gräns 45 000), en rad per halvtimme, grind A oberörd utom 3 av 49 372 halvtimmar.
 - [x] ✅ **#221 STYRDOKUMENTEN — KLART 26/9 (DECISIONS #371/#373)**: tavlan och besluten halverade i arkiv, BACKLOG avvecklad, STATUS-rubriken fryst, motsägelserna rättade, 273 av 279 grenar raderade.

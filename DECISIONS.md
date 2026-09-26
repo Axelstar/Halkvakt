@@ -5057,3 +5057,10 @@ Axels bygge av (17) är första kompileringen.
 **Ingen vektor rörd:** motorns `leadMaxM` 3 000 i `EngineConfig` står kvar; det är appens reglage som ändrats.
 
 **Också — fotostudion och #249.** Fotostudion svepte förbi reglaget och slutade före Om-sidans ärlighetsrad, så varken #259 eller #249 kunde bevisas med bild. `android.yml` tar nu `shot-3-reglaget` efter första svepningen och `shot-7-om` efter en tredje; alla fem bilder in i `docs/produktbok/` (PRODUKTBOKSREGELN). **#249 stängt:** fotostudions nya `shot-7-om.png` (android.yml 36219380753, i produktboken) visar Androids ärlighetsrad och källraden fram till *Fintraffic (CC*; resten läst i koden, `App.kt:686` — *Fintraffic (CC BY 4.0), broar © OpenStreetMap-bidragsgivare (ODbL)*, ordagrant som iOS `HalkvaktApp.swift:124`.
+
+## #375 (26/9 2026) Kort #23 stängt som överspelat — bannern står kvar i koden, beviset efterfrågas inte
+
+**Beslut (Bengt 26/9: *"jag menar att kort 23 är överspelat. Du kan stänga den"*).** Kortet bad om en skärmbild av heads-up-bannern
+över kartappen, per plattform. Bannern är byggd på båda (Android `GuardService.headsUp()`, iOS `HeadsUpService.show()`) och **rörs
+inte** — den står kvar som den är. Det som stängs är kravet på bildbeviset; ingen *Prova bannern*-knapp byggs, och ingen passagerare
+behöver ta bilden. Frågan i §4.2 (väg 1 eller 2) är därmed besvarad utan att någon av dem valts. Kortet flyttat till `TAVLA-ARKIV.md`.
