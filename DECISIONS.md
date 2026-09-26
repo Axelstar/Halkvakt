@@ -4978,3 +4978,18 @@ efter-resan-notisen (*Ja, alla stämde* / *Något stämde inte*, kortet står et
 24/9, #348). Utskicket till en extern TestFlight-grupp är Axels (Beta App Review).
 
 **(3) #221 steg 1 — byggt samma dag.** TAVLA 4 864 → 2 137 rader (122 stängda kort till `TAVLA-ARKIV.md`; öppna kort 44 före och 44 efter, inga öppna i arkivet), DECISIONS 10 550 → 4 981 rader (#1–#185 till `DECISIONS-ARKIV.md`, ordagrant; 358 rubriker före och efter). De två filerna gick från 1 384 kB till 693 kB — hälften. `scripts/beslutsnumren.ts` läser båda; motprov lokalt: en påhittad `## #58` fälls med arkivet och slinker igenom när vakten bara läser DECISIONS.md.
+
+## #372 (26/9 2026) Bengts ok på bildläsningens andra ark — i stället för Axels; 20 rader in i kamerafacit, kort #247 stängt
+
+**Beslut (Bengt 26/9 04:12Z: *"jag gör den om kamerabilderna"* och sedan *"ok"*).** Arket `docs/kamerafacit/prov-2026-09-26/` godkänt
+utan rättelser, stickprovet nr 3 Irsta (*okänd*) och nr 15 Bergsäter (*bar*) visat i chatten. **Avvikelse från #335:** TROSKLAR-SKUGGAN §6
+säger *"Claude klassar, Axel ok:ar"*; det här arket ok:ades av Bengt, och `klassning.json` säger det: `"ok": {"av": "Bengt (i chatten, i
+stället för Axel)", "nar": "2026-09-26T04:12Z"}`. Regeln i §6 är orörd — ett ark, inte en ny ordning.
+
+**Bevis:** dbknapp 36217165040 (bärare sql/033, 20 INSERT som bevisrader): arkets rader i `kamerafacit` 12 bar och 8 okänd, tabellen 41 rader (21 före). `scripts/matningar/kamerafacit-prov-2026-09-26.sql` genererad av `kontaktark.py sql`. Ingen rad är halka, så grind
+S-B räknar ingen händelse.
+
+**Kort #247 stängt:** Verify (*ett ark med minst fem våt eller okänd, ok:at*) uppfylld med 8 okänd; rättelsen kortet väntade sig kom inte,
+eftersom ingen klass var fel. Det kortet ville pröva — att mörker ger *okänd* i stället för en gissning — höll: ingen nattbild fick *våt*.
+Det som inte prövades är *våt* mot *bar* i regn; kortet bad om regn ELLER mörker, och ett regnark är inte längre ett villkor för något.
+Fyndet om spindelväven (#371) står kvar till bildfacitbeslutet (#209). Kortet flyttat till `TAVLA-ARKIV.md` som det första efter #221.
