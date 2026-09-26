@@ -3,18 +3,22 @@
 // föraren kan peka ut vilken som inte stämde. Notisens "Ja, alla stämde" räcker för den som bara
 // vill kvittera; det här kortet finns för avvikelsen.
 //
+// Lager 2 (DECISIONS #379): resans MISSAR står här också — ordet i bilen var ett tryck eller "appen missade", tanken kommer
+// här. Föraren väljer Halka / Vatten / Vilt / Olycka / Annat, och först då skickas missen.
+//
 // Tystnad skickar ingenting. Det står på kortet, med samma ord som på Android.
 import SwiftUI
 
 struct EfterResanKort: View {
     let varningar: [AlertEntry]
+    var missar: [MissEntry] = []
     let sedan: Date
     @State private var prefs = Prefs.shared
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             SectionHeader(text: "Efter resan")
-            Text(Resan.fraga(varningar.count))
+            Text(varningar.isEmpty ? Missar.fraga(missar.count) : Resan.fraga(varningar.count))
                 .font(Typo.sans(19, .bold))
                 .lineSpacing(5)
                 .foregroundStyle(Brand.text)
@@ -42,14 +46,39 @@ struct EfterResanKort: View {
                 .padding(.top, 12)
             }
 
-            Button { svaraAlla() } label: {
-                Text("Ja, alla stämde")
-                    .font(Typo.sans(17, .bold))
-                    .foregroundStyle(Brand.bg)
-                    .frame(maxWidth: .infinity, minHeight: 52)
-                    .background(Brand.yellow, in: Capsule())
+            ForEach(missar, id: \.self) { m in
+                let vald = prefs.missar.first { $0.t == m.t }?.vad
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(alignment: .top, spacing: 10) {
+                        Text(m.t.formatted(.dateTime.hour().minute()))
+                            .font(Typo.mono(12))
+                            .foregroundStyle(Brand.dim)
+                        Text("Du markerade: appen missade — vad?")
+                            .font(Typo.sans(14))
+                            .foregroundStyle(vald == nil ? Brand.text : Brand.dim)
+                        Spacer(minLength: 0)
+                    }
+                    ForEach([Array(Missar.vad.prefix(3)), Array(Missar.vad.suffix(2))], id: \.self) { rad in
+                        HStack(spacing: 8) {
+                            ForEach(rad, id: \.self) { v in
+                                FacitButton(title: v.prefix(1).uppercased() + v.dropFirst(), selected: vald == v) { valj(m, v) }
+                            }
+                        }
+                    }
+                }
+                .padding(.top, 12)
             }
-            .padding(.top, 16)
+
+            if !varningar.isEmpty {
+                Button { svaraAlla() } label: {
+                    Text("Ja, alla stämde")
+                        .font(Typo.sans(17, .bold))
+                        .foregroundStyle(Brand.bg)
+                        .frame(maxWidth: .infinity, minHeight: 52)
+                        .background(Brand.yellow, in: Capsule())
+                }
+                .padding(.top, 16)
+            }
 
             Text("Svarar du inte skickas ingenting — tystnad räknas aldrig som ja.")
                 .font(Typo.sans(11))
@@ -78,6 +107,11 @@ struct EfterResanKort: View {
         guard !obes.isEmpty else { return }
         prefs.facit = Resan.svaraAlla(prefs.facit, obes, svar: true)
         EfterResanNotis.shared.ta_bort()   // frågan är besvarad; notisen ska inte ligga kvar på låsskärmen
+        skicka()
+    }
+
+    private func valj(_ m: MissEntry, _ v: String) {
+        prefs.missar = Missar.valj(prefs.missar, t: m.t, vad: v)
         skicka()
     }
 

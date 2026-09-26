@@ -9,6 +9,7 @@ struct KorlageView: View {
     @State private var now = Date.now
     /// Granskningsläge: håll på "PÅ VAKT" ⇒ kortet med en låtsasvarning, utan röst.
     @State private var demoWarning: HalkvaktEngine.Alert?
+    @State private var missKvitto: String?   // #203 lager 2
     private let clock = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     var body: some View {
@@ -67,6 +68,16 @@ struct KorlageView: View {
                 }
 
                 Spacer()
+
+                // Kort #203 lager 2 (Axels ja, #267 p. 5): iPhones reserv för en miss — Siri är huvudvägen. Bara med betatestet på.
+                if Prefs.shared.facitOn {
+                    OutlineButton(title: "Appen missade", icon: "exclamationmark.bubble", color: Brand.yellow) {
+                        missKvitto = guardM.markeraMiss()
+                            ? "Markerat \(Date.now.formatted(.dateTime.hour().minute())) — du väljer vad det var efter resan."
+                            : "Kunde inte markera: appen har ingen position eller stationslista än."
+                    }
+                    if let k = missKvitto { Text(k).font(Typo.sans(12)).foregroundStyle(Brand.dim) }
+                }
 
                 OutlineButton(title: "Avsluta vakten") { guardM.stop() }
             }

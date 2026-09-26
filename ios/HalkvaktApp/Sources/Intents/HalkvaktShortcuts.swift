@@ -23,5 +23,18 @@ struct HalkvaktShortcuts: AppShortcutsProvider {
             shortTitle: "Stoppa vakten",
             systemImageName: "car"
         )
+        // Kort #203 lager 2 (Axels ja, DECISIONS #267 punkt 3): de två fraserna som inte kan vänta till efter resan.
+        AppShortcut(
+            intent: StamdeInteIntent(),
+            phrases: ["Stämde inte i \(.applicationName)"],
+            shortTitle: "Stämde inte",
+            systemImageName: "hand.thumbsdown"
+        )
+        AppShortcut(
+            intent: AppenMissadeIntent(),
+            phrases: ["Appen missade i \(.applicationName)", "Halt här i \(.applicationName)"],
+            shortTitle: "Appen missade",
+            systemImageName: "exclamationmark.bubble"
+        )
     }
 }

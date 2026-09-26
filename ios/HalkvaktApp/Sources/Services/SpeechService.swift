@@ -51,6 +51,8 @@ final class Prefs {
     /// Kort #203: när den pågående resan började. Fönstret som "alla" i "Ja, alla stämde" betyder.
     /// Överlever omstart: notisens knapp kan tryckas långt efter att appen dödats.
     var tripStart: Date? { didSet { d.set(tripStart, forKey: "k.tripStart") } }
+    /// Kort #203 lager 2: förarens missar, markerade och valda. Ren Swift-logik i Missar.swift.
+    var missar: [MissEntry] { didSet { d.set(try? JSONEncoder().encode(missar), forKey: "k.missar") } }
     /// S4: vad senaste sändningsförsöket gav — syns under knapparna så testaren ser vad som hände (DECISIONS #209).
     var facitStatus: String? { didSet { d.set(facitStatus, forKey: "k.facitStatus") } }
     /// Introduktionen visad? (DECISIONS #36) Kan nollställas från Inställningar.
@@ -84,6 +86,7 @@ final class Prefs {
         facitOn = d.bool(forKey: "k.facitOn")
         facit = d.data(forKey: "k.facit").flatMap { try? JSONDecoder().decode([FacitEntry].self, from: $0) } ?? []
         facitStatus = d.string(forKey: "k.facitStatus")
+        missar = d.data(forKey: "k.missar").flatMap { try? JSONDecoder().decode([MissEntry].self, from: $0) } ?? []
         history = d.data(forKey: "k.history").flatMap { try? JSONDecoder().decode([AlertEntry].self, from: $0) } ?? []
         tripStart = d.object(forKey: "k.tripStart") as? Date
         onboardingDone = d.bool(forKey: "k.onboardingDone")
