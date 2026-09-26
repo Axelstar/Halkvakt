@@ -5176,6 +5176,8 @@ septemberdygn — 231 kalla halvtimmar, två frysnära.
 `kamerafacitprov` (torrt urval), `lagringsprov` (larmet går), vakthundens skarpa rad och första timkörningens svar. Efter sju dygn: bilder
 och MB per dygn mot taket, i bedömningen.
 
+**I drift 26/9 08:24Z:** PR #622 (54ac0d4); deploy från main av kamerafacit 36229634732, skuggmotor 36229638425 och vakthund 36229641777 (08:24Z); sql/039 via dbknapp 36229707252 — jobbet `halkvakt-kamerafacit` `17 * * * *`, aktivt, pekar på kamerafacit (kommandot 267 tecken, aldrig utskrivet). **(1) V1:** skuggmotorn 08:02Z (före): ett fartkameralarm ⇒ 1 bild, 886 ms; 08:32Z (efter): ett fartkameralarm ⇒ 0 bilder, 0 ms, skälet *bara segment- eller fartkameralarm* (dbknapp 36230218670). Bilden 09:02Z kom från en vattenplaningsvarning på E4 Sundsvall→Umeå — avsett, TROSKLAR-VATTENPLANING §2 (36232395271). **(2) Timkörningen:** torrprovet 08:25Z och den första riktiga 09:17Z svarar 200 och `ok`, `faror 0`, `kalla_stationer 0` — varmt, inget att välja; pg_cron *succeeded* (36232357646). **(3) Larmet:** lagringsprovet (36229762008) ⇒ *LAGRINGEN ÄR 26 MB*, issue #623 öppnad 08:27Z och stängd av det gröna varvet 09:07Z; det varvet skrev *lagring: 26 MB av 1 024 (larm vid 800 MB)* och bildkontrollen *skuggans svenska larm 12 h: 0* — inget falsklarm efter V1. **Kvar:** första V2- eller V3-bilden när kylan kommer, och efter sju dygn bilder och MB per dygn mot taket (3/10).
+
 ## #381 (26/9 2026) Kort #261 väg (a): försprånget kläms till motorns tak, reglaget tar bara grundvarningen · systembilden rättad
 
 **Fyndet** (Bengts fråga *"har uppdateringarna någon påverkan på systembilden"*). Motorn klämde försprångskrokens svar till
