@@ -659,9 +659,13 @@ test("#236 den långsamma vakten: sql/030 skriver dygnen i felet, och snapshoten
         ('LV_FRISK', 'frisk',                    ${g(15.2)}, now() - interval '5 minutes', -1.0, 0.0, 'rain', true, false)
       ON CONFLICT DO NOTHING`);
     const q = async (text: string, params?: unknown[]) => (await pool.query(text, params as any[])).rows;
-    const { liveDoc, notes } = await buildSnapshot(q, [], new Date());
+    const { staticDoc, liveDoc, notes } = await buildSnapshot(q, [], new Date());
     const ids = liveDoc.weather.map((w) => w.id).filter((id) => id.startsWith("LV_")).sort();
     assert.deepEqual(ids, ["LV_FRISK", "LV_KORT"], "LV_FEL ska vara tyst, LV_KORT talar igen");
+    // Kort #203 (A): stationslistan i static.json bär ALLA stationer — också den som tystas i live.json — med sin position.
+    const st = staticDoc.stations.filter((s) => s.id.startsWith("LV_"));
+    assert.deepEqual(st.map((s) => s.id), ["LV_FEL", "LV_FRISK", "LV_KORT"], "stationslistan filtrerar inte på väder eller givarvakt");
+    assert.deepEqual(st.map((s) => [s.lon, s.lat]), [[15.1, 60], [15.2, 60], [15.3, 60]]);
     assert.ok(notes.some((n) => n.startsWith("långsam vakt:") && n.includes("LV_FEL") && !n.includes("LV_KORT")));
   } finally { await pool.end(); }
 });

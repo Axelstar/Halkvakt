@@ -102,7 +102,11 @@ test("#38 broarna: bara broar med en kall+våt station inom 15 km, med stationen
 test("#75 givarvakten sitter i VARJE väderfråga: svensk, gräns (fi/no) och bro", async () => {
   const { q, asked } = fakeDb({ fi: [{ station_id: "FI1", surface_temp_c: "-2", rain: false, snow: false, precipitation: null, lon: 24.1, lat: 65.9 }] });
   const { liveDoc, border } = await buildSnapshot(q, [{ id: "B", lon: 15, lat: 58, road: null }], NOW);
-  const wxQueries = asked.filter((t) => t.includes("weather_latest"));
+  // Kort #203 (A): stationslistan i static.json läser bara id och position — inga mätvärden, alltså ingen väderfråga och ingen
+  // givarvakt. Undantaget är namngivet och smalt: läser en fråga mot weather_latest EN ENDA mätkolumn räknas den som väderfråga.
+  const positioner = asked.filter((t) => t.includes("weather_latest") && !/surface_temp|air_temp|precipitation|rain|snow/.test(t));
+  assert.equal(positioner.length, 1, "stationslistan — positioner, inga mätvärden");
+  const wxQueries = asked.filter((t) => t.includes("weather_latest") && !positioner.includes(t));
   assert.equal(wxQueries.length, 4, "svensk + fi + no + bro");
   for (const t of wxQueries) assert.ok(t.includes(WX_SANE), "givarvakten saknas i: " + t.slice(0, 80));
   assert.ok(WX_SANE.includes("interval '3 hours'"), "färskhetskravet");

@@ -137,12 +137,17 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   const cams = await q(`
     SELECT camera_id, road_number, bearing, ST_X(geom) AS lon, ST_Y(geom) AS lat
     FROM cameras WHERE NOT deleted`);
+  // Kort #203 (A), Bengts ja 26/9 (DECISIONS #379): ALLA stationers id och position. Missknappen ("appen missade") bär närmaste
+  // station som plats, och telefonen hade bara de stationer som för stunden var nära noll och våta. Referenspunkter, inga
+  // mätvärden — det som varnar står fortfarande bara i live.json.
+  const stns = await q(`SELECT station_id, ST_X(geom) AS lon, ST_Y(geom) AS lat FROM weather_latest ORDER BY station_id`);
   const staticDoc = {
     schema: 1,
     cameras: cams.map((r) => ({
       id: String(r.camera_id), lon: Number(r.lon), lat: Number(r.lat),
       bearing: num(r.bearing), road: r.road_number ?? null,
     })),
+    stations: stns.map((r) => ({ id: String(r.station_id), lon: Number(r.lon), lat: Number(r.lat) })),
   };
 
   // ---- live: väglag ----
