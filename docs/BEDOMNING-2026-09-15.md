@@ -127,7 +127,7 @@ beviset finns — inte när koden är skriven.
 | **Skuggmotorn på :02/:32 (kort #244, DECISIONS #344)** | ⏳ 24/9 — läst 15:09Z: första varvet på den nya tiden 15:02:02–04Z (E18 Karlstad→Örebro, E4 Sundsvall→Umeå, Rv40 Göteborg→Jönköping, prognosen med i alla tre); 0 av 28 svar i `net._http_response` var 546 mellan 14:49 och 15:09Z. Tjugo minuter bevisar inget ännu: felen kom med timmars mellanrum (sex gånger på femton timmar) | #244 | #344 | tre dygn utan 546 i `net._http_response` |
 | **Vakthundens arkivgräns 3 h (kort #243, DECISIONS #343)** | ⏳ 24/9 — i drift: vakthundens körning 15:07Z skriver *situation_archive rörd för 3 min sedan (gräns 180)* och inga problem | #243 | #343 | sju dygn utan issue från checken *livemotorns effekt* |
 | **Vattenplaningens skugglogg vid nästa regndygn (kort #42, DECISIONS #349)** | ⏳ 25/9 — 1 varning på 108 radarutlösta segment 21–24/9 mot 28 på 693 veckan före | #42 | #349 | nästa regndygn: `rain_segments` i live.json och `vb` i skuggloggen följer varandra |
-| **Arkivets halvtimmesrader (kort #253, DECISIONS #353)** | ✅ **stängt 26/9 (DECISIONS #380):** 0,4 % saknade grannplatser i kalla halvtimmar första dygnet (var 49,5 %), 10 796 → 63 095 rader per dygn, väderarkivet 88 MB, databasen 186 MB · deployad 25/9 07:20Z; täckningen per halvtimme mot 837 aktiva stationer — före deployen **63–84** stationer med rad (05:00–06:30Z, en varm förmiddag), halvtimmen 07:30–08:00Z **830 av 837 (99 %)**; rader per halvtimme 259–320 → 963, alltså ungefär tre gånger så många en varm dag (≈ 46 000 rader/dygn mot ≈ 17 000) | #253 | #353 | censurmätningen på kalla halvtimmar efter 07:20Z < 5 % saknade (tidigast 26/9 morgon) · tillväxten per dygn inskriven |
+| ~~**Arkivets halvtimmesrader (kort #253, DECISIONS #353)**~~ | ✅ **stängt 26/9 (DECISIONS #380):** 0,4 % saknade grannplatser i kalla halvtimmar första dygnet (var 49,5 %), 10 796 → 63 095 rader per dygn, väderarkivet 88 MB, databasen 186 MB · deployad 25/9 07:20Z; täckningen per halvtimme mot 837 aktiva stationer — före deployen **63–84** stationer med rad (05:00–06:30Z, en varm förmiddag), halvtimmen 07:30–08:00Z **830 av 837 (99 %)**; rader per halvtimme 259–320 → 963, alltså ungefär tre gånger så många en varm dag (≈ 46 000 rader/dygn mot ≈ 17 000) | #253 | #353 | censurmätningen på kalla halvtimmar efter 07:20Z < 5 % saknade (tidigast 26/9 morgon) · tillväxten per dygn inskriven |
 | **Försprångets skugga (kort #153 beslut 1, DECISIONS #359)** | ⏳ byggd 25/9, jobbet :12/:42 — loggar bara när en nivå 2-fara finns på rutten, alltså först i vinter | #153 | #359 | första raden i `forsprang_log` med innehåll; FS-A:s andel nivå 2 när frosten kommit |
 | **Skuggmotorns datorkraft (kort #244)** | 🔨 lagat 25/9 med rutfiltret (DECISIONS #360), i drift: huvudvarvet 09:02Z efter deployen 08:32Z — motorn **173 ms** för tre rutter, prognosen **9 ms**, facit 5 300 ms (väntan på kamerabilderna, nätverk och inte räknearbete), totalt 5 737 ms; 740 ankare och 2 797 faror i snapshoten; tre rader med prognos och holdout; **0 × 546** bland 44 svar sedan 08:32Z | #244 | #360 | tre dygn utan 546 efter deployen; svarets `ms` visar tiden per steg |
 | **Frostgrindarnas omtryckning (kort #252, DECISIONS #352)** | ⏳ deployad 25/9 06:45Z, varvet 07:07Z utan problem — trycker först vid frost | #252 | #352 | första frosten: flödena tryckta kl 09 UTC och en markerad kommentar på frostissuen; sju dygn senare en till |
@@ -178,8 +178,8 @@ beviset finns — inte när koden är skriven.
 | Anmälan till Trafikverket om sju felande ytgivare (`docs/ANMALAN-TRV-YTGIVARE.md`) — Ö Ljungby 1106 först | ⏳ **skickad av Bengt 22/9** via Datautbytesportalens formulär; ingen vet när de lagar den — den långsamma vakten (kort #236) läker tills dess | #234, #236 | #298, #300 | svar från Trafikverket · givaren mäter rätt igen (`givarfel_dygn` slutar få nya dygn för 1106) |
 | ~~Den långsamma vakten i drift: `sql/030` med backfill, `sql/018` och `sql/028` omkörda, `ingest-live` och `publicera` deployade~~ | ✅ **22/9:** backfill 28 stationsdygn (1106: 20), tysta nu 1106, livekörningen 60 ms · 018 ENSE 5 767 = 5 767 · 028 och 018 bär dygnsflaggan i `pg_proc` · ingest-live 05:44Z, svaren bär *langsam_vakt* · publicera 05:45Z, publiceringen 05:50Z bär noten *långsam vakt: … 1106*, rätt sha, ingen av de sju | #236 | #300 |
 | Den långsamma vaktens form mäts om efter första frostmånaden (arkivet den byggdes på är augusti–september): tar den någon frisk station i vinterluft? (`scripts/matningar/langsam-vakt-d-2026-09-22.sql`) | ⏳ vid frost | #236 | #300 | noll friska stationer i svepet 5/6/8 ° | `givarfel_dygn` bär 1106 med färskt `senast`, ingest-lives svar bär `langsam_vakt`, publiceringens not *långsam vakt: … 1106*, 1106 borta ur live.json |
-| Grannländernas snapshot i Supabase (kort #238): `publicera?land=grannar` på pg_cron :05/:35, Norge i skuggflottan :25/:55, Actions-steget för fi/dk borta | ✅ **22/9:** publicera?land=grannar körde 09:35:00Z och 10:05:00Z (jobid 46, commit f9dbf12 och 136c0ef i kartrepot, cirka 6 s per varv): Norge 10 väderpunkter, Finland 1 väderpunkt och 1 olycka, Danmark 3 olyckor (körning 35714295337) · skuggmotor?land=no körde 09:55:00Z (jobid 47) och skuggloggen fick sina första norska rader: 3 varv på 3 rutter mot snapshoten 09:35, noll larm — efter 25 dygn med noll | #238 | #301 | norska rader i skuggloggen varje halvtimme; ingest-grannar utan snapshotsteg |
-| Gallringen med Danmark, gravstenar och tidsvakt i drift (kort #240) | ✅ **22/9:** sql/031 körd 22/9 (körning 35714435556): första körningen raderade 12 184 rader; Danmark 2 480 rader kvar, 0 äldre än sju dygn (äldsta 15/9); 0 rader före 2020 i något arkiv, 1970-raden borta; inga gravstenar äldre än 30 dygn ännu (regeln biter från 24/9, arkivet började 24/8); pg_proc bär Danmark, tidsvakten och gravstensregeln; databasen 190 MB tills autovacuum frigör | #240 | #301 | nattjobbet 03:15 tar danska rader äldre än 7 dygn; inga rader före 2020; inga gravstenar äldre än 30 dygn |
+| ~~Grannländernas snapshot i Supabase (kort #238): `publicera?land=grannar` på pg_cron :05/:35, Norge i skuggflottan :25/:55, Actions-steget för fi/dk borta~~ | ✅ **22/9:** publicera?land=grannar körde 09:35:00Z och 10:05:00Z (jobid 46, commit f9dbf12 och 136c0ef i kartrepot, cirka 6 s per varv): Norge 10 väderpunkter, Finland 1 väderpunkt och 1 olycka, Danmark 3 olyckor (körning 35714295337) · skuggmotor?land=no körde 09:55:00Z (jobid 47) och skuggloggen fick sina första norska rader: 3 varv på 3 rutter mot snapshoten 09:35, noll larm — efter 25 dygn med noll | #238 | #301 | norska rader i skuggloggen varje halvtimme; ingest-grannar utan snapshotsteg |
+| ~~Gallringen med Danmark, gravstenar och tidsvakt i drift (kort #240)~~ | ✅ **22/9:** sql/031 körd 22/9 (körning 35714435556): första körningen raderade 12 184 rader; Danmark 2 480 rader kvar, 0 äldre än sju dygn (äldsta 15/9); 0 rader före 2020 i något arkiv, 1970-raden borta; inga gravstenar äldre än 30 dygn ännu (regeln biter från 24/9, arkivet började 24/8); pg_proc bär Danmark, tidsvakten och gravstensregeln; databasen 190 MB tills autovacuum frigör | #240 | #301 | nattjobbet 03:15 tar danska rader äldre än 7 dygn; inga rader före 2020; inga gravstenar äldre än 30 dygn |
 | Databasens storlek mäts igen — **190 MB 22/9, ~4,5 MB/dygn netto ⇒ 400 MB runt 9/11, 500 MB runt 1/12** | ⏳ nästa mätning 29/9; Pro-beslutet (§4.2) står på "senast 1 november" och takten säger att det håller utan marginal | #240 | #301 | pg_database_size varje vecka i bedömningen |
 | ~~Vakthunden svarar inte inom 120 s i kassavaktens timmar (05, 11, 17, 23 UTC) — **bekräftat 11:07Z**, samma timeout som 05:07Z. **Larmet går ut:** kassavakten kommenterade issue #210 05:08:15Z och 11:08:21Z. Kvar: vakthundens svar är oläsbart var sjätte timme, och okänt om kontrollerna efter kassavakten hinner köras~~ | ✅ **18/9 (#238, PR #348):** kassavakten hämtar sex dygn samtidigt. Före: ordinarie 05:07Z timeout vid 120 s; efter deploy svarade kassaprovet inom cirka 70 s med alla rader och samma räkning. Ordinarie 11:07Z ska svara utan timeout | kort #201 | #238 | vakthundens svar inom 120 s i kassavaktens timme |
 | Läsbar version av TROSKLAR-KOMBINATIONEN på Skrivbordet och i Drive är från 16/9 — före Axels sex ändringar, radarn och fastställandet | ⏳ inaktuell; ny version när Bengt vill | #197 | — | aktuell version i Drive, eller den gamla borttagen |
@@ -194,7 +194,32 @@ beviset finns — inte när koden är skriven.
 | **Genomlysningen 20/9 — tolv fynd, sex stängda samma dag, sex öppna (räknat om kort för kort 23/9).** Fem granskare mot motor, drift, mätning, produkt och styrning, plus egna mätningar mot drift och den publicerade snapshoten. Rapport: `docs/GENOMLYSNING-2026-09-20.md`. **Tre fel hörs eller kan höras i bilen** (#210 iOS-null, #211 det tredje olycksropet, #212 otestad korridor). **Två är existentiella** (#213 ingen backup, #215 vakthunden utan dödmansgrepp). **Ett är formellt** (#214 Play-deklarationen osann sedan 16/9) | 🔨 **6 av 12 stängda med bevis, alla 20/9:** #211 tidiga ropet engångs (DECISIONS #258) · #212 trösklarna låsta med nio vektorer (#263) · #213 arkivbackup, återläst och radräknad (#257) · #215 dödmansgreppet, via #50 (#254) · #216 blindningsläckan i T-A (#278) · #220 beslutsnumren unika (#259). **6 öppna:** #210 — fixen byggd (#258/#276), kvar är att höra den i ett iOS-bygge, 0.3.9 (12) · #214 — produktboken och behörighetsrutan rättade (#304/#317), kvar raderingsfrågan och integritet.html (Axel) · ~~#217~~ ✅ **klart 24/9** (DECISIONS #347): boken läst rad för rad mot koden, alla sex löften rättade, tre nya kort (#248–#250) · #218 — inget gjort, väntar på Bengts ja · #219 — Play-kontot och testtelefonen finns, kvar version, introduktion och uppladdning · #221 — inget gjort. *Raden sa "noll åtgärdade" från 20/9 fast sex stängdes samma dag.* | #210–#221 | #249 | ett kort stängt med mätt bevis per fynd |
 | ~~Två av genomlysningens kort var inte nya.~~ **ÅTGÄRDAT 20/9 (#252).** #215 *vakthunden kan tystna* är samma sak som **#50 *Vakthunden är själv obevakad*** (4/9) — sexton dygn på tavlan utan att någon kopplat ihop dem. #51 *vinterarkivet skrivs nästan inte* (4/9) pekade på samma tomhet i `road_condition_history` som #247 mätte 20/9 (0 omklassningar till halka på 14 dygn, 7 rader totalt) | ✅ **ihopslagna 20/9 på Bengts order:** #215 stängd, dess tre defekter (dödmansgreppet, 9c/9d som aldrig kan fyra, pg_cron utan avstämning) införda i **#50** som avsnittet *GENOMLYSNINGEN 20/9* med minsta åtgärd och Verify. **#51** bär nu 20/9-mätningen och är uttryckligen kopplad till facitraden och till **#209** — med ny Verify: omklassningar till halka under de första frostnätterna | #50, #51, #209 | #252 | ett kort per fråga, inte två |
 | ~~Sex överspelade kort stod öppna på tavlan~~ | ✅ **stängda 20/9 med beviset på varje kort** (#250): TestFlight 0.3.5 (main bär 0.3.8) · #79 regn-30 (avvecklad 9/9) · gallringsregeln (i drift 17/9) · Vegvesen DATEX (beviljat 4/9) · #158 (byggd 14/9) · #157 (451 bilder i hinken 20/9). Öppna kort 102 → 96. **Fyra av de sex bar sitt eget bevis i brödtexten** | #157, #158 | #250 | kortet i 🟢 med en rads bevis |
-| Ägarskapet per kort: vad bara Axel kan göra, vad bara Bengt kan, och vad någon annan kan verkställa | ✅ **skrivet 20/9** (`docs/KORTLISTOR-2026-09-20.md`): av Axels 25 är **6 exklusivt hans**, 5 kräver er båda och **14 kan Claude eller Bengt verkställa**. Av Bengts 13 är 4 exklusivt hans | — | #250 | listan använd i riktlinjemötet |
+| ~~Ägarskapet per kort: vad bara Axel kan göra, vad bara Bengt kan, och vad någon annan kan verkställa~~ | ✅ **skrivet 20/9** (`docs/KORTLISTOR-2026-09-20.md`): av Axels 25 är **6 exklusivt hans**, 5 kräver er båda och **14 kan Claude eller Bengt verkställa**. Av Bengts 13 är 4 exklusivt hans | — | #250 | listan använd i riktlinjemötet |
+
+| **`ingest-grannar` faller rött utan felmeddelande — 6 gånger på 7 dygn (fynd 27/9).** Röda körningar 21–27/9: grannar 6, ci 7, dbknapp 5, healthcheck 3, android 3. Den senaste (27/9 01:24, körning 36285411110) har **inget `##[error]` i loggen alls**: Norgesteget skriver klart sin sista rad (`no: latest 466, archived 251`) och sedan kommer Post job cleanup — jobbet är ändå märkt failure. Ett rött jobb utan felrad är samma familj som TRV 400 utan svarskropp: det går inte att felsöka i efterhand. Vakthunden larmar inte, eftersom nästa timkörning lyckas och färskheten hålls. **Behöver eget kortnummer när PR #624 är mergad** (nästa lediga är #262 om den inte tar det) | ⏳ 27/9 — oåtgärdat; första steget är att låta steget skriva ut exitkoden per land | — | — | en röd körning vars logg namnger vad som föll |
+---
+
+### 0c. Radgenomgång 27/9 — vad som faktiskt blockerar de öppna raderna
+
+Bengts beställning 27/9: gå §0b rad för rad. **75 rader, varav 37 strukna.** De 38 som stod kvar faller i sex högar, och
+högen avgör vad som kan göras — inte radens ålder.
+
+| Hög | Rader | Vad som mättes 27/9 | Vad som skulle stänga dem |
+| :-- | :-- | :-- | :-- |
+| **A. Bokföringsskuld — läget säger redan ✅** | 4 rader: arkivets halvtimmesrader (#253) · grannländernas snapshot (#238) · gallringen med Danmark (#240) · ägarskapet per kort | inget nytt behövdes — beviset stod i radens egen lägeskolumn | ~~strukna i det här varvet~~ ✅ |
+| **B. Byggt, i drift, väntar bara på att klockan går** | 5 rader: skuggmotorn på :02/:32 (#244) · vakthundens arkivgräns 3 h (#243) · försprångets skugga (#153) · skuggmotorns datorkraft (#244) · frostgrindarnas omtryckning (#252) | **noll öppna larm-issues 27/9** (bara veckorapporten #420, kassavakten #210 och frostpåminnelsen #127). Ingen av de fem har larmat sedan de deployades 24–25/9 | arkivgränsen stängs **1/10** (sju dygn), datorkraften **28/9** (tre dygn). De övriga tre först vid frost |
+| **C. Vädret — den enda verkligt bindande faktorn** | 12 rader: S1:s stationstäckning · skugglogg ↔ arkiv · radarns bidrag · snöflingemätningen · den långsamma vaktens form · betans startvärden · #153 · vattenplaningens skugglogg · kamerafacit i mars · `senast_sedd` m.fl. | **1 kall station av 1 298** (frostvakten larmar vid 50), 0 onormala segment, 0 regnsegment, 0 väderpunkter i `live.json` | första frostnätterna — **eller kuvösen (#232), se §6** |
+| **D. Axels händer** | 4 rader: facitknappen och fälttestet · PAT-rotationen (senast 15/11) · steg D efter V-C · **simulatorprovet, stoppdatum i dag 27/9** | inget nytt; simulatorprovet är två minuter och har passerat sitt datum | Axel trycker |
+| **E. Externa svar vi inte rår över** | 5 rader: trafikskolorna · Stockholm · Trafikverket om fordonsdata · **kuvösens historiska uttag** · ytgivaranmälan | inga svar bokförda | **kuvösens rad har en trappa med datum: inget svar 28/9 ⇒ *Frågor till Trafikverket*, därefter *Begär ut allmänna handlingar*.** Den trappan är i morgon |
+| **F. Kalenderplikter, inte arbete** | 4 rader: Actions-taket · databasens storlek (nästa mätning 29/9) · `ubuntu-latest` 19/10 · Drive-versionen av TROSKLAR-KOMBINATIONEN | Actions avstämt i dag (se ovan); databasen 190 MB 22/9 ⇒ 400 MB runt 9/11 | **de stängs aldrig** — de är återkommande. Se §6 punkt 3 |
+
+Kvar utanför högarna: `radar_h` (uppskjuten CPU-mätning), genomlysningens sex öppna fynd, arkivexportens eftersläpning
+(19 dygn väntade 24/9 — **första schemalagda körningen grön 27/9 09:20Z, körning #4**), ordlistan som nått backend men
+vars telefonbevis inte är bokfört, och uppspelningens variantutfall som läses först vid dom 1.
+
+**Slutsats av genomgången:** av 38 öppna rader är **4 ren bokföring**, **5 väntar på en klocka**, **12 på vädret**,
+**4 på Axel**, **5 på någon annans svar** och **4 är eviga**. Det som faktiskt går att arbeta på i dag är alltså inte
+38 rader utan en handfull — och den enskilt största spaken ligger i hög E, inte i hög C.
 
 ---
 
@@ -445,6 +470,79 @@ minimilistan A–E (§8). Det här är läget mätt mot den, inte mot minnet. Up
 
 §6.1 (grind A *ingen dom*), §5.4 (prognosens fog som `weather[].osakerhet`), §12 (kamerafacit 0 objekt, ingen vakt) och §7.2–7.4
 (motkrafter som är avgjorda sedan 17/9). ✅ **R17–R20 införda 24/9 och kartan fryst igen (DECISIONS #337).**
+
+---
+
+## 6. Vägen till ett stängt system (Bengts fråga 27/9)
+
+Ambitionen är att stänga systemet när det är fullkomligt. Genomgången i §0c säger något obekvämt om den ambitionen:
+**tavlan kan inte nå noll som den är byggd.** Nedan fem vägar, i fallande ordning efter hur mycket de faktiskt flyttar.
+
+### 6.1 Kuvösen är den enda kända vägen runt vintern — och dess trappa är i morgon
+
+35 öppna kort; **19 av dem står i "Claude — låst (väntar på nyckel)", och nyckeln är nästan alltid första frosten.**
+27/9 har vi 1 kall station av 1 298. Frostvakten larmar vid 50. Vi kan inte påverka det.
+
+Kort **#232 (kuvösen)** upphäver beroendet: hela systemet bakåtprövas på vintern 2024/25 ur Trafikverkets egna arkiv.
+Får vi VViS-observationerna 1/11 2024–31/3 2025 kan **hög C:s tolv rader mätas i november i stället för i mars** —
+S1:s stationstäckning, radarns bidrag med snö, snöflingemätningen, den långsamma vaktens form, skugglogg mot arkiv.
+Det är inte en genväg förbi bevisen; det är samma bevis på ett år som redan hänt.
+
+**Läget:** förfrågan skickad av Bengt 21/9, inget svar. Raden bär en trappa: *inget svar 28/9 ⇒ formuläret "Frågor till
+Trafikverket", därefter "Begär ut allmänna handlingar".* Det sista är en rättighet med svarsplikt, inte en artighet.
+**Trappan utlöses i morgon, och den är den enskilt mest värdefulla åtgärden på hela listan.**
+
+### 6.2 Två av tre facitkällor är tomma — och en av dem kan fyllas utan vinter och utan förare
+
+Domarna i januari och mars vilar på facit. Läget: **förarfacit 0 riktiga svar** (knappen har aldrig nått en telefon som
+någon tryckt på), **kamerafacit insamlat men oläst till mars**, **uppspelningen ur arkiven** fungerar men vårt eget arkiv
+börjar sent i augusti.
+
+Kort **#260 (bildfacit V1–V3, Bengts ja 26/9)** är den enda facitkällan som växer utan att något annat händer: den tar
+bilden vid kameran närmast varje frysrisk i hela landet i stället för bara längs skuggrutterna. Den är byggd och väntar
+på deploy. **Den bör gå före allt annat byggarbete** — varje dygn den inte kör är ett dygn facit som inte samlas, och
+facit kan inte samlas i efterhand.
+
+### 6.3 Ett system med stående vakter kan aldrig stängas — skilj kort från kalender
+
+Fyra §0b-rader och flera kort är inte arbete utan **återkommande plikter**: PAT-rotationen, databasens storlek,
+`ubuntu-latest`-bytet, Actions-taket varje månadsskifte. De kan aldrig bockas av. Så länge de ligger bland korten kommer
+tavlan aldrig att nå noll, och "fullkomligt" blir per konstruktion ouppnåeligt.
+
+**Förslag:** en tredje lista — `docs/KALENDERN.md` — med datum, ägare och vad som ska läsas av. Korten och §0b-raderna
+tas bort därifrån. Vinsten är inte kosmetisk: när listan kan nå noll blir återstoden ett mått på hur långt det är kvar,
+i stället för en lista som alltid ser lika lång ut. **Detta är Bengts beslut och kostar en timme.**
+
+### 6.4 Definiera "fullkomligt" innan det går att nå
+
+I dag finns ingen skriven definition av när systemet är klart, och utan den kan frågan inte besvaras med ja.
+**Förslag till definition, att fastställa eller förkasta:**
+
+1. Varje vinterlänk har gått hela kartans sekvens: publicerad · mätt i skuggan · villkoret ändrat · tre portar gröna.
+2. Varje dom som TROSKLAR-dokumenten föreskriver har avgetts **en gång** — dom 1 i januari, dom 2 i mars.
+3. Alla tre facitkällorna har levererat över sina golv (V-C: ≥ 200 varningar, ≥ 15 facit, ≥ 5 regndygn, ≥ 3 län).
+4. Inget öppet kort utanför kalendern.
+
+Med den definitionen är systemet **inte** stängbart före mars 2027, och det är ett ärligt svar. Utan definitionen är
+frågan obesvarbar, vilket är sämre.
+
+### 6.5 Axels kö är den näst största spaken, och den går att kapa i dag
+
+Nio öppna kort och fyra §0b-rader väntar på Axel. Men `docs/KORTLISTOR-2026-09-20.md` mätte saken: **av Axels 25 kort är
+bara 6 exklusivt hans**, 5 kräver båda, och **14 kan Claude eller Bengt verkställa**. Simulatorprovet har passerat sitt
+stoppdatum i dag; PAT-rotationen har 49 dygn kvar men bara en person som kan göra den.
+
+**Förslag:** gå igenom de 14 och flytta det som inte kräver hans händer. Det är ett samtal, inte ett bygge, och det är
+den snabbaste minskningen av kön som finns att få.
+
+### 6.6 Ordningen, om allt annat är lika
+
+1. **I morgon:** kuvösens trappa (6.1) — den har ett datum och den låser upp tolv rader.
+2. **Denna vecka:** deploya bildfacit V1–V3 (6.2) — facit som inte samlas i dag går inte att samla i efterhand.
+3. **När Bengt har en timme:** kalendern ut ur korten (6.3) och definitionen fastställd (6.4).
+4. **Nästa samtal med Axel:** de 14 kort som inte kräver hans händer (6.5).
+
+Inget av detta bygger något nytt i motorn, och inget av det rör en tröskel. Det är fyra drag som gör resten mätbar.
 
 ---
 
