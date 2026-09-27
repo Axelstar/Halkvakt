@@ -110,6 +110,12 @@ export const KARTAN: Beroende[] = [
     matar: "reservspegel för Overpass", brister: "en av tre speglar", bevakad: "", signal: "OKÄND" },
   { vard: "lastkajen.trafikverket.se", roll: "verktyg",
     matar: "NVDB-uttag, rekognosering", brister: "lastkajen-rekognoseringen", bevakad: "", signal: "OKÄND" },
+  { vard: "api.vegvesen.no", roll: "verktyg",
+    matar: "kandidat i kuvösens norska rekognosering (kort #232) — prövas, inte hämtas i drift",
+    brister: "no-historik-rekognoseringens spår C tappar en kandidat", bevakad: "", signal: "OKÄND" },
+  { vard: "datainn.vegvesen.no", roll: "verktyg",
+    matar: "kandidat i kuvösens norska rekognosering (kort #232) — prövas, inte hämtas i drift",
+    brister: "no-historik-rekognoseringens spår C tappar en kandidat", bevakad: "", signal: "OKÄND" },
   { vard: "www.trafikverket.se", roll: "verktyg",
     matar: "publika sidor i rekognosering och en testfixtur", brister: "inget i drift", bevakad: "", signal: "OKÄND" },
 

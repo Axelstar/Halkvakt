@@ -1,0 +1,23 @@
+# Norsk vägstationshistorik för kuvösen (kort #232): finns yttemperatur för en gången
+# vinter, och räcker kontot vi redan har? REN LÄSNING — laddar inget, skriver inget.
+# Körs på knapp; svaren på Summary-sidan. Att en kandidat faller är ett svar, inte ett fel.
+name: no-historik-rekognosering
+on:
+  workflow_dispatch:
+jobs:
+  rekognosering:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/no-historik-rekognosering.ts | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env:
+          VEGVESEN_USER: "${{ secrets.VEGVESEN_USER }}"
+          VEGVESEN_PASS: "${{ secrets.VEGVESEN_PASS }}"
