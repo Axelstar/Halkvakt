@@ -225,10 +225,29 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   > 3. Oavsett punkt 1 och 2: befintliga uttag, exportfiler eller leveranser som redan gjorts ur VViS-arkivet för den perioden,
   >    samt dokumentation över hur arkivet lagras och vilka format det kan lämnas i.
   > Jag tar gärna emot handlingarna elektroniskt, och i valfritt format (CSV går utmärkt).
+  > Om ni tar ut en avgift ber jag er ange beloppet och den bestämmelse ni tillämpar innan arbetet påbörjas. Jag noterar att
+  > samma data redan tillgängliggörs avgiftsfritt som öppna data (CC0) i realtid, och att meteorologiska observationer är en av
+  > EU:s kategorier av särskilt värdefulla datamängder, som ska tillhandahållas avgiftsfritt.
   > Bedömer ni att en sammanställning enligt punkt 1 eller 2 inte kan tas fram med rutinbetonade åtgärder ber jag er ange det,
   > och i så fall lämna ut det som finns enligt punkt 3. Avslås begäran helt eller delvis ber jag om ett skriftligt beslut med
   > besvärshänvisning. Ange gärna kostnaden innan arbete påbörjas.
   > Bengt Lagerlöf, Halkvakt
+  💰 **KOSTNADEN OM VI FÅR DET PÅ FIL (Bengts fråga 27/9, DECISIONS #384) — tre regimer, och vår formulering avgör vilken.**
+  **(1) Kopia av allmän handling** (avgiftsförordningen 15–16 §§): sidtaxa — de nio första sidorna fria, tio sidor 50 kr, därefter
+  2 kr per sida. Taxan är skriven för PAPPER; en CSV har inga sidor, så den går inte att räkna på en fil. Viktigast: **de får inte
+  ta betalt för sin egen handläggning eller sekretessprövning** — bara för kopior. Och det finns **ingen skyldighet att lämna ut i
+  elektronisk form** (rätten gäller en kopia; mediet väljer myndigheten). **(2) Uppdrag** (4 §, full kostnadstäckning): är uttaget
+  inte en rutinbetonad åtgärd behöver de inte göra det — men de får sälja det, till timpris. **Det är här en verklig faktura kan
+  uppstå**, och det är samma test som avgör om sammanställningen alls är en allmän handling. **(3) Öppna data / värdefulla
+  datamängder** (lagen 2022:818, EU 2019/1024 + 2023/138): meteorologiska data är en av EU:s kategorier, och en särskilt värdefull
+  datamängd ska tillhandahållas **avgiftsfritt**, maskinläsbart, gärna som bulknedladdning. Undantagsfönstret löpte ut 9/2 2025.
+  ⚖️ **Följden för texten:** ju mer begäran liknar *skicka filen ni redan har* desto närmare regim 1/3 (≈ noll), ju mer den liknar
+  *bygg ett dataset åt oss* desto närmare regim 2 (timpris). Därför frågar steg 3 efter befintliga uttag FÖRST.
+  🚧 **Vår egen regel:** gratisnivån är ett villkor (CLAUDE.md) — **ingen kostnad accepteras i ett svar**, den tas tillbaka hit och
+  blir en DECISIONS-post godkänd av Axel. Därför ber båda texterna om beloppet innan arbete påbörjas.
+  📵 **Inte läst på källan:** nätpolicyn blockerar trafikverket.se, riksdagen.se, lagen.nu, forum.esv.se och jpinfonet.se. Talen
+  50 kr/2 kr och avgiftsfriheten för värdefulla datamängder är regelverket som jag känner det plus sökträffar — **kontrollera dem
+  innan de citeras MOT Trafikverket**. Texten ovan behöver dem inte: den frågar efter beloppet och grunden i stället för att påstå.
   ✉️ **Steg 1 — Bengt skickar förfrågan.** ⛔ **INTE till datex@trafikverket.se — adressen STUDSAR** (Bengts mejl 17/9 kom
   tillbaka med *"Adressen hittades inte"*; den gavs ändå ut en gång till 21/9, DECISIONS #293 → rättat i #294).
   📖 **Rätt väg, läst på källan 21/9:** Datautbytesportalens kontaktformulär, data.trafikverket.se/about-us/contact,

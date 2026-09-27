@@ -5317,3 +5317,44 @@ vår egen frist, inte Trafikverkets.** Ingenting utlöses av sig självt — ing
 alls — raden ligger kvar. **Läxa:** när en fråga innehåller ett ord som inte stämmer med bokföringen är det oftast ett löst
 ordval, inte ett nytt sakförhållande. Fråga vad som menas i en mening, svara på det som faktiskt frågades, och gör inte
 ordvalet till huvudsaken.
+
+## #384 (27/9 2026) Kostnaden för kuvösens uttag: tre avgiftsregimer, och det är VÅR formulering som avgör vilken vi hamnar i
+
+**Bengts fråga 27/9:** *"hur kommer kostnaden för uttaget att beräknas om man får det på fil"*
+
+**Svaret är inte ett belopp utan en klassificering.** Vilken regim Trafikverket placerar begäran i avgör allt, och de tre
+skiljer sig med flera tiopotenser.
+
+| Regim | Grund | Vad det kostar | När den gäller |
+| :-- | :-- | :-- | :-- |
+| **1. Kopia av allmän handling** | avgiftsförordningen 15–16 §§ | sidtaxa: nio första fria, tio sidor 50 kr, sedan 2 kr/sida | de lämnar ut något som FINNS |
+| **2. Uppdrag** | avgiftsförordningen 4 §, full kostnadstäckning | timpris för deras arbete | de måste FRAMSTÄLLA något |
+| **3. Värdefull datamängd** | lagen 2022:818, EU 2019/1024 + 2023/138 | **avgiftsfritt** | datamängden är utpekad som särskilt värdefull |
+
+**Tre saker som gäller oavsett regim:**
+1. **Sidtaxan går inte att räkna på en fil.** Den är skriven för papper; en CSV har inga sidor. "På fil" betyder alltså att
+   taxan i regim 1 inte biter — kostnaden faller antingen till noll eller till timpris, och inget däremellan.
+2. **De får inte ta betalt för handläggningen.** Sekretessprövningen och sökandet är inte avgiftsbelagt i regim 1 — bara
+   kopiorna. En faktura för *arbetet med att ta fram* hör hemma i regim 2 och förutsätter att vi beställer.
+3. **Ingen skyldighet att lämna ut elektroniskt.** Rätten gäller en kopia; mediet väljer myndigheten. Att vi vill ha en fil är
+   en önskan, inte ett krav — vilket är ännu ett skäl att fråga vänligt om formatet i stället för att kräva det.
+
+**Slutsatsen som styr texten (kort #232):** ju mer begäran liknar *skicka filen ni redan har* desto närmare regim 1 eller 3 —
+i praktiken noll. Ju mer den liknar *bygg ett dataset åt oss över fem månader* desto närmare regim 2 — timpris, och samma
+rutinbetonade-åtgärder-test som avgör om sammanställningen alls är en allmän handling (#383). **Därför frågar steg 3 efter
+befintliga uttag och exportfiler FÖRST**, och erbjuder rutturvalet som andrahandsalternativ.
+
+**Regim 3 är värd att nämna i brevet, men inte att bråka om.** Meteorologiska data är en av EU:s sex kategorier av särskilt
+värdefulla datamängder, som ska tillhandahållas avgiftsfritt och maskinläsbart; undantagsfönstret löpte ut 9/2 2025. Om
+Trafikverkets VViS-ARKIV är utpekat som sådan datamängd vet vi inte — realtidsflödet är redan CC0. Därför står det i texten som
+en notering (*jag noterar att…*), inte som ett krav. Ett påstående vi inte kan belägga försvagar en begäran som annars är stark.
+
+**Vår egen grind:** gratisnivån är ett villkor och inte en önskan (CLAUDE.md). **Ingen kostnad accepteras i ett svar** — den tas
+tillbaka hit och blir en DECISIONS-post godkänd av Axel innan något beställs. Båda texterna på kortet ber därför om beloppet
+OCH den tillämpade bestämmelsen innan arbete påbörjas.
+
+**Vad som inte är läst på källan.** Nätpolicyn i containern blockerar `trafikverket.se`, `riksdagen.se`, `lagen.nu`,
+`forum.esv.se` och `jpinfonet.se` — fem försök, fem avslag. Talen 50 kr/2 kr och avgiftsfriheten för värdefulla datamängder är
+regelverket som jag känner det, styrkt av sökträffar men inte av en läst sida. **De ska kontrolleras innan de citeras MOT
+Trafikverket.** Texten på kortet är skriven så att den inte behöver dem: den frågar efter beloppet och grunden i stället för att
+påstå vad de är. Det är också det enda sättet att få svaret utan att riskera att ha fel inför den man frågar (#294).
