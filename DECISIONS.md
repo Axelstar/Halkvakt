@@ -5358,3 +5358,14 @@ OCH den tillämpade bestämmelsen innan arbete påbörjas.
 regelverket som jag känner det, styrkt av sökträffar men inte av en läst sida. **De ska kontrolleras innan de citeras MOT
 Trafikverket.** Texten på kortet är skriven så att den inte behöver dem: den frågar efter beloppet och grunden i stället för att
 påstå vad de är. Det är också det enda sättet att få svaret utan att riskera att ha fel inför den man frågar (#294).
+
+**Tillägg samma dag — Bengts följdfråga: *"har man inte beställt om man begärt handlingarna"*.** Nej, men min formulering ovan
+var för grov, och gränsen går på ett annat ställe än den antydde. **En begäran utlöser en prövning, inte ett avtal:** myndigheten
+lämnar ut eller avslår. Ett avslag kan aldrig faktureras, och handläggningen — sökandet, sekretessprövningen — inte heller.
+**Men sidtaxan i regim 1 följer av förordningen, inte av vårt samtycke.** Begär man kopia av en handling på 500 sidor uppstår
+avgiften utan att någon beställt något; i det avseendet ÄR begäran en beställning av kopiorna. Det är liten risk för oss, just
+därför att vi ber om en fil: taxan är skriven för papper. **Regim 2 fungerar tvärtom.** Där kan de inte fakturera alls utan ett
+uttryckligt erbjudande och ett ja. Svarar de *"inte rutinbetonat, men vi gör det som uppdrag för X kr/tim"* är det ett ANBUD —
+och först vårt ja är beställningen. **Skärpning av texten på kort #232:** den ber dem nu inte bara ange belopp och bestämmelse
+utan också **höra av sig innan någon avgift debiteras**, så att varje kostnad blir ett anbud vi kan ta tillbaka till Axel i
+stället för en post på en faktura. Det är hela skyddet: inte att begäran är gratis, utan att inget dyrt kan ske utan ett ja.

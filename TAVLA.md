@@ -225,7 +225,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   > 3. Oavsett punkt 1 och 2: befintliga uttag, exportfiler eller leveranser som redan gjorts ur VViS-arkivet för den perioden,
   >    samt dokumentation över hur arkivet lagras och vilka format det kan lämnas i.
   > Jag tar gärna emot handlingarna elektroniskt, och i valfritt format (CSV går utmärkt).
-  > Om ni tar ut en avgift ber jag er ange beloppet och den bestämmelse ni tillämpar innan arbetet påbörjas. Jag noterar att
+  > Om ni tar ut en avgift ber jag er ange beloppet och den bestämmelse ni tillämpar, och höra av er innan någon avgift
+  > debiteras — jag vill kunna ta ställning först. Jag noterar att
   > samma data redan tillgängliggörs avgiftsfritt som öppna data (CC0) i realtid, och att meteorologiska observationer är en av
   > EU:s kategorier av särskilt värdefulla datamängder, som ska tillhandahållas avgiftsfritt.
   > Bedömer ni att en sammanställning enligt punkt 1 eller 2 inte kan tas fram med rutinbetonade åtgärder ber jag er ange det,
@@ -248,6 +249,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   📵 **Inte läst på källan:** nätpolicyn blockerar trafikverket.se, riksdagen.se, lagen.nu, forum.esv.se och jpinfonet.se. Talen
   50 kr/2 kr och avgiftsfriheten för värdefulla datamängder är regelverket som jag känner det plus sökträffar — **kontrollera dem
   innan de citeras MOT Trafikverket**. Texten ovan behöver dem inte: den frågar efter beloppet och grunden i stället för att påstå.
+  🧾 **ÄR EN BEGÄRAN EN BESTÄLLNING? (Bengts följdfråga 27/9, DECISIONS #384 tillägg.)** Nej — men gränsen går inte där jag först
+  skrev. En begäran utlöser en PRÖVNING, inte ett avtal: myndigheten lämnar ut, eller avslår. **Ett avslag kan aldrig faktureras**,
+  och handläggningen inte heller. MEN: sidtaxan i regim 1 följer av förordningen, inte av vårt samtycke — begär man en kopia av en
+  handling på 500 sidor uppstår avgiften utan att någon beställt något. **Så i regim 1 ÄR begäran i praktiken en beställning av
+  kopiorna** (liten risk för oss: taxan gäller papper, en fil kostar normalt inget). **Regim 2 är motsatsen:** där kan de inte
+  fakturera alls utan ett uttryckligt erbjudande från dem och ett ja från oss. Svarar de *"inte rutinbetonat, men vi gör det som
+  uppdrag för X kr/tim"* är det ANBUDET — och först vårt ja är beställningen. Därför är det ja:et Axels, aldrig ett svar i stunden.
   ✉️ **Steg 1 — Bengt skickar förfrågan.** ⛔ **INTE till datex@trafikverket.se — adressen STUDSAR** (Bengts mejl 17/9 kom
   tillbaka med *"Adressen hittades inte"*; den gavs ändå ut en gång till 21/9, DECISIONS #293 → rättat i #294).
   📖 **Rätt väg, läst på källan 21/9:** Datautbytesportalens kontaktformulär, data.trafikverket.se/about-us/contact,
