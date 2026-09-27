@@ -209,6 +209,25 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   yttemperatur-element** innan kontofrågan ställs, spår C prövar Vegvesens övriga ytor. Jobbet blir rött bara om ALLA
   spår är stumma. Lokalt prov 27/9: alla spår stumma med `Host not in allowlist` — sonden säger själv att det är
   behållaren och inte Norge, vilket var meningen.
+  📏 **SONDEN KÖRD 27/9 19:24 (körning 36344233168, grön) — EN DÖRR STÄNGD, EN FORTFARANDE OPRÖVAD.**
+  ❌ **DATEX bär ingen historik. Bevisat — och beviset är en fälla:** `pulldeltadata`, `pullhistoricdata`,
+  `pullhistorydata` och `pullarchivedata` svarade alla **HTTP 200**. Läser man bara statuskoden ser det ut som fyra
+  historiska ingångar. Läser man KROPPEN bär var och en `<ns17:pullSnapshotDataOutput>` — **servern struntar i sökvägen
+  och lämnar samma ögonblicksbild varje gång.** Fyra 200 som är sämre än ett 404, eftersom de ljuger om sin form.
+  Samma familj som `shadow_log.suppressed`: att något svarar bevisar inte att det bär något.
+  ⚠️ **SONDENS EGEN RÄKNING GICK PÅ SAMMA FÄLLA.** Den räknade `r.ok` som "svar" och redovisade *6 svar lästa* med grönt
+  jobb — fast fyra av dem var samma snapshot i förklädnad och ingen av dem svarade på frågan. Instrumentet behöver läsa
+  rotelementet, inte statuskoden, innan det räknar. Fört som läxa i CLAUDE.md.
+  ❓ **MET Frost: FORTFARANDE OPRÖVAD, och mitt antagande var fel.** Jag trodde elementlistan var öppen referensdata —
+  `elements/v0.jsonld` gav **401**. Alltså går det inte ens att fråga *om MET har ett yttemperatur-element* utan konto,
+  och spår B:s hela poäng (ställ den billiga frågan först) föll. `observations` utan nyckel gav **400**, inte 401 —
+  servern validerar frågan före behörigheten. Kriteriet står alltså oprövat på punkt 1.
+  🔑 **NÄSTA STEG, litet och gratis:** registrera ett client-id på frost.met.no (självbetjäning, kostnadsfritt för
+  icke-kommersiellt bruk), lägg det i GitHub Secrets som `FROST_CLIENT_ID` och tryck knappen igen. Då svarar spår B på
+  riktigt. Utan det är Norge varken en öppen eller en stängd dörr — den är obesvarad.
+  ℹ️ **Spår C:** `api.vegvesen.no` och `datainn.vegvesen.no` gick inte att slå upp alls (fetch failed) — mina
+  kandidatnamn var fel, inte idén. `www.vegvesen.no/trafikkdata/api/` gav 404; trafikproxyn för kort #42 steg 4b behöver
+  rätt sökväg, inte en annan värd.
   🚪 **OPRÖVAD DÖRR: Norge.** Kortet säger att MET:s Frost-arkiv "kräver konto och är inte kontrollerat" — och vi har
   redan ett **Vegvesen-konto** (`VEGVESEN_USER/PASS`, DATEX i realtid). Finns norsk vägstationshistorik går kuvösen att
   köra på en norsk vinter: samma fysik, och vi ingesterar Norge redan. **Jag kunde inte pröva det härifrån** — den här
