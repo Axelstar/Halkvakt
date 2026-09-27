@@ -190,6 +190,45 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **STEG 1 GJORT 21/9 — Bengt har skickat förfrågan via Datautbytesportalens kontaktformulär** (hans besked i chatten).
   ⏳ Väntar svar. **Inget svar senast 28/9 ⇒ reserv 1** (formuläret *Frågor till Trafikverket*), därefter reserv 2. Det
   tidigare Datex II-ärendet gick samma väg 17–19/9 och är fortfarande obesvarat — räkna med att det tar tid.
+  ⏱️ **LÄGET 27/9 (Bengts fråga, DECISIONS #383): sex dygns tystnad — trappan utlöses I MORGON.** Fyra ärenden ligger hos
+  Trafikverket, alla obesvarade: fordonsdata 17/9 (tio dygn) · detta 21/9 (sex) · byvindgivarna 22/9 (fem) · ytgivarna 22/9
+  (fem). Sex dygn är alltså kanalens takt, **inte ett nej** — men fyra av fyra betyder att vi saknar kvitto på att något nått
+  en människa. ⚠️ **Obokfört led:** Bengt talar om en *begäran om allmänna handlingar*; repot bokför formuläret. Är en formell
+  begäran redan inlämnad skickas INTE steg 2 — då påminner vi om begäran i stället (fråga i bedömningen §4.2).
+  ⚖️ **Vad rättigheten räcker till.** Offentlighetsprincipen gäller en handling som FINNS. Ett femmånadersuttag ur en databas
+  är en sammanställning och är allmän handling bara om den kan tas fram med *rutinbetonade åtgärder* — lätt att avvisa. Därför:
+  fråga efter **befintliga uttag och exportfiler**, och kapa volymen **i rummet, aldrig i tiden** (blindningen kräver hela
+  vintern). Rätt kapning är **stationerna längs de 20 skuggrutterna** — de går Helsingborg–Kiruna, så ett läns-urval skär av
+  provet. Antalet stationer längs rutterna mäts ur arkivet innan texten skickas.
+  📵 **Inte läst på källan:** containerns nätpolicy blockerar trafikverket.se och riksdagen.se. E-tjänstens namn och adress
+  (*Begäran om utlämnande av allmän handling*, trafikverket.se/e-tjanster/begaran-om-utlamnande-av-allman-handling/) kommer ur
+  en SÖKTRÄFF. Samma sökning påstod att historiken finns på Lastkajen — vilket #292 motbevisat på sidan. **Bengt öppnar sidan
+  innan något skickas** (läxan från #294).
+  ✉️ **Steg 2 — formuläret *Frågor till Trafikverket*** (etjanster.trafikverket.se/kundfragor-trafikverket), klart att klistra in:
+  > Hej! Den 21 september skickade jag en förfrågan via Datautbytesportalens kontaktformulär (ärendetyp API Öppna Data) om ett
+  > historiskt uttag ur VViS. Jag har inte fått svar och vet inte om ärendet nått rätt funktion.
+  > Vi utvecklar Halkvakt, en svensk app som varnar bilförare för halka och bygger på era öppna data. Innan våra varningsregler
+  > når förare vill vi pröva dem mot en hel gången vinter. Det vi saknar är bara historiken: VViS-observationer 1 november
+  > 2024–31 mars 2025 — yttemperatur, lufttemperatur, daggpunkt, relativ fuktighet, nederbördstyp och -mängd, vind, i den
+  > upplösning ni lagrar. Samma data är öppen (CC0) i realtid; API:t räcker sju dygn bakåt.
+  > Är volymen ett hinder räcker stationerna längs ett antal vägstråk (E4 Helsingborg–Luleå, E6 Göteborg–Strömstad, Rv40, E10,
+  > E14) för samma ändamål.
+  > Tre frågor: (1) vem hos er hanterar sådana uttag? (2) finns färdiga uttag eller exportfiler ur VViS-arkivet som kan lämnas
+  > som de är? (3) vad skulle ett uttag kosta — jag vill veta kostnaden innan något arbete påbörjas.
+  > Med vänlig hälsning, Bengt Lagerlöf, Halkvakt
+  ⚖️ **Steg 3 — e-tjänsten *Begäran om utlämnande av allmän handling***, klart att klistra in:
+  > Jag begär att få ta del av följande allmänna handlingar hos Trafikverket:
+  > 1. VViS-observationer (vägväderstationernas mätvärden) för perioden 1 november 2024–31 mars 2025: yttemperatur,
+  >    lufttemperatur, daggpunkt, relativ fuktighet, nederbördstyp och -mängd samt vind, i den upplösning de lagras.
+  > 2. I andra hand, om volymen är ett hinder: samma uppgifter för stationerna längs vägstråken E4 Helsingborg–Luleå, E6
+  >    Göteborg–Strömstad, Rv40, E10 och E14, för samma period.
+  > 3. Oavsett punkt 1 och 2: befintliga uttag, exportfiler eller leveranser som redan gjorts ur VViS-arkivet för den perioden,
+  >    samt dokumentation över hur arkivet lagras och vilka format det kan lämnas i.
+  > Jag tar gärna emot handlingarna elektroniskt, och i valfritt format (CSV går utmärkt).
+  > Bedömer ni att en sammanställning enligt punkt 1 eller 2 inte kan tas fram med rutinbetonade åtgärder ber jag er ange det,
+  > och i så fall lämna ut det som finns enligt punkt 3. Avslås begäran helt eller delvis ber jag om ett skriftligt beslut med
+  > besvärshänvisning. Ange gärna kostnaden innan arbete påbörjas.
+  > Bengt Lagerlöf, Halkvakt
   ✉️ **Steg 1 — Bengt skickar förfrågan.** ⛔ **INTE till datex@trafikverket.se — adressen STUDSAR** (Bengts mejl 17/9 kom
   tillbaka med *"Adressen hittades inte"*; den gavs ändå ut en gång till 21/9, DECISIONS #293 → rättat i #294).
   📖 **Rätt väg, läst på källan 21/9:** Datautbytesportalens kontaktformulär, data.trafikverket.se/about-us/contact,

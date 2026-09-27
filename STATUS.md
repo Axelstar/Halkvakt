@@ -1856,3 +1856,20 @@ parallellsessionen — #161 (a) bevisat 18/9 (13 källor i state sedan 16/9), (b
 ÄR BORTA ur larmet. weather_obs 379 362 (04:58) mot 297 789 den 15/9 ⇒ ~16 200 rader/dygn, upp från
 12 100 i takt med kylan. HEALTHY.
 Byggt: inget detta varv. Nästa: ingen bokad avläsning — sessionen väntar på Bengt.
+
+## 2026-09-27 — Kuvösens tystnad besvarad, trappan förberedd (DECISIONS #383)
+Bengts fråga: inget svar från Trafikverket — vad betyder det för kuvösen? SVAR: ännu ingenting om utfallet. Fyra
+TRV-ärenden är obesvarade (fordonsdata 17/9 tio dygn · kuvösens uttag 21/9 sex · byvindgivarna 22/9 fem · ytgivarna
+22/9 fem); sex dygn är kanalens takt, inte ett nej. Men fyra av fyra betyder att vi saknar kvitto på att något nått en
+människa — och det, inte otåligheten, är skälet att gå till en kanal med svarsplikt. Priset för tystnaden: hög C:s
+tolv rader mäts i mars i stället för i november, och grind A:s A2 (novemberbeslutet om segmentmotorn) förblir
+oavgjord. Kuvösens steg 2 är däremot inte blockerat för att BYGGAS, bara för att köras på en vinter.
+FYND: offentlighetsprincipen är stark för en handling som FINNS, svag för ett uttag som ska framställas — en
+sammanställning är allmän handling bara om den kan tas fram med rutinbetonade åtgärder. Trappans steg 3 är därför
+omskrivet: fråga efter befintliga uttag, och kapa volymen i rummet (stationerna längs de 20 rutterna, som går
+Helsingborg–Kiruna) aldrig i tiden (blindningen kräver hela vintern).
+OBOKFÖRT LED: Bengt säger "begäran om allmänna handlingar", repot bokför Datautbytesportalens formulär. Frågan står i
+bedömningen §4.2 — är en formell begäran redan inlämnad ska steg 2 inte skickas, utan begäran påminnas om.
+INTE LÄST PÅ KÄLLAN: nätpolicyn blockerar trafikverket.se och riksdagen.se; e-tjänstens adress kommer ur en sökträff,
+och samma sökning upprepade Lastkajen-påståendet som #292 motbevisat. Bengt öppnar sidan före utskick (#294).
+Byggt: inget detta varv. Nästa: Bengts svar på §4.2, och trappans steg 2 eller 3 den 28/9.

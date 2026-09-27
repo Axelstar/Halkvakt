@@ -5253,3 +5253,57 @@ procent per timme.
 
 **Kortet står kvar öppet.** Verify-raden kräver båda plattformarna; **Android-mätningen** återstår och körs på
 testtelefonen (DECISIONS #271/#272), utan köp.
+
+## #383 (27/9 2026) Kuvösens tystnad: sex dygn är kanalens takt, inte ett nej — och offentlighetsprincipen är en svagare nyckel för ett UTTAG än för en HANDLING
+
+**Bengts fråga 27/9:** *"jag har ännu inte fått svar från trafikverket på begäran om allmänna handlingar. Vad betyder det för kuvösen"*
+
+**Först en skillnad som avgör svaret, och som repot inte kan lösa åt oss.** Bokföringen säger att det som skickades 21/9
+var **Datautbytesportalens kontaktformulär, ärendetyp *API Öppna Data*** (kort #232, DECISIONS #294) — **inte** en begäran
+om allmänna handlingar. Den senare är trappans TREDJE steg och har enligt repot aldrig lämnats. De två skiljer sig i
+precis det avseende frågan gäller:
+
+| | Kontaktformuläret (skickat 21/9) | Begäran om utlämnande av allmän handling (ej skickad) |
+| :-- | :-- | :-- |
+| Vad det är | en fråga till en dataägare | en rättighet enligt tryckfrihetsförordningen |
+| Svarsplikt | ingen | ja — skyndsamt |
+| Vid nej | tystnad är ett möjligt utfall | avslag ska på begäran ges som ett överklagbart beslut |
+| Vad sex dygns tystnad betyder | ingenting ovanligt | ett dröjsmål som går att driva |
+
+**Därför en fråga till Bengt (§4.2):** lämnades en formell begäran om utlämnande vid sidan av formuläret? Om ja är den
+inte bokförd, och tystnaden är allvarligare än raden säger. Om nej gäller svaret nedan.
+
+**Tystnaden bär ingen information ännu.** Fyra ärenden ligger hos Trafikverket, alla obesvarade: fordonsdata/Datex II
+17/9 (tio dygn), kuvösens uttag 21/9 (sex), byvindgivarna 22/9 (fem), ytgivarna 22/9 (fem). Sex dygn är kortare än det
+ärende som redan väntat tio. **Men fyra av fyra är ett mönster:** vi har inget kvitto på att något av dem nått en
+människa. Det är skälet att byta kanal — inte otålighet, utan att gå dit någon är skyldig att svara.
+
+**Vad tystnaden kostar, mätt.** Kuvösen är enligt §6.1 den enda kända vägen runt vintern: kommer VViS-observationerna
+1/11 2024–31/3 2025 mäts **hög C:s tolv rader i november i stället för i mars**, och grind A:s oavgjorda A2 avgörs —
+alltså novemberbeslutet om segmentmotorn (#131). Priset räknas i månader, inte i om produkten går att bygga.
+
+**Vad den INTE kostar.** Kuvösens steg 2 är inte blockerat av datan för att BYGGAS — bara för att köras på en vinter.
+Delarna finns (grindarnas skript, uppspelningen `sql/028`, `snapshot-core` → `snapshotToHazards` → `AlertEngine` längs de
+20 rutterna). Ställningen kan resas mot vårt eget arkiv (24/8 och framåt) så att *datan kommer* blir *ladda och kör*.
+Höstarkivet har ingen is: det blir ett rörprov, inte ett vinterprov. **Erbjudet, inte påbörjat** — kortet säger att steg 2
+körs på årets arkiv först om svaret blir nej.
+
+**Offentlighetsprincipens verkliga räckvidd — varför trappans sista steg är svagare än det låter.** Rättigheten gäller en
+handling som FINNS. Ett fem månader långt uttag ur en databas är en sammanställning, och den är en allmän handling bara om
+den kan tas fram med **rutinbetonade åtgärder**. *"Kör den här frågan åt oss över fem månader och alla stationer"* är lätt
+att avvisa på den grunden; *"lämna ut de uttag och exportfiler som redan finns"* är det inte. Trappans sista steg ska
+alltså fråga efter det som finns — och kapa uttaget.
+
+**Hur uttaget kapas utan att bryta blindningen.** Kortets egen regel är *hela vintern, inga handplockade dygn* — tiden får
+inte kapas. Rummet får det. Kortets parentes säger *"ett urval län"*, men de 20 skuggrutterna går Helsingborg–Kiruna (E4
+hela vägen, E6, Rv40, E10, E14), så ett län skär av provet. **Rätt kapning är stationerna LÄNGS de 20 rutterna, hela
+vintern** — det är ändå dem motorkedjan kör på. Grindarnas statistik (A, T-A, R-A) vill ha alla stationer; motorkedjan och
+marginalnyttetabellen klarar sig på rutternas. Alltså: fråga efter alla, erbjud rutturvalet i samma mening. Antalet
+stationer längs rutterna mäts ur arkivet innan texten skickas.
+
+**Vad jag INTE kunde läsa på källan.** Containerns nätpolicy blockerar `trafikverket.se` och `riksdagen.se`. E-tjänstens
+namn och adress — *Begäran om utlämnande av allmän handling*,
+`trafikverket.se/e-tjanster/begaran-om-utlamnande-av-allman-handling/` — kommer ur en **sökträff, inte en läst sida**.
+Samma sökning påstod samtidigt att historiska data hämtas från Lastkajen, vilket #292 motbevisade genom att läsa sidan.
+Läxan från #294 gäller alltså oförändrat: **Bengt öppnar sidan innan något skickas.** Paragrafhänvisningar utelämnas ur
+texterna på kortet; en begäran behöver inga.
