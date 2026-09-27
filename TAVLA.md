@@ -46,7 +46,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   | **Å4** | **Autostartens text ljuger.** Reglaget säger *"Startar när bilens Bluetooth kopplas"* — men `setEnabled` registrerar också **Activity Recognition**, som startar vakten i vilket fordon som helst (buss, som passagerare). Antingen rätta texten eller begränsa beteendet | nej | texten beskriver vad reglaget gör · **PRODUKTBOKEN i samma varv** |
   | **Å5** | **Cache i `Guard.nearestHazardM`.** Den sveper varje koordinat i varje fara vid VARJE fix, och motorn går över samma material — vid 1 Hz två nationella svep i sekunden. Ren prestanda | nej | CPU-andelen mätt före och efter på samma rutt |
   | **Å6** | **Fältmätningsprotokoll**, så nästa rapport går att jämföra: bygge, autostart på/av, telefonmodell, start-% och *Batterianvändning för app* vid start och slut | nej | protokollet skickat med nästa testarutskick |
+  | **Å7** | **MÄT KÖRFALLET PÅ ANDROID** (kort #218:s andra halva, aldrig gjord). Paketet ovan tar bort TIMMAR som inte skulle finnas — det rör inte vad vakten kostar under en riktig körning. iPhone mättes till 7 %/h med övre kant som RÖR 8 (#382); Android har aldrig mätts. **Det är den siffran som avgör om produkten håller kravet**, och ingen av Å0–Å6 svarar på den | nej | en timmes körning, skärmen av, ingen sladd, %/h mot kravet < 8 |
+  | **Å8** | **Nollmätning FÖRE Å1–Å5, på 0.3.9 (18).** Utan ett före går ingen förbättring att bevisa — och att mäta det gamla bygget säger inget, eftersom vi inte vet vad det är (se Å0). Ordningen är alltså: Å0 → nollmätning → fixarna → ommätning | nej | samma protokoll som Å6, körd två gånger med bara fixarna emellan |
 
+  ➗ **Å2 och Å3 överlappar — räkna inte hem båda.** De angriper samma spilltid från två håll: stoppar vakten sig själv (Å3)
+  blir den stillastående tiden kort, och då har Å2 lite kvar att spara. Å2:s egna värde ligger i de fall där vakten SKA vara
+  igång men bilen står — köer, färjelägen, rastplatser — och som skyddsnät när Å3 inte fyrar.
+  📉 **Vad paketet inte gör:** 1 Hz-takten UNDER körning är oförändrad, och det är den dominerande kostnaden när vakten gör
+  sitt jobb. Wakelocket (4 h 16 m) är inte heller åtgärdat i sig. Paketet tar bort timmar som inte skulle finnas — det gör
+  inte en körtimme billigare. Därför Å7.
   ⚖️ **Å2 och Å3 är trösklar och tas inte ensidigt** (Bengt + Axel, §4.2). Båda är säkerhetsnära åt samma håll: **en vakt som
   tystnar i en kö är silence när det gällde** — det dyraste felet appen kan göra. Trösklarna skrivs före mätning och ska genom
   `scripts/vardevakten.ts` innan de bär ett beteende.
