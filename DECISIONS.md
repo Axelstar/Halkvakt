@@ -5253,3 +5253,46 @@ procent per timme.
 
 **Kortet står kvar öppet.** Verify-raden kräver båda plattformarna; **Android-mätningen** återstår och körs på
 testtelefonen (DECISIONS #271/#272), utan köp.
+
+## #383 (27/9 2026) Kuvösens norska sond: DATEX bär ingen historik — och fyra 200-svar var fällan
+
+**Bengts ja 27/9** till att bygga sonden som ett Actions-jobb. Körning **36344233168**, grön, en minut.
+
+### Vad som är bevisat
+
+**Vegvesens DATEX-server — den vi redan har konto till — bär ingen historik.** Sonden frågade efter fyra rimliga
+ändpunkter: `pulldeltadata`, `pullhistoricdata`, `pullhistorydata`, `pullarchivedata`. **Alla fyra svarade HTTP 200.**
+
+Läser man bara statuskoden ser det ut som fyra historiska ingångar. Läser man kroppen bär var och en
+`<ns17:pullSnapshotDataOutput>` — servern struntar i sökvägen och lämnar samma ögonblicksbild varje gång. Kontrollen
+(`pullsnapshotdata`) bekräftade att kontot fungerar, så det är inte ett behörighetsfel.
+
+**Fyra 200 är här sämre än ett 404**, för de ljuger om sin form. Ett 404 hade avslutat frågan på en sekund.
+
+### Vad som INTE är bevisat — och där jag antog fel
+
+**MET Frost står oprövad.** Spår B var byggt på antagandet att elementlistan är öppen referensdata, så att den billiga
+frågan — *har MET alls ett yttemperatur-element?* — kunde ställas före kontofrågan. `elements/v0.jsonld` gav **401**.
+Antagandet var fel, och spårets hela poäng föll. (`observations` utan nyckel gav 400, inte 401: servern validerar
+frågan före behörigheten.)
+
+Kriteriets punkt 1 — yttemperatur per station — står alltså oprövad för Norge. **Norge är varken en öppen eller en
+stängd dörr; den är obesvarad.**
+
+**Spår C:** `api.vegvesen.no` och `datainn.vegvesen.no` gick inte att slå upp (fetch failed) — kandidatnamnen var fel,
+inte idén. `www.vegvesen.no/trafikkdata/api/` gav 404; trafikproxyn i kort #42 steg 4b behöver rätt sökväg.
+
+### Instrumentet gick på samma fälla som det skulle avslöja
+
+Sonden räknade `r.ok` som "svar" och redovisade **6 svar lästa** med grönt jobb — fast fyra av dem var samma snapshot i
+förklädnad och inget av dem svarade på frågan. Hade jag läst sammanfattningsraden i stället för kroppen hade jag
+rapporterat att Norge bär historik. Läxan är införd i CLAUDE.md: **en sond som provar kandidat-ändpunkter räknar på
+svarets rotelement eller en annan innehållsmarkör, aldrig på statuskoden — och skriver ut markören den räknade på.**
+
+### Nästa steg, litet och gratis
+
+Registrera ett client-id på frost.met.no (självbetjäning, kostnadsfritt för icke-kommersiellt bruk), lägg det i GitHub
+Secrets som `FROST_CLIENT_ID`, tryck knappen igen. Då svarar spår B på riktigt. Kostnad: en minut Actions.
+
+**Vad det betyder för kuvösen:** en av två kända sidodörrar är nu definitivt stängd. Trafikverkets tystnad väger
+därmed tyngre, och hållbarhetstiden (omkring 1 december, DECISIONS-raden i kort #232) står oförändrad.

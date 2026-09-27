@@ -239,6 +239,13 @@ i samma commit när de överlappar.
   levande i loggen, oförmögna att larma. Regel: flöden som committar tillbaka använder
   `git pull --rebase --autostash` och skriver ut `git status --porcelain` i fel-grenen; och ett nytt
   radslutsattribut följs av `git add --renormalize` i samma commit.
+- **HTTP 200 är ingen katalog.** Vegvesens DATEX-server svarar 200 på `pulldeltadata`, `pullhistoricdata`,
+  `pullhistorydata` OCH `pullarchivedata` — men varje svar bär `<pullSnapshotDataOutput>`: servern struntar i sökvägen
+  och lämnar samma ögonblicksbild. Fyra 200 som ser ut som fyra historiska ingångar och är noll. Ett 404 hade varit
+  ärligare. Värre: rekognoseringsskriptet räknade `r.ok` som "svar" och redovisade sex lästa svar med grönt jobb, fast
+  fyra var samma snapshot i förklädnad (27/9, kort #232). Regel: en sond som provar kandidat-ändpunkter räknar på
+  SVARETS ROTELEMENT eller en annan innehållsmarkör, aldrig på statuskoden — och skriver ut markören den räknade på.
+  Samma familj som `shadow_log.suppressed`: att något svarar bevisar inte att det bär något.
 - `Boolean(precipitation)` är en falsklarmsmaskin: Trafikverket skriver "no" vid uppehåll och
   de nordiska källorna "Dry". Nederbördsklasser är strängar med ordlista, aldrig sanningsvärden.
 - Ett bevis på att en KOLUMN skrivs är inte ett bevis på att den bär något. `shadow_log.suppressed`
