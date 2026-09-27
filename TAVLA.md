@@ -27,7 +27,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 **Beslut som väntar, inte brådskande (med Bengt):**
 ### Axel — beslut att ta
-- [ ] ⏰ **#86 NYCKELKALENDERN — två nycklar går ut mitt i säsongen** (Axels fynd 9/9, kort av Claude):
+- [x] ⏰ **#86 NYCKELKALENDERN — två nycklar går ut mitt i säsongen** ✅ **STÄNGT 27/9 ↪ `docs/KALENDERN.md`** (Bengts ja: *"ja till kalenderlistan och stäng korten"*, DECISIONS #381). Vakten är byggd och bevisad — nyckelkalendern är check 10 i vakthunden, prövad 15/9 med issue #272 som läste PAT:ens datum live. Det som återstod var inte arbete utan **två datum någon måste läsa av**: PAT 22/11 (rotera senast 15/11) och Supabase-tokenen 8/12 (senast 1/12). De bor nu i kalendern, som äger dem. Kortet kunde aldrig bockas av så länge det bar en plikt som återkommer (Axels fynd 9/9, kort av Claude):
   ⚠️ **18/9 — ett fjärde ställe, okänt om samma nyckel:** pulsklockans jobb i Supabase pg_cron bär en GitHub-nyckel i
   sina kommandon (körningarna startas av *Axelstar*). Går den ut stannar ingest, grannar, healthcheck, marknadsföringen och
   måndagsserien (#160) samtidigt. Byts i malljobbet `puls-ingest-grannar`; `pulsklocka.yml` skarp kopierar till alla. Frågan
