@@ -5307,3 +5307,13 @@ namn och adress — *Begäran om utlämnande av allmän handling*,
 Samma sökning påstod samtidigt att historiska data hämtas från Lastkajen, vilket #292 motbevisade genom att läsa sidan.
 Läxan från #294 gäller alltså oförändrat: **Bengt öppnar sidan innan något skickas.** Paragrafhänvisningar utelämnas ur
 texterna på kortet; en begäran behöver inga.
+
+**Tillägg samma dag — ledet utrett, och en läxa om vad frågan var.** Bengt syftade på förfrågan 21/9; *begäran om allmänna
+handlingar* var hans ord för samma utskick. **Steg 3 är alltså inte taget**, och trappan står kvar precis som raden säger.
+Hans verkliga fråga var enklare än den jag svarade på: *vad menar du med att trappan utlöses i morgon?* Svaret: **trappan är
+vår egen frist, inte Trafikverkets.** Ingenting utlöses av sig självt — inget skript, ingen påminnelse, ingen bevakning. Den
+28/9 upphör bara skälet att vänta på en kanal utan svarsplikt, och steg 2 blir tio minuters arbete för Bengt: öppna
+`etjanster.trafikverket.se/kundfragor-trafikverket`, klistra in texten från kort #232, skicka. Gör ingen det händer ingenting
+alls — raden ligger kvar. **Läxa:** när en fråga innehåller ett ord som inte stämmer med bokföringen är det oftast ett löst
+ordval, inte ett nytt sakförhållande. Fråga vad som menas i en mening, svara på det som faktiskt frågades, och gör inte
+ordvalet till huvudsaken.

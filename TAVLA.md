@@ -193,8 +193,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⏱️ **LÄGET 27/9 (Bengts fråga, DECISIONS #383): sex dygns tystnad — trappan utlöses I MORGON.** Fyra ärenden ligger hos
   Trafikverket, alla obesvarade: fordonsdata 17/9 (tio dygn) · detta 21/9 (sex) · byvindgivarna 22/9 (fem) · ytgivarna 22/9
   (fem). Sex dygn är alltså kanalens takt, **inte ett nej** — men fyra av fyra betyder att vi saknar kvitto på att något nått
-  en människa. ⚠️ **Obokfört led:** Bengt talar om en *begäran om allmänna handlingar*; repot bokför formuläret. Är en formell
-  begäran redan inlämnad skickas INTE steg 2 — då påminner vi om begäran i stället (fråga i bedömningen §4.2).
+  en människa. ✅ **Utrett 27/9:** det är förfrågan 21/9 Bengt menar när han säger *begäran om allmänna handlingar* — **steg 3 är
+  alltså inte taget**, och trappan står kvar som raden säger.
   ⚖️ **Vad rättigheten räcker till.** Offentlighetsprincipen gäller en handling som FINNS. Ett femmånadersuttag ur en databas
   är en sammanställning och är allmän handling bara om den kan tas fram med *rutinbetonade åtgärder* — lätt att avvisa. Därför:
   fråga efter **befintliga uttag och exportfiler**, och kapa volymen **i rummet, aldrig i tiden** (blindningen kräver hela
