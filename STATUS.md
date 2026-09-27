@@ -1873,3 +1873,19 @@ bedömningen §4.2 — är en formell begäran redan inlämnad ska steg 2 inte s
 INTE LÄST PÅ KÄLLAN: nätpolicyn blockerar trafikverket.se och riksdagen.se; e-tjänstens adress kommer ur en sökträff,
 och samma sökning upprepade Lastkajen-påståendet som #292 motbevisat. Bengt öppnar sidan före utskick (#294).
 Byggt: inget detta varv. Nästa: Bengts svar på §4.2, och trappans steg 2 eller 3 den 28/9.
+
+## 2026-09-27 — Fältrapport: Androidvakten gick 11 h 39 m på en baddag (DECISIONS #385, kort #262)
+En Androidtestare låg på 42 % efter en dag med bad och stuga, telefonen knappt använd. Batterianvändning för app: 11 h 39 m
+bakgrund, 0 m skärm, GPS 6 h 40 m, 924 väckningar, väckningslås 4 h 16 m, CPU 2 h 21 m; gårdagen 21,6 % av förbrukningen.
+RÄKNINGEN: 21,6 % är en andel, inte procentenheter — antas dygnet ha dragit ~80 pe blir det ~1,5 %/h, alltså INOM budgeten.
+Felet är inte förbrukningen per timme utan antalet timmar. Låg paketräkning bevisar samtidigt att omladdningsloopen (#370)
+inte kör.
+ROTORSAK, läst i koden: en manuellt startad vakt stoppas aldrig av Activity Recognition (medvetet, AutostartController rad
+onVehicleExit), och enda kvarvarande stoppare är IdleStop — 15 min under 5 km/h. Det är GÅNGFART, och klockan nollställs av
+ETT mätvärde. En buren telefon fyller aldrig kvarten, så självstoppet kan i praktiken bara fira för en parkerad bil.
+LÄXA i familjen "fanns ≠ fungerade": IdleStop är byggd, enhetstestad och grön sedan #248 — provad med de hastigheter vi
+FÖRESTÄLLDE oss, inte med dem en buren telefon rapporterar.
+DESSUTOM: pågående notisen saknar stoppknapp (bara efter-resan-notisen har knappar); och CPU 20 % beror rimligen på att
+nearestHazardM sveper varje koordinat i varje fara vid varje fix.
+Byggt: inget detta varv — (2) är säkerhetsnära och ligger som beslut i §4.2. Nästa: stoppknappen i notisen (ingen avvägning),
+och svar från testaren om byggnummer, autostart och telefonmodell.

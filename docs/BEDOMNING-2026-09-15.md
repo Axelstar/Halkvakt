@@ -50,6 +50,12 @@ väntat tio, och fyra av fyra TRV-ärenden är obesvarade. **Trappan utlöses 28
 #232. Ett fynd på vägen: offentlighetsprincipen är stark för en handling som FINNS, svag för ett uttag som ska framställas
 — därför frågar steg 3 efter befintliga uttag och kapar volymen i rummet, aldrig i tiden (DECISIONS #383). ~~Fråga till Bengt: formuläret eller en formell
 begäran?~~ ✅ **besvarad 27/9: det är förfrågan 21/9 som avses** — steg 3 är alltså inte taget, och trappan står där raden säger.
+**(5) 🚨 Fältrapport som blev en släppblockerare.** En Androidtestare låg på **42 %** efter en baddag: vakten hade gått
+**11 h 39 m** i bakgrunden med **6 h 40 m GPS**, skärmen släckt hela tiden, och stod för **21,6 %** av gårdagens förbrukning.
+Rotorsaken är läst i koden: **självstoppet kan i praktiken bara fira för en parkerad bil.** En manuellt startad vakt stoppas
+aldrig av Activity Recognition (medvetet), och `IdleStop`:s gräns är **5 km/h — gångfart**, nollställd av ett enda brusigt
+mätvärde. Per timme ligger appen sannolikt *inom* 8 %/h; felet är antalet timmar. Nytt kort **#262**, DECISIONS #385.
+**Beslut till §4.2:** självstoppets gräns är säkerhetsnära — en vakt som tystnar i en kö är det dyraste felet appen kan göra.
 
 **Integrationsläget 24/9, mätt mot kartan — se §5.** Steg två av fyra i kartans sekvens för varje vinterlänk (publicerat, mätt i
 skuggan; villkoret i motorn orört). Stoppen i ordning: vädret, facit, S3 (Axels bygge bakom S1-grinden), E och B, ~~lagringen~~ (export i drift 24/9, #334).
@@ -362,6 +368,7 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 
 | Beslut | Vem | Rekommendation | Kort |
 | :-- | :-- | :-- | :-- |
+| **🚨 Självstoppets gräns — hur slutar vakten utan att tystna i en kö?** (Fältrapport 27/9, DECISIONS #385, kort #262.) `IdleStop` stoppar vakten efter 15 min under **5 km/h**. Det är gångfart, och ett enda brusigt mätvärde nollställer klockan — en buren telefon fyller aldrig kvarten, så vakten gick **11 h 39 m** hos en testare. Höjd gräns eller nollställning på FÖRFLYTTNING över fönstret lagar det, men gör vakten sämre på att hålla ut i en lång kö, och **att tystna i en kö är silence när det gällde**. Trösklar skrivs före mätning här, och en tröskel som bär ett beteende ska genom värdevakten | Bengt + Axel | bygg stoppknappen i notisen direkt (ingen avvägning) · för gränsen: nollställ på förflyttning, inte på ett mätvärde — det tar bort brusfelet utan att röra kötåligheten | #262, #218 |
 | **Kuvösen: hur kapas uttaget i steg 3?** (Bengts fråga 27/9, DECISIONS #383.) ~~(a) Vad skickades 21/9 — formuläret eller en formell begäran?~~ ✅ **besvarad 27/9: förfrågan 21/9 är den som avses; steg 3 är inte taget.** **(b) Öppet:** ska begäran fråga efter alla stationer eller kapas till stationerna längs de 20 skuggrutterna? Tiden kapas aldrig (blindningen: hela vintern, inga handplockade dygn) | Bengt | fråga efter alla, erbjud rutturvalet i samma mening — ett avslag på volym ska inte kunna stänga hela begäran | #232 |
 | **Kassavaktens räkneregel — rättas den nu? (Claudes fynd 27/9.)** Vakten mäter körningens väggklocka och avrundar en gång per KÖRNING; GitHub fakturerar varje JOBB för sig, uppåtavrundat. Mätt 26/9: vakten 234 min, GitHubs regel 310 — android 107 mot 190 (två jobb per körning räknas som ett), healthcheck 23 mot 17 (kötid räknas som körtid). Felet går åt båda hållen, och nettot beror på om det byggts app den dagen. Ingreppet är litet — check 8 läser `/runs/{id}/jobs` i stället för körningens spann — men det ändrar ett tal som en grind vilar på, därför frågan. **Andra halvan:** ska vakten också visa BUDGETENS fönster vid sidan av månadens, så att de två talen aldrig mer kan läsas som en motsägelse? | Bengt | ja på båda — utan dem är vaktens larmdatum inte jämförbart med den sida som styr hårdstoppet | #152 |
 | **Grepp 3 — Supabase Pro** senast när databasen passerar 400 MB eller 1 november, det som kommer först. Cirka 25 USD/mån; 8 GB, dagliga backuper. Gratisnivån skrivskyddar vid 500 MB, och vintern kräver cirka 3 GB (`docs/GREPP3-ARKIVEN.md`, DECISIONS #231) | Bengt + Axel (Axel godkänner i DECISIONS) | ja | #83, #213 |

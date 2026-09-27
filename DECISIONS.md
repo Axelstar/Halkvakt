@@ -5369,3 +5369,56 @@ uttryckligt erbjudande och ett ja. Svarar de *"inte rutinbetonat, men vi gör de
 och först vårt ja är beställningen. **Skärpning av texten på kort #232:** den ber dem nu inte bara ange belopp och bestämmelse
 utan också **höra av sig innan någon avgift debiteras**, så att varje kostnad blir ett anbud vi kan ta tillbaka till Axel i
 stället för en post på en faktura. Det är hela skyddet: inte att begäran är gratis, utan att inget dyrt kan ske utan ett ja.
+
+## #385 (27/9 2026) Androidvakten gick 11 h 39 m på en baddag: självstoppet kan i praktiken bara fira för en parkerad bil (kort #262)
+
+**Fältrapport 27/9 från en Androidtestare**, två skärmbilder ur *Batterianvändning för app*. Testarens egna ord: *"Den suger
+mycke batteri appen undrade varför jag bara hade 42 % när vi vart o badat + stugan knappt använt telefonen"* och, efter en
+titt på gårdagen, *"Ser nu att jag haft den på hela tiden. Är kanske inte så man ska ha."*
+
+**Svaret på det sista är nej — det är precis vad självstoppet finns för.** Testaren använde appen som en människa gör, och
+hittade en riktig defekt. Det är den bästa sortens fältrapport.
+
+**Mätningen.** 27/9 14:59: total användningstid **11 h 39 m**, skärm på **0 m**, GPS **6 h 40 m**, väckningar **924**,
+väckningslås **4 h 16 m**, CPU **2 h 21 m**, mobildata 1 717 paket, Wi-Fi 4 028 paket. 26/9: Halkvakt **21,6 %** av dygnets
+batterianvändning (Google Play-tjänster 5,9 %, delvis våra egna anrop).
+
+**Vad talen betyder — och vad de INTE betyder.** 21,6 % är en ANDEL av förbrukningen, inte procentenheter batteri. Antas dygnet
+ha dragit ~80 pe blir Halkvakts del ~17 pe över ~11,6 timmars aktiv tid ⇒ **~1,5 %/h, alltså inom 8 %/h-budgeten**. Startvärdet
+är okänt, så talet är en uppskattning med utskriven förutsättning, inte en mätning. **Slutsatsen vänder ändå på problemet:
+appen drar inte mycket per timme — den har alldeles för många timmar.** Ett dygn i stället för en resa. Paketräkningen är
+dessutom låg, vilket är ett självständigt kvitto på att omladdningsloopen (#370) inte kör längre.
+
+**Rotorsakskedjan, läst i koden och inte gissad:**
+1. Testaren startade vakten **manuellt**.
+2. `AutostartController.onVehicleExit()` returnerar `NONE` när `autoStarted == false`. **En manuellt startad vakt stoppas
+   alltså aldrig av Activity Recognition** — medvetet, för att AR-flimmer inte ska döda en vakt föraren själv slog på.
+3. Kvar som enda stoppare: `IdleStop` — 15 minuter under **5 km/h**.
+4. **5 km/h är gångfart**, och `onFix` nollställer klockan på ETT enda mätvärde ≥ 5 km/h. Ett brusigt värde i kvarten räcker.
+   Den som badar, går till sjön och rör sig i en stuga fyller aldrig kvarten. **Självstoppet kan i praktiken bara fira för en
+   parkerad bil** — inte för en telefon som bärs av en människa.
+5. ⇒ vakten gick 11 h 39 m.
+
+**Läxan i familjen "fanns ≠ fungerade".** `IdleStop` är byggd, enhetstestad och bevisad på JVM:en (#248) — och ändå kan den
+aldrig fira i det vanligaste verkliga fallet. Testet matade den med de hastigheter vi TÄNKTE oss (bil som står still), inte med
+de hastigheter en buren telefon faktiskt rapporterar. **Ett prov som bara innehåller det vi föreställde oss bevisar vår
+föreställning, inte funktionen.** Femte gången i repot att något byggt och grönt inte gör det man tror (jfr #193/#196, #383).
+
+**Tillhörande lucka:** den pågående notisen har **ingen stoppknapp**. Bara *efter resan*-notisen bär knappar. För att stoppa
+vakten måste appen öppnas — halva skälet att den blev kvar på.
+
+**Andrafyndet, CPU 2 h 21 m på 11 h 39 m (20 %):** `retuneCadence` anropar `Guard.nearestHazardM`, som gör
+`coords.minOfOrNull { haversineM }` över varje koordinat i varje fara, och `engine.step` går över samma material. Vid 1 Hz
+nära en fara blir det två nationella svep i sekunden. Ren prestandaskuld, ingen beteendeändring att besluta om.
+
+**Åtgärder, i ordning (kort #262):** (1) stoppknapp i den pågående notisen — ingen tröskel, ingen avvägning, byggs direkt ·
+(2) självstoppet robust mot gångfart — **säkerhetsnära och därför ett beslut**, se nedan · (3) ska AR-exit få stoppa även en
+manuellt startad vakt? · (4) cache i `nearestHazardM`.
+
+**Beslutet som (2) kräver, och som INTE tas ensidigt.** Höjs gränsen eller byts den mot förflyttning över fönstret blir
+vakten bättre på att sluta — och sämre på att hålla ut i en lång kö. Att tystna i en kö är silence när det gällde, alltså det
+dyraste felet appen kan göra. Trösklar skrivs dessutom före mätning i det här projektet, och en tröskel som bär ett beteende
+ska genom värdevakten. **Frågan går till Bengt och Axel i bedömningen §4.2.**
+
+**Frågor till testaren, via Bengt:** byggnummer? Var *starta själv* påslagen? Är det Samsung-telefonen? Svaren avgör om (2)
+eller (3) är rätt fix — är autostart av, är AR-spåret inte ens inkopplat och (2) är hela åtgärden.

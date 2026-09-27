@@ -385,6 +385,40 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **Flyttat 26/9 från *Axel — hösten (brainstorm 31/8)*** (femma åtta, DECISIONS #377): nästa steg är Bengts två minuter (*Visa introduktionen igen*).
 
 ### Claude — olåst
+- [ ] 🔋 **#262 SJÄLVSTOPPET FÅR ALDRIG FIRA — VAKTEN GICK 11 h 39 m PÅ EN BADDAG** (fältrapport från Androidtestare 27/9,
+  DECISIONS #385). 🚨 **Släppblockerare**: batteribudgeten är ett krav i CLAUDE.md, och en vakt som inte kan sluta bryter det
+  utan att röra en tröskel i motorn.
+  📱 **Mätningen (testarens två skärmbilder):** 27/9 kl. 14:59 — total användningstid **11 h 39 m**, skärm på **0 m**, GPS
+  **6 h 40 m**, väckningar **924**, väckningslås **4 h 16 m**, CPU **2 h 21 m**, mobildata 1 717 paket, Wi-Fi 4 028 paket ·
+  26/9 — Halkvakt **21,6 %** av dygnets batterianvändning (Google Play-tjänster 5,9 %, delvis våra anrop). Testaren badade och
+  var i stugan, rörde knappt telefonen, och hade **42 %** kvar.
+  🧮 **Vad talen betyder — och inte.** 21,6 % är en ANDEL av förbrukningen, inte procentenheter batteri. Antas dygnet ha dragit
+  ~80 pe blir Halkvakts del ~17 pe över ~11,6 h ⇒ **~1,5 %/h, alltså INOM 8 %/h-budgeten.** Slutsatsen är därför inte att appen
+  drar mycket per timme utan att **den har alldeles för många timmar**. Paketräkningen är dessutom låg — omladdningsloopen
+  (#370) syns inte i driften, den fixen håller.
+  🔗 **ROTORSAKSKEDJAN (läst i koden 27/9, inte gissad):**
+  1. Testaren startade vakten **manuellt**.
+  2. `AutostartController.onVehicleExit()` returnerar `NONE` när `autoStarted == false` — **en manuellt startad vakt stoppas
+     aldrig av Activity Recognition.** Det är medvetet (kommentaren: *"never killed by AR flakiness"*).
+  3. Kvar som enda stoppare: `IdleStop` — 15 minuter under **5 km/h**.
+  4. **5 km/h är gångfart.** `onFix` nollställer klockan på EN enda mätpunkt ≥ 5 km/h. Ett brusigt GPS-värde i kvarten räcker.
+     Den som badar, går till sjön och rör sig i en stuga fyller **aldrig** kvarten. Självstoppet kan i praktiken bara fira för
+     en **parkerad bil**.
+  5. ⇒ vakten gick tills telefonen tog slut.
+  🚪 **Tillhörande lucka:** den pågående notisen har **ingen stoppknapp** — bara *efter resan*-notisen har knappar. Vill man
+  stoppa vakten måste appen öppnas. Det är halva skälet att den blev kvar på.
+  ⚙️ **Andrafyndet (CPU 20 % av tiden):** `retuneCadence` anropar `Guard.nearestHazardM`, som gör
+  `coords.minOfOrNull { haversineM }` över VARJE koordinat i VARJE fara — och `engine.step` går över samma material. Vid 1 Hz
+  nära en fara är det två nationella svep i sekunden. Cache eller rutnät är en ren prestandaändring utan beteendeändring.
+  🛠️ **Åtgärder i ordning:** (1) **stoppknapp i den pågående notisen** — ingen tröskel, ingen säkerhetsavvägning, byggs direkt ·
+  (2) **självstoppet robust mot gångfart** — ⚠️ SÄKERHETSNÄRA, kräver beslut: höjd gräns och/eller nollställning på
+  FÖRFLYTTNING över fönstret i stället för ett enstaka mätvärde. Risken åt andra hållet är en vakt som tystnar i en kö ·
+  (3) ska AR-exit få stoppa även en manuellt startad vakt? · (4) cachen i `nearestHazardM`.
+  ❓ **Frågor till testaren (via Bengt):** vilket byggnummer? Var *starta själv* (autostart) påslagen? Är det Samsung-telefonen?
+  Svaren ändrar vilken av (2) och (3) som är rätt fix.
+  Verify: en dag med vakten påslagen och telefonen buren till fots ⇒ vakten har stoppat sig själv inom en kvart efter sista
+  körningen, bevisat med `Batterianvändning för app` (bakgrundstid ≈ körtiden, inte dygnet).
+
 - [ ] 📍 **#226 AUTOSTARTENS BEHÖRIGHET FALLER TYST PÅ ANDROID 11+** (Axels fynd på testtelefonen 20/9, DECISIONS #272).
   ⚠️ **HÄRLETT, INTE UPPMÄTT:** kortet skrevs på Axels rapport som antogs vara Android — den var från hans iPhone (#273).
   Ingen har kört det här på en Android-telefon. Grunden är kodläsning + Googles dokumentation, inget annat.
