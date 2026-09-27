@@ -5175,3 +5175,48 @@ septemberdygn — 231 kalla halvtimmar, två frysnära.
 **Kvar efter sammanslagningen:** deploy av `skuggmotor`, `kamerafacit` och `vakthund` från main; `sql/039` via dbknapp; beviset —
 `kamerafacitprov` (torrt urval), `lagringsprov` (larmet går), vakthundens skarpa rad och första timkörningens svar. Efter sju dygn: bilder
 och MB per dygn mot taket, i bedömningen.
+
+## #381 (27/9 2026) Kalendern skiljs från tavlan — och septembersiffran rättad med en hel månads mätning
+
+**Beslut (Bengt 27/9, ordagrant):** *"Ja till kalenderlistan och stäng korten."*
+
+**Problemet var inte arbetsmängd utan konstruktion.** Bland korten och i bedömningens §0b låg plikter som **inte har
+något slutläge**: nycklar som går ut igen, en databas som växer igen, ett månadsskifte som kommer igen. De kunde aldrig
+bockas av. Så länge de låg bland korten kunde tavlan inte nå noll, och ambitionen *"stänga systemet när det är
+fullkomligt"* var omöjlig av konstruktion — inte av brist på arbete. Fyndet skrevs i bedömningens §6.3 samma dag.
+
+**`docs/KALENDERN.md` skapad**, med regeln som avgör var något hör hemma: har raden en *Verify* som kan uppfyllas en
+gång hör den hemma på tavlan; återkommer den, eller är den ett datum då något ska **läsas av**, hör den hemma i
+kalendern. Bär den en dom, ett bygge eller ett beslut är den ett kort, oavsett datum.
+
+**Fem plikter flyttade:** PAT-rotationen (senast 15/11), Supabase-tokenen (senast 1/12), databasens storlek (var sjunde
+dygn), Actions-kassan (varje månadsskifte) och `ubuntu-latest` → Ubuntu 26 den 19/10.
+
+**Kort #86 NYCKELKALENDERN stängt.** Vakten var byggd och bevisad (check 10, issue #272 läste PAT:ens datum live 15/9);
+det som återstod var två datum någon måste läsa av, och de bor nu i kalendern.
+
+**Listan är inte en kopia.** Den äger sina rader; de finns inte kvar som kort. Två listor över samma sak glider isär —
+samma läxa som vitlistan i `dbknapp`. Ett datum som får en dom eller ett bygge hängande på sig flyttar tillbaka.
+
+**Vad som INTE flyttades, fast det har ett datum:** dom 1 i januari, kalibreringen 1/2, dom 2 i mars,
+kamerafacit-bilderna i mars, betan i november, Pro-beslutet senast 1/11, steg 0 inom sju dygn efter första frostnatten.
+
+### Rättelse i samma varv: septembersiffran
+
+Tidigare samma dag skrev jag att septemberfakturan skulle passera 35 USD, med ~38 som troligt utfall. **Det talet byggde
+på ett enda dygn** — 26/9, som hade femton androidbyggen — och extrapolerades till månaden. Det är precis det CLAUDE.md
+förbjuder, och det blev för högt.
+
+Hela september är nu omräknad med GitHubs egen regel, jobb för jobb över **4 459 körningar och 4 413 jobb**:
+
+| | minuter | debiterat |
+| :-- | --: | --: |
+| kassavaktens regel (väggklocka per körning) | 6 025 | 32,20 USD |
+| GitHubs regel (per jobb) | **5 916** | **31,33 USD** |
+
+**Vakten är 1,8 % fel, inte 30 %.** Felen tar ut varandra över en månad: android −315 min (två jobb per körning räknas
+som ett), healthcheck +152 och publish-map +136 (kötid räknas som körtid). Den öppna frågan i §4.2 om att rätta regeln
+står kvar som riktig — regeln *är* fel — men den ändrar inget beslut, och den rangordnas därefter.
+
+**Utfall:** ~33,2 USD den 1/10 med drift enbart. Varje byggdygn lägger ~1,5–2 USD ovanpå, så ett eller två räcker för
+att passera 35. Åtgärden är oförändrad och enkel: **inga app-byggen resten av september.**
