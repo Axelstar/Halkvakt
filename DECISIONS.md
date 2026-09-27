@@ -5220,3 +5220,36 @@ står kvar som riktig — regeln *är* fel — men den ändrar inget beslut, och
 
 **Utfall:** ~33,2 USD den 1/10 med drift enbart. Varje byggdygn lägger ~1,5–2 USD ovanpå, så ett eller två räcker för
 att passera 35. Åtgärden är oförändrad och enkel: **inga app-byggen resten av september.**
+
+## #382 (27/9 2026) Batteribudgeten mätt på iPhone för första gången — 7 %/h, och två förbehåll åt samma håll
+
+**Mätningen (Bengt 27/9).** iPhone, bygge **0.3.9 (14)**, skärmen av, vakten igång hela tiden:
+**78 % → 71 % på en timme = 7 %/h** mot CLAUDE.md:s krav *< 8 %/h skärmen av*. Kravet håller.
+
+Det är första gången budgeten mätts överhuvudtaget. Den stod som krav på tre ställen med noll motprov (kort #218,
+genomlysningen 20/9), och det enda tidigare försöket — Bodenresan 1/9 — hade laddare i bilen och kunde därför inte mäta.
+
+**Två villkor som inte rapporterades men följer av talen:**
+- **Ingen sladd satt i.** Hade kabel-CarPlay laddat hade procenten stigit, inte fallit. Det var precis felet 1/9.
+- **Telefonen rörde sig.** iOS stoppar vakten själv efter en kvart stilla; den gick hela timmen.
+
+**Två förbehåll, båda åt samma håll — talet är ett golv, inte ett kvitto.**
+
+1. **Upplösningen.** iOS visar hela procent. 78 → 71 betyder att den sanna förbrukningen ligger mellan **6,0 och
+   8,0 %/h** (start 77,5–78,5, slut 70,5–71,5). Punktskattningen klarar gränsen; intervallets övre kant **rör** den.
+   En timmes mätning kan alltså inte skilja god marginal från precis på gränsen. Samma läxa som vektorgeneratorns
+   5-metersregel: mät marginalen, gissa inte på den.
+2. **Bygget är äldre än main.** (14) ligger före #258 — *iPhone laddar om vägdatan under resan* (Bengts ja 26/9,
+   DECISIONS #371) — som lägger till nätarbete under körningen. Main bär **0.3.9 (18)** och gör alltså mer än det som
+   mättes. Siffran certifierar (14), inte (18).
+
+**Vad beslutet avgör.** Kort #218 sa att iOS-regleringen (glesare GPS) avgörs först efter iPhone-mätningen, och att
+inget finns att vinna om iPhone redan håller sig under 8 %/h. **Mätningen ger inget stöd för att glesa ut GPS:en** —
+det vore en säkerhetsförsämring utan uppmätt vinst.
+
+**Vad det inte avgör.** Frågan stängs inte på ett tal vars övre kant rör gränsen, mätt på ett bygge som är äldre än
+main. Nästa mätning görs på **0.3.9 (18) eller senare, gärna över två timmar**, så upplösningen halveras räknat i
+procent per timme.
+
+**Kortet står kvar öppet.** Verify-raden kräver båda plattformarna; **Android-mätningen** återstår och körs på
+testtelefonen (DECISIONS #271/#272), utan köp.

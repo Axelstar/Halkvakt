@@ -293,6 +293,24 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔨 **LOOPEN LAGAD 26/9** (Bengts ja, DECISIONS #370): `SnapshotSchedule` — en laddning i taget, 60 s paus efter fel, 30 min
   förnyelse som förut; fem JVM-prov (tio minuter utan nät: 10 laddningar, inte 600). android.yml-körningen 36214202433 (workflow_dispatch på grenen, 16e2e3f) grön: JVM-proven, emulatorn och release-AAB. Motprovet 36214221026 (c27dcce, båda vakterna borttagna) rött med exakt de tre väntade proven fällda — oneLoadAtATime (rad 15), aFailedLoadWaitsAMinute (rad 22) och tiominutersräkningen (rad 50), 46 prov, 3 fällda; halvtimmesförnyelsen och startens förbikoppling höll. Kvar på kortet:
   **mätningen** (iPhone: Bengt, nästa resa över en timme · Android: testtelefonen) och **kadenstestet** (nämnt i samma fråga, inget ja).
+  📏 **iPHONE-MÄTNINGEN GJORD 27/9 (Bengt) — KRAVET HÅLLER.** iPhone, bygge **0.3.9 (14)**, skärmen av, vakten igång hela
+  tiden: **78 % → 71 % på en timme = 7 %/h** mot budgetens < 8 %/h. Två saker som inte stod i rapporten men följer av den:
+  **(a) ingen sladd satt i** — hade kabel-CarPlay laddat hade procenten stigit, inte fallit, vilket var exakt felet med
+  Bodenresan 1/9; **(b) telefonen rörde sig** — iOS stoppar sig självt efter en kvart stilla, och vakten gick hela timmen.
+  ⚠️ **TVÅ FÖRBEHÅLL, båda åt samma håll — talet är ett GOLV, inte ett kvitto:**
+  · **Upplösningen.** iOS visar hela procent. 78 → 71 betyder att den sanna förbrukningen ligger mellan **6,0 och 8,0 %/h**
+    (start 77,5–78,5, slut 70,5–71,5). Punktskattningen 7 klarar gränsen; intervallets övre kant **rör** den. En enda
+    timmes mätning kan alltså inte skilja "god marginal" från "precis på gränsen". MÄT MARGINALEN-läxan gäller här.
+  · **Bygget är äldre än main.** (14) ligger före **#258** (*iPhone laddar om vägdatan under resan*, Bengts ja 26/9,
+    DECISIONS #371), som lägger till nätarbete under körningen. Main bär **0.3.9 (18)**, som alltså gör MER än det som
+    mättes. Siffran certifierar (14), inte (18).
+  🔑 **VAD DET AVGÖR — och vad det inte avgör.** Kortet sa att iOS-regleringen (glesare GPS) avgörs först efter
+  iPhone-mätningen, och att inget finns att vinna om iPhone redan håller sig under 8 %/h. **Mätningen ger inget stöd för
+  att glesa ut GPS:en** — det vore en säkerhetsförsämring utan uppmätt vinst. Men frågan **stängs inte** på ett tal vars
+  övre kant rör gränsen, på ett bygge som är äldre än main. Nästa mätning: **0.3.9 (18) eller senare, gärna två timmar**,
+  så upplösningen halveras i procent per timme.
+  ⏳ **KVAR PÅ KORTET: Android-mätningen** (testtelefonen, inget köp — DECISIONS #271/#272). Verify-raden kräver båda
+  plattformarna, så kortet står kvar öppet med iOS-halvan bevisad.
   🔨 **KADENSTESTET LAGAT 26/9** (femma sju, DECISIONS #373): `tiers()` ersatt av ett körprov i 140 km/h rakt mot en fara från varje start 3,6–60 km; inom motorns räckvidd (leadMaxM + cameraTriggerM) ska varje GPS-punkt komma högst 1 s efter förra. android.yml 36217938454 grön på grenen; motprovet 36217945802 (NEAR_MS 1 → 10 s) rött på exakt två prov — körprovet och `noSnapshotMeansFullAlertness` — där det gamla testet höll. Enligt en modell av provet fäller det också FAR 15 → 450 s men inte 15 → 150 s, som fortfarande är säkert. Kvar på kortet: **mätningen** (iPhone: Bengt · Android: testtelefonen).
 
 - [ ] ↩︎ **Introduktionen** (iOS) — bevis saknas: radera appen → installera → intron ska komma
