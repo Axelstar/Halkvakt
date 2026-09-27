@@ -25,6 +25,39 @@ Roller och ägarskap: `docs/BESLUTSGANGEN.md` (31/8). Tavlan är sanningen — e
 står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett kort direkt.
 ### AXELS NÄSTA STEG — i den här ordningen (uppdaterad 8/9 kväll)
 
+- [ ] 🔋 **#262 BATTERIPAKETET — SJU ÅTGÄRDER EFTER FÄLTRAPPORTEN 27/9** (Bengts beställning 27/9: *"föreslå ett åtgärdspaket
+  … jag vill att Axel gör det"*. DECISIONS #385, #386). 🚨 **Släppblockerare** — batteribudgeten är ett krav i CLAUDE.md.
+  📱 **Vad testaren rapporterade:** 42 % efter en baddag, telefonen knappt använd. 27/9: **11 h 39 m** bakgrund, **0 m** skärm,
+  GPS **6 h 40 m**, 924 väckningar, väckningslås 4 h 16 m, CPU **2 h 21 m**. 26/9: **21,6 %** av dygnets förbrukning.
+  Skärmbilderna: **Autostart PÅ**, **fartkamera 2,0 km bort**, **"Version 0.3.1"**, och telefonen är **inte en Samsung**.
+  🧮 **21,6 % är en ANDEL, inte procentenheter.** Antas dygnet ha dragit ~80 pe ⇒ ~1,5 %/h, alltså *inom* 8 %/h.
+  **Felet är inte förbrukningen per timme utan antalet timmar.**
+  ⛔ **DET STÖRSTA FYNDET: "Version 0.3.1" betyder ingenting.** Numret stod stilla på 0.3.1 / versionCode 4 från 31/8 till
+  26/9 medan koden följde med (DECISIONS #377). **Vi kan alltså inte veta om testaren har självstoppet (#248, 24/9) eller
+  omladdningsfixen (#370, 26/9).** Hela fältrapporten är otolkbar tills testaren står på ett bygge vars nummer betyder något.
+  Det är därför Å0 är först och inte förhandlingsbart.
+
+  | # | Åtgärd | Tröskel? | Verify |
+  | :-- | :-- | :-- | :-- |
+  | **Å0** | **Ge testaren 0.3.9 (18).** Main bär åtta versioners fixar som testaren kanske saknar | nej | testarens Om-sida visar 0.3.9 (18) |
+  | **Å1** | **Stoppknapp i den pågående notisen.** I dag har bara *efter resan*-notisen knappar — vakten kan bara stoppas genom att appen öppnas. Halva skälet att den blev kvar på | nej | vakten stoppas från låsskärmen utan att appen öppnas |
+  | **Å2** | **Stillaståendetiern i `CadencePolicy`.** Testaren hade en **fartkamera 2,0 km bort** ⇒ NEAR ⇒ **1 Hz GPS hela dagen**. Tiererna är skrivna för Norrlands E4 (kommentaren säger det) och slår nästan aldrig till där folk bor. Rör sig telefonen inte kan ingen fara vara nära förestående — **vid 0 km/h går det inte att nå faran**, oavsett avstånd | ⚠️ **JA** | en stillastående telefon nära en fara ligger på FAR-takt, och en rullande bil på oförändrad takt |
+  | **Å3** | **Självstoppet robust mot gångfart.** `IdleStop` nollställs av ETT mätvärde ≥ 5 km/h — gångfart. En buren telefon fyller aldrig kvarten, så självstoppet kan i praktiken bara fira för en **parkerad bil**. Förslag: nollställ på **förflyttning över fönstret**, inte på ett enstaka mätvärde | ⚠️ **JA** | en dag till fots ⇒ vakten har stoppat sig inom en kvart efter sista körningen |
+  | **Å4** | **Autostartens text ljuger.** Reglaget säger *"Startar när bilens Bluetooth kopplas"* — men `setEnabled` registrerar också **Activity Recognition**, som startar vakten i vilket fordon som helst (buss, som passagerare). Antingen rätta texten eller begränsa beteendet | nej | texten beskriver vad reglaget gör · **PRODUKTBOKEN i samma varv** |
+  | **Å5** | **Cache i `Guard.nearestHazardM`.** Den sveper varje koordinat i varje fara vid VARJE fix, och motorn går över samma material — vid 1 Hz två nationella svep i sekunden. Ren prestanda | nej | CPU-andelen mätt före och efter på samma rutt |
+  | **Å6** | **Fältmätningsprotokoll**, så nästa rapport går att jämföra: bygge, autostart på/av, telefonmodell, start-% och *Batterianvändning för app* vid start och slut | nej | protokollet skickat med nästa testarutskick |
+
+  ⚖️ **Å2 och Å3 är trösklar och tas inte ensidigt** (Bengt + Axel, §4.2). Båda är säkerhetsnära åt samma håll: **en vakt som
+  tystnar i en kö är silence när det gällde** — det dyraste felet appen kan göra. Trösklarna skrivs före mätning och ska genom
+  `scripts/vardevakten.ts` innan de bär ett beteende.
+  📵 **Telefonen är inte en Samsung.** Vår testmobil är Samsung A just för att den är aggressivast (skills/halkvakt-android §3)
+  — men OEM:ernas batterihanterare skiljer sig, och **vi kan alltså inte räkna med att reproducera det här på testtelefonen.**
+  Läxan hör hemma i `skills/halkvakt-android/SKILL.md` §5, och Android-mätningen i kort #218 bör köras på minst två fabrikat.
+  📏 **Signal, inte bevis:** 44 % 15:26 → 32 % 16:38 = 12 pe på 72 min ≈ **10 %/h**, alltså över budgeten — men vaktens läge och
+  skärmtiden i fönstret är okända (skärmbilder togs). Räkna inte med talet; mät om det rent enligt Å6.
+  Verify för hela kortet: Å0 kvitterad av testaren · Å1, Å4, Å5 i ett bygge · Å2 och Å3 beslutade i DECISIONS före kod ·
+  en ny fältdag där bakgrundstiden ≈ körtiden, inte dygnet.
+
 **Beslut som väntar, inte brådskande (med Bengt):**
 ### Axel — beslut att ta
 - [x] ⏰ **#86 NYCKELKALENDERN — två nycklar går ut mitt i säsongen** ✅ **STÄNGT 27/9 ↪ `docs/KALENDERN.md`** (Bengts ja: *"ja till kalenderlistan och stäng korten"*, DECISIONS #381). Vakten är byggd och bevisad — nyckelkalendern är check 10 i vakthunden, prövad 15/9 med issue #272 som läste PAT:ens datum live. Det som återstod var inte arbete utan **två datum någon måste läsa av**: PAT 22/11 (rotera senast 15/11) och Supabase-tokenen 8/12 (senast 1/12). De bor nu i kalendern, som äger dem. Kortet kunde aldrig bockas av så länge det bar en plikt som återkommer (Axels fynd 9/9, kort av Claude):
@@ -385,40 +418,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **Flyttat 26/9 från *Axel — hösten (brainstorm 31/8)*** (femma åtta, DECISIONS #377): nästa steg är Bengts två minuter (*Visa introduktionen igen*).
 
 ### Claude — olåst
-- [ ] 🔋 **#262 SJÄLVSTOPPET FÅR ALDRIG FIRA — VAKTEN GICK 11 h 39 m PÅ EN BADDAG** (fältrapport från Androidtestare 27/9,
-  DECISIONS #385). 🚨 **Släppblockerare**: batteribudgeten är ett krav i CLAUDE.md, och en vakt som inte kan sluta bryter det
-  utan att röra en tröskel i motorn.
-  📱 **Mätningen (testarens två skärmbilder):** 27/9 kl. 14:59 — total användningstid **11 h 39 m**, skärm på **0 m**, GPS
-  **6 h 40 m**, väckningar **924**, väckningslås **4 h 16 m**, CPU **2 h 21 m**, mobildata 1 717 paket, Wi-Fi 4 028 paket ·
-  26/9 — Halkvakt **21,6 %** av dygnets batterianvändning (Google Play-tjänster 5,9 %, delvis våra anrop). Testaren badade och
-  var i stugan, rörde knappt telefonen, och hade **42 %** kvar.
-  🧮 **Vad talen betyder — och inte.** 21,6 % är en ANDEL av förbrukningen, inte procentenheter batteri. Antas dygnet ha dragit
-  ~80 pe blir Halkvakts del ~17 pe över ~11,6 h ⇒ **~1,5 %/h, alltså INOM 8 %/h-budgeten.** Slutsatsen är därför inte att appen
-  drar mycket per timme utan att **den har alldeles för många timmar**. Paketräkningen är dessutom låg — omladdningsloopen
-  (#370) syns inte i driften, den fixen håller.
-  🔗 **ROTORSAKSKEDJAN (läst i koden 27/9, inte gissad):**
-  1. Testaren startade vakten **manuellt**.
-  2. `AutostartController.onVehicleExit()` returnerar `NONE` när `autoStarted == false` — **en manuellt startad vakt stoppas
-     aldrig av Activity Recognition.** Det är medvetet (kommentaren: *"never killed by AR flakiness"*).
-  3. Kvar som enda stoppare: `IdleStop` — 15 minuter under **5 km/h**.
-  4. **5 km/h är gångfart.** `onFix` nollställer klockan på EN enda mätpunkt ≥ 5 km/h. Ett brusigt GPS-värde i kvarten räcker.
-     Den som badar, går till sjön och rör sig i en stuga fyller **aldrig** kvarten. Självstoppet kan i praktiken bara fira för
-     en **parkerad bil**.
-  5. ⇒ vakten gick tills telefonen tog slut.
-  🚪 **Tillhörande lucka:** den pågående notisen har **ingen stoppknapp** — bara *efter resan*-notisen har knappar. Vill man
-  stoppa vakten måste appen öppnas. Det är halva skälet att den blev kvar på.
-  ⚙️ **Andrafyndet (CPU 20 % av tiden):** `retuneCadence` anropar `Guard.nearestHazardM`, som gör
-  `coords.minOfOrNull { haversineM }` över VARJE koordinat i VARJE fara — och `engine.step` går över samma material. Vid 1 Hz
-  nära en fara är det två nationella svep i sekunden. Cache eller rutnät är en ren prestandaändring utan beteendeändring.
-  🛠️ **Åtgärder i ordning:** (1) **stoppknapp i den pågående notisen** — ingen tröskel, ingen säkerhetsavvägning, byggs direkt ·
-  (2) **självstoppet robust mot gångfart** — ⚠️ SÄKERHETSNÄRA, kräver beslut: höjd gräns och/eller nollställning på
-  FÖRFLYTTNING över fönstret i stället för ett enstaka mätvärde. Risken åt andra hållet är en vakt som tystnar i en kö ·
-  (3) ska AR-exit få stoppa även en manuellt startad vakt? · (4) cachen i `nearestHazardM`.
-  ❓ **Frågor till testaren (via Bengt):** vilket byggnummer? Var *starta själv* (autostart) påslagen? Är det Samsung-telefonen?
-  Svaren ändrar vilken av (2) och (3) som är rätt fix.
-  Verify: en dag med vakten påslagen och telefonen buren till fots ⇒ vakten har stoppat sig själv inom en kvart efter sista
-  körningen, bevisat med `Batterianvändning för app` (bakgrundstid ≈ körtiden, inte dygnet).
-
 - [ ] 📍 **#226 AUTOSTARTENS BEHÖRIGHET FALLER TYST PÅ ANDROID 11+** (Axels fynd på testtelefonen 20/9, DECISIONS #272).
   ⚠️ **HÄRLETT, INTE UPPMÄTT:** kortet skrevs på Axels rapport som antogs vara Android — den var från hans iPhone (#273).
   Ingen har kört det här på en Android-telefon. Grunden är kodläsning + Googles dokumentation, inget annat.

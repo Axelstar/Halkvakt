@@ -1889,3 +1889,18 @@ DESSUTOM: pågående notisen saknar stoppknapp (bara efter-resan-notisen har kna
 nearestHazardM sveper varje koordinat i varje fara vid varje fix.
 Byggt: inget detta varv — (2) är säkerhetsnära och ligger som beslut i §4.2. Nästa: stoppknappen i notisen (ingen avvägning),
 och svar från testaren om byggnummer, autostart och telefonmodell.
+
+## 2026-09-27 — Batteripaketet till Axel: sju åtgärder, och fältrapporten visade sig otolkbar (DECISIONS #386, kort #262)
+Bengts order: föreslå ett paket, gör inget själv, Axel bygger. Kort #262 flyttat till Axels nästa steg med Å0–Å6.
+STÖRSTA FYNDET: testarens "Version 0.3.1" säger ingenting om vilken kod han kör — numret stod stilla på 0.3.1/versionCode 4
+från 31/8 till 26/9 medan koden följde med (#377). Vi kan alltså inte veta om han har självstoppet (#248) eller
+omladdningsfixen (#370). Därför är Å0 (ge testaren 0.3.9 (18)) först och inte förhandlingsbar.
+TRE FYND TILL ur skärmbilderna: autostart var PÅ och reglagets text säger bara "bilens Bluetooth" fast det också
+registrerar Activity Recognition (användarsynligt ⇒ produktboken) · en FARTKAMERA 2,0 km bort låser CadencePolicy på NEAR,
+alltså 1 Hz GPS hela dagen — tiererna är skrivna för Norrland och slår nästan aldrig till där folk bor · telefonen är inte
+en Samsung, så vår aggressivaste testmobil kanske inte reproducerar felet.
+SIGNAL, EJ BEVIS: 44 % 15:26 → 32 % 16:38 ≈ 10 %/h, över budget — men vaktens läge och skärmtiden är okända och telefonen
+laddade strax innan. Skrivet hit just för att det annars citeras som en mätning nästa gång.
+Å2 (stillaståendetier) och Å3 (självstoppet) bär trösklar och ligger som beslut i bedömningen §4.2, före kod och genom
+värdevakten. Båda säkerhetsnära åt samma håll: en vakt som tystnar i en kö är silence när det gällde.
+Byggt: inget, med flit. Nästa: Axels beslut på Å2/Å3 och hans bygge av Å0, Å1, Å4, Å5.

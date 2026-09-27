@@ -5422,3 +5422,46 @@ ska genom värdevakten. **Frågan går till Bengt och Axel i bedömningen §4.2.
 
 **Frågor till testaren, via Bengt:** byggnummer? Var *starta själv* påslagen? Är det Samsung-telefonen? Svaren avgör om (2)
 eller (3) är rätt fix — är autostart av, är AR-spåret inte ens inkopplat och (2) är hela åtgärden.
+
+## #386 (27/9 2026) Batteripaketet till Axel — och fyndet som gör hela fältrapporten otolkbar: "Version 0.3.1" betyder ingenting
+
+**Bengts order 27/9:** *"det är ingen Samsung. Föreslå ett åtgärdspaket för detta och ovanstående. Gör ingenting själv jag vill
+att Axel gör det."* Paketet ligger som kort **#262** i *Axels nästa steg*, sju åtgärder Å0–Å6. Ingen appkod har rörts.
+
+**Två nya skärmbilder gav fyra fynd som #385 inte kunde se.**
+
+**1. "Version 0.3.1" på Om-sidan säger ingenting om vilken kod testaren kör — och det är paketets viktigaste fynd.**
+Versionsnumret stod stilla på 0.3.1 / versionCode 4 **från 31/8 till 26/9** medan koden följde med (konstaterat 20/9,
+rättat först 26/9 i #377). Alltså: vi kan **inte** veta om testaren har självstoppet (#248, 24/9) eller omladdningsfixen
+(#370, 26/9). **Hela fältrapporten är otolkbar tills testaren står på ett bygge vars nummer betyder något**, och varje
+slutsats vi drar ur den riskerar att beskriva kod vi redan bytt. Därför är Å0 — ge testaren 0.3.9 (18) — först i paketet och
+inte förhandlingsbar. Det är samma familj som #240: *ett byggnummer som sätts före den sista ändringen bevisar inte vilket
+bygge som är ute.* Här är det värre: numret sattes inte alls på en månad.
+
+**2. Autostart var PÅSLAGEN — och reglagets text ljuger om vad det gör.** Texten säger *"Startar när bilens Bluetooth
+kopplas"*. Men `AutostartManager.setEnabled` registrerar också **Activity Recognition**-övergångar, som startar vakten vid
+IN_VEHICLE i vilket fordon som helst — buss, som passagerare, någon annans bil. Användaren kan alltså inte av texten förstå
+varför vakten startar. Användarsynligt ⇒ **PRODUKTBOKSREGELN: texten och produktboken i samma varv** (Å4).
+
+**3. En fartkamera 2,0 km bort låser appen på 1 Hz.** `CadencePolicy` ger NEAR (1 s) inom 5 km, MID (5 s) inom 20 km, annars
+FAR (15 s). Kommentaren i filen säger rakt ut att den är skriven för *"a Norrland E4 stretch"* där närmaste fara kan vara
+100+ km bort. **Där människor faktiskt bor finns alltid något inom 5 km**, så batterispartiererna slår nästan aldrig till.
+Testarens skärmbild visar precis det: *FARTKAMERA 2,0 km*. **Förslaget (Å2) är en stillaståendetier**, och den är bevisbart
+säker på ett sätt de andra inte är: **vid 0 km/h går det inte att nå en fara**, oavsett hur nära den ligger. Den kostar
+ingenting i säkerhet och tar bort det som rimligen är den största posten per timme.
+
+**4. Telefonen är inte en Samsung.** Vår testmobil är Samsung A *just för att* den är aggressivast mot bakgrundsappar
+(skills/halkvakt-android §3). Nu kommer rapporten från ett annat fabrikat, vars batterihanterare beter sig annorlunda.
+**Vi kan alltså inte räkna med att reproducera felet på testtelefonen** — och en åtgärd som ser grön ut där bevisar inte
+fältet. Läxan förs in i `skills/halkvakt-android/SKILL.md` §5 i samma commit som någon rör Android-koden, och kort #218:s
+Android-mätning bör köras på minst två fabrikat.
+
+**En siffra som INTE är ett bevis:** 44 % kl. 15:26 → 32 % kl. 16:38 = 12 procentenheter på 72 minuter ≈ **10 %/h**, alltså
+över budgeten. Men vaktens läge i fönstret är okänt, skärmen var på när skärmbilderna togs, och telefonen laddade mellan
+14:59 (42 %) och 15:26 (44 %). **Talet duger som signal att mäta om, inte som dom.** Det skrivs hit just för att det annars
+hade citerats som en mätning nästa gång någon läser tråden — samma fälla som kassavaktens halverade tal 13/9 (läxan i CLAUDE.md om träfftaket i `/actions/runs`).
+
+**Vad paketet INTE innehåller, med flit.** Ingen ändring av motorn, ingen tröskel ändrad i det här varvet, och ingen kod
+skriven. Å2 och Å3 bär trösklar och går därför till Bengt + Axel i bedömningen §4.2 före bygge, och genom
+`scripts/vardevakten.ts` innan de bär ett beteende. Båda är säkerhetsnära åt samma håll: **en vakt som tystnar i en kö är
+silence när det gällde.**
