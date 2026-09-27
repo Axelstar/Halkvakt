@@ -201,6 +201,14 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⏳ **HÅLLBARHETSTID (fynd 27/9):** kuvösens hela värde är att ge vintersvar FÖRE vintern. Frosten kommer nov–dec och
   dom 1 går i januari på riktig data. Varje vecka av tystnad äter värdet, och omkring **1 december** slutar kuvösen vara
   en spak och blir en historisk kuriositet. **Sätt ett beslutsdatum** i stället för att vänta öppet.
+  🔨 **SONDEN BYGGD 27/9 (Bengts ja):** `scripts/no-historik-rekognosering.ts` + knappen
+  `no-historik-rekognosering` — ren läsning, tre spår, **kriteriet utskrivet överst** så svaret går att läsa utan
+  tolkning: yttemperatur per station · passerad vinter · minst timupplösning · konto vi har eller kan få gratis.
+  Faller något av de fyra är svaret nej, hur mycket data källan än har. Spår A frågar DATEX-servern vi har nyckel till
+  (kontrollen först — faller den är det kontot, inte historiken), spår B frågar MET Frost om den **alls har ett
+  yttemperatur-element** innan kontofrågan ställs, spår C prövar Vegvesens övriga ytor. Jobbet blir rött bara om ALLA
+  spår är stumma. Lokalt prov 27/9: alla spår stumma med `Host not in allowlist` — sonden säger själv att det är
+  behållaren och inte Norge, vilket var meningen.
   🚪 **OPRÖVAD DÖRR: Norge.** Kortet säger att MET:s Frost-arkiv "kräver konto och är inte kontrollerat" — och vi har
   redan ett **Vegvesen-konto** (`VEGVESEN_USER/PASS`, DATEX i realtid). Finns norsk vägstationshistorik går kuvösen att
   köra på en norsk vinter: samma fysik, och vi ingesterar Norge redan. **Jag kunde inte pröva det härifrån** — den här
