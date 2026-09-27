@@ -188,8 +188,24 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   historik är 24 h, och FMI:s vägväderfrågor finns inte längre (151 lagrade frågor listade, ingen för väg) · Norge: Vegvesenets
   flöde är realtid; MET:s Frost-arkiv kräver konto och är inte kontrollerat. **Vägen är alltså en förfrågan till Trafikverket.**
   ✅ **STEG 1 GJORT 21/9 — Bengt har skickat förfrågan via Datautbytesportalens kontaktformulär** (hans besked i chatten).
-  ⏳ Väntar svar. **Inget svar senast 28/9 ⇒ reserv 1** (formuläret *Frågor till Trafikverket*), därefter reserv 2. Det
-  tidigare Datex II-ärendet gick samma väg 17–19/9 och är fortfarande obesvarat — räkna med att det tar tid.
+  ⏳ Väntar svar. ~~Inget svar senast 28/9 ⇒ reserv 1~~ **TRAPPAN ÄR REDAN GÅNGEN TILL SLUTET (Bengt 27/9): begäran om
+  allmänna handlingar är inskickad och OBESVARAD.** Båda reserverna är alltså förbrukade; nästa steg är inte ett nytt
+  formulär utan att kräva ett **skriftligt avslagsbeslut**, som är överklagbart. Det tidigare Datex II-ärendet gick samma
+  väg 17–19/9 och är fortfarande obesvarat — tystnad är mönstret, inte undantaget.
+  ⚠️ **TVÅ RISKER SOM INTE STOD PÅ KORTET, och de gäller även om svaret blir ja:**
+  · **Elektronisk form är inte en rättighet.** Rätten att ta del av en allmän handling omfattar att läsa den och att få
+    papperskopia; att få ut en databas i filform är något myndigheten *får* göra, inte något den måste. För ett vinteruttag
+    är det hela skillnaden mellan användbart och oanvändbart. (Kontrollera formuleringen innan den används skarpt.)
+  · **Det kan vara mer än rutin.** En sammanställning räknas som allmän handling bara om den kan tas fram med
+    rutinbetonade åtgärder. Kräver ett VViS-uttag programmering kan de avslå på den grunden.
+  ⏳ **HÅLLBARHETSTID (fynd 27/9):** kuvösens hela värde är att ge vintersvar FÖRE vintern. Frosten kommer nov–dec och
+  dom 1 går i januari på riktig data. Varje vecka av tystnad äter värdet, och omkring **1 december** slutar kuvösen vara
+  en spak och blir en historisk kuriositet. **Sätt ett beslutsdatum** i stället för att vänta öppet.
+  🚪 **OPRÖVAD DÖRR: Norge.** Kortet säger att MET:s Frost-arkiv "kräver konto och är inte kontrollerat" — och vi har
+  redan ett **Vegvesen-konto** (`VEGVESEN_USER/PASS`, DATEX i realtid). Finns norsk vägstationshistorik går kuvösen att
+  köra på en norsk vinter: samma fysik, och vi ingesterar Norge redan. **Jag kunde inte pröva det härifrån** — den här
+  behållarens utgående trafik blockeras mot frost.met.no, SMHI och Vegvesen (403 i proxyn). Det är min behållares gräns,
+  inte källornas: SMHI metobs bevisades nåbart 21/9. Provet måste alltså köras i ett Actions-jobb eller av dig.
   ✉️ **Steg 1 — Bengt skickar förfrågan.** ⛔ **INTE till datex@trafikverket.se — adressen STUDSAR** (Bengts mejl 17/9 kom
   tillbaka med *"Adressen hittades inte"*; den gavs ändå ut en gång till 21/9, DECISIONS #293 → rättat i #294).
   📖 **Rätt väg, läst på källan 21/9:** Datautbytesportalens kontaktformulär, data.trafikverket.se/about-us/contact,
