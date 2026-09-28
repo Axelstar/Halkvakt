@@ -5348,3 +5348,24 @@ minst två är falska positiver — `polisen-api` dömdes RÖR OSS på ordet *ap
 permanenta rubrik, och `smhi-uppdateringar` på *observation* i en post om HYDROLOGISKA observationer
 (vi använder meteorologiska). Bedömningen matchar mot hela sidan, inklusive rubrik, cookiebanner och
 sidfot. Eget kort; inget ja begärt ännu.
+
+### Bevis, samma kväll (28/9)
+
+**(a) state når main även när jobbet faller.** Omkörningen 16:59 gick grön och committade
+`ingest/trv-nyheter-state.json` **17:00:19 med 13 källor** (commit 6e11358). Före det stod filen på
+**21/9**. Flödet har alltså gått från "ser levande ut men står stilla" till att faktiskt avancera.
+
+**(b) mätvakten upprepar inte längre.** Två mätningar, båda efter deployen 17:04:
+
+1. **Stängningsvägen håller.** Kl 17:07:05 stängde mätvakten issue #640 av sig själv, med en tionde
+   kommentar som var *"Stänger — mätningarna går och källorna växer igen."* — inte ett tionde larm.
+   Utan lagningen hade det blivit en identisk kommentar varje timme till måndag 5/10.
+2. **Motprov på dedupen.** Två tryck på `matvaktprov` i rad, med identiskt fynd:
+   · Prov A (körning 36455960212) skapade issue **#645, 0 kommentarer** — fyndet står i kroppen.
+   · Prov B (körning 36456250932), samma fynd: **fortfarande 0 kommentarer.**
+   **Dom: 0 → 0. Dedupen biter.** Hade jämförelsen gjorts på hela kroppen i stället för på
+   fyndraderna hade tidsstämpeln gjort varje varv olikt och provet gett 0 → 1.
+
+Provet självt hade ett fel värt att notera: första försöket föll på **HTTP 415** — min POST saknade
+`Content-Type: application/json`. Det var mätinstrumentet, inte vakten, och det syntes direkt för att
+felkoden lästes i stället för att tolkas som ett nej.
