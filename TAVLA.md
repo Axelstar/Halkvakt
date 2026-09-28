@@ -495,8 +495,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ### Claude — låst (väntar på nyckel)
 
-- [ ] 📣 **#261 KÄLLVAKTENS FALSKA POSITIVER — bedömningen matchar mot sidans möbler** (fynd 28/9 under
-  mätvaktsfelet, DECISIONS #384). 🔑 **NYCKEL: Bengts ja.**
+- [x] 📣 **#261 KÄLLVAKTENS FALSKA POSITIVER — bedömningen matchar mot sidans möbler** (fynd 28/9 under
+  mätvaktsfelet, DECISIONS #384). 🔑 ~~NYCKEL: Bengts ja.~~ ✅ **JA 28/9 — BYGGT SAMMA KVÄLL.**
   Måndagskörningen 06:40 skapade **fem** källändringslarm (issues #635–#639). Lästa i efterhand kräver
   minst två av dem ingen åtgärd alls, och båda är röda av samma skäl:
   · **#639 `polisen-api` dömdes 🔴 RÖR OSS på ordet *api*** — som står i sidans EGNA permanenta rubrik,
@@ -506,9 +506,27 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   · De tre övriga (#636 halkvarning, #637 dk-dmi, #638 polisen-regler) ändrades i cookiebanner, sidfot,
     nyhetskarusell och raden *"Granskad # september"* — vaktens sifferstrippning gör datumet till `#`,
     men det ÄNDRADE datumet flyttar ändå textlängden och därmed hashen.
-  **TVÅ SKILDA FEL, och de ska inte lagas med samma grepp:**
-  (1) **Bedömningen läser hela sidan** i stället för bara det nya stycket, så permanent inredning kan
-      fälla en dom. (2) **Diffen räknar in boilerplate** som ingen människa vill larmas om.
+  ⚠️ **RÄTTELSE AV MIN EGEN KORTTEXT (28/9, innan en rad kod skrevs).** Jag skrev att *"bedömningen
+  läser hela sidan i stället för det nya stycket"*. **Det var fel** — `changes.push` skickar redan bara
+  `nya.join(" ")`, alltså enbart de nya styckena. Mätningen mot state-filens sparade texter
+  (21/9 mot 28/9) gav den riktiga mekanismen:
+  · **Styckena är för grova.** `nyText` delade bara på `.!?:`, och normaliserad HTML har få
+    meningsslut — rubrik, meny och cookiebanner blir EN körning. Längsta uppmätta: **2 054 tecken**.
+  · **Uppmätt orsak till den falska röda:** ordet **"myndighet"** försvann ur polisens cookietext.
+    Rubriken *"API över polisens händelser"* satt i samma 152-teckens körning och följde med in i
+    "det nya" — och domen föll på ordet *api* ur en rubrik som står där permanent.
+  ✅ **BYGGT 28/9 (DECISIONS #385), två skilda lagningar med var sitt motprov:**
+  · **(1) `nyText` delar även på `|`, `·`, `•`.** Rubriken blir eget stycke. Prövat mot den riktiga
+    datan: samma ändring ger nu **0 nya stycken med ordet *api*** — och larmet går fortfarande ut,
+    som VET INTE. Bedömningen graderar, den tystar aldrig.
+  · **(2) Det breda ordet `observation` ströks** ur metobs nyckelord. **Fyndet bakom fyndet:**
+    ordet *hydrolog* stod REDAN som främmande ord på signalraden — kunskapen fanns. Men en träff
+    rankar över ett främmande ord i graderingen, så det för breda ordet tystade det som var rätt.
+    Nu blir posten ⚪ **RÖR OSS INTE** med skälet utskrivet, i stället för 🔴.
+  🧪 **Motprov, ett per vakt** (läxan 20/9): delningen backad ⇒ test 27 faller · `observation`
+  återinfört ⇒ test 29 faller. Med båda lagningarna: 30/30 i sviten, 199/199 i hela `npm test`.
+  ⏳ **KVAR:** footerns *"Granskad # september"*-rad ger fortfarande ett VET INTE-larm. Det är brus,
+  inte en falsk röd, och det lagas inte med ett sitespecifikt filter utan att någon ber om det.
   ⚠️ Samma familj som mätvaktens 168 larm och som gravstenarna: bruset gör signalen osynlig. Skillnaden
   är att här är bruset *innehåll*, inte upprepning — fem olika issues, inte en upprepad.
   Verify: en körning där en ändrad granskningsdatum-rad INTE ger ett larm, och där ett påhittat äkta

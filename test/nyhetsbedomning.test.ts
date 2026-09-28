@@ -192,3 +192,44 @@ test("men ordbörjan räcker — prefix ska fortfarande träffa", () => {
 test("hela ord träffar som förut", () => {
   assert.equal(bedom("polisen-regler", "Nytt krav på user-agent i vårt API", KARTAN).grad, "RÖR OSS");
 });
+
+// ── STYCKEGRÄNSEN (kort #261, 28/9) ───────────────────────────────────────────────────────
+// Normaliserad HTML har få meningsslut: rubrik, meny och cookiebanner blev EN körning, och ett
+// ändrat ord var som helst i den gjorde HELA körningen ny — rubriken inräknad. Uppmätt skarpt:
+// "myndighet" försvann ur polisens cookietext, rubriken "API över polisens händelser" följde med,
+// och posten dömdes RÖR OSS på ett ord som står permanent på sidan.
+test("ett ändrat ord i cookietexten får inte republicera rubriken", () => {
+  const gammal = "API över polisens händelser | Polisen Kakor på polisen.se På polisen.se använder"
+    + " vi nödvändiga kakor från vår myndighet för att webbplatsen ska fungera så bra som möjligt.";
+  const ny = gammal.replace(" från vår myndighet", "");
+  const nya = nyText(gammal, ny);
+  assert.ok(!nya.some((m) => /(?<![a-zåäöé0-9])api/i.test(m)),
+    `rubriken följde med in i det nya: ${JSON.stringify(nya)}`);
+  assert.ok(nya.length, "ändringen ska fortfarande synas — larmet får inte tystna");
+});
+
+test("motprov: en äkta ny mening räknas fortfarande som ny", () => {
+  // Utan det här kunde delningen ha gjorts så fin att ingenting någonsin blev nytt.
+  const gammal = "Vi publicerar öppna data om trafik. Sidan uppdateras löpande.";
+  const ny = gammal + " API:et för väglag byter schemaversion i november.";
+  assert.ok(nyText(gammal, ny).some((m) => /schemaversion/.test(m)));
+});
+
+// ── ORDET SOM VAR FÖR BRETT (kort #261) ───────────────────────────────────────────────────
+test("hydrologiska observationer är inte våra observationer", () => {
+  // 28/9 dömdes "Arkivdata-API för hydrologiska observationer fungerar igen" RÖR OSS på ordet
+  // "observation". Vi läser metobs — meteorologiska.
+  // POÄNGEN: ordet *hydrolog* stod REDAN som främmande ord på signalraden — kunskapen fanns. Men
+  // en träff rankar över ett främmande ord i graderingen, så det för breda "observation" tystade
+  // det som var rätt. När det breda ordet ströks fick den befintliga kunskapen göra sitt jobb, och
+  // domen blev ⚪ i stället för 🔴. Larmet går ut som förut; bara graden och skälet ändras.
+  const d = bedom("smhi-uppdateringar", "Arkivdata-API för hydrologiska observationer fungerar igen", KARTAN);
+  assert.equal(d.grad, "RÖR OSS INTE");
+  assert.equal(d.traffar.length, 0);
+  assert.ok(d.frammande.includes("hydrolog"), "skälet ska namnges, inte bara graden");
+});
+
+test("motprov: en äkta metobs-post träffar fortfarande", () => {
+  assert.equal(bedom("smhi-uppdateringar", "Ändrat format i metobs latest-months", KARTAN).grad, "RÖR OSS");
+  assert.equal(bedom("smhi-uppdateringar", "Meteorologiska observationer får ny parameter", KARTAN).grad, "RÖR OSS");
+});
