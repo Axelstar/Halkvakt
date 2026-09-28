@@ -87,6 +87,33 @@ kontaktuppgifterna i anmälningarna. Sista dag 1/10.
 Arbetsbladet med sida 1, checklistan och mejltexten ligger i Drive. På vägen rättades tre felaktiga referenser, som funnits
 sedan v4, och påståendet att varningarna "formuleras som åtgärd".
 
+**Jämförelse med vårens 32 beviljade projekt (Bengts lista 28/9; 18 716 352 kr, median 594 050 kr, spann 140 376–898 000).**
+- **Sökande.** Ingen av de 32 är en privatperson. Fördelningen är lärosäten och institut 13 (VTI 4, Lund 3, Chalmers 2), SAFER 2,
+  konsultbolag 10 (Strandroth 2, Trivector 2, Lightness by Design 2), ideella organisationer 5 (MHF 2, NTF 2, FOT), Region Skåne 1
+  och VALMA 1. VALMA hade sitt namn *"inskickat för registrering"* och beviljades ändå, vilket är ett prejudikat för en förening
+  under bildande.
+- **Teman.** Oskyddade trafikanter dominerar med omkring 12 av 32. Vinter och halka finns i fyra projekt (#8 gångsäkerhet vinter,
+  #14 gångflöden för vinterdrift, #28 sopsaltning, #29 app och tvåvägskommunikation om väglag till cyklister), alla för gång och
+  cykel eller kommunal drift. Inget gäller halkvarning till bilförare.
+- **Närmast oss:**
+  - #29 Trivector, 735 200 kr: app som ger trafikanter aktuellt väglag;
+  - #19 Strandroth, 876 000 kr: pilot om uppkopplad fordonsdatas trovärdighet för trafiksäkerhet;
+  - #4 Edeva, 885 200 kr: ISA:s effekt på verklig fart, med A–B-hastighetsdata;
+  - #13 VTI, 599 900 kr: *från prototyp till praktik*.
+- **Styrkor.** Vi ligger i linje med fondens intresse för datadrivet beslutsunderlag till Trafikverket, validering av en
+  prototyp och vinterhalka.
+- **Svagheter.**
+  - Sökandeformen: ingen privatperson finns bland de beviljade.
+  - Ingen meriterad utförare: alla utvärderingsprojekt drivs av institut, lärosäten eller konsulter med meriter, och v8B utan
+    granskning saknar sådan.
+  - Effektmåttet: de beviljade mäter beteende objektivt (#4 fart, #23 fältexperiment, #27 konflikter), medan vi har
+    självrapport.
+- **Förslag till Bengt (Claude 28/9):**
+  1. Förening, även under bildande, i stället för privatperson.
+  2. Citera #19 och #29 som komplement: fondens egen fordonsdatapilot och cykelsidans väglagsapp.
+  3. Lyft felkartans nytta för kommunal vinterdrift (#8, #14, #28, #29, SKR).
+  4. Väg granskningen (343 000 kr) mot 283 000 kr en gång till i ljuset av att alla utvärderare i listan är meriterade.
+
 ## Malmö stad — läget 23/9
 
 Anna Axberg, systemförvaltare på Fastighets- och gatukontoret (kommunikation och digitalisering), ringde Bengt 23/9 efter följdmejlet 19/9 (ärende 1255995): staden planerar **12 väderstationer nedfrästa i asfalten under hösten** och undersöker om datan kan lämnas via API; hon ber om en påminnelse mot årets slut och lovar att prioritera upp. Det är exakt den datatyp appen varnar på (yttemperatur mätt i vägen), och en ny källa i Trafikverkets form är dagar av ingest-arbete, inte veckor. **Avtalsfrågan om de BEFINTLIGA stationerna (19/9-mejlet) är obesvarad** — samtalet handlade om de nya installationerna (Bengt 23/9). Den är vinterns fråga: de tolv nya hinner kanske inte få API förrän långt in i säsongen. **Svaret** (Bengt): tack och en sammanfattning av samtalet, sedan två numrerade frågor som går att vidarebefordra — (1) kan yta, luft och nederbörd från de befintliga stationerna delas under avtal inom ett avgränsat trafiksäkerhetsprojekt, och om det inte är hennes fråga: vem äger den? (2) får vi skriva i Skyltfondsansökan att samtal förs med FGK? — plus erbjudandet att vara första externa testkonsument av API:et och vinterns resultat i Malmö som motprestation. Bildspelet skickas som kort bilaga. Allt som skickas till kommunen är allmän handling — inga partnernamn före deras ja, inga opublicerade trösklar. Påminnelse: **början av december**, före fondens besked 15/12.

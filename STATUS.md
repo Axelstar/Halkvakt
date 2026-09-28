@@ -1994,3 +1994,10 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
     påståendet att "varningarna formuleras som åtgärd", som inte stämmer mot `texts.ts`.
   - **Struket:** fyra påståenden utan källa.
   - **SYSTEM.md** har fått sin Skyltfondsrad uppdaterad.
+- 28/9 (Claude, Bengts fråga): Ansökan jämförd med Skyltfondens 32 beviljade projekt våren 2026 (FINANSIERING.md).
+  - Beloppen: summan är 18,7 Mkr och medianen 594 050 kr. 283 000 kr är sjätte lägst.
+  - Sökandena: ingen privatperson bland de beviljade.
+  - Teman: vinterhalka finns i fyra projekt, men bara för gång och cykel. De närmaste är #29 (väglagsapp), #19
+    (fordonsdatapilot), #4 (ISA:s effekt på fart) och #13 (prototyp till praktik).
+  - Förslag till Bengt: förening i stället för privatperson, citera #19 och #29, lyft kommunal vinterdrift och väg
+    granskningen en gång till.
