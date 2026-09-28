@@ -5254,7 +5254,53 @@ procent per timme.
 **Kortet står kvar öppet.** Verify-raden kräver båda plattformarna; **Android-mätningen** återstår och körs på
 testtelefonen (DECISIONS #271/#272), utan köp.
 
-## #383 (27/9 2026) Kuvösens tystnad: sex dygn är kanalens takt, inte ett nej — och offentlighetsprincipen är en svagare nyckel för ett UTTAG än för en HANDLING
+## #383 (27/9 2026) Kuvösens norska sond: DATEX bär ingen historik — och fyra 200-svar var fällan
+
+**Bengts ja 27/9** till att bygga sonden som ett Actions-jobb. Körning **36344233168**, grön, en minut.
+
+### Vad som är bevisat
+
+**Vegvesens DATEX-server — den vi redan har konto till — bär ingen historik.** Sonden frågade efter fyra rimliga
+ändpunkter: `pulldeltadata`, `pullhistoricdata`, `pullhistorydata`, `pullarchivedata`. **Alla fyra svarade HTTP 200.**
+
+Läser man bara statuskoden ser det ut som fyra historiska ingångar. Läser man kroppen bär var och en
+`<ns17:pullSnapshotDataOutput>` — servern struntar i sökvägen och lämnar samma ögonblicksbild varje gång. Kontrollen
+(`pullsnapshotdata`) bekräftade att kontot fungerar, så det är inte ett behörighetsfel.
+
+**Fyra 200 är här sämre än ett 404**, för de ljuger om sin form. Ett 404 hade avslutat frågan på en sekund.
+
+### Vad som INTE är bevisat — och där jag antog fel
+
+**MET Frost står oprövad.** Spår B var byggt på antagandet att elementlistan är öppen referensdata, så att den billiga
+frågan — *har MET alls ett yttemperatur-element?* — kunde ställas före kontofrågan. `elements/v0.jsonld` gav **401**.
+Antagandet var fel, och spårets hela poäng föll. (`observations` utan nyckel gav 400, inte 401: servern validerar
+frågan före behörigheten.)
+
+Kriteriets punkt 1 — yttemperatur per station — står alltså oprövad för Norge. **Norge är varken en öppen eller en
+stängd dörr; den är obesvarad.**
+
+**Spår C:** `api.vegvesen.no` och `datainn.vegvesen.no` gick inte att slå upp (fetch failed) — kandidatnamnen var fel,
+inte idén. `www.vegvesen.no/trafikkdata/api/` gav 404; trafikproxyn i kort #42 steg 4b behöver rätt sökväg.
+
+### Instrumentet gick på samma fälla som det skulle avslöja
+
+Sonden räknade `r.ok` som "svar" och redovisade **6 svar lästa** med grönt jobb — fast fyra av dem var samma snapshot i
+förklädnad och inget av dem svarade på frågan. Hade jag läst sammanfattningsraden i stället för kroppen hade jag
+rapporterat att Norge bär historik. Läxan är införd i CLAUDE.md: **en sond som provar kandidat-ändpunkter räknar på
+svarets rotelement eller en annan innehållsmarkör, aldrig på statuskoden — och skriver ut markören den räknade på.**
+
+### Nästa steg, litet och gratis
+
+Registrera ett client-id på frost.met.no (självbetjäning, kostnadsfritt för icke-kommersiellt bruk), lägg det i GitHub
+Secrets som `FROST_CLIENT_ID`, tryck knappen igen. Då svarar spår B på riktigt. Kostnad: en minut Actions.
+
+**Vad det betyder för kuvösen:** en av två kända sidodörrar är nu definitivt stängd. Trafikverkets tystnad väger
+därmed tyngre, och hållbarhetstiden (omkring 1 december, DECISIONS-raden i kort #232) står oförändrad.
+## #384 (27/9 2026) Kuvösens tystnad: sex dygn är kanalens takt, inte ett nej — och offentlighetsprincipen är en svagare nyckel för ett UTTAG än för en HANDLING
+
+> ⚠️ **Överspelat, se #388.** Tillägget längre ned säger att Bengt menade formuläret från 21/9 och att steg 3 inte
+> var taget. Det var min tolkning, inte hans svar: samma kväll gav han en parallell session beskedet att begäran om
+> allmänna handlingar är inskickad och obesvarad (PR #631). Trappan och all eskalering är stängda på Bengts order 28/9.
 
 **Bengts fråga 27/9:** *"jag har ännu inte fått svar från trafikverket på begäran om allmänna handlingar. Vad betyder det för kuvösen"*
 
@@ -5318,7 +5364,10 @@ alls — raden ligger kvar. **Läxa:** när en fråga innehåller ett ord som in
 ordval, inte ett nytt sakförhållande. Fråga vad som menas i en mening, svara på det som faktiskt frågades, och gör inte
 ordvalet till huvudsaken.
 
-## #384 (27/9 2026) Kostnaden för kuvösens uttag: tre avgiftsregimer, och det är VÅR formulering som avgör vilken vi hamnar i
+## #385 (27/9 2026) Kostnaden för kuvösens uttag: tre avgiftsregimer, och det är VÅR formulering som avgör vilken vi hamnar i
+
+> ℹ️ **Texterna på kort #232 skickas inte (#388).** Analysen står kvar som referens för den dag Trafikverket beslutar —
+> ett beslut om utlämnande kan komma med en avgift, och då gäller regimerna och grinden nedan.
 
 **Bengts fråga 27/9:** *"hur kommer kostnaden för uttaget att beräknas om man får det på fil"*
 
@@ -5341,7 +5390,7 @@ skiljer sig med flera tiopotenser.
 
 **Slutsatsen som styr texten (kort #232):** ju mer begäran liknar *skicka filen ni redan har* desto närmare regim 1 eller 3 —
 i praktiken noll. Ju mer den liknar *bygg ett dataset åt oss över fem månader* desto närmare regim 2 — timpris, och samma
-rutinbetonade-åtgärder-test som avgör om sammanställningen alls är en allmän handling (#383). **Därför frågar steg 3 efter
+rutinbetonade-åtgärder-test som avgör om sammanställningen alls är en allmän handling (#384). **Därför frågar steg 3 efter
 befintliga uttag och exportfiler FÖRST**, och erbjuder rutturvalet som andrahandsalternativ.
 
 **Regim 3 är värd att nämna i brevet, men inte att bråka om.** Meteorologiska data är en av EU:s sex kategorier av särskilt
@@ -5370,7 +5419,7 @@ och först vårt ja är beställningen. **Skärpning av texten på kort #232:** 
 utan också **höra av sig innan någon avgift debiteras**, så att varje kostnad blir ett anbud vi kan ta tillbaka till Axel i
 stället för en post på en faktura. Det är hela skyddet: inte att begäran är gratis, utan att inget dyrt kan ske utan ett ja.
 
-## #385 (27/9 2026) Androidvakten gick 11 h 39 m på en baddag: självstoppet kan i praktiken bara fira för en parkerad bil (kort #262)
+## #386 (27/9 2026) Androidvakten gick 11 h 39 m på en baddag: självstoppet kan i praktiken bara fira för en parkerad bil (kort #262)
 
 **Fältrapport 27/9 från en Androidtestare**, två skärmbilder ur *Batterianvändning för app*. Testarens egna ord: *"Den suger
 mycke batteri appen undrade varför jag bara hade 42 % när vi vart o badat + stugan knappt använt telefonen"* och, efter en
@@ -5402,7 +5451,7 @@ dessutom låg, vilket är ett självständigt kvitto på att omladdningsloopen (
 **Läxan i familjen "fanns ≠ fungerade".** `IdleStop` är byggd, enhetstestad och bevisad på JVM:en (#248) — och ändå kan den
 aldrig fira i det vanligaste verkliga fallet. Testet matade den med de hastigheter vi TÄNKTE oss (bil som står still), inte med
 de hastigheter en buren telefon faktiskt rapporterar. **Ett prov som bara innehåller det vi föreställde oss bevisar vår
-föreställning, inte funktionen.** Femte gången i repot att något byggt och grönt inte gör det man tror (jfr #193/#196, #383).
+föreställning, inte funktionen.** Femte gången i repot att något byggt och grönt inte gör det man tror (jfr #193/#196, #384).
 
 **Tillhörande lucka:** den pågående notisen har **ingen stoppknapp**. Bara *efter resan*-notisen bär knappar. För att stoppa
 vakten måste appen öppnas — halva skälet att den blev kvar på.
@@ -5423,12 +5472,12 @@ ska genom värdevakten. **Frågan går till Bengt och Axel i bedömningen §4.2.
 **Frågor till testaren, via Bengt:** byggnummer? Var *starta själv* påslagen? Är det Samsung-telefonen? Svaren avgör om (2)
 eller (3) är rätt fix — är autostart av, är AR-spåret inte ens inkopplat och (2) är hela åtgärden.
 
-## #386 (27/9 2026) Batteripaketet till Axel — och fyndet som gör hela fältrapporten otolkbar: "Version 0.3.1" betyder ingenting
+## #387 (27/9 2026) Batteripaketet till Axel — och fyndet som gör hela fältrapporten otolkbar: "Version 0.3.1" betyder ingenting
 
 **Bengts order 27/9:** *"det är ingen Samsung. Föreslå ett åtgärdspaket för detta och ovanstående. Gör ingenting själv jag vill
 att Axel gör det."* Paketet ligger som kort **#262** i *Axels nästa steg*, sju åtgärder Å0–Å6. Ingen appkod har rörts.
 
-**Två nya skärmbilder gav fyra fynd som #385 inte kunde se.**
+**Två nya skärmbilder gav fyra fynd som #386 inte kunde se.**
 
 **1. "Version 0.3.1" på Om-sidan säger ingenting om vilken kod testaren kör — och det är paketets viktigaste fynd.**
 Versionsnumret stod stilla på 0.3.1 / versionCode 4 **från 31/8 till 26/9** medan koden följde med (konstaterat 20/9,
@@ -5465,3 +5514,24 @@ hade citerats som en mätning nästa gång någon läser tråden — samma fäll
 skriven. Å2 och Å3 bär trösklar och går därför till Bengt + Axel i bedömningen §4.2 före bygge, och genom
 `scripts/vardevakten.ts` innan de bär ett beteende. Båda är säkerhetsnära åt samma håll: **en vakt som tystnar i en kö är
 silence när det gällde.**
+
+## #388 (28/9 2026) Kuvösen: Bengt avvaktar Trafikverkets beslut om utlämnande — inget annat. All eskalering stängd
+
+**Bengts order 28/9:** *"allt om klaga hos trafikverket etc kan du stänga. Jag undrade bara hur långt kuvösen kommit. Jag
+avvaktar beslut om utlämnande från Trafikverket inget annat."*
+
+**Stängt:** reservformuläret *Frågor till Trafikverket*, kravet på ett skriftligt avslagsbeslut (PR #631), överklagande,
+de färdiga texterna på kort #232 (#384/#385) och frågan om hur uttaget ska kapas. Inget av det skickas.
+
+**Läget, som det nu står:** begäran om utlämnande av allmän handling är inskickad och obesvarad (Bengts besked 27/9, #631).
+Kortet väntar på Trafikverkets beslut och på ingenting annat. **Öppen väntan är valet** — PR #631:s förslag om ett
+beslutsdatum är därmed besvarat. Hållbarhetstiden (omkring 1 december) står kvar som fakta, inte som utlösare.
+
+**Kvar som fakta, inte som åtgärder:** vid ett ja är elektronisk form ingen rättighet och ett uttag som kräver programmering
+ingen rutinbetonad åtgärd (#631, #385); kostnadsregimerna i #385 gäller om beslutet kommer med en avgift, och ingen
+kostnad accepteras utan Axels godkännande. Norge: DATEX bär ingen historik (#383); MET Frost är oprövad och inget prov är
+beställt.
+
+**Läxa, min egen:** 27/9 skrev jag in *"besvarad: förfrågan 21/9 är den som avses"* som om det var Bengts svar. Han hade
+inte sagt det; han hade frågat något annat, och jag läste frågan som ett svar. Samma kväll sa han motsatsen till en
+parallell session. En tolkning av vad någon menar skrivs som en fråga i §4.2, aldrig som ett ✅.

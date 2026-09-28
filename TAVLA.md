@@ -26,7 +26,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 ### AXELS NÄSTA STEG — i den här ordningen (uppdaterad 8/9 kväll)
 
 - [ ] 🔋 **#262 BATTERIPAKETET — SJU ÅTGÄRDER EFTER FÄLTRAPPORTEN 27/9** (Bengts beställning 27/9: *"föreslå ett åtgärdspaket
-  … jag vill att Axel gör det"*. DECISIONS #385, #386). 🚨 **Släppblockerare** — batteribudgeten är ett krav i CLAUDE.md.
+  … jag vill att Axel gör det"*. DECISIONS #386, #387). 🚨 **Släppblockerare** — batteribudgeten är ett krav i CLAUDE.md.
   📱 **Vad testaren rapporterade:** 42 % efter en baddag, telefonen knappt använd. 27/9: **11 h 39 m** bakgrund, **0 m** skärm,
   GPS **6 h 40 m**, 924 väckningar, väckningslås 4 h 16 m, CPU **2 h 21 m**. 26/9: **21,6 %** av dygnets förbrukning.
   Skärmbilderna: **Autostart PÅ**, **fartkamera 2,0 km bort**, **"Version 0.3.1"**, och telefonen är **inte en Samsung**.
@@ -229,52 +229,52 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   historik är 24 h, och FMI:s vägväderfrågor finns inte längre (151 lagrade frågor listade, ingen för väg) · Norge: Vegvesenets
   flöde är realtid; MET:s Frost-arkiv kräver konto och är inte kontrollerat. **Vägen är alltså en förfrågan till Trafikverket.**
   ✅ **STEG 1 GJORT 21/9 — Bengt har skickat förfrågan via Datautbytesportalens kontaktformulär** (hans besked i chatten).
-  ⏳ Väntar svar. **Inget svar senast 28/9 ⇒ reserv 1** (formuläret *Frågor till Trafikverket*), därefter reserv 2. Det
-  tidigare Datex II-ärendet gick samma väg 17–19/9 och är fortfarande obesvarat — räkna med att det tar tid.
-  ⏱️ **LÄGET 27/9 (Bengts fråga, DECISIONS #383): sex dygns tystnad — trappan utlöses I MORGON.** Fyra ärenden ligger hos
-  Trafikverket, alla obesvarade: fordonsdata 17/9 (tio dygn) · detta 21/9 (sex) · byvindgivarna 22/9 (fem) · ytgivarna 22/9
-  (fem). Sex dygn är alltså kanalens takt, **inte ett nej** — men fyra av fyra betyder att vi saknar kvitto på att något nått
-  en människa. ✅ **Utrett 27/9:** det är förfrågan 21/9 Bengt menar när han säger *begäran om allmänna handlingar* — **steg 3 är
-  alltså inte taget**, och trappan står kvar som raden säger.
-  ⚖️ **Vad rättigheten räcker till.** Offentlighetsprincipen gäller en handling som FINNS. Ett femmånadersuttag ur en databas
-  är en sammanställning och är allmän handling bara om den kan tas fram med *rutinbetonade åtgärder* — lätt att avvisa. Därför:
-  fråga efter **befintliga uttag och exportfiler**, och kapa volymen **i rummet, aldrig i tiden** (blindningen kräver hela
-  vintern). Rätt kapning är **stationerna längs de 20 skuggrutterna** — de går Helsingborg–Kiruna, så ett läns-urval skär av
-  provet. Antalet stationer längs rutterna mäts ur arkivet innan texten skickas.
-  📵 **Inte läst på källan:** containerns nätpolicy blockerar trafikverket.se och riksdagen.se. E-tjänstens namn och adress
-  (*Begäran om utlämnande av allmän handling*, trafikverket.se/e-tjanster/begaran-om-utlamnande-av-allman-handling/) kommer ur
-  en SÖKTRÄFF. Samma sökning påstod att historiken finns på Lastkajen — vilket #292 motbevisat på sidan. **Bengt öppnar sidan
-  innan något skickas** (läxan från #294).
-  ✉️ **Steg 2 — formuläret *Frågor till Trafikverket*** (etjanster.trafikverket.se/kundfragor-trafikverket), klart att klistra in:
-  > Hej! Den 21 september skickade jag en förfrågan via Datautbytesportalens kontaktformulär (ärendetyp API Öppna Data) om ett
-  > historiskt uttag ur VViS. Jag har inte fått svar och vet inte om ärendet nått rätt funktion.
-  > Vi utvecklar Halkvakt, en svensk app som varnar bilförare för halka och bygger på era öppna data. Innan våra varningsregler
-  > når förare vill vi pröva dem mot en hel gången vinter. Det vi saknar är bara historiken: VViS-observationer 1 november
-  > 2024–31 mars 2025 — yttemperatur, lufttemperatur, daggpunkt, relativ fuktighet, nederbördstyp och -mängd, vind, i den
-  > upplösning ni lagrar. Samma data är öppen (CC0) i realtid; API:t räcker sju dygn bakåt.
-  > Är volymen ett hinder räcker stationerna längs ett antal vägstråk (E4 Helsingborg–Luleå, E6 Göteborg–Strömstad, Rv40, E10,
-  > E14) för samma ändamål.
-  > Tre frågor: (1) vem hos er hanterar sådana uttag? (2) finns färdiga uttag eller exportfiler ur VViS-arkivet som kan lämnas
-  > som de är? (3) vad skulle ett uttag kosta — jag vill veta kostnaden innan något arbete påbörjas.
-  > Med vänlig hälsning, Bengt Lagerlöf, Halkvakt
-  ⚖️ **Steg 3 — e-tjänsten *Begäran om utlämnande av allmän handling***, klart att klistra in:
-  > Jag begär att få ta del av följande allmänna handlingar hos Trafikverket:
-  > 1. VViS-observationer (vägväderstationernas mätvärden) för perioden 1 november 2024–31 mars 2025: yttemperatur,
-  >    lufttemperatur, daggpunkt, relativ fuktighet, nederbördstyp och -mängd samt vind, i den upplösning de lagras.
-  > 2. I andra hand, om volymen är ett hinder: samma uppgifter för stationerna längs vägstråken E4 Helsingborg–Luleå, E6
-  >    Göteborg–Strömstad, Rv40, E10 och E14, för samma period.
-  > 3. Oavsett punkt 1 och 2: befintliga uttag, exportfiler eller leveranser som redan gjorts ur VViS-arkivet för den perioden,
-  >    samt dokumentation över hur arkivet lagras och vilka format det kan lämnas i.
-  > Jag tar gärna emot handlingarna elektroniskt, och i valfritt format (CSV går utmärkt).
-  > Om ni tar ut en avgift ber jag er ange beloppet och den bestämmelse ni tillämpar, och höra av er innan någon avgift
-  > debiteras — jag vill kunna ta ställning först. Jag noterar att
-  > samma data redan tillgängliggörs avgiftsfritt som öppna data (CC0) i realtid, och att meteorologiska observationer är en av
-  > EU:s kategorier av särskilt värdefulla datamängder, som ska tillhandahållas avgiftsfritt.
-  > Bedömer ni att en sammanställning enligt punkt 1 eller 2 inte kan tas fram med rutinbetonade åtgärder ber jag er ange det,
-  > och i så fall lämna ut det som finns enligt punkt 3. Avslås begäran helt eller delvis ber jag om ett skriftligt beslut med
-  > besvärshänvisning. Ange gärna kostnaden innan arbete påbörjas.
-  > Bengt Lagerlöf, Halkvakt
-  💰 **KOSTNADEN OM VI FÅR DET PÅ FIL (Bengts fråga 27/9, DECISIONS #384) — tre regimer, och vår formulering avgör vilken.**
+  ⏳ **BEGÄRAN OM UTLÄMNANDE INSKICKAD OCH OBESVARAD (Bengt 27/9). BENGT 28/9: *"Jag avvaktar beslut om utlämnande från
+  Trafikverket inget annat."*** Allt om att driva ärendet — reservformulär, krav på skriftligt avslagsbeslut, överklagande —
+  är **stängt** på hans order (DECISIONS #388). Kortet väntar på Trafikverkets beslut och på ingenting annat. Det tidigare
+  Datex II-ärendet är obesvarat sedan 17/9; tystnad är mönstret, inte undantaget.
+  ⚠️ **TVÅ RISKER SOM INTE STOD PÅ KORTET, och de gäller även om svaret blir ja:**
+  · **Elektronisk form är inte en rättighet.** Rätten att ta del av en allmän handling omfattar att läsa den och att få
+    papperskopia; att få ut en databas i filform är något myndigheten *får* göra, inte något den måste. För ett vinteruttag
+    är det hela skillnaden mellan användbart och oanvändbart. (Kontrollera formuleringen innan den används skarpt.)
+  · **Det kan vara mer än rutin.** En sammanställning räknas som allmän handling bara om den kan tas fram med
+    rutinbetonade åtgärder. Kräver ett VViS-uttag programmering kan de avslå på den grunden.
+  ⏳ **HÅLLBARHETSTID (fynd 27/9):** kuvösens hela värde är att ge vintersvar FÖRE vintern. Frosten kommer nov–dec och
+  dom 1 går i januari på riktig data. Varje vecka av tystnad äter värdet, och omkring **1 december** slutar kuvösen vara
+  en spak och blir en historisk kuriositet. ~~Sätt ett beslutsdatum~~ **Bengt 28/9: öppen väntan är valet** (#388).
+  🔨 **SONDEN BYGGD 27/9 (Bengts ja):** `scripts/no-historik-rekognosering.ts` + knappen
+  `no-historik-rekognosering` — ren läsning, tre spår, **kriteriet utskrivet överst** så svaret går att läsa utan
+  tolkning: yttemperatur per station · passerad vinter · minst timupplösning · konto vi har eller kan få gratis.
+  Faller något av de fyra är svaret nej, hur mycket data källan än har. Spår A frågar DATEX-servern vi har nyckel till
+  (kontrollen först — faller den är det kontot, inte historiken), spår B frågar MET Frost om den **alls har ett
+  yttemperatur-element** innan kontofrågan ställs, spår C prövar Vegvesens övriga ytor. Jobbet blir rött bara om ALLA
+  spår är stumma. Lokalt prov 27/9: alla spår stumma med `Host not in allowlist` — sonden säger själv att det är
+  behållaren och inte Norge, vilket var meningen.
+  📏 **SONDEN KÖRD 27/9 19:24 (körning 36344233168, grön) — EN DÖRR STÄNGD, EN FORTFARANDE OPRÖVAD.**
+  ❌ **DATEX bär ingen historik. Bevisat — och beviset är en fälla:** `pulldeltadata`, `pullhistoricdata`,
+  `pullhistorydata` och `pullarchivedata` svarade alla **HTTP 200**. Läser man bara statuskoden ser det ut som fyra
+  historiska ingångar. Läser man KROPPEN bär var och en `<ns17:pullSnapshotDataOutput>` — **servern struntar i sökvägen
+  och lämnar samma ögonblicksbild varje gång.** Fyra 200 som är sämre än ett 404, eftersom de ljuger om sin form.
+  Samma familj som `shadow_log.suppressed`: att något svarar bevisar inte att det bär något.
+  ⚠️ **SONDENS EGEN RÄKNING GICK PÅ SAMMA FÄLLA.** Den räknade `r.ok` som "svar" och redovisade *6 svar lästa* med grönt
+  jobb — fast fyra av dem var samma snapshot i förklädnad och ingen av dem svarade på frågan. Instrumentet behöver läsa
+  rotelementet, inte statuskoden, innan det räknar. Fört som läxa i CLAUDE.md.
+  ❓ **MET Frost: FORTFARANDE OPRÖVAD, och mitt antagande var fel.** Jag trodde elementlistan var öppen referensdata —
+  `elements/v0.jsonld` gav **401**. Alltså går det inte ens att fråga *om MET har ett yttemperatur-element* utan konto,
+  och spår B:s hela poäng (ställ den billiga frågan först) föll. `observations` utan nyckel gav **400**, inte 401 —
+  servern validerar frågan före behörigheten. Kriteriet står alltså oprövat på punkt 1.
+  🔑 **Möjligt nästa steg — INTE beställt** (Bengt 28/9: avvaktar Trafikverket, inget annat): registrera ett client-id på frost.met.no (självbetjäning, kostnadsfritt för
+  icke-kommersiellt bruk), lägg det i GitHub Secrets som `FROST_CLIENT_ID` och tryck knappen igen. Då svarar spår B på
+  riktigt. Utan det är Norge varken en öppen eller en stängd dörr — den är obesvarad.
+  ℹ️ **Spår C:** `api.vegvesen.no` och `datainn.vegvesen.no` gick inte att slå upp alls (fetch failed) — mina
+  kandidatnamn var fel, inte idén. `www.vegvesen.no/trafikkdata/api/` gav 404; trafikproxyn för kort #42 steg 4b behöver
+  rätt sökväg, inte en annan värd.
+  🚪 **OPRÖVAD DÖRR: Norge.** Kortet säger att MET:s Frost-arkiv "kräver konto och är inte kontrollerat" — och vi har
+  redan ett **Vegvesen-konto** (`VEGVESEN_USER/PASS`, DATEX i realtid). Finns norsk vägstationshistorik går kuvösen att
+  köra på en norsk vinter: samma fysik, och vi ingesterar Norge redan. **Jag kunde inte pröva det härifrån** — den här
+  behållarens utgående trafik blockeras mot frost.met.no, SMHI och Vegvesen (403 i proxyn). Det är min behållares gräns,
+  inte källornas: SMHI metobs bevisades nåbart 21/9. Provet måste alltså köras i ett Actions-jobb eller av dig.
+  💰 **OM BESLUTET KOMMER MED EN AVGIFT (Bengts frågor 27/9, DECISIONS #385) — tre regimer.**
   **(1) Kopia av allmän handling** (avgiftsförordningen 15–16 §§): sidtaxa — de nio första sidorna fria, tio sidor 50 kr, därefter
   2 kr per sida. Taxan är skriven för PAPPER; en CSV har inga sidor, så den går inte att räkna på en fil. Viktigast: **de får inte
   ta betalt för sin egen handläggning eller sekretessprövning** — bara för kopior. Och det finns **ingen skyldighet att lämna ut i
@@ -283,14 +283,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   uppstå**, och det är samma test som avgör om sammanställningen alls är en allmän handling. **(3) Öppna data / värdefulla
   datamängder** (lagen 2022:818, EU 2019/1024 + 2023/138): meteorologiska data är en av EU:s kategorier, och en särskilt värdefull
   datamängd ska tillhandahållas **avgiftsfritt**, maskinläsbart, gärna som bulknedladdning. Undantagsfönstret löpte ut 9/2 2025.
-  ⚖️ **Följden för texten:** ju mer begäran liknar *skicka filen ni redan har* desto närmare regim 1/3 (≈ noll), ju mer den liknar
-  *bygg ett dataset åt oss* desto närmare regim 2 (timpris). Därför frågar steg 3 efter befintliga uttag FÖRST.
   🚧 **Vår egen regel:** gratisnivån är ett villkor (CLAUDE.md) — **ingen kostnad accepteras i ett svar**, den tas tillbaka hit och
-  blir en DECISIONS-post godkänd av Axel. Därför ber båda texterna om beloppet innan arbete påbörjas.
+  blir en DECISIONS-post godkänd av Axel.
   📵 **Inte läst på källan:** nätpolicyn blockerar trafikverket.se, riksdagen.se, lagen.nu, forum.esv.se och jpinfonet.se. Talen
   50 kr/2 kr och avgiftsfriheten för värdefulla datamängder är regelverket som jag känner det plus sökträffar — **kontrollera dem
-  innan de citeras MOT Trafikverket**. Texten ovan behöver dem inte: den frågar efter beloppet och grunden i stället för att påstå.
-  🧾 **ÄR EN BEGÄRAN EN BESTÄLLNING? (Bengts följdfråga 27/9, DECISIONS #384 tillägg.)** Nej — men gränsen går inte där jag först
+  innan de citeras MOT Trafikverket**.
+  🧾 **ÄR EN BEGÄRAN EN BESTÄLLNING? (Bengts följdfråga 27/9, DECISIONS #385 tillägg.)** Nej — men gränsen går inte där jag först
   skrev. En begäran utlöser en PRÖVNING, inte ett avtal: myndigheten lämnar ut, eller avslår. **Ett avslag kan aldrig faktureras**,
   och handläggningen inte heller. MEN: sidtaxan i regim 1 följer av förordningen, inte av vårt samtycke — begär man en kopia av en
   handling på 500 sidor uppstår avgiften utan att någon beställt något. **Så i regim 1 ÄR begäran i praktiken en beställning av

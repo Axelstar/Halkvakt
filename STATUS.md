@@ -1857,7 +1857,7 @@ parallellsessionen — #161 (a) bevisat 18/9 (13 källor i state sedan 16/9), (b
 12 100 i takt med kylan. HEALTHY.
 Byggt: inget detta varv. Nästa: ingen bokad avläsning — sessionen väntar på Bengt.
 
-## 2026-09-27 — Kuvösens tystnad besvarad, trappan förberedd (DECISIONS #383)
+## 2026-09-27 — Kuvösens tystnad besvarad, trappan förberedd (DECISIONS #384 — överspelat 28/9, se #388)
 Bengts fråga: inget svar från Trafikverket — vad betyder det för kuvösen? SVAR: ännu ingenting om utfallet. Fyra
 TRV-ärenden är obesvarade (fordonsdata 17/9 tio dygn · kuvösens uttag 21/9 sex · byvindgivarna 22/9 fem · ytgivarna
 22/9 fem); sex dygn är kanalens takt, inte ett nej. Men fyra av fyra betyder att vi saknar kvitto på att något nått en
@@ -1874,7 +1874,7 @@ INTE LÄST PÅ KÄLLAN: nätpolicyn blockerar trafikverket.se och riksdagen.se; 
 och samma sökning upprepade Lastkajen-påståendet som #292 motbevisat. Bengt öppnar sidan före utskick (#294).
 Byggt: inget detta varv. Nästa: Bengts svar på §4.2, och trappans steg 2 eller 3 den 28/9.
 
-## 2026-09-27 — Fältrapport: Androidvakten gick 11 h 39 m på en baddag (DECISIONS #385, kort #262)
+## 2026-09-27 — Fältrapport: Androidvakten gick 11 h 39 m på en baddag (DECISIONS #386, kort #262)
 En Androidtestare låg på 42 % efter en dag med bad och stuga, telefonen knappt använd. Batterianvändning för app: 11 h 39 m
 bakgrund, 0 m skärm, GPS 6 h 40 m, 924 väckningar, väckningslås 4 h 16 m, CPU 2 h 21 m; gårdagen 21,6 % av förbrukningen.
 RÄKNINGEN: 21,6 % är en andel, inte procentenheter — antas dygnet ha dragit ~80 pe blir det ~1,5 %/h, alltså INOM budgeten.
@@ -1890,7 +1890,7 @@ nearestHazardM sveper varje koordinat i varje fara vid varje fix.
 Byggt: inget detta varv — (2) är säkerhetsnära och ligger som beslut i §4.2. Nästa: stoppknappen i notisen (ingen avvägning),
 och svar från testaren om byggnummer, autostart och telefonmodell.
 
-## 2026-09-27 — Batteripaketet till Axel: sju åtgärder, och fältrapporten visade sig otolkbar (DECISIONS #386, kort #262)
+## 2026-09-27 — Batteripaketet till Axel: sju åtgärder, och fältrapporten visade sig otolkbar (DECISIONS #387, kort #262)
 Bengts order: föreslå ett paket, gör inget själv, Axel bygger. Kort #262 flyttat till Axels nästa steg med Å0–Å6.
 STÖRSTA FYNDET: testarens "Version 0.3.1" säger ingenting om vilken kod han kör — numret stod stilla på 0.3.1/versionCode 4
 från 31/8 till 26/9 medan koden följde med (#377). Vi kan alltså inte veta om han har självstoppet (#248) eller
@@ -1904,3 +1904,15 @@ laddade strax innan. Skrivet hit just för att det annars citeras som en mätnin
 Å2 (stillaståendetier) och Å3 (självstoppet) bär trösklar och ligger som beslut i bedömningen §4.2, före kod och genom
 värdevakten. Båda säkerhetsnära åt samma håll: en vakt som tystnar i en kö är silence när det gällde.
 Byggt: inget, med flit. Nästa: Axels beslut på Å2/Å3 och hans bygge av Å0, Å1, Å4, Å5.
+
+## 2026-09-28 — Kuvösen: Bengt avvaktar Trafikverkets beslut, all eskalering stängd; grenen ihopslagen med main (DECISIONS #388)
+Bengts order: "allt om klaga hos trafikverket etc kan du stänga … Jag avvaktar beslut om utlämnande från Trafikverket inget
+annat." Stängt: reservformuläret, kravet på avslagsbeslut (PR #631), överklagande, de färdiga texterna på kort #232 och
+frågan om kapning. Öppen väntan är valet.
+RÄTTAT: min gren sa 27/9 att Bengt menat formuläret från 21/9 och att steg 3 inte var taget, bokfört som ✅ besvarat. Det var
+min tolkning; samma kväll gav han en parallell session beskedet att begäran om utlämnande är inskickad (PR #631). Main hade
+rätt. Min #384 bär nu en banderoll till #388.
+IHOPSLAGNING: main hade fått PR #631–#633 (bl.a. DECISIONS #383, den norska sonden) medan grenen bar egna #383–#386. Mina
+fyra omnumrerade till #384–#387 med alla korsreferenser, i TAVLA, bedömningen och STATUS. Tre konflikter lösta: main:s fakta
+och sondresultat behållna, Bengts order ovanpå, mina felaktiga rader strukna. Öppna kort 35 = main:s 34 + #262.
+Byggt: inget. Nästa: inget på kuvösen förrän Trafikverket beslutar.
