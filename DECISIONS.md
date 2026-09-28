@@ -5535,3 +5535,25 @@ beställt.
 **Läxa, min egen:** 27/9 skrev jag in *"besvarad: förfrågan 21/9 är den som avses"* som om det var Bengts svar. Han hade
 inte sagt det; han hade frågat något annat, och jag läste frågan som ett svar. Samma kväll sa han motsatsen till en
 parallell session. En tolkning av vad någon menar skrivs som en fråga i §4.2, aldrig som ett ✅.
+
+## #389 (28/9 2026) Kort #233 stängt: inget mer ur Niras produktsida
+
+**Bengts order 28/9:** *"du kan ta fram och avsluta kort 233. Vi kommer inte att göra mer där."*
+
+**Vad kortet var** (#296, 21/9): Niras produktsida läst mot repot. Tre fynd — (1) *före resan*, en ruttkoll för en sparad
+sträcka, saknas helt; (2) *snöflingan som jämförelse*, alltså hur ofta stationsregeln fyrar när bilens egen varning vid
+omkring +3 °C redan lyser, saknas helt; (3) *köslut*, som Nira räknar till kärnan, är inte missat utan parkerat i #15.
+
+**Vad som var gjort:** (2) mättes 21/9 (#297): stationsregeln fyrade 4 episoder på arkivet 24/8–21/9, **alla fyra givarfel**,
+och de 7 äkta frostepisoderna låg i Norrland med luft ≤ +0,4 °C, där snöflingan lyste i samtliga. För tidigt för ett svar
+— men fyndet om givarfelen blev kort #234 och den långsamma vakten, som är i drift. Det var kortets egentliga avkastning.
+
+**Vad som stängs med kortet:**
+- **Utredningen av *före resan*-vyn**, och med den blixthalke-prognosen ur #16 som flyttades dit 22/9 (#309). Ä9 i vårlistan
+  hade vyn som ett av två alternativ efter S-B:s och NT:s domar; kvar är beslutet om en förstärkare.
+- **Omkörningen av snöflingemätningen vid första frostmånaden.** Den stod i §0b och var en av hög C:s tolv rader; hög C
+  har nu elva. Skriptet `scripts/matningar/snoflingan-2026-09-21.sql` står kvar i repot och kan köras om utan ett kort.
+
+**Vad som inte rörs:** köslut står kvar i #15 som uppdatering 1 efter release.
+
+Kortet flyttat ordagrant till TAVLA-ARKIV.md med en stängningsrad; en rad i 🟢 KLART. Tavlan 35 → 34.
