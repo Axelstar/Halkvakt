@@ -5369,3 +5369,56 @@ sidfot. Eget kort; inget ja begärt ännu.
 Provet självt hade ett fel värt att notera: första försöket föll på **HTTP 415** — min POST saknade
 `Content-Type: application/json`. Det var mätinstrumentet, inte vakten, och det syntes direkt för att
 felkoden lästes i stället för att tolkas som ett nej.
+
+## #385 (28/9 2026) Källvaktens falska positiver — och rättelsen av min egen diagnos
+
+**Bengts ja 28/9** på kort #261. Två lagningar byggda samma kväll, med var sitt motprov.
+
+### Först: kortets egen premiss var fel, och det upptäcktes innan en rad kod skrevs
+
+Kortet sa att *"bedömningen läser hela sidan i stället för det nya stycket"*. Det stämde inte —
+`changes.push` skickar redan bara `nya.join(" ")`, alltså enbart de nya styckena. Diagnosen var gjord
+på en logg, inte på koden.
+
+Den riktiga mekanismen mättes i stället mot state-filens sparade texter (21/9 mot 28/9), som git
+råkade bevara åt oss:
+
+- **Styckena var för grova.** `nyText` delade bara på `.!?:`, och normaliserad HTML har få
+  meningsslut: rubrik, meny och cookiebanner blir EN körning. Längsta uppmätta stycke: **2 054 tecken**.
+- **Den falska röda, exakt:** ordet **"myndighet"** försvann ur polisens cookietext. Rubriken
+  *"API över polisens händelser"* satt i samma 152-teckens körning och följde därför med in i "det
+  nya". Domen föll sedan på ordet *api* — ur en rubrik som står på sidan permanent och därför aldrig
+  kan betyda en ändring.
+
+Ett ändrat ord någonstans i en körning republicerade alltså allt annat i den. Det är en
+granularitetsfråga, inte en fråga om vad som läses.
+
+### Lagning 1: `nyText` delar även på `|`, `·`, `•`
+
+Rubriken får ett eget stycke. Prövat mot den riktiga datan: samma ändring ger **0 nya stycken som
+innehåller ordet *api***. Larmet går fortfarande ut, nu som VET INTE — **bedömningen graderar, den
+tystar aldrig**.
+
+### Lagning 2: det breda ordet `observation` ströks ur metobs nyckelord
+
+28/9 dömdes *"Arkivdata-API för hydrologiska observationer fungerar igen"* 🔴 RÖR OSS på det ordet.
+Vi läser metobs, alltså meteorologiska.
+
+**Fyndet bakom fyndet:** ordet *hydrolog* stod **redan** som främmande ord på signalraden — någon hade
+förutsett precis det här. Men i graderingen rankar en träff över ett främmande ord, så det för breda
+`observation` tystade den kunskap som var rätt. Med ordet struket blir posten ⚪ **RÖR OSS INTE** med
+skälet utskrivet. De specifika orden (`metobs`, `meteorologiska observationer`, `parameter 16`,
+`molnmängd`, `latest-months`) står kvar, så en äkta metobs-post träffar som förut.
+
+### Motprov, ett per vakt
+
+Läxan 20/9 säger att en regel som vaktas av flera vakter muteras en gång per vakt:
+delningen backad ⇒ **test 27 faller**; `observation` återinfört ⇒ **test 29 faller**. Med båda
+lagningarna: 30/30 i nyhetsbedömningens svit, **199/199 i hela `npm test`**, beroendekartan komplett,
+kontraktsgrinden orörd.
+
+### Vad som INTE lagades
+
+Footerns rad *"Granskad # september"* ger fortfarande ett VET INTE-larm när granskningsdatumet ändras.
+Det är brus, inte en falsk röd, och det kräver ett sitespecifikt filter — sådana glider isär från det
+de filtrerar, så det byggs inte utan att någon ber om det.
