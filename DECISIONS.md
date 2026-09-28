@@ -5535,3 +5535,27 @@ beställt.
 **Läxa, min egen:** 27/9 skrev jag in *"besvarad: förfrågan 21/9 är den som avses"* som om det var Bengts svar. Han hade
 inte sagt det; han hade frågat något annat, och jag läste frågan som ett svar. Samma kväll sa han motsatsen till en
 parallell session. En tolkning av vad någon menar skrivs som en fråga i §4.2, aldrig som ett ✅.
+
+## #389 (28/9 2026) Kort #244 läst: rent i 134 av 134 skuggvarv — och Verify:ns mått rymmer bara sex timmar. Plus en fälla i DB-knappen (kort #263)
+
+**Bengts order 28/9:** *"kolla 244"*.
+
+**Verify:ns mått räcker inte.** Kortet säger *noll 546 på tre dygn* och den färdiga frågan räknar 546 i `net._http_response`.
+Läst 28/9 03:58Z: **0 av 501 svar var 546** — men den äldsta raden i tabellen är 27/9 21:59Z. pg_net rensar svaren efter ungefär
+sex timmar. Frågan kan alltså bara säga något om de senaste sex timmarna, oavsett vilket fönster den skriver i sin WHERE-sats. Att
+den svarar på ett fönster på tre dygn utan att klaga är samma fälla som statuskoden 200: ett svar är inte ett bevis om det man frågade.
+
+**Måttet som täcker hela fönstret:** skuggmotorn skriver en rad per rutt inne i varvet, och `shadow_log` gallras aldrig. Ett varv som
+dör halvvägs lämnar färre rader. Räknat för varje :02/:32 från 25/9 09:02 (första varvet efter lagningen 08:32) till 28/9 03:32:
+**134 varv, 383 rader — 115 varv med 3 rader, 19 med 2, inget med 0.** De 19 korta ligger exakt vart sjunde varv (10:32, 14:02,
+17:32 …): rotationen över 20 rutter med tre per varv (6 × 3 + 2 = 20). Inget varv saknas och inget dog halvvägs.
+
+**Därför stängs kortet inte i dag klockan fyra.** Tre dygn efter lagningen är 28/9 08:32Z; 66,5 av 72 timmar är lästa. En läsning
+efter 08:32Z täcker resten i båda måtten — pg_net-fönstret rymmer då just 02:32–08:32 — och stänger kortet om den är ren.
+
+**Fyndet på vägen — kort #263.** DB-knappen läser genom att köra en migration och bevisrader efteråt, och standardfilen är
+`sql/014_gallring.sql`. Men 014 schemalägger om `halkvakt-gallring` till `gallra_vader(7)`, medan jobbet sedan `sql/026` kör
+`gallra_arkiv(7)` med grannarna, gravstenarna och tidsvakten (`sql/031`). Ett tryck med standardvärdet stänger alltså tyst av
+den gallring som håller databasen under gratisnivåns tak. Kontrollerat 03:58Z: jobbet bär `SELECT gallra_arkiv(7)`, fällan har inte
+löst ut. Läsningarna i dag bar `sql/033_kamerafacit.sql`, som bara skapar om det som saknas. Åtgärden — ett läsläge i knappen — är
+kort #263 i *Claude — olåst*, inte byggd.

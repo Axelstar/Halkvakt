@@ -1931,3 +1931,13 @@ Byggt: inget. Nästa: avläsningen 3/10.
 Stängningen återställd med git revert: kortet tillbaka i Bengts sektion, KLART-raden och arkivkopian borta, bedömningens
 fyra rader (snöflingans omkörning i §0b, Ä7, Ä9, §4.2) som de var, DECISIONS #389 struken. En rad på kortet säger att det
 inte ska stängas utan nytt besked. Tavlan 35.
+
+## 2026-09-28 04:00Z — Kort #244 läst, stängs efter 08:32Z; ny fälla i DB-knappen (DECISIONS #389, kort #263)
+Bengt: "kolla 244". net._http_response: 0 av 501 svar var 546 — men tabellen bär bara sex timmar (äldsta 27/9 21:59Z), så
+Verify:ns mått kan inte bära tre dygn. I stället: rader i shadow_log per skuggvarv sedan lagningen — 134 av 134 varv skrev
+sina rader (115 × 3, 19 × 2; de korta vart sjunde varv = rotationen över 20 rutter). 66,5 av 72 timmar lästa; en läsning efter
+08:32Z stänger kortet.
+FÄLLA: DB-knappens standardfil sql/014 schemalägger om gallringen till gallra_vader(7) och skulle tyst stänga av gallringen av
+grannar, gravstenar och tidsvakt (jobbet kör gallra_arkiv(7) sedan 026). Inte utlöst — jobbet kontrollerat 03:58Z. Kort #263.
+Läsningarna bar sql/033 (bara IF NOT EXISTS).
+Byggt: inget. Nästa: läsningen efter 08:32Z.
