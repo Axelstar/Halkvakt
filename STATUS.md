@@ -2020,3 +2020,8 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   och beslutsloggen. Genomläsningen hittade ett fel i bilaga 6: kameraexemplet sa *"Gränsen är 80"*, men snapshotens
   kameror bär bara id, läge, bäring och väg (`publish/snapshot-core.ts`). Nu står *"Fartkamera om 500 meter."* och en rad
   om att gränsen inte sägs. Bilaga 6-PDF:en är ombyggd.
+- 28/9 (Claude, Bengts beställning): handlingarna för att bilda Föreningen Halkvakt är skrivna (DECISIONS #396, kort #265), i
+  `docs/forening/` och som redigerbara dokument i Drive-mappen *Föreningen Halkvakt, bildande*: stadgar, kallelse och dagordning,
+  protokollsmall, medlemsförteckning, arbetsblad för SKV 8400 och körschemat. Körschemat lägger mötet tis 13/10, efter
+  Skyltfondsansökan, och spår A (föreningen som sökande 1/10) beskrivs men avråds. Sex beslut väntar hos Bengt och Axel (§4.2).
+  Protokollet exporterat från Drive och granskat som PDF: tre sidor, underskriftsraderna på plats.

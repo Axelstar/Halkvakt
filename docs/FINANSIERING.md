@@ -134,6 +134,9 @@ numret hinner sannolikt inte. Alternativ: (a) sökande = föreningen *under bild
 skyltfonden@trafikverket.se en rad om (a) godtas — Bengt strök förhandskontakten 16/9, hans val; (c) privatperson som i v7. Claude
 kan skriva stadgar och protokoll för konstituerande möte på Bengts ja.
 
+**28/9: handlingarna är skrivna** på Bengts beställning (DECISIONS #396): `docs/forening/`, med körschemat i
+`docs/forening/KORSCHEMA.md`. Föreningen bildas i oktober. Skyltfondsansökan går som privatperson (#395).
+
 ## B2B-idé (Axel 2026-08-29): skolpaketet som produkt
 Trafikskolor säljer allt som paket och betalar redan per elev för innehåll
 (digitala teoritjänster m.m.). Säljbart: UTBILDNINGSMOMENTET (handledarmodul,

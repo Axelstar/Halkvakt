@@ -220,6 +220,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     produktboken) *(låst: Play-kontot)*.
   ↪ **Flyttat 26/9 från *Claude — olåst*** (femma åtta, DECISIONS #377): nästa steg är Play-kontot och testtelefonen.
 ### Bengt
+- [ ] 🏛️ **#265 FÖRENINGEN HALKVAKT BILDAS** (Bengts beställning 28/9, DECISIONS #396). Handlingarna är klara i `docs/forening/`
+  och i Drive-mappen *Föreningen Halkvakt, bildande*: stadgar, kallelse och dagordning, protokollsmall, medlemsförteckning,
+  arbetsblad för SKV 8400 och körschemat. Körschemat: sex beslut senast sön 4/10 (fyra grundare, poster, namn, säte, avgift,
+  firmateckning), kallelse mån 5/10, konstituerande möte tis 13/10, SKV 8400 postad senast mån 19/10, organisationsnummer (räkna med
+  veckor), bankkonto. Skyltfondsansökan påverkas inte (#395). Före första utbetalning: mottagarbytet hos Trafikverket (efter 15/12)
+  och arbetsgivarfrågan. **Verify:** Skatteverkets beslut med organisationsnummer i handen och föreningens bankkonto öppnat.
 - [ ] 🧫 **#232 KUVÖSEN — HELA SYSTEMET BAKÅTPRÖVAT PÅ VINTERN 2024/25** (Bengts idé 21/9, DECISIONS #292). Motorn och ALLA
   skuggregler i en gemensam testbädd, långt från appar och förare, körd mot en hel gången vinter — ett RIKTNINGSPROV: är vi på
   rätt väg, och vad tillför varje del ovanpå de andra? Svarar på kartans §7.3: *"Varje grind dömer sin del ENSAM"*.

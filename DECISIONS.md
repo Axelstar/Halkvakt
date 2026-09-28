@@ -5748,3 +5748,32 @@ det med en partner. Det den har är öppenheten att erbjuda underlaget för ompr
 
 **Alternativ.** En förening under bildande valdes bort. Det fanns ett prejudikat för den i vårens lista: VALMA, vars namn var
 inskickat för registrering, men vars organisationsform är okänd. Stadgar och protokoll skrivs inte.
+
+## #396 (28/9 2026) Föreningshandlingarna upprättade: Föreningen Halkvakt bildas i oktober
+
+**Bengts beställning 28/9:** *"upprätta alla handlingar som behövs för att bilda en ideell förening och gör upp ett körschema för
+detta"*. Handlingarna ligger i `docs/forening/` och som redigerbara dokument i Drive-mappen *Föreningen Halkvakt, bildande*:
+stadgar, kallelse och dagordning, protokollsmall för det konstituerande mötet, medlemsförteckning, arbetsblad för Skatteverkets
+blankett SKV 8400 och körschemat. Meningen i #395, *"Stadgar och protokoll skrivs inte"*, gäller inte längre.
+
+**Det här ändras inte.** Skyltfondsansökan skickas med Bengt som privatperson (#395). Körschemat lägger det konstituerande mötet efter
+1/10, med förslaget tisdag 13/10. Spår A, där föreningen står som sökande redan 1/10, finns i körschemat. Det kräver att #395 ändras
+och att mötet hålls senast 30/9. Rekommendationen är att inte välja det.
+
+**Val i utkasten.** Alla kan ändras på mötet.
+- Fyra grundare: tre i styrelsen och en revisor utanför den. Med fyra röster har ingen över 25 procent, och då har föreningen normalt
+  ingen verklig huvudman.
+- Öppet medlemskap. En ansökan får avslås bara om den sökande kan antas motarbeta ändamålet, så att föreningen kan bedömas som
+  allmännyttig.
+- Integritetslöftet står i § 2 och skyddas som ändamålet: det ändras bara vid två möten med två tredjedelars majoritet.
+- En jävsparagraf (§ 12), eftersom projektet kan ersätta egen tid.
+- Första räkenskapsåret är förlängt till 31/12 2027.
+- Vid upplösning går tillgångarna till organisationer som främjar trafiksäkerheten.
+
+**Alternativ.** Tre grundare, Skatteverkets minimum, hade gett tre verkliga huvudmän och ingen revisor utanför styrelsen. Ett separat
+protokoll för ett konstituerande styrelsemöte valdes bort: mötet väljer poster och firmatecknare direkt, så ett protokoll räcker för
+Skatteverket och banken.
+
+**Okänt.** Skatteverkets och Bolagsverkets sidor gick inte att öppna härifrån 28/9. Reglerna om verklig huvudman och blankettens fält
+är därför lästa genom sökresultat och äldre blankettkopior. Två frågor är öppna: om Trafikverket godtar att mottagaren byts till
+föreningen, och om budgetens 700 kr/h rymmer arbetsgivaravgifter ifall föreningen betalar ut ersättning.
