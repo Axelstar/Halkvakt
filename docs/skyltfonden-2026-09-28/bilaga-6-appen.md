@@ -23,10 +23,10 @@ Rösten säger bara det datan bär. En sträcka ur Trafikverkets väglag får s�
 | Allvarlig olycka, första varningen (cirka 10 km före) | *"Allvarlig olycka på E22 9 kilometer framför dig — stor påverkan på trafiken. Överväg annan väg. Beräknas röjd vid 07:40."* |
 | Allvarlig olycka, påminnelse (2 km före) | *"Sakta ner — olycksplats strax framför dig."* |
 | Djur på vägen (Trafikverket) | *"Viltrisk framöver."* |
-| Fartkamera som bevakar din färdriktning | *"Fartkamera om 500 meter. Gränsen är 80."* |
+| Fartkamera som bevakar din färdriktning | *"Fartkamera om 500 meter."* |
 | Gammal data (en gång per körning) | *"Ingen färsk väglagsdata – kör som om det kan vara halt."* |
 
-Vägnummer, avstånd, klockslag och hastighetsgräns i exemplen fylls i ur datan vid varningstillfället.
+Vägnummer, avstånd och klockslag i exemplen fylls i ur datan vid varningstillfället. Hastighetsgränsen sägs inte, eftersom Trafikverkets kameradata inte bär den.
 
 ## Hur rösten väljer
 

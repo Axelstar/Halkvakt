@@ -1,0 +1,286 @@
+<title>Halkvaktens app</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: the same paper sheet as Halkvaktens systembild and mätningar. A strip of real screens up top, then numbered
+     sections that follow the user: what it says, the screens, starting, answering, what leaves the phone, where it stands. */
+  :root {
+    --papper: #F6F7F5;
+    --blad: #FFFFFF;
+    --black: #16202A;
+    --dampad: #4A5763;
+    --linje: #D9DFE3;
+    --gul: #A8720A;
+    --gul-yta: #FFF3D6;
+    --gron: #1F7A45;
+    --gron-yta: #E4F2EA;
+    --rod: #A63A2A;
+    --rod-yta: #F9E7E3;
+    --frost-yta: #E6F0F5;
+    --skarm: #0B1014;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --papper: #0B1014; --blad: #121A20; --black: #E6ECEF; --dampad: #9DAAB3; --linje: #26323B;
+      --gul: #FFC94A; --gul-yta: #2A2310; --gron: #4CC382; --gron-yta: #12261B; --rod: #F08A7A; --rod-yta: #2B1714;
+      --frost-yta: #13232C; --skarm: #05080A;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --papper: #0B1014; --blad: #121A20; --black: #E6ECEF; --dampad: #9DAAB3; --linje: #26323B;
+    --gul: #FFC94A; --gul-yta: #2A2310; --gron: #4CC382; --gron-yta: #12261B; --rod: #F08A7A; --rod-yta: #2B1714;
+    --frost-yta: #13232C; --skarm: #05080A;
+    color-scheme: dark;
+  }
+  body { background: var(--papper); color: var(--black); padding-inline: 16px; padding-block: 28px 48px;
+         font: 400 16px/1.6 "Source Serif 4", Georgia, "Times New Roman", serif; }
+  .blad { max-width: 820px; margin: 0 auto; background: var(--blad); border: 1px solid var(--linje);
+          padding: clamp(20px, 5vw, 56px); display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  h1, h2, h3, .etikett, th, .dom, .fakta b, figcaption b, .steg b, .rost-fras { font-family: "Instrument Sans", "Helvetica Neue", Arial, sans-serif; }
+  h1 { font-size: clamp(30px, 5vw, 42px); line-height: 1.08; font-weight: 700; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+  h2 { font-size: 21px; font-weight: 700; margin: 18px 0 0; text-wrap: balance; }
+  h3 { font-size: 16px; font-weight: 600; margin: 6px 0 0; }
+  p { margin: 0; max-width: 68ch; }
+  .etikett { font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gul); }
+  .ingress { font-size: 18px; color: var(--dampad); }
+  .mono, code { font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; font-size: 0.86em; font-variant-numeric: tabular-nums; }
+  .litet { font-size: 14px; color: var(--dampad); }
+  ul, ol { margin: 0; padding-left: 1.2em; display: grid; gap: 5px; }
+  li { max-width: 66ch; }
+  hr { border: 0; border-top: 1px solid var(--linje); margin: 4px 0; width: 100%; }
+  q, .citat { font-style: italic; }
+
+  .fakta { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 14px; color: var(--dampad);
+           border-top: 1px solid var(--linje); border-bottom: 1px solid var(--linje); padding-block: 10px; }
+  .fakta b { color: var(--black); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  .remsa { display: flex; gap: 14px; overflow-x: auto; padding-block: 4px 10px; scroll-snap-type: x mandatory; }
+  .remsa figure { margin: 0; flex: 0 0 168px; display: grid; gap: 8px; scroll-snap-align: start; }
+  .remsa img { width: 168px; aspect-ratio: 1 / 2; object-fit: cover; border-radius: 14px; background: var(--skarm);
+               border: 1px solid var(--linje); display: block; max-width: 100%; }
+  figcaption { font-size: 13px; line-height: 1.4; color: var(--dampad); }
+  figcaption b { color: var(--black); font-weight: 600; }
+
+  .tabell { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--linje); vertical-align: top; }
+  th { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dampad); }
+  td.tal, th.tal { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  td.nr { white-space: nowrap; font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; font-size: 13px; }
+  .rost-fras { font-weight: 600; }
+
+  .steg { list-style: none; padding: 0; display: grid; gap: 0; counter-reset: s; }
+  .steg li { counter-increment: s; display: grid; grid-template-columns: 30px 1fr; gap: 12px; padding-block: 9px;
+             border-bottom: 1px solid var(--linje); max-width: none; }
+  .steg li::before { content: counter(s); font: 600 13px "Instrument Sans", Arial, sans-serif; color: var(--blad);
+                     background: var(--black); width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; }
+  .steg li > div { min-width: 0; }
+
+  .par { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px 28px; }
+  .par > * { min-width: 0; }
+  .ruta { border-left: 3px solid var(--gul); padding: 4px 0 4px 14px; display: grid; gap: 6px; align-content: start; }
+  .ruta.gron { border-left-color: var(--gron); }
+  .ruta.rod { border-left-color: var(--rod); }
+  .skickas { background: var(--frost-yta); padding: 14px 16px; border-radius: 4px; display: grid; gap: 8px; }
+
+  .dom { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+         padding: 1px 7px; border-radius: 3px; white-space: nowrap; }
+  .dom.klar { color: var(--gron); background: var(--gron-yta); }
+  .dom.fel { color: var(--rod); background: var(--rod-yta); }
+  .dom.vantar { color: var(--gul); background: var(--gul-yta); }
+  a { color: inherit; }
+</style>
+
+<main class="blad">
+  <div class="etikett">Appen · 28 september 2026</div>
+  <h1>Halkvakt i telefonen: vad den gör, säger och skickar</h1>
+  <p class="ingress">Tredje sidan i serien efter systembilden och mätningarna. Den här sidan följer föraren: vad rösten säger, hur skärmarna ser ut, hur vakten startar och stannar, hur betatestarna svarar och exakt vad som lämnar telefonen. Underlaget är produktboken, systembeskrivningen, beslutsloggen och Skyltfondsansökan med bilagor.</p>
+  <div class="fakta">
+    <span>iPhone <b>0.3.9 (18)</b></span>
+    <span>Android <b>0.3.9 (18)</b></span>
+    <span><b>5</b> faror</span>
+    <span><b>2</b> flikar</span>
+    <span><b>0</b> konton</span>
+    <span>batteri iPhone <b>7 %/h</b></span>
+    <span>gratis i båda butikerna</span>
+  </div>
+
+  <div class="remsa" aria-label="Skärmbilder ur Android-appen, 26 september 2026">
+    <figure><img src="produktbok/shot-1-vakten.png" alt="Efter resan: en varning med knapparna Stämde och Stämde inte, och en markerad miss med valen Halka, Vatten, Vilt, Olycka och Annat."><figcaption><b>Efter resan.</b> Svar på varningen och val för en miss.</figcaption></figure>
+    <figure><img src="produktbok/shot-2-installningar.png" alt="Inställningar: fem brytare under Varna för, alla på."><figcaption><b>Varna för.</b> Fem faror, var och en kan stängas av.</figcaption></figure>
+    <figure><img src="produktbok/shot-3-reglaget.png" alt="Rösten: reglaget Längsta förvarning på 1,2 km och knappen Testa rösten."><figcaption><b>Rösten.</b> Förvarningen kan kortas, aldrig förlängas.</figcaption></figure>
+    <figure><img src="produktbok/shot-6-betatest.png" alt="Betatest: brytaren Svara på varningarna med texten om vad som skickas."><figcaption><b>Betatest.</b> Av från början. Texten säger vad som skickas.</figcaption></figure>
+    <figure><img src="produktbok/shot-7-om.png" alt="Om Halkvakt: löftet att positionen inte lämnar telefonen av sig själv och undantaget för betatestet."><figcaption><b>Om.</b> Löftet och undantaget, ordagrant.</figcaption></figure>
+  </div>
+  <p class="litet">Android ur fotostudion 26/9, som fotar skärmarna automatiskt vid varje bygge. iPhone har samma funktioner i ett något annat skinn.</p>
+
+  <h2>1. Vad appen är</h2>
+  <p>En app du startar när du sätter dig i bilen, och sedan lägger du undan telefonen. Halkvakt lyssnar på Trafikverkets mätstationer och rapporterade väglag och säger till med rösten, i högtalaren eller bilens Bluetooth, när något farligt finns framför dig: halka, frysrisk, olyckor, vilt och fartkameror. Det finns ingen skärm att titta på och inget konto. Tystnad är grundläget: pratar den, betyder det något.</p>
+
+  <h2>2. En körning</h2>
+  <ol class="steg">
+    <li><div><b>Du startar vakten</b>, eller så startar den själv (avsnitt 5). GPS:en börjar lyssna, och skärmen kan släckas.</div></li>
+    <li><div><b>Telefonen hämtar vägdatan</b> och kontrollerar den mot kontrollsumman i manifestet. Stämmer den inte behålls förra snapshoten. Under resan hämtas ny data var 30:e minut.</div></li>
+    <li><div><b>Åldersvakten prövar datan.</b> Väglag och frysrisk äldre än 45 minuter filtreras bort, olyckor och djur efter två timmar. Är datan gammal säger rösten en gång: <q>Ingen färsk väglagsdata – kör som om det kan vara halt.</q></div></li>
+    <li><div><b>Motorn vakar i telefonen.</b> Den letar faror i en korridor på ±35° framför färdriktningen, ungefär 30 sekunder fram. Under 15 km/h är den tyst.</div></li>
+    <li><div><b>Rösten talar</b> när en fara ligger i korridoren. I körläget visas samma text på ett helgult kort i åtta sekunder, och med kartappen framme syns en banner lika länge.</div></li>
+    <li><div><b>Spärren.</b> Inom 10 sekunder får bara en viktigare fara tala. Samma fara upprepas först efter 10 minuter och 5 km.</div></li>
+  </ol>
+
+  <h2>3. Exakt vad rösten säger</h2>
+  <div class="tabell">
+    <table>
+      <thead><tr><th>När</th><th>Frasen</th></tr></thead>
+      <tbody>
+        <tr><td>Rapporterad halka på din väg (väglagskod ≥ 2 eller halkord i Trafikverkets text)</td><td class="rost-fras">"Varning: halka rapporterad på vägen framför dig."</td></tr>
+        <tr><td>Mätstation vid frysrisk (yta ≤ 1 °C och fukt)</td><td class="rost-fras">"Isrisk framöver — vägbanan nära noll grader."</td></tr>
+        <tr><td>Bro nära kall, blöt station (≤ 3 °C)</td><td class="rost-fras">"Frysrisk framöver — bro om 700 meter."</td></tr>
+        <tr><td>Lindrig olycka</td><td class="rost-fras">"Olycka rapporterad på väg 25, 3 kilometer framför dig."</td></tr>
+        <tr><td>Allvarlig olycka, tidigt ropet cirka 10 km före</td><td class="rost-fras">"Allvarlig olycka på E18, 10 kilometer framför dig — stor påverkan på trafiken. Överväg annan väg. Beräknas röjd vid 14:20."</td></tr>
+        <tr><td>Allvarlig olycka, påminnelsen cirka 2 km före</td><td class="rost-fras">"Sakta ner — olycksplats strax framför dig."</td></tr>
+        <tr><td>Djur på vägen enligt Trafikverket, också lösa kor och får</td><td class="rost-fras">"Viltrisk framöver."</td></tr>
+        <tr><td>Fartkamera som bevakar din färdriktning</td><td class="rost-fras">"Fartkamera om 500 meter."</td></tr>
+        <tr><td>Väglagsdatan är gammal, en gång per körning</td><td class="rost-fras">"Ingen färsk väglagsdata – kör som om det kan vara halt."</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="par">
+    <div class="ruta">
+      <h3>Rösten säger inte mer än datan bär</h3>
+      <p>En sträcka ur Trafikverkets väglag får sägas vara <i>på vägen framför dig</i>. En punktmätning, som en station eller ett djur, säger <i>framöver</i> och aldrig ett avstånd som mätningen inte stöder. Hastighetsgränsen vid kamerorna sägs inte, eftersom Trafikverkets kameradata inte bär den.</p>
+    </div>
+    <div class="ruta">
+      <h3>En fara i taget</h3>
+      <p>Står två faror framför dig vinner den allvarligaste: olycka, halka, frysrisk, vilt, kamera. Den andra släpps och köas aldrig. Sanna varningar dämpas inte: kör du åtta mil på is säger rösten <i>halka</i> var tionde minut, för det är halt.</p>
+    </div>
+  </div>
+
+  <h2>4. Skärmarna</h2>
+  <div class="tabell">
+    <table>
+      <thead><tr><th>Skärm</th><th>Vad den visar</th></tr></thead>
+      <tbody>
+        <tr><td><b>Vakten</b></td><td>Ett ord, <i>Redo.</i>, och knappen <i>Starta vakten</i>. Under den senast sagda repliken. Android visar också brytaren <i>Autostart</i> och upp till sex faror i närheten.</td></tr>
+        <tr><td><b>Körläget</b></td><td>Ersätter Vakten medan vakten går: resans tid och sträcka, räknare för varningar, halka och vilt, <i>Senast sagt</i>, <i>På din väg</i>, knappen <i>Appen missade</i> och <i>Avsluta vakten</i>.</td></tr>
+        <tr><td><b>Varningskortet</b></td><td>Helgult i åtta sekunder, med samma text som rösten. På iPhone utan knapp, eftersom du inte ska trycka på något i en bil.</td></tr>
+        <tr><td><b>Inställningar</b></td><td>Fem brytare under <i>Varna för</i>, alla på från början. Reglaget <i>Längsta förvarning</i> 400–1 200 m, som kan korta men aldrig förlänga förvarningen. Brytaren <i>Svara på varningarna</i>, av från början.</td></tr>
+        <tr><td><b>Om</b></td><td>Sista avsnittet i Inställningar: löftet, undantaget för betatestet ordagrant, ärlighetsraden <q>mellan stationerna är vägen oövervakad</q> och datakällorna.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="litet">iPhone har en introduktion i fyra steg (löftet, platsen, bannern, klart). Android har ingen introduktion; första trycket på Starta ber om plats och notiser.</p>
+
+  <h2>5. Start och stopp i bilen</h2>
+  <div class="par">
+    <div class="ruta gron">
+      <h3>iPhone</h3>
+      <ul>
+        <li>Med platsen <b>Alltid</b> ber appen iOS väcka den när telefonen lämnar platsen där bilen stod (150 m). Den startar vakten vid 15 km/h.</li>
+        <li><q>Hej Siri, starta Halkvakt</q>, eller en automation i Genvägar för CarPlay, bilens Bluetooth eller fokusläget Kör. Guiden i appen visar bara de steg som gäller din bil.</li>
+        <li>Vakten stannar när bilen stått still en kvart. En paus kortare än tre timmar räknas som samma resa.</li>
+        <li>Provad på Malmö–Boden och tillbaka 1–2/9: 100 mil med självväckningen som enda start.</li>
+      </ul>
+    </div>
+    <div class="ruta gron">
+      <h3>Android</h3>
+      <ul>
+        <li>Brytaren <b>Autostart</b> ber om plats, rörelseigenkänning, Bluetooth och plats <i>hela tiden</i>.</li>
+        <li>Appen lär sig varje Bluetooth-enhet som kopplas medan vakten går och startar vakten när den kopplar upp igen. Rörelseigenkänningen täcker bilar utan Bluetooth.</li>
+        <li>En självstartad vakt stannar när bilen kopplas från. Varje vakt ska stanna efter en kvart stilla. Det fungerar inte fullt ut i dag, se avsnitt 9.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>6. Betatestarnas svar och missar</h2>
+  <p>Betatestarna är projektets förarfacit. Allt nedan finns bara för den som själv slagit på brytaren <i>Svara på varningarna</i>.</p>
+  <ol class="steg">
+    <li><div><b>Under resan</b> står två knappar under repliken: <i>Stämde</i> och <i>Stämde inte</i>. På iPhone går det också att säga <q>Hej Siri, stämde inte i Halkvakt</q>. Svaret skickas aldrig medan bilen rullar, bara när den stått still en halv minut eller när appen öppnas.</div></li>
+    <li><div><b>När det var halt men rösten teg</b> trycker föraren <i>Appen missade</i> i körläget, eller säger <q>Hej Siri, appen missade i Halkvakt</q>. Appen sparar klockslaget och närmaste mätstation, inte koordinaten.</div></li>
+    <li><div><b>Efter resan</b> kommer en notis: <q>Resan klar — stämde alla 3 varningarna?</q> Ett tryck på <i>Ja, alla stämde</i> räcker, direkt på låsskärmen. Missar väntar på ett val: Halka, Vatten, Vilt, Olycka eller Annat. Först när valet är gjort skickas missen.</div></li>
+    <li><div><b>Svarar du inte skickas ingenting.</b> Tystnad räknas aldrig som ja. Kortet står kvar ett dygn och tiger sedan, eftersom ett svar på en resa man inte minns är en gissning.</div></li>
+  </ol>
+
+  <h2>7. Vad som lämnar telefonen</h2>
+  <div class="skickas">
+    <p><b>Ingen position, inget GPS-spår och ingen rörelsedata lämnar telefonen automatiskt.</b> All matchning mot vägdatan sker i telefonen. Hämtningen av vägdatan är ett anrop utan parametrar och utan id.</p>
+    <div class="tabell">
+      <table>
+        <thead><tr><th>Det enda som skickas</th><th>Innehåll</th><th>Villkor</th></tr></thead>
+        <tbody>
+          <tr><td>Ett svar</td><td>varningens id, klockslaget, svaret, appens namn och version</td><td>betatestaren har slagit på brytaren och tryckt</td></tr>
+          <tr><td>En miss</td><td>klockslaget, valet, närmaste stations och halkavsnitts id, appens namn och version</td><td>betatestaren har markerat och valt vad det var</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="litet">Inget konto, inget enhets-id och ingen IP-adress sparas, och inget delas med tredje part. Ett svar pekar ut ungefär var och när, och det står i appen. I Google Plays dataformulär är det deklarerat som ungefärlig plats, valfri och inte delad.</p>
+  </div>
+
+  <h2>8. Batteri och drift</h2>
+  <div class="par">
+    <div class="ruta gron">
+      <h3>iPhone: inom budget</h3>
+      <p>Med skärmen släckt 78 → 71 % på en timme, alltså 7 % per timme mot projektets gräns på 8 % (bygge 14, 27/9).</p>
+    </div>
+    <div class="ruta rod">
+      <h3>Android: för många timmar</h3>
+      <p>En testare låg på 42 % efter en baddag. Vakten hade gått 11 h 39 min i bakgrunden, med GPS i 6 h 40 min, och stod för 21,6 % av dygnets förbrukning. Timkostnaden var låg, men självstoppet fyrade bara för en parkerad bil. Ett åtgärdspaket ligger hos Axel och är en släppblockerare.</p>
+    </div>
+  </div>
+
+  <h2>9. Var appen står</h2>
+  <div class="tabell">
+    <table>
+      <thead><tr><th>Del</th><th>Läge</th><th></th></tr></thead>
+      <tbody>
+        <tr><td>iPhone, TestFlight</td><td>Intern testkrets sedan 31/8. Bygge (13) laddades upp 23/9 som kandidat till App Store.</td><td><span class="dom klar">i drift</span></td></tr>
+        <tr><td>Android</td><td>Testarna installerar bygget ur CI. Appen kör på riktiga telefoner sedan 20/9.</td><td><span class="dom klar">i drift</span></td></tr>
+        <tr><td>Bygge (19), iPhone</td><td>Fyra rättelser efter provresan 28/9: texter som klipps på små skärmar, statusraden efter resan, dubbeltryck på <i>Appen missade</i> och raden under <i>Redo.</i> som ska säga <q>lämnar inte telefonen av sig själv</q>.</td><td><span class="dom vantar">hos Axel</span></td></tr>
+        <tr><td>Android efter 1/10</td><td>Statusraden och dubbeltrycket, samt självstoppet.</td><td><span class="dom vantar">hos Axel</span></td></tr>
+        <tr><td>Google Play</td><td>Kontot skapat 20/9. Kvar är verifieringen av en telefon och sedan ett slutet test med tolv testare i 14 dygn före produktion, tidigast i november.</td><td><span class="dom vantar">väntar</span></td></tr>
+        <tr><td>Integritetssidan</td><td>Omskriven 23/9. Meningen om radering och raden om missar är inte publicerade än.</td><td><span class="dom vantar">hos Axel</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Versionerna</h3>
+  <div class="tabell">
+    <table>
+      <thead><tr><th>Version</th><th>Datum</th><th>Vad</th></tr></thead>
+      <tbody>
+        <tr><td class="nr">0.3.0 (3)</td><td class="nr">31/8</td><td>Första TestFlight: rösten, Siri, körläget.</td></tr>
+        <tr><td class="nr">0.3.1 (4)</td><td class="nr">31/8</td><td>Autostart, banner, <i>Senast sagt</i>, introduktionen.</td></tr>
+        <tr><td class="nr">0.3.2 (5)</td><td class="nr">31/8</td><td>Självväckningen. Versionen som kördes till Boden.</td></tr>
+        <tr><td class="nr">0.3.3 (6)</td><td class="nr">2/9</td><td>Nytt skinn, ikonerna, resan över pauser, broarna.</td></tr>
+        <tr><td class="nr">0.3.5 (8)</td><td class="nr">2/9</td><td>Kamerariktningen vänd 180°. Första bygget där alla tre motorerna klarade testfallen.</td></tr>
+        <tr><td class="nr">0.3.6 (9)</td><td class="nr">16/9</td><td><i>Stämde / Stämde inte</i> och betatestbrytaren. Spärren 10 sekunder.</td></tr>
+        <tr><td class="nr">0.3.9 (12)</td><td class="nr">20/9</td><td>Rösten tystnar inte längre med släckt skärm.</td></tr>
+        <tr><td class="nr">0.3.9 (13)</td><td class="nr">23/9</td><td><i>Efter resan</i>, viltvarning på Trafikverkets djurdata. Kandidat till App Store.</td></tr>
+        <tr><td class="nr">0.3.9 (16)</td><td class="nr">26/9</td><td>Vägdatan laddas om var 30:e minut under resan.</td></tr>
+        <tr><td class="nr">0.3.9 (17)</td><td class="nr">26/9</td><td>Reglaget <i>Längsta förvarning</i> 400–1 200 m.</td></tr>
+        <tr><td class="nr">0.3.9 (18)</td><td class="nr">26/9</td><td><i>Appen missade</i>, Siri-fraserna och missraderna efter resan. Android bär samma nummer.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>10. Vad appen inte gör</h2>
+  <ul>
+    <li><b>Ingen prognos når föraren.</b> Rösten varnar på uppmätt och rapporterat läge. Prognoslagret körs i skuggdrift och får bli karta och förstärkare först när det klarat sina grindar.</li>
+    <li><b>Tyst mellan stationerna.</b> Medianavståndet till närmaste station är 7 km, och i Norrland ligger 13 % av vägnätet mer än 20 km bort.</li>
+    <li><b>Tyst i staden.</b> Kommunernas egna stationer är inte öppna data.</li>
+    <li><b>Ingen kövarning, vattenplaning, dimma eller vindvarning.</b> Vattenplaningen prövades och föll.</li>
+    <li><b>Ingen hastighetsdata skickas</b>, och appen finns bara på svenska.</li>
+  </ul>
+
+  <h2>11. Appen i Skyltfondsprojektet</h2>
+  <p>Appen är byggd på egen bekostnad och är projektets verktyg, inte det som söks. Under två vintrar ska den visa om Trafikverkets öppna data räcker för att varna i tid:</p>
+  <ul>
+    <li><b>Utvärderingen:</b> varje varning klassas mot kamerabild, SMHI, rapporterad halka, stationens serie och testförarnas svar.</li>
+    <li><b>Testförarna:</b> 30–50 förare, främst i Skåne, använder svaren och missarna i avsnitt 6. En enkät och en gruppintervju frågar om rösten stör och om de sänker farten.</li>
+    <li><b>Prognoslagret:</b> klarar det vinterns grindar kopplas det till app och karta som förtroendemärkt lager och en färdvy vid beräknad ankomsttid, men det talar aldrig ensamt.</li>
+  </ul>
+  <hr>
+  <p class="litet">Källor: produktboken (PRODUKTBOK.md, läst mot koden 24/9), systembeskrivningen (bilaga 3), rösttexterna ur varningsmotorn (bilaga 6), beskrivningen av bygge (19) och beslutsloggen. Alla datum avser 2026.</p>
+</main>

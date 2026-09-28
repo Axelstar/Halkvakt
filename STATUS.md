@@ -2013,3 +2013,10 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - radarn, vattenplaningen och djurdatan;
   - skydden mot oss själva och vinterns grindar.
   Varje tal är kontrollerat mot sin DECISIONS-post.
+- 28/9 (Claude, Bengts beställning): Halkvaktens app, tredje syskonsidan efter systembilden och mätningarna, är publicerad
+  privat (https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT) och sparad i `docs/APPEN-2026-09-28.html` (bilderna ur
+  `docs/produktbok/`). Den följer föraren: rösttexterna, skärmarna, start och stopp, svar och missar, vad som lämnar
+  telefonen, batteriet, byggena och vad appen inte gör. Underlaget är produktboken, SYSTEM.md, bilaga 6, TILL-AXEL-BYGGE-19
+  och beslutsloggen. Genomläsningen hittade ett fel i bilaga 6: kameraexemplet sa *"Gränsen är 80"*, men snapshotens
+  kameror bär bara id, läge, bäring och väg (`publish/snapshot-core.ts`). Nu står *"Fartkamera om 500 meter."* och en rad
+  om att gränsen inte sägs. Bilaga 6-PDF:en är ombyggd.
