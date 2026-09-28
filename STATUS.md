@@ -1960,3 +1960,11 @@ Byggt: inget. Nästa: Axels bygge (19) och integritet.html före utskick till fl
 Bengts order. Läst först: två rader — serverns provrad 26/9 (orörd) och Bengts provtryck, markerat 13:49:26, vatten, wx:7102,
 mottaget 13:52:06. Den raden raderad med ett villkor som inte kunde träffa något annat; omläsningen: 1 rad, 1 prov, 0 riktiga.
 Rättat i beskrivningen till Axel: den skickade missen var från 13:49, inte 13:41 — tre markeringar på elva minuter.
+
+## 2026-09-28 — Källbevakningens polislarm #638/#639 ofarliga; beroendekartans polisrad rättad (DECISIONS #391, kort #264)
+Bengts order. #639 (röd) var falsklarm: ny kakbanner och sidfot, röd bara för att "api" står i sidans rubrik. #638 (gul):
+en ny mening om att driftspåverkan polisanmäls — vi gör ett anrop i timmen med user-agent. Kartans polisrad sa att
+viltvarningarna brister — fel sedan 22/9 (#318); nu arkivet och webbkartans länsstatistik. Nyckelorden api, händelse och
+öppna data (sidornas rubriker) ersatta med fälten vi läser. Prov: issuesens texter får inte bli röda, en fältändring blir det.
+FYND, kort #264: trv-bevakning.ts rad 93 gör HTML-entiteter till mellanslag — å, ä, ö försvinner på polisens sidor, och ett
+svenskt nyckelord med dem kan aldrig träffa. Inte rättat.

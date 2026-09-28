@@ -5586,3 +5586,30 @@ De två osända ligger kvar i telefonen och skickas bara om ett val görs.
 **Varför radering och inte `prov`-märkning:** Bengts ord var *ta bort*, och `prov` är en genererad kolumn som bara följer
 station-id:t — den går inte att sätta för hand. **Läxan till bygge (19):** appen kan inte skilja ett provtryck från ett riktigt,
 så varje prov i bil landar i facit. Tills appen kan märka prov gäller: provtryck raderas samma dag, och av någon som läst raden först.
+
+## #391 (28/9 2026) Källbevakningens två polislarm stängda som ofarliga — och beroendekartans polisrad rättad
+
+**Bengts order 28/9:** *"ja, stäng issuesen och rätta beroendekartan"*, efter frågan *"påverkar det här oss"*.
+
+**Issue #639 🔴 polisen-api [RÖR OSS] — falsklarm.** Sidan *API över polisens händelser* fick ny kakbanner och ett nytt
+*Granskad*-datum i sidfoten, 7 tecken kortare. Fältbeskrivningen är orörd. Den blev röd enbart för att nyckelordet `api` står
+i sidans **rubrik**, som kommer med varje gång bannern ändras.
+
+**Issue #638 🟡 polisen-regler [VET INTE] — en ny mening, inte för oss.** *Regler för öppna data* fick meningen *"Aktiviteter
+som innebär driftspåverkan på polisens webbplats polisanmäls och vi gör även en incidentanmälan till … CERT-SE."* Vi gör **ett
+anrop i timmen** med ett user-agent som säger vilka vi är. Gul var rätt grad: en ändring i villkoren ska läsas av en människa.
+
+**Kartan var inaktuell sedan 22/9.** Raden sa att Polisen *matar varningsslag A4* och att *viltvarningarna* brister om den ändras.
+Sedan #318 säger rösten vilt ur Trafikverkets djurdata och snapshotens `wildlife` är tom med flit; Polisen matar bara
+`polisen_events` och länsstatistiken på webbkartan. `matar` och `brister` säger nu det. Rollen står kvar som *produktion* —
+källan matar arkivet, vilket rollens definition täcker.
+
+**Nyckelorden.** `api`, `händelse` och `öppna data` står i sidornas rubriker och träffar vid varje ändring — `api` gjorde det i
+dag. De två andra träffade inte, men bara av ett skäl som är ett fel i sig (nedan). I stället: fälten `ingest/sources/polisen.ts`
+läser (`gps`, `datetime`, `summary`, `location`), plus `events`, `user-agent`, `vilt` och `trafikolycka` som förut. Prov:
+issuesens egna texter får inte bli röda, och en ändring i `location.gps` eller `datetime` blir det fortfarande. Ordgränsprovet
+som byggde på `api` i *rapid* använder nu `location` i *relocation* — samma syfte.
+
+**Fyndet på vägen — kort #264.** `scripts/trv-bevakning.ts` rad 93 byter varje HTML-entitet mot ett **mellanslag**. Polisen.se
+kodar å, ä och ö som entiteter, så bevakningen läser *"h ndelser"* och *" ppna data"*. Ett nyckelord med å, ä eller ö kan
+därför aldrig träffa på en sådan sida. Inte rättat — det rör alla bevakade källor och är ett eget varv.

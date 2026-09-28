@@ -87,12 +87,15 @@ export const KARTAN: Beroende[] = [
     bevakad: "dk-dmi",
     signal: "täcks av DMI:s egen kanal — filerna är DMI:s, lagringen bara en hylla (#148)",
     nyckelord: ["bucket", "storage", "download"] },
+  // Rättad 28/9 (DECISIONS #391, issue #638/#639): sedan 22/9 (#318) säger rösten vilt ur Trafikverkets djurdata och
+  // snapshotens `wildlife` är tom med flit — Polisen når inte appen. "api", "händelse" och "öppna data" står i sidornas
+  // RUBRIKER ("API över polisens händelser", "Regler för öppna data") och träffade vid varje ändring; i stället fälten vi läser.
   { vard: "polisen.se", roll: "produktion",
-    matar: "vilthändelser (ingest/sources/polisen.ts) — varningsslag A4",
-    brister: "viltvarningarna",
+    matar: "vilthändelser till arkivet (ingest/sources/polisen.ts → polisen_events) och länsstatistiken på webbkartan (publish/map-core.ts) — inte appen sedan 22/9",
+    brister: "viltstatistiken per län på webbkartan och polisen_events — INTE appens viltvarningar, som kommer från Trafikverket (#318)",
     bevakad: "polisen-regler + polisen-api",
     signal: "polisen.se regler-for-oppna-data (villkoren, user-agent-kravet) och api-over-polisens-handelser (fälten) — hash, båda stabila (#148)",
-    nyckelord: ["händelse", "events", "user-agent", "vilt", "trafikolycka", "öppna data", "api"] },
+    nyckelord: ["events", "user-agent", "vilt", "trafikolycka", "gps", "datetime", "summary", "location"] },
 
   // ── VERKTYG ──────────────────────────────────────────────────────────────────────────
   { vard: "frost.met.no", roll: "verktyg",

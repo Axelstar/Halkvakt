@@ -167,6 +167,24 @@ test("NVDB tystas INTE — data på väg in i Öppet API vore vår sak", () => {
   assert.equal(b.grad, "VET INTE");
 });
 
+// Issue #639 och #638 (28/9): polisens sidor fick ny kakbanner och ny sidfot. Texten kommer som den
+// bevakningen ser den — å, ä och ö är mellanslag, eftersom entiteterna byts mot blanksteg. "api" i
+// rubriken gjorde #639 röd; efter rättningen (DECISIONS #391) får ingen av dem bli röd.
+test("verklig post: polisens kakbanner och sidfot får INTE bli röda (#638, #639)", () => {
+  const banner = "API ver polisens h ndelser | Polisen Kakor p polisen.se P polisen.se anv nder vi n dv ndiga kakor f r att webbplatsen ska fungera ska s bra som m jligt.";
+  const sidfot = "Granskad # september # Dela sidan Facebook X LinkedIn E-post Kontakt Kontakta polisen Polisstationer Pressrum Jobb Bli polis Lediga jobb";
+  const regler = "Regler f r ppna data | Polisen Kakor p polisen.se P polisen.se anv nder vi n dv ndiga kakor f r att webbplatsen ska fungera ska s bra som m jligt.";
+  assert.notEqual(bedom("polisen-api", banner, KARTAN).grad, "RÖR OSS");
+  assert.notEqual(bedom("polisen-api", sidfot, KARTAN).grad, "RÖR OSS");
+  assert.notEqual(bedom("polisen-regler", regler, KARTAN).grad, "RÖR OSS");
+});
+
+test("en äkta ändring i polisens fält blir fortfarande röd", () => {
+  // Kontrollen att rättningen inte gjorde vakten blind: fälten vi läser ska fyra.
+  assert.equal(bedom("polisen-api", "Fältet location.gps byter format", KARTAN).grad, "RÖR OSS");
+  assert.equal(bedom("polisen-api", "Nytt format för datetime i svaret", KARTAN).grad, "RÖR OSS");
+});
+
 test("en äkta ändring drunknar inte i rättningen", () => {
   // Kontrollen att fixen inte gjorde vakten blind: de riktiga orden ska fortfarande fyra.
   assert.equal(bedom("trv-rss", "Ny schemaversion för WeatherMeasurepoint", KARTAN).grad, "RÖR OSS");
@@ -177,9 +195,10 @@ test("en äkta ändring drunknar inte i rättningen", () => {
 // Rak delsträngsmatchning gjorde korta nyckelord till falsklarmsmaskiner. Samma fälla som
 // motorns "fläckvis Våt" en gång var, och samma lösning: lookbehind på ordbörjan.
 test("korta nyckelord får inte träffa inuti andra ord", () => {
-  // "api" finns i "rapid", "cap" i "kapacitet", "station" i "poliststation" — inget av dem
-  // är en API-ändring.
-  assert.equal(bedom("polisen-regler", "Rapid utveckling av vår kapacitet", KARTAN).traffar.length, 0);
+  // "location" finns i "relocation", "cap" i "kapacitet", "station" i "poliststation" — inget av dem
+  // är en API-ändring. (Polisens exempel var "api" i "rapid" till 28/9, då "api" togs bort ur
+  // nyckelorden, DECISIONS #391 — provet bytte ord men inte syfte.)
+  assert.equal(bedom("polisen-regler", "Relocation of our servers", KARTAN).traffar.length, 0);
   assert.equal(bedom("smhi-uppdateringar", "Ökad kapacitet i våra system", KARTAN).traffar.length, 0);
 });
 
