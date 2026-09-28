@@ -1927,7 +1927,7 @@ Samma fel som vanligt åt andra hållet: gjort men inte bokfört. Två dygn stod
 "gör denna vecka" fast den redan gick.
 Byggt: inget. Nästa: avläsningen 3/10.
 
-## 2026-09-28 — Kort #233 stängt på Bengts order (DECISIONS #389)
-"Vi kommer inte att göra mer där." Kortet ordagrant till TAVLA-ARKIV, en rad i KLART, tavlan 35 → 34. Med det stängs
-före resan-vyns utredning (och blixthalke-idén från #16 som bodde där) samt omkörningen av snöflingemätningen — hög C 12 → 11.
-Köslut står kvar i #15. Bedömningens §0b-rad, Ä7, Ä9 och §4.2-raden stängda i samma varv.
+## 2026-09-28 — Kort #233 öppnat igen (Bengt: "nej det blev fel")
+Stängningen återställd med git revert: kortet tillbaka i Bengts sektion, KLART-raden och arkivkopian borta, bedömningens
+fyra rader (snöflingans omkörning i §0b, Ä7, Ä9, §4.2) som de var, DECISIONS #389 struken. En rad på kortet säger att det
+inte ska stängas utan nytt besked. Tavlan 35.

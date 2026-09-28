@@ -337,6 +337,35 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↦ **Sorterat 22/9 (kort #224):** registreringar är Bengts (BESLUTSGANGEN §1); Claude lägger om `ingest/dk.ts` när nyckeln finns. Ingen brådska före 2027/28.
   ✅ **Stängt 22/9 (DECISIONS #311, Bengt: *"ta upp våren 2027"*):** behövs först före dansk produktion, tidigast 2027/28. Står nu under Nordenprodukten i Ä7 (bedömningen §3): nyckeln registreras av Bengt och `ingest/dk.ts` läggs om före produktion.
 
+- [ ] 🔭 **#233 UR NIRAS PRODUKTSIDA: TVÅ SAKER VI INTE HAR, EN VI HAR PARKERAT** (Bengts fråga 21/9, DECISIONS #296; sidan
+  niradynamics.com/products/road-surface-alerts läst mot repot). 🔑 Väntar på Bengts val av vad som ska utredas (§4.2).
+  **(1) FÖRE RESAN — saknas helt.** Nira säljer *"route planning that avoids known hazards"*. Halkvakt talar bara under
+  körning, men beslutet som betyder mest — åka tidigare, ta en annan väg, låta bli — fattas före avfärd. En ruttkoll för en
+  sparad sträcka använder samma vägdata och matchas i telefonen, så ingen position lämnar den. Och en vy som föraren själv
+  öppnar TALAR inte: regel T3/T6 förbjuder prognoser att UTLÖSA, inte att visas (samma skäl som i SKUGGAN-PAR4-MOT-REGEL-T).
+  Det är alltså platsen där förvarningen, SMHI:s varningar och *"Halkvakt tror"* får synas utan att regeln bryts. Formen är
+  Axels. Utredning: ett beslutsunderlag, ingen kod. Släkt med BACKLOG 16 (blixthalke-prognosen ur Bengts riskkarta).
+  **(2) SNÖFLINGAN SOM JÄMFÖRELSE — saknas helt.** Nira ställer sig mot bilens egen varning: *"Traditional vehicle warnings
+  often rely on temperature thresholds, such as a snowflake symbol"*. Varje bil varnar redan vid omkring +3 °C i luften. En
+  Halkvakt-varning som bara kommer när snöflingan redan lyser tillför lite; värdet ligger där vägytan är kall fast luften
+  inte är det — klara nätter med utstrålning — och det ser en station men ingen bil. **Mätbart nu, utan facit och utan att
+  blindningen rörs:** hur stor andel av stationsregelns fyrningar sker med luft över +3 °C (och +4 °C — bilmärkena skiljer sig, båda redovisas)? En läsande sats via dbknapp.
+  ✅ **(2) KÖRD 21/9 (DECISIONS #297; körningarna 35629700266, 35629869303, 35630131080) — och svaret är: för tidigt, plus ett
+  fynd som är viktigare än frågan.** Arkivet 24/8–21/9: stationsregeln fyrade **4 episoder — alla fyra givarfel** (luft
+  +8,5…+11,5 °C, yta ≤ +1 °C). Äkta frost (gap luft−yta ≤ 3 °C): 7 episoder, alla i Norrland med luft ≤ +0,4 °C — snöflingan
+  lyste i samtliga. **Inget stöd än för att stationen ser det bilen inte ser; sju episoder i september avgör ingenting.** Körs
+  om efter första frostmånaden. Fyndet: kort #234.
+  **(3) KÖSLUT — inte missat, parkerat.** Niras sjätte varningstyp är *"Slow traffic alert"*. Vi har kort #15 (TrafficFlow,
+  43 s färsk, faktatestad 26/8), beslutad som uppdatering 1 efter release. Ingen ändring föreslås; bara noterat att en
+  konkurrent räknar den till kärnan.
+  **Inte för oss nu:** gropar och ojämn väg (ingen öppen källa utom tjälskademeddelanden; fel säsong och fel produkt) ·
+  motorcyklar (Nira har en artikel; säsongen är inte vår). **Har vi redan:** vattenplaning och kraftigt regn (#42/#81),
+  flottor (#94), bekräftelse över flera källor (kartans bevisbärare, §8 B).
+  Verify: Bengts val inskrivet här · för (2): andelen i bedömningen · för (1): underlaget i docs/ med Axels besked.
+  ↦ **Sorterat 22/9 (kort #224):** nästa steg är ditt val av vad som ska utredas (§4.2); del (2) körs om vid frost.
+  ↪ **Hit 22/9 (DECISIONS #309):** idén ur #16 *Blixthalke-prognos* (MET Nowcast). I *före resan*-vyn får den visas — regel T6 förbjuder en prognos att utlösa, inte att synas. Utreds med (1).
+  ↩︎ **28/9: stängdes och öppnades igen inom en timme på Bengts order** (*"nej det blev fel, öppna kort 233 igen"*) — kortet är oförändrat, stäng det inte utan ett nytt besked.
+
 - [ ] 🔋 **#218 BATTERIBUDGETEN HAR ALDRIG MÄTTS, OCH iOS KÖR FULL GAS** (genomlysningen 20/9). `< 8 %/h` står som krav på tre
   ställen med **noll motprov**. iOS kör `BestForNavigation` med avstängd automatisk paus och saknar motsvarighet till Androids
   kadensreglering. Androids kadenstest är tautologiskt (sänk gränsen tiofalt och det passerar ändå). Dessutom: en
@@ -1746,7 +1775,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
-- [x] ✅ **#233 UR NIRAS PRODUKTSIDA — STÄNGT 28/9 (DECISIONS #389)**: Bengt: *"Vi kommer inte att göra mer där."* (2) snöflingan mättes 21/9 (för tidigt, 4 av 4 fyrningar givarfel, fyndet blev #234); (1) *före resan*-vyn och blixthalke-idén ur #16 utreds inte; (3) köslut står kvar i #15. Kortet ordagrant i TAVLA-ARKIV. Tavlan 35 → 34.
 - [x] ✅ **#253 DE VARMA GRANNARNA — KLART 26/9 (DECISIONS #380)**: den levande ingesten sparar en varm avläsning per station och halvtimme sedan 25/9; 0,4 % saknade grannplatser i kalla halvtimmar (var 49,5 %, gränsen 5 %), 10 796 → 63 095 rader per dygn. Tavlan 35 → 34, och nytt kort #260 (V1–V3) ⇒ 35.
 - [x] ✅ **#241 VILTRÖSTEN — KLART 26/9 (DECISIONS #377)**: Trafikverkets djur i stället för polisens länscentrum, i drift sedan 22/9; del E uppfylld när 0.3.9 (13) laddades upp 23/9. Tavlan 36 → 35.
 - [x] ✅ **#210 "PÅ VÄG <NULL>" — STÄNGT 26/9 PÅ KODBEVISET (DECISIONS #376)**: fixen i main sedan 20/9 och i 0.3.9 (13); aldrig hörd rätt i bil, villkoret släppt. Tavlan 37 → 36.
