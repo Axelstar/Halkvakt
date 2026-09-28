@@ -1946,3 +1946,12 @@ Byggt: inget. Nästa: läsningen efter 08:32Z.
 Den schemalagda sista läsningen (Bengts ja). 144 av 144 skuggvarv 25/9 09:02 – 28/9 08:32Z skrev sina rader (123 × 3, 21 × 2
 enligt rotationen), 0 av 509 svar var 546 i pg_net-fönstret 02:42–08:41Z, gallringsjobbet orört. Kortet arkiverat, KLART-rad,
 §0b-raderna och kalenderraden strukna. Tavlan 36 → 35. Main:s halkläge 28/9 ihopslaget utan konflikt.
+
+## 2026-09-28 — Bengts provresa på (18): fyra fel, beskrivning till Axel (docs/TILL-AXEL-BYGGE-19.md)
+Bengt körde (18) på sin 4,7-tums iPhone och fick "konstiga meddelanden". Läst mot koden, inget ändrat i appen:
+(1) texter klipps — VaktenView och KorlageView saknar ScrollView; (2) "Skickat 13:52 (1 missar)" är sändarens gemensamma
+statusrad, inte raden ovanför, och böjningen är fel; (3) raden 13:52 är en andra miss i en ny resa — knappen och Siri saknar
+spärr, och Siri-vägen kräver inte att vakten kör; (4) "Din position stannar i telefonen" under Redo. — raden #320 missade.
+Android: fel 2 och 3, inte 1 och 4. Bengts provmissar ligger i driver_miss som riktiga rader.
+Beskrivningen till Axel skriven på Bengts begäran (inte ett kort), med skärmbilderna i docs/bygge-19/. Siri-frågan i §4.2.
+Byggt: inget. Nästa: Axels bygge (19) och integritet.html före utskick till fler.
