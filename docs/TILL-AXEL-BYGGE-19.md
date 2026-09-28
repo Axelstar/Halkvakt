@@ -19,6 +19,8 @@ Bengt körde (18) på sin iPhone 28/9, en 4,7-tumsmodell. Skärmbilderna ligger 
 - **13:52, Redo.** (`provresa-2026-09-28-1352-efter-resan.png`): efter-resan-kortet med **en** rad, *"13:52 Du markerade:
   appen missade — va…"*, ingen knapp vald — och under den *"Skickat 13:52 (1 missar)"*. Rubriken är avklippt, *EFTER RESAN*
   ligger under statusraden, *"Ingen tur ä…"* ligger under flikraden, och under *Redo.* står *"Din position stannar i telefonen."*
+- **Databasen** (läst 28/9 14:17): den enda miss som kom in var markerad **13:49:26**, vald *vatten*, mottagen 13:52:06. Alltså
+  tre markeringar på elva minuter — 13:41, 13:49 och 13:52 — varav en skickades. Raden är raderad på Bengts order (se nedan).
 
 Funktionen fungerar i grunden: markering, kort, val och sändning gör det de ska. Men fyra saker är fel.
 
@@ -59,8 +61,8 @@ Funktionen fungerar i grunden: markering, kort, val och sändning gör det de sk
 
 - **Filer:** `Services/FacitSender.swift` (rad 35–37) och `Views/EfterResanKort.swift` (rad 89–94).
 - **I dag:** `facitStatus` är **en** textrad för hela appen — senaste sändningen av vad som helst — och den visas längst ned i
-  kortet. Under en obesvarad rad läser den som att *raden* skickades, fast den gäller en annan miss (i Bengts fall troligen den
-  från 13:41). En testare som ser det tror att appen skickar utan att fråga, och det är precis löftet *"tystnad räknas aldrig
+  kortet. Under en obesvarad rad läser den som att *raden* skickades, fast den gäller en annan miss (i Bengts fall den från
+  13:49, enligt databasen). En testare som ser det tror att appen skickar utan att fråga, och det är precis löftet *"tystnad räknas aldrig
   som ja"* som då ser brutet ut.
 - **Ändring:**
   - (a) Rätt böjning: *"1 miss"* / *"2 missar"* (i dag alltid *"missar"*).
@@ -119,8 +121,10 @@ Android påverkas av fel 2 och 3, inte av 1 och 4. Ingen Android-telefon har (18
 1. **`integritet.html`** i karta-repot — bara du har skrivrätt. De tre ändringarna står färdiga i `docs/PLAY-DATASAFETY.md`
    rad 66–76: raderingsmeningen, **en punkt om missarna** och datumraden. Policyn ska säga vad appen skickar innan appen
    skickar det till någon utanför projektet.
-2. **Bengts provmissar 28/9** ligger i databasen (`driver_miss`) som riktiga rader, eftersom appen inte kan märka ett provtryck.
-   De tas bort eller märks som prov innan någon dom räknar missar. Claude gör det med DB-knappen på Bengts besked.
+2. ~~**Bengts provmissar 28/9** ligger i databasen som riktiga rader.~~ ✅ **Raderade 28/9 14:18 på Bengts order** (DB-knappen,
+   körning 36420976710, DECISIONS #390): en rad, markerad 13:49:26, *vatten*, `wx:7102`. `driver_miss` bär nu bara serverns
+   provrad från 26/9; 0 riktiga missar. De två osända markeringarna (13:41, 13:52) ligger kvar i Bengts telefon och skickas bara
+   om han väljer något för dem. Appen kan fortfarande inte märka ett provtryck — varje prov i bil landar i facit tills den kan.
 
 ## Ordning
 
