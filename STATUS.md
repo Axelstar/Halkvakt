@@ -2004,3 +2004,12 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 28/9 (Claude, Bengts besked): sökande till Skyltfonden är Bengt som privatperson (DECISIONS #395). Sammanfattningen till Axel
   av vårens 32 beviljade projekt är publicerad som privat sida, som Bengt delar:
   https://claude.ai/artifact/JguqbJ3PEDrnuVAue1qBF6
+- 28/9 (Claude, Bengts beställning): Halkvaktens mätningar, en teknisk analys och syskonsida till systembilden, är publicerad
+  privat (https://claude.ai/artifact/D6ipXTD9hoZH9TqCMBo4wT) och sparad i `docs/MATNINGAR-2026-09-28.html`. Den innehåller:
+  - arkivet och censurluckan (49,5 % → 0,4 %);
+  - skuggflottan (1 759 körningar, 144 av 144 varv, takten 0 av 110 och upprepningsfallet #101/#102);
+  - prognoslagrets räkning och grindar, med diagram över grind A över tid och per band;
+  - vakterna (706 av 811) och anmälningarna;
+  - radarn, vattenplaningen och djurdatan;
+  - skydden mot oss själva och vinterns grindar.
+  Varje tal är kontrollerat mot sin DECISIONS-post.
