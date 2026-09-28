@@ -5296,3 +5296,55 @@ Secrets som `FROST_CLIENT_ID`, tryck knappen igen. Då svarar spår B på riktig
 
 **Vad det betyder för kuvösen:** en av två kända sidodörrar är nu definitivt stängd. Trafikverkets tystnad väger
 därmed tyngre, och hållbarhetstiden (omkring 1 december, DECISIONS-raden i kort #232) står oförändrad.
+
+## #384 (28/9 2026) Larma vid förändring, inte vid tillstånd — och ett rött jobb ska inte kosta det som lästes
+
+**Bengts ja 28/9** på båda punkterna, efter nio identiska larm på en kväll.
+
+### Vad som hände
+
+`trv-bevakning` föll måndag 06:40 på **en enda rad**: `no-vegvesen: fetch failed`. Det är Vegvesens
+NYHETSSIDA (signalkällan), inte dataservern — Norges data flödade hela dygnet (steget
+*🇳🇴 Vegvesen DATEX → no.** grönt 14:24:37). Tolv av tretton källor lästes. Omkörning 16:59 grön:
+felet var övergående.
+
+Två fel blev synliga i skuggan av det, och inget av dem handlade om Norge.
+
+### (a) Ett rött jobb lämnade state ocommittat
+
+Commit-steget saknade `if:`, så ett fallet skript hoppade över det. Skriptet skriver state INNAN det
+returnerar, och en källa som kastar behåller sin GAMLA post (tilldelningen sker efter lyckad läsning).
+Alltså: de tolv källor som lästes nådde aldrig main. State stod kvar på **21/9** trots att körningen
+hittat fem ändringar, och nästa måndag hade jämfört mot samma gamla state och larmat om samma fem
+saker igen.
+
+Det är samma FÖLJD som CRLF-felet i kort #161 — rött jobb ⇒ vakten står stilla men ser levande ut —
+av en annan orsak. Lagningen 18/9 tätade git-steget; den tätade inte "vilket fel som helst lämnar
+state ocommittat". **Åtgärd: `if: always()` på commit-steget.**
+
+### (b) Mätvakten upprepade ett identiskt fynd varje timme
+
+`trv-bevakning` är ett **veckojobb**. Mätvakten kör varje timme och kommenterade så länge fyndet stod
+kvar: **nio identiska kommentarer på issue #640 mellan 08:07 och 16:07**, byte för byte samma text.
+Nästa körning som kunde rensa flaggan var måndag 5/10 — alltså **omkring 168 kommentarer och 168
+mejl för en enda händelse**.
+
+Vakten hade dedup för ISSUES (kommenterar i stället för att öppna nya) men ingen för INNEHÅLL.
+
+**Åtgärd, ordagrant enligt Bengt:** *larma vid förändring, inte vid tillstånd.* Den öppna issuen ÄR
+det stående tillståndet; kommentarerna är förändringsloggen. Jämförelsen görs på **fyndraderna**
+(`- ❌ …`), inte på hela kroppen — tidsstämpeln ändras varje varv och hade gjort varje jämförelse
+olik. Ingen daglig puls lades till: issuen står öppen, och det är signalen.
+
+### Varför det är värt ett beslut och inte bara en fix
+
+En vakt som ropar 168 gånger för en händelse lär sin läsare att skumma, och då går det första ÄKTA
+larmet förbi. Det är samma mekanism som gravstenarna i deviations-tabellen: bruset gjorde signalen
+osynlig. Skillnaden är att gravstenarna tog veckor att upptäcka; det här syntes på ett dygn, för att
+larmen gick till en människas telefon.
+
+**Kvar, inte åtgärdat i det här varvet:** samma körning skapade fem källändringslarm (#635–#639) där
+minst två är falska positiver — `polisen-api` dömdes RÖR OSS på ordet *api*, som står i sidans egen
+permanenta rubrik, och `smhi-uppdateringar` på *observation* i en post om HYDROLOGISKA observationer
+(vi använder meteorologiska). Bedömningen matchar mot hela sidan, inklusive rubrik, cookiebanner och
+sidfot. Eget kort; inget ja begärt ännu.

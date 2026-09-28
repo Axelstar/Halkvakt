@@ -9,7 +9,8 @@
 //   2. Sparar vi?      nyaste väderobservationen
 //   3. Når det appen?  live.json på CDN — det led som faktiskt fallerade
 // Larmar via GitHub-issue (API-anrop, inga Actions-minuter). En issue åt gången: öppnas när
-// något är fel, uppdateras medan det består, stängs när allt är grönt igen.
+// något är fel, kommenteras när fyndet FÖRÄNDRAS, stängs när allt är grönt igen. (Förut
+// kommenterades den varje varv medan felet bestod — se mätvakten, 28/9, DECISIONS #384.)
 //
 // Därtill TVÅ händelsevakter som inte är felkontroller. De säger inte att något är trasigt
 // utan att något äntligen går att mäta — egen etikett, egen issue, en enda gång var:
@@ -511,8 +512,23 @@ Deno.serve(async (req) => {
       `flödet matar innan du kvitterar — det var så grind V-A låg åtta dygn på tre dygns regn.` +
       "\n" + "\n" + `Och en källa som slutat växa märks inte i appen förrän domen ska fällas i vinter.`;
     const minM = await enOppen("matvakt", MATVAKT, rad);
+    // LARMA VID FÖRÄNDRING, INTE VID TILLSTÅND (Bengts order 28/9, DECISIONS #384). Den öppna issuen
+    // ÄR det stående tillståndet; kommentarerna är förändringsloggen. Förut kommenterade vakten varje
+    // timme så länge fyndet stod kvar — och trv-bevakning är ett VECKOJOBB: 28/9 gav det NIO identiska
+    // kommentarer på issue #640 på nio timmar, och hade blivit ~168 innan nästa måndagskörning kunde
+    // rensa flaggan. En vakt som ropar 168 gånger för en händelse lär sin läsare att skumma, och då
+    // går det första äkta larmet förbi — samma mekanism som gravstenarna.
+    // Jämförelsen görs på FYNDRADERNA, inte på hela kroppen: tidsstämpeln ändras varje varv.
+    const fyndrader = (kropp: string) => kropp.split("\n").filter((l) => l.startsWith("- ")).join("\n");
     if (allt.length) {
-      if (minM) await gh(`/issues/${minM.number}/comments`, "POST", { body: mKropp });
+      if (minM) {
+        // per_page=100 räcker och taket är ofarligt: efter den här ändringen växer kommentarerna
+        // bara vid förändring, så en mätvaktsissue når aldrig hundra av sig själv.
+        const tidigare = await gh(`/issues/${minM.number}/comments?per_page=100`);
+        const forra = tidigare.length ? tidigare[tidigare.length - 1].body : minM.body;
+        if (fyndrader(String(forra ?? "")) !== fyndrader(mKropp))
+          await gh(`/issues/${minM.number}/comments`, "POST", { body: mKropp });
+      }
       else await gh(`/issues`, "POST", { title: "🔕 Mätvakten: en mätning går inte eller en källa har slutat växa", body: mKropp, labels: ["matvakt"], assignees: ["895845"] });
     } else if (minM) {
       await gh(`/issues/${minM.number}/comments`, "POST", { body: mKropp + "\n" + "\n" + "Stänger — mätningarna går och källorna växer igen." });
