@@ -2001,3 +2001,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
     (fordonsdatapilot), #4 (ISA:s effekt på fart) och #13 (prototyp till praktik).
   - Förslag till Bengt: förening i stället för privatperson, citera #19 och #29, lyft kommunal vinterdrift och väg
     granskningen en gång till.
+- 28/9 (Claude, Bengts besked): sökande till Skyltfonden är Bengt som privatperson (DECISIONS #395). Sammanfattningen till Axel
+  av vårens 32 beviljade projekt är publicerad som privat sida, som Bengt delar:
+  https://claude.ai/artifact/JguqbJ3PEDrnuVAue1qBF6

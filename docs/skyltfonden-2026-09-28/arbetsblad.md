@@ -12,7 +12,7 @@
 
 ## Sida 1 i formuläret
 
-- **Företag:** Bengt Lagerlöf (privatperson), eller föreningen om den bildas före sändning.
+- **Företag:** Bengt Lagerlöf (privatperson).
 - **Kontaktperson, projektledare, firmatecknare:** Bengt Lagerlöf.
 - **Adress, telefon, e-post:** [ ].
 - **Organisationsnummer:** personnummer om privatperson.
@@ -39,7 +39,7 @@
 
 ## Checklista före sändning
 
-- [ ] Sökande: privatperson eller förening (Axels beslut).
+- [x] Sökande: Bengt som privatperson (beslutat 28/9, DECISIONS #395).
 - [ ] Personalplanen i bilaga 1: bakgrund och timmar för Bengt och Axel, och Axels efternamn. Timmarna ska summera till 350.
 - [ ] Kostnadstabellen i bilaga 1-PDF:en ser rätt ut. Google-konverteringen kan visa `**` runt rubrikerna; ta i så fall bort dem i dokumentet.
 - [ ] Malmö stad: kommer Annas ja före sändning kan en mening läggas till under *Efter projektet*: *"Malmö stad planerar egna vägväderstationer i gatunätet och undersöker att lämna datan via API; samtal förs med Fastighets- och gatukontoret om tillgång till stationsdata."* Utan ja står den allmänna meningen kvar.

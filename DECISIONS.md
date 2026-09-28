@@ -5734,3 +5734,17 @@ omdöpt till *"(ersatt av v8B utan extern granskning, 283 000 kr)"*. Dokumentet 
 - personalplanens tal;
 - Malmö-meningen, om Anna svarar ja;
 - sändningen.
+
+## #395 (28/9 2026) Skyltfondsansökan: sökande är Bengt som privatperson
+
+**Bengts besked 28/9.** Först kom *"Vi kommer att ansöka som en förening"*, och i samma varv, innan något byggts på det, *"Som en
+privatperson"*. Den andra raden är tolkad som en rättelse av den första. Tolkningen är nämnd för Bengt, som rättar om den är fel.
+Ansökan (bilaga 1 och arbetsbladet i Drive) är redan skriven med privatperson som sökande, så ingen text ändras. Frågan var
+tidigare Axels (FINANSIERING, #345). Han ser beslutet i sammanfattningen Bengt skickar honom:
+https://claude.ai/artifact/JguqbJ3PEDrnuVAue1qBF6
+
+**Känt pris.** Ingen av vårens 32 beviljade projekt har en privatperson som sökande (FINANSIERING 28/9). Ansökan väger inte upp
+det med en partner. Det den har är öppenheten att erbjuda underlaget för omprövning.
+
+**Alternativ.** En förening under bildande hade prejudikatet VALMA i vårens lista och gällde ingen ideell förening; den valdes
+bort. Stadgar och protokoll skrivs inte.
