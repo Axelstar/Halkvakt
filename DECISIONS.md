@@ -5746,5 +5746,5 @@ https://claude.ai/artifact/JguqbJ3PEDrnuVAue1qBF6
 **Känt pris.** Ingen av vårens 32 beviljade projekt har en privatperson som sökande (FINANSIERING 28/9). Ansökan väger inte upp
 det med en partner. Det den har är öppenheten att erbjuda underlaget för omprövning.
 
-**Alternativ.** En förening under bildande hade prejudikatet VALMA i vårens lista och gällde ingen ideell förening; den valdes
-bort. Stadgar och protokoll skrivs inte.
+**Alternativ.** En förening under bildande valdes bort. Det fanns ett prejudikat för den i vårens lista: VALMA, vars namn var
+inskickat för registrering, men vars organisationsform är okänd. Stadgar och protokoll skrivs inte.
