@@ -5559,3 +5559,10 @@ efter 08:32Z täcker resten i båda måtten — pg_net-fönstret rymmer då just
 den gallring som håller databasen under gratisnivåns tak. Kontrollerat 03:58Z: jobbet bär `SELECT gallra_arkiv(7)`, fällan har inte
 löst ut. Läsningarna i dag bar `sql/033_kamerafacit.sql`, som bara skapar om det som saknas. Åtgärden — ett läsläge i knappen — är
 kort #263 i *Claude — olåst*, inte byggd.
+
+**Tillägg 28/9 08:42Z — sista läsningen, kort #244 stängt (Bengt: *"ja, gör sista läsningen efter 08:32"*).** dbknapp
+36398894806, bärare `sql/033`. **144 av 144 skuggvarv** 25/9 09:02 – 28/9 08:32Z skrev sina rader: 123 med tre, 21 med två, inget
+med noll. De korta föll 05:02 och 08:32 i dag, sju varv efter 01:32 och sju efter varandra — rotationen håller hela vägen.
+`net._http_response`: **0 av 509** svar var 546 i fönstret 02:42–08:41Z; ihop med 04:00-läsningen (21:59–03:58Z, 0 av 501) är
+de sista tio timmarna lästa direkt, och hela fönstret genom raderna. Gallringsjobbet bär `SELECT gallra_arkiv(7)`. Verify uppfylld:
+kortet till TAVLA-ARKIV ordagrant, en rad i KLART, bedömningens två §0b-rader och kalenderraden strukna. Tavlan 36 → 35.

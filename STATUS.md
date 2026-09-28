@@ -1941,3 +1941,8 @@ FÄLLA: DB-knappens standardfil sql/014 schemalägger om gallringen till gallra_
 grannar, gravstenar och tidsvakt (jobbet kör gallra_arkiv(7) sedan 026). Inte utlöst — jobbet kontrollerat 03:58Z. Kort #263.
 Läsningarna bar sql/033 (bara IF NOT EXISTS).
 Byggt: inget. Nästa: läsningen efter 08:32Z.
+
+## 2026-09-28 08:42Z — Kort #244 stängt: tre dygn rena efter rutfiltret (DECISIONS #389 tillägg)
+Den schemalagda sista läsningen (Bengts ja). 144 av 144 skuggvarv 25/9 09:02 – 28/9 08:32Z skrev sina rader (123 × 3, 21 × 2
+enligt rotationen), 0 av 509 svar var 546 i pg_net-fönstret 02:42–08:41Z, gallringsjobbet orört. Kortet arkiverat, KLART-rad,
+§0b-raderna och kalenderraden strukna. Tavlan 36 → 35. Main:s halkläge 28/9 ihopslaget utan konflikt.

@@ -577,21 +577,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Verify: sju dygn utan falsklarm ur den checken, och ett riktigt stopp (kort #222:s fall) fångas fortfarande.
   🔨 **Bengts ja 24/9 (DECISIONS #343):** gränsen 30 → 180 min, kommentaren rättad. Kvar: deploy, sedan sju dygn utan falsklarm ur checken.
   📏 **Läst 24/9 15:09Z:** i drift: vakthundens körning 15:07Z skriver *situation_archive rörd för 3 min sedan (gräns 180)* och inga problem. Kortet stängs efter sju dygn utan falsklarm.
-- [ ] 🧯 **#244 "FÖR LITE DATORKRAFT" PÅ HEL- OCH HALVTIMMEN SEDAN 24/9 00:30** (fynd 24/9 i samma genomlysning). `net._http_response`
-  bär fyra svar 546 WORKER_RESOURCE_LIMIT — 00:30, 01:00, 02:00, 04:00 den 24/9 — och **inget de tre dygnen före**. Alla
-  schemalagda funktioner levererade ändå de minuterna (publicera-commit i kartrepot 02:00:51 och 04:00:54, skuggrader 02:00:03 och
-  04:00:04, livemotorn varje minut), så vilket anrop som föll går inte att se ur databasen — bara Supabases funktionsloggar säger
-  det (Axel). Tidsmässigt sammanfaller starten med kvällens deployer (skuggmotorn 20:51Z och 21:24Z bär nu prognosen: 744
-  ankare hämtas och räknas per varv) och med att tre funktioner startar samma sekund på :00/:30. Skuggvarvet 03:00 tog 50 s mot
-  normala 3–5 s medan grindarna K-A/T-A/W-A läste arkivet. Förslag: Axel läser loggen; är det skuggmotorn flyttas dess schema två
-  minuter (pg_cron, i Supabase — Bengts regel 22/9) så att den inte startar samtidigt som publicera och livemotorn. 🔒 NYCKEL:
-  funktionsloggen (Axel). Verify: noll 546 på tre dygn efter åtgärden.
-  🔨 **Bengts ja 24/9 (DECISIONS #344):** `sql/036` flyttar skuggmotorns svenska schema till :02/:32. Nya 546 i dag före flytten: 11:00 och 14:30. Kvar: tre dygn utan 546.
-  📏 **Läst 24/9 15:09Z:** första varvet på den nya tiden 15:02:02–04Z (E18 Karlstad→Örebro, E4 Sundsvall→Umeå, Rv40 Göteborg→Jönköping, prognosen med i alla tre); 0 av 28 svar i `net._http_response` var 546 mellan 14:49 och 15:09Z. Tjugo minuter bevisar inget ännu: felen kom med timmars mellanrum (sex gånger på femton timmar). Kortet stängs efter tre dygn utan 546.
-  ⚠️ **25/9 — flytten löste det inte (DECISIONS #359):** 546 kom **04:32 och 05:02Z**, på skuggmotorns nya minuter :02/:32. Felet följer skuggmotorn, så det är dess eget arbete (segmentprognosen och holdout sedan 23/9) som slår i taket, inte krocken med andra jobb. Verify står kvar; lagningen är en ny fråga (dela upp huvudvarvet, t.ex. prognos och holdout i eget anrop). Försprånget lades därför i ett eget anrop.
-  🔨 **LAGAT 25/9 (Bengt: *"laga skuggmotorns huvudvarv"*, DECISIONS #360):** rutfiltret — motorn prövar bara faror inom sin längsta räckvidd (10 + 5 km) från rutten, och prognosen bara ankare inom 50 + 2 + 3 km. Samma utfall byte för byte (3 tester, 3 motprov), och svaret bär tiden per steg. Kvar för Verify: tre dygn utan 546 efter deployen.
-  📏 **I drift 25/9 (`scripts/matningar/rutfilter-bevis-2026-09-25.sql`):** huvudvarvet 09:02Z efter deployen 08:32Z — motorn **173 ms** för tre rutter, prognosen **9 ms**, facit 5 300 ms (väntan på kamerabilderna, nätverk och inte räknearbete), totalt 5 737 ms; 740 ankare och 2 797 faror i snapshoten; tre rader med prognos och holdout; **0 × 546** bland 44 svar sedan 08:32Z. Kvar för Verify: tre dygn utan 546 (tidigast 28/9 kl 08:32Z).
-  📏 **LÄST 28/9 04:00Z (dbknapp 36375768319 och 36375846062) — RENT SÅ LÅNGT FÖNSTRET GÅR, STÄNGS EFTER 08:32Z.** (1) `net._http_response`: **0 av 501 svar var 546** — men tabellen bär bara de senaste **sex timmarna** (äldsta rad 27/9 21:59Z), så Verify:ns mått kan inte bära tre dygn. (2) **Måttet som täcker hela fönstret:** rader i `shadow_log` per skuggvarv sedan lagningen. **134 av 134 varv** 25/9 09:02 – 28/9 03:32 skrev sina rader: 115 med 3, 19 med 2 — och de 19 ligger exakt vart sjunde varv (10:32, 14:02, 17:32 …), vilket är rotationen över de 20 rutterna (6 × 3 + 2), inte fel. Inget varv saknas, inget dog halvvägs. **Kvar:** tre dygn är 25/9 08:32 + 72 h = **28/9 08:32Z**; en läsning då täcker de sista timmarna i båda måtten (pg_net-fönstret rymmer 02:32–08:32) och stänger kortet. DECISIONS #389.
 - [ ] 🧂 **#231 PRODUKTIONSREGELNS FALSKLARM PER VÄDERTYP — en rad i bildfacitets läsning** (Bengts ja 21/9, Axel utan synpunkter samma dag, DECISIONS #291,
   ur second opinion #290). 🔑 **Nyckel: bildfacitets läsning (#209) — beslutet efter första frosten, bilderna öppnas i mars.**
   På en stadigt kall snödag säger stationsregeln *kallt och nederbörd* också på en saltad väg med fullt grepp; stationen ser
@@ -1779,6 +1764,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#244 "FÖR LITE DATORKRAFT" — STÄNGT 28/9 08:42Z (DECISIONS #389)**: rutfiltret (25/9, #360) höll i tre dygn. **144 av 144 skuggvarv** 25/9 09:02 – 28/9 08:32Z skrev sina rader (123 med 3, 21 med 2 — de korta vart sjunde varv, rotationen över 20 rutter); **0 av 509** svar i `net._http_response` var 546 (fönstret 02:42–08:41Z; 04:00-läsningen täckte 21:59–03:58Z: 0 av 501); gallringsjobbet orört (`gallra_arkiv(7)`). dbknapp 36398894806. Tavlan 36 → 35.
 - [x] ✅ **#253 DE VARMA GRANNARNA — KLART 26/9 (DECISIONS #380)**: den levande ingesten sparar en varm avläsning per station och halvtimme sedan 25/9; 0,4 % saknade grannplatser i kalla halvtimmar (var 49,5 %, gränsen 5 %), 10 796 → 63 095 rader per dygn. Tavlan 35 → 34, och nytt kort #260 (V1–V3) ⇒ 35.
 - [x] ✅ **#241 VILTRÖSTEN — KLART 26/9 (DECISIONS #377)**: Trafikverkets djur i stället för polisens länscentrum, i drift sedan 22/9; del E uppfylld när 0.3.9 (13) laddades upp 23/9. Tavlan 36 → 35.
 - [x] ✅ **#210 "PÅ VÄG <NULL>" — STÄNGT 26/9 PÅ KODBEVISET (DECISIONS #376)**: fixen i main sedan 20/9 och i 0.3.9 (13); aldrig hörd rätt i bil, villkoret släppt. Tavlan 37 → 36.
