@@ -1978,3 +1978,11 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   Nytt i ansökan: grind A och vägpunktsgrinden, 13 tröskeldokument, givarvakterna och anmälningarna (7 + 9), värdevakten,
   djurdatan, `takt`, batteriet, missknappen och Niras "första bilen". Malmö nämns inte, eftersom inget ja har kommit.
   Issue #638/#639 stängda med kommentar samma varv.
+- 28/9 (Claude, Bengts ja): SYSTEM.md, bilaga 3 till Skyltfondsansökan, är rättad på 22 punkter som ändrats sedan 22/9
+  (DECISIONS #393). Det gäller:
+  - vilt från Trafikverket, med 120 min i åldersvakten i stället för 48 h;
+  - byggen, iOS (18) och Android 0.3.9 (18) i stället för 0.3.1, samt Play-kontot;
+  - prognoslagret utan offset;
+  - integritetsraden med missen, och kamerafacit V1–V3;
+  - arkivet, anmälningarna 7 + 9, 58 kontrakt, v8B, kuvösen och Nira.
+  Varje rättning är kontrollerad mot koden eller beslutet. Filen är inte omläst i övrigt.

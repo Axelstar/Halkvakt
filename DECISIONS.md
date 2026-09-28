@@ -5660,3 +5660,27 @@ hastighetsdata: den bryter invarianten. Bengt valde upphandlingen.
 - kontaktuppgifter i anmälningarna.
 
 Sista dag är 1/10. Ansökan följs fortfarande utanför repot (#345). Den här posten bokför bara versionen och valen.
+
+## #393 (28/9 2026) SYSTEM.md rättad inför bilaga 3 — det som ändrats sedan 22/9 och aldrig förts in
+
+**Bengts ja 28/9:** *"ja, rätta SYSTEM.md"*, på frågan i #392. SYSTEM.md är Skyltfondsansökans bilaga 3 och var läst mot
+koden 22/9. Sedan dess hade minst sex beslut ändrat det filen beskriver utan att filen följde med, trots regeln i dess rad 3
+(DECISIONS #24). Varje rättning är kontrollerad mot koden eller beslutet innan den skrevs:
+- **Vilt.** Vilt kommer från Trafikverkets *djur på vägen*, som punkt, till sluttiden (`end_time > now()` i
+  `publish/snapshot-core.ts`). Det åldras som olyckor, 120 min (`AgeGate.kt`), inte 48 h. Polisen matar bara arkivet och
+  webbkartan (#318, #391). Källtabellen är rättad likaså.
+- **Byggen.** iOS 0.3.9: (13) uppladdad 23/9 och (18) på main. Android 0.3.9, versionCode 18, på main (`build.gradle.kts`),
+  inte 0.3.1. Play-kontot är skapat (#271), och enhetsverifieringen återstår (#219).
+- **Prognoslagret.** Det är en rå avståndsviktning, och offseten utgick (#324, #325). Formuleringen *"före all skuggkod"* är
+  rättad till *före dess kod*, eftersom skuggmotorn körde från 29/8 och trösklarna daterades 1/9.
+- **Integritetsraden.** Den följer nu invarianten i CLAUDE.md ordagrant, med missen (#264, #379).
+- **Kamerafacit.** V1–V3 har varit i drift sedan 26/9 (kort #260).
+- **Arkivet.** Varma rader sparas sedan 25/9 (#353), och Pro valdes bort till förmån för export (#334).
+- **Anmälningarna.** De är 7 + 9, inte 7 (#300, #304).
+- **Grindarna.** Vägpunktsgrinden och förbehållet om censur är införda (#324, #353).
+- **Kontraktsgrinden.** 58 kontrakt enligt körningen 28/9, inte 44.
+- **Övrigt.** Skyltfonden v8B (#392), kuvösens läge (#388) och Nira enligt utredningens slutsats (*konkurrent i varningsledet,
+  möjlig partner i dataledet*). Filen sa tidigare *"partner, inte konkurrent"*, vilket utredningen 21/9 inte stöder.
+
+**Inte gjort:** en ny månadsläsning. Det som inte ändrats sedan 22/9 är inte omläst, och filens huvud säger det. Nästa
+månadsläsning görs i oktober enligt kalendern.
