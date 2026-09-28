@@ -494,6 +494,26 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **SERVERN I DRIFT 26/9 07:00Z** (DECISIONS #380): migrationen sql/038 via dbknapp 36225368861 (tabellen finns, RLS på, anon utan SELECT och INSERT), deploy av `facit-svar` 36225396540 från main, provmiss mot den riktiga funktionen ⇒ 204 och en rad med `prov = true` (dbknapp 36225453047; 0 riktiga), två felaktiga missar ⇒ 400, och ett provsvar på den gamla vägen ⇒ fortfarande 204.
 
 ### Claude — låst (väntar på nyckel)
+
+- [ ] 📣 **#261 KÄLLVAKTENS FALSKA POSITIVER — bedömningen matchar mot sidans möbler** (fynd 28/9 under
+  mätvaktsfelet, DECISIONS #384). 🔑 **NYCKEL: Bengts ja.**
+  Måndagskörningen 06:40 skapade **fem** källändringslarm (issues #635–#639). Lästa i efterhand kräver
+  minst två av dem ingen åtgärd alls, och båda är röda av samma skäl:
+  · **#639 `polisen-api` dömdes 🔴 RÖR OSS på ordet *api*** — som står i sidans EGNA permanenta rubrik,
+    "API över polisens händelser". Ordet kan aldrig försvinna, så den domen kan aldrig bli annat än röd.
+  · **#635 `smhi-uppdateringar` dömdes 🔴 RÖR OSS på *observation*** — i en post om **HYDROLOGISKA**
+    observationer. Vi läser metobs, alltså meteorologiska. Ordet är rätt, ämnet är fel.
+  · De tre övriga (#636 halkvarning, #637 dk-dmi, #638 polisen-regler) ändrades i cookiebanner, sidfot,
+    nyhetskarusell och raden *"Granskad # september"* — vaktens sifferstrippning gör datumet till `#`,
+    men det ÄNDRADE datumet flyttar ändå textlängden och därmed hashen.
+  **TVÅ SKILDA FEL, och de ska inte lagas med samma grepp:**
+  (1) **Bedömningen läser hela sidan** i stället för bara det nya stycket, så permanent inredning kan
+      fälla en dom. (2) **Diffen räknar in boilerplate** som ingen människa vill larmas om.
+  ⚠️ Samma familj som mätvaktens 168 larm och som gravstenarna: bruset gör signalen osynlig. Skillnaden
+  är att här är bruset *innehåll*, inte upprepning — fem olika issues, inte en upprepad.
+  Verify: en körning där en ändrad granskningsdatum-rad INTE ger ett larm, och där ett påhittat äkta
+  ord i ett nytt stycke fortfarande gör det (motprov åt båda hållen — en fälla som inte kan fälla
+  något är ingen fälla, läxan 20/9).
 - [ ] 🐕 **#243 VAKTHUNDENS ARKIVGRÄNS ÄR FÖR SNÄV — issue #528 var ett falsklarm** (fynd 24/9 på Bengts fråga *"vad betyder detta"*).
   Checken *livemotorns effekt* larmar när `situation_archive` inte rörts på 30 min, men arkivet skrivs bara när Trafikverket
   ändrar något: mätt 24/9 04:12Z — 4 gluggar > 30 min senaste dygnet (största 102 min), **32 på sju dygn, medel 54 min, största
