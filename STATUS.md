@@ -1986,3 +1986,11 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - integritetsraden med missen, och kamerafacit V1–V3;
   - arkivet, anmälningarna 7 + 9, 58 kontrakt, v8B, kuvösen och Nira.
   Varje rättning är kontrollerad mot koden eller beslutet. Filen är inte omläst i övrigt.
+- 28/9 (Claude, Bengts order): Skyltfondsansökan v8B utan extern granskning, 283 000 kr, med alla åtta bilagor
+  (DECISIONS #394).
+  - **Bilaga 1** ligger som Google-dokument i Drive.
+  - **Bilaga 2–8** är PDF:er i `docs/skyltfonden-2026-09-28/`, byggda i Chromium och granskade sida för sida.
+  - **Rättat:** tre felaktiga referenser (Freistetter, Kircher och Thorslund, Vollrath och Morawietz mot Naujoks) och
+    påståendet att "varningarna formuleras som åtgärd", som inte stämmer mot `texts.ts`.
+  - **Struket:** fyra påståenden utan källa.
+  - **SYSTEM.md** har fått sin Skyltfondsrad uppdaterad.

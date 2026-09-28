@@ -106,7 +106,7 @@ byggen, prognoslagrets form, kamerafacit, missknappen, arkivet och anmälningarn
   De tre fallen kallas V1–V3 (kort #260, `docs/UTREDNING-FARTKAMEROR-2026-09-26.md`).
 - **Trösklarna är okalibrerade mot en verklig vinter.** ≤ 1 °C + fukt och kod ≥ 2 är startvärden; kalibreringen är
   första säsongens huvuduppgift, och skuggreglernas startvärden (betan, D2) rörs inte förrän utfallen lästs.
-- **Mäter inte effekten på förare.** Inget säger i dag om förare sänker farten. Skyltfondsansökan (v8B, #392) mäter det
+- **Mäter inte effekten på förare.** Inget säger i dag om förare sänker farten. Skyltfondsansökan (v8B, #392, #394) mäter det
   med testförarnas svar, enkät och gruppintervju — inte med hastighetsdata, som appen inte skickar.
 
 ## 5 · Mätning
@@ -135,8 +135,8 @@ byggen, prognoslagrets form, kamerafacit, missknappen, arkivet och anmälningarn
   som klocka för allt som annars svälter.
 
 ## 6 · Vägar framåt (en rad per spår)
-- **Skyltfonden** — ansökan senast 1/10: v8B, den tekniska versionen utan partner, 343 000 kr (DECISIONS #392); beslut
-  15/12; projektstart januari 2027.
+- **Skyltfonden** — ansökan senast 1/10: v8B utan partner och utan extern granskning, 283 000 kr (DECISIONS #392,
+  #394); beslut 15/12; projektstart januari 2027.
 - **Kuvösen** (#232) — bakåtprövning på vintern 2024/25 om Trafikverket lämnar ut historiska VViS-data. Förfrågan
   gjordes 21/9, begäran om utlämnande är inskickad och beslutet inväntas (#388).
 - **Bildfacit per vädertyp** (#231) och kamerabilderna i mars (#157) — produktionsregelns falsklarm mätt.

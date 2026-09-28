@@ -79,6 +79,14 @@ Skyltfonden — Halkvakt (utkast 2026-09-28 v8B, 343 000 kr)"*. Ändringarna:
 Checklistan i dokumentet säger vad som återstår: sökande, att SYSTEM.md rättas som bilaga 3, integritet.html och
 kontaktuppgifterna i anmälningarna. Sista dag 1/10.
 
+**v8B utan extern granskning, 28/9 (DECISIONS #394) — den som skickas.** AP4 är struken på Bengts order, och **sökt belopp är
+283 000 kr**. Alla åtta bilagor är färdiga i `docs/skyltfonden-2026-09-28/`:
+- bilaga 1 finns som Google-dokument i Drive-mappen, med personalplanens hakparenteser kvar att fylla i;
+- bilaga 2–8 finns som PDF.
+
+Arbetsbladet med sida 1, checklistan och mejltexten ligger i Drive. På vägen rättades tre felaktiga referenser, som funnits
+sedan v4, och påståendet att varningarna "formuleras som åtgärd".
+
 ## Malmö stad — läget 23/9
 
 Anna Axberg, systemförvaltare på Fastighets- och gatukontoret (kommunikation och digitalisering), ringde Bengt 23/9 efter följdmejlet 19/9 (ärende 1255995): staden planerar **12 väderstationer nedfrästa i asfalten under hösten** och undersöker om datan kan lämnas via API; hon ber om en påminnelse mot årets slut och lovar att prioritera upp. Det är exakt den datatyp appen varnar på (yttemperatur mätt i vägen), och en ny källa i Trafikverkets form är dagar av ingest-arbete, inte veckor. **Avtalsfrågan om de BEFINTLIGA stationerna (19/9-mejlet) är obesvarad** — samtalet handlade om de nya installationerna (Bengt 23/9). Den är vinterns fråga: de tolv nya hinner kanske inte få API förrän långt in i säsongen. **Svaret** (Bengt): tack och en sammanfattning av samtalet, sedan två numrerade frågor som går att vidarebefordra — (1) kan yta, luft och nederbörd från de befintliga stationerna delas under avtal inom ett avgränsat trafiksäkerhetsprojekt, och om det inte är hennes fråga: vem äger den? (2) får vi skriva i Skyltfondsansökan att samtal förs med FGK? — plus erbjudandet att vara första externa testkonsument av API:et och vinterns resultat i Malmö som motprestation. Bildspelet skickas som kort bilaga. Allt som skickas till kommunen är allmän handling — inga partnernamn före deras ja, inga opublicerade trösklar. Påminnelse: **början av december**, före fondens besked 15/12.

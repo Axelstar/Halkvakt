@@ -5684,3 +5684,53 @@ koden 22/9. Sedan dess hade minst sex beslut ändrat det filen beskriver utan at
 
 **Inte gjort:** en ny månadsläsning. Det som inte ändrats sedan 22/9 är inte omläst, och filens huvud säger det. Nästa
 månadsläsning görs i oktober enligt kalendern.
+
+## #394 (28/9 2026) Skyltfondsansökan v8B utan extern granskning, 283 000 kr — och alla åtta bilagor färdiga
+
+**Bengts order 28/9:** *"skriv en v8 B version utan den externa utvärderingen och lägg till alla bilagor som ska finnas med i
+ansökan"*. Det ersätter valet i #392 (AP4 som upphandlad granskning för 60 000 kr).
+
+**Beslut:**
+- **AP4 är struken och sökt belopp är 283 000 kr** (AP1 126 000 · AP2 70 000 · AP3 41 000 · rapporten, nu AP4, 28 000 · drift
+  12 000 · resor 6 000; egen tid 350 h).
+- **I stället för granskningen står "granskningsbar i stället för granskad".** Tröskeldokumenten med versionshistorik, arkivet,
+  skuggloggen och skripten erbjuds Trafikverket, beredningsgruppen och VTI för egen omprövning, utan kostnad och utan löfte om
+  att någon tar emot.
+
+**Rättat på vägen**, eftersom fel funnits i alla versioner sedan v4 och i v8B med 343 000 kr. Referenserna är kontrollerade mot
+förlagens och databasernas uppgifter via sökning; förlagssidorna själva är spärrade i proxyn.
+- **"Partanen m.fl. 2022":** förstaförfattaren är Freistetter, och Partanen står sist.
+- **"Wallén Warner m.fl., Ergonomics 52, 2009":** författarna är Kircher och Thorslund (VTI), 52(2):165–176.
+- **"TRF 2025: falsklarm urholkar följsamheten, särskilt för auditiva varningar":** Vollrath och Morawietz 2025 fann att
+  falsklarm *inte* gav cry-wolf men onödiga inbromsningar, medan missar gav långsammare reaktioner. Ljudpåståendet kommer från
+  Naujoks, Kiesel och Neukum, AA&P 97, 2016.
+- **"Halkvakts varningar formuleras som åtgärd":** det stämmer inte mot `engine/src/texts.ts`. Halkvarningarna säger vad och var,
+  och bara olycksvarningarna säger *Sakta ner*. Texten säger nu det, och formuleringen blir en enkätfråga.
+- **Strukna eftersom ingen källa finns i repot:**
+  - "9 gånger på snö, 24 på is";
+  - Digitraffics uppdateringstakt och leverantör;
+  - "Göteborgs universitet (vägklimatologi)";
+  - "MET Norges öppna data" (Frost är oprövat).
+- **Källbevakningen** går varje vecka, inte varje timme. Bilaga 5 säger nu det.
+
+**Bilagorna**, i `docs/skyltfonden-2026-09-28/`, byggs med `bygg-bilagor.py` ur markdown till PDF i Chromium och är granskade
+sida för sida:
+1. Ansökningstexten. Den finns som Google-dokument i Bengts Drive-mapp, eftersom personalplanens hakparenteser är hans att fylla.
+2. Rekryteringsplanen.
+3. SYSTEM.md, rättad 28/9 (#393).
+4. En verifierad referenslista. Litteraturgenomgången 29/8 som egen fil finns varken i repot eller i Drive.
+5. En kort källkarta med licenser ur källkartläggningen 25–26/8.
+6. Fem skärmbilder ur fotostudion 26/9 och alla rösttexter ordagrant ur motorn.
+7. En förteckning över de tretton tröskeldokumenten med datum, och TROSKLAR-SKUGGAN i sin helhet.
+8. Båda anmälningarna till Trafikverket, med avsändarnamnet ifyllt och den interna underlagsfoten struken.
+
+Ett arbetsblad med sida 1, ändringarna, checklistan och mejltexten ligger i Drive och här. v8B med 343 000 kr är i Drive
+omdöpt till *"(ersatt av v8B utan extern granskning, 283 000 kr)"*. Dokumentet är kvar, och länken står still.
+
+**Alternativ.** Behålla granskningen (#392). Bengt valde bort den.
+
+**Kvar före 1/10:**
+- sökande (Axel);
+- personalplanens tal;
+- Malmö-meningen, om Anna svarar ja;
+- sändningen.
