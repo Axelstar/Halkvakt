@@ -5613,3 +5613,50 @@ som byggde på `api` i *rapid* använder nu `location` i *relocation* — samma 
 **Fyndet på vägen — kort #264.** `scripts/trv-bevakning.ts` rad 93 byter varje HTML-entitet mot ett **mellanslag**. Polisen.se
 kodar å, ä och ö som entiteter, så bevakningen läser *"h ndelser"* och *" ppna data"*. Ett nyckelord med å, ä eller ö kan
 därför aldrig träffa på en sådan sida. Inte rättat — det rör alla bevakade källor och är ett eget varv.
+
+## #392 (28/9 2026) Skyltfondsansökan v8B: den tekniska versionen utan partner, 343 000 kr, granskningen upphandlas
+
+**Bengts besked 28/9:** *"Vi kommer förmodligen att använda alternativ 7 B"*, och *"Vi har ännu inte någon kontakt med
+universitetet och kommer troligen inte att få någon sådan i tid"*. På förslaget om AP4: *"ja, kör på 343 000 med upphandlad
+granskning"*. Om Malmö stad: han har inget ja till att nämnas. Frågan från 23/9 15:44 är obesvarad, och Annas mejl 12:47
+samma dag gällde bara påminnelsen.
+
+**Beslut.** v7B uppdateras till **v8B** och ligger som Google-dokument i Bengts Drive-mapp bredvid v6: *"Ansökan
+Skyltfonden — Halkvakt (utkast 2026-09-28 v8B, 343 000 kr)"*,
+https://docs.google.com/document/d/1Pafo-qBAPutB368NaiZ32A5UGFrAWDDWHp_e7ZH_kmo/edit. Ändringarna mot v7B:
+- **AP4** är en upphandlad oberoende granskning i två steg: metod före marsdomen och resultat före rapporten. Den upphandlas
+  med offert från minst tre parter efter beviljat bidrag och kostar 60 000 kr. Ingen part namnges. **Sökt belopp 343 000 kr**
+  (AP1 126 000 · AP2 70 000 · AP3 41 000 · AP4 60 000 · AP5 28 000 · drift 12 000 · resor 6 000). Egen tid 350 h.
+- **Beteendestudien ur "anonymiserade hastighetsserier" är struken.** Den bryter invarianten (#264): rörelsedata får aldrig
+  lämna telefonen automatiskt, och en sådan studie hade krävt en ändring i invarianten, Play-deklarationen, integritet.html och
+  produktboken. H3 mäts nu med testförarnas svar, en enkät och en gruppintervju, och ansökan säger öppet att det är svagare.
+- **"Anonym daglig användningsstatistik (opt-in)" är struken**, eftersom den aldrig byggdes (#21 stängt, pulsen ligger i Ä8,
+  #346). Användningen mäts ur appbutikernas aggregerade statistik.
+- **Tre påståenden i v7B var fel mot repot och är rättade:**
+  - "SMHI:s luftstationer ger tydlig förbättring": SMHI-ankarna gjorde modellen sämre, 1,05 → 1,20 °C.
+  - "Förankrad via klimatologiska stationsoffset": offsettabellen utgick 23/9 (#324).
+  - "Viltolyckor via Polisen": vilt kommer från Trafikverket sedan 22/9 (#318).
+- **Två formuleringar var för starka och är rättade.** Appens läge (testkrets iPhone sedan 31/8, Android sedan 20/9, butikerna
+  under hösten med App Store först) och referensrutterna, som är skuggmotorns simulerade rutter.
+- **Nytt, med källa:**
+  - grind A och vägpunktsgrinden (#321/#324), med förbehållet att de prövas om på ocensurerat underlag (#353);
+  - 13 tröskeldokument;
+  - givarvakterna (#298/#299) och de två anmälningarna till Trafikverket, 7 + 9 stationer utan överlapp (#300/#304);
+  - värdevakten (#133/#134), djurdatan (#316) och `takt` (#200);
+  - batteriet på iPhone (#382);
+  - missknappen (#379) och kamerafacit;
+  - Niras "första bilen" och Trafikverkets "några mätningar per dygn" (NIRA-UTREDNING §3–4) samt Karsisto 2024.
+- **Malmö stad nämns inte.** Under *Efter projektet* står en allmän mening om kommunala stationer. Checklistan bär den
+  namngivna meningen om Anna svarar ja före sändning.
+
+**Alternativ.** (a) Stryka AP4 helt, 283 000 kr: fonden förlorar den oberoende kontrollen som bär v7B:s trovärdighet utan
+partner. (b) Behålla VTI/LTH vid namn: det vore ett löfte utan kontakt i en allmän handling. (c) Behålla beteendestudien med
+hastighetsdata: den bryter invarianten. Bengt valde upphandlingen.
+
+**Kvar före sändning, i checklistan:**
+- sökande, privatperson eller förening (Axels beslut, fortfarande obesvarat);
+- SYSTEM.md som bilaga 3, som säger Polisen och Android 0.3.1 och behöver rättas;
+- `integritet.html` (Axel);
+- kontaktuppgifter i anmälningarna.
+
+Sista dag är 1/10. Ansökan följs fortfarande utanför repot (#345). Den här posten bokför bara versionen och valen.

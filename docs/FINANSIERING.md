@@ -67,6 +67,18 @@ konkurs; beskedet kommer per brev. **Ingen av adresserna är prövad av oss** �
 "Skriv meddelande" är reserven. Valet 25/9:
 v7A med muntliga ja, annars v7B; en trafikskola utan halkbana ⇒ v7B med AP3 från v7A.
 
+**v8B, 28/9 (DECISIONS #392) — den som skickas.** Inga muntliga ja kom, och ingen kontakt med VTI, LTH eller något annat
+lärosäte finns eller hinner komma (Bengt 28/9), så v7B gäller. Den är uppdaterad till v8B i Bengts Drive-mapp: *"Ansökan
+Skyltfonden — Halkvakt (utkast 2026-09-28 v8B, 343 000 kr)"*. Ändringarna:
+- **AP4** är en upphandlad granskning utan namngiven part, 60 000 kr, och **sökt belopp är 343 000 kr**.
+- **Beteendestudien ur hastighetsdata är struken**, eftersom den bryter invarianten. Den anonyma användningsstatistiken är
+  också struken, eftersom den aldrig byggdes.
+- **SMHI-ankarna, stationsoffseten och Polisen som viltkälla är rättade** efter mätningarna.
+- **Malmö stad nämns inte** (inget ja).
+
+Checklistan i dokumentet säger vad som återstår: sökande, att SYSTEM.md rättas som bilaga 3, integritet.html och
+kontaktuppgifterna i anmälningarna. Sista dag 1/10.
+
 ## Malmö stad — läget 23/9
 
 Anna Axberg, systemförvaltare på Fastighets- och gatukontoret (kommunikation och digitalisering), ringde Bengt 23/9 efter följdmejlet 19/9 (ärende 1255995): staden planerar **12 väderstationer nedfrästa i asfalten under hösten** och undersöker om datan kan lämnas via API; hon ber om en påminnelse mot årets slut och lovar att prioritera upp. Det är exakt den datatyp appen varnar på (yttemperatur mätt i vägen), och en ny källa i Trafikverkets form är dagar av ingest-arbete, inte veckor. **Avtalsfrågan om de BEFINTLIGA stationerna (19/9-mejlet) är obesvarad** — samtalet handlade om de nya installationerna (Bengt 23/9). Den är vinterns fråga: de tolv nya hinner kanske inte få API förrän långt in i säsongen. **Svaret** (Bengt): tack och en sammanfattning av samtalet, sedan två numrerade frågor som går att vidarebefordra — (1) kan yta, luft och nederbörd från de befintliga stationerna delas under avtal inom ett avgränsat trafiksäkerhetsprojekt, och om det inte är hennes fråga: vem äger den? (2) får vi skriva i Skyltfondsansökan att samtal förs med FGK? — plus erbjudandet att vara första externa testkonsument av API:et och vinterns resultat i Malmö som motprestation. Bildspelet skickas som kort bilaga. Allt som skickas till kommunen är allmän handling — inga partnernamn före deras ja, inga opublicerade trösklar. Påminnelse: **början av december**, före fondens besked 15/12.

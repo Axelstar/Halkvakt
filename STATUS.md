@@ -1968,3 +1968,13 @@ viltvarningarna brister — fel sedan 22/9 (#318); nu arkivet och webbkartans l�
 öppna data (sidornas rubriker) ersatta med fälten vi läser. Prov: issuesens texter får inte bli röda, en fältändring blir det.
 FYND, kort #264: trv-bevakning.ts rad 93 gör HTML-entiteter till mellanslag — å, ä, ö försvinner på polisens sidor, och ett
 svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
+- 28/9 (Claude, Bengts beställning): Skyltfondsansökan v8B skriven och lagd i Bengts Drive-mapp. Det är den tekniska
+  versionen utan partner, med 343 000 kr och AP4 som upphandlad granskning (DECISIONS #392). Tre sökagenter läste igenom repot.
+  Rättat mot v7B:
+  - SMHI-ankarna gjorde modellen sämre, 1,05 → 1,20 °C;
+  - offseten utgick 23/9;
+  - viltet kommer från Trafikverket;
+  - hastighetsserierna och användningsstatistiken ströks, eftersom de bryter invarianten och inte finns.
+  Nytt i ansökan: grind A och vägpunktsgrinden, 13 tröskeldokument, givarvakterna och anmälningarna (7 + 9), värdevakten,
+  djurdatan, `takt`, batteriet, missknappen och Niras "första bilen". Malmö nämns inte, eftersom inget ja har kommit.
+  Issue #638/#639 stängda med kommentar samma varv.
