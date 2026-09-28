@@ -1955,3 +1955,8 @@ spärr, och Siri-vägen kräver inte att vakten kör; (4) "Din position stannar 
 Android: fel 2 och 3, inte 1 och 4. Bengts provmissar ligger i driver_miss som riktiga rader.
 Beskrivningen till Axel skriven på Bengts begäran (inte ett kort), med skärmbilderna i docs/bygge-19/. Siri-frågan i §4.2.
 Byggt: inget. Nästa: Axels bygge (19) och integritet.html före utskick till fler.
+
+## 2026-09-28 14:18 — Bengts provmiss raderad ur driver_miss (DECISIONS #390)
+Bengts order. Läst först: två rader — serverns provrad 26/9 (orörd) och Bengts provtryck, markerat 13:49:26, vatten, wx:7102,
+mottaget 13:52:06. Den raden raderad med ett villkor som inte kunde träffa något annat; omläsningen: 1 rad, 1 prov, 0 riktiga.
+Rättat i beskrivningen till Axel: den skickade missen var från 13:49, inte 13:41 — tre markeringar på elva minuter.

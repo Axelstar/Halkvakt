@@ -5566,3 +5566,23 @@ med noll. De korta föll 05:02 och 08:32 i dag, sju varv efter 01:32 och sju eft
 `net._http_response`: **0 av 509** svar var 546 i fönstret 02:42–08:41Z; ihop med 04:00-läsningen (21:59–03:58Z, 0 av 501) är
 de sista tio timmarna lästa direkt, och hela fönstret genom raderna. Gallringsjobbet bär `SELECT gallra_arkiv(7)`. Verify uppfylld:
 kortet till TAVLA-ARKIV ordagrant, en rad i KLART, bedömningens två §0b-rader och kalenderraden strukna. Tavlan 36 → 35.
+
+## #390 (28/9 2026) Bengts provmiss raderad ur driver_miss — facit har åter 0 riktiga missar
+
+**Bengts order 28/9:** *"ta bort mina provmissar ur databasen"*.
+
+**Läst före radering** (DB-knappen, körning 36420889138): `driver_miss` hade två rader. Rad 1 — 26/9 09:00, *annat*,
+`wx:prov-203` — är serverns eget bevis från driftsättningen (#380), märkt `prov` av tabellens genererade kolumn, och rördes
+inte. Rad 2 — markerad 28/9 13:49:26 svensk tid, *vatten*, `wx:7102`, iOS 0.3.9, mottagen 13:52:06 — var Bengts provtryck och
+räknades som riktig. `driver_facit` hade inga rader i dag.
+
+**Raderat** (körning 36420976710): `DELETE … WHERE id = 2` med station, app, val, `NOT prov` och en mottagningstimme i villkoret,
+så att satsen inte kunde träffa något annat. `RETURNING` visade exakt den raden; omläsningen efteråt gav 1 rad, 1 prov, 0 riktiga.
+
+**Det databasen också sa:** den skickade missen var markerad 13:49, inte 13:41 som analysen gissade. Bengt markerade alltså tre
+gånger på elva minuter (13:41, 13:49, 13:52) och skickade en — beskrivningen till Axel (`docs/TILL-AXEL-BYGGE-19.md`) är rättad.
+De två osända ligger kvar i telefonen och skickas bara om ett val görs.
+
+**Varför radering och inte `prov`-märkning:** Bengts ord var *ta bort*, och `prov` är en genererad kolumn som bara följer
+station-id:t — den går inte att sätta för hand. **Läxan till bygge (19):** appen kan inte skilja ett provtryck från ett riktigt,
+så varje prov i bil landar i facit. Tills appen kan märka prov gäller: provtryck raderas samma dag, och av någon som läst raden först.
