@@ -525,6 +525,16 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     Nu blir posten ⚪ **RÖR OSS INTE** med skälet utskrivet, i stället för 🔴.
   🧪 **Motprov, ett per vakt** (läxan 20/9): delningen backad ⇒ test 27 faller · `observation`
   återinfört ⇒ test 29 faller. Med båda lagningarna: 30/30 i sviten, 199/199 i hela `npm test`.
+  📏 **MÄTT GRÄNS FÖR LAGNING 1 (28/9, efter bygget):** `|`-delningen tar RUBRIKER, inte MENYER.
+  Prövat på `no-vegvesen` (issue #641) mot samma två sparade texter: före fixen bar de nya styckena
+  både *datex* och *publikasjon*; efter fixen försvinner **datex** (rubriken "Informasjon og nyheter om
+  DATEX" blir eget stycke, 657 → 623 tecken) men ***publikasjon* står kvar** — det ordet sitter inne i
+  en 623 teckens NAVIGATIONSMENY utan avgränsare. #641 hade alltså dömts 🔴 även med lagningen, på ett
+  ord ur menyn. Och `no-vegvesen` är signalkällan för ett PRODUKTIONSberoende, alltså just den sortens
+  falska röda som lär en att ignorera den som betyder något.
+  🔑 **NÄSTA STEG, ej byggt, kräver ditt ja:** döm på ORDNIVÅ i stället för styckenivå — när ett nytt
+  stycke är nästan identiskt med ett gammalt, bedöm bara de ord som faktiskt skiljer. Det är den
+  generella lagningen; ett sitespecifikt menyfilter glider isär från det det filtrerar.
   ⏳ **KVAR:** footerns *"Granskad # september"*-rad ger fortfarande ett VET INTE-larm. Det är brus,
   inte en falsk röd, och det lagas inte med ett sitespecifikt filter utan att någon ber om det.
   ⚠️ Samma familj som mätvaktens 168 larm och som gravstenarna: bruset gör signalen osynlig. Skillnaden
