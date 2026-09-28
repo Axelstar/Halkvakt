@@ -1916,3 +1916,13 @@ IHOPSLAGNING: main hade fått PR #631–#633 (bl.a. DECISIONS #383, den norska s
 fyra omnumrerade till #384–#387 med alla korsreferenser, i TAVLA, bedömningen och STATUS. Tre konflikter lösta: main:s fakta
 och sondresultat behållna, Bengts order ovanpå, mina felaktiga rader strukna. Öppna kort 35 = main:s 34 + #262.
 Byggt: inget. Nästa: inget på kuvösen förrän Trafikverket beslutar.
+
+## 2026-09-28 — Kort #260 läst: bildfacit V1–V3 har varit i drift sedan 26/9 08:25Z, kortet visste inte om det
+Bengts fråga: vad är kort 260? Kortet och bedömningen (§6.2, §6.6) sa "väntar på sammanslagning och deploy". Actions-loggarna
+säger annat: PR #622 mergad 08:22, deploy av kamerafacit, skuggmotor och vakthund 08:23–08:24 med bundlarna i synk,
+sql/039 08:25 (timjobbet på minut 17, aktivt), kamerafacitprov torrt 200 ok, lagringsprovet 08:26 larmade (26 MB mot
+gränsen 0) och issue #623 öppnades 08:27, stängdes 09:07. Kvar av Verify: (1) ingen ny bild vid fartkameralarm, (2)
+timkörningarnas svar — med 0–1 kalla stationer väntas "varför inte", (4) sjudygnsavläsningen tidigast 3/10.
+Samma fel som vanligt åt andra hållet: gjort men inte bokfört. Två dygn stod den enskilt viktigaste byggpunkten i §6 som
+"gör denna vecka" fast den redan gick.
+Byggt: inget. Nästa: avläsningen 3/10.

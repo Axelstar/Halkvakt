@@ -66,7 +66,7 @@ skuggan; villkoret i motorn orört). Stoppen i ordning: vädret, facit, S3 (Axel
 **Var vi är (26/9).** Driften är tät och vaktad, och ingen första frost har kommit (frostvakten: 50 stationer under noll; 24/9
 som mest 4) — S1-grinden och alla vinterdomar väntar på den. 26/9 lagades det som låg närmast förarna: Androids
 omladdningsloop (#370), iPhone laddar om vägdatan under resan och åldrar den utan nät (#258, #371), reglaget säger vad det gör
-(#259, #374) och Android bär samma versionsnummer som iOS (#377). Arkivet ser nu de varma grannarna (#253: 0,4 % saknas i kalla halvtimmar, var 49,5 %), och bildfacit breddas från skuggrutterna till hela landet (V1–V3, kort #260, #380 — väntar på sammanslagning och deploy). Styrdokumenten halverades (tavla och beslut i arkiv, 273
+(#259, #374) och Android bär samma versionsnummer som iOS (#377). Arkivet ser nu de varma grannarna (#253: 0,4 % saknas i kalla halvtimmar, var 49,5 %), och bildfacit breddas från skuggrutterna till hela landet (V1–V3, kort #260, #380 — i drift sedan 26/9 08:25Z). Styrdokumenten halverades (tavla och beslut i arkiv, 273
 grenar raderade, #371/#373) och tavlan sorterades efter vem som har nästa steg. **Flaskhalsen är Axels händer:** nio av tavlans
 35 öppna kort väntar på honom — iOS-bygget 0.3.9 (18), som bär #258, #259 och #203 lager 2, utskicket till testarna, Android-provet i bil,
 Play-kontot och Play-deklarationen, nycklarna — och §4.2 bär arton rader med ett obesvarat led. Inga förarsvar har kommit;
@@ -524,9 +524,9 @@ någon tryckt på), **kamerafacit insamlat men oläst till mars**, **uppspelning
 börjar sent i augusti.
 
 Kort **#260 (bildfacit V1–V3, Bengts ja 26/9)** är den enda facitkällan som växer utan att något annat händer: den tar
-bilden vid kameran närmast varje frysrisk i hela landet i stället för bara längs skuggrutterna. Den är byggd och väntar
-på deploy. **Den bör gå före allt annat byggarbete** — varje dygn den inte kör är ett dygn facit som inte samlas, och
-facit kan inte samlas i efterhand.
+bilden vid kameran närmast varje frysrisk i hela landet i stället för bara längs skuggrutterna. ~~Den är byggd och väntar
+på deploy.~~ **I drift sedan 26/9 08:25Z** (deployerna och timjobbet lästa i Actions 28/9, kort #260) — men utan kyla finns
+inget att fotografera: 0–1 kalla stationer av ~1 300 hittills. Det som begränsar facit nu är vädret, inte bygget.
 
 ### 6.3 Ett system med stående vakter kan aldrig stängas — skilj kort från kalender
 
@@ -563,7 +563,7 @@ den snabbaste minskningen av kön som finns att få.
 ### 6.6 Ordningen, om allt annat är lika
 
 1. ~~**I morgon:** kuvösens trappa (6.1)~~ — stängd 28/9: kuvösen väntar på Trafikverkets beslut, inget att göra (#388).
-2. **Denna vecka:** deploya bildfacit V1–V3 (6.2) — facit som inte samlas i dag går inte att samla i efterhand.
+2. ~~**Denna vecka:** deploya bildfacit V1–V3 (6.2)~~ — ✅ i drift sedan 26/9 08:25Z (kort #260); sjudygnsavläsningen tidigast 3/10.
 3. **När Bengt har en timme:** kalendern ut ur korten (6.3) och definitionen fastställd (6.4).
 4. **Nästa samtal med Axel:** de 14 kort som inte kräver hans händer (6.5).
 

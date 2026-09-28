@@ -445,8 +445,16 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   skriver lagringsraden, (4) efter sju dygn står bilder och MB per dygn i bedömningen, under taket.
   🔨 **BYGGT 26/9:** V1 i `skuggmotor/main.ts` (bunten omgjord), V2/V3 i `supabase/functions/kamerafacit` (urvalet i `urval.ts`, fem prov i
   `test/kamerafacit.test.ts`), timjobbet `sql/039` (minut 17), vakthundens lagringskontroll; bildkontrollen räknar bara larm som inte är
-  fartkameror; kontaktarket läser timvägen; facitradien 15 km i kontraktsgrinden (motprov: 14 km fäller). 🔑 Kvar: Bengts *"slå ihop"*,
-  deploy av tre funktioner, sql/039 via dbknapp, beviset.
+  fartkameror; kontaktarket läser timvägen; facitradien 15 km i kontraktsgrinden (motprov: 14 km fäller). ~~🔑 Kvar: Bengts *"slå ihop"*,
+  deploy av tre funktioner, sql/039 via dbknapp, beviset.~~
+  ✅ **I DRIFT SEDAN 26/9 08:25Z — läst i Actions-loggarna 28/9, kortet hade inte fått veta det.** PR #622 mergad 08:22 ·
+  deploy `kamerafacit` 08:23 (körning 36229634732), `skuggmotor` 08:24 (36229638425), `vakthund` 08:24 (36229641777), alla med
+  *bundlarna i synk med källorna* · `sql/039` 08:25 (dbknapp 36229707252): `halkvakt-kamerafacit`, `17 * * * *`, aktivt, pekar
+  på funktionen · kamerafacitprov `?torrt=1` 08:25 ⇒ 200 `ok: true` · **Verify (3) första halvan:** lagringsprovet 08:26 ⇒
+  *"LAGRINGEN ÄR 26 MB"*, issue #623 öppnad 08:27:05, stängd av nästa gröna timkörning 09:07:50.
+  ⏳ **Kvar:** (1) läs att skuggmotorn inte tagit någon ny bild vid fartkameralarm sedan 08:24 · (2) läs timkörningarnas svar —
+  med 0–1 kalla stationer av ~1 300 väntas svaret *varför inte*, inte bilder; frosten styr, inte deployen · (4) sju dygn med
+  bilder och MB per dygn i bedömningen, tidigast 3/10.
 
 - [ ] 🗣️ **#203 FACIT UTAN ATT STANNA — svaret efter resan, och med rösten under den** (Bengts fråga 18/9 efter
   fälttest 2: *"vi måste hitta något system som inte innebär att de ska stanna och bekräfta … ett automatspår"*).
