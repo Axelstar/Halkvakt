@@ -2048,3 +2048,9 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 29/9 (Claude, Bengts "ja, kör på"): main ihopslagen in i grenen (DECISIONS-krocken löst: grenens kuvösbeslut #384/#385 → #397/#398),
   DECISIONS #399 bokför vägpunktsgrinden FALLEN och att skuggan fortsätter som mätning, populationsläsningen flyttad till
   `scripts/vagpunkt-population.ts` och körs varje måndag efter höjdprovet. Kort #266 klart. PR mot main öppnad.
+- 29/9 (Claude, Bengts "radera den och slå ihop"): de två mätningssidorna är ett dokument. Den interna sidan heter nu
+  *Halkvaktens mätningar* (privat, https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc) och bär allt: datan, de 21 delområdena,
+  övriga mätningar, skydden och domkalendern. Den publika sidan från 28/9 är raderad (bara Axel hade länken; han får den privata
+  av Bengt), eftersom den redan glidit isär: den sa att rå viktning klarar vägpunktsgrinden. I repot är kopian en fil,
+  `docs/MATNINGAR-2026-09-29.html`; `MATNINGAR-2026-09-28.html` och `SKUGGMOTORN-2026-09-29.html` är borta. Externa utdrag
+  görs ur den vid behov, utan opublicerade regelvärden.
