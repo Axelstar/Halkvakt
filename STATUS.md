@@ -2080,3 +2080,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 29/9 (Claude, Bengts fråga om luckor, affärshemligheter, vision och marknadsföring): Axels åtta V2-dokument lästa;
   granskningen i `docs/skyltfonden-2026-09-28/GRANSKNING-V2-2026-09-29.md` och i Drive-mappen Skyltfonden. Tio rättelser,
   två saknade stycken med förslagstext, bedömningen att inget i ansökan är en affärshemlighet. §4.2-rad.
+- 29/9 kväll (Claude, Bengts *"Ny version. Gör en granskning"*): bilaga 1 i ny version läst mot de tio punkterna. Sex kvar,
+  viktigast prognoslagrets septemberbild; två nya (föreningen bildas i kväll, förarens nej fäller ensamt mot KB-D). Färdig
+  ersättningstext i granskningsdokumentet §6.

@@ -105,3 +105,74 @@ Stationernas id och koordinater i bilaga 8 är Trafikverkets egna öppna data.
 2. Rättelserna 1–6 och 8–10 i §2. Punkt 1 är den viktigaste: den gäller ärligheten om prognoslagret.
 3. Visionen och spridningsstycket ur §3 a–b, med talen satta.
 4. Konsekvenssvep enligt Dokument 0, plus "0,71", "3,8 %", "Lagerlöf Labs", "Claude klassar".
+
+---
+
+## 6. Andra läsningen: bilaga 1 i ny version (Bengt 29/9 kväll)
+
+**Omdöme.** Texten håller ihop: kostnadsplanen summerar rätt (413 000; 350 timmar = 245 000; 190 + 160), arbetspaketen och
+timmarna stämmer med varandra, granskningen, testbädden, väghållarvyn och datakvalitetsrapporten är väl motiverade, och
+facitreglerna står nu i huvudtexten. Men den viktigaste rättelsen är inte gjord: prognoslagret beskrivs fortfarande som i
+september. Sex av tio punkter står kvar, och två nya har tillkommit.
+
+| # | Punkt | Läge i nya versionen |
+| :-- | :-- | :-- |
+| 1 | Prognoslagret efter 28/9 | **Kvar.** Syfte: "klarades den 23 september … 0,71 °C … 3,8 % … höll också i det glesaste bandet … med 0,72 °C. Vinterns grindar återstår." Eget arbete: "711 stationer och 202 087 avläsningar … 0,71 °C … 3,5–3,8 %" och "Det enklare valdes. En inlärd stationsoffset tillförde inget (0,72 mot 0,71 °C) … Båda ströks." Innovationsgrad 3: "Två förbättringar av prognoslagret ströks när de mättes sämre." Allt detta är septemberbilden. 28/9: grind A håller (0,74 °C, 3,7 %, 715 stationer, 14 594 punkter), men den enklare skattningen utan offset föll med 6,9 % grova fel, och det är offseten som håller när de varma grannarna är med (DECISIONS #399). Meningen "ströks när de mättes sämre" är nu direkt fel om offseten. Färdig text nedan. |
+| 2 | Bilaga 7:s arbetsanteckningar | Kan inte bedömas ur bilaga 1. Kontrollera bilaga 7 separat. |
+| 3 | Vem klassar kamerabilderna | **Rättad i bilaga 1** ("klassas blint av en utomstående", tre gånger). Bilaga 7 §6 måste säga samma sak. |
+| 4 | "Lagerlöf Labs" i bilaga 8 | Kan inte bedömas ur bilaga 1. |
+| 5 | "40–70 förare för att 60 ska fullfölja" | **Kvar** (Risker). Presentkorten är 60. Skriv "60–80 förare för att 60 ska fullfölja", eller sänk presentkorten till 50. |
+| 6 | AP2 "driftsättning mot användare från januari 2027" | **Kvar** (Kostnadsplan, kommentar 2). AP2-texten säger "inför vintern 2027/28 bara om trösklarna klaras". |
+| 7 | Personnummer och bankkonto | Gäller formuläret, inte bilaga 1. Begär sekretessprövning i mejlet om privatperson står kvar. |
+| 8 | Placeholders | **Kvar:** "Bakgrund: [fyll i]" (Bengt) och "[X] timmar, motsvarande [Y] kr". |
+| 9 | Påståenden utan källa | **Delvis.** "Vi har inte funnit någon märkesoberoende tjänst" är reserverat. Kvar utan reservation: "Ingen har mätt hur väl VViS-data fungerar som varningskälla för allmänheten" (Syfte 1), "Ingen bil på marknaden sänker farten för att det är halt två kilometer fram" (H3), "Volvo Cars delar halkdata mellan bilar sedan 2016", "tio halkdagar per vinter". Ett "såvitt vi funnit" räcker. |
+| 10 | Skärpningsdatumen | **Kvar:** "12 och den 23 september" mot bilaga 7:s ändringar 24/9 och 26/9. Skriv "under september". |
+
+**Nya fynd.**
+
+- **Föreningen bildas i kväll.** Personalplan: "projektgruppen avser att bilda en ideell förening som förvaltar dem efter
+  projektet." Om det konstituerande mötet hålls kl. 19 är meningen fel när ansökan skickas 30/9. Skriv då: "Projektgruppen bildade
+  den 29 september 2026 Föreningen Halkvakt, en ideell förening som förvaltar rapport, metod, tröskeldokument och testbädd;
+  organisationsnummer är sökt." Det stärker dessutom kunskapsprojektsramen mer än en avsikt gör, även om Bengt står som sökande.
+- **Förarens nej fäller ensamt.** Metod, Facit: "Ett falsklarm fälls av två saker: en station … eller en testförare som svarar att
+  varningen inte stämde." Tröskelreglerna säger annat (TROSKLAR-KOMBINATIONEN KB-D, mätningssidan §3.3): *Stämde inte* fäller bara om
+  ingen annan källa bekräftar, och förarfacit ensamt fäller eller friar ingen dom. Skriv: "… eller en testförare som svarar att
+  varningen inte stämde, om ingen annan källa bekräftar den." Annars lovar ansökan en regel som tröskeldokumentet förbjuder, och
+  granskaren i AP4 ska pröva just att reglerna tillämpas som de skrevs.
+- **"Tre leverabler är gjorda för dem"** (Trafiksäkerhetsnyttan): de görs under projektet. Skriv "görs".
+- **"betans varningsregler döms i januari 2027"** (Metod): ordet betan är internt. Skriv "de nya varningsreglerna, som testförarna
+  får i november".
+- **Trafikövningsplatsen "inom projektets ram utan ändrat belopp"** står två gånger utan budgetpost. Ofarligt, men lova det inte
+  utan att veta vad ett försök kostar; skriv "kan försöket läggas till efter samråd med fonden".
+
+**Fortfarande saknas.** Visionen (§3 a) och "Så når appen förarna" med talen (§3 b). "Information till förare" under AP3 är
+bra men bär inga tal, och ansökan förutsätter "några hundra aktiva förare" på tre ställen med 40–70 rekryterade. Tidsplanen på en
+sida (§3 c) saknas också.
+
+**Färdig text för punkt 1, att klistra in.**
+
+Syfte, stycket om grinden:
+> Den första av lagrets tre grindar, korsvalideringen vid stationerna, klarades den 23 september 2026 och höll i omkörningen den
+> 28 september på ett fullständigare arkiv: medelfel 0,74 °C mot kravet högst 1,0 °C och grova fel 3,7 % mot kravet högst 5 %.
+> Den enklare skattning som ska gälla mellan stationerna, där ingen egen mätserie finns, föll däremot den 28 september med 6,9 %
+> grova fel. Utfallet är bokfört, och det är just den frågan, vad som går att uppnå mellan stationerna, som vinterns grindar och
+> ansökan avser att pröva.
+
+Eget arbete, de två punkterna om grind A och "Det enklare valdes":
+> **Prognoslagrets grind A.** Lagret är prövat med korsvalidering: varje station hålls utanför och skattas ur grannarna. Senaste
+> körningen, den 28 september över 715 stationer, 308 852 avläsningar och 14 594 punkter, gav medelfel 0,74 °C och 3,7 % grova fel,
+> inom kraven även bortom 20 km från närmaste station.
+>
+> **Det enklare prövades, och föll där det saknar historik.** En skattning utan inlärd stationsoffset var lika bra vid stationerna
+> i september (0,72 mot 0,71 °C), men gav 6,9 % grova fel när arkivet från den 25 september också sparade de varma
+> grannstationerna. Offseten håller (3,7 %) men finns bara där en station har egen mätserie. SMHI:s luftstationer som extra ankare
+> gjorde modellen sämre (1,05 → 1,20 °C) och ströks. Hur en vägpunkt utan station ska skattas är därmed en öppen och bokförd fråga,
+> och den är kärnan i arbetspaket 2.
+
+AP2, Nationell felkarta, efter "0,4 %":
+> Omkörningen den 28 september visade att korsvalideringen vid stationerna håller, men att skattningen mellan stationerna inte gör
+> det utan stationens egen historik. Vilken modell som ska bära vägpunkten avgörs därför på vinterns underlag, inte på höstens.
+
+Innovationsgrad 3, meningen om två förbättringar:
+> SMHI:s luftstationer som ankare ströks när de mättes sämre, och den enklare skattningen mellan stationerna bokfördes som fallen
+> när den mättes om på ett fullständigare arkiv.
