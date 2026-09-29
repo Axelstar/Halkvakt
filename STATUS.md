@@ -2083,3 +2083,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 29/9 kväll (Claude, Bengts *"Ny version. Gör en granskning"*): bilaga 1 i ny version läst mot de tio punkterna. Sex kvar,
   viktigast prognoslagrets septemberbild; två nya (föreningen bildas i kväll, förarens nej fäller ensamt mot KB-D). Färdig
   ersättningstext i granskningsdokumentet §6.
+- 29/9 kväll (Claude, Bengts *"Granska bilaga 1 … lista det som bör ändras"*): ändringslista för V2:s bilaga 1 med placering per
+  avsnitt i `docs/skyltfonden-2026-09-28/ANDRINGSLISTA-BILAGA-1-2026-09-29.md` och i Drive-mappen Skyltfonden. Tre tunga (prognoslagrets
+  septemberbild, föreningen "avses bildas", förarens nej fäller ensamt), tabellen "i dag / om trösklarna klaras" som svar på Bengts
+  visionsfråga, 25 övriga med plats.
