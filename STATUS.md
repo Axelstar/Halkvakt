@@ -2074,3 +2074,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   återställda (DECISIONS #403). `bilaga-1-ansokan-med-granskning-343.md` byggd ur 283 000-texten med v8B:s granskningsstycken;
   arbetsbladet bär jämförelsen och rekommendationen; protokollet § 16 lägger valet på mötet; målbladet §3 bär båda beloppen.
   Drive: nya dokument för bilaga 1 (343), protokollet och arbetsbladet, de gamla omdöpta. Axels sammanfattning uppdaterad.
+- 29/9 (Claude, Bengts *"lägg in allt detta i en mapp i drive med namn Skyltfonden"*): Axels mejl 13:45 om Ansökan V2 (privatperson,
+  413 000 kr, fartförändring i telefonen m.m.) bokfört som öppen §4.2-rad; Drive-mappen *Skyltfonden* skapad med Axels V2-mapp,
+  våra två alternativ och mejlet som dokument.
