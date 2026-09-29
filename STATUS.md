@@ -2035,3 +2035,8 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   mätningssidan är delad med alla som har länken och lämnades orörd. Genomgången hittade att vägpunktsgrinden FÖLL i
   måndagskörningen 28/9 (rå viktning A2 6,9 %, grind A med offset 3,7 %), obokfört; läst i Actions-loggen och fört till §4.2 och
   kort #266. Inaktuella rader och en värdevakt som inte körts sedan 15/9 står på kort #267.
+- 29/9 (Claude, Bengts "gör det"): vägpunktsgrindens population läst. `scripts/matningar/vagpunkt-population-2026-09-29.ts`, körd
+  via hojd-prov-knappen på grenen (`dagar: population`), kör samma population med arkivet som det är och med bara de rader den gamla
+  ingesten sparade, före och efter 25/9 07:30Z. Före: rå 4,2 mot 3,9 %. Efter: rå 11,1 % ± 0,8 mot 4,5 %; offset 4,4 % ± 0,5.
+  Septemberdomen #324 vilade alltså på censurerat underlag, och 28/9:s FALLEN är den ärliga. Ingen DECISIONS-rad förrän Bengt läst
+  (§4.2, kort #266). Den interna sidan är uppdaterad.

@@ -198,7 +198,7 @@
         <tr><td><a href="#d-forare">3.3 Förarsvar och missar</a></td><td>facit</td><td><span class="lage drift">i drift</span></td><td>0 riktiga svar</td></tr>
         <tr><td><a href="#d-tystnad">3.4 Tystnadsfelet</a></td><td>facit</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>2 av 20 tillfällen</td></tr>
         <tr><td><a href="#d-vakter">4.1 Vakterna</a></td><td>L1</td><td><span class="lage drift">i drift</span></td><td>706 av 811 felrader tagna</td></tr>
-        <tr><td><a href="#d-prognos">5.1 Prognoslagret</a></td><td>L4</td><td><span class="lage skugga">körs i skuggan</span></td><td>vägpunktsgrinden föll 28/9, obokfört</td></tr>
+        <tr><td><a href="#d-prognos">5.1 Prognoslagret</a></td><td>L4</td><td><span class="lage skugga">körs i skuggan</span></td><td>vägpunktsgrinden föll 28/9, orsaken prövad</td></tr>
         <tr><td><a href="#d-frysklass">5.2 Frysklassningen</a></td><td>L4</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>0 punkter med frys</td></tr>
         <tr><td><a href="#d-tathet">5.3 Stationstätheten</a></td><td>L4</td><td><span class="lage arkiv">mätt</span></td><td>median 6,8 km till station</td></tr>
         <tr><td><a href="#d-trend">6.1 Trenden</a></td><td>L3</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>19 469 kandidater</td></tr>
@@ -437,14 +437,15 @@
     <div class="nyckel">
       <div><b>3,7 %</b><span>grova fel i grind A 28/9, krav ≤ 5 % <span class="dom klarar">klarar</span></span></div>
       <div><b>6,9 %</b><span>grova fel för modellen i skuggan 28/9 <span class="dom faller">faller</span></span></div>
-      <div><b>14 594</b><span>punkter från 715 stationer i grind A 28/9</span></div>
-      <div><b>0 av 20</b><span>halkhändelser till grind B:s underlag</span></div>
+      <div><b>11,1 %</b><span>rå viktning efter 25/9 med varma grannar</span></div>
+      <div><b>4,5 %</b><span>samma dagar med den gamla arkivregeln</span></div>
     </div>
     <p><b>Nytta:</b> avgör i mars 2027 om prognosen får synas på kartan med konfidens, eller förstärka en varning som vilar på en mätning. Den får aldrig ensam utlösa rösten.</p>
     <div class="ruta rod">
-      <h4>28/9: vägpunktsgrinden föll, och det är inte bokfört</h4>
-      <p>Måndagens veckokörning var den första där arkivet har varma grannrader. Då föll vägpunktsgrinden: rå avståndsviktning, den modell skuggan kör, fick 6,9 % ± 0,4 grova fel mot kravet 5 %, och de två andra kandidaterna föll också. Grind A klarade samma morgon med 0,74 °C, 3,7 % ± 0,3 och 0,0 %. Skillnaden är att grind A använder stationens inlärda offset, som vägpunkten inte har.</p>
-      <p>Den troliga förklaringen är inte prövad: septemberdomarna fälldes när hälften av grannraderna saknades, och fallet kall station med varm granne kommer först nu med. Fönstret saknar dessutom 6–7/9. Enligt projektets regel läses populationen innan domen skrivs in. Frågan ligger i bedömningen. Skuggan fortsätter, eftersom ingenting av den når föraren.</p>
+      <h4>28/9: vägpunktsgrinden föll, och orsaken är prövad</h4>
+      <p>Måndagens veckokörning var den första där arkivet har varma grannrader. Då föll vägpunktsgrinden: rå avståndsviktning, den modell skuggan kör, fick 6,9 % ± 0,4 grova fel mot kravet 5 %, och de två andra kandidaterna föll också. Grind A, som använder stationens inlärda offset, klarade samma morgon med 3,7 % ± 0,3.</p>
+      <p>En läsning 29/9 körde samma population två gånger över samma dagar: med arkivet som det är och med bara de rader den gamla arkivregeln hade sparat. Före 25/9 blev det nästan samma resultat med båda reglerna, 4,2 och 3,9 %. Efter 25/9 gav den gamla regeln 4,5 % och den nya 11,1 %. Septemberdomen var alltså ett resultat av att de varma grannarna saknades. I den värld skuggan faktiskt kör i har rå viktning mer än dubbelt så många grova fel som kravet tillåter. Den inlärda offseten håller, 4,4 % ± 0,5 efter 25/9, men en vägpunkt utan station har ingen egen historik att lära en offset ur.</p>
+      <p>Vad som ska gälla för skuggan är Bengts beslut, och frågan ligger i bedömningen. Skuggan fortsätter under tiden, eftersom ingenting av den når föraren.</p>
     </div>
     <details><summary>Hur den mäter</summary><div class="inne">
       <div class="formel">
@@ -520,10 +521,24 @@
       </div>
       <p>Medelfelet håller kravet i alla band båda gångerna. Det är de grova felen som ändrats: bortom 7 km ligger de nu på 7–8 %. I bandet 7–15 km bar vakterna 23/9 hela skillnaden, 2,68 °C och 24,9 % grova fel före mot 0,55 °C och 1,1 % efter, fast vakterna bara tog 874 + 1 961 + 2 553 av 337 096 rader (#324).</p>
 
+      <h4>Läsningen av populationen 29/9</h4>
+      <div class="tabell">
+        <table>
+          <thead><tr><th>Arkivregel och period</th><th class="tal">Punkter</th><th class="tal">Rå: A1</th><th class="tal">Rå: A2</th><th class="tal">Offset: A2</th></tr></thead>
+          <tbody>
+            <tr><td>Ny regel, före 25/9</td><td class="tal">8 812</td><td class="tal">0,73 °C</td><td class="tal">4,2 % ± 0,4</td><td class="tal">3,0 % ± 0,4</td></tr>
+            <tr><td>Gammal regel, före 25/9</td><td class="tal">8 779</td><td class="tal">0,72 °C</td><td class="tal">3,9 % ± 0,4</td><td class="tal">1,4 % ± 0,2</td></tr>
+            <tr class="fallen"><td><b>Ny regel, efter 25/9</b></td><td class="tal">6 401</td><td class="tal">0,98 °C</td><td class="tal">11,1 % ± 0,8</td><td class="tal">4,4 % ± 0,5</td></tr>
+            <tr><td>Gammal regel, efter 25/9</td><td class="tal">6 013</td><td class="tal">0,73 °C</td><td class="tal">4,5 % ± 0,5</td><td class="tal">1,7 % ± 0,3</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="litet">Samma 60 dygn, vakter och grannregler som vägpunktsgrinden. Gammal regel betyder bara rader med yta ≤ +5 °C, regn, snö eller nederbörd, som ingesten sparade före 25/9. Efter 25/9 gav rå viktning med den nya regeln 2,1 · 13,0 · 10,0 · 12,1 % grova fel per avståndsband, mot 0,3 · 5,2 · 1,9 · 5,4 % med den gamla. A3 var 0,0 % i alla fyra. Ingen dom skrevs; läsningen är en förklaring, inte en grind.</p>
+
       <h4>Det som ströks efter mätning, och det som nu måste läsas om</h4>
       <ul>
         <li><b>SMHI:s luftstationer som extra ankare.</b> På samma 1 918 punkter steg medelfelet från 1,05 till 1,20 °C. De 352 punkter som bara fanns tack vare SMHI hade 2,36 °C (#119).</li>
-        <li><b>Inlärd stationsoffset.</b> Den utgick 23/9 eftersom den inte tillförde något mot den råa viktningen, 0,72 mot 0,71 °C (#324). Körningen 28/9 pekar åt andra hållet: 3,7 % grova fel med offset mot 6,9 % utan.</li>
+        <li><b>Inlärd stationsoffset.</b> Den utgick 23/9 eftersom den inte tillförde något mot den råa viktningen, 0,72 mot 0,71 °C (#324). Med varma grannar är det offseten som håller: 4,4 % grova fel efter 25/9 mot rå viktnings 11,1 %.</li>
         <li><b>Höjdkorrektion.</b> 28/9 hjälper den inom 7 km (0,59 mot 0,82 °C) och i bandet 7–15 km (0,74 mot 0,81) men stjälper bortom 20 km (0,86 mot 0,82 °C). Den empiriska temperaturgradienten är 0,63 °C per 100 m, både ur 3 476 par 12/9 och ur 3 261 par 28/9. Frågan läses om 23/10 (#357).</li>
       </ul>
 
