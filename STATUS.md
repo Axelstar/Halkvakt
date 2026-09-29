@@ -2054,3 +2054,10 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   av Bengt), eftersom den redan glidit isär: den sa att rå viktning klarar vägpunktsgrinden. I repot är kopian en fil,
   `docs/MATNINGAR-2026-09-29.html`; `MATNINGAR-2026-09-28.html` och `SKUGGMOTORN-2026-09-29.html` är borta. Externa utdrag
   görs ur den vid behov, utan opublicerade regelvärden.
+- 29/9 (Claude, Bengts beställning): Föreningen Halkvakt bildas 29/9 och söker Skyltfonden som förening under bildande
+  (DECISIONS #400, ersätter #395). Handlingarna ifyllda med Bengt ordförande, Axel kassör, Harald Lagerlöf ledamot och sekreterare,
+  Susanne Horstmann revisor: stadgar daterade 29/9, kallelse, protokoll (med § 16 om Skyltfondsansökan), medlemsförteckning,
+  8400-arbetsblad och körschema i `docs/forening/`; Skyltfondens arbetsblad och bilaga 1 omskrivna (sökandestycke, Axel Lagerlöf,
+  bilaga 9–10). Nya Google-dokument i Drive, de gamla omdöpta till mallar. Personnummer och adresser fylls i Drive, aldrig i repot.
+  Bilaga 1 säger också det som gäller om prognoslagret efter 28/9 (DECISIONS #399): grind A håller, skattningen mellan
+  stationerna föll, frågan är öppen. Sammanfattningen till Axel uppdaterad med sökanden.

@@ -1,19 +1,28 @@
 # Kallelse till konstituerande möte för Föreningen Halkvakt
 
-**Till:** [namn på de inbjudna]
+**Till:** Axel Lagerlöf, Harald Lagerlöf, Susanne Horstmann
 **Från:** Bengt Lagerlöf
-**Datum:** [datum]
+**Datum:** 29 september 2026
 
 Välkommen till mötet där vi bildar Föreningen Halkvakt, en ideell förening som ska främja trafiksäkerheten på vintervägar. Den ska
 driva och utvärdera appen Halkvakt och redovisa öppet hur väl Trafikverkets öppna väglagsdata räcker för att varna förare i tid.
 
-**Tid:** [veckodag, datum, klockslag]. Mötet tar ungefär 45 minuter.
+Mötet hålls med kort varsel eftersom föreningen ska stå som sökande i ansökan till Skyltfonden, som måste vara inne hos
+Trafikverket senast den 1 oktober. Föreningen söker då som ideell förening under bildande, med stadgarna och mötets protokoll
+som bilagor.
+
+**Tid:** tisdag 29 september 2026 kl. 19.00. Mötet tar ungefär 45 minuter.
 **Plats:** [adress, eller länk till videomötet]
 
-Förslaget till stadgar är bifogat. Läs det gärna före mötet och skicka synpunkter till mig, så kan vi ändra i förslaget innan det
-antas. På mötet väljer vi styrelse och revisor, och den som deltar och vill bli medlem blir det från första dagen.
+Förslaget till stadgar är bifogat. Förslag till styrelse och revisor:
 
-Svara gärna senast [datum] om du kan komma.
+- ordförande: Bengt Lagerlöf;
+- kassör: Axel Lagerlöf;
+- ledamot och sekreterare: Harald Lagerlöf;
+- revisor: Susanne Horstmann.
+
+Alla fyra blir föreningens första medlemmar. Svara så snart du kan om du kan komma, och skicka synpunkter på stadgarna före
+mötet, så ändrar vi i förslaget innan det antas.
 
 Hälsningar\
 Bengt Lagerlöf\
@@ -36,7 +45,8 @@ Bengt Lagerlöf\
 13. Firmateckning och bankkonto
 14. Medlemsavgift
 15. Uppdrag att ansöka om organisationsnummer
-16. Övriga frågor
-17. Mötets avslutande
+16. Ansökan till Skyltfonden
+17. Övriga frågor
+18. Mötets avslutande
 
 **Bilaga:** Förslag till stadgar för Föreningen Halkvakt.

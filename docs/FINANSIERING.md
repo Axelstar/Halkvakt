@@ -114,7 +114,7 @@ sedan v4, och påståendet att varningarna "formuleras som åtgärd".
   3. Lyft felkartans nytta för kommunal vinterdrift (#8, #14, #28, #29, SKR).
   4. Väg granskningen (343 000 kr) mot 283 000 kr en gång till i ljuset av att alla utvärderare i listan är meriterade.
 
-**Sökande: Bengt som privatperson (28/9, DECISIONS #395).** Sammanfattningen till Axel av jämförelsen ligger på
+**Sökande: Föreningen Halkvakt, ideell förening under bildande (29/9, DECISIONS #400, ersätter #395: Bengt som privatperson).** Sammanfattningen till Axel av jämförelsen ligger på
 https://claude.ai/artifact/JguqbJ3PEDrnuVAue1qBF6. Den är privat tills Bengt delar den.
 
 ## Malmö stad — läget 23/9
@@ -135,7 +135,7 @@ skyltfonden@trafikverket.se en rad om (a) godtas — Bengt strök förhandskonta
 kan skriva stadgar och protokoll för konstituerande möte på Bengts ja.
 
 **28/9: handlingarna är skrivna** på Bengts beställning (DECISIONS #396): `docs/forening/`, med körschemat i
-`docs/forening/KORSCHEMA.md`. Föreningen bildas i oktober. Skyltfondsansökan går som privatperson (#395).
+`docs/forening/KORSCHEMA.md`. **29/9 (DECISIONS #400):** föreningen bildas 29/9 kl 19 och står som sökande, som förening under bildande; ansökan 30/9 med stadgar och protokoll som bilaga 9–10.
 
 ## B2B-idé (Axel 2026-08-29): skolpaketet som produkt
 Trafikskolor säljer allt som paket och betalar redan per elev för innehåll

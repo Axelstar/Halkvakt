@@ -220,12 +220,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     produktboken) *(låst: Play-kontot)*.
   ↪ **Flyttat 26/9 från *Claude — olåst*** (femma åtta, DECISIONS #377): nästa steg är Play-kontot och testtelefonen.
 ### Bengt
-- [ ] 🏛️ **#265 FÖRENINGEN HALKVAKT BILDAS** (Bengts beställning 28/9, DECISIONS #396). Handlingarna är klara i `docs/forening/`
-  och i Drive-mappen *Föreningen Halkvakt, bildande*: stadgar, kallelse och dagordning, protokollsmall, medlemsförteckning,
-  arbetsblad för SKV 8400 och körschemat. Körschemat: sex beslut senast sön 4/10 (fyra grundare, poster, namn, säte, avgift,
-  firmateckning), kallelse mån 5/10, konstituerande möte tis 13/10, SKV 8400 postad senast mån 19/10, organisationsnummer (räkna med
-  veckor), bankkonto. Skyltfondsansökan påverkas inte (#395). Före första utbetalning: mottagarbytet hos Trafikverket (efter 15/12)
-  och arbetsgivarfrågan. **Verify:** Skatteverkets beslut med organisationsnummer i handen och föreningens bankkonto öppnat.
+- [ ] 🏛️ **#265 FÖRENINGEN HALKVAKT BILDAS 29/9 — SÖKANDE I SKYLTFONDEN SOM FÖRENING UNDER BILDANDE** (Bengt 29/9, DECISIONS #400,
+  ersätter #396:s oktoberplan). Bengt ordförande, Axel kassör, Harald Lagerlöf ledamot och sekreterare, Susanne Horstmann revisor.
+  Handlingarna ifyllda i `docs/forening/` och Drive: stadgar (29/9), kallelse, protokoll med § 16 om Skyltfonden, medlemsförteckning,
+  8400-arbetsblad, körschema; Skyltfondens arbetsblad och bilaga 1 omskrivna (sökandestycke, bilaga 9–10). **Schemat:** kallelse
+  29/9 fm · möte 29/9 kl 19 · protokoll undertecknat samma kväll · SKV 8400 postad 30/9 · ansökan mejlad 30/9 · reserv 1/10.
+  Fylls i på mötet: sätet, tid och plats, personnummer (aldrig i repot). **Verify:** ansökan skickad med bilaga 9–10 och inget
+  studsat; Skatteverkets beslut med organisationsnummer, skickat till Skyltfonden samma dag; bankkonto öppnat.
 - [ ] 🧫 **#232 KUVÖSEN — HELA SYSTEMET BAKÅTPRÖVAT PÅ VINTERN 2024/25** (Bengts idé 21/9, DECISIONS #292). Motorn och ALLA
   skuggregler i en gemensam testbädd, långt från appar och förare, körd mot en hel gången vinter — ett RIKTNINGSPROV: är vi på
   rätt väg, och vad tillför varje del ovanpå de andra? Svarar på kartans §7.3: *"Varje grind dömer sin del ENSAM"*.

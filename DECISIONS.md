@@ -5957,3 +5957,34 @@ prognoskolumnen enligt #322 villkor 4a.
 när måndagens körning föll blev den liggande i loggen. En ändrad arkivregel ska följas av en omkörning av varje dom som läser grannar
 i arkivet, i samma varv, och veckokörningarnas domrader ska läsas samma dag. Regeln från 23/9 bar igen, i andra riktningen: den här
 gången var det en KLARAR som var artefakten.
+
+## #400 (29/9 2026) Föreningen Halkvakt bildas 29/9 och står som sökande i Skyltfondsansökan, som ideell förening under bildande — ersätter #395
+
+**Bengts beslut 29/9** (*"vi ska bilda en ideell förening … Det är brådskande eftersom vi har för avsikt att lämna in ansökan till
+Skyltfonden för en ideell förening under bildande"*). Ersätter #395 (sökande Bengt som privatperson) och spår B i #396. Körschemat
+följer spår A, men med mötet redan 29/9 och ansökan 30/9 (reserv 1/10).
+
+**Personerna.** Bengt Lagerlöf ordförande och firmatecknare, Axel Lagerlöf kassör och firmatecknare, Harald Lagerlöf styrelseledamot
+tillika sekreterare, Susanne Horstmann revisor. Bengt skrev *"medlem"* om Harald; det är läst som ledamot i styrelsen, eftersom
+stadgarna § 11 kräver minst tre ledamöter, och rättas om det är fel. Alla fyra är medlemmar från mötet, så ingen har över 25 % av
+rösterna och föreningen har normalt ingen verklig huvudman att redovisa.
+
+**Handlingarna** (`docs/forening/` och Drive-mappen *Föreningen Halkvakt, bildande*): stadgarna daterade 29/9, kallelsen till de
+tre, protokollet med namn, roller och en § 16 där föreningen beslutar att söka bidraget och uppdrar åt Bengt att lämna in ansökan,
+medlemsförteckningen, arbetsbladet för SKV 8400 och körschemat. Skyltfondens arbetsblad är omskrivet för föreningen, och bilaga 1
+har ett stycke *Sökande organisation*, Axels efternamn och bilaga 9 (stadgarna) och 10 (protokollet). Personnummer och adresser
+står aldrig i repot.
+
+**Myndigheterna.** Skatteverket är den enda registreringen: SKV 8400 per post med bestyrkta kopior av stadgar och protokoll,
+kostnadsfritt, veckors handläggning. Bolagsverket berörs inte (ingen näringsverksamhet), och verklig huvudman redovisas först när
+bankkontot öppnas. Trafikverket får stadgarna och protokollet som bilagor till ansökan, och organisationsnumret som komplettering
+samma dag det kommer.
+
+**Risken, känd och tagen.** Formuläret säger att ett tomt fält gör att ansökan inte hanteras. *"Ansökt hos Skatteverket 30
+september 2026"* är inte tomt, men ingen vet om det godtas; prejudikatet är VALMA i vårens lista (#395). Vinsten är att ansökan går
+från privatperson till organisation, vilket ingen av vårens 32 beviljade saknade (FINANSIERING 28/9).
+
+**Öppet när detta skrivs:** sätet (kommunen) i stadgarna § 3, tid och plats för mötet, och om revisorn är närstående till styrelsen
+(tillåtet, men den som läser revisionsberättelsen kan notera det).
+
+**Alternativ som valdes bort.** Skicka 1/10 som privatperson och bilda föreningen i oktober (#395, #396 spår B).

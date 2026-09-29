@@ -1,6 +1,6 @@
 # Bilaga 1 — Ansökan till Skyltfonden: Halkvakt
 
-**Utökade svar på formulärets fält 2–8** (Trafikverkets ansökningsformulär, version 240909). Sökande: Bengt Lagerlöf. Sökt belopp: **283 000 kr**. Projektperiod: 2027-01-11 – 2028-04-30.
+**Utökade svar på formulärets fält 2–8** (Trafikverkets ansökningsformulär, version 240909). Sökande: Föreningen Halkvakt, ideell förening under bildande, genom ordföranden Bengt Lagerlöf. Sökt belopp: **283 000 kr**. Projektperiod: 2027-01-11 – 2028-04-30.
 
 **Projektets titel:** Räcker Trafikverkets öppna väglagsdata för att varna alla förare i tid? Utvärdering av röstburen förhandsvarning för halka (Halkvakt) under två vintrar, och validering av ett prognoslager för halka mellan mätstationerna.
 
@@ -16,7 +16,7 @@ Under hösten 2026 har projektgruppen dessutom, på egen bekostnad, byggt ett **
 
 Sedan 23 september 2026 körs lagret enbart i **skuggdrift**. Det beräknar och loggar vad det skulle ha sagt, men når aldrig någon användare. Det får kopplas till användare först när det klarat kvalitetströsklar som fastställdes och daterades 2026-09-01, före lagrets kod (bilaga 7). Även då blir det en karta och en förstärkare, aldrig en röst som talar ensam.
 
-Den första av lagrets tre grindar klarades 23 september 2026. Medelfelet var 0,71 °C mot kravet högst 1,0 °C, och andelen grova fel 3,8 % mot kravet högst 5 %. Lagret höll också i det glesaste bandet, mer än 20 km från närmaste station, med 0,72 °C. Vinterns grindar återstår, och det är dem ansökan avser att pröva.
+Den första av lagrets tre grindar, korsvalideringen vid stationerna, klarades 23 september 2026 och höll i omkörningen 28 september på ett fullständigare arkiv: medelfel 0,74 °C mot kravet högst 1,0 °C och grova fel 3,7 % mot kravet högst 5 %. Den enklare skattning som ska gälla mellan stationerna, där ingen egen mätserie finns, föll däremot 28 september med 6,9 % grova fel. Utfallet är bokfört, och det är just den frågan, vad som går att uppnå mellan stationerna, som vinterns grindar och ansökan avser att pröva.
 
 **Sökt belopp:** 283 000 kr för perioden januari 2027–april 2028, fördelat på fyra arbetspaket enligt kostnadsplanen. Inget av det som redan är byggt ingår i det sökta; det är projektets verktyg.
 
@@ -99,8 +99,8 @@ En station mäter däremot innan första bilen har kommit dit. Waze och Google M
 - **Varningsmotorn** är deterministisk, med identiska implementationer för server, Android och iOS. Alla tre måste klara samma 37 testfall tecken för tecken.
 - **Skuggmotorn** har sedan 29 augusti var 30:e minut kört simulerade resor längs fasta referensrutter och loggat varje varning den skulle ha gett. I dag omfattar den 80 rutter i Sverige, Finland, Norge och Danmark.
 - **Tröskeldokument.** Tretton tröskeldokument är fastställda och daterade *före* den mätning eller kod de styr (förteckning i bilaga 7).
-- **Prognoslagrets grind A.** Lagret är prövat med korsvalidering över 711 stationer och 202 087 avläsningar: varje station hålls utanför och skattas ur grannarna. Medelfelet blev 0,71 °C och andelen grova fel 3,5–3,8 %. Felet stiger med avståndet till närmaste station men håller kraven även bortom 20 km.
-- **Det enklare valdes.** En inlärd stationsoffset tillförde inget (0,72 mot 0,71 °C). SMHI:s luftstationer som extra ankare gjorde modellen sämre (1,05 → 1,20 °C). Båda ströks.
+- **Prognoslagrets grind A.** Lagret är prövat med korsvalidering: varje station hålls utanför och skattas ur grannarna. Senaste körningen, 28 september över 715 stationer, 308 852 avläsningar och 14 594 punkter, gav medelfel 0,74 °C och 3,7 % grova fel, inom kraven även bortom 20 km från närmaste station.
+- **Det enklare prövades, och föll där det saknar historik.** En skattning utan inlärd stationsoffset var lika bra vid stationerna i september (0,72 mot 0,71 °C), men gav 6,9 % grova fel när arkivet från 25 september också sparade de varma grannstationerna. Offseten håller (3,7 %) men finns bara där en station har egen mätserie. SMHI:s luftstationer som extra ankare gjorde modellen sämre (1,05 → 1,20 °C) och ströks. Hur en vägpunkt utan station ska skattas är därmed en öppen och bokförd fråga (29 september 2026), och den är kärnan i arbetspaket 2.
 - **Stationstätheten.** Medianavståndet från huvudvägnätet till närmaste VViS-station är 7 km. Omkring 13 % av Norrlandslänens vägnät ligger mer än 20 km från en station, och den luckan ligger i inlandet.
 - **Givarvakter.** Vakterna sorterar automatiskt bort felmätande stationer och släpper in dem igen när de mäter rätt. De tog bort 706 av 811 felaktiga avläsningar. På E4 gick falsklarmen för broar från 7 till 0.
 - **Anmälningar till Trafikverket.** Sju stationer med fysiskt omöjlig yttemperatur och nio med fysiskt omöjlig byvind anmäldes till Trafikverket 22 september 2026 (bilaga 8).
@@ -149,7 +149,7 @@ Till det kommer testförarnas svar per varning och deras egna markeringar av mis
   - mervärde: minst 25 % av träffarna där punktmotorn var tyst eller mer än 30 minuter senare.
 
   Domen fälls bara om underlaget räcker: minst 20 bedömbara halkhändelser, spridda över minst tre skilda halkperioder.
-- **Nationell felkarta.** Prognosfelet beräknas som funktion av avståndet till närmaste station, genom korsvalidering över hela stationsnätet. Grind A klarades i september på ett arkiv där varma, torra avläsningar ännu inte sparades. Sedan 25 september sparas även de, och andelen saknade grannvärden sjönk från 49,5 % till 0,4 %. Grinden prövas därför om på vinterns fullständiga underlag.
+- **Nationell felkarta.** Prognosfelet beräknas som funktion av avståndet till närmaste station, genom korsvalidering över hela stationsnätet. Grind A klarades i september på ett arkiv där varma, torra avläsningar ännu inte sparades. Sedan 25 september sparas även de, och andelen saknade grannvärden sjönk från 49,5 % till 0,4 %. Omkörningen 28 september visade att korsvalideringen vid stationerna håller, men att skattningen mellan stationerna inte gör det utan stationens egen historik. Vilken modell som ska bära vägpunkten avgörs därför på vinterns underlag, inte på höstens.
 - **Kalibrering och kontroll.** Modellparametrarna (antal ankare, avståndsvikt och höjdkorrektion) kalibreras mot vinterns data. Skuggdriftens prospektiva logg kontrolleras mot en retrospektiv körning på arkivet.
 - **Driftsättning.** Prognosen driftsätts inför vintern 2027/28 bara om trösklarna klaras. Den kopplas då till app och karta med förtroendenivån synlig, och en färdvy visar risken per vägavsnitt vid beräknad ankomsttid. Prognosen får stärka, försvaga eller förlänga en varning som vilar på en mätning, men den talar aldrig ensam. Klaras trösklarna inte redovisas det i rapporten, och prognosen förblir avstängd.
 
@@ -210,9 +210,11 @@ Det gäller bara testförare som själva slagit på funktionen, som är avslagen
 
 **Bengt Lagerlöf, projektledare.** Ansvarar för projektplanen, rekrytering och uppföljning av testförare, utvärderingens uppläggning, kontakten med Trafikverket, rapport och spridning. Bakgrund: [ ]. Beräknad insats: [ ] timmar.
 
-**Axel [efternamn], systemansvarig.** Ansvarar för datapipelinen, varningsmotorn, prognoslagrets drift, loggning och utvärderingsverktyg samt appens drift och publicering. Har utvecklat systemet under 2026. Bakgrund: [ ]. Beräknad insats: [ ] timmar.
+**Axel Lagerlöf, systemansvarig.** Ansvarar för datapipelinen, varningsmotorn, prognoslagrets drift, loggning och utvärderingsverktyg samt appens drift och publicering. Har utvecklat systemet under 2026. Bakgrund: [ ]. Beräknad insats: [ ] timmar.
 
 Tillsammans 350 timmar enligt kostnadsplanen (AP1 180, AP2 100, AP3 30, AP4 40).
+
+**Sökande organisation.** Föreningen Halkvakt är en ideell förening under bildande, med ändamålet att främja trafiksäkerheten på vintervägar: att utveckla, driva och utvärdera Halkvakt, att öppet redovisa hur väl öppna väglagsdata räcker för att varna förare i tid, och att sprida kunskap om halka och vinterkörning. Konstituerande möte hölls den 29 september 2026. Styrelsen består av Bengt Lagerlöf (ordförande), Axel Lagerlöf (kassör) och Harald Lagerlöf (ledamot och sekreterare); revisor är Susanne Horstmann. Ansökan om organisationsnummer lämnades till Skatteverket den 30 september 2026, och numret och bankuppgifterna kompletteras så snart de finns. Stadgarna och protokollet från det konstituerande mötet bifogas som bilaga 9 och 10. Föreningen bedriver ingen näringsverksamhet; appen är gratis och utvecklingen 2026 är egenfinansierad.
 
 **Samverkan.** Projektet har inga formella samarbetspartner.
 - Trafikverket är dataägare och främsta mottagare av resultatet, och informeras vid projektstart och vid rapport. Projektgruppen anmälde i september 2026 sexton felmätande stationer till Trafikverket och har begärt att få ut historiska stationsobservationer.
@@ -267,3 +269,5 @@ Projektet ligger i linje med Nollvisionen och med Skyltfondens prioritering av t
 6. Appen: skärmbilder och rösttexter.
 7. Tröskeldokument för prognoslagret, med förteckning över samtliga tröskeldokument.
 8. Anmälningar till Trafikverket om felmätande vägväderstationer.
+9. Föreningens stadgar, antagna den 29 september 2026.
+10. Protokoll från det konstituerande mötet den 29 september 2026.
