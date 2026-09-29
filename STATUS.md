@@ -2061,3 +2061,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   bilaga 9–10). Nya Google-dokument i Drive, de gamla omdöpta till mallar. Personnummer och adresser fylls i Drive, aldrig i repot.
   Bilaga 1 säger också det som gäller om prognoslagret efter 28/9 (DECISIONS #399): grind A håller, skattningen mellan
   stationerna föll, frågan är öppen. Sammanfattningen till Axel uppdaterad med sökanden.
+- 29/9 (Claude, Bengts *"ja, skriv målbladet"*): `docs/MALET.md` fastställt (DECISIONS #401) — slutmålet i en mening, §6.4:s
+  klart-kriterier, M0–M4 ur Skyltfondsansökan med trösklar och ägare, kalendern med domarna och kritiska vägen till novemberbetan.
+  Bedömningen: §4.2 grepp (1) struket, §6.4 fastställd, §6.6 punkt 3 halv; tavlan #268 KLART. Styrfrågan bokförd som §4.2-rad
+  (f05878c). Ännu inte gjort: korten bär inte sitt mål, greppen (2)–(4) öppna.

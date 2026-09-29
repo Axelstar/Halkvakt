@@ -5988,3 +5988,24 @@ från privatperson till organisation, vilket ingen av vårens 32 beviljade sakna
 (tillåtet, men den som läser revisionsberättelsen kan notera det).
 
 **Alternativ som valdes bort.** Skicka 1/10 som privatperson och bilda föreningen i oktober (#395, #396 spår B).
+
+## #401 (29/9 2026) Målbladet fastställt — `docs/MALET.md` är projektets facit för riktningen
+
+**Beslut (Bengt, *"ja, skriv målbladet"*):** ett blad på en sida säger vart projektet är på väg och när det är klart. Det bär
+slutmålet i en mening, §6.4:s fyra klart-kriterier (därmed fastställda), de fyra målen M1–M4 = Skyltfondsansökans arbetspaket
+med trösklar, datum och ägare, förutsättningen M0 (apparna hos förare före första frosten), kalendern med domarna och den
+kritiska vägen till novemberbetan (fem kort, fyra Axels). Fryst som integrationskartan: ändras bara med ett DECISIONS-nummer.
+
+**Skälet.** Bengts fråga 29/9: *"vilket är våra bästa facit … hur håller vi styr på projektet i stort och smått"*. Svaret: facit
+för produkten är mätningarna och vektorerna, facit för riktningen fanns inte — §6.4 sa det själv 27/9 och väntade på Bengts
+timme. Ansökan är det enda dokumentet med ett daterat slut och tal vi lovat en finansiär; därför är den målens stomme. Mätt 29/9:
+22 000 rader styrdokument, 38 öppna kort varav 15 väntar på vintern, 13 är Axels app-kort, 6 hygien och 4 förening.
+Bäringsrisken ligger i appspåret, och bladet gör det synligt.
+
+**Alternativ som valdes bort.** (a) Låta §6.4 stå kvar som förslag i bedömningen — då finns definitionen bara i en 616-raders
+lista som skrivs om varje varv. (b) Bara hänvisa till ansökan — den saknar M0, klart-kriterierna och den kritiska vägen.
+(c) `docs/KALENDERN.md` enligt §6.3 — kalendern ligger nu i bladet §4; om plikterna (PAT, databasstorlek, Actions-taket) ska ut
+ur korten är fortfarande Bengts beslut (§6.3, öppet).
+
+**Kvar av de fyra greppen (bedömningen §4.2):** (2) en kö i stället för tre, (3) veckoavläsningen som rad per mål, (4) kritiska
+vägen med datum hos Axel. Inget av dem är beslutat. Korten bär ännu inte sitt mål (M0–M4); det är ett eget varv.
