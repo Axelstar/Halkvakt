@@ -14,10 +14,18 @@
 // Offsetmodellen (grind A:s taket, exakt uteslutning av hinken) står bredvid som jämförelse.
 //
 // Ingen dom skrivs — det här är en läsning av populationen, inte en grind. Trösklarna står i TROSKLAR-SKUGGAN §3.
+//
+// Tillägg 29/9 (Bengt: "ja, kör det"): FRYSFLAGGAN. Grova fel är ett ersättningsmått; det föraren märker är om
+// prognosen flaggar (skattning ≤ FRYS_C) där stationen själv mätte ≤ FRYS_C. Per band och period räknas
+//   missad flagga = stationen ≤ 1 °C men modellen > 1 °C (det farliga felet), grovt missad = modellen > 2 °C
+//   falsk flagga  = modellen ≤ 1 °C men stationen > 1 °C, som andel av modellens flaggor
+// och allt vägs mot vägnätet: bandandelarna tas ur prognoslagrets egna provpunkter längs de svenska skuggrutterna
+// (senaste varvet per rutt, avstånd till närmaste bidragande ankare), inte ur stationernas avstånd till varandra.
 // Run: DATABASE_URL=... node --experimental-strip-types scripts/matningar/vagpunkt-population-2026-09-29.ts [dagar=60]
 
 import { Z, andelSe, medelSe } from "../../publish/marginal.ts";
 import { RADVAKT_SQL, karantanSql } from "../../publish/snapshot-core.ts";
+import { FRYS_C } from "../../engine/src/segment.ts";
 
 const K_NEIGHBOURS = 5;
 const MAX_KM = 50;
@@ -105,6 +113,35 @@ function redovisa(regel: string, rader: Rad[]) {
   }
 }
 
+const bandAv = (km: number) => BANDS.findIndex(([, lo, hi]) => km >= lo && km < hi);
+
+/** Frysflaggan per band: missade, grovt missade och falska flaggor. */
+function flagga(rader: Rad[], pick: (r: Rad) => number | null) {
+  const xs = rader.filter((r) => pick(r) !== null);
+  const stat = xs.filter((r) => r.measured <= FRYS_C);
+  const mod = xs.filter((r) => pick(r)! <= FRYS_C);
+  return { nStat: stat.length, missad: stat.filter((r) => pick(r)! > FRYS_C).length, grov: stat.filter((r) => pick(r)! > FRYS_C + 1).length,
+    nMod: mod.length, falsk: mod.filter((r) => r.measured > FRYS_C).length };
+}
+const pct = (a: number, n: number) => n ? `${(100 * a / n).toFixed(1)} % [±${(Z * andelSe(a / n, n) * 100).toFixed(1)} pe]` : "—";
+
+function frysflaggan(regel: string, rader: Rad[], andelar: number[]) {
+  console.log(`\n── FRYSFLAGGAN (≤ ${FRYS_C} °C), ${regel}, EFTER 25/9 07:30Z`);
+  const efter = rader.filter((r) => r.efter);
+  for (const [namn, pick] of [["RÅ", (r: Rad) => r.raw], ["OFFSET", (r: Rad) => r.offset]] as [string, (r: Rad) => number | null][]) {
+    let vMiss = 0, vFalsk = 0, vGross = 0, tackt = 0;
+    for (let i = 0; i < BANDS.length; i++) {
+      const b = efter.filter((r) => bandAv(r.ankKm) === i);
+      const f = flagga(b, pick), m = matt(b, pick);
+      console.log(`  ${namn.padEnd(7)} ${BANDS[i][0].padEnd(9)} stationen flaggade ${String(f.nStat).padStart(5)}: missad ${pct(f.missad, f.nStat)}, ` +
+        `grovt ${f.grov} · modellen flaggade ${String(f.nMod).padStart(5)}: falsk ${pct(f.falsk, f.nMod)} · grova fel ${m.n ? (m.gross * 100).toFixed(1) + " %" : "—"}`);
+      if (f.nStat && f.nMod && m.n) { vMiss += andelar[i] * f.missad / f.nStat; vFalsk += andelar[i] * f.falsk / f.nMod; vGross += andelar[i] * m.gross; tackt += andelar[i]; }
+    }
+    console.log(`  ${namn.padEnd(7)} VÄGVIKTAT (${(100 * tackt).toFixed(0)} % av vägpunkterna har underlag): missade flaggor ${(100 * vMiss / (tackt || 1)).toFixed(1)} %, ` +
+      `falska flaggor ${(100 * vFalsk / (tackt || 1)).toFixed(1)} %, grova fel ${(100 * vGross / (tackt || 1)).toFixed(1)} %`);
+  }
+}
+
 const url = process.env.DATABASE_URL;
 if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
 const pg = (await import("pg")).default;
@@ -138,7 +175,20 @@ async function hamta(gammal: boolean): Promise<Map<string, Station>> {
 console.log(`Vägpunktsgrindens population före och efter arkivregeln (DECISIONS #353), ${DAYS} dygn bakåt. Ingen dom.`);
 const ny = await hamta(false);
 const gammal = await hamta(true);
+// Vägnätets avståndsfördelning: prognoslagrets provpunkter var 2 km längs de svenska skuggrutterna, senaste varvet per rutt.
+const vp = await pool.query(`
+  SELECT (e->>2)::float AS narm
+  FROM (SELECT DISTINCT ON (route) route, prognos FROM shadow_log
+        WHERE land = 'SE' AND prognos ? 'p' AND run_at > now() - interval '7 days'
+        ORDER BY route, run_at DESC) s,
+       jsonb_array_elements(s.prognos->'p') e`);
 await pool.end();
+const narm = vp.rows.map((r: any) => r.narm).filter((x: any) => x !== null) as number[];
+const andelar = BANDS.map((_, i) => narm.filter((k) => bandAv(k) === i).length / (narm.length || 1));
+console.log(`Vägpunkter längs skuggrutterna: ${vp.rows.length}, varav ${narm.length} med ankare inom ${MAX_KM} km. Andel per band: ` +
+  BANDS.map(([n], i) => `${n} ${(100 * andelar[i]).toFixed(1)} %`).join(" · "));
 redovisa("NY REGEL (arkivet som det är, varma rader sedan 25/9)", evaluate(ny));
 redovisa("GAMMAL REGEL (bara kalla eller blöta rader, som före 25/9)", evaluate(gammal));
 console.log(`\nLäsning: håller hypotesen är FÖRE lika i båda reglerna, och RÅ EFTER faller bara under NY REGEL.`);
+frysflaggan("NY REGEL", evaluate(ny), andelar);
+frysflaggan("GAMMAL REGEL", evaluate(gammal), andelar);
