@@ -75,13 +75,11 @@ Mötet uppdrog åt Bengt Lagerlöf att ansöka om organisationsnummer hos Skatte
 
 ## § 16 Ansökan till Skyltfonden
 
-Mötet tog ställning till två alternativ till ansökan om projektbidrag ur Skyltfonden (Trafikverket) för projektet *Räcker
-Trafikverkets öppna väglagsdata för att varna alla förare i tid?*, projektperiod 11 januari 2027–30 april 2028: 283 000 kronor
-utan extern granskning, eller 343 000 kronor där 60 000 kronor avser en upphandlad oberoende granskning av metod och resultat.
-Mötet beslutade att föreningen, som ideell förening under bildande, söker **[283 000 / 343 000] kronor** [stryk det som inte
-gäller]. Mötet uppdrog åt Bengt Lagerlöf att lämna in ansökan senast den 1 oktober 2026 med
-stadgarna och detta protokoll som bilagor, och att komplettera med organisationsnummer och bankuppgifter när de finns. Bengt
-Lagerlöf är projektledare och Axel Lagerlöf systemansvarig i projektet.
+Mötet noterade att Bengt Lagerlöf som privatperson söker projektbidrag ur Skyltfonden (Trafikverket) för projektet *Räcker
+Trafikverkets öppna väglagsdata för att varna bilförare i tid?*, projektperiod 11 januari 2027–30 april 2028, med sökt belopp
+413 000 kronor, och att ansökan lämnas in senast den 1 oktober 2026. Föreningen står inte som sökande. Mötet beslutade att
+föreningen, i enlighet med ändamålet i stadgarna § 2, förvaltar den rapport, den metod, de tröskeldokument och den testbädd som
+projektet publicerar öppet. Bengt Lagerlöf är projektledare och Axel Lagerlöf systemansvarig i projektet.
 
 ## § 17 Övriga frågor
 

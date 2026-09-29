@@ -2090,3 +2090,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 29/9 kväll (Claude, Bengts *"kolla ASEK 8.0-talen och Strada-siffran"*): alla källsidor spärrade i miljön; sökindexet ger ~44 mnkr
   per dödsfall (ASEK 8.0 via PRO 2025-10-20), inte 19,3; "knappt en miljon" liknar IHE:s personskadekostnad; 17 % i TRV 2025/12914
   tycks avse undvikbara olyckor vid däckbyte, inte novemberhalka. Bokfört i ändringslistan §5. Talen måste läsas i filerna av Axel.
+- 29/9 kväll (Claude, Bengts beslut *"ansökan går in som privatperson"*): DECISIONS #404. Rättat: målbladet §1/§3 (413 000, privatperson),
+  bedömningen §4.2 (två rader avgjorda) och läget (1), tavlan #265/#268, protokollet § 16 (notering), kallelsen, körschemat,
+  8400-arbetsbladet, FINANSIERING, de två alternativen märkta ersatta, arbetsbladet omskrivet för V2, ändringslistan omskriven.

@@ -7,9 +7,9 @@
 Välkommen till mötet där vi bildar Föreningen Halkvakt, en ideell förening som ska främja trafiksäkerheten på vintervägar. Den ska
 driva och utvärdera appen Halkvakt och redovisa öppet hur väl Trafikverkets öppna väglagsdata räcker för att varna förare i tid.
 
-Mötet hålls med kort varsel eftersom föreningen ska stå som sökande i ansökan till Skyltfonden, som måste vara inne hos
-Trafikverket senast den 1 oktober. Föreningen söker då som ideell förening under bildande, med stadgarna och mötets protokoll
-som bilagor.
+Mötet hålls med kort varsel eftersom ansökan till Skyltfonden, som måste vara inne hos Trafikverket senast den 1 oktober,
+nämner föreningen som den som förvaltar projektets öppna resultat. Bengt Lagerlöf söker som privatperson; föreningen står inte
+som sökande.
 
 **Tid:** tisdag 29 september 2026 kl. 19.00. Mötet tar ungefär 45 minuter.
 **Plats:** [adress, eller länk till videomötet]
@@ -45,7 +45,7 @@ Bengt Lagerlöf\
 13. Firmateckning och bankkonto
 14. Medlemsavgift
 15. Uppdrag att ansöka om organisationsnummer
-16. Ansökan till Skyltfonden
+16. Ansökan till Skyltfonden (information)
 17. Övriga frågor
 18. Mötets avslutande
 

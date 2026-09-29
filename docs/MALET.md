@@ -1,6 +1,6 @@
 # Målbladet — vart Halkvakt är på väg, och när det är klart
 
-**Status: FASTSTÄLLT 29/9 2026, andra utgåvan (Bengt, DECISIONS #401, #402 och #403). Fryst som integrationskartan:** bladet ändras
+**Status: FASTSTÄLLT 29/9 2026, andra utgåvan (Bengt, DECISIONS #401, #402, #403 och #404). Fryst som integrationskartan:** bladet ändras
 bara med ett nytt DECISIONS-nummer, aldrig löpande. Det säger *vart* och *när*. Var vi står läses i bedömningens läge överst,
 inte här; §6 nedan är utgångsläget vid fastställandet och uppdateras inte. Första utgåvan (samma morgon) byggde på kort och
 sidor från 20/9 och sa fel om Android, Play-kontot, batteriet, kalendern och beloppet; den här är avstämd mot koden,
@@ -14,8 +14,8 @@ här och i källan ska vara samma tal; skiljer de sig gäller källan och bladet
 
 En gratis app som med rösten varnar bilföraren för halka på vägen framför, byggd enbart på Trafikverkets öppna data, utan att
 någon position lämnar telefonen automatiskt, med träffsäkerhet, falsklarm och missar **uppmätta mot oberoende facit, oberoende
-granskade och öppet redovisade** efter två vintrar, 2026/27 och 2027/28. Driven av Föreningen Halkvakt, rapporterad till
-Skyltfonden i april 2028.
+granskade och öppet redovisade** efter två vintrar, 2026/27 och 2027/28. Sökt av Bengt Lagerlöf som privatperson, med
+Föreningen Halkvakt som förvaltare av de öppna resultaten, rapporterad till Skyltfonden i april 2028.
 
 ## 2. "Klart" betyder (bedömningen §6.4, fastställd 29/9)
 
@@ -26,18 +26,19 @@ Skyltfonden i april 2028.
 
 Systemet är därför inte stängbart före mars 2027. Det är ett ärligt svar.
 
-## 3. Målen = ansökans arbetspaket (283 000 eller 343 000 kr, januari 2027 – april 2028)
+## 3. Målen = ansökans arbetspaket (413 000 kr, januari 2027 – april 2028)
 
-Två parallella alternativ till bilaga 1 ligger i repot och Drive (DECISIONS #403): **utan extern granskning, 283 000 kr, fyra
-arbetspaket** (M1–M3 och M5), eller **med upphandlad oberoende granskning, 343 000 kr, fem arbetspaket** (M1–M5). Mötet 29/9 väljer
-(protokollet § 16); bladet bär båda tills dess. Sökande: Föreningen Halkvakt, ideell förening under bildande (#400).
+Ansökan som skickas 30/9 är Axels V2 efter ändringslistan (DECISIONS #404): sökande och projektledare Bengt Lagerlöf som
+privatperson, 413 000 kr i fem arbetspaket (AP1 utvärdering 141 000 varav blind bildklassning 15 000 · AP2 prognoslager 70 000 ·
+AP3 testförare 88 000 · AP4 oberoende granskning 60 000 · AP5 rapport och spridning 36 000 · drift 12 000 · resor 6 000; egen tid
+350 timmar = 245 000). Föreningen Halkvakt står inte som sökande men förvaltar de öppna resultaten efter projektet.
 
 | Mål | Vad vi lovat | Måttet eller tröskeln | När | Ägare |
 | :-- | :-- | :-- | :-- | :-- |
-| **M1 Utvärderingen** (AP1) | Varje varning klassad mot fyra facitkällor (kamera, SMHI, rapporterad halka, station) och förarfacit; missandelen mätt på två oberoende sätt; omkörning på arkivet med ändrade trösklar | träffsäkerhet, falsklarmsandel och missandel per vecka, varningstyp och rutt | jan–apr 2027 | Bengt analys · Claude verktyg |
-| **M2 Prognoslagret** (AP2) | Skuggdriftens prognoser dömda mot förhandsdaterade trösklar; nationell felkarta; driftsatt inför 2027/28 **bara om trösklarna klaras**, annars avstängt och redovisat | B1 falsklarm ≤ 20 % · B2 missar ≤ 30 % · B3 mervärde ≥ 25 %; dom bara vid ≥ 20 halkhändelser över ≥ 3 halkperioder | jan–sep 2027 | Axel systemansvarig · Claude mätning |
-| **M3 Testförarna** (AP3) | 30–50 förare, svar per varning och missar efter resan, enkät och gruppintervju | svaren som förarfacit i M1; enkät april 2027 och april 2028 | jan–apr 2027 · nov 2027–mar 2028 | Bengt |
-| **M4 Granskningen** (AP4, bara i alternativet 343 000) | Oberoende granskning upphandlad efter beviljat bidrag, offert från minst tre parter; steg 1 metod före marsdomen, steg 2 resultat före rapporten; utlåtandet publiceras oavkortat | granskaren gör om klassningen på eget stickprov och reproducerar M2:s dom och felkarta | feb–jun 2027 | Bengt upphandlar |
+| **M1 Utvärderingen** (AP1) | Varje varning klassad mot fyra facitkällor (kamera, SMHI, rapporterad halka, station) och förarfacit; missandelen mätt på två oberoende sätt; omkörning på arkivet med ändrade trösklar; kamerabilderna klassas blint av en utomstående; månatlig datakvalitetsrapport till Trafikverket | träffsäkerhet, falsklarmsandel och missandel per vecka, varningstyp och rutt | jan–apr 2027 | Bengt analys · Claude verktyg |
+| **M2 Prognoslagret** (AP2) | Skuggdriftens prognoser dömda mot förhandsdaterade trösklar; nationell felkarta och väghållarvy; driftsatt inför 2027/28 **bara om trösklarna klaras**, annars avstängt och redovisat | B1 falsklarm ≤ 20 % · B2 missar ≤ 30 % · B3 mervärde ≥ 25 %; dom bara vid ≥ 20 halkhändelser över ≥ 3 halkperioder | jan–sep 2027 | Axel systemansvarig · Claude mätning |
+| **M3 Testförarna** (AP3) | 40–70 förare, svar per varning och missar efter resan, enkät och gruppintervju | svaren som förarfacit i M1; enkät april 2027 och april 2028 | jan–apr 2027 · nov 2027–mar 2028 | Bengt |
+| **M4 Granskningen** (AP4) | Oberoende granskning upphandlad efter beviljat bidrag, offert från minst tre parter; steg 1 metod före marsdomen, steg 2 resultat före rapporten; utlåtandet publiceras oavkortat | granskaren gör om klassningen på eget stickprov och reproducerar M2:s dom och felkarta | feb–jun 2027 | Bengt upphandlar |
 | **M5 Rapporten** (AP5) | Metod, resultat, trösklarnas utfall oavsett vilket och granskarens utlåtande, publicerat; presentationer för Trafikverket och SKR | rapport och spridning juni 2027, slutrapport april 2028 | apr–jun 2027 · apr 2028 | Bengt |
 
 **M0, förutsättningen (hösten 2026, inte sökt):** apparna hos förare före första frosten. Utan M0 finns inget förarfacit till M1
@@ -85,7 +86,7 @@ Koden är i takt på båda plattformarna: iOS och Android bär 0.3.9 (18) från 
 - **M0.** Testkrets på iPhone via TestFlight sedan 31/8 och på Android ur CI-bygget sedan 20/9. 0 riktiga förarsvar, 0 riktiga missar. Ingen Android-version har gått ut via Play.
 - **M1.** Skuggmotorn 80 rutter sedan 29/8, 144 av 144 varv 25–28/9. Kamerafacit 988 bilder, 41 klassade blint, ingen halka. Tystnadsfelet 2 av 20 tillfällen. Inget vinterunderlag: 27/9 var 1 av 1 298 stationer kall.
 - **M2.** Grind A klarad 23/9 och igen 28/9 (0,74 °C, 3,7 %). Vägpunktsgrinden föll 28/9 (rå viktning 6,9 % grova fel) och är bokförd (#399); skuggan fortsätter som mätning, ingen mer byggtid i höst. Grind B och C har 0 av 20 halkhändelser.
-- **M3.** 30–50 testförare rekryteras från januari; tolv i november.
+- **M3.** 40–70 testförare rekryteras från januari; tolv i november.
 - **M4, M5.** Inget påbörjat; granskningen upphandlas efter beviljat bidrag.
 - **Drift.** Databasen 186 MB av 500. Actions september 5 916 min ⇒ 31,33 USD mot budget 35; inga app-byggen resten av september. Kuvösen väntar på Trafikverkets beslut, inget annat (#388).
 

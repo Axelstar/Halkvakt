@@ -6076,3 +6076,29 @@ hålls båda levande, i repot, tills valet är gjort — och varje senare rätte
 
 **Alternativ som valdes bort.** Låta 283 000-texten stå ensam och be Bengt "bekräfta" ett belopp (#402) — det var inte vad han
 beställde. Skriva om 283 000-texten till 343 000 — då hade alternativet utan granskning försvunnit i stället.
+
+## #404 (29/9 2026, kväll) Skyltfondsansökan lämnas av Bengt som privatperson, med Axels V2 (413 000 kr) — ersätter #400:s sökandedel och #403:s två alternativ
+
+**Bengt 29/9 kväll:** *"vi har bestämt att ansökan går in som privatperson inte som en förening under skapande. Rätta på alla
+ställen."* Versionen som skickas 30/9 är Axels V2 efter ändringslistan (`docs/skyltfonden-2026-09-28/ANDRINGSLISTA-BILAGA-1-2026-09-29.md`):
+sökande och projektledare Bengt Lagerlöf, 413 000 kr i fem arbetspaket (AP1 utvärdering 141 000 varav blind bildklassning 15 000 ·
+AP2 prognoslager 70 000 · AP3 testförare 88 000 · AP4 oberoende granskning 60 000 · AP5 rapport och spridning 36 000 · drift 12 000 ·
+resor 6 000; egen tid 350 timmar = 245 000).
+
+**Skälet (Axels, 29/9 13:45):** formuläret säger att en ofullständig ansökan inte hanteras, och ett organisationsnummerfält med
+"ansökt" är en risk ingen kan värdera; fondens sida bjuder uttryckligen in privatpersoner, och en enskild firma beviljades 210 000 kr
+våren 2025. VALMA-prejudikatet (#395, #400) väger lättare än risken att ansökan inte hanteras alls.
+
+**Vad som ändras.** Föreningen bildas som planerat (#400) men står inte som sökande: protokollet § 16 blir en notering om att Bengt
+söker som privatperson och att föreningen förvaltar de öppna resultaten efter projektet; kallelsen, körschemat och 8400-arbetsbladet
+rättade; förmiddagens två alternativ till bilaga 1 (283 000 och 343 000, #403) är ersatta och märkta så; arbetsbladet omskrivet för
+V2; målbladet §3 bär 413 000 och privatperson; bedömningens §4.2 och läget rättade; Axels sammanfattning och Drive-mappen Skyltfonden
+likaså. Personnummer och bankkonto på formulärets sida 1 blir del av en offentlig handling: begär sekretessprövning i mejlet, enligt
+fondens egen anvisning.
+
+**Öppet.** Om det konstituerande mötet hölls 29/9 ska meningen i bilaga 1:s personalplan säga "bildade", annars "avser att bilda";
+Bengt vet, texten har båda. Fartförändringen i telefonen (V2, AP3) är fortfarande ett produktbeslut som kräver egen DECISIONS-post och
+de fyra dokumenten i samma commit innan den byggs; ansökan lovar den för vintern 2027/28.
+
+**Alternativ som valdes bort.** Föreningen under bildande som sökande (#400). Att skjuta på ansökan till marsomgången: nej, vintern
+2026/27 är mätfönstret.

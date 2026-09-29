@@ -1,5 +1,7 @@
 # Bilaga 1 — Ansökan till Skyltfonden: Halkvakt
 
+*ERSATT 29/9 kväll (DECISIONS #404): ansökan lämnas av Bengt som privatperson med Axels V2 (413 000 kr, Drive-mappen Ansökan V2). Texten nedan är förmiddagens alternativ och skickas inte.*
+
 **Utökade svar på formulärets fält 2–8** (Trafikverkets ansökningsformulär, version 240909). Sökande: Föreningen Halkvakt, ideell förening under bildande, genom ordföranden Bengt Lagerlöf. Sökt belopp: **283 000 kr**. Projektperiod: 2027-01-11 – 2028-04-30.
 
 **Projektets titel:** Räcker Trafikverkets öppna väglagsdata för att varna alla förare i tid? Utvärdering av röstburen förhandsvarning för halka (Halkvakt) under två vintrar, och validering av ett prognoslager för halka mellan mätstationerna.

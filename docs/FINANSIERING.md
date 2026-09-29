@@ -114,7 +114,7 @@ sedan v4, och påståendet att varningarna "formuleras som åtgärd".
   3. Lyft felkartans nytta för kommunal vinterdrift (#8, #14, #28, #29, SKR).
   4. Väg granskningen (343 000 kr) mot 283 000 kr en gång till i ljuset av att alla utvärderare i listan är meriterade.
 
-**Sökande: Föreningen Halkvakt, ideell förening under bildande (29/9, DECISIONS #400, ersätter #395: Bengt som privatperson).** Sammanfattningen till Axel av jämförelsen ligger på
+**Sökande: Bengt Lagerlöf som privatperson (29/9 kväll, DECISIONS #404; #400:s förening under bildande valdes bort eftersom ett tomt organisationsnummerfält kan göra ansökan ofullständig). Versionen som skickas är Axels V2, 413 000 kr.** Sammanfattningen till Axel av jämförelsen ligger på https://claude.ai/artifact/JguqbJ3PEDrnuVAue1qBF6.
 https://claude.ai/artifact/JguqbJ3PEDrnuVAue1qBF6. Den är privat tills Bengt delar den.
 
 ## Malmö stad — läget 23/9

@@ -47,4 +47,4 @@ Skicka aldrig originalen. Protokollet och stadgarna i original sparas hos sekret
 
 Skatteverket skickar ett beslut med organisationsnumret till föreningens postadress. Skatteverkets sida anger ingen
 handläggningstid, så räkna med några veckor. Har inget kommit efter sex veckor ringer kontaktpersonen Skatteverket.
-Organisationsnumret behövs för bankkonto och för att ta emot bidraget från Skyltfonden. Skicka det till Skyltfonden som komplettering samma dag det kommer, med hänvisning till ansökan.
+Organisationsnumret behövs för bankkonto och för föreningens fortsatta verksamhet. Skyltfondsansökan lämnas av Bengt som privatperson (DECISIONS #404), så ingen komplettering till fonden behövs.
