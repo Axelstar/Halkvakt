@@ -2077,3 +2077,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 29/9 (Claude, Bengts *"lägg in allt detta i en mapp i drive med namn Skyltfonden"*): Axels mejl 13:45 om Ansökan V2 (privatperson,
   413 000 kr, fartförändring i telefonen m.m.) bokfört som öppen §4.2-rad; Drive-mappen *Skyltfonden* skapad med Axels V2-mapp,
   våra två alternativ och mejlet som dokument.
+- 29/9 (Claude, Bengts fråga om luckor, affärshemligheter, vision och marknadsföring): Axels åtta V2-dokument lästa;
+  granskningen i `docs/skyltfonden-2026-09-28/GRANSKNING-V2-2026-09-29.md` och i Drive-mappen Skyltfonden. Tio rättelser,
+  två saknade stycken med förslagstext, bedömningen att inget i ansökan är en affärshemlighet. §4.2-rad.
