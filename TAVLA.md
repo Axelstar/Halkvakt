@@ -435,6 +435,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   gav rå avståndsviktning A2 6,9 % ± 0,4 (krav 5 %); grind A med offset klarade 3,7 %. ✅ **Läsningen gjord 29/9** (hojd-prov-knappen med
   `dagar: population` på grenen): före 25/9 är rå lika under ny och gammal arkivregel (4,2 mot 3,9 %); efter 25/9 ger den nya 11,1 % och
   den gamla 4,5 %. Septemberdomen #324 vilade på att de varma grannarna saknades (#353). Offseten håller efter 25/9 (4,4 % ± 0,5).
+  Frysflaggan efter 25/9: rå missar 140 av 201 frostpunkter (70 %), offset 95 (47 %) med 53 % falska flaggor; vägviktat grova fel
+  7,0 % (rå) och 3,0 % (offset). Nästan alla frostpunkter bortom 20 km — ingen nivå för typvägen än.
   **Kvar:** Bengts läsning och val (§4.2), därefter DECISIONS-raden. De saknade dygnen 6–7/9 påverkar inte slutsatsen: den bärs av
   jämförelsen över samma dagar.
 - [ ] 🧹 **#267 FYND UNDER GENOMGÅNGEN AV SKUGGMOTORN 29/9** (inga beslut, bara rättelser). Bedömningen §5.1 säger att S2 och S3 är

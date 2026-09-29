@@ -2040,3 +2040,8 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   ingesten sparade, före och efter 25/9 07:30Z. Före: rå 4,2 mot 3,9 %. Efter: rå 11,1 % ± 0,8 mot 4,5 %; offset 4,4 % ± 0,5.
   Septemberdomen #324 vilade alltså på censurerat underlag, och 28/9:s FALLEN är den ärliga. Ingen DECISIONS-rad förrän Bengt läst
   (§4.2, kort #266). Den interna sidan är uppdaterad.
+- 29/9 (Claude, Bengts "ja, kör det"): frysflaggan och vägviktningen tillagda i populationsläsningen. Efter 25/9, ny arkivregel:
+  rå viktning missade 140 av 201 halvtimmar där stationen mätte ≤ 1 °C (70 %), offset 95 (47 %) med 53 % falska flaggor; missarna
+  är desamma med den gamla regeln. Skuggrutternas provpunkter ligger 52,2 · 34,0 · 7,3 · 6,5 % per band; vägviktat blir grova fel
+  7,0 % (rå) och 3,0 % (offset). 176 av 201 frostpunkter bortom 20 km, så flaggan saknar nivå för typvägen. §4.2, kort #266 och den
+  interna sidan uppdaterade.
