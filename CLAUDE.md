@@ -325,3 +325,8 @@ i samma commit när de överlappar.
   en mätning lyfts från diagnos till grind, kopiera hela WHERE-satsen från grinden den speglar, inte bara talen. Kontraktsgrinden
   vaktar talen; ingen vakt ser populationen. Och en dom som ser förkrossande ut på första körningen är ett skäl att läsa
   populationen, inte att skriva DECISIONS.
+- En kortrubrik är en ögonblicksbild, inte ett läge. Målbladets första utgåva 29/9 tog #219:s rubrik från 20/9 ("Android sju versioner
+  efter, Play-kontot saknas") som sanning — nio dagar efter att koden (versionCode 18 = iOS), tre beslut (#346, #377, #379) och appsidan
+  28/9 motbevisat den; samma varv togs "kalendern är Bengts öppna beslut" ur §6.3 fast #381 hade avgjort det två dagar tidigare. Regel:
+  ett dokument som ska frysas läses mot koden och besluten SEDAN kortet skrevs, inte mot rubriken; och en rubrik som verkligheten
+  motbevisat får *↪ överspelad* med datum och bevis samma varv (TAVELREGELN 3), så nästa läsare inte går i samma fälla (DECISIONS #402).

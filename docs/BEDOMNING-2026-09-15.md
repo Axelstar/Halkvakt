@@ -24,7 +24,46 @@ att läsa mot varandra. Kort utan rad här hör hemma på tavlan, inte i bedömn
 
 ---
 
-## Läget 27/9 — var vi är och vart vi är på väg
+## Läget 29/9 — genomgången efter Bengts invändning (DECISIONS #402)
+
+**Varför.** Målbladets första utgåva byggde på kort och sidor från 20/9. Bengt 29/9: *"Såvitt jag vet är inte android efter ios i
+något avseende. Vi har bestämt oss för en ansökan om 343 000 kr … gör en omfattande genomgång och redovisa något som är aktuellt."*
+Genomgången läste appsidan 28/9, systembilden 25/9, mätningssidan 29/9, besluten #340–#401, koden och kalendern. Läget per område:
+
+**(1) Skyltfonden och föreningen.** Sökande: Föreningen Halkvakt under bildande, konstituerande möte 29/9 kl 19, ansökan 30/9 (#400).
+**Beloppet: Bengt 29/9 säger 343 000 kr** = v8B med upphandlad granskning (#392, AP1–AP5). Handlingarna bär 283 000 (#394: bilaga 1,
+arbetsbladet, protokollet § 16, Drive-dokumenten, Axels sammanfattning). ⚠️ De skrivs om före sändningen när Bengt bekräftat — §4.2.
+v8B-texten med 343 000 finns (AP4 *Oberoende granskning*, AP5 *Rapport*).
+
+**(2) Apparna.** iOS och Android bär båda **0.3.9 (18)** på main sedan 26/9 (#377, #379). Android var "sju versioner efter" bara i
+versionsnumret 31/8–26/9, inte i koden (#387); kort #219:s rubrik är överspelad. iOS: (13) uppladdad 23/9 som App Store-kandidat,
+(14)–(18) inte arkiverade, bygge (19) med fyra rättelser hos Axel (`docs/TILL-AXEL-BYGGE-19.md`). Android: testarna kör CI-bygget sedan
+20/9; **Play-kontot finns sedan 20/9**, kvar enhetsverifiering → första uppladdning → slutet test 14 dygn → produktion tidigast november.
+Play-deklarationen omskriven 20/9 (Ja, ungefärlig plats), raderingsfrågan Nej (#378); Axel klistrar in meningen i `integritet.html`.
+Batteri: iPhone **7 %/h** på (14), inom budget (#382); Android: fältrapporten 27/9 ⇒ batteripaketet #262 hos Axel, släppblockerare;
+mätning på två fabrikat återstår. Skillnader som står kvar: Android saknar introduktionen, självstoppet firar bara för parkerad bil,
+Siri bara på iPhone.
+
+**(3) Motorn, skuggan och facit.** Fem faror i rösten, oförändrat. Skuggan 80 rutter, 144 av 144 varv 25–28/9 (#389). Kamerafacit
+988 bilder, 41 klassade, ingen halka; V1–V3 i drift 26/9, sjudygnsavläsning tidigast 3/10. Förarsvar 0 riktiga, missar 0 riktiga (#390).
+Efterhalkan: 35 rader, 2 episoder på 14 dygn; **S3 inte byggd** (Axel, bakom S1-grinden). Vattenplaningens radarspår 57 av 200.
+Vinter: 27/9 var 1 av 1 298 stationer kall — alla vinterdomar väntar.
+
+**(4) Prognoslagret.** Grind A klarar 28/9 (0,74 °C, 3,7 %). Vägpunktsgrinden FALLEN 28/9 (6,9 %), bokförd 29/9 (#399): ingen mer
+byggtid i höst, skuggan mäter, populationsläsning varje måndag. Höjden läses 23/10. Grind B och C 0 av 20 halkhändelser.
+
+**(5) Drift och kassa.** Databasen 186 MB av 500. Actions september 31,33 USD mot 35, inga app-byggen till 1/10 (#381). **Kalendern finns
+sedan 27/9** (`docs/KALENDERN.md`, #381) — #401 sa fel att den var öppen; §6.3 och §6.6 rättade. Kuvösen väntar på Trafikverket, inget
+annat (#388).
+
+**(6) Styrningen.** Målbladet i andra utgåvan (`docs/MALET.md`, #402) med M0–M5 och kritisk väg i sex steg. Kvar av greppen: (2) en kö,
+(3) veckoavläsning, (4) kritiska vägen med datum hos Axel; korten bär inte sitt mål än.
+
+**Vart vi är på väg:** `docs/MALET.md` §4 (milstolparna) och §5 (kritiska vägen).
+
+---
+
+## Läget 27/9 (föregående) — var vi är och vart vi är på väg
 
 > **Till Axel (24/9):** segmentprognosen byggdes och kör i skugga sedan 23/9 (DECISIONS #325), inte från oktober. Kortet sa att
 > sekvenseringen mot lanseringen är din: **starten står om du inte säger annat** — säg till bara om App Store-lanseringen (#320)
@@ -373,7 +412,8 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 | :-- | :-- | :-- | :-- |
 | ~~**Vägpunktsgrinden FÖLL i måndagskörningen 28/9 — vad gäller för skuggan?**~~ ✅ **AVGJORT 29/9 (Bengt, DECISIONS #399):** bokförd FALLEN; #324:s KLARAR vilade på ett censurerat arkiv (rå 11,0 % efter 25/9 med varma grannar mot 4,4 % utan; frysflaggan missad i 70 % för rå, 47 % för offset; vägviktat 7,0 % mot 3,0 %). Skuggan fortsätter som mätning, ingen mer byggtid på prognoslagret i höst, populationsläsningen i måndagsserien | Bengt | ✅ | #266 |
 | ~~**Föreningen Halkvakt: sex beslut före kallelsen 5/10, och spår A eller B**~~ ✅ **AVGJORT 29/9 (Bengt, DECISIONS #400):** föreningen bildas 29/9 kl 19 med Bengt ordförande, Axel kassör, Harald ledamot och sekreterare, Susanne Horstmann revisor; Föreningen Halkvakt; 0 kr; ordförande och kassör var för sig; **spår A** — sökande i Skyltfonden som förening under bildande, ansökan 30/9. Kvar att fylla i på mötet: sätet, tid och plats, personnummer | Bengt | ✅ | #265 |
-| **Styrgreppen (Bengts fråga 29/9: *"vilket är våra bästa facit … hur håller vi styr på projektet i stort och smått"*).** Bedömningen 29/9: facit för PRODUKTEN är mätningarna (grind A, skuggrapporten, bild- och förarfacit) och vektorerna, inte dokumenten; facit för RIKTNINGEN saknas — §6.4:s definition är ännu inte fastställd (§6.6 punkt 3, öppen sedan 27/9). Fyra grepp föreslagna: (1) **ett målblad på en sida** (`docs/MALET.md`): Skyltfondsansökans AP1–AP4 med datum + §6.4:s fyra kriterier + kalenderns domar, fryst som kartan, ändras bara via DECISIONS; (2) **en kö, inte tre** — tavlan bär korten, bedömningen bara läget (högst tio rader, en per mål), kalendern och §4.2; §0/§0b/§0c/§5/§6 arkiveras när raderna är strukna; (3) **veckoavläsningen** — måndagsseriens tal (grind A, höjdprov, population, kassavakt) samlas till en rad per mål i läget överst; (4) **kritisk väg till novemberbetan** synlig på målbladet: #219, #214, #218/#262 och tolv testare, alla Axels. Snapshotsidorna (systembild, app, mätningar) är vyer som regenereras vid milstolpar (novemberbetan, 15/12, dom 1), aldrig facit | Bengt (2)(3) · Axel (4) | ✅ **(1) gjort 29/9: `docs/MALET.md` fastställt (DECISIONS #401), kort #268.** (2) halverar synkarbetet per session; (3) och (4) efter (1) — öppna | #268 |
+| **Skyltfondens belopp: 343 000 eller 283 000 kr? (29/9, före sändningen 30/9.)** Bengt 29/9: *"Vi har bestämt oss för en ansökan om 343 000 kr"* = v8B med upphandlad granskning (#392). Men #394 samma dag, på Bengts order *"utan den externa utvärderingen"*, satte 283 000, och det talet bär bilaga 1, arbetsbladet, protokollet § 16, Drive-dokumenten och Axels sammanfattning. Målbladet följer 343 000. Bekräftar Bengt skrivs handlingarna om samma varv: AP4 *Oberoende granskning* 60 000 kr och AP5 *Rapport* ur v8B-utkastet, kostnadsplanen 343 000, protokollet § 16, arbetsbladet, Drive och sammanfattningen | Bengt | ett ord: 343 000 eller 283 000. Rekommendation: 343 000 — granskningen är den meriterade utförare som alla 32 beviljade hade (FINANSIERING 28/9) | #265 |
+| **Styrgreppen (Bengts fråga 29/9: *"vilket är våra bästa facit … hur håller vi styr på projektet i stort och smått"*).** Bedömningen 29/9: facit för PRODUKTEN är mätningarna (grind A, skuggrapporten, bild- och förarfacit) och vektorerna, inte dokumenten; facit för RIKTNINGEN saknas — §6.4:s definition är ännu inte fastställd (§6.6 punkt 3, öppen sedan 27/9). Fyra grepp föreslagna: (1) **ett målblad på en sida** (`docs/MALET.md`): Skyltfondsansökans AP1–AP4 med datum + §6.4:s fyra kriterier + kalenderns domar, fryst som kartan, ändras bara via DECISIONS; (2) **en kö, inte tre** — tavlan bär korten, bedömningen bara läget (högst tio rader, en per mål), kalendern och §4.2; §0/§0b/§0c/§5/§6 arkiveras när raderna är strukna; (3) **veckoavläsningen** — måndagsseriens tal (grind A, höjdprov, population, kassavakt) samlas till en rad per mål i läget överst; (4) **kritisk väg till novemberbetan** synlig på målbladet: #219, #214, #218/#262 och tolv testare, alla Axels. Snapshotsidorna (systembild, app, mätningar) är vyer som regenereras vid milstolpar (novemberbetan, 15/12, dom 1), aldrig facit | Bengt (2)(3) · Axel (4) | ✅ **(1) gjort 29/9: `docs/MALET.md` fastställt (DECISIONS #401), andra utgåvan efter Bengts invändning (#402), kort #268.** (2) halverar synkarbetet per session; (3) och (4) efter (1) — öppna | #268 |
 | **Bygge (19): fyra fel från Bengts provresa 28/9 — och Siri när vakten är av** (`docs/TILL-AXEL-BYGGE-19.md`). (18) fungerar i grunden, men på iPhone klipps texter på 4,7-tumsskärmar (skärmarna scrollar inte), *"Skickat … (1 missar)"* står under en rad utan val, dubbeltryck ger två missar, och *Redo.* säger *"Din position stannar i telefonen"* — den rad som #320 missade. Android har fel 2 och 3. **Beslutet:** ska *"appen missade"* via Siri gälla när vakten är av? I dag används senaste kända position, som kan vara från en avslutad resa | Axel (bygget och Siri-beslutet) · Axel (`integritet.html`) | vägra när vakten är av; rätta 1–3 och `integritet.html` före utskick till fler; Android efter 1/10 | #203, #262 |
 | **🚨 Självstoppets gräns — hur slutar vakten utan att tystna i en kö?** (Fältrapport 27/9, DECISIONS #386, kort #262.) `IdleStop` stoppar vakten efter 15 min under **5 km/h**. Det är gångfart, och ett enda brusigt mätvärde nollställer klockan — en buren telefon fyller aldrig kvarten, så vakten gick **11 h 39 m** hos en testare. Höjd gräns eller nollställning på FÖRFLYTTNING över fönstret lagar det, men gör vakten sämre på att hålla ut i en lång kö, och **att tystna i en kö är silence när det gällde**. Trösklar skrivs före mätning här, och en tröskel som bär ett beteende ska genom värdevakten | Bengt + Axel | bygg stoppknappen i notisen direkt (ingen avvägning) · för gränsen: nollställ på förflyttning, inte på ett mätvärde — det tar bort brusfelet utan att röra kötåligheten. **Andra tröskeln i samma paket (Å2):** en fartkamera 2,0 km bort låser appen på 1 Hz
 hela dagen — `CadencePolicy` är skriven för Norrland och slår nästan aldrig till där folk bor. En **stillaståendetier** är
@@ -538,7 +578,7 @@ Fyra §0b-rader och flera kort är inte arbete utan **återkommande plikter**: P
 `ubuntu-latest`-bytet, Actions-taket varje månadsskifte. De kan aldrig bockas av. Så länge de ligger bland korten kommer
 tavlan aldrig att nå noll, och "fullkomligt" blir per konstruktion ouppnåeligt.
 
-**Förslag:** en tredje lista — `docs/KALENDERN.md` — med datum, ägare och vad som ska läsas av. Korten och §0b-raderna
+✅ **Gjort 27/9 (Bengt, DECISIONS #381): `docs/KALENDERN.md` finns, fem plikter flyttade, #86 stängt.** ~~**Förslag:** en tredje lista — `docs/KALENDERN.md`~~ — med datum, ägare och vad som ska läsas av. Korten och §0b-raderna
 tas bort därifrån. Vinsten är inte kosmetisk: när listan kan nå noll blir återstoden ett mått på hur långt det är kvar,
 i stället för en lista som alltid ser lika lång ut. **Detta är Bengts beslut och kostar en timme.**
 
@@ -568,7 +608,7 @@ den snabbaste minskningen av kön som finns att få.
 
 1. ~~**I morgon:** kuvösens trappa (6.1)~~ — stängd 28/9: kuvösen väntar på Trafikverkets beslut, inget att göra (#388).
 2. ~~**Denna vecka:** deploya bildfacit V1–V3 (6.2)~~ — ✅ i drift sedan 26/9 08:25Z (kort #260); sjudygnsavläsningen tidigast 3/10.
-3. **När Bengt har en timme:** kalendern ut ur korten (6.3) · ~~definitionen fastställd (6.4)~~ ✅ 29/9 i `docs/MALET.md` (DECISIONS #401).
+3. ~~**När Bengt har en timme:** kalendern ut ur korten (6.3)~~ ✅ 27/9 (DECISIONS #381) · ~~definitionen fastställd (6.4)~~ ✅ 29/9 i `docs/MALET.md` (DECISIONS #401, andra utgåvan #402).
 4. **Nästa samtal med Axel:** de 14 kort som inte kräver hans händer (6.5).
 
 Inget av detta bygger något nytt i motorn, och inget av det rör en tröskel. Det är fyra drag som gör resten mätbar.

@@ -6009,3 +6009,38 @@ ur korten är fortfarande Bengts beslut (§6.3, öppet).
 
 **Kvar av de fyra greppen (bedömningen §4.2):** (2) en kö i stället för tre, (3) veckoavläsningen som rad per mål, (4) kritiska
 vägen med datum hos Axel. Inget av dem är beslutat. Korten bär ännu inte sitt mål (M0–M4); det är ett eget varv.
+
+## #402 (29/9 2026) Målbladet i andra utgåvan efter Bengts invändning — Android i takt, kalendern fanns, beloppet 343 000 kr väntar på bekräftelse
+
+**Bengt 29/9:** *"jag ifrågasätter om detta verkligen är en uppdaterad målbild. har du stämt av denna mot utfört arbete på senare
+tid. Såvitt jag vet är inte android efter ios i något avseende. Vi har bestämt oss för en ansökan om 343 000 kr … jag vill att du
+gör en omfattande genomgång och redovisar något som är aktuellt."* Genomgången läste appsidan 28/9, systembilden 25/9,
+mätningssidan 29/9, besluten #340–#401, koden och `docs/KALENDERN.md`. Läget står överst i bedömningen som *Läget 29/9*.
+
+**Vad som var fel i #401:s blad, med beviset.**
+1. *"Android sju versioner efter, Play-kontot saknas"* — taget ur kort #219:s rubrik (20/9). Koden: `android/app/build.gradle.kts`
+   bär versionCode 18 och versionName 0.3.9, samma som iOS (#377, #379); versionsnumret stod stilla 31/8–26/9 medan koden följde
+   med (#387). Play-kontot skapades 20/9; kvar är enhetsverifieringen och första uppladdningen (#346, appsidan 28/9 §9).
+2. *"Batteribudgeten aldrig mätt"* — mätt på iPhone 27/9, 7 %/h på (14), inom budget (#382). Android-mätningen återstår (#218, #262).
+3. *"`docs/KALENDERN.md` … fortfarande Bengts beslut (§6.3, öppet)"* — kalendern beslutades och skapades 27/9 (#381). Bedömningens
+   §6.3 och §6.6 bar raden som öppen två dagar efter beslutet; rättade nu.
+4. Beloppet 283 000 — ur #394. Bengt säger 343 000; se nedan.
+5. Bladets kalender blandade plikter (PAT 15/11, bildfacitläsningen 3/10) med domar; #381 skiljer dem. Bladet bär nu bara det som
+   bär en dom, ett bygge eller ett beslut, och hänvisar till kalendern för plikterna.
+
+**Beslut.** Andra utgåvan av `docs/MALET.md`: M0–M5 (fem arbetspaket enligt v8B med granskning), milstolparna ur mätningssidans
+domkalender (§11), kritisk väg i sex steg — Play-vägen, iOS-byggena, batteriet, integritetssidan, tolv testare, S3 — utgångsläget
+29/9 som daterad bilaga som inte uppdateras, och regeln att en motbevisad kortrubrik får *↪ överspelad* samma varv. Kort #219 har
+fått raden. Läxan i CLAUDE.md.
+
+**Beloppet, öppet i §4.2.** Bengts besked 29/9 säger 343 000 kr, alltså v8B med upphandlad granskning som han beslutade i #392
+(AP1 126 000 · AP2 70 000 · AP3 41 000 · AP4 60 000 · AP5 28 000 · drift 12 000 · resor 6 000). Men #394 samma dag, på hans
+order *"skriv en v8 B version utan den externa utvärderingen"*, satte 283 000, och det är det talet handlingarna bär: bilaga 1,
+arbetsbladet, protokollet § 16, Drive-dokumenten och sammanfattningen till Axel. Bladet följer Bengts senaste ord. Handlingarna
+skrivs om först när Bengt bekräftat, eftersom de två beskeden står mot varandra i loggen och ansökan sänds 30/9. Texten med
+343 000 finns färdig (v8B-utkastet 28/9 14:26 med AP4 *Oberoende granskning* och AP5 *Rapport*), så omskrivningen är ett varv.
+
+**Alternativ som valdes bort.** (a) Lappa första utgåvan punkt för punkt — den hade fem fel på en sida, och grunden (korten från
+20/9) var fel. (b) Skriva om handlingarna till 343 000 direkt — beskeden #392 och #394 är båda Bengts, samma dag, i motsatt
+riktning; ett ord från honom kostar mindre än ett felaktigt utskick. (c) Låta läget stå i chatten — SESSIONSREGELN: det som bara
+stod i chatten finns inte nästa gång.

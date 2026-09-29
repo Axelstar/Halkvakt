@@ -2065,3 +2065,8 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   klart-kriterier, M0–M4 ur Skyltfondsansökan med trösklar och ägare, kalendern med domarna och kritiska vägen till novemberbetan.
   Bedömningen: §4.2 grepp (1) struket, §6.4 fastställd, §6.6 punkt 3 halv; tavlan #268 KLART. Styrfrågan bokförd som §4.2-rad
   (f05878c). Ännu inte gjort: korten bär inte sitt mål, greppen (2)–(4) öppna.
+- 29/9 (Claude, Bengts invändning *"jag ifrågasätter om detta verkligen är en uppdaterad målbild"*): omfattande genomgång av
+  appsidan 28/9, systembilden 25/9, mätningssidan 29/9, besluten #340–#401, koden och kalendern. Målbladet i andra utgåvan
+  (DECISIONS #402): Android och iOS i takt på 0.3.9 (18), Play-kontot sedan 20/9, batteriet mätt på iPhone, kalendern sedan 27/9,
+  beloppet 343 000 enligt Bengt — handlingarna bär 283 000 och väntar på hans bekräftelse (§4.2). Läget 29/9 överst i bedömningen,
+  §6.3/§6.6 rättade, #219 märkt överspelad, läxan i CLAUDE.md.

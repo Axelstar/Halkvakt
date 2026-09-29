@@ -219,6 +219,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     ↩︎ Play: uppladdningsguide för den CI-signerade AAB:n + fotostudion tag 2 (facit ur CI +
     produktboken) *(låst: Play-kontot)*.
   ↪ **Flyttat 26/9 från *Claude — olåst*** (femma åtta, DECISIONS #377): nästa steg är Play-kontot och testtelefonen.
+  ↪ **29/9: rubriken överspelad (DECISIONS #402).** Android bär 0.3.9 (18) som iOS sedan 26/9 (#377, #379) och Play-kontot finns sedan 20/9. Kvar är bara Play-vägen: enhetsverifieringen i Play Console, första uppladdningen med Data safety-formuläret ifyllt likadant som filen (#214), slutet test 14 dygn med tolv testare, produktion tidigast november. Verify-raden gäller oförändrad.
 ### Bengt
 - [ ] 🏛️ **#265 FÖRENINGEN HALKVAKT BILDAS 29/9 — SÖKANDE I SKYLTFONDEN SOM FÖRENING UNDER BILDANDE** (Bengt 29/9, DECISIONS #400,
   ersätter #396:s oktoberplan). Bengt ordförande, Axel kassör, Harald Lagerlöf ledamot och sekreterare, Susanne Horstmann revisor.
@@ -1832,7 +1833,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
-- [x] ✅ **#268 MÅLBLADET — KLART 29/9 (DECISIONS #401)**: `docs/MALET.md`, en sida: slutmålet, §6.4:s klart-kriterier fastställda, M1–M4 = Skyltfondsansökans arbetspaket med trösklar, datum och ägare, M0 med kritiska vägen till novemberbetan (#219, #214, #218/#262, tolv testare, #320). Fryst; ändras bara via DECISIONS. Bengts *"ja, skriv målbladet"* efter styrfrågan 29/9 (bedömningen §4.2). Kvar: korten får sitt mål M0–M4, och greppen (2)–(4).
+- [x] ✅ **#268 MÅLBLADET — KLART 29/9, ANDRA UTGÅVAN SAMMA DAG (DECISIONS #401, #402)**: `docs/MALET.md`, en sida: slutmålet, §6.4:s klart-kriterier fastställda, M1–M5 = Skyltfondsansökans arbetspaket (v8B med granskning, 343 000 kr enligt Bengt 29/9), M0 med kritisk väg i sex steg, milstolparna ur domkalendern, utgångsläget 29/9. Första utgåvan byggde på kort från 20/9 och sa fel om Android, Play-kontot, batteriet, kalendern och beloppet; andra utgåvan avstämd mot koden, appsidan 28/9, mätningssidan 29/9 och #340–#401. Kvar: korten får sitt mål M0–M5, greppen (2)–(4), och beloppet bekräftas (§4.2).
 - [x] ✅ **#266 VÄGPUNKTSGRINDEN FÖLL 28/9 — BOKFÖRD 29/9 (DECISIONS #399)**: populationsläsningen visade att septemberdomen #324 vilade på ett arkiv utan varma grannar (rå viktning efter 25/9: 11,0 % grova fel med dem, 4,4 % utan; frysflaggan missad i 70 %). Skuggan fortsätter som mätning, läsningen går varje måndag efter höjdprovet.
 - [x] ✅ **#244 "FÖR LITE DATORKRAFT" — STÄNGT 28/9 08:42Z (DECISIONS #389)**: rutfiltret (25/9, #360) höll i tre dygn. **144 av 144 skuggvarv** 25/9 09:02 – 28/9 08:32Z skrev sina rader (123 med 3, 21 med 2 — de korta vart sjunde varv, rotationen över 20 rutter); **0 av 509** svar i `net._http_response` var 546 (fönstret 02:42–08:41Z; 04:00-läsningen täckte 21:59–03:58Z: 0 av 501); gallringsjobbet orört (`gallra_arkiv(7)`). dbknapp 36398894806. Tavlan 36 → 35.
 - [x] ✅ **#253 DE VARMA GRANNARNA — KLART 26/9 (DECISIONS #380)**: den levande ingesten sparar en varm avläsning per station och halvtimme sedan 25/9; 0,4 % saknade grannplatser i kalla halvtimmar (var 49,5 %, gränsen 5 %), 10 796 → 63 095 rader per dygn. Tavlan 35 → 34, och nytt kort #260 (V1–V3) ⇒ 35.
