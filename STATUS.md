@@ -2087,3 +2087,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   avsnitt i `docs/skyltfonden-2026-09-28/ANDRINGSLISTA-BILAGA-1-2026-09-29.md` och i Drive-mappen Skyltfonden. Tre tunga (prognoslagrets
   septemberbild, föreningen "avses bildas", förarens nej fäller ensamt), tabellen "i dag / om trösklarna klaras" som svar på Bengts
   visionsfråga, 25 övriga med plats.
+- 29/9 kväll (Claude, Bengts *"kolla ASEK 8.0-talen och Strada-siffran"*): alla källsidor spärrade i miljön; sökindexet ger ~44 mnkr
+  per dödsfall (ASEK 8.0 via PRO 2025-10-20), inte 19,3; "knappt en miljon" liknar IHE:s personskadekostnad; 17 % i TRV 2025/12914
+  tycks avse undvikbara olyckor vid däckbyte, inte novemberhalka. Bokfört i ändringslistan §5. Talen måste läsas i filerna av Axel.

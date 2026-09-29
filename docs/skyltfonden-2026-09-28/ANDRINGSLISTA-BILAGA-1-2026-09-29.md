@@ -137,3 +137,24 @@ riskerna, "Hur prognosen prövas där ingen station står", väghållarvyn och d
 egna projekt som prejudikat, kostnadsplanen som leverabler (den summerar rätt: 413 000, 350 timmar = 245 000, Bengt 190 + Axel 160),
 "Efter projektet: vägen till alla förare". Rättelserna i bilaga 4 (Rämä utan procenttal, Vollrath 2026, Pilli-Sihvola 1993) är rätt
 gjorda; bilaga 4 i repot bär ännu de gamla uppgifterna och rättas där.
+
+## 5. Kontroll av räkneexemplets tal (29/9 kväll, Bengts fråga)
+
+Direkthämtning av trafikverket.se, bransch.trafikverket.se, regeringen.se, trafa.se och diva-portal är spärrad i den här miljön;
+bara sökindexets citat gick att läsa. Det räcker för två slutsatser, men inte för att sätta rätt tal.
+
+- **19,3 miljoner per dödsfall stämmer inte med ASEK 8.0 som den citeras.** Sökindexet återger Trafikverkets värde till *omkring
+  44 miljoner kronor per dödsfall* (inkomstbortfall, sjukvård, räddningstjänst, materiella skador och anhörigas lidande), med ASEK 8.0
+  som källa (PRO:s sammanställning 2025-10-20). Riskvärderingen är den helt dominerande delen. Talen per skadegrad står inte i
+  rapporten utan i kalkylbilagan (`asek-8.0-kalkylbilaga-2-april-2024.xlsx` på bransch.trafikverket.se), i 2024 års prisnivå.
+- **"Knappt en miljon för en allvarligt skadad"** liknar en personskadekostnad ur IHE:s studier (746 682 kr per allvarligt skadad,
+  minst 1 % medicinsk invaliditet), inte ASEK:s riskvärdering. Vilket ASEK 8.0-värde som gäller för allvarligt skadad ska läsas i
+  kalkylbilagan.
+- **17 % i november** går inte att bekräfta. Sökindexets sammanfattning av promemorian TRV 2025/12914 säger att 17 % är andelen
+  olyckor som *skulle kunna undvikas om 53 % bytte till vinterdäck*, alltså en annan sak än andelen novemberolyckor på halt väglag.
+  Meningen i ansökan kan vara en felläsning. Promemorian måste läsas på sidan innan siffran används.
+
+**Rekommendation:** öppna de tre filerna (ASEK 8.0-rapporten, kalkylbilagan, promemorian 29 aug 2025) och skriv talen med sida
+eller flik angiven, eller skriv räkneexemplet utan tal: *"Trafikverkets kalkylvärden (ASEK 8.0) sätter samhällets kostnad för ett
+dödsfall i trafiken till tiotals miljoner kronor; projektets hela kostnad, 413 000 kr, är en bråkdel av kostnaden för en enda
+allvarligt skadad."* Slutsatsen blir starkare med 44 miljoner än med 19,3, så ingenting går förlorat på att vänta med talen.
