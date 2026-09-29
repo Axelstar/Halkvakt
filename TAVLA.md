@@ -25,6 +25,47 @@ Roller och ägarskap: `docs/BESLUTSGANGEN.md` (31/8). Tavlan är sanningen — e
 står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett kort direkt.
 ### AXELS NÄSTA STEG — i den här ordningen (uppdaterad 8/9 kväll)
 
+- [ ] 🔋 **#262 BATTERIPAKETET — SJU ÅTGÄRDER EFTER FÄLTRAPPORTEN 27/9** (Bengts beställning 27/9: *"föreslå ett åtgärdspaket
+  … jag vill att Axel gör det"*. DECISIONS #386, #387). 🚨 **Släppblockerare** — batteribudgeten är ett krav i CLAUDE.md.
+  📱 **Vad testaren rapporterade:** 42 % efter en baddag, telefonen knappt använd. 27/9: **11 h 39 m** bakgrund, **0 m** skärm,
+  GPS **6 h 40 m**, 924 väckningar, väckningslås 4 h 16 m, CPU **2 h 21 m**. 26/9: **21,6 %** av dygnets förbrukning.
+  Skärmbilderna: **Autostart PÅ**, **fartkamera 2,0 km bort**, **"Version 0.3.1"**, och telefonen är **inte en Samsung**.
+  🧮 **21,6 % är en ANDEL, inte procentenheter.** Antas dygnet ha dragit ~80 pe ⇒ ~1,5 %/h, alltså *inom* 8 %/h.
+  **Felet är inte förbrukningen per timme utan antalet timmar.**
+  ⛔ **DET STÖRSTA FYNDET: "Version 0.3.1" betyder ingenting.** Numret stod stilla på 0.3.1 / versionCode 4 från 31/8 till
+  26/9 medan koden följde med (DECISIONS #377). **Vi kan alltså inte veta om testaren har självstoppet (#248, 24/9) eller
+  omladdningsfixen (#370, 26/9).** Hela fältrapporten är otolkbar tills testaren står på ett bygge vars nummer betyder något.
+  Det är därför Å0 är först och inte förhandlingsbart.
+
+  | # | Åtgärd | Tröskel? | Verify |
+  | :-- | :-- | :-- | :-- |
+  | **Å0** | **Ge testaren 0.3.9 (18).** Main bär åtta versioners fixar som testaren kanske saknar | nej | testarens Om-sida visar 0.3.9 (18) |
+  | **Å1** | **Stoppknapp i den pågående notisen.** I dag har bara *efter resan*-notisen knappar — vakten kan bara stoppas genom att appen öppnas. Halva skälet att den blev kvar på | nej | vakten stoppas från låsskärmen utan att appen öppnas |
+  | **Å2** | **Stillaståendetiern i `CadencePolicy`.** Testaren hade en **fartkamera 2,0 km bort** ⇒ NEAR ⇒ **1 Hz GPS hela dagen**. Tiererna är skrivna för Norrlands E4 (kommentaren säger det) och slår nästan aldrig till där folk bor. Rör sig telefonen inte kan ingen fara vara nära förestående — **vid 0 km/h går det inte att nå faran**, oavsett avstånd | ⚠️ **JA** | en stillastående telefon nära en fara ligger på FAR-takt, och en rullande bil på oförändrad takt |
+  | **Å3** | **Självstoppet robust mot gångfart.** `IdleStop` nollställs av ETT mätvärde ≥ 5 km/h — gångfart. En buren telefon fyller aldrig kvarten, så självstoppet kan i praktiken bara fira för en **parkerad bil**. Förslag: nollställ på **förflyttning över fönstret**, inte på ett enstaka mätvärde | ⚠️ **JA** | en dag till fots ⇒ vakten har stoppat sig inom en kvart efter sista körningen |
+  | **Å4** | **Autostartens text ljuger.** Reglaget säger *"Startar när bilens Bluetooth kopplas"* — men `setEnabled` registrerar också **Activity Recognition**, som startar vakten i vilket fordon som helst (buss, som passagerare). Antingen rätta texten eller begränsa beteendet | nej | texten beskriver vad reglaget gör · **PRODUKTBOKEN i samma varv** |
+  | **Å5** | **Cache i `Guard.nearestHazardM`.** Den sveper varje koordinat i varje fara vid VARJE fix, och motorn går över samma material — vid 1 Hz två nationella svep i sekunden. Ren prestanda | nej | CPU-andelen mätt före och efter på samma rutt |
+  | **Å6** | **Fältmätningsprotokoll**, så nästa rapport går att jämföra: bygge, autostart på/av, telefonmodell, start-% och *Batterianvändning för app* vid start och slut | nej | protokollet skickat med nästa testarutskick |
+  | **Å7** | **MÄT KÖRFALLET PÅ ANDROID** (kort #218:s andra halva, aldrig gjord). Paketet ovan tar bort TIMMAR som inte skulle finnas — det rör inte vad vakten kostar under en riktig körning. iPhone mättes till 7 %/h med övre kant som RÖR 8 (#382); Android har aldrig mätts. **Det är den siffran som avgör om produkten håller kravet**, och ingen av Å0–Å6 svarar på den | nej | en timmes körning, skärmen av, ingen sladd, %/h mot kravet < 8 |
+  | **Å8** | **Nollmätning FÖRE Å1–Å5, på 0.3.9 (18).** Utan ett före går ingen förbättring att bevisa — och att mäta det gamla bygget säger inget, eftersom vi inte vet vad det är (se Å0). Ordningen är alltså: Å0 → nollmätning → fixarna → ommätning | nej | samma protokoll som Å6, körd två gånger med bara fixarna emellan |
+
+  ➗ **Å2 och Å3 överlappar — räkna inte hem båda.** De angriper samma spilltid från två håll: stoppar vakten sig själv (Å3)
+  blir den stillastående tiden kort, och då har Å2 lite kvar att spara. Å2:s egna värde ligger i de fall där vakten SKA vara
+  igång men bilen står — köer, färjelägen, rastplatser — och som skyddsnät när Å3 inte fyrar.
+  📉 **Vad paketet inte gör:** 1 Hz-takten UNDER körning är oförändrad, och det är den dominerande kostnaden när vakten gör
+  sitt jobb. Wakelocket (4 h 16 m) är inte heller åtgärdat i sig. Paketet tar bort timmar som inte skulle finnas — det gör
+  inte en körtimme billigare. Därför Å7.
+  ⚖️ **Å2 och Å3 är trösklar och tas inte ensidigt** (Bengt + Axel, §4.2). Båda är säkerhetsnära åt samma håll: **en vakt som
+  tystnar i en kö är silence när det gällde** — det dyraste felet appen kan göra. Trösklarna skrivs före mätning och ska genom
+  `scripts/vardevakten.ts` innan de bär ett beteende.
+  📵 **Telefonen är inte en Samsung.** Vår testmobil är Samsung A just för att den är aggressivast (skills/halkvakt-android §3)
+  — men OEM:ernas batterihanterare skiljer sig, och **vi kan alltså inte räkna med att reproducera det här på testtelefonen.**
+  Läxan hör hemma i `skills/halkvakt-android/SKILL.md` §5, och Android-mätningen i kort #218 bör köras på minst två fabrikat.
+  📏 **Signal, inte bevis:** 44 % 15:26 → 32 % 16:38 = 12 pe på 72 min ≈ **10 %/h**, alltså över budgeten — men vaktens läge och
+  skärmtiden i fönstret är okända (skärmbilder togs). Räkna inte med talet; mät om det rent enligt Å6.
+  Verify för hela kortet: Å0 kvitterad av testaren · Å1, Å4, Å5 i ett bygge · Å2 och Å3 beslutade i DECISIONS före kod ·
+  en ny fältdag där bakgrundstiden ≈ körtiden, inte dygnet.
+
 **Beslut som väntar, inte brådskande (med Bengt):**
 ### Axel — beslut att ta
 - [x] ⏰ **#86 NYCKELKALENDERN — två nycklar går ut mitt i säsongen** ✅ **STÄNGT 27/9 ↪ `docs/KALENDERN.md`** (Bengts ja: *"ja till kalenderlistan och stäng korten"*, DECISIONS #381). Vakten är byggd och bevisad — nyckelkalendern är check 10 i vakthunden, prövad 15/9 med issue #272 som läste PAT:ens datum live. Det som återstod var inte arbete utan **två datum någon måste läsa av**: PAT 22/11 (rotera senast 15/11) och Supabase-tokenen 8/12 (senast 1/12). De bor nu i kalendern, som äger dem. Kortet kunde aldrig bockas av så länge det bar en plikt som återkommer (Axels fynd 9/9, kort av Claude):
@@ -179,6 +220,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     produktboken) *(låst: Play-kontot)*.
   ↪ **Flyttat 26/9 från *Claude — olåst*** (femma åtta, DECISIONS #377): nästa steg är Play-kontot och testtelefonen.
 ### Bengt
+- [ ] 🏛️ **#265 FÖRENINGEN HALKVAKT BILDAS** (Bengts beställning 28/9, DECISIONS #396). Handlingarna är klara i `docs/forening/`
+  och i Drive-mappen *Föreningen Halkvakt, bildande*: stadgar, kallelse och dagordning, protokollsmall, medlemsförteckning,
+  arbetsblad för SKV 8400 och körschemat. Körschemat: sex beslut senast sön 4/10 (fyra grundare, poster, namn, säte, avgift,
+  firmateckning), kallelse mån 5/10, konstituerande möte tis 13/10, SKV 8400 postad senast mån 19/10, organisationsnummer (räkna med
+  veckor), bankkonto. Skyltfondsansökan påverkas inte (#395). Före första utbetalning: mottagarbytet hos Trafikverket (efter 15/12)
+  och arbetsgivarfrågan. **Verify:** Skatteverkets beslut med organisationsnummer i handen och föreningens bankkonto öppnat.
 - [ ] 🧫 **#232 KUVÖSEN — HELA SYSTEMET BAKÅTPRÖVAT PÅ VINTERN 2024/25** (Bengts idé 21/9, DECISIONS #292). Motorn och ALLA
   skuggregler i en gemensam testbädd, långt från appar och förare, körd mot en hel gången vinter — ett RIKTNINGSPROV: är vi på
   rätt väg, och vad tillför varje del ovanpå de andra? Svarar på kartans §7.3: *"Varje grind dömer sin del ENSAM"*.
@@ -188,10 +235,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   historik är 24 h, och FMI:s vägväderfrågor finns inte längre (151 lagrade frågor listade, ingen för väg) · Norge: Vegvesenets
   flöde är realtid; MET:s Frost-arkiv kräver konto och är inte kontrollerat. **Vägen är alltså en förfrågan till Trafikverket.**
   ✅ **STEG 1 GJORT 21/9 — Bengt har skickat förfrågan via Datautbytesportalens kontaktformulär** (hans besked i chatten).
-  ⏳ Väntar svar. ~~Inget svar senast 28/9 ⇒ reserv 1~~ **TRAPPAN ÄR REDAN GÅNGEN TILL SLUTET (Bengt 27/9): begäran om
-  allmänna handlingar är inskickad och OBESVARAD.** Båda reserverna är alltså förbrukade; nästa steg är inte ett nytt
-  formulär utan att kräva ett **skriftligt avslagsbeslut**, som är överklagbart. Det tidigare Datex II-ärendet gick samma
-  väg 17–19/9 och är fortfarande obesvarat — tystnad är mönstret, inte undantaget.
+  ⏳ **BEGÄRAN OM UTLÄMNANDE INSKICKAD OCH OBESVARAD (Bengt 27/9). BENGT 28/9: *"Jag avvaktar beslut om utlämnande från
+  Trafikverket inget annat."*** Allt om att driva ärendet — reservformulär, krav på skriftligt avslagsbeslut, överklagande —
+  är **stängt** på hans order (DECISIONS #388). Kortet väntar på Trafikverkets beslut och på ingenting annat. Det tidigare
+  Datex II-ärendet är obesvarat sedan 17/9; tystnad är mönstret, inte undantaget.
   ⚠️ **TVÅ RISKER SOM INTE STOD PÅ KORTET, och de gäller även om svaret blir ja:**
   · **Elektronisk form är inte en rättighet.** Rätten att ta del av en allmän handling omfattar att läsa den och att få
     papperskopia; att få ut en databas i filform är något myndigheten *får* göra, inte något den måste. För ett vinteruttag
@@ -200,7 +247,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     rutinbetonade åtgärder. Kräver ett VViS-uttag programmering kan de avslå på den grunden.
   ⏳ **HÅLLBARHETSTID (fynd 27/9):** kuvösens hela värde är att ge vintersvar FÖRE vintern. Frosten kommer nov–dec och
   dom 1 går i januari på riktig data. Varje vecka av tystnad äter värdet, och omkring **1 december** slutar kuvösen vara
-  en spak och blir en historisk kuriositet. **Sätt ett beslutsdatum** i stället för att vänta öppet.
+  en spak och blir en historisk kuriositet. ~~Sätt ett beslutsdatum~~ **Bengt 28/9: öppen väntan är valet** (#388).
   🔨 **SONDEN BYGGD 27/9 (Bengts ja):** `scripts/no-historik-rekognosering.ts` + knappen
   `no-historik-rekognosering` — ren läsning, tre spår, **kriteriet utskrivet överst** så svaret går att läsa utan
   tolkning: yttemperatur per station · passerad vinter · minst timupplösning · konto vi har eller kan få gratis.
@@ -222,7 +269,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   `elements/v0.jsonld` gav **401**. Alltså går det inte ens att fråga *om MET har ett yttemperatur-element* utan konto,
   och spår B:s hela poäng (ställ den billiga frågan först) föll. `observations` utan nyckel gav **400**, inte 401 —
   servern validerar frågan före behörigheten. Kriteriet står alltså oprövat på punkt 1.
-  🔑 **NÄSTA STEG, litet och gratis:** registrera ett client-id på frost.met.no (självbetjäning, kostnadsfritt för
+  🔑 **Möjligt nästa steg — INTE beställt** (Bengt 28/9: avvaktar Trafikverket, inget annat): registrera ett client-id på frost.met.no (självbetjäning, kostnadsfritt för
   icke-kommersiellt bruk), lägg det i GitHub Secrets som `FROST_CLIENT_ID` och tryck knappen igen. Då svarar spår B på
   riktigt. Utan det är Norge varken en öppen eller en stängd dörr — den är obesvarad.
   ℹ️ **Spår C:** `api.vegvesen.no` och `datainn.vegvesen.no` gick inte att slå upp alls (fetch failed) — mina
@@ -233,6 +280,27 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   köra på en norsk vinter: samma fysik, och vi ingesterar Norge redan. **Jag kunde inte pröva det härifrån** — den här
   behållarens utgående trafik blockeras mot frost.met.no, SMHI och Vegvesen (403 i proxyn). Det är min behållares gräns,
   inte källornas: SMHI metobs bevisades nåbart 21/9. Provet måste alltså köras i ett Actions-jobb eller av dig.
+  💰 **OM BESLUTET KOMMER MED EN AVGIFT (Bengts frågor 27/9, DECISIONS #398) — tre regimer.**
+  **(1) Kopia av allmän handling** (avgiftsförordningen 15–16 §§): sidtaxa — de nio första sidorna fria, tio sidor 50 kr, därefter
+  2 kr per sida. Taxan är skriven för PAPPER; en CSV har inga sidor, så den går inte att räkna på en fil. Viktigast: **de får inte
+  ta betalt för sin egen handläggning eller sekretessprövning** — bara för kopior. Och det finns **ingen skyldighet att lämna ut i
+  elektronisk form** (rätten gäller en kopia; mediet väljer myndigheten). **(2) Uppdrag** (4 §, full kostnadstäckning): är uttaget
+  inte en rutinbetonad åtgärd behöver de inte göra det — men de får sälja det, till timpris. **Det är här en verklig faktura kan
+  uppstå**, och det är samma test som avgör om sammanställningen alls är en allmän handling. **(3) Öppna data / värdefulla
+  datamängder** (lagen 2022:818, EU 2019/1024 + 2023/138): meteorologiska data är en av EU:s kategorier, och en särskilt värdefull
+  datamängd ska tillhandahållas **avgiftsfritt**, maskinläsbart, gärna som bulknedladdning. Undantagsfönstret löpte ut 9/2 2025.
+  🚧 **Vår egen regel:** gratisnivån är ett villkor (CLAUDE.md) — **ingen kostnad accepteras i ett svar**, den tas tillbaka hit och
+  blir en DECISIONS-post godkänd av Axel.
+  📵 **Inte läst på källan:** nätpolicyn blockerar trafikverket.se, riksdagen.se, lagen.nu, forum.esv.se och jpinfonet.se. Talen
+  50 kr/2 kr och avgiftsfriheten för värdefulla datamängder är regelverket som jag känner det plus sökträffar — **kontrollera dem
+  innan de citeras MOT Trafikverket**.
+  🧾 **ÄR EN BEGÄRAN EN BESTÄLLNING? (Bengts följdfråga 27/9, DECISIONS #398 tillägg.)** Nej — men gränsen går inte där jag först
+  skrev. En begäran utlöser en PRÖVNING, inte ett avtal: myndigheten lämnar ut, eller avslår. **Ett avslag kan aldrig faktureras**,
+  och handläggningen inte heller. MEN: sidtaxan i regim 1 följer av förordningen, inte av vårt samtycke — begär man en kopia av en
+  handling på 500 sidor uppstår avgiften utan att någon beställt något. **Så i regim 1 ÄR begäran i praktiken en beställning av
+  kopiorna** (liten risk för oss: taxan gäller papper, en fil kostar normalt inget). **Regim 2 är motsatsen:** där kan de inte
+  fakturera alls utan ett uttryckligt erbjudande från dem och ett ja från oss. Svarar de *"inte rutinbetonat, men vi gör det som
+  uppdrag för X kr/tim"* är det ANBUDET — och först vårt ja är beställningen. Därför är det ja:et Axels, aldrig ett svar i stunden.
   ✉️ **Steg 1 — Bengt skickar förfrågan.** ⛔ **INTE till datex@trafikverket.se — adressen STUDSAR** (Bengts mejl 17/9 kom
   tillbaka med *"Adressen hittades inte"*; den gavs ändå ut en gång till 21/9, DECISIONS #293 → rättat i #294).
   📖 **Rätt väg, läst på källan 21/9:** Datautbytesportalens kontaktformulär, data.trafikverket.se/about-us/contact,
@@ -302,6 +370,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Verify: Bengts val inskrivet här · för (2): andelen i bedömningen · för (1): underlaget i docs/ med Axels besked.
   ↦ **Sorterat 22/9 (kort #224):** nästa steg är ditt val av vad som ska utredas (§4.2); del (2) körs om vid frost.
   ↪ **Hit 22/9 (DECISIONS #309):** idén ur #16 *Blixthalke-prognos* (MET Nowcast). I *före resan*-vyn får den visas — regel T6 förbjuder en prognos att utlösa, inte att synas. Utreds med (1).
+  ↩︎ **28/9: stängdes och öppnades igen inom en timme på Bengts order** (*"nej det blev fel, öppna kort 233 igen"*) — kortet är oförändrat, stäng det inte utan ett nytt besked.
 
 - [ ] 🔋 **#218 BATTERIBUDGETEN HAR ALDRIG MÄTTS, OCH iOS KÖR FULL GAS** (genomlysningen 20/9). `< 8 %/h` står som krav på tre
   ställen med **noll motprov**. iOS kör `BestForNavigation` med avstängd automatisk paus och saknar motsvarighet till Androids
@@ -362,6 +431,22 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **Flyttat 26/9 från *Axel — hösten (brainstorm 31/8)*** (femma åtta, DECISIONS #377): nästa steg är Bengts två minuter (*Visa introduktionen igen*).
 
 ### Claude — olåst
+- [ ] 🧹 **#267 FYND UNDER GENOMGÅNGEN AV SKUGGMOTORN 29/9** (inga beslut, bara rättelser). Bedömningen §5.1 säger att S2 och S3 är
+  obyggda och att försprångets regel är obyggd — S2 byggdes 24/9 (#341) och försprånget körs i skuggan sedan 25/9 (#359). #321 säger att
+  felet stiger monotont med avståndet; loggen 22/9 ger 0,43 · 0,79 · 0,76 · 0,72 °C. Värdevakten har inte körts sedan 15/9, och spannet
+  −60…+60 °C släpper igenom ytgivarnas −50 °C. `engine.ts` rad 5 och TROSKLAR-OVERGANGAR §7 säger fortfarande 45 s.
+  **Verify:** raderna rättade med beviset på raden, och en värdevaktskörning på main.
+- [ ] 🔤 **#264 KÄLLBEVAKNINGEN GÖR Å, Ä OCH Ö TILL MELLANSLAG** (fynd 28/9 under issue #638/#639, DECISIONS #391).
+  `scripts/trv-bevakning.ts` rad 93 byter varje HTML-entitet (`&[a-z#0-9]+;`) mot ett blanksteg. Polisen.se kodar å, ä och ö som
+  entiteter, så bevakningen läser *"API ver polisens h ndelser"* och *"Regler f r ppna data"* — och ett nyckelord med å, ä eller
+  ö kan aldrig träffa på en sådan sida. Bedömningen blir då *VET INTE* där den borde bli *RÖR OSS*, tyst. Samma rad matar
+  textlängden och hashen, så åtgärden ändrar alla bevakade sidors hash en gång: nästa körning larmar på varje källa samtidigt.
+  Åtgärd: avkoda entiteterna (namngivna och numeriska) i stället för att stryka dem, och låt första körningen efter ändringen
+  skriva om grundvärdena utan larm. Verify: *"händelser"* med å/ä/ö intakt i en polissidas text · ett prov där ett svenskt
+  nyckelord med ö träffar en entitetskodad sida · ingen larmstorm efter deployen.
+- [ ] 🪤 **#263 DB-KNAPPENS STANDARDFIL ÅTERSTÄLLER GALLRINGEN** (fynd 28/9 under läsningen för #244, DECISIONS #389). `dbknapp.yml` har `fil: sql/014_gallring.sql` som standard, och en läsning görs genom att köra en migration med bevisrader efter. Men 014 gör `cron.unschedule` + `cron.schedule('halkvakt-gallring', …, 'SELECT gallra_vader(7)')` — och sedan `sql/026` pekar jobbet på **`gallra_arkiv(7)`**, som `sql/031` byggt ut med Danmark, gravstenarna och tidsvakten. **Ett tryck med standardfilen stänger alltså tyst av gallringen av grannarkiven, gravstenarna och tidsvakten**, och databasen växer mot gratisnivåns 500 MB utan att något larmar. **Inte utlöst:** jobbet bär `SELECT gallra_arkiv(7)` 28/9 03:58Z. Knappens egen kommentar kallar 014 *"idempotent"* — det var sant 13/9, före 026. Samma familj som vitlistan på två ställen: en sanning som gällde när den skrevs.
+  Åtgärd, liten: ett läsläge i knappen (`atgard: las`, bara bevisraderna, i en transaktion som rullas tillbaka) och en ofarlig standard. Tills dess bär läsningar `sql/033_kamerafacit.sql` (bara `IF NOT EXISTS`, RLS och REVOKE; ingen senare fil ändrar tabellen).
+  Verify: en läsning utan migrationsfil · standardvärdet kan inte ändra ett cron-jobb · motprov: läsläget vägrar en sats som skriver.
 - [ ] 📍 **#226 AUTOSTARTENS BEHÖRIGHET FALLER TYST PÅ ANDROID 11+** (Axels fynd på testtelefonen 20/9, DECISIONS #272).
   ⚠️ **HÄRLETT, INTE UPPMÄTT:** kortet skrevs på Axels rapport som antogs vara Android — den var från hans iPhone (#273).
   Ingen har kört det här på en Android-telefon. Grunden är kodläsning + Googles dokumentation, inget annat.
@@ -383,8 +468,16 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   skriver lagringsraden, (4) efter sju dygn står bilder och MB per dygn i bedömningen, under taket.
   🔨 **BYGGT 26/9:** V1 i `skuggmotor/main.ts` (bunten omgjord), V2/V3 i `supabase/functions/kamerafacit` (urvalet i `urval.ts`, fem prov i
   `test/kamerafacit.test.ts`), timjobbet `sql/039` (minut 17), vakthundens lagringskontroll; bildkontrollen räknar bara larm som inte är
-  fartkameror; kontaktarket läser timvägen; facitradien 15 km i kontraktsgrinden (motprov: 14 km fäller). 🔑 Kvar: Bengts *"slå ihop"*,
-  deploy av tre funktioner, sql/039 via dbknapp, beviset.
+  fartkameror; kontaktarket läser timvägen; facitradien 15 km i kontraktsgrinden (motprov: 14 km fäller). ~~🔑 Kvar: Bengts *"slå ihop"*,
+  deploy av tre funktioner, sql/039 via dbknapp, beviset.~~
+  ✅ **I DRIFT SEDAN 26/9 08:25Z — läst i Actions-loggarna 28/9, kortet hade inte fått veta det.** PR #622 mergad 08:22 ·
+  deploy `kamerafacit` 08:23 (körning 36229634732), `skuggmotor` 08:24 (36229638425), `vakthund` 08:24 (36229641777), alla med
+  *bundlarna i synk med källorna* · `sql/039` 08:25 (dbknapp 36229707252): `halkvakt-kamerafacit`, `17 * * * *`, aktivt, pekar
+  på funktionen · kamerafacitprov `?torrt=1` 08:25 ⇒ 200 `ok: true` · **Verify (3) första halvan:** lagringsprovet 08:26 ⇒
+  *"LAGRINGEN ÄR 26 MB"*, issue #623 öppnad 08:27:05, stängd av nästa gröna timkörning 09:07:50.
+  ⏳ **Kvar:** (1) läs att skuggmotorn inte tagit någon ny bild vid fartkameralarm sedan 08:24 · (2) läs timkörningarnas svar —
+  med 0–1 kalla stationer av ~1 300 väntas svaret *varför inte*, inte bilder; frosten styr, inte deployen · (4) sju dygn med
+  bilder och MB per dygn i bedömningen, tidigast 3/10.
 
 - [ ] 🗣️ **#203 FACIT UTAN ATT STANNA — svaret efter resan, och med rösten under den** (Bengts fråga 18/9 efter
   fälttest 2: *"vi måste hitta något system som inte innebär att de ska stanna och bekräfta … ett automatspår"*).
@@ -551,20 +644,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Verify: sju dygn utan falsklarm ur den checken, och ett riktigt stopp (kort #222:s fall) fångas fortfarande.
   🔨 **Bengts ja 24/9 (DECISIONS #343):** gränsen 30 → 180 min, kommentaren rättad. Kvar: deploy, sedan sju dygn utan falsklarm ur checken.
   📏 **Läst 24/9 15:09Z:** i drift: vakthundens körning 15:07Z skriver *situation_archive rörd för 3 min sedan (gräns 180)* och inga problem. Kortet stängs efter sju dygn utan falsklarm.
-- [ ] 🧯 **#244 "FÖR LITE DATORKRAFT" PÅ HEL- OCH HALVTIMMEN SEDAN 24/9 00:30** (fynd 24/9 i samma genomlysning). `net._http_response`
-  bär fyra svar 546 WORKER_RESOURCE_LIMIT — 00:30, 01:00, 02:00, 04:00 den 24/9 — och **inget de tre dygnen före**. Alla
-  schemalagda funktioner levererade ändå de minuterna (publicera-commit i kartrepot 02:00:51 och 04:00:54, skuggrader 02:00:03 och
-  04:00:04, livemotorn varje minut), så vilket anrop som föll går inte att se ur databasen — bara Supabases funktionsloggar säger
-  det (Axel). Tidsmässigt sammanfaller starten med kvällens deployer (skuggmotorn 20:51Z och 21:24Z bär nu prognosen: 744
-  ankare hämtas och räknas per varv) och med att tre funktioner startar samma sekund på :00/:30. Skuggvarvet 03:00 tog 50 s mot
-  normala 3–5 s medan grindarna K-A/T-A/W-A läste arkivet. Förslag: Axel läser loggen; är det skuggmotorn flyttas dess schema två
-  minuter (pg_cron, i Supabase — Bengts regel 22/9) så att den inte startar samtidigt som publicera och livemotorn. 🔒 NYCKEL:
-  funktionsloggen (Axel). Verify: noll 546 på tre dygn efter åtgärden.
-  🔨 **Bengts ja 24/9 (DECISIONS #344):** `sql/036` flyttar skuggmotorns svenska schema till :02/:32. Nya 546 i dag före flytten: 11:00 och 14:30. Kvar: tre dygn utan 546.
-  📏 **Läst 24/9 15:09Z:** första varvet på den nya tiden 15:02:02–04Z (E18 Karlstad→Örebro, E4 Sundsvall→Umeå, Rv40 Göteborg→Jönköping, prognosen med i alla tre); 0 av 28 svar i `net._http_response` var 546 mellan 14:49 och 15:09Z. Tjugo minuter bevisar inget ännu: felen kom med timmars mellanrum (sex gånger på femton timmar). Kortet stängs efter tre dygn utan 546.
-  ⚠️ **25/9 — flytten löste det inte (DECISIONS #359):** 546 kom **04:32 och 05:02Z**, på skuggmotorns nya minuter :02/:32. Felet följer skuggmotorn, så det är dess eget arbete (segmentprognosen och holdout sedan 23/9) som slår i taket, inte krocken med andra jobb. Verify står kvar; lagningen är en ny fråga (dela upp huvudvarvet, t.ex. prognos och holdout i eget anrop). Försprånget lades därför i ett eget anrop.
-  🔨 **LAGAT 25/9 (Bengt: *"laga skuggmotorns huvudvarv"*, DECISIONS #360):** rutfiltret — motorn prövar bara faror inom sin längsta räckvidd (10 + 5 km) från rutten, och prognosen bara ankare inom 50 + 2 + 3 km. Samma utfall byte för byte (3 tester, 3 motprov), och svaret bär tiden per steg. Kvar för Verify: tre dygn utan 546 efter deployen.
-  📏 **I drift 25/9 (`scripts/matningar/rutfilter-bevis-2026-09-25.sql`):** huvudvarvet 09:02Z efter deployen 08:32Z — motorn **173 ms** för tre rutter, prognosen **9 ms**, facit 5 300 ms (väntan på kamerabilderna, nätverk och inte räknearbete), totalt 5 737 ms; 740 ankare och 2 797 faror i snapshoten; tre rader med prognos och holdout; **0 × 546** bland 44 svar sedan 08:32Z. Kvar för Verify: tre dygn utan 546 (tidigast 28/9 kl 08:32Z).
 - [ ] 🧂 **#231 PRODUKTIONSREGELNS FALSKLARM PER VÄDERTYP — en rad i bildfacitets läsning** (Bengts ja 21/9, Axel utan synpunkter samma dag, DECISIONS #291,
   ur second opinion #290). 🔑 **Nyckel: bildfacitets läsning (#209) — beslutet efter första frosten, bilderna öppnas i mars.**
   På en stadigt kall snödag säger stationsregeln *kallt och nederbörd* också på en saltad väg med fullt grepp; stationen ser
@@ -1752,6 +1831,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#266 VÄGPUNKTSGRINDEN FÖLL 28/9 — BOKFÖRD 29/9 (DECISIONS #399)**: populationsläsningen visade att septemberdomen #324 vilade på ett arkiv utan varma grannar (rå viktning efter 25/9: 11,0 % grova fel med dem, 4,4 % utan; frysflaggan missad i 70 %). Skuggan fortsätter som mätning, läsningen går varje måndag efter höjdprovet.
+- [x] ✅ **#244 "FÖR LITE DATORKRAFT" — STÄNGT 28/9 08:42Z (DECISIONS #389)**: rutfiltret (25/9, #360) höll i tre dygn. **144 av 144 skuggvarv** 25/9 09:02 – 28/9 08:32Z skrev sina rader (123 med 3, 21 med 2 — de korta vart sjunde varv, rotationen över 20 rutter); **0 av 509** svar i `net._http_response` var 546 (fönstret 02:42–08:41Z; 04:00-läsningen täckte 21:59–03:58Z: 0 av 501); gallringsjobbet orört (`gallra_arkiv(7)`). dbknapp 36398894806. Tavlan 36 → 35.
 - [x] ✅ **#253 DE VARMA GRANNARNA — KLART 26/9 (DECISIONS #380)**: den levande ingesten sparar en varm avläsning per station och halvtimme sedan 25/9; 0,4 % saknade grannplatser i kalla halvtimmar (var 49,5 %, gränsen 5 %), 10 796 → 63 095 rader per dygn. Tavlan 35 → 34, och nytt kort #260 (V1–V3) ⇒ 35.
 - [x] ✅ **#241 VILTRÖSTEN — KLART 26/9 (DECISIONS #377)**: Trafikverkets djur i stället för polisens länscentrum, i drift sedan 22/9; del E uppfylld när 0.3.9 (13) laddades upp 23/9. Tavlan 36 → 35.
 - [x] ✅ **#210 "PÅ VÄG <NULL>" — STÄNGT 26/9 PÅ KODBEVISET (DECISIONS #376)**: fixen i main sedan 20/9 och i 0.3.9 (13); aldrig hörd rätt i bil, villkoret släppt. Tavlan 37 → 36.

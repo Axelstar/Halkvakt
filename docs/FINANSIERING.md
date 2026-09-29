@@ -67,6 +67,56 @@ konkurs; beskedet kommer per brev. **Ingen av adresserna är prövad av oss** �
 "Skriv meddelande" är reserven. Valet 25/9:
 v7A med muntliga ja, annars v7B; en trafikskola utan halkbana ⇒ v7B med AP3 från v7A.
 
+**v8B, 28/9 (DECISIONS #392) — den som skickas.** Inga muntliga ja kom, och ingen kontakt med VTI, LTH eller något annat
+lärosäte finns eller hinner komma (Bengt 28/9), så v7B gäller. Den är uppdaterad till v8B i Bengts Drive-mapp: *"Ansökan
+Skyltfonden — Halkvakt (utkast 2026-09-28 v8B, 343 000 kr)"*. Ändringarna:
+- **AP4** är en upphandlad granskning utan namngiven part, 60 000 kr, och **sökt belopp är 343 000 kr**.
+- **Beteendestudien ur hastighetsdata är struken**, eftersom den bryter invarianten. Den anonyma användningsstatistiken är
+  också struken, eftersom den aldrig byggdes.
+- **SMHI-ankarna, stationsoffseten och Polisen som viltkälla är rättade** efter mätningarna.
+- **Malmö stad nämns inte** (inget ja).
+
+Checklistan i dokumentet säger vad som återstår: sökande, att SYSTEM.md rättas som bilaga 3, integritet.html och
+kontaktuppgifterna i anmälningarna. Sista dag 1/10.
+
+**v8B utan extern granskning, 28/9 (DECISIONS #394) — den som skickas.** AP4 är struken på Bengts order, och **sökt belopp är
+283 000 kr**. Alla åtta bilagor är färdiga i `docs/skyltfonden-2026-09-28/`:
+- bilaga 1 finns som Google-dokument i Drive-mappen, med personalplanens hakparenteser kvar att fylla i;
+- bilaga 2–8 finns som PDF.
+
+Arbetsbladet med sida 1, checklistan och mejltexten ligger i Drive. På vägen rättades tre felaktiga referenser, som funnits
+sedan v4, och påståendet att varningarna "formuleras som åtgärd".
+
+**Jämförelse med vårens 32 beviljade projekt (Bengts lista 28/9; 18 716 352 kr, median 594 050 kr, spann 140 376–898 000).**
+- **Sökande.** Ingen av de 32 är en privatperson. Fördelningen är lärosäten och institut 13 (VTI 4, Lund 3, Chalmers 2), SAFER 2,
+  konsultbolag 10 (Strandroth 2, Trivector 2, Lightness by Design 2), ideella organisationer 5 (MHF 2, NTF 2, FOT), Region Skåne 1
+  och VALMA 1. VALMA hade sitt namn *"inskickat för registrering"* och beviljades ändå, vilket är ett prejudikat för en förening
+  under bildande.
+- **Teman.** Oskyddade trafikanter dominerar med omkring 12 av 32. Vinter och halka finns i fyra projekt (#8 gångsäkerhet vinter,
+  #14 gångflöden för vinterdrift, #28 sopsaltning, #29 app och tvåvägskommunikation om väglag till cyklister), alla för gång och
+  cykel eller kommunal drift. Inget gäller halkvarning till bilförare.
+- **Närmast oss:**
+  - #29 Trivector, 735 200 kr: app som ger trafikanter aktuellt väglag;
+  - #19 Strandroth, 876 000 kr: pilot om uppkopplad fordonsdatas trovärdighet för trafiksäkerhet;
+  - #4 Edeva, 885 200 kr: ISA:s effekt på verklig fart, med A–B-hastighetsdata;
+  - #13 VTI, 599 900 kr: *från prototyp till praktik*.
+- **Styrkor.** Vi ligger i linje med fondens intresse för datadrivet beslutsunderlag till Trafikverket, validering av en
+  prototyp och vinterhalka.
+- **Svagheter.**
+  - Sökandeformen: ingen privatperson finns bland de beviljade.
+  - Ingen meriterad utförare: alla utvärderingsprojekt drivs av institut, lärosäten eller konsulter med meriter, och v8B utan
+    granskning saknar sådan.
+  - Effektmåttet: de beviljade mäter beteende objektivt (#4 fart, #23 fältexperiment, #27 konflikter), medan vi har
+    självrapport.
+- **Förslag till Bengt (Claude 28/9):**
+  1. Förening, även under bildande, i stället för privatperson.
+  2. Citera #19 och #29 som komplement: fondens egen fordonsdatapilot och cykelsidans väglagsapp.
+  3. Lyft felkartans nytta för kommunal vinterdrift (#8, #14, #28, #29, SKR).
+  4. Väg granskningen (343 000 kr) mot 283 000 kr en gång till i ljuset av att alla utvärderare i listan är meriterade.
+
+**Sökande: Bengt som privatperson (28/9, DECISIONS #395).** Sammanfattningen till Axel av jämförelsen ligger på
+https://claude.ai/artifact/JguqbJ3PEDrnuVAue1qBF6. Den är privat tills Bengt delar den.
+
 ## Malmö stad — läget 23/9
 
 Anna Axberg, systemförvaltare på Fastighets- och gatukontoret (kommunikation och digitalisering), ringde Bengt 23/9 efter följdmejlet 19/9 (ärende 1255995): staden planerar **12 väderstationer nedfrästa i asfalten under hösten** och undersöker om datan kan lämnas via API; hon ber om en påminnelse mot årets slut och lovar att prioritera upp. Det är exakt den datatyp appen varnar på (yttemperatur mätt i vägen), och en ny källa i Trafikverkets form är dagar av ingest-arbete, inte veckor. **Avtalsfrågan om de BEFINTLIGA stationerna (19/9-mejlet) är obesvarad** — samtalet handlade om de nya installationerna (Bengt 23/9). Den är vinterns fråga: de tolv nya hinner kanske inte få API förrän långt in i säsongen. **Svaret** (Bengt): tack och en sammanfattning av samtalet, sedan två numrerade frågor som går att vidarebefordra — (1) kan yta, luft och nederbörd från de befintliga stationerna delas under avtal inom ett avgränsat trafiksäkerhetsprojekt, och om det inte är hennes fråga: vem äger den? (2) får vi skriva i Skyltfondsansökan att samtal förs med FGK? — plus erbjudandet att vara första externa testkonsument av API:et och vinterns resultat i Malmö som motprestation. Bildspelet skickas som kort bilaga. Allt som skickas till kommunen är allmän handling — inga partnernamn före deras ja, inga opublicerade trösklar. Påminnelse: **början av december**, före fondens besked 15/12.
@@ -83,6 +133,9 @@ numret hinner sannolikt inte. Alternativ: (a) sökande = föreningen *under bild
 "organisationsnummer ansökt hos Skatteverket [datum], kompletteras", bankkonto "meddelas före utbetalning" (besked 15/12); (b) fråga
 skyltfonden@trafikverket.se en rad om (a) godtas — Bengt strök förhandskontakten 16/9, hans val; (c) privatperson som i v7. Claude
 kan skriva stadgar och protokoll för konstituerande möte på Bengts ja.
+
+**28/9: handlingarna är skrivna** på Bengts beställning (DECISIONS #396): `docs/forening/`, med körschemat i
+`docs/forening/KORSCHEMA.md`. Föreningen bildas i oktober. Skyltfondsansökan går som privatperson (#395).
 
 ## B2B-idé (Axel 2026-08-29): skolpaketet som produkt
 Trafikskolor säljer allt som paket och betalar redan per elev för innehåll

@@ -1856,3 +1856,195 @@ parallellsessionen — #161 (a) bevisat 18/9 (13 källor i state sedan 16/9), (b
 ÄR BORTA ur larmet. weather_obs 379 362 (04:58) mot 297 789 den 15/9 ⇒ ~16 200 rader/dygn, upp från
 12 100 i takt med kylan. HEALTHY.
 Byggt: inget detta varv. Nästa: ingen bokad avläsning — sessionen väntar på Bengt.
+
+## 2026-09-27 — Kuvösens tystnad besvarad, trappan förberedd (DECISIONS #397, fram till 29/9 #384 — överspelat 28/9, se #388)
+Bengts fråga: inget svar från Trafikverket — vad betyder det för kuvösen? SVAR: ännu ingenting om utfallet. Fyra
+TRV-ärenden är obesvarade (fordonsdata 17/9 tio dygn · kuvösens uttag 21/9 sex · byvindgivarna 22/9 fem · ytgivarna
+22/9 fem); sex dygn är kanalens takt, inte ett nej. Men fyra av fyra betyder att vi saknar kvitto på att något nått en
+människa — och det, inte otåligheten, är skälet att gå till en kanal med svarsplikt. Priset för tystnaden: hög C:s
+tolv rader mäts i mars i stället för i november, och grind A:s A2 (novemberbeslutet om segmentmotorn) förblir
+oavgjord. Kuvösens steg 2 är däremot inte blockerat för att BYGGAS, bara för att köras på en vinter.
+FYND: offentlighetsprincipen är stark för en handling som FINNS, svag för ett uttag som ska framställas — en
+sammanställning är allmän handling bara om den kan tas fram med rutinbetonade åtgärder. Trappans steg 3 är därför
+omskrivet: fråga efter befintliga uttag, och kapa volymen i rummet (stationerna längs de 20 rutterna, som går
+Helsingborg–Kiruna) aldrig i tiden (blindningen kräver hela vintern).
+OBOKFÖRT LED: Bengt säger "begäran om allmänna handlingar", repot bokför Datautbytesportalens formulär. Frågan står i
+bedömningen §4.2 — är en formell begäran redan inlämnad ska steg 2 inte skickas, utan begäran påminnas om.
+INTE LÄST PÅ KÄLLAN: nätpolicyn blockerar trafikverket.se och riksdagen.se; e-tjänstens adress kommer ur en sökträff,
+och samma sökning upprepade Lastkajen-påståendet som #292 motbevisat. Bengt öppnar sidan före utskick (#294).
+Byggt: inget detta varv. Nästa: Bengts svar på §4.2, och trappans steg 2 eller 3 den 28/9.
+
+## 2026-09-27 — Fältrapport: Androidvakten gick 11 h 39 m på en baddag (DECISIONS #386, kort #262)
+En Androidtestare låg på 42 % efter en dag med bad och stuga, telefonen knappt använd. Batterianvändning för app: 11 h 39 m
+bakgrund, 0 m skärm, GPS 6 h 40 m, 924 väckningar, väckningslås 4 h 16 m, CPU 2 h 21 m; gårdagen 21,6 % av förbrukningen.
+RÄKNINGEN: 21,6 % är en andel, inte procentenheter — antas dygnet ha dragit ~80 pe blir det ~1,5 %/h, alltså INOM budgeten.
+Felet är inte förbrukningen per timme utan antalet timmar. Låg paketräkning bevisar samtidigt att omladdningsloopen (#370)
+inte kör.
+ROTORSAK, läst i koden: en manuellt startad vakt stoppas aldrig av Activity Recognition (medvetet, AutostartController rad
+onVehicleExit), och enda kvarvarande stoppare är IdleStop — 15 min under 5 km/h. Det är GÅNGFART, och klockan nollställs av
+ETT mätvärde. En buren telefon fyller aldrig kvarten, så självstoppet kan i praktiken bara fira för en parkerad bil.
+LÄXA i familjen "fanns ≠ fungerade": IdleStop är byggd, enhetstestad och grön sedan #248 — provad med de hastigheter vi
+FÖRESTÄLLDE oss, inte med dem en buren telefon rapporterar.
+DESSUTOM: pågående notisen saknar stoppknapp (bara efter-resan-notisen har knappar); och CPU 20 % beror rimligen på att
+nearestHazardM sveper varje koordinat i varje fara vid varje fix.
+Byggt: inget detta varv — (2) är säkerhetsnära och ligger som beslut i §4.2. Nästa: stoppknappen i notisen (ingen avvägning),
+och svar från testaren om byggnummer, autostart och telefonmodell.
+
+## 2026-09-27 — Batteripaketet till Axel: sju åtgärder, och fältrapporten visade sig otolkbar (DECISIONS #387, kort #262)
+Bengts order: föreslå ett paket, gör inget själv, Axel bygger. Kort #262 flyttat till Axels nästa steg med Å0–Å6.
+STÖRSTA FYNDET: testarens "Version 0.3.1" säger ingenting om vilken kod han kör — numret stod stilla på 0.3.1/versionCode 4
+från 31/8 till 26/9 medan koden följde med (#377). Vi kan alltså inte veta om han har självstoppet (#248) eller
+omladdningsfixen (#370). Därför är Å0 (ge testaren 0.3.9 (18)) först och inte förhandlingsbar.
+TRE FYND TILL ur skärmbilderna: autostart var PÅ och reglagets text säger bara "bilens Bluetooth" fast det också
+registrerar Activity Recognition (användarsynligt ⇒ produktboken) · en FARTKAMERA 2,0 km bort låser CadencePolicy på NEAR,
+alltså 1 Hz GPS hela dagen — tiererna är skrivna för Norrland och slår nästan aldrig till där folk bor · telefonen är inte
+en Samsung, så vår aggressivaste testmobil kanske inte reproducerar felet.
+SIGNAL, EJ BEVIS: 44 % 15:26 → 32 % 16:38 ≈ 10 %/h, över budget — men vaktens läge och skärmtiden är okända och telefonen
+laddade strax innan. Skrivet hit just för att det annars citeras som en mätning nästa gång.
+Å2 (stillaståendetier) och Å3 (självstoppet) bär trösklar och ligger som beslut i bedömningen §4.2, före kod och genom
+värdevakten. Båda säkerhetsnära åt samma håll: en vakt som tystnar i en kö är silence när det gällde.
+Byggt: inget, med flit. Nästa: Axels beslut på Å2/Å3 och hans bygge av Å0, Å1, Å4, Å5.
+
+## 2026-09-28 — Kuvösen: Bengt avvaktar Trafikverkets beslut, all eskalering stängd; grenen ihopslagen med main (DECISIONS #388)
+Bengts order: "allt om klaga hos trafikverket etc kan du stänga … Jag avvaktar beslut om utlämnande från Trafikverket inget
+annat." Stängt: reservformuläret, kravet på avslagsbeslut (PR #631), överklagande, de färdiga texterna på kort #232 och
+frågan om kapning. Öppen väntan är valet.
+RÄTTAT: min gren sa 27/9 att Bengt menat formuläret från 21/9 och att steg 3 inte var taget, bokfört som ✅ besvarat. Det var
+min tolkning; samma kväll gav han en parallell session beskedet att begäran om utlämnande är inskickad (PR #631). Main hade
+rätt. Min #384 (sedan 29/9 #397) bär nu en banderoll till #388.
+IHOPSLAGNING: main hade fått PR #631–#633 (bl.a. DECISIONS #383, den norska sonden) medan grenen bar egna #383–#386. Mina
+fyra omnumrerade till #384–#387 (sedan 29/9 #397, #398, #386 och #387) med alla korsreferenser, i TAVLA, bedömningen och STATUS. Tre konflikter lösta: main:s fakta
+och sondresultat behållna, Bengts order ovanpå, mina felaktiga rader strukna. Öppna kort 35 = main:s 34 + #262.
+Byggt: inget. Nästa: inget på kuvösen förrän Trafikverket beslutar.
+
+## 2026-09-28 — Kort #260 läst: bildfacit V1–V3 har varit i drift sedan 26/9 08:25Z, kortet visste inte om det
+Bengts fråga: vad är kort 260? Kortet och bedömningen (§6.2, §6.6) sa "väntar på sammanslagning och deploy". Actions-loggarna
+säger annat: PR #622 mergad 08:22, deploy av kamerafacit, skuggmotor och vakthund 08:23–08:24 med bundlarna i synk,
+sql/039 08:25 (timjobbet på minut 17, aktivt), kamerafacitprov torrt 200 ok, lagringsprovet 08:26 larmade (26 MB mot
+gränsen 0) och issue #623 öppnades 08:27, stängdes 09:07. Kvar av Verify: (1) ingen ny bild vid fartkameralarm, (2)
+timkörningarnas svar — med 0–1 kalla stationer väntas "varför inte", (4) sjudygnsavläsningen tidigast 3/10.
+Samma fel som vanligt åt andra hållet: gjort men inte bokfört. Två dygn stod den enskilt viktigaste byggpunkten i §6 som
+"gör denna vecka" fast den redan gick.
+Byggt: inget. Nästa: avläsningen 3/10.
+
+## 2026-09-28 — Kort #233 öppnat igen (Bengt: "nej det blev fel")
+Stängningen återställd med git revert: kortet tillbaka i Bengts sektion, KLART-raden och arkivkopian borta, bedömningens
+fyra rader (snöflingans omkörning i §0b, Ä7, Ä9, §4.2) som de var, DECISIONS #389 struken. En rad på kortet säger att det
+inte ska stängas utan nytt besked. Tavlan 35.
+
+## 2026-09-28 04:00Z — Kort #244 läst, stängs efter 08:32Z; ny fälla i DB-knappen (DECISIONS #389, kort #263)
+Bengt: "kolla 244". net._http_response: 0 av 501 svar var 546 — men tabellen bär bara sex timmar (äldsta 27/9 21:59Z), så
+Verify:ns mått kan inte bära tre dygn. I stället: rader i shadow_log per skuggvarv sedan lagningen — 134 av 134 varv skrev
+sina rader (115 × 3, 19 × 2; de korta vart sjunde varv = rotationen över 20 rutter). 66,5 av 72 timmar lästa; en läsning efter
+08:32Z stänger kortet.
+FÄLLA: DB-knappens standardfil sql/014 schemalägger om gallringen till gallra_vader(7) och skulle tyst stänga av gallringen av
+grannar, gravstenar och tidsvakt (jobbet kör gallra_arkiv(7) sedan 026). Inte utlöst — jobbet kontrollerat 03:58Z. Kort #263.
+Läsningarna bar sql/033 (bara IF NOT EXISTS).
+Byggt: inget. Nästa: läsningen efter 08:32Z.
+
+## 2026-09-28 08:42Z — Kort #244 stängt: tre dygn rena efter rutfiltret (DECISIONS #389 tillägg)
+Den schemalagda sista läsningen (Bengts ja). 144 av 144 skuggvarv 25/9 09:02 – 28/9 08:32Z skrev sina rader (123 × 3, 21 × 2
+enligt rotationen), 0 av 509 svar var 546 i pg_net-fönstret 02:42–08:41Z, gallringsjobbet orört. Kortet arkiverat, KLART-rad,
+§0b-raderna och kalenderraden strukna. Tavlan 36 → 35. Main:s halkläge 28/9 ihopslaget utan konflikt.
+
+## 2026-09-28 — Bengts provresa på (18): fyra fel, beskrivning till Axel (docs/TILL-AXEL-BYGGE-19.md)
+Bengt körde (18) på sin 4,7-tums iPhone och fick "konstiga meddelanden". Läst mot koden, inget ändrat i appen:
+(1) texter klipps — VaktenView och KorlageView saknar ScrollView; (2) "Skickat 13:52 (1 missar)" är sändarens gemensamma
+statusrad, inte raden ovanför, och böjningen är fel; (3) raden 13:52 är en andra miss i en ny resa — knappen och Siri saknar
+spärr, och Siri-vägen kräver inte att vakten kör; (4) "Din position stannar i telefonen" under Redo. — raden #320 missade.
+Android: fel 2 och 3, inte 1 och 4. Bengts provmissar ligger i driver_miss som riktiga rader.
+Beskrivningen till Axel skriven på Bengts begäran (inte ett kort), med skärmbilderna i docs/bygge-19/. Siri-frågan i §4.2.
+Byggt: inget. Nästa: Axels bygge (19) och integritet.html före utskick till fler.
+
+## 2026-09-28 14:18 — Bengts provmiss raderad ur driver_miss (DECISIONS #390)
+Bengts order. Läst först: två rader — serverns provrad 26/9 (orörd) och Bengts provtryck, markerat 13:49:26, vatten, wx:7102,
+mottaget 13:52:06. Den raden raderad med ett villkor som inte kunde träffa något annat; omläsningen: 1 rad, 1 prov, 0 riktiga.
+Rättat i beskrivningen till Axel: den skickade missen var från 13:49, inte 13:41 — tre markeringar på elva minuter.
+
+## 2026-09-28 — Källbevakningens polislarm #638/#639 ofarliga; beroendekartans polisrad rättad (DECISIONS #391, kort #264)
+Bengts order. #639 (röd) var falsklarm: ny kakbanner och sidfot, röd bara för att "api" står i sidans rubrik. #638 (gul):
+en ny mening om att driftspåverkan polisanmäls — vi gör ett anrop i timmen med user-agent. Kartans polisrad sa att
+viltvarningarna brister — fel sedan 22/9 (#318); nu arkivet och webbkartans länsstatistik. Nyckelorden api, händelse och
+öppna data (sidornas rubriker) ersatta med fälten vi läser. Prov: issuesens texter får inte bli röda, en fältändring blir det.
+FYND, kort #264: trv-bevakning.ts rad 93 gör HTML-entiteter till mellanslag — å, ä, ö försvinner på polisens sidor, och ett
+svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
+- 28/9 (Claude, Bengts beställning): Skyltfondsansökan v8B skriven och lagd i Bengts Drive-mapp. Det är den tekniska
+  versionen utan partner, med 343 000 kr och AP4 som upphandlad granskning (DECISIONS #392). Tre sökagenter läste igenom repot.
+  Rättat mot v7B:
+  - SMHI-ankarna gjorde modellen sämre, 1,05 → 1,20 °C;
+  - offseten utgick 23/9;
+  - viltet kommer från Trafikverket;
+  - hastighetsserierna och användningsstatistiken ströks, eftersom de bryter invarianten och inte finns.
+  Nytt i ansökan: grind A och vägpunktsgrinden, 13 tröskeldokument, givarvakterna och anmälningarna (7 + 9), värdevakten,
+  djurdatan, `takt`, batteriet, missknappen och Niras "första bilen". Malmö nämns inte, eftersom inget ja har kommit.
+  Issue #638/#639 stängda med kommentar samma varv.
+- 28/9 (Claude, Bengts ja): SYSTEM.md, bilaga 3 till Skyltfondsansökan, är rättad på 22 punkter som ändrats sedan 22/9
+  (DECISIONS #393). Det gäller:
+  - vilt från Trafikverket, med 120 min i åldersvakten i stället för 48 h;
+  - byggen, iOS (18) och Android 0.3.9 (18) i stället för 0.3.1, samt Play-kontot;
+  - prognoslagret utan offset;
+  - integritetsraden med missen, och kamerafacit V1–V3;
+  - arkivet, anmälningarna 7 + 9, 58 kontrakt, v8B, kuvösen och Nira.
+  Varje rättning är kontrollerad mot koden eller beslutet. Filen är inte omläst i övrigt.
+- 28/9 (Claude, Bengts order): Skyltfondsansökan v8B utan extern granskning, 283 000 kr, med alla åtta bilagor
+  (DECISIONS #394).
+  - **Bilaga 1** ligger som Google-dokument i Drive.
+  - **Bilaga 2–8** är PDF:er i `docs/skyltfonden-2026-09-28/`, byggda i Chromium och granskade sida för sida.
+  - **Rättat:** tre felaktiga referenser (Freistetter, Kircher och Thorslund, Vollrath och Morawietz mot Naujoks) och
+    påståendet att "varningarna formuleras som åtgärd", som inte stämmer mot `texts.ts`.
+  - **Struket:** fyra påståenden utan källa.
+  - **SYSTEM.md** har fått sin Skyltfondsrad uppdaterad.
+- 28/9 (Claude, Bengts fråga): Ansökan jämförd med Skyltfondens 32 beviljade projekt våren 2026 (FINANSIERING.md).
+  - Beloppen: summan är 18,7 Mkr och medianen 594 050 kr. 283 000 kr är sjätte lägst.
+  - Sökandena: ingen privatperson bland de beviljade.
+  - Teman: vinterhalka finns i fyra projekt, men bara för gång och cykel. De närmaste är #29 (väglagsapp), #19
+    (fordonsdatapilot), #4 (ISA:s effekt på fart) och #13 (prototyp till praktik).
+  - Förslag till Bengt: förening i stället för privatperson, citera #19 och #29, lyft kommunal vinterdrift och väg
+    granskningen en gång till.
+- 28/9 (Claude, Bengts besked): sökande till Skyltfonden är Bengt som privatperson (DECISIONS #395). Sammanfattningen till Axel
+  av vårens 32 beviljade projekt är publicerad som privat sida, som Bengt delar:
+  https://claude.ai/artifact/JguqbJ3PEDrnuVAue1qBF6
+- 28/9 (Claude, Bengts beställning): Halkvaktens mätningar, en teknisk analys och syskonsida till systembilden, är publicerad
+  privat (https://claude.ai/artifact/D6ipXTD9hoZH9TqCMBo4wT) och sparad i `docs/MATNINGAR-2026-09-28.html`. Den innehåller:
+  - arkivet och censurluckan (49,5 % → 0,4 %);
+  - skuggflottan (1 759 körningar, 144 av 144 varv, takten 0 av 110 och upprepningsfallet #101/#102);
+  - prognoslagrets räkning och grindar, med diagram över grind A över tid och per band;
+  - vakterna (706 av 811) och anmälningarna;
+  - radarn, vattenplaningen och djurdatan;
+  - skydden mot oss själva och vinterns grindar.
+  Varje tal är kontrollerat mot sin DECISIONS-post.
+- 28/9 (Claude, Bengts beställning): Halkvaktens app, tredje syskonsidan efter systembilden och mätningarna, är publicerad
+  privat (https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT) och sparad i `docs/APPEN-2026-09-28.html` (bilderna ur
+  `docs/produktbok/`). Den följer föraren: rösttexterna, skärmarna, start och stopp, svar och missar, vad som lämnar
+  telefonen, batteriet, byggena och vad appen inte gör. Underlaget är produktboken, SYSTEM.md, bilaga 6, TILL-AXEL-BYGGE-19
+  och beslutsloggen. Genomläsningen hittade ett fel i bilaga 6: kameraexemplet sa *"Gränsen är 80"*, men snapshotens
+  kameror bär bara id, läge, bäring och väg (`publish/snapshot-core.ts`). Nu står *"Fartkamera om 500 meter."* och en rad
+  om att gränsen inte sägs. Bilaga 6-PDF:en är ombyggd.
+- 28/9 (Claude, Bengts beställning): handlingarna för att bilda Föreningen Halkvakt är skrivna (DECISIONS #396, kort #265), i
+  `docs/forening/` och som redigerbara dokument i Drive-mappen *Föreningen Halkvakt, bildande*: stadgar, kallelse och dagordning,
+  protokollsmall, medlemsförteckning, arbetsblad för SKV 8400 och körschemat. Körschemat lägger mötet tis 13/10, efter
+  Skyltfondsansökan, och spår A (föreningen som sökande 1/10) beskrivs men avråds. Sex beslut väntar hos Bengt och Axel (§4.2).
+  Protokollet exporterat från Drive och granskat som PDF: tre sidor, underskriftsraderna på plats.
+- 29/9 (Claude, Bengts fråga "är vattenplaning nedlagd?"): nej, bara stationsspåret (grind V-A, #104). Radarspåret (steg E, #191)
+  loggar `vb` i skuggmotorn sedan 15/9, och grind V-B går i måndagsserien under V-C:s spärr (#213, #350, #351). Tre texter sa för
+  mycket och är rättade: bilaga 7:s förteckning (PDF ombyggd), appsidan (artefakten publicerad om) och produktbokens grindtabell.
+  Bilaga 1:s mening om grinden som föll är sann men nämner inte radarspåret; en precisering är föreslagen för Bengt.
+- 29/9 (Claude, Bengts beställning): skuggmotorns 21 delområden genomgångna och redovisade i en ny intern sida,
+  *Skuggmotorns delområden* (privat, https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc; kopia `docs/SKUGGMOTORN-2026-09-29.html`).
+  Varje del: vad den mäter, hur, siffror och nytta, med detaljerna fällbara. Blindade utfall visas bara som antal. Den gamla
+  mätningssidan är delad med alla som har länken och lämnades orörd. Genomgången hittade att vägpunktsgrinden FÖLL i
+  måndagskörningen 28/9 (rå viktning A2 6,9 %, grind A med offset 3,7 %), obokfört; läst i Actions-loggen och fört till §4.2 och
+  kort #266. Inaktuella rader och en värdevakt som inte körts sedan 15/9 står på kort #267.
+- 29/9 (Claude, Bengts "gör det"): vägpunktsgrindens population läst. `scripts/matningar/vagpunkt-population-2026-09-29.ts`, körd
+  via hojd-prov-knappen på grenen (`dagar: population`), kör samma population med arkivet som det är och med bara de rader den gamla
+  ingesten sparade, före och efter 25/9 07:30Z. Före: rå 4,2 mot 3,9 %. Efter: rå 11,1 % ± 0,8 mot 4,5 %; offset 4,4 % ± 0,5.
+  Septemberdomen #324 vilade alltså på censurerat underlag, och 28/9:s FALLEN är den ärliga. Ingen DECISIONS-rad förrän Bengt läst
+  (§4.2, kort #266). Den interna sidan är uppdaterad.
+- 29/9 (Claude, Bengts "ja, kör det"): frysflaggan och vägviktningen tillagda i populationsläsningen. Efter 25/9, ny arkivregel:
+  rå viktning missade 140 av 201 halvtimmar där stationen mätte ≤ 1 °C (70 %), offset 95 (47 %) med 53 % falska flaggor; missarna
+  är desamma med den gamla regeln. Skuggrutternas provpunkter ligger 52,2 · 34,0 · 7,3 · 6,5 % per band; vägviktat blir grova fel
+  7,0 % (rå) och 3,0 % (offset). 176 av 201 frostpunkter bortom 20 km, så flaggan saknar nivå för typvägen. §4.2, kort #266 och den
+  interna sidan uppdaterade.
+- 29/9 (Claude, Bengts "ja, kör på"): main ihopslagen in i grenen (DECISIONS-krocken löst: grenens kuvösbeslut #384/#385 → #397/#398),
+  DECISIONS #399 bokför vägpunktsgrinden FALLEN och att skuggan fortsätter som mätning, populationsläsningen flyttad till
+  `scripts/vagpunkt-population.ts` och körs varje måndag efter höjdprovet. Kort #266 klart. PR mot main öppnad.
