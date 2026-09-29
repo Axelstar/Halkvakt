@@ -6044,3 +6044,35 @@ skrivs om först när Bengt bekräftat, eftersom de två beskeden står mot vara
 20/9) var fel. (b) Skriva om handlingarna till 343 000 direkt — beskeden #392 och #394 är båda Bengts, samma dag, i motsatt
 riktning; ett ord från honom kostar mindre än ett felaktigt utskick. (c) Låta läget stå i chatten — SESSIONSREGELN: det som bara
 stod i chatten finns inte nästa gång.
+
+## #403 (29/9 2026) Skyltfondsansökan: två parallella alternativ, 283 000 utan och 343 000 med oberoende granskning — #394 tolkade fel att det ena ersatte det andra
+
+**Bengt 29/9:** *"det jag bad om igår var två olika alternativ till ansökan till skyltfonden; en som inte bar en utomstående
+granskning som skulle landa på 283 000 och en som skulle vara med en utomstående granskning för 343 000. Jag har aldrig bett att en
+ska ersätta den andra utan att det skulle vara två parallella som skulle jämföras och sen beslutas."*
+
+**Vad som hade hänt.** #392 skrev v8B med granskning (343 000). #394 läste ordern *"skriv en v8 B version utan den externa
+utvärderingen"* som ett byte, skrev *"Det ersätter valet i #392"*, döpte om Drive-dokumentet med 343 000 till *"ersatt"* och lät bara
+283 000-texten följa med in i repot. Texten med 343 000 checkades aldrig in; den fanns kvar i Drive och i en arbetsfil. 29/9 fördes
+sedan föreningen som sökande, prognoslagrets utfall (#399) och de rättade referenserna in i 283 000-texten men inte i den andra.
+#402 byggde vidare på samma feltolkning och bad Bengt "bekräfta 343 000".
+
+**Beslut.** Alternativen återställs som två parallella, jämförbara texter med samma innehåll utom det granskningen för med sig:
+- `docs/skyltfonden-2026-09-28/bilaga-1-ansokan.md` — utan extern granskning, 283 000 kr, fyra arbetspaket.
+- `docs/skyltfonden-2026-09-28/bilaga-1-ansokan-med-granskning-343.md` — med upphandlad oberoende granskning, 343 000 kr, fem
+  arbetspaket: AP4 *Oberoende granskning* 60 000 kr (feb–jun 2027, offert från minst tre parter, steg 1 metod före marsdomen,
+  steg 2 resultat före rapporten, utlåtandet oavkortat), rapporten som AP5, Bengt upphandlar, prioritering AP1, AP2 och AP4.
+  Byggd 29/9 ur 283 000-texten med v8B:s granskningsstycken, så att föreningen, #399 och referenserna är med i båda.
+- Arbetsbladet bär en jämförelse (belopp, arbetspaket, granskningen, prioritering, styrka, svaghet) och rekommendationen: med
+  granskning. Protokollet § 16 lägger valet på mötet 29/9 med båda beloppen utskrivna. Sida 1 och mejltexten bär valet som
+  hakparentes. Bara det valda alternativet skickas.
+- Drive: två Google-dokument för bilaga 1 (29/9, utan och med granskning), nytt protokoll och nytt arbetsblad; de gamla omdöpta.
+  Drive-kopplingen kan bara skapa och döpa om, inte redigera, så varje ändring blir ett nytt dokument.
+- Målbladet §3 säger 283 000 eller 343 000 tills mötet valt; M4 Granskningen gäller bara i alternativet med granskning.
+
+**Läxan.** En order att skriva version B är inte en order att slopa version A. När beställningen är två alternativ som ska jämföras
+hålls båda levande, i repot, tills valet är gjort — och varje senare rättelse förs in i båda. Ett Drive-dokument som döps om till
+"ersatt" är i praktiken raderat för den som letar.
+
+**Alternativ som valdes bort.** Låta 283 000-texten stå ensam och be Bengt "bekräfta" ett belopp (#402) — det var inte vad han
+beställde. Skriva om 283 000-texten till 343 000 — då hade alternativet utan granskning försvunnit i stället.

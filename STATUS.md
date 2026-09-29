@@ -2070,3 +2070,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   (DECISIONS #402): Android och iOS i takt på 0.3.9 (18), Play-kontot sedan 20/9, batteriet mätt på iPhone, kalendern sedan 27/9,
   beloppet 343 000 enligt Bengt — handlingarna bär 283 000 och väntar på hans bekräftelse (§4.2). Läget 29/9 överst i bedömningen,
   §6.3/§6.6 rättade, #219 märkt överspelad, läxan i CLAUDE.md.
+- 29/9 (Claude, Bengts rättelse *"två parallella som skulle jämföras och sen beslutas"*): Skyltfondsansökans två alternativ
+  återställda (DECISIONS #403). `bilaga-1-ansokan-med-granskning-343.md` byggd ur 283 000-texten med v8B:s granskningsstycken;
+  arbetsbladet bär jämförelsen och rekommendationen; protokollet § 16 lägger valet på mötet; målbladet §3 bär båda beloppen.
+  Drive: nya dokument för bilaga 1 (343), protokollet och arbetsbladet, de gamla omdöpta. Axels sammanfattning uppdaterad.

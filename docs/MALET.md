@@ -1,12 +1,12 @@
 # Målbladet — vart Halkvakt är på väg, och när det är klart
 
-**Status: FASTSTÄLLT 29/9 2026, andra utgåvan (Bengt, DECISIONS #401 och #402). Fryst som integrationskartan:** bladet ändras
+**Status: FASTSTÄLLT 29/9 2026, andra utgåvan (Bengt, DECISIONS #401, #402 och #403). Fryst som integrationskartan:** bladet ändras
 bara med ett nytt DECISIONS-nummer, aldrig löpande. Det säger *vart* och *när*. Var vi står läses i bedömningens läge överst,
 inte här; §6 nedan är utgångsläget vid fastställandet och uppdateras inte. Första utgåvan (samma morgon) byggde på kort och
 sidor från 20/9 och sa fel om Android, Play-kontot, batteriet, kalendern och beloppet; den här är avstämd mot koden,
 appsidan 28/9, mätningssidan 29/9 och besluten #340–#401.
 
-Källorna: Skyltfondsansökan v8B med upphandlad granskning (`docs/skyltfonden-2026-09-28/`, DECISIONS #392), bedömningens §6.4,
+Källorna: Skyltfondsansökan v8B i två alternativ (`docs/skyltfonden-2026-09-28/`, DECISIONS #392, #394, #403), bedömningens §6.4,
 mätningssidans domkalender (`docs/MATNINGAR-2026-09-29.html` §11), `docs/KALENDERN.md` och tröskeldokumenten. Ett tal som står
 här och i källan ska vara samma tal; skiljer de sig gäller källan och bladet rättas.
 
@@ -26,18 +26,18 @@ Skyltfonden i april 2028.
 
 Systemet är därför inte stängbart före mars 2027. Det är ett ärligt svar.
 
-## 3. De fem målen = ansökans arbetspaket (343 000 kr, januari 2027 – april 2028)
+## 3. Målen = ansökans arbetspaket (283 000 eller 343 000 kr, januari 2027 – april 2028)
 
-Beloppet är Bengts besked 29/9: v8B **med** upphandlad granskning (DECISIONS #392: AP1 126 000 · AP2 70 000 · AP3 41 000 ·
-AP4 60 000 · AP5 28 000 · drift 12 000 · resor 6 000). Handlingarna i repot och Drive bär ännu 283 000 (#394) och skrivs om
-före sändningen. Sökande: Föreningen Halkvakt, ideell förening under bildande (#400).
+Två parallella alternativ till bilaga 1 ligger i repot och Drive (DECISIONS #403): **utan extern granskning, 283 000 kr, fyra
+arbetspaket** (M1–M3 och M5), eller **med upphandlad oberoende granskning, 343 000 kr, fem arbetspaket** (M1–M5). Mötet 29/9 väljer
+(protokollet § 16); bladet bär båda tills dess. Sökande: Föreningen Halkvakt, ideell förening under bildande (#400).
 
 | Mål | Vad vi lovat | Måttet eller tröskeln | När | Ägare |
 | :-- | :-- | :-- | :-- | :-- |
 | **M1 Utvärderingen** (AP1) | Varje varning klassad mot fyra facitkällor (kamera, SMHI, rapporterad halka, station) och förarfacit; missandelen mätt på två oberoende sätt; omkörning på arkivet med ändrade trösklar | träffsäkerhet, falsklarmsandel och missandel per vecka, varningstyp och rutt | jan–apr 2027 | Bengt analys · Claude verktyg |
 | **M2 Prognoslagret** (AP2) | Skuggdriftens prognoser dömda mot förhandsdaterade trösklar; nationell felkarta; driftsatt inför 2027/28 **bara om trösklarna klaras**, annars avstängt och redovisat | B1 falsklarm ≤ 20 % · B2 missar ≤ 30 % · B3 mervärde ≥ 25 %; dom bara vid ≥ 20 halkhändelser över ≥ 3 halkperioder | jan–sep 2027 | Axel systemansvarig · Claude mätning |
 | **M3 Testförarna** (AP3) | 30–50 förare, svar per varning och missar efter resan, enkät och gruppintervju | svaren som förarfacit i M1; enkät april 2027 och april 2028 | jan–apr 2027 · nov 2027–mar 2028 | Bengt |
-| **M4 Granskningen** (AP4) | Oberoende granskning upphandlad efter beviljat bidrag, offert från minst tre parter; steg 1 metod före marsdomen, steg 2 resultat före rapporten; utlåtandet publiceras oavkortat | granskaren gör om klassningen på eget stickprov och reproducerar M2:s dom och felkarta | feb–jun 2027 | Bengt upphandlar |
+| **M4 Granskningen** (AP4, bara i alternativet 343 000) | Oberoende granskning upphandlad efter beviljat bidrag, offert från minst tre parter; steg 1 metod före marsdomen, steg 2 resultat före rapporten; utlåtandet publiceras oavkortat | granskaren gör om klassningen på eget stickprov och reproducerar M2:s dom och felkarta | feb–jun 2027 | Bengt upphandlar |
 | **M5 Rapporten** (AP5) | Metod, resultat, trösklarnas utfall oavsett vilket och granskarens utlåtande, publicerat; presentationer för Trafikverket och SKR | rapport och spridning juni 2027, slutrapport april 2028 | apr–jun 2027 · apr 2028 | Bengt |
 
 **M0, förutsättningen (hösten 2026, inte sökt):** apparna hos förare före första frosten. Utan M0 finns inget förarfacit till M1
