@@ -431,14 +431,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **Flyttat 26/9 från *Axel — hösten (brainstorm 31/8)*** (femma åtta, DECISIONS #377): nästa steg är Bengts två minuter (*Visa introduktionen igen*).
 
 ### Claude — olåst
-- [ ] 📉 **#266 VÄGPUNKTSGRINDEN FÖLL 28/9 — POPULATIONEN LÄST 29/9, VÄNTAR PÅ BENGTS LÄSNING** (bedömningen §4.2). Måndagskörningen
-  gav rå avståndsviktning A2 6,9 % ± 0,4 (krav 5 %); grind A med offset klarade 3,7 %. ✅ **Läsningen gjord 29/9** (hojd-prov-knappen med
-  `dagar: population` på grenen): före 25/9 är rå lika under ny och gammal arkivregel (4,2 mot 3,9 %); efter 25/9 ger den nya 11,1 % och
-  den gamla 4,5 %. Septemberdomen #324 vilade på att de varma grannarna saknades (#353). Offseten håller efter 25/9 (4,4 % ± 0,5).
-  Frysflaggan efter 25/9: rå missar 140 av 201 frostpunkter (70 %), offset 95 (47 %) med 53 % falska flaggor; vägviktat grova fel
-  7,0 % (rå) och 3,0 % (offset). Nästan alla frostpunkter bortom 20 km — ingen nivå för typvägen än.
-  **Kvar:** Bengts läsning och val (§4.2), därefter DECISIONS-raden. De saknade dygnen 6–7/9 påverkar inte slutsatsen: den bärs av
-  jämförelsen över samma dagar.
 - [ ] 🧹 **#267 FYND UNDER GENOMGÅNGEN AV SKUGGMOTORN 29/9** (inga beslut, bara rättelser). Bedömningen §5.1 säger att S2 och S3 är
   obyggda och att försprångets regel är obyggd — S2 byggdes 24/9 (#341) och försprånget körs i skuggan sedan 25/9 (#359). #321 säger att
   felet stiger monotont med avståndet; loggen 22/9 ger 0,43 · 0,79 · 0,76 · 0,72 °C. Värdevakten har inte körts sedan 15/9, och spannet
@@ -1839,6 +1831,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#266 VÄGPUNKTSGRINDEN FÖLL 28/9 — BOKFÖRD 29/9 (DECISIONS #399)**: populationsläsningen visade att septemberdomen #324 vilade på ett arkiv utan varma grannar (rå viktning efter 25/9: 11,0 % grova fel med dem, 4,4 % utan; frysflaggan missad i 70 %). Skuggan fortsätter som mätning, läsningen går varje måndag efter höjdprovet.
 - [x] ✅ **#244 "FÖR LITE DATORKRAFT" — STÄNGT 28/9 08:42Z (DECISIONS #389)**: rutfiltret (25/9, #360) höll i tre dygn. **144 av 144 skuggvarv** 25/9 09:02 – 28/9 08:32Z skrev sina rader (123 med 3, 21 med 2 — de korta vart sjunde varv, rotationen över 20 rutter); **0 av 509** svar i `net._http_response` var 546 (fönstret 02:42–08:41Z; 04:00-läsningen täckte 21:59–03:58Z: 0 av 501); gallringsjobbet orört (`gallra_arkiv(7)`). dbknapp 36398894806. Tavlan 36 → 35.
 - [x] ✅ **#253 DE VARMA GRANNARNA — KLART 26/9 (DECISIONS #380)**: den levande ingesten sparar en varm avläsning per station och halvtimme sedan 25/9; 0,4 % saknade grannplatser i kalla halvtimmar (var 49,5 %, gränsen 5 %), 10 796 → 63 095 rader per dygn. Tavlan 35 → 34, och nytt kort #260 (V1–V3) ⇒ 35.
 - [x] ✅ **#241 VILTRÖSTEN — KLART 26/9 (DECISIONS #377)**: Trafikverkets djur i stället för polisens länscentrum, i drift sedan 22/9; del E uppfylld när 0.3.9 (13) laddades upp 23/9. Tavlan 36 → 35.

@@ -5909,3 +5909,51 @@ och först vårt ja är beställningen. **Skärpning av texten på kort #232:** 
 utan också **höra av sig innan någon avgift debiteras**, så att varje kostnad blir ett anbud vi kan ta tillbaka till Axel i
 stället för en post på en faktura. Det är hela skyddet: inte att begäran är gratis, utan att inget dyrt kan ske utan ett ja.
 
+
+## #399 (29/9 2026) Vägpunktsgrinden FALLEN 28/9 — septemberdomen #324 vilade på ett censurerat arkiv; skuggan fortsätter som mätning
+
+**Bengts beslut 29/9** (*"ja, kör på"*), på Claudes rekommendation: låt skuggan gå vidare oförändrad som mätning, bokför fallet och
+lägg ingen mer byggtid på prognoslagret i höst.
+
+**Domen.** Måndagskörningen 28/9 07:00Z (höjdprovet, 60 dygn, 715 stationer, 14 644 punkter): rå avståndsviktning A1 0,82 °C ·
+**A2 6,9 % ± 0,4** · A3 0,0 % ⇒ FALLER; rå + höjd 7,1 % och interpolerad offset 9,7 % ⇒ FALLER. Vägpunktsgrinden är FALLEN. Grind A,
+som lånar stationens inlärda offset, klarade samma morgon: 0,74 °C · 3,7 % ± 0,3 · 0,0 % på 14 594 punkter. Resultatet låg ett dygn
+obokfört i Actions-loggen och hittades under genomgången av skuggmotorn (kort #266).
+
+**Varför septemberdomen inte står.** Populationsläsningen 29/9 (`scripts/vagpunkt-population.ts`) körde vägpunktsgrindens population
+två gånger över samma 60 dygn: arkivet som det är och bara de rader den gamla ingesten sparade (yta ≤ 5 °C, regn, snö eller nederbörd;
+#353), delat vid 2026-09-25 07:30Z. Två körningar samma morgon, 04:34Z och 04:44Z, gav samma bild; talen nedan är från 04:44Z.
+
+| Arkivregel och period | Punkter | Rå: A2 | Offset: A2 |
+| :-- | --: | --: | --: |
+| ny, före 25/9 | 8 812 | 4,2 % ± 0,4 | 3,0 % ± 0,4 |
+| gammal, före 25/9 | 8 779 | 3,9 % ± 0,4 | 1,5 % ± 0,3 |
+| **ny, efter 25/9** | **6 466** | **11,0 % ± 0,8** | **4,4 % ± 0,5** |
+| gammal, efter 25/9 | 6 075 | 4,4 % ± 0,5 | 1,7 % ± 0,3 |
+
+Före 25/9 är reglerna lika, eftersom varma rader då inte sparades. Efter 25/9 är det bara de varma grannraderna som skiljer, och de tar
+rå viktning från 4,4 till 11,0 %. #324:s KLARAR gällde alltså ett arkiv där de varma grannarna saknades. **Frysflaggan** (samma körning,
+efter 25/9, ny regel): av 201 halvtimmar där stationen mätte ≤ 1 °C missade rå viktning 140 (70 %) och offset 95 (47 %), och 119 av
+offsetens 225 flaggor var falska (53 %). Missarna är desamma med den gamla regeln, så de beror inte på de varma grannarna. 176 av 201
+frostpunkter ligger bortom 20 km, så flaggan har ingen nivå för en typisk vägpunkt. **Vägviktat** mot skuggrutternas 1 585
+provpunkter (52,2 · 34,0 · 7,3 · 6,5 % per band) blir grova fel 7,0 % för rå och 3,0 % för offset.
+
+**Beslut.**
+1. Vägpunktsgrinden bokförs FALLEN 28/9. #324:s KLARAR står inte, och rå avståndsviktning är inte godkänd.
+2. Skuggan loggar som i dag, prognoskolumnen och holdout-raderna, som mätning. #322:s villkor 4a (ingen skuggkörning om grinden
+   faller) tillämpas inte på en körning som redan går: att stänga sparar 9 ms per varv och ≈ 140 kB per dygn men kastar vinterns enda
+   underlag. Grind B döms i mars som planerat; inget når föraren före dess (TROSKLAR-SKUGGAN §4).
+3. Ingen mer byggtid på prognoslagret i höst. Den går till det som når förare: efterhalkan som märkt beta, självstoppet på Android
+   och betatestarnas facit.
+4. Populationsläsningen körs varje måndag efter höjdprovet (`hojd-prov.yml`), så att vintern bygger kurvan natt för natt.
+
+**Vad beslutet inte är.** Inga trösklar ändras, ingen modell byts i skuggan och inget ändras för föraren.
+
+**Alternativ som valdes bort.** (a) Offset vid stationerna och okänt mellan dem: offseten finns bara vid stationerna och missar ändå
+nästan hälften av frostflaggorna. (b) Vänta på höjdläsningen 23/10: höjden gav 7,1 % 28/9, och läsningen görs ändå. (c) Stänga
+prognoskolumnen enligt #322 villkor 4a.
+
+**Läxan.** #353 skrev redan 25/9 att *"domarna #321 och #324 gäller ett snällare underlag än driften"*, men ingen av dem dömdes om, och
+när måndagens körning föll blev den liggande i loggen. En ändrad arkivregel ska följas av en omkörning av varje dom som läser grannar
+i arkivet, i samma varv, och veckokörningarnas domrader ska läsas samma dag. Regeln från 23/9 bar igen, i andra riktningen: den här
+gången var det en KLARAR som var artefakten.

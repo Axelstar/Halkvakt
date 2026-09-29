@@ -2045,3 +2045,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   är desamma med den gamla regeln. Skuggrutternas provpunkter ligger 52,2 · 34,0 · 7,3 · 6,5 % per band; vägviktat blir grova fel
   7,0 % (rå) och 3,0 % (offset). 176 av 201 frostpunkter bortom 20 km, så flaggan saknar nivå för typvägen. §4.2, kort #266 och den
   interna sidan uppdaterade.
+- 29/9 (Claude, Bengts "ja, kör på"): main ihopslagen in i grenen (DECISIONS-krocken löst: grenens kuvösbeslut #384/#385 → #397/#398),
+  DECISIONS #399 bokför vägpunktsgrinden FALLEN och att skuggan fortsätter som mätning, populationsläsningen flyttad till
+  `scripts/vagpunkt-population.ts` och körs varje måndag efter höjdprovet. Kort #266 klart. PR mot main öppnad.

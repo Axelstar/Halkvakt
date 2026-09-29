@@ -21,11 +21,11 @@
 //   falsk flagga  = modellen ≤ 1 °C men stationen > 1 °C, som andel av modellens flaggor
 // och allt vägs mot vägnätet: bandandelarna tas ur prognoslagrets egna provpunkter längs de svenska skuggrutterna
 // (senaste varvet per rutt, avstånd till närmaste bidragande ankare), inte ur stationernas avstånd till varandra.
-// Run: DATABASE_URL=... node --experimental-strip-types scripts/matningar/vagpunkt-population-2026-09-29.ts [dagar=60]
+// Run: DATABASE_URL=... node --experimental-strip-types scripts/vagpunkt-population.ts [dagar=60]
 
-import { Z, andelSe, medelSe } from "../../publish/marginal.ts";
-import { RADVAKT_SQL, karantanSql } from "../../publish/snapshot-core.ts";
-import { FRYS_C } from "../../engine/src/segment.ts";
+import { Z, andelSe, medelSe } from "../publish/marginal.ts";
+import { RADVAKT_SQL, karantanSql } from "../publish/snapshot-core.ts";
+import { FRYS_C } from "../engine/src/segment.ts";
 
 const K_NEIGHBOURS = 5;
 const MAX_KM = 50;

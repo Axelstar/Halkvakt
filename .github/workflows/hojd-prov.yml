@@ -22,19 +22,20 @@ jobs:
         with: { node-version: 22, cache: npm }
       - run: npm ci
       - run: node --experimental-strip-types scripts/hojd-prov.ts --sjalvtest
-      # Kort #266: `dagar: population` kör läsningen av vägpunktsgrindens population i stället för provet (60 dygn).
-      - if: ${{ inputs.dagar == 'population' }}
-        shell: bash
-        run: |
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
-          node --experimental-strip-types scripts/matningar/vagpunkt-population-2026-09-29.ts 60 | tee -a "$GITHUB_STEP_SUMMARY"
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
-        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
       # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
       - if: ${{ inputs.dagar != 'population' }}
         shell: bash
         run: |
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           node --experimental-strip-types scripts/hojd-prov.ts "${{ inputs.dagar || '60' }}" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+      # Populationsläsningen (kort #266, DECISIONS #399) varje måndag efter provet: vägpunktsgrindens population med arkivet
+      # som det är mot den gamla arkivregeln, före och efter 25/9, frysflaggan vid 1 °C och vägviktat. Ingen dom.
+      # `dagar: population` kör bara läsningen.
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/vagpunkt-population.ts 60 | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
