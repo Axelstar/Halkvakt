@@ -2025,3 +2025,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   protokollsmall, medlemsförteckning, arbetsblad för SKV 8400 och körschemat. Körschemat lägger mötet tis 13/10, efter
   Skyltfondsansökan, och spår A (föreningen som sökande 1/10) beskrivs men avråds. Sex beslut väntar hos Bengt och Axel (§4.2).
   Protokollet exporterat från Drive och granskat som PDF: tre sidor, underskriftsraderna på plats.
+- 29/9 (Claude, Bengts fråga "är vattenplaning nedlagd?"): nej, bara stationsspåret (grind V-A, #104). Radarspåret (steg E, #191)
+  loggar `vb` i skuggmotorn sedan 15/9, och grind V-B går i måndagsserien under V-C:s spärr (#213, #350, #351). Tre texter sa för
+  mycket och är rättade: bilaga 7:s förteckning (PDF ombyggd), appsidan (artefakten publicerad om) och produktbokens grindtabell.
+  Bilaga 1:s mening om grinden som föll är sann men nämner inte radarspåret; en precisering är föreslagen för Bengt.

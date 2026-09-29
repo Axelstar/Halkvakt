@@ -18,7 +18,7 @@ Nedan följer först en förteckning över alla tretton dokument och sedan i sin
 | Dokument | Vad det styr | Fastställt | Beslut |
 | :-- | :-- | :-- | :-- |
 | TROSKLAR-SKUGGAN | Prognoslagret mellan stationerna: grind A, B och C, domen i mars 2027 | 1/9 (Bengt), 2/9 (Axel); §4 skärpt 23/9 | #52, #61, #319 |
-| TROSKLAR-VATTENPLANING | Vattenplaningsvarning (grinden föll och bokfördes som ett nej) | 4/9 | #68 |
+| TROSKLAR-VATTENPLANING | Vattenplaningsvarning. Stationsspåret (grind V-A) föll och bokfördes som ett nej; radarspåret (grind V-B) mäts i skuggan sedan 15/9 och döms när underlaget räcker | 4/9 | #68, #104, #191 |
 | TROSKLAR-TRENDEN | Varning på fallande yttemperatur | 10/9 (Bengt), 11/9 (Axel) | #95 |
 | TROSKLAR-TYSTNADSFEL | Mått på när tystnaden var fel | 11/9 | #95 |
 | TROSKLAR-OVERGANGAR | Efterhalka: regn som slutar och fryser | 12/9 | #109 |
