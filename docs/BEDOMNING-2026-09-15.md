@@ -47,7 +47,7 @@ med två förbehåll åt samma håll (hela procent ⇒ sant intervall 6,0–8,0 
 öppet för Android-mätningen (DECISIONS #382).
 **(4) Kuvösen.** Begäran om utlämnande är inskickad och obesvarad (Bengts besked 27/9, #631). **Bengt 28/9: avvaktar
 Trafikverkets beslut — inget annat;** all eskalering stängd (DECISIONS #388). ⚠️ Raden här sa 27/9 att Bengt menat
-formuläret från 21/9 och att steg 3 inte var taget — det var min tolkning, inte hans svar, och den var fel (#384, #388).
+formuläret från 21/9 och att steg 3 inte var taget — det var min tolkning, inte hans svar, och den var fel (#397, #388).
 **(5) 🚨 Fältrapport som blev en släppblockerare.** En Androidtestare låg på **42 %** efter en baddag: vakten hade gått
 **11 h 39 m** i bakgrunden med **6 h 40 m GPS**, skärmen släckt hela tiden, och stod för **21,6 %** av gårdagens förbrukning.
 Rotorsaken är läst i koden: **självstoppet kan i praktiken bara fira för en parkerad bil.** En manuellt startad vakt stoppas

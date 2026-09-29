@@ -98,7 +98,16 @@ export function bedom(kallnamn: string, text: string, kartan: Beroende[]): Bedom
 // aldrig bedömas på innehåll, bara på att något rört sig. Meningsgrov: sidorna är normaliserad
 // löptext, så exakthet vore falsk precision — men de nya meningarna räcker för nyckelorden.
 export function nyText(gammal: string, ny: string): string[] {
-  const dela = (s: string) => s.split(/(?<=[.!?:])\s+/).map((x) => x.trim()).filter((x) => x.length > 20);
+  // DELNINGEN ÄR EN BEDÖMNINGSFRÅGA, inte en formatering (kort #261, 28/9). Normaliserad HTML
+  // har få meningsslut: rubrik, meny och cookiebanner blir EN körning på hundratals tecken —
+  // den längsta uppmätta var 2 054. Ett enda ändrat ord någonstans i en sådan körning gjorde
+  // HELA den ny, rubriken inräknad, och bedömningen matchade sedan på ord ur rubriken.
+  // UPPMÄTT 28/9 på polisen-api: ordet "myndighet" försvann ur cookietexten, och eftersom
+  // rubriken "API över polisens händelser" satt i samma körning dömdes posten 🔴 RÖR OSS på
+  // ordet *api* — ett ord som står permanent på sidan och därför aldrig kan betyda en ändring.
+  // Att dela även på | · • ger rubriken ett eget stycke: samma prov ger 0 träffar på *api*,
+  // och larmet går fortfarande ut, nu som VET INTE. Bedömningen graderar, den tystar aldrig.
+  const dela = (s: string) => s.split(/(?<=[.!?:])\s+|\s*[|·•]\s*/).map((x) => x.trim()).filter((x) => x.length > 20);
   const fanns = new Set(dela(gammal));
   return dela(ny).filter((m) => !fanns.has(m));
 }

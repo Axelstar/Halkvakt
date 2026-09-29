@@ -62,7 +62,12 @@ export const KARTAN: Beroende[] = [
     brister: "grind R-A4 och grind T-A:s molnkontroll",
     bevakad: "smhi-uppdateringar",
     signal: "samma RSS som SMHI-varningarna (#148)",
-    nyckelord: ["metobs", "meteorologiska observationer", "observation", "parameter 16", "molnmängd", "latest-months"] },
+    // Bara "observation" ströks 28/9 (kort #261): SMHI:s uppdateringsflöde bär HYDROLOGISKA och
+    // oceanografiska observationer också, och 28/9 dömdes "Arkivdata-API för hydrologiska
+    // observationer fungerar igen" 🔴 RÖR OSS på det ordet. Vi läser metobs, alltså meteorologiska.
+    // De specifika orden står kvar, så en äkta metobs-post träffar fortfarande — och en post som
+    // bara säger "observationer" blir VET INTE, vilket LARMAR. Inget tystas, en dom rättas.
+    nyckelord: ["metobs", "meteorologiska observationer", "parameter 16", "molnmängd", "latest-months"] },
   { vard: "tie.digitraffic.fi", roll: "produktion",
     matar: "finska vägstationer (ingest/fi.ts): /weather/v1/stations och /stations/data",
     brister: "gränssnapshoten mot Finland och grind R-A --land=fi",

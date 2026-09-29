@@ -29,7 +29,14 @@ jobs:
           node --experimental-strip-types scripts/trv-bevakning.ts ${{ inputs.testlarm == 'true' && '--testlarm' || '' }} | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
         env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" }
+      # if: always() — läxan 28/9 (kort #161 c, DECISIONS #384). Skriptet skriver state INNAN det
+      # returnerar, och en källa som kastar behåller sin GAMLA post (tilldelningen sker först efter
+      # lyckad läsning). Föll steget ovan hoppades det här över, så de tolv källor som LÄSTES aldrig
+      # nådde main: 28/9 föll `no-vegvesen: fetch failed` och state stod kvar på 21/9 trots att fem
+      # ändringar hittats. Samma följd som CRLF-felet i #161 — rött jobb ⇒ vakten står stilla men ser
+      # levande ut — fast av en annan orsak. Ett rött jobb ska inte kosta det som faktiskt lästes.
       - name: Committa uppdaterad state (om ändrad)
+        if: always()
         shell: bash
         run: |
           if ! git diff --quiet ingest/trv-nyheter-state.json; then

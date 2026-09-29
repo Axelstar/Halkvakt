@@ -1857,7 +1857,7 @@ parallellsessionen — #161 (a) bevisat 18/9 (13 källor i state sedan 16/9), (b
 12 100 i takt med kylan. HEALTHY.
 Byggt: inget detta varv. Nästa: ingen bokad avläsning — sessionen väntar på Bengt.
 
-## 2026-09-27 — Kuvösens tystnad besvarad, trappan förberedd (DECISIONS #384 — överspelat 28/9, se #388)
+## 2026-09-27 — Kuvösens tystnad besvarad, trappan förberedd (DECISIONS #397, fram till 29/9 #384 — överspelat 28/9, se #388)
 Bengts fråga: inget svar från Trafikverket — vad betyder det för kuvösen? SVAR: ännu ingenting om utfallet. Fyra
 TRV-ärenden är obesvarade (fordonsdata 17/9 tio dygn · kuvösens uttag 21/9 sex · byvindgivarna 22/9 fem · ytgivarna
 22/9 fem); sex dygn är kanalens takt, inte ett nej. Men fyra av fyra betyder att vi saknar kvitto på att något nått en
@@ -1911,9 +1911,9 @@ annat." Stängt: reservformuläret, kravet på avslagsbeslut (PR #631), överkla
 frågan om kapning. Öppen väntan är valet.
 RÄTTAT: min gren sa 27/9 att Bengt menat formuläret från 21/9 och att steg 3 inte var taget, bokfört som ✅ besvarat. Det var
 min tolkning; samma kväll gav han en parallell session beskedet att begäran om utlämnande är inskickad (PR #631). Main hade
-rätt. Min #384 bär nu en banderoll till #388.
+rätt. Min #384 (sedan 29/9 #397) bär nu en banderoll till #388.
 IHOPSLAGNING: main hade fått PR #631–#633 (bl.a. DECISIONS #383, den norska sonden) medan grenen bar egna #383–#386. Mina
-fyra omnumrerade till #384–#387 med alla korsreferenser, i TAVLA, bedömningen och STATUS. Tre konflikter lösta: main:s fakta
+fyra omnumrerade till #384–#387 (sedan 29/9 #397, #398, #386 och #387) med alla korsreferenser, i TAVLA, bedömningen och STATUS. Tre konflikter lösta: main:s fakta
 och sondresultat behållna, Bengts order ovanpå, mina felaktiga rader strukna. Öppna kort 35 = main:s 34 + #262.
 Byggt: inget. Nästa: inget på kuvösen förrän Trafikverket beslutar.
 

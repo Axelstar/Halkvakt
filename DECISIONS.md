@@ -5296,128 +5296,132 @@ Secrets som `FROST_CLIENT_ID`, tryck knappen igen. Då svarar spår B på riktig
 
 **Vad det betyder för kuvösen:** en av två kända sidodörrar är nu definitivt stängd. Trafikverkets tystnad väger
 därmed tyngre, och hållbarhetstiden (omkring 1 december, DECISIONS-raden i kort #232) står oförändrad.
-## #384 (27/9 2026) Kuvösens tystnad: sex dygn är kanalens takt, inte ett nej — och offentlighetsprincipen är en svagare nyckel för ett UTTAG än för en HANDLING
 
-> ⚠️ **Överspelat, se #388.** Tillägget längre ned säger att Bengt menade formuläret från 21/9 och att steg 3 inte
-> var taget. Det var min tolkning, inte hans svar: samma kväll gav han en parallell session beskedet att begäran om
-> allmänna handlingar är inskickad och obesvarad (PR #631). Trappan och all eskalering är stängda på Bengts order 28/9.
+## #384 (28/9 2026) Larma vid förändring, inte vid tillstånd — och ett rött jobb ska inte kosta det som lästes
 
-**Bengts fråga 27/9:** *"jag har ännu inte fått svar från trafikverket på begäran om allmänna handlingar. Vad betyder det för kuvösen"*
+**Bengts ja 28/9** på båda punkterna, efter nio identiska larm på en kväll.
 
-**Först en skillnad som avgör svaret, och som repot inte kan lösa åt oss.** Bokföringen säger att det som skickades 21/9
-var **Datautbytesportalens kontaktformulär, ärendetyp *API Öppna Data*** (kort #232, DECISIONS #294) — **inte** en begäran
-om allmänna handlingar. Den senare är trappans TREDJE steg och har enligt repot aldrig lämnats. De två skiljer sig i
-precis det avseende frågan gäller:
+### Vad som hände
 
-| | Kontaktformuläret (skickat 21/9) | Begäran om utlämnande av allmän handling (ej skickad) |
-| :-- | :-- | :-- |
-| Vad det är | en fråga till en dataägare | en rättighet enligt tryckfrihetsförordningen |
-| Svarsplikt | ingen | ja — skyndsamt |
-| Vid nej | tystnad är ett möjligt utfall | avslag ska på begäran ges som ett överklagbart beslut |
-| Vad sex dygns tystnad betyder | ingenting ovanligt | ett dröjsmål som går att driva |
+`trv-bevakning` föll måndag 06:40 på **en enda rad**: `no-vegvesen: fetch failed`. Det är Vegvesens
+NYHETSSIDA (signalkällan), inte dataservern — Norges data flödade hela dygnet (steget
+*🇳🇴 Vegvesen DATEX → no.** grönt 14:24:37). Tolv av tretton källor lästes. Omkörning 16:59 grön:
+felet var övergående.
 
-**Därför en fråga till Bengt (§4.2):** lämnades en formell begäran om utlämnande vid sidan av formuläret? Om ja är den
-inte bokförd, och tystnaden är allvarligare än raden säger. Om nej gäller svaret nedan.
+Två fel blev synliga i skuggan av det, och inget av dem handlade om Norge.
 
-**Tystnaden bär ingen information ännu.** Fyra ärenden ligger hos Trafikverket, alla obesvarade: fordonsdata/Datex II
-17/9 (tio dygn), kuvösens uttag 21/9 (sex), byvindgivarna 22/9 (fem), ytgivarna 22/9 (fem). Sex dygn är kortare än det
-ärende som redan väntat tio. **Men fyra av fyra är ett mönster:** vi har inget kvitto på att något av dem nått en
-människa. Det är skälet att byta kanal — inte otålighet, utan att gå dit någon är skyldig att svara.
+### (a) Ett rött jobb lämnade state ocommittat
 
-**Vad tystnaden kostar, mätt.** Kuvösen är enligt §6.1 den enda kända vägen runt vintern: kommer VViS-observationerna
-1/11 2024–31/3 2025 mäts **hög C:s tolv rader i november i stället för i mars**, och grind A:s oavgjorda A2 avgörs —
-alltså novemberbeslutet om segmentmotorn (#131). Priset räknas i månader, inte i om produkten går att bygga.
+Commit-steget saknade `if:`, så ett fallet skript hoppade över det. Skriptet skriver state INNAN det
+returnerar, och en källa som kastar behåller sin GAMLA post (tilldelningen sker efter lyckad läsning).
+Alltså: de tolv källor som lästes nådde aldrig main. State stod kvar på **21/9** trots att körningen
+hittat fem ändringar, och nästa måndag hade jämfört mot samma gamla state och larmat om samma fem
+saker igen.
 
-**Vad den INTE kostar.** Kuvösens steg 2 är inte blockerat av datan för att BYGGAS — bara för att köras på en vinter.
-Delarna finns (grindarnas skript, uppspelningen `sql/028`, `snapshot-core` → `snapshotToHazards` → `AlertEngine` längs de
-20 rutterna). Ställningen kan resas mot vårt eget arkiv (24/8 och framåt) så att *datan kommer* blir *ladda och kör*.
-Höstarkivet har ingen is: det blir ett rörprov, inte ett vinterprov. **Erbjudet, inte påbörjat** — kortet säger att steg 2
-körs på årets arkiv först om svaret blir nej.
+Det är samma FÖLJD som CRLF-felet i kort #161 — rött jobb ⇒ vakten står stilla men ser levande ut —
+av en annan orsak. Lagningen 18/9 tätade git-steget; den tätade inte "vilket fel som helst lämnar
+state ocommittat". **Åtgärd: `if: always()` på commit-steget.**
 
-**Offentlighetsprincipens verkliga räckvidd — varför trappans sista steg är svagare än det låter.** Rättigheten gäller en
-handling som FINNS. Ett fem månader långt uttag ur en databas är en sammanställning, och den är en allmän handling bara om
-den kan tas fram med **rutinbetonade åtgärder**. *"Kör den här frågan åt oss över fem månader och alla stationer"* är lätt
-att avvisa på den grunden; *"lämna ut de uttag och exportfiler som redan finns"* är det inte. Trappans sista steg ska
-alltså fråga efter det som finns — och kapa uttaget.
+### (b) Mätvakten upprepade ett identiskt fynd varje timme
 
-**Hur uttaget kapas utan att bryta blindningen.** Kortets egen regel är *hela vintern, inga handplockade dygn* — tiden får
-inte kapas. Rummet får det. Kortets parentes säger *"ett urval län"*, men de 20 skuggrutterna går Helsingborg–Kiruna (E4
-hela vägen, E6, Rv40, E10, E14), så ett län skär av provet. **Rätt kapning är stationerna LÄNGS de 20 rutterna, hela
-vintern** — det är ändå dem motorkedjan kör på. Grindarnas statistik (A, T-A, R-A) vill ha alla stationer; motorkedjan och
-marginalnyttetabellen klarar sig på rutternas. Alltså: fråga efter alla, erbjud rutturvalet i samma mening. Antalet
-stationer längs rutterna mäts ur arkivet innan texten skickas.
+`trv-bevakning` är ett **veckojobb**. Mätvakten kör varje timme och kommenterade så länge fyndet stod
+kvar: **nio identiska kommentarer på issue #640 mellan 08:07 och 16:07**, byte för byte samma text.
+Nästa körning som kunde rensa flaggan var måndag 5/10 — alltså **omkring 168 kommentarer och 168
+mejl för en enda händelse**.
 
-**Vad jag INTE kunde läsa på källan.** Containerns nätpolicy blockerar `trafikverket.se` och `riksdagen.se`. E-tjänstens
-namn och adress — *Begäran om utlämnande av allmän handling*,
-`trafikverket.se/e-tjanster/begaran-om-utlamnande-av-allman-handling/` — kommer ur en **sökträff, inte en läst sida**.
-Samma sökning påstod samtidigt att historiska data hämtas från Lastkajen, vilket #292 motbevisade genom att läsa sidan.
-Läxan från #294 gäller alltså oförändrat: **Bengt öppnar sidan innan något skickas.** Paragrafhänvisningar utelämnas ur
-texterna på kortet; en begäran behöver inga.
+Vakten hade dedup för ISSUES (kommenterar i stället för att öppna nya) men ingen för INNEHÅLL.
 
-**Tillägg samma dag — ledet utrett, och en läxa om vad frågan var.** Bengt syftade på förfrågan 21/9; *begäran om allmänna
-handlingar* var hans ord för samma utskick. **Steg 3 är alltså inte taget**, och trappan står kvar precis som raden säger.
-Hans verkliga fråga var enklare än den jag svarade på: *vad menar du med att trappan utlöses i morgon?* Svaret: **trappan är
-vår egen frist, inte Trafikverkets.** Ingenting utlöses av sig självt — inget skript, ingen påminnelse, ingen bevakning. Den
-28/9 upphör bara skälet att vänta på en kanal utan svarsplikt, och steg 2 blir tio minuters arbete för Bengt: öppna
-`etjanster.trafikverket.se/kundfragor-trafikverket`, klistra in texten från kort #232, skicka. Gör ingen det händer ingenting
-alls — raden ligger kvar. **Läxa:** när en fråga innehåller ett ord som inte stämmer med bokföringen är det oftast ett löst
-ordval, inte ett nytt sakförhållande. Fråga vad som menas i en mening, svara på det som faktiskt frågades, och gör inte
-ordvalet till huvudsaken.
+**Åtgärd, ordagrant enligt Bengt:** *larma vid förändring, inte vid tillstånd.* Den öppna issuen ÄR
+det stående tillståndet; kommentarerna är förändringsloggen. Jämförelsen görs på **fyndraderna**
+(`- ❌ …`), inte på hela kroppen — tidsstämpeln ändras varje varv och hade gjort varje jämförelse
+olik. Ingen daglig puls lades till: issuen står öppen, och det är signalen.
 
-## #385 (27/9 2026) Kostnaden för kuvösens uttag: tre avgiftsregimer, och det är VÅR formulering som avgör vilken vi hamnar i
+### Varför det är värt ett beslut och inte bara en fix
 
-> ℹ️ **Texterna på kort #232 skickas inte (#388).** Analysen står kvar som referens för den dag Trafikverket beslutar —
-> ett beslut om utlämnande kan komma med en avgift, och då gäller regimerna och grinden nedan.
+En vakt som ropar 168 gånger för en händelse lär sin läsare att skumma, och då går det första ÄKTA
+larmet förbi. Det är samma mekanism som gravstenarna i deviations-tabellen: bruset gjorde signalen
+osynlig. Skillnaden är att gravstenarna tog veckor att upptäcka; det här syntes på ett dygn, för att
+larmen gick till en människas telefon.
 
-**Bengts fråga 27/9:** *"hur kommer kostnaden för uttaget att beräknas om man får det på fil"*
+**Kvar, inte åtgärdat i det här varvet:** samma körning skapade fem källändringslarm (#635–#639) där
+minst två är falska positiver — `polisen-api` dömdes RÖR OSS på ordet *api*, som står i sidans egen
+permanenta rubrik, och `smhi-uppdateringar` på *observation* i en post om HYDROLOGISKA observationer
+(vi använder meteorologiska). Bedömningen matchar mot hela sidan, inklusive rubrik, cookiebanner och
+sidfot. Eget kort; inget ja begärt ännu.
 
-**Svaret är inte ett belopp utan en klassificering.** Vilken regim Trafikverket placerar begäran i avgör allt, och de tre
-skiljer sig med flera tiopotenser.
+### Bevis, samma kväll (28/9)
 
-| Regim | Grund | Vad det kostar | När den gäller |
-| :-- | :-- | :-- | :-- |
-| **1. Kopia av allmän handling** | avgiftsförordningen 15–16 §§ | sidtaxa: nio första fria, tio sidor 50 kr, sedan 2 kr/sida | de lämnar ut något som FINNS |
-| **2. Uppdrag** | avgiftsförordningen 4 §, full kostnadstäckning | timpris för deras arbete | de måste FRAMSTÄLLA något |
-| **3. Värdefull datamängd** | lagen 2022:818, EU 2019/1024 + 2023/138 | **avgiftsfritt** | datamängden är utpekad som särskilt värdefull |
+**(a) state når main även när jobbet faller.** Omkörningen 16:59 gick grön och committade
+`ingest/trv-nyheter-state.json` **17:00:19 med 13 källor** (commit 6e11358). Före det stod filen på
+**21/9**. Flödet har alltså gått från "ser levande ut men står stilla" till att faktiskt avancera.
 
-**Tre saker som gäller oavsett regim:**
-1. **Sidtaxan går inte att räkna på en fil.** Den är skriven för papper; en CSV har inga sidor. "På fil" betyder alltså att
-   taxan i regim 1 inte biter — kostnaden faller antingen till noll eller till timpris, och inget däremellan.
-2. **De får inte ta betalt för handläggningen.** Sekretessprövningen och sökandet är inte avgiftsbelagt i regim 1 — bara
-   kopiorna. En faktura för *arbetet med att ta fram* hör hemma i regim 2 och förutsätter att vi beställer.
-3. **Ingen skyldighet att lämna ut elektroniskt.** Rätten gäller en kopia; mediet väljer myndigheten. Att vi vill ha en fil är
-   en önskan, inte ett krav — vilket är ännu ett skäl att fråga vänligt om formatet i stället för att kräva det.
+**(b) mätvakten upprepar inte längre.** Två mätningar, båda efter deployen 17:04:
 
-**Slutsatsen som styr texten (kort #232):** ju mer begäran liknar *skicka filen ni redan har* desto närmare regim 1 eller 3 —
-i praktiken noll. Ju mer den liknar *bygg ett dataset åt oss över fem månader* desto närmare regim 2 — timpris, och samma
-rutinbetonade-åtgärder-test som avgör om sammanställningen alls är en allmän handling (#384). **Därför frågar steg 3 efter
-befintliga uttag och exportfiler FÖRST**, och erbjuder rutturvalet som andrahandsalternativ.
+1. **Stängningsvägen håller.** Kl 17:07:05 stängde mätvakten issue #640 av sig själv, med en tionde
+   kommentar som var *"Stänger — mätningarna går och källorna växer igen."* — inte ett tionde larm.
+   Utan lagningen hade det blivit en identisk kommentar varje timme till måndag 5/10.
+2. **Motprov på dedupen.** Två tryck på `matvaktprov` i rad, med identiskt fynd:
+   · Prov A (körning 36455960212) skapade issue **#645, 0 kommentarer** — fyndet står i kroppen.
+   · Prov B (körning 36456250932), samma fynd: **fortfarande 0 kommentarer.**
+   **Dom: 0 → 0. Dedupen biter.** Hade jämförelsen gjorts på hela kroppen i stället för på
+   fyndraderna hade tidsstämpeln gjort varje varv olikt och provet gett 0 → 1.
 
-**Regim 3 är värd att nämna i brevet, men inte att bråka om.** Meteorologiska data är en av EU:s sex kategorier av särskilt
-värdefulla datamängder, som ska tillhandahållas avgiftsfritt och maskinläsbart; undantagsfönstret löpte ut 9/2 2025. Om
-Trafikverkets VViS-ARKIV är utpekat som sådan datamängd vet vi inte — realtidsflödet är redan CC0. Därför står det i texten som
-en notering (*jag noterar att…*), inte som ett krav. Ett påstående vi inte kan belägga försvagar en begäran som annars är stark.
+Provet självt hade ett fel värt att notera: första försöket föll på **HTTP 415** — min POST saknade
+`Content-Type: application/json`. Det var mätinstrumentet, inte vakten, och det syntes direkt för att
+felkoden lästes i stället för att tolkas som ett nej.
 
-**Vår egen grind:** gratisnivån är ett villkor och inte en önskan (CLAUDE.md). **Ingen kostnad accepteras i ett svar** — den tas
-tillbaka hit och blir en DECISIONS-post godkänd av Axel innan något beställs. Båda texterna på kortet ber därför om beloppet
-OCH den tillämpade bestämmelsen innan arbete påbörjas.
+## #385 (28/9 2026) Källvaktens falska positiver — och rättelsen av min egen diagnos
 
-**Vad som inte är läst på källan.** Nätpolicyn i containern blockerar `trafikverket.se`, `riksdagen.se`, `lagen.nu`,
-`forum.esv.se` och `jpinfonet.se` — fem försök, fem avslag. Talen 50 kr/2 kr och avgiftsfriheten för värdefulla datamängder är
-regelverket som jag känner det, styrkt av sökträffar men inte av en läst sida. **De ska kontrolleras innan de citeras MOT
-Trafikverket.** Texten på kortet är skriven så att den inte behöver dem: den frågar efter beloppet och grunden i stället för att
-påstå vad de är. Det är också det enda sättet att få svaret utan att riskera att ha fel inför den man frågar (#294).
+**Bengts ja 28/9** på kort #261. Två lagningar byggda samma kväll, med var sitt motprov.
 
-**Tillägg samma dag — Bengts följdfråga: *"har man inte beställt om man begärt handlingarna"*.** Nej, men min formulering ovan
-var för grov, och gränsen går på ett annat ställe än den antydde. **En begäran utlöser en prövning, inte ett avtal:** myndigheten
-lämnar ut eller avslår. Ett avslag kan aldrig faktureras, och handläggningen — sökandet, sekretessprövningen — inte heller.
-**Men sidtaxan i regim 1 följer av förordningen, inte av vårt samtycke.** Begär man kopia av en handling på 500 sidor uppstår
-avgiften utan att någon beställt något; i det avseendet ÄR begäran en beställning av kopiorna. Det är liten risk för oss, just
-därför att vi ber om en fil: taxan är skriven för papper. **Regim 2 fungerar tvärtom.** Där kan de inte fakturera alls utan ett
-uttryckligt erbjudande och ett ja. Svarar de *"inte rutinbetonat, men vi gör det som uppdrag för X kr/tim"* är det ett ANBUD —
-och först vårt ja är beställningen. **Skärpning av texten på kort #232:** den ber dem nu inte bara ange belopp och bestämmelse
-utan också **höra av sig innan någon avgift debiteras**, så att varje kostnad blir ett anbud vi kan ta tillbaka till Axel i
-stället för en post på en faktura. Det är hela skyddet: inte att begäran är gratis, utan att inget dyrt kan ske utan ett ja.
+### Först: kortets egen premiss var fel, och det upptäcktes innan en rad kod skrevs
+
+Kortet sa att *"bedömningen läser hela sidan i stället för det nya stycket"*. Det stämde inte —
+`changes.push` skickar redan bara `nya.join(" ")`, alltså enbart de nya styckena. Diagnosen var gjord
+på en logg, inte på koden.
+
+Den riktiga mekanismen mättes i stället mot state-filens sparade texter (21/9 mot 28/9), som git
+råkade bevara åt oss:
+
+- **Styckena var för grova.** `nyText` delade bara på `.!?:`, och normaliserad HTML har få
+  meningsslut: rubrik, meny och cookiebanner blir EN körning. Längsta uppmätta stycke: **2 054 tecken**.
+- **Den falska röda, exakt:** ordet **"myndighet"** försvann ur polisens cookietext. Rubriken
+  *"API över polisens händelser"* satt i samma 152-teckens körning och följde därför med in i "det
+  nya". Domen föll sedan på ordet *api* — ur en rubrik som står på sidan permanent och därför aldrig
+  kan betyda en ändring.
+
+Ett ändrat ord någonstans i en körning republicerade alltså allt annat i den. Det är en
+granularitetsfråga, inte en fråga om vad som läses.
+
+### Lagning 1: `nyText` delar även på `|`, `·`, `•`
+
+Rubriken får ett eget stycke. Prövat mot den riktiga datan: samma ändring ger **0 nya stycken som
+innehåller ordet *api***. Larmet går fortfarande ut, nu som VET INTE — **bedömningen graderar, den
+tystar aldrig**.
+
+### Lagning 2: det breda ordet `observation` ströks ur metobs nyckelord
+
+28/9 dömdes *"Arkivdata-API för hydrologiska observationer fungerar igen"* 🔴 RÖR OSS på det ordet.
+Vi läser metobs, alltså meteorologiska.
+
+**Fyndet bakom fyndet:** ordet *hydrolog* stod **redan** som främmande ord på signalraden — någon hade
+förutsett precis det här. Men i graderingen rankar en träff över ett främmande ord, så det för breda
+`observation` tystade den kunskap som var rätt. Med ordet struket blir posten ⚪ **RÖR OSS INTE** med
+skälet utskrivet. De specifika orden (`metobs`, `meteorologiska observationer`, `parameter 16`,
+`molnmängd`, `latest-months`) står kvar, så en äkta metobs-post träffar som förut.
+
+### Motprov, ett per vakt
+
+Läxan 20/9 säger att en regel som vaktas av flera vakter muteras en gång per vakt:
+delningen backad ⇒ **test 27 faller**; `observation` återinfört ⇒ **test 29 faller**. Med båda
+lagningarna: 30/30 i nyhetsbedömningens svit, **199/199 i hela `npm test`**, beroendekartan komplett,
+kontraktsgrinden orörd.
+
+### Vad som INTE lagades
+
+Footerns rad *"Granskad # september"* ger fortfarande ett VET INTE-larm när granskningsdatumet ändras.
+Det är brus, inte en falsk röd, och det kräver ett sitespecifikt filter — sådana glider isär från det
+de filtrerar, så det byggs inte utan att någon ber om det.
 
 ## #386 (27/9 2026) Androidvakten gick 11 h 39 m på en baddag: självstoppet kan i praktiken bara fira för en parkerad bil (kort #262)
 
@@ -5521,14 +5525,14 @@ silence när det gällde.**
 avvaktar beslut om utlämnande från Trafikverket inget annat."*
 
 **Stängt:** reservformuläret *Frågor till Trafikverket*, kravet på ett skriftligt avslagsbeslut (PR #631), överklagande,
-de färdiga texterna på kort #232 (#384/#385) och frågan om hur uttaget ska kapas. Inget av det skickas.
+de färdiga texterna på kort #232 (#397/#398) och frågan om hur uttaget ska kapas. Inget av det skickas.
 
 **Läget, som det nu står:** begäran om utlämnande av allmän handling är inskickad och obesvarad (Bengts besked 27/9, #631).
 Kortet väntar på Trafikverkets beslut och på ingenting annat. **Öppen väntan är valet** — PR #631:s förslag om ett
 beslutsdatum är därmed besvarat. Hållbarhetstiden (omkring 1 december) står kvar som fakta, inte som utlösare.
 
 **Kvar som fakta, inte som åtgärder:** vid ett ja är elektronisk form ingen rättighet och ett uttag som kräver programmering
-ingen rutinbetonad åtgärd (#631, #385); kostnadsregimerna i #385 gäller om beslutet kommer med en avgift, och ingen
+ingen rutinbetonad åtgärd (#631, #398); kostnadsregimerna i #398 gäller om beslutet kommer med en avgift, och ingen
 kostnad accepteras utan Axels godkännande. Norge: DATEX bär ingen historik (#383); MET Frost är oprövad och inget prov är
 beställt.
 
@@ -5777,3 +5781,131 @@ Skatteverket och banken.
 **Okänt.** Skatteverkets och Bolagsverkets sidor gick inte att öppna härifrån 28/9. Reglerna om verklig huvudman och blankettens fält
 är därför lästa genom sökresultat och äldre blankettkopior. Två frågor är öppna: om Trafikverket godtar att mottagaren byts till
 föreningen, och om budgetens 700 kr/h rymmer arbetsgivaravgifter ifall föreningen betalar ut ersättning.
+
+## #397 (27/9 2026) Kuvösens tystnad: sex dygn är kanalens takt, inte ett nej — och offentlighetsprincipen är en svagare nyckel för ett UTTAG än för en HANDLING
+
+*(Numrerat om från #384 vid sammanslagningen med main 29/9: main hade redan tagit #384 för ett annat beslut.)*
+
+> ⚠️ **Överspelat, se #388.** Tillägget längre ned säger att Bengt menade formuläret från 21/9 och att steg 3 inte
+> var taget. Det var min tolkning, inte hans svar: samma kväll gav han en parallell session beskedet att begäran om
+> allmänna handlingar är inskickad och obesvarad (PR #631). Trappan och all eskalering är stängda på Bengts order 28/9.
+
+**Bengts fråga 27/9:** *"jag har ännu inte fått svar från trafikverket på begäran om allmänna handlingar. Vad betyder det för kuvösen"*
+
+**Först en skillnad som avgör svaret, och som repot inte kan lösa åt oss.** Bokföringen säger att det som skickades 21/9
+var **Datautbytesportalens kontaktformulär, ärendetyp *API Öppna Data*** (kort #232, DECISIONS #294) — **inte** en begäran
+om allmänna handlingar. Den senare är trappans TREDJE steg och har enligt repot aldrig lämnats. De två skiljer sig i
+precis det avseende frågan gäller:
+
+| | Kontaktformuläret (skickat 21/9) | Begäran om utlämnande av allmän handling (ej skickad) |
+| :-- | :-- | :-- |
+| Vad det är | en fråga till en dataägare | en rättighet enligt tryckfrihetsförordningen |
+| Svarsplikt | ingen | ja — skyndsamt |
+| Vid nej | tystnad är ett möjligt utfall | avslag ska på begäran ges som ett överklagbart beslut |
+| Vad sex dygns tystnad betyder | ingenting ovanligt | ett dröjsmål som går att driva |
+
+**Därför en fråga till Bengt (§4.2):** lämnades en formell begäran om utlämnande vid sidan av formuläret? Om ja är den
+inte bokförd, och tystnaden är allvarligare än raden säger. Om nej gäller svaret nedan.
+
+**Tystnaden bär ingen information ännu.** Fyra ärenden ligger hos Trafikverket, alla obesvarade: fordonsdata/Datex II
+17/9 (tio dygn), kuvösens uttag 21/9 (sex), byvindgivarna 22/9 (fem), ytgivarna 22/9 (fem). Sex dygn är kortare än det
+ärende som redan väntat tio. **Men fyra av fyra är ett mönster:** vi har inget kvitto på att något av dem nått en
+människa. Det är skälet att byta kanal — inte otålighet, utan att gå dit någon är skyldig att svara.
+
+**Vad tystnaden kostar, mätt.** Kuvösen är enligt §6.1 den enda kända vägen runt vintern: kommer VViS-observationerna
+1/11 2024–31/3 2025 mäts **hög C:s tolv rader i november i stället för i mars**, och grind A:s oavgjorda A2 avgörs —
+alltså novemberbeslutet om segmentmotorn (#131). Priset räknas i månader, inte i om produkten går att bygga.
+
+**Vad den INTE kostar.** Kuvösens steg 2 är inte blockerat av datan för att BYGGAS — bara för att köras på en vinter.
+Delarna finns (grindarnas skript, uppspelningen `sql/028`, `snapshot-core` → `snapshotToHazards` → `AlertEngine` längs de
+20 rutterna). Ställningen kan resas mot vårt eget arkiv (24/8 och framåt) så att *datan kommer* blir *ladda och kör*.
+Höstarkivet har ingen is: det blir ett rörprov, inte ett vinterprov. **Erbjudet, inte påbörjat** — kortet säger att steg 2
+körs på årets arkiv först om svaret blir nej.
+
+**Offentlighetsprincipens verkliga räckvidd — varför trappans sista steg är svagare än det låter.** Rättigheten gäller en
+handling som FINNS. Ett fem månader långt uttag ur en databas är en sammanställning, och den är en allmän handling bara om
+den kan tas fram med **rutinbetonade åtgärder**. *"Kör den här frågan åt oss över fem månader och alla stationer"* är lätt
+att avvisa på den grunden; *"lämna ut de uttag och exportfiler som redan finns"* är det inte. Trappans sista steg ska
+alltså fråga efter det som finns — och kapa uttaget.
+
+**Hur uttaget kapas utan att bryta blindningen.** Kortets egen regel är *hela vintern, inga handplockade dygn* — tiden får
+inte kapas. Rummet får det. Kortets parentes säger *"ett urval län"*, men de 20 skuggrutterna går Helsingborg–Kiruna (E4
+hela vägen, E6, Rv40, E10, E14), så ett län skär av provet. **Rätt kapning är stationerna LÄNGS de 20 rutterna, hela
+vintern** — det är ändå dem motorkedjan kör på. Grindarnas statistik (A, T-A, R-A) vill ha alla stationer; motorkedjan och
+marginalnyttetabellen klarar sig på rutternas. Alltså: fråga efter alla, erbjud rutturvalet i samma mening. Antalet
+stationer längs rutterna mäts ur arkivet innan texten skickas.
+
+**Vad jag INTE kunde läsa på källan.** Containerns nätpolicy blockerar `trafikverket.se` och `riksdagen.se`. E-tjänstens
+namn och adress — *Begäran om utlämnande av allmän handling*,
+`trafikverket.se/e-tjanster/begaran-om-utlamnande-av-allman-handling/` — kommer ur en **sökträff, inte en läst sida**.
+Samma sökning påstod samtidigt att historiska data hämtas från Lastkajen, vilket #292 motbevisade genom att läsa sidan.
+Läxan från #294 gäller alltså oförändrat: **Bengt öppnar sidan innan något skickas.** Paragrafhänvisningar utelämnas ur
+texterna på kortet; en begäran behöver inga.
+
+**Tillägg samma dag — ledet utrett, och en läxa om vad frågan var.** Bengt syftade på förfrågan 21/9; *begäran om allmänna
+handlingar* var hans ord för samma utskick. **Steg 3 är alltså inte taget**, och trappan står kvar precis som raden säger.
+Hans verkliga fråga var enklare än den jag svarade på: *vad menar du med att trappan utlöses i morgon?* Svaret: **trappan är
+vår egen frist, inte Trafikverkets.** Ingenting utlöses av sig självt — inget skript, ingen påminnelse, ingen bevakning. Den
+28/9 upphör bara skälet att vänta på en kanal utan svarsplikt, och steg 2 blir tio minuters arbete för Bengt: öppna
+`etjanster.trafikverket.se/kundfragor-trafikverket`, klistra in texten från kort #232, skicka. Gör ingen det händer ingenting
+alls — raden ligger kvar. **Läxa:** när en fråga innehåller ett ord som inte stämmer med bokföringen är det oftast ett löst
+ordval, inte ett nytt sakförhållande. Fråga vad som menas i en mening, svara på det som faktiskt frågades, och gör inte
+ordvalet till huvudsaken.
+
+## #398 (27/9 2026) Kostnaden för kuvösens uttag: tre avgiftsregimer, och det är VÅR formulering som avgör vilken vi hamnar i
+
+*(Numrerat om från #385 vid sammanslagningen med main 29/9: main hade redan tagit #385 för ett annat beslut.)*
+
+> ℹ️ **Texterna på kort #232 skickas inte (#388).** Analysen står kvar som referens för den dag Trafikverket beslutar —
+> ett beslut om utlämnande kan komma med en avgift, och då gäller regimerna och grinden nedan.
+
+**Bengts fråga 27/9:** *"hur kommer kostnaden för uttaget att beräknas om man får det på fil"*
+
+**Svaret är inte ett belopp utan en klassificering.** Vilken regim Trafikverket placerar begäran i avgör allt, och de tre
+skiljer sig med flera tiopotenser.
+
+| Regim | Grund | Vad det kostar | När den gäller |
+| :-- | :-- | :-- | :-- |
+| **1. Kopia av allmän handling** | avgiftsförordningen 15–16 §§ | sidtaxa: nio första fria, tio sidor 50 kr, sedan 2 kr/sida | de lämnar ut något som FINNS |
+| **2. Uppdrag** | avgiftsförordningen 4 §, full kostnadstäckning | timpris för deras arbete | de måste FRAMSTÄLLA något |
+| **3. Värdefull datamängd** | lagen 2022:818, EU 2019/1024 + 2023/138 | **avgiftsfritt** | datamängden är utpekad som särskilt värdefull |
+
+**Tre saker som gäller oavsett regim:**
+1. **Sidtaxan går inte att räkna på en fil.** Den är skriven för papper; en CSV har inga sidor. "På fil" betyder alltså att
+   taxan i regim 1 inte biter — kostnaden faller antingen till noll eller till timpris, och inget däremellan.
+2. **De får inte ta betalt för handläggningen.** Sekretessprövningen och sökandet är inte avgiftsbelagt i regim 1 — bara
+   kopiorna. En faktura för *arbetet med att ta fram* hör hemma i regim 2 och förutsätter att vi beställer.
+3. **Ingen skyldighet att lämna ut elektroniskt.** Rätten gäller en kopia; mediet väljer myndigheten. Att vi vill ha en fil är
+   en önskan, inte ett krav — vilket är ännu ett skäl att fråga vänligt om formatet i stället för att kräva det.
+
+**Slutsatsen som styr texten (kort #232):** ju mer begäran liknar *skicka filen ni redan har* desto närmare regim 1 eller 3 —
+i praktiken noll. Ju mer den liknar *bygg ett dataset åt oss över fem månader* desto närmare regim 2 — timpris, och samma
+rutinbetonade-åtgärder-test som avgör om sammanställningen alls är en allmän handling (#397). **Därför frågar steg 3 efter
+befintliga uttag och exportfiler FÖRST**, och erbjuder rutturvalet som andrahandsalternativ.
+
+**Regim 3 är värd att nämna i brevet, men inte att bråka om.** Meteorologiska data är en av EU:s sex kategorier av särskilt
+värdefulla datamängder, som ska tillhandahållas avgiftsfritt och maskinläsbart; undantagsfönstret löpte ut 9/2 2025. Om
+Trafikverkets VViS-ARKIV är utpekat som sådan datamängd vet vi inte — realtidsflödet är redan CC0. Därför står det i texten som
+en notering (*jag noterar att…*), inte som ett krav. Ett påstående vi inte kan belägga försvagar en begäran som annars är stark.
+
+**Vår egen grind:** gratisnivån är ett villkor och inte en önskan (CLAUDE.md). **Ingen kostnad accepteras i ett svar** — den tas
+tillbaka hit och blir en DECISIONS-post godkänd av Axel innan något beställs. Båda texterna på kortet ber därför om beloppet
+OCH den tillämpade bestämmelsen innan arbete påbörjas.
+
+**Vad som inte är läst på källan.** Nätpolicyn i containern blockerar `trafikverket.se`, `riksdagen.se`, `lagen.nu`,
+`forum.esv.se` och `jpinfonet.se` — fem försök, fem avslag. Talen 50 kr/2 kr och avgiftsfriheten för värdefulla datamängder är
+regelverket som jag känner det, styrkt av sökträffar men inte av en läst sida. **De ska kontrolleras innan de citeras MOT
+Trafikverket.** Texten på kortet är skriven så att den inte behöver dem: den frågar efter beloppet och grunden i stället för att
+påstå vad de är. Det är också det enda sättet att få svaret utan att riskera att ha fel inför den man frågar (#294).
+
+**Tillägg samma dag — Bengts följdfråga: *"har man inte beställt om man begärt handlingarna"*.** Nej, men min formulering ovan
+var för grov, och gränsen går på ett annat ställe än den antydde. **En begäran utlöser en prövning, inte ett avtal:** myndigheten
+lämnar ut eller avslår. Ett avslag kan aldrig faktureras, och handläggningen — sökandet, sekretessprövningen — inte heller.
+**Men sidtaxan i regim 1 följer av förordningen, inte av vårt samtycke.** Begär man kopia av en handling på 500 sidor uppstår
+avgiften utan att någon beställt något; i det avseendet ÄR begäran en beställning av kopiorna. Det är liten risk för oss, just
+därför att vi ber om en fil: taxan är skriven för papper. **Regim 2 fungerar tvärtom.** Där kan de inte fakturera alls utan ett
+uttryckligt erbjudande och ett ja. Svarar de *"inte rutinbetonat, men vi gör det som uppdrag för X kr/tim"* är det ett ANBUD —
+och först vårt ja är beställningen. **Skärpning av texten på kort #232:** den ber dem nu inte bara ange belopp och bestämmelse
+utan också **höra av sig innan någon avgift debiteras**, så att varje kostnad blir ett anbud vi kan ta tillbaka till Axel i
+stället för en post på en faktura. Det är hela skyddet: inte att begäran är gratis, utan att inget dyrt kan ske utan ett ja.
+
