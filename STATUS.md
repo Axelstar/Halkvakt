@@ -2029,3 +2029,9 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   loggar `vb` i skuggmotorn sedan 15/9, och grind V-B går i måndagsserien under V-C:s spärr (#213, #350, #351). Tre texter sa för
   mycket och är rättade: bilaga 7:s förteckning (PDF ombyggd), appsidan (artefakten publicerad om) och produktbokens grindtabell.
   Bilaga 1:s mening om grinden som föll är sann men nämner inte radarspåret; en precisering är föreslagen för Bengt.
+- 29/9 (Claude, Bengts beställning): skuggmotorns 21 delområden genomgångna och redovisade i en ny intern sida,
+  *Skuggmotorns delområden* (privat, https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc; kopia `docs/SKUGGMOTORN-2026-09-29.html`).
+  Varje del: vad den mäter, hur, siffror och nytta, med detaljerna fällbara. Blindade utfall visas bara som antal. Den gamla
+  mätningssidan är delad med alla som har länken och lämnades orörd. Genomgången hittade att vägpunktsgrinden FÖLL i
+  måndagskörningen 28/9 (rå viktning A2 6,9 %, grind A med offset 3,7 %), obokfört; läst i Actions-loggen och fört till §4.2 och
+  kort #266. Inaktuella rader och en värdevakt som inte körts sedan 15/9 står på kort #267.

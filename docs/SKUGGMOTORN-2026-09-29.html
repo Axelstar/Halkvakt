@@ -1,0 +1,1149 @@
+<title>Skuggmotorns delområden</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: same paper sheet as Halkvaktens systembild. The shadow engine's sub-areas are grouped by layer (L1–L5), one card
+     each: what it measures, key numbers and the benefit stay visible; "how" and "numbers" fold into details. Charts are
+     hand-drawn SVG from inline data. Internal page: blinded outcomes appear only as counts. */
+  :root {
+    --papper: #F6F7F5;
+    --blad: #FFFFFF;
+    --black: #16202A;
+    --dampad: #4A5763;
+    --linje: #D9DFE3;
+    --gul: #A8720A;
+    --gul-yta: #FFF3D6;
+    --gron: #1F7A45;
+    --gron-yta: #E4F2EA;
+    --rod: #A63A2A;
+    --rod-yta: #F9E7E3;
+    --bla: #1D6FAE;
+    --bla-yta: #E3EEF7;
+    --frost-yta: #E6F0F5;
+    --kort: #FBFCFB;
+    --serie-a: #1D6FAE;
+    --serie-b: #A8720A;
+    --rutnat: #E6EAED;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --papper: #0B1014; --blad: #121A20; --black: #E6ECEF; --dampad: #9DAAB3; --linje: #26323B;
+      --gul: #FFC94A; --gul-yta: #2A2310; --gron: #4CC382; --gron-yta: #12261B; --rod: #F08A7A; --rod-yta: #2B1714;
+      --bla: #7DB8E8; --bla-yta: #12222E; --frost-yta: #13232C; --kort: #151E25;
+      --serie-a: #3D8FD0; --serie-b: #B8830C; --rutnat: #1E2931;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --papper: #0B1014; --blad: #121A20; --black: #E6ECEF; --dampad: #9DAAB3; --linje: #26323B;
+    --gul: #FFC94A; --gul-yta: #2A2310; --gron: #4CC382; --gron-yta: #12261B; --rod: #F08A7A; --rod-yta: #2B1714;
+    --bla: #7DB8E8; --bla-yta: #12222E; --frost-yta: #13232C; --kort: #151E25;
+    --serie-a: #3D8FD0; --serie-b: #B8830C; --rutnat: #1E2931;
+    color-scheme: dark;
+  }
+  body { background: var(--papper); color: var(--black); padding-inline: 16px; padding-block: 28px 48px;
+         font: 400 16px/1.6 "Source Serif 4", Georgia, "Times New Roman", serif; }
+  .blad { max-width: 860px; margin: 0 auto; background: var(--blad); border: 1px solid var(--linje);
+          padding: clamp(20px, 5vw, 56px); display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  h1, h2, h3, h4, .etikett, th, .dom, .lage, .fakta b, .chart-title, .legend, summary, .nyckel b, .nr, .knapp {
+    font-family: "Instrument Sans", "Helvetica Neue", Arial, sans-serif; }
+  h1 { font-size: clamp(30px, 5vw, 42px); line-height: 1.08; font-weight: 700; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+  h2 { font-size: 21px; font-weight: 700; margin: 22px 0 0; text-wrap: balance; }
+  h3 { font-size: 17px; font-weight: 700; margin: 0; }
+  h4 { font-size: 14px; font-weight: 600; margin: 8px 0 0; }
+  p { margin: 0; max-width: 70ch; }
+  .etikett { font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gul); }
+  .ingress { font-size: 18px; color: var(--dampad); }
+  .mono, code { font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; font-size: 0.86em; font-variant-numeric: tabular-nums; }
+  .litet { font-size: 14px; color: var(--dampad); }
+  ul, ol { margin: 0; padding-left: 1.1em; display: grid; gap: 4px; }
+  li { max-width: 68ch; }
+  hr { border: 0; border-top: 1px solid var(--linje); margin: 4px 0; width: 100%; }
+
+  .fakta { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 14px; color: var(--dampad);
+           border-top: 1px solid var(--linje); border-bottom: 1px solid var(--linje); padding-block: 10px; }
+  .fakta b { color: var(--black); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  .formel { background: var(--frost-yta); padding: 12px 16px; border-radius: 4px; display: grid; gap: 6px; }
+  .formel .mono { font-size: 0.95em; overflow-wrap: anywhere; }
+
+  .tabell { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--linje); vertical-align: top; }
+  th { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dampad); }
+  td.tal, th.tal { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tr.vald td { background: var(--gron-yta); }
+  tr.fallen td { background: var(--rod-yta); }
+  .oversikt td:first-child a { font-weight: 600; text-decoration: none; }
+  .oversikt td:first-child a:hover { text-decoration: underline; }
+
+  .dom, .lage { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+         padding: 1px 7px; border-radius: 3px; white-space: nowrap; }
+  .dom.klarar, .lage.skugga, .lage.drift { color: var(--gron); background: var(--gron-yta); }
+  .dom.faller, .lage.nedlagd { color: var(--rod); background: var(--rod-yta); }
+  .dom.oavgjort, .lage.obyggd { color: var(--gul); background: var(--gul-yta); }
+  .lage.arkiv { color: var(--bla); background: var(--bla-yta); }
+
+  .del { border: 1px solid var(--linje); border-radius: 6px; background: var(--kort); padding: 16px clamp(14px, 3vw, 20px);
+         display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; scroll-margin-top: 16px; }
+  .del-huvud { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+  .del-huvud .nr { font-size: 13px; font-weight: 600; color: var(--dampad); font-variant-numeric: tabular-nums; }
+  .del-huvud .lager { font-size: 12px; color: var(--dampad); margin-left: auto; }
+  .nyckel { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px 16px;
+            border-top: 1px solid var(--linje); border-bottom: 1px solid var(--linje); padding-block: 8px; }
+  .nyckel div { display: grid; gap: 1px; min-width: 0; }
+  .nyckel b { font-size: 19px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.2; }
+  .nyckel span { font-size: 13px; line-height: 1.35; color: var(--dampad); }
+
+  details { border-top: 1px solid var(--linje); }
+  details:last-of-type { border-bottom: 0; }
+  summary { cursor: pointer; list-style: none; font-size: 14px; font-weight: 600; padding: 9px 0; display: flex;
+            align-items: center; gap: 10px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::before { content: ""; width: 7px; height: 7px; border-right: 2px solid var(--dampad); border-bottom: 2px solid var(--dampad);
+                    transform: rotate(-45deg); transition: transform .15s; flex: none; margin-left: 2px; }
+  details[open] > summary::before { transform: rotate(45deg); }
+  summary:focus-visible { outline: 2px solid var(--bla); outline-offset: 2px; }
+  .inne { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 2px 0 14px; }
+
+  .knapp { font-size: 13px; font-weight: 600; color: var(--black); background: var(--blad); border: 1px solid var(--linje);
+           border-radius: 4px; padding: 5px 12px; cursor: pointer; justify-self: start; }
+  .knapp:hover { border-color: var(--dampad); }
+
+  .chart { position: relative; display: grid; gap: 6px; min-width: 0; }
+  .chart-title { font-size: 14px; font-weight: 600; }
+  .chart svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .chart .axis text, .chart .lbl { fill: var(--dampad); font: 500 11px "Instrument Sans", Arial, sans-serif; }
+  .chart .val { fill: var(--black); font: 600 11px "Instrument Sans", Arial, sans-serif; font-variant-numeric: tabular-nums; paint-order: stroke; stroke: var(--kort); stroke-width: 3px; stroke-linejoin: round; }
+  .chart .grid { stroke: var(--rutnat); stroke-width: 1; }
+  .chart .base { stroke: var(--linje); stroke-width: 1; }
+  .chart .troskel { stroke: var(--black); stroke-width: 1.5; }
+  .chart .troskel-text { fill: var(--black); font: 600 11px "Instrument Sans", Arial, sans-serif; paint-order: stroke; stroke: var(--kort); stroke-width: 3px; stroke-linejoin: round; }
+  .chart .rull { overflow-x: auto; }
+  .chart .rull svg { min-width: 520px; }
+  .chart .err { stroke: var(--black); stroke-width: 1.5; }
+  .chart .m-a { fill: var(--serie-a); }
+  .chart .m-b { fill: var(--serie-b); }
+  .chart .m-klarar { fill: var(--gron); }
+  .chart .m-faller { fill: var(--rod); }
+  .chart .m-oavgjort { fill: var(--gul); }
+  .chart [data-tip] { cursor: default; }
+  .chart [data-tip]:hover { opacity: .82; }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; color: var(--dampad); }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+  .legend .k-a { background: var(--serie-a); }
+  .legend .k-b { background: var(--serie-b); }
+  .tip { position: absolute; pointer-events: none; background: var(--black); color: var(--blad); font: 500 12px/1.4 "Instrument Sans", Arial, sans-serif;
+         padding: 6px 9px; border-radius: 4px; max-width: 240px; z-index: 2; }
+  .par { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px 28px; }
+  .par > * { min-width: 0; }
+
+  .ruta { border-left: 3px solid var(--gul); padding: 4px 0 4px 14px; display: grid; gap: 6px; align-content: start; }
+  .ruta.gron { border-left-color: var(--gron); }
+  .ruta.rod { border-left-color: var(--rod); background: var(--rod-yta); padding: 10px 12px 10px 14px; border-radius: 0 4px 4px 0; }
+  a { color: inherit; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  @media print { .knapp { display: none; } }
+</style>
+
+<main class="blad">
+  <div class="etikett">Teknisk analys · intern · 29 september 2026</div>
+  <h1>Vad skuggmotorn mäter, hur den räknar och vad det visat</h1>
+  <p class="ingress">Syskonsidan till Halkvaktens systembild, nu uppdelad på skuggmotorns delområden. För varje del står vad den mäter, hur, vilka tal som finns och vad mätningen är till för. Talen kommer ur beslutsloggen (numren inom parentes), tröskeldokumenten, koden och körningarnas loggar. Utfall som är blindade till domarna visas bara som antal.</p>
+  <div class="fakta">
+    <span>arkiv sedan <b>24/8</b></span>
+    <span>skuggflotta sedan <b>29/8</b></span>
+    <span><b>80</b> skuggrutter i fyra länder</span>
+    <span><b>21</b> delområden</span>
+    <span><b>13</b> tröskeldokument</span>
+    <span><b>0</b> når föraren</span>
+  </div>
+
+  <h2>1. Datan som samlas in</h2>
+  <p>Trafikverkets data hämtas varje minut och arkiveras. Snapshoten till apparna publiceras var tionde minut med sha256 i ett manifest, och appen behåller förra snapshoten om kontrollsumman inte stämmer.</p>
+  <div class="tabell">
+    <table>
+      <thead><tr><th>Källa</th><th>Vad</th><th>Hämtas</th><th>Används till</th></tr></thead>
+      <tbody>
+        <tr><td>Trafikverket, VViS</td><td>Yt- och lufttemperatur, fukt, daggpunkt, nederbörd och dess typ, vind, sikt, cirka 845 stationer</td><td>varje minut</td><td>rösten, prognoslagret, facit</td></tr>
+        <tr><td>Trafikverket, väglag</td><td>818 bedömningssegment</td><td>varje minut</td><td>rösten</td></tr>
+        <tr><td>Trafikverket, händelser</td><td>olyckor och djur på vägen</td><td>varje minut</td><td>rösten, facit</td></tr>
+        <tr><td>Trafikverket, kameror</td><td>744 väglagskameror, 2 776 fartkameror</td><td>vid behov</td><td>facitbilder, kameravarning</td></tr>
+        <tr><td>SMHI</td><td>varningar, nederbördsradar, rådande väder, moln</td><td>löpande</td><td>facit och skuggdrift, aldrig rösten</td></tr>
+        <tr><td>Fintraffic, Vegvesen, DMI</td><td>grannländernas vägväder</td><td>löpande</td><td>skuggarkiv och gränspunkter</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="par">
+    <div class="ruta">
+      <h4>Volym</h4>
+      <p>Säkerhetskopian 20/9 läste tillbaka 601 712 rader ur 30 tabeller, varav 389 779 svenska väderobservationer, 64 105 finska och 50 292 radarrader (#257). Databasen låg på 186 MB av gratisnivåns 500 MB den 26/9. Gamla dygn exporteras till lagring i stället för att köpa en större databas (#334).</p>
+    </div>
+    <div class="ruta">
+      <h4>En lucka som stängdes</h4>
+      <p>Arkivet sparade först bara kalla eller blöta avläsningar. I kalla halvtimmar saknade därför 49,5 % av grannstationerna en rad. Sedan 25/9 sparas också en varm rad per station och halvtimme. Första hela dygnet efter ändringen saknades 2 av 452 grannplatser, alltså 0,4 % (#353, #380). Det har betydelse för prognoslagret i avsnitt 5.</p>
+    </div>
+  </div>
+
+  <h2>2. Skuggmotorn och dess delområden</h2>
+  <p>Skuggmotorn är allt som prövas utan att föraren hör det. Den mäter på fyra sätt: i <b>skuggvarvet</b>, där den riktiga varningsmotorn körs längs fasta rutter var 30:e minut; i <b>arkivet</b>, där en tabell eller en uppspelning räknar löpande; med <b>knappar</b> som körs varje måndag eller när frosten kommer; och i <b>snapshoten</b>, där en ny storhet publiceras men inte läses av rösten. De flesta delar har ett tröskeldokument som skrevs innan mätningen fanns.</p>
+  <div class="tabell">
+    <table class="oversikt">
+      <thead><tr><th>Delområde</th><th>Lager</th><th>Läge</th><th>Nu</th></tr></thead>
+      <tbody>
+        <tr><td><a href="#d-varvet">3.1 Huvudvarvet</a></td><td>röst</td><td><span class="lage skugga">körs i skuggan</span></td><td>144 av 144 varv skrev rader 25–28/9</td></tr>
+        <tr><td><a href="#d-kamera">3.2 Kamerafacit</a></td><td>facit</td><td><span class="lage skugga">körs i skuggan</span></td><td>988 bilder, blint arkiv till mars</td></tr>
+        <tr><td><a href="#d-forare">3.3 Förarsvar och missar</a></td><td>facit</td><td><span class="lage drift">i drift</span></td><td>0 riktiga svar</td></tr>
+        <tr><td><a href="#d-tystnad">3.4 Tystnadsfelet</a></td><td>facit</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>2 av 20 tillfällen</td></tr>
+        <tr><td><a href="#d-vakter">4.1 Vakterna</a></td><td>L1</td><td><span class="lage drift">i drift</span></td><td>706 av 811 felrader tagna</td></tr>
+        <tr><td><a href="#d-prognos">5.1 Prognoslagret</a></td><td>L4</td><td><span class="lage skugga">körs i skuggan</span></td><td>vägpunktsgrinden föll 28/9, obokfört</td></tr>
+        <tr><td><a href="#d-frysklass">5.2 Frysklassningen</a></td><td>L4</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>0 punkter med frys</td></tr>
+        <tr><td><a href="#d-tathet">5.3 Stationstätheten</a></td><td>L4</td><td><span class="lage arkiv">mätt</span></td><td>median 6,8 km till station</td></tr>
+        <tr><td><a href="#d-trend">6.1 Trenden</a></td><td>L3</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>19 469 kandidater</td></tr>
+        <tr><td><a href="#d-efterhalka">6.2 Efterhalkan</a></td><td>L3</td><td><span class="lage skugga">körs i skuggan</span></td><td>35 rader, dom i januari</td></tr>
+        <tr><td><a href="#d-rimfrost">6.3 Rimfrosten</a></td><td>L3</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>0 episoder</td></tr>
+        <tr><td><a href="#d-overgang">6.4 Övergångarna</a></td><td>L3</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>Ö-A passerad</td></tr>
+        <tr><td><a href="#d-alder">6.5 Väglagets ålder</a></td><td>L3</td><td><span class="lage obyggd">fastställd, obyggd</span></td><td>0 omklassningar till halka</td></tr>
+        <tr><td><a href="#d-tillstand">7.1 Tillståndsskattaren</a></td><td>L2</td><td><span class="lage drift">i drift</span></td><td>bevis i snapshoten sedan 24/9</td></tr>
+        <tr><td><a href="#d-nedtyp">7.2 Nederbördstypen</a></td><td>L2</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>dom tidigast 1/3 2027</td></tr>
+        <tr><td><a href="#d-radar">7.3 Nederbördsradarn</a></td><td>L2</td><td><span class="lage drift">i drift</span></td><td>faktor 0,65, täckning 91 %</td></tr>
+        <tr><td><a href="#d-vatten">7.4 Vattenplaning</a></td><td>L2</td><td><span class="lage skugga">körs i skuggan</span></td><td>57 av 200 varningar till domen</td></tr>
+        <tr><td><a href="#d-vind">7.5 Vind och sikt</a></td><td>L2</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>W-A oavgjord</td></tr>
+        <tr><td><a href="#d-smhi">7.6 SMHI-förstärkaren</a></td><td>L2</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>0 vintervarningar i arkivet</td></tr>
+        <tr><td><a href="#d-forsprang">8.1 Försprånget</a></td><td>L5</td><td><span class="lage skugga">körs i skuggan</span></td><td>0 rader, väntar på nivå 2</td></tr>
+        <tr><td><a href="#d-kombination">8.2 Kombinationen</a></td><td>L5</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>kalibrering 1/2 2027</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="litet">Lagren är systembildens: L1 trovärdighet (kan mätningen tros?), L2 tillstånd (vad ligger på vägen?), L3 utveckling (vart är det på väg?), L4 räckvidd (vad gäller mellan stationerna?) och L5 allvar och röst (hur och när sägs det?).</p>
+  <button class="knapp" type="button" id="alla">Öppna alla detaljer</button>
+
+  <h2>3. Rösten i skugga och dess facit</h2>
+
+  <section class="del" id="d-varvet">
+    <div class="del-huvud"><span class="nr">3.1</span><h3>Huvudvarvet</h3><span class="lage skugga">körs i skuggan</span><span class="lager">sedan 29/8 · kort #20</span></div>
+    <p><b>Mäter:</b> vad rösten skulle ha sagt om en bil körde 80 fasta rutter i Sverige, Finland, Norge och Danmark, och vilka varningar spärren tystade.</p>
+    <div class="nyckel">
+      <div><b>80</b><span>rutter, 20 per land</span></div>
+      <div><b>144 av 144</b><span>varv skrev sina rader 25–28/9 (#389)</span></div>
+      <div><b>0 av 110</b><span>yttranden inom 60 s av ett annat (16/9, #200)</span></div>
+      <div><b>9 896</b><span>rader i skuggloggen, 2,4 MB (24/9)</span></div>
+    </div>
+    <p><b>Nytta:</b> takten mäts i stället för att antas, och loggen är underlaget för nästan allt annat nedan: tystnadsfelet, kamerafacit, vattenplaningen, efterhalkan och prognoslagrets grind B.</p>
+    <details><summary>Hur den mäter</summary><div class="inne">
+      <ul>
+        <li>En virtuell bil i 80 km/h får en position var femte sekund, ungefär var 111:e meter. Varje rutt får en ny instans av samma motor som apparna kör, med samma regler ordagrant.</li>
+        <li>Reglerna: spärren i 10 sekunder släpper bara fram en viktigare fara; samma fara upprepas tidigast efter 10 minuter och 5 km; prioriteten är olycka, halka, frysrisk, vilt, kamera; kameran talar vid 500 m; förvarningen är fart × 30 s, klämd till 400–3 000 m.</li>
+        <li>De svenska rutterna roteras i sju fack, så varje rutt körs ungefär var 3,5:e timme. Sverige körs på minut 2 och 32, Finland 15 och 45, Danmark 20 och 50 och Norge 25 och 55 (sedan 22/9).</li>
+        <li>Per rutt och varv sparas snapshotens tid, antalet faror, varje varning med text och avstånd, och för punktfaror även positionen. Ett segment får medvetet ingen koordinat, eftersom en mittpunkt kan ligga milsvitt från larmet (#179). I Sverige sparas dessutom vattenplaningens skugga, efterhalkans råa fält och prognoslagret.</li>
+        <li>Som spärrad räknas bara en vinnare som 10-sekundersspärren kastade. Kandidater som stoppas av 10 min/5 km eller förlorar prioritetsvalet loggas inte.</li>
+      </ul>
+    </div></details>
+    <details><summary>Siffror och beräkningar</summary><div class="inne">
+      <div class="tabell">
+        <table>
+          <thead><tr><th>Mått</th><th class="tal">Värde</th><th>När och källa</th></tr></thead>
+          <tbody>
+            <tr><td>Körningar de första 14 dygnen</td><td class="tal">1 759</td><td>29/8–11/9, 20 rutter, 678 resor med varning (#101)</td></tr>
+            <tr><td>Körningar alla länder</td><td class="tal">5 657</td><td>60 rutter, 29/8–14/9 (#171)</td></tr>
+            <tr><td>Varningar med position</td><td class="tal">1 360 av 1 847</td><td>14 dygn till 24/9 (#330)</td></tr>
+            <tr><td>Varningar per slag, Sverige</td><td class="tal">760 · 31 · 14 · 2</td><td>fartkamera · olycka · frysrisk · vilt, 7 dygn till 26/9</td></tr>
+            <tr><td>Prognosrader</td><td class="tal">≈ 125 per dygn</td><td>≈ 140 kB per dygn, ≈ 4 MB per månad (#325)</td></tr>
+            <tr><td>Varv 25/9 09:02 – 28/9 08:32</td><td class="tal">144 av 144</td><td>123 med tre rader, 21 med två, inget med noll (#389)</td></tr>
+            <tr><td>Motorns tid, tre rutter</td><td class="tal">173 ms</td><td>prognosen 9 ms; facit 5 300 ms, som mest väntan på kamerabilder (25/9)</td></tr>
+            <tr><td>Snapshoten i varvet</td><td class="tal">740 ankare · 2 797 faror</td><td>25/9 (#360)</td></tr>
+            <tr><td>Spärrade varningar i verklig drift</td><td class="tal">0</td><td>15/9 kväll och natt; ett prov 16/9 visade att loggen fångar dem (#193, #197)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="par">
+        <div class="ruta">
+          <h4>Takten är mätt</h4>
+          <p>Under ett dygn (16/9) kom 0 av 110 yttranden inom 60 sekunder efter ett annat. Den tätaste följden var 70 sekunder, och per rutt <span class="mono">70 · 145 · 370 · 380 · 525 · 3 665</span> s (#200). Spärren på 10 sekunder är härledd ur kamerornas minsta avstånd, 520 m, som är 15,6 s i 120 km/h.</p>
+        </div>
+        <div class="ruta">
+          <h4>När mätningen och fältet var oense</h4>
+          <p>Skuggloggen visade 11/9 att 340 av 678 resor (50 %) hörde samma mening minst två gånger, nästan alltid <i>"Fartkamera om 500 meter"</i> (#101). Bengts provresa Malmö–Boden visade att varje varning följdes av sin egen kamera: <i>"helt perfekt hela vägen"</i>. Huvudtalet drogs tillbaka och kamerorna lämnades orörda (#102).</p>
+        </div>
+      </div>
+    </div></details>
+  </section>
+
+  <section class="del" id="d-kamera">
+    <div class="del-huvud"><span class="nr">3.2</span><h3>Kamerafacit</h3><span class="lage skugga">körs i skuggan</span><span class="lager">kort #157 · #260</span></div>
+    <p><b>Mäter:</b> väglagskamerans bild vid skuggvarningar, vid aktuella frysrisker och vid kalla stationer utan larm. En bild kan bekräfta is, snö eller slask och kan visa bar väg. Svartis syns inte.</p>
+    <div class="nyckel">
+      <div><b>988</b><span>bilder från 68 av 744 kameror (26/9)</span></div>
+      <div><b>≈ 90</b><span>bilder per dygn före 26/9</span></div>
+      <div><b>41</b><span>provbilder klassade blint, ingen halka</span></div>
+      <div><b>mars</b><span>då arkivet öppnas och läses</span></div>
+    </div>
+    <p><b>Nytta:</b> den enda facitkällan som inte går att hämta i efterhand, eftersom Trafikverket bara serverar den senaste bilden. Bilderna är facit för trenden, tystnadsfelet, efterhalkans dom i januari, prognoslagrets dom i mars och vattenplaningen.</p>
+    <details><summary>Hur den mäter</summary><div class="inne">
+      <div class="tabell">
+        <table>
+          <thead><tr><th>Väg</th><th>När</th><th>Vilken kamera</th><th>Tak</th></tr></thead>
+          <tbody>
+            <tr><td>Vid varning</td><td>varje svenskt skuggvarv</td><td>närmaste väglagskamera inom 15 km från en punktvarning; inte vid fartkameror sedan 26/9</td><td>5 per varv, en per kamera och tretimmarsperiod</td></tr>
+            <tr><td>Vid frysrisk</td><td>varje timme</td><td>närmaste kamera inom 15 km från varje frysrisk och bro i snapshoten; i mörker bara om kameran saknar bild från de senaste 12 h</td><td>150 per dygn</td></tr>
+            <tr><td>Stickprov</td><td>två per timme i dagsljus</td><td>kamera inom 1 km från en kall station (yta ≤ 3 °C, klarar givarvakten, mätt inom 3 h) som inte själv är en fara</td><td>2 per timme</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Klasserna är is, snö, slask, våt, bar och okänd. De tre första räknas som halka. Bilderna klassas blint ur kontaktark med 4 × 5 rutor, där varje ruta bär nummer, kameranamn och tid men aldrig skuggans larm (#339). Axel kontrollerar ett stickprov på minst 10 % och varje bild med is, snö eller slask (#335). Regeln i tröskeldokumentet: en bild får bekräfta en varning men aldrig fälla den.</p>
+    </div></details>
+    <details><summary>Siffror och beräkningar</summary><div class="inne">
+      <ul>
+        <li>Före 15/9 fanns noll bilder, fast 756 av 1 802 svenska körningar hade larm. Två fel låg bakom: varningarna saknade position, så avståndet till kameran blev odefinierat, och uppladdningen saknade ett obligatoriskt fält (#172–#189).</li>
+        <li>15/9: 174 positionerade varningar, alla inom 15 km från en kamera (närmast 0,2 km, längst 13,4 km) (#189).</li>
+        <li>24/9: 790 bilder. 26/9: 988 bilder, 23,1 kB var, 22,2 MB totalt. 94 % togs vid en fartkameravarning, och därför fotar skuggvarvet inte längre vid fartkameror (#380).</li>
+        <li>De 41 klassade bilderna är Trafikverkets direktbilder som använts för att pröva klassningen: 20 bar (24/9), en våt (Tierp), 12 bar och 8 okända i mörker 26/9, varav sju skymda av spindelväv.</li>
+        <li>Första sjudygnsavläsningen efter de nya vägarna görs tidigast 3/10.</li>
+      </ul>
+    </div></details>
+  </section>
+
+  <section class="del" id="d-forare">
+    <div class="del-huvud"><span class="nr">3.3</span><h3>Förarsvar och missar</h3><span class="lage drift">i drift</span><span class="lager">kort #203</span></div>
+    <p><b>Mäter:</b> förarens eget facit. Efter varje varning kan föraren svara <i>Stämde</i> eller <i>Stämde inte</i>, och när det var halt men rösten teg kan föraren markera <i>Appen missade</i>. Gäller bara betatestare som själva slagit på brytaren.</p>
+    <div class="nyckel">
+      <div><b>0</b><span>riktiga svar (28/9)</span></div>
+      <div><b>0</b><span>riktiga missar; provrader räknas aldrig</span></div>
+      <div><b>16/9 · 26/9</b><span>svaren respektive missarna i drift</span></div>
+    </div>
+    <p><b>Nytta:</b> den facitkälla som fylls när det väl blir halt. Den ska bära januaridomen om efterhalkan och ge bekräftelser till prognoslagrets grind och tystnadsfelet.</p>
+    <details><summary>Hur den mäter</summary><div class="inne">
+      <ul>
+        <li><b>Ett svar</b> är varningens id, klockslaget, ja eller nej, appens namn och version. Högst 512 byte, klockslaget inom ±48 h, tak 2 000 per dygn. Ingen IP-adress sparas.</li>
+        <li><b>En miss</b> är klockslaget, vad det var (halka, vatten, vilt, olycka eller annat, valt efter resan), närmaste station och närmaste halkavsnitt inom 2 km.</li>
+        <li>Provrader märks automatiskt och räknas aldrig.</li>
+        <li><b>Så blir det facit:</b> bara ett <i>ja</i> på en varning från en mätstation blir en halkhändelse, om den ligger inom 2 km från en skuggrutt. Ett <i>nej</i> används ännu inte av någon grind, och missarna har ännu ingen mätning som läser dem.</li>
+        <li><b>Reglerna</b> (tröskeldokumentet för kombinationen, KB-D): <i>Stämde</i> bekräftar. <i>Stämde inte</i> fäller bara om ingen annan källa bekräftar. Förarfacit ensamt fäller eller friar ingen dom. Det krävs minst 30 svar från minst 5 förare, och ingen förare får stå för mer än 25 %.</li>
+      </ul>
+    </div></details>
+    <details><summary>Siffror och beräkningar</summary><div class="inne">
+      <ul>
+        <li>16/9: fem provanrop gav de fem väntade svaren, två godkända och tre avvisade (#201).</li>
+        <li>20/9: 0 riktiga svar, 2 provrader (#267). 26/9: en provmiss togs emot och märktes som prov (#380).</li>
+        <li>28/9: Bengts provtryck från provresan raderades. Kvar: 1 rad, 1 prov, 0 riktiga (#390).</li>
+        <li>Villkoret "minst 5 förare" går inte att räkna som det står, eftersom ingen identitet sparas. Det måste lösas före januari.</li>
+      </ul>
+    </div></details>
+  </section>
+
+  <section class="del" id="d-tystnad">
+    <div class="del-huvud"><span class="nr">3.4</span><h3>Tystnadsfelet</h3><span class="lage arkiv">mäts i arkivet</span><span class="lager">kort #98</span></div>
+    <p><b>Mäter:</b> hur ofta systemet teg när det bevisligen var halt inom räckhåll för en station, och om det i så fall fanns en signal som hade kunnat varna.</p>
+    <div class="nyckel">
+      <div><b>2 av 20</b><span>bekräftade tillfällen till minsta underlag (24/9)</span></div>
+      <div><b>2 av 3</b><span>halkperioder</span></div>
+      <div><b>7 km</b><span>räckvidd till närmaste station</span></div>
+      <div><b>16</b><span>celler i svepet</span></div>
+    </div>
+    <p><b>Nytta:</b> avgör om yttröskeln 1 °C är för försiktig, och pekar ut vilken regel som ska betala för en miss: rimfrosten, trenden, övergångarna, räckvidden eller tröskeln.</p>
+    <details><summary>Hur den mäter</summary><div class="inne">
+      <ul>
+        <li><b>Facit</b> är den delade listan inom 2 km från rutterna: SMHI:s isvarningar, halka i händelsearkivet, väglag med kod ≥ 2 eller halkord, förarens <i>Stämde</i> och kamerabilder med is, snö eller slask.</li>
+        <li><b>Tyst</b> betyder ingen frys- eller halkvarning inom 2 km i något skuggvarv de 4 timmarna före. Finns inget varv är det okänt, aldrig tyst.</li>
+        <li><b>Signalerna</b> läses vid närmaste station de 2 timmarna före:</li>
+      </ul>
+      <div class="tabell">
+        <table>
+          <thead><tr><th>Signal</th><th>Definition</th></tr></thead>
+          <tbody>
+            <tr><td>Kondensation</td><td>yta − daggpunkt ≤ 0 · 0,5 · 1 · 2 °C</td></tr>
+            <tr><td>Trend</td><td>fall ≥ 0,8 °C på 30 min, yta ≤ +3 °C och yta − 4 × fallet ≤ 1 °C</td></tr>
+            <tr><td>Stationen visade risk</td><td>yta ≤ 1 °C och fukt</td></tr>
+            <tr><td>Regn</td><td>regn inom 1 · 2 · 3 · 4 h</td></tr>
+            <tr><td>Yttröskeln</td><td>en station inom 2 km på +1…+3 °C med fukt</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>En tyst miss är <i>oursäktlig</i> om någon signal fanns, <i>ursäktlig</i> om radarn såg nederbörd inom 5 km medan stationen var torr, och annars <i>okänd</i>. Bredvid står priset: hur många fler varningstillfällen det hade blivit med yttröskeln 1,0 · 1,5 · 2,0 · 2,5 °C.</p>
+      <p><b>Krav:</b> minst 20 bekräftade tillfällen inom räckvidd, fördelade på minst 3 halkperioder med mer än två dygn emellan. Det finns ingen gräns för att klara eller falla. Utfallet är en rekommendation om tröskeln.</p>
+    </div></details>
+    <details><summary>Siffror och beräkningar</summary><div class="inne">
+      <ul>
+        <li>14/9: 0 omklassningar till halka på 30 dygn, 0 kamerabilder. Olyckorna, 2 773, bär ingen orsak och räknas inte. Ingen dom (#171).</li>
+        <li>24/9, första skarpa körningen: 2 bekräftade tillfällen (halka i händelsearkivet), båda inom 7 km (median 4,2 km), båda tysta, båda okända i alla 16 celler. 2 av 20 tillfällen och 2 av 3 perioder, så inga andelar skrivs (#330).</li>
+      </ul>
+    </div></details>
+  </section>
+
+  <h2>4. Trovärdighet (L1)</h2>
+
+  <section class="del" id="d-vakter">
+    <div class="del-huvud"><span class="nr">4.1</span><h3>Vakterna</h3><span class="lage drift">i drift</span><span class="lager">#75 · #298 · #300 · #134</span></div>
+    <p><b>Mäter:</b> om en ytavläsning är fysiskt trolig jämfört med stationens egen lufttemperatur, och om ett fält i databasen bär koder som är typgiltiga men fysiskt omöjliga.</p>
+    <div class="nyckel">
+      <div><b>706 av 811</b><span>felrader tagna, 4 äkta tystade (#298)</span></div>
+      <div><b>7 → 0</b><span>falska brolarm på E4 Helsingborg–Jönköping</span></div>
+      <div><b>16</b><span>stationer anmälda till Trafikverket 22/9</span></div>
+      <div><b>15/9</b><span>värdevaktens senaste körning</span></div>
+    </div>
+    <p><b>Nytta:</b> en station vi inte litar på tiger, både i appen och i mätningarna. I prognoslagrets band 7–15 km bar vakterna hela skillnaden mellan att falla och att klara. Felen har också anmälts till källan.</p>
+    <details><summary>Hur den mäter</summary><div class="inne">
+      <div class="tabell">
+        <table>
+          <thead><tr><th>Vakt</th><th>Regel</th><th>Sedan</th></tr></thead>
+          <tbody>
+            <tr><td>Givarvakten</td><td>ytan mer än 12 °C under luften ⇒ raden tystas</td><td>8/9</td></tr>
+            <tr><td>Radvakten</td><td>luften ≥ +10 °C och ytan ≥ 8 °C under den ⇒ raden tystas</td><td>21/9</td></tr>
+            <tr><td>Karantänen</td><td>minst tre brott mot givarvakten på sju dygn ⇒ stationen publiceras inte alls</td><td>21/9</td></tr>
+            <tr><td>Den långsamma vakten</td><td>ytan ≥ 6 °C under luften i minst 90 % av det senaste dygnets rader (minst 24) ⇒ tyst i 3 h efter senaste felet</td><td>22/9</td></tr>
+            <tr><td>Byvindvakten</td><td>byvind ≥ 15 m/s och kvot mot medelvinden över 5 ⇒ timmen räknas inte</td><td>13/9</td></tr>
+            <tr><td>Värdevakten</td><td>varje fält ska ha ett deklarerat spann; ett fält utan spann är OBESIKTIGAT och får inte bära en tröskel</td><td>12/9</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>En station som börjar mäta rätt släpps in igen av sig själv. Samma vakter gäller i snapshoten, i grindarna och i prognoslagrets ankare.</p>
+    </div></details>
+    <details><summary>Siffror och beräkningar</summary><div class="inne">
+      <div class="tabell">
+        <table>
+          <thead><tr><th>Mätt mot arkivet 21/9, 60 dygn</th><th class="tal">Felrader tagna av 811</th><th class="tal">Äkta rader tystade</th></tr></thead>
+          <tbody>
+            <tr><td>Karantänen ensam</td><td class="tal">597</td><td class="tal">4</td></tr>
+            <tr><td>Radvakten ensam</td><td class="tal">675</td><td class="tal">0</td></tr>
+            <tr class="vald"><td><b>Båda</b></td><td class="tal">706</td><td class="tal">4</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="litet">De fyra äkta raderna kom från Ollsta och Storvik, som själva är trasiga (#299). Över 60 dygn till 28/9 tog givarvakten 849 rader, radvakten 1 065, karantänen 2 985 och den långsamma vakten 1 749, av 480 577 (grind A:s vaktdiagnos). Redan 11/9 föll 194 av 317 frostrader (61 %) på givarvakten, som värst −49,9 °C (#100).</p>
+      <div class="par">
+        <div class="ruta">
+          <h4>Yttemperatur: sju stationer</h4>
+          <p>Ur 349 141 observationer från 715 stationer, 24/8–21/9. Sex stationer rapporterar tidvis −34 till −50 °C vid +9 till +17 °C i luften. Station 1106 Ö Ljungby vid E4 ligger omkring 12 °C för lågt dygnet runt, i 24 av 29 dygn, och ser ut att ligga precis vid fryspunkten en regnig septembernatt. Anmäld 22/9.</p>
+        </div>
+        <div class="ruta">
+          <h4>Byvind: nio stationer</h4>
+          <p>Ur 115 987 observationer från 751 stationer, 4–13/9. Byvindar på 23,8–87,7 m/s vid en medelvind på 0,4–2,1 m/s. I Trafikverkets eget material är kvoten mellan byvind och medelvind 1,75 i median, 2,25 vid 95:e och 3,08 vid 99,9:e percentilen. De nio ligger på 25–175. Anmäld 22/9.</p>
+        </div>
+      </div>
+      <div class="ruta">
+        <h4>Värdevakten</h4>
+        <p>12/9 prövade den 31 fält i 12 tabeller över 30 dygn (#134). Den hittade en radarintensitet på 727,54 mm/h, där världens högsta uppmätta skurar ligger kring 150–200 mm/h. Sikten 20 000 m var en platshållare i 49,5 % av observationerna och 89,4 % av senaste-tabellen, och byvinden nådde 85,5 m/s. Senaste körningen, 15/9, prövade 41 fält i 13 tabeller med 27 deklarerade spann: 28 i ordning, 2 utanför spann, 2 misstänkta platshållare, 3 med för tunt underlag och 0 obesiktigade. Den har inte körts sedan dess, och spannet −60…+60 °C släpper igenom de trasiga ytgivarnas −50 °C.</p>
+      </div>
+    </div></details>
+  </section>
+
+  <h2>5. Räckvidd (L4)</h2>
+
+  <section class="del" id="d-prognos">
+    <div class="del-huvud"><span class="nr">5.1</span><h3>Prognoslagret</h3><span class="lage skugga">körs i skuggan</span><span class="lager">sedan 23/9 · kort #38b</span></div>
+    <p><b>Mäter:</b> vägytans temperatur var annan kilometer längs de svenska skuggrutterna, också där ingen station står. Varje punkt märks uppmätt, modellerad eller okänd och får en frysflagga.</p>
+    <div class="nyckel">
+      <div><b>3,7 %</b><span>grova fel i grind A 28/9, krav ≤ 5 % <span class="dom klarar">klarar</span></span></div>
+      <div><b>6,9 %</b><span>grova fel för modellen i skuggan 28/9 <span class="dom faller">faller</span></span></div>
+      <div><b>14 594</b><span>punkter från 715 stationer i grind A 28/9</span></div>
+      <div><b>0 av 20</b><span>halkhändelser till grind B:s underlag</span></div>
+    </div>
+    <p><b>Nytta:</b> avgör i mars 2027 om prognosen får synas på kartan med konfidens, eller förstärka en varning som vilar på en mätning. Den får aldrig ensam utlösa rösten.</p>
+    <div class="ruta rod">
+      <h4>28/9: vägpunktsgrinden föll, och det är inte bokfört</h4>
+      <p>Måndagens veckokörning var den första där arkivet har varma grannrader. Då föll vägpunktsgrinden: rå avståndsviktning, den modell skuggan kör, fick 6,9 % ± 0,4 grova fel mot kravet 5 %, och de två andra kandidaterna föll också. Grind A klarade samma morgon med 0,74 °C, 3,7 % ± 0,3 och 0,0 %. Skillnaden är att grind A använder stationens inlärda offset, som vägpunkten inte har.</p>
+      <p>Den troliga förklaringen är inte prövad: septemberdomarna fälldes när hälften av grannraderna saknades, och fallet kall station med varm granne kommer först nu med. Fönstret saknar dessutom 6–7/9. Enligt projektets regel läses populationen innan domen skrivs in. Frågan ligger i bedömningen. Skuggan fortsätter, eftersom ingenting av den når föraren.</p>
+    </div>
+    <details><summary>Hur den mäter</summary><div class="inne">
+      <div class="formel">
+        <div class="mono">T̂ = Σ wᵢ·Tᵢ / Σ wᵢ,  wᵢ = 1 / max(dᵢ, 1 km)</div>
+        <p class="litet">Upp till fem stationer inom 50 km, var annan kilometer längs rutten. En punkt är <i>uppmätt</i> om närmaste station ligger inom 2 km, <i>modellerad</i> inom 50 km och annars <i>okänd</i>. Frysflaggan sätts när skattningen är ≤ 1 °C (#325).</p>
+      </div>
+      <ul>
+        <li><b>Ankarna</b> är stationer med en ytavläsning yngre än 3 h som klarar alla fyra yttemperaturvakter.</li>
+        <li><b>Holdout:</b> varje station inom 2 km från rutten skattas också ur de övriga, som om den inte fanns. Det är de raderna grind B dömer, eftersom stationens egen mätning då är facit.</li>
+        <li><b>Grind A</b> håller ute en station i taget och skattar den ur sina fem närmaste grannar inom 50 km, med stationens inlärda offset mot varje granne. Underlaget är halvtimmar med mätt yta ≤ +5 °C under 60 dygn. <b>Vägpunktsgrinden</b> gör samma sak utan målets egen historik, alltså så som en vägpunkt utan station måste skattas.</li>
+      </ul>
+      <div class="tabell">
+        <table>
+          <thead><tr><th>Mått</th><th>Vad</th><th class="tal">Krav</th></tr></thead>
+          <tbody>
+            <tr><td>A1</td><td>medelfel i beslutsbandet, mätt yta −5…+5 °C</td><td class="tal">≤ 1,0 °C</td></tr>
+            <tr><td>A2</td><td>grova fel, |fel| &gt; 2 °C</td><td class="tal">≤ 5 %</td></tr>
+            <tr><td>A3</td><td>frysklassfel: modell och mätning på olika sidor om 1 °C med mer än 1 °C marginal, alltså den ena under 0 °C och den andra över +2 °C</td><td class="tal">≤ 10 %</td></tr>
+            <tr><td>Underlag</td><td>punkter och stationer, annars ingen dom</td><td class="tal">≥ 500 · ≥ 20</td></tr>
+            <tr><td>Marginal</td><td>inom ±1,96 standardfel från kravet blir domen <i>oavgjort</i>; SE = s/√n för A1 och √(p(1−p)/n) för andelarna</td><td class="tal">±1,96 SE</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h4>Grind B och C, i mars 2027</h4>
+      <div class="tabell">
+        <table>
+          <thead><tr><th>Mått</th><th>Vad</th><th class="tal">Krav</th></tr></thead>
+          <tbody>
+            <tr><td>B1 falsklarm</td><td>holdout-episoder där stationens egen mätning var över +2 °C</td><td class="tal">≤ 20 %</td></tr>
+            <tr><td>B2 missar</td><td>halkhändelser inom 2 km utan flagga de 2 h före; bara de utstrålningsdrivna räknas</td><td class="tal">≤ 30 %</td></tr>
+            <tr><td>B3 mervärde</td><td>bekräftade episoder där punktmotorn teg eller talade mer än 30 min senare</td><td class="tal">≥ 25 %</td></tr>
+            <tr><td>C1 · C2</td><td>bedömbara halkhändelser över ≥ 3 halkperioder · bedömbara holdout-episoder</td><td class="tal">≥ 20 · ≥ 30</td></tr>
+            <tr><td>C3</td><td>holdout-radernas grova fel jämfört med grind A</td><td class="tal">≤ 10 pe ifrån</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="litet">Bara VViS-stationer och testarloggar får fälla en varning. Kamerabilder, händelser, SMHI och väglaget får bara bekräfta. Kraven fastställdes 1–2 september, innan prognoslagret fanns som kod (TROSKLAR-SKUGGAN, #52, #61).</p>
+    </div></details>
+    <details><summary>Siffror och beräkningar</summary><div class="inne">
+      <div class="chart" id="c-grind">
+        <div class="chart-title">Grind A över tid: andel grova fel (A2), krav ≤ 5 %</div>
+        <div class="rull"><svg viewBox="0 0 640 270" role="img" aria-label="Stapeldiagram: andel grova fel i grind A vid fem körningar, från 10,7 procent den 12 september till 3,7 procent den 28 september."></svg></div>
+      </div>
+      <p>Grinden föll först. Felen satt i trasiga givare, inte i modellen. När vakterna rensade bort felmätande stationer sjönk de grova felen från 10,7 % till 3,5 %, och grinden klarades 23/9 på 711 stationer, 202 087 avläsningar och 7 356 punkter (#321). Med varma grannrader 28/9 håller den: 0,74 °C, 3,7 % och 0,0 % på 14 594 punkter.</p>
+
+      <h4>Vägpunktsgrinden: 23/9 mot 28/9</h4>
+      <div class="tabell">
+        <table>
+          <thead><tr><th>Kandidat</th><th class="tal">A1</th><th class="tal">A2</th><th class="tal">A3</th><th>Dom</th></tr></thead>
+          <tbody>
+            <tr><td colspan="5" class="litet">23/9, 712 stationer, 8 132 punkter, halva grannraderna saknades (#324)</td></tr>
+            <tr class="vald"><td><b>Rå avståndsviktning</b> (vald)</td><td class="tal">0,71 °C</td><td class="tal">3,8 % ± 0,4</td><td class="tal">0,0 %</td><td><span class="dom klarar">klarar</span></td></tr>
+            <tr><td>Rå + höjdkorrektion</td><td class="tal">0,74 °C</td><td class="tal">4,7 % ± 0,5</td><td class="tal">0,0 %</td><td><span class="dom oavgjort">oavgjort</span></td></tr>
+            <tr><td>Interpolerad offset</td><td class="tal">0,88 °C</td><td class="tal">9,5 %</td><td class="tal">0,0 %</td><td><span class="dom faller">faller</span></td></tr>
+            <tr><td>Rå, <i>utan</i> vakter</td><td class="tal">1,11 °C</td><td class="tal">9,1 %</td><td class="tal">3,1 %</td><td><span class="dom faller">faller</span></td></tr>
+            <tr><td colspan="5" class="litet">28/9, 715 stationer, 14 644 punkter, varma grannrader sedan 25/9</td></tr>
+            <tr class="fallen"><td><b>Rå avståndsviktning</b> (i skuggan)</td><td class="tal">0,82 °C</td><td class="tal">6,9 % ± 0,4</td><td class="tal">0,0 %</td><td><span class="dom faller">faller</span></td></tr>
+            <tr><td>Rå + höjdkorrektion</td><td class="tal">0,82 °C</td><td class="tal">7,1 % ± 0,4</td><td class="tal">0,0 %</td><td><span class="dom faller">faller</span></td></tr>
+            <tr><td>Interpolerad offset</td><td class="tal">0,92 °C</td><td class="tal">9,7 % ± 0,5</td><td class="tal">0,0 %</td><td><span class="dom faller">faller</span></td></tr>
+            <tr><td>Inlärd offset (taket, grind A)</td><td class="tal">0,74 °C</td><td class="tal">3,7 % ± 0,3</td><td class="tal">0,0 %</td><td class="litet">jämförelse</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="chart" id="c-band-grov">
+        <div class="chart-title">Rå avståndsviktning: grova fel per avstånd till närmaste station (A2), krav ≤ 5 %</div>
+        <div class="legend"><span><i class="k-a"></i>23/9, halva grannraderna saknades</span><span><i class="k-b"></i>28/9, varma grannrader</span></div>
+        <div class="rull"><svg viewBox="0 0 640 250" role="img" aria-label="Grova fel per avståndsband. 23 september: 0,9, 1,1, 5,0 och 4,0 procent. 28 september: 1,4, 7,8, 8,0 och 7,0 procent."></svg></div>
+      </div>
+      <div class="chart" id="c-band-mae">
+        <div class="chart-title">Rå avståndsviktning: medelfel per avstånd till närmaste station (A1), krav ≤ 1,0 °C</div>
+        <div class="legend"><span><i class="k-a"></i>23/9</span><span><i class="k-b"></i>28/9</span></div>
+        <div class="rull"><svg viewBox="0 0 640 250" role="img" aria-label="Medelfel per avståndsband. 23 september: 0,73, 0,55, 0,73 och 0,72 grader. 28 september: 0,82, 0,81, 0,84 och 0,82 grader."></svg></div>
+      </div>
+      <p>Medelfelet håller kravet i alla band båda gångerna. Det är de grova felen som ändrats: bortom 7 km ligger de nu på 7–8 %. I bandet 7–15 km bar vakterna 23/9 hela skillnaden, 2,68 °C och 24,9 % grova fel före mot 0,55 °C och 1,1 % efter, fast vakterna bara tog 874 + 1 961 + 2 553 av 337 096 rader (#324).</p>
+
+      <h4>Det som ströks efter mätning, och det som nu måste läsas om</h4>
+      <ul>
+        <li><b>SMHI:s luftstationer som extra ankare.</b> På samma 1 918 punkter steg medelfelet från 1,05 till 1,20 °C. De 352 punkter som bara fanns tack vare SMHI hade 2,36 °C (#119).</li>
+        <li><b>Inlärd stationsoffset.</b> Den utgick 23/9 eftersom den inte tillförde något mot den råa viktningen, 0,72 mot 0,71 °C (#324). Körningen 28/9 pekar åt andra hållet: 3,7 % grova fel med offset mot 6,9 % utan.</li>
+        <li><b>Höjdkorrektion.</b> 28/9 hjälper den inom 7 km (0,59 mot 0,82 °C) och i bandet 7–15 km (0,74 mot 0,81) men stjälper bortom 20 km (0,86 mot 0,82 °C). Den empiriska temperaturgradienten är 0,63 °C per 100 m, både ur 3 476 par 12/9 och ur 3 261 par 28/9. Frågan läses om 23/10 (#357).</li>
+      </ul>
+
+      <h4>Grind B:s underlag</h4>
+      <p>23/9: 4 varv, 371 provpunkter, 5 holdout-rader. 24/9: 31 varv, 2 488 provpunkter, 117 holdout-rader, 0 facithändelser, alltså C1 0 av 20 och C2 0 av 30 (#327, #333). Inga episoder har uppstått, eftersom ingen station har varit kall. Grinden skriver bara antal till domen.</p>
+    </div></details>
+  </section>
+
+  <section class="del" id="d-frysklass">
+    <div class="del-huvud"><span class="nr">5.2</span><h3>Frysklassningen</h3><span class="lage arkiv">mäts i arkivet</span><span class="lager">kort #103</span></div>
+    <p><b>Mäter:</b> om modellen kan säga <i>fryser</i> eller <i>fryser inte</i> rätt även när den inte kan ange graderna exakt.</p>
+    <div class="nyckel">
+      <div><b>0</b><span>punkter med frys vid 0 °C (24/9)</span></div>
+      <div><b>1 099</b><span>punkter över 44 stationer</span></div>
+      <div><b>27</b><span>kombinationer i svepet</span></div>
+      <div><b>≤ 1 %</b><span>farliga fel tillåtna</span></div>
+    </div>
+    <p><b>Nytta:</b> kan bli en konfidenshöjare som ger längre förvarning till en varning som redan vilar på en mätning. Den utlöser aldrig själv.</p>
+    <details><summary>Hur den mäter</summary><div class="inne">
+      <ul>
+        <li>Svepet: klassgräns 0 · +0,5 · +1,0 °C, osäkerhetszon ±0 · ±0,5 · ±1,0 °C och längsta ankaravstånd 15 · 20 · 50 km, alltså 27 kombinationer.</li>
+        <li>Inom zonen avstår modellen. Ett <i>farligt fel</i> är när modellen säger "fryser inte" och mätningen ligger på eller under gränsen.</li>
+        <li>Krav: träff ≥ 95 %, farliga fel ≤ 1 %, täckning ≥ 70 %, minst 500 punkter över 20 stationer varav minst 100 med uppmätt frys, och ±1,96 SE.</li>
+        <li>Körs av sig själv när minst 50 stationer haft ytan ≤ 0 °C, högst var sjunde dygn.</li>
+      </ul>
+    </div></details>
+    <details><summary>Siffror och beräkningar</summary><div class="inne">
+      <ul>
+        <li>12/9: 709 stationer, 210 punkter över 16 stationer, 0 med frys. Ingen dom (#137).</li>
+        <li>24/9: 712 stationer, 207 647 avläsningar, 1 099 punkter över 44 stationer, 0 med frys vid 0 °C. Ingen dom (#331).</li>
+        <li>Frysklassningen prövar grind A:s offsetmodell, medan skuggan kör rå viktning. En dom skulle alltså gälla en modell som inte körs, om inte frågan i 5.1 avgörs först.</li>
+      </ul>
+    </div></details>
+  </section>
+
+  <section class="del" id="d-tathet">
+    <div class="del-huvud"><span class="nr">5.3</span><h3>Stationstätheten</h3><span class="lage arkiv">mätt</span><span class="lager">#55 · #60c · #120</span></div>
+    <p><b>Mäter:</b> hur långt det är från vägnätet till närmaste station, alltså hur mycket av vägen prognoslagret måste täcka.</p>
+    <div class="nyckel">
+      <div><b>6,8 km</b><span>median från huvudvägnätet till station</span></div>
+      <div><b>12,6 %</b><span>av Norrlands vägnät mer än 20 km bort</span></div>
+      <div><b>738 av 744</b><span>väglagskameror sitter vid en station</span></div>
+    </div>
+    <p><b>Nytta:</b> visar att luckan ligger i inlandet, inte vid gränsen, och att kamerorna ger bildfacit men inga nya mätpunkter.</p>
+    <details><summary>Siffror och beräkningar</summary><div class="inne">
+      <div class="tabell">
+        <table>
+          <thead><tr><th>Vad</th><th>Tal</th></tr></thead>
+          <tbody>
+            <tr><td>Nationellt, median till station</td><td>6,8 km; andel mer än 20 km bort 4,7 % (#55)</td></tr>
+            <tr><td>Norrland</td><td>9,2 km; 12,6 % mer än 20 km bort (#55)</td></tr>
+            <tr><td>Med 431 finska stationer</td><td>12,6 → 11,5 % mer än 20 km bort</td></tr>
+            <tr><td>Med 1 104 norska stationer</td><td>ingen ändring (#60c)</td></tr>
+            <tr><td>Kameror</td><td>738 av 744 vid en station; 6 längre än 1 km bort</td></tr>
+            <tr><td>SMHI:s luftstationer</td><td>235 av 1 003, median 17 km från en VViS-station (#120)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="litet">Mätt stickprovsvis var 2 km över de 818 väglagssegmenten, 1–2 september. Skevheten syns i grind A: 5 344 av 7 356 punkter låg 22/9 i bandet mer än 20 km bort.</p>
+    </div></details>
+  </section>
+
+  <h2>6. Utveckling (L3)</h2>
+
+  <section class="del" id="d-trend">
+    <div class="del-huvud"><span class="nr">6.1</span><h3>Trenden</h3><span class="lage arkiv">mäts i arkivet</span><span class="lager">kort #88</span></div>
+    <p><b>Mäter:</b> hur snabbt vägytan kyls eller värms i fönster om 15, 30 och 60 minuter. Fallande mot noll är förvarningen om svartis. Stigande genom +1 °C är ett skäl att tystna tidigare.</p>
+    <div class="nyckel">
+      <div><b>19 469</b><span>kandidater i trendarkivet (24/9)</span></div>
+      <div><b>47</b><span>frostnätter på 26 stationer, ingen dom (24/9)</span></div>
+      <div><b>11 317 = 11 317</b><span>TypeScript och Postgres valde samma rader (22/9)</span></div>
+      <div><b>144</b><span>kombinationer i svepet</span></div>
+    </div>
+    <p><b>Nytta:</b> tid. En varning kan komma innan ytan når noll. Svepet väljer trösklarna, och lutningen är "faller"-delen i efterhalkan.</p>
+    <details><summary>Hur den mäter</summary><div class="inne">
+      <ul>
+        <li><b>Kandidat:</b> ytan ligger mellan +1 och +6 °C och har fallit minst 0,4 °C i något av fönstren. Fallet är fönstrets första värde minus nuvärdet, avrundat till tusendels grad.</li>
+        <li><b>Trendens egen vakt:</b> minst tre mätningar i fönstret och inget hopp över 3 °C mellan två rader. Därtill givarvakten, en daggpunkt som finns, yta − dagg ≥ −5 °C, radvakten och karantänen.</li>
+        <li><b>Stigande halvan</b> har samma villkor med en höjning på minst 0,4 °C, sedan 25/9 (#368).</li>
+        <li>Lägsta yta inom 90 minuter fylls i efterhand. Arkivet sparar mätvärden, aldrig en dom.</li>
+      </ul>
+      <div class="tabell">
+        <table>
+          <thead><tr><th>Svep</th><th>Värden</th></tr></thead>
+          <tbody>
+            <tr><td>Fönster</td><td>15 · 30 · 60 min</td></tr>
+            <tr><td>Fall</td><td>0,4 · 0,6 · 0,8 · 1,2 °C</td></tr>
+            <tr><td>Daggpunktsgap</td><td>≤ 0 · 0,5 · 1,0 · 2,0 °C</td></tr>
+            <tr><td>Startband</td><td>+1…+3 · +1…+4 · +1…+6 °C</td></tr>
+            <tr><td>Nära miss</td><td>0,3 · 0,5 · 1,0 °C</td></tr>
+            <tr><td>Utfallsfönster</td><td>60 · 90 · 120 min</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><b>Krav.</b> T-A: skillnaden mellan träff och falsklarm ska synas mellan frostnätter och andra nätter, i båda halvorna av underlaget, med minst 30 frostnätter och 20 stationer, och en fysikkontroll (kallast kl 03–07, klara nätter). T-B: mervärde ≥ 20 %, nettonytt ≥ 5 %, falsklarm ≤ 25 %. Om ytan kom inom 0,5 °C från noll inom 90 minuter räknas det som en risk som inte föll ut, inte som ett falsklarm. T-C: minst 40 facit, 15 frostnätter, 3 län och högst 25 % från en station.</p>
+    </div></details>
+    <details><summary>Siffror och beräkningar</summary><div class="inne">
+      <ul>
+        <li>13/9: 3 851 kandidater i TypeScript, 4 713 i SQL. 862 rader valdes bara i SQL, eftersom <span class="mono">4,8 − 4,4</span> blir 0,39999999999999947 i binärt flyttal men 0,4 i Postgres. Efter avrundning: 4 713 mot 4 713 (#170).</li>
+        <li>22/9: driftvakten jämförde sju dygn, 11 317 rader på båda sidor och noll skillnader (#302).</li>
+        <li>12/9: 2 912 stationsnätter, 17 frostnätter på 7 stationer. 24/9: 3 765 stationsnätter, 47 frostnätter på 26 stationer. Ingen dom någon av gångerna (#113, #331). Svepets träffar visas inte förrän domspärren släpper (#278).</li>
+        <li>24/9: 19 469 kandidater. 25/9: 654 stigande kandidater vid 41 stationer på 12 timmar, flest kl 05–08.</li>
+      </ul>
+    </div></details>
+  </section>
+
+  <section class="del" id="d-efterhalka">
+    <div class="del-huvud"><span class="nr">6.2</span><h3>Efterhalkan</h3><span class="lage skugga">körs i skuggan</span><span class="lager">sedan 16/9 · #186 · #222</span></div>
+    <p><b>Mäter:</b> den klassiska efterhalkan, där regnet slutar och ytan sedan faller mot noll. Skuggvarvet loggar per station de råa fält som betans villkor ska läsa, och en uppspelning räknar ur arkivet när betan skulle ha talat.</p>
+    <div class="nyckel">
+      <div><b>35</b><span>rader med innehåll i skuggloggen (senast 22/9)</span></div>
+      <div><b>2</b><span>episoder på 14 dygn där betan skulle talat (25/9)</span></div>
+      <div><b>+1…+3 °C</b><span>startband, fall ≥ 0,8 °C på 30 min, regn inom 2 h</span></div>
+      <div><b>januari</b><span>första domen</span></div>
+    </div>
+    <p><b>Nytta:</b> vinterns enda regel som kan nå rösten, som märkt beta i november: <i>"Halkvakt tror: frysrisk framöver"</i>. Den fyller hålet att motorns fukt bara betyder nederbörd just nu.</p>
+    <details><summary>Hur den mäter</summary><div class="inne">
+      <ul>
+        <li>Per station i ruttens ruta (±0,05°, ungefär 5 km) sparas ytan, fukten, timmar sedan regn, fallet över 15, 30 och 60 minuter, och om motorn larmade. Loggen innehåller ingen tröskel.</li>
+        <li>Uppspelningen: blöt betyder regn senaste 2 timmarna; en episod är stationens första ögonblick per natt, middag till middag svensk tid; facit är en omklassning till halka inom 5 km. Utfallet är blindat till domen.</li>
+        <li>Krav: loggen ska bära nätter, inte enstaka ögonblick, innan något mer byggs (Axel 16/9). Domen i januari kräver nettonytt ≥ 5 % och högst 25 % tillkomna falsklarm, och minst 30 nätter med regn följt av frost vid 20 stationer, 40 facit, 15 frostnätter och 3 län.</li>
+        <li>Själva motorregeln är inte byggd. Den är Axels bygge och väntar på att loggen bär nätter.</li>
+      </ul>
+    </div></details>
+    <details><summary>Siffror och beräkningar</summary><div class="inne">
+      <p>Uppspelningen räknar bara hur ofta varje variant skulle ha talat. Om det var rätt läses först vid domen.</p>
+      <div class="tabell">
+        <table>
+          <thead><tr><th>Variant, 14 dygn</th><th class="tal">20/9 stationsdygn</th><th class="tal">20/9 ögonblick</th><th class="tal">25/9 episoder</th><th class="tal">25/9 ögonblick</th></tr></thead>
+          <tbody>
+            <tr class="vald"><td><b>Betans villkor</b> (yta +1…+3, blöt, faller)</td><td class="tal">1</td><td class="tal">3</td><td class="tal">2</td><td class="tal">4</td></tr>
+            <tr><td>utan villkoret blöt</td><td class="tal">7</td><td class="tal">10</td><td class="tal">12</td><td class="tal">27</td></tr>
+            <tr><td>utan villkoret faller</td><td class="tal">9</td><td class="tal">201</td><td class="tal">–</td><td class="tal">–</td></tr>
+            <tr><td>utan faller och blöt</td><td class="tal">–</td><td class="tal">–</td><td class="tal">204</td><td class="tal">7 380</td></tr>
+            <tr><td>startband +1…+6</td><td class="tal">5</td><td class="tal">13</td><td class="tal">–</td><td class="tal">–</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="litet">Källor #244 och #366. Utan villkoren talar regeln hundratals gånger, med dem en handfull. Det är skälet till att kombinationen prövas som helhet (avsnitt 8.2). Skuggloggen: första raden 16/9; 2 658 körningar på sju dygn gav 5 station-ögonblick (#223); 35 rader till 22/9 (#331); 27/9 fanns inga kalla stationer att logga.</p>
+    </div></details>
+  </section>
+
+  <section class="del" id="d-rimfrost">
+    <div class="del-huvud"><span class="nr">6.3</span><h3>Rimfrosten</h3><span class="lage arkiv">mäts i arkivet</span><span class="lager">kort #46</span></div>
+    <p><b>Mäter:</b> is utan nederbörd. Vägytan är kallare än luftens daggpunkt och under noll, en klar natt. Motorn är blind här, eftersom den kräver nederbörd för att räkna vägen som fuktig.</p>
+    <div class="nyckel">
+      <div><b>0</b><span>episoder, Finland 30 dygn (24/9)</span></div>
+      <div><b>0 av 53</b><span>kandidater överlevde äkthetsvillkoret (4/9)</span></div>
+      <div><b>≥ 200</b><span>stationstimmar krävs för en dom</span></div>
+    </div>
+    <p><b>Nytta:</b> fångar svartis en klar natt där motorn tiger. Klarar den blir den en andra gren i frysrisken, ingen ny farotyp. Ett nej är också ett svar.</p>
+    <details><summary>Hur den mäter</summary><div class="inne">
+      <ul>
+        <li>Villkoret: yta ≤ daggpunkt + M och yta ≤ Y. Svep: M 0 · +0,5 · +1,0 °C, Y 0 · +1 °C, uthållighet 30 · 60 min, sikt och molnklass som konfidens och filter.</li>
+        <li>Daggpunkten levereras färdig av Trafikverket och Fintraffic. Ingen egen formel används.</li>
+        <li>Vakten är tredelad och får aldrig mjukas upp: givarvakten, yta − dagg ≥ −5 °C och relativ fuktighet ≥ 90 %. Därtill radvakten och karantänen.</li>
+        <li>Krav: ≥ 200 stationstimmar, ≥ 20 stationer, ≥ 40 % med kallaste stunden kl 03–07, klara nätter fyrar minst dubbelt så ofta som mulna, ingen station över 20 %. Därefter nettonytt ≥ 5 % och falsklarm ≤ 25 %.</li>
+      </ul>
+    </div></details>
+    <details><summary>Siffror och beräkningar</summary><div class="inne">
+      <ul>
+        <li>4/9: 58 kandidater, varav 53 från tre trasiga stationer (Ollsta, Storvik, Bolhyttan) med yta − dagg på −28 till −49 °C. Med äkthetsvillkoret överlevde 0 av 53.</li>
+        <li>12/9: 0 rader i Finland, eftersom fuktigheten saknades. Ett tyst filter, rättat samma dag: fuktigheten hämtas sedan dess från 505 av 528 finska stationer (#137, #138).</li>
+        <li>24/9: Finland, 30 dygn, 39 244 rader, 419 stationer efter vakten, 0 episoder. Oavgjort (#331).</li>
+      </ul>
+    </div></details>
+  </section>
+
+  <section class="del" id="d-overgang">
+    <div class="del-huvud"><span class="nr">6.4</span><h3>Övergångarna</h3><span class="lage arkiv">mäts i arkivet</span><span class="lager">kort #89</span></div>
+    <p><b>Mäter:</b> om en väg som nyss var blöt fortfarande är blöt när den fryser. Motorns fukt betyder nederbörd just nu. Regeln vidgar den med regnhistorik.</p>
+    <div class="nyckel">
+      <div><b>76 %</b><span>av regnstoppen hade mätarregn kvar vid omslaget</span></div>
+      <div><b>35 min</b><span>median som mätaren står kvar</span></div>
+      <div><b>22</b><span>användbara regnstopp per dygn</span></div>
+      <div><b>Ö-A</b><span>passerad 12/9 <span class="dom klarar">klarar</span></span></div>
+    </div>
+    <p><b>Nytta:</b> samma larm, oftare rätt. I tre av fyra regnstopp tappar motorn fukten medan mätaren fortfarande visar regn.</p>
+    <details><summary>Hur den mäter</summary><div class="inne">
+      <p><b>Blöt</b> = fukt nu, eller regn över en minsta mängd inom N timmar, eller radar över r inom N timmar. <b>Frysrisk</b> = yta ≤ 1 °C (bro 3 °C) och blöt. Varje källa prövas för sig, och givarvakten gäller.</p>
+      <div class="tabell">
+        <table>
+          <thead><tr><th>Svep</th><th>Värden</th></tr></thead>
+          <tbody>
+            <tr><td>N</td><td>1 · 2 · 3 · 4 h</td></tr>
+            <tr><td>SMHI-varning som förlängning</td><td>av · 2 · 4 · 6 h</td></tr>
+            <tr><td>Minsta regn</td><td>&gt; 0 · ≥ 0,2 · ≥ 0,5 mm per 30 min</td></tr>
+            <tr><td>Radar r</td><td>0,1 · 0,5 · 2 mm/h</td></tr>
+            <tr><td>Utfallsfönster</td><td>60 · 120 · 180 min</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><b>Krav:</b> Ö-B nettonytt ≥ 5 % och högst 25 % tillkomna fyrningar som pris; Ö-C minst 30 nätter med regn följt av frost vid 20 stationer; Ö-D läses inom sju dygn efter frosten.</p>
+    </div></details>
+    <details><summary>Siffror och beräkningar</summary><div class="inne">
+      <div class="tabell">
+        <table>
+          <thead><tr><th>Ö-A, 12/9</th><th class="tal">Krav</th><th class="tal">Utfall</th></tr></thead>
+          <tbody>
+            <tr><td>Regnstopp med mätarregn vid omslaget</td><td class="tal">&gt; 50 %</td><td class="tal">76 % (120 av 157)</td></tr>
+            <tr><td>Hur länge mätaren står kvar</td><td class="tal">median &gt; 15 min</td><td class="tal">35 min</td></tr>
+            <tr><td>Användbara regnstopp per dygn</td><td class="tal">≥ 10</td><td class="tal">22</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>157 användbara regnstopp av 1 971 omslag. Fuktigheten efter regn var 90 % i median efter en timme och 95 % efter fyra, så ett villkor på fuktighet ströks.</li>
+        <li>Oljefilmen, att första regnet efter torka gör vägen hal, ströks: 55 torrperioder gav 6 olyckor mot kravet 15.</li>
+      </ul>
+    </div></details>
+  </section>
+
+  <section class="del" id="d-alder">
+    <div class="del-huvud"><span class="nr">6.5</span><h3>Väglagets ålder</h3><span class="lage obyggd">fastställd, obyggd</span><span class="lager">kort #151</span></div>
+    <p><b>Mäter:</b> om en stående halkklassning motsägs av mätningarna, alltså om vintern tagit slut på just den vägen. Frågan är inte om klassningen är gammal utan om världen säger emot.</p>
+    <div class="nyckel">
+      <div><b>0 av 818</b><span>segment med vinterkod 12/9</span></div>
+      <div><b>0</b><span>omklassningar till halka på 14 dygn (20/9)</span></div>
+      <div><b>≥ 100</b><span>fall krävs för en dom</span></div>
+    </div>
+    <p><b>Nytta:</b> färre onödiga halkvarningar där vintern är slut. Riktningen är farlig, eftersom den bestämmer när vi får tiga, och därför är taket hårt. Att inte göra något är ett fullgott svar.</p>
+    <details><summary>Hur den mäter</summary><div class="inne">
+      <ul>
+        <li>R1 tystar när N stationer inom R haft ytan ≥ T i minst H timmar. R2 kräver dessutom att klassningen är minst D dygn gammal. En ren åldersgräns förkastades före mätning.</li>
+        <li>Svep: T 2 · 5 · 8 °C, H 2 · 3 · 6 h, N 1 · 3, R 50 km, D 1 · 3 · 7 dygn. Facit är operatörens nästa omklassning.</li>
+        <li>Krav: minst 70 % rätt, minst 5 % effekt, högst 10 % fel och minst 100 fall; minst 20 fall per vintermånad. Att tysta utan skuggkörning är aldrig tillåtet.</li>
+        <li>Appens åldersfilter är något annat: är snapshoten 45 minuter gammal tas halka och frysrisk bort, och efter 2 timmar olyckor och vilt.</li>
+      </ul>
+    </div></details>
+  </section>
+
+  <h2>7. Tillstånd (L2)</h2>
+
+  <section class="del" id="d-tillstand">
+    <div class="del-huvud"><span class="nr">7.1</span><h3>Tillståndsskattaren</h3><span class="lage drift">i drift</span><span class="lager">#167 · #341 · #342</span></div>
+    <p><b>Mäter:</b> om vägen är blöt, torr eller okänd per avsnitt och timme. Sedan 24/9 publiceras också en nivå med bevis per station i snapshoten: väta 0–4, mängd, radar och frysläge. Rösten läser den inte.</p>
+    <div class="nyckel">
+      <div><b>96,0 %</b><span>när radarn ser regn håller stationen med</span></div>
+      <div><b>39,9 %</b><span>när stationen ser regn håller radarn med</span></div>
+      <div><b>13,1 %</b><span>av segmenttimmarna har radarn en åsikt</span></div>
+      <div><b>0</b><span>stationer med väta över noll 25/9</span></div>
+    </div>
+    <p><b>Nytta:</b> indata till försprånget, där nivå 2 kräver väta ≥ 3, och till efterhalkan. Den bärande regeln är att frånvaro av regn inte är detsamma som torrt.</p>
+    <details><summary>Hur den mäter</summary><div class="inne">
+      <ul>
+        <li>Blöt betyder stationsregn eller radar över r inom N timmar. Svep: N 1 · 2 · 3 · 4 h, regn &gt; 0 · 0,2 · 0,5 mm per 30 min, r 0,1 · 0,5 · 2 mm/h. Väta är antalet N i svepet som ger blött, 0–4.</li>
+        <li>Ett värde utanför svepen avvisas.</li>
+        <li>Radarns del av beviset är ännu tom, eftersom kopplingen mellan station och radarsegment inte är byggd.</li>
+      </ul>
+    </div></details>
+    <details><summary>Siffror och beräkningar</summary><div class="inne">
+      <div class="tabell">
+        <table>
+          <thead><tr><th>7 367 segmenttimmar där båda har en åsikt (13/9, #167)</th><th class="tal">Timmar</th></tr></thead>
+          <tbody>
+            <tr><td>Båda blöta</td><td class="tal">2 338</td></tr>
+            <tr><td>Bara radarn blöt</td><td class="tal">97</td></tr>
+            <tr><td>Bara stationen blöt</td><td class="tal">3 520</td></tr>
+            <tr><td>Båda torra</td><td class="tal">1 412</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="litet">96,0 % = 2 338 / 2 435 och 39,9 % = 2 338 / 5 858. Radarn är alltså precis men inte känslig. 818 segment, median 6,7 km till närmaste station, p90 15,2 km, längst 48,5 km. Bevisbäraren 25/9: 26 av 26, 24 av 24 och 17 av 17 väderpunkter bar sitt bevis i varje timme, med väta över noll hos 0.</p>
+    </div></details>
+  </section>
+
+  <section class="del" id="d-nedtyp">
+    <div class="del-huvud"><span class="nr">7.2</span><h3>Nederbördstypen</h3><span class="lage arkiv">mäts i arkivet</span><span class="lager">kort #45 · #361</span></div>
+    <p><b>Mäter:</b> om det faller regn, slask eller snö, också där ingen givare ser det, ur våtbulbstemperaturen.</p>
+    <div class="nyckel">
+      <div><b>32 · 7</b><span>slask- och snörader i september, av 340 000</span></div>
+      <div><b>1 av 100</b><span>snöepisoder till domens underlag</span></div>
+      <div><b>14 av 40</b><span>slaskepisoder</span></div>
+      <div><b>1/3 2027</b><span>tidigast dom</span></div>
+    </div>
+    <p><b>Nytta:</b> ett tillägg till halkans fara som kan stärka eller förlänga en varning, aldrig en egen röst. Underkylt regn syns inte i våtbulben, så den farligaste formen står utanför.</p>
+    <details><summary>Hur den mäter</summary><div class="inne">
+      <div class="formel">
+        <div class="mono">eₛ(x) = 6,112 · exp(17,62·x / (243,12 + x))<br>e = eₛ(Tw) − 6,53·10⁻⁴ · (1 + 0,000944·Tw) · p · (T − Tw),  p = 1 013,25 hPa</div>
+        <p class="litet">Våtbulbstemperaturen Tw löses ur luftens temperatur T och fuktighet med WMO:s psykrometerekvation, genom halvering. Stulls förenklade formel föll: den ligger 0,2–0,7 °C för lågt nära noll.</p>
+      </div>
+      <ul>
+        <li>Klass: Tw ≤ L ger snö, L &lt; Tw &lt; U slask och Tw ≥ U regn. Svep: L 0 · +0,5 °C, U +1,5 · +2,0 °C.</li>
+        <li>Vid en station med typgivare är sorten en mätning. Mellan stationerna viktas upp till fem stationer inom 50 km med 1/km.</li>
+        <li>Facit är givaren själv och SMHI:s rådande väder inom 5 km (10 km om färre än 20 par), ±10 minuter.</li>
+        <li>Krav för att givaren ska tros: typsträng hos ≥ 70 % av stationerna, ≥ 70 % överensstämmelse med SMHI, och regn när SMHI säger snö eller slask ≤ 15 %. Domens underlag: ≥ 100 snöepisoder, ≥ 40 slaskepisoder, ≥ 30 stationer. Modellen vid och mellan stationerna har egna gränser i tröskeldokumentet.</li>
+      </ul>
+    </div></details>
+    <details><summary>Siffror och beräkningar</summary><div class="inne">
+      <div class="tabell">
+        <table>
+          <thead><tr><th>Givarens värde, 26/8–25/9</th><th class="tal">Rader</th><th class="tal">Stationer</th></tr></thead>
+          <tbody>
+            <tr><td>no (uppehåll)</td><td class="tal">177 888</td><td class="tal">756</td></tr>
+            <tr><td>rain</td><td class="tal">144 908</td><td class="tal">756</td></tr>
+            <tr><td>saknas</td><td class="tal">17 269</td><td class="tal">134</td></tr>
+            <tr><td>sleet</td><td class="tal">32</td><td class="tal">14</td></tr>
+            <tr><td>snow</td><td class="tal">7</td><td class="tal">1</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="litet">Spärrkörningen 25/9: 596 rader i jämförelsebandet, varav 244 med minst två grannar, 43 SMHI-par inom 5 km och 2 057 partimmar (#361). Ordet <i>no</i> betyder torrt. Att läsa fältet som sant eller falskt gör varje torr timme till regn, och 38 546 rader med <i>no</i> hade dessutom regnflaggan på i september.</p>
+    </div></details>
+  </section>
+
+  <section class="del" id="d-radar">
+    <div class="del-huvud"><span class="nr">7.3</span><h3>Nederbördsradarn</h3><span class="lage drift">i drift</span><span class="lager">kort #43</span></div>
+    <p><b>Mäter:</b> nederbörd per vägsegment ur SMHI:s radar, ungefär en bild i timmen. Rader sparas bara där radarn ser nederbörd.</p>
+    <div class="nyckel">
+      <div><b>0,65</b><span>kalibreringsfaktor mot stationerna, median över 7 931 par</span></div>
+      <div><b>91 %</b><span>täckning: 14 190 av 15 540 stationsregn</span></div>
+      <div><b>≥ 2,0 mm/h</b><span>öppnar ett regnsegment</span></div>
+      <div><b>70 min</b><span>därefter är radarn tyst</span></div>
+    </div>
+    <p><b>Nytta:</b> vattenplaningens utlösare mellan stationerna och radarvarianten i kombinationen. Vid kalla stationer var 15 av 115 blöta timmar (13,0 %) kända bara av radarn.</p>
+    <details><summary>Siffror och beräkningar</summary><div class="inne">
+      <div class="chart" id="c-radar">
+        <div class="chart-title">Andel radarceller som bekräftas av stationens nederbörd, per intensitetsband</div>
+        <div class="legend"><span><i class="k-a"></i>fönster 13/9, 7 dygn, 13 577 par</span><span><i class="k-b"></i>förskjutet fönster 12/9</span></div>
+        <div class="rull"><svg viewBox="0 0 640 240" role="img" aria-label="Bekräftelse per band: 42, 56, 77 och 82 procent i första fönstret, 39, 54, 73 och 79 procent i det andra."></svg></div>
+      </div>
+      <p>Kurvan stiger med intensiteten och står nästan still när underlaget byts ut. Faktorn blev 0,65 över 7 931 par och 0,66 över 8 198 i det förskjutna fönstret. Värdet 727,54 mm/h, som värdevakten hittade, gjorde att radarns maxfält spärrades. 20/9 skrevs 3 312 rader över 24 av 24 bilder, och radarsteget tar 4–5 sekunder (#243).</p>
+    </div></details>
+  </section>
+
+  <section class="del" id="d-vatten">
+    <div class="del-huvud"><span class="nr">7.4</span><h3>Vattenplaning</h3><span class="lage skugga">körs i skuggan</span><span class="lager">sedan 15/9 · kort #42 · #81</span></div>
+    <p><b>Mäter:</b> två spår. Stationsspåret prövade om grannstationernas regn förutsäger hur mycket det regnar där du kör, och är nedlagt. Radarspåret loggar vad rösten skulle ha sagt om vattenplaning ur radarn längs rutterna.</p>
+    <div class="nyckel">
+      <div><b>61 %</b><span>träff i stationsspåret, krav 70 % <span class="dom faller">faller</span></span></div>
+      <div><b>57 av 200</b><span>radarvarningar till domens underlag (25/9)</span></div>
+      <div><b>10 av 15</b><span>facit till underlaget</span></div>
+      <div><b>7</b><span>regndygn, kravet är 5</span></div>
+    </div>
+    <p><b>Nytta:</b> klarar radarspåret får rösten säga <i>"Vattenplaning framöver — sakta ner."</i>, placerat under halka och över vilt. Domen fälls när underlaget räcker, enligt tröskeldokumentet i november–december.</p>
+    <details><summary>Hur den mäter</summary><div class="inne">
+      <ul>
+        <li>Ett regnsegment är ett segment som inte är halkklassat, där radarn visat minst 2,0 mm/h de senaste 70 minuterna. Skuggvarvet kör motorns egna regler i en egen instans över regnsegmenten och loggar bilens position när rösten skulle ha talat.</li>
+        <li>Varningen döms mot närmaste station inom ±30 minuter. Tröskeln blir 2,0 / 0,65 ≈ 3,1 mm/h i stationens skala. En station som är igång men tyst inom ±3 timmar räknas som torr (#351).</li>
+        <li>Krav för stationsspåret: träff ≥ 70 % och falsklarm ≤ 25 % inom 10 km. Krav för radarspåret: falsklarm ≤ 20 %, missar ≤ 40 %, högst 3 varningar per rutt och regndygn. Underlaget: ≥ 200 varningar, ≥ 15 facit, ≥ 5 regndygn och ≥ 3 län. Till dess skrivs bara antal (#350).</li>
+      </ul>
+    </div></details>
+    <details><summary>Siffror och beräkningar</summary><div class="inne">
+      <div class="tabell">
+        <table>
+          <thead><tr><th class="tal">Stationsspåret</th><th class="tal">Punkter</th><th class="tal">Träff</th><th class="tal">Delvis</th><th class="tal">Falsklarm</th><th>Dom</th></tr></thead>
+          <tbody>
+            <tr><td class="tal">0,5 mm/h</td><td class="tal">3 594</td><td class="tal">61 ± 2 %</td><td class="tal">27 %</td><td class="tal">12 ± 1 %</td><td><span class="dom faller">faller</span></td></tr>
+            <tr><td class="tal">1 mm/h</td><td class="tal">2 495</td><td class="tal">54 ± 2 %</td><td class="tal">36 %</td><td class="tal">10 ± 1 %</td><td><span class="dom faller">faller</span></td></tr>
+            <tr><td class="tal">2 mm/h</td><td class="tal">1 266</td><td class="tal">41 ± 3 %</td><td class="tal">51 %</td><td class="tal">8 ± 2 %</td><td><span class="dom faller">faller</span></td></tr>
+            <tr><td class="tal">4 mm/h</td><td class="tal">510</td><td class="tal">28 ± 4 %</td><td class="tal">65 %</td><td class="tal">7 ± 2 %</td><td><span class="dom faller">faller</span></td></tr>
+            <tr><td class="tal">6 mm/h</td><td class="tal">216</td><td class="tal">20 ± 5 %</td><td class="tal">75 %</td><td class="tal">5 ± 3 %</td><td><span class="dom faller">faller</span></td></tr>
+            <tr><td class="tal">10 mm/h</td><td class="tal">53</td><td class="tal">11 ± 9 %</td><td class="tal">83 %</td><td class="tal">6 ± 6 %</td><td><span class="dom faller">faller</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="litet">30 dygn, 755 stationer, 68 967 avläsningar (#104). Grannarna vet med hög säkerhet att det regnar, 88 % träff eller delvis vid 0,5 mm/h, men inte hur mycket. Omkörningen 13/9 på 3 800 punkter gav samma bild. Domen bokfördes som ett nej och kravet flyttades inte.</p>
+      <p><b>Radarspåret, bara antal:</b> 15/9 5 varningar, 16/9 17 på 8 rutter. 25/9: 57 varningar, varav 41 mätbara och 16 utan station inom räckhåll; 98 olyckor inom 2 km från rutterna, varav 10 i regn, 4 torra och 84 omätbara; 7 regndygn. 21–24/9 blev det 1 varning på 108 radarutlösta segment, mot 28 på 693 veckan före.</p>
+    </div></details>
+  </section>
+
+  <section class="del" id="d-vind">
+    <div class="del-huvud"><span class="nr">7.5</span><h3>Vind och sikt</h3><span class="lage arkiv">mäts i arkivet</span><span class="lager">kort #90</span></div>
+    <p><b>Mäter:</b> byvind och sikt i två roller, dömda var för sig: som egen fara, och som något som gör halkan värre.</p>
+    <div class="nyckel">
+      <div><b>209 834</b><span>rader i senaste körningen (24/9, 14 dygn)</span></div>
+      <div><b>11</b><span>stationer med fysiskt omöjliga byvindar</span></div>
+      <div><b>2,23 ×</b><span>fler olyckor i bandet 10–15 m/s (12/9)</span></div>
+      <div><b>W-A</b><span>oavgjord <span class="dom oavgjort">oavgjort</span></span></div>
+    </div>
+    <p><b>Nytta:</b> faller den första grinden läggs kortet ner utan en rad kod. Klarar rollen som förvärrare förlänger den försprånget men höjer aldrig prioriteten.</p>
+    <details><summary>Hur den mäter</summary><div class="inne">
+      <ul>
+        <li>Indata: byvind (30-minutersmaximum), medelvind och sikt, mot olyckor i händelsearkivet.</li>
+        <li>Svep: byvind 15 · 18 · 21 · 25 m/s med tak 30 · 40 · 50; som förvärrare 10 · 13 · 16 m/s; sikt 200 · 300 · 500 m, som förvärrare 300 · 500 · 800 m; utfallsfönster 30 · 60 · 120 min.</li>
+        <li>Band: byvind under 10, 10–15, 15–20 och minst 20 m/s; sikt över 1 000, 500–1 000, 200–500 och under 200 m.</li>
+        <li>Sikten 20 000 m är en platshållare och räknas inte.</li>
+        <li>Krav för den första grinden: olycksfrekvensen stiger med bandet, högsta mot lägsta band minst 1,5 gånger, minst 500 stationstimmar och 20 olyckor i högsta bandet. Därefter falsklarm ≤ 20 %, missar ≤ 40 %, högst 3 varningar per rutt och blåsdygn.</li>
+      </ul>
+    </div></details>
+    <details><summary>Siffror och beräkningar</summary><div class="inne">
+      <ul>
+        <li>12/9, 14 dygn, 216 041 rader: sikten 20 000 m i 45 650 av cirka 92 000 rader. Bandet 10–15 m/s hade 89,5 olyckor per 1 000 stationstimmar mot 40,2, alltså 2,23 gånger, på 927 stationstimmar. Högsta vindbandet hade bara 36 stationstimmar.</li>
+        <li>13/9: byvindvakten diskade 9 av 42 stationer, som bar 46 av 110 stationstimmar över 15 m/s, varav 45 omöjliga.</li>
+        <li>24/9, 14 dygn, 209 834 rader: byvind i 99,3 % och sikt i 99,9 % av raderna, 11 stationer med omöjliga timmar, högsta byvind 87,7 m/s. 16 stationstimmar i högsta vindbandet och 243 i högsta siktbandet. Oavgjort (#331).</li>
+      </ul>
+    </div></details>
+  </section>
+
+  <section class="del" id="d-smhi">
+    <div class="del-huvud"><span class="nr">7.6</span><h3>SMHI-förstärkaren</h3><span class="lage arkiv">mäts i arkivet</span><span class="lager">kort #95 d</span></div>
+    <p><b>Mäter:</b> om en aktiv SMHI-varning för snö eller is säger något stationen inte redan sagt, för timmar som redan kvalificerar för frysrisk. Den kan aldrig skapa en ny varning.</p>
+    <div class="nyckel">
+      <div><b>0</b><span>vintervarningar i arkivet</span></div>
+      <div><b>126</b><span>varningar i 41 områden, 18/8–10/9</span></div>
+      <div><b>3</b><span>kvalificerande stationstimmar, 0 förstärkta</span></div>
+    </div>
+    <p><b>Nytta:</b> längre förvarning när SMHI och stationen är eniga. Enligt regel T6 får en prognos stärka eller förlänga, aldrig ensam utlösa.</p>
+    <details><summary>Hur den mäter</summary><div class="inne">
+      <div class="tabell">
+        <table>
+          <thead><tr><th>Svep</th><th>Värden</th></tr></thead>
+          <tbody>
+            <tr><td>Vilka varningar</td><td>snö och is · snö, is och isbildning · alla vinterkoder</td></tr>
+            <tr><td>Nivå</td><td>gul och uppåt · orange och uppåt · alla, också meddelanden</td></tr>
+            <tr><td>Yta nära noll</td><td>≤ 0 · ≤ 1 °C</td></tr>
+            <tr><td>Tid</td><td>giltighetsfönstret · ±0 · ±1 · ±3 h</td></tr>
+            <tr><td>Plats</td><td>inuti området · ≤ 10 km · ≤ 25 km</td></tr>
+            <tr><td>Effekt</td><td>bara mätning · försprång × 1,5 · × 2</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><b>Krav:</b> minst 200 stationstimmar och 20 områden, en förstärkt andel mellan 5 och 80 %, ingen enskild varning över 25 %; därefter minst 1,5 gånger längre förvarning; underlaget minst en vintermånad i minst 3 län.</p>
+    </div></details>
+    <details><summary>Siffror och beräkningar</summary><div class="inne">
+      <p>12/9, 30 dygn: 126 varningar i 41 områden, varav vind till havs 85, brandrisk 25, vattenbrist 10, regn 3 och översvämning 3. Noll snö och noll is. Oavgjort (#122). Giltighetstiden sparas sedan 13/9. SMHI:s varningar har inget öppet arkiv, så förstärkaren kan inte spelas upp på en passerad vinter.</p>
+    </div></details>
+  </section>
+
+  <h2>8. Allvar och röst (L5)</h2>
+
+  <section class="del" id="d-forsprang">
+    <div class="del-huvud"><span class="nr">8.1</span><h3>Försprånget</h3><span class="lage skugga">körs i skuggan</span><span class="lager">sedan 25/9 · kort #153 · #359</span></div>
+    <p><b>Mäter:</b> om en varning som vilar på en mätning kan sägas tidigare när faran är allvarligare. Samma ord, tidigare, utan att rösten blir pratsam eller tränger undan annat.</p>
+    <div class="nyckel">
+      <div><b>0</b><span>loggade rader, inga allvarliga faror än</span></div>
+      <div><b>846</b><span>väglagsrader i arkivet, alla på lägsta koden</span></div>
+      <div><b>45 · 60 · 90 s</b><span>förvarning som prövas</span></div>
+      <div><b>mars 2027</b><span>dom</span></div>
+    </div>
+    <p><b>Nytta:</b> klarar det får allvarlig halka längre förvarning. Faller det stannar förvarningen på 30 sekunder för alla.</p>
+    <details><summary>Hur den mäter</summary><div class="inne">
+      <ul>
+        <li><b>Nivå 2:</b> halt väglag med kod 3 eller 4, eller frysrisk med ytan ≤ 0 °C och väta ≥ 3 av 4. Allt annat är nivå 1 med dagens fart × 30 s.</li>
+        <li>Svepet 45 · 60 · 90 s motsvarar 1 125 · 1 500 · 2 250 m i 90 km/h. Värdet byts varje halvtimme.</li>
+        <li>Körs på minut 12 och 42 över samma rutter som huvudvarvet, men bara där en nivå 2-fara finns. Motorn körs två gånger på samma spår, en gång som i dag och en gång med längre förvarning, och båda loggas.</li>
+      </ul>
+      <p><b>Krav:</b> andelen nivå 2 mellan 5 och 50 %; median extra förvarning ≥ 15 s; undanträngning ≤ 2 % och noll olyckor; takten ökar högst 5 procentenheter; nya varningar ≤ 1 %; minst 60 nivå 2-varningar per svepvärde över 3 halkperioder i 3 län.</p>
+    </div></details>
+  </section>
+
+  <section class="del" id="d-kombination">
+    <div class="del-huvud"><span class="nr">8.2</span><h3>Kombinationen</h3><span class="lage arkiv">mäts i arkivet</span><span class="lager">kort #197 · #225 · #226</span></div>
+    <p><b>Mäter:</b> regler där delar ur olika lager måste tala samtidigt, först efterhalkan: ytan i frysbandet, blöt och fallande. Dokumentet bär också regeln för gemensam kalibrering och tröskelregeln T.</p>
+    <div class="nyckel">
+      <div><b>1 296</b><span>punkter i rutnätet av möjliga inställningar</span></div>
+      <div><b>48</b><span>går att spela upp ur skuggloggen</span></div>
+      <div><b>1/2 2027</b><span>den enda kalibreringen</span></div>
+      <div><b>jan · mars</b><span>domar</span></div>
+    </div>
+    <p><b>Nytta:</b> skyddar mot överanpassning. Varje del ska visa att den bär, och kalibrering och dom görs på skilda nätter.</p>
+    <details><summary>Hur den mäter</summary><div class="inne">
+      <ul>
+        <li><b>Grinden:</b> varje del ska göra resultatet sämre när den tas bort, utanför ±1,96 SE (mars). Mot dagens motor krävs nettonytt ≥ 5 % och högst 25 % tillkomna falsklarm (januari och mars).</li>
+        <li><b>Underlaget:</b> minst 30 nätter med regn följt av frost vid 20 stationer, 40 facit, 15 frostnätter, 3 län och ingen station över 25 %.</li>
+        <li><b>Kalibreringen (D1–D7):</b> delarnas trösklar ändras aldrig, bara värden ur deras svep väljs; startvärdena låses före första natten; kalibrering och dom på skilda nätter, den enda kalibreringen 1/2 på data från november till januari; vinnaren ska hålla i båda halvorna; alla prövade punkter redovisas.</li>
+        <li><b>Tröskelregeln T</b> (Axel 14/9): en storhet som inte kan motbevisas av en mätning får inte utlösa en varning. Extrapolation och interpolation utlöser inte. Minne av mätningar får utlösa. Prognoser får stärka, försvaga eller förlänga, aldrig ensamma utlösa.</li>
+      </ul>
+    </div></details>
+    <details><summary>Siffror och beräkningar</summary><div class="inne">
+      <p>Av rutnätets 1 296 punkter går 48 att spela upp ur skuggloggen; de övriga 1 248 ströks för vintern (#219). Uppspelningens antal står under efterhalkan (6.2). Radarkopplingen: 110 av 140 stationer har en väg inom 5 km, och 118 av 530 stationsdygn hade radarregn.</p>
+    </div></details>
+  </section>
+
+  <h2>9. Andra mätningar</h2>
+  <div class="par">
+    <div class="ruta">
+      <h4>Djur på vägen: Trafikverket mot Polisen</h4>
+      <p>På 14 dygn rapporterade Trafikverket 480 händelser, 474 med vägnummer och 437 (91 %) med djurslaget, med 1,8 minuters fördröjning i median till vårt arkiv. Polisen hade 11, placerade i länets mittpunkt. Det enda paret som gick att matcha rapporterades av Trafikverket 45 minuter före Polisen, och rösten bytte källa samma kväll (#316, #318).</p>
+    </div>
+    <div class="ruta">
+      <h4>Batteri och drift</h4>
+      <p>iPhone med skärmen släckt drog 78 → 71 % på en timme, alltså 7 % per timme mot gränsen 8 % (#382). September kostade 5 916 minuter i GitHub Actions, 31,33 USD, och kassavakten låg 1,8 % fel (#381).</p>
+    </div>
+  </div>
+
+  <h2>10. Hur mätningarna skyddas mot oss själva</h2>
+  <ul>
+    <li><b>Kraven skrivs först.</b> Tretton tröskeldokument är daterade innan mätningen eller koden de styr. En tröskel får skärpas men aldrig lättas när utfallet är sett.</li>
+    <li><b>Blindning.</b> Fram till domen redovisas bara antal. Betans regler döms i januari, kalibreringen görs i februari och prognoslagret döms i mars.</li>
+    <li><b>Samma motor överallt.</b> Server, Android och iOS måste klara 37 gemensamma testfall tecken för tecken.</li>
+    <li><b>Kontraktsgrinden.</b> 58 tal som finns i mer än en fil får inte glida isär.</li>
+    <li><b>Samma beslut i två språk.</b> TypeScript och Postgres räknade olika på <span class="mono">4,8 − 4,4</span>. Nu avrundas TypeScript-sidan före jämförelsen, och en driftvakt kör båda över samma fönster.</li>
+    <li><b>Grinden lånar grindens vakter.</b> En mätning som lyfts till grind får hela grindens urval, inte bara dess tal. Utan vakterna hade vägpunktsgrinden fallit redan 23/9.</li>
+  </ul>
+
+  <h2>11. Domkalendern</h2>
+  <div class="tabell">
+    <table>
+      <thead><tr><th>När</th><th>Vad</th></tr></thead>
+      <tbody>
+        <tr><td>Varje måndag</td><td>grind A, vägpunktsgrinden, vattenplaningens radarspår (bara antal)</td></tr>
+        <tr><td>Inom 7 dygn efter frost</td><td>trenden, rimfrosten, övergångarna, frysklassningen, vind och sikt; körs när minst 50 stationer haft ytan ≤ 0 °C</td></tr>
+        <tr><td>23/10</td><td>höjdkorrektionen läses om på fyra veckors fullständigt underlag</td></tr>
+        <tr><td>November–december</td><td>vattenplaningens radarspår, när underlaget räcker</td></tr>
+        <tr><td>November</td><td>efterhalkan som märkt beta, om skuggloggen bär nätter</td></tr>
+        <tr><td>Januari 2027</td><td>efterhalkans första dom</td></tr>
+        <tr><td>1 februari 2027</td><td>den gemensamma kalibreringen</td></tr>
+        <tr><td>Mars 2027</td><td>prognoslagrets grind B och C, försprånget, kombinationen, nederbördstypen (tidigast 1/3); kamerafacit öppnas</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Hittills finns inget vinterunderlag. Den 27/9 var 1 av 1 298 stationer kall, förarsvaren och missarna har inga riktiga poster, och kamerafacit har ingen halka. Mätningarna i september prövar metoden. Vintern prövar produkten.</p>
+  <hr>
+  <p class="litet">Källor: beslutsloggen (DECISIONS), tröskeldokumenten, systembeskrivningen, koden och veckokörningarnas loggar 28/9. Samma underlag som bilaga 3–8 till Skyltfondsansökan, men sidan är intern och innehåller opublicerade regelvärden. Alla tidpunkter avser 2026 om inget annat står.</p>
+</main>
+
+<script>
+(function () {
+  var NS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, parent, text) {
+    var n = document.createElementNS(NS, tag);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    if (text != null) n.textContent = text;
+    if (parent) parent.appendChild(n);
+    return n;
+  }
+  function fmt(v, d) { return v.toFixed(d).replace('.', ','); }
+  // Column with a 4px rounded data-end, square at the baseline.
+  function column(g, x, w, yTop, yBase, cls, tip) {
+    var r = Math.min(4, (yBase - yTop) / 2, w / 2);
+    var d = 'M' + x + ',' + yBase + ' V' + (yTop + r) + ' Q' + x + ',' + yTop + ' ' + (x + r) + ',' + yTop +
+            ' H' + (x + w - r) + ' Q' + (x + w) + ',' + yTop + ' ' + (x + w) + ',' + (yTop + r) + ' V' + yBase + ' Z';
+    var p = el('path', { d: d, class: cls }, g);
+    if (tip) p.setAttribute('data-tip', tip);
+    return p;
+  }
+  function chart(id, o) {
+    var box = document.getElementById(id); if (!box) return;
+    var svg = box.querySelector('svg');
+    var vb = svg.viewBox.baseVal, W = vb.width, H = vb.height;
+    var L = o.left || 44, R = W - 12, T = 18, B = H - 44;
+    var y = function (v) { return B - (v / o.max) * (B - T); };
+    var axis = el('g', { class: 'axis' }, svg);
+    o.ticks.forEach(function (t) {
+      el('line', { x1: L, x2: R, y1: y(t), y2: y(t), class: t === 0 ? 'base' : 'grid' }, axis);
+      el('text', { x: L - 6, y: y(t) + 4, 'text-anchor': 'end' }, axis, fmt(t, o.tickDec || 0) + o.unit);
+    });
+    if (o.threshold) {
+      var ty = y(o.threshold.v);
+      el('line', { x1: L, x2: R, y1: ty, y2: ty, class: 'troskel' }, svg);
+      var left = o.threshold.left;
+      el('text', { x: left ? L + 4 : R, y: ty - 5, 'text-anchor': left ? 'start' : 'end', class: 'troskel-text' }, svg, o.threshold.label);
+    }
+    var n = o.data.length, slot = (R - L) / n;
+    var series = o.data[0].v.length, bw = Math.min(24, (slot * 0.6) / series), gap = 2;
+    var marks = el('g', {}, svg);
+    o.data.forEach(function (d, i) {
+      var cx = L + slot * i + slot / 2, total = series * bw + (series - 1) * gap;
+      d.v.forEach(function (v, s) {
+        var x = cx - total / 2 + s * (bw + gap);
+        var cls = d.cls ? d.cls[s] : (s === 0 ? 'm-a' : 'm-b');
+        column(marks, x, bw, y(v), B, cls, d.tip ? d.tip[s] : null);
+        if (d.err && d.err[s]) {
+          var e = d.err[s], xm = x + bw / 2;
+          el('line', { x1: xm, x2: xm, y1: y(v + e), y2: y(v - e), class: 'err' }, marks);
+          el('line', { x1: xm - 4, x2: xm + 4, y1: y(v + e), y2: y(v + e), class: 'err' }, marks);
+          el('line', { x1: xm - 4, x2: xm + 4, y1: y(v - e), y2: y(v - e), class: 'err' }, marks);
+        }
+        if (!o.labelSeries || o.labelSeries.indexOf(s) >= 0) {
+          var top = d.err && d.err[s] ? y(v + d.err[s]) : y(v);
+          el('text', { x: x + bw / 2, y: top - 5, 'text-anchor': 'middle', class: 'val' }, marks, fmt(v, o.dec) + (o.valUnit != null ? o.valUnit : o.unit));
+        }
+      });
+      (Array.isArray(d.label) ? d.label : [d.label]).forEach(function (line, k) {
+        el('text', { x: cx, y: B + 16 + k * 13, 'text-anchor': 'middle', class: 'lbl' }, svg, line);
+      });
+    });
+    // Hover layer: one tooltip per chart, positioned inside the chart box.
+    var tip = document.createElement('div'); tip.className = 'tip'; tip.hidden = true; box.appendChild(tip);
+    svg.addEventListener('pointermove', function (ev) {
+      var t = ev.target.closest ? ev.target.closest('[data-tip]') : null;
+      if (!t) { tip.hidden = true; return; }
+      tip.textContent = t.getAttribute('data-tip'); tip.hidden = false;
+      var r = box.getBoundingClientRect(), x = ev.clientX - r.left + 12, yy = ev.clientY - r.top + 12;
+      tip.style.left = Math.min(x, r.width - tip.offsetWidth - 4) + 'px'; tip.style.top = yy + 'px';
+    });
+    svg.addEventListener('pointerleave', function () { tip.hidden = true; });
+  }
+
+  chart('c-grind', {
+    max: 12, ticks: [0, 4, 8, 12], unit: ' %', dec: 1, left: 46,
+    threshold: { v: 5, label: 'krav ≤ 5 %' },
+    data: [
+      { label: ['12/9', 'utan vakter'], v: [10.7], cls: ['m-faller'], tip: ['12/9 utan vakter: 10,7 % grova fel på 2 042 punkter. Faller.'] },
+      { label: ['12/9', 'givarvakten'], v: [5.1], err: [1.0], cls: ['m-oavgjort'], tip: ['12/9 med givarvakten: 5,1 % ± 1,0 på 1 943 punkter. Oavgjort.'] },
+      { label: ['21/9', 'utan två vakter'], v: [3.8], err: [0.5], cls: ['m-klarar'], tip: ['21/9: 3,8 % ± 0,5 på 5 745 punkter.'] },
+      { label: ['22/9', 'alla vakter'], v: [3.5], err: [0.4], cls: ['m-klarar'], tip: ['22/9 med alla vakter: 3,5 % ± 0,4 på 7 356 punkter. Klarad 23/9.'] },
+      { label: ['28/9', 'varma grannar'], v: [3.7], err: [0.3], cls: ['m-klarar'], tip: ['28/9 med varma grannrader: 3,7 % ± 0,3 på 14 594 punkter. Klarar.'] }
+    ]
+  });
+  var band = ['0–7 km', '7–15 km', '15–20 km', '> 20 km'];
+  var grov23 = [0.9, 1.1, 5.0, 4.0], grov28 = [1.4, 7.8, 8.0, 7.0];
+  chart('c-band-grov', {
+    max: 10, ticks: [0, 2, 4, 6, 8, 10], unit: ' %', valUnit: '', dec: 1, left: 46,
+    threshold: { v: 5, label: 'krav ≤ 5 %', left: true },
+    data: band.map(function (l, i) { return { label: l, v: [grov23[i], grov28[i]],
+      tip: [l + ', 23/9: ' + fmt(grov23[i], 1) + ' % grova fel', l + ', 28/9: ' + fmt(grov28[i], 1) + ' % grova fel'] }; })
+  });
+  var mae23 = [0.73, 0.55, 0.73, 0.72], mae28 = [0.82, 0.81, 0.84, 0.82];
+  chart('c-band-mae', {
+    max: 1.2, ticks: [0, 0.4, 0.8, 1.2], tickDec: 1, unit: '', dec: 2, left: 40,
+    threshold: { v: 1.0, label: 'krav ≤ 1,0 °C' },
+    data: band.map(function (l, i) { return { label: l, v: [mae23[i], mae28[i]],
+      tip: [l + ', 23/9: medelfel ' + fmt(mae23[i], 2) + ' °C', l + ', 28/9: medelfel ' + fmt(mae28[i], 2) + ' °C'] }; })
+  });
+  var rb = ['0,1–0,5 mm/h', '0,5–2 mm/h', '2–10 mm/h', '≥ 10 mm/h'], a = [42, 56, 77, 82], b = [39, 54, 73, 79];
+  chart('c-radar', {
+    max: 100, ticks: [0, 25, 50, 75, 100], unit: ' %', dec: 0, left: 46, labelSeries: [0],
+    data: rb.map(function (l, i) { return { label: l, v: [a[i], b[i]], tip: [l + ', fönster 13/9: ' + a[i] + ' %', l + ', fönster 12/9: ' + b[i] + ' %'] }; })
+  });
+
+  // One button opens or closes every details block; printing always opens them.
+  var knapp = document.getElementById('alla');
+  var alla = function () { return Array.prototype.slice.call(document.querySelectorAll('details')); };
+  knapp.addEventListener('click', function () {
+    var oppna = alla().some(function (d) { return !d.open; });
+    alla().forEach(function (d) { d.open = oppna; });
+    knapp.textContent = oppna ? 'Stäng alla detaljer' : 'Öppna alla detaljer';
+  });
+  window.addEventListener('beforeprint', function () { alla().forEach(function (d) { d.open = true; }); });
+})();
+</script>

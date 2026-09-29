@@ -431,6 +431,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **Flyttat 26/9 från *Axel — hösten (brainstorm 31/8)*** (femma åtta, DECISIONS #377): nästa steg är Bengts två minuter (*Visa introduktionen igen*).
 
 ### Claude — olåst
+- [ ] 📉 **#266 VÄGPUNKTSGRINDEN FÖLL 28/9 — LÄS POPULATIONEN FÖRE DOMEN** (hittat 29/9, bedömningen §4.2). Måndagskörningen gav rå
+  avståndsviktning A2 6,9 % ± 0,4 (krav 5 %) mot 3,8 % 23/9; grind A med offset klarade 3,7 %. Första körningen med varma grannrader.
+  Kör samma prov på fönstret efter 25/9 mot före, läs tillbaka 6–7/9 ur exporten, och lägg fram vad som ändrade utfallet.
+  **Verify:** en tabell per fönster med A1–A3 för rå och offset, och en rad i DECISIONS först efter Bengts läsning.
+- [ ] 🧹 **#267 FYND UNDER GENOMGÅNGEN AV SKUGGMOTORN 29/9** (inga beslut, bara rättelser). Bedömningen §5.1 säger att S2 och S3 är
+  obyggda och att försprångets regel är obyggd — S2 byggdes 24/9 (#341) och försprånget körs i skuggan sedan 25/9 (#359). #321 säger att
+  felet stiger monotont med avståndet; loggen 22/9 ger 0,43 · 0,79 · 0,76 · 0,72 °C. Värdevakten har inte körts sedan 15/9, och spannet
+  −60…+60 °C släpper igenom ytgivarnas −50 °C. `engine.ts` rad 5 och TROSKLAR-OVERGANGAR §7 säger fortfarande 45 s.
+  **Verify:** raderna rättade med beviset på raden, och en värdevaktskörning på main.
 - [ ] 🔤 **#264 KÄLLBEVAKNINGEN GÖR Å, Ä OCH Ö TILL MELLANSLAG** (fynd 28/9 under issue #638/#639, DECISIONS #391).
   `scripts/trv-bevakning.ts` rad 93 byter varje HTML-entitet (`&[a-z#0-9]+;`) mot ett blanksteg. Polisen.se kodar å, ä och ö som
   entiteter, så bevakningen läser *"API ver polisens h ndelser"* och *"Regler f r ppna data"* — och ett nyckelord med å, ä eller
