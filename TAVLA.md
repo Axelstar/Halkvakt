@@ -221,6 +221,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **Flyttat 26/9 från *Claude — olåst*** (femma åtta, DECISIONS #377): nästa steg är Play-kontot och testtelefonen.
   ↪ **29/9: rubriken överspelad (DECISIONS #402).** Android bär 0.3.9 (18) som iOS sedan 26/9 (#377, #379) och Play-kontot finns sedan 20/9. Kvar är bara Play-vägen: enhetsverifieringen i Play Console, första uppladdningen med Data safety-formuläret ifyllt likadant som filen (#214), slutet test 14 dygn med tolv testare, produktion tidigast november. Verify-raden gäller oförändrad.
 ### Bengt
+
+- [ ] 📐 **#270 PROGNOSLAGRET EFTER PREMISSMÄTNINGARNA — BENGTS VAL a–h** (30/9, `docs/PROGNOSLAGRET-2026-09-30.md`; DECISIONS
+  #405–#408; bedömningen §4.2). Domen står (fallen 28/9, bekräftad 30/9 och på ärliga rader). Bandet 0–7 km håller i båda
+  länderna men kan inte dömas med svenska stationer (15 av spärrens 20); Finland ger 108 stationer och 2,3 % [1,1–3,5]; frysflaggan
+  vid 1 °C missas i 57 % även inom 7 km, 6 % med en grads marginal; ANOM och regimen (vind + natt) föll. 🔑 Bengts val: (a) veckokörning
+  med fast läsdatum 24/11 · (b) precisera grinden till ärliga rader och dom per band med RÅ+HÖJD · (c) inget · (d) egen spärr för
+  0–7 km · (e) ÅDT-uttag ur Lastkajen · (f) finska utfallet som stöd · (g) mät flaggmarginalen · (h) molnmängd in i arkivet.
+  Rekommendation: a, g nu; b när intervallet inte spänner över tröskeln; h före vintern. *Verify:* varje valt steg har egen
+  DECISIONS-post före körning; läsdatum i posten; inga trösklar rörda.
 - [ ] 🏛️ **#265 FÖRENINGEN HALKVAKT BILDAS 29/9 — SÖKANDE I SKYLTFONDEN SOM FÖRENING UNDER BILDANDE** (Bengt 29/9, DECISIONS #400,
   ersätter #396:s oktoberplan). Bengt ordförande, Axel kassör, Harald Lagerlöf ledamot och sekreterare, Susanne Horstmann revisor.
   Handlingarna ifyllda i `docs/forening/` och Drive: stadgar (29/9), kallelse, protokoll med § 16 om Skyltfonden, medlemsförteckning,
@@ -340,6 +349,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   novemberbeslutet om segmentmotorn.
   Verify: svar från Trafikverket inskrivet här · upplägget i DECISIONS före körningen · tabellen *del × ensam × ovanpå de andra*
   i bedömningen.
+  ↪ **30/9 (nattens mätningar, `docs/PROGNOSLAGRET-2026-09-30.md`):** två tillägg till ansökan om Axel hinner — termisk kartering som
+  rad i AP2 (kort #271, inom AP2:s 70 000 så att 413 000 står) och ett samråd med Trafikverket om fordonsdata för utvärdering, utan
+  beroende (text i chatten 30/9). Ingen av dem krävs för att ansökan ska stå.
 
 *↩︎ = ÅTERSTÄLLT 10/9. Korten nedan föll av tavlan 8/9 20:43 (commit 99473c7: Claudes tavelsynk av
 "Axels nästa steg" svalde 174 rader, inkl. tre Claude-sektioner). Inget av dem har bevis på klart sedan dess.*
@@ -590,6 +602,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **SERVERN I DRIFT 26/9 07:00Z** (DECISIONS #380): migrationen sql/038 via dbknapp 36225368861 (tabellen finns, RLS på, anon utan SELECT och INSERT), deploy av `facit-svar` 36225396540 från main, provmiss mot den riktiga funktionen ⇒ 204 och en rad med `prov = true` (dbknapp 36225453047; 0 riktiga), två felaktiga missar ⇒ 400, och ett provsvar på den gamla vägen ⇒ fortfarande 204.
 
 ### Claude — låst (väntar på nyckel)
+
+- [ ] 🌡️ **#271 TERMISK KARTERING — FACIT MELLAN STATIONERNA** (30/9, `docs/PROGNOSLAGRET-2026-09-30.md` §4; DECISIONS #406/#407
+  visade att vägen mellan stationerna saknar facit och att målplatsens egen särart är felets största del). En kalibrerad infraröd
+  vägytetermometer med positionslogg i projektets bil, tre till fem klara kalla nätter per vinter på testförarnas rutter: uppmätt
+  yttemperatur var femtionde meter, facit för bandet 0–7 km och kalibrering av platsens offset. Loggern är egen utrustning, inte
+  appen — invarianten berörs inte, sägs öppet. Simulering ur höjd, skuggning, trädtäcke, vatten och trafik (kandidat KOVARIAT, egen
+  post) kan bygga men inte validera. 🔑 Bengts och Axels ja, utrustning (Axel prissätter klass), och en rad i Skyltfondens AP2 om
+  det hinns 30/9 — annars projektets egna pengar. *Verify:* första karteringsnatten loggad i arkivet med sträcka, datum och
+  antal punkter; en DECISIONS-post som registrerar den som facitkälla innan den används i en dom.
 
 - [x] 📣 **#261 KÄLLVAKTENS FALSKA POSITIVER — bedömningen matchar mot sidans möbler** (fynd 28/9 under
   mätvaktsfelet, DECISIONS #384). 🔑 ~~NYCKEL: Bengts ja.~~ ✅ **JA 28/9 — BYGGT SAMMA KVÄLL.**

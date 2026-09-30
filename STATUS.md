@@ -2116,3 +2116,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 30/9 (Claude): regimgrinden körd SE (36671071146) och FI (36671072792), gröna: hypotesen höll inte — rå faller i båda läsbara
   regimerna i Sverige, stilla natt är bättre i Finland, blåsigt tomt; bandet 0–7 km håller överallt. Molnmängd saknas i arkivet.
   Bokfört i DECISIONS #408, tavlan #269, bedömningen §4.2 (fråga h). Trösklar orörda.
+- 30/9 (Claude, Bengts *"gör en sammanfattning … och spara så att vi inte tappar det"*): `docs/PROGNOSLAGRET-2026-09-30.md`
+  (körningar, tal, slutsatser, väg framåt, val a–h). Kort #270 (Bengts val) och #271 (termisk kartering) på tavlan, #265 ↪ om
+  ansökans två tillägg. Bedömningen (7) och §4.2 länkar dit.
