@@ -1833,7 +1833,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   bekräftade fallet (rå 7,9 % ± 0,4). Analysen fann fyra trubbiga premisser (oviktad population, blandat arkiv, tandlöst A3,
   oberoendeantagande) och ett modellfel (gradient och offset blandas). Mätningen: bara rader efter 25/9, vägviktat och per band,
   blockbootstrap, frysflaggan som mått, kandidaten ANOM, golvet på täta stationspar. Ingen tröskel rörs, grindens dom står.
-  *Verify:* körningen `matning-vagpunkt-premisser` grön med självtest, utfallet i DECISIONS #405 samma dag.
+  *Verify:* körningen `hojd-prov` med `dagar: premisser` grön med självtest, utfallet i DECISIONS #405 samma dag.
 
 ---
 

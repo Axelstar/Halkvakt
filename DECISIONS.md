@@ -6115,7 +6115,7 @@ frysgränsen och blir 0,0 % i en säsong utan minusgrader, medan frysflaggan bor
 oberoende punkter. Och modellen blandar den storskaliga gradienten (jämn) med platsens offset (lokal) — interp-kandidaten, som antog
 att offseten är rumsligt jämn, blev sämre än rå, och höjden (första platsegenskapen) halverade felet inom 7 km.
 
-**Beslut.** En mätning på arkivet, `scripts/matningar/vagpunkt-premisser-2026-09-30.ts` (knappen `matning-vagpunkt-premisser`),
+**Beslut.** En mätning på arkivet, `scripts/matningar/vagpunkt-premisser-2026-09-30.ts` (knappen `hojd-prov` med `dagar: premisser`),
 registrerad här INNAN den körs, med exakt dessa delar:
 1. Population: bara mål från 2026-09-25 07:30Z; vägpunktsgrindens vakter och urval i övrigt (#75, radvakten, karantänen, mål ≤ +5 °C).
 2. Vägviktning med bandandelarna ur prognoslagrets provpunkter längs de svenska skuggrutterna (som `vagpunkt-population.ts`), redovisat

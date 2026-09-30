@@ -2095,5 +2095,5 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   8400-arbetsbladet, FINANSIERING, de två alternativen märkta ersatta, arbetsbladet omskrivet för V2, ändringslistan omskriven.
 - 30/9 (Claude, Bengts *"gör en omkörning av den test som gjordes den 28/9"* och *"gör en ny mätning"*): vägpunktsgrinden omkörd
   (36664018960): FALLEN igen, rå 7,9 % ± 0,4. Analys av matematiken i chatten; förregistrerad mätning skriven (DECISIONS #405,
-  kort #269, `scripts/matningar/vagpunkt-premisser-2026-09-30.ts`, knappen `matning-vagpunkt-premisser`); självtest grönt,
+  kort #269, `scripts/matningar/vagpunkt-premisser-2026-09-30.ts`, knappen `hojd-prov` med `dagar: premisser`); självtest grönt,
   kontraktsgrinden 58/58 med tre kopior av grind A:s tal. Utfallet fylls i #405 efter körningen.
