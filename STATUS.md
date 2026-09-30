@@ -2097,3 +2097,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   (36664018960): FALLEN igen, rå 7,9 % ± 0,4. Analys av matematiken i chatten; förregistrerad mätning skriven (DECISIONS #405,
   kort #269, `scripts/matningar/vagpunkt-premisser-2026-09-30.ts`, knappen `hojd-prov` med `dagar: premisser`); självtest grönt,
   kontraktsgrinden 58/58 med tre kopior av grind A:s tal. Utfallet fylls i #405 efter körningen.
+- 30/9 (Claude): premissmätningen körd (36666151860, grön): rå faller vägviktat 7,7 %, rå+höjd oavgjord 5,2 % [3,6–6,9], ANOM föll
+  15,2 %, offset (taket) 3,2 %; golvet vid 5 km 15 % på sex par. Utfall i DECISIONS #405, kort #269 KLART, bedömningen (7) och §4.2
+  (Bengts val a/b/c). Trösklar orörda. CI kör inte på grenen utan PR; kontraktsgrinden och självtesterna körda lokalt och i flödet.

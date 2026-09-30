@@ -61,8 +61,10 @@ annat (#388).
 (3) veckoavläsning, (4) kritiska vägen med datum hos Axel; korten bär inte sitt mål än.
 
 **(7) Prognoslagret 30/9.** Omkörningen av vägpunktsgrinden bekräftade fallet (rå 7,9 % ± 0,4 på 17 839 punkter; körning 36664018960).
-Analysen av matematiken (Bengts fråga) fann fyra trubbiga premisser och ett modellfel; en förregistrerad mätning på arkivet körs
-samma dag (DECISIONS #405, kort #269). Trösklarna rörs inte. Inget ändras för appen eller ansökan: ändringslistans punkt A står.
+Analysen av matematiken (Bengts fråga) fann fyra trubbiga premisser och ett modellfel; den förregistrerade mätningen (DECISIONS #405,
+kort #269, körning 36666151860) visar att ingen premissrättning räddar en vägpunktskandidat på ärliga rader: rå faller vägviktat
+(7,7 %), rå+höjd är oavgjord (5,2 % [3,6–6,9]), ANOM föll, offset (taket) klarar. Golvet vid 5 km 15 % på sex par. Trösklarna rörs
+inte. Inget ändras för appen eller ansökan: ändringslistans punkt A står. Bengts beslut i §4.2.
 
 **Vart vi är på väg:** `docs/MALET.md` §4 (milstolparna) och §5 (kritiska vägen).
 
@@ -415,6 +417,7 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 
 | Beslut | Vem | Rekommendation | Kort |
 | :-- | :-- | :-- | :-- |
+| **Vägpunktsgrinden efter premissmätningen (DECISIONS #405, 30/9): vad görs med RÅ+HÖJD?** Mätningen på ärliga rader gav rå+höjd vägviktat 5,2 % [3,6–6,9] (oavgjort) med fem dygns underlag, rå 7,7 % (faller), ANOM 15,2 % (faller), offset (taket) 3,2 %. Tre val: (a) låt premissmätningen gå varje måndag bredvid grinden tills sextio ärliga dygn finns (~24/11) och läs då — en rad i hojd-prov.yml, inga trösklar rörs; (b) precisera vägpunktsgrinden till ärliga rader och vägviktad dom per band, med RÅ+HÖJD som kandidat, genom en DECISIONS-post (precisering enligt TROSKLAR-SKUGGAN §5, ingen lättnad) — då döms den i november på samma tal; (c) ingenting: skuggan mäter, domen i mars. Golvmätningen bör vidgas till ≤ 8 km i samma varv | Bengt | (a) nu; (b) först när intervallet inte längre spänner över tröskeln | #269 |
 | ~~**Vägpunktsgrinden FÖLL i måndagskörningen 28/9 — vad gäller för skuggan?**~~ ✅ **AVGJORT 29/9 (Bengt, DECISIONS #399):** bokförd FALLEN; #324:s KLARAR vilade på ett censurerat arkiv (rå 11,0 % efter 25/9 med varma grannar mot 4,4 % utan; frysflaggan missad i 70 % för rå, 47 % för offset; vägviktat 7,0 % mot 3,0 %). Skuggan fortsätter som mätning, ingen mer byggtid på prognoslagret i höst, populationsläsningen i måndagsserien | Bengt | ✅ | #266 |
 | ~~**Föreningen Halkvakt: sex beslut före kallelsen 5/10, och spår A eller B**~~ ✅ **AVGJORT 29/9 (Bengt, DECISIONS #400):** föreningen bildas 29/9 kl 19 med Bengt ordförande, Axel kassör, Harald ledamot och sekreterare, Susanne Horstmann revisor; Föreningen Halkvakt; 0 kr; ordförande och kassör var för sig; **spår A** — sökande i Skyltfonden som förening under bildande, ansökan 30/9. Kvar att fylla i på mötet: sätet, tid och plats, personnummer · **29/9 kväll (DECISIONS #404): sökande i Skyltfonden blev ändå Bengt som privatperson; föreningen bildas som planerat, § 16 omskrivet till en notering** | Bengt | ✅ | #265 |
 | **Granskningen av V2 (Bengts fråga 29/9: saknas något, affärshemligheter, vision och marknadsföring?)** `docs/skyltfonden-2026-09-28/GRANSKNING-V2-2026-09-29.md`, också i Drive-mappen Skyltfonden. Tio rättelser före sändning (viktigast: V2 bär septemberbilden av prognoslagret, inte 28/9-utfallet #399; bilaga 7 bär beslutsnummer, filnamn och chattcitat; vem som klassar bilderna sägs olika i bilaga 1 och 7). Saknas: vision (förslag till "Vart Halkvakt är på väg" under Efter projektet) och "Så når appen förarna" (ansökan förutsätter några hundra förare, rekryterar 40–70). Affärshemligheter: inga; det som vore det står inte där. Personnummer och bankkonto på sida 1 bör sekretessprövas om privatperson | Bengt och Axel | ta rättelse 1 först; sätt talen i spridningsstycket; vision in | #265 |
