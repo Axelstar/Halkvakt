@@ -379,8 +379,8 @@ const andelarA = BANDS.map((_, i) => narm.filter((k) => bandAv(k) === i).length 
 const seg = await pool.query(`
   SELECT ST_X(q.p) AS lon, ST_Y(q.p) AS lat
   FROM road_conditions rc,
-       LATERAL (SELECT ST_LineInterpolatePoint(rc.geom, f) AS p
-                FROM generate_series(0::float, 1::float, ${PROVSTEG_M}::float / GREATEST(ST_Length(rc.geom::geography), ${PROVSTEG_M}::float)) f) q
+       LATERAL (SELECT ST_LineInterpolatePoint(rc.geom, f::float) AS p
+                FROM generate_series(0::numeric, 1::numeric, (${PROVSTEG_M}::numeric / GREATEST(ST_Length(rc.geom::geography), ${PROVSTEG_M})::numeric)) f) q
   WHERE NOT rc.deleted AND rc.geom IS NOT NULL`);
 await pool.end();
 const statArr = [...stations.values()];
