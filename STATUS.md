@@ -2111,3 +2111,5 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 30/9 (Claude): finska körningen (36670176981, grön): 427 stationer, mild censur (89,5 % varma hinkar); bandet 0–7 km dömbart med
   108 stationer, rå 2,3 % klarar; golvet 3 km 3,9 % på 40 par; frysflaggan missas 57 % inom 7 km, 6 % med en grads marginal.
   Bokfört i DECISIONS #407, tavlan #269, bedömningen §4.2 (frågor f och g). Trösklar orörda.
+- 30/9 (Claude, Bengts *"kör regimgrinden också"*): DECISIONS #408 förregistrerad; del 11 i skriptet (regim vid målstationen ur
+  medelvind och solhöjd, per regim och band med spärr och bootstrap), självtest med solhöjd och regim grönt. Körs SE och FI.

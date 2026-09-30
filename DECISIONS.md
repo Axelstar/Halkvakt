@@ -6268,3 +6268,24 @@ missen till 6 % i samma band; priset i falska flaggor är inte mätt och måste 
 står. Frågorna till Bengt (bedömningen §4.2): spärren för det svenska bandet 0–7 km i ljuset av det finska utfallet, och om
 flaggmarginalen ska mätas som nästa förregistrerade del.
 
+## #408 (30/9 2026) Regimgrinden i premissmätningen — samma mått delade på stilla natt, blåsigt och övrigt, registrerad innan körningen
+
+**Bengts order 30/9** (*"kör regimgrinden också"*), efter frågan om termisk kartering går att simulera: det billigaste steget är
+att mäta NÄR terrängen biter, inte hur mycket. Den svensk-finska skillnaden (rå 11,4 % mot 3,7 %) är sannolikt terräng gånger regim.
+
+**Beslut, registrerat innan körningen.** Del 11 i samma skript, körs på både det svenska (`premisser`) och det finska
+(`premisser-fi`) arkivet:
+- Regimen sätts vid MÅLSTATIONEN i hinken: R1 STILLA NATT = medelvind ≤ 2 m/s och solhöjd < −6° (USNO-approximation, självtestad);
+  R2 BLÅSIGT = medelvind ≥ 5 m/s oavsett tid; R3 ÖVRIGT = resten; R0 OKÄND = medelvind saknas.
+- Medelvinden (`wind_speed_ms`, värdevaktens spann 0–60) används, inte byvinden: det är byvindsgivaren som är trasig (bilaga 8,
+  TROSKLAR-VIND-SIKT §3), och medelvinden var normal vid spikarna. Molnmängd finns inte i arkivet; natten står i dess ställe.
+- Per regim och kandidat: ALLA och per band, A1/A2 mot bootstrapintervallet med grindens spärr (≥ 500 punkter, ≥ 20 stationer),
+  frysflaggan bredvid. Kandidater, trösklar, band, frö: oförändrade (#405–#407).
+- Frågan som avgörs: klarar rå viktning (och rå+höjd) i R2 och R3 och faller bara i R1? Då är en regimstyrd prognos möjlig:
+  visas när den kan, tiger när den inte kan. Faller den i alla regimer är terrängen inte förklaringen.
+
+**Vad som inte ändras.** Trösklarna, grinden, dess dom. Regimgränserna (2 och 5 m/s, −6°) är mätningens, inte produktens, och
+står här så att de inte kan flyttas efter utfallet.
+
+**Utfall.** *(fylls i efter körningarna, i samma post)*
+

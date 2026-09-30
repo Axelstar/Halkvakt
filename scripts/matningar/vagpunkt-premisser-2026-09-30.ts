@@ -31,6 +31,12 @@
 //      finska arkivet bytte aldrig regel (sparar ≤ 5 °C, nederbörd eller Δ ≥ 0,5 °C), så andelen varma hinkar skrivs ut och
 //      läses FÖRE talen. Vakterna #75 och radvakten gäller; karantänen räknas i det finska arkivet; den långsamma vakten är
 //      svensk och saknas. Täckning bara A (finska skuggrutter) om prognospunkter finns; ingen B eller C. Läsning, ingen dom.
+//  11. REGIMGRINDEN (DECISIONS #408, Bengt: "kör regimgrinden också") — samma mått delade på regim vid målstationen i hinken:
+//      R1 STILLA NATT = medelvind ≤ 2 m/s och solhöjd < −6°; R2 BLÅSIGT = medelvind ≥ 5 m/s; R3 ÖVRIGT = resten;
+//      R0 OKÄND = medelvind saknas. Medelvinden (wind_speed_ms, spann i värdevakten) används, inte byvinden — det är
+//      byvindsgivaren som är trasig (bilaga 8). Molnmängd finns inte i arkivet; natten ersätter den. Per regim: per band
+//      och ALLA, med spärren och bootstrapen som förut. Frågan: klarar rå viktning när terrängen inte biter, och faller den
+//      bara när den gör det? Då kan prognosen visas när den kan och tiga när den inte kan.
 // Utfallet skrivs som LÄSNING (KLARAR / OAVGJORT / FALLER), inte som dom. Fler kandidater ger fler chanser att klara av
 // slump — därför står listan i DECISIONS innan talen finns.
 //
@@ -60,8 +66,10 @@ const GOLV_KM = [3, 5];
 const PROVSTEG_M = 2000;
 const ADT_FIL = new URL("../../data/adt-provpunkter.json", import.meta.url);
 
-type Station = { id: string; lon: number; lat: number; elev: number | null; yta: Map<number, number>; luft: Map<number, number> };
-type Rad = { station: string; dygn: number; measured: number; ankKm: number; geoKm: number; raw: number; hojd: number | null; anom: number | null; offset: number | null };
+type Station = { id: string; lon: number; lat: number; elev: number | null; yta: Map<number, number>; luft: Map<number, number>; vind?: Map<number, number> };
+type Rad = { station: string; dygn: number; measured: number; ankKm: number; geoKm: number; regim: number; raw: number; hojd: number | null; anom: number | null; offset: number | null };
+const REGIMER = ["R0 okänd", "R1 stilla natt", "R2 blåsigt", "R3 övrigt"];
+const VIND_STILLA = 2, VIND_BLASIGT = 5, NATT_SOLHOJD = -6;
 type Pick = (r: Rad) => number | null;
 type Population = { namn: string; andelar: number[]; n: number };
 const KANDIDATER: { namn: string; pick: Pick }[] = [
@@ -82,6 +90,25 @@ function pairStats(s: Map<number, number>, a: Map<number, number>): { sum: numbe
     if (w !== undefined) { sum += small === s ? v - w : w - v; n++; }
   }
   return { sum, n };
+}
+
+/** Solhöjd i grader (USNO:s approximation, fel under en grad) vid en position och en unixtid. */
+function solhojd(lat: number, lon: number, tUnix: number): number {
+  const rad = Math.PI / 180, d = (tUnix - 946728000) / 86400; // dygn sedan J2000
+  const g = (357.529 + 0.98560028 * d) * rad, q = 280.459 + 0.98564736 * d;
+  const L = (q + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g)) * rad, e = (23.439 - 0.00000036 * d) * rad;
+  const ra = Math.atan2(Math.cos(e) * Math.sin(L), Math.cos(L)), dec = Math.asin(Math.sin(e) * Math.sin(L));
+  const gmst = ((18.697374558 + 24.06570982441908 * d) % 24 + 24) % 24;
+  const ha = ((gmst + lon / 15) * 15) * rad - ra;
+  return Math.asin(Math.sin(lat * rad) * Math.sin(dec) + Math.cos(lat * rad) * Math.cos(dec) * Math.cos(ha)) / rad;
+}
+/** Regimen vid målstationen i hinken (del 11). */
+function regimAv(s: Station, t: number): number {
+  const v = s.vind?.get(t);
+  if (v === undefined || v === null || Number.isNaN(v)) return 0;
+  if (v >= VIND_BLASIGT) return 2;
+  if (v <= VIND_STILLA && solhojd(s.lat, s.lon, (t + 0.5) * BUCKET_S) < NATT_SOLHOJD) return 1;
+  return 3;
 }
 
 /** Som hojd-prov.ts evaluate() för RÅ, RÅ+HÖJD och OFFSET; ANOM därtill. Bara mål från och med `fran` (hink).
@@ -124,7 +151,7 @@ function evaluate(stations: Map<string, Station>, fran: number): Rad[] {
         const v = 1 / Math.max(km, 1) ** 2;
         wA += v; pA += v * (av - al);
       }
-      rader.push({ station: s.id, dygn: Math.floor(t * BUCKET_S / 86400), measured, ankKm: ank, geoKm, raw: pR / wR,
+      rader.push({ station: s.id, dygn: Math.floor(t * BUCKET_S / 86400), measured, ankKm: ank, geoKm, regim: regimAv(s, t), raw: pR / wR,
         hojd: wH > 0 ? pH / wH : null, anom: wL > 0 && wA > 0 ? pL / wL + pA / wA : null, offset: wO > 0 ? pO / wO : null });
     }
   }
@@ -284,6 +311,30 @@ function bandandelar(punkter: { lon: number; lat: number; vikt: number }[], stat
   return Object.assign(summor.map((x) => tot ? x / tot : 0), { bortom: allt ? bortom / allt : 0 });
 }
 
+/** Del 11: samma mått per regim — ALLA och per band, med spärren och bootstrapen. */
+function regimer(rader: Rad[], rnd: () => number) {
+  const antal = REGIMER.map((_, i) => rader.filter((r) => r.regim === i).length);
+  console.log(`\nREGIMGRINDEN (DECISIONS #408) — punkter per regim: ` + REGIMER.map((n, i) => `${n} ${antal[i]}`).join(" · ") +
+    ` (stilla ≤ ${VIND_STILLA} m/s och solhöjd < ${NATT_SOLHOJD}°; blåsigt ≥ ${VIND_BLASIGT} m/s; medelvind vid målstationen)`);
+  for (const k of KANDIDATER) {
+    console.log(`  ${k.namn}`);
+    for (let ri = 1; ri < REGIMER.length; ri++) {
+      const del = rader.filter((r) => r.regim === ri);
+      const { kluster, stationer } = aggregera(del, k.pick);
+      if (!kluster.length) { console.log(`    ${REGIMER[ri].padEnd(15)} inga punkter`); continue; }
+      const band = BANDS.map((_, i) => summa(kluster.map((x) => x[i])));
+      const alla = matt(summa(band)), st = new Set(stationer.flatMap((x) => [...x])).size;
+      const boot = bootstrap(kluster, [], rnd);
+      const nog = alla.n >= MIN_POINTS_FOR_VERDICT && st >= MIN_STATIONS_FOR_VERDICT;
+      const a1 = boot.alla("mae"), a2 = boot.alla("gross");
+      const perBand = BANDS.map((b, i) => { const m = matt(band[i]); return m.n ? `${b[0]} ${(100 * m.gross).toFixed(1)} % (${m.n} p, ${stationer[i].size} st)` : `${b[0]} —`; }).join(" · ");
+      console.log(`    ${REGIMER[ri].padEnd(15)} n ${String(alla.n).padStart(5)} st ${String(st).padStart(3)} · A1 ${alla.mae.toFixed(2)} ${iv(a1, (x) => x.toFixed(2))} → ${nog ? lasning(a1[0], a1[1], A1_MAX_MAE) : "spärr"}` +
+        ` · A2 ${pc(alla.gross)} ${iv(a2, pc)} → ${nog ? lasning(a2[0], a2[1], A2_MAX_GROSS) : "spärr"} · missad flagga ${pc(alla.miss)} (${alla.nStat}) · falsk ${pc(alla.falsk)} (${alla.nMod})`);
+      console.log(`      per band A2: ${perBand}`);
+    }
+  }
+}
+
 // ── Självtest: kända sanningar för de nya delarna.
 if (process.argv.includes("--sjalvtest")) {
   const rnd = slump(1);
@@ -332,7 +383,16 @@ if (process.argv.includes("--sjalvtest")) {
   const km2lon = (km: number) => 13 + km / (111.32 * Math.cos(56 * Math.PI / 180));
   const and = bandandelar([{ lon: km2lon(2), lat: 56, vikt: 1 }, { lon: km2lon(10), lat: 56, vikt: 1 }, { lon: km2lon(30), lat: 56, vikt: 2 }, { lon: km2lon(80), lat: 56, vikt: 9 }], stat);
   if (!(Math.abs(and[0] - 0.25) < 1e-9 && Math.abs(and[1] - 0.25) < 1e-9 && and[2] === 0 && Math.abs(and[3] - 0.5) < 1e-9)) { console.error(`SJÄLVTEST FALLERAR (bandandelar): ${and}`); process.exit(1); }
-  console.log(`SJÄLVTEST OK: ANOM ${anomM.toFixed(3)} mot RÅ ${rawM.toFixed(3)} °C på ${mitt.length} punkter · bootstrap [${pc(c[0]).trim()}–${pc(c[1]).trim()}] kring 10 % · vägviktat 6,0 % · golvet 50 % · bandet 50 flyttade · bandandelar 25/25/0/50`);
+  // (g) Solhöjd och regim: midsommar kl. 12 UTC i Skåne står solen över 55°, kl. 00 UTC under noll; 21/12 kl. 23 UTC under −30°.
+  const midsommar = Date.parse("2026-06-21T12:00:00Z") / 1000, vinter = Date.parse("2026-12-21T23:00:00Z") / 1000;
+  const h12 = solhojd(56, 13, midsommar), h00 = solhojd(56, 13, midsommar - 12 * 3600), hv = solhojd(56, 13, vinter);
+  if (!(h12 > 55 && h12 < 60 && h00 < 0 && hv < -30)) { console.error(`SJÄLVTEST FALLERAR (solhöjd): ${h12} ${h00} ${hv}`); process.exit(1); }
+  const rs: Station = { id: "r", lon: 13, lat: 56, elev: 0, yta: new Map(), luft: new Map(), vind: new Map([[1, 1], [2, 6], [3, 3]]) };
+  const natt = Math.floor(vinter / BUCKET_S), dag = Math.floor(midsommar / BUCKET_S);
+  rs.vind = new Map([[natt, 1], [dag, 1], [natt + 1, 6], [natt + 2, 3]]);
+  const reg = [regimAv(rs, natt), regimAv(rs, dag), regimAv(rs, natt + 1), regimAv(rs, natt + 2), regimAv(rs, natt + 9)];
+  if (reg.join() !== "1,3,2,3,0") { console.error(`SJÄLVTEST FALLERAR (regim): ${reg}`); process.exit(1); }
+  console.log(`SJÄLVTEST OK: ANOM ${anomM.toFixed(3)} mot RÅ ${rawM.toFixed(3)} °C på ${mitt.length} punkter · bootstrap [${pc(c[0]).trim()}–${pc(c[1]).trim()}] kring 10 % · vägviktat 6,0 % · golvet 50 % · bandet 50 flyttade · bandandelar 25/25/0/50 · solhöjd ${h12.toFixed(1)}/${h00.toFixed(1)}/${hv.toFixed(1)} · regim 1,3,2,3,0`);
   process.exit(0);
 }
 
@@ -360,7 +420,7 @@ await vaktdiagnos((s, p) => pool.query(s, p as any[]).then((r) => r.rows),
 const res = await pool.query(`
   SELECT DISTINCT ON (station_id, b) station_id,
     ST_X(geom::geometry) lon, ST_Y(geom::geometry) lat,
-    floor(extract(epoch FROM sample_time) / ${BUCKET_S})::bigint AS b, surface_temp_c, air_temp_c
+    floor(extract(epoch FROM sample_time) / ${BUCKET_S})::bigint AS b, surface_temp_c, air_temp_c, wind_speed_ms
   FROM ${TABELL}
   WHERE surface_temp_c IS NOT NULL AND sample_time > now() - $1 * interval '1 day'
     AND air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12
@@ -369,8 +429,9 @@ const res = await pool.query(`
 const stations = new Map<string, Station>();
 for (const r of res.rows) {
   let s = stations.get(r.station_id);
-  if (!s) { s = { id: r.station_id, lon: +r.lon, lat: +r.lat, elev: null, yta: new Map(), luft: new Map() }; stations.set(r.station_id, s); }
+  if (!s) { s = { id: r.station_id, lon: +r.lon, lat: +r.lat, elev: null, yta: new Map(), luft: new Map(), vind: new Map() }; stations.set(r.station_id, s); }
   s.yta.set(Number(r.b), +r.surface_temp_c); s.luft.set(Number(r.b), +r.air_temp_c);
+  if (r.wind_speed_ms !== null && +r.wind_speed_ms >= 0 && +r.wind_speed_ms <= 60) s.vind!.set(Number(r.b), +r.wind_speed_ms); // värdevaktens spann
 }
 const efter = res.rows.filter((r: any) => Number(r.b) >= FRAN).length;
 const varma = res.rows.filter((r: any) => Number(r.b) >= FRAN && +r.surface_temp_c > 5).length;
@@ -443,6 +504,7 @@ console.log(`Trösklar (läsning, ingen dom): A1 ≤ ${A1_MAX_MAE.toFixed(1)} °
 const rnd = slump(20260930);
 const utfall = KANDIDATER.map((k) => redovisa(k.namn, rader, k.pick, populationer, rnd));
 
+regimer(rader, rnd);
 console.log(`\nLÄSNING PER BAND (A1/A2) och andel av varje population i band där kandidaten klarar båda:`);
 console.log(`  kandidat         ${BANDS.map(([n]) => n.padEnd(18)).join("")}${populationer.map((p) => p.namn.padStart(18)).join("")}`);
 for (const u of utfall) {
