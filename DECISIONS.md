@@ -6287,5 +6287,30 @@ att mäta NÄR terrängen biter, inte hur mycket. Den svensk-finska skillnaden (
 **Vad som inte ändras.** Trösklarna, grinden, dess dom. Regimgränserna (2 och 5 m/s, −6°) är mätningens, inte produktens, och
 står här så att de inte kan flyttas efter utfallet.
 
-**Utfall.** *(fylls i efter körningarna, i samma post)*
+**Utfall (Sverige 36671071146, Finland 36671072792, 30/9 04:56Z, självtest grönt).**
+
+Punkter per regim — Sverige (mål efter 25/9): stilla natt 6 138 · blåsigt 133 · övrigt 3 334 · okänd 1. Finland: stilla natt
+3 035 · blåsigt 33 · övrigt 1 580 · okänd 754 (vind saknas vid många finska stationer). **Blåsigt är nästan tomt i båda länderna:**
+en kall vägyta i september uppstår i stilla, klart väder, så målurvalet (yta ≤ 5 °C) väljer regimen åt oss. Blåsigt går inte
+att läsa förrän vintern fyller det.
+
+| Kandidat · regim | Sverige A2 [boot] | per band SE 0–7 / 7–15 / 15–20 / >20 | Finland A2 [boot] | per band FI |
+|---|---|---|---|---|
+| RÅ · stilla natt | 12,5 % [10,2–14,8] faller | 1,9 / 15,7 / 10,6 / 13,3 % | 3,1 % [2,0–4,5] klarar | 2,1 / 2,4 / 4,5 / 3,2 % |
+| RÅ · övrigt | 9,2 % [7,2–11,2] faller | 1,9 / 7,2 / 11,7 / 10,1 % | 5,9 % [4,6–7,3] oavgjort | 5,3 / 6,5 / 6,6 / 5,8 % |
+| RÅ+HÖJD · stilla natt | 11,2 % faller | 1,0 / 9,6 / 7,3 / 13,8 % | 3,3 % klarar | 2,5 / 2,4 / 3,8 / 3,7 % |
+| RÅ+HÖJD · övrigt | 9,3 % faller | 1,9 / 6,6 / 9,1 / 11,1 % | 6,8 % faller | 5,3 / 6,5 / 5,9 / 7,9 % |
+| OFFSET (taket) · stilla natt | 4,0 % [2,9–5,1] oavgjort | 0,0 / 5,0 / 3,3 / 4,4 % | 2,0 % klarar | 0,0 / 3,8 / 2,2 / 2,0 % |
+| OFFSET (taket) · övrigt | 5,6 % oavgjort | 2,2 / 7,9 / 7,5 / 5,1 % | 4,6 % oavgjort | 2,3 / 7,4 / 5,5 / 4,4 % |
+
+**Läsning.** (1) **Hypotesen höll inte.** I Sverige faller rå viktning i BÅDA regimerna som går att läsa (12,5 % stilla natt, 9,2 %
+övrigt), och i Finland är den stilla natten den BÄTTRE regimen (3,1 % mot 5,9 %). Vind och natt skiljer alltså inte "när terrängen
+biter" från när den inte gör det. (2) Två skäl syns i talen: molnmängden saknas — en stilla natt är bara en utstrålningsnatt om
+den är klar — och "övrigt" blandar dagtid med måttlig vind, där solen och skuggan skapar egna lokala skillnader. Regimen kräver
+moln (SMHI:s luftstationer, parameter molnmängd, finns inte i arkivet) och en delning dag/natt skild från vinden. (3) Det som
+består genom alla regimer och båda länderna: bandet 0–7 km håller (1,0–2,5 % i Sverige, 2,1–5,3 % i Finland), och Sverige faller
+från 7 km i varje regim medan Finland inte gör det. Skillnaden Sverige–Finland förklaras inte av regimen; terrängen och arkivens
+olika censur återstår som förklaringar, i okänd proportion. (4) **En regimstyrd prognos kan inte motiveras på det här
+underlaget.** Trösklarna orörda, grindens dom står. Nästa steg, om Bengt vill: molnmängd in i arkivet (ny ingest, kostar lagring
+och minuter) och en förregistrerad delning dag/natt × vind × moln när vintern fyllt blåsigt.
 

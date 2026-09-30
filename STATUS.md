@@ -2113,3 +2113,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   Bokfört i DECISIONS #407, tavlan #269, bedömningen §4.2 (frågor f och g). Trösklar orörda.
 - 30/9 (Claude, Bengts *"kör regimgrinden också"*): DECISIONS #408 förregistrerad; del 11 i skriptet (regim vid målstationen ur
   medelvind och solhöjd, per regim och band med spärr och bootstrap), självtest med solhöjd och regim grönt. Körs SE och FI.
+- 30/9 (Claude): regimgrinden körd SE (36671071146) och FI (36671072792), gröna: hypotesen höll inte — rå faller i båda läsbara
+  regimerna i Sverige, stilla natt är bättre i Finland, blåsigt tomt; bandet 0–7 km håller överallt. Molnmängd saknas i arkivet.
+  Bokfört i DECISIONS #408, tavlan #269, bedömningen §4.2 (fråga h). Trösklar orörda.
