@@ -60,6 +60,10 @@ annat (#388).
 **(6) Styrningen.** Målbladet i andra utgåvan (`docs/MALET.md`, #402) med M0–M5 och kritisk väg i sex steg. Kvar av greppen: (2) en kö,
 (3) veckoavläsning, (4) kritiska vägen med datum hos Axel; korten bär inte sitt mål än.
 
+**(7) Prognoslagret 30/9.** Omkörningen av vägpunktsgrinden bekräftade fallet (rå 7,9 % ± 0,4 på 17 839 punkter; körning 36664018960).
+Analysen av matematiken (Bengts fråga) fann fyra trubbiga premisser och ett modellfel; en förregistrerad mätning på arkivet körs
+samma dag (DECISIONS #405, kort #269). Trösklarna rörs inte. Inget ändras för appen eller ansökan: ändringslistans punkt A står.
+
 **Vart vi är på väg:** `docs/MALET.md` §4 (milstolparna) och §5 (kritiska vägen).
 
 ---

@@ -1,0 +1,27 @@
+# Vägpunktsgrindens premisser prövade (DECISIONS #405, Bengt 30/9). Körs på knapp; självtest med känd sanning
+# FÖRE den skarpa körningen, resultatet på Summary-sidan (grind-a-mönstret). Ingen dom: trösklarna i
+# TROSKLAR-SKUGGAN §3 rörs inte, vägpunktsgrindens dom står. Läser samma arkiv som hojd-prov.yml.
+name: matning-vagpunkt-premisser
+on:
+  workflow_dispatch:
+    inputs:
+      dagar:
+        description: "Dagar bakåt (målen räknas bara från 2026-09-25 07:30Z)"
+        default: "60"
+jobs:
+  matning:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types scripts/matningar/vagpunkt-premisser-2026-09-30.ts --sjalvtest
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/matningar/vagpunkt-premisser-2026-09-30.ts "${{ inputs.dagar || '60' }}" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }

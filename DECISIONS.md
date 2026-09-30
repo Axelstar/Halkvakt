@@ -6102,3 +6102,40 @@ de fyra dokumenten i samma commit innan den byggs; ansökan lovar den för vinte
 
 **Alternativ som valdes bort.** Föreningen under bildande som sökande (#400). Att skjuta på ansökan till marsomgången: nej, vintern
 2026/27 är mätfönstret.
+
+## #405 (30/9 2026) Vägpunktsgrindens premisser prövas i en förregistrerad mätning — kandidater, mått och population namngivna innan talen finns
+
+**Bengts order 30/9** (*"gör en ny mätning baserad på din rekommendation"*), efter omkörningen av vägpunktsgrinden 30/9 (körning
+36664018960: rå 7,9 % ± 0,4, interp 10,3 %, rå+höjd 7,9 % — FALLEN som 28/9) och analysen av matematiken bakom den.
+
+**Vad analysen fann.** Domen står, men fyra premisser gör den trubbigare än nödvändigt: (1) domen räknas oviktat på en population där
+65 % av punkterna ligger över 20 km från närmaste granne, medan 7 % av vägpunkterna längs rutterna gör det; (2) fönstret blandar
+censurerade rader före 25/9 (bara kalla eller blöta sparades, #353) med ärliga efter; (3) A3 räknar bara fel med 2 °C tvärs över
+frysgränsen och blir 0,0 % i en säsong utan minusgrader, medan frysflaggan bortom 20 km missas i 70 %; (4) binomialfelet antar
+oberoende punkter. Och modellen blandar den storskaliga gradienten (jämn) med platsens offset (lokal) — interp-kandidaten, som antog
+att offseten är rumsligt jämn, blev sämre än rå, och höjden (första platsegenskapen) halverade felet inom 7 km.
+
+**Beslut.** En mätning på arkivet, `scripts/matningar/vagpunkt-premisser-2026-09-30.ts` (knappen `matning-vagpunkt-premisser`),
+registrerad här INNAN den körs, med exakt dessa delar:
+1. Population: bara mål från 2026-09-25 07:30Z; vägpunktsgrindens vakter och urval i övrigt (#75, radvakten, karantänen, mål ≤ +5 °C).
+2. Vägviktning med bandandelarna ur prognoslagrets provpunkter längs de svenska skuggrutterna (som `vagpunkt-population.ts`), redovisat
+   bredvid oviktat ALLA och per band.
+3. Blockbootstrap per station × UTC-dygn, B = 300, frö 20260930, percentilerna 2,5 och 97,5.
+4. Frysflaggan som mått: missad (stationen ≤ 1 °C, modellen > 1), grovt missad (modellen > 2), falsk (modellen ≤ 1, stationen > 1),
+   klart falsk (stationen > 2). Ingen tröskel — den är Bengts att sätta.
+5. Kandidater, uttömmande: RÅ, RÅ+HÖJD och den nya ANOM (luft ur upp till 8 grannar inom 80 km, vikt 1/km; anomalin yta − luft ur de
+   3 närmaste inom 50 km, vikt 1/km²; skattning = luft + anomali). OFFSET (grind A:s lärda paroffset) står bredvid som taket.
+6. Golvet: stationspar inom 3 och 5 km, andel delade kalla hinkar med |Δyta| > 2 °C.
+
+**Vad mätningen kan och inte kan.** Den ändrar ingen tröskel (TROSKLAR-SKUGGAN §5) och rör inte vägpunktsgrindens dom, som står.
+Utfallet mot A1 och A2 skrivs som *läsning* mot bootstrapintervallet. Klarar en kandidat vägviktat på ärliga rader är det underlag för
+ett nytt beslut om prognoslagrets väg nära stationerna; klarar ingen är det sanningen vi behöver före vintern. Kandidatlistan är
+stängd: fler kandidater ger fler chanser att klara av slump, och en tillagd kandidat kräver en ny post här.
+
+**Alternativ som valdes bort.** Att ändra trösklarna eller vikta om domen i `hojd-prov.ts` direkt: nej, grinden är fastställd och
+dess dom ska stå tills Bengt beslutar annat på ett mätt underlag. Att bara köra om grinden på rader efter 25/9: gör mindre än
+analysen kräver. Kriging med anpassat variogram och platsegenskaper utöver höjd: rätt nästa steg om ANOM eller RÅ+HÖJD visar
+väg, men inte i den här mätningen — de kräver egna beslut och mer än en dags bygge.
+
+**Utfall.** *(fylls i efter körningen, i samma post)*
+

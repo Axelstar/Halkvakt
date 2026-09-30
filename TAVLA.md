@@ -1829,6 +1829,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟡 GÖRA (pågår just nu)
 
+- [ ] 📐 **#269 VÄGPUNKTSGRINDENS PREMISSER PRÖVADE — förregistrerad mätning (Bengt 30/9, DECISIONS #405).** Omkörningen 30/9
+  bekräftade fallet (rå 7,9 % ± 0,4). Analysen fann fyra trubbiga premisser (oviktad population, blandat arkiv, tandlöst A3,
+  oberoendeantagande) och ett modellfel (gradient och offset blandas). Mätningen: bara rader efter 25/9, vägviktat och per band,
+  blockbootstrap, frysflaggan som mått, kandidaten ANOM, golvet på täta stationspar. Ingen tröskel rörs, grindens dom står.
+  *Verify:* körningen `matning-vagpunkt-premisser` grön med självtest, utfallet i DECISIONS #405 samma dag.
 
 ---
 
