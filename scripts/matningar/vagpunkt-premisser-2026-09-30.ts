@@ -266,16 +266,17 @@ function golvet(stations: Map<string, Station>, km: number, fran: number) {
 }
 
 /** Bandandelar för en population: punkter (lon, lat, vikt) mot närmaste station. Vikten är 1 för väglängd, ÅDT för trafikarbete. */
-function bandandelar(punkter: { lon: number; lat: number; vikt: number }[], stations: Station[]): number[] {
+function bandandelar(punkter: { lon: number; lat: number; vikt: number }[], stations: Station[]): number[] & { bortom: number } {
   const summor = BANDS.map(() => 0);
-  let tot = 0;
+  let tot = 0, bortom = 0, allt = 0;
   for (const p of punkter) {
     let narm = Infinity;
     for (const s of stations) { const km = haversineKm(p.lon, p.lat, s.lon, s.lat); if (km < narm) narm = km; }
-    if (!(narm <= MAX_KM)) continue; // bortom yttersta bandet: alltid okänt, räknas inte i täckningen
+    allt += p.vikt;
+    if (!(narm <= MAX_KM)) { bortom += p.vikt; continue; } // bortom yttersta bandet: alltid okänt, räknas inte i täckningen
     summor[bandAv(narm)] += p.vikt; tot += p.vikt;
   }
-  return summor.map((x) => tot ? x / tot : 0);
+  return Object.assign(summor.map((x) => tot ? x / tot : 0), { bortom: allt ? bortom / allt : 0 });
 }
 
 // ── Självtest: kända sanningar för de nya delarna.
@@ -396,7 +397,8 @@ if (existsSync(ADT_FIL)) {
   adtNot = `C trafikarbetet: ${adt.length} ÅDT-provpunkter ur data/adt-provpunkter.json`;
 }
 console.log(`\nTÄCKNING — andel av populationen per band (avstånd till närmaste station; bortom ${MAX_KM} km räknas inte)`);
-for (const p of populationer) console.log(`  ${p.namn.padEnd(18)} ${String(p.n).padStart(6)} punkter: ` + BANDS.map(([n], i) => `${n} ${(100 * p.andelar[i]).toFixed(1)} %`).join(" · "));
+for (const p of populationer) console.log(`  ${p.namn.padEnd(18)} ${String(p.n).padStart(6)} punkter: ` + BANDS.map(([n], i) => `${n} ${(100 * p.andelar[i]).toFixed(1)} %`).join(" · ") +
+  ((p.andelar as any).bortom !== undefined ? ` · bortom ${MAX_KM} km (räknas inte) ${(100 * (p.andelar as any).bortom).toFixed(1)} %` : ""));
 console.log(`  ${adtNot}`);
 
 // Höjder ur EU-DEM (som hojd-prov.ts) för RÅ+HÖJD.

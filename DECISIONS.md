@@ -6188,5 +6188,29 @@ bootstrap och frö som #405, plus:
 **Vad som INTE ändras.** Kandidatlistan (stängd sedan #405), trösklarna, grinden i `hojd-prov.ts` och dess dom. Golvet mäts som
 förut (3 och 5 km); vidgningen till 8 km väntar på Bengts val i bedömningen §4.2.
 
-**Utfall.** *(fylls i efter körningen, i samma post)*
+**Utfall (körning 36668940287, 30/9 04:28Z; första försöket 36668773820 föll på en SQL-typ, rättat).** Mål efter snittet: 9 415
+punkter från 236 stationer, 822 kluster. Grindens bandregel hade flyttat 249 punkter (2,6 %) utåt — spaken är liten.
+
+**Täckning.** A skuggrutterna (1 585 p): 52,6 / 33,9 / 6,8 / 6,8 %. B huvudvägnätet, Trafikverkets 818 väglagssegment (12 260 p):
+49,8 / 37,6 / 7,3 / 5,2 % av punkterna inom 50 km (andelen bortom 50 km skrevs inte ut i den här körningen; rättat till nästa).
+C trafikarbetet: INTE MÄTT, ÅDT-filen saknas. Fördelningen A och B är nästan lika, så valet mellan dem smickrar inte — men B är
+de vintervägar Trafikverket bedömer väglag på, inte hela vägnätet, och C är omätt.
+
+| Kandidat | 0–7 km (15 st) | 7–15 km (57 st) | 15–20 km (54 st) | >20 km (110 st) | Vägviktat A · B (A2) |
+|---|---|---|---|---|---|
+| RÅ | under spärren: 2,5 % [0,9–4,3] | 12,7 % faller | 10,9 % faller | 12,4 % faller | 7,2 · 7,5 % faller |
+| RÅ+HÖJD | under spärren: 1,6 % [0,3–3,2] | 8,5 % [4,7–12,7] oavgjort | 7,8 % [4,6–12,3] oavgjort | 12,9 % faller | 5,1 · 5,3 % oavgjort |
+| ANOM | under spärren: 9,2 % | 21,6 % faller | 22,1 % faller | 13,0 % faller | 14,5 · 15,0 % faller |
+| OFFSET (taket) | under spärren: 1,2 % [0,1–2,2] | 5,9 % oavgjort | 4,6 % oavgjort | 4,6 % [3,1–6,3] oavgjort | 3,2 · 3,4 % klarar |
+
+Andel av population i band där en kandidat klarar båda måtten: 0 % för alla, i båda populationerna.
+
+**Läsning.** (1) Per band avgör fem ärliga dygn ingenting utom fallen: rå och ANOM faller i 7–20 km, rå+höjd faller bortom 20 km;
+allt annat är oavgjort med breda intervall. (2) **Bandet 0–7 km går inte att döma med grindens spärr, och kommer inte att kunna
+dömas:** bara 15 stationer har en granne inom 7 km, spärren kräver 20, och fler dygn ger fler punkter men inte fler stationer.
+Det är hälften av vägnätet, och stationsnätet självt gör det obedömbart med leave-one-out. En bandvis dom kräver antingen en
+egen spärr för det bandet (Bengts beslut, inte en lättnad av något som finns) eller ett annat facit än stationerna. (3) Valet av
+population (A eller B) ändrar tiondelar, inte domar: den spaken var mindre än jag trodde. (4) Bilden från #405 står: rå+höjd är
+kandidaten, oavgjord vägviktat och i 7–20 km, fallen bortom 20 km. **Trösklarna orörda, grindens dom står.** Bengts val i
+bedömningen §4.2 utökas med spärrfrågan för 0–7 km och ÅDT-uttaget för täckning C.
 

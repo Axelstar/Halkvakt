@@ -2103,3 +2103,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 30/9 (Claude, Bengts *"gör om mätningen med dom per band och de tre täckningarna"*): DECISIONS #406 förregistrerad; skriptet
   omskrivet (geometriskt band + räkning av flyttade, läsning per band med spärr, tre täckningar, ÅDT bara ur fil), självtest
   grönt (sex kända sanningar), kontraktsgrinden 58/58. Körs ur hojd-prov med `dagar: premisser`.
+- 30/9 (Claude): andra körningen av premissmätningen (36668940287, grön; 36668773820 föll på generate_series-typ, rättat):
+  täckning A ≈ B, C omätt (ÅDT saknas); bandregeln flyttade 2,6 %; per band avgör fem dygn bara fallen; bandet 0–7 km har
+  15 stationer och kan inte nå spärren 20. Bokfört i DECISIONS #406, tavlan #269, bedömningen §4.2 (frågor d och e).
