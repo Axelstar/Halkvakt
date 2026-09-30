@@ -449,8 +449,8 @@ for (const u of utfall) {
   const tackning = populationer.map((p) => p.andelar.reduce((a, x, i) => a + (u.bandKlarar[i] ? x : 0), 0));
   console.log(`  ${u.namn.padEnd(16)} ${u.bandLas.map((l) => l.padEnd(18)).join("")}${tackning.map((x) => pc(x).padStart(18)).join("")}`);
 }
-console.log(`\nLÄSNING VÄGVIKTAT (A1 · A2 mot bootstrapintervallet):`);
-for (const u of utfall)
+if (populationer.length) console.log(`\nLÄSNING VÄGVIKTAT (A1 · A2 mot bootstrapintervallet):`);
+for (const u of populationer.length ? utfall : [])
   console.log(`  ${u.namn.padEnd(16)} ` + populationer.map((p, i) => { const a1 = u.vag[i].ci("mae"), a2 = u.vag[i].ci("gross");
     return `${p.namn}: ${lasning(a1[0], a1[1], A1_MAX_MAE)} · ${lasning(a2[0], a2[1], A2_MAX_GROSS)} (A2 ${pc(u.vag[i].m.gross).trim()} ${iv(a2, pc)})`; }).join("   "));
 console.log(`Frysflaggan har ingen tröskel i TROSKLAR-SKUGGAN; talen ovan är underlag för Bengts beslut, inte en dom.`);

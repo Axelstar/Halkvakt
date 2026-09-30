@@ -6235,5 +6235,36 @@ granne inom 7 km och att bandet därför aldrig når grindens spärr på 20 stat
 underlag för om det svenska bandet går att döma alls, inte en dom över det svenska nätet. Det ändrar inga trösklar och inte
 vägpunktsgrindens dom.
 
-**Utfall.** *(fylls i efter körningen, i samma post)*
+**Utfall (körning 36670176981, 30/9 04:44Z, självtest grönt).** Finska arkivet: 427 stationer, 55 741 hinkar på 60 dygn (arkivet
+börjar 31/8; 6–7/9 saknas som i Sverige). Varma hinkar 89,5 % — Δ-regeln sparar de varma raderna när temperaturen rör sig, så
+censuren är mild; men en varm granne finns i en hink bara om den själv ändrats ≥ 0,5 °C, vilket gynnar kalla nätter med rörelse.
+Mål ≤ 5 °C: 5 402 punkter från 349 stationer, 1 415 kluster. Bandregeln hade flyttat 4,3 %. Inga finska prognospunkter i
+skuggloggen ⇒ ingen vägviktning; läsning per band.
+
+**Golvet, det Sverige inte kunde ge:** inom 3 km 40 par och 439 hinkar, |Δyta| > 2 °C i 3,9 %, MAE 0,59 °C; inom 5 km 78 par,
+5,7 %, MAE 0,73 °C. Tröskeln 5 % ligger alltså vid golvet för en enskild granne på 5 km och under det på 3 km. De sex svenska
+paren (15 %) var för få för en slutsats.
+
+| Kandidat | 0–7 km (108 st, 1 207 p) | 7–15 km (58 st) | 15–20 km (65 st) | >20 km (118 st) | ALLA (oviktat) |
+|---|---|---|---|---|---|
+| RÅ | 0,60 °C · 2,3 % [1,1–3,5] KLARAR/KLARAR | 3,8 % [1,7–6,0] oavgjort | 4,5 % oavgjort | 3,9 % [2,6–5,6] oavgjort | 0,69 °C · 3,7 % [2,8–4,7] klarar |
+| RÅ+HÖJD | 0,61 °C · 2,5 % KLARAR/KLARAR | 3,8 % oavgjort | 4,2 % oavgjort | 5,1 % oavgjort | 0,71 °C · 4,2 % [3,3–5,0] oavgjort |
+| ANOM | 0,66 °C · 2,5 % KLARAR/KLARAR | 4,9 % oavgjort | 6,7 % oavgjort | 9,0 % faller | 0,81 °C · 6,6 % faller |
+| OFFSET (taket) | 0,50 °C · 0,6 % KLARAR/KLARAR | 5,0 % oavgjort | 3,5 % klarar | 2,7 % klarar | 0,67 °C · 2,7 % klarar |
+
+Frysflaggan i bandet 0–7 km (49 stationsflaggor): rå missar 57 % [41–75], grovt (modellen > 2 °C) 6 %; falska 36 %. Offset missar
+41 %, falska 48 %. Bortom 20 km (136 flaggor): rå missar 63 %, offset 51 %.
+
+**Läsning.** (1) **Bandet 0–7 km går att döma i Finland, med 108 stationer, och rå viktning klarar det med marginal** (2,3 %,
+hela intervallet under 5 %). Sveriges 15 stationer gav 2,5 % [0,9–4,3] under spärren — samma tal. Fysiken är densamma; det
+finska utfallet stödjer att det svenska närbandet håller, med förbehållet att södra Finland är plattare än Sverige (höjden ger
+ingenting där: rå+höjd = rå) och att september var mild. (2) Rå viktning klarar oviktat i Finland (3,7 %) där den faller i Sverige
+(11,4 %): terrängen och arkivets censur förklarar sannolikt båda, i okänd proportion — det är nästa fråga, inte ett svar.
+(3) ANOM faller igen på avstånd; kandidaten är död. (4) **Det viktigaste fyndet är inte A2 utan flaggan: även inom 7 km, där
+temperaturfelet är 0,6 °C, missas frysflaggan vid 1 °C i mer än hälften av fallen.** Ett medelfel av samma storlek som avståndet
+till gränsen ger ett myntkast vid gränsen oavsett hur bra A2 ser ut. Med en marginal på en grad (flagga vid ≤ 2 °C) sjunker
+missen till 6 % i samma band; priset i falska flaggor är inte mätt och måste mätas innan något byggs. Det är domslutets
+"risk"-språk i siffror: prognosen får förstärka och visa risk, aldrig avgöra vid gränsen. (5) Trösklarna orörda; grindens dom
+står. Frågorna till Bengt (bedömningen §4.2): spärren för det svenska bandet 0–7 km i ljuset av det finska utfallet, och om
+flaggmarginalen ska mätas som nästa förregistrerade del.
 
