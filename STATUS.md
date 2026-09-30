@@ -2119,3 +2119,8 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 30/9 (Claude, Bengts *"gör en sammanfattning … och spara så att vi inte tappar det"*): `docs/PROGNOSLAGRET-2026-09-30.md`
   (körningar, tal, slutsatser, väg framåt, val a–h). Kort #270 (Bengts val) och #271 (termisk kartering) på tavlan, #265 ↪ om
   ansökans två tillägg. Bedömningen (7) och §4.2 länkar dit.
+- 30/9 (Claude, Bengts *"Ansökan är skickad du kan stänga alla öppna kort som har med skyltfonden att göra"*): Skyltfondsansökan
+  skickad av Bengt (privatperson, Axels V2, 413 000 kr, bilaga 1–8, båda adresserna). Dagens granskningar (bilaga 3–8, Dokument 0,
+  hypoteserna 1–3, formulärstyckena, samarbetspartner, kostnadsplanen, följebrevet) gavs i chatten på Bengts order. DECISIONS #409;
+  tavlan: KLART-kort, #265 och #271 ↪, nytt #272 (den skickade versionen in i repot); bedömningen (1), §0b, kalendern och två
+  §4.2-rader strukna. origin/main (halkläget 30/9) inmergad.

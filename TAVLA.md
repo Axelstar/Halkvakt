@@ -222,6 +222,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **29/9: rubriken överspelad (DECISIONS #402).** Android bär 0.3.9 (18) som iOS sedan 26/9 (#377, #379) och Play-kontot finns sedan 20/9. Kvar är bara Play-vägen: enhetsverifieringen i Play Console, första uppladdningen med Data safety-formuläret ifyllt likadant som filen (#214), slutet test 14 dygn med tolv testare, produktion tidigast november. Verify-raden gäller oförändrad.
 ### Bengt
 
+- [ ] 📁 **#272 DEN SKICKADE ANSÖKAN IN I REPOT** (30/9, DECISIONS #409). Versionen som gick till fonden 30/9 — formuläret och
+  bilaga 1–8 som PDF — finns bara i Drive-mappen Skyltfonden och i Bengts utkorg; repots bilaga 1 är v8B (283 000 kr, fyra
+  arbetspaket), inte den skickade V2. Ett fastställt dokument som inte är incheckat finns inte (SESSIONSREGELN). Lägg PDF:erna i
+  `docs/skyltfonden-2026-09-28/skickad/`, formuläret utan sida 1 (personnummer och bankkonto får aldrig in i repot). *Verify:*
+  åtta bilagor och formuläret i mappen, commit på main, personnummer grep-fritt.
 - [ ] 📐 **#270 PROGNOSLAGRET EFTER PREMISSMÄTNINGARNA — BENGTS VAL a–h** (30/9, `docs/PROGNOSLAGRET-2026-09-30.md`; DECISIONS
   #405–#408; bedömningen §4.2). Domen står (fallen 28/9, bekräftad 30/9 och på ärliga rader). Bandet 0–7 km håller i båda
   länderna men kan inte dömas med svenska stationer (15 av spärrens 20); Finland ger 108 stationer och 2,3 % [1,1–3,5]; frysflaggan
@@ -238,6 +243,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Fylls i på mötet: sätet, tid och plats, personnummer (aldrig i repot). **Verify:** ansökan skickad med bilaga 9–10 och inget
   studsat; Skatteverkets beslut med organisationsnummer, skickat till Skyltfonden samma dag; bankkonto öppnat.
   ↪ **29/9 kväll (DECISIONS #404): sökande i Skyltfonden är Bengt som privatperson, inte föreningen.** Föreningen bildas som planerat och nämns i ansökan som förvaltare av de öppna resultaten; protokollet § 16 är omskrivet till en notering, kallelsen, körschemat och 8400-arbetsbladet rättade. Versionen som skickas är Axels V2, 413 000 kr, efter ändringslistan.
+  ↪ **30/9 (DECISIONS #409): ansökan skickad — Skyltfondsdelen av kortet är klar.** Kvar är föreningen: SKV 8400,
+  organisationsnummer, bankkonto. Verify-raden gäller utan Skyltfondsleden.
 - [ ] 🧫 **#232 KUVÖSEN — HELA SYSTEMET BAKÅTPRÖVAT PÅ VINTERN 2024/25** (Bengts idé 21/9, DECISIONS #292). Motorn och ALLA
   skuggregler i en gemensam testbädd, långt från appar och förare, körd mot en hel gången vinter — ett RIKTNINGSPROV: är vi på
   rätt väg, och vad tillför varje del ovanpå de andra? Svarar på kartans §7.3: *"Varje grind dömer sin del ENSAM"*.
@@ -608,8 +615,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   vägytetermometer med positionslogg i projektets bil, tre till fem klara kalla nätter per vinter på testförarnas rutter: uppmätt
   yttemperatur var femtionde meter, facit för bandet 0–7 km och kalibrering av platsens offset. Loggern är egen utrustning, inte
   appen — invarianten berörs inte, sägs öppet. Simulering ur höjd, skuggning, trädtäcke, vatten och trafik (kandidat KOVARIAT, egen
-  post) kan bygga men inte validera. 🔑 Bengts och Axels ja, utrustning (Axel prissätter klass), och en rad i Skyltfondens AP2 om
-  det hinns 30/9 — annars projektets egna pengar. *Verify:* första karteringsnatten loggad i arkivet med sträcka, datum och
+  post) kan bygga men inte validera. 🔑 Bengts och Axels ja, utrustning (Axel prissätter klass), och pengar (projektets
+  egna, eller Skyltfondens AP2 om raden kom med i den skickade ansökan — okänt i repot, DECISIONS #409). *Verify:* första karteringsnatten loggad i arkivet med sträcka, datum och
   antal punkter; en DECISIONS-post som registrerar den som facitkälla innan den används i en dom.
 
 - [x] 📣 **#261 KÄLLVAKTENS FALSKA POSITIVER — bedömningen matchar mot sidans möbler** (fynd 28/9 under
@@ -1855,6 +1862,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **SKYLTFONDSANSÖKAN SKICKAD 30/9 (DECISIONS #409)**: Bengts ord 30/9 *"Ansökan är skickad"* — Bengt som privatperson,
+  Axels V2, 413 000 kr i fem arbetspaket, formuläret undertecknat med bilaga 1–8, till båda adresserna; sista dag 1/10, besked per
+  brev senast 15/12 (bevakningen §0b). Granskningarna av bilaga 2–8, Dokument 0 och formulärets stycken gavs i chatten 29–30/9 på
+  Bengts order. #265 gäller nu bara föreningen, #271 utan AP2-nyckeln, nytt #272 (den skickade versionen in i repot).
 - [x] ✅ **#269 VÄGPUNKTSGRINDENS PREMISSER PRÖVADE — KLART 30/9 (DECISIONS #405)**: förregistrerad mätning på ärliga rader (efter
   25/9), vägviktad, blockbootstrap, frysflaggan som mått, kandidaten ANOM och golvet. Körning 36666151860 grön. Utfall: rå faller
   även vägviktat (7,7 % [5,4–9,8]), rå+höjd oavgjord (5,2 % [3,6–6,9]), ANOM föll (15,2 %), offset (taket) klarar (3,2 %). Golvet vid

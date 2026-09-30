@@ -6314,3 +6314,24 @@ olika censur återstår som förklaringar, i okänd proportion. (4) **En regimst
 underlaget.** Trösklarna orörda, grindens dom står. Nästa steg, om Bengt vill: molnmängd in i arkivet (ny ingest, kostar lagring
 och minuter) och en förregistrerad delning dag/natt × vind × moln när vintern fyllt blåsigt.
 
+
+## #409 (30/9 2026) Skyltfondsansökan skickad — Skyltfondskorten stängda, besked väntas senast 15/12
+
+**Bengts besked 30/9:** *"Ansökan är skickad du kan stänga alla öppna kort som har med skyltfonden att göra"*. Skickad av Bengt som
+privatperson (DECISIONS #404): Axels V2, 413 000 kr i fem arbetspaket, formuläret undertecknat 2026-09-30, bilaga 1–8, till
+trafikverket@trafikverket.se och skyltfonden@trafikverket.se (fondens sida anger båda). Sista dag 1/10; besked per brev senast 15/12.
+
+**Dagens granskningar gavs i chatten, inte i repot, på Bengts order** (*"Ingen ting annat"*). Bilaga 2
+(`docs/skyltfonden-2026-09-28/GRANSKNING-BILAGA-2-2026-09-29.md`, a027e68) är den enda i repot; bilaga 3–8, Dokument 0, hypoteserna
+1–3, bakgrunds-, innovations- och spridningsstyckena, samarbetspartner, kostnadsplanens tabell och kommentar samt följebrevet skrevs om
+i chatten och gick till Axel via Bengt. Vilka rättelser som togs in vet repot inte; den skickade versionen finns i Bengts Drive-mapp
+Skyltfonden. Tre rättelser bör läsas igen om fonden ställer frågor: "vägskador" (källan Freistetter 2022 säger skadade i vägtrafiken,
+i Finland, Norge och Sverige — inte Norden), "tre halkvarningsprojekt för fotgängare 2024–2025" (inget underlag i repot; Bengts lista
+har fyra vinterprojekt våren 2026, alla för gående, cyklister eller drift) och Malmö stad (inte namngiven, #392).
+
+**Beslut.** (1) Kortet SKYLTFONDSANSÖKAN SKICKAD 30/9 till 🟢 KLART. #265 gäller nu bara föreningsbildningen; #271:s nyckel "en rad i
+AP2" ersatt av "projektets egna pengar, eller AP2 om raden kom med". Nytt kort #272: den skickade versionen (formulär utan sida 1,
+bilaga 1–8 som PDF) in i repot — repots bilaga 1 är v8B, inte V2, och ett fastställt dokument som inte är incheckat finns inte.
+(2) Bedömningen: läget (1) omskrivet, bevakningsraden Skyltfonden = väntar på besked 15/12, §4.2-raderna granskningen av V2 och
+partnerskap i appen strukna som överspelade. (3) Ingenting mer görs för ansökan förrän fonden svarar; frågor från fonden besvaras ur
+Drive-versionen och bilagorna i `docs/skyltfonden-2026-09-28/`.
