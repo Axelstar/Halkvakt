@@ -235,16 +235,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   0–7 km · (e) ÅDT-uttag ur Lastkajen · (f) finska utfallet som stöd · (g) mät flaggmarginalen · (h) molnmängd in i arkivet.
   Rekommendation: a, g nu; b när intervallet inte spänner över tröskeln; h före vintern. *Verify:* varje valt steg har egen
   DECISIONS-post före körning; läsdatum i posten; inga trösklar rörda.
-- [ ] 🏛️ **#265 FÖRENINGEN HALKVAKT BILDAS 29/9 — SÖKANDE I SKYLTFONDEN SOM FÖRENING UNDER BILDANDE** (Bengt 29/9, DECISIONS #400,
-  ersätter #396:s oktoberplan). Bengt ordförande, Axel kassör, Harald Lagerlöf ledamot och sekreterare, Susanne Horstmann revisor.
-  Handlingarna ifyllda i `docs/forening/` och Drive: stadgar (29/9), kallelse, protokoll med § 16 om Skyltfonden, medlemsförteckning,
-  8400-arbetsblad, körschema; Skyltfondens arbetsblad och bilaga 1 omskrivna (sökandestycke, bilaga 9–10). **Schemat:** kallelse
-  29/9 fm · möte 29/9 kl 19 · protokoll undertecknat samma kväll · SKV 8400 postad 30/9 · ansökan mejlad 30/9 · reserv 1/10.
-  Fylls i på mötet: sätet, tid och plats, personnummer (aldrig i repot). **Verify:** ansökan skickad med bilaga 9–10 och inget
-  studsat; Skatteverkets beslut med organisationsnummer, skickat till Skyltfonden samma dag; bankkonto öppnat.
-  ↪ **29/9 kväll (DECISIONS #404): sökande i Skyltfonden är Bengt som privatperson, inte föreningen.** Föreningen bildas som planerat och nämns i ansökan som förvaltare av de öppna resultaten; protokollet § 16 är omskrivet till en notering, kallelsen, körschemat och 8400-arbetsbladet rättade. Versionen som skickas är Axels V2, 413 000 kr, efter ändringslistan.
-  ↪ **30/9 (DECISIONS #409): ansökan skickad — Skyltfondsdelen av kortet är klar.** Kvar är föreningen: SKV 8400,
-  organisationsnummer, bankkonto. Verify-raden gäller utan Skyltfondsleden.
 - [ ] 🧫 **#232 KUVÖSEN — HELA SYSTEMET BAKÅTPRÖVAT PÅ VINTERN 2024/25** (Bengts idé 21/9, DECISIONS #292). Motorn och ALLA
   skuggregler i en gemensam testbädd, långt från appar och förare, körd mot en hel gången vinter — ett RIKTNINGSPROV: är vi på
   rätt väg, och vad tillför varje del ovanpå de andra? Svarar på kartans §7.3: *"Varje grind dömer sin del ENSAM"*.
@@ -1862,6 +1852,18 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#265 FÖRENINGEN HALKVAKT BILDAD — STÄNGT 30/9 (DECISIONS #410)** *(rubriken var: bildas 29/9, sökande i Skyltfonden som förening under bildande)* (Bengt 29/9, DECISIONS #400,
+  ersätter #396:s oktoberplan). Bengt ordförande, Axel kassör, Harald Lagerlöf ledamot och sekreterare, Susanne Horstmann revisor.
+  Handlingarna ifyllda i `docs/forening/` och Drive: stadgar (29/9), kallelse, protokoll med § 16 om Skyltfonden, medlemsförteckning,
+  8400-arbetsblad, körschema; Skyltfondens arbetsblad och bilaga 1 omskrivna (sökandestycke, bilaga 9–10). **Schemat:** kallelse
+  29/9 fm · möte 29/9 kl 19 · protokoll undertecknat samma kväll · SKV 8400 postad 30/9 · ansökan mejlad 30/9 · reserv 1/10.
+  Fylls i på mötet: sätet, tid och plats, personnummer (aldrig i repot). **Verify:** ansökan skickad med bilaga 9–10 och inget
+  studsat; Skatteverkets beslut med organisationsnummer, skickat till Skyltfonden samma dag; bankkonto öppnat.
+  ↪ **29/9 kväll (DECISIONS #404): sökande i Skyltfonden är Bengt som privatperson, inte föreningen.** Föreningen bildas som planerat och nämns i ansökan som förvaltare av de öppna resultaten; protokollet § 16 är omskrivet till en notering, kallelsen, körschemat och 8400-arbetsbladet rättade. Versionen som skickas är Axels V2, 413 000 kr, efter ändringslistan.
+  ↪ **30/9 (DECISIONS #409): ansökan skickad — Skyltfondsdelen av kortet är klar.** Kvar är föreningen: SKV 8400,
+  organisationsnummer, bankkonto. Verify-raden gäller utan Skyltfondsleden.
+  ↪ **30/9: STÄNGT på Bengts ord** (*"du kan stänga kort 265"*, DECISIONS #410). Det som återstår — Skatteverkets organisationsnummer och
+  bankkontot — följs i bedömningen §0b, inte som kort.
 - [x] ✅ **SKYLTFONDSANSÖKAN SKICKAD 30/9 (DECISIONS #409)**: Bengts ord 30/9 *"Ansökan är skickad"* — Bengt som privatperson,
   Axels V2, 413 000 kr i fem arbetspaket, formuläret undertecknat med bilaga 1–8, till båda adresserna; sista dag 1/10, besked per
   brev senast 15/12 (bevakningen §0b). Granskningarna av bilaga 2–8, Dokument 0 och formulärets stycken gavs i chatten 29–30/9 på

@@ -2124,3 +2124,5 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   hypoteserna 1–3, formulärstyckena, samarbetspartner, kostnadsplanen, följebrevet) gavs i chatten på Bengts order. DECISIONS #409;
   tavlan: KLART-kort, #265 och #271 ↪, nytt #272 (den skickade versionen in i repot); bedömningen (1), §0b, kalendern och två
   §4.2-rader strukna. origin/main (halkläget 30/9) inmergad.
+- 30/9 (Claude, Bengts *"du kan stänga kort 265"*): #265 till 🟢 KLART (DECISIONS #410); organisationsnummer och bankkonto som
+  bevakningsrad i §0b; §4.2-frågan och oktoberraden strukna.

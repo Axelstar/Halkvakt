@@ -6335,3 +6335,10 @@ bilaga 1–8 som PDF) in i repot — repots bilaga 1 är v8B, inte V2, och ett f
 (2) Bedömningen: läget (1) omskrivet, bevakningsraden Skyltfonden = väntar på besked 15/12, §4.2-raderna granskningen av V2 och
 partnerskap i appen strukna som överspelade. (3) Ingenting mer görs för ansökan förrän fonden svarar; frågor från fonden besvaras ur
 Drive-versionen och bilagorna i `docs/skyltfonden-2026-09-28/`.
+
+## #410 (30/9 2026) Kort #265 (föreningen) stängt på Bengts ord
+
+**Bengt 30/9:** *"du kan stänga kort 265"*, på frågan om mötet 29/9 och SKV 8400 (bedömningen §4.2, DECISIONS #409). Kortet flyttas till
+🟢 KLART med rubriken *Föreningen Halkvakt bildad*. Det som återstår av Verify-raden — Skatteverkets organisationsnummer och bankkontot —
+följs i bedömningen §0b som en bevakningsrad, inte som kort; numret meddelas Skyltfonden när det kommer. Oktoberradens gamla plan
+(kallelse 5/10, möte 13/10) struken.
