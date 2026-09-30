@@ -2100,3 +2100,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 30/9 (Claude): premissmätningen körd (36666151860, grön): rå faller vägviktat 7,7 %, rå+höjd oavgjord 5,2 % [3,6–6,9], ANOM föll
   15,2 %, offset (taket) 3,2 %; golvet vid 5 km 15 % på sex par. Utfall i DECISIONS #405, kort #269 KLART, bedömningen (7) och §4.2
   (Bengts val a/b/c). Trösklar orörda. CI kör inte på grenen utan PR; kontraktsgrinden och självtesterna körda lokalt och i flödet.
+- 30/9 (Claude, Bengts *"gör om mätningen med dom per band och de tre täckningarna"*): DECISIONS #406 förregistrerad; skriptet
+  omskrivet (geometriskt band + räkning av flyttade, läsning per band med spärr, tre täckningar, ÅDT bara ur fil), självtest
+  grönt (sex kända sanningar), kontraktsgrinden 58/58. Körs ur hojd-prov med `dagar: premisser`.

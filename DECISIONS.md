@@ -6162,3 +6162,31 @@ slutsats; golvmätningen behöver fler par (≤ 8 km) eller närmaste-granne-LOO
 censurerade rader in i 28/9-domen: på ärliga rader är rå A1 0,98 °C, inte 0,86. **Inget ändras i drift; trösklarna står.**
 Kandidaten att bära vidare är RÅ+HÖJD; nästa steg är Bengts (bedömningen §4.2).
 
+## #406 (30/9 2026) Premissmätningens andra körning: läsning per band och tre täckningar — "hur bra" skilt från "hur mycket"
+
+**Bengts order 30/9** (*"gör om mätningen med dom per band och de tre täckningarna — det här är bara testningar eller hur?"*).
+Ja: mätning, ingen dom. Trösklarna står, vägpunktsgrindens dom står, inget rör driften.
+
+**Varför.** Vägviktningen i #405 tog bandandelarna ur skuggrutterna, Europavägar med täta stationer (53 % av punkterna inom 7 km).
+Det är rätt population för grind B, som döms på samma rutter, men fel för ansökans fråga (räcker öppna data för alla förare?) och
+för produktens (vad får föraren?). Att välja population efter utfall är den smickrande spaken. Lösningen: domen fälls per band,
+oviktad, för avståndet till närmaste station är fysik; täckningen redovisas sedan per population, så att det enda som skiljer
+populationerna är hur mycket väg eller trafik som ligger i band där modellen klarar.
+
+**Beslut, registrerat innan körningen.** Samma skript, samma kandidater (RÅ, RÅ+HÖJD, ANOM; OFFSET som taket), samma population,
+bootstrap och frö som #405, plus:
+7. Bandet efter närmaste station geometriskt, inte närmaste bidragande ankare (grindens regel, som flyttar en punkt utåt när
+   närmaste station saknar data i hinken och därmed smickrar de inre banden). Antalet punkter grindens regel hade flyttat skrivs ut.
+8. Tre täckningar: (A) skuggrutterna, prognoslagrets provpunkter var 2 km; (B) det nationella huvudvägnätet: Trafikverkets 818
+   väglagssegment (riks- och länsvägar), provpunkter var 2 km längs geometrin, avstånd till närmaste station i arkivet;
+   (C) trafikarbetet: ÅDT-provpunkter ur `data/adt-provpunkter.json` (NVDB via Lastkajen) om filen finns — annars skrivs
+   INTE MÄTT, och ingen proxy (vägklass eller annat) sätts i dess ställe.
+9. Läsning per band mot A1 och A2 med bootstrapintervallet och grindens underlagsspärr per band (≥ 500 punkter, ≥ 20 stationer).
+   Per kandidat och population: andelen av populationen i band där kandidaten klarar båda. Vägviktad läsning per population
+   redovisas bredvid, ur samma bootstrapreplikat.
+
+**Vad som INTE ändras.** Kandidatlistan (stängd sedan #405), trösklarna, grinden i `hojd-prov.ts` och dess dom. Golvet mäts som
+förut (3 och 5 km); vidgningen till 8 km väntar på Bengts val i bedömningen §4.2.
+
+**Utfall.** *(fylls i efter körningen, i samma post)*
+

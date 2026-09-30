@@ -1,12 +1,12 @@
 // VÄGPUNKTSGRINDENS PREMISSER PRÖVADE — mätning på arkivet, registrerad i förväg (DECISIONS #405; Bengt 30/9:
-// "gör en ny mätning baserad på din rekommendation").
+// "gör en ny mätning baserad på din rekommendation"). Andra körningen (DECISIONS #406, Bengt: "gör om mätningen med dom
+// per band och de tre täckningarna") lägger till delarna 7–9 nedan; kandidaterna är oförändrade.
 //
 // INGEN DOM. Trösklarna i TROSKLAR-SKUGGAN §3 rörs inte, och vägpunktsgrindens dom (FALLEN 28/9, bekräftad 30/9) står.
-// Det här läser vad domen vilar på, i sex delar som alla är namngivna i DECISIONS #405 innan körningen:
+// Det här läser vad domen vilar på, i delar som alla är namngivna i DECISIONS innan körningen:
 //   1. POPULATION — bara mål efter 2026-09-25 07:30Z (första hela dygnet med varma grannrader, DECISIONS #353/#380).
 //      Hela fönstret läses för parhistoriken (offsetens taket), men inget mål före snittet räknas.
-//   2. VÄGVIKTNING — bandandelarna ur prognoslagrets provpunkter längs de svenska skuggrutterna (som
-//      vagpunkt-population.ts), redovisat bredvid oviktat ALLA och per band.
+//   2. VÄGVIKTNING — bandandelar per population (del 8), redovisat bredvid oviktat ALLA och per band.
 //   3. FELMARGIN — blockbootstrap per station × UTC-dygn (B = 300, percentilerna 2,5 och 97,5). Punkterna är samma
 //      stationer i intilliggande halvtimmar, så binomialfelet i grinden är en undre gräns.
 //   4. FRYSFLAGGAN SOM MÅTT — missad (stationen ≤ 1 °C, modellen > 1), grovt missad (modellen > 2), falsk (modellen ≤ 1,
@@ -16,12 +16,23 @@
 //      (grind A:s lärda paroffset, målets egen historik) står bredvid som taket, inte som kandidat.
 //   6. GOLVET — stationspar inom 3 km och inom 5 km: andel delade kalla hinkar (någon ≤ 5 °C) där |Δyta| > 2 °C.
 //      Det golvet kan ingen interpolation slå.
-// Utfallet mot A1 och A2 skrivs som LÄSNING (KLARAR / OAVGJORT / FALLER mot bootstrapintervallet), inte som dom. Fler
-// kandidater ger fler chanser att klara av slump — därför står listan i DECISIONS innan talen finns.
+//   7. BANDET EFTER NÄRMASTE STATION — geometriskt, oavsett om den bidrog i hinken. Grindens regel (närmaste BIDRAGANDE
+//      ankare) flyttar en punkt utåt när den närmaste stationen saknar data just då, vilket smickrar de inre banden.
+//      Antalet punkter regeln hade flyttat skrivs ut.
+//   8. TRE TÄCKNINGAR — (A) skuggrutterna: prognoslagrets provpunkter var 2 km längs de svenska rutterna; (B) det nationella
+//      huvudvägnätet: Trafikverkets 818 väglagssegment, provpunkter var 2 km, avstånd till närmaste station i arkivet;
+//      (C) trafikarbetet: provpunkter med ÅDT ur `data/adt-provpunkter.json` (NVDB via Lastkajen) om filen finns, annars
+//      uttryckligen INTE MÄTT — ingen proxy sätts i dess ställe.
+//   9. LÄSNING PER BAND — A1 och A2 mot bootstrapintervallet i varje band, med grindens underlagsspärr per band. Sedan, per
+//      kandidat och population: andelen av populationen som ligger i band där kandidaten klarar båda. "Hur bra" (bandet)
+//      hålls isär från "hur mycket" (täckningen), så att ingen population kan väljas efter utfall.
+// Utfallet skrivs som LÄSNING (KLARAR / OAVGJORT / FALLER), inte som dom. Fler kandidater ger fler chanser att klara av
+// slump — därför står listan i DECISIONS innan talen finns.
 //
 // Run: DATABASE_URL=... node --experimental-strip-types scripts/matningar/vagpunkt-premisser-2026-09-30.ts [dagar=60]
 // Självtest utan nät/DB: --sjalvtest
 
+import { existsSync, readFileSync } from "node:fs";
 import { RADVAKT_SQL, karantanSql } from "../../publish/snapshot-core.ts";
 import { vaktdiagnos, led234, saknadeDygn, skrivSaknade } from "../../publish/vaktdiagnos.ts";
 import { FRYS_C } from "../../engine/src/segment.ts";
@@ -41,10 +52,13 @@ const BANDS: [string, number, number][] = [
   ["0–7 km", 0, 7], ["7–15 km", 7, 15], ["15–20 km", 15, 20], [">20 km", 20, Infinity]];
 const B_BOOT = 300;
 const GOLV_KM = [3, 5];
+const PROVSTEG_M = 2000;
+const ADT_FIL = new URL("../../data/adt-provpunkter.json", import.meta.url);
 
 type Station = { id: string; lon: number; lat: number; elev: number | null; yta: Map<number, number>; luft: Map<number, number> };
-type Rad = { station: string; dygn: number; measured: number; ankKm: number; raw: number; hojd: number | null; anom: number | null; offset: number | null };
+type Rad = { station: string; dygn: number; measured: number; ankKm: number; geoKm: number; raw: number; hojd: number | null; anom: number | null; offset: number | null };
 type Pick = (r: Rad) => number | null;
+type Population = { namn: string; andelar: number[]; n: number };
 const KANDIDATER: { namn: string; pick: Pick }[] = [
   { namn: "RÅ", pick: (r) => r.raw }, { namn: "RÅ+HÖJD", pick: (r) => r.hojd }, { namn: "ANOM", pick: (r) => r.anom },
   { namn: "OFFSET (taket)", pick: (r) => r.offset }];
@@ -65,7 +79,8 @@ function pairStats(s: Map<number, number>, a: Map<number, number>): { sum: numbe
   return { sum, n };
 }
 
-/** Som hojd-prov.ts evaluate() för RÅ, RÅ+HÖJD och OFFSET; ANOM därtill. Bara mål från och med `fran` (hink). */
+/** Som hojd-prov.ts evaluate() för RÅ, RÅ+HÖJD och OFFSET; ANOM därtill. Bara mål från och med `fran` (hink).
+ *  `ankKm` = närmaste BIDRAGANDE ankare (grindens regel), `geoKm` = närmaste station oavsett data i hinken (del 7). */
 function evaluate(stations: Map<string, Station>, fran: number): Rad[] {
   const arr = [...stations.values()];
   const rader: Rad[] = [];
@@ -76,6 +91,7 @@ function evaluate(stations: Map<string, Station>, fran: number): Rad[] {
     const nbs = alla.filter((x) => x.km <= MAX_KM).slice(0, K_NEIGHBOURS).map((x) => ({ ...x, p: pairStats(s.yta, x.a.yta) }));
     const nbsLuft = alla.filter((x) => x.km <= MAX_LUFT_KM).slice(0, K_LUFT);
     const nbsAnom = nbs.slice(0, K_ANOM);
+    const geoKm = nbs.length ? nbs[0].km : Infinity;
     for (const [t, measured] of s.yta) {
       if (measured > 5 || t < fran) continue; // vintertimmar som grind A, och bara efter snittet
       let wR = 0, pR = 0, wH = 0, pH = 0, wO = 0, pO = 0, ank = Infinity;
@@ -103,7 +119,7 @@ function evaluate(stations: Map<string, Station>, fran: number): Rad[] {
         const v = 1 / Math.max(km, 1) ** 2;
         wA += v; pA += v * (av - al);
       }
-      rader.push({ station: s.id, dygn: Math.floor(t * BUCKET_S / 86400), measured, ankKm: ank, raw: pR / wR,
+      rader.push({ station: s.id, dygn: Math.floor(t * BUCKET_S / 86400), measured, ankKm: ank, geoKm, raw: pR / wR,
         hojd: wH > 0 ? pH / wH : null, anom: wL > 0 && wA > 0 ? pL / wL + pA / wA : null, offset: wO > 0 ? pO / wO : null });
     }
   }
@@ -124,7 +140,7 @@ function aggregera(rader: Rad[], pick: Pick): { kluster: Agg[][]; stationer: Set
     const key = `${r.station}|${r.dygn}`;
     let k = per.get(key);
     if (!k) { k = BANDS.map(tom); per.set(key, k); }
-    const b = bandAv(r.ankKm), a = k[b];
+    const b = bandAv(r.geoKm), a = k[b]; // del 7: bandet efter närmaste station, inte närmaste bidragande
     stationer[b].add(r.station);
     const fel = Math.abs(v - r.measured);
     a.n++;
@@ -169,25 +185,26 @@ function slump(seed: number): () => number {
 }
 
 type Nyckel = keyof Matt;
-/** Blockbootstrap över kluster: per band, ALLA och vägviktat — percentiler för varje mått. */
-function bootstrap(kluster: Agg[][], andelar: number[], rnd: () => number) {
+type Ci = (k: Nyckel) => [number, number];
+/** Blockbootstrap över kluster: per band, ALLA och vägviktat per population — percentiler för varje mått, ur samma replikat. */
+function bootstrap(kluster: Agg[][], populationer: Population[], rnd: () => number): { band: Ci[]; alla: Ci; vag: Ci[] } {
   const K = kluster.length;
-  const prov: { band: Matt[]; alla: Matt; vag: Matt }[] = [];
+  const prov: { band: Matt[]; alla: Matt; vag: Matt[] }[] = [];
   for (let b = 0; b < B_BOOT; b++) {
     const acc = BANDS.map(tom);
     for (let i = 0; i < K; i++) {
       const k = kluster[Math.floor(rnd() * K)];
       for (let j = 0; j < BANDS.length; j++) for (const key of Object.keys(acc[j]) as (keyof Agg)[]) acc[j][key] += k[j][key];
     }
-    prov.push({ band: acc.map(matt), alla: matt(summa(acc)), vag: vagviktat(acc, andelar).m });
+    prov.push({ band: acc.map(matt), alla: matt(summa(acc)), vag: populationer.map((p) => vagviktat(acc, p.andelar).m) });
   }
   const ci = (xs: number[]): [number, number] => {
     const s = xs.filter((x) => !Number.isNaN(x)).sort((a, b) => a - b);
     if (s.length < 20) return [NaN, NaN];
     return [s[Math.floor(0.025 * (s.length - 1))], s[Math.ceil(0.975 * (s.length - 1))]];
   };
-  const over = (get: (p: typeof prov[number]) => Matt) => (key: Nyckel) => ci(prov.map((p) => get(p)[key] as number));
-  return { band: BANDS.map((_, i) => over((p) => p.band[i])), alla: over((p) => p.alla), vag: over((p) => p.vag) };
+  const over = (get: (p: typeof prov[number]) => Matt): Ci => (key) => ci(prov.map((p) => get(p)[key] as number));
+  return { band: BANDS.map((_, i) => over((p) => p.band[i])), alla: over((p) => p.alla), vag: populationer.map((_, i) => over((p) => p.vag[i])) };
 }
 
 /** Läsning mot en tröskel med bootstrapintervallet: hela intervallet under = KLARAR, hela över = FALLER, annars OAVGJORT. */
@@ -195,29 +212,39 @@ const lasning = (lo: number, hi: number, tr: number): string => Number.isNaN(lo)
 const pc = (x: number) => Number.isNaN(x) ? "  —  " : (100 * x).toFixed(1).padStart(5) + " %";
 const iv = (c: [number, number], f: (x: number) => string) => Number.isNaN(c[0]) ? "[—]" : `[${f(c[0]).trim()}–${f(c[1]).trim()}]`;
 
-function redovisa(namn: string, rader: Rad[], pick: Pick, andelar: number[], rnd: () => number): { vag: Matt; vagCi: (k: Nyckel) => [number, number]; alla: Matt } {
+type Utfall = { namn: string; bandKlarar: boolean[]; bandLas: string[]; alla: Matt; vag: { m: Matt; ci: Ci }[] };
+
+function redovisa(namn: string, rader: Rad[], pick: Pick, populationer: Population[], rnd: () => number): Utfall {
   const { kluster, stationer } = aggregera(rader, pick);
   const band = BANDS.map((_, i) => summa(kluster.map((k) => k[i])));
   const alla = matt(summa(band)), allaStationer = new Set(stationer.flatMap((s) => [...s])).size;
-  const { m: vag, tackt } = vagviktat(band, andelar);
-  const boot = bootstrap(kluster, andelar, rnd);
+  const boot = bootstrap(kluster, populationer, rnd);
   console.log(`\nKANDIDAT ${namn} — ${kluster.length} kluster (station × dygn), ${allaStationer} stationer`);
-  console.log("  band        n      MAE  A2 grova [95 % boot]      A3(dok)  flagga: missad [boot]     grovt   falsk [boot]      klart falsk");
+  console.log("  band        n   st   MAE [boot]         A2 grova [95 % boot]    läsning A1 · A2          A3(dok)  flagga: missad [boot]     grovt   falsk [boot]      klart falsk");
+  const bandKlarar: boolean[] = [], bandLas: string[] = [];
   for (let i = 0; i < BANDS.length; i++) {
-    const m = matt(band[i]), c = boot.band[i];
-    if (!m.n) { console.log(`  ${BANDS[i][0].padEnd(9)} ${"0".padStart(6)}  —`); continue; }
-    console.log(`  ${BANDS[i][0].padEnd(9)} ${String(m.n).padStart(6)}  ${m.mae.toFixed(2)}  ${pc(m.gross)} ${iv(c("gross"), pc).padEnd(17)} ${pc(m.a3)}  ` +
+    const m = matt(band[i]), c = boot.band[i], st = stationer[i].size;
+    if (!m.n) { console.log(`  ${BANDS[i][0].padEnd(9)} ${"0".padStart(6)}  —`); bandKlarar.push(false); bandLas.push("—"); continue; }
+    // Del 9: läsning per band, med grindens underlagsspärr per band.
+    const nog = m.n >= MIN_POINTS_FOR_VERDICT && st >= MIN_STATIONS_FOR_VERDICT;
+    const a1 = c("mae"), a2 = c("gross");
+    const l1 = nog ? lasning(a1[0], a1[1], A1_MAX_MAE) : "spärr", l2 = nog ? lasning(a2[0], a2[1], A2_MAX_GROSS) : "spärr";
+    bandKlarar.push(l1 === "KLARAR" && l2 === "KLARAR"); bandLas.push(`${l1}/${l2}`);
+    console.log(`  ${BANDS[i][0].padEnd(9)} ${String(m.n).padStart(6)} ${String(st).padStart(4)}   ${m.mae.toFixed(2)} ${iv(a1, (x) => x.toFixed(2)).padEnd(12)} ` +
+      `${pc(m.gross)} ${iv(a2, pc).padEnd(17)} ${(l1 + " · " + l2).padEnd(22)} ${pc(m.a3)}  ` +
       `${pc(m.miss)} ${iv(c("miss"), pc).padEnd(17)} (${m.nStat})  ${pc(m.grov)}  ${pc(m.falsk)} ${iv(c("falsk"), pc).padEnd(17)} (${m.nMod})  ${pc(m.klart)}`);
   }
-  const nog = alla.n >= MIN_POINTS_FOR_VERDICT && allaStationer >= MIN_STATIONS_FOR_VERDICT;
-  for (const [rubrik, m, c] of [["ALLA (oviktat)", alla, boot.alla], [`VÄGVIKTAT (täckning ${(100 * tackt).toFixed(0)} %)`, vag, boot.vag]] as [string, Matt, (k: Nyckel) => [number, number]][]) {
+  const nogAlla = alla.n >= MIN_POINTS_FOR_VERDICT && allaStationer >= MIN_STATIONS_FOR_VERDICT;
+  const rader2: [string, Matt, Ci][] = [["ALLA (oviktat)", alla, boot.alla]];
+  const vag = populationer.map((p, i) => { const v = vagviktat(band, p.andelar); rader2.push([`VÄGVIKTAT ${p.namn} (täckning ${(100 * v.tackt).toFixed(0)} %)`, v.m, boot.vag[i]]); return { m: v.m, ci: boot.vag[i] }; });
+  for (const [rubrik, m, c] of rader2) {
     const a1 = c("mae"), a2 = c("gross");
-    console.log(`  ${rubrik.padEnd(28)} n ${String(m.n).padStart(6)} · A1 ${m.mae.toFixed(2)} °C ${iv(a1, (x) => x.toFixed(2))} → ${nog ? lasning(a1[0], a1[1], A1_MAX_MAE) : "under spärren"}` +
-      ` · A2 ${pc(m.gross)} ${iv(a2, pc)} → ${nog ? lasning(a2[0], a2[1], A2_MAX_GROSS) : "under spärren"} · A3(dok) ${pc(m.a3)}` +
+    console.log(`  ${rubrik.padEnd(46)} A1 ${m.mae.toFixed(2)} °C ${iv(a1, (x) => x.toFixed(2))} → ${nogAlla ? lasning(a1[0], a1[1], A1_MAX_MAE) : "spärr"}` +
+      ` · A2 ${pc(m.gross)} ${iv(a2, pc)} → ${nogAlla ? lasning(a2[0], a2[1], A2_MAX_GROSS) : "spärr"} · A3(dok) ${pc(m.a3)}` +
       ` · missad flagga ${pc(m.miss)} ${iv(c("miss"), pc)} · falsk ${pc(m.falsk)} ${iv(c("falsk"), pc)}`);
   }
-  if (!nog) console.log(`  underlag ${alla.n} punkter / ${allaStationer} stationer under spärren (≥ ${MIN_POINTS_FOR_VERDICT} / ≥ ${MIN_STATIONS_FOR_VERDICT})`);
-  return { vag, vagCi: boot.vag, alla };
+  if (!nogAlla) console.log(`  underlag ${alla.n} punkter / ${allaStationer} stationer under spärren (≥ ${MIN_POINTS_FOR_VERDICT} / ≥ ${MIN_STATIONS_FOR_VERDICT})`);
+  return { namn, bandKlarar, bandLas, alla, vag };
 }
 
 /** Golvet: stationspar inom `km`, delade hinkar från snittet där någon mätte ≤ 5 °C. */
@@ -238,7 +265,20 @@ function golvet(stations: Map<string, Station>, km: number, fran: number) {
   return { par, hinkar, andel: hinkar ? over2 / hinkar : NaN, mae: hinkar ? abs / hinkar : NaN };
 }
 
-// ── Självtest: kända sanningar för de tre nya delarna.
+/** Bandandelar för en population: punkter (lon, lat, vikt) mot närmaste station. Vikten är 1 för väglängd, ÅDT för trafikarbete. */
+function bandandelar(punkter: { lon: number; lat: number; vikt: number }[], stations: Station[]): number[] {
+  const summor = BANDS.map(() => 0);
+  let tot = 0;
+  for (const p of punkter) {
+    let narm = Infinity;
+    for (const s of stations) { const km = haversineKm(p.lon, p.lat, s.lon, s.lat); if (km < narm) narm = km; }
+    if (!(narm <= MAX_KM)) continue; // bortom yttersta bandet: alltid okänt, räknas inte i täckningen
+    summor[bandAv(narm)] += p.vikt; tot += p.vikt;
+  }
+  return summor.map((x) => tot ? x / tot : 0);
+}
+
+// ── Självtest: kända sanningar för de nya delarna.
 if (process.argv.includes("--sjalvtest")) {
   const rnd = slump(1);
   // (a) ANOM: tolv stationer på en linje (2 km), luft med lutning 0,05 °C/km, anomali −2 i block om fem, +2 i nästa block.
@@ -259,7 +299,7 @@ if (process.argv.includes("--sjalvtest")) {
   // (b) Bootstrap: 60 kluster à 40 rader, sann andel grova fel 10 % — intervallet ska täcka 0,10 och vara smalare än ±6 pe.
   const kluster: Agg[][] = [];
   for (let k = 0; k < 60; k++) { const a = BANDS.map(tom); for (let i = 0; i < 40; i++) { a[0].n++; if (rnd() < 0.1) a[0].gross++; } kluster.push(a); }
-  const boot = bootstrap(kluster, [1, 0, 0, 0], rnd), c = boot.alla("gross");
+  const boot = bootstrap(kluster, [{ namn: "test", andelar: [1, 0, 0, 0], n: 1 }], rnd), c = boot.alla("gross");
   if (!(c[0] <= 0.1 && c[1] >= 0.1 && c[1] - c[0] < 0.12)) { console.error(`SJÄLVTEST FALLERAR (bootstrap): ${c}`); process.exit(1); }
   // (c) Vägviktning: band 1 med 2 %, band 2 med 10 %, andelar 0,5/0,5 ⇒ 6 %; band utan underlag räknas inte.
   const v1 = tom(), v2 = tom(); v1.n = 100; v1.gross = 2; v2.n = 100; v2.gross = 10;
@@ -271,7 +311,22 @@ if (process.argv.includes("--sjalvtest")) {
   mk("a", 13, 0); mk("b", 13.02, 3); mk("c", 14, 0); mk("d", 14.02, 0.5);
   const gg = golvet(g, 3, SNITT);
   if (!(gg.par === 2 && gg.hinkar === 100 && Math.abs(gg.andel - 0.5) < 1e-9)) { console.error(`SJÄLVTEST FALLERAR (golvet): ${JSON.stringify(gg)}`); process.exit(1); }
-  console.log(`SJÄLVTEST OK: ANOM ${anomM.toFixed(3)} mot RÅ ${rawM.toFixed(3)} °C på ${mitt.length} punkter · bootstrap [${pc(c[0]).trim()}–${pc(c[1]).trim()}] kring 10 % · vägviktat 6,0 % · golvet 50 %`);
+  // (e) Bandet efter närmaste station (del 7): mål m med en granne 3 km bort som saknar varannan hink och en 10 km bort som
+  // alltid finns. Grindens regel flyttar de hinkar där 3 km-grannen saknas till bandet 7–15 km; geometriskt stannar alla i 0–7.
+  const b = new Map<string, Station>();
+  const serie = (n: number, hopp: boolean) => { const y = new Map<number, number>(); for (let t = SNITT; t < SNITT + n; t++) if (!hopp || t % 2 === 0) y.set(t, 0); return y; };
+  b.set("m", { id: "m", lon: 13, lat: 56, elev: 0, yta: serie(100, false), luft: new Map() });
+  b.set("n3", { id: "n3", lon: 13.048, lat: 56, elev: 0, yta: serie(100, true), luft: new Map() });
+  b.set("n10", { id: "n10", lon: 13.16, lat: 56, elev: 0, yta: serie(100, false), luft: new Map() });
+  const br = evaluate(b, SNITT).filter((r) => r.station === "m");
+  const flyttade = br.filter((r) => bandAv(r.ankKm) !== bandAv(r.geoKm)).length;
+  if (!(br.length === 100 && flyttade === 50 && br.every((r) => bandAv(r.geoKm) === 0))) { console.error(`SJÄLVTEST FALLERAR (bandet): n=${br.length}, flyttade=${flyttade}`); process.exit(1); }
+  // (f) Bandandelar: tre punkter med vikt 1/1/2, närmaste station 2, 10 och 30 km bort ⇒ 25 / 25 / 0 / 50 %; en punkt bortom 50 km räknas inte.
+  const stat = [{ id: "x", lon: 13, lat: 56, elev: null, yta: new Map(), luft: new Map() }] as Station[];
+  const km2lon = (km: number) => 13 + km / (111.32 * Math.cos(56 * Math.PI / 180));
+  const and = bandandelar([{ lon: km2lon(2), lat: 56, vikt: 1 }, { lon: km2lon(10), lat: 56, vikt: 1 }, { lon: km2lon(30), lat: 56, vikt: 2 }, { lon: km2lon(80), lat: 56, vikt: 9 }], stat);
+  if (!(Math.abs(and[0] - 0.25) < 1e-9 && Math.abs(and[1] - 0.25) < 1e-9 && and[2] === 0 && Math.abs(and[3] - 0.5) < 1e-9)) { console.error(`SJÄLVTEST FALLERAR (bandandelar): ${and}`); process.exit(1); }
+  console.log(`SJÄLVTEST OK: ANOM ${anomM.toFixed(3)} mot RÅ ${rawM.toFixed(3)} °C på ${mitt.length} punkter · bootstrap [${pc(c[0]).trim()}–${pc(c[1]).trim()}] kring 10 % · vägviktat 6,0 % · golvet 50 % · bandet 50 flyttade · bandandelar 25/25/0/50`);
   process.exit(0);
 }
 
@@ -281,7 +336,7 @@ if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
 const pg = (await import("pg")).default;
 const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });
 const DAYS = Number(process.argv[2] ?? 60);
-console.log(`VÄGPUNKTSGRINDENS PREMISSER — mätning enligt DECISIONS #405, ${DAYS} dygn bakåt, mål från 2026-09-25 07:30Z. Ingen dom.`);
+console.log(`VÄGPUNKTSGRINDENS PREMISSER — mätning enligt DECISIONS #405/#406, ${DAYS} dygn bakåt, mål från 2026-09-25 07:30Z. Ingen dom.`);
 skrivSaknade(await saknadeDygn((s, p) => pool.query(s, p as any[]).then((r) => r.rows), "weather_observations", DAYS));
 await vaktdiagnos((s, p) => pool.query(s, p as any[]).then((r) => r.rows),
   "weather_observations", `WHERE sample_time > now() - ${DAYS} * interval '1 day'`, [
@@ -309,17 +364,41 @@ for (const r of res.rows) {
 const efter = res.rows.filter((r: any) => Number(r.b) >= SNITT).length;
 console.log(`VViS: ${stations.size} stationer, ${res.rows.length} hinkar i fönstret, varav ${efter} efter snittet`);
 if (stations.size < 100 || efter < 1000) { console.error(`UNDERLAGSVAKT: ${stations.size} stationer / ${efter} hinkar efter snittet — arkivet eller hämtningen är trasig.`); process.exit(1); }
-// Vägnätets avståndsfördelning (som vagpunkt-population.ts): provpunkter var 2 km längs de svenska skuggrutterna.
+
+// ── Del 8: tre täckningar.
+// (A) Skuggrutterna: prognoslagrets provpunkter var 2 km längs de svenska rutterna, avstånd till närmaste bidragande ankare.
 const vp = await pool.query(`
   SELECT (e->>2)::float AS narm
   FROM (SELECT DISTINCT ON (route) route, prognos FROM shadow_log
         WHERE land = 'SE' AND prognos ? 'p' AND run_at > now() - interval '7 days'
         ORDER BY route, run_at DESC) s,
        jsonb_array_elements(s.prognos->'p') e`);
-await pool.end();
 const narm = vp.rows.map((r: any) => r.narm).filter((x: any) => x !== null) as number[];
-const andelar = BANDS.map((_, i) => narm.filter((k) => bandAv(k) === i).length / (narm.length || 1));
-console.log(`Vägpunkter längs skuggrutterna: ${narm.length}. Andel per band: ` + BANDS.map(([n], i) => `${n} ${(100 * andelar[i]).toFixed(1)} %`).join(" · "));
+const andelarA = BANDS.map((_, i) => narm.filter((k) => bandAv(k) === i).length / (narm.length || 1));
+// (B) Nationella huvudvägnätet: Trafikverkets väglagssegment (riks- och länsvägar), provpunkter var 2 km längs geometrin.
+const seg = await pool.query(`
+  SELECT ST_X(q.p) AS lon, ST_Y(q.p) AS lat
+  FROM road_conditions rc,
+       LATERAL (SELECT ST_LineInterpolatePoint(rc.geom, f) AS p
+                FROM generate_series(0::float, 1::float, ${PROVSTEG_M}::float / GREATEST(ST_Length(rc.geom::geography), ${PROVSTEG_M}::float)) f) q
+  WHERE NOT rc.deleted AND rc.geom IS NOT NULL`);
+await pool.end();
+const statArr = [...stations.values()];
+const andelarB = bandandelar(seg.rows.map((r: any) => ({ lon: +r.lon, lat: +r.lat, vikt: 1 })), statArr);
+// (C) Trafikarbetet: ÅDT-provpunkter ur NVDB om filen finns — annars inte mätt, ingen proxy.
+let populationer: Population[] = [
+  { namn: "A skuggrutterna", andelar: andelarA, n: narm.length },
+  { namn: "B huvudvägnätet", andelar: andelarB, n: seg.rows.length }];
+let adtNot = "C trafikarbetet: INTE MÄTT — data/adt-provpunkter.json saknas (ÅDT per vägavsnitt ur NVDB via Lastkajen). Ingen proxy sätts i dess ställe.";
+if (existsSync(ADT_FIL)) {
+  const adt = JSON.parse(readFileSync(ADT_FIL, "utf8")) as { lon: number; lat: number; adt: number }[];
+  populationer.push({ namn: "C trafikarbetet", andelar: bandandelar(adt.map((p) => ({ lon: p.lon, lat: p.lat, vikt: p.adt })), statArr), n: adt.length });
+  adtNot = `C trafikarbetet: ${adt.length} ÅDT-provpunkter ur data/adt-provpunkter.json`;
+}
+console.log(`\nTÄCKNING — andel av populationen per band (avstånd till närmaste station; bortom ${MAX_KM} km räknas inte)`);
+for (const p of populationer) console.log(`  ${p.namn.padEnd(18)} ${String(p.n).padStart(6)} punkter: ` + BANDS.map(([n], i) => `${n} ${(100 * p.andelar[i]).toFixed(1)} %`).join(" · "));
+console.log(`  ${adtNot}`);
+
 // Höjder ur EU-DEM (som hojd-prov.ts) för RÅ+HÖJD.
 const ids = [...stations.keys()];
 let elevOk = 0;
@@ -341,14 +420,22 @@ for (const km of GOLV_KM) {
 }
 
 const rader = evaluate(stations, SNITT);
-console.log(`\nMål efter snittet: ${rader.length} punkter från ${new Set(rader.map((r) => r.station)).size} stationer. ` +
-  `Trösklar (läsning, ingen dom): A1 ≤ ${A1_MAX_MAE.toFixed(1)} °C · A2 ≤ ${A2_MAX_GROSS * 100} % · A3(dok) ≤ ${A3_MAX_FREEZE * 100} %. Bootstrap B = ${B_BOOT}, frö 20260930.`);
+const flyttade = rader.filter((r) => bandAv(r.ankKm) !== bandAv(r.geoKm)).length;
+console.log(`\nMål efter snittet: ${rader.length} punkter från ${new Set(rader.map((r) => r.station)).size} stationer. Bandet sätts av närmaste station; ` +
+  `grindens regel (närmaste bidragande ankare) hade flyttat ${flyttade} punkter (${(100 * flyttade / (rader.length || 1)).toFixed(1)} %) utåt.`);
+console.log(`Trösklar (läsning, ingen dom): A1 ≤ ${A1_MAX_MAE.toFixed(1)} °C · A2 ≤ ${A2_MAX_GROSS * 100} % · A3(dok) ≤ ${A3_MAX_FREEZE * 100} %. ` +
+  `Spärr per band ≥ ${MIN_POINTS_FOR_VERDICT} punkter / ≥ ${MIN_STATIONS_FOR_VERDICT} stationer. Bootstrap B = ${B_BOOT}, frö 20260930.`);
 const rnd = slump(20260930);
-const utfall = KANDIDATER.map((k) => ({ namn: k.namn, ...redovisa(k.namn, rader, k.pick, andelar, rnd) }));
-console.log(`\nLÄSNING (vägviktat, mot A1 och A2 med bootstrapintervallet):`);
+const utfall = KANDIDATER.map((k) => redovisa(k.namn, rader, k.pick, populationer, rnd));
+
+console.log(`\nLÄSNING PER BAND (A1/A2) och andel av varje population i band där kandidaten klarar båda:`);
+console.log(`  kandidat         ${BANDS.map(([n]) => n.padEnd(18)).join("")}${populationer.map((p) => p.namn.padStart(18)).join("")}`);
 for (const u of utfall) {
-  const a1 = u.vagCi("mae"), a2 = u.vagCi("gross");
-  console.log(`  ${u.namn.padEnd(15)} A1 ${lasning(a1[0], a1[1], A1_MAX_MAE).padEnd(9)} A2 ${lasning(a2[0], a2[1], A2_MAX_GROSS).padEnd(9)} ` +
-    `(oviktat A2 ${pc(u.alla.gross).trim()}, vägviktat ${pc(u.vag.gross).trim()} ${iv(a2, pc)})`);
+  const tackning = populationer.map((p) => p.andelar.reduce((a, x, i) => a + (u.bandKlarar[i] ? x : 0), 0));
+  console.log(`  ${u.namn.padEnd(16)} ${u.bandLas.map((l) => l.padEnd(18)).join("")}${tackning.map((x) => pc(x).padStart(18)).join("")}`);
 }
+console.log(`\nLÄSNING VÄGVIKTAT (A1 · A2 mot bootstrapintervallet):`);
+for (const u of utfall)
+  console.log(`  ${u.namn.padEnd(16)} ` + populationer.map((p, i) => { const a1 = u.vag[i].ci("mae"), a2 = u.vag[i].ci("gross");
+    return `${p.namn}: ${lasning(a1[0], a1[1], A1_MAX_MAE)} · ${lasning(a2[0], a2[1], A2_MAX_GROSS)} (A2 ${pc(u.vag[i].m.gross).trim()} ${iv(a2, pc)})`; }).join("   "));
 console.log(`Frysflaggan har ingen tröskel i TROSKLAR-SKUGGAN; talen ovan är underlag för Bengts beslut, inte en dom.`);
