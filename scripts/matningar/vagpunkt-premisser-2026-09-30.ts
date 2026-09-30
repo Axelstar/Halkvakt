@@ -26,10 +26,15 @@
 //   9. LÄSNING PER BAND — A1 och A2 mot bootstrapintervallet i varje band, med grindens underlagsspärr per band. Sedan, per
 //      kandidat och population: andelen av populationen som ligger i band där kandidaten klarar båda. "Hur bra" (bandet)
 //      hålls isär från "hur mycket" (täckningen), så att ingen population kan väljas efter utfall.
+//  10. FINSKA STATIONERNA (DECISIONS #407, `--land fi`) — samma mätning på `fi.weather_observations` (Digitraffic, CC BY 4.0):
+//      Finlands nät är tätare i söder och kan ge de tjugo stationer bandet 0–7 km aldrig når i Sverige. Inget snitt: det
+//      finska arkivet bytte aldrig regel (sparar ≤ 5 °C, nederbörd eller Δ ≥ 0,5 °C), så andelen varma hinkar skrivs ut och
+//      läses FÖRE talen. Vakterna #75 och radvakten gäller; karantänen räknas i det finska arkivet; den långsamma vakten är
+//      svensk och saknas. Täckning bara A (finska skuggrutter) om prognospunkter finns; ingen B eller C. Läsning, ingen dom.
 // Utfallet skrivs som LÄSNING (KLARAR / OAVGJORT / FALLER), inte som dom. Fler kandidater ger fler chanser att klara av
 // slump — därför står listan i DECISIONS innan talen finns.
 //
-// Run: DATABASE_URL=... node --experimental-strip-types scripts/matningar/vagpunkt-premisser-2026-09-30.ts [dagar=60]
+// Run: DATABASE_URL=... node --experimental-strip-types scripts/matningar/vagpunkt-premisser-2026-09-30.ts [dagar=60] [--land fi]
 // Självtest utan nät/DB: --sjalvtest
 
 import { existsSync, readFileSync } from "node:fs";
@@ -336,25 +341,30 @@ const url = process.env.DATABASE_URL;
 if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
 const pg = (await import("pg")).default;
 const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });
-const DAYS = Number(process.argv[2] ?? 60);
-console.log(`VÄGPUNKTSGRINDENS PREMISSER — mätning enligt DECISIONS #405/#406, ${DAYS} dygn bakåt, mål från 2026-09-25 07:30Z. Ingen dom.`);
-skrivSaknade(await saknadeDygn((s, p) => pool.query(s, p as any[]).then((r) => r.rows), "weather_observations", DAYS));
+const DAYS = Number(process.argv.slice(2).find((a) => /^\d+$/.test(a)) ?? 60);
+const LAND = process.argv.includes("--land") ? process.argv[process.argv.indexOf("--land") + 1] : "se";
+if (LAND !== "se" && LAND !== "fi") { console.error(`okänt land: ${LAND} (se eller fi)`); process.exit(1); }
+const TABELL = LAND === "fi" ? "fi.weather_observations" : "weather_observations";
+const FRAN = LAND === "fi" ? 0 : SNITT; // det finska arkivet bytte aldrig regel — inget snitt, andelen varma hinkar skrivs ut i stället
+console.log(`VÄGPUNKTSGRINDENS PREMISSER — mätning enligt DECISIONS #405/#406${LAND === "fi" ? "/#407, FINSKA STATIONERNA (fi.weather_observations, Digitraffic CC BY 4.0)" : ""}, ` +
+  `${DAYS} dygn bakåt, mål ${LAND === "fi" ? "hela fönstret" : "från 2026-09-25 07:30Z"}. Ingen dom.`);
+skrivSaknade(await saknadeDygn((s, p) => pool.query(s, p as any[]).then((r) => r.rows), TABELL, DAYS));
 await vaktdiagnos((s, p) => pool.query(s, p as any[]).then((r) => r.rows),
-  "weather_observations", `WHERE sample_time > now() - ${DAYS} * interval '1 day'`, [
+  TABELL, `WHERE sample_time > now() - ${DAYS} * interval '1 day'`, [
     { namn: "yttemperatur finns", bar: "surface_temp_c IS NOT NULL", villkor: "true" },
     { namn: "#75: lufttemperatur finns", bar: "air_temp_c IS NOT NULL", villkor: "true" },
     { namn: "#75: yta - luft >= -12 grader", bar: "surface_temp_c IS NOT NULL AND air_temp_c IS NOT NULL", villkor: "surface_temp_c >= air_temp_c - 12" },
-    ...led234(),
+    ...led234(TABELL),
   ]);
-// Vägpunktsgrindens WHERE-sats ordagrant (hojd-prov.ts), plus luften för ANOM.
+// Vägpunktsgrindens WHERE-sats ordagrant (hojd-prov.ts), plus luften för ANOM. Tabellen är landets arkiv.
 const res = await pool.query(`
   SELECT DISTINCT ON (station_id, b) station_id,
     ST_X(geom::geometry) lon, ST_Y(geom::geometry) lat,
     floor(extract(epoch FROM sample_time) / ${BUCKET_S})::bigint AS b, surface_temp_c, air_temp_c
-  FROM weather_observations
+  FROM ${TABELL}
   WHERE surface_temp_c IS NOT NULL AND sample_time > now() - $1 * interval '1 day'
     AND air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12
-    AND ${RADVAKT_SQL} AND ${karantanSql("weather_observations")}
+    AND ${RADVAKT_SQL} AND ${karantanSql(TABELL, TABELL)}
   ORDER BY station_id, b, sample_time DESC`, [DAYS]);
 const stations = new Map<string, Station>();
 for (const r of res.rows) {
@@ -362,22 +372,24 @@ for (const r of res.rows) {
   if (!s) { s = { id: r.station_id, lon: +r.lon, lat: +r.lat, elev: null, yta: new Map(), luft: new Map() }; stations.set(r.station_id, s); }
   s.yta.set(Number(r.b), +r.surface_temp_c); s.luft.set(Number(r.b), +r.air_temp_c);
 }
-const efter = res.rows.filter((r: any) => Number(r.b) >= SNITT).length;
-console.log(`VViS: ${stations.size} stationer, ${res.rows.length} hinkar i fönstret, varav ${efter} efter snittet`);
-if (stations.size < 100 || efter < 1000) { console.error(`UNDERLAGSVAKT: ${stations.size} stationer / ${efter} hinkar efter snittet — arkivet eller hämtningen är trasig.`); process.exit(1); }
+const efter = res.rows.filter((r: any) => Number(r.b) >= FRAN).length;
+const varma = res.rows.filter((r: any) => Number(r.b) >= FRAN && +r.surface_temp_c > 5).length;
+console.log(`${LAND === "fi" ? "Finska stationer" : "VViS"}: ${stations.size} stationer, ${res.rows.length} hinkar i fönstret, varav ${efter} ${LAND === "fi" ? "räknade" : "efter snittet"}; ` +
+  `varma hinkar (> 5 °C) ${(100 * varma / (efter || 1)).toFixed(1)} % — arkivets censur syns här: få varma hinkar ⇒ varma grannar saknas ⇒ rå viktning smickras.`);
+if (stations.size < 100 || efter < 1000) { console.error(`UNDERLAGSVAKT: ${stations.size} stationer / ${efter} hinkar — arkivet eller hämtningen är trasig.`); process.exit(1); }
 
 // ── Del 8: tre täckningar.
 // (A) Skuggrutterna: prognoslagrets provpunkter var 2 km längs de svenska rutterna, avstånd till närmaste bidragande ankare.
 const vp = await pool.query(`
   SELECT (e->>2)::float AS narm
   FROM (SELECT DISTINCT ON (route) route, prognos FROM shadow_log
-        WHERE land = 'SE' AND prognos ? 'p' AND run_at > now() - interval '7 days'
+        WHERE land = $1 AND prognos ? 'p' AND run_at > now() - interval '7 days'
         ORDER BY route, run_at DESC) s,
-       jsonb_array_elements(s.prognos->'p') e`);
+       jsonb_array_elements(s.prognos->'p') e`, [LAND.toUpperCase()]);
 const narm = vp.rows.map((r: any) => r.narm).filter((x: any) => x !== null) as number[];
 const andelarA = BANDS.map((_, i) => narm.filter((k) => bandAv(k) === i).length / (narm.length || 1));
 // (B) Nationella huvudvägnätet: Trafikverkets väglagssegment (riks- och länsvägar), provpunkter var 2 km längs geometrin.
-const seg = await pool.query(`
+const seg = LAND === "fi" ? { rows: [] as any[] } : await pool.query(`
   SELECT ST_X(q.p) AS lon, ST_Y(q.p) AS lat
   FROM road_conditions rc,
        LATERAL (SELECT ST_LineInterpolatePoint(rc.geom, f::float) AS p
@@ -387,11 +399,12 @@ await pool.end();
 const statArr = [...stations.values()];
 const andelarB = bandandelar(seg.rows.map((r: any) => ({ lon: +r.lon, lat: +r.lat, vikt: 1 })), statArr);
 // (C) Trafikarbetet: ÅDT-provpunkter ur NVDB om filen finns — annars inte mätt, ingen proxy.
-let populationer: Population[] = [
-  { namn: "A skuggrutterna", andelar: andelarA, n: narm.length },
-  { namn: "B huvudvägnätet", andelar: andelarB, n: seg.rows.length }];
-let adtNot = "C trafikarbetet: INTE MÄTT — data/adt-provpunkter.json saknas (ÅDT per vägavsnitt ur NVDB via Lastkajen). Ingen proxy sätts i dess ställe.";
-if (existsSync(ADT_FIL)) {
+let populationer: Population[] = narm.length ? [{ namn: "A skuggrutterna", andelar: andelarA, n: narm.length }] : [];
+if (LAND === "se") populationer.push({ namn: "B huvudvägnätet", andelar: andelarB, n: seg.rows.length });
+let adtNot = LAND === "fi" ? "B och C: bara för Sverige — den finska körningen läses per band, inte vägviktat."
+  : "C trafikarbetet: INTE MÄTT — data/adt-provpunkter.json saknas (ÅDT per vägavsnitt ur NVDB via Lastkajen). Ingen proxy sätts i dess ställe.";
+if (!narm.length) console.log(`  A skuggrutterna: inga prognospunkter i shadow_log för ${LAND.toUpperCase()} de senaste 7 dygnen — ingen vägviktning.`);
+if (LAND === "se" && existsSync(ADT_FIL)) {
   const adt = JSON.parse(readFileSync(ADT_FIL, "utf8")) as { lon: number; lat: number; adt: number }[];
   populationer.push({ namn: "C trafikarbetet", andelar: bandandelar(adt.map((p) => ({ lon: p.lon, lat: p.lat, vikt: p.adt })), statArr), n: adt.length });
   adtNot = `C trafikarbetet: ${adt.length} ÅDT-provpunkter ur data/adt-provpunkter.json`;
@@ -415,15 +428,15 @@ for (let i = 0; i < ids.length; i += 100) {
 }
 console.log(`Höjder: ${elevOk} av ${stations.size} stationer fick EU-DEM-höjd (Copernicus EU-DEM via opentopodata.org)`);
 
-console.log(`\nGOLVET — stationspar, delade hinkar från snittet där någon mätte ≤ 5 °C`);
+console.log(`\nGOLVET — stationspar, delade hinkar ${LAND === "fi" ? "i fönstret" : "från snittet"} där någon mätte ≤ 5 °C`);
 for (const km of GOLV_KM) {
-  const g = golvet(stations, km, SNITT);
+  const g = golvet(stations, km, FRAN);
   console.log(`  inom ${km} km: ${g.par} par, ${g.hinkar} hinkar, |Δyta| > 2 °C i ${pc(g.andel).trim()}, MAE mellan paren ${g.mae.toFixed(2)} °C`);
 }
 
-const rader = evaluate(stations, SNITT);
+const rader = evaluate(stations, FRAN);
 const flyttade = rader.filter((r) => bandAv(r.ankKm) !== bandAv(r.geoKm)).length;
-console.log(`\nMål efter snittet: ${rader.length} punkter från ${new Set(rader.map((r) => r.station)).size} stationer. Bandet sätts av närmaste station; ` +
+console.log(`\nMål ${LAND === "fi" ? "i fönstret" : "efter snittet"}: ${rader.length} punkter från ${new Set(rader.map((r) => r.station)).size} stationer. Bandet sätts av närmaste station; ` +
   `grindens regel (närmaste bidragande ankare) hade flyttat ${flyttade} punkter (${(100 * flyttade / (rader.length || 1)).toFixed(1)} %) utåt.`);
 console.log(`Trösklar (läsning, ingen dom): A1 ≤ ${A1_MAX_MAE.toFixed(1)} °C · A2 ≤ ${A2_MAX_GROSS * 100} % · A3(dok) ≤ ${A3_MAX_FREEZE * 100} %. ` +
   `Spärr per band ≥ ${MIN_POINTS_FOR_VERDICT} punkter / ≥ ${MIN_STATIONS_FOR_VERDICT} stationer. Bootstrap B = ${B_BOOT}, frö 20260930.`);

@@ -6214,3 +6214,26 @@ population (A eller B) ändrar tiondelar, inte domar: den spaken var mindre än 
 kandidaten, oavgjord vägviktat och i 7–20 km, fallen bortom 20 km. **Trösklarna orörda, grindens dom står.** Bengts val i
 bedömningen §4.2 utökas med spärrfrågan för 0–7 km och ÅDT-uttaget för täckning C.
 
+## #407 (30/9 2026) Premissmätningen på de finska stationerna — statistisk kraft för bandet 0–7 km, registrerad innan körningen
+
+**Bengts order 30/9** (*"kör mätningen på de finska stationerna också"*), efter #406:s fynd att bara 15 svenska stationer har en
+granne inom 7 km och att bandet därför aldrig når grindens spärr på 20 stationer.
+
+**Beslut, registrerat innan körningen.** Samma skript med `--land fi` (knappen `hojd-prov`, `dagar: premisser-fi`):
+- Population: `fi.weather_observations` (Fintraffic Digitraffic, CC BY 4.0; 526 stationer i skuggarkivet), 60 dygn, alla mål
+  i fönstret ≤ +5 °C. Inget snitt 25/9: det finska arkivet bytte aldrig regel. Det sparar rader vid yta ≤ 5 °C, nederbörd eller
+  Δ ≥ 0,5 °C mot senast sparade, alltså en censur av samma slag som det svenska före 25/9 men mildare. Andelen varma hinkar
+  (> 5 °C) skrivs ut och läses FÖRE talen: är den låg saknas varma grannar och rå viktning smickras, som i #399.
+- Vakter: #75 (yta ≥ luft − 12), radvakten och karantänen räknad i det finska arkivet. Den långsamma vakten (sql/030) är svensk
+  och saknas. Vaktdiagnosen skrivs ut som för Sverige.
+- Kandidater, trösklar, band (efter närmaste station), bootstrap och frö: oförändrade från #405/#406. Läsning per band med
+  spärren ≥ 500 punkter / ≥ 20 stationer. Golvet inom 3 och 5 km.
+- Täckning: bara A (finska skuggrutter) om prognospunkter finns i skuggloggen, annars ingen vägviktning. Ingen B eller C.
+- Norge körs inte i den här posten: fjällpassen är en annan regim och ska registreras för sig.
+
+**Vad utfallet får betyda.** Fysiken i leave-one-out är densamma, trösklarna desamma. Ett finskt utfall i bandet 0–7 km är
+underlag för om det svenska bandet går att döma alls, inte en dom över det svenska nätet. Det ändrar inga trösklar och inte
+vägpunktsgrindens dom.
+
+**Utfall.** *(fylls i efter körningen, i samma post)*
+

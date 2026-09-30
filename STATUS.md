@@ -2106,3 +2106,5 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 30/9 (Claude): andra körningen av premissmätningen (36668940287, grön; 36668773820 föll på generate_series-typ, rättat):
   täckning A ≈ B, C omätt (ÅDT saknas); bandregeln flyttade 2,6 %; per band avgör fem dygn bara fallen; bandet 0–7 km har
   15 stationer och kan inte nå spärren 20. Bokfört i DECISIONS #406, tavlan #269, bedömningen §4.2 (frågor d och e).
+- 30/9 (Claude, Bengts *"kör mätningen på de finska stationerna också"*): DECISIONS #407 förregistrerad; skriptet fick `--land fi`
+  (finska arkivet, inget snitt, varma hinkar skrivs ut, vakterna via tabellparametern), hojd-prov.yml fick `dagar: premisser-fi`.
