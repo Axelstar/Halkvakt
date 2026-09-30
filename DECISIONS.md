@@ -6137,5 +6137,28 @@ dess dom ska stå tills Bengt beslutar annat på ett mätt underlag. Att bara k�
 analysen kräver. Kriging med anpassat variogram och platsegenskaper utöver höjd: rätt nästa steg om ANOM eller RÅ+HÖJD visar
 väg, men inte i den här mätningen — de kräver egna beslut och mer än en dags bygge.
 
-**Utfall.** *(fylls i efter körningen, i samma post)*
+**Utfall (körning 36666151860, 30/9 03:50Z, självtest grönt).** Mål efter snittet: 9 224 punkter från 235 stationer i 817 kluster
+(fem ärliga dygn). Vägnätets bandandelar 52,6 / 33,9 / 6,8 / 6,8 %.
+
+| Kandidat | A1 vägviktat [boot] | A2 oviktat | A2 vägviktat [boot] | A2 per band 0–7 / 7–15 / 15–20 / >20 km | Läsning vägviktat |
+|---|---|---|---|---|---|
+| RÅ | 0,98 °C [0,89–1,07] | 11,5 % | 7,7 % [5,4–9,8] | 2,7 / 14,1 / 9,9 / 12,4 % | A1 oavgjort · A2 FALLER |
+| RÅ+HÖJD | 0,75 °C [0,67–0,85] | 10,5 % | 5,2 % [3,6–6,9] | 1,5 / 9,2 / 7,3 / 12,9 % | A1 klarar · A2 OAVGJORT |
+| ANOM | 1,13 °C [1,04–1,24] | 15,7 % | 15,2 % [11,9–19,8] | 9,4 / 23,5 / 20,2 / 13,1 % | FALLER båda |
+| OFFSET (taket) | 0,70 °C [0,62–0,78] | 4,5 % [3,4–5,6] | 3,2 % [1,9–4,7] | 1,3 / 5,7 / 4,5 / 4,6 % | klarar båda (oviktat A2 oavgjort) |
+
+Frysflaggan bortom 20 km (266 stationsflaggor): rå missar 70 % [57–84], rå+höjd 62 % [48–76], offset 48 % [35–61]; offsetmodellens
+flaggor är falska i 49 % [36–61]. Banden 0–15 km bär 2 respektive 11 flaggor och säger inget än. Golvet: inga stationspar inom 3 km
+finns; inom 5 km sex par och 169 delade kalla hinkar med |Δyta| > 2 °C i 15,4 % (MAE 1,18 °C mellan paren).
+
+**Läsning.** (1) På ärliga rader räddar ingen premissrättning en vägpunktskandidat: rå faller även vägviktat, rå+höjd är oavgjord
+(5,2 %, intervallet spänner över tröskeln) med fem dygns underlag, och ANOM föll rakt av. Vägpunktsgrindens dom står. (2) Hypotesen
+bakom ANOM — att luften är jämn och anomalin lokal — höll inte: anomalin ur de tre närmaste och luften ur åtta blev sämre än rå
+viktning ur fem. Datat vill ha MER utjämning över grannar, inte mindre: målstationens egen särart är felets största del, och den lär
+bara offsetmodellen ur målets historik, som en vägpunkt saknar. (3) Höjden är den enda platsegenskap som hittills bär: 0,96 → 0,63 °C
+inom 7 km, och vägviktat 7,7 → 5,2 %. (4) Golvet vid 5 km (15 % på sex par) ligger över tröskeln 5 %; är det representativt är A2
+≤ 5 % ouppnåeligt för en enskild granne på det avståndet, och det som når 5 % är medelvärdet av flera. Sex par räcker inte för en
+slutsats; golvmätningen behöver fler par (≤ 8 km) eller närmaste-granne-LOO som proxy. (5) Den oviktade populationen blandade
+censurerade rader in i 28/9-domen: på ärliga rader är rå A1 0,98 °C, inte 0,86. **Inget ändras i drift; trösklarna står.**
+Kandidaten att bära vidare är RÅ+HÖJD; nästa steg är Bengts (bedömningen §4.2).
 
