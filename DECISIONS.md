@@ -6576,3 +6576,17 @@ försprångets tak, 9 vägarbetena. **Appsidan:** *Vad appen inte gör* säger n
 våren 2027). **Systembilden:** försprångets tak, mätapparaten och integriteten (version 10, 14:43Z), plus oljan i skuggtabellen och i L2.
 **Bedömningen:** läget (9), §4.2 fem rader, Ä3. **Kartan:** läge-raderna L2 och L5, §13.6 och §14 — innehållet orört (frysregeln).
 Artefakterna republiceras från main efter sammanslagningen; en artefakt som skiljer sig från sin repokopia är ett fel.
+
+## #423 (1/10 2026) QR-koden till appen kommer först med domänen (kort #277) · fyra tavelrättelser
+
+**Beslut (Bengt 1/10: *"qr kod kommer först med domänen"*).** En QR-kod till appen görs när halkvakt.se finns, som EN kod för båda
+plattformarna via en egen adress som vidarebefordrar. Alternativet — en kod nu direkt på TestFlights publika länk — valdes bort: länken
+kräver en extern grupp och Beta App Review, gäller bara iPhone, och kan stängas eller bytas medan en tryckt kod inte går att ändra.
+Nytt kort **#277**, låst på domänen (kortet *Skydda namnet*), en publik TestFlight-länk eller App Store-sidan, och Play-länken (#219).
+
+**Tavelrättelser (Bengt: *"du kan rätta placeringarna"*), ur listningen av de 35 öppna korten:** (1) **#276** flyttat från *Bengt* till
+*Claude — låst*: i drift, nyckeln är data. (2) **#258 och #259** sade *"Axels bygge 0.3.9 (17)"* — bygget hos Axel är (19); (14)–(18)
+arkiverades aldrig. (3) **#219:s rubrik** (*sju versioner efter, ingen väg till en telefon*) var överspelad sedan 29/9 (#402) — rubriken
+säger nu vad som återstår, Play-vägen, med den gamla lydelsen kvar i parentesen. (4) Sektionsrubriken *Axels nästa steg* bar datumet 8/9.
+Inget kort stängt eller struket; tavlan 35 → 36 med #277. Stomavstämningen: bedömningen (§4.2, läget); de fyra andra orörda —
+inget användaren ser, hör eller gör ändras, och ingen mätning.

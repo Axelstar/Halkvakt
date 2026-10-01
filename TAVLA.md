@@ -23,7 +23,7 @@ direkt här på GitHub (pennikonen ↗). Regel: finns det inte på tavlan finns 
 ### Beslutsgången
 Roller och ägarskap: `docs/BESLUTSGANGEN.md` (31/8). Tavlan är sanningen — en plan som inte
 står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett kort direkt.
-### AXELS NÄSTA STEG — i den här ordningen (uppdaterad 8/9 kväll)
+### AXELS NÄSTA STEG — i den här ordningen (uppdaterad 1/10)
 
 - [ ] 🔋 **#262 BATTERIPAKETET — SJU ÅTGÄRDER EFTER FÄLTRAPPORTEN 27/9** (Bengts beställning 27/9: *"föreslå ett åtgärdspaket
   … jag vill att Axel gör det"*. DECISIONS #386, #387). 🚨 **Släppblockerare** — batteribudgeten är ett krav i CLAUDE.md.
@@ -161,6 +161,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] **Skydda namnet:** varumärket Halkvakt hos PRV + domänen halkvakt.se. Enda juridiska
   muren som finns i branschen; arkivet och relationerna är resten av försvaret.
   ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** *Domänen halkvakt.se (vilande beslut)* — domänen blockerar QR-sidan (#204), så den är inte längre vilande.
+  ↪ **1/10 (DECISIONS #423):** domänen är också nyckeln till QR-koden till appen (kort #277, Bengt: *"qr kod kommer först med domänen"*).
 ### Axel — därefter
 - [ ] **Tolv testare till Play-perioden** — Axels åtagande 31/8: "hittar dem utan problem".
   Väntelisterutan på kartan borttagen på hans beslut. Kvar i `docs/REKRYTERING.md` om det behövs.
@@ -176,6 +177,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   efter fel, minnet behålls mitt i resan (`updateHazards`); utan nät gäller cachen och åldras. Skrivet utan kompilator.
   🔑 Kvar: Axels Xcode-bygge (första kompileringen) och Verify i bil.
   ↪ **Flyttat 26/9 från *Bengt*** (femma åtta, DECISIONS #377): nästa steg är Axels bygge 0.3.9 (17).
+  ↪ **1/10 (DECISIONS #423):** bygget hos Axel är numera **(19)** (`docs/TILL-AXEL-BYGGE-19.md`); (14)–(18) arkiverades aldrig, så (19) blir det första bygget som bär ändringen.
 
 - [ ] 🎚️ **#259 REGLAGET "VARNA PÅ AVSTÅND" LOVAR MER ÄN MOTORN GÖR** (fynd 26/9 under kadenstestet, DECISIONS #373). Motorn
   talar vid `min(leadMaxM, max(400 m, fart × 30 s))` (`engine.ts:110`), och reglaget sätter bara `leadMaxM`. I 140 km/h blir det
@@ -189,6 +191,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   sekunder före; körläget säger *som längst* i stället för *inom 3 km*. Två kontrakt i kontraktsgrinden. android.yml 36219380753 grön på grenen (JVM-prov, emulator, release-AAB); fotostudions shot-3 visar Längsta förvarning 1,2 km, Kortare — 400 m / Fullt — 1,2 km och texten om 30 sekunder.
   🔑 Kvar: iOS-bygget 0.3.9 (17) hos Axel (första kompileringen) — sedan stängs kortet.
   ↪ **Flyttat 26/9 från *Bengt*** (femma åtta, DECISIONS #377): nästa steg är Axels bygge 0.3.9 (17).
+  ↪ **1/10 (DECISIONS #423):** bygget hos Axel är numera **(19)** (`docs/TILL-AXEL-BYGGE-19.md`); (14)–(18) arkiverades aldrig, så (19) blir det första bygget som bär ändringen.
 
 - [ ] ↩︎ Välkomsttext + testinstruktion till kompisarna (extern TestFlight-grupp = Beta App Review).
   🔨 **SKRIVEN 26/9** (Bengts ja, DECISIONS #371): `docs/BETAGUIDE-IOS.md` — TestFlight-texten överst, guiden i Android-guidens
@@ -206,7 +209,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **BYGGT 24/9 (DECISIONS #348):** flaggan sparas mellan styrningarna, självstopp efter en kvart stilla (`IdleStop`), tre JVM-prov. Kvar: verify i bil på Android.
   ↪ **Flyttat 26/9 från *Claude — olåst*** (femma åtta, DECISIONS #377): nästa steg är provet i bil på Axels Android.
 
-- [ ] 🤖 **#219 ANDROID ÄR SJU VERSIONER EFTER OCH HAR INGEN VÄG TILL EN TELEFON** (genomlysningen 20/9). Android står på
+- [ ] 🤖 **#219 ANDROIDS VÄG TILL PLAY — enhetsverifiering, första uppladdning, slutet test** (rubriken löd 20/9 *Android är sju versioner efter och har ingen väg till en telefon* — överspelad 29/9, DECISIONS #402; rubriken rättad 1/10, #423; genomlysningen 20/9). Android står på
   **0.3.1 (versionCode 4)**, iOS på 0.3.8 (11). **Google Play-kontot finns inte**, det finns inget uppladdningsflöde alls — CI
   bygger en AAB som artefakt och där slutar det. Android saknar dessutom introduktionen helt och har autostart av som standard.
   Om tolv testare i november ska hålla är Play-kontot en grind som måste passeras i september.
@@ -221,16 +224,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **Flyttat 26/9 från *Claude — olåst*** (femma åtta, DECISIONS #377): nästa steg är Play-kontot och testtelefonen.
   ↪ **29/9: rubriken överspelad (DECISIONS #402).** Android bär 0.3.9 (18) som iOS sedan 26/9 (#377, #379) och Play-kontot finns sedan 20/9. Kvar är bara Play-vägen: enhetsverifieringen i Play Console, första uppladdningen med Data safety-formuläret ifyllt likadant som filen (#214), slutet test 14 dygn med tolv testare, produktion tidigast november. Verify-raden gäller oförändrad.
 ### Bengt
-- [ ] 🛢️ **#276 OLJA PÅ VÄGEN — HALKA SOM RÖSTEN INTE SÄGER** (fynd 26/9 under vägarbetsmätningen; hette #262 på grenen som aldrig
-  slogs ihop, DECISIONS #420). `NonWeatherRelatedRoadConditions` i `situation_archive` (dbknapp 36232854353, `scripts/matningar/icke-vaderhalka-arkivet-2026-09-26.sql`): **99 händelser 31/8–25/9** (≈ 3,8 om dygnet), alla *Trafikmeddelande*, 24 med stor eller mycket stor påverkan; de flesta av de 25 vanligaste texterna är **olja, diesel eller hydraulolja på vägbanan — *risk för halka*** (några potthål, en vägskada, grus i en rondell).
-  Snapshoten skickar bara olyckor (`deviations`) och djur (`djur`), så appen tiger om dem — fast det är halka i appens egen mening, rapporterad
-  av Trafikverket (en observation, inte en prognos: regel T tillåter att den utlöser). Tre vägar: (a) skuggan först nu — skuggmotorn loggar
-  var rösten skulle ha talat, ingen text i appen; (b) vårlistan tillsammans med #32 hinder; (c) låta bli. 🔑 Bengts och Axels val (§4.2);
-  rösttexten är Axels. Verify för (a): skuggloggen bär rader med oljefaror, och en mätning visar hur ofta rösten skulle ha talat per varv.
-  ✅ **Bengt 1/10: väg (a)** (DECISIONS #421) — skuggan först, egen kolumn som vattenplaningen, egen motorinstans, hela klassen med text, ingen ändring i appen. 🔨 Byggs i egen PR efter omtaget.
-  🔨 **BYGGT 1/10:** `sql/040` (kolumnen `olja` + RPC `olja_aktiva()`, bara service-rollen; aktiv = start ≤ nu < slut, utan sluttid bara första dygnet — 117 händelser, alla med sluttid, median 1 h 48 min, 4 aktiva 1/10) · skuggmotorn: egen motorinstans per rutt, raden i `shadow_log.olja`, `oljaSkal` i svaret · `?oljaprov=1` (dbknappens `oljaprov`) skriver inget · integrationsprov mot PostGIS · mätningssidan 7.7. 🔑 Kvar: *"slå ihop"*, **`sql/040` FÖRE deployen** (annars avvisas skuggloggens rader), deploy, oljaprovet och första raden med innehåll.
-  ✅ **I DRIFT 1/10** (DECISIONS #421): PR #660 sammanslagen 14:36Z (969610c) · `sql/040` via dbknapp 36877728231: kolumnen `olja` jsonb med standard `[]`, `olja_aktiva()` svarar med **5 aktiva** — alla fem vägskador (asfaltskador, körplåtar, stenskott, bärighet), ingen olja — och bara service-rollen får köra den (anon och authenticated nej) · deploy av skuggmotorn 36877830446 från main · oljaprovet 36877971571: en rad (*Prov: olja på vägbanan*, 573 m), `aktiva` 5, inget skäl · Skuggvarven efter deployen skrev sina rader i alla fyra länder (FI 14:45, DK 14:50, NO 14:55, SE 15:02Z — tre rader var, ingen avvisad för den nya kolumnen); det svenska varvet svarade ok med 5 aktiva och 0 rop, eftersom ingen av de fem låg på varvets tre rutter (dbknapp 36881359482). Kvar för Verify: första riktiga oljeraden och mätningen av hur ofta.
-
 
 - [ ] 📐 **#270 PROGNOSLAGRET EFTER PREMISSMÄTNINGARNA — BENGTS VAL a–h** (30/9, `docs/PROGNOSLAGRET-2026-09-30.md`; DECISIONS
   #405–#408; bedömningen §4.2). Domen står (fallen 28/9, bekräftad 30/9 och på ärliga rader). Bandet 0–7 km håller i båda
@@ -603,6 +596,24 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **SERVERN I DRIFT 26/9 07:00Z** (DECISIONS #380): migrationen sql/038 via dbknapp 36225368861 (tabellen finns, RLS på, anon utan SELECT och INSERT), deploy av `facit-svar` 36225396540 från main, provmiss mot den riktiga funktionen ⇒ 204 och en rad med `prov = true` (dbknapp 36225453047; 0 riktiga), två felaktiga missar ⇒ 400, och ett provsvar på den gamla vägen ⇒ fortfarande 204.
 
 ### Claude — låst (väntar på nyckel)
+- [ ] 🔳 **#277 QR-KOD TILL APPEN — en kod för båda plattformarna, via halkvakt.se** (Bengts fråga 26/9 *"kan man hämta appen med qr kod"*,
+  beslut 1/10: *"qr kod kommer först med domänen"*, DECISIONS #423). En QR-kod är bara en länk. Koden ska peka på en egen adress
+  (halkvakt.se/app) som skickar iPhone till TestFlight eller App Store och Android till Google Play — aldrig direkt på en TestFlight-länk,
+  som kan stängas eller bytas medan en tryckt kod inte går att ändra. Koden görs lokalt, utan tredjepartstjänst (som i
+  `docs/QR-SIDA-PER-SKOLA.md`). 🔑 Nyckel: domänen (kortet *Skydda namnet*) · en publik TestFlight-länk eller App Store-sidan (Axel) · Play-länken (#219).
+  Verify: koden skannad på en iPhone och en Android landar på rätt installationssida, och adressen går att peka om utan att koden trycks om.
+
+- [ ] 🛢️ **#276 OLJA PÅ VÄGEN — HALKA SOM RÖSTEN INTE SÄGER** (fynd 26/9 under vägarbetsmätningen; hette #262 på grenen som aldrig
+  slogs ihop, DECISIONS #420). `NonWeatherRelatedRoadConditions` i `situation_archive` (dbknapp 36232854353, `scripts/matningar/icke-vaderhalka-arkivet-2026-09-26.sql`): **99 händelser 31/8–25/9** (≈ 3,8 om dygnet), alla *Trafikmeddelande*, 24 med stor eller mycket stor påverkan; de flesta av de 25 vanligaste texterna är **olja, diesel eller hydraulolja på vägbanan — *risk för halka*** (några potthål, en vägskada, grus i en rondell).
+  Snapshoten skickar bara olyckor (`deviations`) och djur (`djur`), så appen tiger om dem — fast det är halka i appens egen mening, rapporterad
+  av Trafikverket (en observation, inte en prognos: regel T tillåter att den utlöser). Tre vägar: (a) skuggan först nu — skuggmotorn loggar
+  var rösten skulle ha talat, ingen text i appen; (b) vårlistan tillsammans med #32 hinder; (c) låta bli. 🔑 Bengts och Axels val (§4.2);
+  rösttexten är Axels. Verify för (a): skuggloggen bär rader med oljefaror, och en mätning visar hur ofta rösten skulle ha talat per varv.
+  ✅ **Bengt 1/10: väg (a)** (DECISIONS #421) — skuggan först, egen kolumn som vattenplaningen, egen motorinstans, hela klassen med text, ingen ändring i appen. 🔨 Byggs i egen PR efter omtaget.
+  🔨 **BYGGT 1/10:** `sql/040` (kolumnen `olja` + RPC `olja_aktiva()`, bara service-rollen; aktiv = start ≤ nu < slut, utan sluttid bara första dygnet — 117 händelser, alla med sluttid, median 1 h 48 min, 4 aktiva 1/10) · skuggmotorn: egen motorinstans per rutt, raden i `shadow_log.olja`, `oljaSkal` i svaret · `?oljaprov=1` (dbknappens `oljaprov`) skriver inget · integrationsprov mot PostGIS · mätningssidan 7.7. 🔑 Kvar: *"slå ihop"*, **`sql/040` FÖRE deployen** (annars avvisas skuggloggens rader), deploy, oljaprovet och första raden med innehåll.
+  ✅ **I DRIFT 1/10** (DECISIONS #421): PR #660 sammanslagen 14:36Z (969610c) · `sql/040` via dbknapp 36877728231: kolumnen `olja` jsonb med standard `[]`, `olja_aktiva()` svarar med **5 aktiva** — alla fem vägskador (asfaltskador, körplåtar, stenskott, bärighet), ingen olja — och bara service-rollen får köra den (anon och authenticated nej) · deploy av skuggmotorn 36877830446 från main · oljaprovet 36877971571: en rad (*Prov: olja på vägbanan*, 573 m), `aktiva` 5, inget skäl · Skuggvarven efter deployen skrev sina rader i alla fyra länder (FI 14:45, DK 14:50, NO 14:55, SE 15:02Z — tre rader var, ingen avvisad för den nya kolumnen); det svenska varvet svarade ok med 5 aktiva och 0 rop, eftersom ingen av de fem låg på varvets tre rutter (dbknapp 36881359482). Kvar för Verify: första riktiga oljeraden och mätningen av hur ofta.
+  ↪ **Flyttat 1/10 från *Bengt*** (DECISIONS #423): i drift sedan 14:38Z; nyckeln är data — första riktiga oljeraden i skuggloggen. Inget väntar på Bengt.
+
 
 - [ ] 🌡️ **#271 TERMISK KARTERING — FACIT MELLAN STATIONERNA** (30/9, `docs/PROGNOSLAGRET-2026-09-30.md` §4; DECISIONS #406/#407
   visade att vägen mellan stationerna saknar facit och att målplatsens egen särart är felets största del). En kalibrerad infraröd
