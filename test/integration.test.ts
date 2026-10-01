@@ -870,3 +870,84 @@ test("#276 olja_aktiva: bara aktiva NonWeatherRelatedRoadConditions med punkt; o
       "kolumnen olja finns");
   } finally { await pool.end(); }
 });
+
+// KUVÖSENS KLOCKA (kuvos/klocka.sql, kort #232, DECISIONS #424): snapshotbyggaren körd oförändrad mot en gången tidpunkt.
+// FÄLLORNA LIGGER DÄR DE KAN FÄLLA NÅGOT (CLAUDE.md): varje station nedan ger ett annat svar om klockan står fel eller om
+// framtiden läcker. Produktionens frågor har ingen övre tidsgräns, så utan vyerna i kuvos/klocka.sql ser byggaren vid T
+// rader från T+20 min: fel yta, negativ regn_h, nästa timmes lutning, en karantän för brott som inte hänt än.
+test("kuvösens klocka: byggaren ser världen som den var vid T — inget ur framtiden, och utan klockan ingenting", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const { buildSnapshot } = await import("../publish/snapshot-core.ts");
+  const { kuvosKlient } = await import("../kuvos/klocka.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  let k: Awaited<ReturnType<typeof kuvosKlient>> | null = null;
+  try {
+    for (const f of ["001_init.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql", "030_langsam_vakt.sql"])
+      await pool.query(readFileSync(new URL("../sql/" + f, import.meta.url), "utf8"));
+    const klockaSql = readFileSync(new URL("../kuvos/klocka.sql", import.meta.url), "utf8");
+    await pool.query(klockaSql);
+    await pool.query(klockaSql);   // omkörning ofarlig: schemat byggs om helt
+    for (const t of ["weather_observations", "weather_latest", "trend_kandidater", "givarfel_dygn"])
+      await pool.query(`DELETE FROM ${t} WHERE station_id LIKE 'KUV_%'`);
+
+    const T = new Date("2025-01-14T06:00:00Z"), T2 = new Date(T.getTime() + 30 * 60_000);
+    const vid = (min: number) => `'${new Date(T.getTime() + min * 60_000).toISOString()}'`;
+    const g = (x: number) => `ST_SetSRID(ST_MakePoint(${x}, 62.0), 4326)`;
+    await pool.query(`
+      INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, precipitation, rain, snow, rain_sum_mm) VALUES
+        ('KUV_IS',       'x', ${g(15.1)}, ${vid(-40)},  2.5,  3.0, 'rain', true,  false, 0.4),
+        ('KUV_IS',       'x', ${g(15.1)}, ${vid(-10)},  0.5,  1.0, 'no',   false, false, 0),
+        ('KUV_IS',       'x', ${g(15.1)}, ${vid(20)},  -9.0, -8.0, 'rain', true,  false, 1.2),
+        ('KUV_VARM',     'x', ${g(15.2)}, ${vid(-10)},  8.0,  8.0, 'no',   false, false, 0),
+        ('KUV_GAMMAL',   'x', ${g(15.3)}, ${vid(-240)}, 0.5,  1.0, 'rain', true,  false, 0.2),
+        ('KUV_FRAMTID',  'x', ${g(15.4)}, ${vid(20)},  -5.0, -4.0, 'snow', false, true,  0),
+        ('KUV_KARANTAN', 'x', ${g(15.5)}, ${vid(-10)},  0.5,  1.0, 'rain', true,  false, 0.3),
+        ('KUV_KARANTAN', 'x', ${g(15.5)}, ${vid(5)},  -20.0,  5.0, 'no',   false, false, 0),
+        ('KUV_KARANTAN', 'x', ${g(15.5)}, ${vid(10)}, -20.0,  5.0, 'no',   false, false, 0),
+        ('KUV_KARANTAN', 'x', ${g(15.5)}, ${vid(15)}, -20.0,  5.0, 'no',   false, false, 0),
+        ('KUV_LANGSAM',  'x', ${g(15.6)}, ${vid(-10)},  0.5,  1.0, 'rain', true,  false, 0.3),
+        ('KUV_LANGSAM',  'x', ${g(15.6)}, ${vid(25)},   0.5,  1.0, 'rain', true,  false, 0.3)`);
+    await pool.query(`INSERT INTO trend_kandidater (station_id, observed_at, surface_temp_c, lutning30_c) VALUES
+        ('KUV_IS', ${vid(-5)}, 0.5, 0.9), ('KUV_IS', ${vid(25)}, -9.0, 5.5)`);
+    // Ett dygn i felet som börjar om en timme: vid T finns det inte.
+    await pool.query(`INSERT INTO givarfel_dygn (station_id, dag, forst, senast) VALUES ('KUV_LANGSAM', '2025-01-14', ${vid(60)}, ${vid(120)})`);
+
+    k = await kuvosKlient(url!);
+    const kuv = (xs: { id: string }[]) => xs.filter((x) => x.id.startsWith("KUV_")).sort((a, b) => a.id.localeCompare(b.id));
+
+    // Klockan ostalld = väggklockan.
+    assert.equal((await k.q("SELECT now() = pg_catalog.now() AS lika"))[0].lika, true, "utan kuvos.nu går klockan som produktionens");
+
+    await k.stall(T);
+    const a = await buildSnapshot(k.q, [], T);
+    assert.equal(a.liveDoc.generated_at, T.toISOString());
+    const wa = kuv(a.liveDoc.weather) as any[];
+    assert.deepEqual(wa.map((w) => w.id), ["KUV_IS", "KUV_KARANTAN", "KUV_LANGSAM"],
+      "vid T: den gamla raden (4 h) är för gammal, den varma talar inte, den framtida stationen finns inte — och varken karantänen eller den långsamma vakten tystar för något som inte hänt än");
+    const is = wa[0];
+    assert.equal(is.yta, 0.5, "senaste raden FÖRE T, inte −9 från T+20");
+    assert.equal(is.fukt, false);
+    assert.equal(is.regn_h, 0.7, "40 min sedan regnet vid T — med framtiden synlig hade det blivit −0,3");
+    assert.equal(is.lutning30, 0.9, "lutningen från T−5, inte 5,5 från T+25");
+    assert.deepEqual(kuv(a.staticDoc.stations).map((s) => s.id), ["KUV_GAMMAL", "KUV_IS", "KUV_KARANTAN", "KUV_LANGSAM", "KUV_VARM"],
+      "stationslistan: alla med en rad det senaste dygnet före T, ingen ur framtiden");
+
+    // En halvtimme senare har "framtiden" hänt.
+    await k.stall(T2);
+    const b = await buildSnapshot(k.q, [], T2);
+    const wb = kuv(b.liveDoc.weather) as any[];
+    assert.deepEqual(wb.map((w) => w.id), ["KUV_FRAMTID", "KUV_IS", "KUV_LANGSAM"], "vid T+30: snön har kommit, och KUV_KARANTAN är tyst efter tre brott mot #75");
+    assert.deepEqual([wb[1].yta, wb[1].fukt, wb[1].regn_h, wb[1].lutning30], [-9, true, 0.2, 5.5]);
+
+    // MOTKONTROLLEN: samma byggare utan klockan (produktionens väg) ser ingen av dem — raderna är 20 månader gamla och
+    // weather_latest-tabellen har dem inte. Det är klockan som bär provet, inte testdatan.
+    const p = await buildSnapshot(async (t, pr) => (await pool.query(t, pr as any[])).rows, []);
+    assert.deepEqual(kuv(p.liveDoc.weather), []);
+    assert.deepEqual(kuv(p.staticDoc.stations), []);
+  } finally {
+    await k?.slut();
+    await pool.query("DROP SCHEMA IF EXISTS kuvos CASCADE");   // vyerna får inte stå kvar och låsa tabellerna för andra prov
+    await pool.end();
+  }
+});
