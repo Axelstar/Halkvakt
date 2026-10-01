@@ -281,6 +281,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     ↩︎ Play: uppladdningsguide för den CI-signerade AAB:n + fotostudion tag 2 (facit ur CI +
     produktboken) *(låst: Play-kontot)*.
   ↪ **Flyttat 26/9 från *Claude — olåst*** (femma åtta, DECISIONS #377): nästa steg är Play-kontot och testtelefonen.
+  📋 **FREDAGENS LISTA 2/10 (Axels order 00:12: *"sen imorgon är det Play Store som måste ut"*; skriven 00:15):**
+  | # | Vad | Vem |
+  | :-- | :-- | :-- |
+  | 1 | Fem skärmbilder ur Androiden (Redo., körläget, varningskortet, Inställningar, Efter resan) ⇒ Claude ramar in till 1080×2160 (Play tar högst 2:1; CI:s fotostudio är 320×640, för liten) | Axel → Claude |
+  | 2 | Play Console: **enhetsverifieringen** (uppgiften på startsidan + Play Console-appen på telefonen) | Axel |
+  | 3 | **Butiksuppgifter**: namn, kort och lång beskrivning ur `marknadsforing/butik/butikstext.md` (rättad 2/10), ikon 512 och feature graphic (gjorda 1/10), skärmbilderna, kategori Kartor & navigering, kontakt | Axel, Claude på skärmen |
+  | 4 | **Appinnehåll**: integritetspolicy-URL (github.io/integritet.html), **Datasäkerhet exakt som `docs/PLAY-DATASAFETY.md`** (#214: Ja · Location → Approximate · frivillig · insamlad, inte delad · inte kopplad · App functionality + Analytics · radering Nej), annonser nej, appåtkomst ingen inloggning, innehållsklassning (IARC-frågorna), målgrupp vuxna, nyhetsapp nej, statlig app nej | Axel, Claude på skärmen |
+  | 5 | **Slutet test**: ladda upp AAB:n ur senaste gröna android.yml på main (artefakten `halkvakt-release-aab`, versionCode 19 efter #262 — kontrollera att numret stämmer med iOS (20) först, annars ett bygge till), skapa testarlistan (tolv mejladresser) och publicera testet — då startar Googles 14 dygn | Axel |
+  | 6 | Utskick till de tolv med Play-länken + Android-guiden | Axel |
   ↪ **29/9: rubriken överspelad (DECISIONS #402).** Android bär 0.3.9 (18) som iOS sedan 26/9 (#377, #379) och Play-kontot finns sedan 20/9. Kvar är bara Play-vägen: enhetsverifieringen i Play Console, första uppladdningen med Data safety-formuläret ifyllt likadant som filen (#214), slutet test 14 dygn med tolv testare, produktion tidigast november. Verify-raden gäller oförändrad.
 ### Bengt
 
