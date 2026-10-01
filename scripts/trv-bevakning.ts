@@ -8,7 +8,8 @@
 //                      is where "väglagskameror 25/8" and "TrainAnnouncement 2/9" lived)
 //     trv-drift        driftinformationens poster via samma CMS GraphQL (tre föräldranoder)
 //     smhi-opendata    opendata.smhi.se/sitemap.xml (Docusaurus — skalet är tomt, sitemap ärlig)
-//   HASH sources (normalized text, siffror strippade — levande värden får inte larma):
+//   HASH sources (normalized text, entiteter avkodade sedan 1/10 (#264), siffror strippade —
+//                 levande värden får inte larma):
 //     met-api          api.met.no
 //     halkvarning      www.halkvarning.se
 //     klimator         www.klimator.se (JS-tung — vakten ser bara serverskalet; sägs i larmet)
@@ -57,7 +58,7 @@
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { KARTAN } from "../publish/beroenden.ts";
-import { bedom, nyText } from "../publish/nyhetsbedomning.ts";
+import { bedom, norm, nyText } from "../publish/nyhetsbedomning.ts";
 
 const STATE = "ingest/trv-nyheter-state.json";
 const REPO = "Axelstar/Halkvakt";
@@ -88,9 +89,11 @@ async function gql(query: string, variables?: unknown): Promise<any> {
   if (j.errors) throw new Error(`graphql errors: ${JSON.stringify(j.errors).slice(0, 300)}`);
   return j.data;
 }
-const norm = (html: string) => html
-  .replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ")
-  .replace(/<[^>]+>/g, " ").replace(/&[a-z#0-9]+;/gi, " ").replace(/\s+/g, " ").trim();
+// Normaliseringens version (kort #264, DECISIONS #413). v1 strök HTML-entiteter, v2 avkodar dem
+// (publish/nyhetsbedomning.ts:norm). Bytet ändrar varje hash-källas text och hash på en gång, så en
+// hash-källa vars state bär en annan version seedas om UTAN larm i stället för att jämföras — en
+// gång per källa, sedan är stämpeln satt. Ingen flagga, inget handgrepp, ingen larmstorm.
+const NORMV = 2;
 const sha = (s: string) => createHash("sha256").update(s).digest("hex").slice(0, 16);
 
 // ── List sources ──────────────────────────────────────────────────────────────
@@ -133,7 +136,7 @@ async function smhiSitemap(): Promise<{ guid: string; label: string }[]> {
 
 async function main(): Promise<number> {
   const state = existsSync(STATE) ? JSON.parse(readFileSync(STATE, "utf8")) : {};
-  const sources: Record<string, { seen?: string[]; hash?: string; textLen?: number; text?: string }> = state.sources ?? {};
+  const sources: Record<string, { seen?: string[]; hash?: string; textLen?: number; text?: string; normv?: number }> = state.sources ?? {};
   if (Array.isArray(state.seen)) sources["trv-rss"] = { seen: state.seen }; // migrera v1-state
   const changes: Change[] = [];
   let fel = 0;
@@ -185,7 +188,9 @@ async function main(): Promise<number> {
       const spaVarning = text.length < 200 ? " (OBS: nästan ingen text — JS-renderad sida, vakten ser bara skalet)" : "";
       console.log(`${name}: ${text.length} tecken, hash ${h}${spaVarning}`);
       const prev = sources[name]?.hash;
-      if (!seed && prev && prev !== h) {
+      const omseed = !!prev && sources[name]?.normv !== NORMV;
+      if (omseed) console.log(`${name}: normaliseringen bytt (v${sources[name]?.normv ?? 1} → v${NORMV}, kort #264) — grundvärdet skrivs om utan larm.`);
+      else if (!seed && prev && prev !== h) {
         // Texten sparas i state just för det här ögonblicket: utan den föregående texten kan
         // en hash-vakt bara säga ATT något ändrats, aldrig VAD — och då blir varje larm ett
         // "öppna källan och bedöm", vilket är precis det bedömningen skulle ta bort.
@@ -195,7 +200,7 @@ async function main(): Promise<number> {
         else rader.push(sources[name]?.text ? `Ingen ny mening kunde pekas ut — ändringen sitter i något kortare än en mening (meny, siffra, layout).` : `Ingen tidigare text sparad (första ändringen efter #149) — nästa gång kan diffen visas.`);
         changes.push({ source: name, title: "innehållet ändrat", lines: rader, text: nya.join(" ") });
       }
-      sources[name] = { hash: h, textLen: text.length, text };
+      sources[name] = { hash: h, textLen: text.length, text, normv: NORMV };
     } catch (e) { console.error(`${name}: ${String((e as Error).message)}`); fel++; }
   }
 
