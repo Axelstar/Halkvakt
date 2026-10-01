@@ -110,7 +110,8 @@ Gå till **Inställningar → Betatest** och slå på **Svara på varningarna**.
    - Stämde allt: tryck **Ja, alla stämde**. Klart — appen behöver inte ens öppnas.
    - Stämde något inte: tryck **Något stämde inte**. Appen öppnas på **Efter resan**, där varje varning står med sitt
      klockslag. Tryck **Stämde** eller **Stämde inte** på raden.
-3. Under knapparna ska det stå **Skickat** med klockslag. Står det något annat — ta en skärmbild och skicka.
+3. En rad du svarat på försvinner när svaret gått iväg, och när allt är besvarat står **Skickat** med klockslag under
+   *Senaste tur*. Står det **Kunde inte skicka** någonstans — ta en skärmbild och skicka.
 
 Svarar du inte skickas ingenting — **tystnad räknas aldrig som ja**. Frågan och kortet *Efter resan* står kvar i ett dygn.
 

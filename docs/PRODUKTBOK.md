@@ -494,6 +494,14 @@ låg i fickan"*.
 Det som skickas är som förut och inget mer: varningens id, klockslaget, ditt svar och appens namn och
 version. Notisen finns bara om du själv slagit på betatestet i Inställningar.
 
+*Rättat 1/10 (kort #279, bygge 19):* på iPhone rullar *Redo.* och körläget när innehållet är högre än skärmen — ett kort med fyra
+varningar klipptes förut till *"stämde alla 4 varning…"* och gick ut under status- och flikraden. Knapparna *Stämde* / *Stämde
+inte* finns på ett ställe: raden under *Senaste tur* göms medan kortet visas. Kortet säger bara till när en sändning misslyckats
+(*"Kunde inte skicka …"*); en besvarad varning försvinner ur kortet, en vald miss får ordet *Skickad*, och kvittot *"Skickat
+13:48 (4 svar)"* står under *Senaste tur* när allt är besvarat — aldrig längre gårdagens kvitto under dagens varningar. Klockslag
+och datum skrivs på svenska oavsett telefonens språk (*1 okt. 12:39*, inte *1 Oct at 12:39*). Skärmbilderna i det här avsnittet
+byts när bygge (19) finns.
+
 ### När appen var tyst — missarna (26/9, kort #203 lager 2)
 
 Det maskinen inte kan se är sina egna missar: det var halt och rösten teg. **I bilen räcker ett ord eller ett tryck.** På iPhone:

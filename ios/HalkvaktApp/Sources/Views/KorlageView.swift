@@ -1,6 +1,8 @@
 // KÖRLÄGET — skinnet v3 (1a): PÅ VAKT, tid · km stort, tre siffror, SENAST SAGT,
 // PÅ DIN VÄG, avsluta lågt som kontur. Skärmen ligger i hållaren; ingenting ska läsas.
 // Varningskortet (1b) tar hela skärmen i gult i 8 s och försvinner själv — ingen knapp.
+// Rullar när den måste (kort #279): på Bengts 4,7-tums iPhone 28/9 klipptes raden om förvarningen till "…".
+// Samma mönster som VaktenView — minsta höjd = skärmen, så stora telefoner ser ut som förut.
 import SwiftUI
 import HalkvaktEngine
 
@@ -15,73 +17,80 @@ struct KorlageView: View {
     var body: some View {
         ZStack {
             Brand.bg.ignoresSafeArea()
-            VStack(alignment: .leading, spacing: 16) {
-                BrandHeader(trailing: "Vakten på", trailingColor: Brand.green)
+            GeometryReader { geo in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        BrandHeader(trailing: "Vakten på", trailingColor: Brand.green)
 
-                Panel {
-                    VStack(alignment: .leading, spacing: 5) {
-                        SectionHeader(text: "På vakt", color: Brand.greenText)
-                            .frame(height: 28)
-                            .contentShape(Rectangle())   // hela raden tryckbar, inte bara bokstäverna
-                            .onLongPressGesture(minimumDuration: 0.5, maximumDistance: 30) {
-                                demoWarning = HalkvaktEngine.Alert(t: 0, hazardId: "demo", kind: .slippery_segment,
-                                    distanceM: 2000, text: "Halt väglag om två kilometer.")
-                                Task { try? await Task.sleep(for: .seconds(8)); demoWarning = nil }
+                        Panel {
+                            VStack(alignment: .leading, spacing: 5) {
+                                SectionHeader(text: "På vakt", color: Brand.greenText)
+                                    .frame(height: 28)
+                                    .contentShape(Rectangle())   // hela raden tryckbar, inte bara bokstäverna
+                                    .onLongPressGesture(minimumDuration: 0.5, maximumDistance: 30) {
+                                        demoWarning = HalkvaktEngine.Alert(t: 0, hazardId: "demo", kind: .slippery_segment,
+                                            distanceM: 2000, text: "Halt väglag om två kilometer.")
+                                        Task { try? await Task.sleep(for: .seconds(8)); demoWarning = nil }
+                                    }
+                                Text("\(elapsedMin) min · \(distKm) km")
+                                    .font(Typo.sans(34, .semibold)).tracking(-1)
+                                    .foregroundStyle(Brand.text)
+                                Text("Rösten talar ungefär 30 sekunder före, som längst \(String(format: "%.1f", Prefs.shared.leadMaxM / 1000).replacingOccurrences(of: ".", with: ",")) km. En olycka längre fram kan nämnas tidigare.")
+                                    .font(Typo.sans(13)).foregroundStyle(Brand.dim)
                             }
-                        Text("\(elapsedMin) min · \(distKm) km")
-                            .font(Typo.sans(34, .semibold)).tracking(-1)
-                            .foregroundStyle(Brand.text)
-                        Text("Rösten talar ungefär 30 sekunder före, som längst \(String(format: "%.1f", Prefs.shared.leadMaxM / 1000).replacingOccurrences(of: ".", with: ",")) km. En olycka längre fram kan nämnas tidigare.")
-                            .font(Typo.sans(13)).foregroundStyle(Brand.dim)
-                    }
-                    HStack(spacing: 10) {
-                        Stat(value: "\(guardM.alertCount)", label: "Varningar")
-                        Stat(value: "\(count(.slippery_segment))", label: "Halka")
-                        Stat(value: "\(count(.wildlife))", label: "Vilt")
-                    }
-                }
-
-                if let said = guardM.lastSaid {
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            SectionHeader(text: "Senast sagt")
-                            // #250 (b): när repliken sades, inte klockan nu
-                            Text((Prefs.shared.lastSaidAt ?? now).formatted(.dateTime.hour().minute())).font(Typo.mono(11)).foregroundStyle(Brand.faint)
+                            HStack(spacing: 10) {
+                                Stat(value: "\(guardM.alertCount)", label: "Varningar")
+                                Stat(value: "\(count(.slippery_segment))", label: "Halka")
+                                Stat(value: "\(count(.wildlife))", label: "Vilt")
+                            }
                         }
-                        Text("”\(said)”").font(Typo.sans(16)).italic().foregroundStyle(Brand.text)
+
+                        if let said = guardM.lastSaid {
+                            VStack(alignment: .leading, spacing: 8) {
+                                HStack {
+                                    SectionHeader(text: "Senast sagt")
+                                    // #250 (b): när repliken sades, inte klockan nu
+                                    Text((Prefs.shared.lastSaidAt ?? now).klockslag).font(Typo.mono(11)).foregroundStyle(Brand.faint)
+                                }
+                                Text("”\(said)”").font(Typo.sans(16)).italic().foregroundStyle(Brand.text)
+                            }
+                            .padding(.horizontal, 20).padding(.vertical, 16)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Brand.yellow.opacity(0.08), in: RoundedRectangle(cornerRadius: 20))
+                            .overlay(RoundedRectangle(cornerRadius: 20).stroke(Brand.yellow.opacity(0.3), lineWidth: 1))
+                        } else {
+                            Panel(dashed: true) {
+                                SectionHeader(text: "Tyst så länge", color: Brand.faint)
+                                Text("Inget på din väg än. Du hör det direkt när något dyker upp.")
+                                    .font(Typo.sans(14)).foregroundStyle(Brand.dim)
+                            }
+                        }
+
+                        VStack(alignment: .leading, spacing: 10) {
+                            SectionHeader(text: "På din väg", color: Brand.dim)
+                            ForEach(guardM.nearby.prefix(3)) { NearbyRow(item: $0) }
+                        }
+
+                        Spacer()
+
+                        // Kort #203 lager 2 (Axels ja, #267 p. 5): iPhones reserv för en miss — Siri är huvudvägen. Bara med betatestet på.
+                        if Prefs.shared.facitOn {
+                            OutlineButton(title: "Appen missade", icon: "exclamationmark.bubble", color: Brand.yellow) {
+                                missKvitto = guardM.markeraMiss()
+                                    ? "Markerat \(Date.now.klockslag) — du väljer vad det var efter resan."
+                                    : "Kunde inte markera: appen har ingen position eller stationslista än."
+                            }
+                            if let k = missKvitto { Text(k).font(Typo.sans(12)).foregroundStyle(Brand.dim) }
+                        }
+
+                        OutlineButton(title: "Avsluta vakten") { guardM.stop() }
                     }
-                    .padding(.horizontal, 20).padding(.vertical, 16)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Brand.yellow.opacity(0.08), in: RoundedRectangle(cornerRadius: 20))
-                    .overlay(RoundedRectangle(cornerRadius: 20).stroke(Brand.yellow.opacity(0.3), lineWidth: 1))
-                } else {
-                    Panel(dashed: true) {
-                        SectionHeader(text: "Tyst så länge", color: Brand.faint)
-                        Text("Inget på din väg än. Du hör det direkt när något dyker upp.")
-                            .font(Typo.sans(14)).foregroundStyle(Brand.dim)
-                    }
+                    .padding(.horizontal, 20).padding(.top, 10).padding(.bottom, 18)
+                    .frame(minHeight: geo.size.height, alignment: .top)
                 }
-
-                VStack(alignment: .leading, spacing: 10) {
-                    SectionHeader(text: "På din väg", color: Brand.dim)
-                    ForEach(guardM.nearby.prefix(3)) { NearbyRow(item: $0) }
-                }
-
-                Spacer()
-
-                // Kort #203 lager 2 (Axels ja, #267 p. 5): iPhones reserv för en miss — Siri är huvudvägen. Bara med betatestet på.
-                if Prefs.shared.facitOn {
-                    OutlineButton(title: "Appen missade", icon: "exclamationmark.bubble", color: Brand.yellow) {
-                        missKvitto = guardM.markeraMiss()
-                            ? "Markerat \(Date.now.formatted(.dateTime.hour().minute())) — du väljer vad det var efter resan."
-                            : "Kunde inte markera: appen har ingen position eller stationslista än."
-                    }
-                    if let k = missKvitto { Text(k).font(Typo.sans(12)).foregroundStyle(Brand.dim) }
-                }
-
-                OutlineButton(title: "Avsluta vakten") { guardM.stop() }
+                .scrollBounceBehavior(.basedOnSize)
+                .scrollIndicators(.hidden)
             }
-            .padding(.horizontal, 20).padding(.top, 10).padding(.bottom, 18)
 
             if let w = guardM.currentWarning ?? demoWarning {
                 WarningOverlayView(alert: w).transition(.opacity)
@@ -124,7 +133,7 @@ struct WarningOverlayView: View {
                 HStack {
                     Text("HALKVAKT VARNAR").font(Typo.mono(12)).tracking(2.4)
                     Spacer()
-                    Text(Date.now.formatted(.dateTime.hour().minute())).font(Typo.mono(12))
+                    Text(Date.now.klockslag).font(Typo.mono(12))
                 }
                 .foregroundStyle(Brand.onAmber.opacity(0.6))
 

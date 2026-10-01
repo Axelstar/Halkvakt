@@ -193,7 +193,24 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **Flyttat 26/9 från *Bengt*** (femma åtta, DECISIONS #377): nästa steg är Axels bygge 0.3.9 (17).
   ↪ **1/10 (DECISIONS #423):** bygget hos Axel är numera **(19)** (`docs/TILL-AXEL-BYGGE-19.md`); (14)–(18) arkiverades aldrig, så (19) blir det första bygget som bär ändringen.
 
-- [ ] ↩︎ Välkomsttext + testinstruktion till kompisarna (extern TestFlight-grupp = Beta App Review).
+- [ ] 📱 **#279 iOS: EFTER-RESAN-KORTET GICK UTANFÖR SKÄRMEN** (Axels skärmbild 1/10 21:35 från en resa 12:39–13:44 med fyra kameravarningar;
+  samma fel som Bengts provresa 28/9 på 4,7 tum, `docs/TILL-AXEL-BYGGE-19.md` iPhone 1–3). `VaktenView` och `KorlageView` hade ingen
+  `ScrollView`: med fyra rader var kortet högre än skärmen, iOS tryckte ihop texterna till "…" (*"stämde alla 4 varning…"*, *"tystnad
+  räknas aldrig som…"*), kortets topp låg under statusraden och facitraden under flikraden. Dessutom: facitknapparna TVÅ gånger (kortet
+  och S4:s `FacitRow` under *Senaste tur*, samma varning), *"Skickat 22:00 (1 svar)"* från ett tidigare dygn under dagens varningar
+  (statusraden överlever omstart utan datum), *"Senaste tur · 1 Oct at 12:39"* på engelska, och *"Din position stannar i telefonen"*
+  (#320:s missade rad).
+  🔨 **BYGGT 1/10 kväll (DECISIONS #430), skrivet utan kompilator:** båda skärmarna rullar när de måste, minsta höjd = skärmen så stora
+  telefoner ser ut som förut · `FacitRow` göms medan kortet visas · den gemensamma statusraden i kortet bara vid fel och bara den här
+  resans (`facitStatusAt`); en vald miss säger *Skickad* själv; *"1 miss"* / *"2 missar"* · alla klockslag på svenska (`Date.klockslag`,
+  `dagOchKlockslag`, sv_SE) · *"lämnar inte telefonen av sig själv"* · `CURRENT_PROJECT_VERSION` 19 i samma commit. Betaguiden §5 steg 3
+  och produktboken följer med. Android orörd (hemskärmen är en `LazyColumn` och rullar redan; dess dubbla knappar och statusrad står
+  kvar i `TILL-AXEL-BYGGE-19` Android 1).
+  🔑 Kvar: Axels Xcode-bygge (19) — första kompileringen, ios-engine/android/ci gröna först — och en blick på *Redo.* utan kort (ska
+  stå där det stod) · nya iOS-skärmbilder till produktboken ur (19) · 4a dubbeltrycksspärren och 4b Siri när vakten är av (Axels beslut, §4.2).
+  Verify: på en iPhone finns inget "…" i kortet med fyra varningar, sista raden ligger ovanför flikraden, *Stämde*-knapparna finns på ett
+  ställe, ingen *Skickat*-rad under en obesvarad rad, och *Senaste tur* skrivs *1 okt. 12:39*.
+
   🔨 **SKRIVEN 26/9** (Bengts ja, DECISIONS #371): `docs/BETAGUIDE-IOS.md` — TestFlight-texten överst, guiden i Android-guidens
   åtta avsnitt, mot koden i 0.3.9 (16). 🔑 Kvar: utskicket med en extern TestFlight-grupp (Axel, Beta App Review).
   📝 **1/10 (DECISIONS #429):** meningen om trösklarna i TestFlight-texten är omskriven — klistra in ur filen som den står nu, inte ur en äldre kopia.

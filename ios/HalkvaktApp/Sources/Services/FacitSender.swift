@@ -14,7 +14,7 @@ enum FacitSender {
         let missar = Missar.pending(prefs.missar)
         if pending.isEmpty && missar.isEmpty { return 0 }
         let ver = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?"
-        let klockan = Date.now.formatted(.dateTime.hour().minute())
+        let klockan = Date.now.klockslag
         var sent: [FacitEntry] = []
         var sentMissar: [MissEntry] = []
         var fel: String?
@@ -32,9 +32,10 @@ enum FacitSender {
         }
         if !sent.isEmpty { prefs.facit = Facit.markSent(prefs.facit, sent) }
         if !sentMissar.isEmpty { prefs.missar = Missar.markSent(prefs.missar, sentMissar) }
-        let delar = [sent.isEmpty ? nil : "\(sent.count) svar", sentMissar.isEmpty ? nil : "\(sentMissar.count) missar"].compactMap { $0 }
-        if let fel { prefs.facitStatus = "Kunde inte skicka \(klockan): \(fel)" }
-        else if !delar.isEmpty { prefs.facitStatus = "Skickat \(klockan) (\(delar.joined(separator: ", ")))" }
+        let delar = [sent.isEmpty ? nil : "\(sent.count) svar",
+                     sentMissar.isEmpty ? nil : (sentMissar.count == 1 ? "1 miss" : "\(sentMissar.count) missar")].compactMap { $0 }
+        if let fel { prefs.facitStatus = "Kunde inte skicka \(klockan): \(fel)"; prefs.facitStatusAt = .now }
+        else if !delar.isEmpty { prefs.facitStatus = "Skickat \(klockan) (\(delar.joined(separator: ", ")))"; prefs.facitStatusAt = .now }
         return sent.count + sentMissar.count
     }
 
