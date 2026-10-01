@@ -2156,3 +2156,4 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 1/10 kväll (Claude via Cowork, Axels skärmbild): iPhone-skärmarna rullar, facitknapparna på ett ställe, statusraden bara vid fel, svenska klockslag,
   "lämnar inte telefonen av sig själv" — kort #279, DECISIONS #430, bygge (19). Skrivet utan kompilator; Axels Xcode-bygge är första provet.
 - 1/10 22:25 (Axel): **0.3.9 (19) kompilerade och laddades upp till Apple** ur 4f88513 — första bygget sedan (13). En Xcode-varning (`actionJa` ur nonisolated delegat) rättad i main. Verify på telefonen kvar.
+- 1/10 22:34 (Axel, App Store Connect): **(19) *Testing* i Kompisarna** utan ny granskning. Rättelse: (14) VAR arkiverad (23/9, i Kompisarna sedan 26/9, 37 sessioner) — bedömningen och produktboken sa fel i kväll; bara (15)–(18) var oarkiverade.
