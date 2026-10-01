@@ -2136,3 +2136,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 1/10 (Claude, Bengts *"öppna PR:en och merga efter grön"*): PR #652 öppnad (grenen → main, 38 commits). CI startade inte:
   huvudcommiten bar överhoppningsmärket. Läxan i CLAUDE.md — och läxans egen commit (2ead3a4) bar märket ordagrant i RUBRIKEN
   ("Läxa: … på PR:ens sista commit …") och stoppade CI en gång till, precis som 21/9-läxan säger. Först nästa commit, utan ordet, prövas.
+- 1/10 (Claude, Bengts *"kör på #267"*): fyra rättelser (ca25bec, DECISIONS #414): §5.1 L2/L5, #321 utan monotoni, spärren 10 s i
+  motorns huvud och TROSKLAR-OVERGANGAR; bunten omgenererad och skuggmotorn deployad (36820055383), spärrprov 36820118920 grönt (suppressed en rad); värdevakten på
+  main 36819878682 (0 obesiktigade). Kort #267 KLART.

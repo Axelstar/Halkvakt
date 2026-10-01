@@ -6395,3 +6395,17 @@ polisens händelser"*; nyckelordet *förändring* träffar en entitetskodad sida
 av f lten."* och VET INTE; `&#xE5;` med versal hex föll första varvet (regexen saknade versaler) och rättades innan commit. Mot källorna:
 körning 36817880379 på grenen — åtta hash-källor *"normaliseringen bytt (v1 → v2) — grundvärdet skrivs om utan larm"*, statens polisen-text bär
 å/ä/ö; issue-listan oförändrad (sex öppna trv-nyhet-issues före och efter, ingen ny, ingen kommentar). Nätpolicyn i containern ger 403 mot alla källsidor, så det levande beviset är körningens, inte en lokal hämtning.
+
+## #414 (1/10 2026) Kort #267 stängt: fyra rättelser, bunten omgenererad och deployad, värdevakten körd på main
+
+**Bengts order 1/10:** *"kör på #267"*. Inga beslut i sak — kortet var rättelser. (1) Bedömningen §5.1 sade att S2 och S3 var obyggda
+och att försprångets regel saknades; rättat med beviset på raden (S2 byggd 24/9, DECISIONS #341; försprånget i skugga sedan 25/9, #359;
+S3 fortfarande obyggd). (2) DECISIONS #321 påstod att felet stiger monotont med avståndet; loggen 22/9 (35688287525) ger
+0,43 · 0,79 · 0,76 · 0,72 °C — rättelse tillagd i #321, domen orörd. (3) `engine/src/engine.ts` rad 5 och TROSKLAR-OVERGANGAR §7 sade
+45 s om spärren; nu 10 s prioritetsmedvetet (kort #127, v23). Kommentaren ligger i motorns källa, så bunten omgenererades
+(`supabase/functions/skuggmotor/index.ts`, diffen är bara kommentaren) och skuggmotorn deployades enligt husregeln (körning 36820055383);
+mätningen efter deployen är spärrprovet (körning 36820118920): status 200, `suppressed` med EN rad — prov:kam2 tystad av prov:kam1 efter 5 s, inget skrivet i shadow_log. (4) Värdevakten körd på main (36819878682, 30 dygn): 51 numeriska fält i 14 tabeller,
+27 spann, **noll obesiktigade**, fyra kända avvikelser (byvind 87,7 m/s — anmäld; sikt 20 000 som sentinel i två tabeller; radarns
+`rate_max_mmh` 727,54 över spannets 200). Ytans spann −60…+60 °C **står**: de −34…−50 °C sju stationer rapporterade i septemberluft ligger
+inom fysikens spann och är omöjliga bara i relation till luften — det är radvaktens kontroll (DECISIONS #298), inte värdevaktens. Sagt
+som kommentar vid `SPANN` så nästa läsare inte stramar ett spann som vaktar fel sak.
