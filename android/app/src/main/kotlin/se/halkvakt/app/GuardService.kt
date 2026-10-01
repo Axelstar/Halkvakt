@@ -234,12 +234,17 @@ class GuardService : Service() {
             (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(ch)
         }
         val pi = PendingIntent.getActivity(this, 0, Intent(this, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
+        // Å1 (kort #262): vakten ska gå att stoppa från låsskärmen — förut krävde det att appen öppnades.
+        val stoppa = PendingIntent.getBroadcast(this, 3,
+            Intent(this, StoppaVaktenReceiver::class.java).setAction(StoppaVaktenReceiver.ACTION_STOPPA),
+            PendingIntent.FLAG_IMMUTABLE)
         return Notification.Builder(this, chId)
             .setContentTitle("Halkvakt")
             .setContentText(text)
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentIntent(pi)
             .setOngoing(true)
+            .addAction(0, "Avsluta vakten", stoppa)
             .build()
     }
 

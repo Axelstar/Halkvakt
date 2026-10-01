@@ -31,15 +31,35 @@ class Guard(
     fun updateHazards(hazards: List<Hazard>) {
         engine.updateHazards(hazards)
         coords = flatten(hazards)
+        svep = null   // the bound below is only valid for the set it was measured against
     }
+
+    /** Last full sweep: where it was taken and what it found. Null = no sweep yet, or the set changed. */
+    private var svep: Triple<Double, Double, Double>? = null
 
     /**
      * Straight-line distance to the nearest hazard of any kind — feeds CadencePolicy.
      * Coarse on purpose (segment vertices, no corridor logic): this classifies battery
-     * tiers, it never decides alerts. O(n) over ~2 000 national points ≈ microseconds.
+     * tiers, it never decides alerts.
+     *
+     * Kort #262 Å5: the full sweep touches every coordinate of every hazard (segment vertices
+     * included), and at 1 Hz that is a national sweep per second on top of the engine's own.
+     * Between sweeps the triangle inequality gives a LOWER bound for free: after moving m metres,
+     * no hazard can be closer than (lastNearest − m). A lower bound can only pick a FASTER tier
+     * than the truth — never a slower one — so it is safe to hand to CadencePolicy. A new sweep is
+     * taken once the car has covered half the last measured distance, so far from everything the
+     * sweep runs every tens of kilometres, and within the 5 km NEAR tier every ~2.5 km.
+     * Proven in GuardTest.
      */
-    fun nearestHazardM(lon: Double, lat: Double): Double? =
-        coords.minOfOrNull { Geo.haversineM(lon, lat, it[0], it[1]) }
+    fun nearestHazardM(lon: Double, lat: Double): Double? {
+        svep?.let { (sLon, sLat, d) ->
+            val flyttat = Geo.haversineM(lon, lat, sLon, sLat)
+            if (flyttat < d / 2) return d - flyttat
+        }
+        val d = coords.minOfOrNull { Geo.haversineM(lon, lat, it[0], it[1]) } ?: return null
+        svep = Triple(lon, lat, d)
+        return d
+    }
 
     private fun flatten(hazards: List<Hazard>): List<DoubleArray> = buildList {
         for (h in hazards) when (h) {
