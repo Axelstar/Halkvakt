@@ -243,6 +243,18 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Trafikverket inget annat."*** Allt om att driva ärendet — reservformulär, krav på skriftligt avslagsbeslut, överklagande —
   är **stängt** på hans order (DECISIONS #388). Kortet väntar på Trafikverkets beslut och på ingenting annat. Det tidigare
   Datex II-ärendet är obesvarat sedan 17/9; tystnad är mönstret, inte undantaget.
+  📨 **TRAFIKVERKET SVARADE 1/10 08:07** — Micke Wallin, VViS Förvaltning (konsult), på Bengts ärende med ämnet *"Vädervarningar"*:
+  *"för att det ska bli rätt skulle vi vilja veta vilken information du syftar på i det Öppna API't så ska vi leta rätt på det som
+  kan finnas i historikdatabasen avseende det."* Första livstecknet från Trafikverket på fem ärenden sedan 17/9, och det är
+  kuvösens: *historikdatabasen* och *VViS* pekar på uttaget, inte på givaranmälningarna, och inte på e-tjänsten för allmänna
+  handlingar (ett sådant svar kommer från registrator med diarienummer). Bengt hittar inget skickat mejl därför att
+  Datautbytesportalens formulär skickar åt honom — ämnesraden var hans, kopian finns bara hos dem. **Svaret att skicka (gavs i
+  chatten 1/10):** precisera objekttypen `WeatherMeasurepoint` (schemaversion 2.1) i Öppna API:t, fälten vi redan läser
+  (`Observation.Sample`, `Surface.Temperature`, `Air.Temperature`, `Air.Dewpoint`, `Air.RelativeHumidity`,
+  `Weather.Precipitation`, `Aggregated30minutes.Precipitation.RainSum`/`SnowSum.WaterEquivalent`, `Wind.Speed`/`Direction`,
+  `Aggregated30minutes.Wind.SpeedMax`, `Air.VisibleDistance`), perioden 1/11 2024–31/3 2025, alla stationer i den upplösning de
+  lagrar; i andra hand `RoadCondition` och `Situation` för samma period; formatet deras eget; och — enligt #398 — be dem höra av
+  sig INNAN någon avgift uppstår. Ingen eskalering, inga paragrafer: de frågade, vi svarar.
   ⚠️ **TVÅ RISKER SOM INTE STOD PÅ KORTET, och de gäller även om svaret blir ja:**
   · **Elektronisk form är inte en rättighet.** Rätten att ta del av en allmän handling omfattar att läsa den och att få
     papperskopia; att få ut en databas i filform är något myndigheten *får* göra, inte något den måste. För ett vinteruttag
