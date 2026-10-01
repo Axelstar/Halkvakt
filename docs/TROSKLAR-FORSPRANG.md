@@ -91,6 +91,7 @@ och vektorerna i `engine/vectors/` rörs inte. Kroken förs till Kotlin och Swif
 
 - **KLARAR** (A + B + C) ⇒ valregeln i §3 väljer svepvärdet; steg 7: kroken och nivåerna förs in i tre portar (F4), med vektorer som
   låser nivå 2:s försprång och att nivå 1 och alla andra faror är orörda. Rösten är Axels och ändras inte.
+  **Taket är motorns, inte reglagets** (kort #275 väg (a), Bengt 26/9, DECISIONS #419): krokens svar kläms till `DEFAULT_CONFIG.leadMaxM` (3 000 m), och appens reglage *Längsta förvarning* (`leadMaxM` 400–1 200 m) tar bara grundvarningen. Portarna för över klämningen som den står i `engine/src`; provet i `test/forsprang.test.ts` och en vektor låser den. Inget tal i §3 ändras — spannet 400–3 000 m var redan det som mäts.
 - **FALLER** ⇒ dokumenterat nej: försprånget förblir 30 s för alla. Nivåerna står kvar som mätinstrument.
 - **FÖR LITE UNDERLAG** ⇒ fortsatt skugga en vinter till. Aldrig ett tal på tunn dom.
 
