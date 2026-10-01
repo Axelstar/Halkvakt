@@ -6820,3 +6820,22 @@ ramar i en generisk mall; råbilderna fanns redan. Kan prövas för Android, dä
 
 **Vad som inte är gjort.** Körläget och varningskortet saknas bland bilderna — de två som visar vad appen gör; Axel tar dem (starta
 vakten, håll på *PÅ VAKT*). Klick i App Store Connect: versionen, App Privacy, bilderna, texten, inlämning. Triangeln på byggena oläst.
+
+## #433 (2/10 2026 00:09) Halkvakt 0.3.9 (20) inlämnad till App Store — Waiting for Review (kort #280)
+
+**Händelse (Axel, med Claude på skärmen, 1/10 23:37–2/10 00:09).** Versionen 0.3.9 i App Store Connect inlämnad med bygge **(20)**
+(långtrycket rättat, DECISIONS #430/#431-varvet). Ifyllt i samma sittning: sju skärmbilder 1284×2778 i AppLaunchFlow-looken
+(`marknadsforing/butik/appstore/alf.py`), kampanjtext, beskrivning, nyckelord, support- och marknadsförings-URL (github.io — halkvakt.se är
+inte vår, kortet *Skydda namnet*), copyright *© 2026 Lagerlöf Labs*, granskarens anteckningar på engelska med hur varningskortet visas utan att
+köra, *Sign-in required* av, kontakt Axel; App Information: kategori Navigation/Travel, Content Rights ja med rättigheter, åldersgräns 4+;
+App Privacy publicerad: Coarse Location + Product Interaction, App Functionality + Analytics, inte kopplat till identitet, ingen spårning,
+policy-URL `axelstar.github.io/halkvakt-karta/integritet.html` (uppdaterad b9626bf samma kväll); pris gratis (SEK 0); tillgänglighet
+**bara Sverige** (#432); **Manually release** — ett godkännande släpper ingenting förrän Axel trycker Release.
+
+**Vad som väntar.** Apples svar (typiskt 1–3 dygn). Vid avslag: svaret skrivs i Resolution Center, texten in i chatten först. Vid godkännande:
+Axel väljer dagen; betaguiden och Kompisarna påverkas inte (TestFlight går vidare parallellt).
+
+**Sagt högt.** (1) (20) är inlämnat utan att långtrycket provats på en telefon — fungerade i (13), bröts av #279:s ScrollView, rättat med
+simultaneousGesture; Axel provar i TestFlight (20) i morgon, och faller det skickar vi (21) innan granskaren hinner dit. (2) Copyright-fältet
+sparades som *"Copyright: © 2026 Lagerlöf Labs"* — ordet "Copyright:" ska bort nästa gång versionen redigeras. (3) AppLaunchFlows
+nedladdning är betald; samma look byggd fritt i `alf.py`.
