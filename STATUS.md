@@ -2126,3 +2126,5 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   §4.2-rader strukna. origin/main (halkläget 30/9) inmergad.
 - 30/9 (Claude, Bengts *"du kan stänga kort 265"*): #265 till 🟢 KLART (DECISIONS #410); organisationsnummer och bankkonto som
   bevakningsrad i §0b; §4.2-frågan och oktoberraden strukna.
+- 1/10 (Claude, Bengts *"stäng kort 272"*): #272 till 🟢 KLART utan bygge (DECISIONS #411) — den skickade ansökan arkiveras i
+  Drive, inte i repot. Bedömningen (1) och §0b rättade. origin/main (halkläget 1/10) inmergad.

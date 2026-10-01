@@ -6342,3 +6342,11 @@ Drive-versionen och bilagorna i `docs/skyltfonden-2026-09-28/`.
 🟢 KLART med rubriken *Föreningen Halkvakt bildad*. Det som återstår av Verify-raden — Skatteverkets organisationsnummer och bankkontot —
 följs i bedömningen §0b som en bevakningsrad, inte som kort; numret meddelas Skyltfonden när det kommer. Oktoberradens gamla plan
 (kallelse 5/10, möte 13/10) struken.
+
+## #411 (1/10 2026) Kort #272 stängt utan bygge — den skickade Skyltfondsansökan läggs inte i repot
+
+**Bengt 1/10:** *"stäng kort 272"*. Kortet (DECISIONS #409) ville ha den skickade versionen — formuläret utan sida 1 och bilaga 1–8 som
+PDF — i `docs/skyltfonden-2026-09-28/skickad/`. Inget sådant finns på main (kontrollerat 1/10: PDF:erna där är 28/9-byggena, v8B).
+Beslutet är alltså att Drive-mappen Skyltfonden och Bengts utkorg är arkivet för det som skickades; repot bär v8B och ändringslistan.
+Konsekvens att känna till: svar till fonden skrivs ur Drive-versionen, och SESSIONSREGELNs regel om incheckade dokument gäller inte
+den här filen på Bengts beslut.

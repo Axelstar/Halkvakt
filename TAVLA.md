@@ -222,11 +222,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **29/9: rubriken överspelad (DECISIONS #402).** Android bär 0.3.9 (18) som iOS sedan 26/9 (#377, #379) och Play-kontot finns sedan 20/9. Kvar är bara Play-vägen: enhetsverifieringen i Play Console, första uppladdningen med Data safety-formuläret ifyllt likadant som filen (#214), slutet test 14 dygn med tolv testare, produktion tidigast november. Verify-raden gäller oförändrad.
 ### Bengt
 
-- [ ] 📁 **#272 DEN SKICKADE ANSÖKAN IN I REPOT** (30/9, DECISIONS #409). Versionen som gick till fonden 30/9 — formuläret och
-  bilaga 1–8 som PDF — finns bara i Drive-mappen Skyltfonden och i Bengts utkorg; repots bilaga 1 är v8B (283 000 kr, fyra
-  arbetspaket), inte den skickade V2. Ett fastställt dokument som inte är incheckat finns inte (SESSIONSREGELN). Lägg PDF:erna i
-  `docs/skyltfonden-2026-09-28/skickad/`, formuläret utan sida 1 (personnummer och bankkonto får aldrig in i repot). *Verify:*
-  åtta bilagor och formuläret i mappen, commit på main, personnummer grep-fritt.
 - [ ] 📐 **#270 PROGNOSLAGRET EFTER PREMISSMÄTNINGARNA — BENGTS VAL a–h** (30/9, `docs/PROGNOSLAGRET-2026-09-30.md`; DECISIONS
   #405–#408; bedömningen §4.2). Domen står (fallen 28/9, bekräftad 30/9 och på ärliga rader). Bandet 0–7 km håller i båda
   länderna men kan inte dömas med svenska stationer (15 av spärrens 20); Finland ger 108 stationer och 2,3 % [1,1–3,5]; frysflaggan
@@ -1852,6 +1847,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#272 DEN SKICKADE ANSÖKAN IN I REPOT — STÄNGT 1/10 UTAN BYGGE (DECISIONS #411)** (30/9, DECISIONS #409). Versionen som gick till fonden 30/9 — formuläret och
+  bilaga 1–8 som PDF — finns bara i Drive-mappen Skyltfonden och i Bengts utkorg; repots bilaga 1 är v8B (283 000 kr, fyra
+  arbetspaket), inte den skickade V2. Ett fastställt dokument som inte är incheckat finns inte (SESSIONSREGELN). Lägg PDF:erna i
+  `docs/skyltfonden-2026-09-28/skickad/`, formuläret utan sida 1 (personnummer och bankkonto får aldrig in i repot). *Verify:*
+  åtta bilagor och formuläret i mappen, commit på main, personnummer grep-fritt.
+  ↪ **1/10: STÄNGT på Bengts ord** (*"stäng kort 272"*, DECISIONS #411). Den skickade versionen läggs inte i repot; den finns i Drive-mappen
+  Skyltfonden och Bengts utkorg. Repots PDF:er under `docs/skyltfonden-2026-09-28/` är 28/9-byggena (v8B), inte det som skickades.
 - [x] ✅ **#265 FÖRENINGEN HALKVAKT BILDAD — STÄNGT 30/9 (DECISIONS #410)** *(rubriken var: bildas 29/9, sökande i Skyltfonden som förening under bildande)* (Bengt 29/9, DECISIONS #400,
   ersätter #396:s oktoberplan). Bengt ordförande, Axel kassör, Harald Lagerlöf ledamot och sekreterare, Susanne Horstmann revisor.
   Handlingarna ifyllda i `docs/forening/` och Drive: stadgar (29/9), kallelse, protokoll med § 16 om Skyltfonden, medlemsförteckning,
