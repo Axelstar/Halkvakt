@@ -6469,3 +6469,22 @@ fortfarande, efter 3 h i stället för 30 min. Priset är 2,5 h längre till upp
 stoppas, och det görs inte för ett bevis.
 
 **Alternativ:** vänta till 15:09Z med #243 — förkastat, gluggmätningen är starkare än en frånvaro av issues och täcker fönstret.
+
+## #418 (1/10 2026) En extern projektsida, *Halkvakt och kuvösen*, för Trafikverkets handläggare — skriven utan opublicerade tröskelvärden (kort #274)
+
+**Bengts idé 1/10**, sedan VViS Förvaltning svarat på kuvösens uttag: en pedagogisk sida om vad Halkvakt är och vad kuvösen ska göra i
+jämförelse med dagens tröskelmätningar, *"det kanske gynnar vår ansökan till skyltfonden"*.
+
+**Beslut om innehållet.** Sidan säger bara det som redan står i systembeskrivningen, mätningssidan och ansökan: dataflödet och de fyra
+principerna (tyst som standard, en vinnare per steg, löftet följer källan, ingen position lämnar telefonen), tretton tröskeldokument daterade
+före koden, 37 gemensamma testfall, skuggan och arkivet, domkalendern, kuvösens regler (startvärden som de står, hela vintern, varje del ensam
+och ovanpå de andra, facit = stationens egen yta, ändrar ingen tröskel, tillfällig databas), uttagets fält och period, och vilka vi är.
+**Inga regelvärden** — mätningssidan är intern just för att den bär opublicerade trösklar; projektsidan är extern. Novembersvaret är skrivet som
+villkorat: *om uttaget kommer i oktober*. Appens exempelrop är motorns egen text (*Isrisk framöver, vägbanan nära noll grader*), inte påhittad.
+
+**Vad sidan inte lovar:** ingen tidplan för kuvösen utöver villkoret, ingen partner, inget om kostnad för uttaget (det står i svaret till Micke
+Wallin, #398 styr), och inget om vad Trafikverket ska göra med sina givare (anmälningarna står för sig).
+
+**Delning:** artefakten är privat tills Bengt delar den. Han avgör om länken går till Trafikverket (Micke Wallin) och om den nämns för
+Skyltfonden. Källa `docs/HALKVAKT-OCH-KUVOSEN.html`, artefakt https://claude.ai/artifact/CrrMKX7vcRcXHiqqYGjs9S; ändringar görs i repokopian och
+republiceras till samma URL i samma commit (samma regel som stomdokumenten, #415, utan att sidan är ett stomdokument).

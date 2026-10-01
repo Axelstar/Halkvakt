@@ -1,0 +1,207 @@
+<title>Halkvakt och kuvösen</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,600&family=Public+Sans:wght@400;600&display=swap">
+<style>
+  /* Layout: one reading column (68ch) with full-width figures; cool frost neutrals, one warm accent for "varning", one cold blue for "kuvösen". */
+  :root {
+    --bg: #f2f5f7;
+    --paper: #ffffff;
+    --fg: #1d2a33;
+    --muted: #5b6b76;
+    --line: #cfd8de;
+    --accent: #b86b00;      /* varningens färg: vägskyltens gula, mörkad för text */
+    --accent-soft: #fbead0;
+    --cold: #2c6a93;        /* kuvösen, det förflutna, arkivet */
+    --cold-soft: #dbe9f3;
+    --display: "Literata", Georgia, "Times New Roman", serif;
+    --body: "Public Sans", "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141b20; --paper: #1c252c; --fg: #e6ecf0; --muted: #9fb0ba; --line: #334049;
+      --accent: #f0a73a; --accent-soft: #3a2a10; --cold: #7db4d8; --cold-soft: #1e3140; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141b20; --paper: #1c252c; --fg: #e6ecf0; --muted: #9fb0ba; --line: #334049;
+    --accent: #f0a73a; --accent-soft: #3a2a10; --cold: #7db4d8; --cold-soft: #1e3140; color-scheme: dark;
+  }
+  body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 17px; line-height: 1.55; }
+  .wrap { max-width: 980px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 56px; }
+  .prose { max-width: 68ch; }
+  h1, h2, h3 { font-family: var(--display); font-weight: 600; text-wrap: balance; line-height: 1.15; margin: 0; }
+  h1 { font-size: clamp(2rem, 5vw, 3rem); }
+  h2 { font-size: 1.6rem; margin-top: 3.2rem; padding-top: 1.2rem; border-top: 1px solid var(--line); }
+  h3 { font-size: 1.15rem; margin-top: 1.8rem; }
+  p { margin: 0.9rem 0 0; }
+  .eyebrow { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin-bottom: 0.9rem; }
+  .lead { font-size: 1.2rem; line-height: 1.5; margin-top: 1.1rem; color: var(--fg); }
+  .muted { color: var(--muted); }
+  ul { margin: 0.7rem 0 0; padding-left: 1.3rem; }
+  li { margin-top: 0.35rem; }
+  li::marker { color: var(--muted); }
+  strong { font-weight: 600; }
+  code { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 0.92em; background: var(--paper); border: 1px solid var(--line); border-radius: 3px; padding: 0 0.25em; }
+
+  /* Figure 1: data flow */
+  .flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: stretch; gap: 10px; margin-top: 1.4rem; }
+  .flow .box { background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; min-width: 0; }
+  .flow .box h4 { margin: 0; font-family: var(--display); font-weight: 600; font-size: 1.05rem; }
+  .flow .box p { margin-top: 0.4rem; font-size: 0.92rem; color: var(--muted); }
+  .flow .arrow { align-self: center; color: var(--muted); font-size: 1.4rem; }
+  .flow .back { grid-column: 1 / -1; display: flex; gap: 10px; align-items: baseline; font-size: 0.92rem; color: var(--muted); border-top: 1px dashed var(--line); padding-top: 10px; }
+  .flow .back b { color: var(--accent); font-weight: 600; }
+  @media (max-width: 640px) {
+    .flow { grid-template-columns: 1fr; }
+    .flow .arrow { transform: rotate(90deg); justify-self: center; }
+  }
+
+  /* Principles */
+  .principles { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-top: 1.4rem; }
+  .principles div { border-left: 3px solid var(--accent); padding: 4px 0 4px 14px; font-size: 0.95rem; }
+  .principles b { display: block; font-family: var(--display); font-size: 1.05rem; margin-bottom: 0.2rem; }
+
+  /* Figure 2: timeline */
+  .timeline { margin-top: 1.4rem; overflow-x: auto; }
+  .tl { display: grid; grid-template-columns: 110px repeat(8, minmax(72px, 1fr)); gap: 6px 0; min-width: 700px; align-items: center; }
+  .tl .m { font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); text-align: center; padding-bottom: 4px; border-bottom: 1px solid var(--line); }
+  .tl .lab { font-size: 0.9rem; font-weight: 600; padding-right: 10px; }
+  .tl .bar { height: 30px; border-radius: 4px; display: flex; align-items: center; padding: 0 10px; font-size: 0.82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tl .now { background: var(--accent-soft); color: var(--fg); border: 1px solid var(--accent); }
+  .tl .wait { background: transparent; border: 1px dashed var(--line); color: var(--muted); }
+  .tl .kuv { background: var(--cold-soft); color: var(--fg); border: 1px solid var(--cold); }
+  .tl .mark { height: 30px; display: flex; align-items: center; font-size: 0.82rem; padding-left: 8px; border-left: 3px solid var(--accent); white-space: nowrap; }
+  .tl .mark.c { border-left-color: var(--cold); }
+  .tl .spacer { grid-column: 1 / -1; height: 6px; }
+  .cap { font-size: 0.88rem; color: var(--muted); margin-top: 0.6rem; }
+
+  /* Comparison table */
+  .tbl { overflow-x: auto; margin-top: 1.2rem; }
+  table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 0.95rem; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  th { font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  th.now { color: var(--accent); } th.kuv { color: var(--cold); }
+  td:first-child { font-weight: 600; width: 22%; }
+
+  /* Request list */
+  .req { background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 16px 20px; margin-top: 1.2rem; }
+  .req h3 { margin-top: 0; }
+  .req ol { margin: 0.6rem 0 0; padding-left: 1.3rem; }
+  .req li { margin-top: 0.5rem; }
+  .cal { margin-top: 1.2rem; }
+  .cal table { min-width: 0; }
+  footer { margin-top: 3.2rem; padding-top: 1rem; border-top: 1px solid var(--line); font-size: 0.88rem; color: var(--muted); }
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">Till Trafikverket, VViS Förvaltning · oktober 2026</div>
+  <h1>Halkvakt och kuvösen</h1>
+  <p class="lead prose">Halkvakt är en gratis mobilapp som med rösten varnar bilföraren för halka på vägen framför, byggd helt på Trafikverkets öppna data. Den här sidan beskriver vad appen gör, hur vi prövar den i dag, och vad vi vill göra med ett historiskt uttag ur VViS: köra hela systemet mot en vinter som redan hänt, innan den riktiga vintern kommer.</p>
+
+  <h2 id="appen">Vad Halkvakt är</h2>
+  <div class="prose">
+    <p>Appen hämtar en ögonblicksbild av vägläget som vi publicerar var tionde minut: vägväderstationernas mätvärden, rapporterat väglag per sträcka och trafikhändelser som olyckor och djur på vägen. Telefonen matchar bilden mot förarens väg och färdriktning och säger till i tid, till exempel <em>Isrisk framöver, vägbanan nära noll grader</em>. Datapipelinen hämtar Trafikverkets data varje minut och har arkiverat alla mätvärden sedan 24 augusti 2026.</p>
+    <p>Rösten talar bara på det Trafikverket mätt eller rapporterat. SMHI:s varningar och nederbördsradar samt Trafikverkets väglagskameror används som facit och i skuggdrift, aldrig i rösten. Appen används av en testkrets på iPhone sedan 31 augusti 2026 och på Android sedan 20 september 2026. Publicering i App Store och Google Play planeras till hösten 2026.</p>
+  </div>
+
+  <div class="flow" role="img" aria-label="Dataflödet: Trafikverkets öppna API till vår publicering till telefonen. Tillbaka går bara det testföraren själv trycker.">
+    <div class="box"><h4>Trafikverkets öppna API</h4><p>WeatherMeasurepoint, RoadCondition, Situation. Hämtas varje minut, arkiveras.</p></div>
+    <div class="arrow" aria-hidden="true">→</div>
+    <div class="box"><h4>Vår ögonblicksbild</h4><p>En fil var tionde minut med vakter mot felande givare och med checksumma. Samma fil till alla telefoner.</p></div>
+    <div class="arrow" aria-hidden="true">→</div>
+    <div class="box"><h4>Telefonen</h4><p>Matchar bilden mot vägen framför och talar. Ingen server vet var bilen är.</p></div>
+    <div class="back"><span aria-hidden="true">↩</span><span><b>Det enda som går tillbaka:</b> en testförares eget tryck på <em>Stämde</em> eller <em>Stämde inte</em> efter en varning, eller <em>Appen missade</em> efter resan. Varningens id, klockslag och svar. Avstängt som standard, ingen identitet, inget spår.</span></div>
+  </div>
+
+  <div class="principles">
+    <div><b>Tyst som standard</b>Varnar bara vid mätt eller rapporterad risk. Hellre tyst än tjatig; falsklarm urholkar förtroendet.</div>
+    <div><b>En vinnare per steg</b>Olycka före halksträcka före frysrisk före vilt före kamera. Förloraren köas aldrig, och samma fara upprepas inte inom tio minuter.</div>
+    <div><b>Löftet följer källan</b>Medianavståndet från huvudvägnätet till närmaste station är 7 km. Där ingen station ser är appen tyst, och säger det.</div>
+    <div><b>Ingen position lämnar telefonen</b>Ingen position, inget GPS-spår och ingen rörelsedata skickas automatiskt. Matchningen sker i telefonen.</div>
+  </div>
+
+  <h2 id="idag">Hur vi prövar appen i dag: trösklar och grindar</h2>
+  <div class="prose">
+    <p>Varje regel i appen har ett tröskeldokument som skrevs och daterades innan regelns kod och innan mätningen fanns. Tretton sådana dokument finns. En tröskel får skärpas men aldrig lättas när utfallet är sett, och fram till domen redovisas bara antal. Samma varningsmotor körs på server, Android och iPhone och måste klara 37 gemensamma testfall tecken för tecken.</p>
+    <p>Prövningen sker i två rum. I <strong>skuggan</strong> kör samma motor som apparna längs fasta rutter var trettionde minut och loggar varje varning den skulle ha gett, utan att någon förare hör den. I <strong>arkivet</strong> räknas de regler som ännu inte är i drift: trenden i yttemperaturen, rimfrost, övergångar mellan väglag, nederbördstyp, vind och sikt, och ett prognoslager som skattar vägytans temperatur var annan kilometer mellan stationerna. Varje delområde har en <strong>grind</strong>: ett tal det ska klara för sig, med facit ur stationernas egna mätserier, rapporterat väglag, kamerabilderna och testförarnas svar.</p>
+    <p>Två saker begränsar den prövningen. <strong>Den väntar på vädret.</strong> Den 27 september var en enda station i arkivet kall, och alla vinterregler väntar på den första frosten. Den första domen faller i januari 2027, kalibreringen görs i februari och prognoslagret döms i mars. <strong>Och varje grind dömer sin del ensam.</strong> En del kan vara svag för sig och avgörande tillsammans med de andra. Det finns ingen grind för helheten.</p>
+  </div>
+
+  <div class="cal">
+    <table>
+      <thead><tr><th>När</th><th>Vad som döms i dag</th></tr></thead>
+      <tbody>
+        <tr><td>Varje måndag</td><td>Prognoslagrets grindar vid och mellan stationerna</td></tr>
+        <tr><td>Inom sju dygn efter frost</td><td>Trenden, rimfrosten, övergångarna, frysklassningen, vind och sikt. Körs när minst 50 stationer haft ytan under noll</td></tr>
+        <tr><td>Januari 2027</td><td>Efterhalkans första dom</td></tr>
+        <tr><td>1 februari 2027</td><td>Den gemensamma kalibreringen</td></tr>
+        <tr><td>Mars 2027</td><td>Prognoslagrets grind mellan stationerna, försprånget, kombinationen av regler, nederbördstypen. Kamerafacit öppnas</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="kuvosen">Kuvösen: samma prövning på en vinter som redan hänt</h2>
+  <div class="prose">
+    <p>Kuvösen är en testbädd där motorn och alla skuggregler körs tillsammans, långt från appar och förare, mot en hel gången vinter: VViS-observationerna 1 november 2024 till 31 mars 2025. Namnet säger vad den är. Reglerna får växa till sig på en vinter som redan hänt, innan de möter den riktiga.</p>
+    <p>Trafikverkets API ger sju dygn bakåt, och vårt eget arkiv börjar i augusti 2026. Vintern 2024/25 finns bara i Trafikverkets historikdatabas. Det är därför vi frågade.</p>
+    <p><strong>Vad kuvösen svarar på som dagens mätningar inte kan.</strong> Är helheten på rätt väg, och vad tillför varje del ovanpå de andra? Varje regel körs ensam och sedan tillsammans med de övriga, så att dess marginalnytta syns. Och svaret kan komma redan i november 2026, om uttaget kommer i oktober, i stället för i mars 2027. Det är hela poängen: vintersvar före vintern.</p>
+    <p><strong>Reglerna, bestämda innan körningen.</strong> Startvärdena som de står, inget letande efter bästa inställning. Hela vintern, inga handplockade dygn. Facit är stationens egen yttemperatur efter varningen, det vill säga att det <em>blev</em> kallt, inte att vägen bevisligen blev hal, kompletterat med rapporterat väglag och händelser för samma period om vi får dem. Resultatet ändrar ingen tröskel; det är ett riktningsprov. Körningen sker i en separat, tillfällig databas som raderas efteråt, aldrig i driften.</p>
+    <p><strong>Vad kuvösen inte är.</strong> Den ersätter inte vinterns dom på riktiga förare och riktiga vägar, och den gör inte en regel godkänd. Den säger om vi bygger åt rätt håll, medan det fortfarande går att vända.</p>
+  </div>
+
+  <div class="timeline">
+    <div class="tl" role="img" aria-label="Tidslinje september 2026 till april 2027. I dag: metoden prövas i september, väntan på frost i oktober och november, första dom i januari, kalibrering i februari, prognoslagret döms i mars. Kuvösen: körs i oktober 2026 på vintern 2024/25, om uttaget kommer då, och ger svar i november.">
+      <div></div>
+      <div class="m">sep</div><div class="m">okt</div><div class="m">nov</div><div class="m">dec</div><div class="m">jan</div><div class="m">feb</div><div class="m">mar</div><div class="m">apr</div>
+      <div class="lab">I dag</div>
+      <div class="bar now" style="grid-column: 2 / 3">metoden prövas</div>
+      <div class="bar wait" style="grid-column: 3 / 6">väntan på frost, sedan antal</div>
+      <div class="mark" style="grid-column: 6 / 7">dom 1</div>
+      <div class="mark" style="grid-column: 7 / 8">kalibrering</div>
+      <div class="mark" style="grid-column: 8 / 10">prognoslagret döms</div>
+      <div class="spacer"></div>
+      <div class="lab">Kuvösen</div>
+      <div></div>
+      <div class="bar kuv" style="grid-column: 3 / 4">körs på vintern 2024/25</div>
+      <div class="mark c" style="grid-column: 4 / 7">svar: riktning och marginalnytta</div>
+      <div></div><div></div><div></div>
+    </div>
+    <p class="cap">Vinterns dom på riktig data står kvar oavsett. Kuvösen flyttar fram det första svaret om helheten med ungefär fyra månader, förutsatt att uttaget kommer i oktober.</p>
+  </div>
+
+  <h2 id="jamforelse">Jämförelsen</h2>
+  <div class="tbl">
+    <table>
+      <thead><tr><th></th><th class="now">Mätningarna i dag</th><th class="kuv">Kuvösen</th></tr></thead>
+      <tbody>
+        <tr><td>Data</td><td>Vårt eget arkiv från 24 augusti 2026, i realtid</td><td>Trafikverkets VViS-historik 1 nov 2024 till 31 mar 2025</td></tr>
+        <tr><td>Vad som döms</td><td>Varje regel för sig, mot sin egen grind</td><td>Alla regler tillsammans; varje regel ensam och ovanpå de andra</td></tr>
+        <tr><td>När svaret kommer</td><td>Efter första frosten; dom januari till mars 2027</td><td>November 2026, om uttaget kommer i oktober</td></tr>
+        <tr><td>Facit</td><td>Stationernas mätserier, rapporterat väglag, kamerabilder, testförarnas svar</td><td>Stationernas mätserier; väglag och händelser om de ingår i uttaget</td></tr>
+        <tr><td>Reglerna</td><td>Tröskeldokument daterade före koden; skärps, lättas aldrig</td><td>Samma dokument, samma startvärden, upplägget skrivet före körningen</td></tr>
+        <tr><td>Vad resultatet får ändra</td><td>En regel går från skugga till drift när den klarat sin grind</td><td>Ingen tröskel. Riktningen, och var vi lägger arbetet i vinter</td></tr>
+        <tr><td>Var det körs</td><td>Skuggmotorn och arkivet i driften</td><td>En tillfällig databas, raderas efteråt</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="uttaget">Vad vi behöver från Trafikverket</h2>
+  <div class="req">
+    <h3>Historiskt uttag ur VViS</h3>
+    <ol>
+      <li><strong>Period och stationer:</strong> 1 november 2024 till 31 mars 2025, alla stationer, i den tidsupplösning ni lagrar. Är volymen ett hinder räcker stationerna längs våra tjugo provsträckor.</li>
+      <li><strong>Fält, samma som vi läser i Öppna API:t</strong> (objekttypen <code>WeatherMeasurepoint</code>, schemaversion 2.1): <code>Observation.Sample</code>, <code>Surface.Temperature</code>, <code>Air.Temperature</code>, <code>Air.Dewpoint</code>, <code>Air.RelativeHumidity</code>, <code>Weather.Precipitation</code>, <code>Aggregated30minutes.Precipitation</code> (RainSum, SnowSum.WaterEquivalent), <code>Wind</code> (Speed, Direction), <code>Aggregated30minutes.Wind.SpeedMax</code> och <code>Air.VisibleDistance</code>. Saknas något fält i historiken tar vi det som finns.</li>
+      <li><strong>I andra hand, för samma period:</strong> väglagsklassningarna (<code>RoadCondition</code>) och händelserna (<code>Situation</code>).</li>
+      <li><strong>Format:</strong> det ni redan har, CSV eller JSON.</li>
+    </ol>
+    <p class="muted">Vi behöver inga personuppgifter och inga fordonsdata. Uttaget används bara till provet, i en tillfällig databas, och det vi publicerar är resultatet i sammanställd form.</p>
+  </div>
+
+  <h2 id="vilka">Vilka vi är</h2>
+  <div class="prose">
+    <p>Halkvakt drivs av Bengt Lagerlöf och Axel Lagerlöf. Appen, datapipelinen och mätningarna är byggda under 2026 på egen bekostnad, på Trafikverkets öppna API, SMHI:s öppna data och, i skuggarkivet, de finska, norska och danska motsvarigheterna. Den 30 september 2026 lämnades en ansökan till Skyltfonden om att utvärdera förhandsvarningen under vintrarna 2026/27 och 2027/28 och att validera prognoslagret mellan mätstationerna. Allt underlag är daterat och granskningsbart: tröskeldokumenten med sin versionshistorik, arkivet, skuggloggen och utvärderingsskripten.</p>
+    <p>Vi samarbetar gärna med Trafikverket om det som gör utvärderingen bättre, till exempel delning av fordonsdata för att mäta vad stationerna missar mellan sig. Frågor om den här sidan går till Bengt Lagerlöf.</p>
+  </div>
+
+  <footer>Skriven 1 oktober 2026 av projektgruppen. Underlag: tröskeldokumenten, systembeskrivningen och beslutsloggen i projektets arkiv. Siffrorna avser läget den 1 oktober 2026.</footer>
+</div>

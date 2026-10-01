@@ -2149,3 +2149,5 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   uttag (kort #232) — de ber om precisering av informationen i Öppna API:t och letar sedan i historikdatabasen. Inte e-tjänsten;
   formuläret skickar åt Bengt, därför inget skickat mejl i hans låda. Precisering (WeatherMeasurepoint 2.1, fälten, 1/11 2024–31/3
   2025, avgift före arbete) gavs i chatten och står på kortet, bedömningen (läget (4), §0b, §0c E, §6.1) uppdaterad.
+- 1/10 (Claude, Bengts idé): extern projektsida *Halkvakt och kuvösen* för Trafikverkets handläggare — kort #274 skapat och stängt, DECISIONS #418.
+  Källa docs/HALKVAKT-OCH-KUVOSEN.html, artefakt https://claude.ai/artifact/CrrMKX7vcRcXHiqqYGjs9S (v1, privat tills Bengt delar). Inga opublicerade tröskelvärden.

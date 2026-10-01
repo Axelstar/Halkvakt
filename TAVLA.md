@@ -1762,6 +1762,14 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#274 PROJEKTSIDAN TILL TRAFIKVERKET — *Halkvakt och kuvösen* — SKAPAT OCH STÄNGT 1/10 (DECISIONS #418)**: Bengts idé 1/10,
+  när VViS Förvaltning svarat på kuvösens uttag: *"en beskrivning av vårt projekt … lite vad Halkvakt är och vad kuvösen har för avsikt att göra i
+  jämförelse med de mätningar som vi gör nu i trösklar … som en artifact"*. Sidan: vad appen är och inte gör (dataflödet, de fyra principerna),
+  hur vi prövar i dag (tröskeldokument daterade före koden, skuggan och arkivet, grind per del, domkalendern), vad kuvösen svarar på som
+  dagens mätningar inte kan (helheten, marginalnyttan, svar i november i stället för mars — om uttaget kommer i oktober), jämförelsetabellen,
+  uttagets specifikation (samma som svaret till Micke Wallin) och vilka vi är. Inga opublicerade tröskelvärden — sidan är extern.
+  Källa `docs/HALKVAKT-OCH-KUVOSEN.html`, artefakt https://claude.ai/artifact/CrrMKX7vcRcXHiqqYGjs9S (v1). **Privat tills Bengt delar den** (Share-menyn);
+  Bengt avgör om länken går till Trafikverket och Skyltfonden. Ändras sidan: repokopian först, republicera till samma URL i samma commit.
 - [x] ✅ **#243 VAKTHUNDENS ARKIVGRÄNS ÄR FÖR SNÄV — issue #528 var ett falsklarm — STÄNGT 1/10 (DECISIONS #417)** (fynd 24/9 på Bengts fråga *"vad betyder detta"*).
   Checken *livemotorns effekt* larmar när `situation_archive` inte rörts på 30 min, men arkivet skrivs bara när Trafikverket
   ändrar något: mätt 24/9 04:12Z — 4 gluggar > 30 min senaste dygnet (största 102 min), **32 på sju dygn, medel 54 min, största
