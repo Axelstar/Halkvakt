@@ -65,6 +65,11 @@ kort #269, körning 36666151860) visar att ingen premissrättning räddar en vä
 (7,7 %), rå+höjd är oavgjord (5,2 % [3,6–6,9]), ANOM föll, offset (taket) klarar. Golvet vid 5 km 15 % på sex par. Trösklarna rörs
 inte. Inget ändras för appen eller ansökan: ändringslistans punkt A står. Bengts beslut i §4.2. **Sammanfattning med slutsatser och väg framåt: `docs/PROGNOSLAGRET-2026-09-30.md` (kort #270, #271).**
 
+**(8) 1/10.** PR #652 och #653 mergade till main: Skyltfonden skickad och stängd, premissmätningen, db-knappens läsläge (#412),
+källbevakningens å/ä/ö (#413), #267:s rättelser (#414). **Stomregeln (DECISIONS #415):** de fem stomdokumenten — mätningssidan,
+appsidan, systembilden, bedömningen och integrationskartan — stäms av vid varje ändring och bär rättelserna löpande; genomlysning
+gjord 1/10, alla fem uppdaterade (kort #273), kartan öppnad för R21–R26 (#416).
+
 **Vart vi är på väg:** `docs/MALET.md` §4 (milstolparna) och §5 (kritiska vägen).
 
 ---
@@ -186,6 +191,7 @@ beviset finns — inte när koden är skriven.
 
 | Åtgärd | Läge | Kort | DECISIONS | Beviset som gäller |
 | :-- | :-- | :-- | :-- | :-- |
+| **Stomdokumenten (STOMREGELN, DECISIONS #415):** mätningssidan, appsidan, systembilden, bedömningen och kartan stäms av vid varje ändring och bär rättelserna löpande | ✅ genomlysta 1/10: *Halkvaktens mätningar* (artefakt + `docs/MATNINGAR.html`), *Halkvaktens app* (`docs/APPEN.html`), *Halkvaktens systembild* (`docs/SYSTEMBILDEN.html`), kartan R21–R26 (#416), bedömningen — stående plikt varje varv | #273 | #415 | repokopia = artefakt; `git log -1` på de fem inte äldre än senaste beslut som rör dem |
 | ~~**Segmentprognosen i drift (kort #38b steg 4, DECISIONS #325)**~~ | ✅ **23/9:** migration (744 ankare), deploy 20:51Z, första raden MED innehåll: 2 rader med innehåll i `shadow_log.prognos` efter varvet 2026-09-23T21:00:02Z; t.ex. E14 Sundsvall→Åre: 130 provpunkter, 7 uppmätta, 123 modellerade, 0 okända, 0 frysflaggade, 1465 byte; skuggmotorns svar: ankare 5 bidragande per provpunkt (744 i funktionen); E4 Linköping→Södertälje 77 punkter, 970 byte, ankareSkal det svenska svaret hann rulla ur net._http_response före läsningen; det norska varvet svarade ankare 0, "bara Sverige", som avsett. Kvar som egen rad: radstorleken efter första dygnet | #38b | #325 | en rad med `p.length > 0` — inte att kolumnen finns (läxan #127/#193) |
 | ~~**Vägpunktsgrinden (kort #38b 4b): första körningen 23/9 på knapp; svaret på 4a in i TROSKLAR-SKUGGAN §3**~~ | ✅ **23/9 ÖPPEN (DECISIONS #324):** RÅ klarar A1–A3 med vakterna (0,71 °C · 3,8 % ± 0,4 · 0,0 %, 8 132 p / 712 stationer), lika bra som offseten; §3-texten inskriven under #323:s mandat; första körningen utan vakterna föll och räknas inte (fel population, PR #511). Måndagar 07:00 framåt är bevakning. Holdout-urvalet (4c) skrivs in i bygget | #38b | #323 | grinden öppen med en namngiven kandidat (KLARAR A1–A3 utan målets historik), annars inget bygge i oktober |
 | **Arkivexporten i drift (kort #83, DECISIONS #334):** eftersläpningen från 24/8 exporterad, sedan en fil per dygn; vakthundens 9k grön | ⏳ 24/9 05:40Z: två dygn exporterade och verifierade, 19 väntar | #83 | #334 | `arkiv_efterslap() = 0` och en fil per färdigt dygn i hinken |
@@ -517,7 +523,7 @@ minimilistan A–E (§8). Det här är läget mätt mot den, inte mot minnet. Up
 
 | Krav | Läge 24/9 |
 | :-- | :-- |
-| A allvar som försprång | form beslutad, regel obyggd — Axels |
+| A allvar som försprång | ✅ byggd som skugga 25/9 (DECISIONS #359); rösten efter domen i mars — rättat 1/10 |
 | B bevisbärare i snapshoten | ✅ byggd 24/9 (`weather[].bevis`, DECISIONS #342); radarn null tills stationen kopplas till radarsegment |
 | C grind för kombinationen | ✅ skriven 17/9 (TROSKLAR-KOMBINATIONEN KB-A–D) |
 | D gemensam kalibrering | ✅ regel D1–D7, 17/9 |
@@ -528,7 +534,7 @@ minimilistan A–E (§8). Det här är läget mätt mot den, inte mot minnet. Up
 | Länk | 1 publicera | 2 mät i skuggan | 3 villkoret | 4 portar |
 | :-- | :-- | :-- | :-- | :-- |
 | Efterhalkan — vinterns enda röstlänk (§13.4) | ✅ 15/9 (`regn_h`, `lutning`) | ✅ S1 sedan 16/9 | ⏳ S3, Axel, bakom S1-grinden | ⏳ |
-| Segmentprognosen (#38b) | ingen publicering med flit (§4: karta och förstärkare, aldrig röst ensam) | ✅ `prognos` sedan 23/9 | inte förrän domen i mars | — |
+| Segmentprognosen (#38b) | ingen publicering med flit (§4: karta och förstärkare, aldrig röst ensam) | ✅ `prognos` sedan 23/9 — vägpunktsgrinden föll 28/9 (#399), rå viktning inte godkänd | inte förrän domen i mars | — |
 | Radarn / vattenplaningen (#42, #81) | ✅ `rain_segments` 15/9 | ✅ V-B sedan 15/9 | ⏳ steg D efter V-C, Axel | — |
 | Rimfrosten (#46) | fogen vald (andra gren i `icing_point`) | ⏳ R-A saknar data (Finland 0 episoder 24/9) | — | — |
 
@@ -537,18 +543,18 @@ minimilistan A–E (§8). Det här är läget mätt mot den, inte mot minnet. Up
 ### 5.4 De stora stoppen, i ordning
 
 1. **Vädret.** S1-grinden, T-A steg 0, R-A, K-A och W-A väntar på första frosten (frostvakten: 50 stationer under noll; 24/9 som mest 4).
-2. **Facit.** Kamerabilder 790 sedan 15/9 men bara Axel når hinken, en klassad; väglagsarkivet nästan stilla (7 rader på 14 dygn);
-   ett förarsvar; betan inte igång. Utan facit blir mars *fortsatt skugga* av brist på domare, inte av dåliga regler.
+2. **Facit.** Kamerabilder 988 (26/9), 41 provbilder klassade blint, sjudygnsavläsning tidigast 3/10; väglagsarkivet nästan stilla (7 rader på 14 dygn);
+   0 riktiga förarsvar (#390); betan inte igång. Utan facit blir mars *fortsatt skugga* av brist på domare, inte av dåliga regler.
 3. **Steg tre är Axels.** S3 är ett motorbygge i tre portar med v11 som måste förbli tyst — den enda röstlänken i vinter, i konkurrens
    med App Store och betan om hans tid.
-4. **E och B.** Utan nivå från skattaren kan försprånget inte sättas; utan bevisbärare syns inte varför en varning kom.
+4. ~~**E och B.**~~ ✅ **båda byggda 24/9** (#341, #342); försprånget i skugga sedan 25/9 (#359). *(rättat 1/10)*
 5. ~~**Lagringen.**~~ ✅ **Beslutad och i drift 24/9: export till Supabase Storage (DECISIONS #334).** Kvar: återläsningssteget för
    marsdomarna, när raderingen börjat (databasen över 350 MB).
 
 ### 5.5 Kartan är överspelad på fyra ställen
 
 §6.1 (grind A *ingen dom*), §5.4 (prognosens fog som `weather[].osakerhet`), §12 (kamerafacit 0 objekt, ingen vakt) och §7.2–7.4
-(motkrafter som är avgjorda sedan 17/9). ✅ **R17–R20 införda 24/9 och kartan fryst igen (DECISIONS #337).**
+(motkrafter som är avgjorda sedan 17/9). ✅ **R17–R20 införda 24/9 och kartan fryst igen (DECISIONS #337).** ✅ **R21–R26 införda 1/10 (DECISIONS #416): vägpunktsgrindens fall, försprånget och S2 byggda, facitstacken.**
 
 ---
 
