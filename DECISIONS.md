@@ -6727,3 +6727,19 @@ låta rösten tala när någon av varianterna slår till — fler varningar och 
 **Öppet (§4.2, Bengt och Axel): vilken av de två som ska höras.** Regeln säger i dag startvärdena (TROSKLAR-KOMBINATIONEN §7, *ingen
 kalibrering före* dom 1). Ska de kalibrerade höras krävs en ändring av §7 med båda signaturerna, innan betan släpps — och beslutet bör
 tas innan kalibreringens resultat är sett, annars väljs rösten efter utfallet. Ingen tröskel ändras av det här beslutet.
+
+## #428 (1/10 2026) Betan hörs på de kalibrerade värdena om vinnaren håller i båda halvorna, annars på startvärdena — Axels signatur återstår
+
+**Beslut (Bengt 1/10: *"vi kör 1 och 2 som du föreslår"*).** Av de två värdepar som följs i skuggan (#427) hörs i betan **de värden
+kuvösens kalibrering fryser, om vinnaren håller i båda halvorna av vintern 2024/25 (D4); annars startvärdena från 16/9**. Hinner
+kalibreringen inte frysas före betans första natt gäller startvärdena. **Skälet:** förarnas svar är det dyraste facit projektet har, och
+de bör samlas på den regel som ska behållas. **Alternativet:** startvärdena oavsett, som regeln stod — då hade testarna hört gissningar
+i tre månader fast bättre underbyggda värden fanns.
+
+**Valet är gjort innan kalibreringens resultat finns.** Kuvösen har inte fått datan 1/10. Därmed väljs rösten inte efter utfallet.
+
+**Ändringen står i TROSKLAR-KOMBINATIONEN §5 och §7 — men gäller först med Axels signatur.** Ett tröskeldokument ändras bara med båda
+signaturerna, och Bengts ord 1/10 nämner inte Axel (när kalibreringen flyttades, #425, skrev Bengt uttryckligen *"Axel säger ok"*).
+Raden i §4.2 står öppen för honom. **Följd som inte är åtgärdad:** betaguiden till iPhone-testarna säger *"Trösklarna är gissade till
+februari … de justeras i februari"* (`docs/BETAGUIDE-IOS.md`, två ställen). Det stämmer inte sedan #425, och den rätta lydelsen beror på
+om de kalibrerade värdena håller. Texten är testarnas och skrivs om när det är känt (kort #278); den rörs inte nu.

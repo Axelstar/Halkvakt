@@ -610,6 +610,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   de kalibrerade kräver en ändring av TROSKLAR-KOMBINATIONEN §7 före betan) · Axels bygge av regeln i motorn (S3).
   Verify: jämförelsen körd på vintern 2024/25 i kuvösen och på en vecka av årets vinter, med de tre antalen utskrivna; valet av röst
   inskrivet i DECISIONS innan kalibreringens resultat lästes.
+  ✅ **VALET AV RÖST GJORT 1/10, före kalibreringen (Bengt, DECISIONS #428):** de kalibrerade värdena hörs om vinnaren håller i båda halvorna av vintern 2024/25, annars startvärdena; hinner kalibreringen inte frysas före betan gäller startvärdena. ⏳ **Axels signatur återstår** — ändringen står i TROSKLAR-KOMBINATIONEN §5 och gäller först med den. 📝 Betaguiden (`docs/BETAGUIDE-IOS.md`) säger *"gissade till februari … justeras i februari"*, vilket inte stämmer sedan #425; skrivs om när det är känt vilka värden som hörs.
 
 - [ ] 🔳 **#277 QR-KOD TILL APPEN — en kod för båda plattformarna, via halkvakt.se** (Bengts fråga 26/9 *"kan man hämta appen med qr kod"*,
   beslut 1/10: *"qr kod kommer först med domänen"*, DECISIONS #423). En QR-kod är bara en länk. Koden ska peka på en egen adress
