@@ -6743,3 +6743,18 @@ nämnde Axel och ett tröskeldokument bara ändras med båda. **Axel godkände s
 ändringen hade slagits ihop — den gäller. **Följd som inte är åtgärdad:** betaguiden till iPhone-testarna säger *"Trösklarna är gissade till
 februari … de justeras i februari"* (`docs/BETAGUIDE-IOS.md`, två ställen). Det stämmer inte sedan #425, och den rätta lydelsen beror på
 om de kalibrerade värdena håller. Texten är testarnas och skrivs om när det är känt (kort #278); den rörs inte nu.
+
+## #429 (1/10 2026) Betaguiden: trösklarna är satta i förväg och ändras inte under vintern utan ett eget beslut
+
+**Beslut (Bengt 1/10: *"skriv den text du föreslår"*).** De två meningarna i `docs/BETAGUIDE-IOS.md` som sa att trösklarna är *"gissade
+till februari"* och *"justeras i februari"* är omskrivna till: **"Trösklarna är satta i förväg och ändras inte under vintern utan ett eget
+beslut."** — i TestFlight-texten (*Vad ska testas*) och i guidens stycke, där fortsättningen lyder *"Dina svar visar om de håller, och
+därför är de viktiga."*
+
+**Skälet.** Kalibreringen i februari finns inte kvar (#425), och #428 lämnade meningen orättad eftersom rätt lydelse då såg ut att bero på
+om de kalibrerade värdena håller. Den nya lydelsen stämmer i båda fallen: startvärdena är satta 16/9, de kalibrerade fryses i kuvösen före
+betans första natt, och inget av paren rörs under vintern. Den lovar ingen justering och säger inte vilket par som hörs.
+**Alternativet:** vänta tills kalibreringen är klar — då hade guiden sagt något osant till dess, och novemberbetans testare får samma fil.
+
+**Vad som inte är gjort.** Android-guiden har ingen sådan mening och är orörd. Har TestFlight-texten redan klistrats in i App Store
+Connect ligger den gamla lydelsen kvar där tills Axel klistrar in den nya — repot når inte dit. Ingen tröskel och ingen rösttext ändras.

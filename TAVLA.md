@@ -196,6 +196,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] ↩︎ Välkomsttext + testinstruktion till kompisarna (extern TestFlight-grupp = Beta App Review).
   🔨 **SKRIVEN 26/9** (Bengts ja, DECISIONS #371): `docs/BETAGUIDE-IOS.md` — TestFlight-texten överst, guiden i Android-guidens
   åtta avsnitt, mot koden i 0.3.9 (16). 🔑 Kvar: utskicket med en extern TestFlight-grupp (Axel, Beta App Review).
+  📝 **1/10 (DECISIONS #429):** meningen om trösklarna i TestFlight-texten är omskriven — klistra in ur filen som den står nu, inte ur en äldre kopia.
   ↦ **Sorterat 22/9 (kort #224):** texten för iOS-testarna skriver Claude nu; utskicket med en extern TestFlight-grupp är Axels.
   ↪ **Flyttat 26/9 från *Claude — olåst*** (femma åtta, DECISIONS #377): nästa steg är Axels utskick i TestFlight.
 
@@ -610,7 +611,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   de kalibrerade kräver en ändring av TROSKLAR-KOMBINATIONEN §7 före betan) · Axels bygge av regeln i motorn (S3).
   Verify: jämförelsen körd på vintern 2024/25 i kuvösen och på en vecka av årets vinter, med de tre antalen utskrivna; valet av röst
   inskrivet i DECISIONS innan kalibreringens resultat lästes.
-  ✅ **VALET AV RÖST GJORT 1/10, före kalibreringen (Bengt, DECISIONS #428):** de kalibrerade värdena hörs om vinnaren håller i båda halvorna av vintern 2024/25, annars startvärdena; hinner kalibreringen inte frysas före betan gäller startvärdena. ✅ **Axel godkänner samma kväll (via Bengt)** — ändringen i TROSKLAR-KOMBINATIONEN §5 och §7 gäller. 📝 Betaguiden (`docs/BETAGUIDE-IOS.md`) säger *"gissade till februari … justeras i februari"*, vilket inte stämmer sedan #425; skrivs om när det är känt vilka värden som hörs.
+  ✅ **VALET AV RÖST GJORT 1/10, före kalibreringen (Bengt, DECISIONS #428):** de kalibrerade värdena hörs om vinnaren håller i båda halvorna av vintern 2024/25, annars startvärdena; hinner kalibreringen inte frysas före betan gäller startvärdena. ✅ **Axel godkänner samma kväll (via Bengt)** — ändringen i TROSKLAR-KOMBINATIONEN §5 och §7 gäller. 📝 Betaguiden (`docs/BETAGUIDE-IOS.md`) säger *"gissade till februari … justeras i februari"*, vilket inte stämmer sedan #425; skrivs om när det är känt vilka värden som hörs. ✅ **OMSKRIVEN 1/10 (Bengt, DECISIONS #429):** *"Trösklarna är satta i förväg och ändras inte under vintern utan ett eget beslut"* — stämmer vilket par som än hörs. 🔑 Har Axel redan klistrat in TestFlight-texten i App Store Connect ska den nya lydelsen klistras in där.
 
 - [ ] 🔳 **#277 QR-KOD TILL APPEN — en kod för båda plattformarna, via halkvakt.se** (Bengts fråga 26/9 *"kan man hämta appen med qr kod"*,
   beslut 1/10: *"qr kod kommer först med domänen"*, DECISIONS #423). En QR-kod är bara en länk. Koden ska peka på en egen adress
