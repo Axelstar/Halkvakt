@@ -112,6 +112,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔨 **Claude (§5), utan att fråga:** marknadsmotorn igång igen med snölarmet · press.html som presskit · fyra pressmeddelanden · partnerbrev
   (NTF, STR, Trafikverket, If/Folksam, Halkvarning.se) · betygsfrågan i appen efter tredje resan · måndagsmätningen i bedömningen ·
   **"Halkvakt live"** (Axels idé 00:24): motorn postar riktiga larm själv till X/Bluesky/Mastodon/FB-sidan. Push till användarna är ett ägarbeslut (§4.2).
+  🔍 **Sök (Axels fråga 00:28, planens §6):** länssidor + vägsidor *"Halt väglag i Skåne just nu"* som publicera-flödet skriver om var 30:e minut —
+  byggs i karta-repot i oktober (Google behöver veckor) · domänen före första pressomgången · widget + "Sveriges halaste vägar" som länkbeten · Search Console.
   Verify: 12 Android-testare + 50 iPhone-installationer till första snön; 1 000 installationer, 5 pressomnämnanden, 100 facitsvar till 31/12 (§6).
 
 **Beslut som väntar, inte brådskande (med Bengt):**

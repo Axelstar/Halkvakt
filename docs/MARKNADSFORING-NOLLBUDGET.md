@@ -94,7 +94,26 @@ på Bulltoftabanan jan–mar 2027, kuvösen med Trafikverket. Ersätter de betal
 en länsvis prenumeration kräver ett push-token per telefon, alltså ett enhets-id hos oss, som policyn i dag säger att vi inte har. Och "tystnad är en
 funktion". Bengt + Axel.
 
-## 6. Mål att mäta mot (så vi vet om det fungerar)
+## 6. Sök — hur vi blir det som kommer upp när det är halkkaos (Axels fråga 00:28)
+
+**Ärligt läge:** på huvudorden (*halka*, *halkkaos*, *halt väglag*) vinner SMHI, Trafikverket och tidningarna. Vi vinner **de frågor de inte
+svarar på** — *är det halt i Skåne just nu*, *halt väglag E4 idag* — för det är exakt vad livekartan vet och ingen tidning har en sida för.
+
+1. **En sida per län och per stor väg som uppdaterar sig själv** — *Halt väglag i Skåne just nu*: 21 län + E4, E6, E18, E20, E22, R40. Skrivs om
+   var 30:e minut av publicera-flödet ur samma data som kartan: halksträckor, stationer under noll, senaste olyckan, tidsstämpel, och ett kort
+   handskrivet stycke per sida. Titlar och beskrivningar formulerade som frågorna folk googlar. **Det här är hela spelet; Claude bygger det i
+   karta-repot i oktober** — Google behöver veckor, så sidorna måste finnas före första frosten för att synas i december.
+2. **Domänen före första pressomgången.** Länkar till github.io följer inte med; GitHub Pages skickar vidare automatiskt till en egen domän, så
+   varje artikel i vinter ska länka till halkvakt.se (eller .nu) från början.
+3. **Länkar utan pengar är partnerlistan:** NTF, STR, trafikskolor, kommunernas vinterväghållningssidor, försäkringsbolagens vintertips,
+   Trafikverkets exempel på öppna data, Halkvarning.se, varje pressartikel. Två länkbeten: **en inbäddningsbar widget** *halkläget i ditt län*
+   som lokaltidningar och bloggar får lägga på sin sida gratis (varje inbäddning = en länk), och till våren **"Sveriges halaste vägar 2026/27"**
+   ur vårt eget arkiv — tidningar älskar listor med siffror.
+4. **Tekniken (en dag, gratis):** Google Search Console + Bing Webmaster med sitemap (finns), titel/beskrivning per sida, strukturerad data
+   (SoftwareApplication, Organization, Dataset), `lang="sv"`, statiskt och snabbt. Mäts i Search Console varje måndag: vilka frågor, vilken plats.
+5. **App-butikerna söks också:** namnet bär *halk*; nyckelorden är inlagda. Betygen avgör placeringen — därför betygsfrågan efter tredje resan.
+
+## 7. Mål att mäta mot (så vi vet om det fungerar)
 
 | Till | Mål | Mäts i |
 | :-- | :-- | :-- |
