@@ -96,8 +96,8 @@ redovisade som antal.
 2024/25). Hämtas en gång och läggs bredvid.
 *Verify:* täckningen per månad utskriven.
 
-**Steg 5 — körningen.** Hela vintern i halvtimmessteg: snapshoten byggs med tidsmaskinen, motorn körs längs de 20 svenska skuggrutterna
-(samma spår som skuggmotorn), och skuggreglerna och grindarna körs på samma data. Varje del körs **ensam** och **ovanpå de andra**.
+**Steg 5 — körningen.** Hela vintern i halvtimmessteg: snapshoten byggs med tidsmaskinen, motorn körs i två serier (DECISIONS #426) — längs de 20 svenska skuggrutterna
+(samma spår som skuggmotorn) varje halvtimme, och längs hela väglagsnätet (818 sträckor, 23 681 km) var tredje timme — och skuggreglerna och grindarna körs på samma data. Varje del körs **ensam** och **ovanpå de andra**.
 *Verify:* körningens logg bär antalet halvtimmar (≈ 7 250 för november–mars), inga tomma steg utan skäl, och tabellen
 *del × ensam × ovanpå de andra*.
 
@@ -161,3 +161,5 @@ helst; kassavakten bevakar redan taket.
 Ja:et till Trafikverket är redan skickat, utan frågorna i §2 — de besvaras av inventeringen när filen kommer. **Både riktningsprov och
 kalibrering**, i den ordningen; kalibreringen ändrar regel D i TROSKLAR-KOMBINATIONEN och väntar på Axels signatur. **Actions** som
 körplats. Steg 1–2 byggda. Förregistreringen står i DECISIONS #424. Oljefilmen ingår inte (struken #110; fel säsong; facit är olyckor).
+
+**Tillägg samma kväll (DECISIONS #426):** rösten prövas i två serier, de 20 skuggrutterna och hela väglagsnätet, redovisade var för sig. Bestämt innan filen har kommit. Gäller bara kuvösen; skuggan i drift är orörd.

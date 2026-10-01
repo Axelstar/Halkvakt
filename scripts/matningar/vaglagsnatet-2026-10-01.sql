@@ -1,0 +1,5 @@
+-- Kuvösen (kort #232), Bengts fråga 1/10: hur stort är det nationella väglagsnätet som alternativ till de 20 skuggrutterna,
+-- och hur många stationer når det? Läs-only, dbknapp i läsläge (körningarna 36893189091 och 36893534243).
+-- Mätt 1/10: 818 segment, 23 681 km, median 25,8 km, längsta 126 km · 854 stationer: 769 inom 2 km från ett segment, 780 inom 5 km, 33 bortom 20 km.
+SELECT count(*) AS segment, round(sum(ST_Length(geom::geography)) / 1000) AS km, round((percentile_cont(0.5) WITHIN GROUP (ORDER BY ST_Length(geom::geography)) / 1000)::numeric, 1) AS median_km, round((max(ST_Length(geom::geography)) / 1000)::numeric, 1) AS langsta_km FROM road_conditions WHERE NOT deleted AND geom IS NOT NULL
+SELECT count(*) AS stationer, sum((d <= 2000)::int) AS inom_2km, sum((d <= 5000)::int) AS inom_5km, sum((d > 20000)::int) AS bortom_20km FROM (SELECT (SELECT ST_Distance(w.geom::geography, c.geom::geography) FROM road_conditions c WHERE NOT c.deleted AND c.geom IS NOT NULL ORDER BY w.geom <-> c.geom LIMIT 1) AS d FROM weather_latest w WHERE w.geom IS NOT NULL) x

@@ -6612,7 +6612,7 @@ ingår bara om historiken för dem också levereras. Vill Bengt öppna oljefilme
 **FÖRREGISTRERINGEN — skriven innan någon fil är öppnad** (reglerna ur #292, samlade):
 - **Frågan:** är vi på rätt väg, och vad tillför varje del ensam och ovanpå de andra (kartan §7.3)? Ett riktningsprov, ingen dom.
 - **Underlaget:** alla stationer och hela perioden i leveransen, efter driftens vakter (#75, radvakten, karantänen, den långsamma
-  vakten). Inga dygn och inga stationer väljs bort för hand. Halvtimmessteg; motorns del längs de 20 svenska skuggrutterna.
+  vakten). Inga dygn och inga stationer väljs bort för hand. Halvtimmessteg; motorns del längs de 20 svenska skuggrutterna. ↪ *Ändrat före filen, 1/10 (#426): rösten i två serier — de 20 rutterna och hela väglagsnätet.*
 - **Delarna:** frysrisken och broarna, efterhalkan, trenden, rimfrosten, övergångarna, tillståndsskattaren, nederbördstypen, vind och
   sikt, prognoslagret (grind A, vägpunktsgrinden, höjden), försprångets nivå 2 för frysrisken. Utanför utan mer data: väglagssträckorna,
   olyckorna, SMHI-förstärkaren, kamera- och förarfacit.
@@ -6668,3 +6668,41 @@ kuvösen, och bara på grenen. Nu: **mätningssidan** — kuvösen under *Andra 
 ut), 8.2 och blindningsraden med den nya kalibreringen · **systembilden** — raden *K Kuvösen* i skuggtabellen · **appsidan** — orörd, och
 det är rätt: kuvösen når ingen förare och ändrar inget appen gör · **bedömningen** — §4.2, läget, kalendern · **kartan** — läge-raderna
 §13.6 och §14, innehållet orört · **kuvössidan** — ny. Artefakterna republiceras från main efter sammanslagningen.
+
+## #426 (1/10 2026) Kuvösen: rösten prövas i två serier — de 20 skuggrutterna och hela väglagsnätet (ändring av förregistreringen, före filen)
+
+**Bengts fråga 1/10:** Trafikverket levererar alla stationer — *"borde vi bredda antalet testrutter så att vi täcker in hela Sverige.
+skulle det göra resultatet bättre och stabilare eller tänker jag fel"*. **Mätt samma dag:** de 20 svenska skuggrutterna (3 107 km) når
+97 av 854 stationer inom 2 km (11 %) och 190 inom 5 km (22 %); norr om 62° 23 av 205. Väglagsnätet — Trafikverkets 818
+bedömningssträckor — är 23 681 km, och 769 stationer (90 %) ligger inom 2 km från en sträcka
+(`scripts/matningar/rutternas-tackning-2026-10-01.ts`, `vaglagsnatet-2026-10-01.sql`; dbknapp 36893189091, 36893534243).
+
+**Svaret, i två delar.** Stationsreglerna — efterhalkan, trenden, rimfrosten, övergångarna, prognoslagret, vakterna — räknas per station
+och använder redan hela leveransen; fler rutter ändrar ingenting för dem. Rutterna styr bara *vad rösten skulle ha sagt till en förare*:
+takten, undanträngningen, försprånget. Där är 20 rutter 13 % av nätet och nästan inget av Norrlands inland.
+
+**Beslut (Bengt 1/10: *"vi gör b nu"*).** Rösten prövas i kuvösen i två serier, som redovisas var för sig och aldrig slås ihop:
+- **Serie A — de 20 svenska skuggrutterna**, alla tjugo i varje halvtimmessteg (driften hinner tre per halvtimme, varje rutt var 3,5:e
+  timme). Samma rutter som årets skugga, alltså jämförbar med vintern 2026/27.
+- **Serie B — hela väglagsnätet:** varje bedömningssträcka körd som en egen resa i geometrins riktning, samma fart och punkttäthet som
+  skuggan (80 km/h, en punkt var femte sekund), **var tredje timme** från 00:00 UTC. Riktiga vägar, inget handplockat. Geometrin är
+  dagens (`road_conditions` 1/10 2026), inte 2024/25 års.
+
+**Alternativen:** (a) bara de 20, som #424 registrerade — jämförbart men smalt; (c) fler handritade rutter — bredare, men vi hade valt
+var. **Skälet till att det avgörs nu:** att lägga till rutter sedan utfallet är sett är att välja underlag efter svaret. Filen är inte
+levererad och ingenting är läst.
+
+**Sagt före körningen.** (1) Serie B:s resor är korta (median 25,8 km): regeln att samma fara inte upprepas inom 10 min och 5 km, och
+allt annat som rör långa resor, syns bara i serie A. (2) Serie B är ungefär åtta gånger mer körning per steg, därav var tredje timme;
+kostnaden är inte mätt. **Visar körtiden på vinterns första sju dygn att serien inte ryms i ett Actions-jobb glesas den till var sjätte
+timme — avgjort på körtiden, innan något utfall är läst.** (3) Sträckornas egen halkklassning finns inte för 2024/25, så varken serie A
+eller B prövar väglagsvarningen (A1). (4) Kassan läses före varje tung körning (#424).
+
+**Gäller bara kuvösen.** Skuggan i drift kör sina 20 rutter oförändrat: den ryms inte i mer (tre rutter per halvtimme är taket på
+datorkraft, kort #244), och dess rutter ändras inte mitt i en säsong som ska dömas. Vintern 2026/27 kan spelas upp i kuvösen i efterhand,
+ur vårt eget arkiv, med samma två serier. **Fynd i förbigående:** skuggans S1-logg (efterhalkans råa fält) täcker bara stationer nära
+rutterna, ungefär en femtedel — domarna påverkas inte, eftersom uppspelningen ur arkivet läser alla stationer.
+
+**Stomavstämningen:** kuvössidan (två serier i kedjan, reglerna, gränserna), mätningssidan (3.1 rutternas täckning, kuvös-rutan),
+systembilden (raden K), bedömningen (§4.2, läget), kartan (läge-raden §13.6, §14); appsidan orörd. Sidan till Trafikverket (*Halkvakt
+och kuvösen*) nämner bara skuggans rutter och står.

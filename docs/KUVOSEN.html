@@ -103,7 +103,7 @@
   <div class="fakta">
     <span>vintern <b>2024/25</b></span>
     <span><b>≈ 7 250</b> halvtimmar</span>
-    <span><b>20</b> skuggrutter, <b>3 107</b> km</span>
+    <span><b>20</b> skuggrutter och hela väglagsnätet, <b>23 681</b> km</span>
     <span>data väntas <b>vecka 41</b></span>
     <span>första resultat <b>vecka 42</b></span>
     <span><b>0</b> når föraren</span>
@@ -127,7 +127,7 @@
         <tr><td><b>Översättningen och inläsningen</b></td><td>Trafikverkets kolumner till arkivets form. Kan inte byggas förrän filen är inventerad.</td><td><span class="dom vantar">väntar på filen</span></td></tr>
         <tr><td><b>Tidszonen</b></td><td>Avgörs med mätning mot SMHI:s öppna temperaturserier. Perioden har två byten mellan sommar- och vintertid.</td><td><span class="dom vantar">väntar på filen</span></td></tr>
         <tr><td><b>SMHI för samma vinter</b></td><td>Radar, molnmängd, lufttemperatur och nederbörd finns i SMHI:s öppna arkiv. Hämtas en gång.</td><td><span class="dom kvar">kvar</span></td></tr>
-        <tr><td><b>Körflödet</b></td><td>Hela vintern i halvtimmessteg, i GitHub Actions. Beräknad kostnad 2,4–4,8 USD av månadens 35.</td><td><span class="dom kvar">kvar</span></td></tr>
+        <tr><td><b>Körflödet</b></td><td>Hela vintern i halvtimmessteg, i GitHub Actions. Rösten körs i två serier. Beräknad kostnad 2,4–4,8 USD av månadens 35 för de 20 rutterna; den nationella serien är inte mätt.</td><td><span class="dom kvar">kvar</span></td></tr>
         <tr><td><b>Riktningsprovet</b></td><td>Första körningen, med låsta värden. Tidigast vecka 42.</td><td><span class="dom kvar">kvar</span></td></tr>
         <tr><td><b>Kalibreringen</b></td><td>Görs efter riktningsprovet, på samma vinter. Beslutad av Bengt och Axel 1/10.</td><td><span class="dom kvar">kvar</span></td></tr>
       </tbody>
@@ -145,7 +145,7 @@
     <div class="pil" aria-hidden="true">↓</div>
     <div class="nod klar karna"><span class="kod">Steg 1 <span class="dom klar">byggd</span></span><b>Klockan</b><span class="txt">Stegar genom vintern en halvtimme i taget. Koden frågar databasen vad klockan är och får kuvösens tid. Den får också bara se det som hade hänt fram till dess.</span></div>
     <div class="pil" aria-hidden="true">↓</div>
-    <div class="nod"><span class="kod">Steg 5 <span class="dom kvar">kvar</span></span><b>Samma kod som driften</b><span class="txt">Lägesbilden byggs som den byggs till apparna. Motorn kör längs de 20 svenska skuggrutterna, och skuggans regler och grindar räknar på samma halvtimme.</span></div>
+    <div class="nod"><span class="kod">Steg 5 <span class="dom kvar">kvar</span></span><b>Samma kod som driften</b><span class="txt">Lägesbilden byggs som den byggs till apparna. Motorn kör i två serier, längs de 20 svenska skuggrutterna och längs hela väglagsnätet. Skuggans regler och grindar räknar på samma halvtimme.</span></div>
     <div class="pil" aria-hidden="true">↓</div>
     <div class="nod"><span class="kod">Facit</span><b>Stationens egen yta efteråt</b><span class="txt">Blev det kallt där regeln sade att det skulle bli det? Det säger att det blev kallt, inte att vägen blev hal.</span></div>
     <div class="pil" aria-hidden="true">↓</div>
@@ -158,6 +158,19 @@
     <p>Driftens frågor säger bara <i>nyare än</i>, aldrig <i>äldre än nu</i>. I driften finns ingen framtid, så det behövs inte. I kuvösen ligger hela vintern i databasen. Med bara en flyttad klocka hade en station tystats för givarfel som inte hänt än, <i>timmar sedan regn</i> hade blivit negativt och temperaturens lutning hade hämtats ur nästa timme.</p>
     <p>Därför visar kuvösen varje tabell som den såg ut vid klockslaget. Provet har en fälla för varje sådan läcka, och fyra motprov visade att varje fälla biter.</p>
   </div>
+
+  <h3>Rösten prövas i två serier</h3>
+  <p>Reglerna som räknas per station, som efterhalkan, trenden och prognoslagret, använder alla stationer i leveransen. Rutterna styr bara frågan om vad rösten skulle ha sagt till en förare. De 20 skuggrutterna når 190 av 854 stationer inom 5 km och nästan inget av Norrlands inland. Därför körs rösten i två serier, som redovisas var för sig.</p>
+  <div class="tabell">
+    <table>
+      <thead><tr><th>Serie</th><th>Vad</th><th>Hur ofta</th><th>Till vad</th></tr></thead>
+      <tbody>
+        <tr><td><b>De 20 skuggrutterna</b></td><td>3 107 km, samma rutter som årets skugga</td><td>varje halvtimme</td><td>Jämförbar med vintern 2026/27. Visar långa resor: takten och upprepningarna.</td></tr>
+        <tr><td><b>Hela väglagsnätet</b></td><td>Trafikverkets 818 bedömningssträckor, 23 681 km. 90 % av stationerna ligger inom 2 km.</td><td>var tredje timme</td><td>Hela landet, också norr. Riktiga vägar, inget handplockat.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="litet">Bestämt 1/10, innan filen har kommit. Gäller bara kuvösen: skuggan i drift kör sina 20 rutter som förut.</p>
 
   <h2>4. Vad den kan pröva, och vad den inte kan</h2>
   <div class="tabell">
@@ -185,6 +198,7 @@
     <li><b>Låsta värden först.</b> Riktningsprovet körs med de värden som står i dag. Inget väljs och inget prövas fram.</li>
     <li><b>Ensam och tillsammans.</b> Varje del redovisas både ensam och ovanpå de andra, och alla tal skrivs ut, också de som talar emot.</li>
     <li><b>Utfallet ändrar ingenting av sig självt.</b> Ingen tröskel och ingen kod ändras av resultatet. En ändring är ett eget beslut.</li>
+    <li><b>Två serier för rösten, bestämda före filen.</b> De 20 skuggrutterna och hela väglagsnätet. De redovisas var för sig och slås aldrig ihop.</li>
     <li><b>Aldrig i driftens databas.</b> En vinter ryms inte där, och kuvösen ska inte kunna röra det apparna läser.</li>
     <li><b>Kalibrering och dom på skilda nätter.</b> Det som väljs på vintern 2024/25 döms på vintern 2026/27.</li>
   </ul>
@@ -234,6 +248,10 @@
       <p>Stationens egen yta efteråt säger att det blev kallt. Den säger inte att vägen blev hal, och den ser inte saltet. Utan väglag, olyckor, bilder och förarsvar går det inte att räkna falsklarm och missar som vintern 2026/27 kommer att göra.</p>
     </div>
     <div class="ruta rod">
+      <h3>Den nationella serien ser korta resor</h3>
+      <p>Varje sträcka körs som en egen resa, i median 26 km. Det som rör långa resor, som att samma fara inte upprepas inom tio minuter, syns bara längs de 20 rutterna. Väglagsvarningen kan ingen av serierna pröva, eftersom sträckornas halkklassning för vintern saknas.</p>
+    </div>
+    <div class="ruta rod">
       <h3>En vinter är en vinter</h3>
       <p>Resultatet säger vad som är troligt. Vintern 2024/25 kan ha varit mild eller hård på sätt som nästa vinter inte är. Därför fälls domarna fortfarande på årets vinter.</p>
     </div>
@@ -248,5 +266,5 @@
   </div>
   <p>Ingenting i kuvösen når en förare. Appen, rösten och det telefonen hämtar är orörda.</p>
   <hr>
-  <p class="litet">Källor: beslutsloggen (DECISIONS #292, #388, #397, #398, #418, #424, #425), kort #232, planen (docs/PLAN-KUVOSEN-2026-10-01.md), bedömningen §4.2 och §6.1 och tröskeldokumentet för kombinationen (regel D). Sidan till Trafikverkets handläggare, <i>Halkvakt och kuvösen</i>, är en annan sida och säger mindre. Alla datum avser 2026 om inget annat står.</p>
+  <p class="litet">Källor: beslutsloggen (DECISIONS #292, #388, #397, #398, #418, #424, #425, #426), kort #232, planen (docs/PLAN-KUVOSEN-2026-10-01.md), bedömningen §4.2 och §6.1 och tröskeldokumentet för kombinationen (regel D). Sidan till Trafikverkets handläggare, <i>Halkvakt och kuvösen</i>, är en annan sida och säger mindre. Alla datum avser 2026 om inget annat står.</p>
 </main>

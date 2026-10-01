@@ -138,7 +138,7 @@ byggen, prognoslagrets form, kamerafacit, missknappen, arkivet och anmälningarn
 - **Skyltfonden** — ansökan senast 1/10: v8B utan partner och utan extern granskning, 283 000 kr (DECISIONS #392,
   #394); beslut 15/12; projektstart januari 2027.
 - **Kuvösen** (#232) — bakåtprövning på vintern 2024/25. Trafikverket levererar stationsdatan som CSV vecka 41 (besked 1/10);
-  riktningsprov först, sedan säsongens kalibrering (#424, #425). Egen sida: `docs/KUVOSEN.html`.
+  riktningsprov först, sedan säsongens kalibrering (#424, #425); rösten i två serier, de 20 skuggrutterna och hela väglagsnätet (#426). Egen sida: `docs/KUVOSEN.html`.
 - **Bildfacit per vädertyp** (#231) och kamerabilderna i mars (#157) — produktionsregelns falsklarm mätt.
 - **Nira** (#229, `docs/NIRA-UTREDNING-2026-09-21.md`) — konkurrent i varningsledet och möjlig partner i dataledet;
   förhållandet är skevt. Bilen mäter, vi varnar före bilen. Ett partnerskap blir realistiskt först med ett uppmätt
