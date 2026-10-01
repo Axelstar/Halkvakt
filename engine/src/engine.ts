@@ -2,7 +2,9 @@
 // Deterministic by construction: no clocks, no randomness, no I/O. Time comes from fixes.
 // Discipline rules (PLAN §1) are hard requirements, encoded here and proven by engine/vectors/.
 //
-//   1. Max 1 spoken alert per 45 s. Priority accident > slippery > icing > wildlife > camera.
+//   1. Within 10 s of an utterance only a MORE important hazard may speak (priority-aware
+//      cooldown, globalCooldownS; kort #127, v23 — replaced the blind 45 s). Priority
+//      accident > slippery > icing > wildlife > camera.
 //      Losers are DROPPED, not queued. No exceptions, not even for accidents (logged in
 //      DECISIONS — revisit only on beta evidence).
 //   2. Same hazard never repeats until BOTH 10 min have passed AND 5 km been driven.

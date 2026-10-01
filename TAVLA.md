@@ -438,11 +438,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **Flyttat 26/9 från *Axel — hösten (brainstorm 31/8)*** (femma åtta, DECISIONS #377): nästa steg är Bengts två minuter (*Visa introduktionen igen*).
 
 ### Claude — olåst
-- [ ] 🧹 **#267 FYND UNDER GENOMGÅNGEN AV SKUGGMOTORN 29/9** (inga beslut, bara rättelser). Bedömningen §5.1 säger att S2 och S3 är
-  obyggda och att försprångets regel är obyggd — S2 byggdes 24/9 (#341) och försprånget körs i skuggan sedan 25/9 (#359). #321 säger att
-  felet stiger monotont med avståndet; loggen 22/9 ger 0,43 · 0,79 · 0,76 · 0,72 °C. Värdevakten har inte körts sedan 15/9, och spannet
-  −60…+60 °C släpper igenom ytgivarnas −50 °C. `engine.ts` rad 5 och TROSKLAR-OVERGANGAR §7 säger fortfarande 45 s.
-  **Verify:** raderna rättade med beviset på raden, och en värdevaktskörning på main.
 - [ ] 📍 **#226 AUTOSTARTENS BEHÖRIGHET FALLER TYST PÅ ANDROID 11+** (Axels fynd på testtelefonen 20/9, DECISIONS #272).
   ⚠️ **HÄRLETT, INTE UPPMÄTT:** kortet skrevs på Axels rapport som antogs vara Android — den var från hans iPhone (#273).
   Ingen har kört det här på en Android-telefon. Grunden är kodläsning + Googles dokumentation, inget annat.
@@ -1836,6 +1831,17 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#267 FYND UNDER GENOMGÅNGEN AV SKUGGMOTORN 29/9 — STÄNGT 1/10 (DECISIONS #414)** (inga beslut, bara rättelser). Bedömningen §5.1 säger att S2 och S3 är
+  obyggda och att försprångets regel är obyggd — S2 byggdes 24/9 (#341) och försprånget körs i skuggan sedan 25/9 (#359). #321 säger att
+  felet stiger monotont med avståndet; loggen 22/9 ger 0,43 · 0,79 · 0,76 · 0,72 °C. Värdevakten har inte körts sedan 15/9, och spannet
+  −60…+60 °C släpper igenom ytgivarnas −50 °C. `engine.ts` rad 5 och TROSKLAR-OVERGANGAR §7 säger fortfarande 45 s.
+  **Verify:** raderna rättade med beviset på raden, och en värdevaktskörning på main.
+  ↪ **1/10: RÄTTAT OCH BEVISAT** (ca25bec, DECISIONS #414). §5.1: L2 och L5 rättade med #341 och #359 på raden · #321: rättelse med loggen
+  22/9 (35688287525: 0,43 · 0,79 · 0,76 · 0,72 °C — stiger ett band, sedan platt) · spärren: `engine.ts` rad 5 och TROSKLAR-OVERGANGAR §7
+  säger 10 s prioritetsmedvetet (kort #127); bunten omgenererad (bara kommentaren), skuggmotorn deployad (körning 36820055383), spärrprovet efter
+  deployen (körning 36820118920): status 200, `suppressed` med EN rad, prov:kam2 tystad av prov:kam1 efter 5 s · värdevakten körd på main (36819878682): 51 fält, 27 spann, 0 obesiktigade; ytans spann −60…+60 °C står — de −50 °C i
+  septemberluft är omöjliga i RELATION till luften och är radvaktens sak, sagt i `SPANN`. Fyra kända avvikelser kvar i körningen: byvinden 87,7
+  (anmäld), siktens tak 20 000 (sentinel, känd), radarns 727 mm/h (över spannets 200, kortet #231-familjen) — inget nytt.
 - [x] ✅ **#264 KÄLLBEVAKNINGEN GÖR Å, Ä OCH Ö TILL MELLANSLAG — STÄNGT 1/10 (DECISIONS #413)** (fynd 28/9 under issue #638/#639, DECISIONS #391).
   `scripts/trv-bevakning.ts` rad 93 byter varje HTML-entitet (`&[a-z#0-9]+;`) mot ett blanksteg. Polisen.se kodar å, ä och ö som
   entiteter, så bevakningen läser *"API ver polisens h ndelser"* och *"Regler f r ppna data"* — och ett nyckelord med å, ä eller

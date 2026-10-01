@@ -299,7 +299,8 @@ gång.
 | Arkivrader | 123 | 2 | 27 | 13,5 × |
 | **Episoder** | 15 | 2 | 4 | **2,0 ×** |
 
-**Röst räknas i episoder, aldrig i arkivrader.** Motorn talar högst en gång per 45 s, aldrig samma
+**Röst räknas i episoder, aldrig i arkivrader.** Motorn låter inom 10 s efter ett rop bara en viktigare fara
+tala (prioritetsmedveten spärr, kort #127; *rättat 1/10, kort #267 — stod "högst en gång per 45 s"*), aldrig samma
 larm inom 10 min eller 5 km, och läser en snapshot var tionde minut — en station som är frusen hela
 natten ger 8,2 arkivrader men **ett** larm per förbipasserande förare. Ett radtal som citeras som
 röstpåstående är ett mätfel.

@@ -508,10 +508,10 @@ minimilistan A–E (§8). Det här är läget mätt mot den, inte mot minnet. Up
 | Lager | Kartan 14/9 | 24/9 |
 | :-- | :-- | :-- |
 | L1 trovärdighet | i drift | starkare: radvakten, karantänen, långsamma vakten (22/9, DECISIONS #298/#300) |
-| L2 tillstånd | blöt/torr byggt, resten kvar | oförändrat i motorn; skattaren finns, S1 loggar råfälten sedan 16/9 (35 rader), S2 och S3 inte byggda |
+| L2 tillstånd | blöt/torr byggt, resten kvar | oförändrat i motorn; skattaren finns, S1 loggar råfälten sedan 16/9 (35 rader), ~~S2 och S3 inte byggda~~ **rättat 1/10 (kort #267): S2 byggd 24/9 (DECISIONS #341, nivå + bevis ur frysklassningens zoner), S3 inte byggd (bakom S1-grinden, Axel)** |
 | L3 utveckling | mätt, ingen regel | oförändrat; trendarkivet (19 469 kandidater), rimfrosten och T-A väntar på frost |
 | L4 räckvidd | ankaret mätt, knappen saknas | grind A KLARAD (#321), vägpunkten svarad (#324), segmentprognosen i skugga sedan 23/9 med holdouts (#325/#326); knappen (molnet) omätt |
-| L5 allvar och röst | formen beslutad, regeln obyggd | oförändrat; #153 omformulerat till försprång (#221), väntar efter betan och S2 |
+| L5 allvar och röst | formen beslutad, regeln obyggd | ~~oförändrat~~ **rättat 1/10 (kort #267): försprångets regel är byggd och körs i skuggan sedan 25/9 (DECISIONS #359, `puls-skuggmotor-forsprang`, kroken `leadFor`)**; rösten väntar på betan och domen (#153 omformulerat till försprång, #221) |
 
 ### 5.2 Minimilistan (§8)
 
