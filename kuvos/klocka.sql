@@ -49,4 +49,4 @@ CREATE VIEW kuvos.trend_kandidater AS
 -- Ett dygn i felet som börjar efter klockan finns inte än; ett som pågår slutar "nu".
 CREATE VIEW kuvos.givarfel_dygn AS
   SELECT station_id, dag, forst, least(senast, kuvos.now()) AS senast
-  FROM public.givarfel_dygn WHERE forst <= kuvos.now();
+  FROM public.givarfel_dygn WHERE true;
