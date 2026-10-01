@@ -6780,3 +6780,25 @@ datum i stället för filter — fortfarande en rad som gäller något annat.
 provet. 4a (spärr mot dubbeltryck) och 4b (Siri när vakten är av) står kvar som Axels beslut (§4.2). Android är orörd: hemskärmen
 rullar redan, men dubbla knappar (`LastSaidCard` + kortet) och statusraden utan datum finns där också (TILL-AXEL Android 1).
 Betaguiden §5 steg 3 skrivs om (*Skickat* står under *Senaste tur* när allt är besvarat; en rad som gått försvinner).
+
+## #431 (1/10 2026) Batteripaketet: Å1, Å4 och Å5 byggda — de tre som inte bär en tröskel (kort #262)
+
+**Beslut (Axels prioritering 1/10 kväll: #262 före App Store; Bengts beställning 27/9, DECISIONS #386/#387).** Av paketets åtta
+åtgärder byggs de tre som varken bär en tröskel eller ett beslut, i ett varv:
+- **Å1** — *Avsluta vakten* som knapp i den pågående notisen (`StoppaVaktenReceiver`, stopService + nollad autostartflagga). En egen
+  receiver och inte en start-intent till tjänsten: en stoppknapp får aldrig kunna starta en tjänst som redan dött.
+- **Å4** — brytarens text: *"Startar när telefonen märker att du åker bil, direkt om bilens Bluetooth kopplas."* Texten rättas,
+  inte beteendet: rörelseigenkänningen är huvudspåret enligt `Autostart.kt` sedan v0, och att begränsa den vore ett produktbeslut.
+- **Å5** — cache i `Guard.nearestHazardM` med triangelolikheten: efter `m` meter kan ingen fara vara närmare än (senaste svep − m), en
+  undre gräns som bara kan ge SNABBARE GPS-takt än sanningen. Nytt svep när bilen kört halva senaste avståndet; nollas vid ny
+  snapshot. `GuardTest` prövar att gränsen aldrig väljer en långsammare tier än det exakta avståndet (20 000 fixar mot 300 faror +
+  ett segment) och att en ny snapshot släpper gränsen. **Bevis:** android.yml 36924001835 grön på grenen; motprovet 36925352744 med
+båda buggarna (stale värde, ingen nollning) föll på exakt `boundNeverSlowsTheCadence` och `newSnapshotDropsTheOldBound` — 56 prov, 2 fällda.
+
+**Alternativen.** Ett rutnät (spatial index) i stället för en undre gräns — mer kod för samma vinst, och gränsen är bevisbart säker.
+Begränsa autostarten till Bluetooth i stället för att rätta texten — beteendeändring utan beslut.
+
+**Vad som inte är gjort.** Å2 (stillaståendetier) och Å3 (självstoppet mot gångfart) bär trösklar och väntar på Bengt och Axel (§4.2).
+Å0, Å6, Å7, Å8 är Axels: bygge till testaren, protokoll, körfallsmätning, nollmätning. Verify för Å5 (CPU-andel före och efter på
+samma rutt) är en fältmätning, inte ett prov. Android (19) saknar fortfarande iPhones statusrad-rättelse och dubbeltrycksspärren
+(`TILL-AXEL-BYGGE-19` Android 1–2).

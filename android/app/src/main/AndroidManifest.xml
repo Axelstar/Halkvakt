@@ -24,6 +24,7 @@
         <receiver android:name=".DrivingTransitionReceiver" android:exported="false"/>
         <!-- Notisens "Ja, alla stämde" (kort #203). Inte exporterad: bara appens egen notis får trycka. -->
         <receiver android:name=".FacitSvarReceiver" android:exported="false"/>
+        <receiver android:name=".StoppaVaktenReceiver" android:exported="false"/>
         <receiver android:name=".BluetoothCarReceiver" android:exported="true">
             <intent-filter>
                 <action android:name="android.bluetooth.device.action.ACL_CONNECTED"/>

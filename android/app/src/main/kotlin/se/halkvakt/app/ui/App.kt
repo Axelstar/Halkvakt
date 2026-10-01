@@ -286,7 +286,8 @@ private fun RedoContent(activity: MainActivity) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Column(Modifier.weight(1f)) {
                             Text("Autostart", color = Text, fontSize = 15.sp)
-                            Text("Startar när bilens Bluetooth kopplas", color = Dis, fontSize = 12.sp)
+                            // Å4 (kort #262): rörelseigenkänningen är huvudspåret (Autostart.kt) — texten sa bara Bluetooth.
+                            Text("Startar när telefonen märker att du åker bil, direkt om bilens Bluetooth kopplas", color = Dis, fontSize = 12.sp)
                         }
                         Switch(checked = autostart, onCheckedChange = { activity.onAutostartToggle() },
                             colors = SwitchDefaults.colors(checkedTrackColor = Gul, checkedThumbColor = Natt))

@@ -394,6 +394,14 @@ hörlurar — och startar vakten när en av dem kopplar upp igen. Rörelseigenk�
 utan Bluetooth. En vakt som startat av sig själv stannar när bilen kopplas från eller rörelseigenkänningen ser att du
 lämnat bilen, och varje vakt stannar efter en kvart stilla, som på iPhone (kort #248, 24/9).
 
+*Rättat 1/10 (kort #262 Å4):* brytarens undertext sa *"Startar när bilens Bluetooth kopplas"* — men rörelseigenkänningen är
+huvudspåret och startar vakten i vilket fordon som helst, också som passagerare i en buss. Nu: *"Startar när telefonen märker att
+du åker bil, direkt om bilens Bluetooth kopplas."* Beteendet är oförändrat; texten säger vad reglaget gör.
+
+**Avsluta vakten från låsskärmen (1/10, kort #262 Å1):** den pågående notisen *Halkvakt aktiv* har knappen **Avsluta vakten** på
+Android. Förut gick vakten bara att stoppa genom att öppna appen — Bengts fältrapport 27/9 visade en vakt som stod på i nästan tolv
+timmar. Knappen gör samma sak som *Avsluta vakten* i appen, också för autostarten.
+
 **iPhone — vakten vaknar själv (0.3.2):** ge Halkvakt platsen **Alltid**. Då ber appen iOS
 väcka den när telefonen lämnar platsen där bilen senast stod (150 meter), följer farten i upp till en och en
 halv minut och startar vakten vid 15 km/h. Första resan efter installation, när ingen parkering är känd,
