@@ -113,7 +113,27 @@ svarar på** — *är det halt i Skåne just nu*, *halt väglag E4 idag* — fö
    (SoftwareApplication, Organization, Dataset), `lang="sv"`, statiskt och snabbt. Mäts i Search Console varje måndag: vilka frågor, vilken plats.
 5. **App-butikerna söks också:** namnet bär *halk*; nyckelorden är inlagda. Betygen avgör placeringen — därför betygsfrågan efter tredje resan.
 
-## 7. Mål att mäta mot (så vi vet om det fungerar)
+## 7. Regeln: allt som kan gå av sig själv ska gå av sig själv (Axels order 2/10 00:31)
+
+*"Viktigt att du försöker hitta så mycket automatik som möjligt som vi kan använda då allt är satt upp."* Axels och Bengts tid är den knappa
+resursen; datan, pulsklockan och Actions är gratis. Varje punkt i planen prövas mot frågan: **kan det gå utan handgrepp när det väl är uppsatt?**
+
+| Automatik | Källa | Går utan handgrepp? | Läge |
+| :-- | :-- | :-- | :-- |
+| Dagsutkast per kanal + **snölarm per län** | marknadsmotorn, pulsklockan 05:45 | ja — texten ligger klar i `utkast/` | stannade 3/9, startas om |
+| **Halkvakt live**: riktiga larm postas till X/Bluesky/Mastodon/FB-sidan | motorn + plattformarnas API:er (gratis för sidor/konton) | ja, helt | byggs; kräver kontona (Axel) |
+| **Länssidor + vägsidor** "halt väglag … just nu" | publicera-flödet, var 30:e minut | ja, helt | byggs i oktober |
+| **Nyhetsbrevet "Halkläget"** varje måndag | `rapport.json` → Buttondown/Substack via API | ja — utskicket kan gå själv, eller landa som utkast för ett ok | byggs efter kontot |
+| **Pressutkast vid larm**: färdigt mejl till rätt läns tips@-adresser | motorn + en adresslista per län i repot | nästan — ett ok innan det skickas (press är inte brus) | byggs |
+| **Betygsfrågan** efter tredje resan | i appen | ja | kort |
+| **Måndagsmätningen**: installationer, facitsvar, presslänkar, Search Console-frågor | App Store Connect API, Play Developer API, Search Console API, `driver_facit` | ja — en rad i bedömningen skriven av ett flöde | byggs efter kontona |
+| **Widgeten** "halkläget i ditt län" | samma data som kartan | ja — en gång byggd sprider den sig själv | byggs |
+| **"Vintern i siffror"** och "Sveriges halaste vägar" | arkivet | ja — en knapp per år | mars |
+| Kontona skapas, domänen köps, ansiktet bestäms, demovideon filmas | Axel | nej — det är de sex handgreppen i §4 | |
+
+Det som kräver ett mänskligt ok innan det går ut (press, partnerbrev) landar som **färdigt utkast med en knapp**, aldrig som en uppgift att skriva.
+
+## 8. Mål att mäta mot (så vi vet om det fungerar)
 
 | Till | Mål | Mäts i |
 | :-- | :-- | :-- |
