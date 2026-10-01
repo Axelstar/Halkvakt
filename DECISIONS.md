@@ -6535,3 +6535,13 @@ väder, och det mesta är halka i appens egen mening. Rösten säger ingenting o
 friktionsord, med fälten räknade som de finns; och **motorn i `engine/src` körd längs de 20 svenska skuggrutterna** (3 107 km) med
 vägarbetena som punktfaror — antal rop per varv, för alla och för de smala urvalen. Provkört lokalt mot påhittade data. Körs efter
 sammanslagningen; ett flöde måste finnas på main för att kunna tryckas. Läs-only, inget sparas, en körning ≈ en minut Actions.
+
+## #421 (1/10 2026) Kort #276 väg (a): olja på vägen går till skuggan först — ingen text i appen
+
+**Beslut (Bengt 1/10: *"a på 276"*).** Trafikverkets `NonWeatherRelatedRoadConditions` — 99 händelser på 26 dygn, mest olja, diesel och
+hydraulolja med *risk för halka* (#420) — prövas i skuggan: skuggmotorn loggar var rösten SKULLE ha talat, i en egen kolumn bredvid
+`alerts`, som vattenplaningen (`vb`). Alternativen: (b) vårlistan med #32 — ett halvår utan siffror; (c) låta bli — halka som Trafikverket
+själv rapporterar förblir osynlig. **Ramar:** ingen text, ingen prioritet och ingen ändring i appen eller snapshoten — det är Axels beslut
+efter skuggan; en egen motorinstans så att oljan aldrig tränger undan eller tystas av de riktiga varningarna i loggen; hela klassen
+loggas med sin text, så att mätningen kan skilja olja från potthål i efterhand i stället för att filtret gissar i förväg. **Byggs i egen PR**
+efter omtaget (#419/#420), med migration, bunt, deploy och bevis i samma varv.
