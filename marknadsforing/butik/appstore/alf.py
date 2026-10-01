@@ -6,7 +6,7 @@ Ut: 1284×2778 (Apples 6,5-tumsfack, det App Store Connect visar för Halkvakt).
 Körs: python3 marknadsforing/butik/appstore/alf.py <råbildsmapp>
 """
 import sys, os
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 W, H = 1284, 2778
 GUL, MORK = (255, 201, 74), (10, 10, 11)
@@ -34,6 +34,26 @@ def sans(size, bold=True):
     except Exception: pass
     return f
 
+def spärrad(d, x, y, text, font, fill, sparr):
+    for ch in text:
+        d.text((x, y), ch, font=font, fill=fill); x += d.textlength(ch, font=font) + sparr
+
+def statusrad(im, ljus):
+    """iPhones statusrad ovanpå det tomma bandet: 9:41, signal, wifi, batteri — som på Apples egna bilder."""
+    d = ImageDraw.Draw(im); c = (245, 245, 245) if not ljus else (17, 17, 17)
+    d.text((88, 42), "9:41", font=sans(50), fill=c)
+    x0 = im.width - 330
+    for i, h in enumerate((18, 28, 38, 48)):            # signal
+        d.rounded_rectangle((x0 + i * 22, 100 - h, x0 + i * 22 + 14, 100), radius=4, fill=c)
+    wx = im.width - 220                                  # wifi: tre bågar + prick
+    for r, w in ((44, 9), (29, 9), (14, 9)):
+        d.arc((wx - r, 104 - r, wx + r, 104 + r), start=225, end=315, fill=c, width=w)
+    d.ellipse((wx - 6, 96, wx + 6, 108), fill=c)
+    bx = im.width - 150                                  # batteri
+    d.rounded_rectangle((bx, 64, bx + 76, 100), radius=10, outline=c, width=5)
+    d.rounded_rectangle((bx + 7, 71, bx + 69, 93), radius=5, fill=c)
+    d.rounded_rectangle((bx + 79, 75, bx + 85, 89), radius=3, fill=c)
+
 def rama(i, ra, kicker, rubrik, under, ut):
     gul = i % 2 == 0
     duk = Image.new("RGB", (W, H), GUL if gul else MORK)
@@ -41,23 +61,35 @@ def rama(i, ra, kicker, rubrik, under, ut):
     text = SVART if gul else VIT
     y = 150
     if kicker:
-        d.text((M, y), kicker, font=sans(46, False), fill=SVART if gul else GRA); y += 76
+        spärrad(d, M, y, kicker, sans(46, False), SVART if gul else GRA, 0); y += 78
     for rad in rubrik.split("\n"):
-        d.text((M, y), rad, font=sans(112), fill=text); y += 122
+        spärrad(d, M, y, rad, sans(118), text, -4); y += 124
     if under:
-        y += 30; d.text((M, y), under, font=sans(56, False), fill=text); y += 70
-    # Telefonen: statusraden bort, skärmens egen färg i stället; ram, rundade hörn, ö. Toppen 110 px under texten.
+        y += 26; spärrad(d, M, y, under, sans(56, False), text, 0); y += 70
+
+    # Skärmen: statusraden bort, bandet i skärmens färg, en riktig statusrad ovanpå.
     im = Image.open(ra).convert("RGB")
     im.paste(im.getpixel((8, 160)), (0, 0, im.width, 150))
+    statusrad(im, ljus=sum(im.getpixel((8, 160))) > 380)
     sw = PHONE_W - 2 * RAM; sh = round(im.height * sw / im.width)
     im = im.resize((sw, sh), Image.LANCZOS)
     sx = (W - PHONE_W) // 2; sy = y + 110
-    ImageDraw.Draw(duk).rounded_rectangle((sx, sy, sx + PHONE_W, sy + sh + 2 * RAM), radius=R_RAM, fill=GRAFIT, outline=GRAFIT_KANT, width=4)
+
+    # Skugga (mjuk, under ramen), sedan ramen i två toner: metallkant utanpå, mörk fas innanför.
+    sk = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    ImageDraw.Draw(sk).rounded_rectangle((sx - 6, sy + 24, sx + PHONE_W + 6, sy + sh + 2 * RAM + 40), radius=R_RAM, fill=(0, 0, 0, 90 if gul else 140))
+    sk = sk.filter(ImageFilter.GaussianBlur(34))
+    duk = Image.alpha_composite(duk.convert("RGBA"), sk)
+    d = ImageDraw.Draw(duk)
+    kant = (122, 122, 128) if gul else (96, 96, 102)
+    d.rounded_rectangle((sx, sy, sx + PHONE_W, sy + sh + 2 * RAM), radius=R_RAM, fill=kant)
+    d.rounded_rectangle((sx + 5, sy + 5, sx + PHONE_W - 5, sy + sh + 2 * RAM - 5), radius=R_RAM - 5, fill=(18, 18, 20))
+    d.line((sx + 140, sy + 2, sx + PHONE_W - 140, sy + 2), fill=(200, 200, 205), width=2)   # ljusreflex på överkanten
     mask = Image.new("L", im.size, 0)
     ImageDraw.Draw(mask).rounded_rectangle((0, 0, sw - 1, sh - 1), radius=R_SCREEN, fill=255)
     duk.paste(im, (sx + RAM, sy + RAM), mask)
     ImageDraw.Draw(duk).rounded_rectangle((W // 2 - 118, sy + RAM + 20, W // 2 + 118, sy + RAM + 88), radius=34, fill=(0, 0, 0))
-    duk.save(ut, "PNG", optimize=True); print(os.path.basename(ut), "telefonen börjar", sy)
+    duk.convert("RGB").save(ut, "PNG", optimize=True); print(os.path.basename(ut))
 
 if __name__ == "__main__":
     src = sys.argv[1]; out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "alf"); os.makedirs(out, exist_ok=True)
