@@ -1831,6 +1831,14 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#273 GENOMLYSNING AV DE FEM STOMDOKUMENTEN — SKAPAT OCH STÄNGT 1/10 (STOMREGELN, DECISIONS #415/#416)**: Bengts order
+  1/10 — mätningssidan, appsidan, systembilden, bedömningen och integrationskartan är facit och kontrollpunkter; varje ändring stäms
+  av mot dem och rättelserna förs in löpande (CLAUDE.md STOMREGELN, sessionsprotokollets steg 4). Genomlysningen: alla fem lästa mot
+  koden och besluten #399–#414 och uppdaterade — *Halkvaktens mätningar* (nytt 30/9-block i 5.1, värdevakten 1/10, db-knappen,
+  domkalendern), *Halkvaktens app* (byggena (14)–(18) oarkiverade, kända brister #226/#248/#258/#259, Skyltfonden skickad),
+  *Halkvaktens systembild* (L4 med vägpunktsgrindens fall, reglagets tak, vattenplaningens dom), bedömningen (läget (8), §0b-rad,
+  §5.2–5.5) och kartan (R21–R26, #416). Repokopiorna omdöpta till `docs/MATNINGAR.html`, `docs/APPEN.html`,
+  `docs/SYSTEMBILDEN.html` och republicerade till samma URL:er.
 - [x] ✅ **#267 FYND UNDER GENOMGÅNGEN AV SKUGGMOTORN 29/9 — STÄNGT 1/10 (DECISIONS #414)** (inga beslut, bara rättelser). Bedömningen §5.1 säger att S2 och S3 är
   obyggda och att försprångets regel är obyggd — S2 byggdes 24/9 (#341) och försprånget körs i skuggan sedan 25/9 (#359). #321 säger att
   felet stiger monotont med avståndet; loggen 22/9 ger 0,43 · 0,79 · 0,76 · 0,72 °C. Värdevakten har inte körts sedan 15/9, och spannet

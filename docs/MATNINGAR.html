@@ -149,7 +149,7 @@
 </style>
 
 <main class="blad">
-  <div class="etikett">Teknisk analys · intern · 29 september 2026</div>
+  <div class="etikett">Teknisk analys · intern · 29 september 2026 · uppdaterad 1 oktober</div>
   <h1>Vad Halkvakt mäter, hur det räknas och vad det visat</h1>
   <p class="ingress">Syskonsidan till Halkvaktens systembild: allt projektet mäter. Motorn som kör i apparna, vakterna och källorna som är i drift, reglerna som prövas i skuggan och facitkällorna, i 21 delområden. För varje del står vad den mäter, hur, vilka tal som finns och vad mätningen är till för. Talen kommer ur beslutsloggen (numren inom parentes), tröskeldokumenten, koden och körningarnas loggar. Utfall som är blindade till domarna visas bara som antal.</p>
   <div class="fakta">
@@ -198,7 +198,7 @@
         <tr><td><a href="#d-forare">3.3 Förarsvar och missar</a></td><td>facit</td><td><span class="lage drift">i drift</span></td><td>0 riktiga svar</td></tr>
         <tr><td><a href="#d-tystnad">3.4 Tystnadsfelet</a></td><td>facit</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>2 av 20 tillfällen</td></tr>
         <tr><td><a href="#d-vakter">4.1 Vakterna</a></td><td>L1</td><td><span class="lage drift">i drift</span></td><td>706 av 811 felrader tagna</td></tr>
-        <tr><td><a href="#d-prognos">5.1 Prognoslagret</a></td><td>L4</td><td><span class="lage skugga">körs i skuggan</span></td><td>vägpunktsgrinden föll 28/9, bokförd (#399)</td></tr>
+        <tr><td><a href="#d-prognos">5.1 Prognoslagret</a></td><td>L4</td><td><span class="lage skugga">körs i skuggan</span></td><td>föll 28/9 (#399); premissmätningarna 30/9 räddar ingen kandidat (#405–#408)</td></tr>
         <tr><td><a href="#d-frysklass">5.2 Frysklassningen</a></td><td>L4</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>0 punkter med frys</td></tr>
         <tr><td><a href="#d-tathet">5.3 Stationstätheten</a></td><td>L4</td><td><span class="lage arkiv">mätt</span></td><td>median 6,8 km till station</td></tr>
         <tr><td><a href="#d-trend">6.1 Trenden</a></td><td>L3</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>19 469 kandidater</td></tr>
@@ -381,7 +381,7 @@
       <div><b>706 av 811</b><span>felrader tagna, 4 äkta tystade (#298)</span></div>
       <div><b>7 → 0</b><span>falska brolarm på E4 Helsingborg–Jönköping</span></div>
       <div><b>16</b><span>stationer anmälda till Trafikverket 22/9</span></div>
-      <div><b>15/9</b><span>värdevaktens senaste körning</span></div>
+      <div><b>1/10</b><span>värdevaktens senaste körning, 0 obesiktigade</span></div>
     </div>
     <p><b>Nytta:</b> en station vi inte litar på tiger, både i appen och i mätningarna. I prognoslagrets band 7–15 km bar vakterna hela skillnaden mellan att falla och att klara. Felen har också anmälts till källan.</p>
     <details><summary>Hur den mäter</summary><div class="inne">
@@ -424,7 +424,7 @@
       </div>
       <div class="ruta">
         <h4>Värdevakten</h4>
-        <p>12/9 prövade den 31 fält i 12 tabeller över 30 dygn (#134). Den hittade en radarintensitet på 727,54 mm/h, där världens högsta uppmätta skurar ligger kring 150–200 mm/h. Sikten 20 000 m var en platshållare i 49,5 % av observationerna och 89,4 % av senaste-tabellen, och byvinden nådde 85,5 m/s. Senaste körningen, 15/9, prövade 41 fält i 13 tabeller med 27 deklarerade spann: 28 i ordning, 2 utanför spann, 2 misstänkta platshållare, 3 med för tunt underlag och 0 obesiktigade. Den har inte körts sedan dess, och spannet −60…+60 °C släpper igenom de trasiga ytgivarnas −50 °C.</p>
+        <p>12/9 prövade den 31 fält i 12 tabeller över 30 dygn (#134). Den hittade en radarintensitet på 727,54 mm/h, där världens högsta uppmätta skurar ligger kring 150–200 mm/h. Sikten 20 000 m var en platshållare i 49,5 % av observationerna och 89,4 % av senaste-tabellen, och byvinden nådde 85,5 m/s. Senaste körningen, 15/9, prövade 41 fält i 13 tabeller med 27 deklarerade spann: 28 i ordning, 2 utanför spann, 2 misstänkta platshållare, 3 med för tunt underlag och 0 obesiktigade. Körningen 1/10 på main (30 dygn, #414): 51 fält i 14 tabeller, 27 spann, 40 i ordning, 2 utanför spann (byvinden 87,7 m/s, radarns 727 mm/h), 2 misstänkta platshållare (sikten), 1 för tunt och 0 obesiktigade. Spannet −60…+60 °C för ytan står: de −34…−50 °C sju stationer rapporterade i septemberluft ligger inom fysikens spann och är omöjliga bara i relation till luften, vilket är radvaktens kontroll, inte spannets.</p>
       </div>
     </div></details>
   </section>
@@ -446,6 +446,40 @@
       <p>Måndagens veckokörning var den första där arkivet har varma grannrader. Då föll vägpunktsgrinden: rå avståndsviktning, den modell skuggan kör, fick 6,9 % ± 0,4 grova fel mot kravet 5 %, och de två andra kandidaterna föll också. Grind A, som använder stationens inlärda offset, klarade samma morgon med 3,7 % ± 0,3.</p>
       <p>En läsning 29/9 körde samma population två gånger över samma dagar: med arkivet som det är och med bara de rader den gamla arkivregeln hade sparat. Före 25/9 blev det nästan samma resultat med båda reglerna, 4,2 och 3,9 %. Efter 25/9 gav den gamla regeln 4,5 % och den nya 11,1 %. Septemberdomen var alltså ett resultat av att de varma grannarna saknades. I den värld skuggan faktiskt kör i har rå viktning mer än dubbelt så många grova fel som kravet tillåter. Den inlärda offseten håller, 4,4 % ± 0,5 efter 25/9, men en vägpunkt utan station har ingen egen historik att lära en offset ur.</p>
       <p>Bengts beslut 29/9: fallet bokförs, rå viktning är inte godkänd, skuggan fortsätter som mätning och ingen mer byggtid läggs på prognoslagret i höst. Läsningen körs varje måndag efter höjdprovet, så att vintern bygger kurvan natt för natt. Ingenting av detta når föraren.</p>
+    </div>
+    <div class="ruta">
+      <h4>30/9: omkörningen, premisserna och de förregistrerade mätningarna (DECISIONS #405–#408)</h4>
+      <p>Omkörningen 30/9 bekräftade fallet och breddade det: rå viktning 7,9 % ± 0,4 grova fel på 17 839 punkter (28/9: 6,9 %), interpolerad offset 10,3 %, rå + höjd 7,9 %. Analysen av matematiken fann fyra trubbiga premisser (ett censurerat arkiv blandat med ärliga rader, punkter räknade som oberoende, ett tandlöst A3, skuggrutterna som population i stället för vägnätet) och ett modellfel (avståndsviktning utan målets egen särart). Varje omtag registrerades i DECISIONS innan körningen; kandidatlistan är stängd: rå, rå + höjd, ANOM, och den inlärda offseten som tak.</p>
+      <div class="tabell">
+        <table>
+          <thead><tr><th>Sverige, ärliga rader efter 25/9 (9 415 punkter, 236 stationer)</th><th class="tal">0–7 km (15 st)</th><th class="tal">7–15 km (57)</th><th class="tal">15–20 km (54)</th><th class="tal">&gt; 20 km (110)</th><th class="tal">Vägviktat A · B</th></tr></thead>
+          <tbody>
+            <tr class="fallen"><td><b>Rå avståndsviktning</b></td><td class="tal">2,5 % (under spärren)</td><td class="tal">12,7 %</td><td class="tal">10,9 %</td><td class="tal">12,4 %</td><td class="tal">7,2 · 7,5 % faller</td></tr>
+            <tr><td>Rå + höjdkorrektion</td><td class="tal">1,6 % (under spärren)</td><td class="tal">8,5 % [4,7–12,7]</td><td class="tal">7,8 %</td><td class="tal">12,9 %</td><td class="tal">5,1 · 5,3 % oavgjort</td></tr>
+            <tr><td>ANOM</td><td class="tal">9,2 %</td><td class="tal">21,6 %</td><td class="tal">22,1 %</td><td class="tal">13,0 %</td><td class="tal">14,5 · 15,0 % faller</td></tr>
+            <tr><td>Inlärd offset (taket)</td><td class="tal">1,2 %</td><td class="tal">5,9 %</td><td class="tal">4,6 %</td><td class="tal">4,6 %</td><td class="tal">3,2 · 3,4 % klarar</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="tabell">
+        <table>
+          <thead><tr><th>Finland, 427 stationer, 5 402 kalla mål</th><th class="tal">0–7 km (108 st)</th><th class="tal">7–15 km (58)</th><th class="tal">15–20 km (65)</th><th class="tal">&gt; 20 km (118)</th><th class="tal">Alla</th></tr></thead>
+          <tbody>
+            <tr class="vald"><td><b>Rå avståndsviktning</b></td><td class="tal">0,60 °C · 2,3 % [1,1–3,5] klarar</td><td class="tal">3,8 %</td><td class="tal">4,5 %</td><td class="tal">3,9 %</td><td class="tal">3,7 % klarar</td></tr>
+            <tr><td>Rå + höjdkorrektion</td><td class="tal">2,5 % klarar</td><td class="tal">3,8 %</td><td class="tal">4,2 %</td><td class="tal">5,1 %</td><td class="tal">4,2 % oavgjort</td></tr>
+            <tr><td>ANOM</td><td class="tal">2,5 %</td><td class="tal">4,9 %</td><td class="tal">6,7 %</td><td class="tal">9,0 % faller</td><td class="tal">6,6 % faller</td></tr>
+            <tr><td>Inlärd offset (taket)</td><td class="tal">0,6 %</td><td class="tal">5,0 %</td><td class="tal">3,5 %</td><td class="tal">2,7 %</td><td class="tal">2,7 % klarar</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li><b>Täckning:</b> skuggrutterna (A) 52,6 / 33,9 / 6,8 / 6,8 % och huvudvägnätet (B, 818 segment) 49,8 / 37,6 / 7,3 / 5,2 % per band ger nästan samma vikter. Trafikarbetet (C) är omätt, ÅDT saknas. Grindens bandregel flyttade 2,6 % av punkterna.</li>
+        <li><b>Bandet 0–7 km håller</b> i båda länderna och i alla regimer, men går inte att döma med svenska stationer: 15 har en granne inom 7 km, spärren kräver 20. Finland ger kraften med 108 stationer, som stöd och inte som dom.</li>
+        <li><b>Frysflaggan vid 1 °C</b> inom 7 km (Finland): rå viktning missar 57 % [41–75] av stationens egna frysningar, 6 % med en grads marginal, och sätter 36 % falska. Ett fel lika stort som avståndet till gränsen ger ett myntkast vid gränsen. Prognosen får förstärka och visa, aldrig avgöra.</li>
+        <li><b>Två hypoteser föll, förregistrerade:</b> ANOM (luft ur många grannar, anomali ur de närmaste) blev sämre än rå i båda länderna, och regimen ur vind och natt skiljer inte (Sverige rå 12,5 % stilla natt mot 9,2 % övrigt, Finland 3,1 mot 5,9 %). Molnmängd saknas i arkivet och blåsigt var nästan tomt.</li>
+        <li><b>Höjden är den enda platsegenskap som bär:</b> den halverar felet inom 7 km i Sverige (0,96 → 0,63 °C) och ger inget i Finland. Golvet: inga svenska stationspar inom 3 km; Finland 40 par, 3,9 %.</li>
+      </ul>
+      <p class="litet">Domen står, trösklarna är orörda, ingenting når föraren. Vägen framåt är Bengts val a–h i bedömningen §4.2 (veckomätning med fast läsdatum, precisering per band, egen spärr för 0–7 km, ÅDT, flaggmarginalen, molnmängd) och kort #271, termisk kartering som facit mellan stationerna. Sammanfattning med slutsatser: <span class="mono">docs/PROGNOSLAGRET-2026-09-30.md</span>.</p>
     </div>
     <details><summary>Hur den mäter</summary><div class="inne">
       <div class="formel">
@@ -556,7 +590,8 @@
       <ul>
         <li><b>SMHI:s luftstationer som extra ankare.</b> På samma 1 918 punkter steg medelfelet från 1,05 till 1,20 °C. De 352 punkter som bara fanns tack vare SMHI hade 2,36 °C (#119).</li>
         <li><b>Inlärd stationsoffset.</b> Den utgick 23/9 eftersom den inte tillförde något mot den råa viktningen, 0,72 mot 0,71 °C (#324). Med varma grannar är det offseten som håller: 4,4 % grova fel efter 25/9 mot rå viktnings 11,1 %.</li>
-        <li><b>Höjdkorrektion.</b> 28/9 hjälper den inom 7 km (0,59 mot 0,82 °C) och i bandet 7–15 km (0,74 mot 0,81) men stjälper bortom 20 km (0,86 mot 0,82 °C). Den empiriska temperaturgradienten är 0,63 °C per 100 m, både ur 3 476 par 12/9 och ur 3 261 par 28/9. Frågan läses om 23/10 (#357).</li>
+        <li><b>Höjdkorrektion.</b> 28/9 hjälper den inom 7 km (0,59 mot 0,82 °C) och i bandet 7–15 km (0,74 mot 0,81) men stjälper bortom 20 km (0,86 mot 0,82 °C). Den empiriska temperaturgradienten är 0,63 °C per 100 m, både ur 3 476 par 12/9 och ur 3 261 par 28/9. Frågan läses om 23/10 (#357). 30/9 på ärliga rader: höjden halverar felet inom 7 km i Sverige (0,96 → 0,63 °C) och ger inget i Finland; rå + höjd är oavgjord vägviktat, 5,1–5,3 % (#405, #407).</li>
+        <li><b>ANOM och regimen, 30/9.</b> Luft ur många grannar med anomali ur de närmaste blev sämre än rå viktning i båda länderna (14,5 % i Sverige, 6,6 % i Finland); en regim ur vind och natt skilde inte när terrängen biter. Båda förregistrerade, båda strukna som kandidater (#405, #408).</li>
       </ul>
 
       <h4>Grind B:s underlag</h4>
@@ -1039,6 +1074,7 @@
     <li><b>Samma motor överallt.</b> Server, Android och iOS måste klara 37 gemensamma testfall tecken för tecken.</li>
     <li><b>Kontraktsgrinden.</b> 58 tal som finns i mer än en fil får inte glida isär.</li>
     <li><b>Samma beslut i två språk.</b> TypeScript och Postgres räknade olika på <span class="mono">4,8 − 4,4</span>. Nu avrundas TypeScript-sidan före jämförelsen, och en driftvakt kör båda över samma fönster.</li>
+    <li><b>Läsning utan skrivning.</b> Db-knappens avläsningar körs sedan 1/10 i en READ ONLY-transaktion som alltid rullas tillbaka; standardfilen som kunde schemalägga om gallringen är borta (#412).</li>
     <li><b>Grinden lånar grindens vakter.</b> En mätning som lyfts till grind får hela grindens urval, inte bara dess tal. Utan vakterna hade vägpunktsgrinden fallit redan 23/9.</li>
   </ul>
 
@@ -1047,7 +1083,7 @@
     <table>
       <thead><tr><th>När</th><th>Vad</th></tr></thead>
       <tbody>
-        <tr><td>Varje måndag</td><td>grind A, vägpunktsgrinden, vattenplaningens radarspår (bara antal)</td></tr>
+        <tr><td>Varje måndag</td><td>grind A, vägpunktsgrinden och populationsläsningen, vattenplaningens radarspår (bara antal); premissmätningen på knapp (<i>premisser</i>, <i>premisser-fi</i>) när Bengt valt läsdatum (bedömningen §4.2 a)</td></tr>
         <tr><td>Inom 7 dygn efter frost</td><td>trenden, rimfrosten, övergångarna, frysklassningen, vind och sikt; körs när minst 50 stationer haft ytan ≤ 0 °C</td></tr>
         <tr><td>23/10</td><td>höjdkorrektionen läses om på fyra veckors fullständigt underlag</td></tr>
         <tr><td>November–december</td><td>vattenplaningens radarspår, när underlaget räcker</td></tr>
@@ -1060,7 +1096,7 @@
   </div>
   <p>Hittills finns inget vinterunderlag. Den 27/9 var 1 av 1 298 stationer kall, förarsvaren och missarna har inga riktiga poster, och kamerafacit har ingen halka. Mätningarna i september prövar metoden. Vintern prövar produkten.</p>
   <hr>
-  <p class="litet">Källor: beslutsloggen (DECISIONS), tröskeldokumenten, systembeskrivningen, koden och veckokörningarnas loggar 28/9. Samma underlag som bilaga 3–8 till Skyltfondsansökan, men sidan är intern och innehåller opublicerade regelvärden. Alla tidpunkter avser 2026 om inget annat står.</p>
+  <p class="litet">Källor: beslutsloggen (DECISIONS), tröskeldokumenten, systembeskrivningen, koden och körningarnas loggar till 1/10. Samma underlag som bilaga 3–8 till Skyltfondsansökan, men sidan är intern och innehåller opublicerade regelvärden. Alla tidpunkter avser 2026 om inget annat står.</p>
 </main>
 
 <script>

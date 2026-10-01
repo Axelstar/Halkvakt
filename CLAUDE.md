@@ -89,7 +89,8 @@ Every session, in order:
    *Verify* line. (BACKLOG.md avvecklad 26/9, kort #221 — kön bor i bedömningen och på tavlan.)
 3. Prove it: tests/CI/logs — never claim done without evidence.
 4. Commit with a message explaining what + why. Update the bedömning (läget överst,
-   §4.2) and TAVLA; a session-log line in STATUS.md. Log decisions in DECISIONS.md.
+   §4.2) and TAVLA; a session-log line in STATUS.md. Log decisions in DECISIONS.md. Stäm av mot de fem
+   stomdokumenten och för in rättelserna där i samma varv (STOMREGELN).
 5. End by telling Axel: what shipped, what's next, and ONLY the questions that
    block progress. Batch questions; never drip them.
 
@@ -125,6 +126,20 @@ Varje arbetsvarv AVSLUTAS med att TAVLA.md synkas mot verkligheten:
    utan att fråga.
 4. Finns det inte på tavlan finns det inte. Idéer utan kort = tappade idéer.
 Tavlan är människolagret; bedömningen, STATUS och DECISIONS är djuplagren.
+
+## STOMREGELN (Bengts order 2026-10-01 — fem stomdokument, DECISIONS #415)
+Fem dokument är Bengts facit och kontrollpunkter för var vi är, och stommen för det fortsatta bygget:
+1. *Halkvaktens mätningar* — artefakt https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc, källa `docs/MATNINGAR.html`
+2. *Halkvaktens app* — https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT, källa `docs/APPEN.html`
+3. *Halkvaktens systembild* — https://claude.ai/artifact/6hHX4LeXQUrJSbaNthNY9i, källa `docs/SYSTEMBILDEN.html`
+4. Bedömningen — den senaste `docs/BEDOMNING-*.md`
+5. Integrationskartan — `docs/INTEGRATIONSKARTAN.md`
+Varje ändring, tillägg och komplettering STÄMS AV mot de fem innan varvet avslutas, och rättelser, ändringar och avbockningar
+redovisas i dem löpande, i samma varv som de görs — aldrig i efterhand. Artefakterna ändras i repokopian (källan) och republiceras
+till samma URL i samma commit; en artefakt som skiljer sig från sin repokopia är ett fel. Kartans frysregel gäller fortfarande
+dess INNEHÅLL (ändras efter bygge och mätning), men dess läge-rader (§2, §6.1, §8, §13.6, §14) hålls aktuella. Det är ett
+arbetsmoment som alltid står fast. Kontroll före sessionens slut: `git log -1 --format=%ad -- <fil>` på de fem är inte äldre än
+det senaste beslut som rör dem.
 
 ## PRODUKTBOKSREGELN (Axels order 2026-08-29)
 Ändras något användaren SER, HÖR eller GÖR (skärm, rösttext, flöde, behörighet)

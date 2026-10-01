@@ -2139,3 +2139,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 1/10 (Claude, Bengts *"kör på #267"*): fyra rättelser (ca25bec, DECISIONS #414): §5.1 L2/L5, #321 utan monotoni, spärren 10 s i
   motorns huvud och TROSKLAR-OVERGANGAR; bunten omgenererad och skuggmotorn deployad (36820055383), spärrprov 36820118920 grönt (suppressed en rad); värdevakten på
   main 36819878682 (0 obesiktigade). Kort #267 KLART.
+- 1/10 (Claude, Bengts order om stomdokumenten): STOMREGELN i CLAUDE.md (DECISIONS #415) — de tre artefakterna, bedömningen och
+  kartan stäms av vid varje ändring och bär rättelserna löpande. Genomlysning: alla fem uppdaterade (kort #273); kartan R21–R26
+  (#416); repokopiorna omdöpta till odaterade namn och republicerade.

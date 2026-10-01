@@ -6409,3 +6409,40 @@ mätningen efter deployen är spärrprovet (körning 36820118920): status 200, `
 `rate_max_mmh` 727,54 över spannets 200). Ytans spann −60…+60 °C **står**: de −34…−50 °C sju stationer rapporterade i septemberluft ligger
 inom fysikens spann och är omöjliga bara i relation till luften — det är radvaktens kontroll (DECISIONS #298), inte värdevaktens. Sagt
 som kommentar vid `SPANN` så nästa läsare inte stramar ett spann som vaktar fel sak.
+
+## #415 (1/10 2026) STOMREGELN — fem stomdokument stäms av vid varje ändring och bär rättelserna löpande
+
+**Bengts order 1/10:** *"Artifactsen Halkvaktens mätningar, Halkvaktens app och Halkvaktens systembild är facit för mej och
+kontrollpunkter för var vi är. Tillsammans med bedömningar och Integrationskartan utgör de stommen för det fortsatta bygget här.
+Jag vill därför att du lägger in en arbetsorder att alla ändringar, tillägg kompletteringar stäms av mot dessa 5 dokument och
+rättelser/ändringar/avbockningar redovisas även där löpande när de görs. … ett arbetsmoment som alltid står fast … en genomlysning
+av allt så att samtliga dessa är uppdaterade."*
+
+**Beslut.** (1) Regeln står i CLAUDE.md som STOMREGELN, och sessionsprotokollets steg 4 pekar på den. De fem: *Halkvaktens
+mätningar* (artefakt RVrWtvUGPfc88aFUbcYREc), *Halkvaktens app* (FThC1PqVqEMqWxofrCv1GT), *Halkvaktens systembild*
+(6hHX4LeXQUrJSbaNthNY9i), bedömningen och integrationskartan. (2) Repokopiorna är källan och döps om till odaterade namn
+(`docs/MATNINGAR.html`, `docs/APPEN.html`, `docs/SYSTEMBILDEN.html`; förut `MATNINGAR-2026-09-29`, `APPEN-2026-09-28`,
+`SYSTEMBILDEN-2026-09-25`), eftersom ett levande dokument inte kan bära sitt födelsedatum i namnet. Varje ändring görs i
+repokopian och republiceras till samma URL i samma varv. (3) Kartans frysregel (#186) gäller innehållet; läge-raderna hålls löpande.
+
+**Genomlysningen 1/10, vad som var fel eller gammalt i vart och ett.** *Systembilden (25/9):* L4-panelen sade bara "grind A
+klarad, segmentprognosen i skugga" — vägpunktsgrindens fall 28/9 och premissmätningarna 30/9 saknades; förvarningens spann sade
+400–3 000 m utan apparnas tak 1 200 m; vattenplaningens dom saknade datum. *Appen (28/9):* omladdningen under resan stod som
+drift fast iOS-bygget (16) inte kompilerats; byggena (14)–(18) oarkiverade sades inte; de öppna bristerna #226/#248/#258/#259
+saknades; Skyltfonden stod som "söks" med 30–50 förare, ansökan är skickad 30/9. *Mätningarna (29/9):* 5.1 saknade omkörningen
+30/9 och premissmätningarna (#405–#408) helt — nytt block med Sveriges och Finlands band, täckningen, frysflaggan, ANOM, regimen;
+värdevakten sades inte körd sedan 15/9 med ett spann som "släpper igenom" −50 °C (körd 1/10, #414, spannet står); db-knappens
+läsläge och premissmätningens knapp i domkalendern. *Bedömningen:* §5.2 A "regel obyggd", §5.3 segmentprognosen utan fallet, §5.4
+facit 790 bilder och "ett förarsvar", E och B som stopp fast båda byggda 24/9; läget (8) och bevakningsraden tillagda.
+*Integrationskartan (24/9):* R21–R26, eget beslut #416. Kort #273 skapat och stängt med beviset.
+
+## #416 (1/10 2026) Integrationskartan öppnad för R21–R26 efter vägpunktsgrindens fall och premissmätningarna, fryst igen
+
+**Frysvillkoret** (#186: ändring bara efter bygge och mätning) är uppfyllt av vägpunktsgrindens fall 28/9 (#399), de förregistrerade
+premissmätningarna 30/9 (#405–#408), S2 (#341), försprångets skugga (#359) och kamerafacitets vägar (#380). Rättelserna, alla
+läge-rader: **R21** §2 L4 — vägpunktsgrinden FALLEN, premissmätningarna räddar ingen kandidat, bandet 0–7 km håller. **R22** §2 L5 —
+försprånget byggt och i skugga sedan 25/9, S2 nivå + bevis 24/9 (raden sade "regeln obyggd"). **R23** §5.4 — segmentprognosens fog:
+rå viktning föll, kandidaten till marsdomen öppen (#270/#271). **R24** §6.1 — 28/9 med varma grannrader och 30/9 på ärliga rader;
+"felet stiger monotont" rättat här och i §13.3 (samma fel som #321, rättat i #414). **R25** §8 A och E — båda byggda. **R26** §12 —
+facitstacken 988 bilder, 41 provbilder klassade, 0 riktiga förarsvar. Kartans sakinnehåll (fogarna, lagren, principerna) är orört.
+Sedan 1/10 hålls läge-raderna löpande enligt STOMREGELN (#415); innehållet ändras bara efter bygge och mätning som förut.
