@@ -54,8 +54,8 @@ Appen frågar om behörigheter i tur och ordning. Alla behövs för att den ska 
 > förgrundstjänst (det är den pågående notisen du ser), och då fortsätter rösten tala med **släckt
 > skärm** hela resan.
 >
-> **"Tillåt hela tiden" behövs bara för Autostart** — att vakten startar sig själv när bilens Bluetooth
-> kopplar, utan att du öppnat appen. Vill du ha det: *Inställningar → Appar → Halkvakt → Behörigheter →
+> **"Tillåt hela tiden" behövs bara för Autostart** — att vakten startar sig själv när telefonen märker att
+> du åker bil, eller när bilens Bluetooth kopplar, utan att du öppnat appen. Vill du ha det: *Inställningar → Appar → Halkvakt → Behörigheter →
 > Plats → Tillåt hela tiden*. Hoppar du över det fungerar allt annat precis som vanligt; du trycker bara
 > **Starta vakten** själv.
 
@@ -66,7 +66,9 @@ Appen frågar om behörigheter i tur och ordning. Alla behövs för att den ska 
 Appen har två flikar: **Vakten** och **Inställningar**.
 
 - På **Vakten** står det *Redo.* Tryck den gröna **Starta vakten**.
-- Under knappen finns **Autostart** — slår du på den startar vakten själv när bilens Bluetooth kopplas.
+- Under knappen finns **Autostart** — slår du på den startar vakten själv när telefonen märker att du åker bil (i vilket
+  fordon som helst — en buss räknas också), och direkt när bilens Bluetooth kopplas.
+- Vakten stoppas från låsskärmen: den pågående notisen har knappen **Avsluta vakten**.
 - När vakten är på står det *PASSAGERAREN ÄR VAKEN* med tid och sträcka.
 - Klart för dagen: **Avsluta vakten**.
 

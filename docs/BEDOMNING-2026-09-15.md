@@ -40,7 +40,7 @@ versionsnumret 31/8–26/9, inte i koden (#387); kort #219:s rubrik är överspe
 (14) uppladdad 23/9 och i *Kompisarna* sedan 26/9 (37 sessioner 1/10) — rättat 1/10, den stod felaktigt som oarkiverad; (15)–(18) aldrig arkiverade; **(19) uppladdat till Apple 1/10 22:25 och godkänt för *Kompisarna* 22:34** (kort #279, DECISIONS #430 — kompilerade i Axels Xcode) och bär därmed #258, #259, #203 lager 2 och tre av TILL-AXEL-BYGGE-19:s fyra rättelser; kvar 4a/4b. Android: testarna kör CI-bygget sedan
 20/9; **Play-kontot finns sedan 20/9**, kvar enhetsverifiering → första uppladdning → slutet test 14 dygn → produktion tidigast november.
 Play-deklarationen omskriven 20/9 (Ja, ungefärlig plats), raderingsfrågan Nej (#378); Axel klistrar in meningen i `integritet.html`.
-Batteri: iPhone **7 %/h** på (14), inom budget (#382); Android: fältrapporten 27/9 ⇒ batteripaketet #262 hos Axel, släppblockerare;
+Batteri: iPhone **7 %/h** på (14), inom budget (#382); Android: fältrapporten 27/9 ⇒ batteripaketet #262 — Å1/Å4/Å5 byggda 1/10 kväll (#431), Å2/Å3 trösklar hos Bengt och Axel, mätningarna hos Axel; släppblockerare;
 mätning på två fabrikat återstår. Skillnader som står kvar: Android saknar introduktionen, självstoppet firar bara för parkerad bil,
 Siri bara på iPhone.
 

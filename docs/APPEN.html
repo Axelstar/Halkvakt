@@ -95,12 +95,12 @@
 </style>
 
 <main class="blad">
-  <div class="etikett">Appen · 28 september 2026 · läst mot läget 1 oktober</div>
+  <div class="etikett">Appen · 28 september 2026 · läst mot läget 1 oktober kväll</div>
   <h1>Halkvakt i telefonen: vad den gör, säger och skickar</h1>
   <p class="ingress">Tredje sidan i serien efter systembilden och mätningarna. Den här sidan följer föraren: vad rösten säger, hur skärmarna ser ut, hur vakten startar och stannar, hur betatestarna svarar och exakt vad som lämnar telefonen. Underlaget är produktboken, systembeskrivningen, beslutsloggen och Skyltfondsansökan med bilagor.</p>
   <div class="fakta">
-    <span>iPhone <b>0.3.9 (18)</b></span>
-    <span>Android <b>0.3.9 (18)</b></span>
+    <span>iPhone <b>0.3.9 (19)</b></span>
+    <span>Android <b>0.3.9 (19)</b></span>
     <span><b>5</b> faror</span>
     <span><b>2</b> flikar</span>
     <span><b>0</b> konton</span>
@@ -235,13 +235,13 @@
     <table>
       <thead><tr><th>Del</th><th>Läge</th><th></th></tr></thead>
       <tbody>
-        <tr><td>iPhone, TestFlight</td><td>Intern testkrets sedan 31/8. Bygge (13) laddades upp 23/9 som kandidat till App Store. Byggena (14)–(18) ligger på main men är inte arkiverade.</td><td><span class="dom klar">i drift</span></td></tr>
+        <tr><td>iPhone, TestFlight</td><td>Intern testkrets sedan 31/8. Bygge (13) laddades upp 23/9 som kandidat till App Store, (14) samma vecka och ligger i den externa gruppen <i>Kompisarna</i> sedan 26/9. <b>(19) uppladdat och godkänt för Kompisarna 1/10 kväll</b> — första bygget som bär omladdningen, reglaget, missarna och de rullande skärmarna. (15)–(18) arkiverades aldrig.</td><td><span class="dom klar">i drift</span></td></tr>
         <tr><td>Android</td><td>Testarna installerar bygget ur CI. Appen kör på riktiga telefoner sedan 20/9.</td><td><span class="dom klar">i drift</span></td></tr>
-        <tr><td>Bygge (19), iPhone</td><td>Fyra rättelser efter provresan 28/9: texter som klipps på små skärmar, statusraden efter resan, dubbeltryck på <i>Appen missade</i> och raden under <i>Redo.</i> som ska säga <q>lämnar inte telefonen av sig själv</q>.</td><td><span class="dom vantar">hos Axel</span></td></tr>
-        <tr><td>Android efter 1/10</td><td>Statusraden och dubbeltrycket, samt självstoppet.</td><td><span class="dom vantar">hos Axel</span></td></tr>
+        <tr><td>Bygge (19), iPhone</td><td>Tre av fyra rättelser efter provresan 28/9 är ute: skärmarna rullar, statusraden visas bara vid fel och bara för resan, och raden under <i>Redo.</i> säger <q>lämnar inte telefonen av sig själv</q> (kort #279). Kvar: spärren mot dubbeltryck på <i>Appen missade</i> och Siri när vakten är av — Axels beslut.</td><td><span class="dom klar">ute 1/10</span></td></tr>
+        <tr><td>Android, batteripaketet</td><td>Tre åtgärder utan beslut byggda 1/10 kväll (kort #262): <i>Avsluta vakten</i> som knapp i den pågående notisen, autostartens text säger att rörelseigenkänningen startar vakten, och färre nationella svep per sekund i avståndsmätningen. Kvar: statusraden och dubbeltrycket, samt trösklarna för stillastående och självstopp (Bengt och Axel).</td><td><span class="dom vantar">bygge (19) på Android</span></td></tr>
         <tr><td>Google Play</td><td>Kontot skapat 20/9. Kvar är verifieringen av en telefon och sedan ett slutet test med tolv testare i 14 dygn före produktion, tidigast i november.</td><td><span class="dom vantar">väntar</span></td></tr>
         <tr><td>Integritetssidan</td><td>Omskriven 23/9. Meningen om radering och raden om missar är inte publicerade än.</td><td><span class="dom vantar">hos Axel</span></td></tr>
-        <tr><td>Kända brister</td><td>Omladdningen under resan (iPhone) och reglagets tak är byggda i (16) och (17) men väntar på Axels första kompilering (kort #258, #259). Androids autostart stannar vid frånkoppling och efter en kvart stilla sedan 24/9 (kort #248), prov i bil återstår. Autostartens behörighet på Android 11+ är härledd ur koden, inte uppmätt (kort #226).</td><td><span class="dom vantar">hos Axel</span></td></tr>
+        <tr><td>Kända brister</td><td>Omladdningen under resan (iPhone) och reglagets tak är ute i (19) sedan 1/10 men inte provade i bil (kort #258, #259). Androids autostart stannar vid frånkoppling och efter en kvart stilla sedan 24/9 (kort #248), prov i bil återstår. Autostartens behörighet på Android 11+ är härledd ur koden, inte uppmätt (kort #226).</td><td><span class="dom vantar">hos Axel</span></td></tr>
       </tbody>
     </table>
   </div>
@@ -262,6 +262,7 @@
         <tr><td class="nr">0.3.9 (16)</td><td class="nr">26/9</td><td>Vägdatan laddas om var 30:e minut under resan.</td></tr>
         <tr><td class="nr">0.3.9 (17)</td><td class="nr">26/9</td><td>Reglaget <i>Längsta förvarning</i> 400–1 200 m.</td></tr>
         <tr><td class="nr">0.3.9 (18)</td><td class="nr">26/9</td><td><i>Appen missade</i>, Siri-fraserna och missraderna efter resan. Android bär samma nummer.</td></tr>
+        <tr><td class="nr">0.3.9 (19)</td><td class="nr">1/10</td><td>Skärmarna rullar, svaren på ett ställe, svenska klockslag, <q>lämnar inte telefonen av sig själv</q>. Uppladdat och i Kompisarna samma kväll. Android (19): stoppknapp i notisen, autostartens text, cache.</td></tr>
       </tbody>
     </table>
   </div>
