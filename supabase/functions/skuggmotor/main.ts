@@ -233,6 +233,38 @@ function vbAlerts(lv: any, route: [number, number][], trace: Fix[]) {
   });
 }
 
+// OLJA PÅ VÄGEN (kort #276 väg (a), Bengt 1/10, DECISIONS #421): var rösten SKULLE ha talat om Trafikverkets
+// NonWeatherRelatedRoadConditions — mest olja, diesel och hydraulolja med "risk för halka". Egen motorinstans och egen
+// kolumn `olja` (sql/040), aldrig i `alerts`: den listan är motorns ord, och oljan får varken tränga undan eller tystas av
+// de riktiga varningarna. Farorna matas som punktfaror med viltets regel (talar inom grundvarningens försprång) bara för att
+// få motorns riktnings-, avstånds- och upprepningsregler — ingen text och ingen prioritet prövas; de är Axels efter skuggan.
+// Hela klassen loggas med sin text, så mätningen kan skilja olja från potthål i efterhand.
+type Olja = { id: string; lon: number; lat: number; text: string | null; sev: number | null };
+async function oljaAktiva(): Promise<{ lista: Olja[]; skal: string | null }> {
+  try {
+    const r = await fetch(`${SB}/rest/v1/rpc/olja_aktiva`, { method: "POST",
+      headers: { Authorization: `Bearer ${SRK}`, apikey: SRK, "Content-Type": "application/json" }, body: "{}" });
+    if (!r.ok) return { lista: [], skal: `olja_aktiva ${r.status}: ${(await r.text().catch(() => "")).slice(0, 120)}` };
+    const rows: any[] = await r.json();
+    const lista = rows.flatMap((x) => (typeof x.lon === "number" && typeof x.lat === "number"
+      ? [{ id: String(x.id), lon: x.lon, lat: x.lat, text: x.meddelande ?? null, sev: x.sev ?? null }] : []));
+    return { lista, skal: lista.length ? null : "inga aktiva händelser i arkivet" };
+  } catch (e) { return { lista: [], skal: `olja_aktiva kastade: ${String(e).slice(0, 120)}` }; }
+}
+function oljaAlerts(olja: Olja[], route: [number, number][], trace: Fix[]) {
+  const M = 0.05;
+  const lons = route.map((p) => p[0]), lats = route.map((p) => p[1]);
+  const x0 = Math.min(...lons) - M, x1 = Math.max(...lons) + M, y0 = Math.min(...lats) - M, y1 = Math.max(...lats) + M;
+  const nara = olja.filter((o) => o.lon >= x0 && o.lon <= x1 && o.lat >= y0 && o.lat <= y1);
+  if (!nara.length) return [];
+  const byId = new Map(nara.map((o) => [`olja:${o.id}`, o]));
+  const syntetiska: Hazard[] = nara.map((o) => ({ id: `olja:${o.id}`, kind: "wildlife", lon: o.lon, lat: o.lat }));
+  return new AlertEngine(syntetiska).run(trace).map((a) => {
+    const o = byId.get(a.hazardId)!;
+    return { t: a.t, id: o.id, text: o.text, sev: o.sev, distanceM: a.distanceM, geo: "punkt", lon: o.lon, lat: o.lat };
+  });
+}
+
 /** S1: väderpunkter i ruttens ruta (+5 km, samma ruta som vbAlerts) med N4:s råa fält och motorns utfall. */
 function efterhalkaRader(lv: any, route: [number, number][], alerts: Alert[]) {
   const wx: any[] = Array.isArray(lv?.weather) ? lv.weather : [];
@@ -359,6 +391,15 @@ Deno.serve(async (req) => {
     // upprepningen — svaret läses av dbknapp ur net._http_response.
     // Försprångets eget läge (kort #153 beslut 1) — före allt annat, så att huvudvarvets arbete aldrig körs i samma anrop.
     if (new URL(req.url).searchParams.get("lage") === "forsprang") return await forsprangVarv(new URL(req.url).searchParams.get("prov") === "1");
+    // OLJEPROVET (kort #276): en påhittad oljefläck 1,1 km in på ett rakt spår ⇒ EN rad i `olja`, plus hur många aktiva händelser
+    // arkivet ger just nu (RPC:n prövad i drift). Skriver INGET i shadow_log, samma skäl som spärrprovet nedan.
+    if (new URL(req.url).searchParams.get("oljaprov") === "1") {
+      const linje: [number, number][] = [[15.0, 59.0], [15.03, 59.0]];
+      const aktiva = await oljaAktiva();
+      const olja = oljaAlerts([{ id: "prov:olja", lon: 15.02, lat: 59.0, text: "Prov: olja på vägbanan", sev: null }], linje, traceAlong(linje));
+      return new Response(JSON.stringify({ ok: true, prov: "olja", olja, aktiva: aktiva.lista.length, oljaSkal: aktiva.skal }),
+        { headers: { "Content-Type": "application/json" } });
+    }
     if (new URL(req.url).searchParams.get("sparrprov") === "1") {
       const prov: Hazard[] = [
         { id: "prov:kam1", kind: "camera", lon: 15.0105, lat: 59.0, bearing: null },   // ~600 m från start: talar t=5
@@ -382,6 +423,7 @@ Deno.serve(async (req) => {
     const hazards = snapshotToHazards(st, lv);
     // Ankarna hämtas en gång per anrop, inte per rutt. Bara Sverige: funktionen läser det svenska arkivet.
     const ankare = land === "se" ? await vagpunktAnkare() : { lista: [] as Ankare[], skal: "bara Sverige" };
+    const oljaLista = land === "se" ? await oljaAktiva() : { lista: [] as Olja[], skal: "bara Sverige" };
     const results: Record<string, unknown> = {};
     let facitTotal = 0;
     const facitSkal: string[] = [];
@@ -410,6 +452,7 @@ Deno.serve(async (req) => {
       const alerts = motor.run(trace);
       ms.motor += performance.now() - t1;
       const vb = land === "se" ? vbAlerts(lv, line, trace) : [];
+      const olja = oljaAlerts(oljaLista.lista, line, trace);
       // S1 — EFTERHALKANS INDATA (bedömning v3 S1, DECISIONS #198, Bengts "bygg S1 nu" 16/9). N4:s råa fält
       // per station i korridoren + om motorn larmade på stationen. Inget villkor: S2 sätter det, och raden
       // ska kunna spelas upp mot vilket villkor som helst. Axels grind (#196): regn_h döms här innan något
@@ -443,7 +486,7 @@ Deno.serve(async (req) => {
       // En nolla utan skäl är omöjlig att skilja från "inga larm" (#173) — även den här grenen säger varför.
       if (land === "se" && alerts.length && !punkter.length) f.skal.push("bara segment- eller fartkameralarm — inget som behöver väglagsfacit");
       facitBudget -= f.saved; facitTotal += f.saved; facitSkal.push(...f.skal);
-      results[name] = { fixes: trace.length, alerts: alerts.length, vb: vb.length, suppressed: suppressed.length, efterhalka: efterhalka.length,
+      results[name] = { fixes: trace.length, alerts: alerts.length, vb: vb.length, olja: olja.length, suppressed: suppressed.length, efterhalka: efterhalka.length,
         prognos: (prognos as Prognos).p?.length ?? 0 };
       // LARMETS POSITION (kort #158, DECISIONS #177/#179, Axels ja via Bengt 14/9).
       //
@@ -467,7 +510,7 @@ Deno.serve(async (req) => {
       // Exakt punkt för segment kräver att motorns Alert bär den — det är form B och rör vektorerna.
       const body = JSON.stringify({
         route: name, land: land.toUpperCase(), snapshot_generated_at: lv.generated_at,
-        n_hazards: hazards.length, n_alerts: alerts.length, vb, suppressed, efterhalka, prognos,
+        n_hazards: hazards.length, n_alerts: alerts.length, vb, olja, suppressed, efterhalka, prognos,
         alerts: alerts.map((a) => {
           const h = farorById.get(a.hazardId) as any;
           const punkt = h && h.kind !== "slippery_segment" && typeof h.lon === "number";
@@ -487,7 +530,7 @@ Deno.serve(async (req) => {
     // Skälen går med i svaret. En nolla utan skäl är omöjlig att skilja från "inga larm",
     // och det var precis det som lät bucketen stå tom i sexton dygn utan att någon såg det.
     const tid = { motor: Math.round(ms.motor), prognos: Math.round(ms.prognos), facit: Math.round(ms.facit), totalt: Math.round(performance.now() - ms.t0) };
-    return new Response(JSON.stringify({ ok: true, results, ankare: ankare.lista.length, ankareSkal: ankare.skal, facit: facitTotal,
+    return new Response(JSON.stringify({ ok: true, results, ankare: ankare.lista.length, ankareSkal: ankare.skal, olja: oljaLista.lista.length, oljaSkal: oljaLista.skal, facit: facitTotal,
       facitSkal: [...new Set(facitSkal)].slice(0, 8), ms: tid }), {
       headers: { "Content-Type": "application/json" } });
   } catch (e) {

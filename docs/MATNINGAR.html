@@ -212,6 +212,7 @@
         <tr><td><a href="#d-vatten">7.4 Vattenplaning</a></td><td>L2</td><td><span class="lage skugga">körs i skuggan</span></td><td>57 av 200 varningar till domen</td></tr>
         <tr><td><a href="#d-vind">7.5 Vind och sikt</a></td><td>L2</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>W-A oavgjord</td></tr>
         <tr><td><a href="#d-smhi">7.6 SMHI-förstärkaren</a></td><td>L2</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>0 vintervarningar i arkivet</td></tr>
+        <tr><td><a href="#d-olja">7.7 Olja på vägen</a></td><td>L2</td><td><span class="lage obyggd">byggd, i skuggan efter deploy</span></td><td>4 aktiva 1/10, 117 sedan 31/8</td></tr>
         <tr><td><a href="#d-forsprang">8.1 Försprånget</a></td><td>L5</td><td><span class="lage skugga">körs i skuggan</span></td><td>0 rader, väntar på nivå 2</td></tr>
         <tr><td><a href="#d-kombination">8.2 Kombinationen</a></td><td>L5</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>kalibrering 1/2 2027</td></tr>
       </tbody>
@@ -1011,6 +1012,24 @@
   </section>
 
   <h2>8. Allvar och röst (L5)</h2>
+
+  <section class="del" id="d-olja">
+    <div class="del-huvud"><span class="nr">7.7</span><h3>Olja på vägen</h3><span class="lage obyggd">byggd, i skuggan efter deploy</span><span class="lager">sedan 1/10 · kort #276</span></div>
+    <p><b>Mäter:</b> var rösten skulle ha talat om Trafikverkets väglag som inte beror på väder — mest olja, diesel och hydraulolja med <i>risk för halka</i>. Skuggvarvet kör motorns regler i en egen instans över de aktiva händelserna och loggar i en egen kolumn. Ingen förare hör något, och appen är orörd.</p>
+    <div class="nyckel">
+      <div><b>117</b><span>händelser i arkivet 31/8–1/10</span></div>
+      <div><b>1 h 48 min</b><span>median längd, p90 ungefär ett dygn</span></div>
+      <div><b>4</b><span>aktiva 1/10 kl 12 UTC</span></div>
+      <div><b>24 av 99</b><span>med stor påverkan (31/8–25/9)</span></div>
+    </div>
+    <p><b>Nytta:</b> halka som Trafikverket själv rapporterar men som rösten i dag tiger om. Skuggan ger hur ofta rösten skulle ha talat; text och prioritet är Axels beslut efter skuggan (DECISIONS #421).</p>
+    <details><summary>Hur den mäter</summary><div class="inne">
+      <ul>
+        <li>Aktiv betyder start ≤ nu &lt; slut. Arkivet ser aldrig Trafikverkets radering, så sluttiden avgör; en händelse utan sluttid räknas bara det första dygnet (sql/040). Sluttiden är ofta preliminär, så en sanerad fläck kan räknas en stund för länge.</li>
+        <li>Händelserna matas som punktfaror med viltets avståndsregel, bara för att få motorns riktnings-, avstånds- och upprepningsregler. Hela klassen loggas med sin text, så att olja och potthål kan skiljas i efterhand.</li>
+      </ul>
+    </div></details>
+  </section>
 
   <section class="del" id="d-forsprang">
     <div class="del-huvud"><span class="nr">8.1</span><h3>Försprånget</h3><span class="lage skugga">körs i skuggan</span><span class="lager">sedan 25/9 · kort #153 · #359</span></div>

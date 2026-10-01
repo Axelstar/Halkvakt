@@ -5181,6 +5181,8 @@ septemberdygn — 231 kalla halvtimmar, två frysnära.
 `kamerafacitprov` (torrt urval), `lagringsprov` (larmet går), vakthundens skarpa rad och första timkörningens svar. Efter sju dygn: bilder
 och MB per dygn mot taket, i bedömningen.
 
+**I drift 26/9 08:24Z** (bokfört 1/10): PR #622 (54ac0d4); deploy från main av kamerafacit 36229634732, skuggmotor 36229638425 och vakthund 36229641777 (08:24Z); sql/039 via dbknapp 36229707252 — jobbet `halkvakt-kamerafacit` `17 * * * *`, aktivt, pekar på kamerafacit (kommandot 267 tecken, aldrig utskrivet). **(1) V1:** skuggmotorn 08:02Z (före): ett fartkameralarm ⇒ 1 bild, 886 ms; 08:32Z (efter): ett fartkameralarm ⇒ 0 bilder, 0 ms, skälet *bara segment- eller fartkameralarm* (dbknapp 36230218670). Bilden 09:02Z kom från en vattenplaningsvarning på E4 Sundsvall→Umeå — avsett, TROSKLAR-VATTENPLANING §2 (36232395271). **(2) Timkörningen:** torrprovet 08:25Z och den första riktiga 09:17Z svarar 200 och `ok`, `faror 0`, `kalla_stationer 0` — varmt, inget att välja; pg_cron *succeeded* (36232357646). **(3) Larmet:** lagringsprovet (36229762008) ⇒ *LAGRINGEN ÄR 26 MB*, issue #623 öppnad 08:27Z och stängd av det gröna varvet 09:07Z; det varvet skrev *lagring: 26 MB av 1 024 (larm vid 800 MB)* och bildkontrollen *skuggans svenska larm 12 h: 0* — inget falsklarm efter V1. **Kvar:** första V2- eller V3-bilden när kylan kommer, och efter sju dygn bilder och MB per dygn mot taket (3/10).
+
 ## #381 (27/9 2026) Kalendern skiljs från tavlan — och septembersiffran rättad med en hel månads mätning
 
 **Beslut (Bengt 27/9, ordagrant):** *"Ja till kalenderlistan och stäng korten."*
@@ -6488,3 +6490,69 @@ Wallin, #398 styr), och inget om vad Trafikverket ska göra med sina givare (anm
 **Delning:** artefakten är privat tills Bengt delar den. Han avgör om länken går till Trafikverket (Micke Wallin) och om den nämns för
 Skyltfonden. Källa `docs/HALKVAKT-OCH-KUVOSEN.html`, artefakt https://claude.ai/artifact/CrrMKX7vcRcXHiqqYGjs9S; ändringar görs i repokopian och
 republiceras till samma URL i samma commit (samma regel som stomdokumenten, #415, utan att sidan är ett stomdokument).
+
+## #419 (26/9 2026, bokfört 1/10) Kort #275 väg (a): försprånget kläms till motorns tak, reglaget tar bara grundvarningen · systembilden
+
+*Bokfört 1/10 i omtaget av PR #624: beslutet fattades 26/9 som "#381"/"#382" på en gren som aldrig slogs ihop, och de numren togs av andra sessioner 27/9 (#381 kalendern, #382 batteriet); korten hette #261/#262 av samma skäl.*
+
+**Fyndet** (Bengts fråga 26/9 *"har uppdateringarna någon påverkan på systembilden"*). Motorn klämde försprångskrokens svar till
+`cfg.leadMaxM`, och i apparna är det reglaget *Längsta förvarning* — högst **1 200 m** sedan #259 (DECISIONS #374). Skuggan mäter med
+motorns **3 000 m**. Med reglaget på fullt hade 90 s bara räckt till 48 km/h, 60 s till 72 km/h och 45 s till 96 km/h; i 110 km/h hade
+45–90 s blivit samma 1 200 m (≈ 39 s). #374 skrev att taket *"under 144 km/h betyder ingenting"* — sant för 30 s, inte för försprånget.
+Inget var fel i drift: kroken sitter bara i skuggan, och portarna får den vid steg 7, efter domen i mars 2027.
+
+**Beslut (Bengt 26/9: *"ja till systembilden och a på 261"*).** Väg (a): reglaget tar bara grundvarningen, försprånget kläms till motorns
+tak (`DEFAULT_CONFIG.leadMaxM`, 3 000 m). Alternativen: (b) höja reglagets tak den dag försprånget når rösten — reglaget hade bytt
+betydelse; (c) döma försprånget med 1 200 m — domen hade mätt något annat än TROSKLAR-FORSPRANG §3 fastställt. **Ingen tröskel ändras:**
+§3 klämmer redan till 400–3 000 m (båda signaturerna); (a) gör att appen följer §3. Androids GPS-täthet (`CadencePolicy`) är bevisad för
+3 000 m och håller. §4.2-raden stod på Bengt · Axel; Axels signatur bedömdes inte krävas eftersom ingen tröskel ändras.
+
+**Byggt.** `engine/src/engine.ts`: krokens svar kläms till `DEFAULT_CONFIG.leadMaxM` — i skuggan samma tal (standardkonfigurationen), och
+utan krok är motorn byte för byte densamma, så vektorerna rörs inte. Nytt prov i `test/forsprang.test.ts`: med reglaget på 500 m talar
+grundvarningen på 440 m och nivå 2 med 90 s på 1 989 m (80 km/h). **Motprov** (26/9 och igen 1/10 på main): den gamla klämningen fäller
+exakt det provet — *"försprånget på 2 000 m — fick 435"*. Skuggmotorns bunt omgjord. TROSKLAR-FORSPRANG §6 bär regeln till steg 7.
+
+**Systembilden** (`docs/SYSTEMBILDEN.html`, stomdokument 3): försprånget *upp till 3 000 m*, reglagets tak gäller bara grundvarningen (två
+ställen); mätapparaten med kamerafacit i hela landet och vid tysta kalla stationer (#380) och förarnas svar och missar (#379); principen
+*Integritet* säger vad föraren själv kan skicka, som invarianten. Spannet (*400–3 000 m i motorn, i apparna högst 1 200 m*) och L4 (grind A,
+vägpunktsgrindens fall) hade stomgenomgången 1/10 (#415) redan rättat. **Stomavstämningen:** MATNINGAR bär V1–V3 sedan 1/10; APPEN beskriver
+reglaget rätt för i dag (försprånget finns inte i appen före steg 7); kartan och bedömningen utan ny rad utöver §4.2.
+
+## #420 (26/9 2026, bokfört 1/10) Vägarbeten: smal variant till vårlistan, läsmätningen byggd · fynd: olja på vägen är halka som rösten inte säger (kort #276)
+
+*Bokfört 1/10 i omtaget av PR #624: beslutet fattades 26/9 som "#381"/"#382" på en gren som aldrig slogs ihop, och de numren togs av andra sessioner 27/9 (#381 kalendern, #382 batteriet); korten hette #261/#262 av samma skäl.*
+
+**Beslut (Bengt 26/9: *"ja till läsmätning och ja till vårlistan"*).** DECISIONS #5 (24/8) stängde ute vägarbeten som *kroniskt brus*;
+det står sig för vägarbeten i allmänhet. Till vårlistan (Ä3, våren 2027, bredvid #32 hinder och #15 kö-slut — samma flöde och samma
+filter) går en **smal variant**: stor eller mycket stor påverkan (körfält avstängt, kö) och sådant som sänker friktionen (ny beläggning,
+grus). Prövas i skuggan först, aldrig alla vägarbeten, och rösttexten är Axels. PLAN.md:s A3 hade från början *"roadwork with lane
+closure"*; #5 stängde den smala varianten utan att pröva den för sig.
+
+**Läsmätningen, två delar.** (1) **Friktionen ur vårt eget arkiv** — `NonWeatherRelatedRoadConditions` i `situation_archive` (dbknapp 36232854353, `scripts/matningar/icke-vaderhalka-arkivet-2026-09-26.sql`): **99 händelser 31/8–25/9** (≈ 3,8 om dygnet), alla *Trafikmeddelande*, 24 med stor eller mycket stor påverkan; de flesta av de 25 vanligaste texterna är **olja, diesel eller hydraulolja på vägbanan — *risk för halka*** (några potthål, en vägskada, grus i en rondell). Det är inte vägarbeten: det är väglag som inte beror på
+väder, och det mesta är halka i appens egen mening. Rösten säger ingenting om det i dag (snapshoten skickar bara olyckor och djur)
+⇒ **kort #276**. (2) **Vägarbetena ur Trafikverkets API** — `scripts/matningar/vagarbeten-2026-09-26.ts` och engångsknappen
+`vagarbeten-matning.yml`: aktiva avvikelser per typ; vägarbetena per påverkan, varaktighet, MessageCode, TrafficRestrictionType och
+friktionsord, med fälten räknade som de finns; och **motorn i `engine/src` körd längs de 20 svenska skuggrutterna** (3 107 km) med
+vägarbetena som punktfaror — antal rop per varv, för alla och för de smala urvalen. Provkört lokalt mot påhittade data. Körs efter
+sammanslagningen; ett flöde måste finnas på main för att kunna tryckas. Läs-only, inget sparas, en körning ≈ en minut Actions.
+
+## #421 (1/10 2026) Kort #276 väg (a): olja på vägen går till skuggan först — ingen text i appen
+
+**Beslut (Bengt 1/10: *"a på 276"*).** Trafikverkets `NonWeatherRelatedRoadConditions` — 99 händelser på 26 dygn, mest olja, diesel och
+hydraulolja med *risk för halka* (#420) — prövas i skuggan: skuggmotorn loggar var rösten SKULLE ha talat, i en egen kolumn bredvid
+`alerts`, som vattenplaningen (`vb`). Alternativen: (b) vårlistan med #32 — ett halvår utan siffror; (c) låta bli — halka som Trafikverket
+själv rapporterar förblir osynlig. **Ramar:** ingen text, ingen prioritet och ingen ändring i appen eller snapshoten — det är Axels beslut
+efter skuggan; en egen motorinstans så att oljan aldrig tränger undan eller tystas av de riktiga varningarna i loggen; hela klassen
+loggas med sin text, så att mätningen kan skilja olja från potthål i efterhand i stället för att filtret gissar i förväg. **Byggs i egen PR**
+efter omtaget (#419/#420), med migration, bunt, deploy och bevis i samma varv.
+
+**Byggt 1/10** (i samma PR som omtaget, #660). `sql/040`: kolumnen `shadow_log.olja` och RPC:n `olja_aktiva()` — bara service-rollen,
+som `vagpunkt_ankare`. **Aktiv = start ≤ nu < slut**, mätt först (`scripts/matningar/olja-aktiv-2026-10-01.sql`, dbknapp 36861530518):
+117 händelser sedan 31/8, alla med sluttid och punkt, median 1 h 48 min, p90 ungefär ett dygn, 4 aktiva 1/10 — en händelse utan sluttid
+räknas bara det första dygnet, annars hade den varit aktiv för alltid. Arkivet ser aldrig Trafikverkets radering, så en preliminär
+sluttid kan hålla en sanerad fläck aktiv en stund för länge; den längsta händelsen är 689 dygn (troligen en vägskada, inte olja) — det
+är skälet att hela klassen loggas med text. Skuggmotorn: en egen motorinstans per rutt (viltets avståndsregel, ingen text, ingen
+prioritet), raden i `olja`, antal och skäl i svaret. Provet `?oljaprov=1` (dbknappens `oljaprov`, i skriptet OCH flödet) lägger en
+påhittad fläck på ett rakt spår och skriver inget i skuggloggen. Integrationsprov mot PostGIS: aktiv, avslutad, framtida, annan klass,
+utan punkt, utan sluttid ny och gammal — bara två ut. **Ordningen efter sammanslagningen: `sql/040` FÖRE deployen** — skuggmotorn
+skriver kolumnen i varje rad, och PostgREST avvisar en okänd kolumn.

@@ -244,10 +244,10 @@
           <tr class="mats"><td><span class="lagerkod">L2</span> Nederbördstypen<span class="lage mats">Domen byggd 25/9, mäts ur arkivet</span></td><td>Läser stationernas uppmätta typ och räknar våtbulben ur luft och fuktighet där ingen givare ser.</td><td>Rätt fara i snöfall och slask, inte bara ”blött”, också mellan stationerna.</td></tr>
           <tr class="mats"><td><span class="lagerkod">L2</span> Vattenplaning<span class="lage mats">I skugga sedan 15/9 · dom november–december</span></td><td>Läser radarns regnintensitet längs vägen.</td><td>En sjätte fara: <span class="rost">”Vattenplaning framöver — sakta ner.”</span></td></tr>
           <tr class="mats"><td><span class="lagerkod">L4</span> Segmentprognosen<span class="lage mats">I skugga sedan 23/9 · vägpunktsgrinden föll 28/9</span></td><td>Skattar yttemperaturen var andra kilometer ur närliggande stationer, med höjden inräknad.</td><td>Vägen mellan stationerna syns på kartan, och en varning som vilar på en mätning kan stärkas eller förlängas.</td></tr>
-          <tr class="mats"><td><span class="lagerkod">L5</span> Allvar som försprång<span class="lage mats">I skugga sedan 25/9</span></td><td>Ger en allvarligare fara längre förvarning: <span class="mono">45–90 s</span> i stället för <span class="mono">30 s</span>.</td><td>Samma ord, tidigare, när väglaget är mycket besvärligt eller ytan under noll med färskt regn.</td></tr>
+          <tr class="mats"><td><span class="lagerkod">L5</span> Allvar som försprång<span class="lage mats">I skugga sedan 25/9</span></td><td>Ger en allvarligare fara längre förvarning: <span class="mono">45–90 s</span> i stället för <span class="mono">30 s</span>, upp till <span class="mono">3 000 m</span>. Reglagets tak gäller bara grundvarningen.</td><td>Samma ord, tidigare, när väglaget är mycket besvärligt eller ytan under noll med färskt regn.</td></tr>
           <tr class="papper"><td><span class="lagerkod">L3–L5</span> Förstärkarna<span class="lage papper">A-grinden byggd, väntar på frost</span></td><td>Vind och sikt, SMHI:s varningar och frysklassningen.</td><td>De förlänger eller stärker en varning, men utlöser aldrig en egen.</td></tr>
           <tr class="mats"><td><span class="lagerkod">B</span> Bevisbäraren<span class="lage mats">Byggd 24/9, visas inte än</span></td><td>Varje punkt bär vad som talade och hur starkt: väta, regnmängd, temperatur.</td><td>Varje varning går att förklara, på kartan och i efterhand.</td></tr>
-          <tr class="mats"><td><span class="lagerkod">M</span> Mätapparaten<span class="lage mats">Byggd, samlar facit</span></td><td>Tystnadsfelet, facit ur väglagskameror och vakter som ser att kedjan lever.</td><td>Systemet vet hur ofta det har rätt, och när det tiger fel.</td></tr>
+          <tr class="mats"><td><span class="lagerkod">M</span> Mätapparaten<span class="lage mats">Byggd, samlar facit</span></td><td>Tystnadsfelet, facit ur väglagskameror — vid varje frysrisk i hela landet och vid kalla stationer där appen teg — förarnas svar och missar, och vakter som ser att kedjan lever.</td><td>Systemet vet hur ofta det har rätt, och när det tiger fel.</td></tr>
         </tbody>
       </table>
     </div>
@@ -334,7 +334,7 @@
         <div class="panel" id="lager-5" role="region" aria-label="L5 Allvar och röst" hidden>
           <div class="rader">
             <div><h4>Delar</h4><ul>
-              <li>Försprånget: halt väglag och frysrisk på den svårare nivån varnas <span class="mono">45–90 s</span> före, i stället för <span class="mono">30 s</span> <span class="mono">#153</span>.</li>
+              <li>Försprånget: halt väglag och frysrisk på den svårare nivån varnas <span class="mono">45–90 s</span> före, i stället för <span class="mono">30 s</span>, upp till <span class="mono">3 000 m</span> även när reglaget kortat grundvarningen <span class="mono">#153</span> <span class="mono">#275</span>.</li>
               <li>Spärren: inom <span class="mono">10 s</span> efter ett rop får bara en viktigare fara tala.</li>
               <li>Vind och sikt förlänger försprånget men höjer aldrig prioriteten <span class="mono">#90</span>.</li>
             </ul></div>
@@ -370,7 +370,7 @@
         <li><b>Tröskelregeln.</b> En storhet som inte kan motbevisas av en mätning får inte utlösa en varning. Prognoser syns och stärker, men talar aldrig ensamma.</li>
         <li><b>En röst i taget.</b> Allvar blir tid, aldrig högre prioritet och aldrig fler ord.</li>
         <li><b>Mätning före röst.</b> Inget når föraren innan det dömts mot trösklar som skrevs först.</li>
-        <li><b>Integritet.</b> Positionen stannar i telefonen.</li>
+        <li><b>Integritet.</b> Positionen stannar i telefonen. Det enda som skickas är ett svar eller en miss som föraren själv trycker på, och bara i betan med brytaren på.</li>
         <li><b>En motor.</b> Samma regler i tre appar, låsta av samma testfall.</li>
       </ul>
     </div>

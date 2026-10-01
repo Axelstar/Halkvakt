@@ -833,3 +833,40 @@ test("#257 den stigande halvan: egen tabell, samma vakter, fallande orörd, utfa
     assert.deepEqual([bs[1].min, bs[1].n], [0.8, 2], "STIG_B: utfallet fylls — ytan frös om till 0,8 inom 90 min, på två mätningar");
   } finally { await pool.end(); }
 });
+
+// Kort #276 (sql/040, DECISIONS #421): oljeskuggans RPC. Aktiv = start ≤ nu < slut; utan sluttid bara det första dygnet; andra klasser
+// och rader utan punkt aldrig. shadow_log skapades före sql/-katalogen (Management API), så provet ställer en minimal tabell i dess
+// ställe — CI:s PostGIS är slit-och-släng.
+test("#276 olja_aktiva: bara aktiva NonWeatherRelatedRoadConditions med punkt; omkörning ofarlig", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const sqlf = (f: string) => pool.query(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  try {
+    await sqlf("001_init.sql");
+    await sqlf("003_situation_archive.sql");
+    await pool.query("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
+    await sqlf("040_olja_skugga.sql");
+    await pool.query("DELETE FROM situation_archive WHERE deviation_id LIKE 'test276:%'");
+    const in_ = (id: string, typ: string, punkt: boolean, start: string, slut: string | null) => pool.query(
+      `INSERT INTO situation_archive (deviation_id, message_type_value, message, geom, start_time, end_time)
+       VALUES ($1, $2, 'Olja på vägbanan, risk för halka', CASE WHEN $3::boolean THEN ST_SetSRID(ST_MakePoint(15, 59), 4326) END,
+               now() + $4::interval, now() + $5::interval)`, [id, typ, punkt, start, slut]);
+    await in_("test276:aktiv", "NonWeatherRelatedRoadConditions", true, "-1 hour", "2 hours");
+    await in_("test276:slut", "NonWeatherRelatedRoadConditions", true, "-5 hours", "-1 hour");
+    await in_("test276:framtid", "NonWeatherRelatedRoadConditions", true, "1 hour", "3 hours");
+    await in_("test276:annan", "Accident", true, "-1 hour", "2 hours");
+    await in_("test276:utanpunkt", "NonWeatherRelatedRoadConditions", false, "-1 hour", "2 hours");
+    await in_("test276:ingen-slut-ny", "NonWeatherRelatedRoadConditions", true, "-2 hours", null);
+    await in_("test276:ingen-slut-gammal", "NonWeatherRelatedRoadConditions", true, "-30 hours", null);
+    const ids = async () => (await pool.query("SELECT id FROM olja_aktiva() WHERE id LIKE 'test276:%' ORDER BY id")).rows.map((r) => r.id);
+    assert.deepEqual(await ids(), ["test276:aktiv", "test276:ingen-slut-ny"],
+      "aktiv nu, eller utan sluttid och yngre än ett dygn — aldrig avslutad, framtida, annan klass eller utan punkt");
+    const rad = (await pool.query("SELECT lon, lat, meddelande FROM olja_aktiva() WHERE id = 'test276:aktiv'")).rows[0];
+    assert.deepEqual([rad.lon, rad.lat, rad.meddelande], [15, 59, "Olja på vägbanan, risk för halka"], "punkt och text följer med");
+    await sqlf("040_olja_skugga.sql");
+    assert.deepEqual(await ids(), ["test276:aktiv", "test276:ingen-slut-ny"], "omkörning av migrationen ändrar ingenting");
+    assert.equal((await pool.query("SELECT count(*)::int AS n FROM information_schema.columns WHERE table_name = 'shadow_log' AND column_name = 'olja'")).rows[0].n, 1,
+      "kolumnen olja finns");
+  } finally { await pool.end(); }
+});

@@ -221,6 +221,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **Flyttat 26/9 från *Claude — olåst*** (femma åtta, DECISIONS #377): nästa steg är Play-kontot och testtelefonen.
   ↪ **29/9: rubriken överspelad (DECISIONS #402).** Android bär 0.3.9 (18) som iOS sedan 26/9 (#377, #379) och Play-kontot finns sedan 20/9. Kvar är bara Play-vägen: enhetsverifieringen i Play Console, första uppladdningen med Data safety-formuläret ifyllt likadant som filen (#214), slutet test 14 dygn med tolv testare, produktion tidigast november. Verify-raden gäller oförändrad.
 ### Bengt
+- [ ] 🛢️ **#276 OLJA PÅ VÄGEN — HALKA SOM RÖSTEN INTE SÄGER** (fynd 26/9 under vägarbetsmätningen; hette #262 på grenen som aldrig
+  slogs ihop, DECISIONS #420). `NonWeatherRelatedRoadConditions` i `situation_archive` (dbknapp 36232854353, `scripts/matningar/icke-vaderhalka-arkivet-2026-09-26.sql`): **99 händelser 31/8–25/9** (≈ 3,8 om dygnet), alla *Trafikmeddelande*, 24 med stor eller mycket stor påverkan; de flesta av de 25 vanligaste texterna är **olja, diesel eller hydraulolja på vägbanan — *risk för halka*** (några potthål, en vägskada, grus i en rondell).
+  Snapshoten skickar bara olyckor (`deviations`) och djur (`djur`), så appen tiger om dem — fast det är halka i appens egen mening, rapporterad
+  av Trafikverket (en observation, inte en prognos: regel T tillåter att den utlöser). Tre vägar: (a) skuggan först nu — skuggmotorn loggar
+  var rösten skulle ha talat, ingen text i appen; (b) vårlistan tillsammans med #32 hinder; (c) låta bli. 🔑 Bengts och Axels val (§4.2);
+  rösttexten är Axels. Verify för (a): skuggloggen bär rader med oljefaror, och en mätning visar hur ofta rösten skulle ha talat per varv.
+  ✅ **Bengt 1/10: väg (a)** (DECISIONS #421) — skuggan först, egen kolumn som vattenplaningen, egen motorinstans, hela klassen med text, ingen ändring i appen. 🔨 Byggs i egen PR efter omtaget.
+  🔨 **BYGGT 1/10:** `sql/040` (kolumnen `olja` + RPC `olja_aktiva()`, bara service-rollen; aktiv = start ≤ nu < slut, utan sluttid bara första dygnet — 117 händelser, alla med sluttid, median 1 h 48 min, 4 aktiva 1/10) · skuggmotorn: egen motorinstans per rutt, raden i `shadow_log.olja`, `oljaSkal` i svaret · `?oljaprov=1` (dbknappens `oljaprov`) skriver inget · integrationsprov mot PostGIS · mätningssidan 7.7. 🔑 Kvar: *"slå ihop"*, **`sql/040` FÖRE deployen** (annars avvisas skuggloggens rader), deploy, oljaprovet och första raden med innehåll.
+
 
 - [ ] 📐 **#270 PROGNOSLAGRET EFTER PREMISSMÄTNINGARNA — BENGTS VAL a–h** (30/9, `docs/PROGNOSLAGRET-2026-09-30.md`; DECISIONS
   #405–#408; bedömningen §4.2). Domen står (fallen 28/9, bekräftad 30/9 och på ärliga rader). Bandet 0–7 km håller i båda
@@ -452,6 +461,14 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **Flyttat 26/9 från *Axel — hösten (brainstorm 31/8)*** (femma åtta, DECISIONS #377): nästa steg är Bengts två minuter (*Visa introduktionen igen*).
 
 ### Claude — olåst
+- [ ] ⏱️ **#275 REGLAGETS TAK 1 200 m KLIPPTE FÖRSPRÅNGET (L5) — väg (a) beslutad och byggd** (fynd 26/9 vid Bengts fråga om
+  systembilden; hette #261 på grenen som aldrig slogs ihop, DECISIONS #419). Motorn klämde försprångskrokens svar till `cfg.leadMaxM`, som i
+  apparna är reglaget (≤ 1 200 m sedan #259); skuggan mäter med motorns 3 000 m. Med reglaget på fullt räckte 90 s bara till 48 km/h.
+  ✅ **Bengt 26/9: väg (a)** — reglaget tar bara grundvarningen, försprånget kläms till motorns 3 000 m. **Byggt** i `engine/src` (skuggan
+  oförändrad, vektorerna orörda), nytt prov + motprov (*"fick 435"*, 26/9 och 1/10), TROSKLAR-FORSPRANG §6 bär regeln till steg 7, systembilden
+  säger *upp till 3 000 m*. 🔑 Kvar: Bengts *"slå ihop"*, deploy av skuggmotorn och ett varv med `ok` — sedan stängs kortet.
+  Verify: skuggan och motorns källa klämmer försprånget till samma tak, och systembilden säger vilket.
+
 - [ ] 📍 **#226 AUTOSTARTENS BEHÖRIGHET FALLER TYST PÅ ANDROID 11+** (Axels fynd på testtelefonen 20/9, DECISIONS #272).
   ⚠️ **HÄRLETT, INTE UPPMÄTT:** kortet skrevs på Axels rapport som antogs vara Android — den var från hans iPhone (#273).
   Ingen har kört det här på en Android-telefon. Grunden är kodläsning + Googles dokumentation, inget annat.
@@ -483,6 +500,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⏳ **Kvar:** (1) läs att skuggmotorn inte tagit någon ny bild vid fartkameralarm sedan 08:24 · (2) läs timkörningarnas svar —
   med 0–1 kalla stationer av ~1 300 väntas svaret *varför inte*, inte bilder; frosten styr, inte deployen · (4) sju dygn med
   bilder och MB per dygn i bedömningen, tidigast 3/10.
+  ✅ **(1) och (2) lästa 26/9 (bokfört 1/10, DECISIONS #380):** skuggmotorn 08:02Z (före deployen): ett fartkameralarm ⇒ 1 bild, 886 ms; 08:32Z (efter): ett fartkameralarm ⇒ 0 bilder, 0 ms, skälet *bara segment- eller fartkameralarm* (dbknapp 36230218670). Bilden 09:02Z kom från en vattenplaningsvarning på E4 Sundsvall→Umeå — avsett, TROSKLAR-VATTENPLANING §2 (36232395271). Timkörningen 09:17Z: 200, `ok`, `faror 0`, `kalla_stationer 0`, pg_cron *succeeded* (36232357646). **(3) andra halvan:** det gröna varvet 09:07Z skrev *lagring: 26 MB av 1 024 (larm vid 800 MB)* och bildkontrollen *skuggans svenska larm 12 h: 0* — inget falsklarm efter V1. Kvar: (4) 3/10, och första V2/V3-bilden vid kyla.
 
 - [ ] 🗣️ **#203 FACIT UTAN ATT STANNA — svaret efter resan, och med rösten under den** (Bengts fråga 18/9 efter
   fälttest 2: *"vi måste hitta något system som inte innebär att de ska stanna och bekräfta … ett automatspår"*).
