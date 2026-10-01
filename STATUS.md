@@ -2134,4 +2134,5 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 1/10 (Claude, Bengts *"kör på #264"*): källbevakningen avkodar HTML-entiteter (a1d75fb, DECISIONS #413); `norm` i
   `publish/nyhetsbedomning.ts` med prov; hash-källorna seedas om en gång via `normv` utan larm. Körning 36817880379: åtta källor seedade om utan larm, inga issues. Kort #264 KLART.
 - 1/10 (Claude, Bengts *"öppna PR:en och merga efter grön"*): PR #652 öppnad (grenen → main, 38 commits). CI startade inte:
-  huvudcommiten bar `[skip ci]`. Läxan i CLAUDE.md; den här commiten bär inget märke och är PR:ens första CI-dom.
+  huvudcommiten bar överhoppningsmärket. Läxan i CLAUDE.md — och läxans egen commit (2ead3a4) bar märket ordagrant i RUBRIKEN
+  ("Läxa: … på PR:ens sista commit …") och stoppade CI en gång till, precis som 21/9-läxan säger. Först nästa commit, utan ordet, prövas.
