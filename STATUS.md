@@ -2167,3 +2167,5 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   "4.8 App Store"-märkena. `rama.py`-serien (editorial) ligger kvar i repot som reserv.
 - 2/10 00:09 (Axel + Claude på skärmen i Safari): **Halkvakt 0.3.9 (20) inlämnad till App Store — Waiting for Review** (DECISIONS #433). Bilderna i
   AppLaunchFlow-looken (alf.py, sju), bara Sverige, manuell release. Kvar: Apples svar, "Copyright:" ur fältet. 00:11: långtrycket provat i (20) — kortet kommer.
+- 2/10 00:12–00:25: Play-vägen förberedd (butikstexten rättad, versionCode 20 byggs, fredagens lista på #219) och **marknadsplanen utan pengar** skriven
+  på Axels order (`docs/MARKNADSFORING-NOLLBUDGET.md`, kort #281) — sex handgrepp för Axel, resten Claude.

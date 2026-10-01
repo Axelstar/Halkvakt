@@ -1,0 +1,96 @@
+# Marknadsföring utan pengar — planen (2/10 2026)
+
+*Axels order 2/10 00:17: "Sedan måste vi verkligen börja med marknadsföring utan att spendera pengar. Gör upp en plan och vad som
+kommer att krävas. Förstår att vi måste köpa hemsidan men utöver det." Skriven mot läget samma natt: 0.3.9 (20) hos Apple (Waiting
+for Review, bara Sverige), Play-vägen fredag, föreningen Halkvakt bildad 29/9, Skyltfondsansökan inne (svar 15/12), halkbaneförsöket
+på Bulltoftabanan jan–mar 2027, kuvösen med Trafikverket. Ersätter de betalda delarna i `docs/GTM.md` (25/8); kanalerna därifrån behålls.*
+
+**Grundregeln står (DECISIONS #18):** inget från Axels privata konton. Allt går i **föreningens/Halkvakts** namn.
+**Enda kostnaden:** domänen (halkvakt.se, kortet *Skydda namnet*). Allt annat nedan kostar tid, inte kronor.
+
+---
+
+## 1. Det vi redan har — och som ingen konkurrent kan köpa
+
+| Tillgång | Varför den säljer | Läge |
+| :-- | :-- | :-- |
+| **Trafikverkets egna data, i realtid** | "Byggd på Trafikverkets mätstationer" är trovärdigare än någon annons | i drift |
+| **Livekartan** (`karta.html`) | ett dagsaktuellt innehåll som förnyar sig självt — journalister och forum kan länka till den | i drift, 30-minutersuppdatering |
+| **Marknadsmotorn** (`marknadsforing/generator.mjs`) | skriver färdiga kanaltexter varje morgon + **snölarm per län** ur datan — vi vet var det är halt innan nyheterna | stannade 3/9 (Actions); startas om |
+| **Löftet** "positionen lämnar inte telefonen av sig själv" | det enda i kategorin som är sant och bevisbart (öppen kod, öppna data) | sant sedan 23/9 |
+| **Föreningen Halkvakt** (ideell, 29/9) | ingen kommersiell aktör — dörren till NTF, kommuner, trafikskolor, Trafikverket | bildad; org.nr på väg |
+| **Skyltfonden** (svar 15/12) | ett ja = Trafikverket står bakom = pressrubrik gratis | ansökan inne |
+| **Halkbaneförsöket** jan–mar 2027, ~100 elever i riskutbildning | en lokal nyhet i Malmö med bilder, siffror och en skola som ställer upp | muntligt ja, Mattias |
+| **Gratis, inget konto, svensk** | lågt motstånd — det enda vi ber om är en nedladdning | ja |
+
+## 2. Kanalerna — alla gratis
+
+**A. Egna (vi styr, bygger över tid)**
+1. **Sajten** → halkvakt.se när domänen är köpt (GitHub Pages fungerar med egen domän, gratis). `press.html` blir presskit: logga, skärmbilder,
+   faktablad, citat, kontakt. `hej@halkvakt.se` via Cloudflare Email Routing (gratis) — utskick från gmail ser oseriöst ut (GTM kanal 3).
+2. **Butikssidorna** (App Store, Play): sökorden är inlagda; **betyg** är det som räknas. Appen ber om betyg efter tredje resan (bygge, Claude).
+3. **Varumärkeskonton** i Halkvakts namn: Facebook-sida, Instagram, LinkedIn-sida, Threads/Bluesky. Inga annonser — bara flödet.
+   Motorn levererar texten; Axel trycker publicera (eller Bengt). Två inlägg i veckan räcker fram till snön; vid larm varje dag det är halt.
+4. **Nyhetsbrev** för testare och intresserade: gratis upp till flera hundra på Buttondown/Substack. "Halkläget" varje måndag ur `rapport.json`.
+
+**B. Förtjänade (press — den stora kanonen, tajmad mot vädret)**
+5. **Första frostnatten** (motorn larmar per län): lokalpress i det länet samma morgon — *tips@*-adresser, P4-redaktionen. Kroken:
+   *"Gratis app byggd på Trafikverkets mätstationer säger till med rösten när det är halt — i natt var det första gången i [län]."*
+6. **Första snökaoset** (nov/dec): TT + rikspress + motor-/teknikpress (Vi Bilägare, Teknikens Värld, Mobil.se, SweClockers, Feber, Ny Teknik).
+7. **15/12 Skyltfonden** — ja eller nej är en nyhet ("Trafikverket satsar på…" / "Ideell förening bygger det Trafikverket inte gör").
+8. **Jan–mar Bulltoftabanan** — Sydsvenskan, Lokaltidningen Malmö, P4 Malmöhus, SVT Skåne: elever på halkbanan med en röst i örat. Bilder + siffror.
+9. **Podcast/radio**: P1 Trafikredaktionen, P4 Trafik — de talar om halka varje vinterdag och vill ha något nytt att säga.
+
+**C. Gemenskaper (gratis, anonymt möjligt — GTM kanal 1)**
+10. **Flashback** (Datorer & IT → Egna projekt; korsreferens Fordon & trafik vid snö) — utkastet finns i GTM.md. Anonymt by design.
+11. **Reddit** med projektkontot *halkvakt*: r/sweden, r/Malmo, r/Gothenburg/r/stockholm vid snökaos; r/SideProject på engelska (teknikvinkeln).
+12. **Bilforum**: Garaget, Bilsnack, Volvo-/Tesla-forum (elbilsförare är tidiga användare och pratar).
+13. **Facebook-grupper** (pendlargrupper, "Trafiken i Skåne", bilgrupper) — kräver en person, inte en sida: **Bengt eller en vän**, inte Axel.
+
+**D. Partners och multiplikatorer (gratis, förening till förening)**
+14. **NTF** (Nationalföreningen för Trafiksäkerhetens Främjande) — ideell till ideell; deras vinterkampanjer behöver konkret innehåll.
+15. **Trafikskolor + STR** (Sveriges Trafikutbildares Riksförbund): Bulltoftabanan först, sedan "varje riskutbildning del 2 i Skåne".
+    Handledare är trovärdighetsspridare; eleverna är 18-åringar med telefon.
+16. **Trafikverket** — Micke Wallin-kontakten och trafficdata.se: Trafikverket visar gärna *goda exempel* på öppna data. Fråga om vi får stå där.
+17. **Försäkringsbolag** (If, Folksam, Länsförsäkringar) skriver vintertips varje år — en gratis app är innehåll för dem, inte konkurrens.
+18. **Halkvarning.se** (Icebug/Klimator, fotgängare) — komplement, inte konkurrent: korslänk "för bilen: Halkvakt" / "till fots: Halkvarning".
+19. **Kommuner** (Malmö, Lund) och **åkerier/budfirmor** — GTM kanal 3; ett mejl från hej@halkvakt.se.
+
+## 3. Tidslinjen (väderstyrd, inte kalenderstyrd)
+
+| När | Vad | Vem |
+| :-- | :-- | :-- |
+| **Nu–frosten (okt)** | Domän + e-post · varumärkeskonton · presskit på press.html · demovideo 60 s (telefon i bilen, rösten hörs) · betygsfrågan i appen · marknadsmotorn igång igen · partnerbrevet (NTF, STR, Trafikverket, If/Folksam) skrivet och skickat | Axel 2 h · Claude resten |
+| **Första frostnatten** (motorn säger var) | Flashback-tråd + Reddit · lokalpress i länet · första FB/IG-inlägget med kartan | Axel/Bengt klistrar in |
+| **Första snökaoset** (nov/dec) | pressmeddelandet till TT + riks + motorpress · nyhetsbrev nr 1 | Axel skickar |
+| **15/12** | Skyltfondens svar ⇒ pressnotis oavsett utfall | Claude skriver, Axel skickar |
+| **Jan–mar** | Bulltoftabanan: bjud in Sydsvenskan/P4 till en körning · bilder till presskit | Axel + Mattias |
+| **Mars** | "Vintern i siffror": varningar, facit, förare — en rapport ur datan, till press och partners | Claude |
+
+## 4. Vad som krävs av Axel (beslut och handgrepp, inget annat)
+
+1. **Domänen** — halkvakt.se: kolla ägaren (sajten svarar redan på adressen), annars .nu/.app. Cloudflare för DNS + e-post (gratis).
+2. **Ansiktet** — press vill ha ett namn. Tre vägar: *Axel Lagerlöf, grundare* · *Föreningen Halkvakt* med Bengt som talesperson · anonymt
+   "teamet bakom". GTM.md väntar på detta sedan augusti. **Rekommendation:** föreningen som avsändare, Axel med namn i presskitet (det är
+   inte hans privata kanal, det är ett pressmeddelande).
+3. **Kontona** — skapa FB-sida, Instagram, LinkedIn-sida i Halkvakts namn (1 h). Lösenord i föreningens förvar.
+4. **Demovideon** — 60 sekunder, telefonen i hållaren, en riktig varning som hörs. Filmas när första kameravarningen kommer på en resa.
+5. **Partnerbreven** — Claude skriver, Axel skickar från hej@halkvakt.se i föreningens namn. Fem brev, en förmiddag.
+6. **Vem klistrar in i grupper** — Bengt eller någon annan som får använda sitt eget konto.
+
+## 5. Vad Claude bygger (utan att fråga)
+
+- Marknadsmotorn igång igen (pulsklockan), med **snölarmet** kopplat till ett utkast per län och kanal.
+- `press.html` som presskit · pressmeddelandet (frost / snö / Skyltfonden / Bulltofta, fyra versioner) · partnerbreven · nyhetsbrevsmallen.
+- Betygsfrågan i appen efter tredje resan (iOS `SKStoreReviewController`, Android In-App Review) — ett kort.
+- Mätning: installationer per vecka (App Store Connect/Play), facitsvar, presslänkar — en rad i bedömningen varje måndag.
+
+## 6. Mål att mäta mot (så vi vet om det fungerar)
+
+| Till | Mål | Mäts i |
+| :-- | :-- | :-- |
+| första snön | 12 Android-testare + 50 iPhone-installationer | Play Console / App Store Connect |
+| 31/12 | 1 000 installationer · 5 omnämnanden i press · 100 facitsvar | butikerna · presslänkar · `driver_facit` |
+| 31/3 | 5 000 installationer · Bulltofta-artikeln · en partner som länkar (NTF/STR/If) | samma |
+
+Missas första raden är det inte kanalerna det är fel på utan budskapet — då skrivs budskapet om, inte planen.

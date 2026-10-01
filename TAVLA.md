@@ -102,6 +102,16 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Verify: ✅ *Waiting for Review* med (20) — uppfyllt 00:09. Återstår: Apples svar.
   Verify: *Waiting for Review* i App Store Connect med (19) eller senare bifogat; sedan Apples svar.
 
+- [ ] 📣 **#281 MARKNADSFÖRING UTAN PENGAR** (Axels order 2/10 00:17: *"vi måste verkligen börja med marknadsföring utan att spendera
+  pengar … förstår att vi måste köpa hemsidan men utöver det"*). Planen: `docs/MARKNADSFORING-NOLLBUDGET.md` — bygger på det som finns
+  (Trafikverkets data, livekartan, marknadsmotorn, föreningen, Skyltfonden 15/12, Bulltoftabanan jan–mar, kuvösen) och GTM.md:s kanaler
+  utan annonsdelarna. Väderstyrd tidslinje: frost ⇒ lokalpress + forum · snökaos ⇒ TT + riks · 15/12 ⇒ Skyltfondsnotis · jan–mar ⇒ Bulltofta.
+  🔑 **Axels sex handgrepp (§4):** domänen · ansiktet (rekommendation: föreningen som avsändare, Axel med namn i presskitet) · varumärkeskontona ·
+  demovideon 60 s · partnerbreven skickas från hej@halkvakt.se · vem som klistrar in i FB-grupper (inte Axel, DECISIONS #18).
+  🔨 **Claude (§5), utan att fråga:** marknadsmotorn igång igen med snölarmet · press.html som presskit · fyra pressmeddelanden · partnerbrev
+  (NTF, STR, Trafikverket, If/Folksam, Halkvarning.se) · betygsfrågan i appen efter tredje resan · måndagsmätningen i bedömningen.
+  Verify: 12 Android-testare + 50 iPhone-installationer till första snön; 1 000 installationer, 5 pressomnämnanden, 100 facitsvar till 31/12 (§6).
+
 **Beslut som väntar, inte brådskande (med Bengt):**
 ### Axel — beslut att ta
 - [x] ⏰ **#86 NYCKELKALENDERN — två nycklar går ut mitt i säsongen** ✅ **STÄNGT 27/9 ↪ `docs/KALENDERN.md`** (Bengts ja: *"ja till kalenderlistan och stäng korten"*, DECISIONS #381). Vakten är byggd och bevisad — nyckelkalendern är check 10 i vakthunden, prövad 15/9 med issue #272 som läste PAT:ens datum live. Det som återstod var inte arbete utan **två datum någon måste läsa av**: PAT 22/11 (rotera senast 15/11) och Supabase-tokenen 8/12 (senast 1/12). De bor nu i kalendern, som äger dem. Kortet kunde aldrig bockas av så länge det bar en plikt som återkommer (Axels fynd 9/9, kort av Claude):
