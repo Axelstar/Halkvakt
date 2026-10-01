@@ -1839,7 +1839,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **1/10: RÄTTAT OCH BEVISAT** (ca25bec, DECISIONS #414). §5.1: L2 och L5 rättade med #341 och #359 på raden · #321: rättelse med loggen
   22/9 (35688287525: 0,43 · 0,79 · 0,76 · 0,72 °C — stiger ett band, sedan platt) · spärren: `engine.ts` rad 5 och TROSKLAR-OVERGANGAR §7
   säger 10 s prioritetsmedvetet (kort #127); bunten omgenererad (bara kommentaren), skuggmotorn deployad (körning 36820055383), spärrprovet efter
-  deployen: SPARRPROV · värdevakten körd på main (36819878682): 51 fält, 27 spann, 0 obesiktigade; ytans spann −60…+60 °C står — de −50 °C i
+  deployen (körning 36820118920): status 200, `suppressed` med EN rad, prov:kam2 tystad av prov:kam1 efter 5 s · värdevakten körd på main (36819878682): 51 fält, 27 spann, 0 obesiktigade; ytans spann −60…+60 °C står — de −50 °C i
   septemberluft är omöjliga i RELATION till luften och är radvaktens sak, sagt i `SPANN`. Fyra kända avvikelser kvar i körningen: byvinden 87,7
   (anmäld), siktens tak 20 000 (sentinel, känd), radarns 727 mm/h (över spannets 200, kortet #231-familjen) — inget nytt.
 - [x] ✅ **#264 KÄLLBEVAKNINGEN GÖR Å, Ä OCH Ö TILL MELLANSLAG — STÄNGT 1/10 (DECISIONS #413)** (fynd 28/9 under issue #638/#639, DECISIONS #391).
