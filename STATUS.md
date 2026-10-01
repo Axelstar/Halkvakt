@@ -42,6 +42,7 @@ fortsätter. *(Fryst 26/9, kort #221.)*
 - Revoke the unused second PAT (public-read-only one from 2026-08-24) — ej verifierad
 
 ## Session log
+- **S-2026-09-26 → 1/10** (Claude, dator, Bengts order): Androids omladdningsloop lagad (#218, DECISIONS #370) och kadenstestet mäter beteendet (#373); iPhone laddar om vägdatan under resan (#258, #371); reglaget *Längsta förvarning* 400–1 200 m (#259, #374); #203 (A) stationerna i snapshoten och lager 2 med servern i drift (#379/#380); stängda: #23, #83, #210, #221 (273 grenar raderade), #241, #247, #249, #250, #253; **bildfacit V1–V3 och lagringslarmet i drift 26/9** (#260, #380). Grenen med resten (PR #624) blev liggande över 27–30/9 medan andra sessioner tog #381/#382 och korten #261/#262 — omtagen 1/10 på main: **#275 väg (a)**, försprånget kläms till motorns tak (#419); systembilden; vägarbeten till vårlistan och läsmätningen (#420); fynd: olja på vägen (kort #276). Frågor i §4.2: QR-kod till appen, olja på vägen.
 - **S-2026-09-20** (Claude via Cowork, Axels order *"vi börjar att göra backupen nu"*): **kort #213 stängt** —
   `arkivbackup.yml`, veckodump av arkivet till GitHub-release, återläst och radräknad i samma körning (30/30 tabeller,
   601 712 rader, DECISIONS #257). Nytt kort #223 (åldersvakt utanför Actions). **Motorfixarna** (DECISIONS #258): #211
