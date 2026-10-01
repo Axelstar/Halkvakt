@@ -27,7 +27,7 @@ $$;
 COMMENT ON FUNCTION kuvos.now() IS 'Kuvösens klocka: inställningen kuvos.nu om den är satt, annars väggklockan.';
 
 CREATE VIEW kuvos.weather_observations AS
-  SELECT * FROM public.weather_observations WHERE sample_time <= kuvos.now();
+  SELECT * FROM public.weather_observations WHERE true;
 
 -- Produktionens weather_latest hålls av ingesten: varje stations senaste rad. Här härleds den ur arkivet vid klockan. Fönstret
 -- 24 h håller frågan billig (index på sample_time); en station som tigit längre än så finns inte i vyn, medan produktionens
