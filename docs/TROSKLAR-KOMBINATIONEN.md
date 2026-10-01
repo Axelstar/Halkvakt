@@ -305,6 +305,16 @@ värden är det ett eget beslut av Bengt och Axel, taget innan den släpps.
 eller förarsvar. D4:s mål räknas alltså på ett tunnare facit än årets. Ändringen lutar sig inte mot något utfall: inget ur vintern
 2024/25 är läst när den skrivs.
 
+**ÄNDRING 1/10 2026 — vilka värden betan hörs på** (DECISIONS #427, #428). **Bengts ja 1/10; Axels godkännande samma kväll, via Bengt
+(*"axel godkänner"*) — ändringen gäller.** Betan (efterhalkan) släpps i november på **de värden kuvösens kalibrering fryser, om vinnaren håller i båda
+halvorna av vintern 2024/25 (D4) — annars på startvärdena från 16/9**. Det andra värdeparet följs i skuggan på samma nätter (#427), och
+dom 1 i januari dömer betan som den släpptes, alltså det värdepar som hördes. Raden *Ingen kalibrering före* i §7 betyder därmed: ingen
+kalibrering på årets vinter. D2 läses så: värdena sätts före betans första natt och utan facitutfall **från vintern de döms på**; de
+kalibrerade vilar på facit från 2024/25. D3 och D7 gäller oförändrade — en kalibrering, på andra nätter än domens.
+**Valet är gjort innan kalibreringens resultat finns** (kuvösen har inte fått datan 1/10), så rösten väljs inte efter utfallet. Hinner
+kalibreringen inte bli klar och frysas före betans första natt gäller startvärdena. Förbehållet ovan står: kuvösens facit är *det blev
+kallt*, och D4:s krav på båda halvorna är det som ska hindra att ett tunt facit väljer fel.
+
 ---
 
 ## 6. Regel T — tröskelregeln i Axels lydelse
@@ -382,7 +392,7 @@ Ett smalare skydd hade i sig varit en uppmjukning — och av samma skäl fick #1
 | :-- | :-- | :-- |
 | Före första frostnatten | Betans startvärden ur §3:s svep, utan utfall, i DECISIONS (bedömningens S3). ✅ **Skrivna 16/9 (DECISIONS #222):** N 2 h · fönster 30 min · fall ≥ 0,8 °C per fönster · minsta regn > 0 · startband +1…+3 °C · radar av · N_varning av | D2 |
 | November | Betan i drift, *"Halkvakt tror: frysrisk framöver"*. S1:s råa logg går bredvid, så att KB-A:s varianter kan spelas upp (§3). Testförarna — också trafiklärarna — får veta att värdena är gissade fram till februari (betaplanen, S5) | V1–V5 |
-| **Januari** | **KB-B** på betan som den släpptes, under KB-C och KB-D. Ingen kalibrering före. **Utfall (fastställt 17/9, #225/#226):** KLARAR eller OAVGJORT ⇒ betan fortsätter oförändrad till mars · FALLER ⇒ grenen tas bort | Ö-B:s golv |
+| **Januari** | **KB-B** på betan som den släpptes, under KB-C och KB-D. Ingen kalibrering före *(1/10, DECISIONS #428, Bengt och Axel: ingen kalibrering på årets vinter — betan kan ha släppts på värden kalibrerade i kuvösen på 2024/25, se §5)*. **Utfall (fastställt 17/9, #225/#226):** KLARAR eller OAVGJORT ⇒ betan fortsätter oförändrad till mars · FALLER ⇒ grenen tas bort | Ö-B:s golv |
 | ~~**1 februari** (fastställt 17/9, #225/#226)~~ **I kuvösen, efter riktningsprovet** (ändrat 1/10, DECISIONS #425) | Den enda gemensamma kalibreringen, på vintern 2024/25 i stället för på data november–januari; tidpunkten skrivs i DECISIONS före | D3–D6 |
 | **Mars** | **KB-A och KB-B** på data efter kalibreringens tidpunkt (1/10, #425: i praktiken hela vintern 2026/27; förut *efter 1 februari*) — KB-A med varianterna för radar, regnmängd, startband och SMHI-förlängning ur arkiven (§4, #223, #225). Mars-domen dömer alltså riktig, okalibrerad vinterdata (DECISIONS #186) | — |
 
