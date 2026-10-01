@@ -38,9 +38,9 @@ Halkvakt varnar vid Trafikverkets mätstationer och rapporterade väglag — mel
 halka,halkvarning,väglag,vinterväg,fartkamera,viltvarning,olycka,trafikverket,bilkörning,röst
 
 ## Länkar
-- Support-URL: https://halkvakt.se/support.html
-- Marknadsförings-URL: https://halkvakt.se/
-- Integritetspolicy: https://halkvakt.se/integritet.html *(uppdaterad 1/10 med missarna och raderingsmeningen)*
+- Support-URL: https://axelstar.github.io/halkvakt-karta/support.html
+- Marknadsförings-URL: https://axelstar.github.io/halkvakt-karta/
+- Integritetspolicy: https://axelstar.github.io/halkvakt-karta/integritet.html *(uppdaterad 1/10 med missarna och raderingsmeningen)*
 
 ## Kategori, ålder, pris, länder
 - Primär kategori: Navigation. Sekundär: Resor.
