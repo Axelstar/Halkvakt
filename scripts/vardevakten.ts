@@ -50,6 +50,10 @@ const MANGA_DISTINKTA = 50;   // under detta är fältet en kodlista, inte en m�
  *  G_tak 30/40/50 i TROSKLAR-VIND-SIKT), men ingen får vara vidare. Ett fält som saknas här
  *  är OBESIKTIGAT och får inte bära en mätning. */
 export const SPANN: Record<string, [number, number, string]> = {
+  // Yttemperaturens spann är fysikens (Vuoggatjålme −52,6 °C i luften 1966; ytan går lägre en klar natt). De
+  // −34…−50 °C som sju stationer rapporterade i SEPTEMBERLUFT (+9…+17 °C, anmälda till Trafikverket) ligger
+  // INOM spannet och fångas inte här — de är omöjliga i RELATION till luften, och det är radvaktens sak
+  // (publish/snapshot-core.ts RADVAKT_SQL, DECISIONS #298). Spannet vaktar värdet, radvakten paret (kort #267).
   surface_temp_c: [-60, 60, "°C"], air_temp_c: [-60, 60, "°C"], dewpoint_c: [-60, 60, "°C"],
   humidity_pct: [0, 100, "%"],
   wind_speed_ms: [0, 60, "m/s"], wind_gust_ms: [0, 60, "m/s"],

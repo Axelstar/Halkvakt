@@ -3911,6 +3911,11 @@ marginalvakten (DECISIONS #126) är uppfyllda. Felet stiger monotont med ankarav
 **Alternativ.** Vänta på Axels formella rad — Axel fäller marsdomen (§4, §6), men grind A är byggets förgrind och Bengt äger
 mätningen; Axel ser domen här. Förlängd mätning — underlaget är fjorton gånger vaktens golv, det finns inget att vänta på.
 
+**Rättelse 1/10 (kort #267).** Meningen *"Felet stiger monotont med ankaravståndet, som fysiken säger"* stämmer inte med
+körningen domen vilar på (35688287525, 22/9 04:49Z): per band 0,43 · 0,79 · 0,76 · 0,72 °C. Felet stiger från 0–7 km till 7–15 km
+och ligger sedan platt, med en svag nedgång. Domen berörs inte — A1, A2 och A3 är helhetsmått — men påståendet om monotoni stryks
+som bevis för fysiken; det var en läsning av tabellens riktning, inte av dess tal.
+
 **Vad domen säger, och inte.** Den gäller leave-one-out vid stationerna, där en offset kan läras ur stationens egen historik: det
 är modellens tak. En vägpunkt mellan stationerna har ingen historik (kort #38b, raden 23/9); vad vägen får döms av grind B och C i
 mars. Ingen röst, inget till användaren: §4 (DECISIONS #319) gäller. Måndagsserien fortsätter som bevakning; faller ett mått på
