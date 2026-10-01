@@ -443,14 +443,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   felet stiger monotont med avståndet; loggen 22/9 ger 0,43 · 0,79 · 0,76 · 0,72 °C. Värdevakten har inte körts sedan 15/9, och spannet
   −60…+60 °C släpper igenom ytgivarnas −50 °C. `engine.ts` rad 5 och TROSKLAR-OVERGANGAR §7 säger fortfarande 45 s.
   **Verify:** raderna rättade med beviset på raden, och en värdevaktskörning på main.
-- [ ] 🔤 **#264 KÄLLBEVAKNINGEN GÖR Å, Ä OCH Ö TILL MELLANSLAG** (fynd 28/9 under issue #638/#639, DECISIONS #391).
-  `scripts/trv-bevakning.ts` rad 93 byter varje HTML-entitet (`&[a-z#0-9]+;`) mot ett blanksteg. Polisen.se kodar å, ä och ö som
-  entiteter, så bevakningen läser *"API ver polisens h ndelser"* och *"Regler f r ppna data"* — och ett nyckelord med å, ä eller
-  ö kan aldrig träffa på en sådan sida. Bedömningen blir då *VET INTE* där den borde bli *RÖR OSS*, tyst. Samma rad matar
-  textlängden och hashen, så åtgärden ändrar alla bevakade sidors hash en gång: nästa körning larmar på varje källa samtidigt.
-  Åtgärd: avkoda entiteterna (namngivna och numeriska) i stället för att stryka dem, och låt första körningen efter ändringen
-  skriva om grundvärdena utan larm. Verify: *"händelser"* med å/ä/ö intakt i en polissidas text · ett prov där ett svenskt
-  nyckelord med ö träffar en entitetskodad sida · ingen larmstorm efter deployen.
 - [ ] 📍 **#226 AUTOSTARTENS BEHÖRIGHET FALLER TYST PÅ ANDROID 11+** (Axels fynd på testtelefonen 20/9, DECISIONS #272).
   ⚠️ **HÄRLETT, INTE UPPMÄTT:** kortet skrevs på Axels rapport som antogs vara Android — den var från hans iPhone (#273).
   Ingen har kört det här på en Android-telefon. Grunden är kodläsning + Googles dokumentation, inget annat.
@@ -1844,6 +1836,19 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#264 KÄLLBEVAKNINGEN GÖR Å, Ä OCH Ö TILL MELLANSLAG — STÄNGT 1/10 (DECISIONS #413)** (fynd 28/9 under issue #638/#639, DECISIONS #391).
+  `scripts/trv-bevakning.ts` rad 93 byter varje HTML-entitet (`&[a-z#0-9]+;`) mot ett blanksteg. Polisen.se kodar å, ä och ö som
+  entiteter, så bevakningen läser *"API ver polisens h ndelser"* och *"Regler f r ppna data"* — och ett nyckelord med å, ä eller
+  ö kan aldrig träffa på en sådan sida. Bedömningen blir då *VET INTE* där den borde bli *RÖR OSS*, tyst. Samma rad matar
+  textlängden och hashen, så åtgärden ändrar alla bevakade sidors hash en gång: nästa körning larmar på varje källa samtidigt.
+  Åtgärd: avkoda entiteterna (namngivna och numeriska) i stället för att stryka dem, och låt första körningen efter ändringen
+  skriva om grundvärdena utan larm. Verify: *"händelser"* med å/ä/ö intakt i en polissidas text · ett prov där ett svenskt
+  nyckelord med ö träffar en entitetskodad sida · ingen larmstorm efter deployen.
+  ↪ **1/10: BYGGT OCH BEVISAT** (a1d75fb, DECISIONS #413). Entiteterna avkodas (namngivna, decimala, hexadecimala; okänd blir blanksteg som
+  förut), `norm` flyttad till `publish/nyhetsbedomning.ts` och prövad; hash-källorna bär versionsstämpeln `normv` i state och seedas om en gång
+  utan larm. Verify-raden uppfylld: *"API över polisens händelser"* med å/ä/ö intakt (enhetsprov på entitetskodad HTML, och statens polisen-text
+  efter körning 36817880379) · nyckelord med ö träffar en entitetskodad sida (prov; motprov med v1-normaliseringen ger VET INTE) · ingen larmstorm:
+  körning 36817880379 seedade om åtta hash-källor utan larm; issue-listan oförändrad (sex öppna trv-nyhet-issues före och efter, ingen ny, ingen kommentar).
 - [x] ✅ **#263 DB-KNAPPENS STANDARDFIL ÅTERSTÄLLER GALLRINGEN — STÄNGT 1/10 (DECISIONS #412)** (fynd 28/9 under läsningen för #244, DECISIONS #389). `dbknapp.yml` har `fil: sql/014_gallring.sql` som standard, och en läsning görs genom att köra en migration med bevisrader efter. Men 014 gör `cron.unschedule` + `cron.schedule('halkvakt-gallring', …, 'SELECT gallra_vader(7)')` — och sedan `sql/026` pekar jobbet på **`gallra_arkiv(7)`**, som `sql/031` byggt ut med Danmark, gravstenarna och tidsvakten. **Ett tryck med standardfilen stänger alltså tyst av gallringen av grannarkiven, gravstenarna och tidsvakten**, och databasen växer mot gratisnivåns 500 MB utan att något larmar. **Inte utlöst:** jobbet bär `SELECT gallra_arkiv(7)` 28/9 03:58Z. Knappens egen kommentar kallar 014 *"idempotent"* — det var sant 13/9, före 026. Samma familj som vitlistan på två ställen: en sanning som gällde när den skrevs.
   Åtgärd, liten: ett läsläge i knappen (`atgard: las`, bara bevisraderna, i en transaktion som rullas tillbaka) och en ofarlig standard. Tills dess bär läsningar `sql/033_kamerafacit.sql` (bara `IF NOT EXISTS`, RLS och REVOKE; ingen senare fil ändrar tabellen).
   Verify: en läsning utan migrationsfil · standardvärdet kan inte ändra ett cron-jobb · motprov: läsläget vägrar en sats som skriver.

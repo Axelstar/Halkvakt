@@ -6371,3 +6371,22 @@ skrivet*; körning 36817261645 (`las` med `UPDATE cron.job SET active = active W
 read-only transaction*; körning 36817425867 visar gallringsjobbets kommando. Alternativ som valdes bort: en ofarlig standardfil (en fil till som
 "är idempotent i dag"), och en vitlista över tillåtna satser (en lista till som glider). Läxan hör till familjen "en sanning som gällde när
 den skrevs": knappens kommentar kallade 014 idempotent, sant 13/9 och falskt efter 026.
+
+## #413 (1/10 2026) Källbevakningen avkodar HTML-entiteter; hash-källorna seedas om en gång utan larm (kort #264)
+
+**Bengts order 1/10:** *"kör på #264"*. Fyndet (28/9, DECISIONS #391): `scripts/trv-bevakning.ts` bytte varje HTML-entitet mot ett
+blanksteg. Polisen.se kodar å, ä och ö som entiteter, så vakten läste *"API ver polisens h ndelser"* och *"Regler f r ppna data"*, och ett
+nyckelord med å/ä/ö kunde aldrig träffa på en sådan sida — bedömningen blev VET INTE där den borde bli RÖR OSS, tyst.
+
+**Beslut (a1d75fb).** (1) `norm` flyttas till `publish/nyhetsbedomning.ts` och avkodar entiteterna i stället för att stryka dem: namngivna
+ur den lista våra källor använder (svenska, norska, danska, finska tecken och typografin), decimala och hexadecimala. En okänd namngiven
+entitet blir blanksteg som förut — aldrig sämre än v1. (2) Bytet ändrar varje hash-källas text och hash på en gång. I stället för en
+manuell `--seed` (som också hade svalt nya poster i list-källorna sedan 28/9) bär varje hash-källa en versionsstämpel `normv` i state: en
+källa vars state har en annan version seedas om UTAN larm och får stämpeln; nästa körning jämför som vanligt. Ingen flagga, inget handgrepp,
+ingen larmstorm. (3) List-källorna rörs inte.
+
+**Bevis.** Enhetsprov (`test/nyhetsbedomning.test.ts`, 224 gröna): en polissida med `&ouml;`, `&#246;` och `&#xE4;` läses som *"API över
+polisens händelser"*; nyckelordet *förändring* träffar en entitetskodad sida (RÖR OSS); motprovet med v1-normaliseringen ger *"En f r ndring
+av f lten."* och VET INTE; `&#xE5;` med versal hex föll första varvet (regexen saknade versaler) och rättades innan commit. Mot källorna:
+körning 36817880379 på grenen — åtta hash-källor *"normaliseringen bytt (v1 → v2) — grundvärdet skrivs om utan larm"*, statens polisen-text bär
+å/ä/ö; issue-listan oförändrad (sex öppna trv-nyhet-issues före och efter, ingen ny, ingen kommentar). Nätpolicyn i containern ger 403 mot alla källsidor, så det levande beviset är körningens, inte en lokal hämtning.

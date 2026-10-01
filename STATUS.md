@@ -2131,3 +2131,5 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 1/10 (Claude, Bengts *"kör på #263"*): db-knappen fick läsläget `las` (READ ONLY + rollback) som standard och `migrera` ingen
   standardfil (a683e41, DECISIONS #412). Bevis: lokal Postgres (fem fall) och tre knapptryck mot databasen — läsning 36817259654 grön,
   motprov 36817261645 röd med VÄGRAT, gallringsjobbet bär gallra_arkiv (36817425867). Kort #263 till 🟢 KLART.
+- 1/10 (Claude, Bengts *"kör på #264"*): källbevakningen avkodar HTML-entiteter (a1d75fb, DECISIONS #413); `norm` i
+  `publish/nyhetsbedomning.ts` med prov; hash-källorna seedas om en gång via `normv` utan larm. Körning 36817880379: åtta källor seedade om utan larm, inga issues. Kort #264 KLART.
