@@ -103,13 +103,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Verify: *Waiting for Review* i App Store Connect med (19) eller senare bifogat; sedan Apples svar.
 
 - [ ] 📣 **#281 MARKNADSFÖRING UTAN PENGAR** (Axels order 2/10 00:17: *"vi måste verkligen börja med marknadsföring utan att spendera
-  pengar … förstår att vi måste köpa hemsidan men utöver det"*). Planen: `docs/MARKNADSFORING-NOLLBUDGET.md` — bygger på det som finns
+  pengar … förstår att vi måste köpa hemsidan men utöver det"*). Planen: `docs/MARKNADSFORING-NOLLBUDGET.md`, artefakt
+  https://claude.ai/artifact/XcFLRPAK4Y2FK52Sa1tUeX (källa `docs/MARKNADSFORING.html`, privat tills Axel delar) — bygger på det som finns
   (Trafikverkets data, livekartan, marknadsmotorn, föreningen, Skyltfonden 15/12, Bulltoftabanan jan–mar, kuvösen) och GTM.md:s kanaler
   utan annonsdelarna. Väderstyrd tidslinje: frost ⇒ lokalpress + forum · snökaos ⇒ TT + riks · 15/12 ⇒ Skyltfondsnotis · jan–mar ⇒ Bulltofta.
   🔑 **Axels sex handgrepp (§4):** domänen · ansiktet (rekommendation: föreningen som avsändare, Axel med namn i presskitet) · varumärkeskontona ·
   demovideon 60 s · partnerbreven skickas från hej@halkvakt.se · vem som klistrar in i FB-grupper (inte Axel, DECISIONS #18).
   🔨 **Claude (§5), utan att fråga:** marknadsmotorn igång igen med snölarmet · press.html som presskit · fyra pressmeddelanden · partnerbrev
-  (NTF, STR, Trafikverket, If/Folksam, Halkvarning.se) · betygsfrågan i appen efter tredje resan · måndagsmätningen i bedömningen.
+  (NTF, STR, Trafikverket, If/Folksam, Halkvarning.se) · betygsfrågan i appen efter tredje resan · måndagsmätningen i bedömningen ·
+  **"Halkvakt live"** (Axels idé 00:24): motorn postar riktiga larm själv till X/Bluesky/Mastodon/FB-sidan. Push till användarna är ett ägarbeslut (§4.2).
   Verify: 12 Android-testare + 50 iPhone-installationer till första snön; 1 000 installationer, 5 pressomnämnanden, 100 facitsvar till 31/12 (§6).
 
 **Beslut som väntar, inte brådskande (med Bengt):**

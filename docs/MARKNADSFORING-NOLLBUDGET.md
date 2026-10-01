@@ -1,5 +1,7 @@
 # Marknadsföring utan pengar — planen (2/10 2026)
 
+*Artefakt: https://claude.ai/artifact/XcFLRPAK4Y2FK52Sa1tUeX — källa `docs/MARKNADSFORING.html`; ändras i repokopian och republiceras till samma URL.*
+
 *Axels order 2/10 00:17: "Sedan måste vi verkligen börja med marknadsföring utan att spendera pengar. Gör upp en plan och vad som
 kommer att krävas. Förstår att vi måste köpa hemsidan men utöver det." Skriven mot läget samma natt: 0.3.9 (20) hos Apple (Waiting
 for Review, bara Sverige), Play-vägen fredag, föreningen Halkvakt bildad 29/9, Skyltfondsansökan inne (svar 15/12), halkbaneförsöket
