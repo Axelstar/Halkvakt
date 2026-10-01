@@ -1,6 +1,6 @@
 # Halkvakt på iPhone — guide till testaren
 
-*Skriven 26/9 2026 mot koden i 0.3.9 (16), rättad samma dag för (17) — reglaget, kort #259 — inte ur minnet (kort *Välkomsttext + testinstruktion*, DECISIONS #371). Samma
+*Skriven 26/9 2026 mot koden i 0.3.9 (16), rättad samma dag för (17) — reglaget, kort #259 — och 1/10 för trösklarnas mening (DECISIONS #429) — inte ur minnet (kort *Välkomsttext + testinstruktion*, DECISIONS #371). Samma
 guide går till novemberbetans testare — ändras appen ändras den här filen i samma commit. Android-guiden är
 `docs/BETAGUIDE-ANDROID.md`; de två ska säga samma sak där apparna gör samma sak.*
 
@@ -12,7 +12,7 @@ guide går till novemberbetans testare — ändras appen ändras den här filen 
 > dig. Starta vakten, lås skärmen och kör — du behöver aldrig titta på telefonen.
 >
 > Tystnad är det normala. Appen talar bara när Trafikverkets data säger något, och i höst hör du mest fartkameror och en
-> och annan olycka. Halka kommer med kylan. Trösklarna är gissade tills vi mätt en vinter; de justeras i februari.
+> och annan olycka. Halka kommer med kylan. Trösklarna är satta i förväg och ändras inte under vintern utan ett eget beslut.
 >
 > Det som hjälper mest: slå på Inställningar → Betatest → Svara på varningarna. Efter resan får du en fråga om
 > varningarna stämde — ett tryck räcker. "Stämde inte" är det mest värdefulla svaret. Och berätta när det var halt och
@@ -90,7 +90,7 @@ fri — inte att appen är trasig.
 **Och just nu är det höst.** Halka och frysrisk kräver kyla. Det du troligen hör först är **fartkameror** och ibland en
 olycka. Den riktiga provperioden är vintern.
 
-**Trösklarna är gissade till februari.** De är satta på förhand och justeras en gång, på vinterns data. Därför är dina svar
+**Trösklarna är satta i förväg.** De ändras inte under vintern utan ett eget beslut. Dina svar visar om de håller, och därför är de
 viktiga.
 
 **Rösten säger aldrig mer än datan bär.** Hör du något som låter överdrivet eller fel — säg till.
