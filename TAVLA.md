@@ -66,7 +66,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Verify för hela kortet: Å0 kvitterad av testaren · Å1, Å4, Å5 i ett bygge · Å2 och Å3 beslutade i DECISIONS före kod ·
   en ny fältdag där bakgrundstiden ≈ körtiden, inte dygnet.
   🔨 **Å1, Å4, Å5 BYGGDA 1/10 kväll (DECISIONS #431, Axels prioritering: #262 före App Store):** stoppknappen i notisen
-  (`StoppaVaktenReceiver`), brytarens text, cachen med triangelolikheten + `GuardTest`. Bevis: android.yml på grenen (se PR).
+  (`StoppaVaktenReceiver`), brytarens text, cachen med triangelolikheten + `GuardTest`. **Bevis:** android.yml 36924001835 grön på grenen
+  (JVM-prov, APK, AAB, emulator); motprovet 36925352744 (stale cache + ingen nollning) rött på exakt de två proven — 56 prov, 2 fällda.
   🔑 Kvar: Å0 (testaren får (19) — Play-vägen #219 eller APK ur CI) · Å2/Å3 beslut (§4.2) · Å6 protokoll · Å7/Å8 mätningar (Axel).
 
 - [ ] 🏪 **#280 HALKVAKT TILL APP STORE — PÅ RIKTIGT, DIREKT EFTER #262** (Axels order 1/10 22:37 via Cowork: *"efter #262 så vill jag

@@ -6792,7 +6792,8 @@ Betaguiden §5 steg 3 skrivs om (*Skickat* står under *Senaste tur* när allt �
 - **Å5** — cache i `Guard.nearestHazardM` med triangelolikheten: efter `m` meter kan ingen fara vara närmare än (senaste svep − m), en
   undre gräns som bara kan ge SNABBARE GPS-takt än sanningen. Nytt svep när bilen kört halva senaste avståndet; nollas vid ny
   snapshot. `GuardTest` prövar att gränsen aldrig väljer en långsammare tier än det exakta avståndet (20 000 fixar mot 300 faror +
-  ett segment) och att en ny snapshot släpper gränsen.
+  ett segment) och att en ny snapshot släpper gränsen. **Bevis:** android.yml 36924001835 grön på grenen; motprovet 36925352744 med
+båda buggarna (stale värde, ingen nollning) föll på exakt `boundNeverSlowsTheCadence` och `newSnapshotDropsTheOldBound` — 56 prov, 2 fällda.
 
 **Alternativen.** Ett rutnät (spatial index) i stället för en undre gräns — mer kod för samma vinst, och gränsen är bevisbart säker.
 Begränsa autostarten till Bluetooth i stället för att rätta texten — beteendeändring utan beslut.
