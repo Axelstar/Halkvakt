@@ -41,10 +41,10 @@ nämnaren, och den är också nyckeln till hur de ska sitta ihop.
 | Lager | Frågan lagret svarar på | Delar som bor här | Läge |
 | :-- | :-- | :-- | :-- |
 | **L1 TROVÄRDIGHET** | Får vi tro på mätvärdet? | #75 givarvakten · stationsvakten (#164) · G_tak (DECISIONS #163) · värdevakten · R-A5 | ✅ i drift |
-| **L2 TILLSTÅND** | Vad **är** ytan? | tillståndsskattaren (#89 steg 2) · radarns `regn` (#81 C) · operatörens klass · **#45 våtbulb → regn/slask/snö** · **#42 vattenfilm** | 🔨 blöt/torr byggt, resten kvar |
+| **L2 TILLSTÅND** | Vad **är** ytan? | tillståndsskattaren (#89 steg 2) · radarns `regn` (#81 C) · operatörens klass · **#45 våtbulb → regn/slask/snö** · **#42 vattenfilm** · **#276 olja på vägen** (Trafikverkets NonWeatherRelatedRoadConditions) | 🔨 blöt/torr byggt · olja i skugga sedan 1/10 (#421) · resten kvar |
 | **L3 UTVECKLING** | Vart är den på **väg**? | trendarkivet (#88) · övergångarna (#89 a) · **#46 rimfrost** · N_varning (SMHI) | 🔨 mätt, ingen regel |
 | **L4 RÄCKVIDD** | Hur långt **gäller** mätningen? | grind A:s ankare (#38b) · SMHI molnmängd som räckviddsknapp (#95; Verify 2 och representativitetsradien omätta; SMHI som reserv när Trafikverket tystnar helt — uppmätt pris 2,36 °C) · **#91 kallplatslagret** | ✅ **grind A KLARAD** (#321); segmentprognosen i skugga sedan 23/9 (#325) · ⚠️ **knappen saknas** · ⚠️ **R21 (1/10): vägpunktsgrinden FALLEN 28/9** (#399) — rå avståndsviktning 6,9 % ± 0,4 grova fel med varma grannrader; premissmätningarna 30/9 (#405–#408) räddar ingen vägpunktskandidat på ärliga rader, bandet 0–7 km håller (Finland 2,3 %), höjden läses 23/10 |
-| **L5 ALLVAR & RÖST** | Vad **sägs**, och hur illa är det? | #153 allvar som **försprång** · spärren (DECISIONS #165) · **#90 roll B** | ✅ **R22 (1/10): försprånget byggt och i skugga sedan 25/9** (#359), S2 nivå + bevis 24/9 (#341); rösten efter domen i mars |
+| **L5 ALLVAR & RÖST** | Vad **sägs**, och hur illa är det? | #153 allvar som **försprång** · spärren (DECISIONS #165) · **#90 roll B** | ✅ **R22 (1/10): försprånget byggt och i skugga sedan 25/9** (#359), S2 nivå + bevis 24/9 (#341); taket är motorns 3 000 m, inte appens reglage (#275, #419); rösten efter domen i mars |
 
 **Ordningen är inte godtycklig.** L1 gatar allt. L2 och L3 multiplicerar varandra. L4 avgör hur långt
 produkten av L2×L3 får sträckas. L5 är det enda ställe där något når föraren.
@@ -691,6 +691,7 @@ Hans invändning avslöjade dessutom ett tankefel i kartans eget §7.5 — se r�
 | Om #153 **ska** omformuleras till försprång | **avgjort 16/9** (#221) |
 | Om tröskelregeln ska skrivas om till Axels lydelse | **avgjort 16/9** (#220), tätad |
 | Om E byggs före vintern | ✅ **byggd 24/9** (#341) |
+| Om försprånget kläms av appens reglage | **avgjort 26/9** (#419): nej — motorns 3 000 m; reglaget tar bara grundvarningen |
 | Om vinterns röstleverans begränsas till Axels "en sak" | **öppet** — jag rekommenderar ja |
 
 ---
@@ -713,3 +714,4 @@ ingen läser en överspelad version någon annanstans.
 | 14/9 | **Axels fyra invändningar inarbetade (§13).** L5 var inte tomt — formen är beslutad som FÖRSPRÅNG (#90 roll B); #153 kostar därmed **F4, inte F5**; §7.5:s enum-resonemang var fel | DECISIONS #184 |
 | 24/9 | **Kartan öppnad för R17–R20 — efter bygge + mätning (segmentprognosen och facitkopplingen) — och fryst igen.** R17 grind A klarad, 7–15 km-anomalin var givarfel (§2, §6.1) · R18 segmentprognosen: ingen fog i motorn i vinter, karta och förstärkare vid dom (§5.4) · R19 facitstacken tunn men inte tom eller obevakad (§12) · R20 motkrafterna §7.2–7.4 avgjorda 16–17/9, §8 B/C/D, §13.6 | DECISIONS #337 |
 | 1/10 | **Kartan öppnad för R21–R26 — efter vägpunktsgrindens fall 28/9 och premissmätningarna 30/9 — och fryst igen.** R21 L4-raden (#399, #405–#408) · R22 L5: försprånget i skugga (#359), S2 (#341) · R23 segmentprognosens fog (#399) · R24 §6.1 med 28/9 och 30/9, "monoton" rättat här och i #321 · R25 §8 A och E byggda · R26 §12 facitstacken 988 bilder, 0 riktiga förarsvar. Sedan 1/10 hålls läge-raderna löpande (STOMREGELN, #415) | DECISIONS #416 |
+| 1/10 | **Läge-raderna efter omtaget av PR #624 och Bengts bekräftelse av STOMREGELN** — ingen innehållsändring: L2 oljan i skugga (#421) · L5 försprångets tak är motorns (#419) · §13.6 frågan om taket avgjord | DECISIONS #419, #421, #422 |

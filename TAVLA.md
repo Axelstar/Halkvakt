@@ -229,6 +229,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   rösttexten är Axels. Verify för (a): skuggloggen bär rader med oljefaror, och en mätning visar hur ofta rösten skulle ha talat per varv.
   ✅ **Bengt 1/10: väg (a)** (DECISIONS #421) — skuggan först, egen kolumn som vattenplaningen, egen motorinstans, hela klassen med text, ingen ändring i appen. 🔨 Byggs i egen PR efter omtaget.
   🔨 **BYGGT 1/10:** `sql/040` (kolumnen `olja` + RPC `olja_aktiva()`, bara service-rollen; aktiv = start ≤ nu < slut, utan sluttid bara första dygnet — 117 händelser, alla med sluttid, median 1 h 48 min, 4 aktiva 1/10) · skuggmotorn: egen motorinstans per rutt, raden i `shadow_log.olja`, `oljaSkal` i svaret · `?oljaprov=1` (dbknappens `oljaprov`) skriver inget · integrationsprov mot PostGIS · mätningssidan 7.7. 🔑 Kvar: *"slå ihop"*, **`sql/040` FÖRE deployen** (annars avvisas skuggloggens rader), deploy, oljaprovet och första raden med innehåll.
+  ✅ **I DRIFT 1/10** (DECISIONS #421): PR #660 sammanslagen 14:36Z (969610c) · `sql/040` via dbknapp 36877728231: kolumnen `olja` jsonb med standard `[]`, `olja_aktiva()` svarar med **5 aktiva** — alla fem vägskador (asfaltskador, körplåtar, stenskott, bärighet), ingen olja — och bara service-rollen får köra den (anon och authenticated nej) · deploy av skuggmotorn 36877830446 från main · oljaprovet 36877971571: en rad (*Prov: olja på vägbanan*, 573 m), `aktiva` 5, inget skäl · Skuggvarven efter deployen skrev sina rader i alla fyra länder (FI 14:45, DK 14:50, NO 14:55, SE 15:02Z — tre rader var, ingen avvisad för den nya kolumnen); det svenska varvet svarade ok med 5 aktiva och 0 rop, eftersom ingen av de fem låg på varvets tre rutter (dbknapp 36881359482). Kvar för Verify: första riktiga oljeraden och mätningen av hur ofta.
 
 
 - [ ] 📐 **#270 PROGNOSLAGRET EFTER PREMISSMÄTNINGARNA — BENGTS VAL a–h** (30/9, `docs/PROGNOSLAGRET-2026-09-30.md`; DECISIONS
@@ -461,14 +462,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **Flyttat 26/9 från *Axel — hösten (brainstorm 31/8)*** (femma åtta, DECISIONS #377): nästa steg är Bengts två minuter (*Visa introduktionen igen*).
 
 ### Claude — olåst
-- [ ] ⏱️ **#275 REGLAGETS TAK 1 200 m KLIPPTE FÖRSPRÅNGET (L5) — väg (a) beslutad och byggd** (fynd 26/9 vid Bengts fråga om
-  systembilden; hette #261 på grenen som aldrig slogs ihop, DECISIONS #419). Motorn klämde försprångskrokens svar till `cfg.leadMaxM`, som i
-  apparna är reglaget (≤ 1 200 m sedan #259); skuggan mäter med motorns 3 000 m. Med reglaget på fullt räckte 90 s bara till 48 km/h.
-  ✅ **Bengt 26/9: väg (a)** — reglaget tar bara grundvarningen, försprånget kläms till motorns 3 000 m. **Byggt** i `engine/src` (skuggan
-  oförändrad, vektorerna orörda), nytt prov + motprov (*"fick 435"*, 26/9 och 1/10), TROSKLAR-FORSPRANG §6 bär regeln till steg 7, systembilden
-  säger *upp till 3 000 m*. 🔑 Kvar: Bengts *"slå ihop"*, deploy av skuggmotorn och ett varv med `ok` — sedan stängs kortet.
-  Verify: skuggan och motorns källa klämmer försprånget till samma tak, och systembilden säger vilket.
-
 - [ ] 📍 **#226 AUTOSTARTENS BEHÖRIGHET FALLER TYST PÅ ANDROID 11+** (Axels fynd på testtelefonen 20/9, DECISIONS #272).
   ⚠️ **HÄRLETT, INTE UPPMÄTT:** kortet skrevs på Axels rapport som antogs vara Android — den var från hans iPhone (#273).
   Ingen har kört det här på en Android-telefon. Grunden är kodläsning + Googles dokumentation, inget annat.
@@ -1782,6 +1775,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **GENOMLYSNING 2 AV DE FEM STOMDOKUMENTEN — KLART 1/10 (DECISIONS #422)**: STOMREGELN bekräftad av Bengt i en andra session; mätningssidan (7.7, 9, 8.1), appsidan (*Vad appen inte gör*), systembilden (oljan, taket), bedömningen och kartans läge-rader stämda mot #419–#421.
+- [x] ✅ **#275 FÖRSPRÅNGETS TAK — KLART 1/10 (DECISIONS #419)**: försprånget kläms till motorns 3 000 m, reglaget tar bara grundvarningen; sammanslagen i PR #660 (969610c), skuggmotorn deployad (36877830446), `ios-engine` grön, systembilden republicerad. Tavlan 36 → 35.
 - [x] ✅ **#274 PROJEKTSIDAN TILL TRAFIKVERKET — *Halkvakt och kuvösen* — SKAPAT OCH STÄNGT 1/10 (DECISIONS #418)**: Bengts idé 1/10,
   när VViS Förvaltning svarat på kuvösens uttag: *"en beskrivning av vårt projekt … lite vad Halkvakt är och vad kuvösen har för avsikt att göra i
   jämförelse med de mätningar som vi gör nu i trösklar … som en artifact"*. Sidan: vad appen är och inte gör (dataflödet, de fyra principerna),

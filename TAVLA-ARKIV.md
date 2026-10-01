@@ -3046,3 +3046,14 @@
   📏 **I drift 25/9 (`scripts/matningar/rutfilter-bevis-2026-09-25.sql`):** huvudvarvet 09:02Z efter deployen 08:32Z — motorn **173 ms** för tre rutter, prognosen **9 ms**, facit 5 300 ms (väntan på kamerabilderna, nätverk och inte räknearbete), totalt 5 737 ms; 740 ankare och 2 797 faror i snapshoten; tre rader med prognos och holdout; **0 × 546** bland 44 svar sedan 08:32Z. Kvar för Verify: tre dygn utan 546 (tidigast 28/9 kl 08:32Z).
   📏 **LÄST 28/9 04:00Z (dbknapp 36375768319 och 36375846062) — RENT SÅ LÅNGT FÖNSTRET GÅR, STÄNGS EFTER 08:32Z.** (1) `net._http_response`: **0 av 501 svar var 546** — men tabellen bär bara de senaste **sex timmarna** (äldsta rad 27/9 21:59Z), så Verify:ns mått kan inte bära tre dygn. (2) **Måttet som täcker hela fönstret:** rader i `shadow_log` per skuggvarv sedan lagningen. **134 av 134 varv** 25/9 09:02 – 28/9 03:32 skrev sina rader: 115 med 3, 19 med 2 — och de 19 ligger exakt vart sjunde varv (10:32, 14:02, 17:32 …), vilket är rotationen över de 20 rutterna (6 × 3 + 2), inte fel. Inget varv saknas, inget dog halvvägs. **Kvar:** tre dygn är 25/9 08:32 + 72 h = **28/9 08:32Z**; en läsning då täcker de sista timmarna i båda måtten (pg_net-fönstret rymmer 02:32–08:32) och stänger kortet. DECISIONS #389.
   ✅ **STÄNGT 28/9 08:42Z (Bengt: *"ja, gör sista läsningen efter 08:32"*).** Verify uppfylld: **144 av 144 skuggvarv** 25/9 09:02 – 28/9 08:32Z skrev sina rader (123 med 3, 21 med 2 — de korta vart sjunde varv, rotationen över 20 rutter); **0 av 509** svar i `net._http_response` var 546 (fönstret 02:42–08:41Z; 04:00-läsningen täckte 21:59–03:58Z: 0 av 501); gallringsjobbet orört (`gallra_arkiv(7)`). dbknapp 36398894806, DECISIONS #389.
+
+### Claude — olåst
+
+- [x] ✅ **STÄNGT 1/10** (DECISIONS #419) — ⏱️ **#275 REGLAGETS TAK 1 200 m KLIPPTE FÖRSPRÅNGET (L5) — väg (a) beslutad och byggd** (fynd 26/9 vid Bengts fråga om
+  systembilden; hette #261 på grenen som aldrig slogs ihop, DECISIONS #419). Motorn klämde försprångskrokens svar till `cfg.leadMaxM`, som i
+  apparna är reglaget (≤ 1 200 m sedan #259); skuggan mäter med motorns 3 000 m. Med reglaget på fullt räckte 90 s bara till 48 km/h.
+  ✅ **Bengt 26/9: väg (a)** — reglaget tar bara grundvarningen, försprånget kläms till motorns 3 000 m. **Byggt** i `engine/src` (skuggan
+  oförändrad, vektorerna orörda), nytt prov + motprov (*"fick 435"*, 26/9 och 1/10), TROSKLAR-FORSPRANG §6 bär regeln till steg 7, systembilden
+  säger *upp till 3 000 m*. 🔑 Kvar: Bengts *"slå ihop"*, deploy av skuggmotorn och ett varv med `ok` — sedan stängs kortet.
+  Verify: skuggan och motorns källa klämmer försprånget till samma tak, och systembilden säger vilket.
+  ✅ **STÄNGT 1/10:** sammanslagen i PR #660 (969610c), skuggmotorn deployad från main (36877830446), `ios-engine` grön (36877689954), systembilden republicerad (version 10).

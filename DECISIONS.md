@@ -6518,6 +6518,8 @@ ställen); mätapparaten med kamerafacit i hela landet och vid tysta kalla stati
 vägpunktsgrindens fall) hade stomgenomgången 1/10 (#415) redan rättat. **Stomavstämningen:** MATNINGAR bär V1–V3 sedan 1/10; APPEN beskriver
 reglaget rätt för i dag (försprånget finns inte i appen före steg 7); kartan och bedömningen utan ny rad utöver §4.2.
 
+**I drift 1/10:** sammanslagen i PR #660 (969610c), skuggmotorn deployad från main (36877830446) — skuggan räknar som förut, eftersom den kör motorns standardtak. `ios-engine` grön på 969610c (36877689954). Systembilden republicerad (version 10).
+
 ## #420 (26/9 2026, bokfört 1/10) Vägarbeten: smal variant till vårlistan, läsmätningen byggd · fynd: olja på vägen är halka som rösten inte säger (kort #276)
 
 *Bokfört 1/10 i omtaget av PR #624: beslutet fattades 26/9 som "#381"/"#382" på en gren som aldrig slogs ihop, och de numren togs av andra sessioner 27/9 (#381 kalendern, #382 batteriet); korten hette #261/#262 av samma skäl.*
@@ -6535,6 +6537,8 @@ väder, och det mesta är halka i appens egen mening. Rösten säger ingenting o
 friktionsord, med fälten räknade som de finns; och **motorn i `engine/src` körd längs de 20 svenska skuggrutterna** (3 107 km) med
 vägarbetena som punktfaror — antal rop per varv, för alla och för de smala urvalen. Provkört lokalt mot påhittade data. Körs efter
 sammanslagningen; ett flöde måste finnas på main för att kunna tryckas. Läs-only, inget sparas, en körning ≈ en minut Actions.
+
+**Mätt 1/10** — körning 36878098828 (1/10 14:40Z, läs-only): **5 280 aktiva vägarbeten** (MaintenanceWorks 3 390, RoadOrCarriagewayOrLaneManagement 1 890) bland 3 580 situationer; påverkan: stor eller mycket stor **2 894 (55 %)**, liten 2 248, ingen 112; varaktighet: **> 30 dygn 4 775 (90 %)**, 7–30 dygn 354, 1–7 dygn 104, ≤ 1 dygn 42; MessageCode: Vägarbete 2 803, Körfältsavstängningar 1 680, Beläggningsarbete 587, Vägen avstängd 201; *Körfält blockerade* på 3 291; fältet SafetyRelatedMessage finns inte. **Motorn längs de 20 svenska skuggrutterna (3 107 km, ett varv):** alla vägarbeten 151 rop (4,9 per 100 km) · stor eller mycket stor påverkan 94 (3,0) · högst 7 dygn långa 4 (0,1) · friktionsord 31 (1,0). **Läsning:** #5:s *kroniskt brus* står: nio av tio vägarbeten varar över en månad, och påverkansgraden skiljer inte ut någon smal grupp (55 % är stor eller mycket stor). Det enda som smalnar av är **varaktigheten** — högst 7 dygn ger 146 aktiva och 0,1 rop per 100 km. Vårens smala variant ska alltså byggas på kortvarighet (nytt, rörligt, högst en vecka), inte på påverkan. Friktionsorden fångar mest långa beläggningsarbeten (1,0 per 100 km). Inget beslut tas på en enda ögonblicksbild en höstdag.
 
 ## #421 (1/10 2026) Kort #276 väg (a): olja på vägen går till skuggan först — ingen text i appen
 
@@ -6556,3 +6560,19 @@ prioritet), raden i `olja`, antal och skäl i svaret. Provet `?oljaprov=1` (dbkn
 påhittad fläck på ett rakt spår och skriver inget i skuggloggen. Integrationsprov mot PostGIS: aktiv, avslutad, framtida, annan klass,
 utan punkt, utan sluttid ny och gammal — bara två ut. **Ordningen efter sammanslagningen: `sql/040` FÖRE deployen** — skuggmotorn
 skriver kolumnen i varje rad, och PostgREST avvisar en okänd kolumn.
+
+**I drift 1/10:** PR #660 sammanslagen 14:36Z (969610c) · `sql/040` via dbknapp 36877728231: kolumnen `olja` jsonb med standard `[]`, `olja_aktiva()` svarar med **5 aktiva** — alla fem vägskador (asfaltskador, körplåtar, stenskott, bärighet), ingen olja — och bara service-rollen får köra den (anon och authenticated nej) · deploy av skuggmotorn 36877830446 från main · oljaprovet 36877971571: en rad (*Prov: olja på vägbanan*, 573 m), `aktiva` 5, inget skäl · Skuggvarven efter deployen skrev sina rader i alla fyra länder (FI 14:45, DK 14:50, NO 14:55, SE 15:02Z — tre rader var, ingen avvisad för den nya kolumnen); det svenska varvet svarade ok med 5 aktiva och 0 rop, eftersom ingen av de fem låg på varvets tre rutter (dbknapp 36881359482). **Kvar:** första riktiga oljeraden i skuggloggen, och vid nästa läsning hur ofta rösten skulle ha talat, skilt på olja och vägskador ur texten.
+
+## #422 (1/10 2026) STOMREGELN bekräftad i en andra session, och andra genomlysningen samma dag
+
+**Order (Bengt 1/10 kväll, i sessionen som tog omtaget av PR #624):** *"alla ändringar, tillägg och kompletteringar stäms av mot dessa 5
+dokument och rättelser/ändringar/avbockningar redovisas även där löpande när de görs … ett arbetsmoment som alltid står fast … gör en
+genomlysning av allt så att samtliga dessa är uppdaterade."* Ordern finns redan som **STOMREGELN** i CLAUDE.md (DECISIONS #415, samma
+morgon) och laddas i varje session; den gäller oförändrad. Det här beslutet bokför att den bekräftats och vad den andra genomlysningen fann.
+
+**Genomlysningen** — de fem mot allt som ändrats efter morgonens (#415/#416, kort #273): PR #660 (#419–#421), driftsättningen 14:36–15:04Z
+och vägarbetsmätningen. **Mätningssidan:** 7.7 olja på vägen (ny, i skuggan), 22 delområden, sju i skuggvarvet, 3.1 nämner oljan, 8.1
+försprångets tak, 9 vägarbetena. **Appsidan:** *Vad appen inte gör* säger nu oljan (i skuggan) och vägarbetena (utestängda, smal variant
+våren 2027). **Systembilden:** försprångets tak, mätapparaten och integriteten (version 10, 14:43Z), plus oljan i skuggtabellen och i L2.
+**Bedömningen:** läget (9), §4.2 fem rader, Ä3. **Kartan:** läge-raderna L2 och L5, §13.6 och §14 — innehållet orört (frysregeln).
+Artefakterna republiceras från main efter sammanslagningen; en artefakt som skiljer sig från sin repokopia är ett fel.

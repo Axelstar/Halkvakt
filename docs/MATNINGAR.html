@@ -151,12 +151,12 @@
 <main class="blad">
   <div class="etikett">Teknisk analys · intern · 29 september 2026 · uppdaterad 1 oktober</div>
   <h1>Vad Halkvakt mäter, hur det räknas och vad det visat</h1>
-  <p class="ingress">Syskonsidan till Halkvaktens systembild: allt projektet mäter. Motorn som kör i apparna, vakterna och källorna som är i drift, reglerna som prövas i skuggan och facitkällorna, i 21 delområden. För varje del står vad den mäter, hur, vilka tal som finns och vad mätningen är till för. Talen kommer ur beslutsloggen (numren inom parentes), tröskeldokumenten, koden och körningarnas loggar. Utfall som är blindade till domarna visas bara som antal.</p>
+  <p class="ingress">Syskonsidan till Halkvaktens systembild: allt projektet mäter. Motorn som kör i apparna, vakterna och källorna som är i drift, reglerna som prövas i skuggan och facitkällorna, i 22 delområden. För varje del står vad den mäter, hur, vilka tal som finns och vad mätningen är till för. Talen kommer ur beslutsloggen (numren inom parentes), tröskeldokumenten, koden och körningarnas loggar. Utfall som är blindade till domarna visas bara som antal.</p>
   <div class="fakta">
     <span>arkiv sedan <b>24/8</b></span>
     <span>skuggflotta sedan <b>29/8</b></span>
     <span><b>80</b> skuggrutter i fyra länder</span>
-    <span><b>21</b> delområden</span>
+    <span><b>22</b> delområden</span>
     <span><b>13</b> tröskeldokument</span>
     <span><b>0</b> når föraren</span>
   </div>
@@ -188,7 +188,7 @@
   </div>
 
   <h2>2. Delområdena</h2>
-  <p>Delområdena är av tre slag, och kolumnen <i>Läge</i> säger vilket. <b>Motorn i drift</b> mäts genom huvudvarvet (3.1): samma motor som apparna kör, med samma regler, körd längs fasta rutter var 30:e minut så att varje varning den skulle ha gett loggas. <b>Vakterna, radarn, tillståndsskattaren och förarsvaren är i drift</b> och mäts där de går, fyra delområden. <b>Resten är regler som prövas utan att föraren hör dem:</b> sex körs i skuggvarvet, nio räknas i arkivet med tabeller, uppspelningar eller knappar som trycks varje måndag eller när frosten kommer, en är mätt en gång och en är fastställd men obyggd. De flesta delar har ett tröskeldokument som skrevs innan mätningen fanns.</p>
+  <p>Delområdena är av tre slag, och kolumnen <i>Läge</i> säger vilket. <b>Motorn i drift</b> mäts genom huvudvarvet (3.1): samma motor som apparna kör, med samma regler, körd längs fasta rutter var 30:e minut så att varje varning den skulle ha gett loggas. <b>Vakterna, radarn, tillståndsskattaren och förarsvaren är i drift</b> och mäts där de går, fyra delområden. <b>Resten är regler som prövas utan att föraren hör dem:</b> sju körs i skuggvarvet, nio räknas i arkivet med tabeller, uppspelningar eller knappar som trycks varje måndag eller när frosten kommer, en är mätt en gång och en är fastställd men obyggd. De flesta delar har ett tröskeldokument som skrevs innan mätningen fanns.</p>
   <div class="tabell">
     <table class="oversikt">
       <thead><tr><th>Delområde</th><th>Lager</th><th>Läge</th><th>Nu</th></tr></thead>
@@ -212,7 +212,7 @@
         <tr><td><a href="#d-vatten">7.4 Vattenplaning</a></td><td>L2</td><td><span class="lage skugga">körs i skuggan</span></td><td>57 av 200 varningar till domen</td></tr>
         <tr><td><a href="#d-vind">7.5 Vind och sikt</a></td><td>L2</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>W-A oavgjord</td></tr>
         <tr><td><a href="#d-smhi">7.6 SMHI-förstärkaren</a></td><td>L2</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>0 vintervarningar i arkivet</td></tr>
-        <tr><td><a href="#d-olja">7.7 Olja på vägen</a></td><td>L2</td><td><span class="lage obyggd">byggd, i skuggan efter deploy</span></td><td>4 aktiva 1/10, 117 sedan 31/8</td></tr>
+        <tr><td><a href="#d-olja">7.7 Olja på vägen</a></td><td>L2</td><td><span class="lage skugga">körs i skuggan</span></td><td>i drift 1/10, 5 aktiva (alla vägskador)</td></tr>
         <tr><td><a href="#d-forsprang">8.1 Försprånget</a></td><td>L5</td><td><span class="lage skugga">körs i skuggan</span></td><td>0 rader, väntar på nivå 2</td></tr>
         <tr><td><a href="#d-kombination">8.2 Kombinationen</a></td><td>L5</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>kalibrering 1/2 2027</td></tr>
       </tbody>
@@ -238,7 +238,7 @@
         <li>En virtuell bil i 80 km/h får en position var femte sekund, ungefär var 111:e meter. Varje rutt får en ny instans av samma motor som apparna kör, med samma regler ordagrant.</li>
         <li>Reglerna: spärren i 10 sekunder släpper bara fram en viktigare fara; samma fara upprepas tidigast efter 10 minuter och 5 km; prioriteten är olycka, halka, frysrisk, vilt, kamera; kameran talar vid 500 m; förvarningen är fart × 30 s, klämd till 400–3 000 m.</li>
         <li>De svenska rutterna roteras i sju fack, så varje rutt körs ungefär var 3,5:e timme. Sverige körs på minut 2 och 32, Finland 15 och 45, Danmark 20 och 50 och Norge 25 och 55 (sedan 22/9).</li>
-        <li>Per rutt och varv sparas snapshotens tid, antalet faror, varje varning med text och avstånd, och för punktfaror även positionen. Ett segment får medvetet ingen koordinat, eftersom en mittpunkt kan ligga milsvitt från larmet (#179). I Sverige sparas dessutom vattenplaningens skugga, efterhalkans råa fält och prognoslagret.</li>
+        <li>Per rutt och varv sparas snapshotens tid, antalet faror, varje varning med text och avstånd, och för punktfaror även positionen. Ett segment får medvetet ingen koordinat, eftersom en mittpunkt kan ligga milsvitt från larmet (#179). I Sverige sparas dessutom vattenplaningens skugga, efterhalkans råa fält, prognoslagret och oljan (sedan 1/10).</li>
         <li>Som spärrad räknas bara en vinnare som 10-sekundersspärren kastade. Kandidater som stoppas av 10 min/5 km eller förlorar prioritetsvalet loggas inte.</li>
       </ul>
     </div></details>
@@ -1014,12 +1014,12 @@
   <h2>8. Allvar och röst (L5)</h2>
 
   <section class="del" id="d-olja">
-    <div class="del-huvud"><span class="nr">7.7</span><h3>Olja på vägen</h3><span class="lage obyggd">byggd, i skuggan efter deploy</span><span class="lager">sedan 1/10 · kort #276</span></div>
+    <div class="del-huvud"><span class="nr">7.7</span><h3>Olja på vägen</h3><span class="lage skugga">körs i skuggan</span><span class="lager">sedan 1/10 · kort #276</span></div>
     <p><b>Mäter:</b> var rösten skulle ha talat om Trafikverkets väglag som inte beror på väder — mest olja, diesel och hydraulolja med <i>risk för halka</i>. Skuggvarvet kör motorns regler i en egen instans över de aktiva händelserna och loggar i en egen kolumn. Ingen förare hör något, och appen är orörd.</p>
     <div class="nyckel">
       <div><b>117</b><span>händelser i arkivet 31/8–1/10</span></div>
       <div><b>1 h 48 min</b><span>median längd, p90 ungefär ett dygn</span></div>
-      <div><b>4</b><span>aktiva 1/10 kl 12 UTC</span></div>
+      <div><b>5</b><span>aktiva 1/10 kl 14:37 UTC, alla vägskador</span></div>
       <div><b>24 av 99</b><span>med stor påverkan (31/8–25/9)</span></div>
     </div>
     <p><b>Nytta:</b> halka som Trafikverket själv rapporterar men som rösten i dag tiger om. Skuggan ger hur ofta rösten skulle ha talat; text och prioritet är Axels beslut efter skuggan (DECISIONS #421).</p>
@@ -1027,6 +1027,12 @@
       <ul>
         <li>Aktiv betyder start ≤ nu &lt; slut. Arkivet ser aldrig Trafikverkets radering, så sluttiden avgör; en händelse utan sluttid räknas bara det första dygnet (sql/040). Sluttiden är ofta preliminär, så en sanerad fläck kan räknas en stund för länge.</li>
         <li>Händelserna matas som punktfaror med viltets avståndsregel, bara för att få motorns riktnings-, avstånds- och upprepningsregler. Hela klassen loggas med sin text, så att olja och potthål kan skiljas i efterhand.</li>
+      </ul>
+    </div></details>
+    <details><summary>Siffror och beräkningar</summary><div class="inne">
+      <ul>
+        <li>1/10: 117 händelser sedan 31/8, alla med sluttid och punkt; median 1 h 48 min, p90 ungefär ett dygn, längst 689 dygn (en vägskada).</li>
+        <li>I drift 1/10 14:38Z: oljaprovet gav sin rad på 573 m och funktionen 5 aktiva, alla vägskador och ingen olja. Oljan är kortlivad och vägskadorna står i veckor, så vid ett givet ögonblick dominerar vägskadorna; mätningen skiljer dem på texten. Skuggvarven efter deployen skrev sina rader i alla fyra länder (FI 14:45, DK 14:50, NO 14:55, SE 15:02Z — tre rader var, ingen avvisad för den nya kolumnen); det svenska varvet svarade ok med 5 aktiva och 0 rop, eftersom ingen av de fem låg på varvets tre rutter (dbknapp 36881359482).</li>
       </ul>
     </div></details>
   </section>
@@ -1044,7 +1050,7 @@
     <details><summary>Hur den mäter</summary><div class="inne">
       <ul>
         <li><b>Nivå 2:</b> halt väglag med kod 3 eller 4, eller frysrisk med ytan ≤ 0 °C och väta ≥ 3 av 4. Allt annat är nivå 1 med dagens fart × 30 s.</li>
-        <li>Svepet 45 · 60 · 90 s motsvarar 1 125 · 1 500 · 2 250 m i 90 km/h. Värdet byts varje halvtimme.</li>
+        <li>Svepet 45 · 60 · 90 s motsvarar 1 125 · 1 500 · 2 250 m i 90 km/h. Värdet byts varje halvtimme. Förvarningen kläms till motorns 3 000 m, aldrig till appens reglage (#275, #419).</li>
         <li>Körs på minut 12 och 42 över samma rutter som huvudvarvet, men bara där en nivå 2-fara finns. Motorn körs två gånger på samma spår, en gång som i dag och en gång med längre förvarning, och båda loggas.</li>
       </ul>
       <p><b>Krav:</b> andelen nivå 2 mellan 5 och 50 %; median extra förvarning ≥ 15 s; undanträngning ≤ 2 % och noll olyckor; takten ökar högst 5 procentenheter; nya varningar ≤ 1 %; minst 60 nivå 2-varningar per svepvärde över 3 halkperioder i 3 län.</p>
@@ -1079,6 +1085,10 @@
     <div class="ruta">
       <h4>Djur på vägen: Trafikverket mot Polisen</h4>
       <p>På 14 dygn rapporterade Trafikverket 480 händelser, 474 med vägnummer och 437 (91 %) med djurslaget, med 1,8 minuters fördröjning i median till vårt arkiv. Polisen hade 11, placerade i länets mittpunkt. Det enda paret som gick att matcha rapporterades av Trafikverket 45 minuter före Polisen, och rösten bytte källa samma kväll (#316, #318).</p>
+    </div>
+    <div class="ruta">
+      <h4>Vägarbeten: kroniskt, utom de kortvariga</h4>
+      <p>Läs-only 1/10 (#420): 5 280 aktiva vägarbeten, nio av tio längre än en månad och 55 % med stor eller mycket stor påverkan. Motorn längs de 20 svenska skuggrutterna skulle ha talat 151 gånger på ett varv, 4,9 per 100 km; bara vägarbeten på högst en vecka smalnar av, 4 rop (0,1 per 100 km). Vårens smala variant byggs alltså på kortvarighet, inte på påverkan.</p>
     </div>
     <div class="ruta">
       <h4>Batteri och drift</h4>
