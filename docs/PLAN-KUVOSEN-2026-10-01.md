@@ -103,14 +103,26 @@ redovisade som antal.
 
 ## 5. Var kuvösen körs — och vad det kostar
 
+**Rättat samma dag på Bengts fråga** (*"börjar man inte om från 0 med 2000 gratis actionsminuter nu"*). Första versionen sade att
+kuvösen kunde fälla Actions-taket i oktober, räknat på septembers slutsumma (34,78 av 35 USD). Det var att dra en månads totalsumma rakt
+in i nästa — samma fel som #381 rättade 27/9. **Gratispotten på 2 000 minuter nollställs den 1:a, och kassavakten drar redan av den.**
+Kassavakten 1/10 11:07Z: *"61 min sedan 2026-10-01 · debiterat 0 min = 0.00 av 35 USD · takt 132 min per dygn · prognos 17 USD"*.
+
+| Takt | Oktober utan kuvösen | Utrymme till taket |
+| :-- | :-- | :-- |
+| Dagens, 132 min/dygn (elva timmar av 1/10) | ≈ 17 USD | ≈ 18 USD ≈ 2 250 min |
+| Septembers efter konsolideringen 9/9, ≈ 175 min/dygn | ≈ 27 USD | ≈ 8 USD ≈ 1 000 min |
+
+Kuvösen uppskattas till 300–600 minuter för inläsning och några körningar, alltså 2,4–4,8 USD. **Den ryms i båda raderna.**
+
 | Väg | Kostnad | Risk |
 | :-- | :-- | :-- |
-| **A. GitHub Actions** (som CI) | uppskattat 300–600 minuter för inläsning och några körningar ≈ 2–5 USD | **Taket är 35 USD för hela Axels konto, och september slutade på 34,78.** Kuvösen kan fälla taket i oktober och stoppa allt annat. Kräver att taket höjs (Axels beslut, betalt — DECISIONS) eller att annat skärs ned. |
-| **B. Den här datorn** | 0 kr | PostgreSQL och PostGIS finns inte installerade (kontrollerat 1/10). Bengt installerar dem med de officiella installationsprogrammen, ungefär en kvart. 4 kärnor och 29 GB ledigt räcker för en vinter. |
+| **A. GitHub Actions** (som CI) | ≈ 2,4–4,8 USD | Ryms i oktober enligt kassavakten. Kassan läses före varje tung körning; pekar prognosen plus körningen över 30 USD flyttas den till B. CSV:n läggs som tillgång i en GitHub-release (som arkivbackupen #213). En runner har 6 h per jobb, 14 GB disk och 7 GB minne — det räcker för en vinter. |
+| **B. Den här datorn** | 0 kr | PostgreSQL och PostGIS finns inte installerade (kontrollerat 1/10); Bengt installerar dem, ungefär en kvart. Reserven om kassan blir trång. |
 | C. Supabase | — | **Uteslutet** (#292): en vinter ryms inte i 500 MB. |
 
-**Rekommendation: B.** Den kostar ingenting, slår inte i Axels tak, och datan stannar på en dator vi styr. Actions används bara för prov på
-koden, som förut.
+**Rekommendation: A**, med B som reserv. Actions kräver inget av Bengt, körs på samma sätt som CI:s prov och går att köra om av vem som
+helst; kassavakten bevakar redan taket.
 
 ## 6. Tidslinje
 
@@ -128,7 +140,7 @@ koden, som förut.
 2. **Riktningsprov eller kalibreringsdata?** #292 lät det vara ett eget beslut före körningen. **Rekommendation: båda, i den ordningen.**
    Först riktningsprovet med låsta startvärden — inget väljs. Sedan, om ni vill, kalibrering på samma vinter, och domen på årets vinter.
    Då hålls D3 (kalibrering och dom på skilda nätter) bättre än om årets vinter delas i två. Beslutet måste tas innan datan öppnas (Bengt och Axel).
-3. **Var kuvösen körs** — B (den här datorn) eller A (Actions, med taket som risk).
+3. **Var kuvösen körs** — A (Actions, rekommenderas; kassavaktens prognos för oktober är 17 USD av 35) eller B (den här datorn).
 4. **Ja till att börja bygga steg 1 och 2 nu**, innan datan kommer.
 
 ## 8. Fällor att se upp för
