@@ -71,13 +71,16 @@ kalibreringsdata (§7, fråga 2). (d) Upplägget skrivs i DECISIONS innan någon
 räknas, och att inget tal ändras av utfallet.
 *Verify:* DECISIONS-posten finns med datum före första inläsningen.
 
-**Steg 1 — kuvösens databas och klocka.** En tom PostGIS med samma migrationer som CI:s (`sql/`), och en **tidsmaskin**: snapshotbyggaren
-tar redan en tidsparameter, men dess frågor läser databasens `now()` på ett tiotal ställen (`publish/snapshot-core.ts`). Kuvösen ger byggaren
-en egen frågefunktion som byter `now()` mot den historiska tidpunkten — **produktionskoden ändras inte**. Samma grepp för grindskripten.
-*Verify:* ett ekvivalensprov — kuvösens byggare körd med dagens klocka mot dagens arkiv ger byte för byte samma snapshot som produktionens,
-och provet fäller om ett enda `now()` missas (motprov).
+**Steg 1 — kuvösens databas och klocka.** ✅ *Byggt 1/10 (DECISIONS #424).* En tom PostGIS med samma migrationer som CI:s (`sql/`),
+och ett schema `kuvos` (`kuvos/klocka.sql`) med två saker. **Klockan:** `kuvos.now()` svarar med kuvösens tid, och en anslutning med
+sökvägen `kuvos, public, pg_catalog` får den för varje `now()` — i frågetext och i databasens egna funktioner. **Framtiden:** produktionens
+frågor har ingen övre tidsgräns (i driften finns ingen framtid), så vyer visar varje tidsindexerad tabell som den såg ut vid klockan.
+Första utkastet av planen sade att `now()` skulle bytas i frågetexten; det hade inte räckt. **Produktionskoden ändras inte.**
+*Verify:* provet i `test/integration.test.ts` — sex stationer med var sin fälla (fel yta, negativ `regn_h`, nästa timmes lutning, en
+karantän och ett dygn i felet som inte hänt än, en station som bara finns i framtiden) och en motkontroll utan klockan; och provet i
+`test/kuvos.test.ts` som fäller en tidskälla klockan inte når.
 
-**Steg 2 — läsaren för Trafikverkets CSV.** Byggs mot provfilen: kolumnerna till arkivets schema (`weather_observations`), enheterna,
+**Steg 2 — läsaren för Trafikverkets CSV.** ✅ *Inventeringen byggd 1/10 (`kuvos/inventering.ts`); ingen provfil kommer (Bengt 1/10), så kolumnöversättningen byggs mot den riktiga filens inventering.* Översättningen: kolumnerna till arkivets schema (`weather_observations`), enheterna,
 tidszonen till UTC, station-id till våra id, saknade värden till NULL. **Inventeringen först, alltid läs-only:** rader, stationer, tidsspann,
 upplösning, andel tomma per fält, och de typgiltiga men omöjliga värdena (VÄRDEVAKTEN — inget fält bär en tröskel förrän det besiktigats).
 *Verify:* provfilen läst utan fel; inventeringen utskriven; ett fält utan deklarerat spann rapporteras OBESIKTIGAT och stoppar.
@@ -152,3 +155,9 @@ helst; kassavakten bevakar redan taket.
 - **"Det svarar" är inte "det bär".** En inläsning som går grönt men lämnar fälten tomma är värre än en som faller; inventeringen läser
   innehållet, inte statuskoden.
 - **En vinter är en vinter.** Ett riktningsprov på en säsong säger vad som är troligt, inte vad som gäller. Utfallet ändrar ingen tröskel.
+
+## 9. Besluten 1/10 kväll (DECISIONS #424)
+
+Ja:et till Trafikverket är redan skickat, utan frågorna i §2 — de besvaras av inventeringen när filen kommer. **Både riktningsprov och
+kalibrering**, i den ordningen; kalibreringen ändrar regel D i TROSKLAR-KOMBINATIONEN och väntar på Axels signatur. **Actions** som
+körplats. Steg 1–2 byggda. Förregistreringen står i DECISIONS #424. Oljefilmen ingår inte (struken #110; fel säsong; facit är olyckor).

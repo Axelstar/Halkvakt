@@ -78,7 +78,7 @@ byggen, prognoslagrets form, kamerafacit, missknappen, arkivet och anmälningarn
   - **Prognosen har körts i skuggmotorn sedan 23/9** (#325).
 
   Prognoslagrets trösklar fastställdes och daterades 1/9, före dess kod. Utfall läses först vid dom 1 januari,
-  kalibrering 1 februari, dom 2 mars (regel D1–D7). Regel T: en prognos talar aldrig ensam. Klarar prognoslagret
+  kalibrering i kuvösen på vintern 2024/25 (ändrat 1/10, #425; förut 1 februari), dom 2 mars (regel D1–D7). Regel T: en prognos talar aldrig ensam. Klarar prognoslagret
   sina grindar i mars blir det ett kartlager och en förstärkare av mätta varningar — aldrig en egen röst
   (TROSKLAR-SKUGGAN §4, ändrat 23/9, DECISIONS #319).
 - **Tyst mellan mätpunkterna.** Medianavståndet från huvudvägnätet till närmaste station är 7 km; 13 % av Norrlands
@@ -125,8 +125,8 @@ byggen, prognoslagrets form, kamerafacit, missknappen, arkivet och anmälningarn
   V-B (vattenplaning, radarn), plus steg 0-mätningar för övergångar, SMHI-förstärkaren, vind/sikt och tillstånd.
   Trendarkivet räknar kandidater i databasen (`sql/018`) och en driftvakt bevisar att SQL och TypeScript väljer samma
   rader. Uppspelningen (`sql/028`) spelar efterhalkans varianter mot arkivet, blindat.
-- **Blindning:** startvärden låsta, ingen svepning före domarna, utfall läses vid dom 1 (jan), kalibrering (feb),
-  dom 2 (mars). Kuvösen (#232) — hela systemet mot vintern 2024/25 — väntar på Trafikverkets svar om historiska data.
+- **Blindning:** startvärden låsta, ingen svepning före domarna, utfall läses vid dom 1 (jan), kalibrering (i kuvösen, #425),
+  dom 2 (mars). Kuvösen (#232) — hela systemet mot vintern 2024/25 — får Trafikverkets stationsdata vecka 41; klockan och inventeringen byggda 1/10 (#424).
 - **Vakterna kring mätningen:** kontraktsgrinden (58 kontrakt 28/9: ett tal som finns i mer än en fil får inte glida),
   värdevakten (ett fält utan deklarerat spann får inte bära en tröskel), kodgrinden, beslutsnumren, vaktdiagnosen
   (en nolla ska aldrig vara tvetydig), CI-replay av vektorerna vid varje push.
@@ -137,8 +137,8 @@ byggen, prognoslagrets form, kamerafacit, missknappen, arkivet och anmälningarn
 ## 6 · Vägar framåt (en rad per spår)
 - **Skyltfonden** — ansökan senast 1/10: v8B utan partner och utan extern granskning, 283 000 kr (DECISIONS #392,
   #394); beslut 15/12; projektstart januari 2027.
-- **Kuvösen** (#232) — bakåtprövning på vintern 2024/25 om Trafikverket lämnar ut historiska VViS-data. Förfrågan
-  gjordes 21/9, begäran om utlämnande är inskickad och beslutet inväntas (#388).
+- **Kuvösen** (#232) — bakåtprövning på vintern 2024/25. Trafikverket levererar stationsdatan som CSV vecka 41 (besked 1/10);
+  riktningsprov först, sedan säsongens kalibrering (#424, #425). Egen sida: `docs/KUVOSEN.html`.
 - **Bildfacit per vädertyp** (#231) och kamerabilderna i mars (#157) — produktionsregelns falsklarm mätt.
 - **Nira** (#229, `docs/NIRA-UTREDNING-2026-09-21.md`) — konkurrent i varningsledet och möjlig partner i dataledet;
   förhållandet är skevt. Bilen mäter, vi varnar före bilen. Ett partnerskap blir realistiskt först med ett uppmätt

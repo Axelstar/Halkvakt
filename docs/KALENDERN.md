@@ -35,5 +35,5 @@ en dom eller ett bygge hängande på sig flyttar tillbaka till tavlan som kort.
 ## Vad som INTE flyttades hit, fast det har ett datum
 
 Dessa har en dom, ett bygge eller ett beslut hängande på sig och är därför kort, inte kalender:
-**dom 1 i januari**, **kalibreringen 1/2**, **dom 2 i mars**, **kamerafacit-bilderna i mars**, **betan i november**,
+**dom 1 i januari**, **kalibreringen (i kuvösen på vintern 2024/25 — inte 1/2, ändrat 1/10, DECISIONS #425)**, **dom 2 i mars**, **kamerafacit-bilderna i mars**, **betan i november**,
 **Pro-beslutet senast 1/11** (bedömningen §4.2), **steg 0 inom sju dygn efter första frostnatten** (issue #127).

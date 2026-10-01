@@ -692,6 +692,8 @@ Hans invändning avslöjade dessutom ett tankefel i kartans eget §7.5 — se r�
 | Om tröskelregeln ska skrivas om till Axels lydelse | **avgjort 16/9** (#220), tätad |
 | Om E byggs före vintern | ✅ **byggd 24/9** (#341) |
 | Om försprånget kläms av appens reglage | **avgjort 26/9** (#419): nej — motorns 3 000 m; reglaget tar bara grundvarningen |
+| Provet av helheten (§7.3: *varje grind dömer sin del ensam*) | **kuvösen** (kort #232): klockan och inventeringen byggda 1/10, Trafikverkets vinterdata 2024/25 vecka 41, riktningsprovet vecka 42 (#424) |
+| När kombinationen kalibreras | **ändrat 1/10** (#425): i kuvösen på vintern 2024/25, inte 1/2 2027 — årets vinter blir bara domdata |
 | Om vinterns röstleverans begränsas till Axels "en sak" | **öppet** — jag rekommenderar ja |
 
 ---
@@ -715,3 +717,4 @@ ingen läser en överspelad version någon annanstans.
 | 24/9 | **Kartan öppnad för R17–R20 — efter bygge + mätning (segmentprognosen och facitkopplingen) — och fryst igen.** R17 grind A klarad, 7–15 km-anomalin var givarfel (§2, §6.1) · R18 segmentprognosen: ingen fog i motorn i vinter, karta och förstärkare vid dom (§5.4) · R19 facitstacken tunn men inte tom eller obevakad (§12) · R20 motkrafterna §7.2–7.4 avgjorda 16–17/9, §8 B/C/D, §13.6 | DECISIONS #337 |
 | 1/10 | **Kartan öppnad för R21–R26 — efter vägpunktsgrindens fall 28/9 och premissmätningarna 30/9 — och fryst igen.** R21 L4-raden (#399, #405–#408) · R22 L5: försprånget i skugga (#359), S2 (#341) · R23 segmentprognosens fog (#399) · R24 §6.1 med 28/9 och 30/9, "monoton" rättat här och i #321 · R25 §8 A och E byggda · R26 §12 facitstacken 988 bilder, 0 riktiga förarsvar. Sedan 1/10 hålls läge-raderna löpande (STOMREGELN, #415) | DECISIONS #416 |
 | 1/10 | **Läge-raderna efter omtaget av PR #624 och Bengts bekräftelse av STOMREGELN** — ingen innehållsändring: L2 oljan i skugga (#421) · L5 försprångets tak är motorns (#419) · §13.6 frågan om taket avgjord | DECISIONS #419, #421, #422 |
+| 1/10 | **Kuvösen in i läge-raderna** — ingen innehållsändring: §13.6 provet av helheten och kalibreringens tidpunkt. §7.3:s brist (ingen grind för kombinationen) står kvar som den skrevs; kuvösen är svaret på den | DECISIONS #424, #425 |

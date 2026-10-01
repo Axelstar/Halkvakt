@@ -1,0 +1,252 @@
+<title>Halkvaktens kuvös</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: the same paper sheet as Halkvaktens systembild, mätningar and app. Status first (what exists today), then the
+     chain from Trafikverket's file to the result as a vertical flow, then what comes next and what it can change. */
+  :root {
+    --papper: #F6F7F5;
+    --blad: #FFFFFF;
+    --black: #16202A;
+    --dampad: #4A5763;
+    --linje: #D9DFE3;
+    --gul: #A8720A;
+    --gul-yta: #FFF3D6;
+    --gron: #1F7A45;
+    --gron-yta: #E4F2EA;
+    --rod: #A63A2A;
+    --rod-yta: #F9E7E3;
+    --frost: #2F6E92;
+    --frost-yta: #E6F0F5;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --papper: #0B1014; --blad: #121A20; --black: #E6ECEF; --dampad: #9DAAB3; --linje: #26323B;
+      --gul: #FFC94A; --gul-yta: #2A2310; --gron: #4CC382; --gron-yta: #12261B; --rod: #F08A7A; --rod-yta: #2B1714;
+      --frost: #7FC0E0; --frost-yta: #13232C;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --papper: #0B1014; --blad: #121A20; --black: #E6ECEF; --dampad: #9DAAB3; --linje: #26323B;
+    --gul: #FFC94A; --gul-yta: #2A2310; --gron: #4CC382; --gron-yta: #12261B; --rod: #F08A7A; --rod-yta: #2B1714;
+    --frost: #7FC0E0; --frost-yta: #13232C;
+    color-scheme: dark;
+  }
+  body { background: var(--papper); color: var(--black); padding-inline: 16px; padding-block: 28px 48px;
+         font: 400 16px/1.6 "Source Serif 4", Georgia, "Times New Roman", serif; }
+  .blad { max-width: 820px; margin: 0 auto; background: var(--blad); border: 1px solid var(--linje);
+          padding: clamp(20px, 5vw, 56px); display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  h1, h2, h3, .etikett, th, .dom, .fakta b, .flode b, .flode .kod, .tid b { font-family: "Instrument Sans", "Helvetica Neue", Arial, sans-serif; }
+  h1 { font-size: clamp(30px, 5vw, 42px); line-height: 1.08; font-weight: 700; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+  h2 { font-size: 21px; font-weight: 700; margin: 18px 0 0; text-wrap: balance; }
+  h3 { font-size: 16px; font-weight: 600; margin: 0; }
+  p { margin: 0; max-width: 68ch; }
+  .etikett { font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gul); }
+  .ingress { font-size: 18px; color: var(--dampad); }
+  .mono, code { font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; font-size: 0.86em; font-variant-numeric: tabular-nums; }
+  .litet { font-size: 14px; color: var(--dampad); }
+  ul { margin: 0; padding-left: 1.2em; display: grid; gap: 5px; }
+  li { max-width: 66ch; }
+  hr { border: 0; border-top: 1px solid var(--linje); margin: 4px 0; width: 100%; }
+
+  .fakta { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 14px; color: var(--dampad);
+           border-top: 1px solid var(--linje); border-bottom: 1px solid var(--linje); padding-block: 10px; }
+  .fakta b { color: var(--black); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  .tabell { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--linje); vertical-align: top; }
+  th { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dampad); }
+  td.nr { white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+  .dom { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+         padding: 1px 7px; border-radius: 3px; white-space: nowrap; }
+  .dom.klar { color: var(--gron); background: var(--gron-yta); }
+  .dom.vantar { color: var(--gul); background: var(--gul-yta); }
+  .dom.kvar { color: var(--dampad); border: 1px solid var(--linje); }
+  .dom.nej { color: var(--rod); background: var(--rod-yta); }
+
+  /* The chain: one node per step, the border says how far it has come. */
+  .flode { margin: 0; display: grid; gap: 0; }
+  .flode .nod { border: 1.5px solid var(--linje); padding: 11px 14px 12px; display: grid; gap: 3px; }
+  .flode .nod.klar { border-color: var(--gron); }
+  .flode .nod.vantar { border-color: var(--gul); border-style: dashed; }
+  .flode .nod.karna { background: var(--frost-yta); border-color: var(--frost); }
+  .flode .kod { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dampad); display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+  .flode b { font-size: 15px; font-weight: 700; }
+  .flode .txt { font-size: 14.5px; line-height: 1.45; color: var(--dampad); max-width: 70ch; }
+  .flode .pil { display: flex; justify-content: center; min-height: 26px; align-items: center; color: var(--dampad); font-size: 18px; line-height: 1; }
+  .flode figcaption { margin-top: 12px; font-size: 14px; color: var(--dampad); display: flex; flex-wrap: wrap; gap: 6px 18px; }
+
+  .par { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px 28px; }
+  .par > * { min-width: 0; }
+  .ruta { border-left: 3px solid var(--gul); padding: 4px 0 4px 14px; display: grid; gap: 6px; align-content: start; }
+  .ruta.gron { border-left-color: var(--gron); }
+  .ruta.rod { border-left-color: var(--rod); }
+  .ruta.frost { border-left-color: var(--frost); }
+  .lyft { background: var(--frost-yta); padding: 14px 16px; border-radius: 4px; display: grid; gap: 8px; }
+
+  .tid { list-style: none; padding: 0; display: grid; gap: 0; }
+  .tid li { display: grid; grid-template-columns: 118px minmax(0, 1fr); gap: 14px; padding-block: 9px; border-bottom: 1px solid var(--linje); max-width: none; }
+  .tid b { font-size: 13px; font-weight: 600; }
+  @media (max-width: 520px) { .tid li { grid-template-columns: 1fr; gap: 2px; } }
+  a { color: inherit; }
+</style>
+
+<main class="blad">
+  <div class="etikett">Kuvösen · läget 1 oktober 2026</div>
+  <h1>Hela systemet prövat på en vinter som redan har varit</h1>
+  <p class="ingress">Fjärde sidan i serien efter systembilden, mätningarna och appen. Kuvösen är en testbädd där motorn och alla regler som prövas i skuggan körs tillsammans mot vintern 2024/25, långt från appar och förare. Sidan säger var den står i dag, hur den fungerar, vad som kommer härnäst och vad resultatet kan ändra i projektet.</p>
+  <div class="fakta">
+    <span>vintern <b>2024/25</b></span>
+    <span><b>≈ 7 250</b> halvtimmar</span>
+    <span><b>20</b> skuggrutter, <b>3 107</b> km</span>
+    <span>data väntas <b>vecka 41</b></span>
+    <span>första resultat <b>vecka 42</b></span>
+    <span><b>0</b> når föraren</span>
+  </div>
+
+  <h2>1. Varför kuvösen finns</h2>
+  <p>Nästan allt som prövas i skuggan väntar på frost. Den 27 september var en station av 1 298 kall, och 19 av tavlans 35 öppna kort var låsta på en nyckel som nästan alltid var <i>första frosten</i>. Domarna kommer därför först i januari och mars, efter att vintern redan har gått.</p>
+  <p>Kuvösen går runt väntan: samma bevis, på en vinter som redan har hänt. Den svarar också på en fråga som ingen annan mätning ställer. Varje grind dömer sin del ensam, och ingen ser vad delarna ger tillsammans. Kuvösen kör dem tillsammans och redovisar varje del både ensam och ovanpå de andra.</p>
+  <p class="litet">Idén är Bengts, 21 september: en testbädd <i>”i kuvös, långt från bilar och appar och människor”</i>, för att se <i>”om det är på rätt väg eller fel väg”</i>.</p>
+
+  <h2>2. Läget i dag</h2>
+  <div class="tabell">
+    <table>
+      <thead><tr><th>Del</th><th>Läge</th><th></th></tr></thead>
+      <tbody>
+        <tr><td><b>Datan från Trafikverket</b></td><td>Beställd 1/10. VViS Förvaltning levererar vintern för samtliga stationer som CSV, i ett format som skiljer sig från det öppna API:t. Väntas vecka 41.</td><td><span class="dom vantar">väntar</span></td></tr>
+        <tr><td><b>Planen</b></td><td>Sex steg med ett bevis per steg, skriven 1/10.</td><td><span class="dom klar">klar</span></td></tr>
+        <tr><td><b>Förregistreringen</b></td><td>Frågan, underlaget, delarna, facit och följden är nedskrivna innan någon fil har öppnats.</td><td><span class="dom klar">klar</span></td></tr>
+        <tr><td><b>Klockan</b></td><td>Låter produktionens egen kod köra mot en gången tidpunkt, utan att koden ändras. Prövad mot riktig databas, och fyra motprov föll på var sin fälla.</td><td><span class="dom klar">byggd</span></td></tr>
+        <tr><td><b>Inventeringen</b></td><td>Läser en okänd CSV utan att tolka den: rader, kolumner, tomma fält, spann och vanligaste värden.</td><td><span class="dom klar">byggd</span></td></tr>
+        <tr><td><b>Översättningen och inläsningen</b></td><td>Trafikverkets kolumner till arkivets form. Kan inte byggas förrän filen är inventerad.</td><td><span class="dom vantar">väntar på filen</span></td></tr>
+        <tr><td><b>Tidszonen</b></td><td>Avgörs med mätning mot SMHI:s öppna temperaturserier. Perioden har två byten mellan sommar- och vintertid.</td><td><span class="dom vantar">väntar på filen</span></td></tr>
+        <tr><td><b>SMHI för samma vinter</b></td><td>Radar, molnmängd, lufttemperatur och nederbörd finns i SMHI:s öppna arkiv. Hämtas en gång.</td><td><span class="dom kvar">kvar</span></td></tr>
+        <tr><td><b>Körflödet</b></td><td>Hela vintern i halvtimmessteg, i GitHub Actions. Beräknad kostnad 2,4–4,8 USD av månadens 35.</td><td><span class="dom kvar">kvar</span></td></tr>
+        <tr><td><b>Riktningsprovet</b></td><td>Första körningen, med låsta värden. Tidigast vecka 42.</td><td><span class="dom kvar">kvar</span></td></tr>
+        <tr><td><b>Kalibreringen</b></td><td>Görs efter riktningsprovet, på samma vinter. Beslutad av Bengt och Axel 1/10.</td><td><span class="dom kvar">kvar</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>3. Hur den fungerar</h2>
+  <p>Kuvösen kör produktionens egen kod. Det som skiljer är var datan kommer ifrån och vad klockan är.</p>
+  <figure class="flode" aria-label="Kedjan från Trafikverkets fil till resultatet">
+    <div class="nod vantar"><span class="kod">In <span class="dom vantar">väntar</span></span><b>Trafikverkets fil</b><span class="txt">Stationernas mätvärden för vintern: yttemperatur, lufttemperatur, daggpunkt, fuktighet, nederbörd, vind och sikt.</span></div>
+    <div class="pil" aria-hidden="true">↓</div>
+    <div class="nod klar"><span class="kod">Steg 2 <span class="dom klar">byggd</span></span><b>Inventeringen</b><span class="txt">Läser filen utan att tolka den. Först när utskriften är läst översätts kolumnerna, och inget fält används förrän det är besiktigat.</span></div>
+    <div class="pil" aria-hidden="true">↓</div>
+    <div class="nod vantar"><span class="kod">Steg 3 <span class="dom vantar">väntar på filen</span></span><b>Kuvösens databas</b><span class="txt">En egen databas med arkivets form, skild från driften. Driftens vakter mot trasiga givare körs på vintern.</span></div>
+    <div class="pil" aria-hidden="true">↓</div>
+    <div class="nod klar karna"><span class="kod">Steg 1 <span class="dom klar">byggd</span></span><b>Klockan</b><span class="txt">Stegar genom vintern en halvtimme i taget. Koden frågar databasen vad klockan är och får kuvösens tid. Den får också bara se det som hade hänt fram till dess.</span></div>
+    <div class="pil" aria-hidden="true">↓</div>
+    <div class="nod"><span class="kod">Steg 5 <span class="dom kvar">kvar</span></span><b>Samma kod som driften</b><span class="txt">Lägesbilden byggs som den byggs till apparna. Motorn kör längs de 20 svenska skuggrutterna, och skuggans regler och grindar räknar på samma halvtimme.</span></div>
+    <div class="pil" aria-hidden="true">↓</div>
+    <div class="nod"><span class="kod">Facit</span><b>Stationens egen yta efteråt</b><span class="txt">Blev det kallt där regeln sade att det skulle bli det? Det säger att det blev kallt, inte att vägen blev hal.</span></div>
+    <div class="pil" aria-hidden="true">↓</div>
+    <div class="nod"><span class="kod">Steg 6 <span class="dom kvar">kvar</span></span><b>Resultatet</b><span class="txt">En tabell: varje del ensam, och varje del ovanpå de andra.</span></div>
+    <figcaption><span><span class="dom klar">byggd</span> finns och är prövad</span><span><span class="dom vantar">väntar</span> hänger på filen</span><span><span class="dom kvar">kvar</span> byggs när datan finns</span></figcaption>
+  </figure>
+
+  <div class="lyft">
+    <h3>Det räckte inte att flytta klockan</h3>
+    <p>Driftens frågor säger bara <i>nyare än</i>, aldrig <i>äldre än nu</i>. I driften finns ingen framtid, så det behövs inte. I kuvösen ligger hela vintern i databasen. Med bara en flyttad klocka hade en station tystats för givarfel som inte hänt än, <i>timmar sedan regn</i> hade blivit negativt och temperaturens lutning hade hämtats ur nästa timme.</p>
+    <p>Därför visar kuvösen varje tabell som den såg ut vid klockslaget. Provet har en fälla för varje sådan läcka, och fyra motprov visade att varje fälla biter.</p>
+  </div>
+
+  <h2>4. Vad den kan pröva, och vad den inte kan</h2>
+  <div class="tabell">
+    <table>
+      <thead><tr><th>Del</th><th>Med stationsdatan</th><th>Varför</th></tr></thead>
+      <tbody>
+        <tr><td>Frysrisken och broarna</td><td><span class="dom klar">ja</span></td><td>Byggs ur yta och fukt.</td></tr>
+        <tr><td>Efterhalkan, betans regel</td><td><span class="dom klar">ja</span></td><td>Yta, regn och fall finns i stationsdatan.</td></tr>
+        <tr><td>Trenden och rimfrosten</td><td><span class="dom klar">ja</span></td><td>Yta, daggpunkt och fuktighet. Molnmängden ur SMHI.</td></tr>
+        <tr><td>Övergångarna och tillståndet</td><td><span class="dom klar">ja</span></td><td>Regnhistorik och väta. Radarn ur SMHI.</td></tr>
+        <tr><td>Prognoslagret mellan stationerna</td><td><span class="dom klar">ja</span></td><td>En hel vinter med kalla nätter, som september inte hade.</td></tr>
+        <tr><td>Nederbördstypen, vind och sikt</td><td><span class="dom vantar">om fälten finns</span></td><td>Beror på vad filen innehåller.</td></tr>
+        <tr><td>Försprånget</td><td><span class="dom vantar">delvis</span></td><td>Frysrisken ja. Väglagets svåra klasser kräver väglagshistoriken.</td></tr>
+        <tr><td>Väglagssträckorna och olyckorna</td><td><span class="dom nej">nej</span></td><td>Kräver Trafikverkets historik för väglag och händelser, som inte är utlovad.</td></tr>
+        <tr><td>Olja på vägen</td><td><span class="dom nej">nej</span></td><td>Kommer ur händelserna. Oljefilmen efter torka är struken sedan 12/9 och hör till sommaren.</td></tr>
+        <tr><td>SMHI:s varningar</td><td><span class="dom nej">nej</span></td><td>SMHI har inget öppet arkiv över utfärdade varningar.</td></tr>
+        <tr><td>Kamerabilder och förarsvar</td><td><span class="dom nej">nej</span></td><td>Finns inte bakåt i tiden.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>5. Reglerna, skrivna i förväg</h2>
+  <ul>
+    <li><b>Hela vintern.</b> Alla stationer och hela perioden i leveransen. Inga dygn och inga stationer väljs bort för hand.</li>
+    <li><b>Låsta värden först.</b> Riktningsprovet körs med de värden som står i dag. Inget väljs och inget prövas fram.</li>
+    <li><b>Ensam och tillsammans.</b> Varje del redovisas både ensam och ovanpå de andra, och alla tal skrivs ut, också de som talar emot.</li>
+    <li><b>Utfallet ändrar ingenting av sig självt.</b> Ingen tröskel och ingen kod ändras av resultatet. En ändring är ett eget beslut.</li>
+    <li><b>Aldrig i driftens databas.</b> En vinter ryms inte där, och kuvösen ska inte kunna röra det apparna läser.</li>
+    <li><b>Kalibrering och dom på skilda nätter.</b> Det som väljs på vintern 2024/25 döms på vintern 2026/27.</li>
+  </ul>
+
+  <h2>6. Vad som kommer härnäst</h2>
+  <ol class="tid">
+    <li><b>Vecka 41</b><div>Filen kommer. Den laddas ner direkt och inventeras. Sedan byggs översättningen, tidszonen mäts mot SMHI och vakterna körs på vintern.</div></li>
+    <li><b>Vecka 41–42</b><div>SMHI:s radar och moln hämtas för samma vinter. Körflödet byggs.</div></li>
+    <li><b>Vecka 42</b><div>Riktningsprovet körs, och tabellen förs in i bedömningen och på mätningssidan.</div></li>
+    <li><b>Därefter</b><div>Kalibreringen. Målet skrivs före, vinnaren ska hålla i båda halvorna av vintern, och värdena fryses innan årets domdata läses.</div></li>
+    <li><b>Före 1 december</b><div>Kuvösens värde är att ge vintersvar före vintern. Efter frosten och betan i november är den mest historia.</div></li>
+  </ol>
+
+  <h2>7. Vad det kan ändra i projektet</h2>
+  <p>Kuvösen är ett riktningsprov och fäller ingen dom. Men den kan flytta flera beslut från mars till oktober och november.</p>
+  <div class="par">
+    <div class="ruta gron">
+      <h3>Svar före frosten</h3>
+      <p>Det som väntar på vinterdata kan mätas i höst i stället för i mars: hur vakterna beter sig i kyla, radarns bidrag i snö och om stationerna täcker det skuggan loggar. Det gäller också efterhalkan, den regel som ska gå som märkt beta i november. Den kan då prövas på en hel vinter innan en förare hör den.</p>
+    </div>
+    <div class="ruta gron">
+      <h3>Helheten syns för första gången</h3>
+      <p>I dag kan en del falla i sin egen grind fast den bär tillsammans med de andra, eller klara sin grind utan att tillföra något. Tabellen <i>ensam och ovanpå de andra</i> visar vilka delar som faktiskt bidrar. Det avgör var byggtiden ska läggas.</p>
+    </div>
+    <div class="ruta gron">
+      <h3>Prognoslagret får sin vinter</h3>
+      <p>Skattningen mellan stationerna föll i september, på ett underlag med fyra frostnätter. En hel vinter visar hur ofta frysflaggan missar och larmar fel när det verkligen är kallt, och om höjden hjälper.</p>
+    </div>
+    <div class="ruta gron">
+      <h3>Årets vinter blir bara domdata</h3>
+      <p>Kalibreringen var planerad till 1 februari 2027, på data från november till januari. Nu görs den på vintern 2024/25. Då behöver årets vinter inte delas i två, och domen i mars får hela vintern som underlag.</p>
+    </div>
+    <div class="ruta frost">
+      <h3>En testbädd som finns kvar</h3>
+      <p>När kuvösen är byggd kan en ny regel spelas upp på en hel vinter på en timme, i stället för att vänta en säsong i skuggan. Varje ny vinter i vårt eget arkiv kan läggas till.</p>
+    </div>
+    <div class="ruta frost">
+      <h3>Trafikverket som källa till historik</h3>
+      <p>Det här är första gången Trafikverket lämnar ut historiska data till projektet. Går det bra finns en väg att fråga efter väglagen och händelserna för samma vinter, som skulle ge kuvösen ett starkare facit.</p>
+    </div>
+  </div>
+
+  <h2>8. Vad kuvösen inte kan säga</h2>
+  <div class="par">
+    <div class="ruta rod">
+      <h3>Facit är tunt</h3>
+      <p>Stationens egen yta efteråt säger att det blev kallt. Den säger inte att vägen blev hal, och den ser inte saltet. Utan väglag, olyckor, bilder och förarsvar går det inte att räkna falsklarm och missar som vintern 2026/27 kommer att göra.</p>
+    </div>
+    <div class="ruta rod">
+      <h3>En vinter är en vinter</h3>
+      <p>Resultatet säger vad som är troligt. Vintern 2024/25 kan ha varit mild eller hård på sätt som nästa vinter inte är. Därför fälls domarna fortfarande på årets vinter.</p>
+    </div>
+    <div class="ruta rod">
+      <h3>Kalibreringen väljer mot samma tunna facit</h3>
+      <p>Värdena som väljs i kuvösen är valda mot <i>det blev kallt</i>. Håller vinnaren inte i båda halvorna av vintern behålls dagens värden.</p>
+    </div>
+    <div class="ruta">
+      <h3>Öppet beslut</h3>
+      <p>Ska betan i november starta på dagens värden, som regeln säger, eller på kuvösens kalibrerade värden om de hinner bli klara? Det avgörs av Bengt och Axel innan betan släpps.</p>
+    </div>
+  </div>
+  <p>Ingenting i kuvösen når en förare. Appen, rösten och det telefonen hämtar är orörda.</p>
+  <hr>
+  <p class="litet">Källor: beslutsloggen (DECISIONS #292, #388, #397, #398, #418, #424, #425), kort #232, planen (docs/PLAN-KUVOSEN-2026-10-01.md), bedömningen §4.2 och §6.1 och tröskeldokumentet för kombinationen (regel D). Sidan till Trafikverkets handläggare, <i>Halkvakt och kuvösen</i>, är en annan sida och säger mindre. Alla datum avser 2026 om inget annat står.</p>
+</main>
