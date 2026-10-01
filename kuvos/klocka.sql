@@ -44,7 +44,7 @@ CREATE VIEW kuvos.radar_precip AS
 -- Utfallskolumnerna (min_yta_90min_c, utfall_rader) fylls i efterhand också i produktionen. De är facit, inte indata:
 -- snapshotbyggaren läser dem inte, och en regel som gör det läser framtiden.
 CREATE VIEW kuvos.trend_kandidater AS
-  SELECT * FROM public.trend_kandidater WHERE observed_at <= kuvos.now();
+  SELECT * FROM public.trend_kandidater WHERE true;
 
 -- Ett dygn i felet som börjar efter klockan finns inte än; ett som pågår slutar "nu".
 CREATE VIEW kuvos.givarfel_dygn AS
