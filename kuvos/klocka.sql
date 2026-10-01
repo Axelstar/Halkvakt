@@ -35,7 +35,7 @@ CREATE VIEW kuvos.weather_observations AS
 CREATE VIEW kuvos.weather_latest AS
   SELECT DISTINCT ON (station_id) *
   FROM public.weather_observations
-  WHERE sample_time <= kuvos.now() AND sample_time > kuvos.now() - interval '24 hours'
+  WHERE sample_time > kuvos.now() - interval '24 hours'
   ORDER BY station_id, sample_time DESC;
 
 CREATE VIEW kuvos.radar_precip AS
