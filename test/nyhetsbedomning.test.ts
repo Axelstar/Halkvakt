@@ -6,7 +6,7 @@
 // precis den post ingen förutsett.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { bedom, nyText } from "../publish/nyhetsbedomning.ts";
+import { avkoda, bedom, norm, nyText } from "../publish/nyhetsbedomning.ts";
 import { KARTAN, raderForKalla } from "../publish/beroenden.ts";
 
 // ── VERKLIGA POSTER, ordagrant ur feeden 12/9 2026 ────────────────────────────────────────
@@ -251,4 +251,39 @@ test("hydrologiska observationer är inte våra observationer", () => {
 test("motprov: en äkta metobs-post träffar fortfarande", () => {
   assert.equal(bedom("smhi-uppdateringar", "Ändrat format i metobs latest-months", KARTAN).grad, "RÖR OSS");
   assert.equal(bedom("smhi-uppdateringar", "Meteorologiska observationer får ny parameter", KARTAN).grad, "RÖR OSS");
+});
+
+// ── Entiteterna (kort #264, DECISIONS #413) ─────────────────────────────────────────────────
+// Polisen.se kodar å, ä och ö som entiteter. Vakten strök dem förut och läste "API ver polisens
+// h ndelser" — ett nyckelord med å/ä/ö kunde aldrig träffa på en sådan sida.
+test("en polissida med entiteter läses med å, ä och ö intakta", () => {
+  const html = "<html><head><title>API &ouml;ver polisens h&auml;ndelser | Polisen</title><style>p{}</style></head>"
+    + "<body><script>var x=1;</script><h1>API &#246;ver polisens h&#xE4;ndelser</h1><p>Regler f&ouml;r &ouml;ppna data &amp; villkor&nbsp;h&auml;r.</p></body></html>";
+  const text = norm(html);
+  assert.ok(text.includes("API över polisens händelser"), text);
+  assert.ok(text.includes("Regler för öppna data & villkor här."), text);
+  assert.ok(!/[<>]/.test(text), "inga taggar kvar");
+});
+
+test("ett svenskt nyckelord med ö träffar en entitetskodad sida", () => {
+  const kartan = [{ vard: "x.se", roll: "produktion", matar: "", brister: "fältet", bevakad: "x-sida", signal: "", nyckelord: ["förändring"] }] as any;
+  const text = norm("<p>En f&ouml;r&auml;ndring av f&auml;lten fr&aring;n 1 november.</p>");
+  const b = bedom("x-sida", text, kartan);
+  assert.equal(b.grad, "RÖR OSS");
+  assert.deepEqual(b.traffar[0]?.ord, ["förändring"]);
+});
+
+test("motprov: samma sida med v1-normaliseringen (entiteter strukna) hade aldrig träffat", () => {
+  const kartan = [{ vard: "x.se", roll: "produktion", matar: "", brister: "fältet", bevakad: "x-sida", signal: "", nyckelord: ["förändring"] }] as any;
+  const v1 = "<p>En f&ouml;r&auml;ndring av f&auml;lten.</p>".replace(/<[^>]+>/g, " ").replace(/&[a-z#0-9]+;/gi, " ").replace(/\s+/g, " ").trim();
+  assert.equal(v1, "En f r ndring av f lten.");
+  assert.equal(bedom("x-sida", v1, kartan).grad, "VET INTE");
+});
+
+test("avkodningen: numeriskt, hexadecimalt, okänd entitet blir blanksteg som förut, danska och norska tecken", () => {
+  assert.equal(avkoda("&#229;&#xE5;&Aring;"), "ååÅ");
+  assert.equal(avkoda("a&okandentitet;b"), "a b");
+  assert.equal(avkoda("&#0;&#99999999;"), "  ", "ogiltiga kodpunkter blir blanksteg, inte krasch");
+  assert.equal(avkoda("fr&oslash;&aelig;"), "frøæ");
+  assert.equal(avkoda("&amp;lt;"), "&lt;", "avkodas en gång, inte två");
 });

@@ -1,6 +1,6 @@
 # Ansökan om organisationsnummer: arbetsblad
 
-*Internt, skickas inte. Fylls i efter det konstituerande mötet.*
+*Internt, skickas inte. Fylls i direkt efter det konstituerande mötet 29 september 2026 och postas onsdag 30 september.*
 
 ## Blanketten
 
@@ -16,9 +16,9 @@ Fältens namn kan skilja sig något på den blankett som gäller när ni hämtar
 | :-- | :-- | :-- |
 | Föreningens namn | Föreningen Halkvakt | stadgarna § 1, protokollet § 8 |
 | Säte, kommunen där styrelsen har sitt säte | [kommun] | stadgarna § 3 |
-| Föreningens postadress | c/o [namn], [adress] | protokollet § 15 |
-| Firmatecknare, namn och personnummer | de två som tecknar firman | protokollet § 13 |
-| Kontaktperson, telefon och e-post | [namn] | protokollet § 15 |
+| Föreningens postadress | c/o Bengt Lagerlöf, [adress] | protokollet § 15 |
+| Firmatecknare, namn och personnummer | Bengt Lagerlöf och Axel Lagerlöf, var för sig | protokollet § 13 |
+| Kontaktperson, telefon och e-post | Bengt Lagerlöf | protokollet § 15 |
 | Underskrift | enligt blankettens anvisning, normalt firmatecknarna | protokollet § 13 |
 
 Personnummer skrivs på blanketten och i protokollet, aldrig i repot.
@@ -38,7 +38,7 @@ Skicka aldrig originalen. Protokollet och stadgarna i original sparas hos sekret
 - [ ] Namnet är stavat likadant i stadgarna, protokollet och blanketten.
 - [ ] Sätet är samma kommun i stadgarna och blanketten.
 - [ ] Firmatecknarna på blanketten är desamma som i protokollet § 13, med rätt personnummer.
-- [ ] Protokollet är undertecknat av sekreteraren, mötesordföranden och justeraren.
+- [ ] Protokollet är undertecknat av Harald Lagerlöf (sekreterare), Bengt Lagerlöf (mötesordförande) och Axel Lagerlöf (justerare).
 - [ ] Stadgarna bär datumet för det konstituerande mötet.
 - [ ] Kopiorna är bestyrkta.
 - [ ] En kopia av allt som skickas är sparad.
@@ -47,4 +47,4 @@ Skicka aldrig originalen. Protokollet och stadgarna i original sparas hos sekret
 
 Skatteverket skickar ett beslut med organisationsnumret till föreningens postadress. Skatteverkets sida anger ingen
 handläggningstid, så räkna med några veckor. Har inget kommit efter sex veckor ringer kontaktpersonen Skatteverket.
-Organisationsnumret behövs för bankkonto och för att söka bidrag i föreningens namn.
+Organisationsnumret behövs för bankkonto och för föreningens fortsatta verksamhet. Skyltfondsansökan lämnas av Bengt som privatperson (DECISIONS #404), så ingen komplettering till fonden behövs.

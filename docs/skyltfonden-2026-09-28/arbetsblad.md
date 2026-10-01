@@ -1,50 +1,49 @@
-# Arbetsblad — Skyltfondsansökan v8B utan extern granskning (283 000 kr)
+# Arbetsblad — Skyltfondsansökan V2, sökande: Bengt Lagerlöf som privatperson (413 000 kr)
 
-*Internt, skickas inte. 2026-09-28. Sista dag för ankomstregistrering: 1 oktober 2026.*
+*Internt, skickas inte. 29 september 2026, kväll. Sista dag för ankomstregistrering: 1 oktober 2026. Ersätter förmiddagens
+arbetsblad med två alternativ (DECISIONS #403); beslutet om sökande och version är DECISIONS #404. Ansökningstexten är Axels V2 i
+Drive-mappen *Ansökan V2 (Claude 29/9)*, rättad enligt `ANDRINGSLISTA-BILAGA-1-2026-09-29.md`.*
 
 ## Det här skickas
 
 | Fil | Var den finns | Gör så här |
 | :-- | :-- | :-- |
-| Ansökningsformuläret (PDF, version 240909) | trafikverket.se, sidan "Projektbidrag från Skyltfonden" | Fyll i sida 1 enligt nedan. I fälten 2–8 skriv "Se bilaga 1". Datum och namn i intyget. |
-| Bilaga 1 — ansökningstexten | Google-dokumentet i Drive-mappen | Fyll i hakparenteserna i Personalplan, ladda ned som PDF (Arkiv → Ladda ned → PDF) och kontrollera kostnadstabellen i PDF:en. |
-| Bilaga 2–8 | PDF-filer, färdiga (skickade i chatten och i repot under `docs/skyltfonden-2026-09-28/`) | Bifoga som de är. |
+| Ansökningsformuläret (PDF, version 240909) | trafikverket.se, sidan "Projektbidrag från Skyltfonden" | Fyll i sida 1 enligt nedan. I fälten 2–8 de korta svaren ur Axels dokument 0. Datum och Bengts namn i intyget. |
+| Bilaga 1 — ansökningstexten | *V2 — Bilaga 1* i Axels mapp, efter ändringslistan | Bengts bakgrund och egeninsatsens timmar ifyllda, sedan PDF. Kontrollera kostnadstabellen i PDF:en. |
+| Bilaga 2–8 | samma mapp; bilaga 6 är PDF:en med skärmbilderna | PDF av varje. Bilaga 7 utan arbetsanteckningar, bilaga 8 med avsändaren förklarad. |
+| Stadgar och protokoll | Drive-mappen *Föreningen Halkvakt, bildande* | Bifogas inte. Kan bifogas som stöd för meningen om föreningen i personalplanen, om mötet hölls. |
 
 ## Sida 1 i formuläret
 
-- **Företag:** Bengt Lagerlöf (privatperson).
-- **Kontaktperson, projektledare, firmatecknare:** Bengt Lagerlöf.
-- **Adress, telefon, e-post:** [ ].
-- **Organisationsnummer:** personnummer om privatperson.
-- **Bankgiro:** bankkonto om privatperson.
+- **Företag:** Bengt Lagerlöf, privatperson.
+- **Organisationsnummer:** personnummer.
+- **Adress, telefon, e-post:** [adress]. [telefon]. [e-post].
+- **Kontaktperson och projektledare:** Bengt Lagerlöf.
+- **Firmatecknare:** Bengt Lagerlöf.
+- **Bankgiro:** bankkonto, clearing- och kontonummer.
 - **Mottagare av stödet:** samma som sökande.
-- **Projektets titel:** Räcker Trafikverkets öppna väglagsdata för att varna alla förare i tid? Utvärdering av röstburen förhandsvarning för halka (Halkvakt) under två vintrar, och validering av ett prognoslager för halka mellan mätstationerna.
+- **Projektets titel:** Räcker Trafikverkets öppna väglagsdata för att varna bilförare i tid? Utvärdering av röstvarningen Halkvakt och av ett prognoslager mellan mätstationerna under två vintrar.
 - **Start:** 2027-01-11. **Slut:** 2028-04-30.
-- **Sökt belopp:** 283 000 kr.
+- **Sökt belopp:** 413 000 kr.
 
-## Ändrat mot v8B med granskning (343 000 kr)
+## Sekretess
 
-- **AP4, den upphandlade granskningen, är struken** (Bengt 28/9). Beloppet är 283 000 kr, och rapporten är nu AP4.
-- **"Granskningsbar i stället för granskad".** Arkivet, skuggloggen, tröskeldokumenten och skripten erbjuds Trafikverket, beredningsgruppen och VTI för egen omprövning, utan kostnad.
-- **Tre felaktiga referenser är rättade.** De har funnits sedan v4 och finns kvar i v8B med 343 000 kr:
-  - klimatstudien har **Freistetter** som förstaförfattare (Partanen är sist);
-  - simulatorstudien i Ergonomics 2009 är skriven av **Kircher och Thorslund (VTI)**, inte "Wallén Warner";
-  - TRF 2025 sa nästan motsatsen till det v8B påstod: falsklarm gav *inte* cry-wolf, missar gav långsammare reaktioner. Påståendet om ljudvarningar kommer från **Naujoks m.fl. 2016**.
-- **En överdrift är struken.** "Halkvakts varningar formuleras som åtgärd" stämmer inte med koden. Halkvarningarna säger vad och var, och bara olycksvarningarna säger "Sakta ner". Ansökan säger nu det, och formuleringen prövas med testförarna.
-- **Påståenden utan källa i repot är strukna:**
-  - "9 gånger högre risk på snö, 24 på is";
-  - "Digitraffic uppdateras var femte minut av kommersiell leverantör";
-  - "Göteborgs universitet (vägklimatologi)";
-  - "MET Norges öppna data".
+Inkomna handlingar är offentliga. Fondens anvisning: delar som ska skyddas markeras eller läggs i separat bilaga för
+sekretessprövning. Skriv i mejlet: *"Vi begär sekretessprövning för personnummer och bankkontonummer på formulärets sida 1."*
+Inget annat i ansökan behöver skyddas.
 
 ## Checklista före sändning
 
-- [x] Sökande: Bengt som privatperson (beslutat 28/9, DECISIONS #395).
-- [ ] Personalplanen i bilaga 1: bakgrund och timmar för Bengt och Axel, och Axels efternamn. Timmarna ska summera till 350.
-- [ ] Kostnadstabellen i bilaga 1-PDF:en ser rätt ut. Google-konverteringen kan visa `**` runt rubrikerna; ta i så fall bort dem i dokumentet.
-- [ ] Malmö stad: kommer Annas ja före sändning kan en mening läggas till under *Efter projektet*: *"Malmö stad planerar egna vägväderstationer i gatunätet och undersöker att lämna datan via API; samtal förs med Fastighets- och gatukontoret om tillgång till stationsdata."* Utan ja står den allmänna meningen kvar.
+- [ ] Ändringslistans tre tunga är gjorda: prognoslagrets 28/9-utfall in (fyra ställen), meningen om föreningen rätt (bildade eller
+      avser att bilda), förarens nej fäller bara utan annan bekräftelse (två ställen).
+- [ ] Tabellen "i dag / om trösklarna klaras" in under Projektets syfte, före "Varför".
+- [ ] Räkneexemplets tal kontrollerade i ASEK 8.0:s kalkylbilaga och promemorian TRV 2025/12914, med flik och sida, eller skrivna utan tal.
+- [ ] Bengts bakgrund och egeninsatsens timmar ifyllda, eller meningen struken.
+- [ ] Bilaga 6 ligger i mappen. Bilaga 7 utan beslutsnummer, filnamn och chattcitat. Bilaga 8 med avsändaren förklarad.
+- [ ] Konsekvenssvep: "283", "343", "30–50", "fyra arbetspaket", "under bildande", "lämnar aldrig", "0,71", "3,8 %", "Lagerlöf Labs", "Claude klassar".
 - [ ] Alla fält i PDF-formuläret ifyllda. Ett tomt fält betyder att ansökan inte hanteras.
-- [ ] Skicka till **båda** adresserna, trafikverket@trafikverket.se och skyltfonden@trafikverket.se. Läs inkorgen en halvtimme efteråt för att se om något studsat; ingen av adresserna är prövad av oss. Reserven är sidans formulär "Skriv meddelande".
+- [ ] Mejlet till **båda** adresserna, trafikverket@trafikverket.se och skyltfonden@trafikverket.se, med sekretessbegäran. Läs inkorgen
+      en halvtimme efteråt efter studs. Spara mejlet.
 - [ ] Intern regel: inte en krona av fondens medel bokförs mot byggarbete.
 
 ## Mejltext
@@ -53,22 +52,17 @@
 
 Hej,
 
-Här är vår ansökan om projektbidrag ur Skyltfonden, omgången med sista dag 1 oktober 2026.
+Här är min ansökan om projektbidrag ur Skyltfonden, omgången med sista dag 1 oktober 2026. Jag söker som privatperson.
 
-Projektet utvärderar under två vintrar om Trafikverkets öppna väglagsdata räcker för att varna förare i tid, och validerar ett prognoslager för halka mellan mätstationerna. Sökt belopp är 283 000 kr, och projektperioden är 11 januari 2027–30 april 2028.
+Projektet utvärderar under två vintrar om Trafikverkets öppna väglagsdata räcker för att varna bilförare i tid, och validerar ett
+prognoslager för halka mellan mätstationerna. Sökt belopp är 413 000 kr, och projektperioden är 11 januari 2027–30 april 2028.
 
-Bifogat:
-- Ansökningsformuläret
-- Bilaga 1 — utökade svar på fält 2–8
-- Bilaga 2 — rekryteringsplan för testförare
-- Bilaga 3 — systembeskrivning
-- Bilaga 4 — litteratur och källor
-- Bilaga 5 — källkartläggning med licenser
-- Bilaga 6 — appen: skärmbilder och rösttexter
-- Bilaga 7 — tröskeldokument
-- Bilaga 8 — anmälningar till Trafikverket om felmätande vägväderstationer
+Jag begär sekretessprövning för personnummer och bankkontonummer på formulärets sida 1.
 
-Vänliga hälsningar
-Bengt Lagerlöf
-Halkvakt
+Bifogat: ansökningsformuläret och bilaga 1–8 (ansökningstexten, rekryteringsplan, systembeskrivning, litteratur och källor,
+källkartläggning med licenser, appen med skärmbilder och rösttexter, tröskeldokument, anmälningar till Trafikverket om felmätande
+vägväderstationer).
+
+Vänliga hälsningar\
+Bengt Lagerlöf\
 [telefon]

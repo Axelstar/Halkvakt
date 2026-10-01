@@ -1,6 +1,6 @@
 # Stadgar för Föreningen Halkvakt
 
-*Antagna vid konstituerande möte den [datum].*
+*Antagna vid konstituerande möte den 29 september 2026.*
 
 ## § 1 Namn
 

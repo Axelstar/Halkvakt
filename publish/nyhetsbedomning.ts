@@ -27,6 +27,32 @@
 
 import { type Beroende, raderForKalla } from "./beroenden.ts";
 
+// HTML-entiteter avkodas, inte stryks (kort #264, DECISIONS #413). Källvakten bytte förut varje
+// entitet mot ett blanksteg; polisen.se kodar å, ä och ö som entiteter, så vakten läste
+// "API ver polisens h ndelser" och ett nyckelord med å/ä/ö kunde aldrig träffa. Namngivna ur
+// den lista våra källor använder (svenska, norska, danska, finska tecken och typografin), numeriska
+// decimalt och hexadecimalt. En OKÄND namngiven entitet blir blanksteg — som förut, aldrig sämre.
+const ENTITET: Record<string, string> = {
+  amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " ", shy: "",
+  aring: "å", auml: "ä", ouml: "ö", Aring: "Å", Auml: "Ä", Ouml: "Ö", oslash: "ø", Oslash: "Ø", aelig: "æ", AElig: "Æ",
+  eacute: "é", Eacute: "É", egrave: "è", uuml: "ü", Uuml: "Ü",
+  ndash: "–", mdash: "—", hellip: "…", laquo: "«", raquo: "»", lsquo: "‘", rsquo: "’", ldquo: "“", rdquo: "”",
+  copy: "©", reg: "®", deg: "°", times: "×", middot: "·", bull: "•" };
+export const avkoda = (s: string): string => s.replace(/&(#[xX][0-9a-fA-F]+|#[0-9]+|[a-zA-Z]+);/g, (hel, e: string) => {
+  if (e[0] === "#") {
+    const kod = e[1] === "x" || e[1] === "X" ? parseInt(e.slice(2), 16) : parseInt(e.slice(1), 10);
+    return Number.isFinite(kod) && kod > 0 && kod <= 0x10ffff ? String.fromCodePoint(kod) : " ";
+  }
+  return ENTITET[e] ?? " ";
+});
+
+// HTML → normaliserad löptext för hash-källorna: skript, stil och taggar bort, entiteter avkodade,
+// blanktecken hopslagna. Flyttad hit från scripts/trv-bevakning.ts 1/10 så att den kan prövas.
+export const norm = (html: string): string => avkoda(html
+  .replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ")
+  .replace(/<[^>]+>/g, " "))
+  .replace(/\s+/g, " ").trim();
+
 export type Grad = "RÖR OSS" | "VET INTE" | "RÖR OSS INTE";
 
 export type Traff = { vard: string; brister: string; ord: string[] };

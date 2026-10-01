@@ -318,6 +318,10 @@ i samma commit när de överlappar.
   alls på nio minuter: kroppen sa *"Egen commit utan [skip ci]: den bär kod"*, och GitHub läste märket i meningen som
   förnekade det. Regel: skriv aldrig märket i ett meddelande som ska testas, inte ens för att säga att det saknas — och
   kontrollera direkt efter push att en körning har startat (`/actions/runs?head_sha=`) innan du väntar på den.
+- `[skip ci]` på PR:ens SISTA commit stoppar också PR:ens CI. 1/10 öppnades PR #652 med 38 commits, nio av dem kod, och fick
+  ingen körning alls: huvudcommiten var en dokumentsynk märkt `[skip ci]`, och GitHub läser märket på PR:ens head, inte på
+  paketet. `mergeable_state: clean` såg ut som grönt — det betyder bara "inga konflikter". Regel: commiten närmast före en PR
+  (eller en push som ska pröva en PR) bär aldrig märket; och en PR utan check runs är inte grön, den är oprövad.
 - En grind som LÅNAR en annan grinds trösklar måste låna dess VAKTER också. 23/9 föll vägpunktsgrinden på alla tre kandidater
   (A2 9–18 %, 7–15 km-bandet 25 % grova fel) och domen var färdig att bokföras — men höjdprovet läste arkivet utan #75, radvakten
   och karantänen, som grind A bär sedan 22/9 (DECISIONS #299 räknade upp nio mätningar; höjdprovet stod inte med). Med vakterna:
@@ -325,3 +329,8 @@ i samma commit när de överlappar.
   en mätning lyfts från diagnos till grind, kopiera hela WHERE-satsen från grinden den speglar, inte bara talen. Kontraktsgrinden
   vaktar talen; ingen vakt ser populationen. Och en dom som ser förkrossande ut på första körningen är ett skäl att läsa
   populationen, inte att skriva DECISIONS.
+- En kortrubrik är en ögonblicksbild, inte ett läge. Målbladets första utgåva 29/9 tog #219:s rubrik från 20/9 ("Android sju versioner
+  efter, Play-kontot saknas") som sanning — nio dagar efter att koden (versionCode 18 = iOS), tre beslut (#346, #377, #379) och appsidan
+  28/9 motbevisat den; samma varv togs "kalendern är Bengts öppna beslut" ur §6.3 fast #381 hade avgjort det två dagar tidigare. Regel:
+  ett dokument som ska frysas läses mot koden och besluten SEDAN kortet skrevs, inte mot rubriken; och en rubrik som verkligheten
+  motbevisat får *↪ överspelad* med datum och bevis samma varv (TAVELREGELN 3), så nästa läsare inte går i samma fälla (DECISIONS #402).

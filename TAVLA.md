@@ -219,13 +219,17 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
     ↩︎ Play: uppladdningsguide för den CI-signerade AAB:n + fotostudion tag 2 (facit ur CI +
     produktboken) *(låst: Play-kontot)*.
   ↪ **Flyttat 26/9 från *Claude — olåst*** (femma åtta, DECISIONS #377): nästa steg är Play-kontot och testtelefonen.
+  ↪ **29/9: rubriken överspelad (DECISIONS #402).** Android bär 0.3.9 (18) som iOS sedan 26/9 (#377, #379) och Play-kontot finns sedan 20/9. Kvar är bara Play-vägen: enhetsverifieringen i Play Console, första uppladdningen med Data safety-formuläret ifyllt likadant som filen (#214), slutet test 14 dygn med tolv testare, produktion tidigast november. Verify-raden gäller oförändrad.
 ### Bengt
-- [ ] 🏛️ **#265 FÖRENINGEN HALKVAKT BILDAS** (Bengts beställning 28/9, DECISIONS #396). Handlingarna är klara i `docs/forening/`
-  och i Drive-mappen *Föreningen Halkvakt, bildande*: stadgar, kallelse och dagordning, protokollsmall, medlemsförteckning,
-  arbetsblad för SKV 8400 och körschemat. Körschemat: sex beslut senast sön 4/10 (fyra grundare, poster, namn, säte, avgift,
-  firmateckning), kallelse mån 5/10, konstituerande möte tis 13/10, SKV 8400 postad senast mån 19/10, organisationsnummer (räkna med
-  veckor), bankkonto. Skyltfondsansökan påverkas inte (#395). Före första utbetalning: mottagarbytet hos Trafikverket (efter 15/12)
-  och arbetsgivarfrågan. **Verify:** Skatteverkets beslut med organisationsnummer i handen och föreningens bankkonto öppnat.
+
+- [ ] 📐 **#270 PROGNOSLAGRET EFTER PREMISSMÄTNINGARNA — BENGTS VAL a–h** (30/9, `docs/PROGNOSLAGRET-2026-09-30.md`; DECISIONS
+  #405–#408; bedömningen §4.2). Domen står (fallen 28/9, bekräftad 30/9 och på ärliga rader). Bandet 0–7 km håller i båda
+  länderna men kan inte dömas med svenska stationer (15 av spärrens 20); Finland ger 108 stationer och 2,3 % [1,1–3,5]; frysflaggan
+  vid 1 °C missas i 57 % även inom 7 km, 6 % med en grads marginal; ANOM och regimen (vind + natt) föll. 🔑 Bengts val: (a) veckokörning
+  med fast läsdatum 24/11 · (b) precisera grinden till ärliga rader och dom per band med RÅ+HÖJD · (c) inget · (d) egen spärr för
+  0–7 km · (e) ÅDT-uttag ur Lastkajen · (f) finska utfallet som stöd · (g) mät flaggmarginalen · (h) molnmängd in i arkivet.
+  Rekommendation: a, g nu; b när intervallet inte spänner över tröskeln; h före vintern. *Verify:* varje valt steg har egen
+  DECISIONS-post före körning; läsdatum i posten; inga trösklar rörda.
 - [ ] 🧫 **#232 KUVÖSEN — HELA SYSTEMET BAKÅTPRÖVAT PÅ VINTERN 2024/25** (Bengts idé 21/9, DECISIONS #292). Motorn och ALLA
   skuggregler i en gemensam testbädd, långt från appar och förare, körd mot en hel gången vinter — ett RIKTNINGSPROV: är vi på
   rätt väg, och vad tillför varje del ovanpå de andra? Svarar på kartans §7.3: *"Varje grind dömer sin del ENSAM"*.
@@ -337,6 +341,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   novemberbeslutet om segmentmotorn.
   Verify: svar från Trafikverket inskrivet här · upplägget i DECISIONS före körningen · tabellen *del × ensam × ovanpå de andra*
   i bedömningen.
+  ↪ **30/9 (nattens mätningar, `docs/PROGNOSLAGRET-2026-09-30.md`):** två tillägg till ansökan om Axel hinner — termisk kartering som
+  rad i AP2 (kort #271, inom AP2:s 70 000 så att 413 000 står) och ett samråd med Trafikverket om fordonsdata för utvärdering, utan
+  beroende (text i chatten 30/9). Ingen av dem krävs för att ansökan ska stå.
 
 *↩︎ = ÅTERSTÄLLT 10/9. Korten nedan föll av tavlan 8/9 20:43 (commit 99473c7: Claudes tavelsynk av
 "Axels nästa steg" svalde 174 rader, inkl. tre Claude-sektioner). Inget av dem har bevis på klart sedan dess.*
@@ -436,17 +443,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   felet stiger monotont med avståndet; loggen 22/9 ger 0,43 · 0,79 · 0,76 · 0,72 °C. Värdevakten har inte körts sedan 15/9, och spannet
   −60…+60 °C släpper igenom ytgivarnas −50 °C. `engine.ts` rad 5 och TROSKLAR-OVERGANGAR §7 säger fortfarande 45 s.
   **Verify:** raderna rättade med beviset på raden, och en värdevaktskörning på main.
-- [ ] 🔤 **#264 KÄLLBEVAKNINGEN GÖR Å, Ä OCH Ö TILL MELLANSLAG** (fynd 28/9 under issue #638/#639, DECISIONS #391).
-  `scripts/trv-bevakning.ts` rad 93 byter varje HTML-entitet (`&[a-z#0-9]+;`) mot ett blanksteg. Polisen.se kodar å, ä och ö som
-  entiteter, så bevakningen läser *"API ver polisens h ndelser"* och *"Regler f r ppna data"* — och ett nyckelord med å, ä eller
-  ö kan aldrig träffa på en sådan sida. Bedömningen blir då *VET INTE* där den borde bli *RÖR OSS*, tyst. Samma rad matar
-  textlängden och hashen, så åtgärden ändrar alla bevakade sidors hash en gång: nästa körning larmar på varje källa samtidigt.
-  Åtgärd: avkoda entiteterna (namngivna och numeriska) i stället för att stryka dem, och låt första körningen efter ändringen
-  skriva om grundvärdena utan larm. Verify: *"händelser"* med å/ä/ö intakt i en polissidas text · ett prov där ett svenskt
-  nyckelord med ö träffar en entitetskodad sida · ingen larmstorm efter deployen.
-- [ ] 🪤 **#263 DB-KNAPPENS STANDARDFIL ÅTERSTÄLLER GALLRINGEN** (fynd 28/9 under läsningen för #244, DECISIONS #389). `dbknapp.yml` har `fil: sql/014_gallring.sql` som standard, och en läsning görs genom att köra en migration med bevisrader efter. Men 014 gör `cron.unschedule` + `cron.schedule('halkvakt-gallring', …, 'SELECT gallra_vader(7)')` — och sedan `sql/026` pekar jobbet på **`gallra_arkiv(7)`**, som `sql/031` byggt ut med Danmark, gravstenarna och tidsvakten. **Ett tryck med standardfilen stänger alltså tyst av gallringen av grannarkiven, gravstenarna och tidsvakten**, och databasen växer mot gratisnivåns 500 MB utan att något larmar. **Inte utlöst:** jobbet bär `SELECT gallra_arkiv(7)` 28/9 03:58Z. Knappens egen kommentar kallar 014 *"idempotent"* — det var sant 13/9, före 026. Samma familj som vitlistan på två ställen: en sanning som gällde när den skrevs.
-  Åtgärd, liten: ett läsläge i knappen (`atgard: las`, bara bevisraderna, i en transaktion som rullas tillbaka) och en ofarlig standard. Tills dess bär läsningar `sql/033_kamerafacit.sql` (bara `IF NOT EXISTS`, RLS och REVOKE; ingen senare fil ändrar tabellen).
-  Verify: en läsning utan migrationsfil · standardvärdet kan inte ändra ett cron-jobb · motprov: läsläget vägrar en sats som skriver.
 - [ ] 📍 **#226 AUTOSTARTENS BEHÖRIGHET FALLER TYST PÅ ANDROID 11+** (Axels fynd på testtelefonen 20/9, DECISIONS #272).
   ⚠️ **HÄRLETT, INTE UPPMÄTT:** kortet skrevs på Axels rapport som antogs vara Android — den var från hans iPhone (#273).
   Ingen har kört det här på en Android-telefon. Grunden är kodläsning + Googles dokumentation, inget annat.
@@ -587,6 +583,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **SERVERN I DRIFT 26/9 07:00Z** (DECISIONS #380): migrationen sql/038 via dbknapp 36225368861 (tabellen finns, RLS på, anon utan SELECT och INSERT), deploy av `facit-svar` 36225396540 från main, provmiss mot den riktiga funktionen ⇒ 204 och en rad med `prov = true` (dbknapp 36225453047; 0 riktiga), två felaktiga missar ⇒ 400, och ett provsvar på den gamla vägen ⇒ fortfarande 204.
 
 ### Claude — låst (väntar på nyckel)
+
+- [ ] 🌡️ **#271 TERMISK KARTERING — FACIT MELLAN STATIONERNA** (30/9, `docs/PROGNOSLAGRET-2026-09-30.md` §4; DECISIONS #406/#407
+  visade att vägen mellan stationerna saknar facit och att målplatsens egen särart är felets största del). En kalibrerad infraröd
+  vägytetermometer med positionslogg i projektets bil, tre till fem klara kalla nätter per vinter på testförarnas rutter: uppmätt
+  yttemperatur var femtionde meter, facit för bandet 0–7 km och kalibrering av platsens offset. Loggern är egen utrustning, inte
+  appen — invarianten berörs inte, sägs öppet. Simulering ur höjd, skuggning, trädtäcke, vatten och trafik (kandidat KOVARIAT, egen
+  post) kan bygga men inte validera. 🔑 Bengts och Axels ja, utrustning (Axel prissätter klass), och pengar (projektets
+  egna, eller Skyltfondens AP2 om raden kom med i den skickade ansökan — okänt i repot, DECISIONS #409). *Verify:* första karteringsnatten loggad i arkivet med sträcka, datum och
+  antal punkter; en DECISIONS-post som registrerar den som facitkälla innan den används i en dom.
 
 - [x] 📣 **#261 KÄLLVAKTENS FALSKA POSITIVER — bedömningen matchar mot sidans möbler** (fynd 28/9 under
   mätvaktsfelet, DECISIONS #384). 🔑 ~~NYCKEL: Bengts ja.~~ ✅ **JA 28/9 — BYGGT SAMMA KVÄLL.**
@@ -1831,6 +1836,70 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#264 KÄLLBEVAKNINGEN GÖR Å, Ä OCH Ö TILL MELLANSLAG — STÄNGT 1/10 (DECISIONS #413)** (fynd 28/9 under issue #638/#639, DECISIONS #391).
+  `scripts/trv-bevakning.ts` rad 93 byter varje HTML-entitet (`&[a-z#0-9]+;`) mot ett blanksteg. Polisen.se kodar å, ä och ö som
+  entiteter, så bevakningen läser *"API ver polisens h ndelser"* och *"Regler f r ppna data"* — och ett nyckelord med å, ä eller
+  ö kan aldrig träffa på en sådan sida. Bedömningen blir då *VET INTE* där den borde bli *RÖR OSS*, tyst. Samma rad matar
+  textlängden och hashen, så åtgärden ändrar alla bevakade sidors hash en gång: nästa körning larmar på varje källa samtidigt.
+  Åtgärd: avkoda entiteterna (namngivna och numeriska) i stället för att stryka dem, och låt första körningen efter ändringen
+  skriva om grundvärdena utan larm. Verify: *"händelser"* med å/ä/ö intakt i en polissidas text · ett prov där ett svenskt
+  nyckelord med ö träffar en entitetskodad sida · ingen larmstorm efter deployen.
+  ↪ **1/10: BYGGT OCH BEVISAT** (a1d75fb, DECISIONS #413). Entiteterna avkodas (namngivna, decimala, hexadecimala; okänd blir blanksteg som
+  förut), `norm` flyttad till `publish/nyhetsbedomning.ts` och prövad; hash-källorna bär versionsstämpeln `normv` i state och seedas om en gång
+  utan larm. Verify-raden uppfylld: *"API över polisens händelser"* med å/ä/ö intakt (enhetsprov på entitetskodad HTML, och statens polisen-text
+  efter körning 36817880379) · nyckelord med ö träffar en entitetskodad sida (prov; motprov med v1-normaliseringen ger VET INTE) · ingen larmstorm:
+  körning 36817880379 seedade om åtta hash-källor utan larm; issue-listan oförändrad (sex öppna trv-nyhet-issues före och efter, ingen ny, ingen kommentar).
+- [x] ✅ **#263 DB-KNAPPENS STANDARDFIL ÅTERSTÄLLER GALLRINGEN — STÄNGT 1/10 (DECISIONS #412)** (fynd 28/9 under läsningen för #244, DECISIONS #389). `dbknapp.yml` har `fil: sql/014_gallring.sql` som standard, och en läsning görs genom att köra en migration med bevisrader efter. Men 014 gör `cron.unschedule` + `cron.schedule('halkvakt-gallring', …, 'SELECT gallra_vader(7)')` — och sedan `sql/026` pekar jobbet på **`gallra_arkiv(7)`**, som `sql/031` byggt ut med Danmark, gravstenarna och tidsvakten. **Ett tryck med standardfilen stänger alltså tyst av gallringen av grannarkiven, gravstenarna och tidsvakten**, och databasen växer mot gratisnivåns 500 MB utan att något larmar. **Inte utlöst:** jobbet bär `SELECT gallra_arkiv(7)` 28/9 03:58Z. Knappens egen kommentar kallar 014 *"idempotent"* — det var sant 13/9, före 026. Samma familj som vitlistan på två ställen: en sanning som gällde när den skrevs.
+  Åtgärd, liten: ett läsläge i knappen (`atgard: las`, bara bevisraderna, i en transaktion som rullas tillbaka) och en ofarlig standard. Tills dess bär läsningar `sql/033_kamerafacit.sql` (bara `IF NOT EXISTS`, RLS och REVOKE; ingen senare fil ändrar tabellen).
+  Verify: en läsning utan migrationsfil · standardvärdet kan inte ändra ett cron-jobb · motprov: läsläget vägrar en sats som skriver.
+  ↪ **1/10: BYGGT OCH BEVISAT** (a683e41, DECISIONS #412). `atgard: las` är knappens standard: bevisraderna körs i en READ ONLY-transaktion
+  som alltid rullas tillbaka; `migrera` har ingen standardfil längre. Verify-raden uppfylld: läsning utan migrationsfil (körning 36817259654,
+  23 cron-jobb listade, *inget skrivet*) · standardvärdena kan inte ändra ett cron-jobb (ingen fil, READ ONLY) · motprov: läsläget vägrade
+  `UPDATE cron.job …` (körning 36817261645 röd, *cannot execute UPDATE in a read-only transaction*) · gallringsjobbet bär fortfarande
+  `SELECT gallra_arkiv(7)` (körning 36817425867). Lokalt (Postgres 16, cron.job-attrapp): också en skrivande FUNKTION (`cron.schedule`) vägras.
+- [x] ✅ **#272 DEN SKICKADE ANSÖKAN IN I REPOT — STÄNGT 1/10 UTAN BYGGE (DECISIONS #411)** (30/9, DECISIONS #409). Versionen som gick till fonden 30/9 — formuläret och
+  bilaga 1–8 som PDF — finns bara i Drive-mappen Skyltfonden och i Bengts utkorg; repots bilaga 1 är v8B (283 000 kr, fyra
+  arbetspaket), inte den skickade V2. Ett fastställt dokument som inte är incheckat finns inte (SESSIONSREGELN). Lägg PDF:erna i
+  `docs/skyltfonden-2026-09-28/skickad/`, formuläret utan sida 1 (personnummer och bankkonto får aldrig in i repot). *Verify:*
+  åtta bilagor och formuläret i mappen, commit på main, personnummer grep-fritt.
+  ↪ **1/10: STÄNGT på Bengts ord** (*"stäng kort 272"*, DECISIONS #411). Den skickade versionen läggs inte i repot; den finns i Drive-mappen
+  Skyltfonden och Bengts utkorg. Repots PDF:er under `docs/skyltfonden-2026-09-28/` är 28/9-byggena (v8B), inte det som skickades.
+- [x] ✅ **#265 FÖRENINGEN HALKVAKT BILDAD — STÄNGT 30/9 (DECISIONS #410)** *(rubriken var: bildas 29/9, sökande i Skyltfonden som förening under bildande)* (Bengt 29/9, DECISIONS #400,
+  ersätter #396:s oktoberplan). Bengt ordförande, Axel kassör, Harald Lagerlöf ledamot och sekreterare, Susanne Horstmann revisor.
+  Handlingarna ifyllda i `docs/forening/` och Drive: stadgar (29/9), kallelse, protokoll med § 16 om Skyltfonden, medlemsförteckning,
+  8400-arbetsblad, körschema; Skyltfondens arbetsblad och bilaga 1 omskrivna (sökandestycke, bilaga 9–10). **Schemat:** kallelse
+  29/9 fm · möte 29/9 kl 19 · protokoll undertecknat samma kväll · SKV 8400 postad 30/9 · ansökan mejlad 30/9 · reserv 1/10.
+  Fylls i på mötet: sätet, tid och plats, personnummer (aldrig i repot). **Verify:** ansökan skickad med bilaga 9–10 och inget
+  studsat; Skatteverkets beslut med organisationsnummer, skickat till Skyltfonden samma dag; bankkonto öppnat.
+  ↪ **29/9 kväll (DECISIONS #404): sökande i Skyltfonden är Bengt som privatperson, inte föreningen.** Föreningen bildas som planerat och nämns i ansökan som förvaltare av de öppna resultaten; protokollet § 16 är omskrivet till en notering, kallelsen, körschemat och 8400-arbetsbladet rättade. Versionen som skickas är Axels V2, 413 000 kr, efter ändringslistan.
+  ↪ **30/9 (DECISIONS #409): ansökan skickad — Skyltfondsdelen av kortet är klar.** Kvar är föreningen: SKV 8400,
+  organisationsnummer, bankkonto. Verify-raden gäller utan Skyltfondsleden.
+  ↪ **30/9: STÄNGT på Bengts ord** (*"du kan stänga kort 265"*, DECISIONS #410). Det som återstår — Skatteverkets organisationsnummer och
+  bankkontot — följs i bedömningen §0b, inte som kort.
+- [x] ✅ **SKYLTFONDSANSÖKAN SKICKAD 30/9 (DECISIONS #409)**: Bengts ord 30/9 *"Ansökan är skickad"* — Bengt som privatperson,
+  Axels V2, 413 000 kr i fem arbetspaket, formuläret undertecknat med bilaga 1–8, till båda adresserna; sista dag 1/10, besked per
+  brev senast 15/12 (bevakningen §0b). Granskningarna av bilaga 2–8, Dokument 0 och formulärets stycken gavs i chatten 29–30/9 på
+  Bengts order. #265 gäller nu bara föreningen, #271 utan AP2-nyckeln, nytt #272 (den skickade versionen in i repot).
+- [x] ✅ **#269 VÄGPUNKTSGRINDENS PREMISSER PRÖVADE — KLART 30/9 (DECISIONS #405)**: förregistrerad mätning på ärliga rader (efter
+  25/9), vägviktad, blockbootstrap, frysflaggan som mått, kandidaten ANOM och golvet. Körning 36666151860 grön. Utfall: rå faller
+  även vägviktat (7,7 % [5,4–9,8]), rå+höjd oavgjord (5,2 % [3,6–6,9]), ANOM föll (15,2 %), offset (taket) klarar (3,2 %). Golvet vid
+  5 km: 15 % på sex par. Grindens dom står, trösklarna orörda; nästa steg Bengts (§4.2).
+  ↪ **Andra körningen 30/9 (DECISIONS #406, Bengts *"gör om mätningen med dom per band och de tre täckningarna"*):** bandet
+  efter närmaste station, läsning per band med spärr, täckning för skuggrutterna, huvudvägnätet (818 segment) och trafikarbetet
+  (ÅDT-fil, annars inte mätt). Utfall (36668940287): täckning A och B nästan lika (53/34/7/7 mot 50/38/7/5 %), C omätt;
+  grindens bandregel flyttade 2,6 %; per band avgör fem dygn bara fallen (rå, ANOM i 7–20 km; rå+höjd bortom 20 km); bandet
+  0–7 km har 15 stationer och kan aldrig nå spärren 20 — halva vägnätet är obedömbart med leave-one-out. Bokfört i #406.
+  ↪ **Finska stationerna 30/9 (DECISIONS #407, Bengts *"kör mätningen på de finska stationerna också"*):** samma mätning på
+  `fi.weather_observations` med `--land fi`, för statistisk kraft i bandet 0–7 km. Arkivets censur (varma hinkar) läses först.
+  Utfall (36670176981): 427 stationer, 89,5 % varma hinkar (mild censur); bandet 0–7 km har 108 stationer och rå viktning
+  klarar det (2,3 % [1,1–3,5]) — samma tal som Sveriges 15 stationer under spärren; golvet inom 3 km 3,9 % på 40 par; men
+  frysflaggan vid 1 °C missas i 57 % även inom 7 km (6 % med en grads marginal). Bokfört i #407.
+  ↪ **Regimgrinden 30/9 (DECISIONS #408, Bengts *"kör regimgrinden också"*):** samma mått per regim vid målstationen (stilla natt
+  ≤ 2 m/s och solhöjd < −6°; blåsigt ≥ 5 m/s; övrigt), medelvind, inte byvind; molnmängd saknas i arkivet. Sverige och Finland.
+  Utfall (36671071146 / 36671072792): hypotesen höll inte — rå faller i båda läsbara regimerna i Sverige (12,5 / 9,2 %) och den
+  stilla natten är den bättre regimen i Finland (3,1 mot 5,9 %); blåsigt nästan tomt (133 / 33 p) i september. Bandet 0–7 km
+  håller i alla regimer och båda länderna. Regimen kräver molnmängd, som inte finns i arkivet. Bokfört i #408.
+- [x] ✅ **#268 MÅLBLADET — KLART 29/9, ANDRA UTGÅVAN SAMMA DAG (DECISIONS #401, #402)**: `docs/MALET.md`, en sida: slutmålet, §6.4:s klart-kriterier fastställda, M1–M5 = Skyltfondsansökans arbetspaket (Axels V2, 413 000 kr, sökande Bengt som privatperson, DECISIONS #404), M0 med kritisk väg i sex steg, milstolparna ur domkalendern, utgångsläget 29/9. Första utgåvan byggde på kort från 20/9 och sa fel om Android, Play-kontot, batteriet, kalendern och beloppet; andra utgåvan avstämd mot koden, appsidan 28/9, mätningssidan 29/9 och #340–#401. Kvar: korten får sitt mål M0–M5, greppen (2)–(4), och beloppet bekräftas (§4.2).
 - [x] ✅ **#266 VÄGPUNKTSGRINDEN FÖLL 28/9 — BOKFÖRD 29/9 (DECISIONS #399)**: populationsläsningen visade att septemberdomen #324 vilade på ett arkiv utan varma grannar (rå viktning efter 25/9: 11,0 % grova fel med dem, 4,4 % utan; frysflaggan missad i 70 %). Skuggan fortsätter som mätning, läsningen går varje måndag efter höjdprovet.
 - [x] ✅ **#244 "FÖR LITE DATORKRAFT" — STÄNGT 28/9 08:42Z (DECISIONS #389)**: rutfiltret (25/9, #360) höll i tre dygn. **144 av 144 skuggvarv** 25/9 09:02 – 28/9 08:32Z skrev sina rader (123 med 3, 21 med 2 — de korta vart sjunde varv, rotationen över 20 rutter); **0 av 509** svar i `net._http_response` var 546 (fönstret 02:42–08:41Z; 04:00-läsningen täckte 21:59–03:58Z: 0 av 501); gallringsjobbet orört (`gallra_arkiv(7)`). dbknapp 36398894806. Tavlan 36 → 35.
 - [x] ✅ **#253 DE VARMA GRANNARNA — KLART 26/9 (DECISIONS #380)**: den levande ingesten sparar en varm avläsning per station och halvtimme sedan 25/9; 0,4 % saknade grannplatser i kalla halvtimmar (var 49,5 %, gränsen 5 %), 10 796 → 63 095 rader per dygn. Tavlan 35 → 34, och nytt kort #260 (V1–V3) ⇒ 35.

@@ -1,108 +1,75 @@
 # Körschema: Föreningen Halkvakt bildas
 
-*Upprättat 28 september 2026 på Bengts beställning. Förslag: mötet tisdag 13 oktober, organisationsnumret i november.*
+*Upprättat 28 september 2026, omskrivet 29 september på Bengts beställning: föreningen bildas nu. Skyltfondsansökan lämnas av
+Bengt som privatperson (beslut 29/9 kväll, DECISIONS #404); föreningen nämns i ansökan som förvaltare av de öppna resultaten. Sista
+dag för ansökans ankomst: 1 oktober 2026.*
 
-## Läget
+## Personerna
 
-Föreningen kan bildas på en kväll. Det som tar tid är Skatteverkets organisationsnummer, som behövs för bankkonto och för att
-söka bidrag i föreningens namn. Skyltfondsansökan skickas som planerat senast 1 oktober, med Bengt som privatperson (DECISIONS
-#395). Föreningen bildas efter det och ändrar inget i ansökan. Om föreningen ska stå som sökande redan 1 oktober gäller spår A
-längst ned, och det kräver ett möte senast onsdag 30 september.
+| Person | Roll i föreningen | Roll i Skyltfondsprojektet |
+| :-- | :-- | :-- |
+| Bengt Lagerlöf | ordförande, firmatecknare, kontaktperson mot Skatteverket | projektledare |
+| Axel Lagerlöf | kassör, firmatecknare | systemansvarig |
+| Harald Lagerlöf | styrelseledamot, sekreterare | — |
+| Susanne Horstmann | revisor | — |
+
+Alla fyra är medlemmar från det konstituerande mötet. Med fyra röster har ingen mer än 25 procent, så föreningen har normalt
+ingen verklig huvudman att redovisa när bankkontot öppnas.
 
 ## Handlingarna
 
-| Nr | Handling | Används |
-| :-- | :-- | :-- |
-| 1 | Stadgar | bifogas kallelsen som förslag, antas på mötet, kopia till Skatteverket och banken |
-| 2 | Kallelse och dagordning | mejlas till de fyra grundarna |
-| 3 | Protokoll från konstituerande mötet | fylls i under mötet, undertecknas, kopia till Skatteverket och banken |
-| 4 | Medlemsförteckning | fylls i på mötet, förs sedan av styrelsen |
-| 5 | Ansökan om organisationsnummer, arbetsblad | internt stöd för blanketten SKV 8400 |
+| Nr | Handling | Läge | Används |
+| :-- | :-- | :-- | :-- |
+| 1 | Stadgar | klar, daterad 29/9; sätet (kommunen) fylls i | antas på mötet; bilaga till Skatteverket och banken |
+| 2 | Kallelse och dagordning | klar | mejlas till Axel, Harald och Susanne |
+| 3 | Protokoll från konstituerande mötet | klar med namn och roller; personnummer, adress, tid och plats fylls i | undertecknas samma kväll; bilaga till Skatteverket och banken |
+| 4 | Medlemsförteckning | klar med namn; adresser fylls i | förs av styrelsen, lämnar aldrig repot |
+| 5 | Ansökan om organisationsnummer, arbetsblad | klar | stöd för blanketten SKV 8400 |
+| 6 | Skyltfondens arbetsblad | omskrivet för privatperson, V2 | sida 1, sekretessbegäran, checklista, mejltext |
 
-Mallarna ligger i `docs/forening/` och som redigerbara dokument i Drive-mappen *Föreningen Halkvakt, bildande*. Namn, adresser och personnummer fylls i Drive
-eller på papper, aldrig i repot.
+Mallarna ligger i `docs/forening/` och som redigerbara dokument i Drive-mappen *Föreningen Halkvakt, bildande*. Personnummer
+och adresser fylls i Drive eller på papper, aldrig i repot.
 
 ## Schemat
 
 | När | Vad | Vem | Klart när |
 | :-- | :-- | :-- | :-- |
-| mån 28/9–tor 1/10 | Skyltfondsansökan skickas. Föreningen rör den inte. | Bengt | ansökan skickad |
-| senast sön 4/10 | Besluten under *Före kallelsen* nedan. Fråga de två som ska bli grundare utöver Bengt och Axel. | Bengt, Axel | fyra har sagt ja |
-| mån 5/10 | Kallelsen skickas med stadgeförslaget (handling 2 och 1). | Bengt | mejlet skickat |
-| 5/10–fre 9/10 | Synpunkter på stadgarna kommer in och förs in i förslaget. | alla fyra | förslaget låst |
-| tis 13/10 kl 19 | Konstituerande möte, cirka 45 minuter, på plats eller digitalt. Sekreteraren fyller i protokollet (3) och medlemsförteckningen (4) under mötet. | alla fyra | mötet hållet |
-| senast fre 16/10 | Protokollet skrivs rent och undertecknas av sekreteraren, mötesordföranden och justeraren. Stadgarna dateras. Kopiorna bestyrks. | sekreterare, justerare | tre underskrifter |
-| senast mån 19/10 | SKV 8400 fylls i och postas med kopiorna (arbetsblad 5). | kontaktpersonen | kuvertet postat |
-| 19/10 och framåt | Väntan på Skatteverkets beslut. Ingen handläggningstid anges; räkna med några veckor. Har inget kommit mån 30/11 ringer kontaktpersonen Skatteverket. | kontaktpersonen | beslutet har kommit |
-| veckan numret kommer | Bankkonto. Boka tid och ta med stadgarna, protokollet, Skatteverkets beslut och legitimation för firmatecknarna. Bankgiro och Swish vid behov. | firmatecknarna | kontot öppnat |
-| tis 15/12 | Skyltfondens besked. Beviljas pengarna, läs *Innan föreningen tar emot pengar*. | Bengt | besked läst |
+| tis 29/9 förmiddag | Kallelsen (2) mejlas med stadgeförslaget (1). Sätet fylls i i stadgarna. Tid och plats för mötet bestäms. | Bengt | mejlet skickat, tre svar |
+| tis 29/9 kl 19 | Konstituerande möte, cirka 45 minuter, på plats eller på länk. Harald för protokollet (3) under mötet. | alla fyra | mötet hållet |
+| tis 29/9 kväll | Protokollet skrivs rent, personnummer för firmatecknarna fylls i, och Harald, Bengt och Axel skriver under. Deltar någon på länk: skriv ut, skriv under, fotografera, och samla underskrifterna på ett exemplar. Stadgarna skrivs ut. | Harald, Bengt, Axel | tre underskrifter, en skannad PDF av protokollet och en av stadgarna |
+| ons 30/9 förmiddag | SKV 8400 fylls i, kopiorna bestyrks och kuvertet postas (5). Anteckna datumet: det står i ansökan. | Bengt | kuvertet postat |
+| ons 30/9 | Ansökan till Skyltfonden: Bengt som privatperson, Axels V2 efter ändringslistan, bilaga 1–8, mejlas till båda adresserna med begäran om sekretessprövning för personnummer och bankkonto (6). | Bengt | mejlet skickat, inget studsat |
+| tor 1/10 | Reservdag. Sista dag för ankomst hos Trafikverket. | Bengt | — |
+| oktober–november | Organisationsnumret kommer. Bankkontot öppnas. | Bengt, Axel | kontot öppnat |
+| tis 15/12 | Skyltfondens besked. | Bengt | besked läst |
 | före 31/3 2028 | Första ordinarie årsmöte, för räkenskapsåret från bildandet till 31/12 2027. | styrelsen | protokoll |
 
 Från första kronan förs en enkel kassabok med verifikationer. Föreningen är inte bokföringsskyldig så länge den inte bedriver
 näringsverksamhet, men stadgarna § 11 kräver räkenskaper och revisorn ska kunna granska dem.
 
-## Före kallelsen: sex beslut
+## Beslut som är tagna (Bengt 29/9) och tre som fylls i på mötet
 
-1. **Fyra grundare.** Skatteverket kräver minst tre personer. Stadgarna kräver tre i styrelsen och en revisor utanför den, alltså
-   fyra personer: Bengt, Axel och två till. Med fyra medlemmar och en röst var har ingen mer än 25 procent av rösterna, och då har
-   föreningen enligt Bolagsverket normalt ingen verklig huvudman. Med tre medlemmar räknas alla tre som verkliga huvudmän, vilket
-   banken frågar efter.
-2. **Posterna.** Förslag: Bengt ordförande, Axel sekreterare och den tredje kassör. Då betalar ingen av de två som kan få ersättning
-   ur projektet ut pengar till sig själv. Revisorn bör inte vara närstående till någon i styrelsen, eftersom en fondgivare läser
-   revisionsberättelsen.
-3. **Namnet.** Förslag: Föreningen Halkvakt. Halkvakt är fortfarande arbetsnamn. Organisationsnumret ger inget namnskydd.
-4. **Sätet.** Kommunen där styrelsen finns, sannolikt Bengts hemkommun. Den skrivs i stadgarna § 3 och på blanketten.
-5. **Avgiften.** Förslag: 0 kronor till och med 2027. Det sparar administration, och stadgarna låter årsmötet ändra den.
-6. **Firmateckningen.** Förslag: ordföranden och kassören var för sig. Alternativet, två i förening, är säkrare men kräver två
-   personer för varje betalning.
+Tagna: fyra grundare, posterna enligt tabellen ovan, namnet Föreningen Halkvakt, avgiften 0 kronor till och med 2027,
+firmateckning av ordföranden och kassören var för sig, första räkenskapsåret till 31/12 2027, och integritetslöftet i § 2.
 
-Två val är redan gjorda i stadgeförslaget och kan strykas på mötet:
+Fylls i på mötet:
 
-- **Integritetslöftet står i § 2**, med samma innebörd som appens invariant: ingen position lämnar telefonen utan förarens eget val.
-  Står det i ändamålet kan det bara ändras vid två möten med två tredjedelars majoritet.
-- **Första räkenskapsåret är förlängt** till 31/12 2027, så att inget årsmöte behövs för hösten 2026. Vill ni hellre hålla
-  årsmöte redan i mars 2027 stryks den meningen i § 7.
+1. **Sätet**, alltså kommunen där styrelsen finns. Den står i stadgarna § 3 och på blanketten.
+2. **Tid och plats**, och om någon deltar på länk.
+3. **Personnummer** för Bengt och Axel i protokollet § 13, och postadressen i § 15. Skrivs bara på papper och i Drive.
 
-## Innan föreningen tar emot pengar
+Två saker att veta om personerna. Tre av fyra bär samma efternamn, och det är tillåtet i en ideell förening; jävsparagrafen § 12
+gör att den som får ersättning ur projektet inte deltar i beslutet om den. Är revisorn närstående till någon i styrelsen är det
+också tillåtet, men den som läser revisionsberättelsen hos Trafikverket kan notera det.
 
-Inget av detta behövs för att bilda föreningen, men allt måste vara avgjort före första utbetalningen.
+## Vad som gäller för Skyltfondsansökan
 
-- **Mottagaren.** Ansökan har Bengt som sökande och mottagare. Om föreningen ska ta emot bidraget måste Trafikverket godkänna
-  bytet. Det är okänt om det går. Frågan ställs efter beskedet 15/12, före första utbetalningen.
-- **Ersättningen för egen tid.** Budgeten räknar med 700 kronor i timmen för egen tid (bilaga 1). Betalar föreningen ut ersättning
-  till en person blir den arbetsgivare. Då krävs registrering hos Skatteverket och en arbetsgivardeklaration varje månad, och
-  arbetsgivaravgifter tillkommer ovanpå ersättningen. Rymmer 700 kronor inte avgifterna räcker budgeten till färre timmar.
-  Stadgarna § 12 gör att den som får ersättningen inte deltar i beslutet om den.
-- **Appen.** Föreningen äger varken appen eller koden. Apple-kontot är Axels, och Play-kontot är ett personligt konto. Ska
-  föreningen stå som utgivare i butikerna krävs ett avtal om rättigheterna och organisationskonton hos Apple och Google. Google
-  kräver ett DUNS-nummer, som kan ta upp till 30 dagar (`docs/PLAY-KONTO.md`). Det är ett eget beslut och inte en del av
-  bildandet.
-
-## Spår A: föreningen som sökande redan 1 oktober
-
-Det här gäller bara om Bengt och Axel ändrar DECISIONS #395.
-
-| När | Vad |
-| :-- | :-- |
-| tis 29/9 | Fyra grundare har sagt ja. Kallelsen går ut samma dag. |
-| ons 30/9 kväll | Konstituerande möte. Protokollet justeras samma kväll. |
-| tor 1/10 | SKV 8400 postas. Ansökan ändras och skickas. |
-
-I ansökan ändras sida 1: **Företag** blir *Föreningen Halkvakt (under bildande)*, **Organisationsnummer** *"ansökt hos
-Skatteverket 1 oktober 2026"* och **Bankgiro** *"meddelas före utbetalning"*. Firmatecknaren och kontaktpersonen tas ur
-protokollet. I bilaga 1 ändras sökandestycket och personalplanen, och stadgarna och protokollet bifogas som bilaga 9 och 10.
-
-Priset är osäkerheten. Formuläret säger att ett tomt fält gör att ansökan inte hanteras. *"Ansökt"* är inte tomt, men ingen vet om
-det godtas. VALMA beviljades i våras med namnet *"inskickat för registrering"*, men deras organisationsform är okänd. Rekommendationen
-är därför att stå fast vid #395 och bilda föreningen i oktober. Då skickas ansökan som den är skriven, och föreningen bildas utan
-tidspress.
-
-## Källor
-
-- Skatteverkets sida *Starta en ideell förening*, läst 22/9 (`docs/FINANSIERING.md`): minst tre personer, stadgar och protokoll,
-  SKV 8400 per post.
-- Bolagsverket om verklig huvudman i ideell förening: 25-procentsregeln och att en oregistrerad förening redovisar verklig huvudman
-  i samband med affärsförbindelser som ett bankkonto. Läst genom sökresultat 28/9, eftersom sidan inte gick att öppna härifrån.
-  Läs den själv före bankmötet.
-- Blankettens fält och att ansökan är kostnadsfri: äldre kopior av SKV 8400 och sökresultat 28/9. Den blankett som gäller när ni
-  hämtar den går före.
+- Sökande är **Bengt Lagerlöf som privatperson** (DECISIONS #404). Sida 1 fylls i med Bengt som företag, personnummer som
+  organisationsnummer och bankkonto som bankgiro. Bengt är kontaktperson, projektledare och firmatecknare och skriver under intyget.
+- Personnummer och bankkonto blir del av en offentlig handling. I mejlet begärs sekretessprövning för de två fälten, enligt fondens
+  anvisning att delar som ska skyddas markeras eller läggs i separat bilaga.
+- Bilaga 1 nämner föreningen i personalplanen som den som förvaltar rapport, metod, tröskeldokument och testbädd efter projektet.
+  Hölls mötet 29/9 står "bildade den 29 september 2026", annars "avser att bilda". Stadgar och protokoll bifogas inte, men kan
+  bifogas som stöd om ni vill.
+- Skälet till valet: formuläret säger att en ofullständig ansökan inte hanteras, och ett organisationsnummerfält med "ansökt" är en
+  risk ingen kan värdera. Fondens sida bjuder uttryckligen in privatpersoner.

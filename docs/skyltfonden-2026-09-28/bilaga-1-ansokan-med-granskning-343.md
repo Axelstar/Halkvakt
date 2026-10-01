@@ -2,7 +2,7 @@
 
 *ERSATT 29/9 kväll (DECISIONS #404): ansökan lämnas av Bengt som privatperson med Axels V2 (413 000 kr, Drive-mappen Ansökan V2). Texten nedan är förmiddagens alternativ och skickas inte.*
 
-**Utökade svar på formulärets fält 2–8** (Trafikverkets ansökningsformulär, version 240909). Sökande: Föreningen Halkvakt, ideell förening under bildande, genom ordföranden Bengt Lagerlöf. Sökt belopp: **283 000 kr**. Projektperiod: 2027-01-11 – 2028-04-30.
+**Utökade svar på formulärets fält 2–8** (Trafikverkets ansökningsformulär, version 240909). Sökande: Föreningen Halkvakt, ideell förening under bildande, genom ordföranden Bengt Lagerlöf. Sökt belopp: **343 000 kr**. Projektperiod: 2027-01-11 – 2028-04-30.
 
 **Projektets titel:** Räcker Trafikverkets öppna väglagsdata för att varna alla förare i tid? Utvärdering av röstburen förhandsvarning för halka (Halkvakt) under två vintrar, och validering av ett prognoslager för halka mellan mätstationerna.
 
@@ -20,9 +20,9 @@ Sedan 23 september 2026 körs lagret enbart i **skuggdrift**. Det beräknar och 
 
 Den första av lagrets tre grindar, korsvalideringen vid stationerna, klarades 23 september 2026 och höll i omkörningen 28 september på ett fullständigare arkiv: medelfel 0,74 °C mot kravet högst 1,0 °C och grova fel 3,7 % mot kravet högst 5 %. Den enklare skattning som ska gälla mellan stationerna, där ingen egen mätserie finns, föll däremot 28 september med 6,9 % grova fel. Utfallet är bokfört, och det är just den frågan, vad som går att uppnå mellan stationerna, som vinterns grindar och ansökan avser att pröva.
 
-**Sökt belopp:** 283 000 kr för perioden januari 2027–april 2028, fördelat på fyra arbetspaket enligt kostnadsplanen. Inget av det som redan är byggt ingår i det sökta; det är projektets verktyg.
+**Sökt belopp:** 343 000 kr för perioden januari 2027–april 2028, fördelat på fem arbetspaket enligt kostnadsplanen. Inget av det som redan är byggt ingår i det sökta; det är projektets verktyg.
 
-Projektet ställer en fråga som ingen i dag kan besvara: räcker de väglagsdata staten redan samlar in och publicerar för att varna förare i tid, och hur mycket tillför en prognos mellan mätstationerna? Ansökan avser två saker.
+Projektet ställer en fråga som ingen i dag kan besvara: räcker de väglagsdata staten redan samlar in och publicerar för att varna förare i tid, och hur mycket tillför en prognos mellan mätstationerna? Ansökan avser tre saker.
 
 **1. Utvärdera om förhandsvarning på öppna data fungerar i verklig trafik.** Ingen har mätt hur väl VViS-data fungerar som varningskälla för allmänheten. Under vintern 2026/27 loggas varje varning med de indata som utlöste den, och den ställs mot vad som faktiskt hände enligt fem källor:
 - väglagskamerornas bilder;
@@ -35,7 +35,7 @@ Från januari 2027 analyseras detta systematiskt: träffsäkerhet, falsklarmsand
 
 **2. Validera och driftsätta prognoslagret för halka mellan mätstationerna.** Vid projektstart har lagret loggat i skuggdrift sedan september, och det fortsätter hela vintern. Från januari utvärderas prognoserna mot vinterns facit och mot förhandsdaterade trösklar för falsklarm, missar och mervärde. Resultatet redovisas som en nationell felkarta som visar var prognosen är tillförlitlig i förhållande till avståndet till närmaste station. Klarar lagret trösklarna driftsätts det inför vintern 2027/28 som kartlager och som förstärkare av mätta varningar. Klarar det dem inte publiceras det resultatet lika öppet — även ett välgrundat nej är kunskap som Trafikverket saknar i dag.
 
-**Granskningsbar i stället för granskad.** Projektet köper ingen extern granskning. I stället är allt som behövs för att pröva slutsatserna öppet och daterat: tröskeldokumenten med sin versionshistorik, arkivet, skuggloggen och utvärderingsskripten. Trafikverket, fondens beredningsgrupp och VTI erbjuds tillgång till underlaget för egen omprövning, när som helst under projektet.
+**3. Låta en oberoende granskare pröva metoden och resultaten.** Granskningen upphandlas efter beviljat bidrag, med offert från minst tre parter: forskningsinstitut, lärosäte eller konsult med kompetens inom trafiksäkerhet eller vägklimat. Granskaren prövar att trösklarna fastställdes före mätningen och tillämpades som de skrevs, att klassningen av varningar mot facit håller på ett stickprov som granskaren själv väljer, och att prognoslagrets dom går att reproducera ur arkivet. Utlåtandet publiceras oavkortat med rapporten. Underlaget är öppet och daterat också för andra: tröskeldokumenten med sin versionshistorik, arkivet, skuggloggen och utvärderingsskripten erbjuds Trafikverket, fondens beredningsgrupp och VTI för egen omprövning, när som helst under projektet.
 
 **Vad som inte ingår, och varför.** Det starkaste effektbeviset vore ett kontrollerat försök med nya förare vid en trafikövningsplats, där elever med och utan varning jämförs i samma moment. Försöket kräver en trafikövningsplats som partner. Någon sådan har inte bekräftats till denna ansökan, och därför står försöket utanför.
 
@@ -162,9 +162,17 @@ Till det kommer testförarnas svar per varning och deras egna markeringar av mis
 - **Förarfacit.** Svaren används som förarfacit i AP1:s klassning och jämförs med kamera-, station- och SMHI-facit. Där förarna och kamerorna är oense redovisas det som ett eget resultat.
 - **Enkät och gruppintervju** genomförs i april 2027 och upprepas i april 2028. De gäller upplevd träffsäkerhet, om rösten stör, om appen behålls, om föraren sänkte farten eller ökade avståndet vid varning, och vilken formulering av varningen föraren helst vill ha.
 
-### Arbetspaket 4 — Rapport och spridning (apr–jun 2027, slutrapport apr 2028)
+### Arbetspaket 4 — Oberoende granskning (feb–jun 2027)
 
-- **Rapporten** redovisar öppet metoden, resultaten och vad öppna data räcker till och inte, inklusive prognoslagrets utfall mot trösklarna, oavsett vilket det blir. Rapporten, metoden och tröskeldokumenten publiceras, så att väghållare, kommuner och andra utvecklare kan bygga vidare och pröva slutsatserna själva.
+- Uppdraget upphandlas efter beviljat bidrag, med offertförfrågan till minst tre parter: forskningsinstitut, lärosäte eller konsult med kompetens inom trafiksäkerhet eller vägklimat. Ingen part är kontaktad före ansökan, och ingen namnges som åtagen.
+- Granskaren får tillgång till arkivet, skuggloggen, tröskeldokumenten med deras versionshistorik och utvärderingsskripten.
+- **Steg 1, metodgranskning (februari–mars 2027, före driftsättningsdomen i mars):** granskaren prövar att trösklarna fastställdes före mätningen och tillämpas som de skrevs, och att facitreglerna är rimliga.
+- **Steg 2, resultatgranskning (maj–juni 2027, före rapporten):** granskaren gör om klassningen av varningar mot facit på ett eget stickprov och reproducerar prognoslagrets dom och felkarta ur arkivet.
+- Utlåtandet publiceras oavkortat som bilaga till rapporten, också om det är kritiskt.
+
+### Arbetspaket 5 — Rapport och spridning (apr–jun 2027, slutrapport apr 2028)
+
+- **Rapporten** redovisar öppet metoden, resultaten och vad öppna data räcker till och inte, inklusive prognoslagrets utfall mot trösklarna, oavsett vilket det blir, och granskarens utlåtande oavkortat. Rapporten, metoden och tröskeldokumenten publiceras, så att väghållare, kommuner och andra utvecklare kan bygga vidare och pröva slutsatserna själva.
 - **Presentationer** görs för Trafikverket (som dataägare och inför upphandlingen av fordonsdata 2027) och SKR:s nätverk för trafiksäkerhet. VTI och relevanta lärosäten erbjuds underlaget. NTF, trafikskolor och kommuner bjuds in när resultaten finns.
 - **Appen** är den snabbaste spridningen: gratis i Google Play och App Store och i drift under två vintrar.
 
@@ -201,7 +209,7 @@ Det gäller bara testförare som själva slagit på funktionen, som är avslagen
 
 **Efter projektet.**
 - Appen förblir gratis och i drift. Målet är att den ska bära sig genom tjänster till yrkestrafik och väghållare, inte genom konsumentavgifter.
-- Rapporten, metoden och tröskeldokumenten publiceras öppet.
+- Rapporten, granskarens utlåtande, metoden och tröskeldokumenten publiceras öppet.
 - Resultaten presenteras för Trafikverket och SKR och erbjuds VTI och lärosäten, inte minst inför Trafikverkets upphandling av fordonsdata 2027.
 - Klarar prognoslagret trösklarna är nästa steg att förtäta det med fler mätkällor. Kommuner har egna vägväderstationer i gatunätet som i dag bara styr halkbekämpningen, och metoden tar emot en sådan källa med några dagars arbete.
 - Ett kontrollerat försök vid en trafikövningsplats är nästa steg i effektmätningen, när en sådan partner finns.
@@ -210,11 +218,13 @@ Det gäller bara testförare som själva slagit på funktionen, som är avslagen
 
 *Vem eller vilka ansvarar för planering och genomförande?*
 
-**Bengt Lagerlöf, projektledare.** Ansvarar för projektplanen, rekrytering och uppföljning av testförare, utvärderingens uppläggning, kontakten med Trafikverket, rapport och spridning. Bakgrund: [ ]. Beräknad insats: [ ] timmar.
+**Bengt Lagerlöf, projektledare.** Ansvarar för projektplanen, rekrytering och uppföljning av testförare, utvärderingens uppläggning, upphandlingen av granskningen (AP4), kontakten med Trafikverket, rapport och spridning. Bakgrund: [ ]. Beräknad insats: [ ] timmar.
 
 **Axel Lagerlöf, systemansvarig.** Ansvarar för datapipelinen, varningsmotorn, prognoslagrets drift, loggning och utvärderingsverktyg samt appens drift och publicering. Har utvecklat systemet under 2026. Bakgrund: [ ]. Beräknad insats: [ ] timmar.
 
-Tillsammans 350 timmar enligt kostnadsplanen (AP1 180, AP2 100, AP3 30, AP4 40).
+Tillsammans 350 timmar enligt kostnadsplanen (AP1 180, AP2 100, AP3 30, AP5 40).
+
+**Extern part (AP4).** Oberoende granskare, upphandlad efter beviljat bidrag bland minst tre anbudsgivare. Omfattning enligt kostnadsplanen.
 
 **Sökande organisation.** Föreningen Halkvakt är en ideell förening under bildande, med ändamålet att främja trafiksäkerheten på vintervägar: att utveckla, driva och utvärdera Halkvakt, att öppet redovisa hur väl öppna väglagsdata räcker för att varna förare i tid, och att sprida kunskap om halka och vinterkörning. Konstituerande möte hölls den 29 september 2026. Styrelsen består av Bengt Lagerlöf (ordförande), Axel Lagerlöf (kassör) och Harald Lagerlöf (ledamot och sekreterare); revisor är Susanne Horstmann. Ansökan om organisationsnummer lämnades till Skatteverket den 30 september 2026, och numret och bankuppgifterna kompletteras så snart de finns. Stadgarna och protokollet från det konstituerande mötet bifogas som bilaga 9 och 10. Föreningen bedriver ingen näringsverksamhet; appen är gratis och utvecklingen 2026 är egenfinansierad.
 
@@ -225,7 +235,7 @@ Tillsammans 350 timmar enligt kostnadsplanen (AP1 180, AP2 100, AP3 30, AP4 40).
 
 ## Kostnadsplan
 
-**Sökt belopp totalt: 283 000 kr.**
+**Sökt belopp totalt: 343 000 kr.**
 
 Egen finansiering, ej sökt, omfattar utvecklingsarbetet 2026: appen, datapipelinen, prognoslagrets bygge, förarnas återkoppling och missmarkering, mätinfrastrukturen, givarvakterna och skuggdriften hösten och vintern 2026. Dessutom driften av det befintliga systemet fram till projektstart.
 
@@ -236,17 +246,19 @@ Egen finansiering, ej sökt, omfattar utvecklingsarbetet 2026: appen, datapipeli
 | AP2 Prognoslager | Validering mot facit och trösklar, nationell felkarta, kalibrering, driftsättning inkl. ankomsttidsvy | 100 tim | 700 kr | 70 000 | 70 000 |
 | AP3 Testförare | Rekrytering, instruktion, uppföljning, analys av svaren mot facit, enkät och gruppintervju | 30 tim | 700 kr | 21 000 | 21 000 |
 | AP3 Testförare | Ersättning för fullföljd vinter (presentkort) | 40 st | 500 kr | 20 000 | 20 000 |
-| AP4 Rapport | Rapport, presentationer, spridning | 40 tim | 700 kr | 28 000 | 28 000 |
+| AP4 Granskning | Oberoende granskning, upphandlad (offert från minst tre parter) | 1 | 60 000 kr | 60 000 | 60 000 |
+| AP5 Rapport | Rapport, presentationer, spridning | 40 tim | 700 kr | 28 000 | 28 000 |
 | Drift | Server, lagring, körtid för mätningarna, appbutiker, domän (15 mån) | 15 mån | 800 kr | 12 000 | 12 000 |
-| Resor | Möten med Trafikverket och testförare | — | — | 6 000 | 6 000 |
-| **Totalt** | | | | **283 000** | **283 000** |
+| Resor | Möten med Trafikverket, granskaren och testförare | — | — | 6 000 | 6 000 |
+| **Totalt** | | | | **343 000** | **343 000** |
 
 **Kommentarer.**
 - Timpriset 700 kr avser egen tid för projektledning, analys och utveckling.
 - AP2:s medel avser uteslutande validering, kalibrering och driftsättning mot användare från januari 2027.
 - Inget belopp avser redan slutfört arbete.
+- AP4 är en köpt tjänst. Priset är en uppskattning för en granskning i två steg, och den upphandlas i konkurrens. Erbjuder ett lärosäte granskningen som examensarbete utan kostnad återförs motsvarande medel.
 - Ingen annan finansiär finns.
-- Blir det beviljade beloppet lägre än det sökta prioriteras AP1 och AP2.
+- Blir det beviljade beloppet lägre än det sökta prioriteras AP1, AP2 och AP4.
 
 ## Trafiksäkerhetsnyttan
 
@@ -257,7 +269,7 @@ Halka står bakom ungefär hälften av vägskadorna i Norden. Den enskilt viktig
 Nyttan uppstår i tre led:
 - **Direkt, för förare vintern 2026/27 och 2027/28.** Varje korrekt varning är ett tillfälle där en förare kan sänka farten före en hal sträcka i stället för på den. Med 300 aktiva användare och tio halkdagar per vinter blir det tusentals varningstillfällen, och även en liten andel förändrat beteende är olyckor som inte sker.
 - **För de förare som ingen annan varnar.** Halkvarningar i bilen finns i dag för den som köper rätt bil och betalar för tjänsten. Halva bilparken saknar dem, och där finns de äldre bilarna, de nya förarna och de som kör mest på landsväg i mörker. En varning som når varje telefon når också dem.
-- **För Trafikverket och andra aktörer.** Projektet ger den första mätta bilden av hur öppna väglagsdata fungerar som varning för allmänheten: vad datan fångar, vad den missar och hur mycket ett prognoslager tillför. Prövningen görs prospektivt mot förhandsdaterade trösklar, med finska Digitraffic som referens. Kunskapen är användbar för Trafikverkets egna tjänster, för upphandlingen av fordonsdata 2027, för väghållare och för andra som bygger på samma data. Redan under förberedelserna har arbetet gett Trafikverket något tillbaka: sexton felmätande vägväderstationer upptäckta och anmälda.
+- **För Trafikverket och andra aktörer.** Projektet ger den första mätta bilden av hur öppna väglagsdata fungerar som varning för allmänheten: vad datan fångar, vad den missar och hur mycket ett prognoslager tillför. Prövningen görs prospektivt mot förhandsdaterade trösklar och granskas av en oberoende part, med finska Digitraffic som referens. Kunskapen är användbar för Trafikverkets egna tjänster, för upphandlingen av fordonsdata 2027, för väghållare och för andra som bygger på samma data. Redan under förberedelserna har arbetet gett Trafikverket något tillbaka: sexton felmätande vägväderstationer upptäckta och anmälda.
 
 Projektet ligger i linje med Nollvisionen och med Skyltfondens prioritering av trafiksäkra transporter genom ny teknik. Det är gratis för trafikanten, i drift från start och mätbart.
 

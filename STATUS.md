@@ -2048,3 +2048,91 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 29/9 (Claude, Bengts "ja, kör på"): main ihopslagen in i grenen (DECISIONS-krocken löst: grenens kuvösbeslut #384/#385 → #397/#398),
   DECISIONS #399 bokför vägpunktsgrinden FALLEN och att skuggan fortsätter som mätning, populationsläsningen flyttad till
   `scripts/vagpunkt-population.ts` och körs varje måndag efter höjdprovet. Kort #266 klart. PR mot main öppnad.
+- 29/9 (Claude, Bengts "radera den och slå ihop"): de två mätningssidorna är ett dokument. Den interna sidan heter nu
+  *Halkvaktens mätningar* (privat, https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc) och bär allt: datan, de 21 delområdena,
+  övriga mätningar, skydden och domkalendern. Den publika sidan från 28/9 är raderad (bara Axel hade länken; han får den privata
+  av Bengt), eftersom den redan glidit isär: den sa att rå viktning klarar vägpunktsgrinden. I repot är kopian en fil,
+  `docs/MATNINGAR-2026-09-29.html`; `MATNINGAR-2026-09-28.html` och `SKUGGMOTORN-2026-09-29.html` är borta. Externa utdrag
+  görs ur den vid behov, utan opublicerade regelvärden.
+- 29/9 (Claude, Bengts beställning): Föreningen Halkvakt bildas 29/9 och söker Skyltfonden som förening under bildande
+  (DECISIONS #400, ersätter #395). Handlingarna ifyllda med Bengt ordförande, Axel kassör, Harald Lagerlöf ledamot och sekreterare,
+  Susanne Horstmann revisor: stadgar daterade 29/9, kallelse, protokoll (med § 16 om Skyltfondsansökan), medlemsförteckning,
+  8400-arbetsblad och körschema i `docs/forening/`; Skyltfondens arbetsblad och bilaga 1 omskrivna (sökandestycke, Axel Lagerlöf,
+  bilaga 9–10). Nya Google-dokument i Drive, de gamla omdöpta till mallar. Personnummer och adresser fylls i Drive, aldrig i repot.
+  Bilaga 1 säger också det som gäller om prognoslagret efter 28/9 (DECISIONS #399): grind A håller, skattningen mellan
+  stationerna föll, frågan är öppen. Sammanfattningen till Axel uppdaterad med sökanden.
+- 29/9 (Claude, Bengts *"ja, skriv målbladet"*): `docs/MALET.md` fastställt (DECISIONS #401) — slutmålet i en mening, §6.4:s
+  klart-kriterier, M0–M4 ur Skyltfondsansökan med trösklar och ägare, kalendern med domarna och kritiska vägen till novemberbetan.
+  Bedömningen: §4.2 grepp (1) struket, §6.4 fastställd, §6.6 punkt 3 halv; tavlan #268 KLART. Styrfrågan bokförd som §4.2-rad
+  (f05878c). Ännu inte gjort: korten bär inte sitt mål, greppen (2)–(4) öppna.
+- 29/9 (Claude, Bengts invändning *"jag ifrågasätter om detta verkligen är en uppdaterad målbild"*): omfattande genomgång av
+  appsidan 28/9, systembilden 25/9, mätningssidan 29/9, besluten #340–#401, koden och kalendern. Målbladet i andra utgåvan
+  (DECISIONS #402): Android och iOS i takt på 0.3.9 (18), Play-kontot sedan 20/9, batteriet mätt på iPhone, kalendern sedan 27/9,
+  beloppet 343 000 enligt Bengt — handlingarna bär 283 000 och väntar på hans bekräftelse (§4.2). Läget 29/9 överst i bedömningen,
+  §6.3/§6.6 rättade, #219 märkt överspelad, läxan i CLAUDE.md.
+- 29/9 (Claude, Bengts rättelse *"två parallella som skulle jämföras och sen beslutas"*): Skyltfondsansökans två alternativ
+  återställda (DECISIONS #403). `bilaga-1-ansokan-med-granskning-343.md` byggd ur 283 000-texten med v8B:s granskningsstycken;
+  arbetsbladet bär jämförelsen och rekommendationen; protokollet § 16 lägger valet på mötet; målbladet §3 bär båda beloppen.
+  Drive: nya dokument för bilaga 1 (343), protokollet och arbetsbladet, de gamla omdöpta. Axels sammanfattning uppdaterad.
+- 29/9 (Claude, Bengts *"lägg in allt detta i en mapp i drive med namn Skyltfonden"*): Axels mejl 13:45 om Ansökan V2 (privatperson,
+  413 000 kr, fartförändring i telefonen m.m.) bokfört som öppen §4.2-rad; Drive-mappen *Skyltfonden* skapad med Axels V2-mapp,
+  våra två alternativ och mejlet som dokument.
+- 29/9 (Claude, Bengts fråga om luckor, affärshemligheter, vision och marknadsföring): Axels åtta V2-dokument lästa;
+  granskningen i `docs/skyltfonden-2026-09-28/GRANSKNING-V2-2026-09-29.md` och i Drive-mappen Skyltfonden. Tio rättelser,
+  två saknade stycken med förslagstext, bedömningen att inget i ansökan är en affärshemlighet. §4.2-rad.
+- 29/9 kväll (Claude, Bengts *"Ny version. Gör en granskning"*): bilaga 1 i ny version läst mot de tio punkterna. Sex kvar,
+  viktigast prognoslagrets septemberbild; två nya (föreningen bildas i kväll, förarens nej fäller ensamt mot KB-D). Färdig
+  ersättningstext i granskningsdokumentet §6.
+- 29/9 kväll (Claude, Bengts *"Granska bilaga 1 … lista det som bör ändras"*): ändringslista för V2:s bilaga 1 med placering per
+  avsnitt i `docs/skyltfonden-2026-09-28/ANDRINGSLISTA-BILAGA-1-2026-09-29.md` och i Drive-mappen Skyltfonden. Tre tunga (prognoslagrets
+  septemberbild, föreningen "avses bildas", förarens nej fäller ensamt), tabellen "i dag / om trösklarna klaras" som svar på Bengts
+  visionsfråga, 25 övriga med plats.
+- 29/9 kväll (Claude, Bengts *"kolla ASEK 8.0-talen och Strada-siffran"*): alla källsidor spärrade i miljön; sökindexet ger ~44 mnkr
+  per dödsfall (ASEK 8.0 via PRO 2025-10-20), inte 19,3; "knappt en miljon" liknar IHE:s personskadekostnad; 17 % i TRV 2025/12914
+  tycks avse undvikbara olyckor vid däckbyte, inte novemberhalka. Bokfört i ändringslistan §5. Talen måste läsas i filerna av Axel.
+- 29/9 kväll (Claude, Bengts beslut *"ansökan går in som privatperson"*): DECISIONS #404. Rättat: målbladet §1/§3 (413 000, privatperson),
+  bedömningen §4.2 (två rader avgjorda) och läget (1), tavlan #265/#268, protokollet § 16 (notering), kallelsen, körschemat,
+  8400-arbetsbladet, FINANSIERING, de två alternativen märkta ersatta, arbetsbladet omskrivet för V2, ändringslistan omskriven.
+- 30/9 (Claude, Bengts *"gör en omkörning av den test som gjordes den 28/9"* och *"gör en ny mätning"*): vägpunktsgrinden omkörd
+  (36664018960): FALLEN igen, rå 7,9 % ± 0,4. Analys av matematiken i chatten; förregistrerad mätning skriven (DECISIONS #405,
+  kort #269, `scripts/matningar/vagpunkt-premisser-2026-09-30.ts`, knappen `hojd-prov` med `dagar: premisser`); självtest grönt,
+  kontraktsgrinden 58/58 med tre kopior av grind A:s tal. Utfallet fylls i #405 efter körningen.
+- 30/9 (Claude): premissmätningen körd (36666151860, grön): rå faller vägviktat 7,7 %, rå+höjd oavgjord 5,2 % [3,6–6,9], ANOM föll
+  15,2 %, offset (taket) 3,2 %; golvet vid 5 km 15 % på sex par. Utfall i DECISIONS #405, kort #269 KLART, bedömningen (7) och §4.2
+  (Bengts val a/b/c). Trösklar orörda. CI kör inte på grenen utan PR; kontraktsgrinden och självtesterna körda lokalt och i flödet.
+- 30/9 (Claude, Bengts *"gör om mätningen med dom per band och de tre täckningarna"*): DECISIONS #406 förregistrerad; skriptet
+  omskrivet (geometriskt band + räkning av flyttade, läsning per band med spärr, tre täckningar, ÅDT bara ur fil), självtest
+  grönt (sex kända sanningar), kontraktsgrinden 58/58. Körs ur hojd-prov med `dagar: premisser`.
+- 30/9 (Claude): andra körningen av premissmätningen (36668940287, grön; 36668773820 föll på generate_series-typ, rättat):
+  täckning A ≈ B, C omätt (ÅDT saknas); bandregeln flyttade 2,6 %; per band avgör fem dygn bara fallen; bandet 0–7 km har
+  15 stationer och kan inte nå spärren 20. Bokfört i DECISIONS #406, tavlan #269, bedömningen §4.2 (frågor d och e).
+- 30/9 (Claude, Bengts *"kör mätningen på de finska stationerna också"*): DECISIONS #407 förregistrerad; skriptet fick `--land fi`
+  (finska arkivet, inget snitt, varma hinkar skrivs ut, vakterna via tabellparametern), hojd-prov.yml fick `dagar: premisser-fi`.
+- 30/9 (Claude): finska körningen (36670176981, grön): 427 stationer, mild censur (89,5 % varma hinkar); bandet 0–7 km dömbart med
+  108 stationer, rå 2,3 % klarar; golvet 3 km 3,9 % på 40 par; frysflaggan missas 57 % inom 7 km, 6 % med en grads marginal.
+  Bokfört i DECISIONS #407, tavlan #269, bedömningen §4.2 (frågor f och g). Trösklar orörda.
+- 30/9 (Claude, Bengts *"kör regimgrinden också"*): DECISIONS #408 förregistrerad; del 11 i skriptet (regim vid målstationen ur
+  medelvind och solhöjd, per regim och band med spärr och bootstrap), självtest med solhöjd och regim grönt. Körs SE och FI.
+- 30/9 (Claude): regimgrinden körd SE (36671071146) och FI (36671072792), gröna: hypotesen höll inte — rå faller i båda läsbara
+  regimerna i Sverige, stilla natt är bättre i Finland, blåsigt tomt; bandet 0–7 km håller överallt. Molnmängd saknas i arkivet.
+  Bokfört i DECISIONS #408, tavlan #269, bedömningen §4.2 (fråga h). Trösklar orörda.
+- 30/9 (Claude, Bengts *"gör en sammanfattning … och spara så att vi inte tappar det"*): `docs/PROGNOSLAGRET-2026-09-30.md`
+  (körningar, tal, slutsatser, väg framåt, val a–h). Kort #270 (Bengts val) och #271 (termisk kartering) på tavlan, #265 ↪ om
+  ansökans två tillägg. Bedömningen (7) och §4.2 länkar dit.
+- 30/9 (Claude, Bengts *"Ansökan är skickad du kan stänga alla öppna kort som har med skyltfonden att göra"*): Skyltfondsansökan
+  skickad av Bengt (privatperson, Axels V2, 413 000 kr, bilaga 1–8, båda adresserna). Dagens granskningar (bilaga 3–8, Dokument 0,
+  hypoteserna 1–3, formulärstyckena, samarbetspartner, kostnadsplanen, följebrevet) gavs i chatten på Bengts order. DECISIONS #409;
+  tavlan: KLART-kort, #265 och #271 ↪, nytt #272 (den skickade versionen in i repot); bedömningen (1), §0b, kalendern och två
+  §4.2-rader strukna. origin/main (halkläget 30/9) inmergad.
+- 30/9 (Claude, Bengts *"du kan stänga kort 265"*): #265 till 🟢 KLART (DECISIONS #410); organisationsnummer och bankkonto som
+  bevakningsrad i §0b; §4.2-frågan och oktoberraden strukna.
+- 1/10 (Claude, Bengts *"stäng kort 272"*): #272 till 🟢 KLART utan bygge (DECISIONS #411) — den skickade ansökan arkiveras i
+  Drive, inte i repot. Bedömningen (1) och §0b rättade. origin/main (halkläget 1/10) inmergad.
+- 1/10 (Claude, Bengts *"kör på #263"*): db-knappen fick läsläget `las` (READ ONLY + rollback) som standard och `migrera` ingen
+  standardfil (a683e41, DECISIONS #412). Bevis: lokal Postgres (fem fall) och tre knapptryck mot databasen — läsning 36817259654 grön,
+  motprov 36817261645 röd med VÄGRAT, gallringsjobbet bär gallra_arkiv (36817425867). Kort #263 till 🟢 KLART.
+- 1/10 (Claude, Bengts *"kör på #264"*): källbevakningen avkodar HTML-entiteter (a1d75fb, DECISIONS #413); `norm` i
+  `publish/nyhetsbedomning.ts` med prov; hash-källorna seedas om en gång via `normv` utan larm. Körning 36817880379: åtta källor seedade om utan larm, inga issues. Kort #264 KLART.
+- 1/10 (Claude, Bengts *"öppna PR:en och merga efter grön"*): PR #652 öppnad (grenen → main, 38 commits). CI startade inte:
+  huvudcommiten bar överhoppningsmärket. Läxan i CLAUDE.md — och läxans egen commit (2ead3a4) bar märket ordagrant i RUBRIKEN
+  ("Läxa: … på PR:ens sista commit …") och stoppade CI en gång till, precis som 21/9-läxan säger. Först nästa commit, utan ordet, prövas.

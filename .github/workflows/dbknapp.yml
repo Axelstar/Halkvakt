@@ -1,19 +1,19 @@
 name: dbknapp
-# DB-knappen (9/9): kör en migration ur sql/ eller vakthundens larmprov mot databasen, med
+# DB-knappen (9/9): läser databasen, kör en migration ur sql/ eller vakthundens larmprov, med
 # DATABASE_URL som redan ligger i Secrets. Ett medvetet tryck, aldrig cron. Se scripts/dbknapp.ts.
+# Standard är `las` (1/10, kort #263): bevisraderna i en READ ONLY-transaktion som rullas tillbaka.
 on:
   workflow_dispatch:
     inputs:
       atgard:
-        description: "migrera (kör fil), larmprov, vinterprov (kort #52), frostprov (kort #89), matvaktprov (mätvakten, kort #101), paminnelseprov (källvaktspåminnelsen, #150), nyckelprov (nyckelkalendern, kort #86), sparrprov (skuggmotorns spärr, kort #191), databasprov (databasvakten, grepp 3), arkivprov (arkivbackupens ålder, kort #223), lagringsprov (lagringslarmet 800 MB), kamerafacitprov (kamerafacitets urval, torrt)"
+        description: "las (läser bevisraderna, skriver inget), migrera (kör fil), larmprov, vinterprov (kort #52), frostprov (kort #89), matvaktprov (mätvakten, kort #101), paminnelseprov (källvaktspåminnelsen, #150), nyckelprov (nyckelkalendern, kort #86), sparrprov (skuggmotorns spärr, kort #191), databasprov (databasvakten, grepp 3), arkivprov (arkivbackupens ålder, kort #223), lagringsprov (lagringslarmet 800 MB), kamerafacitprov (kamerafacitets urval, torrt)"
         type: choice
-        default: migrera
-        options: [migrera, larmprov, vinterprov, frostprov, matvaktprov, paminnelseprov, kassaprov, nyckelprov, sparrprov, databasprov, facitprov, arkivprov, utlosarprov, forsprangprov, lagringsprov, kamerafacitprov]
+        default: las
+        options: [las, migrera, larmprov, vinterprov, frostprov, matvaktprov, paminnelseprov, kassaprov, nyckelprov, sparrprov, databasprov, facitprov, arkivprov, utlosarprov, forsprangprov, lagringsprov, kamerafacitprov]
       fil:
-        description: "SQL-fil (bara för migrera)"
-        default: sql/014_gallring.sql
+        description: "SQL-fil (krävs för migrera; ingen standard med flit — kort #263: 014 schemalade om gallringsjobbet)"
       bevis:
-        description: "Bevisrader efter migrationen, en SQL-sats per rad (bara för migrera)"
+        description: "Bevisrader, en SQL-sats per rad (las: läses i en READ ONLY-transaktion; migrera: körs efter filen)"
         default: "SELECT jobname, schedule, active FROM cron.job WHERE jobname LIKE 'halkvakt-%' OR jobname LIKE 'puls-%' ORDER BY jobname"
 jobs:
   dbknapp:
@@ -36,11 +36,15 @@ jobs:
           # Förut räknade den upp varje provflagga, alltså en ANDRA vitlista vid sidan av
           # scripts/dbknapp.ts:FLAGGOR. Kassaprovet lades till i skriptets lista men inte här, och
           # en körning med atgard=kassaprov föll då TYST ned i migrera-grenen och körde
-          # sql/014_gallring.sql i stället för larmprovet. Ofarligt den gången (migrationen är
-          # idempotent) men fel sak, och nästa gång kanske filen inte är idempotent.
+          # sql/014_gallring.sql i stället för larmprovet. Ofarligt den gången (migrationen var
+          # idempotent 13/9 — sedan 026 pekar gallringsjobbet på gallra_arkiv, och 014 hade schemalagt
+          # om det till gallra_vader; kort #263) men fel sak, och nästa gång kanske filen inte är idempotent.
           # Nu finns EN lista, i skriptet. Okänd flagga når skriptet och avvisas högljutt.
+          # `las` är standard och har ingen fil: en läsning kan inte ändra ett cron-jobb (READ ONLY + rollback).
           if [ "$ATGARD" = migrera ]; then
             node --experimental-strip-types scripts/dbknapp.ts migrera "$FIL" --bevis "$BEVIS" | tee -a "$GITHUB_STEP_SUMMARY"
+          elif [ "$ATGARD" = las ]; then
+            node --experimental-strip-types scripts/dbknapp.ts las --bevis "$BEVIS" | tee -a "$GITHUB_STEP_SUMMARY"
           else
             node --experimental-strip-types scripts/dbknapp.ts larmprov "$ATGARD" | tee -a "$GITHUB_STEP_SUMMARY"
           fi

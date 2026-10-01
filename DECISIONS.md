@@ -5957,3 +5957,436 @@ prognoskolumnen enligt #322 villkor 4a.
 när måndagens körning föll blev den liggande i loggen. En ändrad arkivregel ska följas av en omkörning av varje dom som läser grannar
 i arkivet, i samma varv, och veckokörningarnas domrader ska läsas samma dag. Regeln från 23/9 bar igen, i andra riktningen: den här
 gången var det en KLARAR som var artefakten.
+
+## #400 (29/9 2026) Föreningen Halkvakt bildas 29/9 och står som sökande i Skyltfondsansökan, som ideell förening under bildande — ersätter #395
+
+**Bengts beslut 29/9** (*"vi ska bilda en ideell förening … Det är brådskande eftersom vi har för avsikt att lämna in ansökan till
+Skyltfonden för en ideell förening under bildande"*). Ersätter #395 (sökande Bengt som privatperson) och spår B i #396. Körschemat
+följer spår A, men med mötet redan 29/9 och ansökan 30/9 (reserv 1/10).
+
+**Personerna.** Bengt Lagerlöf ordförande och firmatecknare, Axel Lagerlöf kassör och firmatecknare, Harald Lagerlöf styrelseledamot
+tillika sekreterare, Susanne Horstmann revisor. Bengt skrev *"medlem"* om Harald; det är läst som ledamot i styrelsen, eftersom
+stadgarna § 11 kräver minst tre ledamöter, och rättas om det är fel. Alla fyra är medlemmar från mötet, så ingen har över 25 % av
+rösterna och föreningen har normalt ingen verklig huvudman att redovisa.
+
+**Handlingarna** (`docs/forening/` och Drive-mappen *Föreningen Halkvakt, bildande*): stadgarna daterade 29/9, kallelsen till de
+tre, protokollet med namn, roller och en § 16 där föreningen beslutar att söka bidraget och uppdrar åt Bengt att lämna in ansökan,
+medlemsförteckningen, arbetsbladet för SKV 8400 och körschemat. Skyltfondens arbetsblad är omskrivet för föreningen, och bilaga 1
+har ett stycke *Sökande organisation*, Axels efternamn och bilaga 9 (stadgarna) och 10 (protokollet). Personnummer och adresser
+står aldrig i repot.
+
+**Myndigheterna.** Skatteverket är den enda registreringen: SKV 8400 per post med bestyrkta kopior av stadgar och protokoll,
+kostnadsfritt, veckors handläggning. Bolagsverket berörs inte (ingen näringsverksamhet), och verklig huvudman redovisas först när
+bankkontot öppnas. Trafikverket får stadgarna och protokollet som bilagor till ansökan, och organisationsnumret som komplettering
+samma dag det kommer.
+
+**Risken, känd och tagen.** Formuläret säger att ett tomt fält gör att ansökan inte hanteras. *"Ansökt hos Skatteverket 30
+september 2026"* är inte tomt, men ingen vet om det godtas; prejudikatet är VALMA i vårens lista (#395). Vinsten är att ansökan går
+från privatperson till organisation, vilket ingen av vårens 32 beviljade saknade (FINANSIERING 28/9).
+
+**Öppet när detta skrivs:** sätet (kommunen) i stadgarna § 3, tid och plats för mötet, och om revisorn är närstående till styrelsen
+(tillåtet, men den som läser revisionsberättelsen kan notera det).
+
+**Alternativ som valdes bort.** Skicka 1/10 som privatperson och bilda föreningen i oktober (#395, #396 spår B).
+
+## #401 (29/9 2026) Målbladet fastställt — `docs/MALET.md` är projektets facit för riktningen
+
+**Beslut (Bengt, *"ja, skriv målbladet"*):** ett blad på en sida säger vart projektet är på väg och när det är klart. Det bär
+slutmålet i en mening, §6.4:s fyra klart-kriterier (därmed fastställda), de fyra målen M1–M4 = Skyltfondsansökans arbetspaket
+med trösklar, datum och ägare, förutsättningen M0 (apparna hos förare före första frosten), kalendern med domarna och den
+kritiska vägen till novemberbetan (fem kort, fyra Axels). Fryst som integrationskartan: ändras bara med ett DECISIONS-nummer.
+
+**Skälet.** Bengts fråga 29/9: *"vilket är våra bästa facit … hur håller vi styr på projektet i stort och smått"*. Svaret: facit
+för produkten är mätningarna och vektorerna, facit för riktningen fanns inte — §6.4 sa det själv 27/9 och väntade på Bengts
+timme. Ansökan är det enda dokumentet med ett daterat slut och tal vi lovat en finansiär; därför är den målens stomme. Mätt 29/9:
+22 000 rader styrdokument, 38 öppna kort varav 15 väntar på vintern, 13 är Axels app-kort, 6 hygien och 4 förening.
+Bäringsrisken ligger i appspåret, och bladet gör det synligt.
+
+**Alternativ som valdes bort.** (a) Låta §6.4 stå kvar som förslag i bedömningen — då finns definitionen bara i en 616-raders
+lista som skrivs om varje varv. (b) Bara hänvisa till ansökan — den saknar M0, klart-kriterierna och den kritiska vägen.
+(c) `docs/KALENDERN.md` enligt §6.3 — kalendern ligger nu i bladet §4; om plikterna (PAT, databasstorlek, Actions-taket) ska ut
+ur korten är fortfarande Bengts beslut (§6.3, öppet).
+
+**Kvar av de fyra greppen (bedömningen §4.2):** (2) en kö i stället för tre, (3) veckoavläsningen som rad per mål, (4) kritiska
+vägen med datum hos Axel. Inget av dem är beslutat. Korten bär ännu inte sitt mål (M0–M4); det är ett eget varv.
+
+## #402 (29/9 2026) Målbladet i andra utgåvan efter Bengts invändning — Android i takt, kalendern fanns, beloppet 343 000 kr väntar på bekräftelse
+
+**Bengt 29/9:** *"jag ifrågasätter om detta verkligen är en uppdaterad målbild. har du stämt av denna mot utfört arbete på senare
+tid. Såvitt jag vet är inte android efter ios i något avseende. Vi har bestämt oss för en ansökan om 343 000 kr … jag vill att du
+gör en omfattande genomgång och redovisar något som är aktuellt."* Genomgången läste appsidan 28/9, systembilden 25/9,
+mätningssidan 29/9, besluten #340–#401, koden och `docs/KALENDERN.md`. Läget står överst i bedömningen som *Läget 29/9*.
+
+**Vad som var fel i #401:s blad, med beviset.**
+1. *"Android sju versioner efter, Play-kontot saknas"* — taget ur kort #219:s rubrik (20/9). Koden: `android/app/build.gradle.kts`
+   bär versionCode 18 och versionName 0.3.9, samma som iOS (#377, #379); versionsnumret stod stilla 31/8–26/9 medan koden följde
+   med (#387). Play-kontot skapades 20/9; kvar är enhetsverifieringen och första uppladdningen (#346, appsidan 28/9 §9).
+2. *"Batteribudgeten aldrig mätt"* — mätt på iPhone 27/9, 7 %/h på (14), inom budget (#382). Android-mätningen återstår (#218, #262).
+3. *"`docs/KALENDERN.md` … fortfarande Bengts beslut (§6.3, öppet)"* — kalendern beslutades och skapades 27/9 (#381). Bedömningens
+   §6.3 och §6.6 bar raden som öppen två dagar efter beslutet; rättade nu.
+4. Beloppet 283 000 — ur #394. Bengt säger 343 000; se nedan.
+5. Bladets kalender blandade plikter (PAT 15/11, bildfacitläsningen 3/10) med domar; #381 skiljer dem. Bladet bär nu bara det som
+   bär en dom, ett bygge eller ett beslut, och hänvisar till kalendern för plikterna.
+
+**Beslut.** Andra utgåvan av `docs/MALET.md`: M0–M5 (fem arbetspaket enligt v8B med granskning), milstolparna ur mätningssidans
+domkalender (§11), kritisk väg i sex steg — Play-vägen, iOS-byggena, batteriet, integritetssidan, tolv testare, S3 — utgångsläget
+29/9 som daterad bilaga som inte uppdateras, och regeln att en motbevisad kortrubrik får *↪ överspelad* samma varv. Kort #219 har
+fått raden. Läxan i CLAUDE.md.
+
+**Beloppet, öppet i §4.2.** Bengts besked 29/9 säger 343 000 kr, alltså v8B med upphandlad granskning som han beslutade i #392
+(AP1 126 000 · AP2 70 000 · AP3 41 000 · AP4 60 000 · AP5 28 000 · drift 12 000 · resor 6 000). Men #394 samma dag, på hans
+order *"skriv en v8 B version utan den externa utvärderingen"*, satte 283 000, och det är det talet handlingarna bär: bilaga 1,
+arbetsbladet, protokollet § 16, Drive-dokumenten och sammanfattningen till Axel. Bladet följer Bengts senaste ord. Handlingarna
+skrivs om först när Bengt bekräftat, eftersom de två beskeden står mot varandra i loggen och ansökan sänds 30/9. Texten med
+343 000 finns färdig (v8B-utkastet 28/9 14:26 med AP4 *Oberoende granskning* och AP5 *Rapport*), så omskrivningen är ett varv.
+
+**Alternativ som valdes bort.** (a) Lappa första utgåvan punkt för punkt — den hade fem fel på en sida, och grunden (korten från
+20/9) var fel. (b) Skriva om handlingarna till 343 000 direkt — beskeden #392 och #394 är båda Bengts, samma dag, i motsatt
+riktning; ett ord från honom kostar mindre än ett felaktigt utskick. (c) Låta läget stå i chatten — SESSIONSREGELN: det som bara
+stod i chatten finns inte nästa gång.
+
+## #403 (29/9 2026) Skyltfondsansökan: två parallella alternativ, 283 000 utan och 343 000 med oberoende granskning — #394 tolkade fel att det ena ersatte det andra
+
+**Bengt 29/9:** *"det jag bad om igår var två olika alternativ till ansökan till skyltfonden; en som inte bar en utomstående
+granskning som skulle landa på 283 000 och en som skulle vara med en utomstående granskning för 343 000. Jag har aldrig bett att en
+ska ersätta den andra utan att det skulle vara två parallella som skulle jämföras och sen beslutas."*
+
+**Vad som hade hänt.** #392 skrev v8B med granskning (343 000). #394 läste ordern *"skriv en v8 B version utan den externa
+utvärderingen"* som ett byte, skrev *"Det ersätter valet i #392"*, döpte om Drive-dokumentet med 343 000 till *"ersatt"* och lät bara
+283 000-texten följa med in i repot. Texten med 343 000 checkades aldrig in; den fanns kvar i Drive och i en arbetsfil. 29/9 fördes
+sedan föreningen som sökande, prognoslagrets utfall (#399) och de rättade referenserna in i 283 000-texten men inte i den andra.
+#402 byggde vidare på samma feltolkning och bad Bengt "bekräfta 343 000".
+
+**Beslut.** Alternativen återställs som två parallella, jämförbara texter med samma innehåll utom det granskningen för med sig:
+- `docs/skyltfonden-2026-09-28/bilaga-1-ansokan.md` — utan extern granskning, 283 000 kr, fyra arbetspaket.
+- `docs/skyltfonden-2026-09-28/bilaga-1-ansokan-med-granskning-343.md` — med upphandlad oberoende granskning, 343 000 kr, fem
+  arbetspaket: AP4 *Oberoende granskning* 60 000 kr (feb–jun 2027, offert från minst tre parter, steg 1 metod före marsdomen,
+  steg 2 resultat före rapporten, utlåtandet oavkortat), rapporten som AP5, Bengt upphandlar, prioritering AP1, AP2 och AP4.
+  Byggd 29/9 ur 283 000-texten med v8B:s granskningsstycken, så att föreningen, #399 och referenserna är med i båda.
+- Arbetsbladet bär en jämförelse (belopp, arbetspaket, granskningen, prioritering, styrka, svaghet) och rekommendationen: med
+  granskning. Protokollet § 16 lägger valet på mötet 29/9 med båda beloppen utskrivna. Sida 1 och mejltexten bär valet som
+  hakparentes. Bara det valda alternativet skickas.
+- Drive: två Google-dokument för bilaga 1 (29/9, utan och med granskning), nytt protokoll och nytt arbetsblad; de gamla omdöpta.
+  Drive-kopplingen kan bara skapa och döpa om, inte redigera, så varje ändring blir ett nytt dokument.
+- Målbladet §3 säger 283 000 eller 343 000 tills mötet valt; M4 Granskningen gäller bara i alternativet med granskning.
+
+**Läxan.** En order att skriva version B är inte en order att slopa version A. När beställningen är två alternativ som ska jämföras
+hålls båda levande, i repot, tills valet är gjort — och varje senare rättelse förs in i båda. Ett Drive-dokument som döps om till
+"ersatt" är i praktiken raderat för den som letar.
+
+**Alternativ som valdes bort.** Låta 283 000-texten stå ensam och be Bengt "bekräfta" ett belopp (#402) — det var inte vad han
+beställde. Skriva om 283 000-texten till 343 000 — då hade alternativet utan granskning försvunnit i stället.
+
+## #404 (29/9 2026, kväll) Skyltfondsansökan lämnas av Bengt som privatperson, med Axels V2 (413 000 kr) — ersätter #400:s sökandedel och #403:s två alternativ
+
+**Bengt 29/9 kväll:** *"vi har bestämt att ansökan går in som privatperson inte som en förening under skapande. Rätta på alla
+ställen."* Versionen som skickas 30/9 är Axels V2 efter ändringslistan (`docs/skyltfonden-2026-09-28/ANDRINGSLISTA-BILAGA-1-2026-09-29.md`):
+sökande och projektledare Bengt Lagerlöf, 413 000 kr i fem arbetspaket (AP1 utvärdering 141 000 varav blind bildklassning 15 000 ·
+AP2 prognoslager 70 000 · AP3 testförare 88 000 · AP4 oberoende granskning 60 000 · AP5 rapport och spridning 36 000 · drift 12 000 ·
+resor 6 000; egen tid 350 timmar = 245 000).
+
+**Skälet (Axels, 29/9 13:45):** formuläret säger att en ofullständig ansökan inte hanteras, och ett organisationsnummerfält med
+"ansökt" är en risk ingen kan värdera; fondens sida bjuder uttryckligen in privatpersoner, och en enskild firma beviljades 210 000 kr
+våren 2025. VALMA-prejudikatet (#395, #400) väger lättare än risken att ansökan inte hanteras alls.
+
+**Vad som ändras.** Föreningen bildas som planerat (#400) men står inte som sökande: protokollet § 16 blir en notering om att Bengt
+söker som privatperson och att föreningen förvaltar de öppna resultaten efter projektet; kallelsen, körschemat och 8400-arbetsbladet
+rättade; förmiddagens två alternativ till bilaga 1 (283 000 och 343 000, #403) är ersatta och märkta så; arbetsbladet omskrivet för
+V2; målbladet §3 bär 413 000 och privatperson; bedömningens §4.2 och läget rättade; Axels sammanfattning och Drive-mappen Skyltfonden
+likaså. Personnummer och bankkonto på formulärets sida 1 blir del av en offentlig handling: begär sekretessprövning i mejlet, enligt
+fondens egen anvisning.
+
+**Öppet.** Om det konstituerande mötet hölls 29/9 ska meningen i bilaga 1:s personalplan säga "bildade", annars "avser att bilda";
+Bengt vet, texten har båda. Fartförändringen i telefonen (V2, AP3) är fortfarande ett produktbeslut som kräver egen DECISIONS-post och
+de fyra dokumenten i samma commit innan den byggs; ansökan lovar den för vintern 2027/28.
+
+**Alternativ som valdes bort.** Föreningen under bildande som sökande (#400). Att skjuta på ansökan till marsomgången: nej, vintern
+2026/27 är mätfönstret.
+
+## #405 (30/9 2026) Vägpunktsgrindens premisser prövas i en förregistrerad mätning — kandidater, mått och population namngivna innan talen finns
+
+**Bengts order 30/9** (*"gör en ny mätning baserad på din rekommendation"*), efter omkörningen av vägpunktsgrinden 30/9 (körning
+36664018960: rå 7,9 % ± 0,4, interp 10,3 %, rå+höjd 7,9 % — FALLEN som 28/9) och analysen av matematiken bakom den.
+
+**Vad analysen fann.** Domen står, men fyra premisser gör den trubbigare än nödvändigt: (1) domen räknas oviktat på en population där
+65 % av punkterna ligger över 20 km från närmaste granne, medan 7 % av vägpunkterna längs rutterna gör det; (2) fönstret blandar
+censurerade rader före 25/9 (bara kalla eller blöta sparades, #353) med ärliga efter; (3) A3 räknar bara fel med 2 °C tvärs över
+frysgränsen och blir 0,0 % i en säsong utan minusgrader, medan frysflaggan bortom 20 km missas i 70 %; (4) binomialfelet antar
+oberoende punkter. Och modellen blandar den storskaliga gradienten (jämn) med platsens offset (lokal) — interp-kandidaten, som antog
+att offseten är rumsligt jämn, blev sämre än rå, och höjden (första platsegenskapen) halverade felet inom 7 km.
+
+**Beslut.** En mätning på arkivet, `scripts/matningar/vagpunkt-premisser-2026-09-30.ts` (knappen `hojd-prov` med `dagar: premisser`),
+registrerad här INNAN den körs, med exakt dessa delar:
+1. Population: bara mål från 2026-09-25 07:30Z; vägpunktsgrindens vakter och urval i övrigt (#75, radvakten, karantänen, mål ≤ +5 °C).
+2. Vägviktning med bandandelarna ur prognoslagrets provpunkter längs de svenska skuggrutterna (som `vagpunkt-population.ts`), redovisat
+   bredvid oviktat ALLA och per band.
+3. Blockbootstrap per station × UTC-dygn, B = 300, frö 20260930, percentilerna 2,5 och 97,5.
+4. Frysflaggan som mått: missad (stationen ≤ 1 °C, modellen > 1), grovt missad (modellen > 2), falsk (modellen ≤ 1, stationen > 1),
+   klart falsk (stationen > 2). Ingen tröskel — den är Bengts att sätta.
+5. Kandidater, uttömmande: RÅ, RÅ+HÖJD och den nya ANOM (luft ur upp till 8 grannar inom 80 km, vikt 1/km; anomalin yta − luft ur de
+   3 närmaste inom 50 km, vikt 1/km²; skattning = luft + anomali). OFFSET (grind A:s lärda paroffset) står bredvid som taket.
+6. Golvet: stationspar inom 3 och 5 km, andel delade kalla hinkar med |Δyta| > 2 °C.
+
+**Vad mätningen kan och inte kan.** Den ändrar ingen tröskel (TROSKLAR-SKUGGAN §5) och rör inte vägpunktsgrindens dom, som står.
+Utfallet mot A1 och A2 skrivs som *läsning* mot bootstrapintervallet. Klarar en kandidat vägviktat på ärliga rader är det underlag för
+ett nytt beslut om prognoslagrets väg nära stationerna; klarar ingen är det sanningen vi behöver före vintern. Kandidatlistan är
+stängd: fler kandidater ger fler chanser att klara av slump, och en tillagd kandidat kräver en ny post här.
+
+**Alternativ som valdes bort.** Att ändra trösklarna eller vikta om domen i `hojd-prov.ts` direkt: nej, grinden är fastställd och
+dess dom ska stå tills Bengt beslutar annat på ett mätt underlag. Att bara köra om grinden på rader efter 25/9: gör mindre än
+analysen kräver. Kriging med anpassat variogram och platsegenskaper utöver höjd: rätt nästa steg om ANOM eller RÅ+HÖJD visar
+väg, men inte i den här mätningen — de kräver egna beslut och mer än en dags bygge.
+
+**Utfall (körning 36666151860, 30/9 03:50Z, självtest grönt).** Mål efter snittet: 9 224 punkter från 235 stationer i 817 kluster
+(fem ärliga dygn). Vägnätets bandandelar 52,6 / 33,9 / 6,8 / 6,8 %.
+
+| Kandidat | A1 vägviktat [boot] | A2 oviktat | A2 vägviktat [boot] | A2 per band 0–7 / 7–15 / 15–20 / >20 km | Läsning vägviktat |
+|---|---|---|---|---|---|
+| RÅ | 0,98 °C [0,89–1,07] | 11,5 % | 7,7 % [5,4–9,8] | 2,7 / 14,1 / 9,9 / 12,4 % | A1 oavgjort · A2 FALLER |
+| RÅ+HÖJD | 0,75 °C [0,67–0,85] | 10,5 % | 5,2 % [3,6–6,9] | 1,5 / 9,2 / 7,3 / 12,9 % | A1 klarar · A2 OAVGJORT |
+| ANOM | 1,13 °C [1,04–1,24] | 15,7 % | 15,2 % [11,9–19,8] | 9,4 / 23,5 / 20,2 / 13,1 % | FALLER båda |
+| OFFSET (taket) | 0,70 °C [0,62–0,78] | 4,5 % [3,4–5,6] | 3,2 % [1,9–4,7] | 1,3 / 5,7 / 4,5 / 4,6 % | klarar båda (oviktat A2 oavgjort) |
+
+Frysflaggan bortom 20 km (266 stationsflaggor): rå missar 70 % [57–84], rå+höjd 62 % [48–76], offset 48 % [35–61]; offsetmodellens
+flaggor är falska i 49 % [36–61]. Banden 0–15 km bär 2 respektive 11 flaggor och säger inget än. Golvet: inga stationspar inom 3 km
+finns; inom 5 km sex par och 169 delade kalla hinkar med |Δyta| > 2 °C i 15,4 % (MAE 1,18 °C mellan paren).
+
+**Läsning.** (1) På ärliga rader räddar ingen premissrättning en vägpunktskandidat: rå faller även vägviktat, rå+höjd är oavgjord
+(5,2 %, intervallet spänner över tröskeln) med fem dygns underlag, och ANOM föll rakt av. Vägpunktsgrindens dom står. (2) Hypotesen
+bakom ANOM — att luften är jämn och anomalin lokal — höll inte: anomalin ur de tre närmaste och luften ur åtta blev sämre än rå
+viktning ur fem. Datat vill ha MER utjämning över grannar, inte mindre: målstationens egen särart är felets största del, och den lär
+bara offsetmodellen ur målets historik, som en vägpunkt saknar. (3) Höjden är den enda platsegenskap som hittills bär: 0,96 → 0,63 °C
+inom 7 km, och vägviktat 7,7 → 5,2 %. (4) Golvet vid 5 km (15 % på sex par) ligger över tröskeln 5 %; är det representativt är A2
+≤ 5 % ouppnåeligt för en enskild granne på det avståndet, och det som når 5 % är medelvärdet av flera. Sex par räcker inte för en
+slutsats; golvmätningen behöver fler par (≤ 8 km) eller närmaste-granne-LOO som proxy. (5) Den oviktade populationen blandade
+censurerade rader in i 28/9-domen: på ärliga rader är rå A1 0,98 °C, inte 0,86. **Inget ändras i drift; trösklarna står.**
+Kandidaten att bära vidare är RÅ+HÖJD; nästa steg är Bengts (bedömningen §4.2).
+
+## #406 (30/9 2026) Premissmätningens andra körning: läsning per band och tre täckningar — "hur bra" skilt från "hur mycket"
+
+**Bengts order 30/9** (*"gör om mätningen med dom per band och de tre täckningarna — det här är bara testningar eller hur?"*).
+Ja: mätning, ingen dom. Trösklarna står, vägpunktsgrindens dom står, inget rör driften.
+
+**Varför.** Vägviktningen i #405 tog bandandelarna ur skuggrutterna, Europavägar med täta stationer (53 % av punkterna inom 7 km).
+Det är rätt population för grind B, som döms på samma rutter, men fel för ansökans fråga (räcker öppna data för alla förare?) och
+för produktens (vad får föraren?). Att välja population efter utfall är den smickrande spaken. Lösningen: domen fälls per band,
+oviktad, för avståndet till närmaste station är fysik; täckningen redovisas sedan per population, så att det enda som skiljer
+populationerna är hur mycket väg eller trafik som ligger i band där modellen klarar.
+
+**Beslut, registrerat innan körningen.** Samma skript, samma kandidater (RÅ, RÅ+HÖJD, ANOM; OFFSET som taket), samma population,
+bootstrap och frö som #405, plus:
+7. Bandet efter närmaste station geometriskt, inte närmaste bidragande ankare (grindens regel, som flyttar en punkt utåt när
+   närmaste station saknar data i hinken och därmed smickrar de inre banden). Antalet punkter grindens regel hade flyttat skrivs ut.
+8. Tre täckningar: (A) skuggrutterna, prognoslagrets provpunkter var 2 km; (B) det nationella huvudvägnätet: Trafikverkets 818
+   väglagssegment (riks- och länsvägar), provpunkter var 2 km längs geometrin, avstånd till närmaste station i arkivet;
+   (C) trafikarbetet: ÅDT-provpunkter ur `data/adt-provpunkter.json` (NVDB via Lastkajen) om filen finns — annars skrivs
+   INTE MÄTT, och ingen proxy (vägklass eller annat) sätts i dess ställe.
+9. Läsning per band mot A1 och A2 med bootstrapintervallet och grindens underlagsspärr per band (≥ 500 punkter, ≥ 20 stationer).
+   Per kandidat och population: andelen av populationen i band där kandidaten klarar båda. Vägviktad läsning per population
+   redovisas bredvid, ur samma bootstrapreplikat.
+
+**Vad som INTE ändras.** Kandidatlistan (stängd sedan #405), trösklarna, grinden i `hojd-prov.ts` och dess dom. Golvet mäts som
+förut (3 och 5 km); vidgningen till 8 km väntar på Bengts val i bedömningen §4.2.
+
+**Utfall (körning 36668940287, 30/9 04:28Z; första försöket 36668773820 föll på en SQL-typ, rättat).** Mål efter snittet: 9 415
+punkter från 236 stationer, 822 kluster. Grindens bandregel hade flyttat 249 punkter (2,6 %) utåt — spaken är liten.
+
+**Täckning.** A skuggrutterna (1 585 p): 52,6 / 33,9 / 6,8 / 6,8 %. B huvudvägnätet, Trafikverkets 818 väglagssegment (12 260 p):
+49,8 / 37,6 / 7,3 / 5,2 % av punkterna inom 50 km (andelen bortom 50 km skrevs inte ut i den här körningen; rättat till nästa).
+C trafikarbetet: INTE MÄTT, ÅDT-filen saknas. Fördelningen A och B är nästan lika, så valet mellan dem smickrar inte — men B är
+de vintervägar Trafikverket bedömer väglag på, inte hela vägnätet, och C är omätt.
+
+| Kandidat | 0–7 km (15 st) | 7–15 km (57 st) | 15–20 km (54 st) | >20 km (110 st) | Vägviktat A · B (A2) |
+|---|---|---|---|---|---|
+| RÅ | under spärren: 2,5 % [0,9–4,3] | 12,7 % faller | 10,9 % faller | 12,4 % faller | 7,2 · 7,5 % faller |
+| RÅ+HÖJD | under spärren: 1,6 % [0,3–3,2] | 8,5 % [4,7–12,7] oavgjort | 7,8 % [4,6–12,3] oavgjort | 12,9 % faller | 5,1 · 5,3 % oavgjort |
+| ANOM | under spärren: 9,2 % | 21,6 % faller | 22,1 % faller | 13,0 % faller | 14,5 · 15,0 % faller |
+| OFFSET (taket) | under spärren: 1,2 % [0,1–2,2] | 5,9 % oavgjort | 4,6 % oavgjort | 4,6 % [3,1–6,3] oavgjort | 3,2 · 3,4 % klarar |
+
+Andel av population i band där en kandidat klarar båda måtten: 0 % för alla, i båda populationerna.
+
+**Läsning.** (1) Per band avgör fem ärliga dygn ingenting utom fallen: rå och ANOM faller i 7–20 km, rå+höjd faller bortom 20 km;
+allt annat är oavgjort med breda intervall. (2) **Bandet 0–7 km går inte att döma med grindens spärr, och kommer inte att kunna
+dömas:** bara 15 stationer har en granne inom 7 km, spärren kräver 20, och fler dygn ger fler punkter men inte fler stationer.
+Det är hälften av vägnätet, och stationsnätet självt gör det obedömbart med leave-one-out. En bandvis dom kräver antingen en
+egen spärr för det bandet (Bengts beslut, inte en lättnad av något som finns) eller ett annat facit än stationerna. (3) Valet av
+population (A eller B) ändrar tiondelar, inte domar: den spaken var mindre än jag trodde. (4) Bilden från #405 står: rå+höjd är
+kandidaten, oavgjord vägviktat och i 7–20 km, fallen bortom 20 km. **Trösklarna orörda, grindens dom står.** Bengts val i
+bedömningen §4.2 utökas med spärrfrågan för 0–7 km och ÅDT-uttaget för täckning C.
+
+## #407 (30/9 2026) Premissmätningen på de finska stationerna — statistisk kraft för bandet 0–7 km, registrerad innan körningen
+
+**Bengts order 30/9** (*"kör mätningen på de finska stationerna också"*), efter #406:s fynd att bara 15 svenska stationer har en
+granne inom 7 km och att bandet därför aldrig når grindens spärr på 20 stationer.
+
+**Beslut, registrerat innan körningen.** Samma skript med `--land fi` (knappen `hojd-prov`, `dagar: premisser-fi`):
+- Population: `fi.weather_observations` (Fintraffic Digitraffic, CC BY 4.0; 526 stationer i skuggarkivet), 60 dygn, alla mål
+  i fönstret ≤ +5 °C. Inget snitt 25/9: det finska arkivet bytte aldrig regel. Det sparar rader vid yta ≤ 5 °C, nederbörd eller
+  Δ ≥ 0,5 °C mot senast sparade, alltså en censur av samma slag som det svenska före 25/9 men mildare. Andelen varma hinkar
+  (> 5 °C) skrivs ut och läses FÖRE talen: är den låg saknas varma grannar och rå viktning smickras, som i #399.
+- Vakter: #75 (yta ≥ luft − 12), radvakten och karantänen räknad i det finska arkivet. Den långsamma vakten (sql/030) är svensk
+  och saknas. Vaktdiagnosen skrivs ut som för Sverige.
+- Kandidater, trösklar, band (efter närmaste station), bootstrap och frö: oförändrade från #405/#406. Läsning per band med
+  spärren ≥ 500 punkter / ≥ 20 stationer. Golvet inom 3 och 5 km.
+- Täckning: bara A (finska skuggrutter) om prognospunkter finns i skuggloggen, annars ingen vägviktning. Ingen B eller C.
+- Norge körs inte i den här posten: fjällpassen är en annan regim och ska registreras för sig.
+
+**Vad utfallet får betyda.** Fysiken i leave-one-out är densamma, trösklarna desamma. Ett finskt utfall i bandet 0–7 km är
+underlag för om det svenska bandet går att döma alls, inte en dom över det svenska nätet. Det ändrar inga trösklar och inte
+vägpunktsgrindens dom.
+
+**Utfall (körning 36670176981, 30/9 04:44Z, självtest grönt).** Finska arkivet: 427 stationer, 55 741 hinkar på 60 dygn (arkivet
+börjar 31/8; 6–7/9 saknas som i Sverige). Varma hinkar 89,5 % — Δ-regeln sparar de varma raderna när temperaturen rör sig, så
+censuren är mild; men en varm granne finns i en hink bara om den själv ändrats ≥ 0,5 °C, vilket gynnar kalla nätter med rörelse.
+Mål ≤ 5 °C: 5 402 punkter från 349 stationer, 1 415 kluster. Bandregeln hade flyttat 4,3 %. Inga finska prognospunkter i
+skuggloggen ⇒ ingen vägviktning; läsning per band.
+
+**Golvet, det Sverige inte kunde ge:** inom 3 km 40 par och 439 hinkar, |Δyta| > 2 °C i 3,9 %, MAE 0,59 °C; inom 5 km 78 par,
+5,7 %, MAE 0,73 °C. Tröskeln 5 % ligger alltså vid golvet för en enskild granne på 5 km och under det på 3 km. De sex svenska
+paren (15 %) var för få för en slutsats.
+
+| Kandidat | 0–7 km (108 st, 1 207 p) | 7–15 km (58 st) | 15–20 km (65 st) | >20 km (118 st) | ALLA (oviktat) |
+|---|---|---|---|---|---|
+| RÅ | 0,60 °C · 2,3 % [1,1–3,5] KLARAR/KLARAR | 3,8 % [1,7–6,0] oavgjort | 4,5 % oavgjort | 3,9 % [2,6–5,6] oavgjort | 0,69 °C · 3,7 % [2,8–4,7] klarar |
+| RÅ+HÖJD | 0,61 °C · 2,5 % KLARAR/KLARAR | 3,8 % oavgjort | 4,2 % oavgjort | 5,1 % oavgjort | 0,71 °C · 4,2 % [3,3–5,0] oavgjort |
+| ANOM | 0,66 °C · 2,5 % KLARAR/KLARAR | 4,9 % oavgjort | 6,7 % oavgjort | 9,0 % faller | 0,81 °C · 6,6 % faller |
+| OFFSET (taket) | 0,50 °C · 0,6 % KLARAR/KLARAR | 5,0 % oavgjort | 3,5 % klarar | 2,7 % klarar | 0,67 °C · 2,7 % klarar |
+
+Frysflaggan i bandet 0–7 km (49 stationsflaggor): rå missar 57 % [41–75], grovt (modellen > 2 °C) 6 %; falska 36 %. Offset missar
+41 %, falska 48 %. Bortom 20 km (136 flaggor): rå missar 63 %, offset 51 %.
+
+**Läsning.** (1) **Bandet 0–7 km går att döma i Finland, med 108 stationer, och rå viktning klarar det med marginal** (2,3 %,
+hela intervallet under 5 %). Sveriges 15 stationer gav 2,5 % [0,9–4,3] under spärren — samma tal. Fysiken är densamma; det
+finska utfallet stödjer att det svenska närbandet håller, med förbehållet att södra Finland är plattare än Sverige (höjden ger
+ingenting där: rå+höjd = rå) och att september var mild. (2) Rå viktning klarar oviktat i Finland (3,7 %) där den faller i Sverige
+(11,4 %): terrängen och arkivets censur förklarar sannolikt båda, i okänd proportion — det är nästa fråga, inte ett svar.
+(3) ANOM faller igen på avstånd; kandidaten är död. (4) **Det viktigaste fyndet är inte A2 utan flaggan: även inom 7 km, där
+temperaturfelet är 0,6 °C, missas frysflaggan vid 1 °C i mer än hälften av fallen.** Ett medelfel av samma storlek som avståndet
+till gränsen ger ett myntkast vid gränsen oavsett hur bra A2 ser ut. Med en marginal på en grad (flagga vid ≤ 2 °C) sjunker
+missen till 6 % i samma band; priset i falska flaggor är inte mätt och måste mätas innan något byggs. Det är domslutets
+"risk"-språk i siffror: prognosen får förstärka och visa risk, aldrig avgöra vid gränsen. (5) Trösklarna orörda; grindens dom
+står. Frågorna till Bengt (bedömningen §4.2): spärren för det svenska bandet 0–7 km i ljuset av det finska utfallet, och om
+flaggmarginalen ska mätas som nästa förregistrerade del.
+
+## #408 (30/9 2026) Regimgrinden i premissmätningen — samma mått delade på stilla natt, blåsigt och övrigt, registrerad innan körningen
+
+**Bengts order 30/9** (*"kör regimgrinden också"*), efter frågan om termisk kartering går att simulera: det billigaste steget är
+att mäta NÄR terrängen biter, inte hur mycket. Den svensk-finska skillnaden (rå 11,4 % mot 3,7 %) är sannolikt terräng gånger regim.
+
+**Beslut, registrerat innan körningen.** Del 11 i samma skript, körs på både det svenska (`premisser`) och det finska
+(`premisser-fi`) arkivet:
+- Regimen sätts vid MÅLSTATIONEN i hinken: R1 STILLA NATT = medelvind ≤ 2 m/s och solhöjd < −6° (USNO-approximation, självtestad);
+  R2 BLÅSIGT = medelvind ≥ 5 m/s oavsett tid; R3 ÖVRIGT = resten; R0 OKÄND = medelvind saknas.
+- Medelvinden (`wind_speed_ms`, värdevaktens spann 0–60) används, inte byvinden: det är byvindsgivaren som är trasig (bilaga 8,
+  TROSKLAR-VIND-SIKT §3), och medelvinden var normal vid spikarna. Molnmängd finns inte i arkivet; natten står i dess ställe.
+- Per regim och kandidat: ALLA och per band, A1/A2 mot bootstrapintervallet med grindens spärr (≥ 500 punkter, ≥ 20 stationer),
+  frysflaggan bredvid. Kandidater, trösklar, band, frö: oförändrade (#405–#407).
+- Frågan som avgörs: klarar rå viktning (och rå+höjd) i R2 och R3 och faller bara i R1? Då är en regimstyrd prognos möjlig:
+  visas när den kan, tiger när den inte kan. Faller den i alla regimer är terrängen inte förklaringen.
+
+**Vad som inte ändras.** Trösklarna, grinden, dess dom. Regimgränserna (2 och 5 m/s, −6°) är mätningens, inte produktens, och
+står här så att de inte kan flyttas efter utfallet.
+
+**Utfall (Sverige 36671071146, Finland 36671072792, 30/9 04:56Z, självtest grönt).**
+
+Punkter per regim — Sverige (mål efter 25/9): stilla natt 6 138 · blåsigt 133 · övrigt 3 334 · okänd 1. Finland: stilla natt
+3 035 · blåsigt 33 · övrigt 1 580 · okänd 754 (vind saknas vid många finska stationer). **Blåsigt är nästan tomt i båda länderna:**
+en kall vägyta i september uppstår i stilla, klart väder, så målurvalet (yta ≤ 5 °C) väljer regimen åt oss. Blåsigt går inte
+att läsa förrän vintern fyller det.
+
+| Kandidat · regim | Sverige A2 [boot] | per band SE 0–7 / 7–15 / 15–20 / >20 | Finland A2 [boot] | per band FI |
+|---|---|---|---|---|
+| RÅ · stilla natt | 12,5 % [10,2–14,8] faller | 1,9 / 15,7 / 10,6 / 13,3 % | 3,1 % [2,0–4,5] klarar | 2,1 / 2,4 / 4,5 / 3,2 % |
+| RÅ · övrigt | 9,2 % [7,2–11,2] faller | 1,9 / 7,2 / 11,7 / 10,1 % | 5,9 % [4,6–7,3] oavgjort | 5,3 / 6,5 / 6,6 / 5,8 % |
+| RÅ+HÖJD · stilla natt | 11,2 % faller | 1,0 / 9,6 / 7,3 / 13,8 % | 3,3 % klarar | 2,5 / 2,4 / 3,8 / 3,7 % |
+| RÅ+HÖJD · övrigt | 9,3 % faller | 1,9 / 6,6 / 9,1 / 11,1 % | 6,8 % faller | 5,3 / 6,5 / 5,9 / 7,9 % |
+| OFFSET (taket) · stilla natt | 4,0 % [2,9–5,1] oavgjort | 0,0 / 5,0 / 3,3 / 4,4 % | 2,0 % klarar | 0,0 / 3,8 / 2,2 / 2,0 % |
+| OFFSET (taket) · övrigt | 5,6 % oavgjort | 2,2 / 7,9 / 7,5 / 5,1 % | 4,6 % oavgjort | 2,3 / 7,4 / 5,5 / 4,4 % |
+
+**Läsning.** (1) **Hypotesen höll inte.** I Sverige faller rå viktning i BÅDA regimerna som går att läsa (12,5 % stilla natt, 9,2 %
+övrigt), och i Finland är den stilla natten den BÄTTRE regimen (3,1 % mot 5,9 %). Vind och natt skiljer alltså inte "när terrängen
+biter" från när den inte gör det. (2) Två skäl syns i talen: molnmängden saknas — en stilla natt är bara en utstrålningsnatt om
+den är klar — och "övrigt" blandar dagtid med måttlig vind, där solen och skuggan skapar egna lokala skillnader. Regimen kräver
+moln (SMHI:s luftstationer, parameter molnmängd, finns inte i arkivet) och en delning dag/natt skild från vinden. (3) Det som
+består genom alla regimer och båda länderna: bandet 0–7 km håller (1,0–2,5 % i Sverige, 2,1–5,3 % i Finland), och Sverige faller
+från 7 km i varje regim medan Finland inte gör det. Skillnaden Sverige–Finland förklaras inte av regimen; terrängen och arkivens
+olika censur återstår som förklaringar, i okänd proportion. (4) **En regimstyrd prognos kan inte motiveras på det här
+underlaget.** Trösklarna orörda, grindens dom står. Nästa steg, om Bengt vill: molnmängd in i arkivet (ny ingest, kostar lagring
+och minuter) och en förregistrerad delning dag/natt × vind × moln när vintern fyllt blåsigt.
+
+
+## #409 (30/9 2026) Skyltfondsansökan skickad — Skyltfondskorten stängda, besked väntas senast 15/12
+
+**Bengts besked 30/9:** *"Ansökan är skickad du kan stänga alla öppna kort som har med skyltfonden att göra"*. Skickad av Bengt som
+privatperson (DECISIONS #404): Axels V2, 413 000 kr i fem arbetspaket, formuläret undertecknat 2026-09-30, bilaga 1–8, till
+trafikverket@trafikverket.se och skyltfonden@trafikverket.se (fondens sida anger båda). Sista dag 1/10; besked per brev senast 15/12.
+
+**Dagens granskningar gavs i chatten, inte i repot, på Bengts order** (*"Ingen ting annat"*). Bilaga 2
+(`docs/skyltfonden-2026-09-28/GRANSKNING-BILAGA-2-2026-09-29.md`, a027e68) är den enda i repot; bilaga 3–8, Dokument 0, hypoteserna
+1–3, bakgrunds-, innovations- och spridningsstyckena, samarbetspartner, kostnadsplanens tabell och kommentar samt följebrevet skrevs om
+i chatten och gick till Axel via Bengt. Vilka rättelser som togs in vet repot inte; den skickade versionen finns i Bengts Drive-mapp
+Skyltfonden. Tre rättelser bör läsas igen om fonden ställer frågor: "vägskador" (källan Freistetter 2022 säger skadade i vägtrafiken,
+i Finland, Norge och Sverige — inte Norden), "tre halkvarningsprojekt för fotgängare 2024–2025" (inget underlag i repot; Bengts lista
+har fyra vinterprojekt våren 2026, alla för gående, cyklister eller drift) och Malmö stad (inte namngiven, #392).
+
+**Beslut.** (1) Kortet SKYLTFONDSANSÖKAN SKICKAD 30/9 till 🟢 KLART. #265 gäller nu bara föreningsbildningen; #271:s nyckel "en rad i
+AP2" ersatt av "projektets egna pengar, eller AP2 om raden kom med". Nytt kort #272: den skickade versionen (formulär utan sida 1,
+bilaga 1–8 som PDF) in i repot — repots bilaga 1 är v8B, inte V2, och ett fastställt dokument som inte är incheckat finns inte.
+(2) Bedömningen: läget (1) omskrivet, bevakningsraden Skyltfonden = väntar på besked 15/12, §4.2-raderna granskningen av V2 och
+partnerskap i appen strukna som överspelade. (3) Ingenting mer görs för ansökan förrän fonden svarar; frågor från fonden besvaras ur
+Drive-versionen och bilagorna i `docs/skyltfonden-2026-09-28/`.
+
+## #410 (30/9 2026) Kort #265 (föreningen) stängt på Bengts ord
+
+**Bengt 30/9:** *"du kan stänga kort 265"*, på frågan om mötet 29/9 och SKV 8400 (bedömningen §4.2, DECISIONS #409). Kortet flyttas till
+🟢 KLART med rubriken *Föreningen Halkvakt bildad*. Det som återstår av Verify-raden — Skatteverkets organisationsnummer och bankkontot —
+följs i bedömningen §0b som en bevakningsrad, inte som kort; numret meddelas Skyltfonden när det kommer. Oktoberradens gamla plan
+(kallelse 5/10, möte 13/10) struken.
+
+## #411 (1/10 2026) Kort #272 stängt utan bygge — den skickade Skyltfondsansökan läggs inte i repot
+
+**Bengt 1/10:** *"stäng kort 272"*. Kortet (DECISIONS #409) ville ha den skickade versionen — formuläret utan sida 1 och bilaga 1–8 som
+PDF — i `docs/skyltfonden-2026-09-28/skickad/`. Inget sådant finns på main (kontrollerat 1/10: PDF:erna där är 28/9-byggena, v8B).
+Beslutet är alltså att Drive-mappen Skyltfonden och Bengts utkorg är arkivet för det som skickades; repot bär v8B och ändringslistan.
+Konsekvens att känna till: svar till fonden skrivs ur Drive-versionen, och SESSIONSREGELNs regel om incheckade dokument gäller inte
+den här filen på Bengts beslut.
+
+## #412 (1/10 2026) DB-knappen får ett läsläge som standard — en läsning kan inte längre ändra ett cron-jobb (kort #263)
+
+**Bengts order 1/10:** *"kör på #263"*. Fyndet (28/9, DECISIONS #389): knappens standardfil var `sql/014_gallring.sql`, som
+schemalägger om gallringsjobbet till `gallra_vader(7)`; sedan 026 ska det peka på `gallra_arkiv(7)`, som 031 byggt ut med Danmark,
+gravstenarna och tidsvakten. Ett tryck med standardvärdena hade tyst stängt av den gallringen. Inte utlöst: jobbet bär
+`SELECT gallra_arkiv(7)` 1/10 (körning 36817425867).
+
+**Beslut (a683e41).** (1) `scripts/dbknapp.ts` får `las --bevis "SQL"`: varje bevisrad körs i EN transaktion som öppnas `BEGIN READ ONLY`
+och alltid rullas tillbaka. Vakten är READ ONLY, inte rollbacken: Postgres vägrar INSERT/UPDATE/DELETE/DDL också inne i funktioner, så
+`cron.schedule` (skriver i `cron.job`) faller när satsen körs. En vägrad sats ger exit 1 och en rad som börjar *VÄGRAT*. (2) `dbknapp.yml`:
+`las` är standardval, `fil` har ingen standard (migrera kräver en fil), grenvalet frågar efter `migrera` och `las` vid namn och låter
+resten gå till larmprovet, som förut. (3) Inget annat rört: migrera och larmprov är oförändrade.
+
+**Bevis.** Lokalt (Postgres 16 i skrivblocket med en `cron.job`-attrapp): läsning ger rader; `UPDATE cron.job` vägrad; en skrivande
+funktion (`cron.schedule`-attrapp) vägrad med *cannot execute INSERT in a read-only transaction*; `las` utan bevis och `migrera` utan
+fil avvisas; tabellen orörd efteråt. Mot databasen: körning 36817259654 (`las`, standardbevis) grön, 23 cron-jobb listade, *inget
+skrivet*; körning 36817261645 (`las` med `UPDATE cron.job SET active = active WHERE false`) röd med *VÄGRAT — cannot execute UPDATE in a
+read-only transaction*; körning 36817425867 visar gallringsjobbets kommando. Alternativ som valdes bort: en ofarlig standardfil (en fil till som
+"är idempotent i dag"), och en vitlista över tillåtna satser (en lista till som glider). Läxan hör till familjen "en sanning som gällde när
+den skrevs": knappens kommentar kallade 014 idempotent, sant 13/9 och falskt efter 026.
+
+## #413 (1/10 2026) Källbevakningen avkodar HTML-entiteter; hash-källorna seedas om en gång utan larm (kort #264)
+
+**Bengts order 1/10:** *"kör på #264"*. Fyndet (28/9, DECISIONS #391): `scripts/trv-bevakning.ts` bytte varje HTML-entitet mot ett
+blanksteg. Polisen.se kodar å, ä och ö som entiteter, så vakten läste *"API ver polisens h ndelser"* och *"Regler f r ppna data"*, och ett
+nyckelord med å/ä/ö kunde aldrig träffa på en sådan sida — bedömningen blev VET INTE där den borde bli RÖR OSS, tyst.
+
+**Beslut (a1d75fb).** (1) `norm` flyttas till `publish/nyhetsbedomning.ts` och avkodar entiteterna i stället för att stryka dem: namngivna
+ur den lista våra källor använder (svenska, norska, danska, finska tecken och typografin), decimala och hexadecimala. En okänd namngiven
+entitet blir blanksteg som förut — aldrig sämre än v1. (2) Bytet ändrar varje hash-källas text och hash på en gång. I stället för en
+manuell `--seed` (som också hade svalt nya poster i list-källorna sedan 28/9) bär varje hash-källa en versionsstämpel `normv` i state: en
+källa vars state har en annan version seedas om UTAN larm och får stämpeln; nästa körning jämför som vanligt. Ingen flagga, inget handgrepp,
+ingen larmstorm. (3) List-källorna rörs inte.
+
+**Bevis.** Enhetsprov (`test/nyhetsbedomning.test.ts`, 224 gröna): en polissida med `&ouml;`, `&#246;` och `&#xE4;` läses som *"API över
+polisens händelser"*; nyckelordet *förändring* träffar en entitetskodad sida (RÖR OSS); motprovet med v1-normaliseringen ger *"En f r ndring
+av f lten."* och VET INTE; `&#xE5;` med versal hex föll första varvet (regexen saknade versaler) och rättades innan commit. Mot källorna:
+körning 36817880379 på grenen — åtta hash-källor *"normaliseringen bytt (v1 → v2) — grundvärdet skrivs om utan larm"*, statens polisen-text bär
+å/ä/ö; issue-listan oförändrad (sex öppna trv-nyhet-issues före och efter, ingen ny, ingen kommentar). Nätpolicyn i containern ger 403 mot alla källsidor, så det levande beviset är körningens, inte en lokal hämtning.
