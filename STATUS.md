@@ -2142,3 +2142,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 1/10 (Claude, Bengts order om stomdokumenten): STOMREGELN i CLAUDE.md (DECISIONS #415) — de tre artefakterna, bedömningen och
   kartan stäms av vid varje ändring och bär rättelserna löpande. Genomlysning: alla fem uppdaterade (kort #273); kartan R21–R26
   (#416); repokopiorna omdöpta till odaterade namn och republicerade.
+- 1/10 (Claude, Bengts order *"stäng #152 och #243 om beviset finns"*): båda stängda med bevis (DECISIONS #417). Kassavakten: september
+  slutade på 6 348 min ⇒ 34,78 av 35 USD i vaktens räkning, ingest gick varje timme, issue #210 stängd av vakten 1/10 05:07Z.
+  Arkivgränsen: 0 gluggar > 180 min sedan 24/9 (största 01:26, 41 > 30 min; körning 36831247108), ingen issue ur checken. 34 öppna kort.

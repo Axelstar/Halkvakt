@@ -6446,3 +6446,26 @@ rå viktning föll, kandidaten till marsdomen öppen (#270/#271). **R24** §6.1 
 "felet stiger monotont" rättat här och i §13.3 (samma fel som #321, rättat i #414). **R25** §8 A och E — båda byggda. **R26** §12 —
 facitstacken 988 bilder, 41 provbilder klassade, 0 riktiga förarsvar. Kartans sakinnehåll (fogarna, lagren, principerna) är orört.
 Sedan 1/10 hålls läge-raderna löpande enligt STOMREGELN (#415); innehållet ändras bara efter bygge och mätning som förut.
+
+## #417 (1/10 2026) Kort #152 och #243 stängda med bevis — kassavakten höll september under taket, arkivgränsen 3 h gav noll falsklarm
+
+**Beslut:** båda korten till 🟢 KLART på Bengts order (*"stäng #152 och #243 om beviset finns"*). Öppna kort 36 → 34.
+
+**#152 kassavakten.** Nyckeln (sorterad 22/9, #224) var tre led: ingen körning stoppad i september, issue #210 stängd av vakten själv,
+Axels Billing-avläsning. Alla tre finns. `ingest` gick varje hel timme genom 30/9 och in i 1/10 (körning 881–910, alla gröna), så
+hårdstoppet slog aldrig i. Kassavakten stängde #210 1/10 05:07Z med *"Stänger — god marginal igen."* efter 81 rader sedan 13/9. Billing
+lästes 27/9 (17,84 USD, #381). Septembers slutrad 30/9 23:07Z: **6 348 min över 4 718 körningar ⇒ 34,78 av 35 USD** i vaktens räkning
+(1,8 % över per-jobb-regeln, #381), släpande takt 95 min/dygn de sista dygnen. Marginalen var 0,22 USD i vaktens tal: åtgärden *inga
+app-byggen till 1/10* var nödvändig, inte försiktig. Oktober börjar på 22 min. Vakten står kvar i drift; räkneregeln per jobb förblir en
+öppen rad i bedömningen §4.2 (rättas ihop med #201, om alls).
+
+**#243 arkivgränsen.** Verify-raden: sju dygn utan falsklarm ur checken *livemotorns effekt*, och ett riktigt stopp fångas fortfarande.
+Avläst 1/10 07:35Z med db-knappens läsläge på main (körning 36831247108): **0 gluggar > 180 min** i `situation_archive` sedan 24/9 07:41Z,
+största 01:26, 41 gluggar > 30 min — den gamla gränsen hade larmat 41 gånger på en vecka, den nya kunde inte larma. Ingen issue ur
+checken sedan deployen 24/9 15:09Z; enda vakthundsissuen är #623 (lagringslarmet 26/9, en annan check). Sju hela dygn fylls 15:09Z i dag;
+avläsningen täcker 6 dygn 16 h och visar varje glugg, inte bara frånvaron av issues, och kortet stängs därför nu. Andra ledet: checken
+är oförändrad utom talet (`LIVEMOTOR_EFFEKT_MIN = 180`), så #222:s fall — cron succeeded, pg_net köar, arkivet står — larmar
+fortfarande, efter 3 h i stället för 30 min. Priset är 2,5 h längre till upptäckt. Inte provat skarpt: det kräver att livemotorn
+stoppas, och det görs inte för ett bevis.
+
+**Alternativ:** vänta till 15:09Z med #243 — förkastat, gluggmätningen är starkare än en frånvaro av issues och täcker fönstret.
