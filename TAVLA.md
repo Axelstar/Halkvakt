@@ -602,6 +602,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **SERVERN I DRIFT 26/9 07:00Z** (DECISIONS #380): migrationen sql/038 via dbknapp 36225368861 (tabellen finns, RLS på, anon utan SELECT och INSERT), deploy av `facit-svar` 36225396540 från main, provmiss mot den riktiga funktionen ⇒ 204 och en rad med `prov = true` (dbknapp 36225453047; 0 riktiga), två felaktiga missar ⇒ 400, och ett provsvar på den gamla vägen ⇒ fortfarande 204.
 
 ### Claude — låst (väntar på nyckel)
+- [ ] 👥 **#278 BETAN: BÅDA VÄRDEPAREN I SKUGGAN, ETT HÖRS** (Bengts fråga och beslut 1/10, DECISIONS #427). Efterhalkans regel följs
+  vintern 2026/27 med två värdepar på samma nätter — startvärdena från 16/9 och kuvösens kalibrerade värden (#425) — så att det syns var
+  de skiljer sig: båda hade varnat, bara det ena, bara det andra. Uppspelningen (sql/028) och skuggans råa logg räcker; det som ska byggas
+  är utskriften som ställer dem bredvid varandra, bara antal fram till domen. Rösten kan inte dubbleras: en variant hörs, och förarnas
+  svar gäller den. 🔑 Nyckel: kalibreringens frysta värden ur kuvösen (kort #232) · Bengts och Axels val av VILKEN som hörs (§4.2;
+  de kalibrerade kräver en ändring av TROSKLAR-KOMBINATIONEN §7 före betan) · Axels bygge av regeln i motorn (S3).
+  Verify: jämförelsen körd på vintern 2024/25 i kuvösen och på en vecka av årets vinter, med de tre antalen utskrivna; valet av röst
+  inskrivet i DECISIONS innan kalibreringens resultat lästes.
+
 - [ ] 🔳 **#277 QR-KOD TILL APPEN — en kod för båda plattformarna, via halkvakt.se** (Bengts fråga 26/9 *"kan man hämta appen med qr kod"*,
   beslut 1/10: *"qr kod kommer först med domänen"*, DECISIONS #423). En QR-kod är bara en länk. Koden ska peka på en egen adress
   (halkvakt.se/app) som skickar iPhone till TestFlight eller App Store och Android till Google Play — aldrig direkt på en TestFlight-länk,

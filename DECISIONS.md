@@ -6706,3 +6706,24 @@ rutterna, ungefär en femtedel — domarna påverkas inte, eftersom uppspelninge
 **Stomavstämningen:** kuvössidan (två serier i kedjan, reglerna, gränserna), mätningssidan (3.1 rutternas täckning, kuvös-rutan),
 systembilden (raden K), bedömningen (§4.2, läget), kartan (läge-raden §13.6, §14); appsidan orörd. Sidan till Trafikverket (*Halkvakt
 och kuvösen*) nämner bara skuggans rutter och står.
+
+## #427 (1/10 2026) Betan: båda värdeparen följs i skuggan, ett av dem hörs (kort #278)
+
+**Bengts fråga 1/10:** *"kan man inte köra dem parallellt både på startvärdena och på de kalibrerade värdena för att kunna se var det
+diffar?"* **Beslut samma dag:** *"båda i skuggan, en hörs"*.
+
+**Vad det betyder.** Efterhalkans regel följs vintern 2026/27 med två värdepar på samma nätter: startvärdena från 16/9 (#222) och de
+värden kuvösens kalibrering fryser (#425). Skuggan loggar efterhalkans råa fält utan tröskel (S1), och uppspelningen (sql/028) räknar
+varje variant ur arkivet, så jämförelsen kräver ingen ny mätning — bara en utskrift som ställer de två bredvid varandra: båda hade
+varnat, bara startvärdena, bara de kalibrerade. **Fram till domen skrivs bara antal** (blindningen). Kuvösen visar samma skillnad på
+vintern 2024/25 redan innan betan startar.
+
+**Vad som inte går att dubblera:** rösten. En förare hör en variant, och *Stämde / Stämde inte* fäster bara vid det som sades. Den tysta
+variantens egna varningar får facit ur stationerna, bilderna och väglaget, inte ur förarsvar.
+
+**Alternativ som valdes bort:** dela testarna i två grupper — tolv testare räcker inte till två underlag (KB-D4: 30 svar från 5 förare);
+låta rösten tala när någon av varianterna slår till — fler varningar och i praktiken en tredje regel som ingen fastställt.
+
+**Öppet (§4.2, Bengt och Axel): vilken av de två som ska höras.** Regeln säger i dag startvärdena (TROSKLAR-KOMBINATIONEN §7, *ingen
+kalibrering före* dom 1). Ska de kalibrerade höras krävs en ändring av §7 med båda signaturerna, innan betan släpps — och beslutet bör
+tas innan kalibreringens resultat är sett, annars väljs rösten efter utfallet. Ingen tröskel ändras av det här beslutet.
