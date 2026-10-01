@@ -214,6 +214,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Verify: på en iPhone finns inget "…" i kortet med fyra varningar, sista raden ligger ovanför flikraden, *Stämde*-knapparna finns på ett
   ställe, ingen *Skickat*-rad under en obesvarad rad, och *Senaste tur* skrivs *1 okt. 12:39*.
 
+- [ ] ↩︎ Välkomsttext + testinstruktion till kompisarna (extern TestFlight-grupp = Beta App Review).
+  ↩︎ **Rubriken återställd 1/10 sent:** den skrevs över när kort #279 lades in (4f88513), och kortets text hängde under #279.
   🔨 **SKRIVEN 26/9** (Bengts ja, DECISIONS #371): `docs/BETAGUIDE-IOS.md` — TestFlight-texten överst, guiden i Android-guidens
   åtta avsnitt, mot koden i 0.3.9 (16). 🔑 Kvar: utskicket med en extern TestFlight-grupp (Axel, Beta App Review).
   📝 **1/10 (DECISIONS #429):** meningen om trösklarna i TestFlight-texten är omskriven — klistra in ur filen som den står nu, inte ur en äldre kopia.
