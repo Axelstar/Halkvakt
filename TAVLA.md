@@ -91,7 +91,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⛔ **Långtrycket på *PÅ VAKT* fyrade inte i (19)** (Axel 23:18) — fungerade i äldre byggen (bilden bevisar det), bröts av kvällens
   `ScrollView` (#279): rullningens gest tar touchen. Rättat samma kväll med `simultaneousGesture`; **bygge (20)** satt i samma commit.
   Granskarnotisen bygger på långtrycket ⇒ (20) ska vara bygget som lämnas in, efter att Axel provat trycket i det.
-  🔑 Kvar: Axels Xcode-bygge (20) + prov av långtrycket · punkt 4–5 klick i App Store Connect · punkt 7 triangeln · inlämningen med (20).
+  🎨 **23:27 — Axel valde AppLaunchFlow** (dashboard.applaunchflow.com) för bilderna: *"exactly how I want it"* — gult/mörkt växelvis, liten
+  kicker, stor vänsterställd rubrik, telefon med ram. Claudes `rama.py`-serie står kvar som reserv. Före *Download Bundle*: **ta bort
+  "4.8 App Store"-märkena** (påhittat betyg = avslag, 2.3.7) och ladda upp de rena råbilderna (statusrad och *◀ TestFlight* bortskurna;
+  skickade i chatten, kan återskapas ur `appstore/ra/` med 150 px topp i skärmens färg). 1290×2796 duger i 6,9-tumsfacket.
+  🔑 Kvar: Axels bundle ur AppLaunchFlow in i `marknadsforing/butik/appstore/` · Axels Xcode-bygge (20) + prov av långtrycket · punkt 4–5
+  klick i App Store Connect · punkt 7 triangeln · inlämningen med (20).
   Verify: *Waiting for Review* i App Store Connect med (19) eller senare bifogat; sedan Apples svar.
 
 **Beslut som väntar, inte brådskande (med Bengt):**
