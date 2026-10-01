@@ -6636,6 +6636,8 @@ karantän och ett dygn i felet som inte hänt än, en station som bara finns i f
 ser ingen av dem. Ett andra prov vaktar att snapshotbyggaren och rekonstruktionen inte har tidskällor som klockan inte når
 (`CURRENT_TIMESTAMP`, `clock_timestamp()`, `Date.now()`).
 
+**Bevis 1/10:** `ci` grön på PR #664 (36888627590) — klockans prov kördes mot PostGIS, 230 prov, 0 hoppade. **Fyra motprov, en vy i taget fick se framtiden, och varje gren föll på sin egen fälla:** `weather_observations` ⇒ KUV_KARANTAN borta (36888904314) · `givarfel_dygn` ⇒ KUV_LANGSAM borta (36888922612) · `trend_kandidater` ⇒ lutningen 5,5 i stället för 0,9 (36888942418) · `weather_latest` ⇒ KUV_FRAMTID synlig vid T (36888962569); 229 av 230 gröna i varje. Utkast-PR #665–#668 stängda och grenarna raderade. Fällan *negativ regn_h* är inte fälld för sig — den ligger bakom samma vy som karantänen och nås inte när stationslistan redan fallit.
+
 **Byggt, steg 2 — inventeringen (`kuvos/inventering.ts`).** Läser en okänd CSV utan att tolka den: avgränsare, kodning (UTF-8 eller
 latin1), rader, och per kolumn tomma, tal med spann (decimalkomma), tider med spann, och de vanligaste textvärdena. Prov lokalt.
 **Kolumnöversättningen till arkivets schema byggs först när filens inventering är läst** — formatet är okänt, och ett fält får inte
