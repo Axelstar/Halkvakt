@@ -27,11 +27,14 @@ struct KorlageView: View {
                                 SectionHeader(text: "På vakt", color: Brand.greenText)
                                     .frame(height: 28)
                                     .contentShape(Rectangle())   // hela raden tryckbar, inte bara bokstäverna
-                                    .onLongPressGesture(minimumDuration: 0.5, maximumDistance: 30) {
+                                    // simultaneousGesture, inte onLongPressGesture: inne i ScrollView (kort #279) tar rullningens gest
+                                    // touchen först, och långtrycket som fungerade i äldre byggen fyrade inte i (19) på Axels iPhone 1/10.
+                                    // Apples granskare ska kunna se ett varningskort utan att köra — det här är den vägen (kort #280).
+                                    .simultaneousGesture(LongPressGesture(minimumDuration: 0.5, maximumDistance: 30).onEnded { _ in
                                         demoWarning = HalkvaktEngine.Alert(t: 0, hazardId: "demo", kind: .slippery_segment,
                                             distanceM: 2000, text: "Halt väglag om två kilometer.")
                                         Task { try? await Task.sleep(for: .seconds(8)); demoWarning = nil }
-                                    }
+                                    })
                                 Text("\(elapsedMin) min · \(distKm) km")
                                     .font(Typo.sans(34, .semibold)).tracking(-1)
                                     .foregroundStyle(Brand.text)

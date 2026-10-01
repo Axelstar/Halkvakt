@@ -2161,3 +2161,5 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   Android-guiden och produktboken följer med; App Store-ordern som kort #280.
 - 1/10 23:06–23:20 (Axel + Claude): App Store-paketet — Axels beslut bara Sverige (DECISIONS #432); `integritet.html` publicerad (karta b9626bf); butikstext + granskarnotis
   (`marknadsforing/butik/appstore-ios.md`); sex skärmbilder 1320×2868 ur Axels iPhone 14-råbilder (`marknadsforing/butik/appstore/rama.py`). Kvar: körläget + varningskortet, klicken, inlämningen.
+- 1/10 23:18 (Axel): körläget ur (19) + äldre bild av varningskortet ⇒ åtta App Store-bilder. Långtrycket på PÅ VAKT fyrade inte i (19) — ScrollView:n från
+  #279 tar touchen; rättat med simultaneousGesture, bygge (20) i samma commit. (20) är inlämningsbygget.
