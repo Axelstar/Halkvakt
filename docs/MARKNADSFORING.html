@@ -1,0 +1,187 @@
+<title>Halkvakt utan annonskonto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: the same paper sheet as Halkvaktens app, systembild and mätningar. One column that reads top to bottom:
+     what we own, the channels, the weather-driven timeline, Axel's six moves, Claude's builds, the goals. */
+  :root {
+    --papper: #F6F7F5; --blad: #FFFFFF; --black: #16202A; --dampad: #4A5763; --linje: #D9DFE3;
+    --gul: #A8720A; --gul-yta: #FFF3D6; --gron: #1F7A45; --gron-yta: #E4F2EA; --frost-yta: #E6F0F5; --skarm: #0B1014;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --papper: #0B1014; --blad: #121A20; --black: #E6ECEF; --dampad: #9DAAB3; --linje: #26323B;
+      --gul: #FFC94A; --gul-yta: #2A2310; --gron: #4CC382; --gron-yta: #12261B; --frost-yta: #13232C; --skarm: #05080A;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --papper: #0B1014; --blad: #121A20; --black: #E6ECEF; --dampad: #9DAAB3; --linje: #26323B;
+    --gul: #FFC94A; --gul-yta: #2A2310; --gron: #4CC382; --gron-yta: #12261B; --frost-yta: #13232C; --skarm: #05080A;
+    color-scheme: dark;
+  }
+  body { background: var(--papper); color: var(--black); padding-inline: 16px; padding-block: 28px 48px;
+         font: 400 16px/1.6 "Source Serif 4", Georgia, "Times New Roman", serif; }
+  .blad { max-width: 820px; margin: 0 auto; background: var(--blad); border: 1px solid var(--linje);
+          padding: clamp(20px, 5vw, 56px); display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  h1, h2, h3, .etikett, th, .dom, .fakta b, .steg b, .vem { font-family: "Instrument Sans", "Helvetica Neue", Arial, sans-serif; }
+  h1 { font-size: clamp(30px, 5vw, 42px); line-height: 1.08; font-weight: 700; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+  h2 { font-size: 21px; font-weight: 700; margin: 18px 0 0; text-wrap: balance; }
+  h3 { font-size: 16px; font-weight: 600; margin: 6px 0 0; }
+  p { margin: 0; max-width: 68ch; }
+  .etikett { font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gul); }
+  .ingress { font-size: 18px; color: var(--dampad); }
+  .litet { font-size: 14px; color: var(--dampad); }
+  code { font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; font-size: 0.86em; }
+  ul, ol { margin: 0; padding-left: 1.2em; display: grid; gap: 5px; }
+  li { max-width: 66ch; }
+  hr { border: 0; border-top: 1px solid var(--linje); margin: 4px 0; width: 100%; }
+  .fakta { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 14px; color: var(--dampad);
+           border-top: 1px solid var(--linje); border-bottom: 1px solid var(--linje); padding-block: 10px; }
+  .fakta b { color: var(--black); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .tabell { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--linje); vertical-align: top; }
+  th { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dampad); }
+  .steg { list-style: none; padding: 0; display: grid; gap: 0; counter-reset: s; }
+  .steg li { counter-increment: s; display: grid; grid-template-columns: 30px 1fr; gap: 12px; padding-block: 9px;
+             border-bottom: 1px solid var(--linje); max-width: none; }
+  .steg li::before { content: counter(s); font: 600 13px "Instrument Sans", Arial, sans-serif; color: var(--blad);
+                     background: var(--black); width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; }
+  .steg li > div { min-width: 0; }
+  .kanaler { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px 28px; }
+  .kanaler > * { min-width: 0; }
+  .ruta { border-left: 3px solid var(--gul); padding: 4px 0 4px 14px; display: grid; gap: 6px; align-content: start; }
+  .ruta.gron { border-left-color: var(--gron); }
+  .ruta.frost { border-left-color: var(--dampad); }
+  .ruta ol, .ruta ul { font-size: 15px; }
+  .regel { background: var(--frost-yta); padding: 14px 16px; border-radius: 4px; display: grid; gap: 6px; }
+  .dom { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+         padding: 1px 7px; border-radius: 3px; white-space: nowrap; }
+  .dom.klar { color: var(--gron); background: var(--gron-yta); }
+  .dom.vantar { color: var(--gul); background: var(--gul-yta); }
+  .vem { font-size: 12px; font-weight: 600; color: var(--dampad); white-space: nowrap; }
+  a { color: inherit; }
+  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<main class="blad">
+  <div class="etikett">Marknadsföring · 2 oktober 2026 · noll kronor utöver domänen</div>
+  <h1>Halkvakt sprids utan att en krona går till annonser</h1>
+  <p class="ingress">Planen bygger på det ingen konkurrent kan köpa: Trafikverkets egna data i realtid, en ideell förening, en halkbana i Malmö och en app som är gratis och utan konto. Tidslinjen styrs av vädret, inte av kalendern. Två regler står fast: inget går ut från Axels privata konton, och allt går i föreningens namn.</p>
+  <div class="fakta">
+    <span>Kostnad <b>domänen</b></span>
+    <span>Avsändare <b>Föreningen Halkvakt</b></span>
+    <span>Första nyhet <b>första frostnatten</b></span>
+    <span>Mål till nyår <b>1 000 installationer</b></span>
+  </div>
+
+  <h2>1. Det vi redan har</h2>
+  <p>Marknadsföringen är redan byggd, den har bara inte gått ut. Varje rad nedan är ett argument som en annons inte kan köpa.</p>
+  <div class="tabell"><table>
+    <thead><tr><th>Tillgång</th><th>Varför den säljer</th><th>Läge</th></tr></thead>
+    <tbody>
+      <tr><td><b>Trafikverkets data i realtid</b></td><td>”Byggd på Trafikverkets mätstationer” väger tyngre än varje reklamtext</td><td><span class="dom klar">i drift</span></td></tr>
+      <tr><td><b>Livekartan</b></td><td>Innehåll som förnyar sig var 30:e minut. Journalister och forum kan länka till den när det är halt</td><td><span class="dom klar">i drift</span></td></tr>
+      <tr><td><b>Marknadsmotorn</b></td><td>Skriver färdiga kanaltexter varje morgon och larmar per län när första halkan kommer. Vi vet var det är halt innan nyheterna gör det</td><td><span class="dom vantar">stannade 3/9, startas om</span></td></tr>
+      <tr><td><b>Löftet</b></td><td>”Din position lämnar inte telefonen av sig själv.” Det enda i kategorin som är sant och går att kontrollera i öppen kod</td><td><span class="dom klar">sant sedan 23/9</span></td></tr>
+      <tr><td><b>Föreningen Halkvakt</b></td><td>Ingen kommersiell aktör. Dörren till NTF, kommuner, trafikskolor och Trafikverket</td><td><span class="dom klar">bildad 29/9</span></td></tr>
+      <tr><td><b>Skyltfonden</b></td><td>Ett ja betyder att Trafikverket står bakom. Det är en rubrik</td><td><span class="dom vantar">svar 15/12</span></td></tr>
+      <tr><td><b>Halkbaneförsöket</b></td><td>Hundra elever på Bulltoftabanan, januari–mars. En lokal nyhet med bilder, siffror och en skola som ställer upp</td><td><span class="dom vantar">muntligt ja</span></td></tr>
+      <tr><td><b>Gratis, inget konto, svensk</b></td><td>Det enda vi ber om är en nedladdning</td><td><span class="dom klar">ja</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>2. Kanalerna, alla gratis</h2>
+  <div class="kanaler">
+    <div class="ruta">
+      <h3>Egna</h3>
+      <ul>
+        <li><b>Sajten</b> på halkvakt.se när domänen är köpt. GitHub Pages med egen domän kostar inget. <code>press.html</code> blir presskit: logga, skärmbilder, faktablad, citat, kontakt.</li>
+        <li><b>hej@halkvakt.se</b> via Cloudflare Email Routing, gratis. Utskick från gmail ser oseriöst ut.</li>
+        <li><b>Butikssidorna.</b> Sökorden är inlagda. Betygen avgör; appen ber om betyg efter tredje resan.</li>
+        <li><b>Fyra varumärkeskonton</b> i Halkvakts namn: Facebook-sida (grupper, lokalpress delar där), Instagram (demovideon, halkbanan), LinkedIn-sida (partnerna läser där), X (journalister och P4 Trafik). TikTok när det finns video att mata den med.</li>
+        <li><b>Nyhetsbrevet</b> ”Halkläget” varje måndag ur motorns veckorapport. Gratis upp till flera hundra prenumeranter.</li>
+      </ul>
+    </div>
+    <div class="ruta gron">
+      <h3>Förtjänade: press, tajmad mot vädret</h3>
+      <ul>
+        <li><b>Första frostnatten</b> i ett län: lokalpress och P4 i det länet samma morgon. Kroken: ”I natt var det första gången i Dalarna. Gratis app byggd på Trafikverkets mätstationer sa till med rösten.”</li>
+        <li><b>Första snökaoset:</b> TT, rikspress, motor- och teknikpress (Vi Bilägare, Teknikens Värld, Mobil.se, SweClockers, Feber, Ny Teknik).</li>
+        <li><b>15 december:</b> Skyltfondens besked är en nyhet oavsett utfall.</li>
+        <li><b>Januari–mars:</b> Sydsvenskan, Lokaltidningen, P4 Malmöhus och SVT Skåne bjuds in till en körning på halkbanan.</li>
+        <li><b>Radio:</b> P1 Trafikredaktionen och P4 Trafik talar om halka varje vinterdag och behöver något nytt att säga.</li>
+      </ul>
+    </div>
+    <div class="ruta frost">
+      <h3>Gemenskaper</h3>
+      <ul>
+        <li><b>Flashback</b> (Datorer &amp; IT → Egna projekt, korsreferens i Fordon &amp; trafik vid snö). Anonymt by design; utkastet finns i GTM-planen.</li>
+        <li><b>Reddit</b> med projektkontot <i>halkvakt</i>: r/sweden, r/Malmo, r/Gothenburg och r/stockholm vid snökaos; r/SideProject på engelska.</li>
+        <li><b>Bilforum:</b> Garaget, Bilsnack, Volvo- och Tesla-forum. Elbilsförare provar tidigt och berättar.</li>
+        <li><b>Facebook-grupper</b> (pendlare, ”Trafiken i Skåne”, bilgrupper) kräver en person, inte en sida. Bengt eller en vän, inte Axel.</li>
+      </ul>
+    </div>
+    <div class="ruta">
+      <h3>Partners och multiplikatorer</h3>
+      <ul>
+        <li><b>NTF</b>, förening till förening. Deras vinterkampanjer behöver konkret innehåll.</li>
+        <li><b>Trafikskolor och STR.</b> Bulltoftabanan först, sedan varje riskutbildning del 2 i Skåne. Handledarna sprider trovärdighet, eleverna har telefonen i handen.</li>
+        <li><b>Trafikverket</b> visar gärna goda exempel på öppna data. Kontakten finns redan genom kuvösen.</li>
+        <li><b>Försäkringsbolagen</b> (If, Folksam, Länsförsäkringar) skriver vintertips varje år. En gratis app är innehåll för dem, inte konkurrens.</li>
+        <li><b>Halkvarning.se</b> (Icebug och Klimator, för fotgängare) är ett komplement: korslänk ”för bilen: Halkvakt, till fots: Halkvarning”.</li>
+        <li><b>Kommuner och åkerier:</b> ett mejl från hej@halkvakt.se.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>3. Tidslinjen följer vädret</h2>
+  <div class="tabell"><table>
+    <thead><tr><th>När</th><th>Vad</th><th>Vem</th></tr></thead>
+    <tbody>
+      <tr><td><b>Nu till frosten</b></td><td>Domän och e-post · varumärkeskonton · presskit · demovideo på 60 sekunder · betygsfrågan i appen · marknadsmotorn igång · partnerbreven skrivna och skickade</td><td class="vem">Axel 2 h, Claude resten</td></tr>
+      <tr><td><b>Första frostnatten</b></td><td>Motorn säger vilket län. Flashback-tråd, Reddit, lokalpress i länet, första inlägget med kartan</td><td class="vem">Axel eller Bengt klistrar in</td></tr>
+      <tr><td><b>Första snökaoset</b></td><td>Pressmeddelandet till TT, riks- och motorpress. Nyhetsbrev nummer ett</td><td class="vem">Axel skickar</td></tr>
+      <tr><td><b>15 december</b></td><td>Skyltfondens svar. Pressnotis oavsett utfall</td><td class="vem">Claude skriver, Axel skickar</td></tr>
+      <tr><td><b>Januari–mars</b></td><td>Bulltoftabanan. Journalister bjuds in till en körning; bilder till presskitet</td><td class="vem">Axel och Mattias</td></tr>
+      <tr><td><b>Mars</b></td><td>”Vintern i siffror”: varningar, facit, förare. En rapport ur datan till press och partners</td><td class="vem">Claude</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>4. Vad som krävs av Axel</h2>
+  <p>Sex handgrepp. Inget av dem kostar pengar, och tre av dem är beslut snarare än arbete.</p>
+  <ol class="steg">
+    <li><div><b>Domänen.</b> halkvakt.se svarar redan på nätet; kolla vem som äger den. Annars .nu eller .app. DNS och e-post hos Cloudflare, gratis.</div></li>
+    <li><div><b>Ansiktet.</b> Press vill ha ett namn. Tre vägar: Axel Lagerlöf som grundare, föreningen med Bengt som talesperson, eller ”teamet bakom Halkvakt”. Rekommendation: föreningen som avsändare och Axel med namn i presskitet. Ett pressmeddelande är inte en privat kanal.</div></li>
+    <li><div><b>Kontona.</b> Facebook-sida, Instagram, LinkedIn-sida och X i Halkvakts namn. En timme. Lösenorden i föreningens förvar.</div></li>
+    <li><div><b>Demovideon.</b> Sextio sekunder, telefonen i hållaren, en riktig varning som hörs. Filmas när nästa kameravarning kommer på en resa.</div></li>
+    <li><div><b>Partnerbreven.</b> Claude skriver, Axel skickar från hej@halkvakt.se i föreningens namn. Fem brev, en förmiddag.</div></li>
+    <li><div><b>Vem som klistrar in i Facebook-grupper.</b> Bengt eller någon annan med eget konto. Inte Axel.</div></li>
+  </ol>
+
+  <h2>5. Vad Claude bygger utan att fråga</h2>
+  <div class="regel">
+    <ul>
+      <li>Marknadsmotorn igång igen på pulsklockan, med snölarmet kopplat till ett utkast per län och kanal.</li>
+      <li><code>press.html</code> som presskit. Fyra pressmeddelanden: frost, snö, Skyltfonden, Bulltofta. Partnerbrev till NTF, STR, Trafikverket, försäkringsbolagen och Halkvarning.se. Nyhetsbrevsmallen.</li>
+      <li>Betygsfrågan i appen efter tredje resan, på båda plattformarna.</li>
+      <li>Mätning varje måndag i bedömningen: installationer, facitsvar, presslänkar.</li>
+      <li><b>”Halkvakt live”:</b> motorn postar själv när ett riktigt larm kommer. ”Just nu: halka rapporterad E4 Gävle–Söderhamn, −2°, blöt väg.” Till X, Bluesky, Mastodon och Facebook-sidan, gratis och utan handgrepp. Bara riktiga larm, aldrig brus; samma tystnadsregel som rösten.</li>
+    </ul>
+  </div>
+
+  <h2>6. Målen vi mäter mot</h2>
+  <div class="tabell"><table>
+    <thead><tr><th>Till</th><th>Mål</th><th>Mäts i</th></tr></thead>
+    <tbody>
+      <tr><td><b>Första snön</b></td><td>12 Android-testare och 50 iPhone-installationer</td><td>Play Console, App Store Connect</td></tr>
+      <tr><td><b>31 december</b></td><td>1 000 installationer, 5 omnämnanden i press, 100 facitsvar</td><td>Butikerna, presslänkar, <code>driver_facit</code></td></tr>
+      <tr><td><b>31 mars</b></td><td>5 000 installationer, Bulltofta-artikeln, en partner som länkar</td><td>Samma</td></tr>
+    </tbody>
+  </table></div>
+  <p class="litet"><b>Utanför planen, ett ägarbeslut:</b> push till användarna om faror. Positionsstyrd push kräver att servern vet var telefonen är, vilket bryter löftet. En länsvis prenumeration går utan position men kräver ett push-token per telefon, alltså ett enhets-id hos oss. Frågan ligger hos Bengt och Axel.</p>
+  <p class="litet">Missas första raden är det inte kanalerna som är fel utan budskapet. Då skrivs budskapet om, inte planen. Källan är <code>docs/MARKNADSFORING-NOLLBUDGET.md</code> i app-repot; GTM-planen från augusti behåller sina kanaler men inte sina annonspengar.</p>
+</main>

@@ -84,6 +84,13 @@ på Bulltoftabanan jan–mar 2027, kuvösen med Trafikverket. Ersätter de betal
 - `press.html` som presskit · pressmeddelandet (frost / snö / Skyltfonden / Bulltofta, fyra versioner) · partnerbreven · nyhetsbrevsmallen.
 - Betygsfrågan i appen efter tredje resan (iOS `SKStoreReviewController`, Android In-App Review) — ett kort.
 - Mätning: installationer per vecka (App Store Connect/Play), facitsvar, presslänkar — en rad i bedömningen varje måndag.
+- **"Halkvakt live" (Axels idé 00:24):** motorn postar själv ur `larm.json` — *"Just nu: halka rapporterad E4 Gävle–Söderhamn, −2°, blöt väg"* —
+  till X, Bluesky, Mastodon och Facebook-sidan. Gratis API:er för sidor och konton; noll handgrepp efter uppsättningen; bevisar att appen vet
+  det före nyheterna. Tröskel: bara riktiga larm (första halkan i ett län, olycka med stor påverkan), aldrig brus — samma tystnadsregel som rösten.
+
+**Inte i planen — ägarbeslut (§4.2):** push till användarna om faror. Positionsstyrd push kräver att servern vet var telefonen är (bryter löftet);
+en länsvis prenumeration kräver ett push-token per telefon, alltså ett enhets-id hos oss, som policyn i dag säger att vi inte har. Och "tystnad är en
+funktion". Bengt + Axel.
 
 ## 6. Mål att mäta mot (så vi vet om det fungerar)
 
