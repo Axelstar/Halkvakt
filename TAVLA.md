@@ -243,6 +243,20 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Trafikverket inget annat."*** Allt om att driva ärendet — reservformulär, krav på skriftligt avslagsbeslut, överklagande —
   är **stängt** på hans order (DECISIONS #388). Kortet väntar på Trafikverkets beslut och på ingenting annat. Det tidigare
   Datex II-ärendet är obesvarat sedan 17/9; tystnad är mönstret, inte undantaget.
+  📨 **TRAFIKVERKET SVARADE 1/10 08:07** — Micke Wallin, VViS Förvaltning (konsult), på Bengts ärende med ämnet *"Vädervarningar"*:
+  *"för att det ska bli rätt skulle vi vilja veta vilken information du syftar på i det Öppna API't så ska vi leta rätt på det som
+  kan finnas i historikdatabasen avseende det."* Första livstecknet från Trafikverket på fem ärenden sedan 17/9, och det är
+  kuvösens: *historikdatabasen* och *VViS* pekar på uttaget, inte på givaranmälningarna, och inte på e-tjänsten för allmänna
+  handlingar (ett sådant svar kommer från registrator med diarienummer). Bengt hittar inget skickat mejl därför att
+  Datautbytesportalens formulär skickar åt honom — ämnesraden var hans, kopian finns bara hos dem. **Svaret att skicka (gavs i
+  chatten 1/10):** precisera objekttypen `WeatherMeasurepoint` (schemaversion 2.1) i Öppna API:t, fälten vi redan läser
+  (`Observation.Sample`, `Surface.Temperature`, `Air.Temperature`, `Air.Dewpoint`, `Air.RelativeHumidity`,
+  `Weather.Precipitation`, `Aggregated30minutes.Precipitation.RainSum`/`SnowSum.WaterEquivalent`, `Wind.Speed`/`Direction`,
+  `Aggregated30minutes.Wind.SpeedMax`, `Air.VisibleDistance`), perioden 1/11 2024–31/3 2025, alla stationer i den upplösning de
+  lagrar; i andra hand `RoadCondition` och `Situation` för samma period; formatet deras eget; och — enligt #398 — be dem höra av
+  sig INNAN någon avgift uppstår. Ingen eskalering, inga paragrafer: de frågade, vi svarar.
+  ✅ **SVARET SKICKAT AV BENGT 1/10 ca 08:15Z** till Micke Wallin direkt (hans adress, läst i hans eget mejl): vilka vi är, preciseringen,
+  avgift före arbete, och projektsidan *Halkvakt och kuvösen* (kort #274) som länk, delad med alla med länken och provad utloggad. Väntar på uttaget.
   ⚠️ **TVÅ RISKER SOM INTE STOD PÅ KORTET, och de gäller även om svaret blir ja:**
   · **Elektronisk form är inte en rättighet.** Rätten att ta del av en allmän handling omfattar att läsa den och att få
     papperskopia; att få ut en databas i filform är något myndigheten *får* göra, inte något den måste. För ett vinteruttag
@@ -635,15 +649,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Verify: en körning där en ändrad granskningsdatum-rad INTE ger ett larm, och där ett påhittat äkta
   ord i ett nytt stycke fortfarande gör det (motprov åt båda hållen — en fälla som inte kan fälla
   något är ingen fälla, läxan 20/9).
-- [ ] 🐕 **#243 VAKTHUNDENS ARKIVGRÄNS ÄR FÖR SNÄV — issue #528 var ett falsklarm** (fynd 24/9 på Bengts fråga *"vad betyder detta"*).
-  Checken *livemotorns effekt* larmar när `situation_archive` inte rörts på 30 min, men arkivet skrivs bara när Trafikverket
-  ändrar något: mätt 24/9 04:12Z — 4 gluggar > 30 min senaste dygnet (största 102 min), **32 på sju dygn, medel 54 min, största
-  128 min**. Livemotorn svarade varje minut hela natten (360 av 360 cron-körningar, 61 svar per timme med innehåll), deviations
-  och road_conditions 1 min färska. Issue #528 (03:07Z) stängdes av vakthunden själv 04:07Z. Förslag: gränsen till 3 h, eller
-  mät att funktionen SKREV (deviations färska) i stället för att arkivet ÄNDRADES. 🔒 NYCKEL: Bengts ja på gräns eller mått.
-  Verify: sju dygn utan falsklarm ur den checken, och ett riktigt stopp (kort #222:s fall) fångas fortfarande.
-  🔨 **Bengts ja 24/9 (DECISIONS #343):** gränsen 30 → 180 min, kommentaren rättad. Kvar: deploy, sedan sju dygn utan falsklarm ur checken.
-  📏 **Läst 24/9 15:09Z:** i drift: vakthundens körning 15:07Z skriver *situation_archive rörd för 3 min sedan (gräns 180)* och inga problem. Kortet stängs efter sju dygn utan falsklarm.
 - [ ] 🧂 **#231 PRODUKTIONSREGELNS FALSKLARM PER VÄDERTYP — en rad i bildfacitets läsning** (Bengts ja 21/9, Axel utan synpunkter samma dag, DECISIONS #291,
   ur second opinion #290). 🔑 **Nyckel: bildfacitets läsning (#209) — beslutet efter första frosten, bilderna öppnas i mars.**
   På en stadigt kall snödag säger stationsregeln *kallt och nederbörd* också på en saltad väg med fullt grepp; stationen ser
@@ -1429,78 +1434,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** #51 *Vinterarkivet* — dess Verify (DECISIONS #252) är samma mätning som den här.
   🔑 **Nyckel, sorterat 22/9 (kort #224):** första frosten — sedan mätningen, därefter Bengts och Axels beslut.
 
-- [ ] 💸 **#152 KASSAVAKTEN — check 8 i vakthunden: larmar innan Actions-taket slår i** (Bengts order
-  13/9: "Kan man ha någon mätning på taket så man vet när man närmar sig gränsen. Automatisk alltså").
-  💰 **RÄTTAD 13/9 (DECISIONS #160, Bengts order "gör kort 152 nu"):** prognosen räknade på
-  månad-till-datum, och i det snittet låg fem flöden som lades ner 8–9/9 (`ingest-fi`, `-no`,
-  `-dk`, `publish-map`, `regn-30`). Vakten sa **21 september**; uppmätt verklig takt var
-  **232 min/dygn** senaste dygnet och **180** de två senaste, mot snittets 311 — och driften ensam
-  (ingest + grannar + healthcheck) är **81**, resten är bygge. **Förbrukningen läses nu ur
-  månadstalet, prognosen ur en SLÄPANDE takt** över de två senaste kompletta dygnen; taket flyttas
-  därmed till **26 september** på verkliga tal. Båda talen står i varje larm — månadssnittet låser
-  fast en takt som kan ha upphört, det släpande är känsligt för en byggskur — och avviker de mer än
-  25 % säger larmet **TAKTEN ÄNDRAS**. Kostar noll extra API-anrop: dygnsloopen fanns redan.
-  🔨 BYGGD 13/9, väntar på deploy + bevis. Bakgrunden är 5/9: minuterna tog slut mitt i drift, appen
-  serverade 66 h gammal data, och det upptäcktes bara för att en människa råkade titta. Taket har HÅRT
-  STOPP, så det är en vägg och inte en försämring. Ligger i vakthunden (Supabase, noll Actions-minuter)
-  med samma nyckel som mätvakten redan använder för att läsa Actions-API:t.
-  RÄKNINGEN: körningar sedan den 1:a, avrundade uppåt per körning, minus gratispotten 2 000 min,
-  gånger 0,008 USD. Larmar när (a) faktisk förbrukning passerat 70 % av taket, eller (b) prognosen når
-  taket före månadsskiftet — och det är (b) som är poängen: "i dagens takt slår taket i den 25:e" går
-  att agera på, "62 % förbrukat" gör det inte.
-  TVÅ KÄNDA FEL, utskrivna i varje larm i stället för dolda: taket är KONTOOMFATTANDE men vi ser ett
-  repo, och GitHub avrundar per jobb medan vi avrundar per körning (android.yml har två jobb). Talet är
-  därför ett GOLV, aldrig fakturan. Exakta siffran kräver kontobehörighet ⇒ Axels handgrepp, eget kort
-  om vi vill ha den.
-  KÖRS 05/11/17/23 UTC, inte varje timme: en räkning är ~30 API-anrop och budgeten rör sig 1–2 USD/dygn.
-  FÄRGAR ALDRIG DRIFTVAKTHUNDEN RÖD (egen etikett `kassavakt`, egen öppna/uppdatera/stäng-cykel) — samma
-  regel som mätvakten: rött ska betyda "kedjan till appen är bruten NU".
-  ✅ ARITMETIKEN BEVISAD fristående mot sex handräknade fall (husets konvention för vakthundslogik, som
-  kadensTimmar): gratispotten ej förbrukad ⇒ 0 USD; 6 375 min ⇒ exakt 35,00; 202 min/dygn ⇒ taket nås
-  INTE i september; 261 min/dygn ⇒ taket slår i 25/9; noll minuter ⇒ inget datum; första halvtimmen i
-  månaden ⇒ ändlig takt. Testet checkades medvetet INTE in: det hade blivit en andra kopia av tre
-  trösklar och utlöst kontraktsgrinden för noll nytta — konstanterna finns i EN fil.
-  Verify: deploy-supabase grön, sedan `?kassaprov=1` ⇒ issue med etiketten `kassavakt` som stängs av
-  nästa körning under gränsen. Och en riktig kassarad i nästa vakthundskörning 05/11/17/23.
-  ✅ **KLAR OCH BEVISAD 13/9 02:08.** Deployad (vakthund, 705 kB) och larmvägen prövad skarpt med
-  `?kassaprov=1` via DB-knappen ⇒ **issue #210 med etiketten `kassavakt`**. Den larmade på EGEN grund,
-  inte bara på provraden: *"I dagens takt (311 min/dygn) slår taket i den 2026-09-21."*
-  **FÖRSTA SKARPA MÄTNINGEN, och den är värre än fönsterskattningen:** 3 761 min sedan 1/9 över
-  2 798 körningar ⇒ debiterat 1 761 min = **14,09 av 35 USD**, takt **311 min/dygn**, prognos för
-  månaden **59 USD**. Fönstermätningen 12/9 gav 202 min/dygn — den fönstret var alltså lugnare än
-  månadssnittet, och 31–40 USD var för lågt räknat.
-  🩹 **TVÅ FEL AV MIG PÅ VÄGEN, båda bokförda för att de är lärorika:**
-  · Jag dispatchade deploy-supabase UTAN `funktion` och fick standardvärdet `publicera`. Jobbet blev
-    grönt, jag läste grönt som "rätt sak deployad", och första provet kunde inte fungera. Läxan är den
-    gamla: en grön körning bevisar att NÅGOT gick bra, inte att det var det man tänkt.
-  · Första skarpa körningen räknade exakt 1 000 körningar och rapporterade 94 min/dygn — halva
-    sanningen, utan felmeddelande. `/actions/runs` paginerar bara till 1 000 träffar. Lagat: räkningen
-    går ett dygn i taget, och dygnsloopen är självtestad. Läxa i CLAUDE.md.
-  · (Ett tredje, ofarligt: `kassaprov` lades i skriptets vitlista men inte i dbknapp.yml:s if-sats, så
-    en körning föll tyst i migrera-grenen och körde om gallringsmigrationen. Idempotent, inga rader
-    rörda, bevisraderna visade alla tio cron-jobb intakta. Villkoret är nu inverterat så att det bara
-    finns EN lista. Läxa i CLAUDE.md.)
-  📏 **AVLÄST 14/9 17:08 (kassavaktens egen rad, issue #210):** förbrukat sedan 1/9 **4 026 min över
-  3 006 körningar** ⇒ debiterat 2 026 min = **16,21 USD av taket 35**. Släpande takt **200 min/dygn**
-  (oförändrad sedan 05:08), månadssnittet sjunker (301 → 294). Takdatum **26/9, oförändrat sedan i
-  morse** — det går alltså inte åt fel håll. **Dygnets EGEN takt är lägre än båda:** 05:08 → 17:08
-  (12,0 h) gav 50 debiterade min över 38 körningar ⇒ **100 min/dygn**. Raderna 05:08, 11:08 och 17:08
-  finns alla; vakten fyrar som den ska.
-  📏 **15/9 04:45:** raden 23:08 finns — förbrukat **4 058 min över 3 025 körningar** ⇒ debiterat
-  2 058 min = **16,46 USD av 35**. Släpande takt 200 oförändrad, månadssnittet ned 294 → 291,
-  takdatum **26/9 oförändrat**. Nattens egen takt 17:08 → 23:08 (6,0 h): 32 min ⇒ **128 min/dygn**.
-  05:08-raden hade inte kommit när avläsningen gjordes (vakthunden fyrar 05 UTC).
-  🔍 **OMRÄKNAT PER JOBB 18/9 (Claude, alla 3 359 körningar sedan 1/9):** GitHub debiterar varje JOBB uppåt till hel
-  minut; kassavakten räknar varje KÖRNING på `updated_at − run_started_at`. Felet går åt två håll: android.yml:s två
-  parallella jobb räknas som ett (16/9: 55 min mot 105), och driftens korta jobb räknas med körningens efterslöp
-  (healthchecks jobb tar 58 s men körningen 63 s ⇒ 2 min i stället för 1). Över månaden: **4 530 min mot 4 369 per jobb**,
-  alltså 161 min för mycket — talet är inget golv, som larmtexten säger. Kvar till taket per jobb: cirka 2 000 min;
-  driften ~74 min per dygn ⇒ bygget högst ~80 min per dygn till 1/10 (bedömningen §0b). GitHubs eget API för debiterbar
-  tid svarar 0 sedan faktureringen lades om, så Billing är enda facit (Axel, §4.2). **Ingen ändring nu:** att räkna per
-  jobb kostar ett API-anrop per körning (~180 per dygn) och skulle förlänga vakthundens redan för långa timme (#201) —
-  rättas i så fall ihop med #201, med dygnssummor som sparas.
-  🔑 **Nyckel, sorterat 22/9 (kort #224):** 1/10 — ingen körning stoppad i september och issue #210 stängd av kassavakten; Axels Billing-avläsning.
-
 - [ ] 🧊 **#151 VÄGLAGETS ÅLDER — ska en stående vinterklassning tystas när mätningarna säger att vintern tagit slut?**
   📄 **TRÖSKELDOKUMENT FASTSTÄLLT 12/9 av Bengt** (`docs/TROSKLAR-VAGLAGETS-ALDER.md`, DECISIONS #151/#152).
   **Kortet kommer ur att Axel mätte i stället för att bygga det jag antog.** Jag flaggade att
@@ -1831,6 +1764,109 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#274 PROJEKTSIDAN TILL TRAFIKVERKET — *Halkvakt och kuvösen* — SKAPAT OCH STÄNGT 1/10 (DECISIONS #418)**: Bengts idé 1/10,
+  när VViS Förvaltning svarat på kuvösens uttag: *"en beskrivning av vårt projekt … lite vad Halkvakt är och vad kuvösen har för avsikt att göra i
+  jämförelse med de mätningar som vi gör nu i trösklar … som en artifact"*. Sidan: vad appen är och inte gör (dataflödet, de fyra principerna),
+  hur vi prövar i dag (tröskeldokument daterade före koden, skuggan och arkivet, grind per del, domkalendern), vad kuvösen svarar på som
+  dagens mätningar inte kan (helheten, marginalnyttan, svar i november i stället för mars — om uttaget kommer i oktober), jämförelsetabellen,
+  uttagets specifikation (samma som svaret till Micke Wallin) och vilka vi är. Inga opublicerade tröskelvärden — sidan är extern.
+  Källa `docs/HALKVAKT-OCH-KUVOSEN.html`, artefakt https://claude.ai/artifact/CrrMKX7vcRcXHiqqYGjs9S (v1). **Privat tills Bengt delar den** (Share-menyn);
+  Bengt avgör om länken går till Trafikverket och Skyltfonden. Ändras sidan: repokopian först, republicera till samma URL i samma commit.
+- [x] ✅ **#243 VAKTHUNDENS ARKIVGRÄNS ÄR FÖR SNÄV — issue #528 var ett falsklarm — STÄNGT 1/10 (DECISIONS #417)** (fynd 24/9 på Bengts fråga *"vad betyder detta"*).
+  Checken *livemotorns effekt* larmar när `situation_archive` inte rörts på 30 min, men arkivet skrivs bara när Trafikverket
+  ändrar något: mätt 24/9 04:12Z — 4 gluggar > 30 min senaste dygnet (största 102 min), **32 på sju dygn, medel 54 min, största
+  128 min**. Livemotorn svarade varje minut hela natten (360 av 360 cron-körningar, 61 svar per timme med innehåll), deviations
+  och road_conditions 1 min färska. Issue #528 (03:07Z) stängdes av vakthunden själv 04:07Z. Förslag: gränsen till 3 h, eller
+  mät att funktionen SKREV (deviations färska) i stället för att arkivet ÄNDRADES. 🔒 NYCKEL: Bengts ja på gräns eller mått.
+  Verify: sju dygn utan falsklarm ur den checken, och ett riktigt stopp (kort #222:s fall) fångas fortfarande.
+  🔨 **Bengts ja 24/9 (DECISIONS #343):** gränsen 30 → 180 min, kommentaren rättad. Kvar: deploy, sedan sju dygn utan falsklarm ur checken.
+  📏 **Läst 24/9 15:09Z:** i drift: vakthundens körning 15:07Z skriver *situation_archive rörd för 3 min sedan (gräns 180)* och inga problem. Kortet stängs efter sju dygn utan falsklarm.
+  ↪ **1/10: STÄNGT MED BEVIS** (DECISIONS #417). Sedan deployen 24/9 15:09Z har checken *livemotorns effekt* inte larmat en enda gång: enda
+  vakthundsissuen sedan dess är #623 (26/9, lagringslarmet — en annan check), och dess egna mätrader säger *situation_archive rörd för 4 min
+  sedan (gräns 180)*. Gluggarna lästa med db-knappens läsläge på main (körning 36831247108, fönster 24/9 07:41Z–1/10 07:35Z): **0 gluggar
+  > 180 min, största 01:26, 41 gluggar > 30 min** — den gamla gränsen hade larmat 41 gånger på en vecka, den nya kunde inte larma. Sju hela dygn
+  fylls 15:09Z i dag; avläsningen täcker 6 dygn 16 h och visar vad checken såg varje minut, inte bara att issues saknas. Andra Verify-ledet
+  (ett riktigt stopp fångas): checkens logik är oförändrad utom talet (`LIVEMOTOR_EFFEKT_MIN = 180`, vakthund/index.ts rad 865), så #222:s fall —
+  cron säger succeeded, pg_net köar, arkivet står still — larmar fortfarande, efter tre timmar i stället för trettio minuter. Priset är 2,5 h
+  längre till upptäckt. Inte provat skarpt: det kräver att livemotorn stoppas, och det görs inte för ett bevis.
+- [x] ✅ **#152 KASSAVAKTEN — check 8 i vakthunden: larmar innan Actions-taket slår i — STÄNGT 1/10 (DECISIONS #417)** (Bengts order
+  13/9: "Kan man ha någon mätning på taket så man vet när man närmar sig gränsen. Automatisk alltså").
+  💰 **RÄTTAD 13/9 (DECISIONS #160, Bengts order "gör kort 152 nu"):** prognosen räknade på
+  månad-till-datum, och i det snittet låg fem flöden som lades ner 8–9/9 (`ingest-fi`, `-no`,
+  `-dk`, `publish-map`, `regn-30`). Vakten sa **21 september**; uppmätt verklig takt var
+  **232 min/dygn** senaste dygnet och **180** de två senaste, mot snittets 311 — och driften ensam
+  (ingest + grannar + healthcheck) är **81**, resten är bygge. **Förbrukningen läses nu ur
+  månadstalet, prognosen ur en SLÄPANDE takt** över de två senaste kompletta dygnen; taket flyttas
+  därmed till **26 september** på verkliga tal. Båda talen står i varje larm — månadssnittet låser
+  fast en takt som kan ha upphört, det släpande är känsligt för en byggskur — och avviker de mer än
+  25 % säger larmet **TAKTEN ÄNDRAS**. Kostar noll extra API-anrop: dygnsloopen fanns redan.
+  🔨 BYGGD 13/9, väntar på deploy + bevis. Bakgrunden är 5/9: minuterna tog slut mitt i drift, appen
+  serverade 66 h gammal data, och det upptäcktes bara för att en människa råkade titta. Taket har HÅRT
+  STOPP, så det är en vägg och inte en försämring. Ligger i vakthunden (Supabase, noll Actions-minuter)
+  med samma nyckel som mätvakten redan använder för att läsa Actions-API:t.
+  RÄKNINGEN: körningar sedan den 1:a, avrundade uppåt per körning, minus gratispotten 2 000 min,
+  gånger 0,008 USD. Larmar när (a) faktisk förbrukning passerat 70 % av taket, eller (b) prognosen når
+  taket före månadsskiftet — och det är (b) som är poängen: "i dagens takt slår taket i den 25:e" går
+  att agera på, "62 % förbrukat" gör det inte.
+  TVÅ KÄNDA FEL, utskrivna i varje larm i stället för dolda: taket är KONTOOMFATTANDE men vi ser ett
+  repo, och GitHub avrundar per jobb medan vi avrundar per körning (android.yml har två jobb). Talet är
+  därför ett GOLV, aldrig fakturan. Exakta siffran kräver kontobehörighet ⇒ Axels handgrepp, eget kort
+  om vi vill ha den.
+  KÖRS 05/11/17/23 UTC, inte varje timme: en räkning är ~30 API-anrop och budgeten rör sig 1–2 USD/dygn.
+  FÄRGAR ALDRIG DRIFTVAKTHUNDEN RÖD (egen etikett `kassavakt`, egen öppna/uppdatera/stäng-cykel) — samma
+  regel som mätvakten: rött ska betyda "kedjan till appen är bruten NU".
+  ✅ ARITMETIKEN BEVISAD fristående mot sex handräknade fall (husets konvention för vakthundslogik, som
+  kadensTimmar): gratispotten ej förbrukad ⇒ 0 USD; 6 375 min ⇒ exakt 35,00; 202 min/dygn ⇒ taket nås
+  INTE i september; 261 min/dygn ⇒ taket slår i 25/9; noll minuter ⇒ inget datum; första halvtimmen i
+  månaden ⇒ ändlig takt. Testet checkades medvetet INTE in: det hade blivit en andra kopia av tre
+  trösklar och utlöst kontraktsgrinden för noll nytta — konstanterna finns i EN fil.
+  Verify: deploy-supabase grön, sedan `?kassaprov=1` ⇒ issue med etiketten `kassavakt` som stängs av
+  nästa körning under gränsen. Och en riktig kassarad i nästa vakthundskörning 05/11/17/23.
+  ✅ **KLAR OCH BEVISAD 13/9 02:08.** Deployad (vakthund, 705 kB) och larmvägen prövad skarpt med
+  `?kassaprov=1` via DB-knappen ⇒ **issue #210 med etiketten `kassavakt`**. Den larmade på EGEN grund,
+  inte bara på provraden: *"I dagens takt (311 min/dygn) slår taket i den 2026-09-21."*
+  **FÖRSTA SKARPA MÄTNINGEN, och den är värre än fönsterskattningen:** 3 761 min sedan 1/9 över
+  2 798 körningar ⇒ debiterat 1 761 min = **14,09 av 35 USD**, takt **311 min/dygn**, prognos för
+  månaden **59 USD**. Fönstermätningen 12/9 gav 202 min/dygn — den fönstret var alltså lugnare än
+  månadssnittet, och 31–40 USD var för lågt räknat.
+  🩹 **TVÅ FEL AV MIG PÅ VÄGEN, båda bokförda för att de är lärorika:**
+  · Jag dispatchade deploy-supabase UTAN `funktion` och fick standardvärdet `publicera`. Jobbet blev
+    grönt, jag läste grönt som "rätt sak deployad", och första provet kunde inte fungera. Läxan är den
+    gamla: en grön körning bevisar att NÅGOT gick bra, inte att det var det man tänkt.
+  · Första skarpa körningen räknade exakt 1 000 körningar och rapporterade 94 min/dygn — halva
+    sanningen, utan felmeddelande. `/actions/runs` paginerar bara till 1 000 träffar. Lagat: räkningen
+    går ett dygn i taget, och dygnsloopen är självtestad. Läxa i CLAUDE.md.
+  · (Ett tredje, ofarligt: `kassaprov` lades i skriptets vitlista men inte i dbknapp.yml:s if-sats, så
+    en körning föll tyst i migrera-grenen och körde om gallringsmigrationen. Idempotent, inga rader
+    rörda, bevisraderna visade alla tio cron-jobb intakta. Villkoret är nu inverterat så att det bara
+    finns EN lista. Läxa i CLAUDE.md.)
+  📏 **AVLÄST 14/9 17:08 (kassavaktens egen rad, issue #210):** förbrukat sedan 1/9 **4 026 min över
+  3 006 körningar** ⇒ debiterat 2 026 min = **16,21 USD av taket 35**. Släpande takt **200 min/dygn**
+  (oförändrad sedan 05:08), månadssnittet sjunker (301 → 294). Takdatum **26/9, oförändrat sedan i
+  morse** — det går alltså inte åt fel håll. **Dygnets EGEN takt är lägre än båda:** 05:08 → 17:08
+  (12,0 h) gav 50 debiterade min över 38 körningar ⇒ **100 min/dygn**. Raderna 05:08, 11:08 och 17:08
+  finns alla; vakten fyrar som den ska.
+  📏 **15/9 04:45:** raden 23:08 finns — förbrukat **4 058 min över 3 025 körningar** ⇒ debiterat
+  2 058 min = **16,46 USD av 35**. Släpande takt 200 oförändrad, månadssnittet ned 294 → 291,
+  takdatum **26/9 oförändrat**. Nattens egen takt 17:08 → 23:08 (6,0 h): 32 min ⇒ **128 min/dygn**.
+  05:08-raden hade inte kommit när avläsningen gjordes (vakthunden fyrar 05 UTC).
+  🔍 **OMRÄKNAT PER JOBB 18/9 (Claude, alla 3 359 körningar sedan 1/9):** GitHub debiterar varje JOBB uppåt till hel
+  minut; kassavakten räknar varje KÖRNING på `updated_at − run_started_at`. Felet går åt två håll: android.yml:s två
+  parallella jobb räknas som ett (16/9: 55 min mot 105), och driftens korta jobb räknas med körningens efterslöp
+  (healthchecks jobb tar 58 s men körningen 63 s ⇒ 2 min i stället för 1). Över månaden: **4 530 min mot 4 369 per jobb**,
+  alltså 161 min för mycket — talet är inget golv, som larmtexten säger. Kvar till taket per jobb: cirka 2 000 min;
+  driften ~74 min per dygn ⇒ bygget högst ~80 min per dygn till 1/10 (bedömningen §0b). GitHubs eget API för debiterbar
+  tid svarar 0 sedan faktureringen lades om, så Billing är enda facit (Axel, §4.2). **Ingen ändring nu:** att räkna per
+  jobb kostar ett API-anrop per körning (~180 per dygn) och skulle förlänga vakthundens redan för långa timme (#201) —
+  rättas i så fall ihop med #201, med dygnssummor som sparas.
+  🔑 **Nyckel, sorterat 22/9 (kort #224):** 1/10 — ingen körning stoppad i september och issue #210 stängd av kassavakten; Axels Billing-avläsning.
+  ↪ **1/10: STÄNGT MED BEVIS** (DECISIONS #417). Nyckeln uppfylld i alla tre led: (1) ingen körning stoppad i september — `ingest` gick varje hel timme
+  30/9 00:11Z → 1/10 07:11Z (körning 881–910, alla gröna), hårdstoppet slog aldrig i; (2) issue #210 stängd av kassavakten själv 1/10 05:07Z
+  (*"Stänger — god marginal igen."*) efter 81 rader sedan 13/9; (3) Axels Billing-avläsning 27/9: 17,84 USD i budgetfönstret från 13/9 (#381),
+  bokförd i bedömningen §0b. Septembers slutrad (30/9 23:07Z): **6 348 min över 4 718 körningar ⇒ 34,78 av 35 USD** i vaktens räkning (1,8 % över
+  per-jobb-regeln enligt omräkningen 27/9), släpande takt 95 min/dygn de sista dygnen — marginalen var 0,22 USD, så *inga app-byggen till 1/10* var
+  nödvändigt, inte försiktigt. Oktober börjar på 22 min. Vakten står kvar i drift (05/11/17/23 UTC); räkneregeln per jobb är fortfarande en öppen
+  rad i bedömningen §4.2 (rättas ihop med #201, om alls).
 - [x] ✅ **#273 GENOMLYSNING AV DE FEM STOMDOKUMENTEN — SKAPAT OCH STÄNGT 1/10 (STOMREGELN, DECISIONS #415/#416)**: Bengts order
   1/10 — mätningssidan, appsidan, systembilden, bedömningen och integrationskartan är facit och kontrollpunkter; varje ändring stäms
   av mot dem och rättelserna förs in löpande (CLAUDE.md STOMREGELN, sessionsprotokollets steg 4). Genomlysningen: alla fem lästa mot
