@@ -6835,7 +6835,7 @@ policy-URL `axelstar.github.io/halkvakt-karta/integritet.html` (uppdaterad b9626
 **Vad som väntar.** Apples svar (typiskt 1–3 dygn). Vid avslag: svaret skrivs i Resolution Center, texten in i chatten först. Vid godkännande:
 Axel väljer dagen; betaguiden och Kompisarna påverkas inte (TestFlight går vidare parallellt).
 
-**Sagt högt.** (1) (20) är inlämnat utan att långtrycket provats på en telefon — fungerade i (13), bröts av #279:s ScrollView, rättat med
-simultaneousGesture; Axel provar i TestFlight (20) i morgon, och faller det skickar vi (21) innan granskaren hinner dit. (2) Copyright-fältet
+**Sagt högt.** (1) ~~(20) är inlämnat utan att långtrycket provats på en telefon~~ — **provat 00:11 på Axels iPhone ur TestFlight (20): kortet
+kommer.** Fungerade i (13), bröts av #279:s ScrollView, rättat med simultaneousGesture — bekräftat. (2) Copyright-fältet
 sparades som *"Copyright: © 2026 Lagerlöf Labs"* — ordet "Copyright:" ska bort nästa gång versionen redigeras. (3) AppLaunchFlows
 nedladdning är betald; samma look byggd fritt i `alf.py`.

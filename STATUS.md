@@ -2166,4 +2166,4 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 1/10 23:27 (Axel): bilderna görs i AppLaunchFlow i stället (Axels look); Claude levererade rena råbilder utan statusrad och varnade för de påhittade
   "4.8 App Store"-märkena. `rama.py`-serien (editorial) ligger kvar i repot som reserv.
 - 2/10 00:09 (Axel + Claude på skärmen i Safari): **Halkvakt 0.3.9 (20) inlämnad till App Store — Waiting for Review** (DECISIONS #433). Bilderna i
-  AppLaunchFlow-looken (alf.py, sju), bara Sverige, manuell release. Kvar: Apples svar, långtrycksprovet i (20), "Copyright:" ur fältet.
+  AppLaunchFlow-looken (alf.py, sju), bara Sverige, manuell release. Kvar: Apples svar, "Copyright:" ur fältet. 00:11: långtrycket provat i (20) — kortet kommer.

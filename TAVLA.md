@@ -97,8 +97,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   skickade i chatten, kan återskapas ur `appstore/ra/` med 150 px topp i skärmens färg). 1290×2796 duger i 6,9-tumsfacket.
   🚀 **INLÄMNAD 2/10 00:09 — 0.3.9 (20) *Waiting for Review*** (DECISIONS #433). Hela formuläret ifyllt på en sittning med Claude på skärmen:
   bilder (alf.py, sju st), texter, granskarnotis, App Information, App Privacy publicerad, gratis, bara Sverige, manuell release.
-  🔑 Kvar: Apples svar · Axel provar långtrycket i TestFlight (20) i morgon (faller det ⇒ (21) före granskningen) · "Copyright:" ur
-  copyright-fältet vid nästa redigering · vid godkännande: Axel väljer releasedag.
+  ✅ **00:11 — långtrycket provat i (20) på Axels iPhone: kortet kommer** (*"Det fungerade"*). simultaneousGesture-fixen håller; granskaren får sin varning.
+  🔑 Kvar: Apples svar · "Copyright:" ur copyright-fältet vid nästa redigering · vid godkännande: Axel väljer releasedag.
   Verify: ✅ *Waiting for Review* med (20) — uppfyllt 00:09. Återstår: Apples svar.
   Verify: *Waiting for Review* i App Store Connect med (19) eller senare bifogat; sedan Apples svar.
 
