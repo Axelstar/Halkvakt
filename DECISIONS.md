@@ -6545,3 +6545,14 @@ själv rapporterar förblir osynlig. **Ramar:** ingen text, ingen prioritet och 
 efter skuggan; en egen motorinstans så att oljan aldrig tränger undan eller tystas av de riktiga varningarna i loggen; hela klassen
 loggas med sin text, så att mätningen kan skilja olja från potthål i efterhand i stället för att filtret gissar i förväg. **Byggs i egen PR**
 efter omtaget (#419/#420), med migration, bunt, deploy och bevis i samma varv.
+
+**Byggt 1/10** (i samma PR som omtaget, #660). `sql/040`: kolumnen `shadow_log.olja` och RPC:n `olja_aktiva()` — bara service-rollen,
+som `vagpunkt_ankare`. **Aktiv = start ≤ nu < slut**, mätt först (`scripts/matningar/olja-aktiv-2026-10-01.sql`, dbknapp 36861530518):
+117 händelser sedan 31/8, alla med sluttid och punkt, median 1 h 48 min, p90 ungefär ett dygn, 4 aktiva 1/10 — en händelse utan sluttid
+räknas bara det första dygnet, annars hade den varit aktiv för alltid. Arkivet ser aldrig Trafikverkets radering, så en preliminär
+sluttid kan hålla en sanerad fläck aktiv en stund för länge; den längsta händelsen är 689 dygn (troligen en vägskada, inte olja) — det
+är skälet att hela klassen loggas med text. Skuggmotorn: en egen motorinstans per rutt (viltets avståndsregel, ingen text, ingen
+prioritet), raden i `olja`, antal och skäl i svaret. Provet `?oljaprov=1` (dbknappens `oljaprov`, i skriptet OCH flödet) lägger en
+påhittad fläck på ett rakt spår och skriver inget i skuggloggen. Integrationsprov mot PostGIS: aktiv, avslutad, framtida, annan klass,
+utan punkt, utan sluttid ny och gammal — bara två ut. **Ordningen efter sammanslagningen: `sql/040` FÖRE deployen** — skuggmotorn
+skriver kolumnen i varje rad, och PostgREST avvisar en okänd kolumn.

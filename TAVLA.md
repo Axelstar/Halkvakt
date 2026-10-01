@@ -228,6 +228,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   var rösten skulle ha talat, ingen text i appen; (b) vårlistan tillsammans med #32 hinder; (c) låta bli. 🔑 Bengts och Axels val (§4.2);
   rösttexten är Axels. Verify för (a): skuggloggen bär rader med oljefaror, och en mätning visar hur ofta rösten skulle ha talat per varv.
   ✅ **Bengt 1/10: väg (a)** (DECISIONS #421) — skuggan först, egen kolumn som vattenplaningen, egen motorinstans, hela klassen med text, ingen ändring i appen. 🔨 Byggs i egen PR efter omtaget.
+  🔨 **BYGGT 1/10:** `sql/040` (kolumnen `olja` + RPC `olja_aktiva()`, bara service-rollen; aktiv = start ≤ nu < slut, utan sluttid bara första dygnet — 117 händelser, alla med sluttid, median 1 h 48 min, 4 aktiva 1/10) · skuggmotorn: egen motorinstans per rutt, raden i `shadow_log.olja`, `oljaSkal` i svaret · `?oljaprov=1` (dbknappens `oljaprov`) skriver inget · integrationsprov mot PostGIS · mätningssidan 7.7. 🔑 Kvar: *"slå ihop"*, **`sql/040` FÖRE deployen** (annars avvisas skuggloggens rader), deploy, oljaprovet och första raden med innehåll.
 
 
 - [ ] 📐 **#270 PROGNOSLAGRET EFTER PREMISSMÄTNINGARNA — BENGTS VAL a–h** (30/9, `docs/PROGNOSLAGRET-2026-09-30.md`; DECISIONS

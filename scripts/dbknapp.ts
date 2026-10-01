@@ -74,9 +74,9 @@ try {
     // Vitlistan först, före FRÅGAN: en felstavad flagga ska falla på en rad, inte efter att ha
     // kört något mot databasen. (Rättat 12/9: kommentaren sa tidigare att den därmed gick att
     // prova helt utan DATABASE_URL — det stämmer inte, toppnivåvakten kräver den ändå.)
-    const FLAGGOR: Record<string, string> = { larmprov: "larmprov=1", vinterprov: "vinterprov=1", frostprov: "frostprov=1", matvaktprov: "matvaktprov=1", paminnelseprov: "paminnelseprov=1", kassaprov: "kassaprov=1", databasprov: "databasprov=1", facitprov: "facitprov=1", nyckelprov: "nyckelprov=1", sparrprov: "sparrprov=1", arkivprov: "arkivprov=1", utlosarprov: "utlosarprov=1" , forsprangprov: "lage=forsprang&prov=1", lagringsprov: "lagringsprov=1", kamerafacitprov: "torrt=1" };
+    const FLAGGOR: Record<string, string> = { larmprov: "larmprov=1", vinterprov: "vinterprov=1", frostprov: "frostprov=1", matvaktprov: "matvaktprov=1", paminnelseprov: "paminnelseprov=1", kassaprov: "kassaprov=1", databasprov: "databasprov=1", facitprov: "facitprov=1", nyckelprov: "nyckelprov=1", sparrprov: "sparrprov=1", arkivprov: "arkivprov=1", utlosarprov: "utlosarprov=1" , forsprangprov: "lage=forsprang&prov=1", lagringsprov: "lagringsprov=1", kamerafacitprov: "torrt=1", oljaprov: "oljaprov=1" };
     // Vilken funktion provet går till. Vakthunden är standard; spärrprovet (kort #191) går till skuggmotorn.
-    const FUNKTION: Record<string, string> = { sparrprov: "skuggmotor", forsprangprov: "skuggmotor", kamerafacitprov: "kamerafacit" };
+    const FUNKTION: Record<string, string> = { sparrprov: "skuggmotor", forsprangprov: "skuggmotor", kamerafacitprov: "kamerafacit", oljaprov: "skuggmotor" };
     const flagga = FLAGGOR[arg ?? "larmprov"];
     if (!flagga) { console.error(`larmprov: okänd flagga "${arg}" — tillåtna: ${Object.keys(FLAGGOR).join(", ")}`); process.exit(1); }
     const fn = FUNKTION[arg ?? ""] ?? "vakthund";
@@ -110,7 +110,7 @@ try {
         console.log(`svar (request ${reqId}): status ${svar.status_code}${svar.error_msg ? ` fel ${svar.error_msg}` : ""}`);
         try {
           const d = JSON.parse(svar.content ?? "");
-          for (const nyckel of ["ok", "prov", "problem", "larmvag", "suppressed", "alerts", "facit", "facitSkal", "faror", "kalla_stationer", "v2", "v3", "utfall"]) if (nyckel in d) console.log(`  ${nyckel}: ${JSON.stringify(d[nyckel]).slice(0, 600)}`);
+          for (const nyckel of ["ok", "prov", "problem", "larmvag", "suppressed", "alerts", "facit", "facitSkal", "faror", "kalla_stationer", "v2", "v3", "utfall", "olja", "aktiva", "oljaSkal"]) if (nyckel in d) console.log(`  ${nyckel}: ${JSON.stringify(d[nyckel]).slice(0, 600)}`);
           if (Array.isArray(d.rad)) for (const x of d.rad) console.log(`  rad: ${x}`);
         } catch { console.log(`  ${String(svar.content ?? "").slice(0, 800)}`); }
       } else console.log(`svar (request ${reqId}): inget svar inom 90 s — funktionen kan fortfarande köra; läs beviset via utfallet`);
@@ -127,6 +127,7 @@ try {
       "facitprov=1": "mätvaktens issue (etikett `matvakt`) ska få raden KÄLLA · kamerafacit … PROV inom en minut, och stängas av nästa timkörning när bilderna är färska (S7).",
       "lage=forsprang&prov=1": "svaret ovan ska visa bas och variant: prov:niva1 talar på samma avstånd i båda, prov:niva2 talar tidigare i varianten (60 s mot 30 s, ungefär dubbla avståndet) — kroken i motorn och nivåerna i drift (kort #153 beslut 1). Inget skrivs i forsprang_log.",
       "torrt=1": "svaret ovan ska visa kamerafacitets urval — `faror`, `kalla_stationer`, `v2` och `v3` — utan att något hämtas eller sparas (`utfall` tomt; DECISIONS #380).",
+      "oljaprov=1": "svaret ovan ska visa `olja` med EN rad (prov:olja, geo punkt) och `aktiva` = antalet aktiva händelser i arkivet just nu, med `oljaSkal` om de är noll — inget skrivs i shadow_log (kort #276, DECISIONS #421).",
       "sparrprov=1": "svaret ovan ska visa `suppressed` med EN rad — kamera 2 tystad av kamera 1 inom spärrens 10 s (#127; kort #188/#191). Inget skrivs i shadow_log.",
     };
     const fallback = "en issue med etiketten vakthund ska finnas inom en minut, och stängas av nästa gröna timkörning (xx:07).";
