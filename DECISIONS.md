@@ -6802,3 +6802,21 @@ Begränsa autostarten till Bluetooth i stället för att rätta texten — betee
 Å0, Å6, Å7, Å8 är Axels: bygge till testaren, protokoll, körfallsmätning, nollmätning. Verify för Å5 (CPU-andel före och efter på
 samma rutt) är en fältmätning, inte ett prov. Android (19) saknar fortfarande iPhones statusrad-rättelse och dubbeltrycksspärren
 (`TILL-AXEL-BYGGE-19` Android 1–2).
+
+## #432 (1/10 2026) App Store: bara Sverige, skärmbilder ur iPhone 14 inramade, integritetspolicyn publicerad (kort #280)
+
+**Beslut (Axel 1/10 23:06 via Cowork).** (1) **Tillgänglighet: bara Sverige** — appen är svensk; bredare när texten finns på fler
+språk. (2) **Skärmbilderna** tas på Axels iPhone 14 (1170×2532) ur (19) och ramas in till Apples 6,9-tumsmått 1320×2868 med appens
+egna tokens och typsnitt (`marknadsforing/butik/appstore/rama.py`); sex bilder gjorda samma kväll ur nio råbilder. (3) **`integritet.html`**
+i karta-repot uppdaterad av Claude (b9626bf) med de tre färdiga ändringarna ur `docs/PLAY-DATASAFETY.md`: missarna, raderingsmeningen,
+datumraden *gäller från 2026-10-01* — publiceringsdagen, inte 26/9 som utkastet sa. Axels ord: *"bara att uppdatera så det blir rätt"*.
+
+**Butikstexten för iOS** och granskarens anteckningar: `marknadsforing/butik/appstore-ios.md` — Play-texten som förlaga, med Polisen
+struken (#318/#320), iPhones autostart (*vaknar själv*), missarna i integritetsstycket, och en anvisning till granskaren hur en varning
+visas utan att köra (håll på *PÅ VAKT*).
+
+**Alternativen.** Goldie (software-mansion-labs) för skärmbilderna — den fångar i simulatorn, som kraschade på Axels Air 20/9 (#269), och
+ramar i en generisk mall; råbilderna fanns redan. Kan prövas för Android, där emulatorn finns i CI.
+
+**Vad som inte är gjort.** Körläget och varningskortet saknas bland bilderna — de två som visar vad appen gör; Axel tar dem (starta
+vakten, håll på *PÅ VAKT*). Klick i App Store Connect: versionen, App Privacy, bilderna, texten, inlämning. Triangeln på byggena oläst.

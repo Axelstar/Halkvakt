@@ -84,7 +84,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   | 5 | **Versionen 0.3.9** under *Distribution*: bifoga (19), kategori Navigation, åldersgräns (frågeformuläret: inget), pris gratis, upphovsrätt *Lagerlöf Labs*, inte näringsidkare (#320), krypteringsfrågan ställs inte (`ITSAppUsesNonExemptEncryption=false`) | Axel | klickas |
   | 6 | **Granskarens anteckningar** (*App Review Information*): kontakt axel.lagerlof.45@gmail.com + telefon; *ingen inloggning*; förklara bakgrundspositionen (rösten varnar med släckt skärm — Apples 2.5.4) och hur granskaren ser en varning utan att köra: starta vakten, håll på *PÅ VAKT* ⇒ provvarning | Claude skriver, Axel klistrar | nästa varv |
   | 7 | **Varningstriangeln på byggena** i TestFlight — läs texten (hovra). Ikonvarningen från 31/8 stoppar inte TestFlight men kan stoppa butiken | Axel | okänd |
-  🔑 **Två beslut till Axel (§4.2):** (a) tillgänglighet — bara Sverige, eller Sverige + Finland + Danmark (datan finns, appen är svensk)? Rekommendation: Sverige först. (b) vilken iPhone tar skärmbilderna — modellen avgör om de kan användas rakt av eller ska ramas in.
+  ✅ **1/10 23:06, Axels tre svar (DECISIONS #432):** bara Sverige · iPhone 14 ⇒ inramning · *"bara att uppdatera"* `integritet.html` ⇒ gjort (karta b9626bf).
+  ✅ **Gjort samma kväll:** punkt 1 butikstexten + punkt 6 granskarens anteckningar (`marknadsforing/butik/appstore-ios.md`) · punkt 2 sex bilder
+  1320×2868 ur Axels nio råbilder (`marknadsforing/butik/appstore/`, `rama.py`) · punkt 3 policyn publicerad.
+  🔑 Kvar: **körläget och varningskortet** som bild 1–2 (Axel: starta vakten, håll på *PÅ VAKT*, skärmbild) · punkt 4–5 klick i App Store
+  Connect · punkt 7 triangeln · inlämningen.
   Verify: *Waiting for Review* i App Store Connect med (19) eller senare bifogat; sedan Apples svar.
 
 **Beslut som väntar, inte brådskande (med Bengt):**
