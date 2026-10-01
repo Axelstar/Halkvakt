@@ -73,8 +73,17 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   verkligen att vi försöker få ut vår app på riktiga App Store"*). Grunden står sedan DECISIONS #320 (iOS först, inte näringsidkare,
   support-URL, `integritet.html`, App Privacy-etiketten) och kandidaten är numera **0.3.9 (19)** — uppladdad, godkänd för Kompisarna,
   bär #258/#259/#203 lager 2/#279. 🔑 Nyckel: #262 Å1/Å4/Å5 i main (Claude, 1/10 kväll) · Axels blick på (19) i telefonen (#279 Verify).
-  Claude gör listan på exakt vad som återstår i App Store Connect (butikstext, skärmbilder, Product Interaction i integritetsmanifestet
-  enligt #320, inlämningsformuläret) i samma varv som #262 stängs, så att Axel kan klicka igenom den i ett sittande.
+  📋 **LISTAN (skriven 1/10 kväll mot koden i (19) och DECISIONS #320):**
+  | # | Vad | Vem | Läge |
+  | :-- | :-- | :-- | :-- |
+  | 1 | **Butikstexten för iOS** — ur `marknadsforing/butik/butikstext.md`, men: Polisen struken som källa (#318/#320), *Autostart när Bluetooth kopplas* ⇒ *vaknar själv när du kör* (iPhone), missarna med i integritetsstycket (#379). Namn, undertext (30), beskrivning, nyckelord, support-URL, integritets-URL | Claude | skrivs i nästa varv, Axel klistrar in |
+  | 2 | **Skärmbilder 6,9 tum (1320×2868)** — minst en, helst fem: *Redo.*, körläget, varningskortet (håll på *PÅ VAKT*), *Efter resan*, Inställningar. Axel tar råbilder på sin iPhone ur (19); Claude ramar in dem i rätt mått med bakgrund och en rad text | Axel → Claude | råbilder saknas |
+  | 3 | **`integritet.html`** i karta-repot: raderingsmeningen och raden om missarna (`docs/PLAY-DATASAFETY.md` rad 66–76) — policyn måste säga vad appen skickar innan Apple läser den | Axel (skrivrätt) | opublicerad sedan 28/9 |
+  | 4 | **App Privacy-frågorna** i App Store Connect: Coarse Location + Product Interaction, inte kopplat till identitet, ingen spårning (#320). Manifestet i (19) deklarerar båda — kontrollerat 1/10 | Axel | klickas |
+  | 5 | **Versionen 0.3.9** under *Distribution*: bifoga (19), kategori Navigation, åldersgräns (frågeformuläret: inget), pris gratis, upphovsrätt *Lagerlöf Labs*, inte näringsidkare (#320), krypteringsfrågan ställs inte (`ITSAppUsesNonExemptEncryption=false`) | Axel | klickas |
+  | 6 | **Granskarens anteckningar** (*App Review Information*): kontakt axel.lagerlof.45@gmail.com + telefon; *ingen inloggning*; förklara bakgrundspositionen (rösten varnar med släckt skärm — Apples 2.5.4) och hur granskaren ser en varning utan att köra: starta vakten, håll på *PÅ VAKT* ⇒ provvarning | Claude skriver, Axel klistrar | nästa varv |
+  | 7 | **Varningstriangeln på byggena** i TestFlight — läs texten (hovra). Ikonvarningen från 31/8 stoppar inte TestFlight men kan stoppa butiken | Axel | okänd |
+  🔑 **Två beslut till Axel (§4.2):** (a) tillgänglighet — bara Sverige, eller Sverige + Finland + Danmark (datan finns, appen är svensk)? Rekommendation: Sverige först. (b) vilken iPhone tar skärmbilderna — modellen avgör om de kan användas rakt av eller ska ramas in.
   Verify: *Waiting for Review* i App Store Connect med (19) eller senare bifogat; sedan Apples svar.
 
 **Beslut som väntar, inte brådskande (med Bengt):**
