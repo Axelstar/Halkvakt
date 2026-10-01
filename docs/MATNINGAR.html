@@ -214,7 +214,7 @@
         <tr><td><a href="#d-smhi">7.6 SMHI-förstärkaren</a></td><td>L2</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>0 vintervarningar i arkivet</td></tr>
         <tr><td><a href="#d-olja">7.7 Olja på vägen</a></td><td>L2</td><td><span class="lage skugga">körs i skuggan</span></td><td>i drift 1/10, 5 aktiva (alla vägskador)</td></tr>
         <tr><td><a href="#d-forsprang">8.1 Försprånget</a></td><td>L5</td><td><span class="lage skugga">körs i skuggan</span></td><td>0 rader, väntar på nivå 2</td></tr>
-        <tr><td><a href="#d-kombination">8.2 Kombinationen</a></td><td>L5</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>kalibrering 1/2 2027</td></tr>
+        <tr><td><a href="#d-kombination">8.2 Kombinationen</a></td><td>L5</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>kalibreras i kuvösen på vintern 2024/25</td></tr>
       </tbody>
     </table>
   </div>
@@ -1063,7 +1063,7 @@
     <div class="nyckel">
       <div><b>1 296</b><span>punkter i rutnätet av möjliga inställningar</span></div>
       <div><b>48</b><span>går att spela upp ur skuggloggen</span></div>
-      <div><b>1/2 2027</b><span>den enda kalibreringen</span></div>
+      <div><b>2024/25</b><span>den enda kalibreringen, i kuvösen (förut 1/2 2027, #425)</span></div>
       <div><b>jan · mars</b><span>domar</span></div>
     </div>
     <p><b>Nytta:</b> skyddar mot överanpassning. Varje del ska visa att den bär, och kalibrering och dom görs på skilda nätter.</p>
@@ -1071,7 +1071,7 @@
       <ul>
         <li><b>Grinden:</b> varje del ska göra resultatet sämre när den tas bort, utanför ±1,96 SE (mars). Mot dagens motor krävs nettonytt ≥ 5 % och högst 25 % tillkomna falsklarm (januari och mars).</li>
         <li><b>Underlaget:</b> minst 30 nätter med regn följt av frost vid 20 stationer, 40 facit, 15 frostnätter, 3 län och ingen station över 25 %.</li>
-        <li><b>Kalibreringen (D1–D7):</b> delarnas trösklar ändras aldrig, bara värden ur deras svep väljs; startvärdena låses före första natten; kalibrering och dom på skilda nätter, den enda kalibreringen 1/2 på data från november till januari; vinnaren ska hålla i båda halvorna; alla prövade punkter redovisas.</li>
+        <li><b>Kalibreringen (D1–D7):</b> delarnas trösklar ändras aldrig, bara värden ur deras svep väljs; startvärdena låses före första natten; kalibrering och dom på skilda nätter, den enda kalibreringen i kuvösen på vintern 2024/25 (ändrat 1/10, #425; förut 1/2 på data från november till januari); vinnaren ska hålla i båda halvorna; alla prövade punkter redovisas.</li>
         <li><b>Tröskelregeln T</b> (Axel 14/9): en storhet som inte kan motbevisas av en mätning får inte utlösa en varning. Extrapolation och interpolation utlöser inte. Minne av mätningar får utlösa. Prognoser får stärka, försvaga eller förlänga, aldrig ensamma utlösa.</li>
       </ul>
     </div></details>
@@ -1087,6 +1087,10 @@
       <p>På 14 dygn rapporterade Trafikverket 480 händelser, 474 med vägnummer och 437 (91 %) med djurslaget, med 1,8 minuters fördröjning i median till vårt arkiv. Polisen hade 11, placerade i länets mittpunkt. Det enda paret som gick att matcha rapporterades av Trafikverket 45 minuter före Polisen, och rösten bytte källa samma kväll (#316, #318).</p>
     </div>
     <div class="ruta">
+      <h4>Kuvösen: hela systemet på vintern 2024/25</h4>
+      <p>En testbädd där motorn och alla skuggregler körs tillsammans mot en gången vinter, varje del ensam och ovanpå de andra. Trafikverket levererar stationsdatan vecka 41. Klockan, som låter driftens kod köra mot en gången tidpunkt utan att se framtiden, och inventeringen är byggda 1/10; fyra motprov föll på var sin fälla (#424). Kuvösen har en egen sida: <a href="https://claude.ai/artifact/1xvv4hydYbfpF5eXFgLcxh">Halkvaktens kuvös</a>.</p>
+    </div>
+    <div class="ruta">
       <h4>Vägarbeten: kroniskt, utom de kortvariga</h4>
       <p>Läs-only 1/10 (#420): 5 280 aktiva vägarbeten, nio av tio längre än en månad och 55 % med stor eller mycket stor påverkan. Motorn längs de 20 svenska skuggrutterna skulle ha talat 151 gånger på ett varv, 4,9 per 100 km; bara vägarbeten på högst en vecka smalnar av, 4 rop (0,1 per 100 km). Vårens smala variant byggs alltså på kortvarighet, inte på påverkan.</p>
     </div>
@@ -1099,7 +1103,7 @@
   <h2>10. Hur mätningarna skyddas mot oss själva</h2>
   <ul>
     <li><b>Kraven skrivs först.</b> Tretton tröskeldokument är daterade innan mätningen eller koden de styr. En tröskel får skärpas men aldrig lättas när utfallet är sett.</li>
-    <li><b>Blindning.</b> Fram till domen redovisas bara antal. Betans regler döms i januari, kalibreringen görs i februari och prognoslagret döms i mars.</li>
+    <li><b>Blindning.</b> Fram till domen redovisas bara antal. Betans regler döms i januari, kalibreringen görs i kuvösen på vintern 2024/25 och prognoslagret döms i mars.</li>
     <li><b>Samma motor överallt.</b> Server, Android och iOS måste klara 37 gemensamma testfall tecken för tecken.</li>
     <li><b>Kontraktsgrinden.</b> 58 tal som finns i mer än en fil får inte glida isär.</li>
     <li><b>Samma beslut i två språk.</b> TypeScript och Postgres räknade olika på <span class="mono">4,8 − 4,4</span>. Nu avrundas TypeScript-sidan före jämförelsen, och en driftvakt kör båda över samma fönster.</li>
@@ -1114,11 +1118,11 @@
       <tbody>
         <tr><td>Varje måndag</td><td>grind A, vägpunktsgrinden och populationsläsningen, vattenplaningens radarspår (bara antal); premissmätningen på knapp (<i>premisser</i>, <i>premisser-fi</i>) när Bengt valt läsdatum (bedömningen §4.2 a)</td></tr>
         <tr><td>Inom 7 dygn efter frost</td><td>trenden, rimfrosten, övergångarna, frysklassningen, vind och sikt; körs när minst 50 stationer haft ytan ≤ 0 °C</td></tr>
+        <tr><td>Vecka 41–42</td><td>kuvösen: Trafikverkets stationsdata för vintern 2024/25 inventeras och riktningsprovet körs; därefter den gemensamma kalibreringen, som förut stod på 1 februari 2027 (#424, #425)</td></tr>
         <tr><td>23/10</td><td>höjdkorrektionen läses om på fyra veckors fullständigt underlag</td></tr>
         <tr><td>November–december</td><td>vattenplaningens radarspår, när underlaget räcker</td></tr>
         <tr><td>November</td><td>efterhalkan som märkt beta, om skuggloggen bär nätter</td></tr>
         <tr><td>Januari 2027</td><td>efterhalkans första dom</td></tr>
-        <tr><td>1 februari 2027</td><td>den gemensamma kalibreringen</td></tr>
         <tr><td>Mars 2027</td><td>prognoslagrets grind B och C, försprånget, kombinationen, nederbördstypen (tidigast 1/3); kamerafacit öppnas</td></tr>
       </tbody>
     </table>

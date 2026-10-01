@@ -6645,3 +6645,26 @@ bära en tröskel förrän det besiktigats (VÄRDEVAKTEN).
 
 **Kvar före körningen (steg 3–5):** kolumnöversättningen och inläsningen · de härledda tabellerna för vintern (`trend_kandidater`,
 `givarfel_dygn`) · vyer för tillståndstabellerna om väglag och händelser levereras · SMHI:s radar och moln · körflödet i Actions.
+
+## #425 (1/10 2026) Kalibreringen flyttas till kuvösen (Axels ok) · kuvösen blir sjätte stomdokumentet · genomlysning 3
+
+**Beslut 1 — kalibreringen (Bengt 1/10: *"Axel säger ok till kalibreringen"*; Bengt samma dag: *"vi kör både riktningsprov och
+kalibreringsdata"*).** Säsongens enda gemensamma kalibrering görs i kuvösen på vintern 2024/25, efter riktningsprovet, i stället för
+1 februari 2027 på data från november–januari. Ändringen är skriven i TROSKLAR-KOMBINATIONEN §5 (regel D) och §7 med båda signaturerna.
+D1–D7 gäller oförändrade; 1/2-kalibreringen utgår (D7: aldrig två). **Följden:** dom 2 i mars får hela vintern 2026/27 som domdata.
+Dom 1 i januari rörs inte — betan släpps och döms på startvärdena (D2). **Alternativ som valdes bort:** att låta 2024/25 bara vara
+riktningsprov (#292:s utgångsläge) — då hade årets vinter fortfarande behövt delas i kalibrerings- och domnätter. **Förbehåll:** kuvösens
+facit är *det blev kallt*, tunnare än årets; håller vinnaren inte i båda halvorna behålls startvärdena (D4). Inget ur 2024/25 var läst när
+ändringen skrevs. **Öppet (§4.2):** ska betan i november starta på startvärdena eller på kalibrerade värden — ett eget beslut före betan.
+Datumet 1 februari rättat i mätningssidan, bedömningen, KALENDERN, SYSTEM och MALET.
+
+**Beslut 2 — kuvösen blir en stomregel (Bengt 1/10: *"ja kuvösen bör bli en stomregel"*; *"vi ska skapa en artifact för kuvösen också
+där vi beskriver nuläget och framtidsläget, vad som kommer härnäst och hur det kan påverka projektet i sin helhet"*).** Ny sida
+*Halkvaktens kuvös*: källa `docs/KUVOSEN.html`, artefakt https://claude.ai/artifact/1xvv4hydYbfpF5eXFgLcxh (privat tills Bengt delar den). STOMREGELN i CLAUDE.md
+säger nu **sex** stomdokument. Sidan är skild från *Halkvakt och kuvösen* (kort #274), som är skriven för Trafikverkets handläggare.
+
+**Genomlysning 3 (Bengts fråga: *"Har du uppdaterat de 5 filerna med det här"*). Svaret var nej:** efter #424 bar bara bedömningen
+kuvösen, och bara på grenen. Nu: **mätningssidan** — kuvösen under *Andra mätningar* med länk, domkalendern (vecka 41–42 in, 1 februari
+ut), 8.2 och blindningsraden med den nya kalibreringen · **systembilden** — raden *K Kuvösen* i skuggtabellen · **appsidan** — orörd, och
+det är rätt: kuvösen når ingen förare och ändrar inget appen gör · **bedömningen** — §4.2, läget, kalendern · **kartan** — läge-raderna
+§13.6 och §14, innehållet orört · **kuvössidan** — ny. Artefakterna republiceras från main efter sammanslagningen.

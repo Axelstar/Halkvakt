@@ -57,7 +57,7 @@ Plikterna som återkommer (nycklar, databasens storlek, Actions-kassan, Ubuntu-b
 | november | **betan till tolv testare:** slutet Play-test 14 dygn, efterhalkan som märkt beta om skuggloggen bär nätter och S3 är byggd; vattenplaningens radarspår döms nov–dec när underlaget räcker | bedömningen S5, mätningssidan §11 |
 | 15/12 | Skyltfondens besked | ansökan |
 | januari 2027 | **dom 1:** betans varningsregler på förar- och kamerafacit; golv nettonytt ≥ 5 %, tillkomna falsklarm ≤ 25 %; godkänd eller oavgjord ⇒ fortsätter, underkänd ⇒ tas bort | bedömningen S6, TROSKLAR-OVERGANGAR |
-| 1 februari 2027 | den enda kalibreringen, 48 punkter, på data november–januari | TROSKLAR-KOMBINATIONEN D1–D7 |
+| ~~1 februari 2027~~ hösten 2026, i kuvösen | den enda kalibreringen, 48 punkter — på vintern 2024/25 i stället för på data november–januari (ändrat 1/10, DECISIONS #425) | TROSKLAR-KOMBINATIONEN D1–D7 |
 | mars 2027 | **dom 2:** prognoslagrets grind B och C, försprånget, kombinationen, nederbördstypen (tidigast 1/3); kamerafacit öppnas och läses | TROSKLAR-SKUGGAN, -FORSPRANG, -NEDERBORDSTYPEN |
 | april 2027 | enkät och gruppintervju 1; M4 steg 2 före rapporten | ansökan AP3, AP4 |
 | apr–jun 2027 | rapport och spridning | ansökan AP5 |
