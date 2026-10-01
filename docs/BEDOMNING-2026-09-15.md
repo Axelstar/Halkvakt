@@ -37,7 +37,7 @@ beslut 1/10, #411: läggs inte i repot; repots bilaga 1 är v8B). Granskningarna
 
 **(2) Apparna.** iOS och Android bär båda **0.3.9 (18)** på main sedan 26/9 (#377, #379). Android var "sju versioner efter" bara i
 versionsnumret 31/8–26/9, inte i koden (#387); kort #219:s rubrik är överspelad. iOS: (13) uppladdad 23/9 som App Store-kandidat,
-(14)–(18) inte arkiverade, bygge (19) med fyra rättelser hos Axel (`docs/TILL-AXEL-BYGGE-19.md`). Android: testarna kör CI-bygget sedan
+(14)–(18) aldrig arkiverade; **(19) uppladdat till Apple 1/10 22:25** (kort #279, DECISIONS #430 — kompilerade i Axels Xcode) och bär därmed #258, #259, #203 lager 2 och tre av TILL-AXEL-BYGGE-19:s fyra rättelser; kvar 4a/4b. Android: testarna kör CI-bygget sedan
 20/9; **Play-kontot finns sedan 20/9**, kvar enhetsverifiering → första uppladdning → slutet test 14 dygn → produktion tidigast november.
 Play-deklarationen omskriven 20/9 (Ja, ungefärlig plats), raderingsfrågan Nej (#378); Axel klistrar in meningen i `integritet.html`.
 Batteri: iPhone **7 %/h** på (14), inom budget (#382); Android: fältrapporten 27/9 ⇒ batteripaketet #262 hos Axel, släppblockerare;

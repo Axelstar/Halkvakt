@@ -539,7 +539,8 @@ du var just då."* (Axels villkor för ja:et, DECISIONS #267.)
 | 0.3.9 (15) | 24/9 | Undantagstexten nämner appens namn och version, körläget visar när repliken sades (DECISIONS #348). |
 | 0.3.9 (16) | 26/9 | Vägdatan laddas om var 30:e minut under resan, också utan nät (kort #258, DECISIONS #371). |
 | 0.3.9 (17) | 26/9 | Reglaget *Längsta förvarning* 400–1 200 m, körläget säger *som längst* (kort #259, DECISIONS #374). |
-| 0.3.9 (18) | 26/9 | Missarna: *Appen missade* i körläget, Siri-fraserna *stämde inte* och *appen missade*, missraderna efter resan (kort #203 lager 2, DECISIONS #379). På main, inte arkiverad än. |
+| 0.3.9 (18) | 26/9 | Missarna: *Appen missade* i körläget, Siri-fraserna *stämde inte* och *appen missade*, missraderna efter resan (kort #203 lager 2, DECISIONS #379). Aldrig arkiverad — (14)–(18) nådde en telefon först med (19). |
+| 0.3.9 (19) | 1/10 | Skärmarna rullar, facitknapparna på ett ställe, statusraden bara vid fel, svenska klockslag, *lämnar inte telefonen av sig själv* (kort #279, DECISIONS #430) — plus allt i (14)–(18). **Uppladdad till Apple 1/10 22:25** ur 4f88513; första bygget som bär #258, #259 och #203 lager 2. |
 | Android (CI) | 16/9 → | Facitknappen och betatest-brytaren (S4, DECISIONS #202), Efter resan (20/9), viltvarningen på Trafikverkets djur (22/9), omladdningsloopen lagad och reglaget (26/9), missarna (26/9). **0.3.9 (18)**, samma nummer som iOS (DECISIONS #377). |
 
 Android bar versionsnumret 0.3.1 (4) från 31/8 till 26/9, fast CI byggde den ur main med skinnet v3, facitknappen

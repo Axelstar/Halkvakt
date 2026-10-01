@@ -206,8 +206,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   `dagOchKlockslag`, sv_SE) · *"lämnar inte telefonen av sig själv"* · `CURRENT_PROJECT_VERSION` 19 i samma commit. Betaguiden §5 steg 3
   och produktboken följer med. Android orörd (hemskärmen är en `LazyColumn` och rullar redan; dess dubbla knappar och statusrad står
   kvar i `TILL-AXEL-BYGGE-19` Android 1).
-  🔑 Kvar: Axels Xcode-bygge (19) — första kompileringen, ios-engine/android/ci gröna först — och en blick på *Redo.* utan kort (ska
-  stå där det stod) · nya iOS-skärmbilder till produktboken ur (19) · 4a dubbeltrycksspärren och 4b Siri när vakten är av (Axels beslut, §4.2).
+  ✅ **KOMPILERADE OCH UPPLADDAT 1/10 22:25** (Axels Xcode, Organizer: *Halkvakt 0.3.9 (19) uploaded*, ur 4f88513). En varning i bygget —
+  `EfterResanNotis.actionJa` läst ur nonisolated delegat — rättad i main samma kväll, går med i (20).
+  🔑 Kvar: Axels blick på telefonen (Verify nedan) · nya iOS-skärmbilder till produktboken ur (19) · 4a dubbeltrycksspärren och 4b Siri när
+  vakten är av (Axels beslut, §4.2).
   Verify: på en iPhone finns inget "…" i kortet med fyra varningar, sista raden ligger ovanför flikraden, *Stämde*-knapparna finns på ett
   ställe, ingen *Skickat*-rad under en obesvarad rad, och *Senaste tur* skrivs *1 okt. 12:39*.
 

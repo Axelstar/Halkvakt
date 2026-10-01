@@ -2155,3 +2155,4 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 1/10 (Bengt): svaret till Micke Wallin skickat ca 08:15Z med preciseringen och projektsidan som länk (kort #232, #274). Kuvösen väntar på uttaget.
 - 1/10 kväll (Claude via Cowork, Axels skärmbild): iPhone-skärmarna rullar, facitknapparna på ett ställe, statusraden bara vid fel, svenska klockslag,
   "lämnar inte telefonen av sig själv" — kort #279, DECISIONS #430, bygge (19). Skrivet utan kompilator; Axels Xcode-bygge är första provet.
+- 1/10 22:25 (Axel): **0.3.9 (19) kompilerade och laddades upp till Apple** ur 4f88513 — första bygget sedan (13). En Xcode-varning (`actionJa` ur nonisolated delegat) rättad i main. Verify på telefonen kvar.

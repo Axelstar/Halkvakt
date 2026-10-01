@@ -18,7 +18,7 @@ final class EfterResanNotis: NSObject, UNUserNotificationCenterDelegate {
     static let shared = EfterResanNotis()
 
     static let categoryId = "halkvakt.efterresan"
-    static let actionJa = "halkvakt.facit.ja"
+    nonisolated static let actionJa = "halkvakt.facit.ja"   // läses i nonisolated didReceive — Xcode 26 varnade vid bygge (19)
     static let actionAvvikelse = "halkvakt.facit.avvikelse"
     /// Egen identitet — får aldrig krocka med heads-up-bannern ("halkvakt.headsup").
     private static let notisId = "halkvakt.efterresan.notis"
