@@ -31,7 +31,7 @@ class Guard(
     fun updateHazards(hazards: List<Hazard>) {
         engine.updateHazards(hazards)
         coords = flatten(hazards)
-        svep = null   // the bound below is only valid for the set it was measured against
+        // MOTPROV: cache not dropped on new snapshot
     }
 
     /** Last full sweep: where it was taken and what it found. Null = no sweep yet, or the set changed. */
@@ -54,7 +54,7 @@ class Guard(
     fun nearestHazardM(lon: Double, lat: Double): Double? {
         svep?.let { (sLon, sLat, d) ->
             val flyttat = Geo.haversineM(lon, lat, sLon, sLat)
-            if (flyttat < d / 2) return d - flyttat
+            if (flyttat < d / 2) return d   // MOTPROV: stale value, bound may exceed the truth
         }
         val d = coords.minOfOrNull { Geo.haversineM(lon, lat, it[0], it[1]) } ?: return null
         svep = Triple(lon, lat, d)
