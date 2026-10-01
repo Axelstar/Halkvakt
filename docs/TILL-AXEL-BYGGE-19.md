@@ -5,6 +5,11 @@
 **Vad som behövs av dig:** rättelserna nedan i ett bygge **(19)** — iPhone nu, Android efter 1/10 — och integritetssidan
 **före** utskicket till fler än Bengt. Ett beslut: iPhone punkt 4b.
 
+> **1/10 kväll (kort #279, DECISIONS #430):** iPhone 1, 2 och 3 är **byggda** i main, skrivna utan kompilator; `CURRENT_PROJECT_VERSION`
+> är 19. Punkt 3b löstes så att en vald miss visar *Skickad* och den gemensamma raden bara visas vid fel — besvarade varningar
+> försvinner ur kortet, så de behöver ingen rad. Samma fel visade sig på Axels stora iPhone 1/10 så fort resan hade fyra varningar.
+> Kvar för dig: bygget (19) i Xcode, 4a och 4b, `integritet.html`.
+
 **Inget i det här rör motorn, vektorerna eller en tröskel.** Det är text, layout och en statusrad. Och inget ändrar *vad*
 appen skickar — gör det det, gäller invariantregeln i CLAUDE.md (fyra dokument i samma commit).
 

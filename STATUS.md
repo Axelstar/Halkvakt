@@ -2153,3 +2153,5 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 1/10 (Claude, Bengts idé): extern projektsida *Halkvakt och kuvösen* för Trafikverkets handläggare — kort #274 skapat och stängt, DECISIONS #418.
   Källa docs/HALKVAKT-OCH-KUVOSEN.html, artefakt https://claude.ai/artifact/CrrMKX7vcRcXHiqqYGjs9S (v1, privat tills Bengt delar). Inga opublicerade tröskelvärden.
 - 1/10 (Bengt): svaret till Micke Wallin skickat ca 08:15Z med preciseringen och projektsidan som länk (kort #232, #274). Kuvösen väntar på uttaget.
+- 1/10 kväll (Claude via Cowork, Axels skärmbild): iPhone-skärmarna rullar, facitknapparna på ett ställe, statusraden bara vid fel, svenska klockslag,
+  "lämnar inte telefonen av sig själv" — kort #279, DECISIONS #430, bygge (19). Skrivet utan kompilator; Axels Xcode-bygge är första provet.

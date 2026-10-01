@@ -17,7 +17,8 @@ struct FacitRow: View {
             }
             Text(svar == nil ? "Stämde det? Svaret skickas direkt." : "Tack.")
                 .font(Typo.sans(12)).foregroundStyle(Brand.faint)
-            if let s = prefs.facitStatus {
+            // Bara en sändning yngre än varningen — en äldre rad är ett kvitto på något annat (kort #279).
+            if let s = prefs.facitStatus, (prefs.facitStatusAt ?? .distantPast) >= at {
                 Text(s).font(Typo.mono(11)).foregroundStyle(s.hasPrefix("Skickat") ? Brand.green : Brand.yellow)
             }
         }

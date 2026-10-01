@@ -28,7 +28,7 @@ struct EfterResanKort: View {
                 let svar = Facit.answerFor(prefs.facit, id: e.id, t: e.t)
                 VStack(alignment: .leading, spacing: 6) {
                     HStack(alignment: .top, spacing: 10) {
-                        Text(e.t.formatted(.dateTime.hour().minute()))
+                        Text(e.t.klockslag)
                             .font(Typo.mono(12))
                             .foregroundStyle(Brand.dim)
                         Text("”\(e.text)”")
@@ -47,16 +47,22 @@ struct EfterResanKort: View {
             }
 
             ForEach(missar, id: \.self) { m in
-                let vald = prefs.missar.first { $0.t == m.t }?.vad
+                let rad = prefs.missar.first { $0.t == m.t }
+                let vald = rad?.vad
                 VStack(alignment: .leading, spacing: 6) {
                     HStack(alignment: .top, spacing: 10) {
-                        Text(m.t.formatted(.dateTime.hour().minute()))
+                        Text(m.t.klockslag)
                             .font(Typo.mono(12))
                             .foregroundStyle(Brand.dim)
                         Text("Du markerade: appen missade — vad?")
                             .font(Typo.sans(14))
                             .foregroundStyle(vald == nil ? Brand.text : Brand.dim)
                         Spacer(minLength: 0)
+                        // Läget PER RAD (Bengts provresa 28/9, `docs/TILL-AXEL-BYGGE-19.md` p. 3): en vald miss säger
+                        // själv att den gått — en rad utan val har aldrig "Skickat" under sig.
+                        if rad?.sent == true {
+                            Text("Skickad").font(Typo.mono(11)).foregroundStyle(Brand.green)
+                        }
                     }
                     // Två per rad, som Android — tre fick inte plats på en smal telefon (fotostudion 26/9).
                     ForEach(stride(from: 0, to: Missar.vad.count, by: 2).map { Array(Missar.vad[$0..<min($0 + 2, Missar.vad.count)]) }, id: \.self) { rad in
@@ -86,10 +92,14 @@ struct EfterResanKort: View {
                 .foregroundStyle(Brand.dim)
                 .padding(.top, 8)
 
-            if let s = prefs.facitStatus {
+            // Den gemensamma statusraden bara vid FEL, och bara den här resans. Ett "Skickat 13:52 (1 miss)" under en
+            // obesvarad rad lästes som att raden gått (Bengts provresa 28/9), och raden överlever omstart, så gårdagens
+            // "Skickat 22:00 (1 svar)" stod under dagens varningar (Axels skärmbild 1/10, kort #279). Besvarade varningar
+            // försvinner ur kortet, valda missar säger "Skickad" själva — lyckade sändningar behöver ingen rad här.
+            if let s = prefs.facitStatus, !s.hasPrefix("Skickat"), (prefs.facitStatusAt ?? .distantPast) >= sedan {
                 Text(s)
                     .font(Typo.mono(11))
-                    .foregroundStyle(s.hasPrefix("Skickat") ? Brand.green : Brand.yellow)
+                    .foregroundStyle(Brand.yellow)
                     .padding(.top, 4)
             }
         }

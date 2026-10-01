@@ -6758,3 +6758,25 @@ betans första natt, och inget av paren rörs under vintern. Den lovar ingen jus
 
 **Vad som inte är gjort.** Android-guiden har ingen sådan mening och är orörd. Har TestFlight-texten redan klistrats in i App Store
 Connect ligger den gamla lydelsen kvar där tills Axel klistrar in den nya — repot når inte dit. Ingen tröskel och ingen rösttext ändras.
+
+## #430 (1/10 2026) iPhone-skärmarna rullar, facitknapparna på ett ställe, statusraden bara vid fel (kort #279)
+
+**Beslut (Axel 1/10 kväll, skärmbild från resan 12:39–13:44: *"det går liksom över skärmen … ska radbrytas, inte kapas"*).**
+`VaktenView` och `KorlageView` får en `ScrollView` med minsta höjd lika med skärmen — stora telefoner ser ut som förut, och ett
+efter-resan-kort med fyra rader går att läsa helt. Samtidigt rättas det som skärmbilden visade i samma vy: S4:s `FacitRow` under
+*Senaste tur* göms medan kortet visas (samma varning, samma knappar på två ställen); kortets gemensamma statusrad visas bara vid fel
+och bara för den här resan (`Prefs.facitStatusAt`, ny), en vald miss bär ordet *Skickad* själv, *"1 miss"* / *"2 missar"*; alla
+klockslag skrivs på svenska oavsett telefonens språk (`Date.klockslag`, `Date.dagOchKlockslag`); och *Redo.* säger *"Din position
+lämnar inte telefonen av sig själv"* (#320:s missade rad). `CURRENT_PROJECT_VERSION` 19 i samma commit (#240).
+
+**Skälet.** Fyra fel som Bengt såg 28/9 på 4,7 tum (`docs/TILL-AXEL-BYGGE-19.md` iPhone 1–3) visade sig 1/10 på Axels stora iPhone
+också, så fort resan hade fyra varningar. Statusraden utan datum var värre än oläslig: *"Skickat 22:00 (1 svar)"* från ett tidigare
+dygn stod under dagens obesvarade varningar och lästes som att de gått — tvärtemot *"tystnad räknas aldrig som ja"*. Besvarade
+varningar försvinner ur kortet på iPhone, så ett lyckat svar behöver ingen rad; felet behöver det.
+**Alternativen:** en rad per svar med klockslag (TILL-AXEL 3b för varningar) — onödig på iPhone där raden försvinner; status med
+datum i stället för filter — fortfarande en rad som gäller något annat.
+
+**Vad som inte är gjort.** Koden är skriven utan kompilator (inget CI-flöde bygger app-målet) — Axels Xcode-bygge (19) är första
+provet. 4a (spärr mot dubbeltryck) och 4b (Siri när vakten är av) står kvar som Axels beslut (§4.2). Android är orörd: hemskärmen
+rullar redan, men dubbla knappar (`LastSaidCard` + kortet) och statusraden utan datum finns där också (TILL-AXEL Android 1).
+Betaguiden §5 steg 3 skrivs om (*Skickat* står under *Senaste tur* när allt är besvarat; en rad som gått försvinner).

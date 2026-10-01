@@ -35,7 +35,7 @@ struct AutostartGuideView: View {
     private var receipt: some View {
         if let at = prefs.lastIntentStartAt {
             Label {
-                Text("Fungerar — vakten startades utifrån senast \(at.formatted(.dateTime.day().month(.abbreviated).hour().minute())). Automation eller Siri.")
+                Text("Fungerar — vakten startades utifrån senast \(at.dagOchKlockslag). Automation eller Siri.")
                     .font(Typo.sans(14))
                     .foregroundStyle(Brand.text)
             } icon: {

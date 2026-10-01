@@ -55,6 +55,8 @@ final class Prefs {
     var missar: [MissEntry] { didSet { d.set(try? JSONEncoder().encode(missar), forKey: "k.missar") } }
     /// S4: vad senaste sändningsförsöket gav — syns under knapparna så testaren ser vad som hände (DECISIONS #209).
     var facitStatus: String? { didSet { d.set(facitStatus, forKey: "k.facitStatus") } }
+    /// När statusraden skrevs — så att den bara visas under den resa eller varning den gäller (kort #279).
+    var facitStatusAt: Date? { didSet { d.set(facitStatusAt, forKey: "k.facitStatusAt") } }
     /// Introduktionen visad? (DECISIONS #36) Kan nollställas från Inställningar.
     var onboardingDone: Bool { didSet { d.set(onboardingDone, forKey: "k.onboardingDone") } }
     /// Hur telefonen kopplas till bilen — styr vilka autostart-steg som visas (DECISIONS #37).
@@ -86,6 +88,7 @@ final class Prefs {
         facitOn = d.bool(forKey: "k.facitOn")
         facit = d.data(forKey: "k.facit").flatMap { try? JSONDecoder().decode([FacitEntry].self, from: $0) } ?? []
         facitStatus = d.string(forKey: "k.facitStatus")
+        facitStatusAt = d.object(forKey: "k.facitStatusAt") as? Date
         missar = d.data(forKey: "k.missar").flatMap { try? JSONDecoder().decode([MissEntry].self, from: $0) } ?? []
         history = d.data(forKey: "k.history").flatMap { try? JSONDecoder().decode([AlertEntry].self, from: $0) } ?? []
         tripStart = d.object(forKey: "k.tripStart") as? Date
