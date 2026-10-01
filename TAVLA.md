@@ -255,6 +255,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   `Aggregated30minutes.Wind.SpeedMax`, `Air.VisibleDistance`), perioden 1/11 2024–31/3 2025, alla stationer i den upplösning de
   lagrar; i andra hand `RoadCondition` och `Situation` för samma period; formatet deras eget; och — enligt #398 — be dem höra av
   sig INNAN någon avgift uppstår. Ingen eskalering, inga paragrafer: de frågade, vi svarar.
+  ✅ **SVARET SKICKAT AV BENGT 1/10 ca 08:15Z** till Micke Wallin direkt (hans adress, läst i hans eget mejl): vilka vi är, preciseringen,
+  avgift före arbete, och projektsidan *Halkvakt och kuvösen* (kort #274) som länk, delad med alla med länken och provad utloggad. Väntar på uttaget.
   ⚠️ **TVÅ RISKER SOM INTE STOD PÅ KORTET, och de gäller även om svaret blir ja:**
   · **Elektronisk form är inte en rättighet.** Rätten att ta del av en allmän handling omfattar att läsa den och att få
     papperskopia; att få ut en databas i filform är något myndigheten *får* göra, inte något den måste. För ett vinteruttag
