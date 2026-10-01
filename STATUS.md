@@ -2152,3 +2152,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 1/10 (Claude, Bengts idé): extern projektsida *Halkvakt och kuvösen* för Trafikverkets handläggare — kort #274 skapat och stängt, DECISIONS #418.
   Källa docs/HALKVAKT-OCH-KUVOSEN.html, artefakt https://claude.ai/artifact/CrrMKX7vcRcXHiqqYGjs9S (v1, privat tills Bengt delar). Inga opublicerade tröskelvärden.
 - 1/10 (Bengt): svaret till Micke Wallin skickat ca 08:15Z med preciseringen och projektsidan som länk (kort #232, #274). Kuvösen väntar på uttaget.
+- 1/10 (Claude, Bengts "kontrollera detta" på källvaktspåminnelsen #650): de fyra öppna nyhetsissuena #635, #637, #641, #643 var
+  alla bedömda ofarliga redan 28/9–1/10 (kort #261, DECISIONS #391 och #413) men aldrig stängda — stängda nu med bedömningen som
+  kommentar. Ingen kod. Läxa: bedömningen stängs i samma varv som den skrivs i repot, annars larmar påminnelsen efter fristen.
