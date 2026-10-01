@@ -19,7 +19,9 @@ TOP = 590                            # var skärmen börjar
 
 # (råfil, etikett, rubrik). Ordningen = butikens ordning.
 BILDER = [
+    ("99ea591b", "Varningskortet", "Gult i åtta\nsekunder.\nSedan tyst."),
     ("a479b0f3", "Vakten",        "Ett ord.\nEn knapp.\nSedan kör du."),
+    ("abf993ba", "Körläget",      "Tre kameror\nframför dig.\nRösten säger till."),
     ("9e0f4ba7", "Så fungerar det", "Rösten säger till\ninnan du är där."),
     ("918d06d0", "Inställningar", "Fem källor.\nSlå av det du\ninte vill höra."),
     ("55fd6ca3", "Integritet",    "Din position\nlämnar inte\ntelefonen."),
@@ -54,7 +56,7 @@ def rama(ra, etikett, rubrik, ut):
     sh = round(im.height * SCREEN_W / im.width)
     im = im.resize((SCREEN_W, sh), Image.LANCZOS)
     # Luft ovanför rubriken HALKVAKT, i stället för den bortskurna statusraden.
-    luft = Image.new("RGB", (SCREEN_W, sh + 44), BG); luft.paste(im, (0, 44)); im = luft
+    luft = Image.new("RGB", (SCREEN_W, sh + 44), im.getpixel((8, 8))); luft.paste(im, (0, 44)); im = luft   # skärmens egen färg (gul på kortet)
     mask = Image.new("L", im.size, 0)
     ImageDraw.Draw(mask).rounded_rectangle((0, 0, im.width - 1, im.height - 1), radius=RADIUS, fill=255)
     sx = (W - SCREEN_W) // 2

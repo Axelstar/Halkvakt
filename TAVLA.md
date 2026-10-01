@@ -87,8 +87,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **1/10 23:06, Axels tre svar (DECISIONS #432):** bara Sverige · iPhone 14 ⇒ inramning · *"bara att uppdatera"* `integritet.html` ⇒ gjort (karta b9626bf).
   ✅ **Gjort samma kväll:** punkt 1 butikstexten + punkt 6 granskarens anteckningar (`marknadsforing/butik/appstore-ios.md`) · punkt 2 sex bilder
   1320×2868 ur Axels nio råbilder (`marknadsforing/butik/appstore/`, `rama.py`) · punkt 3 policyn publicerad.
-  🔑 Kvar: **körläget och varningskortet** som bild 1–2 (Axel: starta vakten, håll på *PÅ VAKT*, skärmbild) · punkt 4–5 klick i App Store
-  Connect · punkt 7 triangeln · inlämningen.
+  ✅ **23:18 — åtta bilder:** Axel tog körläget ur (19) och hittade en äldre skärmbild av varningskortet; kortet är bild 1, körläget bild 3.
+  ⛔ **Långtrycket på *PÅ VAKT* fyrade inte i (19)** (Axel 23:18) — fungerade i äldre byggen (bilden bevisar det), bröts av kvällens
+  `ScrollView` (#279): rullningens gest tar touchen. Rättat samma kväll med `simultaneousGesture`; **bygge (20)** satt i samma commit.
+  Granskarnotisen bygger på långtrycket ⇒ (20) ska vara bygget som lämnas in, efter att Axel provat trycket i det.
+  🔑 Kvar: Axels Xcode-bygge (20) + prov av långtrycket · punkt 4–5 klick i App Store Connect · punkt 7 triangeln · inlämningen med (20).
   Verify: *Waiting for Review* i App Store Connect med (19) eller senare bifogat; sedan Apples svar.
 
 **Beslut som väntar, inte brådskande (med Bengt):**
