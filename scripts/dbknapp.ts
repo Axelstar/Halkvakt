@@ -4,6 +4,9 @@
 // auto-migrationen i ingest/db.ts: det här är ett MEDVETET TRYCK av en människa, inte nästa
 // timkörning — ett cron-jobb ska skapas av någon som vet att det skapas (DECISIONS #87).
 //
+//   las --bevis "SQL"                läser: kör varje bevisrad i EN transaktion som är READ ONLY och
+//                                    alltid rullas tillbaka. Knappens standard sedan 1/10 (kort #263):
+//                                    en läsning får inte kunna ändra ett cron-jobb.
 //   migrera <fil> [--bevis "SQL"]   kör filen i en transaktion, kör sedan varje bevisrad
 //                                    (radbrutna SQL-satser) och skriver ut resultatraderna.
 //   larmprov [flagga]                 läser vakthundens eget cron-kommando ur cron.job, lägger
@@ -29,7 +32,7 @@ const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("loc
 
 try {
   if (atgard === "migrera") {
-    if (!arg || !/^sql\/\d{3}_[a-z0-9_]+\.sql$/.test(arg)) { console.error(`migrera: ange en fil som sql/014_gallring.sql (fick "${arg ?? ""}")`); process.exit(1); }
+    if (!arg || !/^sql\/\d{3}_[a-z0-9_]+\.sql$/.test(arg)) { console.error(`migrera: ange en fil som sql/033_kamerafacit.sql (fick "${arg ?? ""}") — ingen standardfil sedan 1/10 (kort #263)`); process.exit(1); }
     const text = readFileSync(new URL(`../${arg}`, import.meta.url), "utf8");
     const client = await pool.connect();
     try {
@@ -44,6 +47,29 @@ try {
       for (const row of r.rows) console.log("  " + JSON.stringify(row));
       if (!r.rows.length) console.log("  (inga rader)");
     }
+  } else if (atgard === "las") {
+    // Läsläge (kort #263, DECISIONS #412). Vakten är READ ONLY, inte rollbacken: Postgres vägrar
+    // INSERT/UPDATE/DELETE/DDL — också inne i funktioner, så `cron.schedule` (skriver i cron.job)
+    // faller redan när satsen körs. Rollbacken är hängslen för det READ ONLY inte täcker (TEMP-tabeller,
+    // sekvenser). Skälet: knappens standardfil var sql/014_gallring.sql, som schemalägger om gallrings-
+    // jobbet till gallra_vader — sant och ofarligt 13/9, en tyst avstängning av grannarkivens, gravstenarnas
+    // och tidsvaktens gallring efter 026/031. En läsning ska inte kunna göra det.
+    const satser = bevis.split("\n").map((x) => x.trim()).filter(Boolean);
+    if (!satser.length) { console.error("las: ange bevisrader med --bevis (en SQL-sats per rad)"); process.exit(1); }
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN READ ONLY");
+      for (const sats of satser) {
+        const r = await client.query(sats);
+        console.log(`\nläs: ${sats}`);
+        for (const row of r.rows) console.log("  " + JSON.stringify(row));
+        if (!r.rows.length) console.log("  (inga rader)");
+      }
+      console.log(`\nlas: ${satser.length} sats(er) lästa i en READ ONLY-transaktion som rullas tillbaka — inget skrivet`);
+    } catch (e) {
+      console.error(`\nlas: VÄGRAT — ${(e as Error).message}. Läsläget skriver inte; använd migrera med en fil om något ska ändras.`);
+      process.exitCode = 1;
+    } finally { await client.query("ROLLBACK").catch(() => {}); client.release(); }
   } else if (atgard === "larmprov") {
     // Vitlistan först, före FRÅGAN: en felstavad flagga ska falla på en rad, inte efter att ha
     // kört något mot databasen. (Rättat 12/9: kommentaren sa tidigare att den därmed gick att
@@ -105,6 +131,6 @@ try {
     const fallback = "en issue med etiketten vakthund ska finnas inom en minut, och stängas av nästa gröna timkörning (xx:07).";
     console.log(`Beviset är INTE den här raden: ${BEVIS[flagga] ?? fallback}`);
   } else {
-    console.error("dbknapp: atgard måste vara migrera eller larmprov"); process.exit(1);
+    console.error("dbknapp: atgard måste vara las, migrera eller larmprov"); process.exit(1);
   }
 } finally { await pool.end(); }
