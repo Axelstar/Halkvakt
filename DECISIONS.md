@@ -6350,3 +6350,24 @@ PDF — i `docs/skyltfonden-2026-09-28/skickad/`. Inget sådant finns på main (
 Beslutet är alltså att Drive-mappen Skyltfonden och Bengts utkorg är arkivet för det som skickades; repot bär v8B och ändringslistan.
 Konsekvens att känna till: svar till fonden skrivs ur Drive-versionen, och SESSIONSREGELNs regel om incheckade dokument gäller inte
 den här filen på Bengts beslut.
+
+## #412 (1/10 2026) DB-knappen får ett läsläge som standard — en läsning kan inte längre ändra ett cron-jobb (kort #263)
+
+**Bengts order 1/10:** *"kör på #263"*. Fyndet (28/9, DECISIONS #389): knappens standardfil var `sql/014_gallring.sql`, som
+schemalägger om gallringsjobbet till `gallra_vader(7)`; sedan 026 ska det peka på `gallra_arkiv(7)`, som 031 byggt ut med Danmark,
+gravstenarna och tidsvakten. Ett tryck med standardvärdena hade tyst stängt av den gallringen. Inte utlöst: jobbet bär
+`SELECT gallra_arkiv(7)` 1/10 (körning 36817425867).
+
+**Beslut (a683e41).** (1) `scripts/dbknapp.ts` får `las --bevis "SQL"`: varje bevisrad körs i EN transaktion som öppnas `BEGIN READ ONLY`
+och alltid rullas tillbaka. Vakten är READ ONLY, inte rollbacken: Postgres vägrar INSERT/UPDATE/DELETE/DDL också inne i funktioner, så
+`cron.schedule` (skriver i `cron.job`) faller när satsen körs. En vägrad sats ger exit 1 och en rad som börjar *VÄGRAT*. (2) `dbknapp.yml`:
+`las` är standardval, `fil` har ingen standard (migrera kräver en fil), grenvalet frågar efter `migrera` och `las` vid namn och låter
+resten gå till larmprovet, som förut. (3) Inget annat rört: migrera och larmprov är oförändrade.
+
+**Bevis.** Lokalt (Postgres 16 i skrivblocket med en `cron.job`-attrapp): läsning ger rader; `UPDATE cron.job` vägrad; en skrivande
+funktion (`cron.schedule`-attrapp) vägrad med *cannot execute INSERT in a read-only transaction*; `las` utan bevis och `migrera` utan
+fil avvisas; tabellen orörd efteråt. Mot databasen: körning 36817259654 (`las`, standardbevis) grön, 23 cron-jobb listade, *inget
+skrivet*; körning 36817261645 (`las` med `UPDATE cron.job SET active = active WHERE false`) röd med *VÄGRAT — cannot execute UPDATE in a
+read-only transaction*; körning 36817425867 visar gallringsjobbets kommando. Alternativ som valdes bort: en ofarlig standardfil (en fil till som
+"är idempotent i dag"), och en vitlista över tillåtna satser (en lista till som glider). Läxan hör till familjen "en sanning som gällde när
+den skrevs": knappens kommentar kallade 014 idempotent, sant 13/9 och falskt efter 026.

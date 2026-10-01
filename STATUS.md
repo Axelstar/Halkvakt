@@ -2128,3 +2128,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   bevakningsrad i §0b; §4.2-frågan och oktoberraden strukna.
 - 1/10 (Claude, Bengts *"stäng kort 272"*): #272 till 🟢 KLART utan bygge (DECISIONS #411) — den skickade ansökan arkiveras i
   Drive, inte i repot. Bedömningen (1) och §0b rättade. origin/main (halkläget 1/10) inmergad.
+- 1/10 (Claude, Bengts *"kör på #263"*): db-knappen fick läsläget `las` (READ ONLY + rollback) som standard och `migrera` ingen
+  standardfil (a683e41, DECISIONS #412). Bevis: lokal Postgres (fem fall) och tre knapptryck mot databasen — läsning 36817259654 grön,
+  motprov 36817261645 röd med VÄGRAT, gallringsjobbet bär gallra_arkiv (36817425867). Kort #263 till 🟢 KLART.

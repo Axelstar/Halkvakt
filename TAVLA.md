@@ -451,9 +451,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Åtgärd: avkoda entiteterna (namngivna och numeriska) i stället för att stryka dem, och låt första körningen efter ändringen
   skriva om grundvärdena utan larm. Verify: *"händelser"* med å/ä/ö intakt i en polissidas text · ett prov där ett svenskt
   nyckelord med ö träffar en entitetskodad sida · ingen larmstorm efter deployen.
-- [ ] 🪤 **#263 DB-KNAPPENS STANDARDFIL ÅTERSTÄLLER GALLRINGEN** (fynd 28/9 under läsningen för #244, DECISIONS #389). `dbknapp.yml` har `fil: sql/014_gallring.sql` som standard, och en läsning görs genom att köra en migration med bevisrader efter. Men 014 gör `cron.unschedule` + `cron.schedule('halkvakt-gallring', …, 'SELECT gallra_vader(7)')` — och sedan `sql/026` pekar jobbet på **`gallra_arkiv(7)`**, som `sql/031` byggt ut med Danmark, gravstenarna och tidsvakten. **Ett tryck med standardfilen stänger alltså tyst av gallringen av grannarkiven, gravstenarna och tidsvakten**, och databasen växer mot gratisnivåns 500 MB utan att något larmar. **Inte utlöst:** jobbet bär `SELECT gallra_arkiv(7)` 28/9 03:58Z. Knappens egen kommentar kallar 014 *"idempotent"* — det var sant 13/9, före 026. Samma familj som vitlistan på två ställen: en sanning som gällde när den skrevs.
-  Åtgärd, liten: ett läsläge i knappen (`atgard: las`, bara bevisraderna, i en transaktion som rullas tillbaka) och en ofarlig standard. Tills dess bär läsningar `sql/033_kamerafacit.sql` (bara `IF NOT EXISTS`, RLS och REVOKE; ingen senare fil ändrar tabellen).
-  Verify: en läsning utan migrationsfil · standardvärdet kan inte ändra ett cron-jobb · motprov: läsläget vägrar en sats som skriver.
 - [ ] 📍 **#226 AUTOSTARTENS BEHÖRIGHET FALLER TYST PÅ ANDROID 11+** (Axels fynd på testtelefonen 20/9, DECISIONS #272).
   ⚠️ **HÄRLETT, INTE UPPMÄTT:** kortet skrevs på Axels rapport som antogs vara Android — den var från hans iPhone (#273).
   Ingen har kört det här på en Android-telefon. Grunden är kodläsning + Googles dokumentation, inget annat.
@@ -1847,6 +1844,14 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#263 DB-KNAPPENS STANDARDFIL ÅTERSTÄLLER GALLRINGEN — STÄNGT 1/10 (DECISIONS #412)** (fynd 28/9 under läsningen för #244, DECISIONS #389). `dbknapp.yml` har `fil: sql/014_gallring.sql` som standard, och en läsning görs genom att köra en migration med bevisrader efter. Men 014 gör `cron.unschedule` + `cron.schedule('halkvakt-gallring', …, 'SELECT gallra_vader(7)')` — och sedan `sql/026` pekar jobbet på **`gallra_arkiv(7)`**, som `sql/031` byggt ut med Danmark, gravstenarna och tidsvakten. **Ett tryck med standardfilen stänger alltså tyst av gallringen av grannarkiven, gravstenarna och tidsvakten**, och databasen växer mot gratisnivåns 500 MB utan att något larmar. **Inte utlöst:** jobbet bär `SELECT gallra_arkiv(7)` 28/9 03:58Z. Knappens egen kommentar kallar 014 *"idempotent"* — det var sant 13/9, före 026. Samma familj som vitlistan på två ställen: en sanning som gällde när den skrevs.
+  Åtgärd, liten: ett läsläge i knappen (`atgard: las`, bara bevisraderna, i en transaktion som rullas tillbaka) och en ofarlig standard. Tills dess bär läsningar `sql/033_kamerafacit.sql` (bara `IF NOT EXISTS`, RLS och REVOKE; ingen senare fil ändrar tabellen).
+  Verify: en läsning utan migrationsfil · standardvärdet kan inte ändra ett cron-jobb · motprov: läsläget vägrar en sats som skriver.
+  ↪ **1/10: BYGGT OCH BEVISAT** (a683e41, DECISIONS #412). `atgard: las` är knappens standard: bevisraderna körs i en READ ONLY-transaktion
+  som alltid rullas tillbaka; `migrera` har ingen standardfil längre. Verify-raden uppfylld: läsning utan migrationsfil (körning 36817259654,
+  23 cron-jobb listade, *inget skrivet*) · standardvärdena kan inte ändra ett cron-jobb (ingen fil, READ ONLY) · motprov: läsläget vägrade
+  `UPDATE cron.job …` (körning 36817261645 röd, *cannot execute UPDATE in a read-only transaction*) · gallringsjobbet bär fortfarande
+  `SELECT gallra_arkiv(7)` (körning 36817425867). Lokalt (Postgres 16, cron.job-attrapp): också en skrivande FUNKTION (`cron.schedule`) vägras.
 - [x] ✅ **#272 DEN SKICKADE ANSÖKAN IN I REPOT — STÄNGT 1/10 UTAN BYGGE (DECISIONS #411)** (30/9, DECISIONS #409). Versionen som gick till fonden 30/9 — formuläret och
   bilaga 1–8 som PDF — finns bara i Drive-mappen Skyltfonden och i Bengts utkorg; repots bilaga 1 är v8B (283 000 kr, fyra
   arbetspaket), inte den skickade V2. Ett fastställt dokument som inte är incheckat finns inte (SESSIONSREGELN). Lägg PDF:erna i
