@@ -206,7 +206,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   `dagOchKlockslag`, sv_SE) · *"lämnar inte telefonen av sig själv"* · `CURRENT_PROJECT_VERSION` 19 i samma commit. Betaguiden §5 steg 3
   och produktboken följer med. Android orörd (hemskärmen är en `LazyColumn` och rullar redan; dess dubbla knappar och statusrad står
   kvar i `TILL-AXEL-BYGGE-19` Android 1).
-  ✅ **KOMPILERADE OCH UPPLADDAT 1/10 22:25** (Axels Xcode, Organizer: *Halkvakt 0.3.9 (19) uploaded*, ur 4f88513). En varning i bygget —
+  ✅ **KOMPILERADE OCH UPPLADDAT 1/10 22:25** (Axels Xcode, Organizer: *Halkvakt 0.3.9 (19) uploaded*, ur 4f88513); ✅ **TESTING I KOMPISARNA 22:34**
+  (App Store Connect-skärmbild: (19) *Testing*, (14) *Testing* 37 sessioner — samma versionsnummer ⇒ ingen ny granskning). En varning i bygget —
   `EfterResanNotis.actionJa` läst ur nonisolated delegat — rättad i main samma kväll, går med i (20).
   🔑 Kvar: Axels blick på telefonen (Verify nedan) · nya iOS-skärmbilder till produktboken ur (19) · 4a dubbeltrycksspärren och 4b Siri när
   vakten är av (Axels beslut, §4.2).
@@ -216,6 +217,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔨 **SKRIVEN 26/9** (Bengts ja, DECISIONS #371): `docs/BETAGUIDE-IOS.md` — TestFlight-texten överst, guiden i Android-guidens
   åtta avsnitt, mot koden i 0.3.9 (16). 🔑 Kvar: utskicket med en extern TestFlight-grupp (Axel, Beta App Review).
   📝 **1/10 (DECISIONS #429):** meningen om trösklarna i TestFlight-texten är omskriven — klistra in ur filen som den står nu, inte ur en äldre kopia.
+  ✅ **1/10 22:34: (19) är *Testing* i den externa gruppen *Kompisarna*** (2 testare, publik länk `testflight.apple.com/join/PT59wKNC`); (14) låg där
+  sedan Beta App Review 26/9. Texten ur guiden klistrad in 1/10. 🔑 Kvar: själva utskicket av länken till de tolv — Axel, ikväll eller i morgon.
   ↦ **Sorterat 22/9 (kort #224):** texten för iOS-testarna skriver Claude nu; utskicket med en extern TestFlight-grupp är Axels.
   ↪ **Flyttat 26/9 från *Claude — olåst*** (femma åtta, DECISIONS #377): nästa steg är Axels utskick i TestFlight.
 
