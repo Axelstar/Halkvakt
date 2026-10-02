@@ -7067,3 +7067,50 @@ N_varning körs inte, och det sägs.
 **Alternativ som valdes bort:** driftens timtakt för radarn (kuvösen stegar i halvtimmar, och fönstret 70 min täcker båda);
 korrigera tif med −3,4 dBZ (se 3); bara de 40 närmaste molnstationerna per körning, som `moln.ts` gör (en gång för hela vintern är billigare
 än per körning); en GeoTIFF-modul från npm (åtta beroenden för ett fast format med tre taggar som spelar roll).
+
+## #442 (2/10 2026) Före resan räknas, inte byggs: källorna i Trafikverkets API och pendlarens notis på kuvösens vinter (kort #233)
+
+**Beställning (Bengt 2/10: *"ja räkna på allt men bara som information inte något bygge alls (det här är bara på
+experimentstadiet)"*).** Två läsande mätningar för underlaget `docs/FORE-RESAN-2026-10-02.md`. **Inget byggs i appen, i motorn eller i
+driften.** Två mätknappar får en inmatning för att kunna köra en annan läsande fil; det är allt som ändras.
+
+**Skrivet innan körningarna:**
+1. **Källorna** (`scripts/matningar/fore-resan-kallor-2026-10-02.ts`, knappen `vagarbeten-matning` med inmatningen `skript`): Trafikverkets
+   öppna API just nu — aktiva avvikelser per typ, vägarbetena (påverkan, avstängda körfält, varaktighet, geometri, hur många som är nya
+   eller kortare än en vecka), köer (*AbnormalTraffic*), restidssträckorna (*TravelTimeRoute*: antal, län, längd, status, ålder),
+   detektorerna (*TrafficFlow*: antal platser, län, ålder), färjorna (*FerryAnnouncement*), och storleken på en gemensam fil för hela
+   landet med vägarbetena och restiderna, rå och packad.
+2. **Pendlarens notis** (`scripts/matningar/pendling-kuvos-2026-10-02.ts`, knappen `kuvos` med inmatningen `matning`): på kuvösens vinter
+   2024/25, de första och sista 30 km av de 20 svenska skuggrutterna som 40 pendlingsvägar, vardagar kl. 06:45 och 16:00 svensk tid. Vid
+   varje koll: varje stations senaste rad inom tre timmar, med snapshotens fyra vakter, som frysriskpunkter; motorn kör vägen i 80 km/h.
+   Två tal: **(A)** notis när motorn säger något alls, **(B)** bara när något är nytt sedan vägens förra koll. Per månad, breddgrad och väg.
+   Kuvösen har bara stationerna — väglaget, olyckorna och vägarbetena saknas, så talet är frysrisken ensam, ett golv.
+
+**Ingen gräns är satt** för hur ofta en notis får komma, och mätningen väljer inget värde. Talen är information. Ska en gräns sättas senare
+ska beslutet säga att talen var sedda när den sattes. Fyrningar, inga utfall: ingen yta efter en koll läses, inget facit.
+
+**Utfall 1 — källorna** (körning 37034630809 18:32, och 37034747221 18:36 med en rad tillagd, se nedan): 1 876 aktiva vägarbeten, 87 %
+längre än en månad, 50 nya eller kortare än en vecka; 0 kömeddelanden just då (kväll). **198 restidssträckor, 213 km, 191 av dem i
+Stockholms län**, 5 i Västra Götaland och 2 i Skåne; mätvärdet 1,6 min gammalt. **3 125 detektorplatser**, 2 400 i Stockholm, 715 i Västra
+Götaland, 10 i Skåne; 0,6 min gamla. Färjornas svar nådde taket 20 000 avgångar på 36 leder och är inte räknat färdigt. **En gemensam fil:**
+vägarbetena som punkter 48,5 kB packad (som linjer 93,2 kB), restiderna med linjer 71,2 kB, bara status 2,1 kB — tillsammans 120 kB, mot
+lägesbildens 83 kB i dag.
+**Tillagt efter första körningen, med skäl:** mätningen 26/9 (#420) räknade 5 280 aktiva vägarbeten; den här räknade 1 876, eftersom den
+hoppar över de vilande (`Suspended`). Raden som räknar de vilande för sig gav **3 262 vilande inom sin tid** — tillsammans 5 138. **#420:s
+5 280 och dess 151 rop per skuggvarv räknade alltså med de vilande**; de aktiva är omkring en tredjedel. Det ändrar inget beslut (vägarbeten
+står på vårlistan, Ä3), men talet ska läsas så när frågan tas upp.
+
+**Utfall 2 — pendlarens notis på kuvösens vinter** (körning 37034679400 18:38, och 37035476406 18:58 med del C): **(A, B) längs de 40
+ruttbitarna: 0,7 % av 8 560 koller gav en notis, 0 % norr om 58 °N.** Det mäter linjernas grovhet mer än vintern: bitarna har i median två
+punkter, 28 av 40 har ingen station inom 1 km, och motorn ser en station bara inom ungefär en halv kilometer från linjen. **Del C, tillagd
+efter den första körningen av det skälet** och skriven i skriptet innan den kördes, räknar en väg som passerar k stationer:
+
+| Stationer längs vägen | (A) notis | (B) bara nytt | Notiser per vecka (A · B) | Under 58 °N · 58–62 · över 62 (A) |
+| --: | --: | --: | :-- | :-- |
+| 1 | 12,1 % | 7,1 % | 1,2 · 0,7 | 5,4 % · 10,1 % · 23,3 % |
+| 2 | 14,0 % | 9,1 % | 1,4 · 0,9 | 7,0 % · 12,6 % · 27,2 % |
+| 3 | 14,5 % | 10,2 % | 1,5 · 1,0 | 8,2 % · 14,1 % · 28,4 % |
+
+Andelen stationer med frysrisk vid kollen: november 9,4 %, december 10,7 %, januari 22,7 %, februari 10,5 %, mars 6,2 %. **Läsning, inte
+dom:** med bara frysrisken skulle en pendlare med två eller tre stationer längs vägen få ungefär en och en halv notis i veckan, i norr nära
+tre; bara det nya halverar det inte. Väglaget, olyckorna och vägarbetena kommer ovanpå. Ingen gräns är satt.

@@ -1,143 +1,144 @@
-# Före resan — pendlingsvägen som Halkvakt kollar åt dig
+# Före resan — favoritrutter med allt Halkvakt vet om vägen
 
-*Bengts fråga 2/10 2026: "utveckla det där om planering före resan och favoritsträckor (till och från arbetet; pendling etc". Ett
-beslutsunderlag för kort #233 del 1, ingen kod. Formen är Axels. Bygger på Fintraffic-jämförelsen (`docs/FINTRAFFIC-JAMFORELSE-2026-10-02.md`,
-kort #283).*
+*Bengts frågor 2/10 2026: "utveckla det där om planering före resan och favoritsträckor (till och från arbetet; pendling etc", "borde det
+inte finnas information om köbildning, vägarbeten etc", och förtydligandet samma kväll: "jag tänkte att pendlingsstråken skulle vara något
+som ingick som en del i favoritrutter som kunde sparas och att man i förväg fick information om pågående vägarbeten och allt annat som
+appen kan ge information om." Ett beslutsunderlag för kort #233 del 1, ingen kod. Formen är Axels. Bygger på Fintraffic-jämförelsen
+(`docs/FINTRAFFIC-JAMFORELSE-2026-10-02.md`, kort #283).*
 
-## Varför
+*Omskrivet samma kväll efter Bengts förtydligande. Första utgåvan gjorde pendlingen till hela idén och en notis om frysrisk till
+huvudsaken. Bengts tanke är bredare: favoritrutter, där pendlingen är ett av flera fall, och en rapport om allt längs rutten.*
 
-Det viktigaste beslutet om halka fattas innan bilen startar: att åka tio minuter tidigare, ta en annan väg eller låta bli. Finsk
-forskning om 1 437 förare fann att de som var välinformerade främst ändrade sina resplaner, inte sin körning (Kilpeläinen och Summala
-2007, i Skyltfondsansökans bilaga 4). Halkvakt talar i dag bara under körningen och kan alltså inte påverka det beslutet.
+*Som läsbart dokument 2/10 kväll, på Bengts begäran: **Halkvaktens favoriter**, https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT, källa `docs/FAVORITER.html`. Där finns
+skärmarna ritade i appens skinn och hur färsk rapporten kan vara tio minuter före avresan.*
 
-Pendlaren är det enklaste fallet: samma väg till och från jobbet, ungefär samma tider, fem dagar i veckan. Vägen är känd i
-förväg, och det är just den vägen föraren behöver veta något om på morgonen.
+## Idén
 
-Andra har redan byggt det här. Fintraffics app låter föraren spara en rutt och få en notis när något händer längs den, och har över
-100 000 användare. Trafikverkets app Trafiken.nu gör samma sak för Stockholm och Göteborg, med meddelanden om störningar på
-favoritsträckorna under de tider man väljer. Ingen av dem har en röst under körningen, och ingen av dem lovar att positionen stannar
-i telefonen.
+Föraren sparar sina vanliga rutter: till jobbet och hem, till stugan, till föräldrarna, till träningen. Innan en resa öppnar föraren
+rutten och ser allt Halkvakt vet om den just nu — halkan, olyckorna, vägarbetena, köerna där de finns, färjorna och fartkamerorna. Under
+resan är det som i dag: rösten säger bara det som inte kan vänta.
+
+Det viktigaste beslutet fattas innan bilen startar: att åka tidigare, ta en annan väg eller låta bli. Finsk forskning om 1 437 förare
+fann att de välinformerade främst ändrade sina resplaner, inte sin körning (Kilpeläinen och Summala 2007, i Skyltfondsansökans bilaga 4).
+Fintraffic i Finland och Trafikverkets Trafiken.nu i Stockholm och Göteborg har redan favoritrutter med notiser. Ingen av dem har en röst
+under körningen, och ingen av dem lovar att positionen stannar i telefonen.
 
 ## Hur det skulle fungera
 
-**Spara vägen efter en resa.** När föraren har kört till jobbet frågar efter-resan-kortet om resan ska sparas som en väg, till exempel
-*Till jobbet*. Telefonen sparar då den körda vägen, och bara den, lokalt. Föraren behöver inte skriva in någon adress, och ingen
-tjänst för ruttsökning på nätet får veta var föraren bor eller arbetar. Det är skälet till att vägen ska sparas ur en körd resa och inte sökas fram: en
-ruttsökning skickar start och mål till någon annan.
+**Spara en rutt ur en körd resa.** Efter en resa frågar efter-resan-kortet om resan ska sparas som en rutt, och föraren ger den ett namn.
+Telefonen sparar den körda vägen lokalt. Föraren skriver aldrig in en adress, och ingen tjänst för ruttsökning på nätet får veta var
+föraren bor, arbetar eller har sin stuga. Rutter som föraren inte vill ha kvar tas bort med ett tryck.
 
-**Välj tiderna.** *Vardagar 07:15* och *hem 16:30*. Halvtimmen före varje tid kollar telefonen vägen.
+**Ruttrapporten.** När föraren öppnar en rutt visar appen allt som gäller längs den just nu, i en lista som går att läsa på några sekunder.
+Ett påhittat exempel:
 
-**Kollen är en provkörning i förväg.** Telefonen hämtar samma lägesbild som under en riktig resa, samma fil för alla användare, och
-låter motorn köra den sparade vägen i förväg. Motorn gör det redan i skuggan: skuggmotorn kör tjugo rutter varje halvtimme på samma sätt
-(`traceAlong` och `run` i motorn). Det som motorn skulle ha sagt under resan blir kollens svar.
+> **Till stugan** · just nu, 15:40
+> - Vägarbete på E4 vid Gävle: ett körfält avstängt, stor påverkan, till 30 november
+> - Halt väglag rapporterat på väg 83 mellan Bollnäs och Ljusdal
+> - Frysrisk vid två mätstationer längs vägen
+> - Hastigheten nedsatt till 60 km/h vid Hudiksvall
+> - Fyra fartkameror
+> - Inga olyckor och inget vilt rapporterat
 
-**Notisen kommer bara när något är fel.** Är vägen fri kommer ingenting, eftersom tystnad är en funktion också här. Är något fel kommer
-en notis, till exempel:
+Är allt lugnt står det det: *Inget rapporterat längs rutten just nu.*
 
-> *Till jobbet, just nu: halt väglag rapporterat på E18 vid Västerås, och frysrisk vid två mätstationer längs vägen.*
+**Pendlingen är ett fall av favoritrutterna.** En rutt kan få tider, till exempel *vardagar 07:15* och *hem 16:30*. Då gör appen rapporten
+tio minuter före (Bengt 2/10 kväll) och skickar en notis om något har tillkommit som föraren bör veta. Tiderna och notisen är frivilliga; rapporten finns
+alltid när föraren öppnar rutten.
 
-**Siri och CarPlay.** *"Hej Siri, hur är vägen till jobbet?"* ger samma svar i en mening, i bilen innan föraren kör.
+**Siri och CarPlay.** *"Hej Siri, hur är vägen till stugan?"* ger det viktigaste i en mening, i bilen innan föraren kör.
 
-**Under körningen** är allt som i dag: rösten tar över.
+**Under resan** säger rösten som i dag bara det som inte kan vänta: halka, frysrisk, olyckor, vilt och fartkameror. Vägarbetena och köerna
+stannar i rapporten.
 
-## Vad kollen får säga
+## Vad rapporten kan innehålla, och var det kommer ifrån
 
-Samma regler som rösten. Det som är uppmätt eller rapporterat får sägas: halt väglag på sträckan, frysrisk vid en station, olyckor,
-vilt, och vägarbeten när de kommer till våren. **Prognoser får inte utlösa en notis.** Regel T6 säger att en prognos får stärka och
-visas, aldrig ensam utlösa, och en notis är en utlösning. Prognoslagret får visas i vyn som föraren själv öppnar, och först efter domen
-i mars om det klarar sina grindar.
+Allt finns i Trafikverkets öppna data, med samma nyckel som Halkvakt redan har och under samma öppna licens. Läst i Trafikverkets
+datamodell och räknat i deras API 2/10 (DECISIONS #442).
 
-Kollen säger *just nu*, inte *när du kör*. Lägesbilden gäller nu, och vägen kan ändras på en halvtimme. Texten får aldrig låta som en
-prognos.
+| I rapporten | Källa | Täckning | Hos Halkvakt i dag |
+| :-- | :-- | :-- | :-- |
+| Halt väglag på sträckor | *RoadCondition* | Hela landet, november–april | I rösten |
+| Frysrisk vid mätstationer, broar | Väderstationerna | Hela landet, omkring 750 stationer enligt Trafikverket | I rösten |
+| Olyckor, hinder, djur på vägen | *Situation* | Hela landet | I rösten (olyckor och vilt) |
+| **Vägarbeten**: körfält, påverkan, start och slut | *Situation* | Hela landet: 1 876 aktiva 2/10, och 3 262 som vilar | Hämtas, sägs inte |
+| **Hastighetsnedsättningar och omledningar** | *Situation* | Hela landet: 801 och 39 aktiva 2/10 | Hämtas, sägs inte |
+| **Köer och restider** | *TravelTimeRoute*, *TrafficFlow* | Nästan bara Stockholm: 191 av 198 restidssträckor, 2 400 av 3 125 detektorer | Används inte |
+| Kömeddelanden från trafikcentralerna | *Situation* (*AbnormalTraffic*) | Hela landet, när de skrivs | Arkiveras |
+| **Färjor**: avgångar och störningar | *FerryAnnouncement* | Vägfärjorna, 36 leder | Används inte |
+| Fartkameror | *TrafficSafetyCamera* | Hela landet | I rösten |
+| SMHI:s varningar | SMHI | Hela landet | I arkivet |
+| *Halkvakt tror*, prognosen längs vägen | Prognoslagret | — | Först efter domen i mars, och bara om det klarar sina grindar |
 
-## Köer, vägarbeten och annat som hör till planeringen
+**Det som inte går att få öppet:** realtidstrafik från Google, Waze, TomTom eller HERE kostar pengar eller kräver avtal, och gratisnivån
+är ett krav i projektet. Bilarnas egna halkvarningar finns inte i något öppet dataset (DECISIONS #282). Utanför Stockholm och Göteborg
+finns inga mätta köer.
 
-*Bengts fråga samma kväll: "borde det inte finnas information om köbildning, vägarbeten etc". Läst i Trafikverkets datamodell för det
-öppna API:t samma kväll.*
+## Vad som får stå var
 
-Ja. Före resan är det inte bara halkan som avgör, och det mesta finns i Trafikverkets öppna data, med samma nyckel som Halkvakt redan har
-och under samma öppna licens.
+Rapporten är något föraren själv öppnar och läser i lugn och ro. Där får allt stå som är uppmätt eller rapporterat, också vägarbeten som
+pågår i månader. Det är den stora skillnaden mot rösten, som måste vara tyst om det som inte är bråttom.
 
-**Vägarbeten, avstängningar och begränsningar** finns i *Situation*, samma datamängd som olyckorna och viltet redan kommer ifrån. Varje
-händelse har typ (till exempel *Vägarbete*), påverkansgrad, antal avstängda körfält, typen av begränsning (till exempel *körfält
-blockerat*), tillfälliga gränser som *bruttovikt 8 ton*, och när den börjar och slutar. Halkvakt hämtar redan situationerna och arkiverar
-olyckor, hinder och väglagsmeddelanden, men inte vägarbetena, och rösten talar bara om olyckor och vilt. Mätningen 26/9 (DECISIONS #420) visade varför: 5 280 vägarbeten var aktiva, nio av tio längre än en
-månad, och rösten hade talat 151 gånger på ett skuggvarv. **I en vy före resan är det annorlunda.** Där är det nyttigt att se att ett
-körfält på vägen till jobbet är avstängt till slutet av november, och föraren läser det i lugn och ro. Notisen ska däremot bara gälla det
-som är nytt eller kortvarigt, annars kommer den varje dag.
+Notisen är något annat, eftersom den kommer utan att föraren bett om den. Den ska bara gälla det som är nytt eller som ändrar resan: ny
+halka, en olycka, ett nytt vägarbete som stänger ett körfält, en inställd färja. Ett vägarbete som har pågått i två månader är inte en notis.
 
-**Köer och restider** finns i två datamängder. *TravelTimeRoute* ger för bestämda sträckor den aktuella restiden, den normala restiden och
-en status i fyra steg från fri framkomlighet till framkomligheten omöjlig. *TrafficFlow* ger hastighet och flöde per körfält från
-detektorerna i vägen, omkring en minut gammalt (mätt 26/8, kort #15). Trafikcentralernas egna meddelanden om köer och onormal trafik finns
-dessutom som situationstypen *AbnormalTraffic* i hela landet, när de skrivs, och dem arkiverar vi redan. **Detektordatan finns bara i större
-städer och högbelastade trafiksystem**,
-enligt Trafikverkets egen beskrivning, alltså i praktiken Stockholm och Göteborg. Där finns redan Trafikverkets app Trafiken.nu med
-favoritsträckor och notiser om störningar. Halkvakt skulle därför inte tillföra köerna i sig, utan att köer, vägarbeten och halka står i
-samma kolla, med positionen kvar i telefonen. Utanför storstäderna finns ingen öppen källa för köer.
-
-**Färjor** finns i *FerryAnnouncement*, med avgångar och störningar. Det är värdefullt för den som pendlar över ett sund.
-
-**Väglaget och väderstationerna** är de Halkvakt redan läser, och **SMHI:s varningar** finns redan i arkivet.
-
-**Kamerorna** längs vägen är öppna, men de ska inte hämtas automatiskt för den sparade vägen (se *Integriteten* nedan).
-
-**Det som inte går att få öppet:** realtidstrafik från Google, Waze, TomTom eller HERE kostar pengar eller kräver avtal, och
-gratisnivån är ett krav i projektet. Bilarnas egna halkvarningar, som Trafikverket köper och delar i *Data for Road Safety*, finns inte i
-något öppet dataset (DECISIONS #282). Polisens händelser är sämre än Trafikverkets för vägarna (DECISIONS #316, #318).
-
-**Hur det passar in utan att integriteten rubbas.** Allt ovan hämtas som en gemensam fil för hela landet, som lägesbilden i dag, och
-jämförs med den sparade vägen i telefonen. Ingen fråga skickas om just förarens väg. Vägarbetena är många och skulle göra den fil som
-hämtas under körningen mycket större, så de hör hemma i en egen gemensam fil som bara hämtas för kollen före resan. Hur stor den blir
-ska mätas innan något byggs.
+Två regler gäller överallt. **Ingen prognos får utlösa en notis**, eftersom regel T6 säger att en prognos får visas och stärka men aldrig
+ensam utlösa. Och **rapporten säger *just nu***, inte *när du kör* — läget kan ändras på en halvtimme.
 
 ## Integriteten
 
-Den sparade vägen ligger i telefonen och ingen annanstans. Kollen hämtar samma offentliga fil som appen redan hämtar, utan konto och
-utan någon uppgift om vem som frågar. Notisen skapas i telefonen; ingen server skickar den, och ingen server vet vilka vägar som finns.
-Invarianten i CLAUDE.md står kvar: ingen position lämnar telefonen av sig själv.
+Rutterna ligger i telefonen och ingen annanstans. Rapporten bygger på gemensamma filer för hela landet, som lägesbilden i dag, och
+jämförs med rutten i telefonen. Ingen fråga skickas om just förarens rutt, notisen skapas i telefonen, och ingen server vet vilka rutter
+som finns. Invarianten i CLAUDE.md står kvar: ingen position lämnar telefonen av sig själv.
 
-Två saker måste ändå sägas öppet. Appen sparar för första gången en väg som föraren har kört, även om det är på förarens begäran, så
-produktboken, introduktionen och integritetssidan ska säga det. Och kollen får inte hämta något som är särskilt för vägen, till exempel
-bilder från kamerorna längs den: en sådan hämtning berättar för Trafikverkets server vilka kameror föraren intresserar sig för, och
-därmed ungefär vilken väg föraren kör. Bara den gemensamma filen hämtas automatiskt.
+Två saker måste sägas öppet. Appen sparar för första gången vägar som föraren har kört, på förarens begäran, så produktboken,
+introduktionen och integritetssidan ska säga det. Och rapporten får inte hämta något som är särskilt för rutten, till exempel bilder från
+kamerorna längs den, eftersom det berättar för Trafikverkets server ungefär vilken väg föraren tänker köra.
 
-## Det som måste mätas först
+## Talen (räknade 2/10, DECISIONS #442)
 
-Den viktigaste frågan är hur ofta notisen skulle komma. Kommer den varje vintermorgon i Norrland slutar föraren läsa den, och då är den
-värdelös. Det går att mäta innan något byggs:
+*Bengts ord: "räkna på allt men bara som information inte något bygge alls". Inget är byggt.*
 
-- **På kuvösens vinter 2024/25:** låt de tjugo skuggrutterna stå för pendlingsvägar och räkna hur många vardagsmorgnar kl. 06:45 och
-  eftermiddagar kl. 16:00 motorn skulle ha sagt något längs dem. Kuvösen har stationerna, så frysrisken går att räkna; väglaget och
-  olyckorna saknas där.
-- **På årets skugglogg:** samma räkning med väglag och olyckor, när vintern har kommit.
+**Filerna.** Vägarbetena och restiderna i en gemensam fil blir omkring **120 kB packad**, ungefär lika stor som hela lägesbilden i dag
+(83 kB). Det går bra för en rapport som föraren öppnar och för en koll två gånger om dagen, men inte för hämtningen var 30:e minut under
+körningen. Rapporten ska därför ha en egen fil.
 
-Gränsen för hur ofta en notis får komma ska skrivas innan talen läses, av Bengt och Axel. Blir det för ofta finns tre vägar: bara halt
-väglag och olyckor i notisen, frysrisken bara i vyn; bara det som är nytt sedan förra kollen; eller en notis bara när läget är sämre än
-vad som är vanligt för vägen den månaden.
+**Hur ofta en notis om frysrisk hade kommit** på vintern 2024/25, om rutten passerar två eller tre stationer: vid ungefär 14 procent av
+kollerna, en och en halv gång i veckan för den som kollar morgon och eftermiddag, och nästan tre gånger i veckan norr om 62 grader. Det
+är frysrisken ensam, eftersom kuvösen bara har stationerna. Talet visar att notisen måste vara sparsam, och att den bör gälla det som är
+nytt. För rapporten spelar talet ingen roll: den läses när föraren vill.
+
+**Vägarbetena** är färre än mätningen 26/9 sa: 1 876 aktiva, inte 5 280, som räknade också de vilande. Av de aktiva är 50 nya eller
+kortare än en vecka.
 
 ## Tekniken i korthet
 
-- **Motorn finns redan** i Swift och Kotlin och klarar de gemensamma testfallen. En provkörning längs en sparad väg är att köra den
-  befintliga `run` över vägens punkter. Nya testfall läggs till i alla tre språken.
-- **På iPhone** väcker systemet inte appen på minuten. Den säkra vägen är en automation i Genvägar på en viss tid, som kör en
-  åtgärd *Kolla min väg*. Appen har redan åtgärder för Siri (starta, stoppa, stämde inte, appen missade), och guiden till Genvägar finns. Om tidsautomationen kan köras utan att föraren bekräftar varje gång ska provas på Axels telefon innan formen bestäms.
+- **Motorn finns redan** i Swift och Kotlin och kan köra en väg i förväg (`run`), som skuggmotorn gör varje halvtimme. Rapportens halka
+  och frysrisk är det motorn skulle ha sagt längs rutten; vägarbetena, köerna och färjorna läggs till ur den egna filen.
+- **Färskheten** (läst i koden 2/10): livemotorn hämtar olyckor, väglag och väder varje minut, och appens lägesfil publiceras var tionde
+  minut. En koll 07:05 läser alltså 07:00-filen, fem minuter gammal. Under körningen hämtar telefonen var 30:e minut; rapporten hämtar
+  när den öppnas och vid kollen. Tätare publicering är inte prövad.
+- **På iPhone** väcker systemet inte appen på minuten. För de tidsatta notiserna är den säkra vägen en automation i Genvägar som kör en
+  åtgärd *Kolla mina rutter*. Om den kan köras utan att föraren bekräftar varje gång ska provas på Axels telefon. Rapporten själv kräver
+  ingenting av det slaget.
 - **På Android** kan telefonen schemalägga kollen själv.
-- **Batteriet** påverkas inte märkbart: en hämtning och en provkörning, två gånger om dagen.
+- **Batteriet** påverkas inte märkbart.
 
 ## Vad det kan ge projektet
 
-För föraren blir Halkvakt något mer än en röst i bilen: den första appen som både säger till före resan och under den, utan att
-positionen lämnar telefonen. För marknadsföringen är pendlaren den tydligaste målgruppen, och det finns redan en färdig fras att jämföra
-med: Fintraffic säger *"när du kör, så kör du"*. För Skyltfondsansökan nämndes ruttkollen som argument mot yrkesflottor, till exempel
-taxi, bud och hemtjänst, som också kör kända vägar. Där ska den fortfarande skrivas med förbehåll tills den är byggd.
+Halkvakt blir den första appen som både berättar om vägen före resan och säger till under den, utan att positionen lämnar telefonen.
+Fintraffic säger själva om sin app *"när du kör, så kör du"*; Halkvakt täcker båda halvorna. Pendlarna är den tydligaste målgruppen,
+men favoritrutterna gäller också fritidsresorna och yrkesförare som kör kända vägar, till exempel taxi, bud och hemtjänst.
 
 ## Förslaget
 
-1. **Mätningen först:** hur ofta skulle en notis komma på kuvösens vinter, med gränsen skriven före. Ett beslut i DECISIONS och en körning
-   i knappen `kuvos`. Samtidigt: hur stor en gemensam fil med vägarbeten och restider blir.
-2. **Därefter, om talet håller:** *Spara som väg* i efter-resan-kortet, tiderna, provkörningen i telefonen, notisen och Siri-frågan, bara
-   med det som är uppmätt och rapporterat — halkan, olyckorna, vägarbetena och, i storstäderna, köerna och restiden. Formen bestämmer Axel.
-3. **Prognoserna i vyn** först efter domen i mars, och bara om prognoslagret klarar sina grindar.
+Ingenting byggs nu; idén är på experimentstadiet (Bengt 2/10).
 
-**Öppna frågor till Bengt och Axel:** ska mätningen göras; hur många vägar får man spara; ska kollen ha en egen flik eller ligga på
-*Redo.*-skärmen; och vilken gräns för notisens frekvens ska gälla.
+1. **Formen** bestämmer Axel: var rutterna bor i appen, hur rapporten ser ut, och om tiderna och notisen ska finnas i första versionen.
+2. **Innehållet** i första versionen: det som redan finns i rösten, plus vägarbeten, hastighetsnedsättningar, omledningar och färjor i
+   hela landet, och köer och restider där de finns.
+3. **Prognosen** i rapporten först efter domen i mars, och bara om prognoslagret klarar sina grindar.
+
+**Öppna frågor till Bengt och Axel:** hur många rutter man får spara; om rapporten ska ha en egen flik eller ligga på *Redo.*-skärmen; om
+notisen ska finnas i första versionen och vad som i så fall räknas som nytt; om tio minuters publicering räcker för kollen före avresan; om den sparade
+linjen ska visas utan karta bakom sig, eftersom kartbitar avslöjar trakten.
