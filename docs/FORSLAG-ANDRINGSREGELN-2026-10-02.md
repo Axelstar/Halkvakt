@@ -8,6 +8,23 @@ bedömningen §4.2.
 biasen med mycket av de tal vi laborerar med är ändå gissningar och blir de bättre eller sämre om man ser på utfallet och bildar
 sej en uppfattning därefter (går det att bygga bort biasen)"*
 
+> **Efterprövning 2/10, samma dag** (Bengts fråga: *"det känns som ett väldigt avgörande beslut det här. är det rätträknat och
+> bra"*). **Claudes rekommendation är ändrad: inför inte regel L nu.** Tre saker som första utgåvan missade eller underskattade:
+>
+> 1. **Regeln är redovisad för Skyltfonden.** Bilaga 7 till ansökan som skickades 30/9 säger: *"Ändringsreglerna är desamma för
+>    alla dokumenten: En tröskel får skärpas men aldrig lättas när utfallet väl är sett."* Bilaga 1 åberopar att en grind föll
+>    *"utan att kravet flyttades"*. Besked väntas senast 15/12. L2 och L4 öppnar för lättnad och säger alltså något annat än det
+>    fonden har läst. (Citaten är ur repots version; den skickade finns inte i repot, DECISIONS #411.)
+> 2. **Vägen finns redan.** En fråga som fallit eller inte kan dömas tas om som en *ny fråga*, med egen text före ny mätning:
+>    Axel 12/9 (frysklassningen, kort #103), regel D7, NEDERBORDSTYPEN. Det ger det L2 ger, utan att en befintlig tröskel lättas.
+>    §1 nedan överdrev alltså hur trubbig regeln är.
+> 3. **Inget fall har krävt en ny regel.** De fall jag hittar där regeln prövats: A2 12/9, vattenplaningens grind V-A,
+>    vägpunktsgrinden 28/9 och kalibreringens flytt 1/10. Alla löstes inom dagens lydelse.
+>
+> **Det som står sig:** L1 och L3 går åt det stränga hållet och är förenliga med bilaga 7. L3 fångar kort #270 (b), som underlaget
+> 30/9 kallar *"en precisering … ingen lättnad"*. **Ny rekommendation: alternativ D i §7.** Resten av dokumentet står som det
+> skrevs, som underlag.
+
 ---
 
 ## 1. Svaret i korthet
@@ -104,9 +121,15 @@ och skälet lutade sig inte mot ett utfall.
 | :-- | :-- | :-- |
 | **A** | Behåll lydelsen som den står | Enkelt och tryggt. Men närbandet och varje framtida fall löses då genom undantag i chatten, vilket är sämre än en regel |
 | **B** | Regel L bara i kuvösen | Två regimer. En fråga som inte klarar sig på ett ställe kan flyttas till det andra |
-| **C** | Regel L gemensamt för alla tretton | **Rekommenderas.** Till största delen en sammanskrivning av det som redan står i D3, D7, KOMBINATIONEN §6.4 och FORSPRANG §8 |
+| **C** | Regel L gemensamt för alla tretton | Rekommenderades i första utgåvan. Till största delen en sammanskrivning av det som redan står i D3, D7, KOMBINATIONEN §6.4 och FORSPRANG §8, men L2 och L4 säger något annat än bilaga 7 till Skyltfonden |
+| **D** | Behåll lydelsen. Inför bara L1 och L3, som skärpning. Närbandet och kandidatbytet tas som nya frågor, på den väg som redan finns. L2 och L4 prövas tidigast efter Skyltfondens besked och domen i mars | **Rekommenderas efter efterprövningen.** Löser kort #270 (b) och (d), lättar ingenting och ändrar inget som fonden har läst |
 
 ## 8. Om det blir ja
 
-En DECISIONS-post med båda signaturerna, texten in i TROSKLAR-KOMBINATIONEN, L-raden i tretton dokument i samma commit, och
-bedömningen §4.1. Inget i motorn, appen eller driften berörs. Kort #270:s val (b) och (d) tas därefter enligt regeln.
+**Alternativ D:** en DECISIONS-post med L1 och L3 som skärpning (en rad från Bengt där dokumenten tillåter skärpning; i de sju
+strängare gäller förbudet redan). Ingen lydelse om lättnad ändras. Kort #270 (b) och (d) tas som nya frågor med egen text.
+
+**Alternativ C:** en DECISIONS-post med båda signaturerna, texten in i TROSKLAR-KOMBINATIONEN, L-raden i tretton dokument i samma
+commit, och bedömningen §4.1. Fonden bör då få veta att ändringsregeln har fått ny lydelse.
+
+Inget i motorn, appen eller driften berörs i något av fallen.

@@ -317,6 +317,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   rörs inte. **Inget tröskeldokument är ändrat.** Hänger ihop med kort #270 (b) och (d). 🔑 Nyckel: Bengts och Axels ja, nej eller
   ändrad lydelse (§4.2) — tre frågor i förslagets §6. Verify: beslutet i DECISIONS med båda signaturerna; vid ja står texten i
   TROSKLAR-KOMBINATIONEN och L-raden i alla tretton dokument i samma commit.
+  ⚠️ **EFTERPRÖVAT SAMMA DAG — Claudes rekommendation ändrad till alternativ D: inför inte regel L nu.** Bilaga 7 till Skyltfondsansökan (skickad 30/9, besked senast 15/12) säger *"En tröskel får skärpas men aldrig lättas när utfallet väl är sett"*; L2 och L4 öppnar för lättnad och säger alltså något annat än fonden har läst. Vägen för en fallen fråga finns redan: en ny fråga med egen text (Axel 12/9, D7). D = behåll lydelsen, inför bara L1 och L3 (stränga hållet), ta närbandet och kandidatbytet i #270 som nya frågor, pröva L2 och L4 tidigast efter fondens besked och domen i mars.
 
 - [ ] 📐 **#270 PROGNOSLAGRET EFTER PREMISSMÄTNINGARNA — BENGTS VAL a–h** (30/9, `docs/PROGNOSLAGRET-2026-09-30.md`; DECISIONS
   #405–#408; bedömningen §4.2). Domen står (fallen 28/9, bekräftad 30/9 och på ärliga rader). Bandet 0–7 km håller i båda
