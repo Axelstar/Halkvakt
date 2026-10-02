@@ -6958,3 +6958,36 @@ och besiktningen läste fältens innehåll; ingen regel är körd och inget utfa
 
 **Alternativ som valdes bort:** gissa koderna ur temperaturmönstret (avvisat: VÄRDEVAKTEN, och en felöversatt nederbörd förfalskar varje
 frysrisk); läsa in nu utan nederbörden (avvisat: halva motorn skulle köras tom och se frisk ut — *"det svarar" är inte "det bär"*).
+
+## #439 (2/10 2026) Kuvösen: nederbördskoderna 1, 2, 4 och 6 lästa på Trafikverkets källa och vintern inläst — ändrar #438 punkt 4 (kort #232)
+
+**Underlag (Axel 2/10 17:12–17:13).** Axel hittade Trafikverkets *Ersättningsmodell VädErs 2019 — vägklass 4, 5 och GC*
+(bransch.trafikverket.se) och frågade *"kan vi göra något med detta nu?"*; på frågan hur långt: *"Läs in vintern nu"*. Listan han
+klistrade in, ur en söksammanfattning, hade sex koder. **Dokumentet, läst på källan, har fyra** (s. 6–7): *"Nederbörd anges i fyra typer:
+Ingen nederbörd (kod 1), regn (kod 2), snö (kod 4) samt både snö och regn (kod 6)."* *3 = underkylt regn* och *9 = okänd* stod bara i
+sammanfattningen — samma fälla som den påhittade adressen 17/9 (CLAUDE.md). Koderna är MESAN:s; att VViS-filen delar numreringen stämmer
+med datan kod för kod (luften per kod, `docs/KUVOS-LEVERANSEN-2026-10-02.md` §2) men är obekräftat.
+
+**Beslut:**
+1. **#438 punkt 4 ändras för de koder som har en källa:** 1 → `no`, 2 → `rain`, 4 → `snow`, 6 → `sleet` — driftens ord, så produktionens
+   kod läser vintern oförändrad. `rain`/`snow` sätts ur samma kod (2 och 6, 4 och 6). **3, 9 och −9 blir NULL**: 13 893 av 5 391 599
+   rader (0,26 %). Mängden och vindstyrkan förblir NULL tills Micke svarat.
+2. **Inläsningen i två steg:** den råa tabellen `kuvos_ra.trv_obs` (värdena som i filen) och översättningen på ett ställe,
+   `kuvos/oversattning.sql`, som körs om när svaret kommer utan att filerna läses igen. Alla rader läses in, inte arkivpolicyns urval:
+   kuvösens `weather_latest` härleds ur arkivet (klocka.sql) och behöver varje station.
+3. **Körplatsen enligt #424:** knappen `kuvos` (Actions) hämtar releasen, kontrollerar sha256 mot `kuvos/leverans.json`, kör migrationerna
+   och klockan, inläsningen, vakterna och värdevakten. Bevisad lokalt 2/10 på PostgreSQL 16 + PostGIS 3.
+4. **Fråga 1 till Micke skrivs om:** bekräfta MESAN-numreringen och förklara 3, 9 och −9.
+
+**Antal (inget utfall):** arkivet 5 391 599 rader och 754 stationer (23 utan läge, 104 671 rader, inte inlästa). Vakterna: #75 922 rader
+(41 stationer), radvakten 543 (78), karantänen 15 252 (29), den långsamma vakten 16 263 (86; 340 stationsdygn), utan yta 132 950 —
+**5 229 372 rader (97,0 %) får tala**. Värdevakten: fem fält rimliga, inget obesiktigat; sikten 20 000 flaggad som i driften.
+
+**Vad det öppnar och inte:** frysrisken, broarna och trenden kan spelas upp. **Efterhalkan (S1, S2) kan inte** — `regn_h` läser mängden.
+Förregistreringen (#424) står: ingen regel körd, ingen yta efter en tidpunkt läst, och översättningen valdes på källan. Tillägget är
+*före riktningsprovet*, inte *före filen* (#438).
+
+**Alternativ som valdes bort:** vänta på hela kodlistan (#438:s väg — Axel valde bort den: fyra av sex koder och 99,7 % av raderna har nu
+en källa, och kuvösens värde sjunker varje vecka före 1/12); ta sammanfattningens *3 = underkylt regn* (ingen källa, och den farligaste
+klassen får inte vila på en gissning); skriva 3 och 9 som en egen okänd sträng (snapshotens `fukt` gör varje okänd sträng blöt — 1 420
+falska fuktrader).

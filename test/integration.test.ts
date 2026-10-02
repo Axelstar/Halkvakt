@@ -951,3 +951,50 @@ test("kuvösens klocka: byggaren ser världen som den var vid T — inget ur fra
     await pool.end();
   }
 });
+
+// KUVÖSENS ÖVERSÄTTNING (kuvos/oversattning.sql, kort #232, DECISIONS #439). Varje fälla ger ett annat svar om en regel faller:
+// tidszonen (vinter +1, sommar +2 natten tiden hoppar), platshållarna, nederbördskoderna med källa och de utan, riktningen, en
+// station utan läge — och omkörningen, som måste skriva om raderna i stället för att dubblera dem.
+test("kuvösens översättning: lokaltid till UTC, platshållare till NULL, koderna 1/2/4/6 till driftens ord, 3/9/−9 till NULL", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const { RA_SCHEMA } = await import("../kuvos/inlasning.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  try {
+    for (const f of ["001_init.sql", "008_rain_sum.sql", "011_vind_sikt.sql"])
+      await pool.query(readFileSync(new URL("../sql/" + f, import.meta.url), "utf8"));
+    await pool.query(RA_SCHEMA);
+    await pool.query("DELETE FROM kuvos_ra.trv_obs WHERE measurepoint LIKE 'KUV_%'");
+    await pool.query("DELETE FROM kuvos_ra.stationer WHERE station_id LIKE 'KUV_%'");
+    await pool.query("DELETE FROM weather_observations WHERE station_id LIKE 'KUV_%'");
+    await pool.query("INSERT INTO kuvos_ra.stationer VALUES ('KUV_A', 13.0, 55.6)");
+    await pool.query(`INSERT INTO kuvos_ra.trv_obs (measurepoint, measuretime, tyta, tluft, daggp, lu_fu, ned_typ, ned_maengd, vimax, vimed, virik, vind30, siktdjup, fil) VALUES
+      ('KUV_A', '2024-11-15 12:00:03', -99.9, 2.0, 1.0, 90, 1, 0,   5, 2, 'SV ', 2, 20000, 't'),
+      ('KUV_A', '2025-03-30 03:00:03', -0.4,  1.2, -0.3, 97, 2, 0.4, 5, 2, 'N ',  2, -100,  't'),
+      ('KUV_A', '2025-01-10 06:00:03', -3.0, -4.0, -5.0, 95, 4, 1.0, 5, 2, 'NV',  2, 800,   't'),
+      ('KUV_A', '2025-01-10 06:30:03', -1.0,  0.5, -0.5, 99, 6, 1.0, 5, 2, 'O ',  2, 900,   't'),
+      ('KUV_A', '2025-01-10 07:00:03', -1.0,  0.5, -0.5, 99, 3, 0.1, 5, 2, '-9',  2, 900,   't'),
+      ('KUV_A', '2025-01-10 07:30:03', -1.0,  0.5, -0.5, 99, 9, 0,   5, 2, 'S ',  2, 900,   't'),
+      ('KUV_A', '2025-01-10 08:00:03', -1.0,  0.5, -0.5, 99, -9, -99.8, -99.9, -99.9, '-9', -99.9, 900, 't'),
+      ('KUV_UTAN_LAGE', '2025-01-10 06:00:03', -3.0, -4.0, -5.0, 95, 4, 1.0, 5, 2, 'NV', 2, 800, 't')`);
+    const sql = readFileSync(new URL("../kuvos/oversattning.sql", import.meta.url), "utf8");
+    await pool.query(sql);
+    await pool.query(sql);   // omkörningen skriver om, dubblerar inte
+    const r = (await pool.query(`SELECT station_id, to_char(sample_time AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI:SS') AS t,
+        surface_temp_c::float AS yta, precipitation AS p, rain, snow, rain_sum_mm, wind_speed_ms, wind_gust_ms, wind_dir_deg::float AS rikt,
+        visibility_m::float AS sikt FROM weather_observations WHERE station_id LIKE 'KUV_%' ORDER BY sample_time`)).rows;
+    assert.equal(r.length, 7, "sju rader för KUV_A, ingen för stationen utan läge, inga dubbletter efter omkörningen");
+    assert.deepEqual(r.map((x) => x.t), ["2024-11-15 11:00:03", "2025-01-10 05:00:03", "2025-01-10 05:30:03", "2025-01-10 06:00:03",
+      "2025-01-10 06:30:03", "2025-01-10 07:00:03", "2025-03-30 01:00:03"], "vintertid +1 h, sommartid +2 h efter hoppet 30/3");
+    assert.deepEqual(r.map((x) => [x.p, x.rain, x.snow]), [["no", false, false], ["snow", false, true], ["sleet", true, true],
+      [null, false, false], [null, false, false], [null, false, false], ["rain", true, false]], "1/2/4/6 enligt VädErs 2019; 3, 9 och −9 utan källa ⇒ NULL");
+    assert.deepEqual([r[0].yta, r[0].sikt, r[0].rikt, r[6].sikt, r[6].rikt, r[1].rikt, r[3].rikt],
+      [null, 20000, 225, null, 0, 315, null], "−99,9 och −100 blir NULL, taket 20 000 står kvar, streck till sektorns mitt, −9 till NULL");
+    assert.ok(r.every((x) => x.rain_sum_mm === null && x.wind_speed_ms === null && x.wind_gust_ms === null),
+      "mängden och vinden väntar på Trafikverket — NULL, inte en gissning");
+  } finally {
+    await pool.query("DELETE FROM weather_observations WHERE station_id LIKE 'KUV_%'");
+    await pool.query("DROP SCHEMA IF EXISTS kuvos_ra CASCADE");
+    await pool.end();
+  }
+});

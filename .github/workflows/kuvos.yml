@@ -1,0 +1,65 @@
+# Kuvösen (kort #232, PLAN-KUVOSEN steg 3, DECISIONS #439): vintern 2024/25 inläst i en slit-och-släng-PostGIS, aldrig i Supabase.
+# Hämtar Trafikverkets leverans ur den privata releasen, kontrollerar sha256 mot kuvos/leverans.json, kör migrationerna och klockan,
+# läser in (kuvos/inlasning.ts → kuvos/oversattning.sql), kör vakterna som antal och värdevakten. Läser inget utfall.
+# Knapp, inte cron. Körflödet (steg 5) byggs ovanpå samma steg.
+name: kuvos
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inlasning:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    services:
+      postgis:
+        image: postgis/postgis:16-3.4
+        env: { POSTGRES_PASSWORD: postgres }
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+      PGPASSWORD: postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Leveransen ur releasen, kontrollsummorna mot manifestet
+        shell: bash
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          mkdir -p leverans && gh release download kuvos-trv-2024-25 --dir leverans --pattern 'Halkvakt_*.csv.gz'
+          node -e '
+            const m = require("./kuvos/leverans.json"), c = require("crypto"), fs = require("fs");
+            let fel = 0;
+            for (const f of m.filer) {
+              const h = c.createHash("sha256").update(fs.readFileSync("leverans/" + f.packad)).digest("hex");
+              console.log(`${f.packad}: ${h === f.packad_sha256 ? "ok" : "FEL " + h}`); if (h !== f.packad_sha256) fel++;
+            }
+            process.exit(fel ? 1 : 0);'
+          curl -sSf -o static.json https://axelstar.github.io/halkvakt-karta/data/app/v1/static.json
+      # Varje migration för sig. De som kräver driftens tabeller (shadow_log m.fl. skapas av ingesten, inte av sql/) faller här
+      # och skrivs ut; nästa steg kontrollerar att det kuvösen behöver finns — en saknad del fäller jobbet.
+      - name: Migrationerna och klockan
+        shell: bash
+        run: |
+          psql -h localhost -U postgres -qc "CREATE EXTENSION IF NOT EXISTS postgis"
+          for f in sql/*.sql; do psql -h localhost -U postgres -q -v ON_ERROR_STOP=1 -f "$f" >/dev/null 2>err.txt || echo "föll (väntat om driftens tabell saknas): $f — $(tail -1 err.txt)"; done
+          psql -h localhost -U postgres -q -v ON_ERROR_STOP=1 -f kuvos/klocka.sql
+          psql -h localhost -U postgres -v ON_ERROR_STOP=1 -Atc "
+            SELECT 'weather_observations'::regclass, 'givarfel_dygn'::regclass, 'weather_obs_brott_idx'::regclass,
+                   'langsam_vakt(interval)'::regprocedure, 'kuvos.now()'::regprocedure"
+      - name: Inläsningen, vakterna och värdevakten
+        shell: bash
+        run: |
+          {
+            echo '```'
+            node --experimental-strip-types kuvos/inlasning.ts leverans static.json
+            psql -h localhost -U postgres -qc "ANALYZE weather_observations"
+            node --experimental-strip-types kuvos/vakterna.ts
+            node --experimental-strip-types scripts/vardevakten.ts 1000
+            echo '```'
+          } 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
