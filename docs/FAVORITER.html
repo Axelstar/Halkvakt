@@ -416,6 +416,47 @@
   <p>Rutten sparas ur en körd resa. Kortet <i>Efter resan</i> på Redo.-skärmen frågar om resan ska sparas, och föraren ger den ett namn eller väljer ett av förslagen. Föraren skriver aldrig in en adress, och ingen tjänst för ruttsökning på nätet får veta var föraren bor, arbetar eller har sitt sommarställe. En rutt tas bort med ett tryck.</p>
   <p><b>Förslag: ingen karta bakom den sparade linjen.</b> Kartbitar hämtas från en kartserver, som då får veta i vilken trakt rutten går. Linjen ritas i telefonen utan bakgrund. Ortsnamnen i rapporten kommer ur Trafikverkets egna texter i de gemensamma filerna och inte ur en adressökning.</p>
 
+  <h3>Det finns inte i dag</h3>
+  <p>Ingen av apparna kan spara en rutt. Under körningen håller appen bara den senaste och den förra positionen i minnet, för att räkna sträckan och låta motorn jämföra, och båda försvinner när resan slutar. Det appen sparar i telefonen är inställningarna, lägesfilen, facitsvaren och historiken för <i>Efter resan</i>: tid, slag, text och varningens id för högst 50 varningar, men inga koordinater. Läst i koden 2/10.</p>
+
+  <h3>Vad som krävs för att bygga det</h3>
+  <ol class="steg">
+    <li><div><b>Föraren väljer det själv.</b> En brytare, <i>Erbjud att spara resor</i>, av från början. Är den av samlas ingen väg in och ingen fil skrivs, och appen är precis som i dag.</div></li>
+    <li><div><b>Vägen samlas under resan.</b> Punkterna sparas löpande och glesas ut till ungefär en punkt per 50–100 meter. En pendling på 34 km blir några hundra punkter, några kilobyte.</div></li>
+    <li><div><b>Vägen hålls kvar till efter resan.</b> Frågan ställs på kortet <i>Efter resan</i>, ofta långt efter att bilen har stannat, och telefonen kan ha stängt appen under tiden. Den senaste resans väg måste därför ligga i en tillfällig fil tills föraren svarar. Filen raderas av sig själv när föraren säger nej, eller när kortet tystnar efter ett dygn.</div></li>
+    <li><div><b>Lagringen.</b> Sparade rutter ligger i en egen fil i telefonen som undantas från säkerhetskopior. På iPhone sätts flaggan som håller filen utanför iCloud-kopian. Android har redan säkerhetskopian avstängd för hela appen, men flytten vid byte av telefon måste stängas ute för filen med en egen regel.</div></li>
+    <li><div><b>Radering.</b> En rutt tas bort med ett tryck, alla rutter med ett, och allt försvinner när appen tas bort.</div></li>
+    <li><div><b>Prov.</b> Ett test som visar att filen är undantagen från säkerhetskopian, och ett som visar att inget anrop från appen bär något om rutterna.</div></li>
+    <li><div><b>Texterna.</b> Om-sidan, introduktionen, produktboken och integritetssidan säger att rutter kan sparas i telefonen, och hur de tas bort.</div></li>
+  </ol>
+  <p>Arbetet ingår i de 4–6 arbetsdagarna för fliken, rapporten och de sparade rutterna i avsnitt 7. Själva sparandet är ungefär 1–2 av dem.</p>
+
+  <h3>Vad det kostar i löftet</h3>
+  <p>Löftet i appen i dag är <i>Din position lämnar inte telefonen av sig själv</i>. Introduktionen säger <i>Vi samlar in: ingenting</i>, och integritetssidan att appen aldrig skickar position eller resor. De meningarna håller, eftersom en sparad rutt inte skickas någonstans. Google och Apple räknar bara det som lämnar telefonen som insamlat, så uppgifterna om integritet i butikerna ändras inte.</p>
+  <p>Det som offras är något starkare än löftet: att appen inte sparar någon position alls. I dag finns det inget i telefonen som visar vilka vägar föraren kör. Med en sparad rutt finns det. Vägen mellan hemmet och jobbet, eller till sommarstället, ligger i telefonen tills föraren tar bort den, och den som kommer åt en upplåst telefon kan se den. Om-sidans <i>ingen spårning</i> måste skrivas om, för en sparad rutt är ett sparat spår, även om det är förarens eget och bara finns hos föraren.</p>
+  <div class="par">
+    <div class="ruta">
+      <h3>Det här står kvar</h3>
+      <ul>
+        <li>Ingen position lämnar telefonen av sig själv.</li>
+        <li>Vi samlar in ingenting utöver betatestets facit.</li>
+        <li>Ingen server vet vilka rutter som finns, och inget konto behövs.</li>
+        <li>Uppgifterna om integritet i App Store och Google Play.</li>
+        <li>För den som inte slår på brytaren är allt som i dag.</li>
+      </ul>
+    </div>
+    <div class="ruta gul">
+      <h3>Det här ändras</h3>
+      <ul>
+        <li>Appen sparar körda vägar i telefonen, för den som har valt det.</li>
+        <li>Om-sidans <i>ingen spårning</i> skrivs om.</li>
+        <li>Introduktionen, produktboken och integritetssidan får en mening om sparade rutter.</li>
+        <li>Produktregeln i projektets regelbok får en rad om att körda vägar bara sparas på förarens begäran och aldrig följer med i en säkerhetskopia.</li>
+      </ul>
+    </div>
+  </div>
+  <p><b>En sak gäller redan i dag.</b> På iPhone ligger historiken för <i>Efter resan</i>, facitsvaren och missarna i appens inställningar, och de följer med i iCloud-säkerhetskopian. Varningarnas id, de närmaste stationerna och klockslagen säger ungefär var och när föraren körde. Inget av det skickas till Halkvakt, men det lämnar telefonen i förarens egen säkerhetskopia. Det är inte nytt med favoriterna, men samma regel bör gälla för det som för rutterna (kort #285).</p>
+
   <h2>7. Var informationen kommer ifrån, och vad som måste byggas</h2>
   <p>Allt finns i Trafikverkets öppna data, med samma nyckel som Halkvakt redan har och under samma öppna licens, utom SMHI:s varningar. Källorna är lästa i Trafikverkets datamodell och räknade i deras API 2/10 (DECISIONS #442). Vad som finns redan är läst i koden samma kväll.</p>
   <div class="tabell">
@@ -481,7 +522,7 @@
   <div class="skickas">
     <p><b>Det som lämnar telefonen: ingenting nytt.</b> Rutterna ligger i telefonen och ingen annanstans. Rapporten bygger på gemensamma filer för hela landet, samma för alla telefoner, och jämförs med rutten i telefonen. Ingen fråga skickas om just förarens rutt, notisen skapas i telefonen, och ingen server vet vilka rutter som finns. Löftet står kvar: ingen position lämnar telefonen av sig själv.</p>
   </div>
-  <p>Två saker måste sägas öppet. Appen sparar för första gången vägar som föraren har kört, på förarens begäran, så produktboken, introduktionen och integritetssidan ska säga det. Och rapporten får inte hämta något som är särskilt för rutten, till exempel bilder från kamerorna längs den, eftersom det berättar för Trafikverkets server ungefär vilken väg föraren tänker köra.</p>
+  <p>Två saker måste sägas öppet. Appen sparar för första gången vägar som föraren har kört, på förarens begäran, så produktboken, introduktionen och integritetssidan ska säga det. Vad det kräver och vad det kostar står i avsnitt 6. Och rapporten får inte hämta något som är särskilt för rutten, till exempel bilder från kamerorna längs den, eftersom det berättar för Trafikverkets server ungefär vilken väg föraren tänker köra.</p>
 
   <h2>9. Talen</h2>
   <p>Räknade 2/10 som information, inte som bygge (DECISIONS #442). Ingen gräns för notisen är satt.</p>
@@ -511,6 +552,7 @@
     <li><div><b>Vad som räknas som nytt, Axel och Bengt:</b> listan i avsnitt 5 är ett förslag.</div></li>
     <li><div><b>Färskheten, Bengt och Axel:</b> räcker tio minuters publicering för kollen före avresan, eller ska en tätare publicering prövas?</div></li>
     <li><div><b>Kartan, Axel:</b> ingen karta bakom den sparade linjen, ja eller nej?</div></li>
+    <li><div><b>Att spara körda vägar, Axel och Bengt:</b> är det värt att appen slutar vara en app som inte sparar någon position alls, med brytaren av från början som skydd (avsnitt 6)?</div></li>
     <li><div><b>Provet på Axels telefon:</b> kan Genvägar köra <i>Kolla mina rutter</i> 07:05 utan att föraren bekräftar?</div></li>
     <li><div><b>Innehållet i första versionen:</b> det som redan finns i rösten, plus vägarbeten, hastighetsnedsättningar, omledningar och färjor i hela landet, och köer och restider där de mäts. Prognosen först efter domen i mars.</div></li>
   </ol>

@@ -98,6 +98,10 @@ Två saker måste sägas öppet. Appen sparar för första gången vägar som f�
 introduktionen och integritetssidan ska säga det. Och rapporten får inte hämta något som är särskilt för rutten, till exempel bilder från
 kamerorna längs den, eftersom det berättar för Trafikverkets server ungefär vilken väg föraren tänker köra.
 
+Vad som krävs för att spara en rutt, och vad det kostar i löftet, står i Halkvaktens favoriter, avsnitt 6: en brytare av från
+början, en tillfällig fil till efter resan, en fil som undantas från säkerhetskopior, och att appen inte längre är en app som inte
+sparar någon position alls. Löftet att ingen position lämnar telefonen av sig själv står kvar.
+
 ## Talen (räknade 2/10, DECISIONS #442)
 
 *Bengts ord: "räkna på allt men bara som information inte något bygge alls". Inget är byggt.*
