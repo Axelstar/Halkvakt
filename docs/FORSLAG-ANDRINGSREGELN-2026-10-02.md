@@ -88,7 +88,7 @@ talet, skälet enligt L4, vilka data den gäller enligt L2 och svaret på fråga
 | **Höja A2 från 5 % till 7 %**, eftersom rå viktning med höjd låg på 5,1 % | **Nej.** L4: skälet är utfallet. Det är detta Axel kallade målstolpsflytt 12/9 |
 | **Egen spärr för bandet 0–7 km** (kort #270 d): 15 stationer finns, grinden kräver 20 | **Lättnad enligt L3** (flyttar "under spärren" mot "klarar"). Möjlig bara på olästa data (L2): kuvösens vinter eller årets vinter efter postens datum. Skälet enligt L4 är den öppna frågan i §6.1 |
 | **Byta kandidat från RÅ till RÅ+HÖJD** (kort #270 b) | "Ärliga rader" är en skärpning och fri. Kandidatbytet är en lättnad enligt L3 och blir en ny fråga: egen text, domfönster efter postens datum |
-| **Mäta flaggmarginalen** (kort #270 g) | Ingen lättnad, en ny mätning. Men "flagga vid ≤ 2 °C" valdes efter att 6 % var läst. FRYSKLASSNINGEN §2 har ett svep från 12/9 som är skrivet före alla tal och bör användas |
+| **Mäta flaggmarginalen** (kort #270 g) | Ingen lättnad, en ny mätning. Men "flagga vid ≤ 2 °C" valdes efter att 6 % var läst. FRYSKLASSNINGEN §2 har ett svep från 12/9 som är skrivet före alla tal och bör användas. ✅ Så beslutat 2/10 (DECISIONS #436) |
 
 Kalibreringens flytt till kuvösen (DECISIONS #425, #428) följde redan mönstret: beslutad innan något ur vintern 2024/25 var läst,
 och skälet lutade sig inte mot ett utfall.

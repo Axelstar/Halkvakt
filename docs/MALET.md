@@ -53,6 +53,7 @@ Plikterna som återkommer (nycklar, databasens storlek, Actions-kassan, Ubuntu-b
 | :-- | :-- | :-- |
 | inom 7 dygn efter första frostnatten | T-A steg 0, radarns bidrag mäts om, uppspelningen av S1:s nätter; frostgrindarna trycks om när ≥ 50 stationer haft ytan ≤ 0 °C | bedömningen S9, DECISIONS #352 |
 | 23/10 | höjdkorrektionen läses om på fyra veckors fullständigt underlag, beslut före november | kort #96, DECISIONS #357 |
+| 24/11 | premissmätningen av vägpunktsgrinden läses, en gång, med den finska bredvid som stöd; underlag för valet om grinden ska preciseras | kort #270, DECISIONS #434, #435 |
 | senast 1/11 | Pro-beslutet om databasen, villkor för domarna | bedömningen §4.2, Axel |
 | november | **betan till tolv testare:** slutet Play-test 14 dygn, efterhalkan som märkt beta om skuggloggen bär nätter och S3 är byggd; vattenplaningens radarspår döms nov–dec när underlaget räcker | bedömningen S5, mätningssidan §11 |
 | 15/12 | Skyltfondens besked | ansökan |

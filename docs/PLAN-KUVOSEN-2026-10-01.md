@@ -163,3 +163,5 @@ kalibrering**, i den ordningen; kalibreringen ändrar regel D i TROSKLAR-KOMBINA
 körplats. Steg 1–2 byggda. Förregistreringen står i DECISIONS #424. Oljefilmen ingår inte (struken #110; fel säsong; facit är olyckor).
 
 **Tillägg samma kväll (DECISIONS #426):** rösten prövas i två serier, de 20 skuggrutterna och hela väglagsnätet, redovisade var för sig. Bestämt innan filen har kommit. Gäller bara kuvösen; skuggan i drift är orörd.
+
+**Tillägg 2/10 (DECISIONS #436, kort #270 g):** prognoslagrets frysflagga mäts i riktningsprovet med tre marginaler (K2 = 0 · 0,5 · 1,0 °C vid klassgränsen +1,0 °C), för RÅ och RÅ+HÖJD, per band: farliga fel, falska flaggor, rätt klass och täckning. Måttstocken är K-A1–K-A5 i TROSKLAR-FRYSKLASSNINGEN, som läsning och inte som dom. Alla tre marginalerna redovisas och ingen väljs — en avvikelse från *inget svep*, bestämd innan filen har kommit. Byggs med körflödet i steg 5.
