@@ -55,7 +55,8 @@ Android bär samma färger, typsnitt och hemskärmsord men skiljer sig på punkt
 
 **Körläget:** *PÅ VAKT* i grönt, resan i siffror (*"42 min · 38 km"*), tre räknare
 (varningar, halka, vilt), en gul panel *Senast sagt* när rösten har talat (annars *"Tyst så länge"*),
-och listan *På din väg* med de tre närmaste. Längst ner en konturknapp *Avsluta vakten*. Håll fingret
+och listan *På din väg* med de tre närmaste — med vägdatans klockslag till höger om rubriken (*väglag 14:30*), som på Android;
+flyttar det sig under resan har appen hämtat ny vägdata (var 30:e minut, kort #258; raden tillbaka i (21), 2/10). Längst ner en konturknapp *Avsluta vakten*. Håll fingret
 på *PÅ VAKT* en halv sekund så visas ett demo-varningskort (*"Halt väglag om två kilometer."*) — så du
 kan se hur det ser ut utan att vänta på is.
 
