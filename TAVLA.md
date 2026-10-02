@@ -1922,6 +1922,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟡 GÖRA (pågår just nu)
 
+- [ ] 🔨 **#284 APPENS NYA SKINN — DESIGNÖVERLÄMNINGEN V2 (PÅGÅR, Claude, Axels order 2/10 18:46; DECISIONS #442, #443)**: varningskorten
+  A–L med lägesetikett, vägskylt, gränsskylt och rådruta; gammal data M–N; Redo efter tur; På vakt; inställningar i två nivåer; onboarding;
+  sex ikoner; logotypen med "!". iOS och Android lika, Androids "Uppfattat" och källrad bort. Rösten oförändrad.
+  Steg: (1) ✅ motorn bär `Alert.step` (TS grön lokalt, 235 tester; Kotlin/Swift i CI) · (2) varningskortet iOS · (3) varningskortet
+  Android · (4) övriga skärmar · (5) produktboken med nya skärmbilder. **Verify:** ci, ios-engine och android gröna på PR:en; ett
+  iOS-bygge i Axels Xcode visar kort F, G och H vid en allvarlig olycka (inget CI-flöde kompilerar iOS app-målet).
+
 
 ---
 

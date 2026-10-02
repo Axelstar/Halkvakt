@@ -1,6 +1,7 @@
 // Alert engine v0 — pure, deterministic, platform-free (PLAN §1, §2).
 // This module must never import: clocks, randomness, network, DB, Node APIs.
 // The Kotlin (and later Swift) port must pass the identical vectors in engine/vectors/.
+import type { AccidentStep } from "./texts.ts";
 
 export type HazardKind =
   | "accident"          // A3 — Trafikverket Situation/Deviation
@@ -81,6 +82,10 @@ export interface Alert {
   /** Great-circle metres to the hazard at the moment of speaking, rounded. */
   distanceM: number;
   text: string;
+  /** Serious accidents only: which of the two-step calls this is (DECISIONS #28). Absent for
+   *  every other alert, so the log shape of all other vectors is unchanged. The warning card
+   *  shows it as a stage chip (design handoff 2/10, DECISIONS #442). */
+  step?: AccidentStep;
 }
 
 export interface EngineConfig {

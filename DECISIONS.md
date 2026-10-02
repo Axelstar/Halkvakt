@@ -7115,3 +7115,34 @@ efter den första körningen av det skälet** och skriven i skriptet innan den k
 Andelen stationer med frysrisk vid kollen: november 9,4 %, december 10,7 %, januari 22,7 %, februari 10,5 %, mars 6,2 %. **Läsning, inte
 dom:** med bara frysrisken skulle en pendlare med två eller tre stationer längs vägen få ungefär en och en halv notis i veckan, i norr nära
 tre; bara det nya halverar det inte. Väglaget, olyckorna och vägarbetena kommer ovanpå. Ingen gräns är satt.
+## #443 (2/10 2026) Motorn bär olycksläget ut: `Alert.step` (early · reminder · late) för allvarliga olyckor — kort #284
+
+**Underlag (Axel 2/10 18:46: *"Okay, lets start"*, på designöverlämningen v2).** Det nya varningskortet visar en lägesetikett för
+allvarliga olyckor — ALLVARLIG · TIDIGT, PÅMINNELSE, ALLVARLIG · SENT — och rubriken "Sakta ner" i påminnelsen. Läget avgörs i motorn
+(#28: `<id>#early` / `<id>#near`, och om det tidiga ropet hörts), men `Alert` bar bara kind, avstånd och text.
+
+**Beslut:** `Alert` får ett valfritt fält `step` i alla tre motorerna (TS, Kotlin, Swift), satt bara för allvarliga olyckor. Övriga
+varningar är oförändrade, så logformen för 33 av 37 vektorer står kvar. De fyra vektorerna med allvarliga olyckor (v15, v16, v25, v26)
+**får** fältet i sina förväntade loggar — ingen rad tas bort, inget tal ändras; Kotlins och Swifts vektortester jämför nu också `step`.
+Skuggmotorn buntad om.
+
+**Alternativ som valdes bort:** att låta appen härleda läget själv (allvarlighet + avstånd + om ett tidigare rop hörts) — det är motorns
+logik i en fjärde kopia; att läsa läget ur rösttexten — texten är copy, inte kontrakt.
+
+## #444 (2/10 2026) Appens nya skinn: designöverlämningen v2 — och logotypen behåller "!" (kort #284)
+
+**Underlag.** Designöverlämningen *design_handoff_halkvakt_app 2* (2/10): onboarding, Redo (och Redo efter tur), På vakt, varningskorten
+A–L, gammal data M–N, inställningar i två nivåer, sex ikoner. Granskad mot motorn och appen 2/10; sex fynd rättade av design i v2,
+Genvägar-stegen rättade av Claude på Axels order 18:45 ("Kör direkt", åtgärden "Starta vakten", ett tredje spår via fokus Kör).
+Designunderlaget med alla repliker: https://claude.ai/code/artifact/99b270e0-4940-4bc0-817e-45df09b88d1c
+
+**Beslut (Axel):**
+1. **Logotypen är triangeln med utropstecknet urstansat** (2/10 18:26: *"we have decided to use the ! in the logo"*). Ersätter "Mätplatsens"
+   fyllda triangel utan "!" från natten 2/10, som aldrig loggades här. SVG: `assets/halkvakt-mark.svg` i överlämningen.
+2. **Överlämningen v2 är appens design på båda plattformarna** — samma kort, samma rubriker (Olycka, Halka, Frysrisk, Vilt, Fartkamera;
+   Allvarlig olycka; Sakta ner). Androids "Uppfattat"-knapp och källrad försvinner: kortet går bort själv efter 8 s.
+3. **Rösten ändras inte.** Kortets avstånd följer rösten (under 1 km i hela hundratal, annars hela km), står still i 8 s, och halka,
+   vilt och väderstation får ord i stället för tal — kortet hittar aldrig på ett tal.
+
+**Alternativ som valdes bort:** att bara byta färg och typsnitt på dagens kort (varianterna för olyckor och bro bär verklig information
+till föraren); ett gult kort för gammal data (gult betyder en fara framför dig).

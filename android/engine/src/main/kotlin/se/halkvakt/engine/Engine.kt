@@ -93,6 +93,7 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
             t = fix.t, hazardId = win.hazard.id, kind = win.kind,
             distanceM = Math.round(win.distM),
             text = Texts.alertText(win.kind, win.distM, ph, win.step),
+            step = win.step,
         )
     }
 
