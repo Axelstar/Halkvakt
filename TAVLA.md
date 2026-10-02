@@ -1922,12 +1922,20 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟡 GÖRA (pågår just nu)
 
-- [ ] 🔨 **#284 APPENS NYA SKINN — DESIGNÖVERLÄMNINGEN V2 (PÅGÅR, Claude, Axels order 2/10 18:46; DECISIONS #442, #443)**: varningskorten
-  A–L med lägesetikett, vägskylt, gränsskylt och rådruta; gammal data M–N; Redo efter tur; På vakt; inställningar i två nivåer; onboarding;
-  sex ikoner; logotypen med "!". iOS och Android lika, Androids "Uppfattat" och källrad bort. Rösten oförändrad.
-  Steg: (1) ✅ motorn bär `Alert.step` (TS grön lokalt, 235 tester; Kotlin/Swift i CI) · (2) varningskortet iOS · (3) varningskortet
-  Android · (4) övriga skärmar · (5) produktboken med nya skärmbilder. **Verify:** ci, ios-engine och android gröna på PR:en; ett
-  iOS-bygge i Axels Xcode visar kort F, G och H vid en allvarlig olycka (inget CI-flöde kompilerar iOS app-målet).
+- [ ] 🔨 **#284 APPENS NYA SKINN — DESIGNÖVERLÄMNINGEN V2 (BYGGT, väntar på iOS-bygge — Claude, Axels order 2/10 18:46; DECISIONS #442, #443, PR #698)**:
+  varningskorten A–L med lägesetikett, vägskylt, gränsskylt och rådruta; gammal data M–N; Redo efter tur; På vakt; inställningar i
+  två nivåer; introduktionen (iOS); sex ikoner; logotypen med "!"; 3D-socklarna renderade ur designens CSS. iOS och Android lika,
+  Androids "Uppfattat" och källrad borta. Rösten oförändrad.
+  ✅ (1) motorn bär `Alert.step` — TS 235 tester, `ios-engine` och `android` gröna på grenen (workflow_dispatch) · ✅ (2) kortets innehåll
+  i `WarningCard` (Swift + Kotlin) med samma tolv fall i båda testsviterna, gröna · ✅ (3) Android: alla skärmar byggda, `android`
+  37044258124 grön, fotostudion visar Redo, Inställningar och fyra undersidor (i produktboken) · ✅ (4) iOS: alla skärmar skrivna och
+  granskade av en fristående läsning (inga kompileringsfel funna; fyndet att körläget inte öppnades från Inställningar-fliken rättat) ·
+  ✅ (5) produktboken och `docs/APPEN.html` omskrivna.
+  **Kvar:** (a) **Axel bygger iOS i Xcode** — inget CI-flöde kompilerar app-målet; kontrollera kort F, G, H (allvarlig olycka) och
+  Redo efter tur, ta iOS-skärmbilderna till produktboken · (b) artefakten *Halkvaktens app* republiceras ur `docs/APPEN.html` från
+  ägarens konto (Bengts; den här sessionen når den inte) — STOMREGELN · (c) Androids introduktion i fyra sidor är inte byggd (Android
+  har trappan i MainActivity; designen förutsätter iOS dialoger) · (d) Kort #219/#280: byggnumret höjs i samma commit som sista
+  ändringen före arkivering. **Verify:** ett iOS-bygge visar kort F/G/H vid en allvarlig olycka och kvittot på Redo efter en tur.
 
 
 ---
