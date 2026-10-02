@@ -692,7 +692,7 @@ Hans invändning avslöjade dessutom ett tankefel i kartans eget §7.5 — se r�
 | Om tröskelregeln ska skrivas om till Axels lydelse | **avgjort 16/9** (#220), tätad |
 | Om E byggs före vintern | ✅ **byggd 24/9** (#341) |
 | Om försprånget kläms av appens reglage | **avgjort 26/9** (#419): nej — motorns 3 000 m; reglaget tar bara grundvarningen |
-| Provet av helheten (§7.3: *varje grind dömer sin del ensam*) | **kuvösen** (kort #232): klockan och inventeringen byggda 1/10, Trafikverkets vinterdata 2024/25 vecka 41, riktningsprovet vecka 42 (#424); rösten i två serier — de 20 skuggrutterna och hela väglagsnätet (#426) |
+| Provet av helheten (§7.3: *varje grind dömer sin del ensam*) | **kuvösen** (kort #232): klockan och inventeringen byggda 1/10, Trafikverkets vinterdata 2024/25 mottagen 2/10 (5,5 miljoner rader, 777 stationer, lokaltid mätt; nederbörden väntar på kodlistan, #438), riktningsprovet vecka 42 (#424); rösten i två serier — de 20 skuggrutterna och hela väglagsnätet (#426) |
 | När kombinationen kalibreras | **ändrat 1/10** (#425): i kuvösen på vintern 2024/25, inte 1/2 2027 — årets vinter blir bara domdata |
 | Om vinterns röstleverans begränsas till Axels "en sak" | **öppet** — jag rekommenderar ja |
 
@@ -720,3 +720,4 @@ ingen läser en överspelad version någon annanstans.
 | 1/10 | **Kuvösen in i läge-raderna** — ingen innehållsändring: §13.6 provet av helheten och kalibreringens tidpunkt. §7.3:s brist (ingen grind för kombinationen) står kvar som den skrevs; kuvösen är svaret på den | DECISIONS #424, #425 |
 | 1/10 | **Läge-raden för kuvösen:** rösten prövas i två serier (de 20 skuggrutterna och hela väglagsnätet) — ingen innehållsändring | DECISIONS #426 |
 | 2/10 | **Läge-raderna efter Bengts val på kort #270** — ingen innehållsändring: L4-raden och segmentprognosens fog bär valen a, f och g | DECISIONS #435, #436, #437 |
+| 2/10 | **Läge-raden för kuvösen:** Trafikverkets leverans mottagen och besiktigad — ingen innehållsändring | DECISIONS #438 |

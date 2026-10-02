@@ -1,0 +1,63 @@
+{
+ "kalla": "Trafikverket, VViS Förvaltning (leverans på projektets begäran, kort #232)",
+ "mottagen": "2026-10-02T16:05+02:00",
+ "release": "kuvos-trv-2024-25",
+ "period": [
+  "2024-11-01",
+  "2025-03-31"
+ ],
+ "tidszon": "Europe/Stockholm (mätt, DECISIONS #438)",
+ "format": {
+  "avgransare": ";",
+  "decimal": ",",
+  "bom": true,
+  "sidfot": "SSMS: (N rows affected) + Completion time"
+ },
+ "filer": [
+  {
+   "fil": "Halkvakt_2411.csv",
+   "bytes": 78556169,
+   "sha256": "e40c208cb634369d979beed3689a02abe165cb955eabade52bc7a96ab342ef34",
+   "radslut": 1091425,
+   "packad": "Halkvakt_2411.csv.gz",
+   "packad_bytes": 16713483,
+   "packad_sha256": "a81d346582b1ca13fba2146735728622a0ff1fc94ebf6deb338febb14e6b5229"
+  },
+  {
+   "fil": "Halkvakt_2412.csv",
+   "bytes": 81162776,
+   "sha256": "6e8e2271929f518a59b6b172a8474f2769a239dbc88135b95172c8045a42d6d4",
+   "radslut": 1123237,
+   "packad": "Halkvakt_2412.csv.gz",
+   "packad_bytes": 17537976,
+   "packad_sha256": "0255154ab2724bedd17617d2498129268cc5473ffe583b894e35ba1397a055e6"
+  },
+  {
+   "fil": "Halkvakt_2501.csv",
+   "bytes": 81935043,
+   "sha256": "61accaf0d06b88621fbcf920bdb64f69f44084a30a94d9ef597890f1461c4032",
+   "radslut": 1128080,
+   "packad": "Halkvakt_2501.csv.gz",
+   "packad_bytes": 17844766,
+   "packad_sha256": "fb8ea557f761295d868473b8da677e556510ebbe14945e30629c1bb8feee9e3d"
+  },
+  {
+   "fil": "Halkvakt_2502.csv",
+   "bytes": 74266129,
+   "sha256": "4ab3e1e957b9ad6c2a52d87fa21fea8b19509eb3bfac8f68938c575a49a6f007",
+   "radslut": 1022261,
+   "packad": "Halkvakt_2502.csv.gz",
+   "packad_bytes": 15827476,
+   "packad_sha256": "c4113bfb69a6ed3e24f5a675a0656c4e91bf093b54d9ab6cf21fcfd24f2bb24d"
+  },
+  {
+   "fil": "Halkvakt_2503.csv",
+   "bytes": 81364197,
+   "sha256": "54917286122cfb3d5d06fde3451eec1d7fa248c3010b5255a9e7e3ec489f95d7",
+   "radslut": 1131297,
+   "packad": "Halkvakt_2503.csv.gz",
+   "packad_bytes": 17884263,
+   "packad_sha256": "828bbfad514472234c4920f33d047bd4e75182f93f5fecad8cf3e64c3dd49bb7"
+  }
+ ]
+}
