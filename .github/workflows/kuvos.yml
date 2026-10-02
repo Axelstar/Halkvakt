@@ -5,6 +5,10 @@
 name: kuvos
 on:
   workflow_dispatch:
+    inputs:
+      matning:
+        description: "Läsande mätning efter vakterna, en fil under scripts/matningar/ (tomt = ingen). Förregistreras i DECISIONS före körningen."
+        default: ""
 permissions:
   contents: read
 jobs:
@@ -63,3 +67,12 @@ jobs:
             node --experimental-strip-types scripts/vardevakten.ts 1000
             echo '```'
           } 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+      # En mätning på samma inlästa vinter (snöflingan 2/10, DECISIONS #440). Bara filer under scripts/matningar/; den förregistreras
+      # i DECISIONS innan knappen trycks, och den läser inga utfall.
+      - name: Mätningen
+        if: ${{ inputs.matning != '' }}
+        shell: bash
+        env: { MATNING: "${{ inputs.matning }}" }
+        run: |
+          [[ "$MATNING" =~ ^scripts/matningar/[A-Za-z0-9._-]+\.ts$ && -f "$MATNING" ]] || { echo "okänd mätning: $MATNING"; exit 1; }
+          { echo '```'; node --experimental-strip-types "$MATNING"; echo '```'; } 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"

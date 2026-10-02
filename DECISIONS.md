@@ -6994,3 +6994,26 @@ Förregistreringen (#424) står: ingen regel körd, ingen yta efter en tidpunkt 
 en källa, och kuvösens värde sjunker varje vecka före 1/12); ta sammanfattningens *3 = underkylt regn* (ingen källa, och den farligaste
 klassen får inte vila på en gissning); skriva 3 och 9 som en egen okänd sträng (snapshotens `fukt` gör varje okänd sträng blöt — 1 420
 falska fuktrader).
+
+## #440 (2/10 2026) Snöflingan mäts på kuvösens vinter — förregistrerad innan körningen (kort #233)
+
+**Beställning (Bengt 2/10: *"är snöflingan något att satsa på. gör en körning och se hur det skulle falla ut"*).** Kort #233 del (2)
+mättes 21/9 på september (#297) och gav för lite: 7 äkta episoder. Den körs nu på kuvösens vinter 2024/25 (#438, #439), som har kyla.
+
+**Frågan, ordagrant som 21/9:** hur stor andel av stationsregelns fyrningar (yta ≤ +1 °C och fukt) sker när luften ligger över +3 °C
+respektive +4 °C, alltså när bilens egen snöflinga är släckt och bara stationen ser faran?
+
+**Skrivet innan körningen:**
+- **Skriptet:** `scripts/matningar/snoflingan-kuvos-2026-10-02.ts`, i knappen `kuvos` (ny inmatning `matning`) efter inläsningen och vakterna.
+- **Huvudtalet (B):** episoder med alla fyra vakterna som snapshoten bär (#75, radvakten, karantänen, den långsamma vakten); andelen
+  med luft > +3 °C och > +4 °C. **A** räknas som 21/9, bara med #75, så att talen kan jämföras. Därtill stationstimmar, per månad, per
+  breddgrad, och sammanhanget utan fuktkravet (frost med yta ≤ 0 °C) — som 21/9:s sats 5.
+- **Fukten** ur nederbördskoderna 2/4/6 (#439); 3, 9 och −9 räknas som torrt. Broregeln är inte med. Sessionen i UTC.
+- **Läsningen, bestämd före talen** (ingen grind, inget som ändrar en tröskel eller appen): under 5 % — bilens snöflinga täcker nästan
+  allt stationsregeln ser, och snöflingan är inget säljargument; 5–20 % — ett tillägg i en nisch (klara nätter med kall yta och mild
+  luft), värt att nämna men inte att bygga produkten på; över 20 % — ett argument som bär. Med +4 °C som jämförelse bredvid.
+- **Vad den inte säger:** om varningarna var rätt. Det är facit, och det läses inte här (blindningen och riktningsprovet). Den säger
+  inte heller vad en viss bil visar: snöflingan mäts av bilens egen givare nära vägen, VViS-luften på cirka 2 m.
+
+**Kuvösens förregistrering (#424) berörs inte:** mätningen räknar fyrningar, inte utfall, och den väljer inget värde. Filen är öppnad
+sedan 2/10 16:04; inget utfall är läst.
