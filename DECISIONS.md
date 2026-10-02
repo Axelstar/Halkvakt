@@ -7039,3 +7039,31 @@ mer träffsäker om var och när. Snöflingan lyser vid omkring +3 °C överallt
 fall bilen missar. Den andra frågan är facit och riktningsprovets, och den förregistrerades inte här. Det enda sakförhållandet som
 pekar vidare: sammanhangets 6,7 % — kall yta under mild luft finns, men utan nederbörd, och det är rimfrostens kort (#46), inte
 stationsregelns.
+## #441 (2/10 2026) Kuvösen steg 4: SMHI för vintern 2024/25 hämtat en gång — radarn finns bara som tif, och tif ligger ≈ 3,4 dBZ över h5 (kort #232)
+
+**Underlag (Axel 2/10 17:51: *"Okej dra igång steg 4"*).** PLAN-KUVOSEN steg 4: radar, molnmängd, lufttemperatur och nederbörd ur SMHI:s
+öppna arkiv, hämtade en gång och lagda bredvid; *Verify:* täckningen per månad. Fullständigt: `docs/KUVOS-LEVERANSEN-2026-10-02.md` §8.
+
+**Beslut:**
+1. **Metobs:** parametrarna 1 (lufttemperatur), 7 (nederbördsmängd 1 h), 13 (rådande väder) och 16 (molnmängd) ur `corrected-archive`,
+   bara vinterns rader, värdet och kvalitetskoden som SMHI skrev dem (`kuvos/smhi-vinter.ts`) → `kuvos_ra.smhi_obs`. Täckning: 243 · 181 ·
+   162 · 108 stationer, alla fem månaderna; molnet når 680 av 754 VViS-stationer inom 50 km (driftens #114: 91 %).
+2. **Radarn ur tif**, eftersom arkivet saknar h5 (404, mätt 2/10 — kontrollen 21/9 räknade kompositer, inte format). Egen tif-läsare
+   (`kuvos/tif.ts`, lika Pillow pixel för pixel, vakter på varje formatantagande) och SMHI:s dokumenterade kodning (0,4 · p − 30).
+   **Samplingen är driftens:** Z–R, provpunkterna och händelsegränsen flyttade oförändrade från `ingest/radar.ts` till
+   `ingest/radar-karna.ts`, som båda läser. Halvtimmar (kuvösens takt), 7 240 av 7 252 kompositer, 646 278 segmentrader → `radar_precip`.
+3. **Ingen korrektion av tif mot h5.** Mätt samma tidpunkt i båda: tif 8–10 enheter (≈ 3,4 dBZ, ≈ 1,6 × regn) över h5 i varje band, fler
+   svaga eko. Att dra av en förskjutning vore att välja ett tal efter en jämförelse; kuvösens radar redovisas som tif-produkten och
+   skillnaden står i §8. Frågan till Bengt i bedömningen §4.2.
+4. **Förvaringen:** releasen `kuvos-smhi-2024-25`, skapad av knappen `kuvos-smhi` (den här sessionen får inte skapa releaser);
+   `kuvos/smhi-leverans.json` bär summorna och knappen `kuvos` kontrollerar dem.
+
+**Vad steg 5 behöver:** `moln.ts` och grind NT hämtar vid körning ur `latest-months` och måste i kuvösen läsa `kuvos_ra.smhi_obs`.
+Snapshoten läser `radar_precip` genom klockans vy och behöver inget. SMHI:s varningar har inget arkiv (21/9) — SMHI-förstärkaren och
+N_varning körs inte, och det sägs.
+
+**Inget utfall är läst:** hämtning, täckning och formatjämförelse; ingen regel körd.
+
+**Alternativ som valdes bort:** driftens timtakt för radarn (kuvösen stegar i halvtimmar, och fönstret 70 min täcker båda);
+korrigera tif med −3,4 dBZ (se 3); bara de 40 närmaste molnstationerna per körning, som `moln.ts` gör (en gång för hela vintern är billigare
+än per körning); en GeoTIFF-modul från npm (åtta beroenden för ett fast format med tre taggar som spelar roll).

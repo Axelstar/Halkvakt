@@ -19,11 +19,10 @@
 import { readFileSync } from "node:fs";
 import h5wasm from "h5wasm";
 import proj4 from "proj4";
+import { MIN_RATE_MMH, rateFromRaw, segmentRader } from "./radar-karna.ts";
 
 const UA = "Halkvakt-radarpilot/0.1 (+https://github.com/Axelstar/Halkvakt)";
 const API = "https://opendata-download-radar.smhi.se/api/version/latest/area/sweden/product/comp";
-const SAMPLE_KM = 2;        // samma steg som ankaranalysen
-const MIN_RATE_MMH = 0.1;   // händelsegräns: under detta skrivs inget
 const PROV = process.argv.includes("--prov");
 
 // ── 1. Senaste filen ur dagens (eller gårdagens, runt midnatt) listning.
@@ -102,37 +101,10 @@ function rateAt(lon: number, lat: number): number | null {
   const [x, y] = toGrid.forward([lon, lat]);
   const c = Math.floor((x - xll) / xscale), r = Math.floor((yur - y) / yscale); // rad 0 = övre kanten
   if (c < 0 || c >= cols || r < 0 || r >= rows) return null; // utanför kompositen
-  const raw = data[r * cols + c];
-  if (raw === nodata) return null;       // utanför radartäckning
-  if (raw === undetect) return 0;        // täckt, inget eko
-  const dbz = raw * gain + offset;
-  return Math.pow(Math.pow(10, dbz / 10) / 200, 1 / 1.6); // Marshall–Palmer, mm/h
+  return rateFromRaw(data[r * cols + c], { gain, offset, nodata, undetect }); // Marshall–Palmer, mm/h (radar-karna.ts)
 }
 
-// ── 3. Skelettet ur databasen, samplat var 2:a km.
-function haversineKm(a: [number, number], b: [number, number]): number {
-  const R = 6371, dLa = (b[1] - a[1]) * Math.PI / 180, dLo = (b[0] - a[0]) * Math.PI / 180;
-  const s = Math.sin(dLa / 2) ** 2 + Math.cos(a[1] * Math.PI / 180) * Math.cos(b[1] * Math.PI / 180) * Math.sin(dLo / 2) ** 2;
-  return 2 * R * Math.asin(Math.sqrt(s));
-}
-function sampleLine(line: [number, number][], stepKm: number): [number, number][] {
-  const out: [number, number][] = [];
-  let carry = 0;
-  for (let i = 0; i < line.length - 1; i++) {
-    const d = haversineKm(line[i], line[i + 1]);
-    if (d === 0) continue;
-    let t = carry;
-    while (t < d) {
-      const f = t / d;
-      out.push([line[i][0] + (line[i + 1][0] - line[i][0]) * f, line[i][1] + (line[i + 1][1] - line[i][1]) * f]);
-      t += stepKm;
-    }
-    carry = t - d;
-  }
-  if (line.length) out.push(line[line.length - 1]);
-  return out;
-}
-
+// ── 3. Skelettet ur databasen, samplat var 2:a km (radar-karna.ts).
 const url = process.env.DATABASE_URL;
 if (!url && !PROV) { console.error("DATABASE_URL not set"); process.exit(1); }
 let segments: { id: string; line: [number, number][] }[] = [];
@@ -142,21 +114,7 @@ if (url) {
   const res = await pool.query(`SELECT segment_id, ST_AsGeoJSON(geom)::json AS g FROM road_conditions WHERE NOT deleted AND geom IS NOT NULL`);
   segments = res.rows.map((r: any) => ({ id: r.segment_id, line: r.g.coordinates }));
 
-  let events = 0, sampled = 0, outside = 0, maxRate = 0;
-  const ids: string[] = [], maxes: number[] = [], means: number[] = [];
-  for (const seg of segments) {
-    let mx = 0, sum = 0, n = 0;
-    for (const p of sampleLine(seg.line, SAMPLE_KM)) {
-      const rr = rateAt(p[0], p[1]);
-      sampled++;
-      if (rr === null) { outside++; continue; }
-      mx = Math.max(mx, rr); sum += rr; n++;
-    }
-    if (n > 0 && mx >= MIN_RATE_MMH) {
-      events++; maxRate = Math.max(maxRate, mx);
-      ids.push(seg.id); maxes.push(Math.round(mx * 100) / 100); means.push(Math.round((sum / n) * 100) / 100);
-    }
-  }
+  const { ids, maxes, means, events, sampled, outside, maxRate } = segmentRader(segments, rateAt);
   if (!PROV && ids.length) {
     await pool.query(readMigration());
     await pool.query(

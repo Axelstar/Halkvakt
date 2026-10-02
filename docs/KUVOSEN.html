@@ -126,7 +126,7 @@
         <tr><td><b>Inventeringen</b></td><td>Läser en okänd CSV utan att tolka den: rader, kolumner, tomma fält, spann och vanligaste värden.</td><td><span class="dom klar">byggd</span></td></tr>
         <tr><td><b>Översättningen och inläsningen</b></td><td>Vintern är inläst 2/10 kväll: 5 391 599 rader från 754 stationer. Nederbördstypens koder 1, 2, 4 och 6 (uppehåll, regn, snö, snöblandat) står i Trafikverkets ersättningsmodell VädErs 2019 och är översatta; koderna 3 och 9 står inte där och väntar, liksom mängden och vindstyrkan. Frysrisken och trenden kan spelas upp, efterhalkan först när mängden är förklarad. 23 stationer saknar läge.</td><td><span class="dom klar">inläst</span></td></tr>
         <tr><td><b>Tidszonen</b></td><td>Mätt 2/10: svensk lokaltid. Timmen 02 saknas natten till 30/3 2025, och lufttemperaturen stämmer med SMHI vid noll förskjutning på tio av tio stationer.</td><td><span class="dom klar">mätt</span></td></tr>
-        <tr><td><b>SMHI för samma vinter</b></td><td>Radar, molnmängd, lufttemperatur och nederbörd finns i SMHI:s öppna arkiv. Hämtas en gång.</td><td><span class="dom kvar">kvar</span></td></tr>
+        <tr><td><b>SMHI för samma vinter</b></td><td>Hämtat 2/10 kväll: molnmängd, lufttemperatur, nederbörd och rådande väder från 108–243 SMHI-stationer, och radarn för 7 240 av 7 252 halvtimmar, samplad mot väglagssegmenten på samma sätt som i driften. Arkivet har bara radarns tif-format, och det ligger ungefär 3,4 dBZ över driftens format. Ingen korrektion är gjord, och skillnaden redovisas.</td><td><span class="dom klar">hämtad</span></td></tr>
         <tr><td><b>Körflödet</b></td><td>Hela vintern i halvtimmessteg, i GitHub Actions. Rösten körs i två serier. Beräknad kostnad 2,4–4,8 USD av månadens 35 för de 20 rutterna; den nationella serien är inte mätt.</td><td><span class="dom kvar">kvar</span></td></tr>
         <tr><td><b>Första mätningen på vintern</b></td><td>Snöflingan 2/10: i 97 av 100 fall då stationsregeln slår till lyser redan bilens egen snöflinga. Förregistrerad före körningen, läser inga utfall.</td><td><span class="dom klar">körd</span></td></tr>
         <tr><td><b>Riktningsprovet</b></td><td>Första körningen, med låsta värden. Tidigast vecka 42.</td><td><span class="dom kvar">kvar</span></td></tr>
@@ -207,7 +207,7 @@
   <h2>6. Vad som kommer härnäst</h2>
   <ol class="tid">
     <li><b>2/10</b><div>Filen kom, en vecka tidigare än väntat. Den är inventerad, packad i en privat release och tidszonen är mätt. Frågorna om koderna går till Trafikverket.</div></li>
-    <li><b>2/10 kväll</b><div>Axel hittade fyra av nederbördskoderna i Trafikverkets ersättningsmodell. Vintern är inläst i kuvösens databas och vakterna är körda som antal. Inget utfall är läst.</div></li>
+    <li><b>2/10 kväll</b><div>Axel hittade fyra av nederbördskoderna i Trafikverkets ersättningsmodell. Vintern är inläst i kuvösens databas och vakterna är körda som antal. SMHI:s stationer och radar för samma vinter är hämtade. Inget utfall är läst.</div></li>
     <li><b>När koderna är kända</b><div>Översättningen och inläsningen, vakterna körda på vintern, värdevakten på varje fält.</div></li>
     <li><b>Vecka 41–42</b><div>SMHI:s radar och moln hämtas för samma vinter. Körflödet byggs.</div></li>
     <li><b>Vecka 42</b><div>Riktningsprovet körs, och tabellen förs in i bedömningen och på mätningssidan.</div></li>
