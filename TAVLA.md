@@ -512,6 +512,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↦ **Sorterat 22/9 (kort #224):** nästa steg är ditt val av vad som ska utredas (§4.2); del (2) körs om vid frost.
   ↪ **Hit 22/9 (DECISIONS #309):** idén ur #16 *Blixthalke-prognos* (MET Nowcast). I *före resan*-vyn får den visas — regel T6 förbjuder en prognos att utlösa, inte att synas. Utreds med (1).
   ↩︎ **28/9: stängdes och öppnades igen inom en timme på Bengts order** (*"nej det blev fel, öppna kort 233 igen"*) — kortet är oförändrat, stäng det inte utan ett nytt besked.
+  ✅ **(2) KÖRD PÅ KUVÖSENS VINTER 2/10 (Bengt: *"är snöflingan något att satsa på. gör en körning"*, DECISIONS #440, förregistrerad 17:46, körning 37029386466 17:52):** av 46 858 episoder då stationsregeln slår till (734 stationer, 152 nätter, alla fyra vakterna) hade **3,0 % luft över +3 °C och 1,2 % över +4 °C** — under förregistreringens 5 %. Bilens snöflinga lyser i 97 av 100 fall; ingen månad och inget breddgradsband når 5 %. **Inget säljargument.** Frågan om Halkvakt är *träffsäkrare* än snöflingan är en annan och ligger i riktningsprovet. Kortet står öppet för (1) och (3).
 
 - [ ] 🔋 **#218 BATTERIBUDGETEN HAR ALDRIG MÄTTS, OCH iOS KÖR FULL GAS** (genomlysningen 20/9). `< 8 %/h` står som krav på tre
   ställen med **noll motprov**. iOS kör `BestForNavigation` med avstängd automatisk paus och saknar motsvarighet till Androids
