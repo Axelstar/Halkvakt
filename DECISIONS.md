@@ -7017,3 +7017,25 @@ respektive +4 °C, alltså när bilens egen snöflinga är släckt och bara stat
 
 **Kuvösens förregistrering (#424) berörs inte:** mätningen räknar fyrningar, inte utfall, och den väljer inget värde. Filen är öppnad
 sedan 2/10 16:04; inget utfall är läst.
+
+**Utfall (körning 37029386466 på grenen `snoflingan-kuvos`, 5fda573, kl. 17:52 — efter att posten ovan checkades in 17:46):**
+
+| | Episoder | Stationer | Luft > +3 °C | Luft > +4 °C |
+| :-- | --: | --: | --: | --: |
+| **B. Alla fyra vakterna (huvudtalet)** | **46 858** | 734 | **1 427 (3,0 %)** | **539 (1,2 %)** |
+| A. Bara #75, som 21/9 | 47 127 | 734 | 1 470 (3,1 %) | 563 (1,2 %) |
+| C. Stationstimmar (B) | 354 296 | | 2,0 % | 0,8 % |
+
+Luften när regeln slår till: median −1,4 °C; över 0 °C i 31 %, över +1 i 16 %, över +2 i 7,8 %. Per månad (B, över +3): november 4,6 %,
+december 2,9 %, januari 2,8 %, februari 1,7 %, mars 4,5 %. Per breddgrad: under 58 °N 1,9 %, 58–62 °N 2,7 %, över 62 °N 3,9 %.
+Sammanhanget utan fuktkravet: av 74 346 frostepisoder med yta ≤ 0 °C hade 6,7 % luft över +3 °C och 35,6 % luft över noll.
+
+**Läsningen, som den bestämdes före talen:** under 5 %. **Bilens snöflinga lyser i 97 av 100 fall när stationsregeln slår till, och
+att stationen ser det bilen inte ser är inget säljargument.** Ingen månad och inget band når 5 %. Talen stämmer med 21/9 (alla sju
+äkta episoder under +0,4 °C). Ingen tröskel, ingen kod och ingen text i appen ändras.
+
+**Vad mätningen inte avgör — och som inte ska läsas in i den i efterhand:** om Halkvakts varning är *bättre* än snöflingan, alltså
+mer träffsäker om var och när. Snöflingan lyser vid omkring +3 °C överallt och hela kvällar; frågan här var bara om stationen ser
+fall bilen missar. Den andra frågan är facit och riktningsprovets, och den förregistrerades inte här. Det enda sakförhållandet som
+pekar vidare: sammanhangets 6,7 % — kall yta under mild luft finns, men utan nederbörd, och det är rimfrostens kort (#46), inte
+stationsregelns.
