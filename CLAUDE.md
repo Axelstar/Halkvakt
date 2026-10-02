@@ -345,6 +345,9 @@ i samma commit när de överlappar.
   en mätning lyfts från diagnos till grind, kopiera hela WHERE-satsen från grinden den speglar, inte bara talen. Kontraktsgrinden
   vaktar talen; ingen vakt ser populationen. Och en dom som ser förkrossande ut på första körningen är ett skäl att läsa
   populationen, inte att skriva DECISIONS.
+- Intervallaritmetik på `timestamptz` räknas i SESSIONENS tidszon. `sample_time - interval '7 days'` är 167 timmar i Europe/Stockholm
+  över sommartiden och 168 i UTC — kuvösens karantän gav 20 rader olika mellan en lokal databas och Actions (2/10, DECISIONS #439).
+  Regel: varje anslutning som räknar på arkivet sätter `SET TimeZone = 'UTC'`, som Supabase; lita inte på klustrets standard.
 - En kortrubrik är en ögonblicksbild, inte ett läge. Målbladets första utgåva 29/9 tog #219:s rubrik från 20/9 ("Android sju versioner
   efter, Play-kontot saknas") som sanning — nio dagar efter att koden (versionCode 18 = iOS), tre beslut (#346, #377, #379) och appsidan
   28/9 motbevisat den; samma varv togs "kalendern är Bengts öppna beslut" ur §6.3 fast #381 hade avgjort det två dagar tidigare. Regel:
