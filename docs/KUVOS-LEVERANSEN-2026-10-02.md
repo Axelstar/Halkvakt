@@ -136,6 +136,8 @@ där är ett medelvärde över 30 minuter. Tidszonen är redan mätt (§3). **In
 
 Bengt skickar till Micke Wallin, som svar i samma tråd. Fyra frågor och en bekräftelse; tidszonen och vinden behöver inte frågas.
 
+**Skickat 2/10 kväll av Bengt** till Micke Wallin, som svar i leveranstråden: de fyra frågorna och bekräftelsen, med fråga 1 i den allmänna lydelsen (*vad betyder koderna 1, 2, 3, 4, 6 och 9, och −9?*). Omskrivningen nedan efter #439 kom på main samtidigt och gick inte med; svaret på den allmänna frågan täcker den.
+
 1. `ned_typ`: följer VViS-filen MESAN:s numrering i *Ersättningsmodell VädErs 2019* (1 ingen nederbörd, 2 regn, 4 snö, 6 både snö
    och regn)? Och vad betyder 3, 9 och −9, som inte står där? *(Omskriven 2/10 kväll, DECISIONS #439.)*
 2. `ned_maengd`: är det mm per 30 minuter, och är det regn eller all nederbörd omräknad till vatten? Och vad betyder −99,8, som skiljer

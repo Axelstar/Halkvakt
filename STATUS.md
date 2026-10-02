@@ -2176,3 +2176,4 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 2/10 17:20–18:00 (Claude, Axels *"läs in vintern nu"*): kuvösens steg 3 — nederbördskoderna 1/2/4/6 lästa i VädErs 2019 (3/9 ur Axels
   sammanfattning stod inte där), `kuvos/inlasning.ts`/`oversattning.sql`/`vakterna.ts` + knappen `kuvos`; lokalt 5 391 599 rader, 754 stationer,
   vakterna 97 % talar — DECISIONS #439. Inget utfall läst. Kvar: Mickes svar (3/9/−9, mängden, vinden), SMHI, körflödet.
+- 2/10 kväll (Bengt): frågorna till Micke Wallin skickade — fyra frågor och bekräftelsen av vindfälten (kort #232, §5b).
