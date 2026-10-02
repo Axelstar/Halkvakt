@@ -50,6 +50,46 @@ i mars om det klarar sina grindar.
 Kollen säger *just nu*, inte *när du kör*. Lägesbilden gäller nu, och vägen kan ändras på en halvtimme. Texten får aldrig låta som en
 prognos.
 
+## Köer, vägarbeten och annat som hör till planeringen
+
+*Bengts fråga samma kväll: "borde det inte finnas information om köbildning, vägarbeten etc". Läst i Trafikverkets datamodell för det
+öppna API:t samma kväll.*
+
+Ja. Före resan är det inte bara halkan som avgör, och det mesta finns i Trafikverkets öppna data, med samma nyckel som Halkvakt redan har
+och under samma öppna licens.
+
+**Vägarbeten, avstängningar och begränsningar** finns i *Situation*, samma datamängd som olyckorna och viltet redan kommer ifrån. Varje
+händelse har typ (till exempel *Vägarbete*), påverkansgrad, antal avstängda körfält, typen av begränsning (till exempel *körfält
+blockerat*), tillfälliga gränser som *bruttovikt 8 ton*, och när den börjar och slutar. Halkvakt hämtar redan situationerna och arkiverar
+olyckor, hinder och väglagsmeddelanden, men inte vägarbetena, och rösten talar bara om olyckor och vilt. Mätningen 26/9 (DECISIONS #420) visade varför: 5 280 vägarbeten var aktiva, nio av tio längre än en
+månad, och rösten hade talat 151 gånger på ett skuggvarv. **I en vy före resan är det annorlunda.** Där är det nyttigt att se att ett
+körfält på vägen till jobbet är avstängt till slutet av november, och föraren läser det i lugn och ro. Notisen ska däremot bara gälla det
+som är nytt eller kortvarigt, annars kommer den varje dag.
+
+**Köer och restider** finns i två datamängder. *TravelTimeRoute* ger för bestämda sträckor den aktuella restiden, den normala restiden och
+en status i fyra steg från fri framkomlighet till framkomligheten omöjlig. *TrafficFlow* ger hastighet och flöde per körfält från
+detektorerna i vägen, omkring en minut gammalt (mätt 26/8, kort #15). Trafikcentralernas egna meddelanden om köer och onormal trafik finns
+dessutom som situationstypen *AbnormalTraffic* i hela landet, när de skrivs, och dem arkiverar vi redan. **Detektordatan finns bara i större
+städer och högbelastade trafiksystem**,
+enligt Trafikverkets egen beskrivning, alltså i praktiken Stockholm och Göteborg. Där finns redan Trafikverkets app Trafiken.nu med
+favoritsträckor och notiser om störningar. Halkvakt skulle därför inte tillföra köerna i sig, utan att köer, vägarbeten och halka står i
+samma kolla, med positionen kvar i telefonen. Utanför storstäderna finns ingen öppen källa för köer.
+
+**Färjor** finns i *FerryAnnouncement*, med avgångar och störningar. Det är värdefullt för den som pendlar över ett sund.
+
+**Väglaget och väderstationerna** är de Halkvakt redan läser, och **SMHI:s varningar** finns redan i arkivet.
+
+**Kamerorna** längs vägen är öppna, men de ska inte hämtas automatiskt för den sparade vägen (se *Integriteten* nedan).
+
+**Det som inte går att få öppet:** realtidstrafik från Google, Waze, TomTom eller HERE kostar pengar eller kräver avtal, och
+gratisnivån är ett krav i projektet. Bilarnas egna halkvarningar, som Trafikverket köper och delar i *Data for Road Safety*, finns inte i
+något öppet dataset (DECISIONS #282). Polisens händelser är sämre än Trafikverkets för vägarna (DECISIONS #316, #318).
+
+**Hur det passar in utan att integriteten rubbas.** Allt ovan hämtas som en gemensam fil för hela landet, som lägesbilden i dag, och
+jämförs med den sparade vägen i telefonen. Ingen fråga skickas om just förarens väg. Vägarbetena är många och skulle göra den fil som
+hämtas under körningen mycket större, så de hör hemma i en egen gemensam fil som bara hämtas för kollen före resan. Hur stor den blir
+ska mätas innan något byggs.
+
 ## Integriteten
 
 Den sparade vägen ligger i telefonen och ingen annanstans. Kollen hämtar samma offentliga fil som appen redan hämtar, utan konto och
@@ -94,9 +134,9 @@ taxi, bud och hemtjänst, som också kör kända vägar. Där ska den fortfarand
 ## Förslaget
 
 1. **Mätningen först:** hur ofta skulle en notis komma på kuvösens vinter, med gränsen skriven före. Ett beslut i DECISIONS och en körning
-   i knappen `kuvos`.
+   i knappen `kuvos`. Samtidigt: hur stor en gemensam fil med vägarbeten och restider blir.
 2. **Därefter, om talet håller:** *Spara som väg* i efter-resan-kortet, tiderna, provkörningen i telefonen, notisen och Siri-frågan, bara
-   med det som är uppmätt och rapporterat. Formen bestämmer Axel.
+   med det som är uppmätt och rapporterat — halkan, olyckorna, vägarbetena och, i storstäderna, köerna och restiden. Formen bestämmer Axel.
 3. **Prognoserna i vyn** först efter domen i mars, och bara om prognoslagret klarar sina grindar.
 
 **Öppna frågor till Bengt och Axel:** ska mätningen göras; hur många vägar får man spara; ska kollen ha en egen flik eller ligga på
