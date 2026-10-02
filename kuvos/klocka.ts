@@ -13,6 +13,9 @@ export async function kuvosKlient(url: string) {
   const klient = new pg.Client({ connectionString: url });
   await klient.connect();
   await klient.query(`SET search_path = ${KUVOS_SOKVAG}`);
+  // UTC som driftens databas: intervallaritmetik på timestamptz följer sessionens zon, och vintern korsar sommartiden 30/3
+  // (20 karantänrader skilde 2/10 mellan svensk tid och UTC, DECISIONS #439).
+  await klient.query("SET TimeZone = 'UTC'");
   const q: Q = async (text, params) => (await klient.query(text, params as any[])).rows;
   return {
     q,

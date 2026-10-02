@@ -6980,8 +6980,11 @@ med datan kod för kod (luften per kod, `docs/KUVOS-LEVERANSEN-2026-10-02.md` §
 4. **Fråga 1 till Micke skrivs om:** bekräfta MESAN-numreringen och förklara 3, 9 och −9.
 
 **Antal (inget utfall):** arkivet 5 391 599 rader och 754 stationer (23 utan läge, 104 671 rader, inte inlästa). Vakterna: #75 922 rader
-(41 stationer), radvakten 543 (78), karantänen 15 252 (29), den långsamma vakten 16 263 (86; 340 stationsdygn), utan yta 132 950 —
-**5 229 372 rader (97,0 %) får tala**. Värdevakten: fem fält rimliga, inget obesiktigat; sikten 20 000 flaggad som i driften.
+(41 stationer), radvakten 543 (78), karantänen 15 272 (29), den långsamma vakten 16 263 (86; 340 stationsdygn), utan yta 132 950 —
+**5 229 352 rader (97,0 %) får tala**. Värdevakten: fem fält rimliga, inget obesiktigat; sikten 20 000 flaggad som i driften. Talen är knappens körning i Actions
+(37027706480, 5 min 22 s, sha256 ok för alla fem filerna); den lokala körningen gav 20 karantänrader färre — sessionens zon var svensk tid,
+och `interval '7 days'` på timestamptz blir en timme kortare över sommartiden 30/3. **Kuvösens anslutningar sätter nu UTC** som
+Supabase (`kuvos/klocka.ts`, `kuvos/vakterna.ts`); lokalt efteråt: samma tal som Actions.
 
 **Vad det öppnar och inte:** frysrisken, broarna och trenden kan spelas upp. **Efterhalkan (S1, S2) kan inte** — `regn_h` läser mängden.
 Förregistreringen (#424) står: ingen regel körd, ingen yta efter en tidpunkt läst, och översättningen valdes på källan. Tillägget är

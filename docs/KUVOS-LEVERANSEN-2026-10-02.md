@@ -190,9 +190,12 @@ Mängden (`rain_sum_mm`) och vindstyrkan (`wind_speed_ms`, `wind_gust_ms`) är N
 | Utan yta | 132 950 (2,47 %) | |
 | #75 (ytan > 12 ° under luften) | 922 (0,02 %) | 41 |
 | Radvakten (luft ≥ 10 °C, gap ≥ 8 °) | 543 (0,01 %) | 78 |
-| Karantänen (≥ 3 brott på 7 dygn) | 15 252 (0,28 %) | 29 |
+| Karantänen (≥ 3 brott på 7 dygn) | 15 272 (0,28 %) | 29 |
 | Den långsamma vakten | 16 263 (0,30 %), 340 stationsdygn | 86 |
-| **Får tala efter alla fyra** | **5 229 372 (96,99 %)** | |
+| **Får tala efter alla fyra** | **5 229 352 (96,99 %)** | |
+
+Talen är knappens körning i Actions (37027706480); en lokal databas i svensk tid gav 20 karantänrader färre, eftersom sju dygn över
+sommartiden 30/3 är en timme kortare där. Kuvösens anslutningar sätter därför UTC, som Supabase.
 
 **Värdevakten** (`scripts/vardevakten.ts 1000`): fem fält i `weather_observations` besiktade och rimliga (yta −50…50, luft −37…18,4,
 daggpunkt −40…12, fuktighet 13,5…100, riktning 0…315), inget OBESIKTIGAT. Sikten flaggas som misstänkt sentinel — taket 20 000 i 68 % —

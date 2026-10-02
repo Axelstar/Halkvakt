@@ -12,6 +12,9 @@ if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
 const pg = (await import("pg")).default;
 const db = new pg.Client({ connectionString: url });
 await db.connect();
+// UTC som Supabase: `interval '7 days'` på timestamptz räknas i sessionens zon, och över sommartiden 30/3 är sju dygn i
+// Europe/Stockholm en timme kortare. Mätt 2/10: 20 karantänrader skilde mellan en lokal databas i svensk tid och Actions i UTC.
+await db.query("SET TimeZone = 'UTC'");
 const q = async (sql: string, p: unknown[] = []) => (await db.query(sql, p)).rows as any[];
 
 const [{ forst }] = await q(`SELECT min(sample_time) AS forst FROM weather_observations`);
