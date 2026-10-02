@@ -61,18 +61,21 @@ datamodell och räknat i deras API 2/10 (DECISIONS #442).
 | Halt väglag på sträckor | *RoadCondition* | Hela landet, november–april | I rösten |
 | Frysrisk vid mätstationer, broar | Väderstationerna | Hela landet, omkring 750 stationer enligt Trafikverket | I rösten |
 | Olyckor, hinder, djur på vägen | *Situation* | Hela landet | I rösten (olyckor och vilt) |
-| **Vägarbeten**: körfält, påverkan, start och slut | *Situation* | Hela landet: 1 876 aktiva 2/10, och 3 262 som vilar | Hämtas, sägs inte |
-| **Hastighetsnedsättningar och omledningar** | *Situation* | Hela landet: 801 och 39 aktiva 2/10 | Hämtas, sägs inte |
+| **Vägarbeten**: körfält, påverkan, start och slut | *Situation* | Hela landet: 1 876 aktiva 2/10, och 3 262 som vilar | Kommer med i livemotorns svar men kastas |
+| **Hastighetsnedsättningar och omledningar** | *Situation* | Hela landet: 801 och 39 aktiva 2/10 | Kommer med i livemotorns svar men kastas |
 | **Köer och restider** | *TravelTimeRoute*, *TrafficFlow* | Nästan bara Stockholm: 191 av 198 restidssträckor, 2 400 av 3 125 detektorer | Används inte |
 | Kömeddelanden från trafikcentralerna | *Situation* (*AbnormalTraffic*) | Hela landet, när de skrivs | Arkiveras |
 | **Färjor**: avgångar och störningar | *FerryAnnouncement* | Vägfärjorna, 36 leder | Används inte |
 | Fartkameror | *TrafficSafetyCamera* | Hela landet | I rösten |
-| SMHI:s varningar | SMHI | Hela landet | I arkivet |
+| SMHI:s varningar | SMHI | Hela landet | I lägesfilen, visas inte |
 | *Halkvakt tror*, prognosen längs vägen | Prognoslagret | — | Först efter domen i mars, och bara om det klarar sina grindar |
 
 **Det som inte går att få öppet:** realtidstrafik från Google, Waze, TomTom eller HERE kostar pengar eller kräver avtal, och gratisnivån
 är ett krav i projektet. Bilarnas egna halkvarningar finns inte i något öppet dataset (DECISIONS #282). Utanför Stockholm och Göteborg
 finns inga mätta köer.
+
+*Vad som måste byggas, varifrån det hämtas och en uppskattad byggtid (10–15 arbetsdagar, ingen planerad) står i Halkvaktens
+favoriter, avsnitt 7 (`docs/FAVORITER.html`). Raderna ovan om vad som finns i dag är rättade mot koden 2/10.*
 
 ## Vad som får stå var
 

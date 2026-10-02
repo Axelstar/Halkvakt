@@ -191,7 +191,7 @@
 <main class="blad">
   <div class="etikett">Underlag · 2 oktober 2026 · kort #233 · experimentstadiet, inget byggt</div>
   <h1>Favoriter: läget längs dina vägar innan du sätter dig i bilen</h1>
-  <p class="ingress">Halkvakts honnörsord är att ligga före. Vi varnar för en fara innan den har uppstått, och då är det inte mer än rimligt att vi visar farorna längs vägen redan innan färden har börjat. Det är att ta hand om de dubbla riskerna, före resan och under den, på ett ansvarsfullt sätt.</p>
+  <p class="ingress">Halkvakts honnörsord är att ligga före. Vi varnar för en fara innan den har uppstått, och då är det inte mer än rimligt att vi visar farorna längs vägen redan innan färden har börjat. Det är att ta hand om de dubbla riskerna, före resan och under den, på ett ansvarsfullt sätt. Det ger föraren alternativ att välja redan innan bilen startar och kör in på vägar där det finns risker.</p>
   <p class="ingress">Det här är ett underlag för en egen flik i appen. Föraren sparar sina vanliga rutter, till och från jobbet eller till sommarstället, och läser före resan en rapport om allt Halkvakt vet om vägen just nu. Rapporten är så färsk som systemet kan göra den tio minuter före avresan. Formen bestämmer Axel.</p>
   <div class="fakta">
     <span>nytt läge var <b>10</b> min</span>
@@ -416,27 +416,66 @@
   <p>Rutten sparas ur en körd resa. Kortet <i>Efter resan</i> på Redo.-skärmen frågar om resan ska sparas, och föraren ger den ett namn eller väljer ett av förslagen. Föraren skriver aldrig in en adress, och ingen tjänst för ruttsökning på nätet får veta var föraren bor, arbetar eller har sitt sommarställe. En rutt tas bort med ett tryck.</p>
   <p><b>Förslag: ingen karta bakom den sparade linjen.</b> Kartbitar hämtas från en kartserver, som då får veta i vilken trakt rutten går. Linjen ritas i telefonen utan bakgrund. Ortsnamnen i rapporten kommer ur Trafikverkets egna texter i de gemensamma filerna och inte ur en adressökning.</p>
 
-  <h2>7. Var informationen kommer ifrån</h2>
-  <p>Allt finns i Trafikverkets öppna data, med samma nyckel som Halkvakt redan har och under samma öppna licens, utom SMHI:s varningar. Läst i Trafikverkets datamodell och räknat i deras API 2/10 (DECISIONS #442).</p>
+  <h2>7. Var informationen kommer ifrån, och vad som måste byggas</h2>
+  <p>Allt finns i Trafikverkets öppna data, med samma nyckel som Halkvakt redan har och under samma öppna licens, utom SMHI:s varningar. Källorna är lästa i Trafikverkets datamodell och räknade i deras API 2/10 (DECISIONS #442). Vad som finns redan är läst i koden samma kväll.</p>
   <div class="tabell">
     <table>
-      <thead><tr><th>I rapporten</th><th>Källa</th><th>Täckning</th><th>Hos Halkvakt i dag</th></tr></thead>
+      <thead><tr><th>I rapporten</th><th>Källa och täckning</th><th>Finns redan</th><th>Behöver byggas</th></tr></thead>
       <tbody>
-        <tr><td>Halt väglag på sträckor</td><td><i>RoadCondition</i></td><td>Hela landet, november–april</td><td>I rösten</td></tr>
-        <tr><td>Frysrisk vid mätstationer och broar</td><td>Väderstationerna</td><td>Hela landet, omkring 750 stationer</td><td>I rösten</td></tr>
-        <tr><td>Olyckor, hinder, djur på vägen</td><td><i>Situation</i></td><td>Hela landet</td><td>I rösten (olyckor och vilt)</td></tr>
-        <tr><td><b>Vägarbeten</b>: körfält, påverkan, start och slut</td><td><i>Situation</i></td><td>Hela landet</td><td>Hämtas, sägs inte</td></tr>
-        <tr><td><b>Hastighetsnedsättningar och omledningar</b></td><td><i>Situation</i></td><td>Hela landet</td><td>Hämtas, sägs inte</td></tr>
-        <tr><td><b>Köer och restider</b></td><td><i>TravelTimeRoute</i>, <i>TrafficFlow</i></td><td>Nästan bara Stockholm</td><td>Används inte</td></tr>
-        <tr><td>Kömeddelanden från trafikcentralerna</td><td><i>Situation</i></td><td>Hela landet, när de skrivs</td><td>Arkiveras</td></tr>
-        <tr><td><b>Färjor</b>: avgångar och störningar</td><td><i>FerryAnnouncement</i></td><td>Vägfärjorna, 36 leder</td><td>Används inte</td></tr>
-        <tr><td>Fartkameror</td><td><i>TrafficSafetyCamera</i></td><td>Hela landet</td><td>I rösten</td></tr>
-        <tr><td>SMHI:s varningar</td><td>SMHI</td><td>Hela landet</td><td>I arkivet</td></tr>
-        <tr><td><i>Halkvakt tror</i>, prognosen längs vägen</td><td>Prognoslagret</td><td>—</td><td>Först efter domen i mars, om det klarar sina grindar</td></tr>
+        <tr><td>Halt väglag på sträckor</td><td><i>RoadCondition</i>, hela landet, november–april</td><td><span class="dom klar">Ja</span> Livemotorn hämtar det varje minut, det ligger i lägesfilen och rösten använder det.</td><td>Bara jämförelsen mot rutten, i telefonen.</td></tr>
+        <tr><td>Frysrisk vid mätstationer och broar</td><td>Väderstationerna, omkring 750</td><td><span class="dom klar">Ja</span> Samma väg som väglaget.</td><td>Bara jämförelsen mot rutten.</td></tr>
+        <tr><td>Olyckor och djur på vägen</td><td><i>Situation</i>, hela landet</td><td><span class="dom klar">Ja</span> Livemotorn, lägesfilen och rösten.</td><td>Bara jämförelsen mot rutten.</td></tr>
+        <tr><td>Hinder och kömeddelanden</td><td><i>Situation</i>, hela landet, när trafikcentralerna skriver dem</td><td><span class="dom vantar">Delvis</span> Hämtas varje minut men går bara till arkivet.</td><td>In i rapportfilen, ur samma hämtning.</td></tr>
+        <tr><td><b>Vägarbeten</b>: körfält, påverkan, start och slut</td><td><i>Situation</i>, hela landet</td><td><span class="dom vantar">Delvis</span> Kommer med i livemotorns svar varje minut men kastas. Ingen tabell sparar dem.</td><td>Hämtas från Trafikverkets API när rapportfilen byggs och läggs i den.</td></tr>
+        <tr><td><b>Hastighetsnedsättningar och omledningar</b></td><td><i>Situation</i>, hela landet</td><td><span class="dom vantar">Delvis</span> Som vägarbetena.</td><td>Som vägarbetena.</td></tr>
+        <tr><td><b>Köer och restider</b></td><td><i>TravelTimeRoute</i> och <i>TrafficFlow</i>, nästan bara Stockholm</td><td><span class="dom ingen">Nej</span></td><td>En ny hämtning från Trafikverkets API med samma nyckel, när rapportfilen byggs.</td></tr>
+        <tr><td><b>Färjor</b>: avgångar och störningar</td><td><i>FerryAnnouncement</i>, vägfärjorna, 36 leder</td><td><span class="dom ingen">Nej</span></td><td>En ny hämtning från Trafikverkets API. Frågan måste begränsas i tid, eftersom svaret 2/10 nådde taket på 20 000 avgångar.</td></tr>
+        <tr><td>Fartkameror</td><td><i>TrafficSafetyCamera</i>, hela landet</td><td><span class="dom klar">Ja</span> I appens fasta fil, och rösten använder dem.</td><td>Bara jämförelsen mot rutten.</td></tr>
+        <tr><td>SMHI:s varningar</td><td>SMHI, hela landet</td><td><span class="dom klar">Ja</span> Hämtas en gång i timmen och ligger i lägesfilen, men appen visar dem inte.</td><td>Bara visningen i rapporten. Varningarna kan vara upp till en timme gamla.</td></tr>
+        <tr><td><i>Halkvakt tror</i>, prognosen längs vägen</td><td>Prognoslagret</td><td><span class="dom ingen">Nej</span></td><td>Efter domen i mars, och bara om prognoslagret klarar sina grindar.</td></tr>
       </tbody>
     </table>
   </div>
   <p>Realtidstrafik från Google, Waze, TomTom eller HERE kostar pengar eller kräver avtal, och gratisnivån är ett krav i projektet. Bilarnas egna halkvarningar finns inte i något öppet dataset (DECISIONS #282). Utanför Stockholm och Göteborg finns inga mätta köer.</p>
+
+  <h3>Det som byggs</h3>
+  <div class="par">
+    <div class="ruta">
+      <h3>På servern</h3>
+      <ul>
+        <li>En rapportfil bredvid lägesfilen, omkring 120 kB packad. Den byggs i samma publicering var tionde minut och kontrolleras med manifestets kontrollsumma, som lägesfilen.</li>
+        <li>Hämtningarna av vägarbeten, restider och färjor görs direkt från Trafikverket när filen byggs, som kartans kameralager redan gör. Då behövs ingen ny tabell.</li>
+        <li>Allt körs i Supabase, utan Actions-minuter.</li>
+      </ul>
+    </div>
+    <div class="ruta">
+      <h3>I appen, iPhone och Android</h3>
+      <ul>
+        <li>Fliken Favoriter och rapportskärmen.</li>
+        <li>Spara en rutt ur en körd resa, och ta bort den.</li>
+        <li>Jämförelsen mellan rapportfilen och rutten, i den delade motorn med egna testvektorer, så att båda telefonerna fattar samma beslut.</li>
+        <li>Tider, notis och Siri: på iPhone en åtgärd för Genvägar, på Android en schemalagd koll.</li>
+        <li>Texterna i produktboken, introduktionen och på integritetssidan.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Byggtiden</h3>
+  <p>Ingen byggtid är planerad. Bengt har sagt att inget byggs nu, och favoriterna står inte i bedömningens kalender. Tabellen är en grov uppskattning av arbetet om det beställs, i arbetsdagar för Claude, med Axels bygg- och provvarv vid sidan av. Den är inte nedbruten i kort.</p>
+  <div class="tabell">
+    <table>
+      <thead><tr><th>Del</th><th class="tal">Arbetsdagar</th></tr></thead>
+      <tbody>
+        <tr><td>Rapportfilen på servern, med prov</td><td class="tal">1–2</td></tr>
+        <tr><td>Jämförelsen mot rutten i motorn, med testvektorer i Swift och Kotlin</td><td class="tal">2–3</td></tr>
+        <tr><td>Fliken, rapporten och sparade rutter, iPhone och Android</td><td class="tal">4–6</td></tr>
+        <tr><td>Tider, notis och Siri</td><td class="tal">2–3</td></tr>
+        <tr><td>Texterna, produktboken och integritetssidan</td><td class="tal">1</td></tr>
+        <tr><td><b>Sammanlagt</b></td><td class="tal"><b>10–15</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>I kalendern blir det ungefär tre till fem veckor, med varv i TestFlight och Play och prov i bil. En första version utan tider, notis och Siri, alltså fliken, rapporten och de sparade rutterna, är 8–12 av dagarna. Provet med Genvägar på Axels telefon bör göras först, eftersom det avgör hur notisen kan fungera på iPhone.</p>
 
   <h2>8. Integriteten</h2>
   <div class="skickas">
