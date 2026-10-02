@@ -230,6 +230,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔑 Kvar: Axels Xcode-bygge (första kompileringen) och Verify i bil.
   ↪ **Flyttat 26/9 från *Bengt*** (femma åtta, DECISIONS #377): nästa steg är Axels bygge 0.3.9 (17).
   ↪ **1/10 (DECISIONS #423):** bygget hos Axel är numera **(19)** (`docs/TILL-AXEL-BYGGE-19.md`); (14)–(18) arkiverades aldrig, så (19) blir det första bygget som bär ändringen.
+  ✅ **Kompilerad 1/10 22:25 i (19)**, med i (20) hos Apple. ⛔ **Bengts läsning 2/10: Verify-raden går inte att se** — raden *väglag HH:mm*
+  försvann ur körläget med skinnet v3 (31c58e6); strängen räknas (`GuardManager.swift:128`) men visas bara som *Hämtar/Trafikverket live* på
+  *Redo.*, som inte syns under resan. Axels resa 1/10 12:39 räknas inte (bygge utan lagningen).
+  🔨 **VÄG 1 BYGGD 2/10 13:50 (DECISIONS #434):** klockslaget tillbaka i körläget, till höger om *PÅ DIN VÄG* — som Androids rad under
+  *I närheten*. **Bygge (21)** i samma commit; produktboken följer med. Rör inte (20) hos Apple: (21) går till TestFlight, butiken får det
+  som nästa version. ✅ **(21) uppladdat 2/10 13:56** (Axel, Xcode) — interna gruppen får det direkt. 🔑 Kvar: en resa på 45–60 min i (21)
+  där klockslaget vid *PÅ DIN VÄG* flyttar sig minst en gång (servern publicerar var tionde minut, appen hämtar var trettionde). Axel eller Bengt.
 
 - [ ] 🎚️ **#259 REGLAGET "VARNA PÅ AVSTÅND" LOVAR MER ÄN MOTORN GÖR** (fynd 26/9 under kadenstestet, DECISIONS #373). Motorn
   talar vid `min(leadMaxM, max(400 m, fart × 30 s))` (`engine.ts:110`), och reglaget sätter bara `leadMaxM`. I 140 km/h blir det

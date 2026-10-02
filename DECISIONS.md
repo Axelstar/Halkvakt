@@ -6840,6 +6840,23 @@ kommer.** Fungerade i (13), bröts av #279:s ScrollView, rättat med simultaneou
 sparades som *"Copyright: © 2026 Lagerlöf Labs"* — ordet "Copyright:" ska bort nästa gång versionen redigeras. (3) AppLaunchFlows
 nedladdning är betald; samma look byggd fritt i `alf.py`.
 
+## #434 (2/10 2026) Kort #258: vägdatans klockslag tillbaka i körläget — bygge (21), (20) hos Apple rörs inte
+
+**Beslut (Axel 2/10 13:43 på Bengts läsning: *"åtgärda"*).** Kortets Verify — *"körlägets rad väglag HH:mm flyttar sig framåt under resan"* —
+pekade på en rad som inte finns på iPhone sedan skinnet v3 (31c58e6, 2/9); strängen räknas i `GuardManager.swift` men visas bara som
+*Hämtar/Trafikverket live* på *Redo.*. Bengts väg 1: raden tillbaka. Byggd som på Android — klockslaget till höger om rubriken *PÅ DIN VÄG*
+i körläget, i mono, ur `snapshotInfo`. `CURRENT_PROJECT_VERSION` 21 i samma commit (#240); produktboken i samma commit (PRODUKTBOKSREGELN).
+
+**Granskningen.** (20) ligger *Waiting for Review* och rörs inte: att dra tillbaka startar kön om, och raden är ett bevisverktyg, inte ett
+fel i (20). (21) går till TestFlight för provet; butiken får raden i nästa version efter godkännandet.
+
+**Alternativen (Bengts):** byta provet mot något synligt utan ny kod — inget duger (en ny olycka kan inte beställas, Xcodes logg kräver
+sladd); stänga på kodläsning — strider mot bevisregeln. **Verify står:** en resa på 45–60 minuter i (21) där klockslaget flyttar sig minst
+en gång. Axels resa 1/10 12:39 räknas inte (före (19)).
+
+**Sagt högt.** Raden stod i kortet sedan 26/9 utan att någon märkte att den inte fanns på skärmen — samma familj som "en kortrubrik är en
+ögonblicksbild" (#402): en Verify-rad skriven efter Androids mönster måste läsas mot iOS-koden innan den fryses.
+
 ## #435 (2/10 2026) Kort #270 (a): premissmätningen går varje måndag och läses en gång — tisdag 24/11
 
 **Beslut (Bengt 2/10: *"ok vi kör ja på a, f och g"*).** Vägpunktsgrindens premissmätning

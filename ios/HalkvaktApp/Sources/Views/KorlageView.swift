@@ -70,7 +70,15 @@ struct KorlageView: View {
                         }
 
                         VStack(alignment: .leading, spacing: 10) {
-                            SectionHeader(text: "På din väg", color: Brand.dim)
+                            HStack {
+                                SectionHeader(text: "På din väg", color: Brand.dim)
+                                // Kort #258: vägdatans klockslag, som Androids rad under *I närheten*. Raden försvann med skinnet v3
+                                // (31c58e6) och kortets Verify — "väglag HH:mm flyttar sig under resan" — gick inte att se
+                                // (Bengts läsning 2/10). Flyttar sig tiden har omladdningen var 30:e minut bevisligen skett.
+                                if let info = guardM.snapshotInfo {
+                                    Text(info.components(separatedBy: " · ").last ?? info).font(Typo.mono(11)).foregroundStyle(Brand.faint)
+                                }
+                            }
                             ForEach(guardM.nearby.prefix(3)) { NearbyRow(item: $0) }
                         }
 
