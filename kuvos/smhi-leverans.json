@@ -1,0 +1,48 @@
+{
+ "kalla": "SMHI öppna data (CC BY 4.0): radarkompositen som tif (opendata-download-radar) och metobs corrected-archive (opendata-download-metobs)",
+ "hamtad": "2026-10-02T18:04–18:24+02:00 (Claudes session; Actions-hämtningen 37034624104 nådde 90-minuterstaket)",
+ "release": "kuvos-smhi-2024-25 (skapad av 37044952426)",
+ "period": [
+  "2024-10-31T22:00Z",
+  "2025-03-31T23:30Z"
+ ],
+ "skript": {
+  "radar": "kuvos/radar-vinter.ts",
+  "metobs": "kuvos/smhi-vinter.ts",
+  "inlasning": "kuvos/smhi-inlasning.ts"
+ },
+ "parametrar": {
+  "1": "lufttemperatur, momentan 1/tim",
+  "7": "nederbördsmängd, summa 1 tim",
+  "13": "rådande väder (WMO)",
+  "16": "total molnmängd"
+ },
+ "beslut": "DECISIONS #441",
+ "filer": [
+  {
+   "fil": "radar_precip_2024-25.csv.gz",
+   "bytes": 3925020,
+   "sha256": "7a0bf9f482302a6fd60bc3d94988dfc2bbff8e6fc8e37fff263492a28c724b96"
+  },
+  {
+   "fil": "smhi_p1_2024-25.csv.gz",
+   "bytes": 3086631,
+   "sha256": "368e6483d6b32047067841f05e0af1324dc9373105f298d0773c622a657c2f32"
+  },
+  {
+   "fil": "smhi_p7_2024-25.csv.gz",
+   "bytes": 1559159,
+   "sha256": "18d3912358b036d77f253338e218d02fbd89098dd9e221ddd1bc9c1470b0fe25"
+  },
+  {
+   "fil": "smhi_p13_2024-25.csv.gz",
+   "bytes": 1887223,
+   "sha256": "f019715f4b23af85286f37a7139372599430803b294c7864dfcaf99929b5617c"
+  },
+  {
+   "fil": "smhi_p16_2024-25.csv.gz",
+   "bytes": 1276172,
+   "sha256": "7ba336f4c8d795babc3b98685b38a678bf91f246bcf94ca55d7c844da1414028"
+  }
+ ]
+}

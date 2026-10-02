@@ -7055,8 +7055,9 @@ stationsregelns.
 3. **Ingen korrektion av tif mot h5.** Mätt samma tidpunkt i båda: tif 8–10 enheter (≈ 3,4 dBZ, ≈ 1,6 × regn) över h5 i varje band, fler
    svaga eko. Att dra av en förskjutning vore att välja ett tal efter en jämförelse; kuvösens radar redovisas som tif-produkten och
    skillnaden står i §8. Frågan till Bengt i bedömningen §4.2.
-4. **Förvaringen:** releasen `kuvos-smhi-2024-25`, skapad av knappen `kuvos-smhi` (den här sessionen får inte skapa releaser);
-   `kuvos/smhi-leverans.json` bär summorna och knappen `kuvos` kontrollerar dem.
+4. **Förvaringen:** releasen `kuvos-smhi-2024-25` (den här sessionen får inte skapa releaser). Hämtningen i Actions (37034624104) nådde
+   90-minuterstaket utan en rad i loggen — `grep -v` buffrade den — så filerna som hämtades i Claudes session lades på en engångsgren och
+   releasen skapades därifrån (37044952426). Grenen `kuvos-smhi-filer` (12 MB) kan inte tas bort härifrån — Bengt tar bort den. `kuvos/smhi-leverans.json` bär summorna och knappen `kuvos` kontrollerar dem.
 
 **Vad steg 5 behöver:** `moln.ts` och grind NT hämtar vid körning ur `latest-months` och måste i kuvösen läsa `kuvos_ra.smhi_obs`.
 Snapshoten läser `radar_precip` genom klockans vy och behöver inget. SMHI:s varningar har inget arkiv (21/9) — SMHI-förstärkaren och
