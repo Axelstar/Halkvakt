@@ -2182,3 +2182,6 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   sammanfattning stod inte där), `kuvos/inlasning.ts`/`oversattning.sql`/`vakterna.ts` + knappen `kuvos`; lokalt 5 391 599 rader, 754 stationer,
   vakterna 97 % talar — DECISIONS #439. Inget utfall läst. Kvar: Mickes svar (3/9/−9, mängden, vinden), SMHI, körflödet.
 - 2/10 kväll (Bengt): frågorna till Micke Wallin skickade — fyra frågor och bekräftelsen av vindfälten (kort #232, §5b).
+- 2/10 17:52–18:45 (Claude, Axels *"dra igång steg 4"*): kuvösens steg 4 — metobs 1/7/13/16 och radarn för vintern hämtade en gång;
+  radararkivet bara tif (egen läsare `kuvos/tif.ts`, kärnan delad `ingest/radar-karna.ts`), tif ≈ 3,4 dBZ över h5 — DECISIONS #441, fråga i §4.2.
+  Releasen skapas av knappen `kuvos-smhi` (sessionen får inte skapa releaser). Inget utfall läst.

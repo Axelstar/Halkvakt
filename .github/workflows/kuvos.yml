@@ -1,6 +1,7 @@
 # Kuvösen (kort #232, PLAN-KUVOSEN steg 3, DECISIONS #439): vintern 2024/25 inläst i en slit-och-släng-PostGIS, aldrig i Supabase.
 # Hämtar Trafikverkets leverans ur den privata releasen, kontrollerar sha256 mot kuvos/leverans.json, kör migrationerna och klockan,
-# läser in (kuvos/inlasning.ts → kuvos/oversattning.sql), kör vakterna som antal och värdevakten. Läser inget utfall.
+# läser in (kuvos/inlasning.ts → kuvos/oversattning.sql), SMHI för samma vinter (kuvos/smhi-inlasning.ts, steg 4), kör vakterna
+# som antal och värdevakten. Läser inget utfall.
 # Knapp, inte cron. Körflödet (steg 5) byggs ovanpå samma steg.
 name: kuvos
 on:
@@ -45,6 +46,22 @@ jobs:
             }
             process.exit(fel ? 1 : 0);'
           curl -sSf -o static.json https://axelstar.github.io/halkvakt-karta/data/app/v1/static.json
+      # Steg 4 (DECISIONS #441): SMHI för samma vinter — radarn samplad mot segmenten och fyra metobs-parametrar, hämtade en gång.
+      # Hoppas över tills releasen finns och manifestet är incheckat (knappen kuvos-smhi skapar den) — fäller inte andras körningar.
+      - name: SMHI ur releasen, kontrollsummorna mot manifestet
+        if: ${{ hashFiles('kuvos/smhi-leverans.json') != '' }}
+        shell: bash
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          mkdir -p smhi && gh release download kuvos-smhi-2024-25 --dir smhi --pattern '*.csv.gz'
+          node -e '
+            const m = require("./kuvos/smhi-leverans.json"), c = require("crypto"), fs = require("fs");
+            let fel = 0;
+            for (const f of m.filer) {
+              const h = c.createHash("sha256").update(fs.readFileSync("smhi/" + f.fil)).digest("hex");
+              console.log(`${f.fil}: ${h === f.sha256 ? "ok" : "FEL " + h}`); if (h !== f.sha256) fel++;
+            }
+            process.exit(fel ? 1 : 0);'
       # Varje migration för sig. De som kräver driftens tabeller (shadow_log m.fl. skapas av ingesten, inte av sql/) faller här
       # och skrivs ut; nästa steg kontrollerar att det kuvösen behöver finns — en saknad del fäller jobbet.
       - name: Migrationerna och klockan
@@ -62,6 +79,7 @@ jobs:
           {
             echo '```'
             node --experimental-strip-types kuvos/inlasning.ts leverans static.json
+            if [ -d smhi ]; then node --experimental-strip-types kuvos/smhi-inlasning.ts smhi; else echo "SMHI: ingen release inläst än (kuvos/smhi-leverans.json saknas)"; fi
             psql -h localhost -U postgres -qc "ANALYZE weather_observations"
             node --experimental-strip-types kuvos/vakterna.ts
             node --experimental-strip-types scripts/vardevakten.ts 1000
