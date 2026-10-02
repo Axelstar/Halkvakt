@@ -37,9 +37,9 @@ Första inventeringen (`kuvos/inventering.ts`) läste decimalkommat som text i d
 | `lu_fu` | relativ luftfuktighet, % | −99,9: 0,2 % | 29,3 … 100 | `humidity_pct` |
 | `ned_typ` | nederbördstyp, **kod** | −9: 1,0 % | koderna 1, 2, 3, 4, 6, 9 | `precipitation`, `rain`, `snow` — **väntar** |
 | `ned_maengd` | nederbördsmängd, **enhet okänd** | −99,9: 0,4 % · **−99,8: 0,65 %** | 0 … 15,5; fem rader över 100 (max 1 049,3) | `rain_sum_mm`? — **väntar** |
-| `vimax` | vind, troligen byvind | −99,9: 0,5 % | 0,5 … 21,4; 208 rader över 60 m/s | `wind_gust_ms`? — **väntar** |
-| `vimed` | vind, troligen medelvind | −99,9: 0,3 % | 0,1 … 13,1 | `wind_speed_ms`? — **väntar** |
-| `vind30` | vind, okänt vilket mått | −99,9: 0,3 % | 0,2 … 13,0 | — |
+| `vimax` | vind, troligen byvind: högsta 3-sekundersmedel på 30 min (§5a) | −99,9: 0,5 % | 0,5 … 21,4; 208 rader över 60 m/s | `wind_gust_ms`? — **väntar** |
+| `vimed` | vind, troligen medelvind: 10-minutersmedel (§5a) | −99,9: 0,3 % | 0,1 … 13,1 | `wind_speed_ms`? — **väntar** |
+| `vind30` | vind, troligen 30-minutersmedel (§5a) | −99,9: 0,3 % | 0,2 … 13,0 | — |
 | `virik` | vindriktning, åtta väderstreck | −9 (text) | N · NO · O · SO · S · SV · V · NV | `wind_dir_deg` (sektorns mitt) |
 | `siktdjup` | sikt, m | −100: 0,9 % · 20 000: 67,6 % | 112 … 19 695 | `visibility_m` |
 
@@ -108,15 +108,38 @@ Hoppade över, utan gemensamma timmar: 1603 Skara, 2112 Hudiksvall, 2558 Överto
 | Vakterna (#75, radvakten, karantänen, den långsamma vakten) | Körs när datan är inläst, i kuvösens databas; redovisas som antal |
 | Värdevakten | Körs på kuvösens databas före riktningsprovet; ett fält utan spann stoppar |
 
-**Frågorna till Trafikverket** (Bengt skickar till Micke Wallin, som svar i samma tråd):
+### 5a. Läst på Trafikverkets egna sidor (2/10, Bengts fråga)
+
+Trafikverkets datamodell för det öppna API:t (*WeatherObservation 2.1*, data.trafikverket.se, läst i webbläsaren) beskriver fälten
+för samma stationer i dag. Den har inga numeriska koder och inga kolumnnamn som leveransens, men den besvarar två frågor nästan helt:
+
+| Fält i API:t | Trafikverkets beskrivning | Leveransens kolumn, troligen |
+| :-- | :-- | :-- |
+| `Wind.Speed` | medelvärde över tiominutersperiod t.o.m. tidpunkten, m/s | `vimed` |
+| `Aggregated30minutes.Wind.SpeedAverage` | medelvind över 30 minuter, m/s | `vind30` |
+| `Aggregated30minutes.Wind.SpeedMax` | högst uppmätt 3-sekundersmedelvärde under perioden, m/s | `vimax` |
+| `Aggregated30minutes.Precipitation.RainSum` | mängd regn under perioden, mm | `ned_maengd`, om den är regn och inte all nederbörd |
+| `Weather.Precipitation` | vilken typ av nederbörd som detekterats (text, ingen kodlista) | `ned_typ` |
+| `Air.VisibleDistance` | sikt i m, *"OBS! Ej kvalitetssäkrad"* | `siktdjup` |
+| `Sample` | tidpunkten *"inklusive tidzon för att hantera sommartid och normaltid"* | `measuretime`, utan zon i leveransen |
+
+Vindens tre fält stämmer med leveransens mönster: `vimax` är alltid störst, medan `vind30` och `vimed` växlar (60,8 %), som ett
+30-minutersmedel och ett 10-minutersmedel gör. VTI notat 39-2003 (ersättningsmodellen för vinterväghållning) säger att VViS-vinden
+där är ett medelvärde över 30 minuter. Tidszonen är redan mätt (§3). **Inte hittat någonstans:** `ned_typ`:s koder, −99,8, sikten
+20 000 och −100, och läget för de 23 stationerna. VTI:s tre notat om VViS-data (2002, 2003, 2013) nämner nederbördstyp men inga koder.
+
+### 5b. Frågorna till Trafikverket
+
+Bengt skickar till Micke Wallin, som svar i samma tråd. Fyra frågor och en bekräftelse; tidszonen och vinden behöver inte frågas.
 
 1. `ned_typ`: vad betyder koderna 1, 2, 3, 4, 6 och 9, och −9?
-2. `ned_maengd`: vilken enhet och vilket tidsfönster (mm per 30 minuter, mm/h)? Och vad betyder −99,8, som skiljer sig från −99,9?
-3. Vindfälten: vilket av `vimax`, `vimed` och `vind30` är byvind och vilket medelvind, och över vilket tidsfönster?
-4. `siktdjup`: betyder 20 000 sikt över mätområdet, och −100 att sikt inte mäts?
-5. Läget (koordinater) för 23 stationer som inte finns i dagens öppna API: 298, 321, 324, 428, 650, 901, 902, 908, 1227–1231, 1329,
+2. `ned_maengd`: är det mm per 30 minuter, och är det regn eller all nederbörd omräknad till vatten? Och vad betyder −99,8, som skiljer
+   sig från −99,9?
+3. `siktdjup`: betyder 20 000 att sikten är större än mätområdet, och −100 att sikt inte mäts?
+4. Läget (koordinater) för 23 stationer som inte finns i dagens öppna API: 298, 321, 324, 428, 650, 901, 902, 908, 1227–1231, 1329,
    1434, 1435, 1518, 1525, 1547, 1613, 1801, 1815 och 7201.
-6. För ordningens skull: vi har mätt att `measuretime` är svensk lokaltid. Stämmer det?
+5. Bekräftelse: är `vimax` byvinden (högsta 3-sekundersmedel på 30 minuter), `vimed` 10-minutersmedlet och `vind30` 30-minutersmedlet,
+   som i API:t?
 
 ## 6. Vad det här inte är
 
