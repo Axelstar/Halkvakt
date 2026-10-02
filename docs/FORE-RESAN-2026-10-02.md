@@ -9,6 +9,9 @@ appen kan ge information om." Ett beslutsunderlag för kort #233 del 1, ingen ko
 *Omskrivet samma kväll efter Bengts förtydligande. Första utgåvan gjorde pendlingen till hela idén och en notis om frysrisk till
 huvudsaken. Bengts tanke är bredare: favoritrutter, där pendlingen är ett av flera fall, och en rapport om allt längs rutten.*
 
+*Som läsbart dokument 2/10 kväll, på Bengts begäran: **Halkvaktens favoriter**, https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT, källa `docs/FAVORITER.html`. Där finns
+skärmarna ritade i appens skinn och hur färsk rapporten kan vara tio minuter före avresan.*
+
 ## Idén
 
 Föraren sparar sina vanliga rutter: till jobbet och hem, till stugan, till föräldrarna, till träningen. Innan en resa öppnar föraren
@@ -40,7 +43,7 @@ Ett påhittat exempel:
 Är allt lugnt står det det: *Inget rapporterat längs rutten just nu.*
 
 **Pendlingen är ett fall av favoritrutterna.** En rutt kan få tider, till exempel *vardagar 07:15* och *hem 16:30*. Då gör appen rapporten
-en halvtimme före och skickar en notis om något har tillkommit som föraren bör veta. Tiderna och notisen är frivilliga; rapporten finns
+tio minuter före (Bengt 2/10 kväll) och skickar en notis om något har tillkommit som föraren bör veta. Tiderna och notisen är frivilliga; rapporten finns
 alltid när föraren öppnar rutten.
 
 **Siri och CarPlay.** *"Hej Siri, hur är vägen till stugan?"* ger det viktigaste i en mening, i bilen innan föraren kör.
@@ -112,6 +115,9 @@ kortare än en vecka.
 
 - **Motorn finns redan** i Swift och Kotlin och kan köra en väg i förväg (`run`), som skuggmotorn gör varje halvtimme. Rapportens halka
   och frysrisk är det motorn skulle ha sagt längs rutten; vägarbetena, köerna och färjorna läggs till ur den egna filen.
+- **Färskheten** (läst i koden 2/10): livemotorn hämtar olyckor, väglag och väder varje minut, och appens lägesfil publiceras var tionde
+  minut. En koll 07:05 läser alltså 07:00-filen, fem minuter gammal. Under körningen hämtar telefonen var 30:e minut; rapporten hämtar
+  när den öppnas och vid kollen. Tätare publicering är inte prövad.
 - **På iPhone** väcker systemet inte appen på minuten. För de tidsatta notiserna är den säkra vägen en automation i Genvägar som kör en
   åtgärd *Kolla mina rutter*. Om den kan köras utan att föraren bekräftar varje gång ska provas på Axels telefon. Rapporten själv kräver
   ingenting av det slaget.
@@ -134,4 +140,5 @@ Ingenting byggs nu; idén är på experimentstadiet (Bengt 2/10).
 3. **Prognosen** i rapporten först efter domen i mars, och bara om prognoslagret klarar sina grindar.
 
 **Öppna frågor till Bengt och Axel:** hur många rutter man får spara; om rapporten ska ha en egen flik eller ligga på *Redo.*-skärmen; om
-notisen ska finnas i första versionen och vad som i så fall räknas som nytt.
+notisen ska finnas i första versionen och vad som i så fall räknas som nytt; om tio minuters publicering räcker för kollen före avresan; om den sparade
+linjen ska visas utan karta bakom sig, eftersom kartbitar avslöjar trakten.

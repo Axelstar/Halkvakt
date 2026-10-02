@@ -1,0 +1,478 @@
+<title>Halkvaktens favoriter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  /* Layout: the same paper sheet as Halkvaktens app, systembild and mätningar. Three screens up top, then numbered
+     sections that follow the driver: the idea, the tab, the report, how fresh it can be, times and notice, saving a
+     route, the sources, privacy, the numbers, the neighbours, what waits. The screens keep the app's own dark skin in
+     both themes, because the app is dark-only. */
+  :root {
+    --papper: #F6F7F5;
+    --blad: #FFFFFF;
+    --black: #16202A;
+    --dampad: #4A5763;
+    --linje: #D9DFE3;
+    --gul: #A8720A;
+    --gul-yta: #FFF3D6;
+    --gron: #1F7A45;
+    --gron-yta: #E4F2EA;
+    --rod: #A63A2A;
+    --rod-yta: #F9E7E3;
+    --frost-yta: #E6F0F5;
+    --skarm: #0B1014;
+    /* The app's skin (ios/HalkvaktApp/Sources/Theme.swift), identical in both themes. */
+    --app-bg: #080B0D;
+    --app-panel: #0F1518;
+    --app-flik: #0A0E11;
+    --app-kant: rgba(255,255,255,0.12);
+    --app-tunn: rgba(255,255,255,0.08);
+    --app-streck: rgba(255,255,255,0.22);
+    --app-gul: #FFC94A;
+    --app-pagul: #140F00;
+    --app-gron: #1FB25A;
+    --app-grontext: #7FD9A4;
+    --app-bla: #6EC9E8;
+    --app-text: #E9EFF2;
+    --app-text2: #C7D3D9;
+    --app-dim: #8FA0A9;
+    --app-glas: rgba(255,255,255,0.09);
+    --skylt-ring: #E0352B;
+    --skylt-yta: #FFFFFF;
+    --skylt-text: #000000;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --papper: #0B1014; --blad: #121A20; --black: #E6ECEF; --dampad: #9DAAB3; --linje: #26323B;
+      --gul: #FFC94A; --gul-yta: #2A2310; --gron: #4CC382; --gron-yta: #12261B; --rod: #F08A7A; --rod-yta: #2B1714;
+      --frost-yta: #13232C; --skarm: #05080A;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --papper: #0B1014; --blad: #121A20; --black: #E6ECEF; --dampad: #9DAAB3; --linje: #26323B;
+    --gul: #FFC94A; --gul-yta: #2A2310; --gron: #4CC382; --gron-yta: #12261B; --rod: #F08A7A; --rod-yta: #2B1714;
+    --frost-yta: #13232C; --skarm: #05080A;
+    color-scheme: dark;
+  }
+  body { background: var(--papper); color: var(--black); padding-inline: 16px; padding-block: 28px 48px;
+         font: 400 16px/1.6 "Source Serif 4", Georgia, "Times New Roman", serif; }
+  .blad { max-width: 820px; margin: 0 auto; background: var(--blad); border: 1px solid var(--linje);
+          padding: clamp(20px, 5vw, 56px); display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  h1, h2, h3, .etikett, th, .dom, .fakta b, figcaption b, .steg b, .tl-l { font-family: "Instrument Sans", "Helvetica Neue", Arial, sans-serif; }
+  h1 { font-size: clamp(30px, 5vw, 42px); line-height: 1.08; font-weight: 700; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+  h2 { font-size: 21px; font-weight: 700; margin: 18px 0 0; text-wrap: balance; }
+  h3 { font-size: 16px; font-weight: 600; margin: 6px 0 0; }
+  p { margin: 0; max-width: 68ch; }
+  .etikett { font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gul); }
+  .ingress { font-size: 18px; color: var(--dampad); }
+  .mono, code { font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; font-size: 0.86em; font-variant-numeric: tabular-nums; }
+  .litet { font-size: 14px; color: var(--dampad); }
+  ul, ol { margin: 0; padding-left: 1.2em; display: grid; gap: 5px; }
+  li { max-width: 66ch; }
+  a { color: inherit; }
+  a:focus-visible { outline: 2px solid var(--gul); outline-offset: 2px; }
+
+  .fakta { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 14px; color: var(--dampad);
+           border-top: 1px solid var(--linje); border-bottom: 1px solid var(--linje); padding-block: 10px; }
+  .fakta b { color: var(--black); font-weight: 600; font-variant-numeric: tabular-nums; }
+  figure { margin: 0; }
+  figcaption { font-size: 13px; line-height: 1.4; color: var(--dampad); }
+  figcaption b { color: var(--black); font-weight: 600; }
+
+  .tabell { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--linje); vertical-align: top; }
+  th { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dampad); }
+  td.tal, th.tal { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  .steg { list-style: none; padding: 0; display: grid; gap: 0; counter-reset: s; }
+  .steg li { counter-increment: s; display: grid; grid-template-columns: 30px 1fr; gap: 12px; padding-block: 9px;
+             border-bottom: 1px solid var(--linje); max-width: none; }
+  .steg li::before { content: counter(s); font: 600 13px "Instrument Sans", Arial, sans-serif; color: var(--blad);
+                     background: var(--black); width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; }
+  .steg li > div { min-width: 0; }
+
+  .par { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px 28px; align-items: start; }
+  .par > * { min-width: 0; }
+  .ruta { border-left: 3px solid var(--linje); padding: 4px 0 4px 14px; display: grid; gap: 6px; align-content: start; }
+  .ruta.gul { border-left-color: var(--gul); }
+  .skickas { background: var(--frost-yta); padding: 14px 16px; border-radius: 4px; display: grid; gap: 8px; }
+  .dom { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+         padding: 1px 7px; border-radius: 3px; white-space: nowrap; }
+  .dom.klar { color: var(--gron); background: var(--gron-yta); }
+  .dom.vantar { color: var(--gul); background: var(--gul-yta); }
+  .dom.ingen { color: var(--dampad); background: var(--papper); border: 1px solid var(--linje); }
+
+  /* The timeline in section 4: one tick per minute, 06:55–07:20, to scale. */
+  .tl { position: relative; height: 156px; }
+  .tl-streck { position: absolute; left: 0; right: 0; top: 70px; height: 10px; opacity: 0.6;
+               background: repeating-linear-gradient(to right, var(--dampad) 0 1px, transparent 1px 4%); }
+  .tl-linje { position: absolute; left: 0; right: 0; top: 79px; height: 2px; background: var(--linje); }
+  .tl-band { position: absolute; left: 20%; width: 20%; top: 77px; height: 6px; background: var(--gul); }
+  .tl-p { position: absolute; top: 73px; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%;
+          box-sizing: border-box; border: 2px solid var(--black); background: var(--blad); }
+  .tl-p.fil { background: var(--black); }
+  .tl-p.koll { background: var(--gul); border-color: var(--gul); }
+  .tl-l { position: absolute; width: 116px; margin-left: -58px; text-align: center; font-size: 13px; line-height: 1.3; color: var(--dampad); }
+  .tl-l b { display: block; font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; font-weight: 500; color: var(--black); }
+  .tl-l.upp { bottom: 90px; }
+  .tl-l.ned { top: 96px; }
+
+  /* The app screens. Sizes follow the app scaled to about 60 %. */
+  .skarmar { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 18px; align-items: start; }
+  .skarmar figure, .rapport-fig { display: grid; gap: 8px; min-width: 0; }
+  .skarm { background: var(--app-bg); color: var(--app-text); border: 1px solid var(--linje); border-radius: 22px;
+           padding: 12px 12px 0; display: grid; gap: 9px; overflow: hidden;
+           font: 400 12.5px/1.35 "Instrument Sans", system-ui, -apple-system, sans-serif; }
+  .skarm b { font-weight: 600; }
+  .s-topp { display: flex; align-items: center; gap: 6px; font: 500 9px "IBM Plex Mono", ui-monospace, monospace; letter-spacing: 0.16em; color: var(--app-dim); }
+  .s-pill { margin-left: auto; display: flex; align-items: center; gap: 5px; padding: 3px 7px; border-radius: 999px;
+            border: 1px solid var(--app-kant); color: var(--app-grontext); font-size: 8.5px; letter-spacing: 0.1em; }
+  .s-pill::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--app-gron); }
+  .s-h1 { font-size: 23px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.1; }
+  .s-sub { color: var(--app-text2); font-size: 11.5px; }
+  .s-etikett { font: 500 9px "IBM Plex Mono", ui-monospace, monospace; letter-spacing: 0.16em; color: var(--app-gul); text-transform: uppercase;
+               display: flex; align-items: center; gap: 6px; }
+  .s-meta { font: 500 8.5px "IBM Plex Mono", ui-monospace, monospace; letter-spacing: 0.1em; color: var(--app-dim); text-transform: uppercase; }
+  .s-kort { background: var(--app-panel); border: 1px solid var(--app-kant); border-radius: 14px; padding: 10px 12px; display: grid; gap: 4px; }
+  .s-namn { display: flex; align-items: center; gap: 6px; font-size: 14.5px; font-weight: 600; }
+  .s-namn > span:first-child { flex: 1; min-width: 0; }
+  .s-nytt { padding: 2px 6px; border-radius: 999px; background: var(--app-gul); color: var(--app-pagul);
+            font: 600 8px "IBM Plex Mono", ui-monospace, monospace; letter-spacing: 0.1em; }
+  .s-pil { color: var(--app-dim); }
+  .s-text { color: var(--app-text2); font-size: 11.5px; display: flex; gap: 7px; align-items: baseline; }
+  .s-text.gron { color: var(--app-grontext); }
+  .prick { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--app-gul); }
+  .prick.tom { background: none; border: 1.5px solid var(--app-dim); box-sizing: border-box; }
+  .prick.gron { background: var(--app-gron); }
+  .s-streckad { border: 1px dashed var(--app-streck); border-radius: 14px; padding: 9px 12px; display: grid; gap: 3px; font-size: 11.5px; color: var(--app-text2); }
+  .s-streckad b { color: var(--app-text); }
+  .s-las { display: flex; gap: 6px; align-items: center; font-size: 10.5px; color: var(--app-dim); }
+  .s-flikar { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 3px -12px 0; padding: 7px 0 10px;
+              border-top: 1px solid var(--app-kant); background: var(--app-flik); text-align: center; font-size: 9.5px; color: var(--app-dim); }
+  .s-flikar span { display: grid; justify-items: center; gap: 2px; }
+  .s-flikar .pa { color: var(--app-gul); font-weight: 600; }
+  .s-tillbaka { color: var(--app-bla); font-size: 12.5px; font-weight: 500; display: flex; justify-content: space-between; }
+  .s-gul { background: var(--app-gul); color: var(--app-pagul); border-radius: 14px; padding: 10px 12px; display: grid; gap: 3px; }
+  .s-gul .s-etikett { color: var(--app-pagul); font-weight: 600; }
+  .s-gul .stor { font-size: 15px; font-weight: 700; line-height: 1.25; }
+  .s-lista { background: var(--app-panel); border: 1px solid var(--app-kant); border-radius: 14px; padding: 2px 12px; }
+  .s-post { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 8px; padding: 8px 0; border-top: 1px solid var(--app-tunn); align-items: start; }
+  .s-post:first-child { border-top: 0; }
+  .s-post svg { width: 18px; height: 18px; fill: none; stroke: var(--app-gul); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .s-post .t { display: block; font-size: 12.5px; font-weight: 600; color: var(--app-text); }
+  .s-post .d { display: block; font-size: 11px; color: var(--app-text2); }
+  .s-tal { font: 600 12.5px "IBM Plex Mono", ui-monospace, monospace; color: var(--app-gul); text-align: right; line-height: 1.1; }
+  .s-tal small { display: block; font-size: 8px; font-weight: 500; color: var(--app-dim); letter-spacing: 0.1em; }
+  .s-skylt { width: 18px; height: 18px; border-radius: 50%; box-sizing: border-box; border: 2.5px solid var(--skylt-ring);
+             background: var(--skylt-yta); color: var(--skylt-text); font: 700 7.5px "Instrument Sans", Arial, sans-serif; display: grid; place-items: center; }
+  .s-knapp { height: 38px; border-radius: 999px; background: var(--app-gul); color: var(--app-pagul); font-weight: 600; font-size: 13.5px; display: grid; place-items: center; }
+  .s-knapp.kontur { background: none; border: 1px solid var(--app-streck); color: var(--app-text2); }
+  .s-nr { flex: none; display: inline-grid; place-items: center; width: 15px; height: 15px; border-radius: 50%; background: var(--app-text); color: var(--app-bg);
+          font: 700 9px "Instrument Sans", Arial, sans-serif; letter-spacing: 0; }
+  .s-gul .s-nr { background: var(--app-pagul); color: var(--app-gul); }
+  .s-notis { background: var(--app-glas); border-radius: 16px; padding: 10px; display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 9px; }
+  .s-ikon { width: 30px; height: 30px; border-radius: 8px; background: var(--app-gul); display: grid; place-items: center; }
+  .s-bubbla { max-width: 88%; padding: 8px 11px; border-radius: 14px; font-size: 11.5px; background: var(--app-panel); border: 1px solid var(--app-kant); color: var(--app-text2); }
+  .s-bubbla.du { justify-self: end; background: var(--app-glas); border-color: transparent; color: var(--app-text); }
+  .s-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .s-chip { padding: 4px 8px; border-radius: 999px; border: 1px solid var(--app-kant); font-size: 10.5px; color: var(--app-text2); }
+  .s-chip.vald { border-color: var(--app-gul); color: var(--app-gul); }
+  .s-falt { border: 1px solid var(--app-streck); border-radius: 9px; padding: 7px 10px; font-size: 13px; color: var(--app-text); background: var(--app-glas); }
+  .s-facit { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--app-text2); }
+  .s-facit > span:first-child { flex: 1; min-width: 0; }
+  .s-kapsel { padding: 3px 8px; border-radius: 999px; border: 1px solid var(--app-gul); color: var(--app-gul); font-size: 10px; font-weight: 600; white-space: nowrap; }
+  .s-skiljare { border-top: 1px solid var(--app-tunn); }
+  .rapport-fig .skarm { max-width: 320px; }
+</style>
+
+<main class="blad">
+  <div class="etikett">Underlag · 2 oktober 2026 · kort #233 · experimentstadiet, inget byggt</div>
+  <h1>Favoriter: läget längs dina vägar innan du sätter dig i bilen</h1>
+  <p class="ingress">Ett underlag för en egen flik i appen. Föraren sparar sina vanliga rutter, till och från jobbet eller till sommarstället, och läser före resan en rapport om allt Halkvakt vet om vägen just nu. Rapporten är så färsk som systemet kan göra den tio minuter före avresan. Formen bestämmer Axel.</p>
+  <div class="fakta">
+    <span>nytt läge var <b>10</b> min</span>
+    <span><b>8</b> öppna källor</span>
+    <span><b>1 876</b> aktiva vägarbeten 2/10</span>
+    <span>köer: <b>191 av 198</b> sträckor i Stockholm</span>
+    <span>egen fil <b>≈ 120 kB</b></span>
+    <span>positioner som skickas: <b>0</b></span>
+  </div>
+
+  <div class="skarmar">
+    <figure>
+      <div class="skarm">
+        <div class="s-topp"><svg width="9" height="9" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L23 21H1z" fill="#FFC94A"></path></svg>HALKVAKT<span class="s-pill">LÄGET 07:00</span></div>
+        <div class="s-h1">Favoriter</div>
+        <div class="s-sub">Läget längs dina vanliga vägar, just nu.</div>
+        <div class="s-kort">
+          <div class="s-namn"><span>Till jobbet</span><span class="s-nytt">1 NYTT</span><span class="s-pil" aria-hidden="true">›</span></div>
+          <div class="s-meta">Vardagar 07:15 · kollat 07:05</div>
+          <div class="s-text"><i class="prick"></i><span>Olycka på E18 vid Danderyd. Tät trafik dit.</span></div>
+        </div>
+        <div class="s-kort">
+          <div class="s-namn"><span>Hem från jobbet</span><span class="s-pil" aria-hidden="true">›</span></div>
+          <div class="s-meta">Vardagar 16:30 · kollas 16:20</div>
+          <div class="s-text"><i class="prick tom"></i><span>Inget nytt sedan i går. Vägarbetet vid Arninge pågår.</span></div>
+        </div>
+        <div class="s-kort">
+          <div class="s-namn"><span>Till sommarstället</span><span class="s-pil" aria-hidden="true">›</span></div>
+          <div class="s-meta">Ingen fast tid · 340 km</div>
+          <div class="s-text"><i class="prick"></i><span>Halt väglag på väg 83, vägarbete på E4 vid Gävle.</span></div>
+        </div>
+        <div class="s-kort">
+          <div class="s-namn"><span>Till träningen</span><span class="s-pil" aria-hidden="true">›</span></div>
+          <div class="s-meta">Tisdag och torsdag 18:00</div>
+          <div class="s-text gron"><i class="prick gron"></i><span>Inget rapporterat längs rutten just nu.</span></div>
+        </div>
+        <div class="s-streckad"><b>+ Spara en ny rutt</b><span>Kör vägen en gång och spara den när resan är slut.</span></div>
+        <div class="s-las"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Rutterna finns bara i den här telefonen.</div>
+        <div class="s-flikar">
+          <span><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3L22 20H2z" fill="currentColor"></path></svg>Vakten</span>
+          <span class="pa"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.7 5.5 6 .9-4.35 4.25 1.03 6L12 17l-5.38 2.85 1.03-6L3.3 9.6l6-.9z" fill="currentColor"></path></svg>Favoriter</span>
+          <span><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="3.2 2.3"></circle><circle cx="12" cy="12" r="3" fill="currentColor"></circle></svg>Inställningar</span>
+        </div>
+      </div>
+      <figcaption><b>Fliken.</b> Varje rutt på en rad, med läget just nu.</figcaption>
+    </figure>
+
+    <figure>
+      <div class="skarm">
+        <div class="s-etikett">På låsskärmen · 07:05</div>
+        <div class="s-notis">
+          <div class="s-ikon"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5L22.5 21H1.5z" fill="#140F00"></path></svg></div>
+          <div style="display: grid; gap: 2px; min-width: 0">
+            <div class="s-meta" style="display: flex; justify-content: space-between"><span>Halkvakt</span><span>nu</span></div>
+            <b style="font-size: 12.5px">Till jobbet: en olycka på vägen</b>
+            <span style="font-size: 11.5px; color: var(--app-text2)">E18 vid Danderyd, ett körfält avstängt sedan 06:52. Restid till Danderyd 14 min, normalt 9.</span>
+          </div>
+        </div>
+        <div class="s-las">Hem från jobbet och Till träningen: ingen notis, inget är nytt.</div>
+        <div class="s-skiljare"></div>
+        <div class="s-etikett">Siri, innan du kör</div>
+        <div class="s-bubbla du">Hej Siri, hur är vägen till jobbet?</div>
+        <div class="s-bubbla">Just nu en olycka på E18 vid Danderyd och tät trafik dit. Frysrisk vid en station längs vägen. Läget är från 07:00.</div>
+        <div class="s-skiljare"></div>
+        <div class="s-etikett">Under resan</div>
+        <div class="s-text" style="padding-bottom: 12px"><span>Rösten säger som i dag bara det som inte kan vänta: halka, frysrisk, olyckor, vilt och fartkameror. Vägarbetena och köerna stannar i rapporten.</span></div>
+      </div>
+      <figcaption><b>Notisen 07:05.</b> Bara när något är nytt. Siri svarar ur samma rapport.</figcaption>
+    </figure>
+
+    <figure>
+      <div class="skarm">
+        <div class="s-topp"><svg width="9" height="9" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L23 21H1z" fill="#FFC94A"></path></svg>HALKVAKT</div>
+        <div class="s-h1">Redo.</div>
+        <div class="s-etikett">Efter resan</div>
+        <div class="s-kort">
+          <div class="s-meta">I dag 06:58–07:36 · 34 km</div>
+          <div class="s-facit"><span>”Isrisk framöver.” 07:09</span><span class="s-kapsel">Stämde</span><span class="s-kapsel">Stämde inte</span></div>
+          <div class="s-skiljare" style="margin-block: 5px"></div>
+          <b style="font-size: 13.5px">Spara resan som rutt?</b>
+          <svg viewBox="0 0 200 62" width="100%" height="62" aria-hidden="true"><path d="M10 52 C 40 50, 52 30, 84 32 S 130 14, 150 18 S 182 10, 190 8" fill="none" stroke="#FFC94A" stroke-width="3" stroke-linecap="round"></path><circle cx="10" cy="52" r="4.5" fill="#E9EFF2"></circle><circle cx="190" cy="8" r="4.5" fill="#FFC94A"></circle></svg>
+          <div class="s-meta">Ritad i telefonen · ingen karta</div>
+          <div class="s-falt">Till jobbet</div>
+          <div class="s-chips"><span class="s-chip vald">Till jobbet</span><span class="s-chip">Hem från jobbet</span><span class="s-chip">Till sommarstället</span></div>
+          <div class="s-knapp" style="margin-top: 4px">Spara rutten</div>
+          <div class="s-knapp kontur">Inte nu</div>
+        </div>
+        <div class="s-las">Vägen sparas bara i telefonen. Ingen adress, ingen ruttsökning på nätet.</div>
+        <div class="s-flikar">
+          <span class="pa"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3L22 20H2z" fill="currentColor"></path></svg>Vakten</span>
+          <span><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.7 5.5 6 .9-4.35 4.25 1.03 6L12 17l-5.38 2.85 1.03-6L3.3 9.6l6-.9z" fill="currentColor"></path></svg>Favoriter</span>
+          <span><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="3.2 2.3"></circle><circle cx="12" cy="12" r="3" fill="currentColor"></circle></svg>Inställningar</span>
+        </div>
+      </div>
+      <figcaption><b>Spara efter resan.</b> Rutten sparas ur en körd resa, aldrig ur en adress.</figcaption>
+    </figure>
+  </div>
+  <p class="litet">Skärmarna är ritade för det här underlaget i appens eget skinn. Rutter, platser, tider och tal i dem är påhittade exempel.</p>
+
+  <h2>1. Idén</h2>
+  <p>Föraren sparar de vägar som körs ofta: till jobbet och hem, till sommarstället, till föräldrarna eller träningen. Före resan öppnar föraren rutten och ser allt Halkvakt vet om den just nu, alltså halkan, olyckorna, vägarbetena, köerna där de mäts, färjorna och fartkamerorna. Under resan är allt som i dag, och rösten säger bara det som inte kan vänta.</p>
+  <p>Pendlingen är ett av fallen. En rutt kan få tider, till exempel vardagar 07:15. Då kollar appen läget tio minuter före och skickar en notis om något har tillkommit.</p>
+  <p>Det viktigaste beslutet fattas innan bilen startar: att åka tidigare, ta en annan väg eller stanna hemma. En finsk studie av 1 437 förare fann att de välinformerade främst ändrade sina resplaner och inte sin körning (Kilpeläinen och Summala 2007, i Skyltfondsansökans bilaga 4).</p>
+
+  <h2>2. Fliken Favoriter</h2>
+  <p>En tredje flik mellan <i>Vakten</i> och <i>Inställningar</i>. Varje sparad rutt står på en rad med det viktigaste just nu. Raden har ett av tre lägen.</p>
+  <div class="tabell">
+    <table>
+      <thead><tr><th>Läge</th><th>Vad raden visar</th></tr></thead>
+      <tbody>
+        <tr><td><span class="dom vantar">Nytt</span></td><td>Ett gult märke med antalet nya saker sedan förra kollen, och den viktigaste av dem i klartext.</td></tr>
+        <tr><td><span class="dom ingen">Inget nytt</span></td><td>Det som redan pågick står kvar i rapporten. Raden säger att inget har tillkommit och nämner det största som pågår.</td></tr>
+        <tr><td><span class="dom klar">Lugnt</span></td><td><i>Inget rapporterat längs rutten just nu.</i></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Under rutterna finns <i>Spara en ny rutt</i>, med förklaringen att en rutt sparas efter en körning, och en rad som säger att rutterna bara finns i telefonen.</p>
+
+  <h2>3. Rapporten</h2>
+  <p>Rapporten är det föraren läser innan bilen startar. Den ska gå att läsa på några sekunder och säga allt som gäller längs rutten just nu.</p>
+  <div class="par">
+    <figure class="rapport-fig">
+      <div class="skarm">
+        <div class="s-tillbaka"><span>‹ Favoriter</span><span>Tider och notis</span></div>
+        <div class="s-h1">Till jobbet</div>
+        <div class="s-meta">34 km · vardagar 07:15</div>
+        <div class="s-kort">
+          <div class="s-etikett"><span class="s-nr">1</span>Just nu · kollat 07:05</div>
+          <b style="font-size: 14.5px">Läget från 07:00</b>
+          <span class="s-text">Nästa 07:10. Läget kan ändras under resan, och då säger rösten till.</span>
+        </div>
+        <div class="s-gul">
+          <div class="s-etikett"><span class="s-nr">2</span>Nytt sedan i går 16:20</div>
+          <span class="stor">Olycka på E18 vid Danderyd</span>
+          <span>Södergående, ett körfält avstängt. Rapporterad 06:52.</span>
+        </div>
+        <div class="s-etikett"><span class="s-nr">3</span>Längs vägen just nu</div>
+        <div class="s-lista">
+          <div class="s-post"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.2 15.2V4.6"></path><circle cx="7.2" cy="18.2" r="3"></circle><path d="M16.8 3.8v9.2"></path><path d="M12.8 6.1l8 4.6"></path><path d="M20.8 6.1l-8 4.6"></path></svg><span><span class="t">Frysrisk vid stationen i Arninge</span><span class="d">Vägytan −0,8 °C, luften +1,2 °C, fukt på vägbanan.</span></span><span></span></div>
+          <div class="s-post"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg><span><span class="t">E18 Arninge–Danderyd</span><span class="d">Tät trafik, 14 minuter, normalt 9.</span></span><span class="s-tal">+5<small>MIN</small></span></div>
+          <div class="s-post"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 3.5h4l4.5 15.5h-13z"></path><path d="M3 20.5h18"></path><path d="M8.3 9.5h7.4"></path><path d="M6.9 14.5h10.2"></path></svg><span><span class="t">Vägarbete på väg 276 vid Arninge</span><span class="d">Ett körfält avsmalnat, liten påverkan. Pågår till 15 december.</span></span><span></span></div>
+          <div class="s-post"><span class="s-skylt" aria-hidden="true">60</span><span><span class="t">60 km/h förbi vägarbetet</span><span class="d">Tillfälligt nedsatt hastighet.</span></span><span></span></div>
+          <div class="s-post"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.2" y="4.8" width="13.2" height="7.8" rx="2"></rect><circle cx="8" cy="8.7" r="2.3"></circle><path d="M18.2 7.2l2.4-1.7"></path><path d="M18.6 10.2h2.7"></path><path d="M10 12.6V20"></path><path d="M7.4 20h5.2"></path></svg><span><span class="t">Tre fartkameror</span><span class="d">Rösten säger till före varje kamera.</span></span><span></span></div>
+        </div>
+        <div class="s-text gron"><span class="s-nr">4</span><span>Inget rapporterat: halt väglag på sträckorna, vilt, färjor och SMHI-varningar.</span></div>
+        <div class="s-streckad">
+          <div class="s-etikett" style="color: var(--app-dim)"><span class="s-nr">5</span>Halkvakt tror · kommer senare</div>
+          <span>Prognosen längs vägen visas här tidigast efter domen i mars.</span>
+        </div>
+        <div class="s-knapp" style="display: flex; gap: 6px; justify-content: center; align-items: center"><span class="s-nr" style="background: var(--app-pagul); color: var(--app-gul)">6</span>Starta vakten</div>
+        <div class="s-flikar">
+          <span><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3L22 20H2z" fill="currentColor"></path></svg>Vakten</span>
+          <span class="pa"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.7 5.5 6 .9-4.35 4.25 1.03 6L12 17l-5.38 2.85 1.03-6L3.3 9.6l6-.9z" fill="currentColor"></path></svg>Favoriter</span>
+          <span><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="3.2 2.3"></circle><circle cx="12" cy="12" r="3" fill="currentColor"></circle></svg>Inställningar</span>
+        </div>
+      </div>
+      <figcaption><b>Rapporten 07:05,</b> tio minuter före avresan. Påhittat exempel: en pendling i Stockholms län en vintermorgon.</figcaption>
+    </figure>
+    <ol class="steg">
+      <li><div><b>När läget är från.</b> Överst står när appen kollade och vilken fil den läste. Rapporten säger alltid <i>just nu</i> och aldrig <i>när du kör</i>, eftersom läget kan ändras på en halvtimme.</div></li>
+      <li><div><b>Det nya först.</b> Det som har tillkommit sedan förra kollen står överst i appens gula varningsfärg. Det är samma sak som en notis skulle gälla.</div></li>
+      <li><div><b>Allt längs vägen, i viktordning.</b> Halka och frysrisk, olyckor, hinder och vilt, köer och restider, vägarbeten, hastighet och omledningar, färjor, fartkameror och SMHI:s varningar, med en rad per sak. Samma regel som för rösten gäller: en sträcka ur väglaget ligger på vägen, men en station ligger <i>vid</i> en plats och får aldrig ett avstånd som mätningen inte bär.</div></li>
+      <li><div><b>Det tomma på en rad.</b> Kategorier utan något samlas på en rad. Saknas mätningen helt, som köerna utanför storstäderna, står det <i>Köer mäts inte längs den här vägen.</i> Är allt lugnt står det <i>Inget rapporterat längs rutten just nu.</i></div></li>
+      <li><div><b>Prognosen senare.</b> Platsen för <i>Halkvakt tror</i> står tom till domen i mars och fylls bara om prognoslagret klarar sina grindar. En prognos får visas och stärka, men aldrig ensam skicka en notis (regel T6).</div></li>
+      <li><div><b>Starta vakten.</b> Rapporten slutar där resan börjar. Under körningen säger rösten som i dag bara det som inte kan vänta, och vägarbetena och köerna stannar i rapporten.</div></li>
+    </ol>
+  </div>
+  <p>Ett andra exempel, till ett sommarställe i Hälsingland en fredag eftermiddag: <i>Vägarbete på E4 vid Gävle, ett körfält avstängt, stor påverkan, till 30 november · Halt väglag på väg 83 mellan Bollnäs och Ljusdal · Frysrisk vid två mätstationer · 60 km/h vid Hudiksvall · Fyra fartkameror · Köer mäts inte längs den här vägen · Inga olyckor och inget vilt.</i></p>
+
+  <h2>4. Tio minuter före: så färskt det kan bli</h2>
+  <p>Kravet är att rapporten ska vara så färsk som möjligt tio minuter innan föraren sätter sig i bilen. Kedjan ser ut så här i dag:</p>
+  <ul>
+    <li><b>Livemotorn</b> hämtar Trafikverkets olyckor, väglag och väderstationer varje minut (pg_cron i Supabase).</li>
+    <li><b>Appens lägesfil</b> byggs och publiceras var tionde minut, på hela tiotal: 07:00, 07:10, 07:20.</li>
+    <li><b>Restiderna</b> är 1–2 minuter gamla när Trafikverket lämnar dem, och detektorerna under en minut (mätt 2/10, DECISIONS #442).</li>
+    <li><b>Telefonen</b> hämtar lägesfilen var 30:e minut under en körning. Rapporten hämtar i stället när föraren öppnar den och vid den tidsatta kollen.</li>
+  </ul>
+  <figure aria-label="Tidslinje från 06:55 till 07:20 med ett streck per minut.">
+    <div class="tl">
+      <div class="tl-streck"></div>
+      <div class="tl-linje"></div>
+      <div class="tl-band"></div>
+      <span class="tl-p fil" style="left: 20%"></span>
+      <span class="tl-p koll" style="left: 40%"></span>
+      <span class="tl-p fil" style="left: 60%"></span>
+      <span class="tl-p" style="left: 80%"></span>
+      <div class="tl-l upp" style="left: 20%"><b>07:00</b>lägesfilen publiceras</div>
+      <div class="tl-l ned" style="left: 40%"><b>07:05</b>kollen, tio minuter före</div>
+      <div class="tl-l upp" style="left: 60%"><b>07:10</b>nästa fil</div>
+      <div class="tl-l ned" style="left: 80%"><b>07:15</b>avresa</div>
+    </div>
+    <figcaption>Ett streck per minut, 06:55–07:20. Det gula är hur gammalt läget är när kollen läser det: fem minuter.</figcaption>
+  </figure>
+  <p>Med avresa 07:15 kollar appen 07:05 och läser 07:00-filen, som då är fem minuter gammal. Öppnar föraren rapporten 07:12 läser den 07:10-filen. Rapporten skriver alltid ut vilken fil den läser. Tätare än var tionde minut kräver att publiceringen ändras. Det är inte prövat och ingår inte i förslaget.</p>
+  <p>Vägarbetena och restiderna ska ligga i en egen fil, för lägesfilen som telefonen hämtar under körningen ska inte växa (avsnitt 9).</p>
+
+  <h2>5. Tider och notis</h2>
+  <p>Tiderna är frivilliga. En rutt utan tider har ändå sin rapport när föraren öppnar den. Notisen kommer utan att föraren har bett om den, så den gäller bara det som är nytt eller ändrar resan.</p>
+  <div class="par">
+    <div class="ruta gul">
+      <h3>Det här ger en notis</h3>
+      <ul>
+        <li>Ny halka eller frysrisk längs vägen</li>
+        <li>En olycka, ett hinder eller djur på vägen</li>
+        <li>Ett nytt vägarbete som stänger ett körfält</li>
+        <li>En inställd färja</li>
+      </ul>
+    </div>
+    <div class="ruta">
+      <h3>Det här ger aldrig en notis</h3>
+      <ul>
+        <li>Vägarbeten som har pågått en längre tid</li>
+        <li>Det som redan stod i förra kollen</li>
+        <li>Prognosen, enligt regel T6</li>
+      </ul>
+    </div>
+  </div>
+  <p><b>Hur ofta?</b> På kuvösens vinter 2024/25 hade frysrisken ensam gett en notis vid ungefär 14 procent av kollerna för en väg som passerar två eller tre stationer. Det blir en och en halv gång i veckan för den som kollar morgon och eftermiddag, och nära tre gånger i veckan norr om 62 grader. Med bara det nya sjunker det till ungefär en gång i veckan. Väglaget, olyckorna och vägarbetena kommer ovanpå. Notisen måste alltså vara sparsam.</p>
+  <p><b>På iPhone</b> väcker systemet inte appen på minuten. Kollen 07:05 görs därför av en automation i Genvägar som kör åtgärden <i>Kolla mina rutter</i>. Om den kan köras utan att föraren bekräftar varje gång är inte provat, och det ska provas på Axels telefon. Android kan schemalägga kollen själv.</p>
+
+  <h2>6. Spara en rutt</h2>
+  <p>Rutten sparas ur en körd resa. Kortet <i>Efter resan</i> på Redo.-skärmen frågar om resan ska sparas, och föraren ger den ett namn eller väljer ett av förslagen. Föraren skriver aldrig in en adress, och ingen tjänst för ruttsökning på nätet får veta var föraren bor, arbetar eller har sitt sommarställe. En rutt tas bort med ett tryck.</p>
+  <p><b>Förslag: ingen karta bakom den sparade linjen.</b> Kartbitar hämtas från en kartserver, som då får veta i vilken trakt rutten går. Linjen ritas i telefonen utan bakgrund. Ortsnamnen i rapporten kommer ur Trafikverkets egna texter i de gemensamma filerna och inte ur en adressökning.</p>
+
+  <h2>7. Var informationen kommer ifrån</h2>
+  <p>Allt finns i Trafikverkets öppna data, med samma nyckel som Halkvakt redan har och under samma öppna licens, utom SMHI:s varningar. Läst i Trafikverkets datamodell och räknat i deras API 2/10 (DECISIONS #442).</p>
+  <div class="tabell">
+    <table>
+      <thead><tr><th>I rapporten</th><th>Källa</th><th>Täckning</th><th>Hos Halkvakt i dag</th></tr></thead>
+      <tbody>
+        <tr><td>Halt väglag på sträckor</td><td><i>RoadCondition</i></td><td>Hela landet, november–april</td><td>I rösten</td></tr>
+        <tr><td>Frysrisk vid mätstationer och broar</td><td>Väderstationerna</td><td>Hela landet, omkring 750 stationer</td><td>I rösten</td></tr>
+        <tr><td>Olyckor, hinder, djur på vägen</td><td><i>Situation</i></td><td>Hela landet</td><td>I rösten (olyckor och vilt)</td></tr>
+        <tr><td><b>Vägarbeten</b>: körfält, påverkan, start och slut</td><td><i>Situation</i></td><td>Hela landet</td><td>Hämtas, sägs inte</td></tr>
+        <tr><td><b>Hastighetsnedsättningar och omledningar</b></td><td><i>Situation</i></td><td>Hela landet</td><td>Hämtas, sägs inte</td></tr>
+        <tr><td><b>Köer och restider</b></td><td><i>TravelTimeRoute</i>, <i>TrafficFlow</i></td><td>Nästan bara Stockholm</td><td>Används inte</td></tr>
+        <tr><td>Kömeddelanden från trafikcentralerna</td><td><i>Situation</i></td><td>Hela landet, när de skrivs</td><td>Arkiveras</td></tr>
+        <tr><td><b>Färjor</b>: avgångar och störningar</td><td><i>FerryAnnouncement</i></td><td>Vägfärjorna, 36 leder</td><td>Används inte</td></tr>
+        <tr><td>Fartkameror</td><td><i>TrafficSafetyCamera</i></td><td>Hela landet</td><td>I rösten</td></tr>
+        <tr><td>SMHI:s varningar</td><td>SMHI</td><td>Hela landet</td><td>I arkivet</td></tr>
+        <tr><td><i>Halkvakt tror</i>, prognosen längs vägen</td><td>Prognoslagret</td><td>—</td><td>Först efter domen i mars, om det klarar sina grindar</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Realtidstrafik från Google, Waze, TomTom eller HERE kostar pengar eller kräver avtal, och gratisnivån är ett krav i projektet. Bilarnas egna halkvarningar finns inte i något öppet dataset (DECISIONS #282). Utanför Stockholm och Göteborg finns inga mätta köer.</p>
+
+  <h2>8. Integriteten</h2>
+  <div class="skickas">
+    <p><b>Det som lämnar telefonen: ingenting nytt.</b> Rutterna ligger i telefonen och ingen annanstans. Rapporten bygger på gemensamma filer för hela landet, samma för alla telefoner, och jämförs med rutten i telefonen. Ingen fråga skickas om just förarens rutt, notisen skapas i telefonen, och ingen server vet vilka rutter som finns. Löftet står kvar: ingen position lämnar telefonen av sig själv.</p>
+  </div>
+  <p>Två saker måste sägas öppet. Appen sparar för första gången vägar som föraren har kört, på förarens begäran, så produktboken, introduktionen och integritetssidan ska säga det. Och rapporten får inte hämta något som är särskilt för rutten, till exempel bilder från kamerorna längs den, eftersom det berättar för Trafikverkets server ungefär vilken väg föraren tänker köra.</p>
+
+  <h2>9. Talen</h2>
+  <p>Räknade 2/10 som information, inte som bygge (DECISIONS #442). Ingen gräns för notisen är satt.</p>
+  <div class="tabell">
+    <table>
+      <thead><tr><th>Vad</th><th class="tal">Tal</th><th>Läsning</th></tr></thead>
+      <tbody>
+        <tr><td>Aktiva vägarbeten 2/10</td><td class="tal">1 876</td><td>Plus 3 262 som vilar. Mätningen 26/9 räknade båda och kom till 5 280.</td></tr>
+        <tr><td>Vägarbeten som är nya eller kortare än en vecka</td><td class="tal">50</td><td>Det är dem en notis skulle gälla.</td></tr>
+        <tr><td>Restidssträckor</td><td class="tal">198</td><td>191 i Stockholms län, 213 km sammanlagt. Göteborg 5, Skåne 2.</td></tr>
+        <tr><td>Detektorplatser</td><td class="tal">3 125</td><td>2 400 i Stockholm, 715 i Västra Götaland, 10 i Skåne.</td></tr>
+        <tr><td>Vägfärjeleder</td><td class="tal">36</td><td>Avgångarna är inte räknade färdigt (svaret nådde taket).</td></tr>
+        <tr><td>Egen fil med vägarbeten och restider</td><td class="tal">≈ 120 kB</td><td>Packad. Hela lägesfilen i dag är 83 kB.</td></tr>
+        <tr><td>Frysrisknotis, två–tre stationer längs vägen</td><td class="tal">≈ 14 %</td><td>Av kollerna, 1,5 i veckan. Norr om 62 grader nära 3.</td></tr>
+        <tr><td>Samma, bara det nya</td><td class="tal">≈ 9 %</td><td>Ungefär en gång i veckan.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>10. Jämfört med Fintraffic och Trafiken.nu</h2>
+  <p>Fintraffics app i Finland har favoritrutter med notiser, och Trafikverkets Trafiken.nu har samma sak i Stockholm och Göteborg. Ingen av dem har en röst under körningen, och ingen av dem lovar att positionen stannar i telefonen. Fintraffic säger om sin egen app att <i>när du kör, så kör du</i>. Med favoriterna täcker Halkvakt båda halvorna: rapporten före resan och rösten under den. Pendlarna är den tydligaste målgruppen, men favoriterna gäller också fritidsresorna och yrkesförare som kör kända vägar, som taxi, bud och hemtjänst.</p>
+
+  <h2>11. Vad som väntar</h2>
+  <p>Ingenting byggs nu. Idén är på experimentstadiet (Bengt 2/10).</p>
+  <ol class="steg">
+    <li><div><b>Formen, Axel:</b> egen flik som här eller på Redo.-skärmen, hur många rutter man får spara, och om tiderna och notisen ska finnas i första versionen.</div></li>
+    <li><div><b>Vad som räknas som nytt, Axel och Bengt:</b> listan i avsnitt 5 är ett förslag.</div></li>
+    <li><div><b>Färskheten, Bengt och Axel:</b> räcker tio minuters publicering för kollen före avresan, eller ska en tätare publicering prövas?</div></li>
+    <li><div><b>Kartan, Axel:</b> ingen karta bakom den sparade linjen, ja eller nej?</div></li>
+    <li><div><b>Provet på Axels telefon:</b> kan Genvägar köra <i>Kolla mina rutter</i> 07:05 utan att föraren bekräftar?</div></li>
+    <li><div><b>Innehållet i första versionen:</b> det som redan finns i rösten, plus vägarbeten, hastighetsnedsättningar, omledningar och färjor i hela landet, och köer och restider där de mäts. Prognosen först efter domen i mars.</div></li>
+  </ol>
+  <p class="litet">Bygger på <span class="mono">docs/FORE-RESAN-2026-10-02.md</span>, <span class="mono">docs/FINTRAFFIC-JAMFORELSE-2026-10-02.md</span>, DECISIONS #442 och kort #233. Färskheten är läst i <span class="mono">supabase/functions/publicera</span>, <span class="mono">ingest-live</span> och appens <span class="mono">GuardManager</span> 2/10. Källan till den här sidan är <span class="mono">docs/FAVORITER.html</span>.</p>
+</main>

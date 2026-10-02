@@ -53,8 +53,8 @@ bara mäter körfältet medan bilarna kör i alla fält. Fintraffics slutsats va
 
 ## Vad Halkvakt är
 
-Halkvakt är en röst i bilen. Telefonen hämtar Trafikverkets lägesbild var tionde minut och jämför den med bilens position i telefonen
-själv. Ingen position lämnar telefonen av sig själv. Rösten säger till om halka på vägen, frysrisk vid en mätstation, olyckor, vilt och
+Halkvakt är en röst i bilen. Lägesbilden publiceras var tionde minut, och telefonen hämtar den var 30:e minut under körningen och
+jämför den med bilens position i telefonen själv. Ingen position lämnar telefonen av sig själv. Rösten säger till om halka på vägen, frysrisk vid en mätstation, olyckor, vilt och
 fartkameror, en sak i taget och ungefär 30 sekunder innan bilen är där. Annars tiger den.
 
 Allt som ska få tala prövas först i skuggan, mot trösklar som är skrivna innan mätningen görs, och döms blindat i januari och mars. Ingen
