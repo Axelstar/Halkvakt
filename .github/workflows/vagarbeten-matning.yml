@@ -1,8 +1,13 @@
 # Vägarbeten i appen? (Bengts ja 26/9, DECISIONS #420): engångsknapp — läs-only räkning av Trafikverkets aktiva vägarbeten och
 # hur ofta rösten skulle tala på skuggrutterna. Talen på Summary. Inget sparas.
+# Sedan 2/10 (DECISIONS #441) tar knappen inmatningen skript: en annan läsande mätning mot samma API, t.ex. källorna före resan.
 name: vagarbeten-matning
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      skript:
+        description: "Läsande mätning mot Trafikverkets API, en fil under scripts/matningar/ (förregistreras i DECISIONS före körningen)"
+        default: "scripts/matningar/vagarbeten-2026-09-26.ts"
 jobs:
   matning:
     runs-on: ubuntu-latest
@@ -15,6 +20,7 @@ jobs:
       - shell: bash
         run: |
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-          node --experimental-strip-types scripts/matningar/vagarbeten-2026-09-26.ts | tee -a "$GITHUB_STEP_SUMMARY"
+          [[ "$SKRIPT" =~ ^scripts/matningar/[A-Za-z0-9._-]+\.ts$ && -f "$SKRIPT" ]] || { echo "okänt skript: $SKRIPT"; exit 1; }
+          node --experimental-strip-types "$SKRIPT" | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-        env: { TRAFIKVERKET_API_KEY: "${{ secrets.TRAFIKVERKET_API_KEY }}" }
+        env: { TRAFIKVERKET_API_KEY: "${{ secrets.TRAFIKVERKET_API_KEY }}", SKRIPT: "${{ inputs.skript || 'scripts/matningar/vagarbeten-2026-09-26.ts' }}" }

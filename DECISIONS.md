@@ -7039,3 +7039,24 @@ mer träffsäker om var och när. Snöflingan lyser vid omkring +3 °C överallt
 fall bilen missar. Den andra frågan är facit och riktningsprovets, och den förregistrerades inte här. Det enda sakförhållandet som
 pekar vidare: sammanhangets 6,7 % — kall yta under mild luft finns, men utan nederbörd, och det är rimfrostens kort (#46), inte
 stationsregelns.
+
+## #441 (2/10 2026) Före resan räknas, inte byggs: källorna i Trafikverkets API och pendlarens notis på kuvösens vinter (kort #233)
+
+**Beställning (Bengt 2/10: *"ja räkna på allt men bara som information inte något bygge alls (det här är bara på
+experimentstadiet)"*).** Två läsande mätningar för underlaget `docs/FORE-RESAN-2026-10-02.md`. **Inget byggs i appen, i motorn eller i
+driften.** Två mätknappar får en inmatning för att kunna köra en annan läsande fil; det är allt som ändras.
+
+**Skrivet innan körningarna:**
+1. **Källorna** (`scripts/matningar/fore-resan-kallor-2026-10-02.ts`, knappen `vagarbeten-matning` med inmatningen `skript`): Trafikverkets
+   öppna API just nu — aktiva avvikelser per typ, vägarbetena (påverkan, avstängda körfält, varaktighet, geometri, hur många som är nya
+   eller kortare än en vecka), köer (*AbnormalTraffic*), restidssträckorna (*TravelTimeRoute*: antal, län, längd, status, ålder),
+   detektorerna (*TrafficFlow*: antal platser, län, ålder), färjorna (*FerryAnnouncement*), och storleken på en gemensam fil för hela
+   landet med vägarbetena och restiderna, rå och packad.
+2. **Pendlarens notis** (`scripts/matningar/pendling-kuvos-2026-10-02.ts`, knappen `kuvos` med inmatningen `matning`): på kuvösens vinter
+   2024/25, de första och sista 30 km av de 20 svenska skuggrutterna som 40 pendlingsvägar, vardagar kl. 06:45 och 16:00 svensk tid. Vid
+   varje koll: varje stations senaste rad inom tre timmar, med snapshotens fyra vakter, som frysriskpunkter; motorn kör vägen i 80 km/h.
+   Två tal: **(A)** notis när motorn säger något alls, **(B)** bara när något är nytt sedan vägens förra koll. Per månad, breddgrad och väg.
+   Kuvösen har bara stationerna — väglaget, olyckorna och vägarbetena saknas, så talet är frysrisken ensam, ett golv.
+
+**Ingen gräns är satt** för hur ofta en notis får komma, och mätningen väljer inget värde. Talen är information. Ska en gräns sättas senare
+ska beslutet säga att talen var sedda när den sattes. Fyrningar, inga utfall: ingen yta efter en koll läses, inget facit.
