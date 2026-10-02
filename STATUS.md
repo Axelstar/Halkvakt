@@ -42,6 +42,7 @@ fortsätter. *(Fryst 26/9, kort #221.)*
 - Revoke the unused second PAT (public-read-only one from 2026-08-24) — ej verifierad
 
 ## Session log
+- 2/10 23:16 (Axel): skinnet v4 byggt i Xcode och provat i simulatorn — *"It works as intended"*. Byggnumret 0.3.10 (22) på båda; PR #698 sammanslås. Kort #284.
 - 2/10 18:46–21:00 (Claude, Axels *"Okay, lets start"*): appens nya skinn ur designöverlämningen v2 på båda plattformarna, PR #698
   (utkast) — `Alert.step` i tre motorer (DECISIONS #443), varningskorten A–L, gammal data M–N, Redo efter tur, På vakt, inställningar
   i två nivåer, introduktionen (iOS), logotypen med "!" (DECISIONS #444). `ios-engine` och `android` gröna på grenen; iOS app-målet
