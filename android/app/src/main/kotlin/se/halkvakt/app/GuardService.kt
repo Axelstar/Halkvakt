@@ -27,7 +27,10 @@ import kotlinx.coroutines.launch
 import se.halkvakt.engine.Fix
 import se.halkvakt.engine.EngineConfig
 import se.halkvakt.engine.Geo
+import se.halkvakt.engine.Hazard
 import se.halkvakt.engine.HazardKind
+import se.halkvakt.engine.PointHazard
+import se.halkvakt.engine.WarningCard
 import java.util.Locale
 import kotlin.concurrent.thread
 
@@ -61,6 +64,8 @@ class GuardService : Service() {
     private var focusRequest: AudioFocusRequest? = null
     private val snapshotSchedule = SnapshotSchedule()   // #218: one load at a time, a minute's wait after a failure
     private var staleAnnounced = false
+    /** Den laddade vägdatan — kortet slår upp farans metadata här. Skrivs i laddtråden, läses i varningen. */
+    @Volatile private var hazardsNow: List<Hazard> = emptyList()
     private val idleStop = IdleStop()   // #248: samma kvart som iOS
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -115,6 +120,7 @@ class GuardService : Service() {
             val snap = SnapshotRepo.loadSnapshot(this)
             val gate = AgeGate.filter(snap.hazards, snap.generatedAtMs, System.currentTimeMillis())
             val hazards = gate.hazards
+            hazardsNow = hazards
             if (gate.stale && !staleAnnounced) { staleAnnounced = true; speak(AgeGate.STALE_LINE) }
             val dataTid = if (snap.generatedAtMs > 0)
                 android.text.format.DateFormat.format("HH:mm", snap.generatedAtMs) else "okänd tid"
@@ -124,9 +130,12 @@ class GuardService : Service() {
                 guard = Guard(hazards, cfg = EngineConfig(leadMaxM = warnM), speak = ::speak, notify = ::updateNotification, onEvent = AlertBus::post,
                     isEnabled = { it !in disabledKinds },
                     onAlert = { a ->
-                        currentWarning.value = a
+                        // Kortet (DECISIONS #443) slår upp farans metadata: vägnummer, gräns, bro, röjningstid.
+                        val meta = (hazardsNow.firstOrNull { it.id == a.hazardId } as? PointHazard)?.meta
+                        val shown = ShownWarning(a, WarningCard.make(a, meta))
+                        currentWarning.value = shown
                         scope.launch { kotlinx.coroutines.delay(8000)
-                            if (currentWarning.value === a) currentWarning.value = null }
+                            if (currentWarning.value === shown) currentWarning.value = null }
                         session.value = session.value.let { s -> s.copy(
                             counts = s.counts + (a.kind to (s.counts[a.kind] ?: 0) + 1),
                             lastSaid = a.text to System.currentTimeMillis()) }
@@ -364,8 +373,8 @@ class GuardService : Service() {
         val runningFlow = MutableStateFlow(false)
         val snapshotInfo = MutableStateFlow<String?>(null)
         val session = MutableStateFlow(Session())
-        /** Helskärmskortet (1b): sätts vid uppläst varning, släcks efter 8 s eller "Uppfattat". */
-        val currentWarning = MutableStateFlow<se.halkvakt.engine.Alert?>(null)
+        /** Varningskortet (DECISIONS #443): sätts vid uppläst varning, släcks efter 8 s — ingen knapp. */
+        val currentWarning = MutableStateFlow<ShownWarning?>(null)
         var running: Boolean
             get() = runningFlow.value
             set(v) { runningFlow.value = v }

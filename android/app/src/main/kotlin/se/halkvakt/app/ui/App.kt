@@ -5,6 +5,13 @@
 package se.halkvakt.app.ui
 
 import android.graphics.Typeface
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -140,35 +147,16 @@ fun HalkvaktApp(activity: MainActivity) {
                 }
             }
         }
-        warning?.let { w -> WarningOverlay(w) { GuardService.currentWarning.value = null } }
-        }
-    }
-}
-
-/** 1b:s signatur: helskärm i bärnstensgult — läsbar i periferin, en enda handling. */
-@Composable
-private fun WarningOverlay(w: se.halkvakt.engine.Alert, onAck: () -> Unit) {
-    Surface(color = Gul, modifier = Modifier.fillMaxSize()) {
-        Column(Modifier.fillMaxSize().padding(28.dp).statusBarsPadding(),
-            horizontalAlignment = Alignment.CenterHorizontally) {
-            Spacer(Modifier.height(8.dp))
-            Text("HALKVAKT VARNAR", color = Natt, fontSize = 13.sp,
-                fontFamily = FontFamily.Monospace, letterSpacing = 3.sp)
-            Spacer(Modifier.weight(.8f))
-            Text(kindTitle(w.kind), color = Natt, fontFamily = Cond,
-                fontSize = 46.sp, lineHeight = 50.sp)
-            Text(Nearby.distText(w.distanceM.toDouble()), color = Natt, fontFamily = Cond,
-                fontSize = 84.sp, lineHeight = 88.sp)
-            Spacer(Modifier.height(14.dp))
-            Text("”${w.text}”", color = Natt.copy(alpha = .78f), fontSize = 17.sp,
-                lineHeight = 24.sp, modifier = Modifier.padding(horizontal = 8.dp))
-            Spacer(Modifier.weight(1f))
-            Button(onClick = onAck, shape = RoundedCornerShape(50),
-                colors = ButtonDefaults.buttonColors(containerColor = Natt, contentColor = Gul),
-                modifier = Modifier.fillMaxWidth().height(64.dp)) {
-                Text("Uppfattat", fontFamily = Cond, fontSize = 19.sp, letterSpacing = 1.sp)
-            }
-            Spacer(Modifier.height(10.dp))
+        // Kort ersätter kort (designen 04): det nya glider upp och täcker, det gamla krymper och tonar bort.
+        // Nyckeln är ShownWarning-instansen, så en ny varning ger ett nytt kort och en ny 8-sekundersstapel.
+        AnimatedContent(
+            targetState = warning,
+            transitionSpec = {
+                (slideInVertically(tween(380, easing = CubicBezierEasing(.2f, .8f, .2f, 1f))) { it }) togetherWith
+                    (scaleOut(tween(380), targetScale = .92f) + fadeOut(tween(380)))
+            },
+            label = "varningskort",
+        ) { w -> if (w != null) WarningCardScreen(w.card) }
         }
     }
 }
