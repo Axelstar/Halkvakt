@@ -34,6 +34,13 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     }
     var alertCount = 0
     var lastSaid: String?
+    /// Gammal väglagsdata (designen M–N): sant så länge den laddade datan är för gammal för att lita på.
+    var dataStale = false
+    /// När den laddade datan skapades — "SENAST FÄRSK 14:05" på raden i På vakt.
+    var dataTime: Date?
+    /// Den mörka raden överst i På vakt i 8 s medan rösten säger repliken om gammal data.
+    var staleToast = false
+    private var staleToastTask: Task<Void, Never>?
 
     private let manager = CLLocationManager()
     private var engine: AlertEngine?
@@ -121,9 +128,17 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
             if !fresh, running, let engine { engine.updateHazards(gate.hazards) }
             else { engine = AlertEngine(gate.hazards, EngineConfig.withPrefs()) }
             nextLoadAt = .now.addingTimeInterval(Self.refreshEvery)
+            dataStale = gate.stale
+            dataTime = snap.generatedAt > .distantPast ? snap.generatedAt : nil
             if gate.stale && running && !staleAnnounced {
                 staleAnnounced = true
                 SpeechService.shared.speak(AgeGate.staleLine)
+                staleToast = true
+                staleToastTask?.cancel()
+                staleToastTask = Task {
+                    try? await Task.sleep(for: .seconds(8))
+                    if !Task.isCancelled { self.staleToast = false }
+                }
             }
             let df = DateFormatter(); df.dateFormat = "HH:mm"
             let tid = snap.generatedAt > .distantPast ? df.string(from: snap.generatedAt) : "okänd tid"
@@ -284,6 +299,10 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         startRequested = false
         probing = false; probeStartedAt = nil
         tripEndedAt = .now
+        // Redo efter tur (designen 01b): kvittot behöver resans slut och sträcka.
+        Prefs.shared.lastTripEnd = tripEndedAt
+        Prefs.shared.lastTripKm = distanceKm
+        staleToast = false
         headsUpTask?.cancel()
         manager.stopUpdatingLocation()
         dismissTask?.cancel()

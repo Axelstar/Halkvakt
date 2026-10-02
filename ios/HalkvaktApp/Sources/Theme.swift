@@ -1,4 +1,4 @@
-// Skinnet v3 (DECISIONS #47) — portat från docs/design/Halkvakt-App-v3.dc.html.
+// Skinnet v4 = designöverlämningen v2 (DECISIONS #443), byggt på v3 (DECISIONS #47).
 // Tokens är designens, inte mina: ändra i designen, sedan här. Typsnitt: Instrument Sans
 // (text) och IBM Plex Mono (siffror, etiketter), båda OFL, buntade i Sources/Fonts.
 import SwiftUI
@@ -8,19 +8,25 @@ enum Brand {
     static let bg     = Color(hex: 0x080B0D)
     static let panel  = Color(hex: 0x0F1518)
     static let raised = Color.white.opacity(0.04)
+    static let raisedSolid = Color(hex: 0x1A2327)     // aktiv flik, upphöjda chips, toast
     static let stroke = Color.white.opacity(0.12)
+    static let line = Color(hex: 0x1E282D)            // panelkant
+    static let divider = Color(hex: 0x253036)         // streckade avdelare i paneler
+    static let trackOff = Color(hex: 0x26323A)        // avslagen vippa, ringar
     // Accent
     static let yellow = Color(hex: 0xFFC94A)
     static let amber  = Color(hex: 0xFFC94A)          // varningskortets yta = gul
     static let onAmber = Color(hex: 0x140F00)         // text på gult
     static let green  = Color(hex: 0x1FB25A)
+    static let greenDim = Color(hex: 0x167F41)
     static let greenText = Color(hex: 0x7FD9A4)
     static let blue   = Color(hex: 0x6EC9E8)
     // Text
     static let text   = Color(hex: 0xE9EFF2)
-    static let text2  = Color(hex: 0xC7D3D9)
+    static let text2  = Color(hex: 0xA9B5BB)
     static let dim    = Color(hex: 0x8FA0A9)
-    static let faint  = Color(hex: 0x6C7B84)
+    static let faint  = Color(hex: 0x6F7C83)
+    static let faint2 = Color(hex: 0x4A5A63)          // versionsraden, avstängt
 }
 
 extension Color {
@@ -58,7 +64,7 @@ struct SectionHeader: View {
     }
 }
 
-/// Panel: 20 pt radie, #0F1518, tunn kant.
+/// Panel: 18 pt radie, #0F1518, tunn kant.
 struct Panel<Content: View>: View {
     var dashed = false
     @ViewBuilder var content: Content
@@ -66,9 +72,9 @@ struct Panel<Content: View>: View {
         VStack(alignment: .leading, spacing: 12) { content }
             .padding(.horizontal, 20).padding(.vertical, 18)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Brand.panel, in: RoundedRectangle(cornerRadius: 20))
-            .overlay(RoundedRectangle(cornerRadius: 20)
-                .strokeBorder(Brand.stroke, style: StrokeStyle(lineWidth: 1, dash: dashed ? [5, 5] : [])))
+            .background(dashed ? Color.clear : Brand.panel, in: RoundedRectangle(cornerRadius: 18))
+            .overlay(RoundedRectangle(cornerRadius: 18)
+                .strokeBorder(dashed ? Brand.divider : Brand.line, style: StrokeStyle(lineWidth: 1, dash: dashed ? [4, 4] : [])))
     }
 }
 
@@ -140,30 +146,23 @@ struct LinkRow: View {
     }
 }
 
-/// Toppraden: ▲ Halkvakt + statuspill.
+/// Toppraden (designen v2): logomärket + HALKVAKT i mitten, läget till höger med ett pulserande ljus
+/// (gult LIVE när vakten väntar, grönt PÅ när den kör). Utan `trailing` står bara ordbilden.
 struct BrandHeader: View {
     var trailing: String? = nil
     var trailingColor: Color = Brand.green
     var body: some View {
-        HStack(spacing: 8) {
-            Image(systemName: "triangle.fill")
-                .font(.system(size: 11, weight: .black))
-                .foregroundStyle(Brand.yellow)
-            Text("HALKVAKT")
-                .font(Typo.mono(11, .medium))
-                .tracking(2)
-                .foregroundStyle(Brand.dim)
-            Spacer()
+        ZStack {
+            Lockup(markSize: 16, textSize: 12)
             if let t = trailing {
-                HStack(spacing: 6) {
-                    Circle().fill(trailingColor).frame(width: 6, height: 6)
-                    Text(t).font(Typo.mono(10, .medium)).tracking(1.2)
+                HStack(spacing: 7) {
+                    Spacer()
+                    Text(t.uppercased()).font(Typo.mono(10, .medium)).tracking(1.2)
+                        .foregroundStyle(trailingColor == Brand.yellow ? Brand.dim : trailingColor)
+                    StatusLight(color: trailingColor)
                 }
-                .padding(.horizontal, 10).padding(.vertical, 6)
-                .background(Capsule().fill(Brand.raised))
-                .overlay(Capsule().stroke(Brand.stroke, lineWidth: 1))
-                .foregroundStyle(trailingColor)
             }
         }
+        .frame(height: 48)
     }
 }

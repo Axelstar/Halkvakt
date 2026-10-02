@@ -51,6 +51,9 @@ final class Prefs {
     /// Kort #203: när den pågående resan började. Fönstret som "alla" i "Ja, alla stämde" betyder.
     /// Överlever omstart: notisens knapp kan tryckas långt efter att appen dödats.
     var tripStart: Date? { didSet { d.set(tripStart, forKey: "k.tripStart") } }
+    /// Redo efter tur (designen 01b): senaste resans slut och sträcka.
+    var lastTripEnd: Date? { didSet { d.set(lastTripEnd, forKey: "k.lastTripEnd") } }
+    var lastTripKm: Double { didSet { d.set(lastTripKm, forKey: "k.lastTripKm") } }
     /// Kort #203 lager 2: förarens missar, markerade och valda. Ren Swift-logik i Missar.swift.
     var missar: [MissEntry] { didSet { d.set(try? JSONEncoder().encode(missar), forKey: "k.missar") } }
     /// S4: vad senaste sändningsförsöket gav — syns under knapparna så testaren ser vad som hände (DECISIONS #209).
@@ -59,8 +62,6 @@ final class Prefs {
     var facitStatusAt: Date? { didSet { d.set(facitStatusAt, forKey: "k.facitStatusAt") } }
     /// Introduktionen visad? (DECISIONS #36) Kan nollställas från Inställningar.
     var onboardingDone: Bool { didSet { d.set(onboardingDone, forKey: "k.onboardingDone") } }
-    /// Hur telefonen kopplas till bilen — styr vilka autostart-steg som visas (DECISIONS #37).
-    var carSetup: CarSetup? { didSet { d.set(carSetup?.rawValue, forKey: "k.carSetup") } }
     /// Senaste gången vakten startades av intentet (automation eller Siri) — guidens kvitto.
     var lastIntentStartAt: Date? { didSet { d.set(lastIntentStartAt, forKey: "k.lastIntentStartAt") } }
     /// Vakna själv vid körning (kräver Alltid). Standard på. DECISIONS #40.
@@ -92,8 +93,9 @@ final class Prefs {
         missar = d.data(forKey: "k.missar").flatMap { try? JSONDecoder().decode([MissEntry].self, from: $0) } ?? []
         history = d.data(forKey: "k.history").flatMap { try? JSONDecoder().decode([AlertEntry].self, from: $0) } ?? []
         tripStart = d.object(forKey: "k.tripStart") as? Date
+        lastTripEnd = d.object(forKey: "k.lastTripEnd") as? Date
+        lastTripKm = d.double(forKey: "k.lastTripKm")
         onboardingDone = d.bool(forKey: "k.onboardingDone")
-        carSetup = d.string(forKey: "k.carSetup").flatMap(CarSetup.init(rawValue:))
         lastIntentStartAt = d.object(forKey: "k.lastIntentStartAt") as? Date
         autoWake = d.object(forKey: "k.autoWake") as? Bool ?? true
         lastAutoWakeAt = d.object(forKey: "k.lastAutoWakeAt") as? Date
@@ -120,14 +122,4 @@ final class Prefs {
         case .camera: return "Fartkamera"
         }
     }
-}
-
-/// Tre svar på en fråga: "Hur kopplar du telefonen i bilen?" Var och en har sin egen
-/// bästa utlösare. Frågan ställs i introduktionen; svaret styr guiden.
-enum CarSetup: String, CaseIterable, Identifiable {
-    // OBS: heter INTE `none`. På en optional CarSetup? tolkar Swift `.none` som
-    // Optional.none (= nil), inte som vårt fall — knappen "Inte alls" sparade ingenting.
-    // Fångat på Axels telefon 31/8.
-    case carplay, bluetooth, noConnection
-    var id: String { rawValue }
 }
