@@ -149,7 +149,7 @@
 </style>
 
 <main class="blad">
-  <div class="etikett">Teknisk analys · intern · 29 september 2026 · uppdaterad 1 oktober</div>
+  <div class="etikett">Teknisk analys · intern · 29 september 2026 · uppdaterad 2 oktober</div>
   <h1>Vad Halkvakt mäter, hur det räknas och vad det visat</h1>
   <p class="ingress">Syskonsidan till Halkvaktens systembild: allt projektet mäter. Motorn som kör i apparna, vakterna och källorna som är i drift, reglerna som prövas i skuggan och facitkällorna, i 22 delområden. För varje del står vad den mäter, hur, vilka tal som finns och vad mätningen är till för. Talen kommer ur beslutsloggen (numren inom parentes), tröskeldokumenten, koden och körningarnas loggar. Utfall som är blindade till domarna visas bara som antal.</p>
   <div class="fakta">
@@ -198,7 +198,7 @@
         <tr><td><a href="#d-forare">3.3 Förarsvar och missar</a></td><td>facit</td><td><span class="lage drift">i drift</span></td><td>0 riktiga svar</td></tr>
         <tr><td><a href="#d-tystnad">3.4 Tystnadsfelet</a></td><td>facit</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>2 av 20 tillfällen</td></tr>
         <tr><td><a href="#d-vakter">4.1 Vakterna</a></td><td>L1</td><td><span class="lage drift">i drift</span></td><td>706 av 811 felrader tagna</td></tr>
-        <tr><td><a href="#d-prognos">5.1 Prognoslagret</a></td><td>L4</td><td><span class="lage skugga">körs i skuggan</span></td><td>föll 28/9 (#399); premissmätningarna 30/9 räddar ingen kandidat (#405–#408)</td></tr>
+        <tr><td><a href="#d-prognos">5.1 Prognoslagret</a></td><td>L4</td><td><span class="lage skugga">körs i skuggan</span></td><td>föll 28/9 (#399); premissmätningarna 30/9 räddar ingen kandidat (#405–#408); läses igen 24/11 (#435)</td></tr>
         <tr><td><a href="#d-frysklass">5.2 Frysklassningen</a></td><td>L4</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>0 punkter med frys</td></tr>
         <tr><td><a href="#d-tathet">5.3 Stationstätheten</a></td><td>L4</td><td><span class="lage arkiv">mätt</span></td><td>median 6,8 km till station</td></tr>
         <tr><td><a href="#d-trend">6.1 Trenden</a></td><td>L3</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>19 469 kandidater</td></tr>
@@ -477,11 +477,11 @@
       <ul>
         <li><b>Täckning:</b> skuggrutterna (A) 52,6 / 33,9 / 6,8 / 6,8 % och huvudvägnätet (B, 818 segment) 49,8 / 37,6 / 7,3 / 5,2 % per band ger nästan samma vikter. Trafikarbetet (C) är omätt, ÅDT saknas. Grindens bandregel flyttade 2,6 % av punkterna.</li>
         <li><b>Bandet 0–7 km håller</b> i båda länderna och i alla regimer, men går inte att döma med svenska stationer: 15 har en granne inom 7 km, spärren kräver 20. Finland ger kraften med 108 stationer, som stöd och inte som dom.</li>
-        <li><b>Frysflaggan vid 1 °C</b> inom 7 km (Finland): rå viktning missar 57 % [41–75] av stationens egna frysningar, 6 % med en grads marginal, och sätter 36 % falska. Ett fel lika stort som avståndet till gränsen ger ett myntkast vid gränsen. Prognosen får förstärka och visa, aldrig avgöra.</li>
+        <li><b>Frysflaggan vid 1 °C</b> inom 7 km (Finland): rå viktning missar 57 % [41–75] av stationens egna frysningar, 6 % med en grads marginal, och sätter 36 % falska. Ett fel lika stort som avståndet till gränsen ger ett myntkast vid gränsen. Prognosen får förstärka och visa, aldrig avgöra. Vad en marginal kostar i falska flaggor mäts i kuvösen på vintern 2024/25, med tre marginaler: 0, 0,5 och 1 grad (#437).</li>
         <li><b>Två hypoteser föll, förregistrerade:</b> ANOM (luft ur många grannar, anomali ur de närmaste) blev sämre än rå i båda länderna, och regimen ur vind och natt skiljer inte (Sverige rå 12,5 % stilla natt mot 9,2 % övrigt, Finland 3,1 mot 5,9 %). Molnmängd saknas i arkivet och blåsigt var nästan tomt.</li>
         <li><b>Höjden är den enda platsegenskap som bär:</b> den halverar felet inom 7 km i Sverige (0,96 → 0,63 °C) och ger inget i Finland. Golvet: inga svenska stationspar inom 3 km; Finland 40 par, 3,9 %.</li>
       </ul>
-      <p class="litet">Domen står, trösklarna är orörda, ingenting når föraren. Vägen framåt är Bengts val a–h i bedömningen §4.2 (veckomätning med fast läsdatum, precisering per band, egen spärr för 0–7 km, ÅDT, flaggmarginalen, molnmängd) och kort #271, termisk kartering som facit mellan stationerna. Sammanfattning med slutsatser: <span class="mono">docs/PROGNOSLAGRET-2026-09-30.md</span>.</p>
+      <p class="litet">Domen står, trösklarna är orörda, ingenting når föraren. Bengt valde tre av vägarna 2/10 (#435–#437): premissmätningen går varje måndag och läses en gång, tisdag 24/11; det finska utfallet är stöd för närbandet, inte dom; flaggmarginalen mäts i kuvösen. Öppna är precisering per band, egen spärr för 0–7 km, ÅDT och molnmängd (bedömningen §4.2), och kort #271, termisk kartering som facit mellan stationerna. Sammanfattning med slutsatser: <span class="mono">docs/PROGNOSLAGRET-2026-09-30.md</span>.</p>
     </div>
     <details><summary>Hur den mäter</summary><div class="inne">
       <div class="formel">
@@ -624,6 +624,7 @@
         <li>12/9: 709 stationer, 210 punkter över 16 stationer, 0 med frys. Ingen dom (#137).</li>
         <li>24/9: 712 stationer, 207 647 avläsningar, 1 099 punkter över 44 stationer, 0 med frys vid 0 °C. Ingen dom (#331).</li>
         <li>Frysklassningen prövar grind A:s offsetmodell, medan skuggan kör rå viktning. En dom skulle alltså gälla en modell som inte körs, om inte frågan i 5.1 avgörs först.</li>
+        <li>2/10: måttstocken och marginalerna lånas till kuvösens mätning av frysflaggan för de råa vägpunktskandidaterna, på vintern 2024/25. Det är en läsning och ingen dom, och den här delens egen grind döms inte av den (#437).</li>
       </ul>
     </div></details>
   </section>
@@ -1118,10 +1119,11 @@
     <table>
       <thead><tr><th>När</th><th>Vad</th></tr></thead>
       <tbody>
-        <tr><td>Varje måndag</td><td>grind A, vägpunktsgrinden och populationsläsningen, vattenplaningens radarspår (bara antal); premissmätningen på knapp (<i>premisser</i>, <i>premisser-fi</i>) när Bengt valt läsdatum (bedömningen §4.2 a)</td></tr>
+        <tr><td>Varje måndag</td><td>grind A, vägpunktsgrinden och populationsläsningen, vattenplaningens radarspår (bara antal); premissmätningen går med sedan 2/10 men läses inte förrän 24/11 (#435)</td></tr>
         <tr><td>Inom 7 dygn efter frost</td><td>trenden, rimfrosten, övergångarna, frysklassningen, vind och sikt; körs när minst 50 stationer haft ytan ≤ 0 °C</td></tr>
-        <tr><td>Vecka 41–42</td><td>kuvösen: Trafikverkets stationsdata för vintern 2024/25 inventeras och riktningsprovet körs; därefter den gemensamma kalibreringen, som förut stod på 1 februari 2027 (#424, #425)</td></tr>
+        <tr><td>Vecka 41–42</td><td>kuvösen: Trafikverkets stationsdata för vintern 2024/25 inventeras och riktningsprovet körs, med prognoslagrets flaggmarginal (#437); därefter den gemensamma kalibreringen, som förut stod på 1 februari 2027 (#424, #425)</td></tr>
         <tr><td>23/10</td><td>höjdkorrektionen läses om på fyra veckors fullständigt underlag</td></tr>
+        <tr><td>24/11</td><td>premissmätningen läses, en gång, på en egen körning; den finska körs samma dag som stöd (#435, #436)</td></tr>
         <tr><td>November–december</td><td>vattenplaningens radarspår, när underlaget räcker</td></tr>
         <tr><td>November</td><td>efterhalkan som märkt beta, om skuggloggen bär nätter</td></tr>
         <tr><td>Januari 2027</td><td>efterhalkans första dom</td></tr>

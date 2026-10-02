@@ -82,7 +82,7 @@ rå 3,1 % stilla natt (klarar), 5,9 % övrigt. Blåsigt nästan tomt (133 respek
 
 **Ingenting krävs före Skyltfondsansökan.** Den skickas 30/9 med bilden från 28/9; ändringslistans punkt A står. Domen i mars.
 
-**Bengts val, bedömningen §4.2 (a–h):**
+**Bengts val, bedömningen §4.2 (a–h):** *Valt 2/10: a, f och g (DECISIONS #435, #436, #437). Öppna: b, c, d, e, h. Läsdatum för (a): tisdag 24/11, en egen körning. (g) mäts i kuvösen med frysklassningens måttstock, inte som en fri mätning vid ≤ 2 °C.*
 - (a) Låt premissmätningen gå varje måndag bredvid grinden och läs den på ett i förväg fastställt datum (24/11, sextio ärliga dygn).
   Rekommenderas nu. Kostar en knapptryckning i veckan. Läsdatumet måste stå i beslutsposten, annars blir det en stoppregel.
 - (b) Precisera vägpunktsgrinden till ärliga rader och dom per band med RÅ+HÖJD som kandidat — en precisering enligt

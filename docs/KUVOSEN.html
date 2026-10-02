@@ -97,7 +97,7 @@
 </style>
 
 <main class="blad">
-  <div class="etikett">Kuvösen · läget 1 oktober 2026</div>
+  <div class="etikett">Kuvösen · läget 2 oktober 2026</div>
   <h1>Hela systemet prövat på en vinter som redan har varit</h1>
   <p class="ingress">Fjärde sidan i serien efter systembilden, mätningarna och appen. Kuvösen är en testbädd där motorn och alla regler som prövas i skuggan körs tillsammans mot vintern 2024/25, långt från appar och förare. Sidan säger var den står i dag, hur den fungerar, vad som kommer härnäst och vad resultatet kan ändra i projektet.</p>
   <div class="fakta">
@@ -121,7 +121,7 @@
       <tbody>
         <tr><td><b>Datan från Trafikverket</b></td><td>Beställd 1/10. VViS Förvaltning levererar vintern för samtliga stationer som CSV, i ett format som skiljer sig från det öppna API:t. Väntas vecka 41.</td><td><span class="dom vantar">väntar</span></td></tr>
         <tr><td><b>Planen</b></td><td>Sex steg med ett bevis per steg, skriven 1/10.</td><td><span class="dom klar">klar</span></td></tr>
-        <tr><td><b>Förregistreringen</b></td><td>Frågan, underlaget, delarna, facit och följden är nedskrivna innan någon fil har öppnats.</td><td><span class="dom klar">klar</span></td></tr>
+        <tr><td><b>Förregistreringen</b></td><td>Frågan, underlaget, delarna, facit och följden är nedskrivna innan någon fil har öppnats. Två tillägg är gjorda före filen: rösten i två serier (1/10) och prognoslagrets flaggmarginal (2/10).</td><td><span class="dom klar">klar</span></td></tr>
         <tr><td><b>Klockan</b></td><td>Låter produktionens egen kod köra mot en gången tidpunkt, utan att koden ändras. Prövad mot riktig databas, och fyra motprov föll på var sin fälla.</td><td><span class="dom klar">byggd</span></td></tr>
         <tr><td><b>Inventeringen</b></td><td>Läser en okänd CSV utan att tolka den: rader, kolumner, tomma fält, spann och vanligaste värden.</td><td><span class="dom klar">byggd</span></td></tr>
         <tr><td><b>Översättningen och inläsningen</b></td><td>Trafikverkets kolumner till arkivets form. Kan inte byggas förrän filen är inventerad.</td><td><span class="dom vantar">väntar på filen</span></td></tr>
@@ -181,7 +181,7 @@
         <tr><td>Efterhalkan, betans regel</td><td><span class="dom klar">ja</span></td><td>Yta, regn och fall finns i stationsdatan.</td></tr>
         <tr><td>Trenden och rimfrosten</td><td><span class="dom klar">ja</span></td><td>Yta, daggpunkt och fuktighet. Molnmängden ur SMHI.</td></tr>
         <tr><td>Övergångarna och tillståndet</td><td><span class="dom klar">ja</span></td><td>Regnhistorik och väta. Radarn ur SMHI.</td></tr>
-        <tr><td>Prognoslagret mellan stationerna</td><td><span class="dom klar">ja</span></td><td>En hel vinter med kalla nätter, som september inte hade.</td></tr>
+        <tr><td>Prognoslagret mellan stationerna</td><td><span class="dom klar">ja</span></td><td>En hel vinter med kalla nätter, som september inte hade. Frysflaggan mäts med tre marginaler.</td></tr>
         <tr><td>Nederbördstypen, vind och sikt</td><td><span class="dom vantar">om fälten finns</span></td><td>Beror på vad filen innehåller.</td></tr>
         <tr><td>Försprånget</td><td><span class="dom vantar">delvis</span></td><td>Frysrisken ja. Väglagets svåra klasser kräver väglagshistoriken.</td></tr>
         <tr><td>Väglagssträckorna och olyckorna</td><td><span class="dom nej">nej</span></td><td>Kräver Trafikverkets historik för väglag och händelser, som inte är utlovad.</td></tr>
@@ -225,7 +225,7 @@
     </div>
     <div class="ruta gron">
       <h3>Prognoslagret får sin vinter</h3>
-      <p>Skattningen mellan stationerna föll i september, på ett underlag med fyra frostnätter. En hel vinter visar hur ofta frysflaggan missar och larmar fel när det verkligen är kallt, och om höjden hjälper.</p>
+      <p>Skattningen mellan stationerna föll i september, på ett underlag med fyra frostnätter. En hel vinter visar hur ofta frysflaggan missar och larmar fel när det verkligen är kallt, och om höjden hjälper. Tillagt 2/10, innan filen har kommit: flaggan mäts med tre marginaler (0, 0,5 och 1 grad) för rå viktning och för rå viktning med höjd. Alla tre redovisas och ingen väljs.</p>
     </div>
     <div class="ruta gron">
       <h3>Årets vinter blir bara domdata</h3>
@@ -266,5 +266,5 @@
   </div>
   <p>Ingenting i kuvösen når en förare. Appen, rösten och det telefonen hämtar är orörda.</p>
   <hr>
-  <p class="litet">Källor: beslutsloggen (DECISIONS #292, #388, #397, #398, #418, #424–#428), kort #232 och #278, planen (docs/PLAN-KUVOSEN-2026-10-01.md), bedömningen §4.2 och §6.1 och tröskeldokumentet för kombinationen (regel D). Sidan till Trafikverkets handläggare, <i>Halkvakt och kuvösen</i>, är en annan sida och säger mindre. Alla datum avser 2026 om inget annat står.</p>
+  <p class="litet">Källor: beslutsloggen (DECISIONS #292, #388, #397, #398, #418, #424–#428, #437), kort #232, #270 och #278, planen (docs/PLAN-KUVOSEN-2026-10-01.md), bedömningen §4.2 och §6.1 och tröskeldokumentet för kombinationen (regel D). Sidan till Trafikverkets handläggare, <i>Halkvakt och kuvösen</i>, är en annan sida och säger mindre. Alla datum avser 2026 om inget annat står.</p>
 </main>
