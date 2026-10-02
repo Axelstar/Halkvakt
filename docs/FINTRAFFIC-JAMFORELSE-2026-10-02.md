@@ -1,72 +1,136 @@
-# Fintraffic och Halkvakt — vad de gör, vad vi gör, och vad vi kan ta efter
+# Fintraffic och Halkvakt
 
-*Bengts fråga 2/10 2026: "kan du läsa in dej på vad fintraffic gör och jämföra med vad vi gör i halkvakt". Läs-only. Varje uppgift om
-Fintraffic är läst på källan i webbläsaren eller i deras öppna API samma dag; källorna står sist. Kort #283.*
+*Bengts frågor 2/10 2026: "kan du läsa in dej på vad fintraffic gör och jämföra med vad vi gör i halkvakt", "så gör en utvärdering av
+fintraffic jämfört med halkvakt" och "kan du skriva om fintraffic jämförelse till läsbar text". Allt om Fintraffic är läst på deras egna
+sidor, på Digitraffic och hos Meteorologiska institutet samma dag. Källorna står sist. Kort #283 bär förslagen.*
 
-## 1. Svaret i korthet
+## Kort sagt
 
-Fintraffic är Finlands statliga trafikledningsbolag. Det driver vägväderstationerna, trafikcentralen och den öppna datan (Digitraffic), och
-det ger förarna en karta och en app med pushnotiser. **Fintraffic säger själva att appen ska användas före resan eller som passagerare,
-inte under körning.** Halkvakt gör det omvända: en röst under resan, matchad i telefonen, som tiger när inget är fel. De två krockar inte;
-de täcker var sin halva av samma resa. Det Fintraffic har och vi saknar är framför allt **ruttkollen före resan**, **prognoser per
-vägavsnitt** och **väghållningens egna data** (saltning, plogning, friktion). Det vi har och de saknar är **rösten under körningen** och
-**mätta trösklar**.
+Fintraffic och Halkvakt gör inte samma sak. Fintraffic hjälper föraren att planera innan bilen rullar. Halkvakt pratar med föraren medan
+bilen rullar. Fintraffic säger själva att deras app ska användas före resan eller av den som åker med, och skriver *"när du kör, så kör
+du"*. Det är exakt den stund Halkvakt är byggd för.
 
-## 2. Vad Fintraffic gör
+Fintraffic är långt före i mognad, räckvidd och data. Halkvakt har en egen plats: rösten under körningen, positionen som stannar i
+telefonen och trösklar som skrivs innan de prövas. Halkvakt har däremot ännu inte visat att varningarna stämmer. Det avgörs av domarna i
+januari och mars.
 
-| Del | Vad | Till vem |
-| :-- | :-- | :-- |
-| **Vägväder** | Omkring 450 vägväderstationer och över 1 000 väderkameror (Fintraffic). Digitraffic anger över 350 stationer och 470 kameror; vårt eget finska arkiv har 526 stationer (`ingest/fi.ts`) | Väghållningen först: när halkbekämpningen ska sättas in, hur mycket salt |
-| **Trafikcentralen** (*Tieliikennekeskus*) | Varnar för dåligt väglag och styr de variabla hastighetsgränserna; omkring 10 000 trafikmeddelanden om året | Alla trafikanter, via medier, skyltar och appen |
-| **Kartan** (*Liikennetilanne*) | Störningar, vägarbeten, **väglag per vägavsnitt med prognos**, väder, luft- och yttemperatur, kameror, **senaste plogning, sandning och saltning** (24 h, ur entreprenörernas fordon), köer, isvägar | Föraren före resan |
-| **Appen** (*Fintraffic Mobiili*) | Gratis, ingen registrering, ingen reklam. Kartan, väglag och vägväderstationer, **vägvädervarningar**, **pushnotiser efter din position eller en vald rutt eller ett område**, **ruttsökning med sparade favoritrutter och automatiska notiser om störningar längs dem**, och förarnas egna rapporter (vilt, stillastående bilar, dåligt väglag), som syns på kartan i 30 minuter. Över 100 000 användare (oktober 2025), utsedd till Finlands bästa kundgärning 2024 | Föraren — *"innan du ger dig iväg eller när du åker med — och när du kör, så kör du"* |
-| **Väglagsvarningarna** (Meteorologiska institutet, FMI) | Fyra nivåer: normalt, dåligt (gul), mycket dåligt (orange), extremt dåligt (röd). Gäller huvudvägarna, oktober–april, uppdateras fem gånger om dygnet; förvarning 2–3 dygn före mycket dåligt väglag | Alla, via FMI, medier och appen |
-| **Öppna data** (Digitraffic, CC BY 4.0) | Stationerna varje minut, kamerorna var tionde minut, trafikmeddelanden, **prognoser per vägavsnitt** var femte minut: 277 avsnitt (förenklade), med läget nu och om 2, 4, 6 och 12 timmar — väglag, yt- och lufttemperatur, vind, vädersymbol, tillförlitlighet och skälet (vägytan, vinterhalka, underkylt regn, sikt, friktion). Prognoserna bygger enligt Fintraffic på Vaisalas vädermodeller | Alla utvecklare — det är den datan Halkvakt redan läser för sitt finska skuggarkiv |
-| **Under utveckling** (ITS-världskongressen 2024) | *Virtuella skyltar*: varningar om tillfällig halka (med hänsyn till saltning och plogning), kraftigt snöfall, hård vind, nedsatt sikt, vägarbeten, olyckor och köslut, ut till bilar och appar via den nationella åtkomstpunkten. En betaversion finns för trafikcentralens operatörer. Därtill en **olycksriskmotor** med maskininlärning för rutter och informationstjänster, med Jyväskylä universitet | Biltillverkare, tjänsteleverantörer, trafikcentralen |
-| **Bildata** (samma rapport) | Ett prov från en biltillverkare: **2,4 miljoner halkvarningar från personbilar i hela Finland under januari 2024**. De flesta kom när stationens uppmätta friktion var låg; skillnaden förklaras delvis av att stationen bara mäter körfältet, medan bilarna kör i alla. Slutsats: bildatan duger som andra källa bredvid stationerna | Trafikcentralen |
+## Vad Fintraffic är
 
-## 3. Jämförelsen
+Fintraffic är Finlands statliga trafikledningsbolag. Det sköter trafikcentralen för vägarna, driver omkring 450 vägväderstationer och
+över 1 000 väderkameror, och publicerar all data öppet genom tjänsten Digitraffic. Vägväderdatan används i första hand av väghållningen,
+för att bestämma när det ska saltas och hur mycket.
 
-| | Fintraffic | Halkvakt |
-| :-- | :-- | :-- |
-| **När föraren får veta** | Före resan, eller som pushnotis; appen ska inte användas under körning | Under resan, med röst och släckt skärm |
-| **Hur** | Karta och notiser som föraren läser | En mening, en fara i taget; tystnad är grundläget |
-| **Var** | Hela vägnätet på kartan; varningarna för huvudvägarna och regioner | Framför bilen längs den väg den kör |
-| **Vad** | Väglag, väder, störningar, vägarbeten, väghållning, köer, kameror | Halka, frysrisk, olyckor, vilt, fartkameror (vägarbeten till våren, kort #32) |
-| **Prognos** | Ja: per vägavsnitt 12 h framåt, och FMI:s varningar dagar framåt | Nej, inte till föraren. Prognoslagret mäts i skuggan; regel T6: en prognos får stärka, aldrig ensam utlösa |
-| **Ruttkoll före resan** | Ja: favoritrutter med automatiska notiser | Nej (kort #233 del 1, ej utrett) |
-| **Väghållningen** | Plogning, sandning, saltning senaste dygnet; saltmängd på stationerna | Nej — *"saltet syns inte"* är kuvösens och betans känsligaste svaghet |
-| **Förarnas egna rapporter** | Ja, publika i 30 minuter | Bara facit: *Stämde / Stämde inte / Appen missade*, privat, med brytaren på |
-| **Positionen** | Används för notiser efter din plats (var den behandlas framgår inte av sidan) | Lämnar aldrig telefonen av sig själv |
-| **Hur träffsäkerheten bevisas** | Framgår inte av de sidor som är lästa | Tröskeldokument före mätning, blindade domar, skuggmotor, kuvösen |
-| **Bilarnas data** | Prövas som andra källa (2,4 miljoner varningar på en månad) | Ingen öppen källa i Sverige hittad; Trafikverkets upphandling säger att datan inte delas vidare (DECISIONS #282) |
+Till förarna har Fintraffic tre kanaler.
 
-## 4. Vad vi kan ta efter
+**Kartan Liikennetilanne** visar störningar, vägarbeten, kameror, köer och isvägar. Den visar också väglaget per vägavsnitt med en
+prognos för hur det utvecklas, och vad väghållningen har gjort det senaste dygnet: var det har plogats, sandats och saltats. Den uppgiften
+kommer direkt från entreprenörernas fordon.
 
-Bara förslag, inget är beställt. Kort #283 bär valen.
+**Appen Fintraffic Mobiili** är gratis, kräver ingen inloggning och har ingen reklam. Den har kartan, väglaget, vägväderstationerna och
+varningarna. Den skickar pushnotiser om störningar där du befinner dig, eller längs en rutt eller ett område du har valt. Du kan söka
+en rutt, spara den som favorit och få en notis när något händer längs den. Förarna kan själva rapportera vilt, stillastående bilar och
+dåligt väglag, och rapporterna syns på kartan i en halvtimme. Appen hade över 100 000 användare i oktober 2025 och fick ett pris för
+bästa kundgärning 2024.
 
-1. **Ruttkollen före resan finns redan hos en statlig aktör, med 100 000 användare.** Det stärker kort #233 del 1. Fintraffic visar också
-   formen: sparade rutter och en notis när något händer längs dem. Halkvakt skulle göra det utan att positionen lämnar telefonen.
-2. **Fintraffics prognoser per vägavsnitt i vårt finska skuggarkiv.** Datan är öppen och vi läser redan samma API. Då går det att jämföra
-   hur ofta den finska prognosen sa *dåligt väglag* när vår regel slog till, och tvärtom — en extern jämförelse för prognoslagret, utan att
-   något når en förare. Kostnaden är ett anrop till i det timvisa finska flödet och några tusen rader om dygnet.
-3. **Väghållningens data som facit i Finland.** Digitraffic publicerar var och när vägarna plogats, sandats och saltats, och stationerna
-   mäter saltmängd (`SUOLAN_MÄÄRÄ`, som vi inte arkiverar — `docs/GOLVET.md` §6). Det är den del av facit som saknas i Sverige: en varning
-   före en saltning kan vara rätt fast vägen aldrig blev hal.
-4. **Formuleringen *"när du kör, så kör du"*.** Fintraffic avråder själva från att använda appen under körning. Halkvakts poäng — att
-   föraren aldrig behöver titta på telefonen — är precis det Fintraffics app inte gör. Det är ett ärligt argument i marknadsplanen (kort #281).
+**Väglagsvarningarna** kommer från Meteorologiska institutet och har fyra nivåer: normalt, dåligt, mycket dåligt och extremt dåligt.
+De gäller huvudvägarna från oktober till april, uppdateras fem gånger om dygnet och kan komma två till tre dygn i förväg när det väntas
+mycket dåligt väglag.
 
-**Inte för oss nu:** förarnas publika rapporter (kräver positioner från förare, och invarianten förbjuder det automatiskt);
-olycksriskmotorn (en modell som utlöser bryter regel T6); de virtuella skyltarna (de går till bilar och appar via åtkomstpunkten — öppna
-de sig blir de en källa, inte en konkurrent).
+Bakom detta finns öppna data som vem som helst kan använda. Stationerna rapporterar varje minut och kamerorna var tionde minut. För 277
+vägavsnitt finns en prognos som uppdateras var femte minut och sträcker sig 12 timmar framåt, med väglag, yt- och lufttemperatur, vind
+och ett skäl till bedömningen, till exempel vinterhalka, underkylt regn eller friktion. Enligt Fintraffic bygger prognoserna på Vaisalas
+vädermodeller. Det är samma öppna källa som Halkvakt redan läser för sitt finska skuggarkiv.
 
-## 5. Källor (lästa 2/10 2026)
+Två saker är under utveckling, enligt en rapport från Fintraffic till ITS-världskongressen 2024. Den första är *virtuella skyltar*:
+varningar om tillfällig halka, kraftigt snöfall, hård vind, dålig sikt, vägarbeten, olyckor och köslut, som skickas till bilar och appar
+i stället för att visas på skyltar längs vägen. Varningen om halka ska ta hänsyn till om vägen redan har saltats. En första version
+används av trafikcentralens operatörer. Den andra är en motor som med maskininlärning räknar fram olycksrisk, för rutter och
+informationstjänster.
+
+Samma rapport beskriver ett prov med data från en biltillverkare: 2,4 miljoner halkvarningar från personbilar i hela Finland under
+januari 2024. De flesta kom när stationens egen friktionsmätning också var låg. Där de skilde sig berodde det delvis på att stationen
+bara mäter körfältet medan bilarna kör i alla fält. Fintraffics slutsats var att bildatan duger som en andra källa bredvid stationerna.
+
+## Vad Halkvakt är
+
+Halkvakt är en röst i bilen. Telefonen hämtar Trafikverkets lägesbild var tionde minut och jämför den med bilens position i telefonen
+själv. Ingen position lämnar telefonen av sig själv. Rösten säger till om halka på vägen, frysrisk vid en mätstation, olyckor, vilt och
+fartkameror, en sak i taget och ungefär 30 sekunder innan bilen är där. Annars tiger den.
+
+Allt som ska få tala prövas först i skuggan, mot trösklar som är skrivna innan mätningen görs, och döms blindat i januari och mars. Ingen
+prognos får ensam utlösa en varning. Halkvakt är ännu i beta: ett fåtal testare på iPhone, och appen ligger hos Apple för granskning.
+
+## Utvärdering
+
+**Räckvidd och mognad: Fintraffic är långt före.** Fintraffic är en myndighetsnära organisation med egna stationer, en trafikcentral
+och en app som 100 000 människor använder. Halkvakt är ett tvåmannaprojekt i beta. Jämförelsen är inte rättvis, och den behöver inte
+vara det, eftersom de två inte gör samma sak.
+
+**Före resan: Fintraffic är före, och Halkvakt har ingenting.** Ruttkollen med sparade rutter och notiser är just det som kort #233
+del 1 föreslår och som inte är utrett. Fintraffic visar att en statlig aktör anser att den hör till grundutbudet. I Sverige har
+Trafikverket en liknande tjänst bara för Stockholm och Göteborg, appen Trafiken.nu, där man kan få meddelanden om störningar på sina
+favoritsträckor.
+
+**Under körningen: Halkvakt har en plats som Fintraffic medvetet lämnar.** Fintraffic avråder från att använda appen när man kör.
+Deras notiser kommer ändå, men föraren förväntas inte läsa dem. Halkvakt är byggd för att föraren aldrig ska behöva titta på
+telefonen. Det är den tydligaste skillnaden, och den är Halkvakts egen.
+
+**Träffsäkerhet: inget av dem har visat den.** På de sidor jag har läst redovisar Fintraffic inte hur ofta varningarna och prognoserna
+stämmer. Halkvakt har metoden för att visa det men inga domar ännu. Snöflingemätningen 2/10 gav också en påminnelse: när
+stationsregeln varnar lyser bilens egen snöflinga redan i 97 av 100 fall. Halkvakts värde måste alltså ligga i att säga *var* och
+*när*, inte i att se kyla som bilen inte ser. Om det håller visar riktningsprovet och domarna.
+
+**Data: Fintraffic äger källan, Halkvakt lånar den.** Fintraffic har friktion, saltmängd, plogning och saltning, prognoser per
+vägavsnitt och bilarnas egna halkvarningar. Halkvakt bygger på Trafikverkets öppna data och saknar uppgifter om saltning. Det gör att
+en varning före en saltning kan se fel ut fast den var rätt, och det är den svagaste punkten i Halkvakts facit.
+
+**Integritet: Halkvakt är tydligare.** Fintraffic använder positionen för notiser efter var du är, men sidorna säger inte var den
+behandlas. Halkvakt lovar att ingen position lämnar telefonen av sig själv, och koden och dokumenten följer det löftet.
+
+**Kostnad: lika.** Båda är gratis för föraren.
+
+**Den verkliga konkurrensen kommer från bilarna.** Fintraffic finns inte i Sverige och är ingen konkurrent här. Men deras plan att
+skicka halkvarningar direkt till bilarna, och biltillverkarnas egna halkvarningar, pekar mot en framtid där bilen själv säger till. Det
+krymper Halkvakts plats på sikt i nya bilar. I äldre bilar, och för den som inte har en bil med sådana tjänster, finns platsen kvar.
+
+**Samlad bedömning.** Halkvakt konkurrerar inte med Fintraffic, det kompletterar. Fintraffic visar tre saker: att förare vill ha den här
+sortens information (100 000 användare i ett land med 5,6 miljoner invånare), att planeringen före resan är standard hos de bästa, och
+att rösten under körningen är en lucka även hos dem. Halkvakts största risk är inte Fintraffic. Den är att varningarna inte håller i
+domarna, och att bilarna på sikt får egna varningar.
+
+## Vad vi kan ta efter
+
+Inget av detta är beställt. Det står på kort #283 och väntar på Bengts val.
+
+1. **Ruttkollen före resan.** Den finns hos en statlig aktör med 100 000 användare och hos Trafikverket i Stockholm och Göteborg. Det
+   stärker kort #233 del 1. Halkvakt skulle göra den utan att positionen lämnar telefonen.
+2. **Fintraffics prognoser i vårt finska skuggarkiv.** Datan är öppen och vi läser redan samma tjänst. Då kan vi jämföra hur ofta den
+   finska prognosen sa dåligt väglag när vår regel slog till, och tvärtom. Det kostar ett anrop till i det finska flödet som redan går
+   varje timme, och ingenting når en förare.
+3. **Väghållningens data som facit i Finland.** Digitraffic publicerar var och när vägarna har plogats, sandats och saltats, och
+   stationerna mäter saltmängden. Det är den del av facit som saknas i Sverige.
+4. **"När du kör, så kör du" som argument.** Fintraffic avråder själva från att använda appen under körning. Halkvakts poäng är att
+   föraren aldrig behöver göra det. Det är ett ärligt argument för marknadsplanen (kort #281).
+
+Det som inte passar oss nu: förarnas publika rapporter, eftersom de kräver positioner från förarna; olycksriskmotorn, eftersom en modell
+som utlöser en varning bryter regel T6; och de virtuella skyltarna, som går till bilar och appar och blir en källa för oss först om de
+publiceras öppet.
+
+## Det som inte är utrett
+
+Siffrorna för antalet stationer skiljer sig mellan Fintraffics sidor (omkring 450) och Digitraffic (över 350), och vårt finska arkiv har
+526. Jag har inte rett ut varför. Nira-utredningen 21/9 skrev, efter en agents läsning, att det är Meteorologiska institutet som publicerar
+prognoserna per vägavsnitt; Fintraffics egen sida säger att de bygger på Vaisalas modeller. Hur Fintraffic behandlar användarnas position
+framgår inte av sidorna. Appen är inte provad.
+
+## Källor (lästa 2/10 2026)
 
 - Fintraffic, *Road weather*: https://www.fintraffic.fi/en/road_traffic/road-traffic-services/road-weather
 - Fintraffic, *Liikennetilanne-palvelu*: https://www.fintraffic.fi/fi/digitaalisetpalvelut/digitaaliset-palvelut-kuluttajille/liikennetilanne-palvelu
 - Fintraffic, *Fintraffic Mobiili*: https://www.fintraffic.fi/fi/digitaalisetpalvelut/mobiili
-- Digitraffic, *Road traffic* (API-förteckningen): https://www.digitraffic.fi/en/road-traffic/
+- Digitraffic, *Road traffic*: https://www.digitraffic.fi/en/road-traffic/
 - Digitraffic, öppet API: `/api/weather/v1/forecast-sections-simple/forecasts` (277 avsnitt, läst 2/10 15:48 UTC)
 - Ilmatieteen laitos, *Liikennesää*: https://www.ilmatieteenlaitos.fi/liikennesaa
-- Kariniemi m.fl., *Exchange of operationally valuable and safety-critical data within ecosystems*, ITS World Congress 2024 (Fintraffic):
+- Kariniemi m.fl., *Exchange of operationally valuable and safety-critical data within ecosystems*, ITS World Congress 2024:
   https://www.fintraffic.fi/sites/default/files/2024-09/Exchange%20of%20operationally%20valuable%20and%20safety-critical%20data%20within%20ecosystems.pdf
+- Trafiken.nu, *Trafiken.nu som app*: https://trafiken.nu/stockholm/trafikapp_stockholm/
