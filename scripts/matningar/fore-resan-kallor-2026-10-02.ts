@@ -50,6 +50,15 @@ async function main(): Promise<number> {
   // 1. Situationerna
   const sits = await hamta("Situation", "1.6", "road.trafficinfo");
   const typer = new Map<string, number>(), va: any[] = [], ko: any[] = [];
+  // Tillagt efter första körningen (2/10 18:32): mätningen 26/9 (#420) räknade 5 280 aktiva vägarbeten utan att se på `Suspended`, den
+  // här räknade 1 876 med. Raden nedan räknar de vilande vägarbetena för sig, så att skillnaden syns. Inget annat i mätningen ändras.
+  let vilande = 0, vilandeUtanTid = 0;
+  for (const s of sits) for (const d of s.Deviation ?? []) {
+    if (!s.Deleted && !d.Deleted && d.Suspended && VAGARBETE.has(d.MessageTypeValue)) {
+      const st = d.StartTime ? Date.parse(d.StartTime) : -Infinity, sl = d.EndTime ? Date.parse(d.EndTime) : Infinity;
+      if (st <= nu && nu < sl) vilande++; else vilandeUtanTid++;
+    }
+  }
   for (const s of sits) for (const d of s.Deviation ?? []) {
     if (s.Deleted || d.Deleted || d.Suspended) continue;
     const start = d.StartTime ? Date.parse(d.StartTime) : -Infinity, slut = d.EndTime ? Date.parse(d.EndTime) : Infinity;
@@ -70,6 +79,7 @@ async function main(): Promise<number> {
     tally(nytt, sedan <= 24 ? "började senaste dygnet" : sedan <= 24 * 7 ? "började senaste veckan" : "äldre än en vecka");
   }
   console.log(`mätt: aktiva vägarbeten: ${va.length} · köer och onormal trafik (AbnormalTraffic): ${ko.length}`);
+  console.log(`mätt: vilande vägarbeten (Suspended) inom sin tid: ${vilande} · vilande utanför sin tid: ${vilandeUtanTid} — aktiva och vilande tillsammans: ${va.length + vilande}`);
   skriv("vägarbeten: påverkan", pav); skriv("vägarbeten: avstängda körfält", filer); skriv("vägarbeten: varaktighet", tid);
   skriv("vägarbeten: när de började", nytt); skriv("vägarbeten: geometri", geo);
   const kortaEllerNya = va.filter((d) => (nu - Date.parse(d.StartTime)) <= 86_400_000 || (d.EndTime && !d.ValidUntilFurtherNotice && (Date.parse(d.EndTime) - Date.parse(d.StartTime)) <= 7 * 86_400_000));
