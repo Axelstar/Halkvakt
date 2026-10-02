@@ -72,7 +72,7 @@ class MainActivity : ComponentActivity() {
                 Prefs.setTripStart(this@MainActivity, nu - 10 * 60_000L)
                 Prefs.markeraMiss(this@MainActivity, nu - 5 * 60_000L, "wx:fotostudio", null)
             }
-            // Redo efter tur (designen v2, DECISIONS #443): turen är slut, kvittot syns under betatestets kort.
+            // Redo efter tur (designen v2, DECISIONS #444): turen är slut, kvittot syns under betatestets kort.
             Prefs.setTripEnd(this@MainActivity, System.currentTimeMillis() + 1_000L, 31f)
         }
     }
@@ -123,7 +123,7 @@ class MainActivity : ComponentActivity() {
 
     /** Provvarning i samma TTS-kanal som riktiga varningar — volymkontroll i bilen. */
     fun testVoice() {
-        val text = "Fartkamera om 500 meter. Gränsen är 80."   // en riktig motorreplik (DECISIONS #443)
+        val text = "Fartkamera om 500 meter. Gränsen är 80."   // en riktig motorreplik (DECISIONS #444)
         if (testTts == null) {
             testTts = TextToSpeech(this) { st ->
                 if (st == TextToSpeech.SUCCESS) {

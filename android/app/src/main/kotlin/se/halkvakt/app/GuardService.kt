@@ -137,7 +137,7 @@ class GuardService : Service() {
                 guard = Guard(hazards, cfg = EngineConfig(leadMaxM = warnM), speak = ::speak, notify = ::updateNotification, onEvent = AlertBus::post,
                     isEnabled = { it !in disabledKinds },
                     onAlert = { a ->
-                        // Kortet (DECISIONS #443) slår upp farans metadata: vägnummer, gräns, bro, röjningstid.
+                        // Kortet (DECISIONS #444) slår upp farans metadata: vägnummer, gräns, bro, röjningstid.
                         val meta = (hazardsNow.firstOrNull { it.id == a.hazardId } as? PointHazard)?.meta
                         val shown = ShownWarning(a, WarningCard.make(a, meta))
                         currentWarning.value = shown
@@ -390,7 +390,7 @@ class GuardService : Service() {
         val runningFlow = MutableStateFlow(false)
         val snapshotInfo = MutableStateFlow<String?>(null)
         val session = MutableStateFlow(Session())
-        /** Varningskortet (DECISIONS #443): sätts vid uppläst varning, släcks efter 8 s — ingen knapp. */
+        /** Varningskortet (DECISIONS #444): sätts vid uppläst varning, släcks efter 8 s — ingen knapp. */
         val currentWarning = MutableStateFlow<ShownWarning?>(null)
         /** Gammal väglagsdata (designen M–N): sant så länge den laddade datan är för gammal. */
         val dataStale = MutableStateFlow(false)

@@ -84,7 +84,7 @@ export interface Alert {
   text: string;
   /** Serious accidents only: which of the two-step calls this is (DECISIONS #28). Absent for
    *  every other alert, so the log shape of all other vectors is unchanged. The warning card
-   *  shows it as a stage chip (design handoff 2/10, DECISIONS #442). */
+   *  shows it as a stage chip (design handoff 2/10, DECISIONS #443). */
   step?: AccidentStep;
 }
 

@@ -1,4 +1,4 @@
-// Designöverlämningen v2 (DECISIONS #443) på Android — samma skärmar som iOS: Redo (01) och Redo efter tur (01b),
+// Designöverlämningen v2 (DECISIONS #444) på Android — samma skärmar som iOS: Redo (01) och Redo efter tur (01b),
 // På vakt (02) med gammal data (M–N) och inställningar i två nivåer (04). Tokens i Theme.kt, kortet i WarningCardScreen.kt.
 // Avviker Android från iOS är det en bugg, inte en anpassning (DECISIONS #47).
 package se.halkvakt.app.ui
@@ -79,7 +79,7 @@ private val Ring = Color(0xFF34424A)
 
 fun klockslag(ms: Long): String = SimpleDateFormat("HH:mm", Locale("sv", "SE")).format(Date(ms))
 
-/** Kortets rubriker (DECISIONS #443) — samma ord på iPhone och Android. */
+/** Kortets rubriker (DECISIONS #444) — samma ord på iPhone och Android. */
 fun rubrik(k: HazardKind) = when (k) {
     HazardKind.ACCIDENT -> "Olycka"
     HazardKind.SLIPPERY_SEGMENT -> "Halka"

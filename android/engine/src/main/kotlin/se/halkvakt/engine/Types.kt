@@ -56,7 +56,7 @@ data class Fix(
 data class Alert(
     val t: Double, val hazardId: String, val kind: HazardKind,
     val distanceM: Long, val text: String,
-    /** Serious accidents only — which of the two-step calls (DECISIONS #28, #442). Null otherwise. */
+    /** Serious accidents only — which of the two-step calls (DECISIONS #28, #443). Null otherwise. */
     val step: AccidentStep? = null,
 )
 

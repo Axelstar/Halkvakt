@@ -1,4 +1,4 @@
-// VARNINGSKORTET — designöverlämningen v2 (DECISIONS #443), Varningskort.dc.html.
+// VARNINGSKORTET — designöverlämningen v2 (DECISIONS #444), Varningskort.dc.html.
 // Helskärm i gult i 8 s medan rösten talar, sedan bort av sig själv — ingen knapp. Läses med en blick i hållaren.
 // Innehållet (rubrik, avstånd, skyltar, råd) kommer ur HalkvaktEngine.WarningCard, som CI testar;
 // här finns bara layouten. Fast ordning uppifrån: huvudrad, läge, ikon, rubrik, avstånd, råd, repliken, tidsstapeln.

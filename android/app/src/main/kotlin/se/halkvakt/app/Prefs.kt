@@ -22,7 +22,7 @@ object Prefs {
     private val KEY_FACIT_STATUS = stringPreferencesKey("facit_status")
     private val KEY_WARN_DIST = floatPreferencesKey("warn_distance_m")
     private val KEY_TRIP_START = longPreferencesKey("trip_start")
-    private val KEY_TRIP_END = longPreferencesKey("trip_end")      // Redo efter tur (DECISIONS #443)
+    private val KEY_TRIP_END = longPreferencesKey("trip_end")      // Redo efter tur (DECISIONS #444)
     private val KEY_TRIP_KM = floatPreferencesKey("trip_km")
     private val KEY_MISSAR = stringPreferencesKey("missar")
     private fun kindKey(k: HazardKind) = booleanPreferencesKey("warn_${k.wire}")

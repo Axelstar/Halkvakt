@@ -1,4 +1,4 @@
-// The warning card's content for cards A–L of the design handoff v2 (DECISIONS #443).
+// The warning card's content for cards A–L of the design handoff v2 (DECISIONS #444).
 // Swift twin: ios/HalkvaktEngine/Tests/HalkvaktEngineTests/WarningCardTests.swift — keep the cases identical.
 package se.halkvakt.engine
 

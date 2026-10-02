@@ -87,7 +87,7 @@ export interface Alert {
   text: string;
   /** Serious accidents only: which of the two-step calls this is (DECISIONS #28). Absent for
    *  every other alert, so the log shape of all other vectors is unchanged. The warning card
-   *  shows it as a stage chip (design handoff 2/10, DECISIONS #442). */
+   *  shows it as a stage chip (design handoff 2/10, DECISIONS #443). */
   step?: AccidentStep;
 }
 
@@ -422,7 +422,7 @@ interface FiredState { t: number; odometerM: number; }
  * accident owns two independent voice slots ("<id>#early" and "<id>#near") so the 2 km
  * reminder is not swallowed by the 10-min/5-km suppression that follows the 10 km call.
  * This is the "step-aware warning id" of DECISIONS #28. The key stays internal: the
- * emitted Alert keeps its hazardId. Since DECISIONS #442 the Alert also carries `step`
+ * emitted Alert keeps its hazardId. Since DECISIONS #443 the Alert also carries `step`
  * (serious accidents only) so the warning card can show which call it is.
  */
 interface Candidate {

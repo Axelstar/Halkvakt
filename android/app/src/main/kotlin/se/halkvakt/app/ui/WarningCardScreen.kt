@@ -1,4 +1,4 @@
-// VARNINGSKORTET — designöverlämningen v2 (DECISIONS #443), samma kort som iOS WarningCardView.
+// VARNINGSKORTET — designöverlämningen v2 (DECISIONS #444), samma kort som iOS WarningCardView.
 // Helskärm i gult i 8 s medan rösten talar, sedan bort av sig själv — ingen knapp (Androids "Uppfattat" och
 // källrad borttagna). Innehållet kommer ur se.halkvakt.engine.WarningCard, som CI testar; här finns bara layouten.
 // Fast ordning uppifrån: huvudrad, läge, ikon, rubrik, avstånd, råd, repliken, tidsstapeln.

@@ -43,8 +43,8 @@ fortsätter. *(Fryst 26/9, kort #221.)*
 
 ## Session log
 - 2/10 18:46–21:00 (Claude, Axels *"Okay, lets start"*): appens nya skinn ur designöverlämningen v2 på båda plattformarna, PR #698
-  (utkast) — `Alert.step` i tre motorer (DECISIONS #442), varningskorten A–L, gammal data M–N, Redo efter tur, På vakt, inställningar
-  i två nivåer, introduktionen (iOS), logotypen med "!" (DECISIONS #443). `ios-engine` och `android` gröna på grenen; iOS app-målet
+  (utkast) — `Alert.step` i tre motorer (DECISIONS #443), varningskorten A–L, gammal data M–N, Redo efter tur, På vakt, inställningar
+  i två nivåer, introduktionen (iOS), logotypen med "!" (DECISIONS #444). `ios-engine` och `android` gröna på grenen; iOS app-målet
   obyggt till Axels Xcode. Kort #284.
 - 2/10 kväll (Claude, Bengts fråga): Fintraffic läst och jämfört med Halkvakt — `docs/FINTRAFFIC-JAMFORELSE-2026-10-02.md`, kort #283 (fyra förslag, Bengts val). Läs-only.
 - 2/10 kväll (Claude, Bengts frågor): Fintraffic-jämförelsen omskriven till läsbar text med en utvärdering (samma fil, kort #283). Läs-only.

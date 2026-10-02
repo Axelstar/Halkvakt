@@ -1,4 +1,4 @@
-# Renderar designöverlämningens 3D-socklar (DECISIONS #443) till PNG @3x för iOS och Android.
+# Renderar designöverlämningens 3D-socklar (DECISIONS #444) till PNG @3x för iOS och Android.
 # Kör: python3 scripts/design-socklar.py  (kräver playwright + chromium). CSS:en är designens, ordagrant.
 import os
 from playwright.sync_api import sync_playwright

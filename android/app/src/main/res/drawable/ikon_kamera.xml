@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Design handoff v2 (DECISIONS #443): 48-grid, stroke 3.5, round caps. Generated, see HalkvaktIkon.dc.html. -->
+<!-- Design handoff v2 (DECISIONS #444): 48-grid, stroke 3.5, round caps. Generated, see HalkvaktIkon.dc.html. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="48dp" android:height="48dp"
     android:viewportWidth="48" android:viewportHeight="48">

@@ -67,7 +67,7 @@ public struct Alert: Equatable {
     public let kind: HazardKind
     public let distanceM: Int
     public let text: String
-    /// Serious accidents only — which of the two-step calls (DECISIONS #28, #442). nil otherwise.
+    /// Serious accidents only — which of the two-step calls (DECISIONS #28, #443). nil otherwise.
     public let step: AccidentStep?
     public init(t: Double, hazardId: String, kind: HazardKind, distanceM: Int, text: String, step: AccidentStep? = nil) {
         self.t = t; self.hazardId = hazardId; self.kind = kind; self.distanceM = distanceM; self.text = text; self.step = step

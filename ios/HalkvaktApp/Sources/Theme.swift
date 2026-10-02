@@ -1,4 +1,4 @@
-// Skinnet v4 = designöverlämningen v2 (DECISIONS #443), byggt på v3 (DECISIONS #47).
+// Skinnet v4 = designöverlämningen v2 (DECISIONS #444), byggt på v3 (DECISIONS #47).
 // Tokens är designens, inte mina: ändra i designen, sedan här. Typsnitt: Instrument Sans
 // (text) och IBM Plex Mono (siffror, etiketter), båda OFL, buntade i Sources/Fonts.
 import SwiftUI

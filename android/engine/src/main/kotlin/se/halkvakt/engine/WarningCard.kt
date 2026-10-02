@@ -1,4 +1,4 @@
-// What the warning card shows for one alert (design handoff v2, DECISIONS #443).
+// What the warning card shows for one alert (design handoff v2, DECISIONS #444).
 // Swift twin: ios/HalkvaktEngine/Sources/HalkvaktEngine/WarningCard.swift — same cases, same strings.
 // Rule from the design: the card shows what the voice said and nothing more. A number appears only
 // when the voice speaks one; halka, vilt and the weather station get words instead.

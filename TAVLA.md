@@ -1922,7 +1922,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟡 GÖRA (pågår just nu)
 
-- [ ] 🔨 **#284 APPENS NYA SKINN — DESIGNÖVERLÄMNINGEN V2 (BYGGT, väntar på iOS-bygge — Claude, Axels order 2/10 18:46; DECISIONS #442, #443, PR #698)**:
+- [ ] 🔨 **#284 APPENS NYA SKINN — DESIGNÖVERLÄMNINGEN V2 (BYGGT, väntar på iOS-bygge — Claude, Axels order 2/10 18:46; DECISIONS #443, #444, PR #698)**:
   varningskorten A–L med lägesetikett, vägskylt, gränsskylt och rådruta; gammal data M–N; Redo efter tur; På vakt; inställningar i
   två nivåer; introduktionen (iOS); sex ikoner; logotypen med "!"; 3D-socklarna renderade ur designens CSS. iOS och Android lika,
   Androids "Uppfattat" och källrad borta. Rösten oförändrad.

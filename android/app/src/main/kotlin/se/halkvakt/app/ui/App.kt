@@ -1,4 +1,4 @@
-// Halkvakts UI — appens rot, flikraden och betatestets kort. Skärmarna (designöverlämningen v2, DECISIONS #443)
+// Halkvakts UI — appens rot, flikraden och betatestets kort. Skärmarna (designöverlämningen v2, DECISIONS #444)
 // bor i Skinn.kt, varningskortet i WarningCardScreen.kt. Gult bara för det som gör något och för varningen; grönt = på.
 // Skill-regler: en lägsta ansvarig ägare per state (DataStore/tjänstens StateFlows),
 // composables konsumerar; trappan bor orörd i MainActivity.
@@ -79,7 +79,7 @@ private val Scheme = darkColorScheme(
     secondary = Teal,
 )
 
-/** Ikonsetet (designen v2, DECISIONS #443) — sex ikoner, samma former som iOS. Logomärket är INTE en av dem. */
+/** Ikonsetet (designen v2, DECISIONS #444) — sex ikoner, samma former som iOS. Logomärket är INTE en av dem. */
 @Composable
 fun HazardIcon(k: HazardKind, size: Dp = 24.dp, tint: Color = Brand.yellow) {
     Icon(
@@ -109,7 +109,7 @@ fun HalkvaktApp(activity: MainActivity) {
         }
         Box(Modifier.fillMaxSize().background(Natt)) {
             Box(Modifier.fillMaxSize().statusBarsPadding()) {
-                // Ingen flikrad medan vakten kör: körläget täcker allt (designen v2, DECISIONS #443).
+                // Ingen flikrad medan vakten kör: körläget täcker allt (designen v2, DECISIONS #444).
                 if (running) PaVaktScreen(activity)
                 else when (tab) {
                     0 -> RedoScreen(activity) { BetaOverst(activity) }

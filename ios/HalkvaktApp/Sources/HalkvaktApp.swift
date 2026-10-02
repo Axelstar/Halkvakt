@@ -122,7 +122,7 @@ struct InstallningarView: View {
                 .padding(.top, 24)
             HStack {
                 Spacer()
-                // En riktig replik ur motorn (DECISIONS #443) — aldrig en påhittad.
+                // En riktig replik ur motorn (DECISIONS #444) — aldrig en påhittad.
                 YellowPill(title: "Testa rösten", playIcon: true) { SpeechService.shared.speak("Fartkamera om 500 meter. Gränsen är 80.") }
                 Spacer()
             }
@@ -308,7 +308,7 @@ private struct GenvagarGuide: View {
     }
 }
 
-/// Två flikar under en flytande kapsel (designen v2, DECISIONS #443) — Vakten och Inställningar.
+/// Två flikar under en flytande kapsel (designen v2, DECISIONS #444) — Vakten och Inställningar.
 /// Ingen flikrad medan vakten kör: körläget täcker allt.
 struct RootView: View {
     @State private var tab = 0

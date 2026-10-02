@@ -1,4 +1,4 @@
-// VAKTEN — hemskärmen, designöverlämningen v2 (DECISIONS #443): 01 Redo och 01b Redo efter tur.
+// VAKTEN — hemskärmen, designöverlämningen v2 (DECISIONS #444): 01 Redo och 01b Redo efter tur.
 // "Redo." svarar på "är jag skyddad?" med en blick; efter en tur står kvittot över varningarna tills nästa tur.
 // När vakten kör visas KorlageView i helskärm.
 //
@@ -39,7 +39,7 @@ struct VaktenView: View {
 
             // Kort #203: frågan om resan står överst, före allt annat — den som öppnar appen efter
             // en körning ska se den utan att leta. Försvinner när allt är besvarat, och efter ett dygn.
-            // Designen v2 visar inte betatestets kort; det står kvar här för betatestarna (DECISIONS #267, #443).
+            // Designen v2 visar inte betatestets kort; det står kvar här för betatestarna (DECISIONS #267, #444).
             if let resa {
                 EfterResanKort(varningar: resa.obes, missar: prefs.missar.filter { $0.t >= resa.sedan }, sedan: resa.sedan)
                     .padding(.top, 14)
@@ -130,7 +130,7 @@ struct VaktenView: View {
         return SenasteTur(rubrik: "\(start.klockslag)–\(slut.klockslag) · \(min) MIN · \(km) KM", varningar: v)
     }
 
-    /// Kortets rubriker (DECISIONS #443) — samma ord på iPhone och Android.
+    /// Kortets rubriker (DECISIONS #444) — samma ord på iPhone och Android.
     static func rubrik(_ kind: String) -> String {
         switch HazardKind(rawValue: kind) {
         case .accident: return "Olycka"

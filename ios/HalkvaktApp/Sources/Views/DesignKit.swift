@@ -1,4 +1,4 @@
-// Designöverlämningen v2 (DECISIONS #443) — de delar som återkommer på flera skärmar:
+// Designöverlämningen v2 (DECISIONS #444) — de delar som återkommer på flera skärmar:
 // logotypen, statusljuset, gula och neutrala kapselknappar, monoetiketter, navigeringsrader,
 // kvittorader, gröna vippor och den flytande flikraden. Tokens bor i Theme.swift.
 import SwiftUI

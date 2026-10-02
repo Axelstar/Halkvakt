@@ -45,7 +45,7 @@ Xcode: inget CI-flöde kompilerar iOS app-målet.)*
 
 ## Skinnet (v4 — designöverlämningen v2, 2/10, kort #284)
 
-Ritat om 2/10 (DECISIONS #443) och byggt samma kväll på **båda plattformarna, lika** — avviker Android från iOS är
+Ritat om 2/10 (DECISIONS #444) och byggt samma kväll på **båda plattformarna, lika** — avviker Android från iOS är
 det en bugg. Mörkt, tyst, Instrument Sans för text och IBM Plex Mono i versaler för etiketter, tal och avstånd.
 **Gult betyder bara två saker:** en knapp som gör något, och varningen. **Grönt betyder på:** vippor, bockar, *PÅ*, *REDO*.
 Logotypen är triangeln med utropstecknet urstansat; *v3*:s skinn (31/8) och dess ikoner är ersatta.
@@ -99,7 +99,7 @@ krymper och tonar bort; stapeln börjar om.
 | Fartkamera | *Fartkamera* | *500 M* | hastighetsskylt när gränsen är känd |
 
 Kortets innehåll räknas i motorpaketen (`WarningCard` i Swift och Kotlin) och prövas av CI med samma fall på båda
-plattformarna; olycksläget kommer ur motorn (`Alert.step`, DECISIONS #442).
+plattformarna; olycksläget kommer ur motorn (`Alert.step`, DECISIONS #443).
 
 **Ikonerna:** sex, en linjetjocklek, rundade ändar: *olycka* (en avspärrningsbock), *halka* (bilen bakifrån med två
 slirspår), *frysrisk* (en snöflinga), *bro* (en valvbro med en liten flinga — ny), *vilt* (en älg, den enda fyllda formen)

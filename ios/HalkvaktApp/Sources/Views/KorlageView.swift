@@ -1,4 +1,4 @@
-// KÖRLÄGET — designöverlämningen v2 (DECISIONS #443), 02 På vakt: PÅ VAKT, tid och km, tre räknare,
+// KÖRLÄGET — designöverlämningen v2 (DECISIONS #444), 02 På vakt: PÅ VAKT, tid och km, tre räknare,
 // "Tyst så länge" / senast sagt / gammal data (N), PÅ DIN VÄG, Avsluta vakten. Skärmen ligger i hållaren.
 // Varningskortet tar hela skärmen i gult i 8 s och försvinner själv — ingen knapp.
 // Rullar när den måste (kort #279): på Bengts 4,7-tums iPhone 28/9 klipptes raden om förvarningen till "…".
@@ -36,7 +36,7 @@ struct KorlageView: View {
                             // touchen först, och långtrycket som fungerade i äldre byggen fyrade inte i (19) på Axels iPhone 1/10.
                             // Apples granskare ska kunna se ett varningskort utan att köra — det här är den vägen (kort #280).
                             .simultaneousGesture(LongPressGesture(minimumDuration: 0.5, maximumDistance: 30).onEnded { _ in
-                                // Kort B ur designen, med motorns riktiga halkreplik (DECISIONS #443).
+                                // Kort B ur designen, med motorns riktiga halkreplik (DECISIONS #444).
                                 demoWarning = HalkvaktEngine.Alert(t: 0, hazardId: "demo", kind: .slippery_segment,
                                     distanceM: 900, text: "Varning: halka rapporterad på vägen framför dig.")
                                 demoTask?.cancel()

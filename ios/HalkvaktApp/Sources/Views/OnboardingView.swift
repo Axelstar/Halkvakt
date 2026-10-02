@@ -1,4 +1,4 @@
-// Introduktionen (DECISIONS #36) i designöverlämningen v2 (DECISIONS #443): fyra sidor — Löftet, Platsen,
+// Introduktionen (DECISIONS #36) i designöverlämningen v2 (DECISIONS #444): fyra sidor — Löftet, Platsen,
 // Bannern, Du är klar — med systemets egna frågor och vad som händer när föraren säger nej. Varje sida får
 // hoppas över; allt går att ändra i Inställningar, och introduktionen kan visas igen därifrån.
 import SwiftUI
@@ -101,7 +101,7 @@ struct OnboardingView: View {
             .padding(.horizontal, 20).padding(.vertical, 18)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Brand.panel, in: RoundedRectangle(cornerRadius: 18))
-            // En riktig replik ur motorn (DECISIONS #443) — aldrig en påhittad.
+            // En riktig replik ur motorn (DECISIONS #444) — aldrig en påhittad.
             YellowPill(title: playing ? "Spelar…" : "Testa rösten", playIcon: !playing) {
                 guard !playing else { return }
                 playing = true
