@@ -121,7 +121,7 @@ class MainActivity : ComponentActivity() {
 
     /** Provvarning i samma TTS-kanal som riktiga varningar — volymkontroll i bilen. */
     fun testVoice() {
-        val text = "Halka rapporterad om åttahundra meter. Sänk farten."
+        val text = "Fartkamera om 500 meter. Gränsen är 80."   // en riktig motorreplik (DECISIONS #443)
         if (testTts == null) {
             testTts = TextToSpeech(this) { st ->
                 if (st == TextToSpeech.SUCCESS) {

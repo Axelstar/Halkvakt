@@ -121,7 +121,14 @@ class GuardService : Service() {
             val gate = AgeGate.filter(snap.hazards, snap.generatedAtMs, System.currentTimeMillis())
             val hazards = gate.hazards
             hazardsNow = hazards
-            if (gate.stale && !staleAnnounced) { staleAnnounced = true; speak(AgeGate.STALE_LINE) }
+            dataStale.value = gate.stale
+            dataTime.value = snap.generatedAtMs.takeIf { it > 0 }
+            if (gate.stale && !staleAnnounced) {
+                staleAnnounced = true; speak(AgeGate.STALE_LINE)
+                // Designen M: mörk rad överst i På vakt i 8 s medan rösten talar — inget gult kort, ingen fara.
+                staleToast.value = true
+                scope.launch { kotlinx.coroutines.delay(8000); staleToast.value = false }
+            }
             val dataTid = if (snap.generatedAtMs > 0)
                 android.text.format.DateFormat.format("HH:mm", snap.generatedAtMs) else "okänd tid"
             val g = guard
@@ -295,6 +302,8 @@ class GuardService : Service() {
 
     override fun onDestroy() {
         efterResan()          // FÖRE scope.cancel() — läser sitt eget, kortlivade scope
+        sparaTuren()
+        staleToast.value = false
         scope.cancel()
         running = false
         fused.removeLocationUpdates(callback)
@@ -313,6 +322,14 @@ class GuardService : Service() {
      * är en läsning plus en notis. Ingen notis alls om betatestet är av — knappen finns bara för
      * den som själv slagit på den (#186).
      */
+    /** Redo efter tur (designen 01b): turens slut och sträcka till kvittot. Egen kortlivad scope, som efterResan. */
+    private fun sparaTuren() {
+        if (session.value.startedAt <= 0L) return
+        val app = applicationContext
+        val km = session.value.km.toFloat()
+        CoroutineScope(Dispatchers.IO).launch { Prefs.setTripEnd(app, System.currentTimeMillis(), km) }
+    }
+
     private fun efterResan() {
         val sedan = session.value.startedAt
         if (sedan <= 0L) return
@@ -375,6 +392,12 @@ class GuardService : Service() {
         val session = MutableStateFlow(Session())
         /** Varningskortet (DECISIONS #443): sätts vid uppläst varning, släcks efter 8 s — ingen knapp. */
         val currentWarning = MutableStateFlow<ShownWarning?>(null)
+        /** Gammal väglagsdata (designen M–N): sant så länge den laddade datan är för gammal. */
+        val dataStale = MutableStateFlow(false)
+        /** När den laddade datan skapades (ms) — "SENAST FÄRSK 14:05". */
+        val dataTime = MutableStateFlow<Long?>(null)
+        /** Mörka raden överst i På vakt i 8 s medan rösten säger repliken om gammal data. */
+        val staleToast = MutableStateFlow(false)
         var running: Boolean
             get() = runningFlow.value
             set(v) { runningFlow.value = v }
