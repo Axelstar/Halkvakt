@@ -3,6 +3,9 @@
 *Kort #232, PLAN-KUVOSEN steg 2–3, DECISIONS #424 och #438. Läs-only: ingenting är inläst i någon databas, ingen regel är körd och
 inget utfall är läst. Skriptet för varje tal står vid tabellen.*
 
+*Uppdaterat 2/10 kväll (DECISIONS #439): nederbördskoderna 1, 2, 4 och 6 lästa på Trafikverkets källa, vintern inläst i kuvösens
+databas och vakterna körda som antal — §7. Fortfarande inget utfall läst.*
+
 ## 1. Vad som kom
 
 Bengt laddade ner fem filer från VViS Förvaltning (Micke Wallin) 2/10 kl. 16:04–16:05, en per månad november 2024–mars 2025.
@@ -35,7 +38,7 @@ Första inventeringen (`kuvos/inventering.ts`) läste decimalkommat som text i d
 | `tluft` | lufttemperatur, °C | −99,9: 0,2 % | −28,3 … 14,1 | `air_temp_c` |
 | `daggp` | daggpunkt, °C | −99,9: 0,2 % | −29,5 … 9,9 | `dewpoint_c` |
 | `lu_fu` | relativ luftfuktighet, % | −99,9: 0,2 % | 29,3 … 100 | `humidity_pct` |
-| `ned_typ` | nederbördstyp, **kod** | −9: 1,0 % | koderna 1, 2, 3, 4, 6, 9 | `precipitation`, `rain`, `snow` — **väntar** |
+| `ned_typ` | nederbördstyp, **kod** | −9: 1,0 % | koderna 1, 2, 3, 4, 6, 9 | `precipitation`, `rain`, `snow` — 1/2/4/6 översatta (§7), 3/9/−9 **väntar** |
 | `ned_maengd` | nederbördsmängd, **enhet okänd** | −99,9: 0,4 % · **−99,8: 0,65 %** | 0 … 15,5; fem rader över 100 (max 1 049,3) | `rain_sum_mm`? — **väntar** |
 | `vimax` | vind, troligen byvind: högsta 3-sekundersmedel på 30 min (§5a) | −99,9: 0,5 % | 0,5 … 21,4; 208 rader över 60 m/s | `wind_gust_ms`? — **väntar** |
 | `vimed` | vind, troligen medelvind: 10-minutersmedel (§5a) | −99,9: 0,3 % | 0,1 … 13,1 | `wind_speed_ms`? — **väntar** |
@@ -103,7 +106,8 @@ Hoppade över, utan gemensamma timmar: 1603 Skara, 2112 Hudiksvall, 2558 Överto
 | Steg | Läge |
 | :-- | :-- |
 | Temperaturerna, fuktigheten, sikten och riktningen | Kan översättas nu: −99,9 och −100 blir NULL, 20 000 behålls som i driften och tas av värdevakten |
-| **Nederbördstypen, mängden och vindfälten** | **Väntar på Trafikverkets kodlista** — frågorna nedan |
+| Nederbördstypen 1, 2, 4, 6 | ✅ Översatta 2/10 kväll ur VädErs 2019 (§7) |
+| **Nederbördstypen 3, 9, −9, mängden och vindfälten** | **Väntar på Trafikverket** — frågorna nedan (NULL i arkivet tills dess) |
 | De 23 stationerna utan läge | Väntar på Trafikverket |
 | Vakterna (#75, radvakten, karantänen, den långsamma vakten) | Körs när datan är inläst, i kuvösens databas; redovisas som antal |
 | Värdevakten | Körs på kuvösens databas före riktningsprovet; ett fält utan spann stoppar |
@@ -132,7 +136,8 @@ där är ett medelvärde över 30 minuter. Tidszonen är redan mätt (§3). **In
 
 Bengt skickar till Micke Wallin, som svar i samma tråd. Fyra frågor och en bekräftelse; tidszonen och vinden behöver inte frågas.
 
-1. `ned_typ`: vad betyder koderna 1, 2, 3, 4, 6 och 9, och −9?
+1. `ned_typ`: följer VViS-filen MESAN:s numrering i *Ersättningsmodell VädErs 2019* (1 ingen nederbörd, 2 regn, 4 snö, 6 både snö
+   och regn)? Och vad betyder 3, 9 och −9, som inte står där? *(Omskriven 2/10 kväll, DECISIONS #439.)*
 2. `ned_maengd`: är det mm per 30 minuter, och är det regn eller all nederbörd omräknad till vatten? Och vad betyder −99,8, som skiljer
    sig från −99,9?
 3. `siktdjup`: betyder 20 000 att sikten är större än mätområdet, och −100 att sikt inte mäts?
@@ -146,3 +151,53 @@ Bengt skickar till Micke Wallin, som svar i samma tråd. Fyra frågor och en bek
 Ingen regel är körd och inget utfall är läst. Förregistreringen (DECISIONS #424, tilläggen #426 och #437) skrevs innan filen öppnades;
 #437 checkades in 2/10 07:13 (då med numret #436, omnumrerad samma eftermiddag när kort #258 tog #434), och filen kom 16:04. **Från och med nu är filen öppnad:** ett nytt tillägg kan inte kallas *före filen*, bara
 *före riktningsprovet*, och ska säga det.
+
+## 7. Nederbördskoderna och inläsningen (2/10 kväll, DECISIONS #439)
+
+**Källan.** Axel hittade Trafikverkets *Ersättningsmodell VädErs 2019 — vägklass 4, 5 och GC*
+(bransch.trafikverket.se, `ersattningsmodell_vaders_2019_vagklass_4_5_och_gc.pdf`). Läst på källan, s. 6–7: *"Nederbörd anges i fyra
+typer: Ingen nederbörd (kod 1), regn (kod 2), snö (kod 4) samt både snö och regn (kod 6)."* Koderna gäller MESAN, som VViS-data matar.
+Listan som först kom in, från en söksammanfattning, hade också *3 = underkylt regn* och *9 = okänd* — **de står inte i dokumentet** och
+används inte. Datan stämmer med de fyra, kod för kod (luften i §2): 2 i plusgrader, 4 i minus, 6 kring noll, 1 utan mängd.
+
+**Översättningen** (`kuvos/oversattning.sql`, regeln på ett ställe; den råa tabellen `kuvos_ra.trv_obs` är orörd och översättningen
+körs om när Micke svarar):
+
+| Kod | Arkivets `precipitation` | `rain` · `snow` | Rader (stationer med läge) |
+| --: | :-- | :-- | --: |
+| 1 | `no` | nej · nej | 4 416 619 |
+| 2 | `rain` | ja · nej | 403 585 |
+| 4 | `snow` | nej · ja | 534 034 |
+| 6 | `sleet` | ja · ja | 23 468 |
+| 3, 9, −9 | NULL | nej · nej | 914 · 506 · 12 473 |
+
+Mängden (`rain_sum_mm`) och vindstyrkan (`wind_speed_ms`, `wind_gust_ms`) är NULL tills fråga 2 och 5 är besvarade. Vindriktningen är
+översatt (sektorns mitt), sikten −100 → NULL och 20 000 kvar som i driften.
+
+**Inläsningen** (`kuvos/inlasning.ts`, lokalt 2/10 på PostgreSQL 16 + PostGIS 3, 2½ min; knappen `kuvos` gör samma sak i Actions):
+
+| | |
+| :-- | --: |
+| Rader inlästa råa | 5 496 270 (777 stationer), sidfoten 2 rader per fil |
+| Utan läge, inte inlästa | 23 stationer, 104 671 rader |
+| **Arkivet** | **5 391 599 rader, 754 stationer**, 2024-10-31 23:00 – 2025-03-31 21:30 UTC |
+| Sommartiden | sammanhängande halvtimmar i UTC över natten till 30/3 (stickprov 1203 Malmö) |
+
+**Vakterna som antal** (`kuvos/vakterna.ts`; den långsamma vakten körd över hela vintern med sql/030:s egen funktion):
+
+| Vakt | Rader | Stationer |
+| :-- | --: | --: |
+| Utan yta | 132 950 (2,47 %) | |
+| #75 (ytan > 12 ° under luften) | 922 (0,02 %) | 41 |
+| Radvakten (luft ≥ 10 °C, gap ≥ 8 °) | 543 (0,01 %) | 78 |
+| Karantänen (≥ 3 brott på 7 dygn) | 15 252 (0,28 %) | 29 |
+| Den långsamma vakten | 16 263 (0,30 %), 340 stationsdygn | 86 |
+| **Får tala efter alla fyra** | **5 229 372 (96,99 %)** | |
+
+**Värdevakten** (`scripts/vardevakten.ts 1000`): fem fält i `weather_observations` besiktade och rimliga (yta −50…50, luft −37…18,4,
+daggpunkt −40…12, fuktighet 13,5…100, riktning 0…315), inget OBESIKTIGAT. Sikten flaggas som misstänkt sentinel — taket 20 000 i 68 % —
+som i driften. Mängden och vinden har inga rader och prövas när de översätts.
+
+**Vad som kan spelas upp nu och vad som väntar:** frysrisken, broarna och trenden bygger på yta, luft, daggpunkt, fukt och snö — de finns.
+**Efterhalkan (S1, S2) väntar på mängden** (`regn_h` läser `rain_sum_mm`), vinden på fråga 5. Inget utfall är läst: ingen regel är
+körd, ingen yta efter en tidpunkt läst.

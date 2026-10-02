@@ -58,3 +58,27 @@ test("inventeringen: kodningen gissas ur filens början — latin1 när UTF-8 in
   assert.equal(gissaKodning(join(dir, "u.csv")), "utf8");
   assert.equal(gissaKodning(join(dir, "l.csv")), "latin1");
 });
+
+// Inläsningen (kort #232, DECISIONS #439): raden läses som den står — decimalkomma, tid utan zon, koder som tal — och sidfoten
+// hoppas över. Ett värde av fel sort i en rad med rätt antal fält ska LARMA (formatet är då ett annat än det besiktigade).
+test("inläsningen: en rad i leveransens form läses rå, sidfoten hoppas över, fel sort larmar", async () => {
+  const { tolkaRad, lasFil, KOLUMNER } = await import("../kuvos/inlasning.ts");
+  const r = tolkaRad("1203;2025-03-30 03:00:03.000;-0,4;1,2;-0,3;97,1;6;0,4;5,1;2,3;SV ;2,0;20000\r")!;
+  assert.deepEqual([r.measurepoint, r.measuretime, r.tyta, r.lu_fu, r.ned_typ, r.ned_maengd, r.virik, r.siktdjup],
+    ["1203", "2025-03-30 03:00:03", -0.4, 97.1, 6, 0.4, "SV", 20000]);
+  const p = tolkaRad("201;2025-02-13 10:10:03.000;0,7;-0,1;-1,7;87,9;-9;-99,9;-99,9;-99,9;-9;-99,9;-100")!;
+  assert.deepEqual([p.ned_typ, p.vimax, p.virik, p.siktdjup], [-9, -99.9, "-9", -100], "platshållarna står kvar råa — översättningen tar dem");
+  assert.equal(tolkaRad("(1091419 rows affected)"), null);
+  assert.equal(tolkaRad("Completion time: 2026-10-02T15:58:11.1234567+02:00"), null);
+  assert.equal(tolkaRad(""), null);
+  assert.throws(() => tolkaRad("1203;2025-03-30 03:00:03.000;x;1,2;-0,3;97,1;6;0,4;5,1;2,3;SV;2,0;20000"), /tyta/);
+  assert.throws(() => tolkaRad("1203;30/3 2025 03:00;1;1,2;-0,3;97,1;6;0,4;5,1;2,3;SV;2,0;20000"), /measuretime/);
+
+  const dir = mkdtempSync(join(tmpdir(), "kuvos-"));
+  writeFileSync(join(dir, "Halkvakt_2503.csv"), `﻿${KOLUMNER.join(";")}\r\n1203;2025-03-01 00:00:03.000;1;1;1;90;1;0;1;1;N ;1;20000\r\n\r\n(1 rows affected)\r\n`);
+  const rader: string[] = [];
+  for await (const x of lasFil(join(dir, "Halkvakt_2503.csv"))) rader.push(x);
+  assert.equal(rader.filter((x) => tolkaRad(x)).length, 1);
+  writeFileSync(join(dir, "Halkvakt_2504.csv"), "station;tid;yta\n1;2;3\n");
+  await assert.rejects(async () => { for await (const _ of lasFil(join(dir, "Halkvakt_2504.csv"))); }, /rubriken/);
+});
