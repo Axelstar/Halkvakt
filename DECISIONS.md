@@ -6865,6 +6865,8 @@ vägpunktsgrindens fall 28/9 (#399) står. Den är underlaget för valet (b), so
 återkommande körning. **Alternativ:** bara knappen 24/11 utan veckokörningar — billigare, men ett fel på växande data hade då synts
 först på läsdagen.
 
+**Bevis 2/10:** `ci` grön på grenen (36968020846) och driftprov av måndagskörningen utan inputs, som pulsklockan startar den (36968196427): höjdprovet 56 s, premissmätningen 41 s, populationsläsningen 18 s, alla gröna. Bara stegen lästes, inte talen.
+
 ## #435 (2/10 2026) Kort #270 (f): det finska utfallet är stöd för det svenska närbandet, inte dom
 
 **Beslut (Bengt 2/10).** Bandet 0–7 km har 15 svenska stationer med en granne inom 7 km och når inte grindens spärr på 20 (#406). Det
