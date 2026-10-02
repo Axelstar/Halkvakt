@@ -27,7 +27,6 @@ struct VaktenView: View {
                 .scrollIndicators(.hidden)
             }
         }
-        .fullScreenCover(isPresented: $guardM.running) { KorlageView() }
         .task { await guardM.refreshSnapshot() }
     }
 

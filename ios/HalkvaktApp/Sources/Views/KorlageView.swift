@@ -11,6 +11,7 @@ struct KorlageView: View {
     @State private var now = Date.now
     /// Granskningsläge: håll på "PÅ VAKT" ⇒ kortet med en låtsasvarning, utan röst.
     @State private var demoWarning: HalkvaktEngine.Alert?
+    @State private var demoTask: Task<Void, Never>?
     @State private var missKvitto: String?   // #203 lager 2
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     private let clock = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -38,7 +39,8 @@ struct KorlageView: View {
                                 // Kort B ur designen, med motorns riktiga halkreplik (DECISIONS #443).
                                 demoWarning = HalkvaktEngine.Alert(t: 0, hazardId: "demo", kind: .slippery_segment,
                                     distanceM: 900, text: "Varning: halka rapporterad på vägen framför dig.")
-                                Task { try? await Task.sleep(for: .seconds(8)); demoWarning = nil }
+                                demoTask?.cancel()
+                                demoTask = Task { try? await Task.sleep(for: .seconds(8)); if !Task.isCancelled { demoWarning = nil } }
                             })
                             HStack(alignment: .firstTextBaseline, spacing: 22) {
                                 tal("\(elapsedMin)", "MIN")

@@ -64,7 +64,7 @@ class MainActivity : ComponentActivity() {
         val debug = (applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
         if (debug && intent?.getBooleanExtra("fotostudio_facit", false) == true) lifecycleScope.launch {
             Prefs.setFacitEnabled(this@MainActivity, true)
-            Prefs.appendAlert(this@MainActivity, AlertEntry(System.currentTimeMillis(), "camera", "Fartkamera om femhundra meter.", "cam:fotostudio"))
+            Prefs.appendAlert(this@MainActivity, AlertEntry(System.currentTimeMillis(), "camera", "Fartkamera om 500 meter.", "cam:fotostudio"))
             // #203 lager 2: en resa med en miss, så att Efter resan-kortet och missraden syns i bilden. En gång — kroken körs två
             // gånger per fotostudio. "wx:fotostudio" märks som prov i driver_miss (sql/038) om den någonsin skickas.
             if (Prefs.missar(this@MainActivity).first().isEmpty()) {
@@ -72,6 +72,8 @@ class MainActivity : ComponentActivity() {
                 Prefs.setTripStart(this@MainActivity, nu - 10 * 60_000L)
                 Prefs.markeraMiss(this@MainActivity, nu - 5 * 60_000L, "wx:fotostudio", null)
             }
+            // Redo efter tur (designen v2, DECISIONS #443): turen är slut, kvittot syns under betatestets kort.
+            Prefs.setTripEnd(this@MainActivity, System.currentTimeMillis() + 1_000L, 31f)
         }
     }
 

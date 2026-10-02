@@ -8,6 +8,7 @@ import UserNotifications
 struct OnboardingView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
+    @Environment(\.scenePhase) private var scenePhase
     @State private var page = 0
     @State private var guardM = GuardManager.shared
     @State private var notifStatus: UNAuthorizationStatus = .notDetermined
@@ -35,6 +36,10 @@ struct OnboardingView: View {
         }
         .preferredColorScheme(.dark)
         .task { notifStatus = await HeadsUpService.shared.status() }
+        // Tillbaka från Inställningar: läs om notisläget, annars står sidan kvar på "avslagna".
+        .onChange(of: scenePhase) { _, fas in
+            if fas == .active { Task { notifStatus = await HeadsUpService.shared.status() } }
+        }
     }
 
     // MARK: - Ramen

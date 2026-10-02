@@ -312,17 +312,20 @@ private struct GenvagarGuide: View {
 /// Ingen flikrad medan vakten kör: körläget täcker allt.
 struct RootView: View {
     @State private var tab = 0
+    @State private var guardM = GuardManager.shared
     var body: some View {
         ZStack(alignment: .bottom) {
-            Group {
-                if tab == 0 { VaktenView() } else { InstallningarView() }
-            }
+            // Båda flikarna lever hela tiden, som i TabView: ingen omladdning och ingen tappad undersida vid flikbyte.
+            VaktenView().opacity(tab == 0 ? 1 : 0).allowsHitTesting(tab == 0).accessibilityHidden(tab != 0)
+            InstallningarView().opacity(tab == 1 ? 1 : 0).allowsHitTesting(tab == 1).accessibilityHidden(tab != 1)
             LinearGradient(colors: [Brand.bg.opacity(0), Brand.bg], startPoint: .top, endPoint: .init(x: 0.5, y: 0.6))
                 .frame(height: 130).allowsHitTesting(false)
                 .ignoresSafeArea(edges: .bottom)
             FloatingTabBar(tab: $tab).padding(.bottom, 8)
         }
         .background(Brand.bg)
+        // Här och inte i VaktenView: vakten kan starta (Siri, Genvägar, självväckning) medan Inställningar visas.
+        .fullScreenCover(isPresented: $guardM.running) { KorlageView() }
     }
 }
 
@@ -356,12 +359,15 @@ struct HalkvaktApp: App {
                 p.tripStart = t0
                 p.history = [
                     AlertEntry(t: t0.addingTimeInterval(120), kind: "slippery_segment",
-                               text: "Halka rapporterad om åttahundra meter. Sänk farten.", id: "seg:fotostudio"),
-                    AlertEntry(t: t1, kind: "camera", text: "Fartkamera om femhundra meter.", id: "cam:fotostudio"),
+                               text: "Varning: halka rapporterad på vägen framför dig.", id: "seg:fotostudio"),
+                    AlertEntry(t: t1, kind: "camera", text: "Fartkamera om 500 meter.", id: "cam:fotostudio"),
                 ]
-                p.lastSaidText = "Fartkamera om femhundra meter."
+                p.lastSaidText = "Fartkamera om 500 meter."
                 p.lastSaidAt = t1
                 p.lastSaidId = "cam:fotostudio"
+                // Redo efter tur (designen 01b): turen är slut, kvittot syns.
+                p.lastTripEnd = Date.now.addingTimeInterval(-300)
+                p.lastTripKm = 31
             }
         }
         #endif
