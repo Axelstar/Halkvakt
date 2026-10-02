@@ -206,3 +206,50 @@ som i driften. Mängden och vinden har inga rader och prövas när de översätt
 **Vad som kan spelas upp nu och vad som väntar:** frysrisken, broarna och trenden bygger på yta, luft, daggpunkt, fukt och snö — de finns.
 **Efterhalkan (S1, S2) väntar på mängden** (`regn_h` läser `rain_sum_mm`), vinden på fråga 5. Inget utfall är läst: ingen regel är
 körd, ingen yta efter en tidpunkt läst.
+
+## 8. SMHI för samma vinter (steg 4, 2/10 kväll, DECISIONS #441)
+
+Hämtat en gång ur SMHI:s öppna data (CC BY 4.0) och lagt bredvid i releasen **`kuvos-smhi-2024-25`** (knappen `kuvos-smhi`, manifest
+`kuvos/smhi-leverans.json`). Inläst i kuvösens databas av `kuvos/smhi-inlasning.ts`; knappen `kuvos` gör det efter Trafikverkets fil.
+
+**Stationerna (metobs, `corrected-archive`, bara vinterns rader):**
+
+| Parameter | Läser i dag | Stationer över vintern | Rader nov–mar | Inte G-kontrollerade | VViS-stationer inom 50 km |
+| :-- | :-- | --: | --: | --: | --: |
+| 1 lufttemperatur, 1/tim | smhi-prov, SMHI-jämförelserna | 243 | 667 767 | 1,6 % | 752 av 754 (median 17,5 km) |
+| 7 nederbördsmängd, 1 tim | — (mot VViS-mängden när den är förklarad) | 181 | 507 575 | 2,4 % | 728 av 754 (23,9 km) |
+| 13 rådande väder (WMO) | grind NT | 162 | 583 084 | 0,0 % | 741 av 754 (21,6 km) |
+| 16 total molnmängd | T-A, R-A (`publish/moln.ts`) | 108 | 378 509 | 0,0 % | 680 av 754 (29,7 km) |
+
+Molnets täckning, 90 % inom 50 km med median 30 km, är densamma som driftens mätning (DECISIONS #114: 91 %, 29 km). Värdena skrivs som
+SMHI skrev dem, 113 % i molnet inräknad: `moln.ts` klassar den, inläsningen gör det inte.
+
+**Radarn.** Arkivet för 2024/25 har bara **tif och png** — h5-länken, som driften läser, ger 404 (mätt 2/10; kontrollen 21/9 räknade
+kompositerna men inte formaten). Tif-kompositen är ett annat rutnät (SWEREF 99 TM, 471 × 887 pixlar à 2 015 m) med SMHI:s dokumenterade
+kodning *dBZ = 0,4 × pixel − 30, 0 = inget eko, 255 = ingen data* (opendata.smhi.se, radar). Läsaren är egen (`kuvos/tif.ts`, avkodar
+arkivfilen pixel för pixel som Pillow) och samplingen är driftens egen kärna, nu delad (`ingest/radar-karna.ts`): samma 2-km-punkter
+längs de 818 segmenten, samma Marshall–Palmer, samma händelsegräns 0,1 mm/h.
+
+| Månad | Kompositer | Saknas | Segmentrader med regn |
+| :-- | --: | --: | --: |
+| 2024-10 (sista timmarna) | 4 | 0 | 521 |
+| 2024-11 | 1 439 | 1 | 119 608 |
+| 2024-12 | 1 488 | 0 | 154 081 |
+| 2025-01 | 1 477 | 11 | 201 272 |
+| 2025-02 | 1 344 | 0 | 77 397 |
+| 2025-03 | 1 488 | 0 | 93 399 |
+| **Hela vintern** | **7 240 av 7 252 halvtimmar** | **12** | **646 278** |
+
+Värdevakten: `rate_mean_mmh` rimlig (0…62 mm/h); `rate_max_mmh` har 47 rader över spannets 200 mm/h (max 515), samma artefakt som
+driftens självtest känner (727 mm/h).
+
+**⚠️ Tif är inte samma produkt som h5.** Samma tidpunkt ur båda formaten (`scripts/matningar/kuvos-radar-tif-h5-2026-10-02.ts`, 26
+tidpunkter 27/9–1/10 2026, 318 pixlar med eko i båda): **tif ligger 8–10 enheter över h5 i varje band, ≈ 3,4 dBZ** — med Z–R-formeln
+ungefär **1,6 gånger mer regn** — och ser fler svaga eko (78 pixlar bara i tif, 48 bara i h5). På segmentnivå 1/10 (`--jamfor`):
+119 segmenthändelser i båda, 74 bara i tif, 10 bara i h5. Täckningen är densamma (81 mot 82 punkter utanför av 12 960). **Ingen
+korrektion är gjord** — en vald förskjutning vore ett tal valt efter en jämförelse. Kuvösens radar är alltså tif-produkten med SMHI:s
+kodning, och den ligger högre än driftens. Frågan står i bedömningen §4.2.
+
+**Vad steg 5 behöver av det här:** snapshoten läser `radar_precip` genom klockans vy — klar. `moln.ts` och grind NT hämtar vid körning
+ur `latest-months`; i kuvösen måste de läsa `kuvos_ra.smhi_obs` i stället, och det är körflödets sak.
+

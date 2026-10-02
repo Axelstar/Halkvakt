@@ -82,3 +82,43 @@ test("inläsningen: en rad i leveransens form läses rå, sidfoten hoppas över,
   writeFileSync(join(dir, "Halkvakt_2504.csv"), "station;tid;yta\n1;2;3\n");
   await assert.rejects(async () => { for await (const _ of lasFil(join(dir, "Halkvakt_2504.csv"))); }, /rubriken/);
 });
+
+// Steg 4 (DECISIONS #441): SMHI:s radararkiv för 2024/25 finns bara som tif. Läsaren är egen, så den prövas mot en riktig arkivfil
+// (radar_2411150000.tif, 15/11 2024 00:00 UTC): summan och pixelräkningen är Pillows avkodning av samma fil, uppmätt 2/10.
+test("tif-läsaren: SMHI:s arkivkomposit avkodas pixel för pixel som Pillow, och vakterna avvisar fel sort", async () => {
+  const { lasTif, pixel } = await import("../kuvos/tif.ts");
+  const buf = new Uint8Array(readFileSync(new URL("./fixtures/radar_2411150000.tif", import.meta.url)));
+  const t = lasTif(buf);
+  assert.deepEqual([t.bredd, t.hojd, t.x0, t.y0, Math.round(t.pixel * 1000)], [471, 887, 126648.404, 7771252.876, 2014958]);
+  let s = 0, n0 = 0, n255 = 0;
+  for (const v of t.data) { s = (s * 31 + v) >>> 0; if (v === 0) n0++; if (v === 255) n255++; }
+  assert.deepEqual([s, n0, n255], [2082547733, 254361, 156539]);
+  assert.equal(pixel(t, t.x0 - 1, t.y0 - 1), null, "utanför rutnätet");
+  assert.equal(pixel(t, t.x0 + 1, t.y0 - 1), t.data[0], "övre vänstra hörnet är rad 0");
+  const fel = buf.slice(); fel[0] = 0x4d;
+  assert.throws(() => lasTif(fel), /TIF-VAKT/);
+});
+
+test("radarns kärna: Z–R och händelsegränsen som driften, delad mellan h5 och tif", async () => {
+  const { rateFromRaw, segmentRader, MIN_RATE_MMH } = await import("../ingest/radar-karna.ts");
+  const k = { gain: 0.4, offset: -30, nodata: 255, undetect: 0 };
+  assert.equal(rateFromRaw(255, k), null);
+  assert.equal(rateFromRaw(0, k), 0);
+  assert.equal(Math.round(rateFromRaw(125, k)! * 1000) / 1000, Math.round(Math.pow(Math.pow(10, 20 / 10) / 200, 1 / 1.6) * 1000) / 1000, "20 dBZ ≈ 0,65 mm/h");
+  const r = segmentRader([{ id: "a", line: [[13, 55.6], [13.1, 55.6]] }, { id: "b", line: [[14, 56], [14.1, 56]] }],
+    (lon) => (lon < 13.5 ? 1.234 : MIN_RATE_MMH / 2));
+  assert.deepEqual([r.ids, r.maxes, r.means], [["a"], [1.23], [1.23]], "bara segment över händelsegränsen blir rader");
+});
+
+test("SMHI-arkivet: bara vinterns rader, läget ur perioden som täcker raden, värdet som det står", async () => {
+  const { tolkaArkiv } = await import("../kuvos/smhi-vinter.ts");
+  const fil = ["﻿Stationsnamn;Stationsnummer;Stationsnät;Mäthöjd (meter över marken)", "Malmö A;52350;SMHIs stationsnät;2.0", "",
+    "Tidsperiod (fr.o.m);Tidsperiod (t.o.m);Höjd (meter över havet);Latitud (decimalgrader);Longitud (decimalgrader)",
+    "2000-01-01 00:00:00;2024-12-31 23:59:59;10.0;55.5;13.0", "2025-01-01 00:00:00;2026-10-01 00:00:00;12.0;55.6;13.1", "",
+    "Datum;Tid (UTC);Total molnmängd;Kvalitet;;Tidsutsnitt:", "2024-10-30;23:00:00;100;G;;Kvalitetskontrollerade historiska data",
+    "2024-12-01;06:00:00;113;G", "2025-02-01;06:00:00;0;Y", "2025-04-01;00:00:00;50;G"].join("\r\n");
+  const { namn, rader } = tolkaArkiv(fil);
+  assert.equal(namn, "Malmö A");
+  assert.deepEqual(rader.map((r) => [new Date(r.t).toISOString().slice(0, 13), r.varde, r.kvalitet, r.lat]),
+    [["2024-12-01T06", "113", "G", 55.5], ["2025-02-01T06", "0", "Y", 55.6]], "113 (himlen skymd) står kvar — moln.ts klassar den");
+});
