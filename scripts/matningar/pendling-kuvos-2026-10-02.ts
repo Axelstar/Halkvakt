@@ -86,10 +86,12 @@ console.log(`${vagar.length} pendlingsvägar (${PENDLING_KM} km var), ${kollar.l
 type Rad = { vag: number; morgon: boolean; manad: string; nar: string; a: boolean; b: boolean; n: number };
 const rader: Rad[] = [];
 const forra = new Map<number, Set<string>>();
+const lagen: { k: (typeof kollar)[number]; flaggade: Set<string> }[] = [];
 let tomma = 0;
 for (const k of kollar) {
   const lage = (await db.query(LAGE, [k.t.toISOString()])).rows as any[];
   if (!lage.length) tomma++;
+  lagen.push({ k, flaggade: new Set(lage.filter((s) => s.yta !== null && Number(s.yta) <= 1 && s.fukt === true).map((s) => String(s.station_id))) });
   vagar.forEach((v, i) => {
     const faror: Hazard[] = lage.filter((s) => s.lon >= v.box[0] && s.lon <= v.box[2] && s.lat >= v.box[1] && s.lat <= v.box[3])
       .map((s) => ({ id: `wx:${s.station_id}`, kind: "icing_point", lon: Number(s.lon), lat: Number(s.lat), meta: { surfaceTempC: s.yta === null ? null : Number(s.yta), moisture: s.fukt === true } }) as Hazard);
@@ -122,4 +124,37 @@ console.log("\nPer väg (A, andel av vägens koller), sorterat:");
 const perVag = vagar.map((v, i) => { const x = rader.filter((r) => r.vag === i); return { namn: v.namn, lat: v.lat, a: x.filter((r) => r.a).length / x.length, b: x.filter((r) => r.b).length / x.length }; })
   .sort((p, q) => q.a - p.a);
 for (const p of perVag) console.log(`  ${(100 * p.a).toFixed(0).padStart(3)} % · nytt ${(100 * p.b).toFixed(0).padStart(3)} % · ${p.lat.toFixed(1)} °N · ${p.namn}`);
+
+// C. TILLAGT EFTER FÖRSTA KÖRNINGEN (2/10 18:38), med skälet utskrivet: skuggrutterna är grova linjer, de 30 km långa bitarna har i median
+// två punkter, och 28 av 40 har ingen station inom 1 km. Motorn ser en station bara inom ungefär en halv kilometer från linjen (konen 35°,
+// förvarningen 400–3 000 m), så A och B mäter mest linjernas grovhet. En riktig väg passerar sina stationer. Därför räknas här samma koll
+// utan rutterna: en pendlingsväg som passerar k stationer = en station och dess k−1 närmaste grannar inom 30 km. Notis = någon av dem har
+// frysrisk (yta ≤ +1 °C och fukt, samma vakter) vid kollen. Inget annat i mätningen ändras.
+const st = (await db.query(`SELECT DISTINCT ON (station_id) station_id, ST_X(geom) AS lon, ST_Y(geom) AS lat FROM weather_observations ORDER BY station_id, sample_time DESC`)).rows as any[];
+const pos = st.map((s) => ({ id: String(s.station_id), lon: Number(s.lon), lat: Number(s.lat) }));
+console.log(`
+C. UTAN RUTTERNA — en pendlingsväg som passerar k stationer (${pos.length} stationer, ${lagen.length} koller)`);
+console.log("  k · grupper · (A) notis · (B) bara nytt · notiser per vecka (A) · (B) · per breddgrad (A): under 58 / 58–62 / över 62 °N");
+for (const k of [1, 2, 3]) {
+  const grupper = pos.map((s) => {
+    const n = pos.filter((o) => o.id !== s.id).map((o) => ({ id: o.id, d: haversineM(s, o) })).filter((o) => o.d <= 30_000).sort((a, b) => a.d - b.d);
+    return n.length >= k - 1 ? { lat: s.lat, ids: [s.id, ...n.slice(0, k - 1).map((o) => o.id)] } : null;
+  }).filter(Boolean) as { lat: number; ids: string[] }[];
+  let a = 0, b = 0, alla = 0; const band = [[0, 0], [0, 0], [0, 0]];
+  grupper.forEach((g) => {
+    let fore = new Set<string>();
+    for (const l of lagen) {
+      const nu = new Set(g.ids.filter((id) => l.flaggade.has(id)));
+      const ia = nu.size > 0, ib = [...nu].some((id) => !fore.has(id));
+      alla++; if (ia) a++; if (ib) b++;
+      const bi = g.lat < 58 ? 0 : g.lat < 62 ? 1 : 2; band[bi][1]++; if (ia) band[bi][0]++;
+      fore = nu;
+    }
+  });
+  const p = (x: number, n: number) => `${(100 * x / (n || 1)).toFixed(1).replace(".", ",")} %`;
+  console.log(`  ${k} · ${grupper.length} · ${p(a, alla)} · ${p(b, alla)} · ${(10 * a / (alla || 1)).toFixed(1).replace(".", ",")} · ${(10 * b / (alla || 1)).toFixed(1).replace(".", ",")} · ${band.map(([x, n]) => p(x, n)).join(" / ")}`);
+}
+const perManad = new Map<string, [number, number]>();
+for (const l of lagen) { const v = perManad.get(l.k.manad) ?? [0, 0]; v[0] += l.flaggade.size; v[1] += pos.length; perManad.set(l.k.manad, v); }
+console.log("  stationer med frysrisk vid kollen, andel per månad: " + [...perManad].sort().map(([m, [x, n]]) => `${m} ${(100 * x / n).toFixed(1).replace(".", ",")} %`).join(" · "));
 await db.end();
