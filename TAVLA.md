@@ -318,6 +318,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **29/9: rubriken överspelad (DECISIONS #402).** Android bär 0.3.9 (18) som iOS sedan 26/9 (#377, #379) och Play-kontot finns sedan 20/9. Kvar är bara Play-vägen: enhetsverifieringen i Play Console, första uppladdningen med Data safety-formuläret ifyllt likadant som filen (#214), slutet test 14 dygn med tolv testare, produktion tidigast november. Verify-raden gäller oförändrad.
 ### Bengt
 
+- [ ] 🇫🇮 **#283 UR FINTRAFFICS TJÄNSTER: VAD VI KAN TA EFTER** (Bengts fråga 2/10; `docs/FINTRAFFIC-JAMFORELSE-2026-10-02.md`, läst på
+  Fintraffics, Digitraffics och Meteorologiska institutets egna sidor). Fintraffic ger föraren karta, pushnotiser, favoritrutter och
+  väglagsvarningar — *före* resan; appen ska enligt dem inte användas under körning. Halkvakt är rösten *under* resan. Fyra förslag, inget
+  beställt: **(1)** ruttkollen före resan finns redan hos en statlig aktör med 100 000 användare — stärker kort #233 del 1 · **(2)** Fintraffics
+  öppna prognoser per vägavsnitt (277 avsnitt, 2–12 h) in i det finska skuggarkivet, som extern jämförelse för prognoslagret · **(3)**
+  väghållningens data (plogning, sandning, saltning, saltmängd) som facit i Finland — den del som saknas i Sverige · **(4)** *"när du kör, så
+  kör du"* som ärligt argument i marknadsplanen (kort #281). 🔑 Bengts val (§4.2). Verify: valet inskrivet här; för (2) och (3) en
+  DECISIONS-post före bygget.
+
 - [ ] ⚖️ **#282 REGEL L — FÖRSLAG: ÄNDRING AV EN TRÖSKEL EFTER ATT UTFALLET ÄR SETT** (Bengts fråga och order 2/10: *"skriv ett
   förslag för de fyra leden"*; `docs/FORSLAG-ANDRINGSREGELN-2026-10-02.md`). Tretton tröskeldokument säger på fem olika sätt att en
   lättnad är utesluten när utfallet är sett. Förslaget gör regeln gemensam och preciserar den i fyra led: **L1** domen på lästa data
