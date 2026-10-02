@@ -1922,6 +1922,22 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟡 GÖRA (pågår just nu)
 
+- [ ] 🔨 **#284 APPENS NYA SKINN — DESIGNÖVERLÄMNINGEN V2 (BYGGT OCH PROVAT I SIMULATORN — Claude, Axels order 2/10 18:46; DECISIONS #443, #444, PR #698; iOS 0.3.10 (22), Android 0.3.10 (22))**:
+  varningskorten A–L med lägesetikett, vägskylt, gränsskylt och rådruta; gammal data M–N; Redo efter tur; På vakt; inställningar i
+  två nivåer; introduktionen (iOS); sex ikoner; logotypen med "!"; 3D-socklarna renderade ur designens CSS. iOS och Android lika,
+  Androids "Uppfattat" och källrad borta. Rösten oförändrad.
+  ✅ (1) motorn bär `Alert.step` — TS 235 tester, `ios-engine` och `android` gröna på grenen (workflow_dispatch) · ✅ (2) kortets innehåll
+  i `WarningCard` (Swift + Kotlin) med samma tolv fall i båda testsviterna, gröna · ✅ (3) Android: alla skärmar byggda, `android`
+  37044258124 grön, fotostudion visar Redo, Inställningar och fyra undersidor (i produktboken) · ✅ (4) iOS: alla skärmar skrivna och
+  granskade av en fristående läsning (inga kompileringsfel funna; fyndet att körläget inte öppnades från Inställningar-fliken rättat) ·
+  ✅ (5) produktboken och `docs/APPEN.html` omskrivna.
+  ✅ (6) **iOS byggt i Axels Xcode 2/10 23:16 och provat i simulatorn (iPhone 16e, iOS 26.1): "It works as intended"** (Axel). Första
+  starten fastnade på Xcodes debugger ("Waiting to attach") — appen öppnad från hemskärmen. Byggnumret höjt till 0.3.10 (22) på båda.
+  **Kvar:** (a) iOS-skärmbilderna till produktboken; kort F, G, H ses först vid en riktig allvarlig olycka · (b) artefakten *Halkvaktens app* republiceras ur `docs/APPEN.html` från
+  ägarens konto (Bengts; den här sessionen når den inte) — STOMREGELN · (c) Androids introduktion i fyra sidor är inte byggd (Android
+  har trappan i MainActivity; designen förutsätter iOS dialoger) · (d) Kort #219/#280: byggnumret höjs i samma commit som sista
+  ändringen före arkivering. **Verify:** ett iOS-bygge visar kort F/G/H vid en allvarlig olycka och kvittot på Redo efter en tur.
+
 
 ---
 

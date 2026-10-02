@@ -23,17 +23,17 @@ grundläget — pratar den, betyder det något.
 
 ## Så ser den ut
 
-| Vakten | Inställningar | Rösten och längsta förvarning |
+| Redo — med betatestets *Efter resan* överst | Inställningar | Varna för |
 |---|---|---|
-| ![Vakten](produktbok/shot-1-vakten.png) | ![Inställningar](produktbok/shot-2-installningar.png) | ![Reglaget](produktbok/shot-3-reglaget.png) |
+| ![Vakten](produktbok/shot-1-vakten.png) | ![Inställningar](produktbok/shot-2-installningar.png) | ![Varna för](produktbok/shot-3-varna-for.png) |
 
-| Betatest och början av Om | Resten av Om — ärlighetsraden och källorna |
-|---|---|
-| ![Om](produktbok/shot-6-betatest.png) | ![Om, slutet](produktbok/shot-7-om.png) |
+| Förvarning | Betatest | Om Halkvakt |
+|---|---|---|
+| ![Förvarning](produktbok/shot-4-forvarning.png) | ![Betatest](produktbok/shot-6-betatest.png) | ![Om](produktbok/shot-7-om.png) |
 
-*(Android ur fotostudion 26/9, android.yml 36224807598 på kort #203:s gren — *Vakten* visar kortet *Efter resan* med en varning och en miss, *Inställningar* reglaget *Längsta förvarning* 400–1 200 m och brytarens text om missarna, och Om-sidans ärlighetsrad.)*
-säger "Fartkamera om 500 meter.". Två flikar: Om är sista avsnittet i Inställningar — bilden visar slutet av
-Inställningar med betatest-brytaren, som fotostudion slagit på, och början av Om.)*
+*(Android i skinnet v4 ur fotostudion 2/10, android.yml 37044258124 på grenen `design-v2-skinn` (PR #698) — betatestet påslaget,
+en påhittad resa med en varning och en miss, så *Redo* visar kortet *Efter resan* överst. iOS-bilderna kommer ur första bygget i
+Xcode: inget CI-flöde kompilerar iOS app-målet.)*
 
 ### Facitknappen (betatestet, S4 — Android 16/9)
 
@@ -43,108 +43,125 @@ Inställningar med betatest-brytaren, som fotostudion slagit på, och början av
 
 *(Fotostudion 26/9, en påhittad resa: varningen *"Fartkamera om femhundra meter"* och en miss markerad fem minuter tidigare. Knapparna syns bara när betatestet är påslaget och varningen bär ett id; missen skickas först när ett av de fem valen är gjort.)*
 
-## Skinnet (v3, iOS 0.3.3 →)
+## Skinnet (v4 — designöverlämningen v2, 2/10, kort #284)
 
-Ritat om från grunden 31/8 och portat till iOS samma kväll. Mörkt, tyst, ett ord i taget. Beskrivningen är iOS;
-Android bär samma färger, typsnitt och hemskärmsord men skiljer sig på punkterna under *Android i dag*.
+Ritat om 2/10 (DECISIONS #444) och byggt samma kväll på **båda plattformarna, lika** — avviker Android från iOS är
+det en bugg. Mörkt, tyst, Instrument Sans för text och IBM Plex Mono i versaler för etiketter, tal och avstånd.
+**Gult betyder bara två saker:** en knapp som gör något, och varningen. **Grönt betyder på:** vippor, bockar, *PÅ*, *REDO*.
+Logotypen är triangeln med utropstecknet urstansat; *v3*:s skinn (31/8) och dess ikoner är ersatta.
 
-**Hemskärmen säger ett ord: "Redo."** — i stort, i Instrument Sans. Under det en grön knapp,
-*Starta vakten*. Ingen karta, inga siffror att tolka. Under knappen ett litet kvitto:
-*"Ingen tur än."*, *"Senast sagt · ”…”"* eller, efter en självväckning, *"Senaste tur · 24 sep. 07:14,
-38 min, vaknade själv"* — självväckningens spår (se nedan).
+**Toppraden** bär logotypen i mitten och läget till höger med ett ljus som andas: *LIVE* med gult ljus när vakten väntar,
+*PÅ* med grönt när den kör. **Två flikar** i en flytande kapsel längst ner — *Vakten* och *Inställningar*. Ingen flikrad
+medan vakten kör.
 
-**Körläget:** *PÅ VAKT* i grönt, resan i siffror (*"42 min · 38 km"*), tre räknare
-(varningar, halka, vilt), en gul panel *Senast sagt* när rösten har talat (annars *"Tyst så länge"*),
-och listan *På din väg* med de tre närmaste — med vägdatans klockslag till höger om rubriken (*väglag 14:30*), som på Android;
-flyttar det sig under resan har appen hämtat ny vägdata (var 30:e minut, kort #258; raden tillbaka i (21), 2/10). Längst ner en konturknapp *Avsluta vakten*. Håll fingret
-på *PÅ VAKT* en halv sekund så visas ett demo-varningskort (*"Halt väglag om två kilometer."*) — så du
-kan se hur det ser ut utan att vänta på is.
+**01 Redo.** En 3D-sockel med logotypen, ordet *"Redo."*, raden *"Vakten vaknar själv när du kör. Din position lämnar
+inte telefonen av sig själv."* (första meningen bara när vakten kan vakna själv), källorna i mono
+(*HALKA · VILT · OLYCKOR · FRYSRISK · KAMEROR* — en avslagen källa står inte med), den gula knappen ▶ *Starta vakten* och
+under den *INGEN TUR ÄN*.
 
-**Varningskortet:** helgult. Överst triangeln — Halkvakts märke, aldrig farans ikon.
-Under den farans namn i 64 punkter med farans egen ikon intill, avståndet i monospace,
-rösten i kursiv, och en stapel som fylls under åtta sekunder. **Ingen knapp** — du ska
-inte trycka på något i en bil.
+**01b Redo efter tur.** Efter en tur med minst en varning byts sockeln mot ett **kvitto**: *SENASTE TUREN*, tiden och
+sträckan (*16:58–17:34 · 36 MIN · 31 KM*) och en rad per varning — klockslag, ikon, rubrik och exakt vad rösten sa.
+Under: *3 VARNINGAR · VISAS TILLS NÄSTA TUR*. En tur utan varningar ger tillbaka 01.
+**Betatestare** ser dessutom kortet *Efter resan* överst, som förut (kort #203) — designen visar det inte, men det står kvar.
 
-**Ikonsetet:** fem faror, fem former, en linje. *Halt väglag* är bilen som tappar greppet
-(vågspåren redan gjorda — det ÄR halt). *Frysrisk* är termometer och iskristall (det KAN
-bli halt). *Olycka* är samma bilkropp med en islagsstjärna. *Vilt* är ett hjorthuvud
-framifrån, hornen bär igenkänningen. *Fartkamera* är en låda på stolpe, den enda på stolpe.
-Samma fem ritningar finns i Android-koden, men där visas de ännu inte på någon skärm.
+**02 På vakt.** En panel med *● PÅ VAKT* i grönt, minuter och kilometer i stort, och tre räknare (varningar, halka,
+vilt). Under den en streckad ruta: *"Tyst så länge — Inget på din väg än. Du hör det direkt när något dyker upp."*,
+eller *Senast sagt · HH:MM* med repliken när rösten har talat. Sedan *PÅ DIN VÄG* med de tre närmaste farorna (ikon,
+avstånd, fara, väg) och vägdatans klockslag till höger om rubriken. Längst ner *APPEN MISSADE NÅGOT* (betatestare) och
+den neutrala knappen *Avsluta vakten*. Håll fingret på *PÅ VAKT* en halv sekund så visas kort B, halkkortet, med
+motorns riktiga replik — så att granskaren ser ett varningskort utan att köra.
 
-**Två flikar, inte tre.** Om-innehållet — löftet, ärlighetsraden, dataattributionen — är
-sista avsnittet i Inställningar. Inget att leta efter, inget att missa.
+**Gammal väglagsdata (M och N).** När vägdatan är för gammal säger rösten en gång per tur *"Ingen färsk väglagsdata – kör
+som om det kan vara halt."* **Inget gult kort** — gult betyder en fara framför dig. I stället glider en mörk rad in överst
+i åtta sekunder med repliken (M), och resten av turen står *VÄGLAGSDATA · GAMMAL — "Kör som om det kan vara halt." —
+SENAST FÄRSK 14:05* där *Tyst så länge* annars står (N). Ljuset förblir grönt; vakten är på. Ingen banner över kartappen.
 
-**Android i dag** (fotostudion 23/9 och koden på main):
-- Hemskärmen har *Redo.* och *Starta vakten*, och direkt under knappen brytaren *Autostart* — men inget
-  kvitto. Under den står *Senast sagt* med datum och tid, och avsnittet *I närheten*: upp till sex faror
-  inom 60 km, sorterade på avstånd, med väglagets klockslag.
-- Körlägets rubrik är *PASSAGERAREN ÄR VAKEN*, panelen *Senast sagt* är mörk med gul kant, och det finns
-  inget demokort.
-- Varningskortet är helgult men har rubriken *HALKVAKT VARNAR* i stället för triangeln, ingen ikon, rösten
-  utan kursiv och ingen stapel — och en knapp, *Uppfattat*. Kortet stänger sig självt efter åtta sekunder.
-- Statuspillen överst säger *LIVEDATA* i vila och *VAKTEN PÅ* under körning. På iOS säger den
-  *Trafikverket live* (eller *Hämtar*) och *Vakten på*.
+**Varningskortet** — helgult i åtta sekunder medan rösten talar, sedan bort av sig självt. **Ingen knapp på någon
+plattform** (Androids *Uppfattat* är borta). Samma ordning varje gång: *HALKVAKT VARNAR* och klockslaget, för allvarliga
+olyckor en mörk lägesetikett (*ALLVARLIG · TIDIGT*, *PÅMINNELSE*, *ALLVARLIG · SENT*), farans ikon, rubriken, avståndet,
+eventuellt en vägskylt (*E18*, *VÄG 25*) och en hastighetsskylt (*80*), för allvarliga olyckor en mörk rådruta
+(*Överväg annan väg* med *STOR PÅVERKAN · RÖJD CA 19:30*, eller *Sakta ner*), repliken ordagrant och en stapel som fylls.
+**Kortet visar det rösten sa och inget mer:** under en kilometer i hela hundratal (*500 M*, *600 M*), annars hela
+kilometer (*3 KM*), och för halka, vilt och väderstationer ord i stället för tal (*FRAMFÖR DIG*, *FRAMÖVER*). Talet står
+still i åtta sekunder. Kommer en viktigare fara inom tio sekunder glider ett nytt kort upp och täcker det gamla, som
+krymper och tonar bort; stapeln börjar om.
 
-## Första gången (2 minuter) — introduktionen (iOS)
+| Kort | Rubrik | Avstånd | Extra |
+|---|---|---|---|
+| Olycka | *Olycka* | *3 KM* | vägskylt när Trafikverket anger väg |
+| Allvarlig olycka, tidigt rop | *Allvarlig olycka* | *8 KM* | *ALLVARLIG · TIDIGT*, vägskylt, *Överväg annan väg* (+ röjningstid) |
+| Allvarlig olycka, påminnelse | *Sakta ner* — *Olycksplats strax framför dig* | *STRAX FRAMFÖR* | *PÅMINNELSE* |
+| Allvarlig olycka, sent | *Allvarlig olycka* | *2 KM* | *ALLVARLIG · SENT*, vägskylt, *Sakta ner* |
+| Halka | *Halka* | *FRAMFÖR DIG* | — |
+| Frysrisk vid station | *Frysrisk* — *Vägbanan nära noll grader* | *FRAMÖVER* | — |
+| Frysrisk på bro | *Frysrisk* — *Bro* | *600 M* (hundratal, som rösten) | egen ikon |
+| Vilt | *Vilt* | *FRAMÖVER* | — |
+| Fartkamera | *Fartkamera* | *500 M* | hastighetsskylt när gränsen är känd |
 
-Fyra sidor, helskärm, en gång. Allt går att hoppa över och ändra senare, och *Visa introduktionen igen*
-finns i Inställningar, ovanför Betatest och Om.
+Kortets innehåll räknas i motorpaketen (`WarningCard` i Swift och Kotlin) och prövas av CI med samma fall på båda
+plattformarna; olycksläget kommer ur motorn (`Alert.step`, DECISIONS #443).
 
-1. **Löftet** — vad Halkvakt gör, och ordagrant: *"Din position lämnar inte telefonen av sig själv. Vi samlar in:
-   ingenting — om du inte själv slår på betatestets facit i Inställningar."*
-2. **Platsen** — *Tillåt plats* ber om "Vid användning", som räcker för att rösten ska tala med släckt skärm.
-   På samma sida ber knappen *Tillåt Alltid* sedan om "Alltid", som behövs för att vakten ska starta av sig
-   själv. Har du bara gett "Vid användning" frågar appen igen när du startar vakten. Kommer ingen fråga visar
-   sidan vägen: *Inställningar → Halkvakt → Plats → Alltid*.
+**Ikonerna:** sex, en linjetjocklek, rundade ändar: *olycka* (en avspärrningsbock), *halka* (bilen bakifrån med två
+slirspår), *frysrisk* (en snöflinga), *bro* (en valvbro med en liten flinga — ny), *vilt* (en älg, den enda fyllda formen)
+och *fartkamera* (en låda på stolpe med blixtlinjer). Svarta på kortet, ljusa i listorna.
+
+**Inställningar i två nivåer.** Överst *"Inställningar — Allt är på från början."* och två paneler med rader som
+öppnar en egen sida (som glider in från höger, med *← INSTÄLLNINGAR* för att gå tillbaka):
+- *Varna för* (*5 AV 5*) — fem rutor, tryck var som helst för att slå av och på: grön prick *PÅ*, grå *AV*.
+- *Förvarning* (*1,2 KM*) — tre val: *400 m Kortast*, *800 m Mellan*, *1,2 km Fullt — standard*. *"Rösten varnar ungefär
+  30 sekunder före. Du kan korta det, aldrig förlänga."* (Det steglösa reglaget är borta.)
+- *Start* (*SJÄLV*) — vippan *Vaknar själv när du kör*, *ELLER SÄG "Hej Siri, starta Halkvakt"* och
+  *STOPPAR SJÄLV EFTER 15 MIN PARKERAD*. På iOS dessutom *Starta med Genvägar (valfritt)* i två spår — med CarPlay eller
+  Bluetooth, och utan (fokus *Kör*) — fyra steg vardera, knappen *Öppna Genvägar* och, när en automation har startat
+  vakten, *FUNGERAR — STARTAD SENAST …*. (Den gamla guiden med frågan om bilkopplingen är borta.)
+- *Rösten* — var rösten byts i systemet och den gula knappen *Testa rösten*, som säger en riktig motorreplik:
+  *"Fartkamera om 500 meter. Gränsen är 80."*
+- *Betatest* (*PÅ/AV*) — vippan *Svara på varningarna* och kvittot *VAD SKICKAS*: *Skickas* varningens id, klockslag,
+  ditt svar · *Vid missad* klockslag, närmaste mätstation, vad det var · *Aldrig* konto, resa, position. *"Ett varnings-id
+  pekar på en fara på kartan, så vi ser ungefär var du var just då. Appens namn och version följer med. Bara för
+  betatestare."*
+- *Integritet* — löftet: *"Din position lämnar inte telefonen av sig själv."* och *"All matchning mot vägdata sker lokalt
+  i appen. Inget konto, ingen spårning. Undantaget är betatestet — bara om du själv slår på det."*, raden till Betatest
+  och Integritetspolicyn.
+- *Visa introduktionen igen* (iOS).
+- *Om Halkvakt* — Livekartan, Om appen & vanliga frågor, Press & material, ärlighetsraden och attributionen
+  (oförändrade), och versionen.
+
+Under panelerna: *LÖFTET — Din position lämnar inte telefonen av sig själv.*
+
+## Första gången — introduktionen (iOS)
+
+Fyra sidor med punkter längst ner, *HOPPA ÖVER* till vänster och *NÄSTA* / *KLAR* till höger. Allt går att hoppa över och
+ändra senare. Toppraden säger *VAKEN* med gult ljus tills platsen är *Alltid*, sedan *PÅ* med grönt.
+
+1. **Löftet** — logotypen stort, *"Varnar med rösten"*, *"Halka, olyckor, frysrisk, vilt och fartkameror från
+   Trafikverket — i din högtalare, innan du är där."*, sockeln med logotypen, rutan *LÖFTET — "Din position lämnar inte
+   telefonen av sig själv."* och *Testa rösten* (som säger *"Fartkamera om 500 meter. Gränsen är 80."*).
+2. **Platsen** — *"Platsen — bara i telefonen"*, *"Välj Alltid så kan vakten starta själv när du kör."* och en kartnål på
+   sockeln. *Tillåt plats* → iOS egen fråga; sedan den gröna *Tillåt Alltid*. Med Alltid: en grön bock och *"Alltid —
+   vakten vaknar själv när du kör"*, ringarna blir gröna. Avböjer du Alltid: *"Bara när appen är öppen — vakten startar
+   inte själv"* och *ÄNDRA TILL ALLTID*. Nekar du: nålen blir grå, *PLATS · AV — "Utan plats vet vakten inte vad som
+   ligger framför dig."* och *Öppna Inställningar*.
    **iOS egen ruta** säger (ordagrant, `project.yml`): *"Halkvakt jämför din position med
    vägfaror lokalt i telefonen och varnar med rösten, även med släckt skärm under körning.
    Ingen position lämnar telefonen av sig själv — det enda som skickas är betatestets
    facitsvar, som du själv slår på."* Och vid *Alltid*: *"Med "Alltid" startar vakten av sig
    själv när du börjar köra. Matchningen sker lokalt i telefonen — ingen position lämnar den
-   av sig själv."* Skärmbild av rutan kommer ur första bygget som bär texten (0.3.9 (13)).
-3. **Bannern** — *Tillåt notiser*, så att varningen syns över kartappen. En grön bock när det är klart, en gul
-   rad med vägen till Inställningar om du sa nej: rösten talar ändå, bara bannern uteblir.
-4. **Du är klar** — *"Vakten startar av sig själv när du kör, om platsen är Alltid. Inget mer att ställa in."*
-   Vill du starta direkt: knappen i appen, eller *"Hej Siri, starta Halkvakt"* med telefonen i facket.
-   Vakten stoppar sig själv när bilen stått still en kvart. Genvägar nämns inte här; den valfria guiden
-   finns under Inställningar → *Starta direkt (valfritt)*.
+   av sig själv."*
+3. **Bannern** — *"Bannern över kartappen"*, *"Kör du med Google Maps eller Kartor visas rösten som en banner i åtta
+   sekunder."*, en svävande exempelbanner över en liten karta (*FARTKAMERA · 500 M — "Fartkamera om 500 meter. Gränsen är
+   80."*) och *Tillåt notiser*. Påslagna: *Notiser på*. Avslagna: bannern bleknar, *"Rösten varnar ändå — bara utan
+   banner."* och *SLÅ PÅ I INSTÄLLNINGAR*.
+4. **Du är klar** — ett kvitto, inte en manual: *KVITTO* och dagens datum, *START* (*Själv när du kör* / *När appen är
+   öppen* / *Plats saknas*), *DIREKT "Hej Siri, starta Halkvakt"*, *STOPP Efter 15 min parkerad*, *BANNER På* eller *Av —
+   bara röst*, och *STATUS*: *REDO* i grönt, eller *REDO · UTAN BANNER*, *BEGRÄNSAD*, *EJ REDO*. Saknas något:
+   *ÅTGÄRDA I INSTÄLLNINGAR*, som går tillbaka till rätt sida; annars *ALLT GÅR ATT ÄNDRA I INSTÄLLNINGAR*.
 
-Klar. Inga konton, ingen e-post, inga fler frågor.
+Inga konton, ingen e-post, inga fler frågor.
 
-*(Android har ingen introduktion. Första trycket på Starta ber om plats och — på Android 13 och senare —
-notiser. Brytaren Autostart ber om resten: rörelseigenkänning, Bluetooth och plats "Tillåt hela tiden".)*
-
-## Flikarna (två sedan 31/8)
-
-**🛡 Vakten** — hjärtat. En stor knapp startar vakten; under den *Senast sagt* (se nedan). Överst en
-statuspill som visar att datan är levande. På Android står dessutom brytaren *Autostart* och listan
-*I närheten* här.
-
-**🚗 Körläget** — ingen egen flik: det ersätter Vakten medan vakten går. Mörk skärm, resans tid och
-sträcka, tre räknare (varningar, halka, vilt), *Senast sagt*, *På din väg* och *Avsluta vakten*. När
-något händer visas ett **varningskort i 8 sekunder** med samma text som rösten just sa. Byggt för att
-ögonen ska stanna på vägen.
-
-**⚙️ Inställningar** — *Varna för*: fem brytare, en per fara (olyckor och hinder, halt väglag, frysrisk,
-vilt, fartkameror), alla på från början; en avslagen fara varnar aldrig. *Längsta förvarning*: rösten
-talar ungefär 30 sekunder före (750 m i 90 km/h, 1 167 m i 140 km/h), och reglaget är ett tak på det —
-400–1 200 m på båda plattformarna, i steg om 100 på iOS och steglöst på Android, 1 200 m från början.
-Det kan korta förvarningen, aldrig förlänga den. *(Före 26/9 hette det "Varna på avstånd" och gick till
-3 km på iOS och 5 km på Android — över fart × 30 s gjorde det ingenting, kort #259.)* Körläget säger
-samma sak: *"Rösten talar ungefär 30 sekunder före, som längst 1,2 km. En olycka längre fram kan nämnas
-tidigare."* På iOS också *Vaknar själv när du kör* (på från
-början) och guiden *Starta direkt (valfritt)*. Och betatestets brytare *Svara på varningarna* — **av
-tills du själv slår på den** — med texten om exakt vad som skickas (se Om).
-
-**ℹ️ Om** (sista avsnittet i Inställningar) — löftet i klartext, ordagrant som i appen på båda
-plattformarna: *"Din position lämnar inte telefonen av sig själv. All matchning mot vägdata sker lokalt
-i appen. Inget konto, ingen spårning."* Och sedan 16/9 undantaget (Axels krav, DECISIONS #196): *"Undantaget är
-betatestet, om du själv slår på det: då skickas varningens id, klockslag och ditt svar
-(Stämde / Stämde inte), plus appens namn och version — det säger ungefär var du var när rösten talade. Inget annat."*
-(Sedan 24/9, kort #249: texten nämner nu allt svaret bär.)
-Sedan följer ärlighetsraden, på båda plattformarna (Android sedan 24/9, kort #249): *"Varnar vid Trafikverkets mätstationer och rapporterade väglag — mellan
-stationerna är vägen oövervakad."* Och attributionen: Trafikverket (CC0), SMHI, Fintraffic (CC BY 4.0),
-broar © OpenStreetMap-bidragsgivare (ODbL).
+*(Android har ingen introduktion än — designens fyra sidor är inte byggda där. Första trycket på Starta ber om plats och,
+på Android 13 och senare, notiser; vippan *Vaknar själv när du kör* under Inställningar → Start ber om resten:
+rörelseigenkänning, Bluetooth och plats "Tillåt hela tiden".)*
 
 ## Exakt vad rösten säger
 
@@ -388,7 +405,7 @@ Skärmbilder från iOS tas på Axels iPhone eller i simulatorn med fotostudio-kr
 
 ## Autostart i bilen
 
-**Android:** slå på brytaren *Autostart* på hemskärmen. Den ber om fyra behörigheter i tur och ordning:
+**Android:** slå på vippan *Vaknar själv när du kör* under Inställningar → *Start* (före skinnet v4, 2/10, var det brytaren *Autostart* på hemskärmen). Den ber om fyra behörigheter i tur och ordning:
 plats, rörelseigenkänning, Bluetooth och plats *Tillåt hela tiden* (som Android 11 och senare bara ger i
 inställningarna, kort #226). Sedan lär sig appen varje Bluetooth-enhet som kopplas medan vakten går — även
 hörlurar — och startar vakten när en av dem kopplar upp igen. Rörelseigenkänningen startar vakten i bilar
@@ -467,12 +484,11 @@ Säg ja, annars uteblir bannern (rösten talar ändå).
 
 ## Senast sagt
 
-På Android visar hemskärmen den senaste repliken med datum och tid, även när vakten är av. Har rösten
-aldrig behövt säga något står det *"Rösten har inte behövt säga något än."* — tystnad är en funktion.
-På iPhone är det raden under knappen, *"Senast sagt · ”…”"* utan klockslag, och efter en självväckning
-visar raden resan i stället (se Skinnet).
+Sedan skinnet v4 (2/10) lika på båda plattformarna: under körning står *Senast sagt · HH:MM* med repliken i den streckade
+rutan i *På vakt* (*Tyst så länge* innan rösten har talat), och efter turen står varje replik i kvittot på *Redo* (01b)
+tills nästa tur. Den gamla raden under knappen och Androids *Senast sagt* på hemskärmen är borta.
 
-**Facitknappen (betatestet, 16/9):** under repliken två knappar, *Stämde* och *Stämde inte*.
+**Facitknappen (betatestet, 16/9):** för betatestare på Redo, under den senast sagda repliken, två knappar, *Stämde* och *Stämde inte*.
 Ingen fritext — inte i en bil. Svaret sparas i telefonen och skickas när bilen stått stilla en
 halv minut, direkt om vakten är av, eller när appen öppnas; aldrig medan bilen rullar. Det som
 skickas är varningens id, klockslaget, svaret och appens namn och version — inget annat. Knapparna

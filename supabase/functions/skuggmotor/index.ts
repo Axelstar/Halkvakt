@@ -85,6 +85,10 @@ export interface Alert {
   /** Great-circle metres to the hazard at the moment of speaking, rounded. */
   distanceM: number;
   text: string;
+  /** Serious accidents only: which of the two-step calls this is (DECISIONS #28). Absent for
+   *  every other alert, so the log shape of all other vectors is unchanged. The warning card
+   *  shows it as a stage chip (design handoff 2/10, DECISIONS #443). */
+  step?: AccidentStep;
 }
 
 export interface EngineConfig {
@@ -417,9 +421,9 @@ interface FiredState { t: number; odometerM: number; }
  * `alertKey` is what the repeat rules remember — normally the hazard id, but a SERIOUS
  * accident owns two independent voice slots ("<id>#early" and "<id>#near") so the 2 km
  * reminder is not swallowed by the 10-min/5-km suppression that follows the 10 km call.
- * This is the "step-aware warning id" of DECISIONS #28. It stays internal on purpose:
- * the emitted Alert keeps its hazardId, so the cross-platform log shape is unchanged
- * and none of the 14 frozen vectors had to be regenerated.
+ * This is the "step-aware warning id" of DECISIONS #28. The key stays internal: the
+ * emitted Alert keeps its hazardId. Since DECISIONS #443 the Alert also carries `step`
+ * (serious accidents only) so the warning card can show which call it is.
  */
 interface Candidate {
   hazard: Hazard; kind: HazardKind; distM: number;
@@ -564,6 +568,7 @@ export class AlertEngine {
       kind: win.kind,
       distanceM: Math.round(win.distM),
       text: alertText(win.kind, win.distM, pointHazard, win.step),
+      ...(win.step ? { step: win.step } : {}),
     };
   }
 

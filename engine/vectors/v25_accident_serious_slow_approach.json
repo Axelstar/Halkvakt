@@ -3826,14 +3826,16 @@
    "hazardId": "acc1",
    "kind": "accident",
    "distanceM": 9994,
-   "text": "Allvarlig olycka på E6 10 kilometer framför dig — stor påverkan på trafiken. Överväg annan väg."
+   "text": "Allvarlig olycka på E6 10 kilometer framför dig — stor påverkan på trafiken. Överväg annan väg.",
+   "step": "early"
   },
   {
    "t": 724,
    "hazardId": "acc1",
    "kind": "accident",
    "distanceM": 1993,
-   "text": "Sakta ner — olycksplats strax framför dig."
+   "text": "Sakta ner — olycksplats strax framför dig.",
+   "step": "reminder"
   }
  ]
 }

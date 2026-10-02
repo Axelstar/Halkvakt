@@ -93,6 +93,7 @@ class VectorTest {
             assertEquals(e.getString("kind"), g.kind.wire, "$name[$i].kind")
             assertEquals(e.getLong("distanceM"), g.distanceM, "$name[$i].distanceM")
             assertEquals(e.getString("text"), g.text, "$name[$i].text")
+            assertEquals(if (e.has("step")) e.getString("step") else null, g.step?.wire, "$name[$i].step")
         }
     }
 

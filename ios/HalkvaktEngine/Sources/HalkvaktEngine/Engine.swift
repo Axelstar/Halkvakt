@@ -33,7 +33,7 @@ public struct PointMeta {
 }
 
 /// Which utterance of a serious accident this is (DECISIONS #28). Mirrors AccidentStep in texts.ts.
-public enum AccidentStep { case early, reminder, late }
+public enum AccidentStep: String { case early, reminder, late }
 
 public struct SegmentMeta {
     public var code: Int? = nil
@@ -67,8 +67,10 @@ public struct Alert: Equatable {
     public let kind: HazardKind
     public let distanceM: Int
     public let text: String
-    public init(t: Double, hazardId: String, kind: HazardKind, distanceM: Int, text: String) {
-        self.t = t; self.hazardId = hazardId; self.kind = kind; self.distanceM = distanceM; self.text = text
+    /// Serious accidents only — which of the two-step calls (DECISIONS #28, #443). nil otherwise.
+    public let step: AccidentStep?
+    public init(t: Double, hazardId: String, kind: HazardKind, distanceM: Int, text: String, step: AccidentStep? = nil) {
+        self.t = t; self.hazardId = hazardId; self.kind = kind; self.distanceM = distanceM; self.text = text; self.step = step
     }
 }
 
@@ -350,7 +352,8 @@ public final class AlertEngine {
         return Alert(
             t: fix.t, hazardId: win.id, kind: win.kind,
             distanceM: Int(win.distM.rounded()),
-            text: Texts.alertText(win.kind, win.distM, win.limit, win.step, win.endTimeLocal, win.bridge, win.road))
+            text: Texts.alertText(win.kind, win.distM, win.limit, win.step, win.endTimeLocal, win.bridge, win.road),
+            step: win.step)
     }
 
     public func run(_ trace: [Fix]) -> [Alert] { trace.compactMap { step($0) } }

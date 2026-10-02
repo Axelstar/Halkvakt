@@ -68,9 +68,10 @@ jobs:
             adb emu geo fix 18.064 59.335
             adb shell am start -n se.halkvakt.app/.MainActivity --ez fotostudio_facit true
             sleep 8
-            SZ=$(adb shell wm size | tr -d '\r' | awk '{print $NF}'); W=${SZ%x*}; H=${SZ#*x}; Y=$((H*95/100)); echo "skärm ${W}x${H} y=$Y"; adb exec-out screencap -p > /tmp/shot-1-vakten.png; adb shell input tap $((W*3/4)) $Y; sleep 3; adb exec-out screencap -p > /tmp/shot-2-installningar.png; adb shell input swipe $((W/2)) $((H*85/100)) $((W/2)) $((H*15/100)) 600; sleep 2; adb exec-out screencap -p > /tmp/shot-3-reglaget.png; adb shell input swipe $((W/2)) $((H*85/100)) $((W/2)) $((H*15/100)) 600; sleep 2; adb exec-out screencap -p > /tmp/shot-6-betatest.png; adb shell input swipe $((W/2)) $((H*85/100)) $((W/2)) $((H*15/100)) 600; sleep 2; adb exec-out screencap -p > /tmp/shot-7-om.png
+            SZ=$(adb shell wm size | tr -d '\r' | awk '{print $NF}'); W=${SZ%x*}; H=${SZ#*x}; Y=$((H*95/100)); echo "skärm ${W}x${H} y=$Y"; adb exec-out screencap -p > /tmp/shot-1-vakten.png; adb shell input tap $((W*3/4)) $Y; sleep 3; adb exec-out screencap -p > /tmp/shot-2-installningar.png; adb shell input tap $((W/2)) $((H*28/100)); sleep 2; adb exec-out screencap -p > /tmp/shot-3-varna-for.png; adb shell input keyevent 4; sleep 2; adb shell input tap $((W/2)) $((H*37/100)); sleep 2; adb exec-out screencap -p > /tmp/shot-4-forvarning.png; adb shell input keyevent 4; sleep 2; adb shell input tap $((W/2)) $((H*65/100)); sleep 2; adb exec-out screencap -p > /tmp/shot-6-betatest.png; adb shell input keyevent 4; sleep 2; adb shell input tap $((W/2)) $((H*83/100)); sleep 2; adb exec-out screencap -p > /tmp/shot-7-om.png
             # #250 (c) 24/9: Om, Nära dig och Körläget är inga egna skärmar längre — de tre bilderna var dubbletter och är borta.
-            # Kort #259 och #249 (26/9): shot-3 fångar reglaget efter första svepningen, shot-7 resten av Om (ärlighetsraden och källorna).
+            # Designen v2 (DECISIONS #444): inställningarna har två nivåer — fotostudion trycker på raderna (Varna för, Förvarning,
+            # Betatest, Om) i procent av skärmen och backar med tillbakaknappen mellan dem, i stället för att svepa en lång sida.
       - name: Upload app screenshots
         if: always()
         uses: actions/upload-artifact@v4

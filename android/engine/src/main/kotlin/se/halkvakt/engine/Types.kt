@@ -32,7 +32,7 @@ data class PointMeta(
 )
 
 /** Which utterance of a serious accident this is (DECISIONS #28). Mirrors AccidentStep in texts.ts. */
-enum class AccidentStep { EARLY, REMINDER, LATE }
+enum class AccidentStep(val wire: String) { EARLY("early"), REMINDER("reminder"), LATE("late") }
 
 data class SegmentMeta(val code: Int? = null, val info: List<String> = emptyList())
 
@@ -56,6 +56,8 @@ data class Fix(
 data class Alert(
     val t: Double, val hazardId: String, val kind: HazardKind,
     val distanceM: Long, val text: String,
+    /** Serious accidents only — which of the two-step calls (DECISIONS #28, #443). Null otherwise. */
+    val step: AccidentStep? = null,
 )
 
 data class EngineConfig(
