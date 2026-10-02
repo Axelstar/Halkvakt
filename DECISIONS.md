@@ -6994,3 +6994,48 @@ Förregistreringen (#424) står: ingen regel körd, ingen yta efter en tidpunkt 
 en källa, och kuvösens värde sjunker varje vecka före 1/12); ta sammanfattningens *3 = underkylt regn* (ingen källa, och den farligaste
 klassen får inte vila på en gissning); skriva 3 och 9 som en egen okänd sträng (snapshotens `fukt` gör varje okänd sträng blöt — 1 420
 falska fuktrader).
+
+## #440 (2/10 2026) Snöflingan mäts på kuvösens vinter — förregistrerad innan körningen (kort #233)
+
+**Beställning (Bengt 2/10: *"är snöflingan något att satsa på. gör en körning och se hur det skulle falla ut"*).** Kort #233 del (2)
+mättes 21/9 på september (#297) och gav för lite: 7 äkta episoder. Den körs nu på kuvösens vinter 2024/25 (#438, #439), som har kyla.
+
+**Frågan, ordagrant som 21/9:** hur stor andel av stationsregelns fyrningar (yta ≤ +1 °C och fukt) sker när luften ligger över +3 °C
+respektive +4 °C, alltså när bilens egen snöflinga är släckt och bara stationen ser faran?
+
+**Skrivet innan körningen:**
+- **Skriptet:** `scripts/matningar/snoflingan-kuvos-2026-10-02.ts`, i knappen `kuvos` (ny inmatning `matning`) efter inläsningen och vakterna.
+- **Huvudtalet (B):** episoder med alla fyra vakterna som snapshoten bär (#75, radvakten, karantänen, den långsamma vakten); andelen
+  med luft > +3 °C och > +4 °C. **A** räknas som 21/9, bara med #75, så att talen kan jämföras. Därtill stationstimmar, per månad, per
+  breddgrad, och sammanhanget utan fuktkravet (frost med yta ≤ 0 °C) — som 21/9:s sats 5.
+- **Fukten** ur nederbördskoderna 2/4/6 (#439); 3, 9 och −9 räknas som torrt. Broregeln är inte med. Sessionen i UTC.
+- **Läsningen, bestämd före talen** (ingen grind, inget som ändrar en tröskel eller appen): under 5 % — bilens snöflinga täcker nästan
+  allt stationsregeln ser, och snöflingan är inget säljargument; 5–20 % — ett tillägg i en nisch (klara nätter med kall yta och mild
+  luft), värt att nämna men inte att bygga produkten på; över 20 % — ett argument som bär. Med +4 °C som jämförelse bredvid.
+- **Vad den inte säger:** om varningarna var rätt. Det är facit, och det läses inte här (blindningen och riktningsprovet). Den säger
+  inte heller vad en viss bil visar: snöflingan mäts av bilens egen givare nära vägen, VViS-luften på cirka 2 m.
+
+**Kuvösens förregistrering (#424) berörs inte:** mätningen räknar fyrningar, inte utfall, och den väljer inget värde. Filen är öppnad
+sedan 2/10 16:04; inget utfall är läst.
+
+**Utfall (körning 37029386466 på grenen `snoflingan-kuvos`, 5fda573, kl. 17:52 — efter att posten ovan checkades in 17:46):**
+
+| | Episoder | Stationer | Luft > +3 °C | Luft > +4 °C |
+| :-- | --: | --: | --: | --: |
+| **B. Alla fyra vakterna (huvudtalet)** | **46 858** | 734 | **1 427 (3,0 %)** | **539 (1,2 %)** |
+| A. Bara #75, som 21/9 | 47 127 | 734 | 1 470 (3,1 %) | 563 (1,2 %) |
+| C. Stationstimmar (B) | 354 296 | | 2,0 % | 0,8 % |
+
+Luften när regeln slår till: median −1,4 °C; över 0 °C i 31 %, över +1 i 16 %, över +2 i 7,8 %. Per månad (B, över +3): november 4,6 %,
+december 2,9 %, januari 2,8 %, februari 1,7 %, mars 4,5 %. Per breddgrad: under 58 °N 1,9 %, 58–62 °N 2,7 %, över 62 °N 3,9 %.
+Sammanhanget utan fuktkravet: av 74 346 frostepisoder med yta ≤ 0 °C hade 6,7 % luft över +3 °C och 35,6 % luft över noll.
+
+**Läsningen, som den bestämdes före talen:** under 5 %. **Bilens snöflinga lyser i 97 av 100 fall när stationsregeln slår till, och
+att stationen ser det bilen inte ser är inget säljargument.** Ingen månad och inget band når 5 %. Talen stämmer med 21/9 (alla sju
+äkta episoder under +0,4 °C). Ingen tröskel, ingen kod och ingen text i appen ändras.
+
+**Vad mätningen inte avgör — och som inte ska läsas in i den i efterhand:** om Halkvakts varning är *bättre* än snöflingan, alltså
+mer träffsäker om var och när. Snöflingan lyser vid omkring +3 °C överallt och hela kvällar; frågan här var bara om stationen ser
+fall bilen missar. Den andra frågan är facit och riktningsprovets, och den förregistrerades inte här. Det enda sakförhållandet som
+pekar vidare: sammanhangets 6,7 % — kall yta under mild luft finns, men utan nederbörd, och det är rimfrostens kort (#46), inte
+stationsregelns.

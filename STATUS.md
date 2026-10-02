@@ -2175,5 +2175,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 2/10 13:50 (Claude, Axels *"åtgärda"* på Bengts läsning av #258): klockslaget *väglag HH:mm* tillbaka i körläget på iPhone (höger om *PÅ DIN VÄG*),
   bygge (21), produktboken — DECISIONS #434. (20) hos Apple rörs inte. 13:56: (21) uppladdat av Axel. Kvar: en 45–60-minutersresa i (21).
 - 2/10 17:20–18:00 (Claude, Axels *"läs in vintern nu"*): kuvösens steg 3 — nederbördskoderna 1/2/4/6 lästa i VädErs 2019 (3/9 ur Axels
+- 2/10 17:52 (Claude, Bengts *"gör en körning"*): snöflingan på kuvösens vinter (DECISIONS #440, körning 37029386466) — 46 858 episoder, 3,0 % med luft över +3 °C, 1,2 % över +4 °C; under förregistreringens 5 %, inget säljargument (kort #233 del 2).
   sammanfattning stod inte där), `kuvos/inlasning.ts`/`oversattning.sql`/`vakterna.ts` + knappen `kuvos`; lokalt 5 391 599 rader, 754 stationer,
   vakterna 97 % talar — DECISIONS #439. Inget utfall läst. Kvar: Mickes svar (3/9/−9, mängden, vinden), SMHI, körflödet.
+- 2/10 kväll (Bengt): frågorna till Micke Wallin skickade — fyra frågor och bekräftelsen av vindfälten (kort #232, §5b).
