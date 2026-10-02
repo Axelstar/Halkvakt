@@ -6616,7 +6616,7 @@ ingår bara om historiken för dem också levereras. Vill Bengt öppna oljefilme
 - **Delarna:** frysrisken och broarna, efterhalkan, trenden, rimfrosten, övergångarna, tillståndsskattaren, nederbördstypen, vind och
   sikt, prognoslagret (grind A, vägpunktsgrinden, höjden), försprångets nivå 2 för frysrisken. Utanför utan mer data: väglagssträckorna,
   olyckorna, SMHI-förstärkaren, kamera- och förarfacit.
-- **Värdena:** startvärdena som de står i tröskeldokumenten och DECISIONS. Inget svep och inget val i riktningsprovet (D2, D6, D7). ↪ *Tillägg före filen, 2/10 (#436): prognoslagrets frysflagga redovisas med tre marginaler (0 · 0,5 · 1,0 °C); alla skrivs ut, ingen väljs.*
+- **Värdena:** startvärdena som de står i tröskeldokumenten och DECISIONS. Inget svep och inget val i riktningsprovet (D2, D6, D7). ↪ *Tillägg före filen, 2/10 (#437): prognoslagrets frysflagga redovisas med tre marginaler (0 · 0,5 · 1,0 °C); alla skrivs ut, ingen väljs.*
 - **Facit:** stationens egen yta efter varningen, i varje dels eget utfallsfönster — *det blev kallt*, inte *det blev halt*; saltet syns
   inte. Väglag och olyckor räknas bara om Trafikverket levererar dem.
 - **Redovisningen:** varje del ensam OCH ovanpå de andra, som antal och andelar; alla tal skrivs ut, också de som talar emot.
@@ -6840,7 +6840,7 @@ kommer.** Fungerade i (13), bröts av #279:s ScrollView, rättat med simultaneou
 sparades som *"Copyright: © 2026 Lagerlöf Labs"* — ordet "Copyright:" ska bort nästa gång versionen redigeras. (3) AppLaunchFlows
 nedladdning är betald; samma look byggd fritt i `alf.py`.
 
-## #434 (2/10 2026) Kort #270 (a): premissmätningen går varje måndag och läses en gång — tisdag 24/11
+## #435 (2/10 2026) Kort #270 (a): premissmätningen går varje måndag och läses en gång — tisdag 24/11
 
 **Beslut (Bengt 2/10: *"ok vi kör ja på a, f och g"*).** Vägpunktsgrindens premissmätning
 (`scripts/matningar/vagpunkt-premisser-2026-09-30.ts`, DECISIONS #405–#408) går varje måndag i måndagsserien, efter höjdprovet, i samma
@@ -6867,20 +6867,20 @@ först på läsdagen.
 
 **Bevis 2/10:** `ci` grön på grenen (36968020846) och driftprov av måndagskörningen utan inputs, som pulsklockan startar den (36968196427): höjdprovet 56 s, premissmätningen 41 s, populationsläsningen 18 s, alla gröna. Bara stegen lästes, inte talen.
 
-## #435 (2/10 2026) Kort #270 (f): det finska utfallet är stöd för det svenska närbandet, inte dom
+## #436 (2/10 2026) Kort #270 (f): det finska utfallet är stöd för det svenska närbandet, inte dom
 
 **Beslut (Bengt 2/10).** Bandet 0–7 km har 15 svenska stationer med en granne inom 7 km och når inte grindens spärr på 20 (#406). Det
 finska utfallet — 108 stationer, rå viktning 2,3 % [1,1–3,5] grova fel (#407) — får **anföras som stöd** när närbandet beskrivs, i
 bedömningen, på mätningssidan och i rapporten. Det **dömer inte** det svenska bandet: ingen grind klaras och ingen spärr ändras av det.
 
 **Skälet:** måttet och vakterna är desamma, men terrängen är plattare och det finska arkivet har aldrig bytt arkivregel. Vid läsningen
-24/11 (#434) körs den finska mätningen en gång samma dag (`dagar: premisser-fi`), så att stödet bär samma datum som den svenska läsningen.
+24/11 (#435) körs den finska mätningen en gång samma dag (`dagar: premisser-fi`), så att stödet bär samma datum som den svenska läsningen.
 
 **Följden som står kvar:** domslutets väg *"talar nära ankare"* (TROSKLAR-SKUGGAN §4 b) kan inte nås på svenska stationer. Valet (d) och
 kort #271 (termisk kartering) är öppna. **Alternativ:** låta Finland döma (avvisat: annan terräng), eller inte nämna det (avvisat: det är
 det enda underlag med kraft som finns för bandet).
 
-## #436 (2/10 2026) Kort #270 (g): flaggmarginalen mäts i kuvösen med frysklassningens måttstock — tillägg till förregistreringen, före filen
+## #437 (2/10 2026) Kort #270 (g): flaggmarginalen mäts i kuvösen med frysklassningens måttstock — tillägg till förregistreringen, före filen
 
 **Beslut (Bengt 2/10).** Premissmätningen visade att frysflaggan vid 1 °C missas i 57 % [41–75] inom 7 km (Finland, 49 stationsflaggor),
 och i 6 % om flaggan sätts redan vid 2 °C. Priset i falska flaggor mättes inte (#407). Det mäts nu på data som ingen har läst: **vintern
@@ -6910,6 +6910,6 @@ mätta yta i samma halvtimme, efter driftens vakter.
   och visa, aldrig utlösa (regel T6).
 
 **Inte i årets arkiv:** september–november har för få frysningar nära stationerna (2 och 11 flaggor i banden 0–15 km, #405).
-Premissmätningen (#434) skriver redan ut missad och grovt missad flagga och ändras inte. **Alternativ:** mäta *flagga vid ≤ 2 °C* som
+Premissmätningen (#435) skriver redan ut missad och grovt missad flagga och ändras inte. **Alternativ:** mäta *flagga vid ≤ 2 °C* som
 enda punkt (avvisat: vald efter utfallet, och utan priskurvan), eller vänta till årets vinter (avvisat: kuvösen ger en hel vinter i
 oktober).

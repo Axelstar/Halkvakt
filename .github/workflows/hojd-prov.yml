@@ -33,7 +33,7 @@ jobs:
       # Vägpunktsgrindens premisser (DECISIONS #405, kort #269): `dagar: premisser` kör bara den förregistrerade mätningen
       # (`premisser-fi` samma sak på det finska arkivet, DECISIONS #407),
       # självtest först. Ingen dom, inga trösklar — läser samma arkiv som grinden.
-      # Sedan 2/10 (DECISIONS #434, kort #270 a) går den svenska mätningen också varje måndag, efter höjdprovet. Den LÄSES en
+      # Sedan 2/10 (DECISIONS #435, kort #270 a) går den svenska mätningen också varje måndag, efter höjdprovet. Den LÄSES en
       # gång, tisdag 24/11, på en egen körning (`dagar: premisser`); måndagarnas utskrift är driftbevis, inget utfall.
       - if: ${{ inputs.dagar != 'population' }}
         shell: bash
