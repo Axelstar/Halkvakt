@@ -6930,3 +6930,31 @@ mätta yta i samma halvtimme, efter driftens vakter.
 Premissmätningen (#435) skriver redan ut missad och grovt missad flagga och ändras inte. **Alternativ:** mäta *flagga vid ≤ 2 °C* som
 enda punkt (avvisat: vald efter utfallet, och utan priskurvan), eller vänta till årets vinter (avvisat: kuvösen ger en hel vinter i
 oktober).
+
+## #438 (2/10 2026) Kuvösen: Trafikverkets leverans mottagen, besiktigad och i en privat release — stämplarna är svensk lokaltid (mätt)
+
+**Underlag (Bengt 2/10: *"filerna är nedladdade på min dator … Vilket är nästa steg"*, sedan *"fortsätt"*).** Fem filer från VViS
+Förvaltning, november 2024–mars 2025, nedladdade 16:04–16:05: **5 496 270 rader, 777 stationer**, en rad per station och halvtimme
+(medianen 1 440 i november = 30 × 48), inga dubbletter. Fullständigt: `docs/KUVOS-LEVERANSEN-2026-10-02.md`.
+
+**Beslut, i PLAN-KUVOSEN steg 3:s ordning:**
+1. **Förvaringen.** Packade (85 MB) och lagda i den privata releasen `kuvos-trv-2024-25`, sha256 före och efter packning; varje
+   tillgång nedladdad igen och jämförd, lika. Manifestet i `kuvos/leverans.json`. Aldrig i repot, aldrig i Supabase. Taggen börjar inte
+   med `arkiv-`, så arkivbackupens gallring rör den inte.
+2. **Tidszonen är svensk lokaltid (Europe/Stockholm), mätt.** Timmen 02 saknas helt natten till 30/3 2025 (1 522 rader i varje annan
+   timme), och lufttemperaturens timförändring vid tio stationer mot närmaste SMHI-station har sin topp vid 0 h i tio av tio
+   (korrelation 0,55–0,85, mot 0,28–0,57 vid −1 h). Stämplarna görs om till UTC vid inläsningen.
+3. **Formatet:** semikolon, decimalkomma, BOM, SSMS-sidfot. −99,9 är saknat värde i varje talfält och blir NULL; −100 i sikten blir NULL;
+   sikten 20 000 behålls som i driften och tas av värdevakten.
+4. **Nederbördstypen, mängden och vindfälten översätts inte förrän Trafikverkets kodlista finns.** Koderna 1, 2, 3, 4, 6 och 9 ser ut
+   som uppehåll, regn, snö och snöblandat, men det är en gissning. Mängden har en okänd kod −99,8 (35 420 rader) och fem rader över 100.
+   Motorns fukt bygger på nederbörden, så frysrisken kan inte spelas upp utan koderna. Frågorna står i dokumentets §5; Bengt skickar.
+5. **Stationerna:** 754 av 777 har läge i dagens stationslista. **De 23 utan läge används inte** förrän Trafikverket ger det. 100
+   stationer i dagens lista saknas i leveransen och redovisas som saknade.
+
+**Förregistreringen.** #424 och tilläggen #426 och #437 är incheckade innan filen öppnades (#437 kl. 07:13 2/10, filen 16:04). Från och
+med 2/10 16:04 är filen öppnad: ett nytt tillägg kan bara kallas *före riktningsprovet*, inte *före filen*, och ska säga det. Inventeringen
+och besiktningen läste fältens innehåll; ingen regel är körd och inget utfall är läst.
+
+**Alternativ som valdes bort:** gissa koderna ur temperaturmönstret (avvisat: VÄRDEVAKTEN, och en felöversatt nederbörd förfalskar varje
+frysrisk); läsa in nu utan nederbörden (avvisat: halva motorn skulle köras tom och se frisk ut — *"det svarar" är inte "det bär"*).

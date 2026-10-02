@@ -104,7 +104,7 @@
     <span>vintern <b>2024/25</b></span>
     <span><b>≈ 7 250</b> halvtimmar</span>
     <span><b>20</b> skuggrutter och hela väglagsnätet, <b>23 681</b> km</span>
-    <span>data väntas <b>vecka 41</b></span>
+    <span>data mottagen <b>2/10</b>, <b>5,5</b> miljoner rader</span>
     <span>första resultat <b>vecka 42</b></span>
     <span><b>0</b> når föraren</span>
   </div>
@@ -119,13 +119,13 @@
     <table>
       <thead><tr><th>Del</th><th>Läge</th><th></th></tr></thead>
       <tbody>
-        <tr><td><b>Datan från Trafikverket</b></td><td>Beställd 1/10. VViS Förvaltning levererar vintern för samtliga stationer som CSV, i ett format som skiljer sig från det öppna API:t. Väntas vecka 41.</td><td><span class="dom vantar">väntar</span></td></tr>
+        <tr><td><b>Datan från Trafikverket</b></td><td>Mottagen 2/10 från VViS Förvaltning: fem filer, november 2024–mars 2025, 5 496 270 rader från 777 stationer, en rad per station och halvtimme. Ligger i en privat release med kontrollsummor, aldrig i driftens databas.</td><td><span class="dom klar">mottagen</span></td></tr>
         <tr><td><b>Planen</b></td><td>Sex steg med ett bevis per steg, skriven 1/10.</td><td><span class="dom klar">klar</span></td></tr>
         <tr><td><b>Förregistreringen</b></td><td>Frågan, underlaget, delarna, facit och följden är nedskrivna innan någon fil har öppnats. Två tillägg är gjorda före filen: rösten i två serier (1/10) och prognoslagrets flaggmarginal (2/10).</td><td><span class="dom klar">klar</span></td></tr>
         <tr><td><b>Klockan</b></td><td>Låter produktionens egen kod köra mot en gången tidpunkt, utan att koden ändras. Prövad mot riktig databas, och fyra motprov föll på var sin fälla.</td><td><span class="dom klar">byggd</span></td></tr>
         <tr><td><b>Inventeringen</b></td><td>Läser en okänd CSV utan att tolka den: rader, kolumner, tomma fält, spann och vanligaste värden.</td><td><span class="dom klar">byggd</span></td></tr>
-        <tr><td><b>Översättningen och inläsningen</b></td><td>Trafikverkets kolumner till arkivets form. Kan inte byggas förrän filen är inventerad.</td><td><span class="dom vantar">väntar på filen</span></td></tr>
-        <tr><td><b>Tidszonen</b></td><td>Avgörs med mätning mot SMHI:s öppna temperaturserier. Perioden har två byten mellan sommar- och vintertid.</td><td><span class="dom vantar">väntar på filen</span></td></tr>
+        <tr><td><b>Översättningen och inläsningen</b></td><td>Temperaturerna, fuktigheten, sikten och vindriktningen kan översättas nu. Nederbördstypen, mängden och vindfälten är koder som Trafikverket behöver förklara; utan nederbörden kan frysrisken inte spelas upp. 23 stationer saknar läge.</td><td><span class="dom vantar">väntar på kodlistan</span></td></tr>
+        <tr><td><b>Tidszonen</b></td><td>Mätt 2/10: svensk lokaltid. Timmen 02 saknas natten till 30/3 2025, och lufttemperaturen stämmer med SMHI vid noll förskjutning på tio av tio stationer.</td><td><span class="dom klar">mätt</span></td></tr>
         <tr><td><b>SMHI för samma vinter</b></td><td>Radar, molnmängd, lufttemperatur och nederbörd finns i SMHI:s öppna arkiv. Hämtas en gång.</td><td><span class="dom kvar">kvar</span></td></tr>
         <tr><td><b>Körflödet</b></td><td>Hela vintern i halvtimmessteg, i GitHub Actions. Rösten körs i två serier. Beräknad kostnad 2,4–4,8 USD av månadens 35 för de 20 rutterna; den nationella serien är inte mätt.</td><td><span class="dom kvar">kvar</span></td></tr>
         <tr><td><b>Riktningsprovet</b></td><td>Första körningen, med låsta värden. Tidigast vecka 42.</td><td><span class="dom kvar">kvar</span></td></tr>
@@ -137,11 +137,11 @@
   <h2>3. Hur den fungerar</h2>
   <p>Kuvösen kör produktionens egen kod. Det som skiljer är var datan kommer ifrån och vad klockan är.</p>
   <figure class="flode" aria-label="Kedjan från Trafikverkets fil till resultatet">
-    <div class="nod vantar"><span class="kod">In <span class="dom vantar">väntar</span></span><b>Trafikverkets fil</b><span class="txt">Stationernas mätvärden för vintern: yttemperatur, lufttemperatur, daggpunkt, fuktighet, nederbörd, vind och sikt.</span></div>
+    <div class="nod klar"><span class="kod">In <span class="dom klar">mottagen 2/10</span></span><b>Trafikverkets fil</b><span class="txt">Stationernas mätvärden för vintern: yttemperatur, lufttemperatur, daggpunkt, fuktighet, nederbörd, vind och sikt.</span></div>
     <div class="pil" aria-hidden="true">↓</div>
     <div class="nod klar"><span class="kod">Steg 2 <span class="dom klar">byggd</span></span><b>Inventeringen</b><span class="txt">Läser filen utan att tolka den. Först när utskriften är läst översätts kolumnerna, och inget fält används förrän det är besiktigat.</span></div>
     <div class="pil" aria-hidden="true">↓</div>
-    <div class="nod vantar"><span class="kod">Steg 3 <span class="dom vantar">väntar på filen</span></span><b>Kuvösens databas</b><span class="txt">En egen databas med arkivets form, skild från driften. Driftens vakter mot trasiga givare körs på vintern.</span></div>
+    <div class="nod vantar"><span class="kod">Steg 3 <span class="dom vantar">väntar på kodlistan</span></span><b>Kuvösens databas</b><span class="txt">En egen databas med arkivets form, skild från driften. Driftens vakter mot trasiga givare körs på vintern.</span></div>
     <div class="pil" aria-hidden="true">↓</div>
     <div class="nod klar karna"><span class="kod">Steg 1 <span class="dom klar">byggd</span></span><b>Klockan</b><span class="txt">Stegar genom vintern en halvtimme i taget. Koden frågar databasen vad klockan är och får kuvösens tid. Den får också bara se det som hade hänt fram till dess.</span></div>
     <div class="pil" aria-hidden="true">↓</div>
@@ -205,7 +205,8 @@
 
   <h2>6. Vad som kommer härnäst</h2>
   <ol class="tid">
-    <li><b>Vecka 41</b><div>Filen kommer. Den laddas ner direkt och inventeras. Sedan byggs översättningen, tidszonen mäts mot SMHI och vakterna körs på vintern.</div></li>
+    <li><b>2/10</b><div>Filen kom, en vecka tidigare än väntat. Den är inventerad, packad i en privat release och tidszonen är mätt. Frågorna om koderna går till Trafikverket.</div></li>
+    <li><b>När koderna är kända</b><div>Översättningen och inläsningen, vakterna körda på vintern, värdevakten på varje fält.</div></li>
     <li><b>Vecka 41–42</b><div>SMHI:s radar och moln hämtas för samma vinter. Körflödet byggs.</div></li>
     <li><b>Vecka 42</b><div>Riktningsprovet körs, och tabellen förs in i bedömningen och på mätningssidan.</div></li>
     <li><b>Därefter</b><div>Kalibreringen. Målet skrivs före, vinnaren ska hålla i båda halvorna av vintern, och värdena fryses innan årets domdata läses.</div></li>
@@ -266,5 +267,5 @@
   </div>
   <p>Ingenting i kuvösen når en förare. Appen, rösten och det telefonen hämtar är orörda.</p>
   <hr>
-  <p class="litet">Källor: beslutsloggen (DECISIONS #292, #388, #397, #398, #418, #424–#428, #437), kort #232, #270 och #278, planen (docs/PLAN-KUVOSEN-2026-10-01.md), bedömningen §4.2 och §6.1 och tröskeldokumentet för kombinationen (regel D). Sidan till Trafikverkets handläggare, <i>Halkvakt och kuvösen</i>, är en annan sida och säger mindre. Alla datum avser 2026 om inget annat står.</p>
+  <p class="litet">Källor: beslutsloggen (DECISIONS #292, #388, #397, #398, #418, #424–#428, #437, #438), kort #232, #270 och #278, planen (docs/PLAN-KUVOSEN-2026-10-01.md), bedömningen §4.2 och §6.1 och tröskeldokumentet för kombinationen (regel D). Sidan till Trafikverkets handläggare, <i>Halkvakt och kuvösen</i>, är en annan sida och säger mindre. Alla datum avser 2026 om inget annat står.</p>
 </main>
