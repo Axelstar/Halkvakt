@@ -1,46 +1,20 @@
-# Kuvösen steg 4 (kort #232, DECISIONS #441): SMHI för vintern 2024/25, hämtat EN gång och lagt i den privata releasen
-# `kuvos-smhi-2024-25` — radarn samplad mot de 818 väglagssegmenten med driftens kärna (kuvos/radar-vinter.ts) och metobs-
-# parametrarna 1, 7, 13 och 16 (kuvos/smhi-vinter.ts). Manifestet med sha256 läggs i releasen; kuvos/smhi-leverans.json i repot
-# ska bära samma summor (knappen `kuvos` kontrollerar mot den). Knapp, inte cron. Finns releasen redan avbryts jobbet — en
-# hämtning, inte en löpande.
+# GREN kuvos-smhi-filer — engångsväg för releasen (kort #232, DECISIONS #441). Hämtningen i Actions (37034624104) nådde 90-minuterstaket;
+# samma filer hämtades i Claudes session 2/10 och läggs här på en egen gren, som tas bort när releasen finns. Main bär hämtningsvägen.
 name: kuvos-smhi
 on:
   workflow_dispatch:
 permissions:
   contents: write
 jobs:
-  hamta:
+  release:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
     env: { GH_TOKEN: "${{ github.token }}" }
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: npm }
-      - run: npm ci
-      - name: Releasen får inte finnas
+      - shell: bash
         run: |
-          if gh release view kuvos-smhi-2024-25 >/dev/null 2>&1; then echo "::error::releasen kuvos-smhi-2024-25 finns redan"; exit 1; fi
-      - name: Hämtningen
-        shell: bash
-        run: |
-          mkdir -p smhi
-          curl -sSf -o vaglag.geojson https://axelstar.github.io/halkvakt-karta/data/vaglag.geojson
-          {
-            echo '```'
-            node --experimental-strip-types kuvos/smhi-vinter.ts smhi
-            node --experimental-strip-types kuvos/radar-vinter.ts vaglag.geojson smhi/radar_precip_2024-25.csv.gz
-            echo '```'
-          } 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
-      - name: Manifestet och releasen
-        shell: bash
-        run: |
-          node -e '
-            const c = require("crypto"), fs = require("fs");
-            const filer = fs.readdirSync("smhi").filter((f) => f.endsWith(".csv.gz")).sort().map((f) => {
-              const b = fs.readFileSync("smhi/" + f); return { fil: f, bytes: b.length, sha256: c.createHash("sha256").update(b).digest("hex") }; });
-            fs.writeFileSync("smhi/manifest.json", JSON.stringify({ release: "kuvos-smhi-2024-25", hamtad: new Date().toISOString(), filer }, null, 1));
-            console.log(JSON.stringify(filer, null, 1));' | tee -a "$GITHUB_STEP_SUMMARY"
-          gh release create kuvos-smhi-2024-25 --target "${{ github.sha }}" --title "Kuvösen: SMHI för vintern 2024/25" \
-            --notes "Steg 4 (kort #232, DECISIONS #441). Radar samplad mot de 818 väglagssegmenten (driftens kärna) och metobs-parametrarna 1, 7, 13, 16, november 2024–mars 2025. Källa: SMHI öppna data (CC BY 4.0)." \
-            smhi/*.csv.gz smhi/manifest.json
+          if gh release view kuvos-smhi-2024-25 >/dev/null 2>&1; then echo "::error::releasen finns redan"; exit 1; fi
+          sha256sum smhi-release/*.csv.gz | tee -a "$GITHUB_STEP_SUMMARY"
+          gh release create kuvos-smhi-2024-25 --target main --title "Kuvösen: SMHI för vintern 2024/25" \
+            --notes "Steg 4 (kort #232, DECISIONS #441). Radar samplad mot de 818 väglagssegmenten (driftens kärna) och metobs-parametrarna 1, 7, 13, 16, november 2024–mars 2025. Källa: SMHI öppna data (CC BY 4.0). Summorna i kuvos/smhi-leverans.json." \
+            smhi-release/*.csv.gz
