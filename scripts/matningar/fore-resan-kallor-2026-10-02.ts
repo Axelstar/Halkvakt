@@ -1,4 +1,4 @@
-// FÖRE RESAN — KÄLLORNA RÄKNADE (kort #233 del 1, DECISIONS #441; Bengt 2/10: "ja räkna på allt men bara som information inte något
+// FÖRE RESAN — KÄLLORNA RÄKNADE (kort #233 del 1, DECISIONS #442; Bengt 2/10: "ja räkna på allt men bara som information inte något
 // bygge alls (det här är bara på experimentstadiet)"). LÄS-ONLY: Trafikverkets öppna API just nu, räknat. Ingenting sparas, ingenting
 // byggs, inget når appen.
 //   1. Situationerna: aktiva avvikelser per typ, vägarbetena (påverkan, avstängda körfält, varaktighet, geometri), köer (AbnormalTraffic).
@@ -44,7 +44,7 @@ const runda = (wkt: string) => wkt.replace(/-?\d+\.\d+/g, (x) => String(Math.rou
 
 async function main(): Promise<number> {
   if (!KEY) { console.error("TRAFIKVERKET_API_KEY not set"); return 1; }
-  console.log(`mätt: FÖRE RESAN — KÄLLORNA (${new Date().toISOString()}), läs-only, DECISIONS #441`);
+  console.log(`mätt: FÖRE RESAN — KÄLLORNA (${new Date().toISOString()}), läs-only, DECISIONS #442`);
   const nu = Date.now();
 
   // 1. Situationerna

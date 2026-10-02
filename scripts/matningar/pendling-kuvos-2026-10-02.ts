@@ -1,8 +1,8 @@
-// FÖRE RESAN — HUR OFTA SKULLE PENDLARENS NOTIS HA KOMMIT? (kort #233 del 1, DECISIONS #441; Bengt 2/10: "ja räkna på allt men bara
+// FÖRE RESAN — HUR OFTA SKULLE PENDLARENS NOTIS HA KOMMIT? (kort #233 del 1, DECISIONS #442; Bengt 2/10: "ja räkna på allt men bara
 // som information inte något bygge alls"). LÄS-ONLY på kuvösens vinter 2024/25. Räknar hur ofta motorn hade sagt något längs en
 // pendlingsväg vid kollen före avfärd. Det är FYRNINGAR, inte utfall: ingen yta efter kollen läses, inget facit, ingen träff.
 //
-// Bestämt innan körningen (DECISIONS #441):
+// Bestämt innan körningen (DECISIONS #442):
 //   - Pendlingsvägarna: de 20 svenska skuggrutterna, de första och de sista 30 km av varje — 40 vägar. Morgonen i den ena riktningen,
 //     eftermiddagen i den andra.
 //   - Kollerna: vardagar 1/11 2024 – 31/3 2025, kl. 06:45 och 16:00 svensk tid (en halvtimme före 07:15 och 16:30).
@@ -80,7 +80,7 @@ const LAGE = `
   FROM senast w
   WHERE (air_temp_c IS NULL OR surface_temp_c >= air_temp_c - 12) AND ${RADVAKT_SQL} AND ${karantanSql("w")}`;
 
-console.log(`PENDLAREN PÅ KUVÖSENS VINTER — fyrningar vid kollen före avfärd, inga utfall (DECISIONS #441)\n`);
+console.log(`PENDLAREN PÅ KUVÖSENS VINTER — fyrningar vid kollen före avfärd, inga utfall (DECISIONS #442)\n`);
 console.log(`${vagar.length} pendlingsvägar (${PENDLING_KM} km var), ${kollar.length} koller (${kollar.length / 2} vardagar × 2), motorn i 80 km/h.`);
 
 type Rad = { vag: number; morgon: boolean; manad: string; nar: string; a: boolean; b: boolean; n: number };

@@ -1,6 +1,6 @@
 # Vägarbeten i appen? (Bengts ja 26/9, DECISIONS #420): engångsknapp — läs-only räkning av Trafikverkets aktiva vägarbeten och
 # hur ofta rösten skulle tala på skuggrutterna. Talen på Summary. Inget sparas.
-# Sedan 2/10 (DECISIONS #441) tar knappen inmatningen skript: en annan läsande mätning mot samma API, t.ex. källorna före resan.
+# Sedan 2/10 (DECISIONS #442) tar knappen inmatningen skript: en annan läsande mätning mot samma API, t.ex. källorna före resan.
 name: vagarbeten-matning
 on:
   workflow_dispatch:

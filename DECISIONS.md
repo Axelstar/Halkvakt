@@ -7040,7 +7040,7 @@ fall bilen missar. Den andra frågan är facit och riktningsprovets, och den fö
 pekar vidare: sammanhangets 6,7 % — kall yta under mild luft finns, men utan nederbörd, och det är rimfrostens kort (#46), inte
 stationsregelns.
 
-## #441 (2/10 2026) Före resan räknas, inte byggs: källorna i Trafikverkets API och pendlarens notis på kuvösens vinter (kort #233)
+## #442 (2/10 2026) Före resan räknas, inte byggs: källorna i Trafikverkets API och pendlarens notis på kuvösens vinter (kort #233)
 
 **Beställning (Bengt 2/10: *"ja räkna på allt men bara som information inte något bygge alls (det här är bara på
 experimentstadiet)"*).** Två läsande mätningar för underlaget `docs/FORE-RESAN-2026-10-02.md`. **Inget byggs i appen, i motorn eller i
