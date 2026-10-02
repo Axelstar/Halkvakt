@@ -55,7 +55,7 @@ prognos.
 *Bengts fråga samma kväll: "borde det inte finnas information om köbildning, vägarbeten etc". Läst i Trafikverkets datamodell för det
 öppna API:t samma kväll.*
 
-Ja. Före resan är det inte bara halkan som avgör, och det mesta finns i Trafikverkets öppna data, med samma nyckel som Halkvakt redan har
+Ja. Före resan är det inte bara halkan som avgör, och det mesta finns i Trafikverkets öppna data (talen i *Talen* nedan), med samma nyckel som Halkvakt redan har
 och under samma öppna licens.
 
 **Vägarbeten, avstängningar och begränsningar** finns i *Situation*, samma datamängd som olyckorna och viltet redan kommer ifrån. Varje
@@ -130,6 +130,28 @@ För föraren blir Halkvakt något mer än en röst i bilen: den första appen s
 positionen lämnar telefonen. För marknadsföringen är pendlaren den tydligaste målgruppen, och det finns redan en färdig fras att jämföra
 med: Fintraffic säger *"när du kör, så kör du"*. För Skyltfondsansökan nämndes ruttkollen som argument mot yrkesflottor, till exempel
 taxi, bud och hemtjänst, som också kör kända vägar. Där ska den fortfarande skrivas med förbehåll tills den är byggd.
+
+## Talen (mätt 2/10, DECISIONS #442)
+
+*Bengts ord: "räkna på allt men bara som information inte något bygge alls". Inget är byggt. Ingen gräns för notisen är satt.*
+
+**Hur ofta skulle notisen ha kommit på vintern 2024/25?** Om pendlingsvägen passerar två eller tre stationer hade motorn sagt något vid
+ungefär **14 procent av kollerna, eller en och en halv gång i veckan** för den som kollar morgon och eftermiddag. I norr, över 62 grader,
+nästan **tre gånger i veckan**, och söder om 58 grader knappt en gång i veckan. Januari var värst: då hade nästan var fjärde station
+frysrisk vid kollen. Att bara skicka det som är nytt sedan förra kollen sänker det till ungefär en gång i veckan. Det här är frysrisken
+ensam. Väglaget, olyckorna och vägarbetena kommer ovanpå, för de finns inte i kuvösen.
+
+Den första räkningen, längs skuggrutternas linjer, gav nästan inga notiser alls. Det berodde på linjerna, inte på vintern: de är så grova
+att de flesta stationer ligger för långt ifrån dem för att motorn ska se dem. Talen ovan räknar i stället på stationerna själva.
+
+**Vägarbetena** är färre än vi trodde: **1 876 aktiva**, och 3 262 till som vilar just nu. Mätningen 26/9 räknade båda och kom till 5 280.
+Nio av tio aktiva pågår längre än en månad, och **50 är nya eller kortare än en vecka** — det är dem en notis skulle gälla.
+
+**Köerna** finns nästan bara i Stockholm: **191 av 198 restidssträckor** (213 km sammanlagt) och **2 400 av 3 125 detektorer**. Göteborg
+har 5 sträckor och 715 detektorer, Skåne 2 och 10. Utanför storstäderna finns inga mätta köer.
+
+**En gemensam fil** med vägarbetena och restiderna blir omkring **120 kB packad**, ungefär lika stor som hela lägesbilden i dag (83 kB).
+Det går för en koll två gånger om dagen, men inte för hämtningen var 30:e minut under körningen.
 
 ## Förslaget
 
