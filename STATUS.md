@@ -2170,4 +2170,4 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
 - 2/10 00:12–00:25: Play-vägen förberedd (butikstexten rättad, versionCode 20 byggs, fredagens lista på #219) och **marknadsplanen utan pengar** skriven
   på Axels order (`docs/MARKNADSFORING-NOLLBUDGET.md`, kort #281) — sex handgrepp för Axel, resten Claude.
 - 2/10 13:50 (Claude, Axels *"åtgärda"* på Bengts läsning av #258): klockslaget *väglag HH:mm* tillbaka i körläget på iPhone (höger om *PÅ DIN VÄG*),
-  bygge (21), produktboken — DECISIONS #434. (20) hos Apple rörs inte. Kvar: Axels Xcode-bygge (21) och en 45–60-minutersresa.
+  bygge (21), produktboken — DECISIONS #434. (20) hos Apple rörs inte. 13:56: (21) uppladdat av Axel. Kvar: en 45–60-minutersresa i (21).

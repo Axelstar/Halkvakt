@@ -235,8 +235,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   *Redo.*, som inte syns under resan. Axels resa 1/10 12:39 räknas inte (bygge utan lagningen).
   🔨 **VÄG 1 BYGGD 2/10 13:50 (DECISIONS #434):** klockslaget tillbaka i körläget, till höger om *PÅ DIN VÄG* — som Androids rad under
   *I närheten*. **Bygge (21)** i samma commit; produktboken följer med. Rör inte (20) hos Apple: (21) går till TestFlight, butiken får det
-  som nästa version. 🔑 Kvar: Axels Xcode-bygge (21) · en resa på 45–60 min där klockslaget flyttar sig minst en gång (servern publicerar
-  var tionde minut, appen hämtar var trettionde).
+  som nästa version. ✅ **(21) uppladdat 2/10 13:56** (Axel, Xcode) — interna gruppen får det direkt. 🔑 Kvar: en resa på 45–60 min i (21)
+  där klockslaget vid *PÅ DIN VÄG* flyttar sig minst en gång (servern publicerar var tionde minut, appen hämtar var trettionde). Axel eller Bengt.
 
 - [ ] 🎚️ **#259 REGLAGET "VARNA PÅ AVSTÅND" LOVAR MER ÄN MOTORN GÖR** (fynd 26/9 under kadenstestet, DECISIONS #373). Motorn
   talar vid `min(leadMaxM, max(400 m, fart × 30 s))` (`engine.ts:110`), och reglaget sätter bara `leadMaxM`. I 140 km/h blir det
