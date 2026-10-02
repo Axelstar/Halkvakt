@@ -326,6 +326,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   väghållningens data (plogning, sandning, saltning, saltmängd) som facit i Finland — den del som saknas i Sverige · **(4)** *"när du kör, så
   kör du"* som ärligt argument i marknadsplanen (kort #281). 🔑 Bengts val (§4.2). Verify: valet inskrivet här; för (2) och (3) en
   DECISIONS-post före bygget.
+  📝 **Utvärderingen och läsbar text 2/10 (Bengts frågor):** underlaget omskrivet till löpande text med en utvärdering per område. Samlat: Halkvakt konkurrerar inte med Fintraffic, det kompletterar — Fintraffic är långt före i räckvidd, planering före resan och data, Halkvakt har rösten under körningen och integriteten; träffsäkerheten har ingen av dem visat. Största risken är domarna och bilarnas egna varningar, inte Fintraffic.
 
 - [ ] ⚖️ **#282 REGEL L — FÖRSLAG: ÄNDRING AV EN TRÖSKEL EFTER ATT UTFALLET ÄR SETT** (Bengts fråga och order 2/10: *"skriv ett
   förslag för de fyra leden"*; `docs/FORSLAG-ANDRINGSREGELN-2026-10-02.md`). Tretton tröskeldokument säger på fem olika sätt att en
