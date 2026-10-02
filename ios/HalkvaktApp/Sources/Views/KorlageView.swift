@@ -12,6 +12,7 @@ struct KorlageView: View {
     /// Granskningsläge: håll på "PÅ VAKT" ⇒ kortet med en låtsasvarning, utan röst.
     @State private var demoWarning: HalkvaktEngine.Alert?
     @State private var missKvitto: String?   // #203 lager 2
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     private let clock = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     var body: some View {
@@ -31,8 +32,9 @@ struct KorlageView: View {
                                     // touchen först, och långtrycket som fungerade i äldre byggen fyrade inte i (19) på Axels iPhone 1/10.
                                     // Apples granskare ska kunna se ett varningskort utan att köra — det här är den vägen (kort #280).
                                     .simultaneousGesture(LongPressGesture(minimumDuration: 0.5, maximumDistance: 30).onEnded { _ in
+                                        // Kort B ur designen, med motorns riktiga halkreplik (DECISIONS #443).
                                         demoWarning = HalkvaktEngine.Alert(t: 0, hazardId: "demo", kind: .slippery_segment,
-                                            distanceM: 2000, text: "Halt väglag om två kilometer.")
+                                            distanceM: 900, text: "Varning: halka rapporterad på vägen framför dig.")
                                         Task { try? await Task.sleep(for: .seconds(8)); demoWarning = nil }
                                     })
                                 Text("\(elapsedMin) min · \(distKm) km")
@@ -104,14 +106,23 @@ struct KorlageView: View {
             }
 
             if let w = guardM.currentWarning ?? demoWarning {
-                WarningOverlayView(alert: w).transition(.opacity)
+                // Kort ersätter kort (designen 04): det nya glider upp och täcker, det gamla krymper och tonar bort.
+                // .id per varning ger en ny vy — och en ny 8-sekundersstapel — när en viktigare fara tar över.
+                WarningCardView(card: guardM.card(for: w))
+                    .id(Self.warningID(w))
+                    .transition(reduceMotion ? .opacity : .asymmetric(
+                        insertion: .move(edge: .bottom),
+                        removal: .scale(scale: 0.92).combined(with: .opacity)))
+                    .zIndex(1)
             }
         }
+        .animation(.timingCurve(0.2, 0.8, 0.2, 1, duration: 0.38), value: (guardM.currentWarning ?? demoWarning).map(Self.warningID))
         .onReceive(clock) { now = $0 }
         .preferredColorScheme(.dark)
         .persistentSystemOverlays(.hidden)
     }
 
+    private static func warningID(_ a: HalkvaktEngine.Alert) -> String { "\(a.hazardId)@\(a.t)" }
     private var elapsedMin: Int { Int(guardM.drivingSeconds / 60) }
     private var distKm: String { String(format: "%.0f", guardM.distanceKm) }
     private func count(_ k: HazardKind) -> Int { guardM.history.filter { $0.kind == k }.count }
@@ -131,58 +142,3 @@ private struct Stat: View {
     }
 }
 
-/// Varningskortet (1b): helgult, ikon, typ stort, avstånd, repliken i kursiv. Ingen knapp —
-/// GuardManager släcker det efter 8 s. Tunn stapel längst ner visar tiden som rinner.
-struct WarningOverlayView: View {
-    let alert: HalkvaktEngine.Alert
-    @State private var progress = 0.0
-
-    var body: some View {
-        ZStack {
-            Brand.amber.ignoresSafeArea()
-            VStack(alignment: .leading, spacing: 22) {
-                HStack {
-                    Text("HALKVAKT VARNAR").font(Typo.mono(12)).tracking(2.4)
-                    Spacer()
-                    Text(Date.now.klockslag).font(Typo.mono(12))
-                }
-                .foregroundStyle(Brand.onAmber.opacity(0.6))
-
-                Image(systemName: "triangle.fill").font(.system(size: 44)).foregroundStyle(Brand.onAmber)
-
-                // Ikonen intill namnet — aldrig i triangelns plats (designens notering).
-                HStack(alignment: .top, spacing: 14) {
-                    HazardIcon(kind: alert.kind, size: 48).foregroundStyle(Brand.onAmber).padding(.top, 10)
-                    Text(Prefs.shared.label(alert.kind))
-                        .font(Typo.sans(64, .bold)).tracking(-2.5).lineSpacing(-6)
-                        .foregroundStyle(Brand.onAmber)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-
-                HStack(alignment: .firstTextBaseline, spacing: 8) {
-                    Text("\(alert.distanceM)").font(Typo.mono(44, .semibold))
-                    Text("meter").font(Typo.sans(22))
-                }
-                .foregroundStyle(Brand.onAmber)
-
-                Spacer()
-
-                HStack(alignment: .top, spacing: 10) {
-                    Image(systemName: "waveform").font(.system(size: 16))
-                    Text("”\(alert.text)”").font(Typo.sans(16)).italic().lineSpacing(4)
-                }
-                .foregroundStyle(Brand.onAmber.opacity(0.78))
-
-                GeometryReader { g in
-                    ZStack(alignment: .leading) {
-                        Capsule().fill(Brand.onAmber.opacity(0.18))
-                        Capsule().fill(Brand.onAmber).frame(width: g.size.width * progress)
-                    }
-                }
-                .frame(height: 5)
-            }
-            .padding(.horizontal, 24).padding(.top, 18).padding(.bottom, 24)
-        }
-        .onAppear { withAnimation(.linear(duration: 8)) { progress = 1 } }
-    }
-}

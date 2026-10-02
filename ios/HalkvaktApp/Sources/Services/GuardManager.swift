@@ -18,6 +18,8 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     var nearby: [NearbyItem] = []
     var lastLoc: (lon: Double, lat: Double)?
     var currentWarning: Alert?
+    /// Vad varningskortet visar (DECISIONS #443): varningen + farans egen metadata — vägnummer, gräns, bro, röjningstid.
+    func card(for alert: Alert) -> WarningCard { WarningCard.make(alert, meta: pointMeta(alert.hazardId)) }
     var history: [Alert] = []
     /// Platsen är avslagen (Aldrig/begränsad) — knappen kan inte starta; UI ska säga varför.
     var locationDenied = false
@@ -405,6 +407,14 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
             try? await Task.sleep(for: .seconds(8))
             if !Task.isCancelled { self.currentWarning = nil }
         }
+    }
+
+    /// Farans metadata ur den laddade vägdatan; nil för halksträckor och för en fara som hunnit försvinna.
+    private func pointMeta(_ id: String) -> PointMeta? {
+        for h in hazards {
+            if case .point(let hid, _, _, _, _, let meta) = h, hid == id { return meta }
+        }
+        return nil
     }
 
     private func recomputeNearby() {
