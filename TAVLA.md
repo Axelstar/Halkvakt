@@ -309,6 +309,15 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **29/9: rubriken överspelad (DECISIONS #402).** Android bär 0.3.9 (18) som iOS sedan 26/9 (#377, #379) och Play-kontot finns sedan 20/9. Kvar är bara Play-vägen: enhetsverifieringen i Play Console, första uppladdningen med Data safety-formuläret ifyllt likadant som filen (#214), slutet test 14 dygn med tolv testare, produktion tidigast november. Verify-raden gäller oförändrad.
 ### Bengt
 
+- [ ] ⚖️ **#282 REGEL L — FÖRSLAG: ÄNDRING AV EN TRÖSKEL EFTER ATT UTFALLET ÄR SETT** (Bengts fråga och order 2/10: *"skriv ett
+  förslag för de fyra leden"*; `docs/FORSLAG-ANDRINGSREGELN-2026-10-02.md`). Tretton tröskeldokument säger på fem olika sätt att en
+  lättnad är utesluten när utfallet är sett. Förslaget gör regeln gemensam och preciserar den i fyra led: **L1** domen på lästa data
+  står som den föll · **L2** en lättnad gäller bara data som ingen har läst · **L3** en ändring som flyttar ett sett tal mot godkänt
+  räknas som lättnad · **L4** skälet får inte vara utfallet. De absoluta undantagen (regel T, K-A2, givarvakten med flera) och regel D
+  rörs inte. **Inget tröskeldokument är ändrat.** Hänger ihop med kort #270 (b) och (d). 🔑 Nyckel: Bengts och Axels ja, nej eller
+  ändrad lydelse (§4.2) — tre frågor i förslagets §6. Verify: beslutet i DECISIONS med båda signaturerna; vid ja står texten i
+  TROSKLAR-KOMBINATIONEN och L-raden i alla tretton dokument i samma commit.
+
 - [ ] 📐 **#270 PROGNOSLAGRET EFTER PREMISSMÄTNINGARNA — BENGTS VAL a–h** (30/9, `docs/PROGNOSLAGRET-2026-09-30.md`; DECISIONS
   #405–#408; bedömningen §4.2). Domen står (fallen 28/9, bekräftad 30/9 och på ärliga rader). Bandet 0–7 km håller i båda
   länderna men kan inte dömas med svenska stationer (15 av spärrens 20); Finland ger 108 stationer och 2,3 % [1,1–3,5]; frysflaggan
