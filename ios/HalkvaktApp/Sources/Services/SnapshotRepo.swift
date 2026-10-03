@@ -22,63 +22,11 @@ enum SnapshotRepo {
         let gen = (liveDoc["generated_at"] as? String)
             .flatMap { ISO8601DateFormatter.withFraction.date(from: $0) } ?? .distantPast
 
-        var out: [Hazard] = []
-
-        for c in arr(staticDoc, "cameras") {
-            out.append(.point(id: "cam:\(str(c, "id"))", kind: .camera,
-                              lon: dbl(c, "lon"), lat: dbl(c, "lat"),
-                              bearing: optDbl(c, "bearing"),
-                              meta: PointMeta(speedLimitKmh: optInt(c, "limit"))))
-        }
-        for s in arr(liveDoc, "segments") {
-            let rawLine = s["line"] as? [[Any]] ?? []
-            var line: [[Double]] = []
-            for p in rawLine where p.count >= 2 {
-                let lon = (p[0] as? NSNumber)?.doubleValue ?? 0
-                let lat = (p[1] as? NSNumber)?.doubleValue ?? 0
-                line.append([lon, lat])
-            }
-            let info = s["info"] as? [String] ?? []
-            out.append(.segment(id: "seg:\(str(s, "id"))", line: line,
-                                meta: SegmentMeta(code: optInt(s, "code"), info: info)))
-        }
-        for w in arr(liveDoc, "weather") {
-            out.append(.point(id: "wx:\(str(w, "id"))", kind: .icing_point,
-                              lon: dbl(w, "lon"), lat: dbl(w, "lat"), bearing: nil,
-                              meta: PointMeta(surfaceTempC: optDbl(w, "yta"),
-                                              moisture: (w["fukt"] as? Bool) ?? false)))
-        }
-        for b in arr(liveDoc, "bridges") {   // #38
-            out.append(.point(id: "bro:\(str(b, "id"))", kind: .icing_point,
-                              lon: dbl(b, "lon"), lat: dbl(b, "lat"), bearing: nil,
-                              meta: PointMeta(surfaceTempC: optDbl(b, "yta"),
-                                              moisture: (b["fukt"] as? Bool) ?? false, bridge: true)))
-        }
-        for v in arr(liveDoc, "wildlife") {
-            out.append(.point(id: "vilt:\(str(v, "id"))", kind: .wildlife,
-                              lon: dbl(v, "lon"), lat: dbl(v, "lat"), bearing: nil,
-                              meta: PointMeta()))
-        }
-        for v in arr(liveDoc, "djur") {   // #318 — Trafikverkets djur på vägen
-            out.append(.point(id: "djur:\(str(v, "id"))", kind: .wildlife,
-                              lon: dbl(v, "lon"), lat: dbl(v, "lat"), bearing: nil,
-                              meta: PointMeta()))
-        }
-        for d in arr(liveDoc, "deviations") {
-            // Olyckslyftet (#28): sev/slut are absent in snapshots published before this
-            // shipped, and absent for non-accident deviation types by design. Missing ⇒ nil
-            // ⇒ the engine grades it mild and speaks the old line. Never louder by accident.
-            out.append(.point(id: "dev:\(str(d, "id"))", kind: .accident,
-                              lon: dbl(d, "lon"), lat: dbl(d, "lat"), bearing: nil,
-                              meta: PointMeta(severityCode: optInt(d, "sev"),
-                                              endTimeLocal: d["slut"] as? String,
-                                              // `road` is published as JSON null when Trafikverket has no
-                                              // number (5 % of accidents). str() turned NSNull into the
-                                              // string "<null>" and the voice said "på väg <null>" (#210).
-                                              road: d["road"] as? String)))
-        }
+        // Tolkningen bor i motorpaketet (kort #289) och prövas där mot engine/fixtures/lasarprov.json.
+        let out = SnapshotReader.toHazards(staticDoc: staticDoc, liveDoc: liveDoc)
         // Kort #203 lager 2: alla stationers id och position (static.json sedan 26/9) — missens plats. Inga faror.
-        let stations = arr(staticDoc, "stations").map { Station(id: str($0, "id"), lon: dbl($0, "lon"), lat: dbl($0, "lat")) }
+        let stations = SnapshotReader.arr(staticDoc, "stations")
+            .map { Station(id: SnapshotReader.str($0, "id"), lon: SnapshotReader.dbl($0, "lon"), lat: SnapshotReader.dbl($0, "lat")) }
             .filter { !$0.id.isEmpty }
         return Snapshot(hazards: out, generatedAt: gen, stations: stations)
     }
@@ -124,24 +72,6 @@ enum SnapshotRepo {
     private static func cacheDir() -> URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
-
-    // MARK: - JSON-plockare (speglar org.json-anropens tolerans)
-    private static func arr(_ d: [String: Any], _ k: String) -> [[String: Any]] { d[k] as? [[String: Any]] ?? [] }
-    /// ROTFIXEN till #210 (20/9). Den gamla raden var `d[k] as? String ?? "\(d[k] ?? "")"`, och JSON-null
-    /// blir `NSNull` — inte `nil` — från JSONSerialization. `NSNull` överlevde alltså `??` och
-    /// stränginterpolerades till literalen **"<null>"**, som gick hela vägen ut i rösten: *"på väg <null>"*.
-    /// `road` rättades på sin egen rad; det här stänger klassen. Funktionen bär i dag sex id-fält
-    /// (cam/seg/wx/bro/vilt/dev) — ett null där hade gett `"cam:<null>"` som farans id, alltså en nyckel i
-    /// reprisspärren och i facitsvaret. Uppmätt 20/9 i publicerade static.json (2 791 kameror) och
-    /// live.json: inget id är null i dag. Latent, inte aktivt — och nu omöjligt.
-    private static func str(_ d: [String: Any], _ k: String) -> String {
-        if let s = d[k] as? String { return s }
-        guard let v = d[k], !(v is NSNull) else { return "" }
-        return "\(v)"
-    }
-    private static func dbl(_ d: [String: Any], _ k: String) -> Double { (d[k] as? NSNumber)?.doubleValue ?? 0 }
-    private static func optDbl(_ d: [String: Any], _ k: String) -> Double? { (d[k] as? NSNumber)?.doubleValue }
-    private static func optInt(_ d: [String: Any], _ k: String) -> Int? { (d[k] as? NSNumber)?.intValue }
 }
 
 

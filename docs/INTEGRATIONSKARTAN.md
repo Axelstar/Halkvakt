@@ -83,7 +83,7 @@ L2 + L3 stänger det hålet. Det är den enskilt största vinsten som finns att 
 - [Trafikverkets väglag (RoadCondition)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vaglag): klar
 - [Trafikverkets olyckor, djur och hinder](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-situation): klar
 - [Publiceringen var tionde minut](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-l-publicera): klar
-- [Motorn i tre språk](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-motorn): delvis, 92 % · kvar: Swifts och Kotlins läsare av lägesfilen (SnapshotRepo.swift, SnapshotRepo.kt) körs inte mot engine/fixtures/lasarprov.json; iPhone-appen saknar testmål, Android-appen har ett men inget läsartest (kort #289)
+- [Motorn i tre språk](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-motorn): delvis, 92 % · kvar: Axels körning på Macen: appen byggd i Xcode efter flytten av läsaren, och swift test i ios/HalkvaktEngine en gång (CI kör Swift på Linux, appen på Apples Foundation; kort #289)
 - [Olyckor (A3), med olycksläget](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-olyckor): klar
 - [Rapporterad halka (A1)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-halka): klar
 - [Frysrisk vid stationer och broar (A2)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-frysrisk): klar
@@ -770,7 +770,7 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 4 kort.
 
 **§4 Motorn som den faktiskt ser ut i dag**
 
-- #289 LÄSARKONTRAKTET I SWIFT OCH KOTLIN — MOTORN I TRE SPRÅK TILL 100 % — Claude, låst
+- #289 🔨 #289 LÄSARKONTRAKTET I SWIFT OCH KOTLIN — MOTORN I TRE SPRÅK TILL 100 % (BYGGT OCH PROVAT I CI — Claude, … — pågår
 
 **§5 Fogarna — var en skuggdel kan greppa, och vad den kostar**
 

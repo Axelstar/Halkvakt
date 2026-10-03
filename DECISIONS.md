@@ -7203,3 +7203,21 @@ efter att Axel släppt 0.3.10 (22) utan att kartan märkte det.
 **Alternativ som valdes bort:** GitHub Actions på schema (Bengts regel 22/9 om Actions-minuter, och Actions kan inte republicera
 artefakterna); en krok på Axels Mac efter uppladdningen (missar granskningen och installationerna); att be Bengt och Axel säga till
 (det var just det som inte hände 3/10).
+
+## #448 (3/10 2026) Läsarkontraktet i Swift och Kotlin, och fartgränsen bort ur Swift-läsaren (kort #289)
+
+**Beslut (Bengt, 3/10):** *"ja till a och b"* — på planen i kort #289 och frågorna i bedömningen §4.2, efter frågan om vad som krävs för
+att delen *Motorn i tre språk* ska bli klar.
+1. **(a) Planen:** Swift- och Kotlin-läsarna av lägesfilen prövas mot `engine/fixtures/lasarprov.json`, som TS-läsaren sedan 20/9
+   (#278). Kotlin i appens befintliga testmål; Swift-läsaren flyttas ur appen till motorpaketet (där TS-läsaren har sin motsvarighet i
+   `engine/src/snapshot.ts`) och prövas där, så att iPhone-appen inte behöver ett eget testmål. Axel bygger appen och kör paketets
+   tester en gång på Macen, eftersom CI kör Swift på Linux.
+2. **(b) Fartgränsen:** Swift slutar läsa kamerans `limit`. TS är referensen och läser den inte, Kotlin inte heller, och `static.json`
+   publicerar ingen `limit` — läsningen var vilande. En röst med fartgräns är en egen funktion med eget kort och en datakälla som inte
+   finns i dag.
+3. **Följer med:** farornas ordning i Swift och Kotlin blir referensens (olyckorna före vilt, djur och broar). Motorn väljer vinnare på
+   typens prioritet, och ordningen inom en typ ändras inte, så ingen varning ändras — men kontraktet jämför ordningen. Kotlin läser
+   id som text oavsett om JSON bär text eller tal, som TS och Swift: testmiljöns org.json kastar på ett tal där Androids gör om det.
+
+**Alternativ som valdes bort:** ett testmål i iPhone-appen (kräver macOS-körningar i CI till tiodubbla minuter, och Xcode-schemat i
+kort #228 först); Robolectric för Android-testet (riktiga Androids org.json, men tyngre beroende och långsammare körning).

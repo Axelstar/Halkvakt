@@ -1,9 +1,9 @@
 {
- "_om": "LÄSARPROVET (kort #210, 20/9 2026). Vektorerna i engine/vectors/ börjar där faran redan är tolkad — de är ett kontrakt FÖR MOTORN och kan per konstruktion inte se ett fel i JSON-läsningen. Det var precis där #210 satt: iOS gjorde JSON-null till strängen \"<null>\" och rösten läste upp den. Den här filen är motsvarande kontrakt ETT LAGER NED: samma static+live som apparna hämtar, med de fall som är lätta att läsa fel, och det parsade utfall varje läsare ska ge. TS-läsaren prövas av test/lasarkontraktet.test.ts. Swift och Kotlin läser i dag i app-koden, utan testmål — se kortet.",
+ "_om": "LÄSARPROVET (kort #210, 20/9 2026). Vektorerna i engine/vectors/ börjar där faran redan är tolkad — de är ett kontrakt FÖR MOTORN och kan per konstruktion inte se ett fel i JSON-läsningen. Det var precis där #210 satt: iOS gjorde JSON-null till strängen \"<null>\" och rösten läste upp den. Den här filen är motsvarande kontrakt ETT LAGER NED: samma static+live som apparna hämtar, med de fall som är lätta att läsa fel, och det parsade utfall varje läsare ska ge. Alla tre läsarna prövas mot den (kort #289, DECISIONS #448): TS i test/lasarkontraktet.test.ts, Swift i ios/HalkvaktEngine/Tests/HalkvaktEngineTests/LasarkontraktetTests.swift, Kotlin i android/app/src/test/kotlin/se/halkvakt/app/LasarkontraktetTest.kt. Ett saknat fält och null är samma utfall; ett tal eller ett ord är det aldrig.",
  "static": {
   "schema": 1,
   "cameras": [
-   { "id": "k1", "lon": 15.0, "lat": 60.0, "bearing": 180, "road": "E4" },
+   { "id": "k1", "lon": 15.0, "lat": 60.0, "bearing": 180, "road": "E4", "limit": 80 },
    { "id": "k2", "lon": 15.1, "lat": 60.1, "bearing": null, "road": null }
   ]
  },
@@ -26,10 +26,11 @@
   ],
   "smhi": [],
   "wildlife": [{ "id": "v1", "lon": 15.9, "lat": 60.9, "art": null }],
+  "djur": [{ "id": "j1", "lon": 16.1, "lat": 61.1, "art": "Älg", "slut": null }],
   "bridges": [{ "id": "b1", "lon": 16.0, "lat": 61.0, "road": null, "yta": 2.5, "fukt": true }]
  },
  "vantat": [
-  { "id": "cam:k1", "kind": "camera", "bearing": 180 },
+  { "id": "cam:k1", "kind": "camera", "bearing": 180, "speedLimitKmh": null, "_varfor": "kamerans limit läses inte (DECISIONS #448 b): TS är referensen, och static.json publicerar ingen fartgräns — en röst med fartgräns är en egen funktion" },
   { "id": "cam:k2", "kind": "camera", "bearing": null, "_varfor": "bearing null får aldrig bli 0 — 0 är norrut, och en kamera som tros titta norrut filtreras på fel kurs" },
   { "id": "seg:s1", "kind": "slippery_segment", "code": 3 },
   { "id": "seg:s2", "kind": "slippery_segment", "code": null, "_varfor": "code null betyder OKÄNT väglag, inte klass 0" },
@@ -40,6 +41,7 @@
   { "id": "dev:d3", "kind": "accident", "road": null, "severityCode": null, "endTimeLocal": null, "_varfor": "helt SAKNADE fält — samma utfall som null, och sev null får inte bli 0 (0 finns inte i SeverityCode)" },
   { "id": "dev:4711", "kind": "accident", "road": "25", "severityCode": 4, "endTimeLocal": null, "_varfor": "id som TAL, inte sträng. Ska bli \"dev:4711\" — det är därför fallback-grenen i iOS str() finns kvar" },
   { "id": "vilt:v1", "kind": "wildlife" },
+  { "id": "djur:j1", "kind": "wildlife", "_varfor": "#318: Trafikverkets djur på vägen ersätter wildlife, som publiceras tom" },
   { "id": "bro:b1", "kind": "icing_point", "surfaceTempC": 2.5, "bridge": true }
  ]
 }

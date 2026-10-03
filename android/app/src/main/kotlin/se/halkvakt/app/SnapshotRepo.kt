@@ -61,14 +61,14 @@ object SnapshotRepo {
         } finally { conn.disconnect() }
     }
 
-    /** Mirror of snapshotToHazards() in engine/src/snapshot.ts — keep 1:1. */
+    /** Mirror of snapshotToHazards() in engine/src/snapshot.ts — keep 1:1, same order (#289). */
     fun toHazards(staticDoc: JSONObject, liveDoc: JSONObject): List<Hazard> {
         val out = ArrayList<Hazard>()
         val cams = staticDoc.getJSONArray("cameras")
         for (i in 0 until cams.length()) {
             val c = cams.getJSONObject(i)
             out.add(PointHazard(
-                id = "cam:${c.getString("id")}", kind = HazardKind.CAMERA,
+                id = "cam:${c.idText()}", kind = HazardKind.CAMERA,
                 lon = c.getDouble("lon"), lat = c.getDouble("lat"),
                 bearing = if (c.isNull("bearing")) null else c.getDouble("bearing"),
             ))
@@ -82,7 +82,7 @@ object SnapshotRepo {
             }
             val info = s.optJSONArray("info")?.let { a -> (0 until a.length()).map { a.getString(it) } } ?: emptyList()
             out.add(SegmentHazard(
-                id = "seg:${s.getString("id")}", line = line,
+                id = "seg:${s.idText()}", line = line,
                 meta = SegmentMeta(code = if (s.isNull("code")) null else s.getInt("code"), info = info),
             ))
         }
@@ -90,7 +90,7 @@ object SnapshotRepo {
         for (i in 0 until wx.length()) {
             val w = wx.getJSONObject(i)
             out.add(PointHazard(
-                id = "wx:${w.getString("id")}", kind = HazardKind.ICING_POINT,
+                id = "wx:${w.idText()}", kind = HazardKind.ICING_POINT,
                 lon = w.getDouble("lon"), lat = w.getDouble("lat"),
                 meta = PointMeta(
                     surfaceTempC = if (w.isNull("yta")) null else w.getDouble("yta"),
@@ -98,11 +98,45 @@ object SnapshotRepo {
                 ),
             ))
         }
+        val devs = liveDoc.getJSONArray("deviations")
+        for (i in 0 until devs.length()) {
+            val d = devs.getJSONObject(i)
+            // Olyckslyftet (#28): sev/slut are absent in snapshots published before this
+            // shipped, and absent for non-accident deviation types by design. Missing ⇒ null
+            // ⇒ the engine grades it mild and speaks the old line. Never louder by accident.
+            out.add(PointHazard(
+                id = "dev:${d.idText()}", kind = HazardKind.ACCIDENT,
+                lon = d.getDouble("lon"), lat = d.getDouble("lat"),
+                meta = PointMeta(
+                    severityCode = if (d.has("sev") && !d.isNull("sev")) d.getInt("sev") else null,
+                    endTimeLocal = if (d.has("slut") && !d.isNull("slut")) d.getString("slut") else null,
+                    road = if (d.has("road") && !d.isNull("road")) d.getString("road") else null,
+                ),
+            ))
+        }
+        liveDoc.optJSONArray("wildlife")?.let { vs ->
+            for (i in 0 until vs.length()) {
+                val v = vs.getJSONObject(i)
+                out.add(PointHazard(
+                    id = "vilt:${v.idText()}", kind = HazardKind.WILDLIFE,
+                    lon = v.getDouble("lon"), lat = v.getDouble("lat"),
+                ))
+            }
+        }
+        liveDoc.optJSONArray("djur")?.let { ds ->   // #318 — Trafikverkets djur på vägen
+            for (i in 0 until ds.length()) {
+                val v = ds.getJSONObject(i)
+                out.add(PointHazard(
+                    id = "djur:${v.idText()}", kind = HazardKind.WILDLIFE,
+                    lon = v.getDouble("lon"), lat = v.getDouble("lat"),
+                ))
+            }
+        }
         liveDoc.optJSONArray("bridges")?.let { bs ->   // #38 — broar nära frysande station
             for (i in 0 until bs.length()) {
                 val b = bs.getJSONObject(i)
                 out.add(PointHazard(
-                    id = "bro:${b.getString("id")}", kind = HazardKind.ICING_POINT,
+                    id = "bro:${b.idText()}", kind = HazardKind.ICING_POINT,
                     lon = b.getDouble("lon"), lat = b.getDouble("lat"),
                     meta = PointMeta(
                         surfaceTempC = if (b.isNull("yta")) null else b.getDouble("yta"),
@@ -112,40 +146,10 @@ object SnapshotRepo {
                 ))
             }
         }
-        liveDoc.optJSONArray("wildlife")?.let { vs ->
-            for (i in 0 until vs.length()) {
-                val v = vs.getJSONObject(i)
-                out.add(PointHazard(
-                    id = "vilt:${v.getString("id")}", kind = HazardKind.WILDLIFE,
-                    lon = v.getDouble("lon"), lat = v.getDouble("lat"),
-                ))
-            }
-        }
-        liveDoc.optJSONArray("djur")?.let { ds ->   // #318 — Trafikverkets djur på vägen
-            for (i in 0 until ds.length()) {
-                val v = ds.getJSONObject(i)
-                out.add(PointHazard(
-                    id = "djur:${v.getString("id")}", kind = HazardKind.WILDLIFE,
-                    lon = v.getDouble("lon"), lat = v.getDouble("lat"),
-                ))
-            }
-        }
-        val devs = liveDoc.getJSONArray("deviations")
-        for (i in 0 until devs.length()) {
-            val d = devs.getJSONObject(i)
-            // Olyckslyftet (#28): sev/slut are absent in snapshots published before this
-            // shipped, and absent for non-accident deviation types by design. Missing ⇒ null
-            // ⇒ the engine grades it mild and speaks the old line. Never louder by accident.
-            out.add(PointHazard(
-                id = "dev:${d.getString("id")}", kind = HazardKind.ACCIDENT,
-                lon = d.getDouble("lon"), lat = d.getDouble("lat"),
-                meta = PointMeta(
-                    severityCode = if (d.has("sev") && !d.isNull("sev")) d.getInt("sev") else null,
-                    endTimeLocal = if (d.has("slut") && !d.isNull("slut")) d.getString("slut") else null,
-                    road = if (d.has("road") && !d.isNull("road")) d.getString("road") else null,
-                ),
-            ))
-        }
         return out
     }
+
+    /** The id as text whether the JSON carries a string or a number ("dev:4711"), like the TS and Swift readers.
+     *  getString() would do it on Android but throws in the JVM tests' org.json (#289). */
+    private fun JSONObject.idText(): String = get("id").toString()
 }
