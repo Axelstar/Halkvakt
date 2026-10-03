@@ -62,7 +62,9 @@ arkiv (VÄRDEVAKTEN i CLAUDE.md). `−99,8` i mängden är ny: den liknar platsh
 | −9 | 55 318 | 13 % · 20 % · 68 % | 0,1 % |
 
 Mönstret går att läsa som uppehåll, regn, snö och snöblandat regn, men det är en gissning. Koderna översätts först med Trafikverkets
-kodlista (§5). Motorns *fukt* bygger på nederbörden, så frysrisken kan inte spelas upp förrän koderna är kända.
+kodlista (§5). Motorns *fukt* bygger på nederbörden, så frysrisken kan inte spelas upp förrän koderna är kända. *(Överspelat 2/10 kväll:
+1, 2, 4 och 6 är översatta ur VädErs 2019, §7. Kvar är 3, 9 och −9, som är 0,03 % och 1 % av raderna, och riktningsprovet väntar på
+Trafikverkets svar om dem, längst till vecka 42 — bedömningen §4.2.)*
 
 **Vindfälten mot varandra** (5 469 308 rader utan platshållare): `vimax ≥ vind30` i 100 %, `vimax ≥ vimed` i 100 %, men
 `vind30 ≥ vimed` bara i 60,8 %. `vind30` är alltså inget maximum.
