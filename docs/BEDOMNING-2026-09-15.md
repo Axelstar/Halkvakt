@@ -326,6 +326,14 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 
 ### 2.1 Vägen till förare: efterhalkan som märkt beta
 
+<!-- LÄGESRADER §2.1: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+*Läget i projektkartan:*
+
+- [App Store](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-u-app-store): väntar, 67 % · Apples granskning av 0.3.9 (20), Waiting for Review sedan 2/10 00:09 (DECISIONS #433); därefter Axels Release.
+- [Google Play](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-u-play): delvis, 10 % · kvar: Enhetsverifieringen i Play Console (Axel)
+
+<!-- /LÄGESRADER -->
+
 | # | Steg | Fog | Grind | Kort |
 | :-- | :-- | :-- | :-- | :-- |
 | ~~**S1**~~ | ~~Skuggan läser N4:s fält vid sidan av motorn och loggar vad villkoret *skulle* ändrat. **GRIND (Axel 16/9): körs INNAN något mer byggs på `regn_h`** — regntäckningen 13 % gör `regn_h` till efterhalkans osäkra halva. ✅ **Byggt 16/9** (kolumn `efterhalka`, DECISIONS #198), första rad med innehåll 16/9. **Uppspelningen räknas ur arkiven, loggen är kontroll (17/9, #226)**~~ ✅ **STEGET ÄR KLART** — grinden passerad som byggsteg; nätterna bevakas i §0b | — | S1 före S2 | #192, #89 |
@@ -434,6 +442,13 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 
 ### 4.2 Öppna
 
+<!-- LÄGESRADER §4.2: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+*Läget i projektkartan:*
+
+- [Stomdokumenten och kortkartan](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-g-stomdokumenten): klar
+
+<!-- /LÄGESRADER -->
+
 | Beslut | Vem | Rekommendation | Kort |
 | :-- | :-- | :-- | :-- |
 | ~~**Föreningen (#265): hölls det konstituerande mötet 29/9 och postades SKV 8400 30/9?**~~ ✅ **AVGJORT 30/9 (Bengt: *"du kan stänga kort 265"*, DECISIONS #410): kortet stängt; organisationsnummer och bankkonto följs i §0b.** (Claudes fråga 30/9 vid Skyltfondsstängningen, DECISIONS #409.) Repot bär planen (#400) men ingen bekräftelse; kortet kan inte få sin ↪-rad utan den | Bengt | ett ord i chatten ⇒ #265 får ↪ med datum, oktoberraden stryks | #265 |
@@ -532,44 +547,33 @@ bevisbart säker (vid 0 km/h går det inte att nå faran) och är rimligen stör
 | **Kuvösen — hela systemet bakåtprövat på vintern 2024/25 (kort #232, DECISIONS #292).** Bengts idé 21/9: motorn och alla skuggregler i en gemensam testbädd mot en gången vinter, som riktningsprov — svaret på kartans §7.3 (*varje grind dömer sin del ensam*). **Det hänger på en sak:** stationernas mätvärden för den vintern finns inte öppet (API sju dygn · Lastkajen bär inte mätvärden · Vintersidan stängd · Finland 24 h · Norge realtid). Vägen är en förfrågan till Trafikverket — **via Datautbytesportalens kontaktformulär, ärendetyp *API Öppna Data*** (datex@trafikverket.se studsar, DECISIONS #294); färdig text given till Bengt 21/9. SMHI:s varningar (valfritt): kundtjanst@smhi.se. **Två beslut:** (1) ~~skicka förfrågan~~ ✅ **skickad av Bengt 21/9 via formuläret — väntar svar, reserv 28/9**; (2) får vintern 2024/25 bara vara riktningsprov, eller också kalibreringsdata (D3) — avgörs före körningen. Bonus: en hel vinter avgör grind A:s oavgjorda A2 och därmed novemberbeslutet | Bengt (förfrågan) · Bengt + Axel (riktningsprov eller kalibrering) | ~~skicka förfrågan nu~~ ✅ gjort 21/9 · beslut (2) kan vänta tills datan finns | #232, #38b |
 | ~~**#45 nederbördstypen — bygga skuggan före vintern?**~~ ✅ **Bengt ja till (1)–(3) 25/9 (DECISIONS #361).** Steg 1 visade att Trafikverket MÄTER typen (`rain`/`sleet`/`snow`), så våtbulben behövs bara där ingen givare ser. Steg 2 `docs/TROSKLAR-NEDERBORDSTYPEN.md`, steg 3 `scripts/grind-nt.ts` — spärrad till 1 mars 2027, allt ur arkivet, inget nytt jobb. ✅ **Axel kontrasignerade 25/9 (DECISIONS #362)** — inget kvar före domen 1 mars 2027 | ~~Axel~~ | — | #45 |
 | ~~**Rimfrosten och förstärkarna — B-grindarna ur arkivet i stället för skuggkolumner?**~~ ✅ **Bengt ja 25/9 (DECISIONS #363).** Läsningen: alla fyra B-grindarna kan spelas upp ur arkivet; W-B5 och roll A genom att rutterna körs med farorna återskapade som i missmätningen (kräver #255). De fyra dokumenten ändrade enligt sin ändringsregel, och låsankaret flyttat från första skuggkörningen till första körning som läser ett B-utfall. Inga trösklar ändrade | Bengt | — | #46, #90, #95, #103 |
-| ~~**Motorregistret — en fullständig kartläggning av motorbygget? (Bengts fråga 3/10: *"vad behöver man lägga till för att få en fullständig kartläggning över motorn och hur långt vi kommit"*).**~~ Kartläggningen finns i dag utspridd: integrationskartan är måttstocken (lager, fogar, sekvensen per länk), §5 här är läget mot den (senast mätt 24/9, rättat 1/10, och §5.3 har bara fyra länkar), systembilden är bilden, mätningarna har grindarna och domkalendern, och tavlan har korten. Ingenstans står alla motordelar med varje steg: tröskeldokument → publicerat → skugga → grind och dom → villkoret i motorn → vektorer i TypeScript, Swift och Kotlin → rösten i appen. ⏳ **Förslag (Claude):** utvidga §5.3 till ett register över alla delar, mätt mot koden och de tretton tröskeldokumenten, och koppla korten dit via kortkartan. Bengts ja eller nej. 🔁 **Vidgat samma dag (Bengt: *"en arkitektkopia på vad som är klart och vad som ska komma till i respektive del och hur de ska länkas in i helheten ... som en karta över hela projektet där det framgår vad som saknas i respektive del, beroenden etc"*):** ⏳ **förslag (Claude): projektkartan** — en enda datafil i repot (`docs/projektkartan.json`: varje del med block, byggsteg, vad som saknas, beroenden och kort) och ett skript som skriver en sida med kartan och delarna, kontrollerad i ci.yml som kortkartan. Inte en ritad duk i Design: den följer inte repot och skulle glida isär med verkligheten. Bengts ja, och om kartan blir ett åttonde stomdokument. 🔁 **Bengt samma dag: ska kartan vara den enda sanningen, med grönt, orange och rött per del, överordnad allt annat och publicerad som artefakt?** ⏳ **Förslag (Claude):** kartan äger LÄGET per del och är vägen in i bygget; den är överordnad stomdokumentens egna läge-rader, som pekar dit i stället för att föra eget läge. Den är UNDERORDNAD beviset: grönt kräver en länk till bevis (commit, grön körning, mätning, beslut), och säger koden eller ett prov något annat är kartan fel. Besluten stannar i DECISIONS, ordningen och kalendern i bedömningen, arbetet på tavlan och reglerna i tröskeldokumenten. Publiceras som artefakt ur repokopian, som de andra. ✅ **Bengts ja 3/10: projektkartan som nav (DECISIONS #446)** — grov version publicerad, https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8, 75 delar i 9 block, alla öppna kort på en del; mätningen mot koden är kort #286. ⏳ **Bengt 3/10: kartbilden är svår att förstå och oöverskådlig.** Alternativ: (1) läget per block som en stapel med antal per färg; (2) flödet från källorna till förarna, med blocken som steg och favoriterna och styrningen vid sidan; (3) vad som står i vägen för målen (App Store, domen i mars, favoriternas första version). Claudes förslag: (2) med staplarna från (1) överst, sedan (3), och rutorna bakom ett klick per block. ✅ **Bengt 3/10: *"kör på ditt förslag"* — kartsidan ombyggd** (version 2): flödet med staplar, målen App Store, Google Play, efterhalkans beta, domarna i mars och favoriternas första version, delarna bakom *Visa delarna*. 🔁 **Bengt samma dag: antalen skrämmer ("det ser ut som om vi inte gjort något"), en procent på totalen saknas, det som låser upp mest ska synas, och målen är otydliga.** ✅ **Version 3:** hela bygget 59 % (skattat), procent per block och per mål, projektets mål ur Skyltfondsansökan överst, fem mål med *klart när* och datum, och *Gör först* i två listor (att bygga nu, beslut och nycklar) efter hur många mål och delar som väntar. Skattningarna är Claudes och mäts i kort #286. |
+| ~~**Motorregistret — en fullständig kartläggning av motorbygget? (Bengts fråga 3/10: *"vad behöver man lägga till för att få en fullständig kartläggning över motorn och hur långt vi kommit"*).**~~ Kartläggningen finns i dag utspridd: integrationskartan är måttstocken (lager, fogar, sekvensen per länk), §5 här är läget mot den (senast mätt 24/9, rättat 1/10, och §5.3 har bara fyra länkar), systembilden är bilden, mätningarna har grindarna och domkalendern, och tavlan har korten. Ingenstans står alla motordelar med varje steg: tröskeldokument → publicerat → skugga → grind och dom → villkoret i motorn → vektorer i TypeScript, Swift och Kotlin → rösten i appen. ⏳ **Förslag (Claude):** utvidga §5.3 till ett register över alla delar, mätt mot koden och de tretton tröskeldokumenten, och koppla korten dit via kortkartan. Bengts ja eller nej. 🔁 **Vidgat samma dag (Bengt: *"en arkitektkopia på vad som är klart och vad som ska komma till i respektive del och hur de ska länkas in i helheten ... som en karta över hela projektet där det framgår vad som saknas i respektive del, beroenden etc"*):** ⏳ **förslag (Claude): projektkartan** — en enda datafil i repot (`docs/projektkartan.json`: varje del med block, byggsteg, vad som saknas, beroenden och kort) och ett skript som skriver en sida med kartan och delarna, kontrollerad i ci.yml som kortkartan. Inte en ritad duk i Design: den följer inte repot och skulle glida isär med verkligheten. Bengts ja, och om kartan blir ett åttonde stomdokument. 🔁 **Bengt samma dag: ska kartan vara den enda sanningen, med grönt, orange och rött per del, överordnad allt annat och publicerad som artefakt?** ⏳ **Förslag (Claude):** kartan äger LÄGET per del och är vägen in i bygget; den är överordnad stomdokumentens egna läge-rader, som pekar dit i stället för att föra eget läge. Den är UNDERORDNAD beviset: grönt kräver en länk till bevis (commit, grön körning, mätning, beslut), och säger koden eller ett prov något annat är kartan fel. Besluten stannar i DECISIONS, ordningen och kalendern i bedömningen, arbetet på tavlan och reglerna i tröskeldokumenten. Publiceras som artefakt ur repokopian, som de andra. ✅ **Bengts ja 3/10: projektkartan som nav (DECISIONS #446)** — grov version publicerad, https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8, 75 delar i 9 block, alla öppna kort på en del; mätningen mot koden är kort #286. ⏳ **Bengt 3/10: kartbilden är svår att förstå och oöverskådlig.** Alternativ: (1) läget per block som en stapel med antal per färg; (2) flödet från källorna till förarna, med blocken som steg och favoriterna och styrningen vid sidan; (3) vad som står i vägen för målen (App Store, domen i mars, favoriternas första version). Claudes förslag: (2) med staplarna från (1) överst, sedan (3), och rutorna bakom ett klick per block. ✅ **Bengt 3/10: *"kör på ditt förslag"* — kartsidan ombyggd** (version 2): flödet med staplar, målen App Store, Google Play, efterhalkans beta, domarna i mars och favoriternas första version, delarna bakom *Visa delarna*. 🔁 **Bengt samma dag: antalen skrämmer ("det ser ut som om vi inte gjort något"), en procent på totalen saknas, det som låser upp mest ska synas, och målen är otydliga.** ✅ **Version 3:** hela bygget 59 % (skattat), procent per block och per mål, projektets mål ur Skyltfondsansökan överst, fem mål med *klart när* och datum, och *Gör först* i två listor (att bygga nu, beslut och nycklar) efter hur många mål och delar som väntar. Skattningarna är Claudes och mäts i kort #286. ✅ **Mätt mot koden 3/10 (kort #286 klart):** alla 75 delar har byggsteg med bevis, mätta av sju agenter och stickprovade; hela bygget 62 %, flikar (Översikt, Målen, Gör först, Alla delar) och blockflikar; stomdokumenten pekar på kartan med avsnittet *Läget i projektkartan*. Högst hävstång: testfall för appernas läsare av lägesfilen (motorn är bara orange av det skälet) och prov på livemotorn. ⏳ **Bengt 3/10: "förs inte lägesrader i de olika delmomenten längre. är det bra?"** Läget i dag: stomdokumentens handskrivna lägesrader (systembildens *Läge i dag*, appens §9, kuvösens §2, bedömningens §5, favoriternas §12) står kvar men uppdateras inte längre, och åldras därför tyst. Förslag (Claude): **lägesraderna stannar i dokumenten men skrivs ur kartan** — varje avsnitt visar sina delars färg, procent och vad som saknas, genererat och vaktat som kortlistorna, och de handskrivna lägesraderna ersätts av dem. Bengts val: (a) genererade lägesrader i dokumenten, (b) bara hänvisningar till kartan, (c) tillbaka till handskrivna lägesrader. ✅ **Bengt 3/10: (a).** Lägesraderna skrivs ur kartan under varje avsnitt i alla sju (44 block), utfällbara till byggstegen; de handskrivna är borta (systembildens *Läge i dag*, appens §9-tabell, kuvösens §2-tabell som först fördes in som kuvösens byggsteg, favoriternas lägesmening, bedömningens §5.1–5.3). |
 ---
 
 ## 5. Integrationsläget — mätt mot kartan (24/9, Bengts fråga *"hur långt i integrationen har vi kommit"*)
 
+<!-- LÄGESRADER §5: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+*Läget i projektkartan:*
+
+- [Arkivexporten och säkerhetskopian](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-i-export): delvis, 90 % · kvar: Återläsningen av exportfilerna till PostGIS för marsdomarna, innan raderingen tar dygn ur databasen
+- [Datavakterna (givarvakten, radvakten, karantänen)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-i-vakterna): delvis, 88 % · kvar: Inget larm när en vakt inte kan läsa sin historik: fail-soft-noterna läses av ingen
+- [Lägesfilens fält för skuggdelarna](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-l-falten): delvis, 57 % · kvar: Motorn läser inte regn, rain_segments, regn_h, lutning, bevis eller smhi (fogarna F2–F4)
+- [L2 tillståndet (skattaren S1–S3)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-tillstand): delvis, 50 % · kvar: S1-grinden på frostnätter (Axel, DECISIONS #196)
+- [Efterhalkan som märkt beta](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-efterhalkan): väntar, 44 % · Första frostnätterna för S1-grinden (Axel, DECISIONS #196) och Axels bygge av S3 i tre portar; sedan betan i november (#186).
+- [L3 trenden](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-trenden): delvis, 44 % · kvar: T-B (B3-paret och tystnadsfelet för trenden) har inget instrument
+- [Rimfrosten](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-rimfrost): väntar, 38 % · Första svenska frosten: R-A inom sju dygn; vakthunden trycker den själv (#338).
+- [Vattenplaningen](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-vattenplaning): väntar, 56 % · V-C:s underlag (≥200 varningar, ≥15 facit) för V-B-domen i nov–dec; sedan Axels beslut om steg D.
+- [L4 räckvidden: segmentprognosen](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-segmentprognos): väntar, 50 % · Domen i mars 2027 (grind B/C) och Bengts öppna val b och d på kort #270.
+- [L5 allvar som försprång](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-forsprang): delvis, 56 % · kvar: FS-A: nivå 2-fall i vinter (kod 3–4, eller yta ≤ 0 °C med väta ≥ 3)
+- [Grindarna och domkalendern](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-grindarna): delvis, 73 % · kvar: S1-grinden, T-A, R-A, K-A och W-A väntar på frost (minst 50 stationer ≤ 0 °C)
+- [Projektkartan](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-g-projektkartan): delvis, 83 % · kvar: Axels titt (kort #287)
+
+<!-- /LÄGESRADER -->
+
 Kartan (`docs/INTEGRATIONSKARTAN.md`, fryst) är måttstocken: fem lager (§2), fem fogar (§5.1), sekvensen per länk (§5.5) och
-minimilistan A–E (§8). Det här är läget mätt mot den, inte mot minnet. Uppdateras när något byggts och mätts.
+minimilistan A–E (§8). Läget per del skrivs sedan 3/10 ur projektkartan, raderna ovan; 5.4 och 5.5 nedan är analys och historik.
 
-### 5.1 Lagren
-
-| Lager | Kartan 14/9 | 24/9 |
-| :-- | :-- | :-- |
-| L1 trovärdighet | i drift | starkare: radvakten, karantänen, långsamma vakten (22/9, DECISIONS #298/#300) |
-| L2 tillstånd | blöt/torr byggt, resten kvar | oförändrat i motorn; skattaren finns, S1 loggar råfälten sedan 16/9 (35 rader), ~~S2 och S3 inte byggda~~ **rättat 1/10 (kort #267): S2 byggd 24/9 (DECISIONS #341, nivå + bevis ur frysklassningens zoner), S3 inte byggd (bakom S1-grinden, Axel)** |
-| L3 utveckling | mätt, ingen regel | oförändrat; trendarkivet (19 469 kandidater), rimfrosten och T-A väntar på frost |
-| L4 räckvidd | ankaret mätt, knappen saknas | grind A KLARAD (#321), vägpunkten svarad (#324), segmentprognosen i skugga sedan 23/9 med holdouts (#325/#326); knappen (molnet) omätt |
-| L5 allvar och röst | formen beslutad, regeln obyggd | ~~oförändrat~~ **rättat 1/10 (kort #267): försprångets regel är byggd och körs i skuggan sedan 25/9 (DECISIONS #359, `puls-skuggmotor-forsprang`, kroken `leadFor`)**; rösten väntar på betan och domen (#153 omformulerat till försprång, #221) |
-
-### 5.2 Minimilistan (§8)
-
-| Krav | Läge 24/9 |
-| :-- | :-- |
-| A allvar som försprång | ✅ byggd som skugga 25/9 (DECISIONS #359); rösten efter domen i mars — rättat 1/10 |
-| B bevisbärare i snapshoten | ✅ byggd 24/9 (`weather[].bevis`, DECISIONS #342); radarn null tills stationen kopplas till radarsegment |
-| C grind för kombinationen | ✅ skriven 17/9 (TROSKLAR-KOMBINATIONEN KB-A–D) |
-| D gemensam kalibrering | ✅ regel D1–D7, 17/9 |
-| E skattaren ger nivå och bevis | ✅ byggd 24/9 (`skattaNiva`, DECISIONS #341) — ingen konsument än; nyckeln till #245 |
-
-### 5.3 Sekvensen per länk (§5.5: publicera · mät i skuggan · ändra villkoret · tre portar)
-
-| Länk | 1 publicera | 2 mät i skuggan | 3 villkoret | 4 portar |
-| :-- | :-- | :-- | :-- | :-- |
-| Efterhalkan — vinterns enda röstlänk (§13.4) | ✅ 15/9 (`regn_h`, `lutning`) | ✅ S1 sedan 16/9 | ⏳ S3, Axel, bakom S1-grinden | ⏳ |
-| Segmentprognosen (#38b) | ingen publicering med flit (§4: karta och förstärkare, aldrig röst ensam) | ✅ `prognos` sedan 23/9 — vägpunktsgrinden föll 28/9 (#399), rå viktning inte godkänd | inte förrän domen i mars | — |
-| Radarn / vattenplaningen (#42, #81) | ✅ `rain_segments` 15/9 | ✅ V-B sedan 15/9 | ⏳ steg D efter V-C, Axel | — |
-| Rimfrosten (#46) | fogen vald (andra gren i `icing_point`) | ⏳ R-A saknar data (Finland 0 episoder 24/9) | — | — |
-
-**Räknat i länkar:** ingen vinterlänk har nått steg tre. Allt som byggts 23–24/9 ligger i steg två, och det är rätt enligt kartan.
+*§5.1–5.3 (lagren, minimilistan och sekvensen per länk) står inte längre här: läget per del skrivs ur projektkartan, raderna ovan (Bengts val (a) 3/10). 5.4 och 5.5 står kvar som analys och historik.*
 
 ### 5.4 De stora stoppen, i ordning
 
@@ -595,6 +599,13 @@ Ambitionen är att stänga systemet när det är fullkomligt. Genomgången i §0
 **tavlan kan inte nå noll som den är byggd.** Nedan fem vägar, i fallande ordning efter hur mycket de faktiskt flyttar.
 
 ### 6.1 Kuvösen är den enda kända vägen runt vintern — och väntar på Trafikverkets beslut
+
+<!-- LÄGESRADER §6.1: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+*Läget i projektkartan:*
+
+- [Kuvösen](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-kuvosen): delvis, 77 % · kvar: Körflödet
+
+<!-- /LÄGESRADER -->
 
 35 öppna kort; **19 av dem står i "Claude — låst (väntar på nyckel)", och nyckeln är nästan alltid första frosten.**
 27/9 har vi 1 kall station av 1 298. Frostvakten larmar vid 50. Vi kan inte påverka det.
@@ -710,7 +721,7 @@ mätningar — R1–R16 nedan är strukna och står kvar bara som historik.**
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
 
-Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 22 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 21 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
 
 **§1 NU — före första frosten**
 
@@ -742,7 +753,6 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 22 kort
 **§5 Integrationsläget — mätt mot kartan (24/9, Bengts fråga "hur långt i integrationen har vi kommit")**
 
 - #287 PROJEKTKARTAN FINNS — TITTA PÅ DEN — Axel
-- #286 PROJEKTKARTAN — MÄT DEL FÖR DEL MOT KODEN — Claude
 
 **§6.1 Kuvösen är den enda kända vägen runt vintern — och väntar på Trafikverkets beslut**
 

@@ -115,7 +115,7 @@
   .panel { border: 1px solid var(--linje); border-top: 3px solid var(--frost); background: var(--frost-yta); padding: 14px 16px 16px;
            display: grid; gap: 10px; }
   .panel[hidden] { display: none; }
-  .panel .rader { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 12px 22px; }
+  .panel .rader { display: grid; grid-template-columns: 1.3fr 1fr; gap: 12px 22px; }
   .panel .rader > div { display: grid; gap: 4px; align-content: start; }
   .panel h4 { color: var(--frost); }
   .panel p, .panel li { font-size: 14.5px; line-height: 1.45; }
@@ -153,6 +153,85 @@
 
   <section style="display:grid;gap:14px">
     <h2 id="avsnitt-1">1. Motorn i dag</h2>
+<!-- LÄGESRADER §1: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+<div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
+  <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gron, #1F7A45); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vader">Trafikverkets väderstationer</a> <span style="color: var(--dampad, #4A5763)">klar</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Hämtning byggd</b> <span style="color: var(--dampad, #4A5763)">klart · supabase/functions/ingest-live/index.ts:124 weather(), WeatherMeasurepoint 2.1 med kursorn 'weather'</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Hämtning i drift</b> <span style="color: var(--dampad, #4A5763)">klart · pg_cron jobid 1 '* * * * *' → ingest-live (docs/RUNBOOK.md:14); weather() inlagd 8/9 (#72)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Lagras i arkivet</b> <span style="color: var(--dampad, #4A5763)">klart · weather_observations sql/001_init.sql:42, weather_latest :86; arkivpolicyn ingest-live/arkivpolicy.ts:15 (#353)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Vakt på källan</b> <span style="color: var(--dampad, #4A5763)">klart · vakthund/index.ts:141 kursorn 60 min, :165-168 nyaste obs 90 min, :879-881 fältgolv; källvakten scripts/trv-bevakning.ts:146</span></li>
+      <li><span aria-hidden="true">✓</span> <b>I lägesfilen</b> <span style="color: var(--dampad, #4A5763)">klart · publish/snapshot-core.ts:254-257 weather med WX_SANE, :314-331 bridges, :143 static.stations</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Används av motorn och appen</b> <span style="color: var(--dampad, #4A5763)">klart · engine/src/snapshot.ts:39-41 icing_point, :54-57 broar; android SnapshotRepo.kt:89-110</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gron, #1F7A45); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vaglag">Trafikverkets väglag (RoadCondition)</a> <span style="color: var(--dampad, #4A5763)">klar</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Hämtning byggd</b> <span style="color: var(--dampad, #4A5763)">klart · ingest-live/index.ts:96 roadconditions(), RoadCondition 1.2; ingest/sources/roadcondition.ts för arkivkursorn</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Hämtning i drift</b> <span style="color: var(--dampad, #4A5763)">klart · pg_cron jobid 1 varje minut (RUNBOOK.md:14); arkivkursorn via puls-ingest '11 * * * *' (scripts/pulsklocka.ts:30)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Lagras i arkivet</b> <span style="color: var(--dampad, #4A5763)">klart · road_conditions sql/001_init.sql:15; road_condition_history :31, skrivs av ingest/db.ts:104</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Vakt på källan</b> <span style="color: var(--dampad, #4A5763)">klart · vakthund/index.ts:141 (15 min), :154-162 kursorn rör sig, :503-504 stilla i kyla, :887-898 arkivvakt</span></li>
+      <li><span aria-hidden="true">✓</span> <b>I lägesfilen</b> <span style="color: var(--dampad, #4A5763)">klart · snapshot-core.ts:154-167 segments med halkfiltret (#156), :369-374 segRow</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Används av motorn och appen</b> <span style="color: var(--dampad, #4A5763)">klart · engine/src/snapshot.ts:36-38 slippery_segment; SnapshotRepo.kt:76-86</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gron, #1F7A45); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-situation">Trafikverkets olyckor, djur och hinder</a> <span style="color: var(--dampad, #4A5763)">klar</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Hämtning byggd</b> <span style="color: var(--dampad, #4A5763)">klart · ingest-live/index.ts:51 situations(), Situation 1.6; KEEP :34 (Accident, AnimalPresenceObstruction), ARCHIVE :37-41</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Hämtning i drift</b> <span style="color: var(--dampad, #4A5763)">klart · pg_cron jobid 1 varje minut med nyckel (RUNBOOK.md:14; DECISIONS-ARKIV #19 tillägg)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Lagras i arkivet</b> <span style="color: var(--dampad, #4A5763)">klart · deviations sql/001_init.sql:58; situation_archive sql/003_situation_archive.sql:18 bär även hinder och kö</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Vakt på källan</b> <span style="color: var(--dampad, #4A5763)">klart · vakthund/index.ts:141 deviations 15 min; :865-869 situation_archive rörd inom 180 min</span></li>
+      <li><span aria-hidden="true">✓</span> <b>I lägesfilen</b> <span style="color: var(--dampad, #4A5763)">klart · snapshot-core.ts:334-341 Accident som deviations, :345-352 djur, :391-407</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Används av motorn och appen</b> <span style="color: var(--dampad, #4A5763)">klart · engine/src/snapshot.ts:42-47 accident, :51-53 djur som wildlife; SnapshotRepo.kt:124-145</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gron, #1F7A45); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-kameror">Trafikverkets kameror</a> <span style="color: var(--dampad, #4A5763)">klar</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Hämtning byggd</b> <span style="color: var(--dampad, #4A5763)">klart · ingest/sources/cameras.ts:15 TrafficSafetyCamera; väglagskameror i map-core.ts:97 och kamerafacit/index.ts:21</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Hämtning i drift</b> <span style="color: var(--dampad, #4A5763)">klart · puls-ingest '11 * * * *' → ingest.yml (pulsklocka.ts:30); halkvakt-kamerafacit '17 * * * *' (sql/039)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Lagras i arkivet</b> <span style="color: var(--dampad, #4A5763)">klart · cameras sql/001_init.sql:4, skrivs av ingest/db.ts:65-77; facitbilderna i hinken facit</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Vakt på källan</b> <span style="color: var(--dampad, #4A5763)">klart · vakthund/index.ts:835-845 kursorn 'cameras' 150 min, :905 golv 2000, :920-927 kameror-vaglag</span></li>
+      <li><span aria-hidden="true">✓</span> <b>I lägesfilen</b> <span style="color: var(--dampad, #4A5763)">klart · snapshot-core.ts:137-149 static.json cameras (id, lon, lat, bearing, road)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Används av motorn och appen</b> <span style="color: var(--dampad, #4A5763)">klart · engine/src/snapshot.ts:33-35 camera; SnapshotRepo.kt:67-73</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-i-livemotorn">Livemotorn (hämtning varje minut)</a> <span style="color: var(--dampad, #4A5763)">delvis, 88 % · kvar: Prov på ingest-live: upserterna och spegeln mot ingest/sources/situations.ts prövas inte i CI</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Byggd</b> <span style="color: var(--dampad, #4A5763)">klart · supabase/functions/ingest-live/index.ts:234-250: situations, roadconditions, weather parallellt, sedan trend och langsam_vakt</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Schemalagd i drift</b> <span style="color: var(--dampad, #4A5763)">klart · pg_cron jobid 1 '* * * * *' med x-halkvakt-key (docs/RUNBOOK.md:14)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Vakt eller larm</b> <span style="color: var(--dampad, #4A5763)">klart · vakthund/index.ts:141-147 kursorer 15/15/60 min, :154-162 kursorn rör sig; ingest/healthcheck.ts</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Prov</b> <span style="color: var(--dampad, #4A5763)">pågår · Bara arkivpolicyn prövas (test/arkivpolicy.test.ts); upserterna och KEEP/ARCHIVE-spegeln saknar prov i CI</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gron, #1F7A45); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-l-publicera">Publiceringen var tionde minut</a> <span style="color: var(--dampad, #4A5763)">klar</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Byggd</b> <span style="color: var(--dampad, #4A5763)">klart · supabase/functions/publicera/main.ts:78-99 med publish/snapshot-core.ts buildSnapshot; index.ts buntas av scripts/bundle-publicera.ts</span></li>
+      <li><span aria-hidden="true">✓</span> <b>I drift</b> <span style="color: var(--dampad, #4A5763)">klart · pg_cron var 10:e min, jobid 19 (#72; RUNBOOK.md:44); vakthund/index.ts:191 larmar över 45 min</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Kontrollsumma i manifestet</b> <span style="color: var(--dampad, #4A5763)">klart · snapshot-core.ts:434-442 manifestFor sha256; vakthunden jämför live.json på CDN mot manifestet</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Läses av apparna</b> <span style="color: var(--dampad, #4A5763)">klart · SnapshotRepo.kt:40-45 och SnapshotRepo.swift:88-96 förkastar en fil vars sha256 inte stämmer</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Prov i CI</b> <span style="color: var(--dampad, #4A5763)">klart · ci.yml: bundle-publicera.ts --check; test/snapshot-core.test.ts (31 fall); test/lasarkontraktet.test.ts</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gron, #1F7A45); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-l-kartan">Kartsajten</a> <span style="color: var(--dampad, #4A5763)">klar</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Byggd</b> <span style="color: var(--dampad, #4A5763)">klart · publish/map-core.ts:18 buildMapData: vaglag, vader, olyckor, kameror, kameror-vaglag och meta.json</span></li>
+      <li><span aria-hidden="true">✓</span> <b>I drift</b> <span style="color: var(--dampad, #4A5763)">klart · publicera/main.ts:88-98 bygger lagren :00/:30 (#77); vakthund/index.ts:910-915 meta.json ≤ 90 min</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Prov i CI</b> <span style="color: var(--dampad, #4A5763)">klart · test/map-core.test.ts; map-core buntas i publicera/index.ts, prövat med bundle-publicera.ts --check</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-motorn">Motorn i tre språk</a> <span style="color: var(--dampad, #4A5763)">delvis, 92 % · kvar: Swifts och Kotlins läsare av lägesfilen (SnapshotRepo.swift, SnapshotRepo.kt) körs inte mot engine/fixtures/lasarprov.json; appmålen saknar testmål</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Motorn i TypeScript</b> <span style="color: var(--dampad, #4A5763)">klart · engine/src/engine.ts (AlertEngine, 292 rader), types.ts, texts.ts, geo.ts; deterministisk utan I/O (engine.ts:1-17)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Swift-port</b> <span style="color: var(--dampad, #4A5763)">klart · ios/HalkvaktEngine/Sources/HalkvaktEngine/Engine.swift (379 rader); appen länkar paketet (ios/HalkvaktApp/project.yml:9-17)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Kotlin-port</b> <span style="color: var(--dampad, #4A5763)">klart · android/engine/src/main/kotlin/se/halkvakt/engine/Engine.kt och Types.kt; android/app/build.gradle.kts:42 project(':engine')</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Testfallen</b> <span style="color: var(--dampad, #4A5763)">klart · 37 vektorer v01–v37 i engine/vectors plus engine/fixtures/skane_vag108.json; engine/gen-vectors.ts vaktas i ci.yml</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Paritet i CI</b> <span style="color: var(--dampad, #4A5763)">klart · ci.yml npm test (test/engine.test.ts:19-20), ios-engine.yml swift test, android.yml :engine:test; step jämförs (#443)</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Lägesfilens läsare i alla tre</b> <span style="color: var(--dampad, #4A5763)">pågår · TS: engine/src/snapshot.ts:31-59 med test/lasarkontraktet.test.ts; Swift och Kotlin läser i SnapshotRepo utan testmål</span></li>
+    </ul>
+  </details>
+</div>
+<!-- /LÄGESRADER -->
     <div class="spalter">
       <div>
         <h3>Vad den lyssnar på</h3>
@@ -225,6 +304,110 @@
 
   <section class="ny-sida" style="display:grid;gap:14px">
     <h2 id="avsnitt-2">2. Skuggmotorn och vad dess delar ger</h2>
+<!-- LÄGESRADER §2: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+<div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
+  <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-i-vakterna">Datavakterna (givarvakten, radvakten, karantänen)</a> <span style="color: var(--dampad, #4A5763)">delvis, 88 % · kvar: Inget larm när en vakt inte kan läsa sin historik: fail-soft-noterna läses av ingen</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Byggd</b> <span style="color: var(--dampad, #4A5763)">klart · publish/snapshot-core.ts:24-76 givarvakten, radvakten, karantänen (WX_SANE); sql/030_langsam_vakt.sql:40</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Schemalagd i drift</b> <span style="color: var(--dampad, #4A5763)">klart · Varje publicering var 10:e min; langsam_vakt varje minut (ingest-live/index.ts:225-244)</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Vakt eller larm</b> <span style="color: var(--dampad, #4A5763)">pågår · Bara noter i publiceras svar (fail-soft); ingen vakthundsrad; vardevakten.yml är en knapp</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Prov</b> <span style="color: var(--dampad, #4A5763)">klart · test/snapshot-core.test.ts, test/integration.test.ts; kontraktsgrinden.ts i ci.yml</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-tillstand">L2 tillståndet (skattaren S1–S3)</a> <span style="color: var(--dampad, #4A5763)">delvis, 50 % · kvar: S1-grinden på frostnätter (Axel, DECISIONS #196)</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Tröskeldokument</b> <span style="color: var(--dampad, #4A5763)">klart · TROSKLAR-OVERGANGAR fastställt 12/9, TROSKLAR-FRYSKLASSNINGEN 12/9 (#135), TROSKLAR-KOMBINATIONEN 16–17/9</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Data i arkivet</b> <span style="color: var(--dampad, #4A5763)">klart · rain_sum_mm (sql/008), radar_precip (sql/009), trend_kandidater (sql/017); räknas om ur arkiven (tillstand.ts:8-12)</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Publicerat i lägesfilen (S2:s bevis)</b> <span style="color: var(--dampad, #4A5763)">pågår · snapshot-core.ts:386-388: regn_h, lutning (#188) och bevis ur skattaNiva (S2, #341, #342); bevis.radar alltid null (:365)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Mätt i skuggan (S1)</b> <span style="color: var(--dampad, #4A5763)">klart · shadow_log.efterhalka (sql/021) från skuggmotor/main.ts:269-281 sedan 16/9 (#198); skattaren mätt med tillstand-steg2.yml (#167)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Dom (S1-grinden)</b> <span style="color: var(--dampad, #4A5763)">saknas · S1-grinden (Axel, #196) väntar på frostnätter (BEDOMNING §5.4 p.1)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Villkoret i motorn (S3)</b> <span style="color: var(--dampad, #4A5763)">saknas · icing_point läser bara yta och fukt (engine.ts:226-232); regn_h och lutning finns inte i adaptern (snapshot.ts:15)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Testfall i tre språk (S3)</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen S3-vektor i engine/vectors; S2 prövas bara i TS (test/tillstand.test.ts:63-111)</span></li>
+      <li><span aria-hidden="true">–</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Skattaren är indata, aldrig röst (publish/tillstand.ts:8-10)</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-efterhalkan">Efterhalkan som märkt beta</a> <span style="color: var(--dampad, #4A5763)">väntar, 44 % · Första frostnätterna för S1-grinden (Axel, DECISIONS #196) och Axels bygge av S3 i tre portar; sedan betan i november (#186).</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Tröskeldokument</b> <span style="color: var(--dampad, #4A5763)">klart · TROSKLAR-KOMBINATIONEN §7 (C, D 17/9; T 16/9); startvärden DECISIONS #222; §5 och §7 med båda signaturerna (#428)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Data i arkivet</b> <span style="color: var(--dampad, #4A5763)">klart · rain_sum_mm (sql/008), lutning i trend_kandidater (sql/017), radar_precip (sql/009); uppspelning_efterhalka i sql/028:63</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Publicerat i lägesfilen</b> <span style="color: var(--dampad, #4A5763)">klart · snapshot-core.ts:386-387: weather[].regn_h och lutning15/30/60 sedan 15/9 (DECISIONS #188)</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Mätt i skuggan (S1)</b> <span style="color: var(--dampad, #4A5763)">pågår · shadow_log.efterhalka sedan 16/9 (#198), 35 rader till 22/9, inga frostnätter; värdeparens jämförelse (kort #278) obyggd</span></li>
+      <li><span aria-hidden="true">○</span> <b>Dom (S1-grinden)</b> <span style="color: var(--dampad, #4A5763)">saknas · S1-grinden på frostdata väntar (DECISIONS #196); KB-B först i januari (TROSKLAR-KOMBINATIONEN §7)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Villkoret i motorn (S3)</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen gren för regn_h och lutning i icing_point (engine.ts:226-232); startvärdena inte i kontraktsgrinden</span></li>
+      <li><span aria-hidden="true">○</span> <b>Testfall i tre språk (S3)</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen S3-vektor bland v01–v37; v11_silent_drive måste fortsatt tiga</span></li>
+      <li><span aria-hidden="true">○</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">saknas · 'Halkvakt tror: frysrisk framöver' finns inte i texts.ts, Engine.swift eller Types.kt; betan inte släppt (mål november, #186)</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-trenden">L3 trenden</a> <span style="color: var(--dampad, #4A5763)">delvis, 44 % · kvar: T-B (B3-paret och tystnadsfelet för trenden) har inget instrument</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Tröskeldokument</b> <span style="color: var(--dampad, #4A5763)">klart · docs/TROSKLAR-TRENDEN.md:3–5 FASTSTÄLLT OCH KONTRASIGNERAT (Bengt 10/9, Axel 11/9; DECISIONS #92, #95)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Data i arkivet</b> <span style="color: var(--dampad, #4A5763)">klart · sql/017_trend_kandidater.sql:22, trend_stigande sql/018_trend_berakna.sql:50 (#368); räknas i ingest-live/index.ts:216 (#170)</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Publicerat i lägesfilen</b> <span style="color: var(--dampad, #4A5763)">pågår · lutning15/30/60 i weather[] (snapshot-core.ts:387, #188); stigande halvan publiceras inte (snapshot-core.ts:301–305)</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Mätt i skuggan</b> <span style="color: var(--dampad, #4A5763)">pågår · T-A: scripts/grind-t-a.ts + grind-t-a.yml, trycks av vakthund/index.ts:73; S1 loggar lutning. Inget T-B-instrument</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">pågår · T-A ingen dom 12/9 (#113) och 24/9 (körning 35949108311, #331); frostlarmet har inte gått</span></li>
+      <li><span aria-hidden="true">○</span> <b>Villkoret i motorn</b> <span style="color: var(--dampad, #4A5763)">saknas · engine.ts:226–232 läser bara surfaceTempC och moisture; LiveDoc.weather saknar lutning (snapshot.ts:15)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Testfall i tre språk</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen vektor bär lutning; varken ios/ eller android/ läser fältet</span></li>
+      <li><span aria-hidden="true">○</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen trendtext i engine/src/texts.ts; röst först efter T-C och Axels ja (TROSKLAR-TRENDEN.md:245)</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-vattenplaning">Vattenplaningen</a> <span style="color: var(--dampad, #4A5763)">väntar, 56 % · V-C:s underlag (≥200 varningar, ≥15 facit) för V-B-domen i nov–dec; sedan Axels beslut om steg D.</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Tröskeldokument</b> <span style="color: var(--dampad, #4A5763)">klart · docs/TROSKLAR-VATTENPLANING.md:3–5 fastställt av Axel 4/9 (#68); utlösaren 2,0 mm/h (#155, #156)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Data i arkivet</b> <span style="color: var(--dampad, #4A5763)">klart · rain_sum_mm (sql/008_rain_sum.sql:7) och radar_precip (sql/009_radar_precip.sql:5)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Publicerat i lägesfilen</b> <span style="color: var(--dampad, #4A5763)">klart · rain_segments och segments[].regn (snapshot-core.ts:373, 380; DECISIONS #187)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Mätt i skuggan</b> <span style="color: var(--dampad, #4A5763)">klart · vbAlerts till shadow_log.vb (sql/019) sedan 15/9 (#191); grind-v-b.ts måndagar (grind-v-b.yml:16)</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">pågår · V-A FALLER (61 % mot 70 %, #69, #104); V-B under V-C:s spärr, 57/200 varningar och 10/15 facit 25/9 (#350)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Villkoret i motorn</b> <span style="color: var(--dampad, #4A5763)">saknas · Inget farslag aquaplaning i types.ts:6–11; steg D efter V-C och Axels beslut</span></li>
+      <li><span aria-hidden="true">○</span> <b>Testfall i tre språk</b> <span style="color: var(--dampad, #4A5763)">saknas · F5 rör alla vektorer; ingen vektor eller port finns</span></li>
+      <li><span aria-hidden="true">○</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen text i texts.ts; Axels utgångspunkt 'Vattenplaning framöver — sakta ner' (#196)</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-segmentprognos">L4 räckvidden: segmentprognosen</a> <span style="color: var(--dampad, #4A5763)">väntar, 50 % · Domen i mars 2027 (grind B/C) och Bengts öppna val b och d på kort #270.</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Tröskeldokument</b> <span style="color: var(--dampad, #4A5763)">klart · docs/TROSKLAR-SKUGGAN.md:3–4 fastställt (Bengt 1/9, Axel 2/9, #61); vägpunkten §3 (#324, #328), §4 rättad (#319)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Data i arkivet</b> <span style="color: var(--dampad, #4A5763)">klart · shadow_log.prognos och vagpunkt_ankare() (sql/032_prognos.sql:7, 15)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Publicerat i lägesfilen</b> <span style="color: var(--dampad, #4A5763)">saknas · Medvetet opublicerad före domen (INTEGRATIONSKARTAN.md:195)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Mätt i skuggan</b> <span style="color: var(--dampad, #4A5763)">klart · segmentPrognos + holdoutRader i skuggmotorn sedan 23/9 (#325, #326); dom-knappen publish/grind-s-b.ts (#327)</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">pågår · Grind A KLARAD 23/9 (#321); vägpunktsgrinden FALLEN 28/9, 6,9 % mot 5 % (#399); grind B/C döms i mars</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Villkoret i motorn</b> <span style="color: var(--dampad, #4A5763)">pågår · engine/src/segment.ts:56–115 körs bara i skuggmotorn; förstärkarvillkoret finns inte i engine.ts</span></li>
+      <li><span aria-hidden="true">○</span> <b>Testfall i tre språk</b> <span style="color: var(--dampad, #4A5763)">saknas · Bara test/segment.test.ts i TypeScript; ingen vektor eller port (segment.ts:7)</span></li>
+      <li><span aria-hidden="true">○</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Aldrig röst ensam (TROSKLAR-SKUGGAN.md:148–151)</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--dampad, #6B7680); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-kallplatser">Kallplatserna</a> <span style="color: var(--dampad, #4A5763)">stängd · Kortet #91 stängt 25/9, öppnas våren 2027 (vårlistan Ä6)</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">○</span> <b>Tröskeldokument</b> <span style="color: var(--dampad, #4A5763)">saknas · Inget TROSKLAR-dokument; kortets 'fyndet ska in i TROSKLAR-SKUGGAN' ej gjort (KORTAVSTAMNING-2026-09-22.md:130)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Data i arkivet</b> <span style="color: var(--dampad, #4A5763)">saknas · Inget kallplatsindex lagrat; 'Höjd lagras inte i databasen' (TAVLA.md:1384)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Publicerat i lägesfilen</b> <span style="color: var(--dampad, #4A5763)">saknas · F1 på weather[] (INTEGRATIONSKARTAN.md:199) finns inte i publish/snapshot-core.ts</span></li>
+      <li><span aria-hidden="true">○</span> <b>Mätt i skuggan</b> <span style="color: var(--dampad, #4A5763)">saknas · Bara höjdkorrektionen mätt, återvann noll: 1,65→1,65 °C (DECISIONS #119)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">saknas · Kortets Verify inte körd, flyttad till våren 2027 (DECISIONS #355)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Villkoret i motorn</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
+      <li><span aria-hidden="true">○</span> <b>Testfall i tre språk</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
+      <li><span aria-hidden="true">○</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-forsprang">L5 allvar som försprång</a> <span style="color: var(--dampad, #4A5763)">delvis, 56 % · kvar: FS-A: nivå 2-fall i vinter (kod 3–4, eller yta ≤ 0 °C med väta ≥ 3)</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Tröskeldokument</b> <span style="color: var(--dampad, #4A5763)">klart · docs/TROSKLAR-FORSPRANG.md:3 fastställt 25/9 av Bengt, kontrasignerat av Axel (DECISIONS #359)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Data i arkivet</b> <span style="color: var(--dampad, #4A5763)">klart · road_condition_history (sql/001_init.sql:31, ingest/db.ts:105); yta och regn i weather_observations (ingest-live/index.ts:169)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Publicerat i lägesfilen</b> <span style="color: var(--dampad, #4A5763)">klart · segments[].code (snapshot-core.ts:371) och weather[].bevis.vata (snapshot-core.ts:388, DECISIONS #342)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Mätt i skuggan</b> <span style="color: var(--dampad, #4A5763)">klart · skuggmotor?lage=forsprang :12/:42 (sql/037_forsprang.sql:43–44, skuggmotor/main.ts:302), forsprang_log; ännu 0 rader</span></li>
+      <li><span aria-hidden="true">○</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">saknas · FS-A väntar på kod 3–4; ingen domknapp för FS-A–C; domen i mars 2027 (TAVLA.md:1575)</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Villkoret i motorn</b> <span style="color: var(--dampad, #4A5763)">pågår · Kroken leadFor i engine/src/engine.ts:68, 117–119; nivåerna i engine/src/forsprang.ts; bara skuggan sätter kroken</span></li>
+      <li><span aria-hidden="true">○</span> <b>Testfall i tre språk</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen vektor i engine/vectors, ingen leadFor i Kotlin eller Swift; bara test/forsprang.test.ts</span></li>
+      <li><span aria-hidden="true">○</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">saknas · 'Försprånget finns inte i appen före steg 7' (DECISIONS #419)</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gron, #1F7A45); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-skuggmotorn">Skuggmotorn</a> <span style="color: var(--dampad, #4A5763)">klar</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Byggd</b> <span style="color: var(--dampad, #4A5763)">klart · supabase/functions/skuggmotor/main.ts; index.ts buntad av scripts/bundle-skuggmotor.ts, --check i ci.yml</span></li>
+      <li><span aria-hidden="true">✓</span> <b>I drift</b> <span style="color: var(--dampad, #4A5763)">klart · pg_cron halkvakt-skuggmotor :02/:32 (sql/036, #344) och -forsprang :12/:42 (sql/037, #359); senaste deploy 1/10 36877830446</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Data finns</b> <span style="color: var(--dampad, #4A5763)">klart · 9 896 rader i shadow_log 24/9; 144 av 144 varv 25–28/9 skrev rader (MATNINGAR.html, #389)</span></li>
+    </ul>
+  </details>
+</div>
+<!-- /LÄGESRADER -->
     <p>Skuggmotorn kör samma motor mot riktiga data på tjugo referensrutter per land — 80 rutter och knappt 13 000 km i Sverige,
       Finland, Norge och Danmark. Varje halvtimme körs två eller tre rutter per land, så varje rutt körs var tredje och en halv timme,
       och motorn loggar vad rösten <em>skulle</em> ha sagt. Ingen förare hör något. Varje del döms mot trösklar som skrevs innan någon mätning fanns, och bara det som
@@ -257,6 +440,42 @@
 
   <section style="display:grid;gap:14px">
     <h2 id="avsnitt-3">3. Det färdiga systemet</h2>
+<!-- LÄGESRADER §3: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+<div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
+  <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-smhi-forstarkare">SMHI som förstärkare och reserv</a> <span style="color: var(--dampad, #4A5763)">väntar, 38 % · De första vintervarningarna (SNOW_ICE/ICING) för F-A, därefter en vintermånad för F-B.</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Tröskeldokument</b> <span style="color: var(--dampad, #4A5763)">klart · TROSKLAR-SMHI-FORSTARKAREN.md:4 FASTSTÄLLT 12/9 (DECISIONS #135); smala varianten vald (#123)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Data i arkivet</b> <span style="color: var(--dampad, #4A5763)">klart · smhi_warnings_history med approx_start/approx_end (sql/015_smhi_giltighet.sql:24–25), skrivs av ingest/db.ts:268</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Publicerat i lägesfilen</b> <span style="color: var(--dampad, #4A5763)">pågår · smhi[] publiceras (snapshot-core.ts:353–356, 400) utan giltighetsfönster; motorn läser det inte (engine/src/snapshot.ts:23)</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Mätt i skuggan</b> <span style="color: var(--dampad, #4A5763)">pågår · F-A byggd: scripts/smhi-forstarkaren-steg0.ts + smhi-forstarkaren-steg0.yml; F-B-uppspelningen obyggd (DECISIONS #363)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">saknas · F-A OAVGJORT 12/9: 3 stationstimmar, 0 förstärkta (DECISIONS #122); F-B och Verify 2 odömda</span></li>
+      <li><span aria-hidden="true">○</span> <b>Villkoret i motorn</b> <span style="color: var(--dampad, #4A5763)">saknas · 'Ingen kod i motorn, ingen röst' (TROSKLAR-SMHI-FORSTARKAREN.md:6)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Testfall i tre språk</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
+      <li><span aria-hidden="true">○</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">saknas · SMHI når appen men inte motorn (INTEGRATIONSKARTAN.md:159)</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-prognoslagret">Prognoslagret</a> <span style="color: var(--dampad, #4A5763)">väntar, 44 % · Bengts öppna val b, c, d, e och h; läsningen tisdag 24/11 (DECISIONS #435); (g) väntar på kuvösen (#437).</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Tröskeldokument</b> <span style="color: var(--dampad, #4A5763)">klart · TROSKLAR-SKUGGAN.md:3 fastställt 1–2/9; vägpunkten rad 109–122 (DECISIONS #324, #328)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Data i arkivet</b> <span style="color: var(--dampad, #4A5763)">klart · shadow_log.prognos (sql/032_prognos.sql:7), ankare via vagpunkt_ankare()</span></li>
+      <li><span aria-hidden="true">○</span> <b>Publicerat i lägesfilen</b> <span style="color: var(--dampad, #4A5763)">saknas · Medvetet opublicerad fram till domen (BEDOMNING-2026-09-15.md:568)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Mätt i skuggan</b> <span style="color: var(--dampad, #4A5763)">klart · Prognosen loggas sedan 23/9; premissmätningen varje måndag i hojd-prov.yml:33–43, driftprov 36968196427 (DECISIONS #435)</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">pågår · Vägpunktsgrinden föll 28/9, 6,9 % mot 5 % (#399), bekräftat 30/9 (#405–#408); 24/11 och mars återstår</span></li>
+      <li><span aria-hidden="true">○</span> <b>Villkoret i motorn</b> <span style="color: var(--dampad, #4A5763)">saknas · engine/src/segment.ts räknar prognosen men telefonen kör den inte; ingen F4-koppling</span></li>
+      <li><span aria-hidden="true">○</span> <b>Testfall i tre språk</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
+      <li><span aria-hidden="true">○</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">saknas · 'Ingenting av detta når föraren' (MATNINGAR 5.1)</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-termisk">Termisk kartering</a> <span style="color: var(--dampad, #4A5763)">väntar, 0 % · Bengts och Axels ja, utrustningen (Axel prissätter) och pengarna: projektets egna, eller Skyltfondens AP2 (#409).</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">○</span> <b>Regel skriven</b> <span style="color: var(--dampad, #4A5763)">saknas · Bara kort #271 och PROGNOSLAGRET §4; ingen DECISIONS-post registrerar facitkällan</span></li>
+      <li><span aria-hidden="true">○</span> <b>Byggd</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen kod och ingen utrustning</span></li>
+      <li><span aria-hidden="true">○</span> <b>Data finns</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen karteringsnatt loggad</span></li>
+    </ul>
+  </details>
+</div>
+<!-- /LÄGESRADER -->
     <p>När delarna är på plats svarar varje lager på en egen fråga om vägen, och lagren följer på varandra från mätningen till rösten.
       Mätningar och minne av mätningar får utlösa en varning; prognoser och modeller får bara stärka, försvaga eller förlänga den.
       Klicka på ett lager för delarna och läget i dag.</p>
@@ -278,7 +497,6 @@
               <li>Radvakten stoppar en enskild felaktig rad, och karantänen tystar en station som nyligen visat grova fel.</li>
               <li>Värdevakten ger varje fält ett tillåtet spann innan det får bära en tröskel.</li>
             </ul></div>
-            <div><h4>Läge i dag</h4><p>I drift. Lägesbilden till apparna och varje grind läser mätningarna genom vakterna.</p></div>
             <div><h4>Vad det ger</h4><p>Det som sorteras bort når varken rösten eller en dom. Alla andra lager står på det här.</p></div>
           </div>
         </div>
@@ -296,8 +514,6 @@
               <li>Vattenfilmen: regnet som ger vattenplaning <span class="mono">#42</span>.</li>
               <li>Olja på vägen: Trafikverkets rapporter om utsläpp med risk för halka, i skuggan sedan 1/10 <span class="mono">#276</span>.</li>
             </ul></div>
-            <div><h4>Läge i dag</h4><p>Blöt eller torr är byggt och körs i skuggan. Vattenplaningen mäts i skuggan, och bara antal visas fram till domen.
-              Trafikverkets stationer mäter redan nederbördstypen; våtbulbens trösklar och dom finns sedan 25/9, med dom i mars 2027.</p></div>
             <div><h4>Vad det ger</h4><p>Rätt fara i rätt väder: halka i snöfall och slask, vattenplaning i skyfall.</p></div>
           </div>
         </div>
@@ -310,8 +526,6 @@
               <li>Rimfrosten: ytan under daggpunkten en klar natt <span class="mono">#46</span>.</li>
               <li>SMHI:s varningar, som förstärkare.</li>
             </ul></div>
-            <div><h4>Läge i dag</h4><p>Mätt, men ingen regel ännu. Trendarkivet sparar fallen sedan 13/9 och stigningarna sedan 25/9, efterhalkan loggas i skuggan och rimfrostens
-              första grind väntar på frosten. Domarna kräver vinterns data.</p></div>
             <div><h4>Vad det ger</h4><p>Varningen kommer medan det fryser, inte när det redan har frusit.</p></div>
           </div>
         </div>
@@ -324,7 +538,6 @@
               <li>SMHI:s molnmängd, och SMHI som reserv om Trafikverket tystnar <span class="mono">#95</span>.</li>
               <li>Kallplatserna: broar och andra platser som är kallare än stationen visar <span class="mono">#91</span>.</li>
             </ul></div>
-            <div><h4>Läge i dag</h4><p>Grind A klarades 23/9 och håller med varma grannrader 28/9. Vägpunktsgrinden, samma mått utan stationens egen historik, föll 28/9 (6,9 % grova fel mot kravet 5 %), och de förregistrerade premissmätningarna 30/9 räddade ingen vägpunktskandidat; bandet inom 7 km från en station håller. Segmentprognosen körs vidare i skuggan som mätning, utan byggtid i höst. Premissmätningen går varje måndag och läses 24/11, och frysflaggans marginal mäts i kuvösen (#435, #437). Höjden läses 23/10, kallplatserna våren 2027.</p></div>
             <div><h4>Vad det ger</h4><p>Vägen mellan stationerna syns. En varning som vilar på en mätning kan förlängas dit mätningen bär, men prognosen
               talar aldrig ensam.</p></div>
           </div>
@@ -341,8 +554,6 @@
               <li>Spärren: inom <span class="mono">10 s</span> efter ett rop får bara en viktigare fara tala.</li>
               <li>Vind och sikt förlänger försprånget men höjer aldrig prioriteten <span class="mono">#90</span>.</li>
             </ul></div>
-            <div><h4>Läge i dag</h4><p>Spärren är i drift. Försprångets trösklar fastställdes och skuggan startade 25/9, och domen faller i mars 2027.
-              Undantaget för en modellerad temperatur mellan två eniga stationer väntar till våren 2027.</p></div>
             <div><h4>Vad det ger</h4><p>Allvar blir tid: samma ord, tidigare. Aldrig fler ord och aldrig högre prioritet.</p></div>
           </div>
         </div>
