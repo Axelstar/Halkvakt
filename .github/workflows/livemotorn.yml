@@ -1,0 +1,36 @@
+name: livemotorn
+# LIVEMOTORNS PROV (kort #290, DECISIONS #449). Livemotorn (supabase/functions/ingest-live) kör varje minut och hämtar olyckor,
+# väglag och väder, men inget prov i ci.yml rörde den: dess skrivningar prövades bara i den gamla Node-ingesten. Här körs
+# skriv_test.ts med Deno mot samma slags slit-och-släng-PostGIS som ci.yml, med SAMMA SQL som driften kör mot Supabase.
+# Bara när livemotorn, dess tabeller eller situationspolicyn ändras — cirka en Actions-minut per sådan ändring.
+# Deno är låst till en version: setup-deno slår annars upp den senaste med ett oautentiserat anrop (läxan i deploy-supabase.yml).
+on:
+  push:
+    branches: [main]
+    paths: ["supabase/functions/ingest-live/**", "sql/001_init.sql", "sql/003_situation_archive.sql", "sql/008_rain_sum.sql",
+            "sql/011_vind_sikt.sql", "ingest/sources/situations.ts", ".github/workflows/livemotorn.yml"]
+  pull_request:
+    paths: ["supabase/functions/ingest-live/**", "sql/001_init.sql", "sql/003_situation_archive.sql", "sql/008_rain_sum.sql",
+            "sql/011_vind_sikt.sql", "ingest/sources/situations.ts", ".github/workflows/livemotorn.yml"]
+  workflow_dispatch: {}
+jobs:
+  prov:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    services:
+      postgis:
+        image: postgis/postgis:16-3.4
+        env: { POSTGRES_PASSWORD: postgres }
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: denoland/setup-deno@v2
+        with: { deno-version: "2.2.0" }
+      - name: Livemotorns skrivningar mot PostGIS (skriv_test.ts)
+        env:
+          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+        run: deno test --allow-env --allow-net --allow-read supabase/functions/ingest-live/
