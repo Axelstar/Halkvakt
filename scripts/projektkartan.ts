@@ -35,6 +35,8 @@ const STEG: Record<Steg["status"], string> = { klar: "klart", pagar: "pågår", 
 /** Fel i datafilen. Tomt = filen håller. */
 export function granska(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>, sidtext: (fil: string) => string): string[] {
   const fel: string[] = [];
+  // Utan adress pekar stomdokumentens lägesrader på "undefined" (hände 3/10 när datafilen skrevs om utan fältet).
+  if (!/^https:\/\//u.test(k.url ?? "")) fel.push("kartans url saknas i datafilen");
   const block = new Set(k.block.map((b) => b.id));
   for (const b of k.block) {
     const under = b.plats.startsWith("under:") ? b.plats.slice(6) : null;
@@ -555,44 +557,67 @@ export function sida(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>, s
   return ut.join("\n");
 }
 
-// Stomdokumenten pekar på kartan (Bengt 3/10, steg 3): varje stomdokument får ett avsnitt som för vart och ett av dess
-// avsnitt räknar upp de delar kartan säger att det beskriver, med länk till delen i kartan. Inga färger och ingen procent,
-// så att läget bara finns på ett ställe och avsnittet ändras först när kopplingen ändras.
+// Stomdokumentens lägesrader (Bengts val (a) 3/10): under varje avsnitts rubrik står de delar kartan säger att avsnittet
+// beskriver, med färg, procent och vad som återstår, skrivna ur kartan. Handskrivna lägesrader förs inte; läget har en enda
+// källa, docs/projektkartan.json. I html kan varje rad fällas ut och visar då delens byggsteg med bevis.
 const LSTART = "<!-- LÄGET: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->";
 const LSLUT = "<!-- /LÄGET -->";
-const KSTART = "<!-- ÖPPNA KORT:";
+const RSLUT = "<!-- /LÄGESRADER -->";
+const rstart = (nr: string) => `<!-- LÄGESRADER §${nr}: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->`;
+// Dokumentens egna färger där de finns, annars samma som kartans.
+const FARG: Record<Lage, string> = { gron: "var(--gron, #1F7A45)", orange: "var(--gul, #B35C00)", rod: "var(--rod, #A63A2A)", bla: "#3D7CC9", gra: "var(--dampad, #6B7680)" };
+const IKON: Record<Steg["status"], string> = { klar: "✓", pagar: "◐", saknas: "○", ej: "–" };
 
-export function lagesblock(kod: string, sidtext: string, html: boolean, k: Karta, url: string): string {
-  const per = new Map<string, Del[]>();
-  for (const d of k.delar) for (const r of d.beskrivs) {
-    const [s, nr] = r.split(" ");
-    if (s !== kod) continue;
-    per.set(nr, [...(per.get(nr) ?? []), d]);
+/** Det som står efter delens namn: läget, procenten och det första som återstår eller nyckeln. */
+export function lagesrad(d: Del): string {
+  if (d.lage === "gron") return "klar";
+  if (d.lage === "bla") return `väntar, ${andel(d)} % · ${d.nyckel ?? ""}`;
+  if (d.lage === "gra") return `stängd${d.saknas?.[0] ? ` · ${d.saknas[0]}` : ""}`;
+  return `${LAGEN[d.lage].namn.toLowerCase()}, ${andel(d)} %${d.saknas?.[0] ? ` · kvar: ${d.saknas[0]}` : ""}`;
+}
+
+function radblock(nr: string, ds: Del[], html: boolean, url: string): string {
+  if (!html) return [rstart(nr), "*Läget i projektkartan:*", "",
+    ...ds.map((d) => `- [${d.namn}](${url}#del-${d.id}): ${lagesrad(d)}`), "", RSLUT].join("\n");
+  const ut = [rstart(nr),
+    `<div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">`,
+    `  <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="${url}">projektkartan</a></div>`];
+  for (const d of ds) {
+    const prick = `<span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: ${FARG[d.lage]}; margin-right: 6px"></span>`;
+    const rad = `${prick}<a href="${url}#del-${d.id}">${esc(d.namn)}</a> <span style="color: var(--dampad, #4A5763)">${esc(lagesrad(d))}</span>`;
+    if (!d.steg?.length) { ut.push(`  <div>${rad}</div>`); continue; }
+    ut.push(`  <details><summary style="cursor: pointer">${rad}</summary>`,
+      `    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">`,
+      ...d.steg.map((s) => `      <li><span aria-hidden="true">${IKON[s.status]}</span> <b>${esc(s.namn)}</b> <span style="color: var(--dampad, #4A5763)">${STEG[s.status]}${s.bevis ? ` · ${esc(s.bevis)}` : ""}</span></li>`),
+      "    </ul>", "  </details>");
   }
-  const nummer = [...per.keys()].sort((a, b) => a.localeCompare(b, "sv", { numeric: true }));
-  const lankar = (ds: Del[]) => ds.map((d) => html ? `<a href="${url}#del-${d.id}">${esc(d.namn)}</a>` : `[${d.namn}](${url}#del-${d.id})`).join(", ");
-  if (html) {
-    const ut = [LSTART, `  <h2 id="laget">Läget i projektkartan</h2>`,
-      `  <p class="litet">Läget per del, med färg, procent, byggsteg och bevis, står bara i <a href="${url}">projektkartan</a> (DECISIONS #446). Den här sidan beskriver delarna; avsnitten nedan säger vilka.</p>`];
-    for (const nr of nummer) ut.push(`  <p><b>§${nr} ${esc(avsnitt(sidtext, true, nr) ?? "")}:</b> ${lankar(per.get(nr)!)}</p>`);
-    ut.push(LSLUT);
-    return ut.join("\n");
-  }
-  const ut = [LSTART, "## Läget i projektkartan", "",
-    `Läget per del, med färg, procent, byggsteg och bevis, står bara i [projektkartan](${url}) (DECISIONS #446). Den här sidan beskriver delarna; avsnitten nedan säger vilka.`, ""];
-  for (const nr of nummer) ut.push(`- **§${nr} ${avsnitt(sidtext, false, nr) ?? ""}:** ${lankar(per.get(nr)!)}`);
-  ut.push("", LSLUT);
+  ut.push("</div>", RSLUT);
   return ut.join("\n");
 }
 
-/** Sidan med läget på plats: ersätter ett befintligt block, annars före kortlistan, annars före </main> eller sist. */
-export function medLagesblock(sidtext: string, html: boolean, b: string): string {
-  const i = sidtext.indexOf(LSTART), j = sidtext.indexOf(LSLUT);
-  if (i >= 0 && j > i) return sidtext.slice(0, i) + b + sidtext.slice(j + LSLUT.length);
-  const kp = sidtext.indexOf(KSTART);
-  if (kp >= 0) return sidtext.slice(0, kp) + b + "\n" + sidtext.slice(kp);
-  if (html) { const m = sidtext.lastIndexOf("</main>"); return sidtext.slice(0, m) + b + "\n" + sidtext.slice(m); }
-  return sidtext.replace(/\n*$/u, "\n\n") + b + "\n";
+/** Sidan med lägesraderna på plats under varje avsnitt som beskriver delar. Tar först bort gamla rader och det gamla
+ *  avsnittet sist i sidan, så att en andra skrivning ger samma text. */
+export function medLagesrader(sidtext: string, html: boolean, k: Karta, kod: string, url: string): string {
+  let t = sidtext;
+  const i = t.indexOf(LSTART), j = t.indexOf(LSLUT);
+  if (i >= 0 && j > i) t = t.slice(0, i) + t.slice(j + LSLUT.length).replace(/^\n/u, "");
+  const bort = html ? /<!-- LÄGESRADER §[^>]*-->[\s\S]*?<!-- \/LÄGESRADER -->\n/gu : /\n<!-- LÄGESRADER §[^>]*-->[\s\S]*?<!-- \/LÄGESRADER -->\n/gu;
+  t = t.replace(bort, "");
+  const per = new Map<string, Del[]>();
+  for (const d of k.delar) for (const r of d.beskrivs) {
+    const [s, nr] = r.split(" ");
+    if (s === kod) per.set(nr, [...(per.get(nr) ?? []), d]);
+  }
+  for (const [nr, ds] of per) {
+    const e = nr.replace(".", "\\.");
+    const rubrik = html ? new RegExp(`<h2[^>]*>${e}\\. [^<]*</h2>\\n`, "u") : new RegExp(`^#{2,3} ${e}\\.? .*\\n`, "mu");
+    const m = rubrik.exec(t);
+    if (!m) continue;   // granska() har redan fällt ett okänt avsnitt
+    const slut = m.index + m[0].length;
+    const block = radblock(nr, ds, html, url);
+    t = t.slice(0, slut) + (html ? block + "\n" : "\n" + block + "\n") + t.slice(slut);
+  }
+  return t;
 }
 
 const direkt = (process.argv[1] ?? "").replace(/\\/g, "/").endsWith("scripts/projektkartan.ts");
@@ -616,7 +641,8 @@ if (direkt && process.argv[2] === "--sjalvtest") {
   const vant = ["y: grön utan bevis", "y: grön bär en skattning; grönt är 100 %", "y: beror på sig själv", "y: kortet #9 är inte öppet på tavlan",
     "y: avsnittet S 7 finns inte", "z: okänt block \"b\"", "z: delvis utan lista över vad som saknas",
     "z: delvis utan skattad andel klar (0–99 %)", "w: ej påbörjad med skattningen 40 % (högst 20)", "öppet kort utan del: #2 TVÅ",
-    "målet m: okänd del \"q\"", "målet m: saknar \"klart när\"", "block d: ligger under \"c\", som inte är ett steg i flödet"];
+    "målet m: okänd del \"q\"", "målet m: saknar \"klart när\"", "block d: ligger under \"c\", som inte är ett steg i flödet",
+    "kartans url saknas i datafilen"];
   const ok = vant.every((v) => fel.includes(v)) && fel.length === vant.length;
   if (!ok) { console.error("✗ självtest: granskningen", fel); process.exit(1); }
   const del = new Map<string, Del>([
@@ -645,12 +671,16 @@ if (direkt && process.argv[2] === "--sjalvtest") {
   const vant2 = ["s: grön men steg kvar", "u: ej påbörjad men steg påbörjade", "u: steget \"a\" är klart utan bevis",
     "v: vikten 5 är inte 1, 2 eller 3", "v: både byggsteg och skattning; procenten ska komma ur stegen"];
   if (!vant2.every((v) => fel2.includes(v))) { console.error("✗ självtest: stegens granskning", fel2); process.exit(1); }
-  // Stomdokumentens läge-avsnitt: före kortlistan, länkar till delen i kartan, och en andra skrivning ändrar inget.
-  const sidtext = "<main>\n<h2>2. Två</h2>\n<!-- ÖPPNA KORT: x -->\nlista\n<!-- /ÖPPNA KORT -->\n</main>";
-  const lb = lagesblock("S", sidtext, true, { url: "u", projektmal: pm, block: [], mal: [], delar: [k.delar[0]] }, "U");
-  const med = medLagesblock(sidtext, true, lb);
-  if (!med.includes('href="U#del-x"') || med.indexOf("Läget i projektkartan") > med.indexOf("<!-- ÖPPNA KORT:") || medLagesblock(med, true, lb) !== med) {
-    console.error("✗ självtest: läget i stomdokumenten", med); process.exit(1);
+  // Stomdokumentens lägesrader: under rubriken, med länk, steg och läge; en andra skrivning ändrar inget; markdown likaså.
+  const sidtext = "<main>\n<h2 id=\"avsnitt-2\">2. Två</h2>\n<p>text</p>\n</main>";
+  const km: Karta = { url: "u", projektmal: pm, block: [], mal: [], delar: [{ ...s1, beskrivs: ["S 2"] }] };
+  const med = medLagesrader(sidtext, true, km, "S", "U");
+  const ok3 = med.includes('href="U#del-s"') && med.indexOf("LÄGESRADER §2") > med.indexOf("2. Två") && med.indexOf("LÄGESRADER §2") < med.indexOf("<p>text")
+    && med.includes("delvis, 50 %") && med.includes("✓</span> <b>a</b>") && medLagesrader(med, true, km, "S", "U") === med;
+  const md = "# T\n\n## 2. Två\n\ntext\n";
+  const medmd = medLagesrader(md, false, km, "S", "U");
+  if (!ok3 || !medmd.includes("- [S](U#del-s): delvis, 50 %") || medLagesrader(medmd, false, km, "S", "U") !== medmd) {
+    console.error("✗ självtest: lägesraderna", med, medmd); process.exit(1);
   }
   const html = sida({ url: "u", projektmal: pm, block: [k.block[0]], mal: [], delar: [k.delar[0]] }, [oppna[0]], sidor, () => "<h2>2. Två</h2>");
   if (!html.includes('href="#del-x"') || !html.includes("körning 1") || !html.includes("Sidan §2 Två") || !html.includes("100 %")) { console.error("✗ självtest: sidan"); process.exit(1); }
@@ -672,7 +702,7 @@ if (direkt) {
   for (const [kod, s] of Object.entries(sidor)) {
     const html = s.fil.endsWith(".html");
     const text = las(s.fil);
-    filer.set(s.fil, medLagesblock(text, html, lagesblock(kod, text, html, karta, karta.url)));
+    filer.set(s.fil, medLagesrader(text, html, karta, kod, karta.url));
   }
   const andrade = [...filer].filter(([fil, ny]) => { try { return las(fil) !== ny; } catch { return true; } }).map(([fil]) => fil);
   if (process.argv[2] === "--check") {

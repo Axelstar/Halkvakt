@@ -76,6 +76,22 @@ L2 + L3 stänger det hålet. Det är den enskilt största vinsten som finns att 
 
 ## 4. Motorn som den faktiskt ser ut i dag
 
+<!-- LÄGESRADER §4: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+*Läget i projektkartan:*
+
+- [Trafikverkets väderstationer](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vader): klar
+- [Trafikverkets väglag (RoadCondition)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vaglag): klar
+- [Trafikverkets olyckor, djur och hinder](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-situation): klar
+- [Publiceringen var tionde minut](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-l-publicera): klar
+- [Motorn i tre språk](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-motorn): delvis, 92 % · kvar: Swifts och Kotlins läsare av lägesfilen (SnapshotRepo.swift, SnapshotRepo.kt) körs inte mot engine/fixtures/lasarprov.json; appmålen saknar testmål
+- [Olyckor (A3), med olycksläget](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-olyckor): delvis, 92 % · kvar: Olycksläget på varningskortet ute hos testarna: iOS 0.3.10 (22) bara provat i simulatorn, inte uppladdat
+- [Rapporterad halka (A1)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-halka): klar
+- [Frysrisk vid stationer och broar (A2)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-frysrisk): klar
+- [Djur på vägen (A4)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-vilt): klar
+- [Fartkameror (A5)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-kameror): klar
+
+<!-- /LÄGESRADER -->
+
 Kartan ovan är skriven från skuggans sida. Det här är den andra sidan — inte som minne, utan läst ur
 koden: `engine/src/{types,engine,snapshot,texts}.ts`, 588 rader, och den publicerade `live.json`.
 
@@ -126,6 +142,19 @@ kamerorna att arbeta med just nu.
 ---
 
 ## 5. Fogarna — var en skuggdel kan greppa, och vad den kostar
+
+<!-- LÄGESRADER §5: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+*Läget i projektkartan:*
+
+- [SMHI:s varningar](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-smhi-varningar): delvis, 75 % · kvar: Ingen läsare i motorn eller apparna
+- [SMHI:s nederbördsradar](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-radar): delvis, 83 % · kvar: Motorn och apparna läser inte regn eller rain_segments
+- [Lägesfilens fält för skuggdelarna](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-l-falten): delvis, 57 % · kvar: Motorn läser inte regn, rain_segments, regn_h, lutning, bevis eller smhi (fogarna F2–F4)
+- [L3 trenden](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-trenden): delvis, 44 % · kvar: T-B (B3-paret och tystnadsfelet för trenden) har inget instrument
+- [Rimfrosten](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-rimfrost): väntar, 38 % · Första svenska frosten: R-A inom sju dygn; vakthunden trycker den själv (#338).
+- [Nederbördstypen (snö, slask)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-nederbord): väntar, 44 % · Domen tidigast 1/3 2027 när vintern gett ≥100 snö- och ≥40 slaskepisoder (NT-D).
+- [Kallplatserna](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-kallplatser): stängd · Kortet #91 stängt 25/9, öppnas våren 2027 (vårlistan Ä6)
+
+<!-- /LÄGESRADER -->
 
 Frågan *"hur ska det som ligger i skuggan sömlöst kunna länkas ihop med det som kör?"* har ett exakt
 svar: motorn har **fem** ställen där något nytt kan fästa, och de kostar dramatiskt olika mycket.
@@ -261,6 +290,16 @@ byråkrati: den är stället där "sex vektorer" blir ett verkligt tal i ställe
 
 ---
 ## 6. Var lagren står, mätt
+
+<!-- LÄGESRADER §6: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+*Läget i projektkartan:*
+
+- [L2 tillståndet (skattaren S1–S3)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-tillstand): delvis, 50 % · kvar: S1-grinden på frostnätter (Axel, DECISIONS #196)
+- [L4 räckvidden: segmentprognosen](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-segmentprognos): väntar, 50 % · Domen i mars 2027 (grind B/C) och Bengts öppna val b och d på kort #270.
+- [L5 allvar som försprång](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-forsprang): delvis, 56 % · kvar: FS-A: nivå 2-fall i vinter (kod 3–4, eller yta ≤ 0 °C med väta ≥ 3)
+- [Prognoslagret](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-prognoslagret): väntar, 44 % · Bengts öppna val b, c, d, e och h; läsningen tisdag 24/11 (DECISIONS #435); (g) väntar på kuvösen (#437).
+
+<!-- /LÄGESRADER -->
 
 ### 6.1 L4 är inte tomt — ankaret är en mätt osäkerhetskurva
 
@@ -724,16 +763,6 @@ ingen läser en överspelad version någon annanstans.
 | 2/10 | **Läge-raden för kuvösen:** vintern inläst, nederbördskoderna 1/2/4/6 ur VädErs 2019 — ingen innehållsändring | DECISIONS #439 |
 | 2/10 | **Läge-raden för kuvösen:** SMHI för samma vinter hämtat (steg 4) — ingen innehållsändring | DECISIONS #441 |
 
-<!-- LÄGET: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
-## Läget i projektkartan
-
-Läget per del, med färg, procent, byggsteg och bevis, står bara i [projektkartan](undefined) (DECISIONS #446). Den här sidan beskriver delarna; avsnitten nedan säger vilka.
-
-- **§4 Motorn som den faktiskt ser ut i dag:** [Trafikverkets väderstationer](undefined#del-k-vader), [Trafikverkets väglag (RoadCondition)](undefined#del-k-vaglag), [Trafikverkets olyckor, djur och hinder](undefined#del-k-situation), [Publiceringen var tionde minut](undefined#del-l-publicera), [Motorn i tre språk](undefined#del-m-motorn), [Olyckor (A3), med olycksläget](undefined#del-m-olyckor), [Rapporterad halka (A1)](undefined#del-m-halka), [Frysrisk vid stationer och broar (A2)](undefined#del-m-frysrisk), [Djur på vägen (A4)](undefined#del-m-vilt), [Fartkameror (A5)](undefined#del-m-kameror)
-- **§5 Fogarna — var en skuggdel kan greppa, och vad den kostar:** [SMHI:s varningar](undefined#del-k-smhi-varningar), [SMHI:s nederbördsradar](undefined#del-k-radar), [Lägesfilens fält för skuggdelarna](undefined#del-l-falten), [L3 trenden](undefined#del-m-trenden), [Rimfrosten](undefined#del-m-rimfrost), [Nederbördstypen (snö, slask)](undefined#del-m-nederbord), [Kallplatserna](undefined#del-m-kallplatser)
-- **§6 Var lagren står, mätt:** [L2 tillståndet (skattaren S1–S3)](undefined#del-m-tillstand), [L4 räckvidden: segmentprognosen](undefined#del-m-segmentprognos), [L5 allvar som försprång](undefined#del-m-forsprang), [Prognoslagret](undefined#del-m-prognoslagret)
-
-<!-- /LÄGET -->
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
 

@@ -290,11 +290,35 @@
   <p class="litet">Skärmarna är ritade för det här underlaget i appens eget skinn. Rutter, platser, tider och tal i dem är påhittade exempel.</p>
 
   <h2 id="avsnitt-1">1. Idén</h2>
+<!-- LÄGESRADER §1: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+<div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
+  <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-f-underlaget">Underlaget och mätningarna</a> <span style="color: var(--dampad, #4A5763)">delvis, 75 % · kvar: Färjornas avgångar inte färdigräknade; svaret nådde taket på 20 000 (DECISIONS #442)</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Underlag skrivet</b> <span style="color: var(--dampad, #4A5763)">klart · docs/FAVORITER.html (stomdokument 7, DECISIONS #445, §1–12); docs/FORE-RESAN-2026-10-02.md, överspelad 3/10</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Mätt</b> <span style="color: var(--dampad, #4A5763)">pågår · DECISIONS #440, #442; scripts/matningar/fore-resan-kallor-, pendling-kuvos-, snoflingan-kuvos-2026-10-02.ts; färjorna nådde taket</span></li>
+    </ul>
+  </details>
+</div>
+<!-- /LÄGESRADER -->
   <p>Föraren sparar de vägar som körs ofta: till jobbet och hem, till sommarstället, till föräldrarna eller träningen. Före resan öppnar föraren rutten och ser allt Halkvakt vet om den just nu, alltså halkan, olyckorna, vägarbetena, köerna där de mäts, färjorna och fartkamerorna. Under resan är allt som i dag, och rösten säger bara det som inte kan vänta.</p>
   <p>Pendlingen är ett av fallen. En rutt kan få tider, till exempel vardagar 07:15. Då kollar appen läget tio minuter före och skickar en notis om något har tillkommit.</p>
   <p>Ett viktigt beslut fattas innan bilen startar: att åka tidigare, ta en annan väg eller stanna hemma. En finsk studie av 1 437 förare fann att de välinformerade främst ändrade sina resplaner och inte sin körning, men också att bara en minoritet hämtar väglagsinformation före resan (Kilpeläinen och Summala 2007, Skyltfondsansökans bilaga 4). Ansökan drar slutsatsen att informationen måste komma under resan för att påverka körningen, och det gör rösten. Favoriterna tar den andra halvan: rapporten påverkar planen, och eftersom få letar själva måste den komma till föraren, som en påminnelse eller en notis.</p>
 
   <h2 id="avsnitt-2">2. Fliken Favoriter</h2>
+<!-- LÄGESRADER §2: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+<div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
+  <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-f-fliken">Fliken och rapporten</a> <span style="color: var(--dampad, #4A5763)">väntar, 25 % · Axels form och Bengts beställning; inget byggs nu (Bengt 2/10).</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Underlag och skärmar</b> <span style="color: var(--dampad, #4A5763)">klart · FAVORITER.html §2 och §3, skärmarna ritade i appens skinn</span></li>
+      <li><span aria-hidden="true">○</span> <b>Beslut om formen</b> <span style="color: var(--dampad, #4A5763)">saknas · Axel: egen flik eller på Redo., antal rutter, tider i första versionen; inget byggs nu (Bengt)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Byggt i appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen favoritkod i ios/ eller android/</span></li>
+      <li><span aria-hidden="true">○</span> <b>Prov</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
+    </ul>
+  </details>
+</div>
+<!-- /LÄGESRADER -->
   <p>En tredje flik mellan <i>Vakten</i> och <i>Inställningar</i>. Varje sparad rutt står på en rad med det viktigaste just nu. Raden har ett av tre lägen.</p>
   <div class="tabell">
     <table>
@@ -309,6 +333,19 @@
   <p>Under rutterna finns <i>Spara en ny rutt</i>, med förklaringen att en rutt sparas efter en körning, och en rad som säger att rutterna bara finns i telefonen.</p>
 
   <h2 id="avsnitt-3">3. Rapporten</h2>
+<!-- LÄGESRADER §3: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+<div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
+  <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-f-fliken">Fliken och rapporten</a> <span style="color: var(--dampad, #4A5763)">väntar, 25 % · Axels form och Bengts beställning; inget byggs nu (Bengt 2/10).</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Underlag och skärmar</b> <span style="color: var(--dampad, #4A5763)">klart · FAVORITER.html §2 och §3, skärmarna ritade i appens skinn</span></li>
+      <li><span aria-hidden="true">○</span> <b>Beslut om formen</b> <span style="color: var(--dampad, #4A5763)">saknas · Axel: egen flik eller på Redo., antal rutter, tider i första versionen; inget byggs nu (Bengt)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Byggt i appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen favoritkod i ios/ eller android/</span></li>
+      <li><span aria-hidden="true">○</span> <b>Prov</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
+    </ul>
+  </details>
+</div>
+<!-- /LÄGESRADER -->
   <p>Rapporten är det föraren läser innan bilen startar. Den ska gå att läsa på några sekunder och säga allt som gäller längs rutten just nu.</p>
   <div class="par">
     <figure class="rapport-fig">
@@ -360,6 +397,28 @@
   <p>Ett andra exempel, till ett sommarställe i Hälsingland en fredag eftermiddag: <i>Vägarbete på E4 vid Gävle, ett körfält avstängt, stor påverkan, till 30 november · Halt väglag på väg 83 mellan Bollnäs och Ljusdal · Frysrisk vid två mätstationer · 60 km/h vid Hudiksvall · Fyra fartkameror · Köer mäts inte längs den här vägen · Inga olyckor och inget vilt.</i></p>
 
   <h2 id="avsnitt-4">4. Tio minuter före: så färskt det kan bli</h2>
+<!-- LÄGESRADER §4: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+<div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
+  <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gron, #1F7A45); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-l-publicera">Publiceringen var tionde minut</a> <span style="color: var(--dampad, #4A5763)">klar</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Byggd</b> <span style="color: var(--dampad, #4A5763)">klart · supabase/functions/publicera/main.ts:78-99 med publish/snapshot-core.ts buildSnapshot; index.ts buntas av scripts/bundle-publicera.ts</span></li>
+      <li><span aria-hidden="true">✓</span> <b>I drift</b> <span style="color: var(--dampad, #4A5763)">klart · pg_cron var 10:e min, jobid 19 (#72; RUNBOOK.md:44); vakthund/index.ts:191 larmar över 45 min</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Kontrollsumma i manifestet</b> <span style="color: var(--dampad, #4A5763)">klart · snapshot-core.ts:434-442 manifestFor sha256; vakthunden jämför live.json på CDN mot manifestet</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Läses av apparna</b> <span style="color: var(--dampad, #4A5763)">klart · SnapshotRepo.kt:40-45 och SnapshotRepo.swift:88-96 förkastar en fil vars sha256 inte stämmer</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Prov i CI</b> <span style="color: var(--dampad, #4A5763)">klart · ci.yml: bundle-publicera.ts --check; test/snapshot-core.test.ts (31 fall); test/lasarkontraktet.test.ts</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-a-omladdning">Omladdningen under resan (iPhone)</a> <span style="color: var(--dampad, #4A5763)">delvis, 50 % · kvar: En resa på 45–60 min i (21) eller senare där klockslaget vid PÅ DIN VÄG flyttar sig (kort #258)</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Byggd i koden</b> <span style="color: var(--dampad, #4A5763)">klart · GuardManager.swift:113 (30 min), :119–151 (refreshSnapshot); KorlageView.swift:67–71 (klockslaget, #434)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>I ett iPhone-bygge</b> <span style="color: var(--dampad, #4A5763)">klart · Kompilerad i (19) 1/10; (21) med klockslaget uppladdad till TestFlight 2/10 (DECISIONS #434)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Prov i bil eller på telefon</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen resa på 45–60 min i (21) bokförd (DECISIONS #434)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Verify på kortet</b> <span style="color: var(--dampad, #4A5763)">saknas · #258: ingen har bokfört att klockslaget vid PÅ DIN VÄG flyttat sig under en resa</span></li>
+    </ul>
+  </details>
+</div>
+<!-- /LÄGESRADER -->
   <p>Kravet är att rapporten ska vara så färsk som möjligt tio minuter innan föraren sätter sig i bilen. Kedjan ser ut så här i dag:</p>
   <ul>
     <li><b>Livemotorn</b> hämtar Trafikverkets olyckor, väglag och väderstationer varje minut (pg_cron i Supabase).</li>
@@ -387,6 +446,20 @@
   <p>Vägarbetena och restiderna ska ligga i en egen fil, för lägesfilen som telefonen hämtar under körningen ska inte växa. Den är i dag 2,9 kB packad, och den fasta filen med stationer och kameror 80 kB (avsnitt 9).</p>
 
   <h2 id="avsnitt-5">5. Tider och notis</h2>
+<!-- LÄGESRADER §5: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+<div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
+  <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-f-tider">Tider, påminnelse eller notis</a> <span style="color: var(--dampad, #4A5763)">väntar, 40 % · Axels val: påminnelse eller notis på iPhone (bedömningen §4.2).</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Underlag</b> <span style="color: var(--dampad, #4A5763)">klart · FAVORITER.html §5: vad som ger en notis, påminnelse eller notis på iPhone</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Mätt</b> <span style="color: var(--dampad, #4A5763)">klart · DECISIONS #442 utfall 2, pendling-kuvos-2026-10-02.ts: 12–14,5 % (A) och 7–10 % (B) av kollerna</span></li>
+      <li><span aria-hidden="true">○</span> <b>Beslut</b> <span style="color: var(--dampad, #4A5763)">saknas · Axel: påminnelse eller notis; vad som är nytt; ingen gräns satt (#442)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Byggt i appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Android saknar schemaläggning; Genvägar-guiden täcker inte klockslag</span></li>
+      <li><span aria-hidden="true">○</span> <b>Prov</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
+    </ul>
+  </details>
+</div>
+<!-- /LÄGESRADER -->
   <p>Tiderna är frivilliga. En rutt utan tider har ändå sin rapport när föraren öppnar den. Notisen kommer utan att föraren har bett om den, så den gäller bara det som är nytt eller ändrar resan.</p>
   <div class="par">
     <div class="ruta gul">
@@ -416,6 +489,19 @@
   <p><b>På Android</b> finns ingen schemaläggning i appen i dag. Den måste byggas, och om en exakt tid kräver en särskild behörighet är inte utrett. Siri finns bara på iPhone, och om Androids röstassistent kan ta egna fraser är osäkert. <b>Notiserna:</b> appen frågar i dag om dem först när vakten startar, och på iPhone bara om att visa dem. Tiderna måste fråga själva när de ställs in.</p>
 
   <h2 id="avsnitt-6">6. Spara en rutt</h2>
+<!-- LÄGESRADER §6: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+<div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
+  <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-f-spara">Spara en rutt</a> <span style="color: var(--dampad, #4A5763)">väntar, 25 % · Axels och Bengts ja till att spara körda vägar, och Axels kartfråga; inget byggs nu.</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Underlag</b> <span style="color: var(--dampad, #4A5763)">klart · FAVORITER.html §6: sju byggsteg och vad det kostar i löftet; kort #285</span></li>
+      <li><span aria-hidden="true">○</span> <b>Beslut</b> <span style="color: var(--dampad, #4A5763)">saknas · Axel och Bengt: ska körda vägar sparas alls; Axel: ingen karta bakom linjen</span></li>
+      <li><span aria-hidden="true">○</span> <b>Byggt i appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen ruttlagring eller isExcludedFromBackup i ios/ eller android/</span></li>
+      <li><span aria-hidden="true">○</span> <b>Prov</b> <span style="color: var(--dampad, #4A5763)">saknas · Proven att filen är undantagen från säkerhetskopian och att inget anrop bär rutter saknas</span></li>
+    </ul>
+  </details>
+</div>
+<!-- /LÄGESRADER -->
   <p>Rutten sparas ur en körd resa. Efter resan frågar appen på Redo.-skärmen om resan ska sparas, och föraren ger den ett namn eller väljer ett av förslagen. Kortet <i>Efter resan</i> finns redan men visas i dag bara för betatestarna, och designen v2 visar det inte alls (DECISIONS #444), så frågan blir en egen rad för den som har slagit på brytaren. Föraren skriver aldrig in en adress, och ingen tjänst för ruttsökning på nätet får veta var föraren bor, arbetar eller har sitt sommarställe. En rutt tas bort med ett tryck.</p>
   <p><b>Förslag: ingen karta bakom den sparade linjen.</b> Kartbitar hämtas från en kartserver, som då får veta i vilken trakt rutten går. Linjen ritas i telefonen utan bakgrund. Ortsnamnen i rapporten kommer ur Trafikverkets egna texter, som läggs i rapportfilen (avsnitt 7), och aldrig ur en adressökning, som skulle skicka koordinater.</p>
 
@@ -461,6 +547,64 @@
   <p><b>En sak gäller redan i dag.</b> På iPhone ligger historiken för <i>Efter resan</i>, facitsvaren och missarna i appens inställningar, och de följer med i iCloud-säkerhetskopian. Varningarnas id, de närmaste stationerna och klockslagen säger ungefär var och när föraren körde. Inget av det skickas till Halkvakt, men det lämnar telefonen i förarens egen säkerhetskopia. Det är inte nytt med favoriterna, men samma regel bör gälla för det som för rutterna (kort #285).</p>
 
   <h2 id="avsnitt-7">7. Var informationen kommer ifrån, och vad som måste byggas</h2>
+<!-- LÄGESRADER §7: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+<div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
+  <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vagarbeten">Vägarbeten, hastighet och omledningar</a> <span style="color: var(--dampad, #4A5763)">delvis, 8 % · kvar: Ingen löpande hämtning, ingen tabell och inget fält i lägesfilen</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">◐</span> <b>Hämtning byggd</b> <span style="color: var(--dampad, #4A5763)">pågår · ingest-live/index.ts:52 hämtar alla avvikelser, men vägarbetena finns inte i KEEP/ARCHIVE (:34-41) och kastas</span></li>
+      <li><span aria-hidden="true">○</span> <b>Hämtning i drift</b> <span style="color: var(--dampad, #4A5763)">saknas · Bara engångsknappen vagarbeten-matning.yml med scripts/matningar/vagarbeten-2026-09-26.ts (#420)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Lagras i arkivet</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen tabell; ingest/sources/situations.ts:46-51 håller vägarbeten utanför arkivet</span></li>
+      <li><span aria-hidden="true">○</span> <b>Vakt på källan</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen datavakt</span></li>
+      <li><span aria-hidden="true">○</span> <b>I lägesfilen</b> <span style="color: var(--dampad, #4A5763)">saknas · snapshot-core.ts släpper bara Accident och AnimalPresenceObstruction</span></li>
+      <li><span aria-hidden="true">○</span> <b>Används av motorn eller appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Inget i engine/src eller apparna; motorkörningen med vägarbeten var en engångsmätning (#420)</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--rod, #A63A2A); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-restider">Köer och restider (TravelTimeRoute, TrafficFlow)</a> <span style="color: var(--dampad, #4A5763)">ej påbörjad, 0 % · kvar: Ingen hämtning, tabell eller fil</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">○</span> <b>Hämtning byggd</b> <span style="color: var(--dampad, #4A5763)">saknas · Bara läsande engångsmätning: scripts/matningar/fore-resan-kallor-2026-10-02.ts:90, :98</span></li>
+      <li><span aria-hidden="true">○</span> <b>Hämtning i drift</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen cron</span></li>
+      <li><span aria-hidden="true">○</span> <b>Lagras i arkivet</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen tabell i sql/</span></li>
+      <li><span aria-hidden="true">○</span> <b>Vakt på källan</b> <span style="color: var(--dampad, #4A5763)">saknas · TRV_OBJEKT saknar traveltimeroute och trafficflow (publish/beroenden.ts:34)</span></li>
+      <li><span aria-hidden="true">○</span> <b>I lägesfilen</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
+      <li><span aria-hidden="true">○</span> <b>Används av motorn eller appen</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--rod, #A63A2A); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-farjor">Vägfärjorna (FerryAnnouncement)</a> <span style="color: var(--dampad, #4A5763)">ej påbörjad, 0 % · kvar: Ingen hämtning; svaret nådde taket 20 000 avgångar på 36 leder (#442)</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">○</span> <b>Hämtning byggd</b> <span style="color: var(--dampad, #4A5763)">saknas · Bara engångsmätning fore-resan-kallor-2026-10-02.ts:106 FerryAnnouncement 1.2; frågan saknar filter</span></li>
+      <li><span aria-hidden="true">○</span> <b>Hämtning i drift</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen cron</span></li>
+      <li><span aria-hidden="true">○</span> <b>Lagras i arkivet</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen tabell i sql/</span></li>
+      <li><span aria-hidden="true">○</span> <b>Vakt på källan</b> <span style="color: var(--dampad, #4A5763)">saknas · publish/beroenden.ts räknar färjenyheter som främmande; TRV_OBJEKT saknar typen</span></li>
+      <li><span aria-hidden="true">○</span> <b>I lägesfilen</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
+      <li><span aria-hidden="true">○</span> <b>Används av motorn eller appen</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-smhi-varningar">SMHI:s varningar</a> <span style="color: var(--dampad, #4A5763)">delvis, 75 % · kvar: Ingen läsare i motorn eller apparna</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Hämtning byggd</b> <span style="color: var(--dampad, #4A5763)">klart · ingest/sources/smhi.ts:71 fetchSmhiWarnings; ingest/db.ts:244-283 nuläge, historik och smhi_synk</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Hämtning i drift</b> <span style="color: var(--dampad, #4A5763)">klart · puls-ingest '11 * * * *' → ingest.yml:19 (scripts/pulsklocka.ts:30)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Lagras i arkivet</b> <span style="color: var(--dampad, #4A5763)">klart · smhi_warnings_history sql/001_init.sql:148, giltigheten sql/015; smhi_synk sql/024</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Vakt på källan</b> <span style="color: var(--dampad, #4A5763)">pågår · Bara källvakten (beroenden.ts:48-53); ingen färskhetsvakt (vakthund/index.ts:430-432); fel sväljs i ingest/index.ts:46</span></li>
+      <li><span aria-hidden="true">✓</span> <b>I lägesfilen</b> <span style="color: var(--dampad, #4A5763)">klart · snapshot-core.ts:353-356 (SNOW|ICE|ICING|COLD|WIND), :400 smhi[]</span></li>
+      <li><span aria-hidden="true">○</span> <b>Används av motorn eller appen</b> <span style="color: var(--dampad, #4A5763)">saknas · engine/src/snapshot.ts:23 'not consumed by the engine v1'; apparna läser inte smhi</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--rod, #A63A2A); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-f-rapportfil">Rapportfilen på servern</a> <span style="color: var(--dampad, #4A5763)">ej påbörjad, 0 % · kvar: Rapportfilen i publiceringen, med manifestets kontrollsumma</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">○</span> <b>Byggt på servern</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen rapportfil i supabase/functions/publicera eller publish/; ingen hämtning av TravelTimeRoute eller FerryAnnouncement</span></li>
+      <li><span aria-hidden="true">○</span> <b>Prov mot resursfelen</b> <span style="color: var(--dampad, #4A5763)">saknas · En tyngre publicering ska provas mot 546-resursfelen (DECISIONS #344, #360)</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--rod, #A63A2A); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-f-ruttfilter">Jämförelsen mot rutten i Swift och Kotlin</a> <span style="color: var(--dampad, #4A5763)">ej påbörjad, 0 % · kvar: Ett urval längs rutten (dagens filter är en rektangel + 15 km)</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">○</span> <b>Port till Swift och Kotlin</b> <span style="color: var(--dampad, #4A5763)">saknas · Bara i TS: engine/src/rutfilter.ts:33, skuggans förfilter (kort #244, DECISIONS #360); inga träffar i ios/ eller android/</span></li>
+      <li><span aria-hidden="true">○</span> <b>Delade testvektorer</b> <span style="color: var(--dampad, #4A5763)">saknas · Bara test/rutfilter.test.ts (TS); inga vektorer för filtret i engine/vectors</span></li>
+      <li><span aria-hidden="true">○</span> <b>Urvalet längs linjen</b> <span style="color: var(--dampad, #4A5763)">saknas · farorNaraRutten tar allt inom rutans rektangel + 15 km (rutfilter.ts:13-41), inte det som ligger längs rutten</span></li>
+    </ul>
+  </details>
+</div>
+<!-- /LÄGESRADER -->
   <p>Allt finns i Trafikverkets öppna data, med samma nyckel som Halkvakt redan har och under samma öppna licens, utom SMHI:s varningar. Källorna är lästa i Trafikverkets datamodell och räknade i deras API 2/10 (DECISIONS #442). Vad som finns redan är läst i koden samma kväll.</p>
   <div class="tabell">
     <table>
@@ -524,12 +668,37 @@
   <p>I kalendern blir det ungefär tre till fem veckor, med varv i TestFlight och Play och prov i bil. En första version utan tider, notis och Siri, alltså fliken, rapporten och de sparade rutterna, är 9–13 av dagarna. Valet mellan påminnelse och notis på iPhone bör göras först, eftersom det avgör hur tiderna byggs.</p>
 
   <h2 id="avsnitt-8">8. Integriteten</h2>
+<!-- LÄGESRADER §8: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+<div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
+  <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-a-integritet">Löftet och integritetsuppgifterna</a> <span style="color: var(--dampad, #4A5763)">väntar, 70 % · Axel: beslutet om iCloud-kopian (#285) och Data safety-formuläret vid första Play-uppladdningen (#214, #219).</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Löftet i appen</b> <span style="color: var(--dampad, #4A5763)">klart · 'Din position lämnar inte telefonen av sig själv': VaktenView.swift:158, OnboardingView.swift:99, Skinn.kt:253/587</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Integritetssidan</b> <span style="color: var(--dampad, #4A5763)">klart · integritet.html i karta-repot med missarna och raderingsmeningen, b9626bf 1/10 (DECISIONS #432)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>App Privacy (Apple)</b> <span style="color: var(--dampad, #4A5763)">klart · PrivacyInfo.xcprivacy; publicerad i App Store Connect 2/10 (DECISIONS #433)</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Play-deklarationen (#214)</b> <span style="color: var(--dampad, #4A5763)">pågår · docs/PLAY-DATASAFETY.md stämmer (#378); formuläret i Play Console inte ifyllt</span></li>
+      <li><span aria-hidden="true">○</span> <b>Säkerhetskopian (#285)</b> <span style="color: var(--dampad, #4A5763)">saknas · history, facit och missar i UserDefaults.standard följer med iCloud-kopian; inget beslut</span></li>
+    </ul>
+  </details>
+</div>
+<!-- /LÄGESRADER -->
   <div class="skickas">
     <p><b>Det som lämnar telefonen: ingenting nytt.</b> Rutterna ligger i telefonen och ingen annanstans. Rapporten bygger på gemensamma filer för hela landet, samma för alla telefoner, och jämförs med rutten i telefonen. Ingen fråga skickas om just förarens rutt, notisen skapas i telefonen, och ingen server vet vilka rutter som finns. Löftet står kvar: ingen position lämnar telefonen av sig själv.</p>
   </div>
   <p>Två saker måste sägas öppet. Appen sparar för första gången vägar som föraren har kört, på förarens begäran, så produktboken, introduktionen och integritetssidan ska säga det. Vad det kräver och vad det kostar står i avsnitt 6. Och rapporten får inte hämta något som är särskilt för rutten, till exempel bilder från kamerorna längs den, eftersom det berättar för Trafikverkets server ungefär vilken väg föraren tänker köra.</p>
 
   <h2 id="avsnitt-9">9. Talen</h2>
+<!-- LÄGESRADER §9: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+<div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
+  <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-f-underlaget">Underlaget och mätningarna</a> <span style="color: var(--dampad, #4A5763)">delvis, 75 % · kvar: Färjornas avgångar inte färdigräknade; svaret nådde taket på 20 000 (DECISIONS #442)</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Underlag skrivet</b> <span style="color: var(--dampad, #4A5763)">klart · docs/FAVORITER.html (stomdokument 7, DECISIONS #445, §1–12); docs/FORE-RESAN-2026-10-02.md, överspelad 3/10</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Mätt</b> <span style="color: var(--dampad, #4A5763)">pågår · DECISIONS #440, #442; scripts/matningar/fore-resan-kallor-, pendling-kuvos-, snoflingan-kuvos-2026-10-02.ts; färjorna nådde taket</span></li>
+    </ul>
+  </details>
+</div>
+<!-- /LÄGESRADER -->
   <p>Räknade 2/10 som information, inte som bygge (DECISIONS #442). Ingen gräns för notisen är satt.</p>
   <div class="tabell">
     <table>
@@ -565,7 +734,56 @@
   <p class="litet">Bygger på <span class="mono">docs/FORE-RESAN-2026-10-02.md</span>, <span class="mono">docs/FINTRAFFIC-JAMFORELSE-2026-10-02.md</span>, DECISIONS #442 och kort #233. Färskheten är läst i <span class="mono">supabase/functions/publicera</span>, <span class="mono">ingest-live</span> och appens <span class="mono">GuardManager</span> 2/10. Källan till den här sidan är <span class="mono">docs/FAVORITER.html</span>.</p>
 
   <h2 id="avsnitt-12">12. Läget och loggen</h2>
-  <p>Byggframsteg, mätningar och rättelser förs in här i samma varv som de görs (STOMREGELN, DECISIONS #445). <b>Läget 3/10:</b> inget byggt. Två mätningar gjorda (#440, #442). Underlaget är den här sidan, sjunde stomdokumentet sedan 3/10.</p>
+<!-- LÄGESRADER §12: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+<div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
+  <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-f-underlaget">Underlaget och mätningarna</a> <span style="color: var(--dampad, #4A5763)">delvis, 75 % · kvar: Färjornas avgångar inte färdigräknade; svaret nådde taket på 20 000 (DECISIONS #442)</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Underlag skrivet</b> <span style="color: var(--dampad, #4A5763)">klart · docs/FAVORITER.html (stomdokument 7, DECISIONS #445, §1–12); docs/FORE-RESAN-2026-10-02.md, överspelad 3/10</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Mätt</b> <span style="color: var(--dampad, #4A5763)">pågår · DECISIONS #440, #442; scripts/matningar/fore-resan-kallor-, pendling-kuvos-, snoflingan-kuvos-2026-10-02.ts; färjorna nådde taket</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--rod, #A63A2A); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-f-rapportfil">Rapportfilen på servern</a> <span style="color: var(--dampad, #4A5763)">ej påbörjad, 0 % · kvar: Rapportfilen i publiceringen, med manifestets kontrollsumma</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">○</span> <b>Byggt på servern</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen rapportfil i supabase/functions/publicera eller publish/; ingen hämtning av TravelTimeRoute eller FerryAnnouncement</span></li>
+      <li><span aria-hidden="true">○</span> <b>Prov mot resursfelen</b> <span style="color: var(--dampad, #4A5763)">saknas · En tyngre publicering ska provas mot 546-resursfelen (DECISIONS #344, #360)</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--rod, #A63A2A); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-f-ruttfilter">Jämförelsen mot rutten i Swift och Kotlin</a> <span style="color: var(--dampad, #4A5763)">ej påbörjad, 0 % · kvar: Ett urval längs rutten (dagens filter är en rektangel + 15 km)</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">○</span> <b>Port till Swift och Kotlin</b> <span style="color: var(--dampad, #4A5763)">saknas · Bara i TS: engine/src/rutfilter.ts:33, skuggans förfilter (kort #244, DECISIONS #360); inga träffar i ios/ eller android/</span></li>
+      <li><span aria-hidden="true">○</span> <b>Delade testvektorer</b> <span style="color: var(--dampad, #4A5763)">saknas · Bara test/rutfilter.test.ts (TS); inga vektorer för filtret i engine/vectors</span></li>
+      <li><span aria-hidden="true">○</span> <b>Urvalet längs linjen</b> <span style="color: var(--dampad, #4A5763)">saknas · farorNaraRutten tar allt inom rutans rektangel + 15 km (rutfilter.ts:13-41), inte det som ligger längs rutten</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-f-fliken">Fliken och rapporten</a> <span style="color: var(--dampad, #4A5763)">väntar, 25 % · Axels form och Bengts beställning; inget byggs nu (Bengt 2/10).</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Underlag och skärmar</b> <span style="color: var(--dampad, #4A5763)">klart · FAVORITER.html §2 och §3, skärmarna ritade i appens skinn</span></li>
+      <li><span aria-hidden="true">○</span> <b>Beslut om formen</b> <span style="color: var(--dampad, #4A5763)">saknas · Axel: egen flik eller på Redo., antal rutter, tider i första versionen; inget byggs nu (Bengt)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Byggt i appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen favoritkod i ios/ eller android/</span></li>
+      <li><span aria-hidden="true">○</span> <b>Prov</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-f-spara">Spara en rutt</a> <span style="color: var(--dampad, #4A5763)">väntar, 25 % · Axels och Bengts ja till att spara körda vägar, och Axels kartfråga; inget byggs nu.</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Underlag</b> <span style="color: var(--dampad, #4A5763)">klart · FAVORITER.html §6: sju byggsteg och vad det kostar i löftet; kort #285</span></li>
+      <li><span aria-hidden="true">○</span> <b>Beslut</b> <span style="color: var(--dampad, #4A5763)">saknas · Axel och Bengt: ska körda vägar sparas alls; Axel: ingen karta bakom linjen</span></li>
+      <li><span aria-hidden="true">○</span> <b>Byggt i appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen ruttlagring eller isExcludedFromBackup i ios/ eller android/</span></li>
+      <li><span aria-hidden="true">○</span> <b>Prov</b> <span style="color: var(--dampad, #4A5763)">saknas · Proven att filen är undantagen från säkerhetskopian och att inget anrop bär rutter saknas</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-f-tider">Tider, påminnelse eller notis</a> <span style="color: var(--dampad, #4A5763)">väntar, 40 % · Axels val: påminnelse eller notis på iPhone (bedömningen §4.2).</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Underlag</b> <span style="color: var(--dampad, #4A5763)">klart · FAVORITER.html §5: vad som ger en notis, påminnelse eller notis på iPhone</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Mätt</b> <span style="color: var(--dampad, #4A5763)">klart · DECISIONS #442 utfall 2, pendling-kuvos-2026-10-02.ts: 12–14,5 % (A) och 7–10 % (B) av kollerna</span></li>
+      <li><span aria-hidden="true">○</span> <b>Beslut</b> <span style="color: var(--dampad, #4A5763)">saknas · Axel: påminnelse eller notis; vad som är nytt; ingen gräns satt (#442)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Byggt i appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Android saknar schemaläggning; Genvägar-guiden täcker inte klockslag</span></li>
+      <li><span aria-hidden="true">○</span> <b>Prov</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
+    </ul>
+  </details>
+</div>
+<!-- /LÄGESRADER -->
+  <p>Byggframsteg, mätningar och rättelser förs in här i samma varv som de görs (STOMREGELN, DECISIONS #445). Läget per del står ovan, skrivet ur projektkartan.</p>
   <div class="tabell">
     <table>
       <thead><tr><th>Datum</th><th>Vad</th><th>Källa</th></tr></thead>
@@ -584,19 +802,6 @@
     </table>
   </div>
 
-<!-- LÄGET: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
-  <h2 id="laget">Läget i projektkartan</h2>
-  <p class="litet">Läget per del, med färg, procent, byggsteg och bevis, står bara i <a href="undefined">projektkartan</a> (DECISIONS #446). Den här sidan beskriver delarna; avsnitten nedan säger vilka.</p>
-  <p><b>§1 Idén:</b> <a href="undefined#del-f-underlaget">Underlaget och mätningarna</a></p>
-  <p><b>§2 Fliken Favoriter:</b> <a href="undefined#del-f-fliken">Fliken och rapporten</a></p>
-  <p><b>§3 Rapporten:</b> <a href="undefined#del-f-fliken">Fliken och rapporten</a></p>
-  <p><b>§4 Tio minuter före: så färskt det kan bli:</b> <a href="undefined#del-l-publicera">Publiceringen var tionde minut</a>, <a href="undefined#del-a-omladdning">Omladdningen under resan (iPhone)</a></p>
-  <p><b>§5 Tider och notis:</b> <a href="undefined#del-f-tider">Tider, påminnelse eller notis</a></p>
-  <p><b>§6 Spara en rutt:</b> <a href="undefined#del-f-spara">Spara en rutt</a></p>
-  <p><b>§7 Var informationen kommer ifrån, och vad som måste byggas:</b> <a href="undefined#del-k-vagarbeten">Vägarbeten, hastighet och omledningar</a>, <a href="undefined#del-k-restider">Köer och restider (TravelTimeRoute, TrafficFlow)</a>, <a href="undefined#del-k-farjor">Vägfärjorna (FerryAnnouncement)</a>, <a href="undefined#del-k-smhi-varningar">SMHI:s varningar</a>, <a href="undefined#del-f-rapportfil">Rapportfilen på servern</a>, <a href="undefined#del-f-ruttfilter">Jämförelsen mot rutten i Swift och Kotlin</a></p>
-  <p><b>§8 Integriteten:</b> <a href="undefined#del-a-integritet">Löftet och integritetsuppgifterna</a></p>
-  <p><b>§9 Talen:</b> <a href="undefined#del-f-underlaget">Underlaget och mätningarna</a></p>
-<!-- /LÄGET -->
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
   <h2 id="oppna-kort">Öppna kort</h2>
   <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 11 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>

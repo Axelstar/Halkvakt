@@ -160,8 +160,11 @@ varje del av projektet med block, läge, bevis eller nyckel, vad som saknas, ber
   URL i SAMMA commit som ändringen. Ett nytt kort ska hänga på en del. `--check` i ci.yml fäller grönt utan bevis, blått utan nyckel,
   orange och rött utan lista, okända beroenden och avsnitt, öppna kort utan del och en sida som inte är aktuell.
 - **Mätt mot koden 3/10** (kort #286): varje del har byggsteg med bevis, och procenten räknas ur stegen, viktad 1–3. En ny del får byggsteg
-  från början; ett steg är klart bara med bevis. Stomdokumentens egna läge-rader förs inte längre: avsnittet *Läget i projektkartan*,
-  som skriptet skriver i alla sju, pekar på delarna i kartan, och där står läget.
+  från början; ett steg är klart bara med bevis.
+- **Lägesraderna i stomdokumenten skrivs ur kartan** (Bengts val (a) 3/10): under varje avsnitt som beskriver delar står de med färg,
+  procent och vad som återstår, och i html går varje rad att fälla ut till delens byggsteg. Raderna skrivs av projektkartan.ts mellan
+  markörerna `LÄGESRADER` och ändras aldrig för hand; handskrivna lägesrader förs inte. Läget ändras i projektkartan.json, och
+  `--check` fäller en sida vars rader inte är aktuella.
 
 ## PRODUKTBOKSREGELN (Axels order 2026-08-29)
 Ändras något användaren SER, HÖR eller GÖR (skärm, rösttext, flöde, behörighet)

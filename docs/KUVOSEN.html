@@ -115,28 +115,46 @@
   <p class="litet">Idén är Bengts, 21 september: en testbädd <i>”i kuvös, långt från bilar och appar och människor”</i>, för att se <i>”om det är på rätt väg eller fel väg”</i>.</p>
 
   <h2 id="avsnitt-2">2. Läget i dag</h2>
-  <div class="tabell">
-    <table>
-      <thead><tr><th>Del</th><th>Läge</th><th></th></tr></thead>
-      <tbody>
-        <tr><td><b>Datan från Trafikverket</b></td><td>Mottagen 2/10 från VViS Förvaltning: fem filer, november 2024–mars 2025, 5 496 270 rader från 777 stationer, en rad per station och halvtimme. Ligger i en privat release med kontrollsummor, aldrig i driftens databas.</td><td><span class="dom klar">mottagen</span></td></tr>
-        <tr><td><b>Planen</b></td><td>Sex steg med ett bevis per steg, skriven 1/10.</td><td><span class="dom klar">klar</span></td></tr>
-        <tr><td><b>Förregistreringen</b></td><td>Frågan, underlaget, delarna, facit och följden är nedskrivna innan någon fil har öppnats. Två tillägg är gjorda före filen: rösten i två serier (1/10) och prognoslagrets flaggmarginal (2/10).</td><td><span class="dom klar">klar</span></td></tr>
-        <tr><td><b>Klockan</b></td><td>Låter produktionens egen kod köra mot en gången tidpunkt, utan att koden ändras. Prövad mot riktig databas, och fyra motprov föll på var sin fälla.</td><td><span class="dom klar">byggd</span></td></tr>
-        <tr><td><b>Inventeringen</b></td><td>Läser en okänd CSV utan att tolka den: rader, kolumner, tomma fält, spann och vanligaste värden.</td><td><span class="dom klar">byggd</span></td></tr>
-        <tr><td><b>Översättningen och inläsningen</b></td><td>Vintern är inläst 2/10 kväll: 5 391 599 rader från 754 stationer. Nederbördstypens koder 1, 2, 4 och 6 (uppehåll, regn, snö, snöblandat) står i Trafikverkets ersättningsmodell VädErs 2019 och är översatta; koderna 3 och 9 står inte där och väntar, liksom mängden och vindstyrkan. Frysrisken och trenden kan spelas upp, efterhalkan först när mängden är förklarad. 23 stationer saknar läge.</td><td><span class="dom klar">inläst</span></td></tr>
-        <tr><td><b>Tidszonen</b></td><td>Mätt 2/10: svensk lokaltid. Timmen 02 saknas natten till 30/3 2025, och lufttemperaturen stämmer med SMHI vid noll förskjutning på tio av tio stationer.</td><td><span class="dom klar">mätt</span></td></tr>
-        <tr><td><b>SMHI för samma vinter</b></td><td>Hämtat 2/10 kväll: molnmängd, lufttemperatur, nederbörd och rådande väder från 108–243 SMHI-stationer, och radarn för 7 240 av 7 252 halvtimmar, samplad mot väglagssegmenten på samma sätt som i driften. Arkivet har bara radarns tif-format, och det ligger ungefär 3,4 dBZ över driftens format. Ingen korrektion är gjord, och skillnaden redovisas.</td><td><span class="dom klar">hämtad</span></td></tr>
-        <tr><td><b>Körflödet</b></td><td>Hela vintern i halvtimmessteg, i GitHub Actions. Rösten körs i två serier. Beräknad kostnad 2,4–4,8 USD av månadens 35 för de 20 rutterna; den nationella serien är inte mätt.</td><td><span class="dom kvar">kvar</span></td></tr>
-        <tr><td><b>Andra mätningen på vintern</b></td><td>Pendlarens notis 2/10: en väg som passerar två eller tre stationer hade fått en frysrisknotis vid ungefär 14 % av kollerna före avfärd, i norr nära 30 %. Bara information, inget byggt.</td><td><span class="dom klar">körd</span></td></tr>
-        <tr><td><b>Första mätningen på vintern</b></td><td>Snöflingan 2/10: i 97 av 100 fall då stationsregeln slår till lyser redan bilens egen snöflinga. Förregistrerad före körningen, läser inga utfall.</td><td><span class="dom klar">körd</span></td></tr>
-        <tr><td><b>Riktningsprovet</b></td><td>Första körningen, med låsta värden. Tidigast vecka 42.</td><td><span class="dom kvar">kvar</span></td></tr>
-        <tr><td><b>Kalibreringen</b></td><td>Görs efter riktningsprovet, på samma vinter. Beslutad av Bengt och Axel 1/10.</td><td><span class="dom kvar">kvar</span></td></tr>
-      </tbody>
-    </table>
-  </div>
+<!-- LÄGESRADER §2: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+<div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
+  <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-kuvosen">Kuvösen</a> <span style="color: var(--dampad, #4A5763)">delvis, 77 % · kvar: Körflödet</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Datan från Trafikverket</b> <span style="color: var(--dampad, #4A5763)">klart · Mottagen 2/10 från VViS Förvaltning: fem filer, november 2024–mars 2025, 5 496 270 rader från 777 stationer, en rad per station och halvtimme. Ligger i en privat release med kontrollsummor, aldrig i driftens databas.</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Planen</b> <span style="color: var(--dampad, #4A5763)">klart · Sex steg med ett bevis per steg, skriven 1/10.</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Förregistreringen</b> <span style="color: var(--dampad, #4A5763)">klart · Frågan, underlaget, delarna, facit och följden är nedskrivna innan någon fil har öppnats. Två tillägg är gjorda före filen: rösten i två serier (1/10) och prognoslagrets flaggmarginal (2/10).</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Klockan</b> <span style="color: var(--dampad, #4A5763)">klart · Låter produktionens egen kod köra mot en gången tidpunkt, utan att koden ändras. Prövad mot riktig databas, och fyra motprov föll på var sin fälla.</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Inventeringen</b> <span style="color: var(--dampad, #4A5763)">klart · Läser en okänd CSV utan att tolka den: rader, kolumner, tomma fält, spann och vanligaste värden.</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Översättningen och inläsningen</b> <span style="color: var(--dampad, #4A5763)">klart · Vintern är inläst 2/10 kväll: 5 391 599 rader från 754 stationer. Nederbördstypens koder 1, 2, 4 och 6 (uppehåll, regn, snö, snöblandat) står i Trafikverkets ersättningsmodell VädErs 2019 och är översatta; koderna 3 och 9 står …</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Tidszonen</b> <span style="color: var(--dampad, #4A5763)">klart · Mätt 2/10: svensk lokaltid. Timmen 02 saknas natten till 30/3 2025, och lufttemperaturen stämmer med SMHI vid noll förskjutning på tio av tio stationer.</span></li>
+      <li><span aria-hidden="true">✓</span> <b>SMHI för samma vinter</b> <span style="color: var(--dampad, #4A5763)">klart · Hämtat 2/10 kväll: molnmängd, lufttemperatur, nederbörd och rådande väder från 108–243 SMHI-stationer, och radarn för 7 240 av 7 252 halvtimmar, samplad mot väglagssegmenten på samma sätt som i driften. Arkivet har bara radarns …</span></li>
+      <li><span aria-hidden="true">○</span> <b>Körflödet</b> <span style="color: var(--dampad, #4A5763)">saknas · Hela vintern i halvtimmessteg, i GitHub Actions. Rösten körs i två serier. Beräknad kostnad 2,4–4,8 USD av månadens 35 för de 20 rutterna; den nationella serien är inte mätt.</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Andra mätningen på vintern</b> <span style="color: var(--dampad, #4A5763)">klart · Pendlarens notis 2/10: en väg som passerar två eller tre stationer hade fått en frysrisknotis vid ungefär 14 % av kollerna före avfärd, i norr nära 30 %. Bara information, inget byggt.</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Första mätningen på vintern</b> <span style="color: var(--dampad, #4A5763)">klart · Snöflingan 2/10: i 97 av 100 fall då stationsregeln slår till lyser redan bilens egen snöflinga. Förregistrerad före körningen, läser inga utfall.</span></li>
+      <li><span aria-hidden="true">○</span> <b>Riktningsprovet</b> <span style="color: var(--dampad, #4A5763)">saknas · Första körningen, med låsta värden. Tidigast vecka 42.</span></li>
+      <li><span aria-hidden="true">○</span> <b>Kalibreringen</b> <span style="color: var(--dampad, #4A5763)">saknas · Görs efter riktningsprovet, på samma vinter. Beslutad av Bengt och Axel 1/10.</span></li>
+    </ul>
+  </details>
+</div>
+<!-- /LÄGESRADER -->
+  <p class="litet">Kuvösens steg, med läge och bevis, står ovan, skrivna ur projektkartan. Fäll ut raden för att se dem.</p>
 
   <h2 id="avsnitt-3">3. Hur den fungerar</h2>
+<!-- LÄGESRADER §3: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+<div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
+  <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-smhi-obs">SMHI:s observationer (moln och väder)</a> <span style="color: var(--dampad, #4A5763)">delvis, 33 % · kvar: Ingen löpande hämtning eller tabell i driften</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Hämtning byggd</b> <span style="color: var(--dampad, #4A5763)">klart · publish/moln.ts:20 parameter 16 vid körning; kuvos/smhi-vinter.ts:23 parametrarna 1, 7, 13, 16 för vintern 2024/25</span></li>
+      <li><span aria-hidden="true">○</span> <b>Hämtning i drift</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen löpande: moln.ts hämtar när grind T-A/R-A trycks; kuvos-smhi.yml är en knapp</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Lagras i arkivet</b> <span style="color: var(--dampad, #4A5763)">pågår · Bara kuvösen: kuvos_ra.smhi_obs (kuvos/smhi-inlasning.ts:15); driften lagrar med flit inget (moln.ts:8-10)</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Vakt på källan</b> <span style="color: var(--dampad, #4A5763)">pågår · Källvakten bevakar metobs (publish/beroenden.ts:60-70); ingen datavakt</span></li>
+      <li><span aria-hidden="true">○</span> <b>I lägesfilen</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
+      <li><span aria-hidden="true">○</span> <b>Används av motorn eller appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Inget i engine/src; läses av grind-t-a.ts, grind-r-a.ts, grind-nt.ts och kuvösen</span></li>
+    </ul>
+  </details>
+</div>
+<!-- /LÄGESRADER -->
   <p>Kuvösen kör produktionens egen kod. Det som skiljer är var datan kommer ifrån och vad klockan är.</p>
   <figure class="flode" aria-label="Kedjan från Trafikverkets fil till resultatet">
     <div class="nod klar"><span class="kod">In <span class="dom klar">mottagen 2/10</span></span><b>Trafikverkets fil</b><span class="txt">Stationernas mätvärden för vintern: yttemperatur, lufttemperatur, daggpunkt, fuktighet, nederbörd, vind och sikt.</span></div>
@@ -195,6 +213,17 @@
   </div>
 
   <h2 id="avsnitt-5">5. Reglerna, skrivna i förväg</h2>
+<!-- LÄGESRADER §5: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+<div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
+  <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-regel-l">Regel L: ändra en tröskel efter sett utfall</a> <span style="color: var(--dampad, #4A5763)">väntar, 25 % · Bengts och Axels ja, nej eller ändrad lydelse; förslagets egen rekommendation är alternativ D (inför inte regel L nu).</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">◐</span> <b>Förslag skrivet</b> <span style="color: var(--dampad, #4A5763)">pågår · docs/FORSLAG-ANDRINGSREGELN-2026-10-02.md: FÖRSLAG, rekommendationen ändrad till alternativ D</span></li>
+      <li><span aria-hidden="true">○</span> <b>Beslut med båda signaturerna</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen DECISIONS-post för kort #282</span></li>
+    </ul>
+  </details>
+</div>
+<!-- /LÄGESRADER -->
   <ul>
     <li><b>Hela vintern.</b> Alla stationer och hela perioden i leveransen. Inga dygn och inga stationer väljs bort för hand.</li>
     <li><b>Låsta värden först.</b> Riktningsprovet körs med de värden som står i dag. Inget väljs och inget prövas fram.</li>
@@ -272,13 +301,6 @@
   <hr>
   <p class="litet">Källor: beslutsloggen (DECISIONS #292, #388, #397, #398, #418, #424–#428, #437, #438, #440, #442), kort #232, #270 och #278, planen (docs/PLAN-KUVOSEN-2026-10-01.md), bedömningen §4.2 och §6.1 och tröskeldokumentet för kombinationen (regel D). Sidan till Trafikverkets handläggare, <i>Halkvakt och kuvösen</i>, är en annan sida och säger mindre. Alla datum avser 2026 om inget annat står.</p>
 
-<!-- LÄGET: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
-  <h2 id="laget">Läget i projektkartan</h2>
-  <p class="litet">Läget per del, med färg, procent, byggsteg och bevis, står bara i <a href="undefined">projektkartan</a> (DECISIONS #446). Den här sidan beskriver delarna; avsnitten nedan säger vilka.</p>
-  <p><b>§2 Läget i dag:</b> <a href="undefined#del-p-kuvosen">Kuvösen</a></p>
-  <p><b>§3 Hur den fungerar:</b> <a href="undefined#del-k-smhi-obs">SMHI:s observationer (moln och väder)</a></p>
-  <p><b>§5 Reglerna, skrivna i förväg:</b> <a href="undefined#del-p-regel-l">Regel L: ändra en tröskel efter sett utfall</a></p>
-<!-- /LÄGET -->
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
   <h2 id="oppna-kort">Öppna kort</h2>
   <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 4 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
