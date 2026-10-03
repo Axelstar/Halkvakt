@@ -197,7 +197,9 @@ att välja något. Valen ska göras före riktningsprovet och skrivas in som til
 | Efterhalkan, övergångarna (Ö-B), tillståndet, försprångets nivå 2 | **nej** | regnmängden (`rain_sum_mm`), som Trafikverket inte levererat (#439) | — |
 | Vind och sikt | **nej** för vinden; sikten saknar startvärden | vindstyrkan (#439) | — |
 
-**Frågorna** (bedömningen §4.2):
+**Frågorna** (bedömningen §4.2). ✅ **Avgjorda 3/10 (DECISIONS #455):** Bengt sa *"ja till A"* och *"vi kör på dina rekommendationer
+för 1, 2 och 4"*. Väg A är byggd i `kuvos/trend.ts`, som härleder varianten ur `sql/018` vid körning, med prov och integrationsprov, och
+`kuvos.yml` kör den efter vakterna.
 
 1. **"Ovanpå de andra" måste definieras som ett tal.** Inget dokument säger hur det räknas i kuvösen. Den närmaste skrivna formen
    är kombinationsgrinden KB-B (TROSKLAR-KOMBINATIONEN §4). Förslag: för varje del P jämförs *alla andra delar* med *alla andra plus P*.

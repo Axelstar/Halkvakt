@@ -2233,3 +2233,8 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - (C) bara 60 min.
 
   Den nya rekommendationen är B, och annars A. Båda gör att kalibreringen kan stanna i kuvösen. Obekräftat: att leveransens yta är ögonblicksvärdet och inte ett medel.
+- 3/10 (Claude, Bengt: *"ja till A, slå ihop 734"*, sedan *"vi kör på dina rekommendationer för 1, 2 och 4"*): #734 är sammanslagen (5cb7b7f).
+  - **DECISIONS #455** har fyra tillägg före riktningsprovet: ovanpå i KB-B:s form utan golv, frysrisken som baslinje, väg A med kalibreringens svep 30 och 60 min, och delar utan startvärden *ej prövade*.
+  - **Väg A är byggd.** `kuvos/trend.ts` härleder kuvösens trendfunktion ur `sql/018` vid körning. Ändringarna är namnet och `n30 >= 3` → `>= 2`, och varje byte får förekomma exakt en gång, annars stoppar den.
+  - **Proven:** härledningen i `test/kuvos.test.ts`, och samma halvtimmesserie genom driften och varianten i `test/integration.test.ts`. Driften ger 30 = tom och 60 = 1,20; varianten ger 30 = 0,80 och 60 = 1,20.
+  - `kuvos.yml` kör trenden efter vakterna. Driftens kod är orörd.

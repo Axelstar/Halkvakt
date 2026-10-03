@@ -128,7 +128,7 @@
       <li><span aria-hidden="true">✓</span> <b>Översättningen och inläsningen</b> <span style="color: var(--dampad, #4A5763)">klart · Vintern är inläst 2/10 kväll: 5 391 599 rader från 754 stationer. Nederbördstypens koder 1, 2, 4 och 6 (uppehåll, regn, snö, snöblandat) står i Trafikverkets ersättningsmodell VädErs 2019 och är översatta; koderna 3 och 9 står …</span></li>
       <li><span aria-hidden="true">✓</span> <b>Tidszonen</b> <span style="color: var(--dampad, #4A5763)">klart · Mätt 2/10: svensk lokaltid. Timmen 02 saknas natten till 30/3 2025, och lufttemperaturen stämmer med SMHI vid noll förskjutning på tio av tio stationer.</span></li>
       <li><span aria-hidden="true">✓</span> <b>SMHI för samma vinter</b> <span style="color: var(--dampad, #4A5763)">klart · Hämtat 2/10 kväll: molnmängd, lufttemperatur, nederbörd och rådande väder från 108–243 SMHI-stationer, och radarn för 7 240 av 7 252 halvtimmar, samplad mot väglagssegmenten på samma sätt som i driften. Arkivet har bara radarns …</span></li>
-      <li><span aria-hidden="true">◐</span> <b>Körflödet</b> <span style="color: var(--dampad, #4A5763)">pågår · Steg 5a byggt 3/10 (DECISIONS #453): kuvos/korning.ts ställer klockan varje halvtimme, kör buildSnapshot oförändrad och rösten i båda serierna; proven i test/kuvos.test.ts (spåret = skuggmotorns traceAlong fix för fix), kontraktsgrinden vaktar farten och punkttätheten, motproven lokalt. Tidskörningen kuvos 37141247592: 7 245 halvtimmar, 336 steg på sju dygn utan ett tomt, 207 + 114 ms per steg och 166 ms per B-steg ⇒ hela vintern 47 min med B var tredje timme (gränsen 324). Kvar: facit, reglerna och grindarna på klockan, tabellen del × ensam × ovanpå.</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Körflödet</b> <span style="color: var(--dampad, #4A5763)">pågår · Steg 5a byggt 3/10 (DECISIONS #453): kuvos/korning.ts ställer klockan varje halvtimme, kör buildSnapshot oförändrad och rösten i båda serierna; proven i test/kuvos.test.ts (spåret = skuggmotorns traceAlong fix för fix), kontraktsgrinden vaktar farten och punkttätheten, motproven lokalt. Tidskörningen kuvos 37141247592: 7 245 halvtimmar, 336 steg på sju dygn utan ett tomt, 207 + 114 ms per steg och 166 ms per B-steg ⇒ hela vintern 47 min med B var tredje timme (gränsen 324). Tilläggen före riktningsprovet avgjorda 3/10 (DECISIONS #455); trenden för vintern med 30-minutersfallet ur två halvtimmesrader byggd (kuvos/trend.ts, väg A) och frysflaggan (publish/frysflagga.ts). Kvar: facit, NT, T-A och R-A på kuvösens moln, tabellen del × ensam × ovanpå.</span></li>
       <li><span aria-hidden="true">✓</span> <b>Andra mätningen på vintern</b> <span style="color: var(--dampad, #4A5763)">klart · Pendlarens notis 2/10: en väg som passerar två eller tre stationer hade fått en frysrisknotis vid ungefär 14 % av kollerna före avfärd, i norr nära 30 %. Bara information, inget byggt.</span></li>
       <li><span aria-hidden="true">✓</span> <b>Första mätningen på vintern</b> <span style="color: var(--dampad, #4A5763)">klart · Snöflingan 2/10: i 97 av 100 fall då stationsregeln slår till lyser redan bilens egen snöflinga. Förregistrerad före körningen, läser inga utfall.</span></li>
       <li><span aria-hidden="true">○</span> <b>Riktningsprovet</b> <span style="color: var(--dampad, #4A5763)">saknas · Första körningen, med låsta värden. Tidigast vecka 42.</span></li>
@@ -232,6 +232,14 @@
     <li><b>Två serier för rösten, bestämda före filen.</b> De 20 skuggrutterna och hela väglagsnätet. De redovisas var för sig och slås aldrig ihop.</li>
     <li><b>Aldrig i driftens databas.</b> En vinter ryms inte där, och kuvösen ska inte kunna röra det apparna läser.</li>
     <li><b>Kalibrering och dom på skilda nätter.</b> Det som väljs på vintern 2024/25 döms på vintern 2026/27.</li>
+    <li><b>Fyra tillägg innan något har körts (3/10).</b>
+      <ul>
+        <li>En del ovanpå de andra räknas som de räddningar bara den står för, och de falsklarm den lägger till, per natt inom 5 km från stationen, utan golv.</li>
+        <li>Dagens frysrisk är baslinjen som de andra läggs ovanpå.</li>
+        <li>Fallet på 30 minuter räknas ur två halvtimmesrader, som driften i praktiken gör, så kalibreringen kan pröva 30 och 60 minuter men inte 15.</li>
+        <li>Delar utan startvärden redovisas som ej prövade.</li>
+      </ul>
+    </li>
   </ul>
 
   <h2 id="avsnitt-6">6. Vad som kommer härnäst</h2>

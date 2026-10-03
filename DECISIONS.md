@@ -7332,3 +7332,35 @@ något, inget utfall. Mätningen ändrar ingenting; om något ska rättas (t.ex.
 
 **Slutsats:** sekunderna saknar betydelse, och inget rättas. Problemet är upplösningen (en rad per halvtimme räcker inte för ett fönster
 på 30 minuter), inte tidsstämplarna. Frågan i PLAN-KUVOSEN §10 punkt 3 gäller därför bara 30-minutersfönstret.
+
+## #455 (3/10 2026) Kuvösen: fyra tillägg till förregistreringen före riktningsprovet — ovanpå, baslinjen, 30-minutersfallet, ej prövade (kort #232)
+
+**Beslut (Bengt 3/10):** *"ja till A"* och *"vi kör på dina rekommendationer för 1, 2 och 4"* — på PLAN-KUVOSEN §10 och bedömningen §4.2.
+Skrivet efter att filen öppnats men **innan någon regel körts och något utfall lästs** (#438:s regel: från filen räknas tillägg som
+*före riktningsprovet*).
+
+1. **"Ovanpå de andra" räknas i kombinationsgrindens form (KB-B, TROSKLAR-KOMBINATIONEN §4).** För varje del P jämförs *alla andra delar*
+   med *alla andra plus P*:
+   - *Nettonytt* är de facittillfällen inom 5 km från stationen som bara P fångar.
+   - *Pris* är de fyrningar P lägger till och som blev falsklarm.
+   - Allt räknas per episod, en stationsnatt från middag till middag i svensk tid (#246).
+   - En nära miss är inte ett falsklarm, och tidsvinsten redovisas bredvid men räknas aldrig som nettonytt.
+   - **Inga golv**: det är ett riktningsprov, ingen dom. "Ensam" är varje dels eget mått i sitt tröskeldokument.
+2. **Frysrisken (dagens `icing_point` och broarna) är baslinjen** som de andra delarna läggs ovanpå, som "dagens motor" i KB-B. Den
+   redovisas med antal fyrningar och episoder men döms inte på egen yta: utlösaren är stationens egen yta, och egen-yta-facit vore
+   nästan cirkulär.
+3. **Väg A — 30-minutersfallet ur två halvtimmesrader, bara i kuvösen.**
+   - Driftens `lutning30` är värdet 30 minuter bakåt minus värdet nu (`sql/018`). Driften mäter var femte minut (dbknapp 37151681447), och
+     leveransens stämplar :00:03 och :30:03 är två av samma serie (dbknapp 37152138197).
+   - Kuvösen räknar därför trenden med en variant av driftens funktion, **härledd ur `sql/018` vid körning** och aldrig kopierad. Den enda
+     skillnaden är att 30-minutersramen kräver två rader i stället för tre.
+   - Hoppvakten (≤ 3 °C) ser då bara ändpunkterna, och givarvakterna står kvar. Driftens kod är orörd. 15 minuter går inte att räkna.
+   - **Kalibreringen i kuvösen (#425) sveper därför 30 och 60 minuter**, inte 15. Att 15 inte prövades står här, så att ingen läser
+     det som att 15 prövades och föll.
+   - Premissen att ytan är ögonblicksvärdet är starkt trolig men inte bekräftad av Trafikverket (Bengt: ingen fråga till Micke om detta).
+4. **Delar utan startvärden** — rimfrostens R-B (R1–R5 osatta), sikten och daggpunktsgapet — **redovisas som *ej prövade: inga
+   startvärden***. Inga värden skrivs nu för att fylla tabellen. Rimfrostens R-A, som är signalkontrollen, körs.
+
+**Alternativ som valdes bort:** att fråga Trafikverket om 5-minutersvärden (väg B: renast, men Bengt vill inte lägga en femte fråga);
+bara 60 minuter (väg C: betans eget fönster hade aldrig kunnat vinna); att flytta tillbaka kalibreringen till 1/2 2027 (halva domvintern
+förlorad). **Axel** bör få veta punkt 3, eftersom kalibreringen i kuvösen var hans ok (#425).

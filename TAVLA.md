@@ -491,7 +491,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   - (3) betans 30-minutersfönster i halvtimmesdata, som rör kalibreringen i kuvösen (#425) och är Bengts och Axels fråga. ↪ *Omprövat samma kväll:* det är inte omöjligt. Driftens lutning30 är två mätvärden, och det är skyddet som blockerar. Vägarna är 5-minutersvärden från Trafikverket eller två rader i kuvösens egen beräkning (PLAN §10);
   - (4) delar utan startvärden redovisas som *ej prövade*.
 
-  Det som går att köra nu är grind A, vägpunkten och höjden, frysflaggan, NT, T-A (bara 60 min) och R-A:s signal. Efterhalkan, Ö-B, tillståndet, försprånget och vinden väntar på regnmängden och vindstyrkan (#439). KUVOSEN.html §4 och planens §3 är rättade: efterhalkan stod som prövbar.
+  ✅ **AVGJORDA 3/10 (DECISIONS #455):** Bengt sa ja till A och till rekommendationerna för 1, 2 och 4. 30-minutersfallet räknas ur två halvtimmesrader, i `kuvos/trend.ts` härlett ur `sql/018`. Kalibreringen sveper 30 och 60 min. Frysflaggan är byggd (`publish/frysflagga.ts`).
+  Det som går att köra nu är grind A, vägpunkten och höjden, frysflaggan, NT, T-A (30 och 60 min) och R-A:s signal. Efterhalkan, Ö-B, tillståndet, försprånget och vinden väntar på regnmängden och vindstyrkan (#439). KUVOSEN.html §4 och planens §3 är rättade: efterhalkan stod som prövbar.
 
 *↩︎ = ÅTERSTÄLLT 10/9. Korten nedan föll av tavlan 8/9 20:43 (commit 99473c7: Claudes tavelsynk av
 "Axels nästa steg" svalde 174 rader, inkl. tre Claude-sektioner). Inget av dem har bevis på klart sedan dess.*

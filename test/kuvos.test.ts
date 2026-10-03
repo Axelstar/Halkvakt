@@ -139,6 +139,21 @@ test("körflödet: spåret är skuggmotorns traceAlong, fix för fix", async () 
   assert.ok(spar(linje).length > 100, "en riktig sträcka, inte en tom jämförelse");
 });
 
+// Väg A (DECISIONS #455): kuvösens trendfunktion härleds ur driftens källa, aldrig en kopia. Ändras driftens form ska detta falla.
+test("väg A: halvtimmesvarianten är driftens funktion med ett nytt namn och två rader i 30-minutersramen — inget annat", async () => {
+  const { halvtimmesvariant, FUNKTION } = await import("../kuvos/trend.ts");
+  const sql = readFileSync(new URL("../sql/018_trend_berakna.sql", import.meta.url), "utf8");
+  const v = halvtimmesvariant(sql);
+  assert.ok(v.startsWith(`CREATE OR REPLACE FUNCTION ${FUNKTION}(`) && v.endsWith("$$ LANGUAGE plpgsql;"));
+  assert.match(v, /CASE WHEN n15 >= 3 AND/, "15-minutersramen orörd");
+  assert.match(v, /CASE WHEN n30 >= 2 AND/, "30-minutersramen: två rader");
+  assert.match(v, /CASE WHEN n60 >= 3 AND/, "60-minutersramen orörd");
+  const original = sql.slice(sql.indexOf("CREATE OR REPLACE FUNCTION berakna_trendkandidater("), sql.indexOf("$$ LANGUAGE plpgsql;") + 20);
+  assert.equal(v.replace(FUNKTION, "berakna_trendkandidater").replace("n30 >= 2", "n30 >= 3"), original, "allt annat ordagrant driftens");
+  assert.throws(() => halvtimmesvariant(sql.replace("CASE WHEN n30 >= 3 AND", "CASE WHEN n30 >= 4 AND")), /DECISIONS #455/,
+    "en ändrad form i driften fäller härledningen i stället för att tyst ge en annan regel");
+});
+
 test("SMHI-arkivet: bara vinterns rader, läget ur perioden som täcker raden, värdet som det står", async () => {
   const { tolkaArkiv } = await import("../kuvos/smhi-vinter.ts");
   const fil = ["﻿Stationsnamn;Stationsnummer;Stationsnät;Mäthöjd (meter över marken)", "Malmö A;52350;SMHIs stationsnät;2.0", "",

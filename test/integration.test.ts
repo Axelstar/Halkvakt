@@ -994,6 +994,47 @@ test("kuvösens klocka: byggaren ser världen som den var vid T — inget ur fra
   }
 });
 
+// VÄG A (kuvos/trend.ts, DECISIONS #455): samma halvtimmesserie genom driftens trendfunktion och kuvösens variant. Driften kräver tre
+// rader i 30-minutersramen och ger därför ingen 30-minuterslutning; varianten ger värdet 30 minuter bakåt minus nu. 60 minuter lika.
+test("väg A: halvtimmesdata ger 30-minuterslutningen i kuvösens variant men inte i driftens — 60 minuter lika i båda", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const { installera, FUNKTION } = await import("../kuvos/trend.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  try {
+    for (const f of ["001_init.sql", "017_trend_kandidater.sql", "018_trend_berakna.sql", "030_langsam_vakt.sql"])
+      await pool.query(readFileSync(new URL("../sql/" + f, import.meta.url), "utf8"));
+    await installera((s) => pool.query(s));
+    const rensa = async () => { for (const t of ["trend_kandidater", "trend_stigande"]) await pool.query(`DELETE FROM ${t} WHERE station_id = 'KUV_TREND'`); };
+    await pool.query("DELETE FROM weather_observations WHERE station_id = 'KUV_TREND'");
+    await rensa();
+    // Tre halvtimmar som kuvösens leverans, stämplade :00:03/:30:03. Ytan faller 0,4 och sedan 0,8 °C; vakterna släpper igenom raderna.
+    await pool.query(`INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, dewpoint_c, humidity_pct) VALUES
+      ('KUV_TREND', 'x', ST_SetSRID(ST_MakePoint(16.0, 62.0), 4326), '2025-01-14T05:00:03Z', 2.6, 3.0, 0.5, 95),
+      ('KUV_TREND', 'x', ST_SetSRID(ST_MakePoint(16.0, 62.0), 4326), '2025-01-14T05:30:03Z', 2.2, 3.0, 0.5, 95),
+      ('KUV_TREND', 'x', ST_SetSRID(ST_MakePoint(16.0, 62.0), 4326), '2025-01-14T06:00:03Z', 1.4, 3.0, 0.5, 95)`);
+    const kor = (fn: string) => pool.query(`SELECT * FROM ${fn}(now() - '2025-01-13T00:00:00Z'::timestamptz)`);
+    const sex = async () => (await pool.query(`SELECT lutning15_c, lutning30_c, lutning60_c FROM trend_kandidater
+      WHERE station_id = 'KUV_TREND' AND observed_at = '2025-01-14T06:00:03Z'`)).rows[0];
+    const tal = (x: unknown) => (x === null ? null : Number(x).toFixed(2));
+
+    await kor("berakna_trendkandidater");
+    const drift = await sex();
+    assert.deepEqual([tal(drift.lutning15_c), tal(drift.lutning30_c), tal(drift.lutning60_c)], [null, null, "1.20"],
+      "driften: tre rader krävs, så halvtimmesdata ger bara 60-minuterslutningen");
+
+    await rensa();
+    await kor(FUNKTION);
+    const a = await sex();
+    assert.deepEqual([tal(a.lutning15_c), tal(a.lutning30_c), tal(a.lutning60_c)], [null, "0.80", "1.20"],
+      "väg A: 30 minuter = värdet 30 minuter bakåt minus nu; 15 minuter går inte; 60 som driften");
+  } finally {
+    await pool.query("DELETE FROM weather_observations WHERE station_id = 'KUV_TREND'");
+    for (const t of ["trend_kandidater", "trend_stigande"]) await pool.query(`DELETE FROM ${t} WHERE station_id = 'KUV_TREND'`).catch(() => {});
+    await pool.end();
+  }
+});
+
 // KUVÖSENS ÖVERSÄTTNING (kuvos/oversattning.sql, kort #232, DECISIONS #439). Varje fälla ger ett annat svar om en regel faller:
 // tidszonen (vinter +1, sommar +2 natten tiden hoppar), platshållarna, nederbördskoderna med källa och de utan, riktningen, en
 // station utan läge — och omkörningen, som måste skriva om raderna i stället för att dubblera dem.
