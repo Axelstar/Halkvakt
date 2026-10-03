@@ -488,7 +488,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⚖️ **FYRA FRÅGOR FÖRE 5b–5d (3/10, PLAN-KUVOSEN §10, bedömningen §4.2).** Genomgången av delarnas tröskeldokument och kod visar att #424 inte räcker för att bygga utan att välja:
   - (1) hur *ovanpå* räknas — förslaget är KB-B:s form;
   - (2) frysrisken som baslinje, eftersom dess egen-yta-facit är cirkulär;
-  - (3) **halvtimmesdatan räcker inte för betans 30-minutersfönster**, vilket rör kalibreringen i kuvösen (#425) och är Bengts och Axels fråga;
+  - (3) betans 30-minutersfönster i halvtimmesdata, som rör kalibreringen i kuvösen (#425) och är Bengts och Axels fråga. ↪ *Omprövat samma kväll:* det är inte omöjligt. Driftens lutning30 är två mätvärden, och det är skyddet som blockerar. Vägarna är 5-minutersvärden från Trafikverket eller två rader i kuvösens egen beräkning (PLAN §10);
   - (4) delar utan startvärden redovisas som *ej prövade*.
 
   Det som går att köra nu är grind A, vägpunkten och höjden, frysflaggan, NT, T-A (bara 60 min) och R-A:s signal. Efterhalkan, Ö-B, tillståndet, försprånget och vinden väntar på regnmängden och vindstyrkan (#439). KUVOSEN.html §4 och planens §3 är rättade: efterhalkan stod som prövbar.
