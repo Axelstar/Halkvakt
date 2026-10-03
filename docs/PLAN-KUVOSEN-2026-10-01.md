@@ -171,3 +171,10 @@ körplats. Steg 1–2 byggda. Förregistreringen står i DECISIONS #424. Oljefil
 **Steg 3, 2/10 kväll (DECISIONS #439, Axels order):** nederbördskoderna 1, 2, 4 och 6 lästa i Trafikverkets *VädErs 2019* (s. 6–7) och översatta; 3, 9 och −9, mängden och vindstyrkan väntar på Micke (NULL). Vintern inläst — 5 391 599 rader, 754 stationer — och vakterna körda som antal (97 % av raderna får tala). Knappen `kuvos` gör inläsningen i Actions. Kvar före steg 5: SMHI (steg 4) och körflödet; efterhalkan väntar på mängden.
 
 **Steg 4, 2/10 kväll (DECISIONS #441, Axels order):** SMHI hämtat en gång — metobs 1, 7, 13, 16 (243 · 181 · 162 · 108 stationer) och radarn för 7 240 av 7 252 halvtimmar med driftens kärna. Radararkivet har bara tif, och tif ligger ≈ 3,4 dBZ över driftens h5; ingen korrektion, frågan i bedömningen §4.2. Releasen `kuvos-smhi-2024-25` (knappen `kuvos-smhi`). Kvar före steg 5: inget; i steg 5 ska `moln.ts` och grind NT läsa `kuvos_ra.smhi_obs`.
+
+**Steg 5a, 3/10 (DECISIONS #453):** körningen är byggd (`kuvos/korning.ts`). Klockan ställs på varje halvtimme, produktionens snapshotbyggare
+körs oförändrad, och rösten körs i båda serierna med skuggmotorns spår (provat fix för fix; kontraktsgrinden vaktar farten och punkttätheten).
+Först mäts bara körtiden på de sju första dygnen (knappen `kuvos`, `korflode = tid-sju-dygn`). Regeln för om serie B ryms skrevs före
+körningen: högst 90 % av jobbets 360 minuter. **Tidskörningen samma kväll (kuvos 37141247592):** vintern har 7 245 halvtimmar, och sju dygn
+gav 336 steg utan ett tomt. Hela vintern beräknas till 47 min med B var tredje timme, så B glesas inte. Kvar: 5b facit (stationens egen yta i varje dels utfallsfönster), 5c reglerna och grindarna
+på klockan (`moln.ts` och grind NT mot `kuvos_ra.smhi_obs`, `trend_kandidater` för vintern), och 5d tabellen *del × ensam × ovanpå*.
