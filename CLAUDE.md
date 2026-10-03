@@ -147,7 +147,7 @@ det senaste beslut som rör dem.
 och varje stomdokument visar sina öppna kort under rubriken *Öppna kort*. Kopplingen bor på ETT ställe, `docs/kortkartan.json`;
 listorna skrivs av `node --experimental-strip-types scripts/kortkartan.ts` och ändras aldrig för hand. Ett nytt kort, ett stängt kort
 eller en ny rubrik på ett kort ⇒ kortkartan.json, skriptet och republiceringen av de berörda artefakterna i SAMMA commit som
-tavlan. `--check` (i ci.yml) fäller på okopplade kort, kopplingar till stängda kort, okända avsnitt och listor som inte är aktuella.
+tavlan. `--check` (i ci.yml, och i md-vakt.yml för commits som bara ändrar .md) fäller på okopplade kort, kopplingar till stängda kort, okända avsnitt och listor som inte är aktuella.
 
 ## PROJEKTKARTAN (Bengts ja 2026-10-03 — navet över bygget, DECISIONS #446)
 *Halkvaktens projektkarta* — https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8, källa `docs/PROJEKTKARTAN.html`, skriven ur `docs/projektkartan.json` av
@@ -158,7 +158,7 @@ varje del av projektet med block, läge, bevis eller nyckel, vad som saknas, ber
   koden eller ett prov något annat är kartan fel, inte koden. Besluten stannar i DECISIONS, ordningen och kalendern i bedömningen,
   arbetet på tavlan och reglerna i tröskeldokumenten.
 - **Samma commit:** byggs, mäts, stängs eller öppnas något ⇒ delens rad i projektkartan.json, skriptet och republiceringen till samma
-  URL i SAMMA commit som ändringen. Ett nytt kort ska hänga på en del. `--check` i ci.yml fäller grönt utan bevis, blått utan nyckel,
+  URL i SAMMA commit som ändringen. Ett nytt kort ska hänga på en del. `--check` i ci.yml (och i md-vakt.yml för commits som bara ändrar .md) fäller grönt utan bevis, blått utan nyckel,
   orange och rött utan lista, okända beroenden och avsnitt, öppna kort utan del och en sida som inte är aktuell.
 - **Mätt mot koden 3/10** (kort #286): varje del har byggsteg med bevis, och procenten räknas ur stegen, viktad 1–3. En ny del får byggsteg
   från början; ett steg är klart bara med bevis.
