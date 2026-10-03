@@ -7249,3 +7249,20 @@ flyttar raderingens början från "före mars" (sql/034, #334) till runt 15/10.
 
 **Alternativ som valdes bort:** att vänta till februari (sql/034:s plan — raderingen börjar fyra månader tidigare); att läsa tillbaka
 med Node i en container i stället för SQL (en läsare i databasen fungerar likadant i drift, container och CI).
+
+## #451 (3/10 2026) Kortgenomgången är ett krav, som kartan och artefakterna (TAVELREGELN 5)
+
+**Beslut (Bengt, 3/10):** *"kan du inte istället lägga det som ett krav på samma sätt som du uppdaterar projektkartan och övriga
+artifacts"* — efter påminnelsen *"du glömmer inte att stänga öppna kort om det går"*, när kortvakten (#449) visat sig se bara 10 av 45
+öppna kort (de som hänger på en del med ett Verify-steg).
+1. **TAVELREGELN 5:** varje varv avslutas, och varje kartsynk körs, med `scripts/kortkartan.ts --genomgang` — varje öppet kort med sin
+   Verify-rad och sitt "Kvar". Ett kort vars Verify är uppfylld med ett bevis som går att följa flyttas till 🟢 med beviset i samma commit;
+   ett kort utan Verify-rad får en. Sessionsprotokollets steg 4 och den schemalagda kartsynken bär samma steg.
+2. **Kartsynkens rapport** listar korten den bedömer som uppfyllda, med beviset, och öppnar en egen PR som stänger dem. Den PR:en rör
+   tavlan och slås därför inte ihop av sig själv (#447 punkt 2) — den väntar på Bengts "slå ihop".
+3. **Läget 3/10:** 11 av 45 öppna kort saknade Verify-rad och kunde inte prövas (#262, *Skydda namnet*, *Tolv testare*, *Välkomsttext*,
+   *Introduktionen*, #42, #153, #151, #103, #46, #45). De fick en i samma varv, ur kortets egen text och — för tröskelkorten — domen
+   i kortets eget `docs/TROSKLAR-*.md`. Den första genomgången fann inget kort uppfyllt.
+
+**Alternativ som valdes bort:** bara en påminnelse i chatten (det var just den som inte räckte); att kartsynken stänger kort själv och
+slår ihop (att stänga ett kort är en bedömning av beviset, inte en räkning).
