@@ -1,20 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Ikonsetet (DECISIONS #49) — genererad ur docs/design/icons/olycka.svg. Ändra designen, kör om. -->
+<!-- Design handoff v2 (DECISIONS #444): 48-grid, stroke 3.5, round caps. Generated, see HalkvaktIkon.dc.html. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24"
->
-    <path android:pathData="M4.6,12.6 h7.199999999999999 a2.0,2.0 0 0 1 2.0,2.0 v2.2 a2.0,2.0 0 0 1 -2.0,2.0 h-7.199999999999999 a2.0,2.0 0 0 1 -2.0,-2.0 v-2.2 a2.0,2.0 0 0 1 2.0,-2.0 z" android:strokeColor="#FFFFFF" android:strokeWidth="2"
-          android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="#00000000"/>
-    <path android:pathData="M6.2 18.8v1.6" android:strokeColor="#FFFFFF" android:strokeWidth="2"
-          android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="#00000000"/>
-    <path android:pathData="M10.4 18.8v1.6" android:strokeColor="#FFFFFF" android:strokeWidth="2"
-          android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="#00000000"/>
-    <path android:pathData="M17.4 6.9V4.3" android:strokeColor="#FFFFFF" android:strokeWidth="2"
-          android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="#00000000"/>
-    <path android:pathData="M15.8 7L13.9 5.1" android:strokeColor="#FFFFFF" android:strokeWidth="2"
-          android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="#00000000"/>
-    <path android:pathData="M19.1 8.6h2.1" android:strokeColor="#FFFFFF" android:strokeWidth="2"
-          android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="#00000000"/>
-    <path android:pathData="M16.2 9.9l-2 2" android:strokeColor="#FFFFFF" android:strokeWidth="2"
-          android:strokeLineCap="round" android:strokeLineJoin="round" android:fillColor="#00000000"/>
+    android:width="48dp" android:height="48dp"
+    android:viewportWidth="48" android:viewportHeight="48">
+    <path android:pathData="M7.5,13 H40.5 A2.5,2.5 0 0 1 43,15.5 V23.5 A2.5,2.5 0 0 1 40.5,26 H7.5 A2.5,2.5 0 0 1 5,23.5 V15.5 A2.5,2.5 0 0 1 7.5,13 Z"
+        android:strokeColor="#FF000000" android:strokeWidth="3.5"
+        android:strokeLineCap="round" android:strokeLineJoin="round"/>
+    <path android:pathData="M15 13 L10 26 M25 13 L20 26 M35 13 L30 26 M43 16 L39 26"
+        android:strokeColor="#FF000000" android:strokeWidth="3.5"
+        android:strokeLineCap="round" android:strokeLineJoin="round"/>
+    <path android:pathData="M12 26 V41 M36 26 V41 M7 41 H17 M31 41 H41"
+        android:strokeColor="#FF000000" android:strokeWidth="3.5"
+        android:strokeLineCap="round" android:strokeLineJoin="round"/>
 </vector>

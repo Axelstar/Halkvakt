@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Design handoff v2 (DECISIONS #444): 48-grid, stroke 3.5, round caps. Generated, see HalkvaktIkon.dc.html. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp" android:height="48dp"
+    android:viewportWidth="48" android:viewportHeight="48">
+    <path android:pathData="M3 30 H45"
+        android:strokeColor="#FF000000" android:strokeWidth="3.5"
+        android:strokeLineCap="round" android:strokeLineJoin="round"/>
+    <path android:pathData="M8 30 Q24 8 40 30"
+        android:strokeColor="#FF000000" android:strokeWidth="3.5"
+        android:strokeLineCap="round" android:strokeLineJoin="round"/>
+    <path android:pathData="M16 30 V21.5 M24 30 V19 M32 30 V21.5"
+        android:strokeColor="#FF000000" android:strokeWidth="3.5"
+        android:strokeLineCap="round" android:strokeLineJoin="round"/>
+    <path android:pathData="M8 30 V42 M40 30 V42"
+        android:strokeColor="#FF000000" android:strokeWidth="3.5"
+        android:strokeLineCap="round" android:strokeLineJoin="round"/>
+    <path android:pathData="M38 4 V12 M34.5 6 L41.5 10 M34.5 10 L41.5 6"
+        android:strokeColor="#FF000000" android:strokeWidth="2.5"
+        android:strokeLineCap="round" android:strokeLineJoin="round"/>
+</vector>

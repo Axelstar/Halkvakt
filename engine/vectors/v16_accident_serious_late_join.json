@@ -326,7 +326,8 @@
    "hazardId": "acc1",
    "kind": "accident",
    "distanceM": 1873,
-   "text": "Allvarlig olycka på E4 2 kilometer framför dig — stor påverkan. Sakta ner."
+   "text": "Allvarlig olycka på E4 2 kilometer framför dig — stor påverkan. Sakta ner.",
+   "step": "late"
   }
  ]
 }

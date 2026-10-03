@@ -1927,14 +1927,16 @@
    "hazardId": "acc1",
    "kind": "accident",
    "distanceM": 9983,
-   "text": "Allvarlig olycka på E4 10 kilometer framför dig — stor påverkan på trafiken. Överväg annan väg. Beräknas röjd vid 14:20."
+   "text": "Allvarlig olycka på E4 10 kilometer framför dig — stor påverkan på trafiken. Överväg annan väg. Beräknas röjd vid 14:20.",
+   "step": "early"
   },
   {
    "t": 361,
    "hazardId": "acc1",
    "kind": "accident",
    "distanceM": 1992,
-   "text": "Sakta ner — olycksplats strax framför dig."
+   "text": "Sakta ner — olycksplats strax framför dig.",
+   "step": "reminder"
   }
  ]
 }

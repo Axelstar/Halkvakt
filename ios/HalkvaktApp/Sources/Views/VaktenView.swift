@@ -1,5 +1,5 @@
-// VAKTEN — hemskärmen, skinnet v3 (1b): ett ord, en knapp. "Redo." svarar på
-// "är jag skyddad?" med en blick. Källchips under, Starta-knappen, senaste tur i en rad.
+// VAKTEN — hemskärmen, designöverlämningen v2 (DECISIONS #444): 01 Redo och 01b Redo efter tur.
+// "Redo." svarar på "är jag skyddad?" med en blick; efter en tur står kvittot över varningarna tills nästa tur.
 // När vakten kör visas KorlageView i helskärm.
 //
 // Skärmen RULLAR när den måste (kort #279, Axels skärmbild 1/10): kortet *Efter resan* med fyra varningar
@@ -19,61 +19,66 @@ struct VaktenView: View {
             GeometryReader { geo in
                 ScrollView {
                     innehall
-                        .padding(.horizontal, 22).padding(.top, 10)
-                        .padding(.bottom, 96)
+                        .padding(.horizontal, 24)
+                        .padding(.bottom, 120)   // den flytande flikraden
                         .frame(minHeight: geo.size.height, alignment: .top)
                 }
                 .scrollBounceBehavior(.basedOnSize)
                 .scrollIndicators(.hidden)
             }
         }
-        .fullScreenCover(isPresented: $guardM.running) { KorlageView() }
         .task { await guardM.refreshSnapshot() }
     }
 
     private var innehall: some View {
         let resa = efterResan
-        return VStack(alignment: .leading, spacing: 0) {
-            BrandHeader(trailing: guardM.snapshotInfo == nil ? "Hämtar" : "Trafikverket live",
-                        trailingColor: guardM.snapshotInfo == nil ? Brand.faint : Brand.green)
+        let tur = senasteTuren
+        return VStack(spacing: 0) {
+            BrandHeader(trailing: guardM.snapshotInfo == nil ? "Hämtar" : "Live",
+                        trailingColor: guardM.snapshotInfo == nil ? Brand.faint : Brand.yellow)
 
             // Kort #203: frågan om resan står överst, före allt annat — den som öppnar appen efter
             // en körning ska se den utan att leta. Försvinner när allt är besvarat, och efter ett dygn.
+            // Designen v2 visar inte betatestets kort; det står kvar här för betatestarna (DECISIONS #267, #444).
             if let resa {
                 EfterResanKort(varningar: resa.obes, missar: prefs.missar.filter { $0.t >= resa.sedan }, sedan: resa.sedan)
                     .padding(.top, 14)
             }
 
-            Spacer()
+            if tur == nil && resa == nil {
+                Spacer(minLength: 12)
+                Plinth(name: "plinth-logo").frame(height: 220)
+            } else {
+                Spacer(minLength: 24)
+            }
 
-            VStack(alignment: .leading, spacing: 18) {
+            VStack(spacing: 14) {
                 Text("Redo.")
-                    .font(Typo.sans(78, .bold))
-                    .tracking(-3.5)
-                    .lineSpacing(-8)
+                    .font(Typo.sans(44, .semibold)).tracking(-1.3)
                     .foregroundStyle(Brand.text)
-                Text(subtitle)
-                    .font(Typo.sans(15))
-                    .lineSpacing(6)
-                    .foregroundStyle(Brand.dim)
-                chips
+                Text(tur == nil ? subtitle : (wakes ? "Vakten vaknar själv när du kör." : "Din position lämnar inte telefonen av sig själv."))
+                    .font(Typo.sans(15)).lineSpacing(4)
+                    .foregroundStyle(Brand.text2)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: 290)
+                if tur == nil {
+                    Text(kallor).font(Typo.mono(10)).tracking(1.4).foregroundStyle(Brand.dim)
+                        .multilineTextAlignment(.center).padding(.top, 4)
+                }
             }
-            .padding(.bottom, 20)
+            .padding(.top, 12)
 
-            Spacer()
+            if let tur { kvitto(tur).padding(.top, 24) }
 
-            PillButton(title: "Starta vakten", icon: "play.fill", color: Brand.green) {
-                guardM.requestPermissionAndStart()
-            }
-            if guardM.locationDenied { LocationDeniedRow() }
+            Spacer(minLength: 24)
 
-            HStack {
-                Text(lastTrip)
-                    .font(Typo.sans(13))
-                    .foregroundStyle(Brand.faint)
-                Spacer()
-            }
-            .padding(.top, 16)
+            YellowPill(title: "Starta vakten", playIcon: true) { guardM.requestPermissionAndStart() }
+            if guardM.locationDenied { LocationDeniedRow().padding(.top, 10) }
+
+            Text(tur.map { "\($0.varningar.count) \($0.varningar.count == 1 ? "VARNING" : "VARNINGAR") · VISAS TILLS NÄSTA TUR" } ?? "INGEN TUR ÄN")
+                .font(Typo.mono(10)).tracking(1.4).foregroundStyle(Brand.faint)
+                .padding(.top, 16)
+
             // S4 (DECISIONS #210): facitknapparna hör hemma där "Senast sagt" faktiskt visas — här, inte i
             // LastSaidCard som ingen vy använder sedan skinnet v3. Bara betatestare, bara på en varning med id.
             // Inte medan kortet Efter resan visas: det bär samma varning med samma knappar (kort #279).
@@ -81,6 +86,59 @@ struct VaktenView: View {
                Date.now.timeIntervalSince(at) < Facit.maxAge {   // äldre än så tar servern inte emot
                 FacitRow(id: id, at: at).padding(.top, 10)
             }
+        }
+    }
+
+    /// Kvittot över senaste turen (designen 01b): klockslag, ikon, rubrik och det rösten sa, en rad per varning.
+    private func kvitto(_ tur: SenasteTur) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 6) {
+                MonoLabel(text: "Senaste turen")
+                Text(tur.rubrik).font(Typo.mono(12, .medium)).tracking(0.6).foregroundStyle(Brand.text)
+            }
+            .padding(.vertical, 16)
+            ForEach(tur.varningar, id: \.self) { v in
+                DashedDivider()
+                HStack(alignment: .top, spacing: 12) {
+                    Text(v.t.klockslag).font(Typo.mono(12, .medium)).foregroundStyle(Brand.dim)
+                    if let k = HazardKind(rawValue: v.kind) {
+                        HazardIcon(kind: k, size: 22).foregroundStyle(Brand.text)
+                    }
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(Self.rubrik(v.kind)).font(Typo.sans(15, .medium)).foregroundStyle(Brand.text)
+                        Text("”\(v.text)”").font(Typo.sans(13)).foregroundStyle(Brand.text2)
+                    }
+                    Spacer(minLength: 0)
+                }
+                .padding(.vertical, 14)
+                .accessibilityElement(children: .combine)
+            }
+        }
+        .padding(.horizontal, 20)
+        .background(Brand.panel, in: RoundedRectangle(cornerRadius: 18))
+    }
+
+    private struct SenasteTur { let rubrik: String; let varningar: [AlertEntry] }
+
+    /// Senaste avslutade turen med minst en varning; nil ⇒ Redo utan kvitto ("INGEN TUR ÄN").
+    private var senasteTuren: SenasteTur? {
+        guard let start = prefs.tripStart, let slut = prefs.lastTripEnd, slut >= start else { return nil }
+        let v = prefs.history.filter { $0.t >= start && $0.t <= slut }.sorted { $0.t < $1.t }
+        guard !v.isEmpty else { return nil }
+        let min = Int(slut.timeIntervalSince(start) / 60)
+        let km = String(format: "%.0f", prefs.lastTripKm)
+        return SenasteTur(rubrik: "\(start.klockslag)–\(slut.klockslag) · \(min) MIN · \(km) KM", varningar: v)
+    }
+
+    /// Kortets rubriker (DECISIONS #444) — samma ord på iPhone och Android.
+    static func rubrik(_ kind: String) -> String {
+        switch HazardKind(rawValue: kind) {
+        case .accident: return "Olycka"
+        case .slippery_segment: return "Halka"
+        case .icing_point: return "Frysrisk"
+        case .wildlife: return "Vilt"
+        case .camera: return "Fartkamera"
+        case nil: return kind
         }
     }
 
@@ -92,61 +150,43 @@ struct VaktenView: View {
         return Resan.fragaKvar(sedan: sedan, nu: .now, obesvarade: obes.count + omarkerade.count) ? (obes: obes, sedan: sedan) : nil
     }
 
+    private var wakes: Bool { prefs.autoWake && guardM.authStatus == .authorizedAlways }
+
     private var subtitle: String {
-        let n = [prefs.slippery, prefs.icing, prefs.accident, prefs.wildlife, prefs.camera].filter { $0 }.count
-        let wake = prefs.autoWake && guardM.authStatus == .authorizedAlways
         // "lämnar inte telefonen av sig själv" — samma ord som Android, introduktionen och produktboken (DECISIONS #320);
         // "stannar i telefonen" blev osant 16/9 när facitsvaret kom (`docs/TILL-AXEL-BYGGE-19.md` p. 1).
-        return "\(n == 5 ? "Fem" : "\(n)") källor bevakade. Din position lämnar inte telefonen av sig själv." +
-               (wake ? " Vakten vaknar själv när du kör." : "")
+        (wakes ? "Vakten vaknar själv när du kör. " : "") + "Din position lämnar inte telefonen av sig själv."
     }
 
-    private var chips: some View {
-        // Flöde av chips; "KAMEROR AV" visar en avslagen källa utan att gnälla.
-        let items: [(String, Bool)] = [("Halka", prefs.slippery), ("Vilt", prefs.wildlife),
-                                       ("Olyckor", prefs.accident), ("Frysrisk", prefs.icing),
-                                       (prefs.camera ? "Kameror" : "Kameror av", prefs.camera)]
-        return FlowChips(items: items)
-    }
-
-    private var lastTrip: String {
-        if let at = prefs.lastAutoWakeAt {
-            let d = at.dagOchKlockslag
-            return "Senaste tur · \(d)" + (prefs.lastAutoWakeMinutes > 0 ? ", \(prefs.lastAutoWakeMinutes) min, vaknade själv" : "")
-        }
-        if let t = prefs.lastSaidText { return "Senast sagt · ”\(t)”" }
-        return "Ingen tur än."
+    /// "HALKA · VILT · OLYCKOR · FRYSRISK · KAMEROR" — bara de källor som är på.
+    private var kallor: String {
+        let items: [(String, Bool)] = [("Halka", prefs.slippery), ("Vilt", prefs.wildlife), ("Olyckor", prefs.accident),
+                                       ("Frysrisk", prefs.icing), ("Kameror", prefs.camera)]
+        let on = items.filter { $0.1 }.map { $0.0.uppercased() }
+        return on.isEmpty ? "ALLA KÄLLOR AV" : on.joined(separator: " · ")
     }
 }
 
-/// Enkel radbrytande chip-rad (två rader räcker för fem chips).
-private struct FlowChips: View {
-    let items: [(String, Bool)]
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 8) { ForEach(Array(items.prefix(4)), id: \.0) { Chip(text: $0.0, on: $0.1) } }
-            HStack(spacing: 8) { ForEach(Array(items.dropFirst(4)), id: \.0) { Chip(text: $0.0, on: $0.1) } }
-        }
-    }
-}
-
-/// Farokort — används i körläget ("På din väg").
+/// Rad i "På din väg" (designen 02): ikon, avstånd i mono, faran, vägen.
 struct NearbyRow: View {
     let item: NearbyItem
+    var divider = false
     var body: some View {
-        HStack(spacing: 14) {
-            HazardIcon(kind: item.kind, size: 24).foregroundStyle(Brand.yellow)
-            Text(Nearby.distText(item.distM))
-                .font(Typo.mono(14, .semibold))
-                .foregroundStyle(Brand.yellow)
-                .frame(width: 60, alignment: .leading)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(Prefs.shared.label(item.kind)).font(Typo.sans(15, .semibold)).foregroundStyle(Brand.text)
-                if let s = item.secondary { Text(s).font(Typo.sans(12)).foregroundStyle(Brand.dim) }
+        VStack(spacing: 0) {
+            HStack(spacing: 14) {
+                HazardIcon(kind: item.kind, size: 20).foregroundStyle(Brand.dim)
+                Text(Nearby.distText(item.distM).uppercased())
+                    .font(Typo.mono(14)).foregroundStyle(Brand.text)
+                    .frame(width: 70, alignment: .leading)
+                Text(VaktenView.rubrik(item.kind.rawValue)).font(Typo.sans(15, .medium)).foregroundStyle(Brand.text)
+                Spacer(minLength: 8)
+                if let s = item.secondary {
+                    Text(s.uppercased()).font(Typo.mono(10)).tracking(1.2).foregroundStyle(Brand.faint).lineLimit(1)
+                }
             }
-            Spacer()
+            .frame(height: 52)
+            if divider { DashedDivider() }
         }
-        .padding(.horizontal, 16).padding(.vertical, 12)
-        .background(Brand.raised, in: RoundedRectangle(cornerRadius: 14))
+        .accessibilityElement(children: .combine)
     }
 }

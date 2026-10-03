@@ -77,6 +77,7 @@ final class VectorTests: XCTestCase {
             XCTAssertEqual(e["kind"] as! String, g.kind.rawValue, "\(name)[\(i)].kind")
             XCTAssertEqual((e["distanceM"] as! NSNumber).intValue, g.distanceM, "\(name)[\(i)].distanceM")
             XCTAssertEqual(e["text"] as! String, g.text, "\(name)[\(i)].text")
+            XCTAssertEqual(e["step"] as? String, g.step?.rawValue, "\(name)[\(i)].step")
         }
     }
 

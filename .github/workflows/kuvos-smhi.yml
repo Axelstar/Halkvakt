@@ -3,6 +3,10 @@
 # parametrarna 1, 7, 13 och 16 (kuvos/smhi-vinter.ts). Manifestet med sha256 läggs i releasen; kuvos/smhi-leverans.json i repot
 # ska bära samma summor (knappen `kuvos` kontrollerar mot den). Knapp, inte cron. Finns releasen redan avbryts jobbet — en
 # hämtning, inte en löpande.
+#
+# LÄGE 2/10: releasen FINNS. Första körningen här (37034624104) nådde 90-minuterstaket utan en rad i loggen — `grep -v` buffrade
+# utskriften — och de filer som ligger i releasen hämtades i Claudes session samma kväll (kuvos/smhi-leverans.json). Knappen står kvar
+# som vägen att göra om hämtningen; ta bort releasen först.
 name: kuvos-smhi
 on:
   workflow_dispatch:
@@ -11,7 +15,7 @@ permissions:
 jobs:
   hamta:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 180
     env: { GH_TOKEN: "${{ github.token }}" }
     steps:
       - uses: actions/checkout@v4
@@ -31,7 +35,7 @@ jobs:
             node --experimental-strip-types kuvos/smhi-vinter.ts smhi
             node --experimental-strip-types kuvos/radar-vinter.ts vaglag.geojson smhi/radar_precip_2024-25.csv.gz
             echo '```'
-          } 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+          } 2>&1 | grep --line-buffered -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Manifestet och releasen
         shell: bash
         run: |

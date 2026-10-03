@@ -27,7 +27,10 @@ import kotlinx.coroutines.launch
 import se.halkvakt.engine.Fix
 import se.halkvakt.engine.EngineConfig
 import se.halkvakt.engine.Geo
+import se.halkvakt.engine.Hazard
 import se.halkvakt.engine.HazardKind
+import se.halkvakt.engine.PointHazard
+import se.halkvakt.engine.WarningCard
 import java.util.Locale
 import kotlin.concurrent.thread
 
@@ -61,6 +64,8 @@ class GuardService : Service() {
     private var focusRequest: AudioFocusRequest? = null
     private val snapshotSchedule = SnapshotSchedule()   // #218: one load at a time, a minute's wait after a failure
     private var staleAnnounced = false
+    /** Den laddade vägdatan — kortet slår upp farans metadata här. Skrivs i laddtråden, läses i varningen. */
+    @Volatile private var hazardsNow: List<Hazard> = emptyList()
     private val idleStop = IdleStop()   // #248: samma kvart som iOS
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -115,7 +120,15 @@ class GuardService : Service() {
             val snap = SnapshotRepo.loadSnapshot(this)
             val gate = AgeGate.filter(snap.hazards, snap.generatedAtMs, System.currentTimeMillis())
             val hazards = gate.hazards
-            if (gate.stale && !staleAnnounced) { staleAnnounced = true; speak(AgeGate.STALE_LINE) }
+            hazardsNow = hazards
+            dataStale.value = gate.stale
+            dataTime.value = snap.generatedAtMs.takeIf { it > 0 }
+            if (gate.stale && !staleAnnounced) {
+                staleAnnounced = true; speak(AgeGate.STALE_LINE)
+                // Designen M: mörk rad överst i På vakt i 8 s medan rösten talar — inget gult kort, ingen fara.
+                staleToast.value = true
+                scope.launch { kotlinx.coroutines.delay(8000); staleToast.value = false }
+            }
             val dataTid = if (snap.generatedAtMs > 0)
                 android.text.format.DateFormat.format("HH:mm", snap.generatedAtMs) else "okänd tid"
             val g = guard
@@ -124,9 +137,12 @@ class GuardService : Service() {
                 guard = Guard(hazards, cfg = EngineConfig(leadMaxM = warnM), speak = ::speak, notify = ::updateNotification, onEvent = AlertBus::post,
                     isEnabled = { it !in disabledKinds },
                     onAlert = { a ->
-                        currentWarning.value = a
+                        // Kortet (DECISIONS #444) slår upp farans metadata: vägnummer, gräns, bro, röjningstid.
+                        val meta = (hazardsNow.firstOrNull { it.id == a.hazardId } as? PointHazard)?.meta
+                        val shown = ShownWarning(a, WarningCard.make(a, meta))
+                        currentWarning.value = shown
                         scope.launch { kotlinx.coroutines.delay(8000)
-                            if (currentWarning.value === a) currentWarning.value = null }
+                            if (currentWarning.value === shown) currentWarning.value = null }
                         session.value = session.value.let { s -> s.copy(
                             counts = s.counts + (a.kind to (s.counts[a.kind] ?: 0) + 1),
                             lastSaid = a.text to System.currentTimeMillis()) }
@@ -286,6 +302,8 @@ class GuardService : Service() {
 
     override fun onDestroy() {
         efterResan()          // FÖRE scope.cancel() — läser sitt eget, kortlivade scope
+        sparaTuren()
+        staleToast.value = false
         scope.cancel()
         running = false
         fused.removeLocationUpdates(callback)
@@ -304,6 +322,14 @@ class GuardService : Service() {
      * är en läsning plus en notis. Ingen notis alls om betatestet är av — knappen finns bara för
      * den som själv slagit på den (#186).
      */
+    /** Redo efter tur (designen 01b): turens slut och sträcka till kvittot. Egen kortlivad scope, som efterResan. */
+    private fun sparaTuren() {
+        if (session.value.startedAt <= 0L) return
+        val app = applicationContext
+        val km = session.value.km.toFloat()
+        CoroutineScope(Dispatchers.IO).launch { Prefs.setTripEnd(app, System.currentTimeMillis(), km) }
+    }
+
     private fun efterResan() {
         val sedan = session.value.startedAt
         if (sedan <= 0L) return
@@ -364,8 +390,14 @@ class GuardService : Service() {
         val runningFlow = MutableStateFlow(false)
         val snapshotInfo = MutableStateFlow<String?>(null)
         val session = MutableStateFlow(Session())
-        /** Helskärmskortet (1b): sätts vid uppläst varning, släcks efter 8 s eller "Uppfattat". */
-        val currentWarning = MutableStateFlow<se.halkvakt.engine.Alert?>(null)
+        /** Varningskortet (DECISIONS #444): sätts vid uppläst varning, släcks efter 8 s — ingen knapp. */
+        val currentWarning = MutableStateFlow<ShownWarning?>(null)
+        /** Gammal väglagsdata (designen M–N): sant så länge den laddade datan är för gammal. */
+        val dataStale = MutableStateFlow(false)
+        /** När den laddade datan skapades (ms) — "SENAST FÄRSK 14:05". */
+        val dataTime = MutableStateFlow<Long?>(null)
+        /** Mörka raden överst i På vakt i 8 s medan rösten säger repliken om gammal data. */
+        val staleToast = MutableStateFlow(false)
         var running: Boolean
             get() = runningFlow.value
             set(v) { runningFlow.value = v }

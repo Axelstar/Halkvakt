@@ -22,6 +22,8 @@ object Prefs {
     private val KEY_FACIT_STATUS = stringPreferencesKey("facit_status")
     private val KEY_WARN_DIST = floatPreferencesKey("warn_distance_m")
     private val KEY_TRIP_START = longPreferencesKey("trip_start")
+    private val KEY_TRIP_END = longPreferencesKey("trip_end")      // Redo efter tur (DECISIONS #444)
+    private val KEY_TRIP_KM = floatPreferencesKey("trip_km")
     private val KEY_MISSAR = stringPreferencesKey("missar")
     private fun kindKey(k: HazardKind) = booleanPreferencesKey("warn_${k.wire}")
 
@@ -68,6 +70,9 @@ object Prefs {
      *  knapp trycks minuter senare, i en annan process, och måste veta vilket fönster som gäller. */
     fun tripStart(ctx: Context): Flow<Long> = ctx.dataStore.data.map { it[KEY_TRIP_START] ?: 0L }
     suspend fun setTripStart(ctx: Context, t: Long) { ctx.dataStore.edit { it[KEY_TRIP_START] = t } }
+    /** Senaste turens slut och sträcka — kvittot på Redo efter tur (designen 01b). */
+    fun tripEnd(ctx: Context): Flow<Pair<Long, Float>> = ctx.dataStore.data.map { (it[KEY_TRIP_END] ?: 0L) to (it[KEY_TRIP_KM] ?: 0f) }
+    suspend fun setTripEnd(ctx: Context, t: Long, km: Float) { ctx.dataStore.edit { it[KEY_TRIP_END] = t; it[KEY_TRIP_KM] = km } }
 
     /**
      * Ett tryck = EN skrivning, och historiken läses om INUTI transaktionen. Skälet är inte

@@ -326,7 +326,8 @@
    "hazardId": "acc1",
    "kind": "accident",
    "distanceM": 7969,
-   "text": "Allvarlig olycka 8 kilometer framför dig — stor påverkan på trafiken. Överväg annan väg."
+   "text": "Allvarlig olycka 8 kilometer framför dig — stor påverkan på trafiken. Överväg annan väg.",
+   "step": "early"
   }
  ]
 }
