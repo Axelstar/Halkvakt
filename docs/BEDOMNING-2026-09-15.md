@@ -754,7 +754,7 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 21 kort
 
 **§5 Integrationsläget — mätt mot kartan (24/9, Bengts fråga "hur långt i integrationen har vi kommit")**
 
-- #288 🔨 #288 KARTSYNKEN — PROJEKTKARTAN UPPDATERAR SIG SJÄLV (BYGGD, INTE DRIFTSATT — Claude, Bengts ja 3/10: "ja … — pågår
+- #288 🔨 #288 KARTSYNKEN — PROJEKTKARTAN UPPDATERAR SIG SJÄLV (I DRIFT, VÄNTAR PÅ AXELS NYCKEL — Claude, Bengts ja … — pågår
 
 **§6.1 Kuvösen är den enda kända vägen runt vintern — och väntar på Trafikverkets beslut**
 
