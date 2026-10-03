@@ -7379,3 +7379,32 @@ Skrivet efter att filen öppnats men **innan någon regel körts och något utfa
 **Alternativ som valdes bort:** att fråga Trafikverket om 5-minutersvärden (väg B: renast, men Bengt vill inte lägga en femte fråga);
 bara 60 minuter (väg C: betans eget fönster hade aldrig kunnat vinna); att flytta tillbaka kalibreringen till 1/2 2027 (halva domvintern
 förlorad). **Axel** bör få veta punkt 3, eftersom kalibreringen i kuvösen var hans ok (#425).
+
+## #456 (3/10 2026) Kuvösen: riktningsprovet väntar på Trafikverkets svar, längst till vecka 42 — och vad som gäller utan svar (kort #232)
+
+**Beslut (Bengt 3/10):** *"vi väntar till vecka 42"*, efter hans fråga *"ska vi inte vänta in [svaren från Micke] innan vi gör detta?"*.
+**Skälet:** två av de fyra frågorna från 2/10 rör delarna i riktningsprovet. Den ena är nederbördskoderna 3, 9 och −9, som rör motorns
+fukt och nederbördstypens facit (1 423 och 55 318 rader av 5,5 miljoner). Den andra är läget för 23 av 777 stationer. Översättningen av
+en kod är ett val, och det ska göras innan utfallet läses. Planen sa vecka 42, och höjdläsningen 23/10 hinns ändå.
+
+**Förregistrerat nu, före körningen:**
+- **Kommer svaret senast fredag 16/10:** koderna och stationerna förs in enligt Trafikverkets besked, skrivet i DECISIONS innan knappen
+  trycks. Sedan körs riktningsprovet.
+- **Kommer inget svar:** riktningsprovet körs ändå senast fredag 16/10. Koderna 3, 9 och −9 räknas som saknade (NULL, som i dag), och de
+  23 stationerna står utanför. Det skrivs i körningens rubrik och i redovisningen.
+- Regnmängden, sikten och vinden rör inte delarna som körs nu. Efterhalkan, övergångarna, tillståndet, försprånget och vinden körs när
+  regnmängden och vindstyrkan finns.
+
+**"Ovanpå" gjort räknebart för kuvösen (#455 punkt 1), ur redan skrivna värden och utan nya tal.** Skrivet nu, före regnmängden och
+före något utfall. Bengt kan invända innan efterhalkan körs.
+- **Facittillfälle:** en stationsnatt (middag till middag i svensk tid, #246) där stationens yta når ≤ +1,0 °C. Det är uppspelningens
+  *föll ut* (`sql/028`) och T-A:s träffgräns.
+- **En del fångar** tillfället om den fyrat för stationen den natten inom 90 minuter före det första ögonblick ytan når ≤ +1,0 °C, alltså
+  uppspelningens utfallsfönster (t, t + 90 min]. Baslinjen, dagens `icing_point`, fångar om den fyrat för stationen den natten senast
+  i det ögonblicket.
+- **Nettonytt för P** är de facittillfällen som bara P fångar, varken baslinjen eller någon annan del, som andel av alla facittillfällen
+  vid stationer som klarar vakterna den natten. Det är räckviddsvillkoret i KB-B: en miss räknas bara där någon kunde tala.
+- **Pris för P:** P:s tillkomna fyrningsepisoder är nätter där ingen annan del fyrat för stationen. Pris är de av dem där ytan inte når
+  ≤ +1,5 °C inom 90 minuter (*uteblev*), som andel av de tillkomna episoderna. *Nära*, inom nära-miss-bandet +0,5 °C, är inte falsklarm.
+- **Tidsvinsten** är minuterna mellan P:s första fyrning och baslinjens på tillfällen som båda fångar. Den redovisas bredvid och räknas
+  aldrig som nettonytt.

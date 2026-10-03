@@ -2248,4 +2248,5 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
     - nederbördstypen med `grind-nt.ts --kuvos`, på startvärdet, utan svep och utan val, med SMHI p13 ur arkivet.
 
     Frågan står i §4.2.
+  - **Bengt: *"ska vi inte vänta in [Mickes svar]"*:** ja (DECISIONS #456). Koderna 3, 9 och −9 och de 23 stationerna rör delarna i riktningsprovet, och översättningen ska göras innan utfallet läses. Riktningsprovet körs när svaret kommit, men senast fredag 16/10. Utan svar körs det med koderna som saknade (KALENDERN). #737 är sammanslagen (cb7b8ba), och knappen är inte tryckt.
   - **Rättelse till #455:** T-A och R-A är svep som väljer värdet (TROSKLAR-TRENDEN §2: *"T-A väljer värdet"*; R-A redovisar *"bästa kombinationen"*). Därför är de *ej prövade* enligt punkt 4. Jag hade skrivit att R-A körs. Trendens värden prövas inom efterhalkan.

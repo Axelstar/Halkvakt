@@ -493,7 +493,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
   ✅ **AVGJORDA 3/10 (DECISIONS #455):** Bengt sa ja till A och till rekommendationerna för 1, 2 och 4. 30-minutersfallet räknas ur två halvtimmesrader, i `kuvos/trend.ts` härlett ur `sql/018`. Kalibreringen sveper 30 och 60 min. Frysflaggan är byggd (`publish/frysflagga.ts`).
   Det som går att köra nu är grind A, vägpunkten och höjden, frysflaggan och NT. ↪ *Rättat samma kväll (#455):* T-A och R-A är svep utan startvärden och är *ej prövade*. Trendens värden prövas inom efterhalkan.
-  🔨 **Riktningsprovet före regnmängden är byggt (3/10).** Knappen `kuvos` med `korflode = riktningsprov` kör rösten, baslinjen, grind A, höjdprovet med frysflaggan och NT. Den läser utfall och körs bara på Bengts ord (§4.2). *Ovanpå* fylls när efterhalkan kan köras. Efterhalkan, Ö-B, tillståndet, försprånget och vinden väntar på regnmängden och vindstyrkan (#439). KUVOSEN.html §4 och planens §3 är rättade: efterhalkan stod som prövbar.
+  🔨 **Riktningsprovet före regnmängden är byggt (3/10).** Knappen `kuvos` med `korflode = riktningsprov` kör rösten, baslinjen, grind A, höjdprovet med frysflaggan och NT. Den läser utfall och körs bara på Bengts ord (§4.2). *Ovanpå* fylls när efterhalkan kan köras.
+  ⏳ **Väntar på Trafikverkets svar om koderna 3, 9 och −9 och de 23 stationerna, men längst till fredag 16/10** (Bengt 3/10, DECISIONS #456, KALENDERN). Utan svar körs det ändå, med koderna som saknade och stationerna utanför. Efterhalkan, Ö-B, tillståndet, försprånget och vinden väntar på regnmängden och vindstyrkan (#439). KUVOSEN.html §4 och planens §3 är rättade: efterhalkan stod som prövbar.
 
 *↩︎ = ÅTERSTÄLLT 10/9. Korten nedan föll av tavlan 8/9 20:43 (commit 99473c7: Claudes tavelsynk av
 "Axels nästa steg" svalde 174 rader, inkl. tre Claude-sektioner). Inget av dem har bevis på klart sedan dess.*
