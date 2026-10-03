@@ -1,15 +1,22 @@
 {
   "_om": "Projektkartan (Bengts ja 3/10, DECISIONS #446): navet över hela bygget. Varje del har ett läge, och läget är underordnat beviset: grönt kräver bevis, blått en nyckel, orange och rött en lista över vad som saknas. Sidan docs/PROJEKTKARTAN.html skrivs av scripts/projektkartan.ts; ändra här, kör skriptet, republicera artefakten. GROV VERSION 3/10: läget i stora drag ur stomdokumenten, tavlan och beslutsloggen, inte mätt del för del mot koden (kort #286).",
   "block": [
-    { "id": "kallor", "namn": "Källorna", "om": "Det Halkvakt läser: Trafikverket, SMHI, radarn och grannländerna." },
-    { "id": "insamling", "namn": "Insamling och arkiv", "om": "Hämtningen varje minut, arkivet och vakterna som håller datan ren." },
-    { "id": "lagesfilen", "namn": "Lägesfilen", "om": "Det appen hämtar: publiceringen var tionde minut och kartsajten." },
-    { "id": "motorn", "namn": "Motorn", "om": "De fem farslagen i drift, och lagren L1–L5 med delarna som prövas." },
-    { "id": "provningen", "namn": "Skuggan och prövningen", "om": "Skuggmotorn, grindarna, facit och domarna." },
-    { "id": "appen", "namn": "Appen", "om": "Rösten, skärmarna och driften på iPhone och Android." },
-    { "id": "favoriterna", "namn": "Favoriterna", "om": "Läget längs sparade rutter före resan." },
-    { "id": "forarna", "namn": "Ut till förarna", "om": "Butikerna, testarna, namnet och Skyltfonden." },
-    { "id": "styrningen", "namn": "Styrningen", "om": "Stomdokumenten, tavlan och vakterna som håller bygget rätt." }
+    { "id": "kallor", "namn": "Källorna", "om": "Det Halkvakt läser: Trafikverket, SMHI, radarn och grannländerna.", "plats": "flode" },
+    { "id": "insamling", "namn": "Insamling och arkiv", "om": "Hämtningen varje minut, arkivet och vakterna som håller datan ren.", "plats": "flode" },
+    { "id": "lagesfilen", "namn": "Lägesfilen", "om": "Det appen hämtar: publiceringen var tionde minut och kartsajten.", "plats": "flode" },
+    { "id": "motorn", "namn": "Motorn", "om": "De fem farslagen i drift, och lagren L1–L5 med delarna som prövas.", "plats": "flode" },
+    { "id": "provningen", "namn": "Skuggan och prövningen", "om": "Skuggmotorn, grindarna, facit och domarna.", "plats": "under:motorn", "pil": "Prövar motorn: skuggan, grindarna, facit och domarna." },
+    { "id": "appen", "namn": "Appen", "om": "Rösten, skärmarna och driften på iPhone och Android.", "plats": "flode" },
+    { "id": "favoriterna", "namn": "Favoriterna", "om": "Läget längs sparade rutter före resan.", "plats": "sida", "pil": "Bygger på lägesfilen, motorn och appen." },
+    { "id": "forarna", "namn": "Ut till förarna", "om": "Butikerna, testarna, namnet och Skyltfonden.", "plats": "flode" },
+    { "id": "styrningen", "namn": "Styrningen", "om": "Stomdokumenten, tavlan och vakterna som håller bygget rätt.", "plats": "sida", "pil": "Håller ihop hela bygget: stomdokumenten, tavlan och vakterna." }
+  ],
+  "mal": [
+    { "id": "app-store", "namn": "Halkvakt i App Store", "om": "Appen ute till alla iPhone-förare.", "delar": ["u-app-store"] },
+    { "id": "play", "namn": "Halkvakt på Google Play", "om": "Appen ute till alla Android-förare.", "delar": ["u-play"] },
+    { "id": "beta-november", "namn": "Efterhalkan som märkt beta", "om": "Vinterns enda nya röst, planerad till november.", "delar": ["m-efterhalkan"] },
+    { "id": "mars", "namn": "Domarna i mars", "om": "Vinterns domar på grindarna, prognosen och facit.", "delar": ["p-grindarna", "m-segmentprognos", "p-bildfacit-domen", "p-forarfacit"] },
+    { "id": "favoriter-v1", "namn": "Favoriternas första version", "om": "Fliken, rapporten och sparade rutter, utan tider och notis.", "delar": ["f-fliken", "f-spara"] }
   ],
   "delar": [
     { "id": "k-vader", "namn": "Trafikverkets väderstationer", "block": "kallor", "lage": "gron",

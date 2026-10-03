@@ -4,11 +4,12 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500&display=swap">
 <!-- GENERERAD av scripts/projektkartan.ts ur docs/projektkartan.json. Ändra inte här: ändra datafilen och kör skriptet. -->
 <style>
-  /* Layout: the same paper sheet as the core documents. The map up top (one column per block, one tile per part,
-     coloured by state), the build-order warnings, then one sheet per part. Hovering a tile marks what it depends on
-     and what depends on it; without script the tiles are plain links to the sheets. */
+  /* Layout: the same paper sheet as the core documents. Top: the flow from sources to drivers, one step per block
+     with a stacked bar of states; testing hangs under the engine, favourites and governance sit beside the flow.
+     Then what stands in the way of each goal, then the build-order warnings, then one sheet per part. The parts of a
+     block open behind a click; hovering a part marks what it depends on and what depends on it. */
   :root {
-    --papper: #F6F7F5; --blad: #FFFFFF; --black: #16202A; --dampad: #4A5763; --linje: #D9DFE3;
+    --papper: #F6F7F5; --blad: #FFFFFF; --black: #16202A; --dampad: #4A5763; --linje: #D9DFE3; --ram: #C3CBD1;
     --gul: #A8720A; --gul-yta: #FFF3D6;
     --gron: #1F7A45; --gron-yta: #E4F2EA; --orange: #B35C00; --orange-yta: #FFE9D2; --rod: #A63A2A; --rod-yta: #F9E1DC;
     --bla: #1F5F99; --bla-yta: #E1EDF8; --gra: #6B7680; --gra-yta: #ECEFF1;
@@ -16,7 +17,7 @@
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --papper: #0B1014; --blad: #121A20; --black: #E6ECEF; --dampad: #9DAAB3; --linje: #26323B;
+      --papper: #0B1014; --blad: #121A20; --black: #E6ECEF; --dampad: #9DAAB3; --linje: #26323B; --ram: #34424C;
       --gul: #FFC94A; --gul-yta: #2A2310;
       --gron: #4CC382; --gron-yta: #12261B; --orange: #FFA552; --orange-yta: #2E1E0E; --rod: #F08A7A; --rod-yta: #2B1714;
       --bla: #7DB8F0; --bla-yta: #13222F; --gra: #9AA5AE; --gra-yta: #1B2329;
@@ -24,7 +25,7 @@
     }
   }
   :root[data-theme="dark"] {
-    --papper: #0B1014; --blad: #121A20; --black: #E6ECEF; --dampad: #9DAAB3; --linje: #26323B;
+    --papper: #0B1014; --blad: #121A20; --black: #E6ECEF; --dampad: #9DAAB3; --linje: #26323B; --ram: #34424C;
     --gul: #FFC94A; --gul-yta: #2A2310;
     --gron: #4CC382; --gron-yta: #12261B; --orange: #FFA552; --orange-yta: #2E1E0E; --rod: #F08A7A; --rod-yta: #2B1714;
     --bla: #7DB8F0; --bla-yta: #13222F; --gra: #9AA5AE; --gra-yta: #1B2329;
@@ -32,15 +33,15 @@
   }
   body { background: var(--papper); color: var(--black); padding-inline: 16px; padding-block: 28px 48px;
          font: 400 16px/1.6 "Source Serif 4", Georgia, "Times New Roman", serif; }
-  .blad { max-width: 1180px; margin: 0 auto; background: var(--blad); border: 1px solid var(--linje);
+  .blad { max-width: 1240px; margin: 0 auto; background: var(--blad); border: 1px solid var(--linje);
           padding: clamp(20px, 4vw, 48px); display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
-  h1, h2, h3, .etikett, th, .ruta-namn, .chip, .fakta b, .block-namn { font-family: "Instrument Sans", "Helvetica Neue", Arial, sans-serif; }
+  h1, h2, h3, .etikett, .chip, .fakta b, .steg-namn, .mal-namn, summary { font-family: "Instrument Sans", "Helvetica Neue", Arial, sans-serif; }
   h1 { font-size: clamp(30px, 5vw, 42px); line-height: 1.08; font-weight: 700; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
   h2 { font-size: 21px; font-weight: 700; margin: 18px 0 0; text-wrap: balance; }
   h3 { font-size: 16px; font-weight: 600; margin: 0; }
   p { margin: 0; max-width: 72ch; }
   a { color: inherit; }
-  a:focus-visible { outline: 2px solid var(--gul); outline-offset: 2px; }
+  a:focus-visible, summary:focus-visible { outline: 2px solid var(--gul); outline-offset: 2px; }
   .etikett { font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gul); }
   .ingress { font-size: 18px; color: var(--dampad); }
   .litet { font-size: 14px; color: var(--dampad); }
@@ -57,165 +58,352 @@
   .rod { --c: var(--rod); --y: var(--rod-yta); } .bla { --c: var(--bla); --y: var(--bla-yta); } .gra { --c: var(--gra); --y: var(--gra-yta); }
   .chip.gron, .chip.orange, .chip.rod, .chip.bla, .chip.gra { color: var(--c); background: var(--y); }
 
-  .kartan { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; align-items: start; }
-  .block { border: 1px solid var(--linje); border-radius: 8px; padding: 10px; display: grid; gap: 6px; min-width: 0; }
-  .block-namn { font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--dampad); }
-  .ruta { display: flex; gap: 8px; align-items: baseline; padding: 6px 8px; border-radius: 6px; background: var(--y);
-          text-decoration: none; font: 500 13.5px/1.3 "Instrument Sans", Arial, sans-serif; color: var(--black);
+  /* The flow: steps left to right with arrows; under 900 px they stack top to bottom. */
+  .flode { display: flex; align-items: flex-start; gap: 0; }
+  .kolumn { flex: 1 1 0; min-width: 0; display: grid; gap: 10px; }
+  .pil { flex: none; align-self: flex-start; margin-top: 18px; width: 22px; text-align: center; color: var(--dampad);
+         font: 600 18px "Instrument Sans", Arial, sans-serif; }
+  .pil::before { content: "→"; }
+  .steg, .under, .sidosteg { border: 1px solid var(--ram); border-radius: 8px; padding: 10px; display: grid; gap: 6px; min-width: 0; background: var(--blad); }
+  .under { border-style: dashed; }
+  .under-pil { text-align: center; color: var(--dampad); font: 600 14px "Instrument Sans", Arial, sans-serif; }
+  .steg-namn { font-size: 15px; font-weight: 700; line-height: 1.25; }
+  .steg-pil { font-size: 13px; line-height: 1.35; color: var(--dampad); }
+  .stapel { display: flex; height: 12px; border-radius: 3px; overflow: hidden; background: var(--linje); gap: 2px; }
+  .del-stapel { background: var(--c); min-width: 6px; }
+  .steg-tal { font-size: 13px; line-height: 1.35; color: var(--dampad); font-variant-numeric: tabular-nums; }
+  details > summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--dampad); }
+  .rutor { display: grid; gap: 5px; margin-top: 6px; }
+  .sidor { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+  @media (max-width: 900px) {
+    .flode { flex-direction: column; align-items: stretch; }
+    .pil { margin: 4px 0; width: auto; align-self: center; }
+    .pil::before { content: "↓"; }
+  }
+
+  .ruta { display: flex; gap: 8px; align-items: baseline; padding: 5px 8px; border-radius: 6px; background: var(--y);
+          text-decoration: none; font: 500 13px/1.3 "Instrument Sans", Arial, sans-serif; color: var(--black);
           outline: 2px solid transparent; outline-offset: -2px; }
   .ruta::before { content: ""; flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--c); transform: translateY(1px); }
   .ruta:hover, .ruta:focus-visible { outline-color: var(--black); }
   .ruta.markerad-beror { outline: 2px dashed var(--black); }
   .ruta.markerad-levererar { outline: 2px solid var(--dampad); }
-  .kartan.pekar .ruta:not(.markerad-beror):not(.markerad-levererar):not(:hover):not(:focus-visible) { opacity: 0.45; }
-  .ruta .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .ruta .sr, .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+  .mal { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+  .mal-kort { border: 1px solid var(--ram); border-radius: 8px; padding: 12px 14px; display: grid; gap: 6px; align-content: start; }
+  .mal-namn { font-size: 16px; font-weight: 700; }
+  .mal-kort ul { list-style: none; padding: 0; display: grid; gap: 4px; }
+  .mal-kort li { font-size: 14px; line-height: 1.4; display: grid; gap: 1px; }
+  .mal-kort li .varfor { color: var(--dampad); font-size: 13px; }
+  .mal-klar { color: var(--gron); font-size: 14px; font-weight: 600; }
 
   .varning { border: 1px solid var(--linje); border-radius: 6px; padding: 12px 16px; display: grid; gap: 6px; }
   ul { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
   .delar-block { display: grid; gap: 14px; }
   .del { border-top: 1px solid var(--linje); padding-top: 12px; display: grid; gap: 6px; scroll-margin-top: 16px; }
   .del-rubrik { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: baseline; }
-  .rad { display: grid; grid-template-columns: 9.5em minmax(0, 1fr); gap: 2px 12px; font-size: 15px; }
+  .rad { display: grid; grid-template-columns: 9.5em minmax(0, 1fr); gap: 2px 12px; font-size: 15px; margin: 0; }
   .rad > dt { color: var(--dampad); font: 600 13px/1.6 "Instrument Sans", Arial, sans-serif; }
   .rad > dd { margin: 0; min-width: 0; }
   .ref { text-decoration-color: var(--c); text-underline-offset: 3px; }
   @media (max-width: 520px) { .rad { grid-template-columns: minmax(0, 1fr); } .rad > dd { margin-bottom: 6px; } }
-  @media (prefers-reduced-motion: no-preference) { .ruta { transition: opacity 120ms; } }
 </style>
 
 <main class="blad">
   <div class="etikett">Navet över bygget · skrivs ur docs/projektkartan.json</div>
   <h1>Halkvaktens projektkarta</h1>
-  <p class="ingress">Hela Halkvakt på en sida: varje del, hur långt den har kommit, vad som saknas och vad den hänger ihop med. Klicka på en del för att se dess blad. Läget är underordnat beviset: grönt kräver ett bevis, blått en nyckel, orange och rött en lista över vad som saknas, och säger koden eller ett prov något annat är det kartan som är fel.</p>
+  <p class="ingress">Hela Halkvakt på en sida. Överst flödet från källorna till förarna, med en stapel som visar hur långt varje block har kommit. Under det vad som står i vägen för målen, och sist ett blad per del. Läget är underordnat beviset: grönt kräver ett bevis, blått en nyckel, orange och rött en lista över vad som saknas, och säger koden eller ett prov något annat är det kartan som är fel.</p>
   <p class="grov"><b>Grov version 3/10.</b> Läget är satt i stora drag ur stomdokumenten, tavlan och beslutsloggen. Delarna mäts mot koden och tröskeldokumenten i nästa varv (kort #286).</p>
   <div class="fakta">
     <span><b>75</b> delar i <b>9</b> block</span>
     <span><b>21</b> klar</span>
     <span><b>28</b> delvis</span>
-    <span><b>11</b> ej påbörjad</span>
     <span><b>15</b> väntar</span>
+    <span><b>11</b> ej påbörjad</span>
     <span><b>0</b> stängd</span>
     <span><b>46</b> öppna kort, alla på en del</span>
   </div>
   <div class="forklaring">
     <span><span class="chip gron">Klar</span> klar och i drift, med bevis</span>
     <span><span class="chip orange">Delvis</span> byggd men inte prövad, i skuggan eller utan dom</span>
-    <span><span class="chip rod">Ej påbörjad</span> finns bara som kort, idé eller tröskeldokument</span>
     <span><span class="chip bla">Väntar</span> väntar på ett beslut eller en nyckel</span>
+    <span><span class="chip rod">Ej påbörjad</span> finns bara som kort, idé eller tröskeldokument</span>
     <span><span class="chip gra">Stängd</span> medvetet stängd eller parkerad</span>
   </div>
 
-  <h2 id="kartan">Kartan</h2>
-  <p class="litet">Ett block per kolumn, i flödets ordning från källorna till förarna. Pekar du på en del markeras det den beror på med streckad ram och det som beror på den med hel ram.</p>
-  <div class="kartan" id="karta">
-    <section class="block" aria-label="Källorna">
-      <div class="block-namn">Källorna</div>
-      <a class="ruta gron" href="#del-k-vader" data-id="k-vader" data-beror=""><span>Trafikverkets väderstationer</span><span class="sr">, klar</span></a>
-      <a class="ruta gron" href="#del-k-vaglag" data-id="k-vaglag" data-beror=""><span>Trafikverkets väglag (RoadCondition)</span><span class="sr">, klar</span></a>
-      <a class="ruta gron" href="#del-k-situation" data-id="k-situation" data-beror=""><span>Trafikverkets olyckor, djur och hinder</span><span class="sr">, klar</span></a>
-      <a class="ruta gron" href="#del-k-kameror" data-id="k-kameror" data-beror=""><span>Trafikverkets kameror</span><span class="sr">, klar</span></a>
-      <a class="ruta rod" href="#del-k-vagarbeten" data-id="k-vagarbeten" data-beror=""><span>Vägarbeten, hastighet och omledningar</span><span class="sr">, ej påbörjad</span></a>
-      <a class="ruta rod" href="#del-k-restider" data-id="k-restider" data-beror=""><span>Köer och restider (TravelTimeRoute, TrafficFlow)</span><span class="sr">, ej påbörjad</span></a>
-      <a class="ruta rod" href="#del-k-farjor" data-id="k-farjor" data-beror=""><span>Vägfärjorna (FerryAnnouncement)</span><span class="sr">, ej påbörjad</span></a>
-      <a class="ruta gron" href="#del-k-smhi-varningar" data-id="k-smhi-varningar" data-beror=""><span>SMHI:s varningar</span><span class="sr">, klar</span></a>
-      <a class="ruta orange" href="#del-k-smhi-obs" data-id="k-smhi-obs" data-beror=""><span>SMHI:s observationer (moln, sikt)</span><span class="sr">, delvis</span></a>
-      <a class="ruta orange" href="#del-k-radar" data-id="k-radar" data-beror=""><span>SMHI:s nederbördsradar</span><span class="sr">, delvis</span></a>
-      <a class="ruta orange" href="#del-k-grannar" data-id="k-grannar" data-beror=""><span>Grannländernas stationer (FI, NO, DK)</span><span class="sr">, delvis</span></a>
+  <h2 id="flodet">Flödet</h2>
+  <p class="litet">Datan går från vänster till höger. Varje block visar sina delar som en stapel i färgernas ordning. Klicka på <i>Visa delarna</i> för att se dem; pekar du på en del markeras det den beror på med streckad ram och det som beror på den med hel ram.</p>
+  <div class="flode" id="karta">
+    <div class="kolumn">
+    <section class="steg" aria-label="Källorna">
+      <div class="steg-namn">Källorna</div>
+      
+      <div class="stapel" role="img" aria-label="5 klar, 3 delvis, 3 ej påbörjad"><span class="del-stapel gron" style="flex-grow: 5"></span><span class="del-stapel orange" style="flex-grow: 3"></span><span class="del-stapel rod" style="flex-grow: 3"></span></div>
+      <div class="steg-tal">11 delar: 5 klar · 3 delvis · 3 ej påbörjad</div>
+      <details>
+        <summary>Visa delarna</summary>
+        <div class="rutor">
+          <a class="ruta gron" href="#del-k-vader" data-id="k-vader" data-beror=""><span>Trafikverkets väderstationer</span><span class="sr">, klar</span></a>
+          <a class="ruta gron" href="#del-k-vaglag" data-id="k-vaglag" data-beror=""><span>Trafikverkets väglag (RoadCondition)</span><span class="sr">, klar</span></a>
+          <a class="ruta gron" href="#del-k-situation" data-id="k-situation" data-beror=""><span>Trafikverkets olyckor, djur och hinder</span><span class="sr">, klar</span></a>
+          <a class="ruta gron" href="#del-k-kameror" data-id="k-kameror" data-beror=""><span>Trafikverkets kameror</span><span class="sr">, klar</span></a>
+          <a class="ruta rod" href="#del-k-vagarbeten" data-id="k-vagarbeten" data-beror=""><span>Vägarbeten, hastighet och omledningar</span><span class="sr">, ej påbörjad</span></a>
+          <a class="ruta rod" href="#del-k-restider" data-id="k-restider" data-beror=""><span>Köer och restider (TravelTimeRoute, TrafficFlow)</span><span class="sr">, ej påbörjad</span></a>
+          <a class="ruta rod" href="#del-k-farjor" data-id="k-farjor" data-beror=""><span>Vägfärjorna (FerryAnnouncement)</span><span class="sr">, ej påbörjad</span></a>
+          <a class="ruta gron" href="#del-k-smhi-varningar" data-id="k-smhi-varningar" data-beror=""><span>SMHI:s varningar</span><span class="sr">, klar</span></a>
+          <a class="ruta orange" href="#del-k-smhi-obs" data-id="k-smhi-obs" data-beror=""><span>SMHI:s observationer (moln, sikt)</span><span class="sr">, delvis</span></a>
+          <a class="ruta orange" href="#del-k-radar" data-id="k-radar" data-beror=""><span>SMHI:s nederbördsradar</span><span class="sr">, delvis</span></a>
+          <a class="ruta orange" href="#del-k-grannar" data-id="k-grannar" data-beror=""><span>Grannländernas stationer (FI, NO, DK)</span><span class="sr">, delvis</span></a>
+        </div>
+      </details>
     </section>
-    <section class="block" aria-label="Insamling och arkiv">
-      <div class="block-namn">Insamling och arkiv</div>
-      <a class="ruta gron" href="#del-i-livemotorn" data-id="i-livemotorn" data-beror="k-vader k-vaglag k-situation"><span>Livemotorn (hämtning varje minut)</span><span class="sr">, klar</span></a>
-      <a class="ruta gron" href="#del-i-arkivet" data-id="i-arkivet" data-beror="i-livemotorn"><span>Arkivet</span><span class="sr">, klar</span></a>
-      <a class="ruta orange" href="#del-i-export" data-id="i-export" data-beror="i-arkivet"><span>Arkivexporten och säkerhetskopian</span><span class="sr">, delvis</span></a>
-      <a class="ruta gron" href="#del-i-vakterna" data-id="i-vakterna" data-beror="i-arkivet"><span>Datavakterna (givarvakten, radvakten, karantänen)</span><span class="sr">, klar</span></a>
+    </div>
+    <span class="pil" aria-hidden="true"></span>
+    <div class="kolumn">
+    <section class="steg" aria-label="Insamling och arkiv">
+      <div class="steg-namn">Insamling och arkiv</div>
+      
+      <div class="stapel" role="img" aria-label="3 klar, 1 delvis"><span class="del-stapel gron" style="flex-grow: 3"></span><span class="del-stapel orange" style="flex-grow: 1"></span></div>
+      <div class="steg-tal">4 delar: 3 klar · 1 delvis</div>
+      <details>
+        <summary>Visa delarna</summary>
+        <div class="rutor">
+          <a class="ruta gron" href="#del-i-livemotorn" data-id="i-livemotorn" data-beror="k-vader k-vaglag k-situation"><span>Livemotorn (hämtning varje minut)</span><span class="sr">, klar</span></a>
+          <a class="ruta gron" href="#del-i-arkivet" data-id="i-arkivet" data-beror="i-livemotorn"><span>Arkivet</span><span class="sr">, klar</span></a>
+          <a class="ruta orange" href="#del-i-export" data-id="i-export" data-beror="i-arkivet"><span>Arkivexporten och säkerhetskopian</span><span class="sr">, delvis</span></a>
+          <a class="ruta gron" href="#del-i-vakterna" data-id="i-vakterna" data-beror="i-arkivet"><span>Datavakterna (givarvakten, radvakten, karantänen)</span><span class="sr">, klar</span></a>
+        </div>
+      </details>
     </section>
-    <section class="block" aria-label="Lägesfilen">
-      <div class="block-namn">Lägesfilen</div>
-      <a class="ruta gron" href="#del-l-publicera" data-id="l-publicera" data-beror="i-livemotorn i-vakterna"><span>Publiceringen var tionde minut</span><span class="sr">, klar</span></a>
-      <a class="ruta orange" href="#del-l-falten" data-id="l-falten" data-beror="l-publicera"><span>Lägesfilens fält för skuggdelarna</span><span class="sr">, delvis</span></a>
-      <a class="ruta gron" href="#del-l-kartan" data-id="l-kartan" data-beror="l-publicera"><span>Kartsajten</span><span class="sr">, klar</span></a>
+    </div>
+    <span class="pil" aria-hidden="true"></span>
+    <div class="kolumn">
+    <section class="steg" aria-label="Lägesfilen">
+      <div class="steg-namn">Lägesfilen</div>
+      
+      <div class="stapel" role="img" aria-label="2 klar, 1 delvis"><span class="del-stapel gron" style="flex-grow: 2"></span><span class="del-stapel orange" style="flex-grow: 1"></span></div>
+      <div class="steg-tal">3 delar: 2 klar · 1 delvis</div>
+      <details>
+        <summary>Visa delarna</summary>
+        <div class="rutor">
+          <a class="ruta gron" href="#del-l-publicera" data-id="l-publicera" data-beror="i-livemotorn i-vakterna"><span>Publiceringen var tionde minut</span><span class="sr">, klar</span></a>
+          <a class="ruta orange" href="#del-l-falten" data-id="l-falten" data-beror="l-publicera"><span>Lägesfilens fält för skuggdelarna</span><span class="sr">, delvis</span></a>
+          <a class="ruta gron" href="#del-l-kartan" data-id="l-kartan" data-beror="l-publicera"><span>Kartsajten</span><span class="sr">, klar</span></a>
+        </div>
+      </details>
     </section>
-    <section class="block" aria-label="Motorn">
-      <div class="block-namn">Motorn</div>
-      <a class="ruta gron" href="#del-m-motorn" data-id="m-motorn" data-beror=""><span>Motorn i tre språk</span><span class="sr">, klar</span></a>
-      <a class="ruta gron" href="#del-m-olyckor" data-id="m-olyckor" data-beror="m-motorn k-situation"><span>Olyckor (A3), med olycksläget</span><span class="sr">, klar</span></a>
-      <a class="ruta gron" href="#del-m-halka" data-id="m-halka" data-beror="m-motorn k-vaglag"><span>Rapporterad halka (A1)</span><span class="sr">, klar</span></a>
-      <a class="ruta gron" href="#del-m-frysrisk" data-id="m-frysrisk" data-beror="m-motorn k-vader i-vakterna"><span>Frysrisk vid stationer och broar (A2)</span><span class="sr">, klar</span></a>
-      <a class="ruta gron" href="#del-m-vilt" data-id="m-vilt" data-beror="m-motorn k-situation"><span>Djur på vägen (A4)</span><span class="sr">, klar</span></a>
-      <a class="ruta gron" href="#del-m-kameror" data-id="m-kameror" data-beror="m-motorn k-kameror"><span>Fartkameror (A5)</span><span class="sr">, klar</span></a>
-      <a class="ruta orange" href="#del-m-tillstand" data-id="m-tillstand" data-beror="l-falten i-arkivet"><span>L2 tillståndet (skattaren S1–S3)</span><span class="sr">, delvis</span></a>
-      <a class="ruta bla" href="#del-m-efterhalkan" data-id="m-efterhalkan" data-beror="m-tillstand p-grindarna"><span>Efterhalkan som märkt beta</span><span class="sr">, väntar</span></a>
-      <a class="ruta orange" href="#del-m-trenden" data-id="m-trenden" data-beror="i-arkivet k-smhi-obs"><span>L3 trenden</span><span class="sr">, delvis</span></a>
-      <a class="ruta rod" href="#del-m-overgangar" data-id="m-overgangar" data-beror="m-trenden m-tillstand"><span>Övergångarna mellan faror</span><span class="sr">, ej påbörjad</span></a>
-      <a class="ruta orange" href="#del-m-rimfrost" data-id="m-rimfrost" data-beror="m-frysrisk m-trenden"><span>Rimfrosten</span><span class="sr">, delvis</span></a>
-      <a class="ruta rod" href="#del-m-nederbord" data-id="m-nederbord" data-beror="k-radar"><span>Nederbördstypen (snö, slask)</span><span class="sr">, ej påbörjad</span></a>
-      <a class="ruta orange" href="#del-m-vattenplaning" data-id="m-vattenplaning" data-beror="k-radar p-skuggmotorn"><span>Vattenplaningen</span><span class="sr">, delvis</span></a>
-      <a class="ruta orange" href="#del-m-vind-sikt" data-id="m-vind-sikt" data-beror="k-vader"><span>Vind och sikt</span><span class="sr">, delvis</span></a>
-      <a class="ruta orange" href="#del-m-hojd" data-id="m-hojd" data-beror="i-arkivet"><span>Höjden i terrängen</span><span class="sr">, delvis</span></a>
-      <a class="ruta orange" href="#del-m-segmentprognos" data-id="m-segmentprognos" data-beror="m-hojd i-arkivet p-skuggmotorn"><span>L4 räckvidden: segmentprognosen</span><span class="sr">, delvis</span></a>
-      <a class="ruta rod" href="#del-m-kallplatser" data-id="m-kallplatser" data-beror="m-segmentprognos"><span>Kallplatserna</span><span class="sr">, ej påbörjad</span></a>
-      <a class="ruta rod" href="#del-m-smhi-forstarkare" data-id="m-smhi-forstarkare" data-beror="k-smhi-varningar k-smhi-obs"><span>SMHI som förstärkare och reserv</span><span class="sr">, ej påbörjad</span></a>
-      <a class="ruta orange" href="#del-m-forsprang" data-id="m-forsprang" data-beror="m-motorn p-skuggmotorn"><span>L5 allvar som försprång</span><span class="sr">, delvis</span></a>
-      <a class="ruta bla" href="#del-m-vaglagets-alder" data-id="m-vaglagets-alder" data-beror="k-vaglag"><span>Väglagets ålder</span><span class="sr">, väntar</span></a>
-      <a class="ruta bla" href="#del-m-frysklassning" data-id="m-frysklassning" data-beror="m-segmentprognos"><span>Frysklassningen</span><span class="sr">, väntar</span></a>
-      <a class="ruta orange" href="#del-m-tystnadsfel" data-id="m-tystnadsfel" data-beror="i-arkivet"><span>Tystnadsfelet</span><span class="sr">, delvis</span></a>
-      <a class="ruta orange" href="#del-m-olja" data-id="m-olja" data-beror="k-situation p-skuggmotorn"><span>Olja på vägen</span><span class="sr">, delvis</span></a>
-      <a class="ruta bla" href="#del-m-prognoslagret" data-id="m-prognoslagret" data-beror="m-segmentprognos m-trenden p-kuvosen"><span>Prognoslagret</span><span class="sr">, väntar</span></a>
+    </div>
+    <span class="pil" aria-hidden="true"></span>
+    <div class="kolumn">
+    <section class="steg" aria-label="Motorn">
+      <div class="steg-namn">Motorn</div>
+      
+      <div class="stapel" role="img" aria-label="6 klar, 10 delvis, 4 väntar, 4 ej påbörjad"><span class="del-stapel gron" style="flex-grow: 6"></span><span class="del-stapel orange" style="flex-grow: 10"></span><span class="del-stapel bla" style="flex-grow: 4"></span><span class="del-stapel rod" style="flex-grow: 4"></span></div>
+      <div class="steg-tal">24 delar: 6 klar · 10 delvis · 4 väntar · 4 ej påbörjad</div>
+      <details>
+        <summary>Visa delarna</summary>
+        <div class="rutor">
+          <a class="ruta gron" href="#del-m-motorn" data-id="m-motorn" data-beror=""><span>Motorn i tre språk</span><span class="sr">, klar</span></a>
+          <a class="ruta gron" href="#del-m-olyckor" data-id="m-olyckor" data-beror="m-motorn k-situation"><span>Olyckor (A3), med olycksläget</span><span class="sr">, klar</span></a>
+          <a class="ruta gron" href="#del-m-halka" data-id="m-halka" data-beror="m-motorn k-vaglag"><span>Rapporterad halka (A1)</span><span class="sr">, klar</span></a>
+          <a class="ruta gron" href="#del-m-frysrisk" data-id="m-frysrisk" data-beror="m-motorn k-vader i-vakterna"><span>Frysrisk vid stationer och broar (A2)</span><span class="sr">, klar</span></a>
+          <a class="ruta gron" href="#del-m-vilt" data-id="m-vilt" data-beror="m-motorn k-situation"><span>Djur på vägen (A4)</span><span class="sr">, klar</span></a>
+          <a class="ruta gron" href="#del-m-kameror" data-id="m-kameror" data-beror="m-motorn k-kameror"><span>Fartkameror (A5)</span><span class="sr">, klar</span></a>
+          <a class="ruta orange" href="#del-m-tillstand" data-id="m-tillstand" data-beror="l-falten i-arkivet"><span>L2 tillståndet (skattaren S1–S3)</span><span class="sr">, delvis</span></a>
+          <a class="ruta bla" href="#del-m-efterhalkan" data-id="m-efterhalkan" data-beror="m-tillstand p-grindarna"><span>Efterhalkan som märkt beta</span><span class="sr">, väntar</span></a>
+          <a class="ruta orange" href="#del-m-trenden" data-id="m-trenden" data-beror="i-arkivet k-smhi-obs"><span>L3 trenden</span><span class="sr">, delvis</span></a>
+          <a class="ruta rod" href="#del-m-overgangar" data-id="m-overgangar" data-beror="m-trenden m-tillstand"><span>Övergångarna mellan faror</span><span class="sr">, ej påbörjad</span></a>
+          <a class="ruta orange" href="#del-m-rimfrost" data-id="m-rimfrost" data-beror="m-frysrisk m-trenden"><span>Rimfrosten</span><span class="sr">, delvis</span></a>
+          <a class="ruta rod" href="#del-m-nederbord" data-id="m-nederbord" data-beror="k-radar"><span>Nederbördstypen (snö, slask)</span><span class="sr">, ej påbörjad</span></a>
+          <a class="ruta orange" href="#del-m-vattenplaning" data-id="m-vattenplaning" data-beror="k-radar p-skuggmotorn"><span>Vattenplaningen</span><span class="sr">, delvis</span></a>
+          <a class="ruta orange" href="#del-m-vind-sikt" data-id="m-vind-sikt" data-beror="k-vader"><span>Vind och sikt</span><span class="sr">, delvis</span></a>
+          <a class="ruta orange" href="#del-m-hojd" data-id="m-hojd" data-beror="i-arkivet"><span>Höjden i terrängen</span><span class="sr">, delvis</span></a>
+          <a class="ruta orange" href="#del-m-segmentprognos" data-id="m-segmentprognos" data-beror="m-hojd i-arkivet p-skuggmotorn"><span>L4 räckvidden: segmentprognosen</span><span class="sr">, delvis</span></a>
+          <a class="ruta rod" href="#del-m-kallplatser" data-id="m-kallplatser" data-beror="m-segmentprognos"><span>Kallplatserna</span><span class="sr">, ej påbörjad</span></a>
+          <a class="ruta rod" href="#del-m-smhi-forstarkare" data-id="m-smhi-forstarkare" data-beror="k-smhi-varningar k-smhi-obs"><span>SMHI som förstärkare och reserv</span><span class="sr">, ej påbörjad</span></a>
+          <a class="ruta orange" href="#del-m-forsprang" data-id="m-forsprang" data-beror="m-motorn p-skuggmotorn"><span>L5 allvar som försprång</span><span class="sr">, delvis</span></a>
+          <a class="ruta bla" href="#del-m-vaglagets-alder" data-id="m-vaglagets-alder" data-beror="k-vaglag"><span>Väglagets ålder</span><span class="sr">, väntar</span></a>
+          <a class="ruta bla" href="#del-m-frysklassning" data-id="m-frysklassning" data-beror="m-segmentprognos"><span>Frysklassningen</span><span class="sr">, väntar</span></a>
+          <a class="ruta orange" href="#del-m-tystnadsfel" data-id="m-tystnadsfel" data-beror="i-arkivet"><span>Tystnadsfelet</span><span class="sr">, delvis</span></a>
+          <a class="ruta orange" href="#del-m-olja" data-id="m-olja" data-beror="k-situation p-skuggmotorn"><span>Olja på vägen</span><span class="sr">, delvis</span></a>
+          <a class="ruta bla" href="#del-m-prognoslagret" data-id="m-prognoslagret" data-beror="m-segmentprognos m-trenden p-kuvosen"><span>Prognoslagret</span><span class="sr">, väntar</span></a>
+        </div>
+      </details>
     </section>
-    <section class="block" aria-label="Skuggan och prövningen">
-      <div class="block-namn">Skuggan och prövningen</div>
-      <a class="ruta gron" href="#del-p-skuggmotorn" data-id="p-skuggmotorn" data-beror="m-motorn l-publicera"><span>Skuggmotorn</span><span class="sr">, klar</span></a>
-      <a class="ruta orange" href="#del-p-grindarna" data-id="p-grindarna" data-beror="i-arkivet p-skuggmotorn"><span>Grindarna och domkalendern</span><span class="sr">, delvis</span></a>
-      <a class="ruta orange" href="#del-p-kuvosen" data-id="p-kuvosen" data-beror="k-smhi-obs"><span>Kuvösen</span><span class="sr">, delvis</span></a>
-      <a class="ruta bla" href="#del-p-kamerafacit" data-id="p-kamerafacit" data-beror="k-kameror"><span>Kamerafacit i hela landet</span><span class="sr">, väntar</span></a>
-      <a class="ruta bla" href="#del-p-bildfacit-domen" data-id="p-bildfacit-domen" data-beror="p-kamerafacit"><span>Bildfacitets läsning</span><span class="sr">, väntar</span></a>
-      <a class="ruta orange" href="#del-p-forarfacit" data-id="p-forarfacit" data-beror="a-betatest"><span>Förarfacit (svar och missar)</span><span class="sr">, delvis</span></a>
-      <a class="ruta bla" href="#del-p-termisk" data-id="p-termisk" data-beror=""><span>Termisk kartering</span><span class="sr">, väntar</span></a>
-      <a class="ruta bla" href="#del-p-regel-l" data-id="p-regel-l" data-beror=""><span>Regel L: ändra en tröskel efter sett utfall</span><span class="sr">, väntar</span></a>
+    <div class="under-pil" aria-hidden="true">↑</div>
+    <section class="under" aria-label="Skuggan och prövningen">
+      <div class="steg-namn">Skuggan och prövningen</div>
+      <div class="steg-pil">Prövar motorn: skuggan, grindarna, facit och domarna.</div>
+      <div class="stapel" role="img" aria-label="1 klar, 3 delvis, 4 väntar"><span class="del-stapel gron" style="flex-grow: 1"></span><span class="del-stapel orange" style="flex-grow: 3"></span><span class="del-stapel bla" style="flex-grow: 4"></span></div>
+      <div class="steg-tal">8 delar: 1 klar · 3 delvis · 4 väntar</div>
+      <details>
+        <summary>Visa delarna</summary>
+        <div class="rutor">
+          <a class="ruta gron" href="#del-p-skuggmotorn" data-id="p-skuggmotorn" data-beror="m-motorn l-publicera"><span>Skuggmotorn</span><span class="sr">, klar</span></a>
+          <a class="ruta orange" href="#del-p-grindarna" data-id="p-grindarna" data-beror="i-arkivet p-skuggmotorn"><span>Grindarna och domkalendern</span><span class="sr">, delvis</span></a>
+          <a class="ruta orange" href="#del-p-kuvosen" data-id="p-kuvosen" data-beror="k-smhi-obs"><span>Kuvösen</span><span class="sr">, delvis</span></a>
+          <a class="ruta bla" href="#del-p-kamerafacit" data-id="p-kamerafacit" data-beror="k-kameror"><span>Kamerafacit i hela landet</span><span class="sr">, väntar</span></a>
+          <a class="ruta bla" href="#del-p-bildfacit-domen" data-id="p-bildfacit-domen" data-beror="p-kamerafacit"><span>Bildfacitets läsning</span><span class="sr">, väntar</span></a>
+          <a class="ruta orange" href="#del-p-forarfacit" data-id="p-forarfacit" data-beror="a-betatest"><span>Förarfacit (svar och missar)</span><span class="sr">, delvis</span></a>
+          <a class="ruta bla" href="#del-p-termisk" data-id="p-termisk" data-beror=""><span>Termisk kartering</span><span class="sr">, väntar</span></a>
+          <a class="ruta bla" href="#del-p-regel-l" data-id="p-regel-l" data-beror=""><span>Regel L: ändra en tröskel efter sett utfall</span><span class="sr">, väntar</span></a>
+        </div>
+      </details>
     </section>
-    <section class="block" aria-label="Appen">
-      <div class="block-namn">Appen</div>
-      <a class="ruta orange" href="#del-a-ios" data-id="a-ios" data-beror="m-motorn l-publicera"><span>iPhone-appen</span><span class="sr">, delvis</span></a>
-      <a class="ruta orange" href="#del-a-android" data-id="a-android" data-beror="m-motorn l-publicera"><span>Android-appen</span><span class="sr">, delvis</span></a>
-      <a class="ruta gron" href="#del-a-rosten" data-id="a-rosten" data-beror="m-motorn"><span>Rösten och varningskorten</span><span class="sr">, klar</span></a>
-      <a class="ruta gron" href="#del-a-start-ios" data-id="a-start-ios" data-beror="a-ios"><span>Start och stopp på iPhone</span><span class="sr">, klar</span></a>
-      <a class="ruta orange" href="#del-a-start-android" data-id="a-start-android" data-beror="a-android"><span>Start och stopp på Android</span><span class="sr">, delvis</span></a>
-      <a class="ruta orange" href="#del-a-omladdning" data-id="a-omladdning" data-beror="a-ios l-publicera"><span>Omladdningen under resan (iPhone)</span><span class="sr">, delvis</span></a>
-      <a class="ruta orange" href="#del-a-batteri" data-id="a-batteri" data-beror="a-ios a-android"><span>Batteriet</span><span class="sr">, delvis</span></a>
-      <a class="ruta orange" href="#del-a-betatest" data-id="a-betatest" data-beror="a-ios a-android"><span>Betatestet: svar, missar, Efter resan</span><span class="sr">, delvis</span></a>
-      <a class="ruta bla" href="#del-a-reglaget" data-id="a-reglaget" data-beror="a-ios m-motorn"><span>Reglaget för förvarningen</span><span class="sr">, väntar</span></a>
-      <a class="ruta orange" href="#del-a-integritet" data-id="a-integritet" data-beror=""><span>Löftet och integritetsuppgifterna</span><span class="sr">, delvis</span></a>
+    </div>
+    <span class="pil" aria-hidden="true"></span>
+    <div class="kolumn">
+    <section class="steg" aria-label="Appen">
+      <div class="steg-namn">Appen</div>
+      
+      <div class="stapel" role="img" aria-label="2 klar, 7 delvis, 1 väntar"><span class="del-stapel gron" style="flex-grow: 2"></span><span class="del-stapel orange" style="flex-grow: 7"></span><span class="del-stapel bla" style="flex-grow: 1"></span></div>
+      <div class="steg-tal">10 delar: 2 klar · 7 delvis · 1 väntar</div>
+      <details>
+        <summary>Visa delarna</summary>
+        <div class="rutor">
+          <a class="ruta orange" href="#del-a-ios" data-id="a-ios" data-beror="m-motorn l-publicera"><span>iPhone-appen</span><span class="sr">, delvis</span></a>
+          <a class="ruta orange" href="#del-a-android" data-id="a-android" data-beror="m-motorn l-publicera"><span>Android-appen</span><span class="sr">, delvis</span></a>
+          <a class="ruta gron" href="#del-a-rosten" data-id="a-rosten" data-beror="m-motorn"><span>Rösten och varningskorten</span><span class="sr">, klar</span></a>
+          <a class="ruta gron" href="#del-a-start-ios" data-id="a-start-ios" data-beror="a-ios"><span>Start och stopp på iPhone</span><span class="sr">, klar</span></a>
+          <a class="ruta orange" href="#del-a-start-android" data-id="a-start-android" data-beror="a-android"><span>Start och stopp på Android</span><span class="sr">, delvis</span></a>
+          <a class="ruta orange" href="#del-a-omladdning" data-id="a-omladdning" data-beror="a-ios l-publicera"><span>Omladdningen under resan (iPhone)</span><span class="sr">, delvis</span></a>
+          <a class="ruta orange" href="#del-a-batteri" data-id="a-batteri" data-beror="a-ios a-android"><span>Batteriet</span><span class="sr">, delvis</span></a>
+          <a class="ruta orange" href="#del-a-betatest" data-id="a-betatest" data-beror="a-ios a-android"><span>Betatestet: svar, missar, Efter resan</span><span class="sr">, delvis</span></a>
+          <a class="ruta bla" href="#del-a-reglaget" data-id="a-reglaget" data-beror="a-ios m-motorn"><span>Reglaget för förvarningen</span><span class="sr">, väntar</span></a>
+          <a class="ruta orange" href="#del-a-integritet" data-id="a-integritet" data-beror=""><span>Löftet och integritetsuppgifterna</span><span class="sr">, delvis</span></a>
+        </div>
+      </details>
     </section>
-    <section class="block" aria-label="Favoriterna">
-      <div class="block-namn">Favoriterna</div>
-      <a class="ruta gron" href="#del-f-underlaget" data-id="f-underlaget" data-beror=""><span>Underlaget och mätningarna</span><span class="sr">, klar</span></a>
-      <a class="ruta rod" href="#del-f-rapportfil" data-id="f-rapportfil" data-beror="l-publicera k-vagarbeten k-restider k-farjor"><span>Rapportfilen på servern</span><span class="sr">, ej påbörjad</span></a>
-      <a class="ruta rod" href="#del-f-ruttfilter" data-id="f-ruttfilter" data-beror="m-motorn"><span>Jämförelsen mot rutten i Swift och Kotlin</span><span class="sr">, ej påbörjad</span></a>
-      <a class="ruta rod" href="#del-f-fliken" data-id="f-fliken" data-beror="f-rapportfil f-ruttfilter a-ios a-android"><span>Fliken och rapporten</span><span class="sr">, ej påbörjad</span></a>
-      <a class="ruta rod" href="#del-f-spara" data-id="f-spara" data-beror="a-ios a-android"><span>Spara en rutt</span><span class="sr">, ej påbörjad</span></a>
-      <a class="ruta bla" href="#del-f-tider" data-id="f-tider" data-beror="f-fliken"><span>Tider, påminnelse eller notis</span><span class="sr">, väntar</span></a>
+    </div>
+    <span class="pil" aria-hidden="true"></span>
+    <div class="kolumn">
+    <section class="steg" aria-label="Ut till förarna">
+      <div class="steg-namn">Ut till förarna</div>
+      
+      <div class="stapel" role="img" aria-label="2 delvis, 5 väntar"><span class="del-stapel orange" style="flex-grow: 2"></span><span class="del-stapel bla" style="flex-grow: 5"></span></div>
+      <div class="steg-tal">7 delar: 2 delvis · 5 väntar</div>
+      <details>
+        <summary>Visa delarna</summary>
+        <div class="rutor">
+          <a class="ruta bla" href="#del-u-testflight" data-id="u-testflight" data-beror="a-ios"><span>Extern TestFlight till testarna</span><span class="sr">, väntar</span></a>
+          <a class="ruta bla" href="#del-u-app-store" data-id="u-app-store" data-beror="a-batteri a-ios"><span>App Store</span><span class="sr">, väntar</span></a>
+          <a class="ruta orange" href="#del-u-play" data-id="u-play" data-beror="a-android a-integritet"><span>Google Play</span><span class="sr">, delvis</span></a>
+          <a class="ruta bla" href="#del-u-namnet" data-id="u-namnet" data-beror=""><span>Namnet och domänen</span><span class="sr">, väntar</span></a>
+          <a class="ruta bla" href="#del-u-qr" data-id="u-qr" data-beror="u-namnet"><span>QR-koden till appen</span><span class="sr">, väntar</span></a>
+          <a class="ruta orange" href="#del-u-marknadsforing" data-id="u-marknadsforing" data-beror="u-namnet"><span>Marknadsföring utan pengar</span><span class="sr">, delvis</span></a>
+          <a class="ruta bla" href="#del-u-skyltfonden" data-id="u-skyltfonden" data-beror=""><span>Skyltfonden</span><span class="sr">, väntar</span></a>
+        </div>
+      </details>
     </section>
-    <section class="block" aria-label="Ut till förarna">
-      <div class="block-namn">Ut till förarna</div>
-      <a class="ruta bla" href="#del-u-testflight" data-id="u-testflight" data-beror="a-ios"><span>Extern TestFlight till testarna</span><span class="sr">, väntar</span></a>
-      <a class="ruta bla" href="#del-u-app-store" data-id="u-app-store" data-beror="a-batteri a-ios"><span>App Store</span><span class="sr">, väntar</span></a>
-      <a class="ruta orange" href="#del-u-play" data-id="u-play" data-beror="a-android a-integritet"><span>Google Play</span><span class="sr">, delvis</span></a>
-      <a class="ruta bla" href="#del-u-namnet" data-id="u-namnet" data-beror=""><span>Namnet och domänen</span><span class="sr">, väntar</span></a>
-      <a class="ruta bla" href="#del-u-qr" data-id="u-qr" data-beror="u-namnet"><span>QR-koden till appen</span><span class="sr">, väntar</span></a>
-      <a class="ruta orange" href="#del-u-marknadsforing" data-id="u-marknadsforing" data-beror="u-namnet"><span>Marknadsföring utan pengar</span><span class="sr">, delvis</span></a>
-      <a class="ruta bla" href="#del-u-skyltfonden" data-id="u-skyltfonden" data-beror=""><span>Skyltfonden</span><span class="sr">, väntar</span></a>
+    </div>
+  </div>
+  <div class="sidor">
+    <section class="sidosteg" aria-label="Favoriterna">
+      <div class="steg-namn">Favoriterna</div>
+      <div class="steg-pil">Bygger på lägesfilen, motorn och appen.</div>
+      <div class="stapel" role="img" aria-label="1 klar, 1 väntar, 4 ej påbörjad"><span class="del-stapel gron" style="flex-grow: 1"></span><span class="del-stapel bla" style="flex-grow: 1"></span><span class="del-stapel rod" style="flex-grow: 4"></span></div>
+      <div class="steg-tal">6 delar: 1 klar · 1 väntar · 4 ej påbörjad</div>
+      <details>
+        <summary>Visa delarna</summary>
+        <div class="rutor">
+          <a class="ruta gron" href="#del-f-underlaget" data-id="f-underlaget" data-beror=""><span>Underlaget och mätningarna</span><span class="sr">, klar</span></a>
+          <a class="ruta rod" href="#del-f-rapportfil" data-id="f-rapportfil" data-beror="l-publicera k-vagarbeten k-restider k-farjor"><span>Rapportfilen på servern</span><span class="sr">, ej påbörjad</span></a>
+          <a class="ruta rod" href="#del-f-ruttfilter" data-id="f-ruttfilter" data-beror="m-motorn"><span>Jämförelsen mot rutten i Swift och Kotlin</span><span class="sr">, ej påbörjad</span></a>
+          <a class="ruta rod" href="#del-f-fliken" data-id="f-fliken" data-beror="f-rapportfil f-ruttfilter a-ios a-android"><span>Fliken och rapporten</span><span class="sr">, ej påbörjad</span></a>
+          <a class="ruta rod" href="#del-f-spara" data-id="f-spara" data-beror="a-ios a-android"><span>Spara en rutt</span><span class="sr">, ej påbörjad</span></a>
+          <a class="ruta bla" href="#del-f-tider" data-id="f-tider" data-beror="f-fliken"><span>Tider, påminnelse eller notis</span><span class="sr">, väntar</span></a>
+        </div>
+      </details>
     </section>
-    <section class="block" aria-label="Styrningen">
-      <div class="block-namn">Styrningen</div>
-      <a class="ruta gron" href="#del-g-stomdokumenten" data-id="g-stomdokumenten" data-beror=""><span>Stomdokumenten och kortkartan</span><span class="sr">, klar</span></a>
-      <a class="ruta orange" href="#del-g-projektkartan" data-id="g-projektkartan" data-beror="g-stomdokumenten"><span>Projektkartan</span><span class="sr">, delvis</span></a>
+    <section class="sidosteg" aria-label="Styrningen">
+      <div class="steg-namn">Styrningen</div>
+      <div class="steg-pil">Håller ihop hela bygget: stomdokumenten, tavlan och vakterna.</div>
+      <div class="stapel" role="img" aria-label="1 klar, 1 delvis"><span class="del-stapel gron" style="flex-grow: 1"></span><span class="del-stapel orange" style="flex-grow: 1"></span></div>
+      <div class="steg-tal">2 delar: 1 klar · 1 delvis</div>
+      <details>
+        <summary>Visa delarna</summary>
+        <div class="rutor">
+          <a class="ruta gron" href="#del-g-stomdokumenten" data-id="g-stomdokumenten" data-beror=""><span>Stomdokumenten och kortkartan</span><span class="sr">, klar</span></a>
+          <a class="ruta orange" href="#del-g-projektkartan" data-id="g-projektkartan" data-beror="g-stomdokumenten"><span>Projektkartan</span><span class="sr">, delvis</span></a>
+        </div>
+      </details>
+    </section>
+  </div>
+
+  <h2 id="malen">Vad som står i vägen för målen</h2>
+  <p class="litet">För varje mål: de delar som inte är klara, och under dem det de i sin tur beror på. Klara delar visas inte.</p>
+  <div class="mal">
+    <section class="mal-kort" aria-labelledby="mal-app-store">
+      <div class="mal-namn" id="mal-app-store">Halkvakt i App Store</div>
+      <p class="litet">Appen ute till alla iPhone-förare.</p>
+      <p class="litet">4 delar kvar:</p>
+      <ul>
+        <li style="padding-left: 0em"><span><span class="chip bla">Väntar</span> <a class="ref bla" href="#del-u-app-store">App Store</a></span><span class="varfor">väntar: Batteripaketet #262 i main först.</span></li>
+        <li style="padding-left: 1.1em"><span>↳ <span class="chip orange">Delvis</span> <a class="ref orange" href="#del-a-batteri">Batteriet</a></span><span class="varfor">iPhone 7 %/h mätt; Android för många timmar, släppblockerare</span></li>
+        <li style="padding-left: 2.2em"><span>↳ <span class="chip orange">Delvis</span> <a class="ref orange" href="#del-a-ios">iPhone-appen</a></span><span class="varfor">Intern TestFlight; nya skinnet 0.3.10 (22) provat i simulatorn</span></li>
+        <li style="padding-left: 2.2em"><span>↳ <span class="chip orange">Delvis</span> <a class="ref orange" href="#del-a-android">Android-appen</a></span><span class="varfor">Testarna installerar ur CI; verifieringen av en telefon och Play-testet återstår</span></li>
+      </ul>
+    </section>
+    <section class="mal-kort" aria-labelledby="mal-play">
+      <div class="mal-namn" id="mal-play">Halkvakt på Google Play</div>
+      <p class="litet">Appen ute till alla Android-förare.</p>
+      <p class="litet">3 delar kvar:</p>
+      <ul>
+        <li style="padding-left: 0em"><span><span class="chip orange">Delvis</span> <a class="ref orange" href="#del-u-play">Google Play</a></span><span class="varfor">Verifiering av en telefon, första uppladdningen, slutet test med tolv testare i 14 dygn</span></li>
+        <li style="padding-left: 1.1em"><span>↳ <span class="chip orange">Delvis</span> <a class="ref orange" href="#del-a-android">Android-appen</a></span><span class="varfor">Testarna installerar ur CI; verifieringen av en telefon och Play-testet återstår</span></li>
+        <li style="padding-left: 1.1em"><span>↳ <span class="chip orange">Delvis</span> <a class="ref orange" href="#del-a-integritet">Löftet och integritetsuppgifterna</a></span><span class="varfor">Play-deklarationen osann sedan 16/9</span></li>
+      </ul>
+    </section>
+    <section class="mal-kort" aria-labelledby="mal-beta-november">
+      <div class="mal-namn" id="mal-beta-november">Efterhalkan som märkt beta</div>
+      <p class="litet">Vinterns enda nya röst, planerad till november.</p>
+      <p class="litet">4 delar kvar:</p>
+      <ul>
+        <li style="padding-left: 0em"><span><span class="chip bla">Väntar</span> <a class="ref bla" href="#del-m-efterhalkan">Efterhalkan som märkt beta</a></span><span class="varfor">väntar: S1-grinden på frostdata och Axels bygge av S3; rösten är &quot;Halkvakt tror: frysrisk framöver&quot; (DECISIONS #186).</span></li>
+        <li style="padding-left: 1.1em"><span>↳ <span class="chip orange">Delvis</span> <a class="ref orange" href="#del-m-tillstand">L2 tillståndet (skattaren S1–S3)</a></span><span class="varfor">S1 loggar, S2 byggd 24/9 (DECISIONS #341)</span></li>
+        <li style="padding-left: 2.2em"><span>↳ <span class="chip orange">Delvis</span> <a class="ref orange" href="#del-l-falten">Lägesfilens fält för skuggdelarna</a></span><span class="varfor">Bevisbäraren byggd 24/9 (DECISIONS #342), men flera publicerade fält läses inte av motorn (integrationskartan §5.2)</span></li>
+        <li style="padding-left: 1.1em"><span>↳ <span class="chip orange">Delvis</span> <a class="ref orange" href="#del-p-grindarna">Grindarna och domkalendern</a></span><span class="varfor">Grind A klarad (DECISIONS #321); S1, T-A, R-A, K-A och W-A väntar på första frosten</span></li>
+      </ul>
+    </section>
+    <section class="mal-kort" aria-labelledby="mal-mars">
+      <div class="mal-namn" id="mal-mars">Domarna i mars</div>
+      <p class="litet">Vinterns domar på grindarna, prognosen och facit.</p>
+      <p class="litet">9 delar kvar:</p>
+      <ul>
+        <li style="padding-left: 0em"><span><span class="chip orange">Delvis</span> <a class="ref orange" href="#del-p-grindarna">Grindarna och domkalendern</a></span><span class="varfor">Grind A klarad (DECISIONS #321); S1, T-A, R-A, K-A och W-A väntar på första frosten</span></li>
+        <li style="padding-left: 0em"><span><span class="chip orange">Delvis</span> <a class="ref orange" href="#del-m-segmentprognos">L4 räckvidden: segmentprognosen</a></span><span class="varfor">I skuggan sedan 23/9; vägpunktsgrinden föll 28/9 (6,9 % mot 5 %); dom i mars</span></li>
+        <li style="padding-left: 1.1em"><span>↳ <span class="chip orange">Delvis</span> <a class="ref orange" href="#del-m-hojd">Höjden i terrängen</a></span><span class="varfor">Mäter; läsningen RÅ mot RÅ+HÖJD 23/10 (DECISIONS #357)</span></li>
+        <li style="padding-left: 0em"><span><span class="chip bla">Väntar</span> <a class="ref bla" href="#del-p-bildfacit-domen">Bildfacitets läsning</a></span><span class="varfor">väntar: Första frosten: beslutet inom sju dygn, bilderna öppnas i mars (DECISIONS #248, #291).</span></li>
+        <li style="padding-left: 1.1em"><span>↳ <span class="chip bla">Väntar</span> <a class="ref bla" href="#del-p-kamerafacit">Kamerafacit i hela landet</a></span><span class="varfor">väntar: Bengts &quot;slå ihop&quot; och deployen av tre funktioner (V1–V3, DECISIONS #380).</span></li>
+        <li style="padding-left: 0em"><span><span class="chip orange">Delvis</span> <a class="ref orange" href="#del-p-forarfacit">Förarfacit (svar och missar)</a></span><span class="varfor">Byggt i båda apparna; noll riktiga förarsvar ännu, betan inte igång</span></li>
+        <li style="padding-left: 1.1em"><span>↳ <span class="chip orange">Delvis</span> <a class="ref orange" href="#del-a-betatest">Betatestet: svar, missar, Efter resan</a></span><span class="varfor">Efter-resan-kortet gick utanför skärmen på iPhone</span></li>
+        <li style="padding-left: 2.2em"><span>↳ <span class="chip orange">Delvis</span> <a class="ref orange" href="#del-a-ios">iPhone-appen</a></span><span class="varfor">Intern TestFlight; nya skinnet 0.3.10 (22) provat i simulatorn</span></li>
+        <li style="padding-left: 2.2em"><span>↳ <span class="chip orange">Delvis</span> <a class="ref orange" href="#del-a-android">Android-appen</a></span><span class="varfor">Testarna installerar ur CI; verifieringen av en telefon och Play-testet återstår</span></li>
+      </ul>
+    </section>
+    <section class="mal-kort" aria-labelledby="mal-favoriter-v1">
+      <div class="mal-namn" id="mal-favoriter-v1">Favoriternas första version</div>
+      <p class="litet">Fliken, rapporten och sparade rutter, utan tider och notis.</p>
+      <p class="litet">9 delar kvar:</p>
+      <ul>
+        <li style="padding-left: 0em"><span><span class="chip rod">Ej påbörjad</span> <a class="ref rod" href="#del-f-fliken">Fliken och rapporten</a></span><span class="varfor">Inte byggd; formen är Axels</span></li>
+        <li style="padding-left: 1.1em"><span>↳ <span class="chip rod">Ej påbörjad</span> <a class="ref rod" href="#del-f-rapportfil">Rapportfilen på servern</a></span><span class="varfor">Inte byggd; ska delas i en snabb och en långsam del (17 MB om dygnet annars)</span></li>
+        <li style="padding-left: 2.2em"><span>↳ <span class="chip rod">Ej påbörjad</span> <a class="ref rod" href="#del-k-vagarbeten">Vägarbeten, hastighet och omledningar</a></span><span class="varfor">Kommer med i livemotorns svar men kastas; ingen tabell och ingen fil bär dem</span></li>
+        <li style="padding-left: 2.2em"><span>↳ <span class="chip rod">Ej påbörjad</span> <a class="ref rod" href="#del-k-restider">Köer och restider (TravelTimeRoute, TrafficFlow)</a></span><span class="varfor">Ingen hämtning; nästan bara Stockholm (191 av 198 sträckor)</span></li>
+        <li style="padding-left: 2.2em"><span>↳ <span class="chip rod">Ej påbörjad</span> <a class="ref rod" href="#del-k-farjor">Vägfärjorna (FerryAnnouncement)</a></span><span class="varfor">Ingen hämtning; frågan måste begränsas i tid (taket 20 000 avgångar)</span></li>
+        <li style="padding-left: 1.1em"><span>↳ <span class="chip rod">Ej påbörjad</span> <a class="ref rod" href="#del-f-ruttfilter">Jämförelsen mot rutten i Swift och Kotlin</a></span><span class="varfor">farorNaraRutten finns bara i TypeScript; port och testfall saknas</span></li>
+        <li style="padding-left: 1.1em"><span>↳ <span class="chip orange">Delvis</span> <a class="ref orange" href="#del-a-ios">iPhone-appen</a></span><span class="varfor">Intern TestFlight; nya skinnet 0.3.10 (22) provat i simulatorn</span></li>
+        <li style="padding-left: 1.1em"><span>↳ <span class="chip orange">Delvis</span> <a class="ref orange" href="#del-a-android">Android-appen</a></span><span class="varfor">Testarna installerar ur CI; verifieringen av en telefon och Play-testet återstår</span></li>
+        <li style="padding-left: 0em"><span><span class="chip rod">Ej påbörjad</span> <a class="ref rod" href="#del-f-spara">Spara en rutt</a></span><span class="varfor">Inte byggd; brytare av från början, fil utanför säkerhetskopian</span></li>
+      </ul>
     </section>
   </div>
 
   <h2 id="byggordningen">Byggordningen</h2>
   <p class="litet">Ingen klar eller påbörjad del beror på något som inte är påbörjat.</p>
 
-  <h2 id="delarna">Delarna</h2>
+  <h2 id="delarna">Delarna, en i taget</h2>
   <section class="delar-block" aria-labelledby="block-kallor">
   <h2 id="block-kallor">Källorna</h2>
   <p class="litet">Det Halkvakt läser: Trafikverket, SMHI, radarn och grannländerna.</p>
@@ -552,15 +740,15 @@
     <dl class="rad"><dt>Saknas</dt><dd><ul><li>Grov version 3/10: läget i stora drag, inte mätt del för del mot koden och tröskeldokumenten</li></ul></dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-g-stomdokumenten">Stomdokumenten och kortkartan</a></dd><dt>Kort</dt><dd><ul><li>#286 PROJEKTKARTAN — MÄT DEL FÖR DEL MOT KODEN <span class="litet">· Claude</span></li><li>#287 PROJEKTKARTAN FINNS — TITTA PÅ DEN <span class="litet">· Axel</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #446</dd><dt>Beskrivs i</dt><dd><ul><li>Bedömningen §5 Integrationsläget — mätt mot kartan (24/9, Bengts fråga &quot;hur långt i integrationen har vi kommit&quot;) <span class="mono">docs/BEDOMNING-2026-09-15.md</span></li></ul></dd></dl>
   </article>
   </section>
-  <p class="litet">Sidan skrivs av <span class="mono">scripts/projektkartan.ts</span> ur <span class="mono">docs/projektkartan.json</span> och tavlans öppna kort. Kontrollen i ci.yml fäller grönt utan bevis, blått utan nyckel, orange och rött utan lista, okända beroenden, öppna kort utan del och en sida som inte är aktuell (DECISIONS #446).</p>
+  <p class="litet">Sidan skrivs av <span class="mono">scripts/projektkartan.ts</span> ur <span class="mono">docs/projektkartan.json</span> och tavlans öppna kort. Kontrollen i ci.yml fäller grönt utan bevis, blått utan nyckel, orange och rött utan lista, okända beroenden, block och mål, öppna kort utan del och en sida som inte är aktuell (DECISIONS #446).</p>
 </main>
 <script>
   // Mark what the pointed-at part depends on (dashed) and what depends on it (solid). Read-only; links work without it.
   (function () {
-    var karta = document.getElementById("karta");
+    var karta = document.querySelector(".blad");
     if (!karta) return;
     var rutor = Array.prototype.slice.call(karta.querySelectorAll(".ruta"));
-    function rensa() { karta.classList.remove("pekar"); rutor.forEach(function (r) { r.classList.remove("markerad-beror", "markerad-levererar"); }); }
+    function rensa() { rutor.forEach(function (r) { r.classList.remove("markerad-beror", "markerad-levererar"); }); }
     function peka(r) {
       rensa();
       var id = r.getAttribute("data-id");
@@ -569,7 +757,6 @@
         if (beror.indexOf(x.getAttribute("data-id")) >= 0) x.classList.add("markerad-beror");
         if ((x.getAttribute("data-beror") || "").split(" ").indexOf(id) >= 0) x.classList.add("markerad-levererar");
       });
-      karta.classList.add("pekar");
     }
     rutor.forEach(function (r) {
       r.addEventListener("mouseenter", function () { peka(r); });
