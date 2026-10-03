@@ -38,7 +38,7 @@ export function datavakter(publiceringar: string[][]): { tystade: Tystade[]; ola
   const kallor = (n: string[]) => new Set(n.map(olasbar).filter((x): x is string => x !== null));
   const olasbara = [...kallor(nyast)];
   const ihallande = publiceringar.length < I_RAD ? []
-    : olasbara.filter((k) => publiceringar.slice(0, I_RAD).every((p) => kallor(p).has(k)));
+    : olasbara.filter((k) => publiceringar.slice(0, I_RAD).some((p) => kallor(p).has(k)));
   return { tystade: nyast.map(tystade).filter((x): x is Tystade => x !== null), olasbara, ihallande };
 }
 
