@@ -7310,3 +7310,25 @@ gräns avgjorde inget. Väglagsnätet hade sha256 `ac52f6c3…6ad5bb` och var da
 **Inte byggt än (5b–5d).** Facit (stationens egen yta i varje dels utfallsfönster), stationsreglerna och grindarna på kuvösens klocka
 (`moln.ts` och grind NT ska läsa `kuvos_ra.smhi_obs`, och `trend_kandidater` ska beräknas för vintern), samt tabellen *del × ensam ×
 ovanpå*. Efterhalkan och vinden väntar på Trafikverkets svar om mängden och vindstyrkan (#439).
+
+## #454 (3/10 2026) Kuvösen: hur många rader 60-minutersfönstret tappar på sekunderna i tidsstämplarna — förregistrerad mätning (kort #232)
+
+**Bengts fråga 3/10:** *"hur många rader menar du att vi förlorar på totalen och har det någon verklig betydelse"*. Den gäller
+PLAN-KUVOSEN §10 fråga 3. Trendens lutning (`sql/018`) kräver minst tre rader i ramen 60 minuter bakåt. Kuvösens rader är stämplade
+hh:00:ss och hh:30:ss med sekunder 03–06, så raden en timme bakåt kommer med bara om dess sekunder är minst lika många. Är sekunderna
+samma för en station varje gång tappas inget. Är de slumpvisa tappas ungefär 37 %.
+
+**Mätningen, bestämd före körningen** (`scripts/matningar/sekunderna-kuvos-2026-10-03.ts`, knappen `kuvos`):
+(1) sekundernas fördelning och antalet stationer med samma sekund varje gång; (2) andelen rader där 60-minutersramen har minst tre
+rader, mot samma ram vidgad till 62 minuter (där sekunderna inte spelar roll) — skillnaden är det som tappas — och 30-minutersramen;
+(3) samma för trendens bredaste startband (yta +1…+6 °C). **Läser bara tidsstämplar och antal:** ingen lutning, ingen yta efter
+något, inget utfall. Mätningen ändrar ingenting; om något ska rättas (t.ex. tidsstämplarna avrundade till halvtimmen i kuvösens
+översättning) är det ett eget beslut.
+
+**Utfallet (kuvos 37150889692, 3/10):**
+- Sekunderna: 99,6 % av raderna har sekund 03, och 298 av 736 stationer har samma sekund varje gång.
+- 60-minutersramen tappar **21 519 av 5 256 028 rader, 0,4 %**. Inom trendens startband är det 7 277 av 1 622 826, också 0,4 %.
+- 30-minutersramen har tre rader i **0** rader av 5,26 miljoner.
+
+**Slutsats:** sekunderna saknar betydelse, och inget rättas. Problemet är upplösningen (en rad per halvtimme räcker inte för ett fönster
+på 30 minuter), inte tidsstämplarna. Frågan i PLAN-KUVOSEN §10 punkt 3 gäller därför bara 30-minutersfönstret.

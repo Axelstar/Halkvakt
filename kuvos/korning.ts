@@ -108,7 +108,8 @@ if (process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, "
     const faror = snapshotToHazards(staticDoc as any, liveDoc as any);
     ms.snapshot += performance.now() - t0;
     if (!staticDoc.stations.length) tomma.push(t.toISOString());
-    for (const n of notes) { const typ = n.split(":")[0]; noter.set(typ, (noter.get(typ) ?? 0) + 1); }
+    // En vakt som inte kunde läsa skriver under samma rubrik som när den tystar stationer — räknas för sig (vakthund/datavakter.ts).
+    for (const n of notes) { const typ = n.split(":")[0] + (/ej läsbar/u.test(n) ? " EJ LÄSBAR" : ""); noter.set(typ, (noter.get(typ) ?? 0) + 1); }
     const kor = (serie: "A" | "B", vagar: typeof rutter) => {
       for (const v of vagar) {
         const larm = new AlertEngine(farorNaraRutten(faror, v.line)).run(v.fixar);
