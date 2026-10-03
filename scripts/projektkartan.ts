@@ -13,11 +13,11 @@ import { readFileSync, writeFileSync, renameSync } from "node:fs";
 import { oppnaKort, avsnitt } from "./kortkartan.ts";
 
 type Lage = "gron" | "orange" | "rod" | "bla" | "gra";
-type Del = { id: string; namn: string; block: string; lage: Lage; bevis?: string; nyckel?: string; saknas?: string[];
+type Del = { id: string; namn: string; block: string; lage: Lage; klar?: number; bevis?: string; nyckel?: string; saknas?: string[];
   beror: string[]; kort: string[]; beslut?: string[]; beskrivs: string[] };
 type Block = { id: string; namn: string; om: string; plats: string; pil?: string };
-type Mal = { id: string; namn: string; om: string; delar: string[] };
-type Karta = { block: Block[]; mal: Mal[]; delar: Del[] };
+type Mal = { id: string; namn: string; om: string; klart_nar: string; datum: string; delar: string[] };
+type Karta = { projektmal: { text: string; kalla: string }; block: Block[]; mal: Mal[]; delar: Del[] };
 type Sida = { fil: string; namn: string; url?: string };
 type KortInfo = { nyckel: string; nr: string; titel: string; agare: string };
 
@@ -52,6 +52,11 @@ export function granska(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>
     if (d.lage === "gron" && !d.bevis?.trim()) fel.push(`${d.id}: grön utan bevis`);
     if (d.lage === "bla" && !d.nyckel?.trim()) fel.push(`${d.id}: blå utan nyckel`);
     if ((d.lage === "orange" || d.lage === "rod") && !d.saknas?.length) fel.push(`${d.id}: ${LAGEN[d.lage].namn.toLowerCase()} utan lista över vad som saknas`);
+    // Den skattade andelen klar (Bengt 3/10: "en skattning av hur långt det är kommet i %"). Grönt är 100 % av sig självt.
+    if (d.lage === "gron" && d.klar !== undefined) fel.push(`${d.id}: grön bär en skattning; grönt är 100 %`);
+    if ((d.lage === "orange" || d.lage === "bla") && (typeof d.klar !== "number" || d.klar < 0 || d.klar > 99))
+      fel.push(`${d.id}: ${LAGEN[d.lage].namn.toLowerCase()} utan skattad andel klar (0–99 %)`);
+    if (d.lage === "rod" && d.klar !== undefined && (d.klar < 0 || d.klar > 20)) fel.push(`${d.id}: ej påbörjad med skattningen ${d.klar} % (högst 20)`);
     for (const b of d.beror) {
       if (b === d.id) fel.push(`${d.id}: beror på sig själv`);
       else if (!ids.has(b)) fel.push(`${d.id}: beror på okänd del "${b}"`);
@@ -64,7 +69,10 @@ export function granska(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>
       if (!avsnitt(sidtext(s.fil), s.fil.endsWith(".html"), nr)) fel.push(`${d.id}: avsnittet ${ref} finns inte`);
     }
   }
-  for (const m of k.mal) for (const x of m.delar) if (!ids.has(x)) fel.push(`målet ${m.id}: okänd del "${x}"`);
+  for (const m of k.mal) {
+    for (const x of m.delar) if (!ids.has(x)) fel.push(`målet ${m.id}: okänd del "${x}"`);
+    if (!m.klart_nar?.trim()) fel.push(`målet ${m.id}: saknar "klart när"`);
+  }
   for (const c of oppna) if (!burna.has(c.nyckel)) fel.push(`öppet kort utan del: ${c.nyckel} ${c.titel.slice(0, 70)}`);
   return fel;
 }
@@ -87,13 +95,42 @@ export function hinder(m: Mal, del: Map<string, Del>): { d: Del; djup: number }[
   return ut;
 }
 
-/** Sidan: flödet med staplar, målen, delarna per block bakom ett klick, bladen. */
+/** Andel klar: grönt 100 %, annars delens skattning (ej påbörjad utan skattning = 0). */
+export const andel = (d: Del) => (d.lage === "gron" ? 100 : d.klar ?? 0);
+export const medel = (ds: Del[]) => (ds.length ? Math.round(ds.reduce((s, d) => s + andel(d), 0) / ds.length) : 100);
+
+/** Allt ett mål vilar på: målets delar och allt de beror på, klart eller inte. Det är målets procent. */
+export function malDelar(m: Mal, del: Map<string, Del>): Del[] {
+  const s = new Set<string>();
+  const ga = (id: string) => { if (s.has(id)) return; s.add(id); for (const b of del.get(id)!.beror) ga(b); };
+  m.delar.forEach(ga);
+  return [...s].map((id) => del.get(id)!);
+}
+
+/** Hävstången (Bengt 3/10: "gör vi det så bockas det och det också"): för varje del som inte är klar, hur många mål
+ *  som väntar på den och hur många andra ej klara delar som bygger på den, direkt eller längre fram. */
+export function havstang(k: Karta, del: Map<string, Del>): Map<string, { mal: string[]; delar: number }> {
+  const bygger = new Map<string, string[]>();
+  for (const d of k.delar) for (const b of d.beror) bygger.set(b, [...(bygger.get(b) ?? []), d.id]);
+  const ut = new Map<string, { mal: string[]; delar: number }>();
+  for (const d of k.delar) {
+    if (d.lage === "gron") continue;
+    const sedda = new Set<string>();
+    const ko = [...(bygger.get(d.id) ?? [])];
+    while (ko.length) { const x = ko.pop()!; if (sedda.has(x)) continue; sedda.add(x); ko.push(...(bygger.get(x) ?? [])); }
+    const delar = [...sedda].filter((x) => del.get(x)!.lage !== "gron").length;
+    const mal = k.mal.filter((m) => hinder(m, del).some((h) => h.d.id === d.id)).map((m) => m.namn);
+    ut.set(d.id, { mal, delar });
+  }
+  return ut;
+}
+
+/** Sidan: projektets mål och procenten, flödet, målen, det som lönar sig först, delarna bakom ett klick, bladen. */
 export function sida(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>, sidtext: (fil: string) => string): string {
   const kort = new Map(oppna.map((c) => [c.nyckel, c]));
   const del = new Map(k.delar.map((d) => [d.id, d]));
   const levererar = new Map<string, string[]>();
   for (const d of k.delar) for (const b of d.beror) levererar.set(b, [...(levererar.get(b) ?? []), d.id]);
-  const antal = (l: Lage, delar = k.delar) => delar.filter((d) => d.lage === l).length;
   const ordning = k.delar.filter((d) => (d.lage === "gron" || d.lage === "orange") && d.beror.some((b) => del.get(b)?.lage === "rod"));
   const lank = (id: string) => { const d = del.get(id)!; return `<a class="ref ${d.lage}" href="#del-${id}">${esc(d.namn)}</a>`; };
   const ref = (r: string) => {
@@ -105,19 +142,22 @@ export function sida(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>, s
   };
   const kortrad = (d: Del) => d.lage === "bla" ? `väntar: ${d.nyckel}` : (d.saknas?.[0] ?? "");
 
-  // Ett block som steg: namn, stapel med antal per läge, och delarna bakom ett klick.
+  const total = medel(k.delar);
+  const hav = havstang(k, del);
+  const framsteg = (pct: number) => `<div class="framsteg" role="img" aria-label="${pct} procent klart"><span style="width: ${pct}%"></span></div>`;
+
+  // Ett block som steg: namn, andel klar, och delarna bakom ett klick.
   const steg = (b: Block, klass = "steg") => {
     const delar = k.delar.filter((d) => d.block === b.id);
-    const tal = ORDNING.filter((l) => antal(l, delar)).map((l) => `${antal(l, delar)} ${LAGEN[l].namn.toLowerCase()}`);
-    const stapel = ORDNING.filter((l) => antal(l, delar)).map((l) => `<span class="del-stapel ${l}" style="flex-grow: ${antal(l, delar)}"></span>`).join("");
-    const rutor = delar.map((d) => `<a class="ruta ${d.lage}" href="#del-${d.id}" data-id="${d.id}" data-beror="${d.beror.join(" ")}"><span>${esc(d.namn)}</span><span class="sr">, ${LAGEN[d.lage].namn.toLowerCase()}</span></a>`).join("\n          ");
+    const pct = medel(delar);
+    const rutor = delar.map((d) => `<a class="ruta ${d.lage}" href="#del-${d.id}" data-id="${d.id}" data-beror="${d.beror.join(" ")}"><span>${esc(d.namn)}</span><span class="pct">${andel(d)} %</span><span class="sr">, ${LAGEN[d.lage].namn.toLowerCase()}</span></a>`).join("\n          ");
     return `<section class="${klass}" aria-label="${esc(b.namn)}">
       <div class="steg-namn">${esc(b.namn)}</div>
       ${b.pil ? `<div class="steg-pil">${esc(b.pil)}</div>` : ""}
-      <div class="stapel" role="img" aria-label="${esc(tal.join(", "))}">${stapel}</div>
-      <div class="steg-tal">${delar.length} delar: ${esc(tal.join(" · "))}</div>
+      ${framsteg(pct)}
+      <div class="steg-tal"><b>${pct} %</b> klart</div>
       <details>
-        <summary>Visa delarna</summary>
+        <summary>Visa delarna (${delar.length})</summary>
         <div class="rutor">
           ${rutor}
         </div>
@@ -198,9 +238,21 @@ export function sida(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>, s
   .under-pil { text-align: center; color: var(--dampad); font: 600 14px "Instrument Sans", Arial, sans-serif; }
   .steg-namn { font-size: 15px; font-weight: 700; line-height: 1.25; }
   .steg-pil { font-size: 13px; line-height: 1.35; color: var(--dampad); }
-  .stapel { display: flex; height: 12px; border-radius: 3px; overflow: hidden; background: var(--linje); gap: 2px; }
-  .del-stapel { background: var(--c); min-width: 6px; }
+  .framsteg { height: 10px; border-radius: 999px; overflow: hidden; background: var(--linje); }
+  .framsteg > span { display: block; height: 100%; background: var(--gron); border-radius: 999px; }
   .steg-tal { font-size: 13px; line-height: 1.35; color: var(--dampad); font-variant-numeric: tabular-nums; }
+  .steg-tal b { font-size: 18px; color: var(--black); font-family: "Instrument Sans", Arial, sans-serif; }
+  .helhet { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 22px; align-items: center;
+            border: 1px solid var(--ram); border-radius: 8px; padding: 16px 18px; }
+  .helhet-tal { font: 700 clamp(40px, 7vw, 56px)/1 "Instrument Sans", Arial, sans-serif; font-variant-numeric: tabular-nums; }
+  .helhet .framsteg { height: 14px; }
+  .helhet-text { display: grid; gap: 8px; min-width: 0; }
+  @media (max-width: 520px) { .helhet { grid-template-columns: minmax(0, 1fr); } }
+  .forst { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; }
+  .forst-lista { border: 1px solid var(--ram); border-radius: 8px; padding: 12px 14px; display: grid; gap: 8px; align-content: start; }
+  .forst-lista ol { margin: 0; padding-left: 1.4em; display: grid; gap: 8px; }
+  .forst-lista li { font-size: 14px; line-height: 1.4; }
+  .forst-lista .varfor { display: block; color: var(--dampad); font-size: 13px; }
   details > summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--dampad); }
   .rutor { display: grid; gap: 5px; margin-top: 6px; }
   .sidor { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
@@ -214,6 +266,8 @@ export function sida(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>, s
           text-decoration: none; font: 500 13px/1.3 "Instrument Sans", Arial, sans-serif; color: var(--black);
           outline: 2px solid transparent; outline-offset: -2px; }
   .ruta::before { content: ""; flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--c); transform: translateY(1px); }
+  .ruta > span:first-child { flex: 1; min-width: 0; }
+  .ruta .pct { flex: none; color: var(--dampad); font-variant-numeric: tabular-nums; }
   .ruta:hover, .ruta:focus-visible { outline-color: var(--black); }
   .ruta.markerad-beror { outline: 2px dashed var(--black); }
   .ruta.markerad-levererar { outline: 2px solid var(--dampad); }
@@ -242,19 +296,22 @@ export function sida(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>, s
 <main class="blad">
   <div class="etikett">Navet över bygget · skrivs ur docs/projektkartan.json</div>
   <h1>Halkvaktens projektkarta</h1>
-  <p class="ingress">Hela Halkvakt på en sida. Överst flödet från källorna till förarna, med en stapel som visar hur långt varje block har kommit. Under det vad som står i vägen för målen, och sist ett blad per del. Läget är underordnat beviset: grönt kräver ett bevis, blått en nyckel, orange och rött en lista över vad som saknas, och säger koden eller ett prov något annat är det kartan som är fel.</p>
-  <p class="grov"><b>Grov version 3/10.</b> Läget är satt i stora drag ur stomdokumenten, tavlan och beslutsloggen. Delarna mäts mot koden och tröskeldokumenten i nästa varv (kort #286).</p>
-  <div class="fakta">
-    <span><b>${k.delar.length}</b> delar i <b>${k.block.length}</b> block</span>
-    ${ORDNING.map((l) => `<span><b>${antal(l)}</b> ${LAGEN[l].namn.toLowerCase()}</span>`).join("\n    ")}
-    <span><b>${oppna.length}</b> öppna kort, alla på en del</span>
-  </div>
+  <p class="ingress">Hela Halkvakt på en sida: hur långt bygget har kommit, målen vi bygger mot, vad som lönar sig att göra först, och ett blad per del. Läget är underordnat beviset: grönt kräver ett bevis, och säger koden eller ett prov något annat är det kartan som är fel.</p>
+  <section class="helhet" aria-label="Hela bygget">
+    <div class="helhet-tal">${total} %</div>
+    <div class="helhet-text">
+      ${framsteg(total)}
+      <p><b>Projektets mål:</b> ${esc(k.projektmal.text)} <span class="litet">(${esc(k.projektmal.kalla)})</span></p>
+      <p class="litet">Procenten är ett medel över ${k.delar.length} delar: en grön del räknas som 100 %, de andra med sin skattade andel. ${oppna.length} öppna kort hänger på delarna.</p>
+    </div>
+  </section>
+  <p class="grov"><b>Skattning 3/10.</b> Läget och procenten är satta i stora drag av Claude ur stomdokumenten, tavlan och beslutsloggen, och delarna väger lika. De mäts mot koden och tröskeldokumenten i nästa varv (kort #286).</p>
   <div class="forklaring">
     ${ORDNING.map((l) => `<span><span class="chip ${l}">${LAGEN[l].namn}</span> ${LAGEN[l].krav}</span>`).join("\n    ")}
   </div>
 
-  <h2 id="flodet">Flödet</h2>
-  <p class="litet">Datan går från vänster till höger. Varje block visar sina delar som en stapel i färgernas ordning. Klicka på <i>Visa delarna</i> för att se dem; pekar du på en del markeras det den beror på med streckad ram och det som beror på den med hel ram.</p>
+  <h2 id="flodet">Hur långt vi har kommit</h2>
+  <p class="litet">Datan går från vänster till höger. Varje block visar hur stor del av det som är klart. Klicka på <i>Visa delarna</i> för att se delarna med sina procent; pekar du på en del markeras det den beror på med streckad ram och det som beror på den med hel ram.</p>
   <div class="flode" id="karta">`);
   flode.forEach((b, i) => {
     if (i > 0) ut.push(`    <span class="pil" aria-hidden="true"></span>`);
@@ -270,25 +327,57 @@ export function sida(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>, s
   for (const b of k.block.filter((x) => x.plats === "sida")) ut.push(`    ${steg(b, "sidosteg")}`);
   ut.push(`  </div>
 
-  <h2 id="malen">Vad som står i vägen för målen</h2>
-  <p class="litet">För varje mål: de delar som inte är klara, och under dem det de i sin tur beror på. Klara delar visas inte.</p>
+  <h2 id="malen">Målen</h2>
+  <p class="litet">Fem mål på vägen mot projektets mål, i tidsordning. Varje mål säger när det är nått, när det ska vara nått, hur långt det har kommit räknat över allt det vilar på, och vad som återstår.</p>
   <div class="mal">`);
-  for (const m of k.mal) {
+  k.mal.forEach((m, i) => {
     const h = hinder(m, del);
+    const pct = medel(malDelar(m, del));
     ut.push(`    <section class="mal-kort" aria-labelledby="mal-${m.id}">
-      <div class="mal-namn" id="mal-${m.id}">${esc(m.namn)}</div>
-      <p class="litet">${esc(m.om)}</p>`);
+      <div class="mal-namn" id="mal-${m.id}">${i + 1}. ${esc(m.namn)}</div>
+      <p><b>Klart när</b> ${esc(m.klart_nar)}</p>
+      <p class="litet"><b>Datum:</b> ${esc(m.datum)}</p>
+      ${framsteg(pct)}
+      <div class="steg-tal"><b>${pct} %</b> klart, räknat över ${malDelar(m, del).length} delar</div>`);
     if (!h.length) ut.push(`      <p class="mal-klar">Inget står i vägen.</p>`);
     else {
-      ut.push(`      <p class="litet">${h.length} ${h.length === 1 ? "del" : "delar"} kvar:</p>
+      ut.push(`      <p class="litet">Kvar, ${h.length} ${h.length === 1 ? "del" : "delar"}:</p>
       <ul>`);
       for (const { d, djup } of h)
         ut.push(`        <li style="padding-left: ${djup * 1.1}em"><span>${djup ? "↳ " : ""}<span class="chip ${d.lage}">${LAGEN[d.lage].namn}</span> ${lank(d.id)}</span><span class="varfor">${esc(kortrad(d))}</span></li>`);
       ut.push("      </ul>");
     }
     ut.push("    </section>");
-  }
-  ut.push(`  </div>
+  });
+  ut.push(`  </div>`);
+
+  // Det som lönar sig först: mest hävstång först. Två listor, eftersom ett beslut inte byggs utan fattas.
+  const rang = (ids: string[]) => ids.sort((a, b) => {
+    const x = hav.get(a)!, y = hav.get(b)!;
+    return y.mal.length - x.mal.length || y.delar - x.delar || andel(del.get(b)!) - andel(del.get(a)!);
+  }).slice(0, 8);
+  const bygga = rang(k.delar.filter((d) => (d.lage === "orange" || d.lage === "rod") && d.beror.every((b) => del.get(b)!.lage === "gron")).map((d) => d.id));
+  const beslut = rang(k.delar.filter((d) => d.lage === "bla").map((d) => d.id));
+  const punkt = (id: string) => {
+    const d = del.get(id)!, x = hav.get(id)!;
+    const vad = [x.mal.length ? `${x.mal.length} mål (${x.mal.join(", ")})` : "", x.delar ? `${x.delar} ${x.delar === 1 ? "del" : "delar"} till` : ""].filter(Boolean).join(" och ");
+    return `<li><span class="chip ${d.lage}">${andel(d)} %</span> ${lank(id)}<span class="varfor">${vad ? `Låser upp ${esc(vad)}. ` : "Låser inte upp något annat. "}${esc(kortrad(d))}</span></li>`;
+  };
+  ut.push(`
+  <h2 id="forst">Gör först: det som låser upp mest</h2>
+  <p class="litet">Ju fler mål och delar som väntar på en del, desto mer lönar det sig att göra den tidigt. Listorna räknar på kartans beroenden.</p>
+  <div class="forst">
+    <section class="forst-lista" aria-labelledby="forst-bygga">
+      <h3 id="forst-bygga">Att bygga nu</h3>
+      <p class="litet">Delar som inte väntar på något annat, mest hävstång först.</p>
+      <ol>${bygga.map(punkt).join("")}</ol>
+    </section>
+    <section class="forst-lista" aria-labelledby="forst-beslut">
+      <h3 id="forst-beslut">Beslut och nycklar</h3>
+      <p class="litet">Det som väntar på ett beslut eller en nyckel, mest hävstång först.</p>
+      <ol>${beslut.map(punkt).join("")}</ol>
+    </section>
+  </div>
 
   <h2 id="byggordningen">Byggordningen</h2>`);
   if (ordning.length) {
@@ -306,6 +395,7 @@ export function sida(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>, s
   <p class="litet">${esc(b.om)}</p>`);
     for (const d of k.delar.filter((x) => x.block === b.id)) {
       const rader: string[] = [];
+      if (d.lage !== "gron") rader.push(`<dt>Skattat klart</dt><dd>${andel(d)} %</dd>`);
       if (d.bevis) rader.push(`<dt>Bevis</dt><dd>${esc(d.bevis)}</dd>`);
       if (d.nyckel) rader.push(`<dt>Nyckel</dt><dd>${esc(d.nyckel)}</dd>`);
       if (d.saknas?.length) rader.push(`<dt>Saknas</dt><dd><ul>${d.saknas.map((s) => `<li>${esc(s)}</li>`).join("")}</ul></dd>`);
@@ -355,34 +445,45 @@ export function sida(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>, s
 const direkt = (process.argv[1] ?? "").replace(/\\/g, "/").endsWith("scripts/projektkartan.ts");
 
 if (direkt && process.argv[2] === "--sjalvtest") {
+  const pm = { text: "T", kalla: "K" };
   const k: Karta = {
+    projektmal: pm,
     block: [{ id: "a", namn: "A", om: "", plats: "flode" }, { id: "c", namn: "C", om: "", plats: "under:a" }, { id: "d", namn: "D", om: "", plats: "under:c" }],
-    mal: [{ id: "m", namn: "M", om: "", delar: ["x", "q"] }],
+    mal: [{ id: "m", namn: "M", om: "", klart_nar: "", datum: "", delar: ["x", "q"] }],
     delar: [
       { id: "x", namn: "X", block: "a", lage: "gron", bevis: "körning 1", beror: [], kort: ["#1"], beskrivs: ["S 2"] },
-      { id: "y", namn: "Y", block: "a", lage: "gron", beror: ["z", "y"], kort: ["#9"], beskrivs: ["S 7"] },
+      { id: "y", namn: "Y", block: "a", lage: "gron", klar: 50, beror: ["z", "y"], kort: ["#9"], beskrivs: ["S 7"] },
       { id: "z", namn: "Z", block: "b", lage: "orange", beror: [], kort: [], beskrivs: [] },
+      { id: "w", namn: "W", block: "a", lage: "rod", klar: 40, saknas: ["s"], beror: [], kort: [], beskrivs: [] },
     ],
   };
   const oppna = [{ nyckel: "#1", nr: "#1", titel: "ETT", agare: "Bengt" }, { nyckel: "#2", nr: "#2", titel: "TVÅ", agare: "Axel" }];
   const sidor = { S: { fil: "s.html", namn: "Sidan" } };
   const fel = granska(k, oppna, sidor, () => "<h2>2. Två</h2>");
-  const vant = ["y: grön utan bevis", "y: beror på sig själv", "y: kortet #9 är inte öppet på tavlan", "y: avsnittet S 7 finns inte",
-    "z: okänt block \"b\"", "z: delvis utan lista över vad som saknas", "öppet kort utan del: #2 TVÅ", "målet m: okänd del \"q\"",
-    "block d: ligger under \"c\", som inte är ett steg i flödet"];
+  const vant = ["y: grön utan bevis", "y: grön bär en skattning; grönt är 100 %", "y: beror på sig själv", "y: kortet #9 är inte öppet på tavlan",
+    "y: avsnittet S 7 finns inte", "z: okänt block \"b\"", "z: delvis utan lista över vad som saknas",
+    "z: delvis utan skattad andel klar (0–99 %)", "w: ej påbörjad med skattningen 40 % (högst 20)", "öppet kort utan del: #2 TVÅ",
+    "målet m: okänd del \"q\"", "målet m: saknar \"klart när\"", "block d: ligger under \"c\", som inte är ett steg i flödet"];
   const ok = vant.every((v) => fel.includes(v)) && fel.length === vant.length;
   if (!ok) { console.error("✗ självtest: granskningen", fel); process.exit(1); }
   const del = new Map<string, Del>([
-    ["g", { id: "g", namn: "G", block: "a", lage: "orange", saknas: ["s"], beror: ["h", "i"], kort: [], beskrivs: [] }],
+    ["g", { id: "g", namn: "G", block: "a", lage: "orange", klar: 40, saknas: ["s"], beror: ["h", "i"], kort: [], beskrivs: [] }],
     ["h", { id: "h", namn: "H", block: "a", lage: "gron", bevis: "b", beror: ["j"], kort: [], beskrivs: [] }],
-    ["i", { id: "i", namn: "I", block: "a", lage: "bla", nyckel: "n", beror: ["j"], kort: [], beskrivs: [] }],
+    ["i", { id: "i", namn: "I", block: "a", lage: "bla", klar: 20, nyckel: "n", beror: ["j"], kort: [], beskrivs: [] }],
     ["j", { id: "j", namn: "J", block: "a", lage: "rod", saknas: ["s"], beror: [], kort: [], beskrivs: [] }],
   ]);
-  const h = hinder({ id: "m", namn: "", om: "", delar: ["g", "j"] }, del).map((x) => `${x.d.id}${x.djup}`).join(" ");
+  const mal: Mal = { id: "m", namn: "M", om: "", klart_nar: "k", datum: "", delar: ["g", "j"] };
+  const h = hinder(mal, del).map((x) => `${x.d.id}${x.djup}`).join(" ");
   if (h !== "g0 i1 j2") { console.error("✗ självtest: hindren", h); process.exit(1); }
-  const html = sida({ block: [k.block[0]], mal: [], delar: [k.delar[0]] }, [oppna[0]], sidor, () => "<h2>2. Två</h2>");
-  if (!html.includes('href="#del-x"') || !html.includes("körning 1") || !html.includes("Sidan §2 Två") || !html.includes("Visa delarna")) { console.error("✗ självtest: sidan"); process.exit(1); }
-  console.log("✓ självtest: fel i delar, block och mål fälls; hindren går bara genom det som inte är klart och visar varje del en gång; sidan bär flöde, rutor och blad");
+  // Målets procent räknas över allt det vilar på: g 40, h 100, i 20, j 0 ⇒ 40.
+  const pct = medel(malDelar(mal, del));
+  if (pct !== 40) { console.error("✗ självtest: målets procent", pct); process.exit(1); }
+  // Hävstången: j bär h, i och g (två ej klara) och målet; h är grön och har ingen.
+  const hv = havstang({ projektmal: pm, block: [], mal: [mal], delar: [...del.values()] }, del);
+  if (hv.get("j")!.delar !== 2 || hv.get("j")!.mal.join() !== "M" || hv.has("h")) { console.error("✗ självtest: hävstången", [...hv]); process.exit(1); }
+  const html = sida({ projektmal: pm, block: [k.block[0]], mal: [], delar: [k.delar[0]] }, [oppna[0]], sidor, () => "<h2>2. Två</h2>");
+  if (!html.includes('href="#del-x"') || !html.includes("körning 1") || !html.includes("Sidan §2 Två") || !html.includes("100 %")) { console.error("✗ självtest: sidan"); process.exit(1); }
+  console.log("✓ självtest: fel i delar, skattningar, block och mål fälls; hindren och hävstången går bara genom det som inte är klart; målets procent räknas över allt det vilar på");
   process.exit(0);
 }
 
