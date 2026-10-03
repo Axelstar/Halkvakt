@@ -389,3 +389,8 @@ i samma commit när de överlappar.
   28/9 motbevisat den; samma varv togs "kalendern är Bengts öppna beslut" ur §6.3 fast #381 hade avgjort det två dagar tidigare. Regel:
   ett dokument som ska frysas läses mot koden och besluten SEDAN kortet skrevs, inte mot rubriken; och en rubrik som verkligheten
   motbevisat får *↪ överspelad* med datum och bevis samma varv (TAVELREGELN 3), så nästa läsare inte går i samma fälla (DECISIONS #402).
+- En `git worktree add` som misslyckas tyst gör nästa kommando farligt. 3/10 fällde scratchpad-sökvägen worktreen med *Filename too long*
+  (Windows gräns på 260 tecken; appens bilder i `Assets.xcassets` är djupast), felet doldes av `2>$null`, `Set-Location` föll, och grenbytet
+  och kartsynken kördes i Bengts arbetsträd i stället — en ocommittad ändring följde med till fel gren. Inget hann pushas. Regel: worktrees
+  på Windows läggs på kort sökväg (`%TEMP%\hvks-<tid>`, `git -c core.longpaths=true worktree add`), git körs med `-C <worktree>`, och ett
+  steg som resten bygger på får aldrig få sitt stderr dolt — misslyckas det, stannar kedjan.
