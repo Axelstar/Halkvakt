@@ -44,8 +44,12 @@
 // Prov: ?nyckelprov=1
 // PAT:ens datum läses LIVE ur GitHubs svarshuvud; Supabase-tokenens står i koden. Egen etikett,
 // egen cykel, skrivs en gång om dygnet.
+//
+// Och DATAVAKTERNA (kort #292, DECISIONS #452): publiceringens noter om karantänen, den långsamma vakten och de andra källorna —
+// en rad om vilka stationer som tystas, och ett driftlarm när samma källa varit oläsbar tre publiceringar i rad. Prov: ?datavaktprov=1
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
 import { skaTrycka, senasteTryck, FROSTTRYCK_MARK } from "./frosttryck.ts";
+import { I_RAD, datavakter, noter, rad as datavaktRad } from "./datavakter.ts";
 
 const sql = postgres(Deno.env.get("SUPABASE_DB_URL")!, { max: 1, prepare: false });
 const REPO = "Axelstar/Halkvakt";
@@ -475,6 +479,20 @@ Deno.serve(async (req) => {
       rad.push(`lagring: ${mb} MB av 1 024 (larm vid ${grans} MB)`);
       if (mb >= grans) problem.push(`**LAGRINGEN ÄR ${mb} MB** — gratisnivån har 1 GB, och facit-hinkens bilder ska ligga kvar till mars (DECISIONS #380, docs/UTREDNING-FARTKAMEROR-2026-09-26.md §7)`);
     } catch { rad.push("lagring: storleken kunde inte läsas"); }
+    // DATAVAKTERNA (kort #292, DECISIONS #452): vad publiceringen säger om sina vakter (./datavakter.ts). Raden visar vilka stationer
+    // karantänen och den långsamma vakten tystar; larmet kommer när samma källa varit oläsbar i I_RAD publiceringar i rad — då
+    // tystas ingen trasig givare längre, och snapshoten går ut ändå. Prov: ?datavaktprov=1 låtsas att karantänen inte kunnat läsa.
+    try {
+      const svar = await sql`SELECT content FROM net._http_response WHERE created > now() - interval '1 hour'
+        AND content LIKE '%"notes"%' AND content LIKE '%"segments"%' ORDER BY created DESC LIMIT ${I_RAD * 2}`;
+      const pub = svar.map((r: any) => noter(r.content)).filter((n: string[] | null): n is string[] => n !== null);
+      if (new URL(req.url).searchParams.get("datavaktprov") === "1")
+        for (let i = 0; i < I_RAD; i++) pub[i] = [...(pub[i] ?? []), "karantän: weather_observations ej läsbar (DATAVAKTPROV) — ingen station i karantän"];
+      const l = datavakter(pub);
+      rad.push(datavaktRad(l, pub.length));
+      if (l.ihallande.length) problem.push(`**Datavakterna kan inte läsa**: ${l.ihallande.join(", ")} — ${I_RAD} publiceringar i rad. ` +
+        "Publiceringen går ut ändå (fail-soft), så en trasig givare kan tala igen (kort #292).");
+    } catch (e) { rad.push(`datavakterna: publiceringens svar kunde inte läsas (${String(e).slice(0, 80)})`); }
     // 6c. VÄGLAGSARKIVET (#124, 12/9): samma korskontroll som radarn. En operatörsklassning
     //     står tills den ändras, så ren ålder säger inget — men står arkivet stilla MEDAN
     //     en väsentlig andel stationer ligger under noll är antingen ingesten trasig eller

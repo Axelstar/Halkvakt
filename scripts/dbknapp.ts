@@ -74,7 +74,7 @@ try {
     // Vitlistan först, före FRÅGAN: en felstavad flagga ska falla på en rad, inte efter att ha
     // kört något mot databasen. (Rättat 12/9: kommentaren sa tidigare att den därmed gick att
     // prova helt utan DATABASE_URL — det stämmer inte, toppnivåvakten kräver den ändå.)
-    const FLAGGOR: Record<string, string> = { larmprov: "larmprov=1", vinterprov: "vinterprov=1", frostprov: "frostprov=1", matvaktprov: "matvaktprov=1", paminnelseprov: "paminnelseprov=1", kassaprov: "kassaprov=1", databasprov: "databasprov=1", facitprov: "facitprov=1", nyckelprov: "nyckelprov=1", sparrprov: "sparrprov=1", arkivprov: "arkivprov=1", utlosarprov: "utlosarprov=1" , forsprangprov: "lage=forsprang&prov=1", lagringsprov: "lagringsprov=1", kamerafacitprov: "torrt=1", oljaprov: "oljaprov=1", aterlasprov: "aterlasprov=1" };
+    const FLAGGOR: Record<string, string> = { larmprov: "larmprov=1", vinterprov: "vinterprov=1", frostprov: "frostprov=1", matvaktprov: "matvaktprov=1", paminnelseprov: "paminnelseprov=1", kassaprov: "kassaprov=1", databasprov: "databasprov=1", facitprov: "facitprov=1", nyckelprov: "nyckelprov=1", sparrprov: "sparrprov=1", arkivprov: "arkivprov=1", utlosarprov: "utlosarprov=1" , forsprangprov: "lage=forsprang&prov=1", lagringsprov: "lagringsprov=1", kamerafacitprov: "torrt=1", oljaprov: "oljaprov=1", aterlasprov: "aterlasprov=1", datavaktprov: "datavaktprov=1" };
     // Vilken funktion provet går till. Vakthunden är standard; spärrprovet (kort #191) går till skuggmotorn.
     const FUNKTION: Record<string, string> = { sparrprov: "skuggmotor", forsprangprov: "skuggmotor", kamerafacitprov: "kamerafacit", oljaprov: "skuggmotor", aterlasprov: "arkivexport" };
     const flagga = FLAGGOR[arg ?? "larmprov"];
@@ -129,6 +129,7 @@ try {
       "torrt=1": "svaret ovan ska visa kamerafacitets urval — `faror`, `kalla_stationer`, `v2` och `v3` — utan att något hämtas eller sparas (`utfall` tomt; DECISIONS #380).",
       "oljaprov=1": "svaret ovan ska visa `olja` med EN rad (prov:olja, geo punkt) och `aktiva` = antalet aktiva händelser i arkivet just nu, med `oljaSkal` om de är noll — inget skrivs i shadow_log (kort #276, DECISIONS #421).",
       "aterlasprov=1": "svaret ovan ska visa `ok: true` och i `prov` det äldsta exporterade dygnet ur hinken: `sha_lika` true, `fil` lika med `bokforda_rader`, och `bara_i_filen` = `bara_i_databasen` = 0 — filen läses tillbaka kolumn för kolumn, inget skrivs (kort #291, DECISIONS #450).",
+      "datavaktprov=1": "svaret ovan ska visa `problem` med **Datavakterna kan inte läsa**: karantän, och `rad` med raden `datavakterna: …` — och en issue med etiketten `vakthund` ska finnas inom en minut, som stängs av nästa gröna timkörning (kort #292, DECISIONS #452).",
       "sparrprov=1": "svaret ovan ska visa `suppressed` med EN rad — kamera 2 tystad av kamera 1 inom spärrens 10 s (#127; kort #188/#191). Inget skrivs i shadow_log.",
     };
     const fallback = "en issue med etiketten vakthund ska finnas inom en minut, och stängas av nästa gröna timkörning (xx:07).";

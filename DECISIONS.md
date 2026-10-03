@@ -7266,3 +7266,17 @@ artifacts"* — efter påminnelsen *"du glömmer inte att stänga öppna kort om
 
 **Alternativ som valdes bort:** bara en påminnelse i chatten (det var just den som inte räckte); att kartsynken stänger kort själv och
 slår ihop (att stänga ett kort är en bedömning av beviset, inte en räkning).
+
+## #452 (3/10 2026) Datavakterna säger till: vakthunden läser publiceringens noter (kort #292)
+
+**Beslut (Bengt, 3/10):** *"ja till planen, slå ihop 724 och 725 och kör på"* — på planen i kort #292 (bedömningen §4.2).
+1. **`vakthund/datavakter.ts`** läser publiceras senaste svar ur `net._http_response` (de med `segments` och `notes`): vilka stationer
+   karantänen och den långsamma vakten tystar, och vilka källor som inte gick att läsa. Prövad i `test/datavakter.test.ts`.
+2. **Raden** `datavakterna: karantän N (…) · långsam vakt M (…)` står i vakthundens svar varje timme.
+3. **Larmet** är ett driftlarm (`vakthund`-issue) när samma källa varit oläsbar i de tre senaste publiceringarna (en halvtimme). En
+   enstaka miss är fail-soft med flit. Larmet gäller alla publiceringens "ej läsbar"-noter — karantänen och den långsamma vakten, och
+   också radarn, regnsegmenten, grannländerna, regnmängden och lutningen, som tiger på samma sätt.
+4. **Provet** `?datavaktprov=1` via databasknappen låtsas att karantänen inte kunnat läsa i tre publiceringar.
+
+**Alternativ som valdes bort:** att publiceringen själv larmar (den kör var tionde minut och har ingen larmväg; vakthunden har en);
+att räkna om vakterna i vakthunden (regeln skulle då stå på två ställen — läxan bakom kontraktsgrinden).
