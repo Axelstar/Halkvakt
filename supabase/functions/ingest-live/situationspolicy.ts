@@ -20,7 +20,7 @@
 // that Trafikverket's deletes clear a removed animal (the archive never sees a delete). The
 // overstatement risk above is closed in the snapshot, not here: publish/snapshot-core.ts sends
 // only Accident as `deviations` and the animals under their own key `djur`.
-export const KEEP = new Set(["Accident", "AnimalPresenceObstruction"]);
+export const KEEP = new Set(["Accident"]);
 
 /**
  * Types that go to `situation_archive` (BACKLOG #33) — the durable record the miss-
