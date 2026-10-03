@@ -16,7 +16,7 @@ test("kuvösens klocka: snapshotbyggaren har inga tidskällor som klockan inte n
   assert.ok(ONADDA_TIDSKALLOR.test("SELECT CURRENT_TIMESTAMP") && ONADDA_TIDSKALLOR.test("x > clock_timestamp()")
     && ONADDA_TIDSKALLOR.test("pg_catalog.now()") && !ONADDA_TIDSKALLOR.test("sample_time > now() - interval '3 hours'"),
     "mönstret fångar de onådda källorna och släpper now()");
-  for (const f of ["../publish/snapshot-core.ts", "../publish/rekonstruktion.ts"]) {
+  for (const f of ["../publish/snapshot-core.ts", "../publish/rekonstruktion.ts", "../kuvos/korning.ts"]) {
     const src = readFileSync(new URL(f, import.meta.url), "utf8");
     const traff = src.split("\n").map((r, i) => [i + 1, r] as const).filter(([, r]) => ONADDA_TIDSKALLOR.test(r));
     assert.deepEqual(traff, [], `${f}: tidskälla som kuvösens klocka inte når`);
@@ -108,6 +108,35 @@ test("radarns kärna: Z–R och händelsegränsen som driften, delad mellan h5 o
   const r = segmentRader([{ id: "a", line: [[13, 55.6], [13.1, 55.6]] }, { id: "b", line: [[14, 56], [14.1, 56]] }],
     (lon) => (lon < 13.5 ? 1.234 : MIN_RATE_MMH / 2));
   assert.deepEqual([r.ids, r.maxes, r.means], [["a"], [1.23], [1.23]], "bara segment över händelsegränsen blir rader");
+});
+
+// Körflödet (steg 5, DECISIONS #426). Stegen, serie B:s schema och tidsdomen är rena; spåret ska vara skuggmotorns, inte likt det.
+test("körflödet: halvtimmarna, serie B var tredje timme från 00:00 UTC, och tidsdomen satt före körningen", async () => {
+  const { halvtimmar, serieBSteg, tidsdom } = await import("../kuvos/korning.ts");
+  assert.deepEqual(halvtimmar(new Date("2024-10-31T23:10:00Z"), new Date("2024-11-01T01:00:00Z")).map((t) => t.toISOString().slice(11, 16)),
+    ["23:30", "00:00", "00:30", "01:00"], "första hela halvtimmen efter starten, sista vid slutet");
+  assert.equal(halvtimmar(new Date("2024-11-01T00:00:00Z"), new Date("2025-03-31T23:59:59Z")).length, 151 * 48, "november–mars");
+  const b = (iso: string, h: number) => serieBSteg(new Date(iso), h);
+  assert.deepEqual([b("2024-11-01T00:00Z", 3), b("2024-11-01T03:00Z", 3), b("2024-11-01T01:00Z", 3), b("2024-11-01T03:30Z", 3)],
+    [true, true, false, false]);
+  assert.deepEqual([b("2024-11-01T06:00Z", 6), b("2024-11-01T03:00Z", 6)], [true, false], "glesad till var sjätte timme");
+  const d = tidsdom({ stegHelaVintern: 7248, snapshotMs: 500, aMs: 100, bMsPerBSteg: 20_000, foreMin: 10 });
+  assert.deepEqual([Math.round(d.utanB), Math.round(d.b3), Math.round(d.b6), d.grans], [82, 485, 284, 324]);
+  assert.equal(d.dom, "B glesas till var sjätte timme (#426)");
+  assert.equal(tidsdom({ stegHelaVintern: 7248, snapshotMs: 500, aMs: 100, bMsPerBSteg: 1_000, foreMin: 10 }).dom, "B var tredje timme ryms");
+});
+
+test("körflödet: spåret är skuggmotorns traceAlong, fix för fix", async () => {
+  const { spar } = await import("../kuvos/korning.ts");
+  const { haversineM } = await import("../engine/src/geo.ts");
+  const { stripTypeScriptTypes } = await import("node:module");
+  const kod = readFileSync(new URL("../supabase/functions/skuggmotor/main.ts", import.meta.url), "utf8");
+  const start = kod.indexOf("function traceAlong(");
+  const js = stripTypeScriptTypes(kod.slice(start, kod.indexOf("\n}\n", start) + 2));
+  const traceAlong = new Function("haversineM", `${js}; return traceAlong;`)(haversineM);
+  const linje: [number, number][] = [[17.95, 59.3], [18.05, 59.33], [18.06, 59.33], [18.4, 59.6]];
+  assert.deepEqual(spar(linje), traceAlong(linje));
+  assert.ok(spar(linje).length > 100, "en riktig sträcka, inte en tom jämförelse");
 });
 
 test("SMHI-arkivet: bara vinterns rader, läget ur perioden som täcker raden, värdet som det står", async () => {

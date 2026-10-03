@@ -479,6 +479,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **30/9 (nattens mätningar, `docs/PROGNOSLAGRET-2026-09-30.md`):** två tillägg till ansökan om Axel hinner — termisk kartering som
   rad i AP2 (kort #271, inom AP2:s 70 000 så att 413 000 står) och ett samråd med Trafikverket om fordonsdata för utvärdering, utan
   beroende (text i chatten 30/9). Ingen av dem krävs för att ansökan ska stå.
+  🔨 **STEG 5a BYGGT 3/10 (DECISIONS #453, Bengt: *"slå ihop 730 och kör på"*):**
+  - *Körningen* `kuvos/korning.ts` ställer klockan varje halvtimme, kör `buildSnapshot` oförändrad och rösten i båda serierna: A är 20 rutter varje steg, B är 818 sträckor var tredje timme.
+  - *Proven* i `test/kuvos.test.ts` täcker spåret, som är skuggmotorns `traceAlong` fix för fix, och tidsdomen. Kontraktsgrinden vaktar farten och punkttätheten. Två motprov gjordes lokalt och föll på rätt vakt.
+  - *Tidsregeln* är satt före körningen: B "ryms" om hela vintern beräknas till ≤ 324 min (90 % av 360).
+  - **Nästa:** knappen `kuvos` med `korflode = tid-sju-dygn`. Den läser bara körtiden och avgör om B glesas.
+  - **Därefter:** 5b facit, 5c reglerna och grindarna på klockan, 5d tabellen *del × ensam × ovanpå*.
 
 *↩︎ = ÅTERSTÄLLT 10/9. Korten nedan föll av tavlan 8/9 20:43 (commit 99473c7: Claudes tavelsynk av
 "Axels nästa steg" svalde 174 rader, inkl. tre Claude-sektioner). Inget av dem har bevis på klart sedan dess.*

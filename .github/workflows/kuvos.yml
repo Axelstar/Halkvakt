@@ -10,12 +10,17 @@ on:
       matning:
         description: "Läsande mätning efter vakterna, en fil under scripts/matningar/ (tomt = ingen). Förregistreras i DECISIONS före körningen."
         default: ""
+      korflode:
+        description: "Körflödet (steg 5, kuvos/korning.ts). tid-sju-dygn = bara körtiden på vinterns första sju dygn, inga varningar (#426)."
+        type: choice
+        options: [ingen, tid-sju-dygn]
+        default: ingen
 permissions:
   contents: read
 jobs:
   inlasning:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 60
     services:
       postgis:
         image: postgis/postgis:16-3.4
@@ -28,6 +33,7 @@ jobs:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
       PGPASSWORD: postgres
     steps:
+      - run: echo "JOBB_START=$(date +%s)" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
@@ -94,3 +100,14 @@ jobs:
         run: |
           [[ "$MATNING" =~ ^scripts/matningar/[A-Za-z0-9._-]+\.ts$ && -f "$MATNING" ]] || { echo "okänd mätning: $MATNING"; exit 1; }
           { echo '```'; node --experimental-strip-types "$MATNING"; echo '```'; } 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+      # Körflödet (steg 5, DECISIONS #426). Väglagsnätets geometri är dagens, som #426 säger; dess sha256 skrivs ut så att körningen
+      # går att upprepa på samma nät. tid-sju-dygn läser inga varningar — den avgör bara om serie B ryms var tredje timme.
+      - name: Körflödet
+        if: ${{ inputs.korflode == 'tid-sju-dygn' }}
+        shell: bash
+        run: |
+          curl -sSf -o vaglag.geojson https://axelstar.github.io/halkvakt-karta/data/vaglag.geojson
+          FORE=$(( ($(date +%s) - JOBB_START) / 60 ))
+          { echo '```'; sha256sum vaglag.geojson
+            node --experimental-strip-types kuvos/korning.ts vaglag.geojson --tid --dygn 7 --fore-min "$FORE"; echo '```'
+          } 2>&1 | grep --line-buffered -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"

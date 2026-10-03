@@ -7280,3 +7280,27 @@ slår ihop (att stänga ett kort är en bedömning av beviset, inte en räkning)
 
 **Alternativ som valdes bort:** att publiceringen själv larmar (den kör var tionde minut och har ingen larmväg; vakthunden har en);
 att räkna om vakterna i vakthunden (regeln skulle då stå på två ställen — läxan bakom kontraktsgrinden).
+
+## #453 (3/10 2026) Kuvösens körflöde, steg 5a: körningen byggd, och vad "ryms i ett Actions-jobb" betyder — satt före tidskörningen (kort #232)
+
+**Bakgrund.** Steg 5 är beslutat (#424, #426, #437). #426 säger: *visar körtiden på vinterns första sju dygn att serie B inte ryms i ett
+Actions-jobb glesas den till var sjätte timme — avgjort på körtiden, innan något utfall är läst.* Bengt 3/10: *"slå ihop 730 och kör på"*.
+
+**Byggt (`kuvos/korning.ts`).** Klockan ställs på varje halvtimme, produktionens snapshotbyggare körs oförändrad, och motorn kör rösten i
+två serier: (A) de 20 skuggrutterna i varje steg, (B) varje väglagssträcka var tredje timme från 00:00 UTC. Spåret är skuggmotorns
+(80 km/h, en fix var femte sekund). `--tid` skriver bara körtiden och stegen, inga varningar. Utan `--tid` sparas varje varning som en
+rad för facitsteget, och körningen själv läser inget utfall. Knappen är `kuvos` med `korflode = tid-sju-dygn`.
+
+**Regeln, satt nu, före tidskörningen (Claudes val, Bengt kan ändra det före knappen).** *Ryms* betyder att den beräknade tiden för hela
+vintern är högst **90 % av jobbets 360 minuter (324 min)**. Tiden räknas som de sju dygnens snitt per steg uppräknat till vinterns alla
+halvtimmar, plus jobbets egen tid före körflödet (hämtning och inläsning). Ryms B var tredje timme körs den så. Annars glesas B till var
+sjätte timme, och ryms inte ens det skrivs det ut. Skälet till marginalen är att sju dygn är ett stickprov: november är lugnare än
+januari, och snapshoten tar längre tid när fler stationer är kalla.
+
+**Prov.** I `test/kuvos.test.ts` ligger halvtimmarna, schemat för serie B och tidsdomen. Spåret jämförs fix för fix med skuggmotorns
+egen `traceAlong`, utläst ur källan. Kontraktsgrinden vaktar farten och punkttätheten mellan skuggmotorn och kuvösen. Motproven gjordes
+lokalt 3/10: farten 90 fälls av grinden och av provet, och `round` → `floor` är osynlig för grinden men fälls av provet.
+
+**Inte byggt än (5b–5d).** Facit (stationens egen yta i varje dels utfallsfönster), stationsreglerna och grindarna på kuvösens klocka
+(`moln.ts` och grind NT ska läsa `kuvos_ra.smhi_obs`, och `trend_kandidater` ska beräknas för vintern), samt tabellen *del × ensam ×
+ovanpå*. Efterhalkan och vinden väntar på Trafikverkets svar om mängden och vindstyrkan (#439).

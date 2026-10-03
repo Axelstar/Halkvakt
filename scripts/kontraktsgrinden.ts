@@ -583,6 +583,22 @@ export const KONTRAKT: Kontrakt[] = [
     former: [/typeof cams\[0\]; let bd = ([\d_]+);/, /export const FARA_M = ([\d_]+);/],
     golv: 3,
   },
+  {
+    // DECISIONS #426: kuvösens röst körs med "samma fart och punkttäthet som skuggan". Kuvösen kan inte importera skuggmotorn (ett
+    // Deno-skript), så spåret är en kopia. Bunten (index.ts) är genererad ur main.ts och räknas inte.
+    namn: "Rösten längs en linje, farten — km/h i skuggmotorn och i kuvösens körflöde",
+    varfor: "Driver farten isär mäter kuvösens röst en annan förare än skuggan, och vinterns jämförelse 2024/25 mot 2026/27 haltar.",
+    former: [/function (?:traceAlong|spar)\(line: \[number, number\]\[\], kmh = (\d+), stepS = \d+\)/],
+    filer: /skuggmotor\/main\.ts|kuvos\/korning\.ts/,
+    golv: 2,
+  },
+  {
+    namn: "Rösten längs en linje, punkttätheten — sekunder mellan fixarna",
+    varfor: "Samma som ovan: glesare fixar ändrar när motorn hinner tala.",
+    former: [/function (?:traceAlong|spar)\(line: \[number, number\]\[\], kmh = \d+, stepS = (\d+)\)/],
+    filer: /skuggmotor\/main\.ts|kuvos\/korning\.ts/,
+    golv: 2,
+  },
 ];
 
 // ── SJÄLVTEST mot känd sanning, utan disk ──────────────────────────────────────────────
