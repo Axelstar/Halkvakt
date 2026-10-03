@@ -305,6 +305,45 @@ test("#83 arkivexporten: dygnet som text, bokföringen räknar om, raderingen ä
   }
 });
 
+// Kort #291 (sql/042, DECISIONS #450): exportfilen läses tillbaka. Ett dygn med de värden som är lätta att tappa — decimaler,
+// null, sant och falskt, kommatecken och citattecken i namnet, vind och sikt — exporteras, raderas och läses tillbaka, och
+// jämförs kolumn för kolumn. Jämförelsen själv prövas också: en ändrad rad måste synas på båda sidor.
+test("#291 återläsningen: filen blir samma rader igen, kolumn för kolumn", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  try {
+    for (const f of ["034_arkivexport.sql", "042_arkiv_aterlas.sql"]) await pool.query(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+    const dag = (await pool.query(`SELECT ((now() - interval '45 days') AT TIME ZONE 'UTC')::date::text AS d`)).rows[0].d;
+    await pool.query(`DELETE FROM weather_observations WHERE (sample_time AT TIME ZONE 'UTC')::date = $1::date`, [dag]);
+    await pool.query(`
+      INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, dewpoint_c, humidity_pct,
+        precipitation, rain, snow, rain_sum_mm, snow_wateq_mm, wind_speed_ms, wind_gust_ms, wind_dir_deg, visibility_m)
+      VALUES ('R1', 'Ån, "norra"', ST_SetSRID(ST_MakePoint(17.123456789, 62.987654321), 4326), $1::date + interval '30 min',
+              -0.40, 1.2, -2.25, 97.5, 'Lätt snö', true, true, 0.3, 1.25, 4.7, 9.1, 225, 1200),
+             ('R1', 'Ån, "norra"', ST_SetSRID(ST_MakePoint(17.123456789, 62.987654321), 4326), $1::date + interval '23 hours 30 min',
+              null, null, null, null, 'no', false, false, null, null, null, null, null, null),
+             ('R2', 'Två', ST_SetSRID(ST_MakePoint(11, 58), 4326), $1::date, 3, 4, 1, 80, null, false, false, 0, 0, 0.0, 0.0, 0, 20000)`, [dag]);
+    const text: string = (await pool.query(`SELECT arkiv_dygn($1::date) AS t`, [dag])).rows[0].t;
+    const jamfor = async () => (await pool.query(`SELECT arkiv_jamfor($1::date, $2) AS j`, [dag, text])).rows[0].j;
+    assert.deepEqual(await jamfor(), { fil: 3, databas: 3, bara_i_filen: 0, bara_i_databasen: 0 }, "filen och databasen bär samma rader");
+    // Jämförelsen ser en ändring: en rad med en annan temperatur finns då bara på ena sidan, och den andra bara på den andra.
+    await pool.query(`UPDATE weather_observations SET surface_temp_c = -0.41 WHERE station_id = 'R1' AND sample_time = $1::date + interval '30 min'`, [dag]);
+    assert.deepEqual(await jamfor(), { fil: 3, databas: 3, bara_i_filen: 1, bara_i_databasen: 1 }, "en ändrad rad syns");
+    // Dygnet raderas och läses tillbaka ur filen; en andra återläsning skriver inget.
+    await pool.query(`DELETE FROM weather_observations WHERE (sample_time AT TIME ZONE 'UTC')::date = $1::date`, [dag]);
+    assert.equal((await pool.query(`SELECT arkiv_aterlas($1) AS n`, [text])).rows[0].n, 3, "tre rader tillbaka");
+    assert.equal((await pool.query(`SELECT arkiv_aterlas($1) AS n`, [text])).rows[0].n, 0, "en omkörning dubblerar inte");
+    assert.deepEqual(await jamfor(), { fil: 3, databas: 3, bara_i_filen: 0, bara_i_databasen: 0 }, "de återlästa raderna är filens, kolumn för kolumn");
+    const [r] = (await pool.query(`SELECT name, ST_X(geom) AS lon, surface_temp_c::text AS yta, rain, visibility_m::text AS sikt FROM weather_observations
+      WHERE station_id = 'R1' AND sample_time = $1::date + interval '30 min'`, [dag])).rows;
+    assert.deepEqual(r, { name: 'Ån, "norra"', lon: 17.123456789, yta: "-0.40", rain: true, sikt: "1200" }, "decimalerna och skalan står kvar");
+  } finally {
+    await pool.query(`DELETE FROM weather_observations WHERE station_id IN ('R1', 'R2')`).catch(() => {});
+    await pool.end();
+  }
+});
+
 // Grepp 3 (sql/026, DECISIONS #232): gallra_arkiv kör den svenska gallringen och tar dessutom Finland (varma rader efter
 // sju dygn, allt efter 60), Norge (allt efter sju dygn) och pg_crons logg — loggen finns inte i CI och hoppas över.
 test("grepp 3 gallra_arkiv: Finland behåller kalla rader i 60 dygn, Norge och Danmark sju dygn, epoknoll och gravstenar bort, idempotent", { skip: !url }, async () => {

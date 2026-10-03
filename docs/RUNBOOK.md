@@ -44,6 +44,24 @@ Kadenser efter beslut #22: livemotorn 1 min · GitHub-ingest timvis (väder/kame
 · publicera (Supabase pg_cron) var 10:e min, kartlager :00/:30 · fi/dk-snapshoter sist i ingest-grannar (#85) · healthcheck varannan timme
 (trösklar: deviations/road_conditions 15 min, övriga 150 min, + puls på cron-status).
 
+## Arkivet tillbaka — ett raderat dygn behövs (kort #291, DECISIONS #450)
+Raderingen (sql/034 `arkiv_radera_exporterat`, 03:45) tar det äldsta exporterade dygnet ur `weather_observations` när databasen
+passerar 350 MB. Dygnet finns kvar i två kopior: exportfilen `arkiv/weather_observations/ÅÅÅÅ-MM-DD.ndjson.gz` i Supabase Storage
+(privat hink) och veckodumpen `arkiv-…` som GitHub-release (arkivbackup.yml, de 12 senaste).
+- **Att filerna går att läsa tillbaka** prövas med databasknappen: `dbknapp` med `atgard = aterlasprov`. Den hämtar det äldsta
+  ännu inte raderade dygnet ur hinken och jämför det med databasen kolumn för kolumn (`arkiv_jamfor`). Inget skrivs. Väntat:
+  `ok: true`, `sha_lika`, och `bara_i_filen` = `bara_i_databasen` = 0.
+- **Marsvägen, för en dom som behöver raderade dygn:**
+  1. Starta en tom PostGIS (en Actions-container eller lokalt) med `create extension postgis`.
+  2. Läs in den senaste veckodumpen med `pg_restore --no-owner --no-privileges`. Fel om pg_net/pg_cron är väntade.
+  3. Ladda ner de raderade dygnens filer ur hinken. Storage → `arkiv` i panelen, eller REST med service-nyckeln; nyckeln läggs aldrig
+     i repot.
+  4. Läs in varje fil med `SELECT arkiv_aterlas(convert_from(…, 'UTF8'))`, eller med `psql -c "SELECT arkiv_aterlas(:'t')" -v t="$(zcat fil.ndjson.gz)"`.
+     Funktionen hoppar över rader som redan finns, så dumpen och filerna kan överlappa.
+  5. Kör domens skript med `DATABASE_URL` mot containern.
+- **Ett dygn tillbaka i driften** (bara om det verkligen behövs; databasen växer igen): `arkiv_aterlas` på samma sätt mot
+  `DATABASE_URL`, och sedan `UPDATE arkiv_export SET raderad = NULL WHERE dag = …`, så att raderingen kan ta dygnet nästa gång.
+
 ## Rotating secrets
 **Förnyelseklocka:** Supabase-accesstoken (sbp_…, Management-API/CLI) och GitHub-PAT löper ut ~nov 2026 —
 förnya båda och uppdatera STATUS. `INGEST_KEY` roteras enligt livemotor-avsnittet ovan.
