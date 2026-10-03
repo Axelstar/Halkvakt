@@ -723,3 +723,19 @@ ingen läser en överspelad version någon annanstans.
 | 2/10 | **Läge-raden för kuvösen:** Trafikverkets leverans mottagen och besiktigad — ingen innehållsändring | DECISIONS #438 |
 | 2/10 | **Läge-raden för kuvösen:** vintern inläst, nederbördskoderna 1/2/4/6 ur VädErs 2019 — ingen innehållsändring | DECISIONS #439 |
 | 2/10 | **Läge-raden för kuvösen:** SMHI för samma vinter hämtat (steg 4) — ingen innehållsändring | DECISIONS #441 |
+
+<!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
+## Öppna kort
+
+Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 3 av 44 öppna kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+
+**§5 Fogarna — var en skuggdel kan greppa, och vad den kostar**
+
+- #88 TRENDEN — vi mäter var minut men använder bara sista värdet — Claude, låst
+
+**§6 Var lagren står, mätt**
+
+- #270 PROGNOSLAGRET EFTER PREMISSMÄTNINGARNA — BENGTS VAL a–h — Bengt
+- #38b Stråket / skuggmotorn — ÅTERSTÄLLT 10/9 — Claude, låst
+
+<!-- /ÖPPNA KORT -->

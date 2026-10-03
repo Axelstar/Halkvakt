@@ -109,12 +109,12 @@
     <span><b>0</b> når föraren</span>
   </div>
 
-  <h2>1. Varför kuvösen finns</h2>
+  <h2 id="avsnitt-1">1. Varför kuvösen finns</h2>
   <p>Nästan allt som prövas i skuggan väntar på frost. Den 27 september var en station av 1 298 kall, och 19 av tavlans 35 öppna kort var låsta på en nyckel som nästan alltid var <i>första frosten</i>. Domarna kommer därför först i januari och mars, efter att vintern redan har gått.</p>
   <p>Kuvösen går runt väntan: samma bevis, på en vinter som redan har hänt. Den svarar också på en fråga som ingen annan mätning ställer. Varje grind dömer sin del ensam, och ingen ser vad delarna ger tillsammans. Kuvösen kör dem tillsammans och redovisar varje del både ensam och ovanpå de andra.</p>
   <p class="litet">Idén är Bengts, 21 september: en testbädd <i>”i kuvös, långt från bilar och appar och människor”</i>, för att se <i>”om det är på rätt väg eller fel väg”</i>.</p>
 
-  <h2>2. Läget i dag</h2>
+  <h2 id="avsnitt-2">2. Läget i dag</h2>
   <div class="tabell">
     <table>
       <thead><tr><th>Del</th><th>Läge</th><th></th></tr></thead>
@@ -136,7 +136,7 @@
     </table>
   </div>
 
-  <h2>3. Hur den fungerar</h2>
+  <h2 id="avsnitt-3">3. Hur den fungerar</h2>
   <p>Kuvösen kör produktionens egen kod. Det som skiljer är var datan kommer ifrån och vad klockan är.</p>
   <figure class="flode" aria-label="Kedjan från Trafikverkets fil till resultatet">
     <div class="nod klar"><span class="kod">In <span class="dom klar">mottagen 2/10</span></span><b>Trafikverkets fil</b><span class="txt">Stationernas mätvärden för vintern: yttemperatur, lufttemperatur, daggpunkt, fuktighet, nederbörd, vind och sikt.</span></div>
@@ -174,7 +174,7 @@
   </div>
   <p class="litet">Bestämt 1/10, innan filen har kommit. Gäller bara kuvösen: skuggan i drift kör sina 20 rutter som förut.</p>
 
-  <h2>4. Vad den kan pröva, och vad den inte kan</h2>
+  <h2 id="avsnitt-4">4. Vad den kan pröva, och vad den inte kan</h2>
   <div class="tabell">
     <table>
       <thead><tr><th>Del</th><th>Med stationsdatan</th><th>Varför</th></tr></thead>
@@ -194,7 +194,7 @@
     </table>
   </div>
 
-  <h2>5. Reglerna, skrivna i förväg</h2>
+  <h2 id="avsnitt-5">5. Reglerna, skrivna i förväg</h2>
   <ul>
     <li><b>Hela vintern.</b> Alla stationer och hela perioden i leveransen. Inga dygn och inga stationer väljs bort för hand.</li>
     <li><b>Låsta värden först.</b> Riktningsprovet körs med de värden som står i dag. Inget väljs och inget prövas fram.</li>
@@ -205,7 +205,7 @@
     <li><b>Kalibrering och dom på skilda nätter.</b> Det som väljs på vintern 2024/25 döms på vintern 2026/27.</li>
   </ul>
 
-  <h2>6. Vad som kommer härnäst</h2>
+  <h2 id="avsnitt-6">6. Vad som kommer härnäst</h2>
   <ol class="tid">
     <li><b>2/10</b><div>Filen kom, en vecka tidigare än väntat. Den är inventerad, packad i en privat release och tidszonen är mätt. Frågorna om koderna går till Trafikverket.</div></li>
     <li><b>2/10 kväll</b><div>Axel hittade fyra av nederbördskoderna i Trafikverkets ersättningsmodell. Vintern är inläst i kuvösens databas och vakterna är körda som antal. SMHI:s stationer och radar för samma vinter är hämtade. Inget utfall är läst.</div></li>
@@ -216,7 +216,7 @@
     <li><b>Före 1 december</b><div>Kuvösens värde är att ge vintersvar före vintern. Efter frosten och betan i november är den mest historia.</div></li>
   </ol>
 
-  <h2>7. Vad det kan ändra i projektet</h2>
+  <h2 id="avsnitt-7">7. Vad det kan ändra i projektet</h2>
   <p>Kuvösen är ett riktningsprov och fäller ingen dom. Men den kan flytta flera beslut från mars till oktober och november.</p>
   <div class="par">
     <div class="ruta gron">
@@ -245,7 +245,7 @@
     </div>
   </div>
 
-  <h2>8. Vad kuvösen inte kan säga</h2>
+  <h2 id="avsnitt-8">8. Vad kuvösen inte kan säga</h2>
   <div class="par">
     <div class="ruta rod">
       <h3>Facit är tunt</h3>
@@ -271,4 +271,25 @@
   <p>Ingenting i kuvösen når en förare. Appen, rösten och det telefonen hämtar är orörda.</p>
   <hr>
   <p class="litet">Källor: beslutsloggen (DECISIONS #292, #388, #397, #398, #418, #424–#428, #437, #438, #440, #442), kort #232, #270 och #278, planen (docs/PLAN-KUVOSEN-2026-10-01.md), bedömningen §4.2 och §6.1 och tröskeldokumentet för kombinationen (regel D). Sidan till Trafikverkets handläggare, <i>Halkvakt och kuvösen</i>, är en annan sida och säger mindre. Alla datum avser 2026 om inget annat står.</p>
+
+<!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
+  <h2 id="oppna-kort">Öppna kort</h2>
+  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 4 av 44 öppna kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
+  <h3><a href="#avsnitt-2">2. Läget i dag</a></h3>
+  <ul>
+    <li>#232 KUVÖSEN — HELA SYSTEMET BAKÅTPRÖVAT PÅ VINTERN 2024/25 <span class="litet">· Bengt</span></li>
+  </ul>
+  <h3><a href="#avsnitt-5">5. Reglerna, skrivna i förväg</a></h3>
+  <ul>
+    <li>#282 REGEL L — FÖRSLAG: ÄNDRING AV EN TRÖSKEL EFTER ATT UTFALLET ÄR SETT <span class="litet">· Bengt</span></li>
+  </ul>
+  <h3><a href="#avsnitt-6">6. Vad som kommer härnäst</a></h3>
+  <ul>
+    <li>#270 PROGNOSLAGRET EFTER PREMISSMÄTNINGARNA — BENGTS VAL a–h <span class="litet">· Bengt</span></li>
+  </ul>
+  <h3><a href="#avsnitt-7">7. Vad det kan ändra i projektet</a></h3>
+  <ul>
+    <li>#278 BETAN: BÅDA VÄRDEPAREN I SKUGGAN, ETT HÖRS <span class="litet">· Claude, låst</span></li>
+  </ul>
+<!-- /ÖPPNA KORT -->
 </main>

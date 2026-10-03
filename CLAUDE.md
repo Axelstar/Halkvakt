@@ -89,7 +89,7 @@ Every session, in order:
    *Verify* line. (BACKLOG.md avvecklad 26/9, kort #221 — kön bor i bedömningen och på tavlan.)
 3. Prove it: tests/CI/logs — never claim done without evidence.
 4. Commit with a message explaining what + why. Update the bedömning (läget överst,
-   §4.2) and TAVLA; a session-log line in STATUS.md. Log decisions in DECISIONS.md. Stäm av mot de sex
+   §4.2) and TAVLA; a session-log line in STATUS.md. Log decisions in DECISIONS.md. Stäm av mot de sju
    stomdokumenten och för in rättelserna där i samma varv (STOMREGELN).
 5. End by telling Axel: what shipped, what's next, and ONLY the questions that
    block progress. Batch questions; never drip them.
@@ -127,20 +127,26 @@ Varje arbetsvarv AVSLUTAS med att TAVLA.md synkas mot verkligheten:
 4. Finns det inte på tavlan finns det inte. Idéer utan kort = tappade idéer.
 Tavlan är människolagret; bedömningen, STATUS och DECISIONS är djuplagren.
 
-## STOMREGELN (Bengts order 2026-10-01 — sex stomdokument, DECISIONS #415, #425)
-Sex dokument är Bengts facit och kontrollpunkter för var vi är, och stommen för det fortsatta bygget:
+## STOMREGELN (Bengts order 2026-10-01 — sju stomdokument, DECISIONS #415, #425, #445)
+Sju dokument är Bengts facit och kontrollpunkter för var vi är, och stommen för det fortsatta bygget:
 1. *Halkvaktens mätningar* — artefakt https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc, källa `docs/MATNINGAR.html`
 2. *Halkvaktens app* — https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT, källa `docs/APPEN.html`
 3. *Halkvaktens systembild* — https://claude.ai/artifact/6hHX4LeXQUrJSbaNthNY9i, källa `docs/SYSTEMBILDEN.html`
 4. Bedömningen — den senaste `docs/BEDOMNING-*.md`
 5. Integrationskartan — `docs/INTEGRATIONSKARTAN.md`
 6. *Halkvaktens kuvös* — https://claude.ai/artifact/1xvv4hydYbfpF5eXFgLcxh, källa `docs/KUVOSEN.html` (tillagd 1/10 på Bengts order, DECISIONS #425)
-Varje ändring, tillägg och komplettering STÄMS AV mot de sex innan varvet avslutas, och rättelser, ändringar och avbockningar
+7. *Halkvaktens favoriter* — https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT, källa `docs/FAVORITER.html` (tillagd 3/10 på Bengts order, DECISIONS #445)
+Varje ändring, tillägg och komplettering STÄMS AV mot de sju innan varvet avslutas, och rättelser, ändringar och avbockningar
 redovisas i dem löpande, i samma varv som de görs — aldrig i efterhand. Artefakterna ändras i repokopian (källan) och republiceras
 till samma URL i samma commit; en artefakt som skiljer sig från sin repokopia är ett fel. Kartans frysregel gäller fortfarande
 dess INNEHÅLL (ändras efter bygge och mätning), men dess läge-rader (§2, §6.1, §8, §13.6, §14) hålls aktuella. Det är ett
-arbetsmoment som alltid står fast. Kontroll före sessionens slut: `git log -1 --format=%ad -- <fil>` på de sex är inte äldre än
+arbetsmoment som alltid står fast. Kontroll före sessionens slut: `git log -1 --format=%ad -- <fil>` på de sju är inte äldre än
 det senaste beslut som rör dem.
+**KORTKARTAN (Bengts order 3/10, DECISIONS #445).** Varje öppet kort på tavlan hör till ett eller flera avsnitt i stomdokumenten,
+och varje stomdokument visar sina öppna kort under rubriken *Öppna kort*. Kopplingen bor på ETT ställe, `docs/kortkartan.json`;
+listorna skrivs av `node --experimental-strip-types scripts/kortkartan.ts` och ändras aldrig för hand. Ett nytt kort, ett stängt kort
+eller en ny rubrik på ett kort ⇒ kortkartan.json, skriptet och republiceringen av de berörda artefakterna i SAMMA commit som
+tavlan. `--check` (i ci.yml) fäller på okopplade kort, kopplingar till stängda kort, okända avsnitt och listor som inte är aktuella.
 
 ## PRODUKTBOKSREGELN (Axels order 2026-08-29)
 Ändras något användaren SER, HÖR eller GÖR (skärm, rösttext, flöde, behörighet)

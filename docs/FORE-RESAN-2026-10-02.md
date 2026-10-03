@@ -6,6 +6,10 @@ som ingick som en del i favoritrutter som kunde sparas och att man i förväg fi
 appen kan ge information om." Ett beslutsunderlag för kort #233 del 1, ingen kod. Formen är Axels. Bygger på Fintraffic-jämförelsen
 (`docs/FINTRAFFIC-JAMFORELSE-2026-10-02.md`, kort #283).*
 
+*↪ **Överspelat 3/10:** *Halkvaktens favoriter* (`docs/FAVORITER.html`, stomdokument 7, DECISIONS #445) är den gällande sidan. Genomgången
+mot repot 3/10 rättade där bland annat studien, Siri-frasen (Apple kräver appens namn), CarPlay (Siri fungerar via CarPlay, en egen
+CarPlay-app gör det inte), motorns `run()`, filstorlekarna och Android-schemaläggningen. Texten nedan står kvar som den skrevs 2/10.*
+
 *Omskrivet samma kväll efter Bengts förtydligande. Första utgåvan gjorde pendlingen till hela idén och en notis om frysrisk till
 huvudsaken. Bengts tanke är bredare: favoritrutter, där pendlingen är ett av flera fall, och en rapport om allt längs rutten.*
 
@@ -61,18 +65,21 @@ datamodell och räknat i deras API 2/10 (DECISIONS #442).
 | Halt väglag på sträckor | *RoadCondition* | Hela landet, november–april | I rösten |
 | Frysrisk vid mätstationer, broar | Väderstationerna | Hela landet, omkring 750 stationer enligt Trafikverket | I rösten |
 | Olyckor, hinder, djur på vägen | *Situation* | Hela landet | I rösten (olyckor och vilt) |
-| **Vägarbeten**: körfält, påverkan, start och slut | *Situation* | Hela landet: 1 876 aktiva 2/10, och 3 262 som vilar | Hämtas, sägs inte |
-| **Hastighetsnedsättningar och omledningar** | *Situation* | Hela landet: 801 och 39 aktiva 2/10 | Hämtas, sägs inte |
+| **Vägarbeten**: körfält, påverkan, start och slut | *Situation* | Hela landet: 1 876 aktiva 2/10, och 3 262 som vilar | Kommer med i livemotorns svar men kastas |
+| **Hastighetsnedsättningar och omledningar** | *Situation* | Hela landet: 801 och 39 aktiva 2/10 | Kommer med i livemotorns svar men kastas |
 | **Köer och restider** | *TravelTimeRoute*, *TrafficFlow* | Nästan bara Stockholm: 191 av 198 restidssträckor, 2 400 av 3 125 detektorer | Används inte |
 | Kömeddelanden från trafikcentralerna | *Situation* (*AbnormalTraffic*) | Hela landet, när de skrivs | Arkiveras |
 | **Färjor**: avgångar och störningar | *FerryAnnouncement* | Vägfärjorna, 36 leder | Används inte |
 | Fartkameror | *TrafficSafetyCamera* | Hela landet | I rösten |
-| SMHI:s varningar | SMHI | Hela landet | I arkivet |
+| SMHI:s varningar | SMHI | Hela landet | I lägesfilen, visas inte |
 | *Halkvakt tror*, prognosen längs vägen | Prognoslagret | — | Först efter domen i mars, och bara om det klarar sina grindar |
 
 **Det som inte går att få öppet:** realtidstrafik från Google, Waze, TomTom eller HERE kostar pengar eller kräver avtal, och gratisnivån
 är ett krav i projektet. Bilarnas egna halkvarningar finns inte i något öppet dataset (DECISIONS #282). Utanför Stockholm och Göteborg
 finns inga mätta köer.
+
+*Vad som måste byggas, varifrån det hämtas och en uppskattad byggtid (10–15 arbetsdagar, ingen planerad) står i Halkvaktens
+favoriter, avsnitt 7 (`docs/FAVORITER.html`). Raderna ovan om vad som finns i dag är rättade mot koden 2/10.*
 
 ## Vad som får stå var
 
@@ -94,6 +101,10 @@ som finns. Invarianten i CLAUDE.md står kvar: ingen position lämnar telefonen 
 Två saker måste sägas öppet. Appen sparar för första gången vägar som föraren har kört, på förarens begäran, så produktboken,
 introduktionen och integritetssidan ska säga det. Och rapporten får inte hämta något som är särskilt för rutten, till exempel bilder från
 kamerorna längs den, eftersom det berättar för Trafikverkets server ungefär vilken väg föraren tänker köra.
+
+Vad som krävs för att spara en rutt, och vad det kostar i löftet, står i Halkvaktens favoriter, avsnitt 6: en brytare av från
+början, en tillfällig fil till efter resan, en fil som undantas från säkerhetskopior, och att appen inte längre är en app som inte
+sparar någon position alls. Löftet att ingen position lämnar telefonen av sig själv står kvar.
 
 ## Talen (räknade 2/10, DECISIONS #442)
 

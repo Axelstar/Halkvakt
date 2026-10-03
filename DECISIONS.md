@@ -7146,3 +7146,21 @@ Designunderlaget med alla repliker: https://claude.ai/code/artifact/99b270e0-494
 
 **Alternativ som valdes bort:** att bara byta färg och typsnitt på dagens kort (varianterna för olyckor och bro bär verklig information
 till föraren); ett gult kort för gammal data (gult betyder en fara framför dig).
+
+## #445 (3/10 2026) Halkvaktens favoriter blir sjunde stomdokumentet, och varje öppet kort kopplas till sitt område (kort #233)
+
+**Beslut (Bengt, 3/10):** *"är numera en officiell del av vårt byggprojekt på samma sätt som halkvaktens app, kuvös, bedömningar,
+integrationskartan etc. alla byggframsteg ska även noteras där"*, och samma kväll: *"hämta också oavslutade kort och koppla dem till
+sidan. Det gäller för övrigt alla sidor och alla öppna kort. koppla till det område de hör till inom alla block som är officiella
+byggprojekt"*.
+1. ***Halkvaktens favoriter*** (https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT, källa `docs/FAVORITER.html`) är det sjunde stomdokumentet under STOMREGELN, med samma krav som de
+   andra sex: byggframsteg, rättelser och avbockningar förs in där i samma varv, och artefakten republiceras ur repokopian.
+2. **Kortkartan.** Varje öppet kort på TAVLA.md kopplas till ett eller flera avsnitt i stomdokumenten i `docs/kortkartan.json`, och varje
+   stomdokument visar sina öppna kort under *Öppna kort*, ordnade efter sidans egna avsnitt. Listorna skrivs av `scripts/kortkartan.ts`;
+   `--check` i ci.yml fäller på okopplade kort, kopplingar till stängda kort, okända avsnitt och listor som inte är aktuella.
+   Första kopplingen 3/10: 44 öppna kort, alla kopplade, flera till mer än en sida.
+
+**Alternativ som valdes bort:** att skriva listorna för hand i sju dokument (de glider isär, samma skäl som kontraktsgrinden); att märka
+varje kort på tavlan med sin sida (tavlan är människolagret och ändras av flera sessioner, och en tavelsynk som skriver om fyrtio kort är
+den form av ändring som svalde 174 rader 8/9); att lägga listan inne i varje avsnitt (fler markörer i varje sida, samma innehåll).
+**Kopplingen är en bedömning per kort**, gjord av Claude 3/10 mot kortets text och sidans avsnitt. Den rättas i kortkartan.json, inte i sidorna.

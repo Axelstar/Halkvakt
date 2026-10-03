@@ -261,7 +261,10 @@ test("#83 arkivexporten: dygnet som text, bokföringen räknar om, raderingen ä
       UNION ALL SELECT 'X2', 'Ex "två"', ST_SetSRID(ST_MakePoint(16, 61), 4326), date_trunc('day', now() - interval '40 days') + i * interval '1 hour', null, null FROM generate_series(0, 1) i
       UNION ALL SELECT 'X1', 'Ex, ett', ST_SetSRID(ST_MakePoint(15.5, 60.25), 4326), now() - interval '1 day', 1, null`);
     const dag = (await pool.query(`SELECT ((now() - interval '40 days') AT TIME ZONE 'UTC')::date::text AS d`)).rows[0].d;
-    const att = (await pool.query(`SELECT arkiv_att_exportera(100)::text AS d`)).rows.map((r) => r.d);
+    // Ingesttestet ovan lämnar station W1 på det fasta datumet 2026-08-24. Den 3 oktober är "40 dygn sedan" just den dagen,
+    // och räkningen nedan blev 6 (CI 37098271161). Bara X1 och X2 får finnas på testets dygn.
+    await pool.query(`DELETE FROM weather_observations WHERE station_id NOT IN ('X1', 'X2') AND (sample_time AT TIME ZONE 'UTC')::date = $1::date`, [dag]);
+    const att =(await pool.query(`SELECT arkiv_att_exportera(100)::text AS d`)).rows.map((r) => r.d);
     assert.ok(att.includes(dag), `dygnet ${dag} står i kö`);
     const igar = (await pool.query(`SELECT ((now() - interval '1 day') AT TIME ZONE 'UTC')::date::text AS d`)).rows[0].d;
     assert.ok(!att.includes(igar), "gårdagen är för ung — gallringen har inte tunnat den");
