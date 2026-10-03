@@ -7301,6 +7301,12 @@ januari, och snapshoten tar längre tid när fler stationer är kalla.
 egen `traceAlong`, utläst ur källan. Kontraktsgrinden vaktar farten och punkttätheten mellan skuggmotorn och kuvösen. Motproven gjordes
 lokalt 3/10: farten 90 fälls av grinden och av provet, och `round` → `floor` är osynlig för grinden men fälls av provet.
 
+**Utfallet av tidskörningen 3/10 (kuvos 37141247592 på 235f355, inga varningar lästa):** vintern har 7 245 halvtimmar. De sju första
+dygnen gav 336 steg, varav 56 B-steg, och 0 tomma steg. Per steg tog snapshoten 207 ms och serie A 114 ms, och serie B tog 166 ms per
+B-steg. Hela vintern beräknas till 44 min utan B, 47 min med B var tredje timme och 45 min med B var sjätte timme, med jobbets 5 min före
+körflödet inräknade. **⇒ B körs var tredje timme, som #426 registrerade.** Marginalen mot gränsen (324 min) är sjufaldig, så valet av
+gräns avgjorde inget. Väglagsnätet hade sha256 `ac52f6c3…6ad5bb` och var dagens geometri.
+
 **Inte byggt än (5b–5d).** Facit (stationens egen yta i varje dels utfallsfönster), stationsreglerna och grindarna på kuvösens klocka
 (`moln.ts` och grind NT ska läsa `kuvos_ra.smhi_obs`, och `trend_kandidater` ska beräknas för vintern), samt tabellen *del × ensam ×
 ovanpå*. Efterhalkan och vinden väntar på Trafikverkets svar om mängden och vindstyrkan (#439).

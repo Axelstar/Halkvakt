@@ -483,7 +483,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   - *Körningen* `kuvos/korning.ts` ställer klockan varje halvtimme, kör `buildSnapshot` oförändrad och rösten i båda serierna: A är 20 rutter varje steg, B är 818 sträckor var tredje timme.
   - *Proven* i `test/kuvos.test.ts` täcker spåret, som är skuggmotorns `traceAlong` fix för fix, och tidsdomen. Kontraktsgrinden vaktar farten och punkttätheten. Två motprov gjordes lokalt och föll på rätt vakt.
   - *Tidsregeln* är satt före körningen: B "ryms" om hela vintern beräknas till ≤ 324 min (90 % av 360).
-  - **Nästa:** knappen `kuvos` med `korflode = tid-sju-dygn`. Den läser bara körtiden och avgör om B glesas.
+  - ✅ **Tidskörningen 3/10, kuvos 37141247592:** vintern har 7 245 halvtimmar. Sju dygn gav 336 steg och 0 tomma. Ett steg tog 207 ms för snapshoten och 114 ms för serie A, och ett B-steg 166 ms. Hela vintern blir **47 min med B var tredje timme** ⇒ B glesas inte, och gränsen 324 min avgjorde inget.
   - **Därefter:** 5b facit, 5c reglerna och grindarna på klockan, 5d tabellen *del × ensam × ovanpå*.
 
 *↩︎ = ÅTERSTÄLLT 10/9. Korten nedan föll av tavlan 8/9 20:43 (commit 99473c7: Claudes tavelsynk av

@@ -175,5 +175,6 @@ körplats. Steg 1–2 byggda. Förregistreringen står i DECISIONS #424. Oljefil
 **Steg 5a, 3/10 (DECISIONS #453):** körningen är byggd (`kuvos/korning.ts`). Klockan ställs på varje halvtimme, produktionens snapshotbyggare
 körs oförändrad, och rösten körs i båda serierna med skuggmotorns spår (provat fix för fix; kontraktsgrinden vaktar farten och punkttätheten).
 Först mäts bara körtiden på de sju första dygnen (knappen `kuvos`, `korflode = tid-sju-dygn`). Regeln för om serie B ryms skrevs före
-körningen: högst 90 % av jobbets 360 minuter. Kvar: 5b facit (stationens egen yta i varje dels utfallsfönster), 5c reglerna och grindarna
+körningen: högst 90 % av jobbets 360 minuter. **Tidskörningen samma kväll (kuvos 37141247592):** vintern har 7 245 halvtimmar, och sju dygn
+gav 336 steg utan ett tomt. Hela vintern beräknas till 47 min med B var tredje timme, så B glesas inte. Kvar: 5b facit (stationens egen yta i varje dels utfallsfönster), 5c reglerna och grindarna
 på klockan (`moln.ts` och grind NT mot `kuvos_ra.smhi_obs`, `trend_kandidater` för vintern), och 5d tabellen *del × ensam × ovanpå*.
