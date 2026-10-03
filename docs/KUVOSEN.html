@@ -198,12 +198,12 @@
       <thead><tr><th>Del</th><th>Med stationsdatan</th><th>Varför</th></tr></thead>
       <tbody>
         <tr><td>Frysrisken och broarna</td><td><span class="dom klar">ja</span></td><td>Byggs ur yta och fukt.</td></tr>
-        <tr><td>Efterhalkan, betans regel</td><td><span class="dom klar">ja</span></td><td>Yta, regn och fall finns i stationsdatan.</td></tr>
-        <tr><td>Trenden och rimfrosten</td><td><span class="dom klar">ja</span></td><td>Yta, daggpunkt och fuktighet. Molnmängden ur SMHI.</td></tr>
-        <tr><td>Övergångarna och tillståndet</td><td><span class="dom klar">ja</span></td><td>Regnhistorik och väta. Radarn ur SMHI.</td></tr>
+        <tr><td>Efterhalkan, betans regel</td><td><span class="dom vantar">väntar</span></td><td>Regnmängden saknas i leveransen (frågan till Trafikverket), och med en rad per halvtimme går betans fall på 30 minuter inte att räkna (rättat 3/10).</td></tr>
+        <tr><td>Trenden och rimfrosten</td><td><span class="dom vantar">delvis</span></td><td>Yta, daggpunkt och fuktighet, molnmängden ur SMHI. Trenden bara på 60 minuter med halvtimmesdata; rimfrostens andra steg saknar startvärden (rättat 3/10).</td></tr>
+        <tr><td>Övergångarna och tillståndet</td><td><span class="dom vantar">väntar</span></td><td>Bygger på regnmängden, som saknas i leveransen. Radarn finns (rättat 3/10).</td></tr>
         <tr><td>Prognoslagret mellan stationerna</td><td><span class="dom klar">ja</span></td><td>En hel vinter med kalla nätter, som september inte hade. Frysflaggan mäts med tre marginaler.</td></tr>
-        <tr><td>Nederbördstypen, vind och sikt</td><td><span class="dom vantar">om fälten finns</span></td><td>Beror på vad filen innehåller.</td></tr>
-        <tr><td>Försprånget</td><td><span class="dom vantar">delvis</span></td><td>Frysrisken ja. Väglagets svåra klasser kräver väglagshistoriken.</td></tr>
+        <tr><td>Nederbördstypen, vind och sikt</td><td><span class="dom vantar">delvis</span></td><td>Nederbördstypen ja: koderna för uppehåll, regn, snö och snöblandat finns. Vindstyrkan saknas i leveransen, och sikten saknar startvärden (rättat 3/10).</td></tr>
+        <tr><td>Försprånget</td><td><span class="dom vantar">väntar</span></td><td>Nivå 2 kräver väta, som räknas ur regnmängden och den saknas i leveransen. Väglagets svåra klasser kräver väglagshistoriken (rättat 3/10).</td></tr>
         <tr><td>Väglagssträckorna och olyckorna</td><td><span class="dom nej">nej</span></td><td>Kräver Trafikverkets historik för väglag och händelser, som inte är utlovad.</td></tr>
         <tr><td>Olja på vägen</td><td><span class="dom nej">nej</span></td><td>Kommer ur händelserna. Oljefilmen efter torka är struken sedan 12/9 och hör till sommaren.</td></tr>
         <tr><td>SMHI:s varningar</td><td><span class="dom nej">nej</span></td><td>SMHI har inget öppet arkiv över utfärdade varningar.</td></tr>

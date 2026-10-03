@@ -48,7 +48,7 @@ hela vintern en eller två timmar utan att något larmar.
 | Del | Prövas? | Varför |
 | :-- | :-- | :-- |
 | Frysrisken vid stationerna (A2, broarna) | ✅ | byggs ur yta och fukt |
-| Efterhalkan (S1, S2, betans villkor) | ✅ | yta, regn, fall — allt finns i stationsdatan |
+| Efterhalkan (S1, S2, betans villkor) | ~~✅~~ väntar (rättat 3/10, §10) | ~~yta, regn, fall — allt finns i stationsdatan~~ regnmängden saknas i leveransen, och 30-minutersfallet går inte att räkna ur halvtimmesdata |
 | Trenden (T-A) och rimfrosten (R-A) | ✅ | yta, daggpunkt, fuktighet; molnmängd ur SMHI:s öppna arkiv |
 | Övergångarna, tillståndsskattaren | ✅ | regnhistorik och väta; radarn ur SMHI:s öppna arkiv |
 | Nederbördstypen, vind och sikt | ✅ | om typen och vinden finns i uttaget |
@@ -178,3 +178,50 @@ Först mäts bara körtiden på de sju första dygnen (knappen `kuvos`, `korflod
 körningen: högst 90 % av jobbets 360 minuter. **Tidskörningen samma kväll (kuvos 37141247592):** vintern har 7 245 halvtimmar, och sju dygn
 gav 336 steg utan ett tomt. Hela vintern beräknas till 47 min med B var tredje timme, så B glesas inte. Kvar: 5b facit (stationens egen yta i varje dels utfallsfönster), 5c reglerna och grindarna
 på klockan (`moln.ts` och grind NT mot `kuvos_ra.smhi_obs`, `trend_kandidater` för vintern), och 5d tabellen *del × ensam × ovanpå*.
+
+## 10. Steg 5b–5d: vad som går att köra, och fyra frågor före bygget (3/10)
+
+Genomgången av varje dels tröskeldokument och kod 3/10 visar att förregistreringen (#424) inte räcker för att bygga 5b–5d utan
+att välja något. Valen ska göras före riktningsprovet och skrivas in som tillägg (regeln i #438). Inget utfall är läst.
+
+**Vad varje del kräver i kuvösen**
+
+| Del | Kan köras | Vad som behövs | Utfallsfönster och facit (tröskeldokumentet) |
+| :-- | :-- | :-- | :-- |
+| Frysrisken och broarna (A2) | ja, nu (5a sparar varningarna) | en facitdefinition — se fråga 2 | inget eget fönster; utlösaren *är* stationens yta, så egen-yta-facit är nära cirkulär |
+| Grind A, vägpunktsgrinden, höjden | ja, nu | ett körsteg i `kuvos.yml` (skripten tar `[dagar]` och SQL `now()`) | stationens egen yta i samma halvtimme (TROSKLAR-SKUGGAN §3) |
+| Frysflaggan med tre marginaler (#437) | efter ett litet nytt skript | radvärdena ur höjdprovet; måttstocken K-A1–K-A5 | samma som grind A |
+| Nederbördstypen (NT) | efter anpassning | tiden som argument i stället för `Date.now()`, SMHI p13 ur `kuvos_ra.smhi_obs`, stationerna ur arkivet | samtidigt, inte efteråt: givaren och SMHI inom 5 km, ±10 min |
+| Trenden (T-A) | efter anpassning | `trend_kandidater` beräknad för vintern, molnen ur `kuvos_ra.smhi_obs`, ett läge utan svep | 90 min, träff vid yta ≤ +1 °C — **men bara 60-minutersfönstret kan räknas, se fråga 3** |
+| Rimfrosten (R-A) | signalkontrollen efter molnen | R-B saknar startvärden (R1–R5 osatta) | R-B: 90 min mot väglag, kamera och olyckor — som inte finns i kuvösen |
+| Efterhalkan, övergångarna (Ö-B), tillståndet, försprångets nivå 2 | **nej** | regnmängden (`rain_sum_mm`), som Trafikverket inte levererat (#439) | — |
+| Vind och sikt | **nej** för vinden; sikten saknar startvärden | vindstyrkan (#439) | — |
+
+**Frågorna** (bedömningen §4.2):
+
+1. **"Ovanpå de andra" måste definieras som ett tal.** Inget dokument säger hur det räknas i kuvösen. Den närmaste skrivna formen
+   är kombinationsgrinden KB-B (TROSKLAR-KOMBINATIONEN §4). Förslag: för varje del P jämförs *alla andra delar* med *alla andra plus P*.
+   - *Nettonytt* är de facittillfällen inom 5 km som bara P fångar.
+   - *Pris* är de fyrningar P lägger till och som blev falsklarm.
+   - Allt räknas per episod, alltså stationsnatt från middag till middag i svensk tid, som i #246.
+   - En nära miss är inte ett falsklarm, och tidsvinsten redovisas bredvid utan att räknas.
+   - Inga golv, eftersom det är ett riktningsprov och ingen dom.
+2. **Facit för frysrisken.** Dagens regel utlöses av stationens egen yta (≤ +1 °C och fukt), så "ytan blev kall efteråt" är nästan alltid
+   sant. Förslag: frysrisken är **baslinjen**, det som de andra delarna läggs ovanpå (som "dagens motor" i KB-B). Den redovisas med antal
+   och episoder men döms inte på egen yta. Alternativet är ett eget fönster, till exempel 90 min med träff vid yta ≤ 0 °C, men det vore ett
+   nytt tal som ingen skrivit före.
+3. **Halvtimmesdatan räcker inte för betans 30-minutersfönster.** Leveransen har en rad per station och halvtimme. Lutningen kräver
+   minst tre rader i fönstret (`sql/018`), så `lutning30` blir alltid tom och även 60-minutersfönstret beror på sekunderna i
+   tidsstämplarna. Betans startvärde är *fall ≥ 0,8 °C på 30 min* (#222).
+   - **Följden:** efterhalkan kan inte spelas upp med sina startvärden i kuvösen ens när regnmängden kommer. Kalibreringen, som flyttades
+     till kuvösen (#425, #428), kan bara välja bland 60-minutersvarianter.
+   - Förslag: inget ändras nu, eftersom efterhalkan ändå väntar på regnmängden. Bengt och Axel avgör innan Trafikverket svarar om
+     kalibreringen ska göras på 60-minutersfönstret i kuvösen, eller flyttas tillbaka.
+4. **Delar utan startvärden** (rimfrostens R-B, sikten, daggpunktsgapet). Förslag: de står i tabellen som *ej prövade: inga startvärden*.
+   Att skriva värden nu, bara för att fylla tabellen, är just det förregistreringen ska skydda mot.
+
+**Ordningen om svaren är ja:**
+- **5b:** facit och episoderna för de delar som går att köra. Grind A, vägpunkten och höjden körs som de är, och frysflaggan får sitt skript.
+- **5c:** NT, T-A (bara 60-minutersfönstret, utan svep) och R-A:s signalkontroll på kuvösens moln, och `trend_kandidater` beräknas för vintern.
+- **5d:** tabellen *del × ensam × ovanpå* för de delarna. Efterhalkan, övergångarna, tillståndet, försprånget och vinden läggs till när
+  Trafikverket svarat.

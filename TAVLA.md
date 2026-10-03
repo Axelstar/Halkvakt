@@ -485,6 +485,13 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   - *Tidsregeln* är satt före körningen: B "ryms" om hela vintern beräknas till ≤ 324 min (90 % av 360).
   - ✅ **Tidskörningen 3/10, kuvos 37141247592:** vintern har 7 245 halvtimmar. Sju dygn gav 336 steg och 0 tomma. Ett steg tog 207 ms för snapshoten och 114 ms för serie A, och ett B-steg 166 ms. Hela vintern blir **47 min med B var tredje timme** ⇒ B glesas inte, och gränsen 324 min avgjorde inget.
   - **Därefter:** 5b facit, 5c reglerna och grindarna på klockan, 5d tabellen *del × ensam × ovanpå*.
+  ⚖️ **FYRA FRÅGOR FÖRE 5b–5d (3/10, PLAN-KUVOSEN §10, bedömningen §4.2).** Genomgången av delarnas tröskeldokument och kod visar att #424 inte räcker för att bygga utan att välja:
+  - (1) hur *ovanpå* räknas — förslaget är KB-B:s form;
+  - (2) frysrisken som baslinje, eftersom dess egen-yta-facit är cirkulär;
+  - (3) **halvtimmesdatan räcker inte för betans 30-minutersfönster**, vilket rör kalibreringen i kuvösen (#425) och är Bengts och Axels fråga;
+  - (4) delar utan startvärden redovisas som *ej prövade*.
+
+  Det som går att köra nu är grind A, vägpunkten och höjden, frysflaggan, NT, T-A (bara 60 min) och R-A:s signal. Efterhalkan, Ö-B, tillståndet, försprånget och vinden väntar på regnmängden och vindstyrkan (#439). KUVOSEN.html §4 och planens §3 är rättade: efterhalkan stod som prövbar.
 
 *↩︎ = ÅTERSTÄLLT 10/9. Korten nedan föll av tavlan 8/9 20:43 (commit 99473c7: Claudes tavelsynk av
 "Axels nästa steg" svalde 174 rader, inkl. tre Claude-sektioner). Inget av dem har bevis på klart sedan dess.*
