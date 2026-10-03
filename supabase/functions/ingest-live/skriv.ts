@@ -156,8 +156,7 @@ export async function skrivVader(sql: Sql, items: Post[]): Promise<{ n: number; 
       ON CONFLICT (station_id) DO UPDATE SET name = EXCLUDED.name, geom = EXCLUDED.geom,
         sample_time = EXCLUDED.sample_time, surface_temp_c = EXCLUDED.surface_temp_c,
         air_temp_c = EXCLUDED.air_temp_c, precipitation = EXCLUDED.precipitation,
-        rain = EXCLUDED.rain, snow = EXCLUDED.snow
-      WHERE EXCLUDED.sample_time >= weather_latest.sample_time`;
+        rain = EXCLUDED.rain, snow = EXCLUDED.snow`;
   }
   return { n, arkivpolicy };
 }
