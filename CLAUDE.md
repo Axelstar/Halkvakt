@@ -158,7 +158,7 @@ varje del av projektet med block, läge, bevis eller nyckel, vad som saknas, ber
   koden eller ett prov något annat är kartan fel, inte koden. Besluten stannar i DECISIONS, ordningen och kalendern i bedömningen,
   arbetet på tavlan och reglerna i tröskeldokumenten.
 - **Samma commit:** byggs, mäts, stängs eller öppnas något ⇒ delens rad i projektkartan.json, skriptet och republiceringen till samma
-  URL i SAMMA commit som ändringen. Ett nytt kort ska hänga på en del. `--check` i ci.yml (och i md-vakt.yml för commits som bara ändrar .md) fäller grönt utan bevis, blått utan nyckel,
+  URL i SAMMA commit som ändringen. Ett nytt kort ska hänga på en del. `--check` i ci.yml (och i md-vakt.yml för commits som bara ändrar .md) fäller en del som bär ett öppet kort fast den är grön eller dess Verify-steg är klart (kortvakten, DECISIONS #449), grönt utan bevis, blått utan nyckel,
   orange och rött utan lista, okända beroenden och avsnitt, öppna kort utan del och en sida som inte är aktuell.
 - **Mätt mot koden 3/10** (kort #286): varje del har byggsteg med bevis, och procenten räknas ur stegen, viktad 1–3. En ny del får byggsteg
   från början; ett steg är klart bara med bevis.
