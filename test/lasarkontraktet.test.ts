@@ -8,8 +8,8 @@
 //
 // Det här är samma sorts kontrakt ett lager ned: `engine/fixtures/lasarprov.json` bär en static +
 // live som apparna hämtar, med de fall som är lätta att läsa fel, och det parsade utfall varje
-// läsare ska ge. Den här filen prövar TS-läsaren. Swift och Kotlin läser i dag i app-koden, som
-// saknar testmål — provfilen ligger färdig den dagen målet finns, och det är kortets rest.
+// läsare ska ge. Den här filen prövar TS-läsaren; Swift och Kotlin prövas mot samma fil sedan
+// kort #289 (DECISIONS #448). Ett saknat fält (undefined) och null är samma utfall i jämförelsen.
 //
 // NOLLPOLITIKEN ÄR HELA POÄNGEN. Tre fält där null aldrig får bli ett tal eller ett ord:
 //   bearing null → null, inte 0   (0 är norrut; en kamera som tros titta norrut filtreras på fel kurs)
@@ -37,7 +37,7 @@ test("läsarkontraktet: TS-läsaren ger provfilens väntade utfall, och null bli
     for (const [nyckel, forvantat] of Object.entries(v)) {
       if (nyckel === "id" || nyckel === "kind" || nyckel.startsWith("_")) continue;
       const fick = nyckel === "bearing" ? (h as { bearing?: unknown }).bearing : meta[nyckel];
-      assert.strictEqual(fick, forvantat, `${v.id}: ${nyckel} — ${v._varfor ?? ""}`);
+      assert.strictEqual(fick === undefined ? null : fick, forvantat, `${v.id}: ${nyckel} — ${v._varfor ?? ""}`);
     }
   }
 
