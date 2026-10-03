@@ -91,7 +91,8 @@ Every session, in order:
 3. Prove it: tests/CI/logs — never claim done without evidence.
 4. Commit with a message explaining what + why. Update the bedömning (läget överst,
    §4.2) and TAVLA; a session-log line in STATUS.md. Log decisions in DECISIONS.md. Stäm av mot de sju
-   stomdokumenten och för in rättelserna där i samma varv (STOMREGELN).
+   stomdokumenten och för in rättelserna där i samma varv (STOMREGELN). Run the card review (`scripts/kortkartan.ts
+   --genomgang`) and close every card whose Verify is met, in the same commit (TAVELREGELN 5).
 5. End by telling Axel: what shipped, what's next, and ONLY the questions that
    block progress. Batch questions; never drip them.
 
@@ -126,6 +127,11 @@ Varje arbetsvarv AVSLUTAS med att TAVLA.md synkas mot verkligheten:
 3. Verkligheten bevisar något (commit, kvitto, skärmbild) → kortet flyttas
    utan att fråga.
 4. Finns det inte på tavlan finns det inte. Idéer utan kort = tappade idéer.
+5. **Kortgenomgången (Bengts krav 3/10, DECISIONS #451) — ett krav, som kartan och artefakterna:** varje varv avslutas, och varje
+   kartsynk körs, med `node --experimental-strip-types scripts/kortkartan.ts --genomgang`, som listar varje öppet kort med dess
+   Verify-rad och "Kvar". Vart och ett prövas mot beviset: ett kort vars Verify är uppfylld med ett bevis som går att följa flyttas
+   till 🟢 med beviset på raden **i samma commit** (kortkartan.json och delens `kort` i projektkartan.json följer med), och ett kort
+   utan Verify-rad får en. Kortvakten i CI (#449) fäller det kartan själv vet; genomgången tar resten.
 Tavlan är människolagret; bedömningen, STATUS och DECISIONS är djuplagren.
 
 ## STOMREGELN (Bengts order 2026-10-01 — sju stomdokument, DECISIONS #415, #425, #445)

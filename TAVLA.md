@@ -36,6 +36,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   26/9 medan koden följde med (DECISIONS #377). **Vi kan alltså inte veta om testaren har självstoppet (#248, 24/9) eller
   omladdningsfixen (#370, 26/9).** Hela fältrapporten är otolkbar tills testaren står på ett bygge vars nummer betyder något.
   Det är därför Å0 är först och inte förhandlingsbart.
+  **Verify** *(kortgenomgången 3/10, DECISIONS #451)*: batteribudgeten bevisad på båda plattformarna på ett numrerat bygge med Å1–Å5: Android och iPhone mätta en timme med skärmen av och ingen sladd, under 8 %/h (Å7, Å8 med nollmätningen före), och testarens fältprotokoll (Å6) utan avvikelse.
 
   | # | Åtgärd | Tröskel? | Verify |
   | :-- | :-- | :-- | :-- |
@@ -214,10 +215,12 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   muren som finns i branschen; arkivet och relationerna är resten av försvaret.
   ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** *Domänen halkvakt.se (vilande beslut)* — domänen blockerar QR-sidan (#204), så den är inte längre vilande.
   ↪ **1/10 (DECISIONS #423):** domänen är också nyckeln till QR-koden till appen (kort #277, Bengt: *"qr kod kommer först med domänen"*).
+  **Verify** *(kortgenomgången 3/10, DECISIONS #451)*: varumärket Halkvakt inlämnat hos PRV (ansökningsnumret i DECISIONS) och domänen halkvakt.se registrerad, med ägaren bokförd.
 ### Axel — därefter
 - [ ] **Tolv testare till Play-perioden** — Axels åtagande 31/8: "hittar dem utan problem".
   Väntelisterutan på kartan borttagen på hans beslut. Kvar i `docs/REKRYTERING.md` om det behövs.
   ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** kort 6 *Tolv testare till väntelistan* (samma tolv).
+  **Verify** *(kortgenomgången 3/10, DECISIONS #451)*: tolv testare inlagda i Play Consoles slutna test, och första dygnet av de fjorton bokfört.
 
 - [ ] 🔄 **#258 iOS LADDAR ALDRIG OM VÄGDATAN UNDER RESAN** (fynd 26/9 under #218, DECISIONS #370). Vägdatan laddas när vakten
   startar och när Vakten-vyn visas (`GuardManager.swift:230`, `VaktenView.swift:68`); under resan ligger körläget som helskärm över
@@ -269,6 +272,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   sedan Beta App Review 26/9. Texten ur guiden klistrad in 1/10. 🔑 Kvar: själva utskicket av länken till de tolv — Axel, ikväll eller i morgon.
   ↦ **Sorterat 22/9 (kort #224):** texten för iOS-testarna skriver Claude nu; utskicket med en extern TestFlight-grupp är Axels.
   ↪ **Flyttat 26/9 från *Claude — olåst*** (femma åtta, DECISIONS #377): nästa steg är Axels utskick i TestFlight.
+  **Verify** *(kortgenomgången 3/10, DECISIONS #451)*: länken utskickad till de tolv, och minst tolv testare i Kompisarna i TestFlight (kartsynkens regel testare:Kompisarna:12 bockar steget).
 
 - [ ] 🔁 **#248 ANDROID-AUTOSTARTEN STOPPAR ALDRIG VAKTEN** (fynd 24/9 under kort #217, DECISIONS #347). `AutostartManager` skapar en ny
   `AutostartController` för varje systemhändelse, och den nya styrningen har `autoStarted = false`. Därför blir *Bluetooth kopplas
@@ -570,6 +574,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   först; "Visa igen" i Inställningar. Introduktionen i Claude Design är enda skärmen som inte
   ritats om än. Android-spegeln (DECISIONS #36) efter att iOS-varianten testats.
   ↪ **Flyttat 26/9 från *Axel — hösten (brainstorm 31/8)*** (femma åtta, DECISIONS #377): nästa steg är Bengts två minuter (*Visa introduktionen igen*).
+  **Verify** *(kortgenomgången 3/10, DECISIONS #451)*: appen raderad och installerad om på en iPhone, introduktionen kommer först, och *Visa igen* i Inställningar visar den — bokfört med datum och bygge.
 
 ### Claude — olåst
 - [ ] 📍 **#226 AUTOSTARTENS BEHÖRIGHET FALLER TYST PÅ ANDROID 11+** (Axels fynd på testtelefonen 20/9, DECISIONS #272).
@@ -1523,6 +1528,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔨 **BYGGT 25/9 (Bengt: *"ja, bara räkningar under spärren"*, DECISIONS #350):** grind V-B räknar facit enligt §2, fönstret är hela perioden sedan 15/9, och under spärren skrivs bara räkningar. Självtestet sju nya fall, två motprov fällda på rätt rad, och testet körs nu i CI. Kvar: första körningen mot databasen som bevis.
   📏 **BEVISAT MOT DATABASEN 25/9 05:55Z** (körning 36100583870, Bengts order): fönstret från 15/9 (11 dygn), självtestet grönt, och utskriften bär bara räkningar — **57 varningar (41 mätbara, 16 omätbara) · 98 olyckor inom 2 km från rutterna, 10 i regn, 4 torra, 84 omätbara · 7 regndygn · 21 län**. Spärren står på 57 av 200 varningar och 10 av 15 facit. Fyndet om de omätbara blev kort #251.
   ✅ **#251 byggt 25/9 (DECISIONS #351):** en dömande station som är igång men tyst räknas som torr, så V-B1 inte längre gömmer falsklarm bland de omätbara. Kvar för domen: 200 varningar och 15 facit.
+  **Verify** *(kortgenomgången 3/10, DECISIONS #451)*: domen enligt `docs/TROSKLAR-VATTENPLANING.md` fälld i skuggan (minst 200 varningar och 15 facitfall) och bokförd i DECISIONS; vid ett ja är grenen i drift bakom sin grind.
 - [ ] ⚖️ **#153 ALLVAR SOM FÖRSPRÅNG + ETT SMALARE UNDANTAG — beslut 1 omformulerat 16/9 och väntar, beslut 2 öppet (Bengts)**
   ✂️ **DELAT 25/9 (DECISIONS #358, Bengts ja): kortet bär nu bara BESLUT 1.** Datum: senast när betan startar i november skrivs tröskeldokumentet (steg 4 nedan), så att skuggan går december–februari och domen kan falla i mars 2027. Steg 3 (S2) är klart sedan 24/9. **Beslut 2** står i vårlistan (Ä8) bredvid sensortrappan, med beroendet inskrivet: det bygger på beslut 1:s gradering och behöver telefonsensorerna som vittne på platsen.
   ✏️ **OMSKRIVET 16/9 på Bengts order *"gör 153 och omformulera 153"* (DECISIONS #221).** Det gamla kortet föreslog att
@@ -1558,6 +1564,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   frysfall (DECISIONS #137); Finlands 133 "frysrader" 13/9 var en fastnaglad givare. Grind A:s A2-rad är OAVGJORT.
   🔑 **Nyckel, sorterat 22/9 (kort #224):** betan i drift och S2 (DECISIONS #221) — inget väntar på Bengt; i praktiken parkerat till efter betan.
   ✅ **STEG 4 OCH 5 KLARA 25/9 (DECISIONS #359, Bengt och Axel):** `docs/TROSKLAR-FORSPRANG.md` fastställt; motorn fick kroken (utan den byte för byte densamma, vektorerna orörda); nivåer och svep i `engine/src/forsprang.ts`; skuggan körs som eget anrop `?lage=forsprang` på :12/:42 och loggar i `forsprang_log`. 7 tester, 3 motprov. **Kvar:** FS-A väntar på vintern (bara kod 1 i arkivet), dom-knappen före mars, dom i mars, steg 7 efter domen.
+  **Verify** *(kortgenomgången 3/10, DECISIONS #451)*: tröskeldokumentet för beslut 1 fastställt senast när betan startar i november, skuggan körd december–februari, och domen enligt `docs/TROSKLAR-FORSPRANG.md` fälld i mars 2027 och bokförd i DECISIONS.
 
 - [ ] 🧩 **#228 APP-SCHEMAT ÖVERLEVER INTE `xcodegen`** (uppmätt under 0.3.9-releasen 20/9). Efter `xcodegen` fanns bara
   schemat **HalkvaktEngine** i Xcode — app-schemat autoskapas av Xcode och bor i användardata, som den genererade
@@ -1612,6 +1619,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   och stillaståendevakten (återanvänd mätvaktens 6b-form: larma inte på tystnad, larma på tystnad
   MEDAN stationerna säger vinter — och "alla 848 stationer" inträffar aldrig).
   🔑 **Nyckel, sorterat 22/9 (kort #224):** vinterklassningar i arkivet (Å-A4 kräver minst 100 med motsägelse; 7 rader på 14 dygn 20/9).
+  **Verify** *(kortgenomgången 3/10, DECISIONS #451)*: domen enligt `docs/TROSKLAR-VAGLAGETS-ALDER.md` fälld på vinterklassningar (kodgrinden avsnitt D) och bokförd i DECISIONS — R0, R1 eller R2.
 
 - [ ] 🧊 **#103 FRYSKLASSNINGEN — kan en modell som är opålitlig på grader ändå bära en klass?**
   📄 **TRÖSKELDOKUMENT SKRIVET 12/9** (`docs/TROSKLAR-FRYSKLASSNINGEN.md`, **FASTSTÄLLT 12/9**, DECISIONS #130/#135).
@@ -1640,6 +1648,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ⏭️ **B-GRINDEN UR ARKIVET 25/9 (DECISIONS #363, Bengts ja):** skuggkolumnen byggs inte — B spelas upp ur arkivet när A passerat,
   spärrad som grind NT. Inget behöver byggas i skuggmotorn före frosten. Låsankaret är första körning som läser ett B-utfall.
   ↪ **2/10 (DECISIONS #437):** måttstocken K-A1–K-A5 och svepet K2 lånas av kuvösens mätning av flaggmarginalen för de råa vägpunktskandidaterna (kort #270 g). Dokumentet är inte ändrat, och kortets egen grind döms inte av den mätningen.
+  **Verify** *(kortgenomgången 3/10, DECISIONS #451)*: domen enligt `docs/TROSKLAR-FRYSKLASSNINGEN.md` (K-A:s krav på träffsäkerhet och täckning) fälld och bokförd i DECISIONS; vid ett ja stärker klassningen bara en bedömning som vilar på en uppmätt station.
 
 - [ ] 🪢 **#95 Plan B för Trafikverket-beroendet — mät SMHI som reserv** (systemanalys 10/9). Allt
   🔓 **BLOCKERARFYNDET 12/9 (DECISIONS #114): kortet blockerar #88:s dom.** T-A:s fysikkontroll
@@ -1813,6 +1822,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   📏 **Tryckt 24/9 (Bengt: *"gör 5"*, DECISIONS #331):** R-A på det finska arkivet, 30 dygn (körning 35949100922): 39 244 rader, 419 stationer efter vakten — 0 episoder på 0 stationer, OAVGJORT (spärren 200 stationstimmar / 20 stationer); molnkontrollen R-A4 kan inte köras på Finland (SMHI:s moln når inte dit). Tryck om vid Lapplands första frost.
   ⏭️ **B-GRINDEN UR ARKIVET 25/9 (DECISIONS #363, Bengts ja):** skuggkolumnen byggs inte — B spelas upp ur arkivet när A passerat,
   spärrad som grind NT. Inget behöver byggas i skuggmotorn före frosten. Låsankaret är första körning som läser ett B-utfall.
+  **Verify** *(kortgenomgången 3/10, DECISIONS #451)*: domen enligt `docs/TROSKLAR-RIMFROST.md` (grindarna R-A–R-D med givarvakten) fälld och bokförd i DECISIONS; vid ett ja är rimfrosten en gren i `icing_point` bakom sin grind.
 
 - [ ] 🌨️ **#45 Nederbördstypen — regn, snö eller slask?** (Bengts fråga 3/9: "hur mäter
   vi snö, snöslask etc som är lika riskabla?") 🔒 LÅST BAKOM RADARDOMEN 14/9.
@@ -1905,6 +1915,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   nytt jobb. ✅ **Knappen bevisad 25/9 13:07Z** (spärrkörning, run 36138915848): 43 SMHI-par, 596 rader i bandet, bara räkningar
   utskrivna. ✅ **Axel kontrasignerade dokumentet 25/9 (DECISIONS #362).** **Kvar:** domen 1 mars 2027 · steg 2 (vägytans
   tillstånd, #51/#209) med eget dokument.
+  **Verify** *(kortgenomgången 3/10, DECISIONS #451)*: domen enligt `docs/TROSKLAR-NEDERBORDSTYPEN.md` fälld mot SMHI:s observerade nederbördstyp och väglagets klasser och bokförd i DECISIONS (1 mars 2027).
 
 ---
 
