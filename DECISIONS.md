@@ -7221,3 +7221,17 @@ att delen *Motorn i tre språk* ska bli klar.
 
 **Alternativ som valdes bort:** ett testmål i iPhone-appen (kräver macOS-körningar i CI till tiodubbla minuter, och Xcode-schemat i
 kort #228 först); Robolectric för Android-testet (riktiga Androids org.json, men tyngre beroende och långsammare körning).
+
+## #449 (3/10 2026) Kortvakten i kartans kontroll, och ja till planen för livemotorns prov (kort #290)
+
+**Beslut (Bengt, 3/10):** *"1. ja, 2 ja till planen och 3 slå ihop 714"* — efter frågan *"kommer du ihåg att stänga öppna kort allt
+eftersom vi arbetar på"*, när kort #259 visat sig stå öppet en dag fast kartan visste att villkoret var uppfyllt.
+1. **Kortvakten:** `scripts/projektkartan.ts --check` fäller (a) en grön del som bär ett öppet kort, och (b) en del vars Verify-steg alla
+   är klara medan ett öppet kort hänger kvar. Den körs i ci.yml och md-vakt.yml, alltså i varje PR. Motprov: läget före stängningen av
+   #259 (aac8cb0) fälls på `a-reglaget`. Vakten ser bara det kartan vet — ett kort vars villkor bevisas utanför kartan (en mätning, ett
+   kvitto) fångas inte, och där gäller TAVELREGELN 3 som förut.
+2. **Kort #290:** planen godkänd — spegeln (`KEEP`/`ARCHIVE` och beslutet) till en gemensam ren modul, upserterna prövade med Deno mot en
+   tillfällig PostGIS i ett eget flöde som bara körs när livemotorn ändras, och deploy efter steg 2 med kursorerna som bevis.
+
+**Alternativ som valdes bort:** en varning i stället för ett fel (en varning läses inte — samma skäl som VÄRDEVAKTEN: ett hinder, inte
+en varning); att kartsynken stänger kort själv (dess PR:er får bara röra kartan och slås ihop utan "slå ihop", #447 punkt 2).

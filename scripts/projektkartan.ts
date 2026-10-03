@@ -82,6 +82,13 @@ export function granska(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>
       else if (!ids.has(b)) fel.push(`${d.id}: beror på okänd del "${b}"`);
     }
     for (const c of d.kort) { if (!oppen.has(c)) fel.push(`${d.id}: kortet ${c} är inte öppet på tavlan`); burna.add(c); }
+    // KORTVAKTEN (Bengt 3/10, DECISIONS #449): ett kort hänger inte kvar när kartan vet att det är klart. #259 stod öppet en
+    // dag fast delens Verify-steg var klart — kartan visste, tavlan inte.
+    const kvar = d.kort.filter((c) => oppen.has(c));
+    if (kvar.length && d.lage === "gron") fel.push(`${d.id}: grön men bär öppna kort (${kvar.join(", ")}) — stäng dem på tavlan, eller visa vad som återstår`);
+    const verify = (d.steg ?? []).filter((s) => /^Verify/u.test(s.namn));
+    if (kvar.length && verify.length && verify.every((s) => s.status === "klar"))
+      fel.push(`${d.id}: Verify-steget är klart men ${kvar.join(", ")} står öppet — stäng kortet (TAVELREGELN 3) eller sätt steget till pågår`);
     for (const ref of d.beskrivs) {
       const [kod, nr] = ref.split(" ");
       const s = sidor[kod];
@@ -652,7 +659,7 @@ if (direkt && process.argv[2] === "--sjalvtest") {
     "y: avsnittet S 7 finns inte", "z: okänt block \"b\"", "z: delvis utan lista över vad som saknas",
     "z: delvis utan skattad andel klar (0–99 %)", "w: ej påbörjad med skattningen 40 % (högst 20)", "öppet kort utan del: #2 TVÅ",
     "målet m: okänd del \"q\"", "målet m: saknar \"klart när\"", "block d: ligger under \"c\", som inte är ett steg i flödet",
-    "kartans url saknas i datafilen"];
+    "kartans url saknas i datafilen", "x: grön men bär öppna kort (#1) — stäng dem på tavlan, eller visa vad som återstår"];
   const ok = vant.every((v) => fel.includes(v)) && fel.length === vant.length;
   if (!ok) { console.error("✗ självtest: granskningen", fel); process.exit(1); }
   const del = new Map<string, Del>([
@@ -681,6 +688,13 @@ if (direkt && process.argv[2] === "--sjalvtest") {
   const vant2 = ["s: grön men steg kvar", "u: ej påbörjad men steg påbörjade", "u: steget \"a\" är klart utan bevis",
     "v: vikten 5 är inte 1, 2 eller 3", "v: både byggsteg och skattning; procenten ska komma ur stegen"];
   if (!vant2.every((v) => fel2.includes(v))) { console.error("✗ självtest: stegens granskning", fel2); process.exit(1); }
+  // Kortvakten (#449): ett klart Verify-steg med ett öppet kort kvar fälls; ett pågående gör det inte.
+  const kv = (status: Steg["status"]): Del => ({ id: "kv", namn: "KV", block: "a", lage: "orange", saknas: ["prov"], beror: [], kort: ["#1"],
+    beskrivs: [], steg: [{ namn: "Byggd", status: "klar", bevis: "b" }, { namn: "Verify på kortet", status, bevis: "v" }] });
+  const fel3 = granska({ ...k, mal: [], delar: [kv("klar")] }, [oppna[0]], sidor, () => "");
+  const fel4 = granska({ ...k, mal: [], delar: [kv("pagar")] }, [oppna[0]], sidor, () => "");
+  if (!fel3.includes("kv: Verify-steget är klart men #1 står öppet — stäng kortet (TAVELREGELN 3) eller sätt steget till pågår")
+      || fel4.some((f) => f.startsWith("kv: Verify"))) { console.error("✗ självtest: kortvakten", fel3, fel4); process.exit(1); }
   // Stomdokumentens lägesrader: under rubriken, med länk, steg och läge; en andra skrivning ändrar inget; markdown likaså.
   const sidtext = "<main>\n<h2 id=\"avsnitt-2\">2. Två</h2>\n<p>text</p>\n</main>";
   const km: Karta = { url: "u", projektmal: pm, block: [], mal: [], delar: [{ ...s1, beskrivs: ["S 2"] }] };
