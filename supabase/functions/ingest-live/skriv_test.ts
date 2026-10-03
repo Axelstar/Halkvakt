@@ -82,7 +82,7 @@ Deno.test({ name: "livemotorns skrivningar mot PostGIS", ignore: !url, sanitizeO
       const r2 = await skrivVader(sql, [station("V1", tid(12), 12.4)]);
       lika([r1.arkivpolicy, r2.arkivpolicy], ["1 varma halvtimmesrader", "0 varma halvtimmesrader"], "svarets rad om arkivpolicyn");
       const rader = await sql`SELECT station_id, count(*)::int AS n FROM weather_observations GROUP BY station_id ORDER BY station_id`;
-      lika(rader.map((x: { station_id: string; n: number }) => [x.station_id, x.n]), [["K1", 2], ["V1", 1]], "arkivraderna per station");
+      lika(rader.map((x) => [x.station_id, Number(x.n)]), [["K1", 2], ["V1", 1]], "arkivraderna per station");
       // Nuläget följer den senaste mätningen; en äldre som kommer sent skriver inte över.
       await skrivVader(sql, [station("K1", tid(5), -3.0)]);
       const [l] = await sql`SELECT surface_temp_c FROM weather_latest WHERE station_id = 'K1'`;
