@@ -1,0 +1,28 @@
+name: md-vakt
+# MD-VAKTEN (Bengts val B 3/10, kort #288): ci.yml hoppar över commits som bara ändrar .md (paths-ignore,
+# kort #152 — kassan styr formen), så en tavelsynk eller ett nytt beslut gick aldrig genom kortkartans,
+# kartans och beslutsnumrens kontroller; felet syntes först vid nästa kodändring. 30 av 82 commits på main
+# 26/9–3/10 var sådana. Det här flödet kör bara de kontroller som läser .md-filer (TAVLA.md, DECISIONS.md,
+# bedömningen och de andra stomdokumenten), utan postgres och utan npm ci — runt en Actions-minut per körning.
+# En gren som rör både kod och .md kör ci OCH md-vakt; dubbelkörningen av de här tre stegen är billig.
+on:
+  push:
+    branches: [main]
+    paths: ["**.md"]
+  pull_request:
+    paths: ["**.md"]
+jobs:
+  kontroller:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Beslutsnumren — ett beslut, ett nummer (#220)
+        run: node --experimental-strip-types scripts/beslutsnumren.ts
+      - name: Kortkartan — varje öppet kort kopplat till sitt område i stomdokumenten (#445)
+        run: node --experimental-strip-types scripts/kortkartan.ts --check
+      - name: Projektkartan — läget per del, underordnat beviset (#446)
+        run: node --experimental-strip-types scripts/projektkartan.ts --check
