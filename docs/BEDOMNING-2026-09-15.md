@@ -451,7 +451,7 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 
 | Beslut | Vem | Rekommendation | Kort |
 | :-- | :-- | :-- | :-- |
-| **Arkivexportens återläsning (Bengts fråga 3/10, kort #291): bygga den nu, före första raderingen?** Exportfilerna har aldrig lästs tillbaka, och raderingen av gamla dygn ur databasen börjar vid 350 MB — runt 15/10 i dagens takt (266 MB 3/10). Plan i fyra steg, cirka en dag: läsaren i SQL, rundresan i CI med motprov, ett prov på en riktig fil ur hinken (inget skrivs), och marsvägen i RUNBOOK. | Bengt | Ja, nu — en radering som inte går att läsa tillbaka är en förlust, och den första kommer om ungefär tolv dygn | #291 |
+| ✅ **AVGJORT OCH BYGGT 3/10 (Bengt: *"ja till #291, bygg den nu"*, DECISIONS #450): återläsningen bevisad på 2026-08-24 ur hinken — 4 711 rader, 0 skillnad (aterlasprov 37136572674); kort #291 stängt.** ~~**Arkivexportens återläsning (Bengts fråga 3/10, kort #291): bygga den nu, före första raderingen?**~~ Exportfilerna har aldrig lästs tillbaka, och raderingen av gamla dygn ur databasen börjar vid 350 MB — runt 15/10 i dagens takt (266 MB 3/10). Plan i fyra steg, cirka en dag: läsaren i SQL, rundresan i CI med motprov, ett prov på en riktig fil ur hinken (inget skrivs), och marsvägen i RUNBOOK. | Bengt | Ja, nu — en radering som inte går att läsa tillbaka är en förlust, och den första kommer om ungefär tolv dygn | #291 |
 | ✅ **AVGJORT 3/10 (Bengt: *"2 ja till planen"*, DECISIONS #449): byggt, provat och deployat — kort #290 stängt, delen Livemotorn grön.** ~~**Livemotorn till 100 % (Bengts fråga 3/10): spegeln och upserterna i CI (kort #290).**~~ Två steg. (1) *Spegeln*, 1–2 timmar: listorna över vilka händelsetyper som lagras och arkiveras flyttas till en gemensam fil som både livemotorn och den gamla ingesten läser. Då kan de inte glida isär, och de prov som finns gäller driften. (2) *Upserterna*, ½–1 dag: livemotorns skrivningar prövas mot en tillfällig databas i ett eget litet flöde som bara körs när livemotorn ändras. Funktionen deployas efter steg 2. | Bengt | Ja till båda; steg 1 ensamt stänger spegeln men inte upserterna, så delen blir grön först efter steg 2 | #290 |
 | ✅ **AVGJORT 3/10 (Bengt: *"ja till a och b"*, DECISIONS #448): byggt och provat i CI; kvar Axels körning på Macen.** ~~**Motorn i tre språk till 100 % (Bengts fråga 3/10): läsarkontraktet i Swift och Kotlin (kort #289).**~~ Plan i fyra steg, cirka 1,5–2 arbetsdagar för Claude och 15 minuter för Axel vid Macen. (1) Kotlin-läsaren prövas mot `lasarprov.json` i appens befintliga testmål. (2) Swift-läsaren flyttas till motorpaketet, där TS-läsaren har sin motsvarighet, och prövas där. (3) Provfilen kompletteras. (4) Axel bygger appen och kör `swift test` en gång på Macen. Två frågor: (a) ja till planen? (b) *Fartgränsen:* Swift läser kamerans `limit` och säger *"Gränsen är 80"*, men TS (referensen) och Kotlin gör det inte. Det är vilande, eftersom `static.json` inte publicerar någon `limit`. Ska fältet bort ur Swift, eller läsas av alla tre? | Bengt | (a) ja; (b) bort ur Swift — TS är referensen, och en röst med fartgräns är en egen funktion med eget kort och en datakälla som inte finns i dag | #289 |
 | ✅ **(3) AVGJORT 3/10 (Bengt: *"B och slå ihop 709"*): md-vakten byggd (`md-vakt.yml`), motprovet rött på kortkartan (37128743959, PR #710). Kvar: (1) Axels nyckel, (2) ett bygge bockat av maskinen, (4) 19:15 bevisad.** **Projektkartan till 100 % (Bengts fråga 3/10).** Delen *Projektkartan* står på 93 % (orange), med två rader kvar. Plan i fyra steg. (1) *Axels nyckel* till App Store Connect leder till den första läsningen; ärende #706 ska visa `ok: true`. (2) *Ett bygge bockat av maskinen*: (22) är redan uppladdat, så det sker vid första kartsynken efter nyckeln om (22) har installerats på en telefon. Då blir steget *Uppdateras av sig själv* klart, och kort #288:s Verify uppfylls. (3) *md-vakten*: commits som bara ändrar `.md` (30 av 82 sedan 26/9) körs aldrig genom kortkartans och kartans kontroller. Två val: (B) ett litet eget CI-flöde för `.md`, cirka 1 Actions-minut per sådan commit, ungefär 4 per dygn; (A) gratis via kartsynken, som kör kontrollerna och skriver om listorna två gånger per dygn, men med upp till 12 timmars fördröjning och först efter sammanslagningen. (4) *Schemat bevisat*: körningen 19:15 går igenom utan att fastna. | Bengt (3), Axel (1) | B — det fångar felet i PR:en före sammanslagningen, för cirka 120 Actions-minuter i månaden | #288 |
@@ -561,7 +561,7 @@ bevisbart säker (vid 0 km/h går det inte att nå faran) och är rimligen stör
 <!-- LÄGESRADER §5: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 *Läget i projektkartan:*
 
-- [Arkivexporten och säkerhetskopian](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-i-export): delvis, 90 % · kvar: Återläsningen av exportfilerna till PostGIS, innan raderingen börjar vid 350 MB — runt 15/10 i dagens takt (kort #291)
+- [Arkivexporten och säkerhetskopian](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-i-export): klar
 - [Datavakterna (givarvakten, radvakten, karantänen)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-i-vakterna): delvis, 88 % · kvar: Inget larm när en vakt inte kan läsa sin historik: fail-soft-noterna läses av ingen
 - [Lägesfilens fält för skuggdelarna](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-l-falten): delvis, 57 % · kvar: Motorn läser inte regn, rain_segments, regn_h, lutning, bevis eller smhi (fogarna F2–F4)
 - [L2 tillståndet (skattaren S1–S3)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-tillstand): delvis, 50 % · kvar: S1-grinden på frostnätter (Axel, DECISIONS #196)
@@ -727,7 +727,7 @@ mätningar — R1–R16 nedan är strukna och står kvar bara som historik.**
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
 
-Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 21 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 20 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
 
 **§1 NU — före första frosten**
 
@@ -757,7 +757,6 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 21 kort
 
 **§5 Integrationsläget — mätt mot kartan (24/9, Bengts fråga "hur långt i integrationen har vi kommit")**
 
-- #291 ARKIVEXPORTEN LÄSES TILLBAKA — INNAN RADERINGEN BÖRJAR — Claude, låst
 - #288 🔨 #288 KARTSYNKEN — PROJEKTKARTAN UPPDATERAR SIG SJÄLV (I DRIFT, VÄNTAR PÅ AXELS NYCKEL — Claude, Bengts ja … — pågår
 
 **§6.1 Kuvösen är den enda kända vägen runt vintern — och väntar på Trafikverkets beslut**
