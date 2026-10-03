@@ -61,6 +61,10 @@ Allt nedan är destillat av projektets beslut (DECISIONS.md) och Play-dossiern.
   pixel_5` bootar inte alls med default-imagen — standard-AVD + UI-knack i PROCENT av
   `wm size` är det stabila mönstret för skärmdumpar.
 
+- JVM-enhetstester har INTE Androids org.json: `testImplementation("org.json:json:…")` ger json-java, som beter sig annorlunda
+  (3/10, kort #289). `getString()` på ett tal KASTAR där Android gör om det till text, och `optString()` på JSON-null ger `""` där
+  Android ger `"null"`. Läsarkod som ska provas i JVM läser id med `get("id").toString()` och null med `isNull()`, aldrig med
+  `optString`. Utan testberoendet alls är `JSONObject` en stubbe som kastar "Method … not mocked".
 - android.yml körs bara vid push till main (och workflow_dispatch) — PR:ens CI (`ci.yml`) bygger inte Android alls. Beviset
   före sammanslagning tas med workflow_dispatch på grenen, och motprovet likadant på en egen gren (kort #218, 26/9).
 
