@@ -31,7 +31,7 @@ export function halvtimmesvariant(sql018: string): string {
 
 export async function installera(q: (sql: string) => Promise<unknown>) {
   await q("CREATE SCHEMA IF NOT EXISTS kuvos_ra");
-  await q(halvtimmesvariant(readFileSync(new URL("../sql/018_trend_berakna.sql", import.meta.url), "utf8")));
+  await q(readFileSync(new URL("../sql/018_trend_berakna.sql", import.meta.url), "utf8").split("$$ LANGUAGE plpgsql;")[0].slice(readFileSync(new URL("../sql/018_trend_berakna.sql", import.meta.url), "utf8").indexOf("CREATE OR REPLACE FUNCTION")).replace("FUNCTION berakna_trendkandidater(", `FUNCTION ${FUNKTION}(`) + "$$ LANGUAGE plpgsql;"); // MOTPROV: driftens funktion utan bytet
 }
 
 if (process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, "/").split("/").pop()!)) {
