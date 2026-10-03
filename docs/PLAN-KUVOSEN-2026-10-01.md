@@ -232,6 +232,14 @@ att välja något. Valen ska göras före riktningsprovet och skrivas in som til
 
    Med (A) eller (B) kan efterhalkan spelas upp med sitt startvärde (30 min), och kalibreringen kan pröva både 30 och 60 minuter.
    Frågan om att flytta tillbaka kalibreringen försvinner då i stort sett.
+   **Bengt 3/10: ingen fråga till Trafikverket om detta** (fyra frågor är redan obesvarade). Därmed återstår (A). Premissen, att ytan är
+   ögonblicksvärdet, är prövad så långt det går utan Trafikverket:
+   - Driftens mätningar ligger på :00, :05 … :25 med sekund 03 i 99,8 % (dbknapp 37152138197). Leveransens stämplar :00:03 och :30:03 är
+     alltså två av samma mätserie.
+   - Trafikverkets datamodell har 30-minutersaggregat bara för vind och nederbörd, inte för temperaturen (KUVOS-LEVERANSEN §5a).
+
+   Det är starkt troligt men inte bekräftat. **15 minuter går inte med (A):** det finns ingen avläsning 15 minuter bakåt, och en
+   interpolation vore påhittad. Kalibreringens svep blir 30 och 60 minuter, vilket skrivs in före riktningsprovet.
    - **Följden:** efterhalkan kan inte spelas upp med sina startvärden i kuvösen ens när regnmängden kommer. Kalibreringen, som flyttades
      till kuvösen (#425, #428), kan bara välja bland 60-minutersvarianter.
    - Förslag: inget ändras nu, eftersom efterhalkan ändå väntar på regnmängden. Bengt och Axel avgör innan Trafikverket svarar om
