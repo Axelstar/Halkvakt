@@ -2241,4 +2241,11 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **Hela vintern** (kuvos 37152660384): trenden tog 1,0 min och gav 363 508 fallande kandidater. Av dem har 363 453 en 30-minuterslutning (0 före väg A), 363 056 en 60-minuterslutning och 0 en 15-minuterslutning.
   - **Motprov** (utkast-PR #736, stängd): driftens funktion installerades under variantens namn utan bytet. CI 37152660669 blev rött på exakt integrationsprovet (`not ok 102`, 0,80 väntat), och härledningsprovet förblev grönt.
   - **Molnkällan:** `publish/moln.ts` tar en valbar källa, med SMHI:s API som standard så att driften är oförändrad. Kuvösen har sin egen källa ur `kuvos_ra.smhi_obs` (`kuvos/moln.ts`), och ett prov visar att taket gäller per källa.
+  - **Riktningsprovet före regnmängden är byggt** (Bengt: *"behåll ej prövade och kör på"*). Knappen `kuvos` med `korflode = riktningsprov` läser utfall och körs bara på Bengts ord. Den kör:
+    - rösten över vintern, med varningarna sparade;
+    - baslinjen, i `kuvos/baslinjen.ts` med episoder per natt; nattens skift och zon förs in i kontraktsgrinden, nu fyra kopior;
+    - grind A och höjdprovet med frysflaggan, genom kuvösens klocka via anslutningens `options`;
+    - nederbördstypen med `grind-nt.ts --kuvos`, på startvärdet, utan svep och utan val, med SMHI p13 ur arkivet.
+
+    Frågan står i §4.2.
   - **Rättelse till #455:** T-A och R-A är svep som väljer värdet (TROSKLAR-TRENDEN §2: *"T-A väljer värdet"*; R-A redovisar *"bästa kombinationen"*). Därför är de *ej prövade* enligt punkt 4. Jag hade skrivit att R-A körs. Trendens värden prövas inom efterhalkan.

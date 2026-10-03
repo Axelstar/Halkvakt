@@ -154,6 +154,23 @@ test("väg A: halvtimmesvarianten är driftens funktion med ett nytt namn och tv
     "en ändrad form i driften fäller härledningen i stället för att tyst ge en annan regel");
 });
 
+// Baslinjen (DECISIONS #455 punkt 2): frysriskens fyrningar och episoder; natten går från middag till middag i svensk tid.
+test("baslinjen: en episod per fara och natt, natten byter vid middag svensk tid, broarna för sig, bara frysrisken", async () => {
+  const { baslinjen, natt } = await import("../kuvos/baslinjen.ts");
+  assert.deepEqual([natt(Date.UTC(2025, 0, 14, 22) / 1000), natt(Date.UTC(2025, 0, 15, 5) / 1000), natt(Date.UTC(2025, 0, 15, 12, 30) / 1000)],
+    ["2025-01-14", "2025-01-14", "2025-01-15"], "23 och 06 svensk tid är samma natt; 13:30 är nästa");
+  const v = (serie: string, steg: string, t: number, kind: string, id: string) => ({ serie, vag: "x", steg, t, kind, id, d: 500 });
+  const b = baslinjen([
+    v("A", "2025-01-14T22:00:00Z", 0, "icing_point", "wx:1"), v("A", "2025-01-15T04:30:00Z", 600, "icing_point", "wx:1"),
+    v("A", "2025-01-15T12:30:00Z", 0, "icing_point", "wx:1"), v("A", "2025-01-14T22:00:00Z", 30, "icing_point", "bro:9"),
+    v("A", "2025-01-14T22:00:00Z", 60, "camera", "cam:3"), v("B", "2025-01-14T21:00:00Z", 0, "icing_point", "wx:1"),
+  ]);
+  const a = b.get("A")!;
+  assert.deepEqual([a.varningar, a.faror.size, a.episoder.size, a.stationsepisoder, a.broepisoder], [4, 2, 3, 2, 1]);
+  assert.deepEqual([...a.perManad].map(([m, x]) => [m, x.varningar, x.episoder.size]), [["2025-01", 4, 3]]);
+  assert.equal(b.get("B")!.episoder.size, 1, "serierna räknas var för sig");
+});
+
 // Molnen i kuvösen (DECISIONS #441, #455): driftens klassning och radie, men källan är arkivet. Taket gäller per källa.
 test("molnen: samma klassning ur en annan källa, taket är källans, och arkivkällan räknar i minuter", async () => {
   const { molnForPunkter } = await import("../publish/moln.ts");

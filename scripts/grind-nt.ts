@@ -215,25 +215,40 @@ async function smhiTimmar(id: string, fran: number): Promise<Map<number, SmhiKla
 
 const url = process.env.DATABASE_URL;
 if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
+// KUVÖSEN (kort #232, DECISIONS #424, #455): domens mått på vintern 2024/25, men bara startvärdet (det primära paret, SVEP[0]),
+// inget svep och ingen valregel — ett riktningsprov, ingen dom. Tiden kommer som argument, vägstationerna ur arkivet och SMHI:s
+// parameter 13 ur kuvösens arkiv (kuvos_ra.smhi_obs), eftersom API:ts perioder inte når den vintern.
+const KUVOS = process.argv.includes("--kuvos");
+const flagga = (namn: string) => { const i = process.argv.indexOf(namn); return i > 0 ? process.argv[i + 1] : undefined; };
 const DOM = process.argv.includes("--dom");
 if (DOM && Date.now() < Date.parse(DOM_FRAN)) {
   console.error(`--dom är låst till ${DOM_FRAN.slice(0, 10)} (TROSKLAR-NEDERBORDSTYPEN §5, domspärren). Utan flaggan visas räkningarna.`);
   process.exit(1);
 }
 const DAGAR = Number(process.argv.slice(2).find((a) => /^\d+$/.test(a)) ?? 30);
-const FRAN = DOM ? Date.parse(FONSTER_FRAN) : Date.now() - DAGAR * 864e5;
-const TILL = DOM ? Math.min(Date.now(), Date.parse(MARS_TILL)) : Date.now();
+const FRAN = KUVOS ? Date.parse(flagga("--fran")!) : DOM ? Date.parse(FONSTER_FRAN) : Date.now() - DAGAR * 864e5;
+const TILL = KUVOS ? Date.parse(flagga("--till")!) : DOM ? Math.min(Date.now(), Date.parse(MARS_TILL)) : Date.now();
+if (KUVOS && !(FRAN < TILL)) { console.error("--kuvos kräver --fran och --till (ISO)"); process.exit(1); }
 const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });
 await pool.query("SET statement_timeout = '300s'");
 
 console.log(`Grind NT — nederbördstypen (kort #45), ${new Date(FRAN).toISOString().slice(0, 10)} → ${new Date(TILL).toISOString().slice(0, 16)}Z, ` +
-  `${DOM ? "DOMLÄGE" : "SPÄRRAT: bara räkningar på facitsidan (§5)"}\n`);
+  `${KUVOS ? "KUVÖSENS RIKTNINGSPROV: startvärdet L 0 · U +1,5, inget svep, ingen dom (DECISIONS #424, #455)" : DOM ? "DOMLÄGE" : "SPÄRRAT: bara räkningar på facitsidan (§5)"}\n`);
 
 // Paren först: vägstationernas lägen ur weather_latest, SMHI:s aktiva stationer ur API:t. En tyst tom lista vore ett tyst aldrig.
-const vag = (await pool.query(`SELECT station_id AS id, ST_X(geom) AS lon, ST_Y(geom) AS lat FROM weather_latest`)).rows
+const vag = (await pool.query(KUVOS
+  ? `SELECT DISTINCT ON (station_id) station_id AS id, ST_X(geom) AS lon, ST_Y(geom) AS lat FROM weather_observations
+     WHERE geom IS NOT NULL ORDER BY station_id, sample_time DESC`
+  : `SELECT station_id AS id, ST_X(geom) AS lon, ST_Y(geom) AS lat FROM weather_latest`)).rows
   .map((r: any) => ({ id: String(r.id), lon: Number(r.lon), lat: Number(r.lat) }));
+const kuvosStationer = async (): Promise<Smhi[]> => (await pool.query(`SELECT DISTINCT ON (station_id) station_id AS id, lon, lat
+  FROM kuvos_ra.smhi_obs WHERE parameter = 13 AND lon IS NOT NULL ORDER BY station_id, tid DESC`)).rows
+  .map((r: any) => ({ id: String(r.id), lon: Number(r.lon), lat: Number(r.lat) }));
+const kuvosTimmar = async (id: string, fran: number): Promise<Map<number, SmhiKlass>> => new Map((await pool.query(`SELECT
+  extract(epoch FROM tid)::bigint AS t, varde FROM kuvos_ra.smhi_obs WHERE parameter = 13 AND station_id = $1 AND varde IS NOT NULL
+  AND tid >= $2`, [id, new Date(fran).toISOString()])).rows.map((r: any) => [Number(r.t), smhiKlass(String(r.varde))] as [number, SmhiKlass]));
 let smhi: Smhi[] = [], smhiFel = "";
-try { smhi = await smhiStationer(); } catch (e) { smhiFel = String((e as Error).message); }
+try { smhi = KUVOS ? await kuvosStationer() : await smhiStationer(); } catch (e) { smhiFel = String((e as Error).message); }
 let parKm = PAR_KM, par = paraIhop(vag, smhi, PAR_KM);
 if (par.size < PAR_MIN) { parKm = PAR_KM_RESERV; par = paraIhop(vag, smhi, PAR_KM_RESERV); }
 if (smhiFel) console.log(`SMHI EJ NÅBART (${smhiFel}) — A2 och SMHI-räkningarna är EJ MÄTTA, inte noll.`);
@@ -293,14 +308,13 @@ const tack = (await pool.query(`
            AND precipitation IS NOT NULL AND precipitation <> '') AS med_typ
   FROM weather_observations WHERE sample_time >= $1 AND sample_time < $2`, [new Date(FRAN).toISOString(), new Date(TILL).toISOString()])).rows[0];
 stat.medFalt = Number(tack.med_falt); stat.medTyp = Number(tack.med_typ);
-await pool.end();
 
 // SMHI vid paren: facitsidans timmar, och de partimmar där vägstationen har en rad inom ±10 min.
 const parTimmar: { vag: Klass; smhi: Klass; tw: number | null; manad: string }[] = [];
 let smhiStationFel = 0;
 for (const [vid, s] of par) {
   let timmar: Map<number, SmhiKlass>;
-  try { timmar = await smhiTimmar(s.id, FRAN); } catch { smhiStationFel++; continue; }
+  try { timmar = KUVOS ? await kuvosTimmar(s.id, FRAN) : await smhiTimmar(s.id, FRAN); } catch { smhiStationFel++; continue; }
   const rader = vidPar.get(vid) ?? new Map<number, Rad>();
   for (const [H, klass] of timmar) {
     if (H * 1000 >= TILL) continue;
@@ -312,16 +326,19 @@ for (const [vid, s] of par) {
     if (arKlass(r.givare)) parTimmar.push({ vag: r.givare, smhi: klass, tw: r.tw, manad: lokalDag(H).slice(0, 7) });
   }
 }
+await pool.end();
 if (smhiStationFel) console.log(`SMHI: ${smhiStationFel} av ${par.size} parstationer gick inte att hämta — deras timmar saknas, de är inte noll.`);
 
 for (const r of sparrRader(stat)) console.log(r);
-if (!DOM) {
+if (!DOM && !KUVOS) {
   console.log(`\nSPÄRRAT till ${DOM_FRAN.slice(0, 10)}. Modellens klasser och all överensstämmelse visas först i domläget (§5).`);
   process.exit(0);
 }
 
-// ---- DOMEN (§5–§6) ----
-console.log(`\n${"─".repeat(78)}\nDOMEN\n`);
+// ---- DOMEN (§5–§6) ---- I kuvösen samma mått som läsning: bara startvärdet, inget val, ingen dom.
+console.log(`\n${"─".repeat(78)}\n${KUVOS ? "KUVÖSENS RIKTNINGSPROV — domens mått som läsning, ingen dom" : "DOMEN"}\n`);
+const ar = new Date(FRAN).getUTCFullYear();
+const manaderna = KUVOS ? [`${ar}-12`, `${ar + 1}-01`, `${ar + 1}-02`] : VINTERMANADER;
 const a1 = kvot(stat.medTyp, stat.medFalt);
 const aPar = parTimmar.length, aTraff = parTimmar.filter((p) => p.vag === p.smhi).length;
 const aFarligtN = parTimmar.filter((p) => p.smhi !== "regn").length, aFarligt = parTimmar.filter((p) => p.smhi !== "regn" && p.vag === "regn").length;
@@ -334,9 +351,9 @@ console.log(`NT-D  ${D ? "KLARAR" : "FALLER — OAVGJORT (§5: fönstret förlä
 const facitTupler: Tuppel[] = A ? tupler
   : parTimmar.filter((p) => p.tw !== null).map((p) => ({ manad: p.manad, egen: p.tw as number, skattad: null, facit: p.smhi }));
 if (!A) console.log(`      A faller ⇒ B döms mot SMHI i paren (${facitTupler.length} partimmar); C kan inte dömas utan givarfacit.`);
-const utfall = SVEP.map(({ L, U }) => {
+const utfall = (KUVOS ? SVEP.slice(0, 1) : SVEP).map(({ L, U }) => {
   const b = doma(jamfor(facitTupler, L, U, (t) => t.egen), B1_TRAFF, B2_FARLIGT, B3_SLASK);
-  const manader = VINTERMANADER.filter((m) => {
+  const manader = manaderna.filter((m) => {
     const j = jamfor(facitTupler.filter((t) => t.manad === m), L, U, (t) => t.egen);
     const t = kvot(j.traff, j.n);
     return t !== null && t >= B1_TRAFF;
@@ -347,6 +364,7 @@ const utfall = SVEP.map(({ L, U }) => {
     (c ? `   NT-C träff ${c.t} farligt ${c.f} slask ${c.s} ⇒ ${c.klarar ? "KLARAR" : "FALLER"}` : ""));
   return { L, U, B, bf: b.f ?? 1, C: c?.klarar ?? false };
 });
+if (KUVOS) { console.log(`\nInget val (DECISIONS #424): bara startvärdet är räknat. Läsningen förs in i riktningsprovets tabell.`); process.exit(0); }
 const klarar = utfall.filter((u) => u.B).sort((x, y) => x.bf - y.bf || (x.L === SVEP[0].L && x.U === SVEP[0].U ? -1 : 1));
 const vald = klarar[0];
 console.log(`\nValregeln (§3): ${vald ? `L ${vald.L} · U ${vald.U}${vald.C ? " — NT-C klarar också" : " — NT-C faller"}` : "ingen kombination klarar NT-B"}.`);

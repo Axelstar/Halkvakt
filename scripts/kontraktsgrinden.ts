@@ -502,8 +502,9 @@ export const KONTRAKT: Kontrakt[] = [
     varfor: "T-A, R-A och uppspelningens episoder ska mena samma natt. Med UTC-dygn delades 159 av 454 stationsnätter i två (#245).",
     // T-A räknar natten i TypeScript sedan kort #254 d (svensk tid, inte UTC) — konstanten är dess kopia.
     former: [/- interval '(\d+) hours?'\)[^\n]{0,40}AS natt\b/, /NATT_SKIFT_H = (\d+)/],
-    filer: /grind-t-a\.ts|grind-r-a\.ts|028_uppspelning_varianter\.sql/,
-    golv: 3,
+    // Kuvösens baslinje (DECISIONS #455) räknar sina episoder på samma natt.
+    filer: /grind-t-a\.ts|grind-r-a\.ts|028_uppspelning_varianter\.sql|kuvos\/baslinjen\.ts/,
+    golv: 4,
   },
   {
     // Kort #256 (DECISIONS #366): talet 12 räckte inte. Uppspelningen skiftade natten i UTC medan T-A och R-A skiftade i svensk
@@ -512,8 +513,8 @@ export const KONTRAKT: Kontrakt[] = [
     varfor: "T-A, R-A och uppspelningens episoder ska mena samma natt (#246). Samma skift i olika zoner delar natten på olika ställen.",
     former: [/const ZON = "([^"]+)"/, /const TZ = LAND === "fi" \? "[^"]+" : "([^"]+)"/,
               /AT TIME ZONE '([^']+)'\) - interval '\d+ hours?'\)::date AS natt/],
-    filer: /grind-t-a\.ts|grind-r-a\.ts|028_uppspelning_varianter\.sql/,
-    golv: 3,
+    filer: /grind-t-a\.ts|grind-r-a\.ts|028_uppspelning_varianter\.sql|kuvos\/baslinjen\.ts/,
+    golv: 4,
   },
   {
     // Bengts ja 25/9 (DECISIONS #367). Den långsamma vakten SKRIVER givarfelets dygn (sql/030); snapshotkärnan, bunten,

@@ -266,5 +266,15 @@ för 1, 2 och 4"*. Väg A är byggd i `kuvos/trend.ts`, som härleder varianten 
 - **5b:** facit och episoderna för de delar som går att köra. Grind A, vägpunkten och höjden körs som de är, och frysflaggan får sitt skript.
 - **5c:** NT, och `trend_kandidater` beräknas för vintern (väg A, byggd 3/10; kuvos 37152660384: 363 508 kandidater på 1,0 min, 30-minuterslutning i 363 453). ~~T-A och R-A:s signalkontroll~~ är svep och ej prövade (#455, rättelsen).
   Kuvösens molnkälla (`kuvos/moln.ts`) är byggd för kombinationens fysikkontroll (KB-C3).
+- **Riktningsprovet före regnmängden, byggt 3/10.** Knappen `kuvos` med `korflode = riktningsprov` läser utfall och körs bara på
+  Bengts ord. Den kör:
+  - rösten över hela vintern, med varningarna sparade;
+  - baslinjen (`kuvos/baslinjen.ts`): frysriskens fyrningar och episoder per serie;
+  - grind A och höjdprovet med vägpunktsgrinden och frysflaggan, genom kuvösens klocka ställd på vinterns slut, så att "de senaste
+    N dygnen" är vintern;
+  - nederbördstypen på startvärdet (`grind-nt.ts --kuvos`: arkivets stationer, SMHI p13 ur kuvösens arkiv, inget svep, inget val).
+
+  **Ovanpå** har ännu inget att lägga på baslinjen: ingen av de delar som kan köras före regnmängden ger röstvarningar. Tabellen
+  *del × ensam × ovanpå* får därför bara kolumnen *ensam* nu, och *ovanpå* fylls när efterhalkan och övergångarna kan köras.
 - **5d:** tabellen *del × ensam × ovanpå* för de delarna. Efterhalkan, övergångarna, tillståndet, försprånget och vinden läggs till när
   Trafikverket svarat.
