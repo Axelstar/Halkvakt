@@ -9,7 +9,7 @@ on:
         description: "las (läser bevisraderna, skriver inget), migrera (kör fil), larmprov, vinterprov (kort #52), frostprov (kort #89), matvaktprov (mätvakten, kort #101), paminnelseprov (källvaktspåminnelsen, #150), nyckelprov (nyckelkalendern, kort #86), sparrprov (skuggmotorns spärr, kort #191), databasprov (databasvakten, grepp 3), arkivprov (arkivbackupens ålder, kort #223), lagringsprov (lagringslarmet 800 MB), kamerafacitprov (kamerafacitets urval, torrt), oljaprov (oljeskuggan, kort #276)"
         type: choice
         default: las
-        options: [las, migrera, larmprov, vinterprov, frostprov, matvaktprov, paminnelseprov, kassaprov, nyckelprov, sparrprov, databasprov, facitprov, arkivprov, utlosarprov, forsprangprov, lagringsprov, kamerafacitprov, oljaprov]
+        options: [las, migrera, larmprov, vinterprov, frostprov, matvaktprov, paminnelseprov, kassaprov, nyckelprov, sparrprov, databasprov, facitprov, arkivprov, utlosarprov, forsprangprov, lagringsprov, kamerafacitprov, oljaprov, aterlasprov]
       fil:
         description: "SQL-fil (krävs för migrera; ingen standard med flit — kort #263: 014 schemalade om gallringsjobbet)"
       bevis:

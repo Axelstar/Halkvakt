@@ -7235,3 +7235,17 @@ eftersom vi arbetar på"*, när kort #259 visat sig stå öppet en dag fast kart
 
 **Alternativ som valdes bort:** en varning i stället för ett fel (en varning läses inte — samma skäl som VÄRDEVAKTEN: ett hinder, inte
 en varning); att kartsynken stänger kort själv (dess PR:er får bara röra kartan och slås ihop utan "slå ihop", #447 punkt 2).
+
+## #450 (3/10 2026) Arkivexportens återläsning byggs nu, före första raderingen (kort #291)
+
+**Beslut (Bengt, 3/10):** *"ja till #291, bygg den nu och slå ihop 720"* — efter mätningen 266 MB 3/10 (dbknapp 37135239114), som
+flyttar raderingens början från "före mars" (sql/034, #334) till runt 15/10.
+1. **sql/042:** `arkiv_rader` tolkar exportfilen, `arkiv_aterlas` läser tillbaka den till `weather_observations` (`ON CONFLICT DO
+   NOTHING`, bara för postgres), och `arkiv_jamfor` jämför en fil med databasens dygn kolumn för kolumn utan att skriva.
+2. **Proven:** rundresan i `test/integration.test.ts` (exportera, radera, läsa tillbaka, jämföra; jämförelsen ser en ändrad rad) och
+   `arkivexport?aterlasprov=1` via databasknappen mot det äldsta riktiga dygnet i hinken.
+3. **Marsvägen** står i RUNBOOK: veckodumpen och de raderade dygnens filer i en tillfällig PostGIS, domens skript mot den.
+4. **Pro-frågan står kvar** (§4.2, grepp 3) — återläsningen behövs oavsett väg, och alternativen utan Pro står på samma rad.
+
+**Alternativ som valdes bort:** att vänta till februari (sql/034:s plan — raderingen börjar fyra månader tidigare); att läsa tillbaka
+med Node i en container i stället för SQL (en läsare i databasen fungerar likadant i drift, container och CI).
