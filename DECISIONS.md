@@ -7182,3 +7182,24 @@ med vad som är klart, vad som saknas, beroenden och hur delarna länkas in.
 **Alternativ som valdes bort:** en ritad duk i Design (följer inte repot och glider isär med verkligheten, Claudes bedömning som Bengt
 godtog); ett register i bedömningen §5.3 (bedömningen är listan över vad som görs härnäst, inte bilden av vad som finns); ett åttonde
 stomdokument bland de andra (kartan är det man går in genom, inte ett dokument bland andra).
+
+## #447 (3/10 2026) Kartsynken: projektkartan uppdaterar sig själv, och allt arbete bokförs i kartan (kort #288)
+
+**Beslut (Bengt, 3/10):** *"ja till alla tre, slå ihop 704 och bygg kartsynken och det innebär från nu att alla arbeten som axel och jag
+gör oberoende av varandra loggas som gjorda i projektkartan"* — på förslaget `docs/KARTSYNKEN-FORSLAG-2026-10-03.md` (§4.2), skrivet
+efter att Axel släppt 0.3.10 (22) utan att kartan märkte det.
+1. **Kartsynken byggs:** signaler i Supabase (App Store Connect API och förarsvaren), regler på byggstegen i `docs/projektkartan.json`,
+   och en schemalagd kartsynk i Claude-appen morgon och kväll, plus första steget i varje session.
+2. **Sammanslagning utan "slå ihop"** för kartsynkens egna PR:er, på två villkor: (i) de rör enbart `docs/projektkartan.json` och det
+   som `scripts/projektkartan.ts` och `scripts/kortkartan.ts` skriver (kartsidan, LÄGESRADER-blocken, listorna *Öppna kort*); (ii) CI är
+   grön på exakt det prövade huvudet. Allt annat väntar som förut på Bengts ord.
+3. **Axels nyckel till App Store Connect** (Issuer ID, Key ID, `.p8`) läggs i Supabase secrets, aldrig i repot. Tills den finns visar
+   kartan att App Store Connect inte läses — tyst frånvaro vore ett tyst aldrig.
+4. **Allt arbete bokförs i kartan**, Bengts och Axels, i vilken session eller på vilken enhet det än görs. Två vägar: (a) *maskinvägen* —
+   signalerna bockar regelstegen; (b) *bokföringsvägen* — kartsynken går igenom varje commit på main sedan förra synken som inte rörde
+   kartan (utom maskinernas: Marknadsmotorn, trv-bevakning och kartsynken själv) och bokför den på sin del med commiten som bevis, eller
+   antecknar att den inte rör någon del. Regeln *samma commit* (PROJEKTKARTAN i CLAUDE.md) gäller fortfarande; kartsynken är nätet under den.
+
+**Alternativ som valdes bort:** GitHub Actions på schema (Bengts regel 22/9 om Actions-minuter, och Actions kan inte republicera
+artefakterna); en krok på Axels Mac efter uppladdningen (missar granskningen och installationerna); att be Bengt och Axel säga till
+(det var just det som inte hände 3/10).
