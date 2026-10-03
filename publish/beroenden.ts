@@ -103,6 +103,9 @@ export const KARTAN: Beroende[] = [
     nyckelord: ["events", "user-agent", "vilt", "trafikolycka", "gps", "datetime", "summary", "location"] },
 
   // ── VERKTYG ──────────────────────────────────────────────────────────────────────────
+  { vard: "api.appstoreconnect.apple.com", roll: "verktyg",
+    matar: "byggsignalerna: byggen, granskning, installationer per bygge och testarna (kort #288, DECISIONS #447)",
+    brister: "kartsynken bockar inte iPhone-stegen; kartan säger att App Store Connect inte läses", bevakad: "", signal: "OKÄND" },
   { vard: "frost.met.no", roll: "verktyg",
     matar: "norska observationer för frost-provet",
     brister: "frost-prov och frost-rekognosering står still", bevakad: "", signal: "OKÄND" },

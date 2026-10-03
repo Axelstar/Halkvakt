@@ -13,12 +13,15 @@ import { readFileSync, writeFileSync, renameSync } from "node:fs";
 import { oppnaKort, avsnitt } from "./kortkartan.ts";
 
 type Lage = "gron" | "orange" | "rod" | "bla" | "gra";
-type Steg = { namn: string; status: "klar" | "pagar" | "saknas" | "ej"; bevis?: string };
-type Del = { id: string; namn: string; block: string; lage: Lage; klar?: number; vikt?: number; steg?: Steg[]; bevis?: string; nyckel?: string; saknas?: string[];
+// regel och kvar: steget bockas av kartsynken ur byggsignalerna (scripts/kartsynk.ts, DECISIONS #447); kvar är delens
+// saknas-rader som stryks när steget blir klart.
+export type Steg = { namn: string; status: "klar" | "pagar" | "saknas" | "ej"; bevis?: string; regel?: string; kvar?: string[] };
+export type Del = { id: string; namn: string; block: string; lage: Lage; klar?: number; vikt?: number; steg?: Steg[]; bevis?: string; nyckel?: string; saknas?: string[];
   beror: string[]; kort: string[]; beslut?: string[]; beskrivs: string[] };
 type Block = { id: string; namn: string; om: string; plats: string; pil?: string };
 type Mal = { id: string; namn: string; om: string; klart_nar: string; datum: string; delar: string[] };
-type Karta = { url: string; projektmal: { text: string; kalla: string }; block: Block[]; mal: Mal[]; delar: Del[] };
+type Synk = { till: string; tid: string; kallor: Record<string, string> };
+export type Karta = { url: string; projektmal: { text: string; kalla: string }; block: Block[]; mal: Mal[]; delar: Del[]; synk?: Synk };
 type Sida = { fil: string; namn: string; url?: string };
 type KortInfo = { nyckel: string; nr: string; titel: string; agare: string };
 
@@ -96,6 +99,12 @@ export function granska(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>
 
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const kortTitel = (s: string) => (s.length <= 100 ? s : s.slice(0, s.lastIndexOf(" ", 100)) + " …");
+/** "3/10 18:05" i svensk tid ur en ISO-tid. */
+export function stockholm(iso: string): string {
+  const p = Object.fromEntries(new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Stockholm", day: "numeric", month: "numeric", hour: "2-digit", minute: "2-digit" })
+    .formatToParts(new Date(iso)).map((x) => [x.type, x.value]));
+  return `${p.day}/${p.month} ${p.hour}:${p.minute}`;
+}
 
 /** Det som står i vägen för ett mål: målets delar och, under dem, allt de beror på som inte är klart. En del visas en gång. */
 export function hinder(m: Mal, del: Map<string, Del>): { d: Del; djup: number }[] {
@@ -366,7 +375,8 @@ export function sida(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>, s
   </section>
   <p class="grov">${matta === k.delar.length
     ? `<b>Mätt mot koden 3/10 (kort #286).</b> Alla ${matta} delar har byggsteg med bevis; procenten räknas ur stegen, viktad med delarnas storlek. Klicka på en del under <i>Alla delar</i> för att se stegen.`
-    : `<b>Mätningen pågår (kort #286).</b> ${matta} av ${k.delar.length} delar är mätta mot koden, med byggsteg och bevis. De andra är fortfarande Claudes skattning ur stomdokumenten, tavlan och beslutsloggen.`}</p>
+    : `<b>Mätningen pågår (kort #286).</b> ${matta} av ${k.delar.length} delar är mätta mot koden, med byggsteg och bevis. De andra är fortfarande Claudes skattning ur stomdokumenten, tavlan och beslutsloggen.`}</p>${k.synk ? `
+  <p class="litet"><b>Kartsynken</b> (DECISIONS #447) bokför det som görs utanför repot och varje commit på main: senast ${esc(stockholm(k.synk.tid))}, till och med main <span class="mono">${esc(k.synk.till.slice(0, 7))}</span>. ${Object.entries(k.synk.kallor).map(([n, s]) => `${esc(n)}: ${esc(s)}.`).join(" ")} Steg märkta <i>läses av kartsynken</i> bockas ur signalerna.</p>` : ""}
   <div class="forklaring">
     ${ORDNING.map((l) => `<span><span class="chip ${l}">${LAGEN[l].namn}</span> ${LAGEN[l].krav}</span>`).join("\n    ")}
   </div>
@@ -475,7 +485,7 @@ export function sida(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>, s
     for (const d of k.delar.filter((x) => x.block === b.id)) {
       const rader: string[] = [];
       if (d.lage !== "gron") rader.push(d.steg?.length ? `<dt>Klart</dt><dd>${andel(d)} %, räknat ur byggstegen</dd>` : `<dt>Skattat klart</dt><dd>${andel(d)} %, omätt</dd>`);
-      if (d.steg?.length) rader.push(`<dt>Byggsteg</dt><dd><ul class="steglista">${d.steg.map((s) => `<li class="s-${s.status}"><span class="s-ikon" aria-hidden="true"></span><span><b>${esc(s.namn)}</b> <span class="litet">${STEG[s.status]}</span>${s.bevis ? `<span class="s-bevis">${esc(s.bevis)}</span>` : ""}</span></li>`).join("")}</ul></dd>`);
+      if (d.steg?.length) rader.push(`<dt>Byggsteg</dt><dd><ul class="steglista">${d.steg.map((s) => `<li class="s-${s.status}"><span class="s-ikon" aria-hidden="true"></span><span><b>${esc(s.namn)}</b> <span class="litet">${STEG[s.status]}${s.regel ? " · läses av kartsynken" : ""}</span>${s.bevis ? `<span class="s-bevis">${esc(s.bevis)}</span>` : ""}</span></li>`).join("")}</ul></dd>`);
       if (d.vikt) rader.push(`<dt>Vikt</dt><dd>${d.vikt} av 3</dd>`);
       if (d.bevis) rader.push(`<dt>Bevis</dt><dd>${esc(d.bevis)}</dd>`);
       if (d.nyckel) rader.push(`<dt>Nyckel</dt><dd>${esc(d.nyckel)}</dd>`);
