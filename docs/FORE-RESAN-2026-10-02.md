@@ -6,6 +6,10 @@ som ingick som en del i favoritrutter som kunde sparas och att man i förväg fi
 appen kan ge information om." Ett beslutsunderlag för kort #233 del 1, ingen kod. Formen är Axels. Bygger på Fintraffic-jämförelsen
 (`docs/FINTRAFFIC-JAMFORELSE-2026-10-02.md`, kort #283).*
 
+*↪ **Överspelat 3/10:** *Halkvaktens favoriter* (`docs/FAVORITER.html`, stomdokument 7, DECISIONS #445) är den gällande sidan. Genomgången
+mot repot 3/10 rättade där bland annat studien, Siri-frasen (Apple kräver appens namn), CarPlay (Siri fungerar via CarPlay, en egen
+CarPlay-app gör det inte), motorns `run()`, filstorlekarna och Android-schemaläggningen. Texten nedan står kvar som den skrevs 2/10.*
+
 *Omskrivet samma kväll efter Bengts förtydligande. Första utgåvan gjorde pendlingen till hela idén och en notis om frysrisk till
 huvudsaken. Bengts tanke är bredare: favoritrutter, där pendlingen är ett av flera fall, och en rapport om allt längs rutten.*
 

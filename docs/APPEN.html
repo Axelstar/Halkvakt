@@ -118,10 +118,10 @@
   </div>
   <p class="litet">Android ur fotostudion 2/10 i skinnet v4 — designöverlämningen v2 (DECISIONS #444, kort #284), på grenen till nästa bygge. iPhone har samma skärmar; bilderna kommer ur första bygget i Xcode.</p>
 
-  <h2>1. Vad appen är</h2>
+  <h2 id="avsnitt-1">1. Vad appen är</h2>
   <p>En app du startar när du sätter dig i bilen, och sedan lägger du undan telefonen. Halkvakt lyssnar på Trafikverkets mätstationer och rapporterade väglag och säger till med rösten, i högtalaren eller bilens Bluetooth, när något farligt finns framför dig: halka, frysrisk, olyckor, vilt och fartkameror. Det finns ingen skärm att titta på och inget konto. Tystnad är grundläget: pratar den, betyder det något.</p>
 
-  <h2>2. En körning</h2>
+  <h2 id="avsnitt-2">2. En körning</h2>
   <ol class="steg">
     <li><div><b>Du startar vakten</b>, eller så startar den själv (avsnitt 5). GPS:en börjar lyssna, och skärmen kan släckas.</div></li>
     <li><div><b>Telefonen hämtar vägdatan</b> och kontrollerar den mot kontrollsumman i manifestet. Stämmer den inte behålls förra snapshoten. Under resan hämtas ny data var 30:e minut: på Android i drift, på iPhone i koden sedan bygge (16) men ännu inte i ett bygge testarna har.</div></li>
@@ -131,7 +131,7 @@
     <li><div><b>Spärren.</b> Inom 10 sekunder får bara en viktigare fara tala. Samma fara upprepas först efter 10 minuter och 5 km.</div></li>
   </ol>
 
-  <h2>3. Exakt vad rösten säger</h2>
+  <h2 id="avsnitt-3">3. Exakt vad rösten säger</h2>
   <div class="tabell">
     <table>
       <thead><tr><th>När</th><th>Frasen</th></tr></thead>
@@ -159,7 +159,7 @@
     </div>
   </div>
 
-  <h2>4. Skärmarna</h2>
+  <h2 id="avsnitt-4">4. Skärmarna</h2>
   <div class="tabell">
     <table>
       <thead><tr><th>Skärm</th><th>Vad den visar</th></tr></thead>
@@ -174,7 +174,7 @@
   </div>
   <p class="litet">iPhone har en introduktion i fyra steg (löftet, platsen, bannern, klart). Android har ingen introduktion; första trycket på Starta ber om plats och notiser.</p>
 
-  <h2>5. Start och stopp i bilen</h2>
+  <h2 id="avsnitt-5">5. Start och stopp i bilen</h2>
   <div class="par">
     <div class="ruta gron">
       <h3>iPhone</h3>
@@ -195,7 +195,7 @@
     </div>
   </div>
 
-  <h2>6. Betatestarnas svar och missar</h2>
+  <h2 id="avsnitt-6">6. Betatestarnas svar och missar</h2>
   <p>Betatestarna är projektets förarfacit. Allt nedan finns bara för den som själv slagit på brytaren <i>Svara på varningarna</i>.</p>
   <ol class="steg">
     <li><div><b>Under resan</b> står två knappar under repliken: <i>Stämde</i> och <i>Stämde inte</i>. På iPhone går det också att säga <q>Hej Siri, stämde inte i Halkvakt</q>. Svaret skickas aldrig medan bilen rullar, bara när den stått still en halv minut eller när appen öppnas.</div></li>
@@ -204,7 +204,7 @@
     <li><div><b>Svarar du inte skickas ingenting.</b> Tystnad räknas aldrig som ja. Kortet står kvar ett dygn och tiger sedan, eftersom ett svar på en resa man inte minns är en gissning.</div></li>
   </ol>
 
-  <h2>7. Vad som lämnar telefonen</h2>
+  <h2 id="avsnitt-7">7. Vad som lämnar telefonen</h2>
   <div class="skickas">
     <p><b>Ingen position, inget GPS-spår och ingen rörelsedata lämnar telefonen automatiskt.</b> All matchning mot vägdatan sker i telefonen. Hämtningen av vägdatan är ett anrop utan parametrar och utan id.</p>
     <div class="tabell">
@@ -219,7 +219,7 @@
     <p class="litet">Inget konto, inget enhets-id och ingen IP-adress sparas, och inget delas med tredje part. Ett svar pekar ut ungefär var och när, och det står i appen. I Google Plays dataformulär är det deklarerat som ungefärlig plats, valfri och inte delad.</p>
   </div>
 
-  <h2>8. Batteri och drift</h2>
+  <h2 id="avsnitt-8">8. Batteri och drift</h2>
   <div class="par">
     <div class="ruta gron">
       <h3>iPhone: inom budget</h3>
@@ -231,7 +231,7 @@
     </div>
   </div>
 
-  <h2>9. Var appen står</h2>
+  <h2 id="avsnitt-9">9. Var appen står</h2>
   <div class="tabell">
     <table>
       <thead><tr><th>Del</th><th>Läge</th><th></th></tr></thead>
@@ -268,7 +268,7 @@
     </table>
   </div>
 
-  <h2>10. Vad appen inte gör</h2>
+  <h2 id="avsnitt-10">10. Vad appen inte gör</h2>
   <ul>
     <li><b>Ingen prognos når föraren.</b> Rösten varnar på uppmätt och rapporterat läge. Prognoslagret körs i skuggdrift och får bli karta och förstärkare först när det klarat sina grindar.</li>
     <li><b>Tyst mellan stationerna.</b> Medianavståndet till närmaste station är 7 km, och i Norrland ligger 13 % av vägnätet mer än 20 km bort.</li>
@@ -278,7 +278,7 @@
     <li><b>Ingen hastighetsdata skickas</b>, och appen finns bara på svenska.</li>
   </ul>
 
-  <h2>11. Appen i Skyltfondsprojektet</h2>
+  <h2 id="avsnitt-11">11. Appen i Skyltfondsprojektet</h2>
   <p>Appen är byggd på egen bekostnad och är projektets verktyg, inte det som söks. Ansökan skickades 30/9 (413 000 kr, besked senast 15/12). Under två vintrar ska den visa om Trafikverkets öppna data räcker för att varna i tid:</p>
   <ul>
     <li><b>Utvärderingen:</b> varje varning klassas mot kamerabild, SMHI, rapporterad halka, stationens serie och testförarnas svar.</li>
@@ -287,4 +287,55 @@
   </ul>
   <hr>
   <p class="litet">Källor: produktboken (PRODUKTBOK.md, läst mot koden 24/9), systembeskrivningen (bilaga 3), rösttexterna ur varningsmotorn (bilaga 6), beskrivningen av bygge (19) och beslutsloggen; läst mot läget 1/10 (DECISIONS #415). Alla datum avser 2026.</p>
+
+<!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
+  <h2 id="oppna-kort">Öppna kort</h2>
+  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 22 av 44 öppna kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
+  <h3><a href="#avsnitt-2">2. En körning</a></h3>
+  <ul>
+    <li>#258 iOS LADDAR ALDRIG OM VÄGDATAN UNDER RESAN <span class="litet">· Axel</span></li>
+  </ul>
+  <h3><a href="#avsnitt-4">4. Skärmarna</a></h3>
+  <ul>
+    <li>#259 REGLAGET "VARNA PÅ AVSTÅND" LOVAR MER ÄN MOTORN GÖR <span class="litet">· Axel</span></li>
+    <li>Introduktionen <span class="litet">· Bengt</span></li>
+    <li>#284 APPENS NYA SKINN — DESIGNÖVERLÄMNINGEN V2 (BYGGT OCH PROVAT I SIMULATORN — Claude, Axels order 2/10 18:46; … <span class="litet">· pågår</span></li>
+  </ul>
+  <h3><a href="#avsnitt-5">5. Start och stopp i bilen</a></h3>
+  <ul>
+    <li>#248 ANDROID-AUTOSTARTEN STOPPAR ALDRIG VAKTEN <span class="litet">· Axel</span></li>
+    <li>#226 AUTOSTARTENS BEHÖRIGHET FALLER TYST PÅ ANDROID 11+ <span class="litet">· Claude</span></li>
+  </ul>
+  <h3><a href="#avsnitt-6">6. Betatestarnas svar och missar</a></h3>
+  <ul>
+    <li>#279 iOS: EFTER-RESAN-KORTET GICK UTANFÖR SKÄRMEN <span class="litet">· Axel</span></li>
+    <li>#203 FACIT UTAN ATT STANNA — svaret efter resan, och med rösten under den <span class="litet">· Claude</span></li>
+  </ul>
+  <h3><a href="#avsnitt-7">7. Vad som lämnar telefonen</a></h3>
+  <ul>
+    <li>#214 PLAY-DEKLARATIONEN ÄR OSANN SEDAN 16/9 <span class="litet">· Axel, beslut</span></li>
+    <li>#285 iCLOUD-KOPIAN BÄR UNGEFÄR VAR OCH NÄR <span class="litet">· Claude, låst</span></li>
+  </ul>
+  <h3><a href="#avsnitt-8">8. Batteri och drift</a></h3>
+  <ul>
+    <li>#262 BATTERIPAKETET — SJU ÅTGÄRDER EFTER FÄLTRAPPORTEN 27/9 <span class="litet">· Axels nästa steg</span></li>
+    <li>#218 BATTERIBUDGETEN HAR ALDRIG MÄTTS, OCH iOS KÖR FULL GAS <span class="litet">· Bengt</span></li>
+  </ul>
+  <h3><a href="#avsnitt-9">9. Var appen står</a></h3>
+  <ul>
+    <li>#280 HALKVAKT TILL APP STORE — PÅ RIKTIGT, DIREKT EFTER #262 <span class="litet">· Axels nästa steg</span></li>
+    <li>#281 MARKNADSFÖRING UTAN PENGAR <span class="litet">· Axels nästa steg</span></li>
+    <li>Skydda namnet <span class="litet">· Axel</span></li>
+    <li>Tolv testare till Play-perioden <span class="litet">· Axel</span></li>
+    <li>Välkomsttext + testinstruktion till kompisarna <span class="litet">· Axel</span></li>
+    <li>#219 ANDROIDS VÄG TILL PLAY — enhetsverifiering, första uppladdning, slutet test <span class="litet">· Axel</span></li>
+    <li>#277 QR-KOD TILL APPEN — en kod för båda plattformarna, via halkvakt.se <span class="litet">· Claude, låst</span></li>
+    <li>#228 APP-SCHEMAT ÖVERLEVER INTE xcodegen <span class="litet">· Claude, låst</span></li>
+  </ul>
+  <h3><a href="#avsnitt-10">10. Vad appen inte gör</a></h3>
+  <ul>
+    <li>#276 OLJA PÅ VÄGEN — HALKA SOM RÖSTEN INTE SÄGER <span class="litet">· Claude, låst</span></li>
+    <li>#42 Vattenplaningsvarningen <span class="litet">· Claude, låst</span></li>
+  </ul>
+<!-- /ÖPPNA KORT -->
 </main>

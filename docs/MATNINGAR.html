@@ -161,7 +161,7 @@
     <span><b>0</b> når föraren</span>
   </div>
 
-  <h2>1. Datan som samlas in</h2>
+  <h2 id="avsnitt-1">1. Datan som samlas in</h2>
   <p>Trafikverkets data hämtas varje minut och arkiveras. Snapshoten till apparna publiceras var tionde minut med sha256 i ett manifest, och appen behåller förra snapshoten om kontrollsumman inte stämmer.</p>
   <div class="tabell">
     <table>
@@ -187,7 +187,7 @@
     </div>
   </div>
 
-  <h2>2. Delområdena</h2>
+  <h2 id="avsnitt-2">2. Delområdena</h2>
   <p>Delområdena är av tre slag, och kolumnen <i>Läge</i> säger vilket. <b>Motorn i drift</b> mäts genom huvudvarvet (3.1): samma motor som apparna kör, med samma regler, körd längs fasta rutter var 30:e minut så att varje varning den skulle ha gett loggas. <b>Vakterna, radarn, tillståndsskattaren och förarsvaren är i drift</b> och mäts där de går, fyra delområden. <b>Resten är regler som prövas utan att föraren hör dem:</b> sju körs i skuggvarvet, nio räknas i arkivet med tabeller, uppspelningar eller knappar som trycks varje måndag eller när frosten kommer, en är mätt en gång och en är fastställd men obyggd. De flesta delar har ett tröskeldokument som skrevs innan mätningen fanns.</p>
   <div class="tabell">
     <table class="oversikt">
@@ -221,7 +221,7 @@
   <p class="litet">Lagren är systembildens: L1 trovärdighet (kan mätningen tros?), L2 tillstånd (vad ligger på vägen?), L3 utveckling (vart är det på väg?), L4 räckvidd (vad gäller mellan stationerna?) och L5 allvar och röst (hur och när sägs det?).</p>
   <button class="knapp" type="button" id="alla">Öppna alla detaljer</button>
 
-  <h2>3. Motorn i drift och facitkällorna</h2>
+  <h2 id="avsnitt-3">3. Motorn i drift och facitkällorna</h2>
 
   <section class="del" id="d-varvet">
     <div class="del-huvud"><span class="nr">3.1</span><h3>Huvudvarvet</h3><span class="lage skugga">körs i skuggan</span><span class="lager">sedan 29/8 · kort #20</span></div>
@@ -374,7 +374,7 @@
     </div></details>
   </section>
 
-  <h2>4. Trovärdighet (L1)</h2>
+  <h2 id="avsnitt-4">4. Trovärdighet (L1)</h2>
 
   <section class="del" id="d-vakter">
     <div class="del-huvud"><span class="nr">4.1</span><h3>Vakterna</h3><span class="lage drift">i drift</span><span class="lager">#75 · #298 · #300 · #134</span></div>
@@ -431,7 +431,7 @@
     </div></details>
   </section>
 
-  <h2>5. Räckvidd (L4)</h2>
+  <h2 id="avsnitt-5">5. Räckvidd (L4)</h2>
 
   <section class="del" id="d-prognos">
     <div class="del-huvud"><span class="nr">5.1</span><h3>Prognoslagret</h3><span class="lage skugga">körs i skuggan</span><span class="lager">sedan 23/9 · kort #38b</span></div>
@@ -656,7 +656,7 @@
     </div></details>
   </section>
 
-  <h2>6. Utveckling (L3)</h2>
+  <h2 id="avsnitt-6">6. Utveckling (L3)</h2>
 
   <section class="del" id="d-trend">
     <div class="del-huvud"><span class="nr">6.1</span><h3>Trenden</h3><span class="lage arkiv">mäts i arkivet</span><span class="lager">kort #88</span></div>
@@ -825,7 +825,7 @@
     </div></details>
   </section>
 
-  <h2>7. Tillstånd (L2)</h2>
+  <h2 id="avsnitt-7">7. Tillstånd (L2)</h2>
 
   <section class="del" id="d-tillstand">
     <div class="del-huvud"><span class="nr">7.1</span><h3>Tillståndsskattaren</h3><span class="lage drift">i drift</span><span class="lager">#167 · #341 · #342</span></div>
@@ -1013,7 +1013,7 @@
     </div></details>
   </section>
 
-  <h2>8. Allvar och röst (L5)</h2>
+  <h2 id="avsnitt-8">8. Allvar och röst (L5)</h2>
 
   <section class="del" id="d-olja">
     <div class="del-huvud"><span class="nr">7.7</span><h3>Olja på vägen</h3><span class="lage skugga">körs i skuggan</span><span class="lager">sedan 1/10 · kort #276</span></div>
@@ -1083,7 +1083,7 @@
     </div></details>
   </section>
 
-  <h2>9. Andra mätningar</h2>
+  <h2 id="avsnitt-9">9. Andra mätningar</h2>
   <div class="par">
     <div class="ruta">
       <h4>Djur på vägen: Trafikverket mot Polisen</h4>
@@ -1107,7 +1107,7 @@
     </div>
   </div>
 
-  <h2>10. Hur mätningarna skyddas mot oss själva</h2>
+  <h2 id="avsnitt-10">10. Hur mätningarna skyddas mot oss själva</h2>
   <ul>
     <li><b>Kraven skrivs först.</b> Tretton tröskeldokument är daterade innan mätningen eller koden de styr. En tröskel får skärpas men aldrig lättas när utfallet är sett.</li>
     <li><b>Blindning.</b> Fram till domen redovisas bara antal. Betans regler döms i januari, kalibreringen görs i kuvösen på vintern 2024/25 och prognoslagret döms i mars.</li>
@@ -1118,7 +1118,7 @@
     <li><b>Grinden lånar grindens vakter.</b> En mätning som lyfts till grind får hela grindens urval, inte bara dess tal. Utan vakterna hade vägpunktsgrinden fallit redan 23/9.</li>
   </ul>
 
-  <h2>11. Domkalendern</h2>
+  <h2 id="avsnitt-11">11. Domkalendern</h2>
   <div class="tabell">
     <table>
       <thead><tr><th>När</th><th>Vad</th></tr></thead>
@@ -1138,6 +1138,65 @@
   <p>Hittills finns inget vinterunderlag. Den 27/9 var 1 av 1 298 stationer kall, förarsvaren och missarna har inga riktiga poster, och kamerafacit har ingen halka. Mätningarna i september prövar metoden. Vintern prövar produkten.</p>
   <hr>
   <p class="litet">Källor: beslutsloggen (DECISIONS), tröskeldokumenten, systembeskrivningen, koden och körningarnas loggar till 1/10. Samma underlag som bilaga 3–8 till Skyltfondsansökan, men sidan är intern och innehåller opublicerade regelvärden. Alla tidpunkter avser 2026 om inget annat står.</p>
+
+<!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
+  <h2 id="oppna-kort">Öppna kort</h2>
+  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 23 av 44 öppna kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
+  <h3><a href="#avsnitt-2">2. Delområdena</a></h3>
+  <ul>
+    <li>#276 OLJA PÅ VÄGEN — HALKA SOM RÖSTEN INTE SÄGER <span class="litet">· Claude, låst</span></li>
+    <li>#90 VIND OCH SIKT — AXELS JA GIVET 12/9, TRÖSKELDOKUMENT SKRIVET <span class="litet">· Claude, låst</span></li>
+    <li>#42 Vattenplaningsvarningen <span class="litet">· Claude, låst</span></li>
+    <li>#46 Rimfrosten — svartis utan nederbörd <span class="litet">· Claude, låst</span></li>
+    <li>#45 Nederbördstypen — regn, snö eller slask? <span class="litet">· Claude, låst</span></li>
+  </ul>
+  <h3><a href="#avsnitt-3">3. Motorn i drift och facitkällorna</a></h3>
+  <ul>
+    <li>#260 BILDFACIT I HELA LANDET — V1, V2, V3 och lagringslarmet <span class="litet">· Claude</span></li>
+    <li>#203 FACIT UTAN ATT STANNA — svaret efter resan, och med rösten under den <span class="litet">· Claude</span></li>
+    <li>#271 TERMISK KARTERING — FACIT MELLAN STATIONERNA <span class="litet">· Claude, låst</span></li>
+    <li>#209 BILDFACITBESLUTET FLYTTAT TILL EFTER FÖRSTA FROSTEN <span class="litet">· Claude, låst</span></li>
+  </ul>
+  <h3><a href="#avsnitt-4">4. Trovärdighet (L1)</a></h3>
+  <ul>
+    <li>#231 PRODUKTIONSREGELNS FALSKLARM PER VÄDERTYP — en rad i bildfacitets läsning <span class="litet">· Claude, låst</span></li>
+    <li>#98 TYSTNADSFELET — mät tystnadens fel, inte larmens träff <span class="litet">· Claude, låst</span></li>
+  </ul>
+  <h3><a href="#avsnitt-5">5. Räckvidd (L4)</a></h3>
+  <ul>
+    <li>#38b Stråket / skuggmotorn — ÅTERSTÄLLT 10/9 <span class="litet">· Claude, låst</span></li>
+    <li>#96 HÖJDPROVET — terrängens första faktor, mäter redan <span class="litet">· Claude, låst</span></li>
+  </ul>
+  <h3><a href="#avsnitt-6">6. Utveckling (L3)</a></h3>
+  <ul>
+    <li>#270 PROGNOSLAGRET EFTER PREMISSMÄTNINGARNA — BENGTS VAL a–h <span class="litet">· Bengt</span></li>
+    <li>#88 TRENDEN — vi mäter var minut men använder bara sista värdet <span class="litet">· Claude, låst</span></li>
+    <li>#89 ÖVERGÅNGARNA mellan faror — regn→frost, torka→första regnet <span class="litet">· Claude, låst</span></li>
+  </ul>
+  <h3><a href="#avsnitt-7">7. Tillstånd (L2)</a></h3>
+  <ul>
+    <li>#151 VÄGLAGETS ÅLDER — ska en stående vinterklassning tystas när mätningarna säger att vintern tagit slut? <span class="litet">· Claude, låst</span></li>
+    <li>#103 FRYSKLASSNINGEN — kan en modell som är opålitlig på grader ändå bära en klass? <span class="litet">· Claude, låst</span></li>
+  </ul>
+  <h3><a href="#avsnitt-8">8. Allvar och röst (L5)</a></h3>
+  <ul>
+    <li>#259 REGLAGET "VARNA PÅ AVSTÅND" LOVAR MER ÄN MOTORN GÖR <span class="litet">· Axel</span></li>
+    <li>#153 ALLVAR SOM FÖRSPRÅNG + ETT SMALARE UNDANTAG — beslut 1 omformulerat 16/9 och väntar, beslut 2 öppet (Bengts) <span class="litet">· Claude, låst</span></li>
+  </ul>
+  <h3><a href="#avsnitt-9">9. Andra mätningar</a></h3>
+  <ul>
+    <li>#232 KUVÖSEN — HELA SYSTEMET BAKÅTPRÖVAT PÅ VINTERN 2024/25 <span class="litet">· Bengt</span></li>
+    <li>#95 Plan B för Trafikverket-beroendet — mät SMHI som reserv <span class="litet">· Claude, låst</span></li>
+  </ul>
+  <h3><a href="#avsnitt-10">10. Hur mätningarna skyddas mot oss själva</a></h3>
+  <ul>
+    <li>#282 REGEL L — FÖRSLAG: ÄNDRING AV EN TRÖSKEL EFTER ATT UTFALLET ÄR SETT <span class="litet">· Bengt</span></li>
+  </ul>
+  <h3><a href="#avsnitt-11">11. Domkalendern</a></h3>
+  <ul>
+    <li>#209 BILDFACITBESLUTET FLYTTAT TILL EFTER FÖRSTA FROSTEN <span class="litet">· Claude, låst</span></li>
+  </ul>
+<!-- /ÖPPNA KORT -->
 </main>
 
 <script>
