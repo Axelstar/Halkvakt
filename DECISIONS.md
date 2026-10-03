@@ -7324,3 +7324,11 @@ rader, mot samma ram vidgad till 62 minuter (där sekunderna inte spelar roll) �
 (3) samma för trendens bredaste startband (yta +1…+6 °C). **Läser bara tidsstämplar och antal:** ingen lutning, ingen yta efter
 något, inget utfall. Mätningen ändrar ingenting; om något ska rättas (t.ex. tidsstämplarna avrundade till halvtimmen i kuvösens
 översättning) är det ett eget beslut.
+
+**Utfallet (kuvos 37150889692, 3/10):**
+- Sekunderna: 99,6 % av raderna har sekund 03, och 298 av 736 stationer har samma sekund varje gång.
+- 60-minutersramen tappar **21 519 av 5 256 028 rader, 0,4 %**. Inom trendens startband är det 7 277 av 1 622 826, också 0,4 %.
+- 30-minutersramen har tre rader i **0** rader av 5,26 miljoner.
+
+**Slutsats:** sekunderna saknar betydelse, och inget rättas. Problemet är upplösningen (en rad per halvtimme räcker inte för ett fönster
+på 30 minuter), inte tidsstämplarna. Frågan i PLAN-KUVOSEN §10 punkt 3 gäller därför bara 30-minutersfönstret.

@@ -211,8 +211,9 @@ att välja något. Valen ska göras före riktningsprovet och skrivas in som til
    och episoder men döms inte på egen yta. Alternativet är ett eget fönster, till exempel 90 min med träff vid yta ≤ 0 °C, men det vore ett
    nytt tal som ingen skrivit före.
 3. **Halvtimmesdatan räcker inte för betans 30-minutersfönster.** Leveransen har en rad per station och halvtimme. Lutningen kräver
-   minst tre rader i fönstret (`sql/018`), så `lutning30` blir alltid tom och även 60-minutersfönstret beror på sekunderna i
-   tidsstämplarna. Betans startvärde är *fall ≥ 0,8 °C på 30 min* (#222).
+   minst tre rader i fönstret (`sql/018`), så `lutning30` blir alltid tom. Betans startvärde är *fall ≥ 0,8 °C på 30 min* (#222).
+   **Mätt 3/10 (#454):** 30-minutersramen har tre rader i 0 av 5,26 miljoner rader. 60-minutersramen tappar bara 0,4 % på
+   sekunderna i tidsstämplarna (99,6 % har sekund 03), så 60-minutersvägen bär.
    - **Följden:** efterhalkan kan inte spelas upp med sina startvärden i kuvösen ens när regnmängden kommer. Kalibreringen, som flyttades
      till kuvösen (#425, #428), kan bara välja bland 60-minutersvarianter.
    - Förslag: inget ändras nu, eftersom efterhalkan ändå väntar på regnmängden. Bengt och Axel avgör innan Trafikverket svarar om
