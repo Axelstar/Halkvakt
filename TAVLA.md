@@ -833,6 +833,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 - [ ] 🧭 ↩︎ **#38b Stråket / skuggmotorn — ÅTERSTÄLLT 10/9** (föll av tavlan 8/9 20:43 i commit
   99473c7; #88, #91 och #95 hänvisar hit). Bengts byggplan v3 (31/8): segmentmotorn i november, i
   strikt skugga, dom i mars. Sekvensering mot lanseringen = Axels beslut.
+  **Verify (kortgenomgången 3/10, DECISIONS #451):** grind B och C fällda i mars 2027 med `publish/grind-s-b.ts` i domläget
+  enligt docs/TROSKLAR-SKUGGAN.md (B1 ≤ 20 %, B2 ≤ 30 %, B3 ≥ 25 %; C1 ≥ 20 facit i ≥ 3 halkperioder, C2 ≥ 30, C3) och
+  domen bokförd i DECISIONS.
   - [x] ~~(1) Tröskeldokumentet~~ ✅ 1/9 (DECISIONS #52): docs/TROSKLAR-SKUGGAN.md, grind A/B/C.
   - [x] ~~(2) Ankarklippningen~~ ✅ 1/9 (DECISIONS #55): kamerorna ger ingen ny ankartäthet
     (738/744 står vid en VViS); Norrland 9,2 km / 12,6 % oförändrat. Knappen ankaranalys.yml.
