@@ -727,6 +727,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **SERVERN I DRIFT 26/9 07:00Z** (DECISIONS #380): migrationen sql/038 via dbknapp 36225368861 (tabellen finns, RLS på, anon utan SELECT och INSERT), deploy av `facit-svar` 36225396540 från main, provmiss mot den riktiga funktionen ⇒ 204 och en rad med `prov = true` (dbknapp 36225453047; 0 riktiga), två felaktiga missar ⇒ 400, och ett provsvar på den gamla vägen ⇒ fortfarande 204.
 
 ### Claude — låst (väntar på nyckel)
+- [ ] 🔒 **#288 KARTSYNKEN — PROJEKTKARTAN UPPDATERAR SIG SJÄLV** (Bengt 3/10: *"det måste finnas ett automatiserat sätt att uppdatera"*, efter att 0.3.10 (22) släppts utan att kartan märkte det). Förslaget i `docs/KARTSYNKEN-FORSLAG-2026-10-03.md`: (1) signalerna i Supabase — edge function `byggsignaler` på pg_cron varje timme läser App Store Connect API (byggen, granskning, installationer och sessioner per bygge, testare), GitHub (körningar och versioner på main) och `driver_facit`; (2) reglerna — byggsteg i `projektkartan.json` får en `regel` och bockas ur signalerna; (3) kartsynken — schemalagd uppgift i Claude-appen morgon och kväll plus första steget i varje session: skriver om kartan, slår ihop och republicerar. 2–3 arbetsdagar. 🔑 Bengts ja (§4.2), Bengts ja till sammanslagning utan "slå ihop" för kartsynkens rena kart-PR:er, och Axels API-nyckel till App Store Connect (Issuer ID, Key ID, `.p8`). Verify: Axel laddar upp ett bygge, och kartans steg *I ett iPhone-bygge* blir klart med App Store Connects tidpunkt utan att någon skrivit något.
 - [ ] 🔒 **#285 iCLOUD-KOPIAN BÄR UNGEFÄR VAR OCH NÄR** (upptäckt 2/10 kväll när *spara en rutt* utreddes, kort #233). På iPhone ligger `history`, `facit` och `missar` i `UserDefaults.standard` (`SpeechService.swift`, klassen `Prefs`), och den följer med i iCloud- och datorkopian. Varningarnas id, närmaste station och klockslag säger ungefär var och när föraren körde. Inget skickas till Halkvakt, men det lämnar telefonen i förarens egen kopia. Android har `allowBackup="false"`, men flytten vid byte av telefon omfattas inte av den på Android 12+. 🔑 Axels beslut: är det förenligt med *ingen position lämnar telefonen av sig själv*, eller ska de flyttas till en fil som undantas? Verify: beslutet i DECISIONS, och vid flytt ett test som visar att filen är undantagen.
 - [ ] 👥 **#278 BETAN: BÅDA VÄRDEPAREN I SKUGGAN, ETT HÖRS** (Bengts fråga och beslut 1/10, DECISIONS #427). Efterhalkans regel följs
   vintern 2026/27 med två värdepar på samma nätter — startvärdena från 16/9 och kuvösens kalibrerade värden (#425) — så att det syns var
@@ -1924,7 +1925,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟡 GÖRA (pågår just nu)
 
-- [ ] 🔨 **#284 APPENS NYA SKINN — DESIGNÖVERLÄMNINGEN V2 (BYGGT OCH PROVAT I SIMULATORN — Claude, Axels order 2/10 18:46; DECISIONS #443, #444, PR #698; iOS 0.3.10 (22), Android 0.3.10 (22))**:
+- [ ] 🔨 **#284 APPENS NYA SKINN — DESIGNÖVERLÄMNINGEN V2 (BYGGT, SLÄPPT AV AXEL 3/10 — Claude, Axels order 2/10 18:46; DECISIONS #443, #444, PR #698; iOS 0.3.10 (22), Android 0.3.10 (22))**:
   varningskorten A–L med lägesetikett, vägskylt, gränsskylt och rådruta; gammal data M–N; Redo efter tur; På vakt; inställningar i
   två nivåer; introduktionen (iOS); sex ikoner; logotypen med "!"; 3D-socklarna renderade ur designens CSS. iOS och Android lika,
   Androids "Uppfattat" och källrad borta. Rösten oförändrad.
@@ -1935,8 +1936,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ (5) produktboken och `docs/APPEN.html` omskrivna.
   ✅ (6) **iOS byggt i Axels Xcode 2/10 23:16 och provat i simulatorn (iPhone 16e, iOS 26.1): "It works as intended"** (Axel). Första
   starten fastnade på Xcodes debugger ("Waiting to attach") — appen öppnad från hemskärmen. Byggnumret höjt till 0.3.10 (22) på båda.
-  **Kvar:** (a) iOS-skärmbilderna till produktboken; kort F, G, H ses först vid en riktig allvarlig olycka · (b) artefakten *Halkvaktens app* republiceras ur `docs/APPEN.html` från
-  ägarens konto (Bengts; den här sessionen når den inte) — STOMREGELN · (c) Androids introduktion i fyra sidor är inte byggd (Android
+  ✅ (7) **0.3.10 (22) släppt av Axel 3/10** (Bengts besked); projektkartan bokförd samma dag: olycksläget (A3) grönt, iPhone-bygget
+  klart för iPhone-appen och för rösten och varningskorten. Ingen har ännu bokfört (22) sedd på en telefon.
+  **Kvar:** (a) iOS-skärmbilderna till produktboken; kort F, G, H ses först vid en riktig allvarlig olycka · ~~(b) artefakten *Halkvaktens app* republiceras ur `docs/APPEN.html` från
+  ägarens konto~~ ✅ republicerad 3/10 ur repokopian (PR #703 och detta varv) · (c) Androids introduktion i fyra sidor är inte byggd (Android
   har trappan i MainActivity; designen förutsätter iOS dialoger) · (d) Kort #219/#280: byggnumret höjs i samma commit som sista
   ändringen före arkivering. **Verify:** ett iOS-bygge visar kort F/G/H vid en allvarlig olycka och kvittot på Redo efter en tur.
 

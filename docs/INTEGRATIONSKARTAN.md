@@ -84,7 +84,7 @@ L2 + L3 stänger det hålet. Det är den enskilt största vinsten som finns att 
 - [Trafikverkets olyckor, djur och hinder](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-situation): klar
 - [Publiceringen var tionde minut](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-l-publicera): klar
 - [Motorn i tre språk](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-motorn): delvis, 92 % · kvar: Swifts och Kotlins läsare av lägesfilen (SnapshotRepo.swift, SnapshotRepo.kt) körs inte mot engine/fixtures/lasarprov.json; appmålen saknar testmål
-- [Olyckor (A3), med olycksläget](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-olyckor): delvis, 92 % · kvar: Olycksläget på varningskortet ute hos testarna: iOS 0.3.10 (22) bara provat i simulatorn, inte uppladdat
+- [Olyckor (A3), med olycksläget](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-olyckor): klar
 - [Rapporterad halka (A1)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-halka): klar
 - [Frysrisk vid stationer och broar (A2)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-frysrisk): klar
 - [Djur på vägen (A4)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-vilt): klar
