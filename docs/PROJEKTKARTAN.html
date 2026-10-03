@@ -114,9 +114,17 @@
 
   .varning { border: 1px solid var(--linje); border-radius: 6px; padding: 12px 16px; display: grid; gap: 6px; }
   ul { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
-  .delar-block { display: grid; gap: 14px; }
-  .del { border-top: 1px solid var(--linje); padding-top: 12px; display: grid; gap: 6px; scroll-margin-top: 16px; }
-  .del-rubrik { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: baseline; }
+  .delar-block { display: grid; gap: 0; }
+  .block-rubrik { margin: 14px 0 4px; }
+  .del { border-top: 1px solid var(--linje); scroll-margin-top: 16px; }
+  .del > summary { display: flex; gap: 10px; align-items: baseline; padding: 6px 2px; cursor: pointer; list-style: none;
+                   font: 500 14.5px/1.35 "Instrument Sans", Arial, sans-serif; color: var(--black); }
+  .del > summary::-webkit-details-marker { display: none; }
+  .del > summary::before { content: "▸"; color: var(--dampad); flex: none; }
+  .del[open] > summary::before { content: "▾"; }
+  .del-namn { flex: 1; min-width: 0; }
+  .del-pct { flex: none; width: 3.2em; text-align: right; color: var(--dampad); font-variant-numeric: tabular-nums; }
+  .del[open] > .rad { padding: 4px 2px 12px 1.4em; }
   .rad { display: grid; grid-template-columns: 9.5em minmax(0, 1fr); gap: 2px 12px; font-size: 15px; margin: 0; }
   .rad > dt { color: var(--dampad); font: 600 13px/1.6 "Instrument Sans", Arial, sans-serif; }
   .rad > dd { margin: 0; min-width: 0; }
@@ -446,342 +454,334 @@
   <h2 id="byggordningen">Byggordningen</h2>
   <p class="litet">Ingen klar eller påbörjad del beror på något som inte är påbörjat.</p>
 
-  <h2 id="delarna">Delarna, en i taget</h2>
+  <h2 id="delarna">Alla delar</h2>
+  <p class="litet">En rad per del, ordnade efter block. Klicka på en rad för att se bevis, vad som saknas, beroenden, kort och var delen beskrivs.</p>
   <section class="delar-block" aria-labelledby="block-kallor">
-  <h2 id="block-kallor">Källorna</h2>
-  <p class="litet">Det Halkvakt läser: Trafikverket, SMHI, radarn och grannländerna.</p>
-  <article class="del" id="del-k-vader">
-    <div class="del-rubrik"><h3>Trafikverkets väderstationer</h3><span class="chip gron">Klar</span></div>
+  <h3 id="block-kallor" class="block-rubrik">Källorna <span class="litet">· 63 % klart</span></h3>
+  <details class="del" id="del-k-vader">
+    <summary><span class="del-namn">Trafikverkets väderstationer</span><span class="chip gron">Klar</span><span class="del-pct">100 %</span></summary>
     <dl class="rad"><dt>Bevis</dt><dd>Livemotorn hämtar dem varje minut, vakthunden larmar efter 15 minuter (DECISIONS #19, #22).</dd><dt>Levererar till</dt><dd><a class="ref gron" href="#del-i-livemotorn">Livemotorn (hämtning varje minut)</a>, <a class="ref gron" href="#del-m-frysrisk">Frysrisk vid stationer och broar (A2)</a>, <a class="ref orange" href="#del-m-vind-sikt">Vind och sikt</a></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/6hHX4LeXQUrJSbaNthNY9i#avsnitt-1">Halkvaktens systembild §1 Motorn i dag</a></li><li>Integrationskartan §4 Motorn som den faktiskt ser ut i dag <span class="mono">docs/INTEGRATIONSKARTAN.md</span></li><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-1">Halkvaktens mätningar §1 Datan som samlas in</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-k-vaglag">
-    <div class="del-rubrik"><h3>Trafikverkets väglag (RoadCondition)</h3><span class="chip gron">Klar</span></div>
+  </details>
+  <details class="del" id="del-k-vaglag">
+    <summary><span class="del-namn">Trafikverkets väglag (RoadCondition)</span><span class="chip gron">Klar</span><span class="del-pct">100 %</span></summary>
     <dl class="rad"><dt>Bevis</dt><dd>Livemotorn varje minut, samma vakthund (DECISIONS #22).</dd><dt>Levererar till</dt><dd><a class="ref gron" href="#del-i-livemotorn">Livemotorn (hämtning varje minut)</a>, <a class="ref gron" href="#del-m-halka">Rapporterad halka (A1)</a>, <a class="ref bla" href="#del-m-vaglagets-alder">Väglagets ålder</a></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/6hHX4LeXQUrJSbaNthNY9i#avsnitt-1">Halkvaktens systembild §1 Motorn i dag</a></li><li>Integrationskartan §4 Motorn som den faktiskt ser ut i dag <span class="mono">docs/INTEGRATIONSKARTAN.md</span></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-k-situation">
-    <div class="del-rubrik"><h3>Trafikverkets olyckor, djur och hinder</h3><span class="chip gron">Klar</span></div>
+  </details>
+  <details class="del" id="del-k-situation">
+    <summary><span class="del-namn">Trafikverkets olyckor, djur och hinder</span><span class="chip gron">Klar</span><span class="del-pct">100 %</span></summary>
     <dl class="rad"><dt>Bevis</dt><dd>Olyckor och djur live sedan 22/9 (DECISIONS #318); hinder och kömeddelanden till arkivet.</dd><dt>Levererar till</dt><dd><a class="ref gron" href="#del-i-livemotorn">Livemotorn (hämtning varje minut)</a>, <a class="ref gron" href="#del-m-olyckor">Olyckor (A3), med olycksläget</a>, <a class="ref gron" href="#del-m-vilt">Djur på vägen (A4)</a>, <a class="ref orange" href="#del-m-olja">Olja på vägen</a></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/6hHX4LeXQUrJSbaNthNY9i#avsnitt-1">Halkvaktens systembild §1 Motorn i dag</a></li><li>Integrationskartan §4 Motorn som den faktiskt ser ut i dag <span class="mono">docs/INTEGRATIONSKARTAN.md</span></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-k-kameror">
-    <div class="del-rubrik"><h3>Trafikverkets kameror</h3><span class="chip gron">Klar</span></div>
+  </details>
+  <details class="del" id="del-k-kameror">
+    <summary><span class="del-namn">Trafikverkets kameror</span><span class="chip gron">Klar</span><span class="del-pct">100 %</span></summary>
     <dl class="rad"><dt>Bevis</dt><dd>Fartkamerorna i appens fasta fil; väglagskamerornas bilder i kamerafacit.</dd><dt>Levererar till</dt><dd><a class="ref gron" href="#del-m-kameror">Fartkameror (A5)</a>, <a class="ref bla" href="#del-p-kamerafacit">Kamerafacit i hela landet</a></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/6hHX4LeXQUrJSbaNthNY9i#avsnitt-1">Halkvaktens systembild §1 Motorn i dag</a></li><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-3">Halkvaktens mätningar §3 Motorn i drift och facitkällorna</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-k-vagarbeten">
-    <div class="del-rubrik"><h3>Vägarbeten, hastighet och omledningar</h3><span class="chip rod">Ej påbörjad</span></div>
+  </details>
+  <details class="del" id="del-k-vagarbeten">
+    <summary><span class="del-namn">Vägarbeten, hastighet och omledningar</span><span class="chip rod">Ej påbörjad</span><span class="del-pct">10 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>10 %</dd><dt>Saknas</dt><dd><ul><li>Kommer med i livemotorns svar men kastas; ingen tabell och ingen fil bär dem</li><li>En smal variant i rösten prövas våren 2027 (Ä3)</li></ul></dd><dt>Levererar till</dt><dd><a class="ref rod" href="#del-f-rapportfil">Rapportfilen på servern</a></dd><dt>Beslut</dt><dd>DECISIONS #420, #442</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT#avsnitt-7">Halkvaktens favoriter §7 Var informationen kommer ifrån, och vad som måste byggas</a></li><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-10">Halkvaktens app §10 Vad appen inte gör</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-k-restider">
-    <div class="del-rubrik"><h3>Köer och restider (TravelTimeRoute, TrafficFlow)</h3><span class="chip rod">Ej påbörjad</span></div>
+  </details>
+  <details class="del" id="del-k-restider">
+    <summary><span class="del-namn">Köer och restider (TravelTimeRoute, TrafficFlow)</span><span class="chip rod">Ej påbörjad</span><span class="del-pct">5 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>5 %</dd><dt>Saknas</dt><dd><ul><li>Ingen hämtning; nästan bara Stockholm (191 av 198 sträckor)</li></ul></dd><dt>Levererar till</dt><dd><a class="ref rod" href="#del-f-rapportfil">Rapportfilen på servern</a></dd><dt>Beslut</dt><dd>DECISIONS #442</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT#avsnitt-7">Halkvaktens favoriter §7 Var informationen kommer ifrån, och vad som måste byggas</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-k-farjor">
-    <div class="del-rubrik"><h3>Vägfärjorna (FerryAnnouncement)</h3><span class="chip rod">Ej påbörjad</span></div>
+  </details>
+  <details class="del" id="del-k-farjor">
+    <summary><span class="del-namn">Vägfärjorna (FerryAnnouncement)</span><span class="chip rod">Ej påbörjad</span><span class="del-pct">5 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>5 %</dd><dt>Saknas</dt><dd><ul><li>Ingen hämtning; frågan måste begränsas i tid (taket 20 000 avgångar)</li></ul></dd><dt>Levererar till</dt><dd><a class="ref rod" href="#del-f-rapportfil">Rapportfilen på servern</a></dd><dt>Beslut</dt><dd>DECISIONS #442</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT#avsnitt-7">Halkvaktens favoriter §7 Var informationen kommer ifrån, och vad som måste byggas</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-k-smhi-varningar">
-    <div class="del-rubrik"><h3>SMHI:s varningar</h3><span class="chip gron">Klar</span></div>
+  </details>
+  <details class="del" id="del-k-smhi-varningar">
+    <summary><span class="del-namn">SMHI:s varningar</span><span class="chip gron">Klar</span><span class="del-pct">100 %</span></summary>
     <dl class="rad"><dt>Bevis</dt><dd>Hämtas en gång i timmen och ligger i lägesfilen (snö, is, kyla, vind).</dd><dt>Levererar till</dt><dd><a class="ref rod" href="#del-m-smhi-forstarkare">SMHI som förstärkare och reserv</a></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT#avsnitt-7">Halkvaktens favoriter §7 Var informationen kommer ifrån, och vad som måste byggas</a></li><li>Integrationskartan §5 Fogarna — var en skuggdel kan greppa, och vad den kostar <span class="mono">docs/INTEGRATIONSKARTAN.md</span></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-k-smhi-obs">
-    <div class="del-rubrik"><h3>SMHI:s observationer (moln, sikt)</h3><span class="chip orange">Delvis</span></div>
+  </details>
+  <details class="del" id="del-k-smhi-obs">
+    <summary><span class="del-namn">SMHI:s observationer (moln, sikt)</span><span class="chip orange">Delvis</span><span class="del-pct">50 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>50 %</dd><dt>Saknas</dt><dd><ul><li>Hämtade för kuvösens vinter 2024/25; ingen löpande hämtning för driften</li><li>Molnmängden behövs för #88:s dom (DECISIONS #114)</li></ul></dd><dt>Levererar till</dt><dd><a class="ref orange" href="#del-m-trenden">L3 trenden</a>, <a class="ref rod" href="#del-m-smhi-forstarkare">SMHI som förstärkare och reserv</a>, <a class="ref orange" href="#del-p-kuvosen">Kuvösen</a></dd><dt>Kort</dt><dd><ul><li>#95 Plan B för Trafikverket-beroendet — mät SMHI som reserv <span class="litet">· Claude, låst</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #441</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/1xvv4hydYbfpF5eXFgLcxh#avsnitt-3">Halkvaktens kuvös §3 Hur den fungerar</a></li><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-9">Halkvaktens mätningar §9 Andra mätningar</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-k-radar">
-    <div class="del-rubrik"><h3>SMHI:s nederbördsradar</h3><span class="chip orange">Delvis</span></div>
+  </details>
+  <details class="del" id="del-k-radar">
+    <summary><span class="del-namn">SMHI:s nederbördsradar</span><span class="chip orange">Delvis</span><span class="del-pct">60 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>60 %</dd><dt>Saknas</dt><dd><ul><li>Publicerad per segment sedan 15/9 men oläst av motorn</li><li>Radarn per station finns inte i lägesfilen</li></ul></dd><dt>Levererar till</dt><dd><a class="ref rod" href="#del-m-nederbord">Nederbördstypen (snö, slask)</a>, <a class="ref orange" href="#del-m-vattenplaning">Vattenplaningen</a></dd><dt>Kort</dt><dd><ul><li>#42 Vattenplaningsvarningen <span class="litet">· Claude, låst</span></li><li>#45 Nederbördstypen — regn, snö eller slask? <span class="litet">· Claude, låst</span></li></ul></dd><dt>Beskrivs i</dt><dd><ul><li>Integrationskartan §5 Fogarna — var en skuggdel kan greppa, och vad den kostar <span class="mono">docs/INTEGRATIONSKARTAN.md</span></li><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-2">Halkvaktens mätningar §2 Delområdena</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-k-grannar">
-    <div class="del-rubrik"><h3>Grannländernas stationer (FI, NO, DK)</h3><span class="chip orange">Delvis</span></div>
+  </details>
+  <details class="del" id="del-k-grannar">
+    <summary><span class="del-namn">Grannländernas stationer (FI, NO, DK)</span><span class="chip orange">Delvis</span><span class="del-pct">60 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>60 %</dd><dt>Saknas</dt><dd><ul><li>Läget inte mätt i den grova versionen</li></ul></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-1">Halkvaktens mätningar §1 Datan som samlas in</a></li></ul></dd></dl>
-  </article>
+  </details>
   </section>
   <section class="delar-block" aria-labelledby="block-insamling">
-  <h2 id="block-insamling">Insamling och arkiv</h2>
-  <p class="litet">Hämtningen varje minut, arkivet och vakterna som håller datan ren.</p>
-  <article class="del" id="del-i-livemotorn">
-    <div class="del-rubrik"><h3>Livemotorn (hämtning varje minut)</h3><span class="chip gron">Klar</span></div>
+  <h3 id="block-insamling" class="block-rubrik">Insamling och arkiv <span class="litet">· 95 % klart</span></h3>
+  <details class="del" id="del-i-livemotorn">
+    <summary><span class="del-namn">Livemotorn (hämtning varje minut)</span><span class="chip gron">Klar</span><span class="del-pct">100 %</span></summary>
     <dl class="rad"><dt>Bevis</dt><dd>pg_cron i Supabase varje minut, nyckelskyddad, vakthunden på kursorerna (DECISIONS #19, #22, #72, #80).</dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-k-vader">Trafikverkets väderstationer</a>, <a class="ref gron" href="#del-k-vaglag">Trafikverkets väglag (RoadCondition)</a>, <a class="ref gron" href="#del-k-situation">Trafikverkets olyckor, djur och hinder</a></dd><dt>Levererar till</dt><dd><a class="ref gron" href="#del-i-arkivet">Arkivet</a>, <a class="ref gron" href="#del-l-publicera">Publiceringen var tionde minut</a></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/6hHX4LeXQUrJSbaNthNY9i#avsnitt-1">Halkvaktens systembild §1 Motorn i dag</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-i-arkivet">
-    <div class="del-rubrik"><h3>Arkivet</h3><span class="chip gron">Klar</span></div>
+  </details>
+  <details class="del" id="del-i-arkivet">
+    <summary><span class="del-namn">Arkivet</span><span class="chip gron">Klar</span><span class="del-pct">100 %</span></summary>
     <dl class="rad"><dt>Bevis</dt><dd>Väder- och situationsarkivet fylls av livemotorn; gallringen kör 03:15 (sql/014).</dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-i-livemotorn">Livemotorn (hämtning varje minut)</a></dd><dt>Levererar till</dt><dd><a class="ref orange" href="#del-i-export">Arkivexporten och säkerhetskopian</a>, <a class="ref gron" href="#del-i-vakterna">Datavakterna (givarvakten, radvakten, karantänen)</a>, <a class="ref orange" href="#del-m-tillstand">L2 tillståndet (skattaren S1–S3)</a>, <a class="ref orange" href="#del-m-trenden">L3 trenden</a>, <a class="ref orange" href="#del-m-hojd">Höjden i terrängen</a>, <a class="ref orange" href="#del-m-segmentprognos">L4 räckvidden: segmentprognosen</a>, <a class="ref orange" href="#del-m-tystnadsfel">Tystnadsfelet</a>, <a class="ref orange" href="#del-p-grindarna">Grindarna och domkalendern</a></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-1">Halkvaktens mätningar §1 Datan som samlas in</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-i-export">
-    <div class="del-rubrik"><h3>Arkivexporten och säkerhetskopian</h3><span class="chip orange">Delvis</span></div>
+  </details>
+  <details class="del" id="del-i-export">
+    <summary><span class="del-namn">Arkivexporten och säkerhetskopian</span><span class="chip orange">Delvis</span><span class="del-pct">80 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>80 %</dd><dt>Saknas</dt><dd><ul><li>Återläsningen för marsdomarna, när raderingen har börjat</li></ul></dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-i-arkivet">Arkivet</a></dd><dt>Beslut</dt><dd>DECISIONS #334</dd><dt>Beskrivs i</dt><dd><ul><li>Bedömningen §5 Integrationsläget — mätt mot kartan (24/9, Bengts fråga &quot;hur långt i integrationen har vi kommit&quot;) <span class="mono">docs/BEDOMNING-2026-09-15.md</span></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-i-vakterna">
-    <div class="del-rubrik"><h3>Datavakterna (givarvakten, radvakten, karantänen)</h3><span class="chip gron">Klar</span></div>
+  </details>
+  <details class="del" id="del-i-vakterna">
+    <summary><span class="del-namn">Datavakterna (givarvakten, radvakten, karantänen)</span><span class="chip gron">Klar</span><span class="del-pct">100 %</span></summary>
     <dl class="rad"><dt>Bevis</dt><dd>I drift sedan 22/9 (DECISIONS #298, #300).</dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-i-arkivet">Arkivet</a></dd><dt>Levererar till</dt><dd><a class="ref gron" href="#del-l-publicera">Publiceringen var tionde minut</a>, <a class="ref gron" href="#del-m-frysrisk">Frysrisk vid stationer och broar (A2)</a></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-10">Halkvaktens mätningar §10 Hur mätningarna skyddas mot oss själva</a></li><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-4">Halkvaktens mätningar §4 Trovärdighet (L1)</a></li></ul></dd></dl>
-  </article>
+  </details>
   </section>
   <section class="delar-block" aria-labelledby="block-lagesfilen">
-  <h2 id="block-lagesfilen">Lägesfilen</h2>
-  <p class="litet">Det appen hämtar: publiceringen var tionde minut och kartsajten.</p>
-  <article class="del" id="del-l-publicera">
-    <div class="del-rubrik"><h3>Publiceringen var tionde minut</h3><span class="chip gron">Klar</span></div>
+  <h3 id="block-lagesfilen" class="block-rubrik">Lägesfilen <span class="litet">· 90 % klart</span></h3>
+  <details class="del" id="del-l-publicera">
+    <summary><span class="del-namn">Publiceringen var tionde minut</span><span class="chip gron">Klar</span><span class="del-pct">100 %</span></summary>
     <dl class="rad"><dt>Bevis</dt><dd>Edge-funktionen publicera, den enda skrivaren av appens filer; appen kontrollerar manifestets kontrollsumma (DECISIONS #72, #74).</dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-i-livemotorn">Livemotorn (hämtning varje minut)</a>, <a class="ref gron" href="#del-i-vakterna">Datavakterna (givarvakten, radvakten, karantänen)</a></dd><dt>Levererar till</dt><dd><a class="ref orange" href="#del-l-falten">Lägesfilens fält för skuggdelarna</a>, <a class="ref gron" href="#del-l-kartan">Kartsajten</a>, <a class="ref gron" href="#del-p-skuggmotorn">Skuggmotorn</a>, <a class="ref orange" href="#del-a-ios">iPhone-appen</a>, <a class="ref orange" href="#del-a-android">Android-appen</a>, <a class="ref orange" href="#del-a-omladdning">Omladdningen under resan (iPhone)</a>, <a class="ref rod" href="#del-f-rapportfil">Rapportfilen på servern</a></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/6hHX4LeXQUrJSbaNthNY9i#avsnitt-1">Halkvaktens systembild §1 Motorn i dag</a></li><li>Integrationskartan §4 Motorn som den faktiskt ser ut i dag <span class="mono">docs/INTEGRATIONSKARTAN.md</span></li><li><a href="https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT#avsnitt-4">Halkvaktens favoriter §4 Tio minuter före: så färskt det kan bli</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-l-falten">
-    <div class="del-rubrik"><h3>Lägesfilens fält för skuggdelarna</h3><span class="chip orange">Delvis</span></div>
+  </details>
+  <details class="del" id="del-l-falten">
+    <summary><span class="del-namn">Lägesfilens fält för skuggdelarna</span><span class="chip orange">Delvis</span><span class="del-pct">70 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>70 %</dd><dt>Saknas</dt><dd><ul><li>Bevisbäraren byggd 24/9 (DECISIONS #342), men flera publicerade fält läses inte av motorn (integrationskartan §5.2)</li></ul></dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-l-publicera">Publiceringen var tionde minut</a></dd><dt>Levererar till</dt><dd><a class="ref orange" href="#del-m-tillstand">L2 tillståndet (skattaren S1–S3)</a></dd><dt>Beslut</dt><dd>DECISIONS #342</dd><dt>Beskrivs i</dt><dd><ul><li>Integrationskartan §5 Fogarna — var en skuggdel kan greppa, och vad den kostar <span class="mono">docs/INTEGRATIONSKARTAN.md</span></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-l-kartan">
-    <div class="del-rubrik"><h3>Kartsajten</h3><span class="chip gron">Klar</span></div>
+  </details>
+  <details class="del" id="del-l-kartan">
+    <summary><span class="del-namn">Kartsajten</span><span class="chip gron">Klar</span><span class="del-pct">100 %</span></summary>
     <dl class="rad"><dt>Bevis</dt><dd>Publiceras var 30:e minut från samma funktion (DECISIONS #77).</dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-l-publicera">Publiceringen var tionde minut</a></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/6hHX4LeXQUrJSbaNthNY9i#avsnitt-1">Halkvaktens systembild §1 Motorn i dag</a></li></ul></dd></dl>
-  </article>
+  </details>
   </section>
   <section class="delar-block" aria-labelledby="block-motorn">
-  <h2 id="block-motorn">Motorn</h2>
-  <p class="litet">De fem farslagen i drift, och lagren L1–L5 med delarna som prövas.</p>
-  <article class="del" id="del-m-motorn">
-    <div class="del-rubrik"><h3>Motorn i tre språk</h3><span class="chip gron">Klar</span></div>
+  <h3 id="block-motorn" class="block-rubrik">Motorn <span class="litet">· 53 % klart</span></h3>
+  <details class="del" id="del-m-motorn">
+    <summary><span class="del-namn">Motorn i tre språk</span><span class="chip gron">Klar</span><span class="del-pct">100 %</span></summary>
     <dl class="rad"><dt>Bevis</dt><dd>37 testfall i engine/vectors som TypeScript, Swift och Kotlin klarar likadant; ci, ios-engine och android gröna.</dd><dt>Levererar till</dt><dd><a class="ref gron" href="#del-m-olyckor">Olyckor (A3), med olycksläget</a>, <a class="ref gron" href="#del-m-halka">Rapporterad halka (A1)</a>, <a class="ref gron" href="#del-m-frysrisk">Frysrisk vid stationer och broar (A2)</a>, <a class="ref gron" href="#del-m-vilt">Djur på vägen (A4)</a>, <a class="ref gron" href="#del-m-kameror">Fartkameror (A5)</a>, <a class="ref orange" href="#del-m-forsprang">L5 allvar som försprång</a>, <a class="ref gron" href="#del-p-skuggmotorn">Skuggmotorn</a>, <a class="ref orange" href="#del-a-ios">iPhone-appen</a>, <a class="ref orange" href="#del-a-android">Android-appen</a>, <a class="ref gron" href="#del-a-rosten">Rösten och varningskorten</a>, <a class="ref bla" href="#del-a-reglaget">Reglaget för förvarningen</a>, <a class="ref rod" href="#del-f-ruttfilter">Jämförelsen mot rutten i Swift och Kotlin</a></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/6hHX4LeXQUrJSbaNthNY9i#avsnitt-1">Halkvaktens systembild §1 Motorn i dag</a></li><li>Integrationskartan §4 Motorn som den faktiskt ser ut i dag <span class="mono">docs/INTEGRATIONSKARTAN.md</span></li><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-2">Halkvaktens app §2 En körning</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-m-olyckor">
-    <div class="del-rubrik"><h3>Olyckor (A3), med olycksläget</h3><span class="chip gron">Klar</span></div>
+  </details>
+  <details class="del" id="del-m-olyckor">
+    <summary><span class="del-namn">Olyckor (A3), med olycksläget</span><span class="chip gron">Klar</span><span class="del-pct">100 %</span></summary>
     <dl class="rad"><dt>Bevis</dt><dd>I drift; olycksläget tidigt och påminnelse byggt 2/10 (DECISIONS #443).</dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-m-motorn">Motorn i tre språk</a>, <a class="ref gron" href="#del-k-situation">Trafikverkets olyckor, djur och hinder</a></dd><dt>Beslut</dt><dd>DECISIONS #443</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-3">Halkvaktens app §3 Exakt vad rösten säger</a></li><li>Integrationskartan §4 Motorn som den faktiskt ser ut i dag <span class="mono">docs/INTEGRATIONSKARTAN.md</span></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-m-halka">
-    <div class="del-rubrik"><h3>Rapporterad halka (A1)</h3><span class="chip gron">Klar</span></div>
+  </details>
+  <details class="del" id="del-m-halka">
+    <summary><span class="del-namn">Rapporterad halka (A1)</span><span class="chip gron">Klar</span><span class="del-pct">100 %</span></summary>
     <dl class="rad"><dt>Bevis</dt><dd>I drift, testfallen i engine/vectors.</dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-m-motorn">Motorn i tre språk</a>, <a class="ref gron" href="#del-k-vaglag">Trafikverkets väglag (RoadCondition)</a></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-3">Halkvaktens app §3 Exakt vad rösten säger</a></li><li>Integrationskartan §4 Motorn som den faktiskt ser ut i dag <span class="mono">docs/INTEGRATIONSKARTAN.md</span></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-m-frysrisk">
-    <div class="del-rubrik"><h3>Frysrisk vid stationer och broar (A2)</h3><span class="chip gron">Klar</span></div>
+  </details>
+  <details class="del" id="del-m-frysrisk">
+    <summary><span class="del-namn">Frysrisk vid stationer och broar (A2)</span><span class="chip gron">Klar</span><span class="del-pct">100 %</span></summary>
     <dl class="rad"><dt>Bevis</dt><dd>I drift, testfallen i engine/vectors.</dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-m-motorn">Motorn i tre språk</a>, <a class="ref gron" href="#del-k-vader">Trafikverkets väderstationer</a>, <a class="ref gron" href="#del-i-vakterna">Datavakterna (givarvakten, radvakten, karantänen)</a></dd><dt>Levererar till</dt><dd><a class="ref orange" href="#del-m-rimfrost">Rimfrosten</a></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-3">Halkvaktens app §3 Exakt vad rösten säger</a></li><li>Integrationskartan §4 Motorn som den faktiskt ser ut i dag <span class="mono">docs/INTEGRATIONSKARTAN.md</span></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-m-vilt">
-    <div class="del-rubrik"><h3>Djur på vägen (A4)</h3><span class="chip gron">Klar</span></div>
+  </details>
+  <details class="del" id="del-m-vilt">
+    <summary><span class="del-namn">Djur på vägen (A4)</span><span class="chip gron">Klar</span><span class="del-pct">100 %</span></summary>
     <dl class="rad"><dt>Bevis</dt><dd>Trafikverkets djurdata sedan 22/9 (DECISIONS #318).</dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-m-motorn">Motorn i tre språk</a>, <a class="ref gron" href="#del-k-situation">Trafikverkets olyckor, djur och hinder</a></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-3">Halkvaktens app §3 Exakt vad rösten säger</a></li><li>Integrationskartan §4 Motorn som den faktiskt ser ut i dag <span class="mono">docs/INTEGRATIONSKARTAN.md</span></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-m-kameror">
-    <div class="del-rubrik"><h3>Fartkameror (A5)</h3><span class="chip gron">Klar</span></div>
+  </details>
+  <details class="del" id="del-m-kameror">
+    <summary><span class="del-namn">Fartkameror (A5)</span><span class="chip gron">Klar</span><span class="del-pct">100 %</span></summary>
     <dl class="rad"><dt>Bevis</dt><dd>I drift; riktningen vänd 180° 2/9.</dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-m-motorn">Motorn i tre språk</a>, <a class="ref gron" href="#del-k-kameror">Trafikverkets kameror</a></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-3">Halkvaktens app §3 Exakt vad rösten säger</a></li><li>Integrationskartan §4 Motorn som den faktiskt ser ut i dag <span class="mono">docs/INTEGRATIONSKARTAN.md</span></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-m-tillstand">
-    <div class="del-rubrik"><h3>L2 tillståndet (skattaren S1–S3)</h3><span class="chip orange">Delvis</span></div>
+  </details>
+  <details class="del" id="del-m-tillstand">
+    <summary><span class="del-namn">L2 tillståndet (skattaren S1–S3)</span><span class="chip orange">Delvis</span><span class="del-pct">60 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>60 %</dd><dt>Saknas</dt><dd><ul><li>S1 loggar, S2 byggd 24/9 (DECISIONS #341)</li><li>S3, villkoret i motorn, är Axels bygge bakom S1-grinden</li></ul></dd><dt>Beror på</dt><dd><a class="ref orange" href="#del-l-falten">Lägesfilens fält för skuggdelarna</a>, <a class="ref gron" href="#del-i-arkivet">Arkivet</a></dd><dt>Levererar till</dt><dd><a class="ref bla" href="#del-m-efterhalkan">Efterhalkan som märkt beta</a>, <a class="ref rod" href="#del-m-overgangar">Övergångarna mellan faror</a></dd><dt>Beslut</dt><dd>DECISIONS #341</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-7">Halkvaktens mätningar §7 Tillstånd (L2)</a></li><li>Integrationskartan §6 Var lagren står, mätt <span class="mono">docs/INTEGRATIONSKARTAN.md</span></li><li>Bedömningen §5 Integrationsläget — mätt mot kartan (24/9, Bengts fråga &quot;hur långt i integrationen har vi kommit&quot;) <span class="mono">docs/BEDOMNING-2026-09-15.md</span></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-m-efterhalkan">
-    <div class="del-rubrik"><h3>Efterhalkan som märkt beta</h3><span class="chip bla">Väntar</span></div>
+  </details>
+  <details class="del" id="del-m-efterhalkan">
+    <summary><span class="del-namn">Efterhalkan som märkt beta</span><span class="chip bla">Väntar</span><span class="del-pct">50 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>50 %</dd><dt>Nyckel</dt><dd>S1-grinden på frostdata och Axels bygge av S3; rösten är &quot;Halkvakt tror: frysrisk framöver&quot; (DECISIONS #186).</dd><dt>Beror på</dt><dd><a class="ref orange" href="#del-m-tillstand">L2 tillståndet (skattaren S1–S3)</a>, <a class="ref orange" href="#del-p-grindarna">Grindarna och domkalendern</a></dd><dt>Kort</dt><dd><ul><li>#278 BETAN: BÅDA VÄRDEPAREN I SKUGGAN, ETT HÖRS <span class="litet">· Claude, låst</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #186, #427</dd><dt>Beskrivs i</dt><dd><ul><li>Bedömningen §5 Integrationsläget — mätt mot kartan (24/9, Bengts fråga &quot;hur långt i integrationen har vi kommit&quot;) <span class="mono">docs/BEDOMNING-2026-09-15.md</span></li><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-7">Halkvaktens mätningar §7 Tillstånd (L2)</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-m-trenden">
-    <div class="del-rubrik"><h3>L3 trenden</h3><span class="chip orange">Delvis</span></div>
+  </details>
+  <details class="del" id="del-m-trenden">
+    <summary><span class="del-namn">L3 trenden</span><span class="chip orange">Delvis</span><span class="del-pct">40 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>40 %</dd><dt>Saknas</dt><dd><ul><li>Trendarkivet byggt 13/9 (DECISIONS #169), men ingen regel</li><li>T-A väntar på frost, och molnet (#95) för domen</li></ul></dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-i-arkivet">Arkivet</a>, <a class="ref orange" href="#del-k-smhi-obs">SMHI:s observationer (moln, sikt)</a></dd><dt>Levererar till</dt><dd><a class="ref rod" href="#del-m-overgangar">Övergångarna mellan faror</a>, <a class="ref orange" href="#del-m-rimfrost">Rimfrosten</a>, <a class="ref bla" href="#del-m-prognoslagret">Prognoslagret</a></dd><dt>Kort</dt><dd><ul><li>#88 TRENDEN — vi mäter var minut men använder bara sista värdet <span class="litet">· Claude, låst</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #169</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-6">Halkvaktens mätningar §6 Utveckling (L3)</a></li><li>Integrationskartan §5 Fogarna — var en skuggdel kan greppa, och vad den kostar <span class="mono">docs/INTEGRATIONSKARTAN.md</span></li><li><a href="https://claude.ai/artifact/6hHX4LeXQUrJSbaNthNY9i#avsnitt-2">Halkvaktens systembild §2 Skuggmotorn och vad dess delar ger</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-m-overgangar">
-    <div class="del-rubrik"><h3>Övergångarna mellan faror</h3><span class="chip rod">Ej påbörjad</span></div>
+  </details>
+  <details class="del" id="del-m-overgangar">
+    <summary><span class="del-namn">Övergångarna mellan faror</span><span class="chip rod">Ej påbörjad</span><span class="del-pct">10 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>10 %</dd><dt>Saknas</dt><dd><ul><li>Bara kort och tröskeldokument; regn, yta och trend sitter inte ihop</li></ul></dd><dt>Beror på</dt><dd><a class="ref orange" href="#del-m-trenden">L3 trenden</a>, <a class="ref orange" href="#del-m-tillstand">L2 tillståndet (skattaren S1–S3)</a></dd><dt>Kort</dt><dd><ul><li>#89 ÖVERGÅNGARNA mellan faror — regn→frost, torka→första regnet <span class="litet">· Claude, låst</span></li></ul></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-6">Halkvaktens mätningar §6 Utveckling (L3)</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-m-rimfrost">
-    <div class="del-rubrik"><h3>Rimfrosten</h3><span class="chip orange">Delvis</span></div>
+  </details>
+  <details class="del" id="del-m-rimfrost">
+    <summary><span class="del-namn">Rimfrosten</span><span class="chip orange">Delvis</span><span class="del-pct">50 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>50 %</dd><dt>Saknas</dt><dd><ul><li>Fogen vald (andra gren i frysrisken), R-A saknar data</li></ul></dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-m-frysrisk">Frysrisk vid stationer och broar (A2)</a>, <a class="ref orange" href="#del-m-trenden">L3 trenden</a></dd><dt>Kort</dt><dd><ul><li>#46 Rimfrosten — svartis utan nederbörd <span class="litet">· Claude, låst</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #117</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-2">Halkvaktens mätningar §2 Delområdena</a></li><li>Integrationskartan §5 Fogarna — var en skuggdel kan greppa, och vad den kostar <span class="mono">docs/INTEGRATIONSKARTAN.md</span></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-m-nederbord">
-    <div class="del-rubrik"><h3>Nederbördstypen (snö, slask)</h3><span class="chip rod">Ej påbörjad</span></div>
+  </details>
+  <details class="del" id="del-m-nederbord">
+    <summary><span class="del-namn">Nederbördstypen (snö, slask)</span><span class="chip rod">Ej påbörjad</span><span class="del-pct">10 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>10 %</dd><dt>Saknas</dt><dd><ul><li>Låst bakom radardomen</li></ul></dd><dt>Beror på</dt><dd><a class="ref orange" href="#del-k-radar">SMHI:s nederbördsradar</a></dd><dt>Kort</dt><dd><ul><li>#45 Nederbördstypen — regn, snö eller slask? <span class="litet">· Claude, låst</span></li></ul></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-2">Halkvaktens mätningar §2 Delområdena</a></li><li>Integrationskartan §5 Fogarna — var en skuggdel kan greppa, och vad den kostar <span class="mono">docs/INTEGRATIONSKARTAN.md</span></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-m-vattenplaning">
-    <div class="del-rubrik"><h3>Vattenplaningen</h3><span class="chip orange">Delvis</span></div>
+  </details>
+  <details class="del" id="del-m-vattenplaning">
+    <summary><span class="del-namn">Vattenplaningen</span><span class="chip orange">Delvis</span><span class="del-pct">40 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>40 %</dd><dt>Saknas</dt><dd><ul><li>Stationsspåret föll; radarspåret mäts i skuggan sedan 15/9, dom tidigast november–december</li></ul></dd><dt>Beror på</dt><dd><a class="ref orange" href="#del-k-radar">SMHI:s nederbördsradar</a>, <a class="ref gron" href="#del-p-skuggmotorn">Skuggmotorn</a></dd><dt>Kort</dt><dd><ul><li>#42 Vattenplaningsvarningen <span class="litet">· Claude, låst</span></li></ul></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-2">Halkvaktens mätningar §2 Delområdena</a></li><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-10">Halkvaktens app §10 Vad appen inte gör</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-m-vind-sikt">
-    <div class="del-rubrik"><h3>Vind och sikt</h3><span class="chip orange">Delvis</span></div>
+  </details>
+  <details class="del" id="del-m-vind-sikt">
+    <summary><span class="del-namn">Vind och sikt</span><span class="chip orange">Delvis</span><span class="del-pct">30 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>30 %</dd><dt>Saknas</dt><dd><ul><li>Tröskeldokumentet fastställt 12/9 (DECISIONS #112, #135); läget i övrigt inte mätt i den grova versionen</li></ul></dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-k-vader">Trafikverkets väderstationer</a></dd><dt>Kort</dt><dd><ul><li>#90 VIND OCH SIKT — AXELS JA GIVET 12/9, TRÖSKELDOKUMENT SKRIVET <span class="litet">· Claude, låst</span></li></ul></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-2">Halkvaktens mätningar §2 Delområdena</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-m-hojd">
-    <div class="del-rubrik"><h3>Höjden i terrängen</h3><span class="chip orange">Delvis</span></div>
+  </details>
+  <details class="del" id="del-m-hojd">
+    <summary><span class="del-namn">Höjden i terrängen</span><span class="chip orange">Delvis</span><span class="del-pct">60 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>60 %</dd><dt>Saknas</dt><dd><ul><li>Mäter; läsningen RÅ mot RÅ+HÖJD 23/10 (DECISIONS #357)</li></ul></dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-i-arkivet">Arkivet</a></dd><dt>Levererar till</dt><dd><a class="ref orange" href="#del-m-segmentprognos">L4 räckvidden: segmentprognosen</a></dd><dt>Kort</dt><dd><ul><li>#96 HÖJDPROVET — terrängens första faktor, mäter redan <span class="litet">· Claude, låst</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #357</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-5">Halkvaktens mätningar §5 Räckvidd (L4)</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-m-segmentprognos">
-    <div class="del-rubrik"><h3>L4 räckvidden: segmentprognosen</h3><span class="chip orange">Delvis</span></div>
+  </details>
+  <details class="del" id="del-m-segmentprognos">
+    <summary><span class="del-namn">L4 räckvidden: segmentprognosen</span><span class="chip orange">Delvis</span><span class="del-pct">50 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>50 %</dd><dt>Saknas</dt><dd><ul><li>I skuggan sedan 23/9; vägpunktsgrinden föll 28/9 (6,9 % mot 5 %); dom i mars</li></ul></dd><dt>Beror på</dt><dd><a class="ref orange" href="#del-m-hojd">Höjden i terrängen</a>, <a class="ref gron" href="#del-i-arkivet">Arkivet</a>, <a class="ref gron" href="#del-p-skuggmotorn">Skuggmotorn</a></dd><dt>Levererar till</dt><dd><a class="ref rod" href="#del-m-kallplatser">Kallplatserna</a>, <a class="ref bla" href="#del-m-frysklassning">Frysklassningen</a>, <a class="ref bla" href="#del-m-prognoslagret">Prognoslagret</a></dd><dt>Kort</dt><dd><ul><li>#38b Stråket / skuggmotorn — ÅTERSTÄLLT 10/9 <span class="litet">· Claude, låst</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #321, #324, #399</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-5">Halkvaktens mätningar §5 Räckvidd (L4)</a></li><li><a href="https://claude.ai/artifact/6hHX4LeXQUrJSbaNthNY9i#avsnitt-2">Halkvaktens systembild §2 Skuggmotorn och vad dess delar ger</a></li><li>Integrationskartan §6 Var lagren står, mätt <span class="mono">docs/INTEGRATIONSKARTAN.md</span></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-m-kallplatser">
-    <div class="del-rubrik"><h3>Kallplatserna</h3><span class="chip rod">Ej påbörjad</span></div>
+  </details>
+  <details class="del" id="del-m-kallplatser">
+    <summary><span class="del-namn">Kallplatserna</span><span class="chip rod">Ej påbörjad</span><span class="del-pct">5 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>5 %</dd><dt>Saknas</dt><dd><ul><li>Bara i kartan och systembilden; inget byggt</li></ul></dd><dt>Beror på</dt><dd><a class="ref orange" href="#del-m-segmentprognos">L4 räckvidden: segmentprognosen</a></dd><dt>Beskrivs i</dt><dd><ul><li>Integrationskartan §5 Fogarna — var en skuggdel kan greppa, och vad den kostar <span class="mono">docs/INTEGRATIONSKARTAN.md</span></li><li><a href="https://claude.ai/artifact/6hHX4LeXQUrJSbaNthNY9i#avsnitt-2">Halkvaktens systembild §2 Skuggmotorn och vad dess delar ger</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-m-smhi-forstarkare">
-    <div class="del-rubrik"><h3>SMHI som förstärkare och reserv</h3><span class="chip rod">Ej påbörjad</span></div>
+  </details>
+  <details class="del" id="del-m-smhi-forstarkare">
+    <summary><span class="del-namn">SMHI som förstärkare och reserv</span><span class="chip rod">Ej påbörjad</span><span class="del-pct">10 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>10 %</dd><dt>Saknas</dt><dd><ul><li>Plan B för Trafikverket-beroendet inte byggd; molnet blockerar #88:s dom (DECISIONS #114)</li></ul></dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-k-smhi-varningar">SMHI:s varningar</a>, <a class="ref orange" href="#del-k-smhi-obs">SMHI:s observationer (moln, sikt)</a></dd><dt>Kort</dt><dd><ul><li>#95 Plan B för Trafikverket-beroendet — mät SMHI som reserv <span class="litet">· Claude, låst</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #114</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/6hHX4LeXQUrJSbaNthNY9i#avsnitt-3">Halkvaktens systembild §3 Det färdiga systemet</a></li><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-9">Halkvaktens mätningar §9 Andra mätningar</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-m-forsprang">
-    <div class="del-rubrik"><h3>L5 allvar som försprång</h3><span class="chip orange">Delvis</span></div>
+  </details>
+  <details class="del" id="del-m-forsprang">
+    <summary><span class="del-namn">L5 allvar som försprång</span><span class="chip orange">Delvis</span><span class="del-pct">60 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>60 %</dd><dt>Saknas</dt><dd><ul><li>Regeln byggd och i skuggan sedan 25/9 (DECISIONS #359); tröskeldokumentet och rösten efter domen i mars</li></ul></dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-m-motorn">Motorn i tre språk</a>, <a class="ref gron" href="#del-p-skuggmotorn">Skuggmotorn</a></dd><dt>Kort</dt><dd><ul><li>#153 ALLVAR SOM FÖRSPRÅNG + ETT SMALARE UNDANTAG — beslut 1 omformulerat 16/9 och väntar, beslut 2 öppet … <span class="litet">· Claude, låst</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #358, #359</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-8">Halkvaktens mätningar §8 Allvar och röst (L5)</a></li><li>Integrationskartan §6 Var lagren står, mätt <span class="mono">docs/INTEGRATIONSKARTAN.md</span></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-m-vaglagets-alder">
-    <div class="del-rubrik"><h3>Väglagets ålder</h3><span class="chip bla">Väntar</span></div>
+  </details>
+  <details class="del" id="del-m-vaglagets-alder">
+    <summary><span class="del-namn">Väglagets ålder</span><span class="chip bla">Väntar</span><span class="del-pct">30 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>30 %</dd><dt>Nyckel</dt><dd>Vinterklassningar i arkivet (kort #224:s sortering).</dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-k-vaglag">Trafikverkets väglag (RoadCondition)</a></dd><dt>Kort</dt><dd><ul><li>#151 VÄGLAGETS ÅLDER — ska en stående vinterklassning tystas när mätningarna säger att vintern tagit … <span class="litet">· Claude, låst</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #151, #152</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-7">Halkvaktens mätningar §7 Tillstånd (L2)</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-m-frysklassning">
-    <div class="del-rubrik"><h3>Frysklassningen</h3><span class="chip bla">Väntar</span></div>
+  </details>
+  <details class="del" id="del-m-frysklassning">
+    <summary><span class="del-namn">Frysklassningen</span><span class="chip bla">Väntar</span><span class="del-pct">40 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>40 %</dd><dt>Nyckel</dt><dd>Frostnätter: K-A körs om när de kommer.</dd><dt>Beror på</dt><dd><a class="ref orange" href="#del-m-segmentprognos">L4 räckvidden: segmentprognosen</a></dd><dt>Kort</dt><dd><ul><li>#103 FRYSKLASSNINGEN — kan en modell som är opålitlig på grader ändå bära en klass? <span class="litet">· Claude, låst</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #130</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-7">Halkvaktens mätningar §7 Tillstånd (L2)</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-m-tystnadsfel">
-    <div class="del-rubrik"><h3>Tystnadsfelet</h3><span class="chip orange">Delvis</span></div>
+  </details>
+  <details class="del" id="del-m-tystnadsfel">
+    <summary><span class="del-namn">Tystnadsfelet</span><span class="chip orange">Delvis</span><span class="del-pct">50 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>50 %</dd><dt>Saknas</dt><dd><ul><li>Måttet fastställt 11/9 (DECISIONS #93) och självtestet i ci; ingen dom</li></ul></dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-i-arkivet">Arkivet</a></dd><dt>Kort</dt><dd><ul><li>#98 TYSTNADSFELET — mät tystnadens fel, inte larmens träff <span class="litet">· Claude, låst</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #93</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-4">Halkvaktens mätningar §4 Trovärdighet (L1)</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-m-olja">
-    <div class="del-rubrik"><h3>Olja på vägen</h3><span class="chip orange">Delvis</span></div>
+  </details>
+  <details class="del" id="del-m-olja">
+    <summary><span class="del-namn">Olja på vägen</span><span class="chip orange">Delvis</span><span class="del-pct">40 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>40 %</dd><dt>Saknas</dt><dd><ul><li>I skuggan sedan 1/10; ingen text i appen förrän Axel bestämt (DECISIONS #421)</li></ul></dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-k-situation">Trafikverkets olyckor, djur och hinder</a>, <a class="ref gron" href="#del-p-skuggmotorn">Skuggmotorn</a></dd><dt>Kort</dt><dd><ul><li>#276 OLJA PÅ VÄGEN — HALKA SOM RÖSTEN INTE SÄGER <span class="litet">· Claude, låst</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #420, #421</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-2">Halkvaktens mätningar §2 Delområdena</a></li><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-10">Halkvaktens app §10 Vad appen inte gör</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-m-prognoslagret">
-    <div class="del-rubrik"><h3>Prognoslagret</h3><span class="chip bla">Väntar</span></div>
+  </details>
+  <details class="del" id="del-m-prognoslagret">
+    <summary><span class="del-namn">Prognoslagret</span><span class="chip bla">Väntar</span><span class="del-pct">40 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>40 %</dd><dt>Nyckel</dt><dd>Bengts val a–h, premissmätningen läses 24/11 (DECISIONS #435–#437).</dd><dt>Beror på</dt><dd><a class="ref orange" href="#del-m-segmentprognos">L4 räckvidden: segmentprognosen</a>, <a class="ref orange" href="#del-m-trenden">L3 trenden</a>, <a class="ref orange" href="#del-p-kuvosen">Kuvösen</a></dd><dt>Kort</dt><dd><ul><li>#270 PROGNOSLAGRET EFTER PREMISSMÄTNINGARNA — BENGTS VAL a–h <span class="litet">· Bengt</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #435, #436, #437</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-6">Halkvaktens mätningar §6 Utveckling (L3)</a></li><li><a href="https://claude.ai/artifact/6hHX4LeXQUrJSbaNthNY9i#avsnitt-3">Halkvaktens systembild §3 Det färdiga systemet</a></li><li>Integrationskartan §6 Var lagren står, mätt <span class="mono">docs/INTEGRATIONSKARTAN.md</span></li></ul></dd></dl>
-  </article>
+  </details>
   </section>
   <section class="delar-block" aria-labelledby="block-provningen">
-  <h2 id="block-provningen">Skuggan och prövningen</h2>
-  <p class="litet">Skuggmotorn, grindarna, facit och domarna.</p>
-  <article class="del" id="del-p-skuggmotorn">
-    <div class="del-rubrik"><h3>Skuggmotorn</h3><span class="chip gron">Klar</span></div>
+  <h3 id="block-provningen" class="block-rubrik">Skuggan och prövningen <span class="litet">· 56 % klart</span></h3>
+  <details class="del" id="del-p-skuggmotorn">
+    <summary><span class="del-namn">Skuggmotorn</span><span class="chip gron">Klar</span><span class="del-pct">100 %</span></summary>
     <dl class="rad"><dt>Bevis</dt><dd>Kör i Supabase var 30:e minut över 20 svenska rutter, med försprångets körning 12 och 42 (sql/037).</dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-m-motorn">Motorn i tre språk</a>, <a class="ref gron" href="#del-l-publicera">Publiceringen var tionde minut</a></dd><dt>Levererar till</dt><dd><a class="ref orange" href="#del-m-vattenplaning">Vattenplaningen</a>, <a class="ref orange" href="#del-m-segmentprognos">L4 räckvidden: segmentprognosen</a>, <a class="ref orange" href="#del-m-forsprang">L5 allvar som försprång</a>, <a class="ref orange" href="#del-m-olja">Olja på vägen</a>, <a class="ref orange" href="#del-p-grindarna">Grindarna och domkalendern</a></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/6hHX4LeXQUrJSbaNthNY9i#avsnitt-2">Halkvaktens systembild §2 Skuggmotorn och vad dess delar ger</a></li><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-3">Halkvaktens mätningar §3 Motorn i drift och facitkällorna</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-p-grindarna">
-    <div class="del-rubrik"><h3>Grindarna och domkalendern</h3><span class="chip orange">Delvis</span></div>
+  </details>
+  <details class="del" id="del-p-grindarna">
+    <summary><span class="del-namn">Grindarna och domkalendern</span><span class="chip orange">Delvis</span><span class="del-pct">50 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>50 %</dd><dt>Saknas</dt><dd><ul><li>Grind A klarad (DECISIONS #321); S1, T-A, R-A, K-A och W-A väntar på första frosten</li></ul></dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-i-arkivet">Arkivet</a>, <a class="ref gron" href="#del-p-skuggmotorn">Skuggmotorn</a></dd><dt>Levererar till</dt><dd><a class="ref bla" href="#del-m-efterhalkan">Efterhalkan som märkt beta</a></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-11">Halkvaktens mätningar §11 Domkalendern</a></li><li>Bedömningen §5 Integrationsläget — mätt mot kartan (24/9, Bengts fråga &quot;hur långt i integrationen har vi kommit&quot;) <span class="mono">docs/BEDOMNING-2026-09-15.md</span></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-p-kuvosen">
-    <div class="del-rubrik"><h3>Kuvösen</h3><span class="chip orange">Delvis</span></div>
+  </details>
+  <details class="del" id="del-p-kuvosen">
+    <summary><span class="del-namn">Kuvösen</span><span class="chip orange">Delvis</span><span class="del-pct">70 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>70 %</dd><dt>Saknas</dt><dd><ul><li>Trafikverkets och SMHI:s vinter 2024/25 inläst; svaren om nederbördens koder väntar</li></ul></dd><dt>Beror på</dt><dd><a class="ref orange" href="#del-k-smhi-obs">SMHI:s observationer (moln, sikt)</a></dd><dt>Levererar till</dt><dd><a class="ref bla" href="#del-m-prognoslagret">Prognoslagret</a></dd><dt>Kort</dt><dd><ul><li>#232 KUVÖSEN — HELA SYSTEMET BAKÅTPRÖVAT PÅ VINTERN 2024/25 <span class="litet">· Bengt</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #425, #438, #441</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/1xvv4hydYbfpF5eXFgLcxh#avsnitt-2">Halkvaktens kuvös §2 Läget i dag</a></li><li>Bedömningen §6.1 Kuvösen är den enda kända vägen runt vintern — och väntar på Trafikverkets beslut <span class="mono">docs/BEDOMNING-2026-09-15.md</span></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-p-kamerafacit">
-    <div class="del-rubrik"><h3>Kamerafacit i hela landet</h3><span class="chip bla">Väntar</span></div>
+  </details>
+  <details class="del" id="del-p-kamerafacit">
+    <summary><span class="del-namn">Kamerafacit i hela landet</span><span class="chip bla">Väntar</span><span class="del-pct">80 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>80 %</dd><dt>Nyckel</dt><dd>Bengts &quot;slå ihop&quot; och deployen av tre funktioner (V1–V3, DECISIONS #380).</dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-k-kameror">Trafikverkets kameror</a></dd><dt>Levererar till</dt><dd><a class="ref bla" href="#del-p-bildfacit-domen">Bildfacitets läsning</a></dd><dt>Kort</dt><dd><ul><li>#260 BILDFACIT I HELA LANDET — V1, V2, V3 och lagringslarmet <span class="litet">· Claude</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #380</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-3">Halkvaktens mätningar §3 Motorn i drift och facitkällorna</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-p-bildfacit-domen">
-    <div class="del-rubrik"><h3>Bildfacitets läsning</h3><span class="chip bla">Väntar</span></div>
+  </details>
+  <details class="del" id="del-p-bildfacit-domen">
+    <summary><span class="del-namn">Bildfacitets läsning</span><span class="chip bla">Väntar</span><span class="del-pct">30 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>30 %</dd><dt>Nyckel</dt><dd>Första frosten: beslutet inom sju dygn, bilderna öppnas i mars (DECISIONS #248, #291).</dd><dt>Beror på</dt><dd><a class="ref bla" href="#del-p-kamerafacit">Kamerafacit i hela landet</a></dd><dt>Kort</dt><dd><ul><li>#209 BILDFACITBESLUTET FLYTTAT TILL EFTER FÖRSTA FROSTEN <span class="litet">· Claude, låst</span></li><li>#231 PRODUKTIONSREGELNS FALSKLARM PER VÄDERTYP — en rad i bildfacitets läsning <span class="litet">· Claude, låst</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #248, #291</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-3">Halkvaktens mätningar §3 Motorn i drift och facitkällorna</a></li><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-11">Halkvaktens mätningar §11 Domkalendern</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-p-forarfacit">
-    <div class="del-rubrik"><h3>Förarfacit (svar och missar)</h3><span class="chip orange">Delvis</span></div>
+  </details>
+  <details class="del" id="del-p-forarfacit">
+    <summary><span class="del-namn">Förarfacit (svar och missar)</span><span class="chip orange">Delvis</span><span class="del-pct">60 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>60 %</dd><dt>Saknas</dt><dd><ul><li>Byggt i båda apparna; noll riktiga förarsvar ännu, betan inte igång</li></ul></dd><dt>Beror på</dt><dd><a class="ref orange" href="#del-a-betatest">Betatestet: svar, missar, Efter resan</a></dd><dt>Kort</dt><dd><ul><li>#203 FACIT UTAN ATT STANNA — svaret efter resan, och med rösten under den <span class="litet">· Claude</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #267, #379</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-3">Halkvaktens mätningar §3 Motorn i drift och facitkällorna</a></li><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-6">Halkvaktens app §6 Betatestarnas svar och missar</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-p-termisk">
-    <div class="del-rubrik"><h3>Termisk kartering</h3><span class="chip bla">Väntar</span></div>
+  </details>
+  <details class="del" id="del-p-termisk">
+    <summary><span class="del-namn">Termisk kartering</span><span class="chip bla">Väntar</span><span class="del-pct">5 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>5 %</dd><dt>Nyckel</dt><dd>Bengts och Axels ja, utrustningen och pengarna (DECISIONS #406, #407).</dd><dt>Kort</dt><dd><ul><li>#271 TERMISK KARTERING — FACIT MELLAN STATIONERNA <span class="litet">· Claude, låst</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #406, #407</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-3">Halkvaktens mätningar §3 Motorn i drift och facitkällorna</a></li><li><a href="https://claude.ai/artifact/6hHX4LeXQUrJSbaNthNY9i#avsnitt-3">Halkvaktens systembild §3 Det färdiga systemet</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-p-regel-l">
-    <div class="del-rubrik"><h3>Regel L: ändra en tröskel efter sett utfall</h3><span class="chip bla">Väntar</span></div>
+  </details>
+  <details class="del" id="del-p-regel-l">
+    <summary><span class="del-namn">Regel L: ändra en tröskel efter sett utfall</span><span class="chip bla">Väntar</span><span class="del-pct">50 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>50 %</dd><dt>Nyckel</dt><dd>Bengts och Axels ja, nej eller ändrad lydelse.</dd><dt>Kort</dt><dd><ul><li>#282 REGEL L — FÖRSLAG: ÄNDRING AV EN TRÖSKEL EFTER ATT UTFALLET ÄR SETT <span class="litet">· Bengt</span></li></ul></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/RVrWtvUGPfc88aFUbcYREc#avsnitt-10">Halkvaktens mätningar §10 Hur mätningarna skyddas mot oss själva</a></li><li><a href="https://claude.ai/artifact/1xvv4hydYbfpF5eXFgLcxh#avsnitt-5">Halkvaktens kuvös §5 Reglerna, skrivna i förväg</a></li></ul></dd></dl>
-  </article>
+  </details>
   </section>
   <section class="delar-block" aria-labelledby="block-appen">
-  <h2 id="block-appen">Appen</h2>
-  <p class="litet">Rösten, skärmarna och driften på iPhone och Android.</p>
-  <article class="del" id="del-a-ios">
-    <div class="del-rubrik"><h3>iPhone-appen</h3><span class="chip orange">Delvis</span></div>
+  <h3 id="block-appen" class="block-rubrik">Appen <span class="litet">· 77 % klart</span></h3>
+  <details class="del" id="del-a-ios">
+    <summary><span class="del-namn">iPhone-appen</span><span class="chip orange">Delvis</span><span class="del-pct">80 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>80 %</dd><dt>Saknas</dt><dd><ul><li>Intern TestFlight; nya skinnet 0.3.10 (22) provat i simulatorn</li><li>App-schemat överlever inte xcodegen</li><li>Introduktionen saknar bevis</li></ul></dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-m-motorn">Motorn i tre språk</a>, <a class="ref gron" href="#del-l-publicera">Publiceringen var tionde minut</a></dd><dt>Levererar till</dt><dd><a class="ref gron" href="#del-a-start-ios">Start och stopp på iPhone</a>, <a class="ref orange" href="#del-a-omladdning">Omladdningen under resan (iPhone)</a>, <a class="ref orange" href="#del-a-batteri">Batteriet</a>, <a class="ref orange" href="#del-a-betatest">Betatestet: svar, missar, Efter resan</a>, <a class="ref bla" href="#del-a-reglaget">Reglaget för förvarningen</a>, <a class="ref rod" href="#del-f-fliken">Fliken och rapporten</a>, <a class="ref rod" href="#del-f-spara">Spara en rutt</a>, <a class="ref bla" href="#del-u-testflight">Extern TestFlight till testarna</a>, <a class="ref bla" href="#del-u-app-store">App Store</a></dd><dt>Kort</dt><dd><ul><li>#284 APPENS NYA SKINN — DESIGNÖVERLÄMNINGEN V2 (BYGGT OCH PROVAT I SIMULATORN — Claude, Axels order 2/10 … <span class="litet">· pågår</span></li><li>#228 APP-SCHEMAT ÖVERLEVER INTE xcodegen <span class="litet">· Claude, låst</span></li><li>Introduktionen <span class="litet">· Bengt</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #444</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-4">Halkvaktens app §4 Skärmarna</a></li><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-9">Halkvaktens app §9 Var appen står</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-a-android">
-    <div class="del-rubrik"><h3>Android-appen</h3><span class="chip orange">Delvis</span></div>
+  </details>
+  <details class="del" id="del-a-android">
+    <summary><span class="del-namn">Android-appen</span><span class="chip orange">Delvis</span><span class="del-pct">70 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>70 %</dd><dt>Saknas</dt><dd><ul><li>Testarna installerar ur CI; verifieringen av en telefon och Play-testet återstår</li></ul></dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-m-motorn">Motorn i tre språk</a>, <a class="ref gron" href="#del-l-publicera">Publiceringen var tionde minut</a></dd><dt>Levererar till</dt><dd><a class="ref orange" href="#del-a-start-android">Start och stopp på Android</a>, <a class="ref orange" href="#del-a-batteri">Batteriet</a>, <a class="ref orange" href="#del-a-betatest">Betatestet: svar, missar, Efter resan</a>, <a class="ref rod" href="#del-f-fliken">Fliken och rapporten</a>, <a class="ref rod" href="#del-f-spara">Spara en rutt</a>, <a class="ref orange" href="#del-u-play">Google Play</a></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-9">Halkvaktens app §9 Var appen står</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-a-rosten">
-    <div class="del-rubrik"><h3>Rösten och varningskorten</h3><span class="chip gron">Klar</span></div>
+  </details>
+  <details class="del" id="del-a-rosten">
+    <summary><span class="del-namn">Rösten och varningskorten</span><span class="chip gron">Klar</span><span class="del-pct">100 %</span></summary>
     <dl class="rad"><dt>Bevis</dt><dd>Rösttexterna i motorn och testfallen; 100 mil Malmö–Boden 1–2/9.</dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-m-motorn">Motorn i tre språk</a></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-3">Halkvaktens app §3 Exakt vad rösten säger</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-a-start-ios">
-    <div class="del-rubrik"><h3>Start och stopp på iPhone</h3><span class="chip gron">Klar</span></div>
+  </details>
+  <details class="del" id="del-a-start-ios">
+    <summary><span class="del-namn">Start och stopp på iPhone</span><span class="chip gron">Klar</span><span class="del-pct">100 %</span></summary>
     <dl class="rad"><dt>Bevis</dt><dd>Självväckningen bar 100 mil Malmö–Boden 1–2/9; Siri och Genvägar.</dd><dt>Beror på</dt><dd><a class="ref orange" href="#del-a-ios">iPhone-appen</a></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-5">Halkvaktens app §5 Start och stopp i bilen</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-a-start-android">
-    <div class="del-rubrik"><h3>Start och stopp på Android</h3><span class="chip orange">Delvis</span></div>
+  </details>
+  <details class="del" id="del-a-start-android">
+    <summary><span class="del-namn">Start och stopp på Android</span><span class="chip orange">Delvis</span><span class="del-pct">70 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>70 %</dd><dt>Saknas</dt><dd><ul><li>Självstoppet prov i bil</li><li>Behörigheten på Android 11+ härledd, inte uppmätt</li></ul></dd><dt>Beror på</dt><dd><a class="ref orange" href="#del-a-android">Android-appen</a></dd><dt>Kort</dt><dd><ul><li>#248 ANDROID-AUTOSTARTEN STOPPAR ALDRIG VAKTEN <span class="litet">· Axel</span></li><li>#226 AUTOSTARTENS BEHÖRIGHET FALLER TYST PÅ ANDROID 11+ <span class="litet">· Claude</span></li></ul></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-5">Halkvaktens app §5 Start och stopp i bilen</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-a-omladdning">
-    <div class="del-rubrik"><h3>Omladdningen under resan (iPhone)</h3><span class="chip orange">Delvis</span></div>
+  </details>
+  <details class="del" id="del-a-omladdning">
+    <summary><span class="del-namn">Omladdningen under resan (iPhone)</span><span class="chip orange">Delvis</span><span class="del-pct">80 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>80 %</dd><dt>Saknas</dt><dd><ul><li>Byggd (DECISIONS #371); prov i bil återstår</li></ul></dd><dt>Beror på</dt><dd><a class="ref orange" href="#del-a-ios">iPhone-appen</a>, <a class="ref gron" href="#del-l-publicera">Publiceringen var tionde minut</a></dd><dt>Kort</dt><dd><ul><li>#258 iOS LADDAR ALDRIG OM VÄGDATAN UNDER RESAN <span class="litet">· Axel</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #371</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-2">Halkvaktens app §2 En körning</a></li><li><a href="https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT#avsnitt-4">Halkvaktens favoriter §4 Tio minuter före: så färskt det kan bli</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-a-batteri">
-    <div class="del-rubrik"><h3>Batteriet</h3><span class="chip orange">Delvis</span></div>
+  </details>
+  <details class="del" id="del-a-batteri">
+    <summary><span class="del-namn">Batteriet</span><span class="chip orange">Delvis</span><span class="del-pct">50 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>50 %</dd><dt>Saknas</dt><dd><ul><li>iPhone 7 %/h mätt; Android för många timmar, släppblockerare</li><li>Budgeten aldrig mätt med motprov på båda</li></ul></dd><dt>Beror på</dt><dd><a class="ref orange" href="#del-a-ios">iPhone-appen</a>, <a class="ref orange" href="#del-a-android">Android-appen</a></dd><dt>Levererar till</dt><dd><a class="ref bla" href="#del-u-app-store">App Store</a></dd><dt>Kort</dt><dd><ul><li>#262 BATTERIPAKETET — SJU ÅTGÄRDER EFTER FÄLTRAPPORTEN 27/9 <span class="litet">· Axels nästa steg</span></li><li>#218 BATTERIBUDGETEN HAR ALDRIG MÄTTS, OCH iOS KÖR FULL GAS <span class="litet">· Bengt</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #386, #387</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-8">Halkvaktens app §8 Batteri och drift</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-a-betatest">
-    <div class="del-rubrik"><h3>Betatestet: svar, missar, Efter resan</h3><span class="chip orange">Delvis</span></div>
+  </details>
+  <details class="del" id="del-a-betatest">
+    <summary><span class="del-namn">Betatestet: svar, missar, Efter resan</span><span class="chip orange">Delvis</span><span class="del-pct">75 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>75 %</dd><dt>Saknas</dt><dd><ul><li>Efter-resan-kortet gick utanför skärmen på iPhone</li><li>Svar utan att stanna (Siri) delvis byggt</li></ul></dd><dt>Beror på</dt><dd><a class="ref orange" href="#del-a-ios">iPhone-appen</a>, <a class="ref orange" href="#del-a-android">Android-appen</a></dd><dt>Levererar till</dt><dd><a class="ref orange" href="#del-p-forarfacit">Förarfacit (svar och missar)</a></dd><dt>Kort</dt><dd><ul><li>#279 iOS: EFTER-RESAN-KORTET GICK UTANFÖR SKÄRMEN <span class="litet">· Axel</span></li><li>#203 FACIT UTAN ATT STANNA — svaret efter resan, och med rösten under den <span class="litet">· Claude</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #267</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-6">Halkvaktens app §6 Betatestarnas svar och missar</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-a-reglaget">
-    <div class="del-rubrik"><h3>Reglaget för förvarningen</h3><span class="chip bla">Väntar</span></div>
+  </details>
+  <details class="del" id="del-a-reglaget">
+    <summary><span class="del-namn">Reglaget för förvarningen</span><span class="chip bla">Väntar</span><span class="del-pct">70 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>70 %</dd><dt>Nyckel</dt><dd>Bengts och Axels val: reglaget lovar mer än motorn gör.</dd><dt>Beror på</dt><dd><a class="ref orange" href="#del-a-ios">iPhone-appen</a>, <a class="ref gron" href="#del-m-motorn">Motorn i tre språk</a></dd><dt>Kort</dt><dd><ul><li>#259 REGLAGET &quot;VARNA PÅ AVSTÅND&quot; LOVAR MER ÄN MOTORN GÖR <span class="litet">· Axel</span></li></ul></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-4">Halkvaktens app §4 Skärmarna</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-a-integritet">
-    <div class="del-rubrik"><h3>Löftet och integritetsuppgifterna</h3><span class="chip orange">Delvis</span></div>
+  </details>
+  <details class="del" id="del-a-integritet">
+    <summary><span class="del-namn">Löftet och integritetsuppgifterna</span><span class="chip orange">Delvis</span><span class="del-pct">70 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>70 %</dd><dt>Saknas</dt><dd><ul><li>Play-deklarationen osann sedan 16/9</li><li>iCloud-kopian bär ungefär var och när (Axels beslut)</li></ul></dd><dt>Levererar till</dt><dd><a class="ref orange" href="#del-u-play">Google Play</a></dd><dt>Kort</dt><dd><ul><li>#214 PLAY-DEKLARATIONEN ÄR OSANN SEDAN 16/9 <span class="litet">· Axel, beslut</span></li><li>#285 iCLOUD-KOPIAN BÄR UNGEFÄR VAR OCH NÄR <span class="litet">· Claude, låst</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #264, #320</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-7">Halkvaktens app §7 Vad som lämnar telefonen</a></li><li><a href="https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT#avsnitt-8">Halkvaktens favoriter §8 Integriteten</a></li></ul></dd></dl>
-  </article>
+  </details>
   </section>
   <section class="delar-block" aria-labelledby="block-favoriterna">
-  <h2 id="block-favoriterna">Favoriterna</h2>
-  <p class="litet">Läget längs sparade rutter före resan.</p>
-  <article class="del" id="del-f-underlaget">
-    <div class="del-rubrik"><h3>Underlaget och mätningarna</h3><span class="chip gron">Klar</span></div>
+  <h3 id="block-favoriterna" class="block-rubrik">Favoriterna <span class="litet">· 19 % klart</span></h3>
+  <details class="del" id="del-f-underlaget">
+    <summary><span class="del-namn">Underlaget och mätningarna</span><span class="chip gron">Klar</span><span class="del-pct">100 %</span></summary>
     <dl class="rad"><dt>Bevis</dt><dd>Halkvaktens favoriter, stomdokument 7; källorna och notisen räknade (DECISIONS #440, #442, #445).</dd><dt>Kort</dt><dd><ul><li>#233 UR NIRAS PRODUKTSIDA: TVÅ SAKER VI INTE HAR, EN VI HAR PARKERAT <span class="litet">· Bengt</span></li><li>#283 UR FINTRAFFICS TJÄNSTER: VAD VI KAN TA EFTER <span class="litet">· Bengt</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #296, #309, #440, #442, #445</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT#avsnitt-1">Halkvaktens favoriter §1 Idén</a></li><li><a href="https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT#avsnitt-9">Halkvaktens favoriter §9 Talen</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-f-rapportfil">
-    <div class="del-rubrik"><h3>Rapportfilen på servern</h3><span class="chip rod">Ej påbörjad</span></div>
+  </details>
+  <details class="del" id="del-f-rapportfil">
+    <summary><span class="del-namn">Rapportfilen på servern</span><span class="chip rod">Ej påbörjad</span><span class="del-pct">5 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>5 %</dd><dt>Saknas</dt><dd><ul><li>Inte byggd; ska delas i en snabb och en långsam del (17 MB om dygnet annars)</li></ul></dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-l-publicera">Publiceringen var tionde minut</a>, <a class="ref rod" href="#del-k-vagarbeten">Vägarbeten, hastighet och omledningar</a>, <a class="ref rod" href="#del-k-restider">Köer och restider (TravelTimeRoute, TrafficFlow)</a>, <a class="ref rod" href="#del-k-farjor">Vägfärjorna (FerryAnnouncement)</a></dd><dt>Levererar till</dt><dd><a class="ref rod" href="#del-f-fliken">Fliken och rapporten</a></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT#avsnitt-7">Halkvaktens favoriter §7 Var informationen kommer ifrån, och vad som måste byggas</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-f-ruttfilter">
-    <div class="del-rubrik"><h3>Jämförelsen mot rutten i Swift och Kotlin</h3><span class="chip rod">Ej påbörjad</span></div>
+  </details>
+  <details class="del" id="del-f-ruttfilter">
+    <summary><span class="del-namn">Jämförelsen mot rutten i Swift och Kotlin</span><span class="chip rod">Ej påbörjad</span><span class="del-pct">10 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>10 %</dd><dt>Saknas</dt><dd><ul><li>farorNaraRutten finns bara i TypeScript; port och testfall saknas</li></ul></dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-m-motorn">Motorn i tre språk</a></dd><dt>Levererar till</dt><dd><a class="ref rod" href="#del-f-fliken">Fliken och rapporten</a></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT#avsnitt-7">Halkvaktens favoriter §7 Var informationen kommer ifrån, och vad som måste byggas</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-f-fliken">
-    <div class="del-rubrik"><h3>Fliken och rapporten</h3><span class="chip rod">Ej påbörjad</span></div>
+  </details>
+  <details class="del" id="del-f-fliken">
+    <summary><span class="del-namn">Fliken och rapporten</span><span class="chip rod">Ej påbörjad</span><span class="del-pct">0 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>0 %</dd><dt>Saknas</dt><dd><ul><li>Inte byggd; formen är Axels</li></ul></dd><dt>Beror på</dt><dd><a class="ref rod" href="#del-f-rapportfil">Rapportfilen på servern</a>, <a class="ref rod" href="#del-f-ruttfilter">Jämförelsen mot rutten i Swift och Kotlin</a>, <a class="ref orange" href="#del-a-ios">iPhone-appen</a>, <a class="ref orange" href="#del-a-android">Android-appen</a></dd><dt>Levererar till</dt><dd><a class="ref bla" href="#del-f-tider">Tider, påminnelse eller notis</a></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT#avsnitt-2">Halkvaktens favoriter §2 Fliken Favoriter</a></li><li><a href="https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT#avsnitt-3">Halkvaktens favoriter §3 Rapporten</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-f-spara">
-    <div class="del-rubrik"><h3>Spara en rutt</h3><span class="chip rod">Ej påbörjad</span></div>
+  </details>
+  <details class="del" id="del-f-spara">
+    <summary><span class="del-namn">Spara en rutt</span><span class="chip rod">Ej påbörjad</span><span class="del-pct">0 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>0 %</dd><dt>Saknas</dt><dd><ul><li>Inte byggd; brytare av från början, fil utanför säkerhetskopian</li></ul></dd><dt>Beror på</dt><dd><a class="ref orange" href="#del-a-ios">iPhone-appen</a>, <a class="ref orange" href="#del-a-android">Android-appen</a></dd><dt>Kort</dt><dd><ul><li>#285 iCLOUD-KOPIAN BÄR UNGEFÄR VAR OCH NÄR <span class="litet">· Claude, låst</span></li></ul></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT#avsnitt-6">Halkvaktens favoriter §6 Spara en rutt</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-f-tider">
-    <div class="del-rubrik"><h3>Tider, påminnelse eller notis</h3><span class="chip bla">Väntar</span></div>
+  </details>
+  <details class="del" id="del-f-tider">
+    <summary><span class="del-namn">Tider, påminnelse eller notis</span><span class="chip bla">Väntar</span><span class="del-pct">0 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>0 %</dd><dt>Nyckel</dt><dd>Axels val: påminnelse eller notis på iPhone (bedömningen §4.2).</dd><dt>Beror på</dt><dd><a class="ref rod" href="#del-f-fliken">Fliken och rapporten</a></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/EJYcQFCyKYd9BgGcYkCMyT#avsnitt-5">Halkvaktens favoriter §5 Tider och notis</a></li></ul></dd></dl>
-  </article>
+  </details>
   </section>
   <section class="delar-block" aria-labelledby="block-forarna">
-  <h2 id="block-forarna">Ut till förarna</h2>
-  <p class="litet">Butikerna, testarna, namnet och Skyltfonden.</p>
-  <article class="del" id="del-u-testflight">
-    <div class="del-rubrik"><h3>Extern TestFlight till testarna</h3><span class="chip bla">Väntar</span></div>
+  <h3 id="block-forarna" class="block-rubrik">Ut till förarna <span class="litet">· 47 % klart</span></h3>
+  <details class="del" id="del-u-testflight">
+    <summary><span class="del-namn">Extern TestFlight till testarna</span><span class="chip bla">Väntar</span><span class="del-pct">70 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>70 %</dd><dt>Nyckel</dt><dd>Axel: utskicket med en extern grupp (Beta App Review).</dd><dt>Beror på</dt><dd><a class="ref orange" href="#del-a-ios">iPhone-appen</a></dd><dt>Kort</dt><dd><ul><li>Välkomsttext + testinstruktion till kompisarna <span class="litet">· Axel</span></li></ul></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-9">Halkvaktens app §9 Var appen står</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-u-app-store">
-    <div class="del-rubrik"><h3>App Store</h3><span class="chip bla">Väntar</span></div>
+  </details>
+  <details class="del" id="del-u-app-store">
+    <summary><span class="del-namn">App Store</span><span class="chip bla">Väntar</span><span class="del-pct">60 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>60 %</dd><dt>Nyckel</dt><dd>Batteripaketet #262 i main först.</dd><dt>Beror på</dt><dd><a class="ref orange" href="#del-a-batteri">Batteriet</a>, <a class="ref orange" href="#del-a-ios">iPhone-appen</a></dd><dt>Kort</dt><dd><ul><li>#280 HALKVAKT TILL APP STORE — PÅ RIKTIGT, DIREKT EFTER #262 <span class="litet">· Axels nästa steg</span></li></ul></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-9">Halkvaktens app §9 Var appen står</a></li><li>Bedömningen §2.1 Vägen till förare: efterhalkan som märkt beta <span class="mono">docs/BEDOMNING-2026-09-15.md</span></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-u-play">
-    <div class="del-rubrik"><h3>Google Play</h3><span class="chip orange">Delvis</span></div>
+  </details>
+  <details class="del" id="del-u-play">
+    <summary><span class="del-namn">Google Play</span><span class="chip orange">Delvis</span><span class="del-pct">40 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>40 %</dd><dt>Saknas</dt><dd><ul><li>Verifiering av en telefon, första uppladdningen, slutet test med tolv testare i 14 dygn</li></ul></dd><dt>Beror på</dt><dd><a class="ref orange" href="#del-a-android">Android-appen</a>, <a class="ref orange" href="#del-a-integritet">Löftet och integritetsuppgifterna</a></dd><dt>Kort</dt><dd><ul><li>#219 ANDROIDS VÄG TILL PLAY — enhetsverifiering, första uppladdning, slutet test <span class="litet">· Axel</span></li><li>Tolv testare till Play-perioden <span class="litet">· Axel</span></li></ul></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-9">Halkvaktens app §9 Var appen står</a></li><li>Bedömningen §2.1 Vägen till förare: efterhalkan som märkt beta <span class="mono">docs/BEDOMNING-2026-09-15.md</span></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-u-namnet">
-    <div class="del-rubrik"><h3>Namnet och domänen</h3><span class="chip bla">Väntar</span></div>
+  </details>
+  <details class="del" id="del-u-namnet">
+    <summary><span class="del-namn">Namnet och domänen</span><span class="chip bla">Väntar</span><span class="del-pct">20 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>20 %</dd><dt>Nyckel</dt><dd>Axel: varumärket hos PRV och domänen halkvakt.se.</dd><dt>Levererar till</dt><dd><a class="ref bla" href="#del-u-qr">QR-koden till appen</a>, <a class="ref orange" href="#del-u-marknadsforing">Marknadsföring utan pengar</a></dd><dt>Kort</dt><dd><ul><li>Skydda namnet <span class="litet">· Axel</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #303, #423</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-9">Halkvaktens app §9 Var appen står</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-u-qr">
-    <div class="del-rubrik"><h3>QR-koden till appen</h3><span class="chip bla">Väntar</span></div>
+  </details>
+  <details class="del" id="del-u-qr">
+    <summary><span class="del-namn">QR-koden till appen</span><span class="chip bla">Väntar</span><span class="del-pct">30 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>30 %</dd><dt>Nyckel</dt><dd>Domänen (Skydda namnet).</dd><dt>Beror på</dt><dd><a class="ref bla" href="#del-u-namnet">Namnet och domänen</a></dd><dt>Kort</dt><dd><ul><li>#277 QR-KOD TILL APPEN — en kod för båda plattformarna, via halkvakt.se <span class="litet">· Claude, låst</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #423</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-9">Halkvaktens app §9 Var appen står</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-u-marknadsforing">
-    <div class="del-rubrik"><h3>Marknadsföring utan pengar</h3><span class="chip orange">Delvis</span></div>
+  </details>
+  <details class="del" id="del-u-marknadsforing">
+    <summary><span class="del-namn">Marknadsföring utan pengar</span><span class="chip orange">Delvis</span><span class="del-pct">30 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>30 %</dd><dt>Saknas</dt><dd><ul><li>Planen finns; Axels sex handgrepp återstår</li></ul></dd><dt>Beror på</dt><dd><a class="ref bla" href="#del-u-namnet">Namnet och domänen</a></dd><dt>Kort</dt><dd><ul><li>#281 MARKNADSFÖRING UTAN PENGAR <span class="litet">· Axels nästa steg</span></li></ul></dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-9">Halkvaktens app §9 Var appen står</a></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-u-skyltfonden">
-    <div class="del-rubrik"><h3>Skyltfonden</h3><span class="chip bla">Väntar</span></div>
+  </details>
+  <details class="del" id="del-u-skyltfonden">
+    <summary><span class="del-namn">Skyltfonden</span><span class="chip bla">Väntar</span><span class="del-pct">80 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>80 %</dd><dt>Nyckel</dt><dd>Ansökan skickad 30/9; besked senast 15/12.</dd><dt>Beskrivs i</dt><dd><ul><li><a href="https://claude.ai/artifact/FThC1PqVqEMqWxofrCv1GT#avsnitt-11">Halkvaktens app §11 Appen i Skyltfondsprojektet</a></li></ul></dd></dl>
-  </article>
+  </details>
   </section>
   <section class="delar-block" aria-labelledby="block-styrningen">
-  <h2 id="block-styrningen">Styrningen</h2>
-  <p class="litet">Stomdokumenten, tavlan och vakterna som håller bygget rätt.</p>
-  <article class="del" id="del-g-stomdokumenten">
-    <div class="del-rubrik"><h3>Stomdokumenten och kortkartan</h3><span class="chip gron">Klar</span></div>
+  <h3 id="block-styrningen" class="block-rubrik">Styrningen <span class="litet">· 70 % klart</span></h3>
+  <details class="del" id="del-g-stomdokumenten">
+    <summary><span class="del-namn">Stomdokumenten och kortkartan</span><span class="chip gron">Klar</span><span class="del-pct">100 %</span></summary>
     <dl class="rad"><dt>Bevis</dt><dd>Sju stomdokument (DECISIONS #415, #425, #445); alla öppna kort kopplade, kontrollen i ci.</dd><dt>Levererar till</dt><dd><a class="ref orange" href="#del-g-projektkartan">Projektkartan</a></dd><dt>Beslut</dt><dd>DECISIONS #415, #425, #445</dd><dt>Beskrivs i</dt><dd><ul><li>Bedömningen §4.2 Öppna <span class="mono">docs/BEDOMNING-2026-09-15.md</span></li></ul></dd></dl>
-  </article>
-  <article class="del" id="del-g-projektkartan">
-    <div class="del-rubrik"><h3>Projektkartan</h3><span class="chip orange">Delvis</span></div>
+  </details>
+  <details class="del" id="del-g-projektkartan">
+    <summary><span class="del-namn">Projektkartan</span><span class="chip orange">Delvis</span><span class="del-pct">40 %</span></summary>
     <dl class="rad"><dt>Skattat klart</dt><dd>40 %</dd><dt>Saknas</dt><dd><ul><li>Grov version 3/10: läget i stora drag, inte mätt del för del mot koden och tröskeldokumenten</li></ul></dd><dt>Beror på</dt><dd><a class="ref gron" href="#del-g-stomdokumenten">Stomdokumenten och kortkartan</a></dd><dt>Kort</dt><dd><ul><li>#286 PROJEKTKARTAN — MÄT DEL FÖR DEL MOT KODEN <span class="litet">· Claude</span></li><li>#287 PROJEKTKARTAN FINNS — TITTA PÅ DEN <span class="litet">· Axel</span></li></ul></dd><dt>Beslut</dt><dd>DECISIONS #446</dd><dt>Beskrivs i</dt><dd><ul><li>Bedömningen §5 Integrationsläget — mätt mot kartan (24/9, Bengts fråga &quot;hur långt i integrationen har vi kommit&quot;) <span class="mono">docs/BEDOMNING-2026-09-15.md</span></li></ul></dd></dl>
-  </article>
+  </details>
   </section>
   <p class="litet">Sidan skrivs av <span class="mono">scripts/projektkartan.ts</span> ur <span class="mono">docs/projektkartan.json</span> och tavlans öppna kort. Kontrollen i ci.yml fäller grönt utan bevis, blått utan nyckel, orange och rött utan lista, okända beroenden, block och mål, öppna kort utan del och en sida som inte är aktuell (DECISIONS #446).</p>
 </main>
@@ -807,5 +807,13 @@
       r.addEventListener("mouseleave", rensa);
       r.addEventListener("blur", rensa);
     });
+    // A link to a part opens its folded row.
+    function oppna() {
+      var id = (location.hash || "").slice(1);
+      var el = id && document.getElementById(id);
+      if (el && el.tagName === "DETAILS") { el.open = true; el.scrollIntoView({ block: "start" }); }
+    }
+    window.addEventListener("hashchange", oppna);
+    oppna();
   })();
 </script>

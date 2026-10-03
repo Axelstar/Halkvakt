@@ -283,9 +283,17 @@ export function sida(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>, s
 
   .varning { border: 1px solid var(--linje); border-radius: 6px; padding: 12px 16px; display: grid; gap: 6px; }
   ul { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
-  .delar-block { display: grid; gap: 14px; }
-  .del { border-top: 1px solid var(--linje); padding-top: 12px; display: grid; gap: 6px; scroll-margin-top: 16px; }
-  .del-rubrik { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: baseline; }
+  .delar-block { display: grid; gap: 0; }
+  .block-rubrik { margin: 14px 0 4px; }
+  .del { border-top: 1px solid var(--linje); scroll-margin-top: 16px; }
+  .del > summary { display: flex; gap: 10px; align-items: baseline; padding: 6px 2px; cursor: pointer; list-style: none;
+                   font: 500 14.5px/1.35 "Instrument Sans", Arial, sans-serif; color: var(--black); }
+  .del > summary::-webkit-details-marker { display: none; }
+  .del > summary::before { content: "▸"; color: var(--dampad); flex: none; }
+  .del[open] > summary::before { content: "▾"; }
+  .del-namn { flex: 1; min-width: 0; }
+  .del-pct { flex: none; width: 3.2em; text-align: right; color: var(--dampad); font-variant-numeric: tabular-nums; }
+  .del[open] > .rad { padding: 4px 2px 12px 1.4em; }
   .rad { display: grid; grid-template-columns: 9.5em minmax(0, 1fr); gap: 2px 12px; font-size: 15px; margin: 0; }
   .rad > dt { color: var(--dampad); font: 600 13px/1.6 "Instrument Sans", Arial, sans-serif; }
   .rad > dd { margin: 0; min-width: 0; }
@@ -388,11 +396,11 @@ export function sida(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>, s
     ut.push("    </ul>\n  </div>");
   } else ut.push(`  <p class="litet">Ingen klar eller påbörjad del beror på något som inte är påbörjat.</p>`);
   ut.push(`
-  <h2 id="delarna">Delarna, en i taget</h2>`);
+  <h2 id="delarna">Alla delar</h2>
+  <p class="litet">En rad per del, ordnade efter block. Klicka på en rad för att se bevis, vad som saknas, beroenden, kort och var delen beskrivs.</p>`);
   for (const b of k.block) {
     ut.push(`  <section class="delar-block" aria-labelledby="block-${b.id}">
-  <h2 id="block-${b.id}">${esc(b.namn)}</h2>
-  <p class="litet">${esc(b.om)}</p>`);
+  <h3 id="block-${b.id}" class="block-rubrik">${esc(b.namn)} <span class="litet">· ${medel(k.delar.filter((x) => x.block === b.id))} % klart</span></h3>`);
     for (const d of k.delar.filter((x) => x.block === b.id)) {
       const rader: string[] = [];
       if (d.lage !== "gron") rader.push(`<dt>Skattat klart</dt><dd>${andel(d)} %</dd>`);
@@ -405,10 +413,10 @@ export function sida(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>, s
       if (d.kort.length) rader.push(`<dt>Kort</dt><dd><ul>${d.kort.map((c) => { const i = kort.get(c)!; return `<li>${esc((i.nr ? i.nr + " " : "") + kortTitel(i.titel))} <span class="litet">· ${esc(i.agare)}</span></li>`; }).join("")}</ul></dd>`);
       if (d.beslut?.length) rader.push(`<dt>Beslut</dt><dd>DECISIONS ${d.beslut.join(", ")}</dd>`);
       if (d.beskrivs.length) rader.push(`<dt>Beskrivs i</dt><dd><ul>${d.beskrivs.map((r) => `<li>${ref(r)}</li>`).join("")}</ul></dd>`);
-      ut.push(`  <article class="del" id="del-${d.id}">
-    <div class="del-rubrik"><h3>${esc(d.namn)}</h3><span class="chip ${d.lage}">${LAGEN[d.lage].namn}</span></div>
+      ut.push(`  <details class="del" id="del-${d.id}">
+    <summary><span class="del-namn">${esc(d.namn)}</span><span class="chip ${d.lage}">${LAGEN[d.lage].namn}</span><span class="del-pct">${andel(d)} %</span></summary>
     <dl class="rad">${rader.join("")}</dl>
-  </article>`);
+  </details>`);
     }
     ut.push("  </section>");
   }
@@ -436,6 +444,14 @@ export function sida(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>, s
       r.addEventListener("mouseleave", rensa);
       r.addEventListener("blur", rensa);
     });
+    // A link to a part opens its folded row.
+    function oppna() {
+      var id = (location.hash || "").slice(1);
+      var el = id && document.getElementById(id);
+      if (el && el.tagName === "DETAILS") { el.open = true; el.scrollIntoView({ block: "start" }); }
+    }
+    window.addEventListener("hashchange", oppna);
+    oppna();
   })();
 </script>
 `);
