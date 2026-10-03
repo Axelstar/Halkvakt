@@ -539,11 +539,11 @@
 <!-- LÄGESRADER §4: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 <div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
   <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-i-vakterna">Datavakterna (givarvakten, radvakten, karantänen)</a> <span style="color: var(--dampad, #4A5763)">delvis, 88 % · kvar: Inget larm när en vakt inte kan läsa sin historik: fail-soft-noterna läses av ingen (kort #292)</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gron, #1F7A45); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-i-vakterna">Datavakterna (givarvakten, radvakten, karantänen)</a> <span style="color: var(--dampad, #4A5763)">klar</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Byggd</b> <span style="color: var(--dampad, #4A5763)">klart · publish/snapshot-core.ts:24-76 givarvakten, radvakten, karantänen (WX_SANE); sql/030_langsam_vakt.sql:40</span></li>
       <li><span aria-hidden="true">✓</span> <b>Schemalagd i drift</b> <span style="color: var(--dampad, #4A5763)">klart · Varje publicering var 10:e min; langsam_vakt varje minut (ingest-live/index.ts:225-244)</span></li>
-      <li><span aria-hidden="true">◐</span> <b>Vakt eller larm</b> <span style="color: var(--dampad, #4A5763)">pågår · Bara noter i publiceras svar (fail-soft); ingen vakthundsrad; vardevakten.yml är en knapp</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Vakt eller larm</b> <span style="color: var(--dampad, #4A5763)">klart · vakthund/index.ts:482-495 läser publiceras svar ur net._http_response (vakthund/datavakter.ts, test/datavakter.test.ts grön i ci 37137764481, motprovet rött i 37137793266); deploy 37138526711 (01f1ade); datavaktprov 37138573277 ⇒ problem *Datavakterna kan inte läsa: karantän — 3 publiceringar i rad* och raden *datavakterna: karantän 3 (1713, 2132, 2346)*, issue #728 öppnat 16:55Z och stängt av timkörningen 17:07:56Z (kort #292)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Prov</b> <span style="color: var(--dampad, #4A5763)">klart · test/snapshot-core.test.ts, test/integration.test.ts; kontraktsgrinden.ts i ci.yml</span></li>
     </ul>
   </details>
@@ -1464,11 +1464,11 @@
 <!-- LÄGESRADER §10: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 <div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
   <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-i-vakterna">Datavakterna (givarvakten, radvakten, karantänen)</a> <span style="color: var(--dampad, #4A5763)">delvis, 88 % · kvar: Inget larm när en vakt inte kan läsa sin historik: fail-soft-noterna läses av ingen (kort #292)</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gron, #1F7A45); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-i-vakterna">Datavakterna (givarvakten, radvakten, karantänen)</a> <span style="color: var(--dampad, #4A5763)">klar</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Byggd</b> <span style="color: var(--dampad, #4A5763)">klart · publish/snapshot-core.ts:24-76 givarvakten, radvakten, karantänen (WX_SANE); sql/030_langsam_vakt.sql:40</span></li>
       <li><span aria-hidden="true">✓</span> <b>Schemalagd i drift</b> <span style="color: var(--dampad, #4A5763)">klart · Varje publicering var 10:e min; langsam_vakt varje minut (ingest-live/index.ts:225-244)</span></li>
-      <li><span aria-hidden="true">◐</span> <b>Vakt eller larm</b> <span style="color: var(--dampad, #4A5763)">pågår · Bara noter i publiceras svar (fail-soft); ingen vakthundsrad; vardevakten.yml är en knapp</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Vakt eller larm</b> <span style="color: var(--dampad, #4A5763)">klart · vakthund/index.ts:482-495 läser publiceras svar ur net._http_response (vakthund/datavakter.ts, test/datavakter.test.ts grön i ci 37137764481, motprovet rött i 37137793266); deploy 37138526711 (01f1ade); datavaktprov 37138573277 ⇒ problem *Datavakterna kan inte läsa: karantän — 3 publiceringar i rad* och raden *datavakterna: karantän 3 (1713, 2132, 2346)*, issue #728 öppnat 16:55Z och stängt av timkörningen 17:07:56Z (kort #292)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Prov</b> <span style="color: var(--dampad, #4A5763)">klart · test/snapshot-core.test.ts, test/integration.test.ts; kontraktsgrinden.ts i ci.yml</span></li>
     </ul>
   </details>
@@ -1545,7 +1545,7 @@
 
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
   <h2 id="oppna-kort">Öppna kort</h2>
-  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 23 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
+  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 22 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
   <h3><a href="#avsnitt-2">2. Delområdena</a></h3>
   <ul>
     <li>#276 OLJA PÅ VÄGEN — HALKA SOM RÖSTEN INTE SÄGER <span class="litet">· Claude, låst</span></li>
@@ -1594,7 +1594,6 @@
   <h3><a href="#avsnitt-10">10. Hur mätningarna skyddas mot oss själva</a></h3>
   <ul>
     <li>#282 REGEL L — FÖRSLAG: ÄNDRING AV EN TRÖSKEL EFTER ATT UTFALLET ÄR SETT <span class="litet">· Bengt</span></li>
-    <li>#292 DATAVAKTERNA SÄGER TILL — VAKTHUNDEN LÄSER PUBLICERINGENS NOTER <span class="litet">· Claude, låst</span></li>
   </ul>
   <h3><a href="#avsnitt-11">11. Domkalendern</a></h3>
   <ul>
