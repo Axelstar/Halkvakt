@@ -214,6 +214,24 @@ att välja något. Valen ska göras före riktningsprovet och skrivas in som til
    minst tre rader i fönstret (`sql/018`), så `lutning30` blir alltid tom. Betans startvärde är *fall ≥ 0,8 °C på 30 min* (#222).
    **Mätt 3/10 (#454):** 30-minutersramen har tre rader i 0 av 5,26 miljoner rader. 60-minutersramen tappar bara 0,4 % på
    sekunderna i tidsstämplarna (99,6 % har sekund 03), så 60-minutersvägen bär.
+   **Omprövat samma kväll (Bengts begäran om en andra bedömning) — 30 minuter är INTE omöjligt.** Driftens stationer mäter var femte
+   minut (dbknapp 37151681447: 6 676 av 6 716 intervall i kalla rader är 5 min, sex rader per halvtimme). Driftens `lutning30` är
+   `first_value − yta`, alltså värdet 30 minuter bakåt minus värdet nu: två mätvärden. Raderna däremellan används bara av två skydd.
+   - *Täthetsskyddet* kräver minst tre rader.
+   - *Hoppvakten* kräver högst 3 °C mellan två på varandra följande avläsningar.
+
+   Kuvösens två halvtimmesrader är alltså samma två mätvärden som driften använder, om leveransens yta är ögonblicksvärdet vid
+   stämpeln och inte ett halvtimmesmedel. Det är inte bekräftat. Vad som blockerar är skyddet, inte datan. Tre vägar:
+   - **(A)** I kuvösen räknas 30-minutersfallet som skillnaden mellan två på varandra följande rader, med täthetsskyddet satt till två
+     rader. Det är bara kuvösens egen beräkning; produktionskoden är orörd. Förlusten är att hoppvakten bara ser ändpunkterna, så en
+     spik mellan dem syns inte. Givarvakterna (#75, radvakten, karantänen) står kvar. 15 minuter går fortfarande inte att räkna.
+     Förregistreras före riktningsprovet.
+   - **(B)** Trafikverket ombeds leverera 5-minutersvärdena, om historikdatabasen har dem. Då gäller driftens regel oförändrad, med
+     alla tre fönstren.
+   - **(C)** Bara 60 minuter, som ovan.
+
+   Med (A) eller (B) kan efterhalkan spelas upp med sitt startvärde (30 min), och kalibreringen kan pröva både 30 och 60 minuter.
+   Frågan om att flytta tillbaka kalibreringen försvinner då i stort sett.
    - **Följden:** efterhalkan kan inte spelas upp med sina startvärden i kuvösen ens när regnmängden kommer. Kalibreringen, som flyttades
      till kuvösen (#425, #428), kan bara välja bland 60-minutersvarianter.
    - Förslag: inget ändras nu, eftersom efterhalkan ändå väntar på regnmängden. Bengt och Axel avgör innan Trafikverket svarar om

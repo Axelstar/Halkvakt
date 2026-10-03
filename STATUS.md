@@ -2227,3 +2227,9 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   Rättat: KUVOSEN.html §4 och planens §3 sa att efterhalkan, övergångarna och försprånget går att pröva, men de väntar på regnmängden. Rättat är också `korning.ts`, som räknar *ej läsbar*-noter för sig, och bildfacitets 988-siffra i kartan.
 - 3/10 (Claude, Bengt: *"hur många rader … förlorar vi"*, sedan *"kör på"*): sekundmätningen förregistrerad (DECISIONS #454) och startad på grenen (kuvos 37150889692). Den läser bara tidsstämplar och antal. Under tiden är frysflaggan med tre marginaler (#437) byggd, eftersom den inte beror på de fyra frågorna. `publish/frysflagga.ts` är ren, K1 = `FRYS_C` importeras ur motorn och ingen kopia görs, och fyra prov är räknade för hand. Höjdprovet skriver ut tabellen bara med `--frysflagga`, så måndagsserien är oförändrad och självtestet grönt. Den körs i riktningsprovet, inte nu.
   **Sekundmätningen** (kuvos 37150889692): 99,6 % av raderna har sekund 03. 60-minutersramen tappar 21 519 av 5 256 028 rader, 0,4 % (startbandet också 0,4 %), och 30-minutersramen har tre rader i 0 rader. Sekunderna saknar alltså betydelse och inget rättas. Problemet är bara upplösningen för 30-minutersfönstret (#454).
+  **Andra bedömningen (Bengt: *"är det omöjligt? … eller är du bara praktisk"*):** jag var för kategorisk. Driftens stationer mäter var femte minut (dbknapp 37151681447: 6 676 av 6 716 intervall är 5 min). Driftens `lutning30` är ändå bara värdet 30 min bakåt minus nu, alltså två mätvärden. Det är täthetsskyddet (≥ 3 rader), inte datan, som blockerar i kuvösen. Vägarna står i PLAN §10:
+  - (A) två rader i kuvösens egen beräkning;
+  - (B) 5-minutersvärden från Trafikverket;
+  - (C) bara 60 min.
+
+  Den nya rekommendationen är B, och annars A. Båda gör att kalibreringen kan stanna i kuvösen. Obekräftat: att leveransens yta är ögonblicksvärdet och inte ett medel.
