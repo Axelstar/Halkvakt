@@ -217,6 +217,19 @@ att välja något. Valen ska göras före riktningsprovet och skrivas in som til
      till kuvösen (#425, #428), kan bara välja bland 60-minutersvarianter.
    - Förslag: inget ändras nu, eftersom efterhalkan ändå väntar på regnmängden. Bengt och Axel avgör innan Trafikverket svarar om
      kalibreringen ska göras på 60-minutersfönstret i kuvösen, eller flyttas tillbaka.
+   - **De två vägarna (Bengts fråga 3/10).**
+     - *Kalibrering på 60 minuter i kuvösen:* svepet krymper till 60-minutersfönstret.
+       - Förloras: betans eget fönster (30 min) och 15 min kan aldrig vinna.
+       - En vinnare blir en annan regel än startvärdet, som reagerar senare. Då skiljer sig också de två värdeparen i skuggan (#427) i fönster.
+       - Den är kalibrerad på halvtimmesdata men körs i driften på minutdata.
+       - Behålls: årets vinter förblir domdata i sin helhet (#425), och kalibrerade värden kan finnas till betan i november (#428).
+     - *Flyttas tillbaka:* regel D som före 1/10, det vill säga en kalibrering 1/2 2027 på november–januari ur vårt eget arkiv.
+       - Där finns alla tre fönstren, eftersom `trend_kandidater` beräknas varje minut på full upplösning och inte gallras.
+       - Förloras: domen i mars får bara februari–mars som domdata (kalibrering och dom på skilda nätter, D3/D7).
+       - Betan hörs på startvärdena till februari.
+       - Allt hänger på att vintern ger frostnätter före januari, och ändringen kräver båda signaturerna.
+     - *Gemensamt:* utan regnmängden från Trafikverket går efterhalkan inte att kalibrera i kuvösen alls. Då är tillbakaflytten den
+       enda vägen.
 4. **Delar utan startvärden** (rimfrostens R-B, sikten, daggpunktsgapet). Förslag: de står i tabellen som *ej prövade: inga startvärden*.
    Att skriva värden nu, bara för att fylla tabellen, är just det förregistreringen ska skydda mot.
 
