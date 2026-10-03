@@ -7408,3 +7408,19 @@ före något utfall. Bengt kan invända innan efterhalkan körs.
   ≤ +1,5 °C inom 90 minuter (*uteblev*), som andel av de tillkomna episoderna. *Nära*, inom nära-miss-bandet +0,5 °C, är inte falsklarm.
 - **Tidsvinsten** är minuterna mellan P:s första fyrning och baslinjens på tillfällen som båda fångar. Den redovisas bredvid och räknas
   aldrig som nettonytt.
+
+## #457 (3/10 2026) Projektkartan visar också "av det som går att göra före vinterns domar" (kort #286)
+
+**Bengts fråga 3/10:** *"har inte allt vårt arbete med skuggan rört denna siffra överhuvudtaget?"* Svaret var att siffran rörde sig från
+62,8 % till 64,3 % den dagen. Skuggans arbete fyller de tidiga stegen, och stegen efter en dom väntar på vintern. **Beslut (Bengt):**
+*"jag vill att du uppdaterar projektkartan med ditt förslag"*.
+
+**Byggt:** projektkartan.ts skriver under procenten en rad med samma räkning, men bara över de steg som går att göra före vinterns domar.
+Raden säger också hur många steg efter en dom som väntar. De steg som kommer efter en dom är `EFTER_DOM`: domen själv, villkoret i
+motorn, testfallen i tre språk och appen, som enligt tröskelregimen byggs först när domen fallit. **Publiceringen i lägesfilen hör inte
+hit**, eftersom fält publiceras före domen (trendens lutning och regnet gör det redan). Det skiljer sig från överslaget i chatten, som
+räknade med den och därför gav ett högre tak. Självtestet räknar en del för hand: 50 % före domarna mot 25 % totalt, med "Domkalendern"
+som inte är en dom.
+
+**Första värdet 3/10:** hela kartan 64 %, och **72 % av det som går att göra före vinterns domar**. 65 steg i 19 delar väntar på vintern.
+Motorn står på 55 % och på 79 % före domarna; skuggan och prövningen står på 74 % och 77 %.

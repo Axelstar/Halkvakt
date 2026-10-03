@@ -137,9 +137,20 @@ export function andel(d: Del): number {
   return d.klar ?? 0;
 }
 /** Medel viktat med delarnas storlek (vikt 1–3, utan vikt 1). */
-export function medel(ds: Del[]): number {
+export function medel(ds: Del[], f: (d: Del) => number = andel): number {
   const v = ds.reduce((s, d) => s + (d.vikt ?? 1), 0);
-  return v ? Math.round(ds.reduce((s, d) => s + andel(d) * (d.vikt ?? 1), 0) / v) : 100;
+  return v ? Math.round(ds.reduce((s, d) => s + f(d) * (d.vikt ?? 1), 0) / v) : 100;
+}
+
+/** Stegen som enligt tröskelregimen kommer efter en dom: domen själv, och villkoret i motorn, testfallen i tre språk och appen, som
+ *  byggs först när domen fallit. Publiceringen i lägesfilen hör inte hit: fält publiceras före domen (Bengts fråga 3/10, kort #286). */
+export const EFTER_DOM = /^(Dom\b|Villkoret i motorn|Testfall i tre språk|I appen)/u;
+/** Som andel(), men bara över stegen som går att göra före vinterns domar. En del utan sådana steg räknas som andel(). */
+export function andelForeDomarna(d: Del): number {
+  if (d.lage === "gron") return 100;
+  const s = (d.steg ?? []).filter((x) => x.status !== "ej" && !EFTER_DOM.test(x.namn));
+  if (s.length) return Math.round(((s.filter((x) => x.status === "klar").length + 0.5 * s.filter((x) => x.status === "pagar").length) / s.length) * 100);
+  return andel(d);
 }
 
 /** Allt ett mål vilar på: målets delar och allt de beror på, klart eller inte. Det är målets procent. */
@@ -186,6 +197,8 @@ export function sida(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>, s
   const kortrad = (d: Del) => d.lage === "bla" ? `väntar: ${d.nyckel}` : (d.saknas?.[0] ?? "");
 
   const total = medel(k.delar);
+  const foreDomarna = medel(k.delar, andelForeDomarna);
+  const efterDom = k.delar.filter((d) => d.lage !== "gron").map((d) => (d.steg ?? []).filter((x) => x.status !== "ej" && x.status !== "klar" && EFTER_DOM.test(x.namn)).length);
   const matta = k.delar.filter((d) => d.steg?.length).length;
   const hav = havstang(k, del);
   const framsteg = (pct: number) => `<div class="framsteg" role="img" aria-label="${pct} procent klart"><span style="width: ${pct}%"></span></div>`;
@@ -378,6 +391,7 @@ export function sida(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>, s
       ${framsteg(total)}
       <p><b>Projektets mål:</b> ${esc(k.projektmal.text)} <span class="litet">(${esc(k.projektmal.kalla)})</span></p>
       <p class="litet">Procenten är ett medel över ${k.delar.length} delar, viktat med delarnas storlek. En grön del räknas som 100 %, en mätt del ur sina byggsteg och en omätt del med sin skattning. ${oppna.length} öppna kort hänger på delarna.</p>
+      <p><b>${foreDomarna} % av det som går att göra före vinterns domar.</b> <span class="litet">Samma räkning utan stegen som kommer efter en dom: domen själv, villkoret i motorn, testfallen i tre språk och appen. ${efterDom.reduce((a, b) => a + b, 0)} sådana steg i ${efterDom.filter((n) => n > 0).length} delar väntar på vintern; dem flyttar bara frosten.</span></p>
     </div>
   </section>
   <p class="grov">${matta === k.delar.length
@@ -682,6 +696,11 @@ if (direkt && process.argv[2] === "--sjalvtest") {
     steg: [{ namn: "a", status: "klar", bevis: "x" }, { namn: "b", status: "pagar" }, { namn: "c", status: "saknas" }, { namn: "d", status: "ej" }] };
   const s2: Del = { id: "t", namn: "T", block: "a", lage: "orange", klar: 10, saknas: ["c"], beror: [], kort: [], beskrivs: [] };
   if (andel(s1) !== 50 || medel([s1, s2]) !== 40) { console.error("✗ självtest: stegen och vikten", andel(s1), medel([s1, s2])); process.exit(1); }
+  // Före vinterns domar: stegen efter en dom räknas bort, publiceringen i lägesfilen och "Domkalendern" räknas med.
+  const s3: Del = { ...s1, steg: [{ namn: "Mätt i skuggan", status: "klar", bevis: "x" }, { namn: "Publicerat i lägesfilen", status: "pagar" },
+    { namn: "Dom (S1-grinden)", status: "saknas" }, { namn: "Villkoret i motorn", status: "saknas" }, { namn: "I appen", status: "saknas" },
+    { namn: "Domkalendern", status: "saknas" }] };
+  if (andelForeDomarna(s3) !== 50 || andel(s3) !== 25) { console.error("✗ självtest: före vinterns domar", andelForeDomarna(s3), andel(s3)); process.exit(1); }
   const fel2 = granska({ ...k, mal: [], delar: [{ ...s1, lage: "gron", bevis: "b" },
     { id: "u", namn: "U", block: "a", lage: "rod", saknas: ["s"], beror: [], kort: [], beskrivs: [], steg: [{ namn: "a", status: "klar" }] },
     { ...s2, id: "v", vikt: 5, steg: [{ namn: "a", status: "saknas" }] }] }, [], sidor, () => "");
