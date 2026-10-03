@@ -35,6 +35,7 @@
 import { Z, andelSe, medelSe, utfallTak, grindutfall, type Utfall } from "../publish/marginal.ts";
 import { vaktdiagnos, led234, saknadeDygn, skrivSaknade } from "../publish/vaktdiagnos.ts";
 import { RADVAKT_SQL, karantanSql } from "../publish/snapshot-core.ts";
+import { skrivFrysflaggan } from "../publish/frysflagga.ts";
 
 const K_NEIGHBOURS = 5;
 const MAX_KM = 50;
@@ -309,3 +310,7 @@ if (elevOk < ids.length * 0.9) {
 
 const { rows, lapseFit } = evaluate(stations);
 report(rows, lapseFit, `senaste ${DAYS} dygnen`);
+// Frysflaggan med tre marginaler (DECISIONS #437), bara med --frysflagga: kuvösens riktningsprov. Måndagsserien skriver ut som förut.
+if (process.argv.includes("--frysflagga"))
+  for (const r of skrivFrysflaggan(rows, [{ namn: "RÅ", pick: (r) => r.raw }, { namn: "RÅ+HÖJD", pick: (r) => r.hojd },
+    { namn: "OFFSET (taket)", pick: (r) => r.offset }], BANDS)) console.log(r);

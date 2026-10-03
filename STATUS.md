@@ -2225,3 +2225,4 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - delar utan startvärden.
 
   Rättat: KUVOSEN.html §4 och planens §3 sa att efterhalkan, övergångarna och försprånget går att pröva, men de väntar på regnmängden. Rättat är också `korning.ts`, som räknar *ej läsbar*-noter för sig, och bildfacitets 988-siffra i kartan.
+- 3/10 (Claude, Bengt: *"hur många rader … förlorar vi"*, sedan *"kör på"*): sekundmätningen förregistrerad (DECISIONS #454) och startad på grenen (kuvos 37150889692). Den läser bara tidsstämplar och antal. Under tiden är frysflaggan med tre marginaler (#437) byggd, eftersom den inte beror på de fyra frågorna. `publish/frysflagga.ts` är ren, K1 = `FRYS_C` importeras ur motorn och ingen kopia görs, och fyra prov är räknade för hand. Höjdprovet skriver ut tabellen bara med `--frysflagga`, så måndagsserien är oförändrad och självtestet grönt. Den körs i riktningsprovet, inte nu.

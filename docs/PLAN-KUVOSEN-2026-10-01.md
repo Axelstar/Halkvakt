@@ -190,7 +190,7 @@ att välja något. Valen ska göras före riktningsprovet och skrivas in som til
 | :-- | :-- | :-- | :-- |
 | Frysrisken och broarna (A2) | ja, nu (5a sparar varningarna) | en facitdefinition — se fråga 2 | inget eget fönster; utlösaren *är* stationens yta, så egen-yta-facit är nära cirkulär |
 | Grind A, vägpunktsgrinden, höjden | ja, nu | ett körsteg i `kuvos.yml` (skripten tar `[dagar]` och SQL `now()`) | stationens egen yta i samma halvtimme (TROSKLAR-SKUGGAN §3) |
-| Frysflaggan med tre marginaler (#437) | efter ett litet nytt skript | radvärdena ur höjdprovet; måttstocken K-A1–K-A5 | samma som grind A |
+| Frysflaggan med tre marginaler (#437) | **byggd 3/10**: `publish/frysflagga.ts` med prov, `hojd-prov.ts --frysflagga` | radvärdena ur höjdprovet; måttstocken K-A1–K-A5 | samma som grind A |
 | Nederbördstypen (NT) | efter anpassning | tiden som argument i stället för `Date.now()`, SMHI p13 ur `kuvos_ra.smhi_obs`, stationerna ur arkivet | samtidigt, inte efteråt: givaren och SMHI inom 5 km, ±10 min |
 | Trenden (T-A) | efter anpassning | `trend_kandidater` beräknad för vintern, molnen ur `kuvos_ra.smhi_obs`, ett läge utan svep | 90 min, träff vid yta ≤ +1 °C — **men bara 60-minutersfönstret kan räknas, se fråga 3** |
 | Rimfrosten (R-A) | signalkontrollen efter molnen | R-B saknar startvärden (R1–R5 osatta) | R-B: 90 min mot väglag, kamera och olyckor — som inte finns i kuvösen |
