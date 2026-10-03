@@ -724,10 +724,20 @@ ingen läser en överspelad version någon annanstans.
 | 2/10 | **Läge-raden för kuvösen:** vintern inläst, nederbördskoderna 1/2/4/6 ur VädErs 2019 — ingen innehållsändring | DECISIONS #439 |
 | 2/10 | **Läge-raden för kuvösen:** SMHI för samma vinter hämtat (steg 4) — ingen innehållsändring | DECISIONS #441 |
 
+<!-- LÄGET: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+## Läget i projektkartan
+
+Läget per del, med färg, procent, byggsteg och bevis, står bara i [projektkartan](undefined) (DECISIONS #446). Den här sidan beskriver delarna; avsnitten nedan säger vilka.
+
+- **§4 Motorn som den faktiskt ser ut i dag:** [Trafikverkets väderstationer](undefined#del-k-vader), [Trafikverkets väglag (RoadCondition)](undefined#del-k-vaglag), [Trafikverkets olyckor, djur och hinder](undefined#del-k-situation), [Publiceringen var tionde minut](undefined#del-l-publicera), [Motorn i tre språk](undefined#del-m-motorn), [Olyckor (A3), med olycksläget](undefined#del-m-olyckor), [Rapporterad halka (A1)](undefined#del-m-halka), [Frysrisk vid stationer och broar (A2)](undefined#del-m-frysrisk), [Djur på vägen (A4)](undefined#del-m-vilt), [Fartkameror (A5)](undefined#del-m-kameror)
+- **§5 Fogarna — var en skuggdel kan greppa, och vad den kostar:** [SMHI:s varningar](undefined#del-k-smhi-varningar), [SMHI:s nederbördsradar](undefined#del-k-radar), [Lägesfilens fält för skuggdelarna](undefined#del-l-falten), [L3 trenden](undefined#del-m-trenden), [Rimfrosten](undefined#del-m-rimfrost), [Nederbördstypen (snö, slask)](undefined#del-m-nederbord), [Kallplatserna](undefined#del-m-kallplatser)
+- **§6 Var lagren står, mätt:** [L2 tillståndet (skattaren S1–S3)](undefined#del-m-tillstand), [L4 räckvidden: segmentprognosen](undefined#del-m-segmentprognos), [L5 allvar som försprång](undefined#del-m-forsprang), [Prognoslagret](undefined#del-m-prognoslagret)
+
+<!-- /LÄGET -->
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
 
-Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 4 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 3 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
 
 **§5 Fogarna — var en skuggdel kan greppa, och vad den kostar**
 
@@ -736,7 +746,6 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 4 kort.
 **§6 Var lagren står, mätt**
 
 - #270 PROGNOSLAGRET EFTER PREMISSMÄTNINGARNA — BENGTS VAL a–h — Bengt
-- #286 PROJEKTKARTAN — MÄT DEL FÖR DEL MOT KODEN — Claude
 - #38b Stråket / skuggmotorn — ÅTERSTÄLLT 10/9 — Claude, låst
 
 <!-- /ÖPPNA KORT -->

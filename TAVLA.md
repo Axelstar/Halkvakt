@@ -586,7 +586,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **Flyttat 26/9 från *Axel — hösten (brainstorm 31/8)*** (femma åtta, DECISIONS #377): nästa steg är Bengts två minuter (*Visa introduktionen igen*).
 
 ### Claude — olåst
-- [ ] 🗺️ **#286 PROJEKTKARTAN — MÄT DEL FÖR DEL MOT KODEN** (Bengts ja 3/10, DECISIONS #446). Den grova versionen satte läget i stora drag ur stomdokumenten, tavlan och beslutsloggen. Nästa varv: varje del mäts mot koden, de tretton tröskeldokumenten och integrationskartan, och grönt står bara kvar med ett bevis som går att följa. Sedan pekar stomdokumentens egna läge-rader på kartan i stället för att föra eget läge, och kortkartan kan gå genom delarna. Verify: varje grön del har ett följbart bevis, och `scripts/projektkartan.ts --check` är grön.
 - [ ] 📍 **#226 AUTOSTARTENS BEHÖRIGHET FALLER TYST PÅ ANDROID 11+** (Axels fynd på testtelefonen 20/9, DECISIONS #272).
   ⚠️ **HÄRLETT, INTE UPPMÄTT:** kortet skrevs på Axels rapport som antogs vara Android — den var från hans iPhone (#273).
   Ingen har kört det här på en Android-telefon. Grunden är kodläsning + Googles dokumentation, inget annat.
@@ -1946,6 +1945,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#286 PROJEKTKARTAN — MÄT DEL FÖR DEL MOT KODEN** (Bengts ja 3/10, DECISIONS #446). Den grova versionen satte läget i stora drag ur stomdokumenten, tavlan och beslutsloggen. Nästa varv: varje del mäts mot koden, de tretton tröskeldokumenten och integrationskartan, och grönt står bara kvar med ett bevis som går att följa. Sedan pekar stomdokumentens egna läge-rader på kartan i stället för att föra eget läge, och kortkartan kan gå genom delarna. Verify: varje grön del har ett följbart bevis, och `scripts/projektkartan.ts --check` är grön. ✅ **KLART 3/10:** alla 75 delar mätta mot koden med byggsteg och bevis (sju agenter, tre påståenden stickprovade: DECISIONS #433, vakthundens gränser, gallringsjobbet); procenten räknas ur stegen, viktad 1–3; stomdokumenten pekar på kartan med avsnittet *Läget i projektkartan*; `projektkartan.ts --check` grön. Kortkartan genom delarna gjordes inte: kopplingen kort→avsnitt står kvar i kortkartan.json.
 - [x] ✅ **GENOMLYSNING 2 AV DE FEM STOMDOKUMENTEN — KLART 1/10 (DECISIONS #422)**: STOMREGELN bekräftad av Bengt i en andra session; mätningssidan (7.7, 9, 8.1), appsidan (*Vad appen inte gör*), systembilden (oljan, taket), bedömningen och kartans läge-rader stämda mot #419–#421.
 - [x] ✅ **#275 FÖRSPRÅNGETS TAK — KLART 1/10 (DECISIONS #419)**: försprånget kläms till motorns 3 000 m, reglaget tar bara grundvarningen; sammanslagen i PR #660 (969610c), skuggmotorn deployad (36877830446), `ios-engine` grön, systembilden republicerad. Tavlan 36 → 35.
 - [x] ✅ **#274 PROJEKTSIDAN TILL TRAFIKVERKET — *Halkvakt och kuvösen* — SKAPAT OCH STÄNGT 1/10 (DECISIONS #418)**: Bengts idé 1/10,
