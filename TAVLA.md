@@ -238,19 +238,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   som nästa version. ✅ **(21) uppladdat 2/10 13:56** (Axel, Xcode) — interna gruppen får det direkt. 🔑 Kvar: en resa på 45–60 min i (21)
   där klockslaget vid *PÅ DIN VÄG* flyttar sig minst en gång (servern publicerar var tionde minut, appen hämtar var trettionde). Axel eller Bengt.
 
-- [ ] 🎚️ **#259 REGLAGET "VARNA PÅ AVSTÅND" LOVAR MER ÄN MOTORN GÖR** (fynd 26/9 under kadenstestet, DECISIONS #373). Motorn
-  talar vid `min(leadMaxM, max(400 m, fart × 30 s))` (`engine.ts:110`), och reglaget sätter bara `leadMaxM`. I 140 km/h blir det
-  högst 1 167 m, i 90 km/h 750 m — så *Tidigt — 3 km* (iOS) och 5 km (Android) gör ingen skillnad på en svensk väg; bara ett
-  värde UNDER fart × 30 s ändrar något. DECISIONS #263 visste att 3 000 m nås först över 360 km/h, men inte att reglaget därmed
-  lovar något. Produktboken säger *"hur långt i förväg rösten ska tala"*. Två vägar: skriv reglaget som ett tak (*Senast …*) med
-  spannet som faktiskt verkar, eller låt reglaget styra tiden (sekunder) i stället för metern — det senare ändrar vad rösten
-  säger och kräver vektorer. 🔑 Bengts och Axels val (§4.2). Verify: reglagets text och spann säger vad motorn gör, på båda
-  plattformarna, och produktboken likaså.
-  🔨 **VÄG (a) BYGGD 26/9** (Bengts ja, DECISIONS #374): *Längsta förvarning*, 400–1 200 m på båda, 1 200 från början, texten säger 30
-  sekunder före; körläget säger *som längst* i stället för *inom 3 km*. Två kontrakt i kontraktsgrinden. android.yml 36219380753 grön på grenen (JVM-prov, emulator, release-AAB); fotostudions shot-3 visar Längsta förvarning 1,2 km, Kortare — 400 m / Fullt — 1,2 km och texten om 30 sekunder.
-  🔑 Kvar: iOS-bygget 0.3.9 (17) hos Axel (första kompileringen) — sedan stängs kortet.
-  ↪ **Flyttat 26/9 från *Bengt*** (femma åtta, DECISIONS #377): nästa steg är Axels bygge 0.3.9 (17).
-  ↪ **1/10 (DECISIONS #423):** bygget hos Axel är numera **(19)** (`docs/TILL-AXEL-BYGGE-19.md`); (14)–(18) arkiverades aldrig, så (19) blir det första bygget som bär ändringen.
 
 - [ ] 📱 **#279 iOS: EFTER-RESAN-KORTET GICK UTANFÖR SKÄRMEN** (Axels skärmbild 1/10 21:35 från en resa 12:39–13:44 med fyra kameravarningar;
   samma fel som Bengts provresa 28/9 på 4,7 tum, `docs/TILL-AXEL-BYGGE-19.md` iPhone 1–3). `VaktenView` och `KorlageView` hade ingen
@@ -1949,6 +1936,20 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#259 REGLAGET "VARNA PÅ AVSTÅND" LOVAR MER ÄN MOTORN GÖR** (fynd 26/9 under kadenstestet, DECISIONS #373). Motorn
+  talar vid `min(leadMaxM, max(400 m, fart × 30 s))` (`engine.ts:110`), och reglaget sätter bara `leadMaxM`. I 140 km/h blir det
+  högst 1 167 m, i 90 km/h 750 m — så *Tidigt — 3 km* (iOS) och 5 km (Android) gör ingen skillnad på en svensk väg; bara ett
+  värde UNDER fart × 30 s ändrar något. DECISIONS #263 visste att 3 000 m nås först över 360 km/h, men inte att reglaget därmed
+  lovar något. Produktboken säger *"hur långt i förväg rösten ska tala"*. Två vägar: skriv reglaget som ett tak (*Senast …*) med
+  spannet som faktiskt verkar, eller låt reglaget styra tiden (sekunder) i stället för metern — det senare ändrar vad rösten
+  säger och kräver vektorer. 🔑 Bengts och Axels val (§4.2). Verify: reglagets text och spann säger vad motorn gör, på båda
+  plattformarna, och produktboken likaså.
+  🔨 **VÄG (a) BYGGD 26/9** (Bengts ja, DECISIONS #374): *Längsta förvarning*, 400–1 200 m på båda, 1 200 från början, texten säger 30
+  sekunder före; körläget säger *som längst* i stället för *inom 3 km*. Två kontrakt i kontraktsgrinden. android.yml 36219380753 grön på grenen (JVM-prov, emulator, release-AAB); fotostudions shot-3 visar Längsta förvarning 1,2 km, Kortare — 400 m / Fullt — 1,2 km och texten om 30 sekunder.
+  🔑 Kvar: iOS-bygget 0.3.9 (17) hos Axel (första kompileringen) — sedan stängs kortet.
+  ↪ **Flyttat 26/9 från *Bengt*** (femma åtta, DECISIONS #377): nästa steg är Axels bygge 0.3.9 (17).
+  ↪ **1/10 (DECISIONS #423):** bygget hos Axel är numera **(19)** (`docs/TILL-AXEL-BYGGE-19.md`); (14)–(18) arkiverades aldrig, så (19) blir det första bygget som bär ändringen.
+  ✅ **KLART 3/10 (TAVELREGELN 3):** Verify uppfylld på båda plattformarna och i produktboken — *Längsta förvarning* 400–1 200 m, *"Du kan korta det, aldrig förlänga"*: Android i android.yml 36219380753, iPhone i 0.3.9 (19), första bygget med reglaget, i Kompisarna 1/10 (PRODUKTBOK.md:111–112, 568). Bara provet i bil återstår, och det står på delen *Reglaget för förvarningen* i projektkartan.
 - [x] ✅ **#287 PROJEKTKARTAN FINNS — TITTA PÅ DEN** (Bengt 3/10, DECISIONS #446). Navet över hela bygget: https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8. ✅ **KLART 3/10:** sidan delad med länk (artefakten visar *Anyone with the link* från 3/10), och Axel har tittat — Bengts besked 3/10: *"han har tittat"*. Från samma dag bokför kartsynken Axels byggen och commits i kartan (DECISIONS #447, kort #288).
 - [x] ✅ **#286 PROJEKTKARTAN — MÄT DEL FÖR DEL MOT KODEN** (Bengts ja 3/10, DECISIONS #446). Den grova versionen satte läget i stora drag ur stomdokumenten, tavlan och beslutsloggen. Nästa varv: varje del mäts mot koden, de tretton tröskeldokumenten och integrationskartan, och grönt står bara kvar med ett bevis som går att följa. Sedan pekar stomdokumentens egna läge-rader på kartan i stället för att föra eget läge, och kortkartan kan gå genom delarna. Verify: varje grön del har ett följbart bevis, och `scripts/projektkartan.ts --check` är grön. ✅ **KLART 3/10:** alla 75 delar mätta mot koden med byggsteg och bevis (sju agenter, tre påståenden stickprovade: DECISIONS #433, vakthundens gränser, gallringsjobbet); procenten räknas ur stegen, viktad 1–3; stomdokumenten pekar på kartan med avsnittet *Läget i projektkartan*; `projektkartan.ts --check` grön. Kortkartan genom delarna gjordes inte: kopplingen kort→avsnitt står kvar i kortkartan.json.
 - [x] ✅ **GENOMLYSNING 2 AV DE FEM STOMDOKUMENTEN — KLART 1/10 (DECISIONS #422)**: STOMREGELN bekräftad av Bengt i en andra session; mätningssidan (7.7, 9, 8.1), appsidan (*Vad appen inte gör*), systembilden (oljan, taket), bedömningen och kartans läge-rader stämda mot #419–#421.
