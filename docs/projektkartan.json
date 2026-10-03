@@ -1,7 +1,7 @@
 {
   "_om": "Projektkartan (Bengts ja 3/10, DECISIONS #446): navet över hela bygget. Varje del har ett läge, och läget är underordnat beviset: grönt kräver bevis, blått en nyckel, orange och rött en lista över vad som saknas. Varje del har byggsteg med bevis, mätta mot koden 3/10 (kort #286); procenten räknas ur stegen, viktad med delarnas storlek (vikt 1–3). Sidan docs/PROJEKTKARTAN.html och avsnittet Läget i projektkartan i stomdokumenten skrivs av scripts/projektkartan.ts; ändra här, kör skriptet, republicera artefakterna.",
   "url": "https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8",
-  "synk": {"till": "00df3d05be632bc35ccf04e903982c0939aff1fa", "tid": "2026-10-03T08:36:50.361Z", "kallor": {"Byggsignalerna": "inte driftsatta än (kort #288)"}},
+  "synk": {"till": "00df3d05be632bc35ccf04e903982c0939aff1fa", "tid": "2026-10-03T09:33:42.452Z", "kallor": {"App Store Connect": "läses inte, Axels nyckel saknas (kort #288)", "Förarsvaren": "läses varje timme", "Byggsignalerna": "skrivs varje timme"}},
   "projektmal": {"text": "Under två vintrar visa om Trafikverkets öppna data räcker för att varna förare i tid, med appen ute hos förarna på iPhone och Android.", "kalla": "Skyltfondsansökan 30/9; Halkvaktens app §11"},
   "block": [
     {"id": "kallor", "namn": "Källorna", "om": "Det Halkvakt läser: Trafikverket, SMHI, radarn och grannländerna.", "plats": "flode"},
