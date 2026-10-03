@@ -88,6 +88,8 @@ jobs:
             if [ -d smhi ]; then node --experimental-strip-types kuvos/smhi-inlasning.ts smhi; else echo "SMHI: ingen release inläst än (kuvos/smhi-leverans.json saknas)"; fi
             psql -h localhost -U postgres -qc "ANALYZE weather_observations"
             node --experimental-strip-types kuvos/vakterna.ts
+            # Väg A (DECISIONS #455): trendkandidaterna för hela vintern, efter vakterna (den långsamma vakten fyller givarfel_dygn).
+            node --experimental-strip-types kuvos/trend.ts
             node --experimental-strip-types scripts/vardevakten.ts 1000
             echo '```'
           } 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"

@@ -7332,3 +7332,49 @@ något, inget utfall. Mätningen ändrar ingenting; om något ska rättas (t.ex.
 
 **Slutsats:** sekunderna saknar betydelse, och inget rättas. Problemet är upplösningen (en rad per halvtimme räcker inte för ett fönster
 på 30 minuter), inte tidsstämplarna. Frågan i PLAN-KUVOSEN §10 punkt 3 gäller därför bara 30-minutersfönstret.
+
+## #455 (3/10 2026) Kuvösen: fyra tillägg till förregistreringen före riktningsprovet — ovanpå, baslinjen, 30-minutersfallet, ej prövade (kort #232)
+
+**Beslut (Bengt 3/10):** *"ja till A"* och *"vi kör på dina rekommendationer för 1, 2 och 4"* — på PLAN-KUVOSEN §10 och bedömningen §4.2.
+Skrivet efter att filen öppnats men **innan någon regel körts och något utfall lästs** (#438:s regel: från filen räknas tillägg som
+*före riktningsprovet*).
+
+1. **"Ovanpå de andra" räknas i kombinationsgrindens form (KB-B, TROSKLAR-KOMBINATIONEN §4).** För varje del P jämförs *alla andra delar*
+   med *alla andra plus P*:
+   - *Nettonytt* är de facittillfällen inom 5 km från stationen som bara P fångar.
+   - *Pris* är de fyrningar P lägger till och som blev falsklarm.
+   - Allt räknas per episod, en stationsnatt från middag till middag i svensk tid (#246).
+   - En nära miss är inte ett falsklarm, och tidsvinsten redovisas bredvid men räknas aldrig som nettonytt.
+   - **Inga golv**: det är ett riktningsprov, ingen dom. "Ensam" är varje dels eget mått i sitt tröskeldokument.
+2. **Frysrisken (dagens `icing_point` och broarna) är baslinjen** som de andra delarna läggs ovanpå, som "dagens motor" i KB-B. Den
+   redovisas med antal fyrningar och episoder men döms inte på egen yta: utlösaren är stationens egen yta, och egen-yta-facit vore
+   nästan cirkulär.
+3. **Väg A — 30-minutersfallet ur två halvtimmesrader, bara i kuvösen.**
+   - Driftens `lutning30` är värdet 30 minuter bakåt minus värdet nu (`sql/018`). Driften mäter var femte minut (dbknapp 37151681447), och
+     leveransens stämplar :00:03 och :30:03 är två av samma serie (dbknapp 37152138197).
+   - Kuvösen räknar därför trenden med en variant av driftens funktion, **härledd ur `sql/018` vid körning** och aldrig kopierad. Den enda
+     skillnaden är att 30-minutersramen kräver två rader i stället för tre.
+   - Hoppvakten (≤ 3 °C) ser då bara ändpunkterna, och givarvakterna står kvar. Driftens kod är orörd. 15 minuter går inte att räkna.
+   - **Kalibreringen i kuvösen (#425) sveper därför 30 och 60 minuter**, inte 15. Att 15 inte prövades står här, så att ingen läser
+     det som att 15 prövades och föll.
+   - Premissen att ytan är ögonblicksvärdet är starkt trolig men inte bekräftad av Trafikverket (Bengt: ingen fråga till Micke om detta).
+4. **Delar utan startvärden** — rimfrostens R-B (R1–R5 osatta), sikten och daggpunktsgapet — **redovisas som *ej prövade: inga
+   startvärden***. Inga värden skrivs nu för att fylla tabellen. Rimfrostens R-A, som är signalkontrollen, körs.
+
+**Bevis för väg A:**
+- Integrationsprovet är grönt i ci 37152543161 och har sin egen motkontroll: driften ger tom 30-minuterslutning, varianten 0,80.
+- Motprovet blev rött på just det provet i ci 37152660669 (utkast #736, stängt).
+- Kuvösen 37152660384 räknade trenden över hela vintern på 1,0 min: 363 508 fallande kandidater, varav 363 453 med 30-minuterslutning,
+  363 056 med 60 och 0 med 15. Bara antal, inga utfall.
+
+**Rättelse samma kväll (Claude, före varje körning):** punkt 4:s mening *"Rimfrostens R-A, som är signalkontrollen, körs"* var fel.
+- **R-A är ett svep:** den räknar R1 × R2 × R3 och redovisar *"bästa kombinationen"* (`scripts/grind-r-a.ts:250–282`).
+- **T-A är också ett svep:** den rangordnar svepet och väljer en vinnare (`scripts/grind-t-a.ts:229–262`), och TROSKLAR-TRENDEN §2 säger
+  att värdena *"gissas inte … T-A väljer värdet"*. Trenden har alltså inga egna startvärden.
+- Enligt *inget svep* (#424) och punkt 4 är **T-A och R-A *ej prövade*** i riktningsprovet.
+- Trendens parametrar prövas ändå **inom efterhalkan**, med betans startvärden (30 min, 0,8 °C, +1…+3 °C, #222), när regnmängden finns.
+- Molnkällan ur kuvösens arkiv (`kuvos/moln.ts`) behövs för kombinationens fysikkontroll (KB-C3).
+
+**Alternativ som valdes bort:** att fråga Trafikverket om 5-minutersvärden (väg B: renast, men Bengt vill inte lägga en femte fråga);
+bara 60 minuter (väg C: betans eget fönster hade aldrig kunnat vinna); att flytta tillbaka kalibreringen till 1/2 2027 (halva domvintern
+förlorad). **Axel** bör få veta punkt 3, eftersom kalibreringen i kuvösen var hans ok (#425).

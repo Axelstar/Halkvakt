@@ -2233,3 +2233,12 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - (C) bara 60 min.
 
   Den nya rekommendationen är B, och annars A. Båda gör att kalibreringen kan stanna i kuvösen. Obekräftat: att leveransens yta är ögonblicksvärdet och inte ett medel.
+- 3/10 (Claude, Bengt: *"ja till A, slå ihop 734"*, sedan *"vi kör på dina rekommendationer för 1, 2 och 4"*): #734 är sammanslagen (5cb7b7f).
+  - **DECISIONS #455** har fyra tillägg före riktningsprovet: ovanpå i KB-B:s form utan golv, frysrisken som baslinje, väg A med kalibreringens svep 30 och 60 min, och delar utan startvärden *ej prövade*.
+  - **Väg A är byggd.** `kuvos/trend.ts` härleder kuvösens trendfunktion ur `sql/018` vid körning. Ändringarna är namnet och `n30 >= 3` → `>= 2`, och varje byte får förekomma exakt en gång, annars stoppar den.
+  - **Proven:** härledningen i `test/kuvos.test.ts`, och samma halvtimmesserie genom driften och varianten i `test/integration.test.ts`. Driften ger 30 = tom och 60 = 1,20; varianten ger 30 = 0,80 och 60 = 1,20.
+  - `kuvos.yml` kör trenden efter vakterna. Driftens kod är orörd.
+  - **Hela vintern** (kuvos 37152660384): trenden tog 1,0 min och gav 363 508 fallande kandidater. Av dem har 363 453 en 30-minuterslutning (0 före väg A), 363 056 en 60-minuterslutning och 0 en 15-minuterslutning.
+  - **Motprov** (utkast-PR #736, stängd): driftens funktion installerades under variantens namn utan bytet. CI 37152660669 blev rött på exakt integrationsprovet (`not ok 102`, 0,80 väntat), och härledningsprovet förblev grönt.
+  - **Molnkällan:** `publish/moln.ts` tar en valbar källa, med SMHI:s API som standard så att driften är oförändrad. Kuvösen har sin egen källa ur `kuvos_ra.smhi_obs` (`kuvos/moln.ts`), och ett prov visar att taket gäller per källa.
+  - **Rättelse till #455:** T-A och R-A är svep som väljer värdet (TROSKLAR-TRENDEN §2: *"T-A väljer värdet"*; R-A redovisar *"bästa kombinationen"*). Därför är de *ej prövade* enligt punkt 4. Jag hade skrivit att R-A körs. Trendens värden prövas inom efterhalkan.

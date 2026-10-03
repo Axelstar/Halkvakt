@@ -52,17 +52,44 @@ export function narmastITid(serie: Map<number, number>, tMin: number, maxMin: nu
 
 export type Punkt = { lon: number; lat: number; tMin: number };
 
+/** Var molnet kommer ifrån: stationerna, en stations serie (minuter sedan epok → värde) och taket på antalet stationer per körning. */
+export type Molnkalla = {
+  namn: string;
+  stationer: () => Promise<{ id: string; lon: number; lat: number }[]>;
+  serie: (id: string) => Promise<Map<number, number> | null>;
+  tak: number;
+};
+
+/** Driftens källa: SMHI:s API vid körning, `latest-months`. Taket finns för att begränsa anropen mot SMHI. */
+export const SMHI_API: Molnkalla = {
+  namn: "SMHI:s API",
+  stationer: async () => {
+    const rs = await fetch(`${API}.json`, { headers: UA });
+    if (!rs.ok) throw new Error(`SMHI stationslista svarade ${rs.status}`);
+    return (((await rs.json()) as any).station ?? [])
+      .filter((x: any) => x.active && x.longitude != null)
+      .map((x: any) => ({ id: String(x.id), lon: Number(x.longitude), lat: Number(x.latitude) }));
+  },
+  serie: async (id) => {
+    const d = await fetch(`${API}/station/${id}/period/latest-months/data.json`, { headers: UA });
+    if (!d.ok) return null;
+    const m = new Map<number, number>();
+    for (const v of (((await d.json()) as any).value ?? [])) {
+      if (v.value === null) continue;
+      m.set(Number(v.date) / 60000, Number(v.value));
+    }
+    return m;
+  },
+  tak: MAX_STATIONER,
+};
+
 /** Molnklass per punkt. En station som inte svarar är tystnad ("okänd"), inte ett fel — och
  *  SMHI:s molnstationer är SVENSKA: för punkter utanför Sverige blir svaret "okänd", vilket är
- *  rätt svar och inte ett hål att fylla med en sträckt observation. */
+ *  rätt svar och inte ett hål att fylla med en sträckt observation. Kuvösen skickar sin egen källa (kuvos/moln.ts). */
 export async function molnForPunkter(
-  punkter: Punkt[], logg: (s: string) => void = console.log,
+  punkter: Punkt[], logg: (s: string) => void = console.log, kalla: Molnkalla = SMHI_API,
 ): Promise<Molnklass[]> {
-  const rs = await fetch(`${API}.json`, { headers: UA });
-  if (!rs.ok) throw new Error(`SMHI stationslista svarade ${rs.status}`);
-  const st = (((await rs.json()) as any).station ?? [])
-    .filter((x: any) => x.active && x.longitude != null)
-    .map((x: any) => ({ id: String(x.id), lon: Number(x.longitude), lat: Number(x.latitude) }));
+  const st = await kalla.stationer();
 
   const narmast: (string | null)[] = [];
   const behov = new Map<string, number>();
@@ -75,20 +102,14 @@ export async function molnForPunkter(
       narmast.push(st[bi].id); behov.set(st[bi].id, (behov.get(st[bi].id) ?? 0) + 1);
     } else narmast.push(null);
   }
-  const hamta = [...behov].sort((a, b) => b[1] - a[1]).slice(0, MAX_STATIONER).map(([id]) => id);
-  logg(`  ${narmast.filter(Boolean).length} av ${punkter.length} punkter har en molnstation inom ${MAX_MOLN_KM} km · hämtar ${hamta.length} stationer`);
+  const hamta = [...behov].sort((a, b) => b[1] - a[1]).slice(0, kalla.tak).map(([id]) => id);
+  logg(`  ${narmast.filter(Boolean).length} av ${punkter.length} punkter har en molnstation inom ${MAX_MOLN_KM} km · hämtar ${hamta.length} stationer ur ${kalla.namn}`);
 
   const serier = new Map<string, Map<number, number>>();
   for (const id of hamta) {
     try {
-      const d = await fetch(`${API}/station/${id}/period/latest-months/data.json`, { headers: UA });
-      if (!d.ok) continue;
-      const m = new Map<number, number>();
-      for (const v of (((await d.json()) as any).value ?? [])) {
-        if (v.value === null) continue;
-        m.set(Number(v.date) / 60000, Number(v.value));
-      }
-      serier.set(id, m);
+      const m = await kalla.serie(id);
+      if (m) serier.set(id, m);
     } catch { /* en station som inte svarar är tystnad, inte ett fel */ }
   }
   return punkter.map((p, i) => {
