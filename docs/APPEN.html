@@ -158,7 +158,7 @@
 <!-- LÄGESRADER §3: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 <div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
   <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-olyckor">Olyckor (A3), med olycksläget</a> <span style="color: var(--dampad, #4A5763)">delvis, 92 % · kvar: Olycksläget på varningskortet ute hos testarna: iOS 0.3.10 (22) bara provat i simulatorn, inte uppladdat</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gron, #1F7A45); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-olyckor">Olyckor (A3), med olycksläget</a> <span style="color: var(--dampad, #4A5763)">klar</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">–</span> <b>Tröskeldokument</b> <span style="color: var(--dampad, #4A5763)">gäller inte · I drift sedan augusti; graderingen avgjord i DECISIONS-ARKIV #28 och #30a (tröskel 5, types.ts:120)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Data i arkivet</b> <span style="color: var(--dampad, #4A5763)">klart · deviations (sql/001_init.sql:58) och situation_archive (sql/003); ingest-live/index.ts:65-89</span></li>
@@ -167,7 +167,7 @@
       <li><span aria-hidden="true">–</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Ingen grind; tröskeln avgjord av Axel 31/8 (DECISIONS-ARKIV #30a)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Villkoret i motorn</b> <span style="color: var(--dampad, #4A5763)">klart · engine.ts:252-273 evaluateAccident (early/near, tidigt rop en gång #211); Alert.step engine.ts:178-179 (DECISIONS #443)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Testfall i tre språk</b> <span style="color: var(--dampad, #4A5763)">klart · 11 vektorer v04, v10, v11, v15–v17, v22, v25, v26, v28, v29; step jämförs i VectorTests.swift:80 och VectorTest.kt:96</span></li>
-      <li><span aria-hidden="true">◐</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">pågår · Rösten i 0.3.x (APPEN.html:142-144); olycksläget på kortet bara i 0.3.10 (22), provat i simulatorn (TAVLA.md:1937)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">klart · Rösten i 0.3.x (APPEN.html:142-144); olycksläget på kortet i 0.3.10 (22) släppt av Axel 3/10 (Bengts besked); Android versionCode 22 ur CI</span></li>
     </ul>
   </details>
   <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gron, #1F7A45); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-halka">Rapporterad halka (A1)</a> <span style="color: var(--dampad, #4A5763)">klar</span></summary>
@@ -218,10 +218,10 @@
       <li><span aria-hidden="true">✓</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">klart · texts.ts:65-70, Engine.swift:185-186, Types.kt:163-164; riktningen i 0.3.5 (8) 2/9</span></li>
     </ul>
   </details>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-a-rosten">Rösten och varningskorten</a> <span style="color: var(--dampad, #4A5763)">delvis, 60 % · kvar: Varningskorten v4 sedda i ett iOS-bygge på telefon (kort #284)</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-a-rosten">Rösten och varningskorten</a> <span style="color: var(--dampad, #4A5763)">delvis, 70 % · kvar: Varningskorten v4 sedda i ett iOS-bygge på telefon (kort #284)</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Byggd i koden</b> <span style="color: var(--dampad, #4A5763)">klart · engine/src/texts.ts:26–72; SpeechService.swift:13; GuardService.kt:226; WarningCard.swift och WarningCard.kt med tester</span></li>
-      <li><span aria-hidden="true">◐</span> <b>I ett iPhone-bygge</b> <span style="color: var(--dampad, #4A5763)">pågår · Rösten i varje bygge sedan 0.3.0 (3); korten v4 i (22) bara provade i simulatorn 2/10 (TAVLA.md)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>I ett iPhone-bygge</b> <span style="color: var(--dampad, #4A5763)">klart · Rösten i varje bygge sedan 0.3.0 (3); korten v4 i 0.3.10 (22) släppt av Axel 3/10 (Bengts besked)</span></li>
       <li><span aria-hidden="true">✓</span> <b>I ett Android-bygge</b> <span style="color: var(--dampad, #4A5763)">klart · android.yml 37044258124 grön, samma tolv kortfall i båda testsviterna (kort #284); versionCode 22</span></li>
       <li><span aria-hidden="true">◐</span> <b>Prov i bil eller på telefon</b> <span style="color: var(--dampad, #4A5763)">pågår · Kamerorna rätt på Malmö–Boden 1–2/9 (DECISIONS-ARKIV #102); korten v4 aldrig på telefon (#284)</span></li>
       <li><span aria-hidden="true">○</span> <b>Verify på kortet</b> <span style="color: var(--dampad, #4A5763)">saknas · #284: inget iOS-bygge som visar kort F/G/H vid allvarlig olycka och kvittot på Redo</span></li>
@@ -260,10 +260,10 @@
 <!-- LÄGESRADER §4: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 <div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
   <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-a-ios">iPhone-appen</a> <span style="color: var(--dampad, #4A5763)">delvis, 50 % · kvar: Skinnet 0.3.10 (22) uppladdat och sett på en iPhone (kort #284)</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-a-ios">iPhone-appen</a> <span style="color: var(--dampad, #4A5763)">delvis, 63 % · kvar: Skinnet 0.3.10 (22) sett på en iPhone (kort #284)</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Byggd i koden</b> <span style="color: var(--dampad, #4A5763)">klart · ios/HalkvaktApp/Sources: HalkvaktApp.swift, Services/GuardManager.swift, Views/ (11 vyer), Intents/ (5); project.yml 0.3.10 (22)</span></li>
-      <li><span aria-hidden="true">◐</span> <b>I ett iPhone-bygge</b> <span style="color: var(--dampad, #4A5763)">pågår · (19) i Kompisarna 1/10, (20) Waiting for Review (DECISIONS #433), (21) i TestFlight 2/10 (#434); (22) bara i simulatorn</span></li>
+      <li><span aria-hidden="true">✓</span> <b>I ett iPhone-bygge</b> <span style="color: var(--dampad, #4A5763)">klart · 0.3.10 (22) släppt av Axel 3/10 (Bengts besked); (21) i TestFlight 2/10 (#434); (20) Waiting for Review (DECISIONS #433)</span></li>
       <li><span aria-hidden="true">◐</span> <b>Prov i bil eller på telefon</b> <span style="color: var(--dampad, #4A5763)">pågår · Bengts provresa 28/9 på (18) (docs/TILL-AXEL-BYGGE-19.md), långtrycket i (20) på Axels iPhone 2/10 (#433); (22) aldrig på telefon</span></li>
       <li><span aria-hidden="true">○</span> <b>Verify på korten</b> <span style="color: var(--dampad, #4A5763)">saknas · #284: kort F/G/H och kvittot inte sedda i ett iOS-bygge; #228: project.yml saknar schemes; introduktionen inte bokförd</span></li>
     </ul>
@@ -425,10 +425,10 @@
 <!-- LÄGESRADER §9: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 <div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
   <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-a-ios">iPhone-appen</a> <span style="color: var(--dampad, #4A5763)">delvis, 50 % · kvar: Skinnet 0.3.10 (22) uppladdat och sett på en iPhone (kort #284)</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-a-ios">iPhone-appen</a> <span style="color: var(--dampad, #4A5763)">delvis, 63 % · kvar: Skinnet 0.3.10 (22) sett på en iPhone (kort #284)</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Byggd i koden</b> <span style="color: var(--dampad, #4A5763)">klart · ios/HalkvaktApp/Sources: HalkvaktApp.swift, Services/GuardManager.swift, Views/ (11 vyer), Intents/ (5); project.yml 0.3.10 (22)</span></li>
-      <li><span aria-hidden="true">◐</span> <b>I ett iPhone-bygge</b> <span style="color: var(--dampad, #4A5763)">pågår · (19) i Kompisarna 1/10, (20) Waiting for Review (DECISIONS #433), (21) i TestFlight 2/10 (#434); (22) bara i simulatorn</span></li>
+      <li><span aria-hidden="true">✓</span> <b>I ett iPhone-bygge</b> <span style="color: var(--dampad, #4A5763)">klart · 0.3.10 (22) släppt av Axel 3/10 (Bengts besked); (21) i TestFlight 2/10 (#434); (20) Waiting for Review (DECISIONS #433)</span></li>
       <li><span aria-hidden="true">◐</span> <b>Prov i bil eller på telefon</b> <span style="color: var(--dampad, #4A5763)">pågår · Bengts provresa 28/9 på (18) (docs/TILL-AXEL-BYGGE-19.md), långtrycket i (20) på Axels iPhone 2/10 (#433); (22) aldrig på telefon</span></li>
       <li><span aria-hidden="true">○</span> <b>Verify på korten</b> <span style="color: var(--dampad, #4A5763)">saknas · #284: kort F/G/H och kvittot inte sedda i ett iOS-bygge; #228: project.yml saknar schemes; introduktionen inte bokförd</span></li>
     </ul>
@@ -487,7 +487,7 @@
   <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-u-testflight">Extern TestFlight till testarna</a> <span style="color: var(--dampad, #4A5763)">väntar, 75 % · Axel: utskicket av den publika TestFlight-länken till testarna.</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Förberett</b> <span style="color: var(--dampad, #4A5763)">klart · docs/BETAGUIDE-IOS.md, TestFlight-texten (DECISIONS #371, #429); inklistrad 1/10</span></li>
-      <li><span aria-hidden="true">✓</span> <b>Uppladdat</b> <span style="color: var(--dampad, #4A5763)">klart · 0.3.9 (19) uppladdad 1/10 22:25 (STATUS.md); (21) uppladdad 2/10 13:56 (TAVLA.md)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Uppladdat</b> <span style="color: var(--dampad, #4A5763)">klart · 0.3.9 (19) uppladdad 1/10 22:25 (STATUS.md); (21) uppladdad 2/10 13:56 (TAVLA.md); 0.3.10 (22) släppt av Axel 3/10 (Bengts besked)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Godkänt</b> <span style="color: var(--dampad, #4A5763)">klart · Beta App Review 26/9 för (14); (19) Testing i externa gruppen Kompisarna 1/10 med publik länk (PRODUKTBOK.md)</span></li>
       <li><span aria-hidden="true">○</span> <b>Utskick till testarna</b> <span style="color: var(--dampad, #4A5763)">saknas · 'Kvar: själva utskicket av länken till de tolv — Axel' (TAVLA.md); gruppen har 2 testare</span></li>
     </ul>
@@ -549,6 +549,9 @@
         <tr><td class="nr">0.3.9 (17)</td><td class="nr">26/9</td><td>Reglaget <i>Längsta förvarning</i> 400–1 200 m.</td></tr>
         <tr><td class="nr">0.3.9 (18)</td><td class="nr">26/9</td><td><i>Appen missade</i>, Siri-fraserna och missraderna efter resan. Android bär samma nummer.</td></tr>
         <tr><td class="nr">0.3.9 (19)</td><td class="nr">1/10</td><td>Skärmarna rullar, svaren på ett ställe, svenska klockslag, <q>lämnar inte telefonen av sig själv</q>. Uppladdat och i Kompisarna samma kväll. Android (19): stoppknapp i notisen, autostartens text, cache.</td></tr>
+        <tr><td class="nr">0.3.9 (20)</td><td class="nr">2/10</td><td>Långtrycket rättat. Inlämnad till App Store, väntar på Apples granskning.</td></tr>
+        <tr><td class="nr">0.3.9 (21)</td><td class="nr">2/10</td><td>Vägdatans klockslag tillbaka i körläget.</td></tr>
+        <tr><td class="nr">0.3.10 (22)</td><td class="nr">3/10</td><td>Det nya skinnet: varningskorten med lägesetikett och olycksläget, inställningar i två nivåer, introduktionen. Android bär samma nummer.</td></tr>
       </tbody>
     </table>
   </div>

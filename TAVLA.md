@@ -1924,7 +1924,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟡 GÖRA (pågår just nu)
 
-- [ ] 🔨 **#284 APPENS NYA SKINN — DESIGNÖVERLÄMNINGEN V2 (BYGGT OCH PROVAT I SIMULATORN — Claude, Axels order 2/10 18:46; DECISIONS #443, #444, PR #698; iOS 0.3.10 (22), Android 0.3.10 (22))**:
+- [ ] 🔨 **#284 APPENS NYA SKINN — DESIGNÖVERLÄMNINGEN V2 (BYGGT, SLÄPPT AV AXEL 3/10 — Claude, Axels order 2/10 18:46; DECISIONS #443, #444, PR #698; iOS 0.3.10 (22), Android 0.3.10 (22))**:
   varningskorten A–L med lägesetikett, vägskylt, gränsskylt och rådruta; gammal data M–N; Redo efter tur; På vakt; inställningar i
   två nivåer; introduktionen (iOS); sex ikoner; logotypen med "!"; 3D-socklarna renderade ur designens CSS. iOS och Android lika,
   Androids "Uppfattat" och källrad borta. Rösten oförändrad.
@@ -1935,8 +1935,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ (5) produktboken och `docs/APPEN.html` omskrivna.
   ✅ (6) **iOS byggt i Axels Xcode 2/10 23:16 och provat i simulatorn (iPhone 16e, iOS 26.1): "It works as intended"** (Axel). Första
   starten fastnade på Xcodes debugger ("Waiting to attach") — appen öppnad från hemskärmen. Byggnumret höjt till 0.3.10 (22) på båda.
-  **Kvar:** (a) iOS-skärmbilderna till produktboken; kort F, G, H ses först vid en riktig allvarlig olycka · (b) artefakten *Halkvaktens app* republiceras ur `docs/APPEN.html` från
-  ägarens konto (Bengts; den här sessionen når den inte) — STOMREGELN · (c) Androids introduktion i fyra sidor är inte byggd (Android
+  ✅ (7) **0.3.10 (22) släppt av Axel 3/10** (Bengts besked); projektkartan bokförd samma dag: olycksläget (A3) grönt, iPhone-bygget
+  klart för iPhone-appen och för rösten och varningskorten. Ingen har ännu bokfört (22) sedd på en telefon.
+  **Kvar:** (a) iOS-skärmbilderna till produktboken; kort F, G, H ses först vid en riktig allvarlig olycka · ~~(b) artefakten *Halkvaktens app* republiceras ur `docs/APPEN.html` från
+  ägarens konto~~ ✅ republicerad 3/10 ur repokopian (PR #703 och detta varv) · (c) Androids introduktion i fyra sidor är inte byggd (Android
   har trappan i MainActivity; designen förutsätter iOS dialoger) · (d) Kort #219/#280: byggnumret höjs i samma commit som sista
   ändringen före arkivering. **Verify:** ett iOS-bygge visar kort F/G/H vid en allvarlig olycka och kvittot på Redo efter en tur.
 
