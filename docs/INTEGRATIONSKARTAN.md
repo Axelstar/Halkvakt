@@ -83,7 +83,7 @@ L2 + L3 stänger det hålet. Det är den enskilt största vinsten som finns att 
 - [Trafikverkets väglag (RoadCondition)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vaglag): klar
 - [Trafikverkets olyckor, djur och hinder](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-situation): klar
 - [Publiceringen var tionde minut](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-l-publicera): klar
-- [Motorn i tre språk](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-motorn): delvis, 92 % · kvar: Swifts och Kotlins läsare av lägesfilen (SnapshotRepo.swift, SnapshotRepo.kt) körs inte mot engine/fixtures/lasarprov.json; appmålen saknar testmål
+- [Motorn i tre språk](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-motorn): delvis, 92 % · kvar: Swifts och Kotlins läsare av lägesfilen (SnapshotRepo.swift, SnapshotRepo.kt) körs inte mot engine/fixtures/lasarprov.json; iPhone-appen saknar testmål, Android-appen har ett men inget läsartest (kort #289)
 - [Olyckor (A3), med olycksläget](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-olyckor): klar
 - [Rapporterad halka (A1)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-halka): klar
 - [Frysrisk vid stationer och broar (A2)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-frysrisk): klar
@@ -766,7 +766,11 @@ ingen läser en överspelad version någon annanstans.
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
 
-Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 3 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 4 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+
+**§4 Motorn som den faktiskt ser ut i dag**
+
+- #289 LÄSARKONTRAKTET I SWIFT OCH KOTLIN — MOTORN I TRE SPRÅK TILL 100 % — Claude, låst
 
 **§5 Fogarna — var en skuggdel kan greppa, och vad den kostar**
 
