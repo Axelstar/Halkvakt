@@ -17,7 +17,7 @@ BEGIN
     SELECT jsonb_object_agg(k.v, v.v) INTO obj
       FROM json_array_elements_text(hdr) WITH ORDINALITY AS k(v, i)
       JOIN json_array_elements(rad::json) WITH ORDINALITY AS v(v, i) USING (i);
-    r := jsonb_populate_record(NULL::weather_observations, obj);
+    r := jsonb_populate_record(NULL::weather_observations, obj - 'wind_speed_ms');
     r.geom := ST_SetSRID(ST_MakePoint((obj->>'lon')::float8, (obj->>'lat')::float8), 4326);
     RETURN NEXT r;
   END LOOP;
