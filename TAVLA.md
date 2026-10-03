@@ -238,19 +238,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   som nästa version. ✅ **(21) uppladdat 2/10 13:56** (Axel, Xcode) — interna gruppen får det direkt. 🔑 Kvar: en resa på 45–60 min i (21)
   där klockslaget vid *PÅ DIN VÄG* flyttar sig minst en gång (servern publicerar var tionde minut, appen hämtar var trettionde). Axel eller Bengt.
 
-- [ ] 🎚️ **#259 REGLAGET "VARNA PÅ AVSTÅND" LOVAR MER ÄN MOTORN GÖR** (fynd 26/9 under kadenstestet, DECISIONS #373). Motorn
-  talar vid `min(leadMaxM, max(400 m, fart × 30 s))` (`engine.ts:110`), och reglaget sätter bara `leadMaxM`. I 140 km/h blir det
-  högst 1 167 m, i 90 km/h 750 m — så *Tidigt — 3 km* (iOS) och 5 km (Android) gör ingen skillnad på en svensk väg; bara ett
-  värde UNDER fart × 30 s ändrar något. DECISIONS #263 visste att 3 000 m nås först över 360 km/h, men inte att reglaget därmed
-  lovar något. Produktboken säger *"hur långt i förväg rösten ska tala"*. Två vägar: skriv reglaget som ett tak (*Senast …*) med
-  spannet som faktiskt verkar, eller låt reglaget styra tiden (sekunder) i stället för metern — det senare ändrar vad rösten
-  säger och kräver vektorer. 🔑 Bengts och Axels val (§4.2). Verify: reglagets text och spann säger vad motorn gör, på båda
-  plattformarna, och produktboken likaså.
-  🔨 **VÄG (a) BYGGD 26/9** (Bengts ja, DECISIONS #374): *Längsta förvarning*, 400–1 200 m på båda, 1 200 från början, texten säger 30
-  sekunder före; körläget säger *som längst* i stället för *inom 3 km*. Två kontrakt i kontraktsgrinden. android.yml 36219380753 grön på grenen (JVM-prov, emulator, release-AAB); fotostudions shot-3 visar Längsta förvarning 1,2 km, Kortare — 400 m / Fullt — 1,2 km och texten om 30 sekunder.
-  🔑 Kvar: iOS-bygget 0.3.9 (17) hos Axel (första kompileringen) — sedan stängs kortet.
-  ↪ **Flyttat 26/9 från *Bengt*** (femma åtta, DECISIONS #377): nästa steg är Axels bygge 0.3.9 (17).
-  ↪ **1/10 (DECISIONS #423):** bygget hos Axel är numera **(19)** (`docs/TILL-AXEL-BYGGE-19.md`); (14)–(18) arkiverades aldrig, så (19) blir det första bygget som bär ändringen.
 
 - [ ] 📱 **#279 iOS: EFTER-RESAN-KORTET GICK UTANFÖR SKÄRMEN** (Axels skärmbild 1/10 21:35 från en resa 12:39–13:44 med fyra kameravarningar;
   samma fel som Bengts provresa 28/9 på 4,7 tum, `docs/TILL-AXEL-BYGGE-19.md` iPhone 1–3). `VaktenView` och `KorlageView` hade ingen
@@ -726,6 +713,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ✅ **SERVERN I DRIFT 26/9 07:00Z** (DECISIONS #380): migrationen sql/038 via dbknapp 36225368861 (tabellen finns, RLS på, anon utan SELECT och INSERT), deploy av `facit-svar` 36225396540 från main, provmiss mot den riktiga funktionen ⇒ 204 och en rad med `prov = true` (dbknapp 36225453047; 0 riktiga), två felaktiga missar ⇒ 400, och ett provsvar på den gamla vägen ⇒ fortfarande 204.
 
 ### Claude — låst (väntar på nyckel)
+- [ ] 🔒 **#290 LIVEMOTORNS PROV — SPEGELN OCH UPSERTERNA I CI** (Bengts fråga 3/10). Livemotorn (`supabase/functions/ingest-live/index.ts`) kör varje minut, men inget prov i CI rör den: listorna `KEEP` och `ARCHIVE` står en gång i funktionen och en gång i `ingest/sources/situations.ts` (*"MIRROR … keep the two in step"*), utan vakt, och skrivningarna till `deviations`, `road_conditions` och väderarkivet prövas bara i den gamla Node-ingesten. **Plan:** (1) *spegeln, 1–2 h:* listorna och beslutet (`ingestAction`, `shouldArchive`) flyttas till en ren grannmodul, `supabase/functions/ingest-live/situationspolicy.ts`, som `arkivpolicy.ts`; både funktionen och Node-ingesten importerar den, så spegeln försvinner i stället för att vaktas, och de befintliga proven i `test/integration.test.ts` prövar då samma kod som driften · (2) *upserterna, ½–1 dag:* de tre skrivfunktionerna flyttas till en modul som tar databasen som argument och prövas med Deno mot en slit-och-släng-PostGIS — ny händelse, uppdatering, radering, en radering av en typ vi aldrig lagrat (får inte skapa en rad), och omkörning utan dubbletter — i ett eget litet flöde som bara körs när `ingest-live`, `sql/` eller `situations.ts` ändras. Motprov per steg. Funktionen deployas efter steg 2 och beviset är att kursorerna rör sig efter deployen. 🔑 Bengts ja (§4.2). **Verify:** båda proven gröna i CI, motproven röda, kursorerna rör sig efter deployen; delen *Livemotorn* grön.
 - [ ] 🔒 **#285 iCLOUD-KOPIAN BÄR UNGEFÄR VAR OCH NÄR** (upptäckt 2/10 kväll när *spara en rutt* utreddes, kort #233). På iPhone ligger `history`, `facit` och `missar` i `UserDefaults.standard` (`SpeechService.swift`, klassen `Prefs`), och den följer med i iCloud- och datorkopian. Varningarnas id, närmaste station och klockslag säger ungefär var och när föraren körde. Inget skickas till Halkvakt, men det lämnar telefonen i förarens egen kopia. Android har `allowBackup="false"`, men flytten vid byte av telefon omfattas inte av den på Android 12+. 🔑 Axels beslut: är det förenligt med *ingen position lämnar telefonen av sig själv*, eller ska de flyttas till en fil som undantas? Verify: beslutet i DECISIONS, och vid flytt ett test som visar att filen är undantagen.
 - [ ] 👥 **#278 BETAN: BÅDA VÄRDEPAREN I SKUGGAN, ETT HÖRS** (Bengts fråga och beslut 1/10, DECISIONS #427). Efterhalkans regel följs
   vintern 2026/27 med två värdepar på samma nätter — startvärdena från 16/9 och kuvösens kalibrerade värden (#425) — så att det syns var
@@ -1948,6 +1936,20 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#259 REGLAGET "VARNA PÅ AVSTÅND" LOVAR MER ÄN MOTORN GÖR** (fynd 26/9 under kadenstestet, DECISIONS #373). Motorn
+  talar vid `min(leadMaxM, max(400 m, fart × 30 s))` (`engine.ts:110`), och reglaget sätter bara `leadMaxM`. I 140 km/h blir det
+  högst 1 167 m, i 90 km/h 750 m — så *Tidigt — 3 km* (iOS) och 5 km (Android) gör ingen skillnad på en svensk väg; bara ett
+  värde UNDER fart × 30 s ändrar något. DECISIONS #263 visste att 3 000 m nås först över 360 km/h, men inte att reglaget därmed
+  lovar något. Produktboken säger *"hur långt i förväg rösten ska tala"*. Två vägar: skriv reglaget som ett tak (*Senast …*) med
+  spannet som faktiskt verkar, eller låt reglaget styra tiden (sekunder) i stället för metern — det senare ändrar vad rösten
+  säger och kräver vektorer. 🔑 Bengts och Axels val (§4.2). Verify: reglagets text och spann säger vad motorn gör, på båda
+  plattformarna, och produktboken likaså.
+  🔨 **VÄG (a) BYGGD 26/9** (Bengts ja, DECISIONS #374): *Längsta förvarning*, 400–1 200 m på båda, 1 200 från början, texten säger 30
+  sekunder före; körläget säger *som längst* i stället för *inom 3 km*. Två kontrakt i kontraktsgrinden. android.yml 36219380753 grön på grenen (JVM-prov, emulator, release-AAB); fotostudions shot-3 visar Längsta förvarning 1,2 km, Kortare — 400 m / Fullt — 1,2 km och texten om 30 sekunder.
+  🔑 Kvar: iOS-bygget 0.3.9 (17) hos Axel (första kompileringen) — sedan stängs kortet.
+  ↪ **Flyttat 26/9 från *Bengt*** (femma åtta, DECISIONS #377): nästa steg är Axels bygge 0.3.9 (17).
+  ↪ **1/10 (DECISIONS #423):** bygget hos Axel är numera **(19)** (`docs/TILL-AXEL-BYGGE-19.md`); (14)–(18) arkiverades aldrig, så (19) blir det första bygget som bär ändringen.
+  ✅ **KLART 3/10 (TAVELREGELN 3):** Verify uppfylld på båda plattformarna och i produktboken — *Längsta förvarning* 400–1 200 m, *"Du kan korta det, aldrig förlänga"*: Android i android.yml 36219380753, iPhone i 0.3.9 (19), första bygget med reglaget, i Kompisarna 1/10 (PRODUKTBOK.md:111–112, 568). Bara provet i bil återstår, och det står på delen *Reglaget för förvarningen* i projektkartan.
 - [x] ✅ **#287 PROJEKTKARTAN FINNS — TITTA PÅ DEN** (Bengt 3/10, DECISIONS #446). Navet över hela bygget: https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8. ✅ **KLART 3/10:** sidan delad med länk (artefakten visar *Anyone with the link* från 3/10), och Axel har tittat — Bengts besked 3/10: *"han har tittat"*. Från samma dag bokför kartsynken Axels byggen och commits i kartan (DECISIONS #447, kort #288).
 - [x] ✅ **#286 PROJEKTKARTAN — MÄT DEL FÖR DEL MOT KODEN** (Bengts ja 3/10, DECISIONS #446). Den grova versionen satte läget i stora drag ur stomdokumenten, tavlan och beslutsloggen. Nästa varv: varje del mäts mot koden, de tretton tröskeldokumenten och integrationskartan, och grönt står bara kvar med ett bevis som går att följa. Sedan pekar stomdokumentens egna läge-rader på kartan i stället för att föra eget läge, och kortkartan kan gå genom delarna. Verify: varje grön del har ett följbart bevis, och `scripts/projektkartan.ts --check` är grön. ✅ **KLART 3/10:** alla 75 delar mätta mot koden med byggsteg och bevis (sju agenter, tre påståenden stickprovade: DECISIONS #433, vakthundens gränser, gallringsjobbet); procenten räknas ur stegen, viktad 1–3; stomdokumenten pekar på kartan med avsnittet *Läget i projektkartan*; `projektkartan.ts --check` grön. Kortkartan genom delarna gjordes inte: kopplingen kort→avsnitt står kvar i kortkartan.json.
 - [x] ✅ **GENOMLYSNING 2 AV DE FEM STOMDOKUMENTEN — KLART 1/10 (DECISIONS #422)**: STOMREGELN bekräftad av Bengt i en andra session; mätningssidan (7.7, 9, 8.1), appsidan (*Vad appen inte gör*), systembilden (oljan, taket), bedömningen och kartans läge-rader stämda mot #419–#421.

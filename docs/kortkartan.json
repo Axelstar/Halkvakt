@@ -17,7 +17,6 @@
     "Skydda namnet": ["APP 9"],
     "Tolv testare till Play-perioden": ["APP 9"],
     "#258": ["APP 2", "FAV 4"],
-    "#259": ["APP 4", "MAT 8", "BED 4.2"],
     "#279": ["APP 6", "FAV 6"],
     "Välkomsttext + testinstruktion till kompisarna": ["APP 9"],
     "#248": ["APP 5"],
@@ -55,6 +54,7 @@
     "#45": ["MAT 2"],
     "#284": ["APP 4", "FAV 2"],
     "#288": ["BED 5"],
-    "#289": ["KAR 4"]
+    "#289": ["KAR 4"],
+    "#290": ["SYS 1"]
   }
 }
