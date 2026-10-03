@@ -81,7 +81,7 @@ first, English second.
 
 ## Session protocol (self-steering)
 Every session, in order:
-1. Orient per SESSIONSREGELN below: the latest `docs/BEDOMNING-*.md` in full, `docs/INTEGRATIONSKARTAN.md` when it
+1. Orient per SESSIONSREGELN below: the project map (`docs/PROJEKTKARTAN.html`, PROJEKTKARTAN below) for where every part stands, the latest `docs/BEDOMNING-*.md` in full, `docs/INTEGRATIONSKARTAN.md` when it
    changed or a new grepp starts, TAVLA.md's 🟡 section, DECISIONS added since last session, latest CI runs. Search
    TAVLA, STATUS and DECISIONS — don't read them whole (halved 26/9; the older half is in TAVLA-ARKIV.md and
    DECISIONS-ARKIV.md — search there too).
@@ -147,6 +147,19 @@ och varje stomdokument visar sina öppna kort under rubriken *Öppna kort*. Kopp
 listorna skrivs av `node --experimental-strip-types scripts/kortkartan.ts` och ändras aldrig för hand. Ett nytt kort, ett stängt kort
 eller en ny rubrik på ett kort ⇒ kortkartan.json, skriptet och republiceringen av de berörda artefakterna i SAMMA commit som
 tavlan. `--check` (i ci.yml) fäller på okopplade kort, kopplingar till stängda kort, okända avsnitt och listor som inte är aktuella.
+
+## PROJEKTKARTAN (Bengts ja 2026-10-03 — navet över bygget, DECISIONS #446)
+*Halkvaktens projektkarta* — https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8, källa `docs/PROJEKTKARTAN.html`, skriven ur `docs/projektkartan.json` av
+`node --experimental-strip-types scripts/projektkartan.ts` (ändras aldrig för hand). Den är navet OVANFÖR de sju stomdokumenten:
+varje del av projektet med block, läge, bevis eller nyckel, vad som saknas, beroenden, kort, beslut och var delen beskrivs.
+- **Kartan äger LÄGET per del** och är vägen in i bygget. Den är **underordnad BEVISET**: grönt kräver ett bevis som går att följa
+  (commit, grön körning, mätning efter driftsättning, beslut), blått en nyckel, orange och rött en lista över vad som saknas. Säger
+  koden eller ett prov något annat är kartan fel, inte koden. Besluten stannar i DECISIONS, ordningen och kalendern i bedömningen,
+  arbetet på tavlan och reglerna i tröskeldokumenten.
+- **Samma commit:** byggs, mäts, stängs eller öppnas något ⇒ delens rad i projektkartan.json, skriptet och republiceringen till samma
+  URL i SAMMA commit som ändringen. Ett nytt kort ska hänga på en del. `--check` i ci.yml fäller grönt utan bevis, blått utan nyckel,
+  orange och rött utan lista, okända beroenden och avsnitt, öppna kort utan del och en sida som inte är aktuell.
+- **Grov version 3/10** (kort #286): läget satt i stora drag; delarna mäts mot koden innan stomdokumentens egna läge-rader pekar hit.
 
 ## PRODUKTBOKSREGELN (Axels order 2026-08-29)
 Ändras något användaren SER, HÖR eller GÖR (skärm, rösttext, flöde, behörighet)

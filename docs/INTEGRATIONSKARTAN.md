@@ -727,7 +727,7 @@ ingen läser en överspelad version någon annanstans.
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
 
-Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 3 av 44 öppna kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 4 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
 
 **§5 Fogarna — var en skuggdel kan greppa, och vad den kostar**
 
@@ -736,6 +736,7 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 3 av 44
 **§6 Var lagren står, mätt**
 
 - #270 PROGNOSLAGRET EFTER PREMISSMÄTNINGARNA — BENGTS VAL a–h — Bengt
+- #286 PROJEKTKARTAN — MÄT DEL FÖR DEL MOT KODEN — Claude
 - #38b Stråket / skuggmotorn — ÅTERSTÄLLT 10/9 — Claude, låst
 
 <!-- /ÖPPNA KORT -->

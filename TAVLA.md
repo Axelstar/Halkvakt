@@ -215,6 +215,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** *Domänen halkvakt.se (vilande beslut)* — domänen blockerar QR-sidan (#204), så den är inte längre vilande.
   ↪ **1/10 (DECISIONS #423):** domänen är också nyckeln till QR-koden till appen (kort #277, Bengt: *"qr kod kommer först med domänen"*).
 ### Axel — därefter
+- [ ] 🗺️ **#287 PROJEKTKARTAN FINNS — TITTA PÅ DEN** (Bengt 3/10, DECISIONS #446). Navet över hela bygget: https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8. Varje del har en färg: grönt klart och bevisat, orange delvis, rött inte påbörjat, blått väntar på beslut. Tavlan och dina nästa steg är som förut, och dina sessioner håller kartan aktuell. 🔑 Kvar: att Bengt delar sidan och att Axel har tittat. Verify: Axel har öppnat kartan.
 - [ ] **Tolv testare till Play-perioden** — Axels åtagande 31/8: "hittar dem utan problem".
   Väntelisterutan på kartan borttagen på hans beslut. Kvar i `docs/REKRYTERING.md` om det behövs.
   ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** kort 6 *Tolv testare till väntelistan* (samma tolv).
@@ -585,6 +586,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **Flyttat 26/9 från *Axel — hösten (brainstorm 31/8)*** (femma åtta, DECISIONS #377): nästa steg är Bengts två minuter (*Visa introduktionen igen*).
 
 ### Claude — olåst
+- [ ] 🗺️ **#286 PROJEKTKARTAN — MÄT DEL FÖR DEL MOT KODEN** (Bengts ja 3/10, DECISIONS #446). Den grova versionen satte läget i stora drag ur stomdokumenten, tavlan och beslutsloggen. Nästa varv: varje del mäts mot koden, de tretton tröskeldokumenten och integrationskartan, och grönt står bara kvar med ett bevis som går att följa. Sedan pekar stomdokumentens egna läge-rader på kartan i stället för att föra eget läge, och kortkartan kan gå genom delarna. Verify: varje grön del har ett följbart bevis, och `scripts/projektkartan.ts --check` är grön.
 - [ ] 📍 **#226 AUTOSTARTENS BEHÖRIGHET FALLER TYST PÅ ANDROID 11+** (Axels fynd på testtelefonen 20/9, DECISIONS #272).
   ⚠️ **HÄRLETT, INTE UPPMÄTT:** kortet skrevs på Axels rapport som antogs vara Android — den var från hans iPhone (#273).
   Ingen har kört det här på en Android-telefon. Grunden är kodläsning + Googles dokumentation, inget annat.
