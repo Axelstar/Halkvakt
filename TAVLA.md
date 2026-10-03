@@ -215,7 +215,6 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** *Domänen halkvakt.se (vilande beslut)* — domänen blockerar QR-sidan (#204), så den är inte längre vilande.
   ↪ **1/10 (DECISIONS #423):** domänen är också nyckeln till QR-koden till appen (kort #277, Bengt: *"qr kod kommer först med domänen"*).
 ### Axel — därefter
-- [ ] 🗺️ **#287 PROJEKTKARTAN FINNS — TITTA PÅ DEN** (Bengt 3/10, DECISIONS #446). Navet över hela bygget: https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8. Varje del har en färg: grönt klart och bevisat, orange delvis, rött inte påbörjat, blått väntar på beslut. Tavlan och dina nästa steg är som förut, och dina sessioner håller kartan aktuell. 🔑 Kvar: att Bengt delar sidan och att Axel har tittat. Verify: Axel har öppnat kartan.
 - [ ] **Tolv testare till Play-perioden** — Axels åtagande 31/8: "hittar dem utan problem".
   Väntelisterutan på kartan borttagen på hans beslut. Kvar i `docs/REKRYTERING.md` om det behövs.
   ↪ **Hit sammanslaget 22/9 (DECISIONS #303):** kort 6 *Tolv testare till väntelistan* (samma tolv).
@@ -1948,6 +1947,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ **#287 PROJEKTKARTAN FINNS — TITTA PÅ DEN** (Bengt 3/10, DECISIONS #446). Navet över hela bygget: https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8. ✅ **KLART 3/10:** sidan delad med länk (artefakten visar *Anyone with the link* från 3/10), och Axel har tittat — Bengts besked 3/10: *"han har tittat"*. Från samma dag bokför kartsynken Axels byggen och commits i kartan (DECISIONS #447, kort #288).
 - [x] ✅ **#286 PROJEKTKARTAN — MÄT DEL FÖR DEL MOT KODEN** (Bengts ja 3/10, DECISIONS #446). Den grova versionen satte läget i stora drag ur stomdokumenten, tavlan och beslutsloggen. Nästa varv: varje del mäts mot koden, de tretton tröskeldokumenten och integrationskartan, och grönt står bara kvar med ett bevis som går att följa. Sedan pekar stomdokumentens egna läge-rader på kartan i stället för att föra eget läge, och kortkartan kan gå genom delarna. Verify: varje grön del har ett följbart bevis, och `scripts/projektkartan.ts --check` är grön. ✅ **KLART 3/10:** alla 75 delar mätta mot koden med byggsteg och bevis (sju agenter, tre påståenden stickprovade: DECISIONS #433, vakthundens gränser, gallringsjobbet); procenten räknas ur stegen, viktad 1–3; stomdokumenten pekar på kartan med avsnittet *Läget i projektkartan*; `projektkartan.ts --check` grön. Kortkartan genom delarna gjordes inte: kopplingen kort→avsnitt står kvar i kortkartan.json.
 - [x] ✅ **GENOMLYSNING 2 AV DE FEM STOMDOKUMENTEN — KLART 1/10 (DECISIONS #422)**: STOMREGELN bekräftad av Bengt i en andra session; mätningssidan (7.7, 9, 8.1), appsidan (*Vad appen inte gör*), systembilden (oljan, taket), bedömningen och kartans läge-rader stämda mot #419–#421.
 - [x] ✅ **#275 FÖRSPRÅNGETS TAK — KLART 1/10 (DECISIONS #419)**: försprånget kläms till motorns 3 000 m, reglaget tar bara grundvarningen; sammanslagen i PR #660 (969610c), skuggmotorn deployad (36877830446), `ios-engine` grön, systembilden republicerad. Tavlan 36 → 35.
