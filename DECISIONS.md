@@ -7361,6 +7361,20 @@ Skrivet efter att filen öppnats men **innan någon regel körts och något utfa
 4. **Delar utan startvärden** — rimfrostens R-B (R1–R5 osatta), sikten och daggpunktsgapet — **redovisas som *ej prövade: inga
    startvärden***. Inga värden skrivs nu för att fylla tabellen. Rimfrostens R-A, som är signalkontrollen, körs.
 
+**Bevis för väg A:**
+- Integrationsprovet är grönt i ci 37152543161 och har sin egen motkontroll: driften ger tom 30-minuterslutning, varianten 0,80.
+- Motprovet blev rött på just det provet i ci 37152660669 (utkast #736, stängt).
+- Kuvösen 37152660384 räknade trenden över hela vintern på 1,0 min: 363 508 fallande kandidater, varav 363 453 med 30-minuterslutning,
+  363 056 med 60 och 0 med 15. Bara antal, inga utfall.
+
+**Rättelse samma kväll (Claude, före varje körning):** punkt 4:s mening *"Rimfrostens R-A, som är signalkontrollen, körs"* var fel.
+- **R-A är ett svep:** den räknar R1 × R2 × R3 och redovisar *"bästa kombinationen"* (`scripts/grind-r-a.ts:250–282`).
+- **T-A är också ett svep:** den rangordnar svepet och väljer en vinnare (`scripts/grind-t-a.ts:229–262`), och TROSKLAR-TRENDEN §2 säger
+  att värdena *"gissas inte … T-A väljer värdet"*. Trenden har alltså inga egna startvärden.
+- Enligt *inget svep* (#424) och punkt 4 är **T-A och R-A *ej prövade*** i riktningsprovet.
+- Trendens parametrar prövas ändå **inom efterhalkan**, med betans startvärden (30 min, 0,8 °C, +1…+3 °C, #222), när regnmängden finns.
+- Molnkällan ur kuvösens arkiv (`kuvos/moln.ts`) behövs för kombinationens fysikkontroll (KB-C3).
+
 **Alternativ som valdes bort:** att fråga Trafikverket om 5-minutersvärden (väg B: renast, men Bengt vill inte lägga en femte fråga);
 bara 60 minuter (väg C: betans eget fönster hade aldrig kunnat vinna); att flytta tillbaka kalibreringen till 1/2 2027 (halva domvintern
 förlorad). **Axel** bör få veta punkt 3, eftersom kalibreringen i kuvösen var hans ok (#425).

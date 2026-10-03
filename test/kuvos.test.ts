@@ -154,6 +154,31 @@ test("väg A: halvtimmesvarianten är driftens funktion med ett nytt namn och tv
     "en ändrad form i driften fäller härledningen i stället för att tyst ge en annan regel");
 });
 
+// Molnen i kuvösen (DECISIONS #441, #455): driftens klassning och radie, men källan är arkivet. Taket gäller per källa.
+test("molnen: samma klassning ur en annan källa, taket är källans, och arkivkällan räknar i minuter", async () => {
+  const { molnForPunkter } = await import("../publish/moln.ts");
+  const { arkivetsMoln } = await import("../kuvos/moln.ts");
+  const t0 = Date.UTC(2025, 0, 14, 3) / 60_000;
+  const kalla = (tak: number) => ({
+    namn: "prov", tak,
+    stationer: async () => [{ id: "A", lon: 16, lat: 62 }, { id: "B", lon: 17, lat: 62 }],
+    serie: async (id: string) => new Map([[t0, id === "A" ? 113 : 0]]),
+  });
+  const p = [{ lon: 16.01, lat: 62, tMin: t0 + 30 }, { lon: 17.01, lat: 62, tMin: t0 }, { lon: 16.02, lat: 62, tMin: t0 }, { lon: 25, lat: 62, tMin: t0 }];
+  assert.deepEqual(await molnForPunkter(p, () => {}, kalla(Infinity)), ["skymd", "klar", "skymd", "okänd"], "113 = skymd, långt bort = okänd");
+  assert.deepEqual(await molnForPunkter(p, () => {}, kalla(1)), ["skymd", "okänd", "skymd", "okänd"], "taket 1: bara den mest efterfrågade stationen hämtas");
+
+  const fragor: unknown[][] = [];
+  const a = arkivetsMoln(async (sql, par) => {
+    fragor.push(par ?? []);
+    return sql.includes("DISTINCT ON") ? [{ id: "52350", lon: "13.0", lat: "55.5" }] : [{ t: String(t0), varde: "113" }];
+  });
+  assert.deepEqual(await a.stationer(), [{ id: "52350", lon: 13, lat: 55.5 }]);
+  assert.deepEqual([...(await a.serie("52350"))!], [[t0, 113]]);
+  assert.deepEqual(fragor, [[16], [16, "52350"]], "parameter 16, total molnmängd");
+  assert.equal(a.tak, Infinity);
+});
+
 test("SMHI-arkivet: bara vinterns rader, läget ur perioden som täcker raden, värdet som det står", async () => {
   const { tolkaArkiv } = await import("../kuvos/smhi-vinter.ts");
   const fil = ["﻿Stationsnamn;Stationsnummer;Stationsnät;Mäthöjd (meter över marken)", "Malmö A;52350;SMHIs stationsnät;2.0", "",

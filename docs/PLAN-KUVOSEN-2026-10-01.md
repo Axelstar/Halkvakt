@@ -192,8 +192,8 @@ att välja något. Valen ska göras före riktningsprovet och skrivas in som til
 | Grind A, vägpunktsgrinden, höjden | ja, nu | ett körsteg i `kuvos.yml` (skripten tar `[dagar]` och SQL `now()`) | stationens egen yta i samma halvtimme (TROSKLAR-SKUGGAN §3) |
 | Frysflaggan med tre marginaler (#437) | **byggd 3/10**: `publish/frysflagga.ts` med prov, `hojd-prov.ts --frysflagga` | radvärdena ur höjdprovet; måttstocken K-A1–K-A5 | samma som grind A |
 | Nederbördstypen (NT) | efter anpassning | tiden som argument i stället för `Date.now()`, SMHI p13 ur `kuvos_ra.smhi_obs`, stationerna ur arkivet | samtidigt, inte efteråt: givaren och SMHI inom 5 km, ±10 min |
-| Trenden (T-A) | efter anpassning | `trend_kandidater` beräknad för vintern, molnen ur `kuvos_ra.smhi_obs`, ett läge utan svep | 90 min, träff vid yta ≤ +1 °C — **men bara 60-minutersfönstret kan räknas, se fråga 3** |
-| Rimfrosten (R-A) | signalkontrollen efter molnen | R-B saknar startvärden (R1–R5 osatta) | R-B: 90 min mot väglag, kamera och olyckor — som inte finns i kuvösen |
+| Trenden (T-A) | ~~efter anpassning~~ **ej prövad ensam** (rättat 3/10, #455) | T-A är ett svep som väljer värdet, och trenden har inga egna startvärden (TROSKLAR-TRENDEN §2). Trendens parametrar prövas inom efterhalkan med betans startvärden. | — |
+| Rimfrosten (R-A) | ~~signalkontrollen efter molnen~~ **ej prövad** (rättat 3/10, #455) | R-A väljer *bästa kombinationen* ur R1 × R2 × R3, och R-B saknar startvärden | — |
 | Efterhalkan, övergångarna (Ö-B), tillståndet, försprångets nivå 2 | **nej** | regnmängden (`rain_sum_mm`), som Trafikverket inte levererat (#439) | — |
 | Vind och sikt | **nej** för vinden; sikten saknar startvärden | vindstyrkan (#439) | — |
 
@@ -264,6 +264,7 @@ för 1, 2 och 4"*. Väg A är byggd i `kuvos/trend.ts`, som härleder varianten 
 
 **Ordningen om svaren är ja:**
 - **5b:** facit och episoderna för de delar som går att köra. Grind A, vägpunkten och höjden körs som de är, och frysflaggan får sitt skript.
-- **5c:** NT, T-A (bara 60-minutersfönstret, utan svep) och R-A:s signalkontroll på kuvösens moln, och `trend_kandidater` beräknas för vintern.
+- **5c:** NT, och `trend_kandidater` beräknas för vintern (väg A, byggd 3/10; kuvos 37152660384: 363 508 kandidater på 1,0 min, 30-minuterslutning i 363 453). ~~T-A och R-A:s signalkontroll~~ är svep och ej prövade (#455, rättelsen).
+  Kuvösens molnkälla (`kuvos/moln.ts`) är byggd för kombinationens fysikkontroll (KB-C3).
 - **5d:** tabellen *del × ensam × ovanpå* för de delarna. Efterhalkan, övergångarna, tillståndet, försprånget och vinden läggs till när
   Trafikverket svarat.

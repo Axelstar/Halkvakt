@@ -2238,3 +2238,7 @@ svenskt nyckelord med dem kan aldrig träffa. Inte rättat.
   - **Väg A är byggd.** `kuvos/trend.ts` härleder kuvösens trendfunktion ur `sql/018` vid körning. Ändringarna är namnet och `n30 >= 3` → `>= 2`, och varje byte får förekomma exakt en gång, annars stoppar den.
   - **Proven:** härledningen i `test/kuvos.test.ts`, och samma halvtimmesserie genom driften och varianten i `test/integration.test.ts`. Driften ger 30 = tom och 60 = 1,20; varianten ger 30 = 0,80 och 60 = 1,20.
   - `kuvos.yml` kör trenden efter vakterna. Driftens kod är orörd.
+  - **Hela vintern** (kuvos 37152660384): trenden tog 1,0 min och gav 363 508 fallande kandidater. Av dem har 363 453 en 30-minuterslutning (0 före väg A), 363 056 en 60-minuterslutning och 0 en 15-minuterslutning.
+  - **Motprov** (utkast-PR #736, stängd): driftens funktion installerades under variantens namn utan bytet. CI 37152660669 blev rött på exakt integrationsprovet (`not ok 102`, 0,80 väntat), och härledningsprovet förblev grönt.
+  - **Molnkällan:** `publish/moln.ts` tar en valbar källa, med SMHI:s API som standard så att driften är oförändrad. Kuvösen har sin egen källa ur `kuvos_ra.smhi_obs` (`kuvos/moln.ts`), och ett prov visar att taket gäller per källa.
+  - **Rättelse till #455:** T-A och R-A är svep som väljer värdet (TROSKLAR-TRENDEN §2: *"T-A väljer värdet"*; R-A redovisar *"bästa kombinationen"*). Därför är de *ej prövade* enligt punkt 4. Jag hade skrivit att R-A körs. Trendens värden prövas inom efterhalkan.
