@@ -11,16 +11,16 @@ on:
         description: "Läsande mätning efter vakterna, en fil under scripts/matningar/ (tomt = ingen). Förregistreras i DECISIONS före körningen."
         default: ""
       korflode:
-        description: "Körflödet (steg 5, kuvos/korning.ts). tid-sju-dygn = bara körtiden på vinterns första sju dygn, inga varningar (#426)."
+        description: "Körflödet (steg 5). tid-sju-dygn = bara körtiden, inga varningar (#426). riktningsprov = LÄSER UTFALL, bara på Bengts ord (#424, #455)."
         type: choice
-        options: [ingen, tid-sju-dygn]
+        options: [ingen, tid-sju-dygn, riktningsprov]
         default: ingen
 permissions:
   contents: read
 jobs:
   inlasning:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: ${{ inputs.korflode == 'riktningsprov' && 180 || 60 }}
     services:
       postgis:
         image: postgis/postgis:16-3.4
@@ -113,3 +113,30 @@ jobs:
           { echo '```'; sha256sum vaglag.geojson
             node --experimental-strip-types kuvos/korning.ts vaglag.geojson --tid --dygn 7 --fore-min "$FORE"; echo '```'
           } 2>&1 | grep --line-buffered -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+      # RIKTNINGSPROVET (DECISIONS #424, #455) — det enda läget som läser utfall, och bara på Bengts ord. Före regnmängden prövas:
+      # frysrisken som baslinje (rösten i båda serierna), grind A, vägpunktsgrinden och höjden med frysflaggan, och nederbördstypen
+      # på sitt startvärde. Grind A och höjdprovet räknar "de senaste N dygnen" från now(): de körs genom kuvösens klocka, ställd på
+      # vinterns slut, så att fönstret är vintern och inget annat. Varningarna sparas för tabellen del × ensam × ovanpå (5d).
+      - name: Riktningsprovet
+        if: ${{ inputs.korflode == 'riktningsprov' }}
+        shell: bash
+        run: |
+          curl -sSf -o vaglag.geojson https://axelstar.github.io/halkvakt-karta/data/vaglag.geojson
+          FRAN=$(psql -h localhost -U postgres -Atc "SELECT to_char(min(sample_time) AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"') FROM weather_observations")
+          TILL=$(psql -h localhost -U postgres -Atc "SELECT to_char(max(sample_time) AT TIME ZONE 'UTC' + interval '1 second', 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"') FROM weather_observations")
+          DAGAR=$(psql -h localhost -U postgres -Atc "SELECT ceil(extract(epoch FROM max(sample_time) - min(sample_time)) / 86400)::int + 1 FROM weather_observations")
+          KLOCKA="${DATABASE_URL}?options=-c%20search_path%3Dkuvos%2Cpublic%2Cpg_catalog%20-c%20kuvos.nu%3D${TILL}%20-c%20TimeZone%3DUTC"
+          {
+            echo '```'; echo "vintern $FRAN – $TILL, $DAGAR dygn"; sha256sum vaglag.geojson
+            DATABASE_URL="$KLOCKA" node -e 'const pg=require("pg");const c=new pg.Client({connectionString:process.env.DATABASE_URL});c.connect().then(()=>c.query("SELECT now()::text AS nu")).then((r)=>{console.log("klockan för grindarna:",r.rows[0].nu);return c.end()})' || exit 1
+            node --experimental-strip-types kuvos/korning.ts vaglag.geojson --ut varningar.ndjson
+            node --experimental-strip-types kuvos/baslinjen.ts varningar.ndjson
+            DATABASE_URL="$KLOCKA" node --experimental-strip-types publish/grind-a.ts "$DAGAR"
+            DATABASE_URL="$KLOCKA" node --experimental-strip-types scripts/hojd-prov.ts "$DAGAR" --frysflagga
+            node --experimental-strip-types scripts/grind-nt.ts --kuvos --fran "$FRAN" --till "$TILL"
+            echo '```'
+          } 2>&1 | grep --line-buffered -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Varningarna sparas för tabellen (5d)
+        if: ${{ inputs.korflode == 'riktningsprov' }}
+        uses: actions/upload-artifact@v4
+        with: { name: kuvos-varningar, path: varningar.ndjson, retention-days: 90 }

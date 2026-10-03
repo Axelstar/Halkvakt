@@ -7374,6 +7374,7 @@ Skrivet efter att filen öppnats men **innan någon regel körts och något utfa
 - Enligt *inget svep* (#424) och punkt 4 är **T-A och R-A *ej prövade*** i riktningsprovet.
 - Trendens parametrar prövas ändå **inom efterhalkan**, med betans startvärden (30 min, 0,8 °C, +1…+3 °C, #222), när regnmängden finns.
 - Molnkällan ur kuvösens arkiv (`kuvos/moln.ts`) behövs för kombinationens fysikkontroll (KB-C3).
+- **Bengt 3/10, efter rättelsen:** *"behåll ej prövade"*. T-A och R-A körs inte i riktningsprovet, och inga startvärden skrivs för dem.
 
 **Alternativ som valdes bort:** att fråga Trafikverket om 5-minutersvärden (väg B: renast, men Bengt vill inte lägga en femte fråga);
 bara 60 minuter (väg C: betans eget fönster hade aldrig kunnat vinna); att flytta tillbaka kalibreringen till 1/2 2027 (halva domvintern
