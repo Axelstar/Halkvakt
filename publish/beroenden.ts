@@ -189,6 +189,17 @@ export const KARTAN: Beroende[] = [
   { vard: "www.postgresql.org", roll: "bygg",
     matar: "signeringsnyckeln till apt.postgresql.org (arkivbackup.yml)",
     brister: "samma som apt.postgresql.org", bevakad: "", signal: "OKÄND" },
+  // Dokumentationen, inte data: stomdokumentens och projektkartans adresser (docs/kortkartan.json) och typsnitten i
+  // sidan som scripts/projektkartan.ts skriver (DECISIONS #446). Inget skript hämtar härifrån; läsarens webbläsare gör det.
+  { vard: "claude.ai", roll: "bygg",
+    matar: "adresserna till de publicerade stomdokumenten och projektkartan (länkar i docs/kortkartan.json)",
+    brister: "länkarna i projektkartan slutar fungera; repokopiorna i docs/ står kvar", bevakad: "", signal: "OKÄND" },
+  { vard: "fonts.googleapis.com", roll: "bygg",
+    matar: "typsnitten i projektkartans sida (Instrument Sans, Source Serif 4, JetBrains Mono)",
+    brister: "sidan visas med reservtypsnitt; inget innehåll försvinner", bevakad: "", signal: "OKÄND" },
+  { vard: "fonts.gstatic.com", roll: "bygg",
+    matar: "typsnittsfilerna bakom fonts.googleapis.com",
+    brister: "samma som fonts.googleapis.com", bevakad: "", signal: "OKÄND" },
 ];
 
 // Värdar som är vår EGEN infrastruktur eller allmän verktygsinfrastruktur — inte beroenden

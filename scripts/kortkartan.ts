@@ -64,7 +64,7 @@ export function oppnaKort(tavla: string): Kort[] {
 }
 
 /** Avsnittets rubrik på sidan: "<h2>8. Batteri…</h2>" i html, "## 8. …" eller "### 4.2 …" i markdown. */
-function avsnitt(sidtext: string, html: boolean, nr: string): string | null {
+export function avsnitt(sidtext: string, html: boolean, nr: string): string | null {
   const e = nr.replace(".", "\\.");
   const m = html
     ? sidtext.match(new RegExp(`<h2[^>]*>${e}\\. ([^<]+)</h2>`, "u"))
@@ -88,7 +88,7 @@ export function block(kod: string, sidtext: string, html: boolean, alla: Kort[],
   const rad = (k: Kort) => `${k.nr ? k.nr + " " : ""}${kort(110, k.titel)}`;
   if (html) {
     const delar = [START, `  <h2 id="oppna-kort">Öppna kort</h2>`,
-      `  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: ${antal} av ${alla.length} öppna kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>`];
+      `  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: ${antal} kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>`];
     for (const nr of nummer) {
       const titel = avsnitt(sidtext, true, nr);
       if (!titel) { fel.push(`${kod} ${nr}: avsnittet finns inte på sidan`); continue; }
@@ -100,7 +100,7 @@ export function block(kod: string, sidtext: string, html: boolean, alla: Kort[],
     return delar.join("\n");
   }
   const delar = [START, "## Öppna kort", "",
-    `Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: ${antal} av ${alla.length} öppna kort. Ägaren står efter strecket. Listan skrivs av \`scripts/kortkartan.ts\` ur \`TAVLA.md\` och \`docs/kortkartan.json\`.`, ""];
+    `Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: ${antal} kort. Ägaren står efter strecket. Listan skrivs av \`scripts/kortkartan.ts\` ur \`TAVLA.md\` och \`docs/kortkartan.json\`.`, ""];
   for (const nr of nummer) {
     const titel = avsnitt(sidtext, false, nr);
     if (!titel) { fel.push(`${kod} ${nr}: avsnittet finns inte på sidan`); continue; }
@@ -126,7 +126,10 @@ export function medBlock(sidtext: string, html: boolean, b: string): string {
   return t.replace(/\n*$/u, "\n\n") + b + "\n";
 }
 
-if (process.argv[2] === "--sjalvtest") {
+// Projektkartan (scripts/projektkartan.ts) importerar läsarna ovan; resten körs bara när skriptet startas direkt.
+const direkt = (process.argv[1] ?? "").replace(/\\/g, "/").endsWith("scripts/kortkartan.ts");
+
+if (direkt && process.argv[2] === "--sjalvtest") {
   const tavla = "### Bengt\n- [ ] 📍 **#12 ETT KORT** (text) **#99 annat**\n  fortsättning\n- [x] **#13 STÄNGT**\n" +
     "### Claude — låst (väntar på nyckel)\n- [ ] ↩︎ **Introduktionen** (iOS) — x\n- [ ] ↩︎ Välkomsttext till alla (extern). **Fet:** y\n";
   const k = oppnaKort(tavla);
@@ -145,34 +148,38 @@ if (process.argv[2] === "--sjalvtest") {
   process.exit(0);
 }
 
-const rot = new URL("../", import.meta.url);
-const las = (f: string) => readFileSync(new URL(f, rot), "utf8");
-const karta: Karta = JSON.parse(las("docs/kortkartan.json"));
-const alla = oppnaKort(las("TAVLA.md"));
-const fel: string[] = [];
-const oppna = new Set(alla.map((k) => k.nyckel));
-for (const k of alla) if (!karta.kort[k.nyckel]?.length) fel.push(`okopplat kort: ${k.nyckel} ${kort(80, k.titel)} (${k.agare})`);
-for (const n of Object.keys(karta.kort)) if (!oppna.has(n)) fel.push(`kopplat men inte öppet på tavlan: ${n}`);
-for (const [n, refs] of Object.entries(karta.kort)) for (const r of refs) if (!karta.sidor[r.split(" ")[0]]) fel.push(`${n}: okänd sida i "${r}"`);
-const check = process.argv[2] === "--check";
-const andrade: string[] = [];
-for (const [kod, sida] of Object.entries(karta.sidor)) {
-  const html = sida.fil.endsWith(".html");
-  const text = las(sida.fil);
-  const ny = medBlock(text, html, block(kod, text, html, alla, karta, fel));
-  if (ny === text) continue;
-  andrade.push(sida.fil);
-  if (!check) {
-    const tmp = new URL(sida.fil + ".tmp", rot);
-    writeFileSync(tmp, ny); renameSync(tmp, new URL(sida.fil, rot));   // atomiskt: en avbruten skrivning lämnar sidan hel
+if (direkt) huvudprogram();
+
+function huvudprogram(): void {
+  const rot = new URL("../", import.meta.url);
+  const las = (f: string) => readFileSync(new URL(f, rot), "utf8");
+  const karta: Karta = JSON.parse(las("docs/kortkartan.json"));
+  const alla = oppnaKort(las("TAVLA.md"));
+  const fel: string[] = [];
+  const oppna = new Set(alla.map((k) => k.nyckel));
+  for (const k of alla) if (!karta.kort[k.nyckel]?.length) fel.push(`okopplat kort: ${k.nyckel} ${kort(80, k.titel)} (${k.agare})`);
+  for (const n of Object.keys(karta.kort)) if (!oppna.has(n)) fel.push(`kopplat men inte öppet på tavlan: ${n}`);
+  for (const [n, refs] of Object.entries(karta.kort)) for (const r of refs) if (!karta.sidor[r.split(" ")[0]]) fel.push(`${n}: okänd sida i "${r}"`);
+  const check = process.argv[2] === "--check";
+  const andrade: string[] = [];
+  for (const [kod, sida] of Object.entries(karta.sidor)) {
+    const html = sida.fil.endsWith(".html");
+    const text = las(sida.fil);
+    const ny = medBlock(text, html, block(kod, text, html, alla, karta, fel));
+    if (ny === text) continue;
+    andrade.push(sida.fil);
+    if (!check) {
+      const tmp = new URL(sida.fil + ".tmp", rot);
+      writeFileSync(tmp, ny); renameSync(tmp, new URL(sida.fil, rot));   // atomiskt: en avbruten skrivning lämnar sidan hel
+    }
   }
-}
-for (const f of fel) console.error("✗ " + f);
-if (check) {
-  for (const f of andrade) console.error(`✗ listan är inte aktuell: ${f} — kör scripts/kortkartan.ts och republicera`);
-  if (fel.length || andrade.length) process.exit(1);
-  console.log(`✓ kortkartan: ${alla.length} öppna kort, alla kopplade, alla listor aktuella`);
-} else {
-  console.log(`${alla.length} öppna kort. Skrivna: ${andrade.length ? andrade.join(", ") : "inga ändringar"}`);
-  if (fel.length) process.exit(1);
+  for (const f of fel) console.error("✗ " + f);
+  if (check) {
+    for (const f of andrade) console.error(`✗ listan är inte aktuell: ${f} — kör scripts/kortkartan.ts och republicera`);
+    if (fel.length || andrade.length) process.exit(1);
+    console.log(`✓ kortkartan: ${alla.length} öppna kort, alla kopplade, alla listor aktuella`);
+  } else {
+    console.log(`${alla.length} öppna kort. Skrivna: ${andrade.length ? andrade.join(", ") : "inga ändringar"}`);
+    if (fel.length) process.exit(1);
+  }
 }

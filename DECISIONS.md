@@ -7164,3 +7164,21 @@ byggprojekt"*.
 varje kort på tavlan med sin sida (tavlan är människolagret och ändras av flera sessioner, och en tavelsynk som skriver om fyrtio kort är
 den form av ändring som svalde 174 rader 8/9); att lägga listan inne i varje avsnitt (fler markörer i varje sida, samma innehåll).
 **Kopplingen är en bedömning per kort**, gjord av Claude 3/10 mot kortets text och sidans avsnitt. Den rättas i kortkartan.json, inte i sidorna.
+
+## #446 (3/10 2026) Projektkartan blir navet över bygget, med läget per del underordnat beviset (kort #286, #287)
+
+**Beslut (Bengt, 3/10):** *"ja till projektkartan som nav, bygg den grova versionen"*, efter frågan om en arkitektkopia över hela projektet
+med vad som är klart, vad som saknas, beroenden och hur delarna länkas in.
+1. ***Halkvaktens projektkarta*** (https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8, källa `docs/PROJEKTKARTAN.html`) är navet ovanför de sju stomdokumenten. Den skrivs av
+   `scripts/projektkartan.ts` ur `docs/projektkartan.json` och ändras aldrig för hand.
+2. **Rollerna:** kartan äger läget per del; den är underordnad beviset (koden, proven, mätningarna); besluten stannar i DECISIONS, ordningen
+   och kalendern i bedömningen, arbetet på tavlan, reglerna i tröskeldokumenten och beskrivningarna i stomdokumenten.
+3. **Färgerna och kraven:** grönt = klar och i drift, med bevis · orange = delvis, med vad som saknas · rött = ej påbörjad, med vad som
+   saknas · blått = väntar på beslut eller nyckel, med nyckeln · grått = medvetet stängd, med beslutet.
+4. **Kontrollen** `--check` i ci.yml, som kortkartan.
+5. **Grov version först:** 75 delar i 9 block, läget i stora drag ur stomdokumenten, tavlan och beslutsloggen; alla 46 öppna kort på en del.
+   Mätningen del för del mot koden är kort #286; Axels titt är kort #287.
+
+**Alternativ som valdes bort:** en ritad duk i Design (följer inte repot och glider isär med verkligheten, Claudes bedömning som Bengt
+godtog); ett register i bedömningen §5.3 (bedömningen är listan över vad som görs härnäst, inte bilden av vad som finns); ett åttonde
+stomdokument bland de andra (kartan är det man går in genom, inte ett dokument bland andra).
