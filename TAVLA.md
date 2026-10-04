@@ -260,6 +260,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   `EfterResanNotis.actionJa` läst ur nonisolated delegat — rättad i main samma kväll, går med i (20).
   🔑 Kvar: Axels blick på telefonen (Verify nedan) · nya iOS-skärmbilder till produktboken ur (19) · 4a dubbeltrycksspärren och 4b Siri när
   vakten är av (Axels beslut, §4.2).
+  🔨 **ANDROIDS STATUSRAD BYGGD 4/10** (`TILL-AXEL-BYGGE-19` Android 1, Bengts *"kör på"*): samma regler som iPhone, som rena funktioner i
+  `Facit.kt` med JVM-prov, och raden bär sin tid (`facit_status_at`). 📏 Bevis: android 37183577252 grön på c02514a (`:app:compileDebugUnitTestKotlin` och `:app:testDebugUnitTest` körda, BUILD SUCCESSFUL). Androids spärr mot dubbeltryck följer 4a.
   Verify: på en iPhone finns inget "…" i kortet med fyra varningar, sista raden ligger ovanför flikraden, *Stämde*-knapparna finns på ett
   ställe, ingen *Skickat*-rad under en obesvarad rad, och *Senaste tur* skrivs *1 okt. 12:39*.
 

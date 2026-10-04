@@ -149,6 +149,7 @@ private fun BetaOverst(activity: MainActivity) {
     val historik by Prefs.history(ctx).collectAsStateWithLifecycle(initialValue = emptyList())
     val facit by Prefs.facit(ctx).collectAsStateWithLifecycle(initialValue = emptyList())
     val facitStatus by Prefs.facitStatus(ctx).collectAsStateWithLifecycle(initialValue = null)
+    val facitStatusAt by Prefs.facitStatusAt(ctx).collectAsStateWithLifecycle(initialValue = 0L)
     val resanStart by Prefs.tripStart(ctx).collectAsStateWithLifecycle(initialValue = 0L)
     val missar by Prefs.missar(ctx).collectAsStateWithLifecycle(initialValue = emptyList())
     val resansVarningar = remember(historik, resanStart) { historik.filter { it.t >= resanStart && it.id.isNotEmpty() } }
@@ -161,7 +162,7 @@ private fun BetaOverst(activity: MainActivity) {
                 varningar = resansVarningar,
                 missar = resansMissar,
                 svarFor = { e -> Facit.answerFor(facit, e.id, e.t) },
-                status = facitStatus,
+                status = Facit.kortetsStatus(facitStatus, facitStatusAt, resanStart),
                 onSvar = { e, svar -> scope.launch {
                     Prefs.answerFacit(ctx, e.id, e.t, svar)
                     if (!GuardService.running) runCatching { FacitSender.flush(ctx) }
@@ -178,7 +179,8 @@ private fun BetaOverst(activity: MainActivity) {
         } else {
             // Nyaste SIST i historiken (AlertHistory.append). Vakten av = bilen står stilla: skicka direkt (DECISIONS #208).
             val senast = historik.lastOrNull() ?: return@Column
-            LastSaidCard(senast, true, Facit.answerFor(facit, senast.id, senast.t), facitStatus) { svar ->
+            LastSaidCard(senast, true, Facit.answerFor(facit, senast.id, senast.t),
+                Facit.radensStatus(facitStatus, facitStatusAt, senast.t)) { svar ->
                 scope.launch {
                     Prefs.answerFacit(ctx, senast.id, senast.t, svar)
                     if (!GuardService.running) withContext(Dispatchers.IO) { runCatching { FacitSender.flush(ctx) } }
@@ -243,6 +245,8 @@ private fun EfterResanKort(
                         Spacer(Modifier.width(10.dp))
                         Text("Du markerade: appen missade — vad?", color = if (m.vad == null) Text else Dis, fontSize = 14.sp,
                             modifier = Modifier.weight(1f))
+                        // Läget PER RAD (TILL-AXEL-BYGGE-19 Android 1): en vald miss säger själv att den gått.
+                        if (m.sent && m.vad != null) Text("Skickad", color = Gron, fontSize = 11.sp, fontFamily = FontFamily.Monospace)
                     }
                     Spacer(Modifier.height(6.dp))
                     Missar.VAD.chunked(2).forEach { rad ->   // två per rad: tre fick inte plats på en smal telefon (fotostudion 26/9)

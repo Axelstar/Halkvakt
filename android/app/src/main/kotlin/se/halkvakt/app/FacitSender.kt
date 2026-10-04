@@ -31,7 +31,7 @@ object FacitSender {
         }
         if (sent.isNotEmpty()) Prefs.markFacitSent(ctx, sent)
         if (sentMissar.isNotEmpty()) Prefs.markMissarSent(ctx, sentMissar)
-        val delar = listOfNotNull(sent.size.takeIf { it > 0 }?.let { "$it svar" }, sentMissar.size.takeIf { it > 0 }?.let { "$it missar" })
+        val delar = Facit.kvittodelar(sent.size, sentMissar.size)
         if (fel != null) Prefs.setFacitStatus(ctx, "Kunde inte skicka $klockan: $fel")
         else if (delar.isNotEmpty()) Prefs.setFacitStatus(ctx, "Skickat $klockan (${delar.joinToString(", ")})")
         return sent.size + sentMissar.size

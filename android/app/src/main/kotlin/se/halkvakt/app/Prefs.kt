@@ -20,6 +20,7 @@ object Prefs {
     private val KEY_FACIT = stringPreferencesKey("facit")
     private val KEY_FACIT_ON = booleanPreferencesKey("facit_on")
     private val KEY_FACIT_STATUS = stringPreferencesKey("facit_status")
+    private val KEY_FACIT_STATUS_AT = longPreferencesKey("facit_status_at")
     private val KEY_WARN_DIST = floatPreferencesKey("warn_distance_m")
     private val KEY_TRIP_START = longPreferencesKey("trip_start")
     private val KEY_TRIP_END = longPreferencesKey("trip_end")      // Redo efter tur (DECISIONS #444)
@@ -60,7 +61,11 @@ object Prefs {
     }
     /** S4: vad senaste sändningsförsöket gav — syns under knapparna (DECISIONS #209). */
     fun facitStatus(ctx: Context): Flow<String?> = ctx.dataStore.data.map { it[KEY_FACIT_STATUS] }
-    suspend fun setFacitStatus(ctx: Context, s: String) { ctx.dataStore.edit { it[KEY_FACIT_STATUS] = s } }
+    /** När raden skrevs (0 = före 4/10) — raden visas bara där den hör hemma (Facit.kortetsStatus, Facit.radensStatus). */
+    fun facitStatusAt(ctx: Context): Flow<Long> = ctx.dataStore.data.map { it[KEY_FACIT_STATUS_AT] ?: 0L }
+    suspend fun setFacitStatus(ctx: Context, s: String) {
+        ctx.dataStore.edit { it[KEY_FACIT_STATUS] = s; it[KEY_FACIT_STATUS_AT] = System.currentTimeMillis() }
+    }
     suspend fun markFacitSent(ctx: Context, sent: Collection<FacitEntry>) {
         ctx.dataStore.edit { p -> p[KEY_FACIT] = Facit.encode(Facit.markSent(Facit.decode(p[KEY_FACIT] ?: ""), sent)) }
     }

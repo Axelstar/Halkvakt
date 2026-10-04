@@ -527,6 +527,10 @@ inte* finns på ett ställe: raden under *Senaste tur* göms medan kortet visas.
 och datum skrivs på svenska oavsett telefonens språk (*1 okt. 12:39*, inte *1 Oct at 12:39*). Skärmbilderna i det här avsnittet
 byts när bygge (19) finns.
 
+*Rättat 4/10 på Android (`docs/TILL-AXEL-BYGGE-19.md` Android 1):* samma regler som på iPhone. Kortet efter resan säger bara till
+när en sändning under den här resan misslyckats, en vald miss får ordet *Skickad*, kvittot böjer *1 miss*, och under *Senast sagt*
+står bara en sändning som är yngre än varningen — aldrig gårdagens kvitto. Spärren mot dubbeltryck väntar på Axels beslut (4a).
+
 ### När appen var tyst — missarna (26/9, kort #203 lager 2)
 
 Det maskinen inte kan se är sina egna missar: det var halt och rösten teg. **I bilen räcker ett ord eller ett tryck.** På iPhone:

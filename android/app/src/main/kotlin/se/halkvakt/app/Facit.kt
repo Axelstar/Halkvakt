@@ -58,4 +58,21 @@ object Facit {
     fun iso(t: Long): String =
         SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US).apply { timeZone = TimeZone.getTimeZone("UTC") }
             .format(java.util.Date(t))
+
+    // STATUSRADEN (Bengts provresa 28/9, docs/TILL-AXEL-BYGGE-19.md Android 1; samma regler som iOS sedan kort #279).
+    // Raden är EN för hela appen och överlever omstart, så "Skickat 13:52 (1 missar)" under en obesvarad rad lästes som att
+    // raden gått, och gårdagens kvitto stod under dagens varningar. `at` är när raden skrevs; 0 = före den här ändringen.
+
+    /** Kvittots delar, rätt böjda: "2 svar", "1 miss", "3 missar". */
+    fun kvittodelar(svar: Int, missar: Int): List<String> = listOfNotNull(
+        svar.takeIf { it > 0 }?.let { "$it svar" },
+        missar.takeIf { it > 0 }?.let { if (it == 1) "1 miss" else "$it missar" })
+
+    /** Kortet efter resan: bara ett FEL, och bara den här resans. Besvarade varningar försvinner ur kortet och en vald miss
+     *  säger "Skickad" själv — ett lyckat kvitto behöver ingen rad där. */
+    fun kortetsStatus(status: String?, at: Long, resanStart: Long): String? =
+        status?.takeIf { !it.startsWith("Skickat") && at >= resanStart }
+
+    /** Under senast sagda varningen: bara en sändning yngre än varningen — en äldre rad är ett kvitto på något annat. */
+    fun radensStatus(status: String?, at: Long, varningen: Long): String? = status?.takeIf { at >= varningen }
 }

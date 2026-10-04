@@ -7439,3 +7439,25 @@ som inte är en dom.
 
 **Första värdet 3/10:** hela kartan 64 %, och **72 % av det som går att göra före vinterns domar**. 65 steg i 19 delar väntar på vintern.
 Motorn står på 55 % och på 79 % före domarna; skuggan och prövningen står på 74 % och 77 %.
+
+## #458 (4/10 2026) Länssidorna skrivs av publicera — 21 län var 30:e minut, med motorns ord för halt (kort #281)
+
+**Bakgrund:** Marknadsplanen (`docs/MARKNADSFORING-NOLLBUDGET.md` §6, Axels order 2/10) säger att Claude bygger *"Halt väglag i
+Skåne just nu"* för 21 län och sex vägar i oktober, eftersom Google behöver veckor för att hitta sidorna före första frosten. Mätt 4/10:
+Bengts konto har bara läsrätt i `Axelstar/halkvakt-karta`. Dit skriver bara Axel och publicera (PUBLISH_TOKEN). **Beslut (Bengt 4/10):**
+*"B för länssidorna"* — publicera skriver sidorna, inte statiska sidor via Axel (alternativ A).
+
+**Förregistrerat före bygget:**
+- **Var:** `publish/lanssidor.ts`, ren och körtidsneutral som kartkärnan, buntad in i publicera. Sidorna skrivs i kartlagrens varv
+  (var 30:e minut): `lan/<län>/index.html` för de 21 länen och `lan/index.html` med läget per län. Vägsidorna kommer sedan.
+- **Halt** betyder exakt det som får motorn att tala om en sträcka: kod ≥ 2 eller ett halkord i Trafikverkets text (`SLIPPERY_INFO`,
+  `SLIPPERY_STAM`). Kopian vaktas av kontraktsgrinden, och Trafikverkets egna ord står på sidan. Sidan påstår aldrig själv att det är
+  halt: den säger vad Trafikverket rapporterar och vad stationerna mäter.
+- **Stationerna** är de som klarar appens vakter (lägesfilens väderpunkter: #75, radvakten, karantänen och den långsamma vakten).
+  Varje station hör till länet för den närmaste väglagssträckan inom 20 km. Stationerna saknar egen länskod i arkivet.
+- **Olyckorna** är Trafikverkets pågående olyckor i länet (`county_nos`), som på kartan.
+- **Sitemapen** är Axels fil. Publicera läser den och fogar bara in de adresser som saknas. Står de redan där skrivs filen inte.
+- **Sidornas innehåll** går direkt i samma trädanrop som kartlagren, så publiceringen får inga fler anrop. Funktionens körtid mäts före
+  och efter deployen.
+- **Deploy** sker först på Bengts *slå ihop*, och sidorna blir publika i samma stund. Beviset är en commit i kartrepot med sidorna och
+  sitemapen.
