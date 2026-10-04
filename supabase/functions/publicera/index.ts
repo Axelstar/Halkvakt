@@ -225,6 +225,19 @@ export const REGN_H_FONSTER_H = 48;
 export const LUTNING_MAX_ALDER_MIN = 60;
 const BRIDGE_M = 15_000;
 
+/** RADARN PER STATION (DECISIONS #459): radarns högsta RÅA `rate_mean_mmh` över väglagssträckorna inom 5 km från stationen
+ *  (kopplingen station–väg, Bengt 17/9, DECISIONS #225 — samma som uppspelningens radarvariant) de senaste N timmarna, där N är
+ *  svepets längsta (N_SVEP), samma fönster som bevisets väta. Råskala, eftersom R_SVEP är det. Bara stationer med en rad kommer
+ *  med: ingen rad betyder torrt ELLER utanför täckningen, aldrig noll (DECISIONS #162). Förfiltret 0,15° i grader använder
+ *  GiST-indexet och är bredare än 5 km på varje svensk breddgrad (vid 69° N är 5 km 0,125° i longitud). */
+export const RADAR_PER_STATION_SQL = `
+  SELECT w.station_id, max(rp.rate_mean_mmh) AS radar_mmh
+  FROM weather_latest w
+  JOIN road_conditions rc ON NOT rc.deleted AND rc.geom IS NOT NULL
+    AND ST_DWithin(rc.geom, w.geom, 0.15) AND ST_DWithin(rc.geom::geography, w.geom::geography, 5 * 1000)
+  JOIN radar_precip rp ON rp.segment_id = rc.segment_id AND rp.observed_at > now() - interval '${N_SVEP[N_SVEP.length - 1]} hours'
+  GROUP BY w.station_id`;
+
 const num = (x: unknown) => (x === null || x === undefined ? null : Number(x));
 
 /** Fukt = regn, snö eller en nederbördsklass som INTE betyder torrt. Trafikverket skriver
@@ -484,11 +497,23 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
   // (S2, DECISIONS #341). BREDVID fukt, aldrig i stället (§5.3). Ingen port läser nyckeln — verifierat 24/9: Android
   // (SnapshotRepo.kt), iOS (SnapshotRepo.swift) och motorns adapter (engine/src/snapshot.ts) läser id, lon, lat, yta och fukt.
   // Tre nivåer, alla oberoende av N och av K1/K2, så inget startvärde kopieras hit: väta 0–4 (hur nyligen), mängd 0–3 (hur
-  // mycket, null = okänd), radar 0–3 (null = ingen rad — radarn per station finns inte i snapshoten än; fältet fylls när den
-  // kopplingen byggs). Argumenten till skattaNiva tas ur svepen själva; de påverkar inte de tre fälten.
-  const bevisRad = (h: number | null, mm: number | null) => {
-    const n = skattaNiva({ timmarSedanStationsregn: h, timmarSedanRadarregn: null, stationenTacker: false, mmSenaste: mm },
-      N_SVEP[N_SVEP.length - 1], K1_GRANS[K1_GRANS.length - 1], K2_ZON[0]);
+  // mycket, null = okänd), radar 0–3 (null = ingen rad inom 5 km de senaste fyra timmarna, DECISIONS #459). Argumenten till
+  // skattaNiva tas ur svepen själva; de påverkar inte de tre fälten.
+  // VÄTAN RÄKNAR BARA STATIONEN, med flit: `timmarSedanRadarregn` står kvar som null. Försprångets A2 läser `vata`
+  // (TROSKLAR-FORSPRANG §2, §7: "radarn … räknas inte"), och att låta radarn höja vätan vore att ändra en mätning medan den
+  // pågår. Det kräver båda signaturerna (§8). Radarn syns i sitt eget fält, där ingen läser den än.
+  const radarMmh = new Map<string, number>();
+  try {
+    for (const r of await q(RADAR_PER_STATION_SQL)) {
+      const v = Number(r.radar_mmh);
+      if (Number.isFinite(v) && v >= 0) radarMmh.set(String(r.station_id), v);
+    }
+  } catch (e) {
+    notes.push(`radar per station: ej läsbar (${String((e as Error).message).slice(0, 80)}) — bevisets radar blir null`);
+  }
+  const bevisRad = (id: string, h: number | null, mm: number | null) => {
+    const n = skattaNiva({ timmarSedanStationsregn: h, timmarSedanRadarregn: null, stationenTacker: false, mmSenaste: mm,
+      radarMmh: radarMmh.get(id) ?? null }, N_SVEP[N_SVEP.length - 1], K1_GRANS[K1_GRANS.length - 1], K2_ZON[0]);
     return { vata: n.vata, mangd: n.mangd, radar: n.radar };
   };
   const segRow = (r: Record<string, any>) => ({
@@ -510,7 +535,7 @@ export async function buildSnapshot(q: Q, bridgesIn: Bridge[], now: Date = new D
         // F1 (#187): råa indata bredvid fukt. Motorn läser dem inte; skuggan mäter (S1).
         regn_h: regnH.get(id) ?? null,
         lutning15: l?.l15 ?? null, lutning30: l?.l30 ?? null, lutning60: l?.l60 ?? null,
-        bevis: bevisRad(regnH.get(id) ?? null, regnMm.get(id) ?? null),
+        bevis: bevisRad(id, regnH.get(id) ?? null, regnMm.get(id) ?? null),
       };
     }),
     deviations: devs.map((r) => ({

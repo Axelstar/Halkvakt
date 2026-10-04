@@ -102,6 +102,8 @@ och vektorerna i `engine/vectors/` rörs inte. Kroken förs till Kotlin och Swif
 - **A1:s nivå vilar på operatören.** Koden sätts för hela segmentet; den säger inget om var på segmentet det är värst.
 - **A2:s nivå ärver arkivets bevis.** `vata` bygger på stationens regn; sedan 25/9 finns varma stationer i arkivet (DECISIONS #353), men
   radarn når inte bevisbäraren i snapshoten (fältet är null) och räknas inte.
+  *Not 4/10 (DECISIONS #459): `bevis.radar` fylls nu med radarn inom 5 km. Vätan, som A2 läser, räknar fortfarande bara
+  stationen. Ingen tröskel i det här dokumentet är ändrad.*
 
 ## 8. Ändring
 

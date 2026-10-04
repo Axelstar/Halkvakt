@@ -16,6 +16,7 @@ function fakeDb(rows: Partial<Record<string, any[]>>) {
   const q: Q = async (text, params) => {
     asked.push(text);
     if (text.includes("FROM cameras")) return rows.cameras ?? [];
+    if (text.includes("AS radar_mmh")) return rows.radarStation ?? [];   // radarn per station (#459), före weather_latest-frågorna
     if (text.includes("= ANY($1::text[])")) { anyParams.push(params); return rows.regnSegs ?? []; }
     if (text.includes("weather_latest f")) {
       if (rows.borderThrows) throw new Error(`schema "${text.includes("fi.") ? "fi" : "no"}" does not exist`);
@@ -104,8 +105,11 @@ test("#75 givarvakten sitter i VARJE väderfråga: svensk, gräns (fi/no) och br
   const { liveDoc, border } = await buildSnapshot(q, [{ id: "B", lon: 15, lat: 58, road: null }], NOW);
   // Kort #203 (A): stationslistan i static.json läser bara id och position — inga mätvärden, alltså ingen väderfråga och ingen
   // givarvakt. Undantaget är namngivet och smalt: läser en fråga mot weather_latest EN ENDA mätkolumn räknas den som väderfråga.
+  // Andra undantaget (DECISIONS #459): radarn per station läser stationens position och radarns regn, aldrig stationens mätvärden;
+  // radarnivån hamnar bara på väderpunkter som redan klarat givarvakten.
   const positioner = asked.filter((t) => t.includes("weather_latest") && !/surface_temp|air_temp|precipitation|rain|snow/.test(t));
-  assert.equal(positioner.length, 1, "stationslistan — positioner, inga mätvärden");
+  assert.equal(positioner.length, 2, "stationslistan och radarn per station — positioner, inga mätvärden");
+  assert.equal(positioner.filter((t) => t.includes("AS radar_mmh")).length, 1, "det andra undantaget är radarfrågan och ingen annan");
   const wxQueries = asked.filter((t) => t.includes("weather_latest") && !positioner.includes(t));
   assert.equal(wxQueries.length, 4, "svensk + fi + no + bro");
   for (const t of wxQueries) assert.ok(t.includes(WX_SANE), "givarvakten saknas i: " + t.slice(0, 80));
@@ -451,20 +455,31 @@ test("#156 snapshotens halkfilter är ett superset av motorns halkord: allt moto
 });
 
 // Kort #245 (DECISIONS #342): bevisbäraren. Nivåerna ur skattaren (S2), bredvid fukt; motorns adapter ser samma hazard.
-test("#245 bevisbäraren: väta och mängd ur skattaren bredvid fukt — radarn null, adaptern orörd", async () => {
-  const { q } = fakeDb({
+test("#245 bevisbäraren: väta och mängd ur skattaren bredvid fukt, radarn i sitt eget fält, adaptern orörd", async () => {
+  const { q, asked } = fakeDb({
     wx: [
       { station_id: "B1", surface_temp_c: "0.4", rain: true, snow: false, precipitation: "rain", lon: 15, lat: 58 },
       { station_id: "B2", surface_temp_c: "2.0", rain: false, snow: false, precipitation: "no", lon: 16, lat: 59 },
       { station_id: "B3", surface_temp_c: "1.5", rain: false, snow: false, precipitation: "no", lon: 17, lat: 60 },
+      { station_id: "B4", surface_temp_c: "1.0", rain: false, snow: false, precipitation: "no", lon: 18, lat: 61 },
     ],
     regnH: [{ station_id: "B1", regn_h: "0.4", mm: "0.3" }, { station_id: "B2", regn_h: "2.9", mm: "0.1" }],
+    // Radarn per station (#459): pg ger numeric som sträng. B3 har radar men inget stationsregn.
+    radarStation: [{ station_id: "B1", radar_mmh: "0.6" }, { station_id: "B2", radar_mmh: "2.4" }, { station_id: "B3", radar_mmh: "0.1" }],
   });
-  const { liveDoc } = await buildSnapshot(q, [], NOW);
+  const { liveDoc, notes } = await buildSnapshot(q, [], NOW);
   const by = Object.fromEntries(liveDoc.weather.map((w: any) => [w.id, w]));
-  assert.deepEqual(by.B1.bevis, { vata: 4, mangd: 2, radar: null }, "regn för 0,4 h sedan, 0,3 mm");
-  assert.deepEqual(by.B2.bevis, { vata: 2, mangd: 1, radar: null }, "regn för 2,9 h sedan, 0,1 mm");
-  assert.deepEqual(by.B3.bevis, { vata: 0, mangd: null, radar: null }, "inget regn i fönstret: mängden okänd, inte noll");
+  assert.deepEqual(by.B1.bevis, { vata: 4, mangd: 2, radar: 2 }, "regn för 0,4 h sedan, 0,3 mm; radar 0,6 klarar 0,1 och 0,5");
+  assert.deepEqual(by.B2.bevis, { vata: 2, mangd: 1, radar: 3 }, "regn för 2,9 h sedan, 0,1 mm; radar 2,4 klarar alla tre");
+  assert.deepEqual(by.B3.bevis, { vata: 0, mangd: null, radar: 1 },
+    "radarn ensam höjer INTE vätan — försprångets A2 räknar bara stationen (TROSKLAR-FORSPRANG §7)");
+  assert.deepEqual(by.B4.bevis, { vata: 0, mangd: null, radar: null }, "ingen radarrad: null, aldrig noll — frånvaro är inte torrt");
+  assert.ok(!notes.some((n) => n.startsWith("radar per station")));
+  const f = asked.find((t) => t.includes("AS radar_mmh"))!;
+  assert.match(f, /5 \* 1000\)/, "kopplingen station–väg är 5 km (#225)");
+  assert.match(f, /interval '4 hours'/, "fönstret är svepets längsta N, samma som vätan");
+  assert.match(f, /rate_mean_mmh/);
+  assert.ok(!f.includes("rate_max"), "rate_max är spärrat (#134)");
   assert.equal(by.B1.fukt, true, "fukt orört — lägg till, ersätt aldrig");
   const hz = snapshotToHazards({ schema: 1, cameras: [] }, liveDoc).find((h) => h.id === "wx:B1") as any;
   assert.deepEqual(hz.meta, { surfaceTempC: 0.4, moisture: true }, "motorns adapter läser inte bevis");

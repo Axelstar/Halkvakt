@@ -7492,3 +7492,31 @@ Bengts konto har bara läsrätt i `Axelstar/halkvakt-karta`. Dit skriver bara Ax
 - **Sitemapen** får de 6 nya adresserna i första varvet efter deployen.
 - **Prov:** vägsidornas prov med fällor för vägnummerformen och för en kall station vid en annan väg, och integrationsprovet för
   vägnumret.
+## #459 (4/10 2026) Radarn per station i lägesfilens bevis — nivån fylls, vätan räknar fortfarande bara stationen (kort #245, #89)
+
+**Beslut (Bengt 4/10: *"gör radarbeviset per station"*),** efter genomgången av vad i projektkartan som går att göra utan andra. Samma
+lucka stod i fyra delar: radarn, tillståndet, övergångarna och lägesfilens fält (*"bevis.radar alltid null"*). DECISIONS #342 lämnade
+fältet tomt *"tills en koppling station→radarsegment byggs"*.
+
+**Byggt:** `RADAR_PER_STATION_SQL` i `publish/snapshot-core.ts`. Frågan tar fram radarns högsta råa `rate_mean_mmh` över levande
+väglagssträckor inom 5 km från stationen de senaste fyra timmarna. `bevis.radar` blir antalet steg i R_SVEP (0,1 · 0,5 · 2 mm/h) som
+värdet klarar. Inga nya tal:
+- **5 km** är kopplingen station–väg (Bengt 17/9, #225), samma som uppspelningens radarvariant. Kontraktsgrinden vaktar kopian
+  (golv 5).
+- **Fyra timmar** är N_SVEP:s längsta, alltså samma fönster som bevisets väta. Värdet importeras, inte kopieras.
+- **Råskala**, eftersom R_SVEP är satt i rå `rate_mean_mmh`. `rate_max` är spärrat (#134).
+- **Ingen rad blir null**, aldrig noll: frånvaro är torrt eller utanför täckningen (#162). Radarn skriver bara rader från 0,1 mm/h, så
+  en station med rad får nivå 1–3.
+
+**Vätan räknar fortfarande bara stationen, och det är medvetet.** `timmarSedanRadarregn` står kvar som null. Försprångets A2 läser
+`bevis.vata` (TROSKLAR-FORSPRANG §2), och §7 säger att radarn *"räknas inte"*. Om radarn fick höja vätan skulle en pågående skuggmätning
+ändras. Det kräver båda signaturerna (§8) och är ett eget beslut. §7 har fått en daterad not om att fältet nu är fyllt.
+
+**Prov:**
+- #245-provet visar nivåerna 2, 3 och 1 och null för fyra stationer. En station med bara radarregn behåller vätan 0.
+- Givarvaktens prov namnger radarfrågan som andra positionsundantaget. Den läser stationens läge, aldrig dess mätvärden.
+- PostGIS-provet har fällor: en rad äldre än fyra timmar med högre värde, en sträcka 10 km bort, en raderad sträcka nära stationen och
+  en station utan radar.
+
+**Följder:** inget i appen eller motorn läser fältet, och ingen port läser `bevis`. I kuvösen fylls fältet ur SMHI:s tif-arkiv, som
+ligger cirka 1,6 × över driftens h5 (#441). Fältet läses inte där heller.

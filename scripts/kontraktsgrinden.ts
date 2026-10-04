@@ -494,8 +494,9 @@ export const KONTRAKT: Kontrakt[] = [
     namn: "Kopplingen station–väg för radarn — km (Bengt 17/9, DECISIONS #225)",
     varfor: "Täckningssatsen ska mäta samma koppling som uppspelningen räknar på — annars friskförklarar den ett annat rör.",
     former: [/p_radar_km numeric DEFAULT (\d+)/, /p_radar_km <> (\d+) THEN/, /::geography, (\d+) \* 1000\)/],
-    filer: /uppspelning-varianter\.sql|028_uppspelning_varianter\.sql/,
-    golv: 3,
+    // Radarn per station i lägesfilens bevis (DECISIONS #459) kopplar med samma 5 km — och publicera-bunten bär den.
+    filer: /uppspelning-varianter\.sql|028_uppspelning_varianter\.sql|publish\/snapshot-core\.ts|functions\/publicera\/index\.ts/,
+    golv: 5,
   },
   {
     // Formen är bunden till `AS natt`: ett naket "12 hours" fångar också vakthundens tolvtimmarsfönster, som är något annat.
