@@ -588,7 +588,7 @@ bevisbart säker (vid 0 km/h går det inte att nå faran) och är rimligen stör
 - [L4 räckvidden: segmentprognosen](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-segmentprognos): väntar, 50 % · Domen i mars 2027 (grind B/C) och Bengts öppna val b och d på kort #270.
 - [L5 allvar som försprång](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-forsprang): delvis, 56 % · kvar: FS-A: nivå 2-fall i vinter (kod 3–4, eller yta ≤ 0 °C med väta ≥ 3)
 - [Grindarna och domkalendern](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-grindarna): delvis, 73 % · kvar: S1-grinden, T-A, R-A, K-A och W-A väntar på frost (minst 50 stationer ≤ 0 °C)
-- [Projektkartan](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-g-projektkartan): delvis, 93 % · kvar: Ett bygge bockat av maskinen utan att någon skrivit något: väntar på Axels nyckel till App Store Connect (kort #288)
+- [Projektkartan](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-g-projektkartan): delvis, 94 % · kvar: Ett bygge bockat av maskinen utan att någon skrivit något: väntar på Axels nyckel till App Store Connect (kort #288)
 
 <!-- /LÄGESRADER -->
 
