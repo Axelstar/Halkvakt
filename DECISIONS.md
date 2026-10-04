@@ -7422,6 +7422,7 @@ något körs:
   hörts är inte en ny varning.
 - **Facit och baslinjen** räknas bara på rader som klarar vakterna: #75, radvakten, karantänen och den långsamma vakten. Fukten och
   vakterna importeras, och kontraktsgrinden vaktar natten, fönstret och nära-bandet (nytt kontrakt, två kopior).
+**Bevis (PR #739):** ci 37182523731 grön på a4d3504 (259 prov, PostGIS-provet kört, 0 hoppade); motprovet i CI, fukten i facit ersatt med true, rött i 37182562056 på just facitraden (258 av 259, kontraktsgrinden grön; utkast #740 stängt).
 
 ## #457 (3/10 2026) Projektkartan visar också "av det som går att göra före vinterns domar" (kort #286)
 
