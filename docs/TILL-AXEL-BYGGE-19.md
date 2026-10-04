@@ -105,7 +105,7 @@ Android påverkas av fel 2 och 3, inte av 1 och 4. Ingen Android-telefon har (18
 - **Filer:** `FacitSender.kt` (rad 34–36) och `ui/App.kt` (statusraden runt rad 404 och 438).
 - Samma ändring som iPhone punkt 3: *"1 miss"*, läget per rad, gemensam rad bara vid fel.
 - **Byggt 4/10 (Claude):** reglerna är rena funktioner i `Facit.kt` (`kvittodelar`, `kortetsStatus`, `radensStatus`) med JVM-prov i
-  `FacitTest.kt`, och statusraden bär sin tid (`facit_status_at`). Bevis: `android`-körningen på grenen eller efter sammanslagningen.
+  `FacitTest.kt`, och statusraden bär sin tid (`facit_status_at`). Bevis: android 37183577252 grön på c02514a (`:app:compileDebugUnitTestKotlin` och `:app:testDebugUnitTest` körda, BUILD SUCCESSFUL).
 
 ### 2. Spärr mot dubbeltryck (fel 3a)
 
