@@ -86,6 +86,8 @@ Driftbeviset för V1–V3 från 26/9 bokfört på #260 (#380). QR-koden: Bengt 1
 - **4/10:** efterhalkans uppspelning och räkningen *ovanpå* är byggda och prövade på syntetisk data (#456). Utan regnmängden tiger de,
   och de är redo den dag Trafikverket svarar.
 - Projektkartan visar 72 % av det som går att göra före vinterns domar (#457).
+- **Länssidorna är i drift sedan 4/10 10:00Z** (#458): publicera skriver *"Halt väglag i Skåne just nu?"* för 21 län och en
+  översikt var 30:e minut. Google får dem via Axels sitemap. Androids statusrad efter resan är sammanslagen (#742).
 
 **Vart vi är på väg:** `docs/MALET.md` §4 (milstolparna) och §5 (kritiska vägen).
 
