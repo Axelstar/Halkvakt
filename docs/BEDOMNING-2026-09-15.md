@@ -78,6 +78,15 @@ Driftbeviset för V1–V3 från 26/9 bokfört på #260 (#380). QR-koden: Bengt 1
 
 **(10) 2/10.** Bengts fråga om ändringsregeln (*lättnad utesluten så snart utfallet är sett*) gav ett förslag, **regel L** i fyra led (`docs/FORSLAG-ANDRINGSREGELN-2026-10-02.md`, kort #282, §4.2). Det är ett förslag: inget tröskeldokument är ändrat, och det kräver Bengts och Axels signatur. Efterprövat samma dag: rekommendationen är alternativ D, inte en ny gemensam regel nu — ändringsregeln står i bilaga 7 till Skyltfondsansökan. Kort #270 läst mot kuvösen samma dag, utan ändring på kortet: kuvösens vinter 2024/25 är första underlaget där flaggmarginalen (g) kan prövas, och molnmängden (h) hämtas där en gång — besluten är Bengts. **Bengt samma dag: ja till a, f och g** (DECISIONS #435–#437): premissmätningen går varje måndag och läses en gång, tisdag 24/11; Finland är stöd, inte dom; flaggmarginalen mäts i kuvösen och står i förregistreringen före filen. Öppna på kort #270: b, c, d, e, h. **Snöflingan (kort #233 del 2) avgjord på kuvösens vinter** (#440): av 46 858 episoder då stationsregeln slår till hade 3,0 % luft över +3 °C — bilens snöflinga lyser i 97 av 100 fall, inget säljargument. **Kuvösens leverans kom 16:04** (#438): 5,5 miljoner rader från 777 stationer, november–mars, i en privat release; stämplarna är svensk lokaltid (mätt två sätt); översättningen av nederbörden och vinden väntar på Trafikverkets kodlista (§4.2).
 
+**(11) 3–4/10, kuvösen.**
+- Körflödet är byggt (#453): hela vintern tar 47 min.
+- 30-minutersfallet räknas ur två halvtimmesrader (väg A, #455).
+- Riktningsprovet före regnmängden är byggt: rösten, baslinjen, grind A, höjden med frysflaggan och NT.
+- Riktningsprovet väntar på Trafikverkets svar om koderna och stationerna, men körs senast fredag 16/10 (#456).
+- **4/10:** efterhalkans uppspelning och räkningen *ovanpå* är byggda och prövade på syntetisk data (#456). Utan regnmängden tiger de,
+  och de är redo den dag Trafikverket svarar.
+- Projektkartan visar 72 % av det som går att göra före vinterns domar (#457).
+
 **Vart vi är på väg:** `docs/MALET.md` §4 (milstolparna) och §5 (kritiska vägen).
 
 ---

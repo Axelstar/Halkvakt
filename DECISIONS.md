@@ -7409,6 +7409,20 @@ före något utfall. Bengt kan invända innan efterhalkan körs.
 - **Tidsvinsten** är minuterna mellan P:s första fyrning och baslinjens på tillfällen som båda fångar. Den redovisas bredvid och räknas
   aldrig som nettonytt.
 
+**Byggt 4/10 (Bengt: *"ja, bygg efterhalkans uppspelning och kör på"*), före regnmängden och utan något utfall läst.**
+`kuvos/efterhalkan.ts` kör `uppspelning_efterhalka` (sql/028) med betans startvärden. Ögonblicken tar den ur en variant som härleds ur
+samma källa vid körning och aldrig kopieras, som väg A. `kuvos/ovanpa.ts` räknar tabellen ovan, och båda går i riktningsprovets knapp.
+Utan regnmängden skriver efterhalkan bara att underlaget saknas. Fyra läsningar av texten ovan är nu kod, och Bengt kan invända innan
+något körs:
+- **Fönstret** är (t, t + 90 min] och samma natt. En fyrning i själva facitögonblicket har inget försprång och fångar inget.
+- **Baslinjen** är stationens egen `icing_point`, alltså motorns villkor yta ≤ 1 och fukt (engine.ts). Broarna räknas inte, eftersom de
+  är egna faror och inte "för stationen". Baslinjen kan tidigast tala i facitögonblicket, så tidsvinsten blir facit minus P:s första
+  fyrning i fönstret.
+- **Tillkommen** betyder att varken en annan del eller baslinjen talat för stationen den natten. En natt där stationens röst redan
+  hörts är inte en ny varning.
+- **Facit och baslinjen** räknas bara på rader som klarar vakterna: #75, radvakten, karantänen och den långsamma vakten. Fukten och
+  vakterna importeras, och kontraktsgrinden vaktar natten, fönstret och nära-bandet (nytt kontrakt, två kopior).
+
 ## #457 (3/10 2026) Projektkartan visar också "av det som går att göra före vinterns domar" (kort #286)
 
 **Bengts fråga 3/10:** *"har inte allt vårt arbete med skuggan rört denna siffra överhuvudtaget?"* Svaret var att siffran rörde sig från

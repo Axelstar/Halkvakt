@@ -117,6 +117,7 @@ jobs:
       # frysrisken som baslinje (rösten i båda serierna), grind A, vägpunktsgrinden och höjden med frysflaggan, och nederbördstypen
       # på sitt startvärde. Grind A och höjdprovet räknar "de senaste N dygnen" från now(): de körs genom kuvösens klocka, ställd på
       # vinterns slut, så att fönstret är vintern och inget annat. Varningarna sparas för tabellen del × ensam × ovanpå (5d).
+      # Efterhalkan (#456) går med i samma knapp: utan regnmängden skriver den bara att underlaget saknas.
       - name: Riktningsprovet
         if: ${{ inputs.korflode == 'riktningsprov' }}
         shell: bash
@@ -134,6 +135,7 @@ jobs:
             DATABASE_URL="$KLOCKA" node --experimental-strip-types publish/grind-a.ts "$DAGAR"
             DATABASE_URL="$KLOCKA" node --experimental-strip-types scripts/hojd-prov.ts "$DAGAR" --frysflagga
             node --experimental-strip-types scripts/grind-nt.ts --kuvos --fran "$FRAN" --till "$TILL"
+            node --experimental-strip-types kuvos/efterhalkan.ts
             echo '```'
           } 2>&1 | grep --line-buffered -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Varningarna sparas för tabellen (5d)

@@ -502,9 +502,9 @@ export const KONTRAKT: Kontrakt[] = [
     varfor: "T-A, R-A och uppspelningens episoder ska mena samma natt. Med UTC-dygn delades 159 av 454 stationsnätter i två (#245).",
     // T-A räknar natten i TypeScript sedan kort #254 d (svensk tid, inte UTC) — konstanten är dess kopia.
     former: [/- interval '(\d+) hours?'\)[^\n]{0,40}AS natt\b/, /NATT_SKIFT_H = (\d+)/],
-    // Kuvösens baslinje (DECISIONS #455) räknar sina episoder på samma natt.
-    filer: /grind-t-a\.ts|grind-r-a\.ts|028_uppspelning_varianter\.sql|kuvos\/baslinjen\.ts/,
-    golv: 4,
+    // Kuvösens baslinje (DECISIONS #455) räknar sina episoder på samma natt, och ovanpå (#456) sina facittillfällen.
+    filer: /grind-t-a\.ts|grind-r-a\.ts|028_uppspelning_varianter\.sql|kuvos\/baslinjen\.ts|kuvos\/ovanpa\.ts/,
+    golv: 5,
   },
   {
     // Kort #256 (DECISIONS #366): talet 12 räckte inte. Uppspelningen skiftade natten i UTC medan T-A och R-A skiftade i svensk
@@ -513,8 +513,8 @@ export const KONTRAKT: Kontrakt[] = [
     varfor: "T-A, R-A och uppspelningens episoder ska mena samma natt (#246). Samma skift i olika zoner delar natten på olika ställen.",
     former: [/const ZON = "([^"]+)"/, /const TZ = LAND === "fi" \? "[^"]+" : "([^"]+)"/,
               /AT TIME ZONE '([^']+)'\) - interval '\d+ hours?'\)::date AS natt/],
-    filer: /grind-t-a\.ts|grind-r-a\.ts|028_uppspelning_varianter\.sql|kuvos\/baslinjen\.ts/,
-    golv: 4,
+    filer: /grind-t-a\.ts|grind-r-a\.ts|028_uppspelning_varianter\.sql|kuvos\/baslinjen\.ts|kuvos\/ovanpa\.ts/,
+    golv: 5,
   },
   {
     // Bengts ja 25/9 (DECISIONS #367). Den långsamma vakten SKRIVER givarfelets dygn (sql/030); snapshotkärnan, bunten,
@@ -531,7 +531,15 @@ export const KONTRAKT: Kontrakt[] = [
     namn: "Utfallsfönstret — minuter efter fyrningen som facit får komma",
     varfor: "Driver det isär mäter stationens egen facit ett fönster och omklassningarna ett annat, i samma tabellrad.",
     former: [/UTFALLSFONSTER_MIN\s*=\s*(\d+)/, /minuter = (\d+)\)/, /p_utfall interval DEFAULT '(\d+) minutes'/],
-    golv: 3,
+    // Kuvösens ovanpå (DECISIONS #456) mäter delens försprång mot facit i samma fönster.
+    golv: 4,
+  },
+  {
+    // T-B:s nära-miss-band (TROSKLAR-TRENDEN): uppspelningen klassar sina episoder med det, kuvösens ovanpå sina tillkomna (#456).
+    namn: "Nära-miss-bandet — grader över K1 där en episod räknas som nära, inte uteblev",
+    varfor: "Driver de isär räknar ovanpå och uppspelningen olika episoder som falsklarm, och priset i tabellen är ett annat än T-B:s.",
+    former: [/p_band numeric DEFAULT ([\d.]+)/, /NARA_BAND_C = ([\d.]+)/],
+    golv: 2,
   },
   {
     // Vakthunden kan inte importera pulsklockans TypeScript — den kör i Deno hos Supabase. Talet är
