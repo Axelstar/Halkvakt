@@ -291,7 +291,8 @@ export const KONTRAKT: Kontrakt[] = [
     former: [/SLIPPERY_INFO\s*=\s*\/\(\?<!\[a-zåäö\]\)\(([^)]+)\)/,
               /HALKORD\s*=\s*"([^"]+)"/,
               /~\* '\(\^\|\[\^a-zåäö\]\)\(([^)]+)\)'/],
-    golv: 5,
+    // Länssidorna (#458) säger "halt" med motorns ord: publish/lanssidor.ts och publicera-bunten som bär den.
+    golv: 7,
   },
   {
     // Kort #97 (16/9): snö och frost räknas även INUTI sammansättningar ("Nysnö", "Rimfrost"). Egen lista,
@@ -299,7 +300,7 @@ export const KONTRAKT: Kontrakt[] = [
     namn: "Halkstammarna i MOTORN — snö/frost räknas även inuti ord",
     varfor: "Samma tre kopior som ordbörjanslistan. Driver de isär larmar skuggan på Nysnö medan tystnadsfelet mäter som om den teg.",
     former: [/SLIPPERY_STAM\s*=\s*\/\(([^)]+)\)\/i/, /HALKSTAM\s*=\s*"([^"]+)"/, /OR i ~\* '\(([^)]+)\)'/],
-    golv: 5,
+    golv: 7,
   },
   {
     namn: "Trendens minsta lutning — svepets lägsta steg (°C per fönster)",

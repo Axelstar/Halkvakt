@@ -31,15 +31,17 @@ async function gh(path: string, method = "GET", body?: unknown): Promise<any> {
   return r.json();
 }
 
-/** En commit med alla filerna via Git Data API — inget git, inga Actions-minuter. */
-async function publicera(files: Record<string, string>) {
+/** En commit med alla filerna via Git Data API — inget git, inga Actions-minuter. `inline` går som innehåll direkt i
+ *  trädanropet (länssidorna, #458): 22 sidor utan 22 extra blob-anrop. */
+async function publicera(files: Record<string, string>, inline: Record<string, string> = {}) {
   const branch = await gh("/branches/main");
   const baseCommit = branch.commit.sha, baseTree = branch.commit.commit.tree.sha;
-  const entries = [];
+  const entries: Record<string, string>[] = [];
   for (const [path, content] of Object.entries(files)) {
     const blob = await gh("/git/blobs", "POST", { content: btoa(unescape(encodeURIComponent(content))), encoding: "base64" });
     entries.push({ path, mode: "100644", type: "blob", sha: blob.sha });
   }
+  for (const [path, content] of Object.entries(inline)) entries.push({ path, mode: "100644", type: "blob", content });
   const tree = await gh("/git/trees", "POST", { base_tree: baseTree, tree: entries });
   if (tree.sha === baseTree) return null;              // inget nytt att säga
   const commit = await gh("/git/commits", "POST", {
@@ -88,22 +90,34 @@ Deno.serve(async (req) => {
     // Kartlagren var 30:e minut (#77). Minuten läses vid start; pg_cron fyrar :00,:10,…
     const karta = new URL(req.url).searchParams.get("karta") === "1" || new Date().getUTCMinutes() % 30 < 10;
     let kartaStats: unknown = null;
+    const inline: Record<string, string> = {};
     if (karta) {
       const m = await buildMapData(
         (text, params) => sql.unsafe(text, (params ?? []) as any[]) as unknown as Promise<Record<string, any>[]>,
-        { trvKey: Deno.env.get("TRAFIKVERKET_API_KEY") });
+        { trvKey: Deno.env.get("TRAFIKVERKET_API_KEY"), appVader: liveDoc.weather });
       for (const [name, json] of Object.entries(m.files)) files[`data/${name}`] = json;
       notes.push(...m.notes);
       kartaStats = m.stats;
+      // Länssidorna (#458) i sajtens rot, och Axels sitemap med de adresser som saknas. Fail-soft: går sitemapen inte att
+      // läsa skrivs sidorna ändå, och noten säger varför.
+      if (m.sidor) {
+        Object.assign(inline, m.sidor);
+        try {
+          const sm = await gh("/contents/sitemap.xml");
+          const xml = new TextDecoder().decode(Uint8Array.from(atob(String(sm.content).replace(/\n/g, "")), (c) => c.charCodeAt(0)));
+          const ny = sitemapMed(xml, lanAdresser());
+          if (ny) inline["sitemap.xml"] = ny;
+        } catch (e) { notes.push(`sitemap: ej läsbar (${String((e as Error).message).slice(0, 120)}) — länssidorna skrivs ändå`); }
+      }
     }
-    const sha = await publicera(files);
+    const sha = await publicera(files, inline);
     return new Response(JSON.stringify({ ok: true, sha, generated_at: liveDoc.generated_at,
       segments: liveDoc.segments.length, weather: liveDoc.weather.length,
       deviations: liveDoc.deviations.length, wildlife: liveDoc.wildlife.length,
       bridges: liveDoc.bridges.length, smhi: liveDoc.smhi.length,
       cameras: staticDoc.cameras.length, border, notes,
       live_gz_bytes: manifest.files.live.gz_bytes,
-      karta: kartaStats, ms: Date.now() - t0 }), { headers: { "Content-Type": "application/json" } });
+      karta: kartaStats, lanssidor: Object.keys(inline).length, ms: Date.now() - t0 }), { headers: { "Content-Type": "application/json" } });
   } catch (e) {
     return new Response(JSON.stringify({ ok: false, error: String(e) }), { status: 500 });
   }

@@ -1,5 +1,5 @@
 // ═══ GENERERAD av scripts/bundle-publicera.ts — ÄNDRA INTE HÄR ═══
-// Källor: publish/tillstand.ts + publish/snapshot-core.ts + publish/map-core.ts + data/bridges.geojson + supabase/functions/publicera/main.ts
+// Källor: publish/tillstand.ts + publish/snapshot-core.ts + publish/lanssidor.ts + publish/map-core.ts + data/bridges.geojson + supabase/functions/publicera/main.ts
 
 // ═══ publish/tillstand.ts ═══
 // TILLSTÅNDSSKATTAREN — kort #89 steg 2 (TROSKLAR-OVERGANGAR §9, Bengts order 13/9).
@@ -605,6 +605,224 @@ export async function buildGrannSnapshot(q: Q, land: Granne, now: Date = new Dat
 }
 
 
+// ═══ publish/lanssidor.ts ═══
+// LÄNSSIDORNA (kort #281, DECISIONS #458) — "Halt väglag i Skåne just nu?" för de 21 länen, skrivna av publicera i kartlagrens
+// varv (var 30:e minut) till kartsajten. Allt här blir PUBLIKT och läses av Google, så sidan säger bara vad källorna säger:
+// Trafikverkets väglagsrapport med deras egna ord, vägbanans temperatur vid de stationer som klarar appens vakter, och pågående
+// olyckor. Sidan påstår aldrig själv att det är halt.
+//
+// Ren och körtidsneutral som kartkärnan: inga importer, för scripts/bundle-publicera.ts klistrar in filen i publicera. Namnen får
+// därför inte krocka med snapshot-core.ts eller map-core.ts.
+
+/** Kartsajtens adress. Byts den (egen domän) skickar GitHub Pages vidare, men kanoniska adresser och sitemapen följer härifrån. */
+export const SIDBAS = "https://axelstar.github.io/halkvakt-karta";
+
+// Det som får MOTORN att tala om en sträcka (engine.ts, evaluateSegment): kod ≥ 2 eller ett halkord. En kopia, vaktad av
+// kontraktsgrinden ("Halkorden i MOTORN", "Halkstammarna i MOTORN") — sidan och rösten ska mena samma sak med halt.
+const SLIPPERY_INFO = /(?<![a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)/i;
+const SLIPPERY_STAM = /(snö|frost)/i;
+
+export function arHalt(code: number | null, info: string[]): boolean {
+  return (code != null && code >= 2) || info.some((i) => SLIPPERY_INFO.test(i) || SLIPPERY_STAM.test(i));
+}
+
+/** SCB:s länskoder, som Trafikverkets CountyNo. `kort` står i rubriken — så som folk söker. Stycket är skrivet för hand. */
+export const LAN: { kod: number; namn: string; kort: string; slug: string; stycke: string }[] = [
+  { kod: 1, namn: "Stockholms län", kort: "Stockholms län", slug: "stockholm",
+    stycke: "I Stockholms län växlar vintern ofta kring noll grader. En klar natt kan vägbanan frysa före luften, och broar och påfarter på E4, E18 och E20 fryser först." },
+  { kod: 3, namn: "Uppsala län", kort: "Uppsala län", slug: "uppsala",
+    stycke: "Uppsala län har öppna slättvägar där blåst och snödrev kan göra väglaget sämre än temperaturen antyder. E4 och väg 55 går genom länet." },
+  { kod: 4, namn: "Södermanlands län", kort: "Södermanland", slug: "sodermanland",
+    stycke: "I Södermanland går E4 och E20 genom ett landskap med många sjöar, och fukten kan ge frost på vägbanan en kall morgon." },
+  { kod: 5, namn: "Östergötlands län", kort: "Östergötland", slug: "ostergotland",
+    stycke: "Östergötland har både slätten kring E4 och skogsbygden längre ut. Vägbanan kan frysa i sänkor och på broar före resten av vägen." },
+  { kod: 6, namn: "Jönköpings län", kort: "Jönköpings län", slug: "jonkoping",
+    stycke: "Jönköpings län ligger på det småländska höglandet, där vintern ofta kommer tidigare än vid kusten. E4 längs Vättern och väg 26, 27 och 40 korsar länet." },
+  { kod: 7, namn: "Kronobergs län", kort: "Kronoberg", slug: "kronoberg",
+    stycke: "Kronobergs län är skogsbygd med många mindre vägar, där isfläckar kan ligga kvar i skuggan länge efter att resten av vägen tinat." },
+  { kod: 8, namn: "Kalmar län", kort: "Kalmar län", slug: "kalmar",
+    stycke: "I Kalmar län går E22 längs kusten. Vintern är ofta mild där, men den växlar mellan regn och minusgrader, och då kan en blöt väg frysa." },
+  { kod: 9, namn: "Gotlands län", kort: "Gotland", slug: "gotland",
+    stycke: "Gotlands vintrar är milda, men öppna vägar och vind från havet kan ge snabba omslag mellan blött och fruset." },
+  { kod: 10, namn: "Blekinge län", kort: "Blekinge", slug: "blekinge",
+    stycke: "Blekinge har en mild kustvinter längs E22, där temperaturen ofta pendlar kring noll. En blöt väg kan frysa när det klarnar på kvällen." },
+  { kod: 12, namn: "Skåne län", kort: "Skåne", slug: "skane",
+    stycke: "Skånes vintrar är milda, och just därför pendlar temperaturen ofta kring noll grader. En blöt väg på E6, E22 eller väg 108 kan frysa på kort tid när det klarnar upp." },
+  { kod: 13, namn: "Hallands län", kort: "Halland", slug: "halland",
+    stycke: "Halland har milt kustklimat längs E6, men inåt landet stiger terrängen, och där kan vägen vara frusen medan kusten har plusgrader." },
+  { kod: 14, namn: "Västra Götalands län", kort: "Västra Götaland", slug: "vastra-gotaland",
+    stycke: "Västra Götaland är stort, och väglaget kan skilja sig mycket mellan kusten längs E6 och inlandet kring E20 och E45." },
+  { kod: 17, namn: "Värmlands län", kort: "Värmland", slug: "varmland",
+    stycke: "I Värmland kommer vintern tidigt i norr och i skogsbygden. E18, E45 och E16 går genom länet." },
+  { kod: 18, namn: "Örebro län", kort: "Örebro län", slug: "orebro",
+    stycke: "Örebro län har både slätten kring Örebro och skogsbygd i norr och väster, och väg 50, E18 och E20 kan ha olika väglag samma morgon." },
+  { kod: 19, namn: "Västmanlands län", kort: "Västmanland", slug: "vastmanland",
+    stycke: "Västmanland har slättbygd vid Mälaren och skogsbygd i norr. E18 och väg 56 och 70 går genom länet." },
+  { kod: 20, namn: "Dalarnas län", kort: "Dalarna", slug: "dalarna",
+    stycke: "Dalarna har lång vinter i fjällen och skogsbygden, och väg 70, E16 och E45 korsar länet. På höjderna och i dalgångarna kan vägbanan frysa tidigt på hösten." },
+  { kod: 21, namn: "Gävleborgs län", kort: "Gävleborg", slug: "gavleborg",
+    stycke: "I Gävleborg går E4 längs kusten och väg 83 och 84 inåt landet, där vintern ofta är kallare och kommer tidigare än vid kusten." },
+  { kod: 22, namn: "Västernorrlands län", kort: "Västernorrland", slug: "vasternorrland",
+    stycke: "Västernorrland har kuperad terräng längs E4 och Höga kusten, där backar och broar kan bli hala före resten av vägen." },
+  { kod: 23, namn: "Jämtlands län", kort: "Jämtland", slug: "jamtland",
+    stycke: "Jämtland har lång vinter och fjällvägar längs E14 och E45, där väglaget kan ändras snabbt med höjden." },
+  { kod: 24, namn: "Västerbottens län", kort: "Västerbotten", slug: "vasterbotten",
+    stycke: "Västerbotten sträcker sig från kusten vid E4 till fjällen längs E12. Vintern är lång, och omslagen kring noll grader på hösten och våren ger ofta halkan." },
+  { kod: 25, namn: "Norrbottens län", kort: "Norrbotten", slug: "norrbotten",
+    stycke: "Norrbotten har landets längsta vinter, med E4, E10 och E45 genom länet. Kylan är vanlig här, och halkan kommer ofta när det blir mildare och snön eller isen blir blöt." },
+];
+
+export type LanSegment = { code: number | null; text: string | null; info: string[]; road: string | null; plats: string | null; lan: number | null };
+export type LanStation = { name: string; yta: number; fukt: boolean; lan: number };
+export type LanOlycka = { road: string | null; start: string | null; allvar: string | null; lan: number | null };
+
+const lsEsc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const lsGrad = (c: number) => `${c.toFixed(1).replace(".", ",").replace("-", "−")} °C`;
+const lsTid = (d: Date, datum = true) => new Intl.DateTimeFormat("sv-SE", {
+  timeZone: "Europe/Stockholm", hour: "2-digit", minute: "2-digit", ...(datum ? { day: "numeric", month: "short" } : {}),
+}).format(d);
+const lsPlural = (n: number, en: string, flera: string) => `${n} ${n === 1 ? en : flera}`;
+
+const LS_STIL = `:root{--bg:#0E1B25;--panel:#14344A;--fg:#F3F6F9;--dim:#9FB3C8;--gul:#FFC400;--gron:#1E7A46}
+*{box-sizing:border-box;margin:0}body{background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,sans-serif}
+a{color:var(--gul)}.wrap{max-width:880px;margin:0 auto;padding:0 20px}header{padding:18px 0;border-bottom:2px solid var(--panel)}
+.brand{font-family:ui-monospace,monospace;font-weight:700;color:var(--gul);font-size:20px;letter-spacing:.5px;text-decoration:none}
+main{padding:24px 0 8px}h1{font-size:30px;line-height:1.2;margin:6px 0 12px;text-wrap:balance}h2{font-size:19px;margin:26px 0 8px}
+.dim{color:var(--dim);font-size:14px}.svar{font-size:19px;background:var(--panel);border-radius:12px;padding:14px 16px}
+ul{padding-left:20px}li{margin:4px 0}table{border-collapse:collapse;width:100%;font-size:15px;font-variant-numeric:tabular-nums}
+td,th{text-align:left;padding:6px 8px;border-bottom:1px solid var(--panel)}td+td,th+th{white-space:nowrap}nav p{line-height:2}
+footer{padding:20px 0 40px;color:var(--dim);font-size:13px}`;
+
+function lsSkal(o: { titel: string; beskrivning: string; adress: string; rot: string; innehall: string }) {
+  return `<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${lsEsc(o.titel)}</title>
+<meta name="description" content="${lsEsc(o.beskrivning)}">
+<link rel="canonical" href="${o.adress}">
+<meta property="og:title" content="${lsEsc(o.titel)}">
+<meta property="og:description" content="${lsEsc(o.beskrivning)}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="${o.adress}">
+<meta property="og:locale" content="sv_SE">
+<meta property="og:image" content="${SIDBAS}/og.png">
+<link rel="icon" type="image/png" href="${o.rot}favicon.png">
+<style>${LS_STIL}</style>
+</head>
+<body>
+<header><div class="wrap"><a class="brand" href="${o.rot}">HALKVAKT</a></div></header>
+<main class="wrap">
+${o.innehall}
+</main>
+<footer><div class="wrap">Källa: Trafikverkets öppna data (väglag, vägväderstationer och olyckor). Sidan skrivs om var 30:e minut.
+Halkvakt är en app som varnar med rösten för halka, olyckor, vilt och fartkameror på vägen framför dig — <a href="${o.rot}">läs mer</a>.</div></footer>
+</body>
+</html>
+`;
+}
+
+type LanLage = { halt: LanSegment[]; vagavsnitt: number; kalla: LanStation[]; olyckor: LanOlycka[] };
+
+function lsLage(kod: number, d: { vaglag: LanSegment[]; stationer: LanStation[]; olyckor: LanOlycka[] }): LanLage {
+  const segs = d.vaglag.filter((s) => s.lan === kod);
+  return {
+    halt: segs.filter((s) => arHalt(s.code, s.info)),
+    vagavsnitt: segs.length,
+    kalla: d.stationer.filter((s) => s.lan === kod && s.yta <= 0).sort((a, b) => a.yta - b.yta),
+    olyckor: d.olyckor.filter((o) => o.lan === kod),
+  };
+}
+
+/** Svaret överst: vad källorna säger, med deras ord. */
+function lsSvar(l: LanLage): string {
+  const vag = l.halt.length
+    ? `Trafikverket rapporterar halka eller vinterväglag på ${l.halt.length} av länets ${l.vagavsnitt} vägavsnitt.`
+    : `Trafikverket rapporterar ingen halka på länets ${l.vagavsnitt} vägavsnitt just nu.`;
+  const temp = l.kalla.length
+    ? `${lsPlural(l.kalla.length, "mätstation visar", "mätstationer visar")} vägbana på 0 °C eller kallare.`
+    : "Ingen mätstation i länet visar vägbana under noll.";
+  return `${vag} ${temp}`;
+}
+
+function lsLanssida(lan: (typeof LAN)[number], l: LanLage, now: Date): string {
+  const halt = l.halt.slice(0, 15).map((s) => {
+    const vad = [s.text, ...s.info].filter(Boolean).join(", ");
+    return `<li>${lsEsc(s.plats ?? s.road ?? "Vägavsnitt")}: ${lsEsc(vad)}</li>`;
+  }).join("\n");
+  const kalla = l.kalla.slice(0, 5).map((s) =>
+    `<li>${lsEsc(s.name)}: ${lsGrad(s.yta)}${s.fukt ? " — nederbörd eller fukt rapporteras" : ""}</li>`).join("\n");
+  const olyckor = l.olyckor.slice(0, 10).map((o) => `<li>${lsEsc(o.road ?? "Väg")}${o.start ? `, sedan ${lsTid(new Date(o.start))}` : ""}` +
+    `${o.allvar ? ` (${lsEsc(o.allvar)})` : ""}</li>`).join("\n");
+  const andra = LAN.filter((x) => x.kod !== lan.kod).map((x) => `<a href="../${x.slug}/">${lsEsc(x.kort)}</a>`).join(" · ");
+  const innehall = `<p class="dim">Uppdaterad ${lsTid(now)}</p>
+<h1>Halt väglag i ${lsEsc(lan.kort)} just nu?</h1>
+<p class="svar">${lsEsc(lsSvar(l))}</p>
+<h2>Väglaget enligt Trafikverket</h2>
+${l.halt.length ? `<ul>\n${halt}\n</ul>${l.halt.length > 15 ? `\n<p class="dim">och ${l.halt.length - 15} till.</p>` : ""}`
+    : `<p>Inget av länets ${l.vagavsnitt} vägavsnitt har halka eller vinterväglag i Trafikverkets rapport.</p>`}
+<h2>Vägbanans temperatur</h2>
+${l.kalla.length ? `<p>Kallast just nu, vid Trafikverkets vägväderstationer:</p>\n<ul>\n${kalla}\n</ul>`
+    : "<p>Ingen av länets vägväderstationer visar vägbana på 0 °C eller kallare.</p>"}
+<h2>Pågående olyckor</h2>
+${l.olyckor.length ? `<ul>\n${olyckor}\n</ul>` : "<p>Trafikverket rapporterar ingen pågående olycka i länet.</p>"}
+<h2>Vintern i ${lsEsc(lan.kort)}</h2>
+<p>${lsEsc(lan.stycke)}</p>
+<p>Se hela landet på <a href="../../karta.html">livekartan</a>, eller <a href="../">läget i alla län</a>.</p>
+<nav><h2>Andra län</h2><p>${andra}</p></nav>`;
+  return lsSkal({
+    titel: `Halt väglag i ${lan.kort} just nu? Väglag och vägtemperatur | Halkvakt`,
+    beskrivning: `Väglaget i ${lan.namn} just nu: Trafikverkets rapporter om halka, vägbanans temperatur vid mätstationerna och pågående olyckor. Uppdateras var 30:e minut.`,
+    adress: `${SIDBAS}/lan/${lan.slug}/`, rot: "../../", innehall,
+  });
+}
+
+function lsOversikt(lagen: Map<number, LanLage>, now: Date): string {
+  const rader = LAN.map((lan) => {
+    const l = lagen.get(lan.kod)!;
+    return `<tr><td><a href="${lan.slug}/">${lsEsc(lan.namn)}</a></td><td>${l.halt.length} av ${l.vagavsnitt}</td><td>${l.kalla.length}</td><td>${l.olyckor.length}</td></tr>`;
+  }).join("\n");
+  const innehall = `<p class="dim">Uppdaterad ${lsTid(now)}</p>
+<h1>Halt väglag i Sverige just nu? Läget per län</h1>
+<p>Trafikverkets väglagsrapport, vägbanans temperatur vid vägväderstationerna och pågående olyckor, län för län.</p>
+<div style="overflow-x:auto"><table>
+<thead><tr><th>Län</th><th>Halka¹</th><th>≤ 0 °C²</th><th>Olyckor</th></tr></thead>
+<tbody>
+${rader}
+</tbody>
+</table></div>
+<p class="dim">¹ Vägavsnitt med halka eller vinterväglag i Trafikverkets rapport, av länets alla. ² Vägväderstationer som visar vägbana på
+0 °C eller kallare. Olyckor: pågående, enligt Trafikverket.</p>
+<p>Se hela landet på <a href="../karta.html">livekartan</a>.</p>`;
+  return lsSkal({
+    titel: "Halt väglag i Sverige just nu? Läget per län | Halkvakt",
+    beskrivning: "Väglaget i alla 21 län just nu: Trafikverkets rapporter om halka, vägbanans temperatur och pågående olyckor. Uppdateras var 30:e minut.",
+    adress: `${SIDBAS}/lan/`, rot: "../", innehall,
+  });
+}
+
+/** Alla sidor, nyckel = sökvägen i kartsajten. */
+export function byggLanssidor(d: { vaglag: LanSegment[]; stationer: LanStation[]; olyckor: LanOlycka[]; now: Date }): Record<string, string> {
+  const lagen = new Map(LAN.map((lan) => [lan.kod, lsLage(lan.kod, d)] as const));
+  const ut: Record<string, string> = { "lan/index.html": lsOversikt(lagen, d.now) };
+  for (const lan of LAN) ut[`lan/${lan.slug}/index.html`] = lsLanssida(lan, lagen.get(lan.kod)!, d.now);
+  return ut;
+}
+
+export const lanAdresser = () => [`${SIDBAS}/lan/`, ...LAN.map((l) => `${SIDBAS}/lan/${l.slug}/`)];
+
+/** Axels sitemap med de adresser som saknas infogade före </urlset>; null när inget saknas eller filen inte går att läsa. */
+export function sitemapMed(xml: string, adresser: string[]): string | null {
+  const slut = xml.lastIndexOf("</urlset>");
+  if (slut < 0) return null;
+  const nya = adresser.filter((a) => !xml.includes(`<loc>${a}</loc>`));
+  if (!nya.length) return null;
+  const rader = nya.map((a) => `  <url><loc>${a}</loc><changefreq>hourly</changefreq><priority>0.6</priority></url>\n`).join("");
+  return xml.slice(0, slut) + rader + xml.slice(slut);
+}
+
+
 // ═══ publish/map-core.ts ═══
 // KARTLAGERKÄRNAN — kartsajtens filer data/{vaglag,vader,olyckor,kameror,kameror-vaglag}.geojson
 // och data/meta.json, byggda ur databasen. Allt här blir PUBLIKT (bara CC0/CC BY-data).
@@ -622,7 +840,19 @@ export async function buildGrannSnapshot(q: Q, land: Granne, now: Date = new Dat
 const featureCollection = (features: unknown[]) => ({ type: "FeatureCollection", features });
 const numOrNull = (x: unknown) => (x === null || x === undefined ? null : Number(x));
 
-export async function buildMapData(q: Q, opts: { trvKey?: string; fetchFn?: typeof fetch; now?: Date } = {}) {
+/** Varje svensk station med länet för den närmaste väglagssträckan inom 20 km (länssidorna, #458). Stationerna saknar egen
+ *  länskod i arkivet; sträckorna bär Trafikverkets CountyNo. */
+export const STATION_LAN_SQL = `
+  SELECT w.station_id, w.name, n.lan
+  FROM weather_latest w
+  CROSS JOIN LATERAL (SELECT rc.county_nos[1] AS lan, rc.geom FROM road_conditions rc
+                      WHERE NOT rc.deleted AND rc.geom IS NOT NULL ORDER BY rc.geom <-> w.geom LIMIT 1) n
+  WHERE n.lan IS NOT NULL AND ST_DWithin(n.geom::geography, w.geom::geography, 20000)`;
+
+/** `appVader` = lägesfilens väderpunkter (de som klarar appens vakter). Med den skrivs länssidorna (#458); utan den hoppas de över. */
+export async function buildMapData(q: Q, opts: {
+  trvKey?: string; fetchFn?: typeof fetch; now?: Date; appVader?: { id: string; yta: number | null; fukt: boolean }[];
+} = {}) {
   const now = opts.now ?? new Date();
   const notes: string[] = [];
   const files: Record<string, string> = {};
@@ -663,20 +893,20 @@ export async function buildMapData(q: Q, opts: { trvKey?: string; fetchFn?: type
 
   const olyckor = await q(`
     SELECT 'SE' AS land, deviation_id, message_type, message, severity_text, road_number, start_time,
-           ST_AsGeoJSON(COALESCE(geom, ST_Centroid(line_geom)))::json AS g
+           ST_AsGeoJSON(COALESCE(geom, ST_Centroid(line_geom)))::json AS g, county_nos[1] AS lan
     FROM deviations
     WHERE NOT deleted AND (geom IS NOT NULL OR line_geom IS NOT NULL)
       AND (end_time IS NULL OR end_time > now())
       AND message_type_value = 'Accident'   -- #318: djuren ligger i samma tabell sedan 22/9
     UNION ALL
     SELECT 'FI', deviation_id, message_type, message, severity_text, road_number, start_time,
-           ST_AsGeoJSON(geom)::json
+           ST_AsGeoJSON(geom)::json, NULL::int
     FROM fi.deviations
     WHERE NOT deleted AND geom IS NOT NULL AND (end_time IS NULL OR end_time > now())
       AND message_type_value = 'Accident'
     UNION ALL
     SELECT 'DK', deviation_id, message_type, message, severity_text, road_number, start_time,
-           ST_AsGeoJSON(geom)::json
+           ST_AsGeoJSON(geom)::json, NULL::int
     FROM dk.deviations
     WHERE NOT deleted AND geom IS NOT NULL AND (end_time IS NULL OR end_time > now())
       AND message_type_value = 'Accident'`);
@@ -751,7 +981,28 @@ export async function buildMapData(q: Q, opts: { trvKey?: string; fetchFn?: type
     waitlist_count: Number(wl[0]?.n ?? 0),
   };
   put("meta.json", stats);
-  return { files, stats, notes };
+
+  // Länssidorna (kort #281, DECISIONS #458). Stationerna saknar länskod i arkivet: varje station får länet för den närmaste
+  // väglagssträckan inom 20 km. Bara de stationer appen själv talar om (appVader) räknas — en trasig givare blir aldrig
+  // "minusgrader i länet".
+  let sidor: Record<string, string> | null = null;
+  if (opts.appVader) {
+    const stLan = await q(STATION_LAN_SQL);
+    const lanFor = new Map(stLan.map((r) => [String(r.station_id), { name: String(r.name), lan: Number(r.lan) }]));
+    const stationer: LanStation[] = opts.appVader.flatMap((w) => {
+      const s = lanFor.get(w.id);
+      return s && w.yta !== null ? [{ name: s.name, yta: w.yta, fukt: w.fukt, lan: s.lan }] : [];
+    });
+    sidor = byggLanssidor({
+      vaglag: vaglag.map((r) => ({ code: numOrNull(r.condition_code), text: r.condition_text ?? null, info: (r.condition_info ?? []) as string[],
+        road: r.road_number ?? null, plats: r.location_text ?? null, lan: numOrNull(r.lan) })),
+      stationer,
+      olyckor: olyckor.filter((r) => r.land === "SE").map((r) => ({ road: r.road_number ?? null, start: r.start_time ? new Date(r.start_time).toISOString() : null,
+        allvar: r.severity_text ?? null, lan: numOrNull(r.lan) })),
+      now,
+    });
+  }
+  return { files, stats, notes, sidor };
 }
 
 
@@ -792,15 +1043,17 @@ async function gh(path: string, method = "GET", body?: unknown): Promise<any> {
   return r.json();
 }
 
-/** En commit med alla filerna via Git Data API — inget git, inga Actions-minuter. */
-async function publicera(files: Record<string, string>) {
+/** En commit med alla filerna via Git Data API — inget git, inga Actions-minuter. `inline` går som innehåll direkt i
+ *  trädanropet (länssidorna, #458): 22 sidor utan 22 extra blob-anrop. */
+async function publicera(files: Record<string, string>, inline: Record<string, string> = {}) {
   const branch = await gh("/branches/main");
   const baseCommit = branch.commit.sha, baseTree = branch.commit.commit.tree.sha;
-  const entries = [];
+  const entries: Record<string, string>[] = [];
   for (const [path, content] of Object.entries(files)) {
     const blob = await gh("/git/blobs", "POST", { content: btoa(unescape(encodeURIComponent(content))), encoding: "base64" });
     entries.push({ path, mode: "100644", type: "blob", sha: blob.sha });
   }
+  for (const [path, content] of Object.entries(inline)) entries.push({ path, mode: "100644", type: "blob", content });
   const tree = await gh("/git/trees", "POST", { base_tree: baseTree, tree: entries });
   if (tree.sha === baseTree) return null;              // inget nytt att säga
   const commit = await gh("/git/commits", "POST", {
@@ -849,22 +1102,34 @@ Deno.serve(async (req) => {
     // Kartlagren var 30:e minut (#77). Minuten läses vid start; pg_cron fyrar :00,:10,…
     const karta = new URL(req.url).searchParams.get("karta") === "1" || new Date().getUTCMinutes() % 30 < 10;
     let kartaStats: unknown = null;
+    const inline: Record<string, string> = {};
     if (karta) {
       const m = await buildMapData(
         (text, params) => sql.unsafe(text, (params ?? []) as any[]) as unknown as Promise<Record<string, any>[]>,
-        { trvKey: Deno.env.get("TRAFIKVERKET_API_KEY") });
+        { trvKey: Deno.env.get("TRAFIKVERKET_API_KEY"), appVader: liveDoc.weather });
       for (const [name, json] of Object.entries(m.files)) files[`data/${name}`] = json;
       notes.push(...m.notes);
       kartaStats = m.stats;
+      // Länssidorna (#458) i sajtens rot, och Axels sitemap med de adresser som saknas. Fail-soft: går sitemapen inte att
+      // läsa skrivs sidorna ändå, och noten säger varför.
+      if (m.sidor) {
+        Object.assign(inline, m.sidor);
+        try {
+          const sm = await gh("/contents/sitemap.xml");
+          const xml = new TextDecoder().decode(Uint8Array.from(atob(String(sm.content).replace(/\n/g, "")), (c) => c.charCodeAt(0)));
+          const ny = sitemapMed(xml, lanAdresser());
+          if (ny) inline["sitemap.xml"] = ny;
+        } catch (e) { notes.push(`sitemap: ej läsbar (${String((e as Error).message).slice(0, 120)}) — länssidorna skrivs ändå`); }
+      }
     }
-    const sha = await publicera(files);
+    const sha = await publicera(files, inline);
     return new Response(JSON.stringify({ ok: true, sha, generated_at: liveDoc.generated_at,
       segments: liveDoc.segments.length, weather: liveDoc.weather.length,
       deviations: liveDoc.deviations.length, wildlife: liveDoc.wildlife.length,
       bridges: liveDoc.bridges.length, smhi: liveDoc.smhi.length,
       cameras: staticDoc.cameras.length, border, notes,
       live_gz_bytes: manifest.files.live.gz_bytes,
-      karta: kartaStats, ms: Date.now() - t0 }), { headers: { "Content-Type": "application/json" } });
+      karta: kartaStats, lanssidor: Object.keys(inline).length, ms: Date.now() - t0 }), { headers: { "Content-Type": "application/json" } });
   } catch (e) {
     return new Response(JSON.stringify({ ok: false, error: String(e) }), { status: 500 });
   }

@@ -115,6 +115,11 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   **"Halkvakt live"** (Axels idé 00:24): motorn postar riktiga larm själv till X/Bluesky/Mastodon/FB-sidan. Push till användarna är ett ägarbeslut (§4.2).
   🔍 **Sök (Axels fråga 00:28, planens §6):** länssidor + vägsidor *"Halt väglag i Skåne just nu"* som publicera-flödet skriver om var 30:e minut —
   byggs i karta-repot i oktober (Google behöver veckor) · domänen före första pressomgången · widget + "Sveriges halaste vägar" som länkbeten · Search Console.
+  🔨 **LÄNSSIDORNA BYGGDA 4/10 (Bengts *"B för länssidorna"*, DECISIONS #458):** Bengts konto kan bara läsa karta-repot, så publicera skriver
+  `lan/<län>/` för de 21 länen och `lan/` som översikt i kartlagrens varv. Sidorna visar Trafikverkets väglag (halt = motorns regel), vägbanans
+  temperatur vid de stationer appen litar på och pågående olyckor. Axels sitemap får adresserna infogade. Prov: `test/lanssidor.test.ts` och
+  PostGIS-provet för stationernas län, förhandsvisade i mobilbredd. 🔑 Kvar: deploy av publicera på *slå ihop* och en commit i kartrepot med
+  sidorna. **Axel (valfritt):** en länk till `lan/` från startsidan hjälper Google mer än sitemapen ensam. Vägsidorna därefter.
   ⚙️ **Regel (Axels order 00:31, planens §7): allt som kan gå av sig själv när det är uppsatt ska gå av sig själv** — motorn, Halkvakt live,
   länssidorna, nyhetsbrevet, pressutkast vid larm, måndagsmätningen, widgeten, årsrapporten. Det som kräver ett ok landar som färdigt utkast med en knapp.
   Verify: 12 Android-testare + 50 iPhone-installationer till första snön; 1 000 installationer, 5 pressomnämnanden, 100 facitsvar till 31/12 (§6).
