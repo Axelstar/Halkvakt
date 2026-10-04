@@ -7473,3 +7473,13 @@ Bengts konto har bara läsrätt i `Axelstar/halkvakt-karta`. Dit skriver bara Ax
 - **Kontraktsgrinden:** golvet för halkorden och halkstammarna är höjt från 5 till 7.
 - **Förhandsvisat** ur dagens kartdata: översiktens tabell ryms på en 375 px bred telefon. 21 länskoder i kartans data, alla
   sträckor *Normalt* 4/10.
+
+**I drift 4/10** (Bengt: *"slå ihop 742 och 744"*, PR #744 som 5459907):
+- **Deploy och första varv:** deploy-supabase 37193469610 ur 5459907. Kartvarvet 10:00:50Z skrev commit 5b31056 i karta-repot med
+  21 länsmappar och `lan/index.html`.
+- **Sitemapen** har 28 adresser: Axels 6 står kvar, och 22 är infogade.
+- **Pages** svarar 200 på `/lan/` och `/lan/skane/` från 10:01:24. Skånesidan säger *"Trafikverket rapporterar ingen halka på länets
+  88 vägavsnitt just nu. Ingen mätstation i länet visar vägbana under noll."*
+- **Appens lägesfil** är orörd: manifestets live-sha är lika med sha256(live.json) i samma varv.
+- **Körtiden** var 49,6 s med 23 filer i trädanropet. Före deployen tog tolv kartvarv 47,9–52,9 s, median 49,3 s (dbknapp
+  37193406335 och 37194034793). Ingen skillnad syns, men det är ett enda varv.
