@@ -154,6 +154,56 @@ test("väg A: halvtimmesvarianten är driftens funktion med ett nytt namn och tv
     "en ändrad form i driften fäller härledningen i stället för att tyst ge en annan regel");
 });
 
+// Efterhalkan (DECISIONS #456): ögonblicken ur uppspelningens egen funktion, härledda vid körning. Ändras driftens form ska detta falla.
+test("efterhalkan: ögonblicksvarianten är uppspelningen med nytt namn, ny returtyp och ögonblicken i stället för summorna — inget annat", async () => {
+  const { ogonblicksvariant, FUNKTION } = await import("../kuvos/efterhalkan.ts");
+  const sql = readFileSync(new URL("../sql/028_uppspelning_varianter.sql", import.meta.url), "utf8");
+  const v = ogonblicksvariant(sql);
+  assert.ok(v.startsWith(`CREATE OR REPLACE FUNCTION ${FUNKTION}(`) && v.endsWith("END $$;"));
+  assert.match(v, /RETURNS TABLE \(sid text, t timestamptz, min_efter numeric, rader int\)/);
+  assert.ok(!/\bep AS|\bfa AS/.test(v) && v.includes("SELECT f.sid, f.t, f.min_efter, f.rader FROM f ORDER BY f.sid, f.t;"));
+  const start = sql.indexOf("CREATE OR REPLACE FUNCTION uppspelning_efterhalka(");
+  const fram = (s: string) => s.slice(s.indexOf("LANGUAGE plpgsql"), s.indexOf("OR m.blot)") + "OR m.blot)".length);
+  assert.equal(fram(v), fram(sql.slice(start)), "vakterna, basen, blöt-villkoret och nattens etikett ordagrant driftens");
+  assert.throws(() => ogonblicksvariant(sql.replace("ep AS (SELECT DISTINCT ON", "ep AS (SELECT")), /DECISIONS #456/,
+    "en ändrad form i driften fäller härledningen i stället för att tyst ge en annan regel");
+});
+
+// Ovanpå (DECISIONS #456), räknat för hand. Natten 14/1 (svensk tid, middag till middag). S1: baslinjen fångar, delen 60 min före.
+// S2: fukten kom efter facit, så bara delen fångar — nettonytt — men baslinjen talade samma natt, så episoden är inte tillkommen.
+// S3: delen 120 min före facit (utanför fönstret) och i facitögonblicket (inget försprång), nära (1,2). S4: ingen facit, uteblev (2,0);
+// andra natten utan utfall. S5: delen efter facit fångar inget. S6: facit strax efter middag, delen 40 min före men natten innan.
+test("ovanpå: nettonytt, pris på de tillkomna, nära är inte falsklarm, tidsvinsten bredvid — och en annan del tar sin del", async () => {
+  const { ovanpa, skrivOvanpa } = await import("../kuvos/ovanpa.ts");
+  const t = (iso: string) => Date.parse(iso);
+  const facit = [
+    { sid: "S1", tFacit: t("2025-01-15T03:00:00Z"), tBas: t("2025-01-15T03:00:00Z") },
+    { sid: "S2", tFacit: t("2025-01-15T04:00:00Z"), tBas: t("2025-01-15T05:00:00Z") },
+    { sid: "S3", tFacit: t("2025-01-15T04:00:00Z"), tBas: null },
+    { sid: "S5", tFacit: t("2025-01-15T06:00:00Z"), tBas: t("2025-01-15T06:00:00Z") },
+    { sid: "S6", tFacit: t("2025-01-15T11:10:00Z"), tBas: null },
+  ];
+  const f = (sid: string, iso: string, minEfter: number | null, rader: number | null) => ({ sid, t: t(iso), minEfter, rader });
+  const efterhalkan = [f("S1", "2025-01-15T02:00:00Z", 0.4, 3), f("S2", "2025-01-15T03:00:00Z", 0.6, 3), f("S3", "2025-01-15T02:00:00Z", 1.2, 3),
+    f("S3", "2025-01-15T04:00:00Z", 0.9, 3), f("S4", "2025-01-14T23:00:00Z", 2.2, 3), f("S4", "2025-01-14T22:00:00Z", 2.0, 3),
+    f("S4", "2025-01-15T20:00:00Z", null, 0), f("S5", "2025-01-15T06:30:00Z", 0.2, 3), f("S6", "2025-01-15T10:30:00Z", null, 0)];
+  const r = ovanpa(facit, { efterhalkan });
+  assert.deepEqual([r.facit, r.baslinjen], [5, 2]);
+  const e = r.delar[0];
+  assert.deepEqual([e.fyrningar, e.episoder, e.fangade, e.nettonytt, e.medBaslinjen, e.tidsvinstMedianMin], [9, 7, 2, 1, 1, 60],
+    "S3 i facitögonblicket och S6 natten innan fångar inget");
+  assert.deepEqual([e.tillkomna, e.medUtfall, e.follUt, e.nara, e.uteblev], [4, 2, 0, 1, 1], "S3 nära, S4:s första ögonblick uteblev, S4:s andra natt och S6 utan utfall");
+  const ut = skrivOvanpa(r).join("\n");
+  assert.ok(ut.includes("NETTONYTT 1 (20,0 % av facit)") && ut.includes("PRIS 50,0 %") && ut.includes("60 min (median, 1 tillfällen)"), ut);
+
+  // En annan del som fångar S2 och S3: S2 är inte längre bara efterhalkans, och S3:s natt är inte längre tillkommen för den.
+  const r2 = ovanpa(facit, { efterhalkan, annan: [f("S2", "2025-01-15T03:30:00Z", 0.6, 3), f("S3", "2025-01-15T03:30:00Z", 0.9, 3)] });
+  const [e2, a2] = r2.delar;
+  assert.deepEqual([e2.nettonytt, e2.tillkomna, e2.medUtfall, e2.uteblev], [0, 3, 1, 1]);
+  assert.deepEqual([a2.fangade, a2.nettonytt, a2.tillkomna, a2.medUtfall], [2, 1, 0, 0], "S3 är bara den andras; inga tillkomna, så inget pris");
+  assert.ok(skrivOvanpa(r2).some((x) => x.includes("annan:") ) && skrivOvanpa(r2).some((x) => x.includes("PRIS –")));
+});
+
 // Baslinjen (DECISIONS #455 punkt 2): frysriskens fyrningar och episoder; natten går från middag till middag i svensk tid.
 test("baslinjen: en episod per fara och natt, natten byter vid middag svensk tid, broarna för sig, bara frysrisken", async () => {
   const { baslinjen, natt } = await import("../kuvos/baslinjen.ts");

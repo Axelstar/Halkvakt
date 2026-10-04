@@ -1035,6 +1035,55 @@ test("väg A: halvtimmesdata ger 30-minuterslutningen i kuvösens variant men in
   }
 });
 
+// KUVÖSENS EFTERHALKA OCH OVANPÅ (DECISIONS #456): halvtimmesrader som leveransen → väg A:s trend → ögonblicksvarianten, vars första
+// ögonblick per natt ska ge exakt driftens uppspelning. Natten 11/2 2025. E1 faller i regn och fryser; fukten kommer först efter
+// facit, så bara efterhalkan fångar (nettonytt), men baslinjen talar samma natt. E2 faller i regn och stannar på +2,4 (uteblev,
+// tillkommen). E3 faller utan regnmängd och fryser i fukt: efterhalkan tiger, baslinjen fångar.
+test("efterhalkan i kuvösen: ögonblicken ger driftens episoder, och ovanpå räknar facit, baslinjen och priset", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const trend = await import("../kuvos/trend.ts");
+  const { installera, FUNKTION } = await import("../kuvos/efterhalkan.ts");
+  const { ovanpa, FACIT_SQL } = await import("../kuvos/ovanpa.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const rensa = async () => {
+    for (const t of ["weather_observations", "trend_kandidater", "trend_stigande"]) await pool.query(`DELETE FROM ${t} WHERE station_id LIKE 'KUV_E%'`);
+  };
+  try {
+    for (const f of ["001_init.sql", "003_situation_archive.sql", "008_rain_sum.sql", "009_radar_precip.sql", "017_trend_kandidater.sql",
+      "018_trend_berakna.sql", "029_brott_index.sql", "030_langsam_vakt.sql", "028_uppspelning_varianter.sql"])
+      await pool.query(readFileSync(new URL("../sql/" + f, import.meta.url), "utf8"));
+    await trend.installera((s) => pool.query(s));
+    await installera((s) => pool.query(s));
+    await rensa();
+    const rad = (sid: string, hhmm: string, yta: number, regn: number | null, fukt = false) =>
+      `('${sid}', 'x', ST_SetSRID(ST_MakePoint(16.0, 62.0), 4326), '${hhmm < "12" ? "2025-02-12" : "2025-02-11"}T${hhmm}:03Z', ${yta}, 3.5, 0.5, 95, ${regn ?? "NULL"}, ${fukt})`;
+    await pool.query(`INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c, dewpoint_c, humidity_pct, rain_sum_mm, rain) VALUES
+      ${rad("KUV_E1", "22:00", 3.0, 0.2)}, ${rad("KUV_E1", "22:30", 2.2, 0)}, ${rad("KUV_E1", "23:00", 1.4, 0)}, ${rad("KUV_E1", "23:30", 0.6, 0)}, ${rad("KUV_E1", "00:00", 0.4, 0, true)},
+      ${rad("KUV_E2", "22:00", 3.4, 0.3)}, ${rad("KUV_E2", "22:30", 2.6, 0)}, ${rad("KUV_E2", "23:00", 2.4, 0)}, ${rad("KUV_E2", "23:30", 2.4, 0)}, ${rad("KUV_E2", "00:00", 2.5, 0)},
+      ${rad("KUV_E3", "22:00", 2.0, null)}, ${rad("KUV_E3", "22:30", 1.2, null)}, ${rad("KUV_E3", "23:00", 0.8, null, true)}`);
+    await pool.query(`SELECT * FROM ${trend.FUNKTION}(now() - '2025-02-10T00:00:00Z'::timestamptz)`);
+    const fonster = "now() - '2025-02-10T00:00:00Z'::timestamptz";
+    const og = (await pool.query(`SELECT sid, t, min_efter, rader FROM ${FUNKTION}(p_fonster := ${fonster}) WHERE sid LIKE 'KUV_E%'`)).rows;
+    assert.deepEqual(og.map((r) => [r.sid, new Date(r.t).toISOString().slice(11, 16), Number(r.min_efter)]),
+      [["KUV_E1", "22:30", 0.4], ["KUV_E1", "23:00", 0.4], ["KUV_E2", "22:30", 2.4]], "E3 utan regnmängd tiger; E1 två ögonblick samma natt");
+    const [d] = (await pool.query(`SELECT * FROM uppspelning_efterhalka(p_fonster := ${fonster}, p_blind := false) WHERE dag = '2025-02-11'`)).rows;
+    assert.deepEqual([d.ogonblick, d.episoder, d.episoder_med_utfall, d.foll_ut, d.nara, d.uteblev], [3, 2, 2, 1, 0, 1],
+      "driftens uppspelning: samma ögonblick, och episoden är det första per natt");
+
+    const facit = (await pool.query(FACIT_SQL)).rows.filter((r) => String(r.sid).startsWith("KUV_E"))
+      .map((r) => ({ sid: String(r.sid), tFacit: Number(r.t_facit), tBas: r.t_bas === null ? null : Number(r.t_bas) }));
+    assert.deepEqual(facit.map((f) => [f.sid, new Date(f.tFacit).toISOString().slice(11, 16), f.tBas && new Date(f.tBas).toISOString().slice(11, 16)]).sort(),
+      [["KUV_E1", "23:30", "00:00"], ["KUV_E3", "23:00", "23:00"]], "facit = första ≤ +1 per natt; baslinjen = första med fukt");
+    const r = ovanpa(facit, { efterhalkan: og.map((x) => ({ sid: x.sid, t: new Date(x.t).getTime(), minEfter: Number(x.min_efter), rader: x.rader })) });
+    const e = r.delar[0];
+    assert.deepEqual([r.facit, r.baslinjen, e.fangade, e.nettonytt, e.tillkomna, e.medUtfall, e.uteblev], [2, 1, 1, 1, 1, 1, 1]);
+  } finally {
+    await rensa().catch(() => {});
+    await pool.end();
+  }
+});
+
 // KUVÖSENS ÖVERSÄTTNING (kuvos/oversattning.sql, kort #232, DECISIONS #439). Varje fälla ger ett annat svar om en regel faller:
 // tidszonen (vinter +1, sommar +2 natten tiden hoppar), platshållarna, nederbördskoderna med källa och de utan, riktningen, en
 // station utan läge — och omkörningen, som måste skriva om raderna i stället för att dubblera dem.

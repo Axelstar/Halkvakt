@@ -278,6 +278,10 @@ för 1, 2 och 4"*. Väg A är byggd i `kuvos/trend.ts`, som härleder varianten 
   *del × ensam × ovanpå* får därför bara kolumnen *ensam* nu, och *ovanpå* fylls när efterhalkan och övergångarna kan köras.
   **Hur ovanpå räknas** är skrivet i DECISIONS #456 ur redan skrivna värden: facittillfället är en stationsnatt med yta ≤ +1,0 °C;
   en del fångar det inom 90 minuter före; nettonytt är det bara delen fångar; priset är tillkomna episoder som *uteblev* (inte *nära*).
+- **Efterhalkans uppspelning och ovanpå, byggda 4/10 och prövade på syntetisk data.** `kuvos/efterhalkan.ts` spelar betans regel
+  med uppspelningens egen funktion (`uppspelning_efterhalka`, sql/028) och härleder ögonblicken ur samma källa vid körning, som väg A.
+  `kuvos/ovanpa.ts` räknar #456:s tabell: facit, baslinjen, nettonytt, priset och tidsvinsten. Båda går i riktningsprovets knapp.
+  Utan regnmängden skriver efterhalkan bara att underlaget saknas, och är redo den dag Trafikverket svarar.
 - **Väntan (DECISIONS #456):** riktningsprovet körs när Trafikverket svarat om koderna och stationerna, men senast fredag 16/10.
 - **5d:** tabellen *del × ensam × ovanpå* för de delarna. Efterhalkan, övergångarna, tillståndet, försprånget och vinden läggs till när
   Trafikverket svarat.
