@@ -1117,6 +1117,44 @@ test("länssidorna: stationen får länet för närmaste levande sträcka inom 2
   }
 });
 
+// RADARN PER STATION (DECISIONS #459): högsta råa rate_mean_mmh över levande sträckor inom 5 km, de senaste fyra timmarna. Långt
+// norrut (67° N), så att andra provers sträckor och radarrader aldrig når stationerna. Fällor: en rad äldre än fyra timmar med
+// högre värde, en sträcka 10 km bort med eget regn, en raderad sträcka nära stationen, och en station utan radar alls.
+test("radarn per station: högsta råvärdet inom 5 km de senaste fyra timmarna, och ingen rad blir ingen rad", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const { RADAR_PER_STATION_SQL } = await import("../publish/snapshot-core.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const rensa = async () => {
+    await pool.query("DELETE FROM radar_precip WHERE segment_id LIKE 'RS_%'");
+    await pool.query("DELETE FROM road_conditions WHERE segment_id LIKE 'RS_%'");
+    await pool.query("DELETE FROM weather_latest WHERE station_id LIKE 'RS_%'");
+  };
+  try {
+    for (const f of ["001_init.sql", "009_radar_precip.sql"]) await pool.query(readFileSync(new URL("../sql/" + f, import.meta.url), "utf8"));
+    await rensa();
+    const linje = (a: number, b: number, c: number, d: number) => `ST_SetSRID(ST_MakeLine(ST_MakePoint(${a}, ${b}), ST_MakePoint(${c}, ${d})), 4326)`;
+    await pool.query(`INSERT INTO road_conditions (segment_id, condition_code, condition_text, geom, deleted) VALUES
+      ('RS_A', 1, 'Normalt', ${linje(21.00, 67.20, 21.05, 67.20)}, false),
+      ('RS_B', 1, 'Normalt', ${linje(21.00, 67.30, 21.05, 67.30)}, false),
+      ('RS_C', 1, 'Normalt', ${linje(21.02, 67.211, 21.03, 67.211)}, true)`);
+    await pool.query(`INSERT INTO radar_precip (segment_id, observed_at, rate_max_mmh, rate_mean_mmh) VALUES
+      ('RS_A', now() - interval '90 minutes', 1.0, 0.6), ('RS_A', now() - interval '3 hours', 3.0, 2.4),
+      ('RS_A', now() - interval '5 hours', 12.0, 9.0),
+      ('RS_B', now() - interval '20 minutes', 9.0, 7.0), ('RS_C', now() - interval '20 minutes', 9.0, 8.0)`);
+    const st = (id: string, lon: number, lat: number) => `('${id}', '${id}', ST_SetSRID(ST_MakePoint(${lon}, ${lat}), 4326), now())`;
+    await pool.query(`INSERT INTO weather_latest (station_id, name, geom, sample_time) VALUES
+      ${st("RS_W1", 21.02, 67.21)}, ${st("RS_W2", 21.02, 67.29)}, ${st("RS_W3", 21.02, 67.50)}`);
+    const rader = (await pool.query(RADAR_PER_STATION_SQL)).rows.filter((r) => String(r.station_id).startsWith("RS_"))
+      .map((r) => [r.station_id, Number(r.radar_mmh)]).sort();
+    assert.deepEqual(rader, [["RS_W1", 2.4], ["RS_W2", 7.0]],
+      "W1: 2,4 (inte 9,0 äldre än fyra timmar, inte 7,0 från sträckan 10 km bort, inte 8,0 från den raderade); W2: 7,0; W3: ingen rad");
+  } finally {
+    await rensa().catch(() => {});
+    await pool.end();
+  }
+});
+
 // KUVÖSENS ÖVERSÄTTNING (kuvos/oversattning.sql, kort #232, DECISIONS #439). Varje fälla ger ett annat svar om en regel faller:
 // tidszonen (vinter +1, sommar +2 natten tiden hoppar), platshållarna, nederbördskoderna med källa och de utan, riktningen, en
 // station utan läge — och omkörningen, som måste skriva om raderna i stället för att dubblera dem.
