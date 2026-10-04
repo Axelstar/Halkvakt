@@ -115,8 +115,9 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   **"Halkvakt live"** (Axels idé 00:24): motorn postar riktiga larm själv till X/Bluesky/Mastodon/FB-sidan. Push till användarna är ett ägarbeslut (§4.2).
   🔍 **Sök (Axels fråga 00:28, planens §6):** länssidor + vägsidor *"Halt väglag i Skåne just nu"* som publicera-flödet skriver om var 30:e minut —
   byggs i karta-repot i oktober (Google behöver veckor) · domänen före första pressomgången · widget + "Sveriges halaste vägar" som länkbeten · Search Console.
+  ✅ **VÄGSIDORNA I DRIFT 4/10 16:00Z** — deploy 37214328745 ur 45a07b4 · karta-repots commit 7f3b8c2 med `vag/` för alla sex · sitemapen 34 adresser · Pages svarar på `/vag/e4/`.
   🔨 **VÄGSIDORNA BYGGDA 4/10** (DECISIONS #458): `vag/e4/`, `e6`, `e18`, `e20`, `e22` och `rv40` med samma källor. Vägnumret jämförs utan
-  form, och stationerna hör till vägen för sin närmaste sträcka. Översikten och länssidorna länkar dit. 🔑 Kvar: deploy på *slå ihop*.
+  form, och stationerna hör till vägen för sin närmaste sträcka. Översikten och länssidorna länkar dit. ~~🔑 Kvar: deploy på *slå ihop*.~~ ✅ (raden ovan).
   ✅ **LÄNSSIDORNA I DRIFT 4/10 10:00Z** — deploy-supabase 37193469610 ur 5459907 · kartvarvet 10:00:50Z commit 5b31056 i karta-repot: 21 länsmappar och lan/index.html, sitemapen 28 adresser (Axels 6 + 22) · Pages svarar 200 på /lan/ och /lan/skane/ 10:01:24 · manifestets live-sha = sha256(live.json) i samma varv · körtiden 49,6 s med 23 filer i trädanropet mot 47,9–52,9 s (median 49,3 s, tolv kartvarv) före (dbknapp 37193406335 och 37194034793).
   🔨 **LÄNSSIDORNA BYGGDA 4/10 (Bengts *"B för länssidorna"*, DECISIONS #458):** Bengts konto kan bara läsa karta-repot, så publicera skriver
   `lan/<län>/` för de 21 länen och `lan/` som översikt i kartlagrens varv. Sidorna visar Trafikverkets väglag (halt = motorns regel), vägbanans
