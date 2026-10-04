@@ -98,14 +98,14 @@ Deno.serve(async (req) => {
       for (const [name, json] of Object.entries(m.files)) files[`data/${name}`] = json;
       notes.push(...m.notes);
       kartaStats = m.stats;
-      // Länssidorna (#458) i sajtens rot, och Axels sitemap med de adresser som saknas. Fail-soft: går sitemapen inte att
+      // Läns- och vägsidorna (#458) i sajtens rot, och Axels sitemap med de adresser som saknas. Fail-soft: går sitemapen inte att
       // läsa skrivs sidorna ändå, och noten säger varför.
       if (m.sidor) {
         Object.assign(inline, m.sidor);
         try {
           const sm = await gh("/contents/sitemap.xml");
           const xml = new TextDecoder().decode(Uint8Array.from(atob(String(sm.content).replace(/\n/g, "")), (c) => c.charCodeAt(0)));
-          const ny = sitemapMed(xml, lanAdresser());
+          const ny = sitemapMed(xml, sidAdresser());
           if (ny) inline["sitemap.xml"] = ny;
         } catch (e) { notes.push(`sitemap: ej läsbar (${String((e as Error).message).slice(0, 120)}) — länssidorna skrivs ändå`); }
       }

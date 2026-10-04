@@ -606,8 +606,8 @@ export async function buildGrannSnapshot(q: Q, land: Granne, now: Date = new Dat
 
 
 // ═══ publish/lanssidor.ts ═══
-// LÄNSSIDORNA (kort #281, DECISIONS #458) — "Halt väglag i Skåne just nu?" för de 21 länen, skrivna av publicera i kartlagrens
-// varv (var 30:e minut) till kartsajten. Allt här blir PUBLIKT och läses av Google, så sidan säger bara vad källorna säger:
+// LÄNSSIDORNA (kort #281, DECISIONS #458) — "Halt väglag i Skåne just nu?" för de 21 länen, och "Halt väglag på E4 just nu?" för
+// de stora vägarna, skrivna av publicera i kartlagrens varv (var 30:e minut) till kartsajten. Allt här blir PUBLIKT och läses av Google, så sidan säger bara vad källorna säger:
 // Trafikverkets väglagsrapport med deras egna ord, vägbanans temperatur vid de stationer som klarar appens vakter, och pågående
 // olyckor. Sidan påstår aldrig själv att det är halt.
 //
@@ -672,8 +672,27 @@ export const LAN: { kod: number; namn: string; kort: string; slug: string; styck
     stycke: "Norrbotten har landets längsta vinter, med E4, E10 och E45 genom länet. Kylan är vanlig här, och halkan kommer ofta när det blir mildare och snön eller isen blir blöt." },
 ];
 
+/** De stora vägarna (planens §6). Stycket är skrivet för hand och säger bara var vägen går. */
+export const VAGAR: { nyckel: string; namn: string; rubrik: string; slug: string; stycke: string }[] = [
+  { nyckel: "e4", namn: "E4", rubrik: "E4", slug: "e4",
+    stycke: "E4 går från Helsingborg via Jönköping, Linköping, Stockholm, Gävle, Sundsvall, Umeå och Luleå till Haparanda — från mild kustvinter i söder till lång vinter i norr." },
+  { nyckel: "e6", namn: "E6", rubrik: "E6", slug: "e6",
+    stycke: "E6 går längs västkusten från Trelleborg via Malmö, Helsingborg, Halmstad och Göteborg till norska gränsen vid Svinesund." },
+  { nyckel: "e18", namn: "E18", rubrik: "E18", slug: "e18",
+    stycke: "E18 går från norska gränsen i Värmland via Karlstad, Örebro och Västerås till Stockholm och Kapellskär." },
+  { nyckel: "e20", namn: "E20", rubrik: "E20", slug: "e20",
+    stycke: "E20 går från Malmö via Göteborg, Skövde, Örebro och Eskilstuna till Stockholm." },
+  { nyckel: "e22", namn: "E22", rubrik: "E22", slug: "e22",
+    stycke: "E22 går längs sydostkusten från Trelleborg via Kristianstad, Karlskrona och Kalmar till Norrköping." },
+  { nyckel: "40", namn: "Riksväg 40", rubrik: "riksväg 40", slug: "rv40",
+    stycke: "Riksväg 40 går från Göteborg via Borås och Jönköping till Västervik." },
+];
+
+/** Vägnumret utan form: väglaget skriver "E 4" och "Väg 40", olyckorna "E4" och "Väg 274". */
+export const vagNyckel = (s: string | null) => (s ?? "").toLowerCase().replace(/\s+/g, "").replace(/^väg/, "");
+
 export type LanSegment = { code: number | null; text: string | null; info: string[]; road: string | null; plats: string | null; lan: number | null };
-export type LanStation = { name: string; yta: number; fukt: boolean; lan: number };
+export type LanStation = { name: string; yta: number; fukt: boolean; lan: number; vag?: string | null };
 export type LanOlycka = { road: string | null; start: string | null; allvar: string | null; lan: number | null };
 
 const lsEsc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -735,15 +754,60 @@ function lsLage(kod: number, d: { vaglag: LanSegment[]; stationer: LanStation[];
   };
 }
 
-/** Svaret överst: vad källorna säger, med deras ord. */
-function lsSvar(l: LanLage): string {
+/** Svaret överst: vad källorna säger, med deras ord. `vems` = "länets" eller "E4:s", `var` = "i länet" eller "vid vägen". */
+function lsSvar(l: LanLage, vems = "länets", var_ = "i länet"): string {
   const vag = l.halt.length
-    ? `Trafikverket rapporterar halka eller vinterväglag på ${l.halt.length} av länets ${l.vagavsnitt} vägavsnitt.`
-    : `Trafikverket rapporterar ingen halka på länets ${l.vagavsnitt} vägavsnitt just nu.`;
+    ? `Trafikverket rapporterar halka eller vinterväglag på ${l.halt.length} av ${vems} ${l.vagavsnitt} vägavsnitt.`
+    : `Trafikverket rapporterar ingen halka på ${vems} ${l.vagavsnitt} vägavsnitt just nu.`;
   const temp = l.kalla.length
     ? `${lsPlural(l.kalla.length, "mätstation visar", "mätstationer visar")} vägbana på 0 °C eller kallare.`
-    : "Ingen mätstation i länet visar vägbana under noll.";
+    : `Ingen mätstation ${var_} visar vägbana under noll.`;
   return `${vag} ${temp}`;
+}
+
+/** Vägens läge: dess sträckor i alla län, stationerna vars närmaste sträcka är vägen, och olyckorna på den. */
+function lsVagLage(nyckel: string, d: { vaglag: LanSegment[]; stationer: LanStation[]; olyckor: LanOlycka[] }): LanLage {
+  const segs = d.vaglag.filter((s) => vagNyckel(s.road) === nyckel);
+  return {
+    halt: segs.filter((s) => arHalt(s.code, s.info)),
+    vagavsnitt: segs.length,
+    kalla: d.stationer.filter((s) => vagNyckel(s.vag ?? null) === nyckel && s.yta <= 0).sort((a, b) => a.yta - b.yta),
+    olyckor: d.olyckor.filter((o) => vagNyckel(o.road) === nyckel),
+  };
+}
+
+const lsLanKort = (kod: number | null) => LAN.find((l) => l.kod === kod)?.kort ?? null;
+const lsVagLankar = (rot: string) => VAGAR.map((v) => `<a href="${rot}vag/${v.slug}/">${lsEsc(v.namn)}</a>`).join(" · ");
+
+function lsVagsida(vag: (typeof VAGAR)[number], l: LanLage, now: Date): string {
+  const med = (lan: number | null, text: string) => { const k = lsLanKort(lan); return k ? `${lsEsc(k)}: ${text}` : text; };
+  const halt = l.halt.slice(0, 20).map((s) =>
+    `<li>${med(s.lan, `${lsEsc(s.plats ?? s.road ?? "Vägavsnitt")}: ${lsEsc([s.text, ...s.info].filter(Boolean).join(", "))}`)}</li>`).join("\n");
+  const kalla = l.kalla.slice(0, 8).map((s) =>
+    `<li>${med(s.lan, `${lsEsc(s.name)}: ${lsGrad(s.yta)}${s.fukt ? " — nederbörd eller fukt rapporteras" : ""}`)}</li>`).join("\n");
+  const olyckor = l.olyckor.slice(0, 10).map((o) =>
+    `<li>${med(o.lan, `${o.start ? `sedan ${lsTid(new Date(o.start))}` : "pågår"}${o.allvar ? ` (${lsEsc(o.allvar)})` : ""}`)}</li>`).join("\n");
+  const andra = VAGAR.filter((x) => x.slug !== vag.slug).map((x) => `<a href="../${x.slug}/">${lsEsc(x.namn)}</a>`).join(" · ");
+  const innehall = `<p class="dim">Uppdaterad ${lsTid(now)}</p>
+<h1>Halt väglag på ${lsEsc(vag.rubrik)} just nu?</h1>
+<p class="svar">${lsEsc(lsSvar(l, `${vag.namn}:s`, "vid vägen"))}</p>
+<h2>Väglaget enligt Trafikverket</h2>
+${l.halt.length ? `<ul>\n${halt}\n</ul>${l.halt.length > 20 ? `\n<p class="dim">och ${l.halt.length - 20} till.</p>` : ""}`
+    : `<p>Inget av vägens ${l.vagavsnitt} vägavsnitt har halka eller vinterväglag i Trafikverkets rapport.</p>`}
+<h2>Vägbanans temperatur</h2>
+${l.kalla.length ? `<p>Kallast just nu, vid de vägväderstationer som ligger närmast ${lsEsc(vag.namn)}:</p>\n<ul>\n${kalla}\n</ul>`
+    : "<p>Ingen av vägväderstationerna vid vägen visar vägbana på 0 °C eller kallare.</p>"}
+<h2>Pågående olyckor</h2>
+${l.olyckor.length ? `<ul>\n${olyckor}\n</ul>` : `<p>Trafikverket rapporterar ingen pågående olycka på ${lsEsc(vag.rubrik)}.</p>`}
+<h2>Om vägen</h2>
+<p>${lsEsc(vag.stycke)}</p>
+<p>Se hela landet på <a href="../../karta.html">livekartan</a>, eller <a href="../../lan/">läget i alla län</a>.</p>
+<nav><h2>Andra vägar</h2><p>${andra}</p></nav>`;
+  return lsSkal({
+    titel: `Halt väglag på ${vag.rubrik} just nu? Väglag och vägtemperatur längs vägen | Halkvakt`,
+    beskrivning: `Väglaget på ${vag.rubrik} just nu: Trafikverkets rapporter om halka, vägbanans temperatur vid mätstationerna längs vägen och pågående olyckor. Uppdateras var 30:e minut.`,
+    adress: `${SIDBAS}/vag/${vag.slug}/`, rot: "../../", innehall,
+  });
 }
 
 function lsLanssida(lan: (typeof LAN)[number], l: LanLage, now: Date): string {
@@ -770,7 +834,7 @@ ${l.olyckor.length ? `<ul>\n${olyckor}\n</ul>` : "<p>Trafikverket rapporterar in
 <h2>Vintern i ${lsEsc(lan.kort)}</h2>
 <p>${lsEsc(lan.stycke)}</p>
 <p>Se hela landet på <a href="../../karta.html">livekartan</a>, eller <a href="../">läget i alla län</a>.</p>
-<nav><h2>Andra län</h2><p>${andra}</p></nav>`;
+<nav><h2>Andra län</h2><p>${andra}</p><h2>Stora vägar</h2><p>${lsVagLankar("../../")}</p></nav>`;
   return lsSkal({
     titel: `Halt väglag i ${lan.kort} just nu? Väglag och vägtemperatur | Halkvakt`,
     beskrivning: `Väglaget i ${lan.namn} just nu: Trafikverkets rapporter om halka, vägbanans temperatur vid mätstationerna och pågående olyckor. Uppdateras var 30:e minut.`,
@@ -778,11 +842,11 @@ ${l.olyckor.length ? `<ul>\n${olyckor}\n</ul>` : "<p>Trafikverket rapporterar in
   });
 }
 
-function lsOversikt(lagen: Map<number, LanLage>, now: Date): string {
-  const rader = LAN.map((lan) => {
-    const l = lagen.get(lan.kod)!;
-    return `<tr><td><a href="${lan.slug}/">${lsEsc(lan.namn)}</a></td><td>${l.halt.length} av ${l.vagavsnitt}</td><td>${l.kalla.length}</td><td>${l.olyckor.length}</td></tr>`;
-  }).join("\n");
+function lsOversikt(lagen: Map<number, LanLage>, vagar: Map<string, LanLage>, now: Date): string {
+  const rad = (href: string, namn: string, l: LanLage) =>
+    `<tr><td><a href="${href}">${lsEsc(namn)}</a></td><td>${l.halt.length} av ${l.vagavsnitt}</td><td>${l.kalla.length}</td><td>${l.olyckor.length}</td></tr>`;
+  const rader = LAN.map((lan) => rad(`${lan.slug}/`, lan.namn, lagen.get(lan.kod)!)).join("\n");
+  const vagrader = VAGAR.map((v) => rad(`../vag/${v.slug}/`, v.namn, vagar.get(v.slug)!)).join("\n");
   const innehall = `<p class="dim">Uppdaterad ${lsTid(now)}</p>
 <h1>Halt väglag i Sverige just nu? Läget per län</h1>
 <p>Trafikverkets väglagsrapport, vägbanans temperatur vid vägväderstationerna och pågående olyckor, län för län.</p>
@@ -794,6 +858,13 @@ ${rader}
 </table></div>
 <p class="dim">¹ Vägavsnitt med halka eller vinterväglag i Trafikverkets rapport, av länets alla. ² Vägväderstationer som visar vägbana på
 0 °C eller kallare. Olyckor: pågående, enligt Trafikverket.</p>
+<h2>Stora vägar</h2>
+<div style="overflow-x:auto"><table>
+<thead><tr><th>Väg</th><th>Halka¹</th><th>≤ 0 °C²</th><th>Olyckor</th></tr></thead>
+<tbody>
+${vagrader}
+</tbody>
+</table></div>
 <p>Se hela landet på <a href="../karta.html">livekartan</a>.</p>`;
   return lsSkal({
     titel: "Halt väglag i Sverige just nu? Läget per län | Halkvakt",
@@ -805,12 +876,15 @@ ${rader}
 /** Alla sidor, nyckel = sökvägen i kartsajten. */
 export function byggLanssidor(d: { vaglag: LanSegment[]; stationer: LanStation[]; olyckor: LanOlycka[]; now: Date }): Record<string, string> {
   const lagen = new Map(LAN.map((lan) => [lan.kod, lsLage(lan.kod, d)] as const));
-  const ut: Record<string, string> = { "lan/index.html": lsOversikt(lagen, d.now) };
+  const vagar = new Map(VAGAR.map((v) => [v.slug, lsVagLage(v.nyckel, d)] as const));
+  const ut: Record<string, string> = { "lan/index.html": lsOversikt(lagen, vagar, d.now) };
   for (const lan of LAN) ut[`lan/${lan.slug}/index.html`] = lsLanssida(lan, lagen.get(lan.kod)!, d.now);
+  for (const v of VAGAR) ut[`vag/${v.slug}/index.html`] = lsVagsida(v, vagar.get(v.slug)!, d.now);
   return ut;
 }
 
-export const lanAdresser = () => [`${SIDBAS}/lan/`, ...LAN.map((l) => `${SIDBAS}/lan/${l.slug}/`)];
+export const sidAdresser = () => [`${SIDBAS}/lan/`, ...LAN.map((l) => `${SIDBAS}/lan/${l.slug}/`),
+  ...VAGAR.map((v) => `${SIDBAS}/vag/${v.slug}/`)];
 
 /** Axels sitemap med de adresser som saknas infogade före </urlset>; null när inget saknas eller filen inte går att läsa. */
 export function sitemapMed(xml: string, adresser: string[]): string | null {
@@ -840,12 +914,12 @@ export function sitemapMed(xml: string, adresser: string[]): string | null {
 const featureCollection = (features: unknown[]) => ({ type: "FeatureCollection", features });
 const numOrNull = (x: unknown) => (x === null || x === undefined ? null : Number(x));
 
-/** Varje svensk station med länet för den närmaste väglagssträckan inom 20 km (länssidorna, #458). Stationerna saknar egen
- *  länskod i arkivet; sträckorna bär Trafikverkets CountyNo. */
+/** Varje svensk station med länet och vägnumret för den närmaste väglagssträckan inom 20 km (länssidorna och vägsidorna,
+ *  #458). Stationerna saknar egen länskod i arkivet; sträckorna bär Trafikverkets CountyNo och RoadNumber. */
 export const STATION_LAN_SQL = `
-  SELECT w.station_id, w.name, n.lan
+  SELECT w.station_id, w.name, n.lan, n.vag
   FROM weather_latest w
-  CROSS JOIN LATERAL (SELECT rc.county_nos[1] AS lan, rc.geom FROM road_conditions rc
+  CROSS JOIN LATERAL (SELECT rc.county_nos[1] AS lan, rc.road_number AS vag, rc.geom FROM road_conditions rc
                       WHERE NOT rc.deleted AND rc.geom IS NOT NULL ORDER BY rc.geom <-> w.geom LIMIT 1) n
   WHERE n.lan IS NOT NULL AND ST_DWithin(n.geom::geography, w.geom::geography, 20000)`;
 
@@ -988,10 +1062,10 @@ export async function buildMapData(q: Q, opts: {
   let sidor: Record<string, string> | null = null;
   if (opts.appVader) {
     const stLan = await q(STATION_LAN_SQL);
-    const lanFor = new Map(stLan.map((r) => [String(r.station_id), { name: String(r.name), lan: Number(r.lan) }]));
+    const lanFor = new Map(stLan.map((r) => [String(r.station_id), { name: String(r.name), lan: Number(r.lan), vag: r.vag ?? null }]));
     const stationer: LanStation[] = opts.appVader.flatMap((w) => {
       const s = lanFor.get(w.id);
-      return s && w.yta !== null ? [{ name: s.name, yta: w.yta, fukt: w.fukt, lan: s.lan }] : [];
+      return s && w.yta !== null ? [{ name: s.name, yta: w.yta, fukt: w.fukt, lan: s.lan, vag: s.vag }] : [];
     });
     sidor = byggLanssidor({
       vaglag: vaglag.map((r) => ({ code: numOrNull(r.condition_code), text: r.condition_text ?? null, info: (r.condition_info ?? []) as string[],
@@ -1110,14 +1184,14 @@ Deno.serve(async (req) => {
       for (const [name, json] of Object.entries(m.files)) files[`data/${name}`] = json;
       notes.push(...m.notes);
       kartaStats = m.stats;
-      // Länssidorna (#458) i sajtens rot, och Axels sitemap med de adresser som saknas. Fail-soft: går sitemapen inte att
+      // Läns- och vägsidorna (#458) i sajtens rot, och Axels sitemap med de adresser som saknas. Fail-soft: går sitemapen inte att
       // läsa skrivs sidorna ändå, och noten säger varför.
       if (m.sidor) {
         Object.assign(inline, m.sidor);
         try {
           const sm = await gh("/contents/sitemap.xml");
           const xml = new TextDecoder().decode(Uint8Array.from(atob(String(sm.content).replace(/\n/g, "")), (c) => c.charCodeAt(0)));
-          const ny = sitemapMed(xml, lanAdresser());
+          const ny = sitemapMed(xml, sidAdresser());
           if (ny) inline["sitemap.xml"] = ny;
         } catch (e) { notes.push(`sitemap: ej läsbar (${String((e as Error).message).slice(0, 120)}) — länssidorna skrivs ändå`); }
       }

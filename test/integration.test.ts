@@ -1100,17 +1100,17 @@ test("länssidorna: stationen får länet för närmaste levande sträcka inom 2
     await pool.query(readFileSync(new URL("../sql/001_init.sql", import.meta.url), "utf8"));
     await rensa();
     const linje = (a: number, b: number, c: number, d: number) => `ST_SetSRID(ST_MakeLine(ST_MakePoint(${a}, ${b}), ST_MakePoint(${c}, ${d})), 4326)`;
-    await pool.query(`INSERT INTO road_conditions (segment_id, condition_code, condition_text, county_nos, geom, deleted) VALUES
-      ('LS_A', 1, 'Normalt', '{25}', ${linje(23.50, 66.50, 23.60, 66.50)}, false),
-      ('LS_B', 1, 'Normalt', '{24}', ${linje(23.50, 66.70, 23.60, 66.70)}, false),
-      ('LS_C', 1, 'Normalt', '{10}', ${linje(23.55, 66.519, 23.56, 66.519)}, true)`);
+    await pool.query(`INSERT INTO road_conditions (segment_id, condition_code, condition_text, county_nos, road_number, geom, deleted) VALUES
+      ('LS_A', 1, 'Normalt', '{25}', 'E 4', ${linje(23.50, 66.50, 23.60, 66.50)}, false),
+      ('LS_B', 1, 'Normalt', '{24}', 'Väg 363', ${linje(23.50, 66.70, 23.60, 66.70)}, false),
+      ('LS_C', 1, 'Normalt', '{10}', 'E 22', ${linje(23.55, 66.519, 23.56, 66.519)}, true)`);
     const st = (id: string, lon: number, lat: number) => `('${id}', '${id}', ST_SetSRID(ST_MakePoint(${lon}, ${lat}), 4326), now())`;
     await pool.query(`INSERT INTO weather_latest (station_id, name, geom, sample_time) VALUES
       ${st("LS_W1", 23.55, 66.52)}, ${st("LS_W2", 23.55, 66.66)}, ${st("LS_W3", 23.55, 69.0)}`);
     const rader = (await pool.query(STATION_LAN_SQL)).rows.filter((r) => String(r.station_id).startsWith("LS_"))
-      .map((r) => [r.station_id, Number(r.lan)]).sort();
-    assert.deepEqual(rader, [["LS_W1", 25], ["LS_W2", 24]],
-      "W1 tar Norrbotten fast den raderade sträckan ligger närmare; W2 ligger närmast Västerbotten; W3 är 250 km bort och står utanför");
+      .map((r) => [r.station_id, Number(r.lan), r.vag]).sort();
+    assert.deepEqual(rader, [["LS_W1", 25, "E 4"], ["LS_W2", 24, "Väg 363"]],
+      "W1 tar Norrbotten och E 4 fast den raderade sträckan ligger närmare; W2 ligger närmast Västerbotten; W3 är 250 km bort och står utanför");
   } finally {
     await rensa().catch(() => {});
     await pool.end();

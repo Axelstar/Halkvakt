@@ -16,12 +16,12 @@ import { byggLanssidor, type LanStation } from "./lanssidor.ts";
 const featureCollection = (features: unknown[]) => ({ type: "FeatureCollection", features });
 const numOrNull = (x: unknown) => (x === null || x === undefined ? null : Number(x));
 
-/** Varje svensk station med länet för den närmaste väglagssträckan inom 20 km (länssidorna, #458). Stationerna saknar egen
- *  länskod i arkivet; sträckorna bär Trafikverkets CountyNo. */
+/** Varje svensk station med länet och vägnumret för den närmaste väglagssträckan inom 20 km (länssidorna och vägsidorna,
+ *  #458). Stationerna saknar egen länskod i arkivet; sträckorna bär Trafikverkets CountyNo och RoadNumber. */
 export const STATION_LAN_SQL = `
-  SELECT w.station_id, w.name, n.lan
+  SELECT w.station_id, w.name, n.lan, n.vag
   FROM weather_latest w
-  CROSS JOIN LATERAL (SELECT rc.county_nos[1] AS lan, rc.geom FROM road_conditions rc
+  CROSS JOIN LATERAL (SELECT rc.county_nos[1] AS lan, rc.road_number AS vag, rc.geom FROM road_conditions rc
                       WHERE NOT rc.deleted AND rc.geom IS NOT NULL ORDER BY rc.geom <-> w.geom LIMIT 1) n
   WHERE n.lan IS NOT NULL AND ST_DWithin(n.geom::geography, w.geom::geography, 20000)`;
 
@@ -164,10 +164,10 @@ export async function buildMapData(q: Q, opts: {
   let sidor: Record<string, string> | null = null;
   if (opts.appVader) {
     const stLan = await q(STATION_LAN_SQL);
-    const lanFor = new Map(stLan.map((r) => [String(r.station_id), { name: String(r.name), lan: Number(r.lan) }]));
+    const lanFor = new Map(stLan.map((r) => [String(r.station_id), { name: String(r.name), lan: Number(r.lan), vag: r.vag ?? null }]));
     const stationer: LanStation[] = opts.appVader.flatMap((w) => {
       const s = lanFor.get(w.id);
-      return s && w.yta !== null ? [{ name: s.name, yta: w.yta, fukt: w.fukt, lan: s.lan }] : [];
+      return s && w.yta !== null ? [{ name: s.name, yta: w.yta, fukt: w.fukt, lan: s.lan, vag: s.vag }] : [];
     });
     sidor = byggLanssidor({
       vaglag: vaglag.map((r) => ({ code: numOrNull(r.condition_code), text: r.condition_text ?? null, info: (r.condition_info ?? []) as string[],

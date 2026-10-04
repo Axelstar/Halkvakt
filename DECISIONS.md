@@ -7483,3 +7483,12 @@ Bengts konto har bara läsrätt i `Axelstar/halkvakt-karta`. Dit skriver bara Ax
 - **Appens lägesfil** är orörd: manifestets live-sha är lika med sha256(live.json) i samma varv.
 - **Körtiden** var 49,6 s med 23 filer i trädanropet. Före deployen tog tolv kartvarv 47,9–52,9 s, median 49,3 s (dbknapp
   37193406335 och 37194034793). Ingen skillnad syns, men det är ett enda varv.
+
+**Vägsidorna byggda 4/10** (Bengt: *"kör på"* efter #745; #458 sa *"vägsidorna kommer sedan"*):
+- **Sidorna:** `vag/<väg>/` för E4, E6, E18, E20, E22 och riksväg 40 (planens §6), med samma källor och samma ord som länssidorna.
+- **Vägnumret** jämförs utan form (`vagNyckel`): väglaget skriver *E 4* och *Väg 40*, olyckorna *E4*.
+- **Stationerna** hör till vägen för sin närmaste sträcka, i samma fråga som ger länet (`STATION_LAN_SQL` lämnar nu också vägnumret).
+- **Länkar:** översikten har en tabell för vägarna, och länssidorna länkar till dem.
+- **Sitemapen** får de 6 nya adresserna i första varvet efter deployen.
+- **Prov:** vägsidornas prov med fällor för vägnummerformen och för en kall station vid en annan väg, och integrationsprovet för
+  vägnumret.
