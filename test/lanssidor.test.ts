@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { arHalt, byggLanssidor, sitemapMed, lanAdresser, LAN, SIDBAS } from "../publish/lanssidor.ts";
+import { arHalt, byggLanssidor, sitemapMed, sidAdresser, vagNyckel, LAN, VAGAR, SIDBAS } from "../publish/lanssidor.ts";
 import { buildMapData } from "../publish/map-core.ts";
 import type { Q } from "../publish/snapshot-core.ts";
 
@@ -32,14 +32,15 @@ test("länssidorna: 21 län och en översikt, svaret ur källorna, Trafikverkets
       { code: 1, text: "Normalt", info: ["Torrt"], road: "E 4", plats: null, lan: 1 },
     ],
     stationer: [
-      { name: "Lund", yta: -1.5, fukt: true, lan: 12 }, { name: "Malmö", yta: 0.4, fukt: false, lan: 12 },
+      { name: "Lund", yta: -1.5, fukt: true, lan: 12, vag: "E 6" }, { name: "Malmö", yta: 0.4, fukt: false, lan: 12 },
       { name: "Sthlm", yta: 2.1, fukt: false, lan: 1 },
     ],
-    olyckor: [{ road: "E 22", start: "2026-11-20T05:10:00Z", allvar: "Stor påverkan", lan: 12 }],
+    olyckor: [{ road: "E22", start: "2026-11-20T05:10:00Z", allvar: "Stor påverkan", lan: 12 }],   // olyckornas form: utan mellanslag
     now: NOW,
   });
-  assert.equal(Object.keys(sidor).length, 22);
-  assert.deepEqual(Object.keys(sidor).filter((p) => p !== "lan/index.html").sort(), LAN.map((l) => `lan/${l.slug}/index.html`).sort());
+  assert.equal(Object.keys(sidor).length, 28);
+  assert.deepEqual(Object.keys(sidor).filter((p) => p !== "lan/index.html").sort(),
+    [...LAN.map((l) => `lan/${l.slug}/index.html`), ...VAGAR.map((v) => `vag/${v.slug}/index.html`)].sort());
   const skane = sidor["lan/skane/index.html"];
   assert.ok(skane.includes("<title>Halt väglag i Skåne just nu? Väglag och vägtemperatur | Halkvakt</title>"));
   assert.ok(skane.includes(`<link rel="canonical" href="${SIDBAS}/lan/skane/">`));
@@ -47,7 +48,7 @@ test("länssidorna: 21 län och en översikt, svaret ur källorna, Trafikverkets
   assert.ok(skane.includes("1 mätstation visar vägbana på 0 °C eller kallare."));
   assert.ok(skane.includes("E 6 Malmö - Lund: Mycket besvärligt, Is, &lt;b&gt;"), "Trafikverkets ord, escapade");
   assert.ok(skane.includes("Lund: −1,5 °C — nederbörd eller fukt rapporteras") && !skane.includes("Malmö: 0,4"));
-  assert.ok(skane.includes("E 22, sedan 20 nov. 06:10 (Stor påverkan)"), "svensk tid, vinter +1");
+  assert.ok(skane.includes("E22, sedan 20 nov. 06:10 (Stor påverkan)"), "svensk tid, vinter +1");
   assert.ok(skane.includes("Uppdaterad 20 nov. 07:30"));
   const sthlm = sidor["lan/stockholm/index.html"];
   assert.ok(sthlm.includes("Trafikverket rapporterar ingen halka på länets 1 vägavsnitt just nu. Ingen mätstation i länet visar vägbana under noll."));
@@ -57,14 +58,42 @@ test("länssidorna: 21 län och en översikt, svaret ur källorna, Trafikverkets
   for (const [p, html] of Object.entries(sidor)) assert.ok(!/undefined|NaN|null/.test(html), `${p}: inget tomt läckte ut`);
 });
 
+// Vägsidorna (#458, "vägsidorna sedan"): väglaget skriver "E 6" och "Väg 40", olyckorna "E22" — samma väg ska mötas.
+test("vägsidorna: vägnumret utan form, vägens sträckor i alla län, stationen vid vägen och olyckan på den", () => {
+  assert.deepEqual(["E 4", "E4", "Väg 40", "väg 274", null].map(vagNyckel), ["e4", "e4", "40", "274", ""]);
+  const sidor = byggLanssidor({
+    vaglag: [
+      { code: 3, text: "Mycket besvärligt", info: ["Is"], road: "E 6", plats: "E 6 Malmö - Lund", lan: 12 },
+      { code: 1, text: "Normalt", info: [], road: "E 6", plats: "E 6 Kungälv - Uddevalla", lan: 14 },
+      { code: 2, text: "Besvärligt", info: [], road: "Väg 40", plats: "Väg 40 Borås - Ulricehamn", lan: 14 },
+    ],
+    stationer: [{ name: "Lund", yta: -1.5, fukt: false, lan: 12, vag: "E 6" }, { name: "Borås", yta: -0.5, fukt: false, lan: 14, vag: "Väg 40" },
+      { name: "Kall men vid en annan väg", yta: -4, fukt: false, lan: 12, vag: "Väg 108" }],
+    olyckor: [{ road: "E6", start: "2026-11-20T05:10:00Z", allvar: null, lan: 14 }],
+    now: NOW,
+  });
+  const e6 = sidor["vag/e6/index.html"];
+  assert.ok(e6.includes("<title>Halt väglag på E6 just nu? Väglag och vägtemperatur längs vägen | Halkvakt</title>"));
+  assert.ok(e6.includes("Trafikverket rapporterar halka eller vinterväglag på 1 av E6:s 2 vägavsnitt. 1 mätstation visar vägbana på 0 °C eller kallare."));
+  assert.ok(e6.includes("Skåne: E 6 Malmö - Lund: Mycket besvärligt, Is") && !e6.includes("Kungälv"), "bara det hala listas, med länet");
+  assert.ok(e6.includes("Skåne: Lund: −1,5 °C") && !e6.includes("Kall men vid en annan väg"));
+  assert.ok(e6.includes("Västra Götaland: sedan 20 nov. 06:10"), "olyckan 'E6' möter väglagets 'E 6'");
+  const rv40 = sidor["vag/rv40/index.html"];
+  assert.ok(rv40.includes("Halt väglag på riksväg 40 just nu?") && rv40.includes("1 av Riksväg 40:s 1 vägavsnitt"));
+  assert.ok(rv40.includes("Trafikverket rapporterar ingen pågående olycka på riksväg 40."));
+  assert.ok(sidor["lan/index.html"].includes(`<tr><td><a href="../vag/e6/">E6</a></td><td>1 av 2</td><td>1</td><td>1</td></tr>`));
+  assert.ok(sidor["lan/skane/index.html"].includes(`<a href="../../vag/e4/">E4</a>`), "länssidorna länkar till vägarna");
+  for (const [p, html] of Object.entries(sidor)) assert.ok(!/undefined|NaN|null/.test(html), `${p}: inget tomt läckte ut`);
+});
+
 test("länssidorna: sitemapen får de adresser som saknas, en gång, och Axels rader står kvar", () => {
   // Utan namnrymdens adress: beroendekartan läser varje värd i koden, och sitemapMed bryr sig inte om den.
   const axel = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset>\n  <url><loc>${SIDBAS}/</loc></url>\n</urlset>\n`;
-  const ny = sitemapMed(axel, lanAdresser())!;
-  assert.equal((ny.match(/<url>/g) ?? []).length, 23);
+  const ny = sitemapMed(axel, sidAdresser())!;
+  assert.equal((ny.match(/<url>/g) ?? []).length, 29, "Axels 1 + översikten + 21 län + 6 vägar");
   assert.ok(ny.startsWith(axel.slice(0, axel.lastIndexOf("</urlset>"))) && ny.endsWith("</urlset>\n"), "Axels del orörd, slutet kvar");
-  assert.equal(sitemapMed(ny, lanAdresser()), null, "andra varvet: inget att skriva");
-  assert.equal(sitemapMed("<html>inte en sitemap</html>", lanAdresser()), null, "en fil utan </urlset> rörs inte");
+  assert.equal(sitemapMed(ny, sidAdresser()), null, "andra varvet: inget att skriva");
+  assert.equal(sitemapMed("<html>inte en sitemap</html>", sidAdresser()), null, "en fil utan </urlset> rörs inte");
 });
 
 test("kartkärnan: med appens väderpunkter skrivs länssidorna; stationen får närmaste sträckans län, utan dem inga sidor", async () => {
