@@ -7461,3 +7461,15 @@ Bengts konto har bara läsrätt i `Axelstar/halkvakt-karta`. Dit skriver bara Ax
   och efter deployen.
 - **Deploy** sker först på Bengts *slå ihop*, och sidorna blir publika i samma stund. Beviset är en commit i kartrepot med sidorna och
   sitemapen.
+
+**Byggt 4/10, före deployen:**
+- **Koden:** `publish/lanssidor.ts` och `STATION_LAN_SQL` i `publish/map-core.ts`. `publicera/main.ts` lägger sidorna och sitemapen
+  som innehåll i trädanropet.
+- **Prov:**
+  - `test/lanssidor.test.ts`: halt som motorn, med fällan *fläckvis Våt*; Trafikverkets text escapad; svensk tid och
+    minus; sitemapen infogas en gång och Axels rader står kvar.
+  - Kartkärnan med och utan appens väderpunkter.
+  - PostGIS-provet för stationernas län: en raderad sträcka närmare, en station mellan två län och en 250 km bort.
+- **Kontraktsgrinden:** golvet för halkorden och halkstammarna är höjt från 5 till 7.
+- **Förhandsvisat** ur dagens kartdata: översiktens tabell ryms på en 375 px bred telefon. 21 länskoder i kartans data, alla
+  sträckor *Normalt* 4/10.

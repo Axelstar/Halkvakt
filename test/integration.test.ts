@@ -1084,6 +1084,39 @@ test("efterhalkan i kuvösen: ögonblicken ger driftens episoder, och ovanpå r�
   }
 });
 
+// LÄNSSIDORNA (kort #281, DECISIONS #458): stationerna saknar länskod, så de får länet för den närmaste väglagssträckan inom 20 km.
+// Långt norrut, så att andra provers sträckor aldrig är närmast. Fällor: en raderad sträcka närmare än den riktiga, en station mellan
+// två län, och en station 250 km från närmaste sträcka.
+test("länssidorna: stationen får länet för närmaste levande sträcka inom 20 km", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const { STATION_LAN_SQL } = await import("../publish/map-core.ts");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const rensa = async () => {
+    await pool.query("DELETE FROM road_conditions WHERE segment_id LIKE 'LS_%'");
+    await pool.query("DELETE FROM weather_latest WHERE station_id LIKE 'LS_%'");
+  };
+  try {
+    await pool.query(readFileSync(new URL("../sql/001_init.sql", import.meta.url), "utf8"));
+    await rensa();
+    const linje = (a: number, b: number, c: number, d: number) => `ST_SetSRID(ST_MakeLine(ST_MakePoint(${a}, ${b}), ST_MakePoint(${c}, ${d})), 4326)`;
+    await pool.query(`INSERT INTO road_conditions (segment_id, condition_code, condition_text, county_nos, geom, deleted) VALUES
+      ('LS_A', 1, 'Normalt', '{25}', ${linje(23.50, 66.50, 23.60, 66.50)}, false),
+      ('LS_B', 1, 'Normalt', '{24}', ${linje(23.50, 66.70, 23.60, 66.70)}, false),
+      ('LS_C', 1, 'Normalt', '{10}', ${linje(23.55, 66.519, 23.56, 66.519)}, true)`);
+    const st = (id: string, lon: number, lat: number) => `('${id}', '${id}', ST_SetSRID(ST_MakePoint(${lon}, ${lat}), 4326), now())`;
+    await pool.query(`INSERT INTO weather_latest (station_id, name, geom, sample_time) VALUES
+      ${st("LS_W1", 23.55, 66.52)}, ${st("LS_W2", 23.55, 66.66)}, ${st("LS_W3", 23.55, 69.0)}`);
+    const rader = (await pool.query(STATION_LAN_SQL)).rows.filter((r) => String(r.station_id).startsWith("LS_"))
+      .map((r) => [r.station_id, Number(r.lan)]).sort();
+    assert.deepEqual(rader, [["LS_W1", 25], ["LS_W2", 24]],
+      "W1 tar Norrbotten fast den raderade sträckan ligger närmare; W2 ligger närmast Västerbotten; W3 är 250 km bort och står utanför");
+  } finally {
+    await rensa().catch(() => {});
+    await pool.end();
+  }
+});
+
 // KUVÖSENS ÖVERSÄTTNING (kuvos/oversattning.sql, kort #232, DECISIONS #439). Varje fälla ger ett annat svar om en regel faller:
 // tidszonen (vinter +1, sommar +2 natten tiden hoppar), platshållarna, nederbördskoderna med källa och de utan, riktningen, en
 // station utan läge — och omkörningen, som måste skriva om raderna i stället för att dubblera dem.

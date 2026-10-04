@@ -1,4 +1,4 @@
-// Buntar publish/snapshot-core.ts + publish/map-core.ts + data/bridges.geojson + publicera/main.ts
+// Buntar publish/snapshot-core.ts + publish/lanssidor.ts + publish/map-core.ts + data/bridges.geojson + publicera/main.ts
 // → supabase/functions/publicera/index.ts. Samma mönster som bundle-skuggmotor (#34-läxan):
 // index.ts är en GENERERAD fil — ändra i källorna och kör:
 //   node --experimental-strip-types scripts/bundle-publicera.ts
@@ -13,14 +13,16 @@ import { bridgesFromGeoJSON } from "../publish/snapshot-core.ts";
 const strip = (src: string) => src.replace(/^import\b[\s\S]*?from\s+"[^"]+";[ \t]*\n/gm, "");
 const tillstand = strip(readFileSync(new URL("../publish/tillstand.ts", import.meta.url), "utf8"));   // skattaren (#245) före kärnan som använder den
 const core = strip(readFileSync(new URL("../publish/snapshot-core.ts", import.meta.url), "utf8"));
+const lanssidor = strip(readFileSync(new URL("../publish/lanssidor.ts", import.meta.url), "utf8"));   // länssidorna (#458) före kartkärnan som använder dem
 const mapCore = strip(readFileSync(new URL("../publish/map-core.ts", import.meta.url), "utf8"));
 const bridges = bridgesFromGeoJSON(JSON.parse(readFileSync(new URL("../data/bridges.geojson", import.meta.url), "utf8")));
 const main = readFileSync(new URL("../supabase/functions/publicera/main.ts", import.meta.url), "utf8");
 
 const out = `// ═══ GENERERAD av scripts/bundle-publicera.ts — ÄNDRA INTE HÄR ═══\n` +
-  `// Källor: publish/tillstand.ts + publish/snapshot-core.ts + publish/map-core.ts + data/bridges.geojson + supabase/functions/publicera/main.ts\n\n` +
+  `// Källor: publish/tillstand.ts + publish/snapshot-core.ts + publish/lanssidor.ts + publish/map-core.ts + data/bridges.geojson + supabase/functions/publicera/main.ts\n\n` +
   `// ═══ publish/tillstand.ts ═══\n${tillstand}\n\n` +
   `// ═══ publish/snapshot-core.ts ═══\n${core}\n\n` +
+  `// ═══ publish/lanssidor.ts ═══\n${lanssidor}\n\n` +
   `// ═══ publish/map-core.ts ═══\n${mapCore}\n\n` +
   `// ═══ data/bridges.geojson (${bridges.length} broar, #38) ═══\n` +
   `const BRIDGES: Bridge[] = ${JSON.stringify(bridges)};\n\n` +

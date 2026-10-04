@@ -11,11 +11,24 @@
 // Inga Node- eller Deno-importer. Namnen krockar inte med snapshot-core.ts: båda buntas
 // in i SAMMA modul i publicera/index.ts.
 import type { Q } from "./snapshot-core.ts";
+import { byggLanssidor, type LanStation } from "./lanssidor.ts";
 
 const featureCollection = (features: unknown[]) => ({ type: "FeatureCollection", features });
 const numOrNull = (x: unknown) => (x === null || x === undefined ? null : Number(x));
 
-export async function buildMapData(q: Q, opts: { trvKey?: string; fetchFn?: typeof fetch; now?: Date } = {}) {
+/** Varje svensk station med länet för den närmaste väglagssträckan inom 20 km (länssidorna, #458). Stationerna saknar egen
+ *  länskod i arkivet; sträckorna bär Trafikverkets CountyNo. */
+export const STATION_LAN_SQL = `
+  SELECT w.station_id, w.name, n.lan
+  FROM weather_latest w
+  CROSS JOIN LATERAL (SELECT rc.county_nos[1] AS lan, rc.geom FROM road_conditions rc
+                      WHERE NOT rc.deleted AND rc.geom IS NOT NULL ORDER BY rc.geom <-> w.geom LIMIT 1) n
+  WHERE n.lan IS NOT NULL AND ST_DWithin(n.geom::geography, w.geom::geography, 20000)`;
+
+/** `appVader` = lägesfilens väderpunkter (de som klarar appens vakter). Med den skrivs länssidorna (#458); utan den hoppas de över. */
+export async function buildMapData(q: Q, opts: {
+  trvKey?: string; fetchFn?: typeof fetch; now?: Date; appVader?: { id: string; yta: number | null; fukt: boolean }[];
+} = {}) {
   const now = opts.now ?? new Date();
   const notes: string[] = [];
   const files: Record<string, string> = {};
@@ -56,20 +69,20 @@ export async function buildMapData(q: Q, opts: { trvKey?: string; fetchFn?: type
 
   const olyckor = await q(`
     SELECT 'SE' AS land, deviation_id, message_type, message, severity_text, road_number, start_time,
-           ST_AsGeoJSON(COALESCE(geom, ST_Centroid(line_geom)))::json AS g
+           ST_AsGeoJSON(COALESCE(geom, ST_Centroid(line_geom)))::json AS g, county_nos[1] AS lan
     FROM deviations
     WHERE NOT deleted AND (geom IS NOT NULL OR line_geom IS NOT NULL)
       AND (end_time IS NULL OR end_time > now())
       AND message_type_value = 'Accident'   -- #318: djuren ligger i samma tabell sedan 22/9
     UNION ALL
     SELECT 'FI', deviation_id, message_type, message, severity_text, road_number, start_time,
-           ST_AsGeoJSON(geom)::json
+           ST_AsGeoJSON(geom)::json, NULL::int
     FROM fi.deviations
     WHERE NOT deleted AND geom IS NOT NULL AND (end_time IS NULL OR end_time > now())
       AND message_type_value = 'Accident'
     UNION ALL
     SELECT 'DK', deviation_id, message_type, message, severity_text, road_number, start_time,
-           ST_AsGeoJSON(geom)::json
+           ST_AsGeoJSON(geom)::json, NULL::int
     FROM dk.deviations
     WHERE NOT deleted AND geom IS NOT NULL AND (end_time IS NULL OR end_time > now())
       AND message_type_value = 'Accident'`);
@@ -144,5 +157,26 @@ export async function buildMapData(q: Q, opts: { trvKey?: string; fetchFn?: type
     waitlist_count: Number(wl[0]?.n ?? 0),
   };
   put("meta.json", stats);
-  return { files, stats, notes };
+
+  // Länssidorna (kort #281, DECISIONS #458). Stationerna saknar länskod i arkivet: varje station får länet för den närmaste
+  // väglagssträckan inom 20 km. Bara de stationer appen själv talar om (appVader) räknas — en trasig givare blir aldrig
+  // "minusgrader i länet".
+  let sidor: Record<string, string> | null = null;
+  if (opts.appVader) {
+    const stLan = await q(STATION_LAN_SQL);
+    const lanFor = new Map(stLan.map((r) => [String(r.station_id), { name: String(r.name), lan: Number(r.lan) }]));
+    const stationer: LanStation[] = opts.appVader.flatMap((w) => {
+      const s = lanFor.get(w.id);
+      return s && w.yta !== null ? [{ name: s.name, yta: w.yta, fukt: w.fukt, lan: s.lan }] : [];
+    });
+    sidor = byggLanssidor({
+      vaglag: vaglag.map((r) => ({ code: numOrNull(r.condition_code), text: r.condition_text ?? null, info: (r.condition_info ?? []) as string[],
+        road: r.road_number ?? null, plats: r.location_text ?? null, lan: numOrNull(r.lan) })),
+      stationer,
+      olyckor: olyckor.filter((r) => r.land === "SE").map((r) => ({ road: r.road_number ?? null, start: r.start_time ? new Date(r.start_time).toISOString() : null,
+        allvar: r.severity_text ?? null, lan: numOrNull(r.lan) })),
+      now,
+    });
+  }
+  return { files, stats, notes, sidor };
 }
