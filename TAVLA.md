@@ -293,6 +293,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **Flyttat 26/9 från *Claude — olåst*** (femma åtta, DECISIONS #377): nästa steg är provet i bil på Axels Android.
 
 - [ ] 🤖 **#219 ANDROIDS VÄG TILL PLAY — enhetsverifiering, första uppladdning, slutet test** (rubriken löd 20/9 *Android är sju versioner efter och har ingen väg till en telefon* — överspelad 29/9, DECISIONS #402; rubriken rättad 1/10, #423; genomlysningen 20/9). Android står på
+  📍 **Läget 4/10 13:00 (Axel i Play Console):** identiteten inskickad till Google ("kan ta några dagar", mejl när klar). Appen går inte att skapa förrän alla tre kontouppgifter är gröna. Telefonnumret låst tills identiteten godkänts. Enhetsverifieringen: Axel har ingen egen Android, lånar en väns och loggar in i Play Console-appen. Deklarationen om bakgrundsplats rättad samma dag (PR #747). Medan Google granskar: tolv testares Gmail-adresser och fem råbilder plus demovideon ur den lånade telefonen.
   **0.3.1 (versionCode 4)**, iOS på 0.3.8 (11). **Google Play-kontot finns inte**, det finns inget uppladdningsflöde alls — CI
   bygger en AAB som artefakt och där slutar det. Android saknar dessutom introduktionen helt och har autostart av som standard.
   Om tolv testare i november ska hålla är Play-kontot en grind som måste passeras i september.
