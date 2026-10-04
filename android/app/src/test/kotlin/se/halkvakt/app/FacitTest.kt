@@ -46,4 +46,27 @@ class FacitTest {
         assertEquals("{\"id\":\"wx:21\\\"35\",\"t\":\"2023-11-14T22:13:20Z\",\"svar\":\"ja\",\"app\":\"android\",\"ver\":\"0.3.1\"}", b)
         assertFalse(b.contains("lat")); assertFalse(b.contains("lon"))
     }
+
+    // Statusraden (Bengts provresa 28/9, TILL-AXEL-BYGGE-19 Android 1): "Skickat 13:52 (1 missar)" stod under en obesvarad rad,
+    // och gårdagens kvitto under dagens varningar.
+    @Test fun kvittotBojerMiss() {
+        assertEquals(listOf("1 miss"), Facit.kvittodelar(0, 1))
+        assertEquals(listOf("2 svar", "3 missar"), Facit.kvittodelar(2, 3))
+        assertTrue(Facit.kvittodelar(0, 0).isEmpty())
+    }
+
+    @Test fun kortetVisarBaraDenHarResansFel() {
+        val start = 1_000_000L
+        assertNull(Facit.kortetsStatus("Skickat 13:52 (1 miss)", start + 5, start), "ett lyckat kvitto står aldrig i kortet")
+        assertEquals("Kunde inte skicka 13:52: HTTP 400", Facit.kortetsStatus("Kunde inte skicka 13:52: HTTP 400", start + 5, start))
+        assertNull(Facit.kortetsStatus("Kunde inte skicka 22:00: HTTP 500", start - 1, start), "förra resans fel hör inte hit")
+        assertNull(Facit.kortetsStatus("Kunde inte skicka 22:00: HTTP 500", 0L, start), "en rad från före 4/10 saknar tid och visas inte")
+        assertNull(Facit.kortetsStatus(null, start + 5, start))
+    }
+
+    @Test fun radenVisarBaraEnSandningEfterVarningen() {
+        val varningen = 2_000_000L
+        assertEquals("Skickat 13:48 (4 svar)", Facit.radensStatus("Skickat 13:48 (4 svar)", varningen + 60_000, varningen))
+        assertNull(Facit.radensStatus("Skickat 22:00 (1 svar)", varningen - 1, varningen), "gårdagens kvitto under dagens varning")
+    }
 }
