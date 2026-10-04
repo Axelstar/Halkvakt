@@ -18,7 +18,7 @@ export const NARA_BAND_C = 0.5;          // uppspelningens p_band, T-B:s nära-m
  *  #75, radvakten, karantänen och den långsamma vakten, som grindarna. Fukten och vakterna importeras, aldrig kopierade. */
 export const FACIT_SQL = `
   WITH r AS (
-    SELECT w.station_id AS sid, w.sample_time AS t, ${FUKT_SQL} AS fukt
+    SELECT w.station_id AS sid, w.sample_time AS t, true AS fukt
     FROM weather_observations w
     WHERE w.surface_temp_c IS NOT NULL AND w.surface_temp_c <= ${FRYS_C}
       AND w.air_temp_c IS NOT NULL AND w.surface_temp_c >= w.air_temp_c - 12 AND ${RADVAKT_SQL} AND ${karantanSql("w")}),
