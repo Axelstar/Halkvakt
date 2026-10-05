@@ -44,13 +44,16 @@ test("byggRader: byggnummer, version ur preReleaseVersion och TestFlight-lägena
   assert.deepEqual(tillstandsRader(rader), [{ kalla: "asc", nyckel: "bygge:22:extern:WAITING_FOR_BETA_REVIEW", varde: {} }]);
 });
 
-test("anvandning: summan över datapunkterna, först när någon installerat", () => {
+test("anvandning: summan över datapunkterna, först när någon installerat, utan datum ur datapunkterna", () => {
   const svar = { data: [{ dataPoints: [
     { start: "2026-10-04T00:00:00Z", end: "2026-10-05T00:00:00Z", values: { installCount: 1, sessionCount: 3, crashCount: 0, feedbackCount: 0 } },
     { start: "2026-10-03T00:00:00Z", end: "2026-10-04T00:00:00Z", values: { installCount: 1, sessionCount: 2, crashCount: 1 } },
   ] }] };
   assert.deepEqual(anvandning(22, svar), { kalla: "asc", nyckel: "bygge:22:installerad",
-    varde: { installer: 2, sessioner: 5, krascher: 1, feedback: 0, forsta: "2026-10-03T00:00:00Z" } });
+    varde: { installer: 2, sessioner: 5, krascher: 1, feedback: 0 } });
+  // Apples svar 5/10: en datapunkt för hela året. Dess start är fönstrets, inte installationens (kort #288).
+  const ar = { data: [{ dataPoints: [{ start: "2025-10-05T00:00:00Z", end: "2026-10-05T00:00:00Z", values: { installCount: 2, sessionCount: 6 } }] }] };
+  assert.deepEqual(anvandning(22, ar)?.varde, { installer: 2, sessioner: 6, krascher: 0, feedback: 0 });
   assert.equal(anvandning(23, { data: [{ dataPoints: [{ values: { installCount: 0, inviteCount: 4 } }] }] }), null);
   assert.equal(anvandning(23, { data: [] }), null);
 });
