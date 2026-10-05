@@ -119,7 +119,8 @@ struct OnboardingView: View {
             Group {
                 switch guardM.authStatus {
                 case .notDetermined:
-                    YellowPill(title: "Tillåt plats") { guardM.requestLocationPermission() }
+                    // Apple 5.1.1(iv), 5/10: knappen före systemdialogen får inte säga "Tillåt" — bara "Fortsätt".
+                    YellowPill(title: "Fortsätt") { guardM.requestLocationPermission() }
                 case .authorizedWhenInUse where askedAlways:
                     VStack(spacing: 6) {
                         HStack(spacing: 12) {
@@ -130,7 +131,7 @@ struct OnboardingView: View {
                         MonoLink(title: "Ändra till Alltid") { oppnaInstallningar() }
                     }
                 case .authorizedWhenInUse:
-                    YellowPill(title: "Tillåt Alltid", color: Brand.green) { askedAlways = true; guardM.requestAlwaysUpgrade() }
+                    YellowPill(title: "Fortsätt", color: Brand.green) { askedAlways = true; guardM.requestAlwaysUpgrade() }
                 case .authorizedAlways:
                     Bock(text: "Alltid — vakten vaknar själv när du kör")
                 default:
