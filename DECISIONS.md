@@ -7562,3 +7562,17 @@ ligger cirka 1,6 × över driftens h5 (#441). Fältet läses inte där heller.
   svaret och i App Review Notes.
 - **Alternativet** var att ta bort `audio`. Det avvisades: varningarna skulle bara höras med appen öppen.
 - **Samma bygge:** 0.3.10 (22) i project.yml bär ändringen; den gamla 0.3.9 dras inte tillbaka, den ersätts.
+
+**Rättelse till #390, 5/10: förarsvaren fanns** (Bengts *"ja"* till läsningen, dbknapp 37249631052):
+- **Svaren:** `driver_facit` har 32 rader, varav 3 prov och 29 riktiga svar på 24 varningar. Alla 29 är *Stämde* och alla
+  från iOS 0.3.9. De kom i åtta sändningar mellan 22/9 00:13 och 1/10 17:22.
+- **Vad svaren gäller:** 28 gäller fartkameror och 1 en händelse (`dev:`). Inget gäller en halkvarning.
+- **Missarna:** `driver_miss` har bara serverns prov från #380.
+- **Varför kartan sa 0:** #390:s *"driver_facit hade inga rader i dag"* gällde rader mottagna den dagen. Kartan läste det som
+  0 riktiga svar, fast 20 svar redan hade kommit in.
+- **Vems resorna är:** sändningen 1/10 17:22 är Axels resa 12:39–13:44 (kort #279). Resan 26–27/9 och händelsen 29/9 är okända
+  (§4.2).
+- **Hålen i id-serien** (t.ex. 21–46 för tio rader) är omsändningar som fångats av `UNIQUE (alert_id, alert_t, app)`, alltså
+  idempotensen i arbete.
+
+**Kartsynkens tidpunkt i drift 5/10** (Bengt: *"slå ihop 753"*): sammanslagen som 9c47f73, deploy 37249116949 (byggsignaler från 9c47f73); timkörningen 01:23Z skrev ärende #706 utan forsta i alla fem installationsraderna, med forst_sedd kvar.
