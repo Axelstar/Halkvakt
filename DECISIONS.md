@@ -7538,3 +7538,13 @@ ligger cirka 1,6 × över driftens h5 (#441). Fältet läses inte där heller.
   1,03 mm/h, alltså nivå 2.
 - **Lägesfilen bar noll väderpunkter** i eftermiddagssolen, eftersom ingen station var +3 °C eller kallare. Fältet med innehåll syns
   därför första natten med kalla stationer, som när beviset infördes 24/9 (#342).
+
+**Kartsynkens tidpunkt för en installation, 5/10** (Bengt: *"rätta datum"*, kort #288, tillägg till #447):
+- **Felet:** `anvandning()` tog starten på första datapunkten med en installation ur `betaBuildUsages`. Apple ger en datapunkt
+  för hela året (start 2025-10-05 för alla byggen), så kartsynkens första bock 5/10 skrev *"först 5/10 02:00"* om ett bygge
+  som installerats 3–4/10.
+- **Valt:** tidpunkten är signalens `forst_sedd`, alltså timmen då byggsignalerna först såg installationen. Den kan ligga upp till
+  en timme efter installationen, eller längre om signalen inte kunde läsa. `forsta` tas bort ur raden.
+- **Alternativet** var att be Apple om dagsupplösning. Det är inte prövat mot API:et och ger ändå bara dygnet.
+- **(22) bär inte rätt timme:** signalen började läsa först när nyckeln kom, 4/10 11:23. Beviset säger därför
+  *"sedd första gången 4/10 11:23"*, och det är en övre gräns.

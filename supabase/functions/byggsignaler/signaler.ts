@@ -39,17 +39,17 @@ export function byggRader(svar: any): Rad[] {
   });
 }
 
-/** GET /v1/builds/{id}/metrics/betaBuildUsages → summan över alla datapunkter; null tills bygget har installerats. */
+/** GET /v1/builds/{id}/metrics/betaBuildUsages → summan över alla datapunkter; null tills bygget har installerats.
+ *  Inget datum: Apple ger en datapunkt för hela året (5/10: start 2025-10-05 för alla byggen), så dess start säger inget om
+ *  installationen. Tidpunkten är radens forst_sedd, timmen då signalen först såg installationen (kort #288). */
 export function anvandning(nr: number, svar: any): Rad | null {
   let installer = 0, sessioner = 0, krascher = 0, feedback = 0;
-  let forsta: string | null = null;
   for (const d of svar?.data ?? []) for (const p of d?.dataPoints ?? []) {
     const v = p?.values ?? {};
     installer += Number(v.installCount ?? 0); sessioner += Number(v.sessionCount ?? 0);
     krascher += Number(v.crashCount ?? 0); feedback += Number(v.feedbackCount ?? 0);
-    if (Number(v.installCount ?? 0) > 0 && p.start && (!forsta || p.start < forsta)) forsta = p.start;
   }
-  return installer > 0 ? { kalla: "asc", nyckel: `bygge:${nr}:installerad`, varde: { installer, sessioner, krascher, feedback, forsta } } : null;
+  return installer > 0 ? { kalla: "asc", nyckel: `bygge:${nr}:installerad`, varde: { installer, sessioner, krascher, feedback } } : null;
 }
 
 /** GET /v1/apps/{id}/appStoreVersions → en rad per version och en per tillstånd. appStoreState är föråldrad hos Apple

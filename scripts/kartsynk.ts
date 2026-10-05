@@ -44,10 +44,10 @@ export function utfall(r: string, sig: Lagrad[]): Utfall {
   if (namn === "ios-installerad") {
     const b = minst(asc(/^bygge:\d+:installerad$/).filter((s) => nr(s) >= +arg[0]), nr);
     if (!b) return null;
-    const v = b.varde as { installer: number; sessioner: number; forsta: string | null };
+    const v = b.varde as { installer: number; sessioner: number };
     const tal = `${v.installer} installationer, ${v.sessioner} sessioner`;
     return v.sessioner > 0
-      ? { status: "klar", bevis: `(${nr(b)}) installerad och öppnad på telefon: ${tal} (TestFlight, först ${stockholm(v.forsta ?? b.forst_sedd)})` }
+      ? { status: "klar", bevis: `(${nr(b)}) installerad och öppnad på telefon: ${tal} (TestFlight, sedd första gången ${stockholm(b.forst_sedd)})` }
       : { status: "pagar", bevis: `(${nr(b)}) installerad men inte öppnad: ${tal} (TestFlight)` };
   }
   if (namn === "ios-extern") {
@@ -213,7 +213,7 @@ function sjalvtest(): void {
     s("asc", "status", { ok: true }),
     s("asc", "bygge:21", { nr: 21, behandling: "VALID", uppladdad: "2026-10-02T11:56:00Z" }),
     s("asc", "bygge:22", { nr: 22, behandling: "VALID", uppladdad: "2026-10-03T08:10:00Z" }),
-    s("asc", "bygge:22:installerad", { installer: 2, sessioner: 5, forsta: "2026-10-03T09:00:00Z" }),
+    s("asc", "bygge:22:installerad", { installer: 2, sessioner: 5, forsta: "2025-10-05T00:00:00Z" }),
     s("asc", "bygge:21:extern:IN_BETA_TESTING", {}),
     s("asc", "appstore:0.3.9:PENDING_DEVELOPER_RELEASE", {}),
     s("asc", "grupp:Kompisarna", { antal: 12 }),
@@ -229,6 +229,9 @@ function sjalvtest(): void {
   const fel: string[] = [];
   for (const [r, vant] of fall) if ((utfall(r, sig)?.status ?? null) !== vant) fel.push(`${r}: väntade ${vant}, fick ${utfall(r, sig)?.status ?? null}`);
   if (utfall("ios-uppladdad:22", sig)?.bevis !== "(22) uppladdad 3/10 10:10 (App Store Connect)") fel.push(`bevisraden: ${utfall("ios-uppladdad:22", sig)?.bevis}`);
+  // 5/10: Apples datapunkt gäller hela året (start 2025-10-05), så tidpunkten är när signalen först såg installationen (kort #288).
+  if (utfall("ios-installerad:22", sig)?.bevis !== "(22) installerad och öppnad på telefon: 2 installationer, 5 sessioner (TestFlight, sedd första gången 3/10 14:05)")
+    fel.push(`installationens tidpunkt: ${utfall("ios-installerad:22", sig)?.bevis}`);
   if (versionCmp("0.3.10", "0.3.9") <= 0 || versionCmp("0.3.9", "0.3.9") !== 0) fel.push("versionCmp");
   if (!giltigRegel("testare:Kompisarna:12") || giltigRegel("testare:12") || giltigRegel("okand:1")) fel.push("giltigRegel");
 
