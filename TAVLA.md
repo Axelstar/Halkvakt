@@ -99,7 +99,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🚀 **INLÄMNAD 2/10 00:09 — 0.3.9 (20) *Waiting for Review*** (DECISIONS #433). Hela formuläret ifyllt på en sittning med Claude på skärmen:
   bilder (alf.py, sju st), texter, granskarnotis, App Information, App Privacy publicerad, gratis, bara Sverige, manuell release.
   ✅ **00:11 — långtrycket provat i (20) på Axels iPhone: kortet kommer** (*"Det fungerade"*). simultaneousGesture-fixen håller; granskaren får sin varning.
-  🔑 Kvar: Apples svar · "Copyright:" ur copyright-fältet vid nästa redigering · vid godkännande: Axel väljer releasedag.
+  ~~🔑 Kvar: Apples svar~~ ❌ **AVVISAD 5/10** (App Store Connect 09:23, DECISIONS #460): 5.1.1(iv), *Tillåt* före platsfrågan, och 2.5.4, granskaren hörde inget bakgrundsljud. Rättelsen ligger i main sedan 10:44 (Axels #758, effd2d1): *Fortsätt* före platsfrågan, `audio` kvar och *Testa i bakgrunden* i Rösten-fliken.
+  🔑 **Kvar (Axel):** ⚠️ höj byggnumret till **(23)** i `project.yml` i samma commit som den sista ändringen före arkiveringen. (22) laddades upp 3/10 utan rättelsen, och main står kvar på (22). Ladda upp, spela in rösten från hemskärmen med *Testa i bakgrunden*, svara Apple och lämna in igen · "Copyright:" ur copyright-fältet vid nästa redigering · vid godkännande: Axel väljer releasedag.
   Verify: ✅ *Waiting for Review* med (20) — uppfyllt 00:09. Återstår: Apples svar.
   Verify: *Waiting for Review* i App Store Connect med (19) eller senare bifogat; sedan Apples svar.
 
