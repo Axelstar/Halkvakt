@@ -7520,3 +7520,21 @@ värdet klarar. Inga nya tal:
 
 **Följder:** inget i appen eller motorn läser fältet, och ingen port läser `bevis`. I kuvösen fylls fältet ur SMHI:s tif-arkiv, som
 ligger cirka 1,6 × över driftens h5 (#441). Fältet läses inte där heller.
+
+**Vägsidorna i drift 4/10** (Bengt: *"slå ihop 746"*, PR #746 som 45a07b4):
+- **Deploy och första varv:** deploy-supabase 37214328745. Kartvarvet 16:00:47Z skrev commit 7f3b8c2 i karta-repot med alla sex
+  vägarna (e4, e6, e18, e20, e22, rv40).
+- **Sitemapen** har 34 adresser: Axels 6, 22 län och 6 vägar. Varven 10:30–15:30 skrev 22 filer utan sitemapen, så den skrivs
+  bara när en adress saknas.
+- **Pages** svarar på `/vag/e4/` (*"Trafikverket rapporterar ingen halka på E4:s 53 vägavsnitt just nu"*), och översikten bär
+  vägtabellen.
+- **Körtiden:** kartvarvet 16:00 tog 48,1 s med 29 filer, mot 48,8–49,5 s på kartvarven 14:00–15:30.
+
+**#459 i drift 4/10** (Bengt: *"slå ihop 749"*, PR #749 som 9f96078):
+- **Deploy:** deploy-supabase 37215283678, driftsatt 16:02.
+- **Första publiceringen** 16:10 tog 43,4 s, mot 42,0–45,8 s på icke-kartvarven 14:10–15:50. Svaret bar ingen radarnot, alltså
+  gick frågan utan fel. Manifestets live-sha är lika med sha256(live.json).
+- **Frågan mot driftens data** 16:11 (dbknapp 37215841283): 22 stationer med radar inom 5 km de senaste fyra timmarna, högst
+  1,03 mm/h, alltså nivå 2.
+- **Lägesfilen bar noll väderpunkter** i eftermiddagssolen, eftersom ingen station var +3 °C eller kallare. Fältet med innehåll syns
+  därför första natten med kalla stationer, som när beviset infördes 24/9 (#342).
