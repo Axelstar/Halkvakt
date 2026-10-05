@@ -127,6 +127,14 @@ struct InstallningarView: View {
                 Spacer()
             }
             .padding(.top, 32)
+            HStack {
+                Spacer()
+                MonoLink(title: "Testa i bakgrunden (talar om 5 s)") {
+                    SpeechService.shared.speakLater("Fartkamera om 500 meter. Gränsen är 80.")
+                }
+                Spacer()
+            }
+            .padding(.top, 16)
         case .betatest:
             Rubrik(titel: "Betatest", text: "Hjälp oss göra varningarna bättre.")
             RowPanel {

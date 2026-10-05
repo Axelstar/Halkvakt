@@ -7548,3 +7548,17 @@ ligger cirka 1,6 × över driftens h5 (#441). Fältet läses inte där heller.
 - **Alternativet** var att be Apple om dagsupplösning. Det är inte prövat mot API:et och ger ändå bara dygnet.
 - **(22) bär inte rätt timme:** signalen började läsa först när nyckeln kom, 4/10 11:23. Beviset säger därför
   *"sedd första gången 4/10 11:23"*, och det är en övre gräns.
+
+
+## #460 (5/10 2026) App Review avvisade 0.3.9 (20) — knapptexten före platsfrågan och bevis för bakgrundsljudet
+
+**Beslut (Axel 5/10: *"vi kör"*),** efter App Reviews svar 5/10 (submission ab61c8ba).
+- **5.1.1(iv):** en knapp före systemets platsfråga får inte säga *Tillåt*. *Tillåt plats* och *Tillåt Alltid* i onboardingen heter
+  nu *Fortsätt*. Förklaringstexten (*"Välj Alltid så kan vakten starta själv när du kör."*) står kvar; Apple ber om förklaring, inte
+  om att den tas bort. Nekat-flödet med *Öppna Inställningar* fanns redan.
+- **2.5.4:** `audio` i UIBackgroundModes BEHÅLLS. Utan den tystnar rösten när telefonen är låst, och det är hela produkten. Granskaren
+  hörde inget eftersom det inte fanns någon fara att varna för i Cupertino. Rösten-fliken fick *Testa i bakgrunden*, som talar efter
+  5 s under en bakgrundsuppgift, så att en skärminspelning på riktig iPhone kan visa rösten från hemskärmen. Inspelningen följer med
+  svaret och i App Review Notes.
+- **Alternativet** var att ta bort `audio`. Det avvisades: varningarna skulle bara höras med appen öppen.
+- **Samma bygge:** 0.3.10 (22) i project.yml bär ändringen; den gamla 0.3.9 dras inte tillbaka, den ersätts.

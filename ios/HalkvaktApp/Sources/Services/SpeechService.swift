@@ -2,6 +2,7 @@
 // audiosessionens .duckOthers — samma beteende som Androids audio focus.
 import Foundation
 import AVFoundation
+import UIKit
 import Observation
 import HalkvaktEngine
 
@@ -18,6 +19,28 @@ final class SpeechService {
         u.voice = AVSpeechSynthesisVoice(language: "sv-SE")
         u.rate = AVSpeechUtteranceDefaultSpeechRate
         synth.speak(u)
+    }
+
+    /// Testlarm för bakgrundsljudet (Apple 2.5.4, 5/10): talar efter `delay` sekunder så man hinner gå till
+    /// hemskärmen. Bakgrundsuppgiften håller appen vaken tills repliken är sagd.
+    func speakLater(_ text: String, delay: Double = 5) {
+        endBackgroundTask()
+        bgTask = UIApplication.shared.beginBackgroundTask { [weak self] in
+            Task { @MainActor in self?.endBackgroundTask() }
+        }
+        Task { @MainActor in
+            try? await Task.sleep(for: .seconds(delay))
+            speak(text)
+            try? await Task.sleep(for: .seconds(6))
+            endBackgroundTask()
+        }
+    }
+
+    private var bgTask: UIBackgroundTaskIdentifier = .invalid
+    private func endBackgroundTask() {
+        guard bgTask != .invalid else { return }
+        UIApplication.shared.endBackgroundTask(bgTask)
+        bgTask = .invalid
     }
 }
 

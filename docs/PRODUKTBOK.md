@@ -115,7 +115,8 @@ och *fartkamera* (en låda på stolpe med blixtlinjer). Svarta på kortet, ljusa
   Bluetooth, och utan (fokus *Kör*) — fyra steg vardera, knappen *Öppna Genvägar* och, när en automation har startat
   vakten, *FUNGERAR — STARTAD SENAST …*. (Den gamla guiden med frågan om bilkopplingen är borta.)
 - *Rösten* — var rösten byts i systemet och den gula knappen *Testa rösten*, som säger en riktig motorreplik:
-  *"Fartkamera om 500 meter. Gränsen är 80."*
+  *"Fartkamera om 500 meter. Gränsen är 80."* Under den länken *TESTA I BAKGRUNDEN (TALAR OM 5 S)*: samma replik efter fem
+  sekunder, så man hinner gå till hemskärmen och höra att rösten hörs i bakgrunden (Apple 2.5.4, DECISIONS #460).
 - *Betatest* (*PÅ/AV*) — vippan *Svara på varningarna* och kvittot *VAD SKICKAS*: *Skickas* varningens id, klockslag,
   ditt svar · *Vid missad* klockslag, närmaste mätstation, vad det var · *Aldrig* konto, resa, position. *"Ett varnings-id
   pekar på en fara på kartan, så vi ser ungefär var du var just då. Appens namn och version följer med. Bara för
@@ -138,7 +139,7 @@ Fyra sidor med punkter längst ner, *HOPPA ÖVER* till vänster och *NÄSTA* / *
    Trafikverket — i din högtalare, innan du är där."*, sockeln med logotypen, rutan *LÖFTET — "Din position lämnar inte
    telefonen av sig själv."* och *Testa rösten* (som säger *"Fartkamera om 500 meter. Gränsen är 80."*).
 2. **Platsen** — *"Platsen — bara i telefonen"*, *"Välj Alltid så kan vakten starta själv när du kör."* och en kartnål på
-   sockeln. *Tillåt plats* → iOS egen fråga; sedan den gröna *Tillåt Alltid*. Med Alltid: en grön bock och *"Alltid —
+   sockeln. *Fortsätt* → iOS egen fråga; sedan den gröna *Fortsätt* → iOS fråga om Alltid (Apple 5.1.1(iv), DECISIONS #460). Med Alltid: en grön bock och *"Alltid —
    vakten vaknar själv när du kör"*, ringarna blir gröna. Avböjer du Alltid: *"Bara när appen är öppen — vakten startar
    inte själv"* och *ÄNDRA TILL ALLTID*. Nekar du: nålen blir grå, *PLATS · AV — "Utan plats vet vakten inte vad som
    ligger framför dig."* och *Öppna Inställningar*.
