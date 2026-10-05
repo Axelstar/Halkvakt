@@ -303,7 +303,7 @@
       <tbody>
         <tr><td><a href="#d-varvet">3.1 Huvudvarvet</a></td><td>röst</td><td><span class="lage skugga">körs i skuggan</span></td><td>144 av 144 varv skrev rader 25–28/9</td></tr>
         <tr><td><a href="#d-kamera">3.2 Kamerafacit</a></td><td>facit</td><td><span class="lage skugga">körs i skuggan</span></td><td>988 bilder, blint arkiv till mars</td></tr>
-        <tr><td><a href="#d-forare">3.3 Förarsvar och missar</a></td><td>facit</td><td><span class="lage drift">i drift</span></td><td>0 riktiga svar</td></tr>
+        <tr><td><a href="#d-forare">3.3 Förarsvar och missar</a></td><td>facit</td><td><span class="lage drift">i drift</span></td><td>29 riktiga svar, alla på kameror: 0 halkhändelser</td></tr>
         <tr><td><a href="#d-tystnad">3.4 Tystnadsfelet</a></td><td>facit</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>2 av 20 tillfällen</td></tr>
         <tr><td><a href="#d-vakter">4.1 Vakterna</a></td><td>L1</td><td><span class="lage drift">i drift</span></td><td>706 av 811 felrader tagna</td></tr>
         <tr><td><a href="#d-prognos">5.1 Prognoslagret</a></td><td>L4</td><td><span class="lage skugga">körs i skuggan</span></td><td>föll 28/9 (#399); premissmätningarna 30/9 räddar ingen kandidat (#405–#408); läses igen 24/11 (#435)</td></tr>
@@ -366,12 +366,12 @@
       <li><span aria-hidden="true">○</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">saknas · Bilderna öppnas i mars 2027</span></li>
     </ul>
   </details>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-forarfacit">Förarfacit (svar och missar)</a> <span style="color: var(--dampad, #4A5763)">delvis, 75 % · kvar: Riktiga förarsvar och missar, i dag 0 (#390)</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-forarfacit">Förarfacit (svar och missar)</a> <span style="color: var(--dampad, #4A5763)">delvis, 88 % · kvar: Förarsvar om halka och riktiga missar: de 29 riktiga svaren gäller 28 fartkameror och en händelse, och missarna är 0 (dbknapp 37249631052, 5/10)</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Regel skriven</b> <span style="color: var(--dampad, #4A5763)">klart · TROSKLAR-KOMBINATIONEN §4 KB-D, fastställt 17/9 (#226): ≥ 30 svar, ≥ 5 förare, ingen förare &gt; 25 %</span></li>
       <li><span aria-hidden="true">✓</span> <b>Byggd</b> <span style="color: var(--dampad, #4A5763)">klart · facit-svar (#201), sql/022, 025, 027, 038; Facit/Missar/FacitSender i ios/ och android/ (#203, #379)</span></li>
       <li><span aria-hidden="true">✓</span> <b>I drift</b> <span style="color: var(--dampad, #4A5763)">klart · facit-svar deployad 26/9 (36225396540), sql/038 via dbknapp; provmissen gav 204 (#380)</span></li>
-      <li><span aria-hidden="true">○</span> <b>Data finns</b> <span style="color: var(--dampad, #4A5763)">saknas · 0 riktiga svar och 0 riktiga missar (#390)</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Data finns</b> <span style="color: var(--dampad, #4A5763)">pågår · Läst 5/10 (dbknapp 37249631052): 29 riktiga svar i driver_facit, alla Stämde och alla iOS 0.3.9, från sex dagar 21/9–1/10; 28 gäller fartkameror och 1 en händelse (dev:), inget en halkvarning; 0 riktiga missar. Kartans tidigare 0 var fel: 20 av svaren hade kommit in före 28/9 (#390 gällde rader mottagna den dagen)</span></li>
     </ul>
   </details>
   <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-termisk">Termisk kartering</a> <span style="color: var(--dampad, #4A5763)">väntar, 0 % · Bengts och Axels ja, utrustningen (Axel prissätter) och pengarna: projektets egna, eller Skyltfondens AP2 (#409).</span></summary>
@@ -492,6 +492,7 @@
         <li>16/9: fem provanrop gav de fem väntade svaren, två godkända och tre avvisade (#201).</li>
         <li>20/9: 0 riktiga svar, 2 provrader (#267). 26/9: en provmiss togs emot och märktes som prov (#380).</li>
         <li>28/9: Bengts provtryck från provresan raderades. Kvar: 1 rad, 1 prov, 0 riktiga (#390).</li>
+        <li>5/10: förarsvaren lästa (dbknapp 37249631052). Det finns 29 riktiga svar, alla <i>Stämde</i> och alla från iOS 0.3.9, från 21/9–1/10. 28 gäller fartkameror och 1 en händelse, och inget gäller en mätstation, så de ger 0 halkhändelser. Missarna är fortfarande bara serverns prov. Kartans tidigare 0 var en felläsning av #390.</li>
         <li>Villkoret "minst 5 förare" går inte att räkna som det står, eftersom ingen identitet sparas. Det måste lösas före januari.</li>
       </ul>
     </div></details>
