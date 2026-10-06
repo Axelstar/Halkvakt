@@ -8,10 +8,10 @@ on:
   push:
     branches: [main]
     paths: ["supabase/functions/ingest-live/**", "sql/001_init.sql", "sql/003_situation_archive.sql", "sql/008_rain_sum.sql",
-            "sql/011_vind_sikt.sql", "ingest/sources/situations.ts", ".github/workflows/livemotorn.yml"]
+            "sql/011_vind_sikt.sql", "sql/043_ytstatus.sql", "ingest/sources/situations.ts", ".github/workflows/livemotorn.yml"]
   pull_request:
     paths: ["supabase/functions/ingest-live/**", "sql/001_init.sql", "sql/003_situation_archive.sql", "sql/008_rain_sum.sql",
-            "sql/011_vind_sikt.sql", "ingest/sources/situations.ts", ".github/workflows/livemotorn.yml"]
+            "sql/011_vind_sikt.sql", "sql/043_ytstatus.sql", "ingest/sources/situations.ts", ".github/workflows/livemotorn.yml"]
   workflow_dispatch: {}
 jobs:
   prov:
