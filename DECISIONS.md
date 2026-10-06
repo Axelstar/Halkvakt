@@ -8014,3 +8014,76 @@ Kartan: m-efterhalkans saknas-rader om kort #278 och kalibreringen strukna (#468
 
 **Vad som inte görs:** inget fönster, band eller villkor väljs; inga golv ur Ö-B som urval; inget rörs i betan. **Kostnad:** en
 knapptryckning, sekunder efter inläsningen.
+
+**UTFALL 6/10 (körning 37524718907 på e98a4c8, 20:12–20:20Z; mätningen 1 min 53 s). Första försöket 37522992220 skrev "0 av 0" för per natt
+och M2 — nycklarna byggdes av Postgres numeric-sträng, uppslagningen av talet; rättat med vakter som stoppar vid tomt, förregistreringen
+orörd.** Facit 82 985 stationsnätter, baslinjenätter 46 860, halvorna delade 15/1. Kontrollen stämmer: startvärdena per episod 183 av 406 =
+45,1 % (#467).
+
+**M1 — priset per fyrning: måttet ändrar inte kalibreringens utfall.** Startvärdena **43,4 %** per fyrning (195 av 449; A 52,4 %, B 32,3 %)
+mot 45,1 % per episod; lägst **35,0 %** (N 4 h · 60 min · fall 1,2), 36,8 % (N 4 h · 30 · 0,8), 37,5 % (N 3 h · 60 · 1,2). **0 av 32 punkter
+har pris per fyrning ≤ 25 %** på ≥ 20 fyrningar, hela vintern eller i någon halva. Måttet per episod överskattar priset med 1–7
+procentenheter — inte mer. Kalibreringens *ingen vinnare* (#468) står, och ingen kalibrering på annat mått behövs (D7 orörd).
+**Per natt, övre gränsen:** startvärdena **16,7 %** (67 av 401), lägst 15,1 % (N 4 h · 30 · 0,8); 21 av 32 punkter under 25 %. Av
+startvärdenas 183 *uteblev* inom 90 minuter frös stationen senare samma natt i 116 fall (63 %). Det är inte måttet (föraren passerar
+nu), men det är talet som avgör hur Ö-B2:s *"tillfällen som inte blev hala"* ska läsas i januari — kort #296/#297, Bengt och Axel.
+
+| Punkt | per fyrning: uteblev av n ⇒ pris | halva A | halva B | per episod (dagens mått) | per natt (övre gräns) |
+| :-- | :-- | --: | --: | --: | --: |
+| N 1 h · 30 min · fall 0,4 | 668 av 1087 ⇒ **61,5 %** | 68,5 % | 53,7 % | 62,6 % | 256 av 863 ⇒ 29,7 % |
+| N 1 h · 30 min · fall 0,6 | 278 av 466 ⇒ **59,7 %** | 68,8 % | 48,1 % | 61,6 % | 123 av 409 ⇒ 30,1 % |
+| N 1 h · 30 min · fall 0,8 | 134 av 233 ⇒ **57,5 %** | 66,4 % | 45,5 % | 59,2 % | 56 av 213 ⇒ 26,3 % |
+| N 1 h · 30 min · fall 1,2 | 37 av 61 ⇒ **60,7 %** | 66,7 % | 53,6 % | 62,7 % | 14 av 57 ⇒ 24,6 % |
+| N 1 h · 60 min · fall 0,4 | 1287 av 1919 ⇒ **67,1 %** | 73,5 % | 61,4 % | 68,1 % | 386 av 1225 ⇒ 31,5 % |
+| N 1 h · 60 min · fall 0,6 | 543 av 882 ⇒ **61,6 %** | 69,6 % | 53,9 % | 63,2 % | 184 av 665 ⇒ 27,7 % |
+| N 1 h · 60 min · fall 0,8 | 284 av 488 ⇒ **58,2 %** | 66,4 % | 49,1 % | 60,7 % | 107 av 395 ⇒ 27,1 % |
+| N 1 h · 60 min · fall 1,2 | 97 av 166 ⇒ **58,4 %** | 64,5 % | 50,7 % | 60,7 % | 33 av 144 ⇒ 22,9 % |
+| N 2 h · 30 min · fall 0,4 | 1124 av 2076 ⇒ **54,1 %** | 61,0 % | 45,4 % | 60,2 % | 372 av 1382 ⇒ 26,9 % |
+| N 2 h · 30 min · fall 0,6 | 441 av 928 ⇒ **47,5 %** | 56,2 % | 36,9 % | 51,7 % | 172 av 744 ⇒ 23,1 % |
+| N 2 h · 30 min · fall 0,8 **(start)** | 195 av 449 ⇒ **43,4 %** | 52,4 % | 32,3 % | 45,1 % | 67 av 401 ⇒ 16,7 % |
+| N 2 h · 30 min · fall 1,2 | 50 av 100 ⇒ **50,0 %** | 61,5 % | 37,5 % | 52,1 % | 17 av 92 ⇒ 18,5 % |
+| N 2 h · 60 min · fall 0,4 | 2405 av 3965 ⇒ **60,7 %** | 66,3 % | 54,3 % | 67,0 % | 587 av 1959 ⇒ 30,0 % |
+| N 2 h · 60 min · fall 0,6 | 1161 av 2155 ⇒ **53,9 %** | 61,0 % | 44,9 % | 58,5 % | 317 av 1280 ⇒ 24,8 % |
+| N 2 h · 60 min · fall 0,8 | 628 av 1275 ⇒ **49,3 %** | 58,1 % | 37,8 % | 53,2 % | 200 av 861 ⇒ 23,2 % |
+| N 2 h · 60 min · fall 1,2 | 211 av 478 ⇒ **44,1 %** | 55,3 % | 31,6 % | 47,5 % | 68 av 370 ⇒ 18,4 % |
+| N 3 h · 30 min · fall 0,4 | 1598 av 3233 ⇒ **49,4 %** | 54,5 % | 42,4 % | 58,8 % | 493 av 1939 ⇒ 25,4 % |
+| N 3 h · 30 min · fall 0,6 | 625 av 1483 ⇒ **42,1 %** | 48,0 % | 34,4 % | 48,1 % | 230 av 1114 ⇒ 20,6 % |
+| N 3 h · 30 min · fall 0,8 | 267 av 689 ⇒ **38,8 %** | 44,8 % | 30,6 % | 41,7 % | 94 av 597 ⇒ 15,7 % |
+| N 3 h · 30 min · fall 1,2 | 60 av 129 ⇒ **46,5 %** | 58,8 % | 32,8 % | 48,0 % | 25 av 121 ⇒ 20,7 % |
+| N 3 h · 60 min · fall 0,4 | 3417 av 6034 ⇒ **56,6 %** | 60,6 % | 51,4 % | 66,6 % | 737 av 2566 ⇒ 28,7 % |
+| N 3 h · 60 min · fall 0,6 | 1733 av 3505 ⇒ **49,4 %** | 54,4 % | 42,3 % | 58,7 % | 446 av 1825 ⇒ 24,4 % |
+| N 3 h · 60 min · fall 0,8 | 938 av 2119 ⇒ **44,3 %** | 50,5 % | 35,4 % | 51,6 % | 282 av 1302 ⇒ 21,7 % |
+| N 3 h · 60 min · fall 1,2 | 301 av 803 ⇒ **37,5 %** | 45,8 % | 27,8 % | 42,7 % | 103 av 593 ⇒ 17,4 % |
+| N 4 h · 30 min · fall 0,4 | 2110 av 4416 ⇒ **47,8 %** | 52,4 % | 41,2 % | 60,0 % | 606 av 2426 ⇒ 25,0 % |
+| N 4 h · 30 min · fall 0,6 | 815 av 2021 ⇒ **40,3 %** | 45,9 % | 33,2 % | 48,6 % | 283 av 1440 ⇒ 19,7 % |
+| N 4 h · 30 min · fall 0,8 | 329 av 893 ⇒ **36,8 %** | 43,4 % | 28,9 % | 41,0 % | 114 av 756 ⇒ 15,1 % |
+| N 4 h · 30 min · fall 1,2 | 68 av 158 ⇒ **43,0 %** | 58,8 % | 26,9 % | 44,7 % | 28 av 148 ⇒ 18,9 % |
+| N 4 h · 60 min · fall 0,4 | 4513 av 8231 ⇒ **54,8 %** | 58,3 % | 50,0 % | 68,0 % | 880 av 3131 ⇒ 28,1 % |
+| N 4 h · 60 min · fall 0,6 | 2391 av 4959 ⇒ **48,2 %** | 53,1 % | 40,9 % | 59,9 % | 555 av 2334 ⇒ 23,8 % |
+| N 4 h · 60 min · fall 0,8 | 1342 av 3088 ⇒ **43,5 %** | 49,8 % | 34,6 % | 52,6 % | 362 av 1733 ⇒ 20,9 % |
+| N 4 h · 60 min · fall 1,2 | 408 av 1166 ⇒ **35,0 %** | 43,1 % | 25,7 % | 40,4 % | 130 av 825 ⇒ 15,8 % |
+
+**M2 — daggpunkten vid fyrningen: riktningen bekräftad, den starka formen inte.** Alla 1 109 fyrningar fick väderrad och daggpunkt.
+| Daggpunkten vid fyrningen | episoder | föll ut · nära · uteblev (90 min) | pris per episod | per fyrning | per natt | fångar · nettonytt |
+| :-- | --: | :-- | --: | --: | --: | :-- |
+| dagg ≤ +1 °C | 198 | 97 · 37 · 64 | **32,3 %** | 30,9 % | **10,9 %** | 387 · **118** |
+| dagg > +1 °C | 213 | 51 · 41 · 121 | **56,8 %** | 55,2 % | 22,5 % | 74 · 57 |
+
+| Yta − dagg vid fyrningen | episoder | pris per episod | per natt |
+| :-- | --: | --: | --: |
+| ≤ 0 (kondensation pågår) | 129 | **48,8 %** | 22,5 % |
+| 0–1 | 124 | 44,4 % | 14,9 % |
+| 1–2 | 97 | **38,1 %** | 10,3 % |
+| > 2 | 72 | 44,4 % | 15,7 % |
+
+Förutsägelsen (#470) sade *dagg ≤ +1 faller ut i klar majoritet, dagg > +1 uteblir i majoritet*. Utfall: dagg ≤ +1 faller ut i **49 %** inom
+90 minuter (97 av 198) och **78 %** under natten (151 av 193); dagg > +1 uteblir i **57 %** inom 90 minuter (121 av 213) men bara 22,5 % under
+natten. Riktningen håller tydligt — **daggpunkten nästan halverar priset** (32,3 mot 56,8 % per episod, 10,9 mot 22,5 % per natt) **och bär 118
+av 175 nettonytt** — men "klar majoritet inom 90 minuter" håller inte; fallet tar längre tid än förarens horisont också när det fortsätter.
+Yta − dagg ≤ 0 (kondensationen pågår redan) är den dyraste klassen, 48,8 %: det är fysiken i §6.3 — vid daggpunkten bromsar
+kondensationsvärmet fallet. Episoderna är räknade per klass; en natt kan ge en episod i varje klass (411 mot 406).
+
+**Följd:** ingen tröskel, ingen kod, ingen kalibrering. Till kort #297 (Bengt och Axel, före mars): (1) Ö-B2:s mått i januari — per fyrning
+(43,4 %) eller per natt (16,7 %); (2) daggpunkten som mars-variant (D1 stänger den för betan) — riktningen är bekräftad, kostnaden är
+täckning (198 av 411 episoder) och advektion (daggpunkten vid fyrningen är inte daggpunkten två timmar senare); (3) ingen kalibrering om — M1
+visar att måttet inte var felet. Granskningen §7 bär samma tal; bedömningen §7 två rader.
