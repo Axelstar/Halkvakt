@@ -182,7 +182,8 @@ varje del av projektet med block, läge, bevis eller nyckel, vad som saknas, ber
   någon del, och kör sedan `--bokford`. Grenen heter `kartsynk/<datum>`, PR-rubriken börjar med "Kartsynk:", och en gren där
   `--tillatna` är grön (den rör bara kartan och det kartan skriver) slås ihop på grön CI på exakt huvudet utan "slå ihop" och
   republiceras; allt annat väntar på Bengts ord. Regeln *samma commit* ovan gäller fortfarande — kartsynken är nätet under den.
-  En session utan GitHub-API (webben, mobilen) gör bokföringsvägen; signalerna tar nästa session som når dem.
+  En session utan GitHub-API (webben, mobilen) gör bokföringsvägen; signalerna tar nästa session som når dem. Kartsynken listar
+  också **öppna PR:er** (6/10): en PR som väntar lyfts i rapporten till Bengt, och kartgrenar slås ihop av sessionen, aldrig av CI.
 
 ## PRODUKTBOKSREGELN (Axels order 2026-08-29)
 Ändras något användaren SER, HÖR eller GÖR (skärm, rösttext, flöde, behörighet)
