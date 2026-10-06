@@ -24,6 +24,11 @@ export interface WeatherObs {
   windGustMs: number | null;    // Aggregated30minutes.Wind.SpeedMax — byvinden fäller höga fordon
   windDirDeg: number | null;    // Observation.Wind[0].Direction
   visibilityM: number | null;   // Observation.Air.VisibleDistance — dimma/sikt (hål C)
+  // Ytstatusgivarna (kort #294, DECISIONS #465): cirka 50 stationer mäter att vägen BLEV HAL, inte bara kall. NULL = ingen givare.
+  surfaceWater: boolean | null; // Observation.Surface.Water — förekomst av vatten på vägytan
+  surfaceIce: boolean | null;   // Observation.Surface.Ice
+  surfaceSnow: boolean | null;  // Observation.Surface.Snow
+  surfaceGrip: number | null;   // Observation.Surface.Grip.Value — friktion 0–1
   modifiedTime: string;
 }
 
@@ -59,6 +64,10 @@ export async function fetchWeather(apiKey: string, changeid = "0"): Promise<TvRe
       windGustMs: o?.Aggregated30minutes?.Wind?.SpeedMax?.Value ?? null,
       windDirDeg: o?.Wind?.[0]?.Direction?.Value ?? null,
       visibilityM: o?.Air?.VisibleDistance?.Value ?? null,
+      surfaceWater: typeof o?.Surface?.Water === "boolean" ? o.Surface.Water : null,
+      surfaceIce: typeof o?.Surface?.Ice === "boolean" ? o.Surface.Ice : null,
+      surfaceSnow: typeof o?.Surface?.Snow === "boolean" ? o.Surface.Snow : null,
+      surfaceGrip: typeof o?.Surface?.Grip?.Value === "number" ? o.Surface.Grip.Value : null,
       modifiedTime: w.ModifiedTime,
     });
   }

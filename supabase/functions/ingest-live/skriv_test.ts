@@ -16,7 +16,7 @@ Deno.test({ name: "livemotorns skrivningar mot PostGIS", ignore: !url, sanitizeO
   const sql = postgres(url!, { max: 1, onnotice: () => {} });
   try {
     // Tabellerna som livemotorn skriver till, i den ordning den gamla ingesten migrerar dem (ingest/db.ts).
-    for (const f of ["001_init.sql", "003_situation_archive.sql", "008_rain_sum.sql", "011_vind_sikt.sql"]) {
+    for (const f of ["001_init.sql", "003_situation_archive.sql", "008_rain_sum.sql", "011_vind_sikt.sql", "043_ytstatus.sql"]) {
       await sql.unsafe(await Deno.readTextFile(new URL(`../../../sql/${f}`, import.meta.url)));
     }
     await sql`TRUNCATE deviations, situation_archive, road_conditions, weather_observations, weather_latest`;
@@ -70,8 +70,8 @@ Deno.test({ name: "livemotorns skrivningar mot PostGIS", ignore: !url, sanitizeO
     await t.step("vädret: kalla mätningar arkiveras, varma en gång per halvtimme, nuläget skrivs aldrig över av en äldre", async () => {
       const halvtimmen = Math.floor(Date.now() / 1_800_000) * 1_800_000;
       const tid = (min: number) => new Date(halvtimmen + min * 60_000 - 3_600_000).toISOString();   // en timme bak, inom 3 h
-      const station = (id: string, t: string, yta: number) => ({ Id: id, Name: id, Geometry: { WGS84: "POINT (13.0 55.6)" },
-        Observation: { Sample: t, Surface: { Temperature: { Value: yta } }, Air: { Temperature: { Value: yta + 1 } } } });
+      const station = (id: string, t: string, yta: number, ytstatus: Record<string, unknown> = {}) => ({ Id: id, Name: id, Geometry: { WGS84: "POINT (13.0 55.6)" },
+        Observation: { Sample: t, Surface: { Temperature: { Value: yta }, ...ytstatus }, Air: { Temperature: { Value: yta + 1 } } } });
       // En mätning per station och anrop, som i driften (Trafikverket ger stationens senaste; nulägets upsert tål inte två).
       // Kall station: två mätningar i samma halvtimme ger två rader; samma mätning igen ger ingen ny.
       await skrivVader(sql, [station("K1", tid(1), 1.5)]);
@@ -83,6 +83,12 @@ Deno.test({ name: "livemotorns skrivningar mot PostGIS", ignore: !url, sanitizeO
       lika([r1.arkivpolicy, r2.arkivpolicy], ["1 varma halvtimmesrader", "0 varma halvtimmesrader"], "svarets rad om arkivpolicyn");
       const rader = await sql`SELECT station_id, count(*)::int AS n FROM weather_observations GROUP BY station_id ORDER BY station_id`;
       lika(rader.map((x) => [x.station_id, Number(x.n)]), [["K1", 2], ["V1", 1]], "arkivraderna per station");
+      // Ytstatusgivarna (kort #294, DECISIONS #465): is och friktion lagras; en givare som saknas blir NULL, aldrig false.
+      await skrivVader(sql, [station("Y1", tid(7), -1.0, { Ice: true, Water: false, Grip: { Value: 0.32 } })]);
+      const [y] = await sql`SELECT surface_ice, surface_water, surface_snow, surface_grip FROM weather_observations WHERE station_id = 'Y1'`;
+      lika([y.surface_ice, y.surface_water, y.surface_snow, Number(y.surface_grip)], [true, false, null, 0.32], "ytstatusfälten");
+      const [k] = await sql`SELECT surface_ice, surface_grip FROM weather_observations WHERE station_id = 'K1' LIMIT 1`;
+      lika([k.surface_ice, k.surface_grip], [null, null], "en station utan givare: NULL");
       // Nuläget följer den senaste mätningen; en äldre som kommer sent skriver inte över.
       await skrivVader(sql, [station("K1", tid(5), -3.0)]);
       const [l] = await sql`SELECT surface_temp_c FROM weather_latest WHERE station_id = 'K1'`;

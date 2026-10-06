@@ -50,6 +50,7 @@ export async function writeAll(data: {
     await client.query(readFileSync(new URL("../sql/011_vind_sikt.sql", import.meta.url), "utf8"));
     await client.query(readFileSync(new URL("../sql/015_smhi_giltighet.sql", import.meta.url), "utf8"));
     await client.query(readFileSync(new URL("../sql/024_smhi_senast_sedd.sql", import.meta.url), "utf8"));
+    await client.query(readFileSync(new URL("../sql/043_ytstatus.sql", import.meta.url), "utf8"));   // ytstatusfälten (#465)
 
     // Weather archive policy needs last stored temp per station — ONE query, not N.
     const lastTemps = new Map<string, number | null>();
@@ -141,22 +142,25 @@ export async function writeAll(data: {
       await client.query(
         `INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c,
            air_temp_c, dewpoint_c, humidity_pct, precipitation, rain, snow, rain_sum_mm, snow_wateq_mm,
-           wind_speed_ms, wind_gust_ms, wind_dir_deg, visibility_m)
+           wind_speed_ms, wind_gust_ms, wind_dir_deg, visibility_m, surface_water, surface_ice, surface_snow, surface_grip)
          SELECT u.station_id, u.name, ST_SetSRID(ST_MakePoint(u.lon, u.lat), 4326), u.sample_time,
                 u.surface_temp_c, u.air_temp_c, u.dewpoint_c, u.humidity_pct, u.precipitation, u.rain, u.snow,
-                u.rain_sum_mm, u.snow_wateq_mm, u.wind_speed_ms, u.wind_gust_ms, u.wind_dir_deg, u.visibility_m
+                u.rain_sum_mm, u.snow_wateq_mm, u.wind_speed_ms, u.wind_gust_ms, u.wind_dir_deg, u.visibility_m,
+                u.surface_water, u.surface_ice, u.surface_snow, u.surface_grip
          FROM UNNEST($1::text[],$2::text[],$3::float8[],$4::float8[],$5::timestamptz[],$6::numeric[],
                      $7::numeric[],$8::numeric[],$9::numeric[],$10::text[],$11::bool[],$12::bool[],
-                     $13::numeric[],$14::numeric[],$15::numeric[],$16::numeric[],$17::numeric[],$18::numeric[])
+                     $13::numeric[],$14::numeric[],$15::numeric[],$16::numeric[],$17::numeric[],$18::numeric[],
+                     $19::bool[],$20::bool[],$21::bool[],$22::numeric[])
               AS u(station_id, name, lon, lat, sample_time, surface_temp_c, air_temp_c, dewpoint_c,
                    humidity_pct, precipitation, rain, snow, rain_sum_mm, snow_wateq_mm,
-                   wind_speed_ms, wind_gust_ms, wind_dir_deg, visibility_m)
+                   wind_speed_ms, wind_gust_ms, wind_dir_deg, visibility_m, surface_water, surface_ice, surface_snow, surface_grip)
          ON CONFLICT (station_id, sample_time) DO NOTHING`,
         [col(c, x => x.stationId), col(c, x => x.name), col(c, x => x.lon), col(c, x => x.lat),
          col(c, x => x.sampleTime), col(c, x => x.surfaceTempC), col(c, x => x.airTempC),
          col(c, x => x.dewpointC), col(c, x => x.humidityPct), col(c, x => x.precipitation),
          col(c, x => x.rain), col(c, x => x.snow), col(c, x => x.rainSumMm), col(c, x => x.snowWateqMm),
-         col(c, x => x.windSpeedMs), col(c, x => x.windGustMs), col(c, x => x.windDirDeg), col(c, x => x.visibilityM)]);
+         col(c, x => x.windSpeedMs), col(c, x => x.windGustMs), col(c, x => x.windDirDeg), col(c, x => x.visibilityM),
+         col(c, x => x.surfaceWater), col(c, x => x.surfaceIce), col(c, x => x.surfaceSnow), col(c, x => x.surfaceGrip)]);
       counts.weather += c.length;
     }
 

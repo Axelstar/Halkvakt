@@ -125,19 +125,23 @@ export async function skrivVader(sql: Sql, items: Post[]): Promise<{ n: number; 
     // Regnmängd, snöns vattenvärde, vind och sikt (kort #42 steg 0a, DECISIONS #77-serien i
     // ingest/sources/weather.ts): första versionen (8/9) skrev bara temperatur och ja/nej —
     // hela #42:s facit (rain_sum_mm, grind V-A) svalt sedan 5/9 fast arkivet fick rader.
-    // Speglar weather.ts fält för fält; ändras den ena ska den andra följa med.
+    // Speglar weather.ts fält för fält; ändras den ena ska den andra följa med. Ytstatusgivarna (Surface.Water/Ice/Snow/Grip,
+    // kort #294, DECISIONS #465) är det enda i VViS som mäter att vägen blev hal; NULL = ingen givare, aldrig "torrt".
     const rainSum = typeof agg30?.RainSum?.Value === "number" ? agg30.RainSum.Value : null;
     const snowWateq = typeof agg30?.SnowSum?.WaterEquivalent?.Value === "number" ? agg30.SnowSum.WaterEquivalent.Value : null;
     await sql`INSERT INTO weather_observations (station_id, name, geom, sample_time,
         surface_temp_c, air_temp_c, dewpoint_c, humidity_pct, precipitation, rain, snow,
-        rain_sum_mm, snow_wateq_mm, wind_speed_ms, wind_gust_ms, wind_dir_deg, visibility_m)
+        rain_sum_mm, snow_wateq_mm, wind_speed_ms, wind_gust_ms, wind_dir_deg, visibility_m,
+        surface_water, surface_ice, surface_snow, surface_grip)
       VALUES (${String(w.Id)}, ${w.Name ?? ""},
         ST_SetSRID(ST_MakePoint(${p[0]}, ${p[1]}), 4326), ${o.Sample},
         ${yta}, ${o?.Air?.Temperature?.Value ?? null}, ${o?.Air?.Dewpoint?.Value ?? null},
         ${o?.Air?.RelativeHumidity?.Value ?? null}, ${nederbord}, ${rain}, ${snow},
         ${rainSum}, ${snowWateq},
         ${o?.Wind?.[0]?.Speed?.Value ?? null}, ${o?.Aggregated30minutes?.Wind?.SpeedMax?.Value ?? null},
-        ${o?.Wind?.[0]?.Direction?.Value ?? null}, ${o?.Air?.VisibleDistance?.Value ?? null})
+        ${o?.Wind?.[0]?.Direction?.Value ?? null}, ${o?.Air?.VisibleDistance?.Value ?? null},
+        ${typeof o?.Surface?.Water === "boolean" ? o.Surface.Water : null}, ${typeof o?.Surface?.Ice === "boolean" ? o.Surface.Ice : null},
+        ${typeof o?.Surface?.Snow === "boolean" ? o.Surface.Snow : null}, ${typeof o?.Surface?.Grip?.Value === "number" ? o.Surface.Grip.Value : null})
       ON CONFLICT (station_id, sample_time) DO NOTHING`;
     har?.add(nyckel);
     n++;
