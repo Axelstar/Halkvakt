@@ -8074,3 +8074,10 @@ ut i provet. Domen på vintern 2026/27 läser en karta som är fryst innan den v
 
 **Alternativ:** Google Earth Engine (fritt bara för icke-kommersiellt bruk, #470), Sentinel-3 SLSTR (1 km, kortare arkiv, eget
 konto), Landsat/ECOSTRESS (70–100 m men sällan på natten). AppEEARS (LP DAAC:s utsnittstjänst) kräver lösenordsinloggning, inte nyckel.
+
+**UTFALL 6/10 (körning 37527407004, 14 min):** releasen `kuvos-modis-2022-25` finns (kallkartan_modis.npz, sha256 6a2a586b…, samma
+som i den första körningen 37524112922, vars release nekades med HTTP 403 från grenpushen). 1 262 nätter över de två satelliterna,
+4 utan en enda klar pixel; 3 813 571 pixlar med minst en natt, median 207 klara nätter per pixel. Avvikelsen över rutor med fler än
+30 nätter: 5/50/95-percentil −1,18 / −0,01 / +1,19 K. Inget facit läst. **Iakttagelse för förregistreringen av provet:** pixeln
+vid stationen i Vietas ger +3,51 K, troligen för att den ligger mot Akkajaure — en 1 km-pixel vid en sjö bär sjöns värme. Provet
+behöver därför en regel för pixlar med vatten (rutans landandel, eller närmaste rena landpixel), skriven före körningen.
