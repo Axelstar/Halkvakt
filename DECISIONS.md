@@ -7921,6 +7921,75 @@ stationen, inte att vägen var torr. Om priset är orättvist mot efterhalkan av
 | 4 h | 60 min | 0,8 | 5 861 | 3 192 | 844 | 1 745 | 917 | 52,6 % | 432 · 60,2 % | 412 · 42,4 % |
 | 4 h | 60 min | 1,2 | 2 340 | 1 618 | 458 | 832 | 336 | 40,4 % | 214 · 46,3 % | 244 · 33,1 % |
 
+## #469 (6/10 2026) Kuvösens granskning: tre läsningar förregistrerade före körningen — grind A på 60 dygn, efterhalkans pris per fönster, inom räckvidd (kort #295)
+
+**Bengts ja 6/10 (*"ja till 295"*)** till de tre läsningarna i `docs/KUVOS-GRANSKNING-2026-10-06.md` §4. **Ingen dom, ingen tröskel rörs:**
+grind A:s driftdom (#321, #399) står, startvärdena står frysta (#468), vägpunktsgrindens fall står. Skriptet
+`scripts/matningar/kuvos-granskning-2026-10-06.ts` körs på knappen `kuvos` (`matning`), efter inläsningen, vakterna och trenden.
+Inget tal var läst när posten skrevs.
+
+- **F1 — grind A på 60-dygnsfönster.** `publish/grind-a.ts` körs oförändrad, tre gånger, med kuvösens klocka ställd på 1/1 2025,
+  1/3 2025 och vinterns slut (31/3 21:30Z), `DAYS` = 60 som i driften. Frågan: är vinterns A2 5,5 % (#467, 152 dygn) en hårdare vinter
+  eller ett längre offsetfönster? **Läsning i förväg:** ligger A2 under 5 % i alla tre fönstren var vinterläsningen ett fönsterfel och
+  driftens dom står obestridd; ligger den över i alla tre är vintern hårdare än hösten; blandat ⇒ vintern varierar och redovisas per
+  fönster. Grind A:s egna "DOM"-rader är läsning här.
+- **F2 — efterhalkans pris per fönster och band.** Startvärdenas fyrningar (ögonblicksvarianten, #456), de tillkomna episoderna som i
+  ovanpå; lägsta ytan efter fyrningen tas direkt ur `weather_observations` i utfallsfönstren 60 · 90 · 120 min och klassas med
+  nära-banden 0,3 · 0,5 · 1,0 °C — båda svepen härledda ur sql/028:s D1-vakt (TROSKLAR-TRENDEN §2). 90 min · 0,5 ska ge 183 av 406 =
+  45,1 % (kontroll mot #467). Dessutom priset vid 90 min · 0,5 delat på startytan vid fyrningen (+1…+2 och +2…+3 °C): fönstrets
+  aritmetik mot de långsamma fallen. Sampling-skevheten (tre rader mot arton) går inte att mäta i kuvösen; den sägs, inte räknas.
+- **F3 — inom räckvidd för Ö-B1.** Facittillfällen (stationsnätter ≤ +1 °C, vakterna klarade) med regn (`rain_sum_mm > 0`) vid
+  stationen inom N h före facitögonblicket, N = startvärdet 2 h och svepets vidaste 4 h, var och en också med utfallsfönstret 90 min
+  tillagt så att en fyrning före facit ryms. Riktningsprovets nettonytt 175 som andel av dem, bredvid 0,2 % av alla. Definitionen är ett
+  **förslag** till TROSKLAR-OVERGANGAR §4 (Ö-B1 *inom räckvidd*) före mars-domen — den fastställs av Bengt och Axel, inte här.
+
+**Vad som inte görs:** ingen kandidat, ingen tröskel, ingen omkörning av kalibreringen (D7), inget val av fönster eller band.
+**Kostnad:** en knapptryckning (inläsningen ≈ 5 min, grind A tre gånger på 60 dygn, F2/F3 sekunder). Timeouten för en mätning höjd
+till 300 min och heapen till 10 GB i `kuvos.yml`.
+
+**UTFALL 6/10 (körning 37517980895 på fe7c472, 19:18–19:28Z; inläsningen 7 min, mätningen 1 min 46 s).** Alla tal, ingen dom.
+
+**F1 — grind A på 60 dygn, tre fönster** (`publish/grind-a.ts` oförändrad, klockan i anslutningen):
+| Fönster (60 dygn) | stationer · punkter | 0–7 km | 7–15 km | 15–20 km | > 20 km | TOTALT MAE · A2 · A3 | Läsning |
+| :-- | :-- | :-- | :-- | :-- | :-- | :-- | :-- |
+| 2/11–31/12 (klockan 1/1) | 729 · 1 680 540 | 0,42 °C · 2,0 % | 0,46 · 2,0 % | 0,52 · 3,1 % | 0,68 · 6,8 % | 0,51 °C · **3,4 %** · 0,1 % | klarar |
+| 31/12–28/2 (klockan 1/3) | 735 · 1 990 534 | 0,47 · 3,8 % | 0,49 · 3,6 % | 0,54 · 5,4 % | 0,75 · 10,4 % | 0,53 °C · **5,4 %** · 0,2 % | faller |
+| 30/1–31/3 (klockan 31/3) | 736 · 1 658 283 | 0,67 · 5,3 % | 0,70 · 5,3 % | 0,75 · 7,1 % | 0,91 · 11,6 % | 0,74 °C · **7,1 %** · 0,5 % | faller |
+
+**Läsning enligt förregistreringen: blandat ⇒ vintern varierar.** Det var inget fönsterfel: förvintern klarar (3,4 %, som höstens 3,7 %,
+#399), midvintern faller (5,4 %) och vårvintern faller tydligt (7,1 %); 152-dygnstalet 5,5 % (#467) är ett medel av tre olika säsonger.
+Driftens dom står obestridd. Felet växer mot våren i **alla** band, också 0–7 km (2,0 → 3,8 → 5,3 %), och mest bortom 20 km (6,8 → 11,6 %).
+Det pekar på dagsljuset — en konstant offset lär inte hur stationerna skiljer sig i sol och skugga när dagarna blir långa — snarare än
+på höjden (som höjdprovet redan avfärdat, #467). Hypotes, inte mätt; den hör till kort #91 (kallplatslagret/skuggning) och till
+regimgrindens blåsigt/klart-spår (#408, molnmängd). Följd för produkten: prognoslagrets svaga tid är februari–mars, inte vintern som helhet.
+
+**F2 — efterhalkans pris på de 406 tillkomna episoderna** (uteblev av 406 med utfall; kontrollen stämmer: 90 min · 0,5 = 183 = 45,1 %):
+| Utfallsfönster | band 0,3 | band 0,5 | band 1,0 |
+| :-- | --: | --: | --: |
+| 60 min | 58,9 % (239) | 52,0 % (211) | 31,5 % (128) |
+| 90 min | 52,5 % (213) | **45,1 % (183)** — riktningsprovets tal | 25,6 % (104) |
+| 120 min | 47,5 % (193) | 38,9 % (158) | 22,4 % (91) |
+
+Föll ut växer med fönstret (117 → 147 → 168 av 406): ytan fortsätter falla efter 90 minuter. **Per startyta vid fyrningen (90 min · 0,5):
++1…+2 °C 168 episoder, pris 19,0 % (uteblev 32) · +2…+3 °C 238 episoder, pris 63,4 % (uteblev 151).** Priset sitter i bandets övre del:
+därifrån hinner ytan sällan till +1,5 på 90 minuter. Svepet vidgar bara startbandet uppåt (+1…+3 · +1…+4 · +1…+6, D1), så ingen
+kalibreringspunkt kunde nå det smalare bandet — det är ett nytt svepvärde i TROSKLAR-OVERGANGAR §2, med båda signaturerna, och prövas i
+så fall tidigast som mars-variant (som radarn och regnmängden, #223/#225), aldrig i betan (D6). Fönstret och nära-bandet är T-A:s
+utvärderingsparametrar (§3: *väljs i T-A och ärvs*) och väljs inte här. Sampling-skevheten (tre rader mot arton) är sagd, inte mätt.
+
+**F3 — inom räckvidd för Ö-B1** (facit 82 985; riktningsprovets nettonytt 175 = 0,2 % av alla):
+| Definition | tillfällen | andel av facit | nettonytt inom räckvidd |
+| :-- | --: | --: | --: |
+| regn inom 2 h före facit | 2 836 | 3,4 % | **6,2 %** |
+| regn inom 2 h + utfallsfönstret 90 min | 4 113 | 5,0 % | 4,3 % |
+| regn inom 4 h | 4 512 | 5,4 % | 3,9 % |
+| regn inom 4 h + 90 min | 5 873 | 7,1 % | 3,0 % |
+Definitionen avgör om efterhalkan ligger över eller under Ö-B1:s 5 % — den måste fastställas i TROSKLAR-OVERGANGAR §4 före mars-domen,
+av Bengt och Axel. Mitt förslag: *regn inom N h + utfallsfönstret*, eftersom en fyrning annars inte ryms före facit (4,3 % vid N = 2 h).
+
+**Följd:** ingen tröskel och ingen kod ändras. Kort #295 stängs (Verify uppfylld: läsningarna bokförda här, F1:s svar i bedömningen §7).
+Två beslut före mars läggs på kort #296 (Bengt och Axel): Ö-B1:s *inom räckvidd*, och det smalare startbandet som mars-variant eller inte.
+Kartan: m-efterhalkans saknas-rader om kort #278 och kalibreringen strukna (#468); p-grindarnas grind A bär de tre fönstren.
 ## #470 (6/10 2026) Rutnätsmodellen i kuvösen — Axels beslut att pröva, och förregistreringen före något utfall: MET Nordic som bakgrund, vägens skillnad mot luften ur grannarna, hela stationer gömda (kort #298)
 
 **Axels ord 6/10 kväll (chatten, efter genomgången av riktningsprovet #467):** *"Okej jag tycker vi testar"* — om förslaget att
