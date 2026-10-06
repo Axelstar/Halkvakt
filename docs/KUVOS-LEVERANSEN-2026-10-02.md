@@ -150,6 +150,41 @@ Bengt skickar till Micke Wallin, som svar i samma tråd. Fyra frågor och en bek
 5. Bekräftelse: är `vimax` byvinden (högsta 3-sekundersmedel på 30 minuter), `vimed` 10-minutersmedlet och `vind30` 30-minutersmedlet,
    som i API:t?
 
+### 5c. Läst på nätet 6/10 (Bengts order: *"gör en ordentlig sökning på internet"*)
+
+Fyra källor bär svar; läst på källorna, inte ur sammanfattningar. Inget av detta är Trafikverkets svar på frågorna, och svaret går före.
+
+**Fråga 5, vinden: besvarad av API-dokumentationen.** WeatherMeasurepoint v2 (speglad ordagrant i Go-paketet `code.dny.dev/trafikinfo`,
+https://pkg.go.dev/code.dny.dev/trafikinfo/trv/weathermeasurepoint/v2): `Wind.Speed` = *"Medelvärde över tiominutersperiod t.o.m.
+tidpunkten"* (vimed), `Aggregated30minutes.Wind.SpeedMax` = *"Högst uppmätt 3-sekundersmedelvärde under perioden"* (vimax),
+`SpeedAverage` över 30-minutersperioden (vind30). VTI notat 39-2003 (Möller) och 38-2013 (Arvidsson, Gustavsson, Bogren): VädErs räknar
+vind som *"medelvärde över 10 eller 30 minuter beroende på om MESAN- eller VViS-data används"*, alltså 30 minuter för VViS. Stämmer med
+§2:s egen mätning: vimax ≥ vind30 och vimax ≥ vimed i 100 %, vind30 ≥ vimed bara i 60,8 %, som ett medel mot ett annat medel.
+
+**Fråga 3, sikten: besvarad av sensorn.** Trafikverkets presentation *Nästa generations VViS* (Jonas Jonsson, 2019-10-24, SMHI:s
+metodkonferens): nederbördssensorn byts från Optic-Eye till Vaisala PWD22, *"den nya nederbördssensorn mäter även sikt"*; MS7 i 10, 70,
+140, 170, 175, 175 stationer 2019–2024 av 775. Vaisalas datablad för PWD-serien (docs.vaisala.com): PWD22:s mätområde för sikt
+*10–20 000 m*. Alltså: 20 000 = sensorns tak, sikt minst 20 km; −100 = ingen siktsensor (MS4 med Optic-Eye). API:t märker fältet
+*"Ej kvalitetssäkrad"*.
+
+**Fråga 1, koderna: härledd, inte dokumenterad.** API:t dokumenterar sex nederbördstyper: `no` *Ingen nederbörd*, `rain` *Regn*,
+`freezing_rain` *Frusen regn*, `snow` *Snö*, `sleet` *Snöblandat regn*, `yes` *Nederbörd* (typ okänd). Filen har sex koder: 1, 2, 3, 4, 6, 9.
+VädErs 2019 ger 1 = ingen, 2 = regn, 4 = snö, 6 = snö och regn. Kvar är 3 och 9 mot `freezing_rain` och `yes`; 3 mellan regn och snö är
+underkylt regn, 9 är nederbörd av okänd typ. PWD22 rapporterar just *freezing rain* och *precipitation (unknown type)*. −9 är ett
+saknat-värde som −99,9 och −100. Prövas i kuvösen innan det översätts: kod 3 ska ligga i minusgrader i luften med mängd, kod 9 ha mängd
+utan typ.
+
+**Fråga 2, mängden: delvis.** Enheten är mm (PWD22: ackumulering 0,00–99,99 mm; API:t: *"Mängd … under perioden. Value [mm]"*), och
+perioden är 30 minuter som raderna. API:t skiljer `RainSum`, `SnowSum.WaterEquivalent` och `TotalWaterEquivalent`; filens enda kolumn
+är sannolikt stationens totala vattenvärde (VädErs räknar om till cm snö), men det är inte läst någonstans. Regn mot total läses
+empiriskt mot SMHI:s parameter 7 på snötimmar. −99,8 mot −99,9 finns inte dokumenterat.
+
+**Fråga 4, de 23 stationerna: ingen öppen väg utan konto.** Numren ser ut som gamla länskoder (12 Malmöhus, 13 Halland, 14 Göteborg
+och Bohus, 15 Älvsborg, 16 Skaraborg, 18 Örebro), alltså nedlagda stationer. API:ts `includedeletedobjects` behåller raderade poster i
+24 timmar och hjälper inte. Trafikverkets dataprodukt *VViS* (stolparnas läge, id och utrustning; GeoPackage, CC0) finns på Lastkajen
+och i NVDB:s kartvisare (https://catalogue.arctic-sdi.org/geonetwork/srv/resources/records/2723b729-d89f-4197-b4ab-aaf98c341d25),
+men Lastkajen kräver konto, och om nedlagda stolpar finns med står inte i metadatan.
+
 ## 6. Vad det här inte är
 
 Ingen regel är körd och inget utfall är läst. Förregistreringen (DECISIONS #424, tilläggen #426 och #437) skrevs innan filen öppnades;
