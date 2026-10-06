@@ -20,7 +20,7 @@ permissions:
 jobs:
   inlasning:
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ inputs.korflode == 'riktningsprov' && 180 || 60 }}
+    timeout-minutes: ${{ inputs.korflode == 'riktningsprov' && 300 || 60 }}   # 6/10: 82 min till höjdprovet, NT och efterhalkan därefter
     services:
       postgis:
         image: postgis/postgis:16-3.4
