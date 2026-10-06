@@ -142,10 +142,20 @@ async function main(staticJson: string, mapp: string, fran = FORSTA_DAG, till = 
     for (let h = 0; h < 24; h++) {
       const tid = `${dag}T${String(h).padStart(2, "0")}:00:00Z`;
       const t0 = Date.now();
-      const b = await hamta(`${filnamn(dag, h)}?${urval}`);
+      // Ett svar kan komma med 200 men avkortat (uppmätt 6/10 i Actions: 22 av 26 MB) — då hämtas det om, högst sex gånger.
+      let b: Uint8Array | null = null, tolkat: Falt[] | null = null;
+      for (let forsok = 0; forsok < 6 && !tolkat; forsok++) {
+        b = await hamta(`${filnamn(dag, h)}?${urval}`);
+        if (!b) break;
+        try { tolkat = tolkaDods(b); } catch (e) {
+          if (forsok === 5) throw e;
+          console.log(`  ${tid}: ${(e as Error).message} — hämtar om`);
+          await new Promise((ok) => setTimeout(ok, 5000 * (forsok + 1)));
+        }
+      }
       if (process.env.MN_TIDER) console.log(`  ${tid}: ${b ? b.length : "saknas"} byte på ${((Date.now() - t0) / 1000).toFixed(1)} s`);
-      if (!b) { saknade++; console.log(`  saknas: ${tid}`); continue; }
-      const falt = new Map(tolkaDods(b).map((f) => [f.namn, f]));
+      if (!b || !tolkat) { saknade++; console.log(`  saknas: ${tid}`); continue; }
+      const falt = new Map(tolkat.map((f) => [f.namn, f]));
       for (const [f] of FALT) {
         const x = falt.get(f);
         if (!x) throw new Error(`${tid}: fältet ${f} saknas i svaret`);

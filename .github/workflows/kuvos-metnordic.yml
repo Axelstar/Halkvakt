@@ -1,6 +1,6 @@
 # Kuvösens rutnät (kort #298, DECISIONS #470): MET Nordic Analysis för vintern 2024/25 i stationernas rutor, hämtat EN gång och
 # lagt i den privata releasen `kuvos-metnordic-2024-25` med manifest, som SMHI-filerna (kuvos-smhi.yml). Finns releasen redan
-# avbryts jobbet. En förbindelse åt gången (tjänstens villkor); ~1 min per dygn uppmätt 6/10.
+# avbryts jobbet. En förbindelse åt gången (tjänstens villkor); ~1 min per dygn uppmätt 6/10. Ett avkortat svar hämtas om.
 #
 # Utlöses på knapp, och en gång av pushen som lägger till filen på grenen kuvos/rutnatet-469 (Axels ord 6/10) — den raden tas bort
 # när grenen slås ihop. Hämtningen i Claudes session dog mellan två svar (bakgrundsprocesser överlever inte turen), därav jobbet.
