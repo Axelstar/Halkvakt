@@ -5,6 +5,7 @@ package se.halkvakt.app
 
 import se.halkvakt.engine.EngineConfig
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.test.fail
 
@@ -48,5 +49,40 @@ class CadencePolicyTest {
             CadencePolicy.MID_WITHIN_M - CadencePolicy.NEAR_WITHIN_M > farGapM * 2,
             "MID band must be wider than two FAR gaps at worst-case speed",
         )
+    }
+
+    // ── Å2, the standstill tier (DECISIONS #461) ──────────────────────────────────────────────────────────
+
+    @Test fun aStillPhoneNearAHazardSamplesAtMid() {
+        assertEquals(CadencePolicy.MID_MS, CadencePolicy.intervalMs(2_000.0, 0.0))
+        assertEquals(CadencePolicy.MID_MS, CadencePolicy.intervalMs(2_000.0, 2.9))
+    }
+
+    @Test fun aRollingCarKeepsItsCadence() {
+        assertEquals(CadencePolicy.NEAR_MS, CadencePolicy.intervalMs(2_000.0, 3.0))
+        assertEquals(CadencePolicy.NEAR_MS, CadencePolicy.intervalMs(2_000.0, 90.0))
+        assertEquals(CadencePolicy.FAR_MS, CadencePolicy.intervalMs(50_000.0, 90.0))
+    }
+
+    @Test fun unknownSpeedIsNotStill() {
+        assertEquals(CadencePolicy.NEAR_MS, CadencePolicy.intervalMs(2_000.0, null))
+        assertEquals(CadencePolicy.NEAR_MS, CadencePolicy.intervalMs(null, null))
+    }
+
+    @Test fun standstillNeverSpeedsUpAFarTier() {
+        assertEquals(CadencePolicy.FAR_MS, CadencePolicy.intervalMs(50_000.0, 0.0))
+    }
+
+    /** Pull away hard (3 m/s²) from standstill next to a hazard: the car must be back on 1 s cadence within 50 m. */
+    @Test fun pullingAwayFromStandstillIsBackOnFullCadenceWithinFiftyMetres() {
+        val a = 3.0
+        var t = 0.0; var v = 0.0; var travelled = 0.0
+        var gapMs = CadencePolicy.intervalMs(1_000.0, 0.0)     // the fix that saw the car still
+        while (gapMs > CadencePolicy.NEAR_MS) {
+            val dt = gapMs / 1000.0
+            travelled += v * dt + 0.5 * a * dt * dt; v += a * dt; t += dt
+            gapMs = CadencePolicy.intervalMs(1_000.0 - travelled, v * 3.6)
+        }
+        assertTrue(travelled <= 50.0, "travelled $travelled m before full cadence")
     }
 }

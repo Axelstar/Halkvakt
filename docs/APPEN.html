@@ -306,7 +306,7 @@
   </details>
   <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-a-start-android">Start och stopp på Android</a> <span style="color: var(--dampad, #4A5763)">delvis, 50 % · kvar: Självstoppet provat i bil på Android (#248)</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
-      <li><span aria-hidden="true">◐</span> <b>Byggd i koden</b> <span style="color: var(--dampad, #4A5763)">pågår · Autostart.kt (IdleStop:65), GuardService.kt:184, StoppaVaktenReceiver.kt; rutan för #226 saknas (MainActivity.kt:104–107); Å3 inte byggd</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Byggd i koden</b> <span style="color: var(--dampad, #4A5763)">pågår · Autostart.kt (IdleStop:65), GuardService.kt:184, StoppaVaktenReceiver.kt; rutan för #226 saknas (MainActivity.kt:104–107); Å3 i main 6/10 (IdleStop på förflyttning, DECISIONS #461, PR #748)</span></li>
       <li><span aria-hidden="true">✓</span> <b>I ett Android-bygge</b> <span style="color: var(--dampad, #4A5763)">klart · #248 i CI (DECISIONS #348, AutostartControllerTest.kt); stoppknappen i 558a15d (android.yml 36924001835)</span></li>
       <li><span aria-hidden="true">○</span> <b>Prov i bil eller på telefon</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen bilresa bokförd (#248 'Kvar: verify i bil'); fältdagen 27/9 gick vakten 11 h 39 m (DECISIONS #386)</span></li>
       <li><span aria-hidden="true">◐</span> <b>Verify på korten</b> <span style="color: var(--dampad, #4A5763)">pågår · #248: JVM-provet klart, telefonprovet saknas; #226: ingen förklaringsruta i koden</span></li>
@@ -400,11 +400,11 @@
   <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
   <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-a-batteri">Batteriet</a> <span style="color: var(--dampad, #4A5763)">delvis, 58 % · kvar: Android mätt: en timmes körning, skärmen av, ingen sladd (Å7, #218)</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
-      <li><span aria-hidden="true">◐</span> <b>Byggt i koden</b> <span style="color: var(--dampad, #4A5763)">pågår · Android: CadencePolicy.kt, SnapshotSchedule.kt (#370), Guard.kt:54 (Å5), StoppaVaktenReceiver.kt (Å1); Å2 och Å3 finns inte</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Byggt i koden</b> <span style="color: var(--dampad, #4A5763)">pågår · Android: CadencePolicy.kt, SnapshotSchedule.kt (#370), Guard.kt:54 (Å5), StoppaVaktenReceiver.kt (Å1); Å2 och Å3 i main 6/10 (CadencePolicy.kt, IdleStop, DECISIONS #461, PR #748)</span></li>
       <li><span aria-hidden="true">✓</span> <b>I ett Android-bygge</b> <span style="color: var(--dampad, #4A5763)">klart · Å1, Å4, Å5 i main 558a15d (#678); android.yml 36924001835 grön, motprovet 36925352744 rött (DECISIONS #431)</span></li>
       <li><span aria-hidden="true">✓</span> <b>iPhone mätt</b> <span style="color: var(--dampad, #4A5763)">klart · 7 %/h (78→71 %) på 0.3.9 (14) 27/9, skärmen av, ingen sladd (DECISIONS #382)</span></li>
       <li><span aria-hidden="true">○</span> <b>Android mätt</b> <span style="color: var(--dampad, #4A5763)">saknas · Å7 aldrig gjord; 27/9:s ~1,5 %/h uppskattad ur en andel (DECISIONS #386)</span></li>
-      <li><span aria-hidden="true">◐</span> <b>Batteripaketet #262 Å1–Å8</b> <span style="color: var(--dampad, #4A5763)">pågår · Å1, Å4, Å5 i main (DECISIONS #431); kvar Å0, Å2, Å3 (beslut §4.2), Å6, Å7, Å8</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Batteripaketet #262 Å1–Å8</b> <span style="color: var(--dampad, #4A5763)">pågår · Å1, Å4, Å5 i main (DECISIONS #431); Å2, Å3 i main 6/10 (DECISIONS #461, ios-engine 37199541693, Bengts ja); kvar Å0, Å6, Å7, Å8</span></li>
       <li><span aria-hidden="true">◐</span> <b>Verify på korten</b> <span style="color: var(--dampad, #4A5763)">pågår · #262: bara 'Å1, Å4, Å5 i ett bygge' uppfyllt; #218: iOS-halvan bevisad, Android saknas</span></li>
     </ul>
   </details>
@@ -442,7 +442,7 @@
   </details>
   <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-a-start-android">Start och stopp på Android</a> <span style="color: var(--dampad, #4A5763)">delvis, 50 % · kvar: Självstoppet provat i bil på Android (#248)</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
-      <li><span aria-hidden="true">◐</span> <b>Byggd i koden</b> <span style="color: var(--dampad, #4A5763)">pågår · Autostart.kt (IdleStop:65), GuardService.kt:184, StoppaVaktenReceiver.kt; rutan för #226 saknas (MainActivity.kt:104–107); Å3 inte byggd</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Byggd i koden</b> <span style="color: var(--dampad, #4A5763)">pågår · Autostart.kt (IdleStop:65), GuardService.kt:184, StoppaVaktenReceiver.kt; rutan för #226 saknas (MainActivity.kt:104–107); Å3 i main 6/10 (IdleStop på förflyttning, DECISIONS #461, PR #748)</span></li>
       <li><span aria-hidden="true">✓</span> <b>I ett Android-bygge</b> <span style="color: var(--dampad, #4A5763)">klart · #248 i CI (DECISIONS #348, AutostartControllerTest.kt); stoppknappen i 558a15d (android.yml 36924001835)</span></li>
       <li><span aria-hidden="true">○</span> <b>Prov i bil eller på telefon</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen bilresa bokförd (#248 'Kvar: verify i bil'); fältdagen 27/9 gick vakten 11 h 39 m (DECISIONS #386)</span></li>
       <li><span aria-hidden="true">◐</span> <b>Verify på korten</b> <span style="color: var(--dampad, #4A5763)">pågår · #248: JVM-provet klart, telefonprovet saknas; #226: ingen förklaringsruta i koden</span></li>
@@ -458,11 +458,11 @@
   </details>
   <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-a-batteri">Batteriet</a> <span style="color: var(--dampad, #4A5763)">delvis, 58 % · kvar: Android mätt: en timmes körning, skärmen av, ingen sladd (Å7, #218)</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
-      <li><span aria-hidden="true">◐</span> <b>Byggt i koden</b> <span style="color: var(--dampad, #4A5763)">pågår · Android: CadencePolicy.kt, SnapshotSchedule.kt (#370), Guard.kt:54 (Å5), StoppaVaktenReceiver.kt (Å1); Å2 och Å3 finns inte</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Byggt i koden</b> <span style="color: var(--dampad, #4A5763)">pågår · Android: CadencePolicy.kt, SnapshotSchedule.kt (#370), Guard.kt:54 (Å5), StoppaVaktenReceiver.kt (Å1); Å2 och Å3 i main 6/10 (CadencePolicy.kt, IdleStop, DECISIONS #461, PR #748)</span></li>
       <li><span aria-hidden="true">✓</span> <b>I ett Android-bygge</b> <span style="color: var(--dampad, #4A5763)">klart · Å1, Å4, Å5 i main 558a15d (#678); android.yml 36924001835 grön, motprovet 36925352744 rött (DECISIONS #431)</span></li>
       <li><span aria-hidden="true">✓</span> <b>iPhone mätt</b> <span style="color: var(--dampad, #4A5763)">klart · 7 %/h (78→71 %) på 0.3.9 (14) 27/9, skärmen av, ingen sladd (DECISIONS #382)</span></li>
       <li><span aria-hidden="true">○</span> <b>Android mätt</b> <span style="color: var(--dampad, #4A5763)">saknas · Å7 aldrig gjord; 27/9:s ~1,5 %/h uppskattad ur en andel (DECISIONS #386)</span></li>
-      <li><span aria-hidden="true">◐</span> <b>Batteripaketet #262 Å1–Å8</b> <span style="color: var(--dampad, #4A5763)">pågår · Å1, Å4, Å5 i main (DECISIONS #431); kvar Å0, Å2, Å3 (beslut §4.2), Å6, Å7, Å8</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Batteripaketet #262 Å1–Å8</b> <span style="color: var(--dampad, #4A5763)">pågår · Å1, Å4, Å5 i main (DECISIONS #431); Å2, Å3 i main 6/10 (DECISIONS #461, ios-engine 37199541693, Bengts ja); kvar Å0, Å6, Å7, Å8</span></li>
       <li><span aria-hidden="true">◐</span> <b>Verify på korten</b> <span style="color: var(--dampad, #4A5763)">pågår · #262: bara 'Å1, Å4, Å5 i ett bygge' uppfyllt; #218: iOS-halvan bevisad, Android saknas</span></li>
     </ul>
   </details>

@@ -86,9 +86,11 @@ struct KorlageView: View {
                             // Kort #203 lager 2 (Axels ja, #267 p. 5): iPhones reserv för en miss — Siri är huvudvägen. Bara med betatestet på.
                             if Prefs.shared.facitOn {
                                 MonoLink(title: "Appen missade något") {
-                                    missKvitto = guardM.markeraMiss()
-                                        ? "Markerat \(Date.now.klockslag) — du väljer vad det var efter resan."
-                                        : "Kunde inte markera: appen har ingen position eller stationslista än."
+                                    switch guardM.markeraMiss() {
+                                    case .markerat(let t): missKvitto = "Markerat \(t.klockslag) — du väljer vad det var efter resan."
+                                    case .redan(let t): missKvitto = "Redan markerat \(t.klockslag)."
+                                    case .vaktenAv, .ingenPosition: missKvitto = "Kunde inte markera: appen har ingen position eller stationslista än."
+                                    }
                                 }
                                 if let k = missKvitto { Text(k).font(Typo.sans(12)).foregroundStyle(Brand.dim).multilineTextAlignment(.center) }
                             }

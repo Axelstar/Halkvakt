@@ -29,6 +29,8 @@ enum Missar {
     static let vad = ["halka", "vatten", "vilt", "olycka", "annat"]
     static let segmentM = 2_000.0
     static let max = 50
+    /// 4a (DECISIONS #461): ett andra tryck, eller ett andra "appen missade", inom en minut är samma miss. Samma tal som Missar.kt.
+    static let sparrS: TimeInterval = 60
 
     /// Närmaste station som "wx:<id>" — nil bara om telefonen inte har någon stationslista än.
     static func narmasteStation(_ stations: [Station], lon: Double, lat: Double) -> String? {
@@ -49,9 +51,16 @@ enum Missar {
 
     /// Ett tryck eller ett ord i bilen. Utan station finns inget att peka på — då sparas ingenting.
     static func markera(_ list: [MissEntry], t: Date, station: String?, segment: String?) -> [MissEntry] {
-        guard let station else { return list }
+        guard let station, redanMarkerad(list, t: t) == nil else { return list }
         let out = list + [MissEntry(t: t, station: station, segment: segment, vad: nil, sent: false)]
         return out.count > max ? Array(out.suffix(max)) : out
+    }
+
+    /// Markeringen som ett nytt tryck vid `t` skulle dubbla, om den ligger inom `sparrS` — annars nil.
+    static func redanMarkerad(_ list: [MissEntry], t: Date) -> MissEntry? {
+        guard let sista = list.last else { return nil }
+        let d = t.timeIntervalSince(sista.t)
+        return d >= 0 && d < sparrS ? sista : nil
     }
 
     /// Förarens val efter resan. Ett nytt val ersätter det förra och blir osänt igen.

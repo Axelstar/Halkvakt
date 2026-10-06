@@ -538,6 +538,9 @@ Det maskinen inte kan se är sina egna missar: det var halt och rösten teg. **I
 *"Hej Siri, appen missade i Halkvakt"* (eller *"halt här i Halkvakt"*). På båda plattformarna finns en stor knapp i körläget,
 **Appen missade** — Androids väg, iPhones reserv. Appen sparar klockslaget, **närmaste mätstation** och närmaste halkavsnitt inom
 2 km, som id:n; ingen koordinat. Stationerna finns i telefonen sedan 26/9 (alla 851, i samma anonyma hämtning som kamerorna).
+Ett andra tryck, eller ett andra *"appen missade"*, inom en minut är samma miss: knappen svarar *"Redan markerat 08:52."* och Siri
+*"Redan markerat."* En miss hör till en körning, så när vakten är av svarar Siri *"Vakten är inte igång. En miss markeras under
+körningen."* (0.3.11, DECISIONS #461).
 
 **Efter resan** står missen som en rad i kortet: *"08:52 · Du markerade: appen missade — vad?"* med **Halka / Vatten / Vilt /
 Olycka / Annat**. Först när du valt skickas den — en omarkerad miss skickas aldrig. Bar resan bara missar frågar notisen *"Du
@@ -571,6 +574,8 @@ du var just då."* (Axels villkor för ja:et, DECISIONS #267.)
 | 0.3.9 (17) | 26/9 | Reglaget *Längsta förvarning* 400–1 200 m, körläget säger *som längst* (kort #259, DECISIONS #374). |
 | 0.3.9 (18) | 26/9 | Missarna: *Appen missade* i körläget, Siri-fraserna *stämde inte* och *appen missade*, missraderna efter resan (kort #203 lager 2, DECISIONS #379). Aldrig arkiverad — (15)–(18) nådde en telefon först med (19); (14) var uppladdad 23/9 och i *Kompisarna* sedan Beta App Review 26/9. |
 | 0.3.9 (19) | 1/10 | Skärmarna rullar, facitknapparna på ett ställe, statusraden bara vid fel, svenska klockslag, *lämnar inte telefonen av sig själv* (kort #279, DECISIONS #430) — plus allt i (14)–(18). **Uppladdad till Apple 1/10 22:25** ur 4f88513, **godkänd för *Kompisarna* 22:34** (samma versionsnummer som det granskade (14) ⇒ automatiskt); första bygget som bär #258, #259 och #203 lager 2. |
+| 0.3.10 (22) | 2–3/10 | Skinnet v4 ur designöverlämningen v2: varningskortet i helskärm, *Redo.*, körläget, introduktionen och inställningarna (kort #284, DECISIONS #443/#444). Släppt av Axel 3/10. |
+| 0.3.11 (23) | 4/10 | Självstoppet mäts på förflyttning, inte på ett mätvärde: en promenad efter resan håller inte längre vakten vid liv. På Android läser en stillastående telefon GPS glesare. Ett dubbeltryck på *Appen missade* blir en miss, och Siri markerar inga missar när vakten är av (kort #262 Å2/Å3, DECISIONS #461). |
 | Android (CI) | 16/9 → | Facitknappen och betatest-brytaren (S4, DECISIONS #202), Efter resan (20/9), viltvarningen på Trafikverkets djur (22/9), omladdningsloopen lagad och reglaget (26/9), missarna (26/9). **0.3.9 (18)**, samma nummer som iOS (DECISIONS #377). |
 
 Android bar versionsnumret 0.3.1 (4) från 31/8 till 26/9, fast CI byggde den ur main med skinnet v3, facitknappen

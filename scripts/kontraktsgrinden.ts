@@ -610,6 +610,32 @@ export const KONTRAKT: Kontrakt[] = [
     filer: /skuggmotor\/main\.ts|kuvos\/korning\.ts/,
     golv: 2,
   },
+  {
+    // Kort #262 Å3, DECISIONS #461: självstoppet mäts på förflyttning, samma regel i Swift och Kotlin.
+    namn: "Självstoppet — bilfarten (km/h i snitt över fönstret) som startar om klockan",
+    varfor: "Driver talen isär stoppar iPhone och Android vakten efter olika regler, och fältrapporterna går inte att jämföra.",
+    former: [/const val DRIVING_KMH = ([\d.]+)/, /static let drivingKmh = ([\d.]+)/],
+    golv: 2,
+  },
+  {
+    namn: "Självstoppet — fönstret i sekunder",
+    varfor: "Samma som ovan.",
+    former: [/const val WINDOW_MS = (\d+)_000L/, /static let windowS: TimeInterval = (\d+)/],
+    golv: 2,
+  },
+  {
+    namn: "Självstoppet — minuterna utan körning",
+    varfor: "Samma som ovan; texten 'Stoppar själv efter 15 min' i appen bygger på talet.",
+    former: [/const val AFTER_MS = (\d+) \* 60 \* 1000L/, /static let afterS: TimeInterval = (\d+) \* 60/],
+    golv: 2,
+  },
+  {
+    // 4a, DECISIONS #461.
+    namn: "Missarna — spärren mot dubbeltryck i sekunder",
+    varfor: "Olika spärr ger olika antal missar för samma tryck på de två plattformarna.",
+    former: [/const val SPARR_MS = (\d+)_000L/, /static let sparrS: TimeInterval = (\d+)/],
+    golv: 2,
+  },
 ];
 
 // ── SJÄLVTEST mot känd sanning, utan disk ──────────────────────────────────────────────

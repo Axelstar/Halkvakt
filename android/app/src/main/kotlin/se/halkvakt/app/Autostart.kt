@@ -13,6 +13,8 @@
 //     never killed by AR flakiness or a dropped headset.
 package se.halkvakt.app
 
+import se.halkvakt.engine.Geo
+
 enum class AutoCmd { START, STOP, LEARN, NONE }
 
 // #248 (24/9): the glue builds a NEW controller for every system event, so `autoStarted` must come in from
@@ -59,14 +61,45 @@ class AutostartController(learnedCars: Set<String> = emptySet(), autoStarted: Bo
 }
 
 /**
- * Idle stop, the same rule as iOS (GuardManager.idleStopAfter): a guard whose car has stood still for
- * fifteen minutes has finished its trip. "Moving" = at least 5 km/h. Pure, so the JVM proves it (#248).
+ * Idle stop, the same rule as iOS (HalkvaktEngine IdleStop.swift): a guard whose car has not driven for fifteen
+ * minutes has finished its trip. Pure, so the JVM proves it (#248).
+ *
+ * "Driving" is measured on DISPLACEMENT, not on one speed reading (kort #262 Å3, DECISIONS #461). The first rule
+ * restarted the clock on any single fix >= 5 km/h, which is walking pace — a carried phone never filled its
+ * fifteen minutes and one tester's guard ran 11 h 39 m. Now: compare the fix with the newest fix at least
+ * [windowMs] older; the car drove if the average over that span is >= [drivingKmh] (12 km/h = 200 m a minute,
+ * above walking and above GPS drift). One noisy fix can restart the clock at most twice, not on every reading.
+ * A gap longer than the window (tunnel, lost GPS) is measured over the whole gap, so a car that came out of a
+ * tunnel 3 km on has driven. Trade-off said out loud: a queue that averages under 12 km/h for fifteen whole
+ * minutes stops the guard; autostart wakes it again when the drive resumes.
  */
-class IdleStop(private val afterMs: Long = 15 * 60 * 1000L, private val movingKmh: Double = 5.0) {
-    private var lastMovedMs = -1L
-    /** true = stop now. A fix without speed counts as not moving; the clock starts at the first fix. */
-    fun onFix(timeMs: Long, speedKmh: Double?): Boolean {
-        if (lastMovedMs < 0 || (speedKmh ?: 0.0) >= movingKmh) lastMovedMs = timeMs
-        return timeMs - lastMovedMs >= afterMs
+class IdleStop(
+    private val afterMs: Long = AFTER_MS,
+    private val windowMs: Long = WINDOW_MS,
+    private val drivingKmh: Double = DRIVING_KMH,
+) {
+    private data class P(val t: Long, val lon: Double, val lat: Double)
+    private val recent = ArrayDeque<P>()
+    private var lastDroveMs = -1L
+
+    /** true = stop now. The clock starts at the first fix. */
+    fun onFix(timeMs: Long, lon: Double, lat: Double): Boolean {
+        if (lastDroveMs < 0) lastDroveMs = timeMs
+        recent.addLast(P(timeMs, lon, lat))
+        // Keep recent.first() as the newest fix that is at least windowMs old (or the oldest we have).
+        while (recent.size >= 2 && timeMs - recent[1].t >= windowMs) recent.removeFirst()
+        val ref = recent.first()
+        val dtMs = timeMs - ref.t
+        if (dtMs >= windowMs) {
+            val kmh = Geo.haversineM(ref.lon, ref.lat, lon, lat) / (dtMs / 1000.0) * 3.6
+            if (kmh >= drivingKmh) lastDroveMs = timeMs
+        }
+        return timeMs - lastDroveMs >= afterMs
+    }
+
+    companion object {
+        const val AFTER_MS = 15 * 60 * 1000L
+        const val WINDOW_MS = 60_000L
+        const val DRIVING_KMH = 12.0
     }
 }

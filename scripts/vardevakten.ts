@@ -76,6 +76,9 @@ export const SPANN: Record<string, [number, number, string]> = {
   lutning15_c: [-20, 20, "°C per 15 min"], lutning30_c: [-20, 20, "°C per 30 min"], lutning60_c: [-20, 20, "°C per 60 min"],
   dagg_gap_c: [-60, 60, "°C — yta minus daggpunkt"], min_yta_90min_c: [-60, 60, "°C"],
   utfall_rader: [0, 200, "st mätningar i utfallsfönstret — 0 är okänt, inte torrt"],
+  // Telefonens egen GPS-fart (DECISIONS #461): bär stillaståendetiern (< 3) och självstoppets bilfart (snitt ≥ 12 över 60 s).
+  // Inte en arkivkolumn — deklarerad här för att husregeln gäller trösklar i appen också. Negativ/saknad = OKÄND, aldrig stilla.
+  fix_speed_kmh: [0, 300, "km/h — saknad fart är okänd, inte 0"],
 };
 
 /** Identifierare är inte mätvärden. De ska inte stå som obesiktigade — men de ska inte heller

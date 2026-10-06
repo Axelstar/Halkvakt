@@ -7576,3 +7576,49 @@ ligger cirka 1,6 × över driftens h5 (#441). Fältet läses inte där heller.
   idempotensen i arbete.
 
 **Kartsynkens tidpunkt i drift 5/10** (Bengt: *"slå ihop 753"*): sammanslagen som 9c47f73, deploy 37249116949 (byggsignaler från 9c47f73); timkörningen 01:23Z skrev ärende #706 utan forsta i alla fem installationsraderna, med forst_sedd kvar.
+
+## #461 (4/10 2026) Självstoppet på förflyttning, stillaståendetiern, spärren mot dubbeltryck och Siri när vakten är av (kort #262 Å2/Å3, 4a/4b)
+
+**Axels ja 4/10 13:35** (*"Ja vi kör"*) på Claudes förslag samma dag. Å2 och Å3 bär trösklar och är enligt kort #262 och §4.2
+**Bengt + Axel**. Koden byggs med Axels ja, men PR:en slås inte ihop förrän Bengt sagt sitt.
+
+**Å3: självstoppet mäts på förflyttning.** `IdleStop` startade om kvarten på ETT mätvärde ≥ 5 km/h, vilket är gångfart. En buren telefon
+fyllde aldrig kvarten, och en testares vakt gick 11 h 39 m. Ny regel, samma i Kotlin (`Autostart.kt`) och Swift
+(`HalkvaktEngine/IdleStop.swift`):
+- Fixen jämförs med den nyaste fix som är minst **60 s** äldre. Bilen har kört om snittet över spannet är **≥ 12 km/h** (200 m i minuten).
+  Det ligger över gångfart (≤ 6) och över GPS-driften.
+- Vakten stoppar efter **15 min** utan körning, oförändrat.
+- En lucka längre än fönstret (tunnel) mäts över hela luckan.
+- Ett enskilt GPS-hopp kan starta om klockan högst två gånger, inte vid varje mätvärde.
+
+*Avvägningen sagd högt:* en kö som håller under 12 km/h i snitt i femton hela minuter stoppar vakten. Kostnaden är liten, eftersom
+motorn är tyst under 15 km/h (`minSpeedKmh`, produktboken *"Under 15 km/h: tyst"*). Autostarten väcker vakten igen när körningen
+fortsätter.
+
+**Å2 (bara Android, där takten styrs): stillaståendetiern.** En telefon som står still (fart < **3 km/h**, samma gräns som facitflushen
+efter resan) läser högst var **5:e** sekund (MID), även nära en fara. Okänd fart räknas inte som stilla. *Bevis:* från stillastående
+med 3 m/s² är bilen tillbaka på 1 s-takt inom 50 m (`CadencePolicyTest`). Det ligger långt innanför kamerans 500 m och förvarningens
+3 km. Kortet föreslog FAR (15 s). MID valdes för att 15 s från stillastående kan bli över 300 m.
+
+**4a: spärren mot dubbeltryck.** Ett andra tryck, eller ett andra *"appen missade"*, inom **60 s** blir ingen ny miss. Knappen svarar
+*"Redan markerat HH:MM."* och Siri *"Redan markerat."*
+
+**4b: Siri när vakten är av.** Siri vägrar: *"Vakten är inte igång. En miss markeras under körningen."* Claude föreslog först 30 minuter
+efter stoppet och Axel sa ja. Under bygget visade det sig att senaste positionen efter ett självstopp är parkeringen, så stationen hade
+pekat fel. Därför valdes vägran, som `docs/TILL-AXEL-BYGGE-19.md` §4b rekommenderade. Axel kan ändra det.
+
+**Vakter:**
+- Kontraktsgrinden vaktar 12 km/h, 60 s, 15 min och 60 s-spärren i båda språken.
+- Värdevakten har fått `fix_speed_kmh`.
+
+**Prov:**
+- `AutostartControllerTest` och `IdleStopTests` har samma fem fall: parkerad, promenad efter resan, ett GPS-hopp, långsam kö över 12,
+  tunnel.
+- `CadencePolicyTest` har fem fall för Å2.
+- `MissarTest` har ett fall för 4a.
+- Bygget heter 0.3.11 (23) på båda plattformarna.
+
+**Bengts ja 6/10** (*"ja till 748"*): Å2/Å3 har båda signaturerna. Numret var #460 på grenen, men main fick #460 för App
+Review 5/10 (#758) medan PR:en väntade, så beslutet heter #461 (samma fälla som #624, DECISIONS #381/#382). Grenen flyttades över
+main 6/10 ur mains källor; koden är Axels sessions, oförändrad utom numret i kommentarerna. 0.3.11 (23) bär därmed också App
+Review-rättelsen (#460).

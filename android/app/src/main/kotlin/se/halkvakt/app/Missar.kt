@@ -22,6 +22,8 @@ object Missar {
     val VAD = listOf("halka", "vatten", "vilt", "olycka", "annat")
     const val SEGMENT_M = 2_000.0
     const val MAX = 50
+    /** 4a (DECISIONS #461): ett andra tryck, eller ett andra "appen missade", inom en minut är samma miss. */
+    const val SPARR_MS = 60_000L
 
     fun encode(list: List<MissEntry>): String = list.joinToString("\n") {
         "${it.t}\t${it.station}\t${it.segment ?: ""}\t${it.vad ?: ""}\t${if (it.sent) 1 else 0}"
@@ -46,8 +48,12 @@ object Missar {
 
     /** Ett tryck i bilen. Utan station finns inget att peka på — då sparas ingenting (knappen säger det). */
     fun markera(list: List<MissEntry>, t: Long, station: String?, segment: String?): List<MissEntry> =
-        if (station == null) list
+        if (station == null || redanMarkerad(list, t) != null) list
         else (list + MissEntry(t, station, segment, null, false)).let { if (it.size > MAX) it.subList(it.size - MAX, it.size) else it }
+
+    /** Markeringen som ett nytt tryck vid [t] skulle dubbla, om den ligger inom [SPARR_MS] — annars null. */
+    fun redanMarkerad(list: List<MissEntry>, t: Long): MissEntry? =
+        list.lastOrNull()?.takeIf { t - it.t in 0 until SPARR_MS }
 
     /** Förarens val efter resan. Ett nytt val ersätter det förra och blir osänt igen — förarens senaste ord gäller. */
     fun valj(list: List<MissEntry>, t: Long, vad: String): List<MissEntry> =
