@@ -96,7 +96,8 @@ function filnamn(dag: string, timme: number) {
 async function hamta(url: string): Promise<Uint8Array | null> {
   for (let forsok = 0; forsok < 6; forsok++) {
     try {
-      const r = await fetch(url, { headers: { "User-Agent": UA } });
+      // Ett anrop som hänger stoppar hela hämtningen (den går i följd), så varje anrop får två minuter.
+      const r = await fetch(url, { headers: { "User-Agent": UA }, signal: AbortSignal.timeout(120_000) });
       if (r.status === 404) return null;
       if (!r.ok) throw new Error(`HTTP ${r.status}: ${(await r.text()).slice(0, 200)}`);
       return new Uint8Array(await r.arrayBuffer());
@@ -140,7 +141,9 @@ async function main(staticJson: string, mapp: string, fran = FORSTA_DAG, till = 
     const rader: string[] = [];
     for (let h = 0; h < 24; h++) {
       const tid = `${dag}T${String(h).padStart(2, "0")}:00:00Z`;
+      const t0 = Date.now();
       const b = await hamta(`${filnamn(dag, h)}?${urval}`);
+      if (process.env.MN_TIDER) console.log(`  ${tid}: ${b ? b.length : "saknas"} byte på ${((Date.now() - t0) / 1000).toFixed(1)} s`);
       if (!b) { saknade++; console.log(`  saknas: ${tid}`); continue; }
       const falt = new Map(tolkaDods(b).map((f) => [f.namn, f]));
       for (const [f] of FALT) {
