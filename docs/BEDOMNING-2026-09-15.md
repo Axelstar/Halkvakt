@@ -341,7 +341,7 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 *Läget i projektkartan:*
 
 - [App Store](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-u-app-store): väntar, 50 % · Axels nya inlämning: (20) avvisad av App Review 5/10 på 5.1.1(iv) och 2.5.4 (App Store Connect 09:23, DECISIONS #460), rättelsen ligger i main (#758, effd2d1); därefter Apples svar och Axels Release.
-- [Google Play](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-u-play): delvis, 10 % · kvar: Enhetsverifieringen i Play Console (Axel)
+- [Google Play](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-u-play): delvis, 10 % · kvar: Googles identitetsgranskning (inskickad 4/10), sedan enhetsverifieringen på en lånad Android och telefonnumret (Axel)
 
 <!-- /LÄGESRADER -->
 
