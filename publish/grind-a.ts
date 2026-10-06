@@ -22,8 +22,12 @@ const A1_MAX_MAE = 1.0, A2_MAX_GROSS = 0.05, A3_MAX_FREEZE = 0.10;
 const BANDS: [string, number, number][] = [
   ["0–7 km", 0, 7], ["7–15 km", 7, 15], ["15–20 km", 15, 20], [">20 km", 20, Infinity]];
 
-type Station = { lon: number; lat: number; series: Map<number, number> };
-type Eval = { measured: number; pred: number; ankKm: number; station: string };
+export type Station = { lon: number; lat: number; series: Map<number, number> };
+// t = hinken (BUCKET_S-steg), spridning = ankarnas oenighet: störst minus minst offsetkorrigerat ankarvärde (°C), 0 med ett ankare.
+export type Eval = { measured: number; pred: number; ankKm: number; station: string; t: number; spridning: number };
+// Varianter för LÄSNINGAR (kort #298, DECISIONS #471): regim = klass per (station, hink) som offseten lärs inom; utanOffset = rå
+// avståndsviktning på samma punkter. Utan variant är modellen exakt grind A:s — självtestet vaktar det.
+export type Variant = { regim?: (station: string, t: number) => string; utanOffset?: boolean };
 
 function haversineKm(lon1: number, lat1: number, lon2: number, lat2: number): number {
   const R = 6371, dLa = (lat2 - lat1) * Math.PI / 180, dLo = (lon2 - lon1) * Math.PI / 180;
@@ -34,8 +38,9 @@ function haversineKm(lon1: number, lat1: number, lon2: number, lat2: number): nu
 /** Leave-one-out: for every winter bucket (measured ≤ 5 °C) at every station, predict
  * from up to K neighbours as temp_N(t) + mean-offset(S−N over shared buckets, excl. t),
  * inverse-distance weighted. ankKm = nearest contributing neighbour. */
-function evaluate(stations: Map<string, Station>): Eval[] {
+export function evaluate(stations: Map<string, Station>, variant: Variant = {}): Eval[] {
   const ids = [...stations.keys()];
+  const klass = variant.regim ?? (() => "");
   const neighbours = new Map<string, { id: string; km: number }[]>();
   for (const s of ids) {
     const a = stations.get(s)!;
@@ -46,36 +51,41 @@ function evaluate(stations: Map<string, Station>): Eval[] {
       .sort((x, y) => x.km - y.km)
       .slice(0, K_NEIGHBOURS));
   }
-  // Directional pair stats over shared buckets: sum of (S−N) and count.
+  // Directional pair stats over shared buckets: sum of (S−N) and count — per regimklass när en variant ger en.
   const pairs = new Map<string, { sum: number; n: number }>();
   for (const s of ids)
     for (const { id: n } of neighbours.get(s)!) {
       const a = stations.get(s)!.series, b = stations.get(n)!.series;
       const [small, big] = a.size <= b.size ? [a, b] : [b, a];
-      let sum = 0, cnt = 0;
       for (const [t, v] of small) {
         const w = big.get(t);
-        if (w !== undefined) { sum += small === a ? v - w : w - v; cnt++; } // always S−N
+        if (w === undefined) continue;
+        const k = `${s}|${n}|${klass(s, t)}`;
+        const p = pairs.get(k) ?? { sum: 0, n: 0 };
+        p.sum += small === a ? v - w : w - v; p.n++; // always S−N
+        pairs.set(k, p);
       }
-      pairs.set(`${s}|${n}`, { sum, n: cnt });
     }
   const evals: Eval[] = [];
   for (const s of ids) {
     const st = stations.get(s)!;
     for (const [t, measured] of st.series) {
       if (measured > 5) continue; // winter hours only (doc §3, grind A)
-      let wsum = 0, psum = 0, ank = Infinity;
+      let wsum = 0, psum = 0, ank = Infinity, hi = -Infinity, lo = Infinity;
+      const kl = klass(s, t);
       for (const { id: n, km } of neighbours.get(s)!) {
         const nv = stations.get(n)!.series.get(t);
         if (nv === undefined) continue;
-        const p = pairs.get(`${s}|${n}`)!;
-        if (p.n - 1 < MIN_SHARED) continue;              // too little shared history
-        const offsetExcl = (p.sum - (measured - nv)) / (p.n - 1); // exact leave-one-out
-        const w = 1 / Math.max(km, 1);
-        wsum += w; psum += w * (nv + offsetExcl);
+        const p = pairs.get(`${s}|${n}|${kl}`);
+        if (!p || p.n - 1 < MIN_SHARED) continue;        // too little shared history
+        const offsetExcl = variant.utanOffset ? 0 : (p.sum - (measured - nv)) / (p.n - 1); // exact leave-one-out
+        const w = 1 / Math.max(km, 1), ankare = nv + offsetExcl;
+        wsum += w; psum += w * ankare;
         if (km < ank) ank = km;
+        if (ankare > hi) hi = ankare;
+        if (ankare < lo) lo = ankare;
       }
-      if (wsum > 0) evals.push({ measured, pred: psum / wsum, ankKm: ank, station: s });
+      if (wsum > 0) evals.push({ measured, pred: psum / wsum, ankKm: ank, station: s, t, spridning: hi - lo });
     }
   }
   return evals;
@@ -103,7 +113,8 @@ import { Z, andelSe, medelSe, skiljbar, utfallTak, grindutfall } from "./margina
 import { vaktdiagnos, led234, saknadeDygn, skrivSaknade } from "./vaktdiagnos.ts";
 import { RADVAKT_SQL, karantanSql } from "./snapshot-core.ts";
 
-function stats(rows: Eval[]) {
+export { BANDS };
+export function stats(rows: Eval[]) {
   const dec = rows.filter((r) => r.measured >= -5);      // decision band −5…+5 (≤5 already)
   const absDec = dec.map((r) => Math.abs(r.pred - r.measured));
   const mae = dec.length ? absDec.reduce((a, b) => a + b, 0) / dec.length : NaN;
@@ -169,7 +180,9 @@ function report(evals: Eval[], label: string, selftest = false) {
 // ── Self-test (no DB): six stations 5 km apart with constant true offsets on a shared
 // base curve — leave-one-out must recover them near-perfectly (MAE ≈ 0). Series lengths
 // DIFFER per station so both branches of the pair-stats loop are exercised.
-if (process.argv.includes("--sjalvtest")) {
+// Körs filen själv, eller importeras den av en läsning (kort #298)? Importerad kör den varken självtest eller huvudvarv.
+const korsSjalv = !!process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, "/").split("/").pop()!);
+if (korsSjalv && process.argv.includes("--sjalvtest")) {
   const stations = new Map<string, Station>();
   for (let i = 0; i < 6; i++) {
     const series = new Map<number, number>();
@@ -180,6 +193,13 @@ if (process.argv.includes("--sjalvtest")) {
   report(evals, "SJÄLVTEST — syntetiska stationer, känd sanning", true);
   const mae = stats(evals).mae;
   if (!(evals.length > 500 && mae < 0.05)) { console.error(`SJÄLVTEST FALLERAR: n=${evals.length}, MAE=${mae}`); process.exit(1); }
+  // Varianterna (DECISIONS #471): en konstant regimklass ger exakt grind A; rå viktning på samma punkter bär de sanna offseten som
+  // fel (0,5 °C per steg ⇒ MAE klart över 0); spridningen är noll när ankarna är eniga efter offset.
+  const samma = evaluate(stations, { regim: () => "x" });
+  if (samma.length !== evals.length || Math.abs(stats(samma).mae - mae) > 1e-9) { console.error("SJÄLVTEST FALLERAR: regimvarianten med en klass ≠ grind A"); process.exit(1); }
+  const ra = evaluate(stations, { utanOffset: true });
+  if (!(ra.length === evals.length && stats(ra).mae > 0.3)) { console.error(`SJÄLVTEST FALLERAR: rå viktning MAE=${stats(ra).mae}`); process.exit(1); }
+  if (!(evals.every((e) => e.spridning < 0.05) && ra.some((e) => e.spridning > 0.5))) { console.error("SJÄLVTEST FALLERAR: spridningen"); process.exit(1); }
   // Marginalvakten mot känd sanning (§3, DECISIONS #126).
   let mOk = true;
   const m = (namn: string, fick: unknown, vantat: unknown) => {
@@ -200,6 +220,7 @@ if (process.argv.includes("--sjalvtest")) {
   process.exit(0);
 }
 
+if (korsSjalv) {
 const url = process.env.DATABASE_URL;
 if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
 const pg = (await import("pg")).default;
@@ -254,3 +275,4 @@ if (stations.size < 100 || res.rows.length < 1000) {
   process.exit(1);
 }
 report(evaluate(stations), `senaste ${DAYS} dygnen`);
+}

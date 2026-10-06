@@ -8087,3 +8087,37 @@ kondensationsvärmet fallet. Episoderna är räknade per klass; en natt kan ge e
 (43,4 %) eller per natt (16,7 %); (2) daggpunkten som mars-variant (D1 stänger den för betan) — riktningen är bekräftad, kostnaden är
 täckning (198 av 411 episoder) och advektion (daggpunkten vid fyrningen är inte daggpunkten två timmar senare); (3) ingen kalibrering om — M1
 visar att måttet inte var felet. Granskningen §7 bär samma tal; bedömningen §7 två rader.
+
+## #471 (6/10 2026) Prognoslagret: fyra läsningar i kuvösen förregistrerade före körningen — ankarspridningen, natt/säsong, regimstyrd offset, kovariatmodellen (kort #298, Bengts val a)
+
+**Bengts val 6/10 kväll (*"a"*: alla fyra)** ur `docs/PROGNOSLAGRET-VAGAR-2026-10-06.md` §4. **Ingen dom, ingen tröskel rörs:** grind A:s
+driftdom (#321, #399) och vägpunktsgrindens fall står; inga kandidater väljs. Skriptet `scripts/matningar/kuvos-prognoslagret-2026-10-06.ts`
+körs på knappen `kuvos` (`matning`), på hela vintern 2024/25, med grind A:s modell och vakter (#75, radvakten, karantänen). Inget tal var
+läst när posten skrevs.
+
+**Modellen är grind A:s egen, importerad.** `publish/grind-a.ts` har fått två beteendeneutrala tillägg: `evaluate` tar en valfri
+`Variant` (regimklass per station och hink som offseten lärs inom; rå viktning utan offset på samma punkter) och varje punkt bär
+hinken `t` och `spridning` (störst minus minst offsetkorrigerat ankarvärde); huvudvarvet och självtestet körs bara när filen körs själv.
+Självtestet vaktar att en konstant regimklass ger exakt grind A, att rå viktning på samma punkter bär de sanna offseten som fel, och att
+spridningen är noll när ankarna är eniga. Driftens grind A är oförändrad (självtest grönt, samma tal).
+
+- **L1 — ankarspridningen.** A1/A2/A3 och täckning per spridningsband 0–0,5 · 0,5–1 · 1–2 · 2–4 · > 4 °C, för OFFSET och RÅ.
+  *Läsning i förväg:* växer de grova felen monotont med spridningen, och ligger A2 under 5 % i de täta banden med rimlig täckning, kan
+  lagret tiga rätt utan molndata — en grind på spridningen blir då ett förslag till TROSKLAR-SKUGGAN (nytt beslut, båda signaturerna).
+- **L2 — natt och säsong.** A2 för OFFSET per solhöjdsband (natt < −6°, skymning −6…0°, dag > 0°; USNO som regimgrinden #408) × månad.
+  *Läsning i förväg:* sitter vårens fel (#469: 7,1 % i vårvintern) i dagsljuset är nattbegränsningen en väg; är natten lika dålig är
+  det inte solen utan markens säsong (snöfri mark, tjäle) som skiljer.
+- **L4 — regimstyrd offset.** Klasser vid målstationen: *klar stilla natt* (molnmängd ≤ 25 % ur SMHI p16 vid närmaste station ≤ 50 km,
+  medelvind ≤ 2 m/s, sol < −6°), *natt övrigt*, *dag* (sol ≥ −6°), *okänd* (moln eller vind saknas). OFFSET-REGIM mot OFFSET per band och
+  per klass, samma punkter. *Läsning i förväg:* vinner regimdelningen i klar stilla natt men inte annars är särarten en per regim och
+  molnmängd i drift (§4.2 h) får ett mätt värde; vinner den inte var en konstant offset nog.
+- **L8 — kovariatmodellen.** Stationens särart = medel(mätt − RÅ) över ≥ 100 punkter. Kovariater som går att hämta i kväll: höjd (EU-DEM
+  via opentopodata), relief 1 km och 3 km (stationen minus medelhöjden av 8 punkter runt om), kust (andel av 16 punkter på 5 och 10 km
+  utan höjd — EU-DEM saknar hav), lat, lon, stationer inom 20 km. Ridge (λ = 1, standardiserade), leave-one-out över stationerna ⇒ R² och
+  MAE av särarten mot MAE utan modell; kandidaten RÅ+KOVARIAT = RÅ + särart_LOO per band mot RÅ och OFFSET på samma punkter. Räcker inte
+  höjderna (< 90 % av stationerna) hoppas L8 över och sägs. *Läsning i förväg:* förklarar kovariaterna en rimlig del av särarten (R² tydligt
+  över noll, MAE under utan-modell) är platsmodellen värd skog, trafik och himmelsfaktor på riktigt (kort #271:s kovariatspår) — en
+  kandidat med egen DECISIONS-post, aldrig vald här. Skog, ÅDT, bro och himmelsfaktor saknas i den här första versionen; det sägs.
+
+**Vad som inte görs:** ingen kandidat väljs, inga trösklar, ingen ändring i skuggmotorn. **Kostnad:** en knapptryckning; opentopodata
+≈ 250 anrop (publika gränsen 1 000 per dygn).
