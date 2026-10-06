@@ -1,0 +1,47 @@
+# Kuvösens rutnät (kort #296, DECISIONS #469): MET Nordic Analysis för vintern 2024/25 i stationernas rutor, hämtat EN gång och
+# lagt i den privata releasen `kuvos-metnordic-2024-25` med manifest, som SMHI-filerna (kuvos-smhi.yml). Finns releasen redan
+# avbryts jobbet. En förbindelse åt gången (tjänstens villkor); ~1 min per dygn uppmätt 6/10.
+#
+# Utlöses på knapp, och en gång av pushen som lägger till filen på grenen kuvos/rutnatet-469 (Axels ord 6/10) — den raden tas bort
+# när grenen slås ihop. Hämtningen i Claudes session dog mellan två svar (bakgrundsprocesser överlever inte turen), därav jobbet.
+name: kuvos-metnordic
+on:
+  workflow_dispatch:
+  push:
+    branches: [kuvos/rutnatet-469]
+    paths: [.github/workflows/kuvos-metnordic.yml]
+permissions:
+  contents: write
+jobs:
+  hamta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    env: { GH_TOKEN: "${{ github.token }}" }
+    steps:
+      - uses: actions/checkout@v4
+      - name: Releasen får inte finnas
+        run: |
+          if gh release view kuvos-metnordic-2024-25 >/dev/null 2>&1; then echo "::error::releasen kuvos-metnordic-2024-25 finns redan"; exit 1; fi
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Självtestet
+        run: node --experimental-strip-types kuvos/metnordic.ts --sjalvtest
+      - name: Hämtningen
+        shell: bash
+        run: |
+          curl -sSf -o static.json https://axelstar.github.io/halkvakt-karta/data/app/v1/static.json
+          node --experimental-strip-types kuvos/metnordic.ts static.json mn 2>&1 | grep --line-buffered -v ExperimentalWarning | grep --line-buffered -v "byte på"
+          test "${PIPESTATUS[0]}" = 0
+      - name: Manifestet och releasen
+        shell: bash
+        run: |
+          cp static.json mn/static_2026-10-06.json
+          node -e '
+            const c = require("crypto"), fs = require("fs");
+            const filer = ["metnordic_2024-25.csv.gz", "metnordic_stationer.csv", "static_2026-10-06.json"].map((f) => {
+              const b = fs.readFileSync("mn/" + f); return { fil: f, bytes: b.length, sha256: c.createHash("sha256").update(b).digest("hex") }; });
+            fs.writeFileSync("mn/manifest.json", JSON.stringify({ release: "kuvos-metnordic-2024-25", hamtad: new Date().toISOString(), filer }, null, 1));
+            console.log(JSON.stringify(filer, null, 1));' | tee -a "$GITHUB_STEP_SUMMARY"
+          gh release create kuvos-metnordic-2024-25 --target "${{ github.sha }}" --title "Kuvösen: MET Nordic för vintern 2024/25" \
+            --notes "Kort #296, DECISIONS #469. MET Nordic Analysis (1 km, timvis, operativa arkivet) i rutan närmast varje station i static.json 6/10, 31/10 2024–31/3 2025. Källa: MET Norway (NLOD / CC BY 4.0)." \
+            mn/metnordic_2024-25.csv.gz mn/metnordic_stationer.csv mn/static_2026-10-06.json mn/manifest.json
