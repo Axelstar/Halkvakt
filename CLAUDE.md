@@ -173,8 +173,8 @@ varje del av projektet med block, läge, bevis eller nyckel, vad som saknas, ber
   markörerna `LÄGESRADER` och ändras aldrig för hand; handskrivna lägesrader förs inte. Läget ändras i projektkartan.json, och
   `--check` fäller en sida vars rader inte är aktuella.
 - **Kartsynken (Bengts ja 3/10, DECISIONS #447) — allt arbete bokförs i kartan**, Bengts och Axels, i vilken session eller på
-  vilken enhet det än görs. `node --experimental-strip-types scripts/kartsynk.ts` är FÖRSTA steget i varje session, och körs
-  dessutom schemalagt morgon och kväll i Claude-appen på Bengts dator. (1) *Maskinvägen:* steg med `regel` bockas ur
+  vilken enhet det än görs. `node --experimental-strip-types scripts/kartsynk.ts` är FÖRSTA steget i varje session. (Schemat
+  morgon och kväll i Claude-appen är avstängt sedan 6/10: två körningar hängde på sitt första kommando; Bengts ord.) (1) *Maskinvägen:* steg med `regel` bockas ur
   byggsignalerna (edge function `byggsignaler` varje timme → tabellen `byggsignaler` → ärendet *📡 Byggsignaler*), bara framåt och
   med signalens tidpunkt som bevis; `kvar` är delens saknas-rader som stryks när steget blir klart. (2) *Bokföringsvägen:*
   skriptet listar varje commit på main sedan `synk.till` som inte rörde kartan (utom Marknadsmotorns, trv-bevakningens och
