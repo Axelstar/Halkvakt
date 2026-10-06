@@ -7861,3 +7861,62 @@ lika-reglerna, ej räknebar deltar aldrig), knappen `kuvos` med `korflode: kalib
 
 **Vad som inte görs:** inga andra dimensioner (regnmängd, startband, radar — mars-varianter, #223/#225), inga golv ur Ö-B som urval,
 ingen tröskel i någon del rörs (D1), ingen andra kalibrering (D7).
+
+**UTFALL 6/10 (körning 37464971791 på b838d30, 12:41–12:46Z; kalibreringssteget 31 s, ett anrop per punkt ≈ 1 s).** Facit 82 985
+stationsnätter över 152 nätter, halvorna delade vid 2025-01-15 (A: 31/10–14/1, B: 15/1–31/3). 15-minuterslutningar i trendarkivet: 0 ⇒
+16 punkter ej räknebara, 32 räknade. Startvärdena gav exakt riktningsprovets tal (1 109 · 983 · 461 · 175 · 45,1 %, #467) — samma
+räkning, samma svar.
+
+**D4: ingen punkt är kandidat.** Ingen av de 32 räknebara punkterna har priset under taket 25 %, över hela vintern eller i någon halva.
+Lägst pris över vintern **40,4 %** (N 4 h · 60 min · fall 1,2; nettonytt 458), därefter 41,0 % (N 4 h · 30 · 0,8) och 41,7 % (N 3 h · 30 ·
+0,8); lägst i en halva 29,2 % (N 4 h · 30 · 1,2, halva B). Startvärdena 45,1 % (A 54,2 %, B 33,5 %). Största nettonytt 1 292 (1,6 % av
+facit) vid 68,0 % (N 4 h · 60 · 0,4). Ingen punkt når Ö-B1:s 5 % (läsning, döms inte här). **Startvärdena står (D4).**
+
+**FRYST (D6) med Bengts ord — PR #780 *"slå ihop"*:** N 2 h · trendfönster 30 min · fall ≥ 0,8 °C · minsta regn > 0 · startband +1…+3 ·
+radar av · N_varning av (DECISIONS #222 oförändrade); 48 punkter prövade, 32 räknebara; vintern 2024/25; 6/10 2026. Därefter ändras ingen
+tröskel; dom 2 i mars läser vintern 2026/27 (#425). **Följder:** betan hörs på startvärdena (#428: vinnaren höll inte — det fanns ingen);
+kort #278 (båda värdeparen i skuggan) är överspelat, de två paren är ett; TROSKLAR-KOMBINATIONEN §7 *ingen kalibrering före* gäller
+som det står; betaguidens lydelse (#429) stämmer.
+
+**Läsning, ingen dom:** priset sjunker med större fall och längre N, nettonytt stiger med längre N och lägre fall — hela rutnätet ligger
+på samma kurva, 15 procentenheter över taket som närmast. Det är inte brus: halva B är genomgående billigare än A (start 33,5 mot
+54,2 %), men ingen halva når taket. Facit är stationens egen yta inom 90 min — *uteblev* betyder att ytan inte nådde +1,5 °C vid
+stationen, inte att vägen var torr. Om priset är orättvist mot efterhalkan avgörs av Trafikverkets ytstatus och åtgärder (begäran §5d,
+#463), inte av fler punkter.
+
+**Alla prövade punkter (D5)** — hela vintern, och nettonytt · pris per halva; de 16 punkterna med 15-minutersfönstret är ej räknebara:
+
+| N | fönster | fall | fyrningar | episoder | nettonytt | tillkomna | uteblev | pris | halva A: netto · pris | halva B: netto · pris |
+| --: | --: | --: | --: | --: | --: | --: | --: | --: | :-- | :-- |
+| 1 h | 30 min | 0,4 | 2 675 | 2 063 | 222 | 883 | 553 | 62,6 % | 89 · 70,3 % | 133 · 54,6 % |
+| 1 h | 30 min | 0,6 | 1 220 | 1 082 | 111 | 424 | 261 | 61,6 % | 41 · 71,8 % | 70 · 48,9 % |
+| 1 h | 30 min | 0,8 | 641 | 597 | 60 | 218 | 129 | 59,2 % | 21 · 69,0 % | 39 · 45,7 % |
+| 1 h | 30 min | 1,2 | 230 | 224 | 16 | 59 | 37 | 62,7 % | 5 · 66,7 % | 11 · 57,7 % |
+| 1 h | 60 min | 0,4 | 4 638 | 2 765 | 276 | 1 246 | 848 | 68,1 % | 107 · 75,8 % | 169 · 60,9 % |
+| 1 h | 60 min | 0,6 | 2 478 | 1 728 | 188 | 679 | 429 | 63,2 % | 68 · 72,2 % | 120 · 54,4 % |
+| 1 h | 60 min | 0,8 | 1 462 | 1 102 | 115 | 405 | 246 | 60,7 % | 40 · 69,6 % | 75 · 50,8 % |
+| 1 h | 60 min | 1,2 | 580 | 498 | 46 | 150 | 91 | 60,7 % | 12 · 66,7 % | 34 · 53,0 % |
+| 2 h | 30 min | 0,4 | 4 549 | 2 974 | 445 | 1 403 | 845 | 60,2 % | 203 · 66,4 % | 242 · 52,4 % |
+| 2 h | 30 min | 0,6 | 2 156 | 1 707 | 291 | 760 | 393 | 51,7 % | 119 · 59,8 % | 172 · 41,5 % |
+| 2 h | 30 min | 0,8 **(start)** | 1 109 | 983 | 175 | 406 | 183 | 45,1 % | 71 · 54,2 % | 104 · 33,5 % |
+| 2 h | 30 min | 1,2 | 343 | 327 | 39 | 94 | 49 | 52,1 % | 11 · 62,0 % | 28 · 40,9 % |
+| 2 h | 60 min | 0,4 | 8 394 | 3 987 | 589 | 1 984 | 1 329 | 67,0 % | 265 · 74,0 % | 324 · 59,1 % |
+| 2 h | 60 min | 0,6 | 4 895 | 2 744 | 444 | 1 295 | 758 | 58,5 % | 194 · 65,3 % | 250 · 49,8 % |
+| 2 h | 60 min | 0,8 | 3 063 | 1 910 | 326 | 871 | 463 | 53,2 % | 132 · 61,3 % | 194 · 42,4 % |
+| 2 h | 60 min | 1,2 | 1 292 | 945 | 166 | 377 | 179 | 47,5 % | 61 · 56,8 % | 105 · 36,3 % |
+| 3 h | 30 min | 0,4 | 6 455 | 3 870 | 765 | 1 962 | 1 153 | 58,8 % | 395 · 64,3 % | 370 · 51,5 % |
+| 3 h | 30 min | 0,6 | 3 044 | 2 297 | 496 | 1 132 | 545 | 48,1 % | 250 · 54,0 % | 246 · 40,2 % |
+| 3 h | 30 min | 0,8 | 1 493 | 1 290 | 292 | 602 | 251 | 41,7 % | 137 · 48,0 % | 155 · 32,9 % |
+| 3 h | 30 min | 1,2 | 400 | 381 | 57 | 123 | 59 | 48,0 % | 15 · 59,1 % | 42 · 35,1 % |
+| 3 h | 60 min | 0,4 | 11 783 | 4 965 | 951 | 2 593 | 1 728 | 66,6 % | 491 · 72,9 % | 460 · 59,1 % |
+| 3 h | 60 min | 0,6 | 7 123 | 3 591 | 751 | 1 842 | 1 082 | 58,7 % | 385 · 64,3 % | 366 · 51,2 % |
+| 3 h | 60 min | 0,8 | 4 463 | 2 592 | 575 | 1 312 | 677 | 51,6 % | 289 · 57,9 % | 286 · 42,6 % |
+| 3 h | 60 min | 1,2 | 1 816 | 1 285 | 298 | 600 | 256 | 42,7 % | 133 · 48,7 % | 165 · 34,9 % |
+| 4 h | 30 min | 0,4 | 8 195 | 4 570 | 1 050 | 2 450 | 1 471 | 60,0 % | 563 · 66,1 % | 487 · 52,2 % |
+| 4 h | 30 min | 0,6 | 3 834 | 2 778 | 698 | 1 458 | 708 | 48,6 % | 358 · 54,7 % | 340 · 40,8 % |
+| 4 h | 30 min | 0,8 | 1 817 | 1 537 | 403 | 761 | 312 | 41,0 % | 190 · 47,4 % | 213 · 32,7 % |
+| 4 h | 30 min | 1,2 | 452 | 426 | 84 | 150 | 67 | 44,7 % | 24 · 59,0 % | 60 · 29,2 % |
+| 4 h | 60 min | 0,4 | 15 064 | 5 788 | 1 292 | 3 159 | 2 148 | 68,0 % | 688 · 74,5 % | 604 · 60,3 % |
+| 4 h | 60 min | 0,6 | 9 284 | 4 318 | 1 055 | 2 351 | 1 409 | 59,9 % | 553 · 66,1 % | 502 · 51,6 % |
+| 4 h | 60 min | 0,8 | 5 861 | 3 192 | 844 | 1 745 | 917 | 52,6 % | 432 · 60,2 % | 412 · 42,4 % |
+| 4 h | 60 min | 1,2 | 2 340 | 1 618 | 458 | 832 | 336 | 40,4 % | 214 · 46,3 % | 244 · 33,1 % |
