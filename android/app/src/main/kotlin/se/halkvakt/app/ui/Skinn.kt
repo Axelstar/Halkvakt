@@ -354,9 +354,12 @@ fun PaVaktScreen(activity: MainActivity) {
                         val st = if (lon != null && lat != null) Missar.narmasteStation(stations, lon, lat) else null
                         val seg = if (lon != null && lat != null) Missar.narmasteSegment(hazards, lon, lat) else null
                         val t = System.currentTimeMillis()
-                        Prefs.markeraMiss(ctx, t, st, seg)
-                        missKvitto = if (st != null) "Markerat ${klockslag(t)} — du väljer vad det var efter resan."
-                            else "Kunde inte markera: appen har ingen position eller stationslista än."
+                        val dubbel = if (st != null) Prefs.markeraMiss(ctx, t, st, seg) else null
+                        missKvitto = when {
+                            st == null -> "Kunde inte markera: appen har ingen position eller stationslista än."
+                            dubbel != null -> "Redan markerat ${klockslag(dubbel.t)}."
+                            else -> "Markerat ${klockslag(t)} — du väljer vad det var efter resan."
+                        }
                     } }
                     missKvitto?.let { Text(it, color = Brand.dim, fontSize = 12.sp, textAlign = TextAlign.Center) }
                 }

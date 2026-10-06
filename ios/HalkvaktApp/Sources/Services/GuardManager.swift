@@ -56,9 +56,8 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     // en start-automation räcker och ingen stopp-automation behövs. Samma tanke som
     // Androids onVehicleExit, men mätt i tid i stället för i rörelseigenkänning: iOS har
     // ingen motsvarande signal utan extra behörighet, och tid kräver ingenting.
-    private static let idleStopAfter: TimeInterval = 15 * 60
-    private static let movingKmh = 5.0
-    private var lastMovedAt: Date?
+    // Mätt på FÖRFLYTTNING sedan 4/10 (kort #262 Å3, DECISIONS #461): regeln bor i HalkvaktEngine/IdleStop.swift, med prov.
+    private var idleStop = IdleStop()
     // S4: facit skickas när bilen står stilla — en gång per stopp.
     private var stillSince: Date?
     private var flushedThisStop = false
@@ -233,7 +232,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         guard !running else { return }
         print("[Vakten] startar")
         running = true
-        lastMovedAt = .now
+        idleStop = IdleStop()
         // Ny resa bara om det gått länge sedan förra; annars fortsätter tid och sträcka.
         let sameTrip = tripEndedAt.map { Date.now.timeIntervalSince($0) < Self.sameTripWithin } ?? false
         if sameTrip, let ended = tripEndedAt {
@@ -325,12 +324,18 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
     /// Kort #203 lager 2: "appen missade" — knappen i körläget och Siri-frasen. Sparar klockslaget, närmaste station och
     /// halkavsnitt inom 2 km; vad det var väljs efter resan. Utan betatest, position eller stationslista sparas ingenting.
     @discardableResult
-    func markeraMiss() -> Bool {
+    enum MissUtfall { case markerat(Date), redan(Date), vaktenAv, ingenPosition }
+
+    /// En miss hör till en körning (4b, DECISIONS #461): när vakten är av är senaste positionen kanske från en avslutad resa,
+    /// och då pekar stationen fel. Ett andra tryck inom en minut är samma miss (4a).
+    func markeraMiss(nu: Date = .now) -> MissUtfall {
+        guard running else { return .vaktenAv }
         guard Prefs.shared.facitOn, let l = lastLoc,
-              let st = Missar.narmasteStation(stations, lon: l.lon, lat: l.lat) else { return false }
-        Prefs.shared.missar = Missar.markera(Prefs.shared.missar, t: .now, station: st,
+              let st = Missar.narmasteStation(stations, lon: l.lon, lat: l.lat) else { return .ingenPosition }
+        if let tidigare = Missar.redanMarkerad(Prefs.shared.missar, t: nu) { return .redan(tidigare.t) }
+        Prefs.shared.missar = Missar.markera(Prefs.shared.missar, t: nu, station: st,
                                              segment: Missar.narmasteSegment(hazards, lon: l.lon, lat: l.lat))
-        return true
+        return .markerat(nu)
     }
 
     // MARK: - CLLocationManagerDelegate
@@ -377,9 +382,7 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
         if !loading, Date.now >= nextLoadAt { Task { await refreshSnapshot() } }   // #258: också när första laddningen föll
         guard let engine else { return }
 
-        // Självstopp: räkna rörelse, stoppa efter en kvarts stillastående.
         let kmh = loc.speed >= 0 ? loc.speed * 3.6 : 0
-        if kmh >= Self.movingKmh { lastMovedAt = loc.timestamp }
         // S4: facit skickas när bilen står stilla (≥ 30 s under 3 km/h), en gång per stopp — aldrig under körning.
         if kmh >= 3 { stillSince = nil; flushedThisStop = false }
         else if stillSince == nil { stillSince = loc.timestamp }
@@ -387,7 +390,8 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
             flushedThisStop = true
             Task { _ = await FacitSender.flush() }
         }
-        if let moved = lastMovedAt, loc.timestamp.timeIntervalSince(moved) >= Self.idleStopAfter {
+        // Självstopp: en kvart utan att bilen kört (förflyttning, inte ett mätvärde) är slutet på resan.
+        if idleStop.onFix(t: loc.timestamp.timeIntervalSince1970, lon: loc.coordinate.longitude, lat: loc.coordinate.latitude) {
             stop()
             manualStoppedAt = nil   // självstopp ⇒ nästa resa får väcka oss direkt
             print("[Vakten] stillastående en kvart — stoppar själv")

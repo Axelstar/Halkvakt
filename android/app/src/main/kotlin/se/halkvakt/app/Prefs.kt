@@ -98,8 +98,15 @@ object Prefs {
 
     // ── Missarna (kort #203 lager 2) ──────────────────────────────────────────────────────────
     fun missar(ctx: Context): Flow<List<MissEntry>> = ctx.dataStore.data.map { Missar.decode(it[KEY_MISSAR] ?: "") }
-    suspend fun markeraMiss(ctx: Context, t: Long, station: String?, segment: String?) {
-        ctx.dataStore.edit { p -> p[KEY_MISSAR] = Missar.encode(Missar.markera(Missar.decode(p[KEY_MISSAR] ?: ""), t, station, segment)) }
+    /** Returnerar markeringen som trycket dubblade (4a, inom en minut) — då sparas ingenting nytt — annars null. */
+    suspend fun markeraMiss(ctx: Context, t: Long, station: String?, segment: String?): MissEntry? {
+        var dubbel: MissEntry? = null
+        ctx.dataStore.edit { p ->
+            val list = Missar.decode(p[KEY_MISSAR] ?: "")
+            dubbel = Missar.redanMarkerad(list, t)
+            p[KEY_MISSAR] = Missar.encode(Missar.markera(list, t, station, segment))
+        }
+        return dubbel
     }
     suspend fun valjMiss(ctx: Context, t: Long, vad: String) {
         ctx.dataStore.edit { p -> p[KEY_MISSAR] = Missar.encode(Missar.valj(Missar.decode(p[KEY_MISSAR] ?: ""), t, vad)) }

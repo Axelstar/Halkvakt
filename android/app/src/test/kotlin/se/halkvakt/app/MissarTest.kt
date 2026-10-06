@@ -57,4 +57,13 @@ class MissarTest {
         val l = listOf(MissEntry(1L, "wx:1", null, null, false), MissEntry(2L, "wx:2", "seg:3", "annat", true))
         assertEquals(l, Missar.decode(Missar.encode(l) + "\nskräp\n3\t\t\t\t0"))
     }
+
+    /** 4a (DECISIONS #461): ett dubbeltryck blir en miss; ett tryck efter en minut blir en ny. */
+    @Test fun ettAndraTryckInomEnMinutArSammaMiss() {
+        val l = Missar.markera(emptyList(), 1_000L, "wx:2135", null)
+        assertEquals(l, Missar.markera(l, 1_000L + 59_999L, "wx:2135", null))
+        assertEquals(1_000L, Missar.redanMarkerad(l, 1_000L + 30_000L)?.t)
+        assertEquals(null, Missar.redanMarkerad(l, 1_000L + Missar.SPARR_MS))
+        assertEquals(2, Missar.markera(l, 1_000L + Missar.SPARR_MS, "wx:2135", null).size)
+    }
 }

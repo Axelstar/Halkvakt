@@ -69,7 +69,10 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   🔨 **Å1, Å4, Å5 BYGGDA 1/10 kväll (DECISIONS #431, Axels prioritering: #262 före App Store):** stoppknappen i notisen
   (`StoppaVaktenReceiver`), brytarens text, cachen med triangelolikheten + `GuardTest`. **Bevis:** android.yml 36924001835 grön på grenen
   (JVM-prov, APK, AAB, emulator); motprovet 36925352744 (stale cache + ingen nollning) rött på exakt de två proven — 56 prov, 2 fällda.
-  🔑 Kvar: Å0 (testaren får (19) — Play-vägen #219 eller APK ur CI) · Å2/Å3 beslut (§4.2) · Å6 protokoll · Å7/Å8 mätningar (Axel).
+  🔨 **Å2 och Å3 BYGGDA 4/10 (Axels ja 13:35, DECISIONS #461) i 0.3.11 (23):** självstoppet på förflyttning (snitt ≥ 12 km/h över 60 s;
+  Swift `HalkvaktEngine/IdleStop.swift`, Kotlin `Autostart.kt`), stillaståendetiern MID under 3 km/h (Android). **Bevis:** ios-engine 37199541693
+  grön (IdleStopTests 5/5); android se PR. ✅ **Bengts ja 6/10** (*"ja till 748"*), i main; i inget uppladdat bygge än.
+  🔑 Kvar: Å0 (testaren får (23)) · Å6 protokoll · Å7/Å8 mätningar (Axel).
 
 - [ ] 🏪 **#280 HALKVAKT TILL APP STORE — PÅ RIKTIGT, DIREKT EFTER #262** (Axels order 1/10 22:37 via Cowork: *"efter #262 så vill jag
   verkligen att vi försöker få ut vår app på riktiga App Store"*). Grunden står sedan DECISIONS #320 (iOS först, inte näringsidkare,

@@ -181,14 +181,14 @@ class GuardService : Service() {
                 speedKmh = if (loc.hasSpeed()) loc.speed * 3.6 else null,
                 headingDeg = if (loc.hasBearing()) bearingToDouble(loc.bearing) else null,
             )
-            if (idleStop.onFix(loc.time, fix.speedKmh)) {
+            if (idleStop.onFix(loc.time, fix.lon, fix.lat)) {
                 AlertBus.post("Stillastående en kvart — vakten stoppar själv.")
                 AutostartManager.clearAutoStarted(this@GuardService)
                 stopSelf()
                 return
             }
             guard?.onLocation(fix)
-            retuneCadence(fix.lon, fix.lat)
+            retuneCadence(fix.lon, fix.lat, fix.speedKmh)
             // S4: facit skickas när bilen står stilla (≥ 30 s under 3 km/h), en gång per stopp — aldrig under körning.
             val still = (fix.speedKmh ?: 99.0) < 3.0
             if (!still) { stillSinceMs = 0L; flushedThisStop = false }
@@ -215,8 +215,8 @@ class GuardService : Service() {
 
     /** Battery: far from every hazard → sparse GPS; near → full 1 Hz. Tiers proven in CadencePolicyTest. */
     @Suppress("MissingPermission")
-    private fun retuneCadence(lon: Double, lat: Double) {
-        val wanted = CadencePolicy.intervalMs(guard?.nearestHazardM(lon, lat))
+    private fun retuneCadence(lon: Double, lat: Double, speedKmh: Double?) {
+        val wanted = CadencePolicy.intervalMs(guard?.nearestHazardM(lon, lat), speedKmh)
         if (wanted != currentIntervalMs) {
             fused.removeLocationUpdates(callback)
             startLocationUpdates(wanted)

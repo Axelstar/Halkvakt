@@ -6,7 +6,7 @@ android {
         applicationId = "se.halkvakt.app"
         minSdk = 26; targetSdk = 35
         // Femma åtta (4), DECISIONS #377: i takt med iOS FÖRE första Play-uppladdningen, som låser versionCode-spåret.
-        versionCode = 22; versionName = "0.3.10"   // 2/10 kväll: skinnet v4 (kort #284), i takt med iOS 0.3.10 (22)
+        versionCode = 23; versionName = "0.3.11"   // 4/10: självstoppet, stillaståendetiern, missarna (DECISIONS #461), i takt med iOS 0.3.11 (23)
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     sourceSets.getByName("androidTest") {

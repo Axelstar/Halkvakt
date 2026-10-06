@@ -3,6 +3,7 @@
 package se.halkvakt.app
 
 import kotlin.test.Test
+import kotlin.test.assertTrue
 import kotlin.test.assertEquals
 
 class AutostartControllerTest {
@@ -71,18 +72,59 @@ class AutostartControllerTest {
         assertEquals(AutoCmd.STOP, third.onVehicleExit())
     }
 
-    @Test fun idleStopAfterFifteenStillMinutes() {
-        val s = IdleStop()
-        assertEquals(false, s.onFix(0, 60.0))
-        assertEquals(false, s.onFix(14 * 60_000L, 1.0))
-        assertEquals(true, s.onFix(15 * 60_000L, 0.0))
+    // ── Idle stop on displacement (kort #262 Å3, DECISIONS #461) ──────────────────────────────────────────
+    // 0.001° latitude ≈ 111 m. Helpers: one fix per [stepS] seconds moving north at [kmh].
+    private fun IdleStop.drive(fromS: Int, toS: Int, kmh: Double, stepS: Int = 1, lat0: Double = 55.6): Pair<Boolean, Double> {
+        var stopped = false; var lat = lat0
+        for (s in fromS..toS step stepS) {
+            stopped = onFix(s * 1000L, 13.0, lat)
+            lat += kmh / 3.6 * stepS / 111_195.0
+        }
+        return stopped to lat
     }
 
-    @Test fun idleStopClockRestartsWhenMoving() {
+    @Test fun idleStopFifteenMinutesAfterTheCarParks() {
         val s = IdleStop()
-        s.onFix(0, 0.0)
-        assertEquals(false, s.onFix(10 * 60_000L, 30.0))      // rolled again
-        assertEquals(false, s.onFix(24 * 60_000L, 0.0))
-        assertEquals(true, s.onFix(25 * 60_000L, null))
+        val (_, lat) = s.drive(0, 600, 50.0)                               // ten minutes of driving
+        assertEquals(false, s.drive(601, 600 + 14 * 60, 0.0, lat0 = lat).first)
+        assertEquals(true, s.drive(600 + 14 * 60 + 1, 600 + 15 * 60 + 60, 0.0, lat0 = lat).first)
+    }
+
+    /** The bug: one tester's guard ran 11 h 39 m because walking pace restarted the clock on every fix. */
+    @Test fun walkingAfterTheDriveDoesNotKeepTheGuardAlive() {
+        val s = IdleStop()
+        val (_, lat) = s.drive(0, 300, 50.0)
+        var stoppedAt = -1
+        var l = lat
+        for (sec in 301..301 + 30 * 60) {
+            if (s.onFix(sec * 1000L, 13.0, l)) { stoppedAt = sec; break }
+            l += 5.5 / 3.6 / 111_195.0                                    // brisk walk, 5.5 km/h
+        }
+        assertTrue(stoppedAt in 300 + 15 * 60..300 + 16 * 60 + 1, "stopped at $stoppedAt")
+    }
+
+    @Test fun oneGpsJumpWhileParkedDoesNotRestartTheClockForever() {
+        val s = IdleStop()
+        s.drive(0, 120, 50.0)
+        var stopped = false
+        for (sec in 121..121 + 30 * 60) {
+            val jump = sec == 600                                        // one 400 m outlier
+            stopped = s.onFix(sec * 1000L, 13.0, 55.62 + if (jump) 0.0036 else 0.0)
+            if (stopped) break
+        }
+        assertEquals(true, stopped)
+    }
+
+    @Test fun aSlowQueueAboveTwelveKmhKeepsTheGuard() {
+        val s = IdleStop()
+        assertEquals(false, s.drive(0, 40 * 60, 13.0).first)
+    }
+
+    @Test fun aTunnelGapCountsAsDriving() {
+        val s = IdleStop()
+        s.drive(0, 60, 80.0)
+        assertEquals(false, s.onFix(61_000L, 13.0, 55.6))
+        assertEquals(false, s.onFix(61_000L + 14 * 60_000L, 13.0, 55.7))  // 11 km later after a long gap: drove
+        assertEquals(false, s.onFix(61_000L + 20 * 60_000L, 13.0, 55.7))
     }
 }
