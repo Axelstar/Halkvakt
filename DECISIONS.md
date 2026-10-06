@@ -7723,3 +7723,5 @@ halka, SMHI, stationernas yta) hade ingen rad som sa *is*. Från deployen finns 
 
 **Alternativ:** vänta till vintern (förkastat: första frosten är facits första rad, och fälten måste finnas innan); lägga fälten i
 `weather_latest` och lägesfilen (inte nu: ingen regel läser dem, och lägesfilens fält kräver ett tröskeldokument).
+
+**#465 i drift 6/10 08:22Z** (Bengt: *"slå ihop 775 och 776"*): migrationen med DB-knappen 37435521114 (kolumnerna lästa), deploy 37435573958 från eedfd06 (loggen: Deployed Functions: ingest-live), och läsningen 37436952330: av 702 rader skrivna efter deployen (08:25–08:38Z) bar 53 surface_grip från 52 stationer, 1 rad is = sann och 5 vatten = sann; värdevakten 37437120416: surface_grip – (för tunt underlag: 60 rader av minst 100; 0,75–0,82, 4 distinkta, inom spannet). Fynd i första läsningen: friktionen var 0,82 på 92 % av raderna (värdevaktens dygnsfönster: 60 rader, 0,75–0,82, 4 distinkta), vilket ser ut som givarens värde för torr vägbana snarare än en mätning per station, och en rad bar is = sann i oktoberdagsljus; båda ska läsas igen när det blir kallt, innan fältet får döma något (TROSKLAR-KOMBINATIONEN §1).
