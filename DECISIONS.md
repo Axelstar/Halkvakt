@@ -7622,3 +7622,8 @@ pekat fel. Därför valdes vägran, som `docs/TILL-AXEL-BYGGE-19.md` §4b rekomm
 Review 5/10 (#758) medan PR:en väntade, så beslutet heter #461 (samma fälla som #624, DECISIONS #381/#382). Grenen flyttades över
 main 6/10 ur mains källor; koden är Axels sessions, oförändrad utom numret i kommentarerna. 0.3.11 (23) bär därmed också App
 Review-rättelsen (#460).
+
+**Tillägg till #447, 6/10: CI slår inte ihop kartgrenar; kartsynken listar öppna PR:er** (Bengt: *"nej till automatiskt"*, efter en annan sessions förslag 5/10):
+- **Mätningen:** fyra PR:er låg 3–4/10 utan ord (#733 kod, #743 ett kort, #747 Play-texten, #748 kod med två signaturer). Ingen av dem är en ren kartgren, så en CI-regel hade inte slagit ihop någon av dem. Det som saknades var att Bengt fick se dem.
+- **Valt:** `scripts/kartsynk.ts` listar öppna PR:er vid start, med ålder, och en PR som väntat mer än ett dygn märks. Sessionen lyfter dem i rapporten. Sammanslagningen av kartgrenar är fortfarande sessionens (#447 p. 2), aldrig CI:s.
+- **Schemat:** den schemalagda kartsynken hängde från 4/10 07:26 (första PowerShell-anropet kom aldrig tillbaka, som provkörningen 3/10) och blockerade tre körningar. Stoppad 6/10; nästa körning 6/10 07:26 är provet på om uppgiften alls kan köra utan någon vid datorn.
