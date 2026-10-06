@@ -647,7 +647,7 @@ Ambitionen är att stänga systemet när det är fullkomligt. Genomgången i §0
 <!-- LÄGESRADER §6.1: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 *Läget i projektkartan:*
 
-- [Kuvösen](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-kuvosen): delvis, 81 % · kvar: Körflödet
+- [Kuvösen](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-kuvosen): delvis, 85 % · kvar: Körflödet
 
 <!-- /LÄGESRADER -->
 

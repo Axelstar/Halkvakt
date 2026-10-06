@@ -20,7 +20,7 @@ permissions:
 jobs:
   inlasning:
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ inputs.korflode == 'riktningsprov' && 180 || 60 }}
+    timeout-minutes: ${{ inputs.korflode == 'riktningsprov' && 300 || 60 }}   # 6/10: 82 min till höjdprovet, NT och efterhalkan därefter
     services:
       postgis:
         image: postgis/postgis:16-3.4
@@ -121,6 +121,9 @@ jobs:
       - name: Riktningsprovet
         if: ${{ inputs.korflode == 'riktningsprov' }}
         shell: bash
+        # 6/10 (körning 37435099300): hojd-prov.ts föll på Nodes standardheap (~4 GB) över 152 dygn — JavaScript heap out
+        # of memory efter 92 minuter, och NT och efterhalkan kördes aldrig. Runnern har 16 GB; heapen får 10.
+        env: { NODE_OPTIONS: "--max-old-space-size=10240" }
         run: |
           curl -sSf -o vaglag.geojson https://axelstar.github.io/halkvakt-karta/data/vaglag.geojson
           FRAN=$(psql -h localhost -U postgres -Atc "SELECT to_char(min(sample_time) AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"') FROM weather_observations")
