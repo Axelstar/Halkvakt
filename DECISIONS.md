@@ -7753,3 +7753,70 @@ i stället för 180 (82 minuter gick till kraschen, NT och efterhalkan återstod
 komma igen, och de jämförs.
 
 **Alternativ:** läsa höjdprovet i delar (förkastat nu: ändrar skriptet mitt i provet; kan göras om heapen inte räcker).
+
+## #467 (6/10 2026) Riktningsprovet på vintern 2024/25 är kört och läst: varje del ensam och ovanpå de andra, alla tal, ingen dom (kort #232)
+
+**Körningen** 37447617038 (`kuvos` med `riktningsprov`, main 9f09dfe, 10:07–11:26Z; riktningsprovets steg 72 minuter med 10 GB heap,
+#466). Inläsningen 5 391 599 rader från 754 stationer, vakterna som i driften (#75, radvakten, karantänen, den långsamma vakten: 97 %
+talar), värdevakten gick igenom. Varningarna ligger som artefakt `kuvos-varningar` på körningen (7,9 MB, 90 dagar). Startvärdena som
+de står (#424); inget svep, inget val. Grind A:s tal är identiska med första körningens (#466), som väntat av en deterministisk körning.
+
+**1. Motorn över vintern** (`kuvos/korning.ts`): 7 245 steg, serie A 20 rutter, serie B 818 sträckor var tredje timme, 2 476 broar,
+tomma steg 0; snapshotens noter: långsam vakt 2 191 steg, karantän 5 116; **675 178 varningar**.
+
+**2. Baslinjen** (dagens frysrisk och broarna, #455 punkt 2; antal, ingen dom): serie A 114 923 fyrningar, 98 faror, 8 402 episoder
+(stationer 610, broar 7 792); serie B 560 255 fyrningar, 2 850 faror, 179 805 episoder (stationer 30 532, broar 149 273). Per månad,
+serie A (fyrningar/episoder): okt 191/12 · nov 14 534/1 194 · dec 23 660/1 832 · jan 38 685/2 316 · feb 26 054/2 012 · mar 11 799/1 036;
+serie B: okt 1 332/528 · nov 77 551/25 809 · dec 120 020/40 780 · jan 187 534/51 040 · feb 116 993/42 024 · mar 56 825/19 624.
+
+**3. Grind A** (korsvalidering vid stationerna, offsetmodellen, 736 stationer, 5 229 252 bucketade avläsningar): per band
+0–7 km 0,52 °C · 3,6 % · 0,2 % (491 220 punkter); 7–15 km 0,55 · 3,7 · 0,2 (1 985 336); 15–20 km 0,61 · 5,4 · 0,3 (907 357);
+> 20 km 0,79 · 10,3 · 0,4 (969 293); totalt 0,60 °C · 5,5 % · 0,3 % (4 353 206). **A1 0,60 °C klarar · A2 5,5 % faller · A3 0,3 %
+klarar ⇒ grind A fallen på vintern.** Driftens grind A står (höstens 60 dygn, A2 3,7 %, #321, #399); vinterns tal säger att en hel
+vinter har fler grova fel, och felet sitter bortom 15 km (5,4 % och 10,3 %).
+
+**4. Höjdprovet** (lapse 0,65 °C/100 m som antagande; empirisk lapse ur 3 431 par 0,18 °C/100 m): MAE i beslutsbandet, alla band,
+rå 0,68 °C · interp 0,67 · rå+höjd 0,69 · offset (taket) 0,60; > 20 km rå 0,83 · interp 0,82 · rå+höjd 0,91 · offset 0,79. Höjden
+återvinner ingenting på den här vintern: rå+höjd är sämre än rå i varje band utom 7–15 km, och den empiriska lapsen är långt under
+standard, så annat än höjden dominerar (kust, dalgångar). 729 av 736 stationer fick EU-DEM-höjd.
+
+**5. Vägpunktsgrinden** (grind A:s mått utan målets egen historik, #323): RÅ A1 0,68 °C klarar · A2 7,5 % faller · A3 0,4 % klarar;
+INTERP 0,67 · 7,2 % · 0,4 %; RÅ+HÖJD 0,69 · 8,8 % · 0,4 %. Per band, grova fel RÅ: 5,2 · 5,3 · 7,2 · 13,6 %. **Fallen för alla tre
+kandidaterna**, som 28/9 (#399). Det som saknas är data om vägen, inte kod.
+
+**6. Frysflaggan med tre marginaler** (#437; K1 +1 °C, K2 0 · 0,5 · 1 °C; måttstocken lånad av K-A: rätt klass ≥ 95 %, farliga fel ≤ 1 %,
+täckning ≥ 70 %), alla band, 4 353 206 punkter, 729 stationer, 3 015 970 frysningar:
+| kandidat | K2 | farliga fel av frysningarna | av uttalade | falska flaggor | rätt klass | täckning |
+| :-- | --: | --: | --: | --: | --: | --: |
+| RÅ | 0 | 4,9 % | 3,4 % | 3,7 % | 94,1 % | 100 % |
+| RÅ | 0,5 | 2,4 % | 1,8 % | 7,1 % | 97,0 % | 91,0 % |
+| RÅ | 1 | 1,2 % | 1,0 % | 11,2 % | 98,5 % | 81,8 % |
+| RÅ+HÖJD | 0 | 4,9 % | 3,4 % | 3,5 % | 94,2 % | 100 % |
+| RÅ+HÖJD | 0,5 | 2,3 % | 1,7 % | 7,0 % | 97,1 % | 90,9 % |
+| RÅ+HÖJD | 1 | 1,1 % | 1,0 % | 11,1 % | 98,5 % | 81,6 % |
+| OFFSET (taket) | 0 | 4,2 % | 2,9 % | 3,1 % | 95,0 % | 100 % |
+| OFFSET (taket) | 0,5 | 1,8 % | 1,3 % | 6,7 % | 97,8 % | 90,9 % |
+| OFFSET (taket) | 1 | 0,8 % | 0,7 % | 11,0 % | 98,9 % | 81,6 % |
+Läsning: bara offset med K2 = 1 °C når alla tre måtten i den lånade måttstocken (0,8 % farliga, 98,9 % rätt, 81,6 % täckning), och
+offset finns bara där stationen har egen historik. Vid > 20 km klarar även RÅ K2 1 farliga fel (0,9 %) med täckning 89,4 %.
+
+**7. Grind NT** (nederbördstypen, startvärdet L 0 · U +1,5): givarens ordlista no 4 388 124 · rain 402 283 · sleet 23 335 · snow 531 766
+· yes 502 · freezing_rain 909 · null 11 841. NT-A täckning 0,9987 · mot SMHI 0,9336 · farligt 0,0386 ⇒ klarar; NT-D klarar (snöepisoder
+68 349, slaskepisoder 17 954, 751 stationer, 4 band, 151 slaskdygn, 12 476 SMHI-partimmar vid 37 par inom 5 km); **NT-B träff 0,7203 ·
+farligt 0,0082 · slask 0,4171 · månader 0/3 ⇒ faller; NT-C träff 0,7103 · farligt 0,0134 · slask 0,3981 ⇒ faller.** Bara startvärdet
+är räknat (#424). Fynd: skriptets ordlista (§7 punkt 5) känner inte `yes` och `freezing_rain` ur #464 och larmar; de 1 411 raderna
+räknas som okända. Ordlistan rättas i samma varv som nästa körning, inte nu.
+
+**8. Efterhalkan** (betans startvärden, uppspelningen ur sql/028): ENSAM 983 episoder, 983 med utfall: föll ut 527 · nära 178 · uteblev
+278. OVANPÅ (#456): 82 985 facittillfällen (stationsnätter med yta ≤ +1 °C, vakterna klarade); baslinjen fångar 16 826 (20,3 %);
+efterhalkan 1 109 fyrningar i 983 episoder, fångar 461, **nettonytt 175 (0,2 % av facit)**; tillkomna episoder 406 med utfall: föll ut
+147 · nära 76 · uteblev 183 ⇒ **pris 45,1 %**; tidsvinst mot baslinjen 30 min (median, 286 tillfällen), inte nettonytt. Inga golv (#455).
+
+**Vad som inte kördes:** T-A, R-A, W-A (#455), övergångarna, tillståndet, försprånget (radarn ur tif, #441); kalibreringen (regel D,
+efter Axels signatur, #425).
+
+**Fynd på vägen:** (a) grind A och höjdprovet skriver *SAKNADE DYGN* för 2026-05-07–2026-10-06, eftersom `saknadeDygn` räknar fönstret
+från riktig tid och inte från klockan; harmlöst (de dygnen räknas inte) men vilseledande i en kuvöskörning. (b) NT:s ordlista, ovan.
+
+**Följd:** ingen tröskel och ingen kod ändras av utfallet (#424). Tabellen del × ensam × ovanpå står i bedömningen §7, som kort #232:s
+Verify kräver. Nästa steg enligt planen är kalibreringen på samma vinter, som ändrar regel D och kräver Axels signatur (#425).
