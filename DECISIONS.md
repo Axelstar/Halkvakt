@@ -7990,3 +7990,27 @@ av Bengt och Axel. Mitt förslag: *regn inom N h + utfallsfönstret*, eftersom e
 **Följd:** ingen tröskel och ingen kod ändras. Kort #295 stängs (Verify uppfylld: läsningarna bokförda här, F1:s svar i bedömningen §7).
 Två beslut före mars läggs på kort #296 (Bengt och Axel): Ö-B1:s *inom räckvidd*, och det smalare startbandet som mars-variant eller inte.
 Kartan: m-efterhalkans saknas-rader om kort #278 och kalibreringen strukna (#468); p-grindarnas grind A bär de tre fönstren.
+
+## #470 (6/10 2026) Efterhalkans mått och daggpunkt: två läsningar förregistrerade före körningen (kort #297, Bengts ja)
+
+**Bengts ja 6/10 kväll (*"ja till 297"*)** till de två läsningarna i `docs/KUVOS-GRANSKNING-2026-10-06.md` §6 (med rättelsen i §6.2).
+**Ingen dom, ingen tröskel rörs, ingen ny kalibrering (D7):** startvärdena står frysta (#468). Skriptet
+`scripts/matningar/kuvos-mattet-2026-10-06.ts` körs på knappen `kuvos` (`matning`). Inget tal var läst när posten skrevs.
+
+- **M1 — priset per fyrning.** Dagens ovanpå-mått (#456) dömer nattens första fyrning: *uteblev* om ytan inte nått +1,5 °C inom 90 min
+  efter den. Ö-B2:s ord är *"av tillkomna fyrningar"*. Här räknas **varje fyrning** i de tillkomna nätterna (nätter utan baslinje) med sitt
+  eget 90-minutersfönster och T-B:s klasser — samma horisont som föraren har — för startvärdena och de 32 räknebara punkterna, hela
+  vintern och båda halvorna (mittnatten som T-A). Per episod (dagens mått) och per natt (nådde stationen +1,5 någon gång senare samma
+  natt) skrivs bredvid: det ena som kontroll (90 min · 0,5 på startvärdena ska ge 45,1 %), det andra som övre gräns, aldrig som mått.
+  **Läsning i förväg:** har någon punkt pris per fyrning ≤ 25 % på ≥ 20 fyrningar med utfall, hela vintern och i båda halvorna, är
+  kalibreringens *ingen vinnare* (#468) måttets artefakt — då är frågan om en kalibrering på rätt mått Bengts och Axels (D3/D7); har ingen
+  punkt det, ändrar måttet inte kalibreringens utfall. Inget väljs här.
+- **M2 — daggpunkten vid fyrningen.** Startvärdenas fyrningar delas på `dewpoint_c` vid fyrningen (≤ +1 °C mot > +1 °C) och på yta − dagg
+  (≤ 0 · 0–1 · 1–2 · > 2 °C); för varje klass utfallet per episod (90 min · 0,5), per fyrning och per natt, samt nettonyttan per klass
+  (daggklassen hos den fyrning som fångade facit, som ovanpå räknar). Daggpunkten är Trafikverkets levererade, inte räknad.
+  **Förutsägelse, skriven före talen:** episoder med dagg ≤ +1 °C faller ut i klar majoritet, de över +1 °C uteblir i majoritet — fysiken i
+  §6.3 (ytan stannar vid daggpunkten). Håller den, är ett daggpunktsvillkor en ny dimension i TROSKLAR-OVERGANGAR §2 med båda signaturerna,
+  tidigast som mars-variant (D1); håller den inte, står fysiken i §6.3 som motbevisad för den här regeln.
+
+**Vad som inte görs:** inget fönster, band eller villkor väljs; inga golv ur Ö-B som urval; inget rörs i betan. **Kostnad:** en
+knapptryckning, sekunder efter inläsningen.
