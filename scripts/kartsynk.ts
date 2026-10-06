@@ -4,7 +4,7 @@
 //     regel. En regel flyttar bara framåt (saknas → pågår → klar), aldrig bakåt, och beviset bär signalens egen tidpunkt.
 //  2. Bokföringsvägen — varje commit på main sedan förra synken som inte rörde kartan listas, och sessionen som kör synken
 //     bokför den på sin del (eller konstaterar att den inte rör någon). Maskinernas commits räknas inte.
-//   node --experimental-strip-types scripts/kartsynk.ts              signalerna och reglerna; listar obokförda commits
+//   node --experimental-strip-types scripts/kartsynk.ts              signalerna och reglerna; listar öppna PR:er och obokförda commits
 //   node --experimental-strip-types scripts/kartsynk.ts --bokford    efter bokföringen: synken flyttas till origin/main
 //   node --experimental-strip-types scripts/kartsynk.ts --tillatna   rör grenen bara kartan och det kartan skriver? (#447 p. 2)
 //   node --experimental-strip-types scripts/kartsynk.ts --check      okända regler, kvar-rader som saknas i delens lista
@@ -191,6 +191,19 @@ function githubToken(): string {
   return t;
 }
 
+/** En rad per öppen PR. Main är inte hela sanningen: 3–4/10 låg fyra PR:er med bevis och kod utan att någon lyfte dem (6/10). */
+export function prRad(p: { number: number; title: string; user?: { login?: string }; head?: { ref?: string }; created_at: string }, nu: Date): string {
+  const dygn = Math.floor((nu.getTime() - new Date(p.created_at).getTime()) / 86400000);
+  return `  #${p.number} ${p.title.slice(0, 90)} · ${p.head?.ref ?? "?"} · ${p.user?.login ?? "?"} · öppnad ${stockholm(p.created_at)}${dygn >= 1 ? ` ⚠ ${dygn} dygn utan ord` : ""}`;
+}
+
+async function oppnaPr(nu: Date): Promise<string[]> {
+  const r = await fetch(`https://api.github.com/repos/${REPO}/pulls?state=open&per_page=50`,
+    { headers: { Authorization: `Bearer ${githubToken()}`, Accept: "application/vnd.github+json" } });
+  if (!r.ok) throw new Error(`GitHub ${r.status}`);
+  return (await r.json() as any[]).map((p) => prRad(p, nu));
+}
+
 async function lasSignaler(): Promise<{ sig: Lagrad[]; skriven: Date; nr: number }> {
   const r = await fetch(`https://api.github.com/repos/${REPO}/issues?state=open&per_page=100`,
     { headers: { Authorization: `Bearer ${githubToken()}`, Accept: "application/vnd.github+json" } });
@@ -258,8 +271,10 @@ function sjalvtest(): void {
   if (utanGenererat("a<!-- LÄGESRADER §2: x -->\nq\n<!-- /LÄGESRADER -->b<!-- ÖPPNA KORT: y -->z<!-- /ÖPPNA KORT -->c") !== "abc") fel.push("utanGenererat");
   const c = (forfattare: string, rubrik: string, filer: string[]): Commit => ({ sha: "s", forfattare, tid: t, rubrik, filer });
   if (attBokfora([c("Axelstar", "x", ["ios/a.swift"]), c("Marknadsmotorn", "x", ["a"]), c("895845", "Kartsynk: 3/10", ["a"]), c("895845", "y", [FIL])]).length !== 1) fel.push("attBokfora");
+  const pr = prRad({ number: 743, title: "Kartsynk: Axels Mac-körning", user: { login: "Axelstar" }, head: { ref: "kartsynk/2026-10-04-mac" }, created_at: "2026-10-04T09:14:51Z" }, new Date("2026-10-06T06:00:00Z"));
+  if (pr !== "  #743 Kartsynk: Axels Mac-körning · kartsynk/2026-10-04-mac · Axelstar · öppnad 4/10 11:14 ⚠ 1 dygn utan ord") fel.push(`prRad: ${pr}`);
   if (fel.length) { console.error("✗ kartsynk självtest:\n" + fel.join("\n")); process.exit(1); }
-  console.log("✓ kartsynk självtest: reglerna, framåt-bara, gröna delar, radformen, de genererade blocken och commitfiltret");
+  console.log("✓ kartsynk självtest: reglerna, framåt-bara, gröna delar, radformen, de genererade blocken, commitfiltret och PR-raden");
 }
 
 function check(k: Karta): void {
@@ -320,6 +335,12 @@ async function main(): Promise<void> {
   } catch (e) {
     console.log(`⚠ Signalerna lästes inte: ${String(e).slice(0, 200)}. Reglerna står kvar; bokföringen nedan gäller ändå.`);
   }
+
+  // 1b. Öppna PR:er: det som väntar på ett ord ska synas i varje rapport (6/10, Bengts nej till att CI slår ihop kartgrenar).
+  try {
+    const pr = await oppnaPr(nu);
+    console.log(pr.length ? `Öppna PR:er (${pr.length}) — lyft dem som väntar i rapporten:\n${pr.join("\n")}` : "Inga öppna PR:er.");
+  } catch (e) { console.log(`⚠ PR-listan lästes inte: ${String(e).slice(0, 120)}.`); }
 
   // 2. Bokföringsvägen.
   if (!k.synk?.till) { console.log("Ingen synkpunkt än: kör --bokford för att börja från origin/main."); return; }
