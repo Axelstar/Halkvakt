@@ -7920,3 +7920,58 @@ stationen, inte att vägen var torr. Om priset är orättvist mot efterhalkan av
 | 4 h | 60 min | 0,6 | 9 284 | 4 318 | 1 055 | 2 351 | 1 409 | 59,9 % | 553 · 66,1 % | 502 · 51,6 % |
 | 4 h | 60 min | 0,8 | 5 861 | 3 192 | 844 | 1 745 | 917 | 52,6 % | 432 · 60,2 % | 412 · 42,4 % |
 | 4 h | 60 min | 1,2 | 2 340 | 1 618 | 458 | 832 | 336 | 40,4 % | 214 · 46,3 % | 244 · 33,1 % |
+
+## #469 (6/10 2026) Rutnätsmodellen i kuvösen — Axels beslut att pröva, och förregistreringen före något utfall: MET Nordic som bakgrund, vägens skillnad mot luften ur grannarna, hela stationer gömda (kort #296)
+
+**Axels ord 6/10 kväll (chatten, efter genomgången av riktningsprovet #467):** *"Okej jag tycker vi testar"* — om förslaget att
+bygga prognosen mellan stationerna på ett väderrutnät i stället för på stationerna ensamma, med en satellitkarta över kalla nätter
+som nästa byggsten. Ordningen är hans: rutnätet först (*"jag tycker nästan vi börjar med 3"*). Hämtningen av indata görs på det
+ordet; **provet mot facit körs först på Bengts ord** (#424, bedömningen §4.2). Inget tal ur provet är läst när posten skrivs.
+
+**Skälet, ur #467.** Grind A per band med stationens egen historik (OFFSET) mot utan (RÅ, vägpunktsgrinden): grova fel 3,6 mot
+5,2 % inom 7 km, 3,7 mot 5,3 · 5,4 mot 7,2 · 10,3 mot 13,6 %. Vädret är detsamma i båda; skillnaden är platsens särart, som en
+vägpunkt saknar historik för. Höjden återvann ingenting (empirisk lapse 0,18 °C/100 m). Frågan för provet: **tar ett rutnät som
+bär vädret mellan stationerna igen en del av glappet mellan RÅ och OFFSET?** Talet 2,5 % inom 7 km som citerats i chatten kommer
+från premissmätningen 30/9 (15 stationer, under spärren, #405–#406), inte från vintern; vinterns RÅ är 5,2 %.
+
+**Indata (hämtas en gång, som SMHI-filerna #441):** MET Nordic Analysis (MET Norway, NLOD / CC BY 4.0), 1 km, timvis, ur det
+operativa arkivet `metpparchive` — samma produkt som går att läsa i drift, inte omkörningen `metpparchivev4` (som finns, men inte
+löper vidare efter 31/10 2025). Fälten: lufttemperatur 2 m, relativ fukt, vind 10 m, molnmängd, nederbörd, inkommande lång- och
+kortvågsstrålning; rutans höjd och landandel. Samplat i rutan närmast var och en av de 854 stationerna i `static.json` 6/10 (längst
+0,70 km från rutmitten). Skriptet `kuvos/metnordic.ts` (självtest), en förbindelse åt gången enligt tjänstens villkor; piloten
+15/1 2025: 24 timmar på 56 s, alla fält inom rimliga spann. Filen och manifestet läggs i den privata releasen
+`kuvos-metnordic-2024-25` och `kuvos/metnordic-leverans.json` bär summorna. **Läckaget:** analysens lufttemperatur rättas mot
+SMHI:s, FMI:s och MET:s stationer och Netatmo, inte mot Trafikverkets (MET Nordic-dokumentationen, läst 6/10) — en gömd
+Trafikverksstation är gömd helt. **Värdevakten** får spannen för de nya fälten innan något av dem används i en mätning; källans
+kortvågsstrålning har små negativa värden (−64 J/m² i piloten), som spannet ska rymma och värdevakten skriva ut.
+
+**Kandidaterna (fasta nu, inget svep, inget val efter talen):**
+- **RN (rutnätet + grannarnas skillnad):** yta(p,t) = luft_rutnät(p,t) + Δ̂(p,t), där Δ̂ är det invers-distansviktade medlet av
+  Δ_N = yta_N(t) − luft_rutnät(N,t) över samma grannar som RÅ (K = 5, ≤ 50 km, vikt 1/km, målet uteslutet). Vägens skillnad mot
+  luften sprids ut, inte vägens temperatur.
+- **RN+R (som RN, med Δ:s beroende av vädret):** Δ̂ = en linjär regression av Δ på molnmängd, vind, långvåg, kortvåg och fukt i
+  rutan, anpassad på alla stationer **utom målet**, plus det invers-distansviktade medlet av grannarnas residualer. Regressionens
+  koefficienter skrivs ut.
+- **Bredvid som referens, oförändrade:** RÅ, RÅ+HÖJD och OFFSET (taket) på samma rader.
+Kriging med variogram och ett osäkerhetsmått per punkt är **steg 2**, i en egen post innan det körs; satellitkartan (nedan) är
+**steg 3**, också med egen post.
+
+**Valideringen:** som vägpunktsgrinden (#323) — **hela stationen gömd**: målets egen serie används varken till grannmedlet,
+regressionen eller något annat. Populationen och vakterna kopieras från höjdprovets WHERE-sats (#75, radvakten, karantänen;
+CLAUDE.md om lånade grindar), halvtimmeshinkar med vägyta ≤ +5 °C. Analysen gäller hel timme; en hink använder **senaste analys
+vid eller före** hinkens tid (det som finns i drift), aldrig en senare.
+
+**Måtten:** grind A:s A1 (MAE i beslutsbandet), A2 (grova fel > 2 °C), A3 (frysklassfel) per band (närmaste bidragande granne,
+som RÅ) och totalt, och frysflaggan med tre marginaler (0 · 0,5 · 1,0 °C) mot K-A:s måttstock (#437). Alla tal skrivs ut.
+
+**Vad utfallet är:** ett riktningsprov, ingen dom (#424). Vintern 2024/25 är redan läst för RÅ (#467), så ett bra tal här kan inte
+frikänna något; domen läses på vintern 2026/27 i mars, förregistrerad i en egen post före den vintern. Ingen tröskel ändras
+(TROSKLAR-SKUGGAN; Skyltfondens bilaga 7: en tröskel skärps men lättas aldrig när utfallet är sett).
+
+**Satellitkartan (steg 3, inte förregistrerad här):** MODIS natt-LST (MOD11A1/MYD11A1, 1 km), klara nätter oktober–april över
+flera vintrar, till en karta över var det blir kallast; prövas som egenskap i Δ-regressionen. Kräver ett gratiskonto hos NASA
+Earthdata (Axel). Google Earth Engine väljs bort: fritt bara för icke-kommersiellt bruk. Google Earths datalager (WorldCover,
+skogstäckning, ytvatten, höjdmodell GLO-30) bygger på öppna källor (ESA, JRC, Copernicus) och hämtas därifrån om de behövs.
+
+**Alternativ:** SMHI:s MESAN (bara 24 timmar historik i API:t, läst 6/10 — används i drift och för ett eget arkiv framåt, egen
+post); omkörningen v4 (konsekventare bakåt, men inte samma produkt som drift); att vänta på termisk kartering (Axel 6/10: görs inte).
