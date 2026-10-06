@@ -79,7 +79,7 @@ L2 + L3 stänger det hålet. Det är den enskilt största vinsten som finns att 
 <!-- LÄGESRADER §4: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 *Läget i projektkartan:*
 
-- [Trafikverkets väderstationer](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vader): delvis, 93 % · kvar: Ytstatusfälten i drift: migration sql/043, deploy av ingest-live och en rad med surface_grip eller surface_ice skriven av livemotorn (kort #294)
+- [Trafikverkets väderstationer](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vader): delvis, 93 % · kvar: Värdevaktens dom OK på surface_grip när underlaget räcker (6/10: för tunt, 60 rader), och friktionen 0,82 förstådd innan fältet döms (kort #294)
 - [Trafikverkets väglag (RoadCondition)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vaglag): klar
 - [Trafikverkets olyckor, djur och hinder](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-situation): klar
 - [Publiceringen var tionde minut](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-l-publicera): klar
