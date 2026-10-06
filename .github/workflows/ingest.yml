@@ -2,7 +2,15 @@ name: ingest
 on:
   # CRON BORTTAGEN (kort #53): pulsklockan är klockan (puls-ingest, EN gång i timmen
   # sedan kort #80), och GitHub-cronen levererade bara 40 % av bokad takt (#70).
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      prov:
+        description: "tomt = vanlig körning · radarfel = radarsteget faller med flit, för att bevisa larmet (kort #293)"
+        required: false
+        default: ""
+permissions:
+  contents: read
+  issues: write # radarfelslarmet (kort #293)
 jobs:
   ingest:
     runs-on: ubuntu-latest
@@ -25,7 +33,40 @@ jobs:
       # under pilotfasen så en SMHI-hicka inte fäller kärningesten; gravstensläxans
       # motvikt är färskhetsraden i loggen + radar-pilot-knappens bevisläge.
       - name: Radarpiloten (skugga, får fallera utan att fälla ingest)
+        id: radar
         continue-on-error: true
-        run: node --experimental-strip-types ingest/radar.ts
+        run: |
+          if [ "${{ inputs.prov }}" = radarfel ]; then echo "PROV: radarsteget faller med flit (kort #293)"; exit 1; fi
+          node --experimental-strip-types ingest/radar.ts
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      # Radarfelslarmet (kort #293, DECISIONS #462, Bengts "bygg larmet" 6/10): continue-on-error gjorde ett
+      # stående radarfel osynligt — jobbet grönt, bara vakthundens korskontroll såg det, och den larmar
+      # först när stationerna rapporterat regn. Samma mönster som arkivbackup.yml: en issue med etiketten
+      # `radar`, kommenterad vid varje nytt fel och stängd av nästa lyckade radarsteg.
+      - name: Larm när radarn föll
+        if: steps.radar.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const url = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const prov = "${{ inputs.prov }}" === "radarfel" ? " (PROV, kort #293: felet är framkallat)" : "";
+            const body = `Radarpiloten föll ${new Date().toISOString()}${prov} — ${url}\n\nIngest-jobbet är grönt ändå (continue-on-error, DECISIONS #60). Radarn är vattenplaningens enda källa (kort #42) och en av övergångarnas proxies (#89). Läs loggen; larmet stängs av sig självt när nästa radarsteg lyckas.`;
+            try { await github.rest.issues.getLabel({ ...context.repo, name: 'radar' }); }
+            catch { await github.rest.issues.createLabel({ ...context.repo, name: 'radar', color: '1d76db', description: 'Radarpiloten föll (kort #293)' }); }
+            const open = await github.rest.issues.listForRepo({ ...context.repo, state: 'open', labels: 'radar' });
+            if (open.data.length) {
+              await github.rest.issues.createComment({ ...context.repo, issue_number: open.data[0].number, body });
+            } else {
+              await github.rest.issues.create({ ...context.repo, title: '🌧️ Radarpiloten föll', labels: ['radar'], body });
+            }
+      - name: Stäng radarlarmet när radarn lyckas igen
+        if: steps.radar.outcome == 'success'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const open = await github.rest.issues.listForRepo({ ...context.repo, state: 'open', labels: 'radar' });
+            for (const i of open.data) {
+              await github.rest.issues.createComment({ ...context.repo, issue_number: i.number, body: `✅ Radarpiloten lyckades igen ${new Date().toISOString()} — stänger larmet.` });
+              await github.rest.issues.update({ ...context.repo, issue_number: i.number, state: 'closed' });
+            }

@@ -7627,3 +7627,15 @@ Review-rättelsen (#460).
 - **Mätningen:** fyra PR:er låg 3–4/10 utan ord (#733 kod, #743 ett kort, #747 Play-texten, #748 kod med två signaturer). Ingen av dem är en ren kartgren, så en CI-regel hade inte slagit ihop någon av dem. Det som saknades var att Bengt fick se dem.
 - **Valt:** `scripts/kartsynk.ts` listar öppna PR:er vid start, med ålder, och en PR som väntat mer än ett dygn märks. Sessionen lyfter dem i rapporten. Sammanslagningen av kartgrenar är fortfarande sessionens (#447 p. 2), aldrig CI:s.
 - **Schemat:** den schemalagda kartsynken hängde från 4/10 07:26 (första PowerShell-anropet kom aldrig tillbaka, som provkörningen 3/10) och blockerade tre körningar. Stoppad 6/10; nästa körning 6/10 07:26 är provet på om uppgiften alls kan köra utan någon vid datorn.
+
+## #462 (6/10 2026) Radarfelslarmet: en issue med etiketten `radar` när radarpiloten faller, stängd av nästa lyckade steg (kort #293)
+
+**Bengts order 6/10:** *"bygg larmet"*, efter frågan vad som krävs för radardelen (§4.2).
+
+**Problemet:** radarsteget i `ingest.yml` kör med *continue-on-error* sedan piloten (DECISIONS #60), så ett stående radarfel gav ett grönt jobb. Den enda som såg det var vakthundens korskontroll, som larmar först när radarn tigit *medan stationerna rapporterat regn*; i torrt väder är ett fel osynligt i veckor. Radarn är vattenplaningens enda källa (kort #42).
+
+**Valt:** samma mönster som arkivbackup.yml. Faller radarsteget skapar jobbet en issue *🌧️ Radarpiloten föll* med etiketten `radar`, eller kommenterar den öppna; nästa lyckade radarsteg kommenterar och stänger. Etiketten skapas om den saknas. Knappen fick ett provläge `prov=radarfel` som fäller steget med flit, så att larmet kan bevisas utan att vänta på ett riktigt fel.
+
+**Alternativ:** (a) låta radarfelet fälla jobbet: förkastat, piloten ska inte stoppa kamerorna och polisens data (#60, #22). (b) En färskhetsvakt i vakthunden: förkastat, `radar_precip` är händelsefiltrerad (bara segment där radarn ser regn), så en torr timme och ett fel ser likadana ut; korskontrollen står kvar som den är. (c) Ett larm utan provläge: förkastat, en ny loggs bevis är en rad med innehåll, framkallad eller inväntad.
+
+**Bevis:** provkörningen 37415500151 (04:49Z, `prov=radarfel` på grenen) fällde radarsteget med flit, jobbet blev grönt och larmsteget skapade issue #765 med etiketten `radar`; nästa lyckade radarsteg på main stänger den.
