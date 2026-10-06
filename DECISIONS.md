@@ -7659,3 +7659,5 @@ startvärdena och prognoslagrets trösklar är ute sedan ansökan, och sidan til
    nycklarna. Projektsidan till Trafikverkets kontakt står kvar som den är.
 
 **Inte valt:** att be fonden bekräfta sekretessprövningen för personnummer och bankkonto (c). Begäran står i mejlet 30/9 (#404).
+
+**Tillägg 6/10 till rättelsen av #390** (Bengt: *"Resan 26–27/9 var min, händelsen 29/9 Axels"*): resan 26/9 12:11–13:03 med returen 27/9 10:23–11:52 (19 svar, kamerorna 12007xxx) var Bengts, och händelsen 29/9 08:11 Axels. Med 1/10 (Axels resa, kort #279) och samma fyra kameror 21/9 och 28/9 kommer alla 29 svar från projektgruppen: Bengt 19 (26–27/9), Axel 10 (21/9, 28/9, 29/9, 1/10); båda i projektgruppen (Bengts besked 6/10). För KB-D (≥ 30 svar från ≥ 5 förare, ingen över 25 %) räknas de som två förare, båda inne i projektet; kravet står alltså på noll riktiga testförare tills betan har förare utanför gruppen.
