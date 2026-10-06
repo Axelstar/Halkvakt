@@ -1,0 +1,53 @@
+# Kallkartan ur satelliten (kort #296 steg 3, DECISIONS #470): MODIS natt-LST, tre vintrar, till en karta över var marken blir
+# kallare än sin omgivning en klar natt. Hämtas EN gång och läggs i den privata releasen `kuvos-modis-2022-25` med manifest, som
+# SMHI-filerna (kuvos-smhi.yml). Finns releasen redan avbryts jobbet. Nyckeln är hemligheten EARTHDATA_TOKEN (Axels konto hos
+# NASA Earthdata, lagd 6/10); den skrivs aldrig ut.
+#
+# Utlöses på knapp, och en gång av pushen som lägger till filen på grenen kuvos/rutnatet-469 (Axels ord 6/10: pröva nu) — den
+# raden tas bort när grenen slås ihop.
+name: kuvos-modis
+on:
+  workflow_dispatch:
+  push:
+    branches: [kuvos/rutnatet-469]
+    paths: [.github/workflows/kuvos-modis.yml]
+permissions:
+  contents: write
+jobs:
+  hamta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    env: { GH_TOKEN: "${{ github.token }}" }
+    steps:
+      - uses: actions/checkout@v4
+      - name: Releasen får inte finnas
+        run: |
+          if gh release view kuvos-modis-2022-25 >/dev/null 2>&1; then echo "::error::releasen kuvos-modis-2022-25 finns redan"; exit 1; fi
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install pyhdf numpy scipy requests
+      - name: Självtestet
+        run: python kuvos/modis_natt.py --sjalvtest
+      - name: Hämtningen och kartan
+        env: { EARTHDATA_TOKEN: "${{ secrets.EARTHDATA_TOKEN }}" }
+        shell: bash
+        run: |
+          curl -sSf -o static.json https://axelstar.github.io/halkvakt-karta/data/app/v1/static.json
+          mkdir -p modis
+          { echo '```'; python -u kuvos/modis_natt.py static.json modis 6 2>&1; echo '```'; } | tee -a "$GITHUB_STEP_SUMMARY"
+          test "${PIPESTATUS[0]}" = 0
+      - name: Manifestet och releasen
+        shell: bash
+        run: |
+          cp static.json modis/static_2026-10-06.json
+          python - <<'EOF' | tee -a "$GITHUB_STEP_SUMMARY"
+          import hashlib, json, os, datetime
+          filer = [{"fil": f, "bytes": os.path.getsize("modis/" + f), "sha256": hashlib.sha256(open("modis/" + f, "rb").read()).hexdigest()}
+                   for f in sorted(os.listdir("modis")) if not f.startswith(".")]
+          json.dump({"release": "kuvos-modis-2022-25", "hamtad": datetime.datetime.utcnow().isoformat() + "Z", "filer": filer},
+                    open("modis/manifest.json", "w"), indent=1)
+          print(json.dumps(filer, indent=1))
+          EOF
+          gh release create kuvos-modis-2022-25 --target "${{ github.sha }}" --title "Kuvösen: kallkartan ur MODIS, vintrarna 2022/23–2024/25" \
+            --notes "Kort #296 steg 3, DECISIONS #470. MODIS natt-LST (MOD11A1/MYD11A1 v061, 1 km), oktober–april, klara nätter; lokal avvikelse mot ±25 km. Källa: NASA LP DAAC." \
+            modis/*

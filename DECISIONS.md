@@ -7975,3 +7975,29 @@ skogstäckning, ytvatten, höjdmodell GLO-30) bygger på öppna källor (ESA, JR
 
 **Alternativ:** SMHI:s MESAN (bara 24 timmar historik i API:t, läst 6/10 — används i drift och för ett eget arkiv framåt, egen
 post); omkörningen v4 (konsekventare bakåt, men inte samma produkt som drift); att vänta på termisk kartering (Axel 6/10: görs inte).
+
+## #470 (6/10 2026) Kallkartan ur satelliten — hämtningen och receptet, fasta innan något körs (kort #296 steg 3)
+
+**Axels ord 6/10:** pröva satellitkartan nu; han har skapat kontot hos NASA Earthdata och lagt nyckeln som GitHub-hemligheten
+`EARTHDATA_TOKEN` (*"Lets just do it for now as a test and then we update it at a later stage"* — nyckeln ska bytas senare, den har
+synts i chatten). Hämtningen och kartan byggs nu; **kartan prövas mot stationerna först i en egen förregistrering**, som
+egenskap i RN+R:s regression (#469), och den körningen sker på Bengts ord.
+
+**Källan:** MODIS natt-LST, MOD11A1 (Terra, ~22–23 lokal tid) och MYD11A1 (Aqua, ~01–02), version 061, 1 km, NASA LP DAAC. Sverige
+täcks av rutorna h18v02, h19v02, h18v03, h19v03 (CMR 6/10; ~12 MB per natt och satellit). Vintrarna 2022/23, 2023/24 och 2024/25,
+oktober–april. Granulerna listas publikt i CMR; filerna läses och kastas, bara summorna sparas.
+
+**Receptet (fast nu):** (1) bara pixlar med QC_Night bit 0–1 = 00 — framställd, god kvalitet, i praktiken klar himmel; (2) de fyra
+rutorna till en mosaik per natt och satellit; (3) lokal avvikelse = pixelns LST minus medlet av giltiga pixlar i 51 × 51 px
+(±25 km), bara där minst 200 grannar är giltiga — nattens väder tas bort, platsens egenhet står kvar; (4) kartan = summa, kvadratsumma
+och antal nätter per pixel. Ingen station och ingen vägdata läses när kartan byggs. Ut: `kallkartan_modis.npz` och en rad per station
+i `static.json` (6/10) med pixelns medelavvikelse, i den privata releasen `kuvos-modis-2022-25` med manifest.
+
+**Förbehåll som följer med kartan:** satelliten mäter markens yta (skog, mark, snö, sjö), inte asfalten; sjöar och hav får egna
+avvikelser (varma på hösten). Vintern 2024/25 ingår både i kartan och i riktningsprovet — kartan läser ingen facit, men det skrivs
+ut i provet. Domen på vintern 2026/27 läser en karta som är fryst innan den vintern börjar.
+
+**Kostnad:** NASA:s data är fri; Actions-jobbet tar uppskattningsvis 30–90 minuter en gång (kontot har spärren $0, inga pengar).
+
+**Alternativ:** Google Earth Engine (fritt bara för icke-kommersiellt bruk, #469), Sentinel-3 SLSTR (1 km, kortare arkiv, eget
+konto), Landsat/ECOSTRESS (70–100 m men sällan på natten). AppEEARS (LP DAAC:s utsnittstjänst) kräver lösenordsinloggning, inte nyckel.

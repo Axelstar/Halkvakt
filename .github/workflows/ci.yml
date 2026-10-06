@@ -77,6 +77,8 @@ jobs:
           node --experimental-strip-types scripts/grind-nt.ts --sjalvtest
       - name: Kuvösens rutnätshämtning — DAP-tolkningen och närmaste ruta (DECISIONS #469)
         run: node --experimental-strip-types kuvos/metnordic.ts --sjalvtest
+      - name: Kuvösens kallkarta — rutnätet, kvaliteten och avvikelsen (DECISIONS #470)
+        run: python3 -m pip install -q --break-system-packages pyhdf numpy scipy requests && python3 kuvos/modis_natt.py --sjalvtest
       # Generatorn gled isär från vektorfilerna tre gånger (31/8, 2/9, 13/9) utan att någon vakt såg det (#195).
       # Den skriver bara filer vars innehåll ändrats och fäller själv på en vektorfil utan scenario.
       - name: Vektorgeneratorn återskapar engine/vectors/ (#202)
