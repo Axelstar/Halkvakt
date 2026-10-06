@@ -82,3 +82,67 @@ så ingen kalibreringspunkt kunde nå det — ett beslut för TROSKLAR-OVERGANGA
 4 h + 90 min. Ö-B1:s gräns är 5 %. Definitionen måste fastställas före mars-domen (kort #296). Förslag: *regn inom N h + utfallsfönstret*.
 
 Inget ändras av utfallet: inga trösklar, startvärdena frysta, driftens dom står. Kort #295 stängt; kort #296 bär de två besluten.
+
+## 6. Matematiken och fysiken bakom beräkningarna — bedömning (Bengts fråga 6/10 kväll)
+
+*Inte "stämmer talen" utan "är metoden rätt". Läst i koden: `publish/grind-a.ts`, `scripts/hojd-prov.ts`, `kuvos/ovanpa.ts`, `sql/028`,
+`sql/018`, `engine/src/nederbord.ts`, `engine/src/segment.ts`, tröskeldokumenten. Två fynd kan ändra en slutsats (6.2, 6.3); resten är
+sunt med kända gränser. Kort #297.*
+
+### 6.1 Prognoslagret och grind A — sunt som prov, fysiken sätter gränsen
+Modellen är avståndsviktning (vikt 1/km, upp till fem ankare inom 50 km) med en inlärd offset per stationspar; grinden håller ute en station
+i taget. Det är en låg ordningens interpolation, och det är rätt verktyg för frågan *"räcker grannarna?"* — den uppfinner inget. Fysiken:
+vägytans temperatur en klar, stilla natt styrs av lokala ting (himmelsfaktor, skugga, vattennärhet, massa, trafik), och sådana anomalier
+avklingar på 10–20 km. Resultaten följer det: 2,5 % grova fel inom 7 km, 12 % bortom 20 km, i båda länderna. Att felet växer mot våren i
+alla band (#469) är samma fysik med sol i stället för utstrålning. **Offsetmodellen lär en konstant skillnad; verkligheten har en skillnad
+per regim** (klart/mulet, stilla/blåsigt, mörkt/soligt). Nästa steg är därför inte en bättre interpolation utan regimen — som kräver
+molnmängd (#408, §4.2 h) — eller facit mellan stationerna (kort #271). **Höjden:** standardatmosfärens 0,65 °C/100 m gäller fri luft om
+dagen; om natten på vintern ligger kalluften i dalarna och lapsen vänder — den empiriska 0,18 (vinter) mot 0,63 (höst) är väntad, inte ett fel.
+En fast lapse är fel fysik för nattlig vägyta; en regimstyrd (klart: dalgång kallare; mulet/blåsigt: standard) vore rätt, och den behöver
+molnmängd. **Felmarginalerna:** ±1,96 SE räknas på oberoende punkter, men halvtimmarna vid samma station är starkt korrelerade; kuvösens
+"± 0,0" på miljoner punkter betyder ingenting. Blockbootstrap per station × dygn (som premissmätningen, #405) är rätt och ger ~±0,4
+procentenheter på 60 dygn. Grind A:s egen marginal är en undre gräns; att skriva det i grinden är en skärpning, aldrig en lättnad.
+
+### 6.2 Efterhalkans mått straffar försprånget — ett räknefel i konstruktionen, inte i koden
+Ovanpå-måttet (#456) räknar **fångad** bara om fyrningen ligger inom 90 minuter före facitögonblicket, och **uteblev** om ytan inte nått +1,5
+inom 90 minuter efter fyrningen. Båda fönstren är fästa vid fyrningen. Följden: **en riktig varning som kommer 2 h före frysningen räknas
+som falsklarm** — den fångar inte (för tidig) och dess 90 minuter tar slut innan ytan är nere. Måttet och målet (tidsvinst) drar åt motsatt
+håll: ju tidigare regeln talar, desto dyrare ser den ut. Talen visar det: *föll ut* växer 117 → 147 → 168 av 406 när fönstret vidgas 60 → 90
+→ 120 min och har inte planat ut; priset i bandets topp (63 %) är till stor del samma sak — därifrån tar vägen ner mer än 90 minuter. I
+driften, med femminutersdata och 15-minutersfönstret, fyrar regeln ännu tidigare, så skevheten blir större där. Ö-B2:s ord är *"tillfällen som
+inte blev hala"*, inte *"inom 90 minuter"*; nettonyttan räknas redan per natt. **Rätt mått är per natt:** en tillkommen episod är falsklarm om
+stationen inte nådde ≤ +1,5 °C senare samma natt; fönstret 90 min hör till tidsvinsten, inte till priset. Det går att läsa i kuvösen utan ny
+kod av betydelse (samma episoder, facitets stationsnätter finns). Om priset per natt hamnar under 25 % för någon punkt är kalibreringens
+"ingen vinnare" ett artefakt av måttet — och frågan om en ny kalibrering på rätt mått är Bengts och Axels (regel D7). Inget ändras av
+läsningen i sig; startvärdena står.
+
+### 6.3 Efterhalkan saknar sin fysik: daggpunkten avgör om fallet fortsätter
+Regeln är *blöt + i bandet + faller*. Fysiken för en våt yta efter regn: den kyls av utstrålning och avdunstning tills den når daggpunkten —
+då börjar kondensationen, och det frigjorda värmet bromsar fallet. **Ytan stannar vid daggpunkten.** Är daggpunkten +3 °C uteblir
+frysningen; är den −2 °C fortsätter fallet genom +1 och frosten lägger sig (det är rimfrostens fysik, TROSKLAR-RIMFROST). Ingen av svepets
+dimensioner (N, fönster, fall) bär det; daggpunkten finns i regeln bara som vakt (yta − dagg ≥ −5), inte som prediktor. Kuvösen har
+`dewpoint_c` (levererad, inte räknad). **Läsning:** priset och nettonyttan för startvärdena delade på daggpunkten vid fyrningen (≤ +1 °C mot
+> +1 °C) och på yta − dagg. Förutsägelse, skriven före talen: episoder med daggpunkt ≤ +1 faller ut i klar majoritet, de över +1 uteblir i
+majoritet. Håller den är ett daggpunktsvillkor efterhalkans viktigaste dimension — en ny dimension i TROSKLAR-OVERGANGAR §2, med båda
+signaturerna, tidigast som mars-variant (D1 förbjuder den i kalibreringen).
+
+### 6.4 Det som är sunt med kända gränser
+- **Trenden:** fallet på 30 min ur två rader; givarens upplösning 0,1 °C ger ~0,14 °C brus på en differens, så svepets lägsta steg 0,4 ligger
+  tre gånger över bruset. 15-minutersfönstret går inte i halvtimmesdata — redovisat.
+- **Nederbördstypen:** WMO:s psykrometerformel med fast tryck 1 013 hPa; stationer upp till ~600 m ligger ~70 hPa lägre, vilket flyttar
+  våtbulben ~0,1 °C. Godtagbart; VViS ger inget tryck. Gränserna L 0/0,5 och U 1,5/2,0 ligger där litteraturen lägger regn/snö-gränsen
+  (Tw ≈ +0,5…+1,5). Att underkylt regn står utanför är rätt sagt.
+- **Radarn:** faktorn 0,65 är en median av kvoter; kvoten beror på intensiteten (bekräftelsekurvan 42 → 82 %), så en tröskel översatt med
+  medianen är grov men ärlig. Vattenplaningens 2,0/0,65 = 3,1 mm/h följer.
+- **Vinden:** olyckor per stationstimme och band är ett exponeringsmått; det blandar årstid och trafik. Grindens krav på 500
+  stationstimmar och 20 olyckor i högsta bandet är det som skyddar.
+- **Frysflaggan med marginal:** asymmetriskt fel (farligt = säger "fryser inte" när det fryser) är rätt riktning; täckningen bredvid gör
+  att marginalen inte kan väljas gratis.
+- **Facit *det blev kallt*:** VViS-stationerna sitter på saltade vägar; ≤ +1 °C är inte is. Alla kuvösens domar är temperaturprov, inte
+  halkprov — sagt före körningen, gäller fortfarande.
+
+### 6.5 Rekommendation
+Två läsningar, förregistrerade före körning, inga trösklar: **(1) priset per natt** för startvärdena och de 32 punkterna (6.2) — svarar
+på om kalibreringens "ingen vinnare" är måttets fel; **(2) daggpunkten vid fyrningen** (6.3) — svarar på om efterhalkan saknar sin viktigaste
+dimension. Båda ur kuvösen, samma knapp, minuter. Därefter är tre beslut Bengts och Axels: måttet för Ö-B2 i januari (per natt eller
+fönster), daggpunkten som mars-variant, och om en kalibrering på rätt mått får göras (D7). Bengts ja krävs (kort #297).
