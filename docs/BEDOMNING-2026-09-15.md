@@ -647,7 +647,7 @@ Ambitionen är att stänga systemet när det är fullkomligt. Genomgången i §0
 <!-- LÄGESRADER §6.1: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 *Läget i projektkartan:*
 
-- [Kuvösen](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-kuvosen): delvis, 85 % · kvar: Körflödet
+- [Kuvösen](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-kuvosen): delvis, 92 % · kvar: Kalibreringen på samma vinter (regel D, Axels signatur, #425)
 
 <!-- /LÄGESRADER -->
 
@@ -746,6 +746,21 @@ den snabbaste minskningen av kön som finns att få.
 Inget av detta bygger något nytt i motorn, och inget av det rör en tröskel. Det är fyra drag som gör resten mätbar.
 
 ---
+
+## 7. Riktningsprovet på vintern 2024/25 — varje del ensam och ovanpå de andra (6/10, DECISIONS #467)
+
+Körning 37447617038, startvärdena som de står, ingen dom (#424). Facit = stationens egen yta (tunt, sagt före körningen, #455).
+
+| Del | Ensam | Ovanpå de andra | Läsning |
+| :-- | :-- | :-- | :-- |
+| Baslinjen: frysrisk och broar | serie A 114 923 fyrningar, 8 402 episoder; serie B 560 255 fyrningar, 179 805 episoder | fångar 16 826 av 82 985 facittillfällen (20,3 %) | antal, döms inte på egen yta |
+| Efterhalkan (S1, S2, betans startvärden) | 983 episoder: föll ut 527 · nära 178 · uteblev 278 | fångar 461; nettonytt 175 (0,2 %); pris 45,1 % (147 föll ut, 76 nära, 183 uteblev av 406 tillkomna); tidsvinst 30 min median | litet netto, högt pris på halvtimmesdata |
+| Grind A (prognoslagret vid stationerna) | A1 0,60 °C klarar · A2 5,5 % faller · A3 0,3 % klarar | — | fallen på vintern; felet bortom 15 km (5,4 och 10,3 %) |
+| Vägpunktsgrinden (utan egen historik) | RÅ 7,5 % · INTERP 7,2 % · RÅ+HÖJD 8,8 % grova fel | — | fallen för alla tre, som 28/9 |
+| Höjdprovet | empirisk lapse 0,18 °C/100 m; rå+höjd sämre än rå i tre band av fyra | — | höjden återvinner inget på den här vintern |
+| Frysflaggan (K2 0 · 0,5 · 1) | bara offset med K2 = 1 når den lånade måttstocken: farliga 0,8 %, rätt klass 98,9 %, täckning 81,6 % | — | läsning; offset kräver egen historik |
+| Nederbördstypen (NT, L 0 · U 1,5) | NT-A klarar (täckning 0,9987, mot SMHI 0,9336, farligt 0,0386) · NT-D klarar · NT-B faller (träff 0,7203, slask 0,4171) · NT-C faller (0,7103) | — | bara startvärdet räknat |
+| T-A, R-A, W-A, övergångarna, tillståndet, försprånget | ej körda (#455, radarn ur tif #441) | — | — |
 
 ## Bilaga A — rättelser till kartan som väntar tills en rör kod
 
