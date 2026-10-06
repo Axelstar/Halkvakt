@@ -7921,12 +7921,16 @@ stationen, inte att vägen var torr. Om priset är orättvist mot efterhalkan av
 | 4 h | 60 min | 0,8 | 5 861 | 3 192 | 844 | 1 745 | 917 | 52,6 % | 432 · 60,2 % | 412 · 42,4 % |
 | 4 h | 60 min | 1,2 | 2 340 | 1 618 | 458 | 832 | 336 | 40,4 % | 214 · 46,3 % | 244 · 33,1 % |
 
-## #469 (6/10 2026) Rutnätsmodellen i kuvösen — Axels beslut att pröva, och förregistreringen före något utfall: MET Nordic som bakgrund, vägens skillnad mot luften ur grannarna, hela stationer gömda (kort #296)
+## #470 (6/10 2026) Rutnätsmodellen i kuvösen — Axels beslut att pröva, och förregistreringen före något utfall: MET Nordic som bakgrund, vägens skillnad mot luften ur grannarna, hela stationer gömda (kort #298)
 
 **Axels ord 6/10 kväll (chatten, efter genomgången av riktningsprovet #467):** *"Okej jag tycker vi testar"* — om förslaget att
 bygga prognosen mellan stationerna på ett väderrutnät i stället för på stationerna ensamma, med en satellitkarta över kalla nätter
 som nästa byggsten. Ordningen är hans: rutnätet först (*"jag tycker nästan vi börjar med 3"*). Hämtningen av indata görs på det
 ordet; **provet mot facit körs först på Bengts ord** (#424, bedömningen §4.2). Inget tal ur provet är läst när posten skrivs.
+
+**Numreringen:** posten skrevs först som #469 och kortet som #296, samtidigt som en annan session tog båda numren (PR #782). De
+byttes till #470 och #298 före sammanslagningen; commit-meddelandena på grenen och kommentarerna i `kuvos-metnordic.yml` och
+`kuvos-modis.yml` (rörs inte medan hämtningarna går) säger fortfarande #469/#470/#296.
 
 **Skälet, ur #467.** Grind A per band med stationens egen historik (OFFSET) mot utan (RÅ, vägpunktsgrinden): grova fel 3,6 mot
 5,2 % inom 7 km, 3,7 mot 5,3 · 5,4 mot 7,2 · 10,3 mot 13,6 %. Vädret är detsamma i båda; skillnaden är platsens särart, som en
@@ -7976,12 +7980,12 @@ skogstäckning, ytvatten, höjdmodell GLO-30) bygger på öppna källor (ESA, JR
 **Alternativ:** SMHI:s MESAN (bara 24 timmar historik i API:t, läst 6/10 — används i drift och för ett eget arkiv framåt, egen
 post); omkörningen v4 (konsekventare bakåt, men inte samma produkt som drift); att vänta på termisk kartering (Axel 6/10: görs inte).
 
-## #470 (6/10 2026) Kallkartan ur satelliten — hämtningen och receptet, fasta innan något körs (kort #296 steg 3)
+## #471 (6/10 2026) Kallkartan ur satelliten — hämtningen och receptet, fasta innan något körs (kort #298 steg 3)
 
 **Axels ord 6/10:** pröva satellitkartan nu; han har skapat kontot hos NASA Earthdata och lagt nyckeln som GitHub-hemligheten
 `EARTHDATA_TOKEN` (*"Lets just do it for now as a test and then we update it at a later stage"* — nyckeln ska bytas senare, den har
 synts i chatten). Hämtningen och kartan byggs nu; **kartan prövas mot stationerna först i en egen förregistrering**, som
-egenskap i RN+R:s regression (#469), och den körningen sker på Bengts ord.
+egenskap i RN+R:s regression (#470), och den körningen sker på Bengts ord.
 
 **Källan:** MODIS natt-LST, MOD11A1 (Terra, ~22–23 lokal tid) och MYD11A1 (Aqua, ~01–02), version 061, 1 km, NASA LP DAAC. Sverige
 täcks av rutorna h18v02, h19v02, h18v03, h19v03 (CMR 6/10; ~12 MB per natt och satellit). Vintrarna 2022/23, 2023/24 och 2024/25,
@@ -7999,5 +8003,5 @@ ut i provet. Domen på vintern 2026/27 läser en karta som är fryst innan den v
 
 **Kostnad:** NASA:s data är fri; Actions-jobbet tar uppskattningsvis 30–90 minuter en gång (kontot har spärren $0, inga pengar).
 
-**Alternativ:** Google Earth Engine (fritt bara för icke-kommersiellt bruk, #469), Sentinel-3 SLSTR (1 km, kortare arkiv, eget
+**Alternativ:** Google Earth Engine (fritt bara för icke-kommersiellt bruk, #470), Sentinel-3 SLSTR (1 km, kortare arkiv, eget
 konto), Landsat/ECOSTRESS (70–100 m men sällan på natten). AppEEARS (LP DAAC:s utsnittstjänst) kräver lösenordsinloggning, inte nyckel.

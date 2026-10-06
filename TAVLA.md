@@ -325,8 +325,8 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   ↪ **29/9: rubriken överspelad (DECISIONS #402).** Android bär 0.3.9 (18) som iOS sedan 26/9 (#377, #379) och Play-kontot finns sedan 20/9. Kvar är bara Play-vägen: enhetsverifieringen i Play Console, första uppladdningen med Data safety-formuläret ifyllt likadant som filen (#214), slutet test 14 dygn med tolv testare, produktion tidigast november. Verify-raden gäller oförändrad.
 ### Bengt
 
-- [ ] 🛰️ **#296 RUTNÄTSMODELLEN I KUVÖSEN — MET NORDIC SOM BAKGRUND MELLAN STATIONERNA** (Axels ord 6/10 *"jag tycker vi testar"*;
-  DECISIONS #469). Riktningsprovet (#467) visade att felet mellan stationerna är platsens särart: OFFSET 3,6 mot RÅ 5,2 % grova fel
+- [ ] 🛰️ **#298 RUTNÄTSMODELLEN I KUVÖSEN — MET NORDIC SOM BAKGRUND MELLAN STATIONERNA** (Axels ord 6/10 *"jag tycker vi testar"*;
+  DECISIONS #470). Riktningsprovet (#467) visade att felet mellan stationerna är platsens särart: OFFSET 3,6 mot RÅ 5,2 % grova fel
   inom 7 km. Provet: vägen = rutnätets luft (MET Nordic, 1 km, timvis) + vägens skillnad mot luften ur grannarna (RN), och samma med
   skillnadens beroende av moln, vind, strålning och fukt (RN+R); hela stationen gömd, grind A:s mått och frysflaggan per band, RÅ och
   OFFSET bredvid. Riktningsprov, ingen dom; domen på vintern 2026/27. **Steg 1:** hämtningen (`kuvos/metnordic.ts`, release
@@ -334,7 +334,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   kalla nätter (MODIS natt-LST, kräver Axels konto hos NASA Earthdata; egen post). 🔑 Bengts ja till provet; Axels Earthdata-konto för
   steg 3. *Verify:* releasen med manifest och `kuvos/metnordic-leverans.json`; värdevaktens spann för fälten; provets tal i en
   DECISIONS-post med alla kandidater per band.
-  🛰️ **Steg 3 byggt 6/10 (DECISIONS #470):** `kuvos/modis_natt.py` (självtest) och knappen `kuvos-modis` — MODIS natt-LST, tre vintrar, receptet fast före körningen; Axels nyckel ligger som `EARTHDATA_TOKEN` (ska bytas, den syntes i chatten).
+  🛰️ **Steg 3 byggt 6/10 (DECISIONS #471):** `kuvos/modis_natt.py` (självtest) och knappen `kuvos-modis` — MODIS natt-LST, tre vintrar, receptet fast före körningen; Axels nyckel ligger som `EARTHDATA_TOKEN` (ska bytas, den syntes i chatten).
 
 - [ ] 🔍 **#295 KUVÖSENS BERÄKNINGAR GRANSKADE — TRE LÄSNINGAR SOM KAN ÄNDRA BILDEN** (Bengts fråga 6/10 *"finns det några missar/misstag/tankefel"*; `docs/KUVOS-GRANSKNING-2026-10-06.md`, läst i koden och loggarna, inget kört). Kontrollerat och rätt: grind A:s fönster går genom klockan, startvärdena räknar lika i båda körningarna, regnmängden är mm/30 min i båda, fukten finns, kalibreringens regel. Tre fynd som kan ändra en läsning: **(F1)** grind A på vintern lärde offseten över 152 dygn mot driftens 60 — *hårdare vinter* eller *längre fönster* går inte att skilja utan en körning på 60-dygnsfönster vid tre klockslag (31/12, 28/2, 31/3); **(F2)** efterhalkans pris 45 % bär två omätta skevheter uppåt (tre utfallsrader i stället för arton; 90-minutersfönstrets aritmetik straffar fall 0,4–0,6 från bandets topp) — mäts med 120-minutersfönstret och nära-bandet 1,0 ur T-A:s svep, läsning utan dom; **(F3)** *nettonytt av facit* måste räknas *inom räckvidd* (regn inom N h) före mars-domen, annars döms efterhalkan mot en nämnare den inte kan nå (Ö-B1). Två som inte ändrar något: diagnosraden *saknade dygn* ur riktig tid, NT:s ordlista (1 411 rader). 🔑 Nyckel: Bengts ja till de tre läsningarna; var och en förregistreras i DECISIONS före körning, inga trösklar rörs. *Verify:* de tre läsningarna körda och bokförda i DECISIONS med talen, och F1:s svar (fönsterfel eller hårdare vinter) inskrivet i bedömningen §7.
 

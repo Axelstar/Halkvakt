@@ -1,7 +1,7 @@
-"""KALLKARTAN UR SATELLITEN (kort #296 steg 3, DECISIONS #470). MODIS natt-LST (MOD11A1 Terra, MYD11A1 Aqua, version 061,
+"""KALLKARTAN UR SATELLITEN (kort #298 steg 3, DECISIONS #471). MODIS natt-LST (MOD11A1 Terra, MYD11A1 Aqua, version 061,
 1 km) över Sverige, tre vintrar oktober–april, till en karta över var marken blir kallare än sin omgivning en klar natt.
 
-Receptet (fast i DECISIONS #470 innan något körs):
+Receptet (fast i DECISIONS #471 innan något körs):
   1. Bara pixlar med QC_Night bit 0–1 = 00 (LST framställd, god kvalitet) — i praktiken klar himmel.
   2. Per natt och satellit läggs de fyra rutorna (h18/h19 × v02/v03) ihop till en mosaik 2400 × 2400.
   3. Lokal avvikelse = pixelns LST minus medlet av giltiga pixlar i en ruta 51 × 51 (±25 km) runt den. Kräver minst 200 giltiga

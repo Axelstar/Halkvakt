@@ -1,4 +1,4 @@
-// KUVÖSENS RUTNÄT (Axels ord 6/10, DECISIONS #469, kort #296): MET Nordic Analysis — Meteorologisk institutts (MET Norway)
+// KUVÖSENS RUTNÄT (Axels ord 6/10, DECISIONS #470, kort #298): MET Nordic Analysis — Meteorologisk institutts (MET Norway)
 // timvisa analys på 1 km för Norden — för vintern 2024/25, samplad i rutan där varje Trafikverksstation står. Hämtas EN gång,
 // som SMHI-filerna (kuvos/smhi-vinter.ts), och läggs i en privat release med manifest; provet läser filen, aldrig nätet.
 //
