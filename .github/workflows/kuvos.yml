@@ -11,16 +11,16 @@ on:
         description: "Läsande mätning efter vakterna, en fil under scripts/matningar/ (tomt = ingen). Förregistreras i DECISIONS före körningen."
         default: ""
       korflode:
-        description: "Körflödet (steg 5). tid-sju-dygn = bara körtiden, inga varningar (#426). riktningsprov = LÄSER UTFALL, bara på Bengts ord (#424, #455)."
+        description: "Körflödet (steg 5). tid-sju-dygn = bara körtiden, inga varningar (#426). riktningsprov = LÄSER UTFALL, bara på Bengts ord (#424, #455). kalibrering = regel D på vintern, efter riktningsprovet, bara på Bengts ord (#425, #468)."
         type: choice
-        options: [ingen, tid-sju-dygn, riktningsprov]
+        options: [ingen, tid-sju-dygn, riktningsprov, kalibrering]
         default: ingen
 permissions:
   contents: read
 jobs:
   inlasning:
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ inputs.korflode == 'riktningsprov' && 300 || 60 }}   # 6/10: 82 min till höjdprovet, NT och efterhalkan därefter
+    timeout-minutes: ${{ (inputs.korflode == 'riktningsprov' || inputs.korflode == 'kalibrering') && 300 || 60 }}   # 6/10: 82 min till höjdprovet, NT och efterhalkan därefter
     services:
       postgis:
         image: postgis/postgis:16-3.4
@@ -141,6 +141,14 @@ jobs:
             node --experimental-strip-types kuvos/efterhalkan.ts
             echo '```'
           } 2>&1 | grep --line-buffered -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+      # KALIBRERINGEN (regel D, DECISIONS #425, #468) — läser utfall, bara på Bengts ord, efter riktningsprovet. Rutnätet och
+      # startvärdena härleds ur sql/028; varje punkt skrivs ut med hela vintern och båda halvorna; skriptet föreslår, Bengt fryser (D6).
+      - name: Kalibreringen
+        if: ${{ inputs.korflode == 'kalibrering' }}
+        shell: bash
+        env: { NODE_OPTIONS: "--max-old-space-size=10240" }
+        run: |
+          { echo '```'; node --experimental-strip-types kuvos/kalibrering.ts; echo '```'; } 2>&1 | grep --line-buffered -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Varningarna sparas för tabellen (5d)
         if: ${{ inputs.korflode == 'riktningsprov' }}
         uses: actions/upload-artifact@v4
