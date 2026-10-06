@@ -7820,3 +7820,44 @@ från riktig tid och inte från klockan; harmlöst (de dygnen räknas inte) men 
 
 **Följd:** ingen tröskel och ingen kod ändras av utfallet (#424). Tabellen del × ensam × ovanpå står i bedömningen §7, som kort #232:s
 Verify kräver. Nästa steg enligt planen är kalibreringen på samma vinter, som ändrar regel D och kräver Axels signatur (#425).
+
+## #468 (6/10 2026) Kalibreringen i kuvösen — förregistrerad före körningen: tidpunkten, rutnätet, måttet, regeln (regel D3–D5, kort #232)
+
+**Bengts ord 6/10: *"gör kalibreringen"*,** efter riktningsprovet (#467). Signaturerna finns sedan 1/10: Bengt och Axel flyttade
+säsongens enda gemensamma kalibrering till kuvösen (#425, TROSKLAR-KOMBINATIONEN §5), och betan hörs på de kalibrerade värdena om
+vinnaren håller i båda halvorna, annars på startvärdena (#427, #428). Det här är tidpunkten regel D3 kräver i DECISIONS innan
+kalibreringen inträffar. Inget tal ur kalibreringen var läst när posten skrevs.
+
+**Tidpunkten (D3):** 6/10 2026, på vintern 2024/25 i kuvösen — all data ligger före tidpunkten, och ingen natt ur vintern 2026/27
+läses. Domdata är hela vintern 2026/27 (#425).
+
+**Rutnätet (D1, §3, #219):** N 1 · 2 · 3 · 4 h × trendfönster 15 · 30 · 60 min × fall 0,4 · 0,6 · 0,8 · 1,2 °C = **48 punkter**, med
+minsta regn > 0, startband +1…+3, radar av, N_varning av — de 48 betan kan köra. Svepen och startvärdena härleds ur sql/028 vid körning
+(D1-vaktens listor och funktionens standardvärden), aldrig kopierade; ett värde utanför svepen avvisas av funktionen själv.
+15-minutersfönstret går inte att räkna i kuvösen (en rad per halvtimme, väg A, #455): de 16 punkterna redovisas som *ej räknebara*,
+aldrig som noll. Räknebara: 32.
+
+**Måttet (#456, kuvos/ovanpa.ts):** per punkt över hela vintern — nettonytt = facittillfällen (stationsnätter med yta ≤ +1 °C, vakterna
+klarade) som bara punkten fångar och inte baslinjen; pris = *uteblev* av punktens tillkomna episoder med utfall. Samma facit som
+riktningsprovet: det blev kallt, inte det blev halt (förbehållet i #425).
+
+**Regeln (D4), skriven nu:**
+- **Kandidat** = räknebar punkt med pris ≤ 25 % (Ö-B2, TROSKLAR-OVERGANGAR §4) räknat på **minst 20 tillkomna episoder med utfall**,
+  och nettonytt > 0. Golvet 20 är nytt och mitt: ett pris på en handfull episoder är brus, och utan golv vinner en tyst punkt på 0 av 3.
+- **Vinnare** = kandidaten med störst nettonytt över hela vintern; lika ⇒ lägst pris ⇒ färst ändrade dimensioner mot startvärdena ⇒
+  rutnätets ordning.
+- **Håller** = vinnaren är kandidat på samma villkor i **båda halvorna** av vintern, delade vid facitnätternas mittnatt (som grind T-A:s
+  tidsdelning). Håller den inte, eller finns ingen kandidat, står startvärdena (N 2 h · 30 min · fall 0,8).
+- Startvärdenas tal skrivs bredvid, och nettonytt som andel av facit mot Ö-B1 (≥ 5 %) som läsning — Ö-B1 döms i januari och mars, inte här.
+
+**Redovisningen (D5):** alla 48 punkter med hela vintern och båda halvorna, antalet prövade och räknebara bredvid vinnaren.
+**Frysningen (D6):** skriptet föreslår; Bengt fryser med sitt ord, och värdena, antalet punkter och datumet skrivs här som utfall.
+Därefter ändras ingen tröskel; dom 2 i mars läser vintern 2026/27.
+
+**Byggt:** `kuvos/kalibrering.ts` (härledning ur sql/028, 32 anrop av ögonblicksvarianten ur #456, ovanpå per halva, regeln som ren
+funktion), proven i `test/kuvos.test.ts` (nätet 48, startvärdena i nätet, D1-vakten fäller, D4 räknat för hand: taket, golvet, halvorna,
+lika-reglerna, ej räknebar deltar aldrig), knappen `kuvos` med `korflode: kalibrering` (300 min, 10 GB heap), som vägrar utanför kuvösen
+(`kuvos.now()` saknas ⇒ stopp). Ö-B2:s 25 % är första kopian i kod; dokumentet är källan.
+
+**Vad som inte görs:** inga andra dimensioner (regnmängd, startband, radar — mars-varianter, #223/#225), inga golv ur Ö-B som urval,
+ingen tröskel i någon del rörs (D1), ingen andra kalibrering (D7).

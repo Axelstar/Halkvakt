@@ -258,3 +258,43 @@ test("SMHI-arkivet: bara vinterns rader, läget ur perioden som täcker raden, v
   assert.deepEqual(rader.map((r) => [new Date(r.t).toISOString().slice(0, 13), r.varde, r.kvalitet, r.lat]),
     [["2024-12-01T06", "113", "G", 55.5], ["2025-02-01T06", "0", "Y", 55.6]], "113 (himlen skymd) står kvar — moln.ts klassar den");
 });
+
+// Kalibreringen (regel D, DECISIONS #468): rutnätet och startvärdena härleds ur sql/028, aldrig kopierade.
+test("kalibreringen: 48 punkter ur sql/028:s svep, startvärdena står i nätet, en ändrad D1-vakt fäller härledningen", async () => {
+  const { rutnat, svepen, startvarden, samma } = await import("../kuvos/kalibrering.ts");
+  const sql = readFileSync(new URL("../sql/028_uppspelning_varianter.sql", import.meta.url), "utf8");
+  assert.deepEqual(svepen(sql), { n: [1, 2, 3, 4], fonster: [15, 30, 60], fall: [0.4, 0.6, 0.8, 1.2] });
+  const natet = rutnat(sql);
+  assert.equal(natet.length, 48);
+  assert.equal(natet.filter((p) => p.fonster === 15).length, 16, "de 16 punkterna med 15-minutersfönstret finns i nätet");
+  const start = startvarden(sql);
+  assert.deepEqual(start, { n: 2, fonster: 30, fall: 0.8 }, "betans startvärden (DECISIONS #222)");
+  assert.ok(natet.some((p) => samma(p, start)));
+  assert.throws(() => svepen(sql.replace("p_fall NOT IN (0.4, 0.6, 0.8, 1.2)", "p_fall IS NULL")), /DECISIONS #468/, "en borttagen D1-vakt fäller härledningen");
+  assert.equal(rutnat(sql.replace("p_fall NOT IN (0.4, 0.6, 0.8, 1.2)", "p_fall NOT IN (0.4)")).length, 12, "ett ändrat svep följs — det kopieras aldrig");
+});
+
+// Regel D4, räknat för hand: kandidat = pris ≤ 25 % på ≥ 20 episoder och nettonytt > 0; vinnaren håller bara i båda halvorna.
+test("kalibreringen: D4 — störst nettonytt under taket, tunt pris räknas inte, vinnaren måste hålla i båda halvorna, annars startvärdena", async () => {
+  const { valj, kandidat, TAK_PRIS, GOLV_EPISODER } = await import("../kuvos/kalibrering.ts");
+  const t = (nettonytt: number, medUtfall: number, uteblev: number) => ({ fyrningar: 0, episoder: 0, fangade: 0, nettonytt, tillkomna: medUtfall, medUtfall, uteblev });
+  const u = (n: number, fonster: number, fall: number, hel: ReturnType<typeof t>, a = hel, b = hel, raknebar = true) => ({ punkt: { n, fonster, fall }, raknebar, hel, a, b });
+  const start = { n: 2, fonster: 30, fall: 0.8 };
+  assert.deepEqual([TAK_PRIS, GOLV_EPISODER], [0.25, 20]);
+  assert.ok(kandidat(t(1, 20, 5)) && !kandidat(t(1, 20, 6)) && !kandidat(t(1, 19, 0)) && !kandidat(t(0, 40, 0)), "gränserna: 25 % inklusive, 20 episoder, nettonytt > 0");
+
+  // Startvärdena över taket (45 %), som i riktningsprovet; två punkter under taket, den med störst nettonytt vinner och håller.
+  const s = u(2, 30, 0.8, t(175, 406, 183));
+  const v1 = valj([s, u(1, 30, 0.8, t(60, 100, 20)), u(1, 60, 1.2, t(90, 120, 30))], start);
+  assert.deepEqual(v1.vinnare?.punkt, { n: 1, fonster: 60, fall: 1.2 });
+  assert.match(v1.skal, /2 kandidater av 3 räknebara/);
+  // Samma vinnare, men halva B över taket ⇒ startvärdena står.
+  const v2 = valj([s, u(1, 30, 0.8, t(60, 100, 20)), u(1, 60, 1.2, t(90, 120, 30), t(50, 60, 10), t(40, 60, 20))], start);
+  assert.equal(v2.vinnare, null); assert.match(v2.skal, /håller inte i halva B/);
+  // Ingen under taket ⇒ startvärdena, med skälet.
+  const v3 = valj([s, u(1, 30, 0.8, t(60, 100, 30))], start);
+  assert.equal(v3.vinnare, null); assert.match(v3.skal, /ingen punkt är kandidat/);
+  // Lika nettonytt ⇒ lägst pris; lika pris ⇒ närmast startvärdena. Ej räknebar punkt deltar aldrig.
+  const v4 = valj([s, u(1, 30, 0.8, t(60, 100, 20)), u(3, 30, 0.8, t(60, 100, 10)), u(1, 60, 0.4, t(60, 100, 10)), u(4, 15, 0.4, t(999, 100, 0), undefined, undefined, false)], start);
+  assert.deepEqual(v4.vinnare?.punkt, { n: 3, fonster: 30, fall: 0.8 }, "10 % slår 20 %; en ändrad dimension slår två");
+});
