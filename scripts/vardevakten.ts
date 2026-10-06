@@ -59,6 +59,7 @@ export const SPANN: Record<string, [number, number, string]> = {
   wind_speed_ms: [0, 60, "m/s"], wind_gust_ms: [0, 60, "m/s"],
   visibility_m: [0, 20000, "m — 20 000 ÄR ETT TAK, inte en mätning"],
   rain_sum_mm: [0, 100, "mm/30 min"], snow_wateq_mm: [0, 100, "mm/30 min"],
+  surface_grip: [0, 1, "friktion 0–1 ur ytstatusgivaren (Surface.Grip, DECISIONS #465) — NULL = ingen givare"],
   condition_code: [1, 4, "Trafikverkets väglagsklass"],
   severity_code: [1, 5, "TRV SeverityCode — 3 har aldrig förekommit"],
   // Radarns intensiteter. 200 mm/h är fysikens gräns för en 5-minutersskur; extrema

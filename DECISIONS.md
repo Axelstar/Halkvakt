@@ -7697,3 +7697,29 @@ maskinvägen får fler regelsteg. Första: regeln `inlamnad:<version>` i `script
 angivna nått *Waiting for Review* eller ett senare tillstånd), satt på App Store-delens *Inskickat*. Skälet mot en nattlig skrivare:
 kartan är bokföring med bevis, inte nattens siffror, och en skrivare utan republicering ger varje morgon en artefakt som skiljer sig
 från sin repokopia (STOMREGELN).
+
+## #465 (6/10 2026) Ytstatusfälten in i arkivet: Surface.Water, Ice, Snow och Grip från stationerna med givare (kort #294)
+
+**Bengts ja 6/10** (*"ja till begäran och ytstatusfälten"*), efter frågan vad som krävs för att kuvösens facit inte ska vara tunt
+(bedömningen §4.2 6/10).
+
+**Varför.** Cirka 50 av Trafikverkets 775 stationer har beröringsfria ytstatusgivare (MS7; Trafikverkets presentation *Nästa generations
+VViS* 2019), och API:t bär dem som `Observation.Surface.Water`, `Ice`, `Snow` (förekomst) och `Surface.Grip` (friktion 0–1). Det är det
+enda i VViS som mäter att vägen *blev hal*, inte bara kall. Arkivet sparade dem inte, så vinterns facit (kameror, förare, rapporterad
+halka, SMHI, stationernas yta) hade ingen rad som sa *is*. Från deployen finns de på de rader arkivpolicyn ändå sparar (DECISIONS #4,
+#353); fyra små kolumner, ingen ny rad.
+
+**Beslut.**
+1. `sql/043_ytstatus.sql`: `surface_water`, `surface_ice`, `surface_snow` (boolean) och `surface_grip` (numeric) i `weather_observations`.
+   NULL betyder *ingen givare*, aldrig *torrt*.
+2. `ingest/sources/weather.ts`, `ingest/db.ts` och `supabase/functions/ingest-live/skriv.ts` skriver fälten fält för fält; provet i
+   `skriv_test.ts` lagrar is och friktion och visar att en station utan givare får NULL.
+3. Värdevakten får spannet `surface_grip` 0–1 INNAN fältet bär något (VÄRDEVAKTEN). Booleanerna har inget spann.
+4. Fälten används inte av motorn och går inte till lägesfilen. De är facit, och hur de får döma skrivs i tröskeldokumenten innan de
+   används i en dom (regeln i TROSKLAR-KOMBINATIONEN §1).
+
+**Drift:** migrationen med DB-knappen, deploy av `ingest-live`, och beviset är en rad med `surface_grip` eller `surface_ice` satt
+(kort #294). Kartan: `k-vader` orange tills raden finns.
+
+**Alternativ:** vänta till vintern (förkastat: första frosten är facits första rad, och fälten måste finnas innan); lägga fälten i
+`weather_latest` och lägesfilen (inte nu: ingen regel läser dem, och lägesfilens fält kräver ett tröskeldokument).
