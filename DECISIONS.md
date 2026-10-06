@@ -7639,3 +7639,23 @@ Review-rättelsen (#460).
 **Alternativ:** (a) låta radarfelet fälla jobbet: förkastat, piloten ska inte stoppa kamerorna och polisens data (#60, #22). (b) En färskhetsvakt i vakthunden: förkastat, `radar_precip` är händelsefiltrerad (bara segment där radarn ser regn), så en torr timme och ett fel ser likadana ut; korskontrollen står kvar som den är. (c) Ett larm utan provläge: förkastat, en ny loggs bevis är en rad med innehåll, framkallad eller inväntad.
 
 **Bevis:** provkörningen 37415500151 (04:49Z, `prov=radarfel` på grenen) fällde radarsteget med flit, jobbet blev grönt och larmsteget skapade issue #765 med etiketten `radar`; nästa lyckade radarsteg på main stänger den.
+
+## #463 (6/10 2026) Underlaget till Trafikverket och VTI: sammanställningar och skript, aldrig rådata, och först efter domen — och vad som faktiskt är opublicerat efter Skyltfondsansökan
+
+**Bengts fråga 6/10:** *"kontrollera vår ansökan till skyltfonden och gör en bedömning om vi lämnat ut för mycket uppgifter som avslöjar
+affärshemligheter"*. Bedömningen står i §4.2 (6/10). **Bengts svar:** *"ja till a, b och d"*.
+
+**Läget efter 30/9.** Ansökan är en allmän handling hos Trafikverket och bär motorns startvärden (bilaga 3 och 6), hela TROSKLAR-SKUGGAN
+med grindtalen (bilaga 7), modellen, mätta utfall, arkitekturen och affärsidén. Opublicerat är de tolv andra tröskeldokumentens tal,
+kuvösens utfall, förarfacit, skuggloggens träffar, koden och nycklarna. Det är den listan som gäller, inte #418:s "inga regelvärden":
+startvärdena och prognoslagrets trösklar är ute sedan ansökan, och sidan till Trafikverkets kontakt skyddar inte dem.
+
+**Beslut.**
+1. **Underlaget** som ansökan erbjuder Trafikverket, beredningsgruppen och VTI (*"tillgång till underlaget för egen omprövning"*) ges som
+   sammanställningar och utvärderingsskript, aldrig råarkivet, skuggloggen eller förarfacit, och först efter domen i mars 2027. Skälet:
+   allt som lämnas till en myndighet blir allmän handling, och det som har konkurrensvärde är kalibreringen, facit och arkivet.
+2. **Svar till fonden** bär inga nya tal utöver ansökans. Frågor om metoden besvaras med hänvisning till bilagorna.
+3. **Rättelse till #418:** det opublicerade är de tolv andra tröskeldokumentens tal, kalibreringen, förarfacit, skuggloggen, koden och
+   nycklarna. Projektsidan till Trafikverkets kontakt står kvar som den är.
+
+**Inte valt:** att be fonden bekräfta sekretessprövningen för personnummer och bankkonto (c). Begäran står i mejlet 30/9 (#404).
