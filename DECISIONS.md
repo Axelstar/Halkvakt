@@ -7999,7 +7999,7 @@ ordet; **provet mot facit körs först på Bengts ord** (#424, bedömningen §4.
 
 **Numreringen:** posten skrevs först som #469 och kortet som #296, samtidigt som en annan session tog båda numren (PR #782). De
 byttes till #470 och #298 före sammanslagningen; commit-meddelandena på grenen och kommentarerna i `kuvos-metnordic.yml` och
-`kuvos-modis.yml` (rörs inte medan hämtningarna går) säger fortfarande #469/#470/#296.
+`kuvos-modis.yml` säger #469/#470/#296 till rättelsen samma kväll; commit-meddelandena står kvar.
 
 **Skälet, ur #467.** Grind A per band med stationens egen historik (OFFSET) mot utan (RÅ, vägpunktsgrinden): grova fel 3,6 mot
 5,2 % inom 7 km, 3,7 mot 5,3 · 5,4 mot 7,2 · 10,3 mot 13,6 %. Vädret är detsamma i båda; skillnaden är platsens särart, som en
