@@ -7920,3 +7920,29 @@ stationen, inte att vägen var torr. Om priset är orättvist mot efterhalkan av
 | 4 h | 60 min | 0,6 | 9 284 | 4 318 | 1 055 | 2 351 | 1 409 | 59,9 % | 553 · 66,1 % | 502 · 51,6 % |
 | 4 h | 60 min | 0,8 | 5 861 | 3 192 | 844 | 1 745 | 917 | 52,6 % | 432 · 60,2 % | 412 · 42,4 % |
 | 4 h | 60 min | 1,2 | 2 340 | 1 618 | 458 | 832 | 336 | 40,4 % | 214 · 46,3 % | 244 · 33,1 % |
+
+## #469 (6/10 2026) Kuvösens granskning: tre läsningar förregistrerade före körningen — grind A på 60 dygn, efterhalkans pris per fönster, inom räckvidd (kort #295)
+
+**Bengts ja 6/10 (*"ja till 295"*)** till de tre läsningarna i `docs/KUVOS-GRANSKNING-2026-10-06.md` §4. **Ingen dom, ingen tröskel rörs:**
+grind A:s driftdom (#321, #399) står, startvärdena står frysta (#468), vägpunktsgrindens fall står. Skriptet
+`scripts/matningar/kuvos-granskning-2026-10-06.ts` körs på knappen `kuvos` (`matning`), efter inläsningen, vakterna och trenden.
+Inget tal var läst när posten skrevs.
+
+- **F1 — grind A på 60-dygnsfönster.** `publish/grind-a.ts` körs oförändrad, tre gånger, med kuvösens klocka ställd på 1/1 2025,
+  1/3 2025 och vinterns slut (31/3 21:30Z), `DAYS` = 60 som i driften. Frågan: är vinterns A2 5,5 % (#467, 152 dygn) en hårdare vinter
+  eller ett längre offsetfönster? **Läsning i förväg:** ligger A2 under 5 % i alla tre fönstren var vinterläsningen ett fönsterfel och
+  driftens dom står obestridd; ligger den över i alla tre är vintern hårdare än hösten; blandat ⇒ vintern varierar och redovisas per
+  fönster. Grind A:s egna "DOM"-rader är läsning här.
+- **F2 — efterhalkans pris per fönster och band.** Startvärdenas fyrningar (ögonblicksvarianten, #456), de tillkomna episoderna som i
+  ovanpå; lägsta ytan efter fyrningen tas direkt ur `weather_observations` i utfallsfönstren 60 · 90 · 120 min och klassas med
+  nära-banden 0,3 · 0,5 · 1,0 °C — båda svepen härledda ur sql/028:s D1-vakt (TROSKLAR-TRENDEN §2). 90 min · 0,5 ska ge 183 av 406 =
+  45,1 % (kontroll mot #467). Dessutom priset vid 90 min · 0,5 delat på startytan vid fyrningen (+1…+2 och +2…+3 °C): fönstrets
+  aritmetik mot de långsamma fallen. Sampling-skevheten (tre rader mot arton) går inte att mäta i kuvösen; den sägs, inte räknas.
+- **F3 — inom räckvidd för Ö-B1.** Facittillfällen (stationsnätter ≤ +1 °C, vakterna klarade) med regn (`rain_sum_mm > 0`) vid
+  stationen inom N h före facitögonblicket, N = startvärdet 2 h och svepets vidaste 4 h, var och en också med utfallsfönstret 90 min
+  tillagt så att en fyrning före facit ryms. Riktningsprovets nettonytt 175 som andel av dem, bredvid 0,2 % av alla. Definitionen är ett
+  **förslag** till TROSKLAR-OVERGANGAR §4 (Ö-B1 *inom räckvidd*) före mars-domen — den fastställs av Bengt och Axel, inte här.
+
+**Vad som inte görs:** ingen kandidat, ingen tröskel, ingen omkörning av kalibreringen (D7), inget val av fönster eller band.
+**Kostnad:** en knapptryckning (inläsningen ≈ 5 min, grind A tre gånger på 60 dygn, F2/F3 sekunder). Timeouten för en mätning höjd
+till 300 min och heapen till 10 GB i `kuvos.yml`.

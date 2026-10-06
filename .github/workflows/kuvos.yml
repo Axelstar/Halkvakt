@@ -20,7 +20,7 @@ permissions:
 jobs:
   inlasning:
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ (inputs.korflode == 'riktningsprov' || inputs.korflode == 'kalibrering') && 300 || 60 }}   # 6/10: 82 min till höjdprovet, NT och efterhalkan därefter
+    timeout-minutes: ${{ (inputs.korflode == 'riktningsprov' || inputs.korflode == 'kalibrering' || inputs.matning != '') && 300 || 60 }}   # 6/10: 82 min till höjdprovet, NT och efterhalkan därefter; en mätning kan köra grind A flera gånger (#469)
     services:
       postgis:
         image: postgis/postgis:16-3.4
@@ -98,7 +98,7 @@ jobs:
       - name: Mätningen
         if: ${{ inputs.matning != '' }}
         shell: bash
-        env: { MATNING: "${{ inputs.matning }}" }
+        env: { MATNING: "${{ inputs.matning }}", NODE_OPTIONS: "--max-old-space-size=10240" }
         run: |
           [[ "$MATNING" =~ ^scripts/matningar/[A-Za-z0-9._-]+\.ts$ && -f "$MATNING" ]] || { echo "okänd mätning: $MATNING"; exit 1; }
           { echo '```'; node --experimental-strip-types "$MATNING"; echo '```'; } 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
