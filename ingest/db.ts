@@ -50,6 +50,7 @@ export async function writeAll(data: {
     await client.query(readFileSync(new URL("../sql/011_vind_sikt.sql", import.meta.url), "utf8"));
     await client.query(readFileSync(new URL("../sql/015_smhi_giltighet.sql", import.meta.url), "utf8"));
     await client.query(readFileSync(new URL("../sql/024_smhi_senast_sedd.sql", import.meta.url), "utf8"));
+    await client.query(readFileSync(new URL("../sql/043_ytstatus.sql", import.meta.url), "utf8"));   // ytstatusfälten (#465)
 
     // Weather archive policy needs last stored temp per station — ONE query, not N.
     const lastTemps = new Map<string, number | null>();
