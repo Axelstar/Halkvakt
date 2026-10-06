@@ -1158,7 +1158,7 @@ test("radarn per station: högsta råvärdet inom 5 km de senaste fyra timmarna,
 // KUVÖSENS ÖVERSÄTTNING (kuvos/oversattning.sql, kort #232, DECISIONS #439). Varje fälla ger ett annat svar om en regel faller:
 // tidszonen (vinter +1, sommar +2 natten tiden hoppar), platshållarna, nederbördskoderna med källa och de utan, riktningen, en
 // station utan läge — och omkörningen, som måste skriva om raderna i stället för att dubblera dem.
-test("kuvösens översättning: lokaltid till UTC, platshållare till NULL, koderna 1/2/4/6 till driftens ord, 3/9/−9 till NULL", { skip: !url }, async () => {
+test("kuvösens översättning: lokaltid till UTC, platshållare till NULL, koderna 1/2/3/4/6/9 till driftens ord, −9 till NULL, mängden per typ, vinden", { skip: !url }, async () => {
   const { default: pg } = await import("pg");
   const { readFileSync } = await import("node:fs");
   const { RA_SCHEMA } = await import("../kuvos/inlasning.ts");
@@ -1184,17 +1184,22 @@ test("kuvösens översättning: lokaltid till UTC, platshållare till NULL, kode
     await pool.query(sql);
     await pool.query(sql);   // omkörningen skriver om, dubblerar inte
     const r = (await pool.query(`SELECT station_id, to_char(sample_time AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI:SS') AS t,
-        surface_temp_c::float AS yta, precipitation AS p, rain, snow, rain_sum_mm, wind_speed_ms, wind_gust_ms, wind_dir_deg::float AS rikt,
+        surface_temp_c::float AS yta, precipitation AS p, rain, snow, rain_sum_mm::float AS regn, snow_wateq_mm::float AS sno,
+        wind_speed_ms::float AS vmed, wind_gust_ms::float AS vmax, wind_dir_deg::float AS rikt,
         visibility_m::float AS sikt FROM weather_observations WHERE station_id LIKE 'KUV_%' ORDER BY sample_time`)).rows;
     assert.equal(r.length, 7, "sju rader för KUV_A, ingen för stationen utan läge, inga dubbletter efter omkörningen");
     assert.deepEqual(r.map((x) => x.t), ["2024-11-15 11:00:03", "2025-01-10 05:00:03", "2025-01-10 05:30:03", "2025-01-10 06:00:03",
       "2025-01-10 06:30:03", "2025-01-10 07:00:03", "2025-03-30 01:00:03"], "vintertid +1 h, sommartid +2 h efter hoppet 30/3");
     assert.deepEqual(r.map((x) => [x.p, x.rain, x.snow]), [["no", false, false], ["snow", false, true], ["sleet", true, true],
-      [null, false, false], [null, false, false], [null, false, false], ["rain", true, false]], "1/2/4/6 enligt VädErs 2019; 3, 9 och −9 utan källa ⇒ NULL");
+      ["freezing_rain", true, false], ["yes", false, false], [null, false, false], ["rain", true, false]],
+      "1/2/4/6 enligt VädErs 2019; 3 och 9 ur API:ts sex typer (DECISIONS #464); −9 ⇒ NULL");
     assert.deepEqual([r[0].yta, r[0].sikt, r[0].rikt, r[6].sikt, r[6].rikt, r[1].rikt, r[3].rikt],
       [null, 20000, 225, null, 0, 315, null], "−99,9 och −100 blir NULL, taket 20 000 står kvar, streck till sektorns mitt, −9 till NULL");
-    assert.ok(r.every((x) => x.rain_sum_mm === null && x.wind_speed_ms === null && x.wind_gust_ms === null),
-      "mängden och vinden väntar på Trafikverket — NULL, inte en gissning");
+    // Mängden per typ (#464): regn vid 2/3/6 och 0 vid 1/4; snö som vatten vid 4 och 0 vid 1/2/3; 9 och −9 ⇒ NULL; −99,8 ⇒ NULL.
+    assert.deepEqual(r.map((x) => [x.regn, x.sno]), [[0, 0], [0, 1], [1, null], [0.1, 0], [null, null], [null, null], [0.4, 0]],
+      "mängden läggs där typen säger; okänd typ och platshållare ⇒ NULL");
+    assert.deepEqual(r.map((x) => [x.vmed, x.vmax]), [[2, 5], [2, 5], [2, 5], [2, 5], [2, 5], [null, null], [2, 5]],
+      "vimed och vimax ur API:ts definitioner; −99,9 ⇒ NULL");
   } finally {
     await pool.query("DELETE FROM weather_observations WHERE station_id LIKE 'KUV_%'");
     await pool.query("DROP SCHEMA IF EXISTS kuvos_ra CASCADE");

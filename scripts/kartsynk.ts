@@ -20,7 +20,10 @@ const REPO = "Axelstar/Halkvakt";
 /** Commits som inte är arbete att bokföra: dagens halkläge, källvakten. */
 const MASKINER = new Set(["Marknadsmotorn", "trv-bevakning"]);
 const RANG: Record<Steg["status"], number> = { ej: -1, saknas: 0, pagar: 1, klar: 2 };
-const REGLER = ["ios-uppladdad", "ios-installerad", "ios-extern", "appstore", "testare", "facit"] as const;
+const REGLER = ["ios-uppladdad", "ios-installerad", "ios-extern", "appstore", "inlamnad", "testare", "facit"] as const;
+/** App Store-tillstånd från och med inlämningen (Apples appStoreVersions.appVersionState). */
+const INLAMNAD = ["WAITING_FOR_REVIEW", "IN_REVIEW", "PENDING_DEVELOPER_RELEASE", "ACCEPTED", "PENDING_APPLE_RELEASE",
+  "PROCESSING_FOR_DISTRIBUTION", "READY_FOR_DISTRIBUTION", "READY_FOR_SALE"];
 
 type Utfall = { status: "pagar" | "klar"; bevis: string } | null;
 
@@ -64,6 +67,12 @@ export function utfall(r: string, sig: Lagrad[]): Utfall {
     const godkand = ver.find((x) => ["PENDING_DEVELOPER_RELEASE", "ACCEPTED", "PENDING_APPLE_RELEASE", "PROCESSING_FOR_DISTRIBUTION"].includes(x.t));
     return godkand ? { status: "pagar", bevis: `${godkand.v} godkänd av Apple ${stockholm(godkand.s.forst_sedd)}, väntar på Release (App Store Connect)` } : null;
   }
+  if (namn === "inlamnad") {
+    // Väg C (6/10, tillägg till #447): klar när en version ≥ den angivna nått Waiting for Review eller ett senare tillstånd.
+    const v = asc(/^appstore:[\d.]+:[A-Z_]+$/).map((s) => ({ s, v: s.nyckel.split(":")[1], t: s.nyckel.split(":")[2] }))
+      .filter((x) => versionCmp(x.v, arg[0]) >= 0 && INLAMNAD.includes(x.t)).sort((a, b) => a.s.forst_sedd.localeCompare(b.s.forst_sedd))[0];
+    return v ? { status: "klar", bevis: `${v.v} inlämnad till App Review: ${v.t} sedd ${stockholm(v.s.forst_sedd)} (App Store Connect)` } : null;
+  }
   if (namn === "testare") {
     const g = sig.find((s) => s.kalla === "asc" && s.nyckel === `grupp:${arg[0]}`);
     const antal = Number(g?.varde.antal ?? 0);
@@ -83,7 +92,7 @@ export function utfall(r: string, sig: Lagrad[]): Utfall {
 /** Regeln läses: känt namn och rätt antal argument. */
 export function giltigRegel(r: string): boolean {
   const [namn, ...arg] = r.split(":");
-  const antal: Record<string, number> = { "ios-uppladdad": 1, "ios-installerad": 1, "ios-extern": 1, appstore: 1, testare: 2, facit: 2 };
+  const antal: Record<string, number> = { "ios-uppladdad": 1, "ios-installerad": 1, "ios-extern": 1, appstore: 1, inlamnad: 1, testare: 2, facit: 2 };
   return (REGLER as readonly string[]).includes(namn) && arg.length === antal[namn] && arg.every(Boolean);
 }
 
@@ -237,6 +246,7 @@ function sjalvtest(): void {
     ["ios-uppladdad:22", "klar"], ["ios-uppladdad:23", null], ["ios-installerad:22", "klar"], ["ios-installerad:23", null],
     ["ios-extern:21", "klar"], ["ios-extern:22", null], ["appstore:0.3.9", "pagar"], ["appstore:0.3.10", null],
     ["testare:Kompisarna:12", "klar"], ["testare:Kompisarna:13", null], ["facit:ios:0.3.10", null], ["facit:alla:0.3.10", "klar"],
+    ["inlamnad:0.3.9", "klar"], ["inlamnad:0.3.10", null],
     ["okand:1", null],
   ];
   const fel: string[] = [];

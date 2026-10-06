@@ -185,6 +185,28 @@ och Bohus, 15 Älvsborg, 16 Skaraborg, 18 Örebro), alltså nedlagda stationer. 
 och i NVDB:s kartvisare (https://catalogue.arctic-sdi.org/geonetwork/srv/resources/records/2723b729-d89f-4197-b4ab-aaf98c341d25),
 men Lastkajen kräver konto, och om nedlagda stolpar finns med står inte i metadatan.
 
+### 5d. Begäran till Trafikverket om facit för samma vinter (Bengts ja 6/10; utkast, Bengt skickar i leveranstråden)
+
+> Hej Micke,
+>
+> tack för uttaget, det är inläst och prövat. För att kunna pröva våra regler mot vad som faktiskt hände på vägen, inte bara mot
+> stationens egen yta, skulle vi vilja be om ytterligare fyra uttag för samma period och stationer, november 2024–mars 2025, i samma
+> form och på samma villkor om avgift som förra gången:
+>
+> 1. **Ytstatus och friktion** från de stationer som har beröringsfria ytstatusgivare: torrt, vått, is, snö, friktion (motsvarande
+>    API:ts `Surface.Water`, `Ice`, `Snow`, `Grip`), per station och halvtimme.
+> 2. **Rapporterat väglag** per vägsträcka (det som i öppna API:t heter RoadCondition) för perioden, om historiken sparas.
+> 3. **Händelser** (olyckor, djur, hinder; öppna API:ts Situation) för perioden, om historiken sparas.
+> 4. **Utförda vinterväghållningsåtgärder** (saltning, plogning) per sträcka och tid, om sådana data finns att lämna ut.
+>
+> Och två korta frågor om förra uttaget, om du hinner: vad betyder `ned_typ` 3 och 9 (vi läser dem som underkylt regn och
+> nederbörd av okänd typ), och är `ned_maengd` all nederbörd räknad som vatten eller bara regn?
+>
+> Vänliga hälsningar
+> Bengt
+
+Inget i utkastet bär tal ur tröskeldokumenten eller resultat (DECISIONS #463).
+
 ## 6. Vad det här inte är
 
 Ingen regel är körd och inget utfall är läst. Förregistreringen (DECISIONS #424, tilläggen #426 och #437) skrevs innan filen öppnades;

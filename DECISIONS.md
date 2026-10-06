@@ -7663,3 +7663,37 @@ startvärdena och prognoslagrets trösklar är ute sedan ansökan, och sidan til
 **Tillägg 6/10 till rättelsen av #390** (Bengt: *"Resan 26–27/9 var min, händelsen 29/9 Axels"*): resan 26/9 12:11–13:03 med returen 27/9 10:23–11:52 (19 svar, kamerorna 12007xxx) var Bengts, och händelsen 29/9 08:11 Axels. Med 1/10 (Axels resa, kort #279) och samma fyra kameror 21/9 och 28/9 kommer alla 29 svar från projektgruppen: Bengt 19 (26–27/9), Axel 10 (21/9, 28/9, 29/9, 1/10); båda i projektgruppen (Bengts besked 6/10). För KB-D (≥ 30 svar från ≥ 5 förare, ingen över 25 %) räknas de som två förare, båda inne i projektet; kravet står alltså på noll riktiga testförare tills betan har förare utanför gruppen.
 
 **Tillägg till #447, 6/10: schemat avstängt** (Bengt: *"stäng av schemat"*): den schemalagda kartsynken i Claude-appen hängde två gånger i rad på sitt första PowerShell-anrop (4/10 07:26 och 6/10 03:45, den senare startad av schemat i samma sekund som den förra stoppades), och 6/10 07:26 startade aldrig. Orsaken syns inte i loggen; troligen ett godkännande som ingen besvarar när ingen sitter vid datorn. Uppgiften är avstängd (inte raderad) och körningen stoppad. Kartsynken är fortfarande första steget i varje session, och sedan 6/10 listar den öppna PR:er; det var vad schemat skulle ge. Slås på igen när orsaken är känd och en körning med *Kör nu* gått igenom med Bengt vid datorn.
+
+## #464 (6/10 2026) Kuvösen: vinden, mängden och koderna 3/9/−9 översätts ur dokumentationen, och riktningsprovet körs nu — tillägg till #456
+
+**Bengts order 6/10:** *"gör en ordentlig sökning på internet"* och sedan *"ja till riktningsprovet, ja till begäran"*. Läsningen står i
+`docs/KUVOS-LEVERANSEN-2026-10-02.md` §5c med källorna; begäran om facit i §5d (Bengt skickar).
+
+**Beslut, skrivna före körningen och före något utfall (#424, #438):**
+1. **Vinden:** `vimed` → `wind_speed_ms` (API:t: *medelvärde över tiominutersperiod t.o.m. tidpunkten*), `vimax` → `wind_gust_ms`
+   (*högst uppmätt 3-sekundersmedelvärde under perioden*). −99,9 ⇒ NULL. `vind30` är 30-minutersmedlet och läses inte in; VädErs
+   räknar VViS-vind så (VTI notat 39-2003, 38-2013).
+2. **Mängden:** mm per 30 minuter. Kolumnen läggs där typen säger: `rain_sum_mm` = mängden vid regn, frusen regn och snöblandat
+   (2, 3, 6), 0 vid ingen nederbörd och snö (1, 4); `snow_wateq_mm` = mängden vid snö (4), 0 vid 1, 2, 3; snöblandat läggs helt på
+   regn. Okänd typ (9, −9) ⇒ NULL. −99,9 och −99,8 ⇒ NULL; skillnaden är inte läst. Fem rader över 100 mm lämnas åt värdevakten.
+   Skälet till att det räcker: efterhalkan läser regn, och på regnkodade rader är mängden regn vilken definition kolumnen än har.
+3. **Koderna:** 3 = `freezing_rain` (rain), 9 = `yes` (nederbörd av okänd typ, varken rain eller snow; motorn räknar `yes` som
+   nederbörd), −9 ⇒ NULL. Härledning: API:t dokumenterar exakt sex typer och filen har sex koder; 1/2/4/6 är kända ur VädErs 2019, och
+   PWD22 rapporterar just *freezing rain* och *precipitation (unknown type)*. 914 + 506 rader.
+4. **De 23 stationerna utan läge** står utanför, som #456 sa. Vägen till deras läge är Lastkajens dataprodukt *VViS* (konto krävs).
+5. **Sikten:** oförändrad (20 000 = PWD22:s tak, −100 = ingen sensor), som redan översatt.
+6. **Riktningsprovet körs i veckan** på knappen `kuvos` med `riktningsprov`, i stället för att vänta till 16/10 (#456). Väntan gällde
+   koderna och stationerna, och båda har nu ett skrivet val. Kommer Trafikverkets svar och säger annat ändras tabellen i
+   `kuvos/oversattning.sql`, filen körs om, och provet körs om; körningen är deterministisk.
+
+**Prov:** integrationstestet för översättningen bär de nya fallen (3, 9, −9, mängden per typ, vinden, platshållarna).
+
+**Alternativ:** vänta på Trafikverket (förkastat 6/10: tre av fem frågor är besvarade av dokumentation, och resten kan inte vända en
+riktning); läsa koderna empiriskt först (förkastat: översättningen är ett val som ska göras före utfallet, och härledningen räcker;
+stickprovet redovisas i stället bredvid körningen).
+
+**Tillägg till #447, 6/10 (Bengt: *"C"*):** projektkartan skrivs inte om varje natt; kartsynken körs av varje session vid start, och
+maskinvägen får fler regelsteg. Första: regeln `inlamnad:<version>` i `scripts/kartsynk.ts` (klar när en App Store-version ≥ den
+angivna nått *Waiting for Review* eller ett senare tillstånd), satt på App Store-delens *Inskickat*. Skälet mot en nattlig skrivare:
+kartan är bokföring med bevis, inte nattens siffror, och en skrivare utan republicering ger varje morgon en artefakt som skiljer sig
+från sin repokopia (STOMREGELN).
