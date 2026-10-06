@@ -116,6 +116,15 @@ kod av betydelse (samma episoder, facitets stationsnätter finns). Om priset per
 "ingen vinnare" ett artefakt av måttet — och frågan om en ny kalibrering på rätt mått är Bengts och Axels (regel D7). Inget ändras av
 läsningen i sig; startvärdena står.
 
+**Rättelse samma kväll (Bengts fråga *"blir det bättre om vi gör dessa ändringar?"*):** *per natt* är för långt. Rösten hörs av en förare som
+passerar nu; en varning kl. 22 för en frysning kl. 00:30 är ett falsklarm för den föraren, och 90-minutersfönstret är förarens horisont
+(T-B:s utfallsfönster). Det dagens mått gör fel är att det bara dömer **nattens första fyrning** — det tidigaste och sämsta ögonblicket —
+fast regeln fyrar om och om igen under natten. Ö-B2:s ord är *"av tillkomna fyrningar"*: **varje fyrning med sitt eget 90-minutersfönster.**
+Per natt redovisas bredvid som övre gräns, aldrig som mått. Läsningen (1) i §6.5 är därför *priset per fyrning*, inte per natt.
+Ingen av ändringarna gör vintern 2026/27 bättre (startvärdena står, D1 stänger nya dimensioner för betan); måttet gör domen rättvisare,
+daggpunkten kan göra regeln bättre från mars om kuvösen bekräftar fysiken — med priset att daggpunkten vid fyrningen inte är daggpunkten
+två timmar senare (advektion av torrare luft). Mäts, antas inte.
+
 ### 6.3 Efterhalkan saknar sin fysik: daggpunkten avgör om fallet fortsätter
 Regeln är *blöt + i bandet + faller*. Fysiken för en våt yta efter regn: den kyls av utstrålning och avdunstning tills den når daggpunkten —
 då börjar kondensationen, och det frigjorda värmet bromsar fallet. **Ytan stannar vid daggpunkten.** Är daggpunkten +3 °C uteblir
@@ -142,7 +151,7 @@ signaturerna, tidigast som mars-variant (D1 förbjuder den i kalibreringen).
   halkprov — sagt före körningen, gäller fortfarande.
 
 ### 6.5 Rekommendation
-Två läsningar, förregistrerade före körning, inga trösklar: **(1) priset per natt** för startvärdena och de 32 punkterna (6.2) — svarar
-på om kalibreringens "ingen vinnare" är måttets fel; **(2) daggpunkten vid fyrningen** (6.3) — svarar på om efterhalkan saknar sin viktigaste
+Två läsningar, förregistrerade före körning, inga trösklar: **(1) priset per fyrning** (varje ögonblick med sitt eget 90-minutersfönster, per
+natt som övre gräns bredvid) för startvärdena och de 32 punkterna (6.2, rättelsen) — svarar på om kalibreringens "ingen vinnare" är måttets fel; **(2) daggpunkten vid fyrningen** (6.3) — svarar på om efterhalkan saknar sin viktigaste
 dimension. Båda ur kuvösen, samma knapp, minuter. Därefter är tre beslut Bengts och Axels: måttet för Ö-B2 i januari (per natt eller
 fönster), daggpunkten som mars-variant, och om en kalibrering på rätt mått får göras (D7). Bengts ja krävs (kort #297).
