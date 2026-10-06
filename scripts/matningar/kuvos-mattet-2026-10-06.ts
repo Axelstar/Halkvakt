@@ -86,7 +86,11 @@ const perNatt = async (fyr: Fyrning[]): Promise<Map<string, number | null>> => {
     FROM e LEFT JOIN weather_observations w ON w.station_id = e.sid AND w.surface_temp_c IS NOT NULL AND w.sample_time > e.t
       AND ((w.sample_time AT TIME ZONE 'Europe/Stockholm') - interval '12 hours')::date = ((e.t AT TIME ZONE 'Europe/Stockholm') - interval '12 hours')::date
     GROUP BY e.sid, e.t`, [fyr.map((x) => x.sid), fyr.map((x) => new Date(x.t).toISOString())]);
-  return new Map(rows.map((r) => [`${r.sid}|${r.t}`, r.m === null ? null : Number(r.m)]));
+  // extract(epoch …) kommer som numeric-sträng ("…000.000"): nyckeln måste byggas av talet, annars matchar inget — och "0 av 0" är
+  // inte ett utfall utan ett nyckelfel (första körningen 37522992220 skrev just så). Därför vakten: tomt ⇒ stopp.
+  const m = new Map<string, number | null>(rows.map((r) => [`${r.sid}|${Number(r.t)}`, r.m === null ? null : Number(r.m)]));
+  if (fyr.length && ![...m.values()].some((x) => x !== null)) throw new Error("perNatt: ingen fyrning fick en lägsta yta — nyckelfel, inte ett utfall (DECISIONS #470)");
+  return m;
 };
 type Mått = { perFyrning: Rakning; perEpisod: Rakning; perNatt: Rakning };
 const matt = (fyr: Fyrning[], nattMin: Map<string, number | null>, urval: (f: Fyrning) => boolean): Mått => {
@@ -122,7 +126,10 @@ const vader = new Map((await q(`
   WITH e AS (SELECT unnest($1::text[]) AS sid, unnest($2::timestamptz[]) AS t)
   SELECT e.sid, extract(epoch FROM e.t) * 1000 AS t, w.surface_temp_c AS yta, w.dewpoint_c AS dagg
   FROM e JOIN weather_observations w ON w.station_id = e.sid AND w.sample_time = e.t`, [fyr0.map((x) => x.sid), fyr0.map((x) => new Date(x.t).toISOString())]))
-  .map((r) => [`${r.sid}|${r.t}`, { yta: r.yta === null ? null : Number(r.yta), dagg: r.dagg === null ? null : Number(r.dagg) }]));
+  .map((r) => [`${r.sid}|${Number(r.t)}`, { yta: r.yta === null ? null : Number(r.yta), dagg: r.dagg === null ? null : Number(r.dagg) }]));
+if (fyr0.length && !fyr0.some((f) => vader.get(`${f.sid}|${f.t}`)?.dagg !== undefined && vader.get(`${f.sid}|${f.t}`)!.dagg !== null))
+  throw new Error("M2: ingen fyrning fick en daggpunkt — nyckelfel eller tomt fält, inte ett utfall (DECISIONS #470)");
+console.log(`  fyrningar ${fyr0.length}, med väderrad ${fyr0.filter((f) => vader.has(`${f.sid}|${f.t}`)).length}, med daggpunkt ${fyr0.filter((f) => vader.get(`${f.sid}|${f.t}`)?.dagg != null).length}`);
 const nattMin0 = await perNatt(fyr0);
 const v = (f: Fyrning) => vader.get(`${f.sid}|${f.t}`) ?? { yta: null, dagg: null };
 for (const [rubrik, klassa] of [["Daggpunkten", (f: Fyrning) => daggklass(v(f).dagg)], ["Yta − dagg", (f: Fyrning) => gapklass(v(f).yta, v(f).dagg)]] as const) {
