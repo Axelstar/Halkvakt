@@ -323,7 +323,6 @@ final class GuardManager: NSObject, CLLocationManagerDelegate {
 
     /// Kort #203 lager 2: "appen missade" — knappen i körläget och Siri-frasen. Sparar klockslaget, närmaste station och
     /// halkavsnitt inom 2 km; vad det var väljs efter resan. Utan betatest, position eller stationslista sparas ingenting.
-    @discardableResult
     enum MissUtfall { case markerat(Date), redan(Date), vaktenAv, ingenPosition }
 
     /// En miss hör till en körning (4b, DECISIONS #461): när vakten är av är senaste positionen kanske från en avslutad resa,
