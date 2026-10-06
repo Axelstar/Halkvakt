@@ -7725,3 +7725,31 @@ halka, SMHI, stationernas yta) hade ingen rad som sa *is*. Från deployen finns 
 `weather_latest` och lägesfilen (inte nu: ingen regel läser dem, och lägesfilens fält kräver ett tröskeldokument).
 
 **#465 i drift 6/10 08:22Z** (Bengt: *"slå ihop 775 och 776"*): migrationen med DB-knappen 37435521114 (kolumnerna lästa), deploy 37435573958 från eedfd06 (loggen: Deployed Functions: ingest-live), och läsningen 37436952330: av 702 rader skrivna efter deployen (08:25–08:38Z) bar 53 surface_grip från 52 stationer, 1 rad is = sann och 5 vatten = sann; värdevakten 37437120416: surface_grip – (för tunt underlag: 60 rader av minst 100; 0,75–0,82, 4 distinkta, inom spannet). Fynd i första läsningen: friktionen var 0,82 på 92 % av raderna (värdevaktens dygnsfönster: 60 rader, 0,75–0,82, 4 distinkta), vilket ser ut som givarens värde för torr vägbana snarare än en mätning per station, och en rad bar is = sann i oktoberdagsljus; båda ska läsas igen när det blir kallt, innan fältet får döma något (TROSKLAR-KOMBINATIONEN §1).
+
+## #466 (6/10 2026) Riktningsprovet, första körningen: grind A läst på vintern 2024/25, höjdprovet föll på minnet, omkörning (kort #232)
+
+**Körningen** 37435099300 (`kuvos` med `riktningsprov`, main 31860c2, startad 08:17Z på Bengts ja 6/10 i #464). Inläsningen, vakterna
+och värdevakten gick igenom (08:17–08:25Z). Riktningsprovet körde 08:25–09:47Z och föll i `scripts/hojd-prov.ts`: *JavaScript heap out
+of memory* på Nodes standardheap över 152 dygn. Grind NT och efterhalkan kördes aldrig.
+
+**Talen som hann skrivas, ordagrant ur loggen (en läsning enligt #424: alla tal skrivs ut, inget är en dom):**
+- **Motorn över vintern** (`kuvos/korning.ts`): 7 245 steg 2024-10-31T23:30Z – 2025-03-31T21:30Z, serie A 20 rutter, serie B 818
+  sträckor var tredje timme, 2 476 broar; **675 178 varningar** sparade.
+- **Baslinjen** (dagens frysrisk och broarna, #455 punkt 2, antal utan dom): serie A 114 923 fyrningar, 98 faror, 8 402 episoder
+  (stationer 610, broar 7 792); serie B 560 255 fyrningar, 2 850 faror, 179 805 episoder (stationer 30 532, broar 149 273).
+  Per månad i serie A: okt 191/12, nov 14 534/1 194, dec 23 660/1 832, jan 38 685/2 316, feb 26 054/2 012, mar 11 799/1 036
+  (fyrningar/episoder).
+- **Grind A** (`publish/grind-a.ts 152`, korsvalidering vid stationerna, TROSKLAR-SKUGGAN): A1 MAE i beslutsbandet 0,60 °C på
+  3 364 122 punkter → KLARAR; **A2 grova fel > 2 °C: 5,5 % mot kravet ≤ 5 % → FALLER**; A3 frysklassningsfel 0,3 % → KLARAR.
+  Skriptets egen rad: *DOM: GRIND A FALLEN*. Lapse 0,65 °C/100 m.
+
+**Vad talet betyder, och inte.** Riktningsprovet fäller ingen dom (#424). Driftens grind A står kvar som klarad (23/9 och 28/9 på
+60 dygn, A2 3,7 %, DECISIONS #321, #399). Vintern 2024/25 säger att andelen grova fel ligger över fem procent på en hel vinter, med
+mer kyla och större spridning än hösten. Det är precis den fråga vinterns grindar i mars ska svara på, och talet skrivs här så att
+ingen senare kan säga att det var okänt. Ingen tröskel ändras.
+
+**Åtgärd:** `kuvos.yml`: riktningsprovets steg får `NODE_OPTIONS=--max-old-space-size=10240` (runnern har 16 GB) och 300 minuter
+i stället för 180 (82 minuter gick till kraschen, NT och efterhalkan återstod). Omkörningen är deterministisk; grind A:s tal ska
+komma igen, och de jämförs.
+
+**Alternativ:** läsa höjdprovet i delar (förkastat nu: ändrar skriptet mitt i provet; kan göras om heapen inte räcker).
