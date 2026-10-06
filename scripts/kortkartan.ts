@@ -126,9 +126,11 @@ export function medBlock(sidtext: string, html: boolean, b: string): string {
   return t.replace(/\n*$/u, "\n\n") + b + "\n";
 }
 
-/** KORTGENOMGÅNGEN (Bengts krav 3/10, DECISIONS #451): varje öppet kort med sin Verify-rad och sitt "Kvar", så att varvet kan
- *  pröva vart och ett mot beviset och stänga det som är uppfyllt. Kortet är rubrikraden och dess indragna rader. */
-export function genomgang(tavla: string): (Kort & { verify: string; kvar: string })[] {
+/** KORTGENOMGÅNGEN (Bengts krav 3/10, DECISIONS #451): varje öppet kort med sina Verify-rader och sitt "Kvar", så att varvet kan
+ *  pröva vart och ett mot beviset och stänga det som är uppfyllt. Kortet är rubrikraden och dess indragna rader. Bara en
+ *  etikett räknas — "Verify:", "Verify (…):" eller "Verify för …:" — aldrig ordet i löptext ("Verify-raden", "Verify 2",
+ *  "Kvar (Verify):"), som 3/10 gav sex kort en Verify-rad av lösryckta fragment. */
+export function genomgang(tavla: string): (Kort & { verify: string[]; kvar: string })[] {
   const rader = tavla.split("\n");
   const lista = oppnaKort(tavla);
   const block: string[] = [];
@@ -138,11 +140,17 @@ export function genomgang(tavla: string): (Kort & { verify: string; kvar: string
     while (j < rader.length && rader[j].startsWith("  ")) j++;
     block.push(rensa(rader.slice(i, j).join(" ")));
   }
-  const efter = (b: string, ord: string) => {
-    const i = b.lastIndexOf(ord);
-    return i < 0 ? "" : kort(240, b.slice(i + ord.length).replace(/^[:\s]+/u, ""));
+  const etikett = /(?<![\p{L}-])(Verify|Kvar)(?:\s*\([^)]{0,80}\)|\s+för\s+[^:.]{1,40})?\s*:\s*/gu;
+  const efter = (b: string) => {
+    const m = [...b.matchAll(etikett)];
+    // A row ends at the next label or the next status marker (✅ 🔨 ↪ …), where the card's story of what happened begins.
+    const del = (i: number) => kort(200, b.slice(m[i].index! + m[i][0].length, m[i + 1]?.index ?? b.length)
+      .replace(/(?<=.)\s[\p{Extended_Pictographic}↪↦].*$/u, "").trim());
+    const verify = m.flatMap((x, i) => x[1] === "Verify" ? [del(i)] : []);
+    const kvar = m.map((x, i) => x[1] === "Kvar" ? i : -1).filter((i) => i >= 0).pop();
+    return { verify, kvar: kvar === undefined ? "" : del(kvar) };
   };
-  return lista.map((k, n) => ({ ...k, verify: efter(block[n] ?? "", "Verify"), kvar: efter(block[n] ?? "", "Kvar") }));
+  return lista.map((k, n) => ({ ...k, ...efter(block[n] ?? "") }));
 }
 
 // Projektkartan (scripts/projektkartan.ts) importerar läsarna ovan; resten körs bara när skriptet startas direkt.
@@ -163,9 +171,12 @@ if (direkt && process.argv[2] === "--sjalvtest") {
   const ok2 = fel.length === 1 && fel[0].startsWith("X 9") && ny.includes('<h2 id="avsnitt-2">2. Två</h2>')
     && ny.includes("#12 ETT KORT") && medBlock(ny, true, b) === ny;
   if (!ok2) { console.error("✗ självtest 2: blocket", fel, ny); process.exit(1); }
-  // Kortgenomgången (#451): Verify och Kvar läses ur hela kortblocket, också ur en indragen rad; ett kort utan Verify ger tomt.
-  const g = genomgang("### Bengt\n- [ ] **#7 SJU** text. **Kvar:** ett steg\n  mer. **Verify:** körningen grön.\n- [ ] **#8 ÅTTA** inget här\n");
-  const ok3 = g.length === 2 && g[0].verify === "körningen grön." && g[0].kvar.startsWith("ett steg mer.") && g[1].verify === "";
+  // Kortgenomgången (#451): Verify och Kvar läses ur hela kortblocket, också ur en indragen rad; bara etiketter räknas, alla
+  // Verify-rader följer med, och ett kort med ordet bara i löptext ger ingen Verify.
+  const g = genomgang("### Bengt\n- [ ] **#7 SJU** text. **Kvar:** ett steg\n  mer. **Verify:** körningen grön. Verify-raden ovan gäller." +
+    " *Verify (från 3/10):* provet rött.\n- [ ] **#8 ÅTTA** se Verify 2 och Kvar (Verify): mars.\n");
+  const ok3 = g.length === 2 && g[0].verify.join("|") === "körningen grön. Verify-raden ovan gäller.|provet rött."
+    && g[0].kvar === "ett steg mer." && g[1].verify.length === 0 && g[1].kvar === "mars.";
   if (!ok3) { console.error("✗ självtest 3: kortgenomgången", g); process.exit(1); }
   console.log("✓ självtest: öppna kort läses med ägare, kort utan nummer får rubriken som nyckel, okänt avsnitt fälls, skrivningen är idempotent, genomgången läser Verify och Kvar");
   process.exit(0);
@@ -177,7 +188,7 @@ if (direkt && process.argv[2] === "--genomgang") {
     "kortet till 🟢 med beviset på raden i samma commit (TAVELREGELN 3, DECISIONS #451).\n");
   for (const k of g) {
     console.log(`${k.nr || k.nyckel} ${kort(90, k.titel)} · ${k.agare}`);
-    console.log(`   Verify: ${k.verify || "— ingen Verify-rad på kortet (skriv en)"}`);
+    for (const v of k.verify.length ? k.verify : ["— ingen Verify-rad på kortet (skriv en)"]) console.log(`   Verify: ${v}`);
     if (k.kvar) console.log(`   Kvar: ${k.kvar}`);
   }
   process.exit(0);
