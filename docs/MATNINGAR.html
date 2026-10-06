@@ -1105,7 +1105,7 @@
       <li><span aria-hidden="true">✓</span> <b>Tröskeldokument</b> <span style="color: var(--dampad, #4A5763)">klart · TROSKLAR-KOMBINATIONEN §7 (C, D 17/9; T 16/9); startvärden DECISIONS #222; §5 och §7 med båda signaturerna (#428)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Data i arkivet</b> <span style="color: var(--dampad, #4A5763)">klart · rain_sum_mm (sql/008), lutning i trend_kandidater (sql/017), radar_precip (sql/009); uppspelning_efterhalka i sql/028:63</span></li>
       <li><span aria-hidden="true">✓</span> <b>Publicerat i lägesfilen</b> <span style="color: var(--dampad, #4A5763)">klart · snapshot-core.ts:386-387: weather[].regn_h och lutning15/30/60 sedan 15/9 (DECISIONS #188)</span></li>
-      <li><span aria-hidden="true">◐</span> <b>Mätt i skuggan (S1)</b> <span style="color: var(--dampad, #4A5763)">pågår · shadow_log.efterhalka sedan 16/9 (#198), 35 rader till 22/9, inga frostnätter; värdeparens jämförelse (kort #278) obyggd</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Mätt i skuggan (S1)</b> <span style="color: var(--dampad, #4A5763)">pågår · shadow_log.efterhalka sedan 16/9 (#198), 35 rader till 22/9, inga frostnätter; värdeparens jämförelse (kort #278) överspelad — kalibreringen fryste startvärdena (DECISIONS #468)</span></li>
       <li><span aria-hidden="true">○</span> <b>Dom (S1-grinden)</b> <span style="color: var(--dampad, #4A5763)">saknas · S1-grinden på frostdata väntar (DECISIONS #196); KB-B först i januari (TROSKLAR-KOMBINATIONEN §7)</span></li>
       <li><span aria-hidden="true">○</span> <b>Villkoret i motorn (S3)</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen gren för regn_h och lutning i icing_point (engine.ts:226-232); startvärdena inte i kontraktsgrinden</span></li>
       <li><span aria-hidden="true">○</span> <b>Testfall i tre språk (S3)</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen S3-vektor bland v01–v37; v11_silent_drive måste fortsatt tiga</span></li>
@@ -1500,7 +1500,7 @@
   <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-grindarna">Grindarna och domkalendern</a> <span style="color: var(--dampad, #4A5763)">delvis, 73 % · kvar: S1-grinden, T-A, R-A, K-A och W-A väntar på frost (minst 50 stationer ≤ 0 °C)</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Tröskeldokument skrivna</b> <span style="color: var(--dampad, #4A5763)">klart · TROSKLAR-SKUGGAN, -VATTENPLANING (#68), -TRENDEN, -RIMFROST, -FRYSKLASSNINGEN (#135), -VIND-SIKT, -NEDERBORDSTYPEN (#361, #362)</span></li>
-      <li><span aria-hidden="true">✓</span> <b>Grind A</b> <span style="color: var(--dampad, #4A5763)">klart · KLARAD 23/9 (DECISIONS #321); måndagskörningen 28/9 klarar igen: A2 3,7 % (#399); kuvösen 2024/25 (riktningsprov, ingen dom): A2 5,5 % faller, A1 0,60 °C och A3 0,3 % klarar (DECISIONS #466)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Grind A</b> <span style="color: var(--dampad, #4A5763)">klart · KLARAD 23/9 (DECISIONS #321); måndagskörningen 28/9 klarar igen: A2 3,7 % (#399); kuvösen 2024/25 (riktningsprov, ingen dom): A2 5,5 % faller, A1 0,60 °C och A3 0,3 % klarar (DECISIONS #466); på 60-dygnsfönster förvintern 3,4 % klarar, midvintern 5,4 % och vårvintern 7,1 % faller (#469)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Vägpunktsgrinden</b> <span style="color: var(--dampad, #4A5763)">klart · FALLEN 28/9: A2 6,9 % ± 0,4 mot kravet 5 % (DECISIONS #399); premissmätningen läses 24/11 (#435); kuvösen 2024/25 (riktningsprov): fallen för RÅ 7,5 %, INTERP 7,2 %, RÅ+HÖJD 8,8 % (#467)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Grind V-A</b> <span style="color: var(--dampad, #4A5763)">klart · FALLER 4/9 (DECISIONS #69), omkörd 12/9, domen står (#104)</span></li>
       <li><span aria-hidden="true">◐</span> <b>Grind V-B</b> <span style="color: var(--dampad, #4A5763)">pågår · publish/grind-v-b.ts (#211), varje måndag via puls-grind-v-b; dom tidigast nov–dec</span></li>
@@ -1548,7 +1548,7 @@
 
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
   <h2 id="oppna-kort">Öppna kort</h2>
-  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 22 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
+  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 23 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
   <h3><a href="#avsnitt-1">1. Datan som samlas in</a></h3>
   <ul>
     <li>#294 YTSTATUSFÄLTEN I ARKIVET — vägytans is, snö, vatten och friktion från de cirka 50 stationerna med givare <span class="litet">· Claude</span></li>
@@ -1585,6 +1585,7 @@
   </ul>
   <h3><a href="#avsnitt-7">7. Tillstånd (L2)</a></h3>
   <ul>
+    <li>#296 EFTER GRANSKNINGEN — TVÅ BESLUT FÖRE MARS-DOMEN: Ö-B1 "INOM RÄCKVIDD" OCH STARTBANDETS ÖVRE DEL <span class="litet">· Bengt</span></li>
     <li>#151 VÄGLAGETS ÅLDER — ska en stående vinterklassning tystas när mätningarna säger att vintern tagit slut? <span class="litet">· Claude, låst</span></li>
     <li>#103 FRYSKLASSNINGEN — kan en modell som är opålitlig på grader ändå bära en klass? <span class="litet">· Claude, låst</span></li>
   </ul>

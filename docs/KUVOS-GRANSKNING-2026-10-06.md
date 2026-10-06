@@ -57,3 +57,28 @@ Tre läsningar, förregistrerade i DECISIONS innan de körs, inga trösklar rör
 klockslag (F1); (2) efterhalkans pris med 120-minutersfönstret och nära-bandet 1,0 på samma episoder (F2); (3) *inom räckvidd* definierad och
 räknad för Ö-B1 (F3). Kostnad: en knapptryckning på `kuvos` var (inläsningen 5 min + mätningen), ett mätskript under `scripts/matningar/`.
 Bengts ja krävs (kort #295).
+
+## 5. Utfallet 6/10 (Bengts ja *"ja till 295"*, DECISIONS #469; körning 37517980895)
+
+**F1 — inget fönsterfel, en vinter i tre delar.** Grind A oförändrad på 60 dygn: förvintern (2/11–31/12) **3,4 %** klarar, midvintern
+(31/12–28/2) **5,4 %** faller, vårvintern (30/1–31/3) **7,1 %** faller. Vinterns 5,5 % över 152 dygn var ett medel. Felet växer mot våren i
+alla band, också 0–7 km (2,0 → 3,8 → 5,3 %) — dagsljuset, inte höjden, är den troliga förklaringen (hypotes, kort #91).
+| Fönster (60 dygn) | stationer · punkter | 0–7 km | 7–15 km | 15–20 km | > 20 km | TOTALT MAE · A2 · A3 | Läsning |
+| :-- | :-- | :-- | :-- | :-- | :-- | :-- | :-- |
+| 2/11–31/12 (klockan 1/1) | 729 · 1 680 540 | 0,42 °C · 2,0 % | 0,46 · 2,0 % | 0,52 · 3,1 % | 0,68 · 6,8 % | 0,51 °C · **3,4 %** · 0,1 % | klarar |
+| 31/12–28/2 (klockan 1/3) | 735 · 1 990 534 | 0,47 · 3,8 % | 0,49 · 3,6 % | 0,54 · 5,4 % | 0,75 · 10,4 % | 0,53 °C · **5,4 %** · 0,2 % | faller |
+| 30/1–31/3 (klockan 31/3) | 736 · 1 658 283 | 0,67 · 5,3 % | 0,70 · 5,3 % | 0,75 · 7,1 % | 0,91 · 11,6 % | 0,74 °C · **7,1 %** · 0,5 % | faller |
+
+**F2 — priset sitter i bandets topp.** Kontrollen stämmer (90 min · 0,5 = 45,1 %). Fönster och band flyttar priset mellan 22 och 59 %;
+startytan är den stora spaken: **+1…+2 °C ger 19,0 %, +2…+3 °C ger 63,4 %.** Ett smalare band finns inte i svepet (det vidgas bara uppåt),
+så ingen kalibreringspunkt kunde nå det — ett beslut för TROSKLAR-OVERGANGAR §2 före mars, inte för betan.
+| Utfallsfönster | band 0,3 | band 0,5 | band 1,0 |
+| :-- | --: | --: | --: |
+| 60 min | 58,9 % (239) | 52,0 % (211) | 31,5 % (128) |
+| 90 min | 52,5 % (213) | **45,1 % (183)** — riktningsprovets tal | 25,6 % (104) |
+| 120 min | 47,5 % (193) | 38,9 % (158) | 22,4 % (91) |
+
+**F3 — nämnaren avgör.** Nettonytt 175 är 6,2 % av facit med regn inom 2 h, 4,3 % med 2 h + utfallsfönstret, 3,9 % med 4 h och 3,0 % med
+4 h + 90 min. Ö-B1:s gräns är 5 %. Definitionen måste fastställas före mars-domen (kort #296). Förslag: *regn inom N h + utfallsfönstret*.
+
+Inget ändras av utfallet: inga trösklar, startvärdena frysta, driftens dom står. Kort #295 stängt; kort #296 bär de två besluten.
