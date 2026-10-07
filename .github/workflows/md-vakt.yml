@@ -17,7 +17,8 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-        with: { persist-credentials: false }
+        # Hela historiken (cirka 50 MB): stomvakten läser DECISIONS.md och stomdokumenten i basen (#484).
+        with: { persist-credentials: false, fetch-depth: 0 }
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - name: Beslutsnumren — ett beslut, ett nummer (#220)
@@ -26,3 +27,9 @@ jobs:
         run: node --experimental-strip-types scripts/kortkartan.ts --check
       - name: Projektkartan — läget per del, underordnat beviset (#446)
         run: node --experimental-strip-types scripts/projektkartan.ts --check
+      - name: Stomvakten — ett nytt beslut namnger sina stomdokument, och deras handtext ändras i samma ändring (#484)
+        env:
+          BAS: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          node --experimental-strip-types scripts/stomvakten.ts --sjalvtest
+          node --experimental-strip-types scripts/stomvakten.ts --bas "$BAS"

@@ -62,7 +62,8 @@ Define success criteria. Loop until verified.
   release blockers.
 - Secrets (Trafikverket key etc.) live in GitHub Actions secrets / local `.env`; never
   in code, snapshots, or the client app.
-- Log significant choices in DECISIONS.md (date, decision, alternatives, why). Ett beslut = ett
+- Log significant choices in DECISIONS.md (date, decision, alternatives, why). Varje nytt beslut slutar med raden
+  `**Stomdokument:** MAT, SYS` eller `**Stomdokument:** inga — skälet` (DOKUMENTSYNKEN nedan; stomvakten i md-vakt fäller annars). Ett beslut = ett
   unikt nummer, nästa är högsta + 1 (`scripts/beslutsnumren.ts` i CI fäller dubbletter). Hänvisa
   alltid med rymden utskriven: `DECISIONS #NN`, `kort #NN`, `issue #NN`, `PR #NN` (kort #220).
 - **VÄRDEVAKTEN (Bengts order 2026-09-12).** Ett fält får inte bära en mätning, en tröskel eller
@@ -82,7 +83,8 @@ first, English second.
 ## Session protocol (self-steering)
 Every session, in order:
 1. Run the kartsynk first (`node --experimental-strip-types scripts/kartsynk.ts`) and book what it lists (PROJEKTKARTAN →
-   Kartsynken below). Then orient per SESSIONSREGELN below: the project map (`docs/PROJEKTKARTAN.html`, PROJEKTKARTAN below) for where every part stands, the latest `docs/BEDOMNING-*.md` in full, `docs/INTEGRATIONSKARTAN.md` when it
+   Kartsynken below). Read the morning's dokumentsynk (DOKUMENTSYNKEN below): its STATUS line, its PR, and republish every artifact its line lists under
+   *Att republicera* that this machine can reach. Then orient per SESSIONSREGELN below: the project map (`docs/PROJEKTKARTAN.html`, PROJEKTKARTAN below) for where every part stands, the latest `docs/BEDOMNING-*.md` in full, `docs/INTEGRATIONSKARTAN.md` when it
    changed or a new grepp starts, TAVLA.md's 🟡 section, DECISIONS added since last session, latest CI runs. Search
    TAVLA, STATUS and DECISIONS — don't read them whole (halved 26/9; the older half is in TAVLA-ARKIV.md and
    DECISIONS-ARKIV.md — search there too).
@@ -184,6 +186,40 @@ varje del av projektet med block, läge, bevis eller nyckel, vad som saknas, ber
   republiceras; allt annat väntar på Bengts ord. Regeln *samma commit* ovan gäller fortfarande — kartsynken är nätet under den.
   En session utan GitHub-API (webben, mobilen) gör bokföringsvägen; signalerna tar nästa session som når dem. Kartsynken listar
   också **öppna PR:er** (6/10): en PR som väntar lyfts i rapporten till Bengt, och kartgrenar slås ihop av sessionen, aldrig av CI.
+
+## DOKUMENTSYNKEN (Bengts ja 2026-10-07 — styrdokumenten stäms av varje dygn, DECISIONS #484, kort #304)
+Genomgången 7/10 (DECISIONS #483) behövde ett sjuttiotal rättelser i handtexten, fast kartan visade stomdokumenten gröna: CI
+prövade bara det skripten skriver, och regeln *samma varv* hängde på minnet. Tre delar håller nu dokumenten i fas, för alla
+sessioner på alla enheter:
+- **Stomvakten (CI).** Varje nytt beslut slutar med `**Stomdokument:** MAT, SYS` (koderna ur `docs/kortkartan.json`: MAT APP SYS
+  BED KAR KUV FAV; text efter koden är fri, t.ex. `BED §4.2`) eller `**Stomdokument:** inga — skälet`. `scripts/stomvakten.ts --bas
+  <sha>` i md-vakt.yml fäller ett nytt beslut utan raden, ett *inga* utan skäl, en okänd kod och ett namngivet dokument vars
+  handtext — sidan utan lägesrader och kortlistor — är oförändrad i samma push eller PR. Gamla beslut prövas inte.
+  `stomvakten.ts --lage` visar varje dokuments senaste handtextändring och besluten sedan dess; den ersätter inte läsningen.
+- **Morgonrutinen** — claude.ai-rutinen *Halkvakt: dokumentsynken varje morgon* (`trig_015zMNvnicaHT1wFNk4ZWdaH`), kl. 03:30 UTC
+  (05:30 sommartid, 04:30 vintertid), i molnet och inte bunden till någon dator. Den gör stegen nedan.
+- **Väntar på Bengt / Väntar på Axel** överst i projektkartan, skrivna av `projektkartan.ts` ur tavlans avsnitt för Bengt och Axel
+  (kortets *Kvar*, annars dess nyckel) och kartsynkens lista över öppna PR:er (`synk.prar`). Ändras aldrig för hand.
+
+**Dokumentsynken, steg för steg** (rutinen varje morgon, eller en session som gör den för hand):
+1. `git fetch origin`; gren `claude/dokumentsynk-<ÅÅÅÅ-MM-DD>` från origin/main.
+2. Kartsynken (PROJEKTKARTAN ovan): bokför varje obokförd commit på sin del, och läs varje maskinbock mot beviset innan den får
+   stå — 7/10 bockade regeln `inlamnad:0.3.9` en inlämning som App Review avvisat. Sedan `--bokford`.
+3. Kortgenomgången (TAVELREGELN 5): `kortkartan.ts --genomgang`; stäng varje kort vars Verify är uppfylld, med beviset.
+4. Stomgenomgången: `stomvakten.ts --lage`. Läs allt som hänt sedan förra dokumentsynken — commits på main från alla författare,
+   nya beslut, nya STATUS-rader, sammanslagna och öppna PR:er — och rätta handtexten i de sju, `docs/KALENDERN.md` och TAVLA.md
+   där den inte längre stämmer. Integrationskartans innehåll är fryst: bara dess läge-rader; en innehållsrättelse blir en fråga i
+   bedömningens §4.2. Ett tal förs bara in om det står i källan (DECISIONS, STATUS, koden, en körning) — aldrig ur minnet.
+5. `projektkartan.ts` och `kortkartan.ts`, sedan `--check` på båda, `kartsynk.ts --check` och `stomvakten.ts --tillatna`.
+6. En rad i STATUS.md: *Dokumentsynk <datum>:* vad som rättades per dokument, eller *inget att stämma av* — en tyst morgon ska inte
+   se ut som en lyckad — och *Att republicera:* med de artefakter vars källa ändrades.
+7. Commit (märk den aldrig så att CI hoppas över), push, PR med rubriken *Dokumentsynk: <datum>*. Är ci och md-vakt gröna på exakt
+   huvudet och `--tillatna` grön slår rutinen ihop själv (Bengts val (d), DECISIONS #484); annars väntar PR:en på Bengts ord och
+   står i rapporten.
+8. Republicera de artefakter vars källa ändrades, till sina adresser. Når rutinen inte artefakterna gör dagens första session det
+   (sessionsprotokollet steg 1).
+Rutinen fattar inga beslut, ändrar inga trösklar, rör ingen kod och inga hemligheter och kör inga flöden. Det som kräver ett
+beslut skrivs som en fråga i §4.2 och står i rapporten.
 
 ## PRODUKTBOKSREGELN (Axels order 2026-08-29)
 Ändras något användaren SER, HÖR eller GÖR (skärm, rösttext, flöde, behörighet)

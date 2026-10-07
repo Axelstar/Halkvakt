@@ -12,7 +12,7 @@
 // Efter en ändring skrivs kartan och lägesraderna om (projektkartan.ts). Rutinen står i CLAUDE.md under PROJEKTKARTAN.
 import { execFileSync } from "node:child_process";
 import { readFileSync, writeFileSync, renameSync } from "node:fs";
-import { type Del, type Karta, type Steg, stockholm } from "./projektkartan.ts";
+import { type Del, type Karta, type Pr, type Steg, stockholm } from "./projektkartan.ts";
 import { type Lagrad, ISSUE_MARK, lasKropp } from "../supabase/functions/byggsignaler/signaler.ts";
 
 const FIL = "docs/projektkartan.json";
@@ -206,11 +206,16 @@ export function prRad(p: { number: number; title: string; user?: { login?: strin
   return `  #${p.number} ${p.title.slice(0, 90)} · ${p.head?.ref ?? "?"} · ${p.user?.login ?? "?"} · öppnad ${stockholm(p.created_at)}${dygn >= 1 ? ` ⚠ ${dygn} dygn utan ord` : ""}`;
 }
 
-async function oppnaPr(nu: Date): Promise<string[]> {
+async function oppnaPr(): Promise<any[]> {
   const r = await fetch(`https://api.github.com/repos/${REPO}/pulls?state=open&per_page=50`,
     { headers: { Authorization: `Bearer ${githubToken()}`, Accept: "application/vnd.github+json" } });
   if (!r.ok) throw new Error(`GitHub ${r.status}`);
-  return (await r.json() as any[]).map((p) => prRad(p, nu));
+  return await r.json() as any[];
+}
+
+/** Det kartan sparar om en öppen PR, för listan Väntar på Bengt (#484 (c)). */
+export function prInfo(p: { number: number; title: string; user?: { login?: string }; head?: { ref?: string }; created_at: string }): Pr {
+  return { nr: p.number, titel: p.title.slice(0, 120), gren: p.head?.ref ?? "?", av: p.user?.login ?? "?", oppnad: p.created_at };
 }
 
 async function lasSignaler(): Promise<{ sig: Lagrad[]; skriven: Date; nr: number }> {
@@ -279,6 +284,8 @@ function sjalvtest(): void {
   if (!ny.includes('    {"id": "a", "n": "å"},\n    {"id": "b", "n": 2}\n') || !ny.includes('  "url": "https://u",\n  "synk": {"till": "abc"')) fel.push(`tillbakaskrivningen:\n${ny}`);
 
   if (utanGenererat("a<!-- LÄGESRADER §2: x -->\nq\n<!-- /LÄGESRADER -->b<!-- ÖPPNA KORT: y -->z<!-- /ÖPPNA KORT -->c") !== "abc") fel.push("utanGenererat");
+  if (kanon(prInfo({ number: 5, title: "x".repeat(130), head: { ref: "g" }, created_at: t })) !== kanon({ nr: 5, titel: "x".repeat(120), gren: "g", av: "?", oppnad: t }))
+    fel.push("prInfo");
   const c = (forfattare: string, rubrik: string, filer: string[]): Commit => ({ sha: "s", forfattare, tid: t, rubrik, filer });
   if (attBokfora([c("Axelstar", "x", ["ios/a.swift"]), c("Marknadsmotorn", "x", ["a"]), c("895845", "Kartsynk: 3/10", ["a"]), c("895845", "y", [FIL])]).length !== 1) fel.push("attBokfora");
   const pr = prRad({ number: 743, title: "Kartsynk: Axels Mac-körning", user: { login: "Axelstar" }, head: { ref: "kartsynk/2026-10-04-mac" }, created_at: "2026-10-04T09:14:51Z" }, new Date("2026-10-06T06:00:00Z"));
@@ -322,7 +329,7 @@ async function main(): Promise<void> {
   const main = git("rev-parse", "origin/main").trim();
   if (arg.includes("--bokford")) {
     const efter = JSON.parse(text) as Karta;
-    efter.synk = { till: main, tid: new Date().toISOString(), kallor: k.synk?.kallor ?? {} };
+    efter.synk = { ...k.synk, till: main, tid: new Date().toISOString(), kallor: k.synk?.kallor ?? {} };
     skriv(text, k, efter);
     console.log(`✓ synken flyttad till ${main.slice(0, 7)}`);
     return;
@@ -331,26 +338,33 @@ async function main(): Promise<void> {
   // 1. Maskinvägen.
   const efter = JSON.parse(text) as Karta;
   const nu = new Date();
+  let logg: string[] = [], nyaKallor = k.synk?.kallor ?? {};
   try {
     const { sig, skriven, nr } = await lasSignaler();
-    const logg = tillampa(efter, sig, nu);
-    const nyaKallor = kallor(sig, skriven, nu);
-    const kallorAndrade = JSON.stringify(nyaKallor) !== JSON.stringify(k.synk?.kallor ?? {});
+    logg = tillampa(efter, sig, nu);
+    nyaKallor = kallor(sig, skriven, nu);
     console.log(`Signalerna (ärende #${nr}, skrivet ${stockholm(skriven.toISOString())}): ${Object.entries(nyaKallor).map(([a, b]) => `${a} ${b}`).join(" · ")}`);
-    if (logg.length || kallorAndrade) {
-      efter.synk = { till: k.synk?.till ?? main, tid: nu.toISOString(), kallor: nyaKallor };
-      skriv(text, k, efter);
-      console.log(logg.length ? `Bokfört ur signalerna:\n${logg.map((x) => `  ${x}`).join("\n")}` : "Källornas läge ändrat.");
-    } else console.log("Inget nytt ur signalerna.");
   } catch (e) {
     console.log(`⚠ Signalerna lästes inte: ${String(e).slice(0, 200)}. Reglerna står kvar; bokföringen nedan gäller ändå.`);
   }
 
-  // 1b. Öppna PR:er: det som väntar på ett ord ska synas i varje rapport (6/10, Bengts nej till att CI slår ihop kartgrenar).
+  // 1b. Öppna PR:er: det som väntar på ett ord ska synas i varje rapport (6/10, Bengts nej till att CI slår ihop kartgrenar),
+  // och sedan 7/10 överst i kartan under Väntar på Bengt (#484 (c)) — därför sparas de i synk.prar.
+  let prar: Pr[] | null = null;
   try {
-    const pr = await oppnaPr(nu);
-    console.log(pr.length ? `Öppna PR:er (${pr.length}) — lyft dem som väntar i rapporten:\n${pr.join("\n")}` : "Inga öppna PR:er.");
-  } catch (e) { console.log(`⚠ PR-listan lästes inte: ${String(e).slice(0, 120)}.`); }
+    const raa = await oppnaPr();
+    prar = raa.map(prInfo);
+    console.log(raa.length ? `Öppna PR:er (${raa.length}) — lyft dem som väntar i rapporten:\n${raa.map((p) => prRad(p, nu)).join("\n")}` : "Inga öppna PR:er.");
+  } catch (e) { console.log(`⚠ PR-listan lästes inte: ${String(e).slice(0, 120)}. Kartans lista står kvar.`); }
+
+  const kallorAndrade = kanon(nyaKallor) !== kanon(k.synk?.kallor ?? {});
+  const prAndrade = prar !== null && kanon(prar) !== kanon(k.synk?.prar ?? []);
+  if (logg.length || kallorAndrade || prAndrade) {
+    efter.synk = { ...k.synk, till: k.synk?.till ?? main, tid: nu.toISOString(), kallor: nyaKallor, ...(prar ? { prar, prtid: nu.toISOString() } : {}) };
+    skriv(text, k, efter);
+    console.log(logg.length ? `Bokfört ur signalerna:\n${logg.map((x) => `  ${x}`).join("\n")}`
+      : kallorAndrade ? "Källornas läge ändrat." : "Inget nytt ur signalerna; PR-listan i kartan uppdaterad.");
+  } else console.log("Inget nytt ur signalerna.");
 
   // 2. Bokföringsvägen.
   if (!k.synk?.till) { console.log("Ingen synkpunkt än: kör --bokford för att börja från origin/main."); return; }

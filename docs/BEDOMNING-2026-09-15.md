@@ -47,6 +47,9 @@ nedan med rättelserna under *Övrigt sedan 29/9*, om inte §0, §0b eller §4.2
 - **Förarsvaren:** 32 riktiga svar 6/10, alla projektgruppens (Bengt 22, Axel 10), inget om halka.
 - **Databasen:** 266 MB 3/10; raderingen börjar runt 15/10, återläsningen är bevisad (#450), och Pro-beslutet fattas senast 1/11.
 - **Kuvösen:** Trafikverkets data kom 2/10 (#438); riktningsprovet och kalibreringen kördes 6/10 (#467, #468).
+- **Styrdokumenten:** genomgångna mot läget 7/10 (#483). Sedan 7/10 kväll stäms de av varje morgon av en rutin i molnet, och en vakt i
+  CI fäller ett nytt beslut vars stomdokument inte rättas i samma ändring (#484). *Väntar på Bengt* och *Väntar på Axel* står överst
+  i projektkartan.
 
 **Vart vi är på väg.** Frosten och betan i november, och skuggans vinter fram till marsdomen. Fysikspåret väntar på Axels kod och en
 egen förregistrering. Öppet i §4.2: kriging och kallkartan efter rutnätsmodellens utfall, och Axels fingeravtryck per station för att
@@ -488,7 +491,7 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 <!-- LÄGESRADER §4.2: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 *Läget i projektkartan:*
 
-- [Stomdokumenten och kortkartan](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-g-stomdokumenten): väntar, 67 % · Bengts val (a)–(d) om dokumentsynken (kort #304, bedömningen §4.2).
+- [Stomdokumenten och kortkartan](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-g-stomdokumenten): väntar, 93 % · Sju morgnar i rad med dokumentsynken, från 8/10 03:30 UTC (kort #304, DECISIONS #484).
 
 <!-- /LÄGESRADER -->
 
@@ -633,7 +636,7 @@ bevisbart säker (vid 0 km/h går det inte att nå faran) och är rimligen stör
 | **Rutnätsmodellen i kuvösen (kort #302, DECISIONS #481 och #482 — Axels ord 6/10, flyttade från PR #783).** Vägens temperatur byggs på MET Nordics luft plus vägens skillnad mot luften ur grannarna (RN), och samma med skillnadens beroende av vädret (RN+R). ✅ Bengts ja 7/10 (*"kör RN"*), körd samma kväll (#481 utfall): RN och RN+R sämre än RÅ i alla band, 9,3 mot 7,4 % grova fel och bortom 20 km 18 mot 13,6 % — ingen kandidat. Kallkartan ur MODIS byggd 6/10. **Öppet:** (1) ska steg 2, kriging, och kallkartans prov göras efter detta utfall, eller läggas ned; (2) Axels Earthdata-nyckel ska bytas; (3) ✅ PR #783 stängd 7/10, posterna på main (PR #797); kort #302 klart. 🔑 Bengt och Axel. |
 | **Vägdatalagret (kort #301, DECISIONS #472): NVDB:s vägdata ligger i öppna API:et med vår nyckel — ÅDT (också nattrafiken 22–06), vägklass, slitlager, vägbredd, hastighet, väghållare, beläggningsdata.** ✅ Rekognoseringen körd 7/10 (#472 utfall): stationer 99–100 %, segment 100 %, vägpunkter 14–55 % (vår rutgeometri), 5–7 objekt per träff, spårdjup i MeasurementData20 utan geometri. ✅ Hämtaren körd 7/10 (Bengts ja, val a; #473 utfall): `data/vagdata/` med fyra filer i repot — stationer, segment och väglagspunkter fullt täckta, rutternas vägpunkter 24 % ÅDT (handritade rutter). ✅ C8 med vägdata körd 7/10 (#479): vägdatan förklarar 4 % av stationernas särart mot RÅ — ingen rättelse ovanpå grannarna; mot en vädermodell 30 % (#480), ett prövat underlag för fysikspåret. Nästa beslut: Axels kolumner in (steg 3), rutternas snappning (b, eget kort vid ja) och om Lastkajen alls behövs (vinterväghållningsklass, bro). **(c) hela vägnätet** bevakas som villkorsrad i `docs/KALENDERN.md` (Bengt 7/10: *"påminner du om när det är dags"*) — tre villkor, lyfts när något inträffar. 🔑 Bengt och Axel. |
 | **Axels fingeravtryck per station — upprepa hans 23 % mot hans egen modell (Bengt 7/10).** C8 mätte vägdatan mot grannarna (4 %, #479) och mot en vädermodell ur MET Nordic (30 %, #480), men inte mot Axels fysikmodell. En fil från Axel med stationens id, fingeravtrycket i °C och antalet timmar räcker för att räkna samma sak med öppen vägdata; ange också vilken modell och population fingeravtrycket gäller. 🔑 Axel (filen), Bengt (frågan skickas). |
-| **Dokumentsynken — styrdokumenten stäms av varje dygn (kort #304, Bengts fråga 7/10).** Genomgången 7/10 (#483) behövde ett sjuttiotal rättelser fast kartan visade stomdokumenten gröna. Förslaget i `docs/DOKUMENTSYNKEN-FORSLAG-2026-10-07.md`: **(a)** stomvakten i CI — varje nytt beslut namnger sina stomdokument, och CI fäller ett namngivet dokument vars handtext inte ändrats i samma push eller PR; **(b)** en morgonrutin i molnet kl. 05:30 — kartsynken, kortgenomgången och stomgenomgången, rättelserna i en PR *Dokumentsynk: <datum>*; **(c)** *Väntar på Bengt* och *Väntar på Axel* överst i projektkartan; **(d)** om rutinen får slå ihop sin egen dokument-PR på grön CI, som kartsynkens kartgrenar. | Bengt | Rekommendation: ja till alla fyra, (d) så att avstämningen inte väntar på ett ord. | #304 |
+| ✅ **AVGJORT 7/10 (Bengt: *"bygg enligt ditt förslag"*, DECISIONS #484): ja till alla fyra; byggt, första morgonen 8/10.** **Dokumentsynken — styrdokumenten stäms av varje dygn (kort #304, Bengts fråga 7/10).** Genomgången 7/10 (#483) behövde ett sjuttiotal rättelser fast kartan visade stomdokumenten gröna. Förslaget i `docs/DOKUMENTSYNKEN-FORSLAG-2026-10-07.md`: **(a)** stomvakten i CI — varje nytt beslut namnger sina stomdokument, och CI fäller ett namngivet dokument vars handtext inte ändrats i samma push eller PR; **(b)** en morgonrutin i molnet kl. 05:30 — kartsynken, kortgenomgången och stomgenomgången, rättelserna i en PR *Dokumentsynk: <datum>*; **(c)** *Väntar på Bengt* och *Väntar på Axel* överst i projektkartan; **(d)** om rutinen får slå ihop sin egen dokument-PR på grön CI, som kartsynkens kartgrenar. | Bengt | Rekommendation: ja till alla fyra, (d) så att avstämningen inte väntar på ett ord. | #304 |
 ---
 
 ## 5. Integrationsläget — mätt mot kartan (24/9, Bengts fråga *"hur långt i integrationen har vi kommit"*)
@@ -879,7 +882,6 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 25 kort
 **§4.2 Öppna**
 
 - #214 PLAY-DEKLARATIONEN ÄR OSANN SEDAN 16/9 — Axel, beslut
-- #304 DOKUMENTSYNKEN — STYRDOKUMENTEN STÄMS AV VARJE DYGN, MED EN VAKT VID KÄLLAN — Bengt
 - #303 VÄGDATALAGRET, STEG 3 — KUVÖSENS INLÄSNING OCH AXELS KOLUMNER — Bengt
 - #299 SPRIDNINGSGRINDEN OCH NATTBEGRÄNSNINGEN — TVÅ FÖRSLAG TILL TROSKLAR-SKUGGAN UR KUVÖSEN — Bengt
 - #298 PROGNOSLAGRET — ALLT PÅ BORDET: FEMTON VÄGAR, FYRA MÄTBARA I KUVÖSEN NU — Bengt
@@ -895,6 +897,7 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 25 kort
 - #271 TERMISK KARTERING — FACIT MELLAN STATIONERNA — Claude, låst
 - #42 Vattenplaningsvarningen — Claude, låst
 - #153 ALLVAR SOM FÖRSPRÅNG + ETT SMALARE UNDANTAG — beslut 1 omformulerat 16/9 och väntar, beslut 2 öppet (Bengts) — Claude, låst
+- #304 DOKUMENTSYNKEN — STYRDOKUMENTEN STÄMS AV VARJE DYGN, MED EN VAKT VID KÄLLAN (BYGGT 7/10, RUTINEN GÅR FRÅN … — pågår
 
 **§5 Integrationsläget — mätt mot kartan (24/9, Bengts fråga "hur långt i integrationen har vi kommit")**
 

@@ -130,7 +130,7 @@ export function medBlock(sidtext: string, html: boolean, b: string): string {
  *  pröva vart och ett mot beviset och stänga det som är uppfyllt. Kortet är rubrikraden och dess indragna rader. Bara en
  *  etikett räknas — "Verify:", "Verify (…):" eller "Verify för …:" — aldrig ordet i löptext ("Verify-raden", "Verify 2",
  *  "Kvar (Verify):"), som 3/10 gav sex kort en Verify-rad av lösryckta fragment. */
-export function genomgang(tavla: string): (Kort & { verify: string[]; kvar: string })[] {
+export function genomgang(tavla: string): (Kort & { verify: string[]; kvar: string; vantar: string })[] {
   const rader = tavla.split("\n");
   const lista = oppnaKort(tavla);
   const block: string[] = [];
@@ -148,7 +148,13 @@ export function genomgang(tavla: string): (Kort & { verify: string[]; kvar: stri
       .replace(/(?<=.)\s[\p{Extended_Pictographic}↪↦].*$/u, "").trim());
     const verify = m.flatMap((x, i) => x[1] === "Verify" ? [del(i)] : []);
     const kvar = m.map((x, i) => x[1] === "Kvar" ? i : -1).filter((i) => i >= 0).pop();
-    return { verify, kvar: kvar === undefined ? "" : del(kvar) };
+    const kvarText = kvar === undefined ? "" : del(kvar);
+    // What the card waits for (#484 (c), projektkartan's Väntar på-lists): the Kvar row, which is the card's latest word; without
+    // one, the text after the card's last 🔑, up to the next Verify label or status marker.
+    const n = b.lastIndexOf("🔑");
+    const nyckel = n < 0 ? "" : kort(200, b.slice(n + "🔑".length).replace(/^\s*(?:Nyckel|Kvar)[^:]{0,40}:\s*/u, "")
+      .replace(/\s(?:Verify\b|[\p{Extended_Pictographic}↪↦]).*$/u, "").trim());
+    return { verify, kvar: kvarText, vantar: (kvarText || nyckel).replace(/~~/g, "").trim() };
   };
   return lista.map((k, n) => ({ ...k, ...efter(block[n] ?? "") }));
 }
@@ -175,10 +181,15 @@ if (direkt && process.argv[2] === "--sjalvtest") {
   // Verify-rader följer med, och ett kort med ordet bara i löptext ger ingen Verify.
   const g = genomgang("### Bengt\n- [ ] **#7 SJU** text. **Kvar:** ett steg\n  mer. **Verify:** körningen grön. Verify-raden ovan gäller." +
     " *Verify (från 3/10):* provet rött.\n- [ ] **#8 ÅTTA** se Verify 2 och Kvar (Verify): mars.\n");
+  const v = genomgang("### Bengt\n- [ ] **#9 NIO** text. 🔑 Nyckel: Bengts ja till (a). *Verify:* grönt. ✅ klart 1/10\n" +
+    "- [ ] **#10 TIO** text. **Kvar:** mätningen.\n- [ ] **#11 ELVA** 🔑 Nyckel: gammalt. **Kvar:** ~~a~~ b.\n");
+  if (v[0].vantar !== "Bengts ja till (a)." || v[1].vantar !== "mätningen." || v[2].vantar !== "a b.") {
+    console.error("✗ självtest: väntetexten läses fel", v); process.exit(1);
+  }
   const ok3 = g.length === 2 && g[0].verify.join("|") === "körningen grön. Verify-raden ovan gäller.|provet rött."
     && g[0].kvar === "ett steg mer." && g[1].verify.length === 0 && g[1].kvar === "mars.";
   if (!ok3) { console.error("✗ självtest 3: kortgenomgången", g); process.exit(1); }
-  console.log("✓ självtest: öppna kort läses med ägare, kort utan nummer får rubriken som nyckel, okänt avsnitt fälls, skrivningen är idempotent, genomgången läser Verify och Kvar");
+  console.log("✓ självtest: öppna kort läses med ägare, kort utan nummer får rubriken som nyckel, okänt avsnitt fälls, skrivningen är idempotent, genomgången läser Verify och Kvar och vad kortet väntar på");
   process.exit(0);
 }
 
