@@ -1,0 +1,25 @@
+# Vägdatalagrets rekognosering (kort #301, DECISIONS #472): bär öppna API:et NVDB:s vägdata vid våra platser? REN LÄSNING på ett
+# stickprov — laddar inget, skriver inget. Knapp, inte cron. Svaren på Summary-sidan.
+name: vagdata-rekognosering
+on:
+  workflow_dispatch:
+    inputs:
+      alla:
+        description: "true = alla platser (hämtarens läge, ~3 000 anrop per datamängd). Tomt = stickprov."
+        default: ""
+jobs:
+  vagdata-rekognosering:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - shell: bash
+        env: { TRAFIKVERKET_API_KEY: "${{ secrets.TRAFIKVERKET_API_KEY }}", ALLA: "${{ inputs.alla }}" }
+        run: |
+          curl -sSf -o static.json https://axelstar.github.io/halkvakt-karta/data/app/v1/static.json
+          curl -sSf -o vaglag.geojson https://axelstar.github.io/halkvakt-karta/data/vaglag.geojson
+          node --experimental-strip-types scripts/vagdata-rekognosering.ts --sjalvtest
+          { echo '```'; node --experimental-strip-types scripts/vagdata-rekognosering.ts $([ "$ALLA" = "true" ] && echo --alla); echo '```'; } 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
