@@ -8557,3 +8557,30 @@ hittar den med R² över 0,9, BAS inte. Läckvakten: en särart som är rent bru
 målet med i sin egen träning (R² 0,058 på bruset), ÅDT utan logaritm, REL utan grannarna.
 
 **Vad som INTE görs.** Inga trösklar, ingen ändring i driften, ingen förregistrering av fysikspåret.
+
+**UTFALL #479, 7/10 — körd och läst** (kuvos 37659713953 på 49484f5, läsningen 1,7 min). **Kontrollen höll:** RÅ gav 4 353 206 punkter och
+7,5 % grova fel. Alla 729 stationer med punkter fick vägdata; ingen saknades.
+
+| Modell | R², regioner gömda (55 rutor) | R², leave-one-out | MAE för särarten (utan modell 0,43 °C) |
+| :-- | --: | --: | --: |
+| VÄG | 0,034 | 0,033 | 0,42 °C |
+| REL | 0,042 | 0,046 | 0,42 °C |
+| BAS | −0,005 | −0,011 | 0,43 °C |
+
+Kandidaterna, grova fel hela vintern: RÅ 7,5 % · RÅ+VÄG 7,5 % · RÅ+REL 7,5 % · RÅ+BAS 7,5 % · OFFSET 5,5 %. Per band för RÅ+REL: 0–7 km
+5,2 → 5,0 %, 7–15 km 5,3 → 5,1 %, 15–20 km 7,2 → 7,1 %, över 20 km 13,6 → 13,8 %. Under spridningsgrinden vid 2,25 °C: 2,8 % för alla,
+täckning 60,6 %. Effekt per standardavvikelse i VÄG: vägklass −0,09 °C, hastighet +0,05, bredd +0,03, övriga högst ±0,03. Särarten per
+ÅDT-klass: under 1 000 −0,10 °C (136 stationer), 1 000–20 000 −0,08 (570), över 20 000 +0,20 (22). Särartens spridning sd 0,55 °C.
+
+**Mot läsningen i förväg.** (1) *Föll:* den bästa modellen förklarar 0,042, inte 0,10–0,25. (2) *Höll, knappt:* REL 0,042 mot VÄG 0,034.
+(3) *Höll:* BAS −0,005. (4) *Föll:* de grova felen står kvar på 7,5 %. (5) *Höll i riktningen, inte i storleken:* −0,10 / −0,08 /
++0,20 °C mot Axels −0,58 / +1,14.
+
+**Läsning.** Vägens egenskaper förklarar nästan ingenting av en stations avvikelse från sina grannar. Stationerna står på samma slags
+vägar som grannarna, så trafikens och saltets värme finns redan i RÅ:s medel. Axels 23 % mäter avvikelsen från en vädermodell som
+inte vet något om vägen, och där bär vägdatan. Särarten mot grannarna, sd 0,55 °C, är mikroskala — skugga, placering, lokala
+kallhål — och lärs bara ur stationens egen historik (OFFSET 5,5 %), ur en lokal karta eller ur mätningar längs vägen.
+
+**Följd.** Ingen kandidat: C8 med vägdata ger ingen rättelse ovanpå RÅ på huvudvägnätet. För fysikspåret betyder det att vägdatan hör
+hemma i en modell som börjar från vädret, inte från grannarna, vilket stöder Axels uppdelning med RÅ nära stationerna och modellen
+längre bort. För småvägar utanför de 818 segmenten (vägdatalagret c) säger läsningen ingenting, eftersom stationerna inte står där.
