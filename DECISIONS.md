@@ -8239,3 +8239,40 @@ datamängder ≈ 20 000 anrop ≈ en timme med 0,6 s paus — en knapptryckning 
 **Mitt misstag på vägen:** v2:s självtest för SWEREF99TM-projektionen föll (glömd skalfaktor 0,9996) och `grep -v` utan `pipefail` dolde det
 lokalt, så commiten och knappen gick ändå (37569823738 röd på provet). Rättat i a7da354; kedjor som filtrerar utdata körs nu med `set -o
 pipefail`. **Följd:** kort #301 steg 1 klart; steg 2 (hämtaren med vägval och snappning) är nästa beslut.
+
+## #473 (7/10 2026) Vägdatalagrets hämtare — reglerna skrivna före körningen: ett NVDB-element per plats, spannen i värdevakten, filerna via PR (kort #301 steg 2, Bengts ja)
+
+**Bengts ja 7/10 (*"ja till hämtaren"*)** efter rekognoseringen (#472). `scripts/vagdata-hamta.ts` och knappen `vagdata-hamta.yml`.
+
+- **Platserna:** VViS-stationerna (static.json, 854), väglagsnätets segment (818, linjens mittpunkt) och vägpunkterna var 2 km längs de 20
+  svenska skuggrutterna (prognoslagrets egna `provpunkter`, 1 585). **Vägpunkterna snappas inte** — prognoslagret räknar på just de
+  koordinaterna; radien vidgas i stället 150 → 400 → 1 000 m, och den radie som bar står på raden.
+- **En förfrågan per plats** med sex QUERY i samma REQUEST (Trafik, FunktionellVägklass, Slitlager, Vägbredd, Hastighetsgräns,
+  Väghållare), `INTERSECTS Geometry.WKT-WGS84-3D` (#472), geometrin exkluderad ur svaret, 0,35 s paus — nyckeln delas med driftens ingest.
+- **Vägvalet:** objekten grupperas på NVDB:s `Element_Id`; raderade (`Deleted`) och utgångna (`Valid_To` passerad) kastas; ETT element
+  väljs: **lägst funktionell vägklass ⇒ statlig väghållare ⇒ störst ÅDT_fordon ⇒ första.** Skälet (`vald_pa`) och antalet kandidater står
+  på raden. Saknar det valda elementet en datamängd är fältet null — aldrig grannens värde.
+- **Fälten:** element_id, klass, väghållare (typ, namn), slitlager, bredd_m, hastighet_kmh, adt_fordon, adt_lastbilar, adt_latta_22_06,
+  adt_matar (ur Mätårsperiod), adt_matmetod, radie_m, kandidater, vald_pa. **Spannen** står i `scripts/vardevakten.ts` (klass 0–9,
+  bredd 0–60 m, hastighet 5–130, ÅDT 0–200 000, lastbilar och nattlätta 0–50 000, mätår 1990–2030) och importeras av hämtaren, som
+  fäller körningen vid brott — VÄRDEVAKTEN före första användning. Värdevakten har fått en vakt så att den kan importeras utan att köra.
+- **Filerna:** `data/vagdata/{stationer,segment,vagpunkter}.json` med huvud (källa, datum, datamängder och versioner, geometri, radier,
+  regel, täckning per fält, radie som bar, vald på, spannens min/max). Flödet laddar upp dem som artefakt och **committar inget**:
+  jag läser sammanfattningen (täckning, vägval, spann) och committar filerna i en PR som Bengt slår ihop. Licens CC0.
+- **Vakter:** mer än 2 % fallna förfrågningar fäller körningen; spannfel fäller; självtest utan nät (levande, kandidater, vägvalet, raden,
+  spannkontrollen) i knappen före körningen.
+- **Kostnad:** ≈ 3 300 förfrågningar (fler där radien vidgas), ≈ 30 min, en gång per säsong. Stickprov (`stickprov: true`, var 40:e plats)
+  körs först.
+
+**Vad som inte görs:** inget skrivs till Supabase; kuvösens inläsning (`kuvos_ra.vagdata`) och Axels kolumner (himmelsfaktor, skog, vatten)
+är steg 3; ingen mätning läser lagret förrän filerna är i repot och spannen OK.
+
+**Tillägg, Bengts val (a) 7/10 (*"a, slå ihop 788"*) — väglagspunkterna.** Frågan var varför vägpunkterna följer våra egna linjer:
+skuggrutterna är handritade sedan 29/8 — 20 rutter, 109 brytpunkter, 3 107 km, ~35 km per rak sträcka — och det är därför NVDB träffade
+14–55 % vid dem (#472). Tre vägar ställdes: (a) väglagsnätets egen geometri (Trafikverkets 818 segment, 23 681 km) med punkter var 2 km,
+(b) rutterna snappade till vägen (byter skuggans population — eget kort, förregistrering, Bengt och Axel), (c) hela vägnätet som
+population. **(a) valdes** därför att facit mellan stationerna finns bara där (RoadCondition, kamerorna), det redan är premissmätningens
+population B (#406) så kuvösen, hösten och mars förblir jämförbara, geometrin redan är hämtad, produkten talar bara där, och
+stationerna inte kan kalibrera småvägar; (c) först när facit finns utanför de 818. Hämtaren får en fjärde fil
+`data/vagdata/vaglagspunkter.json` — var 2 km längs segmentens linjer, id `segment_id@km`, ~11 800 punkter — och tiden växer till ≈ 2 h
+per säsong. Rutternas vägpunkter behålls för prognoslagrets läsningar som de står; (b) är kort #302 om Bengt och Axel vill.

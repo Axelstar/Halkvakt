@@ -61,6 +61,15 @@ export const SPANN: Record<string, [number, number, string]> = {
   rain_sum_mm: [0, 100, "mm/30 min"], snow_wateq_mm: [0, 100, "mm/30 min"],
   surface_grip: [0, 1, "friktion 0–1 ur ytstatusgivaren (Surface.Grip, DECISIONS #465) — NULL = ingen givare"],
   condition_code: [1, 4, "Trafikverkets väglagsklass"],
+  // Vägdatalagret (kort #301, DECISIONS #473): NVDB ur öppna API:et, statiskt per plats i data/vagdata/. Spannen deklareras HÄR
+  // innan någon mätning läser fälten; hämtaren importerar dem och fäller vid brott.
+  klass: [0, 9, "funktionell vägklass 0 (riksväg) … 9"],
+  bredd_m: [0, 60, "m vägbredd"],
+  hastighet_kmh: [5, 130, "km/h högsta tillåtna"],
+  adt_fordon: [0, 200000, "fordon per årsmedeldygn"],
+  adt_lastbilar: [0, 50000, "tunga fordon per årsmedeldygn"],
+  adt_latta_22_06: [0, 50000, "lätta fordon per årsmedeldygn kl. 22–06"],
+  adt_matar: [1990, 2030, "mätår för ÅDT (ur Mätårsperiod ÅÅÅÅMM)"],
   severity_code: [1, 5, "TRV SeverityCode — 3 har aldrig förekommit"],
   // Radarns intensiteter. 200 mm/h är fysikens gräns för en 5-minutersskur; extrema
   // konvektiva celler når 150–200. HÖGRE ÄR EN RADARARTEFAKT, inte regn — och de här två
@@ -112,8 +121,11 @@ export function doma(f: Falt): Dom {
 const ikon = (u: Dom["utfall"]) =>
   u === "OK" ? "✅" : u === "OBESIKTIGAT" ? "⊘" : u === "–" ? "·" : u === "ID" ? "🔖" : "⚠️";
 
+// Körs filen själv, eller importeras SPANN av en annan vakt (vägdatalagrets hämtare, kort #301)? Importerad kör den varken
+// självtest eller huvudvarv — spannen är det som delas.
+const korsSjalv = !!process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, "/").split("/").pop()!);
 // ── Självtest: de fyra verkliga fallen från 12/9, plus ett obesiktigat fält.
-if (process.argv.includes("--sjalvtest")) {
+if (korsSjalv && process.argv.includes("--sjalvtest")) {
   console.log("SJÄLVTEST — värdevakten mot de fyra fall som faktiskt lurade oss\n");
   let ok = true;
   const k = (namn: string, fick: unknown, vantat: unknown) => {
@@ -162,6 +174,7 @@ if (process.argv.includes("--sjalvtest")) {
   process.exit(0);
 }
 
+if (korsSjalv) {
 // ── Skarpt (läser bara).
 const url = process.env.DATABASE_URL;
 if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
@@ -244,3 +257,4 @@ if (hinder.length) {
   console.log(`\nAlla fält är besiktade och inom sina spann.`);
 }
 await pool.end();
+}
