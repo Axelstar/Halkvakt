@@ -81,7 +81,8 @@ if (process.argv.includes("--sjalvtest")) {
   k(esc('a&b<"c"') === "a&amp;b&lt;&quot;c&quot;", "XML-escapen");
   k(MANGDER.length === 8 && MANGDER.every((m) => m.ns && m.ver), "åtta datamängder med namespace och version");
   const [E, N] = sweref99tm(15, 60);
-  k(Math.abs(E - 500000) < 0.01 && Math.abs(N - 6653180) < 200, `SWEREF99TM på meridianen: E ${E.toFixed(1)} N ${N.toFixed(0)}`);
+  // Meridianbågen till 60° N är ~6 654 072 m på GRS80; med skalfaktorn 0,9996 blir N ≈ 6 651 411 (självtestets första version glömde k0).
+  k(Math.abs(E - 500000) < 0.01 && Math.abs(N - 6651411) < 100, `SWEREF99TM på meridianen: E ${E.toFixed(1)} N ${N.toFixed(0)}`);
   const [E2] = sweref99tm(13, 56);
   k(E2 < 500000 && E2 > 350000, `SWEREF99TM väster om meridianen: E ${E2.toFixed(0)}`);
   console.log("✓ självtest: WITHIN-filtret, escapen, datamängderna");
