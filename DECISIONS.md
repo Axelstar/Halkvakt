@@ -8489,3 +8489,30 @@ fastställt"* även med X satt — upptäckt när X skulle sättas. Rättat, och
 saknar X. Två motprov fällde provet: X borttaget ur anropet, och X = 2,3, som inte är en bandgräns.
 
 **Kvar på kort #299:** Axels signatur på väg (c) (#475) och vinterläsningen.
+
+## #478 (7/10 2026) Axel signerar väg (c), och vinterläsningen av spridningsgrinden beställd — ingen vinter att läsa än (kort #299)
+
+**Beslut.** Bengt 7/10: *"axel signerar väg c och gör vinterläsningen"*. Axels signatur, relayerad av Bengt i chatten som för förslag
+1 (#474) och fastställandet 2/9 (#61), gör #475 fullt: marsdomen räknas med spridningsgrinden vid X = 2,25 °C (#477), och halka på ett
+täckt segment där grinden tystade prognosen är en miss.
+
+**Vinterläsningen — nuläget 7/10** (grind S-B i underlagsläge, 37655806370 på 08c645f, hela loggen sedan 23/9):
+
+| | antal |
+| :-- | --: |
+| varv med prognos | 1 881, varav 5 med spridningen loggad (sedan 16:32Z) |
+| täckta provpunkter med spridning | 457: 0,5–1 °C 21 · 1–2 201 · 2–2,25 51 · 2,25–4 179 · över 4 5 |
+| under X = 2,25 °C | 273, 59,7 % (kuvösen 60,6 %) |
+| holdout-rader under +5 °C med spridning | 0 |
+| C1 · C2 | 0 av 20 · 0 av 30 |
+
+Körningens rubrik säger *"X = 2.25 °C"*: huvudflödet skickar X till domen i drift, och felet från #792 är bevisat rättat. Läsningen
+kan inte göras än. Kortets Verify kräver täckning och grova fel med grinden *i vinter*, och loggen har inga vinterrader. Grova fel per
+band är en andel, och andelar skrivs bara i domläget när C1 och C2 är uppfyllda (#352). Oktoberns täckning räknas inte som vinter.
+
+**Planen** (`docs/KALENDERN.md`): täckningen med grinden läses ur antalen, som inte är blindade, den 1/12, 1/1 och 1/2 — en körning av
+grind S-B i underlagsläge var, ungefär en minut. Grova fel per band, och domen med grinden, läses i domläget första gången C1 och C2 är
+uppfyllda — på Bengts order, och beställningen 7/10 står — eller senast vid marsdomen. Kort #299 stängs med den läsningen.
+
+**Alternativ:** (a) grova fel per band nu, i domläget — förkastat, C1 och C2 är inte uppfyllda och andelarna är blindade (#352);
+(b) lyfta blindningen för spridningens grova fel — förkastat utan eget beslut, eftersom holdout-raderna är samma rader som B1 dömer.
