@@ -8584,3 +8584,45 @@ kallhål — och lärs bara ur stationens egen historik (OFFSET 5,5 %), ur en lo
 **Följd.** Ingen kandidat: C8 med vägdata ger ingen rättelse ovanpå RÅ på huvudvägnätet. För fysikspåret betyder det att vägdatan hör
 hemma i en modell som börjar från vädret, inte från grannarna, vilket stöder Axels uppdelning med RÅ nära stationerna och modellen
 längre bort. För småvägar utanför de 818 segmenten (vägdatalagret c) säger läsningen ingenting, eftersom stationerna inte står där.
+
+## #480 (7/10 2026) C8 mot vädret — vägdatan mot en väderbaslinje ur MET Nordic, förregistrerad före körningen (kort #298, Bengts ord)
+
+**Beslut.** Bengt 7/10: *"mät mot met nordic. jag är i alla fall nyfiken på resultatet"* — efter att Bengt själv påpekat att MET
+Nordic inte är vad Axels mätning gjordes mot. En läsning, ingen dom. Skript `scripts/matningar/kuvos-c8-metnordic-2026-10-07.ts` på
+knappen `kuvos` (`matning`), förregistrerat här i samma commit som skriptet, före körningen.
+
+**Vad det är och inte är.** C8 (#479) mätte stationens särart mot grannarna (RÅ): vägdatan förklarade 4 %. Axel mätte mot sin
+fysikmodell, driven av ECMWF och utanför repot: 23 %. Det här är en **tredje** baslinje — MET Nordics väderrutnät — och därför ingen
+upprepning av Axels mätning. Frågan: vet vägdatan något som väderrutnätet inte vet? Indata och idén att bygga på rutnätet kommer från
+Axels gren `kuvos/rutnatet-469` (PR #783, där DECISIONS #470); grenen är inte ihopslagen och läsningen hämtar releasen direkt.
+
+**Indata.** Releasen `kuvos-metnordic-2024-25` (MET Norway, NLOD / CC BY 4.0): sju fält per timme i rutan närmast var och en av 854
+stationer, 31/10 2024 – 31/3 2025, 3 115 392 rader. Summorna lästa ur releasens manifest och kontrollerade mot nedladdade filer 7/10;
+de står nu i `kuvos/metnordic-leverans.json`, och kuvösknappen jämför mot dem. **Värdevakten:** spannen för de sju fälten är införda i
+`scripts/vardevakten.ts` före körningen; läsningen fäller vid ett värde utanför. Hela vintern ligger inom spannen (kortvågens 30 541
+små negativa värden, ned till −222 J/m² per timme, är beräkningsbrus och ryms). En halvtimmeshink läser analysen vid sin början.
+
+**Baslinjerna** (ingen station går in): **LUFT** — ytan skattas som MET Nordics lufttemperatur 2 m. **VÄDER** — linjär regression av
+ytan på de sju fälten (luft, fukt, vind, moln, nederbörd, lång- och kortvåg i W/m²), tränad med stationens hela region gömd (rutor
+1° × 2°, som C8) på grind A:s population; koefficienterna skrivs ut.
+
+**C8 på varje baslinje.** Stationens särart = medel(mätt − baslinje) för stationer med minst 100 punkter. VÄG och BAS ur C8-skriptet
+— importerade, samma kolumner, samma ridge (λ = 1) — med regionerna gömda och leave-one-out. R², MAE, effekt per standardavvikelse och
+särarten per ÅDT-klass. **Kandidaterna** per punkt: LUFT, LUFT+VÄG, VÄDER, VÄDER+VÄG och VÄDER+BAS mot RÅ och OFFSET på samma
+punkter, per band (bandet är RÅ:s närmaste ankare).
+
+**Läsningen i förväg.** (1) VÄG förklarar mer av särarten mot VÄDER än mot RÅ (0,034): mellan 0,05 och 0,25. (2) ÅDT-klasserna spänner
+bredare än mot RÅ: mer än 0,5 °C mellan över 20 000 och under 1 000, mot 0,30 °C i C8. (3) BAS förklarar mer mot vädret än mot RÅ,
+R² över 0,05, eftersom latitud och kust syns mot en vädermodell. (4) VÄDER ensam har fler grova fel än RÅ i banden 0–20 km. (5)
+VÄDER+VÄG har färre grova fel än VÄDER.
+
+**Kontroll.** RÅ ska ge 4 353 206 punkter och 7,5 % grova fel som i C8. Avviker det läses inte resten.
+
+**Prov före körningen.** Självtestet: timindexet (06:00 och 06:30 läser 06-analysen), lösaren, måtten lika med grind A:s `stats()`,
+spannkontrollen, vädermodellen med regionen gömd (en region 10 °C varmare än luften behåller hela resten), hela läsningen på syntetiska
+stationer, och att RÅ och OFFSET måste vara radlika. Tre motprov fällde provet: regionen med i vädermodellen (resten 4,32 i stället för
+10), en senare analys, och frysklassfelet fel definierat. Inläsningen och spannkontrollen
+kördes lokalt mot den riktiga filen: 3 115 392 rader, 854 stationer, inga fel. C8-skriptet fick en vakt så att ett import inte startar
+dess läsning (beteendeneutralt).
+
+**Vad som INTE görs.** Inga trösklar, ingen ändring i driften, ingen förregistrering av fysikspåret eller av PR #783:s RN-kandidater.
