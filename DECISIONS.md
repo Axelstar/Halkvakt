@@ -8947,3 +8947,34 @@ det som mätts, inte +1…+6 h).
 den; kuvösens §6 får raden 8/10. **Utfall** skrivs under den här posten när knappen körts.
 
 **Stomdokument:** KUV §6, BED §4.2
+
+## #486 (7/10 2026) Axels ord i Bengts ställe för kort #305: slå ihop PR #802, kör FYSIK på knappen och C8 mot fingeravtrycken — C8-läsningen förregistrerad före körningen
+
+**Beslut.** Axel 7/10 23:54, i projektchatten: *"I say that we run it"*, och på frågan om det är hans ord eller Bengts: *"Yes please built
+c8 before and then we do a run"*. Axel är produktägare med fullt beslutsmandat; hans ord står här i Bengts ställe för tre saker och bara
+dem: **(1)** slå ihop PR #802 (förregistreringen i DECISIONS #485, oförändrad), **(2)** kör knappen `kuvos` med
+`scripts/matningar/kuvos-fysik-2026-10-08.ts`, **(3)** kör C8 mot fingeravtrycksfilen (§4.2, Bengts begäran 7/10). Inga trösklar, ingen
+drift, inget av FYSIK+BLANDNING eller vintern 2026/27 — de två besluten står kvar i §4.2 för Bengt. Bengt ser detta i morgonrapporten.
+Releasen `kuvos-fysik-2024-25` skapades av Axel 7/10 23:49 på main (864ecb2); GitHubs sha256 för filen = `kuvos/fysik-leverans.json`.
+
+**C8 mot fingeravtrycken — vad det är.** Bengts C8 (#479), oförändrad: VÄG, REL och BAS importerade ur
+`scripts/matningar/kuvos-c8-vagdata-2026-10-07.ts`, ridge λ = 1, regioner gömda (rutor 1° × 2°) som huvudtal och leave-one-out, minst
+100 timmar per station, särarten per ÅDT-klass. Målet är Axels `fingeravtryck_c` (medel uppmätt − modell; `data/fysik/fingeravtryck-2024-25.csv`,
+summan i manifestet) i stället för särarten mot RÅ. Fyra mål: modell **Bsp** (den tidigare utan vägdata — modellen bakom 23 %) och
+**A2** (den frysta, med vägdata inne) × **novdec** (Axels inlärningsfönster) och **vinter**. Skript
+`scripts/matningar/kuvos-c8-fingeravtryck-2026-10-08.ts`, självtest i ci.yml (två motprov 7/10: MIN_TIMMAR 0 och fel kolumn fälls).
+Ingen databas: allt ligger i repot, så läsningen körs lokalt och utskriften står under Utfall.
+
+**Det är inte en upprepning av Axels 23 %.** Axel räknade på 165 stationer i mellanregionen, med Vägunderhållsklass och Driftområde,
+och 15 lägeskluster som regioner (SVAR §5). Här är det alla stationer med vägdata, C8:s tio kolumner och C8:s rutor. Frågan är om
+vägdatan förklarar fysikmodellens särart också med Bengts verktyg.
+
+**Kontroll först** (SVAR §6): A2 vinter 736 stationer med värde och spridning 0,52 °C, Bsp vinter spridning 0,64 °C, ±0,01. Stämmer
+det inte läses inget annat.
+
+**Läsningen i förväg.** (1) **Bsp novdec, VÄG, regioner gömda: R² mellan 0,05 och 0,30** — över C8 mot RÅ (0,034), runt Axels 0,227.
+(2) **A2 novdec, VÄG: R² ≤ 0,05** — vägdatan är redan förbrukad inne i A2 (Axel −0,11). (3) **ÅDT-spannet** (> 20 000 minus < 1 000)
+**över 0,9 °C för Bsp vinter** (Axel −0,58 / +1,14) och **under 0,6 °C för A2 vinter**. REL och BAS skrivs ut utan förväntan.
+Träff i (1) och (2): Axels slutsats håller med Bengts kolumner. Under 0,05 i (1): de 23 % hänger på Axels kolumner eller regioner.
+
+**Stomdokument:** BED §4.2 (raden om fingeravtrycken: skriptet nu och utfallet efter körningen)
