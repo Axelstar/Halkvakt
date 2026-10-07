@@ -197,7 +197,10 @@ export function c8(RA: Eval[], OFF: Eval[], pos: Map<string, Pos>, vag: Map<stri
   return ut;
 }
 
-if (process.argv.includes("--sjalvtest")) {
+// Körs filen direkt? Importeras den (kuvos-c8-metnordic-2026-10-07.ts, #480) får varken självtestet eller läsningen starta —
+// i Actions finns DATABASE_URL, och ett import hade kört hela C8 en gång till. Samma vakt som grind A och värdevakten.
+const korsSjalv = !!process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, "/").split("/").pop()!);
+if (korsSjalv && process.argv.includes("--sjalvtest")) {
   const k = (v: boolean, t: string) => { if (!v) { console.error(`✗ ${t}`); process.exit(1); } };
   // Ridge återfinner en linjär sanning.
   const X0: number[][] = [], y0: number[] = [];
@@ -247,44 +250,46 @@ if (process.argv.includes("--sjalvtest")) {
   process.exit(0);
 }
 
-const url = process.env.DATABASE_URL;
-if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
-const pg = (await import("pg")).default;
-const db = new pg.Client({ connectionString: url });
-await db.connect();
-await db.query("SET TimeZone = 'UTC'");
-await db.query("SET statement_timeout = 0");
-const q = async (sql: string, p: unknown[] = []) => (await db.query(sql, p)).rows as any[];
-const [{ kuvos }] = await q("SELECT to_regprocedure('kuvos.now()') IS NOT NULL AS kuvos");
-if (!kuvos) { console.error("Inte kuvösen (kuvos.now() saknas): läsningen gäller bara vintern 2024/25 (DECISIONS #479)"); process.exit(1); }
-const t0 = performance.now();
-const min = () => `${((performance.now() - t0) / 60_000).toFixed(1)} min`;
-console.log("C8 MED VÄGDATA (kort #298, DECISIONS #479), vintern 2024/25, grind A:s RÅ och vakter, vägdatalagret ur NVDB. Ingen dom.");
+if (korsSjalv) {
+  const url = process.env.DATABASE_URL;
+  if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
+  const pg = (await import("pg")).default;
+  const db = new pg.Client({ connectionString: url });
+  await db.connect();
+  await db.query("SET TimeZone = 'UTC'");
+  await db.query("SET statement_timeout = 0");
+  const q = async (sql: string, p: unknown[] = []) => (await db.query(sql, p)).rows as any[];
+  const [{ kuvos }] = await q("SELECT to_regprocedure('kuvos.now()') IS NOT NULL AS kuvos");
+  if (!kuvos) { console.error("Inte kuvösen (kuvos.now() saknas): läsningen gäller bara vintern 2024/25 (DECISIONS #479)"); process.exit(1); }
+  const t0 = performance.now();
+  const min = () => `${((performance.now() - t0) / 60_000).toFixed(1)} min`;
+  console.log("C8 MED VÄGDATA (kort #298, DECISIONS #479), vintern 2024/25, grind A:s RÅ och vakter, vägdatalagret ur NVDB. Ingen dom.");
 
-// ── Underlaget: som L1/L2/K1 (kuvos-spridning-natt-2026-10-07.ts).
-const res = await q(`
-  SELECT DISTINCT ON (station_id, b) station_id, ST_X(geom::geometry) lon, ST_Y(geom::geometry) lat,
-    floor(extract(epoch FROM sample_time) / ${BUCKET_S})::bigint AS b, surface_temp_c
-  FROM weather_observations
-  WHERE surface_temp_c IS NOT NULL AND air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12
-    AND ${RADVAKT_SQL} AND ${karantanSql("weather_observations")}
-  ORDER BY station_id, b, sample_time DESC`);
-const stations = new Map<string, Station>();
-for (const r of res) {
-  let s = stations.get(r.station_id);
-  if (!s) { s = { lon: +r.lon, lat: +r.lat, series: new Map() }; stations.set(r.station_id, s); }
-  s.series.set(Number(r.b), +r.surface_temp_c);
+  // ── Underlaget: som L1/L2/K1 (kuvos-spridning-natt-2026-10-07.ts).
+  const res = await q(`
+    SELECT DISTINCT ON (station_id, b) station_id, ST_X(geom::geometry) lon, ST_Y(geom::geometry) lat,
+      floor(extract(epoch FROM sample_time) / ${BUCKET_S})::bigint AS b, surface_temp_c
+    FROM weather_observations
+    WHERE surface_temp_c IS NOT NULL AND air_temp_c IS NOT NULL AND surface_temp_c >= air_temp_c - 12
+      AND ${RADVAKT_SQL} AND ${karantanSql("weather_observations")}
+    ORDER BY station_id, b, sample_time DESC`);
+  const stations = new Map<string, Station>();
+  for (const r of res) {
+    let s = stations.get(r.station_id);
+    if (!s) { s = { lon: +r.lon, lat: +r.lat, series: new Map() }; stations.set(r.station_id, s); }
+    s.series.set(Number(r.b), +r.surface_temp_c);
+  }
+  await db.end();
+  console.log(`  ${stations.size} stationer, ${res.length} bucketade avläsningar (${min()})`);
+  if (stations.size < 100 || res.length < 1000) { console.error("UNDERLAGSVAKT: för lite — arkivet eller vakterna är trasiga"); process.exit(1); }
+
+  const vagfil = JSON.parse(readFileSync(new URL("../../data/vagdata/stationer.json", import.meta.url), "utf8"));
+  const vag = new Map<string, VagRad>((vagfil.rader as VagRad[]).map((r) => [String(r.id), r]));
+  console.log(`  vägdatan: ${vag.size} stationer ur ${vagfil.huvud?.kalla ?? "data/vagdata/stationer.json"} (hämtad ${vagfil.huvud?.datum ?? "?"})`);
+  const pos = new Map<string, Pos>([...stations].map(([id, s]) => [id, { lat: s.lat, lon: s.lon }]));
+
+  const RA = evaluate(stations, { utanOffset: true }), OFF = evaluate(stations);
+  console.log(`  RÅ ${RA.length} punkter · OFFSET ${OFF.length} (${min()}) — kontroll mot 6/10 och K1 (4 353 206 punkter, grova 7,5 %): ${rad(stats(RA))}`);
+  c8(RA, OFF, pos, vag);
+  console.log(`\nKlart (${min()}). Ingen dom: läsningen är underlag för Bengt och Axel (DECISIONS #479).`);
 }
-await db.end();
-console.log(`  ${stations.size} stationer, ${res.length} bucketade avläsningar (${min()})`);
-if (stations.size < 100 || res.length < 1000) { console.error("UNDERLAGSVAKT: för lite — arkivet eller vakterna är trasiga"); process.exit(1); }
-
-const vagfil = JSON.parse(readFileSync(new URL("../../data/vagdata/stationer.json", import.meta.url), "utf8"));
-const vag = new Map<string, VagRad>((vagfil.rader as VagRad[]).map((r) => [String(r.id), r]));
-console.log(`  vägdatan: ${vag.size} stationer ur ${vagfil.huvud?.kalla ?? "data/vagdata/stationer.json"} (hämtad ${vagfil.huvud?.datum ?? "?"})`);
-const pos = new Map<string, Pos>([...stations].map(([id, s]) => [id, { lat: s.lat, lon: s.lon }]));
-
-const RA = evaluate(stations, { utanOffset: true }), OFF = evaluate(stations);
-console.log(`  RÅ ${RA.length} punkter · OFFSET ${OFF.length} (${min()}) — kontroll mot 6/10 och K1 (4 353 206 punkter, grova 7,5 %): ${rad(stats(RA))}`);
-c8(RA, OFF, pos, vag);
-console.log(`\nKlart (${min()}). Ingen dom: läsningen är underlag för Bengt och Axel (DECISIONS #479).`);

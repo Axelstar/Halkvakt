@@ -70,6 +70,16 @@ export const SPANN: Record<string, [number, number, string]> = {
   adt_lastbilar: [0, 50000, "tunga fordon per årsmedeldygn"],
   adt_latta_22_06: [0, 50000, "lätta fordon per årsmedeldygn kl. 22–06"],
   adt_matar: [1990, 2030, "mätår för ÅDT (ur Mätårsperiod ÅÅÅÅMM)"],
+  // MET Nordic Analysis (MET Norway, 1 km, timvis; releasen kuvos-metnordic-2024-25, DECISIONS #480). Läst 7/10 över hela
+  // vintern: luft −36,0…+18,1 °C, fukt 0,28–1, vind 0,01–21,5 m/s, moln 0–1, nederbörd 0–13,7 mm/h, långvåg 525 000–1 346 000
+  // J/m² per timme, kortvåg −222…2 257 000 J/m² per timme. Kortvågens små negativa värden (30 541 timmar) är beräkningsbrus.
+  t2m_c: [-50, 35, "°C lufttemperatur 2 m (MET Nordic)"],
+  rh2m: [0, 1, "andel relativ fukt 2 m (MET Nordic)"],
+  vind10_ms: [0, 60, "m/s medelvind 10 m (MET Nordic)"],
+  moln: [0, 1, "andel molnmängd (MET Nordic)"],
+  nederbord_mm: [0, 50, "mm nederbörd per timme (MET Nordic)"],
+  langvag_jm2: [360000, 1800000, "J/m² inkommande långvåg per timme, 100–500 W/m² (MET Nordic)"],
+  kortvag_jm2: [-1000, 4000000, "J/m² inkommande kortvåg per timme; ned till −1 000 rymmer beräkningsbruset (MET Nordic)"],
   severity_code: [1, 5, "TRV SeverityCode — 3 har aldrig förekommit"],
   // Radarns intensiteter. 200 mm/h är fysikens gräns för en 5-minutersskur; extrema
   // konvektiva celler når 150–200. HÖGRE ÄR EN RADARARTEFAKT, inte regn — och de här två

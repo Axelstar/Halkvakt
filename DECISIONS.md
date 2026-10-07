@@ -8584,3 +8584,81 @@ kallhål — och lärs bara ur stationens egen historik (OFFSET 5,5 %), ur en lo
 **Följd.** Ingen kandidat: C8 med vägdata ger ingen rättelse ovanpå RÅ på huvudvägnätet. För fysikspåret betyder det att vägdatan hör
 hemma i en modell som börjar från vädret, inte från grannarna, vilket stöder Axels uppdelning med RÅ nära stationerna och modellen
 längre bort. För småvägar utanför de 818 segmenten (vägdatalagret c) säger läsningen ingenting, eftersom stationerna inte står där.
+
+## #480 (7/10 2026) C8 mot vädret — vägdatan mot en väderbaslinje ur MET Nordic, förregistrerad före körningen (kort #298, Bengts ord)
+
+**Beslut.** Bengt 7/10: *"mät mot met nordic. jag är i alla fall nyfiken på resultatet"* — efter att Bengt själv påpekat att MET
+Nordic inte är vad Axels mätning gjordes mot. En läsning, ingen dom. Skript `scripts/matningar/kuvos-c8-metnordic-2026-10-07.ts` på
+knappen `kuvos` (`matning`), förregistrerat här i samma commit som skriptet, före körningen.
+
+**Vad det är och inte är.** C8 (#479) mätte stationens särart mot grannarna (RÅ): vägdatan förklarade 4 %. Axel mätte mot sin
+fysikmodell, driven av ECMWF och utanför repot: 23 %. Det här är en **tredje** baslinje — MET Nordics väderrutnät — och därför ingen
+upprepning av Axels mätning. Frågan: vet vägdatan något som väderrutnätet inte vet? Indata och idén att bygga på rutnätet kommer från
+Axels gren `kuvos/rutnatet-469` (PR #783, där DECISIONS #470); grenen är inte ihopslagen och läsningen hämtar releasen direkt.
+
+**Indata.** Releasen `kuvos-metnordic-2024-25` (MET Norway, NLOD / CC BY 4.0): sju fält per timme i rutan närmast var och en av 854
+stationer, 31/10 2024 – 31/3 2025, 3 115 392 rader. Summorna lästa ur releasens manifest och kontrollerade mot nedladdade filer 7/10;
+de står nu i `kuvos/metnordic-leverans.json`, och kuvösknappen jämför mot dem. **Värdevakten:** spannen för de sju fälten är införda i
+`scripts/vardevakten.ts` före körningen; läsningen fäller vid ett värde utanför. Hela vintern ligger inom spannen (kortvågens 30 541
+små negativa värden, ned till −222 J/m² per timme, är beräkningsbrus och ryms). En halvtimmeshink läser analysen vid sin början.
+
+**Baslinjerna** (ingen station går in): **LUFT** — ytan skattas som MET Nordics lufttemperatur 2 m. **VÄDER** — linjär regression av
+ytan på de sju fälten (luft, fukt, vind, moln, nederbörd, lång- och kortvåg i W/m²), tränad med stationens hela region gömd (rutor
+1° × 2°, som C8) på grind A:s population; koefficienterna skrivs ut.
+
+**C8 på varje baslinje.** Stationens särart = medel(mätt − baslinje) för stationer med minst 100 punkter. VÄG och BAS ur C8-skriptet
+— importerade, samma kolumner, samma ridge (λ = 1) — med regionerna gömda och leave-one-out. R², MAE, effekt per standardavvikelse och
+särarten per ÅDT-klass. **Kandidaterna** per punkt: LUFT, LUFT+VÄG, VÄDER, VÄDER+VÄG och VÄDER+BAS mot RÅ och OFFSET på samma
+punkter, per band (bandet är RÅ:s närmaste ankare).
+
+**Läsningen i förväg.** (1) VÄG förklarar mer av särarten mot VÄDER än mot RÅ (0,034): mellan 0,05 och 0,25. (2) ÅDT-klasserna spänner
+bredare än mot RÅ: mer än 0,5 °C mellan över 20 000 och under 1 000, mot 0,30 °C i C8. (3) BAS förklarar mer mot vädret än mot RÅ,
+R² över 0,05, eftersom latitud och kust syns mot en vädermodell. (4) VÄDER ensam har fler grova fel än RÅ i banden 0–20 km. (5)
+VÄDER+VÄG har färre grova fel än VÄDER.
+
+**Kontroll.** RÅ ska ge 4 353 206 punkter och 7,5 % grova fel som i C8. Avviker det läses inte resten.
+
+**Prov före körningen.** Självtestet: timindexet (06:00 och 06:30 läser 06-analysen), lösaren, måtten lika med grind A:s `stats()`,
+spannkontrollen, vädermodellen med regionen gömd (en region 10 °C varmare än luften behåller hela resten), hela läsningen på syntetiska
+stationer, och att RÅ och OFFSET måste vara radlika. Tre motprov fällde provet: regionen med i vädermodellen (resten 4,32 i stället för
+10), en senare analys, och frysklassfelet fel definierat. Inläsningen och spannkontrollen
+kördes lokalt mot den riktiga filen: 3 115 392 rader, 854 stationer, inga fel. C8-skriptet fick en vakt så att ett import inte startar
+dess läsning (beteendeneutralt).
+
+**Vad som INTE görs.** Inga trösklar, ingen ändring i driften, ingen förregistrering av fysikspåret eller av PR #783:s RN-kandidater.
+
+**UTFALL #480, 7/10 — körd och läst** (kuvos 37663768575 på 0d496e5, läsningen 1,4 min). MET Nordic-filen godkänd mot summorna, och
+värdevakten höll för alla sju fälten. **Kontrollen höll:** RÅ gav 4 353 206 punkter och 7,5 % grova fel. Alla punkter hade väder och
+vägdata; 729 stationer.
+
+| Baslinje | särartens sd | VÄG R², regioner gömda (LOO) | BAS R², regioner gömda (LOO) | ÅDT under 1 000 · 1 000–20 000 · över 20 000 |
+| :-- | --: | --: | --: | :-- |
+| RÅ (C8, #479) | 0,55 °C | 0,034 (0,033) | −0,005 (−0,011) | −0,10 · −0,08 · +0,20 °C |
+| LUFT | 0,66 °C | 0,080 (0,115) | 0,202 (0,226) | −0,94 · −0,59 · −0,17 °C |
+| VÄDER | 0,89 °C | **0,298** (0,334) | **0,596** (0,608) | **−0,62 · +0,25 · +1,04 °C** |
+| Axel, mot sin fysikmodell | — | 23 % (hans mått) | — | −0,58 · — · +1,14 °C |
+
+Effekt per standardavvikelse mot VÄDER: log ÅDT +0,68 °C, vägklass +0,28, andel nattrafik −0,13, bredd −0,11, övriga högst ±0,06.
+
+Kandidaterna, grova fel hela vintern och per band (0–7 · 7–15 · 15–20 · över 20 km): RÅ 7,5 % (5,2 · 5,3 · 7,2 · 13,6) · LUFT 30,1 %
+(22,1 · 23,7 · 31,3 · 46,2) · LUFT+VÄG 27,0 % · VÄDER 21,8 % (17,3 · 17,4 · 20,9 · 33,9) · VÄDER+VÄG 20,1 % (15,5 · 15,9 · 19,7 ·
+31,1) · VÄDER+BAS 18,1 % (14,0 · 13,9 · 18,1 · 28,8) · OFFSET 5,5 %. Vädermodellens koefficienter på hela landet: konstant −5,93,
+luft 0,76, fukt 1,13, vind −0,14 per m/s, moln −0,14, nederbörd −0,16 per mm/h, långvåg 0,016 och kortvåg 0,006 per W/m².
+
+**Mot läsningen i förväg.** (1) *Höll i riktningen, över spannet:* VÄG förklarar 0,298 mot VÄDER, mot förväntade 0,05–0,25 och 0,034
+mot RÅ. (2) *Höll:* ÅDT-klasserna spänner 1,66 °C mot VÄDER och 0,77 mot LUFT, mot 0,30 i C8. (3) *Höll, mer än väntat:* BAS 0,596 mot
+VÄDER och 0,202 mot LUFT. (4) *Höll:* VÄDER har 17–21 % grova fel i banden 0–20 km mot RÅ:s 5–7 %. (5) *Höll:* VÄDER+VÄG 20,1 % mot
+VÄDER 21,8 %.
+
+**Läsning.** Axels fynd står sig i sak, med öppen vägdata och en annan vädermodell. Mot vädret förklarar vägdatan 30 % av stationernas
+särart (Axel 23 %), och små vägar går 0,62 °C kallare och stora 1,04 °C varmare än vädermodellen säger (Axel −0,58 / +1,14). Vägens
+effekt är alltså verklig, ungefär 1,7 °C mellan de minsta och de största vägarna. Mot grannarna syns den inte (C8, #479), eftersom
+stationerna står på samma slags vägar som sina grannar. Den linjära vädermodellen duger inte som prognos: 21,8 % grova fel, långt efter
+RÅ:s 7,5 % och efter Axels fysik med inlärd rättelse utan stationer (10,2 %, hans tal), och mycket av dess fel är geografiskt (BAS 0,60).
+En vädergrundad modell behöver fysik eller inlärning för att bära, och vägdatan är en av dess ingredienser.
+
+**Följd.** Ingen kandidat. Två saker följer. (a) Vägdatan i `data/vagdata/` är ett prövat underlag för fysikspåret, och en
+förregistrering av det kan använda den i stället för Lastkajen. (b) För småvägarna (vägdatalagret c, `docs/KALENDERN.md`) säger
+mätningen att vägar under 1 000 fordon per dygn går ungefär 0,9 °C kallare relativt vädret än vägar med 1 000–20 000. Skulle produkten
+tala där, kan RÅ från stationer på större vägar ligga för varmt. Det är en hypotes, omätt mot facit, eftersom inga stationer står
+utanför de 818 segmenten.

@@ -68,6 +68,21 @@ jobs:
               console.log(`${f.fil}: ${h === f.sha256 ? "ok" : "FEL " + h}`); if (h !== f.sha256) fel++;
             }
             process.exit(fel ? 1 : 0);'
+      # MET Nordic (DECISIONS #480) bara för mätningar som läser den: 49 MB, summorna mot kuvos/metnordic-leverans.json.
+      - name: MET Nordic ur releasen, kontrollsummorna mot manifestet
+        if: ${{ hashFiles('kuvos/metnordic-leverans.json') != '' && contains(inputs.matning, 'metnordic') }}
+        shell: bash
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          mkdir -p metnordic && gh release download kuvos-metnordic-2024-25 --dir metnordic --pattern '*.csv.gz'
+          node -e '
+            const m = require("./kuvos/metnordic-leverans.json"), c = require("crypto"), fs = require("fs");
+            let fel = 0;
+            for (const f of m.filer.filter((f) => f.fil.endsWith(".csv.gz"))) {
+              const h = c.createHash("sha256").update(fs.readFileSync("metnordic/" + f.fil)).digest("hex");
+              console.log(`${f.fil}: ${h === f.sha256 ? "ok" : "FEL " + h}`); if (h !== f.sha256) fel++;
+            }
+            process.exit(fel ? 1 : 0);'
       # Varje migration för sig. De som kräver driftens tabeller (shadow_log m.fl. skapas av ingesten, inte av sql/) faller här
       # och skrivs ut; nästa steg kontrollerar att det kuvösen behöver finns — en saknad del fäller jobbet.
       - name: Migrationerna och klockan

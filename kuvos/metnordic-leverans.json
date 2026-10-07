@@ -1,0 +1,22 @@
+{
+ "_om": "MET Nordic Analysis (MET Norway, NLOD / CC BY 4.0), 1 km, timvis, i rutan närmast varje station i static.json 6/10, 31/10 2024 – 31/3 2025. Hämtad av Axels gren kuvos/rutnatet-469 (PR #783) till releasen nedan; summorna lästa ur releasens manifest.json och kontrollerade mot de nedladdade filerna 7/10 (DECISIONS #480). Kuvösknappen jämför mot dem.",
+ "release": "kuvos-metnordic-2024-25",
+ "hamtad": "2026-10-07T00:38:56.058Z",
+ "filer": [
+  {
+   "fil": "metnordic_2024-25.csv.gz",
+   "bytes": 49106947,
+   "sha256": "c5c0298b9f4a5398ebb28e62f6b5464e360a292c3f09b14d288c241046825878"
+  },
+  {
+   "fil": "metnordic_stationer.csv",
+   "bytes": 51249,
+   "sha256": "841605e9f58ea236ea8e4c8f4ad567fdae240498e09fd6e0d85525f01e16d770"
+  },
+  {
+   "fil": "static_2026-10-06.json",
+   "bytes": 289170,
+   "sha256": "04b48da86bc897b8053484c1fb92919178a8fbd61cfe381f9251f5c950f7e08e"
+  }
+ ]
+}
