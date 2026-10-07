@@ -10,7 +10,7 @@
 //   node --experimental-strip-types scripts/projektkartan.ts --sjalvtest
 // Efter en skrivning: republicera artefakten (STOMREGELN).
 import { readFileSync, writeFileSync, renameSync } from "node:fs";
-import { oppnaKort, avsnitt } from "./kortkartan.ts";
+import { oppnaKort, avsnitt, genomgang } from "./kortkartan.ts";
 
 type Lage = "gron" | "orange" | "rod" | "bla" | "gra";
 // regel och kvar: steget bockas av kartsynken ur byggsignalerna (scripts/kartsynk.ts, DECISIONS #447); kvar är delens
@@ -20,7 +20,11 @@ export type Del = { id: string; namn: string; block: string; lage: Lage; klar?: 
   beror: string[]; kort: string[]; beslut?: string[]; beskrivs: string[] };
 type Block = { id: string; namn: string; om: string; plats: string; pil?: string };
 type Mal = { id: string; namn: string; om: string; klart_nar: string; datum: string; delar: string[] };
-type Synk = { till: string; tid: string; kallor: Record<string, string> };
+/** En öppen PR som kartsynken såg (#484 (c)): sidan visar dem under Väntar på Bengt, eftersom en PR väntar på hans ord. */
+export type Pr = { nr: number; titel: string; gren: string; av: string; oppnad: string };
+type Synk = { till: string; tid: string; kallor: Record<string, string>; prar?: Pr[]; prtid?: string };
+/** Ett öppet kort i Bengts eller Axels avsnitt på tavlan, med det kortet väntar på (kortkartan.ts genomgang). */
+export type Vantar = { nr: string; titel: string; agare: string; vantar: string };
 export type Karta = { url: string; projektmal: { text: string; kalla: string }; block: Block[]; mal: Mal[]; delar: Del[]; synk?: Synk };
 type Sida = { fil: string; namn: string; url?: string };
 type KortInfo = { nyckel: string; nr: string; titel: string; agare: string };
@@ -180,7 +184,22 @@ export function havstang(k: Karta, del: Map<string, Del>): Map<string, { mal: st
 }
 
 /** Sidan: projektets mål och procenten, flödet, målen, det som lönar sig först, delarna bakom ett klick, bladen. */
-export function sida(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>, sidtext: (fil: string) => string): string {
+/** Väntar på Bengt och Väntar på Axel (Bengts ja 7/10, DECISIONS #484 (c)): ur tavlans avsnitt och kartsynkens PR-lista. */
+function vantarPa(k: Karta, vantar: Vantar[]): string {
+  const rad = (v: Vantar) => `<li><b>${esc(v.nr || v.titel)}</b>${v.nr ? ` ${esc(v.titel.length > 90 ? v.titel.slice(0, v.titel.lastIndexOf(" ", 90)) + " …" : v.titel)}` : ""}` +
+    `${v.vantar ? `<span class="litet"> — ${esc(v.vantar)}</span>` : ""}</li>`;
+  const prar = (k.synk?.prar ?? []).map((p) => `<li><b>PR #${p.nr}</b> ${esc(p.titel)}<span class="litet"> — väntar på ditt ord, öppnad ${esc(stockholm(p.oppnad))}</span></li>`);
+  const bengt = [...prar, ...vantar.filter((v) => v.agare === "Bengt").map(rad)];
+  const axel = vantar.filter((v) => v.agare.startsWith("Axel")).map(rad);
+  const lista = (namn: string, r: string[]) => `<div><h3>Väntar på ${namn} <span class="litet">(${r.length})</span></h3>${r.length ? `<ul>${r.join("")}</ul>` : `<p class="litet">Inget just nu.</p>`}</div>`;
+  return `<section class="vantar" aria-label="Vad som väntar på vem">
+    ${lista("Bengt", bengt)}
+    ${lista("Axel", axel)}
+    <p class="litet">Skrivs ur tavlans avsnitt för Bengt och Axel, med kortets <i>Kvar</i> eller nyckel, och ur kartsynkens lista över öppna PR:er${k.synk?.prtid ? `, läst ${esc(stockholm(k.synk.prtid))}` : ""}. Ändras aldrig för hand (DECISIONS #484).</p>
+  </section>`;
+}
+
+export function sida(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>, sidtext: (fil: string) => string, vantar: Vantar[] = []): string {
   const kort = new Map(oppna.map((c) => [c.nyckel, c]));
   const del = new Map(k.delar.map((d) => [d.id, d]));
   const levererar = new Map<string, string[]>();
@@ -305,6 +324,11 @@ export function sida(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>, s
   .helhet .framsteg { height: 14px; }
   .helhet-text { display: grid; gap: 8px; min-width: 0; }
   @media (max-width: 520px) { .helhet { grid-template-columns: minmax(0, 1fr); } }
+  .vantar { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 10px 28px; margin-block: 14px; }
+  .vantar > div { min-width: 0; }
+  .vantar ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; font-size: 15px; }
+  .vantar li { overflow-wrap: anywhere; }
+  .vantar > p { grid-column: 1 / -1; margin: 0; }
   .forst { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; }
   .forst-lista { border: 1px solid var(--ram); border-radius: 8px; padding: 12px 14px; display: grid; gap: 8px; align-content: start; }
   .forst-lista ol { margin: 0; padding-left: 1.4em; display: grid; gap: 8px; }
@@ -396,7 +420,8 @@ export function sida(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>, s
   </section>
   <p class="grov">${matta === k.delar.length
     ? `<b>Mätt mot koden 3/10 (kort #286).</b> Alla ${matta} delar har byggsteg med bevis; procenten räknas ur stegen, viktad med delarnas storlek. Klicka på en del under <i>Alla delar</i> för att se stegen.`
-    : `<b>Mätningen pågår (kort #286).</b> ${matta} av ${k.delar.length} delar är mätta mot koden, med byggsteg och bevis. De andra är fortfarande Claudes skattning ur stomdokumenten, tavlan och beslutsloggen.`}</p>${k.synk ? `
+    : `<b>Mätningen pågår (kort #286).</b> ${matta} av ${k.delar.length} delar är mätta mot koden, med byggsteg och bevis. De andra är fortfarande Claudes skattning ur stomdokumenten, tavlan och beslutsloggen.`}</p>
+  ${vantarPa(k, vantar)}${k.synk ? `
   <p class="litet"><b>Kartsynken</b> (DECISIONS #447) bokför det som görs utanför repot och varje commit på main: senast ${esc(stockholm(k.synk.tid))}, till och med main <span class="mono">${esc(k.synk.till.slice(0, 7))}</span>. ${Object.entries(k.synk.kallor).map(([n, s]) => `${esc(n)}: ${esc(s)}.`).join(" ")} Steg märkta <i>läses av kartsynken</i> bockas ur signalerna.</p>` : ""}
   <div class="forklaring">
     ${ORDNING.map((l) => `<span><span class="chip ${l}">${LAGEN[l].namn}</span> ${LAGEN[l].krav}</span>`).join("\n    ")}
@@ -727,7 +752,16 @@ if (direkt && process.argv[2] === "--sjalvtest") {
   }
   const html = sida({ url: "u", projektmal: pm, block: [k.block[0]], mal: [], delar: [k.delar[0]] }, [oppna[0]], sidor, () => "<h2>2. Två</h2>");
   if (!html.includes('href="#del-x"') || !html.includes("körning 1") || !html.includes("Sidan §2 Två") || !html.includes("100 %")) { console.error("✗ självtest: sidan"); process.exit(1); }
-  console.log("✓ självtest: fel i delar, skattningar, block och mål fälls; hindren och hävstången går bara genom det som inte är klart; målets procent räknas över allt det vilar på; byggstegen och vikterna räknas och granskas");
+  // Väntar på-listorna (#484 (c)): PR:erna och Bengts kort under Bengt, Axels avsnitt under Axel.
+  const vk: Karta = { url: "u", projektmal: pm, block: [k.block[0]], mal: [], delar: [k.delar[0]],
+    synk: { till: "a", tid: "2026-10-07T20:00:00Z", kallor: {}, prar: [{ nr: 9, titel: "En PR", gren: "g", av: "x", oppnad: "2026-10-07T19:00:00Z" }], prtid: "2026-10-07T20:00:00Z" } };
+  const vh = sida(vk, [oppna[0]], sidor, () => "<h2>2. Två</h2>", [{ nr: "#7", titel: "SJU", agare: "Bengt", vantar: "ditt ja" },
+    { nr: "", titel: "Skydda namnet", agare: "Axel", vantar: "" }]);
+  const b = vh.slice(vh.indexOf("Väntar på Bengt"), vh.indexOf("Väntar på Axel")), a = vh.slice(vh.indexOf("Väntar på Axel"));
+  if (!(b.includes("PR #9") && b.includes("#7</b> SJU") && b.includes("ditt ja") && a.includes("<b>Skydda namnet</b></li>") && !a.includes("SJU"))) {
+    console.error("✗ självtest: väntar på-listorna"); process.exit(1);
+  }
+  console.log("✓ självtest: fel i delar, skattningar, block och mål fälls; hindren och hävstången går bara genom det som inte är klart; målets procent räknas över allt det vilar på; byggstegen och vikterna räknas och granskas; väntar på-listorna delas på Bengt och Axel");
   process.exit(0);
 }
 
@@ -741,7 +775,8 @@ if (direkt) {
   for (const f of fel) console.error("✗ " + f);
   if (fel.length) process.exit(1);
   // Kartsidan och läget-avsnittet i varje stomdokument.
-  const filer = new Map<string, string>([["docs/PROJEKTKARTAN.html", sida(karta, oppna, sidor, las)]]);
+  const vantar = genomgang(las("TAVLA.md")).filter((c) => c.agare === "Bengt" || c.agare.startsWith("Axel"));
+  const filer = new Map<string, string>([["docs/PROJEKTKARTAN.html", sida(karta, oppna, sidor, las, vantar)]]);
   for (const [kod, s] of Object.entries(sidor)) {
     const html = s.fil.endsWith(".html");
     const text = las(s.fil);

@@ -8847,3 +8847,36 @@ Följande stod osäkra och står kvar:
 **Läxa.** En avstämning som bara ser att de genererade blocken är aktuella säger inget om handtexten — `git log -1` på ett
 stomdokument visar dagens datum så snart ett skript skrivit om lägesraderna. Och ett steg i projektkartan är ett byggsteg mot delen,
 inte en läsning. Båda gjorde att avstämningen 7/10 först sa att dokumenten var uppdaterade.
+
+## #484 (7/10 2026) Dokumentsynken: stomvakten i CI, en morgonrutin i molnet, Väntar på Bengt och Axel i kartan, och rutinen slår ihop sina dokument-PR:er
+
+**Beslut.** Bengt 7/10: *"bygg enligt ditt förslag"* — ja till alla fyra delarna i `docs/DOKUMENTSYNKEN-FORSLAG-2026-10-07.md`,
+med rekommendationen: (a) stomvakten, (b) morgonrutinen kl. 05:30, (c) listorna överst i projektkartan, och (d) att rutinen slår
+ihop sin egen PR på grön CI när den bara rör dokumenten. Skälet står i #483: genomgången 7/10 behövde ett sjuttiotal rättelser i
+handtexten fast kartan visade stomdokumenten gröna, och det dagliga varvet hade varit avstängt sedan 6/10.
+
+**Vad som byggdes.**
+- *(a) Stomvakten.* `scripts/stomvakten.ts --bas <sha>` i md-vakt.yml, som ser varje ändring i DECISIONS.md (hela historiken
+  hämtas, cirka 50 MB); självtestet också i ci. Varje nytt beslut slutar med `**Stomdokument:** <koder>` eller `**Stomdokument:**
+  inga — skälet`; vakten fäller en saknad rad, ett *inga* utan skäl, en okänd kod och ett namngivet dokument vars handtext är
+  oförändrad. Motprov 7/10 i ett eget arbetsträd, ett per regel: beslut utan rad rött; raden namnger MAT men bara lägesraderna
+  ändrade rött; handtexten ändrad grönt; *inga* utan skäl rött. `--lage` mot main som det stod i morse (52ff586) visar glappet:
+  integrationskartan och FAVORITER 36 beslut sedan 3/10, APPEN 22 sedan 6/10, SYSTEMBILDEN 14 — men MATNINGAR såg färsk ut, eftersom
+  ett stycke ändrats 7/10, fast den behövde 28 rättelser. Översikten ersätter alltså inte läsningen.
+- *(b) Morgonrutinen.* claude.ai-rutinen *Halkvakt: dokumentsynken varje morgon* (`trig_015zMNvnicaHT1wFNk4ZWdaH`), cron 03:30 UTC
+  (05:30 sommartid, 04:30 vintertid), miljön `env_01RGogJbnVr7jUKB1rJPLjHJ` som rutinerna i september, en ny session varje morgon.
+  Stegen står i CLAUDE.md, avsnittet DOKUMENTSYNKEN; uppmaningen pekar dit, så att instruktionerna versionshanteras i repot. Saknas
+  avsnittet på main gör rutinen ingenting.
+- *(c) Listorna.* `projektkartan.ts` skriver *Väntar på Bengt* och *Väntar på Axel* överst i kartan ur tavlans avsnitt (kortets
+  *Kvar*, annars dess nyckel, läst av genomgången i `kortkartan.ts`) och ur `synk.prar`, där `kartsynk.ts` nu sparar de öppna PR:erna.
+- *(d) Ihopslagningen.* `stomvakten.ts --tillatna` släpper bara en gren som rör de sju, KALENDERN, TAVLA, STATUS, projektkartan.json,
+  PROJEKTKARTAN.html och kortkartan.json. DECISIONS.md ingår inte, så ett beslut väntar alltid på Bengts ord. Tillägg till regeln
+  att bara Bengts *"slå ihop"* slår ihop, som kartgrenarna i #447.
+
+**Alternativ som valdes bort** (förslaget §7): appens lokala schema med öppnade behörigheter, Claude i Actions (betald API-nyckel
+och Actions-minuter), pg_cron (kan inte skriva text med omdöme).
+
+**Inte prövat än.** Att rutinen når repot och GitHub från molnet, att den kan slå ihop och om den kan republicera visar första
+körningen 8/10. Kort #304 stängs efter sju morgnar i rad.
+
+**Stomdokument:** BED §4.2 och läget 7/10 — frågan om dokumentsynken avgjord

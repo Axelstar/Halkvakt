@@ -2,7 +2,8 @@
 
 Bengts fråga 7/10: *"hur ska vi åstadkomma att alla de här dokumenten blir uppdaterade en gång per dag och fångar det som har
 gjorts både av axel och mej i olika sessioner så att vi aldrig mer behöver hamna i den här situationen att dokumenten glider i sär
-och jag inte har någon aning om vad som förväntas"*. Inget är byggt. Valen står sist och i bedömningen §4.2.
+och jag inte har någon aning om vad som förväntas"*. **Beslutat 7/10 (DECISIONS #484):** Bengt sa *"bygg enligt ditt förslag"*, alltså ja till alla fyra med rekommendationen.
+Reglerna står i CLAUDE.md, avsnittet DOKUMENTSYNKEN.
 
 ## 1. Problemet, mätt 7/10
 
