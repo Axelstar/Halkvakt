@@ -8405,3 +8405,60 @@ natten. (5) Morgonen 06–09 i mars är mest skymning och dag.
 detsamma, och läsningen läses inte förrän skälet är känt.
 
 **Vad som INTE görs.** Inga trösklar, inget X, ingen nattregel.
+
+**UTFALL #476, 7/10 — körd och läst** (kuvos 37651865384 på 465b1a7, läsningen 1,2 min). **Kontrollen höll:** RÅ utan grind gav
+4 353 206 punkter och 7,5 % grova fel, samma som L1/L2 6/10.
+
+*K1 — X-kurvan.* Grinden vid X, täckning av alla punkter och felen bland dem som talar:
+
+| X | täckning | grova fel (A2) | frysklassfel (A3) | MAE |
+| :-- | --: | --: | --: | --: |
+| 1 °C | 15,8 % | 1,9 % | 0,1 % | 0,43 °C |
+| 1,5 °C | 34,5 % | 2,1 % | 0,1 % | 0,47 °C |
+| 2 °C | 52,0 % | 2,5 % | 0,1 % | 0,51 °C |
+| **2,25 °C** | **60,6 %** | **2,8 %** | **0,1 %** | **0,53 °C** |
+| 2,5 °C | 65,6 % | 3,0 % | 0,1 % | 0,54 °C |
+| 3 °C | 75,5 % | 3,6 % | 0,2 % | 0,57 °C |
+| 3,5 °C | 82,3 % | 4,1 % | 0,2 % | 0,59 °C |
+| 4 °C | 87,0 % | 4,6 % | 0,2 % | 0,60 °C |
+| ingen grind | 100 % | 7,5 % | 0,4 % | 0,68 °C |
+
+Banden var för sig: 0–0,5 °C 2,6 % · 0,5–1 1,8 % · 1–1,25 2,1 % · 1,25–1,5 2,5 % · 1,5–1,75 3,0 % · 1,75–2 3,8 % · **2–2,25 4,7 % ·
+2,25–2,5 5,6 %** · 2,5–2,75 6,7 % · 2,75–3 8,2 % · 3–3,25 9,7 % · 3,25–3,5 11,2 % · 3,5–3,75 12,8 % · 3,75–4 14,3 % · över 4 27,2 %;
+ett ensamt ankare 24,2 % på 2,0 % av punkterna.
+
+*K2–K3 — natten och grinden.* Täckning · grova fel:
+
+| Regel | hela vintern | februari | mars |
+| :-- | :-- | :-- | :-- |
+| ingen regel | 100 % · 7,5 % | 100 % · 9,2 % | 100 % · 10,5 % |
+| bara natt (sol < −6°) | 63,0 % · 6,0 % | 57,7 % · 6,1 % | 56,6 % · 5,4 % |
+| grind 2 | 52,0 % · 2,5 % | 48,7 % · 2,7 % | 45,4 % · 4,0 % |
+| grind 2 + natt | 34,2 % · 2,3 % | 30,8 % · 2,3 % | 28,9 % · 3,4 % |
+| grind 3 | 75,5 % · 3,6 % | 71,6 % · 4,0 % | 71,4 % · 5,1 % |
+| grind 3 + natt | 49,3 % · 3,3 % | 44,8 % · 3,3 % | 44,9 % · 4,2 % |
+| grind 4 | 87,0 % · 4,6 % | 83,8 % · 5,3 % | 84,6 % · 6,2 % |
+| grind 4 + natt | 56,2 % · 4,1 % | 51,4 % · 4,2 % | 52,1 % · 4,7 % |
+
+RÅ per solhöjdsband utan grind: natt 6,0 % (5,3–7,3 % varje månad), skymning 7,3 %, dag 10,9 % (februari 14,6 %, mars 19,2 %). Med
+grinden vid 2: natt 2,3 %, skymning 2,6 %, dag 3,0 % (mars 5,4 %).
+
+*K4 — morgonen 06–09 normaltid.* Februari: natt 29 %, skymning 29 %, dag 42 % av punkterna. Mars: **dag 86,8 %**, skymning 12,4 %,
+natt 0,8 %. Dagsljuset på marsmorgonen har 6,0 % grova fel utan grind, **2,9 % med grinden vid 2** (50 % täckning) och 3,9 % vid 3.
+
+**Mot läsningen i förväg.** (1) *Höll:* felen stiger med spridningen, från 1,8 % i 0,5–1 till 27,2 % över 4, och grinden vid 3 ger
+3,6 % på 75,5 %. Bandet 0–0,5 (2,6 %) ligger över 0,5–1. (2) *Höll:* ett ensamt ankare 24,2 % mot två eniga 2,6 %. (3) *Höll till
+hälften:* RÅ ligger 1,8–2,3 procentenheter över L2:s OFFSET och dagen i mars på 19,2 % — men natten för RÅ ligger över 5 % i varje
+månad; L2:s "natten under 5 %" gällde bara OFFSET. (4) *Höll på gränsen:* med grinden vid 2 ligger dagen i mars 5,4 % mot nattens
+3,4 %, exakt 2,0 procentenheter. (5) *Höll:* marsmorgonen är till 87 % dagsljus.
+
+**Läsning.** Grinden gör det jobb natten var tänkt för: ovanpå grinden köper natten 0,2–0,5 procentenheter över vintern och 0,6–1,5 i mars och kostar en tredjedel av
+täckningen, och ensam räddar den inte RÅ (6,0 %). Den skulle tysta marsmorgnarna, där grinden vid 2 ger 2,9 %. Det som återstår är
+vårens eftermiddag — dagen i mars med grinden ligger på 5,4 % mot morgonens 2,9 % — och den är omätt som egen regel. Varje band upp
+till 2,25 °C klarar grind A:s 5 % på egen hand; nästa band gör det inte. Med mätvärden på en tiondels grad betyder X = 2,25 att
+ankarna får skilja högst 2,2 °C. Täckningens sicksack mellan banden (11,1 · 7,6 · 10,8 · 6,6 %) är den upplösningen: ett band om
+0,25 °C rymmer tre eller två tiondelar. Ett ensamt ankare gäller 89 232 punkter, inte 92 739 som L1 räknade — 3 507 punkter hade två
+eniga ankare.
+
+**Följd:** ingen tröskel, inget X, ingen nattregel — Bengts och Axels val (bedömningen §4.2). Claudes förslag: **X = 2,25 °C**, och
+**natten avstås** (förslag 2 nej), med vårens eftermiddag som möjlig egen läsning.
