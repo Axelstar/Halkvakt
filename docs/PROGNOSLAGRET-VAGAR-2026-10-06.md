@@ -85,3 +85,44 @@ kovariatmodellen på stationernas offset**. De svarar på om lagret kan *tiga r�
 Därefter 9 och 10 (era kontakter). Det som sannolikt förbisetts: att osäkerheten går att mäta direkt ur ankarnas oenighet (1), att
 stationernas offset är ett facit för en platsmodell (8) så att kovariatspåret inte väntar på karteringen, och att Trafikverket kan ha
 prognosen redan (10).
+
+## 5. Utfallet av 1, 2, 4 och 8 (Bengts val *a*, DECISIONS #471; körning 37530898977, 6/10 21:20Z)
+
+**1 — ankarspridningen skiljer.** Spridning 0,5–2 °C (59 % av punkterna): OFFSET 1,8 % grova fel; 0–2 °C (66 %): 2,4 %; över 4 °C: 28 %.
+Lagret kan tiga rätt utan molndata, om grinden kräver minst två ankare (ett enda ankare ger spridning 0 och 7,6 %).
+| Spridning (°C) | OFFSET: täckning · A2 · MAE | RÅ: täckning · A2 · MAE |
+| :-- | :-- | :-- |
+| 0–0,5 (inkl. ett enda ankare: 89 232 resp. 92 739 punkter) | 6,7 % · 7,6 % · 0,50 | 4,9 % · 11,5 % · 0,61 |
+| 0,5–1 | 19,9 % · **1,1 %** · 0,41 | 13,3 % · **1,8 %** · 0,43 |
+| 1–2 | 39,5 % · **2,2 %** · 0,52 | 36,1 % · **2,8 %** · 0,55 |
+| 2–4 | 27,1 % · 7,4 % · 0,77 | 34,8 % · 7,8 % · 0,78 |
+| > 4 | 6,8 % · **28,4 %** · 1,81 | 10,8 % · **27,3 %** · 1,62 |
+
+**2 — vårens fel sitter i dagsljuset.** Natt < 5 % varje månad utom januari (5,7 %), mars bäst (3,1 %); dag 11,1 % i februari och 17,9 % i mars.
+Nattbegränsat: 4,2 % på 63 % av punkterna.
+| Solhöjd | okt | nov | dec | jan | feb | mar | alla (n · MAE · A2) |
+| :-- | --: | --: | --: | --: | --: | --: | :-- |
+| natt (< −6°) | 4,2 % | 3,7 % | 4,0 % | 5,7 % | 3,7 % | **3,1 %** | 2 742 593 · 0,52 °C · **4,2 %** |
+| skymning (−6…0°) | — | 4,1 % | 4,5 % | 6,7 % | 4,6 % | 5,8 % | 379 660 · 0,55 · 5,2 % |
+| dag (> 0°) | — | 5,3 % | 2,3 % | 4,1 % | **11,1 %** | **17,9 %** | 1 230 953 · 0,76 · 8,6 % |
+
+**4 — regimstyrd offset hjälper lite, där fysiken sade.** Klar stilla natt 6,6 → 5,1 %, dagen 0, totalt 5,5 → 5,2 %. Molnmängd i drift köper
+0,3 procentenheter.
+| Klass | täckning | OFFSET-REGIM: MAE · A2 | OFFSET: MAE · A2 |
+| :-- | --: | :-- | :-- |
+| klar stilla natt | 15,4 % | 0,61 · **5,1 %** | 0,64 · **6,6 %** |
+| natt övrigt | 38,7 % | 0,44 · 2,5 % | 0,48 · 2,6 % |
+| dag | 37,0 % | 0,75 · 7,9 % | 0,71 · 7,8 % |
+| okänd (moln eller vind saknas) | 8,8 % | 0,60 · 6,3 % | 0,62 · 6,9 % |
+| **alla** | 100 % | 0,59 · **5,2 %** (band 3,4 · 3,4 · 5,2 · 9,9 %) | 0,60 · **5,5 %** (3,6 · 3,7 · 5,4 · 10,3 %) |
+
+**8 — de grova kovariaterna förklarar inget.** R² 0,010 på 722 stationer; höjd, relief, kust, läge och täthet bär inte särarten (sd 0,55 °C).
+Särarten är mikroskala; metoden står, kovariaterna måste bli de rätta (himmelsfaktor ur laserdata, skog, trafik) eller karteringen (#271).
+| Kandidat (samma 4 312 216 punkter) | MAE | A2 | per band 0–7 · 7–15 · 15–20 · > 20 km |
+| :-- | --: | --: | :-- |
+| RÅ+KOVARIAT | 0,68 °C | 7,3 % | 5,2 · 4,9 · 7,0 · 13,5 % |
+| RÅ | 0,67 | 7,4 % | 5,2 · 5,1 · 7,1 · 13,6 % |
+| OFFSET (taket) | 0,59 | 5,5 % | 3,6 · 3,6 · 5,4 · 10,3 % |
+
+**Följd:** två förslag till TROSKLAR-SKUGGAN för Bengt och Axel (kort #299): spridningsgrinden (minst två ankare, X ur tabellen) och
+nattbegränsningen. Molnmängd i drift kan strykas för prognosens del. Kovariatspåret är ingen genväg utan riktiga kovariater.

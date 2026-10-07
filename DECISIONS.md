@@ -8087,3 +8087,97 @@ kondensationsvärmet fallet. Episoderna är räknade per klass; en natt kan ge e
 (43,4 %) eller per natt (16,7 %); (2) daggpunkten som mars-variant (D1 stänger den för betan) — riktningen är bekräftad, kostnaden är
 täckning (198 av 411 episoder) och advektion (daggpunkten vid fyrningen är inte daggpunkten två timmar senare); (3) ingen kalibrering om — M1
 visar att måttet inte var felet. Granskningen §7 bär samma tal; bedömningen §7 två rader.
+
+## #471 (6/10 2026) Prognoslagret: fyra läsningar i kuvösen förregistrerade före körningen — ankarspridningen, natt/säsong, regimstyrd offset, kovariatmodellen (kort #298, Bengts val a)
+
+**Bengts val 6/10 kväll (*"a"*: alla fyra)** ur `docs/PROGNOSLAGRET-VAGAR-2026-10-06.md` §4. **Ingen dom, ingen tröskel rörs:** grind A:s
+driftdom (#321, #399) och vägpunktsgrindens fall står; inga kandidater väljs. Skriptet `scripts/matningar/kuvos-prognoslagret-2026-10-06.ts`
+körs på knappen `kuvos` (`matning`), på hela vintern 2024/25, med grind A:s modell och vakter (#75, radvakten, karantänen). Inget tal var
+läst när posten skrevs.
+
+**Modellen är grind A:s egen, importerad.** `publish/grind-a.ts` har fått två beteendeneutrala tillägg: `evaluate` tar en valfri
+`Variant` (regimklass per station och hink som offseten lärs inom; rå viktning utan offset på samma punkter) och varje punkt bär
+hinken `t` och `spridning` (störst minus minst offsetkorrigerat ankarvärde); huvudvarvet och självtestet körs bara när filen körs själv.
+Självtestet vaktar att en konstant regimklass ger exakt grind A, att rå viktning på samma punkter bär de sanna offseten som fel, och att
+spridningen är noll när ankarna är eniga. Driftens grind A är oförändrad (självtest grönt, samma tal).
+
+- **L1 — ankarspridningen.** A1/A2/A3 och täckning per spridningsband 0–0,5 · 0,5–1 · 1–2 · 2–4 · > 4 °C, för OFFSET och RÅ.
+  *Läsning i förväg:* växer de grova felen monotont med spridningen, och ligger A2 under 5 % i de täta banden med rimlig täckning, kan
+  lagret tiga rätt utan molndata — en grind på spridningen blir då ett förslag till TROSKLAR-SKUGGAN (nytt beslut, båda signaturerna).
+- **L2 — natt och säsong.** A2 för OFFSET per solhöjdsband (natt < −6°, skymning −6…0°, dag > 0°; USNO som regimgrinden #408) × månad.
+  *Läsning i förväg:* sitter vårens fel (#469: 7,1 % i vårvintern) i dagsljuset är nattbegränsningen en väg; är natten lika dålig är
+  det inte solen utan markens säsong (snöfri mark, tjäle) som skiljer.
+- **L4 — regimstyrd offset.** Klasser vid målstationen: *klar stilla natt* (molnmängd ≤ 25 % ur SMHI p16 vid närmaste station ≤ 50 km,
+  medelvind ≤ 2 m/s, sol < −6°), *natt övrigt*, *dag* (sol ≥ −6°), *okänd* (moln eller vind saknas). OFFSET-REGIM mot OFFSET per band och
+  per klass, samma punkter. *Läsning i förväg:* vinner regimdelningen i klar stilla natt men inte annars är särarten en per regim och
+  molnmängd i drift (§4.2 h) får ett mätt värde; vinner den inte var en konstant offset nog.
+- **L8 — kovariatmodellen.** Stationens särart = medel(mätt − RÅ) över ≥ 100 punkter. Kovariater som går att hämta i kväll: höjd (EU-DEM
+  via opentopodata), relief 1 km och 3 km (stationen minus medelhöjden av 8 punkter runt om), kust (andel av 16 punkter på 5 och 10 km
+  utan höjd — EU-DEM saknar hav), lat, lon, stationer inom 20 km. Ridge (λ = 1, standardiserade), leave-one-out över stationerna ⇒ R² och
+  MAE av särarten mot MAE utan modell; kandidaten RÅ+KOVARIAT = RÅ + särart_LOO per band mot RÅ och OFFSET på samma punkter. Räcker inte
+  höjderna (< 90 % av stationerna) hoppas L8 över och sägs. *Läsning i förväg:* förklarar kovariaterna en rimlig del av särarten (R² tydligt
+  över noll, MAE under utan-modell) är platsmodellen värd skog, trafik och himmelsfaktor på riktigt (kort #271:s kovariatspår) — en
+  kandidat med egen DECISIONS-post, aldrig vald här. Skog, ÅDT, bro och himmelsfaktor saknas i den här första versionen; det sägs.
+
+**Vad som inte görs:** ingen kandidat väljs, inga trösklar, ingen ändring i skuggmotorn. **Kostnad:** en knapptryckning; opentopodata
+≈ 250 anrop (publika gränsen 1 000 per dygn).
+
+**UTFALL 6/10 (körning 37530898977 på a393ca8, 21:02–21:20Z; mätningen 10,5 min varav höjdhämtningen 8,8).** 736 stationer, 5 229 252
+avläsningar, 4 353 206 punkter; OFFSET ger exakt riktningsprovets tal (0,60 °C · 5,5 % · 0,3 %, #467) och RÅ vägpunktens (0,68 · 7,5 · 0,4) —
+modellen är densamma. SMHI-molnstationer 108; 663 av 736 VViS-stationer har en inom 50 km.
+
+**L1 — ankarspridningen skiljer de grova felen från de fina.** Läsningen i förväg höll:
+| Spridning (°C) | OFFSET: täckning · A2 · MAE | RÅ: täckning · A2 · MAE |
+| :-- | :-- | :-- |
+| 0–0,5 (inkl. ett enda ankare: 89 232 resp. 92 739 punkter) | 6,7 % · 7,6 % · 0,50 | 4,9 % · 11,5 % · 0,61 |
+| 0,5–1 | 19,9 % · **1,1 %** · 0,41 | 13,3 % · **1,8 %** · 0,43 |
+| 1–2 | 39,5 % · **2,2 %** · 0,52 | 36,1 % · **2,8 %** · 0,55 |
+| 2–4 | 27,1 % · 7,4 % · 0,77 | 34,8 % · 7,8 % · 0,78 |
+| > 4 | 6,8 % · **28,4 %** · 1,81 | 10,8 % · **27,3 %** · 1,62 |
+
+Med spridning 0,5–2 °C (59 % av punkterna) är OFFSET:s grova fel **1,8 %**; med 0–2 °C (66 %) **2,4 %**. För RÅ: 0,5–2 °C (49 %) **2,5 %**. Över 4 °C
+(7–11 % av punkterna) ligger mer än var fjärde punkt grovt fel. Bandet 0–0,5 bär punkterna med ett enda ankare (spridning 0 av konstruktion)
+och är därför sämre än 0,5–1 — en spridningsgrind måste kräva minst två ankare. **Lagret kan tiga rätt utan molndata.**
+
+**L2 — vårens fel sitter i dagsljuset.** Läsningen i förväg höll:
+| Solhöjd | okt | nov | dec | jan | feb | mar | alla (n · MAE · A2) |
+| :-- | --: | --: | --: | --: | --: | --: | :-- |
+| natt (< −6°) | 4,2 % | 3,7 % | 4,0 % | 5,7 % | 3,7 % | **3,1 %** | 2 742 593 · 0,52 °C · **4,2 %** |
+| skymning (−6…0°) | — | 4,1 % | 4,5 % | 6,7 % | 4,6 % | 5,8 % | 379 660 · 0,55 · 5,2 % |
+| dag (> 0°) | — | 5,3 % | 2,3 % | 4,1 % | **11,1 %** | **17,9 %** | 1 230 953 · 0,76 · 8,6 % |
+
+Natten är under 5 % varje månad utom januari (5,7 %) och bäst i mars (3,1 %); dagen går från 2,3 % i december till 17,9 % i mars. Vinterns
+7,1 % i vårvintern (#469) är solen, inte marken. **Nattbegränsat håller OFFSET 4,2 % på 63 % av punkterna** — hela vintern, alla band
+sammantaget. Januarinatten (5,7 %) är den mörka vinterns klara, stilla nätter (L4).
+
+**L4 — regimstyrd offset hjälper där fysiken sade, och lite.**
+| Klass | täckning | OFFSET-REGIM: MAE · A2 | OFFSET: MAE · A2 |
+| :-- | --: | :-- | :-- |
+| klar stilla natt | 15,4 % | 0,61 · **5,1 %** | 0,64 · **6,6 %** |
+| natt övrigt | 38,7 % | 0,44 · 2,5 % | 0,48 · 2,6 % |
+| dag | 37,0 % | 0,75 · 7,9 % | 0,71 · 7,8 % |
+| okänd (moln eller vind saknas) | 8,8 % | 0,60 · 6,3 % | 0,62 · 6,9 % |
+| **alla** | 100 % | 0,59 · **5,2 %** (band 3,4 · 3,4 · 5,2 · 9,9 %) | 0,60 · **5,5 %** (3,6 · 3,7 · 5,4 · 10,3 %) |
+
+Vinsten sitter nästan helt i klar stilla natt (6,6 → 5,1 %) och är noll på dagen; totalt 5,5 → 5,2 %. En konstant offset är nästan nog; det
+som fattas i klara stilla nätter är inte offsetens regim utan det lokala köldhålet som ingen granne ser. Molnmängd i drift (§4.2 h) köper
+0,3 procentenheter — inte mer.
+
+**L8 — de grova kovariaterna förklarar ingenting av särarten.** 729 stationer med ≥ 100 punkter, särartens spridning sd 0,55 °C; 722 fick
+EU-DEM-höjd (24 057 punkter frågade). Leave-one-out: **R² 0,010**, MAE 0,43 °C mot 0,43 utan modell. Effekt per standardavvikelse: kust
+0,10 °C, lat 0,06, relief 0,02–0,03, höjd 0,00. Kandidaten:
+| Kandidat (samma 4 312 216 punkter) | MAE | A2 | per band 0–7 · 7–15 · 15–20 · > 20 km |
+| :-- | --: | --: | :-- |
+| RÅ+KOVARIAT | 0,68 °C | 7,3 % | 5,2 · 4,9 · 7,0 · 13,5 % |
+| RÅ | 0,67 | 7,4 % | 5,2 · 5,1 · 7,1 · 13,6 % |
+| OFFSET (taket) | 0,59 | 5,5 % | 3,6 · 3,6 · 5,4 · 10,3 % |
+
+Läsningen i förväg gick åt andra hållet: höjd, relief på 1–3 km, kustnärhet, läge och stationstäthet bär inte särarten. **Särarten är
+mikroskala** — himmelsfaktor, skugga, vägkropp, vatten intill — eller regim gånger plats. Metoden (stationerna som facit för en platsmodell)
+står och gav ett rent svar; det är kovariaterna som måste bli de rätta (laserdata för himmelsfaktor, NMD för skog, NVDB för trafik), eller
+karteringen (#271). Tills dess är kovariatspåret inte en genväg.
+
+**Följd:** ingen tröskel, ingen kod, ingen kandidat. Två förslag till TROSKLAR-SKUGGAN, Bengts och Axels beslut (kort #299): en
+**spridningsgrind** (tig när ankarna är oense över X °C, minst två ankare — X läses ur tabellen, 2 °C är bandgränsen som mätts, inget
+val gjort) och en **nattbegränsning** (tala bara när solen är under −6°). Molnmängd i drift (§4.2 h) kan strykas som lager för prognosen
+(0,3 pe); kovariatspåret (#271) behöver riktiga kovariater. Bedömningen §7 fyra rader; PROGNOSLAGRET-VAGAR §5.

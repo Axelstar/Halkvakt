@@ -596,7 +596,8 @@ bevisbart säker (vid 0 km/h går det inte att nå faran) och är rimligen stör
 | **Ö-B1 *inom räckvidd* — vilken nämnare? (kort #296, DECISIONS #469 F3.)** Nettonytt 175 är 6,2 % av facit med regn inom 2 h före, 4,3 % med 2 h + utfallsfönstret 90 min, 3,9 % med 4 h, 3,0 % med 4 h + 90 min; Ö-B1:s gräns är 5 %. Förslag: *regn inom N h + utfallsfönstret*, så att en fyrning ryms före facit. Skrivs in i TROSKLAR-OVERGANGAR §4 med båda signaturerna före mars-domen. 🔑 Bengt och Axel. |
 | **Startbandets övre del — smalare band (+1…+2 °C) som mars-variant? (kort #296, #469 F2.)** Priset 45,1 % sitter i bandets topp: +1…+2 °C 19,0 %, +2…+3 °C 63,4 %. Svepet vidgar bara uppåt (D1), så ingen kalibreringspunkt kunde nå det. Ett smalare band är ett nytt svepvärde i TROSKLAR-OVERGANGAR §2 — tidigast som mars-variant (#223/#225), aldrig i betan (D6). (a) ja som mars-variant · (b) nej. 🔑 Bengt och Axel. |
 | ✅ **LÄSTA 6/10 (DECISIONS #470): M1 måttet ändrar inte kalibreringen (per fyrning 43,4 %, 0 av 32 under taket; per natt 16,7 % som övre gräns); M2 daggpunkten ≤ +1 nästan halverar priset (32,3 mot 56,8 %) och bär 118 av 175 nettonytt. Kvar: era tre beslut (Ö-B2:s mått, daggpunkten som mars-variant, ingen kalibrering om).** **Matematiken och fysiken (kort #297, granskningen §6): efterhalkans mått straffar försprånget — en riktig varning 2 h före frysningen räknas som falsklarm, eftersom både fångad och uteblev är fästa vid 90 min kring fyrningen; och daggpunkten, som fysiskt avgör om fallet fortsätter, finns bara som vakt.** Två läsningar i kuvösen föreslås, förregistrerade, inga trösklar: priset per fyrning (varje ögonblick med sitt eget 90-minutersfönster; per natt bredvid som övre gräns — *per natt* som mått var för långt, rättat samma kväll) för de 32 punkterna, och priset delat på daggpunkten vid fyrningen. Hamnar priset per fyrning under 25 % är kalibreringens *ingen vinnare* måttets fel — en ny kalibrering på rätt mått är då er fråga (D7). 🔑 Bengts ja till läsningarna. |
-| **Prognoslagret — allt på bordet (kort #298, `docs/PROGNOSLAGRET-VAGAR-2026-10-06.md`).** Femton vägar; fyra går att mäta i kuvösen nu utan ny data: (1) ankarspridningen som grind — tig när ankarna är oense; (2) natt/säsong — A2 per solhöjd och månad; (4) regimstyrd offset med kuvösens molnmängd; (8) kovariatmodellen tränad på stationernas egna offset (facit finns, karteringen behövs inte för att pröva). Plus en fråga till Micke: har Trafikverket redan en vägväderprognos per station att dela? (a) alla fyra läsningarna · (b) 1 och 4 · (c) 1 och 8 · (d) inga. Var och en förregistreras före körning, inga trösklar. 🔑 Bengts val. |
+| ✅ **VALT (a) OCH LÄST 6/10 (DECISIONS #471): spridningen skiljer (0,5–2 °C ⇒ 1,8 % grova fel på 59 %), vårens fel är dagsljuset (natt 4,2 %, dag 18 % i mars), regimstyrd offset ger 0,3 pe, grova kovariater förklarar inget (R² 0,01). Förslagen spridningsgrind + nattbegränsning på kort #299 nedan.** **Prognoslagret — allt på bordet (kort #298, `docs/PROGNOSLAGRET-VAGAR-2026-10-06.md`).** Femton vägar; fyra går att mäta i kuvösen nu utan ny data: (1) ankarspridningen som grind — tig när ankarna är oense; (2) natt/säsong — A2 per solhöjd och månad; (4) regimstyrd offset med kuvösens molnmängd; (8) kovariatmodellen tränad på stationernas egna offset (facit finns, karteringen behövs inte för att pröva). Plus en fråga till Micke: har Trafikverket redan en vägväderprognos per station att dela? (a) alla fyra läsningarna · (b) 1 och 4 · (c) 1 och 8 · (d) inga. Var och en förregistreras före körning, inga trösklar. 🔑 Bengts val. |
+| **Spridningsgrinden och nattbegränsningen — två förslag till TROSKLAR-SKUGGAN (kort #299, DECISIONS #471).** Lagret tiger när ankarna är oense (minst två ankare; spridning 0,5–2 °C ger 1,8 % grova fel på 59 % av punkterna, > 4 °C 28 %) och talar bara om natten (solen under −6°: 4,2 % på 63 %, varje månad under 5 % utom januari). Båda tar bort punkter och sänker inget krav; mäts i skuggan i vinter innan någon röst. (a) båda · (b) bara spridningsgrinden · (c) bara natten · (d) inget. 🔑 Bengt och Axel. |
 ---
 
 ## 5. Integrationsläget — mätt mot kartan (24/9, Bengts fråga *"hur långt i integrationen har vi kommit"*)
@@ -772,6 +773,10 @@ Körning 37447617038, startvärdena som de står, ingen dom (#424). Facit = stat
 | **Granskningen F3: inom räckvidd för Ö-B1** (#469) | nettonytt 175 = 6,2 % (regn inom 2 h) · 4,3 % (2 h + 90 min) · 3,9 % (4 h) · 3,0 % (4 h + 90 min) | — | definitionen avgör över/under 5 %; fastställs före mars (kort #296) |
 | **Måttet M1: priset per fyrning** (#470) | startvärdena **43,4 %** (per episod 45,1 %), lägst 35,0 %; **0 av 32 under 25 %**; per natt (övre gräns) 16,7 %, 21 av 32 under 25 % | — | måttet ändrar inte kalibreringen; Ö-B2:s läsning i januari är kort #296/#297 |
 | **Daggpunkten M2** (#470) | dagg ≤ +1: pris **32,3 %** (per natt 10,9 %), fångar 387, nettonytt 118 · dagg > +1: **56,8 %** (22,5 %), nettonytt 57; yta − dagg ≤ 0 dyrast 48,8 % | — | riktningen bekräftad, *klar majoritet inom 90 min* inte (49 %); daggpunkten som mars-variant är kort #297 |
+| **Prognoslagret L1: ankarspridningen** (#471) | OFFSET spridning 0,5–1 °C 1,1 % · 1–2 °C 2,2 % · 2–4 °C 7,4 % · > 4 °C **28,4 %**; 0,5–2 °C = 59 % av punkterna med **1,8 %** | — | lagret kan tiga rätt utan molndata; minst två ankare (kort #299) |
+| **Prognoslagret L2: natt och säsong** (#471) | natt **4,2 %** (63 % av punkterna; jan 5,7 %, mar 3,1 %) · dag 8,6 % (feb 11,1 %, mar **17,9 %**) | — | vårens fel är solen; nattbegränsning (kort #299) |
+| **Prognoslagret L4: regimstyrd offset** (#471) | 5,5 → **5,2 %**; klar stilla natt 6,6 → 5,1 %, dagen oförändrad | — | konstant offset nästan nog; molnmängd i drift köper 0,3 pe |
+| **Prognoslagret L8: kovariatmodellen** (#471) | **R² 0,010** på 722 stationer; RÅ+KOVARIAT 7,3 % mot RÅ 7,4 % | — | grova kovariater bär inte särarten (mikroskala); metoden står, kovariaterna måste bli de rätta eller karteringen (#271) |
 
 ## Bilaga A — rättelser till kartan som väntar tills en rör kod
 
@@ -817,7 +822,7 @@ mätningar — R1–R16 nedan är strukna och står kvar bara som historik.**
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
 
-Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 22 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 23 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
 
 **§1 NU — före första frosten**
 
@@ -834,6 +839,7 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 22 kort
 **§4.2 Öppna**
 
 - #214 PLAY-DEKLARATIONEN ÄR OSANN SEDAN 16/9 — Axel, beslut
+- #299 SPRIDNINGSGRINDEN OCH NATTBEGRÄNSNINGEN — TVÅ FÖRSLAG TILL TROSKLAR-SKUGGAN UR KUVÖSEN — Bengt
 - #298 PROGNOSLAGRET — ALLT PÅ BORDET: FEMTON VÄGAR, FYRA MÄTBARA I KUVÖSEN NU — Bengt
 - #297 MATEMATIKEN OCH FYSIKEN — EFTERHALKANS MÅTT STRAFFAR FÖRSPRÅNGET, OCH DAGGPUNKTEN SAKNAS — Bengt
 - #296 EFTER GRANSKNINGEN — TVÅ BESLUT FÖRE MARS-DOMEN: Ö-B1 "INOM RÄCKVIDD" OCH STARTBANDETS ÖVRE DEL — Bengt
