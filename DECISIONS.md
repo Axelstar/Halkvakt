@@ -8662,3 +8662,153 @@ förregistrering av det kan använda den i stället för Lastkajen. (b) För sm�
 mätningen att vägar under 1 000 fordon per dygn går ungefär 0,9 °C kallare relativt vädret än vägar med 1 000–20 000. Skulle produkten
 tala där, kan RÅ från stationer på större vägar ligga för varmt. Det är en hypotes, omätt mot facit, eftersom inga stationer står
 utanför de 818 segmenten.
+
+## #481 (6/10 2026, flyttad till main 7/10) Rutnätsmodellen i kuvösen — Axels beslut att pröva, och förregistreringen före något utfall: MET Nordic som bakgrund, vägens skillnad mot luften ur grannarna, hela stationer gömda (kort #302)
+
+**Flyttad till main 7/10** (Bengt: *"kör RN"*). Posten skrevs 6/10 som #470 på grenen `kuvos/rutnatet-469` (PR #783), som aldrig slogs ihop; under tiden togs #470, #471 och kort #298 på main. Texten nedan är grenens, oförändrad utom rubriken och hänvisningarna till rutnätsmodellen (#481), kallkartan (#482) och kortet (#302).
+
+**Axels ord 6/10 kväll (chatten, efter genomgången av riktningsprovet #467):** *"Okej jag tycker vi testar"* — om förslaget att
+bygga prognosen mellan stationerna på ett väderrutnät i stället för på stationerna ensamma, med en satellitkarta över kalla nätter
+som nästa byggsten. Ordningen är hans: rutnätet först (*"jag tycker nästan vi börjar med 3"*). Hämtningen av indata görs på det
+ordet; **provet mot facit körs först på Bengts ord** (#424, bedömningen §4.2). Inget tal ur provet är läst när posten skrivs.
+
+**Numreringen:** posten skrevs först som #469 och kortet som #296, samtidigt som en annan session tog båda numren (PR #782). De
+byttes till #470 och #298 före sammanslagningen; commit-meddelandena på grenen och kommentarerna i `kuvos-metnordic.yml` och
+`kuvos-modis.yml` säger #469/#470/#296 till rättelsen samma kväll; commit-meddelandena står kvar.
+
+**Skälet, ur #467.** Grind A per band med stationens egen historik (OFFSET) mot utan (RÅ, vägpunktsgrinden): grova fel 3,6 mot
+5,2 % inom 7 km, 3,7 mot 5,3 · 5,4 mot 7,2 · 10,3 mot 13,6 %. Vädret är detsamma i båda; skillnaden är platsens särart, som en
+vägpunkt saknar historik för. Höjden återvann ingenting (empirisk lapse 0,18 °C/100 m). Frågan för provet: **tar ett rutnät som
+bär vädret mellan stationerna igen en del av glappet mellan RÅ och OFFSET?** Talet 2,5 % inom 7 km som citerats i chatten kommer
+från premissmätningen 30/9 (15 stationer, under spärren, #405–#406), inte från vintern; vinterns RÅ är 5,2 %.
+
+**Indata (hämtas en gång, som SMHI-filerna #441):** MET Nordic Analysis (MET Norway, NLOD / CC BY 4.0), 1 km, timvis, ur det
+operativa arkivet `metpparchive` — samma produkt som går att läsa i drift, inte omkörningen `metpparchivev4` (som finns, men inte
+löper vidare efter 31/10 2025). Fälten: lufttemperatur 2 m, relativ fukt, vind 10 m, molnmängd, nederbörd, inkommande lång- och
+kortvågsstrålning; rutans höjd och landandel. Samplat i rutan närmast var och en av de 854 stationerna i `static.json` 6/10 (längst
+0,70 km från rutmitten). Skriptet `kuvos/metnordic.ts` (självtest), en förbindelse åt gången enligt tjänstens villkor; piloten
+15/1 2025: 24 timmar på 56 s, alla fält inom rimliga spann. Filen och manifestet läggs i den privata releasen
+`kuvos-metnordic-2024-25` och `kuvos/metnordic-leverans.json` bär summorna. **Läckaget:** analysens lufttemperatur rättas mot
+SMHI:s, FMI:s och MET:s stationer och Netatmo, inte mot Trafikverkets (MET Nordic-dokumentationen, läst 6/10) — en gömd
+Trafikverksstation är gömd helt. **Värdevakten** får spannen för de nya fälten innan något av dem används i en mätning; källans
+kortvågsstrålning har små negativa värden (−64 J/m² i piloten), som spannet ska rymma och värdevakten skriva ut.
+
+**Kandidaterna (fasta nu, inget svep, inget val efter talen):**
+- **RN (rutnätet + grannarnas skillnad):** yta(p,t) = luft_rutnät(p,t) + Δ̂(p,t), där Δ̂ är det invers-distansviktade medlet av
+  Δ_N = yta_N(t) − luft_rutnät(N,t) över samma grannar som RÅ (K = 5, ≤ 50 km, vikt 1/km, målet uteslutet). Vägens skillnad mot
+  luften sprids ut, inte vägens temperatur.
+- **RN+R (som RN, med Δ:s beroende av vädret):** Δ̂ = en linjär regression av Δ på molnmängd, vind, långvåg, kortvåg och fukt i
+  rutan, anpassad på alla stationer **utom målet**, plus det invers-distansviktade medlet av grannarnas residualer. Regressionens
+  koefficienter skrivs ut.
+- **Bredvid som referens, oförändrade:** RÅ, RÅ+HÖJD och OFFSET (taket) på samma rader.
+Kriging med variogram och ett osäkerhetsmått per punkt är **steg 2**, i en egen post innan det körs; satellitkartan (nedan) är
+**steg 3**, också med egen post.
+
+**Valideringen:** som vägpunktsgrinden (#323) — **hela stationen gömd**: målets egen serie används varken till grannmedlet,
+regressionen eller något annat. Populationen och vakterna kopieras från höjdprovets WHERE-sats (#75, radvakten, karantänen;
+CLAUDE.md om lånade grindar), halvtimmeshinkar med vägyta ≤ +5 °C. Analysen gäller hel timme; en hink använder **senaste analys
+vid eller före** hinkens tid (det som finns i drift), aldrig en senare.
+
+**Måtten:** grind A:s A1 (MAE i beslutsbandet), A2 (grova fel > 2 °C), A3 (frysklassfel) per band (närmaste bidragande granne,
+som RÅ) och totalt, och frysflaggan med tre marginaler (0 · 0,5 · 1,0 °C) mot K-A:s måttstock (#437). Alla tal skrivs ut.
+
+**Vad utfallet är:** ett riktningsprov, ingen dom (#424). Vintern 2024/25 är redan läst för RÅ (#467), så ett bra tal här kan inte
+frikänna något; domen läses på vintern 2026/27 i mars, förregistrerad i en egen post före den vintern. Ingen tröskel ändras
+(TROSKLAR-SKUGGAN; Skyltfondens bilaga 7: en tröskel skärps men lättas aldrig när utfallet är sett).
+
+**Satellitkartan (steg 3, inte förregistrerad här):** MODIS natt-LST (MOD11A1/MYD11A1, 1 km), klara nätter oktober–april över
+flera vintrar, till en karta över var det blir kallast; prövas som egenskap i Δ-regressionen. Kräver ett gratiskonto hos NASA
+Earthdata (Axel). Google Earth Engine väljs bort: fritt bara för icke-kommersiellt bruk. Google Earths datalager (WorldCover,
+skogstäckning, ytvatten, höjdmodell GLO-30) bygger på öppna källor (ESA, JRC, Copernicus) och hämtas därifrån om de behövs.
+
+**Alternativ:** SMHI:s MESAN (bara 24 timmar historik i API:t, läst 6/10 — används i drift och för ett eget arkiv framåt, egen
+post); omkörningen v4 (konsekventare bakåt, men inte samma produkt som drift); att vänta på termisk kartering (Axel 6/10: görs inte).
+
+**Tillägg 7/10, före körningen** (Bengt: *"kör RN"*) **— genomförandet och vad som redan är sett.**
+- *Sett före körningen:* MET Nordic har lästs en gång, i #480: luften ensam (30,1 % grova fel) och en linjär vädermodell (21,8 %), båda
+  utan stationer. RN:s och RN+R:s egna tal har ingen sett. Kandidaterna står som de skrevs 6/10.
+- *Genomförandet:* alla kandidater räknas av grind A:s `evaluate()` med `utanOffset` och en justering per granne — en ny krok,
+  beteendeneutral och prövad i grind A:s självtest. RN lägger luft(mål) − luft(granne) på varje grannes yta, vilket är detsamma som
+  luft(mål) plus grannarnas viktade Δ. RN+R lägger dessutom på g(mål) − g(granne) med målets g. RÅ+HÖJD räknas med samma krok:
+  −0,0065 °C/m gånger höjdskillnaden, med höjder ur EU-DEM via opentopodata som i höjdprovet. Därmed är "samma grannar som RÅ" exakt:
+  fem närmaste inom 50 km, vikt 1/max(km, 1), och RÅ:s krav på gemensam historik.
+- *g:* linjär med konstant på moln, vind, lång- och kortvåg i W/m² och fukt, anpassad på alla stationers hinkar med yta ≤ +5 °C och
+  väder — för varje mål utan målets egna hinkar.
+- *Punkterna:* kandidaterna jämförs på de punkter där alla har ett värde, och antalet per kandidat skrivs ut. Bandet är närmaste
+  bidragande granne.
+- *Måtten:* grind A:s A1, A2 och A3 per band och totalt; frysflaggan med `publish/frysflagga.ts`, samma kod som riktningsprovet (#437).
+- *Indata:* releasen med summorna i `kuvos/metnordic-leverans.json` och värdevaktens spann (#480).
+- *Läsningen i förväg* (ny, skriven 7/10 före körningen; posten från 6/10 hade ingen): (1) RN slår RÅ bortom 20 km, där RÅ har 13,6 %
+  grova fel, med minst en procentenhet. (2) Inom 15 km skiljer RN och RÅ mindre än en halv procentenhet. (3) RN+R är bättre än RN, men
+  med högst en procentenhet totalt. (4) RÅ+HÖJD ligger nära RÅ, som i #467.
+- *Kontroll:* RÅ ska ge 7,5 % grova fel som i C8 (#479). Avviker det läses inte resten.
+- *Prov före körningen:* självtestet — g återfinner en känd väderdel och tränas utan målet; linjeringen mot RÅ; RN och RN+R på en
+  syntetisk väg där luften bär skillnaden mellan stationerna; RÅ+HÖJD:s tecken; hela utskriften med frysflaggan. Fyra motprov fällde
+  provet på rätt rad: RN med fel tecken, g tränad med målet, RÅ+HÖJD med fel tecken och RN+R med en senare analys.
+- Skript: `scripts/matningar/kuvos-rn-2026-10-07.ts` på knappen `kuvos` (`matning`).
+
+**UTFALL #481, 7/10 — körd och läst** (kuvos 37669854795 på 75b9b27, läsningen 3,5 min; en första körning, 37669737670, avbröts innan
+den läste något, eftersom hämtsteget för MET Nordic inte kände igen skriptets namn). MET Nordic godkänd mot summorna, värdevakten höll.
+736 stationer; 729 fick höjd ur EU-DEM. **Kontrollen:** RÅ gav samma 4 353 206 punkter som i C8; på de 4 312 216 punkter där alla
+kandidater har ett värde, utan de sju stationerna utan höjd, är RÅ:s grova fel 7,4 %.
+
+| Kandidat | grova fel, alla | 0–7 km | 7–15 km | 15–20 km | över 20 km | MAE |
+| :-- | --: | --: | --: | --: | --: | --: |
+| RÅ | 7,4 % | 5,2 % | 5,1 % | 7,1 % | 13,6 % | 0,67 °C |
+| RÅ+HÖJD | 8,8 % | 5,8 % | 5,6 % | 8,6 % | 16,8 % | 0,69 °C |
+| RN | 9,3 % | 6,0 % | 5,9 % | 8,9 % | 18,1 % | 0,70 °C |
+| RN+R | 9,3 % | 5,9 % | 5,9 % | 8,8 % | 18,4 % | 0,71 °C |
+| OFFSET (taket) | 5,5 % | 3,6 % | 3,6 % | 5,4 % | 10,3 % | 0,59 °C |
+
+Frysflaggan, alla band, farliga fel av frysningarna vid marginal 0 · 0,5 · 1,0 °C: RÅ 4,9 · 2,3 · 1,2 % · RÅ+HÖJD 4,9 · 2,3 · 1,1 % · RN
+5,0 · 2,4 · 1,2 % · RN+R 5,1 · 2,5 · 1,3 % · OFFSET 4,2 · 1,7 · 0,8 %. Bortom 20 km vid marginal 0: RÅ 2,8 %, RN 3,4 %. Rätt klass och
+täckning skiljer högst 0,2 procentenheter mellan RÅ och RN. RN+R:s g på hela landet: konstant 1,38, moln 1,28, vind −0,24 per m/s,
+långvåg −0,014 och kortvåg 0,001 per W/m², fukt 1,51; 4 405 373 hinkar.
+
+**Mot läsningen i förväg.** (1) *Föll:* RN slår inte RÅ bortom 20 km, utan är 4,5 procentenheter sämre (18,1 mot 13,6 %). (2) *Föll:*
+inom 15 km är RN 0,8 procentenheter sämre (6,0 mot 5,2 och 5,9 mot 5,1 %). (3) *Föll:* RN+R är inte bättre än RN (9,3 mot 9,3 %; bortom
+20 km 18,4 mot 18,1). (4) *Föll:* RÅ+HÖJD är 1,4 procentenheter sämre än RÅ.
+
+**Läsning.** Att sprida vägens skillnad mot MET Nordics luft är sämre än att sprida vägens temperatur, i alla band och mest där RÅ är
+svagast. Rutnätets luftskillnader mellan stationerna slår alltså inte igenom ett till ett i vägytan. Samma sak syns i RÅ+HÖJD, som
+överför standardatmosfärens 0,65 °C per 100 m fullt och blir sämre, och i #480:s vädermodell, där ytan följer luften med koefficienten
+0,76, inte 1. *Iakttagelse, inte kandidat:* en delvis överföring av luftskillnaden vore en ny parameter, vald efter att detta utfall är
+sett — den får i så fall förregistreras och prövas på en annan vinter.
+
+**Följd.** Ingen kandidat. Rutnätsmodellen i den form den låstes 6/10 bär inte. Steg 2 (kriging) och kallkartans prov (#482) bygger på
+rutnätet och väntar på Bengts och Axels ord (bedömningen §4.2). PR #783 stängs när #481 och #482 är på main.
+
+## #482 (6/10 2026, flyttad till main 7/10) Kallkartan ur satelliten — hämtningen och receptet, fasta innan något körs (kort #302 steg 3)
+
+**Flyttad till main 7/10** (Bengt: *"kör RN"*). Posten skrevs 6/10 som #471 på grenen `kuvos/rutnatet-469` (PR #783), som aldrig slogs ihop; under tiden togs #470, #471 och kort #298 på main. Texten nedan är grenens, oförändrad utom rubriken och hänvisningarna till rutnätsmodellen (#481), kallkartan (#482) och kortet (#302).
+
+**Axels ord 6/10:** pröva satellitkartan nu; han har skapat kontot hos NASA Earthdata och lagt nyckeln som GitHub-hemligheten
+`EARTHDATA_TOKEN` (*"Lets just do it for now as a test and then we update it at a later stage"* — nyckeln ska bytas senare, den har
+synts i chatten). Hämtningen och kartan byggs nu; **kartan prövas mot stationerna först i en egen förregistrering**, som
+egenskap i RN+R:s regression (#481), och den körningen sker på Bengts ord.
+
+**Källan:** MODIS natt-LST, MOD11A1 (Terra, ~22–23 lokal tid) och MYD11A1 (Aqua, ~01–02), version 061, 1 km, NASA LP DAAC. Sverige
+täcks av rutorna h18v02, h19v02, h18v03, h19v03 (CMR 6/10; ~12 MB per natt och satellit). Vintrarna 2022/23, 2023/24 och 2024/25,
+oktober–april. Granulerna listas publikt i CMR; filerna läses och kastas, bara summorna sparas.
+
+**Receptet (fast nu):** (1) bara pixlar med QC_Night bit 0–1 = 00 — framställd, god kvalitet, i praktiken klar himmel; (2) de fyra
+rutorna till en mosaik per natt och satellit; (3) lokal avvikelse = pixelns LST minus medlet av giltiga pixlar i 51 × 51 px
+(±25 km), bara där minst 200 grannar är giltiga — nattens väder tas bort, platsens egenhet står kvar; (4) kartan = summa, kvadratsumma
+och antal nätter per pixel. Ingen station och ingen vägdata läses när kartan byggs. Ut: `kallkartan_modis.npz` och en rad per station
+i `static.json` (6/10) med pixelns medelavvikelse, i den privata releasen `kuvos-modis-2022-25` med manifest.
+
+**Förbehåll som följer med kartan:** satelliten mäter markens yta (skog, mark, snö, sjö), inte asfalten; sjöar och hav får egna
+avvikelser (varma på hösten). Vintern 2024/25 ingår både i kartan och i riktningsprovet — kartan läser ingen facit, men det skrivs
+ut i provet. Domen på vintern 2026/27 läser en karta som är fryst innan den vintern börjar.
+
+**Kostnad:** NASA:s data är fri; Actions-jobbet tar uppskattningsvis 30–90 minuter en gång (kontot har spärren $0, inga pengar).
+
+**Alternativ:** Google Earth Engine (fritt bara för icke-kommersiellt bruk, #481), Sentinel-3 SLSTR (1 km, kortare arkiv, eget
+konto), Landsat/ECOSTRESS (70–100 m men sällan på natten). AppEEARS (LP DAAC:s utsnittstjänst) kräver lösenordsinloggning, inte nyckel.
+
+**UTFALL 6/10 (körning 37527407004, 14 min):** releasen `kuvos-modis-2022-25` finns (kallkartan_modis.npz, sha256 6a2a586b…, samma
+som i den första körningen 37524112922, vars release nekades med HTTP 403 från grenpushen). 1 262 nätter över de två satelliterna,
+4 utan en enda klar pixel; 3 813 571 pixlar med minst en natt, median 207 klara nätter per pixel. Avvikelsen över rutor med fler än
+30 nätter: 5/50/95-percentil −1,18 / −0,01 / +1,19 K. Inget facit läst. **Iakttagelse för förregistreringen av provet:** pixeln
+vid stationen i Vietas ger +3,51 K, troligen för att den ligger mot Akkajaure — en 1 km-pixel vid en sjö bär sjöns värme. Provet
+behöver därför en regel för pixlar med vatten (rutans landandel, eller närmaste rena landpixel), skriven före körningen.
