@@ -4,7 +4,7 @@
 och vad allt underkänt lämnade kvar.**
 
 **Kartan är fryst** (Axels förslag, Bengts beslut 15/9): en ändring kommer bara efter att något byggts och
-mätts. **Öppnad tre gånger: 16/9 för R1–R16** (DECISIONS #199), **24/9 för R17–R20** (DECISIONS #337) **och 1/10 för R21–R26** (DECISIONS #416) — varje gång
+mätts. **Öppnad fyra gånger: 16/9 för R1–R16** (DECISIONS #199), **24/9 för R17–R20** (DECISIONS #337), **1/10 för R21–R26** (DECISIONS #416) **och 7/10 för R27–R34** (DECISIONS #483) — varje gång
 efter bygge och mätning, och fryst igen. *Sedan 1/10 hålls kartans läge-rader (§2, §6.1, §8, §13.6, §14) aktuella löpande
 (STOMREGELN, DECISIONS #415); innehållet ändras fortfarande bara efter bygge och mätning.* *Vad som görs, och när, står i `docs/BEDOMNING-2026-09-15.md` — den enda listan.*
 
@@ -43,7 +43,7 @@ nämnaren, och den är också nyckeln till hur de ska sitta ihop.
 | **L1 TROVÄRDIGHET** | Får vi tro på mätvärdet? | #75 givarvakten · stationsvakten (#164) · G_tak (DECISIONS #163) · värdevakten · R-A5 | ✅ i drift |
 | **L2 TILLSTÅND** | Vad **är** ytan? | tillståndsskattaren (#89 steg 2) · radarns `regn` (#81 C) · operatörens klass · **#45 våtbulb → regn/slask/snö** · **#42 vattenfilm** · **#276 olja på vägen** (Trafikverkets NonWeatherRelatedRoadConditions) | 🔨 blöt/torr byggt · olja i skugga sedan 1/10 (#421) · resten kvar |
 | **L3 UTVECKLING** | Vart är den på **väg**? | trendarkivet (#88) · övergångarna (#89 a) · **#46 rimfrost** · N_varning (SMHI) | 🔨 mätt, ingen regel |
-| **L4 RÄCKVIDD** | Hur långt **gäller** mätningen? | grind A:s ankare (#38b) · SMHI molnmängd som räckviddsknapp (#95; Verify 2 och representativitetsradien omätta; SMHI som reserv när Trafikverket tystnar helt — uppmätt pris 2,36 °C) · **#91 kallplatslagret** | ✅ **grind A KLARAD** (#321); segmentprognosen i skugga sedan 23/9 (#325) · ⚠️ **knappen saknas** · ⚠️ **R21 (1/10): vägpunktsgrinden FALLEN 28/9** (#399) — rå avståndsviktning 6,9 % ± 0,4 grova fel med varma grannrader; premissmätningarna 30/9 (#405–#408) räddar ingen vägpunktskandidat på ärliga rader, bandet 0–7 km håller (Finland 2,3 %), höjden läses 23/10 · **2/10:** premissmätningen går varje måndag och läses 24/11 (#435), Finland är stöd och inte dom (#436), flaggmarginalen mäts i kuvösen (#437) |
+| **L4 RÄCKVIDD** | Hur långt **gäller** mätningen? | grind A:s ankare (#38b) · SMHI molnmängd som räckviddsknapp (#95; Verify 2 och representativitetsradien omätta; SMHI som reserv när Trafikverket tystnar helt — uppmätt pris 2,36 °C) · **#91 kallplatslagret** | ✅ **grind A KLARAD** (#321); segmentprognosen i skugga sedan 23/9 (#325) · **knappen = ankarspridningen (7/10):** spridningsgrinden är regel, X = 2,25 °C, 2,8 % grova fel på 61 % av punkterna i kuvösen (#474–#478) · ⚠️ **R21 (1/10): vägpunktsgrinden FALLEN 28/9** (#399) — rå avståndsviktning 6,9 % ± 0,4 grova fel med varma grannrader; premissmätningarna 30/9 (#405–#408) räddar ingen vägpunktskandidat på ärliga rader, bandet 0–7 km håller (Finland 2,3 %), höjden läses 23/10 · **2/10:** premissmätningen går varje måndag och läses 24/11 (#435), Finland är stöd och inte dom (#436), flaggmarginalen mäts i kuvösen (#437) |
 | **L5 ALLVAR & RÖST** | Vad **sägs**, och hur illa är det? | #153 allvar som **försprång** · spärren (DECISIONS #165) · **#90 roll B** | ✅ **R22 (1/10): försprånget byggt och i skugga sedan 25/9** (#359), S2 nivå + bevis 24/9 (#341); taket är motorns 3 000 m, inte appens reglage (#275, #419); rösten efter domen i mars |
 
 **Ordningen är inte godtycklig.** L1 gatar allt. L2 och L3 multiplicerar varandra. L4 avgör hur långt
@@ -148,6 +148,7 @@ kamerorna att arbeta med just nu.
 
 - [SMHI:s varningar](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-smhi-varningar): delvis, 75 % · kvar: Ingen läsare i motorn eller apparna
 - [SMHI:s nederbördsradar](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-radar): delvis, 92 % · kvar: Motorn och apparna läser inte regn eller rain_segments
+- [Vägdatalagret (NVDB)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vagdata): delvis, 63 % · kvar: Kuvösens inläsning till kuvos_ra.vagdata (kort #303)
 - [Lägesfilens fält för skuggdelarna](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-l-falten): delvis, 57 % · kvar: Motorn läser inte regn, rain_segments, regn_h, lutning, bevis eller smhi (fogarna F2–F4)
 - [L3 trenden](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-trenden): delvis, 44 % · kvar: T-B (B3-paret och tystnadsfelet för trenden) har inget instrument
 - [Rimfrosten](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-rimfrost): väntar, 38 % · Första svenska frosten: R-A inom sju dygn; vakthunden trycker den själv (#338).
@@ -221,7 +222,7 @@ syns inte av sig självt.**
 | **Radarns `regn`** (#81 C) | L2 | F2+F3+F4 — **redan publicerat** | nej, nytt villkor vid sidan | 3 segmentvektorer |
 | **Tillståndsskattaren** (#89 steg 2) | L2 | F1 `weather[].tillstand` + F3 + F4 | **nej — bredvid `fukt`** | 6 isvektorer, **v11 är grinden** |
 | **Trendarkivet** (#88) | L3 | F1 `weather[].lutning` + F3 + F4 | nej | 6 isvektorer |
-| **Segmentprognosen** (#38b) | L4 | **ingen fog i motorn i vinter:** loggas i `shadow_log.prognos` (rå avståndsviktning, #324); **R23 (1/10): rå viktning föll vägpunktsgrinden 28/9 (#399), ingen byggtid i höst, kandidaten till marsdomen är öppen (kort #270/#271)** · 2/10: Bengt valde a, f och g (#435–#437), b och d står öppna; vid dom (a) i mars karta och förstärkare, aldrig röst ensam (TROSKLAR-SKUGGAN §4, #319) — förstärkningen går då genom F1 + F3 + F4 | nej | F4 vid (a) — **och att `leadM` slutar vara motorns enda avståndsbegrepp** (§4.2) |
+| **Segmentprognosen** (#38b) | L4 | **ingen fog i motorn i vinter:** loggas i `shadow_log.prognos` (rå avståndsviktning, #324); **R23 (1/10): rå viktning föll vägpunktsgrinden 28/9 (#399), ingen byggtid i höst, kandidaten till marsdomen är öppen (kort #270/#271)** · 2/10: Bengt valde a, f och g (#435–#437), b och d står öppna; vid dom (a) i mars karta och förstärkare, aldrig röst ensam (TROSKLAR-SKUGGAN §4, #319) — förstärkningen går då genom F1 + F3 + F4 | nej | F4 vid (a) — **och att `leadM` slutar vara motorns enda avståndsbegrepp** (§4.2) · **R27 (7/10):** spridningen loggas sedan 7/10 (#474); marsdomen räknas med spridningsgrinden vid 2,25 °C och tystnad på täckt segment som miss (#475, #477, #478) |
 | **#46 rimfrost** | L3 | F3+F4 — **redan gjort**, som andra gren i `icing_point` | nej | klar; förebilden (§7.8) |
 | **#45 snö/slask** | L2 | F1 + F3 + F4 | nej | 6 isvektorer — **och frestelsen att göra det till ett sjätte slag måste avvisas** (§7.8). **Låst av #52:** ett test i tre portar säger att kod 1 + "Packad snö" MÅSTE larma — motsatsen till #45:s vinterbaseline. Vektorn beslutas före #45 |
 | **#42 vattenplaning** | L2 | egen byggordning **#81 A–F**: A, B och radarhalvan av C **byggda**, C:s stationshalva blockerad, **D = nytt farslag `aquaplaning`** | — | **F5 av konstruktion** — det prövade undantaget från §7.8 (kriteriet i §9). Skugga (E) i **höstregn** först; enda spåret med höstfönster |
@@ -297,7 +298,7 @@ byråkrati: den är stället där "sex vektorer" blir ett verkligt tal i ställe
 - [L2 tillståndet (skattaren S1–S3)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-tillstand): delvis, 57 % · kvar: S1-grinden på frostnätter (Axel, DECISIONS #196)
 - [L4 räckvidden: segmentprognosen](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-segmentprognos): väntar, 50 % · Domen i mars 2027 (grind B/C) och Bengts öppna val b och d på kort #270.
 - [L5 allvar som försprång](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-forsprang): delvis, 56 % · kvar: FS-A: nivå 2-fall i vinter (kod 3–4, eller yta ≤ 0 °C med väta ≥ 3)
-- [Prognoslagret](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-prognoslagret): väntar, 66 % · Bengts öppna val b, c, d, e och h; läsningen tisdag 24/11 (DECISIONS #435); (g) väntar på kuvösen (#437).
+- [Prognoslagret](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-prognoslagret): väntar, 44 % · Bengts öppna val b, c, d, e och h; läsningen tisdag 24/11 (DECISIONS #435); (g) mätt i kuvösen 6/10 (#467).
 
 <!-- /LÄGESRADER -->
 
@@ -332,6 +333,8 @@ faktiskt är uppmätt** — precis den storhet L4 behöver. Vad som saknas är *
 kurvan brantare eller flackare en enskild natt (moln, vind, terräng). Vi har alltså inte bara "vid
 stationen, med minne" — vi har ett ankare vars fel vi känner som funktion av avstånd, och saknar bara
 det som modulerar det.
+
+**Läget 7/10:** knappen är ankarspridningen. Spridningsgrinden är regel med X = 2,25 °C och ger 2,8 % grova fel på 61 % av punkterna i kuvösen (#474–#478). På vintern 2024/25 föll grind A (A2 5,5 %) och vägpunktsgrinden för alla kandidater (#467); med offsetmodellen gav 15–20 km 5,4 % och bortom 20 km 10,3 %, och 60-dygnsfönstren 3,4, 5,4 och 7,1 % (#469). Molnet köper 0,3 procentenheter (#471 L4), och terräng och vägdata förklarar nästan inget av stationernas särart mot grannarna (#471 L8, #479).
 
 ### 6.2 Täckningen multipliceras — och krymper därmed
 
@@ -440,7 +443,7 @@ tystna tidigare på morgonen"*. För L3 vill man ha trenden överallt där tills
 
 ### 7.7 #45 lutar på en höjdkorrektion som #91 mätte till noll
 
-#45:s metod: våtbulb per segment via **offsetmodell + höjdkorrektion** (lapse 0,71 °/100 m), för att
+#45:s metod: våtbulb per segment via **offsetmodell + höjdkorrektion** (lapse 0,71 °/100 m — **R28 (7/10):** #45 använder 0,63 sedan 17/9 (#226); på vintern 2024/25 var lapsen 0,18 (#467), och RÅ+HÖJD var sämre än RÅ (#481)), för att
 höjden flyttar snögränsen.
 
 #91:s mätning 12/9: på 1 962 punkter återvinner höjdkorrektionen **exakt noll** (1,65 → 1,65 °C) och
@@ -477,7 +480,7 @@ F (röst) i alla tre fallen — för #42 är E byggt (DECISIONS #191).
 | # | Vad | Vems | Fog | Kostnad |
 | :-- | :-- | :-- | :-- | :-- |
 | **A** | **Allvar som FÖRSPRÅNG** — samma ord, tidigare. Formen beslutad (#90 roll B); regeln saknas | Axels (rösten) | **F4** | ✅ R25 (1/10): byggd som skugga 25/9 (#359), dom mars 2027 |
-| **B** | **Bevisbärare i snapshoten** — varje fara bär vilka lager som talade och hur starkt, inte en boolean | delad | F1+F3 | additiv — kort #245 |
+| **B** | **Bevisbärare i snapshoten** — varje fara bär vilka lager som talade och hur starkt, inte en boolean | delad | F1+F3 | additiv — ✅ byggd 24/9 (#342), radarn per station sedan 4/10 (#459); motorn läser den inte än — kort #245 |
 | **C** | **En grind för KOMBINATIONEN** vid sidan av per-delsgrindarna | mätningen, alltså vår | — | ✅ skriven 17/9 (KB-A–D) |
 | **D** | **En skriven regel för gemensam kalibrering** — tillägg till §8-regimerna | Bengt fastställer | — | ✅ regel D, 17/9 |
 | **E** | **Graciös degradering** — skattaren returnerar nivå + bevis i stället för enum | min kod | F3 | ✅ byggd 24/9 (#341) |
@@ -503,8 +506,8 @@ vilar på. Samma del, annan roll, avgörande värde.
 
 | Del | Vad som underkändes (mätt) | Obesvarad fråga i det sammanvägda |
 | :-- | :-- | :-- |
-| **SMHI** | som ANKARE: MAE 1,05 → 1,20; som **reserv när Trafikverket tystnar helt** kostar den uppmätt 2,36 °C på 352 punkter — en kvantifierad beredskap, ingen väg | som **räckviddsknapp** (L4): gör molnmängden grind A:s felkurva brantare klara nätter? Aldrig mätt |
-| **Höjden** | återvinner noll på YTtemperatur *som medelkorrektion* — men **#96 mäter fortfarande varje måndag**, och lapse **0,63 °/100 m ur 3 476 par** är ett stabilt fysiskt faktum (#45 använder det gamla 0,71) | (a) #45 använder **luft**, inte yta — annan storhet. (b) förutsäger höjden **var modellen är opålitlig** i stället för att korrigera medelvärdet? |
+| **SMHI** | som ANKARE: MAE 1,05 → 1,20; som **reserv när Trafikverket tystnar helt** kostar den uppmätt 2,36 °C på 352 punkter — en kvantifierad beredskap, ingen väg | som **räckviddsknapp** (L4): gör molnmängden grind A:s felkurva brantare klara nätter? Aldrig mätt — **R29 (7/10):** mätt i kuvösen 6/10 (#471 L4): 0,3 procentenheter; knappen är spridningen, inte molnet |
+| **Höjden** | återvinner noll på YTtemperatur *som medelkorrektion* — men **#96 mäter fortfarande varje måndag**, och lapse **0,63 °/100 m ur 3 476 par** är ett stabilt fysiskt faktum (#45 använder 0,63 sedan 17/9, #226 — **R30 (7/10):** på vintern 0,18 ur 3 431 par, #467; RÅ+HÖJD 8,8 mot 7,4 % grova fel, #481) | (a) #45 använder **luft**, inte yta — annan storhet. (b) förutsäger höjden **var modellen är opålitlig** i stället för att korrigera medelvärdet? |
 | **Kamerorna** | som TÄCKNING: 6 av 744 ger nytt ankarläge | ✅ redan omrollad till **bildfacit** — prejudikatet |
 | **RH-guarden** | som FILTER: fuktigheten stiger efter regn | den **stigningen** är i sig ett tillstånd — förutsättningen för kondensation och rimfrost (#46) |
 | **Operatörens "Våt"** | som PROXY: omätbar eftersläpning | som **facit** i stället för indata — samma skifte som kamerorna gjorde |
@@ -590,7 +593,7 @@ inte längre: #43 steg 4 är öppnat sedan radardomen 13/9, och radarns roll som
 
 Delarna **är** byggda så att de kan integrera: de faller i fem lager utan att någon behöver skrivas
 om, och varje del producerar en mätt storhet i stället för en dom — vilket är förutsättningen för att
-de ska kunna vägas ihop senare. Räckvidden är mätt och duger (§6.1), tillståndet och utvecklingen är
+de ska kunna vägas ihop senare. Räckvidden är mätt och duger på hösten, på vintern bara med spridningsgrinden (§6.1, #477; **R31, 7/10**), tillståndet och utvecklingen är
 byggda och sparade, och registret visar att även det underkända lämnat användbara beräkningar efter
 sig (§10.4).
 
@@ -604,7 +607,7 @@ bokstavligen motorn, så varje länk kan mätas på riktig trafik innan den når
 **Och det som allt ska dömas mot är fortfarande tunt — men inte längre tomt eller obevakat.** Kamerafacit: 988 bilder
 i hinken 26/9 (R26), tabellen `kamerafacit`, 41 provbilder klassade blint (#329/#333/#380), läsning i mars (#248, #335) med
 ett spår för blind klassning och Axels ok (kort #246). `road_condition_history` står nästan stilla (rätt i september).
-`situation_archive` är mätt (3 122 olyckor på 30 dygn, #189) men bär ingen orsak. Förarfacit: 0 riktiga svar 28/9 (#390). Mätvakten
+`situation_archive` är mätt (3 122 olyckor på 30 dygn, #189) men bär ingen orsak. Förarfacit: ~~0 riktiga svar 28/9 (#390)~~ — **R32 (7/10):** förarsvaren fanns (#460); 32 riktiga svar 6/10, alla projektgruppens, inget om halka. Mätvakten
 (S7) mäter att facitkällorna växer, och alla läses genom en delad händelselista (`publish/skuggfacit.ts`, #327/#330).
 Axels tröskelregel har vittnen på väg, inte i hand (§13.2).
 
@@ -613,7 +616,7 @@ modellerad storhet utlöser aldrig ensam — regel T (§7.2, #220), och kombinat
 gemensam kalibrering (§7.3–7.4, TROSKLAR-KOMBINATIONEN, #217–#228). Kvar är att bygga dem, i den ordning bedömningen
 §5 säger.
 
-**Skillnaden mellan det vi har och produkten Bengt beskriver sitter alltså i L4:s knapp och i L5** —
+**Skillnaden mellan det vi har och produkten Bengt beskriver sitter alltså i L4:s knapp och i L5** (**R33, 7/10:** knappen finns nu — ankarspridningen, #474–#478) —
 och L5 är billigare än kartan först påstod: som **försprång** kostar den F4 (§13.1). Att kartan mätte
 det byggda mot ett löfte ingen gett är Axels kritik, och den ger jag (§13.3).
 
@@ -674,7 +677,7 @@ mätningar. Båda är tomma:
 | Vittne | Läge |
 | :-- | :-- |
 | Ytstatus / operatörens "Våt" | **33 rader, noll med efterföljande klassning** — skälet den ströks (§10.2) |
-| Kameran visar torr asfalt | **kamerafacit: 0 objekt efter 5 657 skuggkörningar** (kort #157) |
+| Kameran visar torr asfalt | **kamerafacit: 0 objekt efter 5 657 skuggkörningar** (kort #157) — **R34 (7/10):** objekt sedan 15/9 (#189), 988 bilder 26/9; ytstatusen ur stationerna i arkivet sedan 6/10 (#465) |
 
 Följden: **kort #157 blir bärande för Axels egen punkt 13.4.** Den enda funktion han vill släppa till
 rösten i vinter kan inte passera hans eget test förrän kamerafacit faktiskt fylls.
@@ -725,14 +728,14 @@ Hans invändning avslöjade dessutom ett tankefel i kartans eget §7.5 — se r�
 | :-- | :-- |
 | L5:s form är **försprång**, inte ord | **redan beslutat** (#90 roll B, E1) — kartan säger det nu |
 | #153 som försprång kostar **F4**, inte F5 | **mätt** (§5.1, §5.4) |
-| Grind A | **KLARAD 23/9** (#321) |
+| Grind A | **KLARAD 23/9** (#321) · vintern 2024/25 A2 5,5 %, ingen dom (#467, #469) |
 | #157 är bärande för vinterleveransen | **följer av 13.2** |
 | Om #153 **ska** omformuleras till försprång | **avgjort 16/9** (#221) |
 | Om tröskelregeln ska skrivas om till Axels lydelse | **avgjort 16/9** (#220), tätad |
 | Om E byggs före vintern | ✅ **byggd 24/9** (#341) |
 | Om försprånget kläms av appens reglage | **avgjort 26/9** (#419): nej — motorns 3 000 m; reglaget tar bara grundvarningen |
-| Provet av helheten (§7.3: *varje grind dömer sin del ensam*) | **kuvösen** (kort #232): klockan och inventeringen byggda 1/10, Trafikverkets vinterdata 2024/25 mottagen 2/10 (5,5 miljoner rader, 777 stationer, lokaltid mätt, #438; inläst 2/10 kväll med nederbördskoderna 1/2/4/6 ur VädErs 2019 — 5,39 miljoner rader, 754 stationer; 3/9, mängden och vinden väntar, #439; SMHI för samma vinter hämtat, radarn som tif ≈ 3,4 dBZ över h5, #441), riktningsprovet vecka 42 (#424); rösten i två serier — de 20 skuggrutterna och hela väglagsnätet (#426) |
-| När kombinationen kalibreras | **ändrat 1/10** (#425): i kuvösen på vintern 2024/25, inte 1/2 2027 — årets vinter blir bara domdata |
+| Provet av helheten (§7.3: *varje grind dömer sin del ensam*) | **kuvösen** (kort #232): klockan och inventeringen byggda 1/10, Trafikverkets vinterdata 2024/25 mottagen 2/10 (5,5 miljoner rader, 777 stationer, lokaltid mätt, #438; inläst 2/10 kväll med nederbördskoderna 1/2/4/6 ur VädErs 2019 — 5,39 miljoner rader, 754 stationer; 3/9, mängden och vinden översatta ur dokumentationen 6/10, #464; SMHI för samma vinter hämtat, radarn som tif ≈ 3,4 dBZ över h5, #441), riktningsprovet kört 6/10 (#467), granskat (#469, #470); rösten i två serier — de 20 skuggrutterna och hela väglagsnätet (#426) |
+| När kombinationen kalibreras | **ändrat 1/10** (#425): i kuvösen på vintern 2024/25, inte 1/2 2027 — årets vinter blir bara domdata · ✅ **gjord 6/10** (#468): 32 räknebara punkter, ingen under taket 25 %, startvärdena frysta |
 | Om vinterns röstleverans begränsas till Axels "en sak" | **öppet** — jag rekommenderar ja |
 
 ---
@@ -762,6 +765,8 @@ ingen läser en överspelad version någon annanstans.
 | 2/10 | **Läge-raden för kuvösen:** Trafikverkets leverans mottagen och besiktigad — ingen innehållsändring | DECISIONS #438 |
 | 2/10 | **Läge-raden för kuvösen:** vintern inläst, nederbördskoderna 1/2/4/6 ur VädErs 2019 — ingen innehållsändring | DECISIONS #439 |
 | 2/10 | **Läge-raden för kuvösen:** SMHI för samma vinter hämtat (steg 4) — ingen innehållsändring | DECISIONS #441 |
+| 7/10 | **Läge-raderna efter kuvösens utfall och spridningsgrinden:** L4-raden (§2), §6.1, §8 B och §13.6 (grind A på vintern, riktningsprovet, kalibreringen) — ingen innehållsändring | DECISIONS #464, #467–#478 |
+| 7/10 | **Kartan öppnad för R27–R34 — efter kuvösens läsningar 6–7/10 — och fryst igen.** R27 segmentprognosens fog (§5.4) · R28 lapsen i #45:s metod (§7.7) · R29 molnet som räckviddsknapp (§9.1) · R30 höjden (§9.1) · R31 räckvidden (§12) · R32 förarfacit (§12) · R33 L4:s knapp (§12) · R34 kamerafacit och ytstatus (§13.2) | DECISIONS #483 |
 
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
@@ -774,7 +779,7 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 5 kort.
 
 **§5 Fogarna — var en skuggdel kan greppa, och vad den kostar**
 
-- #301 VÄGDATALAGRET — EN TABELL, ÅTTA ANVÄNDARE: VÄGENS EGENSKAPER PER STATION, SEGMENT OCH VÄGPUNKT — Bengt
+- #303 VÄGDATALAGRET, STEG 3 — KUVÖSENS INLÄSNING OCH AXELS KOLUMNER — Bengt
 - #88 TRENDEN — vi mäter var minut men använder bara sista värdet — Claude, låst
 
 **§6 Var lagren står, mätt**

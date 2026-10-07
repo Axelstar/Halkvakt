@@ -95,17 +95,17 @@
 </style>
 
 <main class="blad">
-  <div class="etikett">Appen · 28 september 2026 · läst mot läget 1 oktober kväll</div>
+  <div class="etikett">Appen · 28 september 2026 · läst mot läget 7 oktober</div>
   <h1>Halkvakt i telefonen: vad den gör, säger och skickar</h1>
   <p class="ingress">Tredje sidan i serien efter systembilden och mätningarna. Den här sidan följer föraren: vad rösten säger, hur skärmarna ser ut, hur vakten startar och stannar, hur betatestarna svarar och exakt vad som lämnar telefonen. Underlaget är produktboken, systembeskrivningen, beslutsloggen och Skyltfondsansökan med bilagor.</p>
   <div class="fakta">
-    <span>iPhone <b>0.3.9 (19)</b></span>
-    <span>Android <b>0.3.9 (19)</b></span>
+    <span>iPhone <b>0.3.11 (23)</b></span>
+    <span>Android <b>0.3.11 (23)</b></span>
     <span><b>5</b> faror</span>
     <span><b>2</b> flikar</span>
     <span><b>0</b> konton</span>
     <span>batteri iPhone <b>7 %/h</b></span>
-    <span>gratis i båda butikerna</span>
+    <span>gratis, ännu bara hos testarna</span>
   </div>
 
   <div class="remsa" aria-label="Skärmbilder ur Android-appen i skinnet v4, 2 oktober 2026">
@@ -116,7 +116,7 @@
     <figure><img src="produktbok/shot-6-betatest.png" alt="Betatest: vippan Svara på varningarna och kvittot över vad som skickas, vid missad och aldrig."><figcaption><b>Betatest.</b> Av från början. Kvittot säger vad som skickas.</figcaption></figure>
     <figure><img src="produktbok/shot-7-om.png" alt="Om Halkvakt: livekartan, frågorna, pressmaterialet, ärlighetsraden och datakällorna."><figcaption><b>Om.</b> Ärlighetsraden och källorna, ordagrant.</figcaption></figure>
   </div>
-  <p class="litet">Android ur fotostudion 2/10 i skinnet v4 — designöverlämningen v2 (DECISIONS #444, kort #284), på grenen till nästa bygge. iPhone har samma skärmar; bilderna kommer ur första bygget i Xcode.</p>
+  <p class="litet">Android ur fotostudion 2/10 i skinnet v4 — designöverlämningen v2 (DECISIONS #444, kort #284), i 0.3.10 (22) och senare. iPhone har samma skärmar; bilderna kommer ur första bygget i Xcode.</p>
 
   <h2 id="avsnitt-1">1. Vad appen är</h2>
   <p>En app du startar när du sätter dig i bilen, och sedan lägger du undan telefonen. Halkvakt lyssnar på Trafikverkets mätstationer och rapporterade väglag och säger till med rösten, i högtalaren eller bilens Bluetooth, när något farligt finns framför dig: halka, frysrisk, olyckor, vilt och fartkameror. Det finns ingen skärm att titta på och inget konto. Tystnad är grundläget: pratar den, betyder det något.</p>
@@ -147,7 +147,7 @@
 <!-- /LÄGESRADER -->
   <ol class="steg">
     <li><div><b>Du startar vakten</b>, eller så startar den själv (avsnitt 5). GPS:en börjar lyssna, och skärmen kan släckas.</div></li>
-    <li><div><b>Telefonen hämtar vägdatan</b> och kontrollerar den mot kontrollsumman i manifestet. Stämmer den inte behålls förra snapshoten. Under resan hämtas ny data var 30:e minut: på Android i drift, på iPhone i koden sedan bygge (16) men ännu inte i ett bygge testarna har.</div></li>
+    <li><div><b>Telefonen hämtar vägdatan</b> och kontrollerar den mot kontrollsumman i manifestet. Stämmer den inte behålls förra snapshoten. Under resan hämtas ny data var 30:e minut: på Android i drift, på iPhone i testarnas byggen sedan 1/10, men ännu inte provat på en hel resa (kort #258).</div></li>
     <li><div><b>Åldersvakten prövar datan.</b> Väglag och frysrisk äldre än 45 minuter filtreras bort, olyckor och djur efter två timmar. Är datan gammal säger rösten en gång: <q>Ingen färsk väglagsdata – kör som om det kan vara halt.</q></div></li>
     <li><div><b>Motorn vakar i telefonen.</b> Den letar faror i en korridor på ±35° framför färdriktningen, ungefär 30 sekunder fram. Under 15 km/h är den tyst.</div></li>
     <li><div><b>Rösten talar</b> när en fara ligger i korridoren. I körläget visas samma text på ett helgult kort i åtta sekunder, och med kartappen framme syns en banner lika länge.</div></li>
@@ -320,7 +320,7 @@
       <ul>
         <li>Med platsen <b>Alltid</b> ber appen iOS väcka den när telefonen lämnar platsen där bilen stod (150 m). Den startar vakten vid 15 km/h.</li>
         <li><q>Hej Siri, starta Halkvakt</q>, eller en automation i Genvägar för CarPlay, bilens Bluetooth eller fokusläget Kör. Guiden under Inställningar → Start visar två spår i fyra steg och bekräftar när en automation har startat vakten.</li>
-        <li>Vakten stannar när bilen stått still en kvart. En paus kortare än tre timmar räknas som samma resa.</li>
+        <li>Vakten stannar när bilen stått still en kvart, sedan 0.3.11 (23) mätt på förflyttning (#461). En paus kortare än tre timmar räknas som samma resa.</li>
         <li>Provad på Malmö–Boden och tillbaka 1–2/9: 100 mil med självväckningen som enda start.</li>
       </ul>
     </div>
@@ -329,7 +329,7 @@
       <ul>
         <li>Vippan <b>Vaknar själv när du kör</b> under Inställningar → Start (före skinnet v4: brytaren <i>Autostart</i> på hemskärmen) ber om plats, rörelseigenkänning, Bluetooth och plats <i>hela tiden</i>.</li>
         <li>Appen lär sig varje Bluetooth-enhet som kopplas medan vakten går och startar vakten när den kopplar upp igen. Rörelseigenkänningen täcker bilar utan Bluetooth.</li>
-        <li>En självstartad vakt stannar när bilen kopplas från. Varje vakt ska stanna efter en kvart stilla. Det fungerar inte fullt ut i dag, se avsnitt 9.</li>
+        <li>En självstartad vakt stannar när bilen kopplas från. Varje vakt ska stanna efter en kvart utan körning. Sedan 0.3.11 (23) mäts det på förflyttning, inte på ett enskilt mätvärde (#461), men det är ännu inte provat i bil; se avsnitt 9.</li>
       </ul>
     </div>
   </div>
@@ -338,7 +338,7 @@
 <!-- LÄGESRADER §6: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 <div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
   <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-forarfacit">Förarfacit (svar och missar)</a> <span style="color: var(--dampad, #4A5763)">delvis, 88 % · kvar: Förarsvar om halka och riktiga missar: de 29 riktiga svaren gäller 28 fartkameror och en händelse, och missarna är 0 (dbknapp 37249631052, 5/10)</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-forarfacit">Förarfacit (svar och missar)</a> <span style="color: var(--dampad, #4A5763)">delvis, 88 % · kvar: Förarsvar om halka och riktiga missar: 32 riktiga svar 6/10, alla projektgruppens (Bengt 22, Axel 10), inget om halka, och missarna är 0 (dbknapp 37249631052 5/10; bedömningen §4.2 6/10)</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Regel skriven</b> <span style="color: var(--dampad, #4A5763)">klart · TROSKLAR-KOMBINATIONEN §4 KB-D, fastställt 17/9 (#226): ≥ 30 svar, ≥ 5 förare, ingen förare &gt; 25 %</span></li>
       <li><span aria-hidden="true">✓</span> <b>Byggd</b> <span style="color: var(--dampad, #4A5763)">klart · facit-svar (#201), sql/022, 025, 027, 038; Facit/Missar/FacitSender i ios/ och android/ (#203, #379)</span></li>
@@ -360,7 +360,7 @@
   <p>Betatestarna är projektets förarfacit. Allt nedan finns bara för den som själv slagit på brytaren <i>Svara på varningarna</i>.</p>
   <ol class="steg">
     <li><div><b>Under resan</b> står två knappar under repliken: <i>Stämde</i> och <i>Stämde inte</i>. På iPhone går det också att säga <q>Hej Siri, stämde inte i Halkvakt</q>. Svaret skickas aldrig medan bilen rullar, bara när den stått still en halv minut eller när appen öppnas.</div></li>
-    <li><div><b>När det var halt men rösten teg</b> trycker föraren <i>Appen missade</i> i körläget, eller säger <q>Hej Siri, appen missade i Halkvakt</q>. Appen sparar klockslaget och närmaste mätstation, inte koordinaten.</div></li>
+    <li><div><b>När det var halt men rösten teg</b> trycker föraren <i>Appen missade</i> i körläget, eller säger <q>Hej Siri, appen missade i Halkvakt</q>. Appen sparar klockslaget och närmaste mätstation, inte koordinaten. Sedan 0.3.11 (23) blir ett andra tryck inom 60 s ingen ny miss, och Siri markerar inga missar när vakten är av (#461).</div></li>
     <li><div><b>Efter resan</b> kommer en notis: <q>Resan klar — stämde alla 3 varningarna?</q> Ett tryck på <i>Ja, alla stämde</i> räcker, direkt på låsskärmen. Missar väntar på ett val: Halka, Vatten, Vilt, Olycka eller Annat. Först när valet är gjort skickas missen.</div></li>
     <li><div><b>Svarar du inte skickas ingenting.</b> Tystnad räknas aldrig som ja. Kortet står kvar ett dygn och tiger sedan, eftersom ett svar på en resa man inte minns är en gissning.</div></li>
   </ol>
@@ -391,7 +391,7 @@
         </tbody>
       </table>
     </div>
-    <p class="litet">Inget konto, inget enhets-id och ingen IP-adress sparas, och inget delas med tredje part. Ett svar pekar ut ungefär var och när, och det står i appen. I Google Plays dataformulär är det deklarerat som ungefärlig plats, valfri och inte delad.</p>
+    <p class="litet">Inget konto, inget enhets-id och ingen IP-adress sparas, och inget delas med tredje part. Ett svar pekar ut ungefär var och när, och det står i appen. I Google Plays dataformulär ska det deklareras som ungefärlig plats, valfri och inte delad (docs/PLAY-DATASAFETY.md); formuläret fylls i vid första uppladdningen (kort #214).</p>
   </div>
 
   <h2 id="avsnitt-8">8. Batteri och drift</h2>
@@ -417,7 +417,7 @@
     </div>
     <div class="ruta rod">
       <h3>Android: för många timmar</h3>
-      <p>En testare låg på 42 % efter en baddag. Vakten hade gått 11 h 39 min i bakgrunden, med GPS i 6 h 40 min, och stod för 21,6 % av dygnets förbrukning. Timkostnaden var låg, men självstoppet fyrade bara för en parkerad bil. Ett åtgärdspaket ligger hos Axel och är en släppblockerare.</p>
+      <p>En testare låg på 42 % efter en baddag. Vakten hade gått 11 h 39 min i bakgrunden, med GPS i 6 h 40 min, och stod för 21,6 % av dygnets förbrukning. Timkostnaden var låg, men självstoppet fyrade bara för en parkerad bil. Åtgärdspaketet (kort #262): fem av åtta åtgärder är byggda, Å1, Å4 och Å5 den 1/10 (#431) och Å2 och Å3 i 0.3.11 (23) (#461). Mätningen på Android (Å7) saknas och är en släppblockerare.</p>
     </div>
   </div>
 
@@ -436,7 +436,7 @@
   <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-a-android">Android-appen</a> <span style="color: var(--dampad, #4A5763)">delvis, 83 % · kvar: Skinnet v4 (22) sett på en riktig Android-telefon</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Byggd i koden</b> <span style="color: var(--dampad, #4A5763)">klart · android/app/src/main/kotlin/se/halkvakt/app: MainActivity.kt, GuardService.kt, Guard.kt, ui/Skinn.kt, ui/WarningCardScreen.kt m.fl.</span></li>
-      <li><span aria-hidden="true">✓</span> <b>I ett Android-bygge</b> <span style="color: var(--dampad, #4A5763)">klart · android.yml 37044258124 grön: JVM, APK, AAB, emulator (kort #284); build.gradle.kts versionCode 22, 0.3.10</span></li>
+      <li><span aria-hidden="true">✓</span> <b>I ett Android-bygge</b> <span style="color: var(--dampad, #4A5763)">klart · android.yml 37044258124 grön: JVM, APK, AAB, emulator (kort #284); build.gradle.kts versionCode 23, 0.3.11 (410f2a5, android.yml 37411512730 grön, DECISIONS #461)</span></li>
       <li><span aria-hidden="true">◐</span> <b>Prov i bil eller på telefon</b> <span style="color: var(--dampad, #4A5763)">pågår · Axels Android sedan 20/9 (DECISIONS #271); testarens dag 27/9 på okänt bygge (#386, #387); skinnet v4 bara i emulatorn</span></li>
     </ul>
   </details>
@@ -551,9 +551,10 @@
         <tr><td class="nr">0.3.9 (17)</td><td class="nr">26/9</td><td>Reglaget <i>Längsta förvarning</i> 400–1 200 m.</td></tr>
         <tr><td class="nr">0.3.9 (18)</td><td class="nr">26/9</td><td><i>Appen missade</i>, Siri-fraserna och missraderna efter resan. Android bär samma nummer.</td></tr>
         <tr><td class="nr">0.3.9 (19)</td><td class="nr">1/10</td><td>Skärmarna rullar, svaren på ett ställe, svenska klockslag, <q>lämnar inte telefonen av sig själv</q>. Uppladdat och i Kompisarna samma kväll. Android (19): stoppknapp i notisen, autostartens text, cache.</td></tr>
-        <tr><td class="nr">0.3.9 (20)</td><td class="nr">2/10</td><td>Långtrycket rättat. Inlämnad till App Store 2/10 och avvisad 5/10 på två punkter: knappen före platsfrågan sa <i>Tillåt</i>, och granskaren hörde inget bakgrundsljud (DECISIONS #460). Rättelsen ligger i main och kommer i nästa bygge.</td></tr>
+        <tr><td class="nr">0.3.9 (20)</td><td class="nr">2/10</td><td>Långtrycket rättat. Inlämnad till App Store 2/10 och avvisad 5/10 på två punkter: knappen före platsfrågan sa <i>Tillåt</i>, och granskaren hörde inget bakgrundsljud (DECISIONS #460). Rättelsen kom i 0.3.11 (23) 6/10; ny inlämning väntar på Axel.</td></tr>
         <tr><td class="nr">0.3.9 (21)</td><td class="nr">2/10</td><td>Vägdatans klockslag tillbaka i körläget.</td></tr>
         <tr><td class="nr">0.3.10 (22)</td><td class="nr">3/10</td><td>Det nya skinnet: varningskorten med lägesetikett och olycksläget, inställningar i två nivåer, introduktionen. Android bär samma nummer.</td></tr>
+        <tr><td class="nr">0.3.11 (23)</td><td class="nr">4–6/10</td><td>Självstoppet mäts på förflyttning, och på Android läser en stillastående telefon GPS glesare. Ett andra tryck på <i>Appen missade</i> inom 60 s blir ingen ny miss, och Siri markerar inga missar när vakten är av (DECISIONS #461). Rättelserna efter App Review (#460). Uppladdad 6/10 till intern testning; ny inlämning till App Store väntar på Axel. Android bär samma nummer.</td></tr>
       </tbody>
     </table>
   </div>
@@ -627,7 +628,7 @@
     <li><b>Prognoslagret:</b> klarar det vinterns grindar kopplas det till app och karta som förtroendemärkt lager och en färdvy vid beräknad ankomsttid, men det talar aldrig ensamt.</li>
   </ul>
   <hr>
-  <p class="litet">Källor: produktboken (PRODUKTBOK.md, läst mot koden 24/9), systembeskrivningen (bilaga 3), rösttexterna ur varningsmotorn (bilaga 6), beskrivningen av bygge (19) och beslutsloggen; läst mot läget 1/10 (DECISIONS #415). Alla datum avser 2026.</p>
+  <p class="litet">Källor: produktboken (PRODUKTBOK.md, läst mot koden 24/9), systembeskrivningen (bilaga 3), rösttexterna ur varningsmotorn (bilaga 6), beskrivningen av bygge (19) och beslutsloggen; läst mot läget 7/10 (DECISIONS #415). Alla datum avser 2026.</p>
 
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
   <h2 id="oppna-kort">Öppna kort</h2>

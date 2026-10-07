@@ -145,7 +145,7 @@
 
 <main class="blad">
   <header style="display:grid;gap:10px">
-    <div class="etikett">Halkvakt · systembild 25 september 2026 · läst mot läget 1 oktober</div>
+    <div class="etikett">Halkvakt · systembild 25 september 2026 · läst mot läget 7 oktober</div>
     <h1>Motorn i dag, och systemet när skuggmotorns delar klarat sina prov</h1>
     <p class="ingress">Halkvakt är en röst som säger till när något farligt finns på vägen framför bilen. Den här sidan beskriver
       motorn som kör i telefonen i dag, och hur helheten ser ut den dag varje del i skuggmotorn har klarat de prov den är byggd för.</p>
@@ -285,7 +285,7 @@
         <div class="rad"><h4>Var den ser</h4><p>Vid stationerna och på rapporterade sträckor. Mellan dem är vägen oövervakad.</p></div>
         <div class="rad"><h4>Vad den ser</h4><p>Läget nu: väglaget, en yta nära noll, fukt.</p></div>
         <div class="rad"><h4>När den varnar</h4><p>När halkan redan finns i väglaget, eller ytan redan är nära noll.</p></div>
-        <div class="rad"><h4>Hur tidigt</h4><p><span class="mono">30 s</span> före, lika tidigt hur allvarlig faran än är.</p></div>
+        <div class="rad"><h4>Hur tidigt</h4><p><span class="mono">30 s</span> före, utom en allvarlig olycka, som ropas redan på en mil (#443).</p></div>
         <div class="rad"><h4>Faror</h4><p>Fem: halka, frysrisk, olycka, vilt och kamera.</p></div>
         <div class="rad"><h4>Hur ofta den talar</h4><p>Sällan. Tystnad är grundläget.</p></div>
       </div>
@@ -293,7 +293,7 @@
         <h3>När delarna klarat sina prov</h3>
         <p class="tal">Var 2:a km</p>
         <p class="under">skattad vägyta längs hela vägen, på kartan</p>
-        <div class="rad"><h4>Var den ser</h4><p>Längs hela vägen, med höjden inräknad. Varningen vilar fortfarande på en mätning.</p></div>
+        <div class="rad"><h4>Var den ser</h4><p>Mellan stationerna, där grannstationerna är eniga (spridningsgrinden, #477). Varningen vilar fortfarande på en mätning.</p></div>
         <div class="rad"><h4>Vad den ser</h4><p>Vart ytan är på väg: ytan som faller, regnet som slutat, en klar natt, regn, slask eller snö.</p></div>
         <div class="rad"><h4>När den varnar</h4><p>Medan det fryser. Svartis efter regn och en klar natt varnas innan den syns i väglaget.</p></div>
         <div class="rad"><h4>Hur tidigt</h4><p><span class="mono">30 s</span>, och <span class="mono">45–90 s</span> när väglaget är mycket besvärligt eller ytan under noll med färskt regn.</p></div>
@@ -369,8 +369,8 @@
       <li><span aria-hidden="true">✓</span> <b>Tröskeldokument</b> <span style="color: var(--dampad, #4A5763)">klart · docs/TROSKLAR-SKUGGAN.md:3–4 fastställt (Bengt 1/9, Axel 2/9, #61); vägpunkten §3 (#324, #328), §4 rättad (#319)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Data i arkivet</b> <span style="color: var(--dampad, #4A5763)">klart · shadow_log.prognos och vagpunkt_ankare() (sql/032_prognos.sql:7, 15)</span></li>
       <li><span aria-hidden="true">○</span> <b>Publicerat i lägesfilen</b> <span style="color: var(--dampad, #4A5763)">saknas · Medvetet opublicerad före domen (INTEGRATIONSKARTAN.md:195)</span></li>
-      <li><span aria-hidden="true">✓</span> <b>Mätt i skuggan</b> <span style="color: var(--dampad, #4A5763)">klart · segmentPrognos + holdoutRader i skuggmotorn sedan 23/9 (#325, #326); dom-knappen publish/grind-s-b.ts (#327)</span></li>
-      <li><span aria-hidden="true">◐</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">pågår · Grind A KLARAD 23/9 (#321); vägpunktsgrinden FALLEN 28/9, 6,9 % mot 5 % (#399); grind B/C döms i mars</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Mätt i skuggan</b> <span style="color: var(--dampad, #4A5763)">klart · segmentPrognos + holdoutRader i skuggmotorn sedan 23/9 (#325, #326); dom-knappen publish/grind-s-b.ts (#327); ankarnas spridning loggas sedan 7/10 16:32Z (deploy 37650576469, #474)</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">pågår · Grind A KLARAD 23/9 (#321); vägpunktsgrinden FALLEN 28/9, 6,9 % mot 5 % (#399); grind B/C döms i mars; marsdomen räknas med spridningsgrinden vid 2,25 °C och tystnad på täckt segment som miss (#475, #477, #478); vinterläsningen 1/12, 1/1, 1/2 och i domläget (KALENDERN)</span></li>
       <li><span aria-hidden="true">◐</span> <b>Villkoret i motorn</b> <span style="color: var(--dampad, #4A5763)">pågår · engine/src/segment.ts:56–115 körs bara i skuggmotorn; förstärkarvillkoret finns inte i engine.ts</span></li>
       <li><span aria-hidden="true">○</span> <b>Testfall i tre språk</b> <span style="color: var(--dampad, #4A5763)">saknas · Bara test/segment.test.ts i TypeScript; ingen vektor eller port (segment.ts:7)</span></li>
       <li><span aria-hidden="true">○</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Aldrig röst ensam (TROSKLAR-SKUGGAN.md:148–151)</span></li>
@@ -412,7 +412,7 @@
     <p>Skuggmotorn kör samma motor mot riktiga data på tjugo referensrutter per land — 80 rutter och knappt 13 000 km i Sverige,
       Finland, Norge och Danmark. Varje halvtimme körs två eller tre rutter per land, så varje rutt körs var tredje och en halv timme,
       och motorn loggar vad rösten <em>skulle</em> ha sagt. Ingen förare hör något. Varje del döms mot trösklar som skrevs innan någon mätning fanns, och bara det som
-      klarar sina prov når rösten. Nedan antas att alla delar klarar dem. Färgen vid varje rad visar läget den 25 september.</p>
+      klarar sina prov når rösten. Nedan antas att alla delar klarar dem. Färgen och etiketten vid varje rad visar läget den 7 oktober.</p>
     <div class="tecken" aria-label="Teckenförklaring">
       <span><span class="lage drift">I drift</span>når föraren i dag</span>
       <span><span class="lage mats">Byggd och mäts</span>körs och loggas, når inte föraren före domen</span>
@@ -422,18 +422,18 @@
       <table>
         <thead><tr><th>Del</th><th>Vad den gör</th><th>Vad systemet vinner</th></tr></thead>
         <tbody>
-          <tr class="mats"><td><span class="lagerkod">L3</span> Efterhalkan<span class="lage mats">I skugga sedan 16/9</span></td><td>Känner igen en blöt väg vars yta sjunker mot noll efter att regnet slutat.</td><td>Varnar för den vanligaste svartisen innan den syns i väglaget.</td></tr>
+          <tr class="mats"><td><span class="lagerkod">L3</span> Efterhalkan<span class="lage mats">I skugga sedan 16/9 · startvärdena frysta 6/10 (#468) · märkt beta i november</span></td><td>Känner igen en blöt väg vars yta sjunker mot noll efter att regnet slutat.</td><td>Varnar för den vanligaste svartisen innan den syns i väglaget.</td></tr>
           <tr class="papper"><td><span class="lagerkod">L3</span> Rimfrosten<span class="lage papper">A-grinden byggd, väntar på frost</span></td><td>Ser när ytan blir kallare än daggpunkten en klar natt.</td><td>Svartis utan nederbörd, som i dag är osynlig.</td></tr>
-          <tr class="mats"><td><span class="lagerkod">L3</span> Trenden<span class="lage mats">Arkivet samlar sedan 13/9</span></td><td>Mäter hur fort ytan faller — och sedan 25/9 stiger — över 15, 30 och 60 minuter.</td><td>Varningen kommer medan det fryser, inte när det redan har frusit, och tystnar tidigare när ytan värms på morgonen.</td></tr>
-          <tr class="mats"><td><span class="lagerkod">L2</span> Nederbördstypen<span class="lage mats">Domen byggd 25/9, mäts ur arkivet</span></td><td>Läser stationernas uppmätta typ och räknar våtbulben ur luft och fuktighet där ingen givare ser.</td><td>Rätt fara i snöfall och slask, inte bara ”blött”, också mellan stationerna.</td></tr>
+          <tr class="mats"><td><span class="lagerkod">L3</span> Trenden<span class="lage mats">Arkivet samlar sedan 13/9 · T-A byggd, väntar på frost · T-B saknar instrument</span></td><td>Mäter hur fort ytan faller — och sedan 25/9 stiger — över 15, 30 och 60 minuter.</td><td>Varningen kommer medan det fryser, inte när det redan har frusit, och tystnar tidigare när ytan värms på morgonen.</td></tr>
+          <tr class="mats"><td><span class="lagerkod">L2</span> Nederbördstypen<span class="lage mats">Domen byggd 25/9 · NT-B och NT-C föll i kuvösen 6/10 (#467) · dom tidigast 1/3 2027</span></td><td>Läser stationernas uppmätta typ och räknar våtbulben ur luft och fuktighet där ingen givare ser.</td><td>Rätt fara i snöfall och slask, inte bara ”blött”, också mellan stationerna.</td></tr>
           <tr class="mats"><td><span class="lagerkod">L2</span> Vattenplaning<span class="lage mats">I skugga sedan 15/9 · dom november–december</span></td><td>Läser radarns regnintensitet längs vägen.</td><td>En sjätte fara: <span class="rost">”Vattenplaning framöver — sakta ner.”</span></td></tr>
-          <tr class="mats"><td><span class="lagerkod">L2</span> Olja på vägen<span class="lage mats">I skugga sedan 1/10</span></td><td>Loggar var rösten skulle ha talat om Trafikverkets rapporter om olja och diesel på vägbanan.</td><td>Halka som Trafikverket själv rapporterar men som rösten i dag tiger om. Text och prioritet avgörs efter skuggan.</td></tr>
-          <tr class="mats"><td><span class="lagerkod">L4</span> Segmentprognosen<span class="lage mats">I skugga sedan 23/9 · vägpunktsgrinden föll 28/9</span></td><td>Skattar yttemperaturen var andra kilometer ur närliggande stationer, med höjden inräknad.</td><td>Vägen mellan stationerna syns på kartan, och en varning som vilar på en mätning kan stärkas eller förlängas.</td></tr>
-          <tr class="mats"><td><span class="lagerkod">L5</span> Allvar som försprång<span class="lage mats">I skugga sedan 25/9</span></td><td>Ger en allvarligare fara längre förvarning: <span class="mono">45–90 s</span> i stället för <span class="mono">30 s</span>, upp till <span class="mono">3 000 m</span>. Reglagets tak gäller bara grundvarningen.</td><td>Samma ord, tidigare, när väglaget är mycket besvärligt eller ytan under noll med färskt regn.</td></tr>
-          <tr class="papper"><td><span class="lagerkod">L3–L5</span> Förstärkarna<span class="lage papper">A-grinden byggd, väntar på frost</span></td><td>Vind och sikt, SMHI:s varningar och frysklassningen.</td><td>De förlänger eller stärker en varning, men utlöser aldrig en egen.</td></tr>
-          <tr class="mats"><td><span class="lagerkod">B</span> Bevisbäraren<span class="lage mats">Byggd 24/9, visas inte än</span></td><td>Varje punkt bär vad som talade och hur starkt: väta, regnmängd, temperatur.</td><td>Varje varning går att förklara, på kartan och i efterhand.</td></tr>
-          <tr class="mats"><td><span class="lagerkod">K</span> Kuvösen<span class="lage mats">Klockan byggd 1/10 · vintern och SMHI inlästa 2/10 · riktningsprovet läst och kalibreringen gjord 6/10 (#467, #468)</span></td><td>Kör motorn och alla skuggregler tillsammans mot vintern 2024/25, långt från appar och förare. Rösten prövas längs de 20 skuggrutterna och längs hela väglagsnätet.</td><td>Det enda prov som ser helheten: vad varje del ger ensam och ovanpå de andra. Vintersvar före vintern, och säsongens kalibrering på en vinter som redan varit.</td></tr>
-          <tr class="mats"><td><span class="lagerkod">M</span> Mätapparaten<span class="lage mats">Byggd, samlar facit</span></td><td>Tystnadsfelet, facit ur väglagskameror — vid varje frysrisk i hela landet och vid kalla stationer där appen teg — förarnas svar och missar, och vakter som ser att kedjan lever.</td><td>Systemet vet hur ofta det har rätt, och när det tiger fel.</td></tr>
+          <tr class="mats"><td><span class="lagerkod">L2</span> Olja på vägen<span class="lage mats">I skugga sedan 1/10 · ingen oljerad än, inga trösklar</span></td><td>Loggar var rösten skulle ha talat om Trafikverkets rapporter om olja och diesel på vägbanan.</td><td>Halka som Trafikverket själv rapporterar men som rösten i dag tiger om. Text och prioritet avgörs efter skuggan.</td></tr>
+          <tr class="mats"><td><span class="lagerkod">L4</span> Segmentprognosen<span class="lage mats">I skugga sedan 23/9 · vägpunktsgrinden föll 28/9 och på vintern 2024/25 (#467) · spridningsgrinden 2,25 °C sedan 7/10</span></td><td>Skattar yttemperaturen var andra kilometer ur närliggande stationer, avståndsviktat och utan höjd: höjdkorrigeringen gjorde det sämre (#481). Tiger där ankarna skiljer <span class="mono">2,25 °C</span> eller mer, eller bara ett ankare bidrar (spridningsgrinden, #477). Varken vägens egenskaper (#479) eller ett väderrutnät (#481) har gjort skattningen bättre än grannarna själva.</td><td>Vägen mellan stationerna syns på kartan, och en varning som vilar på en mätning kan stärkas eller förlängas.</td></tr>
+          <tr class="mats"><td><span class="lagerkod">L5</span> Allvar som försprång<span class="lage mats">I skugga sedan 25/9 · väntar på nivå 2-fall</span></td><td>Ger en allvarligare fara längre förvarning: <span class="mono">45–90 s</span> i stället för <span class="mono">30 s</span>, upp till <span class="mono">3 000 m</span>. Reglagets tak gäller bara grundvarningen.</td><td>Samma ord, tidigare, när väglaget är mycket besvärligt eller ytan under noll med färskt regn.</td></tr>
+          <tr class="papper"><td><span class="lagerkod">L3–L5</span> Förstärkarna<span class="lage papper">A-grindarna byggda · väntar på frost och SMHI:s vintervarningar</span></td><td>Vind och sikt, SMHI:s varningar och frysklassningen.</td><td>De förlänger eller stärker en varning, men utlöser aldrig en egen.</td></tr>
+          <tr class="mats"><td><span class="lagerkod">B</span> Bevisbäraren<span class="lage mats">Byggd 24/9 · radarn med sedan 4/10 (#459) · motorn läser den inte än</span></td><td>Varje punkt bär vad som talade och hur starkt: väta, regnmängd, temperatur.</td><td>Varje varning går att förklara, på kartan och i efterhand.</td></tr>
+          <tr class="mats"><td><span class="lagerkod">K</span> Kuvösen<span class="lage mats">Klockan byggd 1/10 · vintern och SMHI inlästa 2/10 · riktningsprovet läst och kalibreringen gjord 6/10 (#467, #468) · läsningarna 6–7/10 gav ingen ny kandidat (#469–#471, #476, #479–#481) · tjockare facit begärt</span></td><td>Kör motorn och de skuggregler vintern har data för tillsammans mot vintern 2024/25, långt från appar och förare. Rösten prövas längs de 20 skuggrutterna och längs hela väglagsnätet.</td><td>Det enda prov som ser helheten: vad varje del ger ensam och ovanpå de andra. Vintersvar före vintern, och säsongens kalibrering på en vinter som redan varit.</td></tr>
+          <tr class="mats"><td><span class="lagerkod">M</span> Mätapparaten<span class="lage mats">Byggd, samlar facit · ytstatus ur stationerna sedan 6/10 (#465)</span></td><td>Tystnadsfelet, facit ur väglagskameror — vid varje frysrisk i hela landet och vid kalla stationer där appen teg — förarnas svar och missar, och vakter som ser att kedjan lever.</td><td>Systemet vet hur ofta det har rätt, och när det tiger fel.</td></tr>
         </tbody>
       </table>
     </div>
@@ -456,20 +456,12 @@
       <li><span aria-hidden="true">○</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">saknas · SMHI når appen men inte motorn (INTEGRATIONSKARTAN.md:159)</span></li>
     </ul>
   </details>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-prognoslagret">Prognoslagret</a> <span style="color: var(--dampad, #4A5763)">väntar, 66 % · Bengts öppna val b, c, d, e och h; läsningen tisdag 24/11 (DECISIONS #435); (g) väntar på kuvösen (#437).</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-prognoslagret">Prognoslagret</a> <span style="color: var(--dampad, #4A5763)">väntar, 44 % · Bengts öppna val b, c, d, e och h; läsningen tisdag 24/11 (DECISIONS #435); (g) mätt i kuvösen 6/10 (#467).</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Tröskeldokument</b> <span style="color: var(--dampad, #4A5763)">klart · TROSKLAR-SKUGGAN.md:3 fastställt 1–2/9; vägpunkten rad 109–122 (DECISIONS #324, #328)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Data i arkivet</b> <span style="color: var(--dampad, #4A5763)">klart · shadow_log.prognos (sql/032_prognos.sql:7), ankare via vagpunkt_ankare()</span></li>
       <li><span aria-hidden="true">○</span> <b>Publicerat i lägesfilen</b> <span style="color: var(--dampad, #4A5763)">saknas · Medvetet opublicerad fram till domen (BEDOMNING-2026-09-15.md:568)</span></li>
-      <li><span aria-hidden="true">✓</span> <b>Mätt i skuggan</b> <span style="color: var(--dampad, #4A5763)">klart · Prognosen loggas sedan 23/9; premissmätningen varje måndag i hojd-prov.yml:33–43, driftprov 36968196427 (DECISIONS #435)</span></li>
-      <li><span aria-hidden="true">✓</span> <b>Spridningsgrinden i skuggan (kort #299, förslag 1)</b> <span style="color: var(--dampad, #4A5763)">klart · Bengts ja och Axels signatur 7/10 (DECISIONS #474); deploy 37650576469 (16:15Z, 3bc0050); första varvet efter, 16:32Z: 193 täckta provpunkter med spridningen ifylld (0,5–1 °C: 6 · 1–2: 72 · 2–4: 115), grind S-B 37653085290; holdout-raderna syns först när en mätning ligger under +5 °C</span></li>
-      <li><span aria-hidden="true">✓</span> <b>Domen med grinden, tystnaden som miss (väg c)</b> <span style="color: var(--dampad, #4A5763)">klart · Bengts val och Axels signatur 7/10 (DECISIONS #475, #478); X = 2,25 °C (#477); publish/grind-s-b.ts med självtest och motprov; i drift visar grind S-B 37655806370 X = 2,25 i rubriken</span></li>
-      <li><span aria-hidden="true">○</span> <b>Vinterläsningen av spridningsgrinden (#478)</b> <span style="color: var(--dampad, #4A5763)">saknas · Beställd 7/10; ingen vinter än (noll holdout-rader under +5 °C, C1 0 av 20, C2 0 av 30) — plan i KALENDERN</span></li>
-      <li><span aria-hidden="true">✓</span> <b>Korsade läsningen: X-kurvan och natten (#476)</b> <span style="color: var(--dampad, #4A5763)">klart · kuvos 37651865384 på 465b1a7, förregistrerad i DECISIONS #476; utfallet: 2,25 °C 61 % täckning och 2,8 % grova fel, natten köper 0,2–0,5 pe över vintern (0,6–1,5 i mars)</span></li>
-      <li><span aria-hidden="true">✓</span> <b>X fastställt och natten avstådd (#477)</b> <span style="color: var(--dampad, #4A5763)">klart · Bengt 7/10 ur #476:s utfall; TROSKLAR-SKUGGAN §3 och publish/grind-s-b.ts SPRIDNING_X = 2.25, självtestet vaktar bandgränsen och att huvudflödet skickar X</span></li>
-      <li><span aria-hidden="true">✓</span> <b>C8 med vägdata (#479)</b> <span style="color: var(--dampad, #4A5763)">klart · kuvos 37659713953 på 49484f5, förregistrerad i DECISIONS #479: vägdatan förklarar 4 % av särarten mot RÅ, grova fel 7,5 → 7,5 % — ingen kandidat</span></li>
-      <li><span aria-hidden="true">✓</span> <b>C8 mot vädret, MET Nordic (#480)</b> <span style="color: var(--dampad, #4A5763)">klart · kuvos 37663768575 på 0d496e5, förregistrerad i DECISIONS #480: vägdatan förklarar 30 % av särarten mot vädermodellen, ÅDT-klasserna −0,62 / +1,04 °C; vädermodellen 21,8 % grova fel — ingen kandidat</span></li>
-      <li><span aria-hidden="true">✓</span> <b>Rutnätsmodellen RN och RN+R (#481)</b> <span style="color: var(--dampad, #4A5763)">klart · kuvos 37669854795 på 75b9b27, förregistrerad 6/10 och 7/10 (DECISIONS #481): RN och RN+R 9,3 % grova fel mot RÅ 7,4 %, bortom 20 km 18 mot 13,6 % — ingen kandidat</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Mätt i skuggan</b> <span style="color: var(--dampad, #4A5763)">klart · Prognosen loggas sedan 23/9; premissmätningen varje måndag i hojd-prov.yml:33–43, driftprov 36968196427 (DECISIONS #435); flaggmarginalen mätt i kuvösen 6/10 (#467); kuvösläsningarna 6–7/10 gav ingen ny kandidat: L1–L8 (#471), korsade läsningen (#476), C8 mot grannarna och mot vädret (#479, #480), rutnätsmodellen (#481)</span></li>
       <li><span aria-hidden="true">◐</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">pågår · Vägpunktsgrinden föll 28/9, 6,9 % mot 5 % (#399), bekräftat 30/9 (#405–#408); 24/11 och mars återstår</span></li>
       <li><span aria-hidden="true">○</span> <b>Villkoret i motorn</b> <span style="color: var(--dampad, #4A5763)">saknas · engine/src/segment.ts räknar prognosen men telefonen kör den inte; ingen F4-koppling</span></li>
       <li><span aria-hidden="true">○</span> <b>Testfall i tre språk</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
@@ -542,10 +534,11 @@
         <div class="panel" id="lager-4" role="region" aria-label="L4 Räckvidd" hidden>
           <div class="rader">
             <div><h4>Delar</h4><ul>
-              <li>Segmentprognosen: yttemperaturen var andra kilometer ur närliggande stationer <span class="mono">#38b</span>.</li>
-              <li>Höjden: uppmätt <span class="mono">0,71 °C</span> per 100 m mellan stationspar <span class="mono">#96</span>.</li>
+              <li>Segmentprognosen: yttemperaturen var andra kilometer ur närliggande stationer <span class="mono">#38b</span>; den tiger där ankarna skiljer 2,25 °C eller mer (spridningsgrinden, #477).</li>
+              <li>Höjden: prövad som korrektion <span class="mono">#96</span>, och den har inte gjort skattningen bättre (#467, #481).</li>
               <li>SMHI:s molnmängd, och SMHI som reserv om Trafikverket tystnar <span class="mono">#95</span>.</li>
-              <li>Kallplatserna: broar och andra platser som är kallare än stationen visar <span class="mono">#91</span>.</li>
+              <li>Kallplatserna: broar och andra platser som är kallare än stationen visar <span class="mono">#91</span>, vilande till våren 2027; varken grova kovariater eller vägdata har förklarat stationernas särart mot grannarna (#471, #479).</li>
+              <li>Vägdatalagret: NVDB:s vägegenskaper för stationer, segment och väglagspunkter <span class="mono">#301</span>; de förklarar 30 % av särarten mot en vädermodell och hör hemma i en vädergrundad modell (#480).</li>
             </ul></div>
             <div><h4>Vad det ger</h4><p>Vägen mellan stationerna syns. En varning som vilar på en mätning kan förlängas dit mätningen bär, men prognosen
               talar aldrig ensam.</p></div>
@@ -602,7 +595,7 @@
   </section>
 
   <p class="fot">Byggd ur repot Axelstar/Halkvakt: integrationskartan, bedömningen och tröskeldokumenten för varje del. Beskrivningen utgår
-    från att varje del klarar sina prov i skuggan; vilka som gör det avgörs vid domarna i januari och mars 2027. Läst mot läget 1/10 2026 (DECISIONS #415): L4-raden, segmentprognosen och vattenplaningen uppdaterade, resten står. Samma kväll (#419, #421, #422): försprångets tak, mätapparaten, integriteten och oljan i skuggan. Kuvösen tillagd 1/10 (#424, #425); den har en egen sida, Halkvaktens kuvös. L4-läget uppdaterat 2/10 (#435–#437); kuvösens data mottagen samma dag (#438).</p>
+    från att varje del klarar sina prov i skuggan; vilka som gör det avgörs vid domarna i januari och mars 2027. Läst mot läget 1/10 2026 (DECISIONS #415): L4-raden, segmentprognosen och vattenplaningen uppdaterade, resten står. Samma kväll (#419, #421, #422): försprångets tak, mätapparaten, integriteten och oljan i skuggan. Kuvösen tillagd 1/10 (#424, #425); den har en egen sida, Halkvaktens kuvös. L4-läget uppdaterat 2/10 (#435–#437); kuvösens data mottagen samma dag (#438). Läst mot läget 7/10: kuvösens utfall 6/10 (#467–#471), spridningsgrinden och prognoslagrets läsningar 7/10 (#474–#481), vägdatalagret (#472, #473); segmentprognosens rader rättade, höjden räknas inte in.</p>
   <script>
     const knappar = document.querySelectorAll(".flode button[aria-controls]");
     knappar.forEach((knapp) => {
