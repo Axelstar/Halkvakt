@@ -1,0 +1,27 @@
+# Vägdatalagrets hämtare (kort #301 steg 2, DECISIONS #473): skriver data/vagdata/*.json ur Trafikverkets öppna API vid alla platser
+# och laddar upp dem som artefakt. Flödet committar INGET — filerna läses och committas i en PR. Knapp, inte cron: en gång per säsong.
+name: vagdata-hamta
+on:
+  workflow_dispatch:
+    inputs:
+      stickprov:
+        description: "true = var 40:e plats (prov av hämtaren). Tomt = alla platser (~3 300 förfrågningar, ~30 min)."
+        default: ""
+jobs:
+  vagdata-hamta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - shell: bash
+        env: { TRAFIKVERKET_API_KEY: "${{ secrets.TRAFIKVERKET_API_KEY }}", STICKPROV: "${{ inputs.stickprov }}" }
+        run: |
+          curl -sSf -o static.json https://axelstar.github.io/halkvakt-karta/data/app/v1/static.json
+          curl -sSf -o vaglag.geojson https://axelstar.github.io/halkvakt-karta/data/vaglag.geojson
+          node --experimental-strip-types scripts/vagdata-hamta.ts --sjalvtest
+          { echo '```'; node --experimental-strip-types scripts/vagdata-hamta.ts --ut vagdata-ut $([ "$STICKPROV" = "true" ] && echo --stickprov); echo '```'; } 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with: { name: vagdata, path: vagdata-ut/*.json, retention-days: 90 }
