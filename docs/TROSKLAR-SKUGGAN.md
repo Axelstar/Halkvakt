@@ -127,8 +127,10 @@ när ankarnas spridning, störst minus minst av de bidragande ankarnas yttempera
 grinden tar bort punkter och sänker inget krav. **X fastställs här genom en DECISIONS-post före vinterläsningen** — inget tal är
 valt 7/10. Skuggmotorn loggar spridningen rå per provpunkt och holdout-rad (sjunde fältet); statusen i loggen bär inte grinden.
 Grind S-B läser täckningen och holdout-radernas grova fel per spridningsband och för X = 1, 2 och 4 °C, under samma blindning
-som B-måtten. **B1–B3 och C1–C3 räknas utan grinden:** B2 dömer bara täckta segment och har inget täckningskrav, så grinden i
-B-måtten kunde bli en lättnad; ska domen räknas med grinden krävs ett täckningskrav i samma post. Underlaget (RÅ, stationerna,
+som B-måtten. **Domen räknas med grinden, och tystnaden är en miss** (DECISIONS #475, väg c — Bengts val 7/10; **Axels signatur
+väntar**): B1, B3 och C2 räknas på det grinden släpper fram; B2:s täckning är oförändrad (status ≥ 1 utan grinden), så halka där
+grinden tystade prognosen är en MISS. C1 och C3 som förut. Bara varv med loggad spridning räknas, och utan fastställt X fälls
+ingen dom. Underlaget (RÅ, stationerna,
 vintern 2024/25): spridning 0,5–2 °C på 49 % av punkterna med 2,5 % grova fel, 2–4 °C på 35 % med 7,8 %, över 4 °C på 11 % med 27 %.
 
 ### Grind B — skuggdriften (hela vintern, dom i mars)
@@ -141,6 +143,9 @@ vintern 2024/25): spridning 0,5–2 °C på 49 % av punkterna med 2,5 % grova fe
 
 B3 är existensvillkoret: en skugga som bara talar där punktmotorn redan talar
 adderar risk utan värde.
+
+**Med spridningsgrinden** (vägpunkten i §3, DECISIONS #475): B1–B3 räknas på det grinden släpper fram, och tystnad på ett
+täckt segment är en miss i B2. Utan fastställt X fälls ingen dom.
 
 ### Grind C — domens giltighet (utan C fälls ingen dom alls)
 

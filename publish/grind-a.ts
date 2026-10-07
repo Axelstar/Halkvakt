@@ -24,7 +24,8 @@ const BANDS: [string, number, number][] = [
 
 export type Station = { lon: number; lat: number; series: Map<number, number> };
 // t = hinken (BUCKET_S-steg), spridning = ankarnas oenighet: störst minus minst offsetkorrigerat ankarvärde (°C), 0 med ett ankare.
-export type Eval = { measured: number; pred: number; ankKm: number; station: string; t: number; spridning: number };
+// ankare = antal bidragande ankare (DECISIONS #476: spridningen 0 med ett ankare skiljs från två eniga).
+export type Eval = { measured: number; pred: number; ankKm: number; station: string; t: number; spridning: number; ankare: number };
 // Varianter för LÄSNINGAR (kort #298, DECISIONS #471): regim = klass per (station, hink) som offseten lärs inom; utanOffset = rå
 // avståndsviktning på samma punkter. Utan variant är modellen exakt grind A:s — självtestet vaktar det.
 export type Variant = { regim?: (station: string, t: number) => string; utanOffset?: boolean };
@@ -71,7 +72,7 @@ export function evaluate(stations: Map<string, Station>, variant: Variant = {}):
     const st = stations.get(s)!;
     for (const [t, measured] of st.series) {
       if (measured > 5) continue; // winter hours only (doc §3, grind A)
-      let wsum = 0, psum = 0, ank = Infinity, hi = -Infinity, lo = Infinity;
+      let wsum = 0, psum = 0, ank = Infinity, hi = -Infinity, lo = Infinity, antal = 0;
       const kl = klass(s, t);
       for (const { id: n, km } of neighbours.get(s)!) {
         const nv = stations.get(n)!.series.get(t);
@@ -80,12 +81,12 @@ export function evaluate(stations: Map<string, Station>, variant: Variant = {}):
         if (!p || p.n - 1 < MIN_SHARED) continue;        // too little shared history
         const offsetExcl = variant.utanOffset ? 0 : (p.sum - (measured - nv)) / (p.n - 1); // exact leave-one-out
         const w = 1 / Math.max(km, 1), ankare = nv + offsetExcl;
-        wsum += w; psum += w * ankare;
+        wsum += w; psum += w * ankare; antal++;
         if (km < ank) ank = km;
         if (ankare > hi) hi = ankare;
         if (ankare < lo) lo = ankare;
       }
-      if (wsum > 0) evals.push({ measured, pred: psum / wsum, ankKm: ank, station: s, t, spridning: hi - lo });
+      if (wsum > 0) evals.push({ measured, pred: psum / wsum, ankKm: ank, station: s, t, spridning: hi - lo, ankare: antal });
     }
   }
   return evals;

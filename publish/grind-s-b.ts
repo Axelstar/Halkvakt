@@ -38,9 +38,12 @@
 //  · SPRIDNINGSGRINDEN (TROSKLAR-SKUGGAN §3, DECISIONS #474, kort #299): skuggmotorn loggar ankarnas spridning rå som sjunde
 //    fält i `p` och `h`; statusen bär inte grinden. Här räknas den: täckta provpunkter och holdout-rader per spridningsband
 //    (kuvösens L1-band, DECISIONS #471), ett ankare för sig, rader utan fältet som "ej loggad". Underlagsläget skriver antalen;
-//    domläget täckningen och holdout-radernas grova fel (C3:s mått) per band och för grinden vid X = 1, 2 och 4 °C. B1–B3
-//    räknas som förut, utan grinden: B2 dömer bara täckta segment och har inget täckningskrav, så en grind i B-måtten kunde
-//    krympa populationen och bli en lättnad (§5).
+//    domläget täckningen och holdout-radernas grova fel (C3:s mått) per band och för grinden vid X = 1, 2 och 4 °C.
+//  · DOMEN MED GRINDEN, TYSTNADEN SOM MISS (väg c, DECISIONS #475): med X satt räknas B1 och B3 bara på varningar grinden
+//    släpper fram (provpunkt och holdout-rad med minst två ankare och spridning under X). B2:s täckning är OFÖRÄNDRAD (status
+//    ≥ 1 utan grinden), så halka där grinden tystade prognosen är en MISS — grinden kan bara vinna B1 genom att betala i B2.
+//    C1 räknas utan grinden, C2 på de holdout-episoder grinden släpper fram, C3 som förut. Bara varv där spridningen är
+//    loggad räknas; utan fastställt X fälls ingen dom. Utan X (null) räknar funktionerna som före #475.
 //
 // Run: DATABASE_URL=... node --experimental-strip-types publish/grind-s-b.ts [dagar — utan: sedan 23/9] [--underlag|--dom] [--grindA2 3.5]
 // Självtest utan DB: publish/grind-s-b.ts --sjalvtest
@@ -57,6 +60,9 @@ const EPISOD_GAP_H = 2;           // flaggade varv närmare än så på samma pu
 const PERIOD_GAP_D = 2;           // halkperioder
 const PROGNOS_START = "2026-09-23";  // prognosloggens första dygn (DECISIONS #325) — fönstret (#352)
 const GRIND_A2_DOMD = 3.5;        // grind A:s dömda A2 i procent (DECISIONS #321) — C3:s backtestsida (#352)
+// Spridningsgrindens X (TROSKLAR-SKUGGAN §3, DECISIONS #474/#475). INTE FASTSTÄLLT — null tills en DECISIONS-post sätter det i
+// dokumentet. Domen fälls inte utan X (väg c). När det sätts: samma tal här och i dokumentet, och in i kontraktsgrinden.
+const SPRIDNING_X: number | null = null;
 
 export type Punkt = [number, number | null, number | null, number, number, number, (number | null)?];
 export type HoldoutRad = [number, string, number, number | null, number | null, number, (number | null)?];
@@ -66,11 +72,18 @@ export type Episod = { rutt: string; km: number; start: Date; slut: Date; varv: 
 
 const H = 3600_000;
 
+/** Väg c (#475): talar prognosen här med grinden vid X? Utan X talar allt som förut. Rader utan fältet talar aldrig med X —
+ *  därför filtrerar rakna() bort varv före spridningen innan grinden används. */
+export const talar = (n: number, spr: number | null | undefined, X: number | null) =>
+  X === null || (n >= 2 && typeof spr === "number" && spr < X);
+/** Ett varv där skuggmotorn loggade spridningen (sjunde fältet i varje provpunkt). */
+export const spridningLoggad = (v: Varv) => v.p.length > 0 && v.p.every((q) => q.length >= 7);
+
 /** Episoder: flaggade provpunkter per (rutt, km), varv som ligger ≤ EPISOD_GAP_H isär hör ihop. */
-export function episoder(varv: Varv[]): Episod[] {
+export function episoder(varv: Varv[], X: number | null = null): Episod[] {
   const per = new Map<string, Varv[]>();
   for (const v of [...varv].sort((a, b) => +a.t - +b.t))
-    for (const q of v.p) if (q[5] === 1 && q[4] >= 1) {
+    for (const q of v.p) if (q[5] === 1 && q[4] >= 1 && talar(q[3], q[6], X)) {
       const k = `${v.rutt}|${q[0]}`;
       (per.get(k) ?? per.set(k, []).get(k)!).push(v);
     }
@@ -114,10 +127,10 @@ export function stationsdom(ep: Episod, kameror: Lage[] = []): Stationsdom {
 
 /** B1 och C2 (DECISIONS #352): HOLDOUT-EPISODER — stationens leave-one-out-skattning ≤ frysgränsen i varv ≤ EPISOD_GAP_H isär. */
 export type HoldoutEpisod = { rutt: string; station: string; km: number; start: Date; slut: Date; matt: number[] };
-export function holdoutEpisoder(varv: Varv[]): HoldoutEpisod[] {
+export function holdoutEpisoder(varv: Varv[], X: number | null = null): HoldoutEpisod[] {
   const per = new Map<string, { t: Date; km: number; matt: number }[]>();
   for (const v of [...varv].sort((a, b) => +a.t - +b.t))
-    for (const h of v.h) if (h[3] !== null && h[3] <= FRYS_C) {
+    for (const h of v.h) if (h[3] !== null && h[3] <= FRYS_C && talar(h[5], h[6], X)) {
       const k = `${v.rutt}\u0001${h[1]}`;
       (per.get(k) ?? per.set(k, []).get(k)!).push({ t: v.t, km: h[0], matt: h[2] });
     }
@@ -155,7 +168,7 @@ export function mervarde(ep: Episod, rutter: Rutter): boolean {
 
 export type Handelsedom = { utfall: "TRÄFF" | "MISS" | "OBEDÖMBAR"; orsak: "UTSTRÅLNING" | "NEDERBÖRD" | null; rutt: string | null; km: number | null };
 /** B2: låg händelsen på ett täckt segment, och var någon provpunkt inom facitradien flaggad de två timmarna före? */
-export function handelsedom(e: Handelse, varv: Varv[], rutter: Rutter): Handelsedom {
+export function handelsedom(e: Handelse, varv: Varv[], rutter: Rutter, X: number | null = null): Handelsedom {
   let bast: { rutt: string; km: number; d: number } | null = null;
   for (const [rutt, line] of Object.entries(rutter)) {
     const n = narmastLangs(e, line);
@@ -168,7 +181,8 @@ export function handelsedom(e: Handelse, varv: Varv[], rutter: Rutter): Handelse
   const nara = (q: Punkt) => Math.abs(q[0] - bast!.km) <= FACIT_KM;
   const tackt = senaste.p.some((q) => nara(q) && q[4] >= 1);
   if (!tackt) return { utfall: "OBEDÖMBAR", orsak: null, rutt: bast.rutt, km: bast.km };
-  const flaggad = fore.some((v) => v.p.some((q) => nara(q) && q[5] === 1 && q[4] >= 1));
+  // Täckt ovan UTAN grinden; flaggad bara där grinden låter prognosen tala ⇒ tystnad på ett täckt segment är en MISS (#475).
+  const flaggad = fore.some((v) => v.p.some((q) => nara(q) && q[5] === 1 && q[4] >= 1 && talar(q[3], q[6], X)));
   if (flaggad) return { utfall: "TRÄFF", orsak: null, rutt: bast.rutt, km: bast.km };
   // En okänd orsak (null: ingen station inom NEDERBORD_KM) är INGEN ursäkt — den bokförs på utstrålningen, den stränga läsningen
   // av §2 (kort #254 g). Antalet okända skrivs ut för sig.
@@ -220,26 +234,28 @@ export function grindVid(spr: Map<string, Bandtal>, X: number): Bandtal {
   return ut;
 }
 
-export function rakna(varv: Varv[], handelser: Handelse[], rutter: Rutter) {
-  const eps = episoder(varv);
+export function rakna(alla: Varv[], handelser: Handelse[], rutter: Rutter, X: number | null = null) {
+  const varv = X === null ? alla : alla.filter(spridningLoggad);   // #475: grinden kan bara läsas där spridningen loggats
+  const eps = episoder(varv, X);
   const kameror = handelser.filter((e) => e.kalla === "kamera").map((e) => lage(e, rutter)).filter((x): x is Lage => x !== null);
   const domar = eps.map((ep) => ({ ep, dom: stationsdom(ep, kameror) }));
   const bekraftade = domar.filter((d) => d.dom === "BEKRÄFTAD"), falska = domar.filter((d) => d.dom === "FALSK"), omatbara = domar.filter((d) => d.dom === "OMÄTBAR");
   const merv = bekraftade.filter((d) => mervarde(d.ep, rutter));
-  const hd = handelser.map((e) => ({ e, d: handelsedom(e, varv, rutter) }));
+  const hd = handelser.map((e) => ({ e, d: handelsedom(e, varv, rutter, X) }));
   const traffar = hd.filter((x) => x.d.utfall === "TRÄFF"), missar = hd.filter((x) => x.d.utfall === "MISS"), obed = hd.filter((x) => x.d.utfall === "OBEDÖMBAR");
   const missUtstr = missar.filter((x) => x.d.orsak === "UTSTRÅLNING"), missNed = missar.filter((x) => x.d.orsak === "NEDERBÖRD");
   const bedomda = traffar.length + missUtstr.length;   // nederbördsmissar står bredvid, aldrig i B2
   const perioder = halkperioder([...traffar, ...missar].map((x) => x.e.t));
-  const heps = holdoutEpisoder(varv);
+  const heps = holdoutEpisoder(varv, X);
   const hdomar = heps.map((ep) => ({ ep, dom: holdoutDom(ep, kameror) }));
   const b1Bekr = hdomar.filter((d) => d.dom === "BEKRÄFTAD"), b1Falska = hdomar.filter((d) => d.dom === "FALSK"), b1Omat = hdomar.filter((d) => d.dom === "OMÄTBAR");
   return { eps, bekraftade, falska, omatbara, merv, traffar, missar, missUtstr, missNed, obed, bedomda, perioder, grova: holdoutGrova(varv),
-           heps, b1Bekr, b1Falska, b1Omat, spr: spridningen(varv) };
+           heps, b1Bekr, b1Falska, b1Omat, spr: spridningen(alla), utanforGrind: alla.length - varv.length };
 }
 
-export function rapport(varv: Varv[], handelser: Handelse[], rutter: Rutter, lage: "underlag" | "dom", grindA2: number | null, label: string, selftest = false) {
-  const r = rakna(varv, handelser, rutter);
+export function rapport(varv: Varv[], handelser: Handelse[], rutter: Rutter, lage: "underlag" | "dom", grindA2: number | null, label: string, selftest = false,
+                        X: number | null = null) {
+  const r = rakna(varv, handelser, rutter, X);
   const kallor = new Map<string, number>();
   for (const e of handelser) kallor.set(e.kalla, (kallor.get(e.kalla) ?? 0) + 1);
   console.log(`Grind S-B/S-C — segmentprognosens skuggdrift (${label}) · läge: ${lage.toUpperCase()}`);
@@ -248,12 +264,19 @@ export function rapport(varv: Varv[], handelser: Handelse[], rutter: Rutter, lag
   console.log(`Episoder på rutten (B3) ${r.eps.length}: med station eller kamera ${r.bekraftade.length + r.falska.length}, OMÄTBARA ${r.omatbara.length} (ingen holdout inom ${FACIT_KM} km)`);
   console.log(`Facithändelser ${handelser.length} — ${[...kallor].map(([k, n]) => `${k} ${n}`).join(" · ") || "inga"}; på täckta segment ${r.traffar.length + r.missar.length}, OBEDÖMBARA ${r.obed.length}`);
   console.log(`Halkperioder ${r.perioder}`);
+  console.log(X === null ? `Spridningsgrinden i domen (#475): X inte fastställt — B och C räknas utan grinden, ingen dom fälls`
+    : `Spridningsgrinden i domen (#475): X = ${X} °C, tystnad på täckt segment = miss; ${r.utanforGrind} varv före spridningen utanför`);
   console.log(`Spridningen (DECISIONS #474) — täckta provpunkter / holdout-rader per band: ${[...r.spr].map(([b, x]) => `${b} ${x.punkter}/${x.rader}`).join(" · ")}`);
   const c1 = r.traffar.length + r.missar.length >= C1_MIN_HANDELSER && r.perioder >= C1_MIN_PERIODER;
   const c2 = r.b1Bekr.length + r.b1Falska.length >= C2_MIN_EPISODER;
   console.log(`C1 ${r.traffar.length + r.missar.length}/${C1_MIN_HANDELSER} händelser, ${r.perioder}/${C1_MIN_PERIODER} perioder → ${c1 ? "uppfyllt" : "inte än"} · C2 ${r.b1Bekr.length + r.b1Falska.length}/${C2_MIN_EPISODER} bedömbara holdout-episoder → ${c2 ? "uppfyllt" : "inte än"}`);
   if (lage === "underlag") {
     console.log(`\nUNDERLAG, INGA ANDELAR: blindningen gäller till domens tidpunkt (mars 2027). Kör med --dom på Bengts order.`);
+    return null;
+  }
+  // Väg c (#475): domen fälls med grinden. Utan fastställt X ingen dom — självtestet räknar ändå.
+  if (X === null && !selftest) {
+    console.log(`\n⏳ INGEN DOM — spridningsgrindens X är inte fastställt i TROSKLAR-SKUGGAN (DECISIONS #475). Utfallet är fortsatt skugga.`);
     return null;
   }
   // Andelarna först när C1 och C2 är uppfyllda (DECISIONS #352) — självtestet räknar dem ändå, utan att det är en läsning.
@@ -350,8 +373,9 @@ if (process.argv.includes("--sjalvtest")) {
   const domskrivet: string[] = []; console.log = (s?: unknown) => { domskrivet.push(String(s)); };
   const domut = rapport(varv, handelser, rutter, "dom", 3.5, "SJÄLVTEST");
   console.log = orig;
-  k("dom-läget under C nämner inga procent", domskrivet.some((s) => /\d %|\d+\.\d %/.test(s)), false);
-  k("dom-läget under C fäller ingen dom", domut, null);
+  k("dom-läget utan X nämner inga procent", domskrivet.some((s) => /\d %|\d+\.\d %/.test(s)), false);
+  k("dom-läget utan X fäller ingen dom (#475)", domut, null);
+  k("X-spärren nådd", domskrivet.some((s) => s.includes("X är inte fastställt")), true);
   // Spridningen (DECISIONS #474): band per täckt punkt och skattad holdout-rad; sexfältsrader är "ej loggad", aldrig ett band.
   const sv: Varv[] = [{ t: tid(0), rutt: "Provrutt", alerts: [],
     p: [[0, -1, 1, 1, 2, 1, 0], [2, -1, 3, 3, 1, 1, 0.7], [4, 0, 5, 4, 1, 1, 4.5], [6, null, null, 0, 0, 0, null], [8, 1, 5, 5, 1, 0]],
@@ -364,10 +388,40 @@ if (process.argv.includes("--sjalvtest")) {
   k("spridning: 2,0 hamnar i 2–4 (grinden vid 2 tiger där)", `${g("2–4").rader}/${g("2–4").grova}`, "1/1");
   k("spridning: mätt +7 °C utanför C3:s population", [...sp.values()].reduce((a, x) => a + x.rader, 0), 4);
   k("grinden vid 2: 0–0,5 + 0,5–1 + 1–2", JSON.stringify(grindVid(sp, 2)), JSON.stringify({ punkter: 1, rader: 2, grova: 1 }));
+  // Väg c (#475): grinden tystar en flaggad punkt med spridning 3 ⇒ halkan där blir MISS; holdout-raden med spridning 3 och
+  // varm station försvinner ur B1; varvet utan spridning räknas inte med X. Utan X: allt som före #475.
+  const ny = (km: number, frys: 0 | 1, spr: number): Punkt => [km, frys ? -1.5 : 3, 5, 3, 1, frys, spr];
+  const cv: Varv[] = [
+    { t: tid(-14400), rutt: "Provrutt", p: p([5]), h: [], alerts: [] },                                  // tio dygn före: sex fält
+    { t: tid(0), rutt: "Provrutt", alerts: [],
+      p: [0, 5, 10, 15, 20, 25, 30].map((km) => ny(km, km === 10 || km === 20 ? 1 : 0, km === 10 ? 3 : 1)),
+      h: [[10.5, "het", 4, 0.5, 6, 3, 3], [20.5, "kall2", -1, -0.5, 6, 3, 1]] },
+  ];
+  const ch: Handelse[] = [
+    { id: "G1", t: tid(45), lon: lonVid(10.2), lat: 56.0, kalla: "smhi", nederbord: false },   // vid den tystade punkten
+    { id: "G2", t: tid(45), lon: lonVid(20.3), lat: 56.0, kalla: "smhi", nederbord: false },   // vid den talande punkten
+  ];
+  const utan = rakna(cv, ch, rutter), med = rakna(cv, ch, rutter, 2);
+  k("väg c utan X: episoder (km 5 gammalt varv, km 10, km 20)", utan.eps.length, 3);
+  k("väg c utan X: falsk holdout (het) och bekräftad (kall2)", `${utan.b1Falska.length}/${utan.b1Bekr.length}`, "1/1");
+  k("väg c utan X: båda händelserna träffar", `${utan.traffar.length}/${utan.missUtstr.length}`, "2/0");
+  k("väg c X=2: bara km 20 talar", med.eps.length, 1);
+  k("väg c X=2: den varma holdouten tystad, B1 0 av 1", `${med.b1Falska.length}/${med.b1Bekr.length}`, "0/1");
+  k("väg c X=2: tystnaden vid km 10 är en MISS", `${med.traffar.length}/${med.missUtstr.length}`, "1/1");
+  k("väg c X=2: varvet utan spridning utanför", med.utanforGrind, 1);
+  k("talar: spridning lika med X tiger, strax under talar, ett ankare tiger, saknat fält tiger, utan X talar allt",
+    [talar(3, 2, 2), talar(3, 1.9, 2), talar(1, 0, 2), talar(3, undefined, 2), talar(1, 9, null)].join(), "false,true,false,false,true");
+  // Blindningen med X satt: C1/C2 inte uppfyllda ⇒ inga andelar, ingen dom (C-spärren, #352).
+  const cskrivet: string[] = []; console.log = (s?: unknown) => { cskrivet.push(String(s)); };
+  const cut = rapport(cv, ch, rutter, "dom", 3.5, "SJÄLVTEST", false, 2);
+  console.log = orig;
+  k("väg c: dom-läget under C med X nämner inga procent", cskrivet.some((s) => /\d %|\d+\.\d %/.test(s)), false);
+  k("väg c: dom-läget under C med X fäller ingen dom", cut, null);
+  k("väg c: C-spärren nådd (inte X-spärren)", cskrivet.some((s) => s.includes("grind C inte uppfylld")), true);
   // Ruttparsern mot skuggmotorns riktiga källa.
   const rutterSkarpt = skuggmotornsRutter();
   k("skuggmotorns rutter lästa (20)", Object.keys(rutterSkarpt).length, 20);
-  console.log("SJÄLVTEST OK: episoder, stationsdom, mervärde, händelsedom, orsaksklassning, spridningen, blindning, ruttparsern");
+  console.log("SJÄLVTEST OK: episoder, stationsdom, mervärde, händelsedom, orsaksklassning, spridningen, väg c, blindning, ruttparsern");
   process.exit(0);
 }
 
@@ -378,6 +432,7 @@ const DAYS = Number(process.argv.find((a) => /^\d+$/.test(a)) ?? Math.ceil((Date
 const LAGE: "underlag" | "dom" = process.argv.includes("--dom") ? "dom" : "underlag";
 const gaIdx = process.argv.indexOf("--grindA2");
 const GRIND_A2 = gaIdx > 0 ? Number(process.argv[gaIdx + 1]) : GRIND_A2_DOMD;
+const X = SPRIDNING_X;   // ur dokumentet, aldrig ur kommandoraden (#475)
 const pg = (await import("pg")).default;
 const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });
 const rutter = skuggmotornsRutter();
