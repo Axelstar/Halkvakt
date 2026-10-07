@@ -5,7 +5,7 @@
 // FRYS-2026-10-07.md), filens summa står i kuvos/fysik-leverans.json och kuvösknappen kontrollerar den. INGEN STATION används vid målet;
 // målets egna mätningar är aldrig indata. Här läses filen — inget räknas om.
 //   FYSIK    filens värde på hinken (på halvtimmen medlet av de två omgivande timmarna; utdata_fysik.py i arkivet).
-//   RÅ       kontrollen: grind A:s evaluate() med utanOffset. Den ska landa på kuvösens 7,4–7,5 % (DECISIONS #481) — gör den inte
+//   RÅ       kontrollen: grind A:s evaluate() med utanOffset. Den ska landa inom 7,4–7,6 % (förväntan i DECISIONS #485; kuvösen 7,4 %, #481) — gör den inte
 //            det skiljer populationen, och inget annat läses.
 //   OFFSET   taket (målets egen historia), oförändrat.
 // MÅTTEN: grind A:s A1/A2/A3 per band (bandet = RÅ:s närmaste bidragande granne på samma hink) och totalt, på de punkter där alla tre
