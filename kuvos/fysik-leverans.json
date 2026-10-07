@@ -1,0 +1,20 @@
+{
+ "_om": "FYSIK — Axels fysikspår som kandidat till vägpunktsgrinden (DECISIONS #485, kort #305): en skattning av ytan per station och halvtimme, vintern 2024/25 (1/11 2024 00:00 – 31/3 2025 23:00 UTC), räknad utanför repot ur ECMWF IFS (Open-Meteos arkiv) med 1-D värmekolumn och inlärd rättelse där varje station förutsägs med hela sin region utesluten (docs/FYSIKSPARET-SVAR-2026-10-07.md, frysningen docs/FYSIKSPARET-FRYS-2026-10-07.md). Ingen station används vid målet. Skriven 7/10 23:31 ur den frysta oof_A2.npy (sha256 9268c6c7…2a2f3f) av utdata_fysik.py; summorna räknade på filen 7/10. Kuvösknappen jämför mot dem; scripts/matningar/kuvos-fysik-2026-10-08.ts fäller en fil som inte stämmer.",
+ "release": "kuvos-fysik-2024-25",
+ "skriven": "2026-10-07T21:31:00Z",
+ "filer": [
+  {
+   "fil": "fysik-2024-25.csv.gz",
+   "bytes": 26709268,
+   "rader": 5464238,
+   "stationer": 754,
+   "sha256": "84d13f938d7bfb9cdc5560f712ac83fdbd10c91752cafb2af98a77a9f65ffd1c"
+  },
+  {
+   "fil": "fingeravtryck-2024-25.csv",
+   "bytes": 288939,
+   "sha256": "696002a8821e7a2cf280db9530d2b59dba58747df8428a318a9f2f2e2c9453dc",
+   "i_repot": "data/fysik/fingeravtryck-2024-25.csv"
+  }
+ ]
+}

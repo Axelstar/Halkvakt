@@ -8880,3 +8880,101 @@ och Actions-minuter), pg_cron (kan inte skriva text med omdöme).
 körningen 8/10. Kort #304 stängs efter sju morgnar i rad.
 
 **Stomdokument:** BED §4.2 och läget 7/10 — frågan om dokumentsynken avgjord
+
+## #485 (8/10 2026) Fysikspåret i kuvösen — Axels ECMWF-drivna fysikmodell förregistrerad som kandidat FYSIK: en fryst fil med hash, kuvösens egna regler, förväntningarna skrivna före knappen (kort #305)
+
+**Beslut.** Axel 7/10 kväll: *"lets set it all up as much as we can and then i take the decisions that we run it"*. Förregistreringen
+skrivs nu; knappen trycks på Bengts ord. Kandidaten heter **FYSIK** och prövas i kuvösen med grind A:s egen modell och vakter, bredvid
+RÅ och OFFSET, på hela vintern 2024/25. Inga trösklar rörs, inget i driften ändras, ingen kod ur fysikspåret går in i repot — bara
+dess UTDATA som fil, så som DECISIONS #480 och #481 redan skilde på modell och underlag.
+
+**Vad kandidaten är** (`docs/FYSIKSPARET-SVAR-2026-10-07.md`, Axels svar på kuvössessionens sex frågor 7/10). En skattning av ytans
+temperatur per station och halvtimme, räknad utanför repot i Axels fysiksession: ECMWF IFS ur Open-Meteos arkiv (timvis per
+stationsläge) → 1-D värmekolumn med energibalans vid ytan, 11 lager, 12 parametrar → inlärd rättelse (gradientboostning på uppmätt
+yta − fysik, 55+ särdrag ur väder, terräng och NVDB:s vägdata) där **varje station förutsägs med hela sin region utesluten ur
+träningen** (25 lägeskluster, 5 veck). Ingen station används vid målet; målets egna mätningar är aldrig indata. Grannarnas uppmätta
+fel (FYSIK+GRANNAR) och blandningen med RÅ (FYSIK+BLANDNING) är INTE med i den här förregistreringen — de kräver grannlagret i
+TypeScript och är ett eget beslut.
+
+**Vad som är fryst, med hash.** Pipelinen frystes 7/10 22:45 innan dess kuvösreplika kördes (`docs/FYSIKSPARET-FRYS-2026-10-07.md`):
+modellens utdata `oof_A2.npy` sha256 `9268c6c7…2a2f3f`, fysikens parametrar `65a431c4…515bc`, koden (`physics.py`, `common.py`,
+`layers.py`, `v4.py`, `expA.py`), replikan `kuvos_replica.py` `c640619d…ce262`. Filen till kuvösen, `fysik-2024-25.csv.gz`
+(5 464 238 rader, 754 stationer, 1/11 2024 00:00 – 31/3 2025 23:00 UTC; på halvtimmen medlet av de två omgivande timmarna), sha256
+`84d13f93…ffd1c`, 26 709 268 byte, står i `kuvos/fysik-leverans.json` och läggs i releasen `kuvos-fysik-2024-25` av Axel; knappen
+kontrollerar summan och mätningen fäller en fil som inte stämmer. `fysik_c` har spann i värdevakten (−60…+60 °C; läst −25,5…+17,4).
+
+**Genomförandet** (`scripts/matningar/kuvos-fysik-2026-10-08.ts`, självtest i ci.yml, filen hämtas i kuvos.yml när mätningens namn
+innehåller `kuvos-fysik`). Underlaget exakt som prognoslagret 6/10: grind A:s WHERE (#75, radvakten, karantänen, den långsamma vakten),
+senaste avläsning per halvtimmeshink, yta ≤ +5 °C. RÅ = `evaluate()` med `utanOffset` som kontroll, OFFSET som tak. FYSIK = filens
+värde på RÅ:s punkt; bandet = RÅ:s närmaste bidragande granne, så att banden är jämförbara. Måtten: A1/A2/A3 per band och totalt på de
+punkter där alla tre har ett värde, frysflaggan (#437) på samma punkter, norr/söder om 62°; dessutom FYSIK på ALLA hinkar ≤ +5 °C utan
+krav på ankare — kandidatens egentliga population, den behöver ingen granne.
+
+**Vad som är blint och vad som inte är det** (SVAR §4). Blint: ingen station vid målet; regionen gömd i rättelsen; replikan 7/10 körd
+av en separat agent med hashar före och efter, RÅ som kontroll (7,50 % mot kuvösens 7,4 %). Inte blint: fysikens tolv parametrar
+kalibrerades på hälften av stationerna; hyperparametrarna valdes på dev-vecken med bekräftelsevecken lästa en handfull gånger; och
+förväntningarna nedan skrevs efter att replikan lästs. **Därför är det här en kontroll av att filen och kuvösen räknar på samma
+population — inte ett bevis för modellen.** Ett tal som träffar förväntan frikänner inget; domen läses på vintern 2026/27 (#481, #424).
+
+**Förväntningar, skrivna före knappen** (replikan 7/10 i FRYS §UTFALL, med 736 stationer):
+
+| | RÅ (kontroll) | FYSIK på RÅ:s punkter | FYSIK alla hinkar |
+| :-- | --: | --: | --: |
+| A2 grova fel totalt | 7,4–7,6 % | 9,5–10,2 % | 9,7–10,4 % |
+| band 0–7 · 7–15 · 15–20 · > 20 km | 5,2 · 5,2 · 7,1 · 13,6 | 7,5–8,5 · 7,5–8,5 · 8–9,5 · 14,5–16,5 | — |
+| A1 (≥ −5 °C) | ~0,68 °C | 0,75–0,85 °C | — |
+| A3 frysklassfel | ~0,4 % | ≤ 0,5 % | — |
+| norr om 62° / söder | ~14,1 / 4,8 % | 16,5–18,5 / 6,5–7,5 % | — |
+| farliga fel, K2 = 1,0 | ~1,2 % | ≤ 1,6 % | — |
+| dom A1 · A2 · A3 | KLARAR · FALLER · KLARAR | KLARAR · FALLER · KLARAR | — |
+
+Landar RÅ utanför 7,4–7,6 % läses inget annat: då skiljer populationen (vakterna, MIN_SHARED, hinkarna), och det förstås först.
+FYSIK ensam väntas vara SÄMRE än RÅ i alla band — det är redan sett och är inte frågan; frågan är om kuvösen får samma tal som
+replikan på samma data, så att en kandidat utanför repot alls går att döma där. Ett FYSIK-tal mer än en procentenhet från spannet
+är ett fel i filen, i tidsupplösningen eller i populationen, och läses som det.
+
+**Alternativ som valdes bort.** (a) Porta modellen till TypeScript i repot — en vecka, och en port ändrar talen; filen är ärligare.
+(b) Vänta med allt till 2026/27 — då saknas beviset att kuvösen kan döma en extern kandidat, och det beviset ska finnas före vintern.
+(c) Förregistrera FYSIK+BLANDNING (5,97 % i replikan, 10,9 % bortom 20 km — den enda som slår RÅ där) samtidigt — kräver grannlagret i
+TypeScript; tas som eget beslut efter den här körningen.
+
+**Vad som INTE görs.** Inga trösklar, ingen drift, ingen kod ur fysikspåret i repot, inget utfall läst förrän Bengt sagt kör. Open-Meteo
+är icke-kommersiell: en driftsatt version körs på SMHI/MET, och den är en ny förregistrering med egen prognoshorisont (analysläge är
+det som mätts, inte +1…+6 h).
+
+**Följd.** Kort #305 på tavlan under Bengt; raden *Axels fingeravtryck per station* i bedömningen §4.2 är levererad
+(`data/fysik/fingeravtryck-2024-25.csv`, 754 stationer × 2 modeller × 2 perioder, SVAR §6) och väntar bara på Bengts C8-körning mot
+den; kuvösens §6 får raden 8/10. **Utfall** skrivs under den här posten när knappen körts.
+
+**Stomdokument:** KUV §6, BED §4.2
+
+## #486 (7/10 2026) Axels ord i Bengts ställe för kort #305: slå ihop PR #802, kör FYSIK på knappen och C8 mot fingeravtrycken — C8-läsningen förregistrerad före körningen
+
+**Beslut.** Axel 7/10 23:54, i projektchatten: *"I say that we run it"*, och på frågan om det är hans ord eller Bengts: *"Yes please built
+c8 before and then we do a run"*. Axel är produktägare med fullt beslutsmandat; hans ord står här i Bengts ställe för tre saker och bara
+dem: **(1)** slå ihop PR #802 (förregistreringen i DECISIONS #485, oförändrad), **(2)** kör knappen `kuvos` med
+`scripts/matningar/kuvos-fysik-2026-10-08.ts`, **(3)** kör C8 mot fingeravtrycksfilen (§4.2, Bengts begäran 7/10). Inga trösklar, ingen
+drift, inget av FYSIK+BLANDNING eller vintern 2026/27 — de två besluten står kvar i §4.2 för Bengt. Bengt ser detta i morgonrapporten.
+Releasen `kuvos-fysik-2024-25` skapades av Axel 7/10 23:49 på main (864ecb2); GitHubs sha256 för filen = `kuvos/fysik-leverans.json`.
+
+**C8 mot fingeravtrycken — vad det är.** Bengts C8 (#479), oförändrad: VÄG, REL och BAS importerade ur
+`scripts/matningar/kuvos-c8-vagdata-2026-10-07.ts`, ridge λ = 1, regioner gömda (rutor 1° × 2°) som huvudtal och leave-one-out, minst
+100 timmar per station, särarten per ÅDT-klass. Målet är Axels `fingeravtryck_c` (medel uppmätt − modell; `data/fysik/fingeravtryck-2024-25.csv`,
+summan i manifestet) i stället för särarten mot RÅ. Fyra mål: modell **Bsp** (den tidigare utan vägdata — modellen bakom 23 %) och
+**A2** (den frysta, med vägdata inne) × **novdec** (Axels inlärningsfönster) och **vinter**. Skript
+`scripts/matningar/kuvos-c8-fingeravtryck-2026-10-08.ts`, självtest i ci.yml (två motprov 7/10: MIN_TIMMAR 0 och fel kolumn fälls).
+Ingen databas: allt ligger i repot, så läsningen körs lokalt och utskriften står under Utfall.
+
+**Det är inte en upprepning av Axels 23 %.** Axel räknade på 165 stationer i mellanregionen, med Vägunderhållsklass och Driftområde,
+och 15 lägeskluster som regioner (SVAR §5). Här är det alla stationer med vägdata, C8:s tio kolumner och C8:s rutor. Frågan är om
+vägdatan förklarar fysikmodellens särart också med Bengts verktyg.
+
+**Kontroll först** (SVAR §6): A2 vinter 736 stationer med värde och spridning 0,52 °C, Bsp vinter spridning 0,64 °C, ±0,01. Stämmer
+det inte läses inget annat.
+
+**Läsningen i förväg.** (1) **Bsp novdec, VÄG, regioner gömda: R² mellan 0,05 och 0,30** — över C8 mot RÅ (0,034), runt Axels 0,227.
+(2) **A2 novdec, VÄG: R² ≤ 0,05** — vägdatan är redan förbrukad inne i A2 (Axel −0,11). (3) **ÅDT-spannet** (> 20 000 minus < 1 000)
+**över 0,9 °C för Bsp vinter** (Axel −0,58 / +1,14) och **under 0,6 °C för A2 vinter**. REL och BAS skrivs ut utan förväntan.
+Träff i (1) och (2): Axels slutsats håller med Bengts kolumner. Under 0,05 i (1): de 23 % hänger på Axels kolumner eller regioner.
+
+**Stomdokument:** BED §4.2 (raden om fingeravtrycken: skriptet nu och utfallet efter körningen)

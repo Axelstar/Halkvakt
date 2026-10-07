@@ -80,6 +80,9 @@ export const SPANN: Record<string, [number, number, string]> = {
   nederbord_mm: [0, 50, "mm nederbörd per timme (MET Nordic)"],
   langvag_jm2: [360000, 1800000, "J/m² inkommande långvåg per timme, 100–500 W/m² (MET Nordic)"],
   kortvag_jm2: [-1000, 4000000, "J/m² inkommande kortvåg per timme; ned till −1 000 rymmer beräkningsbruset (MET Nordic)"],
+  // FYSIK (Axels fysikspår som fil; releasen kuvos-fysik-2024-25, DECISIONS #485). Läst 7/10 över hela vintern: −25,5…+17,4 °C.
+  // Spannet är ytans, som surface_temp_c: en skattning utanför det är ett fel i filen, inte en kall natt.
+  fysik_c: [-60, 60, "°C skattad yttemperatur (fysikspåret, kuvos-fysik-2024-25)"],
   severity_code: [1, 5, "TRV SeverityCode — 3 har aldrig förekommit"],
   // Radarns intensiteter. 200 mm/h är fysikens gräns för en 5-minutersskur; extrema
   // konvektiva celler når 150–200. HÖGRE ÄR EN RADARARTEFAKT, inte regn — och de här två
