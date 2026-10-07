@@ -24,6 +24,27 @@ att läsa mot varandra. Kort utan rad här hör hemma på tavlan, inte i bedömn
 
 ---
 
+## Läget 7/10 — prognoslagret prövat på vintern, spridningsgrinden i drift, vägdatalagret i repot
+
+Det här läget gäller prognoslagret, skuggan, kuvösen och vägdatalagret, som var dagens arbete. Övriga områden står som i läget 29/9
+nedan, om inte §0, §0b eller §4.2 säger annat.
+
+**Var vi är.**
+- **Spridningsgrinden** är regel och i drift (DECISIONS #474–#478). Prognosen mellan stationerna tiger när ankarna skiljer 2,25 °C
+  eller mer eller bara ett ankare bidrar. Skuggmotorn loggar spridningen sedan 7/10 16:32Z. Marsdomen räknas med grinden, och
+  tystnad på ett täckt segment är en miss (väg c, Bengt och Axel). Nattbegränsningen är avstådd. Vinterläsningen följer KALENDERN:
+  täckningen 1/12, 1/1 och 1/2, grova fel per band i domläget.
+- **Prognoslagret är prövat i kuvösen** på vintern 2024/25, och ingen ny kandidat slår RÅ. Grinden vid 2,25 °C ger 2,8 % grova fel på
+  61 % av punkterna, mot 7,5 % på alla (#476). Vägdata förklarar 4 % av stationernas särart mot grannarna (#479) men 30 % mot en
+  vädermodell (#480), vilket stöder Axels fynd. Rutnätsmodellen gav 9,3 % mot RÅ:s 7,4 % (#481).
+- **Vägdatalagret** ligger i `data/vagdata/` (#472, #473): NVDB:s vägdata för 854 stationer, 818 segment och 12 960
+  väglagspunkter. Hela vägnätet (c) bevakas som villkorsrad i KALENDERN.
+- **Kuvösen** har riktningsprovet och kalibreringen sedan 6/10 (#467, #468). MET Nordic-releasen har summor och spann på main (#480).
+
+**Vart vi är på väg.** Frosten och betan i november, och skuggans vinter fram till marsdomen. Fysikspåret väntar på Axels kod och en
+egen förregistrering. Öppet i §4.2: kriging och kallkartan efter rutnätsmodellens utfall, och Axels fingeravtryck per station för att
+upprepa hans 23 %.
+
 ## Läget 29/9 — genomgången efter Bengts invändning (DECISIONS #402)
 
 **Varför.** Målbladets första utgåva byggde på kort och sidor från 20/9. Bengt 29/9: *"Såvitt jag vet är inte android efter ios i
