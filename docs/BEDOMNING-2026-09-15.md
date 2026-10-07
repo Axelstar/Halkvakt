@@ -488,7 +488,7 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 <!-- LÄGESRADER §4.2: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 *Läget i projektkartan:*
 
-- [Stomdokumenten och kortkartan](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-g-stomdokumenten): klar
+- [Stomdokumenten och kortkartan](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-g-stomdokumenten): väntar, 67 % · Bengts val (a)–(d) om dokumentsynken (kort #304, bedömningen §4.2).
 
 <!-- /LÄGESRADER -->
 
@@ -633,6 +633,7 @@ bevisbart säker (vid 0 km/h går det inte att nå faran) och är rimligen stör
 | **Rutnätsmodellen i kuvösen (kort #302, DECISIONS #481 och #482 — Axels ord 6/10, flyttade från PR #783).** Vägens temperatur byggs på MET Nordics luft plus vägens skillnad mot luften ur grannarna (RN), och samma med skillnadens beroende av vädret (RN+R). ✅ Bengts ja 7/10 (*"kör RN"*), körd samma kväll (#481 utfall): RN och RN+R sämre än RÅ i alla band, 9,3 mot 7,4 % grova fel och bortom 20 km 18 mot 13,6 % — ingen kandidat. Kallkartan ur MODIS byggd 6/10. **Öppet:** (1) ska steg 2, kriging, och kallkartans prov göras efter detta utfall, eller läggas ned; (2) Axels Earthdata-nyckel ska bytas; (3) ✅ PR #783 stängd 7/10, posterna på main (PR #797); kort #302 klart. 🔑 Bengt och Axel. |
 | **Vägdatalagret (kort #301, DECISIONS #472): NVDB:s vägdata ligger i öppna API:et med vår nyckel — ÅDT (också nattrafiken 22–06), vägklass, slitlager, vägbredd, hastighet, väghållare, beläggningsdata.** ✅ Rekognoseringen körd 7/10 (#472 utfall): stationer 99–100 %, segment 100 %, vägpunkter 14–55 % (vår rutgeometri), 5–7 objekt per träff, spårdjup i MeasurementData20 utan geometri. ✅ Hämtaren körd 7/10 (Bengts ja, val a; #473 utfall): `data/vagdata/` med fyra filer i repot — stationer, segment och väglagspunkter fullt täckta, rutternas vägpunkter 24 % ÅDT (handritade rutter). ✅ C8 med vägdata körd 7/10 (#479): vägdatan förklarar 4 % av stationernas särart mot RÅ — ingen rättelse ovanpå grannarna; mot en vädermodell 30 % (#480), ett prövat underlag för fysikspåret. Nästa beslut: Axels kolumner in (steg 3), rutternas snappning (b, eget kort vid ja) och om Lastkajen alls behövs (vinterväghållningsklass, bro). **(c) hela vägnätet** bevakas som villkorsrad i `docs/KALENDERN.md` (Bengt 7/10: *"påminner du om när det är dags"*) — tre villkor, lyfts när något inträffar. 🔑 Bengt och Axel. |
 | **Axels fingeravtryck per station — upprepa hans 23 % mot hans egen modell (Bengt 7/10).** C8 mätte vägdatan mot grannarna (4 %, #479) och mot en vädermodell ur MET Nordic (30 %, #480), men inte mot Axels fysikmodell. En fil från Axel med stationens id, fingeravtrycket i °C och antalet timmar räcker för att räkna samma sak med öppen vägdata; ange också vilken modell och population fingeravtrycket gäller. 🔑 Axel (filen), Bengt (frågan skickas). |
+| **Dokumentsynken — styrdokumenten stäms av varje dygn (kort #304, Bengts fråga 7/10).** Genomgången 7/10 (#483) behövde ett sjuttiotal rättelser fast kartan visade stomdokumenten gröna. Förslaget i `docs/DOKUMENTSYNKEN-FORSLAG-2026-10-07.md`: **(a)** stomvakten i CI — varje nytt beslut namnger sina stomdokument, och CI fäller ett namngivet dokument vars handtext inte ändrats i samma push eller PR; **(b)** en morgonrutin i molnet kl. 05:30 — kartsynken, kortgenomgången och stomgenomgången, rättelserna i en PR *Dokumentsynk: <datum>*; **(c)** *Väntar på Bengt* och *Väntar på Axel* överst i projektkartan; **(d)** om rutinen får slå ihop sin egen dokument-PR på grön CI, som kartsynkens kartgrenar. | Bengt | Rekommendation: ja till alla fyra, (d) så att avstämningen inte väntar på ett ord. | #304 |
 ---
 
 ## 5. Integrationsläget — mätt mot kartan (24/9, Bengts fråga *"hur långt i integrationen har vi kommit"*)
@@ -861,7 +862,7 @@ mätningar — R1–R16 nedan är strukna och står kvar bara som historik.**
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
 
-Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 24 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 25 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
 
 **§1 NU — före första frosten**
 
@@ -878,6 +879,7 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 24 kort
 **§4.2 Öppna**
 
 - #214 PLAY-DEKLARATIONEN ÄR OSANN SEDAN 16/9 — Axel, beslut
+- #304 DOKUMENTSYNKEN — STYRDOKUMENTEN STÄMS AV VARJE DYGN, MED EN VAKT VID KÄLLAN — Bengt
 - #303 VÄGDATALAGRET, STEG 3 — KUVÖSENS INLÄSNING OCH AXELS KOLUMNER — Bengt
 - #299 SPRIDNINGSGRINDEN OCH NATTBEGRÄNSNINGEN — TVÅ FÖRSLAG TILL TROSKLAR-SKUGGAN UR KUVÖSEN — Bengt
 - #298 PROGNOSLAGRET — ALLT PÅ BORDET: FEMTON VÄGAR, FYRA MÄTBARA I KUVÖSEN NU — Bengt
