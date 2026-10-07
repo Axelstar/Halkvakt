@@ -27,8 +27,11 @@ export type Station = { lon: number; lat: number; series: Map<number, number> };
 // ankare = antal bidragande ankare (DECISIONS #476: spridningen 0 med ett ankare skiljs från två eniga).
 export type Eval = { measured: number; pred: number; ankKm: number; station: string; t: number; spridning: number; ankare: number };
 // Varianter för LÄSNINGAR (kort #298, DECISIONS #471): regim = klass per (station, hink) som offseten lärs inom; utanOffset = rå
-// avståndsviktning på samma punkter. Utan variant är modellen exakt grind A:s — självtestet vaktar det.
-export type Variant = { regim?: (station: string, t: number) => string; utanOffset?: boolean };
+// avståndsviktning på samma punkter. justering = ett tillägg till varje grannes värde, som beror på målet, grannen och hinken
+// (DECISIONS #481: rutnätsmodellen RN/RN+R och RÅ+HÖJD räknas på exakt RÅ:s grannar); undefined = grannen bidrar inte.
+// Utan variant är modellen exakt grind A:s — självtestet vaktar det.
+export type Variant = { regim?: (station: string, t: number) => string; utanOffset?: boolean;
+  justering?: (mal: string, granne: string, t: number) => number | undefined };
 
 function haversineKm(lon1: number, lat1: number, lon2: number, lat2: number): number {
   const R = 6371, dLa = (lat2 - lat1) * Math.PI / 180, dLo = (lon2 - lon1) * Math.PI / 180;
@@ -80,7 +83,9 @@ export function evaluate(stations: Map<string, Station>, variant: Variant = {}):
         const p = pairs.get(`${s}|${n}|${kl}`);
         if (!p || p.n - 1 < MIN_SHARED) continue;        // too little shared history
         const offsetExcl = variant.utanOffset ? 0 : (p.sum - (measured - nv)) / (p.n - 1); // exact leave-one-out
-        const w = 1 / Math.max(km, 1), ankare = nv + offsetExcl;
+        const just = variant.justering ? variant.justering(s, n, t) : 0;
+        if (just === undefined) continue;                  // justeringen saknas för grannen: den bidrar inte
+        const w = 1 / Math.max(km, 1), ankare = nv + offsetExcl + just;
         wsum += w; psum += w * ankare; antal++;
         if (km < ank) ank = km;
         if (ankare > hi) hi = ankare;
@@ -201,6 +206,12 @@ if (korsSjalv && process.argv.includes("--sjalvtest")) {
   const ra = evaluate(stations, { utanOffset: true });
   if (!(ra.length === evals.length && stats(ra).mae > 0.3)) { console.error(`SJÄLVTEST FALLERAR: rå viktning MAE=${stats(ra).mae}`); process.exit(1); }
   if (!(evals.every((e) => e.spridning < 0.05) && ra.some((e) => e.spridning > 0.5))) { console.error("SJÄLVTEST FALLERAR: spridningen"); process.exit(1); }
+  // Justeringen (#481): noll ger exakt RÅ; en konstant läggs på varje skattning; undefined tar bort grannen.
+  const noll = evaluate(stations, { utanOffset: true, justering: () => 0 });
+  const plus = evaluate(stations, { utanOffset: true, justering: () => 0.7 });
+  const ingen = evaluate(stations, { utanOffset: true, justering: () => undefined });
+  if (!(noll.length === ra.length && noll.every((e, i) => e.pred === ra[i].pred) && plus.every((e, i) => Math.abs(e.pred - ra[i].pred - 0.7) < 1e-9)
+        && ingen.length === 0)) { console.error("SJÄLVTEST FALLERAR: justeringen"); process.exit(1); }
   // Marginalvakten mot känd sanning (§3, DECISIONS #126).
   let mOk = true;
   const m = (namn: string, fick: unknown, vantat: unknown) => {
