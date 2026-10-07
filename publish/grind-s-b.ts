@@ -38,7 +38,7 @@
 //  · SPRIDNINGSGRINDEN (TROSKLAR-SKUGGAN §3, DECISIONS #474, kort #299): skuggmotorn loggar ankarnas spridning rå som sjunde
 //    fält i `p` och `h`; statusen bär inte grinden. Här räknas den: täckta provpunkter och holdout-rader per spridningsband
 //    (kuvösens L1-band, DECISIONS #471), ett ankare för sig, rader utan fältet som "ej loggad". Underlagsläget skriver antalen;
-//    domläget täckningen och holdout-radernas grova fel (C3:s mått) per band och för grinden vid X = 1, 2 och 4 °C.
+//    domläget täckningen och holdout-radernas grova fel (C3:s mått) per band och för grinden vid X = 1, 2, 2,25 och 4 °C.
 //  · DOMEN MED GRINDEN, TYSTNADEN SOM MISS (väg c, DECISIONS #475): med X satt räknas B1 och B3 bara på varningar grinden
 //    släpper fram (provpunkt och holdout-rad med minst två ankare och spridning under X). B2:s täckning är OFÖRÄNDRAD (status
 //    ≥ 1 utan grinden), så halka där grinden tystade prognosen är en MISS — grinden kan bara vinna B1 genom att betala i B2.
@@ -47,6 +47,7 @@
 //
 // Run: DATABASE_URL=... node --experimental-strip-types publish/grind-s-b.ts [dagar — utan: sedan 23/9] [--underlag|--dom] [--grindA2 3.5]
 // Självtest utan DB: publish/grind-s-b.ts --sjalvtest
+import { readFileSync } from "node:fs";
 import { Z, andelSe, utfallTak, utfallGolv, grindutfall, type Utfall } from "./marginal.ts";
 import { narmastLangs, FRYS_C } from "../engine/src/segment.ts";
 import { skuggmotornsRutter, hamtaHandelser, FACIT_KM, type Rutter, type Handelse } from "./skuggfacit.ts";
@@ -60,9 +61,10 @@ const EPISOD_GAP_H = 2;           // flaggade varv närmare än så på samma pu
 const PERIOD_GAP_D = 2;           // halkperioder
 const PROGNOS_START = "2026-09-23";  // prognosloggens första dygn (DECISIONS #325) — fönstret (#352)
 const GRIND_A2_DOMD = 3.5;        // grind A:s dömda A2 i procent (DECISIONS #321) — C3:s backtestsida (#352)
-// Spridningsgrindens X (TROSKLAR-SKUGGAN §3, DECISIONS #474/#475). INTE FASTSTÄLLT — null tills en DECISIONS-post sätter det i
-// dokumentet. Domen fälls inte utan X (väg c). När det sätts: samma tal här och i dokumentet, och in i kontraktsgrinden.
-const SPRIDNING_X: number | null = null;
+// Spridningsgrindens X (TROSKLAR-SKUGGAN §3, DECISIONS #474/#475/#477): 2,25 °C, satt av Bengt 7/10 ur kuvösens korsade läsning
+// (#476 — varje band upp dit klarar 5 % grova fel på egen hand). Skuggan loggar spridningen med en decimal: 2,2 talar, 2,3 tiger.
+// Samma tal som i dokumentet. En kodkopia till (motorn när rösten byggs) förs in i kontraktsgrinden i samma commit.
+const SPRIDNING_X: number | null = 2.25;
 
 export type Punkt = [number, number | null, number | null, number, number, number, (number | null)?];
 export type HoldoutRad = [number, string, number, number | null, number | null, number, (number | null)?];
@@ -204,9 +206,11 @@ export function holdoutGrova(varv: Varv[]): { n: number; grova: number } {
   return { n, grova };
 }
 
-// Spridningsgrinden: kuvösens L1-band (DECISIONS #471), så skuggan och kuvösen går att lägga bredvid varandra. Banden är
-// [lo, hi): grinden vid X talar under X och tiger vid X eller mer (TROSKLAR-SKUGGAN §3).
-const SPRIDNINGSBAND: [string, number, number][] = [["0–0,5", 0, 0.5], ["0,5–1", 0.5, 1], ["1–2", 1, 2], ["2–4", 2, 4], ["> 4", 4, Infinity]];
+// Spridningsgrinden: kuvösens L1-band (DECISIONS #471) med gränsen vid X = 2,25 (#477) inlagd, så att skuggan och kuvösen går att
+// lägga bredvid varandra och grinden vid X räknas på X. Banden är [lo, hi): grinden vid X talar under X och tiger vid X eller mer
+// (TROSKLAR-SKUGGAN §3). grindVid() summerar hela band, så ett X som inte är en bandgräns vore fel — självtestet vaktar det.
+const SPRIDNINGSBAND: [string, number, number][] = [["0–0,5", 0, 0.5], ["0,5–1", 0.5, 1], ["1–2", 1, 2], ["2–2,25", 2, 2.25],
+  ["2,25–4", 2.25, 4], ["> 4", 4, Infinity]];
 const BANDORDNING = ["ett ankare", ...SPRIDNINGSBAND.map(([b]) => b), "ej loggad"];
 /** Bandet för en täckt provpunkt eller skattad holdout-rad: antal ankare och spridning (undefined = raden saknar fältet). */
 export function spridningsband(n: number, spr: number | null | undefined): string {
@@ -305,7 +309,7 @@ export function rapport(varv: Varv[], handelser: Handelse[], rutter: Rutter, lag
     console.log(`  ${namn.padEnd(15)} täckning ${P ? (100 * x.punkter / P).toFixed(1) + " %" : "—"} · grova fel ${x.rader ? (a * 100).toFixed(1) + " %" + pe(a, x.rader) : "—"} (${x.grova} av ${x.rader})`);
   };
   for (const [b, x] of loggade) bandrad(b, x);
-  for (const X of [1, 2, 4]) bandrad(`grind X = ${X} °C`, grindVid(r.spr, X));
+  for (const x of [1, 2, 2.25, 4]) bandrad(`grind X = ${String(x).replace(".", ",")} °C${x === SPRIDNING_X ? " (fastställt)" : ""}`, grindVid(r.spr, x));
   if (selftest) return { b1, b2, b3, uB1, uB2, uB3, c1, c2, c3 };
   const dom = grindutfall([uB1, uB2, uB3, c3] as Utfall[]);
   console.log(`\nDOM: GRIND B ${dom === "KLARAR" ? "KLARAD — §4 (a)/(b) avgörs av banden" : dom === "FALLER" ? "FALLEN — tyst (§4 c)" : "OAVGJORD — mät vidare"}`);
@@ -385,9 +389,16 @@ if (process.argv.includes("--sjalvtest")) {
   k("spridning: 0,5–1 och > 4 en punkt var, okänd punkt inte räknad", `${g("0,5–1").punkter}/${g("> 4").punkter}`, "1/1");
   k("spridning: sexfältsraden är ej loggad", g("ej loggad").punkter, 1);
   k("spridning: 1–2 en grov rad", `${g("1–2").rader}/${g("1–2").grova}`, "1/1");
-  k("spridning: 2,0 hamnar i 2–4 (grinden vid 2 tiger där)", `${g("2–4").rader}/${g("2–4").grova}`, "1/1");
+  k("spridning: 2,0 hamnar i 2–2,25 (grinden vid 2 tiger där, vid 2,25 talar den)", `${g("2–2,25").rader}/${g("2–2,25").grova}`, "1/1");
   k("spridning: mätt +7 °C utanför C3:s population", [...sp.values()].reduce((a, x) => a + x.rader, 0), 4);
   k("grinden vid 2: 0–0,5 + 0,5–1 + 1–2", JSON.stringify(grindVid(sp, 2)), JSON.stringify({ punkter: 1, rader: 2, grova: 1 }));
+  k("grinden vid 2,25: också 2–2,25", JSON.stringify(grindVid(sp, 2.25)), JSON.stringify({ punkter: 1, rader: 3, grova: 2 }));
+  // X måste vara en bandgräns, annars räknar grindVid() tyst på bandet under (#477).
+  k("X är en bandgräns", SPRIDNINGSBAND.some(([, lo]) => lo === SPRIDNING_X), true);
+  k("X fastställt i koden (DECISIONS #477)", SPRIDNING_X, 2.25);
+  // Huvudflödet skickar dokumentets X till rapporten. #792 glömde det: domen hade svarat "X inte fastställt" med X satt.
+  const kalla = readFileSync(new URL(import.meta.url), "utf8");
+  k("huvudflödet skickar X till rapporten", /\nrapport\(varv, handelser, rutter, LAGE, GRIND_A2, [^\n]*, false, X\);/.test(kalla), true);
   // Väg c (#475): grinden tystar en flaggad punkt med spridning 3 ⇒ halkan där blir MISS; holdout-raden med spridning 3 och
   // varm station försvinner ur B1; varvet utan spridning räknas inte med X. Utan X: allt som före #475.
   const ny = (km: number, frys: 0 | 1, spr: number): Punkt => [km, frys ? -1.5 : 3, 5, 3, 1, frys, spr];
@@ -446,4 +457,4 @@ const handelser = await hamtaHandelser((s, p) => pool.query(s, p as any[]).then(
 await pool.end();
 const okandNed = handelser.filter((e) => e.nederbord === null).length;
 if (okandNed) console.log(`(${okandNed} händelser utan station inom räckhåll för orsaksklassning — räknas som utstrålning)`);
-rapport(varv, handelser, rutter, LAGE, GRIND_A2, `från ${PROGNOS_START}, ${DAYS} dygn`);
+rapport(varv, handelser, rutter, LAGE, GRIND_A2, `från ${PROGNOS_START}, ${DAYS} dygn`, false, X);
