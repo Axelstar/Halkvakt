@@ -35,6 +35,13 @@
 //    och okänd gör ingenting i domen.
 // Segmentlarm från punktmotorn utan position (`geo: "segment"`) räknas inte i B3.
 //
+//  · SPRIDNINGSGRINDEN (TROSKLAR-SKUGGAN §3, DECISIONS #474, kort #299): skuggmotorn loggar ankarnas spridning rå som sjunde
+//    fält i `p` och `h`; statusen bär inte grinden. Här räknas den: täckta provpunkter och holdout-rader per spridningsband
+//    (kuvösens L1-band, DECISIONS #471), ett ankare för sig, rader utan fältet som "ej loggad". Underlagsläget skriver antalen;
+//    domläget täckningen och holdout-radernas grova fel (C3:s mått) per band och för grinden vid X = 1, 2 och 4 °C. B1–B3
+//    räknas som förut, utan grinden: B2 dömer bara täckta segment och har inget täckningskrav, så en grind i B-måtten kunde
+//    krympa populationen och bli en lättnad (§5).
+//
 // Run: DATABASE_URL=... node --experimental-strip-types publish/grind-s-b.ts [dagar — utan: sedan 23/9] [--underlag|--dom] [--grindA2 3.5]
 // Självtest utan DB: publish/grind-s-b.ts --sjalvtest
 import { Z, andelSe, utfallTak, utfallGolv, grindutfall, type Utfall } from "./marginal.ts";
@@ -51,8 +58,8 @@ const PERIOD_GAP_D = 2;           // halkperioder
 const PROGNOS_START = "2026-09-23";  // prognosloggens första dygn (DECISIONS #325) — fönstret (#352)
 const GRIND_A2_DOMD = 3.5;        // grind A:s dömda A2 i procent (DECISIONS #321) — C3:s backtestsida (#352)
 
-export type Punkt = [number, number | null, number | null, number, number, number];
-export type HoldoutRad = [number, string, number, number | null, number | null, number];
+export type Punkt = [number, number | null, number | null, number, number, number, (number | null)?];
+export type HoldoutRad = [number, string, number, number | null, number | null, number, (number | null)?];
 export type Larm = { kind: string; geo?: string; lon?: number; lat?: number };
 export type Varv = { t: Date; rutt: string; p: Punkt[]; h: HoldoutRad[]; alerts: Larm[] };
 export type Episod = { rutt: string; km: number; start: Date; slut: Date; varv: Varv[] };
@@ -183,6 +190,36 @@ export function holdoutGrova(varv: Varv[]): { n: number; grova: number } {
   return { n, grova };
 }
 
+// Spridningsgrinden: kuvösens L1-band (DECISIONS #471), så skuggan och kuvösen går att lägga bredvid varandra. Banden är
+// [lo, hi): grinden vid X talar under X och tiger vid X eller mer (TROSKLAR-SKUGGAN §3).
+const SPRIDNINGSBAND: [string, number, number][] = [["0–0,5", 0, 0.5], ["0,5–1", 0.5, 1], ["1–2", 1, 2], ["2–4", 2, 4], ["> 4", 4, Infinity]];
+const BANDORDNING = ["ett ankare", ...SPRIDNINGSBAND.map(([b]) => b), "ej loggad"];
+/** Bandet för en täckt provpunkt eller skattad holdout-rad: antal ankare och spridning (undefined = raden saknar fältet). */
+export function spridningsband(n: number, spr: number | null | undefined): string {
+  if (spr === undefined) return "ej loggad";
+  if (n < 2 || spr === null) return "ett ankare";
+  return SPRIDNINGSBAND.find(([, lo, hi]) => spr >= lo && spr < hi)![0];
+}
+export type Bandtal = { punkter: number; rader: number; grova: number };
+/** Täckta provpunkter (status ≥ 1) och holdout-rader (C3:s population: skattade, mätt ≤ +5 °C) per spridningsband. */
+export function spridningen(varv: Varv[]): Map<string, Bandtal> {
+  const ut = new Map<string, Bandtal>(BANDORDNING.map((b) => [b, { punkter: 0, rader: 0, grova: 0 }]));
+  for (const v of varv) {
+    for (const q of v.p) if (q[4] >= 1) ut.get(spridningsband(q[3], q[6]))!.punkter++;
+    for (const h of v.h) if (h[3] !== null && h[2] <= 5) {
+      const b = ut.get(spridningsband(h[5], h[6]))!;
+      b.rader++; if (Math.abs(h[3] - h[2]) > 2) b.grova++;
+    }
+  }
+  return ut;
+}
+/** Grinden vid X: minst två ankare och spridning under X — summan av banden som slutar vid X eller lägre. */
+export function grindVid(spr: Map<string, Bandtal>, X: number): Bandtal {
+  const ut: Bandtal = { punkter: 0, rader: 0, grova: 0 };
+  for (const [b, , hi] of SPRIDNINGSBAND) if (hi <= X) { const x = spr.get(b)!; ut.punkter += x.punkter; ut.rader += x.rader; ut.grova += x.grova; }
+  return ut;
+}
+
 export function rakna(varv: Varv[], handelser: Handelse[], rutter: Rutter) {
   const eps = episoder(varv);
   const kameror = handelser.filter((e) => e.kalla === "kamera").map((e) => lage(e, rutter)).filter((x): x is Lage => x !== null);
@@ -198,7 +235,7 @@ export function rakna(varv: Varv[], handelser: Handelse[], rutter: Rutter) {
   const hdomar = heps.map((ep) => ({ ep, dom: holdoutDom(ep, kameror) }));
   const b1Bekr = hdomar.filter((d) => d.dom === "BEKRÄFTAD"), b1Falska = hdomar.filter((d) => d.dom === "FALSK"), b1Omat = hdomar.filter((d) => d.dom === "OMÄTBAR");
   return { eps, bekraftade, falska, omatbara, merv, traffar, missar, missUtstr, missNed, obed, bedomda, perioder, grova: holdoutGrova(varv),
-           heps, b1Bekr, b1Falska, b1Omat };
+           heps, b1Bekr, b1Falska, b1Omat, spr: spridningen(varv) };
 }
 
 export function rapport(varv: Varv[], handelser: Handelse[], rutter: Rutter, lage: "underlag" | "dom", grindA2: number | null, label: string, selftest = false) {
@@ -211,6 +248,7 @@ export function rapport(varv: Varv[], handelser: Handelse[], rutter: Rutter, lag
   console.log(`Episoder på rutten (B3) ${r.eps.length}: med station eller kamera ${r.bekraftade.length + r.falska.length}, OMÄTBARA ${r.omatbara.length} (ingen holdout inom ${FACIT_KM} km)`);
   console.log(`Facithändelser ${handelser.length} — ${[...kallor].map(([k, n]) => `${k} ${n}`).join(" · ") || "inga"}; på täckta segment ${r.traffar.length + r.missar.length}, OBEDÖMBARA ${r.obed.length}`);
   console.log(`Halkperioder ${r.perioder}`);
+  console.log(`Spridningen (DECISIONS #474) — täckta provpunkter / holdout-rader per band: ${[...r.spr].map(([b, x]) => `${b} ${x.punkter}/${x.rader}`).join(" · ")}`);
   const c1 = r.traffar.length + r.missar.length >= C1_MIN_HANDELSER && r.perioder >= C1_MIN_PERIODER;
   const c2 = r.b1Bekr.length + r.b1Falska.length >= C2_MIN_EPISODER;
   console.log(`C1 ${r.traffar.length + r.missar.length}/${C1_MIN_HANDELSER} händelser, ${r.perioder}/${C1_MIN_PERIODER} perioder → ${c1 ? "uppfyllt" : "inte än"} · C2 ${r.b1Bekr.length + r.b1Falska.length}/${C2_MIN_EPISODER} bedömbara holdout-episoder → ${c2 ? "uppfyllt" : "inte än"}`);
@@ -236,6 +274,15 @@ export function rapport(varv: Varv[], handelser: Handelse[], rutter: Rutter, lag
   const c3 = grindA2 === null || !r.grova.n ? "OAVGJORT" : Math.abs(a2 * 100 - grindA2) <= C3_MAX_PE ? "KLARAR" : "FALLER";
   console.log(`C3 drift mot backtest: holdout-radernas grova fel ${r.grova.n ? (a2 * 100).toFixed(1) + " %" : "—"} på ${r.grova.n} rader${grindA2 === null ? " — grind A:s A2 ej given (--grindA2)" : ` mot grind A ${grindA2} %`} → ${c3}`);
   console.log(`Nederbördsdrivna missar ${r.missNed.length} (till #16, inte B2)`);
+  const loggade = [...r.spr].filter(([b]) => b !== "ej loggad");
+  const P = loggade.reduce((a, [, x]) => a + x.punkter, 0), RN = loggade.reduce((a, [, x]) => a + x.rader, 0);
+  console.log(`\nSPRIDNINGSGRINDEN (TROSKLAR-SKUGGAN §3, DECISIONS #474): täckning bland ${P} täckta provpunkter och grova fel bland ${RN} holdout-rader där spridningen är loggad`);
+  const bandrad = (namn: string, x: Bandtal) => {
+    const a = x.rader ? x.grova / x.rader : NaN;
+    console.log(`  ${namn.padEnd(15)} täckning ${P ? (100 * x.punkter / P).toFixed(1) + " %" : "—"} · grova fel ${x.rader ? (a * 100).toFixed(1) + " %" + pe(a, x.rader) : "—"} (${x.grova} av ${x.rader})`);
+  };
+  for (const [b, x] of loggade) bandrad(b, x);
+  for (const X of [1, 2, 4]) bandrad(`grind X = ${X} °C`, grindVid(r.spr, X));
   if (selftest) return { b1, b2, b3, uB1, uB2, uB3, c1, c2, c3 };
   const dom = grindutfall([uB1, uB2, uB3, c3] as Utfall[]);
   console.log(`\nDOM: GRIND B ${dom === "KLARAR" ? "KLARAD — §4 (a)/(b) avgörs av banden" : dom === "FALLER" ? "FALLEN — tyst (§4 c)" : "OAVGJORD — mät vidare"}`);
@@ -305,10 +352,22 @@ if (process.argv.includes("--sjalvtest")) {
   console.log = orig;
   k("dom-läget under C nämner inga procent", domskrivet.some((s) => /\d %|\d+\.\d %/.test(s)), false);
   k("dom-läget under C fäller ingen dom", domut, null);
+  // Spridningen (DECISIONS #474): band per täckt punkt och skattad holdout-rad; sexfältsrader är "ej loggad", aldrig ett band.
+  const sv: Varv[] = [{ t: tid(0), rutt: "Provrutt", alerts: [],
+    p: [[0, -1, 1, 1, 2, 1, 0], [2, -1, 3, 3, 1, 1, 0.7], [4, 0, 5, 4, 1, 1, 4.5], [6, null, null, 0, 0, 0, null], [8, 1, 5, 5, 1, 0]],
+    h: [[1, "a", -1, 2, 3, 3, 1.5], [3, "b", 0, 0.5, 4, 2, 0.4], [5, "c", 1, 1.2, 4, 1, 0], [7, "d", 4, 1, 4, 3, 2], [9, "e", 7, 1, 4, 3, 1]] }];
+  const sp = spridningen(sv), g = (b: string) => sp.get(b)!;
+  k("spridning: ett ankare (punkt n=1, rad n=1)", `${g("ett ankare").punkter}/${g("ett ankare").rader}`, "1/1");
+  k("spridning: 0,5–1 och > 4 en punkt var, okänd punkt inte räknad", `${g("0,5–1").punkter}/${g("> 4").punkter}`, "1/1");
+  k("spridning: sexfältsraden är ej loggad", g("ej loggad").punkter, 1);
+  k("spridning: 1–2 en grov rad", `${g("1–2").rader}/${g("1–2").grova}`, "1/1");
+  k("spridning: 2,0 hamnar i 2–4 (grinden vid 2 tiger där)", `${g("2–4").rader}/${g("2–4").grova}`, "1/1");
+  k("spridning: mätt +7 °C utanför C3:s population", [...sp.values()].reduce((a, x) => a + x.rader, 0), 4);
+  k("grinden vid 2: 0–0,5 + 0,5–1 + 1–2", JSON.stringify(grindVid(sp, 2)), JSON.stringify({ punkter: 1, rader: 2, grova: 1 }));
   // Ruttparsern mot skuggmotorns riktiga källa.
   const rutterSkarpt = skuggmotornsRutter();
   k("skuggmotorns rutter lästa (20)", Object.keys(rutterSkarpt).length, 20);
-  console.log("SJÄLVTEST OK: episoder, stationsdom, mervärde, händelsedom, orsaksklassning, blindning, ruttparsern");
+  console.log("SJÄLVTEST OK: episoder, stationsdom, mervärde, händelsedom, orsaksklassning, spridningen, blindning, ruttparsern");
   process.exit(0);
 }
 
