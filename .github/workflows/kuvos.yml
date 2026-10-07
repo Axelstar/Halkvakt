@@ -68,9 +68,10 @@ jobs:
               console.log(`${f.fil}: ${h === f.sha256 ? "ok" : "FEL " + h}`); if (h !== f.sha256) fel++;
             }
             process.exit(fel ? 1 : 0);'
-      # MET Nordic (DECISIONS #480) bara för mätningar som läser den: 49 MB, summorna mot kuvos/metnordic-leverans.json.
+      # MET Nordic (DECISIONS #480, #481) bara för mätningar som läser den: 49 MB, summorna mot kuvos/metnordic-leverans.json.
+      # Läser den: filnamnet innehåller 'metnordic' eller är rutnätsmodellens ('kuvos-rn-') — en ny läsare läggs till här.
       - name: MET Nordic ur releasen, kontrollsummorna mot manifestet
-        if: ${{ hashFiles('kuvos/metnordic-leverans.json') != '' && contains(inputs.matning, 'metnordic') }}
+        if: ${{ hashFiles('kuvos/metnordic-leverans.json') != '' && (contains(inputs.matning, 'metnordic') || contains(inputs.matning, 'kuvos-rn-')) }}
         shell: bash
         env: { GH_TOKEN: "${{ github.token }}" }
         run: |
