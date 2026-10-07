@@ -598,6 +598,7 @@ bevisbart säker (vid 0 km/h går det inte att nå faran) och är rimligen stör
 | ✅ **LÄSTA 6/10 (DECISIONS #470): M1 måttet ändrar inte kalibreringen (per fyrning 43,4 %, 0 av 32 under taket; per natt 16,7 % som övre gräns); M2 daggpunkten ≤ +1 nästan halverar priset (32,3 mot 56,8 %) och bär 118 av 175 nettonytt. Kvar: era tre beslut (Ö-B2:s mått, daggpunkten som mars-variant, ingen kalibrering om).** **Matematiken och fysiken (kort #297, granskningen §6): efterhalkans mått straffar försprånget — en riktig varning 2 h före frysningen räknas som falsklarm, eftersom både fångad och uteblev är fästa vid 90 min kring fyrningen; och daggpunkten, som fysiskt avgör om fallet fortsätter, finns bara som vakt.** Två läsningar i kuvösen föreslås, förregistrerade, inga trösklar: priset per fyrning (varje ögonblick med sitt eget 90-minutersfönster; per natt bredvid som övre gräns — *per natt* som mått var för långt, rättat samma kväll) för de 32 punkterna, och priset delat på daggpunkten vid fyrningen. Hamnar priset per fyrning under 25 % är kalibreringens *ingen vinnare* måttets fel — en ny kalibrering på rätt mått är då er fråga (D7). 🔑 Bengts ja till läsningarna. |
 | ✅ **VALT (a) OCH LÄST 6/10 (DECISIONS #471): spridningen skiljer (0,5–2 °C ⇒ 1,8 % grova fel på 59 %), vårens fel är dagsljuset (natt 4,2 %, dag 18 % i mars), regimstyrd offset ger 0,3 pe, grova kovariater förklarar inget (R² 0,01). Förslagen spridningsgrind + nattbegränsning på kort #299 nedan.** **Prognoslagret — allt på bordet (kort #298, `docs/PROGNOSLAGRET-VAGAR-2026-10-06.md`).** Femton vägar; fyra går att mäta i kuvösen nu utan ny data: (1) ankarspridningen som grind — tig när ankarna är oense; (2) natt/säsong — A2 per solhöjd och månad; (4) regimstyrd offset med kuvösens molnmängd; (8) kovariatmodellen tränad på stationernas egna offset (facit finns, karteringen behövs inte för att pröva). Plus en fråga till Micke: har Trafikverket redan en vägväderprognos per station att dela? (a) alla fyra läsningarna · (b) 1 och 4 · (c) 1 och 8 · (d) inga. Var och en förregistreras före körning, inga trösklar. 🔑 Bengts val. |
 | **Spridningsgrinden och nattbegränsningen — två förslag till TROSKLAR-SKUGGAN (kort #299, DECISIONS #471).** Lagret tiger när ankarna är oense (minst två ankare; spridning 0,5–2 °C ger 1,8 % grova fel på 59 % av punkterna, > 4 °C 28 %) och talar bara om natten (solen under −6°: 4,2 % på 63 %, varje månad under 5 % utom januari). Båda tar bort punkter och sänker inget krav; mäts i skuggan i vinter innan någon röst. (a) båda · (b) bara spridningsgrinden · (c) bara natten · (d) inget. 🔑 Bengt och Axel. |
+| **Vägdatalagret (kort #301, DECISIONS #472): NVDB:s vägdata ligger i öppna API:et med vår nyckel — ÅDT (också nattrafiken 22–06), vägklass, slitlager, vägbredd, hastighet, väghållare, beläggningsdata.** Rekognoseringen körs på Bengts order 7/10 (stickprov, inget utfall). Nästa beslut efter svaret: hämtaren som skriver `data/vagdata/` (tre filer), Axels kolumner in, och om Lastkajen alls behövs (vinterväghållningsklass, bro). 🔑 Bengt. |
 ---
 
 ## 5. Integrationsläget — mätt mot kartan (24/9, Bengts fråga *"hur långt i integrationen har vi kommit"*)
@@ -822,7 +823,7 @@ mätningar — R1–R16 nedan är strukna och står kvar bara som historik.**
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
 
-Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 23 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 24 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
 
 **§1 NU — före första frosten**
 
@@ -839,6 +840,7 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 23 kort
 **§4.2 Öppna**
 
 - #214 PLAY-DEKLARATIONEN ÄR OSANN SEDAN 16/9 — Axel, beslut
+- #301 VÄGDATALAGRET — EN TABELL, ÅTTA ANVÄNDARE: VÄGENS EGENSKAPER PER STATION, SEGMENT OCH VÄGPUNKT — Bengt
 - #299 SPRIDNINGSGRINDEN OCH NATTBEGRÄNSNINGEN — TVÅ FÖRSLAG TILL TROSKLAR-SKUGGAN UR KUVÖSEN — Bengt
 - #298 PROGNOSLAGRET — ALLT PÅ BORDET: FEMTON VÄGAR, FYRA MÄTBARA I KUVÖSEN NU — Bengt
 - #297 MATEMATIKEN OCH FYSIKEN — EFTERHALKANS MÅTT STRAFFAR FÖRSPRÅNGET, OCH DAGGPUNKTEN SAKNAS — Bengt

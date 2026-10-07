@@ -8181,3 +8181,30 @@ karteringen (#271). Tills dess är kovariatspåret inte en genväg.
 **spridningsgrind** (tig när ankarna är oense över X °C, minst två ankare — X läses ur tabellen, 2 °C är bandgränsen som mätts, inget
 val gjort) och en **nattbegränsning** (tala bara när solen är under −6°). Molnmängd i drift (§4.2 h) kan strykas som lager för prognosen
 (0,3 pe); kovariatspåret (#271) behöver riktiga kovariater. Bedömningen §7 fyra rader; PROGNOSLAGRET-VAGAR §5.
+
+## #472 (7/10 2026) Vägdatalagret — ett statiskt lager med vägens egenskaper för åtta användare, och rekognoseringen av öppna API:ets NVDB-data (kort #301, Bengts order)
+
+**Bengts order 7/10 (*"kör rekognoseringen och gör kortet"*)**, efter analysen av C8 (kovariatmodellen tränad på stationernas egna offset,
+kort #298) och Axels fysikspår: det som ska delas är inte en modell utan **datalagret under den** — vägens egenskaper per plats.
+
+**Fyndet som ändrar förutsättningarna.** Trafikverkets öppna API — nyckeln `TRAFIKVERKET_API_KEY` som driften redan använder — bär
+sedan 7/2 2025 NVDB:s vägdata (datamodellen på data.trafikverket.se, läst 7/10): *Trafik* (namespace `Vägdata.TRAFIK_DK_O` 1.2, med
+ÅDT_fordon, ÅDT_lastbilar och ÅDT per dygnsperiod — bl.a. **ÅDT_lätta_fordon_22_06**, nattrafiken), *FunktionellVägklass*, *Slitlager*,
+*Vägbredd*, *Hastighetsgräns*, *Motorväg*, *Väghållare* (`Vägdata.NVDB_DK_O`), samt *PavementData/MeasurementData* (`Road.PavementInfo`).
+Geometrin är WKT i WGS84; rumslig fråga med `INTERSECTS shape="center" radius="…m"`. Källkartläggningen 26/8 sade "ÅDT via Lastkajen,
+kräver konto" — det gäller inte längre. Lastkajen (läst 7/10): konto gratis och självregistrerat, API:et odokumenterat bakom
+inloggningstoken, inga hemligheter hos oss; behövs bara för det öppna API:et saknar (vinterväghållningsklass, bro).
+
+**Lagret (kort #301):** `data/vagdata/stationer.json`, `segment.json`, `vagpunkter.json` — en rad per VViS-station (854 i static.json),
+väglagssegment (818) och vägpunkt (var 2 km längs de 20 svenska rutterna) med källa, datum och version i huvudet; Axels beräknade kolumner
+(himmelsfaktor, skog, vatten, terrängläge) i samma filer med proveniens; spann i värdevakten innan någon mätning läser dem; kuvösen läser
+filerna in i `kuvos_ra.vagdata`; driften får en tabell först vid ett byggbeslut. **Användare:** prognoslagret (C8, #298), fysikspåret,
+kallplatserna (#91 — indexet per segment är tabellen), efterhalkan (priset per vägklass/salt, #296/#297), vattenplaningen (spårdjup, #42),
+rimfrosten (himmelsfaktor), vind och sikt (exponering), frysklassningen, tystnadsfelet, kamerafacit.
+
+**Rekognoseringen, förregistrerad här:** `scripts/vagdata-rekognosering.ts`, knappen `vagdata-rekognosering.yml`, **ren läsning, inget
+utfall, inget lagrat.** Spår A: en post per datamängd (limit 1) — finns den, vilka fält. Syntaxprov: INTERSECTS center/radius 150 m vid en
+station, med WITHIN som reserv, status och kropp utskrivna. Spår B: samma fråga vid ett **stickprov** (var tolfte station, var tjugonde
+segment, var tjugonde vägpunkt) per datamängd — andel platser med träff, objekt per träff, ms per anrop; stickprov eftersom nyckeln delas
+med driftens ingest varje minut. Spår C: PavementData vid segmentstickprovet — finns spårdjup. Varje svar räknas på rotelementet, aldrig
+på statuskoden (Vegvesen-läxan). Nästa steg är hämtaren (`--alla`), som skriver filerna — eget beslut efter rekognoseringen.
