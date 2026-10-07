@@ -84,6 +84,21 @@ jobs:
               console.log(`${f.fil}: ${h === f.sha256 ? "ok" : "FEL " + h}`); if (h !== f.sha256) fel++;
             }
             process.exit(fel ? 1 : 0);'
+      # FYSIK (DECISIONS #485, kort #305) bara för mätningen som läser den: Axels fysikspår som fil, 27 MB, summan mot kuvos/fysik-leverans.json.
+      - name: FYSIK ur releasen, kontrollsumman mot manifestet
+        if: ${{ hashFiles('kuvos/fysik-leverans.json') != '' && contains(inputs.matning, 'kuvos-fysik') }}
+        shell: bash
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          mkdir -p fysik && gh release download kuvos-fysik-2024-25 --dir fysik --pattern '*.csv.gz'
+          node -e '
+            const m = require("./kuvos/fysik-leverans.json"), c = require("crypto"), fs = require("fs");
+            let fel = 0;
+            for (const f of m.filer.filter((f) => f.fil.endsWith(".csv.gz"))) {
+              const h = c.createHash("sha256").update(fs.readFileSync("fysik/" + f.fil)).digest("hex");
+              console.log(`${f.fil}: ${h === f.sha256 ? "ok" : "FEL " + h}`); if (h !== f.sha256) fel++;
+            }
+            process.exit(fel ? 1 : 0);'
       # Varje migration för sig. De som kräver driftens tabeller (shadow_log m.fl. skapas av ingesten, inte av sql/) faller här
       # och skrivs ut; nästa steg kontrollerar att det kuvösen behöver finns — en saknad del fäller jobbet.
       - name: Migrationerna och klockan
