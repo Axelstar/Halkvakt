@@ -8812,3 +8812,38 @@ som i den första körningen 37524112922, vars release nekades med HTTP 403 frå
 30 nätter: 5/50/95-percentil −1,18 / −0,01 / +1,19 K. Inget facit läst. **Iakttagelse för förregistreringen av provet:** pixeln
 vid stationen i Vietas ger +3,51 K, troligen för att den ligger mot Akkajaure — en 1 km-pixel vid en sjö bär sjöns värme. Provet
 behöver därför en regel för pixlar med vatten (rutans landandel, eller närmaste rena landpixel), skriven före körningen.
+
+## #483 (7/10 2026) Styrdokumenten genomgångna mot läget 7/10, projektkartan rättad, och integrationskartan öppnad för R27–R34 och fryst igen
+
+**Beslut.** Bengt 7/10: *"ja det vill jag att du gör, men jag vill också att du går igenom de andra dokumenten och uppdaterar dem. jag
+kan inte förstå hur vi ska kunna hålla oss uppdaterade i det här projektet om våra styrdokument inte uppdateras, som jag ideligen har
+krävt att de ska göras"*. Svaret på hans fråga om projektkartan hade visat att prognoslagret steg från 44 till 66 % bara för att
+läsningar bokförts som byggsteg, och att de handskrivna delarna av flera stomdokument stod kvar på 25/9–2/10.
+
+**Vad som gjordes.** Fyra granskare läste var sina dokument mot DECISIONS, STATUS, TAVLA, KALENDERN, projektkartan och koden, och
+varje fynd prövades mot källan innan det fördes in. Fynd som granskarna själva märkte osäkra togs inte med utan kontroll.
+- *Projektkartan:* prognoslagret tillbaka på sina åtta byggsteg (44 %), läsningarna som bevis; spridningsgrinden bokförd på
+  segmentprognosen, där den sitter; vägdatalagret som egen del bland källorna (k-vagdata, 62 %, kort #301); Android-bygget till
+  versionCode 23 och förarsvaren till 32.
+- *MATNINGAR* (28 ändringar), *SYSTEMBILDEN* (19, bland dem raden om segmentprognosen, som sa "med höjden inräknad"), *APPEN* (14: appen
+  stod på 0.3.9 (19) fast koden bär 0.3.11 (23)), *KUVOSEN* (tabellen, flödet och tidslinjen före riktningsprovet), *FAVORITER* (fyra
+  ändringar och loggen 4–7/10), *KALENDERN* (riktningsprovet och kalibreringen gjorda, ny plikt för vägdatalagret), *bedömningen*
+  (läget 7/10 med *Övrigt sedan 29/9*, tolv öppna rader i §0b och §4.2 strukna eller rättade, fyra nya bevakningsrader, en ny fråga
+  om Axels fingeravtryck i §4.2).
+- *Integrationskartan:* läge-raderna i §2, §6.1, §8 och §13.6; innehållet öppnat för R27–R34 och fryst igen — R27 segmentprognosens
+  fog (§5.4), R28 lapsen i #45:s metod (§7.7), R29 molnet som räckviddsknapp och R30 höjden (§9.1), R31 räckvidden, R32 förarfacit
+  och R33 L4:s knapp (§12), R34 kamerafacit och ytstatus (§13.2).
+
+- *Tavlan:* kort #301 stängt — Verify uppfylld (rekognoseringen bokförd, filerna i repot med huvud, spann och grön CI, C8 läste dem i kuvösen) — och steg 3 utbrutet på kort #303: kuvösens inläsning eller beslutet att filen räcker, Axels kolumner med proveniens, Lastkajen vid behov. Kortgenomgången fann inget annat kort med Verify uppfylld.
+
+**Inte gjort, med skäl.** Raderna i §4.2 som redan säger *avgjort* i sista kolumnen men saknar ✅ först fick ingen massändring.
+Följande stod osäkra och står kvar:
+- MATNINGAR:s *cirka 845 stationer* mot 854 i static.json
+- snöflingan (#440)
+- SYSTEMBILDEN:s *inget når föraren innan det dömts*, med tanke på betan
+- steg 4 i S4
+- KALENDERN:s förslag om TestFlight-byggens 90 dagar och Actions-kassan i oktober
+
+**Läxa.** En avstämning som bara ser att de genererade blocken är aktuella säger inget om handtexten — `git log -1` på ett
+stomdokument visar dagens datum så snart ett skript skrivit om lägesraderna. Och ett steg i projektkartan är ett byggsteg mot delen,
+inte en läsning. Båda gjorde att avstämningen 7/10 först sa att dokumenten var uppdaterade.
