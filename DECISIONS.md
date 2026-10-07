@@ -8208,3 +8208,34 @@ station, med WITHIN som reserv, status och kropp utskrivna. Spår B: samma fråg
 segment, var tjugonde vägpunkt) per datamängd — andel platser med träff, objekt per träff, ms per anrop; stickprov eftersom nyckeln delas
 med driftens ingest varje minut. Spår C: PavementData vid segmentstickprovet — finns spårdjup. Varje svar räknas på rotelementet, aldrig
 på statuskoden (Vegvesen-läxan). Nästa steg är hämtaren (`--alla`), som skriver filerna — eget beslut efter rekognoseringen.
+
+**UTFALL 7/10 — två körningar.** *Körning 1* (37567654151, 03:38–04:03Z, main 93c0947): spår A fann alla sju datamängderna med fält
+(HTTP 200, rotelement = datamängden, en post var), men syntaxprovet och hela spår B/C föll på *"Invalid query attribute
+Trafik.Geometry.WGS84"* — 0 av 193 platser var ett attributfel, inte täckning, och svarskroppen sa det (TRV 400-läxan). *Körning 2*
+(37569902629, 04:07–04:25Z, a7da354) läser geometrinycklarna ur första posten: NVDB-posterna bär **`WKT-SWEREF99TM-3D` och
+`WKT-WGS84-3D`**; `INTERSECTS name="Geometry.WKT-WGS84-3D" shape="center" radius="150m"` svarar (station 1001: 4 Trafik-objekt, 218 ms).
+Stickprovet, 150 m, ~170 ms per anrop:
+| Datamängd | stationer (72) | segment (41) | vägpunkter (80) | objekt per träff | exempel |
+| :-- | --: | --: | --: | --: | :-- |
+| Trafik (ÅDT) | **99 %** | **100 %** | 14 % | 1,3–2,4 | ÅDT_fordon 2 346 · lastbilar 214 · lätta 22–06 106 · mätår 2022-01 · stickprovsmätning |
+| FunktionellVägklass | 100 % | 100 % | 55 % | 5–6 | Klass 0 (station) · 8 (segment) · 7 (vägpunkt) |
+| Slitlager | 100 % | 100 % | 55 % | 5,5–7,3 | belagd · grus · belagd |
+| Vägbredd | 100 % | 100 % | 39 % | 3,2–7,3 | 4,5 · 3 · 5,1 m |
+| Hastighetsgräns | 100 % | 100 % | 55 % | 6,3–6,7 | 100 · 70 · 40 |
+| Väghållare | 100 % | 100 % | 55 % | 5,3–7,3 | statlig · enskild · kommunal |
+| PavementData, MeasurementData20 | — | — | — | — | ingen geometri: nyckeln är län + vägnummer + löpande längd |
+
+**Läsning.** (1) **Vid stationerna och segmenten är täckningen full** för alla sex NVDB-datamängderna med nyckeln vi har — vägdatalagret
+går att bygga utan Lastkajen. (2) **Vägpunkterna träffar sämre (14–55 %)**: rutternas linjer är grova (#323: E14 hade 7 stationer inom 2 km av
+linjen mot 10 inom 5 km), så provpunkterna ligger ofta mer än 150 m från vägen — ett fel i vår geometri, inte i NVDB; hämtaren ska
+snappa vägpunkterna till väglagsnätets segment eller vidga radien, och räkna täckningen. (3) **150 m fångar grannvägar**: 5–7 objekt per träff,
+och exemplen (segment: grus · Klass 8 · enskild · 70) visar att en sidoväg kan ta platsen. Hämtaren måste **välja rätt väg** — vägnummer
+(datamängden *Vägnummer*) eller lägst klass/statlig väghållare/störst ÅDT — och skriva ut vad den valde. (4) ÅDT:s mätår varierar
+(2016–2022 i stickprovet); åldern följer med som fält. (5) **Spårdjupet finns** — `MeasurementData20` bär RutDepthMax15/17, RutArea,
+WaterArea, IRI, Crossfall — men utan geometri: nyckeln är län + vägnummer + löpande längd, och kopplingen går via *RoadGeometry* i samma
+namespace. Vattenplaningens Lastkajen-låsning (kort #42) är upplåst, kopplingen är ett eget steg. (6) Full hämtning ≈ 3 257 platser × 6
+datamängder ≈ 20 000 anrop ≈ en timme med 0,6 s paus — en knapptryckning per säsong.
+
+**Mitt misstag på vägen:** v2:s självtest för SWEREF99TM-projektionen föll (glömd skalfaktor 0,9996) och `grep -v` utan `pipefail` dolde det
+lokalt, så commiten och knappen gick ändå (37569823738 röd på provet). Rättat i a7da354; kedjor som filtrerar utdata körs nu med `set -o
+pipefail`. **Följd:** kort #301 steg 1 klart; steg 2 (hämtaren med vägval och snappning) är nästa beslut.

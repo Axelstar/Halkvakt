@@ -32,7 +32,23 @@ const MANGDER: Mangd[] = [
   { namn: "Hastighetsgräns", ns: "Vägdata.NVDB_DK_O", ver: "1.2", falt: ["Högsta_tillåtna_hastighet"] },
   { namn: "Väghållare", ns: "Vägdata.NVDB_DK_O", ver: "1.2", falt: ["Väghållartyp"] },
   { namn: "PavementData", ns: "Road.PavementInfo", ver: "1", falt: [] },
+  { namn: "MeasurementData20", ns: "Road.PavementInfo", ver: "1", falt: [] },   // spårdjup bor här, inte i PavementData (körning 1)
 ];
+// Geometrins attributnamn upptäcks i spår A ur första posten (körning 37567654151: "Invalid query attribute Trafik.Geometry.WGS84" —
+// NVDB-posternas Geometry heter något annat). Finns en WGS84-nyckel används den med radie i meter; annars SWEREF99TM med
+// projicerade koordinater (Krüger-serien, självtestad mot E = 500 000 på meridianen 15°).
+let GEO_ATTR = "Geometry.WGS84", GEO_WGS84 = true;
+export function sweref99tm(lon: number, lat: number): [number, number] {
+  const a = 6378137, f = 1 / 298.257222101, k0 = 0.9996, lon0 = 15, FE = 500000;
+  const e2 = f * (2 - f), n = f / (2 - f), A = a / (1 + n) * (1 + n * n / 4 + n ** 4 / 64);
+  const φ = lat * Math.PI / 180, λ = (lon - lon0) * Math.PI / 180;
+  const e = Math.sqrt(e2), conf = Math.atanh(Math.sin(φ)) - e * Math.atanh(e * Math.sin(φ));
+  const t = Math.sinh(conf), ξ0 = Math.atan2(t, Math.cos(λ)), η0 = Math.atanh(Math.sin(λ) / Math.sqrt(1 + t * t));
+  const α = [n / 2 - 2 * n * n / 3 + 5 * n ** 3 / 16, 13 * n * n / 48 - 3 * n ** 3 / 5, 61 * n ** 3 / 240];
+  let ξ = ξ0, η = η0;
+  α.forEach((c, i) => { const j = 2 * (i + 1); ξ += c * Math.sin(j * ξ0) * Math.cosh(j * η0); η += c * Math.cos(j * ξ0) * Math.sinh(j * η0); });
+  return [FE + k0 * A * η, k0 * A * ξ];
+}
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
 const rad = (s: string) => console.log(s);
 
@@ -51,7 +67,11 @@ async function fraga(m: Mangd, filter: string, limit: number, ver = m.ver) {
 }
 // Linjegeometrier ligger aldrig helt INOM en cirkel — det är INTERSECTS som gäller (dokumentationen: "används på samma sätt som
 // WITHIN"; radien i meter kräver suffixet m på WGS84). Spår A provar syntaxen på en station innan stickprovet.
-const within = (lon: number, lat: number) => `<INTERSECTS name="Geometry.WGS84" shape="center" value="${lon.toFixed(5)} ${lat.toFixed(5)}" radius="${RADIE_M}m"/>`;
+const within = (lon: number, lat: number) => {
+  if (GEO_WGS84) return `<INTERSECTS name="${GEO_ATTR}" shape="center" value="${lon.toFixed(5)} ${lat.toFixed(5)}" radius="${RADIE_M}m"/>`;
+  const [E, N] = sweref99tm(lon, lat);
+  return `<INTERSECTS name="${GEO_ATTR}" shape="center" value="${E.toFixed(0)} ${N.toFixed(0)}" radius="${RADIE_M}"/>`;
+};
 const paus = () => new Promise((ok) => setTimeout(ok, PAUS_MS));
 const pct = (a: number, b: number) => (b ? `${(100 * a / b).toFixed(0)} %` : "–");
 
@@ -59,7 +79,12 @@ if (process.argv.includes("--sjalvtest")) {
   const k = (v: boolean, t: string) => { if (!v) { console.error(`✗ ${t}`); process.exit(1); } };
   k(within(13.12345678, 56.1).includes('value="13.12346 56.10000"') && within(1, 2).includes(`radius="${RADIE_M}m"`), "WITHIN-filtret");
   k(esc('a&b<"c"') === "a&amp;b&lt;&quot;c&quot;", "XML-escapen");
-  k(MANGDER.length === 7 && MANGDER.every((m) => m.ns && m.ver), "sju datamängder med namespace och version");
+  k(MANGDER.length === 8 && MANGDER.every((m) => m.ns && m.ver), "åtta datamängder med namespace och version");
+  const [E, N] = sweref99tm(15, 60);
+  // Meridianbågen till 60° N är ~6 654 072 m på GRS80; med skalfaktorn 0,9996 blir N ≈ 6 651 411 (självtestets första version glömde k0).
+  k(Math.abs(E - 500000) < 0.01 && Math.abs(N - 6651411) < 100, `SWEREF99TM på meridianen: E ${E.toFixed(1)} N ${N.toFixed(0)}`);
+  const [E2] = sweref99tm(13, 56);
+  k(E2 < 500000 && E2 > 350000, `SWEREF99TM väster om meridianen: E ${E2.toFixed(0)}`);
   console.log("✓ självtest: WITHIN-filtret, escapen, datamängderna");
   process.exit(0);
 }
@@ -72,8 +97,17 @@ rad(`\n=== SPÅR A: en post per datamängd (limit 1) ===`);
 const finns = new Map<string, boolean>();
 for (const m of MANGDER) {
   const r = await fraga(m, "", 1);
-  const falt = r.items[0] ? Object.keys(r.items[0]).filter((k) => k !== "Geometry").slice(0, 12).join(", ") : "";
+  const falt = r.items[0] ? Object.keys(r.items[0]).filter((k) => k !== "Geometry").join(", ") : "";
+  const geo = r.items[0]?.Geometry;
+  const geoNycklar = geo && typeof geo === "object" ? Object.keys(geo) : [];
   rad(`A ${m.namn.padEnd(20)} ${m.ns} ${m.ver}  HTTP ${r.status} ${r.ms} ms  rot: ${r.rot}  poster: ${r.items.length}${falt ? `  fält: ${falt}` : ""}${r.fel ? `  FEL: ${r.fel}` : ""}`);
+  if (geoNycklar.length) rad(`    Geometry-nycklar: ${geoNycklar.join(", ")}  exempel: ${String(geo[geoNycklar[0]]).slice(0, 70)}`);
+  else if (r.items[0]) rad(`    Geometry: ${geo === undefined ? "saknas i posten" : String(geo).slice(0, 90)}`);
+  if (m.namn === "Trafik" && geoNycklar.length) {
+    const w = geoNycklar.find((k) => /WGS84/i.test(k)), s = geoNycklar.find((k) => /SWEREF/i.test(k));
+    if (w) { GEO_ATTR = `Geometry.${w}`; GEO_WGS84 = true; } else if (s) { GEO_ATTR = `Geometry.${s}`; GEO_WGS84 = false; }
+    rad(`    ⇒ rumslig fråga med ${GEO_ATTR} (${GEO_WGS84 ? "WGS84, radie i meter" : "SWEREF99TM, projicerat"})`);
+  }
   finns.set(m.namn, r.ok && r.items.length > 0);
   await paus();
 }
@@ -107,7 +141,7 @@ rad(`\nPlatser: stationer ${stationer.length} (stickprov ${platser.station.lengt
 // ── Spår B: rumslig träff per datamängd och platstyp.
 rad(`\n=== SPÅR B: WITHIN ${RADIE_M} m vid stickprovet — andel platser med träff, objekt per träff, ms per anrop ===`);
 const rader: string[] = [];
-for (const m of MANGDER.filter((x) => x.namn !== "PavementData")) {
+for (const m of MANGDER.filter((x) => x.ns !== "Road.PavementInfo")) {
   if (!finns.get(m.namn)) { rad(`B ${m.namn}: hoppas över — fanns inte i spår A`); continue; }
   for (const [typ, lista] of Object.entries(platser)) {
     let traff = 0, objekt = 0, fel = 0, ms = 0, exempel = "";
@@ -123,17 +157,18 @@ for (const m of MANGDER.filter((x) => x.namn !== "PavementData")) {
   }
 }
 
-// ── Spår C: PavementData vid segmentstickprovet.
-rad(`\n=== SPÅR C: PavementData (Road.PavementInfo) vid segmentstickprovet — spårdjup? ===`);
-const pd = MANGDER.find((m) => m.namn === "PavementData")!;
-if (!finns.get("PavementData")) rad("C: PavementData fanns inte i spår A — hoppas över");
-else {
-  let traff = 0, falt = "";
+// ── Spår C: beläggningsdatan vid segmentstickprovet — PavementData (beläggningstyp, datum) och MeasurementData20 (spårdjup?).
+rad(`\n=== SPÅR C: Road.PavementInfo vid segmentstickprovet — beläggning och spårdjup? ===`);
+for (const namn of ["PavementData", "MeasurementData20"]) {
+  const pd = MANGDER.find((m) => m.namn === namn)!;
+  if (!finns.get(namn)) { rad(`C ${namn}: fanns inte i spår A — hoppas över`); continue; }
+  let traff = 0, fel = 0, falt = "", exempel = "";
   for (const p of platser.segment) {
     const r = await fraga(pd, within(p.lon, p.lat), 5);
-    if (r.ok && r.items.length) { traff++; if (!falt) falt = Object.keys(r.items[0]).filter((k) => k !== "Geometry").join(", "); }
+    if (!r.ok) { fel++; if (!exempel) exempel = r.fel; }
+    else if (r.items.length) { traff++; if (!falt) falt = Object.keys(r.items[0]).filter((k) => k !== "Geometry").join(", "); }
     await paus();
   }
-  rad(`C PavementData segment träff ${traff}/${platser.segment.length} (${pct(traff, platser.segment.length)})  fält: ${falt || "–"}`);
+  rad(`C ${namn.padEnd(18)} segment träff ${traff}/${platser.segment.length} (${pct(traff, platser.segment.length)})${fel ? ` · FEL ${fel}: ${exempel.slice(0, 160)}` : ""}  fält: ${falt || "–"}`);
 }
 rad(`\nKlart. Rekognosering: inget utfall, inget lagrat. Hämtaren (nästa steg, kort #301) tar alla platser och skriver data/vagdata/.`);
