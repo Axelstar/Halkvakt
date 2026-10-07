@@ -8747,6 +8747,37 @@ post); omkörningen v4 (konsekventare bakåt, men inte samma produkt som drift);
   provet på rätt rad: RN med fel tecken, g tränad med målet, RÅ+HÖJD med fel tecken och RN+R med en senare analys.
 - Skript: `scripts/matningar/kuvos-rn-2026-10-07.ts` på knappen `kuvos` (`matning`).
 
+**UTFALL #481, 7/10 — körd och läst** (kuvos 37669854795 på 75b9b27, läsningen 3,5 min; en första körning, 37669737670, avbröts innan
+den läste något, eftersom hämtsteget för MET Nordic inte kände igen skriptets namn). MET Nordic godkänd mot summorna, värdevakten höll.
+736 stationer; 729 fick höjd ur EU-DEM. **Kontrollen:** RÅ gav samma 4 353 206 punkter som i C8; på de 4 312 216 punkter där alla
+kandidater har ett värde, utan de sju stationerna utan höjd, är RÅ:s grova fel 7,4 %.
+
+| Kandidat | grova fel, alla | 0–7 km | 7–15 km | 15–20 km | över 20 km | MAE |
+| :-- | --: | --: | --: | --: | --: | --: |
+| RÅ | 7,4 % | 5,2 % | 5,1 % | 7,1 % | 13,6 % | 0,67 °C |
+| RÅ+HÖJD | 8,8 % | 5,8 % | 5,6 % | 8,6 % | 16,8 % | 0,69 °C |
+| RN | 9,3 % | 6,0 % | 5,9 % | 8,9 % | 18,1 % | 0,70 °C |
+| RN+R | 9,3 % | 5,9 % | 5,9 % | 8,8 % | 18,4 % | 0,71 °C |
+| OFFSET (taket) | 5,5 % | 3,6 % | 3,6 % | 5,4 % | 10,3 % | 0,59 °C |
+
+Frysflaggan, alla band, farliga fel av frysningarna vid marginal 0 · 0,5 · 1,0 °C: RÅ 4,9 · 2,3 · 1,2 % · RÅ+HÖJD 4,9 · 2,3 · 1,1 % · RN
+5,0 · 2,4 · 1,2 % · RN+R 5,1 · 2,5 · 1,3 % · OFFSET 4,2 · 1,7 · 0,8 %. Bortom 20 km vid marginal 0: RÅ 2,8 %, RN 3,4 %. Rätt klass och
+täckning skiljer högst 0,2 procentenheter mellan RÅ och RN. RN+R:s g på hela landet: konstant 1,38, moln 1,28, vind −0,24 per m/s,
+långvåg −0,014 och kortvåg 0,001 per W/m², fukt 1,51; 4 405 373 hinkar.
+
+**Mot läsningen i förväg.** (1) *Föll:* RN slår inte RÅ bortom 20 km, utan är 4,5 procentenheter sämre (18,1 mot 13,6 %). (2) *Föll:*
+inom 15 km är RN 0,8 procentenheter sämre (6,0 mot 5,2 och 5,9 mot 5,1 %). (3) *Föll:* RN+R är inte bättre än RN (9,3 mot 9,3 %; bortom
+20 km 18,4 mot 18,1). (4) *Föll:* RÅ+HÖJD är 1,4 procentenheter sämre än RÅ.
+
+**Läsning.** Att sprida vägens skillnad mot MET Nordics luft är sämre än att sprida vägens temperatur, i alla band och mest där RÅ är
+svagast. Rutnätets luftskillnader mellan stationerna slår alltså inte igenom ett till ett i vägytan. Samma sak syns i RÅ+HÖJD, som
+överför standardatmosfärens 0,65 °C per 100 m fullt och blir sämre, och i #480:s vädermodell, där ytan följer luften med koefficienten
+0,76, inte 1. *Iakttagelse, inte kandidat:* en delvis överföring av luftskillnaden vore en ny parameter, vald efter att detta utfall är
+sett — den får i så fall förregistreras och prövas på en annan vinter.
+
+**Följd.** Ingen kandidat. Rutnätsmodellen i den form den låstes 6/10 bär inte. Steg 2 (kriging) och kallkartans prov (#482) bygger på
+rutnätet och väntar på Bengts och Axels ord (bedömningen §4.2). PR #783 stängs när #481 och #482 är på main.
+
 ## #482 (6/10 2026, flyttad till main 7/10) Kallkartan ur satelliten — hämtningen och receptet, fasta innan något körs (kort #302 steg 3)
 
 **Flyttad till main 7/10** (Bengt: *"kör RN"*). Posten skrevs 6/10 som #471 på grenen `kuvos/rutnatet-469` (PR #783), som aldrig slogs ihop; under tiden togs #470, #471 och kort #298 på main. Texten nedan är grenens, oförändrad utom rubriken och hänvisningarna till rutnätsmodellen (#481), kallkartan (#482) och kortet (#302).
