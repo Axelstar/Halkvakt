@@ -780,6 +780,7 @@ Körning 37447617038, startvärdena som de står, ingen dom (#424). Facit = stat
 | **Prognoslagret L8: kovariatmodellen** (#471) | **R² 0,010** på 722 stationer; RÅ+KOVARIAT 7,3 % mot RÅ 7,4 % | — | grova kovariater bär inte särarten (mikroskala); metoden står, kovariaterna måste bli de rätta eller karteringen (#271) |
 | **Korsade läsningen K1–K4: spridningen och natten** (#476) | grind 2 °C 52 % · 2,5 % · **2,25 °C 61 % · 2,8 %** · 3 °C 76 % · 3,6 % · 4 °C 87 % · 4,6 %; ett ankare 24,2 %; RÅ-natten 6,0 %; grind 2 + natt 34 % · 2,3 % | — | grinden tar dagsljusets fel; natten kostar en tredjedel av täckningen och tystar marsmorgnar; X ur banden (§4.2) |
 | **C8 med vägdata** (#479) | R² **0,042** (REL), 0,034 (VÄG), −0,005 (BAS) med regionerna gömda; grova fel 7,5 → 7,5 %; ÅDT-klasserna −0,10 / −0,08 / +0,20 °C | — | vägens effekt finns redan i grannmedlet; särarten är mikroskala — ingen kandidat |
+| **C8 mot vädret** (#480) | mot MET Nordics linjära vädermodell: VÄG R² **0,298**, BAS 0,596; ÅDT-klasserna −0,62 / +0,25 / **+1,04 °C** (Axel −0,58 / +1,14); vädermodellen 21,8 % grova fel, med vägdata 20,1 % | — | Axels fynd står sig: vägens effekt är verklig men finns redan i grannmedlet; vägdatan hör hemma i en vädergrundad modell |
 
 ## Bilaga A — rättelser till kartan som väntar tills en rör kod
 
