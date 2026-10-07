@@ -8516,3 +8516,44 @@ uppfyllda — på Bengts order, och beställningen 7/10 står — eller senast v
 
 **Alternativ:** (a) grova fel per band nu, i domläget — förkastat, C1 och C2 är inte uppfyllda och andelarna är blindade (#352);
 (b) lyfta blindningen för spridningens grova fel — förkastat utan eget beslut, eftersom holdout-raderna är samma rader som B1 dömer.
+
+## #479 (7/10 2026) C8 med vägdata — kovariatmodellen tränad på stationernas särart, nu med vägens egenskaper, förregistrerad före körningen (kort #298, Bengts "kör c8")
+
+**Beslut.** Bengt 7/10: *"kör c8"*. En läsning i kuvösen, ingen dom. Skript `scripts/matningar/kuvos-c8-vagdata-2026-10-07.ts` på
+knappen `kuvos` (`matning`), förregistrerat här i samma commit som skriptet, före körningen.
+
+**Varför nu, och vad som redan är sett.** L8 (#471) prövade terräng och fick R² 0,01. Axels fysikspår (7/10, utanför repot, inte
+förregistrerat) fann att trafikmängd och vägklass förklarar 23 % av stationernas avvikelse — mot hans fysikmodell, inte mot RÅ; ÅDT
+under 1 000 gav −0,58 °C och över 20 000 +1,14 °C. Den här läsningen är utformad **efter** att det fyndet lästs, och efter L1–L8, den
+korsade läsningen (#476) och Axels nattkörning på samma vinter. Den riktiga prövningen av en rättelse ur vägdata är vintern 2026/27,
+förregistrerad före den vintern. Vägdatan är NVDB i dag (`data/vagdata/stationer.json`, #473), vintern är 2024/25; ÅDT:ns mätår
+spänner 2014–2026.
+
+**Målet, som L8:** stationens särart = medel(mätt − RÅ) över dess punkter, för stationer med minst 100 punkter. Grind A:s RÅ och
+vakter, samma underlag som K1 (#476).
+
+**Tre modeller, ridge** (λ = 1 på standardiserade kolumner, som L8):
+- **VÄG:** log ÅDT, andel lastbilar, andel lätta fordon 22–06, funktionell vägklass, hastighet, bredd, grus, kommunal väghållare,
+  och flaggor för saknad ÅDT och saknad nattrafik. Saknade värden fylls med medianen över stationerna; målet fylls aldrig.
+- **REL:** de sex talen minus grannarnas viktade medel — samma grannar som RÅ, fem närmaste inom 50 km, vikt 1/max(km, 1). RÅ är ett
+  grannmedel, så det som syns i särarten borde vara skillnaden mot grannarna.
+- **BAS:** L8:s billiga variabler — latitud, longitud, stationer inom 20 km. Höjderna hoppas över; de bar ingenting i L8.
+
+**Valideringen:** (1) **hela regioner gömda** — rutor om 1° latitud × 2° longitud; varje station förutsägs av en modell tränad på
+stationerna utanför dess ruta. Det är huvudtalet. (2) Leave-one-out, som L8, bredvid.
+
+**Måtten:** R² och MAE för särarten; kandidaterna RÅ+VÄG, RÅ+REL och RÅ+BAS — RÅ plus den regionsgömda särarten — per band med A1,
+A2 och A3 mot RÅ och OFFSET på samma punkter; samma sak under spridningsgrinden vid 2,25 °C (#477), som nu är baslinjen; effekt per
+standardavvikelse för VÄG och REL; särarten per ÅDT-klass (under 1 000 · 1 000–20 000 · över 20 000) som kontroll mot Axels tal.
+
+**Läsningen i förväg.** (1) Den bästa av VÄG och REL förklarar 0,10–0,25 av särarten med regionerna gömda. (2) REL slår VÄG. (3) BAS
+förklarar nära noll, som i L8. (4) Den bästa kandidaten tar de grova felen från 7,5 % till 6,5–7,0 %. (5) Särarten stiger med
+ÅDT-klassen: negativ under 1 000, positiv över 20 000.
+
+**Kontroll:** RÅ ska ge 4 353 206 punkter och 7,5 % grova fel som 6/10 och K1; avviker det läses inte resten förrän skälet är känt.
+
+**Prov före körningen:** självtestet räknar hela läsningen på 160 syntetiska stationer där särarten är 0,9 · (log ÅDT − 3,5) — VÄG
+hittar den med R² över 0,9, BAS inte. Läckvakten: en särart som är rent brus ger R² under 0 korsvaliderat. Tre motprov fällde provet:
+målet med i sin egen träning (R² 0,058 på bruset), ÅDT utan logaritm, REL utan grannarna.
+
+**Vad som INTE görs.** Inga trösklar, ingen ändring i driften, ingen förregistrering av fysikspåret.
