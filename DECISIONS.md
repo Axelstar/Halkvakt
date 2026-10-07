@@ -8266,3 +8266,13 @@ pipefail`. **Följd:** kort #301 steg 1 klart; steg 2 (hämtaren med vägval och
 
 **Vad som inte görs:** inget skrivs till Supabase; kuvösens inläsning (`kuvos_ra.vagdata`) och Axels kolumner (himmelsfaktor, skog, vatten)
 är steg 3; ingen mätning läser lagret förrän filerna är i repot och spannen OK.
+
+**Tillägg, Bengts val (a) 7/10 (*"a, slå ihop 788"*) — väglagspunkterna.** Frågan var varför vägpunkterna följer våra egna linjer:
+skuggrutterna är handritade sedan 29/8 — 20 rutter, 109 brytpunkter, 3 107 km, ~35 km per rak sträcka — och det är därför NVDB träffade
+14–55 % vid dem (#472). Tre vägar ställdes: (a) väglagsnätets egen geometri (Trafikverkets 818 segment, 23 681 km) med punkter var 2 km,
+(b) rutterna snappade till vägen (byter skuggans population — eget kort, förregistrering, Bengt och Axel), (c) hela vägnätet som
+population. **(a) valdes** därför att facit mellan stationerna finns bara där (RoadCondition, kamerorna), det redan är premissmätningens
+population B (#406) så kuvösen, hösten och mars förblir jämförbara, geometrin redan är hämtad, produkten talar bara där, och
+stationerna inte kan kalibrera småvägar; (c) först när facit finns utanför de 818. Hämtaren får en fjärde fil
+`data/vagdata/vaglagspunkter.json` — var 2 km längs segmentens linjer, id `segment_id@km`, ~11 800 punkter — och tiden växer till ≈ 2 h
+per säsong. Rutternas vägpunkter behålls för prognoslagrets läsningar som de står; (b) är kort #302 om Bengt och Axel vill.

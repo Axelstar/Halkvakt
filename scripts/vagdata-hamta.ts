@@ -2,9 +2,11 @@
 // data/vagdata/{stationer,segment,vagpunkter}.json ur Trafikverkets öppna API (NVDB i API:et sedan 7/2 2025, licens CC0) med nyckeln
 // driften redan har. En knapptryckning per säsong; filerna committas i en PR efter att sammanfattningen lästs — aldrig av flödet självt.
 //
-// PLATSERNA: VViS-stationerna (static.json), väglagsnätets 818 segment (mittpunkten på linjen) och vägpunkterna var 2 km längs de 20
-// svenska skuggrutterna (engine/src/segment.ts provpunkter, samma som prognoslagret). Vägpunkterna snappas INTE: prognoslagret räknar
-// på just de koordinaterna, så lagret ska beskriva dem — radien vidgas i stället (150 → 400 → 1 000 m) och den radie som bar skrivs ut.
+// PLATSERNA: VViS-stationerna (static.json), väglagsnätets 818 segment (mittpunkten på linjen), vägpunkterna var 2 km längs de 20
+// svenska skuggrutterna (engine/src/segment.ts provpunkter, samma som prognoslagret) och — Bengts val (a) 7/10 — VÄGLAGSPUNKTERNA: var
+// 2 km längs väglagsnätets egna linjer (Trafikverkets riktiga geometri, 23 681 km, ~11 800 punkter; premissmätningens population B, #406).
+// Skuggrutterna är handritade (109 brytpunkter på 3 107 km, ~35 km per rak sträcka), så rutternas vägpunkter snappas INTE — prognoslagret
+// räknar på just de koordinaterna och lagret ska beskriva dem — radien vidgas i stället (150 → 400 → 1 000 m) och den radie som bar skrivs ut.
 //
 // VÄGVALET (rekognoseringen #472: 5–7 objekt per träff på 150 m, en sidoväg kan ta platsen): alla sex datamängderna hämtas i EN förfrågan
 // per plats (sex QUERY i samma REQUEST), objekten grupperas på NVDB:s Element_Id, raderade och utgångna (Valid_To passerad) kastas, och ETT
@@ -164,6 +166,8 @@ const platser: Record<string, { id: string; lon: number; lat: number }[]> = {
   stationer: glesa(statik.stations.map((s: any) => ({ id: String(s.id), lon: s.lon, lat: s.lat }))),
   segment: glesa(vaglag.features.map((f: any) => { const c = f.geometry.coordinates; const m = c[Math.floor(c.length / 2)]; return { id: String(f.properties.segment_id), lon: m[0], lat: m[1] }; })),
   vagpunkter: glesa(Object.entries(ROUTES).filter(([n]) => !/Finland|Norge|Danmark|FI|NO|DK/.test(n)).flatMap(([n, line]) => provpunkter(line).map((p) => ({ id: `${n}@${p.km}`, lon: p.lon, lat: p.lat })))),
+  // (a): riktig geometri — var 2 km längs väglagsnätets 818 linjer, id = segment_id@km.
+  vaglagspunkter: glesa(vaglag.features.flatMap((f: any) => provpunkter(f.geometry.coordinates as [number, number][]).map((p) => ({ id: `${f.properties.segment_id}@${p.km}`, lon: p.lon, lat: p.lat })))),
 };
 const datum = new Date().toISOString();
 console.log(`VÄGDATALAGRETS HÄMTARE (kort #301 steg 2, DECISIONS #473) — ${stickprov ? "STICKPROV (var 40:e)" : "alla platser"}: ` +

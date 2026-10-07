@@ -5,12 +5,12 @@ on:
   workflow_dispatch:
     inputs:
       stickprov:
-        description: "true = var 40:e plats (prov av hämtaren). Tomt = alla platser (~3 300 förfrågningar, ~30 min)."
+        description: "true = var 40:e plats (prov av hämtaren). Tomt = alla platser (~15 000 förfrågningar med väglagspunkterna, ~2 h)."
         default: ""
 jobs:
   vagdata-hamta:
     runs-on: ubuntu-latest
-    timeout-minutes: 150
+    timeout-minutes: 300
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
