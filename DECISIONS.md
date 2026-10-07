@@ -8348,3 +8348,60 @@ Bengts order. Rader loggade före deployen har sex fält och kan inte bandas, s�
 **Alternativ:** (a) grinden i loggens status — förkastat, loggen ska vara rå (#196) och X är inte satt; (b) B1–B3 omräknade med
 grinden — förkastat nu, lättnadsrisken ovan; (c) vänta med bygget tills X är satt — förkastat, varje dygn utan loggad spridning
 är ett dygn mindre i vinterläsningen.
+
+## #475 (7/10 2026) Marsdomen räknas med spridningsgrinden, och tystnaden är en miss — väg (c) (kort #299, Bengts val; Axels signatur väntar)
+
+**Beslut.** Bengt 7/10: *"c"* — svaret på bedömningens §4.2 om marsdomens B1–B3 med grinden: (a) utan grind, (b) med grind och ett
+täckningskrav, (c) med grind och tystnaden som miss. Ändrar #474:s *"B1–B3 och C1–C3 räknas utan grinden"*.
+
+**Regeln** (TROSKLAR-SKUGGAN §3, vägpunkten och grind B). Med X fastställt räknas
+- B1 och C2 på de holdout-episoder grinden släpper fram: holdout-raden har minst två ankare och spridning under X;
+- B3 på de episoder på rutten som grinden släpper fram;
+- B2 med täckningen OFÖRÄNDRAD — ett segment är täckt när närmaste provpunkt har status ≥ 1 utan grinden — men flaggat bara där
+  grinden låter prognosen tala. Halka på ett täckt segment där grinden tystade prognosen är alltså en MISS;
+- C1 utan grinden, och C3 som förut: samstämmigheten mellan backtest och drift gäller modellen, inte grinden.
+Domen räknas bara på varv där spridningen är loggad. Utan fastställt X fälls ingen dom — grind S-B skriver *INGEN DOM*.
+
+**Varför (c).** Domen ska döma det produkten skulle säga, och tystnad måste kosta. Med (a) kunde B1 fällas av falsklarm som produkten
+med grinden aldrig ger, och efter mars hade det varit för sent att byta. Med (b) krävdes ett nytt tal. Med (c) kan grinden bara vinna
+B1 genom att betala i B2. Det är inte en ren skärpning, eftersom B1 blir lättare; därför krävs båda signaturerna, och beslutet fattas
+medan andelarna är blinda (#352) — ingen har sett utfallet, så §5:s spärr mot lättnad efter sett utfall träffar inte.
+
+**Axels signatur väntar** (bedömningen §4.2). Koden är byggd nu och verkar först när X är satt; domen fälls tidigast i mars.
+Vägpunktsgrinden (A-måtten, föll 28/9 på 6,9 %, #399) dömer fortfarande utan grind; ska den dömas med grinden krävs en egen post,
+med samma princip att tystnad kostar.
+
+**Byggt.** `publish/grind-s-b.ts`: `talar()` och `spridningLoggad()`, X genom episoderna, holdout-episoderna, händelsedomen, räkningen
+och rapporten; `SPRIDNING_X = null` tills dokumentet sätter talet, aldrig från kommandoraden. Självtestet: grinden tystar en flaggad
+punkt med spridning 3 ⇒ halkan där blir MISS, den varma holdouten försvinner ur B1, varvet utan spridning räknas inte, spridning lika
+med X tiger, och X-spärren och C-spärren prövas var för sig. Fyra motprov fällde provet på rätt rad: flaggad utan grinden; täckt MED
+grinden — lättnaden, missen försvann; gränsen som ≤ X; gamla varv med i grinden.
+
+## #476 (7/10 2026) Spridningen och natten korsade — en läsning i kuvösen, förregistrerad före körningen (kort #299, Bengts ja)
+
+**Beslut.** Bengt 7/10: *"ja till korsade läsningen"*. En läsning, ingen dom: underlaget för X (#474) och för nattbegränsningen
+(kort #299 förslag 2), som Bengt och Axel beslutar ur tabellerna. Skript `scripts/matningar/kuvos-spridning-natt-2026-10-07.ts` på
+knappen `kuvos` (`matning`). Förregistrerad här, i samma commit som skriptet, före körningen.
+
+**Population och modell.** Vintern 2024/25 i kuvösen, grind A:s underlag och vakter (#75, radvakten, karantänen) som L1/L2 (#471),
+och grind A:s RÅ utan offset — driftens modell; L2 mätte OFFSET. Grind A:s `evaluate` bär nu antalet bidragande ankare
+(beteendeneutralt, självtestet grönt), så att ett ensamt ankare skiljs från två eniga: L1 räknade spridning 0 som ett ankare.
+Spridningen avrundas till tre decimaler före bandningen, så att 2,0 aldrig hamnar under 2 av flyttalsskäl.
+
+**Läsningarna.**
+- **K1 X-kurvan:** per spridningsband bland punkter med minst två ankare (0–0,5 · 0,5–1 · steg om 0,25 °C från 1 till 4 · > 4) och
+  ett ankare för sig: täckning, MAE, A2, A3. Grinden vid X = 0,5; 1; 1,25 … 4: täckning av alla punkter och felen bland dem som talar.
+- **K2 natten för RÅ:** A2 per solhöjdsband (natt < −6°, skymning −6…0°, dag > 0°) och månad.
+- **K3 korsat:** K2 bland punkter grinden släpper fram vid X = 2, 3 och 4; och reglerna bara grind, grind + natt, grind + sol under 0°,
+  bara natt och ingen regel sida vid sida — täckning, MAE, A2, A3 hela vintern, i februari och i mars.
+- **K4 morgonen:** punkter 05–08 UTC (06–09 normaltid) i februari och mars — andel per solhöjdsband och A2 med och utan grind.
+
+**Läsningen i förväg.** (1) A2 stiger med spridningen, och grinden vid 3 °C håller under 5 % med ungefär 70 % täckning. (2) Ett ensamt
+ankare har grova fel långt över två eniga. (3) RÅ följer L2:s mönster en till två procentenheter sämre, och dagen i mars ligger över
+15 %. (4) Grinden tar en del av dagsljusets fel men inte allt: med grinden vid 2 ligger dagen i mars minst två procentenheter över
+natten. (5) Morgonen 06–09 i mars är mest skymning och dag.
+
+**Kontroll.** Utan grind ska RÅ ge samma tal som L1/L2 6/10 — 4 353 206 punkter, 7,5 % grova fel. Avviker det är underlaget inte
+detsamma, och läsningen läses inte förrän skälet är känt.
+
+**Vad som INTE görs.** Inga trösklar, inget X, ingen nattregel.
