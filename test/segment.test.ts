@@ -70,8 +70,8 @@ test("raden är kompakt och avrundad: km, yta och avstånd med högst en decimal
   const pr = segmentPrognos(LINE, [ank("a", 13.13, -0.37), ank("b", 13.31, 2.11)]);
   assert.equal(pr.steg_km, STEG_KM);
   for (const q of pr.p) {
-    assert.equal(q.length, 6);
-    for (const v of [q[1], q[2]]) if (v !== null) assert.equal(v, Math.round(v * 10) / 10);
+    assert.equal(q.length, 7);
+    for (const v of [q[1], q[2], q[6]]) if (v !== null) assert.equal(v, Math.round(v * 10) / 10);
   }
 });
 
@@ -101,6 +101,24 @@ test("holdout: stationer inom facitradien skattas ur de ÖVRIGA och loggas med s
   // Ensam station på linjen utan grannar inom 50 km ⇒ skattning null, inte sin egen mätning.
   const ensam = holdoutRader(LINE, [ank("ensam", 13.25, -1)]);
   assert.equal(ensam.length, 1); assert.equal(ensam[0][3], null); assert.equal(ensam[0][5], 0);
+});
+
+test("spridningen (DECISIONS #474): störst minus minst av de bidragande ankarna, 0 med ett, null utan", () => {
+  const p = { lon: 13.1, lat: 56.0 };
+  assert.equal(skatta(p, [ank("v", 13.08, -1.5), ank("h", 13.12, 2.3), ank("m", 13.1, 0)]).spr, 2.3 - -1.5);
+  assert.equal(skatta(p, [ank("a", 13.1, -2.3)]).spr, 0);
+  assert.equal(skatta(p, [ank("langt", 14.0, -5)]).spr, null);                       // 62 km bort: inget ankare bidrar
+  // Bara de fem närmaste: det sjätte och sjunde (±40 °C) får inte blåsa upp spridningen.
+  const fem = [1, 2, 3, 4, 5].map((i) => ank(`a${i}`, 13.1 + i * 0.02, i));
+  const sju = [...fem, ank("a6", 13.1 + 6 * 0.02, 40), ank("a7", 13.1 + 7 * 0.02, -40)];
+  assert.equal(skatta(p, sju).spr, 4);
+  // I raden: sjunde fältet, avrundat; flaggan och statusen bär inte grinden (loggen är rå).
+  const r = segmentPrognos([[13.0, 56.0], [13.01, 56.0]], [ank("a", 13.0, -0.4), ank("b", 13.02, 4.6)]).p[0];
+  assert.equal(r[6], 5); assert.equal(r[4], 2);
+  // Holdout: de ÖVRIGAS spridning, aldrig den egna mätningens.
+  const h = holdoutRader(LINE, [ank("mitt", 13.25, 30), ank("x", 13.3, 1), ank("y", 13.35, -1)]);
+  assert.equal(h.find((q) => q[1] === "mitt")![6], 2);
+  assert.equal(holdoutRader(LINE, [ank("ensam", 13.25, -1)])[0][6], null);
 });
 
 test("determinism: samma indata ⇒ byte-identisk rad", () => {

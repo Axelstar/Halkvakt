@@ -121,6 +121,16 @@ Holdout (DECISIONS #326): varje station inom 2 km av rutten skattas varje varv u
 mätning (`prognos.h`) — det är §2:s stationsfacit, utan att något tas bort ur prognosen.
 Faller RÅ på vinterdata tas frågan upp i bedömningen §4.2 — grinden körs om varje måndag.
 
+**Spridningsgrinden** (7/10 2026, DECISIONS #474 — Bengts ja och Axels signatur 7/10, relayerad av Bengt i chatten; kort #299
+förslag 1, ur kuvösens läsning L1, DECISIONS #471): en provpunkt är *okänt* — prognosen tiger — när färre än två ankare bidrar eller
+när ankarnas spridning, störst minus minst av de bidragande ankarnas yttemperatur, är **X °C eller mer**. Skärpning enligt §5:
+grinden tar bort punkter och sänker inget krav. **X fastställs här genom en DECISIONS-post före vinterläsningen** — inget tal är
+valt 7/10. Skuggmotorn loggar spridningen rå per provpunkt och holdout-rad (sjunde fältet); statusen i loggen bär inte grinden.
+Grind S-B läser täckningen och holdout-radernas grova fel per spridningsband och för X = 1, 2 och 4 °C, under samma blindning
+som B-måtten. **B1–B3 och C1–C3 räknas utan grinden:** B2 dömer bara täckta segment och har inget täckningskrav, så grinden i
+B-måtten kunde bli en lättnad; ska domen räknas med grinden krävs ett täckningskrav i samma post. Underlaget (RÅ, stationerna,
+vintern 2024/25): spridning 0,5–2 °C på 49 % av punkterna med 2,5 % grova fel, 2–4 °C på 35 % med 7,8 %, över 4 °C på 11 % med 27 %.
+
 ### Grind B — skuggdriften (hela vintern, dom i mars)
 
 | # | Mått | Tröskel |

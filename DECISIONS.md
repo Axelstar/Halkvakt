@@ -8302,3 +8302,49 @@ närliggande element på samma väg; raden bär `kandidater` så att det går at
 **Följd:** kort #301 steg 2 klart. Steg 3: kuvösens inläsning (`kuvos_ra.vagdata`) och Axels kolumner (himmelsfaktor, skog, vatten,
 terrängläge) med proveniens. Första användare i tur: C8 v2 (#298) med ÅDT och vägklass, efterhalkans pris per vägklass (#296/#297),
 kallplatsindexet per segment (#91). Ingen mätning har läst filerna än.
+
+## #474 (7/10 2026) Spridningsgrinden antagen: prognosen tiger när ankarna är oense — spridningen loggas rå i skuggan, X sätts före vinterläsningen (kort #299 förslag 1, Bengts ja, Axels signatur)
+
+**Beslut.** Bengt 7/10: *"kör förslag 1 på kort 299"*, och samma timme *"Axel signerar"* (relayerat i chatten, som fastställandet
+2/9, #61). Förslag 1 ur kuvösens läsning L1 (#471) blir regel i TROSKLAR-SKUGGAN §3, stycket om vägpunkten: en provpunkt är *okänt*
+— prognosen tiger — när färre än två ankare bidrar eller när ankarnas spridning, störst minus minst av de bidragande ankarnas
+yttemperatur, är **X °C eller mer**. Det är en skärpning enligt §5: grinden tar bort punkter och sänker inget krav. Gränsen ligger
+på [lo, hi) som L1:s band, så att skuggans läsning och kuvösens går att lägga bredvid varandra.
+
+**X är inte satt.** Förslaget sa *"X läses ur tabellen, inget val gjort"*, och inget av orden 7/10 nämner ett tal. X fastställs i
+TROSKLAR-SKUGGAN genom en DECISIONS-post före vinterläsningen (bedömningen §4.2). Underlaget är RÅ, leave-one-out vid stationerna,
+vintern 2024/25 (#471); täckningen är en undre gräns, eftersom bandet 0–0,5 °C i L1 blandade ett ankare med två och inte delades:
+
+| X | täckning, minst två ankare och spridning under X | grova fel (A2) i banden 0,5–X |
+| :-- | --: | --: |
+| 1 °C | minst 13,3 % | 1,8 % |
+| 2 °C | minst 49,4 % | 2,5 % |
+| 4 °C | minst 84,2 % | 4,7 % |
+| ingen grind | 100 % | 7,5 % |
+
+A2 för 2 och 4 °C är viktad ur banden: (13,3 · 1,8 + 36,1 · 2,8) / 49,4 = 2,5 och (… + 34,8 · 7,8) / 84,2 = 4,7. Grind A:s krav är
+A2 ≤ 5 %; vid 4 °C ligger talet inom marginalvaktens räckhåll.
+
+**Vad som byggs nu, oberoende av X.**
+1. *Loggen.* `engine/src/segment.ts`: `skatta()` räknar spridningen över samma fem ankare som skattningen, och provpunkten och
+   holdout-raden får ett sjunde fält, spridningen i °C med en decimal — 0 med ett ankare, null utan. Status och frysflagga bär INTE
+   grinden: loggen är rå, domen räknar (#196). Skuggmotorn buntas om (`index.ts` är genererad) och deployas efter ihopslagningen;
+   beviset är första raden MED innehåll i sjunde fältet efter deployen, inte commit-hashen.
+2. *Läsningen.* `publish/grind-s-b.ts`: täckta provpunkter (status ≥ 1) och holdout-rader (C3:s population, mätt ≤ +5 °C) per
+   spridningsband — L1:s fem band, ett ankare för sig, rader utan fältet som *ej loggad*. Underlagsläget skriver bara antal;
+   domläget skriver täckning och holdout-radernas grova fel per band och för X = 1, 2 och 4 °C, under samma blindning som B-måtten
+   (#352). Självtestet bär en fälla på gränsen: spridning 2,0 hamnar i 2–4, där grinden vid 2 tiger. Tre motprov fällde provet:
+   spridning över alla ankare inom 50 km, banden som (lo, hi], och holdout-raderna utan vinterfiltret.
+
+**Vad som INTE ändras.** B1–B3 och C1–C3 räknas som förut, utan grinden. B2 dömer missar bara på täckta segment, och grind C har
+inget täckningskrav; en grind i B-måtten kunde därför krympa populationen och bli en lättnad, som §5 utesluter. Ska marsdomen
+räknas med grinden krävs ett täckningskrav i samma post (§4.2). Nattbegränsningen (förslag 2) ingår inte. Rösten berörs inte:
+telefonen kör inte segmentprognosen.
+
+**Förregistrerat för vinterläsningen.** Läsningen i förväg: de grova felen stiger med spridningsbandet i skuggan som i kuvösen.
+Stiger de inte, tas grinden upp igen innan den bär något. Läsningen är `grind-s-b --dom` när C1 och C2 är uppfyllda, eller på
+Bengts order. Rader loggade före deployen har sex fält och kan inte bandas, så läsningens fönster börjar vid deployen.
+
+**Alternativ:** (a) grinden i loggens status — förkastat, loggen ska vara rå (#196) och X är inte satt; (b) B1–B3 omräknade med
+grinden — förkastat nu, lättnadsrisken ovan; (c) vänta med bygget tills X är satt — förkastat, varje dygn utan loggad spridning
+är ett dygn mindre i vinterläsningen.

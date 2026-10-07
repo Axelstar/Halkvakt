@@ -8,19 +8,22 @@
 // hörd, tills domen i mars 2027 (TROSKLAR-SKUGGAN §4: karta och förstärkare, aldrig röst ensam).
 //
 // Utdata per provpunkt var STEG_KM längs rutten, kompakt för databasens skull:
-//   [km, yta, narm, n, status, frys]
+//   [km, yta, narm, n, status, frys, spr]
 //   km     läge längs rutten (km)
 //   yta    skattad yttemperatur (°C, en decimal) eller null när inget ankare når
 //   narm   avstånd till närmaste bidragande ankare (km, en decimal) eller null
 //   n      antal bidragande ankare (0–5)
 //   status 2 = uppmätt (ankare inom UPPMATT_KM, facitradien i §2) · 1 = modellerat · 0 = okänt (inget ankare inom MAX_KM)
 //   frys   1 när yta ≤ FRYS_C (A3:s klassgräns), annars 0 — "prognosen flaggade segmentet" i §2:s mening
+//   spr    ankarnas spridning: störst minus minst bidragande ankares yta (°C, en decimal), 0 med ett ankare, null utan
+//          ankare — spridningsgrindens underlag (TROSKLAR-SKUGGAN §3, DECISIONS #474). Loggas rå: status och frys bär
+//          INTE grinden, domen räknar (DECISIONS #196). Rader loggade före spridningen har sex fält.
 // Tidsdelen (risk vid beräknad ankomsttid, §1) är INTE med: grinden bevisade den rumsliga delen, inget har prövat
 // den tidsliga. Kolumnen loggar nuläget per segment; tiden väntar på trendregeln (kort #88).
 import { haversineM } from "./geo.ts";
 
 export type Ankare = { id: string; lon: number; lat: number; yta: number };
-export type Provpunkt = [number, number | null, number | null, number, 0 | 1 | 2, 0 | 1];
+export type Provpunkt = [number, number | null, number | null, number, 0 | 1 | 2, 0 | 1, number | null];
 export type Prognos = { steg_km: number; p: Provpunkt[] };
 
 export const STEG_KM = 2;        // provpunkt var annan kilometer — facit matchas inom 2 km (§2)
@@ -52,8 +55,9 @@ export function provpunkter(line: [number, number][], stegKm = STEG_KM): { km: n
 
 const r1 = (x: number) => Math.round(x * 10) / 10;
 
-/** En provpunkt: de K närmaste ankarna inom MAX_KM, viktade 1/max(km, 1) — grind A:s grannvikt, ordagrant. */
-export function skatta(p: { lon: number; lat: number }, ankare: Ankare[]): { yta: number | null; narm: number | null; n: number } {
+/** En provpunkt: de K närmaste ankarna inom MAX_KM, viktade 1/max(km, 1) — grind A:s grannvikt, ordagrant. Spridningen är
+ *  störst minus minst av samma ankares yta, som grind A:s `spridning` utan offset (kuvösens L1 för RÅ, DECISIONS #471). */
+export function skatta(p: { lon: number; lat: number }, ankare: Ankare[]): { yta: number | null; narm: number | null; n: number; spr: number | null } {
   const nara: { km: number; yta: number }[] = [];
   for (const a of ankare) {
     const km = haversineM(p, a) / 1000;
@@ -61,13 +65,13 @@ export function skatta(p: { lon: number; lat: number }, ankare: Ankare[]): { yta
   }
   nara.sort((x, y) => x.km - y.km);
   const k = nara.slice(0, K_NEIGHBOURS);
-  if (!k.length) return { yta: null, narm: null, n: 0 };
-  let w = 0, s = 0;
-  for (const a of k) { const v = 1 / Math.max(a.km, 1); w += v; s += v * a.yta; }
-  return { yta: s / w, narm: k[0].km, n: k.length };
+  if (!k.length) return { yta: null, narm: null, n: 0, spr: null };
+  let w = 0, s = 0, hi = -Infinity, lo = Infinity;
+  for (const a of k) { const v = 1 / Math.max(a.km, 1); w += v; s += v * a.yta; if (a.yta > hi) hi = a.yta; if (a.yta < lo) lo = a.yta; }
+  return { yta: s / w, narm: k[0].km, n: k.length, spr: hi - lo };
 }
 
-export type Holdout = [number, string, number, number | null, number | null, number];
+export type Holdout = [number, string, number, number | null, number | null, number, number | null];
 
 /** Närmaste punkt på linjen: avstånd (km) och läge längs linjen (km), i en lokal planprojektion per delsträcka. */
 export function narmastLangs(p: { lon: number; lat: number }, line: [number, number][]): { km: number; vid: number } {
@@ -90,14 +94,15 @@ export function narmastLangs(p: { lon: number; lat: number }, line: [number, num
 /** HOLDOUT (kort #38b 4c, DECISIONS #326): varje ankare inom UPPMATT_KM av rutten skattas ur de ÖVRIGA ankarna — samma
  *  leave-one-out som grind A, varje varv — och loggas med sin egen mätning. Inget tas bort ur prognosen ovan: stationen
  *  bär prognosen för alla andra punkter och är facit för sin egen (TROSKLAR-SKUGGAN §2: stationen får fälla).
- *  Rad: [km längs rutten, id, mätt yta, skattad yta, avstånd till närmaste övriga ankare, antal ankare]. */
+ *  Rad: [km längs rutten, id, mätt yta, skattad yta, avstånd till närmaste övriga ankare, antal ankare, de övrigas spridning]. */
 export function holdoutRader(line: [number, number][], ankare: Ankare[]): Holdout[] {
   const ut: Holdout[] = [];
   for (const a of ankare) {
     const n = narmastLangs(a, line);
     if (n.km > UPPMATT_KM) continue;
     const s = skatta(a, ankare.filter((o) => o.id !== a.id));
-    ut.push([r1(n.vid), a.id, a.yta, s.yta === null ? null : r1(s.yta), s.narm === null ? null : r1(s.narm), s.n]);
+    ut.push([r1(n.vid), a.id, a.yta, s.yta === null ? null : r1(s.yta), s.narm === null ? null : r1(s.narm), s.n,
+             s.spr === null ? null : r1(s.spr)]);
   }
   ut.sort((x, y) => x[0] - y[0]);
   return ut;
@@ -109,7 +114,8 @@ export function segmentPrognos(line: [number, number][], ankare: Ankare[], stegK
     const s = skatta(pp, ankare);
     const status: 0 | 1 | 2 = s.narm === null ? 0 : s.narm <= UPPMATT_KM ? 2 : 1;
     const frys: 0 | 1 = s.yta !== null && s.yta <= FRYS_C ? 1 : 0;
-    return [pp.km, s.yta === null ? null : r1(s.yta), s.narm === null ? null : r1(s.narm), s.n, status, frys];
+    return [pp.km, s.yta === null ? null : r1(s.yta), s.narm === null ? null : r1(s.narm), s.n, status, frys,
+            s.spr === null ? null : r1(s.spr)];
   });
   return { steg_km: stegKm, p };
 }
