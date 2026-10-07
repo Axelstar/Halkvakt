@@ -8948,6 +8948,27 @@ den; kuvösens §6 får raden 8/10. **Utfall** skrivs under den här posten när
 
 **Stomdokument:** KUV §6, BED §4.2
 
+**Utfall (8/10 00:08, knappen 37693105481 på 2a43651, Axels ord i Bengts ställe — DECISIONS #486). TRÄFF på varje rad.** Filen
+hämtad ur releasen, summan = manifestet; `fysik_c` −25,48…+17,36 inom spannet; 736 stationer, 5 229 252 hinkar, ingen station i
+arkivet utan rad i filen. Gemensamma punkter 4 352 753 (FYSIK saknar 453 av RÅ:s 4 353 206).
+
+| | RÅ (kontroll) | FYSIK på RÅ:s punkter | FYSIK alla hinkar | förväntan FYSIK |
+| :-- | --: | --: | --: | :-- |
+| A2 grova fel totalt | **7,51 %** | **9,85 %** | **10,04 %** | 9,5–10,2 · 9,7–10,4 ✓ |
+| band 0–7 · 7–15 · 15–20 · > 20 km | 5,23 · 5,26 · 7,16 · 13,59 | 8,09 · 7,99 · 8,79 · 15,54 | — | ✓ alla fyra |
+| MAE | 0,68 °C | 0,79 °C | 0,79 °C | 0,75–0,85 ✓ |
+| A3 frysklassfel | 0,39 % | 0,39 % | 0,39 % | ≤ 0,5 ✓ |
+| norr om 62° / söder | 14,13 / 4,82 % | 17,07 / 6,92 % | 17,44 / 6,95 % | 16,5–18,5 / 6,5–7,5 ✓ |
+| farliga fel K2 = 1,0 (av frysningarna) | 1,2 % | 1,4 % | — | ≤ 1,6 ✓ |
+| OFFSET (taket) | 5,52 % | | | |
+
+**Läsningen.** RÅ-kontrollen 7,51 % ligger i 7,4–7,6 %, så populationen är kuvösens, och resten fick läsas. FYSIK landar inom spannet på
+varje rad och inom 0,1 procentenhet av replikan 7/10 (9,81 %, band 8,0 · 7,9 · 8,7 · 15,5; alla hinkar 10,01 %). **Det som är bevisat:**
+kuvösen räknar samma tal som replikan på samma fil, alltså kan en kandidat utanför repot dömas i kuvösen. **Det som inte är bevisat:**
+något om modellen — förväntningarna skrevs efter replikan, och FYSIK ensam är sämre än RÅ i varje band (dom A2 FALLER, som RÅ).
+Domen läses på vintern 2026/27. Två beslut står kvar för Bengt i bedömningen §4.2: FYSIK+BLANDNING som andra kandidat, och
+förregistreringen för 2026/27 på SMHI/MET.
+
 ## #486 (7/10 2026) Axels ord i Bengts ställe för kort #305: slå ihop PR #802, kör FYSIK på knappen och C8 mot fingeravtrycken — C8-läsningen förregistrerad före körningen
 
 **Beslut.** Axel 7/10 23:54, i projektchatten: *"I say that we run it"*, och på frågan om det är hans ord eller Bengts: *"Yes please built
@@ -8978,3 +8999,23 @@ det inte läses inget annat.
 Träff i (1) och (2): Axels slutsats håller med Bengts kolumner. Under 0,05 i (1): de 23 % hänger på Axels kolumner eller regioner.
 
 **Stomdokument:** BED §4.2 (raden om fingeravtrycken: skriptet nu och utfallet efter körningen)
+
+**Utfall (7–8/10 natten, lokalt på 2a43651 — ingen databas; summan = manifestet).** Kontrollen höll: A2 vinter 736 stationer, spridning
+0,523 °C; Bsp vinter 0,643 °C. 729 stationer i novdec, 735 i vinter (≥ 100 timmar, med vägdata), 55 rutor.
+
+| mål | VÄG R² regioner gömda (LOO) | REL | BAS | ÅDT-klasser < 1 000 · 1 000–20 000 · > 20 000 | spann |
+| :-- | --: | --: | --: | :-- | --: |
+| Bsp novdec | **0,0499** (0,065) | 0,013 | 0,147 | −0,20 · −0,05 · +0,93 °C | 1,13 °C |
+| A2 novdec | −0,019 (−0,010) | −0,017 | 0,015 | −0,09 · −0,04 · +0,31 °C | 0,39 °C |
+| Bsp vinter | 0,054 (0,066) | 0,028 | 0,101 | −0,21 · −0,04 · +0,82 °C | 1,03 °C |
+| A2 vinter | −0,022 (−0,013) | −0,018 | 0,003 | −0,13 · −0,04 · +0,24 °C | 0,36 °C |
+
+**Mot förväntan.** (1) **MISS, på gränsen:** Bsp novdec VÄG 0,0499 mot golvet 0,05. (2) **Träff:** A2 novdec −0,019 ≤ 0,05.
+(3) **Träff:** ÅDT-spannet 1,03 °C för Bsp vinter (> 0,9), 0,36 °C för A2 vinter (< 0,6).
+**Läsningen.** Med Bengts kolumner och rutor förklarar vägdatan ungefär 5 % av särarten mot Bsp — mer än mot RÅ (0,034, #479), men
+långt från Axels 23 %. Enligt läsningen i förväg hänger de 23 % alltså på Axels kolumner (Vägunderhållsklass, Driftområde) eller hans
+165 stationer och regioner, inte på vägdatan i sig. Signalen finns, men den sitter i de få största vägarna: 21–22 stationer över
+20 000 fordon ligger +0,8–0,9 °C varmare än Bsp, medan resten skiljer under 0,2 °C — ett linjärt mått över 729 stationer ser lite av
+det. BAS (läget) förklarar mer än VÄG mot Bsp (0,147), alltså är Bsp:s särart mer regional än väggiven. Mot den frysta A2 förklarar
+ingenting något (alla R² ≤ 0,015), och ÅDT-spannet krymper till 0,36 °C: A2 har redan tagit upp vägdatan, som Axel fann (R² −0,11).
+Ingen tröskel och ingen kandidat följer; raden i §4.2 stryks.
