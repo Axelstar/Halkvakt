@@ -123,15 +123,18 @@ Faller RÅ på vinterdata tas frågan upp i bedömningen §4.2 — grinden körs
 
 **Spridningsgrinden** (7/10 2026, DECISIONS #474 — Bengts ja och Axels signatur 7/10, relayerad av Bengt i chatten; kort #299
 förslag 1, ur kuvösens läsning L1, DECISIONS #471): en provpunkt är *okänt* — prognosen tiger — när färre än två ankare bidrar eller
-när ankarnas spridning, störst minus minst av de bidragande ankarnas yttemperatur, är **X °C eller mer**. Skärpning enligt §5:
-grinden tar bort punkter och sänker inget krav. **X fastställs här genom en DECISIONS-post före vinterläsningen** — inget tal är
-valt 7/10. Skuggmotorn loggar spridningen rå per provpunkt och holdout-rad (sjunde fältet); statusen i loggen bär inte grinden.
-Grind S-B läser täckningen och holdout-radernas grova fel per spridningsband och för X = 1, 2 och 4 °C, under samma blindning
-som B-måtten. **Domen räknas med grinden, och tystnaden är en miss** (DECISIONS #475, väg c — Bengts val 7/10; **Axels signatur
+när ankarnas spridning, störst minus minst av de bidragande ankarnas yttemperatur, är **X = 2,25 °C eller mer** (DECISIONS #477,
+Bengt 7/10, läst ur tabellen som förslaget föreskrev). Med mätvärden på en tiondels grad talar prognosen när ankarna skiljer högst
+2,2 °C. Skärpning enligt §5: grinden tar bort punkter och sänker inget krav. Underlaget är kuvösens korsade läsning (RÅ,
+stationerna, vintern 2024/25, DECISIONS #476): varje spridningsband upp till 2,25 °C har under 5 % grova fel för sig (2–2,25 °C:
+4,7 %), nästa band 5,6 %; med grinden talar prognosen på 60,6 % av punkterna med 2,8 % grova fel och 0,1 % frysklassfel, mot
+7,5 % och 0,4 % utan. **Nattbegränsningen** (kort #299 förslag 2) **är avstådd** (DECISIONS #477): ovanpå grinden köpte den
+0,2–0,5 procentenheter över vintern för en tredjedel av täckningen, och den hade tystat marsmorgnarna där grinden ger 2,9 %.
+Skuggmotorn loggar spridningen rå per provpunkt och holdout-rad (sjunde fältet); statusen i loggen bär inte grinden. Grind S-B
+läser täckningen och holdout-radernas grova fel per spridningsband och för X = 1, 2, 2,25 och 4 °C, under samma blindning som
+B-måtten. **Domen räknas med grinden, och tystnaden är en miss** (DECISIONS #475, väg c — Bengts val 7/10; **Axels signatur
 väntar**): B1, B3 och C2 räknas på det grinden släpper fram; B2:s täckning är oförändrad (status ≥ 1 utan grinden), så halka där
-grinden tystade prognosen är en MISS. C1 och C3 som förut. Bara varv med loggad spridning räknas, och utan fastställt X fälls
-ingen dom. Underlaget (RÅ, stationerna,
-vintern 2024/25): spridning 0,5–2 °C på 49 % av punkterna med 2,5 % grova fel, 2–4 °C på 35 % med 7,8 %, över 4 °C på 11 % med 27 %.
+grinden tystade prognosen är en MISS. C1 och C3 som förut. Bara varv med loggad spridning räknas.
 
 ### Grind B — skuggdriften (hela vintern, dom i mars)
 
@@ -145,7 +148,7 @@ B3 är existensvillkoret: en skugga som bara talar där punktmotorn redan talar
 adderar risk utan värde.
 
 **Med spridningsgrinden** (vägpunkten i §3, DECISIONS #475): B1–B3 räknas på det grinden släpper fram, och tystnad på ett
-täckt segment är en miss i B2. Utan fastställt X fälls ingen dom.
+täckt segment är en miss i B2. X = 2,25 °C (DECISIONS #477).
 
 ### Grind C — domens giltighet (utan C fälls ingen dom alls)
 

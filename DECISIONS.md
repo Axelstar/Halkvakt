@@ -8462,3 +8462,30 @@ eniga ankare.
 
 **Följd:** ingen tröskel, inget X, ingen nattregel — Bengts och Axels val (bedömningen §4.2). Claudes förslag: **X = 2,25 °C**, och
 **natten avstås** (förslag 2 nej), med vårens eftermiddag som möjlig egen läsning.
+
+## #477 (7/10 2026) Spridningsgrindens X = 2,25 °C, och nattbegränsningen avstås (kort #299; Bengts beslut ur den korsade läsningen)
+
+**Beslut.** Bengt 7/10: *"X = 2,25, avstå natten"*.
+
+**X = 2,25 °C.** Prognosen tiger när ankarna skiljer 2,25 °C eller mer. Med mätvärden på en tiondels grad betyder det att den talar
+när ankarna skiljer högst 2,2 °C och tiger från 2,3. Skälet ur #476: varje spridningsband upp till 2,25 °C klarar grind A:s 5 % grova
+fel på egen hand (2–2,25 °C: 4,7 %), och nästa band gör det inte (2,25–2,5 °C: 5,6 %). I kuvösen talar prognosen då på 60,6 % av
+punkterna med 2,8 % grova fel, 0,1 % frysklassfel och 0,53 °C i medelfel, mot 7,5 % och 0,4 % utan grind. Förslag 1, som Axel
+signerade 7/10 (#474), sa att X läses ur tabellen; det är gjort. Mars vid 2,25 °C är inte uträknad för sig — den ligger mellan 4,0 %
+vid 2 °C och 5,1 % vid 3 °C.
+
+**Natten avstås** (kort #299 förslag 2). Utan grind ligger natten för driftens modell på 6,0 % grova fel, över 5 % varje månad. Ovanpå
+grinden köper den 0,2–0,5 procentenheter över vintern och 0,6–1,5 i mars, för en tredjedel av täckningen, och den hade tystat
+marsmorgnarna, som till 87 % är dagsljus och där grinden vid 2 ger 2,9 %. Vårens eftermiddag är omätt som egen regel och kan bli en
+egen läsning.
+
+**Var talet står.** TROSKLAR-SKUGGAN §3 och `publish/grind-s-b.ts` (`SPRIDNING_X = 2.25`) — en kodkopia, så inget kontrakt i
+kontraktsgrinden än; en andra kodkopia (motorn när rösten byggs) förs in där i samma commit. Skuggans bandtabell får gränsen vid 2,25
+(banden 2–2,25 och 2,25–4 i stället för 2–4), eftersom `grindVid()` summerar hela band; självtestet fäller ett X som inte är en
+bandgräns.
+
+**Ett fel i #792 rättat i samma varv.** Huvudflödet i grind S-B skickade inte X till rapporten, så domen hade svarat *"X inte
+fastställt"* även med X satt — upptäckt när X skulle sättas. Rättat, och självtestet läser nu sin egen källa och fäller om anropet
+saknar X. Två motprov fällde provet: X borttaget ur anropet, och X = 2,3, som inte är en bandgräns.
+
+**Kvar på kort #299:** Axels signatur på väg (c) (#475) och vinterläsningen.
