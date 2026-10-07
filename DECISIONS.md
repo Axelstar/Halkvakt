@@ -8276,3 +8276,29 @@ population B (#406) så kuvösen, hösten och mars förblir jämförbara, geomet
 stationerna inte kan kalibrera småvägar; (c) först när facit finns utanför de 818. Hämtaren får en fjärde fil
 `data/vagdata/vaglagspunkter.json` — var 2 km längs segmentens linjer, id `segment_id@km`, ~11 800 punkter — och tiden växer till ≈ 2 h
 per säsong. Rutternas vägpunkter behålls för prognoslagrets läsningar som de står; (b) är kort #302 om Bengt och Axel vill.
+
+**UTFALL 7/10 — hämtningen körd och filerna i repot.** Stickprovet (37572883058, 427 förfrågningar, 0 fel, 3,7 min) höll spannen och
+vägvalet; hela hämtningen (37573291703, main 0cc31ca, 04:49–07:17Z) tog **17 194 förfrågningar, 0 fel, 148 min** — långsammare än
+stickprovet antydde, eftersom rutternas vägpunkter kostar upp till tre förfrågningar (150 → 400 → 1 000 m). Artefakten (603 kB zip, sha256
+cdd69918…) hämtad och lagd i `data/vagdata/` (7,3 MB, fyra filer med huvud: källa, datum, datamängder, geometri, radier, regel, täckning,
+radie som bar, vald på, spannens min/max).
+| Fil | platser | element | ÅDT fordon | ÅDT lätta 22–06 | klass · slitlager · bredd · hastighet · väghållare | radie som bar | vald på |
+| :-- | --: | --: | --: | --: | :-- | :-- | :-- |
+| stationer.json | 854 | 854 | 844 | 774 | 854 · 851 · 853 · 854 · 852 | 150 m: 853 · 400: 1 | adt 337 · klass 348 · enda 97 · första 72 |
+| segment.json | 818 | 818 | 802 | 752 | 818 · 818 · 818 · 818 · 818 | 150 m: 818 | klass 400 · adt 237 · enda 111 · första 70 |
+| vagpunkter.json (rutterna) | 1 585 | 1 514 | **382** | 363 | 1 503 · 1 503 · 827 · 1 500 · 1 510 | 150: 848 · 400: 499 · 1 000: 167 · ingen: 71 | första 603 · enda 460 · klass 363 · adt 86 · statlig 2 |
+| vaglagspunkter.json (a) | 12 960 | 12 960 | 12 834 | 11 990 | 12 960 · 12 944 · 12 952 · 12 958 · 12 954 | 150 m: 12 959 · 400: 1 | klass 5 518 · adt 4 046 · enda 2 244 · första 1 142 · statlig 10 |
+
+**Läsning.** (1) **Stationer, segment och väglagspunkter: full täckning** — element i 100 %, ÅDT i 98–99 %, nattrafiken (lätta 22–06) i
+91–93 %; en enda plats av 14 632 behövde 400 m. (2) **Rutternas vägpunkter bekräftar att rutterna är handritade:** 71 utan element inom 1 km,
+499 behövde 400 m, 167 behövde 1 000 m, ÅDT bara i 24 % — och "första" (oavgjort vägval) i 38 %: på 1 000 m är det många vägar. Filen
+behålls för prognoslagrets läsningar som de står, men varje mätning längs vägen ska hädanefter använda `vaglagspunkter.json` (riktig
+geometri) — rutternas snappning är kort #302 om Bengt och Axel vill. (3) **Spannen håller** i alla fyra filerna (ÅDT 13–72 240, klass 0–9,
+bredd 2–23,8 m, hastighet 30–120, mätår 2015–2025); segmentens vägklass 0–5, stationernas 0–7 — stationerna står på huvudvägar, som
+väntat. (4) "Första" i 8–14 % vid stationer, segment och väglagspunkter: lika klass, inte statlig, utan ÅDT på båda — oftast två
+närliggande element på samma väg; raden bär `kandidater` så att det går att granska. (5) Mätåret för ÅDT spänner 2015–2025 —
+`adt_matar` följer med varje rad.
+
+**Följd:** kort #301 steg 2 klart. Steg 3: kuvösens inläsning (`kuvos_ra.vagdata`) och Axels kolumner (himmelsfaktor, skog, vatten,
+terrängläge) med proveniens. Första användare i tur: C8 v2 (#298) med ÅDT och vägklass, efterhalkans pris per vägklass (#296/#297),
+kallplatsindexet per segment (#91). Ingen mätning har läst filerna än.
