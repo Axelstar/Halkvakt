@@ -132,8 +132,8 @@ stationerna, vintern 2024/25, DECISIONS #476): varje spridningsband upp till 2,2
 0,2–0,5 procentenheter över vintern för en tredjedel av täckningen, och den hade tystat marsmorgnarna där grinden ger 2,9 %.
 Skuggmotorn loggar spridningen rå per provpunkt och holdout-rad (sjunde fältet); statusen i loggen bär inte grinden. Grind S-B
 läser täckningen och holdout-radernas grova fel per spridningsband och för X = 1, 2, 2,25 och 4 °C, under samma blindning som
-B-måtten. **Domen räknas med grinden, och tystnaden är en miss** (DECISIONS #475, väg c — Bengts val 7/10; **Axels signatur
-väntar**): B1, B3 och C2 räknas på det grinden släpper fram; B2:s täckning är oförändrad (status ≥ 1 utan grinden), så halka där
+B-måtten. **Domen räknas med grinden, och tystnaden är en miss** (DECISIONS #475, väg c — Bengts val och Axels
+signatur 7/10, DECISIONS #478): B1, B3 och C2 räknas på det grinden släpper fram; B2:s täckning är oförändrad (status ≥ 1 utan grinden), så halka där
 grinden tystade prognosen är en MISS. C1 och C3 som förut. Bara varv med loggad spridning räknas.
 
 ### Grind B — skuggdriften (hela vintern, dom i mars)
