@@ -110,7 +110,7 @@ Hoppade över, utan gemensamma timmar: 1603 Skara, 2112 Hudiksvall, 2558 Överto
 | Temperaturerna, fuktigheten, sikten och riktningen | Kan översättas nu: −99,9 och −100 blir NULL, 20 000 behålls som i driften och tas av värdevakten |
 | Nederbördstypen 1, 2, 4, 6 | ✅ Översatta 2/10 kväll ur VädErs 2019 (§7) |
 | **Nederbördstypen 3, 9, −9, mängden och vindfälten** | **Väntar på Trafikverket** — frågorna nedan (NULL i arkivet tills dess) |
-| De 23 stationerna utan läge | Väntar på Trafikverket |
+| De 23 stationerna utan läge | Utanför: inte i dagens nät; frågan om läget struken ur mejlet 8/10 (Bengt, §5d) |
 | Vakterna (#75, radvakten, karantänen, den långsamma vakten) | Körs när datan är inläst, i kuvösens databas; redovisas som antal |
 | Värdevakten | Körs på kuvösens databas före riktningsprovet; ett fält utan spann stoppar |
 
@@ -189,38 +189,35 @@ men Lastkajen kräver konto, och om nedlagda stolpar finns med står inte i meta
 
 > Hej Micke,
 >
-> tack igen för uttaget. Det är inläst och vi har arbetat med det sedan dess.
+> tack igen för uttaget. Det är inläst och vi har arbetat med det sedan dess. Frågorna jag skickade den 2 oktober har vi kunnat lösa
+> själva ur Trafikverkets dokumentation, så dem behöver du inte lägga någon tid på.
 >
-> En uppdatering om frågorna jag skickade den 2 oktober, så att du inte lägger tid i onödan: de flesta har vi kunnat besvara själva ur
-> Trafikverkets dokumentation. Stämmer något inte får du gärna rätta oss.
+> Nu skulle vi vilja pröva mot vad som faktiskt hände på vägen, inte bara mot stationens egen yta. Därför vill jag be om fyra uttag
+> till för samma period, november 2024–mars 2025, på samma villkor som förra gången:
 >
-> - Vindfälten: vimed läser vi som tiominutersmedlet och vimax som byvinden, som i API:t.
-> - Nederbördsmängden: mm per 30 minuter.
-> - Nederbördstypen: 1, 2, 4 och 6 enligt Ersättningsmodell VädErs 2019. 3 läser vi som underkylt regn, 9 som nederbörd av okänd typ
->   och −9 som saknat värde.
+> 1. **Ytstatus och friktion** från stationerna med beröringsfria ytstatusgivare: torrt, vått, is, snö och friktion (i öppna API:t
+>    `Surface.Water`, `Ice`, `Snow` och `Grip`), per station och halvtimme, i samma form som förra uttaget.
+> 2. **Rapporterat väglag** per vägsträcka (RoadCondition i öppna API:t), om historiken sparas.
+> 3. **Utförda vinterväghållningsåtgärder**, saltning och plogning, per sträcka och tid, om sådana data finns att lämna ut.
+> 4. **Händelser** (olyckor, djur och hinder; Situation i öppna API:t), om historiken sparas.
 >
-> Två frågor står kvar:
->
-> 1. Läget (koordinater) för 23 stationer som inte finns i dagens öppna API: 298, 321, 324, 428, 650, 901, 902, 908, 1227–1231, 1329,
->    1434, 1435, 1518, 1525, 1547, 1613, 1801, 1815 och 7201.
-> 2. Siktdjupet: betyder 20 000 att sikten är större än mätområdet, och −100 att sikt inte mäts?
->
-> Och en ny förfrågan. För att kunna pröva mot vad som faktiskt hände på vägen, inte bara mot stationens egen yta, skulle vi vilja be om
-> fyra uttag till för samma period och stationer, november 2024–mars 2025, i samma form och på samma villkor om avgift som förra gången.
-> De får gärna komma ett i taget, i den takt det passar er:
->
-> 1. **Ytstatus och friktion** från de stationer som har beröringsfria ytstatusgivare: torrt, vått, is, snö och friktion (motsvarande
->    API:ts `Surface.Water`, `Ice`, `Snow` och `Grip`), per station och halvtimme.
-> 2. **Rapporterat väglag** per vägsträcka (det som i öppna API:t heter RoadCondition) för perioden, om historiken sparas.
-> 3. **Händelser** (olyckor, djur och hinder; öppna API:ts Situation) för perioden, om historiken sparas.
-> 4. **Utförda vinterväghållningsåtgärder** (saltning och plogning) per sträcka och tid, om sådana data finns att lämna ut.
+> Finns det redan uttag eller exportfiler som ligger nära räcker de gott, så anpassar vi oss efter formen. De får gärna komma ett i
+> taget, i den takt det passar er. Skulle något av det kosta något, hör gärna av dig med beloppet innan ni sätter igång.
 >
 > Ligger något av detta utanför ditt område tar jag gärna emot namnet på rätt kontakt.
 >
 > Vänliga hälsningar
 > Bengt
 
-*Omskrivet 8/10 (Bengts ja: "skriv om utkastet till ett färdigt mejl").* Utkastet från 6/10 frågade fortfarande om koderna 3 och 9 och om mängden, som #464 löst ur dokumentationen 6/10; nu står lösningarna som en uppdatering Micke kan rätta, och de två frågor som faktiskt är öppna står kvar: de 23 stationernas läge (104 671 rader väntar, §7) och siktdjupets värden. Fordonsdata är medvetet utanför mejlet: Micke ansvarar för väderstationerna, Trafikverket delar inte köpt fordonsdata utan särskild överenskommelse (DECISIONS #282, läst 21/9), och en egen fråga om fordonsdata från 17/9 är obesvarad. Frågan om Trafikverkets egen vägväderprognos (kort #298, punkt 10) är också utanför; Bengt avgör om den ska med.
+*Omskrivet igen 8/10 (Bengt: "stryk och skriv om bara fokus på det nya viktiga").* Mejlet bär nu bara begäran. Struket: frågan om
+läget för de 23 stationerna (104 671 rader av 5 496 270, 1,9 %; troligen nedlagda och inte i dagens nät, så som grannar skulle de ge
+kuvösen ett tätare nät än driften har, och riktningsprovet kördes utan dem, #464), frågan om siktdjupet (valet står i #464 punkt 5)
+och uppdateringen om vind, mängd och koder, som blev en mening. Ordningen följer värdet: vägens tillstånd först (Axels fynd att
+felen kommer i dygnsstora block, kuvössidan §5), händelserna sist. Enligt #398 frågar texten efter befintliga uttag först och ber
+om beloppet innan arbete börjar; ingen kostnad accepteras utan Axels godkännande. Fordonsdata är medvetet utanför mejlet: Micke
+ansvarar för väderstationerna, Trafikverket delar inte köpt fordonsdata utan särskild överenskommelse (DECISIONS #282, läst 21/9),
+och en egen fråga om fordonsdata från 17/9 är obesvarad. Frågan om Trafikverkets egen vägväderprognos (kort #298, punkt 10) är också
+utanför; Bengt avgör om den ska med.
 
 Inget i utkastet bär tal ur tröskeldokumenten eller resultat (DECISIONS #463).
 
