@@ -9062,3 +9062,38 @@ En dokument-PR om dagen kostar ett ord, och de andra vägarna kräver en ändrin
 om klassaren släpper igenom anropet med en sådan regel i molnet, och regeln hade gällt varje session i repot, inte bara rutinen.
 
 **Stomdokument:** BED §4.2 (raden om dokumentsynkens sammanslagning avgjord)
+
+## #489 (8/10 2026) Kuvösen blir ett eget block i projektkartan, och kuvössidan följer blockets fem delar
+
+**Beslut.** Bengt 8/10: *"ja till eget block, räkna in det i totalen"* — på frågan om kuvösen ska brytas ut i projektkartan som
+favoriterna. Frågan kom ur hans iakttagelse samma morgon: *"vårt kuvösarbete har blivit stort … Jag vet inte om jag tycker att
+kuvösarbetet är tillräckligt bra beskrivet i projektkartan och i halkvaktens kuvös"*.
+
+**Vad analysen visade.** Kuvösen hade 37 beslut sedan 21/9 och tolv läsningsskript, men bara en del i kartan, med 14 byggsteg för
+testbädden. Läsningarna stod som bevis på ämnesdelar (prognoslagret, segmentprognosen, vägdatalagret) och som dagboksstycken i
+kuvössidans §6, som hette *Vad som kommer härnäst* men var historik 2/10–8/10. Prognoslagrets kandidater stod aldrig sida vid sida, och
+RÅ stod som 7,4, 7,5 och 7,51 % utan att populationen sades. #486, en kuvösläsning, namngav bara bedömningen.
+
+**Vad som byggdes.**
+- *Blocket Kuvösen* (plats sida, räknas i totalen) med fem delar: **Testbädden** (`p-kuvosen`, grön: datan, klockan, körflödet, SMHI,
+  MET Nordic, kandidater utifrån som fil), **Systemets delar på vintern** (`kv-delarna`: riktningsprovet, kalibreringen, granskningen,
+  måttet och daggpunkten klara; nederbördstypen pågår; övergångarna, försprånget och vind och sikt saknas), **Prognoslagrets kandidater**
+  (`kv-prognoslagret`: sju läsningar klara, kriging och FYSIK+BLANDNING väntar på beslut), **Före resan på vintern** (`kv-fore-resan`,
+  grön) och **Facit från Trafikverket** (`kv-facit`, blå: Bengt skickar begäran §5d; kort #232 flyttat hit). Byggstegen här är äkta:
+  i ett kuvösblock är provet leveransen. Produktens delar rörs inte, så felet från 7/10 (läsningar som byggsteg på prognoslagret, #483)
+  upprepas inte. Totalen 65 % före och efter.
+- *Kuvössidan* omgjord efter delarna: §2 en handskriven lägesruta och delarna, §3–§7 en del var med sina lägesrader ur kartan, §5 en
+  jämförelsetabell för prognoslagret med populationen angiven, §8 reglerna, §9 bara framtid (kön med vad varje läsning väntar på),
+  §10–§11 som förut och §12 dagboken hopfälld. Kortkartan följer: #232 → KUV 7, #270 → KUV 5, #282 → KUV 8.
+- *Stomvakten* fäller en ändring som rör `kuvos/` eller `scripts/matningar/kuvos-*` och lägger till beslut utan att något av dem
+  namnger KUV; självtest och motprov.
+- *CLAUDE.md* DOKUMENTSYNKEN: en ny kuvösläsning är ett byggsteg på sin del, och en kandidat för prognoslagret får en rad i tabellen.
+
+**Vad som följer med automatiskt, utan ändring.** Kartskriptet skriver blocket och lägesraderna på kuvössidan, kartsynken bokför
+commits på kuvösens delar, kortkartan och kortvakten gäller som förut, och morgonrutinen läser CLAUDE.md. Jämförelsetabellen är
+handskriven och stäms av av morgonrutinen.
+
+**Alternativ som valdes bort.** Ett register ur en egen datafil (förslag 2 i analysen) — kartan bär redan datum, körning, beslut och
+utfall per byggsteg. Att visa blocket utanför totalen — skuggan och grindarna räknas redan, och kuvösen är samma sorts arbete.
+
+**Stomdokument:** KUV hela sidan, BED §4.2 och läget 7/10

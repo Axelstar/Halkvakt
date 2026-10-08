@@ -66,6 +66,17 @@ export function prova(nya: Inlagg[], sidor: Record<string, Sida>, fore: (fil: st
   return fel;
 }
 
+/** KUVÖSEN (Bengts ja 8/10, DECISIONS #489): en ändring som rör kuvösens filer och lägger till beslut måste namnge kuvössidan i
+ *  minst ett av dem. #486, en kuvösläsning, namngav bara bedömningen, och kuvössidan fick en mening i en dagbok i stället för en rad. */
+const KUVOSFIL = /^(kuvos\/|scripts\/matningar\/kuvos-)/u;
+export function kuvosRegel(nya: Inlagg[], filer: string[]): string[] {
+  const kuvos = filer.filter((f) => KUVOSFIL.test(f));
+  if (!kuvos.length || !nya.length) return [];
+  const namnger = nya.some((n) => { const r = stomrad(n.text); return r !== null && !r.inga && r.koder.includes("KUV"); });
+  return namnger ? [] : [`ändringen rör kuvösen (${kuvos.slice(0, 3).join(", ")}${kuvos.length > 3 ? " …" : ""}), men inget av de nya besluten ` +
+    `(${nya.map((n) => "#" + n.id).join(", ")}) namnger KUV — läsningen bokförs på kuvössidan och i kuvösblocket i projektkartan (DECISIONS #489)`];
+}
+
 /** Filerna dokumentsynkens gren får röra: de sju och OCKSA. */
 export function tillatna(filer: string[], sidor: Record<string, Sida>): string[] {
   const ok = new Set([...Object.values(sidor).map((s) => s.fil), ...OCKSA]);
@@ -110,9 +121,14 @@ function sjalvtest(): void {
   const ok4 = prova([nya[1]], sidor, (f) => filer[f][0], (f) => filer[f][1]).length === 0;
   const ok5 = tillatna(["m.html", "STATUS.md", "DECISIONS.md", "scripts/x.ts"], sidor).join(",") === "DECISIONS.md,scripts/x.ts";
   const ok6 = handtext("a\r\nb") === "a\nb";
-  if (!(ok1 && ok2 && ok3 && ok4 && ok5 && ok6)) { console.error("✗ stomvakten självtest", { ok1, ok2, ok3, ok4, ok5, ok6, fel }); process.exit(1); }
+  // Kuvösregeln (#489): kuvösfil + nytt beslut utan KUV fälls; med KUV, utan kuvösfil eller utan nytt beslut släpps det.
+  const kuv: Inlagg = { id: "16", text: "## #16 (2/1) Kuvös\n**Stomdokument:** KUV §5, BED §4.2\n" };
+  const ok7 = kuvosRegel([nya[1]], ["scripts/matningar/kuvos-x.ts"]).length === 1 && kuvosRegel([nya[1], kuv], ["kuvos/korning.ts"]).length === 0
+    && kuvosRegel([nya[1]], ["scripts/kartsynk.ts"]).length === 0 && kuvosRegel([], ["kuvos/korning.ts"]).length === 0;
+  if (!(ok1 && ok2 && ok3 && ok4 && ok5 && ok6 && ok7)) { console.error("✗ stomvakten självtest", { ok1, ok2, ok3, ok4, ok5, ok6, ok7, fel }); process.exit(1); }
   console.log("✓ stomvakten självtest: nya beslut hittas, raden läses (koder, inga med skäl), saknad rad, tomt skäl, okänd kod och en " +
-    "oförändrad handtext fälls, omskrivna lägesrader räknas inte, och dokumentsynkens gren får bara röra dokumenten");
+    "oförändrad handtext fälls, omskrivna lägesrader räknas inte, dokumentsynkens gren får bara röra dokumenten, och en ändring av " +
+    "kuvösen utan KUV i något nytt beslut fälls");
 }
 
 function main(): void {
@@ -153,7 +169,8 @@ function main(): void {
   const foreD = visa(bas, "DECISIONS.md");
   if (foreD === null) { console.error(`✗ basen ${bas.slice(0, 7)} går inte att läsa — hämta den (fetch-depth 0)`); process.exit(2); }
   const nya = nyaInlagg(foreD, fran("DECISIONS.md") ?? "");
-  const fel = prova(nya, sidor, (f) => visa(bas, f), fran);
+  const filer = git("diff", "--name-only", bas).split("\n").filter(Boolean);
+  const fel = [...prova(nya, sidor, (f) => visa(bas, f), fran), ...kuvosRegel(nya, filer)];
   for (const f of fel) console.error("✗ " + f);
   if (fel.length) process.exit(1);
   console.log(nya.length
