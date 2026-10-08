@@ -185,25 +185,42 @@ och Bohus, 15 Älvsborg, 16 Skaraborg, 18 Örebro), alltså nedlagda stationer. 
 och i NVDB:s kartvisare (https://catalogue.arctic-sdi.org/geonetwork/srv/resources/records/2723b729-d89f-4197-b4ab-aaf98c341d25),
 men Lastkajen kräver konto, och om nedlagda stolpar finns med står inte i metadatan.
 
-### 5d. Begäran till Trafikverket om facit för samma vinter (Bengts ja 6/10; utkast, Bengt skickar i leveranstråden)
+### 5d. Begäran till Trafikverket om facit för samma vinter (Bengts ja 6/10; omskriven 8/10 till ett färdigt mejl efter #464, Bengt skickar i leveranstråden)
 
 > Hej Micke,
 >
-> tack för uttaget, det är inläst och prövat. För att kunna pröva våra regler mot vad som faktiskt hände på vägen, inte bara mot
-> stationens egen yta, skulle vi vilja be om ytterligare fyra uttag för samma period och stationer, november 2024–mars 2025, i samma
-> form och på samma villkor om avgift som förra gången:
+> tack igen för uttaget. Det är inläst och vi har arbetat med det sedan dess.
 >
-> 1. **Ytstatus och friktion** från de stationer som har beröringsfria ytstatusgivare: torrt, vått, is, snö, friktion (motsvarande
->    API:ts `Surface.Water`, `Ice`, `Snow`, `Grip`), per station och halvtimme.
+> En uppdatering om frågorna jag skickade den 2 oktober, så att du inte lägger tid i onödan: de flesta har vi kunnat besvara själva ur
+> Trafikverkets dokumentation. Stämmer något inte får du gärna rätta oss.
+>
+> - Vindfälten: vimed läser vi som tiominutersmedlet och vimax som byvinden, som i API:t.
+> - Nederbördsmängden: mm per 30 minuter.
+> - Nederbördstypen: 1, 2, 4 och 6 enligt Ersättningsmodell VädErs 2019. 3 läser vi som underkylt regn, 9 som nederbörd av okänd typ
+>   och −9 som saknat värde.
+>
+> Två frågor står kvar:
+>
+> 1. Läget (koordinater) för 23 stationer som inte finns i dagens öppna API: 298, 321, 324, 428, 650, 901, 902, 908, 1227–1231, 1329,
+>    1434, 1435, 1518, 1525, 1547, 1613, 1801, 1815 och 7201.
+> 2. Siktdjupet: betyder 20 000 att sikten är större än mätområdet, och −100 att sikt inte mäts?
+>
+> Och en ny förfrågan. För att kunna pröva mot vad som faktiskt hände på vägen, inte bara mot stationens egen yta, skulle vi vilja be om
+> fyra uttag till för samma period och stationer, november 2024–mars 2025, i samma form och på samma villkor om avgift som förra gången.
+> De får gärna komma ett i taget, i den takt det passar er:
+>
+> 1. **Ytstatus och friktion** från de stationer som har beröringsfria ytstatusgivare: torrt, vått, is, snö och friktion (motsvarande
+>    API:ts `Surface.Water`, `Ice`, `Snow` och `Grip`), per station och halvtimme.
 > 2. **Rapporterat väglag** per vägsträcka (det som i öppna API:t heter RoadCondition) för perioden, om historiken sparas.
-> 3. **Händelser** (olyckor, djur, hinder; öppna API:ts Situation) för perioden, om historiken sparas.
-> 4. **Utförda vinterväghållningsåtgärder** (saltning, plogning) per sträcka och tid, om sådana data finns att lämna ut.
+> 3. **Händelser** (olyckor, djur och hinder; öppna API:ts Situation) för perioden, om historiken sparas.
+> 4. **Utförda vinterväghållningsåtgärder** (saltning och plogning) per sträcka och tid, om sådana data finns att lämna ut.
 >
-> Och två korta frågor om förra uttaget, om du hinner: vad betyder `ned_typ` 3 och 9 (vi läser dem som underkylt regn och
-> nederbörd av okänd typ), och är `ned_maengd` all nederbörd räknad som vatten eller bara regn?
+> Ligger något av detta utanför ditt område tar jag gärna emot namnet på rätt kontakt.
 >
 > Vänliga hälsningar
 > Bengt
+
+*Omskrivet 8/10 (Bengts ja: "skriv om utkastet till ett färdigt mejl").* Utkastet från 6/10 frågade fortfarande om koderna 3 och 9 och om mängden, som #464 löst ur dokumentationen 6/10; nu står lösningarna som en uppdatering Micke kan rätta, och de två frågor som faktiskt är öppna står kvar: de 23 stationernas läge (104 671 rader väntar, §7) och siktdjupets värden. Fordonsdata är medvetet utanför mejlet: Micke ansvarar för väderstationerna, Trafikverket delar inte köpt fordonsdata utan särskild överenskommelse (DECISIONS #282, läst 21/9), och en egen fråga om fordonsdata från 17/9 är obesvarad. Frågan om Trafikverkets egen vägväderprognos (kort #298, punkt 10) är också utanför; Bengt avgör om den ska med.
 
 Inget i utkastet bär tal ur tröskeldokumenten eller resultat (DECISIONS #463).
 
