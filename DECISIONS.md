@@ -9170,7 +9170,7 @@ modellens känslighet för prognosfel, inte en driftsatt källa.
 
 **Stomdokument:** KUV §5 och §9, BED §4.2
 
-**Utfall läsning 3 (8/10 10:05, lokalt på 9b1e93c, vägdatalagret 7/10 04:49 UTC). Tre av fyra rader inom förväntan; bortom 20 km
+**Utfall läsning 3 (8/10 09:52, lokalt på 9b1e93c, vägdatalagret 7/10 04:49 UTC). Tre av fyra rader inom förväntan; bortom 20 km
 under.** 12 960 punkter, 25 920 km väg, 854 stationer. Ingen punkt ligger mer än 50 km från en
 station. 126 punkter saknar ÅDT, 100 av dem i 0–7 km.
 
