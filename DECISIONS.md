@@ -9047,3 +9047,18 @@ före GH_TOKEN, nyckeln i felraden. På Bengts Windows (ingen gh) läser kartsyn
 *Signalerna (ärende #706 …)* och PR-listan och utan 401.
 
 **Stomdokument:** inga — bara kod i kartsynken; ingen av de sju beskriver hur kartsynken når GitHub, och läget står i projektkartan och på tavlan
+
+## #488 (8/10 2026) Dokumentsynkens PR slås ihop på Bengts ord, inte av rutinen — (d) i #484 struken
+
+**Beslut.** Bengt 8/10, på frågan i bedömningens §4.2: *"b"*. Morgonrutinen slår aldrig ihop sin PR. Den väntar på Bengts *slå ihop*,
+och rapporten säger om ci och md-vakt är gröna på exakt huvudet och om `stomvakten.ts --tillatna` är grön. Steg 7 i CLAUDE.md
+(DOKUMENTSYNKEN) är omskrivet, och `--tillatna` säger inte längre att grenen får slås ihop. Del (d) i #484 är struken; (a)–(c) står.
+
+**Varför.** Första morgonen 8/10 (session `cse_01VhX7G7E1KzUnMT3EKZmVY2`) nådde rutinen repot och gjorde alla stegen. Anropet som
+skulle slå ihop PR #805 nekades av auto-lägets klassare (*Merge Without Review*), och PR:en slogs ihop från Bengts konto 06:22 UTC.
+En dokument-PR om dagen kostar ett ord, och de andra vägarna kräver en ändring som gäller fler än rutinen.
+
+**Alternativ som valdes bort.** (a) En tillåtelseregel för sammanslagningsanropet i repots `.claude/settings.json`. Det var inte prövat
+om klassaren släpper igenom anropet med en sådan regel i molnet, och regeln hade gällt varje session i repot, inte bara rutinen.
+
+**Stomdokument:** BED §4.2 (raden om dokumentsynkens sammanslagning avgjord)
