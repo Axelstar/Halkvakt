@@ -192,12 +192,38 @@ export function commitsSedan(till: string): Commit[] {
     });
 }
 
-function githubToken(): string {
-  if (process.env.GITHUB_TOKEN) return process.env.GITHUB_TOKEN;
-  const ut = execFileSync("git", ["credential", "fill"], { input: "protocol=https\nhost=github.com\n\n", encoding: "utf8" });
-  const t = ut.split("\n").find((r) => r.startsWith("password="))?.slice(9);
-  if (!t) throw new Error("ingen GitHub-inloggning (GITHUB_TOKEN eller git credential)");
-  return t;
+/** Kör ett kommando och lämnar stdout (stderr fångas i felet); ersätts i självtestet, så att provet inte kräver gh eller git. */
+export type Kor = (cmd: string, args: string[], input?: string) => string;
+const kor: Kor = (cmd, args, input) => execFileSync(cmd, args, { input, encoding: "utf8", stdio: "pipe", maxBuffer: 64 * 1024 * 1024 });
+
+/** Det molnets GH_TOKEN och GITHUB_TOKEN bär: GitHub-proxyn byter in den riktiga nyckeln för gh, inte för ett skript som läser
+ *  variabeln (code.claude.com/docs/en/cloud-environments). Den förra koden skickade den och fick 401 (8/10, DECISIONS #487). */
+const PLATSHALLARE = "proxy-injected";
+
+/** Nyckeln för fetch när gh inte når fram, och varifrån den kom (källan skrivs ut, nyckeln aldrig). */
+export function githubToken(env: Record<string, string | undefined> = process.env, k: Kor = kor): { nyckel: string; kalla: string } {
+  for (const namn of ["GH_TOKEN", "GITHUB_TOKEN"]) {
+    const v = env[namn];
+    if (v && v !== PLATSHALLARE) return { nyckel: v, kalla: namn };
+  }
+  const t = k("git", ["credential", "fill"], "protocol=https\nhost=github.com\n\n").split("\n").find((r) => r.startsWith("password="))?.slice(9);
+  if (!t) throw new Error("ingen GitHub-inloggning (gh, GH_TOKEN, GITHUB_TOKEN eller git credential)");
+  return { nyckel: t, kalla: "git credential" };
+}
+
+/** GET mot GitHubs REST-API. Först `gh api`, som har sin egen inloggning och i molnet är den väg proxyn släpper igenom; saknas gh
+ *  eller fallerar den (Bengts Windows har ingen gh) tar fetch över med githubToken(). Felet bär båda vägarnas skäl. */
+export async function github(sokvag: string, env: Record<string, string | undefined> = process.env, k: Kor = kor,
+  hamta: typeof fetch = fetch): Promise<any> {
+  let ghSkal: string;
+  try { return JSON.parse(k("gh", ["api", `repos/${REPO}/${sokvag}`])); } catch (e: any) {
+    ghSkal = e?.code === "ENOENT" ? "gh saknas" : String(e?.stderr || e?.message || e).trim().split("\n")[0].slice(0, 120);
+  }
+  const { nyckel, kalla } = githubToken(env, k);
+  const r = await hamta(`https://api.github.com/repos/${REPO}/${sokvag}`,
+    { headers: { Authorization: `Bearer ${nyckel}`, Accept: "application/vnd.github+json" } });
+  if (!r.ok) throw new Error(`GitHub ${r.status} med nyckel ur ${kalla} (gh api: ${ghSkal}): ${(await r.text()).slice(0, 200)}`);
+  return await r.json();
 }
 
 /** En rad per öppen PR. Main är inte hela sanningen: 3–4/10 låg fyra PR:er med bevis och kod utan att någon lyfte dem (6/10). */
@@ -207,10 +233,7 @@ export function prRad(p: { number: number; title: string; user?: { login?: strin
 }
 
 async function oppnaPr(): Promise<any[]> {
-  const r = await fetch(`https://api.github.com/repos/${REPO}/pulls?state=open&per_page=50`,
-    { headers: { Authorization: `Bearer ${githubToken()}`, Accept: "application/vnd.github+json" } });
-  if (!r.ok) throw new Error(`GitHub ${r.status}`);
-  return await r.json() as any[];
+  return await github("pulls?state=open&per_page=50") as any[];
 }
 
 /** Det kartan sparar om en öppen PR, för listan Väntar på Bengt (#484 (c)). */
@@ -219,10 +242,7 @@ export function prInfo(p: { number: number; title: string; user?: { login?: stri
 }
 
 async function lasSignaler(): Promise<{ sig: Lagrad[]; skriven: Date; nr: number }> {
-  const r = await fetch(`https://api.github.com/repos/${REPO}/issues?state=open&per_page=100`,
-    { headers: { Authorization: `Bearer ${githubToken()}`, Accept: "application/vnd.github+json" } });
-  if (!r.ok) throw new Error(`GitHub ${r.status}: ${(await r.text()).slice(0, 200)}`);
-  const issue = (await r.json() as any[]).find((i) => (i.body ?? "").startsWith(ISSUE_MARK));
+  const issue = (await github("issues?state=open&per_page=100") as any[]).find((i) => (i.body ?? "").startsWith(ISSUE_MARK));
   if (!issue) throw new Error("ärendet med byggsignalerna finns inte än (byggsignaler har inte kört)");
   return { sig: lasKropp(issue.body), skriven: new Date(issue.updated_at), nr: issue.number };
 }
@@ -233,7 +253,7 @@ function skriv(text: string, fore: Karta, efter: Karta) {
   execFileSync(process.execPath, ["--experimental-strip-types", "scripts/projektkartan.ts"], { stdio: "inherit" });
 }
 
-function sjalvtest(): void {
+async function sjalvtest(): Promise<void> {
   const t = "2026-10-03T12:05:00.000Z";
   const s = (kalla: string, nyckel: string, varde: Record<string, unknown>): Lagrad => ({ kalla, nyckel, varde, forst_sedd: t, senast_sedd: t });
   const sig = [
@@ -290,8 +310,40 @@ function sjalvtest(): void {
   if (attBokfora([c("Axelstar", "x", ["ios/a.swift"]), c("Marknadsmotorn", "x", ["a"]), c("895845", "Kartsynk: 3/10", ["a"]), c("895845", "y", [FIL])]).length !== 1) fel.push("attBokfora");
   const pr = prRad({ number: 743, title: "Kartsynk: Axels Mac-körning", user: { login: "Axelstar" }, head: { ref: "kartsynk/2026-10-04-mac" }, created_at: "2026-10-04T09:14:51Z" }, new Date("2026-10-06T06:00:00Z"));
   if (pr !== "  #743 Kartsynk: Axels Mac-körning · kartsynk/2026-10-04-mac · Axelstar · öppnad 4/10 11:14 ⚠ 1 dygn utan ord") fel.push(`prRad: ${pr}`);
+
+  // Vägen till GitHub (8/10): gh api först; utan gh fetch med en nyckel, GH_TOKEN före GITHUB_TOKEN före git, och molnets
+  // platshållare räknas inte som nyckel. Kommandona och fetch är låtsade, så provet kräver varken gh, git eller nät.
+  const anrop: string[] = [], skickat: string[] = [];
+  const falsk = (gh: "ok" | "saknas" | "401"): Kor => (cmd, args) => {
+    anrop.push(`${cmd} ${args[0]}`);
+    if (cmd === "git") return "protocol=https\nhost=github.com\nusername=x\npassword=ur-git\n";
+    if (gh === "saknas") throw Object.assign(new Error("spawn gh ENOENT"), { code: "ENOENT" });
+    if (gh === "401") throw Object.assign(new Error("Command failed: gh api"), { status: 1, stderr: "gh: Bad credentials (HTTP 401)\n" });
+    return '[{"number":1}]';
+  };
+  const svar = (status: number) => (async (_u: unknown, init?: RequestInit) => {
+    skickat.push(String((init?.headers as Record<string, string>).Authorization));
+    return new Response(status === 200 ? "[]" : '{"message":"Bad credentials"}', { status });
+  }) as typeof fetch;
+  const vag = async (env: Record<string, string>, gh: "ok" | "saknas" | "401", status = 200) => {
+    anrop.length = 0; skickat.length = 0;
+    let ut: string;
+    try { ut = JSON.stringify(await github("pulls", env, falsk(gh), svar(status))); } catch (e) { ut = String(e); }
+    return `${anrop.join(", ")} → ${skickat.join(", ") || "ingen fetch"} → ${ut}`;
+  };
+  const moln = { GH_TOKEN: PLATSHALLARE, GITHUB_TOKEN: PLATSHALLARE };
+  const vagar: [string, string][] = [
+    [await vag(moln, "ok"), 'gh api → ingen fetch → [{"number":1}]'],
+    [await vag(moln, "saknas"), "gh api, git credential → Bearer ur-git → []"],
+    [await vag({ GITHUB_TOKEN: "ur-github" }, "saknas"), "gh api → Bearer ur-github → []"],
+    [await vag({ GH_TOKEN: "ur-gh", GITHUB_TOKEN: "ur-github" }, "saknas"), "gh api → Bearer ur-gh → []"],
+    [await vag(moln, "401", 401), 'gh api, git credential → Bearer ur-git → Error: GitHub 401 med nyckel ur git credential (gh api: gh: Bad credentials (HTTP 401)): {"message":"Bad credentials"}'],
+  ];
+  for (const [fick, vant] of vagar) if (fick !== vant) fel.push(`vägen till GitHub:\n  väntade ${vant}\n  fick    ${fick}`);
+  if (vagar[4][0].split("→")[2].includes("ur-git")) fel.push("felraden bär nyckeln");
+
   if (fel.length) { console.error("✗ kartsynk självtest:\n" + fel.join("\n")); process.exit(1); }
-  console.log("✓ kartsynk självtest: reglerna, framåt-bara, gröna delar, radformen, de genererade blocken, commitfiltret och PR-raden");
+  console.log("✓ kartsynk självtest: reglerna, framåt-bara, gröna delar, radformen, de genererade blocken, commitfiltret, PR-raden och vägen till GitHub");
 }
 
 function check(k: Karta): void {
@@ -355,7 +407,7 @@ async function main(): Promise<void> {
     const raa = await oppnaPr();
     prar = raa.map(prInfo);
     console.log(raa.length ? `Öppna PR:er (${raa.length}) — lyft dem som väntar i rapporten:\n${raa.map((p) => prRad(p, nu)).join("\n")}` : "Inga öppna PR:er.");
-  } catch (e) { console.log(`⚠ PR-listan lästes inte: ${String(e).slice(0, 120)}. Kartans lista står kvar.`); }
+  } catch (e) { console.log(`⚠ PR-listan lästes inte: ${String(e).slice(0, 200)}. Kartans lista står kvar.`); }
 
   const kallorAndrade = kanon(nyaKallor) !== kanon(k.synk?.kallor ?? {});
   const prAndrade = prar !== null && kanon(prar) !== kanon(k.synk?.prar ?? []);
