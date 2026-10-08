@@ -194,7 +194,8 @@ sessioner på alla enheter:
 - **Stomvakten (CI).** Varje nytt beslut slutar med `**Stomdokument:** MAT, SYS` (koderna ur `docs/kortkartan.json`: MAT APP SYS
   BED KAR KUV FAV; text efter koden är fri, t.ex. `BED §4.2`) eller `**Stomdokument:** inga — skälet`. `scripts/stomvakten.ts --bas
   <sha>` i md-vakt.yml fäller ett nytt beslut utan raden, ett *inga* utan skäl, en okänd kod och ett namngivet dokument vars
-  handtext — sidan utan lägesrader och kortlistor — är oförändrad i samma push eller PR. Gamla beslut prövas inte.
+  handtext — sidan utan lägesrader och kortlistor — är oförändrad i samma push eller PR. Gamla beslut prövas inte. En ändring som rör `kuvos/` eller
+  `scripts/matningar/kuvos-*` och lägger till beslut måste namnge KUV i minst ett av dem (DECISIONS #489).
   `stomvakten.ts --lage` visar varje dokuments senaste handtextändring och besluten sedan dess; den ersätter inte läsningen.
 - **Morgonrutinen** — claude.ai-rutinen *Halkvakt: dokumentsynken varje morgon* (`trig_015zMNvnicaHT1wFNk4ZWdaH`), kl. 03:30 UTC
   (05:30 sommartid, 04:30 vintertid), i molnet och inte bunden till någon dator. Den gör stegen nedan.
@@ -210,6 +211,9 @@ sessioner på alla enheter:
    nya beslut, nya STATUS-rader, sammanslagna och öppna PR:er — och rätta handtexten i de sju, `docs/KALENDERN.md` och TAVLA.md
    där den inte längre stämmer. Integrationskartans innehåll är fryst: bara dess läge-rader; en innehållsrättelse blir en fråga i
    bedömningens §4.2. Ett tal förs bara in om det står i källan (DECISIONS, STATUS, koden, en körning) — aldrig ur minnet.
+   **Kuvösen** (eget block i projektkartan sedan 8/10, DECISIONS #489): en ny läsning är ett byggsteg på sin del i blocket — testbädden,
+   systemets delar, prognoslagrets kandidater, före resan eller facit — med körning, beslut och utfall som bevis, och en kandidat för
+   prognoslagret får en rad i jämförelsetabellen på kuvössidan (§5). Kön står i sidans §9, bara framtid; historiken i §12.
 5. `projektkartan.ts` och `kortkartan.ts`, sedan `--check` på båda, `kartsynk.ts --check` och `stomvakten.ts --tillatna`.
 6. En rad i STATUS.md: *Dokumentsynk <datum>:* vad som rättades per dokument, eller *inget att stämma av* — en tyst morgon ska inte
    se ut som en lyckad — och *Att republicera:* med de artefakter vars källa ändrades.

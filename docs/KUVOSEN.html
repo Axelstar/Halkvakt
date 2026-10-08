@@ -97,15 +97,15 @@
 </style>
 
 <main class="blad">
-  <div class="etikett">Kuvösen · läget 7 oktober 2026</div>
+  <div class="etikett">Kuvösen · läget 8 oktober 2026</div>
   <h1>Hela systemet prövat på en vinter som redan har varit</h1>
-  <p class="ingress">Fjärde sidan i serien efter systembilden, mätningarna och appen. Kuvösen är en testbädd där motorn och alla regler som prövas i skuggan körs tillsammans mot vintern 2024/25, långt från appar och förare. Sidan säger var den står i dag, hur den fungerar, vad som kommer härnäst och vad resultatet kan ändra i projektet.</p>
+  <p class="ingress">Fjärde sidan i serien efter systembilden, mätningarna och appen. Kuvösen är en testbädd där motorn och alla regler som prövas i skuggan körs tillsammans mot vintern 2024/25, långt från appar och förare. Sidan följer kuvösens fem delar i projektkartan: testbädden, systemets delar, prognoslagrets kandidater, före resan och facit från Trafikverket. Under varje avsnitt står delens läge, skrivet ur kartan.</p>
   <div class="fakta">
     <span>vintern <b>2024/25</b></span>
     <span><b>≈ 7 250</b> halvtimmar</span>
     <span><b>20</b> skuggrutter och hela väglagsnätet, <b>23 681</b> km</span>
     <span>data mottagen <b>2/10</b>, <b>5,5</b> miljoner rader</span>
-    <span>första resultat <b>6/10</b></span>
+    <span><b>13</b> läsningar sedan <b>2/10</b></span>
     <span><b>0</b> når föraren</span>
   </div>
 
@@ -115,32 +115,29 @@
   <p class="litet">Idén är Bengts, 21 september: en testbädd <i>”i kuvös, långt från bilar och appar och människor”</i>, för att se <i>”om det är på rätt väg eller fel väg”</i>.</p>
 
   <h2 id="avsnitt-2">2. Läget i dag</h2>
-<!-- LÄGESRADER §2: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
-<div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
-  <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-kuvosen">Kuvösen</a> <span style="color: var(--dampad, #4A5763)">delvis, 93 % · kvar: Trafikverkets svar på begäran §5d — ytstatus, väglag, händelser, åtgärder 2024/25 (kort #232)</span></summary>
-    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
-      <li><span aria-hidden="true">✓</span> <b>Datan från Trafikverket</b> <span style="color: var(--dampad, #4A5763)">klart · Mottagen 2/10 från VViS Förvaltning: fem filer, november 2024–mars 2025, 5 496 270 rader från 777 stationer, en rad per station och halvtimme. Ligger i en privat release med kontrollsummor, aldrig i driftens databas.</span></li>
-      <li><span aria-hidden="true">✓</span> <b>Planen</b> <span style="color: var(--dampad, #4A5763)">klart · Sex steg med ett bevis per steg, skriven 1/10.</span></li>
-      <li><span aria-hidden="true">✓</span> <b>Förregistreringen</b> <span style="color: var(--dampad, #4A5763)">klart · Frågan, underlaget, delarna, facit och följden är nedskrivna innan någon fil har öppnats. Två tillägg är gjorda före filen: rösten i två serier (1/10) och prognoslagrets flaggmarginal (2/10).</span></li>
-      <li><span aria-hidden="true">✓</span> <b>Klockan</b> <span style="color: var(--dampad, #4A5763)">klart · Låter produktionens egen kod köra mot en gången tidpunkt, utan att koden ändras. Prövad mot riktig databas, och fyra motprov föll på var sin fälla.</span></li>
-      <li><span aria-hidden="true">✓</span> <b>Inventeringen</b> <span style="color: var(--dampad, #4A5763)">klart · Läser en okänd CSV utan att tolka den: rader, kolumner, tomma fält, spann och vanligaste värden.</span></li>
-      <li><span aria-hidden="true">✓</span> <b>Översättningen och inläsningen</b> <span style="color: var(--dampad, #4A5763)">klart · Vintern är inläst 2/10 kväll: 5 391 599 rader från 754 stationer. Nederbördstypens koder 1, 2, 4 och 6 (uppehåll, regn, snö, snöblandat) står i Trafikverkets ersättningsmodell VädErs 2019 och är översatta; koderna 3 och 9 står …</span></li>
-      <li><span aria-hidden="true">✓</span> <b>Tidszonen</b> <span style="color: var(--dampad, #4A5763)">klart · Mätt 2/10: svensk lokaltid. Timmen 02 saknas natten till 30/3 2025, och lufttemperaturen stämmer med SMHI vid noll förskjutning på tio av tio stationer.</span></li>
-      <li><span aria-hidden="true">✓</span> <b>SMHI för samma vinter</b> <span style="color: var(--dampad, #4A5763)">klart · Hämtat 2/10 kväll: molnmängd, lufttemperatur, nederbörd och rådande väder från 108–243 SMHI-stationer, och radarn för 7 240 av 7 252 halvtimmar, samplad mot väglagssegmenten på samma sätt som i driften. Arkivet har bara radarns …</span></li>
-      <li><span aria-hidden="true">✓</span> <b>Körflödet</b> <span style="color: var(--dampad, #4A5763)">klart · Steg 5a byggt 3/10 (DECISIONS #453): kuvos/korning.ts ställer klockan varje halvtimme, kör buildSnapshot oförändrad och rösten i båda serierna; proven i test/kuvos.test.ts (spåret = skuggmotorns traceAlong fix för fix), kontraktsgrinden vaktar farten och punkttätheten, motproven lokalt. Tidskörningen kuvos 37141247592: 7 245 halvtimmar, 336 steg på sju dygn utan ett tomt, 207 + 114 ms per steg och 166 ms per B-steg ⇒ hela vintern 47 min med B var tredje timme (gränsen 324). Tilläggen före riktningsprovet avgjorda 3/10 (DECISIONS #455); trenden för vintern med 30-minutersfallet ur två halvtimmesrader byggd (kuvos/trend.ts, väg A) och frysflaggan (publish/frysflagga.ts). Riktningsprovet före regnmängden byggt (knappen kuvos, korflode = riktningsprov: rösten, baslinjen, grind A, höjdprovet med frysflaggan, NT --kuvos); T-A och R-A ej prövade (svep). Efterhalkans uppspelning och ovanpå byggda 4/10 (kuvos/efterhalkan.ts, kuvos/ovanpa.ts, DECISIONS #456): ögonblicken härledda ur sql/028 vid körning, PostGIS-provet från halvtimmesrader till driftens egen summa (ci 37182523731), motprovet rött på facitraden (37182562056) och fyra lokalt; i samma knapp, tiger utan regnmängden. Körningen på Bengts ord 6/10 (37447617038, DECISIONS #467): alla delar i samma knapp, efterhalkan med de övriga sedan regnmängden översatts (#464); 72 min med 10 GB heap (#466).</span></li>
-      <li><span aria-hidden="true">✓</span> <b>Andra mätningen på vintern</b> <span style="color: var(--dampad, #4A5763)">klart · Pendlarens notis 2/10: en väg som passerar två eller tre stationer hade fått en frysrisknotis vid ungefär 14 % av kollerna före avfärd, i norr nära 30 %. Bara information, inget byggt.</span></li>
-      <li><span aria-hidden="true">✓</span> <b>Första mätningen på vintern</b> <span style="color: var(--dampad, #4A5763)">klart · Snöflingan 2/10: i 97 av 100 fall då stationsregeln slår till lyser redan bilens egen snöflinga. Förregistrerad före körningen, läser inga utfall.</span></li>
-      <li><span aria-hidden="true">✓</span> <b>Riktningsprovet</b> <span style="color: var(--dampad, #4A5763)">klart · Kört och läst 6/10 (37447617038, DECISIONS #467; första försöket 37435099300 föll på minnet, #466): 675 178 varningar, baslinjen 8 402 episoder i serie A; grind A fallen på vintern (A2 5,5 %), vägpunktsgrinden fallen för alla kandidater, höjden återvinner inget, frysflaggan läst med tre marginaler, NT-B/NT-C faller vid startvärdet, efterhalkan nettonytt 175 (0,2 %) till priset 45,1 %. Tabellen del × ensam × ovanpå i bedömningen §7.</span></li>
-      <li><span aria-hidden="true">✓</span> <b>Kalibreringen</b> <span style="color: var(--dampad, #4A5763)">klart · Gjord 6/10 (37464971791, DECISIONS #468, förregistrerad före körningen): 48 punkter ur sql/028, 32 räknebara, ingen under taket 25 % (lägst 40,4 %, startvärdena 45,1 %). Startvärdena frysta (D6) med Bengts ord; betan hörs på dem (#428).</span></li>
-      <li><span aria-hidden="true">○</span> <b>Tjockare facit från Trafikverket</b> <span style="color: var(--dampad, #4A5763)">saknas · Begäran §5d i KUVOS-LEVERANSEN (ytstatus, väglag, händelser, åtgärder 2024/25; kort #232, #463). Utan det är facit *det blev kallt*, och efterhalkans pris 45 % kan inte skiljas från stationens blindhet.</span></li>
-    </ul>
-  </details>
-</div>
-<!-- /LÄGESRADER -->
-  <p class="litet">Kuvösens steg, med läge och bevis, står ovan, skrivna ur projektkartan. Fäll ut raden för att se dem.</p>
+  <div class="lyft">
+    <p><b>8 oktober.</b> Testbädden är färdig och har kört 13 läsningar på vintern 2024/25 sedan 2/10. Efterhalkan, nederbördstypen och
+    prognoslagret är prövade; övergångarna, försprånget och vind och sikt väntar på beslutet om radarn eller på startvärden.</p>
+    <p>Ingen modell som räknar mellan stationerna har slagit dagens avståndsviktning RÅ, som har 7,5 % grova fel. Det som hjälper är att
+    tiga där ankarna är oense: spridningsgrinden ger 2,8 % grova fel på 61 % av punkterna och är antagen (avsnitt 5).</p>
+    <p>Facit är fortfarande stationens egen yta. Begäran om Trafikverkets väglag och händelser för samma vinter väntar på att skickas
+    (avsnitt 7).</p>
+  </div>
+  <div class="tabell">
+    <table>
+      <thead><tr><th>Del i kartan</th><th>Vad den bär</th><th>Avsnitt</th></tr></thead>
+      <tbody>
+        <tr><td><b>Testbädden</b></td><td>Datan, klockan, körflödet, vakterna, SMHI, MET Nordic och kandidater utifrån som fil</td><td><a href="#avsnitt-3">3</a></td></tr>
+        <tr><td><b>Systemets delar på vintern</b></td><td>Riktningsprovet, kalibreringen, granskningen, måttet och daggpunkten, delarna som väntar</td><td><a href="#avsnitt-4">4</a></td></tr>
+        <tr><td><b>Prognoslagrets kandidater</b></td><td>Varje modell för vägen mellan stationerna, prövad mot RÅ på samma punkter</td><td><a href="#avsnitt-5">5</a></td></tr>
+        <tr><td><b>Före resan på vintern</b></td><td>Snöflingan och pendlarens notis</td><td><a href="#avsnitt-6">6</a></td></tr>
+        <tr><td><b>Facit från Trafikverket</b></td><td>Väglag, händelser, åtgärder och ytstatus för samma vinter</td><td><a href="#avsnitt-7">7</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="litet">Kuvösen är ett eget block i projektkartan sedan 8/10 (DECISIONS #489). En ny läsning bokförs som ett byggsteg på sin del i samma commit som utfallet, och läget här skrivs ur kartan.</p>
 
-  <h2 id="avsnitt-3">3. Hur den fungerar</h2>
+  <h2 id="avsnitt-3">3. Testbädden</h2>
 <!-- LÄGESRADER §3: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 <div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
   <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
@@ -152,6 +149,21 @@
       <li><span aria-hidden="true">◐</span> <b>Vakt på källan</b> <span style="color: var(--dampad, #4A5763)">pågår · Källvakten bevakar metobs (publish/beroenden.ts:60-70); ingen datavakt</span></li>
       <li><span aria-hidden="true">○</span> <b>I lägesfilen</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
       <li><span aria-hidden="true">○</span> <b>Används av motorn eller appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Inget i engine/src; läses av grind-t-a.ts, grind-r-a.ts, grind-nt.ts och kuvösen</span></li>
+    </ul>
+  </details>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gron, #1F7A45); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-kuvosen">Testbädden</a> <span style="color: var(--dampad, #4A5763)">klar</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Datan från Trafikverket</b> <span style="color: var(--dampad, #4A5763)">klart · Mottagen 2/10 från VViS Förvaltning: fem filer, november 2024–mars 2025, 5 496 270 rader från 777 stationer, en rad per station och halvtimme. Ligger i en privat release med kontrollsummor, aldrig i driftens databas.</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Planen</b> <span style="color: var(--dampad, #4A5763)">klart · Sex steg med ett bevis per steg, skriven 1/10.</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Förregistreringen</b> <span style="color: var(--dampad, #4A5763)">klart · Frågan, underlaget, delarna, facit och följden är nedskrivna innan någon fil har öppnats. Två tillägg är gjorda före filen: rösten i två serier (1/10) och prognoslagrets flaggmarginal (2/10).</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Klockan</b> <span style="color: var(--dampad, #4A5763)">klart · Låter produktionens egen kod köra mot en gången tidpunkt, utan att koden ändras. Prövad mot riktig databas, och fyra motprov föll på var sin fälla.</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Inventeringen</b> <span style="color: var(--dampad, #4A5763)">klart · Läser en okänd CSV utan att tolka den: rader, kolumner, tomma fält, spann och vanligaste värden.</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Översättningen och inläsningen</b> <span style="color: var(--dampad, #4A5763)">klart · Vintern är inläst 2/10 kväll: 5 391 599 rader från 754 stationer. Nederbördstypens koder 1, 2, 4 och 6 (uppehåll, regn, snö, snöblandat) står i Trafikverkets ersättningsmodell VädErs 2019 och är översatta; koderna 3 och 9 står …</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Tidszonen</b> <span style="color: var(--dampad, #4A5763)">klart · Mätt 2/10: svensk lokaltid. Timmen 02 saknas natten till 30/3 2025, och lufttemperaturen stämmer med SMHI vid noll förskjutning på tio av tio stationer.</span></li>
+      <li><span aria-hidden="true">✓</span> <b>SMHI för samma vinter</b> <span style="color: var(--dampad, #4A5763)">klart · Hämtat 2/10 kväll: molnmängd, lufttemperatur, nederbörd och rådande väder från 108–243 SMHI-stationer, och radarn för 7 240 av 7 252 halvtimmar, samplad mot väglagssegmenten på samma sätt som i driften. Arkivet har bara radarns …</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Körflödet</b> <span style="color: var(--dampad, #4A5763)">klart · Steg 5a byggt 3/10 (DECISIONS #453): kuvos/korning.ts ställer klockan varje halvtimme, kör buildSnapshot oförändrad och rösten i båda serierna; proven i test/kuvos.test.ts (spåret = skuggmotorns traceAlong fix för fix), kontraktsgrinden vaktar farten och punkttätheten, motproven lokalt. Tidskörningen kuvos 37141247592: 7 245 halvtimmar, 336 steg på sju dygn utan ett tomt, 207 + 114 ms per steg och 166 ms per B-steg ⇒ hela vintern 47 min med B var tredje timme (gränsen 324). Tilläggen före riktningsprovet avgjorda 3/10 (DECISIONS #455); trenden för vintern med 30-minutersfallet ur två halvtimmesrader byggd (kuvos/trend.ts, väg A) och frysflaggan (publish/frysflagga.ts). Riktningsprovet före regnmängden byggt (knappen kuvos, korflode = riktningsprov: rösten, baslinjen, grind A, höjdprovet med frysflaggan, NT --kuvos); T-A och R-A ej prövade (svep). Efterhalkans uppspelning och ovanpå byggda 4/10 (kuvos/efterhalkan.ts, kuvos/ovanpa.ts, DECISIONS #456): ögonblicken härledda ur sql/028 vid körning, PostGIS-provet från halvtimmesrader till driftens egen summa (ci 37182523731), motprovet rött på facitraden (37182562056) och fyra lokalt; i samma knapp, tiger utan regnmängden. Körningen på Bengts ord 6/10 (37447617038, DECISIONS #467): alla delar i samma knapp, efterhalkan med de övriga sedan regnmängden översatts (#464); 72 min med 10 GB heap (#466).</span></li>
+      <li><span aria-hidden="true">✓</span> <b>MET Nordic för samma vinter</b> <span style="color: var(--dampad, #4A5763)">klart · Releasen kuvos-metnordic-2024-25 med summor i kuvos/metnordic-leverans.json; spannen för alla sju fälten i scripts/vardevakten.ts (DECISIONS #480, #482)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Kandidater utifrån som fil</b> <span style="color: var(--dampad, #4A5763)">klart · FYSIK in som fryst fil med hash (kuvos/fysik-leverans.json); kuvösen räknade samma tal som replikan, inom 0,1 procentenhet (37693105481, DECISIONS #485)</span></li>
     </ul>
   </details>
 </div>
@@ -193,7 +205,26 @@
   </div>
   <p class="litet">Bestämt 1/10, innan filen har kommit. Gäller bara kuvösen: skuggan i drift kör sina 20 rutter som förut.</p>
 
-  <h2 id="avsnitt-4">4. Vad den kan pröva, och vad den inte kan</h2>
+  <h2 id="avsnitt-4">4. Systemets delar på vintern</h2>
+<!-- LÄGESRADER §4: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+<div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
+  <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-kv-delarna">Systemets delar på vintern</a> <span style="color: var(--dampad, #4A5763)">delvis, 56 % · kvar: Övergångarna, tillståndet och försprånget: Bengts svar om radarns tif-korrektion (bedömningen §4.2, DECISIONS #441)</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Riktningsprovet</b> <span style="color: var(--dampad, #4A5763)">klart · Kört och läst 6/10 (37447617038, DECISIONS #467; första försöket 37435099300 föll på minnet, #466): 675 178 varningar, baslinjen 8 402 episoder i serie A; grind A fallen på vintern (A2 5,5 %), vägpunktsgrinden fallen för alla kandidater, höjden återvinner inget, frysflaggan läst med tre marginaler, NT-B/NT-C faller vid startvärdet, efterhalkan nettonytt 175 (0,2 %) till priset 45,1 %. Tabellen del × ensam × ovanpå i bedömningen §7.</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Kalibreringen</b> <span style="color: var(--dampad, #4A5763)">klart · Gjord 6/10 (37464971791, DECISIONS #468, förregistrerad före körningen): 48 punkter ur sql/028, 32 räknebara, ingen under taket 25 % (lägst 40,4 %, startvärdena 45,1 %). Startvärdena frysta (D6) med Bengts ord; betan hörs på dem (#428).</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Granskningen</b> <span style="color: var(--dampad, #4A5763)">klart · Tre läsningar 6/10 (37517980895, DECISIONS #469, kort #295): grind A på 60 dygn klarar förvintern (3,4 %) och faller midvintern (5,4 %) och vårvintern (7,1 %), inget fönsterfel; efterhalkans pris sitter i startbandets topp; nettonytt 6,2 eller 3,0 % inom räckvidd beroende på definitionen (kort #296)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Måttet och daggpunkten</b> <span style="color: var(--dampad, #4A5763)">klart · Två läsningar 6/10 (37524718907, DECISIONS #470, kort #297): per fyrning 43,4 %, 0 av 32 under taket, ingen ny kalibrering; daggpunkten ≤ +1 °C ger 32,3 % mot 56,8 % och bär 118 av 175 nettonytt</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Nederbördstypen</b> <span style="color: var(--dampad, #4A5763)">pågår · Körd 6/10 (DECISIONS #467): NT-A och NT-D klarar, NT-B och NT-C faller vid startvärdet; ordlistan får yes och freezing_rain före nästa körning</span></li>
+      <li><span aria-hidden="true">○</span> <b>Övergångarna och tillståndet</b> <span style="color: var(--dampad, #4A5763)">saknas · Ej körda 6/10: radarn finns bara som tif, ungefär 3,4 dBZ över driftens h5, och frågan om korrektion är Bengts (bedömningen §4.2, DECISIONS #441, #467)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Försprånget</b> <span style="color: var(--dampad, #4A5763)">saknas · Ej körd 6/10 av samma skäl; väglagets svåra klasser kräver väglagshistoriken, som är begärd (§5d)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Vind och sikt</b> <span style="color: var(--dampad, #4A5763)">saknas · Vinden översatt 6/10 (DECISIONS #464); vind och sikt saknar startvärden och är inte prövade</span></li>
+      <li><span aria-hidden="true">–</span> <b>Trenden och rimfrosten</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Saknar egna startvärden, så riktningsprovet väljer ingenting åt dem; trendens värden prövas inom efterhalkan (rättat 3/10, DECISIONS #455)</span></li>
+    </ul>
+  </details>
+</div>
+<!-- /LÄGESRADER -->
+  <p>Riktningsprovet körde 6/10 varje del av systemet med de värden som står, ensam och ovanpå de andra; tabellen med alla tal står i bedömningen §7. Samma kväll gjordes kalibreringen, granskningen av beräkningarna och läsningen av måttet och daggpunkten. Tabellen nedan säger vilka delar stationsdatan kan pröva.</p>
   <div class="tabell">
     <table>
       <thead><tr><th>Del</th><th>Med stationsdatan</th><th>Varför</th></tr></thead>
@@ -202,7 +233,7 @@
         <tr><td>Efterhalkan, betans regel</td><td><span class="dom klar">ja</span></td><td>Regnmängden översatt ur dokumentationen 6/10 (DECISIONS #464). Körd i riktningsprovet: nettonytt 175 (0,2 %), pris 45,1 %; kalibreringen behöll startvärdena (#467, #468).</td></tr>
         <tr><td>Trenden och rimfrosten</td><td><span class="dom nej">inte ensamma</span></td><td>Båda saknar egna startvärden. Deras första prov väljer bästa kombinationen ur ett svep, och riktningsprovet väljer ingenting. Trendens värden prövas i stället inom efterhalkan, med betans startvärden (rättat 3/10).</td></tr>
         <tr><td>Övergångarna och tillståndet</td><td><span class="dom nej">ej körda</span></td><td>Ej körda 6/10: radarn finns bara som tif, ungefär 3,4 dBZ över driftens h5, och frågan om korrektion är Bengts (bedömningen §4.2, DECISIONS #441, #467). Regnmängden finns sedan 6/10 (#464).</td></tr>
-        <tr><td>Prognoslagret mellan stationerna</td><td><span class="dom klar">ja</span></td><td>En hel vinter med kalla nätter, som september inte hade. Frysflaggan mäts med tre marginaler.</td></tr>
+        <tr><td>Prognoslagret mellan stationerna</td><td><span class="dom klar">ja</span></td><td>En hel vinter med kalla nätter, som september inte hade. Kandidaterna står i <a href="#avsnitt-5">avsnitt 5</a>.</td></tr>
         <tr><td>Nederbördstypen, vind och sikt</td><td><span class="dom klar">delvis</span></td><td>Nederbördstypen körd 6/10: NT-A och NT-D klarar, NT-B och NT-C faller vid startvärdet (DECISIONS #467). Vinden översatt (#464); vind och sikt saknar startvärden och är inte prövade.</td></tr>
         <tr><td>Försprånget</td><td><span class="dom nej">ej körd</span></td><td>Ej körd 6/10, av samma skäl som övergångarna (radarn bara som tif, DECISIONS #441). Väglagets svåra klasser kräver väglagshistoriken, som är begärd (§5d).</td></tr>
         <tr><td>Väglagssträckorna och olyckorna</td><td><span class="dom nej">nej</span></td><td>Kräver Trafikverkets historik för väglag och händelser; begäran skriven 6/10 (KUVOS-LEVERANSEN §5d), Bengt skickar.</td></tr>
@@ -213,8 +244,91 @@
     </table>
   </div>
 
-  <h2 id="avsnitt-5">5. Reglerna, skrivna i förväg</h2>
+  <h2 id="avsnitt-5">5. Prognoslagrets kandidater</h2>
 <!-- LÄGESRADER §5: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+<div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
+  <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-kv-prognoslagret">Prognoslagrets kandidater</a> <span style="color: var(--dampad, #4A5763)">delvis, 78 % · kvar: Kriging och kallkartan: Bengts och Axels ord efter rutnätsmodellen (bedömningen §4.2, DECISIONS #481, #482)</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Fyra läsningar 6/10</b> <span style="color: var(--dampad, #4A5763)">klart · 37530898977, DECISIONS #471: ankarspridningen skiljer de grova felen (0,5–2 °C ger 1,8 % på 59 % av punkterna), vårens fel är dagsljuset (natten 4,2 %), regimstyrd offset ger 0,3 procentenheter, grova kovariater inget (R² 0,01)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Spridningen och natten korsade</b> <span style="color: var(--dampad, #4A5763)">klart · 37651865384, DECISIONS #476: grinden vid 2,25 °C talar på 60,6 % med 2,8 % grova fel, natten ensam 6,0 % på 63,0 %; grinden antagen med X = 2,25 °C och natten avstådd (DECISIONS #474, #477, #478)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>C8 med vägdata</b> <span style="color: var(--dampad, #4A5763)">klart · 37659713953, DECISIONS #479: vägdatan förklarar 4 % av stationernas särart mot RÅ (R² 0,042), de grova felen står kvar på 7,5 %; ingen kandidat</span></li>
+      <li><span aria-hidden="true">✓</span> <b>C8 mot vädret</b> <span style="color: var(--dampad, #4A5763)">klart · 37663768575, DECISIONS #480: mot en vädermodell ur MET Nordic förklarar vägdatan 30 % (R² 0,298); vädermodellen själv har 21,8 % grova fel; ingen kandidat</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Rutnätsmodellen och höjden</b> <span style="color: var(--dampad, #4A5763)">klart · 37669854795, DECISIONS #481: RN 9,3 %, RN+R 9,3 % och RÅ+HÖJD 8,8 % grova fel mot RÅ:s 7,4 % på samma punkter; ingen kandidat</span></li>
+      <li><span aria-hidden="true">✓</span> <b>FYSIK</b> <span style="color: var(--dampad, #4A5763)">klart · 37693105481, DECISIONS #485: 9,85 % grova fel på RÅ:s punkter mot RÅ:s 7,51 %, sämre i varje band; domen läses på vintern 2026/27</span></li>
+      <li><span aria-hidden="true">✓</span> <b>C8 mot fingeravtrycken</b> <span style="color: var(--dampad, #4A5763)">klart · DECISIONS #486: vägdatan förklarar ungefär 5 % av särarten mot den äldre modellen (VÄG R² 0,0499) och ingenting mot den frysta</span></li>
+      <li><span aria-hidden="true">○</span> <b>Kriging och kallkartan</b> <span style="color: var(--dampad, #4A5763)">saknas · Väntar på Bengts och Axels ord efter rutnätsmodellen (bedömningen §4.2, DECISIONS #481, #482)</span></li>
+      <li><span aria-hidden="true">○</span> <b>FYSIK+BLANDNING och förregistreringen för 2026/27</b> <span style="color: var(--dampad, #4A5763)">saknas · Två beslut för Bengt i bedömningen §4.2 (DECISIONS #485)</span></li>
+    </ul>
+  </details>
+</div>
+<!-- /LÄGESRADER -->
+  <p>Prognoslagret skattar vägens temperatur mellan stationerna. Varje kandidat prövas mot dagens avståndsviktning, RÅ, på samma punkter:
+  kuvösens vägpunkter, där ytan är högst +5 °C. Måttet är andelen grova fel, mer än 2 °C fel, totalt och efter avståndet till närmaste
+  station. Kravet i vägpunktsgrinden är 5 %.</p>
+  <div class="tabell">
+    <table>
+      <thead><tr><th>Kandidat</th><th>Grova fel</th><th>0–7 · 7–15 · 15–20 · &gt; 20 km</th><th>Följd</th><th>Beslut</th></tr></thead>
+      <tbody>
+        <tr><td><b>RÅ</b>, grannarnas yta avståndsviktad (i drift)</td><td class="nr">7,5 %</td><td class="nr">5,2 · 5,3 · 7,2 · 13,6</td><td>Baslinjen</td><td class="nr">#471, #479</td></tr>
+        <tr><td><b>OFFSET</b>, stationens egen historik</td><td class="nr">5,5 %</td><td class="nr">3,6 · 3,6 · 5,4 · 10,3*</td><td>Taket: kräver en station, går inte att räkna mellan dem</td><td class="nr">#471, #481</td></tr>
+        <tr><td><b>Spridningsgrinden</b>, RÅ tiger när ankarna skiljer mer än 2,25 °C</td><td class="nr">2,8 % på 60,6 %</td><td class="nr">—</td><td><span class="dom klar">antagen 7/10</span>, loggas i skuggan</td><td class="nr">#474–#478</td></tr>
+        <tr><td><b>Natten</b>, tala bara när solen är under −6°</td><td class="nr">6,0 % på 63,0 %</td><td class="nr">—</td><td><span class="dom nej">avstådd 7/10</span></td><td class="nr">#476, #477</td></tr>
+        <tr><td><b>Regimstyrd offset</b>, offset efter molnregim</td><td class="nr">5,5 → 5,2 %</td><td class="nr">—</td><td>Bara i klar stilla natt; ingen kandidat</td><td class="nr">#471</td></tr>
+        <tr><td><b>RÅ+VÄG</b>, RÅ med vägens egenskaper (C8)</td><td class="nr">7,5 %</td><td class="nr">—</td><td>Förklarar 4 % av särarten; ingen kandidat</td><td class="nr">#479</td></tr>
+        <tr><td><b>VÄDER</b>, linjär vädermodell ur MET Nordic</td><td class="nr">21,8 %</td><td class="nr">17,3 · 17,4 · 20,9 · 33,9</td><td>Mot den förklarar vägdatan 30 % av särarten; ingen kandidat</td><td class="nr">#480</td></tr>
+        <tr><td><b>RÅ+HÖJD</b>, RÅ med höjdkorrektion*</td><td class="nr">8,8 %</td><td class="nr">5,8 · 5,6 · 8,6 · 16,8</td><td>Sämre än RÅ; ingen kandidat</td><td class="nr">#481</td></tr>
+        <tr><td><b>RN</b>, rutnätsmodellen: vägens skillnad mot MET Nordics luft*</td><td class="nr">9,3 %</td><td class="nr">6,0 · 5,9 · 8,9 · 18,1</td><td>Sämre än RÅ i alla band; ingen kandidat</td><td class="nr">#481</td></tr>
+        <tr><td><b>FYSIK</b>, Axels fysikmodell ur ECMWF, räknad utanför repot†</td><td class="nr">9,85 %</td><td class="nr">8,1 · 8,0 · 8,8 · 15,5</td><td>Sämre än RÅ i varje band; domen 2026/27</td><td class="nr">#485</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="litet">Alla på 4 353 206 punkter där RÅ har 7,5 %, utom * på 4 312 216 punkter där RÅ har 7,4 % (sju stationer saknar höjd) och
+  † på 4 352 753 punkter där RÅ har 7,51 %. RN+R, rutnätsmodellen med vädret, gav samma 9,3 % som RN. C8 mot Axels fingeravtryck förklarade
+  ungefär 5 % av särarten mot den äldre modellen och ingenting mot den frysta (#486). Ingen dom fälls i kuvösen: domarna läses på vintern
+  2026/27.</p>
+
+  <h2 id="avsnitt-6">6. Före resan på vintern</h2>
+<!-- LÄGESRADER §6: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+<div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
+  <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gron, #1F7A45); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-kv-fore-resan">Före resan på vintern</a> <span style="color: var(--dampad, #4A5763)">klar</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Snöflingan</b> <span style="color: var(--dampad, #4A5763)">klart · 2/10, DECISIONS #440: i 97 av 100 fall då stationsregeln slår till lyser redan bilens egen snöflinga; förregistrerad, läser inga utfall</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Pendlarens notis</b> <span style="color: var(--dampad, #4A5763)">klart · 2/10, DECISIONS #442: en väg som passerar två eller tre stationer hade fått en frysrisknotis vid ungefär 14 % av kollerna före avfärd, i norr nära 30 %; bara information</span></li>
+    </ul>
+  </details>
+</div>
+<!-- /LÄGESRADER -->
+  <p>Två läsningar gäller det föraren får veta innan bilen startar. Ingen av dem läser ett utfall, och ingen ändrar något i appen.</p>
+  <ul>
+    <li><b>Snöflingan (2/10, DECISIONS #440).</b> I 97 av 100 fall då stationsregeln slår till lyser redan bilens egen snöflinga.</li>
+    <li><b>Pendlarens notis (2/10, DECISIONS #442).</b> En väg som passerar två eller tre stationer hade fått en frysrisknotis vid ungefär
+    14 % av kollerna före avfärd, i norr nära 30 %. Underlaget för favoriterna.</li>
+  </ul>
+
+  <h2 id="avsnitt-7">7. Facit från Trafikverket</h2>
+<!-- LÄGESRADER §7: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
+<div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
+  <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-kv-facit">Facit från Trafikverket</a> <span style="color: var(--dampad, #4A5763)">väntar, 25 % · Bengt skickar begäran §5d (KUVOS-LEVERANSEN §5d); sedan Trafikverkets svar.</span></summary>
+    <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
+      <li><span aria-hidden="true">✓</span> <b>Begäran skriven</b> <span style="color: var(--dampad, #4A5763)">klart · 6/10 i KUVOS-LEVERANSEN §5d, Bengts ja (DECISIONS #465): ytstatus, väglag, händelser och åtgärder för vintern 2024/25</span></li>
+      <li><span aria-hidden="true">○</span> <b>Begäran skickad</b> <span style="color: var(--dampad, #4A5763)">saknas · Bengt skickar; inget bokfört om att den skickats (bedömningen §0b)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Trafikverkets svar</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
+      <li><span aria-hidden="true">○</span> <b>Facit inläst och läst</b> <span style="color: var(--dampad, #4A5763)">saknas · Utan det är facit att det blev kallt, och efterhalkans pris 45 % kan inte skiljas från stationens blindhet</span></li>
+    </ul>
+  </details>
+</div>
+<!-- /LÄGESRADER -->
+  <p>Facit i kuvösen är stationens egen yta efteråt. Den säger att det blev kallt, inte att vägen blev hal, och den ser inte saltet. Ett
+  starkare facit finns hos Trafikverket: väglaget, händelserna, åtgärderna och ytstatusen för samma vinter.</p>
+  <p>Det här är första gången Trafikverket lämnar ut historiska data till projektet. Leveransen 2/10 gick bra, och 6/10 skrevs en begäran
+  om facit för samma vinter (KUVOS-LEVERANSEN §5d, DECISIONS #465). Bengt skickar den. Utan svaret kan efterhalkans pris på 45 % inte
+  skiljas från stationens blindhet.</p>
+
+  <h2 id="avsnitt-8">8. Reglerna, skrivna i förväg</h2>
+<!-- LÄGESRADER §8: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 <div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
   <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
   <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-regel-l">Regel L: ändra en tröskel efter sett utfall</a> <span style="color: var(--dampad, #4A5763)">väntar, 25 % · Bengts och Axels ja, nej eller ändrad lydelse; förslagets egen rekommendation är alternativ D (inför inte regel L nu).</span></summary>
@@ -244,20 +358,24 @@
     <li><b>Ovanpå, räknat per stationsnatt (3/10, byggt 4/10).</b> Facit är en natt då stationens egen yta når +1 °C. En del fångar den om den talat för stationen samma natt inom 90 minuter före. Nettonytt är det bara delen fångar. Priset är delens nya nätter där ytan inte ens kom under +1,5 °C. Tidsvinsten står bredvid och räknas aldrig som nytt (DECISIONS #456).</li>
   </ul>
 
-  <h2 id="avsnitt-6">6. Vad som kommer härnäst</h2>
-  <ol class="tid">
-    <li><b>2/10</b><div>Filen kom, en vecka tidigare än väntat. Den är inventerad, packad i en privat release och tidszonen är mätt. Frågorna om koderna går till Trafikverket.</div></li>
-    <li><b>2/10 kväll</b><div>Axel hittade fyra av nederbördskoderna i Trafikverkets ersättningsmodell. Vintern är inläst i kuvösens databas och vakterna är körda som antal. SMHI:s stationer och radar för samma vinter är hämtade. Inget utfall är läst.</div></li>
-    <li><b>3/10</b><div>Körflödets första del är byggd. Klockan går genom vintern en halvtimme i taget, lägesbilden byggs med driftens egen kod och rösten körs i båda serierna. Först mättes bara körtiden på vinterns första sju dygn. Den avgjorde om hela väglagsnätet ryms var tredje timme, och regeln för det skrevs ner innan något tal fanns. Svaret: hela vintern, 7 245 halvtimmar, tar ungefär 47 minuter med väglagsnätet var tredje timme. Det ryms med god marginal, och inget steg var tomt.</div></li>
-    <li><b>6/10</b><div>Vinden, mängden och koderna 3, 9 och −9 översattes ur Trafikverkets dokumentation (DECISIONS #464), så riktningsprovet kördes tio dagar före 16/10; första försöket föll på minnet (#466). Begäran om ytstatus, väglag, händelser och åtgärder är skriven (§5d). Riktningsprovet kört och läst (DECISIONS #467), och kalibreringen gjord samma dag: 48 punkter ur delarnas svep, 32 räknebara, ingen under taket 25 % (lägst 40,4 %). Startvärdena frysta, betan hörs på dem (DECISIONS #468). Beräkningarna granskade samma kväll (kort #295, DECISIONS #469): grind A på 60 dygn klarar förvintern (3,4 %) och faller midvintern (5,4 %) och vårvintern (7,1 %) — inget fönsterfel; efterhalkans pris sitter i startbandets topp; Ö-B1:s nämnare avgörs före mars (kort #296). Måttet per fyrning och daggpunkten lästa samma kväll (DECISIONS #470): måttet ändrar inte kalibreringen (0 av 32 under taket), daggpunkten ≤ +1 nästan halverar efterhalkans pris och bär två tredjedelar av nettonyttan — ett beslut för mars (kort #297). Prognoslagrets fyra läsningar samma kväll (DECISIONS #471): ankarnas oenighet skiljer de grova felen (0,5–2 °C ⇒ 1,8 % på 59 % av punkterna), vårens fel är dagsljuset (natten 4,2 %), regimstyrd offset ger lite, grova kovariater inget — spridningsgrind och nattbegränsning föreslås (kort #299).</div></li>
-    <li><b>7/10</b><div>Spridningen och natten korsade (DECISIONS #476): X-kurvan i steg om 0,25 °C, natten för driftens råa modell och morgonen. Kontrollen höll mot 6/10, med 4 353 206 punkter och 7,5 % grova fel. Grinden vid 2,25 °C talar på 61 % med 2,8 % grova fel. Natten ensam ger 6,0 %, och ovanpå grinden köper den lite men tystar marsmorgnarna. Samma kväll satte Bengt X till 2,25 °C och avstod natten (DECISIONS #477). C8 med vägdata kördes också (DECISIONS #479): trafikmängd och vägklass förklarar 4 % av stationernas särart mot RÅ, och de grova felen står kvar på 7,5 %. Mot en vädermodell ur MET Nordic förklarar samma vägdata 30 % (DECISIONS #480), nästan som Axel fann mot sin fysikmodell; vädermodellen själv har 21,8 % grova fel. Rutnätsmodellen från 6/10 kördes också (DECISIONS #481): att sprida vägens skillnad mot luften i stället för vägens temperatur gav 9,3 % grova fel mot RÅ:s 7,4 %. Spridningsgrinden antogs och loggas i skuggan (#474), och Axel signerade att marsdomen räknas med den (#475, #478). Vägdatan för 854 stationer och 818 segment ligger i repot (#472, #473).</div></li>
-    <li><b>8/10</b><div>Axels fysikspår förregistrerat som kandidaten FYSIK (DECISIONS #485, kort #305): en skattning av ytan per station och halvtimme ur ECMWF, en värmekolumn och en inlärd rättelse där varje stations region är gömd — räknad utanför repot och fryst med hash, och den går in i kuvösen som fil, inte som kod. Mätningen räknar RÅ som kontroll och FYSIK på samma punkter; förväntningarna står i beslutet före knappen, och ett träffat tal bevisar bara att filen och kuvösen räknar på samma population. Fingeravtrycksfilen Bengt bad om ligger i repot.</div></li>
-    <li><b>8/10</b><div>FYSIK körd på knappen (37693105481, Axels ord i Bengts ställe, DECISIONS #485 och #486): RÅ-kontrollen 7,51 % visar att populationen är kuvösens, och FYSIK fick 9,85 % grova fel på RÅ:s punkter (band 8,1 · 8,0 · 8,8 · 15,5 %) och 10,04 % på alla hinkar — varje tal inom förväntan och inom 0,1 procentenhet av replikan. Kuvösen kan alltså döma en kandidat som räknats utanför repot. FYSIK ensam är sämre än RÅ i varje band; domen läses på vintern 2026/27. C8 mot Axels fingeravtryck: vägdatan förklarar ungefär 5 % av särarten mot den äldre modellen och ingenting mot den frysta.</div></li>
-    <li><b>Härnäst</b><div>Fysikspårets två uppföljningsbeslut står hos Bengt: FYSIK+BLANDNING som andra kandidat, och förregistreringen för vintern 2026/27 på SMHI/MET (bedömningen §4.2, #485). Delarna som inte kördes (trenden, rimfrosten, vind och sikt, övergångarna, tillståndet, försprånget) väntar på startvärden eller på svaret om radarn i tif (bedömningen §4.2). Nederbördstypens ordlista får <i>yes</i> och <i>freezing_rain</i> före nästa körning (#467). Kallkartan och kriging väntar på Bengts och Axels ord efter rutnätsmodellen (#481, #482). Spridningsgrindens vinterläsning 1/12, 1/1 och 1/2 (#478). Trafikverkets svar på begäran §5d.</div></li>
-    <li><b>Före 1 december</b><div>Kuvösens värde är att ge vintersvar före vintern. Efter frosten och betan i november är den mest historia.</div></li>
-  </ol>
+  <h2 id="avsnitt-9">9. Vad som kommer härnäst</h2>
+  <div class="tabell">
+    <table>
+      <thead><tr><th>Läsning</th><th>Väntar på</th><th>Del</th></tr></thead>
+      <tbody>
+        <tr><td>Övergångarna, tillståndet och försprånget</td><td>Bengts svar om radarns tif-korrektion (bedömningen §4.2, #441)</td><td><a href="#avsnitt-4">4</a></td></tr>
+        <tr><td>Vind och sikt</td><td>Startvärden</td><td><a href="#avsnitt-4">4</a></td></tr>
+        <tr><td>Nederbördstypen igen</td><td>Ordlistan får <i>yes</i> och <i>freezing_rain</i> före nästa körning (#467)</td><td><a href="#avsnitt-4">4</a></td></tr>
+        <tr><td>Kriging och kallkartan</td><td>Bengts och Axels ord efter rutnätsmodellen (#481, #482)</td><td><a href="#avsnitt-5">5</a></td></tr>
+        <tr><td>FYSIK+BLANDNING och förregistreringen för 2026/27</td><td>Bengts beslut (bedömningen §4.2, #485)</td><td><a href="#avsnitt-5">5</a></td></tr>
+        <tr><td>Facit för samma vinter</td><td>Att begäran §5d skickas, och Trafikverkets svar</td><td><a href="#avsnitt-7">7</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="litet">Spridningsgrindens vinterläsning 1/12, 1/1 och 1/2 görs i skuggan, inte i kuvösen (#478). Kuvösens värde är att ge vintersvar
+  före vintern; efter frosten och betan i november är den mest historia.</p>
 
-  <h2 id="avsnitt-7">7. Vad det kan ändra i projektet</h2>
+  <h2 id="avsnitt-10">10. Vad det kan ändra i projektet</h2>
   <p>Kuvösen är ett riktningsprov och fäller ingen dom. Men den kan flytta flera beslut från mars till oktober och november.</p>
   <div class="par">
     <div class="ruta gron">
@@ -270,7 +388,7 @@
     </div>
     <div class="ruta gron">
       <h3>Prognoslagret får sin vinter</h3>
-      <p>Skattningen mellan stationerna föll i september, på ett underlag med fyra frostnätter. En hel vinter visar hur ofta frysflaggan missar och larmar fel när det verkligen är kallt, och om höjden hjälper. Tillagt 2/10, innan filen har kommit: flaggan mäts med tre marginaler (0, 0,5 och 1 grad) för rå viktning och för rå viktning med höjd. Alla tre redovisas och ingen väljs. <b>Utfallet 6–7/10:</b> grind A 5,5 % och vägpunktsgrinden 7,5 % grova fel, höjden hjälper inte; med spridningsgrinden vid 2,25 °C 2,8 % på 61 % av punkterna (DECISIONS #467, #476, #477).</p>
+      <p>Skattningen mellan stationerna föll i september, på ett underlag med fyra frostnätter. En hel vinter visar hur ofta frysflaggan missar och larmar fel när det verkligen är kallt, och om höjden hjälper. Tillagt 2/10, innan filen har kommit: flaggan mäts med tre marginaler (0, 0,5 och 1 grad) för rå viktning och för rå viktning med höjd. Alla tre redovisas och ingen väljs. <b>Utfallet 6–8/10:</b> grind A 5,5 % och vägpunktsgrinden 7,5 % grova fel, och ingen kandidat har slagit RÅ; med spridningsgrinden vid 2,25 °C 2,8 % på 61 % av punkterna. Alla kandidater står i <a href="#avsnitt-5">avsnitt 5</a>.</p>
     </div>
     <div class="ruta gron">
       <h3>Årets vinter blir bara domdata</h3>
@@ -278,15 +396,11 @@
     </div>
     <div class="ruta frost">
       <h3>En testbädd som finns kvar</h3>
-      <p>Kuvösen är byggd: riktningsprovet tog 72 minuter, och 7/10 prövades fyra nya läsningar på samma vinter på några minuter var (DECISIONS #476, #479–#481), i stället för att vänta en säsong i skuggan. Varje ny vinter i vårt eget arkiv kan läggas till.</p>
-    </div>
-    <div class="ruta frost">
-      <h3>Trafikverket som källa till historik</h3>
-      <p>Det här är första gången Trafikverket lämnar ut historiska data till projektet. Det gick bra, och 6/10 skrevs en begäran om väglag, händelser, åtgärder och ytstatus för samma vinter (KUVOS-LEVERANSEN §5d), som skulle ge kuvösen ett starkare facit. Bengt skickar den.</p>
+      <p>Kuvösen är byggd: riktningsprovet tog 72 minuter, och 7/10 prövades fyra nya läsningar på samma vinter på några minuter var (DECISIONS #476, #479–#481), i stället för att vänta en säsong i skuggan. 8/10 dömdes för första gången en kandidat som räknats utanför repot, Axels FYSIK (#485). Varje ny vinter i vårt eget arkiv kan läggas till.</p>
     </div>
   </div>
 
-  <h2 id="avsnitt-8">8. Vad kuvösen inte kan säga</h2>
+  <h2 id="avsnitt-11">11. Vad kuvösen inte kan säga</h2>
   <div class="par">
     <div class="ruta rod">
       <h3>Facit är tunt</h3>
@@ -310,23 +424,38 @@
     </div>
   </div>
   <p>Ingenting i kuvösen når en förare. Appen, rösten och det telefonen hämtar är orörda.</p>
+  <h2 id="avsnitt-12">12. Loggen, dag för dag</h2>
+  <details>
+    <summary style="cursor: pointer">Vad som hände 2/10–8/10, som det skrevs då</summary>
+    <ol class="tid">
+      <li><b>2/10</b><div>Filen kom, en vecka tidigare än väntat. Den är inventerad, packad i en privat release och tidszonen är mätt. Frågorna om koderna går till Trafikverket.</div></li>
+      <li><b>2/10 kväll</b><div>Axel hittade fyra av nederbördskoderna i Trafikverkets ersättningsmodell. Vintern är inläst i kuvösens databas och vakterna är körda som antal. SMHI:s stationer och radar för samma vinter är hämtade. Inget utfall är läst.</div></li>
+      <li><b>3/10</b><div>Körflödets första del är byggd. Klockan går genom vintern en halvtimme i taget, lägesbilden byggs med driftens egen kod och rösten körs i båda serierna. Först mättes bara körtiden på vinterns första sju dygn. Den avgjorde om hela väglagsnätet ryms var tredje timme, och regeln för det skrevs ner innan något tal fanns. Svaret: hela vintern, 7 245 halvtimmar, tar ungefär 47 minuter med väglagsnätet var tredje timme. Det ryms med god marginal, och inget steg var tomt.</div></li>
+      <li><b>6/10</b><div>Vinden, mängden och koderna 3, 9 och −9 översattes ur Trafikverkets dokumentation (DECISIONS #464), så riktningsprovet kördes tio dagar före 16/10; första försöket föll på minnet (#466). Begäran om ytstatus, väglag, händelser och åtgärder är skriven (§5d). Riktningsprovet kört och läst (DECISIONS #467), och kalibreringen gjord samma dag: 48 punkter ur delarnas svep, 32 räknebara, ingen under taket 25 % (lägst 40,4 %). Startvärdena frysta, betan hörs på dem (DECISIONS #468). Beräkningarna granskade samma kväll (kort #295, DECISIONS #469): grind A på 60 dygn klarar förvintern (3,4 %) och faller midvintern (5,4 %) och vårvintern (7,1 %) — inget fönsterfel; efterhalkans pris sitter i startbandets topp; Ö-B1:s nämnare avgörs före mars (kort #296). Måttet per fyrning och daggpunkten lästa samma kväll (DECISIONS #470): måttet ändrar inte kalibreringen (0 av 32 under taket), daggpunkten ≤ +1 nästan halverar efterhalkans pris och bär två tredjedelar av nettonyttan — ett beslut för mars (kort #297). Prognoslagrets fyra läsningar samma kväll (DECISIONS #471): ankarnas oenighet skiljer de grova felen (0,5–2 °C ⇒ 1,8 % på 59 % av punkterna), vårens fel är dagsljuset (natten 4,2 %), regimstyrd offset ger lite, grova kovariater inget — spridningsgrind och nattbegränsning föreslås (kort #299).</div></li>
+      <li><b>7/10</b><div>Spridningen och natten korsade (DECISIONS #476): X-kurvan i steg om 0,25 °C, natten för driftens råa modell och morgonen. Kontrollen höll mot 6/10, med 4 353 206 punkter och 7,5 % grova fel. Grinden vid 2,25 °C talar på 61 % med 2,8 % grova fel. Natten ensam ger 6,0 %, och ovanpå grinden köper den lite men tystar marsmorgnarna. Samma kväll satte Bengt X till 2,25 °C och avstod natten (DECISIONS #477). C8 med vägdata kördes också (DECISIONS #479): trafikmängd och vägklass förklarar 4 % av stationernas särart mot RÅ, och de grova felen står kvar på 7,5 %. Mot en vädermodell ur MET Nordic förklarar samma vägdata 30 % (DECISIONS #480), nästan som Axel fann mot sin fysikmodell; vädermodellen själv har 21,8 % grova fel. Rutnätsmodellen från 6/10 kördes också (DECISIONS #481): att sprida vägens skillnad mot luften i stället för vägens temperatur gav 9,3 % grova fel mot RÅ:s 7,4 %. Spridningsgrinden antogs och loggas i skuggan (#474), och Axel signerade att marsdomen räknas med den (#475, #478). Vägdatan för 854 stationer och 818 segment ligger i repot (#472, #473).</div></li>
+      <li><b>8/10</b><div>Axels fysikspår förregistrerat som kandidaten FYSIK (DECISIONS #485, kort #305): en skattning av ytan per station och halvtimme ur ECMWF, en värmekolumn och en inlärd rättelse där varje stations region är gömd — räknad utanför repot och fryst med hash, och den går in i kuvösen som fil, inte som kod. Mätningen räknar RÅ som kontroll och FYSIK på samma punkter; förväntningarna står i beslutet före knappen, och ett träffat tal bevisar bara att filen och kuvösen räknar på samma population. Fingeravtrycksfilen Bengt bad om ligger i repot.</div></li>
+      <li><b>8/10</b><div>FYSIK körd på knappen (37693105481, Axels ord i Bengts ställe, DECISIONS #485 och #486): RÅ-kontrollen 7,51 % visar att populationen är kuvösens, och FYSIK fick 9,85 % grova fel på RÅ:s punkter (band 8,1 · 8,0 · 8,8 · 15,5 %) och 10,04 % på alla hinkar — varje tal inom förväntan och inom 0,1 procentenhet av replikan. Kuvösen kan alltså döma en kandidat som räknats utanför repot. FYSIK ensam är sämre än RÅ i varje band; domen läses på vintern 2026/27. C8 mot Axels fingeravtryck: vägdatan förklarar ungefär 5 % av särarten mot den äldre modellen och ingenting mot den frysta.</div></li>
+    </ol>
+  </details>
+  <p class="litet">Besluten och STATUS bär samma historik i detalj.</p>
+
   <hr>
-  <p class="litet">Källor: beslutsloggen (DECISIONS #292, #388, #397, #398, #418, #424–#428, #437, #438, #440, #442, #453–#456, #464, #466–#471, #474–#482), kort #232, #270, #278 och #298, planen (docs/PLAN-KUVOSEN-2026-10-01.md), bedömningen §4.2, §6.1 och §7 och tröskeldokumentet för kombinationen (regel D). Sidan till Trafikverkets handläggare, <i>Halkvakt och kuvösen</i>, är en annan sida och säger mindre. Alla datum avser 2026 om inget annat står.</p>
+  <p class="litet">Källor: beslutsloggen (DECISIONS #292, #388, #397, #398, #418, #424–#428, #437, #438, #440, #442, #453–#456, #463–#482, #485, #486, #489), kort #232, #270, #278 och #298, planen (docs/PLAN-KUVOSEN-2026-10-01.md), bedömningen §4.2, §6.1 och §7 och tröskeldokumentet för kombinationen (regel D). Sidan till Trafikverkets handläggare, <i>Halkvakt och kuvösen</i>, är en annan sida och säger mindre. Alla datum avser 2026 om inget annat står.</p>
 
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
   <h2 id="oppna-kort">Öppna kort</h2>
   <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 3 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
-  <h3><a href="#avsnitt-2">2. Läget i dag</a></h3>
+  <h3><a href="#avsnitt-5">5. Prognoslagrets kandidater</a></h3>
+  <ul>
+    <li>#270 PROGNOSLAGRET EFTER PREMISSMÄTNINGARNA — BENGTS VAL a–h <span class="litet">· Bengt</span></li>
+  </ul>
+  <h3><a href="#avsnitt-7">7. Facit från Trafikverket</a></h3>
   <ul>
     <li>#232 KUVÖSEN — HELA SYSTEMET BAKÅTPRÖVAT PÅ VINTERN 2024/25 <span class="litet">· Bengt</span></li>
   </ul>
-  <h3><a href="#avsnitt-5">5. Reglerna, skrivna i förväg</a></h3>
+  <h3><a href="#avsnitt-8">8. Reglerna, skrivna i förväg</a></h3>
   <ul>
     <li>#282 REGEL L — FÖRSLAG: ÄNDRING AV EN TRÖSKEL EFTER ATT UTFALLET ÄR SETT <span class="litet">· Bengt</span></li>
-  </ul>
-  <h3><a href="#avsnitt-6">6. Vad som kommer härnäst</a></h3>
-  <ul>
-    <li>#270 PROGNOSLAGRET EFTER PREMISSMÄTNINGARNA — BENGTS VAL a–h <span class="litet">· Bengt</span></li>
   </ul>
 <!-- /ÖPPNA KORT -->
 </main>
