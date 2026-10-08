@@ -118,8 +118,10 @@
   <div class="lyft">
     <p><b>8 oktober.</b> Testbädden är färdig och har kört 13 läsningar på vintern 2024/25 sedan 2/10. Efterhalkan, nederbördstypen och
     prognoslagret är prövade; övergångarna, försprånget och vind och sikt väntar på beslutet om radarn eller på startvärden.</p>
-    <p>Ingen modell som räknar mellan stationerna har slagit dagens avståndsviktning RÅ, som har 7,5 % grova fel. Det som hjälper är att
-    tiga där ankarna är oense: spridningsgrinden ger 2,8 % grova fel på 61 % av punkterna och är antagen (avsnitt 5).</p>
+    <p>Ingen modell som kuvösen själv har kört har slagit dagens avståndsviktning RÅ, som har 7,5 % grova fel. I Axels replika under
+    kuvösens regler gör två varianter av fysikmodellen det: med grannarnas fel 6,65 % och med blandningen 5,97 %. De är inte körda i
+    kuvösen än; det kräver grannlagret och ett beslut (#485). Det som redan hjälper är att tiga där ankarna är oense: spridningsgrinden
+    ger 2,8 % grova fel på 61 % av punkterna och är antagen (avsnitt 5).</p>
     <p>Facit är fortfarande stationens egen yta. Begäran om Trafikverkets väglag och händelser för samma vinter väntar på att skickas
     (avsnitt 7).</p>
   </div>
@@ -255,7 +257,7 @@
       <li><span aria-hidden="true">✓</span> <b>C8 med vägdata</b> <span style="color: var(--dampad, #4A5763)">klart · 37659713953, DECISIONS #479: vägdatan förklarar 4 % av stationernas särart mot RÅ (R² 0,042), de grova felen står kvar på 7,5 %; ingen kandidat</span></li>
       <li><span aria-hidden="true">✓</span> <b>C8 mot vädret</b> <span style="color: var(--dampad, #4A5763)">klart · 37663768575, DECISIONS #480: mot en vädermodell ur MET Nordic förklarar vägdatan 30 % (R² 0,298); vädermodellen själv har 21,8 % grova fel; ingen kandidat</span></li>
       <li><span aria-hidden="true">✓</span> <b>Rutnätsmodellen och höjden</b> <span style="color: var(--dampad, #4A5763)">klart · 37669854795, DECISIONS #481: RN 9,3 %, RN+R 9,3 % och RÅ+HÖJD 8,8 % grova fel mot RÅ:s 7,4 % på samma punkter; ingen kandidat</span></li>
-      <li><span aria-hidden="true">✓</span> <b>FYSIK</b> <span style="color: var(--dampad, #4A5763)">klart · 37693105481, DECISIONS #485: 9,85 % grova fel på RÅ:s punkter mot RÅ:s 7,51 %, sämre i varje band; domen läses på vintern 2026/27</span></li>
+      <li><span aria-hidden="true">✓</span> <b>FYSIK</b> <span style="color: var(--dampad, #4A5763)">klart · 37693105481, DECISIONS #485: 9,85 % grova fel på RÅ:s punkter mot RÅ:s 7,51 %, sämre i varje band; domen läses på vintern 2026/27; i Axels replika under kuvösens regler ger FYSIK med grannarnas fel 6,65 % och med blandningen 5,97 % (bortom 20 km 10,9 mot RÅ:s 13,6 %), inte körda i kuvösen: de kräver grannlagret och ett beslut (docs/FYSIKSPARET-FRYS-2026-10-07.md); vädret är ECMWF:s analys, inte en prognos</span></li>
       <li><span aria-hidden="true">✓</span> <b>C8 mot fingeravtrycken</b> <span style="color: var(--dampad, #4A5763)">klart · DECISIONS #486: vägdatan förklarar ungefär 5 % av särarten mot den äldre modellen (VÄG R² 0,0499) och ingenting mot den frysta</span></li>
       <li><span aria-hidden="true">○</span> <b>Kriging och kallkartan</b> <span style="color: var(--dampad, #4A5763)">saknas · Väntar på Bengts och Axels ord efter rutnätsmodellen (bedömningen §4.2, DECISIONS #481, #482)</span></li>
       <li><span aria-hidden="true">○</span> <b>FYSIK+BLANDNING och förregistreringen för 2026/27</b> <span style="color: var(--dampad, #4A5763)">saknas · Två beslut för Bengt i bedömningen §4.2 (DECISIONS #485)</span></li>
@@ -280,13 +282,39 @@
         <tr><td><b>RÅ+HÖJD</b>, RÅ med höjdkorrektion*</td><td class="nr">8,8 %</td><td class="nr">5,8 · 5,6 · 8,6 · 16,8</td><td>Sämre än RÅ; ingen kandidat</td><td class="nr">#481</td></tr>
         <tr><td><b>RN</b>, rutnätsmodellen: vägens skillnad mot MET Nordics luft*</td><td class="nr">9,3 %</td><td class="nr">6,0 · 5,9 · 8,9 · 18,1</td><td>Sämre än RÅ i alla band; ingen kandidat</td><td class="nr">#481</td></tr>
         <tr><td><b>FYSIK</b>, Axels fysikmodell ur ECMWF, räknad utanför repot†</td><td class="nr">9,85 %</td><td class="nr">8,1 · 8,0 · 8,8 · 15,5</td><td>Sämre än RÅ i varje band; domen 2026/27</td><td class="nr">#485</td></tr>
+        <tr><td><b>FYSIK + grannarnas fel</b>, Axels replika‡</td><td class="nr">6,65 %</td><td class="nr">4,5 · 4,9 · 5,7 · 12,2</td><td>Slår RÅ; inte körd i kuvösen, kräver grannlagret</td><td class="nr">#485</td></tr>
+        <tr><td><b>FYSIK + blandning</b> med RÅ nära stationerna, Axels replika‡</td><td class="nr">5,97 %</td><td class="nr">4,1 · 4,3 · 5,3 · 10,9</td><td>Bäst hittills och den enda som slår RÅ bortom 20 km; <span class="dom vantar">väntar på beslut</span></td><td class="nr">#485</td></tr>
       </tbody>
     </table>
   </div>
   <p class="litet">Alla på 4 353 206 punkter där RÅ har 7,5 %, utom * på 4 312 216 punkter där RÅ har 7,4 % (sju stationer saknar höjd) och
   † på 4 352 753 punkter där RÅ har 7,51 %. RN+R, rutnätsmodellen med vädret, gav samma 9,3 % som RN. C8 mot Axels fingeravtryck förklarade
-  ungefär 5 % av särarten mot den äldre modellen och ingenting mot den frysta (#486). Ingen dom fälls i kuvösen: domarna läses på vintern
-  2026/27.</p>
+  ungefär 5 % av särarten mot den äldre modellen och ingenting mot den frysta (#486). ‡ Axels replika 7/10 under kuvösens regler, körd
+  utanför repot av en separat agent med hashar före och efter, med RÅ som kontroll på 7,50 % (docs/FYSIKSPARET-FRYS-2026-10-07.md). Kuvösen
+  har själv bara prövat FYSIK ensam och fick då samma tal som replikan inom 0,1 procentenhet (#485). Ingen dom fälls i kuvösen: domarna
+  läses på vintern 2026/27.</p>
+  <div class="lyft">
+    <h3>Axels fynd ur fysikspåret</h3>
+    <p class="litet">Ur Axels sida <a href="https://claude.ai/artifact/2QAxS4Wz848PT6xwT6GQ72"><i>Physics-First Road Ice Test</i></a>, räknade i hans egen
+    kedja utanför repot. Kuvösen har inte prövat dem.</p>
+    <ul>
+      <li><b>Analys, inte prognos.</b> Vädret i FYSIK är ECMWF:s analys, alltså vad som faktiskt hände. En prognos flera timmar framåt har
+      större fel. Open-Meteo får inte användas kommersiellt, så en version i drift bygger på SMHI eller MET och blir en egen
+      förregistrering (#485).</li>
+      <li><b>Felen kommer i dygnsstora block.</b> Tas varje stations medelfel per dygn bort sjunker fysikens grova fel från 24,6 % till
+      6,8 %. Det som saknas är vägens tillstånd den dagen: snö, salt och vatten.</li>
+      <li><b>Atmosfären är inte huvudproblemet.</b> Fel i ECMWF:s lufttemperatur står för 16 % av fysikens fel.</li>
+      <li><b>Norr är svårast.</b> Okorrigerad fysik har 40 % grova fel norr om 66° N.</li>
+      <li><b>Modellens fel når långt.</b> Felet korrelerar 0,45 mellan stationer 60–100 km isär. Därför hjälper grannarnas fel där RÅ inte gör
+      det.</li>
+      <li><b>De 46 verkligt isolerade stationerna</b> blir inte bättre: den inlärda modellen ger 23,7 % mot RÅ:s 22,0 %.</li>
+      <li><b>Satelliten ser kalla fläckar.</b> MODIS nattliga yttemperatur visar ett stabilt mönster, ±1,3 °C i Västerbottens inland, som
+      terrängläget i 5 km-skala förklarar till 40–50 %. Det är underlag för frågan om kallkartan och kriging.</li>
+      <li><b>Vad som skulle flytta fallet med 100 km mot 5 %:</b> vägens tillstånd (saltnings- och plogningsloggar), finska och norska
+      gränsstationer, termisk kartering (#271), SMHI:s MESAN på 2,5 km och svaret som en sannolikhet. Saltning och plogning finns i
+      begäran till Trafikverket (avsnitt 7).</li>
+    </ul>
+  </div>
 
   <h2 id="avsnitt-6">6. Före resan på vintern</h2>
 <!-- LÄGESRADER §6: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
@@ -388,7 +416,7 @@
     </div>
     <div class="ruta gron">
       <h3>Prognoslagret får sin vinter</h3>
-      <p>Skattningen mellan stationerna föll i september, på ett underlag med fyra frostnätter. En hel vinter visar hur ofta frysflaggan missar och larmar fel när det verkligen är kallt, och om höjden hjälper. Tillagt 2/10, innan filen har kommit: flaggan mäts med tre marginaler (0, 0,5 och 1 grad) för rå viktning och för rå viktning med höjd. Alla tre redovisas och ingen väljs. <b>Utfallet 6–8/10:</b> grind A 5,5 % och vägpunktsgrinden 7,5 % grova fel, och ingen kandidat har slagit RÅ; med spridningsgrinden vid 2,25 °C 2,8 % på 61 % av punkterna. Alla kandidater står i <a href="#avsnitt-5">avsnitt 5</a>.</p>
+      <p>Skattningen mellan stationerna föll i september, på ett underlag med fyra frostnätter. En hel vinter visar hur ofta frysflaggan missar och larmar fel när det verkligen är kallt, och om höjden hjälper. Tillagt 2/10, innan filen har kommit: flaggan mäts med tre marginaler (0, 0,5 och 1 grad) för rå viktning och för rå viktning med höjd. Alla tre redovisas och ingen väljs. <b>Utfallet 6–8/10:</b> grind A 5,5 % och vägpunktsgrinden 7,5 % grova fel, och ingen kandidat som kuvösen själv kört har slagit RÅ, medan Axels replika med blandningen ger 5,97 % och väntar på beslut; med spridningsgrinden vid 2,25 °C 2,8 % på 61 % av punkterna. Alla kandidater står i <a href="#avsnitt-5">avsnitt 5</a>.</p>
     </div>
     <div class="ruta gron">
       <h3>Årets vinter blir bara domdata</h3>
@@ -440,7 +468,7 @@
   <p class="litet">Besluten och STATUS bär samma historik i detalj.</p>
 
   <hr>
-  <p class="litet">Källor: beslutsloggen (DECISIONS #292, #388, #397, #398, #418, #424–#428, #437, #438, #440, #442, #453–#456, #463–#482, #485, #486, #489), kort #232, #270, #278 och #298, planen (docs/PLAN-KUVOSEN-2026-10-01.md), bedömningen §4.2, §6.1 och §7 och tröskeldokumentet för kombinationen (regel D). Sidan till Trafikverkets handläggare, <i>Halkvakt och kuvösen</i>, är en annan sida och säger mindre. Alla datum avser 2026 om inget annat står.</p>
+  <p class="litet">Källor: beslutsloggen (DECISIONS #292, #388, #397, #398, #418, #424–#428, #437, #438, #440, #442, #453–#456, #463–#482, #485, #486, #489), fysikspårets frysdokument (docs/FYSIKSPARET-FRYS-2026-10-07.md) och Axels sida <i>Physics-First Road Ice Test</i>, kort #232, #270, #278 och #298, planen (docs/PLAN-KUVOSEN-2026-10-01.md), bedömningen §4.2, §6.1 och §7 och tröskeldokumentet för kombinationen (regel D). Sidan till Trafikverkets handläggare, <i>Halkvakt och kuvösen</i>, är en annan sida och säger mindre. Alla datum avser 2026 om inget annat står.</p>
 
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
   <h2 id="oppna-kort">Öppna kort</h2>
