@@ -9019,3 +9019,31 @@ långt från Axels 23 %. Enligt läsningen i förväg hänger de 23 % alltså p�
 det. BAS (läget) förklarar mer än VÄG mot Bsp (0,147), alltså är Bsp:s särart mer regional än väggiven. Mot den frysta A2 förklarar
 ingenting något (alla R² ≤ 0,015), och ÅDT-spannet krymper till 0,36 °C: A2 har redan tagit upp vägdatan, som Axel fann (R² −0,11).
 Ingen tröskel och ingen kandidat följer; raden i §4.2 stryks.
+
+## #487 (8/10 2026) Kartsynken går till GitHub med `gh api` först — molnets GH_TOKEN och GITHUB_TOKEN är en platshållare (kort #306)
+
+**Beslut.** Bengt 8/10, på valet i sessionen: *"gh api först"*. `scripts/kartsynk.ts` läser ärendet med byggsignalerna och de öppna
+PR:erna med `gh api` när gh finns. Saknas gh eller fallerar den, tar fetch över med en nyckel ur GH_TOKEN, GITHUB_TOKEN eller
+`git credential fill`, i den ordningen, och platshållaren `proxy-injected` räknas inte som nyckel. Felraden säger vilken nyckelkälla
+som avvisades och varför gh inte nådde fram, men skriver aldrig ut nyckeln.
+
+**Varför.** Morgonrutinens första körning 8/10 03:40 UTC (session `cse_01VhX7G7E1KzUnMT3EKZmVY2`) fick *GitHub 401: Bad credentials*
+på både signalerna och PR-listan, medan `gh api repos/Axelstar/halkvakt/...` fungerade i samma session. Molnmiljöns dokumentation
+(code.claude.com/docs/en/cloud-environments, *Work with GitHub issues and pull requests*) förklarar varför: utan en egen nyckel bär
+GH_TOKEN och GITHUB_TOKEN platshållaren `proxy-injected`, och GitHub-proxyn byter in den riktiga nyckeln för `gh` och de inbyggda
+verktygen — *"a script that reads GITHUB_TOKEN directly gets the placeholder, not a usable token"*. Den gamla koden läste GITHUB_TOKEN
+först och skickade alltså platshållaren; `git credential fill` nåddes aldrig.
+
+**Alternativ som valdes bort.** (1) *Som beställt:* GH_TOKEN och `gh auth token` före git credential. gh läser GH_TOKEN, så båda ger
+samma platshållare, och morgonen efter hade sannolikt gett samma 401. (2) *Båda vägarna:* nyckelordningen och `gh api` som reserv
+vid 401 — mer kod och två vägar att hålla isär. (3) Att få Nodes fetch genom proxyn (`NODE_USE_ENV_PROXY`): det är inte
+dokumenterat hur proxyn nås, så det går inte att pröva utan en körning i molnet.
+
+**Bevis före sammanslagningen.** `--sjalvtest` prövar vägen med en låtsad kommandokörare och en låtsad fetch, så provet kräver varken
+gh, git eller nät: gh api först utan fetch; utan gh hoppas platshållaren över och git används; GH_TOKEN före GITHUB_TOKEN; felraden
+bär båda skälen men inte nyckeln. Fyra motprov, ett per regel, fälldes alla: platshållaren som nyckel, gh hoppad över, GITHUB_TOKEN
+före GH_TOKEN, nyckeln i felraden. På Bengts Windows (ingen gh) läser kartsynken signalerna och PR-listan som förut, via git.
+`gh api` med Halkvakts egna sökvägar är inte prövad i molnet än. Beviset är morgonrutinens körlogg efter sammanslagningen, med
+*Signalerna (ärende #706 …)* och PR-listan och utan 401.
+
+**Stomdokument:** inga — bara kod i kartsynken; ingen av de sju beskriver hur kartsynken når GitHub, och läget står i projektkartan och på tavlan
