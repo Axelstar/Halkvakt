@@ -9169,3 +9169,35 @@ modellens känslighet för prognosfel, inte en driftsatt källa.
 *Trafiken per band*; kuvössidans §9 och bedömningens §4.2 följer. **Utfall** skrivs under den här posten.
 
 **Stomdokument:** KUV §5 och §9, BED §4.2
+
+**Utfall läsning 3 (8/10 10:05, lokalt på 9b1e93c, vägdatalagret 7/10 04:49 UTC). Tre av fyra rader inom förväntan; bortom 20 km
+under.** 12 960 punkter, 25 920 km väg, 854 stationer. Ingen punkt ligger mer än 50 km från en
+station. 126 punkter saknar ÅDT, 100 av dem i 0–7 km.
+
+| band | väglängd | trafiken | nattrafiken 22–06 | förväntan, trafiken |
+| :-- | --: | --: | --: | :-- |
+| 0–7 km | 52,1 % | **68,1 %** | 65,8 % | 50–75 ✓ |
+| 7–15 km | 37,1 % | **28,4 %** | 30,4 % | 15–35 ✓ |
+| 15–20 km | 6,5 % | **2,3 %** | 2,4 % | 2–10 ✓ (nedre kanten) |
+| > 20 km (alla 20–50) | 4,3 % | **1,3 %** | 1,4 % | 2–10 ✗ under |
+| norr om 62°, bortom 15 km | 26,9 % | 17,5 % | 17,7 % | — |
+
+Bortom 20 km går 76,8 % av trafiken norr om 62° ✓, och bandets andel av vägen är större än dess andel av trafiken ✓ (4,3 mot 1,3 %).
+Bortom 15 km ligger 10,8 % av vägen och 3,6 % av trafiken (3,8 % av nattrafiken); 53,7 % av den trafiken går norr om 62°. (Andelarna norr
+om 62° skrivs av skriptet sedan en rad som lades till efter körningen; talen i tabellen är körningens.)
+
+**Läsningen.** Under 5 % av trafiken bortom 20 km, så regeln ovan säger: kraften bortom 15 km i första hand på 15–20 km och tystnad
+bortom 20 km. Men 15–20 km bär själv bara 2,3 %. Räknat på hela landet ligger trafiken i banden under 15 km.
+*Räknat efteråt, inte förregistrerat* (andelarna här, banden ur RÅ i #485 och ur replikan): trafikviktat har RÅ 5,4 % grova fel
+(0,681 · 5,23 + 0,284 · 5,26 + 0,023 · 7,16 + 0,013 · 13,59); felfria band bortom 15 km skulle ge 5,05 %, alltså högst 0,34
+procentenheter. FYSIK+BLANDNING ger trafikviktat 4,3 %, och 93 % av vinsten (1,04 av 1,12 procentenheter) kommer ur banden under
+15 km. I norr är bilden en annan: där går 17,5 % av trafiken bortom 15 km.
+
+**Mot #406.** Huvudvägnätet mot arkivets stationer gav 49,8 · 37,6 · 7,3 · 5,2 % av vägen; här mot dagens 854 stationer
+52,1 · 37,1 · 6,5 · 4,3 %, samma bild. Trafikarbetet stod där som INTE MÄTT; det är mätt nu.
+
+**Reservationer.** Dagens stationsnät, inte vinterns 736 med data; grindens bandregel (närmaste bidragande ankare) flyttar ungefär
+2,6 % av punkterna utåt (#406), så andelarna bortom 15 km är något för låga. Bandens felandelar är mätta på stationer; att de gäller vägen i samma band är ett
+antagande i den trafikviktade räkningen. ÅDT är årsmedel, inte vinter. Väglagsnätet är riks- och
+länsvägarna; kommunernas gator, som skulle göra det inre bandet ännu större, ingår inte. Grindens krav och dom räknas per punkt, oviktat
+(#406): läsningen ändrar ingen tröskel och ingen dom. Beslutet om var kraften läggs är Bengts.

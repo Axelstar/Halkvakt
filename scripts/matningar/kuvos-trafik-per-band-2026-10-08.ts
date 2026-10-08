@@ -78,4 +78,8 @@ if (korsSjalv) {
   for (const r of skriv(perBand(punkter, platser), "hela landet")) console.log(r);
   for (const r of skriv(perBand(punkter.filter((p) => p.lat >= NORR_LAT), platser), `norr om ${NORR_LAT}°`)) console.log(r);
   for (const r of skriv(perBand(punkter.filter((p) => p.lat < NORR_LAT), platser), `söder om ${NORR_LAT}°`)) console.log(r);
+  // Tillagt efter körningen 8/10 (utfallet under #490): hur stor del av trafiken i de bortre banden som går norr om 62°.
+  const hela = perBand(punkter, platser), norr = perBand(punkter.filter((p) => p.lat >= NORR_LAT), platser);
+  const bortom = (rr: Rad[], fran: number) => rr.slice(fran).reduce((a, r) => a + r.fordonKm, 0);
+  for (const [namn, fran] of [["15", 2], ["20", 3]] as const) console.log(`bortom ${namn} km: ${pct(bortom(norr, fran), bortom(hela, fran))} av trafiken går norr om ${NORR_LAT}°`);
 }
