@@ -209,6 +209,8 @@ men Lastkajen kräver konto, och om nedlagda stolpar finns med står inte i meta
 > Vänliga hälsningar
 > Bengt
 
+**Skickat 8/10 av Bengt** till Micke Wallin i leveranstråden, med texten ovan.
+
 *Omskrivet igen 8/10 (Bengt: "stryk och skriv om bara fokus på det nya viktiga").* Mejlet bär nu bara begäran. Struket: frågan om
 läget för de 23 stationerna (104 671 rader av 5 496 270, 1,9 %; troligen nedlagda och inte i dagens nät, så som grannar skulle de ge
 kuvösen ett tätare nät än driften har, och riktningsprovet kördes utan dem, #464), frågan om siktdjupet (valet står i #464 punkt 5)
