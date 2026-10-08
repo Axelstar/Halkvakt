@@ -211,7 +211,7 @@
 <!-- LÄGESRADER §4: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 <div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
   <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-kv-delarna">Systemets delar på vintern</a> <span style="color: var(--dampad, #4A5763)">delvis, 56 % · kvar: Övergångarna, tillståndet och försprånget: Bengts svar om radarns tif-korrektion (bedömningen §4.2, DECISIONS #441)</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-kv-delarna">Systemets delar på vintern</a> <span style="color: var(--dampad, #4A5763)">delvis, 50 % · kvar: Övergångarna, tillståndet och försprånget: Bengts svar om radarns tif-korrektion (bedömningen §4.2, DECISIONS #441)</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Riktningsprovet</b> <span style="color: var(--dampad, #4A5763)">klart · Kört och läst 6/10 (37447617038, DECISIONS #467; första försöket 37435099300 föll på minnet, #466): 675 178 varningar, baslinjen 8 402 episoder i serie A; grind A fallen på vintern (A2 5,5 %), vägpunktsgrinden fallen för alla kandidater, höjden återvinner inget, frysflaggan läst med tre marginaler, NT-B/NT-C faller vid startvärdet, efterhalkan nettonytt 175 (0,2 %) till priset 45,1 %. Tabellen del × ensam × ovanpå i bedömningen §7.</span></li>
       <li><span aria-hidden="true">✓</span> <b>Kalibreringen</b> <span style="color: var(--dampad, #4A5763)">klart · Gjord 6/10 (37464971791, DECISIONS #468, förregistrerad före körningen): 48 punkter ur sql/028, 32 räknebara, ingen under taket 25 % (lägst 40,4 %, startvärdena 45,1 %). Startvärdena frysta (D6) med Bengts ord; betan hörs på dem (#428).</span></li>
@@ -222,6 +222,7 @@
       <li><span aria-hidden="true">○</span> <b>Försprånget</b> <span style="color: var(--dampad, #4A5763)">saknas · Ej körd 6/10 av samma skäl; väglagets svåra klasser kräver väglagshistoriken, som är begärd (§5d)</span></li>
       <li><span aria-hidden="true">○</span> <b>Vind och sikt</b> <span style="color: var(--dampad, #4A5763)">saknas · Vinden översatt 6/10 (DECISIONS #464); vind och sikt saknar startvärden och är inte prövade</span></li>
       <li><span aria-hidden="true">–</span> <b>Trenden och rimfrosten</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Saknar egna startvärden, så riktningsprovet väljer ingenting åt dem; trendens värden prövas inom efterhalkan (rättat 3/10, DECISIONS #455)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Fysiken som givarvakt</b> <span style="color: var(--dampad, #4A5763)">saknas · Förregistrerad i DECISIONS #493 (Bengts ja 8/10); knappen kuvos med mätningen kuvos-fysik-givarvakt-2026-10-08.ts</span></li>
     </ul>
   </details>
 </div>
@@ -407,6 +408,7 @@
         <tr><td>Övergångarna, tillståndet och försprånget</td><td>Bengts svar om radarns tif-korrektion (bedömningen §4.2, #441)</td><td><a href="#avsnitt-4">4</a></td></tr>
         <tr><td>Vind och sikt</td><td>Startvärden</td><td><a href="#avsnitt-4">4</a></td></tr>
         <tr><td>Nederbördstypen igen</td><td>Ordlistan får <i>yes</i> och <i>freezing_rain</i> före nästa körning (#467)</td><td><a href="#avsnitt-4">4</a></td></tr>
+        <tr><td>Fysiken som givarvakt: uppmätt yta mot FYSIK, vakternas rader och stationerna vakterna missar</td><td>Inget: förregistrerad, körs nu (#493)</td><td><a href="#avsnitt-4">4</a></td></tr>
         <tr><td>Kriging och kallkartan</td><td>Bengts och Axels ord efter rutnätsmodellen (#481, #482)</td><td><a href="#avsnitt-5">5</a></td></tr>
         <tr><td>FYSIK+BLANDNING och FYSIK+GRANNAR i kuvösen, i analysläge och med prognosväder +6 h</td><td>Axels filer i releasen (kort #308; förväntningarna i #490)</td><td><a href="#avsnitt-5">5</a></td></tr>
         <tr><td>Förregistreringen för vintern 2026/27 på SMHI/MET</td><td>Bengts beslut (bedömningen §4.2, #485)</td><td><a href="#avsnitt-5">5</a></td></tr>

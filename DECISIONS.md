@@ -9270,3 +9270,45 @@ Regeln väljer den bästa, och det står i dokumentet. Underlaget är sju dygn i
 kurvan räknas ändå över hela svepet.
 
 **Stomdokument:** MAT §6.1, BED §4.2
+
+## #493 (8/10 2026) Fysiken som givarvakt — en läsning i kuvösen på FYSIK-filen som finns: pekar oenigheten mellan mätt yta och fysik ut de rader vakterna tar, och vilka stationer de missar?
+
+**Beslut.** Bengt 8/10: *"ja till givarvakten"* — på förslaget efter hans invändning mot ordningen för fysikregeln (*"varför ska vi
+då binda in den inom en barriär av mätningar som i sig ger eventuellt sämre resultat"*, bedömningen §4.2). Där mätningen kan vara
+fel — en trasig givare — kan fysiken få en roll som vakt: den är ett oberoende vittne vid stationen, eftersom varje station är
+förutsagd med hela sin region utesluten ur träningen (#485). Läsningen kräver inget från Axel; filen `fysik-2024-25.csv.gz` ligger i
+releasen med summan i manifestet. Ingen dom, ingen tröskel, ingenting i driften.
+
+**Genomförandet** (`scripts/matningar/kuvos-fysik-givarvakt-2026-10-08.ts`, självtest i ci.yml; namnet bär `kuvos-fysik`, så kuvos.yml
+hämtar filen och prövar summan). Senaste avläsning per station och halvtimmeshink med yta, *före* vakterna. Vakterna — #75, radvakten,
+karantänen och den långsamma vakten, samma uttryck som grind A (`publish/snapshot-core.ts`) — blir flaggor per rad. D = uppmätt yta −
+FYSIK på samma hink. Grupperna: raderna vakterna tar (alla och per vakt), raderna de behåller med luft, och de behållna utan luft (som
+#75 och radvakten inte kan pröva). Per grupp: MAE, andelen |D| > 2, 3, 5 och 8 °C, och median D. Stationerna som vakterna behåller men
+fysiken är oense med: |D| > 5 °C i minst 20 % av minst 100 hinkar, med median D och antalet rader vakterna tog hos dem.
+
+**Kontrollen först.** De behållna raderna med luft och yta ≤ +5 °C är FYSIK-mätningens egen population (#485, 10,04 % med |D| > 2 °C
+på alla hinkar). Landar den utanför 9,8–10,3 % skiljer populationen, och inget annat läses förrän det är förstått. Kategoriseringen
+efter hinkens senaste rad, i stället för efter vakterna, kan flytta talet något.
+
+**Förväntningar, skrivna före knappen.**
+
+| | förväntan |
+| :-- | :-- |
+| kontrollen, \|D\| > 2 °C | 9,8–10,3 %; MAE 0,75–0,85 °C |
+| rader vakterna tar, \|D\| > 5 °C | 30–80 % |
+| — #75 | ≥ 80 %, median D ≤ −8 °C |
+| — radvakten · den långsamma vakten | ≥ 50 % vardera |
+| — karantänen (alla stationens rader i karantänen, också de friska) | 15–60 % |
+| behållna med luft, \|D\| > 5 °C | 0,5–3 % |
+| behållna utan luft, \|D\| > 5 °C | 0,5–6 % |
+| stationer vakterna behåller, oense i ≥ 20 % | 0–20 |
+
+**Hur läsningen läses — en läsning, inte en dom.** Fysiken är en användbar kandidat till givarvakt om \|D\| > 5 °C fångar minst hälften
+av det vakterna tar och flaggar högst 2 % av det de behåller. Stationslistan läses för hand, som septemberlistan där en människa
+hittade Ö Ljungby (#300): ett konstant D är en givare, ett D som växlar med vädret är troligen fysikens eget fel (snö, salt och vatten,
+Axels dygnsstora block). Ingen station anmäls på den här läsningen, eftersom vintern är 2024/25 och givarna kan vara lagade.
+
+**Vad som INTE görs.** Inga trösklar, inga vakter i driften, ingen kod ur fysikspåret. En givarvakt i driften kräver fysiken i drift
+(SMHI/MET-väder, #485) och ett eget beslut. Regel T rörs inte: en vakt tystar, den utlöser ingenting.
+
+**Stomdokument:** KUV §4 och §9, BED §4.2
