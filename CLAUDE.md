@@ -213,9 +213,9 @@ sessioner på alla enheter:
 5. `projektkartan.ts` och `kortkartan.ts`, sedan `--check` på båda, `kartsynk.ts --check` och `stomvakten.ts --tillatna`.
 6. En rad i STATUS.md: *Dokumentsynk <datum>:* vad som rättades per dokument, eller *inget att stämma av* — en tyst morgon ska inte
    se ut som en lyckad — och *Att republicera:* med de artefakter vars källa ändrades.
-7. Commit (märk den aldrig så att CI hoppas över), push, PR med rubriken *Dokumentsynk: <datum>*. Är ci och md-vakt gröna på exakt
-   huvudet och `--tillatna` grön slår rutinen ihop själv (Bengts val (d), DECISIONS #484); annars väntar PR:en på Bengts ord och
-   står i rapporten.
+7. Commit (märk den aldrig så att CI hoppas över), push, PR med rubriken *Dokumentsynk: <datum>*. Rutinen slår aldrig ihop: PR:en
+   väntar på Bengts *slå ihop*, och rapporten säger om ci och md-vakt är gröna på exakt huvudet och om `--tillatna` är grön (Bengts
+   val (b) 8/10, DECISIONS #488: auto-läget nekade sammanslagningen första morgonen, och (d) i #484 är struken).
 8. Republicera de artefakter vars källa ändrades, till sina adresser. Når rutinen inte artefakterna gör dagens första session det
    (sessionsprotokollet steg 1).
 Rutinen fattar inga beslut, ändrar inga trösklar, rör ingen kod och inga hemligheter och kör inga flöden. Det som kräver ett

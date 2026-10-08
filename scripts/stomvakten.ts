@@ -5,7 +5,7 @@
 // Vakten ser bara inlägg som läggs till, aldrig gamla. Ett "inga" kan den inte pröva; det gör morgonens dokumentsynk.
 //   node --experimental-strip-types scripts/stomvakten.ts --bas <sha>   prövar besluten som lagts till sedan <sha> (md-vakt.yml)
 //   node --experimental-strip-types scripts/stomvakten.ts --lage        varje stomdokuments senaste handtextändring och besluten sedan dess
-//   node --experimental-strip-types scripts/stomvakten.ts --tillatna    rör grenen bara dokumenten? (dokumentsynkens PR, #484 (d))
+//   node --experimental-strip-types scripts/stomvakten.ts --tillatna    rör grenen bara dokumenten? (dokumentsynkens PR, i rapporten till Bengt, #488)
 //   node --experimental-strip-types scripts/stomvakten.ts --sjalvtest
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
@@ -126,7 +126,7 @@ function main(): void {
     const fel = tillatna(filer, sidor);
     if (!filer.length) { console.error("✗ grenen ändrar ingenting"); process.exit(1); }
     if (fel.length) { console.error(`✗ grenen rör mer än dokumenten: ${fel.join(", ")} — vänta på Bengts "slå ihop"`); process.exit(1); }
-    console.log(`✓ grenen rör bara dokumenten (${filer.length} filer) — får slås ihop på grön körning på exakt huvudet (DECISIONS #484)`);
+    console.log(`✓ grenen rör bara dokumenten (${filer.length} filer) — säg det i rapporten; PR:en väntar på Bengts "slå ihop" (DECISIONS #488)`);
     return;
   }
 
