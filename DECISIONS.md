@@ -9270,3 +9270,74 @@ Regeln väljer den bästa, och det står i dokumentet. Underlaget är sju dygn i
 kurvan räknas ändå över hela svepet.
 
 **Stomdokument:** MAT §6.1, BED §4.2
+
+## #493 (8/10 2026) Fysiken som givarvakt — en läsning i kuvösen på FYSIK-filen som finns: pekar oenigheten mellan mätt yta och fysik ut de rader vakterna tar, och vilka stationer de missar?
+
+**Beslut.** Bengt 8/10: *"ja till givarvakten"* — på förslaget efter hans invändning mot ordningen för fysikregeln (*"varför ska vi
+då binda in den inom en barriär av mätningar som i sig ger eventuellt sämre resultat"*, bedömningen §4.2). Där mätningen kan vara
+fel — en trasig givare — kan fysiken få en roll som vakt: den är ett oberoende vittne vid stationen, eftersom varje station är
+förutsagd med hela sin region utesluten ur träningen (#485). Läsningen kräver inget från Axel; filen `fysik-2024-25.csv.gz` ligger i
+releasen med summan i manifestet. Ingen dom, ingen tröskel, ingenting i driften.
+
+**Genomförandet** (`scripts/matningar/kuvos-fysik-givarvakt-2026-10-08.ts`, självtest i ci.yml; namnet bär `kuvos-fysik`, så kuvos.yml
+hämtar filen och prövar summan). Senaste avläsning per station och halvtimmeshink med yta, *före* vakterna. Vakterna — #75, radvakten,
+karantänen och den långsamma vakten, samma uttryck som grind A (`publish/snapshot-core.ts`) — blir flaggor per rad. D = uppmätt yta −
+FYSIK på samma hink. Grupperna: raderna vakterna tar (alla och per vakt), raderna de behåller med luft, och de behållna utan luft (som
+#75 och radvakten inte kan pröva). Per grupp: MAE, andelen |D| > 2, 3, 5 och 8 °C, och median D. Stationerna som vakterna behåller men
+fysiken är oense med: |D| > 5 °C i minst 20 % av minst 100 hinkar, med median D och antalet rader vakterna tog hos dem.
+
+**Kontrollen först.** De behållna raderna med luft och yta ≤ +5 °C är FYSIK-mätningens egen population (#485, 10,04 % med |D| > 2 °C
+på alla hinkar). Landar den utanför 9,8–10,3 % skiljer populationen, och inget annat läses förrän det är förstått. Kategoriseringen
+efter hinkens senaste rad, i stället för efter vakterna, kan flytta talet något.
+
+**Förväntningar, skrivna före knappen.**
+
+| | förväntan |
+| :-- | :-- |
+| kontrollen, \|D\| > 2 °C | 9,8–10,3 %; MAE 0,75–0,85 °C |
+| rader vakterna tar, \|D\| > 5 °C | 30–80 % |
+| — #75 | ≥ 80 %, median D ≤ −8 °C |
+| — radvakten · den långsamma vakten | ≥ 50 % vardera |
+| — karantänen (alla stationens rader i karantänen, också de friska) | 15–60 % |
+| behållna med luft, \|D\| > 5 °C | 0,5–3 % |
+| behållna utan luft, \|D\| > 5 °C | 0,5–6 % |
+| stationer vakterna behåller, oense i ≥ 20 % | 0–20 |
+
+**Hur läsningen läses — en läsning, inte en dom.** Fysiken är en användbar kandidat till givarvakt om \|D\| > 5 °C fångar minst hälften
+av det vakterna tar och flaggar högst 2 % av det de behåller. Stationslistan läses för hand, som septemberlistan där en människa
+hittade Ö Ljungby (#300): ett konstant D är en givare, ett D som växlar med vädret är troligen fysikens eget fel (snö, salt och vatten,
+Axels dygnsstora block). Ingen station anmäls på den här läsningen, eftersom vintern är 2024/25 och givarna kan vara lagade.
+
+**Vad som INTE görs.** Inga trösklar, inga vakter i driften, ingen kod ur fysikspåret. En givarvakt i driften kräver fysiken i drift
+(SMHI/MET-väder, #485) och ett eget beslut. Regel T rörs inte: en vakt tystar, den utlöser ingenting.
+
+**Stomdokument:** KUV §4 och §9, BED §4.2
+
+**Utfall (8/10 11:51, knappen 37759452234 på b3fecd8, Bengts ja). Kontrollen träffar; fysiken håller med #75 men inte med radvakten
+och den långsamma vakten, och den hittar ingen station vakterna missar.** Filen hämtad ur releasen, summan = manifestet; 5 258 649
+hinkar ur arkivet, 736 stationer, 1 434 hinkar utan värde i filen.
+
+| grupp | hinkar | \|D\| > 2 | \|D\| > 5 | median D | förväntan |
+| :-- | --: | --: | --: | --: | :-- |
+| kontrollen (behålls, luft, yta ≤ +5) | 4 404 906 | **10,04 %** | 0,38 % | 0,00 °C | 9,8–10,3 % ✓ · MAE 0,91 °C ✗ (se nedan) |
+| tas av vakterna | 29 297 | 32,76 % | **10,43 %** | −0,97 °C | 30–80 % ✗ |
+| — #75 | 922 | 95,66 % | **82,21 %** | **−8,67 °C** | ≥ 80 %, ≤ −8 °C ✓ |
+| — radvakten | 543 | 46,22 % | **14,18 %** | −1,70 °C | ≥ 50 % ✗ |
+| — karantänen | 15 272 | 42,76 % | **16,08 %** | −1,33 °C | 15–60 % ✓ |
+| — den långsamma vakten | 16 263 | 30,44 % | **12,86 %** | −0,94 °C | ≥ 50 % ✗ |
+| behålls, luft | 5 227 818 | 11,59 % | **1,30 %** | 0,09 °C | 0,5–3 % ✓ |
+| behålls, utan luft | 100 | 12,00 % | 0,00 % | −0,04 °C | 0,5–6 % ✗ (100 hinkar) |
+| stationer vakterna behåller, oense i ≥ 20 % | — | — | **0** | — | 0–20 ✓ |
+
+**Läsningen, enligt regeln ovan.** Fysiken fångar 10,4 % av det vakterna tar (krav minst hälften) och flaggar 1,3 % av det de behåller
+(tak 2 %). **Den är alltså inte en användbar kandidat till givarvakt** på den här läsningen. Den håller med om de grova felen: #75:s rader
+ligger i median 8,7 °C under fysiken, och 82 % av dem är mer än 5 °C fel. Den hittar ingen station som vakterna släpper igenom och den är
+oense med. **Det oväntade är radvakten och den långsamma vakten:** på de raderna ligger den uppmätta ytan i median bara 1–2 °C under
+fysiken, och två tredjedelar ligger inom 2 °C. Fysiken, som aldrig sett stationens egna mätningar, tror alltså på de flesta av de
+värden vakterna kastar. Två förklaringar går inte att skilja här: att vakterna i vinterluft också tar verkligt kalla ytor — en snö- eller
+istäckt givare en solig dag, och fysiken har snödjupet som indata — eller att fysiken bär samma fel som givarna. Det är en fråga om
+vakterna, inte om fysiken, och den står i bedömningen §4.2.
+
+**Två förväntningar föll på mätningen, inte på populationen.** MAE 0,91 °C mot väntade 0,75–0,85: #485:s 0,79 °C är grind A:s A1, som
+bara räknar ytor −5…+5 °C, medan kontrollen här räknar alla ytor ≤ +5 °C — andelen grova fel, som har samma definition, träffar exakt
+(10,04 %). Raderna utan luft är 100 hinkar och bär ingenting.

@@ -211,7 +211,7 @@
 <!-- LÄGESRADER §4: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 <div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
   <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-kv-delarna">Systemets delar på vintern</a> <span style="color: var(--dampad, #4A5763)">delvis, 56 % · kvar: Övergångarna, tillståndet och försprånget: Bengts svar om radarns tif-korrektion (bedömningen §4.2, DECISIONS #441)</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-kv-delarna">Systemets delar på vintern</a> <span style="color: var(--dampad, #4A5763)">delvis, 61 % · kvar: Övergångarna, tillståndet och försprånget: Bengts svar om radarns tif-korrektion (bedömningen §4.2, DECISIONS #441)</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Riktningsprovet</b> <span style="color: var(--dampad, #4A5763)">klart · Kört och läst 6/10 (37447617038, DECISIONS #467; första försöket 37435099300 föll på minnet, #466): 675 178 varningar, baslinjen 8 402 episoder i serie A; grind A fallen på vintern (A2 5,5 %), vägpunktsgrinden fallen för alla kandidater, höjden återvinner inget, frysflaggan läst med tre marginaler, NT-B/NT-C faller vid startvärdet, efterhalkan nettonytt 175 (0,2 %) till priset 45,1 %. Tabellen del × ensam × ovanpå i bedömningen §7.</span></li>
       <li><span aria-hidden="true">✓</span> <b>Kalibreringen</b> <span style="color: var(--dampad, #4A5763)">klart · Gjord 6/10 (37464971791, DECISIONS #468, förregistrerad före körningen): 48 punkter ur sql/028, 32 räknebara, ingen under taket 25 % (lägst 40,4 %, startvärdena 45,1 %). Startvärdena frysta (D6) med Bengts ord; betan hörs på dem (#428).</span></li>
@@ -222,6 +222,7 @@
       <li><span aria-hidden="true">○</span> <b>Försprånget</b> <span style="color: var(--dampad, #4A5763)">saknas · Ej körd 6/10 av samma skäl; väglagets svåra klasser kräver väglagshistoriken, som är begärd (§5d)</span></li>
       <li><span aria-hidden="true">○</span> <b>Vind och sikt</b> <span style="color: var(--dampad, #4A5763)">saknas · Vinden översatt 6/10 (DECISIONS #464); vind och sikt saknar startvärden och är inte prövade</span></li>
       <li><span aria-hidden="true">–</span> <b>Trenden och rimfrosten</b> <span style="color: var(--dampad, #4A5763)">gäller inte · Saknar egna startvärden, så riktningsprovet väljer ingenting åt dem; trendens värden prövas inom efterhalkan (rättat 3/10, DECISIONS #455)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Fysiken som givarvakt</b> <span style="color: var(--dampad, #4A5763)">klart · 37759452234 på b3fecd8, DECISIONS #493: kontrollen 10,04 % ✓; fysiken fångar 10,4 % av vakternas rader (#75 82 %, radvakten 14 %, den långsamma vakten 13 %) och flaggar 1,3 % av de behållna; 0 stationer vakterna missar; ingen givarvakt-kandidat</span></li>
     </ul>
   </details>
 </div>
@@ -246,7 +247,13 @@
     </table>
   </div>
 
-  <h2 id="avsnitt-5">5. Prognoslagrets kandidater</h2>
+    <p><b>Fysiken som givarvakt (8/10, #493).</b> Uppmätt yta mot Axels fysik på samma halvtimme, med driftens vakter som flaggor. Fysiken
+  håller med om de grova givarfelen: 82 % av raderna #75 tar ligger mer än 5 °C under fysiken. Men av raderna radvakten och den
+  långsamma vakten tar ligger två tredjedelar inom 2 °C från den, och den hittar ingen station vakterna släpper igenom och den är oense
+  med. Den är därför ingen givarvakt. Frågan den väcker gäller vakterna: tar de i vinterluft också verkligt kalla ytor, till exempel en
+  snötäckt givare en solig dag? Den står i bedömningen §4.2.</p>
+
+<h2 id="avsnitt-5">5. Prognoslagrets kandidater</h2>
 <!-- LÄGESRADER §5: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 <div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
   <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
