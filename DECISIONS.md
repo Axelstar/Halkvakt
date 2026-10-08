@@ -9097,3 +9097,151 @@ handskriven och stäms av av morgonrutinen.
 utfall per byggsteg. Att visa blocket utanför totalen — skuggan och grindarna räknas redan, och kuvösen är samma sorts arbete.
 
 **Stomdokument:** KUV hela sidan, BED §4.2 och läget 7/10
+
+## #490 (8/10 2026) Prognoslagret bortom 15 km — tre läsningar förregistrerade på Bengts ja: FYSIK+BLANDNING i kuvösen som fil från Axel, samma kandidat med prognosväder, och trafiken per avståndsband (kort #308)
+
+**Beslut.** Bengt 8/10: *"ja till 1, 2 och 3"* — på förslagen efter hans fråga samma förmiddag: *"Det system som förordas är alltså
+fysik med blandning där banden till 15 km ligger rätt och det som vi ska lägga extrem kraft på är bandet 15-20 och över 20 km. Har du
+några bra förslag här?"* Svaret rättade premissen: det antagna är RÅ med spridningsgrinden (#474–#478), FYSIK+BLANDNING är en kandidat
+som aldrig körts i kuvösen, och talen 4,1 · 4,3 · 5,3 · 10,9 % gäller vädrets analys, inte en prognos (#485). De tre förslagen han sa
+ja till avgör om bandet bortom 15 km alls är rätt mål, innan kraft läggs där:
+1. **FYSIK+BLANDNING i kuvösen**, som en fil från Axel på samma sätt som FYSIK (#485) — det beslut som (c) i #485 sköt upp.
+2. **Samma kandidat med prognosväder**, så som den skulle köra i drift.
+3. **Andelen trafik per avståndsband**, ur vägdatalagrets väglagspunkter med ÅDT.
+Förslagen 4–7 (tystnad bortom 15 km, vägens tillstånd, grannländerna och termisk kartering i norr, MESAN) står kvar i bedömningen §4.2.
+
+**Läsning 1 och 2 — filerna Axel lämnar** (`kuvos/blandning-leverans.json`, releasen `kuvos-blandning-2024-25`). Samma form som FYSIK:
+`station_id,t_utc,fysik_c`, halvtimmar, vintern 2024/25 som `fysik-2024-25.csv.gz`, gzip, en fil per kandidat och läge. Kandidaterna är
+FYSIK+GRANNAR och FYSIK+BLANDNING ur hans replika 7/10 (`docs/FYSIKSPARET-FRYS-2026-10-07.md`): grannarnas uppmätta fel och blandningen
+räknas i hans kedja, inte i TypeScript, så att kuvösen bara läser en fil — det som gör (c) i #485 billigt. Två lägen:
+- **analys** — som FYSIK: ECMWF:s analys vid t.
+- **operativt** — bara den prognos som fanns utfärdad vid t, med ledtiden i filens läge (t.ex. `operativt +6 h`). Minst en fil med
+  ledtid +6 h eller mer. Grannarnas mätningar vid t får användas: de finns i realtid i driften. Rättelsen får läras om på prognosväder,
+  med samma utelämnade region.
+Målstationens egna mätningar är aldrig indata, vid målet eller i blandningen. Varje fil fryses med sha256, rader och stationer i
+manifestet innan knappen trycks; mätningen fäller en fil som inte stämmer. `fysik_c` har redan spann i värdevakten (−60…+60 °C).
+
+**Genomförandet.** `scripts/matningar/kuvos-blandning-2026-10-08.ts` (självtest i ci.yml; kuvos.yml hämtar releasen och kontrollerar
+summorna när mätningens namn innehåller `kuvos-blandning`). Underlaget exakt som FYSIK i #485: grind A:s WHERE med vakterna, senaste
+avläsning per halvtimmeshink, yta ≤ +5 °C, RÅ som kontroll, OFFSET som tak, bandet = RÅ:s närmaste bidragande granne. Varje fil blir
+kandidaten *namn (läge)*; måtten A1/A2/A3 per band och totalt på gemensamma punkter, frysflaggan, norr/söder om 62°.
+
+**Läsning 3 — trafiken per band** (`scripts/matningar/kuvos-trafik-per-band-2026-10-08.ts`, självtest i ci.yml). Ingen databas: de
+12 960 väglagspunkterna i `data/vagdata/vaglagspunkter.json` (var 2 km längs väglagsnätet, med NVDB:s ÅDT och lätta fordon 22–06) mot de
+854 stationerna i `data/vagdata/stationer.json`. Bandet är avståndet till närmaste station; väglängden räknas som 2 km per punkt och
+trafiken som ÅDT × 2 km (fordonskilometer per dygn). Banden 0–7 · 7–15 · 15–20 · 20–50 · > 50 km, hela landet och norr/söder om 62°.
+Körs lokalt efter att den här posten checkats in.
+
+**Förväntningar, skrivna före körningarna.**
+
+| | förväntan |
+| :-- | :-- |
+| 1 · RÅ (kontroll) | 7,4–7,6 % grova fel; annars läses inget annat |
+| 1 · FYSIK+GRANNAR, analys | 6,35–6,95 %; banden inom ±0,3 av 4,5 · 4,9 · 5,7 · 12,2 |
+| 1 · FYSIK+BLANDNING, analys | 5,7–6,3 %; banden inom ±0,3 av 4,1 · 4,3 · 5,3 · 10,9 |
+| 2 · FYSIK+BLANDNING, operativt ≥ +6 h | sämre än analysläget i varje band; totalt 6,5–9 %; banden 0–7 och 7–15 km över 5 % |
+| 3 · trafiken 0–7 km | 50–75 % av fordonskilometerna |
+| 3 · 7–15 km | 15–35 % |
+| 3 · 15–20 km | 2–10 % |
+| 3 · > 20 km (20–50 och > 50) | 2–10 %, mest norr om 62°; dess andel av väglängden större än dess andel av trafiken |
+
+Läsning 1 är som FYSIK en kontroll av att filen och kuvösen räknar på samma population, inget bevis för modellen: förväntningarna
+skrevs efter replikan. Ett tal mer än en procentenhet utanför spannet är ett fel i filen eller populationen och läses som det.
+Läsning 2 och 3 har inget facit i förväg.
+
+**Hur läsningarna läses — en läsning, inte en dom; beslutet är Bengts.**
+- Håller operativt läge banden 0–7 och 7–15 km på RÅ:s nivå eller bättre (≤ 5,2 %) och ligger bortom 20 km minst en procentenhet under
+  RÅ:s 13,6 %, är förregistreringen för vintern 2026/27 på SMHI/MET (#485) värd kraften bortom 15 km.
+- Tappar operativt läge fördelen i de närmaste banden är bandet bortom 15 km fel mål för den här modellen; kraften går då till
+  tystnaden bortom 15 km och vägens tillstånd (förslag 4 och 5 i §4.2).
+- Går under 5 % av trafiken bortom 20 km läggs kraften bortom 15 km i första hand på bandet 15–20 km och på tystnad bortom 20 km; går
+  över 10 % där är bandet ett mål i sig.
+
+**Alternativ som valdes bort.** (a) Grannlagret och blandningen i TypeScript i repot — en port ändrar talen och tar en vecka; filen är
+ärligare (samma skäl som #485 (a)). (b) Bara analysläget — då vet vi inte om fördelen överlever en prognos, och det är prognosen som
+körs i drift. (c) Trafiken ur shadow_log — den mäter bara betatestarnas resor; ÅDT täcker hela nätet.
+
+**Vad som INTE görs.** Inga trösklar, ingen drift, ingen kod ur fysikspåret i repot. Knappen för läsning 1 och 2 trycks på Bengts ord
+när Axels filer ligger i releasen med summorna i manifestet. Open-Meteo är icke-kommersiell också i operativt läge; läsning 2 mäter
+modellens känslighet för prognosfel, inte en driftsatt källa.
+
+**Följd.** Kort #308 på tavlan under Axel; prognoslagrets del i projektkartan får stegen *FYSIK+BLANDNING i kuvösen*, *Operativt läge* och
+*Trafiken per band*; kuvössidans §9 och bedömningens §4.2 följer. **Utfall** skrivs under den här posten.
+
+**Stomdokument:** KUV §5 och §9, BED §4.2
+
+**Utfall läsning 3 (8/10 09:52, lokalt på 9b1e93c, vägdatalagret 7/10 04:49 UTC). Tre av fyra rader inom förväntan; bortom 20 km
+under.** 12 960 punkter, 25 920 km väg, 854 stationer. Ingen punkt ligger mer än 50 km från en
+station. 126 punkter saknar ÅDT, 100 av dem i 0–7 km.
+
+| band | väglängd | trafiken | nattrafiken 22–06 | förväntan, trafiken |
+| :-- | --: | --: | --: | :-- |
+| 0–7 km | 52,1 % | **68,1 %** | 65,8 % | 50–75 ✓ |
+| 7–15 km | 37,1 % | **28,4 %** | 30,4 % | 15–35 ✓ |
+| 15–20 km | 6,5 % | **2,3 %** | 2,4 % | 2–10 ✓ (nedre kanten) |
+| > 20 km (alla 20–50) | 4,3 % | **1,3 %** | 1,4 % | 2–10 ✗ under |
+| norr om 62°, bortom 15 km | 26,9 % | 17,5 % | 17,7 % | — |
+
+Bortom 20 km går 76,8 % av trafiken norr om 62° ✓, och bandets andel av vägen är större än dess andel av trafiken ✓ (4,3 mot 1,3 %).
+Bortom 15 km ligger 10,8 % av vägen och 3,6 % av trafiken (3,8 % av nattrafiken); 53,7 % av den trafiken går norr om 62°. (Andelarna norr
+om 62° skrivs av skriptet sedan en rad som lades till efter körningen; talen i tabellen är körningens.)
+
+**Läsningen.** Under 5 % av trafiken bortom 20 km, så regeln ovan säger: kraften bortom 15 km i första hand på 15–20 km och tystnad
+bortom 20 km. Men 15–20 km bär själv bara 2,3 %. Räknat på hela landet ligger trafiken i banden under 15 km.
+*Räknat efteråt, inte förregistrerat* (andelarna här, banden ur RÅ i #485 och ur replikan): trafikviktat har RÅ 5,4 % grova fel
+(0,681 · 5,23 + 0,284 · 5,26 + 0,023 · 7,16 + 0,013 · 13,59); felfria band bortom 15 km skulle ge 5,05 %, alltså högst 0,34
+procentenheter. FYSIK+BLANDNING ger trafikviktat 4,3 %, och 93 % av vinsten (1,04 av 1,12 procentenheter) kommer ur banden under
+15 km. I norr är bilden en annan: där går 17,5 % av trafiken bortom 15 km.
+
+**Mot #406.** Huvudvägnätet mot arkivets stationer gav 49,8 · 37,6 · 7,3 · 5,2 % av vägen; här mot dagens 854 stationer
+52,1 · 37,1 · 6,5 · 4,3 %, samma bild. Trafikarbetet stod där som INTE MÄTT; det är mätt nu.
+
+**Reservationer.** Dagens stationsnät, inte vinterns 736 med data; grindens bandregel (närmaste bidragande ankare) flyttar ungefär
+2,6 % av punkterna utåt (#406), så andelarna bortom 15 km är något för låga. Bandens felandelar är mätta på stationer; att de gäller vägen i samma band är ett
+antagande i den trafikviktade räkningen. ÅDT är årsmedel, inte vinter. Väglagsnätet är riks- och
+länsvägarna; kommunernas gator, som skulle göra det inre bandet ännu större, ingår inte. Grindens krav och dom räknas per punkt, oviktat
+(#406): läsningen ändrar ingen tröskel och ingen dom. Beslutet om var kraften läggs är Bengts.
+
+## #491 (8/10 2026) Frostens första läsningar: steg 0 för övergångarna, T-A, R-A, K-A och W-A, bildfacitets omklassningar och efterhalkans uppspelning — K-A passerad, T-A:s domspärr släppt (kort #89, #88, #46, #103, #90, #209)
+
+**Beställningen.** Bengt 8/10: *"kör 89 och allt som hör till det och stäng issuesena sen de är klara"*. Frostlarmet (issue #804)
+öppnades 8/10 01:07 UTC med 54 stationer med vägyta ≤ 0 °C; vakthunden tryckte de fem frostflödena 09:07 UTC (79 stationer), alla
+204. Läsningen i databasen (dbknapp `las`, sex satser i en READ ONLY-transaktion som rullas tillbaka) tryckt 09:12 UTC på Bengts
+order. Allt på main 14873df, fönstren slutar 8/10 kring 09 UTC, alltså inom sju dygn från frostnätterna 6–8/10, före gallringen.
+
+| Läsning | Körning | Utfall |
+| :-- | :-- | :-- |
+| Steg 0, övergångarna (kort #89), 7 dygn | 37754417681 | 0c: **42** av 3 245 användbara regnstopp följdes av yta ≤ 1 °C inom 4 h (1/2/3 h: 27/30/37), mot 3–4 den 11/9; 177 frostepisoder på 117 stationer, 23 larmar i dag, med N = 4 h 29. 0a: mätarregn vid omslaget i 18 % (±1,3 pe), median 65 min kvar. 0d: 2 äkta torrperioder ≥ 5 dygn, OAVGJORT för V-B. 0e: väglagsarkivet rör sig igen, 12 469 rader på 7 dygn; *Våt* median 9,6 h |
+| T-A, trenden (kort #88), 7 dygn | 37754420461 | **Domspärren släppt:** 169 frostnätter på 119 stationer (krav 30 och 20). Bästa kombinationen 60 min · lutning 0,4 · gap 2,0 · startband +1…+3: träff 64 % (108/169), falsklarm 3 % (144/5 141), separation 61 % ±7,3 pe, halva A 73 % och B 60 %. Fysikkontrollen: kallast kl 03–07 i 79 %, fyrningsandel klara nätter 65 % mot mulna 53 % — *stödjer* |
+| R-A, rimfrosten (kort #46), svenska arkivet 30 dygn | 37754423323 | Bästa kombinationen R1 1 · R2 1 · R3 30 min: 163 episoder, 394 stationstimmar, 61 stationer (spärren 200 och 20 passerad). R-A3 dygnsprofil 73 % ±6,8 kl 03–07 (krav 40) KLARAR; R-A5 dominans 6 % (tak 20) KLARAR; R-A4 klara mot mulna 4,73 × (krav 2) *stödjer* |
+| K-A, frysklassningen (kort #103), 60 dygn | 37754426571 | **DOM: K-A PASSERAD** i 13 av 27 kombinationer; bäst täckning K1 0 °C · K2 ±0,5 · K3 20 km: täckning 97,8 % ±0,2, träff 99,3 %, farliga fel 0,5 %. 736 stationer, 649 976 avläsningar. Två saknade dygn (6–7/9, exporterade enligt sql/034) räknas inte |
+| W-A, vind och sikt (kort #90), 14 dygn | 37754429130 | B1 byvind OAVGJORT (116 stationstimmar i högsta bandet, krav 500). **B2 sikt FALLER:** olycksfrekvensen *sjunker* med sikten, 41,1 → 15,1 per 1 000 h, kvot 0,37 (krav ≥ 1,5). 27 stationer med trasig byvindgivare (kvot > 5), värst 2312 |
+| Bildfacitets omklassningar (kort #209), 7 dygn | 37755033058 | **0 omklassningar till halka**, 0 inom 5 km från de 82 froststationerna, av 12 469 omklassningar: *Normalt* 12 468, *Besvärligt (risk för)* 1 (8/10 06:23). 315 olyckor i händelsearkivet |
+| Efterhalkans uppspelning, 7 dygn | 37755033058 | 11 episoder: 2 · 5 · 4 på 6/10 · 7/10 · 8/10 (5 · 13 · 31 ögonblick). Samma tal ur den fristående satsen (kombinationen 2 · 5 · 4) — uppspelningen och satsen är ense. Utfallet är blint (`p_blind`), och det lästes inte |
+| Skuggloggen mot arkivet, 7 dygn | 37755033058 | 274 stationsögonblick i `shadow_log.efterhalka`: ense på alla 274, men **inget av dem uppfyller regeln** i vare sig loggen eller arkivet; de 11 episoderna låg vid stationer utanför skuggrutterna |
+
+**Läsningen, del för del** (läsningar och grindarnas egna domar; inga trösklar ändrade):
+- **K-A är passerad**, och kort #103:s Verify är därmed uppfylld: domen enligt `docs/TROSKLAR-FRYSKLASSNINGEN.md` fälld och bokförd
+  här. Det ger ingen rätt att varna (§1): en godkänd frysklassning får bara stärka en bedömning som vilar på en uppmätt station.
+  Nästa steg enligt dokumentets §7.4 är K-B:s uppspelning, kort #309. Värdena K1 0 · K2 ±0,5 · K3 20 km är mätningens förslag, inte
+  satta trösklar (§7).
+- **T-A:s domspärr har släppt**, och kraven i TROSKLAR-TRENDEN §4 är uppfyllda: separationen syns i båda halvorna, fysikkontrollen
+  stödjer. Enligt §4 blir den kombination som skiljer bäst tröskeln: 60 · 0,4 · 2,0 · +1…+3. Den näst bästa (+1…+4, 60 % ±7,2) går
+  inte att skilja från den. Att skriva in värdena i tröskeldokumentet är Bengts ord (bedömningen §4.2); T-B saknar instrument.
+- **R-A visar en signal som är fysik** (R-A3–R-A5). Det ger ingen rätt till röst; nästa steg är R-B:s uppspelning (DECISIONS #363).
+  Den finska körningen trycktes inte.
+- **W-A faller för sikten**: färre olyckor per timme vid sämre sikt. Situationsarkivet bär ingen orsak, och dimtimmar ligger troligen
+  där trafiken är gles — läs det som att sikt inte är en egen fara i datan, inte som att dimma är ofarlig. Byvinden väntar på blåsigt
+  väder.
+- **Steg 0:s 0c har underlag**: 42 regnstopp med frost inom 4 h, där grinden behöver omkring 30. Ö-B saknar fortfarande eget
+  instrument, och frostnätterna 6–8/10 gallras från 13/10.
+- **Bildfacitet (kort #209)**: omklassningarna till halka är noll också under frostnätterna, fast väglagsarkivet nu rör sig. Det
+  besannar farhågan i #248: januaridomen står på kamerabilderna. Beslutet är Bengts och Axels (bedömningen §4.2).
+- **Kontrollen mellan skuggloggen och arkivet** säger ingenting om positiva fall: inget av de 274 ögonblicken uppfyllde regeln.
+
+**Ärendena.** Issue #804 och #127 stängdes 8/10 09:01–09:02 UTC av kontot 895845, före tryckningen; vakthunden tryckte ändå (den
+hittar frostlarmet med `state=all`). Arbetet de beställde är nu gjort. Nästa tryckning tidigast 15/10 09 UTC, så länge frosten varar.
+
+**Vad som INTE görs.** Inga trösklar, ingen drift och ingen röst ändras. Inga blinda utfall lästa.
+
+**Stomdokument:** MAT §2 §3.2 §5.2 §6.1–§6.4 §7.5, BED §0b och §4.2

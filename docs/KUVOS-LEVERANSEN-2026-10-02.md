@@ -110,7 +110,7 @@ Hoppade över, utan gemensamma timmar: 1603 Skara, 2112 Hudiksvall, 2558 Överto
 | Temperaturerna, fuktigheten, sikten och riktningen | Kan översättas nu: −99,9 och −100 blir NULL, 20 000 behålls som i driften och tas av värdevakten |
 | Nederbördstypen 1, 2, 4, 6 | ✅ Översatta 2/10 kväll ur VädErs 2019 (§7) |
 | **Nederbördstypen 3, 9, −9, mängden och vindfälten** | **Väntar på Trafikverket** — frågorna nedan (NULL i arkivet tills dess) |
-| De 23 stationerna utan läge | Väntar på Trafikverket |
+| De 23 stationerna utan läge | Utanför. Trafikverket 8/10 (§5e): 16 ersatta, 7201 en teststation, sex med tillfälligt fel (namn, inga koordinater) |
 | Vakterna (#75, radvakten, karantänen, den långsamma vakten) | Körs när datan är inläst, i kuvösens databas; redovisas som antal |
 | Värdevakten | Körs på kuvösens databas före riktningsprovet; ett fält utan spann stoppar |
 
@@ -185,27 +185,92 @@ och Bohus, 15 Älvsborg, 16 Skaraborg, 18 Örebro), alltså nedlagda stationer. 
 och i NVDB:s kartvisare (https://catalogue.arctic-sdi.org/geonetwork/srv/resources/records/2723b729-d89f-4197-b4ab-aaf98c341d25),
 men Lastkajen kräver konto, och om nedlagda stolpar finns med står inte i metadatan.
 
-### 5d. Begäran till Trafikverket om facit för samma vinter (Bengts ja 6/10; utkast, Bengt skickar i leveranstråden)
+### 5d. Begäran till Trafikverket om facit för samma vinter (Bengts ja 6/10; omskriven 8/10 till ett färdigt mejl efter #464, Bengt skickar i leveranstråden)
 
 > Hej Micke,
 >
-> tack för uttaget, det är inläst och prövat. För att kunna pröva våra regler mot vad som faktiskt hände på vägen, inte bara mot
-> stationens egen yta, skulle vi vilja be om ytterligare fyra uttag för samma period och stationer, november 2024–mars 2025, i samma
-> form och på samma villkor om avgift som förra gången:
+> tack igen för uttaget. Det är inläst och vi har arbetat med det sedan dess. Frågorna jag skickade den 2 oktober har vi kunnat lösa
+> själva ur Trafikverkets dokumentation, så dem behöver du inte lägga någon tid på.
 >
-> 1. **Ytstatus och friktion** från de stationer som har beröringsfria ytstatusgivare: torrt, vått, is, snö, friktion (motsvarande
->    API:ts `Surface.Water`, `Ice`, `Snow`, `Grip`), per station och halvtimme.
-> 2. **Rapporterat väglag** per vägsträcka (det som i öppna API:t heter RoadCondition) för perioden, om historiken sparas.
-> 3. **Händelser** (olyckor, djur, hinder; öppna API:ts Situation) för perioden, om historiken sparas.
-> 4. **Utförda vinterväghållningsåtgärder** (saltning, plogning) per sträcka och tid, om sådana data finns att lämna ut.
+> Nu skulle vi vilja pröva mot vad som faktiskt hände på vägen, inte bara mot stationens egen yta. Därför vill jag be om fyra uttag
+> till för samma period, november 2024–mars 2025, på samma villkor som förra gången:
 >
-> Och två korta frågor om förra uttaget, om du hinner: vad betyder `ned_typ` 3 och 9 (vi läser dem som underkylt regn och
-> nederbörd av okänd typ), och är `ned_maengd` all nederbörd räknad som vatten eller bara regn?
+> 1. **Ytstatus och friktion** från stationerna med beröringsfria ytstatusgivare: torrt, vått, is, snö och friktion (i öppna API:t
+>    `Surface.Water`, `Ice`, `Snow` och `Grip`), per station och halvtimme, i samma form som förra uttaget.
+> 2. **Rapporterat väglag** per vägsträcka (RoadCondition i öppna API:t), om historiken sparas.
+> 3. **Utförda vinterväghållningsåtgärder**, saltning och plogning, per sträcka och tid, om sådana data finns att lämna ut.
+> 4. **Händelser** (olyckor, djur och hinder; Situation i öppna API:t), om historiken sparas.
+>
+> Finns det redan uttag eller exportfiler som ligger nära räcker de gott, så anpassar vi oss efter formen. De får gärna komma ett i
+> taget, i den takt det passar er. Skulle något av det kosta något, hör gärna av dig med beloppet innan ni sätter igång.
+>
+> Ligger något av detta utanför ditt område tar jag gärna emot namnet på rätt kontakt.
 >
 > Vänliga hälsningar
 > Bengt
 
+**Skickat 8/10 av Bengt** till Micke Wallin i leveranstråden, med texten ovan.
+
+*Omskrivet igen 8/10 (Bengt: "stryk och skriv om bara fokus på det nya viktiga").* Mejlet bär nu bara begäran. Struket: frågan om
+läget för de 23 stationerna (104 671 rader av 5 496 270, 1,9 %; troligen nedlagda och inte i dagens nät, så som grannar skulle de ge
+kuvösen ett tätare nät än driften har, och riktningsprovet kördes utan dem, #464), frågan om siktdjupet (valet står i #464 punkt 5)
+och uppdateringen om vind, mängd och koder, som blev en mening. Ordningen följer värdet: vägens tillstånd först (Axels fynd att
+felen kommer i dygnsstora block, kuvössidan §5), händelserna sist. Enligt #398 frågar texten efter befintliga uttag först och ber
+om beloppet innan arbete börjar; ingen kostnad accepteras utan Axels godkännande. Fordonsdata är medvetet utanför mejlet: Micke
+ansvarar för väderstationerna, Trafikverket delar inte köpt fordonsdata utan särskild överenskommelse (DECISIONS #282, läst 21/9),
+och en egen fråga om fordonsdata från 17/9 är obesvarad. Frågan om Trafikverkets egen vägväderprognos (kort #298, punkt 10) är också
+utanför; Bengt avgör om den ska med.
+
 Inget i utkastet bär tal ur tröskeldokumenten eller resultat (DECISIONS #463).
+
+### 5e. Trafikverkets svar 8/10 10:40 (Micke Wallin, VViS Förvaltning)
+
+Svar i samma tråd, 13 minuter efter begäran. Han besvarar också tre av frågorna från 2/10; en annan fråga har han skickat vidare och
+väntar på svar om. Läst mot vår översättning (`kuvos/oversattning.sql`, DECISIONS #464):
+
+| Kod | Trafikverkets namn | Vår översättning | Stämmer |
+| :-- | :-- | :-- | :-- |
+| 1 | Ingen nederbörd | `no` | ✓ |
+| 2 | Regn, luft ≥ −2 | `rain` | ✓ |
+| 3 | Regn, luft ≥ −10 (ev. underkylt regn) | `freezing_rain`, räknas som regn | ✓ (underkylt är *eventuellt*) |
+| 4 | Snö | `snow` | ✓ |
+| 6 | Snöblandat regn | `sleet`, regn och snö | ✓ |
+| 9 | Okänd typ, osäker mängd | `yes`, mängden NULL | ✓ |
+| −9 | Givare saknas eller fel på givare | NULL | ✓ |
+| 5, 7, 8, 80, −999, −10 | (Snö), (Drev), (Hagel), gammal givartyp, givarfel, stationen ur drift | finns inte i filerna | — |
+
+- **Sikten:** 20 000 m är sensorns största mätbara sikt; ett negativt värde betyder att mätningen inte skett, t.ex. vid fel. Stämmer
+  med översättningen (−100 → NULL, 20 000 kvar som tak; −100 är det enda negativa värdet i filerna, §2).
+- **De 23 stationerna:** 16 är gamla stationer som ersatts (298, 321, 324, 650, 901, 902, 908, 1227–1231, 1434, 1435, 1801, 1815),
+  7201 är en teststation som ska tas bort, och sex finns men har tillfälligt fel: 428 Nya Hjälmaresund, 1613 Igelbäcken, 1525
+  Stallbackabron, 1547 Äspekärr, 1518 Vårgårda och 1329 Falkenberg. Inga koordinater i svaret. De sex står inte i dagens
+  stationslista (`data/vagdata/stationer.json`, 854) och står kvar utanför kuvösen tills ett läge finns.
+- **Begäran (§5d):** *"Det löser vi innan helgen"*, skrivet under inledningen, men svaren på punkterna säger att VViS inte har något av
+  det: **ytstatus och friktion sparas inte historiskt** (inte standardutrustning, givarna finns på vissa platser och används främst för
+  forskning), och väglag, vinterväghållning och händelser hör till andra förvaltningar. Han har inga namn och ber om ett separat
+  ärende *"precis som du gjort för att få kontakt med mig"*, så blir det lotsat rätt. Vad som löses före helgen är oklart.
+
+**Följder.** Översättningen står; inget körs om. Ytstatusen för vintern 2024/25 finns inte någonstans, så driftens eget arkiv sedan
+6/10 (kort #294) är den enda historik som kommer att finnas. Väglag, vinterväghållning och händelser kräver ett nytt ärende genom
+samma väg som det första, Datautbytesportalens kontaktformulär (data.trafikverket.se/about-us/contact).
+
+**Utkast till det nya ärendet** (Bengt skickar; ämne *Historik för väglag, vinterväghållning och händelser, vintern 2024/25*):
+
+> Hej,
+>
+> jag utvärderar en halkvarningstjänst som bygger på Trafikverkets öppna data, och har fått väderstationernas historik för vintern
+> 2024/25 från VViS Förvaltning (Michael Wallin). Han hänvisade mig hit för det som ligger utanför VViS. Jag skulle vilja be om
+> följande för perioden 1 november 2024–31 mars 2025:
+>
+> 1. **Rapporterat väglag** per vägsträcka, det som i öppna API:t heter RoadCondition, om historiken sparas.
+> 2. **Utförda vinterväghållningsåtgärder**, saltning och plogning, per sträcka och tid, om sådana data finns hos Trafikverket.
+> 3. **Händelser** (olyckor, djur och hinder), det som i öppna API:t heter Situation, om historiken sparas.
+>
+> Finns det befintliga uttag eller exportfiler räcker de gott, så anpassar vi oss efter formen. Skulle något kosta, hör gärna av er
+> med beloppet innan arbetet börjar. Ligger punkterna hos olika delar av Trafikverket tar jag gärna emot dem var för sig.
+>
+> Vänliga hälsningar
+> Bengt
 
 ## 6. Vad det här inte är
 
