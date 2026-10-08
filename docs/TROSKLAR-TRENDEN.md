@@ -3,7 +3,8 @@
 **Kort:** #88 TRENDEN (systemanalysen §2.1). **Status:** ✅ **FASTSTÄLLT OCH KONTRASIGNERAT** —
 Bengt 2026-09-10 i chatten, Axel 2026-09-11 via Bengt (samma form som DECISIONS #61/#68; se #95).
 Fastställda: svepet i §2, golven i T-B (20 / 5 / 25 %), underlagskraven i T-C. Ingen kod ännu.
-Skuggkolumnen byggs först efter radardomen 14/9 (kort #81:s ordning). Från första skuggkörningen
+Skuggkolumnen byggs först efter radardomen 14/9 (kort #81:s ordning). **T-A 8/10:** domspärren släppte, och
+fönster, lutning, gap och startband är satta ur svepet enligt §4 (§2, DECISIONS #491, #492). Från första skuggkörningen
 gäller §8 — regimen är knuten till första skuggkörningen och
 inte till signaturen.
 
@@ -49,6 +50,24 @@ T-A (§4) väljer värdet.
 | **Stigande tröskel** | hur brant stigningen måste vara för tystnad | +0,4 · +0,8 °C per fönster, yta > +1 |
 | **Nära-miss-band** | hur nära tröskeln ytan måste komma för att en fyrning ska räknas som "risk som inte föll ut" i stället för falsklarm (T-B) | 0,3 · 0,5 · 1,0 °C |
 | **Utfallsfönster** | hur länge efter fyrningen utfallet får komma | 60 · 90 · 120 min |
+
+**Satt 8/10 ur T-A** (körning 37754420461, DECISIONS #491; inskrivet på Bengts ja, #492). Regeln i §4 — den kombination som
+skiljer bäst blir tröskeln — gav:
+
+| Parameter | Värde | Ur |
+| :-- | :-- | :-- |
+| Fönster | **60 min** | T-A 8/10 |
+| Lutningströskel | **0,4 °C** per fönster | T-A 8/10 |
+| Daggpunktsgap | yta − dagg **≤ 2,0 °C** | T-A 8/10 |
+| Startband | yta mellan **+1 och +3 °C** | T-A 8/10 |
+| Stigande tröskel, nära-miss-band, utfallsfönster | osatta | T-B (sätts inte av T-A) |
+
+Underlaget: 169 frostnätter på 119 stationer, 5 141 andra nätter, sju dygn till 8/10. Träff 64 % (108/169), falsklarm 3 %
+(144/5 141), separation 61 % ±7,3 pe; halva A 73 % och halva B 60 %. Fysikkontrollen: kallast kl 03–07 i 79 % av
+frostnätterna, fyrningsandel klara nätter 65 % mot mulna 53 %. Den näst bästa kombinationen (startband +1…+4, separation
+60 % ±7,2) går inte att skilja från den valda; regeln väljer den bästa och det skrivs ut. **Inget av värdena gäller i
+kombinationen:** efterhalkans *faller* (lutning ≥ 0,8 °C på 30 min) är kombinationens frysta startvärde och ändras bara
+enligt regel D (§8, DECISIONS #468). T-B räknar fortfarande korsningskurvan över hela svepet (§4).
 
 **Varför startbandet finns:** under +1 °C fyrar redan punktregeln; ovanför bandets tak är ytan för
 långt från noll för att "risk framöver" ska vara sant inom ett rimligt försprång. Bandet är alltså
@@ -239,7 +258,7 @@ höstens första frost, inte i arkivets början.
 | :-- | :-- | :-- |
 | Tröskeldokumentet (detta) | ✅ fastställt 10/9 | Bengt (äger mätningen) |
 | Skuggkolumnen byggs | efter radardomen 14/9 | kort #81:s ordning |
-| T-A körs | höstens första frostnätter (okt–nov) | ≥ 30 nätter, fysikkontrollen |
+| T-A körs | höstens första frostnätter (okt–nov) — ✅ **8/10:** 169 nätter, fysikkontrollen stödjer, värdena i §2 (#491, #492) | ≥ 30 nätter, fysikkontrollen |
 | T-B skuggar | **från första frosten**, hela vintern | facit ur egen stack (§6): kamerafacit #20, road_condition_history, situation_archive #33 |
 | T-C dömer | mars | underlagskraven |
 | Röst | bara efter T-C **och** Axels ja | rösttext, plats i A-skalan, PRODUKTBOK |

@@ -9245,3 +9245,28 @@ hittar frostlarmet med `state=all`). Arbetet de beställde är nu gjort. Nästa 
 **Vad som INTE görs.** Inga trösklar, ingen drift och ingen röst ändras. Inga blinda utfall lästa.
 
 **Stomdokument:** MAT §2 §3.2 §5.2 §6.1–§6.4 §7.5, BED §0b och §4.2
+
+## #492 (8/10 2026) T-A:s värden in i TROSKLAR-TRENDEN på Bengts ja: fönster 60 min, lutning 0,4 °C, gap ≤ 2,0 °C, startband +1…+3 °C (kort #88)
+
+**Beslut.** Bengt 8/10: *"ja till 2"* — på frågan om T-A:s kombination ska skrivas in i tröskeldokumentet (bedömningen §4.2,
+DECISIONS #491). T-A:s domspärr släppte 8/10 (169 frostnätter på 119 stationer), separationen syns i båda halvorna och
+fysikkontrollen stödjer. TROSKLAR-TRENDEN §4 säger att den kombination som skiljer bäst blir tröskeln; den skrivs nu in i §2.
+
+| Parameter | Värde |
+| :-- | :-- |
+| Fönster | 60 min |
+| Lutningströskel | 0,4 °C per fönster |
+| Daggpunktsgap | yta − dagg ≤ 2,0 °C |
+| Startband | +1 … +3 °C |
+
+**Vad det inte är.** Ingen röst, ingen kod i motorn och ingen ändring i kombinationen: efterhalkans *faller* (lutning ≥ 0,8 °C
+på 30 min) är kombinationens frysta startvärde och följer regel D (TROSKLAR-TRENDEN §8, DECISIONS #468). Stigande tröskel,
+nära-miss-band och utfallsfönster sätts inte av T-A. T-B saknar fortfarande instrument, och T-C dömer i mars.
+
+**Reservation.** Den näst bästa kombinationen (startband +1…+4, separation 60 % ±7,2 pe) går inte att skilja från den valda.
+Regeln väljer den bästa, och det står i dokumentet. Underlaget är sju dygn i början av frostsäsongen.
+
+**Alternativ som valdes bort.** Att vänta på T-B:s korsningskurva innan något skrivs in — §4 säger att T-A väljer värdet, och
+kurvan räknas ändå över hela svepet.
+
+**Stomdokument:** MAT §6.1, BED §4.2
