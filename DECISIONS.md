@@ -9201,3 +9201,47 @@ procentenheter. FYSIK+BLANDNING ger trafikviktat 4,3 %, och 93 % av vinsten (1,0
 antagande i den trafikviktade räkningen. ÅDT är årsmedel, inte vinter. Väglagsnätet är riks- och
 länsvägarna; kommunernas gator, som skulle göra det inre bandet ännu större, ingår inte. Grindens krav och dom räknas per punkt, oviktat
 (#406): läsningen ändrar ingen tröskel och ingen dom. Beslutet om var kraften läggs är Bengts.
+
+## #491 (8/10 2026) Frostens första läsningar: steg 0 för övergångarna, T-A, R-A, K-A och W-A, bildfacitets omklassningar och efterhalkans uppspelning — K-A passerad, T-A:s domspärr släppt (kort #89, #88, #46, #103, #90, #209)
+
+**Beställningen.** Bengt 8/10: *"kör 89 och allt som hör till det och stäng issuesena sen de är klara"*. Frostlarmet (issue #804)
+öppnades 8/10 01:07 UTC med 54 stationer med vägyta ≤ 0 °C; vakthunden tryckte de fem frostflödena 09:07 UTC (79 stationer), alla
+204. Läsningen i databasen (dbknapp `las`, sex satser i en READ ONLY-transaktion som rullas tillbaka) tryckt 09:12 UTC på Bengts
+order. Allt på main 14873df, fönstren slutar 8/10 kring 09 UTC, alltså inom sju dygn från frostnätterna 6–8/10, före gallringen.
+
+| Läsning | Körning | Utfall |
+| :-- | :-- | :-- |
+| Steg 0, övergångarna (kort #89), 7 dygn | 37754417681 | 0c: **42** av 3 245 användbara regnstopp följdes av yta ≤ 1 °C inom 4 h (1/2/3 h: 27/30/37), mot 3–4 den 11/9; 177 frostepisoder på 117 stationer, 23 larmar i dag, med N = 4 h 29. 0a: mätarregn vid omslaget i 18 % (±1,3 pe), median 65 min kvar. 0d: 2 äkta torrperioder ≥ 5 dygn, OAVGJORT för V-B. 0e: väglagsarkivet rör sig igen, 12 469 rader på 7 dygn; *Våt* median 9,6 h |
+| T-A, trenden (kort #88), 7 dygn | 37754420461 | **Domspärren släppt:** 169 frostnätter på 119 stationer (krav 30 och 20). Bästa kombinationen 60 min · lutning 0,4 · gap 2,0 · startband +1…+3: träff 64 % (108/169), falsklarm 3 % (144/5 141), separation 61 % ±7,3 pe, halva A 73 % och B 60 %. Fysikkontrollen: kallast kl 03–07 i 79 %, fyrningsandel klara nätter 65 % mot mulna 53 % — *stödjer* |
+| R-A, rimfrosten (kort #46), svenska arkivet 30 dygn | 37754423323 | Bästa kombinationen R1 1 · R2 1 · R3 30 min: 163 episoder, 394 stationstimmar, 61 stationer (spärren 200 och 20 passerad). R-A3 dygnsprofil 73 % ±6,8 kl 03–07 (krav 40) KLARAR; R-A5 dominans 6 % (tak 20) KLARAR; R-A4 klara mot mulna 4,73 × (krav 2) *stödjer* |
+| K-A, frysklassningen (kort #103), 60 dygn | 37754426571 | **DOM: K-A PASSERAD** i 13 av 27 kombinationer; bäst täckning K1 0 °C · K2 ±0,5 · K3 20 km: täckning 97,8 % ±0,2, träff 99,3 %, farliga fel 0,5 %. 736 stationer, 649 976 avläsningar. Två saknade dygn (6–7/9, exporterade enligt sql/034) räknas inte |
+| W-A, vind och sikt (kort #90), 14 dygn | 37754429130 | B1 byvind OAVGJORT (116 stationstimmar i högsta bandet, krav 500). **B2 sikt FALLER:** olycksfrekvensen *sjunker* med sikten, 41,1 → 15,1 per 1 000 h, kvot 0,37 (krav ≥ 1,5). 27 stationer med trasig byvindgivare (kvot > 5), värst 2312 |
+| Bildfacitets omklassningar (kort #209), 7 dygn | 37755033058 | **0 omklassningar till halka**, 0 inom 5 km från de 82 froststationerna, av 12 469 omklassningar: *Normalt* 12 468, *Besvärligt (risk för)* 1 (8/10 06:23). 315 olyckor i händelsearkivet |
+| Efterhalkans uppspelning, 7 dygn | 37755033058 | 11 episoder: 2 · 5 · 4 på 6/10 · 7/10 · 8/10 (5 · 13 · 31 ögonblick). Samma tal ur den fristående satsen (kombinationen 2 · 5 · 4) — uppspelningen och satsen är ense. Utfallet är blint (`p_blind`), och det lästes inte |
+| Skuggloggen mot arkivet, 7 dygn | 37755033058 | 274 stationsögonblick i `shadow_log.efterhalka`: ense på alla 274, men **inget av dem uppfyller regeln** i vare sig loggen eller arkivet; de 11 episoderna låg vid stationer utanför skuggrutterna |
+
+**Läsningen, del för del** (läsningar och grindarnas egna domar; inga trösklar ändrade):
+- **K-A är passerad**, och kort #103:s Verify är därmed uppfylld: domen enligt `docs/TROSKLAR-FRYSKLASSNINGEN.md` fälld och bokförd
+  här. Det ger ingen rätt att varna (§1): en godkänd frysklassning får bara stärka en bedömning som vilar på en uppmätt station.
+  Nästa steg enligt dokumentets §7.4 är K-B:s uppspelning, kort #309. Värdena K1 0 · K2 ±0,5 · K3 20 km är mätningens förslag, inte
+  satta trösklar (§7).
+- **T-A:s domspärr har släppt**, och kraven i TROSKLAR-TRENDEN §4 är uppfyllda: separationen syns i båda halvorna, fysikkontrollen
+  stödjer. Enligt §4 blir den kombination som skiljer bäst tröskeln: 60 · 0,4 · 2,0 · +1…+3. Den näst bästa (+1…+4, 60 % ±7,2) går
+  inte att skilja från den. Att skriva in värdena i tröskeldokumentet är Bengts ord (bedömningen §4.2); T-B saknar instrument.
+- **R-A visar en signal som är fysik** (R-A3–R-A5). Det ger ingen rätt till röst; nästa steg är R-B:s uppspelning (DECISIONS #363).
+  Den finska körningen trycktes inte.
+- **W-A faller för sikten**: färre olyckor per timme vid sämre sikt. Situationsarkivet bär ingen orsak, och dimtimmar ligger troligen
+  där trafiken är gles — läs det som att sikt inte är en egen fara i datan, inte som att dimma är ofarlig. Byvinden väntar på blåsigt
+  väder.
+- **Steg 0:s 0c har underlag**: 42 regnstopp med frost inom 4 h, där grinden behöver omkring 30. Ö-B saknar fortfarande eget
+  instrument, och frostnätterna 6–8/10 gallras från 13/10.
+- **Bildfacitet (kort #209)**: omklassningarna till halka är noll också under frostnätterna, fast väglagsarkivet nu rör sig. Det
+  besannar farhågan i #248: januaridomen står på kamerabilderna. Beslutet är Bengts och Axels (bedömningen §4.2).
+- **Kontrollen mellan skuggloggen och arkivet** säger ingenting om positiva fall: inget av de 274 ögonblicken uppfyllde regeln.
+
+**Ärendena.** Issue #804 och #127 stängdes 8/10 09:01–09:02 UTC av kontot 895845, före tryckningen; vakthunden tryckte ändå (den
+hittar frostlarmet med `state=all`). Arbetet de beställde är nu gjort. Nästa tryckning tidigast 15/10 09 UTC, så länge frosten varar.
+
+**Vad som INTE görs.** Inga trösklar, ingen drift och ingen röst ändras. Inga blinda utfall lästa.
+
+**Stomdokument:** MAT §2 §3.2 §5.2 §6.1–§6.4 §7.5, BED §0b och §4.2
