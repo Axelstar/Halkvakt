@@ -9341,3 +9341,14 @@ vakterna, inte om fysiken, och den står i bedömningen §4.2.
 **Två förväntningar föll på mätningen, inte på populationen.** MAE 0,91 °C mot väntade 0,75–0,85: #485:s 0,79 °C är grind A:s A1, som
 bara räknar ytor −5…+5 °C, medan kontrollen här räknar alla ytor ≤ +5 °C — andelen grova fel, som har samma definition, träffar exakt
 (10,04 %). Raderna utan luft är 100 hinkar och bär ingenting.
+
+## #494 (8/10 2026) Ingen egen läsning av raderna radvakten och den långsamma vakten tar — Bengts nej
+
+**Beslut.** Bengt 8/10: *"nej till läsningen"* — på förslaget ur givarvaktsläsningen (DECISIONS #493) att i kuvösen läsa de rader
+radvakten och den långsamma vakten tog på vintern 2024/25 (543 och 16 263 halvtimmar, två tredjedelar inom 2 °C från fysiken), med
+solen och nederbörden ur MET Nordic, stationernas snökoder och SMHI:s snödjup. Kostnaden var en kuvöskörning om ungefär 9 Actions-minuter.
+
+**Vad som står kvar.** Iakttagelsen står under #493: att vakterna i vinterluft kan ta verkligt kalla ytor är en hypotes, inte ett fynd,
+och fysiken kan lika gärna bära samma fel som givarna. Vakterna i driften är orörda.
+
+**Stomdokument:** KUV §4, BED §4.2
