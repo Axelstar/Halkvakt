@@ -1968,6 +1968,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
 
 ## 🟢 KLART (senaste vinsterna)
 
+- [x] ✅ 🧪 **#310 FYSIKEN SOM GIVARVAKT I KUVÖSEN (KLART 8/10 — Verify uppfylld: förregistrerad i DECISIONS #493 på b3fecd8 före knappen 37759452234, utfallet bokfört under #493; Claude, Bengts ja 8/10: *"ja till givarvakten"*)**: uppmätt yta mot FYSIK på samma halvtimme med vakterna som flaggor. Kontrollen 10,04 % ✓. Fysiken fångar 10,4 % av vakternas rader (#75 82 %, radvakten 14 %, den långsamma vakten 13 %), flaggar 1,3 % av de behållna och hittar 0 stationer vakterna missar: ingen givarvakt. Frågan om vakterna tar verkligt kalla ytor i vinterluft står i bedömningen §4.2.
 - [x] ✅ 🧊 **#103 FRYSKLASSNINGEN (KLART 8/10 — Verify uppfylld: K-A PASSERAD i 13 av 27 kombinationer, körning 37754426571, bokförd i DECISIONS #491; K-B blir kort #309)** — — kan en modell som är opålitlig på grader ändå bära en klass?**
   📄 **TRÖSKELDOKUMENT SKRIVET 12/9** (`docs/TROSKLAR-FRYSKLASSNINGEN.md`, **FASTSTÄLLT 12/9**, DECISIONS #130/#135).
   **Frågan är Axels, ordagrant**, ur hans bedömning av grind A: grind A föll, men A3
