@@ -250,7 +250,7 @@
 <!-- LÄGESRADER §5: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 <div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
   <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-kv-prognoslagret">Prognoslagrets kandidater</a> <span style="color: var(--dampad, #4A5763)">delvis, 78 % · kvar: Kriging och kallkartan: Bengts och Axels ord efter rutnätsmodellen (bedömningen §4.2, DECISIONS #481, #482)</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-kv-prognoslagret">Prognoslagrets kandidater</a> <span style="color: var(--dampad, #4A5763)">delvis, 58 % · kvar: Kriging och kallkartan: Bengts och Axels ord efter rutnätsmodellen (bedömningen §4.2, DECISIONS #481, #482)</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Fyra läsningar 6/10</b> <span style="color: var(--dampad, #4A5763)">klart · 37530898977, DECISIONS #471: ankarspridningen skiljer de grova felen (0,5–2 °C ger 1,8 % på 59 % av punkterna), vårens fel är dagsljuset (natten 4,2 %), regimstyrd offset ger 0,3 procentenheter, grova kovariater inget (R² 0,01)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Spridningen och natten korsade</b> <span style="color: var(--dampad, #4A5763)">klart · 37651865384, DECISIONS #476: grinden vid 2,25 °C talar på 60,6 % med 2,8 % grova fel, natten ensam 6,0 % på 63,0 %; grinden antagen med X = 2,25 °C och natten avstådd (DECISIONS #474, #477, #478)</span></li>
@@ -260,7 +260,10 @@
       <li><span aria-hidden="true">✓</span> <b>FYSIK</b> <span style="color: var(--dampad, #4A5763)">klart · 37693105481, DECISIONS #485: 9,85 % grova fel på RÅ:s punkter mot RÅ:s 7,51 %, sämre i varje band; domen läses på vintern 2026/27; i Axels replika under kuvösens regler ger FYSIK med grannarnas fel 6,65 % och med blandningen 5,97 % (bortom 20 km 10,9 mot RÅ:s 13,6 %), inte körda i kuvösen: de kräver grannlagret och ett beslut (docs/FYSIKSPARET-FRYS-2026-10-07.md); vädret är ECMWF:s analys, inte en prognos</span></li>
       <li><span aria-hidden="true">✓</span> <b>C8 mot fingeravtrycken</b> <span style="color: var(--dampad, #4A5763)">klart · DECISIONS #486: vägdatan förklarar ungefär 5 % av särarten mot den äldre modellen (VÄG R² 0,0499) och ingenting mot den frysta</span></li>
       <li><span aria-hidden="true">○</span> <b>Kriging och kallkartan</b> <span style="color: var(--dampad, #4A5763)">saknas · Väntar på Bengts och Axels ord efter rutnätsmodellen (bedömningen §4.2, DECISIONS #481, #482)</span></li>
-      <li><span aria-hidden="true">○</span> <b>FYSIK+BLANDNING och förregistreringen för 2026/27</b> <span style="color: var(--dampad, #4A5763)">saknas · Två beslut för Bengt i bedömningen §4.2 (DECISIONS #485)</span></li>
+      <li><span aria-hidden="true">○</span> <b>FYSIK+BLANDNING i kuvösen</b> <span style="color: var(--dampad, #4A5763)">saknas · Mätningen byggd och förregistrerad med förväntningar (DECISIONS #490); väntar på Axels filer i analysläge (kort #308)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Operativt läge, prognosväder +6 h</b> <span style="color: var(--dampad, #4A5763)">saknas · Förregistrerad i DECISIONS #490; väntar på Axels fil i operativt läge (kort #308)</span></li>
+      <li><span aria-hidden="true">○</span> <b>Trafiken per band</b> <span style="color: var(--dampad, #4A5763)">saknas · Förregistrerad i DECISIONS #490, körs ur vägdatalagret</span></li>
+      <li><span aria-hidden="true">○</span> <b>Förregistreringen för 2026/27 på SMHI/MET</b> <span style="color: var(--dampad, #4A5763)">saknas · Bengts beslut i bedömningen §4.2 (DECISIONS #485)</span></li>
     </ul>
   </details>
 </div>
@@ -282,8 +285,8 @@
         <tr><td><b>RÅ+HÖJD</b>, RÅ med höjdkorrektion*</td><td class="nr">8,8 %</td><td class="nr">5,8 · 5,6 · 8,6 · 16,8</td><td>Sämre än RÅ; ingen kandidat</td><td class="nr">#481</td></tr>
         <tr><td><b>RN</b>, rutnätsmodellen: vägens skillnad mot MET Nordics luft*</td><td class="nr">9,3 %</td><td class="nr">6,0 · 5,9 · 8,9 · 18,1</td><td>Sämre än RÅ i alla band; ingen kandidat</td><td class="nr">#481</td></tr>
         <tr><td><b>FYSIK</b>, Axels fysikmodell ur ECMWF, räknad utanför repot†</td><td class="nr">9,85 %</td><td class="nr">8,1 · 8,0 · 8,8 · 15,5</td><td>Sämre än RÅ i varje band; domen 2026/27</td><td class="nr">#485</td></tr>
-        <tr><td><b>FYSIK + grannarnas fel</b>, Axels replika‡</td><td class="nr">6,65 %</td><td class="nr">4,5 · 4,9 · 5,7 · 12,2</td><td>Slår RÅ; inte körd i kuvösen, kräver grannlagret</td><td class="nr">#485</td></tr>
-        <tr><td><b>FYSIK + blandning</b> med RÅ nära stationerna, Axels replika‡</td><td class="nr">5,97 %</td><td class="nr">4,1 · 4,3 · 5,3 · 10,9</td><td>Bäst hittills och den enda som slår RÅ bortom 20 km; <span class="dom vantar">väntar på beslut</span></td><td class="nr">#485</td></tr>
+        <tr><td><b>FYSIK + grannarnas fel</b>, Axels replika‡</td><td class="nr">6,65 %</td><td class="nr">4,5 · 4,9 · 5,7 · 12,2</td><td>Slår RÅ; förregistrerad 8/10, väntar på Axels fil</td><td class="nr">#485, #490</td></tr>
+        <tr><td><b>FYSIK + blandning</b> med RÅ nära stationerna, Axels replika‡</td><td class="nr">5,97 %</td><td class="nr">4,1 · 4,3 · 5,3 · 10,9</td><td>Bäst hittills och den enda som slår RÅ bortom 20 km; <span class="dom vantar">förregistrerad 8/10, väntar på Axels fil</span></td><td class="nr">#485, #490</td></tr>
       </tbody>
     </table>
   </div>
@@ -395,7 +398,9 @@
         <tr><td>Vind och sikt</td><td>Startvärden</td><td><a href="#avsnitt-4">4</a></td></tr>
         <tr><td>Nederbördstypen igen</td><td>Ordlistan får <i>yes</i> och <i>freezing_rain</i> före nästa körning (#467)</td><td><a href="#avsnitt-4">4</a></td></tr>
         <tr><td>Kriging och kallkartan</td><td>Bengts och Axels ord efter rutnätsmodellen (#481, #482)</td><td><a href="#avsnitt-5">5</a></td></tr>
-        <tr><td>FYSIK+BLANDNING och förregistreringen för vintern 2026/27 på SMHI/MET</td><td>Bengts beslut (bedömningen §4.2, #485)</td><td><a href="#avsnitt-5">5</a></td></tr>
+        <tr><td>FYSIK+BLANDNING och FYSIK+GRANNAR i kuvösen, i analysläge och med prognosväder +6 h</td><td>Axels filer i releasen (kort #308; förväntningarna i #490)</td><td><a href="#avsnitt-5">5</a></td></tr>
+        <tr><td>Trafiken per avståndsband ur vägdatalagret</td><td>Inget: körs efter förregistreringen (#490)</td><td><a href="#avsnitt-5">5</a></td></tr>
+        <tr><td>Förregistreringen för vintern 2026/27 på SMHI/MET</td><td>Bengts beslut (bedömningen §4.2, #485)</td><td><a href="#avsnitt-5">5</a></td></tr>
         <tr><td>Facit för samma vinter</td><td>Att begäran §5d skickas, och Trafikverkets svar</td><td><a href="#avsnitt-7">7</a></td></tr>
       </tbody>
     </table>
@@ -472,9 +477,10 @@
 
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
   <h2 id="oppna-kort">Öppna kort</h2>
-  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 3 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
+  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 4 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
   <h3><a href="#avsnitt-5">5. Prognoslagrets kandidater</a></h3>
   <ul>
+    <li>#308 🧪 #308 FYSIK+BLANDNING I KUVÖSEN — AXELS FILER, I ANALYSLÄGE OCH MED PROGNOSVÄDER (FÖRREGISTRERAD 8/10 — … <span class="litet">· Axel</span></li>
     <li>#270 PROGNOSLAGRET EFTER PREMISSMÄTNINGARNA — BENGTS VAL a–h <span class="litet">· Bengt</span></li>
   </ul>
   <h3><a href="#avsnitt-7">7. Facit från Trafikverket</a></h3>

@@ -99,6 +99,23 @@ jobs:
               console.log(`${f.fil}: ${h === f.sha256 ? "ok" : "FEL " + h}`); if (h !== f.sha256) fel++;
             }
             process.exit(fel ? 1 : 0);'
+      # BLANDNINGEN (DECISIONS #490, kort #308) bara för mätningen som läser den: Axels filer, summorna mot kuvos/blandning-leverans.json.
+      - name: Blandningen ur releasen, kontrollsummorna mot manifestet
+        if: ${{ hashFiles('kuvos/blandning-leverans.json') != '' && contains(inputs.matning, 'kuvos-blandning') }}
+        shell: bash
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          mkdir -p blandning && gh release download kuvos-blandning-2024-25 --dir blandning --pattern '*.csv.gz'
+          node -e '
+            const m = require("./kuvos/blandning-leverans.json"), c = require("crypto"), fs = require("fs");
+            const filer = (m.filer || []).filter((f) => f.fil.endsWith(".csv.gz"));
+            if (!filer.length) { console.log("manifestet saknar filer"); process.exit(1); }
+            let fel = 0;
+            for (const f of filer) {
+              const h = c.createHash("sha256").update(fs.readFileSync("blandning/" + f.fil)).digest("hex");
+              console.log(`${f.fil}: ${h === f.sha256 ? "ok" : "FEL " + h}`); if (h !== f.sha256) fel++;
+            }
+            process.exit(fel ? 1 : 0);'
       # Varje migration för sig. De som kräver driftens tabeller (shadow_log m.fl. skapas av ingesten, inte av sql/) faller här
       # och skrivs ut; nästa steg kontrollerar att det kuvösen behöver finns — en saknad del fäller jobbet.
       - name: Migrationerna och klockan

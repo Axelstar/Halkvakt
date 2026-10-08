@@ -119,7 +119,7 @@ import { Z, andelSe, medelSe, skiljbar, utfallTak, grindutfall } from "./margina
 import { vaktdiagnos, led234, saknadeDygn, skrivSaknade } from "./vaktdiagnos.ts";
 import { RADVAKT_SQL, karantanSql } from "./snapshot-core.ts";
 
-export { BANDS };
+export { BANDS, MAX_KM };
 export function stats(rows: Eval[]) {
   const dec = rows.filter((r) => r.measured >= -5);      // decision band −5…+5 (≤5 already)
   const absDec = dec.map((r) => Math.abs(r.pred - r.measured));

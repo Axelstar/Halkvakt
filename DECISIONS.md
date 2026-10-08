@@ -9097,3 +9097,75 @@ handskriven och stäms av av morgonrutinen.
 utfall per byggsteg. Att visa blocket utanför totalen — skuggan och grindarna räknas redan, och kuvösen är samma sorts arbete.
 
 **Stomdokument:** KUV hela sidan, BED §4.2 och läget 7/10
+
+## #490 (8/10 2026) Prognoslagret bortom 15 km — tre läsningar förregistrerade på Bengts ja: FYSIK+BLANDNING i kuvösen som fil från Axel, samma kandidat med prognosväder, och trafiken per avståndsband (kort #308)
+
+**Beslut.** Bengt 8/10: *"ja till 1, 2 och 3"* — på förslagen efter hans fråga samma förmiddag: *"Det system som förordas är alltså
+fysik med blandning där banden till 15 km ligger rätt och det som vi ska lägga extrem kraft på är bandet 15-20 och över 20 km. Har du
+några bra förslag här?"* Svaret rättade premissen: det antagna är RÅ med spridningsgrinden (#474–#478), FYSIK+BLANDNING är en kandidat
+som aldrig körts i kuvösen, och talen 4,1 · 4,3 · 5,3 · 10,9 % gäller vädrets analys, inte en prognos (#485). De tre förslagen han sa
+ja till avgör om bandet bortom 15 km alls är rätt mål, innan kraft läggs där:
+1. **FYSIK+BLANDNING i kuvösen**, som en fil från Axel på samma sätt som FYSIK (#485) — det beslut som (c) i #485 sköt upp.
+2. **Samma kandidat med prognosväder**, så som den skulle köra i drift.
+3. **Andelen trafik per avståndsband**, ur vägdatalagrets väglagspunkter med ÅDT.
+Förslagen 4–7 (tystnad bortom 15 km, vägens tillstånd, grannländerna och termisk kartering i norr, MESAN) står kvar i bedömningen §4.2.
+
+**Läsning 1 och 2 — filerna Axel lämnar** (`kuvos/blandning-leverans.json`, releasen `kuvos-blandning-2024-25`). Samma form som FYSIK:
+`station_id,t_utc,fysik_c`, halvtimmar, vintern 2024/25 som `fysik-2024-25.csv.gz`, gzip, en fil per kandidat och läge. Kandidaterna är
+FYSIK+GRANNAR och FYSIK+BLANDNING ur hans replika 7/10 (`docs/FYSIKSPARET-FRYS-2026-10-07.md`): grannarnas uppmätta fel och blandningen
+räknas i hans kedja, inte i TypeScript, så att kuvösen bara läser en fil — det som gör (c) i #485 billigt. Två lägen:
+- **analys** — som FYSIK: ECMWF:s analys vid t.
+- **operativt** — bara den prognos som fanns utfärdad vid t, med ledtiden i filens läge (t.ex. `operativt +6 h`). Minst en fil med
+  ledtid +6 h eller mer. Grannarnas mätningar vid t får användas: de finns i realtid i driften. Rättelsen får läras om på prognosväder,
+  med samma utelämnade region.
+Målstationens egna mätningar är aldrig indata, vid målet eller i blandningen. Varje fil fryses med sha256, rader och stationer i
+manifestet innan knappen trycks; mätningen fäller en fil som inte stämmer. `fysik_c` har redan spann i värdevakten (−60…+60 °C).
+
+**Genomförandet.** `scripts/matningar/kuvos-blandning-2026-10-08.ts` (självtest i ci.yml; kuvos.yml hämtar releasen och kontrollerar
+summorna när mätningens namn innehåller `kuvos-blandning`). Underlaget exakt som FYSIK i #485: grind A:s WHERE med vakterna, senaste
+avläsning per halvtimmeshink, yta ≤ +5 °C, RÅ som kontroll, OFFSET som tak, bandet = RÅ:s närmaste bidragande granne. Varje fil blir
+kandidaten *namn (läge)*; måtten A1/A2/A3 per band och totalt på gemensamma punkter, frysflaggan, norr/söder om 62°.
+
+**Läsning 3 — trafiken per band** (`scripts/matningar/kuvos-trafik-per-band-2026-10-08.ts`, självtest i ci.yml). Ingen databas: de
+12 960 väglagspunkterna i `data/vagdata/vaglagspunkter.json` (var 2 km längs väglagsnätet, med NVDB:s ÅDT och lätta fordon 22–06) mot de
+854 stationerna i `data/vagdata/stationer.json`. Bandet är avståndet till närmaste station; väglängden räknas som 2 km per punkt och
+trafiken som ÅDT × 2 km (fordonskilometer per dygn). Banden 0–7 · 7–15 · 15–20 · 20–50 · > 50 km, hela landet och norr/söder om 62°.
+Körs lokalt efter att den här posten checkats in.
+
+**Förväntningar, skrivna före körningarna.**
+
+| | förväntan |
+| :-- | :-- |
+| 1 · RÅ (kontroll) | 7,4–7,6 % grova fel; annars läses inget annat |
+| 1 · FYSIK+GRANNAR, analys | 6,35–6,95 %; banden inom ±0,3 av 4,5 · 4,9 · 5,7 · 12,2 |
+| 1 · FYSIK+BLANDNING, analys | 5,7–6,3 %; banden inom ±0,3 av 4,1 · 4,3 · 5,3 · 10,9 |
+| 2 · FYSIK+BLANDNING, operativt ≥ +6 h | sämre än analysläget i varje band; totalt 6,5–9 %; banden 0–7 och 7–15 km över 5 % |
+| 3 · trafiken 0–7 km | 50–75 % av fordonskilometerna |
+| 3 · 7–15 km | 15–35 % |
+| 3 · 15–20 km | 2–10 % |
+| 3 · > 20 km (20–50 och > 50) | 2–10 %, mest norr om 62°; dess andel av väglängden större än dess andel av trafiken |
+
+Läsning 1 är som FYSIK en kontroll av att filen och kuvösen räknar på samma population, inget bevis för modellen: förväntningarna
+skrevs efter replikan. Ett tal mer än en procentenhet utanför spannet är ett fel i filen eller populationen och läses som det.
+Läsning 2 och 3 har inget facit i förväg.
+
+**Hur läsningarna läses — en läsning, inte en dom; beslutet är Bengts.**
+- Håller operativt läge banden 0–7 och 7–15 km på RÅ:s nivå eller bättre (≤ 5,2 %) och ligger bortom 20 km minst en procentenhet under
+  RÅ:s 13,6 %, är förregistreringen för vintern 2026/27 på SMHI/MET (#485) värd kraften bortom 15 km.
+- Tappar operativt läge fördelen i de närmaste banden är bandet bortom 15 km fel mål för den här modellen; kraften går då till
+  tystnaden bortom 15 km och vägens tillstånd (förslag 4 och 5 i §4.2).
+- Går under 5 % av trafiken bortom 20 km läggs kraften bortom 15 km i första hand på bandet 15–20 km och på tystnad bortom 20 km; går
+  över 10 % där är bandet ett mål i sig.
+
+**Alternativ som valdes bort.** (a) Grannlagret och blandningen i TypeScript i repot — en port ändrar talen och tar en vecka; filen är
+ärligare (samma skäl som #485 (a)). (b) Bara analysläget — då vet vi inte om fördelen överlever en prognos, och det är prognosen som
+körs i drift. (c) Trafiken ur shadow_log — den mäter bara betatestarnas resor; ÅDT täcker hela nätet.
+
+**Vad som INTE görs.** Inga trösklar, ingen drift, ingen kod ur fysikspåret i repot. Knappen för läsning 1 och 2 trycks på Bengts ord
+när Axels filer ligger i releasen med summorna i manifestet. Open-Meteo är icke-kommersiell också i operativt läge; läsning 2 mäter
+modellens känslighet för prognosfel, inte en driftsatt källa.
+
+**Följd.** Kort #308 på tavlan under Axel; prognoslagrets del i projektkartan får stegen *FYSIK+BLANDNING i kuvösen*, *Operativt läge* och
+*Trafiken per band*; kuvössidans §9 och bedömningens §4.2 följer. **Utfall** skrivs under den här posten.
+
+**Stomdokument:** KUV §5 och §9, BED §4.2
