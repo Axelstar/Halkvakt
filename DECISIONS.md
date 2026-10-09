@@ -9502,4 +9502,4 @@ och redan KALL-½ var sämre än RÅ. (b) Låta kartan stå öppen i §4.2 — e
 
 **Följd.** Prognoslagrets steg *Kallkartan* bär beslutet; kriging står ensam som fråga till Bengt och Axel i bedömningens §4.2.
 
-**Stomdokument:** KUV §5 och §9, BED §4.2
+**Stomdokument:** KUV §5 och §9, MAT §1 och §5 och §9, BED §4.2
