@@ -9352,3 +9352,29 @@ solen och nederbörden ur MET Nordic, stationernas snökoder och SMHI:s snödjup
 och fysiken kan lika gärna bära samma fel som givarna. Vakterna i driften är orörda.
 
 **Stomdokument:** KUV §4, BED §4.2
+
+## #495 (9/10 2026) Veckokopian av arkivet flyttar från GitHub-releaser till den privata hinken `arkiv` i Supabase (kort #312)
+
+**Beslut.** Bengt 9/10: *"gör a, b och c"*, där (b) var att bygga backupens nya förvar i Supabase. Skälet är det publika repot
+(kort #311): releaserna blir publika med repot, och veckokopian (`arkivbackup.yml`, kort #213) är en `pg_dump` av hela
+public-schemat — också `driver_facit` och `driver_miss`, testarnas svar och missar med tid och närmaste station.
+
+**Vad som byggs.** `arkivbackup.yml` dumpar och läser tillbaka som förut, men laddar sedan upp dumpen i delar om 45 MB
+(gratisnivåns tak är 50 MB per fil) till `arkiv/dump/`, hämtar delarna tillbaka och jämför sha256 med dumpen, och gallrar till de
+fyra senaste kopiorna. Den nya edge-funktionen `arkivdump` ger bara signerade adresser och gallrar; den rör aldrig själva filerna
+och avvisar namn utanför mönstret. Nyckeln är INGEST_KEY, som jobbet läser ur pg_cron:s eget jobb med den databasanslutning det
+redan har och maskerar i loggen — **ingen ny hemlighet i GitHub, inget för Axel att göra**. Releasesteget och gallringen av releaser
+är borta; de tre befintliga `arkiv-*`-releaserna raderar Bengt själv, när en kopia bevisligen ligger i hinken.
+
+**Avvägningen, sagd högt.** Kopian låg medvetet *utanför* Supabase. Nu ligger den hos samma leverantör och i samma projekt som
+databasen: försvinner projektet eller kontot försvinner kopian med det. Mot det står att den inte blir publik, och att det enda
+alternativet utan Axel — en krypterad release — kräver en nyckel som antingen ligger i databasen (och då försvinner med den) eller
+hos någon av oss. Den som vill ha en kopia utanför Supabase hämtar en med `lage=hamta` och lägger den på egen disk.
+
+**Alternativ som valdes bort.** (a) En privat repo för kopiorna — kräver en nyckel i Halkvakts hemligheter, och bara ägaren
+(Axel) kan lägga in den. (b) En krypterad release med en nyckel ur databasen — återläsningen dör med databasen. (c) Att behålla
+releaserna och inte göra repot publikt — det är Axels beslut på kort #311, och backupen ska inte vara skälet.
+
+**Gränser.** Fyra kopior, inte tolv. Hinken delas med kamerafacit (56 MB 9/10) och arkivexporten (8 MB) inom 1 GB.
+
+**Stomdokument:** MAT §1, BED §4.2

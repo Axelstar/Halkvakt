@@ -16,7 +16,7 @@ on:
         description: "Vilken funktion"
         type: choice
         default: publicera
-        options: [publicera, ingest-live, vakthund, skuggmotor, skuggrapport, facit-svar, arkivexport, kamerafacit, byggsignaler, alla]
+        options: [publicera, ingest-live, vakthund, skuggmotor, skuggrapport, facit-svar, arkivexport, arkivdump, kamerafacit, byggsignaler, alla]
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -45,7 +45,7 @@ jobs:
           if [ -z "$SUPABASE_ACCESS_TOKEN" ]; then
             echo "::error::SUPABASE_ACCESS_TOKEN saknas i GitHub Secrets — kort #78, Axel lägger in den"; exit 1
           fi
-          if [ "$FUNKTION" = alla ]; then F="publicera ingest-live vakthund skuggmotor skuggrapport facit-svar arkivexport kamerafacit byggsignaler"; else F="$FUNKTION"; fi
+          if [ "$FUNKTION" = alla ]; then F="publicera ingest-live vakthund skuggmotor skuggrapport facit-svar arkivexport arkivdump kamerafacit byggsignaler"; else F="$FUNKTION"; fi
           for f in $F; do
             echo "== deploy $f"
             supabase functions deploy "$f" --project-ref xmpfztykhyvhmrzsnjrc --no-verify-jwt
