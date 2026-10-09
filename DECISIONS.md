@@ -9825,3 +9825,38 @@ inte; då gäller regeln. Releaserna står i #499 och loggarna i #498.
 **Rättelse 9/10, före sammanslagningen.** Vakten kraschade i ci (37931141510): `skills/swift-testing-pro/references` är en symbolisk länk (mode 120000) till `../../references`, som inte finns, och `statSync` följer länken. På Windows checkas länken ut som en liten textfil, så vakten gick igenom lokalt. Nu `lstatSync`, som läser länken själv. **Läxa:** ett skript som går igenom `git ls-files` ska läsa med `lstat`, och ett grönt lokalt prov på Windows bevisar inget om symboliska länkar — det gör ci på Linux.
 
 **Stomdokument:** inga — regeln står i CLAUDE.md och vakten i ci; läget på kort #311 och #320 och i projektkartan (g-kassan)
+
+## #507 (9/10 2026) Norr och söder per band och vägt med trafiken — den gemensamma redovisningen, och RÅ, FYSIK och OFFSET som utgångsläge (kort #317 (a))
+
+**Beslut.** Bengt 9/10: *"ja till a nu, b väntar"* — på genomgången av kort #317 och #502. Principen i #502 (norr och söder var för
+sig, per band och vägt med trafiken) följdes fullt ut bara i nivå 1b (#505); RN (#481), FYSIK (#485) och kallkartan (#496) har bara
+totaler. (a) görs nu, som utgångsläge i samma form som det som kommer efter — nivå 2 (kort #319) och FYSIK+BLANDNING (kort #308).
+(b), frågan om norr mitt i vintern, väntar till november med skuggans vinter i norr som underlag.
+
+**Vad som byggs.**
+1. **Den gemensamma redovisningen** `scripts/matningar/regioner.ts`: grind A:s grova fel (> 2 °C) på gemensamma punkter, för alla, norr
+   och söder om 62°, per band (grind A:s ankKm) och vägt med trafiken (varje stations andel grova fel vägd med ÅDT × 2 km på
+   väglagspunkterna närmast stationen, #490). Varje kommande läsning av prognoslagret importerar den, så att principen följer med
+   av sig själv. Självtest i ci, motprovat tre gånger (regionfiltret av, trafikvikten som en etta — båda fäller; första versionen av
+   självtestet fångade inte regionfiltret, och fick ett prov till).
+2. **Läsningen** `scripts/matningar/kuvos-fysik-regioner-2026-10-09.ts`: underlaget och kandidaterna exakt som FYSIK i kuvösen (#485)
+   — grind A:s WHERE med vakterna, RÅ (utanOffset), FYSIK på RÅ:s punkter ur den frysta filen (sha256 mot manifestet), OFFSET som tak —
+   och redovisningen ur regioner.ts. Självtest i ci.
+
+**Förväntningar, skrivna före knappen.** Kontrollen är #485:s tal på samma punkter; ett tal mer än en halv procentenhet därifrån är ett
+fel i underlaget.
+
+| | RÅ | FYSIK | OFFSET |
+| :-- | --: | --: | --: |
+| alla, alla band (kontroll #485) | 7,51 % ± 0,5 | 9,85 % ± 0,5 | 5,5 % ± 0,5 |
+| norr / söder, alla band (kontroll #485) | 14,13 / 4,82 % ± 0,5 | 17,07 / 6,92 % ± 0,5 | — |
+| norr · 0–7 km / >20 km | 7–12 / 18–28 % | — / 18–30 % | — |
+| söder · 0–7 km / >20 km | 4–6 / 8–16 % | — | — |
+| vägt med trafiken: alla / norr / söder | 4,5–6,5 / 10–15 / 4–5,5 % | 6–8,5 % (alla) | 3,5–5 % (alla) |
+
+**Hur läsningen läses.** Ingen dom och inget val: talen är utgångsläget som nivå 2 och FYSIK+BLANDNING jämförs mot, per region och
+vägt med trafiken.
+
+**Kostnad.** En körning av kuvos.yml, omkring tio minuter, gratis (#503).
+
+**Stomdokument:** KUV §8 och §9, BED §4.2

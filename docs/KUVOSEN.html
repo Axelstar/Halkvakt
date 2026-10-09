@@ -398,7 +398,7 @@
     <li><b>Två serier för rösten, bestämda före filen.</b> De 20 skuggrutterna och hela väglagsnätet. De redovisas var för sig och slås aldrig ihop.</li>
     <li><b>Aldrig i driftens databas.</b> En vinter ryms inte där, och kuvösen ska inte kunna röra det apparna läser.</li>
     <li><b>Kalibrering och dom på skilda nätter.</b> Det som väljs på vintern 2024/25 döms på vintern 2026/27.</li>
-    <li><b>Norr och söder om 62° var för sig (9/10, #502).</b> Varje läsning av prognoslagret redovisar norr och söder om 62° för sig, också per band och vägt med trafiken i varje region. Norr bär ungefär 11 % av trafiken men väger mer i måtten per station. En kandidat eller tröskel får väljas per region, förregistrerad och med eget beslut.</li>
+    <li><b>Norr och söder om 62° var för sig (9/10, #502).</b> Varje läsning av prognoslagret redovisar norr och söder om 62° för sig, också per band och vägt med trafiken i varje region. Norr bär ungefär 11 % av trafiken men väger mer i måtten per station. En kandidat eller tröskel får väljas per region, förregistrerad och med eget beslut. Redovisningen är gemensam: <span class="mono">scripts/matningar/regioner.ts</span> (#507).</li>
     <li><b>Fyra tillägg innan något har körts (3/10).</b>
       <ul>
         <li>En del ovanpå de andra räknas som de räddningar bara den står för, och de falsklarm den lägger till, per natt inom 5 km från stationen, utan golv.</li>
@@ -419,6 +419,7 @@
         <tr><td>Vind och sikt</td><td>Startvärden</td><td><a href="#avsnitt-4">4</a></td></tr>
         <tr><td>Nederbördstypen igen</td><td>Ordlistan får <i>yes</i> och <i>freezing_rain</i> före nästa körning (#467)</td><td><a href="#avsnitt-4">4</a></td></tr>
         <tr><td>Väderkällan nivå 2: fysiken omkalibrerad på MET Nordic, mot FYSIK:s 9,85 %</td><td>Axels fil och val av källa (nivå 1b 9/10: MET Nordic 9,0 mot ECMWF 16,2 % grova fel i luften, #505)</td><td><a href="#avsnitt-5">5</a></td></tr>
+        <tr><td>Norr och söder per band och vägt med trafiken: RÅ, FYSIK och OFFSET</td><td>Körningen i kuvösen, förregistrerad 9/10 (#507, kort #317)</td><td><a href="#avsnitt-5">5</a></td></tr>
         <tr><td>Kriging</td><td>Bengts och Axels ord: prövas ensam eller läggs ned, sedan kallkartan lagts åt sidan (#481, #496, #497)</td><td><a href="#avsnitt-5">5</a></td></tr>
         <tr><td>FYSIK+BLANDNING och FYSIK+GRANNAR i kuvösen, i analysläge och med prognosväder +6 h</td><td>Axels filer i releasen (kort #308; förväntningarna i #490)</td><td><a href="#avsnitt-5">5</a></td></tr>
         <tr><td>Förregistreringen för vintern 2026/27 på SMHI/MET</td><td>Bengts beslut (bedömningen §4.2, #485)</td><td><a href="#avsnitt-5">5</a></td></tr>
