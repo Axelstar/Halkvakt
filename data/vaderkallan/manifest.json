@@ -1,0 +1,24 @@
+{
+ "kalla": "ECMWF IFS via Open-Meteos historiska arkiv (archive-api.open-meteo.com, models=ecmwf_ifs), CC BY 4.0 — Open-Meteo.com / ECMWF",
+ "period": [
+  "2024-10-31T00:00Z",
+  "2025-03-31T23:00Z"
+ ],
+ "punkter": "70 VViS-stationer med en SMHI-station inom 5 km (stationspar_vviss_smhi.csv)",
+ "plats": "data/vaderkallan/ i repot (releaser kan inte skapas från alla sessioner)",
+ "hamtad": "2026-10-09",
+ "skript": "scripts/matningar/vaderkallan-hamta-ecmwf-2026-10-09.py",
+ "beslut": "DECISIONS #504",
+ "filer": [
+  {
+   "fil": "ecmwf_2024-25.csv.gz",
+   "bytes": 2383264,
+   "sha256": "5783f31dd7f1fc527a4e4b072a31d4b6f3e9c7a94c4e19de253ceda029df05dd"
+  },
+  {
+   "fil": "stationspar_vviss_smhi.csv",
+   "bytes": 3762,
+   "sha256": "3e798cb812b8b5720e7d3b901e5ee23fdd149f3870c7a9bd85fe8292530758e3"
+  }
+ ]
+}
