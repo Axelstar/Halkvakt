@@ -24,6 +24,16 @@ export function dumpAv(fil: string): string | null {
   return m && NAMN.test(m[1]) ? m[1] : null;
 }
 
+/** Kuvösens filer som inte får ligga i en publik release (kort #311, DECISIONS #499): Trafikverkets leverans, som #438 lade i en
+ *  privat release. Namnet är `<release>/<fil>`, och filen hamnar i `kuvos/<release>/<fil>`; gallringen rör aldrig mappen. */
+export const KUVOSFIL = /^kuvos-[a-z0-9-]+\/[A-Za-z0-9][A-Za-z0-9_.-]*$/;
+export const KUVOSMAPP = "kuvos";
+
+export function kuvosnamn(fil: string): string {
+  if (!KUVOSFIL.test(fil) || fil.includes("..")) throw new Error(`ogiltigt kuvösnamn: ${fil}`);
+  return `${KUVOSMAPP}/${fil}`;
+}
+
 /** Vilka filer i mappen som ska bort: delarna av alla kopior utom de `behall` senaste. Namnen bär UTC-tiden och sorteras
  *  därför i tidsordning. Filer som inte är delar rörs aldrig. */
 export function attGallra(filer: string[], behall = BEHALL): string[] {

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { attGallra, delnamn, dumpAv, BEHALL } from "../supabase/functions/arkivdump/delar.ts";
+import { attGallra, delnamn, dumpAv, kuvosnamn, BEHALL } from "../supabase/functions/arkivdump/delar.ts";
 
 // Kort #312, DECISIONS #495: veckokopian i hinken arkiv, delad under 50 MB, de fyra senaste behålls.
 const namn = (d: string) => `halkvakt-arkiv-${d}T0317Z.dump`;
@@ -31,4 +31,12 @@ test("gallringen behåller de fyra senaste kopiorna med alla deras delar och rö
 test("färre kopior än fyra gallrar ingenting, och behall under 1 avvisas", () => {
   assert.deepEqual(attGallra([`${namn("2026-10-11")}.del00`]), []);
   assert.throws(() => attGallra([], 0));
+});
+
+// Kort #311, DECISIONS #499: Trafikverkets leverans lämnar den publika releasen för hinken, under kuvos/.
+test("kuvösens filer hamnar under kuvos/<release>/, och inget annat namn släpps igenom", () => {
+  assert.equal(kuvosnamn("kuvos-trv-2024-25/Halkvakt_2411.csv.gz"), "kuvos/kuvos-trv-2024-25/Halkvakt_2411.csv.gz");
+  for (const fel of ["kuvos-trv-2024-25/../dump/x", "kuvos-trv-2024-25/..", "kuvos-trv-2024-25/.dold", "dump/halkvakt-arkiv-2026-10-11T0317Z.dump",
+    "../kuvos-trv-2024-25/a.csv", "kuvos-trv-2024-25/a/b.csv", "kuvos-trv-2024-25/", "facit/bild.jpg", "KUVOS-trv/a.csv"])
+    assert.throws(() => kuvosnamn(fel), fel);
 });

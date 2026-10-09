@@ -6,8 +6,12 @@
 //   POST ?lage=ladda_upp  {namn, delar}  → { urls: [...] }   en adress per del, giltig i två timmar
 //   POST ?lage=hamta      {namn}         → { delar: [{fil, bytes, url}] }   för provet efter uppladdningen och för återläsning
 //   POST ?lage=gallra     {}             → { raderade: [...] }   behåller de fyra senaste kopiorna
+// Kuvösens filer som inte får ligga i en publik release (kort #311, DECISIONS #499) — Trafikverkets leverans — ligger i samma hink
+// under kuvos/<release>/<fil>, en fil per tillgång (alla under 50 MB):
+//   POST ?lage=kuvos_ladda_upp  {filer: ["kuvos-trv-2024-25/Halkvakt_2411.csv.gz", …]}  → { urls: [...] }
+//   POST ?lage=kuvos_hamta      {filer: [...]}                                          → { filer: [{fil, url}] }
 // Skyddet är INGEST_KEY i x-halkvakt-key, som pg_cron:s jobb redan bär; funktionen deployas med --no-verify-jwt.
-import { BEHALL, MAPP, NAMN, attGallra, delnamn, dumpAv } from "./delar.ts";
+import { BEHALL, MAPP, NAMN, attGallra, delnamn, dumpAv, kuvosnamn } from "./delar.ts";
 
 const SB = Deno.env.get("SUPABASE_URL")!;
 const SRK = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -67,6 +71,20 @@ Deno.serve(async (req) => {
       const borta = new Set(bort);
       const kvar = new Set(filer.filter((f) => !borta.has(`${MAPP}/${f}`)).map(dumpAv).filter((d) => d !== null)).size;
       return svar({ raderade: bort, kopior_kvar: kvar });
+    }
+    if (lage === "kuvos_ladda_upp" || lage === "kuvos_hamta") {
+      const filer = (kropp as { filer?: unknown }).filer;
+      if (!Array.isArray(filer) || !filer.length || filer.length > 20) return svar({ fel: "filer: 1–20 namn" }, 400);
+      const sokvagar = filer.map((f) => kuvosnamn(String(f)));   // kastar vid ett namn utanför mönstret, innan något signeras
+      if (lage === "kuvos_ladda_upp") {
+        const urls: string[] = [];
+        for (const s of sokvagar) urls.push(`${SB}/storage/v1${(await storage(`/object/upload/sign/${HINK}/${s}`, "POST", {})).url}`);
+        return svar({ urls });
+      }
+      const ut = [];
+      for (let i = 0; i < sokvagar.length; i++)
+        ut.push({ fil: filer[i], url: `${SB}/storage/v1${(await storage(`/object/sign/${HINK}/${sokvagar[i]}`, "POST", { expiresIn: 7200 })).signedURL}` });
+      return svar({ filer: ut });
     }
     return svar({ fel: `okänt läge: ${lage}` }, 400);
   } catch (e) {

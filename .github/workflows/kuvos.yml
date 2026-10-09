@@ -38,11 +38,24 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci
-      - name: Leveransen ur releasen, kontrollsummorna mot manifestet
+      # Leveransen ligger sedan 9/10 i den privata hinken `arkiv` i Supabase, inte i releasen, som blir publik med repot (kort #311,
+      # DECISIONS #499). Signerade adresser ur arkivdump; nyckeln ur pg_cron:s jobb som i arkivbackup.yml, maskerad.
+      - name: Leveransen ur hinken, kontrollsummorna mot manifestet
         shell: bash
-        env: { GH_TOKEN: "${{ github.token }}" }
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
         run: |
-          mkdir -p leverans && gh release download kuvos-trv-2024-25 --dir leverans --pattern 'Halkvakt_*.csv.gz'
+          set -euo pipefail
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          FILER=$(node -e 'console.log(JSON.stringify(require("./kuvos/leverans.json").filer.map((f) => "kuvos-trv-2024-25/" + f.packad)))')
+          curl -sS --fail-with-body -X POST "$FN?lage=kuvos_hamta" -H "x-halkvakt-key: $KEY" -H "Content-Type: application/json" -d "{\"filer\":$FILER}" > hamta.json
+          mkdir -p leverans
+          node -e 'for (const d of require("./hamta.json").filer) console.log(d.fil.split("/").pop() + " " + d.url)' | while read -r FIL URL; do
+            curl -sS --fail -o "leverans/$FIL" "$URL"
+          done
+          rm hamta.json
           node -e '
             const m = require("./kuvos/leverans.json"), c = require("crypto"), fs = require("fs");
             let fel = 0;

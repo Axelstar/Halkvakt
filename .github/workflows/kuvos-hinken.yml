@@ -1,0 +1,66 @@
+# Trafikverkets leverans ur releasen till hinken (kort #311, DECISIONS #499). Releasen kuvos-trv-2024-25 är privat bara så länge
+# repot är det (#438 lade den där för att den inte skulle bli publik); med ett publikt repo blir releasen publik. Knappen kopierar
+# de fem filerna till den privata hinken `arkiv` i Supabase under kuvos/kuvos-trv-2024-25/, hämtar tillbaka dem och jämför
+# sha256 mot kuvos/leverans.json. Därefter läser kuvos.yml leveransen ur hinken, och releasen kan raderas (Bengt).
+# Knapp, inte cron. Nyckeln läses ur pg_cron:s eget jobb som i arkivbackup.yml — ingen ny hemlighet i GitHub.
+name: kuvos-hinken
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency: kuvos-hinken
+jobs:
+  kopiera:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DATABASE_URL: "${{ secrets.DATABASE_URL }}"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Releasen hämtad och jämförd med manifestet
+        shell: bash
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          set -euo pipefail
+          mkdir -p leverans && gh release download kuvos-trv-2024-25 --dir leverans --pattern 'Halkvakt_*.csv.gz'
+          python3 - <<'PY'
+          import hashlib, json
+          m = json.load(open("kuvos/leverans.json", encoding="utf-8"))
+          fel = 0
+          for f in m["filer"]:
+              h = hashlib.sha256(open("leverans/" + f["packad"], "rb").read()).hexdigest()
+              print(f"{f['packad']}: {'ok' if h == f['packad_sha256'] else 'FEL ' + h}"); fel += h != f["packad_sha256"]
+          raise SystemExit(1 if fel else 0)
+          PY
+      - name: Till hinken, hämtad tillbaka och jämförd
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          read -r FN KEY < <(psql "$DATABASE_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          anrop() { curl -sS --fail-with-body -X POST "$FN?lage=$1" -H "x-halkvakt-key: $KEY" -H "Content-Type: application/json" -d "$2"; }
+          FILER=$(python3 -c "import json; print(json.dumps(['kuvos-trv-2024-25/' + f['packad'] for f in json.load(open('kuvos/leverans.json', encoding='utf-8'))['filer']]))")
+          anrop kuvos_ladda_upp "{\"filer\":$FILER}" > urls.json
+          python3 - <<'PY'
+          import json, subprocess
+          filer = json.load(open("kuvos/leverans.json", encoding="utf-8"))["filer"]
+          for f, url in zip(filer, json.load(open("urls.json"))["urls"]):
+              subprocess.run(["curl", "-sS", "--fail-with-body", "-X", "PUT", "-H", "Content-Type: application/octet-stream",
+                              "--data-binary", "@leverans/" + f["packad"], url], check=True, stdout=subprocess.DEVNULL)
+              print(f"uppladdad: {f['packad']}")
+          PY
+          # Beviset är inte uppladdningens kvitto utan filerna hämtade tillbaka ur hinken med manifestets sha256.
+          anrop kuvos_hamta "{\"filer\":$FILER}" > hamta.json
+          python3 - <<'PY'
+          import hashlib, json, urllib.request
+          sha = {"kuvos-trv-2024-25/" + f["packad"]: f["packad_sha256"] for f in json.load(open("kuvos/leverans.json", encoding="utf-8"))["filer"]}
+          fel = 0
+          for d in json.load(open("hamta.json"))["filer"]:
+              b = urllib.request.urlopen(d["url"], timeout=300).read()
+              ok = hashlib.sha256(b).hexdigest() == sha[d["fil"]]; fel += not ok
+              print(f"hämtad ur hinken: {d['fil']} ({len(b)} byte) — {'sha256 lika' if ok else 'FEL'}")
+          raise SystemExit(1 if fel else 0)
+          PY
+          echo "## Trafikverkets leverans i hinken arkiv/kuvos/kuvos-trv-2024-25/ — fem filer, sha256 lika efter hämtning" >> "$GITHUB_STEP_SUMMARY"

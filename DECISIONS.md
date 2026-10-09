@@ -9536,3 +9536,40 @@ kopiera till sammanfattningen — loggen läcker ändå. (c) Maskera all utskrif
 de pekar nu på DECISIONS #460, där talen står. Historiska hänvisningar till de sju körningarna i DECISIONS, STATUS och TAVLA står kvar.
 
 **Stomdokument:** inga — DB-knappen och Actions-loggarna beskrivs inte i de sju; läget står på kort #311 och #315 och i projektkartan (g-kassan)
+
+## #499 (9/10 2026) Repot görs publikt i dag — förberedelserna, det som blockerar och det Axel gör vid bytet (kort #311)
+
+**Beslut.** Bengt 9/10: *"vi kommer att göra repot publikt idag så jag vill att alla förberedelser så långt det går är gjorda"*.
+Bytet görs från Axels konto (repot är hans; Bengts konto har skriv- men inte adminrätt, så inställningarna nedan är Axels).
+
+**Genomsökt 9/10.** git-historiken (2 258 commits, alla grenar och PR-referenser): inga personnummer, telefonnummer eller testarnas rader; i commit-huvudena bara Bengts gmail (1 564 som författare, 876 som incheckare); gmail-adresser i fyra filers historik men inte i dagens filer; städernas adresser är funktionsadresser. Ärenden och PR:er (1 247 texter): rena. Flödena: inga pull_request_target-, workflow_run- eller issue_comment-triggers, de tre PR-flödena läser inga hemligheter, inga egna runners. Actions-loggarna: #498 (sju körningar raderade, spärren i DB-knappen). gitleaks
+över historik, ärenden och loggar: inga läckor (#495-förberedelsen och #498).
+
+**Gjort i den här ändringen.**
+- *Trafikverkets leverans lämnar releasen.* #438 lade den i en **privat** release, och villkoren för en publicering är okända; en release
+  i ett publikt repo är publik. `arkivdump` får två lägen (`kuvos_ladda_upp`, `kuvos_hamta`) för `kuvos/<release>/<fil>` i den privata
+  hinken `arkiv`, med en namnregel som inte släpper igenom något annat (prov i test/arkivdump.test.ts); knappen `kuvos-hinken.yml`
+  kopierar de fem filerna och jämför sha256 efter hämtning; kuvos.yml läser leveransen ur hinken. Efter beviset raderar Bengt releasen
+  `kuvos-trv-2024-25` och artefakten `kuvos-varningar` (varningar ur leveransen).
+- De övriga releaserna får bli publika: SMHI (CC BY 4.0), MET Nordic (NLOD/CC BY 4.0), MODIS (NASA, fri), FYSIK (Axels egen fil).
+  CC BY kräver att källan anges; releasernas texter bör säga det.
+
+**Blockerar, och kan inte lösas av förberedelser.** Föreningens handlingar (`docs/forening/`, och omnämnanden i DECISIONS, STATUS,
+TAVLA, bedömningen och Skyltfondens bilaga 1) namnger **två personer utöver Bengt och Axel**, med roller, i medlemsförteckningen och
+protokollet. Namnen finns också i historiken (tre commits och ett commit-meddelande), och historiken går inte att rensa: GitHub
+behåller PR-referenserna, och bara GitHubs support kan ta bort dem. Bytet kräver därför deras samtycke — eller att repot inte görs
+publikt i den här formen (ett nytt publikt repo utan historik är det andra alternativet, och det flyttar hemligheter, ärenden och
+pulsklockans adresser).
+
+**Bengt och Axel godtar eller inte** (kan inte ändras utan att skriva om historiken): Bengts gmail i commit-huvudena; de fyra
+dokumenten om namngivna motparter (Trafikverksanmälningarna, Nira-utredningen, Skyltfondens bilagor, städernas citerade svar);
+föreningens och Skyltfondens handlingar; marknadsföringens utkast om samarbetspartners.
+
+**Axel vid bytet** (Settings): Actions → *Fork pull request workflows from outside collaborators* → *Require approval for all external
+contributors*; Actions → *Workflow permissions* → *Read repository contents*; Code security → *Secret scanning* och *Push protection*
+på; Branches → skydd på `main` (PR och gröna ci och md-vakt). Därefter: kassavakten visar 0 USD debiterat (kort #311:s Verify).
+
+**Alternativ.** (a) Flytta releaserna till ett privat systerrepo — kräver en ny nyckel i GitHub, och nycklarna är Axels. (b) Radera
+leveransen helt — kuvösen behöver den för FYSIK+BLANDNING (kort #308). (c) Skriva om historiken — löser inte PR-referenserna.
+
+**Stomdokument:** BED §4.2
