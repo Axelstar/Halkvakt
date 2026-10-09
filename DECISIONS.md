@@ -9378,3 +9378,5 @@ releaserna och inte göra repot publikt — det är Axels beslut på kort #311, 
 **Gränser.** Fyra kopior, inte tolv. Hinken delas med kamerafacit (56 MB 9/10) och arkivexporten (8 MB) inom 1 GB.
 
 **Stomdokument:** MAT §1, BED §4.2
+
+**Utfall (9/10 06:12, i drift).** Arkivdump deployad 9/10 (37882553751, anrop utan nyckel ⇒ 403); knappen arkivbackup 37882625889 på dea07ee: dumpen 56 MB, 37 tabeller återlästa (1 445 591 rader på båda sidor), uppladdad i två delar och hämtad tillbaka med samma sha256, nyckeln inte synlig i loggen; de tre arkiv-releaserna raderade av Bengt 9/10, bara kuvos-* kvar. Dumpen var redan 56 MB, över gratisnivåns 50 MB per fil — utan uppdelningen hade första uppladdningen fallit (39 MB 4/10). Återläsningens två fel, *schema public already exists* och *role anon does not exist*, är de väntade från förut.
