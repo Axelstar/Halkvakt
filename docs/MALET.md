@@ -63,7 +63,7 @@ Plikterna som återkommer (nycklar, databasens storlek, Actions-kassan, Ubuntu-b
 | april 2027 | enkät och gruppintervju 1; M4 steg 2 före rapporten | ansökan AP3, AP4 |
 | apr–jun 2027 | rapport och spridning | ansökan AP5 |
 | vintern 2027/28 | prognosen driftsatt om dom 2 höll; testförarnas andra vinter | ansökan AP2, AP3 |
-| före 31/3 2028 | föreningens första årsmöte | `docs/forening/KORSCHEMA.md` |
+| ~~före 31/3 2028~~ | ~~föreningens första årsmöte~~ — föreningen bildades aldrig (Bengt 9/10, DECISIONS #500) | — |
 | april 2028 | enkät 2 och slutrapport; projektet slutar 30/4 | ansökan |
 
 Blindning: fram till domen redovisas antal, inte andelar. En tröskel får skärpas men aldrig lättas när utfallet är sett.

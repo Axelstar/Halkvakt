@@ -5971,8 +5971,8 @@ gången var det en KLARAR som var artefakten.
 Skyltfonden för en ideell förening under bildande"*). Ersätter #395 (sökande Bengt som privatperson) och spår B i #396. Körschemat
 följer spår A, men med mötet redan 29/9 och ansökan 30/9 (reserv 1/10).
 
-**Personerna.** Bengt Lagerlöf ordförande och firmatecknare, Axel Lagerlöf kassör och firmatecknare, Harald Lagerlöf styrelseledamot
-tillika sekreterare, Susanne Horstmann revisor. Bengt skrev *"medlem"* om Harald; det är läst som ledamot i styrelsen, eftersom
+**Personerna.** Bengt Lagerlöf ordförande och firmatecknare, Axel Lagerlöf kassör och firmatecknare, [namn borttaget] styrelseledamot
+tillika sekreterare, [namn borttaget] revisor. Bengt skrev *"medlem"* om [namn borttaget]; det är läst som ledamot i styrelsen, eftersom
 stadgarna § 11 kräver minst tre ledamöter, och rättas om det är fel. Alla fyra är medlemmar från mötet, så ingen har över 25 % av
 rösterna och föreningen har normalt ingen verklig huvudman att redovisa.
 
@@ -9554,16 +9554,11 @@ Bytet görs från Axels konto (repot är hans; Bengts konto har skriv- men inte 
 - De övriga releaserna får bli publika: SMHI (CC BY 4.0), MET Nordic (NLOD/CC BY 4.0), MODIS (NASA, fri), FYSIK (Axels egen fil).
   CC BY kräver att källan anges; releasernas texter bör säga det.
 
-**Blockerar, och kan inte lösas av förberedelser.** Föreningens handlingar (`docs/forening/`, och omnämnanden i DECISIONS, STATUS,
-TAVLA, bedömningen och Skyltfondens bilaga 1) namnger **två personer utöver Bengt och Axel**, med roller, i medlemsförteckningen och
-protokollet. Namnen finns också i historiken (tre commits och ett commit-meddelande), och historiken går inte att rensa: GitHub
-behåller PR-referenserna, och bara GitHubs support kan ta bort dem. Bytet kräver därför deras samtycke — eller att repot inte görs
-publikt i den här formen (ett nytt publikt repo utan historik är det andra alternativet, och det flyttar hemligheter, ärenden och
-pulsklockans adresser).
+**Föreningens handlingar** (`docs/forening/`) namngav två personer utöver Bengt och Axel. Föreningen bildades aldrig, så handlingarna och namnen tas ur dagens filer — se #500, som också säger vad som står kvar i historiken.
 
 **Bengt och Axel godtar eller inte** (kan inte ändras utan att skriva om historiken): Bengts gmail i commit-huvudena; de fyra
 dokumenten om namngivna motparter (Trafikverksanmälningarna, Nira-utredningen, Skyltfondens bilagor, städernas citerade svar);
-föreningens och Skyltfondens handlingar; marknadsföringens utkast om samarbetspartners.
+Skyltfondens handlingar; marknadsföringens utkast om samarbetspartners; de två namnen i historiken (#500).
 
 **Axel vid bytet** (Settings): Actions → *Fork pull request workflows from outside collaborators* → *Require approval for all external
 contributors*; Actions → *Workflow permissions* → *Read repository contents*; Code security → *Secret scanning* och *Push protection*
@@ -9573,3 +9568,20 @@ på; Branches → skydd på `main` (PR och gröna ci och md-vakt). Därefter: ka
 leveransen helt — kuvösen behöver den för FYSIK+BLANDNING (kort #308). (c) Skriva om historiken — löser inte PR-referenserna.
 
 **Stomdokument:** BED §4.2
+
+## #500 (9/10 2026) Föreningens handlingar ur repot — föreningen bildades aldrig
+
+**Beslut.** Bengt 9/10: *"föreningen blev aldrig verklighet så det är helt och hållet oanvändbar info i dem"* — på frågan om det som
+gäller föreningen kan lyftas ut inför bytet till publikt repo (#499). `docs/forening/` (stadgar, kallelse, protokoll, medlemsförteckning,
+SKV 8400-arbetsbladet, körschemat) tas bort, och de två namnen utöver Bengt och Axel ersätts med *[namn borttaget]* i DECISIONS, STATUS,
+TAVLA, bedömningen och Skyltfondens bilaga 1. Årsmötesraden i MALET och Skatteverksraden i bedömningen stryks. Omnämnanden av föreningen
+i övrigt står kvar som historik (#396, #400, #404, #410).
+
+**Det som står kvar i historiken.** Namnen finns i varje version av filerna på main från 3ecbeec (1/10) — 165 commits — och i två
+commits på PR-grenar (2202df1, 765e578; den första också i commit-meddelandet), och 151 PR-referenser når dem. GitHubs kodsök läser
+bara huvudgrenens aktuella filer, så namnen syns inte i en sökning, men den som bläddrar i historiken eller klonar repot når dem.
+Att ta bort dem helt kräver att historiken skrivs om (alla commits sedan 1/10 får nya hashar; 161 hänvisningar i DECISIONS, STATUS,
+TAVLA, bedömningen och projektkartan pekar på dem som bevis, och varje klon måste göras om) och att GitHubs support rensar
+PR-referenserna, vilket tar dagar. Valet — godta resten i historiken och byta i dag, eller skriva om och vänta — är Bengts och Axels.
+
+**Stomdokument:** BED §4.2 och §2
