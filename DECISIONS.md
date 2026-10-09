@@ -9681,6 +9681,8 @@ stängd av vakten själv.
 **Kvar.** Axel bekräftar *Secret scanning* och *Push protection* (punkt 8 i #501; syns bara för admin). Kort #311 stängs när
 kassavakten visar 0 USD debiterat för november. Oktobers minuter före bytet står kvar: omkring 700 debiterade, ungefär 6 USD av taket 35.
 
+**Utfall (9/10 11:07 UTC).** Vakthund deployad från 63d9422 (37916879782); kassavaktens räkning 9/10 11:07 UTC: 2 728 min sedan 1/10, debiterat 728 min = 5,82 USD av taket 35, prognos 6 USD, *"Repot är publikt sedan 2026-10-09 09:45 UTC"*, och issue #701 stängd av vakten själv 11:07:19 (*"Stänger — god marginal igen"*). Taket nås inte i oktober.
+
 **Stomdokument:** BED §4.2
 
 ## #504 (9/10 2026) Väderkällan för fysikspåret, nivå 1 — MET Nordic ligger närmare SMHI:s mätningar än ECMWF via Open-Meteo
