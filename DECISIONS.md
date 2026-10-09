@@ -9892,3 +9892,51 @@ följer söderns avståndstrappa, och det gör den inte.
 Punkt 1 och 3 är underlag för (b) i november.
 
 **Stomdokument:** KUV §8 och §9, BED §4.2
+
+## #508 (9/10 2026) Fysikkoden i repot — publik på Bengts beslut, fryst med samma sha256 som FYSIKSPARET-SVAR §1, utan data (kort #319)
+
+**Beslut.** Bengt 9/10, väg (b) för nivå 2 av väderkällan (*"vi måste be axel skicka fysikmodellens kod från molnet"*): koden
+läggs i repot och körs här. Axel lämnade valet till Bengt 9/10. Det ersätter Axels önskan 7/10 i #485 att hålla koden utanför repot
+och bara leverera dess utdata som fil — den stod när repot var privat och koden bara fanns i molnsessionen; sedan 9/10 är repot
+publikt (#503) och publik kod är rätt, så länge ingen data följer med (#506). PR:en kommer från Axels fysiksession, där koden skrevs.
+
+**Vad som ligger i `fysik/`.** De tolv Bengt bad om — `prep.py`, `fetch_ifs.py`, `fetch_ifs2.py`, `physics.py`, `calib2.py`,
+`common.py`, `layers.py`, `v4.py`, `expA.py`, `kuvos_replica.py`, `roadtest.py`, `fingeravtryck.py` — och `params_v2.json`, plus
+sex filer som kedjan inte går att köra utan och som därför följer med: `prep_raw.py` (råuttaget kuvösreplikan läser), `fetch_elev.py`,
+`geofeat.py`, `geofeat2.py`, `roadjoin.py` (höjd, terräng, skog, vägdata — `v4.py` läser deras filer) och `utdata_fysik.py` (FYSIK som
+fil till releasen). `README.md` med ordning, tider, minne och sökvägar; `requirements.txt` med exakta versioner (Python 3.13.16,
+numpy 2.5.3, pandas 3.0.5, scipy 1.18.1, scikit-learn 1.9.1, pyarrow 25.0.1; rasterio 1.5.2, geopandas 1.2.0, pyogrio 0.13.0,
+shapely 2.1.2 bara för terräng och vägdata); `.gitignore` som spärrar data; `SHA256SUMS`.
+
+**Kontrollen.** Filerna är byte för byte de som kördes: `physics.py 32972b71…`, `params_v2.json 65a431c4…`, `common.py a76d799c…`,
+`layers.py 14619655…`, `v4.py 2bf71bf5…` — samma som FYSIKSPARET-SVAR §1 — och `expA.py 81a8085c…`, `kuvos_replica.py c640619d…`.
+`cd fysik && sha256sum -c SHA256SUMS` körs i ci.yml: en ändring i de frysta filerna är en ny modell och fäller bygget tills den fått
+ett nytt frysdokument och ett nytt beslut. Nivå 2 görs som nya filer, inte som ändringar i dessa. Priset: de frysta filerna bär sina
+absoluta sökvägar (`/home/claude/fys`), så kedjan körs genom en länk (README).
+
+**Vad som INTE följer med** (CLAUDE.md *PUBLIKT REPO*): inga VViS-filer, ingen ECMWF-cache, inga `.npy`, inga `oof`-filer, inga
+parquet, inga loggar; publikvakten går grön (926 filer). Trafikverkets leverans ligger i hinken; det som räknats ur den rad för rad
+(`oof_A2.npy`, `B_sp.npy`, `fysik-2024-25.csv.gz`) är releaser eller hinken.
+
+**De tre fälten MET Nordic saknar — svaret** (README, avsnittet om fälten). Fysiken (`physics.py`) läser inget av dem; bara den
+inlärda rättelsen gör det, som 6 av 70 särdrag. Uppmätt 7/10 (`ablate.py`, A1-konfigurationen): ensamma värda 0,7 procentenheter
+(12,9 → 12,2 %); bidraget ovanpå väg och terräng inte mätt separat. Rekommendation, Axels: **snödjup** ersätts av kolumnens eget
+snötäcke `swe` (finns redan som särdrag; snöfallet härleds ur nederbörd vid luft ≤ +1 °C, MET Nordic har ingen snöfallskolumn);
+**låga moln** ersätts av MET Nordics uppmätta långvåg — effektiv himmelsemissivitet som särdrag, och i fysiken `Lsky` direkt ur
+långvågen i stället för Brutsaert-skattningen, den största vinsten med bytet; **marktemperatur** ersätts av kolumnens eget 5 cm-lager
+(räknas redan, lämnas inte ut — en rads ändring i nivå 2:s kopia) eller stryks. Daggpunkten härleds ur fukten (Magnus). Allt är en
+omkalibrering: `calib2.py` på MET Nordic ger nya parametrar och `expA.py` en ny rättelse, och den förregistreras som egen kandidat
+före knappen (kort #319). Går de tre bort helt kostar det högst 0,7 procentenheter i rättelsen — det är inte där nivå 2 avgörs.
+
+**Körning** (README): hela kedjan från tomt ~3–4 h klocktid, det mesta väntan på Open-Meteo och rastrarna; med cachen ~50 min, varav
+`expA.py` 45 min. Minne uppmätt 9/10: 2,6 GB RSS till och med första veckets designmatris; 4 GB räcker.
+
+**Alternativ som valdes bort.** (a) Bara de tolv filerna — kedjan stannar på `v4.py` utan höjd, terräng och vägdata; de sex följer
+med och är märkta i README, Bengt kan stryka dem. (b) Byta sökvägarna till relativa — hade ändrat hasharna; länken är billigare.
+(c) Lägga `final.py` (B_sp bakom de 23 %) med — talet är återräknat i `fingeravtryck.py` mot båda modellerna (SVAR §5), så
+`roadtest.py` står som källa utan att vara ett steg.
+
+**Vad som INTE görs.** Ingen omkalibrering i den här PR:en, inget utfall, inga trösklar. Nivå 2 är kort #319: nya filer, egen
+förregistrering, knappen på Bengts ord.
+
+**Stomdokument:** KUV §6, BED §4.2

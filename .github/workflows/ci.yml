@@ -89,6 +89,8 @@ jobs:
           node --experimental-strip-types scripts/matningar/regioner.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-fysik-regioner-2026-10-09.ts --sjalvtest
           node --experimental-strip-types scripts/publikvakt.ts
+          # Fysikkoden är fryst (DECISIONS #508): de fem filerna bär samma sha256 som FYSIKSPARET-SVAR §1, annars är det inte den frysta versionen.
+          (cd fysik && sha256sum -c SHA256SUMS)
           node --experimental-strip-types scripts/matningar/kuvos-metnordic-ecmwf-1b-2026-10-09.ts --sjalvtest
       # Generatorn gled isär från vektorfilerna tre gånger (31/8, 2/9, 13/9) utan att någon vakt såg det (#195).
       # Den skriver bara filer vars innehåll ändrats och fäller själv på en vektorfil utan scenario.

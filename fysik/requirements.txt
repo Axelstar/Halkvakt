@@ -1,0 +1,12 @@
+# Fysikspårets kedja, exakta versioner ur Axels fysiksession 9/10 2026 (python3 -m pip freeze, bara det kedjan importerar).
+# Python 3.13.16. Installera: python3 -m pip install -r fysik/requirements.txt
+numpy==2.5.3
+pandas==3.0.5
+scipy==1.18.1
+scikit-learn==1.9.1
+pyarrow==25.0.1
+# bara geofeat.py, geofeat2.py (rasterio) och roadjoin.py (geopandas, pyogrio, shapely):
+rasterio==1.5.2
+geopandas==1.2.0
+pyogrio==0.13.0
+shapely==2.1.2

@@ -1,0 +1,10 @@
+# PUBLIKT REPO (CLAUDE.md, DECISIONS #506): ingen data följer med koden. Trafikverkets leverans och allt som räknats ur den
+# rad för rad ligger i hinken arkiv; ECMWF-cachen, parquet, modellarrayer, utfall och loggar stannar i arbetskatalogen.
+data/
+*.npy
+*.parquet
+*.csv
+*.csv.gz
+*.log
+results*.json
+names_v4.json
