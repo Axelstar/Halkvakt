@@ -22,6 +22,15 @@
 //                                    Beviset är issuen, inte utskriften.
 import pg from "pg";
 import { readFileSync } from "node:fs";
+import { testarvakt } from "./testarvakt.ts";
+
+/** Skriver ut svaret på en bevis- eller lässats — utom rader ur testartabellerna (kort #315, DECISIONS #498). */
+function skrivSvar(sats: string, r: pg.QueryResult): void {
+  const vagrat = testarvakt(sats, r.fields ?? [], r.rows.length);
+  if (vagrat) { console.log(`  ${vagrat}`); process.exitCode = 1; return; }
+  for (const row of r.rows) console.log("  " + JSON.stringify(row));
+  if (!r.rows.length) console.log("  (inga rader)");
+}
 
 const url = process.env.DATABASE_URL;
 if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
@@ -44,8 +53,7 @@ try {
     for (const sats of bevis.split("\n").map((s) => s.trim()).filter(Boolean)) {
       const r = await pool.query(sats);
       console.log(`\nbevis: ${sats}`);
-      for (const row of r.rows) console.log("  " + JSON.stringify(row));
-      if (!r.rows.length) console.log("  (inga rader)");
+      skrivSvar(sats, r);
     }
   } else if (atgard === "las") {
     // Läsläge (kort #263, DECISIONS #412). Vakten är READ ONLY, inte rollbacken: Postgres vägrar
@@ -62,8 +70,7 @@ try {
       for (const sats of satser) {
         const r = await client.query(sats);
         console.log(`\nläs: ${sats}`);
-        for (const row of r.rows) console.log("  " + JSON.stringify(row));
-        if (!r.rows.length) console.log("  (inga rader)");
+        skrivSvar(sats, r);
       }
       console.log(`\nlas: ${satser.length} sats(er) lästa i en READ ONLY-transaktion som rullas tillbaka — inget skrivet`);
     } catch (e) {

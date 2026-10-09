@@ -9503,3 +9503,36 @@ och redan KALL-½ var sämre än RÅ. (b) Låta kartan stå öppen i §4.2 — e
 **Följd.** Prognoslagrets steg *Kallkartan* bär beslutet; kriging står ensam som fråga till Bengt och Axel i bedömningens §4.2.
 
 **Stomdokument:** KUV §5 och §9, MAT §1 och §5 och §9, BED §4.2
+
+## #498 (9/10 2026) Testarvakten i DB-knappen: rader ur testartabellerna skrivs aldrig ut i Actions (kort #315)
+
+**Beslut.** Bengt 9/10: *"den här spärren var nödvändig vid publikt eller hur. om den var nödvändig så ja"*. Den är nödvändig:
+loggskanningen inför ett publikt repo (kort #311) fann testarnas svar och missar i sju körningar av DB-knappen — varnings-id,
+station och klockslag, alltså ungefär var och när en testare körde. Loggarna raderades, men sammanfattningen på körningssidan bar
+samma rader (DB-knappen kopierar sin utskrift dit med `tee -a "$GITHUB_STEP_SUMMARY"`), så Bengt raderade de sju körningarna helt
+9/10. Utan en spärr kommer raderna tillbaka nästa gång någon läser tabellerna med knappen, och med ett publikt repo ser vem som
+helst dem.
+
+**Regeln** (`scripts/testarvakt.ts`, i `scripts/dbknapp.ts` för både `las` och `migrera`:s bevisrader). En sats som nämner
+`driver_facit` eller `driver_miss` får skriva ut sitt svar bara om det är högst en rad där varje kolumn är ett tal, bedömt efter
+Postgres typ — ett stationsnummer som text eller en tidpunkt släpps inte. Annars skrivs *VÄGRAT* med antalet rader och namnen på de
+kolumner som inte är tal, inga värden, och körningen faller (steget kör med `pipefail`). Ett antal går alltid: `SELECT count(*) FROM
+driver_facit WHERE received_at > now() - interval '2 hours'` bevisar att ett tryck kommit fram. Den som behöver se raderna läser
+dem i Supabase SQL-editor, där inget hamnar i en logg. Inga vyer eller funktioner läser tabellerna (kontrollerat 9/10), så
+tabellnamnen räcker.
+
+**Bevis.** Självtest i ci.yml med elva fall; motprovat två gånger — spärren avslagen släpper `SELECT *`, radgränsen borttagen släpper
+flera rader, och självtestet fäller båda.
+
+**Vad den inte gör.** Den stoppar misstag, inte avsikt: den som gör om ett id till ett tal får ut det. Andra flöden skriver inte ut
+testarnas rader (loggskanningen 9/10: inga träffar utanför DB-knappen, inga förare-id i textform). Vakthundens rad *förarfacit:
+N svar (senast …)* är ett antal och en tidpunkt, utan plats, och står kvar.
+
+**Alternativ.** (a) En egen databasroll för knappen utan rätt att läsa tabellerna — databasen vägrar själv, också vid avsikt. Starkare,
+men kräver en ny roll och en ny hemlighet i GitHub, och hemligheterna är Axels; ett senare steg om repot blir publikt. (b) Sluta
+kopiera till sammanfattningen — loggen läcker ändå. (c) Maskera all utskrift i läsläget — knappen blir oanvändbar som bevis.
+
+**Följd.** Kort #315 klart i samma commit. Projektkartans bevis för förarsvaren pekade på körning 37249631052, som är raderad;
+de pekar nu på DECISIONS #460, där talen står. Historiska hänvisningar till de sju körningarna i DECISIONS, STATUS och TAVLA står kvar.
+
+**Stomdokument:** inga — DB-knappen och Actions-loggarna beskrivs inte i de sju; läget står på kort #311 och #315 och i projektkartan (g-kassan)
