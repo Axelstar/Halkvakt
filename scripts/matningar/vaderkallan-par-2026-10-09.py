@@ -9,7 +9,7 @@ for r in csv.DictReader(gzip.open(d+'/smhi_p1_2024-25.csv.gz','rt')):
     sm.setdefault(r['station_id'],(float(r['lat']),float(r['lon'])))
 def km(a,b,c,e):
     return 6371*2*math.asin(math.sqrt(math.sin(math.radians(c-a)/2)**2+math.cos(math.radians(a))*math.cos(math.radians(c))*math.sin(math.radians(e-b)/2)**2))
-out=csv.writer(open(d+'/par.csv','w')); out.writerow(['vviss','smhi','km','lat','lon','ruta_lat','ruta_lon'])
+out=csv.writer(open(d+'/par.csv','w'),lineterminator='\n'); out.writerow(['vviss','smhi','km','lat','lon','ruta_lat','ruta_lon'])
 n=0
 for v in vv:
     la,lo=float(v['lat']),float(v['lon'])
