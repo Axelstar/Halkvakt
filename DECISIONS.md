@@ -9682,3 +9682,32 @@ stängd av vakten själv.
 kassavakten visar 0 USD debiterat för november. Oktobers minuter före bytet står kvar: omkring 700 debiterade, ungefär 6 USD av taket 35.
 
 **Stomdokument:** BED §4.2
+
+## #504 (9/10 2026) Väderkällan för fysikspåret, nivå 1 — MET Nordic ligger närmare SMHI:s mätningar än ECMWF via Open-Meteo
+
+**Läsning, inget val.** Axel 9/10: *"gör du inte en utvärdering analys först av vilken vi ska ta hem"* — och *"gör nivå 1 först"*.
+Fysikspåret är kalibrerat på ECMWF IFS ur Open-Meteos arkiv (#485), som #485 säger inte får bära driften. Innan en ersättare väljs:
+vilken källa ligger närmast verkligheten? Nivå 1 jämför källorna mot SMHI:s egna mätningar; nivå 2 är Axels modell omkalibrerad på
+den valda källan i kuvösen.
+
+**Upplägg.** De 70 VViS-stationer som har en SMHI-station inom 5 km (18 norr, 52 söder om 62°). MET Nordic Analysis i rutan närmast
+(`kuvos-metnordic-2024-25`, #480) och ECMWF IFS ur Open-Meteos arkiv i samma punkt (hämtad 9/10, `data/vaderkallan/`), mot SMHI:s
+mätning samma timme (`kuvos-smhi-2024-25`, #441): lufttemperatur, total molnmängd (113 utesluten), nederbörd 1 h; bara timmar där
+alla tre finns. Skript `scripts/matningar/vaderkallan-{par,hamta-ecmwf,jamforelse}-2026-10-09.py`; rapport
+`docs/VADERKALLAN-JAMFORELSE-2026-10-09.md`.
+
+**Utfall (grova fel i luften, > 2 °C).** Alla timmar ECMWF 16,0 %, MET Nordic 8,7 %; frost 25,8 mot 15,2 %; nära noll (−3…+2 °C)
+11,6 mot 4,5 %; norr 28,4 mot 20,4 %; söder 11,1 mot 4,1 %; sträng kyla (≤ −15 °C) 67,0 mot 64,6 % — båda för varma, +3,5 och
++2,9 °C. Molnen: medelfel 26,2 mot 23,8 pe, falskt klar 15,1 mot 11,5 %, klara timmar i norr hittade 24,2 mot 37,7 %. Nederbörden:
+hittad 77,6 mot 71,7 %, falsklarm 45,4 mot 31,3 %.
+
+**Förbehåll.** MET Nordic läser in SMHI:s stationer i analysen, så facit är inte helt oberoende för den; försprånget krymper inte med
+avståndet till stationen (0–2 km 18,2 mot 13,4 %, 3,5–5 km 17,1 mot 8,9 %), men inläsningen går inte att utesluta. Ett oberoende
+facit är VViS-stationernas egen luft och daggpunkt i kuvösen. Måttet är fysikens indata, inte vägytan; analys, inte prognos
+(+1…+6 h omätt, #490); daggpunkt och vind saknar SMHI-facit och är inte jämförda.
+
+**Vad som INTE görs.** Ingen källa väljs, ingen förregistrering, ingen omkalibrering. Valet är Axels och står i bedömningens §4.2,
+med frågan till Bengt om en körning mot VViS-facit i kuvösen. Data: ECMWF-filen ligger i `data/vaderkallan/` (2,4 MB, sha256 i
+`manifest.json`) eftersom releaser inte kunde skapas från sessionen; källa Open-Meteo.com / ECMWF, CC BY 4.0.
+
+**Stomdokument:** BED §4.2
