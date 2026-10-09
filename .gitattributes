@@ -16,3 +16,7 @@
 # Undantaget: Windows batch. cmd.exe vill ha CRLF, och android/gradlew.bat är den enda.
 *.bat text eol=crlf
 *.cmd text eol=crlf
+
+# Releasefiler som prövas mot sin sha256 lagras byte för byte: kallkartans csv skrevs med CRLF (Pythons csv-modul), och
+# normaliserad till LF bär den en annan summa än releasens manifest (9/10, DECISIONS #496).
+data/kallkartan/*.csv -text
