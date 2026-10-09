@@ -80,6 +80,17 @@ Define success criteria. Loop until verified.
 **Language:** code + comments in English; all user-facing strings in `strings/sv.xml`
 first, English second.
 
+## PUBLIKT REPO (Bengts ja 9/10 — repot publikt sedan 9/10, DECISIONS #499–#503, #506)
+Allt i repot är publikt och går inte att ta tillbaka: filerna, historiken, ärendena, PR:erna, releaserna och Actions-loggarna.
+- **Får ligga här:** kod, parametrar, dokument, och öppna data med fri licens och källhänvisning (Trafikverkets öppna API och NVDB,
+  SMHI, MET Nordic, ECMWF via Open-Meteo, NASA, OpenStreetMap).
+- **Får aldrig ligga här** — varken i en fil, en release, en logg eller ett ärende: Trafikverkets leverans och allt som räknats ur den
+  rad för rad (den ligger i hinken `arkiv`); testarnas svar och missar (DB-knappen spärrar dem, #498); hemligheter; personuppgifter
+  (namn på privatpersoner, privata e-postadresser, telefonnummer). Ett aggregat per station är inte rad för rad.
+- Varje fil under `data/` står i `data/KALLOR.json` med källa och licens; publikvakten (`scripts/publikvakt.ts`, i ci) fäller en fil som
+  saknas där, en fil över 20 MB och kända mönster (Trafikverkets leveransfiler, `.npy`, `oof`, exporter av testarnas svar).
+- Osäker? Lägg det i hinken, inte i repot, och fråga.
+
 ## Session protocol (self-steering)
 Every session, in order:
 1. Run the kartsynk first (`node --experimental-strip-types scripts/kartsynk.ts`) and book what it lists (PROJEKTKARTAN →

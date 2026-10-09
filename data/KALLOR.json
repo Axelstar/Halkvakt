@@ -1,0 +1,15 @@
+{
+ "_om": "Registret över datafilerna i det publika repot (kort #320, DECISIONS #506). Varje fil under data/ står här med källa och licens; publikvakten (scripts/publikvakt.ts, i ci) fäller en fil som saknas och en rad vars fil inte finns. Trafikverkets leverans och allt som räknats ur den rad för rad får aldrig stå här — den ligger i hinken arkiv (#438, #499).",
+ "filer": {
+  "data/bridges.geojson": { "kalla": "OpenStreetMap, broar längs vägnätet (bridges.yml, kort #82)", "licens": "ODbL 1.0 — © OpenStreetMaps bidragsgivare" },
+  "data/fysik/fingeravtryck-2024-25.csv": { "kalla": "Axels fysikspår: medel och spridning av modellens fel per station, modell och period (FYSIKSPARET-SVAR §6) — aggregat per station ur Trafikverkets leverans, inte rad för rad", "licens": "Halkvakts eget aggregat" },
+  "data/kallkartan/kallkartan_stationer.csv": { "kalla": "NASA MODIS natt-LST (MOD11A1/MYD11A1 v061, LP DAAC) i stationernas lägen ur Trafikverkets öppna API (#482)", "licens": "NASA-data utan begränsning; stationernas lägen CC0" },
+  "data/vaderkallan/ecmwf_2024-25.csv.gz": { "kalla": "ECMWF IFS ur Open-Meteos arkiv, 70 punkter (#504)", "licens": "CC BY 4.0 — Open-Meteo.com och ECMWF" },
+  "data/vaderkallan/manifest.json": { "kalla": "manifest med sha256 för väderkällans nivå 1 (#504)", "licens": "Halkvakts eget" },
+  "data/vaderkallan/stationspar_vviss_smhi.csv": { "kalla": "vägstationernas lägen (Trafikverkets öppna API) parade med SMHI:s stationer (#504)", "licens": "CC0 och CC BY 4.0 (SMHI)" },
+  "data/vagdata/segment.json": { "kalla": "Trafikverkets öppna API och NVDB via Datautbytesportalen (#473)", "licens": "CC0" },
+  "data/vagdata/stationer.json": { "kalla": "Trafikverkets öppna API och NVDB via Datautbytesportalen (#473)", "licens": "CC0" },
+  "data/vagdata/vaglagspunkter.json": { "kalla": "Trafikverkets öppna API och NVDB via Datautbytesportalen (#473)", "licens": "CC0" },
+  "data/vagdata/vagpunkter.json": { "kalla": "Trafikverkets öppna API och NVDB via Datautbytesportalen (#473)", "licens": "CC0" }
+ }
+}
