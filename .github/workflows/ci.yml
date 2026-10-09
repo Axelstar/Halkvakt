@@ -85,6 +85,8 @@ jobs:
           node --experimental-strip-types scripts/matningar/kuvos-fysik-givarvakt-2026-10-08.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-kallkartan-2026-10-09.ts --sjalvtest
           node --experimental-strip-types scripts/testarvakt.ts --sjalvtest
+          node --experimental-strip-types scripts/publikvakt.ts --sjalvtest
+          node --experimental-strip-types scripts/publikvakt.ts
           node --experimental-strip-types scripts/matningar/kuvos-metnordic-ecmwf-1b-2026-10-09.ts --sjalvtest
       # Generatorn gled isär från vektorfilerna tre gånger (31/8, 2/9, 13/9) utan att någon vakt såg det (#195).
       # Den skriver bara filer vars innehåll ändrats och fäller själv på en vektorfil utan scenario.

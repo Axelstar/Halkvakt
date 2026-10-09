@@ -9800,3 +9800,28 @@ och 9,9 mot 11,8 %). Båda källorna ligger för varmt i frost (+0,57 och +0,72 
 Axels fysikmodell omkalibrerad på MET Nordic, i kuvösen mot FYSIK:s 9,85 % — och Axels val av källa.
 
 **Stomdokument:** KUV §9, BED §4.2
+
+## #506 (9/10 2026) Regeln PUBLIKT REPO i CLAUDE.md, ett register över datafilerna och en publikvakt i ci (kort #320)
+
+**Beslut.** Bengt 9/10: *"men hur ska vi kunna komma ihåg detta. kan det läggas som en kravspec elelr?"* och sedan *"ja till alla
+tre"* — efter frågan varför data inte får följa med fysikkoden in i det publika repot. Svaret var inte att metoden ska döljas (koden blir
+publik, och det är bra), utan att Trafikverkets leverans inte är vår att publicera, att relationen med Trafikverket står på spel, att
+det inte går att ångra, att det som räknats ur datan rad för rad i praktiken är samma data, och storleken.
+
+**Vad som byggdes.**
+1. **Regeln** — avsnittet *PUBLIKT REPO* i CLAUDE.md, som varje session läser först: vad som får ligga i repot, vad som aldrig får
+   ligga där (Trafikverkets leverans och det som räknats ur den rad för rad, testarnas svar och missar, hemligheter, personuppgifter),
+   att ett aggregat per station inte är rad för rad, och *osäker — lägg det i hinken och fråga*.
+2. **Registret** `data/KALLOR.json` — de tio datafilerna med källa och licens (Trafikverkets öppna API och NVDB CC0, OpenStreetMap
+   ODbL, NASA MODIS, ECMWF via Open-Meteo CC BY 4.0, SMHI CC BY 4.0, och fysikspårets fingeravtryck som aggregat per station).
+3. **Publikvakten** `scripts/publikvakt.ts` i ci: hela trädet prövas — en datafil utan registerrad, en registerrad utan fil, en fil över
+   20 MB, Trafikverkets leveransfiler, `.npy`, `oof` och exporter av testarnas svar fälls.
+
+**Bevis.** `scripts/publikvakt.ts` med register `data/KALLOR.json` (tio datafiler med källa och licens); självtestet med nio fall i ci; trädet passerar (899 filer, ingen över 20 MB, inga förbjudna mönster); motprovat två gånger — utan storleksgränsen och utan registerkontrollen fäller självtestet; första körningen mot trädet fångade fyra migrationer i sql/ som mönstret tog för data, och mönstret begränsades till datafiler.
+
+**Vad den inte gör.** Den läser namn och storlekar, inte innehåll, och inte releaser eller loggar — ett nytt sorts misstag fångar den
+inte; då gäller regeln. Releaserna står i #499 och loggarna i #498.
+
+**Rättelse 9/10, före sammanslagningen.** Vakten kraschade i ci (37931141510): `skills/swift-testing-pro/references` är en symbolisk länk (mode 120000) till `../../references`, som inte finns, och `statSync` följer länken. På Windows checkas länken ut som en liten textfil, så vakten gick igenom lokalt. Nu `lstatSync`, som läser länken själv. **Läxa:** ett skript som går igenom `git ls-files` ska läsa med `lstat`, och ett grönt lokalt prov på Windows bevisar inget om symboliska länkar — det gör ci på Linux.
+
+**Stomdokument:** inga — regeln står i CLAUDE.md och vakten i ci; läget på kort #311 och #320 och i projektkartan (g-kassan)
