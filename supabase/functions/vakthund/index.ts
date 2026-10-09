@@ -946,18 +946,18 @@ Deno.serve(async (req) => {
 
     // 9j. ARKIVBACKUPEN (kort #223, 20/9). Veckodumpen av arkivet (arkivbackup.yml, kort #213) kör i
     //     Actions — och Actions dog tyst 5/9. Då tystnar dumpen och healthchecken samtidigt, och den
-    //     här vakten är den enda som kör utanför. Frågar GitHub om senaste release med taggen `arkiv-`:
-    //     ingen alls, eller äldre än gränsen ⇒ larm. Prov: ?arkivprov=1 låtsas att den är 99 dygn.
+    //     här vakten är den enda som kör utanför. Sedan 9/10 ligger dumpen i hinken `arkiv` i Supabase, i delar
+    //     `dump/<namn>.dump.delNN` (arkivdump, DECISIONS #495), inte som GitHub-release: vakten räknar dumparna och läser den
+    //     nyaste delens tid ur storage.objects. Ingen alls, eller äldre än gränsen ⇒ larm. Prov: ?arkivprov=1 låtsas att den är 99 dygn.
     try {
-      const rel: any[] = await gh(`/releases?per_page=30`);
-      const arkiv = rel.filter((r) => typeof r.tag_name === "string" && r.tag_name.startsWith("arkiv-"))
-        .map((r) => new Date(r.published_at ?? r.created_at).getTime());
+      const [ab] = await sql`SELECT count(DISTINCT split_part(name, '.del', 1))::int AS n, max(created_at) AS t
+        FROM storage.objects WHERE bucket_id = 'arkiv' AND name LIKE 'dump/%.dump.del%'`;
       const arkivprov = new URL(req.url).searchParams.get("arkivprov") === "1";
-      const aDygn = arkivprov ? 99 : arkiv.length ? (Date.now() - Math.max(...arkiv)) / 86_400_000 : null;
-      rad.push(`arkivbackup: ${arkiv.length} dumpar, senaste ${aDygn === null ? "saknas" : `${aDygn.toFixed(1)} dygn`} (gräns ${ARKIVBACKUP_MAX_DYGN})${arkivprov ? " — PROV" : ""}`);
+      const aDygn = arkivprov ? 99 : ab.t ? (Date.now() - new Date(ab.t).getTime()) / 86_400_000 : null;
+      rad.push(`arkivbackup: ${ab.n} dumpar i hinken, senaste ${aDygn === null ? "saknas" : `${aDygn.toFixed(1)} dygn`} (gräns ${ARKIVBACKUP_MAX_DYGN})${arkivprov ? " — PROV" : ""}`);
       if (aDygn === null || aDygn > ARKIVBACKUP_MAX_DYGN)
         problem.push(`**Arkivet saknar färsk backup**: senaste dump ${aDygn === null ? "finns inte" : `${aDygn.toFixed(1)} dygn gammal`} (gräns ${ARKIVBACKUP_MAX_DYGN}) — kör arkivbackup.yml med knappen; står Actions stilla är arkivet oskyddat (kort #213/#223)${arkivprov ? " — PROV, försvinner nästa timme" : ""}`);
-    } catch (e) { problem.push(`**Kunde inte läsa arkivbackupens releaser**: ${String(e)}`); }
+    } catch (e) { problem.push(`**Kunde inte läsa arkivbackupens hink**: ${String(e)}`); }
     // 9k. ARKIVEXPORTEN (kort #83 steg 2a, DECISIONS #334). Exporten får ligga efter medan den beta av eftersläpningen, men
     //     inte STÅ STILLA: färdiga dygn som inte exporterats OCH ingen export på tre timmar ⇒ larm. Står exporten stilla
     //     raderas heller ingenting (bara bokförda dygn får tas), så databasvakten vid 400 MB är den andra vakten.

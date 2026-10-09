@@ -221,7 +221,7 @@
         <tr><td>Fintraffic, Vegvesen, DMI</td><td>grannländernas vägväder</td><td>löpande</td><td>skuggarkiv och gränspunkter</td></tr>
         <tr><td>Trafikverket, NVDB</td><td>vägdatalagret: ÅDT, vägklass, bredd, hastighet, slitlager, väghållare för 854 stationer, 818 segment och 12 960 väglagspunkter (#472, #473)</td><td>en gång per säsong</td><td>kuvösens läsningar, inte rösten</td></tr>
         <tr><td>MET Norway, MET Nordic</td><td>väderrutnät 1 km: luft, fukt, vind, moln, nederbörd, strålning, vintern 2024/25 (#480)</td><td>en gång, release</td><td>kuvösens läsningar</td></tr>
-        <tr><td>NASA, MODIS</td><td>nattlig yttemperatur 1 km, kallkartan över tre vintrar (#482)</td><td>en gång, release</td><td>väntar på en egen förregistrering</td></tr>
+        <tr><td>NASA, MODIS</td><td>nattlig yttemperatur 1 km, kallkartan över tre vintrar (#482)</td><td>en gång, release</td><td>prövad i kuvösen 9/10 som rättelse på RÅ och lagd åt sidan (#496, #497)</td></tr>
       </tbody>
     </table>
   </div>
@@ -821,7 +821,7 @@
           </tbody>
         </table>
       </div>
-      <p class="litet">176 av de 201 frostpunkterna ligger mer än 20 km från närmaste station, och bandet inom 7 km, där halva vägnätet ligger, hade inga. Frysflaggan kan därför inte vägas mot vägnätet än, och fyra nätter i september räcker inte för en nivå. Missarna är desamma med den gamla arkivregeln (122 av 176 bortom 20 km för rå viktning i båda). De beror alltså inte på de varma grannarna. Tolkningen, ännu inte prövad (kallkartan ur MODIS är byggd för att pröva den, #482): stationen var kallare än grannarna en klar natt, och ett sådant lokalt köldhål syns inte i grannarnas mätningar.</p>
+      <p class="litet">176 av de 201 frostpunkterna ligger mer än 20 km från närmaste station, och bandet inom 7 km, där halva vägnätet ligger, hade inga. Frysflaggan kan därför inte vägas mot vägnätet än, och fyra nätter i september räcker inte för en nivå. Missarna är desamma med den gamla arkivregeln (122 av 176 bortom 20 km för rå viktning i båda). De beror alltså inte på de varma grannarna. Tolkningen: stationen var kallare än grannarna en klar natt, och ett sådant lokalt köldhål syns inte i grannarnas mätningar. Den är inte prövad direkt. Kallkartan ur MODIS (#482), byggd för att pröva den, hjälpte inte: som rättelse på RÅ gjorde den skattningen sämre på vintern 2024/25, också på natten (#496), och den är lagd åt sidan (#497).</p>
 
       <h4>Det som ströks efter mätning, och det som nu måste läsas om</h4>
       <ul>
@@ -1470,7 +1470,7 @@
     </div>
     <div class="ruta">
       <h4>Kuvösen: hela systemet på vintern 2024/25</h4>
-      <p>En testbädd där motorn och alla skuggregler körs tillsammans mot en gången vinter, varje del ensam och ovanpå de andra. Trafikverket levererade stationsdatan 2/10: 5,5 miljoner rader från 777 stationer, november 2024–mars 2025, i svensk lokaltid (mätt). Vintern är inläst i kuvösens databas 2/10 kväll: 5 391 599 rader från 754 stationer, och efter driftens vakter får 97 % av raderna tala. Nederbördskoderna, mängden och vinden är översatta ur Trafikverkets dokumentation 6/10 (#464). SMHI för samma vinter är hämtat: stationerna och radarn, där arkivets radarformat ligger ungefär 3,4 dBZ över driftens (#441). Klockan, som låter driftens kod köra mot en gången tidpunkt utan att se framtiden, och inventeringen är byggda 1/10; fyra motprov föll på var sin fälla (#424). Rösten prövas där i två serier, de 20 skuggrutterna och hela väglagsnätet (#426). Riktningsprovet kördes och lästes 6/10 (#467): 675 178 varningar över vintern, grind A fallen på vintern (A2 5,5 %), vägpunktsgrinden fallen för alla kandidater, efterhalkan nettonytt 0,2 % till priset 45,1 %. Kalibreringen samma dag gav startvärdena (#468). Granskningen av beräkningarna (#469): grind A klarar förvintern (3,4 %) och faller mid- och vårvintern (5,4 och 7,1 %) — inget fönsterfel, en vinter i tre delar. Därefter: efterhalkans mått och daggpunkt (#470), prognoslagrets fyra läsningar (#471), den korsade läsningen (#476), C8 mot grannarna och mot vädret (#479, #480), rutnätsmodellen (#481) och kallkartan ur MODIS (#482). Trafikverkets svar om ett tjockare facit för 2024/25 väntar (KUVOS-LEVERANSEN §5d). Kuvösen har en egen sida: <a href="https://claude.ai/artifact/1xvv4hydYbfpF5eXFgLcxh">Halkvaktens kuvös</a>.</p>
+      <p>En testbädd där motorn och alla skuggregler körs tillsammans mot en gången vinter, varje del ensam och ovanpå de andra. Trafikverket levererade stationsdatan 2/10: 5,5 miljoner rader från 777 stationer, november 2024–mars 2025, i svensk lokaltid (mätt). Vintern är inläst i kuvösens databas 2/10 kväll: 5 391 599 rader från 754 stationer, och efter driftens vakter får 97 % av raderna tala. Nederbördskoderna, mängden och vinden är översatta ur Trafikverkets dokumentation 6/10 (#464). SMHI för samma vinter är hämtat: stationerna och radarn, där arkivets radarformat ligger ungefär 3,4 dBZ över driftens (#441). Klockan, som låter driftens kod köra mot en gången tidpunkt utan att se framtiden, och inventeringen är byggda 1/10; fyra motprov föll på var sin fälla (#424). Rösten prövas där i två serier, de 20 skuggrutterna och hela väglagsnätet (#426). Riktningsprovet kördes och lästes 6/10 (#467): 675 178 varningar över vintern, grind A fallen på vintern (A2 5,5 %), vägpunktsgrinden fallen för alla kandidater, efterhalkan nettonytt 0,2 % till priset 45,1 %. Kalibreringen samma dag gav startvärdena (#468). Granskningen av beräkningarna (#469): grind A klarar förvintern (3,4 %) och faller mid- och vårvintern (5,4 och 7,1 %) — inget fönsterfel, en vinter i tre delar. Därefter: efterhalkans mått och daggpunkt (#470), prognoslagrets fyra läsningar (#471), den korsade läsningen (#476), C8 mot grannarna och mot vädret (#479, #480), rutnätsmodellen (#481) och kallkartan ur MODIS (#482), som prövades 9/10 och lades åt sidan (#496, #497). Trafikverket svarade 8/10 (KUVOS-LEVERANSEN §5e): ytstatus och friktion sparas inte historiskt, och väglag, vinterväghållning och händelser kräver ett nytt ärende. Kuvösen har en egen sida: <a href="https://claude.ai/artifact/1xvv4hydYbfpF5eXFgLcxh">Halkvaktens kuvös</a>.</p>
     </div>
     <div class="ruta">
       <h4>Vägarbeten: kroniskt, utom de kortvariga</h4>
@@ -1572,11 +1572,12 @@
 
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
   <h2 id="oppna-kort">Öppna kort</h2>
-  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 27 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
+  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 28 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
   <h3><a href="#avsnitt-1">1. Datan som samlas in</a></h3>
   <ul>
     <li>#303 VÄGDATALAGRET, STEG 3 — KUVÖSENS INLÄSNING OCH AXELS KOLUMNER <span class="litet">· Bengt</span></li>
     <li>#294 YTSTATUSFÄLTEN I ARKIVET — vägytans is, snö, vatten och friktion från de cirka 50 stationerna med givare <span class="litet">· Claude</span></li>
+    <li>#314 VAKTHUNDEN VAKTAR BACKUPEN I HINKEN, INTE I RELEASERNA (RÄTTAT I KODEN 9/10 — Claude, efter larmet issue … <span class="litet">· pågår</span></li>
   </ul>
   <h3><a href="#avsnitt-2">2. Delområdena</a></h3>
   <ul>
