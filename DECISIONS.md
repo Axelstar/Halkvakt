@@ -9713,3 +9713,54 @@ med frågan till Bengt om en körning mot VViS-facit i kuvösen. Data: ECMWF-fil
 `manifest.json`) eftersom releaser inte kunde skapas från sessionen; källa Open-Meteo.com / ECMWF, CC BY 4.0.
 
 **Stomdokument:** BED §4.2
+
+## #505 (9/10 2026) Väderkällan nivå 1b — MET Nordic och ECMWF mot vägstationernas egen luft och daggpunkt, förregistrerad (kort #318)
+
+**Beslut.** Bengt 9/10: *"slå ihop 837 och kör nivå 1b nu"* — efter *"men då måste vi väl göra den breda mätningen för att få rättvisa
+jämförelsetal eller?"*. Nivå 1 (#504) jämförde källorna mot SMHI:s luft vid 70 punkter, 18 i norr. Nivå 1b gör samma jämförelse vid
+**alla vägstationer med data i kuvösen** — samma stationer som FYSIK prövades på (#485) — mot **vägstationernas egen luft och
+daggpunkt**. MET Norways dokumentation (läst 9/10, kort #318) nämner inte vägstationerna bland det MET Nordic korrigerar mot, så facit
+är oberoende för MET Nordic; MET Nordics fukt är modellens (MEPS) utan korrigering.
+
+**Underlaget.** MET Nordic Analysis i rutan närmast varje station (release `kuvos-metnordic-2024-25`, #480). ECMWF IFS ur Open-Meteos
+arkiv i varje stations koordinat, hämtad 9/10 för alla 854 stationer (`scripts/matningar/vaderkallan-1b-hamta-ecmwf-2026-10-09.py`,
+samma anrop som nivå 1 men bara luft och fukt): 3 115 392 rader, luft −32,4…+17,7 °C, fukt 18–100 %, i den öppna releasen
+`kuvos-ecmwf-2024-25` (sha256 7a247017…, `kuvos/ecmwf-leverans.json`; källa Open-Meteo.com och ECMWF, CC BY 4.0). Fältet `rh_pct`
+deklarerat i värdevakten. Daggpunkten räknas ur luft och fukt med Magnus formel för båda källorna. Facit: vägstationens `air_temp_c`
+och `dewpoint_c` i avläsningen närmast hela timmen (±15 min), stationer i karantän utelämnade (#299, med givarvakten #75), värdevaktens
+spann hållna. Bara timmar där facit och båda källorna finns.
+
+**Måtten.** Grova fel (> 2 °C), MAE och medelfel i luft och daggpunkt: alla timmar, nära noll (facit −3…+2 °C), frost (≤ 0 °C), norr
+och söder om 62° (#502), avståndsband (stationens avstånd till närmaste andra station) och **vägt med trafiken** — varje väglagspunkt
+(#490) räknas till närmaste station med sin ÅDT × 2 km. Skriptet `scripts/matningar/kuvos-metnordic-ecmwf-1b-2026-10-09.ts`, självtest i
+ci.yml, motprovat: ECMWF räknad med MET Nordics värden fäller; att tidsfönstrets gräns tas bort fäller inte, eftersom en timme utanför
+fönstret saknar källvärde och ändå hoppas över — skyddet finns två gånger.
+
+**Förväntningar, skrivna före knappen.**
+
+| | MET Nordic | ECMWF |
+| :-- | --: | --: |
+| underlaget | 700–760 stationer, minst 2,0 miljoner timmar med luft | samma |
+| luft, grova fel, alla timmar | 9–16 % | 15–24 % |
+| luft, norr om 62° | 18–30 % | 25–38 % |
+| luft, söder om 62° | 6–12 % | 11–19 % |
+| luft, nära noll | 4–10 % | 9–16 % |
+| luft, vägt med trafiken | 6–12 % | 11–19 % |
+| daggpunkt, grova fel, alla timmar | 10–22 % | 12–26 % |
+
+Vägstationernas givare sitter vid vägen, ofta i svackor och skärningar, så felen väntas bli större än mot SMHI:s stationer för båda
+källorna. MET Nordics försprång i daggpunkten väntas vara högst hälften av försprånget i luften, eftersom dess fukt inte korrigeras.
+
+**Hur läsningen läses — en läsning, inget val av källa (Axels, #504).**
+- MET Nordic är det bättre underlaget för fysiken om dess grova fel i luften är färre än ECMWF:s **vägt med trafiken och i både norr
+  och söder**, och dess daggpunkt inte är mer än en procentenhet sämre.
+- Vinner MET Nordic luften men förlorar daggpunkten med mer än en procentenhet, noteras att fukten bör tas från en annan källa (MEPS).
+- Är ECMWF lika bra eller bättre i luften håller inte nivå 1:s slutsats på vägnätet, och frågan går tillbaka till Axel med båda
+  tabellerna.
+
+**Reservationer, med i läsningen.** Luft och daggpunkt, inte vägytan — nivå 2 (fysiken omkalibrerad på MET Nordic, mot FYSIK:s 9,85 %)
+avgör. Analys, inte prognos: MET Nordics prognoser arkiveras sedan 2018 och kan prövas senare. En vinter.
+
+**Kostnad.** En körning av kuvos.yml, omkring tio minuter, gratis sedan repot blev publikt (#503).
+
+**Stomdokument:** KUV §9, BED §4.2
