@@ -9483,3 +9483,21 @@ satelliten ser snö, skog och mark, och en pixel blandar en kvadratkilometer. In
 **Följd.** Förslaget enligt läsregeln: kallkartan läggs åt sidan som rättelse på RÅ — Bengts ord. Releasen och filen i repot står kvar,
 inget raderas. Kriging (steg 2 i #481) står nu ensam: prövas eller läggs ned, en fråga till Bengt och Axel i bedömningens §4.2.
 Kort #313 klart.
+
+## #497 (9/10 2026) Kallkartan läggs åt sidan som rättelse på RÅ — Bengts ja
+
+**Beslut.** Bengt 9/10: *"slå ihop 824 och ja till att lägga kallkartan åt sidan"* — på förslaget enligt läsregeln i #496, efter
+körningen 37885821554 där alla tre KALL-kandidaterna var sämre än RÅ på samma punkter, också på natten: KALL 9,76 %, KALL-NATT
+8,79 % och KALL-½ 7,63 % grova fel mot RÅ:s 7,26 %.
+
+**Vad det betyder.** Kallkartan används inte som rättelse på RÅ — inte i prognoslagret och inte i förregistreringen för vintern
+2026/27. Releasen `kuvos-modis-2022-25`, filen i `data/kallkartan/` och skriptet med sitt självtest står kvar; inget raderas. Varför
+kartan inte bär är inte prövat (#496). En ny användning av den, till exempel som egenskap i en annan modell eller för att välja var
+termisk kartering görs, kräver en egen förregistrering.
+
+**Alternativ som valdes bort.** (a) Ett mindre k eller ett k ur en regression — det vore att anpassa efter facit på samma vinter,
+och redan KALL-½ var sämre än RÅ. (b) Låta kartan stå öppen i §4.2 — en rad till utan en väg framåt.
+
+**Följd.** Prognoslagrets steg *Kallkartan* bär beslutet; kriging står ensam som fråga till Bengt och Axel i bedömningens §4.2.
+
+**Stomdokument:** KUV §5 och §9, BED §4.2
