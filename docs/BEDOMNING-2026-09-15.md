@@ -496,7 +496,7 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 *Läget i projektkartan:*
 
 - [Stomdokumenten och kortkartan](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-g-stomdokumenten): väntar, 93 % · Sju morgnar i rad med dokumentsynken, från 8/10 03:30 UTC (kort #304, DECISIONS #484).
-- [Actions-taket och kassavakten](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-g-kassan): delvis, 63 % · kvar: Taket räcker inte oktober ut: i den släpande takten slår det i 15/10 (kassavakten 8/10, issue #701)
+- [Actions-taket och kassavakten](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-g-kassan): delvis, 75 % · kvar: Taket räcker inte oktober ut: i den släpande takten slår det i 15/10 (kassavakten 8/10, issue #701)
 
 <!-- /LÄGESRADER -->
 
@@ -673,7 +673,7 @@ bevisbart säker (vid 0 km/h går det inte att nå faran) och är rimligen stör
 - [L5 allvar som försprång](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-forsprang): delvis, 56 % · kvar: FS-A: nivå 2-fall i vinter (kod 3–4, eller yta ≤ 0 °C med väta ≥ 3)
 - [Grindarna och domkalendern](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-p-grindarna): delvis, 73 % · kvar: S1-grinden, T-A, R-A, K-A och W-A väntar på frost (minst 50 stationer ≤ 0 °C)
 - [Projektkartan](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-g-projektkartan): delvis, 94 % · kvar: Maskinens bock med rätt tidpunkt: lagad och i drift 5/10 (PR #753); kvar är nästa bygge bockat med rätt tid (kort #288)
-- [Actions-taket och kassavakten](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-g-kassan): delvis, 63 % · kvar: Taket räcker inte oktober ut: i den släpande takten slår det i 15/10 (kassavakten 8/10, issue #701)
+- [Actions-taket och kassavakten](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-g-kassan): delvis, 75 % · kvar: Taket räcker inte oktober ut: i den släpande takten slår det i 15/10 (kassavakten 8/10, issue #701)
 
 <!-- /LÄGESRADER -->
 
@@ -890,7 +890,7 @@ mätningar — R1–R16 nedan är strukna och står kvar bara som historik.**
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
 
-Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 28 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 27 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
 
 **§1 NU — före första frosten**
 
@@ -929,7 +929,6 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 28 kort
 **§5 Integrationsläget — mätt mot kartan (24/9, Bengts fråga "hur långt i integrationen har vi kommit")**
 
 - #311 🔓 #311 PUBLIKT REPO — ACTIONS GRATIS, ELLER TAKET 35 USD SLÅS I (BESLUTSUNDERLAG 9/10 — Axel, exklusivt hans … — Axel, beslut
-- #314 VAKTHUNDEN VAKTAR BACKUPEN I HINKEN, INTE I RELEASERNA (RÄTTAT I KODEN 9/10 — Claude, efter larmet issue … — pågår
 - #288 🔨 #288 KARTSYNKEN — PROJEKTKARTAN UPPDATERAR SIG SJÄLV (I DRIFT, VÄNTAR PÅ AXELS NYCKEL — Claude, Bengts ja … — pågår
 
 **§6.1 Kuvösen är den enda kända vägen runt vintern — och väntar på Trafikverkets beslut**
