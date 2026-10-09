@@ -7,7 +7,7 @@
 // Den letar efter namn och storlekar, inte innehåll — ett nytt sorts misstag fångar den inte; då gäller regeln i CLAUDE.md (PUBLIKT REPO).
 // Kör: node --experimental-strip-types scripts/publikvakt.ts [--sjalvtest]
 import { execFileSync } from "node:child_process";
-import { readFileSync, statSync } from "node:fs";
+import { lstatSync, readFileSync } from "node:fs";
 
 export const MAX_BYTE = 20_000_000;
 export const REGISTER = "data/KALLOR.json";
@@ -56,7 +56,9 @@ if (korsSjalv && process.argv.includes("--sjalvtest")) {
 
 if (korsSjalv) {
   const filer = execFileSync("git", ["ls-files", "-z"], { encoding: "utf8" }).split("\0").filter(Boolean)
-    .map((fil) => ({ fil, byte: statSync(fil).size }));
+    // lstat, inte stat: repot bär symboliska länkar (skills/*/references → ../../references) som på Linux pekar på en sökväg som inte
+    // finns. stat följer länken och kraschade i ci 9/10; på Windows checkas länken ut som en textfil, så felet syntes inte lokalt.
+    .map((fil) => ({ fil, byte: lstatSync(fil).size }));
   const register: Record<string, Kalla> = JSON.parse(readFileSync(REGISTER, "utf8")).filer;
   const fel = granska(filer, register);
   if (fel.length) { console.error(`✗ publikvakten: ${fel.length} fel\n  ` + fel.join("\n  ")); process.exit(1); }

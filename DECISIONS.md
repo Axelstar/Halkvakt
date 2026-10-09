@@ -9822,4 +9822,6 @@ det inte går att ångra, att det som räknats ur datan rad för rad i praktiken
 **Vad den inte gör.** Den läser namn och storlekar, inte innehåll, och inte releaser eller loggar — ett nytt sorts misstag fångar den
 inte; då gäller regeln. Releaserna står i #499 och loggarna i #498.
 
+**Rättelse 9/10, före sammanslagningen.** Vakten kraschade i ci (37931141510): `skills/swift-testing-pro/references` är en symbolisk länk (mode 120000) till `../../references`, som inte finns, och `statSync` följer länken. På Windows checkas länken ut som en liten textfil, så vakten gick igenom lokalt. Nu `lstatSync`, som läser länken själv. **Läxa:** ett skript som går igenom `git ls-files` ska läsa med `lstat`, och ett grönt lokalt prov på Windows bevisar inget om symboliska länkar — det gör ci på Linux.
+
 **Stomdokument:** inga — regeln står i CLAUDE.md och vakten i ci; läget på kort #311 och #320 och i projektkartan (g-kassan)
