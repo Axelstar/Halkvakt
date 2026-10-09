@@ -888,7 +888,7 @@ mätningar — R1–R16 nedan är strukna och står kvar bara som historik.**
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
 
-Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 28 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 27 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
 
 **§1 NU — före första frosten**
 
@@ -927,7 +927,6 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 28 kort
 **§5 Integrationsläget — mätt mot kartan (24/9, Bengts fråga "hur långt i integrationen har vi kommit")**
 
 - #311 🔓 #311 PUBLIKT REPO — ACTIONS GRATIS, ELLER TAKET 35 USD SLÅS I (BESLUTSUNDERLAG 9/10 — Axel, exklusivt hans … — Axel, beslut
-- #306 KARTSYNKEN NÅR GITHUB I MOLNET — gh api FÖRST (I MAIN 8/10, VÄNTAR PÅ MORGONRUTINEN 9/10 — Claude, Bengts val … — pågår
 - #288 🔨 #288 KARTSYNKEN — PROJEKTKARTAN UPPDATERAR SIG SJÄLV (I DRIFT, VÄNTAR PÅ AXELS NYCKEL — Claude, Bengts ja … — pågår
 
 **§6.1 Kuvösen är den enda kända vägen runt vintern — och väntar på Trafikverkets beslut**
