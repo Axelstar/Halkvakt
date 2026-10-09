@@ -9453,3 +9453,33 @@ tio minuter (RN 11, FYSIK 9), ungefär 0,08 USD.
 bedömningens §4.2 följer. **Utfall** skrivs under den här posten.
 
 **Stomdokument:** KUV §5 och §9, BED §4.2
+
+**Utfall (9/10 05:02 UTC, körning 37885821554 på 28926d7; jobbet 10,4 min, mätningen 2,7).** Kartan läst med releasens sha256
+(9f356ee8…); 823 stationer i kartan, vattenregeln tog 2534 (+3,51 K) och 2580 (+2,47 K). I kuvösen 737 stationer, 713 med avvikelse;
+4 216 946 gemensamma punkter (RÅ ensam 4 359 014, 706 stationer i frysflaggan).
+
+| Kandidat | grova fel | 0–7 · 7–15 · 15–20 · > 20 km | MAE | natt | dag och skymning | farliga fel, K2 0 |
+| :-- | --: | --: | --: | --: | --: | --: |
+| RÅ | 7,26 % | 5,32 · 4,99 · 7,12 · 13,13 | 0,67 °C | 5,73 % | 9,86 % | 4,9 % |
+| KALL | 9,76 % | 5,86 · 7,50 · 9,66 · 16,56 | 0,83 °C | 8,14 % | 12,51 % | 6,1 % |
+| KALL-NATT | 8,79 % | 5,69 · 6,49 · 8,68 · 15,32 | 0,77 °C | 8,14 % | 9,91 % | 5,6 % |
+| KALL-½ | 7,63 % | 5,37 · 5,51 · 7,54 · 13,31 | 0,72 °C | 6,03 % | 10,34 % | 5,2 % |
+| OFFSET (taket) | 5,31 % | 3,68 · 3,52 · 5,35 · 9,84 | 0,59 °C | 3,96 % | 7,60 % | 4,2 % |
+
+Norr om 62° RÅ 13,76 % mot KALL 18,05, KALL-NATT 16,45 och KALL-½ 14,26 %; söder om 62° RÅ 4,73 % mot 6,53 · 5,82 · 5,05 %.
+
+**Mot förväntningarna.** RÅ 7,26 % och bortom 20 km 13,13 % ligger inom spannen — populationen håller. KALL-½ 7,63 % ligger inom
+7,1–8,0. KALL 9,76 % ligger över 7,3–8,5, KALL-NATT 8,79 % över 7,0–7,8 och bortom 20 km 15,32 % över 12,5–14,5. Det tydligaste
+felet i förväntningarna gäller natten: KALL-NATT skulle ligga 0–0,5 procentenheter under RÅ där och ligger 2,41 över.
+
+**Mot läsregeln.** Ingen KALL-kandidat ligger under RÅ — inte totalt, inte bortom 20 km, inte på natten, inte i norr eller söder — och
+frysflaggans farliga fel ökar för alla tre (4,9 → 5,2–6,1 %). Kallkartan bär inte i den här formen.
+
+**Läsningen.** Rättelsen skadar på natten ungefär lika mycket som på dagen (KALL +2,41 mot +2,65 procentenheter), fast kartan är byggd
+av klara nätter, och den halva rättelsen skadar minst. Det är vad en karta utan samband med vägytans avvikelse ger: rättelsen blir
+brus, och halva bruset skadar mindre. Möjliga skäl, inte prövade: vägen är plogad, saltad och trafikerad asfalt, ofta på bank, medan
+satelliten ser snö, skog och mark, och en pixel blandar en kvadratkilometer. Inget tal i den här körningen skiljer skälen åt.
+
+**Följd.** Förslaget enligt läsregeln: kallkartan läggs åt sidan som rättelse på RÅ — Bengts ord. Releasen och filen i repot står kvar,
+inget raderas. Kriging (steg 2 i #481) står nu ensam: prövas eller läggs ned, en fråga till Bengt och Axel i bedömningens §4.2.
+Kort #313 klart.
