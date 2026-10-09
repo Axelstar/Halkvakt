@@ -9622,3 +9622,33 @@ behörighetsblock använder GitHubs token.
 9. Säg till — Claude kontrollerar att repot är publikt och att flödena går, och kassavakten ska visa 0 USD debiterat (kort #311:s Verify).
 
 **Stomdokument:** BED §4.2
+
+## #502 (9/10 2026) Norr och söder om 62° redovisas och optimeras var för sig — en liten del av trafiken ska inte styra helheten
+
+**Beslut.** Bengt 9/10: *"för mej är det rätt uppenbart att vi hela tiden måste tänka i ett norr och söderläge när vi försöker
+optimera detta. Annars kommer en liten del av trafikmängden hela tiden dra ned helhetsresultatet och det kan ju inte vara meningen"* —
+efter trafiken per band och region (skriptet ur #490, kört lokalt 9/10 på vägdatalagret 7/10):
+
+| band | trafiken norr om 62° | trafiken söder om 62° |
+| :-- | --: | --: |
+| 0–7 km | 46,6 % | 70,7 % |
+| 7–15 km | 35,9 % | 27,5 % |
+| 15–20 km | 8,6 % | 1,5 % |
+| > 20 km | 8,9 % | 0,3 % |
+
+Norr om 62° går ungefär 11 % av landets trafik (räknat ur tabellerna: 53,7 % av trafiken bortom 15 km går där), och 17,5 % av den
+bortom 15 km; söder om 62° 1,8 %. RÅ:s grova fel på kallkartans punkter 9/10 (#496): 13,8 % norr om 62°, 4,7 % söder.
+
+**Vad det betyder.** Kuvösens och skuggans mått räknas per station och halvtimme, och norr väger där mer än dess andel av trafiken.
+Därför, från nu:
+1. Varje läsning av prognoslagret redovisar **norr och söder om 62° var för sig**, också per band, och **vägt med trafiken** i varje
+   region, bredvid helhetstalet.
+2. En kandidat, en tröskel eller en grind får prövas och väljas **per region**. Valet förregistreras som förut, och en regionsvis
+   tröskel kräver ett eget beslut — två regioner är två prövningar, inte ett fritt val efteråt.
+3. Norr läggs inte åt sidan: där bär 17,5 % av trafiken det långa avståndet, och tystnad bortom 20 km (spridningsgrinden) är svaret när
+   osäkerheten är för stor, inte ett fel som döljs i ett riksgenomsnitt.
+
+**Väntar (Bengt: *"vi väntar med det ett tag"*).** Läsningen RÅ:s grova fel per band, norr och söder om 62°, vägt med trafiken i
+varje region — ungefär tio minuter i kuvösen, gratis efter bytet till publikt repo (#501). Står i bedömningens §4.2.
+
+**Stomdokument:** KUV §8, BED §4.2
