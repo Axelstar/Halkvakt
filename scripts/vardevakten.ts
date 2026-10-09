@@ -83,6 +83,9 @@ export const SPANN: Record<string, [number, number, string]> = {
   // FYSIK (Axels fysikspår som fil; releasen kuvos-fysik-2024-25, DECISIONS #485). Läst 7/10 över hela vintern: −25,5…+17,4 °C.
   // Spannet är ytans, som surface_temp_c: en skattning utanför det är ett fel i filen, inte en kall natt.
   fysik_c: [-60, 60, "°C skattad yttemperatur (fysikspåret, kuvos-fysik-2024-25)"],
+  // Kallkartan (MODIS natt-LST 2022–25, releasen kuvos-modis-2022-25, DECISIONS #482). Läst 9/10 vid 843 stationer: −2,74…+3,51 K,
+  // 1/99-percentil −1,78 / +1,46. Spannet är fysikens för en lokal avvikelse mot ±25 km en klar natt; vattnet tas av provets egen regel.
+  medelavvikelse_k: [-15, 15, "K lokal avvikelse i MODIS natt-LST mot ±25 km (kallkartan, kuvos-modis-2022-25, DECISIONS #482)"],
   severity_code: [1, 5, "TRV SeverityCode — 3 har aldrig förekommit"],
   // Radarns intensiteter. 200 mm/h är fysikens gräns för en 5-minutersskur; extrema
   // konvektiva celler når 150–200. HÖGRE ÄR EN RADARARTEFAKT, inte regn — och de här två

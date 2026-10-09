@@ -9380,3 +9380,76 @@ releaserna och inte göra repot publikt — det är Axels beslut på kort #311, 
 **Stomdokument:** MAT §1, BED §4.2
 
 **Utfall (9/10 06:12, i drift).** Arkivdump deployad 9/10 (37882553751, anrop utan nyckel ⇒ 403); knappen arkivbackup 37882625889 på dea07ee: dumpen 56 MB, 37 tabeller återlästa (1 445 591 rader på båda sidor), uppladdad i två delar och hämtad tillbaka med samma sha256, nyckeln inte synlig i loggen; de tre arkiv-releaserna raderade av Bengt 9/10, bara kuvos-* kvar. Dumpen var redan 56 MB, över gratisnivåns 50 MB per fil — utan uppdelningen hade första uppladdningen fallit (39 MB 4/10). Återläsningens två fel, *schema public already exists* och *role anon does not exist*, är de väntade från förut.
+
+## #496 (9/10 2026) Kallkartan i kuvösen — RÅ rättad med MODIS-kartans lokala avvikelse, förregistrerad före körningen (kort #313)
+
+**Beslut.** Bengt 9/10: *"ja, kör kallkartan nu"* — på svaret på hans fråga om prognoslagrets steg *Kriging och kallkartan* kan göras
+oberoende av när Axel kommer med sina filer: kallkartans prov kan köras nu, på kartan som finns sedan 6/10 (#482) och stationerna i
+kuvösen; kriging väntar på kallkartans utfall, och förregistreringen för vintern 2026/27 på Bengts beslut (#485). Inget av det beror
+på kort #308.
+
+**Frågan.** Bär kartan stationens särart mot grannarna? RÅ skattar en station ur grannarnas yta. Ligger en granne i ett köldhål och
+målet på en varmare plats har RÅ fel på ett sätt kartan känner till. Kandidaterna rättar därför varje grannes värde med skillnaden i
+kartans avvikelse mellan målet och grannen.
+
+**Underlaget.** `data/kallkartan/kallkartan_stationer.csv` ur releasen `kuvos-modis-2022-25` (sha256 9f356ee8…, samma som releasens
+manifest; mätningen fäller en annan fil), incheckad i repot (45 kB) så att mätningen inte hämtar releasen. 854 stationer: 11 utan
+avvikelse, 18 med färre än 30 klara nätter (räknas inte), 2 tagna av vattenregeln, 823 kvar. Fältet `medelavvikelse_k` är deklarerat
+i värdevakten (−15…+15 K) innan det används; kartan läst vid stationerna −2,74…+3,51 K, 1/99-percentil −1,78 / +1,46 K.
+
+**Vattenregeln** (#482 krävde den före körningen). Releasen har ingen landandel. En pixel varmare än +2,0 K räknas som vatten — en
+sjö bär sin värme in i nätterna oktober–april — och stationen står utanför KALL-kandidaterna. Det tar två: 2534 Vietas (+3,51 K, mot
+Akkajaure) och 2580 vid Kiruna (+2,47 K). Kalla avvikelser behålls, för köldhålen är det kartan ska hitta; den kallaste är 1633
+(−2,31 K). Regeln är satt på kartans egen fördelning, utan facit.
+
+**Kandidaterna.** Alla räknas av grind A:s `evaluate()` med `utanOffset` och en justering per granne, som RN i #481:
+- **RÅ** — kontrollen.
+- **KALL** — grannens värde + 1 · (a_mål − a_granne), alla timmar.
+- **KALL-NATT** — samma när solen vid målet står under −6° (regimgrindens gräns, #408), annars ingen rättelse. Kartan är byggd av klara
+  nätter.
+- **KALL-½** — k = 0,5, alla timmar: markens avvikelse är inte asfaltens, och halva är en försiktigare tro på kartan.
+- **OFFSET** — taket, som förut.
+En granne utan avvikelse bidrar inte till KALL-kandidaterna, och en station utan avvikelse skattas inte. Måtten läses på de punkter där
+alla kandidater har ett värde, så RÅ räknas på samma population. Skriptet: `scripts/matningar/kuvos-kallkartan-2026-10-09.ts`
+(självtest i ci.yml, motprovat: vänt tecken i justeringen och avstängd vattenregel fäller var sin rad).
+
+**Måtten.** Grind A:s A1 (MAE i beslutsbandet), A2 (grova fel > 2 °C) och A3 (frysklassfel) per band (närmaste bidragande granne) och
+totalt; natten (sol < −6°) mot dag och skymning; norr och söder om 62°; frysflaggan med tre marginaler (#437).
+
+**Förväntningar, skrivna före körningen.**
+
+| | förväntan |
+| :-- | :-- |
+| RÅ (kontroll) | 7,2–7,7 % grova fel på de gemensamma punkterna, bortom 20 km 12,5–14,5 %; annars läses inget annat |
+| KALL | 7,3–8,5 % — rättelsen gäller också dag och mulna nätter, där kartan inte säger något; RÅ+HÖJD, också en fast rättelse per plats, gav 8,8 % (#481) |
+| KALL-NATT | 7,0–7,8 %; natten 0–0,5 procentenheter under RÅ:s natt |
+| KALL-½ | 7,1–8,0 % |
+| KALL-NATT bortom 20 km | 12,5–14,5 % |
+
+Spannen är breda med avsikt: kartans spridning mellan stationerna (sd 0,66 K) är en tredjedel av gränsen för ett grovt fel, så
+rättelsen kan flytta några procent av punkterna över eller under 2 °C, åt båda hållen.
+
+**Hur läsningen läses — en läsning, inte en dom; beslutet är Bengts.**
+- Ligger någon KALL-kandidat minst 0,3 procentenheter under RÅ totalt och minst 0,5 bortom 20 km, utan att frysflaggans farliga fel
+  (K2 0, alla band) ökar, är kallkartan värd en egen förregistrering för vintern 2026/27, på Bengts ord. Tre kandidater prövas, så en
+  vinst på gränsen läses försiktigt.
+- Annars bär kallkartan inte i den här formen. Förslaget blir då att lägga den åt sidan och att kriging (steg 2 i #481) prövas ensamt
+  eller läggs ned — en fråga i bedömningens §4.2.
+
+**Reservationer, med i läsningen.** (1) Kartan är byggd av vintrarna 2022–25, och 2024/25 är också kuvösens vinter. Den läser ingen
+station och inget facit, men samma nätter står på båda sidor; en vinst bekräftas först på 2026/27 med kartan fryst. (2) Satelliten
+mäter markens yta — skog, mark, snö, sjö — inte asfalten. (3) Vattenregeln och KALL-NATT:s solgräns är satta före körningen och
+ändras inte efter den.
+
+**Alternativ som valdes bort.** (a) Kartan som egenskap i RN+R:s regression, som #482 skrev — RN+R föll i #481, så kartan prövas på
+RÅ, det antagna. (b) Ett k anpassat på stationerna — ett bättre tal men en sämre läsning; k = 1 och 0,5 är fysiken och en halvering av
+den, fasta före körningen. (c) Landandel eller närmaste rena landpixel för vattnet — releasen har ingen landmask, och den kräver en ny
+hämtning. (d) Vänta på Axels filer — kallkartan beror inte på dem.
+
+**Vad som INTE görs.** Inga trösklar, ingen drift, ingen ändring av appen eller static.json. Kostnad: en körning av kuvos.yml, omkring
+tio minuter (RN 11, FYSIK 9), ungefär 0,08 USD.
+
+**Följd.** Kort #313 på tavlan; prognoslagrets steg *Kriging och kallkartan* delas i *Kallkartan* och *Kriging*; kuvössidans §9 och
+bedömningens §4.2 följer. **Utfall** skrivs under den här posten.
+
+**Stomdokument:** KUV §5 och §9, BED §4.2
