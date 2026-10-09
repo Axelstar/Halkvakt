@@ -3875,7 +3875,7 @@ underlagets §7 bär tilläggen. Tavlan 49 → 48 öppna.
 ## #320 (23/9 2026) Halkvakt till App Store: iOS först, 0.3.9 (13) är kandidaten, ingen näringsidkare — och integritetspolicyn rättad
 
 **Axels svar 23/9 kväll** på frågorna i dokumentet *Halkvakt till App Store*:
-(1) **Kontakt** för supportsidan och granskningen: axel.lagerlof.45@gmail.com.
+(1) **Kontakt** för supportsidan och granskningen: Axels e-postadress (står i App Store Connect; ur repot 9/10, kort #311).
 (2) **EU:s näringsidkarstatus (DSA): inte näringsidkare** — gratisapp utan verksamhet bakom; adress och telefon visas då inte i butiken.
 (3) **iOS släpps före Android.** Det ändrar DECISIONS #23 (samtidig lansering). Android följer när Googles stängda test (12 testare,
 14 dygn) är klart.
