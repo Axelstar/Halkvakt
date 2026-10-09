@@ -9650,6 +9650,17 @@ Därför, från nu:
 
 **Öppen fråga (Bengt 9/10):** *"i norrland vet man på vintern att det är halt och de har en annan beredskap för halka där … De kan nästan se det genom att titta på vägen"*. Ska norr ha en egen inriktning mitt i vintern — kraften på omslagen (oktober–november, mars–april), svartis och rimfrost på barmark, underkylt regn och broar, och tystare när vägen varit vinterväg i flera dagar? Det som syns och väntas tillför lite; det plötsliga och osynliga tillför mest. Underlag först: kuvösen kan mäta hur stor del av vintern ytan i norr ligger under noll i dagar i sträck, mot omslagen och de klara nätterna. En tystare regel ändrar vad föraren hör och kräver mätning och beslut; upprepade sanna varningar är inte i sig att ropa varg. Frågan står i bedömningens §4.2.
 
+**Var Halkvakt hjälper lite och mycket i norr** (Bengt 9/10: *"så vi kommer ihåg var halkvakt hjälper lite och mycket"*).
+En bedömning, inte en mätning — underlaget för frågan ovan.
+
+| läge i norr | syns det på vägen? | vad Halkvakt tillför |
+| :-- | :-- | :-- |
+| Snö- eller isbelagd väg mitt i vintern | ja, och den är väntad | lite — förarna är redan beredda |
+| Svartis och rimfrost på barmark en klar natt, utan nederbörd | nej — SYSTEMBILDEN: *"osynlig"* | mycket — det rimfrostgrenen ska se |
+| Underkylt regn och blidväder på frusen mark | sällan i förväg | mycket |
+| Broar, som fryser före vägen | nej | mycket — motorn varnar redan vid +3 °C på broar (`engine/src/engine.ts`) |
+| Omslagen oktober–november och mars–april | som i söder: oväntat | mycket — då är beredskapen lägst också i norr |
+
 **Väntar (Bengt: *"vi väntar med det ett tag"*).** Läsningen RÅ:s grova fel per band, norr och söder om 62°, vägt med trafiken i
 varje region — ungefär tio minuter i kuvösen, gratis efter bytet till publikt repo (#501). Står i bedömningens §4.2.
 
