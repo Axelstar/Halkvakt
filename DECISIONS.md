@@ -9585,3 +9585,40 @@ TAVLA, bedömningen och projektkartan pekar på dem som bevis, och varje klon m�
 PR-referenserna, vilket tar dagar. Valet — godta resten i historiken och byta i dag, eller skriva om och vänta — är Bengts och Axels.
 
 **Stomdokument:** BED §4.2 och §2
+
+## #501 (9/10 2026) Historiken godtas, och Axel gör bytet till publikt repo i dag — förberedelserna klara, och hans lista
+
+**Beslut.** Bengt 9/10: *"vi godtar historiken och ska göra bytet idag men det är axel som ska göra bytet. jag vill bara att
+förberedelserna är helt klara. när du gjort detta vill jag att du listar vad axel ska göra för att vi ska vara publika"*. Det som står
+kvar i historiken godtas: de två namnen i varje version sedan 1/10 (#500) och Bengts gmail i commit-huvudena (1 564 commits).
+
+**Förberedelserna klara 9/10.** Trafikverkets leverans: arkivdump deployad från 64f590e (37895597775); knappen kuvos-hinken 37895684323: fem filer i arkiv/kuvos/kuvos-trv-2024-25/, sha256 lika med manifestet efter hämtning, ingen nyckel eller signerad adress i loggen; kuvos.yml 37895773651 läste leveransen ur hinken — alla fem summorna lika, 5 496 270 råa rader från 777 stationer inlästa som förut, körningen grön. Releasen `kuvos-fysik-2024-25` fick källhänvisningen
+(Open-Meteo.com och ECMWF, CC BY 4.0); SMHI, MET Nordic och MODIS hade sin.
+
+**Rättelse av #499.** Grenskyddet ska *inte* kräva pull requests: bridges, marknadsforing och trv-bevakning pushar själva till main.
+Bara radering och force-push spärras. Standardbehörigheten för flödena kan sänkas till läsning, eftersom inget flöde utan eget
+behörighetsblock använder GitHubs token.
+
+**Före bytet (Bengt eller Axel):**
+1. Radera releasen `kuvos-trv-2024-25` (Releases → releasen → *Delete*). Leveransen ligger i hinken, och kuvösen läser den därifrån.
+2. Radera artefakten `kuvos-varningar` i körning 37447617038 (papperskorgen vid artefakten) — varningar ur leveransen.
+3. Godta att det som står i repot i dag blir publikt: Trafikverksanmälningarna (`docs/ANMALAN-TRV-*`), Nira-utredningen,
+   Skyltfondens handlingar (`docs/skyltfonden-2026-09-28/`), städernas citerade svar i bedömningen och marknadsföringens utkast
+   (`marknadsforing/`). Historiken är godtagen (#501).
+
+**Axel, inställningar före bytet (Settings):**
+4. *Actions → General → Approval for running fork pull request workflows from contributors* → **Require approval for all external
+   contributors**.
+5. *Actions → General → Workflow permissions* → **Read repository contents and packages permissions** (inga flöden utan egen
+   behörighet skriver, kontrollerat 9/10).
+6. *Rules → Rulesets* (eller *Branches*): en regel för `main` med **Restrict deletions** och **Block force pushes** — **inte**
+   *Require a pull request*: bridges, marknadsforing och trv-bevakning pushar själva till main och skulle stanna.
+
+**Axel, bytet:**
+7. *Settings → General → Danger Zone → Change repository visibility → Change to public*, och bekräfta med repots namn.
+
+**Axel, direkt efter:**
+8. *Settings → Code security*: kontrollera att **Secret scanning** och **Push protection** är på.
+9. Säg till — Claude kontrollerar att repot är publikt och att flödena går, och kassavakten ska visa 0 USD debiterat (kort #311:s Verify).
+
+**Stomdokument:** BED §4.2
