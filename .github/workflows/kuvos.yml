@@ -20,7 +20,7 @@ permissions:
 jobs:
   inlasning:
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ (inputs.korflode == 'riktningsprov' || inputs.korflode == 'kalibrering' || inputs.matning != '') && 300 || 60 }}   # 6/10: 82 min till höjdprovet, NT och efterhalkan därefter; en mätning kan köra grind A flera gånger (#469)
+    timeout-minutes: ${{ contains(inputs.matning, 'niva2') && 360 || ((inputs.korflode == 'riktningsprov' || inputs.korflode == 'kalibrering' || inputs.matning != '') && 300 || 60) }}   # 6/10: 82 min till höjdprovet, NT och efterhalkan därefter; en mätning kan köra grind A flera gånger (#469). Nivå 2 (#509) kör fysikkedjan två gånger, ~3 h: GitHubs tak 360.
     services:
       postgis:
         image: postgis/postgis:16-3.4
@@ -88,11 +88,11 @@ jobs:
         shell: bash
         env: { GH_TOKEN: "${{ github.token }}" }
         run: |
-          mkdir -p metnordic && gh release download kuvos-metnordic-2024-25 --dir metnordic --pattern '*.csv.gz'
+          mkdir -p metnordic && gh release download kuvos-metnordic-2024-25 --dir metnordic
           node -e '
             const m = require("./kuvos/metnordic-leverans.json"), c = require("crypto"), fs = require("fs");
             let fel = 0;
-            for (const f of m.filer.filter((f) => f.fil.endsWith(".csv.gz"))) {
+            for (const f of m.filer) {
               const h = c.createHash("sha256").update(fs.readFileSync("metnordic/" + f.fil)).digest("hex");
               console.log(`${f.fil}: ${h === f.sha256 ? "ok" : "FEL " + h}`); if (h !== f.sha256) fel++;
             }
@@ -154,6 +154,50 @@ jobs:
             node --experimental-strip-types scripts/vardevakten.ts 1000
             echo '```'
           } 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+      # NIVÅ 2 AV VÄDERKÄLLAN (kort #319, DECISIONS #509) bara för mätningen som läser den: fysikkedjan i fysik/ körs här i jobbet,
+      # först den frysta kedjan på ECMWF (kontrollen, ska ge FYSIK) och sedan samma kedja på MET Nordic (fysik/niva2/kedja.py).
+      # Indata som inte är Trafikverkets (höjd, terräng, vägdata, ECMWF-cachen — öppna källor per station) ur Axels release, summorna mot
+      # kuvos/fysik-indata-leverans.json. Trafikverkets filer packas upp där prep.py läser dem och når aldrig trädet (fysik/.gitignore).
+      - uses: actions/setup-python@v5
+        if: ${{ contains(inputs.matning, 'kuvos-fysik-niva2') }}
+        with: { python-version: "3.13" }
+      - name: Fysikkedjan — kontrollen på ECMWF och nivå 2 på MET Nordic
+        if: ${{ contains(inputs.matning, 'kuvos-fysik-niva2') }}
+        shell: bash
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          set -euo pipefail
+          [ -f kuvos/fysik-indata-leverans.json ] || { echo "::error::kuvos/fysik-indata-leverans.json saknas — Axels indata-release (kort #319, bedömningen §4.2)"; exit 1; }
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          mkdir -p indata && gh release download kuvos-fysik-indata-2024-25 --dir indata
+          node -e '
+            const m = require("./kuvos/fysik-indata-leverans.json"), c = require("crypto"), fs = require("fs");
+            let fel = 0;
+            for (const f of m.filer) {
+              const h = c.createHash("sha256").update(fs.readFileSync("indata/" + f.fil)).digest("hex");
+              console.log(`${f.fil}: ${h === f.sha256 ? "ok" : "FEL " + h}`); if (h !== f.sha256) fel++;
+            }
+            process.exit(fel ? 1 : 0);'
+          # Kedjan körs där den frystes: /home/claude/fys är en länk till fysik/ (de frysta filerna bär den sökvägen, README).
+          sudo mkdir -p /home/claude /mnt/user-data/uploads && sudo chown -R "$(id -u):$(id -g)" /home/claude /mnt/user-data
+          ln -sfn "$PWD/fysik" /home/claude/fys
+          mkdir -p fysik/data
+          for f in indata/*.tar.gz; do [ -e "$f" ] && tar -xzf "$f" -C fysik/data; done
+          if [ -d fysik/data/data ]; then mv fysik/data/data/* fysik/data/ && rmdir fysik/data/data; fi
+          for f in indata/*.csv; do [ -e "$f" ] && cp "$f" fysik/data/; done
+          for f in leverans/*.csv.gz; do gunzip -c "$f" > "/mnt/user-data/uploads/$(basename "${f%.gz}")"; done
+          cp metnordic/static_2026-10-06.json fysik/data/static.json
+          echo "indata: $(ls fysik/data | tr '\n' ' ') · ifs $(ls fysik/data/ifs | wc -l) stationer · ifs2 $(ls fysik/data/ifs2 | wc -l)"
+          UT="$PWD/niva2-ut"; MN="$PWD/metnordic/metnordic_2024-25.csv.gz"
+          {
+            echo '```'
+            (cd /home/claude/fys && python3 prep.py && python3 niva2/kedja.py kontroll --ut "$UT" && python3 niva2/kedja.py niva2 --metnordic "$MN" --ut "$UT" --maxfev 120)
+            echo '```'
+          } 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Kedjans utdata sparas (modellens skattningar, inte Trafikverkets data)
+        if: ${{ always() && contains(inputs.matning, 'kuvos-fysik-niva2') }}
+        uses: actions/upload-artifact@v4
+        with: { name: niva2-ut, path: niva2-ut/, retention-days: 90, if-no-files-found: ignore }
       # En mätning på samma inlästa vinter (snöflingan 2/10, DECISIONS #440). Bara filer under scripts/matningar/; den förregistreras
       # i DECISIONS innan knappen trycks, och den läser inga utfall.
       - name: Mätningen
