@@ -3875,7 +3875,7 @@ underlagets §7 bär tilläggen. Tavlan 49 → 48 öppna.
 ## #320 (23/9 2026) Halkvakt till App Store: iOS först, 0.3.9 (13) är kandidaten, ingen näringsidkare — och integritetspolicyn rättad
 
 **Axels svar 23/9 kväll** på frågorna i dokumentet *Halkvakt till App Store*:
-(1) **Kontakt** för supportsidan och granskningen: axel.lagerlof.45@gmail.com.
+(1) **Kontakt** för supportsidan och granskningen: Axels e-postadress (står i App Store Connect; ur repot 9/10, kort #311).
 (2) **EU:s näringsidkarstatus (DSA): inte näringsidkare** — gratisapp utan verksamhet bakom; adress och telefon visas då inte i butiken.
 (3) **iOS släpps före Android.** Det ändrar DECISIONS #23 (samtidig lansering). Android följer när Googles stängda test (12 testare,
 14 dygn) är klart.
@@ -9341,3 +9341,40 @@ vakterna, inte om fysiken, och den står i bedömningen §4.2.
 **Två förväntningar föll på mätningen, inte på populationen.** MAE 0,91 °C mot väntade 0,75–0,85: #485:s 0,79 °C är grind A:s A1, som
 bara räknar ytor −5…+5 °C, medan kontrollen här räknar alla ytor ≤ +5 °C — andelen grova fel, som har samma definition, träffar exakt
 (10,04 %). Raderna utan luft är 100 hinkar och bär ingenting.
+
+## #494 (8/10 2026) Ingen egen läsning av raderna radvakten och den långsamma vakten tar — Bengts nej
+
+**Beslut.** Bengt 8/10: *"nej till läsningen"* — på förslaget ur givarvaktsläsningen (DECISIONS #493) att i kuvösen läsa de rader
+radvakten och den långsamma vakten tog på vintern 2024/25 (543 och 16 263 halvtimmar, två tredjedelar inom 2 °C från fysiken), med
+solen och nederbörden ur MET Nordic, stationernas snökoder och SMHI:s snödjup. Kostnaden var en kuvöskörning om ungefär 9 Actions-minuter.
+
+**Vad som står kvar.** Iakttagelsen står under #493: att vakterna i vinterluft kan ta verkligt kalla ytor är en hypotes, inte ett fynd,
+och fysiken kan lika gärna bära samma fel som givarna. Vakterna i driften är orörda.
+
+**Stomdokument:** KUV §4, BED §4.2
+
+## #495 (9/10 2026) Veckokopian av arkivet flyttar från GitHub-releaser till den privata hinken `arkiv` i Supabase (kort #312)
+
+**Beslut.** Bengt 9/10: *"gör a, b och c"*, där (b) var att bygga backupens nya förvar i Supabase. Skälet är det publika repot
+(kort #311): releaserna blir publika med repot, och veckokopian (`arkivbackup.yml`, kort #213) är en `pg_dump` av hela
+public-schemat — också `driver_facit` och `driver_miss`, testarnas svar och missar med tid och närmaste station.
+
+**Vad som byggs.** `arkivbackup.yml` dumpar och läser tillbaka som förut, men laddar sedan upp dumpen i delar om 45 MB
+(gratisnivåns tak är 50 MB per fil) till `arkiv/dump/`, hämtar delarna tillbaka och jämför sha256 med dumpen, och gallrar till de
+fyra senaste kopiorna. Den nya edge-funktionen `arkivdump` ger bara signerade adresser och gallrar; den rör aldrig själva filerna
+och avvisar namn utanför mönstret. Nyckeln är INGEST_KEY, som jobbet läser ur pg_cron:s eget jobb med den databasanslutning det
+redan har och maskerar i loggen — **ingen ny hemlighet i GitHub, inget för Axel att göra**. Releasesteget och gallringen av releaser
+är borta; de tre befintliga `arkiv-*`-releaserna raderar Bengt själv, när en kopia bevisligen ligger i hinken.
+
+**Avvägningen, sagd högt.** Kopian låg medvetet *utanför* Supabase. Nu ligger den hos samma leverantör och i samma projekt som
+databasen: försvinner projektet eller kontot försvinner kopian med det. Mot det står att den inte blir publik, och att det enda
+alternativet utan Axel — en krypterad release — kräver en nyckel som antingen ligger i databasen (och då försvinner med den) eller
+hos någon av oss. Den som vill ha en kopia utanför Supabase hämtar en med `lage=hamta` och lägger den på egen disk.
+
+**Alternativ som valdes bort.** (a) En privat repo för kopiorna — kräver en nyckel i Halkvakts hemligheter, och bara ägaren
+(Axel) kan lägga in den. (b) En krypterad release med en nyckel ur databasen — återläsningen dör med databasen. (c) Att behålla
+releaserna och inte göra repot publikt — det är Axels beslut på kort #311, och backupen ska inte vara skälet.
+
+**Gränser.** Fyra kopior, inte tolv. Hinken delas med kamerafacit (56 MB 9/10) och arkivexporten (8 MB) inom 1 GB.
+
+**Stomdokument:** MAT §1, BED §4.2
