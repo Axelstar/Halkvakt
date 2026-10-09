@@ -9926,7 +9926,7 @@ snötäcke `swe` (finns redan som särdrag; snöfallet härleds ur nederbörd vi
 långvågen i stället för Brutsaert-skattningen, den största vinsten med bytet; **marktemperatur** ersätts av kolumnens eget 5 cm-lager
 (räknas redan, lämnas inte ut — en rads ändring i nivå 2:s kopia) eller stryks. Daggpunkten härleds ur fukten (Magnus). Allt är en
 omkalibrering: `calib2.py` på MET Nordic ger nya parametrar och `expA.py` en ny rättelse, och den förregistreras som egen kandidat
-före knappen (kort #319). Går de tre bort helt kostar det högst 0,7 procentenheter i rättelsen — det är inte där nivå 2 avgörs.
+före knappen (kort #319). Vad det kostar att stryka de tre helt är inte mätt: 0,7 procentenheter är deras värde ensamma, och bidraget ovanpå väg och terräng mättes inte.
 
 **Körning** (README): hela kedjan från tomt ~3–4 h klocktid, det mesta väntan på Open-Meteo och rastrarna; med cachen ~50 min, varav
 `expA.py` 45 min. Minne uppmätt 9/10: 2,6 GB RSS till och med första veckets designmatris; 4 GB räcker.
@@ -9939,4 +9939,6 @@ med och är märkta i README, Bengt kan stryka dem. (b) Byta sökvägarna till r
 **Vad som INTE görs.** Ingen omkalibrering i den här PR:en, inget utfall, inga trösklar. Nivå 2 är kort #319: nya filer, egen
 förregistrering, knappen på Bengts ord.
 
-**Stomdokument:** KUV §6, BED §4.2
+**Rättelse 9/10 kväll (granskningen i Bengts session, Bengts ja).** Två rader rättade efter sammanslagningen (a10c9fa): (1) posten sade *"högst 0,7 procentenheter"* för att stryka de tre fälten — talet är deras värde ensamma, och bidraget ovanpå väg och terräng mättes inte, så kostnaden är okänd; (2) stomdokumentraden pekade på KUV §6, men ändringen på kuvössidan gjordes i §12 (loggen). Samtidigt flyttades kort #319 från Axel till Claude: nyckeln är levererad, nivå 2 byggs i Bengts session som nya filer, med förregistrering och knappen på Bengts ord; Axels val av källa står kvar. I projektkartan sade raden för nivå 2 både att koden bara fanns i Axels session och att den låg i repot — rättad, och ett byggsteg *Fysikkoden i repot* med a10c9fa som bevis. Kuvössidans kö (§9) sade *Axels fil* — rättad.
+
+**Stomdokument:** KUV §12, BED §4.2
