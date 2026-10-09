@@ -60,6 +60,27 @@ Skillnaden finns i båda regionerna och är störst kring noll, där halkan upps
 nivå 2: Axels modell omkalibrerad på MET Nordic, körd i kuvösen mot samma facit som FYSIK (9,85 %). Dagens tal är ECMWF:s och följer
 inte med.
 
+## Nivå 1b — alla vägstationer, mot deras egen luft och daggpunkt (9/10, DECISIONS #505)
+
+Samma två källor vid alla 753 vägstationer med data i kuvösen (samma stationer som FYSIK), mot vägstationens egen luft och daggpunkt — ett facit MET Nordic inte läser in (MET Norways dokumentation). ECMWF hämtad för alla 854 stationer, i den öppna releasen `kuvos-ecmwf-2024-25`. Körning 37927729663, 2 680 361 timmar.
+
+| grova fel (> 2 °C) | MET Nordic | ECMWF | förväntan MET / ECMWF |
+| :-- | --: | --: | :-- |
+| luft, alla timmar | **9,0 %** | 16,2 % | 9–16 ✓ / 15–24 ✓ |
+| luft, nära noll (−3…+2 °C) | **4,4 %** | 12,0 % | 4–10 ✓ / 9–16 ✓ |
+| luft, frost (≤ 0 °C) | **16,0 %** | 26,5 % | — |
+| luft, norr om 62° | **20,1 %** | 27,2 % | 18–30 ✓ / 25–38 ✓ |
+| luft, söder om 62° | **5,1 %** | 12,3 % | 6–12 ✗ (bättre) / 11–19 ✓ |
+| luft, vägt med trafiken | **5,6 %** | 13,2 % | 6–12 ✗ (bättre) / 11–19 ✓ |
+| luft, trafikvägt norr / söder | **18,4 / 4,0 %** | 27,2 / 11,5 % | — |
+| luft, band 0–7 · 7–15 · 15–20 · > 20 km | **4,7 · 6,1 · 9,3 · 19,8** | 12,9 · 13,6 · 16,4 · 25,4 | — |
+| daggpunkt, alla timmar | 14,8 % | 14,7 % | 10–22 ✓ / 12–26 ✓ |
+| daggpunkt, nära noll · frost | **9,9 · 20,2 %** | 11,8 · 24,8 % | — |
+| daggpunkt, norr · söder | 24,1 · 11,6 % | 24,2 · 11,3 % | — |
+| daggpunkt, vägt med trafiken | 12,5 % | 12,0 % | — |
+
+**Läsning.** MET Nordic har ungefär hälften så många grova fel i luften som ECMWF, i båda regionerna och vägt med trafiken, och störst försprång nära noll. Talen ligger nästan exakt på nivå 1:s, så oron för det beroende facit förklarade inte försprånget. Daggpunkten skiljer inte källorna åt. Enligt läsregeln i #505 är MET Nordic det bättre underlaget; valet är Axels.
+
 ## Data
 
 `data/vaderkallan/`: `ecmwf_2024-25.csv.gz` (255 360 rader = 70 punkter × 3 648 timmar; t2m, rh, vind 10 m, moln, nederbörd,
