@@ -9648,6 +9648,8 @@ Därför, från nu:
 3. Norr läggs inte åt sidan: där bär 17,5 % av trafiken det långa avståndet, och tystnad bortom 20 km (spridningsgrinden) är svaret när
    osäkerheten är för stor, inte ett fel som döljs i ett riksgenomsnitt.
 
+**Öppen fråga (Bengt 9/10):** *"i norrland vet man på vintern att det är halt och de har en annan beredskap för halka där … De kan nästan se det genom att titta på vägen"*. Ska norr ha en egen inriktning mitt i vintern — kraften på omslagen (oktober–november, mars–april), svartis och rimfrost på barmark, underkylt regn och broar, och tystare när vägen varit vinterväg i flera dagar? Det som syns och väntas tillför lite; det plötsliga och osynliga tillför mest. Underlag först: kuvösen kan mäta hur stor del av vintern ytan i norr ligger under noll i dagar i sträck, mot omslagen och de klara nätterna. En tystare regel ändrar vad föraren hör och kräver mätning och beslut; upprepade sanna varningar är inte i sig att ropa varg. Frågan står i bedömningens §4.2.
+
 **Väntar (Bengt: *"vi väntar med det ett tag"*).** Läsningen RÅ:s grova fel per band, norr och söder om 62°, vägt med trafiken i
 varje region — ungefär tio minuter i kuvösen, gratis efter bytet till publikt repo (#501). Står i bedömningens §4.2.
 
