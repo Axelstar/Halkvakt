@@ -9665,3 +9665,20 @@ En bedömning, inte en mätning — underlaget för frågan ovan.
 varje region — ungefär tio minuter i kuvösen, gratis efter bytet till publikt repo (#501). Står i bedömningens §4.2.
 
 **Stomdokument:** KUV §8, BED §4.2
+
+## #503 (9/10 2026) Repot är publikt — bytet bekräftat, och kassavakten räknar inte minuterna efter bytet (kort #311)
+
+**Beslut.** Bengt 9/10: *"vi är klara med omläggningen till publikt repo"*. Kontrollerat: repot publikt 9/10 omkring 09:45 UTC (Axel): API:et svarar `visibility: public` utan inloggning, och regeln för main är aktiv med *Restrict deletions* och *Block force pushes* (`deletion`, `non_fast_forward`) på standardgrenen; de fyra releaserna syns utan inloggning, Trafikverkets inte; hemlighetsskanningen syns bara för admin.
+
+**Kassavakten rättad i samma varv.** Den räknade varje körnings minuter oavsett synlighet, så räkningen 11 UTC hade fortsatt säga
+*"TAKET SLÅR I 2026-10-21"* fast standardrunners i ett publikt repo inte debiteras, och kort #311:s Verify — *"kassavakten visar
+0 USD debiterat månaden efter"* — hade aldrig kunnat bli sann. Nu läser vakten repots synlighet: är det publikt räknas bara körningar som
+startade före `PUBLIKT_FRAN` (2026-10-09 09:45 UTC, repots `updated_at` efter bytet, på minuten när), och prognosen räknar framåt med
+takten noll; varningen *"Takten ändras"* tystnar, eftersom det är bytet som ändrar den. Går repot tillbaka till privat räknas allt som
+förut. Beviset är kassavaktens rad efter deployen (räknas 05/11/17/23 UTC): *"PUBLIKT sedan 2026-10-09 09:45 UTC"* och issue #701
+stängd av vakten själv.
+
+**Kvar.** Axel bekräftar *Secret scanning* och *Push protection* (punkt 8 i #501; syns bara för admin). Kort #311 stängs när
+kassavakten visar 0 USD debiterat för november. Oktobers minuter före bytet står kvar: omkring 700 debiterade, ungefär 6 USD av taket 35.
+
+**Stomdokument:** BED §4.2

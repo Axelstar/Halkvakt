@@ -670,6 +670,11 @@ Deno.serve(async (req) => {
   const LARM_ANDEL = 0.70;     // larma när FAKTISK förbrukning passerat denna andel av taket
   const SIDTAK = 10;           // max 10 sidor à 100 körningar PER DYGN — GitHub paginerar ändå bara till 1 000
   const KASSA_SAMTIDIGA = 6;   // dygn som hämtas samtidigt (kort #201) — lågt nog för GitHubs gräns för samtidiga anrop
+  // PUBLIKT REPO (9/10, DECISIONS #501/#503): standardrunners i ett publikt repo debiteras inte. Är repot publikt räknas bara
+  // körningar som startade före bytet, och prognosen räknar framåt med takten noll — annars larmar vakten om ett tak som inte
+  // längre kan nås, och kort #311:s Verify ("0 USD debiterat månaden efter") kan aldrig bli sann. Tiden är repots updated_at
+  // efter bytet (API 9/10), på minuten när; går repot tillbaka till privat räknas allt som förut.
+  const PUBLIKT_FRAN = Date.parse("2026-10-09T09:45:00Z");
   try {
     const nu = new Date();
     const kassaprov = new URL(req.url).searchParams.get("kassaprov") === "1";
@@ -678,6 +683,7 @@ Deno.serve(async (req) => {
     } else {
       const start = new Date(Date.UTC(nu.getUTCFullYear(), nu.getUTCMonth(), 1));
       const sedan = start.toISOString().slice(0, 10);
+      const publikt = (await gh("")).private === false;
       // ETT DYGN I TAGET, inte hela månaden på en gång. GitHubs runs-endpoint paginerar bara
       // fram till 1 000 träffar och säger det inte: första bygget 13/9 räknade exakt 1 000
       // körningar, rapporterade 94 min/dygn och såg fullt rimligt ut — mot 202 som mätts
@@ -701,6 +707,7 @@ Deno.serve(async (req) => {
           for (const r of k) {
             // Pågående körningar räknas nästa varv — en halvfärdig körning har ingen sluttid.
             if (r.status !== "completed" || !r.run_started_at) continue;
+            if (publikt && new Date(r.created_at).getTime() >= PUBLIKT_FRAN) continue;   // efter bytet: debiteras inte
             const sek = (new Date(r.updated_at).getTime() - new Date(r.run_started_at).getTime()) / 1000;
             dagMin += Math.max(1, Math.ceil(sek / 60));
             dagKorningar++;
@@ -740,19 +747,21 @@ Deno.serve(async (req) => {
         ? kompletta.reduce((s, d) => s + (perDag.get(d) ?? 0), 0) / kompletta.length : takt;
       // Avviker takterna mycket står marken och gungar under prognosen, och då ska det SÄGAS
       // i stället för att en av siffrorna tyst vinner.
-      const gungar = takt > 0 && Math.abs(slapande - takt) / takt > 0.25;
+      const gungar = !publikt && takt > 0 && Math.abs(slapande - takt) / takt > 0.25;
+      const framat = publikt ? 0 : slapande;   // det som kan debiteras framåt
 
       // PROGNOSEN RÄKNAS PÅ DEN SLÄPANDE TAKTEN, och räknas framåt FRÅN NU i stället för från
       // månadens början — samma tal när takten är konstant, men rätt när den inte är det.
-      const prognosUsd = Math.max(0, minuter + slapande * (dygnIManaden - dygnIn) - GRATIS_MIN) * PRIS_PER_MIN;
+      const prognosUsd = Math.max(0, minuter + framat * (dygnIManaden - dygnIn) - GRATIS_MIN) * PRIS_PER_MIN;
       const takMin = GRATIS_MIN + TAK_USD / PRIS_PER_MIN;
-      const dygnTillTak = slapande > 0 ? (takMin - minuter) / slapande : Infinity;
+      const dygnTillTak = framat > 0 ? (takMin - minuter) / framat : Infinity;
       const takDatum = dygnTillTak >= 0 && dygnIn + dygnTillTak <= dygnIManaden
         ? new Date(nu.getTime() + dygnTillTak * 86400000).toISOString().slice(0, 10) : null;
       rad.push(`kassan: ${minuter} min sedan ${sedan} (${korningar} körningar) · debiterat ${debiterat} min ` +
         `= ${kostnad.toFixed(2)} av ${TAK_USD} USD · takt ${takt.toFixed(0)} månad / ${slapande.toFixed(0)} släpande ` +
         `min per dygn · prognos ${prognosUsd.toFixed(0)} USD` +
-        `${takDatum ? ` · TAKET SLÅR I ${takDatum}` : ""}${gungar ? " · TAKTEN ÄNDRAS" : ""}${avkortad ? " · AVKORTAD" : ""}`);
+        `${takDatum ? ` · TAKET SLÅR I ${takDatum}` : ""}${gungar ? " · TAKTEN ÄNDRAS" : ""}${avkortad ? " · AVKORTAD" : ""}` +
+        `${publikt ? " · PUBLIKT sedan 2026-10-09 09:45 UTC: körningar därefter debiteras inte" : ""}`);
 
       const skal: string[] = [];
       if (kostnad >= TAK_USD * LARM_ANDEL)
@@ -775,6 +784,8 @@ Deno.serve(async (req) => {
         `dras bort först ⇒ debiterat **${debiterat} min = ${kostnad.toFixed(2)} USD** av taket ${TAK_USD}. ` +
         `Takt: **${takt.toFixed(0)} min/dygn** månad-till-datum, **${slapande.toFixed(0)} min/dygn** släpande ` +
         `(${kompletta.length} kompletta dygn). Prognos för månaden **${prognosUsd.toFixed(0)} USD**.` + "\n" + "\n" +
+        (publikt ? `**Repot är publikt sedan 2026-10-09 09:45 UTC** (DECISIONS #503): standardrunners debiteras inte, så bara ` +
+          `körningarna före bytet räknas, och prognosen räknar framåt med takten noll.` + "\n" + "\n" : "") +
         `**Förbrukningen läses ur månadstalet, prognosen ur det släpande.** Månadssnittet låser fast ` +
         `en takt som kan ha upphört att gälla — 13/9 innehöll det fem flöden som lades ner 8–9/9 och ` +
         `pekade därför nio dygn fel. Det släpande talet är i gengäld känsligt för en enskild byggskur. ` +
