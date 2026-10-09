@@ -9713,3 +9713,90 @@ med frågan till Bengt om en körning mot VViS-facit i kuvösen. Data: ECMWF-fil
 `manifest.json`) eftersom releaser inte kunde skapas från sessionen; källa Open-Meteo.com / ECMWF, CC BY 4.0.
 
 **Stomdokument:** BED §4.2
+
+## #505 (9/10 2026) Väderkällan nivå 1b — MET Nordic och ECMWF mot vägstationernas egen luft och daggpunkt, förregistrerad (kort #318)
+
+**Beslut.** Bengt 9/10: *"slå ihop 837 och kör nivå 1b nu"* — efter *"men då måste vi väl göra den breda mätningen för att få rättvisa
+jämförelsetal eller?"*. Nivå 1 (#504) jämförde källorna mot SMHI:s luft vid 70 punkter, 18 i norr. Nivå 1b gör samma jämförelse vid
+**alla vägstationer med data i kuvösen** — samma stationer som FYSIK prövades på (#485) — mot **vägstationernas egen luft och
+daggpunkt**. MET Norways dokumentation (läst 9/10, kort #318) nämner inte vägstationerna bland det MET Nordic korrigerar mot, så facit
+är oberoende för MET Nordic; MET Nordics fukt är modellens (MEPS) utan korrigering.
+
+**Underlaget.** MET Nordic Analysis i rutan närmast varje station (release `kuvos-metnordic-2024-25`, #480). ECMWF IFS ur Open-Meteos
+arkiv i varje stations koordinat, hämtad 9/10 för alla 854 stationer (`scripts/matningar/vaderkallan-1b-hamta-ecmwf-2026-10-09.py`,
+samma anrop som nivå 1 men bara luft och fukt): 3 115 392 rader, luft −32,4…+17,7 °C, fukt 18–100 %, i den öppna releasen
+`kuvos-ecmwf-2024-25` (sha256 7a247017…, `kuvos/ecmwf-leverans.json`; källa Open-Meteo.com och ECMWF, CC BY 4.0). Fältet `rh_pct`
+deklarerat i värdevakten. Daggpunkten räknas ur luft och fukt med Magnus formel för båda källorna. Facit: vägstationens `air_temp_c`
+och `dewpoint_c` i avläsningen närmast hela timmen (±15 min), stationer i karantän utelämnade (#299, med givarvakten #75), värdevaktens
+spann hållna. Bara timmar där facit och båda källorna finns.
+
+**Måtten.** Grova fel (> 2 °C), MAE och medelfel i luft och daggpunkt: alla timmar, nära noll (facit −3…+2 °C), frost (≤ 0 °C), norr
+och söder om 62° (#502), avståndsband (stationens avstånd till närmaste andra station) och **vägt med trafiken** — varje väglagspunkt
+(#490) räknas till närmaste station med sin ÅDT × 2 km. Skriptet `scripts/matningar/kuvos-metnordic-ecmwf-1b-2026-10-09.ts`, självtest i
+ci.yml, motprovat: ECMWF räknad med MET Nordics värden fäller; att tidsfönstrets gräns tas bort fäller inte, eftersom en timme utanför
+fönstret saknar källvärde och ändå hoppas över — skyddet finns två gånger.
+
+**Förväntningar, skrivna före knappen.**
+
+| | MET Nordic | ECMWF |
+| :-- | --: | --: |
+| underlaget | 700–760 stationer, minst 2,0 miljoner timmar med luft | samma |
+| luft, grova fel, alla timmar | 9–16 % | 15–24 % |
+| luft, norr om 62° | 18–30 % | 25–38 % |
+| luft, söder om 62° | 6–12 % | 11–19 % |
+| luft, nära noll | 4–10 % | 9–16 % |
+| luft, vägt med trafiken | 6–12 % | 11–19 % |
+| daggpunkt, grova fel, alla timmar | 10–22 % | 12–26 % |
+
+Vägstationernas givare sitter vid vägen, ofta i svackor och skärningar, så felen väntas bli större än mot SMHI:s stationer för båda
+källorna. MET Nordics försprång i daggpunkten väntas vara högst hälften av försprånget i luften, eftersom dess fukt inte korrigeras.
+
+**Hur läsningen läses — en läsning, inget val av källa (Axels, #504).**
+- MET Nordic är det bättre underlaget för fysiken om dess grova fel i luften är färre än ECMWF:s **vägt med trafiken och i både norr
+  och söder**, och dess daggpunkt inte är mer än en procentenhet sämre.
+- Vinner MET Nordic luften men förlorar daggpunkten med mer än en procentenhet, noteras att fukten bör tas från en annan källa (MEPS).
+- Är ECMWF lika bra eller bättre i luften håller inte nivå 1:s slutsats på vägnätet, och frågan går tillbaka till Axel med båda
+  tabellerna.
+
+**Reservationer, med i läsningen.** Luft och daggpunkt, inte vägytan — nivå 2 (fysiken omkalibrerad på MET Nordic, mot FYSIK:s 9,85 %)
+avgör. Analys, inte prognos: MET Nordics prognoser arkiveras sedan 2018 och kan prövas senare. En vinter.
+
+**Kostnad.** En körning av kuvos.yml, omkring tio minuter, gratis sedan repot blev publikt (#503).
+
+**Utfall (9/10 12:15 UTC, körning 37927729663 på 6ab24e0; mätningen 0,4 min).** ECMWF-filen = manifestet (sha256 7a247017…).
+Vägstationernas timmar 2 683 984 från 754 stationer, daggpunkt i nästan alla; 753 stationer med facit och båda källorna.
+
+| grova fel (> 2 °C) | MET Nordic | ECMWF | förväntan MET / ECMWF |
+| :-- | --: | --: | :-- |
+| luft, alla timmar | **9,0 %** | 16,2 % | 9–16 ✓ / 15–24 ✓ |
+| luft, nära noll (−3…+2 °C) | **4,4 %** | 12,0 % | 4–10 ✓ / 9–16 ✓ |
+| luft, frost (≤ 0 °C) | **16,0 %** | 26,5 % | — |
+| luft, norr om 62° | **20,1 %** | 27,2 % | 18–30 ✓ / 25–38 ✓ |
+| luft, söder om 62° | **5,1 %** | 12,3 % | 6–12 ✗ (bättre) / 11–19 ✓ |
+| luft, vägt med trafiken | **5,6 %** | 13,2 % | 6–12 ✗ (bättre) / 11–19 ✓ |
+| luft, trafikvägt norr / söder | **18,4 / 4,0 %** | 27,2 / 11,5 % | — |
+| luft, band 0–7 · 7–15 · 15–20 · > 20 km | **4,7 · 6,1 · 9,3 · 19,8** | 12,9 · 13,6 · 16,4 · 25,4 | — |
+| daggpunkt, alla timmar | 14,8 % | 14,7 % | 10–22 ✓ / 12–26 ✓ |
+| daggpunkt, nära noll · frost | **9,9 · 20,2 %** | 11,8 · 24,8 % | — |
+| daggpunkt, norr · söder | 24,1 · 11,6 % | 24,2 · 11,3 % | — |
+| daggpunkt, vägt med trafiken | 12,5 % | 12,0 % | — |
+
+**Mot förväntningarna.** Underlaget och nio av elva tal inom spannen. Två utanför, båda åt det bättre hållet för MET Nordic: söder om
+62° 5,1 % (förväntat 6–12) och vägt med trafiken 5,6 % (6–12). MET Nordics försprång i daggpunkten blev noll, inom förväntan *högst
+hälften av försprånget i luften*.
+
+**Mot läsregeln.** MET Nordic har färre grova fel i luften än ECMWF vägt med trafiken, i norr och i söder, och dess daggpunkt är 0,1
+procentenheter sämre totalt och 0,5 vägt med trafiken — under gränsen på en. **Enligt läsregeln är MET Nordic det bättre underlaget för
+fysiken.** Valet är Axels (#504).
+
+**Läsningen.** Talen ligger nästan exakt på nivå 1:s (8,7 och 16,0 % mot SMHI), fast facit nu är vägstationernas egna givare och
+oberoende av MET Nordic: oron för att MET Nordic läser in SMHI:s stationer förklarade inte försprånget. Försprånget i luften är störst
+nära noll (4,4 mot 12,0 %), där halkan uppstår. Båda källorna blir sämre ju längre en station ligger från andra (MET Nordic 4,7 % inom
+7 km, 19,8 % bortom 20 km) — det är norr och glesbygden, samma bild som #502. Daggpunkten skiljer inte källorna åt: MET Nordics fukt är
+modellens, utan korrigering, och dess daggpunkt ligger 0,43 °C för högt i medel; i frost och nära noll är den ändå bättre (20,2 mot 24,8
+och 9,9 mot 11,8 %). Båda källorna ligger för varmt i frost (+0,57 och +0,72 °C).
+
+**Följd.** Rapporten `docs/VADERKALLAN-JAMFORELSE-2026-10-09.md` har ett avsnitt om nivå 1b. Kort #318 klart. Nästa steg är nivå 2 —
+Axels fysikmodell omkalibrerad på MET Nordic, i kuvösen mot FYSIK:s 9,85 % — och Axels val av källa.
+
+**Stomdokument:** KUV §9, BED §4.2

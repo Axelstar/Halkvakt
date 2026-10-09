@@ -1,0 +1,14 @@
+{
+ "_om": "ECMWF IFS ur Open-Meteos arkiv (models=ecmwf_ifs) för väderkällans nivå 1b (kort #318, DECISIONS #505): timvis 31/10 2024 – 31/3 2025 UTC, luft 2 m (t2m_c) och relativ fukt (rh_pct) i 854 vägstationers punkter, hämtad 9/10 av scripts/matningar/vaderkallan-1b-hamta-ecmwf-2026-10-09.py. Källa: Open-Meteo.com och ECMWF (CC BY 4.0). Mätningen hämtar filen ur den öppna releasen och fäller en fil som inte stämmer.",
+ "release": "kuvos-ecmwf-2024-25",
+ "hamtad": "2026-10-09",
+ "filer": [
+  {
+   "fil": "ecmwf_1b_2024-25.csv.gz",
+   "bytes": 15664233,
+   "rader": 3115392,
+   "stationer": 854,
+   "sha256": "7a247017edc8b7d9e6530cee405632ea6342e53d0687e78bc9ebe424895df495"
+  }
+ ]
+}

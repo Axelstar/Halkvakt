@@ -85,6 +85,8 @@ export const SPANN: Record<string, [number, number, string]> = {
   fysik_c: [-60, 60, "°C skattad yttemperatur (fysikspåret, kuvos-fysik-2024-25)"],
   // Kallkartan (MODIS natt-LST 2022–25, releasen kuvos-modis-2022-25, DECISIONS #482). Läst 9/10 vid 843 stationer: −2,74…+3,51 K,
   // 1/99-percentil −1,78 / +1,46. Spannet är fysikens för en lokal avvikelse mot ±25 km en klar natt; vattnet tas av provets egen regel.
+  // ECMWF IFS ur Open-Meteos arkiv för väderkällans nivå 1b (kort #318, DECISIONS #505): relativ fukt i procent; luften läses som t2m_c.
+  rh_pct: [0, 100, "% relativ fukt 2 m (ECMWF via Open-Meteo, nivå 1b)"],
   medelavvikelse_k: [-15, 15, "K lokal avvikelse i MODIS natt-LST mot ±25 km (kallkartan, kuvos-modis-2022-25, DECISIONS #482)"],
   severity_code: [1, 5, "TRV SeverityCode — 3 har aldrig förekommit"],
   // Radarns intensiteter. 200 mm/h är fysikens gräns för en 5-minutersskur; extrema
