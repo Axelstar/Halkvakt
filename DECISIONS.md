@@ -9859,4 +9859,36 @@ vägt med trafiken.
 
 **Kostnad.** En körning av kuvos.yml, omkring tio minuter, gratis (#503).
 
+**Utfall 9/10** (körning 37932248631 på add4113; förväntningarna i samma commit, pushad före knappen). 737 stationer och 4 352 753
+gemensamma punkter, FYSIK:s sha256 lika med manifestet; 729 stationer med trafik närmast sig, 183 i norr och 546 i söder.
+
+| | RÅ | FYSIK | OFFSET (taket) |
+| :-- | --: | --: | --: |
+| alla, alla band | 7,5 % | 9,8 % | 5,5 % |
+| alla · 0–7 · 7–15 · 15–20 · >20 km | 5,2 · 5,3 · 7,2 · 13,6 | 8,1 · 8,0 · 8,8 · 15,5 | 3,6 · 3,7 · 5,4 · 10,3 |
+| alla · vägt med trafiken | 5,1 % | 7,6 % | 3,6 % |
+| **norr**, alla band (1 255 431 punkter) | 14,1 % | 17,1 % | 10,7 % |
+| norr · 0–7 · 7–15 · 15–20 · >20 km | 14,3 · 11,0 · 12,3 · 16,0 | 16,9 · 16,6 · 15,4 · 17,9 | 9,5 · 7,7 · 10,2 · 12,2 |
+| norr · vägt med trafiken | 12,6 % | 16,0 % | 9,5 % |
+| **söder**, alla band (3 097 322 punkter) | 4,8 % | 6,9 % | 3,4 % |
+| söder · 0–7 · 7–15 · 15–20 · >20 km | 3,2 · 4,5 · 5,2 · 8,4 | 6,1 · 6,8 · 6,2 · 10,4 | 2,3 · 3,1 · 3,6 · 6,1 |
+| söder · vägt med trafiken | 4,1 % | 6,6 % | 2,9 % |
+
+**Mot förväntningarna.** Kontrollerna träffar: totalerna och norr och söder för RÅ och FYSIK ligger inom 0,05 procentenheter av #485,
+så underlaget är kuvösens. De trafikvägda talen ligger inom sina spann. Fyra bandförväntningar missade: RÅ norr 0–7 km 14,3 % (väntat
+7–12), RÅ norr >20 km 16,0 % (18–28), FYSIK norr >20 km 17,9 % (18–30) och RÅ söder 0–7 km 3,2 % (4–6). Förväntningarna antog att norr
+följer söderns avståndstrappa, och det gör den inte.
+
+**Vad talen visar** (ingen dom):
+1. I söder följer felet avståndet: 3,2 % nära en station och 8,4 % bortom 20 km. I norr gör det inte: 14,3 % nära och 16,0 % långt
+   bort, och bandet 7–15 km är bäst (11,0 %). Det som felar i norr sitter alltså inte främst i luckorna mellan stationerna.
+2. FYSIK är sämre än RÅ i alla tio cellerna, också bortom 20 km i norr (17,9 mot 16,0 %).
+3. Taket OFFSET, stationens egen historik, lämnar 10,7 % grova fel i norr (vägt 9,5 %), alltså mer än dubbla vägpunktsgrindens 5 % fast
+   en station står på platsen. I söder lämnar det 3,4 %.
+4. Vägt med trafiken får RÅ 5,1 %, inte 5,4 % som i #490. #490 vägde banden med trafikens andel, medan regioner.ts väger varje
+   station med trafiken närmast den. Båda räkningarna är riktiga; framåt gäller regioner.ts.
+5. Norrs 0–7 km-band har 90 004 punkter. Varför det är sämre än 7–15 km är inte utrett.
+
+Punkt 1 och 3 är underlag för (b) i november.
+
 **Stomdokument:** KUV §8 och §9, BED §4.2

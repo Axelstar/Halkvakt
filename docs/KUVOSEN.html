@@ -257,7 +257,7 @@
 <!-- LÄGESRADER §5: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 <div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
   <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-kv-prognoslagret">Prognoslagrets kandidater</a> <span style="color: var(--dampad, #4A5763)">delvis, 71 % · kvar: Kriging: prövas eller läggs ned efter kallkartans utfall, Bengts och Axels ord (bedömningen §4.2, DECISIONS #481, #496, #497)</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-kv-prognoslagret">Prognoslagrets kandidater</a> <span style="color: var(--dampad, #4A5763)">delvis, 73 % · kvar: Kriging: prövas eller läggs ned efter kallkartans utfall, Bengts och Axels ord (bedömningen §4.2, DECISIONS #481, #496, #497)</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Fyra läsningar 6/10</b> <span style="color: var(--dampad, #4A5763)">klart · 37530898977, DECISIONS #471: ankarspridningen skiljer de grova felen (0,5–2 °C ger 1,8 % på 59 % av punkterna), vårens fel är dagsljuset (natten 4,2 %), regimstyrd offset ger 0,3 procentenheter, grova kovariater inget (R² 0,01)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Spridningen och natten korsade</b> <span style="color: var(--dampad, #4A5763)">klart · 37651865384, DECISIONS #476: grinden vid 2,25 °C talar på 60,6 % med 2,8 % grova fel, natten ensam 6,0 % på 63,0 %; grinden antagen med X = 2,25 °C och natten avstådd (DECISIONS #474, #477, #478)</span></li>
@@ -268,6 +268,7 @@
       <li><span aria-hidden="true">✓</span> <b>C8 mot fingeravtrycken</b> <span style="color: var(--dampad, #4A5763)">klart · DECISIONS #486: vägdatan förklarar ungefär 5 % av särarten mot den äldre modellen (VÄG R² 0,0499) och ingenting mot den frysta</span></li>
       <li><span aria-hidden="true">✓</span> <b>Kallkartan</b> <span style="color: var(--dampad, #4A5763)">klart · Körning 37885821554 på 28926d7 (förväntningarna incheckade i 1d3bb95 före knappen): KALL 9,76 %, KALL-NATT 8,79 % och KALL-½ 7,63 % grova fel mot RÅ:s 7,26 % på samma 4 216 946 punkter, bortom 20 km 16,56 · 15,32 · 13,31 mot 13,13 %; på natten 8,14 · 8,14 · 6,03 mot 5,73 %; ingen kandidat (DECISIONS #496); lagd åt sidan som rättelse på RÅ på Bengts ja 9/10 (DECISIONS #497)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Väderkällan, nivå 1 och 1b</b> <span style="color: var(--dampad, #4A5763)">klart · Nivå 1 (#504, 70 punkter mot SMHI): MET Nordic 8,7 mot ECMWF 16,0 % grova fel i luften. Nivå 1b (#505): körning 37927729663 på 6ab24e0 (förväntningarna i samma commit, pushad före knappen): 753 stationer, 2 680 361 timmar med luft; MET Nordic 9,0 % grova fel i luften mot ECMWF 16,2 %, vägt med trafiken 5,6 mot 13,2 %, norr 20,1 mot 27,2 %, söder 5,1 mot 12,3 %; daggpunkten lika (14,8 mot 14,7 %). Valet är Axels; nivå 2 avgör</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Norr och söder om 62°, per band och vägt med trafiken</b> <span style="color: var(--dampad, #4A5763)">klart · Körning 37932248631 på add4113 (förväntningarna i samma commit, pushad före knappen), DECISIONS #507: RÅ i norr 14,1 % (0–7 km 14,3, &gt;20 km 16,0, vägt med trafiken 12,6) mot söder 4,8 % (3,2 → 8,4, vägt 4,1); FYSIK sämre än RÅ i alla tio cellerna; taket OFFSET lämnar 10,7 % i norr. Den gemensamma redovisningen scripts/matningar/regioner.ts</span></li>
       <li><span aria-hidden="true">○</span> <b>Kriging</b> <span style="color: var(--dampad, #4A5763)">saknas · Står ensam efter kallkartans utfall: prövas eller läggs ned, Bengts och Axels ord (bedömningen §4.2, DECISIONS #481, #496, #497)</span></li>
       <li><span aria-hidden="true">○</span> <b>FYSIK+BLANDNING i kuvösen</b> <span style="color: var(--dampad, #4A5763)">saknas · Mätningen byggd och förregistrerad med förväntningar (DECISIONS #490); väntar på Axels filer i analysläge (kort #308)</span></li>
       <li><span aria-hidden="true">○</span> <b>Operativt läge, prognosväder +6 h</b> <span style="color: var(--dampad, #4A5763)">saknas · Förregistrerad i DECISIONS #490; väntar på Axels fil i operativt läge (kort #308)</span></li>
@@ -311,6 +312,26 @@
   trafiken, och drygt hälften av den går norr om 62°, där 17,5 % av trafiken går bortom 15 km. Vägt med trafiken har RÅ 5,4 % grova
   fel, och felfria band bortom 15 km skulle ge 5,05 %. Kuvösens 7,5 % räknas per station och halvtimme, inte per fordonskilometer.
   Räkningen med trafiken gjordes efteråt och var inte förregistrerad.</p>
+  <p><b>Norr och söder om 62° (9/10, #507).</b> RÅ, FYSIK och OFFSET på FYSIK:s 4 352 753 punkter, norr och söder var för sig, per band
+  och vägt med trafiken närmast varje station. Redovisningen är gemensam för alla kommande läsningar
+  (<span class="mono">scripts/matningar/regioner.ts</span>). Ingen dom: talen är utgångsläget som nivå 2 och FYSIK+BLANDNING jämförs mot.</p>
+  <div class="tabell">
+    <table>
+      <thead><tr><th>Region</th><th>Kandidat</th><th>Grova fel</th><th>0–7 · 7–15 · 15–20 · &gt; 20 km</th><th>Vägt med trafiken</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="3"><b>Norr</b>, 183 stationer</td><td>RÅ</td><td class="nr">14,1 %</td><td class="nr">14,3 · 11,0 · 12,3 · 16,0</td><td class="nr">12,6 %</td></tr>
+        <tr><td>FYSIK</td><td class="nr">17,1 %</td><td class="nr">16,9 · 16,6 · 15,4 · 17,9</td><td class="nr">16,0 %</td></tr>
+        <tr><td>OFFSET (taket)</td><td class="nr">10,7 %</td><td class="nr">9,5 · 7,7 · 10,2 · 12,2</td><td class="nr">9,5 %</td></tr>
+        <tr><td rowspan="3"><b>Söder</b>, 546 stationer</td><td>RÅ</td><td class="nr">4,8 %</td><td class="nr">3,2 · 4,5 · 5,2 · 8,4</td><td class="nr">4,1 %</td></tr>
+        <tr><td>FYSIK</td><td class="nr">6,9 %</td><td class="nr">6,1 · 6,8 · 6,2 · 10,4</td><td class="nr">6,6 %</td></tr>
+        <tr><td>OFFSET (taket)</td><td class="nr">3,4 %</td><td class="nr">2,3 · 3,1 · 3,6 · 6,1</td><td class="nr">2,9 %</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="litet">I söder följer felet avståndet, från 3,2 % nära en station till 8,4 % bortom 20 km. I norr gör det inte: 14,3 % nära och
+  16,0 % långt bort, och 7–15 km är bäst. Taket, stationens egen historik, lämnar 10,7 % grova fel i norr. FYSIK är sämre än RÅ i alla tio
+  cellerna. Vägt med trafiken får RÅ 5,1 % i hela landet; #490:s 5,4 % vägde banden i stället för stationerna. Fyra av förväntningarna per
+  band missade, alla för att de antog att norr följer söderns avståndstrappa. Kontrollerna träffade inom 0,05 procentenheter av #485.</p>
   <div class="lyft">
     <h3>Axels fynd ur fysikspåret</h3>
     <p class="litet">Ur Axels sida <a href="https://claude.ai/artifact/2QAxS4Wz848PT6xwT6GQ72"><i>Physics-First Road Ice Test</i></a>, räknade i hans egen
@@ -419,7 +440,6 @@
         <tr><td>Vind och sikt</td><td>Startvärden</td><td><a href="#avsnitt-4">4</a></td></tr>
         <tr><td>Nederbördstypen igen</td><td>Ordlistan får <i>yes</i> och <i>freezing_rain</i> före nästa körning (#467)</td><td><a href="#avsnitt-4">4</a></td></tr>
         <tr><td>Väderkällan nivå 2: fysiken omkalibrerad på MET Nordic, mot FYSIK:s 9,85 %</td><td>Axels fil och val av källa (nivå 1b 9/10: MET Nordic 9,0 mot ECMWF 16,2 % grova fel i luften, #505)</td><td><a href="#avsnitt-5">5</a></td></tr>
-        <tr><td>Norr och söder per band och vägt med trafiken: RÅ, FYSIK och OFFSET</td><td>Körningen i kuvösen, förregistrerad 9/10 (#507, kort #317)</td><td><a href="#avsnitt-5">5</a></td></tr>
         <tr><td>Kriging</td><td>Bengts och Axels ord: prövas ensam eller läggs ned, sedan kallkartan lagts åt sidan (#481, #496, #497)</td><td><a href="#avsnitt-5">5</a></td></tr>
         <tr><td>FYSIK+BLANDNING och FYSIK+GRANNAR i kuvösen, i analysläge och med prognosväder +6 h</td><td>Axels filer i releasen (kort #308; förväntningarna i #490)</td><td><a href="#avsnitt-5">5</a></td></tr>
         <tr><td>Förregistreringen för vintern 2026/27 på SMHI/MET</td><td>Bengts beslut (bedömningen §4.2, #485)</td><td><a href="#avsnitt-5">5</a></td></tr>
@@ -481,7 +501,7 @@
   <p>Ingenting i kuvösen når en förare. Appen, rösten och det telefonen hämtar är orörda.</p>
   <h2 id="avsnitt-12">12. Loggen, dag för dag</h2>
   <details>
-    <summary style="cursor: pointer">Vad som hände 2/10–8/10, som det skrevs då</summary>
+    <summary style="cursor: pointer">Vad som hände 2/10–9/10, som det skrevs då</summary>
     <ol class="tid">
       <li><b>2/10</b><div>Filen kom, en vecka tidigare än väntat. Den är inventerad, packad i en privat release och tidszonen är mätt. Frågorna om koderna går till Trafikverket.</div></li>
       <li><b>2/10 kväll</b><div>Axel hittade fyra av nederbördskoderna i Trafikverkets ersättningsmodell. Vintern är inläst i kuvösens databas och vakterna är körda som antal. SMHI:s stationer och radar för samma vinter är hämtade. Inget utfall är läst.</div></li>
@@ -490,12 +510,13 @@
       <li><b>7/10</b><div>Spridningen och natten korsade (DECISIONS #476): X-kurvan i steg om 0,25 °C, natten för driftens råa modell och morgonen. Kontrollen höll mot 6/10, med 4 353 206 punkter och 7,5 % grova fel. Grinden vid 2,25 °C talar på 61 % med 2,8 % grova fel. Natten ensam ger 6,0 %, och ovanpå grinden köper den lite men tystar marsmorgnarna. Samma kväll satte Bengt X till 2,25 °C och avstod natten (DECISIONS #477). C8 med vägdata kördes också (DECISIONS #479): trafikmängd och vägklass förklarar 4 % av stationernas särart mot RÅ, och de grova felen står kvar på 7,5 %. Mot en vädermodell ur MET Nordic förklarar samma vägdata 30 % (DECISIONS #480), nästan som Axel fann mot sin fysikmodell; vädermodellen själv har 21,8 % grova fel. Rutnätsmodellen från 6/10 kördes också (DECISIONS #481): att sprida vägens skillnad mot luften i stället för vägens temperatur gav 9,3 % grova fel mot RÅ:s 7,4 %. Spridningsgrinden antogs och loggas i skuggan (#474), och Axel signerade att marsdomen räknas med den (#475, #478). Vägdatan för 854 stationer och 818 segment ligger i repot (#472, #473).</div></li>
       <li><b>8/10</b><div>Axels fysikspår förregistrerat som kandidaten FYSIK (DECISIONS #485, kort #305): en skattning av ytan per station och halvtimme ur ECMWF, en värmekolumn och en inlärd rättelse där varje stations region är gömd — räknad utanför repot och fryst med hash, och den går in i kuvösen som fil, inte som kod. Mätningen räknar RÅ som kontroll och FYSIK på samma punkter; förväntningarna står i beslutet före knappen, och ett träffat tal bevisar bara att filen och kuvösen räknar på samma population. Fingeravtrycksfilen Bengt bad om ligger i repot.</div></li>
       <li><b>8/10</b><div>FYSIK körd på knappen (37693105481, Axels ord i Bengts ställe, DECISIONS #485 och #486): RÅ-kontrollen 7,51 % visar att populationen är kuvösens, och FYSIK fick 9,85 % grova fel på RÅ:s punkter (band 8,1 · 8,0 · 8,8 · 15,5 %) och 10,04 % på alla hinkar — varje tal inom förväntan och inom 0,1 procentenhet av replikan. Kuvösen kan alltså döma en kandidat som räknats utanför repot. FYSIK ensam är sämre än RÅ i varje band; domen läses på vintern 2026/27. C8 mot Axels fingeravtryck: vägdatan förklarar ungefär 5 % av särarten mot den äldre modellen och ingenting mot den frysta.</div></li>
+      <li><b>9/10</b><div>Kallkartan, RÅ rättad med satellitens nattliga yttemperatur, bar inte (DECISIONS #496): KALL 9,76 % grova fel mot RÅ:s 7,26 % på samma punkter, sämre också på natten. Bengt lade den åt sidan (#497). Väderkällan nivå 1b på alla vägstationer (#505): MET Nordic 9,0 % grova fel i luften mot ECMWF:s 16,2 %, vägt med trafiken 5,6 mot 13,2 %. Norr och söder om 62° lästa per band och vägt med trafiken (#507): i söder följer felet avståndet (3,2 → 8,4 %), i norr inte (14,3 → 16,0 %), och taket lämnar 10,7 % i norr.</div></li>
     </ol>
   </details>
   <p class="litet">Besluten och STATUS bär samma historik i detalj.</p>
 
   <hr>
-  <p class="litet">Källor: beslutsloggen (DECISIONS #292, #388, #397, #398, #418, #424–#428, #437, #438, #440, #442, #453–#456, #463–#482, #485, #486, #489), fysikspårets frysdokument (docs/FYSIKSPARET-FRYS-2026-10-07.md) och Axels sida <i>Physics-First Road Ice Test</i>, kort #232, #270, #278 och #298, planen (docs/PLAN-KUVOSEN-2026-10-01.md), bedömningen §4.2, §6.1 och §7 och tröskeldokumentet för kombinationen (regel D). Sidan till Trafikverkets handläggare, <i>Halkvakt och kuvösen</i>, är en annan sida och säger mindre. Alla datum avser 2026 om inget annat står.</p>
+  <p class="litet">Källor: beslutsloggen (DECISIONS #292, #388, #397, #398, #418, #424–#428, #437, #438, #440, #442, #453–#456, #463–#482, #485, #486, #489, #496, #497, #502, #505, #507), fysikspårets frysdokument (docs/FYSIKSPARET-FRYS-2026-10-07.md) och Axels sida <i>Physics-First Road Ice Test</i>, kort #232, #270, #278 och #298, planen (docs/PLAN-KUVOSEN-2026-10-01.md), bedömningen §4.2, §6.1 och §7 och tröskeldokumentet för kombinationen (regel D). Sidan till Trafikverkets handläggare, <i>Halkvakt och kuvösen</i>, är en annan sida och säger mindre. Alla datum avser 2026 om inget annat står.</p>
 
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
   <h2 id="oppna-kort">Öppna kort</h2>
