@@ -484,7 +484,7 @@
   <p><b>På iPhone</b> väcker systemet inte appen på minuten, och det finns två vägar.</p>
   <ul>
     <li><b>En påminnelse vid den inställda tiden,</b> <i>Dags att kolla vägen till jobbet</i>. Telefonen kan schemalägga den själv, och rapporten är färsk när föraren öppnar den. Men den kommer varje gång, också när inget är nytt.</li>
-    <li><b>En notis bara när något är nytt</b> kräver att appen kör kollen 07:05, och det kan i praktiken bara en automation i Genvägar. Projektet har redan bedömt sådana automationer som för svåra för de flesta: varje förare måste bygga sin egen, och appen kan inte skapa eller dela dem (DECISIONS #38, #39). Genvägar är därför valfritt (#309), och dagens guide täcker bara CarPlay, Bluetooth och fokus Kör, inte ett klockslag.</li>
+    <li><b>En notis bara när något är nytt</b> kräver att appen kör kollen 07:05, och det kan i praktiken bara en automation i Genvägar. Projektet har redan bedömt sådana automationer som för svåra för de flesta: varje förare måste bygga sin egen, och appen kan inte skapa eller dela dem (DECISIONS #38, #39). Genvägar är därför valfritt (DECISIONS #309), och dagens guide täcker bara CarPlay, Bluetooth och fokus Kör, inte ett klockslag.</li>
   </ul>
   <p><b>På Android</b> finns ingen schemaläggning i appen i dag. Den måste byggas, och om en exakt tid kräver en särskild behörighet är inte utrett. Siri finns bara på iPhone, och om Androids röstassistent kan ta egna fraser är osäkert. <b>Notiserna:</b> appen frågar i dag om dem först när vakten startar, och på iPhone bara om att visa dem. Tiderna måste fråga själva när de ställs in.</p>
 
@@ -544,7 +544,7 @@
       </ul>
     </div>
   </div>
-  <p><b>En sak gäller redan i dag.</b> På iPhone ligger historiken för <i>Efter resan</i>, facitsvaren och missarna i appens inställningar, och de följer med i iCloud-säkerhetskopian. Varningarnas id, de närmaste stationerna och klockslagen säger ungefär var och när föraren körde. Inget av det skickas till Halkvakt, men det lämnar telefonen i förarens egen säkerhetskopia. Det är inte nytt med favoriterna, men samma regel bör gälla för det som för rutterna (kort #285).</p>
+  <p><b>En sak gäller redan i dag.</b> På iPhone ligger historiken för <i>Efter resan</i>, facitsvaren och missarna i appens inställningar, och de följer med i iCloud-säkerhetskopian. Varningarnas id, de närmaste stationerna och klockslagen säger ungefär var och när föraren körde. Kopian i inställningarna skickas aldrig till Halkvakt — bara det svar eller den miss som en betatestare själv trycker på, med brytaren på — men den lämnar telefonen i förarens egen säkerhetskopia. Det är inte nytt med favoriterna, men samma regel bör gälla för det som för rutterna (kort #285).</p>
 
   <h2 id="avsnitt-7">7. Var informationen kommer ifrån, och vad som måste byggas</h2>
 <!-- LÄGESRADER §7: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
