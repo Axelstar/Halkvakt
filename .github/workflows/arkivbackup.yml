@@ -1,6 +1,7 @@
 name: arkivbackup
-# ARKIVBACKUP (kort #213, 20/9): veckovis pg_dump av hela arkivet till en GitHub-release i det här
-# repot — utanför Supabase, vars gratisnivå inte säkerhetskopierar. Trafikverket ger bara nuläge
+# ARKIVBACKUP (kort #213, 20/9): veckovis pg_dump av hela arkivet — sedan 9/10 till den privata hinken `arkiv` i Supabase
+# (kort #312, DECISIONS #495), inte längre som GitHub-release: releaserna blir publika med ett publikt repo (kort #311), och
+# dumpen bär hela public-schemat, också testarnas svar och missar. Supabases gratisnivå säkerhetskopierar inte databasen själv. Trafikverket ger bara nuläge
 # och delta, så det som tappas ur arkivet är borta för alltid, och januari- och marsdomen vilar på det.
 #
 # Ett grönt jobb betyder att dumpen BEVISLIGEN går att läsa tillbaka, inte bara att filen finns:
@@ -10,14 +11,16 @@ name: arkivbackup
 #
 # Larm: en issue med etiketten `arkivbackup` när körningen faller. Egen etikett med flit —
 # healthcheckens `incident` auto-stängs av nästa gröna healthcheck och skulle tysta larmet.
-# Kvarhållning: de 12 senaste dumparna (≈ tre månader). Äldre tas bort SIST, efter att den nya
-# är uppladdad — en misslyckad körning gallrar ingenting.
+# Kvarhållning: de fyra senaste dumparna i hinken (hinken delas med kamerafacit och arkivexporten inom 1 GB). Äldre tas bort
+# SIST, efter att den nya är uppladdad OCH hämtad tillbaka med samma sha256 — en misslyckad körning gallrar ingenting.
+# Återläsning: POST functions/v1/arkivdump?lage=hamta {"namn": "<dump>"} med x-halkvakt-key ger adresser till delarna;
+# ladda ner dem, `cat <dump>.del* > <dump>`, och läs tillbaka med pg_restore som i provet nedan.
 on:
   schedule:
     - cron: "17 3 * * 0" # söndag 03:17Z — en körning i veckan, ~5 min (minutdiet, beslut #22)
   workflow_dispatch: {}
 permissions:
-  contents: write # releaser
+  contents: read
   issues: write # larm
 concurrency: arkivbackup
 jobs:
@@ -33,7 +36,6 @@ jobs:
     env:
       DATABASE_URL: "${{ secrets.DATABASE_URL }}"
       PROV_URL: postgresql://postgres:prov@localhost:5433/prov
-      GH_TOKEN: "${{ github.token }}"
     steps:
       - name: Klient som matchar servern
         shell: bash
@@ -128,30 +130,45 @@ jobs:
           print(f"alla {len(kalla)} tabeller återlästa: {sum(map(int, kalla.values()))} rader i källan, {sum(int(prov[t]) for t in kalla)} i provet")
           PY
 
-      - name: Publicera som release
+      - name: Till hinken i Supabase, hämtad tillbaka och jämförd
         shell: bash
         run: |
-          TAG="arkiv-$(date -u +%Y-%m-%dT%H%MZ)"
-          {
-            echo "Arkivdump $(date -u +'%Y-%m-%d %H:%MZ') — pg_dump custom-format, $((BYTES / 1000000)) MB, scheman: $SCHEMAS."
-            echo
-            echo "Återläst i en PostGIS-container i samma körning; radantal per tabell (källan före dumpen mot det återlästa):"
-            echo
-            cat tabell.md
-            echo
-            echo 'Återläsning: `createdb x && psql x -c "create extension postgis" && pg_restore --dbname x --no-owner --no-privileges <fil>.dump` — fel om pg_net/pg_cron är väntade, tabellerna kommer med.'
-          } > notes.md
-          gh release create "$TAG" "$FIL" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Arkivdump $(date -u +%Y-%m-%d)" --notes-file notes.md --latest=false
-          echo "release: $TAG ($FIL, $((BYTES / 1000000)) MB)"
-          { echo "## Arkivdump $TAG — $((BYTES / 1000000)) MB, återläst ✅"; echo; cat tabell.md; } >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Gallra äldre än de 12 senaste
-        shell: bash
-        run: |
-          gh release list --repo "$GITHUB_REPOSITORY" --limit 200 --json tagName,createdAt \
-            --jq '[.[] | select(.tagName | startswith("arkiv-"))] | sort_by(.createdAt) | reverse | .[12:] | .[].tagName' \
-          | while read -r t; do gh release delete "$t" --repo "$GITHUB_REPOSITORY" --cleanup-tag --yes && echo "gallrad: $t"; done
-          echo "kvar: $(gh release list --repo "$GITHUB_REPOSITORY" --limit 200 --json tagName --jq '[.[] | select(.tagName | startswith("arkiv-"))] | length') arkivdumpar"
+          set -euo pipefail
+          # Funktionens adress och nyckel ur pg_cron:s eget jobb — samma INGEST_KEY som klockan bär, ingen ny hemlighet i
+          # GitHub (kort #312). Nyckeln maskeras innan något annat görs; de signerade adresserna skrivs aldrig ut.
+          read -r FN KEY < <(psql "$DUMP_URL" -At -F ' ' -c "select substring(command from '(https://[a-z0-9]+[.]supabase[.]co)') || '/functions/v1/arkivdump', substring(command from 'x-halkvakt-key[^A-Za-z0-9_-]+([A-Za-z0-9_-]+)') from cron.job where jobname = 'halkvakt-arkivexport'")
+          [ "${#KEY}" -ge 32 ] || { echo "::error::nyckeln gick inte att läsa ur cron.job (halkvakt-arkivexport)"; exit 1; }
+          echo "::add-mask::$KEY"
+          anrop() { curl -sS --fail-with-body -X POST "$FN?lage=$1" -H "x-halkvakt-key: $KEY" -H "Content-Type: application/json" -d "$2"; }
+          # Gratisnivån tar högst 50 MB per fil: delar om 45 MB, i ordningen .del00, .del01 …
+          split -b 45000000 -d -a 2 "$FIL" "$FIL.del"
+          DELAR=$(ls "$FIL".del* | wc -l)
+          SHA=$(sha256sum "$FIL" | cut -d' ' -f1)
+          echo "dump: $FIL — $BYTES byte i $DELAR delar, sha256 $SHA"
+          anrop ladda_upp "{\"namn\":\"$FIL\",\"delar\":$DELAR}" > urls.json
+          i=0
+          for del in "$FIL".del*; do
+            URL=$(python3 -c "import json; print(json.load(open('urls.json'))['urls'][$i])")
+            curl -sS --fail-with-body -X PUT -H "Content-Type: application/octet-stream" --data-binary @"$del" "$URL" > /dev/null
+            echo "uppladdad: $del ($(stat -c %s "$del") byte)"
+            i=$((i + 1))
+          done
+          # Beviset är inte uppladdningens kvitto utan filen hämtad tillbaka ur hinken: samma sha256 som dumpen som återlästes ovan.
+          anrop hamta "{\"namn\":\"$FIL\"}" > hamta.json
+          SHA="$SHA" python3 - <<'PY'
+          import hashlib, json, os, urllib.request
+          delar = sorted(json.load(open("hamta.json"))["delar"], key=lambda d: d["fil"])
+          h, n = hashlib.sha256(), 0
+          for d in delar:
+              b = urllib.request.urlopen(d["url"], timeout=300).read()
+              h.update(b); n += len(b)
+              print(f"hämtad: {d['fil']} ({len(b)} byte)")
+          if h.hexdigest() != os.environ["SHA"] or n != int(os.environ["BYTES"]):
+              print(f"::error::hinkens kopia är inte dumpen: {n} byte, sha256 {h.hexdigest()}"); raise SystemExit(1)
+          print(f"hinkens kopia = dumpen: {len(delar)} delar, {n} byte, sha256 lika")
+          PY
+          anrop gallra '{}' | python3 -c "import json, sys; g = json.load(sys.stdin); print(f\"gallrade: {len(g['raderade'])} delar · kopior kvar i hinken: {g['kopior_kvar']}\")"
+          { echo "## Arkivdump $FIL — $((BYTES / 1000000)) MB, återläst ✅, i hinken arkiv/dump/ ($DELAR delar, sha256 lika efter hämtning)"; echo; cat tabell.md; } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Larm-issue vid fel
         if: failure()

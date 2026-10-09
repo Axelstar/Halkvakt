@@ -67,9 +67,9 @@ Klistra in på engelska — granskarna läser engelska:
 >
 > The optional "Betatest" switch in Settings (off by default) lets a tester send a one-tap answer after a trip about whether a warning was correct; the data sent is described in the app and in the privacy policy (hazard id, timestamp, answer, app version).
 >
-> The app is in Swedish and is released in Sweden only. Contact: Axel Lagerlöf, axel.lagerlof.45@gmail.com.
+> The app is in Swedish and is released in Sweden only. Contact: Axel Lagerlöf, ‹Axels e-postadress›.
 
-Kontaktuppgifter i formuläret: Axel Lagerlöf, +46 (ditt nummer), axel.lagerlof.45@gmail.com. *Sign-in required:* **Nej**.
+Kontaktuppgifter i formuläret: Axel Lagerlöf, +46 (ditt nummer), ‹Axels e-postadress›. *Sign-in required:* **Nej**.
 
 ## Skärmbilder
 Mappen `appstore/` i den här katalogen: 1320 × 2868 (6,9 tum), inramade ur råbilder tagna på Axels iPhone 14 ur (19), 1/10 kväll. Apple
