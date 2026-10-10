@@ -52,7 +52,7 @@ const MAXGAP_MIN = 45;   // längre lucka bryter episoden — arkivdieten, inte 
 export type Rad = { station: string; t: number; yta: number; dagg: number; rh: number; timme: number;
   natt: string; lon: number; lat: number };
 export type Episod = { station: string; natt: string; minuter: number; kallastTimme: number;
-  kallastT: number; lon: number; lat: number; moln?: Molnklass };
+  kallastT: number; lon: number; lat: number; moln?: Molnklass; startT?: number };   // startT: första radens epoch-sekund (R-B:s fyrning, kort #46)
 
 /** Villkoret. Vakten sitter i frågan; den här funktionen prövar bara fysiken. */
 export function uppfyller(r: { yta: number; dagg: number }, m: number, y: number): boolean {
@@ -77,7 +77,7 @@ export function episoder(rader: Rad[], m: number, y: number, uthall: number): Ep
         if (minuter >= uthall) {
           const kallast = lopande.reduce((a, b) => (b.yta < a.yta ? b : a));
           ut.push({ station, natt: lopande[0].natt, minuter, kallastTimme: kallast.timme,
-            kallastT: kallast.t / 60, lon: kallast.lon, lat: kallast.lat });
+            kallastT: kallast.t / 60, lon: kallast.lon, lat: kallast.lat, startT: lopande[0].t });
         }
       }
       lopande = [];
@@ -128,8 +128,11 @@ function raRad(m: number, y: number, u: number, ep: Episod[], oppen: boolean): s
     `${andel(natt / (ep.length || 1)).padStart(8)}  ${andel(d.andel).padStart(8)}`;
 }
 
+// Bara när filen körs själv: R-B:s uppspelning (kort #46) importerar villkoret och episoderna och har sitt eget självtest.
+const korsSjalv = !!process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, "/").split("/").pop()!);
+
 // ── Självtest med känd sanning.
-if (process.argv.includes("--sjalvtest")) {
+if (korsSjalv && process.argv.includes("--sjalvtest")) {
   console.log("SJÄLVTEST — villkoret, episoderna, uthålligheten och vakterna mot känd sanning\n");
   let ok = true;
   const k = (namn: string, fick: unknown, vantat: unknown) => {
@@ -185,7 +188,8 @@ if (process.argv.includes("--sjalvtest")) {
   process.exit(0);
 }
 
-// ── Skarpt (läser bara).
+// ── Skarpt (läser bara). Bara när filen körs själv — R-B:s uppspelning (kort #46) importerar villkoret och episoderna ovan.
+if (korsSjalv) {
 const url = process.env.DATABASE_URL;
 if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
 const LAND = (process.argv.find((a) => a.startsWith("--land="))?.split("=")[1] ?? "fi").toLowerCase();
@@ -320,3 +324,4 @@ if (LAND === "se") {
 console.log(`\n  Att läsa med: R-A prövar om SIGNALEN finns och är fysik. Den ger ingen rätt till röst.`);
 console.log(`  Rimfrosten blir en ANDRA GREN i icing_point, aldrig en sjätte farotyp (§1).`);
 await pool.end();
+}

@@ -47,7 +47,7 @@ export const K3_KM = [15, 20, 50];            // längsta avstånd till bidragan
 const K_A1_TRAFF = 0.95, K_A2_FARLIGT = 0.01, K_A3_TACKNING = 0.70;
 const MIN_PUNKTER = 500, MIN_STATIONER = 20, MIN_FRYS = 100;
 
-export type Punkt = { measured: number; pred: number; station: string };
+export type Punkt = { measured: number; pred: number; station: string; t?: number };   // t: hinken (K-B:s uppspelning läser den)
 export type Utvardering = {
   uttalade: number; ratt: number; farligt: number; avstod: number;
   traff: number; farligtAndel: number; tackning: number;
@@ -99,8 +99,11 @@ function kaRad(km: number, grans: number, zon: number,
     `${nog ? utfall : "—"}`;
 }
 
+// Bara när filen körs själv: K-B:s uppspelning importerar funktionerna ovan och har sitt eget självtest.
+const korsSjalv = !!process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, "/").split("/").pop()!);
+
 // ── Självtest med känd sanning + driftvakt mot grind A.
-if (process.argv.includes("--sjalvtest")) {
+if (korsSjalv && process.argv.includes("--sjalvtest")) {
   console.log("SJÄLVTEST — klassningen, avståendet och vakterna mot känd sanning\n");
   let ok = true;
   const k = (namn: string, fick: unknown, vantat: unknown) => {
@@ -156,51 +159,16 @@ if (process.argv.includes("--sjalvtest")) {
   process.exit(0);
 }
 
-// ── Skarpt (läser bara).
-const url = process.env.DATABASE_URL;
-if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
-const DAGAR = Number(process.argv.slice(2).find((a) => /^\d+$/.test(a)) ?? 60);
-const pg = (await import("pg")).default;
-const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });
-await pool.query("SET statement_timeout = '600s'");
-// Saknade dygn (kort #252, DECISIONS #352): raderingen i sql/034 får aldrig krympa fönstret tyst.
-skrivSaknade(await saknadeDygn((s, p) => pool.query(s, p as any[]).then((r) => r.rows), "weather_observations", DAGAR));
+export type Station = { id: string; lon: number; lat: number; series: Map<number, number> };
 
-type Station = { id: string; lon: number; lat: number; series: Map<number, number> };
-// VAKTDIAGNOSEN FÖRST (DECISIONS #141).
-await vaktdiagnos((s, p) => pool.query(s, p as any[]).then((r) => r.rows),
-  "weather_observations", `WHERE sample_time > now() - ${DAGAR} * interval '1 day'`, [
-    { namn: "yttemperatur finns", bar: "surface_temp_c IS NOT NULL", villkor: "true" },
-    { namn: "#75: lufttemperatur finns", bar: "air_temp_c IS NOT NULL", villkor: "true" },
-    { namn: "#75: yta - luft >= -12 grader", bar: "surface_temp_c IS NOT NULL AND air_temp_c IS NOT NULL", villkor: "surface_temp_c >= air_temp_c - 12" },
-    { namn: "vintertimme (yta <= 5 grader)", bar: "surface_temp_c IS NOT NULL", villkor: "surface_temp_c <= 5" },
-    ...led234(),
-  ]);
-const res = await pool.query(`
-  SELECT DISTINCT ON (station_id, b) station_id,
-    ST_X(geom::geometry) lon, ST_Y(geom::geometry) lat,
-    floor(extract(epoch FROM sample_time) / ${BUCKET_S})::bigint AS b, surface_temp_c
-  FROM weather_observations
-  WHERE surface_temp_c IS NOT NULL AND sample_time > now() - $1 * interval '1 day' AND ${GIVARVAKT}
-  ORDER BY station_id, b, sample_time DESC`, [DAGAR]);
-const stationer = new Map<string, Station>();
-for (const r of res.rows as any[]) {
-  let s = stationer.get(r.station_id);
-  if (!s) { s = { id: r.station_id, lon: +r.lon, lat: +r.lat, series: new Map() }; stationer.set(r.station_id, s); }
-  s.series.set(Number(r.b), +r.surface_temp_c);
-}
-console.log(`Grind K-A — bär modellen en FRYSKLASSNING? (kort #103, ${DAGAR} dygn)\n`);
-console.log(`Underlag: ${stationer.size} stationer, ${res.rows.length} bucketade avläsningar (efter #75:s givarvakt).`);
-if (stationer.size < 100) { console.error("UNDERLAGSVAKT: för få stationer. Avbryter."); await pool.end(); process.exit(1); }
-
-function haversineKm(lon1: number, lat1: number, lon2: number, lat2: number): number {
+export function haversineKm(lon1: number, lat1: number, lon2: number, lat2: number): number {
   const R = 6371, dLa = (lat2 - lat1) * Math.PI / 180, dLo = (lon2 - lon1) * Math.PI / 180;
   const a = Math.sin(dLa / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLo / 2) ** 2;
   return 2 * R * Math.asin(Math.sqrt(a));
 }
 
-/** Grind A:s leave-one-out, men med K3 som tak för bidragande grannar. */
-function utvardera(maxKm: number): Punkt[] {
+/** Grind A:s leave-one-out, men med K3 som tak för bidragande grannar. Exporterad för K-B:s uppspelning (kort #309). */
+export function utvardera(stationer: Map<string, Station>, maxKm: number): Punkt[] {
   const ids = [...stationer.keys()];
   const grannar = new Map<string, { id: string; km: number }[]>();
   for (const s of ids) {
@@ -236,11 +204,48 @@ function utvardera(maxKm: number): Punkt[] {
         const w = 1 / Math.max(km, 1);
         wsum += w; psum += w * (nv + offsetExcl);
       }
-      if (wsum > 0) ut.push({ measured, pred: psum / wsum, station: s });
+      if (wsum > 0) ut.push({ measured, pred: psum / wsum, station: s, t });
     }
   }
   return ut;
 }
+
+// ── Skarpt (läser bara). Bara när filen körs själv — K-B:s uppspelning importerar funktionerna ovan.
+if (korsSjalv) {
+const url = process.env.DATABASE_URL;
+if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
+const DAGAR = Number(process.argv.slice(2).find((a) => /^\d+$/.test(a)) ?? 60);
+const pg = (await import("pg")).default;
+const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });
+await pool.query("SET statement_timeout = '600s'");
+// Saknade dygn (kort #252, DECISIONS #352): raderingen i sql/034 får aldrig krympa fönstret tyst.
+skrivSaknade(await saknadeDygn((s, p) => pool.query(s, p as any[]).then((r) => r.rows), "weather_observations", DAGAR));
+
+// VAKTDIAGNOSEN FÖRST (DECISIONS #141).
+await vaktdiagnos((s, p) => pool.query(s, p as any[]).then((r) => r.rows),
+  "weather_observations", `WHERE sample_time > now() - ${DAGAR} * interval '1 day'`, [
+    { namn: "yttemperatur finns", bar: "surface_temp_c IS NOT NULL", villkor: "true" },
+    { namn: "#75: lufttemperatur finns", bar: "air_temp_c IS NOT NULL", villkor: "true" },
+    { namn: "#75: yta - luft >= -12 grader", bar: "surface_temp_c IS NOT NULL AND air_temp_c IS NOT NULL", villkor: "surface_temp_c >= air_temp_c - 12" },
+    { namn: "vintertimme (yta <= 5 grader)", bar: "surface_temp_c IS NOT NULL", villkor: "surface_temp_c <= 5" },
+    ...led234(),
+  ]);
+const res = await pool.query(`
+  SELECT DISTINCT ON (station_id, b) station_id,
+    ST_X(geom::geometry) lon, ST_Y(geom::geometry) lat,
+    floor(extract(epoch FROM sample_time) / ${BUCKET_S})::bigint AS b, surface_temp_c
+  FROM weather_observations
+  WHERE surface_temp_c IS NOT NULL AND sample_time > now() - $1 * interval '1 day' AND ${GIVARVAKT}
+  ORDER BY station_id, b, sample_time DESC`, [DAGAR]);
+const stationer = new Map<string, Station>();
+for (const r of res.rows as any[]) {
+  let s = stationer.get(r.station_id);
+  if (!s) { s = { id: r.station_id, lon: +r.lon, lat: +r.lat, series: new Map() }; stationer.set(r.station_id, s); }
+  s.series.set(Number(r.b), +r.surface_temp_c);
+}
+console.log(`Grind K-A — bär modellen en FRYSKLASSNING? (kort #103, ${DAGAR} dygn)\n`);
+console.log(`Underlag: ${stationer.size} stationer, ${res.rows.length} bucketade avläsningar (efter #75:s givarvakt).`);
+if (stationer.size < 100) { console.error("UNDERLAGSVAKT: för få stationer. Avbryter."); await pool.end(); process.exit(1); }
 
 console.log(`\nSVEPET — K1 klassgräns × K2 osäkerhetszon × K3 ankaravstånd (${K1_GRANS.length * K2_ZON.length * K3_KM.length} kombinationer)`);
 console.log(`  Krav: träff ≥ ${pct(K_A1_TRAFF)} · farliga fel ≤ ${pct(K_A2_FARLIGT)} · täckning ≥ ${pct(K_A3_TACKNING)}`);
@@ -248,7 +253,7 @@ console.log(`  Krav: träff ≥ ${pct(K_A1_TRAFF)} · farliga fel ≤ ${pct(K_A2
 type Rad = { km: number; grans: number; zon: number; u: Utvardering; g: ReturnType<typeof grind>; frys: number; stationer: number };
 const rader: Rad[] = [];
 for (const km of K3_KM) {
-  const punkter = utvardera(km);
+  const punkter = utvardera(stationer, km);
   const nStationer = new Set(punkter.map((p) => p.station)).size;
   for (const grans of K1_GRANS) {
     const frys = punkter.filter((p) => p.measured <= grans).length;
@@ -289,3 +294,4 @@ console.log(`\n  Att läsa med, alltid: ett ja här ger INGEN rätt att skapa en
 console.log(`  frysklassning får stärka en bedömning som redan vilar på en uppmätt station — aldrig`);
 console.log(`  vara avtryckare. En modellerad storhet är inte en observation.`);
 await pool.end();
+}

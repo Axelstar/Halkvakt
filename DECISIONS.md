@@ -9942,3 +9942,52 @@ förregistrering, knappen på Bengts ord.
 **Rättelse 9/10 kväll (granskningen i Bengts session, Bengts ja).** Två rader rättade efter sammanslagningen (a10c9fa): (1) posten sade *"högst 0,7 procentenheter"* för att stryka de tre fälten — talet är deras värde ensamma, och bidraget ovanpå väg och terräng mättes inte, så kostnaden är okänd; (2) stomdokumentraden pekade på KUV §6, men ändringen på kuvössidan gjordes i §12 (loggen). Samtidigt flyttades kort #319 från Axel till Claude: nyckeln är levererad, nivå 2 byggs i Bengts session som nya filer, med förregistrering och knappen på Bengts ord; Axels val av källa står kvar. I projektkartan sade raden för nivå 2 både att koden bara fanns i Axels session och att den låg i repot — rättad, och ett byggsteg *Fysikkoden i repot* med a10c9fa som bevis. Kuvössidans kö (§9) sade *Axels fil* — rättad.
 
 **Stomdokument:** KUV §12, BED §4.2
+
+## #510 (10/10 2026) K-B:s och R-B:s uppspelningar byggda ur arkivet, spärrade som grind NT — och kodgrindens underlagsspärr förregistrerad (kort #309, #46, ärende #815)
+
+**Beslut.** Bengt 10/10: *"går det att göra kort 309, 46 och 815 nu så gör vi dem"*, efter vinterkollen (frosten 6–8/10 läst 8/10, #491;
+108 stationer under noll 9/10, snölarm i tre län, första vinterordet 8/10). Tre byggen, inga trösklar ändrade, inget utfall läst.
+
+**1. Den gemensamma facitsidan** (`scripts/uppspelning-facit.ts`). B-grindarna döms ur arkivet (#363), och de två uppspelningarna läser
+samma facit som efterhalkans (sql/028, #245, #247): ett *bekräftat halktillfälle* är en omklassning till halka i `road_condition_history`
+på ett vägavsnitt inom 5 km från stationen, med motorns egna halkord (kontraktsgrinden vaktar kopiorna; `FACIT_KM` är nu den tredje kopian
+av radien). Olyckor räknas separat och går aldrig in i grundtalet. Dagens punktmotor spelas upp ur stationens egen rad: yta ≤ 1 °C och
+fukt (samma ord som snapshoten). Måttet är B3:s: per tillfälle T frågas om kandidaten fyrade inom 90 min före T (T-A:s fönster), och om
+punktmotorn då var tyst — **nettonytt** — eller kom mer än 30 min efter kandidaten — **tidsvinst**; de redovisas delat (TRENDEN T-B).
+Falsklarm är kandidatens fyrningar utan tillfälle inom 90 min efter. Natten räknas i svensk tid, middag till middag (#246, #366).
+
+**2. K-B** (`scripts/grind-k-b.ts`, knappen `grind-k-b`, kort #309). Modellen är K-A:s — grind A:s leave-one-out med K3 som tak —
+importerad ur `grind-k-a.ts`, som fick sin huvudkörning bakom en körs-själv-vakt så att funktionen går att importera (ingen kopia).
+Svepet är K-A:s 27 kombinationer; K-A:s förslag K1 0 · K2 ±0,5 · K3 20 km märks i tabellen. K-B1 = (nettonytt + tidsvinst) / tillfällen,
+golv 5 %, med marginalvakten. K-B2 är 0 per konstruktion (§1) och mäts ändå som det falsklarm klassningen hade orsakat om den fick
+tala: hinkar med "fryser" över gränsen utan tillfälle inom 90 min. Giltigheten K-C1 räknas ur fönstret: minst 30 frostdygn (yta ≤ 0
+någonstans i regionen) i minst 3 av fyra breddgradsregioner (NT-D:s band 57,5 · 60 · 63°).
+
+**3. R-B** (`scripts/grind-r-b.ts`, knappen `grind-r-b`, kort #46). Villkoret och episoderna är R-A:s (`grind-r-a.ts`, importerade,
+samma körs-själv-vakt; episoden bär nu sin starttid), genom den femdelade givarvakten (§3). Grenen fyrar när uthålligheten är nådd:
+första raden + U. R-B1 som K-B1, golv 5 %. R-B2 falsklarm ≤ 25 % — facit är omklassningen, inte stationens yta, som redan ingår i
+villkoret. R-B3 extra röst per station och natt där punktmotorn teg — redovisas, fäller inte (#103). R5 molnklassen ur SMHI i efterhand
+på den bästa kombinationens episoder (klar · klar+mellan · alla), som R-A4. Giltigheten R-C1–C2: 15 frostdygn i 3 regioner; R-C3
+täckningen efter vakten som andel; R-C4 OAVGJORT före tabellen.
+
+**4. Spärren** (båda). Utan `--dom` skrivs bara facitsidan — tillfällen, stationer, nätter, regioner, län, olyckor — giltighetens
+räkningar och (R-B) episodantalen per kombination, som R-A redan visar; aldrig fyrningar mot facit, aldrig en andel. `--dom` vägrar om
+giltigheten inte är uppfylld i fönstret. Den första körning som läser ett B-utfall låser trösklarna (FRYSKLASSNINGEN §7, RIMFROST §9).
+Knapparna trycks på Bengts ord; den spärrade körningen är kortens Verify-steg.
+
+**5. Kodgrindens underlagsspärr** (`scripts/kodgrinden.ts`, ärende #815; Bengts förslag i bedömningen §4.2 9/10: *"lägg först en
+underlagsspärr på C i skriptet, en skärpning, talet förregistrerat, och kör när snön legat en vecka i norr"*). C-raden får skriva
+*"premissen håller"* först när arkivet bär **minst 30 rader med vinterord på kod 1 från minst 3 län**; annars OAVGJORT, och eventuella
+träffar (farlighetsord på kod 1) listas ändå för läsning. Talet: lämnade Trafikverket farlighetsord på kod 1 i var tionde sådan rad hade
+30 rader visat minst ett med 96 % sannolikhet (0,9³⁰ = 4 %). Knappen trycks omkring 16/10, när snön legat en vecka i norr (snölarmen
+9/10) — eller tidigare för att se spärren hålla i drift.
+
+**Bevis.** Självtester i ci för facitmodulen (B3 per tillfälle med fönstret åt båda håll, falsklarm, natten, giltigheten, spärrens rad,
+facitfrågans form), K-B (fyrningar rätt och fel, punktmotorn, K-B1 med marginalvakt), R-B (fyrningen vid första raden + U, R-B1/R-B2,
+R-B3 per station och natt), kodgrindens spärr (29/3 fäller, 30/2 fäller, 30/3 släpper, 1/1 fäller); K-A:s och R-A:s självtester gröna
+efter vakten, och en import utan DATABASE_URL avslutar inte processen. Kontraktsgrinden grön med den tredje kopian av facitradien.
+
+**Vad som INTE görs.** Inget utfall läst, ingen dom, inga trösklar; ingen motorändring (rimfrosten blir en gren först efter R-B och
+Axels röst, §8 steg 6; K4 = E0). Kamerafacit och förarsvar är inte med i facitsidan (sql/028:s regel).
+
+**Stomdokument:** MAT §5.2 och §6.3, BED §4.2
