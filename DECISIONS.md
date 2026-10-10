@@ -10204,3 +10204,30 @@ kontrollsummor och fann inget sådant dygn bland 44.
 driften); provet `tillfalliga-arkivet` med 38 dygn utan olika dygn; nattjobbet 11/10 03:45 har raderat dygn (vakthundens rad).
 
 **Stomdokument:** BED — läget (Databasen)
+
+## #515 (10/10 2026) Projektkartan visar takten: de senaste sju dygnens steg, och varje ändring med sin commit (kort #325)
+
+**Bengts fråga 10/10:** *"jag tycker att vi jobbar och jobbar men klarprocenten i projektkartan rör sig inte överhuvudtaget. är det
+rätt att våra ansträngningar inte syns där"*. **Svaret, räknat:** procenten är andelen av allt kartan känner, och kartan växer medan vi
+bygger. Mellan slutet av 3/10 och 10/10 gick klara steg från 225 till 281 och procenten från 64 till 66 %: 67 nya steg och 6 nya delar
+kom till (kuvösen 36 steg, styrningen 19, källorna 10), och av de 434 steg som fanns 3/10 blev bara 4 fler klara — det som återstår av
+den planen väntar mest på vintern (65 steg i 19 delar) eller på Axel.
+
+**Beslut (Bengt: *"jag vill att du lägger in a) så att man kan härleda sitt arbete"*, *"gör den som dropdown om du tar med alla
+stegen och commiten"*).** Formeln är oförändrad. Överst på kartan står takten för de senaste sju dygnen före HEAD:s commit: klara steg
+(som fanns och som kom till), nya steg, nya delar, steg som gått tillbaka och borttagna, en tabell per block, och i en fällbar lista
+varje ändring grupperad per commit med tid, länk och rubrik. `scripts/takten.ts` läser git-historiken för `docs/projektkartan.json`;
+`projektkartan.ts` skriver `docs/takten.json` varje gång den körs, och `--check` prövar sidan mot filen (en PR-körning bär inte
+main-historiken). Kartsynkens `--tillatna` släpper igenom filen.
+
+**Hur ett steg följs.** Ett steg matchas på delens id och sitt namn. Ett namnbyte — ett nytt steg på samma plats i delens lista som
+ett som försvunnit, i samma commit — och en flytt — samma namn som försvinner ur en del och dyker upp i en annan, i samma commit —
+följer sitt läge och räknas bara om statusen ändrats. Ett steg som skrivs om under ett nytt namn i en senare commit räknas som
+borttaget och nytt; att para sådana kräver en gissning. Commitens författare tas inte med: namn hör inte hemma i en fil i det publika
+repot, och rubriken och länken räcker för att hitta arbetet.
+
+**Vid bygget:** 68 steg klara 3/10 14:17–10/10 14:17 (28 som fanns, 40 som kom till), 76 nya steg, 6 nya delar, 1 tillbaka och 9 borttagna; 133 ändringar i 50 commits, varav 4 namnbyten och 2 flyttar som följer sitt läge; procenten 64 → 66 %. Siffran 68 är brutto och perioden börjar 3/10 14:17; nettot från slutet av 3/10 är 56.
+
+**Alternativ.** (b) dessutom en procent mot en omfattning som låses varje måndag (inte valt); (c) kartan som den var (inte valt).
+
+**Stomdokument:** BED §4.2

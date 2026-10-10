@@ -181,6 +181,9 @@ varje del av projektet med block, läge, bevis eller nyckel, vad som saknas, ber
   orange och rött utan lista, okända beroenden och avsnitt, öppna kort utan del och en sida som inte är aktuell.
 - **Mätt mot koden 3/10** (kort #286): varje del har byggsteg med bevis, och procenten räknas ur stegen, viktad 1–3. En ny del får byggsteg
   från början; ett steg är klart bara med bevis.
+- **Takten** (Bengts val 10/10, DECISIONS #515): överst de senaste sju dygnens klara, nya och borttagna steg per block, och varje
+  ändring med sin commit i en fällbar lista, ur git-historiken (`scripts/takten.ts` → `docs/takten.json`). Skrivs varje gång
+  projektkartan.ts körs; `--check` prövar sidan mot filen. Ett namnbyte eller en flytt i samma commit följer sitt läge.
 - **Lägesraderna i stomdokumenten skrivs ur kartan** (Bengts val (a) 3/10): under varje avsnitt som beskriver delar står de med färg,
   procent och vad som återstår, och i html går varje rad att fälla ut till delens byggsteg. Raderna skrivs av projektkartan.ts mellan
   markörerna `LÄGESRADER` och ändras aldrig för hand; handskrivna lägesrader förs inte. Läget ändras i projektkartan.json, och

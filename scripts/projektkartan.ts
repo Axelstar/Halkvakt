@@ -10,7 +10,9 @@
 //   node --experimental-strip-types scripts/projektkartan.ts --sjalvtest
 // Efter en skrivning: republicera artefakten (STOMREGELN).
 import { readFileSync, writeFileSync, renameSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { oppnaKort, avsnitt, genomgang } from "./kortkartan.ts";
+import { DYGN, lasTakten, skillnad, summera, type Handelse, type Summa, type Takten } from "./takten.ts";
 
 type Lage = "gron" | "orange" | "rod" | "bla" | "gra";
 // regel och kvar: steget bockas av kartsynken ur byggsignalerna (scripts/kartsynk.ts, DECISIONS #447); kvar är delens
@@ -199,7 +201,47 @@ function vantarPa(k: Karta, vantar: Vantar[]): string {
   </section>`;
 }
 
-export function sida(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>, sidtext: (fil: string) => string, vantar: Vantar[] = []): string {
+/** Takten (Bengts val (a) 10/10, DECISIONS #515): de senaste sju dygnens klara, nya och borttagna steg, per block, och varje ändring
+ *  med sin commit i en fällbar lista, så att arbetet bakom ett steg går att härleda. Ur docs/takten.json, som skrivs ur git-historiken. */
+type Status = Steg["status"];
+const STATUSORD: Record<Status, string> = { klar: "klart", pagar: "pågår", saknas: "saknas", ej: "gäller inte" };
+export function andring(h: Handelse): string {
+  if (h.art === "ny del") return "ny del";
+  if (h.art === "borttagen del") return "delen borttagen";
+  const byte = h.fran !== h.till ? `, ${STATUSORD[h.fran!]} → ${STATUSORD[h.till!]}` : "";
+  if (h.tidigare) return `bytt namn från ”${esc(h.tidigare)}”${byte}`;
+  if (h.flyttatFran) return `flyttat från ${esc(h.flyttatFran)}${byte}`;
+  if (h.fran === null) return `nytt steg, ${STATUSORD[h.till!]}`;
+  if (h.till === null) return `steget borttaget (var ${STATUSORD[h.fran]})`;
+  return `${STATUSORD[h.fran]} → ${STATUSORD[h.till]}`;
+}
+export function taktSektion(t: Takten | null, k: Karta, nu: number): string {
+  if (!t) return `<section class="takt" aria-label="Takten"><h2 id="takten">Takten</h2><p class="litet">docs/takten.json saknas — kör scripts/projektkartan.ts.</p></section>`;
+  const s = summera(t.handelser);
+  const block = new Map(k.block.map((b) => [b.id, b.namn]));
+  const perBlock = new Map<string, Handelse[]>();
+  for (const h of t.handelser) perBlock.set(h.block, [...(perBlock.get(h.block) ?? []), h]);
+  const tal = (n: number) => `<td class="tal">${n || "–"}</td>`;
+  const rader = [...perBlock].map(([b, hs]) => [b, summera(hs)] as [string, Summa]).sort((a, b) => b[1].klara - a[1].klara || b[1].nyaSteg - a[1].nyaSteg)
+    .map(([b, x]) => `<tr><td>${esc(block.get(b) ?? b)}</td>${tal(x.klara)}${tal(x.klaraNya)}${tal(x.nyaSteg)}${tal(x.nyaDelar)}${tal(x.tillbaka)}${tal(x.borttagna)}</tr>`);
+  const commits = new Map<string, Handelse[]>();
+  for (const h of [...t.handelser].reverse()) commits.set(h.sha, [...(commits.get(h.sha) ?? []), h]);
+  const lista = [...commits].map(([sha, hs]) => `<li><span class="mono">${esc(stockholm(hs[0].tid))}</span> <a class="mono" href="https://github.com/Axelstar/Halkvakt/commit/${sha}">${sha.slice(0, 7)}</a> ${esc(hs[0].rubrik)}
+        <ul>${[...hs].reverse().map((h) => `<li><a href="#del-${esc(h.del)}">${esc(h.delnamn)}</a>${h.steg ? `: ${esc(h.steg)}` : ""} <span class="litet">— ${andring(h)}</span></li>`).join("")}</ul></li>`);
+  return `<section class="takt" aria-label="Takten de senaste ${DYGN} dygnen">
+    <h2 id="takten">Takten: de senaste ${DYGN} dygnen</h2>
+    <p><b>${s.klara} steg klara</b> ${esc(stockholm(t.fran))}–${esc(stockholm(t.till))}: ${s.klaraFanns} av dem fanns redan på kartan, ${s.klaraNya} kom till under perioden. ${s.nyaSteg} nya steg och ${s.nyaDelar} nya delar har tillkommit${s.tillbaka ? `, ${s.tillbaka} steg har gått tillbaka` : ""}${s.borttagna ? ` och ${s.borttagna} tagits bort` : ""}. Procenten gick från ${t.procentFore} till ${nu} %: den räknar andelen av allt kartan känner, och kartan växer medan vi bygger.</p>
+    ${rader.length ? `<div class="tabell"><table>
+      <thead><tr><th>Block</th><th class="tal">Klara steg</th><th class="tal">varav nya</th><th class="tal">Nya steg</th><th class="tal">Nya delar</th><th class="tal">Tillbaka</th><th class="tal">Borttagna</th></tr></thead>
+      <tbody>${rader.join("")}</tbody></table></div>
+    <details class="takt-lista"><summary>Alla ${t.handelser.length} ändringar i ${commits.size} commits, steg för steg</summary>
+      <ol>${lista.join("")}</ol>
+    </details>` : `<p class="litet">Inga ändringar i kartan under perioden.</p>`}
+    <p class="litet">Skrivs ur git-historiken för docs/projektkartan.json av scripts/projektkartan.ts, till och med <span class="mono">${t.sha.slice(0, 7)}</span>. Ett steg som byter namn räknas som borttaget och nytt. Ändras aldrig för hand (DECISIONS #515).</p>
+  </section>`;
+}
+
+export function sida(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>, sidtext: (fil: string) => string, vantar: Vantar[] = [], takten: Takten | null = null): string {
   const kort = new Map(oppna.map((c) => [c.nyckel, c]));
   const del = new Map(k.delar.map((d) => [d.id, d]));
   const levererar = new Map<string, string[]>();
@@ -324,6 +366,16 @@ export function sida(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>, s
   .helhet .framsteg { height: 14px; }
   .helhet-text { display: grid; gap: 8px; min-width: 0; }
   @media (max-width: 520px) { .helhet { grid-template-columns: minmax(0, 1fr); } }
+  .takt { display: grid; gap: 10px; min-width: 0; }
+  .takt h2 { margin: 0; }
+  .takt .tabell { overflow-x: auto; }
+  .takt table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  .takt th, .takt td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--linje); vertical-align: top; }
+  .takt th { font: 600 12px "Instrument Sans", Arial, sans-serif; letter-spacing: 0.04em; color: var(--dampad); }
+  .takt .tal { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .takt-lista ol { margin: 8px 0 0; padding-left: 1.4em; display: grid; gap: 8px; font-size: 14px; }
+  .takt-lista ul { margin: 2px 0 0; padding-left: 1.1em; display: grid; gap: 2px; }
+  .takt-lista li { overflow-wrap: anywhere; }
   .vantar { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 10px 28px; margin-block: 14px; }
   .vantar > div { min-width: 0; }
   .vantar ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; font-size: 15px; }
@@ -418,6 +470,7 @@ export function sida(k: Karta, oppna: KortInfo[], sidor: Record<string, Sida>, s
       <p><b>${foreDomarna} % av det som går att göra före vinterns domar.</b> <span class="litet">Samma räkning utan stegen som kommer efter en dom: domen själv, villkoret i motorn, testfallen i tre språk och appen. ${efterDom.reduce((a, b) => a + b, 0)} sådana steg i ${efterDom.filter((n) => n > 0).length} delar väntar på vintern; dem flyttar bara frosten.</span></p>
     </div>
   </section>
+  ${taktSektion(takten, k, total)}
   <p class="grov">${matta === k.delar.length
     ? `<b>Mätt mot koden 3/10 (kort #286).</b> Alla ${matta} delar har byggsteg med bevis; procenten räknas ur stegen, viktad med delarnas storlek. Klicka på en del under <i>Alla delar</i> för att se stegen.`
     : `<b>Mätningen pågår (kort #286).</b> ${matta} av ${k.delar.length} delar är mätta mot koden, med byggsteg och bevis. De andra är fortfarande Claudes skattning ur stomdokumenten, tavlan och beslutsloggen.`}</p>
@@ -761,7 +814,42 @@ if (direkt && process.argv[2] === "--sjalvtest") {
   if (!(b.includes("PR #9") && b.includes("#7</b> SJU") && b.includes("ditt ja") && a.includes("<b>Skydda namnet</b></li>") && !a.includes("SJU"))) {
     console.error("✗ självtest: väntar på-listorna"); process.exit(1);
   }
-  console.log("✓ självtest: fel i delar, skattningar, block och mål fälls; hindren och hävstången går bara genom det som inte är klart; målets procent räknas över allt det vilar på; byggstegen och vikterna räknas och granskas; väntar på-listorna delas på Bengt och Axel");
+  // Takten (DECISIONS #515): ett steg som blir klart, ett nytt klart steg i en ny del, ett steg som går tillbaka och ett som tas bort.
+  const c = { tid: "2026-10-10T10:00:00Z", sha: "abcdef1234", rubrik: "Ett bygge <b>" };
+  const t0 = { delar: [{ id: "x", namn: "X", block: "a", steg: [{ namn: "s1", status: "pagar" as const }, { namn: "s2", status: "klar" as const }, { namn: "s3", status: "saknas" as const }] }] };
+  const t1 = { delar: [{ id: "x", namn: "X", block: "a", steg: [{ namn: "s1", status: "klar" as const }, { namn: "s2", status: "pagar" as const }] },
+    { id: "y", namn: "Y", block: "a", steg: [{ namn: "n1", status: "klar" as const }, { namn: "n2", status: "saknas" as const }] }] };
+  const hs = skillnad(t0, t1, c);
+  const sm = summera(hs);
+  const vantat = { klara: 2, klaraFanns: 1, klaraNya: 1, nyaSteg: 2, nyaDelar: 1, tillbaka: 1, borttagna: 1 };
+  if (JSON.stringify(sm) !== JSON.stringify(vantat) || hs.length !== 6 || skillnad(t1, t1, c).length !== 0) {
+    console.error("✗ självtest: takten", JSON.stringify(sm), hs.length); process.exit(1);
+  }
+  // Ett namnbyte på samma plats följer det gamla stegets läge: ett klart steg som byter namn är varken nytt, klart eller borttaget.
+  const r0 = { delar: [{ id: "x", namn: "X", block: "a", steg: [{ namn: "a", status: "klar" as const }, { namn: "b", status: "saknas" as const }] }] };
+  const r1 = { delar: [{ id: "x", namn: "X", block: "a", steg: [{ namn: "a2", status: "klar" as const }, { namn: "b2", status: "pagar" as const }] }] };
+  const rh = skillnad(r0, r1, c), rs = summera(rh);
+  if (rh.length !== 2 || rh[0].tidigare !== "a" || rh[1].fran !== "saknas" || rs.klara + rs.nyaSteg + rs.borttagna !== 0 ||
+      andring(rh[0]) !== "bytt namn från ”a”" || andring(rh[1]) !== "bytt namn från ”b”, saknas → pågår") {
+    console.error("✗ självtest: namnbytet", JSON.stringify(rh), JSON.stringify(rs)); process.exit(1);
+  }
+  // En flytt till en annan del i samma commit följer också sitt läge: varken nytt, klart eller borttaget.
+  // Två steg flyttas, så att en flytt aldrig skymmer nästa (ett fel i första utkastet 10/10).
+  const f0 = { delar: [{ id: "x", namn: "X", block: "a", steg: [{ namn: "k", status: "klar" as const }, { namn: "k2", status: "klar" as const },
+    { namn: "m", status: "saknas" as const }] }, { id: "y", namn: "Y", block: "a", steg: [] }] };
+  const f1 = { delar: [{ id: "x", namn: "X", block: "a", steg: [{ namn: "m", status: "saknas" as const }] },
+    { id: "y", namn: "Y", block: "a", steg: [{ namn: "k", status: "klar" as const }, { namn: "k2", status: "klar" as const }] }] };
+  const fh = skillnad(f0, f1, c), fsum = summera(fh);
+  if (fh.length !== 2 || fh.some((x) => x.del !== "y" || x.flyttatFran !== "X") || fsum.klara + fsum.nyaSteg + fsum.borttagna !== 0 || andring(fh[0]) !== "flyttat från X") {
+    console.error("✗ självtest: flytten", JSON.stringify(fh)); process.exit(1);
+  }
+  const ts = taktSektion({ fran: "2026-10-03T10:00:00Z", till: "2026-10-10T10:00:00Z", sha: "abcdef1234", procentFore: 64, procent: 66, handelser: hs },
+    { url: "u", projektmal: pm, block: [{ id: "a", namn: "Blocket", om: "", plats: "" }], mal: [], delar: [] }, 66);
+  if (!ts.includes("<b>2 steg klara</b>") || !ts.includes("från 64 till 66 %") || !ts.includes("<details") || !ts.includes("commit/abcdef1234") ||
+      !ts.includes("Ett bygge &lt;b&gt;") || !ts.includes("pågår → klart") || !ts.includes("steget borttaget (var saknas)") || !ts.includes("<td>Blocket</td>")) {
+    console.error("✗ självtest: taktens avsnitt"); process.exit(1);
+  }
+  console.log("✓ självtest: fel i delar, skattningar, block och mål fälls; hindren och hävstången går bara genom det som inte är klart; målets procent räknas över allt det vilar på; byggstegen och vikterna räknas och granskas; väntar på-listorna delas på Bengt och Axel; takten räknar klara, nya, tillbakagångna och borttagna steg och listar varje ändring med sin commit");
   process.exit(0);
 }
 
@@ -774,9 +862,18 @@ if (direkt) {
   const fel = granska(karta, oppna, sidor, las);
   for (const f of fel) console.error("✗ " + f);
   if (fel.length) process.exit(1);
+  // Takten (DECISIONS #515): skrivs ur git-historiken vid en skrivning; --check läser filen, eftersom en PR-körning inte bär main-
+  // historiken. En grund klon lämnar filen som den är.
+  const lasFil = (): Takten | null => { try { return JSON.parse(las("docs/takten.json")); } catch { return null; } };
+  const takten = process.argv[2] === "--check" ? lasFil() : (lasTakten(fileURLToPath(rot), (k: Karta) => medel(k.delar)) ?? lasFil());
+  if (!takten) console.error("⚠ docs/takten.json saknas och historiken går inte att läsa — takten visas inte");
   // Kartsidan och läget-avsnittet i varje stomdokument.
   const vantar = genomgang(las("TAVLA.md")).filter((c) => c.agare === "Bengt" || c.agare.startsWith("Axel"));
-  const filer = new Map<string, string>([["docs/PROJEKTKARTAN.html", sida(karta, oppna, sidor, las, vantar)]]);
+  const filer = new Map<string, string>([["docs/PROJEKTKARTAN.html", sida(karta, oppna, sidor, las, vantar, takten)]]);
+  // En ändring per rad, så att en diff av filen visar ändringarna och inte formen.
+  const { handelser, ...huvud } = takten ?? { handelser: [] };
+  if (takten && process.argv[2] !== "--check")
+    filer.set("docs/takten.json", JSON.stringify(huvud).slice(0, -1) + `,"handelser":[\n${handelser.map((h) => JSON.stringify(h)).join(",\n")}\n]}\n`);
   for (const [kod, s] of Object.entries(sidor)) {
     const html = s.fil.endsWith(".html");
     const text = las(s.fil);
