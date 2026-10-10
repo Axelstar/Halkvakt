@@ -1,15 +1,15 @@
 # Steg 2 för kort #89 (övergångarna): tillståndsskattaren mätt mot arkiven. Helt läsande —
 # skattningen räknas fram ur radar_precip och weather_observations, ingen kolumn skrivs.
-# Knapp, inte cron (#85). Fönstret hålls på sju dygn eller mindre: gallringen (#83) tunnar
+# Knapp, inte cron (#85). Fönstret hålls på tre dygn eller mindre (sju till 10/10, #511): gallringen (#83) tunnar
 # allt äldre till en rad per halvtimme, och då blir stationstäckningen en fiktion (Ö-D).
 name: tillstand-steg2
 on:
   workflow_dispatch:
     inputs:
       dagar:
-        description: "Fönster i dygn — håll det på 7 eller mindre (Ö-D, gallringen)"
+        description: "Fönster i dygn — håll det på 3 eller mindre (Ö-D, gallringen)"
         required: false
-        default: "7"
+        default: "3"
 jobs:
   tillstand-steg2:
     runs-on: ubuntu-latest
@@ -25,5 +25,5 @@ jobs:
           DATABASE_URL: "${{ secrets.DATABASE_URL }}"
         run: |
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-          node --experimental-strip-types scripts/tillstand-steg2.ts "${{ inputs.dagar || '7' }}" | tee -a "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/tillstand-steg2.ts "${{ inputs.dagar || '3' }}" | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"

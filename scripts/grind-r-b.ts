@@ -19,6 +19,7 @@
 // Självtest utan DB och nät: scripts/grind-r-b.ts --sjalvtest
 import { andelSe, utfallGolv, utfallTak, marginalPe, type Utfall } from "../publish/marginal.ts";
 import { RADVAKT_SQL, karantanSql } from "../publish/snapshot-core.ts";
+import { saknadeDygn, skrivSaknade } from "../publish/vaktdiagnos.ts";
 import { molnForPunkter, type Molnklass } from "../publish/moln.ts";
 import { R1_MARGINAL, R2_YTA, R3_UTHALL, episoder, type Rad, type Episod } from "./grind-r-a.ts";
 import { BUCKET_S, FACIT_SQL, OLYCKOR_SQL, FUKT_SQL, PUNKT_YTA_C, FONSTER_HINKAR, b3, falsklarm, sparrRader, giltighet, bandFor, natt,
@@ -107,6 +108,8 @@ if (korsSjalv) {
   const q = async (sql: string, p: unknown[] = []) => (await pool.query(sql, p)).rows as any[];
   console.log(`Grind R-B — rimfrostens uppspelning (kort #46), svenska arkivet, ${P[0].slice(0, 10)} → ${P[1].slice(0, 16)}Z, ` +
     `${DOM ? "DOMLÄGE (låser trösklarna, §9)" : "SPÄRRAT: bara räkningar (DECISIONS #363)"}\n`);
+  // Saknade dygn (kort #322, DECISIONS #511): raderingen tar dygn äldre än 14 ur databasen och får aldrig krympa fönstret tyst.
+  skrivSaknade(await saknadeDygn(q, "weather_observations", DAGAR));
 
   // Alla rader genom #75, radvakten och karantänen: punktmotorn, frostdygnen och täckningens nämnare.
   const alla = await q(`

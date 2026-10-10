@@ -17,6 +17,7 @@
 // Självtest utan DB: scripts/grind-k-b.ts --sjalvtest
 import { andelSe, utfallGolv, marginalPe, type Utfall } from "../publish/marginal.ts";
 import { RADVAKT_SQL, karantanSql } from "../publish/snapshot-core.ts";
+import { saknadeDygn, skrivSaknade } from "../publish/vaktdiagnos.ts";
 import { K1_GRANS, K2_ZON, K3_KM, utvardera, type Punkt, type Station } from "./grind-k-a.ts";
 import { BUCKET_S, FACIT_SQL, OLYCKOR_SQL, FUKT_SQL, PUNKT_YTA_C, b3, falsklarm, sparrRader, giltighet, bandFor, natt,
   type Tillfalle, type Fyrningar, type B3 } from "./uppspelning-facit.ts";
@@ -104,6 +105,8 @@ if (korsSjalv) {
   const q = async (sql: string, p: unknown[] = []) => (await pool.query(sql, p)).rows as any[];
   console.log(`Grind K-B — frysklassningens uppspelning (kort #309), ${new Date(FRAN).toISOString().slice(0, 10)} → ${new Date(TILL).toISOString().slice(0, 16)}Z, ` +
     `${DOM ? "DOMLÄGE (låser trösklarna, §7)" : "SPÄRRAT: bara räkningar på facitsidan (DECISIONS #363)"}\n`);
+  // Saknade dygn (kort #322, DECISIONS #511): raderingen tar dygn äldre än 14 ur databasen och får aldrig krympa fönstret tyst.
+  skrivSaknade(await saknadeDygn(q, "weather_observations", DAGAR));
 
   const res = await q(`
     SELECT DISTINCT ON (station_id, b) station_id, ST_X(geom::geometry) lon, ST_Y(geom::geometry) lat,

@@ -36,7 +36,7 @@
 // Självtest utan DB: scripts/grind-r-a.ts --sjalvtest
 
 import { andelSe, utfallGolv, utfallTak, marginalPe } from "../publish/marginal.ts";
-import { vaktdiagnos, led234 } from "../publish/vaktdiagnos.ts";
+import { vaktdiagnos, led234, saknadeDygn, skrivSaknade } from "../publish/vaktdiagnos.ts";
 import { RADVAKT_SQL, karantanSql } from "../publish/snapshot-core.ts";
 import { molnForPunkter, type Molnklass } from "../publish/moln.ts";
 
@@ -206,6 +206,9 @@ if (LAND === "fi") {
   console.log(`Finskt arkiv med flit: KASTEPISTE sedan 4/9, och Lapplands septemberfrost ger äkta`);
   console.log(`rimfrostnätter VECKOR före Sverige. Ingen ny källa, inga svenska nätter att vänta på.\n`);
 }
+// Saknade dygn (kort #322, DECISIONS #511): raderingen tar dygn äldre än 14 ur det SVENSKA arkivet och får aldrig krympa
+// fönstret tyst. Det finska exporteras inte; dess kalla rader sparas 60 dygn (sql/031).
+if (LAND === "se") skrivSaknade(await saknadeDygn((s, p) => pool.query(s, p as any[]).then((r) => r.rows), SCHEMA, DAGAR));
 
 // VAKTDIAGNOSEN FÖRST — nu den DELADE (DECISIONS #141). Den föddes här, ur att `humidity_pct`
 // inte finns i det finska arkivet och tyst filtrerade bort varje rad; nu bär varje grind samma.

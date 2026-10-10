@@ -394,6 +394,91 @@ test("grepp 3 gallra_arkiv: Finland behåller kalla rader i 60 dygn, Norge och D
   } finally { await pool.end(); }
 });
 
+// Kort #322 (sql/044, DECISIONS #511): nattjobben ur migrationen själv, inte avskrivna. Jobbkommandona plockas ur filen och
+// körs här, så att det som schemaläggs är det som prövas.
+const JOBB_044 = async () => {
+  const { readFileSync } = await import("node:fs");
+  const text = readFileSync(new URL("../sql/044_gallring_tre_dygn.sql", import.meta.url), "utf8");
+  const jobb = (namn: string) => {
+    const m = text.match(new RegExp(`'(SELECT ${namn}[^']*)'`));
+    assert.ok(m, `sql/044 bär ett jobbkommando för ${namn}`);
+    return m![1];
+  };
+  return { text, gallring: jobb("gallra_arkiv"), radering: jobb("arkiv_radera_exporterat") };
+};
+
+// Gallringen efter tre dygn behåller brotten mot #75 (ytan mer än 12 °C under luften): karantänen i snapshoten räknar dem
+// över sju dygn. En rad utan yta är inget brott och gallras som förut. Dygn yngre än tre rörs inte.
+test("#322 gallringen efter tre dygn: brotten mot #75 står kvar, ytlösa rader gallras, yngre dygn orörda, idempotent", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  try {
+    const { text, gallring } = await JOBB_044();
+    assert.equal(gallring, "SELECT gallra_arkiv(3)");
+    for (const f of ["014_gallring.sql", "004_fi_schema.sql", "006_no_schema.sql", "007_dk_schema.sql", "026_gallring_grannar.sql", "031_gallring_dk_gravstenar_tid.sql"])
+      await pool.query(readFileSync(new URL("../sql/" + f, import.meta.url), "utf8"));
+    await pool.query(text);
+    await pool.query(`DELETE FROM weather_observations WHERE station_id IN ('B11', 'B12')`);
+    // B11: ett helt dygn var tionde minut för fem dygn sedan. 00:00 och 00:10 är brott (yta −15, luft 1), 00:30 saknar yta
+    // men har luft. B12: ett helt dygn för två dygn sedan, under fristen.
+    await pool.query(`
+      INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c, air_temp_c)
+      SELECT 'B11', 'Brott', ST_SetSRID(ST_MakePoint(15, 60), 4326), date_trunc('day', now() - interval '5 days') + i * interval '10 min',
+             CASE WHEN i IN (0, 1) THEN -15 WHEN i = 3 THEN NULL ELSE 0 END, CASE WHEN i = 3 THEN 2 ELSE 1 END
+      FROM generate_series(0, 143) i
+      UNION ALL
+      SELECT 'B12', 'Färsk', ST_SetSRID(ST_MakePoint(16, 61), 4326), date_trunc('day', now() - interval '2 days') + i * interval '10 min', 0, 1
+      FROM generate_series(0, 143) i`);
+    await pool.query(gallring);
+    const n = async (villkor: string) => (await pool.query(`SELECT count(*)::int AS n FROM weather_observations WHERE ${villkor}`)).rows[0].n;
+    assert.equal(await n(`station_id = 'B11'`), 48 + 2, "en rad per halvtimme, plus de två brotten som inte var sista i sin hink");
+    assert.equal(await n(`station_id = 'B11' AND surface_temp_c < air_temp_c - 12`), 2, "brotten står kvar");
+    assert.equal(await n(`station_id = 'B11' AND surface_temp_c IS NULL`), 0, "raden utan yta är inget brott och gallras");
+    assert.equal(await n(`station_id = 'B12'`), 144, "två dygn gamla rader rörs inte");
+    await pool.query(gallring);
+    assert.equal(await n(`station_id IN ('B11', 'B12')`), 50 + 144, "andra körningen tar inget");
+  } finally {
+    await pool.query(`DELETE FROM weather_observations WHERE station_id IN ('B11', 'B12')`).catch(() => {});
+    await pool.end();
+  }
+});
+
+// Raderingen tar ikapp: nattjobbets kommando anropar raderingen upp till 40 gånger och tar varje exporterat dygn äldre än
+// 14 dygn, äldst först, med samma radprov som förut; sedan säger varje anrop att inget finns. Ett yngre dygn står kvar.
+test("#322 raderingen ur exporten: golvet 14 dygn, ikapp i en körning, yngre dygn kvar", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  try {
+    const { radering } = await JOBB_044();
+    assert.equal(radering, "SELECT arkiv_radera_exporterat(350, 14) FROM generate_series(1, 40)");
+    await pool.query(readFileSync(new URL("../sql/034_arkivexport.sql", import.meta.url), "utf8"));
+    await pool.query(`DELETE FROM arkiv_export`);
+    const dagar: string[] = [];
+    for (const alder of [22, 21, 20, 10]) {
+      const dag = (await pool.query(`SELECT ((now() - $1 * interval '1 day') AT TIME ZONE 'UTC')::date::text AS d`, [alder])).rows[0].d;
+      dagar.push(dag);
+      await pool.query(`DELETE FROM weather_observations WHERE (sample_time AT TIME ZONE 'UTC')::date = $1::date`, [dag]);
+      await pool.query(`INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c)
+        SELECT 'Y1', 'Ikapp', ST_SetSRID(ST_MakePoint(15, 60), 4326), $1::date + i * interval '30 min', 0 FROM generate_series(0, 1) i`, [dag]);
+      await pool.query(`SELECT arkiv_export_klar($1::date, 2, 100, 'x', 'v')`, [dag]);
+    }
+    // Gränsen 0 MB i stället för 350, så att provet inte beror på provdatabasens storlek; resten är jobbets kommando.
+    const svar = (await pool.query(radering.replace("(350, 14)", "(0, 14)"))).rows.map((r) => String(Object.values(r)[0]));
+    assert.equal(svar.filter((s) => s.startsWith("raderade 2 rader")).length, 3, "tre dygn äldre än 14 raderade");
+    assert.equal(svar.filter((s) => /inget exporterat dygn äldre än 14/.test(s)).length, 37, "sedan finns inget att ta");
+    assert.match(svar[0], new RegExp(dagar[0]), "äldst först");
+    const kvar = (await pool.query(`SELECT (sample_time AT TIME ZONE 'UTC')::date::text AS d, count(*)::int AS n FROM weather_observations
+      WHERE station_id = 'Y1' GROUP BY 1 ORDER BY 1`)).rows;
+    assert.deepEqual(kvar, [{ d: dagar[3], n: 2 }], "bara dygnet som är tio dygn gammalt står kvar");
+    assert.equal((await pool.query(`SELECT count(*)::int AS n FROM arkiv_export WHERE raderad IS NOT NULL`)).rows[0].n, 3);
+  } finally {
+    await pool.query(`DELETE FROM weather_observations WHERE station_id = 'Y1'`).catch(() => {});
+    await pool.end();
+  }
+});
+
 // Kort #196/#205 (sql/025, sql/027): provrader märks av en genererad kolumn och räknas aldrig (KB-D6). Fotostudio-kroken i
 // apparna skickar "cam:fotostudio" som ett riktigt anrop — utan 027 landade den som ett riktigt förarsvar.
 test("kort #205 prov-kolumnen: prov och fotostudio märks, riktiga id:n inte, omkörning ofarlig", { skip: !url }, async () => {

@@ -64,7 +64,7 @@ function utvardera(stationer: Station[], T: number): Utfall[] {
 // fälldes ändå på punktskattningen. Nu avgör den. V-A:s stående nej berörs inte: 61 % mot kravets
 // 70 % är nio procentenheters gap mot två i brus, alltså avgjort med bred marginal.
 import { Z, andelSe, utfallGolv, utfallTak, grindutfall } from "./marginal.ts";
-import { vaktdiagnos } from "./vaktdiagnos.ts";
+import { vaktdiagnos, saknadeDygn, skrivSaknade } from "./vaktdiagnos.ts";
 const brus = (p: number, n: number) => n > 0 ? Z * andelSe(p, n) : NaN;
 
 function rapport(stationer: Station[], label: string, domspärr: boolean) {
@@ -144,6 +144,8 @@ if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
 const pg = (await import("pg")).default;
 const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });
 const DAGAR = Number(process.argv[2] ?? 30);
+// Saknade dygn (kort #322, DECISIONS #511): raderingen tar dygn äldre än 14 ur databasen och får aldrig krympa fönstret tyst.
+skrivSaknade(await saknadeDygn((s, p) => pool.query(s, p as any[]).then((r) => r.rows), "weather_observations", DAGAR));
 // VAKTDIAGNOSEN FÖRST (DECISIONS #141).
 await vaktdiagnos((s, p) => pool.query(s, p as any[]).then((r) => r.rows),
   "weather_observations", `WHERE sample_time > now() - ${DAGAR} * interval '1 day'`, [

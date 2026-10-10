@@ -149,16 +149,17 @@ if (process.argv.includes("--sjalvtest")) {
 // ── Skarpt (läser bara).
 const url = process.env.DATABASE_URL;
 if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
-const DAGAR = Number(process.argv.slice(2).find((a) => /^\d+$/.test(a)) ?? 7);
+const GALLRING_DYGN = 3;   // sql/044 (DECISIONS #511, sju dygn till 10/10); kontraktsgrinden vaktar kopiorna
+const DAGAR = Number(process.argv.slice(2).find((a) => /^\d+$/.test(a)) ?? GALLRING_DYGN);
 const pg = (await import("pg")).default;
 const pool = new pg.Pool({ connectionString: url, max: 1, ssl: url.includes("localhost") ? undefined : { rejectUnauthorized: false } });
 await pool.query("SET statement_timeout = '300s'");
 
 console.log(`Grind T-A (kort #88) — har trenden signal? (${DAGAR} dygns fönster)\n`);
 
-if (DAGAR > 7) {
-  console.log(`⚠️  GALLRINGSVARNING (DECISIONS #97): fönstret är ${DAGAR} dygn, men gallringen tunnar`);
-  console.log(`    allt äldre än sju dygn till en rad per halvtimme. 15-minutersfönstret i svepet`);
+if (DAGAR > GALLRING_DYGN) {
+  console.log(`⚠️  GALLRINGSVARNING (DECISIONS #97, #511): fönstret är ${DAGAR} dygn, men gallringen tunnar`);
+  console.log(`    allt äldre än ${GALLRING_DYGN} dygn till en rad per halvtimme. 15-minutersfönstret i svepet`);
   console.log(`    kan då inte räknas alls, och 30-minutersfönstret får exakt två mätningar — under`);
   console.log(`    trendens egen vakt (≥ 3). Läs talen nedan som "det gallringen lämnade kvar".\n`);
 }

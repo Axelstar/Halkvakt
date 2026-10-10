@@ -37,7 +37,7 @@
 // Självtest utan DB: publish/grind-v-b.ts --sjalvtest
 import { REGN_UTLOSARE_MMH, RADAR_FAKTOR } from "./snapshot-core.ts";
 import { Z, andelSe, utfallTak, grindutfall, type Utfall } from "./marginal.ts";
-import { vaktdiagnos } from "./vaktdiagnos.ts";
+import { vaktdiagnos, saknadeDygn, skrivSaknade } from "./vaktdiagnos.ts";
 import { FACIT_KM, skuggmotornsRutter, ruttWkt } from "./skuggfacit.ts";
 
 /** Tröskeln i STATIONENS skala — härledd ur de två fastställda talen, aldrig skriven för hand.
@@ -268,6 +268,9 @@ const q = (s: string, p?: unknown[]) => pool.query(s, p as any[]).then((r) => r.
 const arg = process.argv[2];
 const DAGAR = arg ? Number(arg) : dagarSedanStart();
 if (!Number.isFinite(DAGAR) || DAGAR <= 0) { console.error(`ogiltigt antal dagar: ${arg}`); process.exit(1); }
+// Saknade dygn (kort #322, DECISIONS #511): regnmätningarna läses ur väderarkivet sedan 15/9, och raderingen tar dygn äldre
+// än 14 ur databasen — fönstret får aldrig krympa tyst.
+skrivSaknade(await saknadeDygn(q, "weather_observations", DAGAR));
 
 // Vaktdiagnosen först (DECISIONS #141): bär raderna fälten alls?
 await vaktdiagnos(q, "shadow_log", `WHERE run_at > now() - ${DAGAR} * interval '1 day' AND land = 'SE'`, [
