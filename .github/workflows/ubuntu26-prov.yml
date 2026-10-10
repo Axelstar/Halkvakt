@@ -1,0 +1,311 @@
+# KORT #316 — ubuntu-latest blir Ubuntu 26 den 19/10. Det här flödet kör de jobb som installerar något på BÅDA avbildningarna,
+# utan hemligheter och utan driftverkan: 24.04 är kontrollen, så ett fel som bara syns på 26.04 är avbildningens, inte koden.
+# ci, livemotorn och android är ordagranna kopior ur sina flöden (bara runs-on är en matris; steg som kräver hemligheter eller
+# laddar upp artefakter är bortklippta). arkivbackup, kuvos och deploy-supabase kräver hemligheter, så deras OS-beroende steg
+# körs mot lokala Postgres-behållare. Skrivet av en generator i sessionen 10/10; körs bara på provgrenen, slås aldrig ihop.
+name: ubuntu26-prov
+on:
+  push:
+    branches: [claude/ubuntu26-prov]
+permissions:
+  contents: read
+jobs:
+  ci:
+    strategy: { fail-fast: false, matrix: { os: [ubuntu-24.04, ubuntu-26.04] } }
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    services:
+      postgis:
+        image: postgis/postgis:16-3.4
+        env: { POSTGRES_PASSWORD: postgres }
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    steps:
+      - name: Avbildningen
+        run: echo "$ImageOS $ImageVersion · $(lsb_release -ds) ($(lsb_release -cs)) · kärna $(uname -r)"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Skuggmotorns motorkopia i synk med engine/src (#34-läxan)
+        run: node --experimental-strip-types scripts/bundle-skuggmotor.ts --check
+      - name: publicera/index.ts i synk med snapshotkärnan + broarna (#74)
+        run: node --experimental-strip-types scripts/bundle-publicera.ts --check
+      - name: Kontraktsgrinden — samma tröskelvärde i varje kopia (#144)
+        run: |
+          node --experimental-strip-types scripts/kontraktsgrinden.ts --sjalvtest
+          node --experimental-strip-types scripts/kontraktsgrinden.ts
+      - name: Beroendekartan — varje extern källa deklarerad (#147)
+        run: |
+          node --experimental-strip-types scripts/beroendekartan.ts --sjalvtest
+          node --experimental-strip-types scripts/beroendekartan.ts
+      - name: Beslutsnumren — ett beslut, ett nummer (#220)
+        run: |
+          node --experimental-strip-types scripts/beslutsnumren.ts --sjalvtest
+          node --experimental-strip-types scripts/beslutsnumren.ts
+      - name: Kortkartan — varje öppet kort kopplat till sitt område i stomdokumenten (#445)
+        run: |
+          node --experimental-strip-types scripts/kortkartan.ts --sjalvtest
+          node --experimental-strip-types scripts/kortkartan.ts --check
+      - name: Projektkartan — läget per del, underordnat beviset (#446)
+        run: |
+          node --experimental-strip-types scripts/projektkartan.ts --sjalvtest
+          node --experimental-strip-types scripts/projektkartan.ts --check
+      - name: Kartsynken — reglerna, framåt-bara och radformen (#447)
+        run: |
+          node --experimental-strip-types scripts/kartsynk.ts --sjalvtest
+          node --experimental-strip-types scripts/kartsynk.ts --check
+      # Själva vakten kör i md-vakt.yml, som ser varje ändring i DECISIONS.md; här prövas skriptet när koden ändras.
+      - name: Stomvaktens självtest (#484)
+        run: node --experimental-strip-types scripts/stomvakten.ts --sjalvtest
+      - name: Grind V-B:s självtest — facit enligt §2 och bara räkningar under spärren (#349, #350)
+        run: node --experimental-strip-types publish/grind-v-b.ts --sjalvtest
+      # Knapparna som granskningen 25/9 ändrade (kort #252, DECISIONS #352) prövas i varje PR, inte bara när de körs.
+      - name: Grindarnas självtester — A, vägpunkten, K-A, R-A, S-B, tystnadsfelet (#352), NT (#361)
+        run: |
+          node --experimental-strip-types publish/grind-a.ts --sjalvtest
+          node --experimental-strip-types scripts/hojd-prov.ts --sjalvtest
+          node --experimental-strip-types scripts/grind-k-a.ts --sjalvtest
+          node --experimental-strip-types scripts/grind-r-a.ts --sjalvtest
+          node --experimental-strip-types publish/grind-s-b.ts --sjalvtest
+          node --experimental-strip-types scripts/tystnadsfelet.ts --sjalvtest
+          node --experimental-strip-types scripts/grind-nt.ts --sjalvtest
+          node --experimental-strip-types scripts/uppspelning-facit.ts --sjalvtest
+          node --experimental-strip-types scripts/grind-k-b.ts --sjalvtest
+          node --experimental-strip-types scripts/grind-r-b.ts --sjalvtest
+          node --experimental-strip-types scripts/kodgrinden.ts --sjalvtest
+          node --experimental-strip-types scripts/matningar/kuvos-fysik-2026-10-08.ts --sjalvtest
+          node --experimental-strip-types scripts/matningar/kuvos-c8-fingeravtryck-2026-10-08.ts --sjalvtest
+          node --experimental-strip-types scripts/matningar/kuvos-blandning-2026-10-08.ts --sjalvtest
+          node --experimental-strip-types scripts/matningar/kuvos-trafik-per-band-2026-10-08.ts --sjalvtest
+          node --experimental-strip-types scripts/matningar/kuvos-fysik-givarvakt-2026-10-08.ts --sjalvtest
+          node --experimental-strip-types scripts/matningar/kuvos-kallkartan-2026-10-09.ts --sjalvtest
+          node --experimental-strip-types scripts/testarvakt.ts --sjalvtest
+          node --experimental-strip-types scripts/publikvakt.ts --sjalvtest
+          node --experimental-strip-types scripts/matningar/regioner.ts --sjalvtest
+          node --experimental-strip-types scripts/matningar/kuvos-fysik-regioner-2026-10-09.ts --sjalvtest
+          node --experimental-strip-types scripts/publikvakt.ts
+          # Fysikkoden är fryst (DECISIONS #508): de fem filerna bär samma sha256 som FYSIKSPARET-SVAR §1, annars är det inte den frysta versionen.
+          (cd fysik && sha256sum -c SHA256SUMS)
+          node --experimental-strip-types scripts/matningar/kuvos-metnordic-ecmwf-1b-2026-10-09.ts --sjalvtest
+          node --experimental-strip-types scripts/matningar/kuvos-fysik-niva2-metnordic-2026-10-09.ts --sjalvtest
+      # Nivå 2:s fysikkedja (fysik/niva2/, DECISIONS #509) är Python: självtestet går på syntetiska data, aldrig på Trafikverkets.
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
+      - name: Fysikkedjans självtest (fysik/niva2/sjalvtest.py)
+        run: |
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          python3 fysik/niva2/sjalvtest.py
+      # Generatorn gled isär från vektorfilerna tre gånger (31/8, 2/9, 13/9) utan att någon vakt såg det (#195).
+      # Den skriver bara filer vars innehåll ändrats och fäller själv på en vektorfil utan scenario.
+      - name: Vektorgeneratorn återskapar engine/vectors/ (#202)
+        run: |
+          node --experimental-strip-types engine/gen-vectors.ts > /dev/null
+          if [ -n "$(git status --porcelain --untracked-files=all engine/vectors/)" ]; then
+            git status --porcelain --untracked-files=all engine/vectors/
+            echo "::error::engine/gen-vectors.ts och engine/vectors/ har glidit isär — ändra scenariot i generatorn i samma commit som vektorfilen (kort #202)"
+            exit 1
+          fi
+      - run: npm test
+        env:
+          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+
+  livemotorn:
+    strategy: { fail-fast: false, matrix: { os: [ubuntu-24.04, ubuntu-26.04] } }
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 8
+    services:
+      postgis:
+        image: postgis/postgis:16-3.4
+        env: { POSTGRES_PASSWORD: postgres }
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    steps:
+      - name: Avbildningen
+        run: echo "$ImageOS $ImageVersion · $(lsb_release -ds) ($(lsb_release -cs)) · kärna $(uname -r)"
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: denoland/setup-deno@v2
+        with: { deno-version: "2.2.0" }
+      - name: Livemotorns skrivningar mot PostGIS (skriv_test.ts)
+        env:
+          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+        run: deno test --allow-env --allow-net --allow-read supabase/functions/ingest-live/
+
+  android:
+    strategy: { fail-fast: false, matrix: { os: [ubuntu-24.04, ubuntu-26.04] } }
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - name: Avbildningen
+        run: echo "$ImageOS $ImageVersion · $(lsb_release -ds) ($(lsb_release -cs)) · kärna $(uname -r)"
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - name: Kotlin engine vs shared vectors (the cross-platform contract)
+        run: cd android && ./gradlew --no-daemon :engine:test :app:testDebugUnitTest
+      - name: Assemble debug APK
+        run: cd android && ./gradlew --no-daemon :app:assembleDebug
+
+  android-emulator:
+    strategy: { fail-fast: false, matrix: { os: [ubuntu-24.04, ubuntu-26.04] } }
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    steps:
+      - name: Avbildningen
+        run: echo "$ImageOS $ImageVersion · $(lsb_release -ds) ($(lsb_release -cs)) · kärna $(uname -r)"
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Boot emulator + run on-device Skåne replay
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          arch: x86_64
+          target: default
+          disable-animations: true
+          script: |
+            cd android && ./gradlew --no-daemon :app:connectedDebugAndroidTest
+            adb install -r android/app/build/outputs/apk/debug/app-debug.apk
+            adb shell pm grant se.halkvakt.app android.permission.ACCESS_FINE_LOCATION
+            adb emu geo fix 18.063 59.334
+            adb shell am start -n se.halkvakt.app/.MainActivity --ez fotostudio_facit true
+            sleep 6
+            adb emu geo fix 18.063 59.334
+            sleep 2
+            adb emu geo fix 18.064 59.335
+            adb shell am start -n se.halkvakt.app/.MainActivity --ez fotostudio_facit true
+            sleep 8
+            SZ=$(adb shell wm size | tr -d '\r' | awk '{print $NF}'); W=${SZ%x*}; H=${SZ#*x}; Y=$((H*95/100)); echo "skärm ${W}x${H} y=$Y"; adb exec-out screencap -p > /tmp/shot-1-vakten.png; adb shell input tap $((W*3/4)) $Y; sleep 3; adb exec-out screencap -p > /tmp/shot-2-installningar.png; adb shell input tap $((W/2)) $((H*28/100)); sleep 2; adb exec-out screencap -p > /tmp/shot-3-varna-for.png; adb shell input keyevent 4; sleep 2; adb shell input tap $((W/2)) $((H*37/100)); sleep 2; adb exec-out screencap -p > /tmp/shot-4-forvarning.png; adb shell input keyevent 4; sleep 2; adb shell input tap $((W/2)) $((H*65/100)); sleep 2; adb exec-out screencap -p > /tmp/shot-6-betatest.png; adb shell input keyevent 4; sleep 2; adb shell input tap $((W/2)) $((H*83/100)); sleep 2; adb exec-out screencap -p > /tmp/shot-7-om.png
+            # #250 (c) 24/9: Om, Nära dig och Körläget är inga egna skärmar längre — de tre bilderna var dubbletter och är borta.
+            # Designen v2 (DECISIONS #444): inställningarna har två nivåer — fotostudion trycker på raderna (Varna för, Förvarning,
+            # Betatest, Om) i procent av skärmen och backar med tillbakaknappen mellan dem, i stället för att svepa en lång sida.
+
+  arkivbackup:
+    strategy: { fail-fast: false, matrix: { os: [ubuntu-24.04, ubuntu-26.04] } }
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    services:
+      kalla:
+        image: postgis/postgis:17-3.5
+        env: { POSTGRES_PASSWORD: kalla }
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 20
+      prov:
+        image: postgis/postgis:17-3.5
+        env: { POSTGRES_PASSWORD: prov }
+        ports: ["5433:5432"]
+        options: --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      # I stället för driftens databas: en lokal Postgres 17 med PostGIS, som Supabase. Inga hemligheter, ingen hink.
+      DATABASE_URL: postgresql://postgres:kalla@localhost:5432/postgres
+      PROV_URL: postgresql://postgres:prov@localhost:5433/prov
+    steps:
+      - name: Avbildningen
+        run: echo "$ImageOS $ImageVersion · $(lsb_release -ds) ($(lsb_release -cs)) · kärna $(uname -r)"
+      - name: Klient som matchar servern (ordagrant ur arkivbackup.yml)
+        shell: bash
+        run: |
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          MAJOR=$(psql "$DATABASE_URL" -Atc "show server_version_num" | cut -c1-2)
+          echo "servern kör Postgres $MAJOR ($(psql "$DATABASE_URL" -Atc 'show server_version'))"
+          if ! grep -rqs apt.postgresql.org /etc/apt/sources.list.d/; then
+            curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/pgdg.gpg
+            echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list >/dev/null
+          fi
+          sudo apt-get -qq update >/dev/null
+          sudo apt-get -qq install -y "postgresql-client-$MAJOR" >/dev/null
+          echo "/usr/lib/postgresql/$MAJOR/bin" >> "$GITHUB_PATH"
+          "/usr/lib/postgresql/$MAJOR/bin/pg_dump" --version
+      - name: Dumpa och läs tillbaka (samma flaggor som arkivbackup.yml)
+        shell: bash
+        run: |
+          set -euo pipefail
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q -c "create extension if not exists postgis" \
+            -c "create table prov_tabell (id int primary key, geom geometry(Point,4326), t timestamptz)" \
+            -c "insert into prov_tabell select g, ST_SetSRID(ST_MakePoint(15 + g / 1e4, 60), 4326), now() from generate_series(1, 50000) g"
+          pg_dump "$DATABASE_URL" --format=custom --no-owner --no-privileges --schema=public --file prov.dump
+          echo "dump: $(stat -c %s prov.dump) byte, $(pg_restore --list prov.dump | grep -c 'TABLE DATA') tabeller med data"
+          psql "${PROV_URL%/prov}/postgres" -v ON_ERROR_STOP=1 -q -c "create database prov template template0"
+          psql "$PROV_URL" -v ON_ERROR_STOP=1 -q -c "create extension postgis"
+          set +e; pg_restore --dbname "$PROV_URL" --no-owner --no-privileges --jobs 2 prov.dump 2> restore.err; echo "pg_restore exit $?"; set -e
+          grep 'ERROR' restore.err | head -5 || true
+          N=$(psql "$PROV_URL" -Atc "select count(*) from prov_tabell where geom is not null")
+          python3 -c "import sys; n = int(sys.argv[1]); print(f'återlästa: {n} av 50000'); sys.exit(0 if n == 50000 else 1)" "$N"
+
+  kuvos:
+    strategy: { fail-fast: false, matrix: { os: [ubuntu-24.04, ubuntu-26.04] } }
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    services:
+      postgis:
+        image: postgis/postgis:16-3.4
+        env: { POSTGRES_PASSWORD: postgres }
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+      PGPASSWORD: postgres
+    steps:
+      - name: Avbildningen
+        run: echo "$ImageOS $ImageVersion · $(lsb_release -ds) ($(lsb_release -cs)) · kärna $(uname -r)"
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: psql-klienten (raden ur kuvos.yml)
+        run: |
+          command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+          psql --version
+      - name: Migrationerna och klockan
+        shell: bash
+        run: |
+          psql -h localhost -U postgres -qc "CREATE EXTENSION IF NOT EXISTS postgis"
+          for f in sql/*.sql; do psql -h localhost -U postgres -q -v ON_ERROR_STOP=1 -f "$f" >/dev/null 2>err.txt || echo "föll (väntat om driftens tabell saknas): $f — $(tail -1 err.txt)"; done
+          psql -h localhost -U postgres -q -v ON_ERROR_STOP=1 -f kuvos/klocka.sql
+          psql -h localhost -U postgres -v ON_ERROR_STOP=1 -Atc "
+            SELECT 'weather_observations'::regclass, 'givarfel_dygn'::regclass, 'weather_obs_brott_idx'::regclass,
+                   'langsam_vakt(interval)'::regprocedure, 'kuvos.now()'::regprocedure"
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13" }
+      - name: Fysikkedjans beroenden och självtest där kedjan frystes (/home/claude/fys)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          sudo mkdir -p /home/claude /mnt/user-data/uploads && sudo chown -R "$(id -u):$(id -g)" /home/claude /mnt/user-data
+          ln -sfn "$PWD/fysik" /home/claude/fys
+          (cd /home/claude/fys && python3 niva2/sjalvtest.py)
+          { gh --version; tar --version; gunzip --version; } 2>&1 | grep -E '^(gh|tar|gunzip) ' || true
+
+  deploy-supabase:
+    strategy: { fail-fast: false, matrix: { os: [ubuntu-24.04, ubuntu-26.04] } }
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 8
+    steps:
+      - name: Avbildningen
+        run: echo "$ImageOS $ImageVersion · $(lsb_release -ds) ($(lsb_release -cs)) · kärna $(uname -r)"
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Bundlarna i synk med källorna
+        run: |
+          node --experimental-strip-types scripts/bundle-publicera.ts --check
+          node --experimental-strip-types scripts/bundle-skuggmotor.ts --check
+      - uses: supabase/setup-cli@v1
+        with: { version: 2.117.0 }
+      - name: CLI:t startar (ingen deploy, ingen nyckel)
+        run: supabase --version
