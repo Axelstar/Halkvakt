@@ -48,7 +48,7 @@ nedan med rättelserna under *Övrigt sedan 29/9*, om inte §0, §0b eller §4.2
 - **Databasen:** 388 MB 10/10 06:14 UTC (dbknapp 38030231454), ~30 MB/dygn det senaste dygnet; 500 MB omkring 14–16/10.
   **Avgjort 10/10 (#511): alternativ 1+2, inte Pro.** Gallringen efter tre dygn med brotten mot #75 sparade, och raderingens golv
   14 dygn, ikapp första natten (kort #322, sql/044). Grindarna som läser längre bakåt läser de raderade dygnen ur
-  hinken via en tillfällig databas i Actions (kort #323, #513: i drift 10/10). Provet fann att 19–22/9 bär sena rader som inte står i filerna; sql/034:s undantag hade då rullat tillbaka hela nattens radering — sql/045 (#514) exporterar om sådana dygn och går vidare. **I drift 10/10 07:04 UTC:** migrationen med DB-knappen (38033120634: båda jobben bär 044:s kommandon,
+  hinken via en tillfällig databas i Actions (kort #323, #513: i drift 10/10). Provet fann att 19–22/9 bär sena rader som inte står i filerna; sql/034:s undantag hade då rullat tillbaka hela nattens radering — sql/045 (#514, i drift 12:17 UTC) exporterade om dem, och provet med 38 dygn gav sedan alla 44 dygn lika driften och samma utskrift i grind A och V-A (38057014942). **I drift 10/10 07:04 UTC:** migrationen med DB-knappen (38033120634: båda jobben bär 044:s kommandon,
   funktionen sparar brotten; 389 MB) och vakthunden deployad från 377cc84 (38033122513). Verify: nattjobben 11/10 03:15 och
   03:45 UTC och storleken som planar ut. Databasvakten larmar vid 450 MB sedan 10/10 (#512, Bengts val (a)); (b), en
   `VACUUM FULL`, kördes inte — toppen hade passerat 500 MB (§4.2).
@@ -677,7 +677,7 @@ bevisbart säker (vid 0 km/h går det inte att nå faran) och är rimligen stör
 <!-- LÄGESRADER §5: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 *Läget i projektkartan:*
 
-- [Arkivexporten och säkerhetskopian](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-i-export): delvis, 92 % · kvar: Provet utan olika dygn efter att 19–22/9 exporterats om (sql/045, #514), och måndagens grind A och V-A via pulsklockan (kort #323)
+- [Arkivexporten och säkerhetskopian](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-i-export): delvis, 92 % · kvar: Måndagens körningar 12/10 via pulsklockan: grind A, höjdprovet, V-A och V-B mot den tillfälliga databasen (kort #323)
 - [Datavakterna (givarvakten, radvakten, karantänen)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-i-vakterna): klar
 - [Lägesfilens fält för skuggdelarna](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-l-falten): delvis, 57 % · kvar: Motorn läser inte regn, rain_segments, regn_h, lutning, bevis eller smhi (fogarna F2–F4)
 - [L2 tillståndet (skattaren S1–S3)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-tillstand): delvis, 57 % · kvar: S1-grinden på frostnätter (Axel, DECISIONS #196)

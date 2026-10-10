@@ -10176,6 +10176,8 @@ exporten).
 
 **Stomdokument:** MAT §1, BED §0b
 
+**#513 provat 10/10, med hinkens dygn i fönstret** (efter #514): provet `tillfalliga-arkivet` med 38 dygn (körning 38057014942, 13:47 UTC): fönstret 26/8–10/10, 35 dygn ur hinken (8,3 MB), 9 ur driften, 6–7/9 saknas i båda (aldrig hämtade); 44 av 44 dygn lika driften i antal och md5; grind A och V-A gav SAMMA UTSKRIFT i driften och i den tillfälliga databasen (24 och 42 rader); trafik 102,5 MB ur driften. Första körningen med hinken (38049764165) gav 40 av 44 lika; de fyra andra var fyndet i #514. Kvar av Verify: måndagens körningar via pulsklockan.
+
 ## #514 (10/10 2026) Raderingen exporterar om ett dygn som vuxit sedan exporten, i stället för att stoppa hela natten (kort #322, #323)
 
 **Fyndet.** Provet för kort #323 (körning 38049764165, 38 dygn) gav 40 av 44 dygn lika driften rad för rad. De fyra andra, 19–22/9,
@@ -10204,6 +10206,8 @@ kontrollsummor och fann inget sådant dygn bland 44.
 driften); provet `tillfalliga-arkivet` med 38 dygn utan olika dygn; nattjobbet 11/10 03:45 har raderat dygn (vakthundens rad).
 
 **Stomdokument:** BED — läget (Databasen)
+
+**#514 i drift 10/10** (Bengt: *"slå ihop 855"*): sql/045 i drift 10/10 12:17 UTC (PR #855 som 13e8a38, DB-knappen 38051426175); 19–22/9 omexporterade 12:40 och 13:40 UTC med de sena raderna (DB-knappen 38056988569: 9 377, 5 790, 2 477 och 3 090 rader, lika driften; eftersläpningen 0; 400 MB). Provet för #323 därefter: 44 av 44 dygn lika driften (38057014942). Kvar av Verify: nattjobbet 11/10 03:45 har raderat dygn.
 
 ## #515 (10/10 2026) Projektkartan visar takten: de senaste sju dygnens steg, och varje ändring med sin commit (kort #325)
 
