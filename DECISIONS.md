@@ -10096,3 +10096,27 @@ och toppen hade blivit ~580 MB, över gränsen där gratisnivån går i skrivsky
 återläsningen: inte valt, alternativ 2 hade då inte gett plats före 14/10. Svagare karantän: inte valt.
 
 **Stomdokument:** MAT §1, BED §4.2
+
+## #512 (10/10 2026) Databasvakten larmar vid 450 MB i stället för 400 — databasen krymper inte efter raderingarna (kort #322)
+
+**Beslut.** Bengt 10/10: *"höj gränsen till a)"*, på bedömningens §4.2 (raden *Databasvaktens 400 MB-larm när databasen inte kan
+krympa*). Vakthundens databasvakt (grepp 3, #232) larmar när `pg_database_size` passerar **450 MB** (90 % av gratisnivåns 500), i stället
+för 400 (80 %). Provläget `?databasprov=1` sänker som förut gränsen till 0.
+
+**Varför.** Gallring och radering frigör plats för återanvändning men minskar inte storleken (sql/014:16). Efter #511 står databasen
+kring 400 MB — 390 MB 10/10 07:06 UTC (dbknapp 38033278427) och ~1,25 MB i timmen till nattens jobb — och hade den passerat 400 hade
+larmet stått för gott och kommenterat varje timme i ärendet som bär alla vakthundens larm. Ett larm som alltid står döljer de andra.
+
+**Alternativ.** (b) en engångs `VACUUM FULL` — Bengts första val samma dag, pausat: toppen under omskrivningen hade blivit ~580 MB,
+över gränsen där gratisnivån går i skrivskydd (#511, *I drift*). (c) låta larmet stå: inte valt.
+
+**Vad det kostar.** Marginalen mellan larm och skrivskydd krymper från 100 till 50 MB. I takten 10/10 (~30 MB/dygn) är det knappt två
+dygn; när gallringen och golvet verkar ska tillväxten stanna, och det är nattjobbens Verify (kort #322) som visar om den gör det.
+
+**Byggt.** `supabase/functions/vakthund/index.ts:468` (gränsen) och två kommentarer; kopian finns bara där (fullständig grep 10/10).
+Dokumenten som bar regeln: KALENDERN, bedömningen, projektkartans *Arkivet* och GREPP3-ARKIVENs statusrad.
+
+**Driftsättning och Verify.** Efter Bengts "slå ihop": deploy av vakthunden. Beviset är vakthundens egen rad efter deployen,
+*databas: N MB av 500 (larm vid 450 MB)*, läst ur `net._http_response` med DB-knappen i läsläget.
+
+**Stomdokument:** BED §4.2

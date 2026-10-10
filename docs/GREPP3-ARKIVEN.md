@@ -1,6 +1,6 @@
 # GREPP 3 — arkiven till mars (kort #83 steg 2)
 
-**Status:** 🔨 **BESLUTSUNDERLAG 2026-09-17 — punkt 1 klar och i drift; Pro-beslutet återstår (larm vid 400 MB eller 1/11)**, skrivet av Claude på Bengts order *"kör grepp 3"*. Besluten är Bengts och
+**Status:** ✅ **AVGJORT — gratisvägen, inte Pro:** exporten (#334, 24/9), gallring efter tre dygn och raderingens golv 14 dygn (#511, 10/10); databasvakten larmar vid 450 MB sedan 10/10 (#512). Underlaget nedan är från 17/9 (*Pro-beslutet återstår (larm vid 400 MB eller 1/11)*), skrivet av Claude på Bengts order *"kör grepp 3"*. Besluten är Bengts och
 Axels (bedömningen §4.2). En betald tjänst kräver en DECISIONS-post som Axel godkänt (CLAUDE.md, gratisnivåregeln).
 
 ---
