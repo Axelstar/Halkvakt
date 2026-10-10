@@ -460,12 +460,12 @@ Deno.serve(async (req) => {
       rad.push(`förarfacit: ${df.n} svar${senast}${df.prov ? ` · ${df.prov} prov uteslutna` : ""}`);
     } catch { rad.push("förarfacit: tabellen saknas — hoppar"); }
     // Grepp 3 (DECISIONS #231/#232): databasens storlek. Gratisnivån skrivskyddar databasen vid 500 MB — då stannar
-    // ingest-live och appen visar gammal data, utan att något annat larmar. Larm vid 400 MB (80 %).
+    // ingest-live och appen visar gammal data, utan att något annat larmar. Larm vid 450 MB (90 %; 400 till 10/10, DECISIONS #512).
     // Prov: ?databasprov=1 sänker gränsen till 0 MB så att larmvägen syns.
     try {
       const [db] = await sql`SELECT pg_database_size(current_database())::bigint AS b`;
       const mb = Math.round(Number(db.b) / 1048576);
-      const grans = new URL(req.url).searchParams.get("databasprov") === "1" ? 0 : 400;
+      const grans = new URL(req.url).searchParams.get("databasprov") === "1" ? 0 : 450;
       rad.push(`databas: ${mb} MB av 500 (larm vid ${grans} MB)`);
       if (mb >= grans) problem.push(`**DATABASEN ÄR ${mb} MB** — gratisnivån skrivskyddar vid 500 MB och då stannar ingest-live (grepp 3, docs/GREPP3-ARKIVEN.md)`);
     } catch { rad.push("databas: storleken kunde inte läsas"); }
@@ -971,7 +971,7 @@ Deno.serve(async (req) => {
     } catch (e) { problem.push(`**Kunde inte läsa arkivbackupens hink**: ${String(e)}`); }
     // 9k. ARKIVEXPORTEN (kort #83 steg 2a, DECISIONS #334). Exporten får ligga efter medan den beta av eftersläpningen, men
     //     inte STÅ STILLA: färdiga dygn som inte exporterats OCH ingen export på tre timmar ⇒ larm. Står exporten stilla
-    //     raderas heller ingenting (bara bokförda dygn får tas), så databasvakten vid 400 MB är den andra vakten.
+    //     raderas heller ingenting (bara bokförda dygn får tas), så databasvakten vid 450 MB är den andra vakten.
     try {
       const [x] = await sql`SELECT arkiv_efterslap() AS efter, (SELECT count(*)::int FROM arkiv_export) AS dygn,
         (SELECT max(dag)::text FROM arkiv_export) AS senast_dag,
