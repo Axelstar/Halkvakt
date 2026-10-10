@@ -250,11 +250,12 @@
       <li><span aria-hidden="true">◐</span> <b>Används av motorn eller appen</b> <span style="color: var(--dampad, #4A5763)">pågår · Skuggmotorn läser rain_segments (skuggmotor/main.ts:220); motorns LiveDoc saknar regn</span></li>
     </ul>
   </details>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-rimfrost">Rimfrosten</a> <span style="color: var(--dampad, #4A5763)">väntar, 38 % · En frostmånad för R-B; uppspelningen ur arkivet byggs efter R-A (#363, #491).</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-rimfrost">Rimfrosten</a> <span style="color: var(--dampad, #4A5763)">väntar, 44 % · En frostmånad för R-B; uppspelningen ur arkivet byggs efter R-A (#363, #491).</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Tröskeldokument</b> <span style="color: var(--dampad, #4A5763)">klart · docs/TROSKLAR-RIMFROST.md:3–4 FASTSTÄLLT 12/9 (DECISIONS #117, #135); B ur arkivet (#363)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Data i arkivet</b> <span style="color: var(--dampad, #4A5763)">klart · dewpoint_c (sql/001_init.sql:49), fuktighet och sikt skrivs av ingest-live/index.ts:170–171; finska KASTEPISTE (sql/010)</span></li>
       <li><span aria-hidden="true">○</span> <b>Publicerat i lägesfilen</b> <span style="color: var(--dampad, #4A5763)">saknas · weather[] bär ingen daggpunkt (snapshot-core.ts:381–389)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Uppspelningen för R-B byggd</b> <span style="color: var(--dampad, #4A5763)">klart · DECISIONS #510: scripts/grind-r-b.ts och knappen grind-r-b, R-A:s villkor importerat; spärrad tills R-C1–C2; självtester i ci. Verify kräver en spärrad körning</span></li>
       <li><span aria-hidden="true">◐</span> <b>Mätt i skuggan</b> <span style="color: var(--dampad, #4A5763)">pågår · R-A: scripts/grind-r-a.ts + grind-r-a.yml, svensk körning trycks av vakthund/index.ts:74; R-B byggs när R-A passerat (#363)</span></li>
       <li><span aria-hidden="true">◐</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">pågår · R-A på svenska arkivet 8/10 (37754423323, DECISIONS #491): 163 episoder, 394 stationstimmar, 61 stationer; R-A3 och R-A5 klarar, R-A4 stödjer; R-B:s uppspelning nästa</span></li>
       <li><span aria-hidden="true">○</span> <b>Villkoret i motorn</b> <span style="color: var(--dampad, #4A5763)">saknas · engine.ts:226–232 har ingen daggpunktsgren; TROSKLAR-RIMFROST.md:5 'Ingen kod ännu'</span></li>
@@ -323,11 +324,11 @@
         <tr><td><a href="#d-tystnad">3.4 Tystnadsfelet</a></td><td>facit</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>2 av 20 tillfällen</td></tr>
         <tr><td><a href="#d-vakter">4.1 Vakterna</a></td><td>L1</td><td><span class="lage drift">i drift</span></td><td>706 av 811 felrader tagna</td></tr>
         <tr><td><a href="#d-prognos">5.1 Prognoslagret</a></td><td>L4</td><td><span class="lage skugga">körs i skuggan</span></td><td>föll 28/9 (#399); premissmätningarna 30/9 räddar ingen kandidat (#405–#408); föll för alla kandidater på vintern 2024/25 (#467); spridningsgrinden i skuggan sedan 7/10, X = 2,25 °C (#474–#478); läses igen 24/11 (#435)</td></tr>
-        <tr><td><a href="#d-frysklass">5.2 Frysklassningen</a></td><td>L4</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>K-A passerad 8/10; K-B efter en vintermånad</td></tr>
+        <tr><td><a href="#d-frysklass">5.2 Frysklassningen</a></td><td>L4</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>K-A passerad 8/10; K-B:s uppspelning byggd 10/10, spärrad (#510); döms efter en vintermånad</td></tr>
         <tr><td><a href="#d-tathet">5.3 Stationstätheten</a></td><td>L4</td><td><span class="lage arkiv">mätt</span></td><td>median 6,8 km till station</td></tr>
         <tr><td><a href="#d-trend">6.1 Trenden</a></td><td>L3</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>T-A: domspärren släppt 8/10, 169 frostnätter</td></tr>
         <tr><td><a href="#d-efterhalka">6.2 Efterhalkan</a></td><td>L3</td><td><span class="lage skugga">körs i skuggan</span></td><td>35 rader, dom i januari</td></tr>
-        <tr><td><a href="#d-rimfrost">6.3 Rimfrosten</a></td><td>L3</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>R-A: 163 episoder på 61 stationer, signalen är fysik</td></tr>
+        <tr><td><a href="#d-rimfrost">6.3 Rimfrosten</a></td><td>L3</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>R-A: 163 episoder på 61 stationer, signalen är fysik; R-B:s uppspelning byggd 10/10, spärrad (#510)</td></tr>
         <tr><td><a href="#d-overgang">6.4 Övergångarna</a></td><td>L3</td><td><span class="lage arkiv">mäts i arkivet</span></td><td>Ö-A passerad; 42 regnstopp följda av frost 8/10</td></tr>
         <tr><td><a href="#d-alder">6.5 Väglagets ålder</a></td><td>L3</td><td><span class="lage obyggd">fastställd, obyggd</span></td><td>0 omklassningar till halka</td></tr>
         <tr><td><a href="#d-tillstand">7.1 Tillståndsskattaren</a></td><td>L2</td><td><span class="lage drift">i drift</span></td><td>bevis i snapshoten sedan 24/9</td></tr>
@@ -850,6 +851,7 @@
       <ul>
         <li>Svepet: klassgräns 0 · +0,5 · +1,0 °C, osäkerhetszon ±0 · ±0,5 · ±1,0 °C och längsta ankaravstånd 15 · 20 · 50 km, alltså 27 kombinationer.</li>
         <li>Inom zonen avstår modellen. Ett <i>farligt fel</i> är när modellen säger "fryser inte" och mätningen ligger på eller under gränsen.</li>
+        <li>K-B spelas upp ur arkivet, inte i en skuggkolumn (DECISIONS #363, #510; <span class="mono">scripts/grind-k-b.ts</span>): vid varje bekräftat halktillfälle, en omklassning till halka inom 5 km från stationen, frågas om klassningen sade "fryser" och var rätt, och om dagens punktmotor var tyst (nettonytt) eller mer än 30 min senare (tidsvinst). Knappen är spärrad och skriver bara räkningar tills en vintermånad med frost i tre regioner finns och Bengt säger dom.</li>
         <li>Krav: träff ≥ 95 %, farliga fel ≤ 1 %, täckning ≥ 70 %, minst 500 punkter över 20 stationer varav minst 100 med uppmätt frys, och ±1,96 SE.</li>
         <li>Körs av sig själv när minst 50 stationer haft ytan ≤ 0 °C, högst var sjunde dygn.</li>
       </ul>
@@ -1028,6 +1030,7 @@
         <li>Villkoret: yta ≤ daggpunkt + M och yta ≤ Y. Svep: M 0 · +0,5 · +1,0 °C, Y 0 · +1 °C, uthållighet 30 · 60 min, sikt och molnklass som konfidens och filter.</li>
         <li>Daggpunkten levereras färdig av Trafikverket och Fintraffic. Ingen egen formel används.</li>
         <li>Vakten är tredelad och får aldrig mjukas upp: givarvakten, yta − dagg ≥ −5 °C och relativ fuktighet ≥ 90 %. Därtill radvakten och karantänen.</li>
+        <li>R-B spelas upp ur arkivet (DECISIONS #363, #510; <span class="mono">scripts/grind-r-b.ts</span>): grenen fyrar när uthålligheten är nådd, och mot de bekräftade halktillfällena mäts nettonytt och tidsvinst (R-B1), falsklarm utan omklassning inom 90 min (R-B2) och extra röst per station och natt (R-B3), med molnklassen ur SMHI i efterhand. Spärrad tills 15 frostdygn i tre regioner finns och Bengt säger dom.</li>
         <li>Krav: ≥ 200 stationstimmar, ≥ 20 stationer, ≥ 40 % med kallaste stunden kl 03–07, klara nätter fyrar minst dubbelt så ofta som mulna, ingen station över 20 %. Därefter nettonytt ≥ 5 % och falsklarm ≤ 25 %.</li>
       </ul>
     </div></details>
@@ -1145,11 +1148,12 @@
       <li><span aria-hidden="true">○</span> <b>I appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Når förarna först vid E2, efter Å-A, Å-B och Bengts ord</span></li>
     </ul>
   </details>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-frysklassning">Frysklassningen</a> <span style="color: var(--dampad, #4A5763)">väntar, 38 % · En vintermånad för K-B; uppspelningen byggs först (kort #309, DECISIONS #491).</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-frysklassning">Frysklassningen</a> <span style="color: var(--dampad, #4A5763)">väntar, 44 % · En vintermånad för K-B; uppspelningen byggs först (kort #309, DECISIONS #491).</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Tröskeldokument</b> <span style="color: var(--dampad, #4A5763)">klart · TROSKLAR-FRYSKLASSNINGEN.md:4 FASTSTÄLLT 12/9 (DECISIONS #135)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Data i arkivet</b> <span style="color: var(--dampad, #4A5763)">klart · Yta och luft per station i weather_observations (ingest-live/index.ts:169–171)</span></li>
       <li><span aria-hidden="true">○</span> <b>Publicerat i lägesfilen</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen klass i lägesfilen; K4 = E1 först efter K-B (TROSKLAR-FRYSKLASSNINGEN.md:160)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Uppspelningen för K-B byggd</b> <span style="color: var(--dampad, #4A5763)">klart · DECISIONS #510: scripts/grind-k-b.ts och knappen grind-k-b, facitsidan i scripts/uppspelning-facit.ts; spärrad som grind NT; självtester i ci. Verify kräver en spärrad körning</span></li>
       <li><span aria-hidden="true">◐</span> <b>Mätt i skuggan</b> <span style="color: var(--dampad, #4A5763)">pågår · scripts/grind-k-a.ts + grind-k-a.yml, självtest i ci.yml, trycks av frostflödet (vakthund/index.ts:75); K-B obyggd (#363)</span></li>
       <li><span aria-hidden="true">◐</span> <b>Dom</b> <span style="color: var(--dampad, #4A5763)">pågår · K-A PASSERAD 8/10 (37754426571, DECISIONS #491): 13 av 27 kombinationer, bäst täckning K1 0 °C · K2 ±0,5 · K3 20 km (97,8 %, träff 99,3 %, farliga 0,5 %); K-B efter en vintermånad</span></li>
       <li><span aria-hidden="true">○</span> <b>Villkoret i motorn</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>

@@ -31,6 +31,13 @@ const FARLIGHET = /(?<![a-zåäö])(is|halka|halkrisk|halkig|halt)|frost/i;
 const YTA = /snö/i;
 const FEMTE_TERMEN = /(?<![a-zåäö])(mycket besvärligt)/i;   // finns i motorn, saknas i publish-filtret
 
+// UNDERLAGSSPÄRREN PÅ C (DECISIONS #510, Bengts förslag 9/10 efter ärende #815). Premissen "inga farlighetsord på kod 1" kan bara
+// prövas där kod 1 bär vinterord alls: C kräver minst C_MIN_RADER sådana rader från minst C_MIN_LAN län innan noll träffar får
+// läsas som att premissen håller. Med ett enda vinterord i arkivet (Lössnö 8/10) hade raden annars skrivit grönt på ett ord.
+// 30 rader: lämnade Trafikverket farlighetsord på kod 1 i var tionde sådan rad hade 30 rader visat minst ett med 96 % sannolikhet.
+export const C_MIN_RADER = 30, C_MIN_LAN = 3;
+export function cSparr(rader: number, lan: number): boolean { return rader >= C_MIN_RADER && lan >= C_MIN_LAN; }
+
 type Niva = "FARLIGHET" | "YTA" | "NEUTRAL";
 export function niva(info: string): Niva {
   if (FARLIGHET.test(info) || FEMTE_TERMEN.test(info)) return "FARLIGHET";
@@ -139,6 +146,11 @@ if (process.argv.includes("--sjalvtest")) {
   const vinterord = (kk: Kors) => [...kk.values()].reduce((s, c) => s + (c.per.get("FARLIGHET") ?? 0) + (c.per.get("YTA") ?? 0), 0);
   k("vinterord i rikt arkiv", vinterord(kt), 10);
   k("vinterord i tomt arkiv", vinterord(korstabulera([{ code: 1, info: "Torrt", n: 99 }])), 0);
+  // Underlagsspärren på C (DECISIONS #510): 30 rader med vinterord på kod 1 från 3 län — båda leden.
+  k("spärren: 29 rader fäller", cSparr(29, 3), false);
+  k("spärren: 30 rader från 2 län fäller", cSparr(30, 2), false);
+  k("spärren: 30 rader från 3 län släpper", cSparr(30, 3), true);
+  k("spärren: ett vinterord släpper inte (8/10:s läge)", cSparr(1, 1), false);
   rapportB(kt);
   rapportBlind(korstabulera([{ code: 1, info: "Halkbekämpning", n: 2 }, { code: 1, info: "Torrt", n: 9 }]));
   if (!ok) { console.error("\nSJÄLVTEST FÄLLDE."); process.exit(1); }
@@ -210,14 +222,28 @@ const cAntal = (await q(`SELECT count(*)::int AS n FROM road_condition_history h
 // med det underlag som finns får aldrig rapportera "premissen håller". Saknas vinterorden helt
 // är noll träffar i C ett utsagolöst noll, inte ett stöd.
 const vinterord = [...kors.values()].reduce((s, c) => s + (c.per.get("FARLIGHET") ?? 0) + (c.per.get("YTA") ?? 0), 0);
+// Underlagsspärren (DECISIONS #510): kod 1-rader som bär något vinterord alls (farlighet eller yta), och deras län.
+const cUnderlag = (await q(`SELECT count(*)::int AS rader,
+    count(DISTINCT CASE WHEN array_length(r.county_nos, 1) IS NULL THEN NULL ELSE r.county_nos[1] END)::int AS lan
+  FROM road_condition_history h LEFT JOIN road_conditions r USING (segment_id)
+  WHERE h.condition_code = 1
+    AND EXISTS (SELECT 1 FROM unnest(h.condition_info) i WHERE i ~* '(^|[^a-zåäö])(is|halka|halkrisk|halkig|halt|mycket besvärligt)|frost' OR i ~* 'snö')`))[0];
 console.log(`\nC — PREMISSEN: lämnar Trafikverket farlighetsord på kod 1 (Normalt)?`);
+console.log(`  underlag: ${cUnderlag.rader} rader med vinterord på kod 1 från ${cUnderlag.lan} län (spärren kräver ≥ ${C_MIN_RADER} från ≥ ${C_MIN_LAN}, DECISIONS #510)`);
 if (!vinterord) {
   console.log(`  ⊘ OAVGJORT. Arkivet innehåller noll farlighetsord och noll ytord — oavsett kod.`);
   console.log(`    Frågan KAN alltså inte falsifieras med det här underlaget, och noll träffar`);
   console.log(`    nedan betyder ingenting. Det är läxan i DECISIONS #71: moaten är tom, inte hel.`);
   console.log(`    Mätningen blir avgörande först när ordförrådet i B innehåller vinterord.`);
+} else if (!cSparr(Number(cUnderlag.rader), Number(cUnderlag.lan))) {
+  console.log(`  ⊘ OAVGJORT — underlagsspärren håller: för få kod 1-rader med vinterord för att noll träffar ska säga något.`);
+  console.log(`    Premissen varken håller eller faller här. Kör om när snön legat en vecka i norr.`);
+  if (cAntal) {
+    console.log(`  ⚠ Men ${cAntal} rader har redan kod 1 OCH ett farlighetsord — de ska läsas för hand oavsett spärren:`);
+    for (const r of c) console.log(`    ${String(r.tid).slice(0, 16)}  län ${String(r.lan ?? "?").padStart(2)}  seg ${String(r.segment_id).padEnd(8)} ${r.text} ${JSON.stringify(r.info)}`);
+  }
 } else if (!cAntal) {
-  console.log(`  ✓ NOLL träffar av ${vinterord} vinterord i arkivet. Premissen håller så långt arkivet räcker.`);
+  console.log(`  ✓ NOLL träffar av ${cUnderlag.rader} kod 1-rader med vinterord (${vinterord} vinterord i arkivet). Premissen håller så långt arkivet räcker.`);
 } else {
   console.log(`  ⚠ ${cAntal} rader har kod 1 OCH ett farlighetsord. Premissen håller INTE rakt av.`);
   console.log(`  De ${Math.min(25, cAntal)} senaste, att läsa för hand:`);

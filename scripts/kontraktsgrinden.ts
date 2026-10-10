@@ -555,8 +555,8 @@ export const KONTRAKT: Kontrakt[] = [
   {
     namn: "Räckvidden för facit — km från stationen (Bengt 20/9, DECISIONS #245)",
     varfor: "Standardvärdet och vakten som avvisar andra tal måste bära samma km, annars släpper vakten igenom sitt eget fel.",
-    former: [/p_facit_km numeric DEFAULT (\d+)/, /p_facit_km <> (\d+) THEN/],
-    golv: 2,
+    former: [/p_facit_km numeric DEFAULT (\d+)/, /p_facit_km <> (\d+) THEN/, /const FACIT_KM = (\d+)/],   // tredje kopian: B-uppspelningarnas facitmodul (#510)
+    golv: 3,
   },
   {
     // Kort #259 (Bengts ja 26/9, DECISIONS #374): reglaget var 400–3 000 på iOS och 500–5 000 på Android, och ovanför fart × 30 s

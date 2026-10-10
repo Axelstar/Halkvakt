@@ -1,0 +1,32 @@
+# Grind R-B — rimfrostens uppspelning (kort #46, DECISIONS #363, #510). Läsande knapp, spärrad som standard: utan dom skrivs
+# bara räkningar. dom = ja läser B-utfallet och låser trösklarna (§9) — bara på Bengts ord, när R-C1–R-C2 är uppfyllda.
+name: grind-r-b
+on:
+  workflow_dispatch:
+    inputs:
+      dagar:
+        description: "Fönster i dygn"
+        required: false
+        default: "30"
+      dom:
+        description: "nej = spärrad (bara räkningar). ja = DOMLÄGE, läser utfallet — bara på Bengts ord."
+        type: choice
+        default: nej
+        options: [nej, ja]
+jobs:
+  grind-r-b:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: node --experimental-strip-types scripts/grind-r-b.ts --sjalvtest
+      # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
+      - shell: bash
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/grind-r-b.ts "${{ inputs.dagar || '30' }}" ${{ inputs.dom == 'ja' && '--dom' || '' }} | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
