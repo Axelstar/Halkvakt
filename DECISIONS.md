@@ -9943,6 +9943,56 @@ förregistrering, knappen på Bengts ord.
 
 **Stomdokument:** KUV §12, BED §4.2
 
+## #509 (9/10 2026) Väderkällan nivå 2 förregistrerad — fysikkedjan omkörd i kuvösen på ECMWF som kontroll och på MET Nordic som kandidat, förväntningarna före knappen (kort #319)
+
+**Beslut.** Bengt 9/10 kväll: *"kör nivå 2"*. Nivå 2 är fysikspåret (värmekolumnen och den inlärda rättelsen, #485, #508) med vädret
+bytt från ECMWF till MET Nordic, prövat i kuvösen mot samma facit som FYSIK. Bara vädret får skilja: därför körs först den frysta
+kedjan om i kuvösen som **KONTROLL** (ska ge FYSIK:s 9,85 %), och sedan samma kedja på MET Nordic som **NIVÅ 2**. Ingen dom; utfallet
+är underlag för Axels val av källa (kort #319). Trösklar, drift och de frysta filerna rörs inte.
+
+**Vad som byggs** (`fysik/niva2/`, README där; `scripts/matningar/kuvos-fysik-niva2-metnordic-2026-10-09.ts`; steg i kuvos.yml).
+1. **Kontrollen:** `v4.py` och expA:s A2-konfiguration körs som de frystes, på Trafikverkets filer ur hinken och Axels indata
+   (höjd, terräng, vägdata, ECMWF-cachen). oof_A2:s sha256 skrivs ut bredvid den frysta (`9268c6c7…`); byte för byte lika bevisar
+   återskapandet, annars avgör talen (gradientboostningens trådar kan ge sista decimalen olika).
+2. **Nivå 2, samma kedja med vädret bytt** (fysik/README.md, Axels rekommendation, #508): daggpunkt ur fukten (Magnus, som 1b);
+   snöfall ur nederbörd vid luft ≤ +1 °C i Open-Meteos enhet (7 cm per mm) så att snötäcket räknas som förut; strålningen i W/m²;
+   **uppmätt långvåg i fysiken** i stället för Brutsaert-skattningen; höjdskillnaden 0 (1 km-rutan står vid stationen). De tre
+   ECMWF-fälten ersatta i rättelsen: snödjup → kolumnens eget snötäcke, marktemperatur → kolumnens 5,5 cm-lager, låga moln →
+   effektiv himmelsemissivitet ur långvågen. Fysiken **omkalibreras** med calib2.py:s protokoll (Nelder–Mead, A1 + 5·A2, vecken
+   0/2/4, läses på 1/3) på tio parametrar — `cloud_p` och `lapse` är overksamma med uppmätt långvåg och höjdskillnad 0. Rättelsen
+   med samma 25 kluster, fem veck, samma radurval (samma frö, samma rader) och konfiguration som A2.
+3. **Uppvärmningen:** MET Nordic-releasen börjar 31/10; timmarna 10/10–30/10 tas ur ECMWF-cachen så att timindex, 45-dygns- och
+   72-timmarsfönstren och radurvalet är identiska med kontrollen. Den dömda vintern (1/11–) är helt MET Nordic-driven.
+4. **Läsningen:** RÅ, FYSIK (den frysta filen), KONTROLL, NIVÅ 2, fysiken ensam på ECMWF och på MET Nordic (vädrets egen skillnad,
+   utan rättelsen) och OFFSET på RÅ:s punkter, per band, frysflaggan, norr och söder per band och vägt med trafiken (#507); och
+   andelen punkter där KONTROLL = FYSIK.
+
+**Förväntningar, skrivna före knappen** (grova fel > 2 °C på RÅ:s punkter; FYSIK:s tal ur #485/#507).
+
+| | väntat | skälet |
+| :-- | --: | :-- |
+| RÅ (kontrollen på populationen) | 7,4–7,6 % | #485 |
+| KONTROLL | 9,85 % ± 0,3; lika FYSIK inom 0,005 °C på ≥ 95 % av punkterna om sha256 stämmer, annars inom 0,1 °C på ≥ 90 % | återskapandet |
+| ECMWF ensam (frysta parametrar) | 20–27 % | Axel: fysiken ensam 24,6 % timvis på sin population |
+| MET N. ensam (omkalibrerad, långvåg) | 15–24 %, lägre än ECMWF ensam | luften hälften så många grova fel (#505), långvågen uppmätt |
+| NIVÅ 2 | 8,8–10,2 % (FYSIK 9,85); norr 15,5–17,5, söder 6,0–7,2; vägt med trafiken 6,8–8,0 (FYSIK 7,6) | rättelsen tar det mesta av vädrets fel — *"atmosfären är inte huvudproblemet"* |
+| Kalibreringen på andra halvan | A2 ≤ de frysta parametrarnas A2 på samma halva | annars hittade Nelder–Mead ett sämre läge, och nivå 2 läses med det förbehållet |
+
+**Hur läsningen läses.** Ingen dom. Ligger NIVÅ 2 mer än 0,5 procentenheter under FYSIK stöder kedjan MET Nordic som källa; mer än
+0,5 över stöder den inte bytet; däremellan visar läsningen ingen skillnad. Fysiken ensam visar vädrets egen skillnad utan rättelsen.
+Landar RÅ utanför 7,4–7,6 % eller KONTROLL utanför sitt spann läses inget annat: då skiljer populationen eller kedjan, och det förstås
+först.
+
+**Vad som krävs före knappen.** Axels indata-release `kuvos-fysik-indata-2024-25` (bedömningen §4.2, kort #319 nyckel 2) med
+manifest i `kuvos/fysik-indata-leverans.json` — öppna källor per station, aldrig VViS. Kostnad: en körning, ~3 timmar, gratis (#503);
+jobbets tak höjt till GitHubs 360 minuter för den här mätningen.
+
+**Alternativ som valdes bort.** (a) Bara fysiken ensam på MET Nordic — billigt men svarar inte på frågan: kandidaten är fysik +
+rättelse. (b) Återskapa höjd, terräng och vägdata här — Lastkajens vägdata beställdes för hand och terrängen läses ur rastrar över
+nätet; en annan version gör jämförelsen oren. (c) Väg (a) i #319, Axel kör i sin session och lämnar en fil — Bengt valde väg (b) i
+#508, och kontrollen i kuvösen är beviset att kedjan är densamma.
+
+**Stomdokument:** KUV §9, BED §4.2
 ## #510 (10/10 2026) K-B:s och R-B:s uppspelningar byggda ur arkivet, spärrade som grind NT — och kodgrindens underlagsspärr förregistrerad (kort #309, #46, ärende #815)
 
 **Beslut.** Bengt 10/10: *"går det att göra kort 309, 46 och 815 nu så gör vi dem"*, efter vinterkollen (frosten 6–8/10 läst 8/10, #491;

@@ -96,6 +96,14 @@ jobs:
           # Fysikkoden är fryst (DECISIONS #508): de fem filerna bär samma sha256 som FYSIKSPARET-SVAR §1, annars är det inte den frysta versionen.
           (cd fysik && sha256sum -c SHA256SUMS)
           node --experimental-strip-types scripts/matningar/kuvos-metnordic-ecmwf-1b-2026-10-09.ts --sjalvtest
+          node --experimental-strip-types scripts/matningar/kuvos-fysik-niva2-metnordic-2026-10-09.ts --sjalvtest
+      # Nivå 2:s fysikkedja (fysik/niva2/, DECISIONS #509) är Python: självtestet går på syntetiska data, aldrig på Trafikverkets.
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13", cache: pip, cache-dependency-path: fysik/requirements.txt }
+      - name: Fysikkedjans självtest (fysik/niva2/sjalvtest.py)
+        run: |
+          python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
+          python3 fysik/niva2/sjalvtest.py
       # Generatorn gled isär från vektorfilerna tre gånger (31/8, 2/9, 13/9) utan att någon vakt såg det (#195).
       # Den skriver bara filer vars innehåll ändrats och fäller själv på en vektorfil utan scenario.
       - name: Vektorgeneratorn återskapar engine/vectors/ (#202)
