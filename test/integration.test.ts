@@ -245,13 +245,14 @@ test("#83 gallra_vader: tunnar gammalt till 30 min, lämnar sista veckan, idempo
 
 // Kort #83 steg 2a (sql/034, DECISIONS #334): arkivexporten. Dygnet packas som rubrikrad + en JSON-lista per rad, bokförs bara
 // om filen bär exakt dygnets radantal, och raderingen tar bara det äldsta bokförda dygnet, bara över gränsen, aldrig yngre än
-// min_dygn, och aldrig om databasen bär fler rader än filen.
+// min_dygn, och aldrig om databasen bär fler rader än filen — då exporteras dygnet om (sql/045, DECISIONS #514).
 test("#83 arkivexporten: dygnet som text, bokföringen räknar om, raderingen är försiktig", { skip: !url }, async () => {
   const { default: pg } = await import("pg");
   const { readFileSync } = await import("node:fs");
   const pool = new pg.Pool({ connectionString: url, max: 1 });
   try {
-    await pool.query(readFileSync(new URL("../sql/034_arkivexport.sql", import.meta.url), "utf8"));
+    for (const f of ["034_arkivexport.sql", "045_radering_exporterar_om.sql"])
+      await pool.query(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
     await pool.query(`DELETE FROM weather_observations WHERE station_id IN ('X1', 'X2')`);
     await pool.query(`DELETE FROM arkiv_export`);
     // Ett dygn 40 dygn sedan: X1 tre rader, X2 två. Plus en rad i går (för ung att exportera).
@@ -287,18 +288,21 @@ test("#83 arkivexporten: dygnet som text, bokföringen räknar om, raderingen ä
     assert.match((await pool.query(`SELECT arkiv_radera_exporterat(100000, 30) AS s`)).rows[0].s, /inget raderas/);
     // För ungt: min_dygn 50 skyddar ett dygn som är 40 dygn gammalt.
     assert.match((await pool.query(`SELECT arkiv_radera_exporterat(0, 50) AS s`)).rows[0].s, /inget exporterat dygn äldre än 50/);
-    // En sen rad i dygnet stoppar raderingen högljutt.
+    // En sen rad i dygnet: ingenting raderas, dygnet tas ur bokföringen och står i exportens kö igen (sql/045).
     await pool.query(`INSERT INTO weather_observations (station_id, name, geom, sample_time) VALUES ('X2', 'Ex "två"', ST_SetSRID(ST_MakePoint(16, 61), 4326), $1::date + interval '23 hours')`, [dag]);
-    await assert.rejects(pool.query(`SELECT arkiv_radera_exporterat(0, 30)`), /har 6 rader, filen bara 5/);
-    await pool.query(`DELETE FROM weather_observations WHERE station_id = 'X2' AND sample_time = $1::date + interval '23 hours'`, [dag]);
-    assert.match((await pool.query(`SELECT arkiv_radera_exporterat(0, 30) AS s`)).rows[0].s, /raderade 5 rader/);
+    assert.match((await pool.query(`SELECT arkiv_radera_exporterat(0, 30) AS s`)).rows[0].s, /har 6 rader, filen bara 5 — exporteras om/);
+    assert.equal((await pool.query(`SELECT count(*)::int AS n FROM weather_observations WHERE (sample_time AT TIME ZONE 'UTC')::date = $1::date`, [dag])).rows[0].n, 6, "ingen rad raderad");
+    assert.ok((await pool.query(`SELECT arkiv_att_exportera(100)::text AS d`)).rows.some((r) => r.d === dag), "dygnet står i kö igen");
+    // Exporten tar dygnet igen, med den sena raden; sedan raderas det.
+    assert.equal((await pool.query(`SELECT arkiv_export_klar($1::date, 6, 100, 'x2', 'v') AS n`, [dag])).rows[0].n, 6);
+    assert.match((await pool.query(`SELECT arkiv_radera_exporterat(0, 30) AS s`)).rows[0].s, /raderade 6 rader/);
     const kvar = (await pool.query(`SELECT count(*)::int AS n FROM weather_observations WHERE station_id IN ('X1', 'X2')`)).rows[0].n;
     assert.equal(kvar, 1, "bara gårdagens rad står kvar");
     const e = (await pool.query(`SELECT raderad IS NOT NULL AS raderad, raderade_rader FROM arkiv_export WHERE dag = $1::date`, [dag])).rows[0];
-    assert.deepEqual(e, { raderad: true, raderade_rader: 5 });
+    assert.deepEqual(e, { raderad: true, raderade_rader: 6 });
     // Ett raderat dygn skrivs aldrig över av en ny bokföring (dygnet är nu tomt, så 0 rader "stämmer").
     await pool.query(`SELECT arkiv_export_klar($1::date, 0, 1, 'y', 'v')`, [dag]);
-    assert.equal((await pool.query(`SELECT rader FROM arkiv_export WHERE dag = $1::date`, [dag])).rows[0].rader, 5);
+    assert.equal((await pool.query(`SELECT rader FROM arkiv_export WHERE dag = $1::date`, [dag])).rows[0].rader, 6);
   } finally {
     await pool.query(`DELETE FROM weather_observations WHERE station_id IN ('X1', 'X2')`).catch(() => {});
     await pool.end();
@@ -446,6 +450,8 @@ test("#322 gallringen efter tre dygn: brotten mot #75 står kvar, ytlösa rader 
 
 // Raderingen tar ikapp: nattjobbets kommando anropar raderingen upp till 40 gånger och tar varje exporterat dygn äldre än
 // 14 dygn, äldst först, med samma radprov som förut; sedan säger varje anrop att inget finns. Ett yngre dygn står kvar.
+// Ett dygn som vuxit sedan exporten exporteras om, och natten går vidare: i driften 10/10 hade 19–22/9 sena rader, och ett
+// undantag hade rullat tillbaka hela nattens radering (sql/045, DECISIONS #514).
 test("#322 raderingen ur exporten: golvet 14 dygn, ikapp i en körning, yngre dygn kvar", { skip: !url }, async () => {
   const { default: pg } = await import("pg");
   const { readFileSync } = await import("node:fs");
@@ -453,7 +459,8 @@ test("#322 raderingen ur exporten: golvet 14 dygn, ikapp i en körning, yngre dy
   try {
     const { radering } = await JOBB_044();
     assert.equal(radering, "SELECT arkiv_radera_exporterat(350, 14) FROM generate_series(1, 40)");
-    await pool.query(readFileSync(new URL("../sql/034_arkivexport.sql", import.meta.url), "utf8"));
+    for (const f of ["034_arkivexport.sql", "045_radering_exporterar_om.sql"])
+      await pool.query(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
     await pool.query(`DELETE FROM arkiv_export`);
     const dagar: string[] = [];
     for (const alder of [22, 21, 20, 10]) {
@@ -464,15 +471,20 @@ test("#322 raderingen ur exporten: golvet 14 dygn, ikapp i en körning, yngre dy
         SELECT 'Y1', 'Ikapp', ST_SetSRID(ST_MakePoint(15, 60), 4326), $1::date + i * interval '30 min', 0 FROM generate_series(0, 1) i`, [dag]);
       await pool.query(`SELECT arkiv_export_klar($1::date, 2, 100, 'x', 'v')`, [dag]);
     }
+    // En sen rad i mittendygnet efter exporten, som i driften 19–22/9.
+    await pool.query(`INSERT INTO weather_observations (station_id, name, geom, sample_time, surface_temp_c)
+      VALUES ('Y1', 'Ikapp', ST_SetSRID(ST_MakePoint(15, 60), 4326), $1::date + interval '23 hours', 0)`, [dagar[1]]);
     // Gränsen 0 MB i stället för 350, så att provet inte beror på provdatabasens storlek; resten är jobbets kommando.
     const svar = (await pool.query(radering.replace("(350, 14)", "(0, 14)"))).rows.map((r) => String(Object.values(r)[0]));
-    assert.equal(svar.filter((s) => s.startsWith("raderade 2 rader")).length, 3, "tre dygn äldre än 14 raderade");
+    assert.equal(svar.filter((s) => s.startsWith("raderade 2 rader")).length, 2, "de två dygnen utan sena rader raderade");
+    assert.deepEqual(svar.filter((s) => /exporteras om/.test(s)), [`dygnet ${dagar[1]} har 3 rader, filen bara 2 — exporteras om, raderas en senare natt`]);
     assert.equal(svar.filter((s) => /inget exporterat dygn äldre än 14/.test(s)).length, 37, "sedan finns inget att ta");
     assert.match(svar[0], new RegExp(dagar[0]), "äldst först");
     const kvar = (await pool.query(`SELECT (sample_time AT TIME ZONE 'UTC')::date::text AS d, count(*)::int AS n FROM weather_observations
       WHERE station_id = 'Y1' GROUP BY 1 ORDER BY 1`)).rows;
-    assert.deepEqual(kvar, [{ d: dagar[3], n: 2 }], "bara dygnet som är tio dygn gammalt står kvar");
-    assert.equal((await pool.query(`SELECT count(*)::int AS n FROM arkiv_export WHERE raderad IS NOT NULL`)).rows[0].n, 3);
+    assert.deepEqual(kvar, [{ d: dagar[1], n: 3 }, { d: dagar[3], n: 2 }], "dygnet med den sena raden och det tio dygn gamla står kvar");
+    assert.equal((await pool.query(`SELECT count(*)::int AS n FROM arkiv_export WHERE raderad IS NOT NULL`)).rows[0].n, 2);
+    assert.ok((await pool.query(`SELECT arkiv_att_exportera(100)::text AS d`)).rows.some((r) => r.d === dagar[1]), "det står i exportens kö igen");
   } finally {
     await pool.query(`DELETE FROM weather_observations WHERE station_id = 'Y1'`).catch(() => {});
     await pool.end();
