@@ -459,7 +459,7 @@ test("#322 raderingen ur exporten: golvet 14 dygn, ikapp i en körning, yngre dy
   try {
     const { radering } = await JOBB_044();
     assert.equal(radering, "SELECT arkiv_radera_exporterat(350, 14) FROM generate_series(1, 40)");
-    for (const f of ["034_arkivexport.sql", "045_radering_exporterar_om.sql"])
+    for (const f of ["034_arkivexport.sql"])
       await pool.query(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
     await pool.query(`DELETE FROM arkiv_export`);
     const dagar: string[] = [];
