@@ -10175,3 +10175,32 @@ måndagens grind A och V-A via pulsklockan utan saknade dygn utom de som aldrig 
 exporten).
 
 **Stomdokument:** MAT §1, BED §0b
+
+## #514 (10/10 2026) Raderingen exporterar om ett dygn som vuxit sedan exporten, i stället för att stoppa hela natten (kort #322, #323)
+
+**Fyndet.** Provet för kort #323 (körning 38049764165, 38 dygn) gav 40 av 44 dygn lika driften rad för rad. De fyra andra, 19–22/9,
+bär 6, 9, 9 och 8 rader fler i driften än i sina exportfiler (dbknapp 38050128850): rader från en eller två stationer per dygn, spridda
+över dygnet, utan brott mot #75, med transaktions-id kring 1,52 miljoner mot dygnens median 0,75–0,87 miljoner — insatta långt efter
+exporten. Vad som skrev dem är inte utrett; det mest troliga är att Trafikverket skickade om en stations äldre observationer och att
+inläsningen satte in rader som gallringen hade tagit.
+
+**Följden.** sql/034 lät ett sådant dygn stoppa raderingen med ett undantag — byggt för ett anrop per natt. Sedan sql/044 (#511) gör
+nattjobbet 40 anrop i en sats, och undantaget rullar tillbaka hela natten. I natt hade raderingen tagit 26/8–18/9 (22 dygn), nått 19/9
+och rullat tillbaka alla 22, och så varje natt. Det föll i #511:s egen ändring och syntes inte i provet för #322, som saknade sena rader.
+
+**Beslut.** sql/045: ett dygn med fler rader än sin fil tas ur bokföringen (`arkiv_export`), så att arkivexporten tar det igen nästa
+timme med de sena raderna (den skriver över filen, `x-upsert`), och raderingen går vidare till nästa dygn. Dygnet raderas en senare
+natt. Ingen rad raderas som inte står i en fil. Läkningen i samma fil tar de dygn som redan vuxit, så att 19–22/9 exporteras om i dag.
+Proven i `test/integration.test.ts` (#83 och #322) bär en sen rad: dygnet står kvar och i exportens kö, och natten raderar de andra.
+
+**Alternativ.** Hoppa över dygnet och låta det stå (förkastat: det står då kvar för alltid och väger i databasen); radera ändå
+(förkastat: de sena raderna finns i ingen fil). Ett anrop per sats i nattjobbet (förkastat: raderingen tar alltid det äldsta dygnet, så
+samma dygn fäller varje anrop).
+
+**Reservation.** Ett dygn där en sen rad ersatt en exporterad rad med samma antal syns inte i räkningen; provet för #323 jämför
+kontrollsummor och fann inget sådant dygn bland 44.
+
+**Verify:** migrationen med DB-knappen före 03:45 UTC 11/10; 19–22/9 exporterade om med de sena raderna (arkiv_export.rader lika
+driften); provet `tillfalliga-arkivet` med 38 dygn utan olika dygn; nattjobbet 11/10 03:45 har raderat dygn (vakthundens rad).
+
+**Stomdokument:** BED — läget (Databasen)
