@@ -10091,6 +10091,9 @@ och toppen hade blivit ~580 MB, över gränsen där gratisnivån går i skrivsky
 - Grindarna som läser 30–60 dygn (A, K-A, K-B, R-B, V-A, V-B, NT, R-A) räknar på 14 dygn och skriver ut resten som saknade dygn tills
   kort #323 är byggt. Vaktens rad säger att dygnen ska läsas tillbaka före en dom; den stoppar inte körningen.
 - Databasen krymper inte, platsen återanvänds: det den hunnit växa till före första natten står kvar som golv.
+- *Tillagt 10/10 efter driftsättningen, inte sett före:* frostnätterna 6–8/10 förlorar minutupplösningen 11/10 och 12/10 i stället
+  för från 13/10 (#491). Bedömningens fråga om att bygga Ö-B:s instrument före 13/10 (påminnelse 12/10) faller därmed bort; kvar är
+  rekommendationen att läsa Ö-B på nästa frost och i kuvösen.
 
 **Alternativ.** Supabase Pro (~25 USD/mån, 8 GB, dagliga backuper): inte valt, gratisvägen från #334 står. Golvet först efter
 återläsningen: inte valt, alternativ 2 hade då inte gett plats före 14/10. Svagare karantän: inte valt.
@@ -10118,5 +10121,10 @@ Dokumenten som bar regeln: KALENDERN, bedömningen, projektkartans *Arkivet* och
 
 **Driftsättning och Verify.** Efter Bengts "slå ihop": deploy av vakthunden. Beviset är vakthundens egen rad efter deployen,
 *databas: N MB av 500 (larm vid 450 MB)*, läst ur `net._http_response` med DB-knappen i läsläget.
+
+**I drift 10/10 07:34 UTC** (Bengt: *"slå ihop 851"*): PR #851 sammanslagen som 304290f; vakthunden deployad från 304290f
+(38034894523). **Verify uppfylld:** dbknapp 38036906879 läste vakthundens svar ur `net._http_response` — körningen 08:07 UTC skrev
+*databas: 391 MB av 500 (larm vid 450 MB)*, körningen 07:07 fortfarande *(larm vid 400 MB)*. Samma rader: 387 · 388 · 390 · 391 MB
+kl. 05–08 UTC, ungefär 1,3 MB i timmen före första nattens gallring.
 
 **Stomdokument:** BED §4.2
