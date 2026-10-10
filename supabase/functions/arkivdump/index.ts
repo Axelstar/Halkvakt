@@ -10,8 +10,10 @@
 // under kuvos/<release>/<fil>, en fil per tillgång (alla under 50 MB):
 //   POST ?lage=kuvos_ladda_upp  {filer: ["kuvos-trv-2024-25/Halkvakt_2411.csv.gz", …]}  → { urls: [...] }
 //   POST ?lage=kuvos_hamta      {filer: [...]}                                          → { filer: [{fil, url}] }
+// Arkivexportens dygnsfiler (sql/034) för grindarnas tillfälliga databas (kort #323), bara hämtning:
+//   POST ?lage=dygn_hamta       {dagar: ["2026-09-01", …]}                               → { filer: [{dag, url}] }
 // Skyddet är INGEST_KEY i x-halkvakt-key, som pg_cron:s jobb redan bär; funktionen deployas med --no-verify-jwt.
-import { BEHALL, MAPP, NAMN, attGallra, delnamn, dumpAv, kuvosnamn } from "./delar.ts";
+import { BEHALL, MAPP, MAX_DYGN, NAMN, attGallra, delnamn, dumpAv, dygnnamn, kuvosnamn } from "./delar.ts";
 
 const SB = Deno.env.get("SUPABASE_URL")!;
 const SRK = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -84,6 +86,15 @@ Deno.serve(async (req) => {
       const ut = [];
       for (let i = 0; i < sokvagar.length; i++)
         ut.push({ fil: filer[i], url: `${SB}/storage/v1${(await storage(`/object/sign/${HINK}/${sokvagar[i]}`, "POST", { expiresIn: 7200 })).signedURL}` });
+      return svar({ filer: ut });
+    }
+    if (lage === "dygn_hamta") {
+      const dagar = (kropp as { dagar?: unknown }).dagar;
+      if (!Array.isArray(dagar) || !dagar.length || dagar.length > MAX_DYGN) return svar({ fel: `dagar: 1–${MAX_DYGN} datum` }, 400);
+      const sokvagar = dagar.map((d) => dygnnamn(String(d)));   // kastar vid ett ogiltigt datum, innan något signeras
+      const ut = [];
+      for (let i = 0; i < sokvagar.length; i++)
+        ut.push({ dag: dagar[i], url: `${SB}/storage/v1${(await storage(`/object/sign/${HINK}/${sokvagar[i]}`, "POST", { expiresIn: 7200 })).signedURL}` });
       return svar({ filer: ut });
     }
     return svar({ fel: `okänt läge: ${lage}` }, 400);

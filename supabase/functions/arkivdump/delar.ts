@@ -34,6 +34,17 @@ export function kuvosnamn(fil: string): string {
   return `${KUVOSMAPP}/${fil}`;
 }
 
+/** Arkivexportens dygnsfiler (sql/034), som grindarnas tillfälliga databas läser tillbaka (kort #323): bara hämtning, aldrig
+ *  uppladdning eller radering. Ett riktigt kalenderdatum blir `weather_observations/ÅÅÅÅ-MM-DD.ndjson.gz`; allt annat avvisas. */
+export const DYGNMAPP = "weather_observations";
+export const MAX_DYGN = 70;
+
+export function dygnnamn(dag: string): string {
+  const d = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dag);
+  if (!d || new Date(`${dag}T00:00:00Z`).toISOString().slice(0, 10) !== dag) throw new Error(`ogiltigt dygn: ${dag}`);
+  return `${DYGNMAPP}/${dag}.ndjson.gz`;
+}
+
 /** Vilka filer i mappen som ska bort: delarna av alla kopior utom de `behall` senaste. Namnen bär UTC-tiden och sorteras
  *  därför i tidsordning. Filer som inte är delar rörs aldrig. */
 export function attGallra(filer: string[], behall = BEHALL): string[] {

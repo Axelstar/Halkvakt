@@ -6,14 +6,18 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - run: npm ci
+      # Kort #323 (DECISIONS #513): fönstret ur hinken (de exporterade dygnen) och driften (de senaste) till en tillfällig
+      # PostGIS, så att raderingens golv på 14 dygn (#511) inte krymper grinden. Grinden räknar mot den.
+      - uses: ./.github/actions/tillfalliga-arkivet
+        with: { dagar: "60", drift-url: "${{ secrets.DATABASE_URL }}" }
       - name: Grind A — självtest först, sedan arkivet
-        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        env: { DATABASE_URL: "${{ env.TILLFALLIG_URL }}" }
         # shell: bash ger pipefail — utan den äter `| tee` exit-koden och underlagsvakt/
         # självtest kan aldrig fälla jobbet (tee-läxan, DECISIONS #26; larmvägen bevisad 1/9).
         shell: bash

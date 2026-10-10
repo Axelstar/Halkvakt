@@ -10130,3 +10130,48 @@ Dokumenten som bar regeln: KALENDERN, bedömningen, projektkartans *Arkivet* och
 kl. 05–08 UTC, ungefär 1,3 MB i timmen före första nattens gallring.
 
 **Stomdokument:** BED §4.2
+
+## #513 (10/10 2026) Grindarnas tillfälliga databas: fönstret ur hinken och driften, grinden oförändrad (kort #323)
+
+**Bengt 10/10:** *"börja med kort 323"* — beställt i #511 som del av alternativ 2.
+
+**Varför.** Raderingens golv är 14 dygn sedan 10/10 (#511), och första natten raderas allt exporterat som är äldre. Grind A, K-A och
+höjdprovet läser 60 dygn, de andra 30 eller fler (V-B sedan 15/9); utan återläsning räknar de på 14 och skriver ut resten som saknat.
+
+**Beslut.**
+1. Varje grindflöde bygger en tillfällig PostGIS 17 i jobbet (`.github/actions/tillfalliga-arkivet`, `scripts/tillfalliga-arkivet.ts`):
+   driftens schema (`pg_dump --schema-only`), de exporterade dygnen ur hinken med kontrollsumman mot `arkiv_export` och inläsningen
+   med `arkiv_aterlas` (sql/042), de ännu inte exporterade ur driften med `\copy`, och tabellerna grinden läser vid sidan av. Grinden
+   körs oförändrad med `DATABASE_URL` mot den.
+2. Ett exporterat dygn läses ur hinken även när driften har det kvar: samma rader (sql/034 bokför bara en fil med lika många rader),
+   och den packade filen är en bråkdel av trafiken.
+3. Karantänens `KARANTAN_DYGN` (7) dygn följer med före fönstret, ur `publish/snapshot-core.ts`. Utan dem släppte provet igenom rader
+   som driften spärrar. Marginalen täcker också R-B:s 12 timmar och vägpunktens population (7 dygn).
+4. `arkivdump` får läget `dygn_hamta`: signerade adresser till `weather_observations/ÅÅÅÅ-MM-DD.ndjson.gz`, bara hämtning, bara
+   riktiga datum, högst `MAX_DYGN` (70) per anrop; laddaren hämtar i omgångar, eftersom V-B:s fönster passerar 70 dygn i november.
+5. Flödena: grind-a, -k-a, -k-b, -r-b, -v-a, -v-b, -nt, -r-a (bara `land=se`; det finska arkivet exporteras inte) och hojd-prov (utom
+   `premisser-fi`). Provet är knappen `tillfalliga-arkivet`: driften mot den tillfälliga databasen dygn för dygn (antal och md5 över
+   raderna, sorterade bytevis) och grind A och V-A mot båda samtidigt.
+
+**Provet på grenen 10/10, driftens väg** (före deployen av `dygn_hamta`). Körning 38049009787: 1 dygn och karantänens 7 före — 9 dygn
+ur driften, alla 9 lika i antal och md5; grind A och V-A gav samma utskrift i driften och i den tillfälliga databasen. Två prov före
+det visade två fel som är rättade: md5 skilde på varje dygn fast antalen var lika (38048655495 — driftens och behållarens kollation
+sorterar olika; nu `COLLATE "C"`), och grind A släppte igenom 646 083 rader genom karantänen mot driftens 645 841, 718 stationer mot
+717, med samma MAE och dom (38048815179 — dygnen före fönstret saknades; nu punkt 3).
+
+**Vad det kostar.** Dygnen ur driften kostar ungefär 100 MB per körning (100,9 MB uppmätt för 9 dygn: de tre ogallrade dygnen väger
+mest), hinkens dygn under 1 MB vardera packade. Fyra måndagskörningar (A, höjdprovet, V-A, V-B) blir ungefär 0,4 GB i veckan, mot
+gratisnivåns 5 GB okachad utgående trafik i månaden för hela organisationen (Supabase: *Manage Egress usage*). Grindarna hämtade redan
+förut sina fönster ur driften, så tillskottet är mindre; det läses i panelen efter måndagen (bedömningen §0b). Körtiden ökar med
+ett par minuter per flöde; timeouterna är höjda till 30 minuter.
+
+**Alternativ.** Veckodumpen ur hinken som grund (förkastat: den saknar dygnen som raderats före dumpen och behöver ändå
+dygnsfilerna); två databaser i varje grind (förkastat: ändrar nio grindars kod); `postgres_fdw` mot driften (förkastat: drar ändå
+raderna över nätet). Export tidigare än nio dygn — gallringen är klar efter tre (#511) — minskar driftens del; inte nu, ett eget beslut
+om trafiken kräver det.
+
+**Verify (kort #323):** efter sammanslagningen och deployen av `arkivdump`: provet med hinkens dygn i fönstret (alla lika), och
+måndagens grind A och V-A via pulsklockan utan saknade dygn utom de som aldrig hämtades (6/9 och 7/9 finns varken i driften eller i
+exporten).
+
+**Stomdokument:** MAT §1, BED §0b

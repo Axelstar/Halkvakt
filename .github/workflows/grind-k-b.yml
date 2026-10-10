@@ -23,10 +23,14 @@ jobs:
         with: { node-version: 22, cache: npm }
       - run: npm ci
       - run: node --experimental-strip-types scripts/grind-k-b.ts --sjalvtest
+      # Kort #323 (DECISIONS #513): fönstret ur hinken (de exporterade dygnen) och driften (de senaste) till en tillfällig
+      # PostGIS, så att raderingens golv på 14 dygn (#511) inte krymper grinden. Grinden räknar mot den.
+      - uses: ./.github/actions/tillfalliga-arkivet
+        with: { dagar: "${{ inputs.dagar || '30' }}", drift-url: "${{ secrets.DATABASE_URL }}", tabeller: "road_condition_history,road_conditions,situation_archive,weather_latest" }
       # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
       - shell: bash
         run: |
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           node --experimental-strip-types scripts/grind-k-b.ts "${{ inputs.dagar || '30' }}" ${{ inputs.dom == 'ja' && '--dom' || '' }} | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        env: { DATABASE_URL: "${{ env.TILLFALLIG_URL }}" }
