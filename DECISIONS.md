@@ -10078,6 +10078,14 @@ fäller den, ett tryckintervall på 3 fäller frosttryckets prov; enhetssviten 2
 funktionens definition), och deploy av vakthunden. **Verify:** nattjobben 11/10 03:15 och 03:45 UTC — raderade rader per jobb, vakthundens
 rad *arkivexport: … N raderade ur databasen*, och databasens storlek som planar ut under 500 MB de följande dygnen.
 
+**I drift 10/10 07:04 UTC** (Bengt: *"slå ihop 849 och b)"*): PR #849 sammanslagen som 377cc84 på huvudet 0d5c330 med ci och md-vakt
+gröna; DB-knappen 38033120634 — `halkvakt-gallring` kör `SELECT gallra_arkiv(3)`, `halkvakt-arkivradering` kör
+`SELECT arkiv_radera_exporterat(350, 14) FROM generate_series(1, 40)`, båda med schemat orört, `gallra_vader` bär brottsundantaget,
+databasen 389 MB; vakthunden deployad från 377cc84 (38033122513). Läsningen 07:06 UTC (dbknapp 38033278427) gav 129 770 rader in
+senaste dygnet, inte ~57 000 som talet ovan bygger på (det var 3/10:s ogallrade dygn); slutsatsen står, raderingen av augustidygnen
+biter ännu mindre. (b) i bedömningens §4.2 — en engångs `VACUUM FULL` — är inte körd: den skriver en ny kopia innan den gamla släpps,
+och toppen hade blivit ~580 MB, över gränsen där gratisnivån går i skrivskydd. Frågan står öppen i §4.2.
+
 **Vad det kostar.**
 - Frostläsningarnas frist blir tre dygn, och minutupplösning äldre än tre dygn finns inte längre, varken i databasen eller i exporten.
 - Grindarna som läser 30–60 dygn (A, K-A, K-B, R-B, V-A, V-B, NT, R-A) räknar på 14 dygn och skriver ut resten som saknade dygn tills
