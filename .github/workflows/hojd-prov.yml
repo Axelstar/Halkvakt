@@ -15,13 +15,18 @@ on:
 jobs:
   hojd-prov:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci
       - run: node --experimental-strip-types scripts/hojd-prov.ts --sjalvtest
+      # Kort #323 (DECISIONS #513): fönstret ur hinken (de exporterade dygnen) och driften (de senaste) till en tillfällig
+      # PostGIS, så att raderingens golv på 14 dygn (#511) inte krymper grinden. Grinden räknar mot den.
+      - uses: ./.github/actions/tillfalliga-arkivet
+        if: ${{ inputs.dagar != 'premisser-fi' }}
+        with: { dagar: "${{ (inputs.dagar && inputs.dagar != 'population' && inputs.dagar != 'premisser') && inputs.dagar || '60' }}", drift-url: "${{ secrets.DATABASE_URL }}", tabeller: "road_conditions,shadow_log" }
       # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
       - if: ${{ inputs.dagar != 'population' && inputs.dagar != 'premisser' && inputs.dagar != 'premisser-fi' }}
         shell: bash
@@ -29,7 +34,7 @@ jobs:
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           node --experimental-strip-types scripts/hojd-prov.ts "${{ inputs.dagar || '60' }}" | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        env: { DATABASE_URL: "${{ env.TILLFALLIG_URL || secrets.DATABASE_URL }}" }
       # Vägpunktsgrindens premisser (DECISIONS #405, kort #269): `dagar: premisser` kör bara den förregistrerade mätningen
       # (`premisser-fi` samma sak på det finska arkivet, DECISIONS #407),
       # självtest först. Ingen dom, inga trösklar — läser samma arkiv som grinden.
@@ -42,7 +47,7 @@ jobs:
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           node --experimental-strip-types scripts/matningar/vagpunkt-premisser-2026-09-30.ts 60 ${{ inputs.dagar == 'premisser-fi' && '--land fi' || '' }} | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        env: { DATABASE_URL: "${{ env.TILLFALLIG_URL || secrets.DATABASE_URL }}" }
       # Populationsläsningen (kort #266, DECISIONS #399) varje måndag efter provet: vägpunktsgrindens population med arkivet
       # som det är mot den gamla arkivregeln, före och efter 25/9, frysflaggan vid 1 °C och vägviktat. Ingen dom.
       # `dagar: population` kör bara läsningen.
@@ -52,4 +57,4 @@ jobs:
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           node --experimental-strip-types scripts/vagpunkt-population.ts 60 | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        env: { DATABASE_URL: "${{ env.TILLFALLIG_URL || secrets.DATABASE_URL }}" }

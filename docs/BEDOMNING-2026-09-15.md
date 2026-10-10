@@ -47,8 +47,8 @@ nedan med rättelserna under *Övrigt sedan 29/9*, om inte §0, §0b eller §4.2
 - **Förarsvaren:** 32 riktiga svar 6/10, alla projektgruppens (Bengt 22, Axel 10), inget om halka.
 - **Databasen:** 388 MB 10/10 06:14 UTC (dbknapp 38030231454), ~30 MB/dygn det senaste dygnet; 500 MB omkring 14–16/10.
   **Avgjort 10/10 (#511): alternativ 1+2, inte Pro.** Gallringen efter tre dygn med brotten mot #75 sparade, och raderingens golv
-  14 dygn, ikapp första natten (kort #322, sql/044). Grindarna som läser längre bakåt skriver ut saknade dygn tills de läser
-  hinken (kort #323). **I drift 10/10 07:04 UTC:** migrationen med DB-knappen (38033120634: båda jobben bär 044:s kommandon,
+  14 dygn, ikapp första natten (kort #322, sql/044). Grindarna som läser längre bakåt läser de raderade dygnen ur
+  hinken via en tillfällig databas i Actions (kort #323, #513: byggd och provad 10/10, i drift efter deployen av arkivdump). **I drift 10/10 07:04 UTC:** migrationen med DB-knappen (38033120634: båda jobben bär 044:s kommandon,
   funktionen sparar brotten; 389 MB) och vakthunden deployad från 377cc84 (38033122513). Verify: nattjobben 11/10 03:15 och
   03:45 UTC och storleken som planar ut. Databasvakten larmar vid 450 MB sedan 10/10 (#512, Bengts val (a)); (b), en
   `VACUUM FULL`, kördes inte — toppen hade passerat 500 MB (§4.2).
@@ -257,6 +257,7 @@ beviset finns — inte när koden är skriven.
 
 | Åtgärd | Läge | Kort | DECISIONS | Beviset som gäller |
 | :-- | :-- | :-- | :-- | :-- |
+| **Trafiken ur driften för grindarnas tillfälliga databas** — ~100 MB per körning (100,9 MB uppmätt för 9 dygn), fyra måndagskörningar ≈ 0,4 GB i veckan mot gratisnivåns 5 GB okachad utgående trafik i månaden för hela organisationen | ⏳ Bengt läser *Usage → Egress* i Supabase-panelen efter måndagen 12/10; når den hälften av taket byggs databasen en gång för hela måndagsserien, eller exporten flyttas närmare gallringen | #323 | #513 | egress efter en måndag under hälften av 5 GB i månadstakt |
 | **Stomdokumenten (STOMREGELN, DECISIONS #415):** de sju stomdokumenten (mätningarna, appen, systembilden, bedömningen, integrationskartan, kuvösen, favoriterna) och projektkartan stäms av vid varje ändring och bär rättelserna löpande | ✅ **genomgångna 7/10 mot läget** (granskning av alla sju och KALENDERN, PR #799) · ✅ genomlysta 1/10: *Halkvaktens mätningar* (artefakt + `docs/MATNINGAR.html`), *Halkvaktens app* (`docs/APPEN.html`), *Halkvaktens systembild* (`docs/SYSTEMBILDEN.html`), kartan R21–R26 (#416), bedömningen — stående plikt varje varv | #273 | #415 | repokopia = artefakt; `git log -1` på de fem inte äldre än senaste beslut som rör dem |
 | ~~**Segmentprognosen i drift (kort #38b steg 4, DECISIONS #325)**~~ | ✅ **23/9:** migration (744 ankare), deploy 20:51Z, första raden MED innehåll: 2 rader med innehåll i `shadow_log.prognos` efter varvet 2026-09-23T21:00:02Z; t.ex. E14 Sundsvall→Åre: 130 provpunkter, 7 uppmätta, 123 modellerade, 0 okända, 0 frysflaggade, 1465 byte; skuggmotorns svar: ankare 5 bidragande per provpunkt (744 i funktionen); E4 Linköping→Södertälje 77 punkter, 970 byte, ankareSkal det svenska svaret hann rulla ur net._http_response före läsningen; det norska varvet svarade ankare 0, "bara Sverige", som avsett. Kvar som egen rad: radstorleken efter första dygnet | #38b | #325 | en rad med `p.length > 0` — inte att kolumnen finns (läxan #127/#193) |
 | ~~**Vägpunktsgrinden (kort #38b 4b): första körningen 23/9 på knapp; svaret på 4a in i TROSKLAR-SKUGGAN §3**~~ | ✅ **23/9 ÖPPEN (DECISIONS #324):** RÅ klarar A1–A3 med vakterna (0,71 °C · 3,8 % ± 0,4 · 0,0 %, 8 132 p / 712 stationer), lika bra som offseten; §3-texten inskriven under #323:s mandat; första körningen utan vakterna föll och räknas inte (fel population, PR #511). Måndagar 07:00 framåt är bevakning. Holdout-urvalet (4c) skrivs in i bygget | #38b | #323 | grinden öppen med en namngiven kandidat (KLARAR A1–A3 utan målets historik), annars inget bygge i oktober |
@@ -675,7 +676,7 @@ bevisbart säker (vid 0 km/h går det inte att nå faran) och är rimligen stör
 <!-- LÄGESRADER §5: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 *Läget i projektkartan:*
 
-- [Arkivexporten och säkerhetskopian](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-i-export): delvis, 83 % · kvar: En tillfällig PostGIS i Actions som läser fönstrets dygn ur hinken (sql/042) och de senaste ur driften, och grindarna körda mot den (kort #323)
+- [Arkivexporten och säkerhetskopian](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-i-export): delvis, 92 % · kvar: Deploy av arkivdump (dygn_hamta), provet med hinkens dygn i fönstret, och måndagens grind A och V-A via pulsklockan (kort #323)
 - [Datavakterna (givarvakten, radvakten, karantänen)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-i-vakterna): klar
 - [Lägesfilens fält för skuggdelarna](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-l-falten): delvis, 57 % · kvar: Motorn läser inte regn, rain_segments, regn_h, lutning, bevis eller smhi (fogarna F2–F4)
 - [L2 tillståndet (skattaren S1–S3)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-tillstand): delvis, 57 % · kvar: S1-grinden på frostnätter (Axel, DECISIONS #196)

@@ -23,17 +23,27 @@ on:
 jobs:
   grind-v-b:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci
       - run: node --experimental-strip-types publish/grind-v-b.ts --sjalvtest
+      - name: V-B:s fönster — dygnen sedan VB_START, ett extra för midnatt
+        if: ${{ !inputs.dagar }}
+        shell: bash
+        run: |
+          START=$(grep -oE 'VB_START = "[0-9]{4}-[0-9]{2}-[0-9]{2}"' publish/grind-v-b.ts | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}')
+          echo "VB_DAGAR=$(( ( $(date -u +%s) - $(date -u -d "$START" +%s) + 86399 ) / 86400 + 1 ))" >> "$GITHUB_ENV"
+      # Kort #323 (DECISIONS #513): fönstret ur hinken (de exporterade dygnen) och driften (de senaste) till en tillfällig
+      # PostGIS, så att raderingens golv på 14 dygn (#511) inte krymper grinden. Grinden räknar mot den.
+      - uses: ./.github/actions/tillfalliga-arkivet
+        with: { dagar: "${{ inputs.dagar || env.VB_DAGAR }}", drift-url: "${{ secrets.DATABASE_URL }}", tabeller: "shadow_log,situation_archive" }
       # shell: bash ger pipefail — annars äter tee exit-koden (läxan i DECISIONS #26).
       - shell: bash
         run: |
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           node --experimental-strip-types publish/grind-v-b.ts "${{ inputs.dagar }}" | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        env: { DATABASE_URL: "${{ env.TILLFALLIG_URL }}" }

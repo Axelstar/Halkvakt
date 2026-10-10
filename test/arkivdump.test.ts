@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { attGallra, delnamn, dumpAv, kuvosnamn, BEHALL } from "../supabase/functions/arkivdump/delar.ts";
+import { attGallra, delnamn, dumpAv, dygnnamn, kuvosnamn, BEHALL, MAX_DYGN } from "../supabase/functions/arkivdump/delar.ts";
 
 // Kort #312, DECISIONS #495: veckokopian i hinken arkiv, delad under 50 MB, de fyra senaste behålls.
 const namn = (d: string) => `halkvakt-arkiv-${d}T0317Z.dump`;
@@ -39,4 +39,12 @@ test("kuvösens filer hamnar under kuvos/<release>/, och inget annat namn släpp
   for (const fel of ["kuvos-trv-2024-25/../dump/x", "kuvos-trv-2024-25/..", "kuvos-trv-2024-25/.dold", "dump/halkvakt-arkiv-2026-10-11T0317Z.dump",
     "../kuvos-trv-2024-25/a.csv", "kuvos-trv-2024-25/a/b.csv", "kuvos-trv-2024-25/", "facit/bild.jpg", "KUVOS-trv/a.csv"])
     assert.throws(() => kuvosnamn(fel), fel);
+});
+
+// Kort #323: grindarnas tillfälliga databas hämtar arkivexportens dygn (sql/034) — bara riktiga datum, bara den mappen.
+test("dygnsfilerna hamnar under weather_observations/, och bara ett riktigt datum släpps igenom", () => {
+  assert.equal(dygnnamn("2026-09-01"), "weather_observations/2026-09-01.ndjson.gz");
+  assert.equal(MAX_DYGN, 70);
+  for (const fel of ["2026-02-30", "2026-9-01", "2026-09-01/../../dump/x", "../2026-09-01", "2026-09-01.ndjson.gz", "", "kuvos-trv-2024-25/a.csv"])
+    assert.throws(() => dygnnamn(fel), fel);
 });

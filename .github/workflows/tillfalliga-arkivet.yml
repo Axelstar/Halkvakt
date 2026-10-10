@@ -1,0 +1,53 @@
+name: tillfalliga-arkivet
+# KORT #323 — PROVET FÖR GRINDARNAS TILLFÄLLIGA DATABAS (DECISIONS #513). Bygger databasen för ett fönster som fortfarande ligger
+# helt i driften och visar två saker: (1) varje dygn bär samma rader i båda (antal och md5, scripts/tillfalliga-arkivet.ts
+# --jamfor), och (2) grind A och grind V-A ger samma utskrift mot driften som mot den tillfälliga databasen, körda samtidigt.
+# Bara tal skrivs ut. Läser driften, skriver ingenting där.
+on:
+  workflow_dispatch:
+    inputs:
+      dagar:
+        description: "Fönstret i dygn — med karantänens 7 före högst så långt som driften har allt (golvet 14 dygn, #511: alltså 7)"
+        default: "7"
+permissions:
+  contents: read
+jobs:
+  prov:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      DAGAR: "${{ inputs.dagar || '7' }}"
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - uses: ./.github/actions/tillfalliga-arkivet
+        with: { dagar: "${{ env.DAGAR }}", drift-url: "${{ secrets.DATABASE_URL }}", jamfor: "ja" }
+      - name: Grind A och V-A mot driften och mot den tillfälliga databasen, samtidigt
+        shell: bash
+        env: { DRIFT_URL: "${{ secrets.DATABASE_URL }}" }
+        run: |
+          set -euo pipefail
+          fel=0
+          for g in publish/grind-a.ts publish/grind-v-a.ts; do
+            n=$(basename "$g" .ts)
+            DATABASE_URL="$DRIFT_URL" node --experimental-strip-types "$g" "$DAGAR" > "$n.drift.txt" 2>&1 & a=$!
+            DATABASE_URL="$TILLFALLIG_URL" node --experimental-strip-types "$g" "$DAGAR" > "$n.tillfallig.txt" 2>&1 & b=$!
+            ka=0; wait $a || ka=$?
+            kb=0; wait $b || kb=$?
+            sed -i '/ExperimentalWarning/d; /trace-warnings/d' "$n.drift.txt" "$n.tillfallig.txt"
+            lika=0; diff -q "$n.drift.txt" "$n.tillfallig.txt" >/dev/null && lika=1
+            [ "$lika" = 1 ] && [ "$ka" = 0 ] && [ "$kb" = 0 ] || fel=1
+            {
+              echo "### $n, $DAGAR dygn — exit $ka i driften, $kb i den tillfälliga"
+              if [ "$lika" = 1 ]; then
+                echo "SAMMA UTSKRIFT ($(wc -l < "$n.drift.txt") rader)"
+              else
+                echo "UTSKRIFTERNA SKILJER SIG:"; echo '```'; diff "$n.drift.txt" "$n.tillfallig.txt" | head -60 || true; echo '```'
+              fi
+              echo '```'; cat "$n.tillfallig.txt"; echo '```'
+            } | tee -a "$GITHUB_STEP_SUMMARY"
+          done
+          exit $fel

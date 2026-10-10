@@ -51,7 +51,11 @@ passerar 350 MB. Dygnet finns kvar i två kopior: exportfilen `arkiv/weather_obs
 - **Att filerna går att läsa tillbaka** prövas med databasknappen: `dbknapp` med `atgard = aterlasprov`. Den hämtar det äldsta
   ännu inte raderade dygnet ur hinken och jämför det med databasen kolumn för kolumn (`arkiv_jamfor`). Inget skrivs. Väntat:
   `ok: true`, `sha_lika`, och `bara_i_filen` = `bara_i_databasen` = 0.
-- **Marsvägen, för en dom som behöver raderade dygn:**
+- **Grindflödena gör det själva sedan 10/10** (kort #323, DECISIONS #513): `.github/actions/tillfalliga-arkivet` bygger en PostGIS
+  i jobbet med driftens schema, fönstrets exporterade dygn ur hinken (`arkivdump` `?lage=dygn_hamta`, sha256 mot `arkiv_export`) och
+  de nyare ur driften, och grinden körs mot den. Provet: `tillfalliga-arkivet` (knapp) med ett fönster som driften har helt —
+  väntat *0 olika* i jämförelsen och *SAMMA UTSKRIFT* för grind A och V-A.
+- **Marsvägen för hand, för en dom som behöver raderade dygn:**
   1. Starta en tom PostGIS (en Actions-container eller lokalt) med `create extension postgis`.
   2. Läs in den senaste veckodumpen med `pg_restore --no-owner --no-privileges`. Fel om pg_net/pg_cron är väntade.
   3. Ladda ner de raderade dygnens filer ur hinken. Storage → `arkiv` i panelen, eller REST med service-nyckeln; nyckeln läggs aldrig

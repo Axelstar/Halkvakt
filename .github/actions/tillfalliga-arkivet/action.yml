@@ -1,0 +1,60 @@
+# Grindarnas tillfälliga databas (kort #323, DECISIONS #513): en PostGIS 17 på localhost:5433 med driftens schema, fönstrets
+# exporterade dygn ur hinken och de nyare ur driften (scripts/tillfalliga-arkivet.ts). Efter steget pekar TILLFALLIG_URL på den,
+# och grinden körs oförändrad med DATABASE_URL satt till den. Jobbet har kört checkout, setup-node och npm ci före.
+name: tillfalliga-arkivet
+description: Grindens fönster ur hinken och driften till en tillfällig PostGIS
+inputs:
+  dagar:
+    description: "Fönstret i dygn (1–70), som grindens eget"
+    required: true
+  drift-url:
+    description: "Driftens DATABASE_URL (hemligheten)"
+    required: true
+  tabeller:
+    description: "Tabeller grinden läser vid sidan av väderarkivet, kommaseparerade (givarfel_dygn och arkiv_export följer alltid med)"
+    default: ""
+  jamfor:
+    description: "ja = jämför varje dygn som finns kvar i driften med den tillfälliga databasen (beviset)"
+    default: "nej"
+runs:
+  using: composite
+  steps:
+    - name: Tillfällig PostGIS och en klient som matchar driften
+      shell: bash
+      env: { DRIFT_URL: "${{ inputs.drift-url }}" }
+      run: |
+        set -euo pipefail
+        docker run -d --name tillfalligt -e POSTGRES_PASSWORD=postgres -p 5433:5432 postgis/postgis:17-3.5 >/dev/null
+        # Klienten som arkivbackup.yml installerar: pg_dump måste vara minst driftens version.
+        command -v psql >/dev/null || sudo apt-get -qq install -y postgresql-client
+        MAJOR=$(psql "$DRIFT_URL" -Atc "show server_version_num" | cut -c1-2)
+        if ! grep -rqs apt.postgresql.org /etc/apt/sources.list.d/; then
+          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/pgdg.gpg
+          echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list >/dev/null
+        fi
+        sudo apt-get -qq update >/dev/null
+        sudo apt-get -qq install -y "postgresql-client-$MAJOR" >/dev/null
+        echo "/usr/lib/postgresql/$MAJOR/bin" >> "$GITHUB_PATH"
+        echo "driften kör Postgres $MAJOR; $("/usr/lib/postgresql/$MAJOR/bin/pg_dump" --version)"
+        # Sessionsläge för pg_dump och \copy (port 5432 på samma pooler, som i arkivbackup.yml).
+        SESSION_URL="${DRIFT_URL/:6543\//:5432\/}"
+        echo "::add-mask::$SESSION_URL"
+        if psql "$SESSION_URL" -Atc "select 1" >/dev/null 2>&1; then echo "DUMP_URL=$SESSION_URL" >> "$GITHUB_ENV"; else echo "DUMP_URL=$DRIFT_URL" >> "$GITHUB_ENV"; fi
+        for i in $(seq 90); do
+          if "/usr/lib/postgresql/$MAJOR/bin/pg_isready" -q -h localhost -p 5433 -U postgres; then break; fi
+          [ "$i" = 90 ] && { echo "::error::den tillfälliga PostGIS:en svarade inte på 90 s"; docker logs tillfalligt | tail -20; exit 1; }
+          sleep 1
+        done
+        echo "TILLFALLIG_URL=postgresql://postgres:postgres@localhost:5433/postgres" >> "$GITHUB_ENV"
+    - name: Fönstret ur hinken och driften
+      shell: bash
+      env:
+        DRIFT_URL: "${{ inputs.drift-url }}"
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5433/postgres
+      run: |
+        set -euo pipefail
+        # Loggen får maskeringsraden för hinkens nyckel; sammanfattningen får allt utom den.
+        node --experimental-strip-types scripts/tillfalliga-arkivet.ts "${{ inputs.dagar }}" "--tabeller=${{ inputs.tabeller }}" \
+          ${{ inputs.jamfor == 'ja' && '--jamfor' || '' }} 2>&1 | grep -v ExperimentalWarning | tee arkivet.log
+        { echo '```'; grep -v '^::' arkivet.log; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+        rm arkivet.log
