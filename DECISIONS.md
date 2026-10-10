@@ -10041,3 +10041,50 @@ efter vakten, och en import utan DATABASE_URL avslutar inte processen. Kontrakts
 Axels röst, §8 steg 6; K4 = E0). Kamerafacit och förarsvar är inte med i facitsidan (sql/028:s regel).
 
 **Stomdokument:** MAT §5.2 och §6.3, BED §4.2
+
+## #511 (10/10 2026) Arkivet ryms i vinter: gallring efter tre dygn med brotten sparade, raderingens golv 14 dygn (kort #322, #323)
+
+**Beslut.** Bengt 10/10: *"vi kör alternativ 1+2 redan idag"*, på bedömningens §4.2 Grepp 3 efter läsningen 388 MB 06:14 UTC
+(dbknapp 38030231454, PR #847): ~30 MB/dygn det senaste dygnet, 500 MB omkring 14–16/10, och raderingen ur exporten (#334) tog
+augustidygn med ~8 200 rader mot ~57 000 in per dygn. Fyra val samma timme, alla enligt rekommendationen:
+1. **Tre dygn i full upplösning** (förut sju). Nattjobbet `halkvakt-gallring` kör `gallra_arkiv(3)` (sql/044). Samma tal styr Norge,
+   Danmark, Finlands varma rader och pg_crons logg, och inget läser dem längre bakåt: rimfrosten läser Finlands kalla rader, som sparas
+   60 dygn för sig (sql/031), och vakthunden läser bara livemotorns senaste cron-körning.
+2. **Brotten mot #75 sparas.** `gallra_vader` behåller rader där ytan ligger mer än 12 °C under luften. Karantänen i snapshoten räknar
+   dem över sju dygn (KARANTAN_DYGN, kort #234); utan undantaget hade dygn 4–7 bara burit de brott som råkade vara sista raden i sin
+   halvtimme, och en trasig givare hade släppts tidigare. Följden hittades i genomsökningen inför bygget och stod inte i §4.2:s alternativ.
+3. **Golvet 14 dygn i dag**, med vakten mot saknade dygn först. `halkvakt-arkivradering` kör `arkiv_radera_exporterat(350, 14)` (förut
+   30). V-A, V-B, NT, R-A (svenska arkivet), K-B och R-B fick vakten som A, K-A och höjdprovet redan bar (#352): de skriver ut saknade dygn
+   och krymper aldrig tyst. De räknar på 14 dygn tills de läser resten ur hinken (kort #323).
+4. **Ikapp första natten.** Jobbet anropar raderingen upp till 40 gånger per natt; varje dygn prövas som förut mot filens radantal, och
+   ett fel stoppar nattens körning högljutt. Omkring 32 dygn (25/8–26/9) första natten, sedan ett per natt.
+
+**Byggt (kort #322).**
+- `sql/044_gallring_tre_dygn.sql`: `gallra_vader` med brottsundantaget (coalesce: en rad utan yta är inget brott); båda jobben via
+  `cron.alter_job`, schemat orört (03:15 och 03:45 UTC); migrationen fäller om ett jobb saknas.
+- Frosttrycket: `GALLRING_DYGN = 3` och `TRYCK_INTERVALL_D = 2` i `supabase/functions/vakthund/frosttryck.ts`. Vakthunden trycker steg 0
+  och T-A med `dagar = 3` och högst vartannat dygn medan frosten varar; frostärendets texter följer talen.
+- T-A och trendarkivet: standardfönstret och taket 3 (`GALLRING_DYGN`); workflowerna för T-A, trendarkivet och tillståndets steg 2 har
+  standardvärdet 3.
+- Kontraktsgrinden: kontraktet *Gallringens dygn* över de fyra kopiorna (frosttryck, trendarkivet, T-A, sql/044). Gränsen stod som lös
+  siffra i elva filer utan vakt; sql/014 och sql/026 bär det gamla jobbet som historik.
+
+**Prov.** Två integrationsprov mot PostGIS i ci kör jobbkommandona ur sql/044, inte avskrifter: gallringen efter tre dygn lämnar brotten,
+gallrar raden utan yta, rör inte dygn yngre än tre och är idempotent; raderingen tar dygnen äldre än 14, äldst först, svarar sedan att
+inget finns och lämnar ett dygn som är tio dygn gammalt. Lokalt: kontraktsgrinden grön med fyra kopior; motprov — en kopia satt till 7
+fäller den, ett tryckintervall på 3 fäller frosttryckets prov; enhetssviten 277 prov, 0 fel (integrationsproven kräver databas).
+
+**Driftsättning, efter Bengts "slå ihop".** DB-knappen `migrera sql/044_gallring_tre_dygn.sql` med bevisrader (jobbens kommandon,
+funktionens definition), och deploy av vakthunden. **Verify:** nattjobben 11/10 03:15 och 03:45 UTC — raderade rader per jobb, vakthundens
+rad *arkivexport: … N raderade ur databasen*, och databasens storlek som planar ut under 500 MB de följande dygnen.
+
+**Vad det kostar.**
+- Frostläsningarnas frist blir tre dygn, och minutupplösning äldre än tre dygn finns inte längre, varken i databasen eller i exporten.
+- Grindarna som läser 30–60 dygn (A, K-A, K-B, R-B, V-A, V-B, NT, R-A) räknar på 14 dygn och skriver ut resten som saknade dygn tills
+  kort #323 är byggt. Vaktens rad säger att dygnen ska läsas tillbaka före en dom; den stoppar inte körningen.
+- Databasen krymper inte, platsen återanvänds: det den hunnit växa till före första natten står kvar som golv.
+
+**Alternativ.** Supabase Pro (~25 USD/mån, 8 GB, dagliga backuper): inte valt, gratisvägen från #334 står. Golvet först efter
+återläsningen: inte valt, alternativ 2 hade då inte gett plats före 14/10. Svagare karantän: inte valt.
+
+**Stomdokument:** MAT §1, BED §4.2

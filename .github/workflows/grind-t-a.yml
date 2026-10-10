@@ -2,15 +2,15 @@
 # lutning och daggpunktsgap på nätter som slutade i frost mot nätter som inte gjorde det.
 # Helt läsande, rör inte skuggloggen. Byggd FÖRE skuggkolumnen med flit: T-A läser arkivet, och
 # instrumentet ska vara prövat innan höstens första frostnätter, som är en engångschans.
-# Knapp, inte cron: den trycks när frostlarmet i vakthunden går, och inom sju dygn (DECISIONS #97).
+# Knapp, inte cron: den trycks när frostlarmet i vakthunden går, och inom tre dygn (DECISIONS #97, #511; sju till 10/10).
 name: grind-t-a
 on:
   workflow_dispatch:
     inputs:
       dagar:
-        description: "Fönster i dygn — håll <= 7, annars har gallringen ätit minutupplösningen"
+        description: "Fönster i dygn — håll <= 3, annars har gallringen ätit minutupplösningen"
         required: false
-        default: "7"
+        default: "3"
 jobs:
   grind-t-a:
     runs-on: ubuntu-latest
@@ -25,6 +25,6 @@ jobs:
       - shell: bash
         run: |
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-          node --experimental-strip-types scripts/grind-t-a.ts "${{ inputs.dagar || '7' }}" | tee -a "$GITHUB_STEP_SUMMARY"
+          node --experimental-strip-types scripts/grind-t-a.ts "${{ inputs.dagar || '3' }}" | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
         env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }

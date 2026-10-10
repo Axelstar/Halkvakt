@@ -48,7 +48,7 @@
 // Och DATAVAKTERNA (kort #292, DECISIONS #452): publiceringens noter om karantänen, den långsamma vakten och de andra källorna —
 // en rad om vilka stationer som tystas, och ett driftlarm när samma källa varit oläsbar tre publiceringar i rad. Prov: ?datavaktprov=1
 import postgres from "https://deno.land/x/postgresjs@v3.4.4/mod.js";
-import { skaTrycka, senasteTryck, FROSTTRYCK_MARK } from "./frosttryck.ts";
+import { skaTrycka, senasteTryck, FROSTTRYCK_MARK, GALLRING_DYGN, TRYCK_INTERVALL_D } from "./frosttryck.ts";
 import { I_RAD, datavakter, noter, rad as datavaktRad } from "./datavakter.ts";
 
 const sql = postgres(Deno.env.get("SUPABASE_DB_URL")!, { max: 1, prepare: false });
@@ -68,13 +68,13 @@ async function gh(path: string, method = "GET", body?: unknown): Promise<any> {
 }
 
 /** FROSTTRIGGERN (DECISIONS #338, Bengts ja 24/9; omtryckningen #352, 25/9): mätningarna som frostnätterna ger trycks av
- *  vakthunden själv — kl 09 UTC, efter morgonen, ett dygn då frosten når tröskeln, och sedan högst var sjunde dygn så länge
- *  den varar (frosttryck.ts). Före 25/9 trycktes de EN gång, mitt i första frostnatten, och stod sedan stilla. I stället för
+ *  vakthunden själv — kl 09 UTC, efter morgonen, ett dygn då frosten når tröskeln, och sedan högst var TRYCK_INTERVALL_D:e
+ *  dygn så länge den varar (frosttryck.ts; varannan dag sedan gallringen tunnar efter tre dygn, DECISIONS #511). Före 25/9 trycktes de EN gång, mitt i första frostnatten, och stod sedan stilla. I stället för
  *  en veckoklocka i Actions (regeln 22/9) och i stället för att hänga på att någon läser issuen. Dispatch svarar 204 utan kropp, därför egen fetch.
  *  Utfallet per flöde skrivs i issuen: ett nekat anrop (PAT:en saknar actions:write) ska synas, inte tiga. */
 const FROSTFLODEN: { fil: string; inputs: Record<string, string> }[] = [
-  { fil: "overgangar-steg0.yml", inputs: { dagar: "7" } },   // #89 0c
-  { fil: "grind-t-a.yml", inputs: { dagar: "7" } },          // #88 trenden, steg 0 inom sju dygn
+  { fil: "overgangar-steg0.yml", inputs: { dagar: String(GALLRING_DYGN) } },   // #89 0c
+  { fil: "grind-t-a.yml", inputs: { dagar: String(GALLRING_DYGN) } },          // #88 trenden, inom gallringens dygn
   { fil: "grind-r-a.yml", inputs: { dagar: "30", land: "se" } }, // #46 rimfrosten, svensk körning (R-A4 molnkontrollen)
   { fil: "grind-k-a.yml", inputs: { dagar: "60" } },         // #103 frysklassningen
   { fil: "vindsikt-steg0.yml", inputs: { dagar: "14" } },    // #90 W-A
@@ -262,8 +262,8 @@ Deno.serve(async (req) => {
   // 5. HAR FROSTEN KOMMIT? Samma sort som 4: en HÄNDELSE, egen etikett, egen issue, EN gång,
   //    och den får aldrig färga vakthunden röd. Bengts order 11/9 efter steg 0 (kort #89).
   //    Varför den måste larma i stället för att stå i en issue: steg 0:s frysfråga (0c) gav
-  //    3–4 fall och behöver ~30, och avläsningen har en HÅRD deadline på sju dygn — gallringen
-  //    (#83, sql/014) tunnar allt äldre än så till en rad per halvtimme, och då kan arkivet
+  //    3–4 fall och behöver ~30, och avläsningen har en HÅRD deadline på GALLRING_DYGN (tre) dygn — gallringen
+  //    (#83, sql/044) tunnar allt äldre än så till en rad per halvtimme, och då kan arkivet
   //    inte längre säga NÄR regnet slutade (DECISIONS #97). En passiv påminnelse som ingen
   //    läser på tio dagar är i praktiken ingen påminnelse.
   //    SNUBBELTRÅD, INTE MÄTNING. Den räknar stationer med frusen yta — inte regnstopp följda
@@ -298,25 +298,25 @@ Deno.serve(async (req) => {
         // 09-varv via grenen nedan. Provet trycker inga flöden (det gör ?utlosarprov=1).
         const tryckt = etikett === "frostlarm" && skaTrycka(nu, null) ? await utlos(FROSTFLODEN) : [];
         await gh(`/issues`, "POST", {
-          title: `🥶 Frosten är här — kör steg 0 inom sju dygn (kort #89)${prov && f.n < FROST_STATIONER ? " [PROV]" : ""}`,
+          title: `🥶 Frosten är här — kör steg 0 inom ${GALLRING_DYGN} dygn (kort #89)${prov && f.n < FROST_STATIONER ? " [PROV]" : ""}`,
           labels: [etikett],
           assignees: ["895845"],
           body: `${f.n} stationer har haft vägyta ≤ 0 °C det senaste dygnet` +
             `${f.kallast != null ? ` (kallast ${Number(f.kallast).toFixed(1)} °C)` : ""}. Tröskeln är ${FROST_STATIONER}.\n\n` +
             (tryckt.length ? `${FROSTTRYCK_MARK}\n**Vakthunden har tryckt mätningarna själv (DECISIONS #338):**\n${tryckt.map((t) => `- ${t}`).join("\n")}\n\n` +
               `Står något ❌ ovan: tryck det flödet för hand i Actions med samma värden.\n\n` : "") +
-            `**Tryckningarna (DECISIONS #352):** vakthunden trycker de fem mätningarna kl 09 UTC och sedan var sjunde dygn så ` +
+            `**Tryckningarna (DECISIONS #352, #511):** vakthunden trycker de fem mätningarna kl 09 UTC och sedan högst var ${TRYCK_INTERVALL_D}:a dygn så ` +
             `länge frosten varar; varje tryckning blir en kommentar här. **Att göra nu:** ${tryckt.length ? "inget, om allt står ✅ ovan" : "inget — första tryckningen kommer kl 09 UTC"}.\n\n` +
-            `**Varför det brådskar — sju dygn, inte "när det passar":** gallringen (kort #83, sql/014) ` +
-            `tunnar allt äldre än sju dygn till EN rad per station och halvtimme. Steg 0:s gap-vakt kastar ` +
-            `varje omslag med mer än 20 minuters lucka, så en gallrad vecka är obrukbar per konstruktion. ` +
+            `**Varför det brådskar — ${GALLRING_DYGN} dygn, inte "när det passar":** gallringen (kort #83, sql/044) ` +
+            `tunnar allt äldre än ${GALLRING_DYGN} dygn till EN rad per station och halvtimme. Steg 0:s gap-vakt kastar ` +
+            `varje omslag med mer än 20 minuters lucka, så gallrade dygn är obrukbara per konstruktion. ` +
             `Mätt 11/9 (DECISIONS #97): ogallrad vecka 157 användbara omslag av 1 971, gallrad vecka 32 av ` +
             `5 175. Läses frostnätterna för sent finns raderna kvar — men de kan inte längre säga NÄR ` +
             `regnet slutade, och 0a/0b/0c blir OAVGJORT.\n\n` +
             `**Vad som faktiskt ändras:** bara 0c. Avläsningen 11/9 gav 3–4 regnstopp följda av yta ≤ 1 °C; ` +
             `grinden behöver ~30. 0a (76 %, median 35 min), 0b, 0d och 0f ger samma svar som då.\n\n` +
             `**FYRA MÄTNINGAR VÄNTAR PÅ SAMMA NÄTTER, och ingen av dem kan ta dem ikapp:**\n` +
-            `1. \`overgangar-steg0\` med \`dagar = 7\` — kort #89, 0c (ovan)\n` +
+            `1. \`overgangar-steg0\` med \`dagar = ${GALLRING_DYGN}\` — kort #89, 0c (ovan)\n` +
             `2. \`grind-t-a\` — trenden (#88), kräver >= 30 frostnätter på >= 20 stationer\n` +
             `3. \`grind-r-a\` med \`land = se\` — rimfrosten (#46). Svensk körning är den ENDA som kan ` +
             `köra R-A4, molnkontrollen: SMHI:s molnstationer är svenska. Finsk körning är förhandsbesked.\n` +
@@ -326,7 +326,7 @@ Deno.serve(async (req) => {
             `Engångslarm: den här issuen skapas aldrig igen, öppen eller stängd.`,
         });
       } else if (etikett === "frostlarm" && skaTrycka(nu, null)) {
-        // Omtryckningen (DECISIONS #352): kl 09 UTC, högst var sjunde dygn, medan frosten når tröskeln. Klockan är den senaste
+        // Omtryckningen (DECISIONS #352, #511): kl 09 UTC, högst var TRYCK_INTERVALL_D:e dygn, medan frosten når tröskeln. Klockan är den senaste
         // markerade tryckningen på issuen; `since` håller listan kort så att den nyaste alltid kommer med.
         const issue = tidigare[0];
         const kommentarer = await gh(`/issues/${issue.number}/comments?per_page=100&since=${new Date(+nu - 8 * 86_400_000).toISOString()}`);
@@ -335,7 +335,7 @@ Deno.serve(async (req) => {
           await gh(`/issues/${issue.number}/comments`, "POST", {
             body: `${FROSTTRYCK_MARK}\n🔁 **Frosten varar — mätningarna tryckta igen** (${f.n} stationer med vägyta ≤ 0 °C senaste dygnet, ` +
               `DECISIONS #352):\n${tryckt.map((x) => `- ${x}`).join("\n")}\n\nStår något ❌: tryck det flödet för hand i Actions med ` +
-              `samma värden. Nästa tryckning tidigast om sju dygn, kl 09 UTC.`,
+              `samma värden. Nästa tryckning tidigast om ${TRYCK_INTERVALL_D} dygn, kl 09 UTC.`,
           });
           rad.push(`frost: ${tryckt.filter((x) => x.startsWith("✅")).length} av ${tryckt.length} frostflöden tryckta igen`);
         }

@@ -198,12 +198,13 @@
       <li><span aria-hidden="true">○</span> <b>Används av motorn eller appen</b> <span style="color: var(--dampad, #4A5763)">saknas · ingen rättelse ur vägdata bär ovanpå grannarna (#479); hör hemma i en vädergrundad modell (#480)</span></li>
     </ul>
   </details>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gron, #1F7A45); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-i-arkivet">Arkivet</a> <span style="color: var(--dampad, #4A5763)">klar</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-i-arkivet">Arkivet</a> <span style="color: var(--dampad, #4A5763)">delvis, 90 % · kvar: sql/044 i drift: migrationen med DB-knappen och nattjobben 11/10 03:15 och 03:45 UTC som gallrat och raderat (kort #322)</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Byggd</b> <span style="color: var(--dampad, #4A5763)">klart · weather_observations sql/001_init.sql:42, road_condition_history :31, situation_archive sql/003:18</span></li>
       <li><span aria-hidden="true">✓</span> <b>Schemalagd i drift</b> <span style="color: var(--dampad, #4A5763)">klart · Livemotorn jobid 1 och puls-ingest; halkvakt-gallring 03:15 med gallra_arkiv(7) (sql/026:66)</span></li>
       <li><span aria-hidden="true">✓</span> <b>Vakt eller larm</b> <span style="color: var(--dampad, #4A5763)">klart · vakthund/index.ts:165-168 väderarkivet, :865-869 situation_archive, :887-898 arkivvakten, :461-467 databasen 400 MB</span></li>
       <li><span aria-hidden="true">✓</span> <b>Prov</b> <span style="color: var(--dampad, #4A5763)">klart · test/integration.test.ts writeAll, gallra_vader, gallra_arkiv; test/arkivpolicy.test.ts; ci.yml med PostGIS</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Ryms under 500 MB i vinter</b> <span style="color: var(--dampad, #4A5763)">pågår · Beslutat 10/10 (DECISIONS #511): sql/044 gallrar efter tre dygn med brotten mot #75 sparade och raderar exporterade dygn äldre än 14; 388 MB 10/10 06:14 UTC (dbknapp 38030231454)</span></li>
     </ul>
   </details>
 </div>
@@ -228,7 +229,7 @@
   <div class="par">
     <div class="ruta">
       <h4>Volym</h4>
-      <p>Säkerhetskopian 20/9 läste tillbaka 601 712 rader ur 30 tabeller, varav 389 779 svenska väderobservationer, 64 105 finska och 50 292 radarrader (#257). Databasen låg på 266 MB av gratisnivåns 500 MB den 3/10 och växer med ungefär 6,9 MB per dygn. Gamla dygn exporteras till lagring i stället för att köpa en större databas: raderingen börjar runt 15/10, och återläsningen är byggd (#334, #450). Veckokopian av hela databasen flyttar 9/10 från GitHub-releaser till den privata hinken <span class="mono">arkiv</span> i Supabase, inför ett publikt repo (#495). Pro-beslutet fattas senast 1/11.</p>
+      <p>Säkerhetskopian 20/9 läste tillbaka 601 712 rader ur 30 tabeller, varav 389 779 svenska väderobservationer, 64 105 finska och 50 292 radarrader (#257). Databasen låg på 388 MB av gratisnivåns 500 MB den 10/10 och växte med ungefär 30 MB per dygn, när kylan gav fler rader. Gamla dygn exporteras till lagring i stället för att köpa en större databas (#334), och sedan 10/10 snävare (#511): väderarkivet bär minutupplösningen i tre dygn i stället för sju, brotten mot givarvakten sparas för karantänen, och exporterade dygn äldre än 14 raderas i stället för äldre än 30. Grindarna som läser längre bakåt skriver ut de saknade dygnen tills de läser dem ur exporten; återläsningen är byggd (#450). Veckokopian av hela databasen flyttar 9/10 från GitHub-releaser till den privata hinken <span class="mono">arkiv</span> i Supabase, inför ett publikt repo (#495). Supabase Pro valdes bort 10/10 (#511).</p>
     </div>
     <div class="ruta">
       <h4>En lucka som stängdes</h4>
@@ -1576,11 +1577,13 @@
 
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
   <h2 id="oppna-kort">Öppna kort</h2>
-  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 27 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
+  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 29 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
   <h3><a href="#avsnitt-1">1. Datan som samlas in</a></h3>
   <ul>
     <li>#303 VÄGDATALAGRET, STEG 3 — KUVÖSENS INLÄSNING OCH AXELS KOLUMNER <span class="litet">· Bengt</span></li>
+    <li>#323 GRINDARNA LÄSER DYGNEN ÄLDRE ÄN 14 UR HINKEN (BESTÄLLT 10/10 — Claude, DECISIONS #511, del av Bengts … <span class="litet">· Claude</span></li>
     <li>#294 YTSTATUSFÄLTEN I ARKIVET — vägytans is, snö, vatten och friktion från de cirka 50 stationerna med givare <span class="litet">· Claude</span></li>
+    <li>#322 🗄️ #322 ARKIVET RYMS I VINTER — GALLRING EFTER TRE DYGN OCH RADERINGENS GOLV 14 DYGN (BYGGT 10/10 — Claude, … <span class="litet">· pågår</span></li>
   </ul>
   <h3><a href="#avsnitt-2">2. Delområdena</a></h3>
   <ul>

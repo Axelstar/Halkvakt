@@ -17,6 +17,7 @@
 // Självtest utan DB och nät: scripts/grind-nt.ts --sjalvtest
 import pg from "pg";
 import { RADVAKT_SQL, karantanSql } from "../publish/snapshot-core.ts";
+import { saknadeDygn, skrivSaknade } from "../publish/vaktdiagnos.ts";
 import { vatbulb, klassa, givarklass, smhiKlass, SVEP, BAND_C, type Klass, type Givarklass, type SmhiKlass } from "../engine/src/nederbord.ts";
 import { skatta } from "../engine/src/segment.ts";
 import { haversineM } from "../engine/src/geo.ts";
@@ -234,6 +235,10 @@ await pool.query("SET statement_timeout = '300s'");
 
 console.log(`Grind NT — nederbördstypen (kort #45), ${new Date(FRAN).toISOString().slice(0, 10)} → ${new Date(TILL).toISOString().slice(0, 16)}Z, ` +
   `${KUVOS ? "KUVÖSENS RIKTNINGSPROV: startvärdet L 0 · U +1,5, inget svep, ingen dom (DECISIONS #424, #455)" : DOM ? "DOMLÄGE" : "SPÄRRAT: bara räkningar på facitsidan (§5)"}\n`);
+// Saknade dygn (kort #322, DECISIONS #511): raderingen tar dygn äldre än 14 ur databasen och får aldrig krympa fönstret tyst.
+// Kuvösen läser en egen databas med en gången vinter, inte driften.
+if (!KUVOS) skrivSaknade(await saknadeDygn((s, p) => pool.query(s, p as any[]).then((r) => r.rows), "weather_observations",
+  Math.ceil((Date.now() - FRAN) / 864e5)));
 
 // Paren först: vägstationernas lägen ur weather_latest, SMHI:s aktiva stationer ur API:t. En tyst tom lista vore ett tyst aldrig.
 const vag = (await pool.query(KUVOS

@@ -4,13 +4,17 @@
 // Före 25/9 tryckte vakthunden de fem frostflödena EN gång, i samma ögonblick som frostlarmet skapades — ofta mitt i den
 // första frostnatten. Grindarna kräver veckor av frost (T-A 30 frostnätter, K-C1 en vintermånad, R-C1 15 frostdygn), och
 // ingen av dem ligger på pulsklockan, så efter första körningen stod de stilla. Nu: kl 09 UTC, efter morgonen så att T-A
-// ser hela natten, ett dygn då frosten når vakthundens tröskel, och högst en gång per sju dygn. Frosten upphör ⇒
-// tryckningarna upphör av sig själva.
+// ser hela natten, ett dygn då frosten når vakthundens tröskel, och högst en gång per TRYCK_INTERVALL_D dygn. Frosten
+// upphör ⇒ tryckningarna upphör av sig själva.
 
 /** Tryckningens timme i UTC. Vakthunden går :07 varje timme, så 09:07 UTC — efter den lokala morgonen året runt. */
 export const TRYCK_TIMME_UTC = 9;
-/** Högst en tryckning per så många dygn. */
-export const TRYCK_INTERVALL_D = 7;
+/** Gallringen tunnar allt äldre än så många dygn till en rad per halvtimme (sql/044, DECISIONS #511; sju dygn till 10/10).
+ *  Frostläsningarna behöver minutupplösningen och måste alltså ske inom dem. Kontraktsgrinden vaktar kopiorna. */
+export const GALLRING_DYGN = 3;
+/** Högst en tryckning per så många dygn. Kortare än gallringen, så att varje natt hinner läsas ogallrad medan frosten
+ *  varar (DECISIONS #511). När frosten upphör trycks inget mer — de sista nätterna kan då gallras olästa, som förut. */
+export const TRYCK_INTERVALL_D = 2;
 /** Varvet kan landa några sekunder före förra veckans klockslag; två timmars slack gör att veckan inte hoppas över. */
 const SLACK_MS = 2 * 3600_000;
 /** Markören som gör en kommentar (eller issuens kropp) till en tryckning — den senaste är klockan som räknar dygnen. */

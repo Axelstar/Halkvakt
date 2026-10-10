@@ -13,7 +13,7 @@
 //                tillbringar mest tid där är den som kan säga något om varför.
 //   · T-A/#46  — hur många stationer inom räckvidd som redan haft vägyta ≤ 0 °C, efter #75:s
 //                givarvakt. Frosten kommer inte överallt samtidigt; den rutt som fryser först
-//                är den som hinner ge T-A sitt underlag inom gallringens sju dygn.
+//                är den som hinner ge T-A sitt underlag inom gallringens tre dygn (sju till 10/10, #511).
 //   · W-A      — hur många stationer längs rutten som bär vind och sikt alls (bara ~42 % av
 //                arkivraderna gör det, DECISIONS #120), och högsta uppmätta byvind.
 //   · F-A      — KAPACITETSKOLL, inte rangordning. Se nedan.
