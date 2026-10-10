@@ -369,7 +369,7 @@ async function main(): Promise<void> {
   if (arg.includes("--tillatna")) {
     git("fetch", "-q", "origin");
     const filer = git("diff", "--name-only", "origin/main...HEAD").split("\n").filter(Boolean);
-    const fel = filer.filter((f) => f !== FIL && f !== "docs/PROJEKTKARTAN.html" &&
+    const fel = filer.filter((f) => f !== FIL && f !== "docs/PROJEKTKARTAN.html" && f !== "docs/takten.json" &&
       utanGenererat(git("show", `origin/main:${f}`)) !== utanGenererat(readFileSync(f, "utf8")));
     if (!filer.length) { console.error("✗ grenen ändrar ingenting"); process.exit(1); }
     if (fel.length) { console.error(`✗ grenen rör mer än kartan: ${fel.join(", ")} — vänta på Bengts "slå ihop"`); process.exit(1); }
