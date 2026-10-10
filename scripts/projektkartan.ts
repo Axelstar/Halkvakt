@@ -237,7 +237,7 @@ export function taktSektion(t: Takten | null, k: Karta, nu: number): string {
     <details class="takt-lista"><summary>Alla ${t.handelser.length} ändringar i ${commits.size} commits, steg för steg</summary>
       <ol>${lista.join("")}</ol>
     </details>` : `<p class="litet">Inga ändringar i kartan under perioden.</p>`}
-    <p class="litet">Skrivs ur git-historiken för docs/projektkartan.json av scripts/projektkartan.ts, till och med <span class="mono">${t.sha.slice(0, 7)}</span>. Ett steg som byter namn räknas som borttaget och nytt. Ändras aldrig för hand (DECISIONS #515).</p>
+    <p class="litet">Skrivs ur git-historiken för docs/projektkartan.json av scripts/projektkartan.ts, till och med <span class="mono">${t.sha.slice(0, 7)}</span>. Ett namnbyte (samma plats i delen) eller en flytt (samma namn till en annan del) i samma commit följer sitt läge; ett steg som skrivs om under nytt namn i en senare commit räknas som borttaget och nytt. Ändras aldrig för hand (DECISIONS #515).</p>
   </section>`;
 }
 
