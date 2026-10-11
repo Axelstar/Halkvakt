@@ -10400,3 +10400,36 @@ bortom 20 km, i norr och vägt med trafiken, och under RÅ i varje band och regi
 stationerna (3,61 → 3,69). Två spann missade åt det bättre hållet, som i #509. Förbehållen står kvar: vädret är en analys och inte en
 prognos, och frågan om MET Nordics luft och vägstationerna (punkt 1 ovan). Ingen dom: valet av källa är Axels, och förregistreringen
 för vintern 2026/27 är Bengts beslut (#485).
+
+## #518 (11/10 2026) MET Nordic vald som väderkälla för fysikspåret; prognosläget prövas på MET Nordics egna prognoser, hämtade härifrån; takten på dokumentsynkens lista (kort #308)
+
+**Beslut.** Bengt 11/10: *"Axel och jag väljer Met Nordic"*, *"kan inte vi göra denna hämtning härifrån"* (om MET Nordics
+arkiverade prognoser) och *"lägg till takten på listan"*.
+1. **MET Nordic är fysikspårets väderkälla**, valt av Bengt och Axel efter #509 och #517: nivå 2 6,10 % grova fel mot FYSIK:s 9,85 %,
+   och nivå 2 med grannarna och blandningen 5,02 % mot RÅ:s 7,51 % och taket OFFSET:s 5,52 %. MET Nordic är fri att använda också
+   kommersiellt (MET Norway, CC BY 4.0). Förbehållen står kvar: det prövade är analysen, inte prognosen, och frågan om MET Nordics luft
+   rättas mot Trafikverkets vägstationer har ställts men svaret finns inte i repot (#517).
+2. **ECMWF-filen på +24–48 h i #516 punkt 4 stryks.** Prognosläget prövas i stället på MET Nordics egna arkiverade prognoser, och de
+   hämtas härifrån. Arkivet `metpparchive` har `met_forecast_1_0km_nordic` fyra körningar per dygn (00, 06, 12 och 18 UTC) med 59
+   timsteg (+0…+58 h), samma sju fält och samma rutnät 1796 × 2321 som analysen (läst i arkivets katalog och filbeskrivning 11/10 för
+   1/12 2024 och 15/1 2025). Hämtningen byggs ur analysens (`kuvos/metnordic.ts` på grenen `kuvos/rutnatet-469`), en förbindelse åt
+   gången enligt tjänstens villkor, i rutan närmast varje station. Varje rad bär körningens starttid och ledtiden. Kostnaden, räknad ur
+   analysens pilot (ungefär 26 MB och 2–5 s per timsteg för rutan över stationerna): ungefär 95 GB och 2,5–5 timmar per ledtidsklass
+   (de sex timstegen från varje körning som täcker varje timme, till exempel +6…+11 h), alltså ungefär 190 GB för +6 och +24 h.
+   Förregistreringen skrivs innan läsningens knapp, med Axels förväntan.
+3. **`docs/takten.json` får röras av dokumentsynkens gren** (`scripts/stomvakten.ts`, listan `OCKSA`): filen skrivs av
+   `projektkartan.ts` ur git-historiken (#515) och ändras när main har flyttat, vilket fällde `--tillatna` för PR #862 11/10.
+
+**Öppet före prognosläsningens knapp (bedömningen §4.2).** (a) Hur fysikens tillstånd bärs i prognosläget — Axels val: antingen körs
+kolumnen hela vintern på prognosvädret vid en fast ledtid (enkelt, men vägens tillstånd driver iväg på prognosens fel, så provet blir
+strängare än driften), eller startar den om från analysens tillstånd vid varje körning och räknar framåt på prognosen (som driften,
+men det kräver att fysiken kan starta från ett sparat tillstånd). **Valet styr också hämtningen:** den fasta ledtiden behöver bara
+klassens sex timsteg per körning (ungefär 95 GB per klass), medan omstarten behöver varje timsteg från körningen till ledtiden, för
++24 h ungefär 30 timsteg per körning och ungefär 475 GB. (b) Ledtidsklasserna: +6 och +24 h, och +48 h om kostnaden godtas.
+(c) Axels förväntan. Rättelsen lärs på analysen och används på prognosvädret, om inget annat sägs.
+
+**Alternativ som valdes bort.** (a) Behålla ECMWF som källa: sämre i varje band och region (#509), och Open-Meteo är
+icke-kommersiell. (b) ECMWF-prognoser på +24–48 h ur Open-Meteo: ett prov på en källa vi lämnar. (c) Låta Axel hämta prognoserna i
+sin session: hämtningen finns redan för analysen här, och Actions är gratis för det publika repot (#503).
+
+**Stomdokument:** KUV §5 och §9, BED §4.2
