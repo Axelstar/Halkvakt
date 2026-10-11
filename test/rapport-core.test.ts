@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { byggRapport, favoritRapport, linjerUr, nyttSedan, punktUr, slagFor, tomma, ORDNING } from "../publish/rapport-core.ts";
+import { byggRapport, favoritRapport, glesa, grupperade, linjerUr, notis, nyttSedan, punktUr, slagFor, tomma, visning, ORDNING, GRUPP_FRAN, type Rad } from "../publish/rapport-core.ts";
 import type { LiveDoc, StaticDoc } from "../engine/src/snapshot.ts";
 
 // Rapportfilen och favoritprovet (DECISIONS #529). Syntetiska svar i Trafikverkets form; rutten går rakt österut vid 59°.
@@ -21,12 +21,19 @@ test("klassningen: slagen ur koderna, och Körfält blockerade är ingen kö (#5
   assert.equal(slagFor({ MessageTypeValue: "Ferry", MessageCodeValue: "ferry" }), null);
 });
 
-test("geometrin: punkt, linje, multilinje och Z", () => {
-  assert.deepEqual(punktUr("POINT (15.123456 59.5)"), [15.12346, 59.5]);
+test("geometrin: punkt, linje, multilinje och Z, fyra decimaler (#530)", () => {
+  assert.deepEqual(punktUr("POINT (15.123456 59.5)"), [15.1235, 59.5]);
   assert.deepEqual(punktUr("POINT Z (15.1 59.2 30)"), [15.1, 59.2]);
   assert.deepEqual(linjerUr("LINESTRING (15 59, 15.1 59.1)"), [[[15, 59], [15.1, 59.1]]]);
   assert.deepEqual(linjerUr("MULTILINESTRING Z ((15 59 1, 15.1 59.1 2), (16 60 0, 16.1 60.1 0))"), [[[15, 59], [15.1, 59.1]], [[16, 60], [16.1, 60.1]]]);
   assert.deepEqual(linjerUr("POINT (1 2)"), []);
+});
+
+test("utglesningen: brytpunkter närmare än 20 m den förra stryks, start och slut står kvar", () => {
+  // Från starten: ~6 m och ~11 m (strykas), ~57 m (behålls), ~6 m från den men sist (behålls alltid).
+  const l: [number, number][] = [[15, 59], [15.0001, 59], [15.0002, 59], [15.001, 59], [15.0011, 59]];
+  assert.deepEqual(glesa(l), [[15, 59], [15.001, 59], [15.0011, 59]]);
+  assert.deepEqual(glesa([[15, 59], [15.00001, 59]]), [[15, 59], [15.00001, 59]], "två punkter rörs aldrig");
 });
 
 const IN = {
@@ -39,7 +46,10 @@ const IN = {
     dev({ Id: "vilande", MessageTypeValue: "MaintenanceWorks", Suspended: true, Geometry: { Point: { WGS84: "POINT (15.1 59.0)" } } }),
     dev({ Id: "slut", MessageTypeValue: "Accident", EndTime: "2026-10-12T05:30:00Z", Geometry: { Point: { WGS84: "POINT (15.1 59.0)" } } }),
     dev({ Id: "fjarran", MessageTypeValue: "Accident", Geometry: { Point: { WGS84: "POINT (18.0 59.3)" } } }),
-  ] }],
+  ] },
+  // En hastighet utan vägarbete i sin situation står kvar för sig.
+  { Deviation: [dev({ Id: "h2", MessageTypeValue: "RoadOrCarriagewayOrLaneManagement", MessageCodeValue: "speedRestrictionInOperation",
+    TemporaryLimit: "Rekommenderad hastighet: 70km/h", Geometry: { Point: { WGS84: "POINT (15.32 59.0)" } } })] }],
   restider: [
     { Id: "tt1", Name: "Längs rutten", TravelTime: 840, FreeFlowTravelTime: 540, TrafficStatus: "heavy", Geometry: { WGS84: "LINESTRING (15.05 59.001, 15.15 59.001)" } },
     { Id: "tt2", Name: "Långt bort", TravelTime: 300, FreeFlowTravelTime: 300, Geometry: { WGS84: "LINESTRING (18 59.3, 18.1 59.3)" } },
@@ -58,11 +68,17 @@ const IN = {
 test("rapportfilen: bara det aktiva, linjerna i den långsamma delen, restider och färjor", () => {
   const { snabb, lang } = byggRapport(IN);
   const ids = snabb.poster.map((p) => p.id);
-  assert.deepEqual(ids.filter((i) => i.startsWith("dev:")).sort(), ["dev:fjarran", "dev:h1", "dev:o1", "dev:v1"], "vilande och slutade borta");
+  assert.deepEqual(ids.filter((i) => i.startsWith("dev:")).sort(), ["dev:fjarran", "dev:h2", "dev:o1", "dev:v1"], "vilande och slutade borta, h1 lagd på v1");
+  const v1 = snabb.poster.find((p) => p.id === "dev:v1")!;
+  assert.equal(v1.grans, 50, "hastigheten i samma situation ligger på vägarbetet");
+  assert.equal(visning(v1), "1 körfält avstängda · 50 km/h förbi vägarbetet · till 20 oktober");
+  assert.equal(snabb.poster.find((p) => p.id === "dev:h2")!.rubrik, "70 km/h");
+  assert.ok(snabb.noter.includes("1 hastigheter lagda på sitt vägarbete"));
+  assert.equal(visning(snabb.poster.find((p) => p.id === "dev:o1")!), "Olycka, ett körfält avstängt · rapporterad 07:00");
   assert.ok(lang.linjer["dev:v1"] && lang.linjer["tt:tt1"] && lang.linjer["led:7"], "linjerna ligger i den långsamma delen");
   const tt1 = snabb.poster.find((p) => p.id === "tt:tt1")!;
   assert.equal(tt1.slag, "ko", "fem minuter över normal är kö");
-  assert.equal(tt1.text, "14 minuter, normalt 9");
+  assert.equal(visning(tt1), "14 minuter, normalt 9");
   assert.equal(snabb.poster.find((p) => p.id === "tt:tt2")!.slag, "restid");
   const f = snabb.poster.find((p) => p.id === "farja:7")!;
   assert.match(f.text, /^nästa 08:10 från Öst, 08:20 från Väst$/, "i tidsordning, svensk tid");
@@ -87,7 +103,7 @@ test("favoritprovet: rutten får sina rader i viktordning, de fjärran inte", ()
   const { snabb, lang } = byggRapport(IN);
   const r = favoritRapport(RUTT, LIVE, STAT, snabb, lang);
   const ids = r.map((x) => x.id);
-  assert.deepEqual(ids, ["seg:r1", "wx:s1", "wx:s2", "dev:o1", "tt:tt1", "dev:v1", "dev:h1", "farja:7", "farja:9", "cam:k1", "smhi:5:Halka"]);
+  assert.deepEqual(ids, ["seg:r1", "wx:s1", "wx:s2", "dev:o1", "tt:tt1", "dev:v1", "dev:h2", "farja:7", "farja:9", "cam:k1", "smhi:5:Halka"]);
   assert.ok(!ids.some((i) => /fjarran|tt2|k2|s3/.test(i)), "inget utanför marginalerna");
   assert.match(r.find((x) => x.id === "wx:s1")!.rubrik, /^Frysrisk vid stationen i Provby$/);
   assert.match(r.find((x) => x.id === "wx:s1")!.text, /^Vägytan −0,8 °C, luften \+1,2 °C, fukt på vägbanan$/);
@@ -105,4 +121,35 @@ test("nytt sedan förra kollen och det tomma på en rad", () => {
   assert.ok(t.inget.includes("vilt") && t.inget.includes("hinder") && !t.inget.includes("restid"));
   assert.equal(t.koerMatsInte, false, "en restidssträcka går längs rutten");
   assert.equal(tomma(nu.filter((x) => !x.id.startsWith("tt:"))).koerMatsInte, true);
+});
+
+// Sammanslagningen och notisen (DECISIONS #530).
+const rad = (id: string, slag: Rad["slag"], langsM: number, o: Partial<Rad> = {}): Rad =>
+  ({ id, slag, rubrik: id, text: `text ${id}`, avstandM: 10, langsM, vag: null, start: null, ...o });
+
+test("sammanslagningen: kameror och restider alltid, vägarbeten per väg från tre, det viktiga för sig", () => {
+  const r = [rad("seg:1", "halka", 500), rad("dev:o", "olycka", 900),
+    rad("cam:1", "kamera", 100, { vag: "E4" }), rad("cam:2", "kamera", 3000, { vag: "E4" }), rad("cam:3", "kamera", 2000, { vag: "E18" }),
+    rad("dev:v1", "vagarbete", 1000, { vag: "E4" }), rad("dev:v2", "vagarbete", 4000, { vag: "E4" }), rad("dev:v3", "vagarbete", 2500, { vag: "E4" }),
+    rad("dev:v4", "vagarbete", 6000, { vag: "Väg 276" }), rad("tt:1", "restid", 700), rad("tt:2", "restid", 800), rad("tt:3", "ko", 750)];
+  const g = grupperade(r);
+  assert.deepEqual(g.map((x) => x.id), ["seg:1", "dev:o", "tt:3", "grupp:restid", "grupp:vagarbete|E4", "dev:v4", "grupp:kamera|E4", "grupp:kamera|E18"]);
+  const va = g.find((x) => x.id === "grupp:vagarbete|E4")!;
+  assert.equal(va.rubrik, "Tre vägarbeten på E4");
+  assert.equal(va.antal, 3); assert.deepEqual(va.ids.sort(), ["dev:v1", "dev:v2", "dev:v3"]);
+  assert.match(va.text, /^Mellan 1 km och 4 km in på rutten\. Närmast: text dev:v1$/);
+  assert.equal(g.find((x) => x.id === "grupp:kamera|E4")!.rubrik, "Två fartkameror på E4");
+  assert.equal(g.find((x) => x.id === "grupp:kamera|E18")!.rubrik, "En fartkamera på E18", "en kamera är också en grupp");
+  assert.equal(g.find((x) => x.id === "grupp:restid")!.rubrik, "Två restidssträckor", "restider utan väg i rubriken");
+  assert.equal(GRUPP_FRAN, 3);
+  assert.equal(g.reduce((s, x) => s + x.antal, 0), r.length, "varje rad står i exakt en grupp");
+});
+
+test("notisen: det nya av rätt slag, och ett vägarbete bara om det är nytt på riktigt", () => {
+  const nu = Date.parse("2026-10-12T06:00:00Z");
+  const r = [rad("seg:1", "halka", 1), rad("dev:gammalt", "vagarbete", 2, { start: "2026-09-01T00:00:00Z" }),
+    rad("dev:nytt", "vagarbete", 3, { start: "2026-10-12T04:00:00Z" }), rad("smhi:1", "smhi", 4), rad("tt:1", "ko", 5), rad("cam:1", "kamera", 6)];
+  assert.deepEqual(notis(r, [], nu), { ja: false, ids: [] }, "inget nytt, ingen notis");
+  assert.deepEqual(notis(r, ["dev:gammalt", "smhi:1", "tt:1", "cam:1"], nu), { ja: false, ids: [] }, "ett gammalt vägarbete, SMHI (T6), köer och kameror ger aldrig notis");
+  assert.deepEqual(notis(r, ["seg:1", "dev:nytt"], nu), { ja: true, ids: ["seg:1", "dev:nytt"] });
 });

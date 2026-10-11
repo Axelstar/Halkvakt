@@ -35,7 +35,7 @@ async function main(): Promise<number> {
     "TemporaryLimit", "TrafficRestrictionType", "Geometry.Point.WGS84", "Geometry.Line.WGS84"].map((f) => `Deviation.${f}`);
   // Första körningen (38135635603) föll på INCLUDE: "Invalid query attribute Situation.Deviation.Deleted". Nu utan INCLUDE, och
   // fälten som faktiskt finns skrivs ut, så att funktionens lista byggs på dem.
-  const sit = await trv("Situation", "1.6", "road.trafficinfo", `<IN name="Deviation.MessageTypeValue" value="${TYPER}"/>`, ["Deleted", ...DEV]);
+  const sit = await trv("Situation", "1.6", "road.trafficinfo", `<IN name="Deviation.MessageTypeValue" value="${TYPER}"/>`, ["Id", "Deleted", ...DEV]);
   const falt = new Set<string>(); for (const s of sit) for (const d of s.Deviation ?? []) for (const k of Object.keys(d)) falt.add(k);
   console.log(`mätt: fälten i avvikelserna (alla): ${[...falt].sort().join(", ")}`);
   console.log(`mätt: fälten i en situation: ${Object.keys(sit[0] ?? {}).join(", ")}`);

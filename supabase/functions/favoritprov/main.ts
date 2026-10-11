@@ -1,6 +1,6 @@
 // FAVORITPROVET (favoriterna, DECISIONS #529, Bengt 11/10: "vi bygger det nu … en testmiljö … under faktiska förhållanden och inte
 // når ut till själva telefonen"). Bygger rapportfilen som den är tänkt för appen, och det fliken skulle visa för skuggans 30 rutter,
-// var 30:e minut (:08/:38, sql/047) — men skriver ALLT till hinken `favoritprov` i Supabase Storage, aldrig till kartrepot eller
+// var 30:e minut (:08/:38, sql/047), med raderna sammanslagna och notisen simulerad (#530) — men skriver ALLT till hinken `favoritprov` i Supabase Storage, aldrig till kartrepot eller
 // data/app/v1/, så ingen app läser något av det. Filerna skrivs över (ingen historik som växer); visningen är docs/favoritprov.html.
 //
 // index.ts är GENERERAD av scripts/bundle-favoritprov.ts ur engine/src, publish/rapport-core.ts, skuggans rutter (RUTTER_PROV, ur
@@ -60,7 +60,7 @@ Deno.serve(async (req) => {
       "TemporaryLimit", "TrafficRestrictionType", "Geometry.Point.WGS84", "Geometry.Line.WGS84"].map((f) => `Deviation.${f}`);
     const [sit, tt, fa, fr, lv, st, wl] = await Promise.all([
       // Inget tidsfilter här: avvikelser utan sluttid (vägarbeten tills vidare) skulle falla bort. byggRapport avgör vad som är aktivt.
-      trv("Situation", "1.6", "road.trafficinfo", `<IN name="Deviation.MessageTypeValue" value="${TYPER}"/>`, ["Deleted", ...DEV]),
+      trv("Situation", "1.6", "road.trafficinfo", `<IN name="Deviation.MessageTypeValue" value="${TYPER}"/>`, ["Id", "Deleted", ...DEV]),
       trv("TravelTimeRoute", "1.6", "road.trafficinfo", "", ["Id", "Name", "TravelTime", "FreeFlowTravelTime", "TrafficStatus", "MeasureTime", "Geometry.WGS84"]),
       trv("FerryAnnouncement", "1.2", "ferry.trafficinfo", `<AND><GTE name="DepartureTime" value="${fran}"/><LT name="DepartureTime" value="${till}"/></AND>`),
       trv("FerryRoute", "1.2", "ferry.trafficinfo", ""),
@@ -70,8 +70,11 @@ Deno.serve(async (req) => {
     ]);
     steg("hamtning", t);
     t = performance.now();
+    const kalla = new Set((lv.weather as any[]).map((w) => String(w.id)));
     const { snabb, lang } = byggRapport({ nu, situationer: sit.rader, restider: tt.rader, farjor: fa.rader, farjeleder: fr.rader,
-      stationer: (wl as any[]).map((w) => ({ id: String(w.station_id), namn: String(w.name ?? ""), luft: w.air_temp_c == null ? null : Number(w.air_temp_c) })) });
+      // Bara stationerna i lägesfilens weather[] (ytan högst +3 °C) — de enda som kan stå som frysrisk; namnen för alla 855 vägde 8,8 kB (#530).
+      stationer: (wl as any[]).filter((w) => kalla.has(String(w.station_id)))
+        .map((w) => ({ id: String(w.station_id), namn: String(w.name ?? ""), luft: w.air_temp_c == null ? null : Number(w.air_temp_c) })) });
     if (fr.rader.length) snabb.noter.push(`färjeledens fält: ${Object.keys(fr.rader[0]).join(", ")}`);
     steg("rapport", t);
     t = performance.now();
@@ -93,8 +96,10 @@ Deno.serve(async (req) => {
     const rutter: Record<string, unknown> = {};
     for (const [namn, linje] of Object.entries(RUTTER_PROV)) {
       const rader = favoritRapport(linje, lv, st, snabb, lang);
+      const nytt = nyttSedan(forra?.rutter?.[namn]?.rader ?? null, rader);
+      // Skärmen visar grupperna (#530: sammanslagna per slag och väg); raderna står kvar under dem, och notisen räknas på det nya.
       rutter[namn] = { km: Math.round(linje.reduce((s, p, i) => i ? s + haversineM({ lon: linje[i - 1][0], lat: linje[i - 1][1] }, { lon: p[0], lat: p[1] }) : 0, 0) / 1000),
-        rader, nytt: nyttSedan(forra?.rutter?.[namn]?.rader ?? null, rader), tomma: tomma(rader) };
+        grupper: grupperade(rader), rader, nytt, notis: notis(rader, nytt, nu), tomma: tomma(rader) };
     }
     steg("rutterna", t);
     const fav = { schema: 1, generated_at: snabb.generated_at, lagesfil: lv.generated_at, forra: forra?.generated_at ?? null, rutter };
@@ -102,7 +107,9 @@ Deno.serve(async (req) => {
     const hist = (await lasHink("historik.json"))?.korningar ?? [];
     hist.push({ t: snabb.generated_at, ms: Math.round(performance.now() - t0), poster: snabb.poster.length, snabb_gz: manifest.snabb.gz_byte,
       lang_gz: manifest.lang.gz_byte, rader: Object.fromEntries(Object.entries(rutter).map(([n, r]: [string, any]) => [n, r.rader.length])),
-      nytt: Object.values(rutter).reduce((s: number, r: any) => s + r.nytt.length, 0) });
+      nytt: Object.values(rutter).reduce((s: number, r: any) => s + r.nytt.length, 0),
+      grupper: Object.values(rutter).reduce((s: number, r: any) => s + r.grupper.length, 0),
+      notis: Object.entries(rutter).filter(([, r]: [string, any]) => r.notis.ja).map(([n]) => n) });
     await skrivHink("historik.json", JSON.stringify({ schema: 1, korningar: hist.slice(-HISTORIK) }));
     return new Response(JSON.stringify({ ok: true, generated_at: snabb.generated_at, poster: snabb.poster.length, noter: snabb.noter,
       svar_byte: { situation: sit.byte, restider: tt.byte, farjor: fa.byte, farjeleder: fr.byte }, manifest, ny_lang: nyLang,
