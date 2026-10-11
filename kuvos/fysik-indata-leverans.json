@@ -1,0 +1,12 @@
+{
+ "_om": "Fysikkedjans indata som inte är Trafikverkets (DECISIONS #508, #509, kort #319 nyckel 2): ECMWF IFS ur Open-Meteos arkiv per station (data/ifs, data/ifs2), höjd och terräng (elev.csv, geofeat.csv, geofeat2.csv), vägdata ur NVDB (road_all.csv) och stationernas läge (stations.csv), med manifest.json i arkivets rot. Packad av Axels fysiksession 9/10 och lagd i releasen nedan 10/10. Kontrollerad 11/10: sha256 lika Axels besked, 1 514 filer (754 + 754 per station, fem tabeller, manifestet), inga absoluta sökvägar eller länkar, inga VViS-kolumner i någon rubrik. Kuvösknappen jämför mot summan.",
+ "release": "kuvos-fysik-indata-2024-25",
+ "hamtad": "2026-10-11T02:16:00Z",
+ "filer": [
+  {
+   "fil": "kuvos-fysik-indata-2024-25.tar.gz",
+   "bytes": 54442067,
+   "sha256": "1285c165d7038382a9bd1b971f47e857229cff66d5390a749f8a8271166e2520"
+  }
+ ]
+}
