@@ -1,0 +1,265 @@
+{
+ "_om": "Facit för urvalet längs rutten (DECISIONS #528), skrivet av scripts/langsrutten-facit.ts — ändras aldrig för hand. Varje fall: linjen, marginalen, farorna och det väntade urvalet i körordning med avstånd och plats längs rutten i meter. Kotlin och Swift ska ge samma id i samma ordning och talen inom 0,01 m.",
+ "fall": [
+  {
+   "namn": "vinkel vid 59° — punkt, hörn, före starten, andra benet, korsning, parallellt, segment som bara når en brytpunkt",
+   "linje": [
+    [
+     15,
+     59
+    ],
+    [
+     15.5,
+     59
+    ],
+    [
+     15.5,
+     59.3
+    ]
+   ],
+   "marginalM": 2000,
+   "faror": [
+    {
+     "id": "p-nara",
+     "kind": "camera",
+     "lon": 15.2,
+     "lat": 59.009
+    },
+    {
+     "id": "p-fjarran",
+     "kind": "camera",
+     "lon": 15.1,
+     "lat": 59.03
+    },
+    {
+     "id": "p-fore-start",
+     "kind": "accident",
+     "lon": 14.974,
+     "lat": 59
+    },
+    {
+     "id": "p-hornet",
+     "kind": "icing_point",
+     "lon": 15.52,
+     "lat": 58.995
+    },
+    {
+     "id": "p-andra-benet",
+     "kind": "wildlife",
+     "lon": 15.5087,
+     "lat": 59.2
+    },
+    {
+     "id": "p-tvilling-b",
+     "kind": "camera",
+     "lon": 15.35,
+     "lat": 59.006
+    },
+    {
+     "id": "p-tvilling-a",
+     "kind": "camera",
+     "lon": 15.35,
+     "lat": 58.994
+    },
+    {
+     "id": "s-korsar",
+     "kind": "slippery_segment",
+     "line": [
+      [
+       15.3,
+       58.9
+      ],
+      [
+       15.3,
+       59.1
+      ]
+     ]
+    },
+    {
+     "id": "s-parallell",
+     "kind": "slippery_segment",
+     "line": [
+      [
+       15.05,
+       59.0135
+      ],
+      [
+       15.15,
+       59.0135
+      ]
+     ]
+    },
+    {
+     "id": "s-bara-brytpunkten",
+     "kind": "slippery_segment",
+     "line": [
+      [
+       14.97,
+       59.05
+      ],
+      [
+       14.97,
+       58.95
+      ]
+     ]
+    },
+    {
+     "id": "s-fjarran",
+     "kind": "slippery_segment",
+     "line": [
+      [
+       16,
+       60
+      ],
+      [
+       16.1,
+       60.1
+      ]
+     ]
+    }
+   ],
+   "vantat": [
+    {
+     "id": "p-fore-start",
+     "avstandM": 1489.01,
+     "langsM": 0
+    },
+    {
+     "id": "s-bara-brytpunkten",
+     "avstandM": 1718.089,
+     "langsM": 0
+    },
+    {
+     "id": "s-parallell",
+     "avstandM": 1501.132,
+     "langsM": 2863.474
+    },
+    {
+     "id": "p-nara",
+     "avstandM": 1000.754,
+     "langsM": 11453.897
+    },
+    {
+     "id": "s-korsar",
+     "avstandM": 0,
+     "langsM": 17180.846
+    },
+    {
+     "id": "p-tvilling-a",
+     "avstandM": 667.17,
+     "langsM": 20044.321
+    },
+    {
+     "id": "p-tvilling-b",
+     "avstandM": 667.17,
+     "langsM": 20044.321
+    },
+    {
+     "id": "p-hornet",
+     "avstandM": 1273.347,
+     "langsM": 28634.744
+    },
+    {
+     "id": "p-andra-benet",
+     "avstandM": 495.348,
+     "langsM": 50873.729
+    }
+   ]
+  },
+  {
+   "namn": "diagonal vid 65° med marginalen 15 km",
+   "linje": [
+    [
+     20,
+     65
+    ],
+    [
+     21,
+     65.6
+    ]
+   ],
+   "marginalM": 15000,
+   "faror": [
+    {
+     "id": "n-6km",
+     "kind": "accident",
+     "lon": 20.3,
+     "lat": 65.28
+    },
+    {
+     "id": "n-innanfor-kanten",
+     "kind": "accident",
+     "lon": 20.8,
+     "lat": 65.25
+    },
+    {
+     "id": "n-utanfor",
+     "kind": "accident",
+     "lon": 20.1,
+     "lat": 65.4
+    },
+    {
+     "id": "n-pa-linjen",
+     "kind": "camera",
+     "lon": 20.5,
+     "lat": 65.3
+    },
+    {
+     "id": "n-segment",
+     "kind": "slippery_segment",
+     "line": [
+      [
+       20.9,
+       65.4
+      ],
+      [
+       21.2,
+       65.45
+      ]
+     ]
+    }
+   ],
+   "vantat": [
+    {
+     "id": "n-6km",
+     "avstandM": 6358.068,
+     "langsM": 33510.054
+    },
+    {
+     "id": "n-pa-linjen",
+     "avstandM": 0,
+     "langsM": 40650.263
+    },
+    {
+     "id": "n-innanfor-kanten",
+     "avstandM": 14634.744,
+     "langsM": 44080.257
+    },
+    {
+     "id": "n-segment",
+     "avstandM": 8873.966,
+     "langsM": 60364.594
+    }
+   ]
+  },
+  {
+   "namn": "en linje med en punkt ger inget",
+   "linje": [
+    [
+     15,
+     59
+    ]
+   ],
+   "marginalM": 2000,
+   "faror": [
+    {
+     "id": "ensam",
+     "kind": "camera",
+     "lon": 15,
+     "lat": 59
+    }
+   ],
+   "vantat": []
+  }
+ ]
+}

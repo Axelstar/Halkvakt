@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { AlertEngine } from "../engine/src/engine.ts";
 import { segmentPrognos, holdoutRader, type Ankare } from "../engine/src/segment.ts";
-import { farorNaraRutten, ankareNaraRutten, FARA_MARGINAL_KM, ANKARE_MARGINAL_KM } from "../engine/src/rutfilter.ts";
+import { farorNaraRutten, farorLangsRutten, ankareNaraRutten, FARA_MARGINAL_KM, ANKARE_MARGINAL_KM } from "../engine/src/rutfilter.ts";
 import type { Fix, Hazard } from "../engine/src/types.ts";
 
 // Kort #244, DECISIONS #360: filtret tar bort bara det som aldrig kan påverka utfallet — motorn och prognosen ger samma svar.
@@ -39,6 +39,19 @@ test("motorn ger samma varningar och samma undanträngda med och utan filtret", 
   const med = kor(nara);
   assert.ok(med.alerts.length >= 3, `jämförelsen bär varningar: ${med.alerts.map((a) => a.hazardId).join(", ")}`);
   assert.deepEqual(med, kor(faror));
+});
+
+test("urvalet längs linjen ger samma varningar som allt, med motorns marginal (DECISIONS #528)", () => {
+  const kor = (h: Hazard[]) => {
+    const m = new AlertEngine(h); const sup: unknown[] = [];
+    m.onSuppressed = (c) => sup.push(c);
+    return { alerts: m.run(spar()), sup };
+  };
+  // Motorn räknar på farorna i ursprunglig ordning; urvalet ordnar dem längs rutten, så ordningen återställs.
+  const langs = farorLangsRutten(faror, LINE, FARA_MARGINAL_KM * 1000).map((x) => x.hazard);
+  langs.sort((a, b) => faror.indexOf(a) - faror.indexOf(b));
+  assert.ok(langs.length < 10 && langs.some((h) => h.id === "seg:lang"), `de fjärran borta, segmentet som korsar kvar: ${langs.map((h) => h.id).join(", ")}`);
+  assert.deepEqual(kor(langs), kor(faror));
 });
 
 test("olyckan på tio kilometers avstånd är kvar — marginalen är motorns längsta räckvidd", () => {
