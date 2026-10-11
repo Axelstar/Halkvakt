@@ -776,26 +776,37 @@ function polygonTraffar(geom: any, rutt: Linje): boolean {
   return false;
 }
 
-/** Rutnätet längs rutten: rutor om RUTA_GRAD grader som ruttens sträckor, vidgade med marginM, når in i. Svaret säger om en kandidats
- *  ruta (punkt eller linjens rektangel) når in i någon av dem. Försiktigt: hellre en ruta för mycket än en för lite. */
+/** Rutnätet längs rutten: rutor om RUTA_GRAD grader, och i varje ruta indexen för ruttens sträckor som — vidgade med marginM — når in
+ *  i den. Svaret för en kandidat (punkt eller linjens rektangel) är det första och sista sträckindexet i dess rutor, eller null om
+ *  ingen sträcka ligger nära. Kandidaten behöver då bara mätas mot den biten av rutten: en sträcka utanför rutorna ligger längre bort
+ *  än marginalen (#531; rutterna längs vägen har 200–1 460 punkter, och varje linje mot hela rutten tog sekunder). Försiktigt: hellre
+ *  en ruta för mycket än en för lite. */
 export const RUTA_GRAD = 0.05;
-export function rutnat(rutt: Linje, marginM: number): (geo: Hazard[]) => boolean {
-  const rutor = new Set<string>();
+export function rutnat(rutt: Linje, marginM: number): (geo: Hazard[]) => [number, number] | null {
+  const rutor = new Map<string, number[]>();
   const nord = Math.max(...rutt.map((p) => Math.abs(p[1])));
   const dy = marginM / 110_000, dx = marginM / (111_320 * Math.cos((nord * Math.PI) / 180));
   const cell = (v: number) => Math.floor(v / RUTA_GRAD);
   for (let i = 0; i < rutt.length - 1; i++) {
     const [ax, ay] = rutt[i], [bx, by] = rutt[i + 1];
     for (let cx = cell(Math.min(ax, bx) - dx); cx <= cell(Math.max(ax, bx) + dx); cx++)
-      for (let cy = cell(Math.min(ay, by) - dy); cy <= cell(Math.max(ay, by) + dy); cy++) rutor.add(`${cx},${cy}`);
+      for (let cy = cell(Math.min(ay, by) - dy); cy <= cell(Math.max(ay, by) + dy); cy++) {
+        const k = `${cx},${cy}`; const l = rutor.get(k); if (l) l.push(i); else rutor.set(k, [i]);
+      }
   }
-  return (geo) => geo.some((h) => {
-    const ps: number[][] = h.kind === "slippery_segment" ? h.line : [[(h as any).lon, (h as any).lat]];
-    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
-    for (const [x, y] of ps) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
-    for (let cx = cell(x0); cx <= cell(x1); cx++) for (let cy = cell(y0); cy <= cell(y1); cy++) if (rutor.has(`${cx},${cy}`)) return true;
-    return false;
-  });
+  return (geo) => {
+    let i0 = Infinity, i1 = -Infinity;
+    for (const h of geo) {
+      const ps: number[][] = h.kind === "slippery_segment" ? h.line : [[(h as any).lon, (h as any).lat]];
+      let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+      for (const [x, y] of ps) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+      for (let cx = cell(x0); cx <= cell(x1); cx++) for (let cy = cell(y0); cy <= cell(y1); cy++) {
+        const l = rutor.get(`${cx},${cy}`);
+        if (l) for (const s of l) { if (s < i0) i0 = s; if (s > i1) i1 = s; }
+      }
+    }
+    return i0 === Infinity ? null : [i0, i1];
+  };
 }
 
 /** Ligger linjen längs rutten och inte bara tvärs över den? Linjen provas var LANGS_STEG_M:e meter. */
@@ -846,11 +857,15 @@ export function favoritRapport(rutt: Linje, live: LiveDoc, stat: StaticDoc, snab
   // farorLangsRutten tar ändå bara det inom marginalen — men arbetet en bråkdel.
   const skar = rutnat(rutt, Math.max(...Object.values(marginal)) + 200);
   const rader: Rad[] = [];
+  // Platsen längs rutten räknas som i farorLangsRutten (haversine per sträcka), så att biten plus avståndet fram till den ger samma tal.
+  const kum = [0];
+  for (let i = 1; i < rutt.length; i++) kum.push(kum[i - 1] + haversineM({ lon: rutt[i - 1][0], lat: rutt[i - 1][1] }, { lon: rutt[i][0], lat: rutt[i][1] }));
   for (const k of kand) {
-    if (!skar(k.geo)) continue;
-    const traff = farorLangsRutten(k.geo, rutt, marginal[k.slag]).sort((a, b) => a.avstandM - b.avstandM)[0];
-    if (traff && k.geo[0].kind === "slippery_segment" && !langsVagen(k.geo, rutt, marginal[k.slag])) continue;
-    if (traff) rader.push({ id: k.id, slag: k.slag, rubrik: k.rubrik, text: k.post ? visning(k.post) : k.text, avstandM: Math.round(traff.avstandM), langsM: Math.round(traff.langsM),
+    const nara = skar(k.geo); if (!nara) continue;
+    const bit = rutt.slice(nara[0], nara[1] + 2), fore = kum[nara[0]];
+    const traff = farorLangsRutten(k.geo, bit, marginal[k.slag]).sort((a, b) => a.avstandM - b.avstandM)[0];
+    if (traff && k.geo[0].kind === "slippery_segment" && !langsVagen(k.geo, bit, marginal[k.slag])) continue;
+    if (traff) rader.push({ id: k.id, slag: k.slag, rubrik: k.rubrik, text: k.post ? visning(k.post) : k.text, avstandM: Math.round(traff.avstandM), langsM: Math.round(fore + traff.langsM),
       vag: k.vag ?? null, start: k.start ?? null });
   }
   for (const w of live.smhi as any[]) if (polygonTraffar(w.geom, rutt)) rader.push({ id: `smhi:${w.id}:${w.event}`, slag: "smhi",
