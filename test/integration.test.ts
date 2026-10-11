@@ -1010,6 +1010,31 @@ test("#276 olja_aktiva: bara aktiva NonWeatherRelatedRoadConditions med punkt; o
   } finally { await pool.end(); }
 });
 
+// Väg C (sql/046, DECISIONS #527): shadow_log_c har shadow_logs kolumner och RLS på, och omkörning är ofarlig. Samma minimala
+// shadow_log som provet ovan, plus kolumnerna ur 005, 016, 019, 021, 032 och 040 (bara kolumnerna: 032:s och 040:s funktioner
+// kräver väderarkivet och händelsearkivet, som provet inte behöver).
+test("väg C: shadow_log_c har shadow_logs kolumner och RLS; omkörning ofarlig", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const sqlf = (f: string) => pool.query(readFileSync(new URL(`../sql/${f}`, import.meta.url), "utf8"));
+  const kolumner = async (t: string) => (await pool.query(
+    "SELECT column_name FROM information_schema.columns WHERE table_name = $1 ORDER BY column_name", [t])).rows.map((r) => r.column_name);
+  try {
+    await pool.query("CREATE TABLE IF NOT EXISTS shadow_log (id bigserial PRIMARY KEY, run_at timestamptz NOT NULL DEFAULT now(), alerts jsonb NOT NULL DEFAULT '[]'::jsonb)");
+    for (const f of ["005_shadow_log_land.sql", "016_shadow_suppressed.sql", "019_shadow_vb.sql", "021_shadow_efterhalka.sql"]) await sqlf(f);
+    await pool.query("ALTER TABLE shadow_log ADD COLUMN IF NOT EXISTS prognos jsonb NOT NULL DEFAULT '{}'::jsonb");
+    await pool.query("ALTER TABLE shadow_log ADD COLUMN IF NOT EXISTS olja jsonb NOT NULL DEFAULT '[]'::jsonb");
+    await sqlf("046_skugga_c.sql");
+    await sqlf("046_skugga_c.sql");
+    assert.deepEqual(await kolumner("shadow_log_c"), await kolumner("shadow_log"), "samma kolumner som shadow_log");
+    assert.equal((await pool.query("SELECT relrowsecurity FROM pg_class WHERE relname = 'shadow_log_c'")).rows[0].relrowsecurity, true, "RLS på");
+    await pool.query("INSERT INTO shadow_log_c (alerts) VALUES ('[]'::jsonb)");
+    const rad = (await pool.query("SELECT land, efterhalka, prognos FROM shadow_log_c ORDER BY id DESC LIMIT 1")).rows[0];
+    assert.deepEqual([rad.land, rad.efterhalka, rad.prognos], ["SE", [], {}], "standardvärdena följer med");
+  } finally { await pool.end(); }
+});
+
 // KUVÖSENS KLOCKA (kuvos/klocka.sql, kort #232, DECISIONS #424): snapshotbyggaren körd oförändrad mot en gången tidpunkt.
 // FÄLLORNA LIGGER DÄR DE KAN FÄLLA NÅGOT (CLAUDE.md): varje station nedan ger ett annat svar om klockan står fel eller om
 // framtiden läcker. Produktionens frågor har ingen övre tidsgräns, så utan vyerna i kuvos/klocka.sql ser byggaren vid T
