@@ -10774,3 +10774,46 @@ Då kan provets avstånd krympa till tiotals eller hundratals meter, och paralle
 Bengt valde det framför NVDB, som inte beräknar rutter och som inte räcker för stationskedjorna.
 
 **Stomdokument:** FAV, BED §4.2
+
+## #531 (11/10 2026) Favoritprovets rutter på vägnätet med OSRM, avstånd för vägen och en regel för linjer längs vägen (kort #338)
+
+**Beslut.** Bengt 11/10: *"då blir det osm + osrm för punkt 5 när vi kommer dit"* och *"gör kort 338"*.
+
+**Rutterna.** Skuggans 30 rutter läggs på vägnätet med OSRM på OpenStreetMap (`scripts/favoritprov-rutter-osrm.ts`), en gång.
+Resultatet sparas i `data/favoritprov/rutter-osrm.json` (14 866 punkter, 297 kB, ODbL i `data/KALLOR.json`), och
+favoritprovet buntar in filen. Bunten fäller om namnen skiljer från skuggans. Skuggans egna rutter rörs inte.
+- **Vägrutterna** (de 20 som heter efter en väg) går mellan start och mål. Med skuggans mellanpunkter (två decimaler) körde OSRM
+  ut till småvägar och tillbaka: E22 Malmö→Kristianstad blev 124 km, mellan start och mål 94 km. Omvägen mot fågelvägen är nu
+  1,04–1,28. E10 Luleå→Kiruna går via Gällivare, 345 km.
+- **C-kedjorna** behåller varje station som stopp, eftersom stationerna är poängen. De blir 1,14–2,02 gånger fågelvägen, för
+  vägarna går runt fjäll och sjöar (C Fjällen 420 km).
+
+**Avstånden för vägen** (`MARGINALER`, provets parametrar och inte appens trösklar):
+- 100 m för linjer och kameror;
+- 150 m för olyckor, hinder och djur;
+- 500 m för stationer och färjor.
+
+De raka avstånden finns kvar som `MARGINALER_RAKA` för proven och jämförelsen.
+
+**En linje ligger längs vägen** först när minst hälften av den, eller minst 500 m (`LANGS_ANDEL`, `LANGS_MINST_M`), ligger inom
+marginalen. En väg som korsar rutten är 0 m från den i korsningen, och utan regeln kommer varje vägarbete och restidssträcka på en
+tvärväg med.
+
+**Jämförelsen på samma lägesfil** (torrkörningarna 38140937352, 38141108768 och 38141327880, läs-only), raka rutter → vägen:
+- **Totalt:** 606 → 690 rader.
+- **Städerna får färre,** eftersom tvärvägar och parallella vägar faller bort: E6 Göteborg→Strömstad 49 → 8, E22 12 → 3, E4
+  Södertälje→Uppsala 131 → 91 (restidssträckorna längs E4 i båda riktningar).
+- **Norr får fler,** eftersom vägen passerar det de raka linjerna missade: E10 Luleå→Kiruna 5 → 49 (43 kameror), E14 43 → 80, E4
+  Gävle→Sundsvall 12 → 37 (12 frysriskstationer).
+- **E4 Uppsala→Gävle** gick från 20 till 0. Den raka rutten fångade parallella vägar.
+
+**Tiden:**
+- **Med rektangeln:** vägrutterna har 200–1 460 punkter, och varje linje mättes mot hela rutten. Båda varianterna tog 1 562 ms,
+  och ett rutnät som bara förfilter gav 2 498.
+- **Med rutnätet:** det ger nu också vilka av ruttens sträckor som ligger nära, och varje kandidat mäts bara mot den biten, med
+  avståndet fram till biten lagt till platsen. Svaret blir detsamma av konstruktion, eftersom en sträcka utanför kandidatens
+  rutor ligger längre bort än marginalen. Det bekräftades av samma 606 och 690 rader. Båda varianterna tar 614 ms.
+
+**Bevis efter driftsättningen:** favoritprovet kör på vägrutterna, och raderna per rutt står i hinken.
+
+**Stomdokument:** FAV, BED §4.2
