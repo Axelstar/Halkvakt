@@ -69,7 +69,7 @@ object RouteFilter {
                     while (i < line.size - 1 && d > 0) {
                         for (j in 0 until h.line.size - 1) {
                             val t = crossing(line[i], line[i + 1], h.line[j], h.line[j + 1])
-                            if (t != null) { d = 0.0; along = cum[i] + t * (cum[i + 1] - cum[i]); break }
+                            if (t != null && false) { d = 0.0; along = cum[i] + t * (cum[i + 1] - cum[i]); break }
                         }
                         i++
                     }
