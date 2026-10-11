@@ -48,6 +48,13 @@ test("jämförelsen: en avvikelse längre bort än toleransen, eller av fel slag
   assert.equal(jamfor([rad("seg:1", "halka", 5_000)], [{ id: "seg:2", kind: "slippery_segment", t: 0, langsM: 5_000, text: "" }], new Set()).forvarnade, 0);
 });
 
+test("jämförelsen: samma Trafikverket-id under motorns prefix (djur:X mot dev:X) förvarnar, oavsett plats", () => {
+  const djur: Larm = { id: "djur:SE_STA_TRISSID_1_8067642", kind: "wildlife", t: 0, langsM: 101_700, text: "" };
+  assert.equal(jamfor([rad("dev:SE_STA_TRISSID_1_8067642", "vilt", 100_156)], [djur], new Set()).forvarnade, 1);
+  assert.equal(jamfor([rad("dev:SE_STA_TRISSID_1_1", "vilt", 100_156)], [djur], new Set()).forvarnade, 0, "annat id och 1,5 km bort förvarnar inte");
+  assert.equal(jamfor([rad("cam:SE_STA_TRISSID_1_8067642", "kamera", 0)], [djur], new Set()).forvarnade, 0, "bara dev: räknas som samma avvikelse");
+});
+
 test("summan: andelen förvarnade larm, per motorslag, och utan larm delat i borta och kvar", () => {
   const larm: Record<string, Larm[]> = {
     A: [{ id: "wx:1", kind: "icing_point", t: 0, langsM: 0, text: "" }, { id: "seg:2", kind: "slippery_segment", t: 0, langsM: 0, text: "" }],
