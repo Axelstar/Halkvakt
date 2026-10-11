@@ -10604,6 +10604,10 @@ migrationen. Om C-rutterna ska räknas i grindarna, från ett startdatum, är Be
 mönstret. Inget fall ligger söder om 58°, och rutten sorteras sist, så rotationens index för de andra 19 var rätt. Talen i #523
 står.
 
+**Rättelse samma dag:** :22/:52 ligger inte mellan huvudvarvet och försprånget. Det ligger efter båda, mellan
+Danmarks (:20/:50) och Norges (:25/:55) varv (`cron.job`, DB-knappen 38129954949). Varje anrop har ändå sitt eget tak för
+datorkraften. Rättat i sql/046:s kommentar.
+
 **Stomdokument:** MAT, SYS, BED §4.2
 
 ## #528 (11/10 2026) Favoriterna: underlaget räknas färdigt, och jämförelsen mot rutten byggs i motorns tre språk

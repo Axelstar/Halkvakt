@@ -1,8 +1,8 @@
 -- 046: väg C — skuggrutter där fallen ligger (DECISIONS #527, Bengts "gör denna" 11/10).
 --
 -- EGEN TABELL, EGET ANROP, som försprånget (sql/037). `skuggmotor?grupp=c` kör ROUTES_C (stationskedjor genom efterhalkans fall och
--- de frysnära stationerna) på :22/:52, mellan huvudvarvet (:02/:32) och försprånget (:12/:42), så varje anrop har sitt eget
--- datorkraftstak. Raderna skrivs till shadow_log_c, inte shadow_log: grindarna som läser shadow_log och ROUTES (tystnadsfelet, S-B,
+-- de frysnära stationerna) på :22/:52, efter huvudvarvet (:02/:32) och försprånget (:12/:42), mellan Danmarks (:20/:50) och Norges
+-- (:25/:55) varv; varje anrop har sitt eget datorkraftstak. Raderna skrivs till shadow_log_c, inte shadow_log: grindarna som läser shadow_log och ROUTES (tystnadsfelet, S-B,
 -- V-B, upprepningen) får samma population som förut. Bara larmen loggas — ingen prognos, ingen efterhalka, inga facitbilder.
 --
 -- Samma kolumner som shadow_log (som skapades före sql/-katalogen, via Management API), därför LIKE. INCLUDING ALL tar med
