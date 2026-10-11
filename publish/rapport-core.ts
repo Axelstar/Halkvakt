@@ -67,18 +67,23 @@ export function glesa(l: Linje): Linje {
 }
 
 const ren = (s: unknown, n = 140) => String(s ?? "").replace(/\s+/g, " ").trim().slice(0, n);
+// Formaterarna skapas EN gång: toLocale…String med tidszon bygger en ny vid varje anrop, och rutterna tog 1 895 ms i stället för
+// 152 när visning() anropades för varje post (torrkörningen 38138648357).
+const FMT_KLOCKA = new Intl.DateTimeFormat("sv-SE", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Stockholm" });
+const FMT_DATUM = new Intl.DateTimeFormat("sv-SE", { day: "numeric", month: "long", timeZone: "Europe/Stockholm" });
+const FMT_ISO = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Stockholm" });
 const klocka = (iso: unknown) => {
   const t = Date.parse(String(iso ?? "")); if (!Number.isFinite(t)) return null;
-  return new Date(t).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Stockholm" });
+  return FMT_KLOCKA.format(t);
 };
 const datum = (iso: unknown) => {
   const t = Date.parse(String(iso ?? "")); if (!Number.isFinite(t)) return null;
-  return new Date(t).toLocaleDateString("sv-SE", { day: "numeric", month: "long", timeZone: "Europe/Stockholm" });
+  return FMT_DATUM.format(t);
 };
 /** Svenskt datum som ÅÅÅÅ-MM-DD (sv-SE skriver så). */
 const datumIso = (iso: unknown) => {
   const v = Date.parse(String(iso ?? "")); if (!Number.isFinite(v)) return null;
-  return new Date(v).toLocaleDateString("sv-SE", { timeZone: "Europe/Stockholm" });
+  return FMT_ISO.format(v);
 };
 /** Den läsbara texten för en post, ur fälten — som appen skulle sätta ihop den (#530). */
 export function visning(p: Post): string {
@@ -240,7 +245,7 @@ export function favoritRapport(rutt: Linje, live: LiveDoc, stat: StaticDoc, snab
   marginal: Record<Slag, number> = MARGINALER): Rad[] {
   // Varje kandidat har en eller flera geometrier: en punkt, eller linjens delar var för sig (en multilinje sammanfogad till en linje
   // skulle få en falsk sträcka mellan delarna, som kan korsa rutten). Den närmaste delen räknas.
-  const kand: { id: string; slag: Slag; rubrik: string; text: string; geo: Hazard[]; vag?: string | null; start?: string | null }[] = [];
+  const kand: { id: string; slag: Slag; rubrik: string; text: string; geo: Hazard[]; vag?: string | null; start?: string | null; post?: Post }[] = [];
   const pkt = (id: string, lon: number, lat: number) => [{ id, kind: "accident", lon, lat } as Hazard];
   const lin = (id: string, delar: Linje[]) => delar.filter((l) => l.length >= 2).map((line, i) => ({ id: `${id}#${i}`, kind: "slippery_segment", line } as Hazard));
   const st = snabb.stationer;
@@ -264,7 +269,8 @@ export function favoritRapport(rutt: Linje, live: LiveDoc, stat: StaticDoc, snab
     geo: pkt(`cam:${c.id}`, c.lon, c.lat), vag: vagNamn(c.road) });
   for (const p of snabb.poster) {
     const geo = p.l ? lin(p.id, lang.linjer[p.l] ?? []) : p.p ? pkt(p.id, p.p[0], p.p[1]) : [];
-    if (geo.length) kand.push({ id: p.id, slag: p.slag, rubrik: p.rubrik, text: visning(p), geo, vag: (p.vag as string | null) ?? null,
+    // Texten sätts ihop först för det som träffar rutten (nedan): visning() för varje post på varje rutt kostade mest av tiden.
+    if (geo.length) kand.push({ id: p.id, slag: p.slag, rubrik: p.rubrik, text: "", post: p, geo, vag: (p.vag as string | null) ?? null,
       start: (p.start as string | null) ?? null });
   }
   // Grovt förfilter per rutt, som skuggans rektangel (rutaKring): bara kandidater vars ruta skär rutans ruta plus den största
@@ -280,7 +286,7 @@ export function favoritRapport(rutt: Linje, live: LiveDoc, stat: StaticDoc, snab
   for (const k of kand) {
     if (!skar(k.geo)) continue;
     const traff = farorLangsRutten(k.geo, rutt, marginal[k.slag]).sort((a, b) => a.avstandM - b.avstandM)[0];
-    if (traff) rader.push({ id: k.id, slag: k.slag, rubrik: k.rubrik, text: k.text, avstandM: Math.round(traff.avstandM), langsM: Math.round(traff.langsM),
+    if (traff) rader.push({ id: k.id, slag: k.slag, rubrik: k.rubrik, text: k.post ? visning(k.post) : k.text, avstandM: Math.round(traff.avstandM), langsM: Math.round(traff.langsM),
       vag: k.vag ?? null, start: k.start ?? null });
   }
   for (const w of live.smhi as any[]) if (polygonTraffar(w.geom, rutt)) rader.push({ id: `smhi:${w.id}:${w.event}`, slag: "smhi",
