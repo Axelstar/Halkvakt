@@ -99,6 +99,10 @@ krymper och tonar bort; stapeln börjar om.
 | Vilt | *Vilt* | *FRAMÖVER* | — |
 | Fartkamera | *Fartkamera* | *500 M* | hastighetsskylt när gränsen är känd |
 
+![Betakortet](produktbok/shot-8-betakortet.png)
+
+*(Betakortet, frysrisken efter regnet (S3): Android ur fotostudion 11/10, android.yml 38123089310 på grenen `claude/granskning-fotostudio-525`, en påhittad varning 655 m bort, bara i debug-bygget (DECISIONS #525). iOS-kortet har samma rader (`WarningCardTests.testPostRainBetaIsMarked`), men ingen skärmbild.)*
+
 Kortets innehåll räknas i motorpaketen (`WarningCard` i Swift och Kotlin) och prövas av CI med samma fall på båda
 plattformarna; olycksläget kommer ur motorn (`Alert.step`, DECISIONS #443).
 

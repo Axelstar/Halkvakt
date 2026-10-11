@@ -60,6 +60,10 @@ Allt nedan är destillat av projektets beslut (DECISIONS.md) och Play-dossiern.
   överlever inte radbyten; kedja med `&&`/`;` eller använd fulla sökvägar. `profile:
   pixel_5` bootar inte alls med default-imagen — standard-AVD + UI-knack i PROCENT av
   `wm size` är det stabila mönstret för skärmdumpar.
+- `adb shell am start -n` mot en app som redan är öppen skapar ingen ny aktivitet: uppgiften förs bara fram, `onCreate`
+  körs inte och en `--ez`-flagga läses aldrig. Fotostudions första betakort (11/10, DECISIONS #525) blev byte för byte samma
+  bild som skärmen före. En krok i `onCreate` startas med `am start -S -W` (appen stoppas först), och en ny skärmbild jämförs
+  med föregående (md5) innan den förs in i produktboken.
 
 - JVM-enhetstester har INTE Androids org.json: `testImplementation("org.json:json:…")` ger json-java, som beter sig annorlunda
   (3/10, kort #289). `getString()` på ett tal KASTAR där Android gör om det till text, och `optString()` på JSON-null ger `""` där
