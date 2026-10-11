@@ -10629,4 +10629,37 @@ plats längs den, så att rapporten kan ordna dem i körordning. Avståndet är 
 slag hör till Axels form, och de skrivs som trösklar först då. Först mäts om skuggan tjänar på urvalet: hur många faror rektangeln
 och linjen ger per rutt, på dagens lägesfil. Skuggan byts inte utan Bengts ord.
 
+**Utfall 1, underlaget** (körning 38132503708 10:35 UTC, söndag; den första, 38132362450 10:33, med två fel som rättades, se nedan):
+- **Färjorna:** 2 509 avgångar de närmaste 24 timmarna på 39 leder (60 led och riktning), och inget fönster nådde taket. Hönöleden
+  har flest (200), Holmöleden färst (8). Hela svaret utan filter når fortfarande 20 000 och sträcker sig 10/10–19/10, alltså nio dygn.
+- **Avvikelserna:** 2 930 aktiva. Hastighetsbegränsningar 843 (koden *speedRestrictionInOperation*; TemporaryLimit säger oftast
+  *Rekommenderad hastighet: 30 km/h*, 436 st), omledningar 73 (*followDiversionSigns* 39 och TemporaryLimit *Omledning: …*),
+  kömeddelanden 0 (AbnormalTraffic, söndag förmiddag; kvällen 2/10 gav också 0).
+- **En gemensam fil för hela landet, packad:** färjornas avgångar 24 h 9,1 kB (de tre närmaste per led och riktning 1,0 kB),
+  hastigheterna 11,3 kB, omledningarna 1,3 kB, köerna 0. Tillsammans 21,7 kB, mot lägesbildens live.json 2,9 kB och static.json
+  80 kB.
+- **Kvar:** kömeddelandena en vardag i rusningen, eftersom ingen mätning hittills har sett ett enda.
+
+**Tillagt efter första körningen, med skäl:** (a) mönstret `kö\b` träffade *Körfält blockerade*. I JavaScript är ö inget
+ordtecken, så `\b` ligger mellan ö och r, och det gav 1 994 "kömeddelanden" och 32,5 kB. Kö är nu bara AbnormalTraffic, som 2/10.
+(b) Hastigheten var *TemporaryLimit satt*, vilket också tog vikt, bredd och omledning (910). Nu är det bara gränser som säger
+hastighet, eller koden (843). (c) Raden *avgångar med avvikelse* räknar alla 2 509 också efter rättelsen: `DeviationId` bär ett
+värde på varje avgång, och vad det betyder är oläst. Talet används inte.
+
+**Utfall 2, skuggan** (`scripts/matningar/rutfilter-langs-linjen-2026-10-11.ts`, lokalt mot lägesfilen 10:30 UTC, 3 052 faror och
+30 rutter, marginalen 15 km): rektangeln gav 3 696 faror och linjen 2 031 (55 %). Motorns tid sjönk från 7 558 till 3 861 ms, med en
+uppvärmningskörning före varje mätning. Urvalet självt tog 98 ms för alla 30. Varningarna och de undanträngda var exakt desamma
+på alla 30 rutter. Störst var vinsten på E14 Sundsvall→Åre (2 051 → 608 ms i första körningen) och C Orsa finnmark (70 → 7 faror).
+
+**Utfall 3, bygget:** `farorLangsRutten` i engine/src/rutfilter.ts och `RouteFilter.alongRoute` i Kotlin och Swift. Kortaste
+avståndet räknas plant i en lokal projektion: punkt mot sträcka, ett segment åt båda hållen, och korsningar ger 0. Till det kommer
+platsen längs rutten, i körordning med id som andra nyckel. Rektangeln är inget förfilter, så utfallet är bevisligen detsamma i alla
+tre. Det delade facit `engine/fixtures/langsrutten.json` (tre fall, 13 träffar) skrivs av `scripts/langsrutten-facit.ts` med
+femmetersregeln. Två lika platser är med flit lika: tvillingarna och de två vid starten, där platsen är exakt 0. Prov: TS
+(test/langsrutten.test.ts, och test/rutfilter.test.ts med samma varningar som utan urval), Kotlin (LangsRuttenTest) och Swift
+(LangsRuttenTests) gröna: ios-engine 38132921474 och android 38132923284 gröna på feac039. Motprov med korsningsgrenen avslagen, en gång per språk: TypeScript lokalt (s-korsar försvann), Kotlin (android
+38133323715 på provgrenen claude/motprov-528: LangsRuttenTest föll vid rad 39) och Swift (ios-engine 38133592525: rad 39, 41
+och 42). Provgrenen slås aldrig ihop.
+skuggmotor/index.ts är buntad om; skuggan använder inte urvalet.
+
 **Stomdokument:** FAV, BED §4.2
