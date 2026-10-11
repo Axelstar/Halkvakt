@@ -21,7 +21,8 @@ from scipy.optimize import minimize
 from sklearn.cluster import KMeans
 from sklearn.ensemble import HistGradientBoostingRegressor
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path[:0] = [HERE, os.path.dirname(HERE)]          # niva2/ and fysik/ (the frozen modules), as sjalvtest.py does
 import common
 from common import gates
 from physics import DEFAULT, SIGMA
