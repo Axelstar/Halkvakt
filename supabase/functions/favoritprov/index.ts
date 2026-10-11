@@ -768,7 +768,7 @@ const RUTTER_PROV: Record<string, [number, number][]> = {"E22 Malmö→Kristians
 // ═══ supabase/functions/favoritprov/main.ts ═══
 // FAVORITPROVET (favoriterna, DECISIONS #529, Bengt 11/10: "vi bygger det nu … en testmiljö … under faktiska förhållanden och inte
 // når ut till själva telefonen"). Bygger rapportfilen som den är tänkt för appen, och det fliken skulle visa för skuggans 30 rutter,
-// var 30:e minut (:05/:35, sql/047) — men skriver ALLT till hinken `favoritprov` i Supabase Storage, aldrig till kartrepot eller
+// var 30:e minut (:08/:38, sql/047) — men skriver ALLT till hinken `favoritprov` i Supabase Storage, aldrig till kartrepot eller
 // data/app/v1/, så ingen app läser något av det. Filerna skrivs över (ingen historik som växer); visningen är docs/favoritprov.html.
 //
 // index.ts är GENERERAD av scripts/bundle-favoritprov.ts ur engine/src, publish/rapport-core.ts, skuggans rutter (RUTTER_PROV, ur

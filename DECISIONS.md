@@ -10721,4 +10721,7 @@ frågor och samma kärna i Node):
 - (b) I kartrepot. Omkring 3 MB om dygnet i historiken.
 - (c) En tabell. Det äter databasens marginal (418 av 500 MB).
 
+**Rättelse samma dag:** :05/:35 var inte ledigt. `halkvakt-publicera-grannar` går där (cron.job, DB-knappen 38136542574), och
+resursfelen kom när flera funktioner startade samtidigt. Provet går på :08/:38, som inget annat jobb använder.
+
 **Stomdokument:** FAV, BED §4.2
