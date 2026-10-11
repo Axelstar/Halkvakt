@@ -83,7 +83,9 @@ export function filnamn(dag: string, korning: number) {
 }
 
 async function hamta(url: string): Promise<Uint8Array | null> {
-  for (let forsok = 0; forsok < 6; forsok++) {
+  // 11/10 eftermiddag: arkivet svarade så långsamt på förmiddagen att del 2 föll efter sex försök (25 min) och del 1 nådde jobbets tak
+  // efter nio dygn. Nu tio försök med väntan upp till en minut; dygnen som är klara sparas ändå, och nästa körning tar vid där (flödet).
+  for (let forsok = 0; forsok < 10; forsok++) {
     try {
       // Ett anrop som hänger stoppar hela hämtningen (den går i följd), så varje anrop får tre minuter.
       const r = await fetch(url, { headers: { "User-Agent": UA }, signal: AbortSignal.timeout(180_000) });
@@ -91,8 +93,9 @@ async function hamta(url: string): Promise<Uint8Array | null> {
       if (!r.ok) throw new Error(`HTTP ${r.status}: ${(await r.text()).slice(0, 200)}`);
       return new Uint8Array(await r.arrayBuffer());
     } catch (e) {
-      if (forsok === 5) throw new Error(`${url}: ${(e as Error).message}`);
-      await new Promise((ok) => setTimeout(ok, 5000 * (forsok + 1)));
+      if (forsok === 9) throw new Error(`${url}: ${(e as Error).message}`);
+      console.log(`  försök ${forsok + 1}: ${(e as Error).message} — väntar och hämtar om`);
+      await new Promise((ok) => setTimeout(ok, Math.min(60_000, 5000 * (forsok + 1))));
     }
   }
   return null;
@@ -142,9 +145,16 @@ async function main(stationerCsv: string, mapp: string, fran: string, till: stri
   const by = y1 - y0 + 1, bx = x1 - x0 + 1;
   console.log(`${rutor.length} stationer; ruta y ${y0}–${y1}, x ${x0}–${x1} (${by}×${bx}); ${fran}–${till}; timsteg 0–${TIMSTEG - 1}`);
   let hamtade = 0, saknade = 0;
+  // Tidsbudgeten (MNP_MINUTER, minuter): när den är slut stannar hämtningen mellan två dygn med kod 3, så att de klara dygnen hinner
+  // sparas som artefakt innan jobbets tak, och nästa körning tar vid där. Utan budget går den till slutet.
+  const slutTid = process.env.MNP_MINUTER ? Date.now() + Number(process.env.MNP_MINUTER) * 60_000 : Infinity;
   for (const dag of dagar(fran, till)) {
     const fil = join(mapp, "dagar", `${dag}.csv.gz`);
     if (existsSync(fil)) continue;                                       // återupptagen körning: dygnet finns
+    if (Date.now() > slutTid) {
+      console.log(`tidsbudgeten slut före ${dag}: de klara dygnen sparas, nästa körning tar vid där`);
+      process.exit(3);
+    }
     const rader: string[] = [];
     for (const kh of korningar) {
       const korningIso = `${dag}T${String(kh).padStart(2, "0")}:00:00Z`;
