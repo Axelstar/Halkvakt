@@ -1,10 +1,12 @@
 // BLANDNINGEN I KUVÖSEN — fysikspårets FYSIK+GRANNAR och FYSIK+BLANDNING som filer, i analysläge och i operativt läge (DECISIONS #490,
-// förslag 1 och 2; Bengts ja 8/10). INGEN DOM, inga trösklar. Kandidaterna är FILER, räknade utanför repot av Axel som FYSIK (#485):
+// förslag 1 och 2; Bengts ja 8/10). INGEN DOM, inga trösklar. Kandidaterna är FILER i FYSIK-filens form (#485), räknade i kuvösjobbet
+// av Axels frysta fysik/kuvos_replica.py (fysik/blandning/grannar_blandning.py, DECISIONS #516) och aldrig utanför det:
 // en skattning av ytan per station och halvtimme för vintern 2024/25, där målet aldrig är indata och dess region är gömd i rättelsen.
 //   analysläge   vädret är ECMWF:s analys, det som hände — samma som replikan 7/10 (docs/FYSIKSPARET-FRYS-2026-10-07.md)
 //   operativt    vid varje halvtimme bara den väderprognos som hade funnits tillgänglig då; grannarnas mätningar (RÅ, grannarnas fel)
 //                vid samma halvtimme, eftersom de finns i realtid. Ledtiden står i manifestet per fil.
-// Filerna står i kuvos/blandning-leverans.json med sha256; knappen hämtar releasen och mätningen fäller en fil som inte stämmer.
+// Filerna och blandning/manifest.json skrivs i jobbet och lämnar det aldrig (de bär grannarnas uppmätta yta, #506); mätningen fäller en
+// fil vars summa inte är manifestets.
 // Måtten som FYSIK 8/10: grind A:s A1/A2/A3 per band (bandet = RÅ:s närmaste bidragande granne) och totalt på de punkter där alla
 // kandidater har ett värde, norr/söder om 62°, och frysflaggan (#437). RÅ är kontrollen och ska landa i 7,4–7,6 %.
 // Kör: DATABASE_URL=... node --experimental-strip-types scripts/matningar/kuvos-blandning-2026-10-08.ts [--sjalvtest]
@@ -50,10 +52,10 @@ export function blandningILkuvosen(stations: Map<string, Station>, filer: Fil[])
   return ut;
 }
 
-/** Manifestet: varje fil med namn, läge (analys eller operativt, med ledtiden) och sha256. Tomt = Axels filer har inte kommit. */
+/** Manifestet: varje fil med namn, läge (analys eller operativt, med ledtiden) och sha256. Tomt = grannarna och blandningen räknades inte i jobbet. */
 export function lasManifest(m: { filer?: { fil: string; namn?: string; lage?: string; sha256?: string }[] }): { fil: string; namn: string; lage: string; sha256: string }[] {
   const f = (m.filer ?? []).filter((x) => x.fil.endsWith(".csv.gz"));
-  if (!f.length) throw new Error("kuvos/blandning-leverans.json saknar filer — Axels filer har inte kommit (kort #308)");
+  if (!f.length) throw new Error("blandning/manifest.json saknar filer — grannarna och blandningen har inte räknats i jobbet (DECISIONS #516)");
   for (const x of f) if (!x.namn || !x.lage || !/^[0-9a-f]{64}$/.test(x.sha256 ?? "")) throw new Error(`manifestet: ${x.fil} saknar namn, läge eller sha256`);
   return f as { fil: string; namn: string; lage: string; sha256: string }[];
 }
@@ -86,7 +88,7 @@ if (korsSjalv && process.argv.includes("--sjalvtest")) {
   k("RÅ" in ut && "OFFSET (taket)" in ut, "RÅ och taket räknas bredvid");
   k(fangat.some((r) => r.includes("FRYSFLAGGAN")), "frysflaggan skrivs");
   let mfel = ""; try { lasManifest({ filer: [] }); } catch (e) { mfel = String(e); }
-  k(mfel.includes("har inte kommit"), "ett tomt manifest fälls");
+  k(mfel.includes("har inte räknats"), "ett tomt manifest fälls");
   mfel = ""; try { lasManifest({ filer: [{ fil: "a.csv.gz", namn: "X", lage: "analys", sha256: "abc" }] }); } catch (e) { mfel = String(e); }
   k(mfel.includes("saknar namn, läge eller sha256"), "en fil utan riktig summa fälls");
   k(spannkontroll(filer[0].fysik).startsWith("fysik_c:"), "värdevakten: fältet har spann");
@@ -101,12 +103,12 @@ if (korsSjalv) {
   const t0 = performance.now();
   const min = (ms: number) => `${((performance.now() - ms) / 60_000).toFixed(1)} min`;
   console.log("BLANDNINGEN I KUVÖSEN (DECISIONS #490) — fysikspåret som filer, analysläge och operativt läge, hela vintern 2024/25. Ingen dom.");
-  const manifest = JSON.parse(readFileSync(new URL("../../kuvos/blandning-leverans.json", import.meta.url), "utf8"));
+  const manifest = JSON.parse(readFileSync("blandning/manifest.json", "utf8"));        // skrivet i jobbet (DECISIONS #516)
   const filer: Fil[] = [];
   for (const m of lasManifest(manifest)) {
     const fysik = lasFysik(readFileSync(`blandning/${m.fil}`));
     console.log(`  ${m.fil} (${m.namn}, ${m.lage}): ${fysik.rader} rader, ${fysik.serie.size} stationer; sha256 ${fysik.sha256}${fysik.sha256 === m.sha256 ? " = manifestet" : " ≠ MANIFESTET"}`);
-    if (fysik.sha256 !== m.sha256) { console.error(`${m.fil} är inte den frysta filen (kuvos/blandning-leverans.json)`); process.exit(1); }
+    if (fysik.sha256 !== m.sha256) { console.error(`${m.fil} har inte manifestets summa (blandning/manifest.json)`); process.exit(1); }
     console.log(`  ${spannkontroll(fysik)}`);
     filer.push({ namn: m.namn, lage: m.lage, fysik });
   }
