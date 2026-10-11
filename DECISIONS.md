@@ -10534,3 +10534,21 @@ enligt #331 och #196; Axel granskar och arkiverar. Bygget i en egen PR, som föl
 apparna (skills, produktboken, ios-engine, android och ci gröna innan Axel ombeds arkivera).
 
 **Stomdokument:** MAT, APP, BED §4.2
+
+## #525 (11/10 2026) Bengt granskar S3 i Axels ställe, fotostudion visar betakortet, och tre behörigheter begärs av Axel (kort #89, #332, #333)
+
+**Beslut.** Bengt 11/10: *"2 ja, 3 ja, 4 skriv meddelandet"*, på frågan om han kan göra Axels delar härifrån. (1) Bengt granskar
+S3 (PR #872, 29e1e78) i Axels ställe, som S1-grinden i #521. Granskningen är spärren före ett bygge till testarna och bärs av kort
+#332. (2) Fotostudion i `android.yml` får en krok i debug-bygget, `fotostudio_beta`, som visar betakortet på en påhittad varning,
+och en skärmbild till produktboken. Samma mönster som `fotostudio_facit`: kroken finns bara i debug-bygget, aldrig i release.
+(3) Tre behörigheter begärs av Axel en gång: Bengt som användare i Play Console, skrivrätt för Bengt i `halkvakt-karta`, och en
+App Store Connect-nyckel för ett TestFlight-flöde i Actions (kort #333, låst på nyckeln). Claude skriver meddelandet, Bengt
+skickar det. Tills #333 finns arkiverar Axel iOS-bygget.
+
+**Alternativ.** Vänta på Axels granskning, så att S3 når testarna först när han hinner. Eller behåll Axels händer för varje bygge,
+som i dag.
+
+**Varför.** Fem av sex steg på den kritiska vägen till novemberbetan är Axels (`docs/MALET.md` §5). Det som bara kräver ett beslut
+eller en behörighet flyttas till den som har tid. Ingen tröskel ändras, och appen skickar inget nytt.
+
+**Stomdokument:** APP, MAT, BED §4.2

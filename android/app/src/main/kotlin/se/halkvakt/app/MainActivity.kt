@@ -14,7 +14,11 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import se.halkvakt.engine.Alert
 import se.halkvakt.engine.Hazard
+import se.halkvakt.engine.HazardKind
+import se.halkvakt.engine.Texts
+import se.halkvakt.engine.WarningCard
 import androidx.activity.compose.setContent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -74,6 +78,11 @@ class MainActivity : ComponentActivity() {
             }
             // Redo efter tur (designen v2, DECISIONS #444): turen är slut, kvittot syns under betatestets kort.
             Prefs.setTripEnd(this@MainActivity, System.currentTimeMillis() + 1_000L, 31f)
+        }
+        // Fotostudion: betakortet (S3, DECISIONS #524) på en påhittad varning, för produktboken (#525). Bara debug-byggen.
+        if (debug && intent?.getBooleanExtra("fotostudio_beta", false) == true) {
+            val a = Alert(System.currentTimeMillis() / 1000.0, "wx:fotostudio", HazardKind.ICING_POINT, 655, Texts.EFTERHALKA_TEXT, beta = true)
+            GuardService.currentWarning.value = ShownWarning(a, WarningCard.make(a, null))
         }
     }
 
