@@ -63,7 +63,8 @@ async function main(): Promise<number> {
   const riktningar = new Set(fonster.map((a) => `${a.Route?.Id ?? a.Route?.Name}|${a.FromHarbor?.Id ?? a.FromHarbor?.Name}`));
   console.log(`mätt: färjeavgångar de närmaste 24 timmarna: ${fonster.length} på ${leder.size} leder (${riktningar.size} led och riktning)`);
   skriv("färjeleder, avgångar de närmaste 24 timmarna", leder, 40);
-  const info = fonster.filter((a) => (Array.isArray(a.Info) ? a.Info.length : a.Info) || a.DeviationId);
+  // Rättat efter första körningen (38132362450): DeviationId är en lista, och en tom lista räknas som sann — alla 2 508 räknades.
+  const info = fonster.filter((a) => (Array.isArray(a.DeviationId) ? a.DeviationId.length : a.DeviationId));
   console.log(`mätt: avgångar med avvikelse eller info: ${info.length}`);
 
   // 2. Situationerna: koderna som finns, och urvalen
@@ -79,12 +80,15 @@ async function main(): Promise<number> {
   console.log(`mätt: aktiva avvikelser: ${aktiva.length}`);
   skriv("MessageCode", kod, 40); skriv("MessageCodeValue", kodv, 40); skriv("TrafficRestrictionType", restr, 20); skriv("TemporaryLimit", grans, 20);
 
-  const HASTIGHET = /hastighet|speed/i, OMLEDNING = /omled|divers|detour/i, KO = /kö\b|köbild|queu|congest|stillastående/i;
-  console.log(`mätt: urvalen: hastighet = TemporaryLimit satt eller ${HASTIGHET}; omledning = ${OMLEDNING}; kö = AbnormalTraffic eller ${KO}`);
+  // Rättat efter första körningen (38132362450): `kö\b` träffade *Körfält blockerade* — i JavaScript är ö inget ordtecken, så \b
+  // ligger mellan ö och r (1 994 träffar). Kö är nu bara MessageTypeValue AbnormalTraffic, som 2/10. Hastighet var TemporaryLimit satt,
+  // vilket också tog vikt, bredd och omledning; nu bara gränser som säger hastighet, eller koden speedRestrictionInOperation.
+  const HASTIGHET = /hastighet|speedRestriction/i, OMLEDNING = /omled|divers|detour/i;
+  console.log(`mätt: urvalen: hastighet = ${HASTIGHET} i TemporaryLimit eller koderna; omledning = ${OMLEDNING}; kö = MessageTypeValue AbnormalTraffic`);
   const kod3 = (d: any) => `${d.MessageCode ?? ""} ${d.MessageCodeValue ?? ""} ${d.TrafficRestrictionType ?? ""}`;
-  const hast = aktiva.filter((d) => d.TemporaryLimit || HASTIGHET.test(kod3(d)));
+  const hast = aktiva.filter((d) => HASTIGHET.test(String(d.TemporaryLimit ?? "")) || HASTIGHET.test(kod3(d)));
   const oml = aktiva.filter((d) => OMLEDNING.test(kod3(d)) || OMLEDNING.test(text(d)));
-  const ko = aktiva.filter((d) => d.MessageTypeValue === "AbnormalTraffic" || KO.test(kod3(d)));
+  const ko = aktiva.filter((d) => d.MessageTypeValue === "AbnormalTraffic");
   console.log(`mätt: hastigheter ${hast.length} · omledningar ${oml.length} · kömeddelanden ${ko.length} (${new Date(nu).toLocaleDateString("sv-SE", { weekday: "long", timeZone: "Europe/Stockholm" })} ${new Date(nu).toISOString().slice(11, 16)} UTC)`);
 
   // 3. En gemensam fil för hela landet
