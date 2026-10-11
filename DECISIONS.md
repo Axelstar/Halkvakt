@@ -10441,3 +10441,24 @@ icke-kommersiell. (b) ECMWF-prognoser på +24–48 h ur Open-Meteo: ett prov på
 sin session: hämtningen finns redan för analysen här, och Actions är gratis för det publika repot (#503).
 
 **Stomdokument:** KUV §5 och §9, BED §4.2
+
+## #520 (11/10 2026) Tre punkter ur en granskning: A2 per ytband i varje läsning, kvantil och fysiken som vittne som låsta kort (kort #329, #330, #331)
+
+**Beslut.** Bengt 11/10: *"2 ja"* — på rekommendationen i bedömningen §4.2 om tre outforskade punkter ur en granskning han klistrade
+in samma dag (telefonen blev kort #328).
+1. **A2 per ytband (kort #329).** Varje läsning av prognoslagret redovisar de grova felen per uppmätt yttemperatur, ≤ −3 · −3…+1 ·
+   +1…+3 · +3…+5 °C, bredvid norr och söder (#502), så att det syns hur stor del av felen som ligger där appen ändå inte kan varna.
+   Redovisningen byggs in i läsningarnas gemensamma kod och följer med i prognosläsningens körning (#519); den förregistreras före
+   den knappen, med granskarens förväntan (25–45 % av de grova felen över +3 °C) som hans. **Ingen grind ändras av redovisningen:**
+   nivå 2 med blandningen står på 5,02 % mot grind A:s 5 % (#517), och att flytta populationen nu vore att flytta målet efter utfallet
+   (regel L, kort #282). En ändring av grind A:s population är ett eget beslut enligt regel L.
+2. **Kvantil i stället för medelvärde (kort #330, låst).** Rättelsen förutsäger ett band per rad i stället för ett tal, och grinden
+   kan läsa bandet. Nyckeln: kandidaten för vintern 2026/27 är vald, eftersom hur grinden läser bandet är en tröskelfråga.
+3. **Fysiken som vittne (kort #331, låst).** De grova fel fysiken hittar tar #75 redan (#493); det nya är den 1,3 % av raderna som
+   vakterna behåller men fysiken flaggar. De läses på nivå 2:s skattning, som har ungefär halva felen. Nyckeln: en senare kuvöskörning,
+   efter prognosläsningen.
+
+**Alternativ som valdes bort.** (a) Ändra grind A:s population till det band där appen kan varna: regel L. (b) Allt som en egen
+körning nu: punkt 1 kostar ingenting i prognosläsningens körning, och punkt 2 och 3 avgör inget före vintern 2026/27.
+
+**Stomdokument:** KUV §5, BED §4.2
