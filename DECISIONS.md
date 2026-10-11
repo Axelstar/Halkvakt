@@ -10441,3 +10441,45 @@ icke-kommersiell. (b) ECMWF-prognoser på +24–48 h ur Open-Meteo: ett prov på
 sin session: hämtningen finns redan för analysen här, och Actions är gratis för det publika repot (#503).
 
 **Stomdokument:** KUV §5 och §9, BED §4.2
+
+## #519 (11/10 2026) Prognosläget på MET Nordic förregistrerat — omstart från analysens tillstånd, timstegen 0–29, ledtiderna +6 och +24 h, Axels förväntan (kort #308)
+
+**Beslut.** Bengt 11/10: *"ja till b och hämtning timsteg 0-29 och axels förväntan överensstämmer med tabellen ovan"* — på
+rekommendationen samma morgon (#518 punkt (a)–(c)).
+1. **Omstart (B).** För var och en av vinterns 608 körningar (00, 06, 12 och 18 UTC) startar fysikkolumnen från det tillstånd som
+   nivå 2 på MET Nordics analys har vid körningens starttid, och räknar framåt på körningens prognos till +29 h. Rättelsen lärs på
+   analysen som i #517 och används på särdrag ur prognosvädret; rättelsens fönster (72 timmar, 45 dygn) byggs av analysen före
+   körningen och prognosen efter. Grannarnas uppmätta fel och blandningen med RÅ använder mätningarna vid giltighetstiden, som #490:s
+   operativa läge säger. Omstarten byggs i nivå 2:s egen kopia av fysiken (`fysik/niva2/fysik_lw.py`), aldrig i de frysta filerna.
+2. **Ledtiderna** +6 h (timstegen 6–11) och +24 h (24–29): för varje timme den senaste körningen som ger en ledtid i klassen.
+3. **Hämtningen**, timstegen 0–29: `kuvos/metnordic-prognos.ts` (självtest i ci) och flödet `kuvos-metnordic-prognos.yml`, åtta delar
+   om högst 20 dygn, en åt gången, till den öppna releasen `kuvos-metnordic-prognos-2024-25`. **Piloten 11/10** (körningen 15/1 2025
+   06 UTC): 2 minuter, 25 620 rader (854 stationer × 30 timsteg), 394 kB packat; strålningen är i prognosen summerad från körningens
+   start och räknas om till timvärden, och för station 1001 blev timvärdena de två första timmarna exakt analysens (872 806,25 och
+   859 370,25 J/m² långvåg, 39 248 J/m² kortvåg). Nederbörden saknar värde i timsteg 0 och har små negativa värden: 1 033 av 24 766, ned
+   till −0,008 mm. **I kedjan räknas nederbörd i [−0,01, 0) som 0, och antalet skrivs ut; ett värde under −0,01 mm fäller läsningen.**
+   Spannet i värdevakten rörs inte.
+4. **Driftens fördröjning, läst 11/10 06:03 UTC** i MET Norways realtidskatalog `metpplatest`: analysen för 05 UTC publicerad 05:15,
+   prognoskörningen 05 UTC 05:26, och prognoserna körs varje timme i realtid men arkiveras bara fyra gånger per dygn. I drift är vädret
+   alltså högst ungefär en timme gammalt; +6 och +24 h är pessimistiska marginaler för läget mellan stationerna nu. Hur långt i förväg
+   appen kan varna (grannarnas mätningar bara fram till prognosens utgivning) är en annan läsning, som hör till försprånget.
+
+**Förväntningarna — Axels (Bengt 11/10), skrivna före knappen** (grova fel > 2 °C på RÅ:s punkter).
+
+| | väntat | skälet |
+| :-- | --: | :-- |
+| RÅ (kontrollen på populationen) | 7,4–7,6 % | #485 |
+| NIVÅ 2+BLANDNING på analysen, i samma jobb (kontrollen) | 4,9–5,15 % | #517: 5,02 % |
+| NIVÅ 2+BLANDNING, +6 h | 5,1–5,6 % | grannarnas fel tar bort mest av vädrets storskaliga fel (FYSIK 9,85 → 6,67, #490), och prognosfel på några timmar är mest storskaliga |
+| NIVÅ 2+BLANDNING, +24 h | 5,3–6,2 % | som ovan, med större prognosfel |
+
+**Hur läsningen läses.** Ingen dom. Ligger +6 h under RÅ i varje band, i norr och söder och vägt med trafiken, håller fördelen med
+prognosväder; ligger den över 5,6 % försämrar prognosen mer än väntat, och läsningen visar var (band, region). Landar RÅ eller
+kontrollen utanför sina spann läses inget annat förrän skälet är förstått. Norr och söder per band och vägt med trafiken redovisas
+(#502). Förregistreringen för vintern 2026/27 är fortfarande Bengts beslut (#485).
+
+**Alternativ som valdes bort.** (a) Fast ledtid (A): kolumnens minne byggs bara av prognoser, vilket aldrig händer i drift; ett
+utfall som faller avgör inte driften. (b) Bara timstegen 6–11 och 24–29 (ungefär 189 GB): räcker inte för omstarten. (c) Grannarnas
+mätningar bara fram till utgivningen: en annan fråga (punkt 4).
+
+**Stomdokument:** KUV §9, BED §4.2
