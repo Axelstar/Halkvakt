@@ -13,6 +13,7 @@ import { farorLangsRutten, rutaKring } from "../engine/src/rutfilter.ts";
 import type { Hazard } from "../engine/src/types.ts";
 import type { LiveDoc, StaticDoc } from "../engine/src/snapshot.ts";
 import { DEFAULT_CONFIG } from "../engine/src/types.ts";
+import { samplePolyline } from "../engine/src/geo.ts";
 
 export type Linje = [number, number][];
 export type Slag = "frysrisk" | "halka" | "olycka" | "hinder" | "vilt" | "ko" | "restid" | "vagarbete" | "hastighet" | "omledning"
@@ -24,10 +25,18 @@ export const RUBRIK: Record<Slag, string> = { halka: "halt väglag på sträckor
   hinder: "hinder", vilt: "vilt", ko: "köer", restid: "restider", vagarbete: "vägarbeten", hastighet: "hastighet",
   omledning: "omledningar", farja: "färjor", kamera: "fartkameror", smhi: "SMHI-varningar" };
 
-/** Provmiljöns avstånd till rutten per slag, i meter (DECISIONS #529). Provets rutter är skuggans: raka sträckor mellan
- *  brytpunkter, inte vägens geometri — därför 1,5 km. En riktig sparad rutt följer GPS-spåret, och Axels form sätter de riktiga. */
-export const MARGINALER: Record<Slag, number> = { halka: 1500, frysrisk: 2000, olycka: 1500, hinder: 1500, vilt: 1500, ko: 1500,
+/** Provmiljöns avstånd till rutten per slag, i meter, när rutten följer vägen (OSRM på OpenStreetMap, kort #338, DECISIONS #531):
+ *  linjer och kameror 100 m (Trafikverkets och OpenStreetMaps vägmitt skiljer några tiotal meter, och en motorvägs körbanor ligger
+ *  isär), olyckor, hinder och djur 150 m, stationer och färjor 500 m (en station står vid vägen, en färjeled är en punkt mitt i
+ *  överfarten). Provets parametrar, inte appens trösklar — Axels form sätter dem. */
+export const MARGINALER: Record<Slag, number> = { halka: 100, frysrisk: 500, olycka: 150, hinder: 150, vilt: 150, ko: 100,
+  restid: 100, vagarbete: 100, hastighet: 100, omledning: 100, farja: 500, kamera: 100, smhi: 0 };
+/** Avstånden för raka rutter, som skuggans brytpunkter (DECISIONS #529): 1,5 km, 2 km för stationer och färjor. */
+export const MARGINALER_RAKA: Record<Slag, number> = { halka: 1500, frysrisk: 2000, olycka: 1500, hinder: 1500, vilt: 1500, ko: 1500,
   restid: 1500, vagarbete: 1500, hastighet: 1500, omledning: 1500, farja: 2000, kamera: 1500, smhi: 0 };
+/** En LINJE ligger längs rutten först när minst LANGS_ANDEL av den, eller LANGS_MINST_M, ligger inom marginalen — en väg som bara
+ *  korsar rutten är 0 m från den i korsningen, och då hade varje vägarbete och restidssträcka på en tvärväg kommit med (#531). */
+export const LANGS_ANDEL = 0.5, LANGS_MINST_M = 500, LANGS_STEG_M = 100;
 
 /** En post i rapportfilens snabba del (schema 2, #530). `t` är Trafikverkets egen rubrik; körfält, gräns, slut och restid är fält,
  *  och den läsbara texten sätts ihop av visning() — som appen skulle göra. `p` en punkt, `l` id för en linje i den långsamma delen. */
@@ -240,6 +249,15 @@ function polygonTraffar(geom: any, rutt: Linje): boolean {
   return false;
 }
 
+/** Ligger linjen längs rutten och inte bara tvärs över den? Linjen provas var LANGS_STEG_M:e meter. */
+export function langsVagen(geo: Hazard[], rutt: Linje, marginalM: number): boolean {
+  const prov = geo.flatMap((h) => h.kind === "slippery_segment" ? samplePolyline(h.line, LANGS_STEG_M) : [])
+    .map((q, i) => ({ id: `s${i}`, kind: "accident", lon: q.lon, lat: q.lat } as Hazard));
+  if (!prov.length) return true;
+  const inom = farorLangsRutten(prov, rutt, marginalM).length;
+  return inom / prov.length >= LANGS_ANDEL || inom * LANGS_STEG_M >= LANGS_MINST_M;
+}
+
 /** Det fliken skulle visa för rutten: rader i viktordning, inom slagets ordning i körordning. */
 export function favoritRapport(rutt: Linje, live: LiveDoc, stat: StaticDoc, snabb: Rapport, lang: Linjer,
   marginal: Record<Slag, number> = MARGINALER): Rad[] {
@@ -286,6 +304,7 @@ export function favoritRapport(rutt: Linje, live: LiveDoc, stat: StaticDoc, snab
   for (const k of kand) {
     if (!skar(k.geo)) continue;
     const traff = farorLangsRutten(k.geo, rutt, marginal[k.slag]).sort((a, b) => a.avstandM - b.avstandM)[0];
+    if (traff && k.geo[0].kind === "slippery_segment" && !langsVagen(k.geo, rutt, marginal[k.slag])) continue;
     if (traff) rader.push({ id: k.id, slag: k.slag, rubrik: k.rubrik, text: k.post ? visning(k.post) : k.text, avstandM: Math.round(traff.avstandM), langsM: Math.round(traff.langsM),
       vag: k.vag ?? null, start: k.start ?? null });
   }

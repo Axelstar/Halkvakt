@@ -5,7 +5,7 @@
 // Kör: vagarbeten-matning.yml med inmatningen skript = den här filen. TRAFIKVERKET_API_KEY krävs.
 import { gzipSync } from "node:zlib";
 import { readFileSync } from "node:fs";
-import { byggRapport, favoritRapport, ORDNING } from "../../publish/rapport-core.ts";
+import { byggRapport, favoritRapport, ORDNING, MARGINALER_RAKA } from "../../publish/rapport-core.ts";
 import { lasRutter } from "../../publish/skuggfacit.ts";
 
 const KEY = process.env.TRAFIKVERKET_API_KEY;
@@ -54,13 +54,17 @@ async function main(): Promise<number> {
   console.log(`mätt: den snabba delen ${kb(JSON.stringify(snabb))} · den långsamma ${kb(JSON.stringify(lang))}`);
   const kod = readFileSync(new URL("../../supabase/functions/skuggmotor/main.ts", import.meta.url), "utf8");
   const rutter = { ...lasRutter(kod), ...lasRutter(kod.replace("const ROUTES: Record", "const ROUTES_X: Record").replace("const ROUTES_C: Record", "const ROUTES: Record")) };
-  const t1 = performance.now(); let sum = 0;
-  for (const [namn, linje] of Object.entries(rutter)) {
+  // Kort #338 (#531): samma lägesfil och rapport, de raka rutterna med de raka avstånden mot vägrutterna (OSRM) med vägens.
+  const osrm = JSON.parse(readFileSync(new URL("../../data/favoritprov/rutter-osrm.json", import.meta.url), "utf8")).rutter;
+  const t1 = performance.now(); let sum = 0, sumRak = 0;
+  for (const [namn, rak] of Object.entries(rutter)) {
+    const linje = osrm[namn].punkter;
     const r = favoritRapport(linje, lv, st, snabb, lang); sum += r.length;
+    const rr = favoritRapport(rak, lv, st, snabb, lang, MARGINALER_RAKA); sumRak += rr.length;
     const per = ORDNING.map((s) => [s, r.filter((x) => x.slag === s).length] as const).filter(([, n]) => n).map(([s, n]) => `${s} ${n}`);
-    console.log(`mätt:   ${namn.slice(0, 42).padEnd(42)} ${String(r.length).padStart(3)} rader: ${per.join(", ") || "inget"}`);
+    console.log(`mätt:   ${namn.slice(0, 42).padEnd(42)} rakt ${String(rr.length).padStart(3)} → vägen ${String(r.length).padStart(3)} rader: ${per.join(", ") || "inget"}`);
   }
-  console.log(`mätt: favoritRapport för ${Object.keys(rutter).length} rutter ${(performance.now() - t1).toFixed(0)} ms, ${sum} rader`);
+  console.log(`mätt: favoritRapport för ${Object.keys(rutter).length} rutter, båda varianterna, ${(performance.now() - t1).toFixed(0)} ms: rakt ${sumRak} rader, vägen ${sum}`);
   return 0;
 }
 main().then((c) => process.exit(c), (e) => { console.error(e); process.exit(1); });
