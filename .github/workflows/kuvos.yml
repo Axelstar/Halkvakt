@@ -178,7 +178,10 @@ jobs:
           UT="$PWD/niva2-ut"; MN="$PWD/metnordic/metnordic_2024-25.csv.gz"; BL="$PWD/blandning"
           {
             echo '```'
-            if [[ "$MATNING" == *kuvos-blandning* ]]; then
+            if [[ "$MATNING" == *kuvos-blandning-niva2* ]]; then
+              # #517: nivå 2:s skattning (ingen kontroll; NIVÅ 2 i replikans halvtimmar är kontrollen mot #509) in i samma replika.
+              (cd /home/claude/fys && python3 prep.py && python3 prep_raw.py && python3 niva2/kedja.py niva2 --metnordic "$MN" --ut "$UT" --maxfev 120 && python3 blandning/grannar_blandning.py --oof "$UT/oof_niva2.npy" --namn "NIVÅ 2" --fil niva2 --ut "$BL")
+            elif [[ "$MATNING" == *kuvos-blandning* ]]; then
               (cd /home/claude/fys && python3 prep.py && python3 prep_raw.py && python3 niva2/kedja.py kontroll --ut "$UT" && python3 blandning/grannar_blandning.py --oof "$UT/oof_A2_kontroll.npy" --ut "$BL")
             else
               (cd /home/claude/fys && python3 prep.py && python3 niva2/kedja.py kontroll --ut "$UT" && python3 niva2/kedja.py niva2 --metnordic "$MN" --ut "$UT" --maxfev 120)
