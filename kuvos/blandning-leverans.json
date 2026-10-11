@@ -1,7 +1,0 @@
-{
- "_om": "FYSIK+GRANNAR och FYSIK+BLANDNING — Axels fysikspår med grannarnas uppmätta fel och blandningen med RÅ, som kandidater till vägpunktsgrinden (DECISIONS #490, kort #308). Filerna saknas tills Axel lämnar dem. Varje fil: station_id,t_utc,fysik_c på halvtimmarna, vintern 2024/25 som fysik-2024-25.csv.gz (kuvos/fysik-leverans.json), gzip, en fil per kandidat och läge. Läget är 'analys' (ECMWF:s analys vid t, som FYSIK) eller 'operativt +N h' (bara den prognos som fanns utfärdad vid t, ledtiden N timmar; minst en fil med N ≥ 6). Grannarnas mätningar vid t får användas; målstationens egna mätningar är aldrig indata; regionen hålls utanför rättelsen som i FYSIK. Varje fil fryses med fil, namn, lage, bytes, rader, stationer och sha256 i listan filer innan knappen trycks (mallen nedan); scripts/matningar/kuvos-blandning-2026-10-08.ts läser varje fil som kandidaten 'namn (lage)' och fäller en fil som inte stämmer. Filerna läggs i releasen kuvos-blandning-2024-25.",
- "release": "kuvos-blandning-2024-25",
- "skriven": null,
- "mall": {"fil": "fysik-blandning-analys-2024-25.csv.gz", "namn": "FYSIK+BLANDNING", "lage": "analys", "bytes": 0, "rader": 0, "stationer": 0, "sha256": "64 hextecken"},
- "filer": []
-}

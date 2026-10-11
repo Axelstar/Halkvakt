@@ -105,6 +105,7 @@ jobs:
         run: |
           python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
           python3 fysik/niva2/sjalvtest.py
+          python3 fysik/blandning/grannar_blandning.py --sjalvtest   # DECISIONS #516
       # Generatorn gled isär från vektorfilerna tre gånger (31/8, 2/9, 13/9) utan att någon vakt såg det (#195).
       # Den skriver bara filer vars innehåll ändrats och fäller själv på en vektorfil utan scenario.
       - name: Vektorgeneratorn återskapar engine/vectors/ (#202)

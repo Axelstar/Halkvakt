@@ -83,8 +83,9 @@ jobs:
             process.exit(fel ? 1 : 0);'
       # MET Nordic (DECISIONS #480, #481) bara för mätningar som läser den: 49 MB, summorna mot kuvos/metnordic-leverans.json.
       # Läser den: filnamnet innehåller 'metnordic' eller är rutnätsmodellens ('kuvos-rn-') — en ny läsare läggs till här.
+      # Blandningen (#516) läser bara static.json härifrån: fysikkedjans prep.py behöver den.
       - name: MET Nordic ur releasen, kontrollsummorna mot manifestet
-        if: ${{ hashFiles('kuvos/metnordic-leverans.json') != '' && (contains(inputs.matning, 'metnordic') || contains(inputs.matning, 'kuvos-rn-')) }}
+        if: ${{ hashFiles('kuvos/metnordic-leverans.json') != '' && (contains(inputs.matning, 'metnordic') || contains(inputs.matning, 'kuvos-rn-') || contains(inputs.matning, 'kuvos-blandning')) }}
         shell: bash
         env: { GH_TOKEN: "${{ github.token }}" }
         run: |
@@ -109,23 +110,6 @@ jobs:
             let fel = 0;
             for (const f of m.filer.filter((f) => f.fil.endsWith(".csv.gz"))) {
               const h = c.createHash("sha256").update(fs.readFileSync("fysik/" + f.fil)).digest("hex");
-              console.log(`${f.fil}: ${h === f.sha256 ? "ok" : "FEL " + h}`); if (h !== f.sha256) fel++;
-            }
-            process.exit(fel ? 1 : 0);'
-      # BLANDNINGEN (DECISIONS #490, kort #308) bara för mätningen som läser den: Axels filer, summorna mot kuvos/blandning-leverans.json.
-      - name: Blandningen ur releasen, kontrollsummorna mot manifestet
-        if: ${{ hashFiles('kuvos/blandning-leverans.json') != '' && contains(inputs.matning, 'kuvos-blandning') }}
-        shell: bash
-        env: { GH_TOKEN: "${{ github.token }}" }
-        run: |
-          mkdir -p blandning && gh release download kuvos-blandning-2024-25 --dir blandning --pattern '*.csv.gz'
-          node -e '
-            const m = require("./kuvos/blandning-leverans.json"), c = require("crypto"), fs = require("fs");
-            const filer = (m.filer || []).filter((f) => f.fil.endsWith(".csv.gz"));
-            if (!filer.length) { console.log("manifestet saknar filer"); process.exit(1); }
-            let fel = 0;
-            for (const f of filer) {
-              const h = c.createHash("sha256").update(fs.readFileSync("blandning/" + f.fil)).digest("hex");
               console.log(`${f.fil}: ${h === f.sha256 ? "ok" : "FEL " + h}`); if (h !== f.sha256) fel++;
             }
             process.exit(fel ? 1 : 0);'
@@ -158,13 +142,16 @@ jobs:
       # först den frysta kedjan på ECMWF (kontrollen, ska ge FYSIK) och sedan samma kedja på MET Nordic (fysik/niva2/kedja.py).
       # Indata som inte är Trafikverkets (höjd, terräng, vägdata, ECMWF-cachen — öppna källor per station) ur Axels release, summorna mot
       # kuvos/fysik-indata-leverans.json. Trafikverkets filer packas upp där prep.py läser dem och når aldrig trädet (fysik/.gitignore).
+      # BLANDNINGEN (kort #308, DECISIONS #490, #516): samma kontroll, och sedan grannarna och blandningen av Axels frysta kuvos_replica.py
+      # på kontrollens FYSIK. Filerna bär grannarnas uppmätta yta och lämnar aldrig jobbet: de skrivs i blandning/, som ingen artefakt
+      # tar med, och loggen bär bara aggregat.
       - uses: actions/setup-python@v5
-        if: ${{ contains(inputs.matning, 'kuvos-fysik-niva2') }}
+        if: ${{ contains(inputs.matning, 'kuvos-fysik-niva2') || contains(inputs.matning, 'kuvos-blandning') }}
         with: { python-version: "3.13" }
-      - name: Fysikkedjan — kontrollen på ECMWF och nivå 2 på MET Nordic
-        if: ${{ contains(inputs.matning, 'kuvos-fysik-niva2') }}
+      - name: Fysikkedjan — kontrollen på ECMWF, och nivå 2 på MET Nordic eller grannarna och blandningen
+        if: ${{ contains(inputs.matning, 'kuvos-fysik-niva2') || contains(inputs.matning, 'kuvos-blandning') }}
         shell: bash
-        env: { GH_TOKEN: "${{ github.token }}" }
+        env: { GH_TOKEN: "${{ github.token }}", MATNING: "${{ inputs.matning }}" }
         run: |
           set -euo pipefail
           [ -f kuvos/fysik-indata-leverans.json ] || { echo "::error::kuvos/fysik-indata-leverans.json saknas — Axels indata-release (kort #319, bedömningen §4.2)"; exit 1; }
@@ -188,10 +175,14 @@ jobs:
           for f in leverans/*.csv.gz; do gunzip -c "$f" > "/mnt/user-data/uploads/$(basename "${f%.gz}")"; done
           cp metnordic/static_2026-10-06.json fysik/data/static.json
           echo "indata: $(ls fysik/data | tr '\n' ' ') · ifs $(ls fysik/data/ifs | wc -l) stationer · ifs2 $(ls fysik/data/ifs2 | wc -l)"
-          UT="$PWD/niva2-ut"; MN="$PWD/metnordic/metnordic_2024-25.csv.gz"
+          UT="$PWD/niva2-ut"; MN="$PWD/metnordic/metnordic_2024-25.csv.gz"; BL="$PWD/blandning"
           {
             echo '```'
-            (cd /home/claude/fys && python3 prep.py && python3 niva2/kedja.py kontroll --ut "$UT" && python3 niva2/kedja.py niva2 --metnordic "$MN" --ut "$UT" --maxfev 120)
+            if [[ "$MATNING" == *kuvos-blandning* ]]; then
+              (cd /home/claude/fys && python3 prep.py && python3 prep_raw.py && python3 niva2/kedja.py kontroll --ut "$UT" && python3 blandning/grannar_blandning.py --oof "$UT/oof_A2_kontroll.npy" --ut "$BL")
+            else
+              (cd /home/claude/fys && python3 prep.py && python3 niva2/kedja.py kontroll --ut "$UT" && python3 niva2/kedja.py niva2 --metnordic "$MN" --ut "$UT" --maxfev 120)
+            fi
             echo '```'
           } 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Kedjans utdata sparas (modellens skattningar, inte Trafikverkets data)
