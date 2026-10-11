@@ -10725,3 +10725,52 @@ frågor och samma kärna i Node):
 resursfelen kom när flera funktioner startade samtidigt. Provet går på :08/:38, som inget annat jobb använder.
 
 **Stomdokument:** FAV, BED §4.2
+
+## #530 (11/10 2026) Favoritprovet steg 2: rapportfilen bantad, raderna sammanslagna och notisen simulerad; riktiga vägar med OSM
+och OSRM senare (kort #337, #338)
+
+**Beslut.** Bengt 11/10: *"efter körningen gör du 1,2,3"* och *"då blir det osm + osrm för punkt 5 när vi kommer dit"*.
+
+**1. Bantningen, efter mätningen på första körningen** (12:08, `scripts/matningar/rapportfilen-vikt-2026-10-11.ts`). Den snabba
+delen var 141,7 kB packad. Mest vägde texten (36 kB), `plats` (31,7), punkterna (17,4), id (13,3) och linjerna (12,3). 795 av 841
+hastigheter låg inom 100 m av ett vägarbete. Ändringarna (schema 2):
+- Hastigheten läggs på vägarbetet i samma *situation* hos Trafikverket, som fältet `grans` (den lägsta gränsen). En hastighet
+  utan vägarbete i sin situation står kvar.
+- Texten är bara Trafikverkets rubrik, högst 100 tecken. Körfält, slutdatum och minuter är fält, och `visning()` sätter ihop den
+  läsbara texten, som appen skulle göra.
+- `plats` tas bort.
+- Starttid bara där notisen och *rapporterad* läser den.
+- Fyra decimaler (11 m), och linjernas brytpunkter närmare än 20 m den förra stryks.
+- Bara de kalla stationernas namn följer med.
+
+  **Utfall** (torrkörningen 38138381838, läs-only): 840 hastigheter lagda på sitt vägarbete. Den snabba delen 73,3 kB packad (från
+  144) och den långsamma 109,0 kB (från 200).
+  **Tillagt efter visningen mot första körningen, med skäl:** samma arbete stod två gånger, som *Vägarbete* och
+  *Körfältsavstängningar* i samma situation ("Vägarbete söder om Vä"). En situation blir nu ett vägarbete, med flest körfält och
+  högst påverkan. Kamerornas väg stod som ett nackt tal (*17*), så vägnamnen skrivs nu lika (*väg 17*, *E22*, `vagNamn()`).
+  Torrkörningen 38138648357: 832 avvikelser sammanslagna, 1 402 poster (från 3 069), den snabba delen **59,0 kB** packad och den
+  långsamma **103,8 kB**. Den körningen tog 1 895 ms för rutterna, eftersom datumformateringen byggde en ny formaterare vid varje
+  anrop. Formaterarna skapas nu en gång, och texten bara för det som träffar rutten. Torrkörningen 38138782856: byggRapport 86 ms
+  och de 30 rutterna 150 ms.
+**2. Sammanslagningen** (`grupperade()`, favoritsidan §3: *"Tre fartkameror"*, en rapport som går att läsa på några sekunder):
+- Halka, frysrisk, olyckor, hinder, vilt, köer, färjor och SMHI står för sig.
+- Kamerorna slås samman per väg, och restiderna i normal trafik till en rad.
+- Vägarbeten, hastigheter och omledningar slås samman per väg från tre (`GRUPP_FRAN`).
+- Raderna står kvar under grupperna, och visningen fäller ut dem.
+
+**3. Notisen** (`notis()`, favoritsidan §5):
+- **Ger notis:** det nya sedan förra kollen av slagen halka, frysrisk, olycka, hinder och vilt, och ett vägarbete som började inom
+  24 h (`NYTT_VAGARBETE_H`).
+- **Ger aldrig notis:** vägarbeten som pågått länge, köer, kameror, restider och SMHI:s varningar (T6).
+- **Inställd färja** står också i §5, men Trafikverkets fält säger inte inställd (`DeviationId` bär ett värde på varje avgång, #528).
+  Den regeln väntar.
+- `historik.json` sparar vilka rutter som skulle ha fått en notis vid varje körning, och visningen visar hur ofta.
+- **Förbehåll:** provet kollar var 30:e minut, och *nytt* räknas mot förra kollen. En pendlare som kollar en gång om dagen jämför
+  med i går och får fler saker *nya*. Provets tal är alltså en nedre gräns per koll.
+
+**5, senare: riktiga vägar** (kort #338). Provets rutter läggs på vägarna med OpenStreetMap och en OSRM-beräkning som körs en gång
+och sparas i repot, med källa och licens (ODbL) i `data/KALLOR.json`. Det ger samma sak som en sparad rutt i appen: vägen bilen kör.
+Då kan provets avstånd krympa till tiotals eller hundratals meter, och parallella vägar försvinner. Skuggans egna rutter rörs inte.
+Bengt valde det framför NVDB, som inte beräknar rutter och som inte räcker för stationskedjorna.
+
+**Stomdokument:** FAV, BED §4.2
