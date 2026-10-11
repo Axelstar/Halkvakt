@@ -557,14 +557,18 @@ export const RUBRIK: Record<Slag, string> = { halka: "halt väglag på sträckor
 export const MARGINALER: Record<Slag, number> = { halka: 1500, frysrisk: 2000, olycka: 1500, hinder: 1500, vilt: 1500, ko: 1500,
   restid: 1500, vagarbete: 1500, hastighet: 1500, omledning: 1500, farja: 2000, kamera: 1500, smhi: 0 };
 
-/** En post i rapportfilens snabba del. `p` en punkt, `l` id för en linje i den långsamma delen. */
-export type Post = { id: string; slag: Slag; rubrik: string; text: string; p?: [number, number]; l?: string; [k: string]: unknown };
-export type Rapport = { schema: 1; generated_at: string; poster: Post[]; noter: string[];
+/** En post i rapportfilens snabba del (schema 2, #530). `t` är Trafikverkets egen rubrik; körfält, gräns, slut och restid är fält,
+ *  och den läsbara texten sätts ihop av visning() — som appen skulle göra. `p` en punkt, `l` id för en linje i den långsamma delen. */
+export type Post = { id: string; slag: Slag; rubrik: string; t?: string; p?: [number, number]; l?: string; vag?: string | null;
+  start?: string | null; slut?: string | null; korfalt?: number; grans?: number; sev?: number | null; tid?: number; normal?: number;
+  status?: string | null; text?: string; [k: string]: unknown };
+export type Rapport = { schema: 2; generated_at: string; poster: Post[]; noter: string[];
   stationer: Record<string, { namn: string; luft: number | null }> };
-export type Linjer = { schema: 1; generated_at: string; linjer: Record<string, Linje[]> };
+export type Linjer = { schema: 2; generated_at: string; linjer: Record<string, Linje[]> };
 
 // ── Trafikverkets geometri ──────────────────────────────────────────────────────────────────────────────────────────────────
-const tal = (s: string) => Math.round(Number(s) * 1e5) / 1e5;
+// Fyra decimaler, ungefär 11 m — nog för att jämföra med en rutt, och en sjättedel av punkternas vikt (#530).
+const tal = (s: string) => Math.round(Number(s) * 1e4) / 1e4;
 export function punktUr(wkt: unknown): [number, number] | null {
   const m = /POINT\s*Z?\s*\(\s*([-\d.]+)\s+([-\d.]+)/.exec(String(wkt ?? ""));
   return m ? [tal(m[1]), tal(m[2])] : null;
@@ -573,20 +577,59 @@ export function punktUr(wkt: unknown): [number, number] | null {
 export function linjerUr(wkt: unknown): Linje[] {
   const s = String(wkt ?? "");
   if (!/LINESTRING/.test(s)) return [];
-  return [...s.matchAll(/\(([^()]+)\)/g)].map((m) => m[1].split(",").map((par) => {
+  return [...s.matchAll(/\(([^()]+)\)/g)].map((m) => glesa(m[1].split(",").map((par) => {
     const [x, y] = par.trim().split(/\s+/); return [tal(x), tal(y)] as [number, number];
-  })).filter((l) => l.length >= 2);
+  }))).filter((l) => l.length >= 2);
+}
+/** Stryker brytpunkter närmare än GLES_M den förra som behölls; den sista behålls alltid, så linjen slutar där den slutade (#530). */
+export const GLES_M = 20;
+export function glesa(l: Linje): Linje {
+  if (l.length <= 2) return l;
+  const ut: Linje = [l[0]];
+  for (let i = 1; i < l.length - 1; i++) {
+    const [x0, y0] = ut[ut.length - 1], [x, y] = l[i];
+    if (Math.hypot((x - x0) * 111_320 * Math.cos((y0 * Math.PI) / 180), (y - y0) * 110_574) >= GLES_M) ut.push(l[i]);
+  }
+  ut.push(l[l.length - 1]);
+  return ut;
 }
 
 const ren = (s: unknown, n = 140) => String(s ?? "").replace(/\s+/g, " ").trim().slice(0, n);
+// Formaterarna skapas EN gång: toLocale…String med tidszon bygger en ny vid varje anrop, och rutterna tog 1 895 ms i stället för
+// 152 när visning() anropades för varje post (torrkörningen 38138648357).
+const FMT_KLOCKA = new Intl.DateTimeFormat("sv-SE", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Stockholm" });
+const FMT_DATUM = new Intl.DateTimeFormat("sv-SE", { day: "numeric", month: "long", timeZone: "Europe/Stockholm" });
+const FMT_ISO = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Stockholm" });
 const klocka = (iso: unknown) => {
   const t = Date.parse(String(iso ?? "")); if (!Number.isFinite(t)) return null;
-  return new Date(t).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Stockholm" });
+  return FMT_KLOCKA.format(t);
 };
 const datum = (iso: unknown) => {
   const t = Date.parse(String(iso ?? "")); if (!Number.isFinite(t)) return null;
-  return new Date(t).toLocaleDateString("sv-SE", { day: "numeric", month: "long", timeZone: "Europe/Stockholm" });
+  return FMT_DATUM.format(t);
 };
+/** Svenskt datum som ÅÅÅÅ-MM-DD (sv-SE skriver så). */
+const datumIso = (iso: unknown) => {
+  const v = Date.parse(String(iso ?? "")); if (!Number.isFinite(v)) return null;
+  return FMT_ISO.format(v);
+};
+/** Den läsbara texten för en post, ur fälten — som appen skulle sätta ihop den (#530). */
+export function visning(p: Post): string {
+  if (p.text) return p.text;   // färjorna bär sin text färdig
+  if (p.slag === "restid" || (p.slag === "ko" && p.id.startsWith("tt:")))
+    return p.tid != null ? `${p.tid} minuter, normalt ${p.normal ?? "–"}` : "restid saknas";
+  const slut = p.slut === "tv" ? "tills vidare" : p.slut ? `till ${datum(p.slut + "T12:00:00Z")}` : "";
+  return [p.t ?? "", p.korfalt ? `${p.korfalt} körfält avstängda` : "", p.grans ? `${p.grans} km/h förbi vägarbetet` : "", slut,
+    p.slag === "olycka" || p.slag === "hinder" || p.slag === "ko" ? `rapporterad ${klocka(p.start) ?? "–"}` : ""].filter(Boolean).join(" · ");
+}
+/** Vägnamnen skrivna lika, så att sammanslagningen per väg träffar: E-vägar som "E22", övriga som "väg 17" — Trafikverket skriver
+ *  "17", "Väg 17" och "väg 17" om vartannat (kamerornas *17* i visningen). Inget namn blir null. */
+export function vagNamn(v: unknown): string | null {
+  const s = String(v ?? "").trim(); if (!s) return null;
+  const e = /^e\s*(\d+)$/i.exec(s); if (e) return `E${e[1]}`;
+  const n = /^(?:väg|rv|riksväg|länsväg)?\s*(\d+)$/i.exec(s); if (n) return `väg ${n[1]}`;
+  return s.slice(0, 20);
+}
 const VAGARBETE = new Set(["MaintenanceWorks", "RoadOrCarriagewayOrLaneManagement"]);
 const HINDER = new Set(["obstructionOnTheRoad", "objectOnTheRoad", "brokenDownVehicle"]);
 const HASTIGHET = /hastighet|speedRestriction/i, OMLEDNING = /omled|divers|detour/i;   // som mätningen #528, efter rättelsen
@@ -617,34 +660,60 @@ export type In = {
 export function byggRapport(x: In): { snabb: Rapport; lang: Linjer } {
   const iso = new Date(x.nu).toISOString();
   const poster: Post[] = [], linjer: Record<string, Linje[]> = {}, noter: string[] = [];
-  for (const s of x.situationer) for (const d of s.Deviation ?? []) {
-    if (s.Deleted || d.Deleted || d.Suspended) continue;
-    const start = d.StartTime ? Date.parse(d.StartTime) : -Infinity, slut = d.EndTime ? Date.parse(d.EndTime) : Infinity;
-    if (!(start <= x.nu && x.nu < slut)) continue;
-    const slag = slagFor(d); if (!slag) continue;
-    const p = punktUr(d.Geometry?.Point?.WGS84), l = linjerUr(d.Geometry?.Line?.WGS84);
-    if (!p && !l.length) continue;
-    const id = `dev:${d.Id}`;
-    if (l.length) linjer[id] = l;
-    const vag = ren(d.RoadNumber, 20) || null, plats = ren(d.LocationDescriptor, 120) || null;
-    const rubrik = slag === "hastighet" ? (ren(d.TemporaryLimit, 60) || "Tillfälligt nedsatt hastighet")
-      : slag === "omledning" ? "Omledning" : ren(d.MessageCode, 60) || RUBRIK[slag];
-    const delar = [ren(d.Header ?? d.Message, 160), d.NumberOfLanesRestricted ? `${d.NumberOfLanesRestricted} körfält avstängda` : "",
-      d.SeverityText ? ren(d.SeverityText, 40).toLowerCase() : "",
-      d.ValidUntilFurtherNotice ? "tills vidare" : d.EndTime && slag !== "olycka" ? `till ${datum(d.EndTime)}` : "",
-      slag === "olycka" || slag === "ko" || slag === "hinder" ? `rapporterad ${klocka(d.StartTime ?? d.CreationTime) ?? "–"}` : ""].filter(Boolean);
-    poster.push({ id, slag, rubrik, text: delar.join(" · "), ...(p ? { p } : {}), ...(l.length ? { l: id } : {}), vag, plats,
-      start: d.StartTime ?? null, slut: d.EndTime ?? null, sev: d.SeverityCode ?? null });
+  let lagda = 0, sammanslagna = 0;
+  for (const s of x.situationer) {
+    if (s.Deleted) continue;
+    const egna: Post[] = [], granser: number[] = [];
+    for (const d of s.Deviation ?? []) {
+      if (d.Suspended) continue;
+      const start = d.StartTime ? Date.parse(d.StartTime) : -Infinity, slut = d.EndTime ? Date.parse(d.EndTime) : Infinity;
+      if (!(start <= x.nu && x.nu < slut)) continue;
+      const slag = slagFor(d); if (!slag) continue;
+      const p = punktUr(d.Geometry?.Point?.WGS84), l = linjerUr(d.Geometry?.Line?.WGS84);
+      if (!p && !l.length) continue;
+      const id = `dev:${d.Id}`;
+      const kmh = Number(/(\d+)\s*km\/h/i.exec(String(d.TemporaryLimit ?? ""))?.[1]);
+      const post: Post = { id, slag, rubrik: slag === "hastighet" ? (Number.isFinite(kmh) ? `${kmh} km/h` : "Tillfälligt nedsatt hastighet")
+        : slag === "omledning" ? "Omledning" : ren(d.MessageCode, 60) || RUBRIK[slag],
+        t: ren(d.Header ?? d.Message, 100) || ren(d.LocationDescriptor, 100) || undefined,
+        ...(p ? { p } : {}), ...(l.length ? { l: id } : {}), vag: vagNamn(d.RoadNumber),
+        ...(slag === "vagarbete" || slag === "olycka" || slag === "hinder" || slag === "ko" ? { start: d.StartTime ?? d.CreationTime ?? null } : {}),
+        ...(slag !== "olycka" ? { slut: d.ValidUntilFurtherNotice ? "tv" : d.EndTime ? datumIso(d.EndTime) : null } : {}),
+        ...(d.NumberOfLanesRestricted ? { korfalt: Number(d.NumberOfLanesRestricted) } : {}), sev: d.SeverityCode ?? null };
+      if (l.length) linjer[id] = l;
+      if (slag === "hastighet" && Number.isFinite(kmh)) granser.push(kmh);
+      egna.push(post);
+    }
+    // Hastigheten vid ett vägarbete är vägarbetets (795 av 841 låg inom 100 m av ett, #530): den lägsta gränsen läggs på situationens
+    // vägarbete, och hastighetsposterna stryks. En hastighet utan vägarbete i samma situation står kvar för sig.
+    // Och en situation är ETT vägarbete: Trafikverket skriver ofta samma arbete som både *Vägarbete* och *Körfältsavstängningar*
+    // (visningen mot första körningen, "Vägarbete söder om Vä" två gånger). De slås ihop i den första: flest avstängda körfält,
+    // högsta påverkan, första texten och geometrin; de andras linjer stryks.
+    const va = egna.filter((q) => q.slag === "vagarbete");
+    const forsta = va[0];
+    for (const q of egna) {
+      if (q.slag === "hastighet" && va.length && granser.length) { lagda++; delete linjer[q.id]; continue; }
+      if (q.slag === "vagarbete" && q !== forsta) {
+        if (q.korfalt && (!forsta.korfalt || q.korfalt > forsta.korfalt)) forsta.korfalt = q.korfalt;
+        if (q.sev != null && (forsta.sev == null || q.sev > forsta.sev)) forsta.sev = q.sev;
+        if (!forsta.t && q.t) forsta.t = q.t;
+        if (!forsta.p && !forsta.l) { forsta.p = q.p; forsta.l = q.l; } else if (q.l && q.l !== forsta.l) delete linjer[q.l];
+        sammanslagna++; continue;
+      }
+      if (q === forsta && granser.length) q.grans = Math.min(...granser);
+      poster.push(q);
+    }
   }
+  if (lagda) noter.push(`${lagda} hastigheter lagda på sitt vägarbete`);
+  if (sammanslagna) noter.push(`${sammanslagna} avvikelser sammanslagna med sitt vägarbete i samma situation`);
   for (const r of x.restider) {
     const l = linjerUr(r.Geometry?.WGS84); if (!l.length) continue;
     const id = `tt:${r.Id}`; linjer[id] = l;
     const tid = Number(r.TravelTime), normal = Number(r.FreeFlowTravelTime);
     const min = (s: number) => Math.round(s / 60);
     const extra = Number.isFinite(tid) && Number.isFinite(normal) ? min(tid) - min(normal) : null;
-    poster.push({ id, slag: extra !== null && extra >= 2 ? "ko" : "restid", rubrik: ren(r.Name, 80) || "Restidssträcka",
-      text: Number.isFinite(tid) ? `${min(tid)} minuter, normalt ${Number.isFinite(normal) ? min(normal) : "–"}` : "restid saknas",
-      l: id, status: r.TrafficStatus ?? null, extraMin: extra, matt: r.MeasureTime ?? null });
+    poster.push({ id, slag: extra !== null && extra >= 2 ? "ko" : "restid", rubrik: ren(r.Name, 80) || "Restidssträcka", l: id,
+      ...(Number.isFinite(tid) ? { tid: min(tid) } : {}), ...(Number.isFinite(normal) ? { normal: min(normal) } : {}), status: r.TrafficStatus ?? null });
   }
   const ledLinje = new Map<string, string>();
   // FerryRoute bär en PUNKT för leden, inte en linje (torrkörningen 38135721921). Överfarterna är korta, så punkten mäts mot rutten
@@ -668,11 +737,13 @@ export function byggRapport(x: In): { snabb: Rapport; lang: Linjer } {
       ...(lid ? { l: lid } : { p: lp }), avgangar24h: avg.length });
   }
   const stationer = Object.fromEntries(x.stationer.map((s) => [s.id, { namn: s.namn, luft: s.luft }]));
-  return { snabb: { schema: 1, generated_at: iso, poster, noter, stationer }, lang: { schema: 1, generated_at: iso, linjer } };
+  return { snabb: { schema: 2, generated_at: iso, poster, noter, stationer }, lang: { schema: 2, generated_at: iso, linjer } };
 }
 
 // ── Favoritprovet: det fliken skulle visa för en rutt ───────────────────────────────────────────────────────────────────────
-export type Rad = { id: string; slag: Slag; rubrik: string; text: string; avstandM: number; langsM: number };
+export type Rad = { id: string; slag: Slag; rubrik: string; text: string; avstandM: number; langsM: number;
+  /** Vägnumret när källan säger det, och starttiden för avvikelser — sammanslagningen och notisregeln läser dem (#530). */
+  vag: string | null; start: string | null };
 
 const grader = (v: number | null | undefined) => v == null ? "–" : `${v > 0 ? "+" : v < 0 ? "−" : ""}${Math.abs(v).toFixed(1).replace(".", ",")} °C`;
 /** Punkt i polygon (GeoJSON-ringar, jämn–udda), för SMHI:s områden. */
@@ -702,13 +773,13 @@ export function favoritRapport(rutt: Linje, live: LiveDoc, stat: StaticDoc, snab
   marginal: Record<Slag, number> = MARGINALER): Rad[] {
   // Varje kandidat har en eller flera geometrier: en punkt, eller linjens delar var för sig (en multilinje sammanfogad till en linje
   // skulle få en falsk sträcka mellan delarna, som kan korsa rutten). Den närmaste delen räknas.
-  const kand: { id: string; slag: Slag; rubrik: string; text: string; geo: Hazard[] }[] = [];
+  const kand: { id: string; slag: Slag; rubrik: string; text: string; geo: Hazard[]; vag?: string | null; start?: string | null; post?: Post }[] = [];
   const pkt = (id: string, lon: number, lat: number) => [{ id, kind: "accident", lon, lat } as Hazard];
   const lin = (id: string, delar: Linje[]) => delar.filter((l) => l.length >= 2).map((line, i) => ({ id: `${id}#${i}`, kind: "slippery_segment", line } as Hazard));
   const st = snabb.stationer;
   const cfg = DEFAULT_CONFIG;
-  for (const s of live.segments) kand.push({ id: `seg:${s.id}`, slag: "halka", rubrik: `Halt väglag${s.road ? ` på ${s.road}` : ""}`,
-    text: s.info.join(", ") || "halka rapporterad på sträckan", geo: lin(`seg:${s.id}`, [s.line]) });
+  for (const s of live.segments) kand.push({ id: `seg:${s.id}`, slag: "halka", rubrik: `Halt väglag${vagNamn(s.road) ? ` på ${vagNamn(s.road)}` : ""}`,
+    text: s.info.join(", ") || "halka rapporterad på sträckan", geo: lin(`seg:${s.id}`, [s.line]), vag: vagNamn(s.road) });
   for (const w of live.weather) {
     const t = w.yta, frys = t != null && t <= 1 && w.fukt;
     // S3 (#524): samma villkor som motorn, med motorns startvärden.
@@ -721,12 +792,14 @@ export function favoritRapport(rutt: Linje, live: LiveDoc, stat: StaticDoc, snab
       geo: pkt(`wx:${w.id}`, w.lon, w.lat) });
   }
   for (const b of live.bridges ?? []) if (b.yta != null && b.yta <= 3 && b.fukt) kand.push({ id: `bro:${b.id}`, slag: "frysrisk",
-    rubrik: `Frysrisk på bron${b.road ? ` på ${b.road}` : ""}`, text: `närmaste station ${grader(b.yta)}`, geo: pkt(`bro:${b.id}`, b.lon, b.lat) });
-  for (const c of stat.cameras) kand.push({ id: `cam:${c.id}`, slag: "kamera", rubrik: "Fartkamera", text: c.road ?? "",
-    geo: pkt(`cam:${c.id}`, c.lon, c.lat) });
+    rubrik: `Frysrisk på bron${vagNamn(b.road) ? ` på ${vagNamn(b.road)}` : ""}`, text: `närmaste station ${grader(b.yta)}`, geo: pkt(`bro:${b.id}`, b.lon, b.lat), vag: b.road });
+  for (const c of stat.cameras) kand.push({ id: `cam:${c.id}`, slag: "kamera", rubrik: "Fartkamera", text: vagNamn(c.road) ?? "",
+    geo: pkt(`cam:${c.id}`, c.lon, c.lat), vag: vagNamn(c.road) });
   for (const p of snabb.poster) {
     const geo = p.l ? lin(p.id, lang.linjer[p.l] ?? []) : p.p ? pkt(p.id, p.p[0], p.p[1]) : [];
-    if (geo.length) kand.push({ id: p.id, slag: p.slag, rubrik: p.rubrik, text: p.text, geo });
+    // Texten sätts ihop först för det som träffar rutten (nedan): visning() för varje post på varje rutt kostade mest av tiden.
+    if (geo.length) kand.push({ id: p.id, slag: p.slag, rubrik: p.rubrik, text: "", post: p, geo, vag: (p.vag as string | null) ?? null,
+      start: (p.start as string | null) ?? null });
   }
   // Grovt förfilter per rutt, som skuggans rektangel (rutaKring): bara kandidater vars ruta skär rutans ruta plus den största
   // marginalen mäts mot linjen. Utfallet är detsamma — farorLangsRutten tar ändå bara det inom marginalen — men arbetet en bråkdel.
@@ -741,10 +814,11 @@ export function favoritRapport(rutt: Linje, live: LiveDoc, stat: StaticDoc, snab
   for (const k of kand) {
     if (!skar(k.geo)) continue;
     const traff = farorLangsRutten(k.geo, rutt, marginal[k.slag]).sort((a, b) => a.avstandM - b.avstandM)[0];
-    if (traff) rader.push({ id: k.id, slag: k.slag, rubrik: k.rubrik, text: k.text, avstandM: Math.round(traff.avstandM), langsM: Math.round(traff.langsM) });
+    if (traff) rader.push({ id: k.id, slag: k.slag, rubrik: k.rubrik, text: k.post ? visning(k.post) : k.text, avstandM: Math.round(traff.avstandM), langsM: Math.round(traff.langsM),
+      vag: k.vag ?? null, start: k.start ?? null });
   }
   for (const w of live.smhi as any[]) if (polygonTraffar(w.geom, rutt)) rader.push({ id: `smhi:${w.id}:${w.event}`, slag: "smhi",
-    rubrik: `SMHI: ${w.event ?? "varning"}`, text: `nivå ${w.niva ?? "–"}`, avstandM: 0, langsM: 0 });
+    rubrik: `SMHI: ${w.event ?? "varning"}`, text: `nivå ${w.niva ?? "–"}`, avstandM: 0, langsM: 0, vag: null, start: null });
   return rader.sort((a, b) => ORDNING.indexOf(a.slag) - ORDNING.indexOf(b.slag) || a.langsM - b.langsM || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
 }
 
@@ -761,6 +835,56 @@ export function tomma(rader: Rad[]): { inget: Slag[]; koerMatsInte: boolean } {
   return { inget: ORDNING.filter((s) => !finns.has(s) && s !== "restid"), koerMatsInte: !rader.some((r) => r.id.startsWith("tt:")) };
 }
 
+// ── Sammanslagningen och notisen (DECISIONS #530) ────────────────────────────────────────────────────────────────────────────
+/** En rad på skärmen: en enskild sak, eller flera av samma slag på samma väg. `ids` är raderna den står för. */
+export type Grupp = { id: string; slag: Slag; rubrik: string; text: string; antal: number; ids: string[]; langsM: number };
+
+/** Det som alltid står för sig: det viktiga och det sällsynta. Resten slås samman per väg från GRUPP_FRAN av samma slag. */
+const ENSKILD = new Set<Slag>(["halka", "frysrisk", "olycka", "hinder", "vilt", "ko", "farja", "smhi"]);
+export const GRUPP_FRAN = 3;
+const ORD: Partial<Record<Slag, [string, string]>> = { kamera: ["fartkamera", "fartkameror"], vagarbete: ["vägarbete", "vägarbeten"],
+  hastighet: ["hastighetsbegränsning", "hastighetsbegränsningar"], omledning: ["omledning", "omledningar"], restid: ["restidssträcka", "restidssträckor"] };
+const TAL = ["noll", "en", "två", "tre", "fyra", "fem", "sex", "sju", "åtta", "nio", "tio", "elva", "tolv"];
+const kmText = (m: number) => `${(m / 1000).toLocaleString("sv-SE", { maximumFractionDigits: 0 })} km`;
+
+/** Raderna sammanslagna för skärmen (favoritsidan §3: "Tre fartkameror"; en rapport som går att läsa på några sekunder). Kameror och
+ *  restider i normal trafik slås alltid samman, vägarbeten, hastigheter och omledningar per väg från GRUPP_FRAN. Ordningen är rapportens. */
+export function grupperade(rader: Rad[]): Grupp[] {
+  const ut: Grupp[] = [], hinkar = new Map<string, Rad[]>();
+  for (const r of rader) {
+    if (ENSKILD.has(r.slag)) { ut.push({ id: r.id, slag: r.slag, rubrik: r.rubrik, text: r.text, antal: 1, ids: [r.id], langsM: r.langsM }); continue; }
+    const nyckel = r.slag === "restid" ? "restid" : `${r.slag}|${r.vag ?? ""}`;
+    const l = hinkar.get(nyckel) ?? []; l.push(r); hinkar.set(nyckel, l);
+  }
+  for (const [nyckel, l] of hinkar) {
+    const slag = l[0].slag, vag = l[0].vag;
+    const samman = slag === "kamera" || slag === "restid" || l.length >= GRUPP_FRAN;
+    if (!samman) { for (const r of l) ut.push({ id: r.id, slag, rubrik: r.rubrik, text: r.text, antal: 1, ids: [r.id], langsM: r.langsM }); continue; }
+    const [en, flera] = ORD[slag]!;
+    const n = l.length, tal = n < TAL.length ? TAL[n] : String(n);
+    const rubrik = `${tal[0].toUpperCase()}${tal.slice(1)} ${n === 1 ? en : flera}${slag !== "restid" && vag ? ` på ${vag}` : ""}`;
+    const fran = Math.min(...l.map((r) => r.langsM)), till = Math.max(...l.map((r) => r.langsM));
+    const text = slag === "kamera" ? "Rösten säger till före varje kamera."
+      : slag === "restid" ? "Normal trafik på sträckorna längs rutten."
+      : `${n === 1 ? "" : `Mellan ${kmText(fran)} och ${kmText(till)} in på rutten. `}Närmast: ${l.sort((a, b) => a.langsM - b.langsM)[0].text || l[0].rubrik}`;
+    ut.push({ id: `grupp:${nyckel}`, slag, rubrik, text, antal: n, ids: l.map((r) => r.id), langsM: fran });
+  }
+  return ut.sort((a, b) => ORDNING.indexOf(a.slag) - ORDNING.indexOf(b.slag) || a.langsM - b.langsM || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+}
+
+/** Vad som ger en notis (favoritsidan §5): ny halka eller frysrisk, en olycka, ett hinder eller djur på vägen, och ett NYTT vägarbete
+ *  — ett som började inom NYTT_VAGARBETE_H timmar. Aldrig: vägarbeten som pågått länge, det som stod i förra kollen, prognosen och
+ *  SMHI:s varningar (T6). En inställd färja står också i §5, men Trafikverkets fält säger inte inställd (DeviationId bär ett värde på
+ *  varje avgång, #528) — den regeln väntar. */
+export const NYTT_VAGARBETE_H = 24;
+const NOTIS = new Set<Slag>(["halka", "frysrisk", "olycka", "hinder", "vilt"]);
+export function notis(rader: Rad[], nytt: string[], nu: number): { ja: boolean; ids: string[] } {
+  const ny = new Set(nytt);
+  const ids = rader.filter((r) => ny.has(r.id) && (NOTIS.has(r.slag) ||
+    (r.slag === "vagarbete" && r.start != null && nu - Date.parse(r.start) <= NYTT_VAGARBETE_H * 3_600_000))).map((r) => r.id);
+  return { ja: ids.length > 0, ids };
+}
+
 
 // ═══ skuggans rutter (30) ═══
 const RUTTER_PROV: Record<string, [number, number][]> = {"E22 Malmö→Kristianstad":[[13.05,55.6],[13.19,55.7],[13.35,55.76],[13.54,55.83],[13.74,55.85],[13.95,55.9],[14.05,55.95],[14.16,56.03]],"Väg 23 Höör→Osby":[[13.54,55.94],[13.62,56.02],[13.7,56.09],[13.77,56.16],[13.85,56.25],[13.93,56.32],[13.98,56.38]],"Väg 19 Ystad→Kristianstad":[[13.82,55.43],[13.87,55.5],[13.95,55.55],[14.02,55.63],[14.1,55.72],[14.13,55.82],[14.15,55.92],[14.16,56.02]],"E6 Malmö→Halmstad":[[12.99,55.61],[12.83,55.87],[12.7,56.05],[12.86,56.24],[12.85,56.42],[13.04,56.51],[12.86,56.67]],"E6 Halmstad→Göteborg":[[12.86,56.67],[12.49,56.9],[12.25,57.11],[12.08,57.49],[11.97,57.71]],"E6 Göteborg→Strömstad":[[11.97,57.71],[11.98,57.87],[11.82,58.07],[11.94,58.35],[11.68,58.47],[11.32,58.72],[11.17,58.94]],"Rv40 Göteborg→Jönköping":[[11.97,57.71],[12.22,57.68],[12.94,57.72],[13.42,57.79],[14.16,57.78]],"E4 Helsingborg→Jönköping":[[12.7,56.05],[13.28,56.28],[13.6,56.46],[13.94,56.83],[14.04,57.19],[14.16,57.78]],"E4 Jönköping→Linköping":[[14.16,57.78],[14.47,58.02],[14.65,58.23],[15.13,58.32],[15.62,58.41]],"E4 Linköping→Södertälje":[[15.62,58.41],[16.19,58.59],[17.01,58.75],[17.63,59.2]],"E4 Södertälje→Uppsala":[[17.63,59.2],[18.07,59.33],[17.92,59.65],[17.64,59.86]],"E4 Uppsala→Gävle":[[17.64,59.86],[17.51,60.34],[17.14,60.67]],"E4 Gävle→Sundsvall":[[17.14,60.67],[17.06,61.3],[17.11,61.73],[17.31,62.39]],"E4 Sundsvall→Umeå":[[17.31,62.39],[17.94,62.63],[18.72,63.29],[19.5,63.57],[20.26,63.83]],"E4 Umeå→Luleå":[[20.26,63.83],[21.06,64.75],[21.48,65.32],[22.15,65.58]],"E10 Luleå→Kiruna":[[22.15,65.58],[21.69,65.83],[20.66,67.13],[20.23,67.86]],"E14 Sundsvall→Åre":[[17.31,62.39],[15.66,62.53],[15.42,62.75],[14.64,63.18],[13.08,63.4]],"E18 Karlstad→Örebro":[[13.5,59.38],[14.11,59.31],[14.52,59.33],[15.21,59.27]],"E18 Örebro→Stockholm":[[15.21,59.27],[15.84,59.39],[16.55,59.61],[17.07,59.64],[18.07,59.33]],"Rv70 Enköping→Mora":[[17.07,59.64],[16.6,59.92],[16.17,60.15],[15.98,60.28],[15.43,60.48],[15.13,60.55],[14.99,60.73],[15.12,60.89],[14.54,61]],"C Värmland: Eda→Mångsbodarna":[[12.275,59.911],[12.623,60.02],[12.609,60.209],[12.615,60.385],[12.704,60.654],[13.114,61.158],[13.62,61.079]],"C Klarälvdalen: S Berga→Ruskåsen":[[13.134,59.726],[13.403,59.867],[13.253,60.207],[13.172,60.354]],"C Bergslagen: Gumhöjden→Gruvorna":[[13.909,60.022],[14.176,60.113],[14.2,60.327],[13.956,60.501],[14.334,60.86]],"C Ludvika: Basttjärn→Mårtanberg":[[14.979,60.025],[14.523,60.16],[14.674,60.467],[15.253,60.823]],"C Orsa finnmark: Lillhärdal→Gruvberget":[[14.04,61.843],[14.798,61.388],[15.135,61.167],[15.796,61.071],[16.177,61.132]],"C Norrlandskusten: Hammarbacken→Bönhamn":[[17.185,61.9],[17.277,62.078],[17.37,62.195],[17.453,62.517],[17.847,62.686],[18.446,62.876]],"C Fjällen: Blåsjöfjället→Kåtaviken":[[14.04,64.772],[15.379,64.968],[14.815,65.422],[15.095,66.01],[14.805,66.118]],"C Kiruna: Nikkaluokta→Riksgränsen":[[19.027,67.86],[20.294,67.856],[19.782,68.148],[18.575,68.434],[18.269,68.43],[18.116,68.433]],"C Lule lappmark: Porjus→Stora Sjöfallet":[[19.821,66.96],[18.367,67.474]],"C Tornedalen: Limingojärvi→Kätkesuando":[[22.899,66.689],[23.482,67.442],[23.311,68.12]]};
@@ -768,7 +892,7 @@ const RUTTER_PROV: Record<string, [number, number][]> = {"E22 Malmö→Kristians
 // ═══ supabase/functions/favoritprov/main.ts ═══
 // FAVORITPROVET (favoriterna, DECISIONS #529, Bengt 11/10: "vi bygger det nu … en testmiljö … under faktiska förhållanden och inte
 // når ut till själva telefonen"). Bygger rapportfilen som den är tänkt för appen, och det fliken skulle visa för skuggans 30 rutter,
-// var 30:e minut (:08/:38, sql/047) — men skriver ALLT till hinken `favoritprov` i Supabase Storage, aldrig till kartrepot eller
+// var 30:e minut (:08/:38, sql/047), med raderna sammanslagna och notisen simulerad (#530) — men skriver ALLT till hinken `favoritprov` i Supabase Storage, aldrig till kartrepot eller
 // data/app/v1/, så ingen app läser något av det. Filerna skrivs över (ingen historik som växer); visningen är docs/favoritprov.html.
 //
 // index.ts är GENERERAD av scripts/bundle-favoritprov.ts ur engine/src, publish/rapport-core.ts, skuggans rutter (RUTTER_PROV, ur
@@ -828,7 +952,7 @@ Deno.serve(async (req) => {
       "TemporaryLimit", "TrafficRestrictionType", "Geometry.Point.WGS84", "Geometry.Line.WGS84"].map((f) => `Deviation.${f}`);
     const [sit, tt, fa, fr, lv, st, wl] = await Promise.all([
       // Inget tidsfilter här: avvikelser utan sluttid (vägarbeten tills vidare) skulle falla bort. byggRapport avgör vad som är aktivt.
-      trv("Situation", "1.6", "road.trafficinfo", `<IN name="Deviation.MessageTypeValue" value="${TYPER}"/>`, ["Deleted", ...DEV]),
+      trv("Situation", "1.6", "road.trafficinfo", `<IN name="Deviation.MessageTypeValue" value="${TYPER}"/>`, ["Id", "Deleted", ...DEV]),
       trv("TravelTimeRoute", "1.6", "road.trafficinfo", "", ["Id", "Name", "TravelTime", "FreeFlowTravelTime", "TrafficStatus", "MeasureTime", "Geometry.WGS84"]),
       trv("FerryAnnouncement", "1.2", "ferry.trafficinfo", `<AND><GTE name="DepartureTime" value="${fran}"/><LT name="DepartureTime" value="${till}"/></AND>`),
       trv("FerryRoute", "1.2", "ferry.trafficinfo", ""),
@@ -838,8 +962,11 @@ Deno.serve(async (req) => {
     ]);
     steg("hamtning", t);
     t = performance.now();
+    const kalla = new Set((lv.weather as any[]).map((w) => String(w.id)));
     const { snabb, lang } = byggRapport({ nu, situationer: sit.rader, restider: tt.rader, farjor: fa.rader, farjeleder: fr.rader,
-      stationer: (wl as any[]).map((w) => ({ id: String(w.station_id), namn: String(w.name ?? ""), luft: w.air_temp_c == null ? null : Number(w.air_temp_c) })) });
+      // Bara stationerna i lägesfilens weather[] (ytan högst +3 °C) — de enda som kan stå som frysrisk; namnen för alla 855 vägde 8,8 kB (#530).
+      stationer: (wl as any[]).filter((w) => kalla.has(String(w.station_id)))
+        .map((w) => ({ id: String(w.station_id), namn: String(w.name ?? ""), luft: w.air_temp_c == null ? null : Number(w.air_temp_c) })) });
     if (fr.rader.length) snabb.noter.push(`färjeledens fält: ${Object.keys(fr.rader[0]).join(", ")}`);
     steg("rapport", t);
     t = performance.now();
@@ -861,8 +988,10 @@ Deno.serve(async (req) => {
     const rutter: Record<string, unknown> = {};
     for (const [namn, linje] of Object.entries(RUTTER_PROV)) {
       const rader = favoritRapport(linje, lv, st, snabb, lang);
+      const nytt = nyttSedan(forra?.rutter?.[namn]?.rader ?? null, rader);
+      // Skärmen visar grupperna (#530: sammanslagna per slag och väg); raderna står kvar under dem, och notisen räknas på det nya.
       rutter[namn] = { km: Math.round(linje.reduce((s, p, i) => i ? s + haversineM({ lon: linje[i - 1][0], lat: linje[i - 1][1] }, { lon: p[0], lat: p[1] }) : 0, 0) / 1000),
-        rader, nytt: nyttSedan(forra?.rutter?.[namn]?.rader ?? null, rader), tomma: tomma(rader) };
+        grupper: grupperade(rader), rader, nytt, notis: notis(rader, nytt, nu), tomma: tomma(rader) };
     }
     steg("rutterna", t);
     const fav = { schema: 1, generated_at: snabb.generated_at, lagesfil: lv.generated_at, forra: forra?.generated_at ?? null, rutter };
@@ -870,7 +999,9 @@ Deno.serve(async (req) => {
     const hist = (await lasHink("historik.json"))?.korningar ?? [];
     hist.push({ t: snabb.generated_at, ms: Math.round(performance.now() - t0), poster: snabb.poster.length, snabb_gz: manifest.snabb.gz_byte,
       lang_gz: manifest.lang.gz_byte, rader: Object.fromEntries(Object.entries(rutter).map(([n, r]: [string, any]) => [n, r.rader.length])),
-      nytt: Object.values(rutter).reduce((s: number, r: any) => s + r.nytt.length, 0) });
+      nytt: Object.values(rutter).reduce((s: number, r: any) => s + r.nytt.length, 0),
+      grupper: Object.values(rutter).reduce((s: number, r: any) => s + r.grupper.length, 0),
+      notis: Object.entries(rutter).filter(([, r]: [string, any]) => r.notis.ja).map(([n]) => n) });
     await skrivHink("historik.json", JSON.stringify({ schema: 1, korningar: hist.slice(-HISTORIK) }));
     return new Response(JSON.stringify({ ok: true, generated_at: snabb.generated_at, poster: snabb.poster.length, noter: snabb.noter,
       svar_byte: { situation: sit.byte, restider: tt.byte, farjor: fa.byte, farjeleder: fr.byte }, manifest, ny_lang: nyLang,
