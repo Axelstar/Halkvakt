@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { byggRapport, favoritRapport, glesa, grupperade, linjerUr, notis, nyttSedan, punktUr, slagFor, tomma, visning, ORDNING, GRUPP_FRAN, type Rad } from "../publish/rapport-core.ts";
+import { byggRapport, favoritRapport, glesa, grupperade, linjerUr, notis, nyttSedan, punktUr, slagFor, tomma, vagNamn, visning, ORDNING, GRUPP_FRAN, type Rad } from "../publish/rapport-core.ts";
 import type { LiveDoc, StaticDoc } from "../engine/src/snapshot.ts";
 
 // Rapportfilen och favoritprovet (DECISIONS #529). Syntetiska svar i Trafikverkets form; rutten går rakt österut vid 59°.
@@ -43,6 +43,9 @@ const IN = {
     dev({ Id: "v1", MessageTypeValue: "MaintenanceWorks", MessageCode: "Vägarbete", MessageCodeValue: "roadworks", NumberOfLanesRestricted: 1,
       SeverityText: "Liten påverkan", Geometry: { Line: { WGS84: "LINESTRING (15.3 58.99, 15.3 59.01)" } } }),
     dev({ Id: "h1", MessageTypeValue: "MaintenanceWorks", MessageCodeValue: "speedRestrictionInOperation", TemporaryLimit: "Hastighet: 50km/h", Geometry: { Point: { WGS84: "POINT (15.31 59.0)" } } }),
+    // Samma arbete som Körfältsavstängningar i samma situation (visningen 11/10): slås ihop med v1, med flest körfält.
+    dev({ Id: "v1b", MessageTypeValue: "MaintenanceWorks", MessageCode: "Körfältsavstängningar", MessageCodeValue: "laneClosures", NumberOfLanesRestricted: 2,
+      Geometry: { Line: { WGS84: "LINESTRING (15.3 58.995, 15.3 59.005)" } } }),
     dev({ Id: "vilande", MessageTypeValue: "MaintenanceWorks", Suspended: true, Geometry: { Point: { WGS84: "POINT (15.1 59.0)" } } }),
     dev({ Id: "slut", MessageTypeValue: "Accident", EndTime: "2026-10-12T05:30:00Z", Geometry: { Point: { WGS84: "POINT (15.1 59.0)" } } }),
     dev({ Id: "fjarran", MessageTypeValue: "Accident", Geometry: { Point: { WGS84: "POINT (18.0 59.3)" } } }),
@@ -71,7 +74,9 @@ test("rapportfilen: bara det aktiva, linjerna i den långsamma delen, restider o
   assert.deepEqual(ids.filter((i) => i.startsWith("dev:")).sort(), ["dev:fjarran", "dev:h2", "dev:o1", "dev:v1"], "vilande och slutade borta, h1 lagd på v1");
   const v1 = snabb.poster.find((p) => p.id === "dev:v1")!;
   assert.equal(v1.grans, 50, "hastigheten i samma situation ligger på vägarbetet");
-  assert.equal(visning(v1), "1 körfält avstängda · 50 km/h förbi vägarbetet · till 20 oktober");
+  assert.equal(visning(v1), "2 körfält avstängda · 50 km/h förbi vägarbetet · till 20 oktober", "v1b:s två körfält på v1");
+  assert.ok(!ids.includes("dev:v1b") && !lang.linjer["dev:v1b"], "körfältsavstängningen är samma vägarbete");
+  assert.ok(snabb.noter.includes("1 avvikelser sammanslagna med sitt vägarbete i samma situation"));
   assert.equal(snabb.poster.find((p) => p.id === "dev:h2")!.rubrik, "70 km/h");
   assert.ok(snabb.noter.includes("1 hastigheter lagda på sitt vägarbete"));
   assert.equal(visning(snabb.poster.find((p) => p.id === "dev:o1")!), "Olycka, ett körfält avstängt · rapporterad 07:00");
@@ -152,4 +157,9 @@ test("notisen: det nya av rätt slag, och ett vägarbete bara om det är nytt p�
   assert.deepEqual(notis(r, [], nu), { ja: false, ids: [] }, "inget nytt, ingen notis");
   assert.deepEqual(notis(r, ["dev:gammalt", "smhi:1", "tt:1", "cam:1"], nu), { ja: false, ids: [] }, "ett gammalt vägarbete, SMHI (T6), köer och kameror ger aldrig notis");
   assert.deepEqual(notis(r, ["seg:1", "dev:nytt"], nu), { ja: true, ids: ["seg:1", "dev:nytt"] });
+});
+
+test("vägnamnen skrivs lika", () => {
+  assert.equal(vagNamn("17"), "väg 17"); assert.equal(vagNamn("Väg 17"), "väg 17"); assert.equal(vagNamn("väg 882"), "väg 882");
+  assert.equal(vagNamn("E22"), "E22"); assert.equal(vagNamn("e 4"), "E4"); assert.equal(vagNamn(""), null); assert.equal(vagNamn(null), null);
 });

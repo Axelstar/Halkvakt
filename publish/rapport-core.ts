@@ -89,6 +89,14 @@ export function visning(p: Post): string {
   return [p.t ?? "", p.korfalt ? `${p.korfalt} körfält avstängda` : "", p.grans ? `${p.grans} km/h förbi vägarbetet` : "", slut,
     p.slag === "olycka" || p.slag === "hinder" || p.slag === "ko" ? `rapporterad ${klocka(p.start) ?? "–"}` : ""].filter(Boolean).join(" · ");
 }
+/** Vägnamnen skrivna lika, så att sammanslagningen per väg träffar: E-vägar som "E22", övriga som "väg 17" — Trafikverket skriver
+ *  "17", "Väg 17" och "väg 17" om vartannat (kamerornas *17* i visningen). Inget namn blir null. */
+export function vagNamn(v: unknown): string | null {
+  const s = String(v ?? "").trim(); if (!s) return null;
+  const e = /^e\s*(\d+)$/i.exec(s); if (e) return `E${e[1]}`;
+  const n = /^(?:väg|rv|riksväg|länsväg)?\s*(\d+)$/i.exec(s); if (n) return `väg ${n[1]}`;
+  return s.slice(0, 20);
+}
 const VAGARBETE = new Set(["MaintenanceWorks", "RoadOrCarriagewayOrLaneManagement"]);
 const HINDER = new Set(["obstructionOnTheRoad", "objectOnTheRoad", "brokenDownVehicle"]);
 const HASTIGHET = /hastighet|speedRestriction/i, OMLEDNING = /omled|divers|detour/i;   // som mätningen #528, efter rättelsen
@@ -119,7 +127,7 @@ export type In = {
 export function byggRapport(x: In): { snabb: Rapport; lang: Linjer } {
   const iso = new Date(x.nu).toISOString();
   const poster: Post[] = [], linjer: Record<string, Linje[]> = {}, noter: string[] = [];
-  let lagda = 0;
+  let lagda = 0, sammanslagna = 0;
   for (const s of x.situationer) {
     if (s.Deleted) continue;
     const egna: Post[] = [], granser: number[] = [];
@@ -135,7 +143,7 @@ export function byggRapport(x: In): { snabb: Rapport; lang: Linjer } {
       const post: Post = { id, slag, rubrik: slag === "hastighet" ? (Number.isFinite(kmh) ? `${kmh} km/h` : "Tillfälligt nedsatt hastighet")
         : slag === "omledning" ? "Omledning" : ren(d.MessageCode, 60) || RUBRIK[slag],
         t: ren(d.Header ?? d.Message, 100) || ren(d.LocationDescriptor, 100) || undefined,
-        ...(p ? { p } : {}), ...(l.length ? { l: id } : {}), vag: ren(d.RoadNumber, 20) || null,
+        ...(p ? { p } : {}), ...(l.length ? { l: id } : {}), vag: vagNamn(d.RoadNumber),
         ...(slag === "vagarbete" || slag === "olycka" || slag === "hinder" || slag === "ko" ? { start: d.StartTime ?? d.CreationTime ?? null } : {}),
         ...(slag !== "olycka" ? { slut: d.ValidUntilFurtherNotice ? "tv" : d.EndTime ? datumIso(d.EndTime) : null } : {}),
         ...(d.NumberOfLanesRestricted ? { korfalt: Number(d.NumberOfLanesRestricted) } : {}), sev: d.SeverityCode ?? null };
@@ -144,15 +152,27 @@ export function byggRapport(x: In): { snabb: Rapport; lang: Linjer } {
       egna.push(post);
     }
     // Hastigheten vid ett vägarbete är vägarbetets (795 av 841 låg inom 100 m av ett, #530): den lägsta gränsen läggs på situationens
-    // vägarbeten, och hastighetsposterna stryks. En hastighet utan vägarbete i samma situation står kvar för sig.
+    // vägarbete, och hastighetsposterna stryks. En hastighet utan vägarbete i samma situation står kvar för sig.
+    // Och en situation är ETT vägarbete: Trafikverket skriver ofta samma arbete som både *Vägarbete* och *Körfältsavstängningar*
+    // (visningen mot första körningen, "Vägarbete söder om Vä" två gånger). De slås ihop i den första: flest avstängda körfält,
+    // högsta påverkan, första texten och geometrin; de andras linjer stryks.
     const va = egna.filter((q) => q.slag === "vagarbete");
+    const forsta = va[0];
     for (const q of egna) {
       if (q.slag === "hastighet" && va.length && granser.length) { lagda++; delete linjer[q.id]; continue; }
-      if (q.slag === "vagarbete" && granser.length) q.grans = Math.min(...granser);
+      if (q.slag === "vagarbete" && q !== forsta) {
+        if (q.korfalt && (!forsta.korfalt || q.korfalt > forsta.korfalt)) forsta.korfalt = q.korfalt;
+        if (q.sev != null && (forsta.sev == null || q.sev > forsta.sev)) forsta.sev = q.sev;
+        if (!forsta.t && q.t) forsta.t = q.t;
+        if (!forsta.p && !forsta.l) { forsta.p = q.p; forsta.l = q.l; } else if (q.l && q.l !== forsta.l) delete linjer[q.l];
+        sammanslagna++; continue;
+      }
+      if (q === forsta && granser.length) q.grans = Math.min(...granser);
       poster.push(q);
     }
   }
   if (lagda) noter.push(`${lagda} hastigheter lagda på sitt vägarbete`);
+  if (sammanslagna) noter.push(`${sammanslagna} avvikelser sammanslagna med sitt vägarbete i samma situation`);
   for (const r of x.restider) {
     const l = linjerUr(r.Geometry?.WGS84); if (!l.length) continue;
     const id = `tt:${r.Id}`; linjer[id] = l;
@@ -226,7 +246,7 @@ export function favoritRapport(rutt: Linje, live: LiveDoc, stat: StaticDoc, snab
   const st = snabb.stationer;
   const cfg = DEFAULT_CONFIG;
   for (const s of live.segments) kand.push({ id: `seg:${s.id}`, slag: "halka", rubrik: `Halt väglag${s.road ? ` på ${s.road}` : ""}`,
-    text: s.info.join(", ") || "halka rapporterad på sträckan", geo: lin(`seg:${s.id}`, [s.line]), vag: s.road });
+    text: s.info.join(", ") || "halka rapporterad på sträckan", geo: lin(`seg:${s.id}`, [s.line]), vag: vagNamn(s.road) });
   for (const w of live.weather) {
     const t = w.yta, frys = t != null && t <= 1 && w.fukt;
     // S3 (#524): samma villkor som motorn, med motorns startvärden.
@@ -240,8 +260,8 @@ export function favoritRapport(rutt: Linje, live: LiveDoc, stat: StaticDoc, snab
   }
   for (const b of live.bridges ?? []) if (b.yta != null && b.yta <= 3 && b.fukt) kand.push({ id: `bro:${b.id}`, slag: "frysrisk",
     rubrik: `Frysrisk på bron${b.road ? ` på ${b.road}` : ""}`, text: `närmaste station ${grader(b.yta)}`, geo: pkt(`bro:${b.id}`, b.lon, b.lat), vag: b.road });
-  for (const c of stat.cameras) kand.push({ id: `cam:${c.id}`, slag: "kamera", rubrik: "Fartkamera", text: c.road ?? "",
-    geo: pkt(`cam:${c.id}`, c.lon, c.lat), vag: c.road });
+  for (const c of stat.cameras) kand.push({ id: `cam:${c.id}`, slag: "kamera", rubrik: "Fartkamera", text: vagNamn(c.road) ?? "",
+    geo: pkt(`cam:${c.id}`, c.lon, c.lat), vag: vagNamn(c.road) });
   for (const p of snabb.poster) {
     const geo = p.l ? lin(p.id, lang.linjer[p.l] ?? []) : p.p ? pkt(p.id, p.p[0], p.p[1]) : [];
     if (geo.length) kand.push({ id: p.id, slag: p.slag, rubrik: p.rubrik, text: visning(p), geo, vag: (p.vag as string | null) ?? null,
