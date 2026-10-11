@@ -10483,3 +10483,25 @@ utfall som faller avgör inte driften. (b) Bara timstegen 6–11 och 24–29 (un
 mätningar bara fram till utgivningen: en annan fråga (punkt 4).
 
 **Stomdokument:** KUV §9, BED §4.2
+
+**Byggt 11/10 eftermiddag (Claude; Axel: *"pappa behövs inte"*, han trycker knappen).** Omstarten och läsningen, medan hämtningen
+pågår:
+- `fysik/niva2/prognos.py`: nivå 2 på analysen som `kedja.py niva2` (samma kalibrering, särdrag och rättelse; `fit_modeller` är
+  `fit_oof` rad för rad och lämnar också de fem modellerna). Kolumnens hela tillstånd sparas i slutet av timmen före varje körning
+  (`fysik_lw.run_lw`, nya `T_init` och `spara`; utan dem oförändrad). För varje körning: vädret i fönstret [körningen − 45 dygn,
+  +29 h] är analysen före körningen och prognosen från den, tdeep, ta72 och snötäcket räknas om på den skarvade serien, kolumnen
+  startar ur det sparade tillståndet, särdragen byggs på fönstret och veckets modell (stationens region gömd) läggs på timstegen
+  6–11 och 24–29. Prognosens tomma värden i timsteg 0 (strålning, nederbörd) tas ur analysen för samma timme, som i drift (punkt 4).
+- Självtestet (ci): omstart ur sparat tillstånd på samma väder ger samma yta (< 1e-9); en "prognos" som är analysen själv ger
+  analysens skattning (100 % lika, max 7e-7); prognosens luft 3 °C varmare i en körning höjer den körningens yta och rör inte nästa;
+  bruset räknas som 0 och −0,02 mm fäller.
+- Läst på den riktiga del 3 (10–29/12): 80 körningar, 2 049 600 rader, 854 stationer, strålning och nederbörd tomma precis i
+  timsteg 0 (68 320 = 80 × 854), 38 300 nederbördsvärden i [−0,01, 0), inget under.
+- `grannar_blandning.py` tar `--lage`, `--kod` och `--lagg-till`, så att replikan körs på analysen, +6 h och +24 h in i samma
+  manifest; mätningen `kuvos-blandning-prognos-2026-10-11.ts` läser alla nio filer med RÅ och OFFSET bredvid. `kuvos.yml` hämtar
+  prognosdelarna med summorna mot `kuvos/metnordic-prognos-leverans.json`, som skrivs när hämtningen är klar.
+
+**A2 per ytband i samma körning (kort #329, DECISIONS #520), förregistrerat före knappen.** Varje kandidat redovisar de grova felen
+per uppmätt yta (≤ −3 · −3…+1 · +1…+3 · +3…+5 °C) och hur stor del av alla grova fel som ligger i varje band. **Granskarens förväntan:
+25–45 % av de grova felen ligger i +3…+5 °C**, för RÅ och för NIVÅ 2+BLANDNING. Ingen grind och ingen population ändras av den (regel L,
+kort #282).

@@ -11,8 +11,11 @@ from physics import SIGMA, RHO_A, CP_A, DZ, Z_MID, K, RHOC, DEFAULT, road_cover,
 LAGER_5CM = 3          # Z_MID[3] = 0.055 m; ECMWF's soil_temperature_0_to_7cm was the 0–7 cm mean
 
 
-def run_lw(F, p=None, dt_sub=1800.0):
-    """Returns (Ts, T5): surface and 5.5 cm layer at the end of each hour, shape (n_hours, n_st)."""
+def run_lw(F, p=None, dt_sub=1800.0, T_init=None, spara=None):
+    """Returns (Ts, T5): surface and 5.5 cm layer at the end of each hour, shape (n_hours, n_st).
+    For the forecast mode (DECISIONS #519): T_init (n_st, n_layers) starts the column from a saved state instead of the air/deep
+    blend, and spara (hour indices) also returns {h: the column's state at the end of hour h} as a third value. Without them the
+    function is unchanged (the self-test proves both: a restart from a saved state on the same weather gives the same surface)."""
     q = dict(DEFAULT)
     if p: q.update(p)
     nh, ns = F['ta'].shape
@@ -22,7 +25,13 @@ def run_lw(F, p=None, dt_sub=1800.0):
     lw_all = F.get('lw')
     T = np.empty((ns, nl))
     w = (Z_MID / Z_MID[-1])[None, :]
-    T[:] = ta_all[0][:, None] * (1 - w) + (F['tdeep'][0] + q['deep_off'])[:, None] * w
+    if T_init is None:
+        T[:] = ta_all[0][:, None] * (1 - w) + (F['tdeep'][0] + q['deep_off'])[:, None] * w
+    else:
+        T[:] = T_init
+    med_tillstand = spara is not None
+    spara = set() if spara is None else set(spara)
+    tillstand = {}
     dzc = (DZ[:-1] + DZ[1:]) / 2
     kc = 2 * K[:-1] * K[1:] / (K[:-1] + K[1:])
     G = kc / dzc
@@ -76,4 +85,6 @@ def run_lw(F, p=None, dt_sub=1800.0):
                 T[:, i] = rp[:, i] - cp[:, i] * T[:, i + 1]
         out[h] = T[:, 0]
         out5[h] = T[:, LAGER_5CM]                                    # change 2
-    return out, out5
+        if h in spara:
+            tillstand[h] = T.copy()
+    return (out, out5, tillstand) if med_tillstand else (out, out5)

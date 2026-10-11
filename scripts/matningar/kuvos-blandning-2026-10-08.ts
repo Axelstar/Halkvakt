@@ -47,6 +47,7 @@ export function blandningILkuvosen(stations: Map<string, Station>, filer: Fil[],
     for (const [b, lo, hi] of BANDS) console.log(`      ${b.padEnd(8)} ${rad(stats(ev.filter((e) => e.ankKm >= lo && e.ankKm < hi)))}`);
     const norr = ev.filter((e) => stations.get(e.station)!.lat >= NORR_LAT), soder = ev.filter((e) => stations.get(e.station)!.lat < NORR_LAT);
     console.log(`      norr ≥ ${NORR_LAT}° grova ${pct(stats(norr).gross)} (n ${norr.length}) · söder grova ${pct(stats(soder).gross)} (n ${soder.length})`);
+    console.log(`      ${ytbandsrad(ev)}`);
   }
   const rader: { measured: number; ankKm: number; station: string; v: (number | null)[] }[] = [];
   for (let k = 0; k < N; k++) if (med[k]) rader.push({ measured: RA[k].measured, ankKm: RA[k].ankKm, station: RA[k].station, v: kand.map(([, v]) => v[k]) });
@@ -54,6 +55,17 @@ export function blandningILkuvosen(stations: Map<string, Station>, filer: Fil[],
   const reg: Rad[] = RA.map((e) => ({ station: e.station, lat: stations.get(e.station)!.lat, ankKm: e.ankKm, measured: e.measured }));
   for (const r of regionsrapport(reg, kand.map(([namn, v]) => ({ namn, v })), vikt)) console.log(r);
   return ut;
+}
+
+/** A2 PER YTBAND (kort #329, DECISIONS #520): de grova felen per uppmätt yttemperatur och hur stor del av alla grova fel som ligger
+ *  i varje band — särskilt +3…+5 °C, där appen ändå inte varnar. Bara redovisning: ingen grind och ingen population ändras. */
+export const YTBAND: [string, number, number][] = [["≤ −3", -Infinity, -3], ["−3…+1", -3, 1], ["+1…+3", 1, 3], ["+3…+5", 3, 5.0001]];
+export function ytbandsrad(ev: { measured: number; pred: number }[]): string {
+  const grova = ev.filter((e) => Math.abs(e.pred - e.measured) > 2).length;
+  return "ytband " + YTBAND.map(([namn, lo, hi]) => {
+    const i = ev.filter((e) => e.measured > lo && e.measured <= hi), g = i.filter((e) => Math.abs(e.pred - e.measured) > 2).length;
+    return `${namn} °C grova ${pct(i.length ? g / i.length : NaN)} (n ${i.length}, ${pct(grova ? g / grova : NaN)} av felen)`;
+  }).join(" · ");
 }
 
 /** Manifestet: varje fil med namn, läge (analys eller operativt, med ledtiden) och sha256. Tomt = grannarna och blandningen räknades inte i jobbet. */
@@ -97,8 +109,11 @@ if (korsSjalv && process.argv.includes("--sjalvtest")) {
   mfel = ""; try { lasManifest({ filer: [{ fil: "a.csv.gz", namn: "X", lage: "analys", sha256: "abc" }] }); } catch (e) { mfel = String(e); }
   k(mfel.includes("saknar namn, läge eller sha256"), "en fil utan riktig summa fälls");
   k(spannkontroll(filer[0].fysik).startsWith("fysik_c:"), "värdevakten: fältet har spann");
+  k(fangat.some((r) => r.includes("ytband ≤ −3 °C")), "ytbanden skrivs per kandidat (#329)");
+  const yb = ytbandsrad([{ measured: -4, pred: -4 }, { measured: 0, pred: 3 }, { measured: 4, pred: 0 }, { measured: 4, pred: 4.5 }]);
+  k(yb.includes("+3…+5 °C grova 50,00 % (n 2, 50,00 % av felen)") && yb.includes("≤ −3 °C grova 0,00 % (n 1, 0,00 % av felen)"), `ytbandsraden: ${yb}`);
   if (fel) process.exit(1);
-  console.log("✓ självtest: filerna läses som FYSIK, mäts på RÅ:s punkter per band med taket bredvid, frysflaggan och norr/söder med trafikvikten skrivs, och manifestet fäller en fil utan läge eller summa");
+  console.log("✓ självtest: filerna läses som FYSIK, mäts på RÅ:s punkter per band med taket bredvid, frysflaggan, norr/söder med trafikvikten och ytbanden skrivs, och manifestet fäller en fil utan läge eller summa");
   process.exit(0);
 }
 
