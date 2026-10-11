@@ -10503,3 +10503,34 @@ bedömningen §4.2:** räcker det för att bygga S3?
 i bygget. (b) Ingen avstämning alls: dokumenten gled isär 3/10–7/10 (#483), och det var skälet till dokumentsynken.
 
 **Stomdokument:** BED läget (stäms av i morgonens synk)
+
+## #523 (11/10 2026) S1 för alla stationer: varvets första rutt bär varje väderpunkt i lägesfilen (kort #89)
+
+**Beslut.** Bengt 11/10: *"1, ja"* — väg B, på läsningen samma morgon (DB-knappen 38119492966, READ ONLY): arkivets fall av
+efterhalkans regel 4–11/10 var 233 ögonblick vid 40 stationer; 78 % låg mer än 20 km från närmaste skuggrutt (median 57 km), inget
+söder om 58° och 81 % mellan 58° och 62°; bara 12 (5 %) låg i en rutts ruta den halvtimme rutten körde, eftersom rutterna roterar och
+var och en körs var 3,5:e timme. Skuggloggen är 7,5 MB (19 305 rader sedan 29/8) av databasens 418 MB och växer ungefär 260 kB per
+dygn; i snitt 152 stationer per halvtimme har ytan högst +3 °C.
+
+**Vad som byggs.** `efterhalkaRader` i `supabase/functions/skuggmotor/main.ts` tar en rutt eller ingen: utan rutt loggas varje
+väderpunkt i lägesfilen. Varvets första rutt (en av tre per halvtimme) loggar utan rutt, de andra som förut; `larm` gäller fortfarande
+bara den rutt raden hör till. Inga nya rader i `shadow_log` (räkningar per rutt rörs inte), och S1-jämförelsen tar bort dubbletterna.
+Kostnad: ungefär 240 kB per dygn i snitt, mer mitt i vintern. `index.ts` buntad med `scripts/bundle-skuggmotor.ts`.
+
+**Bevis efter driftsättningen** (CLAUDE.md: en ny logg bevisas med en rad med innehåll): första ruttens `efterhalka` bär lika många
+stationer som lägesfilens `weather[]` i samma varv, och S1-jämförelsen körd igen efter ett dygn.
+
+**Alternativ som valdes bort.** (a) En egen rad per varv: förvränger det som räknar rader per rutt. (b) Alla tre ruttraderna med alla
+stationer: tre gånger kostnaden. (c) Fler rutter i dagens rotation: varje rutt körs då ännu mer sällan (väg C, efter B).
+
+**Stomdokument:** MAT, BED §4.2
+
+## #524 (11/10 2026) Motorregeln S3 byggs av Claude, Axel granskar och arkiverar (kort #89)
+
+**Beslut.** Bengt 11/10: *"2 ja"* — S3, efterhalkans regel i motorn och novemberbetans enda nya regel (`docs/MALET.md` §5), byggs av
+Claude efter S1-läsningen (#521): `icing_point` med `regn_h` och lutningen enligt TROSKLAR-KOMBINATIONEN §7 och startvärdena i #222,
+startvärdena i kontraktsgrinden, vektorer i tre språk och texten *"Halkvakt tror: frysrisk framöver"* (svenska först). Axels bygge
+enligt #331 och #196; Axel granskar och arkiverar. Bygget i en egen PR, som följer CLAUDE.md:s regler för motorn, vektorerna och
+apparna (skills, produktboken, ios-engine, android och ci gröna innan Axel ombeds arkivera).
+
+**Stomdokument:** MAT, APP, BED §4.2
