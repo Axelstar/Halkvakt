@@ -776,6 +776,28 @@ function polygonTraffar(geom: any, rutt: Linje): boolean {
   return false;
 }
 
+/** Rutnätet längs rutten: rutor om RUTA_GRAD grader som ruttens sträckor, vidgade med marginM, når in i. Svaret säger om en kandidats
+ *  ruta (punkt eller linjens rektangel) når in i någon av dem. Försiktigt: hellre en ruta för mycket än en för lite. */
+export const RUTA_GRAD = 0.05;
+export function rutnat(rutt: Linje, marginM: number): (geo: Hazard[]) => boolean {
+  const rutor = new Set<string>();
+  const nord = Math.max(...rutt.map((p) => Math.abs(p[1])));
+  const dy = marginM / 110_000, dx = marginM / (111_320 * Math.cos((nord * Math.PI) / 180));
+  const cell = (v: number) => Math.floor(v / RUTA_GRAD);
+  for (let i = 0; i < rutt.length - 1; i++) {
+    const [ax, ay] = rutt[i], [bx, by] = rutt[i + 1];
+    for (let cx = cell(Math.min(ax, bx) - dx); cx <= cell(Math.max(ax, bx) + dx); cx++)
+      for (let cy = cell(Math.min(ay, by) - dy); cy <= cell(Math.max(ay, by) + dy); cy++) rutor.add(`${cx},${cy}`);
+  }
+  return (geo) => geo.some((h) => {
+    const ps: number[][] = h.kind === "slippery_segment" ? h.line : [[(h as any).lon, (h as any).lat]];
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    for (const [x, y] of ps) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    for (let cx = cell(x0); cx <= cell(x1); cx++) for (let cy = cell(y0); cy <= cell(y1); cy++) if (rutor.has(`${cx},${cy}`)) return true;
+    return false;
+  });
+}
+
 /** Ligger linjen längs rutten och inte bara tvärs över den? Linjen provas var LANGS_STEG_M:e meter. */
 export function langsVagen(geo: Hazard[], rutt: Linje, marginalM: number): boolean {
   const prov = geo.flatMap((h) => h.kind === "slippery_segment" ? samplePolyline(h.line, LANGS_STEG_M) : [])
@@ -818,15 +840,11 @@ export function favoritRapport(rutt: Linje, live: LiveDoc, stat: StaticDoc, snab
     if (geo.length) kand.push({ id: p.id, slag: p.slag, rubrik: p.rubrik, text: "", post: p, geo, vag: (p.vag as string | null) ?? null,
       start: (p.start as string | null) ?? null });
   }
-  // Grovt förfilter per rutt, som skuggans rektangel (rutaKring): bara kandidater vars ruta skär rutans ruta plus den största
-  // marginalen mäts mot linjen. Utfallet är detsamma — farorLangsRutten tar ändå bara det inom marginalen — men arbetet en bråkdel.
-  const ruta = rutaKring(rutt, Math.max(...Object.values(marginal)) / 1000 + 1);
-  const skar = (geo: Hazard[]) => geo.some((h) => {
-    const ps: number[][] = h.kind === "slippery_segment" ? h.line : [[(h as any).lon, (h as any).lat]];
-    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
-    for (const [x, y] of ps) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
-    return x1 >= ruta.x0 && x0 <= ruta.x1 && y1 >= ruta.y0 && y0 <= ruta.y1;
-  });
+  // Grovt förfilter per rutt: ett RUTNÄT längs vägen (#531). Varje ruta som en av ruttens sträckor — vidgad med den största marginalen
+  // och lite till — når in i markeras; en kandidat mäts mot linjen bara om dess egen ruta når in i en markerad ruta. Rektangeln runt
+  // hela rutten (rutaKring) släppte igenom en stor del av landet för en diagonal rutt på 300 km. Utfallet är detsamma —
+  // farorLangsRutten tar ändå bara det inom marginalen — men arbetet en bråkdel.
+  const skar = rutnat(rutt, Math.max(...Object.values(marginal)) + 200);
   const rader: Rad[] = [];
   for (const k of kand) {
     if (!skar(k.geo)) continue;
