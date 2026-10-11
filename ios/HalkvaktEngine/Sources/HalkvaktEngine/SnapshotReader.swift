@@ -31,7 +31,9 @@ public enum SnapshotReader {
             out.append(.point(id: "wx:\(str(w, "id"))", kind: .icing_point,
                               lon: dbl(w, "lon"), lat: dbl(w, "lat"), bearing: nil,
                               meta: PointMeta(surfaceTempC: optDbl(w, "yta"),
-                                              moisture: (w["fukt"] as? Bool) ?? false)))
+                                              moisture: (w["fukt"] as? Bool) ?? false,
+                                              // S3 (DECISIONS #524): saknas fältet eller är det null ⇒ nil, och betan tiger.
+                                              rainH: optDbl(w, "regn_h"), fall30C: optDbl(w, "lutning30"))))
         }
         for d in arr(liveDoc, "deviations") {
             // Olyckslyftet (#28): sev/slut are absent in snapshots published before this

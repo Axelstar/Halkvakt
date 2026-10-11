@@ -51,6 +51,8 @@ class VectorTest {
                 speedLimitKmh = m?.let { if (it.has("speedLimitKmh") && !it.isNull("speedLimitKmh")) it.getInt("speedLimitKmh") else null },
                 severityCode = m?.let { if (it.has("severityCode") && !it.isNull("severityCode")) it.getInt("severityCode") else null },
                 bridge = m?.optBoolean("bridge", false) ?: false,
+                rainH = m?.let { if (it.has("rainH") && !it.isNull("rainH")) it.getDouble("rainH") else null },
+                fall30C = m?.let { if (it.has("fall30C") && !it.isNull("fall30C")) it.getDouble("fall30C") else null },
                 road = m?.let { if (it.has("road") && !it.isNull("road")) it.getString("road") else null },
                 endTimeLocal = m?.let { if (it.has("endTimeLocal") && !it.isNull("endTimeLocal")) it.getString("endTimeLocal") else null },
             ),
@@ -94,6 +96,7 @@ class VectorTest {
             assertEquals(e.getLong("distanceM"), g.distanceM, "$name[$i].distanceM")
             assertEquals(e.getString("text"), g.text, "$name[$i].text")
             assertEquals(if (e.has("step")) e.getString("step") else null, g.step?.wire, "$name[$i].step")
+            assertEquals(e.optBoolean("beta", false), g.beta, "$name[$i].beta")
         }
     }
 

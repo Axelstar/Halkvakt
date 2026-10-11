@@ -23,12 +23,15 @@ public struct PointMeta {
     /// accident — EndTime pre-formatted "HH:MM" Europe/Stockholm by the publisher.
     /// The engine reads no clocks and knows no timezones; the string arrives ready to speak.
     public var endTimeLocal: String? = nil
+    /// icing_point — S3 (DECISIONS #222, #524): timmar sedan regn och ytans fall på 30 min, positivt = faller. nil ⇒ tyst.
+    public var rainH: Double? = nil
+    public var fall30C: Double? = nil
     public init(surfaceTempC: Double? = nil, moisture: Bool = false, active: Bool = true,
                 speedLimitKmh: Int? = nil, severityCode: Int? = nil, endTimeLocal: String? = nil,
-                bridge: Bool = false, road: String? = nil) {
+                bridge: Bool = false, road: String? = nil, rainH: Double? = nil, fall30C: Double? = nil) {
         self.surfaceTempC = surfaceTempC; self.moisture = moisture; self.active = active
         self.speedLimitKmh = speedLimitKmh; self.severityCode = severityCode; self.endTimeLocal = endTimeLocal
-        self.bridge = bridge; self.road = road
+        self.bridge = bridge; self.road = road; self.rainH = rainH; self.fall30C = fall30C
     }
 }
 
@@ -69,8 +72,11 @@ public struct Alert: Equatable {
     public let text: String
     /// Serious accidents only — which of the two-step calls (DECISIONS #28, #443). nil otherwise.
     public let step: AccidentStep?
-    public init(t: Double, hazardId: String, kind: HazardKind, distanceM: Int, text: String, step: AccidentStep? = nil) {
+    /// S3 only — the frost-risk call came from the post-rain beta rule (DECISIONS #524). The warning card marks it as beta.
+    public let beta: Bool
+    public init(t: Double, hazardId: String, kind: HazardKind, distanceM: Int, text: String, step: AccidentStep? = nil, beta: Bool = false) {
         self.t = t; self.hazardId = hazardId; self.kind = kind; self.distanceM = distanceM; self.text = text; self.step = step
+        self.beta = beta
     }
 }
 
@@ -89,6 +95,11 @@ public struct EngineConfig {
     public var leadMaxM = 3000.0
     public var segmentSampleM = 100.0
     public var cameraBearingToleranceDeg = 60.0
+    // S3 (DECISIONS #222, #524): betans startvärden — samma tal som engine/src/types.ts och sql/028 (kontraktsgrinden).
+    public var efterhalkaYtaMinC = 1.0
+    public var efterhalkaYtaMaxC = 3.0
+    public var efterhalkaFall30C = 0.8
+    public var efterhalkaRegnH = 2.0
     public init() {}
 }
 
@@ -142,6 +153,9 @@ enum Geo {
 // MARK: - Texts (exact product copy — mirror of texts.ts)
 
 enum Texts {
+    /// S3, efterhalkan som märkt beta (DECISIONS #222, #524) — spegel av EFTERHALKA_TEXT i texts.ts.
+    static let efterhalkaText = "Halkvakt tror: frysrisk framöver."
+
     /// " på E18" / " på väg 25" / "" när numret saknas.
     static func roadPhrase(_ road: String?) -> String {
         guard let r = road?.trimmingCharacters(in: .whitespaces), !r.isEmpty else { return "" }
@@ -256,6 +270,7 @@ public final class AlertEngine {
             var alertKey: String; var step: AccidentStep? = nil; var endTimeLocal: String? = nil
             var bridge: Bool = false
             var road: String? = nil
+            var beta: Bool = false
         }
         var candidates: [Candidate] = []
 
@@ -298,9 +313,17 @@ public final class AlertEngine {
                 }
             case .icing_point:
                 // Broar (#38): brobanan fryser först — närmaste station på +3 räcker.
-                if let t = p.meta.surfaceTempC, t <= (p.meta.bridge ? 3 : 1), p.meta.moisture, distM <= leadM {
-                    candidates.append(Candidate(id: p.id, kind: p.kind, distM: distM, limit: nil, alertKey: p.id,
-                                                bridge: p.meta.bridge, road: p.meta.road))
+                if let t = p.meta.surfaceTempC, t <= (p.meta.bridge ? 3 : 1), p.meta.moisture {
+                    if distM <= leadM {
+                        candidates.append(Candidate(id: p.id, kind: p.kind, distM: distM, limit: nil, alertKey: p.id,
+                                                    bridge: p.meta.bridge, road: p.meta.road))
+                    }
+                } else if !p.meta.bridge, let t = p.meta.surfaceTempC, let rainH = p.meta.rainH, let fall30 = p.meta.fall30C,
+                          t >= cfg.efterhalkaYtaMinC, t <= cfg.efterhalkaYtaMaxC,
+                          fall30 >= cfg.efterhalkaFall30C, rainH <= cfg.efterhalkaRegnH, distM <= leadM {
+                    // S3 — efterhalkan som märkt beta (DECISIONS #222, #524), spegel av engine.ts: +1…+3 °C, fallit snabbt
+                    // efter regn inom 2 h. Bara stationer — broarna behåller sin +3-regel.
+                    candidates.append(Candidate(id: p.id, kind: p.kind, distM: distM, limit: nil, alertKey: p.id, beta: true))
                 }
             case .wildlife:
                 if p.meta.active, distM <= leadM {
@@ -352,8 +375,9 @@ public final class AlertEngine {
         return Alert(
             t: fix.t, hazardId: win.id, kind: win.kind,
             distanceM: Int(win.distM.rounded()),
-            text: Texts.alertText(win.kind, win.distM, win.limit, win.step, win.endTimeLocal, win.bridge, win.road),
-            step: win.step)
+            text: win.beta ? Texts.efterhalkaText
+                           : Texts.alertText(win.kind, win.distM, win.limit, win.step, win.endTimeLocal, win.bridge, win.road),
+            step: win.step, beta: win.beta)
     }
 
     public func run(_ trace: [Fix]) -> [Alert] { trace.compactMap { step($0) } }

@@ -60,6 +60,11 @@ public struct WarningCard: Equatable {
                 return WarningCard(icon: .bro, stage: nil, title: "Frysrisk", sub: "Bro", distance: .number(String(m), unit: "M"),
                                    road: nil, limit: nil, advice: nil, adviceSub: nil, quote: alert.text)
             }
+            if alert.beta {
+                // S3 (DECISIONS #524): märkt beta — en gissning ur regn och fall, inte en uppmätt frysning.
+                return WarningCard(icon: .frys, stage: "BETA", title: "Frysrisk", sub: "Halkvakt tror — efter regnet",
+                                   distance: .words("FRAMÖVER"), road: nil, limit: nil, advice: nil, adviceSub: nil, quote: alert.text)
+            }
             return WarningCard(icon: .frys, stage: nil, title: "Frysrisk", sub: "Vägbanan nära noll grader",
                                distance: .words("FRAMÖVER"), road: nil, limit: nil, advice: nil, adviceSub: nil, quote: alert.text)
         case .wildlife:
