@@ -10903,3 +10903,8 @@ anrop. Jobbet togs bort samma kväll (sql/049, DB-knappen 38161914133).
 borta. Vad de saknade larmen beror på läses först på jämförbara körningar.
 
 **Stomdokument:** FAV 7, FAV 12
+
+**Rättelse 11/10 kväll (#534).** Två *saknade* djur på vägen var jämförelsens fel, inte rapportens: rapporten bär avvikelsen som
+`dev:X`, motorn larmar samma Trafikverket-id som `djur:X` (vilt som `vilt:X`), och platsjämförelsen missade med 1,5 km eftersom
+larmets plats räknas fågelvägen fram till faran. Jämförelsen matchar nu också samma id efter prefixet (`test/synk-core.test.ts`).
+Mätt på lägesfilen 19:18: 13 saknade larm, alla fartkameror 144–202 m från rutten och halkavsnitt som korsar den (bedömningen §4.2).

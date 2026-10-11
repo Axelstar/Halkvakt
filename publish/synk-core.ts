@@ -77,7 +77,11 @@ export function bilensLarm(faror: Hazard[], line: [number, number][]): Larm[] {
 export function jamfor(rader: Rad[], larm: Larm[], nuIds: Set<string>): Utfall {
   const anvanda = new Set<string>(); let forvarnade = 0; const saknade: Utfall["saknade"] = [];
   for (const a of larm) {
-    let r = rader.find((x) => x.id === a.id);
+    // Samma Trafikverket-id under ett annat prefix: motorn döper djur på vägen `djur:X` och viltolyckor `vilt:X`, rapporten samma
+    // avvikelse `dev:X` (E18-älgen 19:18 11/10 missades så: platsen skilde 1,5 km, eftersom larmets plats räknas fågelvägen fram).
+    const svans = (id: string) => id.slice(id.indexOf(":") + 1);
+    let r = rader.find((x) => x.id === a.id) ??
+      (a.kind === "accident" || a.kind === "wildlife" ? rader.find((x) => !anvanda.has(x.id) && x.id.startsWith("dev:") && svans(x.id) === svans(a.id)) : undefined);
     if (!r && (a.kind === "accident" || a.kind === "wildlife"))
       r = rader.filter((x) => !anvanda.has(x.id) && (SLAG_FOR[a.kind] ?? []).includes(x.slag) && Math.abs(x.langsM - a.langsM) <= LANGS_TOL_M)
         .sort((x, y) => Math.abs(x.langsM - a.langsM) - Math.abs(y.langsM - a.langsM))[0];
