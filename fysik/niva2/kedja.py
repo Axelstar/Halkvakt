@@ -240,6 +240,7 @@ def niva2(fil, ut, maxfev):
     names = list(feat)
     logg(f"{len(names)} särdrag")
     oof = fit_oof(feat, names, obs, Ts, fold, **A2_KONFIG)
+    np.save(f'{ut}/oof_niva2.npy', oof)          # the hourly estimate, for the replica's neighbours and blending (DECISIONS #517)
     rapport('nivå 2 fysik ensam', obs, Ts, lat)
     rapport('nivå 2 fysik + rättelse', obs, oof, lat)
     for namn, P in [('niva2-ts', Ts), ('niva2-fysik', oof)]:
