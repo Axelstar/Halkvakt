@@ -12,10 +12,10 @@
 //   kvar        faran finns kvar men motorn larmade inte (riktning, avstånd, spärr)
 // Slag som motorn aldrig larmar för (vägarbete, kö, restid, färja, hastighet, omledning, SMHI) räknas bara, de kan inte jämföras.
 import { AlertEngine } from "../engine/src/engine.ts";
-import { farorNaraRutten } from "../engine/src/rutfilter.ts";
+import { FARA_MARGINAL_KM } from "../engine/src/rutfilter.ts";
 import { haversineM } from "../engine/src/geo.ts";
-import type { Fix, Hazard, HazardKind } from "../engine/src/types.ts";
-import type { Rad, Slag } from "./rapport-core.ts";
+import { DEFAULT_CONFIG, type Fix, type Hazard, type HazardKind } from "../engine/src/types.ts";
+import { rutnat, type Rad, type Slag } from "./rapport-core.ts";
 
 export const SYNK_EFTER_MIN = 10;                  // bilen kör tio minuter efter rapporten
 export const ALDER_MIN = 5, ALDER_MAX = 20;        // rapporten räknas bara om den är så gammal när bilen kör
@@ -53,11 +53,23 @@ export function korLangs(line: [number, number][], kmh = HASTIGHET_KMH, stegS = 
   return { fixar, langs };
 }
 
+/** Farorna motorn kan larma för längs linjen: rutnätet längs vägen (#531) med motorns räckvidd. Skuggmotorns rektangel
+ *  (farorNaraRutten) tar för en diagonal rutt en stor del av landet, och synkens första körning 17:48 11/10 föll på resurstaket (546):
+ *  9,2 s för de 30 vägrutterna. Rutnätet är en övermängd av allt inom räckvidden, så larmen blir desamma (test/synk-core.test.ts). */
+export function farorLangs(faror: Hazard[], line: [number, number][]): Hazard[] {
+  const nara = rutnat(line, FARA_MARGINAL_KM * 1000 + 200);
+  // Ett halkavsnitt larmar bara om ett av dess provpunkter ligger inom ledtidens längd framför bilen (evaluateSegment: best > leadM ⇒
+  // null, och leadM ≤ leadMaxM), så avsnitt längre bort än leadMaxM plus provavståndet kan aldrig larma. Avsnitten var nästan hela
+  // tiden: tio avsnitt kostade 2,7 s på Värmlandsrutten 11/10.
+  const naraSeg = rutnat(line, DEFAULT_CONFIG.leadMaxM + DEFAULT_CONFIG.segmentSampleM + 300);
+  return faror.filter((h) => (h.kind === "slippery_segment" ? naraSeg : nara)([h]) !== null);
+}
+
 /** Vad bilen får höra: motorns larm längs linjen, med platsen för faran längs rutten (bilens plats vid larmet plus avståndet fram). */
 export function bilensLarm(faror: Hazard[], line: [number, number][]): Larm[] {
   const { fixar, langs } = korLangs(line);
   const vid = new Map(fixar.map((f, i) => [f.t, langs[i]]));
-  return new AlertEngine(farorNaraRutten(faror, line)).run(fixar).map((a) => ({ id: a.hazardId, kind: a.kind, t: a.t,
+  return new AlertEngine(farorLangs(faror, line)).run(fixar).map((a) => ({ id: a.hazardId, kind: a.kind, t: a.t,
     langsM: Math.round((vid.get(a.t) ?? 0) + (a.distanceM ?? 0)), text: a.text }));
 }
 

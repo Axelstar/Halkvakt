@@ -611,7 +611,7 @@
       <li><span aria-hidden="true">✓</span> <b>Prov mot resursfelen</b> <span style="color: var(--dampad, #4A5763)">klart · funktionens tid 3 872 och 4 570 ms; publiceringen skrev 12:10, 12:20, 12:31 och grannländerna 12:35 som vanligt</span></li>
       <li><span aria-hidden="true">◐</span> <b>Rutter längs vägen</b> <span style="color: var(--dampad, #4A5763)">pågår · data/favoritprov/rutter-osrm.json (OSRM på OpenStreetMap, 14 866 punkter, ODbL); avstånd 100–500 m och regeln för linjer längs vägen; torrkörningen 38141327880: 690 rader på vägen mot 606 raka, 614 ms för båda (DECISIONS #531)</span></li>
       <li><span aria-hidden="true">◐</span> <b>Vakt</b> <span style="color: var(--dampad, #4A5763)">pågår · vakthundens mätvakt läser favoritprovets manifest.json och larmar efter 75 min (DECISIONS #532); vakthund driftsatt från main 0666987 (38158432723), väntar på raden i vakthundens svar</span></li>
-      <li><span aria-hidden="true">◐</span> <b>Synkprovet</b> <span style="color: var(--dampad, #4A5763)">pågår · favoritprov?lage=synk på :18/:48 (sql/048): motorn längs vägrutterna tio minuter efter rapporten, publish/synk-core.ts med test/synk-core.test.ts, synk.json och synk-historik.json, rutan i docs/favoritprov.html (DECISIONS #533); väntar på driftsättningen och två jämförbara körningar</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Synkprovet</b> <span style="color: var(--dampad, #4A5763)">pågår · bilen i GitHub Actions på :18/:48 (favoritprov-synk.yml, pulsklockan) efter resurstaket i funktionen 17:48; publish/synk-core.ts med test/synk-core.test.ts, favoritprov_synk (sql/050) speglad till hinken, rutan i docs/favoritprov.html; torrkörningen 20:00: 369 larm, 94,3 % förvarnade (DECISIONS #533, #534); väntar på två jämförbara körningar</span></li>
     </ul>
   </details>
 </div>
@@ -800,7 +800,7 @@
       <li><span aria-hidden="true">✓</span> <b>Prov mot resursfelen</b> <span style="color: var(--dampad, #4A5763)">klart · funktionens tid 3 872 och 4 570 ms; publiceringen skrev 12:10, 12:20, 12:31 och grannländerna 12:35 som vanligt</span></li>
       <li><span aria-hidden="true">◐</span> <b>Rutter längs vägen</b> <span style="color: var(--dampad, #4A5763)">pågår · data/favoritprov/rutter-osrm.json (OSRM på OpenStreetMap, 14 866 punkter, ODbL); avstånd 100–500 m och regeln för linjer längs vägen; torrkörningen 38141327880: 690 rader på vägen mot 606 raka, 614 ms för båda (DECISIONS #531)</span></li>
       <li><span aria-hidden="true">◐</span> <b>Vakt</b> <span style="color: var(--dampad, #4A5763)">pågår · vakthundens mätvakt läser favoritprovets manifest.json och larmar efter 75 min (DECISIONS #532); vakthund driftsatt från main 0666987 (38158432723), väntar på raden i vakthundens svar</span></li>
-      <li><span aria-hidden="true">◐</span> <b>Synkprovet</b> <span style="color: var(--dampad, #4A5763)">pågår · favoritprov?lage=synk på :18/:48 (sql/048): motorn längs vägrutterna tio minuter efter rapporten, publish/synk-core.ts med test/synk-core.test.ts, synk.json och synk-historik.json, rutan i docs/favoritprov.html (DECISIONS #533); väntar på driftsättningen och två jämförbara körningar</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Synkprovet</b> <span style="color: var(--dampad, #4A5763)">pågår · bilen i GitHub Actions på :18/:48 (favoritprov-synk.yml, pulsklockan) efter resurstaket i funktionen 17:48; publish/synk-core.ts med test/synk-core.test.ts, favoritprov_synk (sql/050) speglad till hinken, rutan i docs/favoritprov.html; torrkörningen 20:00: 369 larm, 94,3 % förvarnade (DECISIONS #533, #534); väntar på två jämförbara körningar</span></li>
     </ul>
   </details>
 </div>
@@ -854,7 +854,7 @@
   <ul>
     <li>#336 🚗 #336 KÖERNA EN VARDAG — TVÅ KNAPPTRYCK MÅNDAG 12/10 (Bengt, Bengts val 11/10: "1, 1", DECISIONS #528): … <span class="litet">· Bengt</span></li>
     <li>#339 🐕 #339 VAKTEN PÅ FAVORITPROVET (Claude, Bengts ja 11/10: "ja först 4", DECISIONS #532): vakthundens mätvakt … <span class="litet">· Claude</span></li>
-    <li>#340 SYNKPROVET — RAPPORTEN TIO MINUTER INNAN MOT BILEN (Claude, Bengts plan via Axel 11/10, DECISIONS #533) <span class="litet">· Claude</span></li>
+    <li>#340 SYNKPROVET — RAPPORTEN TIO MINUTER INNAN MOT BILEN (Claude, Bengts plan via Axel 11/10, DECISIONS #533, #534) <span class="litet">· Claude</span></li>
     <li>#338 FAVORITPROVETS RUTTER PÅ RIKTIGA VÄGAR — OSM OCH OSRM (Claude, Bengts val 11/10, DECISIONS #530) <span class="litet">· Claude</span></li>
   </ul>
   <h3><a href="#avsnitt-8">8. Integriteten</a></h3>
@@ -876,7 +876,7 @@
   <h3><a href="#avsnitt-12">12. Läget och loggen</a></h3>
   <ul>
     <li>#339 🐕 #339 VAKTEN PÅ FAVORITPROVET (Claude, Bengts ja 11/10: "ja först 4", DECISIONS #532): vakthundens mätvakt … <span class="litet">· Claude</span></li>
-    <li>#340 SYNKPROVET — RAPPORTEN TIO MINUTER INNAN MOT BILEN (Claude, Bengts plan via Axel 11/10, DECISIONS #533) <span class="litet">· Claude</span></li>
+    <li>#340 SYNKPROVET — RAPPORTEN TIO MINUTER INNAN MOT BILEN (Claude, Bengts plan via Axel 11/10, DECISIONS #533, #534) <span class="litet">· Claude</span></li>
   </ul>
 <!-- /ÖPPNA KORT -->
 </main>

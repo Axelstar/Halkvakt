@@ -45,48 +45,25 @@ async function gzBytes(s: string): Promise<number> {
   return (await new Response(cs.readable).arrayBuffer()).byteLength;
 }
 
-// SYNKPROVET (DECISIONS #533, kort #340; Bengt 11/10): `?lage=synk` på :18/:48 (sql/048), tio minuter efter rapporten. Bilen är motorn
-// på färsk lägesfil längs varje favoritrutt; varje larm jämförs med vad rapporten i favoriter.json sa (publish/synk-core.ts). Allt
-// skrivs till hinken: synk.json (senaste körningen, skrivs över) och synk-historik.json (de senaste SYNK_HISTORIK körningarna).
+// SYNKPROVET (DECISIONS #533, #534, kort #340): bilen kör i GitHub Actions (scripts/favoritprov-synk.ts, :18/:48) och skriver en rad
+// per körning i favoritprov_synk (sql/050). Varje körning här speglar de senaste raderna till hinken: synk.json (den senaste) och
+// synk-historik.json (SYNK_HISTORIK körningar), som visningen läser. Ett fel här stoppar aldrig rapporten.
 const SYNK_HISTORIK = 96;   // två dygn
-async function synkVarv(): Promise<Response> {
-  const t0 = performance.now(); const nu = Date.now();
-  const [fav, lv, st] = await Promise.all([
-    lasHink("favoriter.json"),
-    fetch(CDN + "live.json?t=" + nu).then((r) => r.json()),
-    fetch(CDN + "static.json?t=" + nu).then((r) => r.json()),
-  ]);
-  const alder = rapportensAlder(fav?.generated_at, nu);
-  const faror = snapshotToHazards(st, lv);
-  const nuIds = new Set(faror.map((h) => h.id));
-  const rutter: Record<string, Utfall> = {}, larmPer: Record<string, Larm[]> = {};
-  const skal: string[] = [];
-  if (!alder.ok) skal.push(alder.min == null ? "favoriter.json saknas eller saknar generated_at" : `rapporten är ${alder.min} min gammal (räknas ${ALDER_MIN}–${ALDER_MAX})`);
-  if (fav?.lagesfil && fav.lagesfil === lv.generated_at) skal.push("samma lägesfil som rapporten — publiceringen har inte gått sedan dess");
-  for (const [namn, linje] of Object.entries(RUTTER_PROV)) {
-    const larm = bilensLarm(faror, linje);
-    larmPer[namn] = larm;
-    rutter[namn] = jamfor(fav?.rutter?.[namn]?.rader ?? [], larm, nuIds);
-  }
-  const sum = summa(rutter, larmPer);
-  const ut = { schema: 1, generated_at: new Date(nu).toISOString(), rapport: fav?.generated_at ?? null, alder_min: alder.min, jamforbar: alder.ok,
-    lagesfil: lv.generated_at, rapportens_lagesfil: fav?.lagesfil ?? null, skal, summa: sum, rutter };
-  await skrivHink("synk.json", JSON.stringify(ut));
-  const hist = (await lasHink("synk-historik.json"))?.korningar ?? [];
-  hist.push({ t: ut.generated_at, rapport: ut.rapport, alder_min: alder.min, jamforbar: alder.ok, larm: sum.larm, forvarnade: sum.forvarnade,
-    saknade: Object.fromEntries(Object.entries(rutter).filter(([, u]) => u.saknade.length).map(([n, u]) => [n, u.saknade.map((x) => x.id)])),
-    utan_larm: sum.utanLarm, per_slag: sum.perSlag });
-  await skrivHink("synk-historik.json", JSON.stringify({ schema: 1, korningar: hist.slice(-SYNK_HISTORIK) }));
-  return new Response(JSON.stringify({ ok: true, lage: "synk", generated_at: ut.generated_at, rapport: ut.rapport, alder_min: alder.min,
-    jamforbar: alder.ok, skal, summa: sum, ms: Math.round(performance.now() - t0) }), { headers: { "Content-Type": "application/json" } });
+async function speglaSynk(): Promise<string> {
+  const r = await fetch(`${SB}/rest/v1/favoritprov_synk?select=data&order=t.desc&limit=${SYNK_HISTORIK}`,
+    { headers: { Authorization: `Bearer ${SRK}`, apikey: SRK } });
+  if (!r.ok) return `synken: ${r.status} ${(await r.text()).slice(0, 120)}`;
+  const rader = (await r.json()) as { data: any }[];
+  if (!rader.length) return "synken: inga rader än";
+  const { historik: _h, ...senaste } = rader[0].data;
+  await skrivHink("synk.json", JSON.stringify(senaste));
+  await skrivHink("synk-historik.json", JSON.stringify({ schema: 1, korningar: rader.map((x) => x.data.historik).reverse() }));
+  return `synken: ${rader.length} körningar speglade, senast ${senaste.generated_at}`;
 }
 
 Deno.serve(async (req) => {
   const k = Deno.env.get("INGEST_KEY");
   if (!k || req.headers.get("x-halkvakt-key") !== k) return new Response("forbidden", { status: 403 });
-  if (new URL(req.url).searchParams.get("lage") === "synk") {
-    try { return await synkVarv(); } catch (e) { return new Response(JSON.stringify({ ok: false, lage: "synk", error: String(e) }), { status: 500 }); }
-  }
   const t0 = performance.now(); const ms: Record<string, number> = {}; const steg = (n: string, t: number) => { ms[n] = Math.round(performance.now() - t); };
   try {
     const nu = Date.now(); const fran = new Date(nu).toISOString(), till = new Date(nu + 24 * 3_600_000).toISOString();
@@ -150,9 +127,12 @@ Deno.serve(async (req) => {
       grupper: Object.values(rutter).reduce((s: number, r: any) => s + r.grupper.length, 0),
       notis: Object.entries(rutter).filter(([, r]: [string, any]) => r.notis.ja).map(([n]) => n) });
     await skrivHink("historik.json", JSON.stringify({ schema: 1, korningar: hist.slice(-HISTORIK) }));
+    t = performance.now();
+    const synk = await speglaSynk().catch((e) => `synken: ${String(e).slice(0, 160)}`);
+    steg("synken", t);
     return new Response(JSON.stringify({ ok: true, generated_at: snabb.generated_at, poster: snabb.poster.length, noter: snabb.noter,
       svar_byte: { situation: sit.byte, restider: tt.byte, farjor: fa.byte, farjeleder: fr.byte }, manifest, ny_lang: nyLang,
-      rutter: Object.keys(rutter).length, ms: { ...ms, totalt: Math.round(performance.now() - t0) } }), { headers: { "Content-Type": "application/json" } });
+      rutter: Object.keys(rutter).length, synk, ms: { ...ms, totalt: Math.round(performance.now() - t0) } }), { headers: { "Content-Type": "application/json" } });
   } catch (e) {
     return new Response(JSON.stringify({ ok: false, error: String(e), ms }), { status: 500 });
   }
