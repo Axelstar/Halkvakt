@@ -507,7 +507,15 @@ Deno.serve(async (req) => {
     const aSl = alderH(sl.t), aSa = alderH(sa.t), aRp = alderH(rp.t);
     const aFc = facitprov ? 99 : alderH(fc.t);
     const visa = (a: number | null) => a === null ? "tom" : a < 1 ? `${(a * 60).toFixed(0)} min` : `${a.toFixed(1)} h`;
-    rad.push(`källor: skuggloggen ${visa(aSl)} · olycksarkivet ${visa(aSa)} · radarn ${visa(aRp)} (stationsnederbörd 3 h: ${vatt.n}) · väglaget ${visa(aRc)} (kalla stationer 3 h: ${kallt.n}/${kallt.alla}) · kamerafacit ${visa(aFc)} (skuggans svenska larm 12 h: ${sl12.n})`);
+    // FAVORITPROVET (DECISIONS #529, #532): favoriternas provmiljö skriver manifest.json i hinken `favoritprov` var 30:e min
+    // (:08/:38, sql/047). Åldern läses ur filens egen generated_at, inte ur att den svarar 200. Larm först efter 75 min, alltså
+    // två uteblivna körningar i rad vid :07: ett enstaka fel hos Trafikverket är provets sak, inte ett stopp. Oläsbar fil = tom.
+    let aFp: number | null = null;
+    try {
+      const m = await (await fetch(`${Deno.env.get("SUPABASE_URL")}/storage/v1/object/public/favoritprov/manifest.json?t=${Date.now()}`, { cache: "no-store" })).json();
+      aFp = alderH(m?.generated_at);
+    } catch { /* aFp förblir null */ }
+    rad.push(`källor: skuggloggen ${visa(aSl)} · olycksarkivet ${visa(aSa)} · radarn ${visa(aRp)} (stationsnederbörd 3 h: ${vatt.n}) · väglaget ${visa(aRc)} (kalla stationer 3 h: ${kallt.n}/${kallt.alla}) · kamerafacit ${visa(aFc)} (skuggans svenska larm 12 h: ${sl12.n}) · favoritprovet ${visa(aFp)}`);
 
     const torra: string[] = [];
     if (aSl === null || aSl > 2)
@@ -520,6 +528,8 @@ Deno.serve(async (req) => {
       torra.push(`**kamerafacit** (bucketen \`facit\`) har inte fått en bild på ${visa(aFc)} MEDAN skuggan gett ${sl12.n} svenska larm med plats (fartkameror oräknade) de senaste 12 h — bilderna ska döma betan i mars; skuggmotorns svar bär skälen (\`facitSkal\`)${facitprov ? " — PROV, försvinner nästa timme" : ""}`);
     if ((aRc === null || aRc > 48) && kallAndel >= 0.10)
       torra.push(`**road_conditions** står stilla sedan ${visa(aRc)} MEDAN ${kallt.n} av ${kallt.alla} stationer (${(kallAndel * 100).toFixed(0)} %) legat på eller under noll de senaste 3 h — operatören borde klassa om; antingen ingest-live:s roadconditions() eller Trafikverket är tyst (#124)`);
+    if (aFp === null || aFp > 1.25)
+      torra.push(`**favoritprovet** (hinken \`favoritprov\`) har inte skrivit manifest.json på ${visa(aFp)} (körs :08/:38) — favoriternas provmiljö står still; funktionens svar med felet ligger i net._http_response`);
 
     // Egen livscykel, egen etikett. Aldrig problem.push() — se huvudkommentaren.
     const allt = [...sena.map((x) => `- ❌ KÖRNING · ${x}`), ...torra.map((x) => `- ❌ KÄLLA · ${x}`)];

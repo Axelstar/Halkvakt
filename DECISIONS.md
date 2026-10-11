@@ -10817,3 +10817,30 @@ tvärväg med.
 **Bevis efter driftsättningen:** favoritprovet kör på vägrutterna, och raderna per rutt står i hinken.
 
 **Stomdokument:** FAV, BED §4.2
+
+## #532 (11/10 2026) Vakten på favoritprovet, och Trafikverkets tre nya objekttyper i beroendekartan (kort #339)
+
+**Beslut.** Bengt 11/10: *"ja först 4 och sen synktest"*. Punkt 4 var vakten på källorna som favoritprovet hämtar. Den ska stå
+innan synkprovet bygger på provet.
+
+**Vakthundens mätvakt** läser `manifest.json` i hinken `favoritprov` och tar åldern ur filens egen `generated_at`, inte ur att
+filen svarar 200.
+- **Raden** *källor* i svaret bär `favoritprovet N min`.
+- **Larmet** (en ❌ KÄLLA i mätvaktens ärende) går när filen är äldre än 75 min eller inte går att läsa. Vakthunden kör :07 och
+  provet :08/:38, så 75 min är två uteblivna körningar i rad. En enstaka miss, till exempel ett fel hos Trafikverket, är provets
+  sak och larmar inte. Felet självt står i funktionens svar i `net._http_response`.
+
+**Beroendekartan** (`publish/beroenden.ts`):
+- **De nya typerna:** `TRV_OBJEKT` har nu `traveltimeroute`, `ferryannouncement` och `ferryroute`. En nyhet från Trafikverket som
+  nämner någon av dem bedöms som *RÖR OSS*.
+- **Färjan är inte längre främmande:** `färja` och `ferry` är strukna ur de två signalradernas främmande ord, eftersom provet nu
+  hämtar färjor. En färjenyhet utan typnamn blir *VET INTE* och läses, i stället för att tystas.
+- **Driftvakten var blind:** den läste bara citerade `objecttype`-värden, och favoritprovet bygger frågan i hjälpfunktionen `trv("…")`.
+  Mönstret tar nu också den. Utan ändringen fällde självtestet med de tre typerna saknade i koden, och med den är det grönt.
+  Provet i `test/nyhetsbedomning.test.ts` fäller utan typerna (0 av 1).
+
+**Inte gjort:** TrafficFlow hämtas inte och står därför inte i listan.
+
+**Bevis efter driftsättningen:** vakthundens svar bär raden med favoritprovets ålder.
+
+**Stomdokument:** FAV §7 och §12
