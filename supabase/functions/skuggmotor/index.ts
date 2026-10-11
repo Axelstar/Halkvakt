@@ -990,6 +990,24 @@ const ROUTES: Record<string, [number, number][]> = {
   "Rv70 Enköping→Mora": [[17.07,59.64],[16.60,59.92],[16.17,60.15],[15.98,60.28],[15.43,60.48],[15.13,60.55],[14.99,60.73],[15.12,60.89],[14.54,61.00]],
 };
 
+// VÄG C (DECISIONS #527, Bengts "gör denna" 11/10): rutter genom stationerna där efterhalkans fall och de frysnära halvtimmarna
+// låg (läsningen 38128801752: av 236 fall låg 7 % inom 2 km från en rutt i ROUTES, av de kalla halvtimmarna 2 %). Varje rutt är
+// en KEDJA AV STATIONER i körordning, raka sträckor emellan som i ROUTES — inte vägens geometri, och namnen är stationernas.
+// Eget anrop (`?grupp=c`, :22/:52) och egen tabell (shadow_log_c): ROUTES, dess takt och mätningarna som läser den rörs inte
+// (lasRutter i publish/skuggfacit.ts läser bara ROUTES). Bara larmen loggas: ingen prognos, ingen efterhalka, inga facitbilder.
+const ROUTES_C: Record<string, [number, number][]> = {
+  "C Värmland: Eda→Mångsbodarna": [[12.275,59.911],[12.623,60.020],[12.609,60.209],[12.615,60.385],[12.704,60.654],[13.114,61.158],[13.620,61.079]],
+  "C Klarälvdalen: S Berga→Ruskåsen": [[13.134,59.726],[13.403,59.867],[13.253,60.207],[13.172,60.354]],
+  "C Bergslagen: Gumhöjden→Gruvorna": [[13.909,60.022],[14.176,60.113],[14.200,60.327],[13.956,60.501],[14.334,60.860]],
+  "C Ludvika: Basttjärn→Mårtanberg": [[14.979,60.025],[14.523,60.160],[14.674,60.467],[15.253,60.823]],
+  "C Orsa finnmark: Lillhärdal→Gruvberget": [[14.040,61.843],[14.798,61.388],[15.135,61.167],[15.796,61.071],[16.177,61.132]],
+  "C Norrlandskusten: Hammarbacken→Bönhamn": [[17.185,61.900],[17.277,62.078],[17.370,62.195],[17.453,62.517],[17.847,62.686],[18.446,62.876]],
+  "C Fjällen: Blåsjöfjället→Kåtaviken": [[14.040,64.772],[15.379,64.968],[14.815,65.422],[15.095,66.010],[14.805,66.118]],
+  "C Kiruna: Nikkaluokta→Riksgränsen": [[19.027,67.860],[20.294,67.856],[19.782,68.148],[18.575,68.434],[18.269,68.430],[18.116,68.433]],
+  "C Lule lappmark: Porjus→Stora Sjöfallet": [[19.821,66.960],[18.367,67.474]],
+  "C Tornedalen: Limingojärvi→Kätkesuando": [[22.899,66.689],[23.482,67.442],[23.311,68.120]],
+};
+
 function traceAlong(line: [number, number][], kmh = 80, stepS = 5): Fix[] {
   const mps = (kmh * 1000) / 3600;
   const fixes: Fix[] = []; let t = 0;
@@ -1292,7 +1310,11 @@ Deno.serve(async (req) => {
     }
     const land = (new URL(req.url).searchParams.get("land") ?? "se").toLowerCase();
     const CDN = CDN_BY_LAND[land]; if (!CDN) return new Response("okänt land", { status: 400 });
-    const routes = land === "fi" ? ROUTES_FI : land === "no" ? ROUTES_NO : land === "dk" ? ROUTES_DK : ROUTES;
+    // VÄG C (DECISIONS #527): `?grupp=c` kör ROUTES_C i ett eget anrop på :22/:52 och skriver till shadow_log_c — bara larmen.
+    const grupp = new URL(req.url).searchParams.get("grupp");
+    if (grupp !== null && (grupp !== "c" || land !== "se")) return new Response("okänd grupp", { status: 400 });
+    const c = grupp === "c";
+    const routes = c ? ROUTES_C : land === "fi" ? ROUTES_FI : land === "no" ? ROUTES_NO : land === "dk" ? ROUTES_DK : ROUTES;
     const bust = `?t=${Date.now()}`;
     const [st, lv] = await Promise.all([
       fetch(CDN + "static.json" + bust).then((r) => r.json()),
@@ -1300,7 +1322,7 @@ Deno.serve(async (req) => {
     ]);
     const hazards = snapshotToHazards(st, lv);
     // Ankarna hämtas en gång per anrop, inte per rutt. Bara Sverige: funktionen läser det svenska arkivet.
-    const ankare = land === "se" ? await vagpunktAnkare() : { lista: [] as Ankare[], skal: "bara Sverige" };
+    const ankare = land === "se" && !c ? await vagpunktAnkare() : { lista: [] as Ankare[], skal: c ? "grupp C loggar ingen prognos" : "bara Sverige" };
     const oljaLista = land === "se" ? await oljaAktiva() : { lista: [] as Olja[], skal: "bara Sverige" };
     const results: Record<string, unknown> = {};
     let facitTotal = 0;
@@ -1309,7 +1331,7 @@ Deno.serve(async (req) => {
     // Rotation: 3 rutter per varv (CPU-taket, läxa 29/8) — alla 20 täcks varje 3,5 h,
     // i båda länderna.
     const allNames = Object.keys(routes).sort();
-    const slots = 7;
+    const slots = c ? Math.ceil(allNames.length / 3) : 7;   // grupp C: samma tak, högst 3 rutter per anrop
     const slot = Math.floor(Date.now() / 1800e3) % slots;
     // TIDMÄTNING PER STEG (kort #244, DECISIONS #360): funktionsloggen är Axels panel, så svaret bär själv var tiden går.
     const ms = { motor: 0, prognos: 0, facit: 0, t0: performance.now() };
@@ -1338,7 +1360,8 @@ Deno.serve(async (req) => {
       // ALLA STATIONER (DECISIONS #523, Bengts ja 11/10): varvets första rutt bär varje väderpunkt i lägesfilen, inte bara sin
       // korridor. Rutterna kör var 3,5:e timme och gick förbi 95 % av efterhalkans fall 4–11/10 (#521); S1 handlar om stationer,
       // inte vägar. Inga nya rader: jämförelsen mot arkivet tar bort dubbletterna.
-      const efterhalka = land === "se" ? efterhalkaRader(lv, name === batch[0] ? null : line, alerts) : [];
+      // Grupp C loggar ingen efterhalka: huvudvarvets första rutt bär redan varje station varje halvtimme (#523).
+      const efterhalka = land === "se" && !c ? efterhalkaRader(lv, name === batch[0] ? null : line, alerts) : [];
       // SEGMENTPROGNOSEN (kort #38b steg 4, DECISIONS #324/#325, Bengts "bygg nu" 23/9): rå avståndsviktning av de
       // vaktade stationerna per provpunkt längs rutten (engine/src/segment.ts). Loggad, aldrig hörd — grind B och C
       // dömer i mars. Tom utan ankare, och skälet står i svaret (ankareSkal), så en tom kolumn aldrig är tvetydig.
@@ -1362,7 +1385,8 @@ Deno.serve(async (req) => {
       // falsklarm enligt TROSKLAR-VATTENPLANING §2. Motorns punkter först; budgeten är gemensam.
       const vbPunkter = vb.flatMap((v) => (v.lon != null && v.lat != null ? [{ lon: v.lon, lat: v.lat }] : []));
       const t3 = performance.now();
-      const f = land === "se" ? await archiveFacit([...punkter, ...vbPunkter], name) : { saved: 0, skal: [] };
+      const f = land === "se" && !c ? await archiveFacit([...punkter, ...vbPunkter], name)
+        : { saved: 0, skal: c ? ["grupp C arkiverar inga facitbilder (DECISIONS #527)"] : [] };
       ms.facit += performance.now() - t3;
       // En nolla utan skäl är omöjlig att skilja från "inga larm" (#173) — även den här grenen säger varför.
       if (land === "se" && alerts.length && !punkter.length) f.skal.push("bara segment- eller fartkameralarm — inget som behöver väglagsfacit");
@@ -1402,7 +1426,7 @@ Deno.serve(async (req) => {
           };
         }),
       });
-      await fetch(`${SB}/rest/v1/shadow_log`, {
+      await fetch(`${SB}/rest/v1/${c ? "shadow_log_c" : "shadow_log"}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${SRK}`, apikey: SRK, "Content-Type": "application/json" },
         body });

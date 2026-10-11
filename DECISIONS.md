@@ -10569,3 +10569,39 @@ TestFlight-flödet (#333) finns, vilket fördröjer S3 till testarna med minst n
 är hos testarna, desto fler frostnätter hinner den möta. Byggnumret höjs efter den sista ändringen, aldrig före (CLAUDE.md, #240).
 
 **Stomdokument:** APP, MAT, BED §4.2
+
+## #527 (11/10 2026) Väg C: tio skuggrutter där fallen ligger, i ett eget anrop och en egen tabell (kort #89, #334)
+
+**Beslut.** Bengt 11/10: *"Fler skuggrutter där fallen ligger (väg C) gör denna"*. Underlaget är läsningen 38128801752 (READ ONLY).
+Av efterhalkans 236 ögonblick 4–11/10 vid 41 stationer låg 7 % inom 2 km från en skuggrutt, och 23 % inom 20 km. Av de 150
+stationer som haft ytan högst +1 °C i minst fyra halvtimmar de senaste tre dygnen låg 2 % inom 2 km. Motorn talar om en station
+först när spåret passerar inom förvarningen, så en station 5–10 km från spåret ger aldrig ett larm.
+- **Tio rutter i `ROUTES_C`** (`supabase/functions/skuggmotor/main.ts`). Var och en är en kedja av stationerna med fall i
+  körordning, med raka sträckor emellan som i `ROUTES`. Det är inte vägens geometri, och namnen är stationernas: Värmland
+  (Eda→Mångsbodarna), Klarälvdalen, Bergslagen, Ludvika, Orsa finnmark, Norrlandskusten (Hammarbacken→Bönhamn), Fjällen
+  (Blåsjöfjället→Kåtaviken), Kiruna (Nikkaluokta→Riksgränsen), Lule lappmark och Tornedalen. Sammanlagt 47 stationer på 77–208 km
+  per rutt.
+- **Eget anrop:** `skuggmotor?grupp=c` på :22/:52 (sql/046), mellan huvudvarvet på :02/:32 och försprånget på :12/:42. Varje anrop
+  har då sitt eget tak för datorkraften. Högst tre rutter per anrop, så varje C-rutt körs varannan timme.
+- **Egen tabell:** `shadow_log_c`, med samma kolumner som `shadow_log`, RLS på och rättigheterna indragna. `ROUTES`, dess takt och
+  mätningarna som läser `shadow_log` och `lasRutter` (tystnadsfelet, S-B, V-B, upprepningen) får samma population som förut.
+  Annars hade händelser vid de nya rutterna räknats bakåt i tiden, då ingen skugga körde där.
+- **Bara larmen loggas:** ingen segmentprognos, ingen efterhalka (huvudvarvets första rutt bär redan varje station, #523) och
+  inga facitbilder.
+
+**Kostnaden, mätt i läsningen 38129236702:** en skuggrad kostar 1,65 kB i snitt, varav prognosen 1,27 kB. Raden som bär alla
+stationer kostar 4,5 kB. C-raderna blir runt 0,3 kB, 120 per dygn, alltså cirka 36 kB per dygn och 6 MB till sista mars. Med
+prognosen hade lagt till 26 MB.
+
+**Alternativ.** (a) Rutterna i `ROUTES`: alla nuvarande rutter körs mer sällan, och mätningarnas populationer ändras i
+efterhand (#523 c). (b) Fler rutter per anrop: taket för datorkraften (sql/037, 546 i september). (c) Rutterna längs vägens
+geometri ur NVDB: mer arbete, och motorn talar ändå bara vid stationen.
+
+**Bevis efter driftsättningen:** rader i `shadow_log_c` från rutter i `ROUTES_C`, med `n_hazards` över noll, inom ett dygn efter
+migrationen. Om C-rutterna ska räknas i grindarna, från ett startdatum, är Bengts fråga (bedömningen §4.2).
+
+**Rättelse till läsningen bakom #523:** skriptet läste 19 av de 20 rutterna. *Väg 23 Höör→Osby* föll bort på ett mellanslag i
+mönstret. Inget fall ligger söder om 58°, och rutten sorteras sist, så rotationens index för de andra 19 var rätt. Talen i #523
+står.
+
+**Stomdokument:** MAT, SYS, BED §4.2
