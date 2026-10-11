@@ -321,17 +321,26 @@
   fel, och felfria band bortom 15 km skulle ge 5,05 %. Kuvösens 7,5 % räknas per station och halvtimme, inte per fordonskilometer.
   Räkningen med trafiken gjordes efteråt och var inte förregistrerad.</p>
   <p><b>Norr och söder om 62° (9/10, #507).</b> RÅ, FYSIK och OFFSET på FYSIK:s 4 352 753 punkter, norr och söder var för sig, per band
-  och vägt med trafiken närmast varje station. Redovisningen är gemensam för alla kommande läsningar
-  (<span class="mono">scripts/matningar/regioner.ts</span>). Ingen dom: talen är utgångsläget som nivå 2 och FYSIK+BLANDNING jämförs mot.</p>
+  och vägt med trafiken närmast varje station, och sedan 11/10 de bästa kandidaterna: nivå 2 på MET Nordics väder och nivå 2 med
+  grannarnas fel och blandningen (#509, #517). Redovisningen är gemensam för alla läsningar
+  (<span class="mono">scripts/matningar/regioner.ts</span>). Ingen dom.</p>
   <div class="tabell">
     <table>
       <thead><tr><th>Region</th><th>Kandidat</th><th>Grova fel</th><th>0–7 · 7–15 · 15–20 · &gt; 20 km</th><th>Vägt med trafiken</th></tr></thead>
       <tbody>
-        <tr><td rowspan="3"><b>Norr</b>, 183 stationer</td><td>RÅ</td><td class="nr">14,1 %</td><td class="nr">14,3 · 11,0 · 12,3 · 16,0</td><td class="nr">12,6 %</td></tr>
+        <tr><td rowspan="7"><b>Norr</b>, 183 stationer</td><td>RÅ</td><td class="nr">14,1 %</td><td class="nr">14,3 · 11,0 · 12,3 · 16,0</td><td class="nr">12,6 %</td></tr>
         <tr><td>FYSIK</td><td class="nr">17,1 %</td><td class="nr">16,9 · 16,6 · 15,4 · 17,9</td><td class="nr">16,0 %</td></tr>
+        <tr><td>FYSIK + blandning¹</td><td class="nr">11,9 %</td><td class="nr">—</td><td class="nr">—</td></tr>
+        <tr><td>NIVÅ 2</td><td class="nr">12,3 %</td><td class="nr">11,9 · 10,2 · 9,6 · 14,2</td><td class="nr">11,4 %</td></tr>
+        <tr><td>NIVÅ 2 + grannarnas fel²</td><td class="nr">10,5 %</td><td class="nr">10,5 · 8,5 · 8,4 · 12,1</td><td class="nr">9,9 %</td></tr>
+        <tr><td><b>NIVÅ 2 + blandning²</b></td><td class="nr"><b>9,9 %</b></td><td class="nr">10,4 · 7,8 · 8,4 · 11,1</td><td class="nr">9,3 %</td></tr>
         <tr><td>OFFSET (taket)</td><td class="nr">10,7 %</td><td class="nr">9,5 · 7,7 · 10,2 · 12,2</td><td class="nr">9,5 %</td></tr>
-        <tr><td rowspan="3"><b>Söder</b>, 546 stationer</td><td>RÅ</td><td class="nr">4,8 %</td><td class="nr">3,2 · 4,5 · 5,2 · 8,4</td><td class="nr">4,1 %</td></tr>
+        <tr><td rowspan="7"><b>Söder</b>, 546 stationer</td><td>RÅ</td><td class="nr">4,8 %</td><td class="nr">3,2 · 4,5 · 5,2 · 8,4</td><td class="nr">4,1 %</td></tr>
         <tr><td>FYSIK</td><td class="nr">6,9 %</td><td class="nr">6,1 · 6,8 · 6,2 · 10,4</td><td class="nr">6,6 %</td></tr>
+        <tr><td>FYSIK + blandning¹</td><td class="nr">3,6 %</td><td class="nr">—</td><td class="nr">—</td></tr>
+        <tr><td>NIVÅ 2</td><td class="nr">3,6 %</td><td class="nr">2,7 · 3,4 · 3,3 · 6,6</td><td class="nr">3,1 %</td></tr>
+        <tr><td>NIVÅ 2 + grannarnas fel²</td><td class="nr">2,9 %</td><td class="nr">2,1 · 2,8 · 2,9 · 4,9</td><td class="nr">2,5 %</td></tr>
+        <tr><td><b>NIVÅ 2 + blandning²</b></td><td class="nr"><b>3,0 %</b></td><td class="nr">2,2 · 2,9 · 3,1 · 5,0</td><td class="nr">2,6 %</td></tr>
         <tr><td>OFFSET (taket)</td><td class="nr">3,4 %</td><td class="nr">2,3 · 3,1 · 3,6 · 6,1</td><td class="nr">2,9 %</td></tr>
       </tbody>
     </table>
@@ -339,7 +348,12 @@
   <p class="litet">I söder följer felet avståndet, från 3,2 % nära en station till 8,4 % bortom 20 km. I norr gör det inte: 14,3 % nära och
   16,0 % långt bort, och 7–15 km är bäst. Taket, stationens egen historik, lämnar 10,7 % grova fel i norr. FYSIK är sämre än RÅ i alla tio
   cellerna. Vägt med trafiken får RÅ 5,1 % i hela landet; #490:s 5,4 % vägde banden i stället för stationerna. Fyra av förväntningarna per
-  band missade, alla för att de antog att norr följer söderns avståndstrappa. Kontrollerna träffade inom 0,05 procentenheter av #485.</p>
+  band missade, alla för att de antog att norr följer söderns avståndstrappa. Kontrollerna träffade inom 0,05 procentenheter av #485.
+  <b>Nivå 2 (11/10).</b> Med MET Nordics väder i stället för ECMWF faller felet i båda regionerna, och med grannarnas fel och blandningen
+  hamnar nivå 2 under taket i norr, 9,9 mot 10,7 %, och strax under i söder, 3,0 mot 3,4 %. I norr är 7–15 km fortfarande bäst och
+  felet följer inte avståndet, men bortom 20 km är det 11,1 mot RÅ:s 16,0 %. Grannarnas fel ensamma gör söder lite bättre än
+  blandningen, 2,9 mot 3,0 %; blandningen med RÅ hjälper i norr och bortom 20 km. ¹ Bara totalen för norr och söder redovisades i den
+  körningen (#490 utfall läsning 1). ² På 4 352 575 punkter, 178 färre än FYSIK:s; RÅ och OFFSET får där samma tal på en decimal.</p>
   <div class="lyft">
     <h3>Axels fynd ur fysikspåret</h3>
     <p class="litet">Ur Axels sida <a href="https://claude.ai/artifact/2QAxS4Wz848PT6xwT6GQ72"><i>Physics-First Road Ice Test</i></a>, räknade i hans egen
