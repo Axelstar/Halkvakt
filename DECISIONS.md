@@ -10844,3 +10844,35 @@ filen svarar 200.
 **Bevis efter driftsättningen:** vakthundens svar bär raden med favoritprovets ålder.
 
 **Stomdokument:** FAV §7 och §12
+
+## #533 (11/10 2026) Synkprovet: rapporten tio minuter innan mot bilen tio minuter efter (kort #340)
+
+**Beslut.** Bengt 11/10 (vidarebefordrat av Axel): *"Jag simulerar en pendlingsresa och den info man får 10 minuter innan o sen kör en
+skuggflottebil 10 minuter efter. Det är för att stämma av om infon du får innan överensstämmer med vad testbilen upplever vid resan"*;
+Axel: *"kör vidare på hans bygge och bygg klart det"*. Byggt efter #532 (vakten först, som Bengt sa).
+
+**Vad som byggs.**
+- **`favoritprov?lage=synk` på :18/:48** (sql/048), tio minuter efter favoritprovet (:08/:38). Minuten är ledig i `cron.job` (DB-knappen
+  38158674309). Bilen kör på publiceringen :10/:40, rapporten räknades på :00/:30, så det är två olika lägesfiler.
+- **Bilen** är motorn (`AlertEngine`) på färsk lägesfil, 80 km/h med en punkt var 5:e sekund som skuggmotorns `traceAlong`, längs
+  **samma vägrutt som rapporten** (OSRM, #531) — inte skuggans raka linjer, så rapporten och färden mäts på samma väg.
+- **Jämförelsen** (`publish/synk-core.ts`, prövad i `test/synk-core.test.ts`): varje larm är *förvarnad* om rapporten bar samma id
+  (halka `seg:`, frysrisk `wx:`/`bro:`, fartkamera `cam:`, avvikelse `dev:`), eller för avvikelser och vilt en rad av samma slag inom
+  1 km längs rutten; annars *saknades*. Rapportens rader av slag som motorn larmar för, utan larm under färden, är *borta* (faran finns
+  inte i lägesfilen längre) eller *kvar* (riktning, avstånd eller spärr). Vägarbeten, köer, restider, färjor, hastighet, omledningar och
+  SMHI räknas bara: motorn larmar inte för dem. Larmets plats längs rutten är bilens plats vid larmet plus avståndet fram.
+- **Rapportens ålder** måste vara 5–20 min; annars skrivs körningen som *inte jämförbar* med skälet, så en utebliven favoritprovskörning
+  aldrig blir ett falskt utfall. Samma lägesfil som rapporten skrivs också som skäl.
+- **Allt till hinken** `favoritprov`: `synk.json` (senaste, skrivs över) och `synk-historik.json` (96 körningar, två dygn). Ingen app
+  läser något. **Visningen** är en ny ruta i `docs/favoritprov.html`: summan, per rutt det som saknades och det som inte gav larm, och de
+  tolv senaste körningarna.
+
+**Vad som INTE görs.** Inga trösklar och ingen motor ändras; skuggmotorn, `shadow_log` och grindarna rörs inte. Det här är en
+provmiljö: andelen förvarnade larm läses, den dömer inget.
+
+**Alternativ som valdes bort.** (a) Jämföra mot skuggmotorns egna varv: de kör raka linjer, 3 rutter per halvtimme, på :02/:32 och
+:22/:52 — aldrig samma rutt tio minuter efter rapporten. (b) Matcha på plats för halka och frysrisk: de bär samma id i rapporten och i
+motorn, och en platsmatchning hade dolt fel id. (c) Lägga synken i favoritprovets egen körning: då hade rapporten och bilen sett samma
+lägesfil, och provet hade inte prövat de tio minuterna.
+
+**Stomdokument:** FAV 7, FAV 12

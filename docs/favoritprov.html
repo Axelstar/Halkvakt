@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Favoritprovet</title>
-<!-- FAVORITPROVET (DECISIONS #529): visningen av testmiljön. Läser hinken favoritprov i Supabase Storage, som funktionen favoritprov
+<!-- FAVORITPROVET (DECISIONS #529; synkprovet #533): visningen av testmiljön. Läser hinken favoritprov i Supabase Storage, som funktionen favoritprov
      skriver var 30:e minut. Ingen app läser något härifrån. Öppnas i en webbläsare: dubbelklicka på filen, eller i appens webbläsarruta. -->
 <style>
   :root { --bg: #f6f4ef; --kort: #ffffff; --fg: #1d232a; --dampad: #5a6570; --linje: #dcd8cf; --gul: #ffc94a; --gul-fg: #2a2000;
@@ -54,6 +54,15 @@
     <p class="litet" id="lage">Läser hinken …</p>
   </div>
   <div class="kort" id="rapport"></div>
+  <div class="kort" id="synk">
+    <label>Synkprovet — rapporten tio minuter innan mot bilen</label>
+    <p class="litet">Tio minuter efter rapporten (:18/:48) kör bilen — motorn på färsk lägesfil — samma rutt (DECISIONS #533). Varje larm
+      bilen får ska ha stått i rapporten: <b>förvarnad</b> om det gjorde det, <b>saknades</b> om inte. Rader i rapporten som motorn kan larma
+      för men inte larmade: <b>borta</b> (faran försvann på tio minuter) eller <b>kvar</b> (riktning, avstånd eller spärr).</p>
+    <p class="litet" id="synklage">Läser synk.json …</p>
+    <div id="synkrutt"></div>
+    <div class="skroll"><table id="synkhist"></table></div>
+  </div>
   <div class="kort">
     <label>Filerna</label>
     <div id="filer" class="litet"></div>
@@ -115,6 +124,39 @@ function rad(x, ny) {
   d.append(el("div", "r", x.rubrik), el("div", "t", x.text || ""), el("div", "m", `${km(x.langsM)} in på rutten · ${x.avstandM} m från linjen`));
   return d;
 }
+let synk = null;
+const KIND = { slippery_segment: "halka", icing_point: "isrisk", camera: "fartkamera", accident: "avvikelse", wildlife: "vilt" };
+function visaSynk(namn) {
+  const ut = document.getElementById("synkrutt"); ut.replaceChildren();
+  const u = synk?.rutter?.[namn]; if (!u) return;
+  ut.append(el("div", "steg", `${namn}: ${u.larm} larm under färden, ${u.forvarnade} förvarnade i rapporten`));
+  for (const x of u.saknade) ut.append(el("div", "rad nytt", `Saknades i rapporten: ${KIND[x.kind] ?? x.kind} (${x.id}) vid ${km(x.langsM)} — ${x.text}`));
+  for (const x of u.utanLarm) ut.append(el("div", "rad", `I rapporten, inget larm (${x.orsak}): ${x.rubrik} vid ${km(x.langsM)}`));
+  const ej = Object.entries(u.ejJamforbara ?? {}).map(([s, n]) => `${RUBRIK[s] ?? s} ${n}`);
+  if (ej.length) ut.append(el("div", "litet", `Motorn larmar inte för: ${ej.join(" · ")}`));
+}
+async function startSynk() {
+  const lage = document.getElementById("synklage");
+  try {
+    const [s, h] = await Promise.all([hamta("synk.json"), hamta("synk-historik.json").catch(() => ({ korningar: [] }))]);
+    synk = s;
+    const a = s.summa, andel = a.andel == null ? "–" : Math.round(100 * a.andel) + " %";
+    lage.textContent = `Bilen körde ${kl(s.generated_at)} mot rapporten ${kl(s.rapport)} (${s.alder_min ?? "–"} min innan): ${a.larm} larm på ${a.rutter} rutter, ` +
+      `${a.forvarnade} förvarnade (${andel}), ${a.saknade} saknades; utan larm ${a.utanLarm.borta} borta, ${a.utanLarm.kvar} kvar.` +
+      (s.jamforbar ? "" : " Inte jämförbar: " + s.skal.join("; "));
+    if (!s.jamforbar || a.saknade) lage.classList.add("fel");
+    visaSynk(document.getElementById("rutt").value);
+    const t = document.getElementById("synkhist");
+    const hr = el("tr"); for (const k of ["Bilen", "Rapporten", "Larm", "Förvarnade", "Saknades", "Borta", "Kvar"]) hr.append(el("th", null, k)); t.append(hr);
+    for (const k of [...h.korningar].reverse().slice(0, 12)) {
+      const tr = el("tr");
+      for (const v of [kl(k.t), kl(k.rapport) + (k.jamforbar ? "" : " ✗"), k.larm, k.forvarnade, k.larm - k.forvarnade, k.utan_larm.borta, k.utan_larm.kvar]) tr.append(el("td", null, String(v)));
+      t.append(tr);
+    }
+  } catch (e) {
+    lage.textContent = `Ingen synk ännu (${e.message}) — synkprovet kör :18/:48.`;
+  }
+}
 async function start() {
   const lage = document.getElementById("lage");
   try {
@@ -122,7 +164,7 @@ async function start() {
     fav = f; hist = h;
     const sel = document.getElementById("rutt");
     for (const [namn, r] of Object.entries(f.rutter)) { const o = el("option", null, `${namn} — ${(r.grupper ?? r.rader).length} rader${r.nytt.length ? `, ${r.nytt.length} nya` : ""}${r.notis?.ja ? " · notis" : ""}`); o.value = namn; sel.append(o); }
-    sel.onchange = () => visa(sel.value);
+    sel.onchange = () => { visa(sel.value); visaSynk(sel.value); };
     visa(sel.value);
     const alder = Math.round((Date.now() - Date.parse(f.generated_at)) / 60000);
     lage.textContent = `Rapporten byggd ${kl(f.generated_at)} (${alder} min sedan) ur lägesfilen ${kl(f.lagesfil)}.` + (alder > 45 ? " Äldre än en körning — har provet stannat?" : "");
@@ -141,7 +183,7 @@ async function start() {
     lage.textContent = `Kunde inte läsa hinken: ${e.message}. Har provet körts?`; lage.classList.add("fel");
   }
 }
-start();
+start().then(startSynk);
 </script>
 </body>
 </html>
