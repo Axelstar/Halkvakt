@@ -778,7 +778,7 @@ export function favoritRapport(rutt: Linje, live: LiveDoc, stat: StaticDoc, snab
   const lin = (id: string, delar: Linje[]) => delar.filter((l) => l.length >= 2).map((line, i) => ({ id: `${id}#${i}`, kind: "slippery_segment", line } as Hazard));
   const st = snabb.stationer;
   const cfg = DEFAULT_CONFIG;
-  for (const s of live.segments) kand.push({ id: `seg:${s.id}`, slag: "halka", rubrik: `Halt väglag${s.road ? ` på ${s.road}` : ""}`,
+  for (const s of live.segments) kand.push({ id: `seg:${s.id}`, slag: "halka", rubrik: `Halt väglag${vagNamn(s.road) ? ` på ${vagNamn(s.road)}` : ""}`,
     text: s.info.join(", ") || "halka rapporterad på sträckan", geo: lin(`seg:${s.id}`, [s.line]), vag: vagNamn(s.road) });
   for (const w of live.weather) {
     const t = w.yta, frys = t != null && t <= 1 && w.fukt;
@@ -792,7 +792,7 @@ export function favoritRapport(rutt: Linje, live: LiveDoc, stat: StaticDoc, snab
       geo: pkt(`wx:${w.id}`, w.lon, w.lat) });
   }
   for (const b of live.bridges ?? []) if (b.yta != null && b.yta <= 3 && b.fukt) kand.push({ id: `bro:${b.id}`, slag: "frysrisk",
-    rubrik: `Frysrisk på bron${b.road ? ` på ${b.road}` : ""}`, text: `närmaste station ${grader(b.yta)}`, geo: pkt(`bro:${b.id}`, b.lon, b.lat), vag: b.road });
+    rubrik: `Frysrisk på bron${vagNamn(b.road) ? ` på ${vagNamn(b.road)}` : ""}`, text: `närmaste station ${grader(b.yta)}`, geo: pkt(`bro:${b.id}`, b.lon, b.lat), vag: b.road });
   for (const c of stat.cameras) kand.push({ id: `cam:${c.id}`, slag: "kamera", rubrik: "Fartkamera", text: vagNamn(c.road) ?? "",
     geo: pkt(`cam:${c.id}`, c.lon, c.lat), vag: vagNamn(c.road) });
   for (const p of snabb.poster) {

@@ -161,5 +161,5 @@ test("notisen: det nya av rätt slag, och ett vägarbete bara om det är nytt p�
 
 test("vägnamnen skrivs lika", () => {
   assert.equal(vagNamn("17"), "väg 17"); assert.equal(vagNamn("Väg 17"), "väg 17"); assert.equal(vagNamn("väg 882"), "väg 882");
-  assert.equal(vagNamn("E22"), "E22"); assert.equal(vagNamn("e 4"), "E4"); assert.equal(vagNamn(""), null); assert.equal(vagNamn(null), null);
+  assert.equal(vagNamn("E22"), "E22"); assert.equal(vagNamn("e 4"), "E4"); assert.equal(vagNamn("E 4"), "E4", "broarnas väg i körningen 12:38"); assert.equal(vagNamn(""), null); assert.equal(vagNamn(null), null);
 });
