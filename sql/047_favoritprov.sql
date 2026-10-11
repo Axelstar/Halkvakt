@@ -13,7 +13,8 @@ BEGIN
   END IF;
 END $$;
 
--- Jobbet på :05/:35, mellan publiceringens tiominutersvarv (:00, :10 …) och skuggans (:02/:32, :12/:42, :22/:52). Kommandot KOPIERAS
+-- Jobbet på :08/:38, en minut som inget annat jobb använder (cron.job läst 11/10 med DB-knappen 38136542574). Först stod :05/:35, men
+-- där går halkvakt-publicera-grannar, och resursfelen 546 kom när flera funktioner startade samtidigt (#344, #360). Kommandot KOPIERAS
 -- ur skuggmotorns svenska jobb inne i databasen med replace(), så nyckeln aldrig står i en fil (husregeln, som sql/034, 037 och 046).
 DO $$
 DECLARE k text;
@@ -24,6 +25,6 @@ BEGIN
       RAISE EXCEPTION 'sql/047: skuggmotorns jobbkommando har inte väntad form — favoritprovets jobb skapas inte';
     END IF;
     PERFORM cron.unschedule(jobid) FROM cron.job WHERE jobname = 'halkvakt-favoritprov';
-    PERFORM cron.schedule('halkvakt-favoritprov', '5,35 * * * *', replace(k, '/functions/v1/skuggmotor''', '/functions/v1/favoritprov'''));
+    PERFORM cron.schedule('halkvakt-favoritprov', '8,38 * * * *', replace(k, '/functions/v1/skuggmotor''', '/functions/v1/favoritprov'''));
   END IF;
 END $$;
