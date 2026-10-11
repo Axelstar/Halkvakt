@@ -33,12 +33,18 @@ async function main(): Promise<number> {
   const DEV = ["Id", "Deleted", "Suspended", "StartTime", "EndTime", "CreationTime", "ValidUntilFurtherNotice", "MessageTypeValue", "MessageCode",
     "MessageCodeValue", "Header", "Message", "RoadNumber", "LocationDescriptor", "SeverityCode", "SeverityText", "NumberOfLanesRestricted",
     "TemporaryLimit", "TrafficRestrictionType", "Geometry.Point.WGS84", "Geometry.Line.WGS84"].map((f) => `Deviation.${f}`);
-  const sit = await trv("Situation", "1.6", "road.trafficinfo", `<IN name="Deviation.MessageTypeValue" value="${TYPER}"/>`, ["Deleted", ...DEV]);
+  // Första körningen (38135635603) föll på INCLUDE: "Invalid query attribute Situation.Deviation.Deleted". Nu utan INCLUDE, och
+  // fälten som faktiskt finns skrivs ut, så att funktionens lista byggs på dem.
+  const sit = await trv("Situation", "1.6", "road.trafficinfo", `<IN name="Deviation.MessageTypeValue" value="${TYPER}"/>`);
+  const falt = new Set<string>(); for (const s of sit) for (const d of s.Deviation ?? []) for (const k of Object.keys(d)) falt.add(k);
+  console.log(`mätt: fälten i avvikelserna (alla): ${[...falt].sort().join(", ")}`);
+  console.log(`mätt: fälten i en situation: ${Object.keys(sit[0] ?? {}).join(", ")}`);
+  const saknas = DEV.map((f) => f.replace("Deviation.", "").split(".")[0]).filter((f) => !falt.has(f));
+  console.log(`mätt: av funktionens INCLUDE-fält saknas: ${[...new Set(saknas)].join(", ") || "inga"}`);
   const tt = await trv("TravelTimeRoute", "1.6", "road.trafficinfo", "", ["Id", "Name", "TravelTime", "FreeFlowTravelTime", "TrafficStatus", "MeasureTime", "Geometry.WGS84"]);
   const fa = await trv("FerryAnnouncement", "1.2", "ferry.trafficinfo", `<AND><GTE name="DepartureTime" value="${fran}"/><LT name="DepartureTime" value="${till}"/></AND>`);
   const fr = await trv("FerryRoute", "1.2", "ferry.trafficinfo", "");
   console.log(`mätt: fälten i en färjeled: ${JSON.stringify(fr[0] ?? {}).slice(0, 400)}`);
-  console.log(`mätt: fälten i en avvikelse: ${Object.keys(sit[0]?.Deviation?.[0] ?? {}).join(", ")}`);
   const [lv, st] = await Promise.all([fetch(CDN + "live.json").then((r) => r.json()), fetch(CDN + "static.json").then((r) => r.json())]);
   const t0 = performance.now();
   const { snabb, lang } = byggRapport({ nu, situationer: sit, restider: tt, farjor: fa, farjeleder: fr, stationer: [] });

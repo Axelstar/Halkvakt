@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Favoritprovet</title>
+<!-- FAVORITPROVET (DECISIONS #529): visningen av testmiljön. Läser hinken favoritprov i Supabase Storage, som funktionen favoritprov
+     skriver var 30:e minut. Ingen app läser något härifrån. Öppnas i en webbläsare: dubbelklicka på filen, eller i appens webbläsarruta. -->
+<style>
+  :root { --bg: #f6f4ef; --kort: #ffffff; --fg: #1d232a; --dampad: #5a6570; --linje: #dcd8cf; --gul: #ffc94a; --gul-fg: #2a2000;
+          --gron: #1f7a4a; --rod: #b23a2e; color-scheme: light; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #11161b; --kort: #1a2129; --fg: #e8ecef; --dampad: #9aa6b1; --linje: #2c3640;
+          --gul: #ffc94a; --gul-fg: #2a2000; --gron: #4fc38a; --rod: #ff7b6e; color-scheme: dark; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 1.5rem; margin: 0 0 4px; text-wrap: balance; }
+  .ingress { color: var(--dampad); margin: 0 0 20px; }
+  .kort { background: var(--kort); border: 1px solid var(--linje); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+  label { font-size: .8rem; letter-spacing: .04em; text-transform: uppercase; color: var(--dampad); display: block; margin-bottom: 6px; }
+  select { width: 100%; font: inherit; padding: 8px; border-radius: 8px; border: 1px solid var(--linje); background: var(--kort); color: var(--fg); }
+  .steg { display: flex; gap: 10px; align-items: baseline; margin: 18px 0 8px; font-weight: 600; }
+  .steg b { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--fg); color: var(--bg); font-size: .8rem; }
+  .rad { padding: 10px 0; border-top: 1px solid var(--linje); }
+  .rad:first-of-type { border-top: 0; }
+  .rad .r { font-weight: 600; }
+  .rad .t { color: var(--dampad); }
+  .rad .m { font-variant-numeric: tabular-nums; color: var(--dampad); font-size: .85rem; }
+  .nytt { background: var(--gul); color: var(--gul-fg); border-radius: 8px; padding: 2px 10px; }
+  .nytt .t, .nytt .m { color: var(--gul-fg); }
+  .tomt { color: var(--dampad); }
+  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: .9rem; }
+  th, td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--linje); }
+  .skroll { overflow-x: auto; }
+  .fel { color: var(--rod); }
+  .litet { font-size: .85rem; color: var(--dampad); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Favoritprovet</h1>
+  <p class="ingress">Testmiljön för favoriterna (DECISIONS #529): rapportfilen och det fliken skulle visa för skuggans 30 rutter, byggt
+    var 30:e minut ur Trafikverkets och SMHI:s öppna data och dagens lägesfil. <b>Ingen app läser något av det här.</b> Rutterna är
+    skuggans, raka sträckor mellan brytpunkter, så avstånden är provets parametrar och inte appens trösklar.</p>
+  <div class="kort">
+    <label for="rutt">Rutt</label>
+    <select id="rutt"></select>
+    <p class="litet" id="lage">Läser hinken …</p>
+  </div>
+  <div class="kort" id="rapport"></div>
+  <div class="kort">
+    <label>Filerna</label>
+    <div id="filer" class="litet"></div>
+  </div>
+  <div class="kort">
+    <label>De senaste körningarna</label>
+    <div class="skroll"><table id="historik"></table></div>
+  </div>
+</main>
+<script>
+const HINK = "https://xmpfztykhyvhmrzsnjrc.supabase.co/storage/v1/object/public/favoritprov/";
+const RUBRIK = { halka: "halt väglag på sträckorna", frysrisk: "frysrisk vid stationerna", olycka: "olyckor", hinder: "hinder", vilt: "vilt",
+  ko: "köer", vagarbete: "vägarbeten", hastighet: "hastighet", omledning: "omledningar", farja: "färjor", kamera: "fartkameror", smhi: "SMHI-varningar" };
+const kl = (iso) => iso ? new Date(iso).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Stockholm" }) : "–";
+const km = (m) => (m / 1000).toLocaleString("sv-SE", { maximumFractionDigits: 1 }) + " km";
+const kb = (b) => b == null ? "–" : (b / 1000).toLocaleString("sv-SE", { maximumFractionDigits: 1 }) + " kB";
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const hamta = (namn) => fetch(HINK + namn + "?t=" + Date.now()).then((r) => { if (!r.ok) throw new Error(namn + " " + r.status); return r.json(); });
+
+let fav = null;
+function visa(namn) {
+  const r = fav.rutter[namn], ut = document.getElementById("rapport");
+  ut.replaceChildren();
+  const rubrik = el("div", "steg"); rubrik.append(el("b", null, "1"), el("span", null, `Just nu · kollat ${kl(fav.generated_at)} · läget från ${kl(fav.lagesfil)} · ${r.km} km`));
+  ut.append(rubrik);
+  const nytt = new Set(r.nytt);
+  const s2 = el("div", "steg"); s2.append(el("b", null, "2"), el("span", null, fav.forra ? `Nytt sedan ${kl(fav.forra)}` : "Nytt sedan förra kollen — första kollen"));
+  ut.append(s2);
+  const nya = r.rader.filter((x) => nytt.has(x.id));
+  if (!nya.length) ut.append(el("p", "tomt", "Inget nytt."));
+  for (const x of nya) ut.append(rad(x, true));
+  const s3 = el("div", "steg"); s3.append(el("b", null, "3"), el("span", null, "Längs vägen just nu")); ut.append(s3);
+  if (!r.rader.length) ut.append(el("p", "tomt", "Inget rapporterat längs rutten just nu."));
+  for (const x of r.rader) ut.append(rad(x, nytt.has(x.id)));
+  const s4 = el("div", "steg"); s4.append(el("b", null, "4"), el("span", null, "Inget rapporterat")); ut.append(s4);
+  const inget = r.tomma.inget.map((s) => RUBRIK[s]).filter(Boolean);
+  ut.append(el("p", "tomt", (inget.length ? inget.join(", ") + "." : "Något i varje slag.") + (r.tomma.koerMatsInte ? " Köer mäts inte längs den här vägen." : "")));
+}
+function rad(x, ny) {
+  const d = el("div", "rad" + (ny ? " nytt" : ""));
+  d.append(el("div", "r", x.rubrik), el("div", "t", x.text || ""), el("div", "m", `${km(x.langsM)} in på rutten · ${x.avstandM} m från linjen`));
+  return d;
+}
+async function start() {
+  const lage = document.getElementById("lage");
+  try {
+    const [f, m, h] = await Promise.all([hamta("favoriter.json"), hamta("manifest.json"), hamta("historik.json").catch(() => ({ korningar: [] }))]);
+    fav = f;
+    const sel = document.getElementById("rutt");
+    for (const [namn, r] of Object.entries(f.rutter)) { const o = el("option", null, `${namn} — ${r.rader.length} rader${r.nytt.length ? `, ${r.nytt.length} nya` : ""}`); o.value = namn; sel.append(o); }
+    sel.onchange = () => visa(sel.value);
+    visa(sel.value);
+    const alder = Math.round((Date.now() - Date.parse(f.generated_at)) / 60000);
+    lage.textContent = `Rapporten byggd ${kl(f.generated_at)} (${alder} min sedan) ur lägesfilen ${kl(f.lagesfil)}.` + (alder > 45 ? " Äldre än en körning — har provet stannat?" : "");
+    if (alder > 45) lage.classList.add("fel");
+    document.getElementById("filer").textContent = `Snabba delen ${kb(m.snabb.byte)} rå, ${kb(m.snabb.gz_byte)} packad · långsamma delen ${kb(m.lang.byte)} rå, ` +
+      `${kb(m.lang.gz_byte)} packad, senast skriven ${kl(m.lang.skriven)} · sha256 ${m.snabb.sha256.slice(0, 12)}…`;
+    const t = document.getElementById("historik");
+    const hr = el("tr"); for (const k of ["Körning", "Tid", "Poster", "Packad", "Rader", "Nya"]) hr.append(el("th", null, k)); t.append(hr);
+    for (const k of [...h.korningar].reverse().slice(0, 12)) {
+      const tr = el("tr");
+      for (const v of [kl(k.t), (k.ms / 1000).toFixed(1) + " s", k.poster, kb(k.snabb_gz), Object.values(k.rader).reduce((s, n) => s + n, 0), k.nytt]) tr.append(el("td", null, String(v)));
+      t.append(tr);
+    }
+  } catch (e) {
+    lage.textContent = `Kunde inte läsa hinken: ${e.message}. Har provet körts?`; lage.classList.add("fel");
+  }
+}
+start();
+</script>
+</body>
+</html>
