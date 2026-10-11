@@ -10876,3 +10876,30 @@ motorn, och en platsmatchning hade dolt fel id. (c) Lägga synken i favoritprove
 lägesfil, och provet hade inte prövat de tio minuterna.
 
 **Stomdokument:** FAV 7, FAV 12
+
+## #534 (11/10 2026) Synkprovets bil i GitHub Actions — funktionen föll på resurstaket (kort #340)
+
+**Vad som hände.** Synkprovets första körning i funktionen (#533) 17:48 11/10 föll med 546 WORKER_RESOURCE_LIMIT (`net._http_response`,
+DB-knappen 38161600356). Mätt på lägesfilen 17:50: motorn längs de 30 vägrutterna tar 9,2 s med skuggmotorns rektangel och 5,6 s med
+rutnätet längs vägen; halkavsnitten är nästan all tid (tio avsnitt 2,7 s på Värmlandsrutten, eftersom motorn prövar varje provpunkt
+på avsnittet mot varje bilpunkt). Funktionens tak är runt 2 s, och samma tak är skälet till att skuggmotorn bara kör tre rutter per
+anrop. Jobbet togs bort samma kväll (sql/049, DB-knappen 38161914133).
+
+**Beslut (Claude, på Axels "bygg klart det").**
+1. **Bilen kör i GitHub Actions**: `scripts/favoritprov-synk.ts` i flödet `favoritprov-synk.yml`, startat av pulsklockan
+   (`puls-favoritprov-synk`, :18/:48) — inte av GitHub-cronen, som levererar timmar sent (#26, #160). Gratis för det publika repot
+   (#503), ungefär en minut per körning. Jämförelsen är densamma (`publish/synk-core.ts`).
+2. **Raden skrivs i `favoritprov_synk`** (sql/050, låst för anon och authenticated) via DATABASE_URL; rader äldre än två dygn raderas.
+   Favoritprovet (:08/:38) speglar de 96 senaste till hinken (`synk.json`, `synk-historik.json`), så visningen är oförändrad men visar
+   bilen med upp till 20 minuters fördröjning. Ett fel i speglingen stoppar aldrig rapporten.
+3. **Rutnätet längs vägen** ersätter rektangeln i synkens förfilter, och halkavsnitt längre än ledtidens längd (leadMaxM) plus
+   provavståndet från rutten tas bort: motorn kan aldrig larma för dem (`evaluateSegment`). Alla 30 rutter gav samma 369 larm som
+   med rektangeln. Motorn rörs inte.
+4. Funktionens läge `?lage=synk` och motorn i favoritprovets bunt tas bort. **Vakthundens pulsgolv** blir 12 (`PULS_GOLV`,
+   `ANTAL_NYA`, kontraktsgrinden).
+
+**Torrkörningen 11/10 20:00** (rapporten 17:38, för gammal för att räknas, men visar formen): 30 rutter, 369 larm, 348 förvarnade
+(94,3 %), 21 saknades — fartkameror, halkavsnitt, broar och ett djur på vägen; 187 rader i rapporten gav inget larm (kvar), 6 var
+borta. Vad de saknade larmen beror på läses först på jämförbara körningar.
+
+**Stomdokument:** FAV 7, FAV 12

@@ -388,7 +388,7 @@ Deno.serve(async (req) => {
     // Kort #222: ett puls-jobb som avaktiveras eller raderas föll TYST ur bevakningslistan — vakten
     // såg en sen körning, aldrig ett försvunnet schema. Golvet är pulsklockans egen NYA-lista
     // (scripts/pulsklocka.ts); kontraktsgrinden vaktar att de två talen inte glider isär.
-    const PULS_GOLV = 11;
+    const PULS_GOLV = 12;   // 12 sedan puls-favoritprov-synk (kort #340, DECISIONS #534)
     rad.push(`pulsjobb: ${puls.length} aktiva (golv ${PULS_GOLV})`);
     if (puls.length < PULS_GOLV) problem.push(
       `**Pulsklockan har tappat jobb**: ${puls.length} aktiva av ${PULS_GOLV} — ett schema har avaktiverats eller raderats och faller tyst ur bevakningslistan (kort #222)`);

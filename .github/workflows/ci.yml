@@ -40,7 +40,9 @@ jobs:
       - name: publicera/index.ts i synk med snapshotkärnan + broarna (#74)
         run: node --experimental-strip-types scripts/bundle-publicera.ts --check
       - name: favoritprov/index.ts i synk med rapportkärnan, motorn och skuggans rutter (#529)
-        run: node --experimental-strip-types scripts/bundle-favoritprov.ts --check
+        run: |
+          node --experimental-strip-types scripts/bundle-favoritprov.ts --check
+          node --experimental-strip-types scripts/favoritprov-synk.ts --sjalvtest
       - name: Kontraktsgrinden — samma tröskelvärde i varje kopia (#144)
         run: |
           node --experimental-strip-types scripts/kontraktsgrinden.ts --sjalvtest

@@ -1,4 +1,4 @@
-// Buntar engine/src (det urvalet längs rutten och synkprovets bil behöver), publish/rapport-core.ts, publish/synk-core.ts, skuggans rutter och
+// Buntar engine/src (det urvalet längs rutten behöver), publish/rapport-core.ts, skuggans rutter och
 // supabase/functions/favoritprov/main.ts → index.ts (DECISIONS #529). Samma mönster som bundle-skuggmotor.ts: index.ts är
 // genererad — ändra aldrig i den, ändra i källorna och kör:
 //   node --experimental-strip-types scripts/bundle-favoritprov.ts
@@ -8,13 +8,12 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { lasRutter } from "../publish/skuggfacit.ts";
 
-const ORDER = ["types", "geo", "segment", "texts", "engine", "rutfilter", "snapshot"];   // texts och engine: synkprovets bil (#533)
+const ORDER = ["types", "geo", "segment", "rutfilter", "snapshot"];
 const strip = (s: string) => s.replace(/^import\b[\s\S]*?from\s+"[^"]+";[ \t]*\n/gm, "");
 let out = `// ═══ GENERERAD av scripts/bundle-favoritprov.ts — ÄNDRA INTE HÄR ═══\n` +
-          `// Källor: engine/src/{${ORDER.join(",")}}.ts + publish/rapport-core.ts + publish/synk-core.ts + data/favoritprov/rutter-osrm.json + supabase/functions/favoritprov/main.ts\n\n`;
+          `// Källor: engine/src/{${ORDER.join(",")}}.ts + publish/rapport-core.ts + data/favoritprov/rutter-osrm.json + supabase/functions/favoritprov/main.ts\n\n`;
 for (const f of ORDER) out += `// ═══ engine/src/${f}.ts ═══\n${strip(readFileSync(new URL(`../engine/src/${f}.ts`, import.meta.url), "utf8"))}\n\n`;
 out += `// ═══ publish/rapport-core.ts ═══\n${strip(readFileSync(new URL("../publish/rapport-core.ts", import.meta.url), "utf8"))}\n\n`;
-out += `// ═══ publish/synk-core.ts ═══\n${strip(readFileSync(new URL("../publish/synk-core.ts", import.meta.url), "utf8"))}\n\n`;
 const kod = readFileSync(new URL("../supabase/functions/skuggmotor/main.ts", import.meta.url), "utf8");
 const skuggans = { ...lasRutter(kod),
   ...lasRutter(kod.replace("const ROUTES: Record", "const ROUTES_X: Record").replace("const ROUTES_C: Record", "const ROUTES: Record")) };
