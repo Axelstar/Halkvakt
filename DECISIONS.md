@@ -9204,6 +9204,8 @@ antagande i den trafikviktade räkningen. ÅDT är årsmedel, inte vinter. Vägl
 länsvägarna; kommunernas gator, som skulle göra det inre bandet ännu större, ingår inte. Grindens krav och dom räknas per punkt, oviktat
 (#406): läsningen ändrar ingen tröskel och ingen dom. Beslutet om var kraften läggs är Bengts.
 
+**Ändrat 11/10 (DECISIONS #516, Bengts ja):** FYSIK+GRANNAR och FYSIK+BLANDNING räknas i kuvösjobbet av Axels frysta `fysik/kuvos_replica.py` och lämnar aldrig jobbet, i stället för filer från Axel i en release; förväntningarna för läsning 1 står kvar. Läsning 2 körs på +24–48 h med Axels förväntan, skriven under #516 före knappen.
+
 ## #491 (8/10 2026) Frostens första läsningar: steg 0 för övergångarna, T-A, R-A, K-A och W-A, bildfacitets omklassningar och efterhalkans uppspelning — K-A passerad, T-A:s domspärr släppt (kort #89, #88, #46, #103, #90, #209)
 
 **Beställningen.** Bengt 8/10: *"kör 89 och allt som hör till det och stäng issuesena sen de är klara"*. Frostlarmet (issue #804)
@@ -9995,6 +9997,8 @@ nätet; en annan version gör jämförelsen oren. (c) Väg (a) i #319, Axel kör
 #508, och kontrollen i kuvösen är beviset att kedjan är densamma.
 
 **Stomdokument:** KUV §9, BED §4.2
+**Axels tips, skrivet före knappen (11/10, DECISIONS #516):** *"FYSIK-MET tydligt under FYSIK:s 9,85 %, men fortfarande över RÅ:s 7,51 % ensam"*. Spannet ovan rörs inte; tipset läses bredvid. Indata-releasen inkopplad i PR #860.
+
 ## #510 (10/10 2026) K-B:s och R-B:s uppspelningar byggda ur arkivet, spärrade som grind NT — och kodgrindens underlagsspärr förregistrerad (kort #309, #46, ärende #815)
 
 **Beslut.** Bengt 10/10: *"går det att göra kort 309, 46 och 815 nu så gör vi dem"*, efter vinterkollen (frosten 6–8/10 läst 8/10, #491;
@@ -10235,3 +10239,43 @@ repot, och rubriken och länken räcker för att hitta arbetet.
 **Alternativ.** (b) dessutom en procent mot en omfattning som låses varje måndag (inte valt); (c) kartan som den var (inte valt).
 
 **Stomdokument:** BED §4.2
+
+## #516 (11/10 2026) Nivå 2 och kort #308 efter Axels besked 10/10: hans tips bredvid #509, grannarna och blandningen räknade i kuvösjobbet ur hans frysta kod, och prognosläget på +24–48 h (kort #319, #308)
+
+**Beslut.** Bengt 11/10: *"slå ihop 860 och ja till 2,3,4a,4b"* — på rekommendationerna samma natt efter Axels besked från
+fysiksessionen 10/10, som Bengt klistrade in (indata-releasen finns, steg 1–4, ett tips om utfallet och två frågor om kort #308).
+Indata-releasen kopplades in i PR #860 (b20ae1e).
+
+1. **Axels tips står bredvid #509, spannet rörs inte.** Skrivet före knappen: *"FYSIK-MET tydligt under FYSIK:s 9,85 %, men
+   fortfarande över RÅ:s 7,51 % ensam — vinsten syns först i blandningen bortom 15 km."* #509:s förväntan för NIVÅ 2 är
+   fortfarande 8,8–10,2 %, och dess läsregel gäller: mer än 0,5 procentenheter under FYSIK stöder MET Nordic. Tipset är Axels
+   egen förväntan och läses bredvid, inte i stället.
+2. **Knappen för nivå 2** trycks på Bengts ord, på grenen med den här posten, efter att den pushats.
+3. **(a) FYSIK+GRANNAR och FYSIK+BLANDNING räknas i kuvösjobbet, av Axels frysta `fysik/kuvos_replica.py`.** Filerna bär
+   grannarnas uppmätta yttemperaturer per halvtimme, räknade ur leveransen rad för rad, och får inte ligga i en publik release
+   (#506). Axels förslag var en port till TypeScript; den valdes bort i #490 (a) eftersom en port ändrar talen och tar en vecka,
+   och det skälet står kvar. Replikan räknar redan båda (8 grannar inom 300 km, vikt e^(−d/100 km), krympning 0,5, målet uteslutet;
+   w = 0,5·e^(−d/80 km) på RÅ), och den ligger i repot med sin sha256 i `fysik/SHA256SUMS` (#508). Ett tunt skript bredvid de
+   frysta lägger kontrollens FYSIK där replikan läser den, kör replikan oförändrad och skriver de två filerna i FYSIK-filens form
+   (`station_id,t_utc,fysik_c`, halvtimmar, två decimaler) med en förteckning, **bara på jobbets disk** — aldrig som artefakt,
+   release eller rad i loggen. `kuvos-blandning-2026-10-08.ts` läser dem som förut. Det som ändras i #490: filerna fryses inte
+   med sha256 före knappen, eftersom de skapas i jobbet. I stället bär koden sin frysta summa, och FYSIK in i replikan är
+   kontrollens omräkning, vars sha256 skrivs ut mot den frysta `9268c6c7…` (#509). Filernas summor, rader och stationer skrivs ut
+   i loggen. Förväntningarna i #490 för läsning 1 står kvar oförändrade. **Ordningen:** knappen för läsning 1 trycks först när
+   nivå 2:s kontroll visat att FYSIK återskapas inom #509:s spann; faller kontrollen läses ingen av dem förrän felet är förstått.
+4. **(b) Prognosläget på +24–48 h.** ECMWF via Open-Meteo ger enligt Axel bara föregående dags körning, alltså +24–48 h. Axel
+   lämnar en FYSIK-prognosfil på +24–48 h (modellens utdata i FYSIK-filens form, får ligga publikt som FYSIK), och grannarna och
+   blandningen räknas på den i jobbet på samma sätt som i (a). Filen uppfyller #490:s *minst +6 h*, men förväntan 6,5–9 % skrevs
+   för +6 h, och provet är hårdare. Därför: **Axel skriver förväntan för +24–48 h under den här posten före knappen**, och knappen
+   väntar på den. **Läsregeln:** håller +24–48 h #490:s villkor (banden 0–7 och 7–15 km på högst 5,2 %, bortom 20 km minst en
+   procentenhet under RÅ:s 13,6 %) är det ett starkare stöd än +6 h hade gett; faller det är frågan om +6 h fortfarande öppen.
+   Riktiga +6 h på MET Nordics arkiverade körningar är en egen läsning med egen förregistrering. Open-Meteo är icke-kommersiell,
+   som #490 redan säger; läsningen mäter modellens känslighet för prognosfel, inte en källa i drift.
+
+**Alternativ som valdes bort.** (a) Axels port till TypeScript: ändrar talen (#490 (a)). (b) Axel räknar filerna och lägger dem i
+den privata hinken i stället för en release: kräver att hans session når hinken, och jobbet har redan allt som behövs. (c) Ändra
+#509:s spann efter Axels tips: en förregistrering ändras inte för att en kollega gissar annorlunda; båda står och läses.
+
+**Vad som INTE görs.** Inga trösklar, ingen drift, de frysta filerna rörs inte. Inga filer med grannarnas fel lämnar jobbet.
+
+**Stomdokument:** KUV §5 och §9, BED §4.2
