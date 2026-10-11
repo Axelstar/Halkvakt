@@ -603,12 +603,13 @@
       <li><span aria-hidden="true">✓</span> <b>Urvalet längs linjen</b> <span style="color: var(--dampad, #4A5763)">klart · farorLangsRutten: kortaste avståndet till linjen och platsen längs den, i körordning; på skuggans 30 rutter 55 % av rektangelns faror, samma varningar (DECISIONS #528, utfall 2)</span></li>
     </ul>
   </details>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-f-provmiljo">Favoritprovet, testmiljön</a> <span style="color: var(--dampad, #4A5763)">delvis, 100 % · kvar: Rutterna längs riktiga vägar med OSM och OSRM (kort #338)</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-f-provmiljo">Favoritprovet, testmiljön</a> <span style="color: var(--dampad, #4A5763)">delvis, 90 % · kvar: Favoritprovet i drift på vägrutterna (OSRM, kort #338): driftsättningen och raderna i hinken</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Byggt</b> <span style="color: var(--dampad, #4A5763)">klart · supabase/functions/favoritprov (bunten scripts/bundle-favoritprov.ts, --check i ci), publish/rapport-core.ts med test/rapport-core.test.ts, sql/047; torrkörningen 38135906644 (läs-only, samma frågor som funktionen)</span></li>
       <li><span aria-hidden="true">✓</span> <b>I drift</b> <span style="color: var(--dampad, #4A5763)">klart · halkvakt-favoritprov :08/:38 (sql/047, DB-knappen 38136994352); körningarna 12:08 och 12:38 i hinken</span></li>
       <li><span aria-hidden="true">✓</span> <b>Visningen</b> <span style="color: var(--dampad, #4A5763)">klart · docs/favoritprov.html öppnad mot hinken 12:18, 30 rutter, raderna, nytt och det tomma</span></li>
       <li><span aria-hidden="true">✓</span> <b>Prov mot resursfelen</b> <span style="color: var(--dampad, #4A5763)">klart · funktionens tid 3 872 och 4 570 ms; publiceringen skrev 12:10, 12:20, 12:31 och grannländerna 12:35 som vanligt</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Rutter längs vägen</b> <span style="color: var(--dampad, #4A5763)">pågår · data/favoritprov/rutter-osrm.json (OSRM på OpenStreetMap, 14 866 punkter, ODbL); avstånd 100–500 m och regeln för linjer längs vägen; torrkörningen 38141327880: 690 rader på vägen mot 606 raka, 614 ms för båda (DECISIONS #531)</span></li>
     </ul>
   </details>
 </div>
@@ -789,12 +790,13 @@
       <li><span aria-hidden="true">○</span> <b>Prov</b> <span style="color: var(--dampad, #4A5763)">saknas</span></li>
     </ul>
   </details>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-f-provmiljo">Favoritprovet, testmiljön</a> <span style="color: var(--dampad, #4A5763)">delvis, 100 % · kvar: Rutterna längs riktiga vägar med OSM och OSRM (kort #338)</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-f-provmiljo">Favoritprovet, testmiljön</a> <span style="color: var(--dampad, #4A5763)">delvis, 90 % · kvar: Favoritprovet i drift på vägrutterna (OSRM, kort #338): driftsättningen och raderna i hinken</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Byggt</b> <span style="color: var(--dampad, #4A5763)">klart · supabase/functions/favoritprov (bunten scripts/bundle-favoritprov.ts, --check i ci), publish/rapport-core.ts med test/rapport-core.test.ts, sql/047; torrkörningen 38135906644 (läs-only, samma frågor som funktionen)</span></li>
       <li><span aria-hidden="true">✓</span> <b>I drift</b> <span style="color: var(--dampad, #4A5763)">klart · halkvakt-favoritprov :08/:38 (sql/047, DB-knappen 38136994352); körningarna 12:08 och 12:38 i hinken</span></li>
       <li><span aria-hidden="true">✓</span> <b>Visningen</b> <span style="color: var(--dampad, #4A5763)">klart · docs/favoritprov.html öppnad mot hinken 12:18, 30 rutter, raderna, nytt och det tomma</span></li>
       <li><span aria-hidden="true">✓</span> <b>Prov mot resursfelen</b> <span style="color: var(--dampad, #4A5763)">klart · funktionens tid 3 872 och 4 570 ms; publiceringen skrev 12:10, 12:20, 12:31 och grannländerna 12:35 som vanligt</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Rutter längs vägen</b> <span style="color: var(--dampad, #4A5763)">pågår · data/favoritprov/rutter-osrm.json (OSRM på OpenStreetMap, 14 866 punkter, ODbL); avstånd 100–500 m och regeln för linjer längs vägen; torrkörningen 38141327880: 690 rader på vägen mot 606 raka, 614 ms för båda (DECISIONS #531)</span></li>
     </ul>
   </details>
 </div>

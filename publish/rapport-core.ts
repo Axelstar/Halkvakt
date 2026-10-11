@@ -9,10 +9,11 @@
 //    Urvalet längs rutten är motorns farorLangsRutten (#528). Avstånden per slag är PROVMILJÖNS parametrar (MARGINALER nedan), inte
 //    appens trösklar: de hör till Axels form och skrivs som trösklar först då.
 // Allt är Trafikverkets och SMHI:s öppna data. Ingen rutt för en verklig förare finns här — provets rutter är skuggans.
-import { farorLangsRutten, rutaKring } from "../engine/src/rutfilter.ts";
+import { farorLangsRutten } from "../engine/src/rutfilter.ts";
 import type { Hazard } from "../engine/src/types.ts";
 import type { LiveDoc, StaticDoc } from "../engine/src/snapshot.ts";
 import { DEFAULT_CONFIG } from "../engine/src/types.ts";
+import { haversineM, samplePolyline } from "../engine/src/geo.ts";
 
 export type Linje = [number, number][];
 export type Slag = "frysrisk" | "halka" | "olycka" | "hinder" | "vilt" | "ko" | "restid" | "vagarbete" | "hastighet" | "omledning"
@@ -24,10 +25,18 @@ export const RUBRIK: Record<Slag, string> = { halka: "halt väglag på sträckor
   hinder: "hinder", vilt: "vilt", ko: "köer", restid: "restider", vagarbete: "vägarbeten", hastighet: "hastighet",
   omledning: "omledningar", farja: "färjor", kamera: "fartkameror", smhi: "SMHI-varningar" };
 
-/** Provmiljöns avstånd till rutten per slag, i meter (DECISIONS #529). Provets rutter är skuggans: raka sträckor mellan
- *  brytpunkter, inte vägens geometri — därför 1,5 km. En riktig sparad rutt följer GPS-spåret, och Axels form sätter de riktiga. */
-export const MARGINALER: Record<Slag, number> = { halka: 1500, frysrisk: 2000, olycka: 1500, hinder: 1500, vilt: 1500, ko: 1500,
+/** Provmiljöns avstånd till rutten per slag, i meter, när rutten följer vägen (OSRM på OpenStreetMap, kort #338, DECISIONS #531):
+ *  linjer och kameror 100 m (Trafikverkets och OpenStreetMaps vägmitt skiljer några tiotal meter, och en motorvägs körbanor ligger
+ *  isär), olyckor, hinder och djur 150 m, stationer och färjor 500 m (en station står vid vägen, en färjeled är en punkt mitt i
+ *  överfarten). Provets parametrar, inte appens trösklar — Axels form sätter dem. */
+export const MARGINALER: Record<Slag, number> = { halka: 100, frysrisk: 500, olycka: 150, hinder: 150, vilt: 150, ko: 100,
+  restid: 100, vagarbete: 100, hastighet: 100, omledning: 100, farja: 500, kamera: 100, smhi: 0 };
+/** Avstånden för raka rutter, som skuggans brytpunkter (DECISIONS #529): 1,5 km, 2 km för stationer och färjor. */
+export const MARGINALER_RAKA: Record<Slag, number> = { halka: 1500, frysrisk: 2000, olycka: 1500, hinder: 1500, vilt: 1500, ko: 1500,
   restid: 1500, vagarbete: 1500, hastighet: 1500, omledning: 1500, farja: 2000, kamera: 1500, smhi: 0 };
+/** En LINJE ligger längs rutten först när minst LANGS_ANDEL av den, eller LANGS_MINST_M, ligger inom marginalen — en väg som bara
+ *  korsar rutten är 0 m från den i korsningen, och då hade varje vägarbete och restidssträcka på en tvärväg kommit med (#531). */
+export const LANGS_ANDEL = 0.5, LANGS_MINST_M = 500, LANGS_STEG_M = 100;
 
 /** En post i rapportfilens snabba del (schema 2, #530). `t` är Trafikverkets egen rubrik; körfält, gräns, slut och restid är fält,
  *  och den läsbara texten sätts ihop av visning() — som appen skulle göra. `p` en punkt, `l` id för en linje i den långsamma delen. */
@@ -240,6 +249,48 @@ function polygonTraffar(geom: any, rutt: Linje): boolean {
   return false;
 }
 
+/** Rutnätet längs rutten: rutor om RUTA_GRAD grader, och i varje ruta indexen för ruttens sträckor som — vidgade med marginM — når in
+ *  i den. Svaret för en kandidat (punkt eller linjens rektangel) är det första och sista sträckindexet i dess rutor, eller null om
+ *  ingen sträcka ligger nära. Kandidaten behöver då bara mätas mot den biten av rutten: en sträcka utanför rutorna ligger längre bort
+ *  än marginalen (#531; rutterna längs vägen har 200–1 460 punkter, och varje linje mot hela rutten tog sekunder). Försiktigt: hellre
+ *  en ruta för mycket än en för lite. */
+export const RUTA_GRAD = 0.05;
+export function rutnat(rutt: Linje, marginM: number): (geo: Hazard[]) => [number, number] | null {
+  const rutor = new Map<string, number[]>();
+  const nord = Math.max(...rutt.map((p) => Math.abs(p[1])));
+  const dy = marginM / 110_000, dx = marginM / (111_320 * Math.cos((nord * Math.PI) / 180));
+  const cell = (v: number) => Math.floor(v / RUTA_GRAD);
+  for (let i = 0; i < rutt.length - 1; i++) {
+    const [ax, ay] = rutt[i], [bx, by] = rutt[i + 1];
+    for (let cx = cell(Math.min(ax, bx) - dx); cx <= cell(Math.max(ax, bx) + dx); cx++)
+      for (let cy = cell(Math.min(ay, by) - dy); cy <= cell(Math.max(ay, by) + dy); cy++) {
+        const k = `${cx},${cy}`; const l = rutor.get(k); if (l) l.push(i); else rutor.set(k, [i]);
+      }
+  }
+  return (geo) => {
+    let i0 = Infinity, i1 = -Infinity;
+    for (const h of geo) {
+      const ps: number[][] = h.kind === "slippery_segment" ? h.line : [[(h as any).lon, (h as any).lat]];
+      let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+      for (const [x, y] of ps) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+      for (let cx = cell(x0); cx <= cell(x1); cx++) for (let cy = cell(y0); cy <= cell(y1); cy++) {
+        const l = rutor.get(`${cx},${cy}`);
+        if (l) for (const s of l) { if (s < i0) i0 = s; if (s > i1) i1 = s; }
+      }
+    }
+    return i0 === Infinity ? null : [i0, i1];
+  };
+}
+
+/** Ligger linjen längs rutten och inte bara tvärs över den? Linjen provas var LANGS_STEG_M:e meter. */
+export function langsVagen(geo: Hazard[], rutt: Linje, marginalM: number): boolean {
+  const prov = geo.flatMap((h) => h.kind === "slippery_segment" ? samplePolyline(h.line, LANGS_STEG_M) : [])
+    .map((q, i) => ({ id: `s${i}`, kind: "accident", lon: q.lon, lat: q.lat } as Hazard));
+  if (!prov.length) return true;
+  const inom = farorLangsRutten(prov, rutt, marginalM).length;
+  return inom / prov.length >= LANGS_ANDEL || inom * LANGS_STEG_M >= LANGS_MINST_M;
+}
+
 /** Det fliken skulle visa för rutten: rader i viktordning, inom slagets ordning i körordning. */
 export function favoritRapport(rutt: Linje, live: LiveDoc, stat: StaticDoc, snabb: Rapport, lang: Linjer,
   marginal: Record<Slag, number> = MARGINALER): Rad[] {
@@ -273,20 +324,21 @@ export function favoritRapport(rutt: Linje, live: LiveDoc, stat: StaticDoc, snab
     if (geo.length) kand.push({ id: p.id, slag: p.slag, rubrik: p.rubrik, text: "", post: p, geo, vag: (p.vag as string | null) ?? null,
       start: (p.start as string | null) ?? null });
   }
-  // Grovt förfilter per rutt, som skuggans rektangel (rutaKring): bara kandidater vars ruta skär rutans ruta plus den största
-  // marginalen mäts mot linjen. Utfallet är detsamma — farorLangsRutten tar ändå bara det inom marginalen — men arbetet en bråkdel.
-  const ruta = rutaKring(rutt, Math.max(...Object.values(marginal)) / 1000 + 1);
-  const skar = (geo: Hazard[]) => geo.some((h) => {
-    const ps: number[][] = h.kind === "slippery_segment" ? h.line : [[(h as any).lon, (h as any).lat]];
-    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
-    for (const [x, y] of ps) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
-    return x1 >= ruta.x0 && x0 <= ruta.x1 && y1 >= ruta.y0 && y0 <= ruta.y1;
-  });
+  // Grovt förfilter per rutt: ett RUTNÄT längs vägen (#531). Varje ruta som en av ruttens sträckor — vidgad med den största marginalen
+  // och lite till — når in i markeras; en kandidat mäts mot linjen bara om dess egen ruta når in i en markerad ruta. Rektangeln runt
+  // hela rutten (rutaKring) släppte igenom en stor del av landet för en diagonal rutt på 300 km. Utfallet är detsamma —
+  // farorLangsRutten tar ändå bara det inom marginalen — men arbetet en bråkdel.
+  const skar = rutnat(rutt, Math.max(...Object.values(marginal)) + 200);
   const rader: Rad[] = [];
+  // Platsen längs rutten räknas som i farorLangsRutten (haversine per sträcka), så att biten plus avståndet fram till den ger samma tal.
+  const kum = [0];
+  for (let i = 1; i < rutt.length; i++) kum.push(kum[i - 1] + haversineM({ lon: rutt[i - 1][0], lat: rutt[i - 1][1] }, { lon: rutt[i][0], lat: rutt[i][1] }));
   for (const k of kand) {
-    if (!skar(k.geo)) continue;
-    const traff = farorLangsRutten(k.geo, rutt, marginal[k.slag]).sort((a, b) => a.avstandM - b.avstandM)[0];
-    if (traff) rader.push({ id: k.id, slag: k.slag, rubrik: k.rubrik, text: k.post ? visning(k.post) : k.text, avstandM: Math.round(traff.avstandM), langsM: Math.round(traff.langsM),
+    const nara = skar(k.geo); if (!nara) continue;
+    const bit = rutt.slice(nara[0], nara[1] + 2), fore = kum[nara[0]];
+    const traff = farorLangsRutten(k.geo, bit, marginal[k.slag]).sort((a, b) => a.avstandM - b.avstandM)[0];
+    if (traff && k.geo[0].kind === "slippery_segment" && !langsVagen(k.geo, bit, marginal[k.slag])) continue;
+    if (traff) rader.push({ id: k.id, slag: k.slag, rubrik: k.rubrik, text: k.post ? visning(k.post) : k.text, avstandM: Math.round(traff.avstandM), langsM: Math.round(fore + traff.langsM),
       vag: k.vag ?? null, start: k.start ?? null });
   }
   for (const w of live.smhi as any[]) if (polygonTraffar(w.geom, rutt)) rader.push({ id: `smhi:${w.id}:${w.event}`, slag: "smhi",

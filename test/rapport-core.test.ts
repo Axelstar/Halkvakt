@@ -1,6 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { byggRapport, favoritRapport, glesa, grupperade, linjerUr, notis, nyttSedan, punktUr, slagFor, tomma, vagNamn, visning, ORDNING, GRUPP_FRAN, type Rad } from "../publish/rapport-core.ts";
+import { byggRapport, favoritRapport, glesa, grupperade, langsVagen, linjerUr, notis, nyttSedan, punktUr, slagFor, tomma, vagNamn, visning, ORDNING, GRUPP_FRAN,
+  MARGINALER, MARGINALER_RAKA, type Rad } from "../publish/rapport-core.ts";
+import type { Hazard } from "../engine/src/types.ts";
 import type { LiveDoc, StaticDoc } from "../engine/src/snapshot.ts";
 
 // Rapportfilen och favoritprovet (DECISIONS #529). Syntetiska svar i Trafikverkets form; rutten går rakt österut vid 59°.
@@ -106,7 +108,7 @@ const STAT: StaticDoc = { schema: 1, cameras: [{ id: "k1", lon: 15.35, lat: 59.0
 
 test("favoritprovet: rutten får sina rader i viktordning, de fjärran inte", () => {
   const { snabb, lang } = byggRapport(IN);
-  const r = favoritRapport(RUTT, LIVE, STAT, snabb, lang);
+  const r = favoritRapport(RUTT, LIVE, STAT, snabb, lang, MARGINALER_RAKA);
   const ids = r.map((x) => x.id);
   assert.deepEqual(ids, ["seg:r1", "wx:s1", "wx:s2", "dev:o1", "tt:tt1", "dev:v1", "dev:h2", "farja:7", "farja:9", "cam:k1", "smhi:5:Halka"]);
   assert.ok(!ids.some((i) => /fjarran|tt2|k2|s3/.test(i)), "inget utanför marginalerna");
@@ -119,7 +121,7 @@ test("favoritprovet: rutten får sina rader i viktordning, de fjärran inte", ()
 
 test("nytt sedan förra kollen och det tomma på en rad", () => {
   const { snabb, lang } = byggRapport(IN);
-  const nu = favoritRapport(RUTT, LIVE, STAT, snabb, lang);
+  const nu = favoritRapport(RUTT, LIVE, STAT, snabb, lang, MARGINALER_RAKA);
   assert.deepEqual(nyttSedan(null, nu), [], "första kollen har inget nytt");
   assert.deepEqual(nyttSedan(nu.filter((x) => x.id !== "dev:o1"), nu), ["dev:o1"]);
   const t = tomma(nu.filter((x) => x.slag !== "vilt"));
@@ -162,4 +164,15 @@ test("notisen: det nya av rätt slag, och ett vägarbete bara om det är nytt p�
 test("vägnamnen skrivs lika", () => {
   assert.equal(vagNamn("17"), "väg 17"); assert.equal(vagNamn("Väg 17"), "väg 17"); assert.equal(vagNamn("väg 882"), "väg 882");
   assert.equal(vagNamn("E22"), "E22"); assert.equal(vagNamn("e 4"), "E4"); assert.equal(vagNamn("E 4"), "E4", "broarnas väg i körningen 12:38"); assert.equal(vagNamn(""), null); assert.equal(vagNamn(null), null);
+});
+
+test("längs vägen: en tvärväg är inte längs rutten, en väg längs den är det (#531)", () => {
+  const seg = (id: string, line: [number, number][]) => ({ id, kind: "slippery_segment", line } as Hazard);
+  const tvars = seg("tvars", [[15.2, 58.98], [15.2, 59.02]]);            // korsar rutten, ~4,4 km lång: bara ~100 m inom 100 m
+  const langs = seg("langs", [[15.1, 59.0003], [15.15, 59.0003]]);       // ~33 m från rutten, ~2,9 km lång
+  const kort = seg("kort", [[15.3, 59.0], [15.3, 59.004]]);              // ~450 m lång, mest inom marginalen
+  assert.equal(langsVagen([tvars], RUTT, MARGINALER.vagarbete), false, "en tvärväg");
+  assert.equal(langsVagen([langs], RUTT, MARGINALER.vagarbete), true);
+  assert.equal(langsVagen([kort], RUTT, MARGINALER.vagarbete), false, "~450 m med en fjärdedel inom 100 m är för lite");
+  assert.equal(MARGINALER.kamera, 100); assert.equal(MARGINALER_RAKA.kamera, 1500);
 });
