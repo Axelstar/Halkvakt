@@ -10552,3 +10552,20 @@ som i dag.
 eller en behörighet flyttas till den som har tid. Ingen tröskel ändras, och appen skickar inget nytt.
 
 **Stomdokument:** APP, MAT, BED §4.2
+
+## #526 (11/10 2026) S3 godkänd av Bengt, och S3-bygget blir 0.3.12 (24) på båda plattformarna (kort #89, #332)
+
+**Beslut.** Bengt 11/10: *"2, ja"* på granskningen av S3 (kort #332, PR #872, 29e1e78), som han gör i Axels ställe (#525). Det
+bokförs som *S3 godkänd*: regeln i motorns tre portar, talen ur #222, texten *"Halkvakt tror: frysrisk framöver."*, kortet med
+*BETA* och vektorerna v38–v41. Spärren före ett bygge till testarna är därmed passerad. Bygget blir **0.3.12 (24)** på iOS och
+Android, i samma commit som beslutet, eftersom 0.3.11 (23) laddades upp 6/10 och inte bär S3. Axel arkiverar iOS (24) från main när
+ios-engine, android och ci är gröna där, och uppmaningen nämner commit-hashen. Android-testarna får APK:n ur CI som förut.
+Behörigheterna i #525 punkt 3 tar Bengt upp med Axel senare (Bengts ord: *"jag tar behörigheterna sen"*).
+
+**Alternativ.** Arkivera 0.3.11 (23) igen (går inte: Apple tar aldrig samma byggnummer två gånger). Vänta med bygget till
+TestFlight-flödet (#333) finns, vilket fördröjer S3 till testarna med minst nyckeln från Axel.
+
+**Varför.** S3 är novemberbetans enda nya regel (`docs/MALET.md` §5), och betan döms i januari på förarnas svar. Ju tidigare den
+är hos testarna, desto fler frostnätter hinner den möta. Byggnumret höjs efter den sista ändringen, aldrig före (CLAUDE.md, #240).
+
+**Stomdokument:** APP, MAT, BED §4.2
