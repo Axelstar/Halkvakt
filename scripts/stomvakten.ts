@@ -1,7 +1,8 @@
 // Stomvakten (Bengts ja 7/10, DECISIONS #484, kort #304): varje nytt beslut i DECISIONS.md slutar med en rad som namnger de
-// stomdokument det rör — `**Stomdokument:** MAT, SYS` eller `**Stomdokument:** inga — skälet` — och de namngivna dokumentens
-// handtext ändras i samma push eller PR. Handtext är sidan utan det skripten skriver (lägesraderna och listorna över öppna
-// kort), så en omskriven lägesrad räknas inte: det var just den som fick dokumenten att se färska ut 3/10–7/10 (DECISIONS #483).
+// stomdokument det rör — `**Stomdokument:** MAT, SYS` eller `**Stomdokument:** inga — skälet`. Sedan 11/10 (Bengts order, DECISIONS
+// #522) stäms de namngivna dokumentens handtext av en gång per dygn av morgonens dokumentsynk, inte i varje PR: --lage visar synken
+// varje dokuments senaste handtextändring och besluten sedan dess som namnger det. Handtext är sidan utan det skripten skriver
+// (lägesraderna och listorna över öppna kort), så en omskriven lägesrad räknas inte (DECISIONS #483).
 // Vakten ser bara inlägg som läggs till, aldrig gamla. Ett "inga" kan den inte pröva; det gör morgonens dokumentsynk.
 //   node --experimental-strip-types scripts/stomvakten.ts --bas <sha>   prövar besluten som lagts till sedan <sha> (md-vakt.yml)
 //   node --experimental-strip-types scripts/stomvakten.ts --lage        varje stomdokuments senaste handtextändring och besluten sedan dess
@@ -46,8 +47,8 @@ export function stomrad(text: string): Rad | null {
   return { inga: false, koder: v.split(/[,;]/u).map((x) => x.trim().split(/\s+/u)[0].replace(/[.:]$/u, "")).filter(Boolean) };
 }
 
-/** Felen i de nya inläggen. fore/efter ger en fils text före och efter ändringen (null = filen fanns inte). */
-export function prova(nya: Inlagg[], sidor: Record<string, Sida>, fore: (fil: string) => string | null, efter: (fil: string) => string | null): string[] {
+/** Felen i de nya inläggen: raden saknas, ett inga utan skäl, en tom rad eller en okänd kod. Handtexten prövas av synken (#522). */
+export function prova(nya: Inlagg[], sidor: Record<string, Sida>): string[] {
   const fel: string[] = [];
   const koder = Object.keys(sidor).join(", ");
   for (const n of nya) {
@@ -55,14 +56,7 @@ export function prova(nya: Inlagg[], sidor: Record<string, Sida>, fore: (fil: st
     if (!r) { fel.push(`#${n.id} saknar raden **Stomdokument:** sist i inlägget — namnge ${koder}, eller skriv inga med ett skäl`); continue; }
     if (r.inga) { if (!/\p{L}{3}/u.test(r.skal)) fel.push(`#${n.id}: **Stomdokument:** inga — skälet saknas`); continue; }
     if (!r.koder.length) { fel.push(`#${n.id}: **Stomdokument:** är tom — namnge ${koder}, eller skriv inga med ett skäl`); continue; }
-    for (const k of r.koder) {
-      const s = sidor[k];
-      if (!s) { fel.push(`#${n.id}: okänt stomdokument "${k}" — giltiga är ${koder}`); continue; }
-      const f = fore(s.fil), e = efter(s.fil);
-      if (f !== null && e !== null && handtext(f) === handtext(e))
-        fel.push(`#${n.id} namnger ${k}, men handtexten i ${s.fil} är oförändrad i den här ändringen — rätta ${s.namn} i samma commit, ` +
-          `eller ändra raden (lägesraderna och korten räknas inte, de skrivs av skripten)`);
-    }
+    for (const k of r.koder) if (!sidor[k]) fel.push(`#${n.id}: okänt stomdokument "${k}" — giltiga är ${koder}`);
   }
   return fel;
 }
@@ -112,14 +106,11 @@ function sjalvtest(): void {
   const r = stomrad(nya[1].text);
   const ok2 = r !== null && !r.inga && r.koder.join(",") === "MAT,BED" && stomrad(nya[0].text) === null
     && (stomrad(nya[2].text) as any)?.skal === "bara kod";
-  // MAT ändrar bara lägesraderna (räknas inte), BED ändrar handtexten.
+  // Ett namngivet dokument vars handtext inte ändrats fälls inte längre (#522); raden, skälet och koderna prövas.
+  const fel = prova(nya, sidor);
+  const ok3 = fel.length === 3 && fel[0].startsWith("#11 saknar") && fel[1].startsWith("#14:") && fel[2].includes('okänt stomdokument "KAL"');
   const L = (x: string) => `a<!-- LÄGESRADER §1: s -->\n${x}\n<!-- /LÄGESRADER -->b`;
-  const filer: Record<string, [string, string]> = { "m.html": [L("gammal"), L("ny")], "b.md": ["hand 1", "hand 2"] };
-  const fel = prova(nya, sidor, (f) => filer[f]?.[0] ?? null, (f) => filer[f]?.[1] ?? null);
-  const ok3 = fel.length === 4 && fel[0].startsWith("#11 saknar") && fel[1].startsWith("#12 namnger MAT") && fel[2].startsWith("#14:")
-    && fel[3].includes('okänt stomdokument "KAL"');
-  filer["m.html"] = [L("x") + "hand 1", L("x") + "hand 2"];
-  const ok4 = prova([nya[1]], sidor, (f) => filer[f][0], (f) => filer[f][1]).length === 0;
+  const ok4 = prova([nya[1]], sidor).length === 0 && handtext(L("gammal")) === handtext(L("ny"));
   const ok5 = tillatna(["m.html", "STATUS.md", "docs/takten.json", "DECISIONS.md", "scripts/x.ts"], sidor).join(",") === "DECISIONS.md,scripts/x.ts";
   const ok6 = handtext("a\r\nb") === "a\nb";
   // Kuvösregeln (#489): kuvösfil + nytt beslut utan KUV fälls; med KUV, utan kuvösfil eller utan nytt beslut släpps det.
@@ -127,8 +118,8 @@ function sjalvtest(): void {
   const ok7 = kuvosRegel([nya[1]], ["scripts/matningar/kuvos-x.ts"]).length === 1 && kuvosRegel([nya[1], kuv], ["kuvos/korning.ts"]).length === 0
     && kuvosRegel([nya[1]], ["scripts/kartsynk.ts"]).length === 0 && kuvosRegel([], ["kuvos/korning.ts"]).length === 0;
   if (!(ok1 && ok2 && ok3 && ok4 && ok5 && ok6 && ok7)) { console.error("✗ stomvakten självtest", { ok1, ok2, ok3, ok4, ok5, ok6, ok7, fel }); process.exit(1); }
-  console.log("✓ stomvakten självtest: nya beslut hittas, raden läses (koder, inga med skäl), saknad rad, tomt skäl, okänd kod och en " +
-    "oförändrad handtext fälls, omskrivna lägesrader räknas inte, dokumentsynkens gren får bara röra dokumenten, och en ändring av " +
+  console.log("✓ stomvakten självtest: nya beslut hittas, raden läses (koder, inga med skäl), saknad rad, tomt skäl och okänd kod " +
+    "fälls, omskrivna lägesrader räknas inte som handtext, dokumentsynkens gren får bara röra dokumenten, och en ändring av " +
     "kuvösen utan KUV i något nytt beslut fälls");
 }
 
@@ -171,11 +162,11 @@ function main(): void {
   if (foreD === null) { console.error(`✗ basen ${bas.slice(0, 7)} går inte att läsa — hämta den (fetch-depth 0)`); process.exit(2); }
   const nya = nyaInlagg(foreD, fran("DECISIONS.md") ?? "");
   const filer = git("diff", "--name-only", bas).split("\n").filter(Boolean);
-  const fel = [...prova(nya, sidor, (f) => visa(bas, f), fran), ...kuvosRegel(nya, filer)];
+  const fel = [...prova(nya, sidor), ...kuvosRegel(nya, filer)];
   for (const f of fel) console.error("✗ " + f);
   if (fel.length) process.exit(1);
   console.log(nya.length
-    ? `✓ stomvakten: ${nya.length} nya beslut (${nya.map((n) => "#" + n.id).join(", ")}) namnger sina stomdokument, och handtexten följer med`
+    ? `✓ stomvakten: ${nya.length} nya beslut (${nya.map((n) => "#" + n.id).join(", ")}) namnger sina stomdokument; handtexten stäms av i morgonens synk (#522)`
     : `✓ stomvakten: inga nya beslut sedan ${bas.slice(0, 7)}`);
 }
 
