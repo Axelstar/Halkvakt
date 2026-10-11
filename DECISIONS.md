@@ -10332,3 +10332,43 @@ den privata hinken i stället för en release: kräver att hans session når hin
 **Vad som INTE görs.** Inga trösklar, ingen drift, de frysta filerna rörs inte. Inga filer med grannarnas fel lämnar jobbet.
 
 **Stomdokument:** KUV §5 och §9, BED §4.2
+
+## #517 (11/10 2026) Nivå 2 med grannarna och blandningen förregistrerad — Axels frysta replika på nivå 2:s skattning i kuvösjobbet; frågan till MET Norway ställs inte igen (kort #327)
+
+**Beslut.** Bengt 11/10: *"slå ihop 861 nej till frågan om MET (har ställts tidigare) och ja till nivå 2 med grannar och
+blandningen"* och *"och ja till 3"* — på rekommendationerna efter utfallen samma natt (#509, #490).
+1. **Frågan till MET Norway** om MET Nordics luft rättas mot Trafikverkets vägstationer ställs inte igen: den har ställts tidigare
+   (Bengt). I repot finns bara läsningen av MET Norways dokumentation 9/10 (bedömningen, raden om väderkällan), där vägstationerna
+   inte nämns. Förbehållet i #509:s utfall står kvar tills svaret finns i repot.
+2. **Nivå 2 med grannarna och blandningen** körs i kuvösen. Samma frysta replika och samma skript som i #516, men på nivå 2:s
+   skattning i stället för kontrollens FYSIK. Frågan: lägger grannarnas fel och blandningen med RÅ något till ovanpå MET Nordic, när
+   nivå 2 ensam (6,10 %) redan ligger nästan lika med FYSIK+BLANDNING på ECMWF (6,00 %)?
+
+**Vad som byggs.** `fysik/niva2/kedja.py` sparar nivå 2:s timvisa skattning (`oof_niva2.npy`; inget annat i kedjan ändras).
+`fysik/blandning/grannar_blandning.py` tar kandidatens namn och skriver tre filer: indatan som replikan ser den, +GRANNAR och
++BLANDNING. Kuvösens steg kör kedjan på MET Nordic och sedan replikan när mätningen heter `kuvos-blandning-niva2`, utan kontrollen:
+NIVÅ 2 i replikans halvtimmar är kontrollen mot #509. Mätningen `scripts/matningar/kuvos-blandning-niva2-2026-10-11.ts` kör samma
+läsning som `kuvos-blandning-2026-10-08.ts`, som nu också redovisar norr och söder per band och vägt med trafiken (#502). Filerna
+lämnar aldrig jobbet (#506, #516).
+
+**Förväntningarna, skrivna före knappen** (grova fel > 2 °C på RÅ:s punkter; jämförelsetalen ur #509 och #490 utfall).
+
+| | väntat | skälet |
+| :-- | --: | :-- |
+| RÅ (kontrollen på populationen) | 7,4–7,6 % | #485 |
+| NIVÅ 2 i replikans halvtimmar (kontrollen) | 6,0–6,2 % | #509: 6,10 %; gradientboostningen räknar inte byte för byte lika mellan körningar |
+| NIVÅ 2+GRANNAR | 5,3–6,0 % | grannarnas fel tog 3,2 procentenheter av FYSIK:s fel; MET Nordic har redan tagit det mesta av det storskaliga felet, så mindre återstår |
+| NIVÅ 2+BLANDNING | 5,0–5,8 %, inte över NIVÅ 2+GRANNAR | blandningen tog 0,7 procentenheter till på ECMWF |
+| NIVÅ 2+BLANDNING bortom 20 km | 10,0–11,5 % | nivå 2 11,81, FYSIK+BLANDNING 10,98 |
+| NIVÅ 2+BLANDNING i norr | 10,5–12,3 % | nivå 2 12,3, FYSIK+BLANDNING 11,88 |
+
+**Hur läsningen läses.** Ingen dom. Ligger NIVÅ 2+BLANDNING mer än 0,3 procentenheter under både NIVÅ 2 och FYSIK+BLANDNING (6,00 %)
+lägger grannarna och blandningen något till ovanpå MET Nordic, och kandidaten är den bästa kuvösen har kört; inom 0,3 har vädret tagit
+vinsten och blandningen lägger lite till. Landar RÅ eller NIVÅ 2 (kontrollen) utanför sina spann läses inget annat förrän skälet är
+förstått. Norr och söder per band och vägt med trafiken redovisas för varje kandidat (#502). Förbehållet om MET Nordic och
+vägstationerna gäller också här. Valet av källa är Axels; förregistreringen för vintern 2026/27 är Bengts beslut (#485).
+
+**Alternativ som valdes bort.** (a) Ställa frågan till MET Norway först: Bengts nej, den är ställd. (b) Köra kontrollen igen i samma
+jobb: den bevisades i #509 och #516, och NIVÅ 2 i replikan är kontrollen här. (c) Blanda nivå 2 i TypeScript: #490 (a), #516.
+
+**Stomdokument:** KUV §5 och §9, BED §4.2
