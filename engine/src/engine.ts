@@ -21,7 +21,7 @@ import type {
 } from "./types.ts";
 import { DEFAULT_CONFIG, PRIORITY } from "./types.ts";
 import { angDiffDeg, bearingDeg, haversineM, isAhead, samplePolyline, type LonLat } from "./geo.ts";
-import { alertText, type AccidentStep } from "./texts.ts";
+import { alertText, EFTERHALKA_TEXT, type AccidentStep } from "./texts.ts";
 
 interface FiredState { t: number; odometerM: number; }
 
@@ -37,6 +37,8 @@ interface Candidate {
   hazard: Hazard; kind: HazardKind; distM: number;
   alertKey: string;
   step?: AccidentStep;
+  /** S3: the frost-risk call came from the post-rain beta rule (DECISIONS #524). */
+  beta?: true;
 }
 
 // Swedish word-start boundary: "Isfläckar"/"Svår halka" match; "fläckvis Våt" must NOT
@@ -175,8 +177,9 @@ export class AlertEngine {
       hazardId: win.hazard.id,
       kind: win.kind,
       distanceM: Math.round(win.distM),
-      text: alertText(win.kind, win.distM, pointHazard, win.step),
+      text: win.beta ? EFTERHALKA_TEXT : alertText(win.kind, win.distM, pointHazard, win.step),
       ...(win.step ? { step: win.step } : {}),
+      ...(win.beta ? { beta: true as const } : {}),
     };
   }
 
@@ -228,7 +231,14 @@ export class AlertEngine {
         // Bridges (#38): the deck freezes before the road — nearest station at +3 is enough.
         const threshold = p.meta?.bridge ? 3 : 1;
         const icy = t != null && t <= threshold && p.meta?.moisture === true;
-        return icy && distM <= leadM ? { hazard: p, kind: p.kind, distM, alertKey: p.id } : null;
+        if (icy) return distM <= leadM ? { hazard: p, kind: p.kind, distM, alertKey: p.id } : null;
+        // S3 — efterhalkan som märkt beta (DECISIONS #222, #524): the surface is still above the freezing rule but within
+        // +1…+3 °C, has fallen fast after rain, and the gauge saw rain within 2 h. Stations only — bridges keep their +3 rule.
+        const rainH = p.meta?.rainH, fall30 = p.meta?.fall30C;
+        const beta = !p.meta?.bridge && t != null && rainH != null && fall30 != null &&
+          t >= this.cfg.efterhalkaYtaMinC && t <= this.cfg.efterhalkaYtaMaxC &&
+          fall30 >= this.cfg.efterhalkaFall30C && rainH <= this.cfg.efterhalkaRegnH;
+        return beta && distM <= leadM ? { hazard: p, kind: p.kind, distM, alertKey: p.id, beta: true } : null;
       }
       case "wildlife": {
         const active = p.meta?.active !== false;

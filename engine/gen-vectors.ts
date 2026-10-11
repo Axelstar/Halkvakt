@@ -451,6 +451,37 @@ const scenarios: Scenario[] = [
     ],
     trace: northTrace(120, 80),
   },
+  // S3 — EFTERHALKAN SOM MÄRKT BETA (DECISIONS #222, #524, TROSKLAR-KOMBINATIONEN §7). Samma station och trace som v08, så
+  // tidpunkten (t=56 vid 655 m) och marginalen är v08:s. Värdena ligger långt från gränserna (+1…+3 °C, fall ≥ 0,8, regn ≤ 2 h)
+  // så att ingen port kan välja annorlunda på avrundning.
+  {
+    file: "v38_efterhalka_beta_speaks", name: "Efterhalkan som beta: regn och snabbt fall talar (S3)",
+    description:
+      "Station 1,9 km fram: ytan +2,0 °C utan fukt — dagens regel tiger. Men regnet slutade för 0,5 h sedan och ytan har " +
+      "fallit 1,0 °C på 30 minuter, så betan talar som v08 (t=56) med 'Halkvakt tror: frysrisk framöver.' och beta=true.",
+    hazards: [{ id: "wx1", kind: "icing_point", lon: LON0, lat: northOf(1900), meta: { surfaceTempC: 2.0, moisture: false, rainH: 0.5, fall30C: 1.0 } }],
+    trace: northTrace(120, 80),
+  },
+  {
+    file: "v39_efterhalka_no_rain_silent", name: "Efterhalkan: inget regn de senaste 2 timmarna — tyst",
+    description: "Samma station och fall som v38, men regnet slutade för 3,5 h sedan. Utanför N = 2 h ⇒ tystnad.",
+    hazards: [{ id: "wx1", kind: "icing_point", lon: LON0, lat: northOf(1900), meta: { surfaceTempC: 2.0, moisture: false, rainH: 3.5, fall30C: 1.0 } }],
+    trace: northTrace(120, 80),
+  },
+  {
+    file: "v40_efterhalka_slow_fall_silent", name: "Efterhalkan: för långsamt fall — tyst",
+    description: "Samma station och regn som v38, men ytan har bara fallit 0,4 °C på 30 minuter. Under 0,8 ⇒ tystnad.",
+    hazards: [{ id: "wx1", kind: "icing_point", lon: LON0, lat: northOf(1900), meta: { surfaceTempC: 2.0, moisture: false, rainH: 0.5, fall30C: 0.4 } }],
+    trace: northTrace(120, 80),
+  },
+  {
+    file: "v41_efterhalka_standard_first", name: "Frysrisken före betan: fukt under +1 talar med dagens fras",
+    description:
+      "Ytan +0,4 °C med fukt, regn för 0,5 h sedan och fall 1,0 °C. Dagens regel gäller och går först: dagens fras " +
+      "'Isrisk framöver …' utan beta — betan tar bara det dagens regel tiger om.",
+    hazards: [{ id: "wx1", kind: "icing_point", lon: LON0, lat: northOf(1900), meta: { surfaceTempC: 0.4, moisture: true, rainH: 0.5, fall30C: 1.0 } }],
+    trace: northTrace(120, 80),
+  },
 ];
 
 /** Canonical replay-with-updates — the reference all three test runners mirror. */

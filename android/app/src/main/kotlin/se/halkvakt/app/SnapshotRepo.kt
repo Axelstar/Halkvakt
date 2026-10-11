@@ -95,6 +95,9 @@ object SnapshotRepo {
                 meta = PointMeta(
                     surfaceTempC = if (w.isNull("yta")) null else w.getDouble("yta"),
                     moisture = w.optBoolean("fukt", false),
+                    // S3 (DECISIONS #524): saknas fältet eller är det null ⇒ null, och betan tiger.
+                    rainH = if (!w.has("regn_h") || w.isNull("regn_h")) null else w.getDouble("regn_h"),
+                    fall30C = if (!w.has("lutning30") || w.isNull("lutning30")) null else w.getDouble("lutning30"),
                 ),
             ))
         }

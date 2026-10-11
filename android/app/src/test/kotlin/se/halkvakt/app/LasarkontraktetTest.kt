@@ -41,6 +41,8 @@ class LasarkontraktetTest {
             "endTimeLocal" -> h.meta.endTimeLocal
             "road" -> h.meta.road
             "speedLimitKmh" -> h.meta.speedLimitKmh
+            "rainH" -> h.meta.rainH
+            "fall30C" -> h.meta.fall30C
             else -> error("${h.id}: unknown point field $nyckel")
         }
     }

@@ -32,6 +32,10 @@ export interface PointHazard {
     /** icing_point */
     surfaceTempC?: number | null;
     moisture?: boolean; // rain/snow/wet surface at the station
+    /** icing_point — S3, efterhalkan som märkt beta (DECISIONS #222, #524): hours since the station's gauge last saw
+     *  rain (`regn_h`) and the surface's fall over 30 min, positive = falling (`lutning30`). null = unknown ⇒ silent. */
+    rainH?: number | null;
+    fall30C?: number | null;
     /** icing_point — this point is a BRIDGE (#38): surfaceTempC/moisture come from the
      *  nearest road weather station; bridges freeze first, so the threshold is +3 °C. */
     bridge?: boolean;
@@ -86,6 +90,9 @@ export interface Alert {
    *  every other alert, so the log shape of all other vectors is unchanged. The warning card
    *  shows it as a stage chip (design handoff 2/10, DECISIONS #443). */
   step?: AccidentStep;
+  /** S3 only: the frost-risk call came from the post-rain beta rule, not from surface + moisture (DECISIONS #524).
+   *  Absent otherwise, so the log shape of every other vector is unchanged. The warning card marks it as beta. */
+  beta?: true;
 }
 
 export interface EngineConfig {
@@ -105,6 +112,12 @@ export interface EngineConfig {
   leadMaxM: number;
   segmentSampleM: number;       // polyline sampling step for corridor tests
   cameraBearingToleranceDeg: number; // co-directionality gate for cameras with known bearing
+  /** S3, efterhalkan som märkt beta (DECISIONS #222): surface within [min, max] °C, fallen at least fall30 °C in 30 min,
+   *  and rain within regnH hours. Start values written before the frost, frozen by the calibration (#468). */
+  efterhalkaYtaMinC: number;
+  efterhalkaYtaMaxC: number;
+  efterhalkaFall30C: number;
+  efterhalkaRegnH: number;
 }
 
 export const DEFAULT_CONFIG: EngineConfig = {
@@ -130,4 +143,9 @@ export const DEFAULT_CONFIG: EngineConfig = {
   // var bara för vid. 60° släpper igenom egen riktning i kurvor och på ramper och stänger
   // ute mötande.
   cameraBearingToleranceDeg: 60,
+  // S3 (DECISIONS #222, #524): betans startvärden — samma tal som sql/028 och uppspelningen (kontraktsgrinden).
+  efterhalkaYtaMinC: 1.0,
+  efterhalkaYtaMaxC: 3.0,
+  efterhalkaFall30C: 0.8,
+  efterhalkaRegnH: 2.0,
 };

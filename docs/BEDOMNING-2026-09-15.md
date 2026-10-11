@@ -685,8 +685,8 @@ bevisbart säker (vid 0 km/h går det inte att nå faran) och är rimligen stör
 - [Arkivexporten och säkerhetskopian](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-i-export): delvis, 92 % · kvar: Måndagens körningar 12/10 via pulsklockan: grind A, höjdprovet, V-A och V-B mot den tillfälliga databasen (kort #323)
 - [Datavakterna (givarvakten, radvakten, karantänen)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-i-vakterna): klar
 - [Lägesfilens fält för skuggdelarna](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-l-falten): delvis, 57 % · kvar: Motorn läser inte regn, rain_segments, regn_h, lutning, bevis eller smhi (fogarna F2–F4)
-- [L2 tillståndet (skattaren S1–S3)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-tillstand): delvis, 64 % · kvar: S1-grinden på frostnätter (Axel, DECISIONS #196)
-- [Efterhalkan som märkt beta](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-efterhalkan): väntar, 50 % · Första frostnätterna för S1-grinden (Axel, DECISIONS #196) och Axels bygge av S3 i tre portar; sedan betan i november (#186).
+- [L2 tillståndet (skattaren S1–S3)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-tillstand): delvis, 79 % · kvar: S1-grinden på frostnätter (Axel, DECISIONS #196)
+- [Efterhalkan som märkt beta](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-efterhalkan): väntar, 69 % · Första frostnätterna för S1-grinden (Axel, DECISIONS #196) och Axels bygge av S3 i tre portar; sedan betan i november (#186).
 - [L3 trenden](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-trenden): delvis, 44 % · kvar: T-B (B3-paret och tystnadsfelet för trenden) har inget instrument
 - [Rimfrosten](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-rimfrost): väntar, 44 % · En frostmånad för R-B; uppspelningen ur arkivet byggs efter R-A (#363, #491).
 - [Vattenplaningen](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-vattenplaning): väntar, 56 % · V-C:s underlag (≥200 varningar, ≥15 facit) för V-B-domen i nov–dec; sedan Axels beslut om steg D.

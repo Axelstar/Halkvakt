@@ -27,6 +27,9 @@ data class PointMeta(
     val endTimeLocal: String? = null,
     /** icing_point — punkten är en BRO (#38): temp/fukt från närmaste station, tröskel +3. */
     val bridge: Boolean = false,
+    /** icing_point — S3 (DECISIONS #222, #524): timmar sedan regn och ytans fall på 30 min, positivt = faller. null ⇒ tyst. */
+    val rainH: Double? = null,
+    val fall30C: Double? = null,
     /** accident — vägnummer ur Trafikverket ("E18", "25"). Rösten säger VAR (2/9). */
     val road: String? = null,
 )
@@ -58,6 +61,8 @@ data class Alert(
     val distanceM: Long, val text: String,
     /** Serious accidents only — which of the two-step calls (DECISIONS #28, #443). Null otherwise. */
     val step: AccidentStep? = null,
+    /** S3 only — the frost-risk call came from the post-rain beta rule (DECISIONS #524). The warning card marks it as beta. */
+    val beta: Boolean = false,
 )
 
 data class EngineConfig(
@@ -75,6 +80,11 @@ data class EngineConfig(
     val leadMaxM: Double = 3000.0,
     val segmentSampleM: Double = 100.0,
     val cameraBearingToleranceDeg: Double = 60.0,
+    // S3 (DECISIONS #222, #524): betans startvärden — samma tal som engine/src/types.ts och sql/028 (kontraktsgrinden).
+    val efterhalkaYtaMinC: Double = 1.0,
+    val efterhalkaYtaMaxC: Double = 3.0,
+    val efterhalkaFall30C: Double = 0.8,
+    val efterhalkaRegnH: Double = 2.0,
 )
 
 // ---- geo (mirror of geo.ts, same formula sequences) ----
@@ -123,6 +133,9 @@ object Geo {
 
 // ---- texts (mirror of texts.ts — exact strings, they are product copy) ----
 object Texts {
+    /** S3, efterhalkan som märkt beta (DECISIONS #222, #524) — spegel av EFTERHALKA_TEXT i texts.ts. */
+    const val EFTERHALKA_TEXT = "Halkvakt tror: frysrisk framöver."
+
     /** " på E18" / " på väg 25" / "" när numret saknas. */
     fun roadPhrase(road: String?): String {
         val r = road?.trim().orEmpty()

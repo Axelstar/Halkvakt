@@ -35,6 +35,10 @@ export interface PointHazard {
     /** icing_point */
     surfaceTempC?: number | null;
     moisture?: boolean; // rain/snow/wet surface at the station
+    /** icing_point — S3, efterhalkan som märkt beta (DECISIONS #222, #524): hours since the station's gauge last saw
+     *  rain (`regn_h`) and the surface's fall over 30 min, positive = falling (`lutning30`). null = unknown ⇒ silent. */
+    rainH?: number | null;
+    fall30C?: number | null;
     /** icing_point — this point is a BRIDGE (#38): surfaceTempC/moisture come from the
      *  nearest road weather station; bridges freeze first, so the threshold is +3 °C. */
     bridge?: boolean;
@@ -89,6 +93,9 @@ export interface Alert {
    *  every other alert, so the log shape of all other vectors is unchanged. The warning card
    *  shows it as a stage chip (design handoff 2/10, DECISIONS #443). */
   step?: AccidentStep;
+  /** S3 only: the frost-risk call came from the post-rain beta rule, not from surface + moisture (DECISIONS #524).
+   *  Absent otherwise, so the log shape of every other vector is unchanged. The warning card marks it as beta. */
+  beta?: true;
 }
 
 export interface EngineConfig {
@@ -108,6 +115,12 @@ export interface EngineConfig {
   leadMaxM: number;
   segmentSampleM: number;       // polyline sampling step for corridor tests
   cameraBearingToleranceDeg: number; // co-directionality gate for cameras with known bearing
+  /** S3, efterhalkan som märkt beta (DECISIONS #222): surface within [min, max] °C, fallen at least fall30 °C in 30 min,
+   *  and rain within regnH hours. Start values written before the frost, frozen by the calibration (#468). */
+  efterhalkaYtaMinC: number;
+  efterhalkaYtaMaxC: number;
+  efterhalkaFall30C: number;
+  efterhalkaRegnH: number;
 }
 
 export const DEFAULT_CONFIG: EngineConfig = {
@@ -133,6 +146,11 @@ export const DEFAULT_CONFIG: EngineConfig = {
   // var bara för vid. 60° släpper igenom egen riktning i kurvor och på ramper och stänger
   // ute mötande.
   cameraBearingToleranceDeg: 60,
+  // S3 (DECISIONS #222, #524): betans startvärden — samma tal som sql/028 och uppspelningen (kontraktsgrinden).
+  efterhalkaYtaMinC: 1.0,
+  efterhalkaYtaMaxC: 3.0,
+  efterhalkaFall30C: 0.8,
+  efterhalkaRegnH: 2.0,
 };
 
 
@@ -352,6 +370,10 @@ export function roadPhrase(road?: string | null): string {
   return /^[A-Za-zÅÄÖåäö]/.test(r) ? ` på ${r}` : ` på väg ${r}`;
 }
 
+/** S3, efterhalkan som märkt beta (DECISIONS #222, #524, TROSKLAR-KOMBINATIONEN §7). "Halkvakt tror" säger att det är en
+ *  gissning ur regn och fall, inte en uppmätt frysning; punktkälla ⇒ "framöver". */
+export const EFTERHALKA_TEXT = "Halkvakt tror: frysrisk framöver.";
+
 export function alertText(
   kind: HazardKind,
   distanceM: number,
@@ -435,6 +457,8 @@ interface Candidate {
   hazard: Hazard; kind: HazardKind; distM: number;
   alertKey: string;
   step?: AccidentStep;
+  /** S3: the frost-risk call came from the post-rain beta rule (DECISIONS #524). */
+  beta?: true;
 }
 
 // Swedish word-start boundary: "Isfläckar"/"Svår halka" match; "fläckvis Våt" must NOT
@@ -573,8 +597,9 @@ export class AlertEngine {
       hazardId: win.hazard.id,
       kind: win.kind,
       distanceM: Math.round(win.distM),
-      text: alertText(win.kind, win.distM, pointHazard, win.step),
+      text: win.beta ? EFTERHALKA_TEXT : alertText(win.kind, win.distM, pointHazard, win.step),
       ...(win.step ? { step: win.step } : {}),
+      ...(win.beta ? { beta: true as const } : {}),
     };
   }
 
@@ -626,7 +651,14 @@ export class AlertEngine {
         // Bridges (#38): the deck freezes before the road — nearest station at +3 is enough.
         const threshold = p.meta?.bridge ? 3 : 1;
         const icy = t != null && t <= threshold && p.meta?.moisture === true;
-        return icy && distM <= leadM ? { hazard: p, kind: p.kind, distM, alertKey: p.id } : null;
+        if (icy) return distM <= leadM ? { hazard: p, kind: p.kind, distM, alertKey: p.id } : null;
+        // S3 — efterhalkan som märkt beta (DECISIONS #222, #524): the surface is still above the freezing rule but within
+        // +1…+3 °C, has fallen fast after rain, and the gauge saw rain within 2 h. Stations only — bridges keep their +3 rule.
+        const rainH = p.meta?.rainH, fall30 = p.meta?.fall30C;
+        const beta = !p.meta?.bridge && t != null && rainH != null && fall30 != null &&
+          t >= this.cfg.efterhalkaYtaMinC && t <= this.cfg.efterhalkaYtaMaxC &&
+          fall30 >= this.cfg.efterhalkaFall30C && rainH <= this.cfg.efterhalkaRegnH;
+        return beta && distM <= leadM ? { hazard: p, kind: p.kind, distM, alertKey: p.id, beta: true } : null;
       }
       case "wildlife": {
         const active = p.meta?.active !== false;
@@ -792,7 +824,9 @@ export interface LiveDoc {
   schema: number;
   generated_at: string;
   segments: { id: string; line: [number, number][]; code: number | null; info: string[]; road: string | null }[];
-  weather: { id: string; lon: number; lat: number; yta: number | null; fukt: boolean }[];
+  weather: { id: string; lon: number; lat: number; yta: number | null; fukt: boolean;
+             /** S3 (#524): timmar sedan regn och ytans fall på 30 min, positivt = faller (snapshot-core.ts). */
+             regn_h?: number | null; lutning30?: number | null }[];
   deviations: {
     id: string; lon: number; lat: number; typ: string | null; road: string | null;
     /** Trafikverket SeverityCode, present only for real accidents (#28). */
@@ -817,7 +851,8 @@ export function snapshotToHazards(staticDoc: StaticDoc, liveDoc: LiveDoc): Hazar
     out.push({ id: `seg:${s.id}`, kind: "slippery_segment", line: s.line, meta: { code: s.code, info: s.info } });
   }
   for (const w of liveDoc.weather) {
-    out.push({ id: `wx:${w.id}`, kind: "icing_point", lon: w.lon, lat: w.lat, meta: { surfaceTempC: w.yta, moisture: w.fukt } });
+    out.push({ id: `wx:${w.id}`, kind: "icing_point", lon: w.lon, lat: w.lat,
+               meta: { surfaceTempC: w.yta, moisture: w.fukt, rainH: w.regn_h ?? null, fall30C: w.lutning30 ?? null } });
   }
   for (const d of liveDoc.deviations) {
     out.push({
