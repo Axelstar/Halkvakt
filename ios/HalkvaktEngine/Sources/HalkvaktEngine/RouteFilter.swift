@@ -62,7 +62,7 @@ public enum RouteFilter {
                 var i = 0
                 while i < line.count - 1 && d > 0 {
                     for j in 0..<(seg.count - 1) {
-                        if let t = crossing(line[i], line[i + 1], seg[j], seg[j + 1]) { d = 0; along = cum[i] + t * (cum[i + 1] - cum[i]); break }
+                        if let t = crossing(line[i], line[i + 1], seg[j], seg[j + 1]), false { d = 0; along = cum[i] + t * (cum[i + 1] - cum[i]); break }
                     }
                     i += 1
                 }
