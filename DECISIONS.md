@@ -10667,3 +10667,58 @@ och 42). Provgrenen slås aldrig ihop.
 skuggmotor/index.ts är buntad om; skuggan använder inte urvalet.
 
 **Stomdokument:** FAV, BED §4.2
+
+## #529 (11/10 2026) Favoritprovet: favoriternas testmiljö under verkliga förhållanden, som aldrig når telefonerna (kort #337)
+
+**Beslut.** Bengt 11/10: *"vi bygger det nu. jag skulle vilja bygga så mycket så att det kan vara i en testmiljö så man ser hur den
+beter sig i skyddad miljö men under faktiska förhållanden och inte når ut till själva telefonen"*. Det häver *inget byggs nu* (2/10)
+för rapportfilen och källorna under den, på servern.
+
+**Vad som byggs.**
+- **Funktionen `favoritprov`** (Supabase, sql/047: `halkvakt-favoritprov` på :05/:35). Den gör tre saker:
+  - bygger rapportfilen som den är tänkt för appen, ur Trafikverkets öppna API när den körs (Situation med typfilter och INCLUDE,
+    TravelTimeRoute, FerryAnnouncement de närmaste 24 h och FerryRoute) och stationernas namn och lufttemperatur ur `weather_latest`;
+  - bygger det fliken skulle visa för skuggans 30 rutter (`ROUTES` och `ROUTES_C`) ur rapportfilen och dagens lägesfil;
+  - räknar *nytt sedan förra kollen*.
+- **Kärnan** är `publish/rapport-core.ts`, ren och prövad (test/rapport-core.test.ts). Urvalet längs rutten är motorns (#528), och
+  `index.ts` buntas av `scripts/bundle-favoritprov.ts` med `--check` i ci och deploy.
+- **Allt skrivs till hinken `favoritprov`** i Supabase Storage och skrivs över, så ingen historik växer: `rapport-snabb.json`,
+  `rapport-lang.json` (bara när linjerna ändrats), `manifest.json` (sha256 och storlekar), `favoriter.json` och `historik.json`
+  (de senaste 48 körningarna). Inget skrivs till kartrepot eller `data/app/v1/`, och publiceringen rörs inte, så **ingen app läser
+  något av det**.
+- **Visningen** är `docs/favoritprov.html`, som läser hinken och visar en rutt i taget, upplagd som favoritsidans rapport (§3). Hinken
+  är läsbar för alla, men oadresserad, med `noindex` och utan länk. Den bär bara öppna data och skuggans rutter, inga förare.
+- **Provets avstånd till rutten** är parametrar för provet, inte appens trösklar: 1,5 km, och 2 km för stationer och färjor
+  (`MARGINALER`). Skuggans rutter är raka sträckor mellan brytpunkter, inte vägens geometri, så avståndet måste rymma skillnaden.
+  Axels form sätter de riktiga.
+
+**Torrkörningarna före driftsättningen** (mätknappen, läs-only, `scripts/matningar/favoritprov-torrkorning-2026-10-11.ts`, samma
+frågor och samma kärna i Node):
+- **38135635603:** Trafikverket svarade *Invalid query attribute Situation.Deviation.Deleted*. Fältet finns på situationen, inte på
+  avvikelsen. Funktionen hade fallit i drift.
+- **38135721921 (utan INCLUDE):** svaret blev 13,5 MB. FerryRoute bär en **punkt**, inte en linje, och rutterna tog 952 ms.
+- **38135906644 (rättad):**
+  - Situation 7,2 MB på 2,6 s; 3 072 poster, varav vägarbeten 1 982, hastigheter 841, restider 190, köer 10, färjor 39, hinder 7,
+    vilt 2 och olyckor 1.
+  - Den snabba delen blir **132,9 kB packad** och den långsamma **186,1 kB**.
+  - byggRapport tog 256 ms och de 30 rutterna 152 ms (efter ett grovt förfilter per rutt), 928 rader.
+
+**Fynd som rör appen senare:**
+- **Filen blir större än beräknat.** Favoritsidan räknade med omkring 120 kB för allt, men den snabba delen ensam är 133 kB packad,
+  eftersom vägarbetena och hastigheterna är många och bär text. Det ska bantas innan en app hämtar filen var tionde minut.
+- **Rapporten blir för lång i Stockholm.** E4 Södertälje→Uppsala fick 166 rader, varav 77 restider och 67 vägarbeten, och
+  favoritsidan vill att rapporten ska gå att läsa på några sekunder. Det talar för att rader läggs samman per slag och väg.
+
+**Bevis efter driftsättningen:**
+- `favoriter.json` i hinken med alla 30 rutter, och efter två körningar i rad räknat *nytt sedan*;
+- funktionens tid i `net._http_response`;
+- publiceringen och skuggan skrev som förut runt körningen;
+- visningen öppnad mot hinken.
+
+**Alternativ.**
+- (a) I publiceringen, som favoritsidan §7 tänker sig för appen. Det riskerar produktionens enda skrivare av lägesfilen, och därmed
+  resursfelen (#344, #360).
+- (b) I kartrepot. Omkring 3 MB om dygnet i historiken.
+- (c) En tabell. Det äter databasens marginal (418 av 500 MB).
+
+**Stomdokument:** FAV, BED §4.2
