@@ -16,8 +16,9 @@ type Sida = { fil: string; namn: string };
 type Inlagg = { id: string; text: string };
 type Rad = { inga: true; skal: string } | { inga: false; koder: string[] };
 
-/** Filer som dokumentsynkens gren får röra utöver de sju (#484 (d)). DECISIONS.md hör inte hit: ett beslut väntar på Bengts ord. */
-const OCKSA = ["docs/KALENDERN.md", "TAVLA.md", "STATUS.md", "docs/projektkartan.json", "docs/PROJEKTKARTAN.html", "docs/kortkartan.json"];
+/** Filer som dokumentsynkens gren får röra utöver de sju (#484 (d)). DECISIONS.md hör inte hit: ett beslut väntar på Bengts ord.
+ *  docs/takten.json skrivs av projektkartan.ts ur git-historiken (#515) och ändras när main flyttat (Bengt 11/10, #518). */
+const OCKSA = ["docs/KALENDERN.md", "TAVLA.md", "STATUS.md", "docs/projektkartan.json", "docs/PROJEKTKARTAN.html", "docs/kortkartan.json", "docs/takten.json"];
 const RUBRIK = /^## #(\d+[a-z]?(?:-[a-zåäö]+)?)(?![\w-])/gmu;   // samma som scripts/beslutsnumren.ts
 const RADEN = /^\*\*Stomdokument:\*\*[ \t]*(.*)$/gmu;
 
@@ -119,7 +120,7 @@ function sjalvtest(): void {
     && fel[3].includes('okänt stomdokument "KAL"');
   filer["m.html"] = [L("x") + "hand 1", L("x") + "hand 2"];
   const ok4 = prova([nya[1]], sidor, (f) => filer[f][0], (f) => filer[f][1]).length === 0;
-  const ok5 = tillatna(["m.html", "STATUS.md", "DECISIONS.md", "scripts/x.ts"], sidor).join(",") === "DECISIONS.md,scripts/x.ts";
+  const ok5 = tillatna(["m.html", "STATUS.md", "docs/takten.json", "DECISIONS.md", "scripts/x.ts"], sidor).join(",") === "DECISIONS.md,scripts/x.ts";
   const ok6 = handtext("a\r\nb") === "a\nb";
   // Kuvösregeln (#489): kuvösfil + nytt beslut utan KUV fälls; med KUV, utan kuvösfil eller utan nytt beslut släpps det.
   const kuv: Inlagg = { id: "16", text: "## #16 (2/1) Kuvös\n**Stomdokument:** KUV §5, BED §4.2\n" };
