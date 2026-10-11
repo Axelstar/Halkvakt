@@ -10462,3 +10462,44 @@ in samma dag (telefonen blev kort #328).
 körning nu: punkt 1 kostar ingenting i prognosläsningens körning, och punkt 2 och 3 avgör inget före vintern 2026/27.
 
 **Stomdokument:** KUV §5, BED §4.2
+
+## #521 (11/10 2026) S1-grinden läst i Axels ställe: skuggloggen och arkivet ense på alla 1 349 ögonblick, och det första positiva fallet (kort #89)
+
+**Beslut.** Bengt 11/10: *"ja till 1"* — att läsa S1-grinden nu i Axels ställe (#196 gav den till Axel), sedan arbetet visat att
+produktionen står still och att motorregeln S3, novemberbetans enda egna regel, väntar på grinden (`docs/MALET.md` §5).
+
+**Läsningen** (DB-knappen 38118591156, READ ONLY, samma satser som 37755033058 8/10 i #491): skuggloggens `efterhalka` mot arkivet
+— yta +1…+3 °C, regn inom 2 timmar, fall ≥ 0,8 °C på 30 minuter — över 3 dygn (det ogallrade arkivet, #511) och 7 dygn.
+
+| fönster | ögonblick | ense, regeln uppfylld | bara loggen | bara arkivet | ense, inte uppfylld |
+| :-- | --: | --: | --: | --: | --: |
+| 3 dygn | 1 107 | **1** | 0 | 0 | 1 106 |
+| 7 dygn | 1 349 | **1** | 0 | 0 | 1 348 |
+
+Arkivets uppspelning samma dygn: 2 · 4 · 23 · 1 · 19 · 3 episoder 6/10–11/10 — de flesta vid stationer utanför skuggans rutter, som
+8/10. Skuggloggen bär nu 200–500 ögonblick per dygn (11 den 5/10, 497 den 10/10).
+
+**Läsningen.** Kontrollen #226 kräver att arkivet räknar som telefonen såg: det gör det på alla 1 349 ögonblick, och för första gången
+på ett fall där regeln är uppfylld (8/10 fanns inget). Ett positivt fall är tunt, men det är det kontrollen kan ge innan fler blöta
+frostnätter faller på skuggans rutter; S3:s dom läses i januari på förarfacit (KB-B, TROSKLAR-KOMBINATIONEN §7), inte här. **Frågan i
+bedömningen §4.2:** räcker det för att bygga S3?
+
+**Stomdokument:** MAT, BED §4.2
+
+## #522 (11/10 2026) Stomdokumenten stäms av en gång per dygn av morgonens dokumentsynk, inte i varje ändring
+
+**Beslut.** Bengt 11/10: *"lägg om 3"* — på frågan om dokumentationen, efter att 107 av 118 commits 4–11/10 rört dokument och varje
+ändring rättat två till tre sidor och republicerat dem efter sammanslagningen.
+1. **De sju stomdokumentens handtext och republiceringen av artefakterna** görs en gång per dygn av morgonens dokumentsynk (CLAUDE.md,
+   DOKUMENTSYNKEN steg 4 och 8); når rutinen inte artefakterna gör dagens första session det. En artefakt får ligga högst ett dygn
+   efter sin repokopia.
+2. **I varje ändring** förs bara in det maskinerna prövar: beslutet med sin rad `**Stomdokument:**`, tavlan, projektkartan och
+   kortkartan (skripten skriver lägesraderna och korten i sidorna) och en rad i STATUS. Produktboksregeln gäller som förut.
+3. **Stomvakten** (`scripts/stomvakten.ts`) fäller inte längre ett namngivet dokument vars handtext är oförändrad i PR:en; raden, skälet,
+   koderna och kuvösregeln (#489) prövas som förut. `--lage` är synkens lista: varje dokuments senaste handtextändring och besluten
+   sedan dess som namnger det.
+
+**Alternativ som valdes bort.** (a) Som förut: varje ändring rättade sidorna och republicerade, och kostnaden låg i dokumenten och inte
+i bygget. (b) Ingen avstämning alls: dokumenten gled isär 3/10–7/10 (#483), och det var skälet till dokumentsynken.
+
+**Stomdokument:** BED läget (stäms av i morgonens synk)
