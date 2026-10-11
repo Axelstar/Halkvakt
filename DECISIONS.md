@@ -10423,7 +10423,9 @@ arkiverade prognoser) och *"lägg till takten på listan"*.
 **Öppet före prognosläsningens knapp (bedömningen §4.2).** (a) Hur fysikens tillstånd bärs i prognosläget — Axels val: antingen körs
 kolumnen hela vintern på prognosvädret vid en fast ledtid (enkelt, men vägens tillstånd driver iväg på prognosens fel, så provet blir
 strängare än driften), eller startar den om från analysens tillstånd vid varje körning och räknar framåt på prognosen (som driften,
-men det kräver att fysiken kan starta från ett sparat tillstånd). (b) Ledtidsklasserna: +6 och +24 h, och +48 h om kostnaden godtas.
+men det kräver att fysiken kan starta från ett sparat tillstånd). **Valet styr också hämtningen:** den fasta ledtiden behöver bara
+klassens sex timsteg per körning (ungefär 95 GB per klass), medan omstarten behöver varje timsteg från körningen till ledtiden, för
++24 h ungefär 30 timsteg per körning och ungefär 475 GB. (b) Ledtidsklasserna: +6 och +24 h, och +48 h om kostnaden godtas.
 (c) Axels förväntan. Rättelsen lärs på analysen och används på prognosvädret, om inget annat sägs.
 
 **Alternativ som valdes bort.** (a) Behålla ECMWF som källa: sämre i varje band och region (#509), och Open-Meteo är
