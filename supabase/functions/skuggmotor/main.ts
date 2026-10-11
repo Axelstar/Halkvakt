@@ -265,15 +265,16 @@ function oljaAlerts(olja: Olja[], route: [number, number][], trace: Fix[]) {
   });
 }
 
-/** S1: väderpunkter i ruttens ruta (+5 km, samma ruta som vbAlerts) med N4:s råa fält och motorns utfall. */
-function efterhalkaRader(lv: any, route: [number, number][], alerts: Alert[]) {
+/** S1: väderpunkter i ruttens ruta (+5 km, samma ruta som vbAlerts) med N4:s råa fält och motorns utfall. Utan rutt (null): alla
+ *  väderpunkter i lägesfilen (DECISIONS #523) — larm gäller fortfarande bara den rutt raden hör till. */
+function efterhalkaRader(lv: any, route: [number, number][] | null, alerts: Alert[]) {
   const wx: any[] = Array.isArray(lv?.weather) ? lv.weather : [];
   if (!wx.length) return [];
   const M = 0.05;
-  const lons = route.map((p) => p[0]), lats = route.map((p) => p[1]);
+  const lons = (route ?? []).map((p) => p[0]), lats = (route ?? []).map((p) => p[1]);
   const x0 = Math.min(...lons) - M, x1 = Math.max(...lons) + M, y0 = Math.min(...lats) - M, y1 = Math.max(...lats) + M;
   const larmade = new Set(alerts.map((a) => a.hazardId));
-  return wx.filter((w) => w.lon >= x0 && w.lon <= x1 && w.lat >= y0 && w.lat <= y1).map((w) => ({
+  return wx.filter((w) => !route || (w.lon >= x0 && w.lon <= x1 && w.lat >= y0 && w.lat <= y1)).map((w) => ({
     id: String(w.id), yta: w.yta ?? null, fukt: w.fukt ?? null,
     regn_h: w.regn_h ?? null, lutning15: w.lutning15 ?? null, lutning30: w.lutning30 ?? null, lutning60: w.lutning60 ?? null,
     larm: larmade.has(`wx:${w.id}`),
@@ -457,7 +458,10 @@ Deno.serve(async (req) => {
       // per station i korridoren + om motorn larmade på stationen. Inget villkor: S2 sätter det, och raden
       // ska kunna spelas upp mot vilket villkor som helst. Axels grind (#196): regn_h döms här innan något
       // mer byggs på det. Tom i september (weather[] saknar stationer ≤ 3 °C) — det är rätt, inte fel.
-      const efterhalka = land === "se" ? efterhalkaRader(lv, line, alerts) : [];
+      // ALLA STATIONER (DECISIONS #523, Bengts ja 11/10): varvets första rutt bär varje väderpunkt i lägesfilen, inte bara sin
+      // korridor. Rutterna kör var 3,5:e timme och gick förbi 95 % av efterhalkans fall 4–11/10 (#521); S1 handlar om stationer,
+      // inte vägar. Inga nya rader: jämförelsen mot arkivet tar bort dubbletterna.
+      const efterhalka = land === "se" ? efterhalkaRader(lv, name === batch[0] ? null : line, alerts) : [];
       // SEGMENTPROGNOSEN (kort #38b steg 4, DECISIONS #324/#325, Bengts "bygg nu" 23/9): rå avståndsviktning av de
       // vaktade stationerna per provpunkt längs rutten (engine/src/segment.ts). Loggad, aldrig hörd — grind B och C
       // dömer i mars. Tom utan ankare, och skälet står i svaret (ankareSkal), så en tom kolumn aldrig är tvetydig.
