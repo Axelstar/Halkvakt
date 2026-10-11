@@ -10428,6 +10428,14 @@ klassens sex timsteg per körning (ungefär 95 GB per klass), medan omstarten be
 +24 h ungefär 30 timsteg per körning och ungefär 475 GB. (b) Ledtidsklasserna: +6 och +24 h, och +48 h om kostnaden godtas.
 (c) Axels förväntan. Rättelsen lärs på analysen och används på prognosvädret, om inget annat sägs.
 
+**Avgjort 11/10 (Bengt: *"2 gör som du föreslår"*):** ledtiderna +6 och +24 h först; +48 h väntar. **Mätt 11/10** mot arkivet (körningen
+15/1 2025 06 UTC): ett anrop kostar omkring 10 s också för en enda ruta över 30 timsteg, och en ruta på 100 × 100 km lika mycket, så
+kostnaden sitter i antalet anrop och timsteg och inte i rutans storlek. Hela rutan över stationerna (1 477 × 627 rutor, 25,9 MB per
+timsteg för de sju fälten) tog 2,4 s för ett timsteg och 12,3 s för sex. En ruta per körning är alltså billigast, och mindre rutor blir
+dyrare. Med 608 körningar: den fasta ledtiden (12 timsteg per körning) ungefär 189 GB och 4–5 timmar, omstarten (30 timsteg per
+körning) ungefär 473 GB och 10–11 timmar. Det som sparas är bara stationernas egna rutor (767 av rutans 926 079): ungefär 50 MB packat
+per ledtidsklass för den fasta ledtiden, ungefär 250 MB för omstarten.
+
 **Alternativ som valdes bort.** (a) Behålla ECMWF som källa: sämre i varje band och region (#509), och Open-Meteo är
 icke-kommersiell. (b) ECMWF-prognoser på +24–48 h ur Open-Meteo: ett prov på en källa vi lämnar. (c) Låta Axel hämta prognoserna i
 sin session: hämtningen finns redan för analysen här, och Actions är gratis för det publika repot (#503).
