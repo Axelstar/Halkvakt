@@ -30,12 +30,12 @@ async function main(): Promise<number> {
   const nu = Date.now(); const fran = new Date(nu).toISOString(), till = new Date(nu + 24 * 3_600_000).toISOString();
   console.log(`mätt: FAVORITPROVET, TORRKÖRNING (${fran}), läs-only, DECISIONS #529`);
   const TYPER = "Accident,AnimalPresenceObstruction,AbnormalTraffic,MaintenanceWorks,RoadOrCarriagewayOrLaneManagement,VehicleObstruction,GeneralObstruction";
-  const DEV = ["Id", "Deleted", "Suspended", "StartTime", "EndTime", "CreationTime", "ValidUntilFurtherNotice", "MessageTypeValue", "MessageCode",
+  const DEV = ["Id", "Suspended", "StartTime", "EndTime", "CreationTime", "ValidUntilFurtherNotice", "MessageTypeValue", "MessageCode",
     "MessageCodeValue", "Header", "Message", "RoadNumber", "LocationDescriptor", "SeverityCode", "SeverityText", "NumberOfLanesRestricted",
     "TemporaryLimit", "TrafficRestrictionType", "Geometry.Point.WGS84", "Geometry.Line.WGS84"].map((f) => `Deviation.${f}`);
   // Första körningen (38135635603) föll på INCLUDE: "Invalid query attribute Situation.Deviation.Deleted". Nu utan INCLUDE, och
   // fälten som faktiskt finns skrivs ut, så att funktionens lista byggs på dem.
-  const sit = await trv("Situation", "1.6", "road.trafficinfo", `<IN name="Deviation.MessageTypeValue" value="${TYPER}"/>`);
+  const sit = await trv("Situation", "1.6", "road.trafficinfo", `<IN name="Deviation.MessageTypeValue" value="${TYPER}"/>`, ["Deleted", ...DEV]);
   const falt = new Set<string>(); for (const s of sit) for (const d of s.Deviation ?? []) for (const k of Object.keys(d)) falt.add(k);
   console.log(`mätt: fälten i avvikelserna (alla): ${[...falt].sort().join(", ")}`);
   console.log(`mätt: fälten i en situation: ${Object.keys(sit[0] ?? {}).join(", ")}`);

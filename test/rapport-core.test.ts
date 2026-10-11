@@ -48,8 +48,10 @@ const IN = {
     { Route: { Id: 7, Name: "Provleden" }, FromHarbor: { Name: "Väst" }, DepartureTime: "2026-10-12T06:20:00Z" },
     { Route: { Id: 7, Name: "Provleden" }, FromHarbor: { Name: "Öst" }, DepartureTime: "2026-10-12T06:10:00Z" },
     { Route: { Id: 8, Name: "Utan geometri" }, FromHarbor: { Name: "X" }, DepartureTime: "2026-10-12T06:15:00Z" },
+    { Route: { Id: 9, Name: "Punktleden" }, FromHarbor: { Name: "Y" }, DepartureTime: "2026-10-12T06:30:00Z" },
   ],
-  farjeleder: [{ Id: 7, Geometry: { WGS84: "LINESTRING (15.45 59.005, 15.45 59.05)" } }],
+  // FerryRoute bär i verkligheten en PUNKT (torrkörningen 38135721921); led 7 har en linje för att pröva båda.
+  farjeleder: [{ Id: 7, Geometry: { WGS84: "LINESTRING (15.45 59.005, 15.45 59.05)" } }, { Id: 9, Geometry: { WGS84: "POINT (15.48 59.003)" } }, { Id: 8 }],
   stationer: [{ id: "s1", namn: "Provby", luft: 1.2 }],
 };
 
@@ -65,6 +67,7 @@ test("rapportfilen: bara det aktiva, linjerna i den långsamma delen, restider o
   const f = snabb.poster.find((p) => p.id === "farja:7")!;
   assert.match(f.text, /^nästa 08:10 från Öst, 08:20 från Väst$/, "i tidsordning, svensk tid");
   assert.ok(!ids.includes("farja:8"), "en led utan geometri kan inte jämföras med en rutt");
+  assert.deepEqual(snabb.poster.find((p) => p.id === "farja:9")!.p, [15.48, 59.003], "en led som är en punkt blir en punkt");
   assert.deepEqual(snabb.stationer.s1, { namn: "Provby", luft: 1.2 });
 });
 
@@ -84,7 +87,7 @@ test("favoritprovet: rutten får sina rader i viktordning, de fjärran inte", ()
   const { snabb, lang } = byggRapport(IN);
   const r = favoritRapport(RUTT, LIVE, STAT, snabb, lang);
   const ids = r.map((x) => x.id);
-  assert.deepEqual(ids, ["seg:r1", "wx:s1", "wx:s2", "dev:o1", "tt:tt1", "dev:v1", "dev:h1", "farja:7", "cam:k1", "smhi:5:Halka"]);
+  assert.deepEqual(ids, ["seg:r1", "wx:s1", "wx:s2", "dev:o1", "tt:tt1", "dev:v1", "dev:h1", "farja:7", "farja:9", "cam:k1", "smhi:5:Halka"]);
   assert.ok(!ids.some((i) => /fjarran|tt2|k2|s3/.test(i)), "inget utanför marginalerna");
   assert.match(r.find((x) => x.id === "wx:s1")!.rubrik, /^Frysrisk vid stationen i Provby$/);
   assert.match(r.find((x) => x.id === "wx:s1")!.text, /^Vägytan −0,8 °C, luften \+1,2 °C, fukt på vägbanan$/);

@@ -647,22 +647,25 @@ export function byggRapport(x: In): { snabb: Rapport; lang: Linjer } {
       l: id, status: r.TrafficStatus ?? null, extraMin: extra, matt: r.MeasureTime ?? null });
   }
   const ledLinje = new Map<string, string>();
+  // FerryRoute bär en PUNKT för leden, inte en linje (torrkörningen 38135721921). Överfarterna är korta, så punkten mäts mot rutten
+  // med färjans marginal; en led med linje mäts som linje.
+  const ledPunkt = new Map<string, [number, number]>();
   for (const f of x.farjeleder) {
-    const l = linjerUr(f.Geometry?.WGS84); if (!l.length) continue;
-    const id = `led:${f.Id}`; linjer[id] = l; ledLinje.set(String(f.Id), id);
+    const l = linjerUr(f.Geometry?.WGS84), p = punktUr(f.Geometry?.WGS84);
+    if (l.length) { const id = `led:${f.Id}`; linjer[id] = l; ledLinje.set(String(f.Id), id); } else if (p) ledPunkt.set(String(f.Id), p);
   }
-  if (x.farjeleder.length && !ledLinje.size) noter.push(`färjelederna saknar geometri (${Object.keys(x.farjeleder[0] ?? {}).join(", ")})`);
+  if (x.farjeleder.length && !ledLinje.size && !ledPunkt.size) noter.push(`färjelederna saknar geometri (${Object.keys(x.farjeleder[0] ?? {}).join(", ")})`);
   const perLed = new Map<string, any[]>();
   for (const a of x.farjor) {
     if (a.Deleted) continue;
     const led = String(a.Route?.Id ?? ""); const l = perLed.get(led) ?? []; l.push(a); perLed.set(led, l);
   }
   for (const [led, avg] of perLed) {
-    const lid = ledLinje.get(led); if (!lid) continue;
+    const lid = ledLinje.get(led), lp = ledPunkt.get(led); if (!lid && !lp) continue;
     avg.sort((a, b) => Date.parse(a.DepartureTime) - Date.parse(b.DepartureTime));
     const nasta = avg.slice(0, 3).map((a) => `${klocka(a.DepartureTime)} från ${ren(a.FromHarbor?.Name, 40)}`);
     poster.push({ id: `farja:${led}`, slag: "farja", rubrik: ren(avg[0].Route?.Name, 60) || "Färja", text: `nästa ${nasta.join(", ")}`,
-      l: lid, avgangar24h: avg.length });
+      ...(lid ? { l: lid } : { p: lp }), avgangar24h: avg.length });
   }
   const stationer = Object.fromEntries(x.stationer.map((s) => [s.id, { namn: s.namn, luft: s.luft }]));
   return { snabb: { schema: 1, generated_at: iso, poster, noter, stationer }, lang: { schema: 1, generated_at: iso, linjer } };
@@ -725,8 +728,18 @@ export function favoritRapport(rutt: Linje, live: LiveDoc, stat: StaticDoc, snab
     const geo = p.l ? lin(p.id, lang.linjer[p.l] ?? []) : p.p ? pkt(p.id, p.p[0], p.p[1]) : [];
     if (geo.length) kand.push({ id: p.id, slag: p.slag, rubrik: p.rubrik, text: p.text, geo });
   }
+  // Grovt förfilter per rutt, som skuggans rektangel (rutaKring): bara kandidater vars ruta skär rutans ruta plus den största
+  // marginalen mäts mot linjen. Utfallet är detsamma — farorLangsRutten tar ändå bara det inom marginalen — men arbetet en bråkdel.
+  const ruta = rutaKring(rutt, Math.max(...Object.values(marginal)) / 1000 + 1);
+  const skar = (geo: Hazard[]) => geo.some((h) => {
+    const ps: number[][] = h.kind === "slippery_segment" ? h.line : [[(h as any).lon, (h as any).lat]];
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    for (const [x, y] of ps) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    return x1 >= ruta.x0 && x0 <= ruta.x1 && y1 >= ruta.y0 && y0 <= ruta.y1;
+  });
   const rader: Rad[] = [];
   for (const k of kand) {
+    if (!skar(k.geo)) continue;
     const traff = farorLangsRutten(k.geo, rutt, marginal[k.slag]).sort((a, b) => a.avstandM - b.avstandM)[0];
     if (traff) rader.push({ id: k.id, slag: k.slag, rubrik: k.rubrik, text: k.text, avstandM: Math.round(traff.avstandM), langsM: Math.round(traff.langsM) });
   }
@@ -809,7 +822,8 @@ Deno.serve(async (req) => {
     let t = performance.now();
     // Bara de slag rapporten bär, bara aktiva, och bara fälten den läser — svaret för hela Situation är stort.
     const TYPER = "Accident,AnimalPresenceObstruction,AbnormalTraffic,MaintenanceWorks,RoadOrCarriagewayOrLaneManagement,VehicleObstruction,GeneralObstruction";
-    const DEV = ["Id", "Deleted", "Suspended", "StartTime", "EndTime", "CreationTime", "ValidUntilFurtherNotice", "MessageTypeValue", "MessageCode",
+    // Deviation.Deleted finns inte (torrkörningen 38135721921: "Invalid query attribute"); Situation.Deleted gör det.
+    const DEV = ["Id", "Suspended", "StartTime", "EndTime", "CreationTime", "ValidUntilFurtherNotice", "MessageTypeValue", "MessageCode",
       "MessageCodeValue", "Header", "Message", "RoadNumber", "LocationDescriptor", "SeverityCode", "SeverityText", "NumberOfLanesRestricted",
       "TemporaryLimit", "TrafficRestrictionType", "Geometry.Point.WGS84", "Geometry.Line.WGS84"].map((f) => `Deviation.${f}`);
     const [sit, tt, fa, fr, lv, st, wl] = await Promise.all([
