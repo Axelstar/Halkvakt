@@ -10605,3 +10605,28 @@ mönstret. Inget fall ligger söder om 58°, och rutten sorteras sist, så rotat
 står.
 
 **Stomdokument:** MAT, SYS, BED §4.2
+
+## #528 (11/10 2026) Favoriterna: underlaget räknas färdigt, och jämförelsen mot rutten byggs i motorns tre språk
+
+**Beslut.** Bengt 11/10: *"gör 1 och 2"*, på frågan vad i favoriterna som går att göra färdigt utan att det hänger på andra
+delar. Det häver Bengts *inget byggs nu* (2/10) för de här två delarna. Fliken, rapporten, de sparade rutterna och tiderna väntar
+fortfarande på Axels form och på Bengts och Axels ja till att spara körda vägar.
+
+**1. Underlaget (förregistrerat före körningen).** `scripts/matningar/fore-resan-kallor-2026-10-11.ts`, läs-only mot Trafikverkets
+öppna API med `vagarbeten-matning.yml`, som #442. Den räknar:
+- **Färjorna färdigt.** Svaret 2/10 nådde taket 20 000. Nu räknas de i fyra fönster på sex timmar de närmaste 24 timmarna, så att
+  inget fönster når taket, och hela svaret utan filter en gång till, för att se hur långt fram det sträcker sig.
+- **Koderna.** Vilka MessageCode, MessageCodeValue, TrafficRestrictionType och TemporaryLimit som finns bland de aktiva avvikelserna.
+  Urvalen för hastighet, omledning och kö görs med mönster som skrivs ut, eftersom fälten inte är kända i förväg.
+- **Filstorleken.** Färjorna (alla avgångar 24 h och de tre närmaste per led och riktning), hastigheterna, omledningarna och
+  kömeddelandena, som en gemensam fil för hela landet, rå och packad.
+
+  Ingen dom. Talen förs in i favoriternas underlag. Körningen är en söndag, så kömeddelandena blir få, som 2/10 (0 en kväll).
+
+**2. Jämförelsen mot rutten.** Ett urval av faror *längs* en linje, i stället för rutans rektangel plus 15 km, i TypeScript, Kotlin
+och Swift med ett delat facit (`engine/fixtures/`), som läsarkontraktet. Varje fara får sitt kortaste avstånd till linjen och sin
+plats längs den, så att rapporten kan ordna dem i körordning. Avståndet är en parameter. Vilka avstånd rapporten ska använda per
+slag hör till Axels form, och de skrivs som trösklar först då. Först mäts om skuggan tjänar på urvalet: hur många faror rektangeln
+och linjen ger per rutt, på dagens lägesfil. Skuggan byts inte utan Bengts ord.
+
+**Stomdokument:** FAV, BED §4.2
