@@ -13,6 +13,7 @@ from physics import run, SIGMA
 from fysik_lw import run_lw
 from metnordic import load_mn, magnus_td, CM_PER_MM, FALT
 from kedja import veck, kalibrera, base_features_mn, state_features_mn, fit_oof, utdata
+import prognos
 
 NS, NH = 30, 24 * 40                                     # 30 stations, 40 days from 10/10; MET Nordic from 31/10 (hour 504)
 IDX = pd.date_range('2024-10-10', periods=NH, freq='h')
@@ -115,4 +116,50 @@ with tempfile.TemporaryDirectory() as d:
     k(lines[0] == 'station_id,t_utc,fysik_c' and rader == NS * (2 * nh_v - 1) and len(sha) == 64, f'utdatafilen: rubrik, {rader} rader = {NS} × (2·{nh_v} − 1), sha256')
     sid, t, v = lines[1].split(',')
     k(t == '2024-11-01T00:00:00Z' and abs(float(v) - oof[int(np.searchsorted(idx, pd.Timestamp('2024-11-01'))), list(meta.sid).index(sid)]) < 0.006, 'första raden bär timvärdet 1/11 00:00')
-print('✓ självtest nivå 2: MET Nordic-läsaren (Magnus, snöfall, W/m², uppvärmning ur ECMWF), run_lw = physics.run utan långvåg, 70 särdrag med tre ersatta, kalibrering, rättelse, utdatafil')
+    # Prognosläget (#519): en "prognos" som är analysen själv. Omstarten från det sparade tillståndet på samma väder ska ge samma
+    # yta, och rättelsen ur analysens modeller på de skarvade särdragen samma skattning som analysens egen (ur samma veck).
+    _, _, till = run_lw(G, p, spara=[i0 + 23])
+    k(np.max(np.abs(run_lw({kk: (v[i0 + 24:] if isinstance(v, np.ndarray) and v.ndim == 2 else v) for kk, v in G.items()}, p, T_init=till[i0 + 23])[0] - Ts[i0 + 24:])) < 1e-9,
+      'omstarten från ett sparat tillstånd på samma väder ger samma yta')
+    oof2, modeller = prognos.fit_modeller(feat, names, obs, Ts, fold, max_rows=4000, iters=15, lr=0.1, leaves=7, msl=20)
+    k(np.array_equal(oof2, oof, equal_nan=True) and len(modeller) == 5, 'fit_modeller = fit_oof, och lämnar fem modeller')
+    mnd = pd.read_csv(fil, dtype={'station_id': str})
+    mnd['tid'] = pd.to_datetime(mnd.tid_utc, utc=True).dt.tz_convert(None)
+    prog = []
+    for kt in pd.date_range('2024-11-01', '2024-11-10 18:00', freq='6h'):
+        for ld in range(prognos.TIMSTEG):
+            x = mnd[mnd.tid == kt + pd.Timedelta(hours=ld)].copy()
+            x['korning_utc'] = kt.strftime('%Y-%m-%dT%H:%M:%SZ'); x['ledtid_h'] = ld
+            if ld == 0: x[['nederbord_mm', 'langvag_jm2', 'kortvag_jm2']] = np.nan        # tomma i timsteg 0, som i prognosfilen
+            if ld == 3: x['nederbord_mm'] = np.where(x.nederbord_mm > 0, x.nederbord_mm, -0.004)  # bruset under 0
+            prog.append(x)
+    pf = f'{d}/prognos_test.csv.gz'
+    pd.concat(prog)[['station_id', 'korning_utc', 'ledtid_h', 'tid_utc'] + prognos.FALT].to_csv(pf, index=False)
+    kor_, A = prognos.las_prognos([pf], list(meta.sid))
+    V, brus = prognos.vader(A)
+    k(len(kor_) == 40 and A['t2m_c'].shape == (40, 30, NS) and brus > 0 and np.nanmin(V['precip']) >= 0, f'prognosfilen: 40 körningar × 30 timsteg, bruset ({brus}) räknat som 0')
+    fel = False
+    try:
+        A2 = {kk: v.copy() for kk, v in A.items()}; A2['nederbord_mm'][0, 5, 0] = -0.02; prognos.vader(A2)
+    except ValueError:
+        fel = True
+    k(fel, 'nederbörd under −0,01 mm fäller läsningen')
+    karta = {t: i for i, t in enumerate(idx)}
+    spara = sorted(karta[t] - 1 for t in kor_)
+    Ts3, T53, till = run_lw(G, p, spara=spara)
+    P, TS, n = prognos.prognoslage(meta, idx, G, Ts3, T53, till, p, modeller, fold, names, kor_, V, logga_var=0)
+    k(n['korningar'] == 40 and n['fyllda_ur_analysen'] > 0, f"40 omstarter, tomma värden ur analysen ({n})")
+    for L in (6, 24):
+        m = np.isfinite(P[L])
+        rader = np.where(m.any(axis=1))[0]
+        k(len(rader) >= 200, f'+{L} h: {len(rader)} timmar täckta')
+        dts = np.abs(TS[L][m] - Ts3[m]); dp = np.abs(P[L][m] - oof2[m])
+        k(dts.max() < 1e-6, f'+{L} h: fysiken på "prognosen" = analysens (max {dts.max():.1e})')
+        print(f'  +{L} h: {int(m.sum())} värden, {100 * np.mean(dp < 1e-3):.2f} % lika, max {dp.max():.2e}'); k(np.mean(dp < 1e-3) > 0.99, f'+{L} h: rättelsen på de skarvade särdragen = analysens skattning ({100 * np.mean(dp < 1e-3):.1f} % lika, max {dp.max():.2e})')
+    k(not np.isfinite(P[6][:int(karta[kor_[0]]) + 6]).any(), 'inga värden före första körningens +6 h')
+    V2 = {kk: v.copy() for kk, v in V.items()}; V2['ta'][10] += 3.0; V2['td'][10] += 3.0
+    P2, TS2, _ = prognos.prognoslage(meta, idx, G, Ts3, T53, till, p, modeller, fold, names, kor_, V2, logga_var=0)
+    h10 = karta[kor_[10]]
+    k(np.nanmean(TS2[6][h10 + 6:h10 + 12] - TS[6][h10 + 6:h10 + 12]) > 0.5 and np.allclose(P2[6][h10 + 12:h10 + 18], P[6][h10 + 12:h10 + 18]),
+      'prognosens luft 3 °C varmare i en körning höjer just den körningens yta, och nästa körning rörs inte')
+print('✓ självtest nivå 2: MET Nordic-läsaren (Magnus, snöfall, W/m², uppvärmning ur ECMWF), run_lw = physics.run utan långvåg, 70 särdrag med tre ersatta, kalibrering, rättelse, utdatafil; prognosläget: omstart ur sparat tillstånd, prognosfilen, bruset, skarven och rättelsen på prognosens särdrag')

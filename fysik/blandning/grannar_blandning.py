@@ -19,10 +19,11 @@ D = '/home/claude/fys'
 BUCKET_S = 1800
 
 
-def kandidater(namn='FYSIK', fil='fysik'):
-    """The replica's arrays: PH is the input (FYSIK or nivå 2) on the half-hours, PG with the neighbours' errors, PB blended with RÅ."""
-    return [('PH', namn, f'{fil}-analys-2024-25.csv.gz'), ('PG', f'{namn}+GRANNAR', f'{fil}-grannar-analys-2024-25.csv.gz'),
-            ('PB', f'{namn}+BLANDNING', f'{fil}-blandning-analys-2024-25.csv.gz')]
+def kandidater(namn='FYSIK', fil='fysik', kod='analys'):
+    """The replica's arrays: PH is the input (FYSIK or nivå 2) on the half-hours, PG with the neighbours' errors, PB blended with RÅ.
+    kod names the weather mode in the file name (analys, or prognos6/prognos24 for the forecast mode, DECISIONS #519)."""
+    return [('PH', namn, f'{fil}-{kod}-2024-25.csv.gz'), ('PG', f'{namn}+GRANNAR', f'{fil}-grannar-{kod}-2024-25.csv.gz'),
+            ('PB', f'{namn}+BLANDNING', f'{fil}-blandning-{kod}-2024-25.csv.gz')]
 
 
 def skriv(P, sids, b0, fil):
@@ -36,15 +37,21 @@ def skriv(P, sids, b0, fil):
     return len(df), int(df.station_id.nunique()), hashlib.sha256(open(fil, 'rb').read()).hexdigest()
 
 
-def manifest(g, ut, namn='FYSIK', fil='fysik'):
+def manifest(g, ut, namn='FYSIK', fil='fysik', lage='analys', kod='analys', lagg_till=False):
+    """Writes the three files and manifest.json. With lagg_till the files are added to an existing manifest (the forecast mode runs
+    the replica once per weather mode into the same directory, DECISIONS #519); a file name already there is replaced."""
     filer = []
-    for var, namn, fil in kandidater(namn, fil):
-        rader, stationer, sha = skriv(g[var], g['sids'], g['b0'], f'{ut}/{fil}')
-        filer.append({'fil': fil, 'namn': namn, 'lage': 'analys', 'bytes': os.path.getsize(f'{ut}/{fil}'),
+    for var, namn_k, fil_k in kandidater(namn, fil, kod):
+        rader, stationer, sha = skriv(g[var], g['sids'], g['b0'], f'{ut}/{fil_k}')
+        filer.append({'fil': fil_k, 'namn': namn_k, 'lage': lage, 'bytes': os.path.getsize(f'{ut}/{fil_k}'),
                       'rader': rader, 'stationer': stationer, 'sha256': sha})
-        print(f'{fil}: {rader} rader, {stationer} stationer, sha256 {sha}', flush=True)
+        print(f'{fil_k} ({lage}): {rader} rader, {stationer} stationer, sha256 {sha}', flush=True)
+    tidigare = []
+    if lagg_till and os.path.exists(f'{ut}/manifest.json'):
+        nya = {f['fil'] for f in filer}
+        tidigare = [f for f in json.load(open(f'{ut}/manifest.json'))['filer'] if f['fil'] not in nya]
     json.dump({'_om': 'Skrivet i kuvösjobbet av fysik/blandning/grannar_blandning.py ur Axels frysta kuvos_replica.py '
-                      '(DECISIONS #516); lämnar aldrig jobbet.', 'filer': filer}, open(f'{ut}/manifest.json', 'w'), indent=1)
+                      '(DECISIONS #516); lämnar aldrig jobbet.', 'filer': tidigare + filer}, open(f'{ut}/manifest.json', 'w'), indent=1)
     return filer
 
 
@@ -69,6 +76,12 @@ def sjalvtest():
                 fel.append(f'manifestet: {f}')
         if sorted(os.listdir(ut)) != sorted([k[2] for k in kandidater('NIVÅ 2', 'niva2')] + ['manifest.json']): fel.append('bara filerna och manifestet i --ut')
         if len({f['sha256'] for f in filer}) != 3: fel.append('kandidater med samma summa')
+        manifest({'PH': P - 2, 'PG': P - 3, 'PB': P - 4, 'sids': sids, 'b0': b0}, ut, 'NIVÅ 2', 'niva2', 'prognos +6 h', 'prognos6', lagg_till=True)
+        m = json.load(open(f'{ut}/manifest.json'))
+        if [(f['namn'], f['lage']) for f in m['filer']] != [(n, 'analys') for n in ('NIVÅ 2', 'NIVÅ 2+GRANNAR', 'NIVÅ 2+BLANDNING')] + \
+                [(n, 'prognos +6 h') for n in ('NIVÅ 2', 'NIVÅ 2+GRANNAR', 'NIVÅ 2+BLANDNING')]:
+            fel.append(f"prognosläget läggs till i manifestet: {[(f['namn'], f['lage']) for f in m['filer']]}")
+        if not os.path.exists(f'{ut}/niva2-blandning-prognos6-2024-25.csv.gz'): fel.append('prognosfilens namn')
         if [k[1] for k in kandidater()] != ['FYSIK', 'FYSIK+GRANNAR', 'FYSIK+BLANDNING']: fel.append('standardnamnen')
     for f in fel: print('✗', f)
     if fel: sys.exit(1)
@@ -83,10 +96,13 @@ if __name__ == '__main__':
     ap.add_argument('--ut', required=True)
     ap.add_argument('--namn', default='FYSIK')
     ap.add_argument('--fil', default='fysik')
+    ap.add_argument('--lage', default='analys', help="vädrets läge i manifestet, t.ex. 'prognos +6 h' (DECISIONS #519)")
+    ap.add_argument('--kod', default='analys', help='lägets namn i filnamnet, t.ex. prognos6')
+    ap.add_argument('--lagg-till', action='store_true', help='lägg filerna till ett befintligt manifest i --ut')
     a = ap.parse_args()
     os.makedirs(a.ut, exist_ok=True)
     shutil.copyfile(a.oof, f'{D}/oof_A2.npy')
     sha = hashlib.sha256(open(f'{D}/oof_A2.npy', 'rb').read()).hexdigest()
     print(f"{a.namn} in i replikan: {a.oof}, sha256 {sha}" + (f" ({'den frysta' if sha.startswith('9268c6c7') else 'inte byte för byte den frysta 9268c6c7…'})" if a.namn == 'FYSIK' else ''), flush=True)
     g = runpy.run_path(f'{D}/kuvos_replica.py', run_name='__main__')      # the frozen replica, unchanged; prints its own aggregates
-    manifest(g, a.ut, a.namn, a.fil)
+    manifest(g, a.ut, a.namn, a.fil, a.lage, a.kod, a.lagg_till)

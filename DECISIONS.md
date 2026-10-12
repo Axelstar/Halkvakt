@@ -10442,6 +10442,70 @@ sin session: hämtningen finns redan för analysen här, och Actions är gratis 
 
 **Stomdokument:** KUV §5 och §9, BED §4.2
 
+## #519 (11/10 2026) Prognosläget på MET Nordic förregistrerat — omstart från analysens tillstånd, timstegen 0–29, ledtiderna +6 och +24 h, Axels förväntan (kort #308)
+
+**Beslut.** Bengt 11/10: *"ja till b och hämtning timsteg 0-29 och axels förväntan överensstämmer med tabellen ovan"* — på
+rekommendationen samma morgon (#518 punkt (a)–(c)).
+1. **Omstart (B).** För var och en av vinterns 608 körningar (00, 06, 12 och 18 UTC) startar fysikkolumnen från det tillstånd som
+   nivå 2 på MET Nordics analys har vid körningens starttid, och räknar framåt på körningens prognos till +29 h. Rättelsen lärs på
+   analysen som i #517 och används på särdrag ur prognosvädret; rättelsens fönster (72 timmar, 45 dygn) byggs av analysen före
+   körningen och prognosen efter. Grannarnas uppmätta fel och blandningen med RÅ använder mätningarna vid giltighetstiden, som #490:s
+   operativa läge säger. Omstarten byggs i nivå 2:s egen kopia av fysiken (`fysik/niva2/fysik_lw.py`), aldrig i de frysta filerna.
+2. **Ledtiderna** +6 h (timstegen 6–11) och +24 h (24–29): för varje timme den senaste körningen som ger en ledtid i klassen.
+3. **Hämtningen**, timstegen 0–29: `kuvos/metnordic-prognos.ts` (självtest i ci) och flödet `kuvos-metnordic-prognos.yml`, åtta delar
+   om högst 20 dygn, en åt gången, till den öppna releasen `kuvos-metnordic-prognos-2024-25`. **Piloten 11/10** (körningen 15/1 2025
+   06 UTC): 2 minuter, 25 620 rader (854 stationer × 30 timsteg), 394 kB packat; strålningen är i prognosen summerad från körningens
+   start och räknas om till timvärden, och för station 1001 blev timvärdena de två första timmarna exakt analysens (872 806,25 och
+   859 370,25 J/m² långvåg, 39 248 J/m² kortvåg). Nederbörden saknar värde i timsteg 0 och har små negativa värden: 1 033 av 24 766, ned
+   till −0,008 mm. **I kedjan räknas nederbörd i [−0,01, 0) som 0, och antalet skrivs ut; ett värde under −0,01 mm fäller läsningen.**
+   Spannet i värdevakten rörs inte.
+4. **Driftens fördröjning, läst 11/10 06:03 UTC** i MET Norways realtidskatalog `metpplatest`: analysen för 05 UTC publicerad 05:15,
+   prognoskörningen 05 UTC 05:26, och prognoserna körs varje timme i realtid men arkiveras bara fyra gånger per dygn. I drift är vädret
+   alltså högst ungefär en timme gammalt; +6 och +24 h är pessimistiska marginaler för läget mellan stationerna nu. Hur långt i förväg
+   appen kan varna (grannarnas mätningar bara fram till prognosens utgivning) är en annan läsning, som hör till försprånget.
+
+**Förväntningarna — Axels (Bengt 11/10), skrivna före knappen** (grova fel > 2 °C på RÅ:s punkter).
+
+| | väntat | skälet |
+| :-- | --: | :-- |
+| RÅ (kontrollen på populationen) | 7,4–7,6 % | #485 |
+| NIVÅ 2+BLANDNING på analysen, i samma jobb (kontrollen) | 4,9–5,15 % | #517: 5,02 % |
+| NIVÅ 2+BLANDNING, +6 h | 5,1–5,6 % | grannarnas fel tar bort mest av vädrets storskaliga fel (FYSIK 9,85 → 6,67, #490), och prognosfel på några timmar är mest storskaliga |
+| NIVÅ 2+BLANDNING, +24 h | 5,3–6,2 % | som ovan, med större prognosfel |
+
+**Hur läsningen läses.** Ingen dom. Ligger +6 h under RÅ i varje band, i norr och söder och vägt med trafiken, håller fördelen med
+prognosväder; ligger den över 5,6 % försämrar prognosen mer än väntat, och läsningen visar var (band, region). Landar RÅ eller
+kontrollen utanför sina spann läses inget annat förrän skälet är förstått. Norr och söder per band och vägt med trafiken redovisas
+(#502). Förregistreringen för vintern 2026/27 är fortfarande Bengts beslut (#485).
+
+**Alternativ som valdes bort.** (a) Fast ledtid (A): kolumnens minne byggs bara av prognoser, vilket aldrig händer i drift; ett
+utfall som faller avgör inte driften. (b) Bara timstegen 6–11 och 24–29 (ungefär 189 GB): räcker inte för omstarten. (c) Grannarnas
+mätningar bara fram till utgivningen: en annan fråga (punkt 4).
+
+**Stomdokument:** KUV §9, BED §4.2
+
+**Byggt 11/10 eftermiddag (Claude; Axel: *"pappa behövs inte"*, han trycker knappen).** Omstarten och läsningen, medan hämtningen
+pågår:
+- `fysik/niva2/prognos.py`: nivå 2 på analysen som `kedja.py niva2` (samma kalibrering, särdrag och rättelse; `fit_modeller` är
+  `fit_oof` rad för rad och lämnar också de fem modellerna). Kolumnens hela tillstånd sparas i slutet av timmen före varje körning
+  (`fysik_lw.run_lw`, nya `T_init` och `spara`; utan dem oförändrad). För varje körning: vädret i fönstret [körningen − 45 dygn,
+  +29 h] är analysen före körningen och prognosen från den, tdeep, ta72 och snötäcket räknas om på den skarvade serien, kolumnen
+  startar ur det sparade tillståndet, särdragen byggs på fönstret och veckets modell (stationens region gömd) läggs på timstegen
+  6–11 och 24–29. Prognosens tomma värden i timsteg 0 (strålning, nederbörd) tas ur analysen för samma timme, som i drift (punkt 4).
+- Självtestet (ci): omstart ur sparat tillstånd på samma väder ger samma yta (< 1e-9); en "prognos" som är analysen själv ger
+  analysens skattning (100 % lika, max 7e-7); prognosens luft 3 °C varmare i en körning höjer den körningens yta och rör inte nästa;
+  bruset räknas som 0 och −0,02 mm fäller.
+- Läst på den riktiga del 3 (10–29/12): 80 körningar, 2 049 600 rader, 854 stationer, strålning och nederbörd tomma precis i
+  timsteg 0 (68 320 = 80 × 854), 38 300 nederbördsvärden i [−0,01, 0), inget under.
+- `grannar_blandning.py` tar `--lage`, `--kod` och `--lagg-till`, så att replikan körs på analysen, +6 h och +24 h in i samma
+  manifest; mätningen `kuvos-blandning-prognos-2026-10-11.ts` läser alla nio filer med RÅ och OFFSET bredvid. `kuvos.yml` hämtar
+  prognosdelarna med summorna mot `kuvos/metnordic-prognos-leverans.json`, som skrivs när hämtningen är klar.
+
+**A2 per ytband i samma körning (kort #329, DECISIONS #520), förregistrerat före knappen.** Varje kandidat redovisar de grova felen
+per uppmätt yta (≤ −3 · −3…+1 · +1…+3 · +3…+5 °C) och hur stor del av alla grova fel som ligger i varje band. **Granskarens förväntan:
+25–45 % av de grova felen ligger i +3…+5 °C**, för RÅ och för NIVÅ 2+BLANDNING. Ingen grind och ingen population ändras av den (regel L,
+kort #282).
+
 ## #520 (11/10 2026) Tre punkter ur en granskning: A2 per ytband i varje läsning, kvantil och fysiken som vittne som låsta kort (kort #329, #330, #331)
 
 **Beslut.** Bengt 11/10: *"2 ja"* — på rekommendationen i bedömningen §4.2 om tre outforskade punkter ur en granskning han klistrade
@@ -10973,6 +11037,15 @@ fördel i de mindre kritiska lägena. Utfall utanför spannen läses med skälet
 **Vad som byggs före knappen.** Tillägg 1 och 2 finns redan i läsningens kod på #519-grenen (`ytbandsrad`, `skrivFrysflaggan`).
 Tillägg 3 finns bara i kuvösens läsning 6/10 (`scripts/matningar/kuvos-prognoslagret-2026-10-06.ts`, #471) och byggs in i
 prognosläsningen, med självtest, innan Axel trycker.
+
+**Byggt 12/10 kväll (Claude; Bengt: *"bygg in nattdelningen"*), PR #867, 8e2009a.** Läsningen skriver nu en rad per kandidat med
+klassen, de grova felen, klassens andel av punkterna och norr och söder. Klasserna är klar stilla natt, natt övrigt, dag och okänd.
+Definitionen är #471:s, kopierad ur läsningen 6/10. Molnen hämtas ur `kuvos_ra.smhi_obs` (p16), vinden ur samma arkivrad som ytan.
+Prognosläsningen slår på delningen. Analysläsningarna 8/10 och 11/10 är oförändrade.
+Läsningen räknar molnvärden utanför 0–100 %. Koden 113 (himlen skymd) räknas som inte klar.
+Saknas molnen fälls jobbet först efter läsningen, så att de andra måtten inte går förlorade.
+Självtestet prövar klassningen med rader i databasens form. Motproven fällde alla åtta: molngränsen, vindgränsen, solgränsen,
+bortkopplad nattrad, förväxlat norr och söder, timnyckeln, avståndet och vindens hink.
 
 **Stomdokument:** KUV §5, BED §4.2
 

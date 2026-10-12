@@ -91,6 +91,8 @@ jobs:
           node --experimental-strip-types scripts/matningar/kuvos-c8-fingeravtryck-2026-10-08.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-blandning-2026-10-08.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-blandning-niva2-2026-10-11.ts --sjalvtest
+          node --experimental-strip-types scripts/matningar/kuvos-blandning-prognos-2026-10-11.ts --sjalvtest
+          node --experimental-strip-types kuvos/metnordic-prognos.ts --sjalvtest   # DECISIONS #519
           node --experimental-strip-types scripts/matningar/kuvos-trafik-per-band-2026-10-08.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-fysik-givarvakt-2026-10-08.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-kallkartan-2026-10-09.ts --sjalvtest
@@ -110,6 +112,7 @@ jobs:
         run: |
           python3 -m pip install -q $(grep -E '^(numpy|pandas|scipy|scikit-learn|pyarrow)==' fysik/requirements.txt)
           python3 fysik/niva2/sjalvtest.py
+          python3 fysik/niva2/prognos.py --help > /dev/null
           python3 fysik/niva2/kedja.py --help > /dev/null   # skriptets egen start: självtestet sätter sökvägen själv och såg inte att common saknades 11/10
           python3 fysik/blandning/grannar_blandning.py --sjalvtest   # DECISIONS #516
       # Generatorn gled isär från vektorfilerna tre gånger (31/8, 2/9, 13/9) utan att någon vakt såg det (#195).
