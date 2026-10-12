@@ -790,7 +790,8 @@ export function rutaKring(line: [number, number][], marginalKm: number): Ruta {
 const iRutan = (x: number, y: number, r: Ruta) => x >= r.x0 && x <= r.x1 && y >= r.y0 && y <= r.y1;
 
 /** Farorna som kan tala på rutten. En punkt ska ligga i rutan; ett segment räcker att dess egen ruta skär rutans — ett långt
- *  segment kan korsa rutten utan att någon av dess brytpunkter ligger nära. */
+ *  segment kan korsa rutten utan att någon av dess brytpunkter ligger nära. Skuggans förfilter till 12/10; sedan dess
+ *  farorVidLinjen nedan (DECISIONS #535). */
 export function farorNaraRutten(hazards: Hazard[], line: [number, number][], marginalKm = FARA_MARGINAL_KM): Hazard[] {
   const r = rutaKring(line, marginalKm);
   return hazards.filter((h) => {
@@ -878,6 +879,15 @@ export function farorLangsRutten(hazards: Hazard[], line: [number, number][], ma
     if (d <= marginalM) ut.push({ hazard: h, avstandM: d, langsM: langs });
   }
   return ut.sort((a, b) => a.langsM - b.langsM || (a.hazard.id < b.hazard.id ? -1 : a.hazard.id > b.hazard.id ? 1 : 0));
+}
+
+/** Skuggans förfilter sedan 12/10 (Bengt, DECISIONS #535): farorna inom motorns längsta räckvidd från själva linjen, i stället för
+ *  rektangeln runt hela rutten. Motorn räknar på farorna i den ordning de kommer, så snapshotens ordning behålls och urvalets
+ *  körordning kastas. Samma varningar och samma undanträngda som utan filter (test/rutfilter.test.ts); mätt 11/10 och 12/10 på
+ *  skuggans 30 rutter: 54–55 % av rektangelns faror och halva motorns tid (#528). */
+export function farorVidLinjen(hazards: Hazard[], line: [number, number][]): Hazard[] {
+  const valda = new Set(farorLangsRutten(hazards, line, FARA_MARGINAL_KM * 1000).map((x) => x.hazard));
+  return hazards.filter((h) => valda.has(h));
 }
 
 
@@ -1316,7 +1326,7 @@ async function forsprangVarv(prov: boolean): Promise<Response> {
     const niva2 = hazards.filter((h) => nivaer.get(h.id) === 2 && iRutan(h, x0, x1, y0, y1)).length;
     if (!niva2) continue;
     const trace = traceAlong(line);
-    const naraFaror = farorNaraRutten(hazards, line);   // rutfiltret (kort #244, DECISIONS #360) — samma utfall, mindre arbete
+    const naraFaror = farorVidLinjen(hazards, line);   // rutfiltret (kort #244, DECISIONS #360, #535) — samma utfall, mindre arbete
     const bas = kor(naraFaror, trace, nivaer, false), variant = kor(naraFaror, trace, nivaer, true);
     // FS-B4: en varning i varianten om en fara baskörningen aldrig talade om. Avståndet kvar till rutans slut följer med, så att
     // faror där baskörningens spår tog slut före faran kan redovisas för sig.
@@ -1416,8 +1426,9 @@ Deno.serve(async (req) => {
       // kastar loggas per körning, med vad som tystade det och med vilken marginal.
       // RUTFILTRET (kort #244, DECISIONS #360): motorn prövar bara faror inom sin längsta räckvidd från rutten — utfallet är
       // detsamma byte för byte (test/rutfilter.test.ts), arbetet en bråkdel. n_hazards nedan är fortsatt hela snapshotens antal.
+      // Sedan 12/10 räknas räckvidden från själva linjen, inte från rektangeln runt rutten (Bengt, DECISIONS #535).
       const t1 = performance.now();
-      const motor = new AlertEngine(farorNaraRutten(hazards, line));
+      const motor = new AlertEngine(farorVidLinjen(hazards, line));
       const suppressed: { kind: string; id: string; distM: number; by: string; sinceS: number }[] = [];
       motor.onSuppressed = (c) => suppressed.push({ kind: c.kind, id: c.hazardId, distM: Math.round(c.distM), by: c.by, sinceS: c.sinceS });
       const alerts = motor.run(trace);

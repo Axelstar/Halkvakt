@@ -374,7 +374,8 @@ export function rutaKring(line: [number, number][], marginalKm: number): Ruta {
 const iRutan = (x: number, y: number, r: Ruta) => x >= r.x0 && x <= r.x1 && y >= r.y0 && y <= r.y1;
 
 /** Farorna som kan tala på rutten. En punkt ska ligga i rutan; ett segment räcker att dess egen ruta skär rutans — ett långt
- *  segment kan korsa rutten utan att någon av dess brytpunkter ligger nära. */
+ *  segment kan korsa rutten utan att någon av dess brytpunkter ligger nära. Skuggans förfilter till 12/10; sedan dess
+ *  farorVidLinjen nedan (DECISIONS #535). */
 export function farorNaraRutten(hazards: Hazard[], line: [number, number][], marginalKm = FARA_MARGINAL_KM): Hazard[] {
   const r = rutaKring(line, marginalKm);
   return hazards.filter((h) => {
@@ -462,6 +463,15 @@ export function farorLangsRutten(hazards: Hazard[], line: [number, number][], ma
     if (d <= marginalM) ut.push({ hazard: h, avstandM: d, langsM: langs });
   }
   return ut.sort((a, b) => a.langsM - b.langsM || (a.hazard.id < b.hazard.id ? -1 : a.hazard.id > b.hazard.id ? 1 : 0));
+}
+
+/** Skuggans förfilter sedan 12/10 (Bengt, DECISIONS #535): farorna inom motorns längsta räckvidd från själva linjen, i stället för
+ *  rektangeln runt hela rutten. Motorn räknar på farorna i den ordning de kommer, så snapshotens ordning behålls och urvalets
+ *  körordning kastas. Samma varningar och samma undanträngda som utan filter (test/rutfilter.test.ts); mätt 11/10 och 12/10 på
+ *  skuggans 30 rutter: 54–55 % av rektangelns faror och halva motorns tid (#528). */
+export function farorVidLinjen(hazards: Hazard[], line: [number, number][]): Hazard[] {
+  const valda = new Set(farorLangsRutten(hazards, line, FARA_MARGINAL_KM * 1000).map((x) => x.hazard));
+  return hazards.filter((h) => valda.has(h));
 }
 
 
