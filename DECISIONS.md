@@ -10934,3 +10934,44 @@ den nya funktionen, så dess beteende är detsamma.
 `shadow_log` som förut.
 
 **Stomdokument:** MAT §3, SYS §2, BED §4.2
+
+## #536 (12/10 2026) Prognosläsningens tre tillägg och Axels förväntan förregistrerade före knappen (kort #308)
+
+**Beslut.** Bengt 12/10: *"Axel godkänner"*, om utkastet i bedömningen §4.2 och på kort #308 (PR #896, fa88089). Förväntan nedan
+är därmed Axels och står före knappen. Ett tillägg till förregistreringen av prognosläget (#519, PR #867).
+
+**Skälet** (Bengts fråga 12/10, *"kan vi med någon form av säkerhet uttala oss om hur det ser ut längre fram på vägen"*): måttet
+grova fel säger hur ofta temperaturen blir mer än 2 °C fel, inte hur ofta en varning stämmer, och kuvösen saknar facit för halka.
+Grind B (falsklarm, missar, mervärde) döms i skuggan i mars. Tilläggen ger frågan tal redan i kuvösen. Inget av dem ger prognosen
+rätt att tala (TROSKLAR-SKUGGAN, T3 och T6), och ingen tröskel, grind eller population ändras (regel L, kort #282).
+
+**De tre tilläggen**, för RÅ och NIVÅ 2+BLANDNING i analysläget, +6 h och +24 h, norr och söder:
+1. **Felen per uppmätt yttemperatur** (≤ −3 · −3…+1 · +1…+3 · +3…+5 °C) och hur stor del av alla grova fel som ligger i varje band
+   (kort #329, #520).
+2. **Frysflaggan vid +1 °C** (#437), marginal 0 · 0,5 · 1 °C: farliga fel av frysningarna, falska flaggor, rätt klass och täckning,
+   läst mot K-A:s måttstock (≤ 1 % farliga fel, ≥ 95 % rätt klass, ≥ 70 % täckning).
+3. **Klara, stilla nätter för sig**, med #471:s definition: molnmängd ≤ 25 % ur SMHI vid närmaste station inom 50 km, medelvind
+   ≤ 2 m/s och solen under −6°, satt efter hur det faktiskt var vid t.
+
+**Förväntan — Axels (via Bengt 12/10), skriven före knappen:**
+
+| Tillägg | Förväntan | Skälet |
+| :-- | :-- | :-- |
+| 1. Felen per yttemperatur | 25–45 % av de grova felen i +3…+5 °C, för RÅ och NIVÅ 2+BLANDNING | Granskarens förväntan (#519); dagens fel dominerar (RÅ 10,9 % dag mot 6,0 % natt, #476) |
+| 2. Frysflaggan, marginal 1 °C, +6 h | farliga fel 0,8–1,0 %, rätt klass ≥ 98,7 % | Analysläget 0,8 % och 99,0 %, RÅ 1,2 % och 98,5 % (#517); Axels A2-förväntan i #519 (5,1–5,6 %) |
+| 2. Frysflaggan, marginal 1 °C, +24 h | farliga fel 0,9–1,2 %, rätt klass ≥ 98,5 % | Som ovan med #519:s 5,3–6,2 % |
+| 3. Klara stilla nätter, RÅ | 8–11 % grova fel | OFFSET 6,6 % där (#471) gånger RÅ:s nattfel genom OFFSET:s, 6,0 / 4,2 ≈ 1,4 (#476, #471) |
+| 3. Klara stilla nätter, NIVÅ 2+BLANDNING | 5,5–8 % i analysläget; 1–2 procentenheter sämre vid +6 h | Som ovan; molnprognosen är svagast just då |
+
+Spannet för nätterna är det svagast underbyggda: det bygger på en kvot mellan två läsningar på olika populationer. Ungefär 15 % av
+punkterna är klara stilla nätter (#471).
+
+**Hur det läses.** Ingen dom. Håller frysflaggan högst 1,0 % farliga fel vid +6 h klarar kandidaten K-A:s måttstock, som RÅ inte
+gör (1,2 %) och som hittills bara OFFSET klarat. Ligger kandidaten inte under RÅ på klara stilla nätter vid +6 h, sitter fysikens
+fördel i de mindre kritiska lägena. Utfall utanför spannen läses med skälet innan något annat läses.
+
+**Vad som byggs före knappen.** Tillägg 1 och 2 finns redan i läsningens kod på #519-grenen (`ytbandsrad`, `skrivFrysflaggan`).
+Tillägg 3 finns bara i kuvösens läsning 6/10 (`scripts/matningar/kuvos-prognoslagret-2026-10-06.ts`, #471) och byggs in i
+prognosläsningen, med självtest, innan Axel trycker.
+
+**Stomdokument:** KUV §5, BED §4.2
