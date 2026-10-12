@@ -10908,3 +10908,29 @@ borta. Vad de saknade larmen beror på läses först på jämförbara körningar
 `dev:X`, motorn larmar samma Trafikverket-id som `djur:X` (vilt som `vilt:X`), och platsjämförelsen missade med 1,5 km eftersom
 larmets plats räknas fågelvägen fram till faran. Jämförelsen matchar nu också samma id efter prefixet (`test/synk-core.test.ts`).
 Mätt på lägesfilen 19:18: 13 saknade larm, alla fartkameror 144–202 m från rutten och halkavsnitt som korsar den (bedömningen §4.2).
+
+## #535 (12/10 2026) Skuggans förfilter längs linjen i stället för rektangeln runt rutten (kort #341)
+
+**Beslut.** Bengt 12/10: *"byt förfilter i skuggan"*, på frågan i bedömningen §4.2 som #528 lämnade (*"till §4.2 i synken"*).
+
+**Ändringen.** Skuggmotorn prövar sedan #360 bara faror inom motorns längsta räckvidd (`FARA_MARGINAL_KM`, 15 km). Räckvidden
+räknades från en rektangel runt hela rutten (`farorNaraRutten`) och räknas nu från själva linjen (`farorVidLinjen` i
+`engine/src/rutfilter.ts`, ovanpå `farorLangsRutten` ur #528). Snapshotens ordning behålls, eftersom motorn räknar på farorna i
+den ordning de kommer. Båda ställena i skuggmotorn byter: huvudvarvet (alla länder och grupp C) och försprångets varv.
+Rektangeln står kvar som referens i proven och i mätskriptet från 11/10.
+
+**Mätt mot dagens lägesfil** (`scripts/matningar/rutfilter-langs-linjen-2026-10-11.ts`, 12/10, skuggans 30 rutter): rektangeln 3 469
+faror och linjen 1 861 (54 %); motorns tid 4 025 → 2 321 ms; urvalet självt 73 ms; **0 rutter med olika varningar eller
+undanträngda**. Samma som 11/10 (#528: 55 %, 7 558 → 3 861 ms, 0 olika).
+
+**Proven** (`test/rutfilter.test.ts`): urvalet är exakt urvalet längs linjen i snapshotens ordning, ger samma varningar och samma
+undanträngda som utan filter, och behåller olyckan 9 km från rutten. Motprov: med marginalen krympt till 1 km faller provet (3 av 4
+gröna), och det första provet utan olyckan fällde inte, därför det tillägget.
+
+**Buntarna:** skuggmotorns och favoritprovets `index.ts` buntade om, eftersom båda bär `rutfilter.ts`. Favoritprovet anropar inte
+den nya funktionen, så dess beteende är detsamma.
+
+**Bevis efter driftsättningen:** skuggmotorn och favoritprovet driftsatta från main, och skuggans varv efter det med rader i
+`shadow_log` som förut.
+
+**Stomdokument:** MAT §3, SYS §2, BED §4.2
