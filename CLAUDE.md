@@ -126,6 +126,18 @@ Repot är enda synken mellan sessioner (dator, webb, mobil). Det som bara stod i
    läget överst (var vi är, vart vi är på väg) hålls aktuellt. Integrationskartan stryks inte löpande — den är fryst
    och ändras först efter bygge och mätning.
 
+## KONTAKTREGELN (Bengts order 2026-10-12 — externa kontakter är ingen frågetjänst, DECISIONS #538)
+Bengts kontakter hos Trafikverket och andra myndigheter svarar av välvilja, och varje fråga drar på den. Bengt väljer noga innan han
+besvärar dem; en session får aldrig behandla dem som en resurs att fråga när svaret går att ta fram själv.
+1. **Egna vägar först.** Innan en fråga till en extern kontakt föreslås prövas repot, öppna källor och dokumentation, en egen läsning
+   (DB-knappen, kuvösen) och att vänta på data. Förslaget säger vilka vägar som prövats och varför de inte räcker.
+2. **Bara det som blockerar.** En fråga föreslås bara när svaret blockerar något viktigt som inte går att få fram på annat sätt —
+   aldrig för att något vore bra att veta.
+3. **Samlat, aldrig droppat.** Flera frågor till samma kontakt samlas till ett tillfälle; en enstaka liten fråga föreslås inte.
+4. **Bengt väljer.** Vad som skickas, till vem och när är Bengts beslut. Ett nej bokförs och frågan återkommer inte i nästa varv.
+Skälet: 12/10 föreslog Claude att fråga Trafikverket vad is- och snöflaggan betyder (kort #324), fast den egna läsningen av
+frostnätterna redan visade att flaggan inte markerar is (ingen av 718 rader under 0 °C) — den räckte för att lägga flaggan åt sidan.
+
 ## Skills (obligatoriskt före app-kod)
 Före kod i `android/` eller `ios/`: läs relevant `skills/<namn>/SKILL.md` enligt
 katalogen i `docs/SKILLS.md`. Minimum: `halkvakt-android` för allt Android-arbete,
