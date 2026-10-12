@@ -67,6 +67,26 @@ försprång (#153), SMHI som räckviddsknapp (#95) och kallplatslagret (#91).
 | Om något ska bli ett nytt farslag | kartan §7.8, kriteriet Bengt fastställde 15/9 |
 | Interpolation mellan två eniga stationer | #153 beslut 2 — och den måste klara regel T som allt annat. Tills dess **förbjuden som utlösare** (T5, tätat 16/9) |
 
+
+### 1.1 Friktionen som facit för halka (FASTSTÄLLD 12/10 — Bengt, kontrasignerad av Axel via Bengt; DECISIONS #540, kort #324)
+
+Vid stationerna med Trafikverkets beröringsfria ytstatusgivare (Vaisala DSC211, omkring 50 stationer) räknas ytstatusens friktion
+(`surface_grip`, Vaisalas grip, skala 0,09–0,82) som facit för halka, avläsning för avläsning:
+
+| Klass | Villkor i samma avläsning |
+| :-- | :-- |
+| **Halt** | grip under 0,30 och vägytan på eller under +1 °C |
+| **Mycket halt** | grip under 0,25 och vägytan på eller under +1 °C |
+| Ingen halka enligt friktionen | allt annat |
+
+- **Gränserna är Trafikverkets.** 0,30 är startkriteriet för friktion på körfält vid nederbörd och 0,25 kravet på vägren och på
+  körfält under −12 °C (*Standardbeskrivning basunderhåll väg*, 2025-09-30, 81.121). 0,82 är givarens tak, torr väg.
+- **Temperaturen skiljer is från vatten.** Låg grip på varmare väg är en vattenhinna och räknas inte här.
+- **Is- och snöflaggan räknas inte** (DECISIONS #537): den markerar inte is.
+- **Förbehållet:** grip är Vaisalas räknade värde och friktionstalet Trafikverkets mätta. Att skalorna motsvarar varandra prövas vid
+  den första riktiga halkan vid en friktionsstation; en avvikelse bokförs och leder till ett nytt beslut, aldrig en tyst ändring.
+- **Ändring** bara med ett nytt beslut i DECISIONS med båda signaturerna, och aldrig lättnad efter att ett utfall den dömer är sett.
+
 ---
 
 ## 2. Villkor varje kombination måste uppfylla — före grinden
