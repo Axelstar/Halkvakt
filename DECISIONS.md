@@ -10991,3 +10991,15 @@ stationer, 0,18–0,82, och 0,82 är givarens tak för torr väg) och följer fl
 i §4.2, och dess gräns skrivs före varje läsning som dömer något.
 
 **Stomdokument:** MAT §3, BED §4.2
+
+## #538 (12/10 2026) KONTAKTREGELN: externa kontakter är ingen frågetjänst
+
+**Beslut.** Bengt 12/10: *"tyvärr kan jag inte använda micke som en claude. jag väljer noga innan jag besvärar honom med frågor. Gör
+en regel av det här nu"*. Regeln står i CLAUDE.md (KONTAKTREGELN) och gäller alla sessioner: egna vägar först (repot, öppna källor,
+en egen läsning, att vänta på data), en fråga till en extern kontakt föreslås bara när svaret blockerar något viktigt som inte går att
+få fram på annat sätt, frågorna samlas och droppas aldrig en och en, och Bengt väljer vad som skickas; ett nej återkommer inte.
+
+**Skälet.** Frågan om is- och snöflaggan (bedömningen §4.2, 10/10) rekommenderade att fråga Trafikverket, fast den egna läsningen av
+frostnätterna 6–8/10 redan visade att flaggan inte markerar is (DECISIONS #537). En egen läsning räckte.
+
+**Stomdokument:** inga — en arbetsregel för sessionerna i CLAUDE.md; den ändrar inget som stomdokumenten beskriver
