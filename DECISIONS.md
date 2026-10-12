@@ -11029,3 +11029,23 @@ mött is**, och en gräns för halka går inte att härleda ur våra egna data. 
 eller ur en första riktig halka i arkivet, och skrivas med båda signaturerna innan den dömer något (§4.2). Ingen tröskel sätts här.
 
 **Stomdokument:** MAT §1, BED §4.2
+
+## #540 (12/10 2026) Friktionen som facit för halka fastställd: grip under 0,30 med vägytan på eller under +1 °C (kort #324)
+
+**Beslut.** Bengt 12/10: *"slå ihop 900 och Axel godkänner"*, om utkastet i bedömningen §4.2 och på kort #324 (PR #900, 14d45a2).
+Regeln står i TROSKLAR-KOMBINATIONEN §1.1 med Bengts signatur och Axels kontrasignatur via Bengt.
+
+**Regeln.** Vid stationerna med ytstatusgivare räknas en avläsning som **halt** när grip är under 0,30 och vägytan på eller under
++1 °C, och som **mycket halt** när grip är under 0,25 med samma temperatur. Allt annat är ingen halka enligt friktionen.
+
+**Underlaget** (öppna källor, läst ur originalen 12/10; KONTAKTREGELN, #538): givaren är Vaisala DSC211 (Trafikverkets rapport
+*VViS MS7*, 2020), grip 0,09–0,82 utan tabell per ytklass (Vaisalas blad); FMI 2010: ~0,8 torrt och ~0,1 på is med vattenhinna;
+Trafikverkets *Standardbeskrivning basunderhåll väg* (2025-09-30, 81.121): startkriteriet friktion 0,30 på körfält vid nederbörd,
+0,35 och 0,25 vid kyla, 0,25 på vägren. Friktionen läst per yttemperatur 6–12/10 (#539): 0,82 torrt, 0,7–0,8 vått, ännu ingen
+halka vid en friktionsstation.
+
+**Vad det inte gör.** Ingen kod läser regeln än, och inget dömer med den förrän en läsning hänvisar hit. Låg grip på varm väg
+(vattenhinna) räknas inte; om den ska bli facit för vattenplaningen (#42) är ett eget beslut. Is- och snöflaggan räknas inte (#537).
+Att grip och friktionstal motsvarar varandra prövas vid första riktiga halkan.
+
+**Stomdokument:** MAT §1, BED §4.2

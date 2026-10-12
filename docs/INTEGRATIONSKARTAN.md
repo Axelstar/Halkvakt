@@ -79,7 +79,7 @@ L2 + L3 stänger det hålet. Det är den enskilt största vinsten som finns att 
 <!-- LÄGESRADER §4: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 *Läget i projektkartan:*
 
-- [Trafikverkets väderstationer](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vader): delvis, 88 % · kvar: Regeln för ytstatusen som facit: friktionen i stället för is- och snöflaggan, i TROSKLAR-KOMBINATIONEN §1 ur friktionen per yttemperatur på frostnätterna (kort #324, bedömningen §4.2)
+- [Trafikverkets väderstationer](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vader): klar
 - [Trafikverkets väglag (RoadCondition)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vaglag): klar
 - [Trafikverkets olyckor, djur och hinder](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-situation): klar
 - [Publiceringen var tionde minut](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-l-publicera): klar
