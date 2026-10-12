@@ -10975,3 +10975,19 @@ Tillägg 3 finns bara i kuvösens läsning 6/10 (`scripts/matningar/kuvos-progno
 prognosläsningen, med självtest, innan Axel trycker.
 
 **Stomdokument:** KUV §5, BED §4.2
+
+## #537 (12/10 2026) Ingen fråga till Trafikverket om is- och snöflaggan; flaggorna dömer inget, och friktionen blir frågan (kort #324)
+
+**Beslut.** Bengt 12/10: *"jag kommer inte att fråga Micke om detta"*, om frågan i bedömningen §4.2 (10/10) om vad `Surface.Ice` och
+`Surface.Snow` betyder.
+
+**Följden.** Regeln för när flaggorna får räknas som facit kan bara skrivas ur det vi själva läser, och läsningen säger att flaggan inte
+markerar is: 873 av 942 rader med is sann 6–10/10 har vägytan varmare än +5 °C, och ingen av 718 rader på eller under 0 °C bär den,
+också under frostnätterna 6–8/10 (DB-knappen 38046716085, bara summor). Flaggorna dömer därför inget, som i dag (DECISIONS #465 p. 4):
+inget läser fälten. Det här ändrar ingen tröskel, grind eller population.
+
+**Vad som står kvar av ytstatusen.** Friktionen (`surface_grip`) är besiktad av värdevakten (38046557111: 26 379 rader från 59
+stationer, 0,18–0,82, och 0,82 är givarens tak för torr väg) och följer flaggorna. Om friktionen ska bli facit för halka är en ny fråga
+i §4.2, och dess gräns skrivs före varje läsning som dömer något.
+
+**Stomdokument:** MAT §3, BED §4.2
