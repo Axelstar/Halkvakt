@@ -29,14 +29,15 @@ export type Beroende = {
 };
 
 // Trafikverkets objekttyper är INTE gissade: de är lästa ur ingest/sources/*.ts, publish/
-// map-core.ts och skuggmotorn 12/9. scripts/beroendekartan.ts har en driftvakt som läser om
-// dem ur koden och fäller om listan här slutar stämma.
-export const TRV_OBJEKT = ["weathermeasurepoint", "roadcondition", "situation", "trafficsafetycamera", "camera"];
+// map-core.ts och skuggmotorn 12/9, och restiderna och färjorna ur favoritprovet 11/10 (DECISIONS #532). scripts/beroendekartan.ts
+// har en driftvakt som läser om dem ur koden och fäller om listan här slutar stämma.
+export const TRV_OBJEKT = ["weathermeasurepoint", "roadcondition", "situation", "trafficsafetycamera", "camera",
+  "traveltimeroute", "ferryannouncement", "ferryroute"];
 
 export const KARTAN: Beroende[] = [
   // ── PRODUKTION ───────────────────────────────────────────────────────────────────────
   { vard: "api.trafikinfo.trafikverket.se", roll: "produktion",
-    matar: "väder, väglag, kameror, situationer — motorns huvudkälla",
+    matar: "väder, väglag, kameror, situationer — motorns huvudkälla; restider och färjor till favoritprovet",
     brister: "allt: snapshoten, alla fem varningsslag, hela arkivet",
     bevakad: "trv-rss + trv-portal-news + trv-drift",
     signal: "bransch-RSS och portalens nyhetssida (bevisad väg, #31)",
@@ -115,6 +116,9 @@ export const KARTAN: Beroende[] = [
   { vard: "api.opentopodata.org", roll: "verktyg",
     matar: "höjddata för höjd-provet och anomalin",
     brister: "höjduppdelningen i anomalin", bevakad: "", signal: "OKÄND" },
+  { vard: "router.project-osrm.org", roll: "verktyg",
+    matar: "favoritprovets rutter på vägnätet, en beräkning (scripts/favoritprov-rutter-osrm.ts, kort #338, DECISIONS #531)",
+    brister: "rutterna kan inte räknas om; filen data/favoritprov/rutter-osrm.json står kvar", bevakad: "", signal: "OKÄND" },
   { vard: "overpass-api.de", roll: "verktyg",
     matar: "broar ur OpenStreetMap (fetch-bridges)",
     brister: "brolistan kan inte byggas om", bevakad: "", signal: "OKÄND" },
@@ -159,20 +163,21 @@ export const KARTAN: Beroende[] = [
   { vard: "bransch.trafikverket.se", roll: "signal",
     matar: "inget — nyhetsflödet för api.trafikinfo", brister: "inget", bevakad: "trv-rss",
     signal: "RSS (#31)",
-    // Trafikverkets dataflöde täcker järnväg och färja lika mycket som väg.
-    // NetInfo och Inspire är EGNA produkter som inte kan röra våra fem objekttyper i Öppet
+    // Trafikverkets dataflöde täcker järnväg och färja lika mycket som väg. Färjan ströks som främmande 11/10 (#532): favoritprovet
+    // hämtar FerryAnnouncement och FerryRoute, så en färjenyhet ska läsas, inte tystas.
+    // NetInfo och Inspire är EGNA produkter som inte kan röra våra åtta objekttyper i Öppet
     // API. NVDB står medvetet INTE här: NVDB-data på väg IN i Öppet API vore i högsta grad
     // vår sak, och regel 2 säger att tveksamma fall ska läsas, inte tystas. Flödet domineras
     // av NVDB (uppmätt 12/9: 24 poster) — priset är gula larm, inte missade röda.
-    frammande: ["baninfo", "järnväg", "tåg", "trainannouncement", "railway", "färja", "ferry", "netinfo", "inspire"] },
+    frammande: ["baninfo", "järnväg", "tåg", "trainannouncement", "railway", "netinfo", "inspire"] },
   { vard: "data.trafikverket.se", roll: "signal",
     matar: "inget — portalens nyheter och driftinformation för api.trafikinfo",
     brister: "inget", bevakad: "trv-portal-news + trv-drift", signal: "CMS-GraphQL (#31)",
-    // NetInfo och Inspire är EGNA produkter som inte kan röra våra fem objekttyper i Öppet
+    // NetInfo och Inspire är EGNA produkter som inte kan röra våra åtta objekttyper i Öppet
     // API. NVDB står medvetet INTE här: NVDB-data på väg IN i Öppet API vore i högsta grad
     // vår sak, och regel 2 säger att tveksamma fall ska läsas, inte tystas. Flödet domineras
     // av NVDB (uppmätt 12/9: 24 poster) — priset är gula larm, inte missade röda.
-    frammande: ["baninfo", "järnväg", "tåg", "trainannouncement", "railway", "färja", "ferry", "netinfo", "inspire"] },
+    frammande: ["baninfo", "järnväg", "tåg", "trainannouncement", "railway", "netinfo", "inspire"] },
 
   // ── OMVÄRLD ──────────────────────────────────────────────────────────────────────────
   { vard: "api.met.no", roll: "omvärld",

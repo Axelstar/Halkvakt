@@ -4,8 +4,8 @@ import XCTest
 @testable import HalkvaktEngine
 
 final class WarningCardTests: XCTestCase {
-    private func alert(_ kind: HazardKind, _ d: Int, _ text: String, _ step: AccidentStep? = nil) -> Alert {
-        Alert(t: 0, hazardId: "h", kind: kind, distanceM: d, text: text, step: step)
+    private func alert(_ kind: HazardKind, _ d: Int, _ text: String, _ step: AccidentStep? = nil, beta: Bool = false) -> Alert {
+        Alert(t: 0, hazardId: "h", kind: kind, distanceM: d, text: text, step: step, beta: beta)
     }
 
     func testAccidentPlainWithRoad() {   // A
@@ -51,6 +51,13 @@ final class WarningCardTests: XCTestCase {
         XCTAssertEqual(c.icon, .frys); XCTAssertEqual(c.sub, "Vägbanan nära noll grader"); XCTAssertEqual(c.distance, .words("FRAMÖVER"))
         let d = WarningCard.make(alert(.wildlife, 650, "Viltrisk framöver."), meta: nil)
         XCTAssertEqual(d.title, "Vilt"); XCTAssertEqual(d.distance, .words("FRAMÖVER"))
+    }
+
+    func testPostRainBetaIsMarked() {   // S3, DECISIONS #524
+        let c = WarningCard.make(alert(.icing_point, 655, "Halkvakt tror: frysrisk framöver.", beta: true), meta: PointMeta(rainH: 0.5, fall30C: 1.0))
+        XCTAssertEqual(c.icon, .frys); XCTAssertEqual(c.stage, "BETA"); XCTAssertEqual(c.title, "Frysrisk")
+        XCTAssertEqual(c.sub, "Halkvakt tror — efter regnet"); XCTAssertEqual(c.distance, .words("FRAMÖVER"))
+        XCTAssertEqual(c.quote, "Halkvakt tror: frysrisk framöver.")
     }
 
     func testBridgeInHundredsOfMetresLikeTheVoice() {   // K

@@ -42,6 +42,8 @@ struct LasarkontraktetTests {
             case "endTimeLocal": return meta.endTimeLocal
             case "road": return meta.road
             case "speedLimitKmh": return meta.speedLimitKmh
+            case "rainH": return meta.rainH
+            case "fall30C": return meta.fall30C
             default: break
             }
         }

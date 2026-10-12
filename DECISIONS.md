@@ -10505,3 +10505,620 @@ pågår:
 per uppmätt yta (≤ −3 · −3…+1 · +1…+3 · +3…+5 °C) och hur stor del av alla grova fel som ligger i varje band. **Granskarens förväntan:
 25–45 % av de grova felen ligger i +3…+5 °C**, för RÅ och för NIVÅ 2+BLANDNING. Ingen grind och ingen population ändras av den (regel L,
 kort #282).
+
+## #520 (11/10 2026) Tre punkter ur en granskning: A2 per ytband i varje läsning, kvantil och fysiken som vittne som låsta kort (kort #329, #330, #331)
+
+**Beslut.** Bengt 11/10: *"2 ja"* — på rekommendationen i bedömningen §4.2 om tre outforskade punkter ur en granskning han klistrade
+in samma dag (telefonen blev kort #328).
+1. **A2 per ytband (kort #329).** Varje läsning av prognoslagret redovisar de grova felen per uppmätt yttemperatur, ≤ −3 · −3…+1 ·
+   +1…+3 · +3…+5 °C, bredvid norr och söder (#502), så att det syns hur stor del av felen som ligger där appen ändå inte kan varna.
+   Redovisningen byggs in i läsningarnas gemensamma kod och följer med i prognosläsningens körning (#519); den förregistreras före
+   den knappen, med granskarens förväntan (25–45 % av de grova felen över +3 °C) som hans. **Ingen grind ändras av redovisningen:**
+   nivå 2 med blandningen står på 5,02 % mot grind A:s 5 % (#517), och att flytta populationen nu vore att flytta målet efter utfallet
+   (regel L, kort #282). En ändring av grind A:s population är ett eget beslut enligt regel L.
+2. **Kvantil i stället för medelvärde (kort #330, låst).** Rättelsen förutsäger ett band per rad i stället för ett tal, och grinden
+   kan läsa bandet. Nyckeln: kandidaten för vintern 2026/27 är vald, eftersom hur grinden läser bandet är en tröskelfråga.
+3. **Fysiken som vittne (kort #331, låst).** De grova fel fysiken hittar tar #75 redan (#493); det nya är den 1,3 % av raderna som
+   vakterna behåller men fysiken flaggar. De läses på nivå 2:s skattning, som har ungefär halva felen. Nyckeln: en senare kuvöskörning,
+   efter prognosläsningen.
+
+**Alternativ som valdes bort.** (a) Ändra grind A:s population till det band där appen kan varna: regel L. (b) Allt som en egen
+körning nu: punkt 1 kostar ingenting i prognosläsningens körning, och punkt 2 och 3 avgör inget före vintern 2026/27.
+
+**Stomdokument:** KUV §5, BED §4.2
+
+## #521 (11/10 2026) S1-grinden läst i Axels ställe: skuggloggen och arkivet ense på alla 1 349 ögonblick, och det första positiva fallet (kort #89)
+
+**Beslut.** Bengt 11/10: *"ja till 1"* — att läsa S1-grinden nu i Axels ställe (#196 gav den till Axel), sedan arbetet visat att
+produktionen står still och att motorregeln S3, novemberbetans enda egna regel, väntar på grinden (`docs/MALET.md` §5).
+
+**Läsningen** (DB-knappen 38118591156, READ ONLY, samma satser som 37755033058 8/10 i #491): skuggloggens `efterhalka` mot arkivet
+— yta +1…+3 °C, regn inom 2 timmar, fall ≥ 0,8 °C på 30 minuter — över 3 dygn (det ogallrade arkivet, #511) och 7 dygn.
+
+| fönster | ögonblick | ense, regeln uppfylld | bara loggen | bara arkivet | ense, inte uppfylld |
+| :-- | --: | --: | --: | --: | --: |
+| 3 dygn | 1 107 | **1** | 0 | 0 | 1 106 |
+| 7 dygn | 1 349 | **1** | 0 | 0 | 1 348 |
+
+Arkivets uppspelning samma dygn: 2 · 4 · 23 · 1 · 19 · 3 episoder 6/10–11/10 — de flesta vid stationer utanför skuggans rutter, som
+8/10. Skuggloggen bär nu 200–500 ögonblick per dygn (11 den 5/10, 497 den 10/10).
+
+**Läsningen.** Kontrollen #226 kräver att arkivet räknar som telefonen såg: det gör det på alla 1 349 ögonblick, och för första gången
+på ett fall där regeln är uppfylld (8/10 fanns inget). Ett positivt fall är tunt, men det är det kontrollen kan ge innan fler blöta
+frostnätter faller på skuggans rutter; S3:s dom läses i januari på förarfacit (KB-B, TROSKLAR-KOMBINATIONEN §7), inte här. **Frågan i
+bedömningen §4.2:** räcker det för att bygga S3?
+
+**Stomdokument:** MAT, BED §4.2
+
+## #522 (11/10 2026) Stomdokumenten stäms av en gång per dygn av morgonens dokumentsynk, inte i varje ändring
+
+**Beslut.** Bengt 11/10: *"lägg om 3"* — på frågan om dokumentationen, efter att 107 av 118 commits 4–11/10 rört dokument och varje
+ändring rättat två till tre sidor och republicerat dem efter sammanslagningen.
+1. **De sju stomdokumentens handtext och republiceringen av artefakterna** görs en gång per dygn av morgonens dokumentsynk (CLAUDE.md,
+   DOKUMENTSYNKEN steg 4 och 8); når rutinen inte artefakterna gör dagens första session det. En artefakt får ligga högst ett dygn
+   efter sin repokopia.
+2. **I varje ändring** förs bara in det maskinerna prövar: beslutet med sin rad `**Stomdokument:**`, tavlan, projektkartan och
+   kortkartan (skripten skriver lägesraderna och korten i sidorna) och en rad i STATUS. Produktboksregeln gäller som förut.
+3. **Stomvakten** (`scripts/stomvakten.ts`) fäller inte längre ett namngivet dokument vars handtext är oförändrad i PR:en; raden, skälet,
+   koderna och kuvösregeln (#489) prövas som förut. `--lage` är synkens lista: varje dokuments senaste handtextändring och besluten
+   sedan dess som namnger det.
+
+**Alternativ som valdes bort.** (a) Som förut: varje ändring rättade sidorna och republicerade, och kostnaden låg i dokumenten och inte
+i bygget. (b) Ingen avstämning alls: dokumenten gled isär 3/10–7/10 (#483), och det var skälet till dokumentsynken.
+
+**Stomdokument:** BED läget (stäms av i morgonens synk)
+
+## #523 (11/10 2026) S1 för alla stationer: varvets första rutt bär varje väderpunkt i lägesfilen (kort #89)
+
+**Beslut.** Bengt 11/10: *"1, ja"* — väg B, på läsningen samma morgon (DB-knappen 38119492966, READ ONLY): arkivets fall av
+efterhalkans regel 4–11/10 var 233 ögonblick vid 40 stationer; 78 % låg mer än 20 km från närmaste skuggrutt (median 57 km), inget
+söder om 58° och 81 % mellan 58° och 62°; bara 12 (5 %) låg i en rutts ruta den halvtimme rutten körde, eftersom rutterna roterar och
+var och en körs var 3,5:e timme. Skuggloggen är 7,5 MB (19 305 rader sedan 29/8) av databasens 418 MB och växer ungefär 260 kB per
+dygn; i snitt 152 stationer per halvtimme har ytan högst +3 °C.
+
+**Vad som byggs.** `efterhalkaRader` i `supabase/functions/skuggmotor/main.ts` tar en rutt eller ingen: utan rutt loggas varje
+väderpunkt i lägesfilen. Varvets första rutt (en av tre per halvtimme) loggar utan rutt, de andra som förut; `larm` gäller fortfarande
+bara den rutt raden hör till. Inga nya rader i `shadow_log` (räkningar per rutt rörs inte), och S1-jämförelsen tar bort dubbletterna.
+Kostnad: ungefär 240 kB per dygn i snitt, mer mitt i vintern. `index.ts` buntad med `scripts/bundle-skuggmotor.ts`.
+
+**Bevis efter driftsättningen** (CLAUDE.md: en ny logg bevisas med en rad med innehåll): första ruttens `efterhalka` bär lika många
+stationer som lägesfilens `weather[]` i samma varv, och S1-jämförelsen körd igen efter ett dygn.
+
+**Alternativ som valdes bort.** (a) En egen rad per varv: förvränger det som räknar rader per rutt. (b) Alla tre ruttraderna med alla
+stationer: tre gånger kostnaden. (c) Fler rutter i dagens rotation: varje rutt körs då ännu mer sällan (väg C, efter B).
+
+**Stomdokument:** MAT, BED §4.2
+
+## #524 (11/10 2026) Motorregeln S3 byggs av Claude, Axel granskar och arkiverar (kort #89)
+
+**Beslut.** Bengt 11/10: *"2 ja"* — S3, efterhalkans regel i motorn och novemberbetans enda nya regel (`docs/MALET.md` §5), byggs av
+Claude efter S1-läsningen (#521): `icing_point` med `regn_h` och lutningen enligt TROSKLAR-KOMBINATIONEN §7 och startvärdena i #222,
+startvärdena i kontraktsgrinden, vektorer i tre språk och texten *"Halkvakt tror: frysrisk framöver"* (svenska först). Axels bygge
+enligt #331 och #196; Axel granskar och arkiverar. Bygget i en egen PR, som följer CLAUDE.md:s regler för motorn, vektorerna och
+apparna (skills, produktboken, ios-engine, android och ci gröna innan Axel ombeds arkivera).
+
+**Stomdokument:** MAT, APP, BED §4.2
+
+## #525 (11/10 2026) Bengt granskar S3 i Axels ställe, fotostudion visar betakortet, och tre behörigheter begärs av Axel (kort #89, #332, #333)
+
+**Beslut.** Bengt 11/10: *"2 ja, 3 ja, 4 skriv meddelandet"*, på frågan om han kan göra Axels delar härifrån. (1) Bengt granskar
+S3 (PR #872, 29e1e78) i Axels ställe, som S1-grinden i #521. Granskningen är spärren före ett bygge till testarna och bärs av kort
+#332. (2) Fotostudion i `android.yml` får en krok i debug-bygget, `fotostudio_beta`, som visar betakortet på en påhittad varning,
+och en skärmbild till produktboken. Samma mönster som `fotostudio_facit`: kroken finns bara i debug-bygget, aldrig i release.
+(3) Tre behörigheter begärs av Axel en gång: Bengt som användare i Play Console, skrivrätt för Bengt i `halkvakt-karta`, och en
+App Store Connect-nyckel för ett TestFlight-flöde i Actions (kort #333, låst på nyckeln). Claude skriver meddelandet, Bengt
+skickar det. Tills #333 finns arkiverar Axel iOS-bygget.
+
+**Alternativ.** Vänta på Axels granskning, så att S3 når testarna först när han hinner. Eller behåll Axels händer för varje bygge,
+som i dag.
+
+**Varför.** Fem av sex steg på den kritiska vägen till novemberbetan är Axels (`docs/MALET.md` §5). Det som bara kräver ett beslut
+eller en behörighet flyttas till den som har tid. Ingen tröskel ändras, och appen skickar inget nytt.
+
+**Stomdokument:** APP, MAT, BED §4.2
+
+## #526 (11/10 2026) S3 godkänd av Bengt, och S3-bygget blir 0.3.12 (24) på båda plattformarna (kort #89, #332)
+
+**Beslut.** Bengt 11/10: *"2, ja"* på granskningen av S3 (kort #332, PR #872, 29e1e78), som han gör i Axels ställe (#525). Det
+bokförs som *S3 godkänd*: regeln i motorns tre portar, talen ur #222, texten *"Halkvakt tror: frysrisk framöver."*, kortet med
+*BETA* och vektorerna v38–v41. Spärren före ett bygge till testarna är därmed passerad. Bygget blir **0.3.12 (24)** på iOS och
+Android, i samma commit som beslutet, eftersom 0.3.11 (23) laddades upp 6/10 och inte bär S3. Axel arkiverar iOS (24) från main när
+ios-engine, android och ci är gröna där, och uppmaningen nämner commit-hashen. Android-testarna får APK:n ur CI som förut.
+Behörigheterna i #525 punkt 3 tar Bengt upp med Axel senare (Bengts ord: *"jag tar behörigheterna sen"*).
+
+**Alternativ.** Arkivera 0.3.11 (23) igen (går inte: Apple tar aldrig samma byggnummer två gånger). Vänta med bygget till
+TestFlight-flödet (#333) finns, vilket fördröjer S3 till testarna med minst nyckeln från Axel.
+
+**Varför.** S3 är novemberbetans enda nya regel (`docs/MALET.md` §5), och betan döms i januari på förarnas svar. Ju tidigare den
+är hos testarna, desto fler frostnätter hinner den möta. Byggnumret höjs efter den sista ändringen, aldrig före (CLAUDE.md, #240).
+
+**Stomdokument:** APP, MAT, BED §4.2
+
+## #527 (11/10 2026) Väg C: tio skuggrutter där fallen ligger, i ett eget anrop och en egen tabell (kort #89, #334)
+
+**Beslut.** Bengt 11/10: *"Fler skuggrutter där fallen ligger (väg C) gör denna"*. Underlaget är läsningen 38128801752 (READ ONLY).
+Av efterhalkans 236 ögonblick 4–11/10 vid 41 stationer låg 7 % inom 2 km från en skuggrutt, och 23 % inom 20 km. Av de 150
+stationer som haft ytan högst +1 °C i minst fyra halvtimmar de senaste tre dygnen låg 2 % inom 2 km. Motorn talar om en station
+först när spåret passerar inom förvarningen, så en station 5–10 km från spåret ger aldrig ett larm.
+- **Tio rutter i `ROUTES_C`** (`supabase/functions/skuggmotor/main.ts`). Var och en är en kedja av stationerna med fall i
+  körordning, med raka sträckor emellan som i `ROUTES`. Det är inte vägens geometri, och namnen är stationernas: Värmland
+  (Eda→Mångsbodarna), Klarälvdalen, Bergslagen, Ludvika, Orsa finnmark, Norrlandskusten (Hammarbacken→Bönhamn), Fjällen
+  (Blåsjöfjället→Kåtaviken), Kiruna (Nikkaluokta→Riksgränsen), Lule lappmark och Tornedalen. Sammanlagt 47 stationer på 77–208 km
+  per rutt.
+- **Eget anrop:** `skuggmotor?grupp=c` på :22/:52 (sql/046), mellan huvudvarvet på :02/:32 och försprånget på :12/:42. Varje anrop
+  har då sitt eget tak för datorkraften. Högst tre rutter per anrop, så varje C-rutt körs varannan timme.
+- **Egen tabell:** `shadow_log_c`, med samma kolumner som `shadow_log`, RLS på och rättigheterna indragna. `ROUTES`, dess takt och
+  mätningarna som läser `shadow_log` och `lasRutter` (tystnadsfelet, S-B, V-B, upprepningen) får samma population som förut.
+  Annars hade händelser vid de nya rutterna räknats bakåt i tiden, då ingen skugga körde där.
+- **Bara larmen loggas:** ingen segmentprognos, ingen efterhalka (huvudvarvets första rutt bär redan varje station, #523) och
+  inga facitbilder.
+
+**Kostnaden, mätt i läsningen 38129236702:** en skuggrad kostar 1,65 kB i snitt, varav prognosen 1,27 kB. Raden som bär alla
+stationer kostar 4,5 kB. C-raderna blir runt 0,3 kB, 120 per dygn, alltså cirka 36 kB per dygn och 6 MB till sista mars. Med
+prognosen hade lagt till 26 MB.
+
+**Alternativ.** (a) Rutterna i `ROUTES`: alla nuvarande rutter körs mer sällan, och mätningarnas populationer ändras i
+efterhand (#523 c). (b) Fler rutter per anrop: taket för datorkraften (sql/037, 546 i september). (c) Rutterna längs vägens
+geometri ur NVDB: mer arbete, och motorn talar ändå bara vid stationen.
+
+**Bevis efter driftsättningen:** rader i `shadow_log_c` från rutter i `ROUTES_C`, med `n_hazards` över noll, inom ett dygn efter
+migrationen. Om C-rutterna ska räknas i grindarna, från ett startdatum, är Bengts fråga (bedömningen §4.2).
+
+**Rättelse till läsningen bakom #523:** skriptet läste 19 av de 20 rutterna. *Väg 23 Höör→Osby* föll bort på ett mellanslag i
+mönstret. Inget fall ligger söder om 58°, och rutten sorteras sist, så rotationens index för de andra 19 var rätt. Talen i #523
+står.
+
+**Rättelse samma dag:** :22/:52 ligger inte mellan huvudvarvet och försprånget. Det ligger efter båda, mellan
+Danmarks (:20/:50) och Norges (:25/:55) varv (`cron.job`, DB-knappen 38129954949). Varje anrop har ändå sitt eget tak för
+datorkraften. Rättat i sql/046:s kommentar.
+
+**Stomdokument:** MAT, SYS, BED §4.2
+
+## #528 (11/10 2026) Favoriterna: underlaget räknas färdigt, och jämförelsen mot rutten byggs i motorns tre språk
+
+**Beslut.** Bengt 11/10: *"gör 1 och 2"*, på frågan vad i favoriterna som går att göra färdigt utan att det hänger på andra
+delar. Det häver Bengts *inget byggs nu* (2/10) för de här två delarna. Fliken, rapporten, de sparade rutterna och tiderna väntar
+fortfarande på Axels form och på Bengts och Axels ja till att spara körda vägar.
+
+**1. Underlaget (förregistrerat före körningen).** `scripts/matningar/fore-resan-kallor-2026-10-11.ts`, läs-only mot Trafikverkets
+öppna API med `vagarbeten-matning.yml`, som #442. Den räknar:
+- **Färjorna färdigt.** Svaret 2/10 nådde taket 20 000. Nu räknas de i fyra fönster på sex timmar de närmaste 24 timmarna, så att
+  inget fönster når taket, och hela svaret utan filter en gång till, för att se hur långt fram det sträcker sig.
+- **Koderna.** Vilka MessageCode, MessageCodeValue, TrafficRestrictionType och TemporaryLimit som finns bland de aktiva avvikelserna.
+  Urvalen för hastighet, omledning och kö görs med mönster som skrivs ut, eftersom fälten inte är kända i förväg.
+- **Filstorleken.** Färjorna (alla avgångar 24 h och de tre närmaste per led och riktning), hastigheterna, omledningarna och
+  kömeddelandena, som en gemensam fil för hela landet, rå och packad.
+
+  Ingen dom. Talen förs in i favoriternas underlag. Körningen är en söndag, så kömeddelandena blir få, som 2/10 (0 en kväll).
+
+**2. Jämförelsen mot rutten.** Ett urval av faror *längs* en linje, i stället för rutans rektangel plus 15 km, i TypeScript, Kotlin
+och Swift med ett delat facit (`engine/fixtures/`), som läsarkontraktet. Varje fara får sitt kortaste avstånd till linjen och sin
+plats längs den, så att rapporten kan ordna dem i körordning. Avståndet är en parameter. Vilka avstånd rapporten ska använda per
+slag hör till Axels form, och de skrivs som trösklar först då. Först mäts om skuggan tjänar på urvalet: hur många faror rektangeln
+och linjen ger per rutt, på dagens lägesfil. Skuggan byts inte utan Bengts ord.
+
+**Utfall 1, underlaget** (körning 38132503708 10:35 UTC, söndag; den första, 38132362450 10:33, med två fel som rättades, se nedan):
+- **Färjorna:** 2 509 avgångar de närmaste 24 timmarna på 39 leder (60 led och riktning), och inget fönster nådde taket. Hönöleden
+  har flest (200), Holmöleden färst (8). Hela svaret utan filter når fortfarande 20 000 och sträcker sig 10/10–19/10, alltså nio dygn.
+- **Avvikelserna:** 2 930 aktiva. Hastighetsbegränsningar 843 (koden *speedRestrictionInOperation*; TemporaryLimit säger oftast
+  *Rekommenderad hastighet: 30 km/h*, 436 st), omledningar 73 (*followDiversionSigns* 39 och TemporaryLimit *Omledning: …*),
+  kömeddelanden 0 (AbnormalTraffic, söndag förmiddag; kvällen 2/10 gav också 0).
+- **En gemensam fil för hela landet, packad:** färjornas avgångar 24 h 9,1 kB (de tre närmaste per led och riktning 1,0 kB),
+  hastigheterna 11,3 kB, omledningarna 1,3 kB, köerna 0. Tillsammans 21,7 kB, mot lägesbildens live.json 2,9 kB och static.json
+  80 kB.
+- **Kvar:** kömeddelandena en vardag i rusningen, eftersom ingen mätning hittills har sett ett enda.
+
+**Tillagt efter första körningen, med skäl:** (a) mönstret `kö\b` träffade *Körfält blockerade*. I JavaScript är ö inget
+ordtecken, så `\b` ligger mellan ö och r, och det gav 1 994 "kömeddelanden" och 32,5 kB. Kö är nu bara AbnormalTraffic, som 2/10.
+(b) Hastigheten var *TemporaryLimit satt*, vilket också tog vikt, bredd och omledning (910). Nu är det bara gränser som säger
+hastighet, eller koden (843). (c) Raden *avgångar med avvikelse* räknar alla 2 509 också efter rättelsen: `DeviationId` bär ett
+värde på varje avgång, och vad det betyder är oläst. Talet används inte.
+
+**Utfall 2, skuggan** (`scripts/matningar/rutfilter-langs-linjen-2026-10-11.ts`, lokalt mot lägesfilen 10:30 UTC, 3 052 faror och
+30 rutter, marginalen 15 km): rektangeln gav 3 696 faror och linjen 2 031 (55 %). Motorns tid sjönk från 7 558 till 3 861 ms, med en
+uppvärmningskörning före varje mätning. Urvalet självt tog 98 ms för alla 30. Varningarna och de undanträngda var exakt desamma
+på alla 30 rutter. Störst var vinsten på E14 Sundsvall→Åre (2 051 → 608 ms i första körningen) och C Orsa finnmark (70 → 7 faror).
+
+**Utfall 3, bygget:** `farorLangsRutten` i engine/src/rutfilter.ts och `RouteFilter.alongRoute` i Kotlin och Swift. Kortaste
+avståndet räknas plant i en lokal projektion: punkt mot sträcka, ett segment åt båda hållen, och korsningar ger 0. Till det kommer
+platsen längs rutten, i körordning med id som andra nyckel. Rektangeln är inget förfilter, så utfallet är bevisligen detsamma i alla
+tre. Det delade facit `engine/fixtures/langsrutten.json` (tre fall, 13 träffar) skrivs av `scripts/langsrutten-facit.ts` med
+femmetersregeln. Två lika platser är med flit lika: tvillingarna och de två vid starten, där platsen är exakt 0. Prov: TS
+(test/langsrutten.test.ts, och test/rutfilter.test.ts med samma varningar som utan urval), Kotlin (LangsRuttenTest) och Swift
+(LangsRuttenTests) gröna: ios-engine 38132921474 och android 38132923284 gröna på feac039. Motprov med korsningsgrenen avslagen, en gång per språk: TypeScript lokalt (s-korsar försvann), Kotlin (android
+38133323715 på provgrenen claude/motprov-528: LangsRuttenTest föll vid rad 39) och Swift (ios-engine 38133592525: rad 39, 41
+och 42). Provgrenen slås aldrig ihop.
+skuggmotor/index.ts är buntad om; skuggan använder inte urvalet.
+
+**Stomdokument:** FAV, BED §4.2
+
+## #529 (11/10 2026) Favoritprovet: favoriternas testmiljö under verkliga förhållanden, som aldrig når telefonerna (kort #337)
+
+**Beslut.** Bengt 11/10: *"vi bygger det nu. jag skulle vilja bygga så mycket så att det kan vara i en testmiljö så man ser hur den
+beter sig i skyddad miljö men under faktiska förhållanden och inte når ut till själva telefonen"*. Det häver *inget byggs nu* (2/10)
+för rapportfilen och källorna under den, på servern.
+
+**Vad som byggs.**
+- **Funktionen `favoritprov`** (Supabase, sql/047: `halkvakt-favoritprov` på :05/:35). Den gör tre saker:
+  - bygger rapportfilen som den är tänkt för appen, ur Trafikverkets öppna API när den körs (Situation med typfilter och INCLUDE,
+    TravelTimeRoute, FerryAnnouncement de närmaste 24 h och FerryRoute) och stationernas namn och lufttemperatur ur `weather_latest`;
+  - bygger det fliken skulle visa för skuggans 30 rutter (`ROUTES` och `ROUTES_C`) ur rapportfilen och dagens lägesfil;
+  - räknar *nytt sedan förra kollen*.
+- **Kärnan** är `publish/rapport-core.ts`, ren och prövad (test/rapport-core.test.ts). Urvalet längs rutten är motorns (#528), och
+  `index.ts` buntas av `scripts/bundle-favoritprov.ts` med `--check` i ci och deploy.
+- **Allt skrivs till hinken `favoritprov`** i Supabase Storage och skrivs över, så ingen historik växer: `rapport-snabb.json`,
+  `rapport-lang.json` (bara när linjerna ändrats), `manifest.json` (sha256 och storlekar), `favoriter.json` och `historik.json`
+  (de senaste 48 körningarna). Inget skrivs till kartrepot eller `data/app/v1/`, och publiceringen rörs inte, så **ingen app läser
+  något av det**.
+- **Visningen** är `docs/favoritprov.html`, som läser hinken och visar en rutt i taget, upplagd som favoritsidans rapport (§3). Hinken
+  är läsbar för alla, men oadresserad, med `noindex` och utan länk. Den bär bara öppna data och skuggans rutter, inga förare.
+- **Provets avstånd till rutten** är parametrar för provet, inte appens trösklar: 1,5 km, och 2 km för stationer och färjor
+  (`MARGINALER`). Skuggans rutter är raka sträckor mellan brytpunkter, inte vägens geometri, så avståndet måste rymma skillnaden.
+  Axels form sätter de riktiga.
+
+**Torrkörningarna före driftsättningen** (mätknappen, läs-only, `scripts/matningar/favoritprov-torrkorning-2026-10-11.ts`, samma
+frågor och samma kärna i Node):
+- **38135635603:** Trafikverket svarade *Invalid query attribute Situation.Deviation.Deleted*. Fältet finns på situationen, inte på
+  avvikelsen. Funktionen hade fallit i drift.
+- **38135721921 (utan INCLUDE):** svaret blev 13,5 MB. FerryRoute bär en **punkt**, inte en linje, och rutterna tog 952 ms.
+- **38135906644 (rättad):**
+  - Situation 7,2 MB på 2,6 s; 3 072 poster, varav vägarbeten 1 982, hastigheter 841, restider 190, köer 10, färjor 39, hinder 7,
+    vilt 2 och olyckor 1.
+  - Den snabba delen blir **132,9 kB packad** och den långsamma **186,1 kB**.
+  - byggRapport tog 256 ms och de 30 rutterna 152 ms (efter ett grovt förfilter per rutt), 928 rader.
+
+**Fynd som rör appen senare:**
+- **Filen blir större än beräknat.** Favoritsidan räknade med omkring 120 kB för allt, men den snabba delen ensam är 133 kB packad,
+  eftersom vägarbetena och hastigheterna är många och bär text. Det ska bantas innan en app hämtar filen var tionde minut.
+- **Rapporten blir för lång i Stockholm.** E4 Södertälje→Uppsala fick 166 rader, varav 77 restider och 67 vägarbeten, och
+  favoritsidan vill att rapporten ska gå att läsa på några sekunder. Det talar för att rader läggs samman per slag och väg.
+
+**Bevis efter driftsättningen:**
+- `favoriter.json` i hinken med alla 30 rutter, och efter två körningar i rad räknat *nytt sedan*;
+- funktionens tid i `net._http_response`;
+- publiceringen och skuggan skrev som förut runt körningen;
+- visningen öppnad mot hinken.
+
+**Alternativ.**
+- (a) I publiceringen, som favoritsidan §7 tänker sig för appen. Det riskerar produktionens enda skrivare av lägesfilen, och därmed
+  resursfelen (#344, #360).
+- (b) I kartrepot. Omkring 3 MB om dygnet i historiken.
+- (c) En tabell. Det äter databasens marginal (418 av 500 MB).
+
+**Rättelse samma dag:** :05/:35 var inte ledigt. `halkvakt-publicera-grannar` går där (cron.job, DB-knappen 38136542574), och
+resursfelen kom när flera funktioner startade samtidigt. Provet går på :08/:38, som inget annat jobb använder.
+
+**Stomdokument:** FAV, BED §4.2
+
+## #530 (11/10 2026) Favoritprovet steg 2: rapportfilen bantad, raderna sammanslagna och notisen simulerad; riktiga vägar med OSM
+och OSRM senare (kort #337, #338)
+
+**Beslut.** Bengt 11/10: *"efter körningen gör du 1,2,3"* och *"då blir det osm + osrm för punkt 5 när vi kommer dit"*.
+
+**1. Bantningen, efter mätningen på första körningen** (12:08, `scripts/matningar/rapportfilen-vikt-2026-10-11.ts`). Den snabba
+delen var 141,7 kB packad. Mest vägde texten (36 kB), `plats` (31,7), punkterna (17,4), id (13,3) och linjerna (12,3). 795 av 841
+hastigheter låg inom 100 m av ett vägarbete. Ändringarna (schema 2):
+- Hastigheten läggs på vägarbetet i samma *situation* hos Trafikverket, som fältet `grans` (den lägsta gränsen). En hastighet
+  utan vägarbete i sin situation står kvar.
+- Texten är bara Trafikverkets rubrik, högst 100 tecken. Körfält, slutdatum och minuter är fält, och `visning()` sätter ihop den
+  läsbara texten, som appen skulle göra.
+- `plats` tas bort.
+- Starttid bara där notisen och *rapporterad* läser den.
+- Fyra decimaler (11 m), och linjernas brytpunkter närmare än 20 m den förra stryks.
+- Bara de kalla stationernas namn följer med.
+
+  **Utfall** (torrkörningen 38138381838, läs-only): 840 hastigheter lagda på sitt vägarbete. Den snabba delen 73,3 kB packad (från
+  144) och den långsamma 109,0 kB (från 200).
+  **Tillagt efter visningen mot första körningen, med skäl:** samma arbete stod två gånger, som *Vägarbete* och
+  *Körfältsavstängningar* i samma situation ("Vägarbete söder om Vä"). En situation blir nu ett vägarbete, med flest körfält och
+  högst påverkan. Kamerornas väg stod som ett nackt tal (*17*), så vägnamnen skrivs nu lika (*väg 17*, *E22*, `vagNamn()`).
+  Torrkörningen 38138648357: 832 avvikelser sammanslagna, 1 402 poster (från 3 069), den snabba delen **59,0 kB** packad och den
+  långsamma **103,8 kB**. Den körningen tog 1 895 ms för rutterna, eftersom datumformateringen byggde en ny formaterare vid varje
+  anrop. Formaterarna skapas nu en gång, och texten bara för det som träffar rutten. Torrkörningen 38138782856: byggRapport 86 ms
+  och de 30 rutterna 150 ms.
+**2. Sammanslagningen** (`grupperade()`, favoritsidan §3: *"Tre fartkameror"*, en rapport som går att läsa på några sekunder):
+- Halka, frysrisk, olyckor, hinder, vilt, köer, färjor och SMHI står för sig.
+- Kamerorna slås samman per väg, och restiderna i normal trafik till en rad.
+- Vägarbeten, hastigheter och omledningar slås samman per väg från tre (`GRUPP_FRAN`).
+- Raderna står kvar under grupperna, och visningen fäller ut dem.
+
+**3. Notisen** (`notis()`, favoritsidan §5):
+- **Ger notis:** det nya sedan förra kollen av slagen halka, frysrisk, olycka, hinder och vilt, och ett vägarbete som började inom
+  24 h (`NYTT_VAGARBETE_H`).
+- **Ger aldrig notis:** vägarbeten som pågått länge, köer, kameror, restider och SMHI:s varningar (T6).
+- **Inställd färja** står också i §5, men Trafikverkets fält säger inte inställd (`DeviationId` bär ett värde på varje avgång, #528).
+  Den regeln väntar.
+- `historik.json` sparar vilka rutter som skulle ha fått en notis vid varje körning, och visningen visar hur ofta.
+- **Förbehåll:** provet kollar var 30:e minut, och *nytt* räknas mot förra kollen. En pendlare som kollar en gång om dagen jämför
+  med i går och får fler saker *nya*. Provets tal är alltså en nedre gräns per koll.
+
+**5, senare: riktiga vägar** (kort #338). Provets rutter läggs på vägarna med OpenStreetMap och en OSRM-beräkning som körs en gång
+och sparas i repot, med källa och licens (ODbL) i `data/KALLOR.json`. Det ger samma sak som en sparad rutt i appen: vägen bilen kör.
+Då kan provets avstånd krympa till tiotals eller hundratals meter, och parallella vägar försvinner. Skuggans egna rutter rörs inte.
+Bengt valde det framför NVDB, som inte beräknar rutter och som inte räcker för stationskedjorna.
+
+**Stomdokument:** FAV, BED §4.2
+
+## #531 (11/10 2026) Favoritprovets rutter på vägnätet med OSRM, avstånd för vägen och en regel för linjer längs vägen (kort #338)
+
+**Beslut.** Bengt 11/10: *"då blir det osm + osrm för punkt 5 när vi kommer dit"* och *"gör kort 338"*.
+
+**Rutterna.** Skuggans 30 rutter läggs på vägnätet med OSRM på OpenStreetMap (`scripts/favoritprov-rutter-osrm.ts`), en gång.
+Resultatet sparas i `data/favoritprov/rutter-osrm.json` (14 866 punkter, 297 kB, ODbL i `data/KALLOR.json`), och
+favoritprovet buntar in filen. Bunten fäller om namnen skiljer från skuggans. Skuggans egna rutter rörs inte.
+- **Vägrutterna** (de 20 som heter efter en väg) går mellan start och mål. Med skuggans mellanpunkter (två decimaler) körde OSRM
+  ut till småvägar och tillbaka: E22 Malmö→Kristianstad blev 124 km, mellan start och mål 94 km. Omvägen mot fågelvägen är nu
+  1,04–1,28. E10 Luleå→Kiruna går via Gällivare, 345 km.
+- **C-kedjorna** behåller varje station som stopp, eftersom stationerna är poängen. De blir 1,14–2,02 gånger fågelvägen, för
+  vägarna går runt fjäll och sjöar (C Fjällen 420 km).
+
+**Avstånden för vägen** (`MARGINALER`, provets parametrar och inte appens trösklar):
+- 100 m för linjer och kameror;
+- 150 m för olyckor, hinder och djur;
+- 500 m för stationer och färjor.
+
+De raka avstånden finns kvar som `MARGINALER_RAKA` för proven och jämförelsen.
+
+**En linje ligger längs vägen** först när minst hälften av den, eller minst 500 m (`LANGS_ANDEL`, `LANGS_MINST_M`), ligger inom
+marginalen. En väg som korsar rutten är 0 m från den i korsningen, och utan regeln kommer varje vägarbete och restidssträcka på en
+tvärväg med.
+
+**Jämförelsen på samma lägesfil** (torrkörningarna 38140937352, 38141108768 och 38141327880, läs-only), raka rutter → vägen:
+- **Totalt:** 606 → 690 rader.
+- **Städerna får färre,** eftersom tvärvägar och parallella vägar faller bort: E6 Göteborg→Strömstad 49 → 8, E22 12 → 3, E4
+  Södertälje→Uppsala 131 → 91 (restidssträckorna längs E4 i båda riktningar).
+- **Norr får fler,** eftersom vägen passerar det de raka linjerna missade: E10 Luleå→Kiruna 5 → 49 (43 kameror), E14 43 → 80, E4
+  Gävle→Sundsvall 12 → 37 (12 frysriskstationer).
+- **E4 Uppsala→Gävle** gick från 20 till 0. Den raka rutten fångade parallella vägar.
+
+**Tiden:**
+- **Med rektangeln:** vägrutterna har 200–1 460 punkter, och varje linje mättes mot hela rutten. Båda varianterna tog 1 562 ms,
+  och ett rutnät som bara förfilter gav 2 498.
+- **Med rutnätet:** det ger nu också vilka av ruttens sträckor som ligger nära, och varje kandidat mäts bara mot den biten, med
+  avståndet fram till biten lagt till platsen. Svaret blir detsamma av konstruktion, eftersom en sträcka utanför kandidatens
+  rutor ligger längre bort än marginalen. Det bekräftades av samma 606 och 690 rader. Båda varianterna tar 614 ms.
+
+**Bevis efter driftsättningen:** favoritprovet kör på vägrutterna, och raderna per rutt står i hinken.
+
+**Stomdokument:** FAV, BED §4.2
+
+## #532 (11/10 2026) Vakten på favoritprovet, och Trafikverkets tre nya objekttyper i beroendekartan (kort #339)
+
+**Beslut.** Bengt 11/10: *"ja först 4 och sen synktest"*. Punkt 4 var vakten på källorna som favoritprovet hämtar. Den ska stå
+innan synkprovet bygger på provet.
+
+**Vakthundens mätvakt** läser `manifest.json` i hinken `favoritprov` och tar åldern ur filens egen `generated_at`, inte ur att
+filen svarar 200.
+- **Raden** *källor* i svaret bär `favoritprovet N min`.
+- **Larmet** (en ❌ KÄLLA i mätvaktens ärende) går när filen är äldre än 75 min eller inte går att läsa. Vakthunden kör :07 och
+  provet :08/:38, så 75 min är två uteblivna körningar i rad. En enstaka miss, till exempel ett fel hos Trafikverket, är provets
+  sak och larmar inte. Felet självt står i funktionens svar i `net._http_response`.
+
+**Beroendekartan** (`publish/beroenden.ts`):
+- **De nya typerna:** `TRV_OBJEKT` har nu `traveltimeroute`, `ferryannouncement` och `ferryroute`. En nyhet från Trafikverket som
+  nämner någon av dem bedöms som *RÖR OSS*.
+- **Färjan är inte längre främmande:** `färja` och `ferry` är strukna ur de två signalradernas främmande ord, eftersom provet nu
+  hämtar färjor. En färjenyhet utan typnamn blir *VET INTE* och läses, i stället för att tystas.
+- **Driftvakten var blind:** den läste bara citerade `objecttype`-värden, och favoritprovet bygger frågan i hjälpfunktionen `trv("…")`.
+  Mönstret tar nu också den. Utan ändringen fällde självtestet med de tre typerna saknade i koden, och med den är det grönt.
+  Provet i `test/nyhetsbedomning.test.ts` fäller utan typerna (0 av 1).
+
+**Inte gjort:** TrafficFlow hämtas inte och står därför inte i listan.
+
+**Bevis efter driftsättningen:** vakthundens svar bär raden med favoritprovets ålder.
+
+**Stomdokument:** FAV §7 och §12
+
+## #533 (11/10 2026) Synkprovet: rapporten tio minuter innan mot bilen tio minuter efter (kort #340)
+
+**Beslut.** Bengt 11/10 (vidarebefordrat av Axel): *"Jag simulerar en pendlingsresa och den info man får 10 minuter innan o sen kör en
+skuggflottebil 10 minuter efter. Det är för att stämma av om infon du får innan överensstämmer med vad testbilen upplever vid resan"*;
+Axel: *"kör vidare på hans bygge och bygg klart det"*. Byggt efter #532 (vakten först, som Bengt sa).
+
+**Vad som byggs.**
+- **`favoritprov?lage=synk` på :18/:48** (sql/048), tio minuter efter favoritprovet (:08/:38). Minuten är ledig i `cron.job` (DB-knappen
+  38158674309). Bilen kör på publiceringen :10/:40, rapporten räknades på :00/:30, så det är två olika lägesfiler.
+- **Bilen** är motorn (`AlertEngine`) på färsk lägesfil, 80 km/h med en punkt var 5:e sekund som skuggmotorns `traceAlong`, längs
+  **samma vägrutt som rapporten** (OSRM, #531) — inte skuggans raka linjer, så rapporten och färden mäts på samma väg.
+- **Jämförelsen** (`publish/synk-core.ts`, prövad i `test/synk-core.test.ts`): varje larm är *förvarnad* om rapporten bar samma id
+  (halka `seg:`, frysrisk `wx:`/`bro:`, fartkamera `cam:`, avvikelse `dev:`), eller för avvikelser och vilt en rad av samma slag inom
+  1 km längs rutten; annars *saknades*. Rapportens rader av slag som motorn larmar för, utan larm under färden, är *borta* (faran finns
+  inte i lägesfilen längre) eller *kvar* (riktning, avstånd eller spärr). Vägarbeten, köer, restider, färjor, hastighet, omledningar och
+  SMHI räknas bara: motorn larmar inte för dem. Larmets plats längs rutten är bilens plats vid larmet plus avståndet fram.
+- **Rapportens ålder** måste vara 5–20 min; annars skrivs körningen som *inte jämförbar* med skälet, så en utebliven favoritprovskörning
+  aldrig blir ett falskt utfall. Samma lägesfil som rapporten skrivs också som skäl.
+- **Allt till hinken** `favoritprov`: `synk.json` (senaste, skrivs över) och `synk-historik.json` (96 körningar, två dygn). Ingen app
+  läser något. **Visningen** är en ny ruta i `docs/favoritprov.html`: summan, per rutt det som saknades och det som inte gav larm, och de
+  tolv senaste körningarna.
+
+**Vad som INTE görs.** Inga trösklar och ingen motor ändras; skuggmotorn, `shadow_log` och grindarna rörs inte. Det här är en
+provmiljö: andelen förvarnade larm läses, den dömer inget.
+
+**Alternativ som valdes bort.** (a) Jämföra mot skuggmotorns egna varv: de kör raka linjer, 3 rutter per halvtimme, på :02/:32 och
+:22/:52 — aldrig samma rutt tio minuter efter rapporten. (b) Matcha på plats för halka och frysrisk: de bär samma id i rapporten och i
+motorn, och en platsmatchning hade dolt fel id. (c) Lägga synken i favoritprovets egen körning: då hade rapporten och bilen sett samma
+lägesfil, och provet hade inte prövat de tio minuterna.
+
+**Stomdokument:** FAV 7, FAV 12
+
+## #534 (11/10 2026) Synkprovets bil i GitHub Actions — funktionen föll på resurstaket (kort #340)
+
+**Vad som hände.** Synkprovets första körning i funktionen (#533) 17:48 11/10 föll med 546 WORKER_RESOURCE_LIMIT (`net._http_response`,
+DB-knappen 38161600356). Mätt på lägesfilen 17:50: motorn längs de 30 vägrutterna tar 9,2 s med skuggmotorns rektangel och 5,6 s med
+rutnätet längs vägen; halkavsnitten är nästan all tid (tio avsnitt 2,7 s på Värmlandsrutten, eftersom motorn prövar varje provpunkt
+på avsnittet mot varje bilpunkt). Funktionens tak är runt 2 s, och samma tak är skälet till att skuggmotorn bara kör tre rutter per
+anrop. Jobbet togs bort samma kväll (sql/049, DB-knappen 38161914133).
+
+**Beslut (Claude, på Axels "bygg klart det").**
+1. **Bilen kör i GitHub Actions**: `scripts/favoritprov-synk.ts` i flödet `favoritprov-synk.yml`, startat av pulsklockan
+   (`puls-favoritprov-synk`, :18/:48) — inte av GitHub-cronen, som levererar timmar sent (#26, #160). Gratis för det publika repot
+   (#503), ungefär en minut per körning. Jämförelsen är densamma (`publish/synk-core.ts`).
+2. **Raden skrivs i `favoritprov_synk`** (sql/050, låst för anon och authenticated) via DATABASE_URL; rader äldre än två dygn raderas.
+   Favoritprovet (:08/:38) speglar de 96 senaste till hinken (`synk.json`, `synk-historik.json`), så visningen är oförändrad men visar
+   bilen med upp till 20 minuters fördröjning. Ett fel i speglingen stoppar aldrig rapporten.
+3. **Rutnätet längs vägen** ersätter rektangeln i synkens förfilter, och halkavsnitt längre än ledtidens längd (leadMaxM) plus
+   provavståndet från rutten tas bort: motorn kan aldrig larma för dem (`evaluateSegment`). Alla 30 rutter gav samma 369 larm som
+   med rektangeln. Motorn rörs inte.
+4. Funktionens läge `?lage=synk` och motorn i favoritprovets bunt tas bort. **Vakthundens pulsgolv** blir 12 (`PULS_GOLV`,
+   `ANTAL_NYA`, kontraktsgrinden).
+
+**Torrkörningen 11/10 20:00** (rapporten 17:38, för gammal för att räknas, men visar formen): 30 rutter, 369 larm, 348 förvarnade
+(94,3 %), 21 saknades — fartkameror, halkavsnitt, broar och ett djur på vägen; 187 rader i rapporten gav inget larm (kvar), 6 var
+borta. Vad de saknade larmen beror på läses först på jämförbara körningar.
+
+**Stomdokument:** FAV 7, FAV 12
+
+**Rättelse 11/10 kväll (#534).** Två *saknade* djur på vägen var jämförelsens fel, inte rapportens: rapporten bär avvikelsen som
+`dev:X`, motorn larmar samma Trafikverket-id som `djur:X` (vilt som `vilt:X`), och platsjämförelsen missade med 1,5 km eftersom
+larmets plats räknas fågelvägen fram till faran. Jämförelsen matchar nu också samma id efter prefixet (`test/synk-core.test.ts`).
+Mätt på lägesfilen 19:18: 13 saknade larm, alla fartkameror 144–202 m från rutten och halkavsnitt som korsar den (bedömningen §4.2).
+
+## #535 (12/10 2026) Skuggans förfilter längs linjen i stället för rektangeln runt rutten (kort #341)
+
+**Beslut.** Bengt 12/10: *"byt förfilter i skuggan"*, på frågan i bedömningen §4.2 som #528 lämnade (*"till §4.2 i synken"*).
+
+**Ändringen.** Skuggmotorn prövar sedan #360 bara faror inom motorns längsta räckvidd (`FARA_MARGINAL_KM`, 15 km). Räckvidden
+räknades från en rektangel runt hela rutten (`farorNaraRutten`) och räknas nu från själva linjen (`farorVidLinjen` i
+`engine/src/rutfilter.ts`, ovanpå `farorLangsRutten` ur #528). Snapshotens ordning behålls, eftersom motorn räknar på farorna i
+den ordning de kommer. Båda ställena i skuggmotorn byter: huvudvarvet (alla länder och grupp C) och försprångets varv.
+Rektangeln står kvar som referens i proven och i mätskriptet från 11/10.
+
+**Mätt mot dagens lägesfil** (`scripts/matningar/rutfilter-langs-linjen-2026-10-11.ts`, 12/10, skuggans 30 rutter): rektangeln 3 469
+faror och linjen 1 861 (54 %); motorns tid 4 025 → 2 321 ms; urvalet självt 73 ms; **0 rutter med olika varningar eller
+undanträngda**. Samma som 11/10 (#528: 55 %, 7 558 → 3 861 ms, 0 olika).
+
+**Proven** (`test/rutfilter.test.ts`): urvalet är exakt urvalet längs linjen i snapshotens ordning, ger samma varningar och samma
+undanträngda som utan filter, och behåller olyckan 9 km från rutten. Motprov: med marginalen krympt till 1 km faller provet (3 av 4
+gröna), och det första provet utan olyckan fällde inte, därför det tillägget.
+
+**Buntarna:** skuggmotorns och favoritprovets `index.ts` buntade om, eftersom båda bär `rutfilter.ts`. Favoritprovet anropar inte
+den nya funktionen, så dess beteende är detsamma.
+
+**Bevis efter driftsättningen:** skuggmotorn och favoritprovet driftsatta från main, och skuggans varv efter det med rader i
+`shadow_log` som förut.
+
+**Stomdokument:** MAT §3, SYS §2, BED §4.2
+
+## #536 (12/10 2026) Prognosläsningens tre tillägg och Axels förväntan förregistrerade före knappen (kort #308)
+
+**Beslut.** Bengt 12/10: *"Axel godkänner"*, om utkastet i bedömningen §4.2 och på kort #308 (PR #896, fa88089). Förväntan nedan
+är därmed Axels och står före knappen. Ett tillägg till förregistreringen av prognosläget (#519, PR #867).
+
+**Skälet** (Bengts fråga 12/10, *"kan vi med någon form av säkerhet uttala oss om hur det ser ut längre fram på vägen"*): måttet
+grova fel säger hur ofta temperaturen blir mer än 2 °C fel, inte hur ofta en varning stämmer, och kuvösen saknar facit för halka.
+Grind B (falsklarm, missar, mervärde) döms i skuggan i mars. Tilläggen ger frågan tal redan i kuvösen. Inget av dem ger prognosen
+rätt att tala (TROSKLAR-SKUGGAN, T3 och T6), och ingen tröskel, grind eller population ändras (regel L, kort #282).
+
+**De tre tilläggen**, för RÅ och NIVÅ 2+BLANDNING i analysläget, +6 h och +24 h, norr och söder:
+1. **Felen per uppmätt yttemperatur** (≤ −3 · −3…+1 · +1…+3 · +3…+5 °C) och hur stor del av alla grova fel som ligger i varje band
+   (kort #329, #520).
+2. **Frysflaggan vid +1 °C** (#437), marginal 0 · 0,5 · 1 °C: farliga fel av frysningarna, falska flaggor, rätt klass och täckning,
+   läst mot K-A:s måttstock (≤ 1 % farliga fel, ≥ 95 % rätt klass, ≥ 70 % täckning).
+3. **Klara, stilla nätter för sig**, med #471:s definition: molnmängd ≤ 25 % ur SMHI vid närmaste station inom 50 km, medelvind
+   ≤ 2 m/s och solen under −6°, satt efter hur det faktiskt var vid t.
+
+**Förväntan — Axels (via Bengt 12/10), skriven före knappen:**
+
+| Tillägg | Förväntan | Skälet |
+| :-- | :-- | :-- |
+| 1. Felen per yttemperatur | 25–45 % av de grova felen i +3…+5 °C, för RÅ och NIVÅ 2+BLANDNING | Granskarens förväntan (#519); dagens fel dominerar (RÅ 10,9 % dag mot 6,0 % natt, #476) |
+| 2. Frysflaggan, marginal 1 °C, +6 h | farliga fel 0,8–1,0 %, rätt klass ≥ 98,7 % | Analysläget 0,8 % och 99,0 %, RÅ 1,2 % och 98,5 % (#517); Axels A2-förväntan i #519 (5,1–5,6 %) |
+| 2. Frysflaggan, marginal 1 °C, +24 h | farliga fel 0,9–1,2 %, rätt klass ≥ 98,5 % | Som ovan med #519:s 5,3–6,2 % |
+| 3. Klara stilla nätter, RÅ | 8–11 % grova fel | OFFSET 6,6 % där (#471) gånger RÅ:s nattfel genom OFFSET:s, 6,0 / 4,2 ≈ 1,4 (#476, #471) |
+| 3. Klara stilla nätter, NIVÅ 2+BLANDNING | 5,5–8 % i analysläget; 1–2 procentenheter sämre vid +6 h | Som ovan; molnprognosen är svagast just då |
+
+Spannet för nätterna är det svagast underbyggda: det bygger på en kvot mellan två läsningar på olika populationer. Ungefär 15 % av
+punkterna är klara stilla nätter (#471).
+
+**Hur det läses.** Ingen dom. Håller frysflaggan högst 1,0 % farliga fel vid +6 h klarar kandidaten K-A:s måttstock, som RÅ inte
+gör (1,2 %) och som hittills bara OFFSET klarat. Ligger kandidaten inte under RÅ på klara stilla nätter vid +6 h, sitter fysikens
+fördel i de mindre kritiska lägena. Utfall utanför spannen läses med skälet innan något annat läses.
+
+**Vad som byggs före knappen.** Tillägg 1 och 2 finns redan i läsningens kod på #519-grenen (`ytbandsrad`, `skrivFrysflaggan`).
+Tillägg 3 finns bara i kuvösens läsning 6/10 (`scripts/matningar/kuvos-prognoslagret-2026-10-06.ts`, #471) och byggs in i
+prognosläsningen, med självtest, innan Axel trycker.
+
+**Byggt 12/10 kväll (Claude; Bengt: *"bygg in nattdelningen"*), PR #867, 8e2009a.** Läsningen skriver nu en rad per kandidat med
+klassen, de grova felen, klassens andel av punkterna och norr och söder. Klasserna är klar stilla natt, natt övrigt, dag och okänd.
+Definitionen är #471:s, kopierad ur läsningen 6/10. Molnen hämtas ur `kuvos_ra.smhi_obs` (p16), vinden ur samma arkivrad som ytan.
+Prognosläsningen slår på delningen. Analysläsningarna 8/10 och 11/10 är oförändrade.
+Läsningen räknar molnvärden utanför 0–100 %. Koden 113 (himlen skymd) räknas som inte klar.
+Saknas molnen fälls jobbet först efter läsningen, så att de andra måtten inte går förlorade.
+Självtestet prövar klassningen med rader i databasens form. Motproven fällde alla åtta: molngränsen, vindgränsen, solgränsen,
+bortkopplad nattrad, förväxlat norr och söder, timnyckeln, avståndet och vindens hink.
+
+**Stomdokument:** KUV §5, BED §4.2
+
+## #537 (12/10 2026) Ingen fråga till Trafikverket om is- och snöflaggan; flaggorna dömer inget, och friktionen blir frågan (kort #324)
+
+**Beslut.** Bengt 12/10: *"jag kommer inte att fråga Micke om detta"*, om frågan i bedömningen §4.2 (10/10) om vad `Surface.Ice` och
+`Surface.Snow` betyder.
+
+**Följden.** Regeln för när flaggorna får räknas som facit kan bara skrivas ur det vi själva läser, och läsningen säger att flaggan inte
+markerar is: 873 av 942 rader med is sann 6–10/10 har vägytan varmare än +5 °C, och ingen av 718 rader på eller under 0 °C bär den,
+också under frostnätterna 6–8/10 (DB-knappen 38046716085, bara summor). Flaggorna dömer därför inget, som i dag (DECISIONS #465 p. 4):
+inget läser fälten. Det här ändrar ingen tröskel, grind eller population.
+
+**Vad som står kvar av ytstatusen.** Friktionen (`surface_grip`) är besiktad av värdevakten (38046557111: 26 379 rader från 59
+stationer, 0,18–0,82, och 0,82 är givarens tak för torr väg) och följer flaggorna. Om friktionen ska bli facit för halka är en ny fråga
+i §4.2, och dess gräns skrivs före varje läsning som dömer något.
+
+**Stomdokument:** MAT §3, BED §4.2
+
+## #538 (12/10 2026) KONTAKTREGELN: externa kontakter är ingen frågetjänst
+
+**Beslut.** Bengt 12/10: *"tyvärr kan jag inte använda micke som en claude. jag väljer noga innan jag besvärar honom med frågor. Gör
+en regel av det här nu"*. Regeln står i CLAUDE.md (KONTAKTREGELN) och gäller alla sessioner: egna vägar först (repot, öppna källor,
+en egen läsning, att vänta på data), en fråga till en extern kontakt föreslås bara när svaret blockerar något viktigt som inte går att
+få fram på annat sätt, frågorna samlas och droppas aldrig en och en, och Bengt väljer vad som skickas; ett nej återkommer inte.
+
+**Skälet.** Frågan om is- och snöflaggan (bedömningen §4.2, 10/10) rekommenderade att fråga Trafikverket, fast den egna läsningen av
+frostnätterna 6–8/10 redan visade att flaggan inte markerar is (DECISIONS #537). En egen läsning räckte.
+
+**Stomdokument:** inga — en arbetsregel för sessionerna i CLAUDE.md; den ändrar inget som stomdokumenten beskriver
+
+## #539 (12/10 2026) Friktionen läst per yttemperatur: rimlig på torr och våt väg, men ännu aldrig mött is — regeln kan inte härledas ur egna data än (kort #324)
+
+**Beslut.** Bengt 12/10: *"slå ihop 898 och kör friktionen"*, steg 1 i frågan i bedömningen §4.2 (DECISIONS #537). En läsning med
+DB-knappen (38284633103, READ ONLY, bara summor, inga modellutfall), 6–12/10: 34 613 rader med friktion från 51–55 stationer per dygn.
+
+| Yta | rader | stationer | friktion p05 · p25 · p50 | under 0,7 | våt-flagga | is-flagga |
+| :-- | --: | --: | :-- | --: | --: | --: |
+| ≤ −3 °C | 516 | 2 | 0,82 · 0,82 · 0,82 | 0 % | 0 % | 0 % |
+| −3…−1 °C | 330 | 3 | 0,82 · 0,82 · 0,82 | 0 % | 0 % | 0 % |
+| −1…0 °C | 760 | 6 | 0,82 · 0,82 · 0,82 | 0 % | 0 % | 0 % |
+| 0…+1 °C | 812 | 11 | 0,74 · 0,82 · 0,82 | 0 % | 10,2 % | 4,6 % |
+| +1…+3 °C | 2 756 | 19 | 0,76 · 0,82 · 0,82 | 0 % | 20,9 % | 0,6 % |
+| +3…+5 °C | 5 159 | 27 | 0,74 · 0,82 · 0,82 | 0,1 % | 30,3 % | 0,7 % |
+| > +5 °C | 24 280 | 55 | 0,68 · 0,73 · 0,79 | 9,7 % | 68,8 % | 4,0 % |
+
+Ytor på eller under +1 °C: torra 2 335 rader (10 stationer) med friktionen 0,82 rakt igenom; våta 83 rader (3 stationer) med median
+0,74. Friktion under 0,5: 35 rader på 5 stationer, 28 av dem (80 %) från en station. Lägsta värdet 0,18 (9/10).
+
+**Läsningen.** Friktionen beter sig fysikaliskt: 0,82 på torr väg, 0,7–0,8 på våt, och lägre nästan bara på varm våt väg. Men på de
+1 606 raderna på eller under 0 °C var vägen torr varje gång — ingen våt-flagga, ingen friktion under 0,82 — och bara 2–6 av
+friktionsstationerna var så kalla. Frostnätterna 6–8/10 gav 0, 5 och 29 kalla rader med friktion. **Friktionen har alltså ännu inte
+mött is**, och en gräns för halka går inte att härleda ur våra egna data. Den måste komma ur givarens dokumenterade skala (öppna källor)
+eller ur en första riktig halka i arkivet, och skrivas med båda signaturerna innan den dömer något (§4.2). Ingen tröskel sätts här.
+
+**Stomdokument:** MAT §1, BED §4.2
+
+## #540 (12/10 2026) Friktionen som facit för halka fastställd: grip under 0,30 med vägytan på eller under +1 °C (kort #324)
+
+**Beslut.** Bengt 12/10: *"slå ihop 900 och Axel godkänner"*, om utkastet i bedömningen §4.2 och på kort #324 (PR #900, 14d45a2).
+Regeln står i TROSKLAR-KOMBINATIONEN §1.1 med Bengts signatur och Axels kontrasignatur via Bengt.
+
+**Regeln.** Vid stationerna med ytstatusgivare räknas en avläsning som **halt** när grip är under 0,30 och vägytan på eller under
++1 °C, och som **mycket halt** när grip är under 0,25 med samma temperatur. Allt annat är ingen halka enligt friktionen.
+
+**Underlaget** (öppna källor, läst ur originalen 12/10; KONTAKTREGELN, #538): givaren är Vaisala DSC211 (Trafikverkets rapport
+*VViS MS7*, 2020), grip 0,09–0,82 utan tabell per ytklass (Vaisalas blad); FMI 2010: ~0,8 torrt och ~0,1 på is med vattenhinna;
+Trafikverkets *Standardbeskrivning basunderhåll väg* (2025-09-30, 81.121): startkriteriet friktion 0,30 på körfält vid nederbörd,
+0,35 och 0,25 vid kyla, 0,25 på vägren. Friktionen läst per yttemperatur 6–12/10 (#539): 0,82 torrt, 0,7–0,8 vått, ännu ingen
+halka vid en friktionsstation.
+
+**Vad det inte gör.** Ingen kod läser regeln än, och inget dömer med den förrän en läsning hänvisar hit. Låg grip på varm väg
+(vattenhinna) räknas inte; om den ska bli facit för vattenplaningen (#42) är ett eget beslut. Is- och snöflaggan räknas inte (#537).
+Att grip och friktionstal motsvarar varandra prövas vid första riktiga halkan.
+
+**Stomdokument:** MAT §1, BED §4.2

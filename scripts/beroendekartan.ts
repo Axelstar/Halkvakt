@@ -60,8 +60,9 @@ if (process.argv.includes("--sjalvtest")) {
   const rot2 = ex("git rev-parse --show-toplevel", { encoding: "utf-8", cwd }).trim();
   // Citationstecknet är inte kosmetiskt: utan det matchar mönstret även typdeklarationen
   // `objecttype: string` och plockar ut "tring". Bara CITERADE värden är riktiga objekttyper.
-  const kod = ex(`git grep -hoiE "objecttype[:=] ?['\\"][A-Za-z]+" -- "*.ts"`, { encoding: "utf-8", cwd: rot2 })
-    .split("\n").map((r) => r.replace(/^objecttype[:=] ?['"]/i, "").trim().toLowerCase()).filter(Boolean);
+  // `trv("…"` är favoritprovets hjälpfunktion (#532), som bygger frågan ur sitt första argument — utan den var tre typer osynliga.
+  const kod = ex(`git grep -hoiE "(objecttype[:=] ?|\\btrv\\()['\\"][A-Za-z]+" -- "*.ts"`, { encoding: "utf-8", cwd: rot2 })
+    .split("\n").map((r) => r.replace(/^(objecttype[:=] ?|trv\()['"]/i, "").trim().toLowerCase()).filter(Boolean);
   const iKod = [...new Set(kod)].sort();
   k("TRV-objekttyperna i kartan = de koden frågar efter", iKod, [...TRV_OBJEKT].sort());
 

@@ -23,6 +23,10 @@ export function roadPhrase(road?: string | null): string {
   return /^[A-Za-zÅÄÖåäö]/.test(r) ? ` på ${r}` : ` på väg ${r}`;
 }
 
+/** S3, efterhalkan som märkt beta (DECISIONS #222, #524, TROSKLAR-KOMBINATIONEN §7). "Halkvakt tror" säger att det är en
+ *  gissning ur regn och fall, inte en uppmätt frysning; punktkälla ⇒ "framöver". */
+export const EFTERHALKA_TEXT = "Halkvakt tror: frysrisk framöver.";
+
 export function alertText(
   kind: HazardKind,
   distanceM: number,

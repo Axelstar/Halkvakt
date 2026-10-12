@@ -272,6 +272,35 @@ samma väg som det första, Datautbytesportalens kontaktformulär (data.trafikve
 > Vänliga hälsningar
 > Bengt
 
+### 5f. Svaret om åtgärderna 12/10, och följdfrågan
+
+**Svaret.** Det nya ärendet (utkastet i §5e) är skickat av Bengt. Mottagaren svarade 12/10 att frågan gäller flera områden och
+skickade punkterna om väglaget och händelserna vidare till andra delar av Trafikverket. För vinterväghållningen kom en
+sammanställning (`241101-250331.xlsx`, 9,8 kB):
+- **Innehållet:** ett blad med tre rader för hela landet och hela perioden 1/11 2024–31/3 2025: halkbekämpning kemiskt,
+  halkbekämpning mekaniskt och snöröjning, med åtgärdad längd i km per vägklass (1–5 och övrig), total längd och varaktighet
+  i timmar.
+- **Ingen tid och ingen plats**, så den går inte att para ihop med någon station eller halvtimme. Som facit för kuvösen duger den
+  inte; den visar bara att åtgärderna finns registrerade på en finare nivå än den vi fick.
+- **Filen ligger inte i repot** (PUBLIKT REPO): läst lokalt 12/10, talen förs inte in här.
+
+**Följdfrågan, skickad av Bengt 12/10** (samma tråd):
+
+> Tack för sammanställningen, och för att du skickade vidare resten!
+>
+> Lite bakgrund, eftersom frågan nu går till fler: Halkvakt är en gratis app för iPhone och Android, i test hos förare, som med
+> rösten varnar för halka, olyckor och vilt längs vägen och bygger helt på Trafikverkets öppna data. Projektet har sökt medel ur
+> Skyltfonden. Innan nästa vinter prövar vi varningarna mot vintern 2024/25, och då behöver vi veta var och när det faktiskt var
+> halt. Där är era uppgifter det bästa facit som finns. Vi delar gärna resultatet med er när det är klart.
+>
+> För det behöver jag åtgärderna på en finare nivå än totalerna: helst en rad per utförd åtgärd med typ (salt, sand, plog), start-
+> och sluttid och plats (vägnummer och sträcka, koordinater eller åtminstone driftområde), för perioden 1/11 2024–31/3 2025. Finns
+> det bara per driftområde och dygn går det också bra. Om det inte går att ta fram är det också ett svar jag har nytta av.
+>
+> Vet du vilka som fått frågorna om väglaget och händelserna, så att jag vet vem jag väntar på svar från?
+
+**Löftet:** resultatet delas med Trafikverket när kuvösens facit är läst.
+
 ## 6. Vad det här inte är
 
 Ingen regel är körd och inget utfall är läst. Förregistreringen (DECISIONS #424, tilläggen #426 och #437) skrevs innan filen öppnades;

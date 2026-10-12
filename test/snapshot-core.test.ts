@@ -346,9 +346,9 @@ test("#187 regn_h och lutning läggs bredvid fukt — null när fönstret är to
   assert.match(rh, /rain_sum_mm > 0/); assert.match(rh, /48 hours/);
   const tk = asked.find((t) => t.includes("FROM trend_kandidater"))!;
   assert.match(tk, /60 minutes/); assert.match(tk, /DISTINCT ON \(station_id\)/);
-  // Motorn läser inget av det: samma hazard som förut.
+  // S3 (DECISIONS #524): motorn läser regn_h och lutning30 — inget annat av det nya (lutning15/60 och beviset står utanför).
   const wx = snapshotToHazards({ schema: 1, cameras: [] }, liveDoc).find((h) => h.id === "wx:W1") as any;
-  assert.deepEqual(wx.meta, { surfaceTempC: 1, moisture: false });
+  assert.deepEqual(wx.meta, { surfaceTempC: 1, moisture: false, rainH: 3.5, fall30C: null });
 });
 
 test("#187 otillgängliga arkiv fäller inte snapshoten — regn_h/lutning blir null och noteras", async () => {
@@ -482,5 +482,6 @@ test("#245 bevisbäraren: väta och mängd ur skattaren bredvid fukt, radarn i s
   assert.ok(!f.includes("rate_max"), "rate_max är spärrat (#134)");
   assert.equal(by.B1.fukt, true, "fukt orört — lägg till, ersätt aldrig");
   const hz = snapshotToHazards({ schema: 1, cameras: [] }, liveDoc).find((h) => h.id === "wx:B1") as any;
-  assert.deepEqual(hz.meta, { surfaceTempC: 0.4, moisture: true }, "motorns adapter läser inte bevis");
+  assert.deepEqual(hz.meta, { surfaceTempC: 0.4, moisture: true, rainH: 0.4, fall30C: null },
+    "motorns adapter läser inte bevis — bara regn_h och lutning30 sedan S3 (#524)");
 });

@@ -47,6 +47,7 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
         val distM: Double,
         val alertKey: String,
         val step: AccidentStep? = null,
+        val beta: Boolean = false,
     )
 
     fun step(fix: Fix): Alert? {
@@ -92,8 +93,9 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
         return Alert(
             t = fix.t, hazardId = win.hazard.id, kind = win.kind,
             distanceM = Math.round(win.distM),
-            text = Texts.alertText(win.kind, win.distM, ph, win.step),
+            text = if (win.beta) Texts.EFTERHALKA_TEXT else Texts.alertText(win.kind, win.distM, ph, win.step),
             step = win.step,
+            beta = win.beta,
         )
     }
 
@@ -137,7 +139,15 @@ class AlertEngine(hazards: List<Hazard>, private val cfg: EngineConfig = EngineC
                 // Broar (#38): brobanan fryser först — närmaste station på +3 räcker.
                 val threshold = if (p.meta.bridge) 3.0 else 1.0
                 val icy = t != null && t <= threshold && p.meta.moisture
-                if (icy && distM <= leadM) Candidate(p, p.kind, distM, p.id) else null
+                if (icy) return if (distM <= leadM) Candidate(p, p.kind, distM, p.id) else null
+                // S3 — efterhalkan som märkt beta (DECISIONS #222, #524), spegel av engine.ts: +1…+3 °C, fallit snabbt
+                // efter regn inom 2 h. Bara stationer — broarna behåller sin +3-regel.
+                val rainH = p.meta.rainH
+                val fall30 = p.meta.fall30C
+                val beta = !p.meta.bridge && t != null && rainH != null && fall30 != null &&
+                    t >= cfg.efterhalkaYtaMinC && t <= cfg.efterhalkaYtaMaxC &&
+                    fall30 >= cfg.efterhalkaFall30C && rainH <= cfg.efterhalkaRegnH
+                if (beta && distM <= leadM) Candidate(p, p.kind, distM, p.id, beta = true) else null
             }
             HazardKind.WILDLIFE ->
                 if (p.meta.active && distM <= leadM) Candidate(p, p.kind, distM, p.id) else null

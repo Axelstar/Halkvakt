@@ -161,6 +161,14 @@ test("verklig post: 'Förändringar i NetInfo-tjänster' är en annan produkt", 
   assert.equal(bedom("trv-rss", "Förändringar i NetInfo-tjänster", KARTAN).grad, "RÖR OSS INTE");
 });
 
+test("färjornas och restidernas objekttyper rör oss sedan favoritprovet (#532), och en färjenyhet tystas inte längre", () => {
+  const b = bedom("trv-rss", "FerryAnnouncement får nytt fält", KARTAN);
+  assert.equal(b.grad, "RÖR OSS");
+  assert.ok(b.traffar[0].ord.includes("ferryannouncement"));
+  assert.equal(bedom("trv-rss", "TravelTimeRoute byter geometri", KARTAN).grad, "RÖR OSS");
+  assert.equal(bedom("trv-rss", "Ny färja på Ljusteröleden", KARTAN).grad, "VET INTE");
+});
+
 test("NVDB tystas INTE — data på väg in i Öppet API vore vår sak", () => {
   // Medvetet gul, inte vit. Regel 2: tveksamma fall läses, de tystas inte.
   const b = bedom("trv-rss", "NVDB vägdata tillgängliga i Trafikverkets Datautbytesportal för användning i Öppet API", KARTAN);

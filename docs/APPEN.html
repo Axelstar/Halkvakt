@@ -95,17 +95,17 @@
 </style>
 
 <main class="blad">
-  <div class="etikett">Appen · 28 september 2026 · läst mot läget 7 oktober</div>
+  <div class="etikett">Appen · 28 september 2026 · läst mot läget 12 oktober</div>
   <h1>Halkvakt i telefonen: vad den gör, säger och skickar</h1>
   <p class="ingress">Tredje sidan i serien efter systembilden och mätningarna. Den här sidan följer föraren: vad rösten säger, hur skärmarna ser ut, hur vakten startar och stannar, hur betatestarna svarar och exakt vad som lämnar telefonen. Underlaget är produktboken, systembeskrivningen, beslutsloggen och Skyltfondsansökan med bilagor.</p>
   <div class="fakta">
-    <span>iPhone <b>0.3.11 (23)</b></span>
-    <span>Android <b>0.3.11 (23)</b></span>
+    <span>iPhone <b>0.3.12 (24)</b> i koden</span>
+    <span>Android <b>0.3.12 (24)</b> i koden</span>
     <span><b>5</b> faror</span>
     <span><b>2</b> flikar</span>
     <span><b>0</b> konton</span>
     <span>batteri iPhone <b>7 %/h</b></span>
-    <span>gratis, ännu bara hos testarna</span>
+    <span>gratis · App Store <b>0.3.9</b> godkänd 12/10</span>
   </div>
 
   <div class="remsa" aria-label="Skärmbilder ur Android-appen i skinnet v4, 2 oktober 2026">
@@ -235,6 +235,7 @@
       <tbody>
         <tr><td>Rapporterad halka på din väg (väglagskod ≥ 2 eller halkord i Trafikverkets text)</td><td class="rost-fras">"Varning: halka rapporterad på vägen framför dig."</td></tr>
         <tr><td>Mätstation vid frysrisk (yta ≤ 1 °C och fukt)</td><td class="rost-fras">"Isrisk framöver — vägbanan nära noll grader."</td></tr>
+        <tr><td>Efter regnet, märkt beta (S3, från 0.3.12): ytan +1…+3 °C, fallit minst 0,8 °C på 30 minuter och regn inom 2 timmar, inte på broar</td><td class="rost-fras">"Halkvakt tror: frysrisk framöver."</td></tr>
         <tr><td>Bro nära kall, blöt station (≤ 3 °C)</td><td class="rost-fras">"Frysrisk framöver — bro om 700 meter."</td></tr>
         <tr><td>Lindrig olycka</td><td class="rost-fras">"Olycka rapporterad på väg 25, 3 kilometer framför dig."</td></tr>
         <tr><td>Allvarlig olycka, tidigt ropet cirka 10 km före</td><td class="rost-fras">"Allvarlig olycka på E18, 10 kilometer framför dig — stor påverkan på trafiken. Överväg annan väg. Beräknas röjd vid 14:20."</td></tr>
@@ -248,7 +249,7 @@
   <div class="par">
     <div class="ruta">
       <h3>Rösten säger inte mer än datan bär</h3>
-      <p>En sträcka ur Trafikverkets väglag får sägas vara <i>på vägen framför dig</i>. En punktmätning, som en station eller ett djur, säger <i>framöver</i> och aldrig ett avstånd som mätningen inte stöder. Hastighetsgränsen vid kamerorna sägs inte, eftersom Trafikverkets kameradata inte bär den.</p>
+      <p>En sträcka ur Trafikverkets väglag får sägas vara <i>på vägen framför dig</i>. En punktmätning, som en station eller ett djur, säger <i>framöver</i> och aldrig ett avstånd som mätningen inte stöder. Hastighetsgränsen vid kamerorna sägs inte, eftersom Trafikverkets kameradata inte bär den. Frysrisken efter regnet börjar med <i>Halkvakt tror</i>: den är en gissning ur regnet och hur fort vägbanan kyls, inte en uppmätt frysning, och döms i januari på förarnas svar (DECISIONS #521, #524).</p>
     </div>
     <div class="ruta">
       <h3>En fara i taget</h3>
@@ -285,7 +286,7 @@
       <tbody>
         <tr><td><b>Vakten</b></td><td><i>Redo.</i> och den gula knappen <i>Starta vakten</i>. Efter en tur ett kvitto: varje varning med klockslag och det rösten sa, tills nästa tur. Betatestare ser kortet <i>Efter resan</i> överst.</td></tr>
         <tr><td><b>Körläget</b></td><td>Ersätter Vakten medan vakten går: resans tid och sträcka, räknare för varningar, halka och vilt, <i>Tyst så länge</i> eller <i>Senast sagt</i>, <i>På din väg</i>, <i>Appen missade något</i> (betatestare) och <i>Avsluta vakten</i>. Är vägdatan gammal står <i>Väglagsdata · gammal</i> där, utan gult.</td></tr>
-        <tr><td><b>Varningskortet</b></td><td>Helgult i åtta sekunder medan rösten talar, utan knapp på båda plattformarna. Rubrik, avstånd som rösten sa det, vägskylt, hastighetsskylt och för allvarliga olyckor läget och ett råd. Kortet visar aldrig ett tal som rösten inte sa.</td></tr>
+        <tr><td><b>Varningskortet</b></td><td>Helgult i åtta sekunder medan rösten talar, utan knapp på båda plattformarna. Rubrik, avstånd som rösten sa det, vägskylt, hastighetsskylt och för allvarliga olyckor läget och ett råd. Frysrisken efter regnet (S3, från 0.3.12) bär märket <i>BETA</i> och raden <i>Halkvakt tror — efter regnet</i>. Kortet visar aldrig ett tal som rösten inte sa.</td></tr>
         <tr><td><b>Inställningar</b></td><td>Två nivåer: <i>Varna för</i> (fem faror, alla på), <i>Förvarning</i> (400 m, 800 m eller 1,2 km, som kan korta men aldrig förlänga), <i>Start</i>, <i>Rösten</i>, <i>Betatest</i> (av från början), <i>Integritet</i> och <i>Om Halkvakt</i>.</td></tr>
         <tr><td><b>Om</b></td><td>Egen sida under Inställningar: livekartan, frågorna, ärlighetsraden <q>mellan stationerna är vägen oövervakad</q> och datakällorna. Löftet och undantaget för betatestet står under <i>Integritet</i>.</td></tr>
       </tbody>
@@ -492,11 +493,11 @@
       <li><span aria-hidden="true">○</span> <b>Utskick till testarna</b> <span style="color: var(--dampad, #4A5763)">saknas · 'Kvar: själva utskicket av länken till de tolv — Axel' (TAVLA.md); gruppen har 2 testare</span></li>
     </ul>
   </details>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-u-app-store">App Store</a> <span style="color: var(--dampad, #4A5763)">väntar, 50 % · Axels nya inlämning: (20) avvisad av App Review 5/10 på 5.1.1(iv) och 2.5.4 (App Store Connect 09:23, DECISIONS #460), rättelsen ligger i main (#758, effd2d1); därefter Apples svar och Axels Release.</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #3D7CC9; margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-u-app-store">App Store</a> <span style="color: var(--dampad, #4A5763)">väntar, 100 % · Appen synlig i App Store: App Store Connect visar 0.3.9 i READY_FOR_DISTRIBUTION sedan 12/10 07:23 UTC, men Apples publika katalog (lookup för Sverige, USA och Norge, och sökningen) gav 0 träffar 12:30 UTC; Axel bekräftar att appen går att hämta och vilket bygge versionen bär (bedömningen §4.2).</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
       <li><span aria-hidden="true">✓</span> <b>Förberett</b> <span style="color: var(--dampad, #4A5763)">klart · marknadsforing/butik/appstore-ios.md, bilderna, integritet.html (karta b9626bf), bara Sverige (DECISIONS #432)</span></li>
-      <li><span aria-hidden="true">◐</span> <b>Inskickat</b> <span style="color: var(--dampad, #4A5763)">pågår · 0.3.9 (20) inlämnad 2/10 00:09 (DECISIONS #433), avvisad av App Review 5/10 på 5.1.1(iv) och 2.5.4 (App Store Connect 09:23, DECISIONS #460); rättelsen i main (#758); 0.3.11 (23) uppladdad 6/10 07:25 (App Store Connect, signalen 08:23; be3b42a5, VALID, intern IN_BETA_TESTING); App Store-versionen 0.3.9 stod i READY_FOR_REVIEW 08:23, alltså förberedd men inte inlämnad; WAITING_FOR_REVIEW är beviset; regeln flyttad 7/10 till 0.3.11: 0.3.9:s WAITING_FOR_REVIEW från före avvisningen bockade steget falskt i kartsynken 7/10 kväll, och en regel som bara går framåt kan inte se en avvisning</span></li>
-      <li><span aria-hidden="true">○</span> <b>Godkänt och släppt</b> <span style="color: var(--dampad, #4A5763)">saknas · (20) avvisad av App Review 5/10 på 5.1.1(iv) och 2.5.4 (App Store Connect 09:23, DECISIONS #460); manuell release, Axel trycker Release (DECISIONS #433)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Inskickat</b> <span style="color: var(--dampad, #4A5763)">klart · 0.3.9 (20) inlämnad 2/10 00:09 (DECISIONS #433), avvisad av App Review 5/10 på 5.1.1(iv) och 2.5.4 (App Store Connect 09:23, DECISIONS #460); rättelsen i main (#758); 0.3.11 (23) uppladdad 6/10 07:25 (App Store Connect, signalen 08:23; be3b42a5, VALID, intern IN_BETA_TESTING); App Store-versionen 0.3.9 stod i READY_FOR_REVIEW 08:23, alltså förberedd men inte inlämnad; WAITING_FOR_REVIEW är beviset; regeln flyttad 7/10 till 0.3.11: 0.3.9:s WAITING_FOR_REVIEW från före avvisningen bockade steget falskt i kartsynken 7/10 kväll, och en regel som bara går framåt kan inte se en avvisning; 12/10: inlämnad igen under App Store-versionen 0.3.9, inte 0.3.11 — READY_FOR_REVIEW senast 10/10 20:23, WAITING_FOR_REVIEW till 12/10 05:23 och IN_REVIEW 06:23 UTC (byggsignalerna i ärende #706); regeln inlamnad:0.3.11 fick därför aldrig sin signal</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Godkänt och släppt</b> <span style="color: var(--dampad, #4A5763)">klart · 0.3.9 i READY_FOR_DISTRIBUTION 12/10 07:23 UTC (09:23 svensk tid) efter IN_REVIEW 06:23 (App Store Connect, byggsignalerna i ärende #706); vilket bygge versionen bär syns inte i signalerna, och Apples publika katalog (lookup för Sverige, USA och Norge, och sökningen) gav 0 träffar 12:30 UTC</span></li>
     </ul>
   </details>
   <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-u-play">Google Play</a> <span style="color: var(--dampad, #4A5763)">delvis, 10 % · kvar: Googles identitetsgranskning (inskickad 4/10), sedan enhetsverifieringen på en lånad Android och telefonnumret (Axel)</span></summary>
@@ -533,6 +534,7 @@
 </div>
 <!-- /LÄGESRADER -->
   <p class="litet">Läget för varje del står ovan, skrivet ur projektkartan. Versionerna nedan är historik.</p>
+  <p><b>App Store, 12/10.</b> App Store-versionen 0.3.9 stod i App Store Connect som väntande på granskning (<i>WAITING_FOR_REVIEW</i>, senast sedd 12/10 05:23 UTC), i granskning 06:23 och <i>READY_FOR_DISTRIBUTION</i> från 07:23 UTC (09:23 svensk tid) och sedan dess: Apple har godkänt versionen och den är distribuerad (byggsignalerna, issue #706). Två förbehåll: vilket bygge versionen bär syns inte i signalerna, och Apples publika katalog (uppslaget på appens bundle-id i Sverige, USA och Norge, och sökningen på <i>halkvakt</i>) gav 0 träffar 12/10 omkring 12:30 UTC — katalogen brukar släpa efter. Inlämningen gick alltså under App Store-versionen 0.3.9, inte under 0.3.11.</p>
 
   <h3>Versionerna</h3>
   <div class="tabell">
@@ -551,10 +553,11 @@
         <tr><td class="nr">0.3.9 (17)</td><td class="nr">26/9</td><td>Reglaget <i>Längsta förvarning</i> 400–1 200 m.</td></tr>
         <tr><td class="nr">0.3.9 (18)</td><td class="nr">26/9</td><td><i>Appen missade</i>, Siri-fraserna och missraderna efter resan. Android bär samma nummer.</td></tr>
         <tr><td class="nr">0.3.9 (19)</td><td class="nr">1/10</td><td>Skärmarna rullar, svaren på ett ställe, svenska klockslag, <q>lämnar inte telefonen av sig själv</q>. Uppladdat och i Kompisarna samma kväll. Android (19): stoppknapp i notisen, autostartens text, cache.</td></tr>
-        <tr><td class="nr">0.3.9 (20)</td><td class="nr">2/10</td><td>Långtrycket rättat. Inlämnad till App Store 2/10 och avvisad 5/10 på två punkter: knappen före platsfrågan sa <i>Tillåt</i>, och granskaren hörde inget bakgrundsljud (DECISIONS #460). Rättelsen kom i 0.3.11 (23) 6/10; ny inlämning väntar på Axel.</td></tr>
+        <tr><td class="nr">0.3.9 (20)</td><td class="nr">2/10</td><td>Långtrycket rättat. Inlämnad till App Store 2/10 och avvisad 5/10 på två punkter: knappen före platsfrågan sa <i>Tillåt</i>, och granskaren hörde inget bakgrundsljud (DECISIONS #460). Rättelsen kom i 0.3.11 (23) 6/10. App Store-versionen 0.3.9 godkändes 12/10 (ovan); vilket bygge den bär syns inte.</td></tr>
         <tr><td class="nr">0.3.9 (21)</td><td class="nr">2/10</td><td>Vägdatans klockslag tillbaka i körläget.</td></tr>
         <tr><td class="nr">0.3.10 (22)</td><td class="nr">3/10</td><td>Det nya skinnet: varningskorten med lägesetikett och olycksläget, inställningar i två nivåer, introduktionen. Android bär samma nummer.</td></tr>
-        <tr><td class="nr">0.3.11 (23)</td><td class="nr">4–6/10</td><td>Självstoppet mäts på förflyttning, och på Android läser en stillastående telefon GPS glesare. Ett andra tryck på <i>Appen missade</i> inom 60 s blir ingen ny miss, och Siri markerar inga missar när vakten är av (DECISIONS #461). Rättelserna efter App Review (#460). Uppladdad 6/10 till intern testning; ny inlämning till App Store väntar på Axel. Android bär samma nummer.</td></tr>
+        <tr><td class="nr">0.3.11 (23)</td><td class="nr">4–6/10</td><td>Självstoppet mäts på förflyttning, och på Android läser en stillastående telefon GPS glesare. Ett andra tryck på <i>Appen missade</i> inom 60 s blir ingen ny miss, och Siri markerar inga missar när vakten är av (DECISIONS #461). Rättelserna efter App Review (#460). Uppladdad 6/10 till intern testning; inlämningen till App Store gick under versionen 0.3.9, inte 0.3.11 (ovan). Android bär samma nummer.</td></tr>
+        <tr><td class="nr">0.3.12 (24)</td><td class="nr">11/10</td><td>Frysrisken efter regnet, märkt beta (S3): rösten säger <q>Halkvakt tror: frysrisk framöver.</q> och kortet visar <i>BETA</i> (avsnitt 3). Granskad och godkänd av Bengt i Axels ställe (DECISIONS #525, #526). Android bär samma nummer och når testarna som APK ur CI; iOS (24) är arkiverat och uppladdat 11/10 14:18 UTC och internt i TestFlight (byggsignalerna), men externt står det i <i>Ready for Beta Submission</i>, alltså inte skickat till Kompisarna än. Tills TestFlight-flödet i Actions finns (kort #333) arkiverar Axel varje iOS-bygge.</td></tr>
       </tbody>
     </table>
   </div>
@@ -563,12 +566,12 @@
 <!-- LÄGESRADER §10: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 <div style="display: grid; gap: 4px; margin: 2px 0 12px; font-size: 14px; line-height: 1.45">
   <div style="font: 600 11px/1.4 'Instrument Sans', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dampad, #4A5763)">Läget i <a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8">projektkartan</a></div>
-  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vagarbeten">Vägarbeten, hastighet och omledningar</a> <span style="color: var(--dampad, #4A5763)">delvis, 8 % · kvar: Ingen löpande hämtning, ingen tabell och inget fält i lägesfilen</span></summary>
+  <details><summary style="cursor: pointer"><span aria-hidden="true" style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--gul, #B35C00); margin-right: 6px"></span><a href="https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-k-vagarbeten">Vägarbeten, hastighet och omledningar</a> <span style="color: var(--dampad, #4A5763)">delvis, 42 % · kvar: Löpande hämtning bara i favoritprovet (testmiljön, #529); ingen tabell och inget fält i lägesfilen</span></summary>
     <ul style="margin: 4px 0 8px; padding-left: 1.6em; display: grid; gap: 2px; font-size: 13px; list-style: none">
-      <li><span aria-hidden="true">◐</span> <b>Hämtning byggd</b> <span style="color: var(--dampad, #4A5763)">pågår · ingest-live/index.ts:52 hämtar alla avvikelser, men vägarbetena finns inte i KEEP/ARCHIVE (:34-41) och kastas</span></li>
-      <li><span aria-hidden="true">○</span> <b>Hämtning i drift</b> <span style="color: var(--dampad, #4A5763)">saknas · Bara engångsknappen vagarbeten-matning.yml med scripts/matningar/vagarbeten-2026-09-26.ts (#420)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Hämtning byggd</b> <span style="color: var(--dampad, #4A5763)">klart · favoritprov/main.ts: Situation med typfilter och INCLUDE; 1 982 vägarbeten, 841 hastigheter; torrkörningen 38135906644 (läs-only, samma frågor som funktionen)</span></li>
+      <li><span aria-hidden="true">✓</span> <b>Hämtning i drift</b> <span style="color: var(--dampad, #4A5763)">klart · i favoritprovet (testmiljön) var 30:e minut sedan 11/10 12:08, halkvakt-favoritprov :08/:38 (#529)</span></li>
       <li><span aria-hidden="true">○</span> <b>Lagras i arkivet</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen tabell; ingest/sources/situations.ts:46-51 håller vägarbeten utanför arkivet</span></li>
-      <li><span aria-hidden="true">○</span> <b>Vakt på källan</b> <span style="color: var(--dampad, #4A5763)">saknas · Ingen datavakt</span></li>
+      <li><span aria-hidden="true">◐</span> <b>Vakt på källan</b> <span style="color: var(--dampad, #4A5763)">pågår · situation stod redan i TRV_OBJEKT; vakthundens mätvakt läser favoritprovets manifest.json och larmar efter 75 min (DECISIONS #532); väntar på driftsättningen och raden i vakthundens svar</span></li>
       <li><span aria-hidden="true">○</span> <b>I lägesfilen</b> <span style="color: var(--dampad, #4A5763)">saknas · snapshot-core.ts släpper bara Accident och AnimalPresenceObstruction</span></li>
       <li><span aria-hidden="true">○</span> <b>Används av motorn eller appen</b> <span style="color: var(--dampad, #4A5763)">saknas · Inget i engine/src eller apparna; motorkörningen med vägarbeten var en engångsmätning (#420)</span></li>
     </ul>
@@ -600,7 +603,7 @@
 </div>
 <!-- /LÄGESRADER -->
   <ul>
-    <li><b>Ingen prognos når föraren.</b> Rösten varnar på uppmätt och rapporterat läge. Prognoslagret körs i skuggdrift och får bli karta och förstärkare först när det klarat sina grindar.</li>
+    <li><b>Ingen prognos når föraren.</b> Rösten varnar på uppmätt och rapporterat läge; betan efter regnet (avsnitt 3) är en gissning ur stationens egna mätningar av regnet och vägbanan, inte prognoslagret. Prognoslagret körs i skuggdrift och får bli karta och förstärkare först när det klarat sina grindar.</li>
     <li><b>Tyst mellan stationerna.</b> Medianavståndet till närmaste station är 7 km, och i Norrland ligger 13 % av vägnätet mer än 20 km bort.</li>
     <li><b>Tyst i staden.</b> Kommunernas egna stationer är inte öppna data.</li>
     <li><b>Ingen kövarning, dimma eller vindvarning, och ingen vattenplaning i rösten än.</b> Vattenplaningen prövas i två spår. Spåret med stationernas regn föll, och spåret med nederbördsradarn mäts i skuggan sedan 15/9, med dom tidigast i november–december (57 av 200 varningar till underlaget 25/9).</li>
@@ -628,11 +631,11 @@
     <li><b>Prognoslagret:</b> klarar det vinterns grindar kopplas det till app och karta som förtroendemärkt lager och en färdvy vid beräknad ankomsttid, men det talar aldrig ensamt.</li>
   </ul>
   <hr>
-  <p class="litet">Källor: produktboken (PRODUKTBOK.md, läst mot koden 24/9), systembeskrivningen (bilaga 3), rösttexterna ur varningsmotorn (bilaga 6), beskrivningen av bygge (19) och beslutsloggen; läst mot läget 7/10 (DECISIONS #415). Alla datum avser 2026.</p>
+  <p class="litet">Källor: produktboken (PRODUKTBOK.md, läst mot koden 24/9), systembeskrivningen (bilaga 3), rösttexterna ur varningsmotorn (bilaga 6), beskrivningen av bygge (19) och beslutsloggen; läst mot läget 12/10 (DECISIONS #415, #522). Alla datum avser 2026.</p>
 
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
   <h2 id="oppna-kort">Öppna kort</h2>
-  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 21 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
+  <p class="litet">Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 22 kort. Ägaren står efter strecket. Listan skrivs av <span class="mono">scripts/kortkartan.ts</span> ur <span class="mono">TAVLA.md</span> och <span class="mono">docs/kortkartan.json</span>.</p>
   <h3><a href="#avsnitt-2">2. En körning</a></h3>
   <ul>
     <li>#258 iOS LADDAR ALDRIG OM VÄGDATAN UNDER RESAN <span class="litet">· Axel</span></li>
@@ -651,6 +654,7 @@
   <ul>
     <li>#279 iOS: EFTER-RESAN-KORTET GICK UTANFÖR SKÄRMEN <span class="litet">· Axel</span></li>
     <li>#203 FACIT UTAN ATT STANNA — svaret efter resan, och med rösten under den <span class="litet">· Claude</span></li>
+    <li>#328 🔒 📱 #328 TELEFONEN SOM MÄTAPPARAT — VÄGYTANS SIGNATUR UR ACCELEROMETERN (PÅ VÄNT 11/10 — Claude, Bengts ord … <span class="litet">· Claude, låst</span></li>
   </ul>
   <h3><a href="#avsnitt-7">7. Vad som lämnar telefonen</a></h3>
   <ul>
@@ -664,12 +668,12 @@
   </ul>
   <h3><a href="#avsnitt-9">9. Var appen står</a></h3>
   <ul>
-    <li>#280 HALKVAKT TILL APP STORE — PÅ RIKTIGT, DIREKT EFTER #262 <span class="litet">· Axels nästa steg</span></li>
     <li>#281 MARKNADSFÖRING UTAN PENGAR <span class="litet">· Axels nästa steg</span></li>
     <li>Skydda namnet <span class="litet">· Axel</span></li>
     <li>Tolv testare till Play-perioden <span class="litet">· Axel</span></li>
     <li>Välkomsttext + testinstruktion till kompisarna <span class="litet">· Axel</span></li>
     <li>#219 ANDROIDS VÄG TILL PLAY — enhetsverifiering, första uppladdning, slutet test <span class="litet">· Axel</span></li>
+    <li>#333 TESTFLIGHT-FLÖDET I ACTIONS — iOS-BYGGEN UTAN AXELS MAC (LÅST 11/10 — Claude, DECISIONS #525; nyckel: App … <span class="litet">· Claude, låst</span></li>
     <li>#277 QR-KOD TILL APPEN — en kod för båda plattformarna, via halkvakt.se <span class="litet">· Claude, låst</span></li>
     <li>#228 APP-SCHEMAT ÖVERLEVER INTE xcodegen <span class="litet">· Claude, låst</span></li>
   </ul>
