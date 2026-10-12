@@ -11003,3 +11003,29 @@ få fram på annat sätt, frågorna samlas och droppas aldrig en och en, och Ben
 frostnätterna 6–8/10 redan visade att flaggan inte markerar is (DECISIONS #537). En egen läsning räckte.
 
 **Stomdokument:** inga — en arbetsregel för sessionerna i CLAUDE.md; den ändrar inget som stomdokumenten beskriver
+
+## #539 (12/10 2026) Friktionen läst per yttemperatur: rimlig på torr och våt väg, men ännu aldrig mött is — regeln kan inte härledas ur egna data än (kort #324)
+
+**Beslut.** Bengt 12/10: *"slå ihop 898 och kör friktionen"*, steg 1 i frågan i bedömningen §4.2 (DECISIONS #537). En läsning med
+DB-knappen (38284633103, READ ONLY, bara summor, inga modellutfall), 6–12/10: 34 613 rader med friktion från 51–55 stationer per dygn.
+
+| Yta | rader | stationer | friktion p05 · p25 · p50 | under 0,7 | våt-flagga | is-flagga |
+| :-- | --: | --: | :-- | --: | --: | --: |
+| ≤ −3 °C | 516 | 2 | 0,82 · 0,82 · 0,82 | 0 % | 0 % | 0 % |
+| −3…−1 °C | 330 | 3 | 0,82 · 0,82 · 0,82 | 0 % | 0 % | 0 % |
+| −1…0 °C | 760 | 6 | 0,82 · 0,82 · 0,82 | 0 % | 0 % | 0 % |
+| 0…+1 °C | 812 | 11 | 0,74 · 0,82 · 0,82 | 0 % | 10,2 % | 4,6 % |
+| +1…+3 °C | 2 756 | 19 | 0,76 · 0,82 · 0,82 | 0 % | 20,9 % | 0,6 % |
+| +3…+5 °C | 5 159 | 27 | 0,74 · 0,82 · 0,82 | 0,1 % | 30,3 % | 0,7 % |
+| > +5 °C | 24 280 | 55 | 0,68 · 0,73 · 0,79 | 9,7 % | 68,8 % | 4,0 % |
+
+Ytor på eller under +1 °C: torra 2 335 rader (10 stationer) med friktionen 0,82 rakt igenom; våta 83 rader (3 stationer) med median
+0,74. Friktion under 0,5: 35 rader på 5 stationer, 28 av dem (80 %) från en station. Lägsta värdet 0,18 (9/10).
+
+**Läsningen.** Friktionen beter sig fysikaliskt: 0,82 på torr väg, 0,7–0,8 på våt, och lägre nästan bara på varm våt väg. Men på de
+1 606 raderna på eller under 0 °C var vägen torr varje gång — ingen våt-flagga, ingen friktion under 0,82 — och bara 2–6 av
+friktionsstationerna var så kalla. Frostnätterna 6–8/10 gav 0, 5 och 29 kalla rader med friktion. **Friktionen har alltså ännu inte
+mött is**, och en gräns för halka går inte att härleda ur våra egna data. Den måste komma ur givarens dokumenterade skala (öppna källor)
+eller ur en första riktig halka i arkivet, och skrivas med båda signaturerna innan den dömer något (§4.2). Ingen tröskel sätts här.
+
+**Stomdokument:** MAT §1, BED §4.2
