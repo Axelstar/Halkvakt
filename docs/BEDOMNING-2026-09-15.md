@@ -42,8 +42,11 @@ nedan med rättelserna under *Övrigt sedan 29/9*, om inte §0, §0b eller §4.2
 - **Kuvösen** har riktningsprovet och kalibreringen sedan 6/10 (#467, #468). MET Nordic-releasen har summor och spann på main (#480).
 
 **Övrigt sedan 29/9.**
-- **Appen:** 0.3.9 (20) avvisades av App Review 5/10 (#460). 0.3.10 (22) är hos testarna sedan 3/10, och 0.3.11 (23) är uppladdad
-  6/10 till intern testning; ny inlämning väntar på Axel (#461). Play: Googles identitetsgranskning inskickad 4/10.
+- **Appen:** 0.3.9 (20) avvisades av App Review 5/10 (#460). **12/10 godkände Apple App Store-versionen 0.3.9**: *IN_REVIEW* 06:23
+  och *READY_FOR_DISTRIBUTION* 07:23 UTC (byggsignalerna, ärende #706; kort #280 stängt). Vilket bygge versionen bär syns inte i
+  signalerna, och Apples publika katalog gav 0 träffar 12:30 UTC (frågan till Axel i §4.2). 0.3.10 (22) är hos testarna sedan 3/10;
+  0.3.11 (23) och 0.3.12 (24) med S3 (uppladdad 11/10 14:18 UTC) är interna i TestFlight. Play: Googles identitetsgranskning
+  inskickad 4/10.
 - **Förarsvaren:** 32 riktiga svar 6/10, alla projektgruppens (Bengt 22, Axel 10), inget om halka.
 - **Databasen:** 388 MB 10/10 06:14 UTC (dbknapp 38030231454), ~30 MB/dygn det senaste dygnet; 500 MB omkring 14–16/10.
   **Avgjort 10/10 (#511): alternativ 1+2, inte Pro.** Gallringen efter tre dygn med brotten mot #75 sparade, och raderingens golv
@@ -58,7 +61,8 @@ nedan med rättelserna under *Övrigt sedan 29/9*, om inte §0, §0b eller §4.2
 - **Kuvösen:** Trafikverkets data kom 2/10 (#438); riktningsprovet och kalibreringen kördes 6/10 (#467, #468).
 - **Styrdokumenten:** genomgångna mot läget 7/10 (#483). Sedan 7/10 kväll stäms de av varje morgon av en rutin i molnet, och en vakt i
   CI fäller ett nytt beslut vars stomdokument inte rättas i samma ändring (#484). *Väntar på Bengt* och *Väntar på Axel* står överst
-  i projektkartan. Kuvösen är sedan 8/10 ett eget block i kartan med fem delar, och kuvössidan följer dem (#489).
+  i projektkartan. Kuvösen är sedan 8/10 ett eget block i kartan med fem delar, och kuvössidan följer dem (#489). 12/10 föll
+  morgonrutinen på användningstaket och synken gjordes för hand (§4.2).
 
 **Vart vi är på väg.** Frosten och betan i november, och skuggans vinter fram till marsdomen. Fysikspåret är kört i kuvösen som fil
 (8/10, Axels ord i Bengts ställe, DECISIONS #485, #486): FYSIK 9,85 % mot RÅ 7,51 %, varje tal inom förväntan — kuvösen kan döma en
@@ -257,7 +261,7 @@ beviset finns — inte när koden är skriven.
 
 | Åtgärd | Läge | Kort | DECISIONS | Beviset som gäller |
 | :-- | :-- | :-- | :-- | :-- |
-| **Trafiken ur driften för grindarnas tillfälliga databas** — ~100 MB per körning (100,9 MB uppmätt för 9 dygn), fyra måndagskörningar ≈ 0,4 GB i veckan mot gratisnivåns 5 GB okachad utgående trafik i månaden för hela organisationen | ⏳ Bengt läser *Usage → Egress* i Supabase-panelen efter måndagen 12/10; når den hälften av taket byggs databasen en gång för hela måndagsserien, eller exporten flyttas närmare gallringen | #323 | #513 | egress efter en måndag under hälften av 5 GB i månadstakt |
+| **Trafiken ur driften för grindarnas tillfälliga databas** — ~100 MB per körning (100,9 MB uppmätt för 9 dygn), fyra måndagskörningar ≈ 0,4 GB i veckan mot gratisnivåns 5 GB okachad utgående trafik i månaden för hela organisationen | ⏳ **Måndagen 12/10 mätt i körningarna:** 90,3 (grind A), 106,7 (höjdprovet), 91,7 (V-A) och 104,8 MB (V-B) ur driften, 393,5 MB för dagen (kort #323 stängt). Bengt läser *Usage → Egress* i Supabase-panelen efter måndagen 12/10; når den hälften av taket byggs databasen en gång för hela måndagsserien, eller exporten flyttas närmare gallringen | #323 | #513 | egress efter en måndag under hälften av 5 GB i månadstakt |
 | **Stomdokumenten (STOMREGELN, DECISIONS #415):** de sju stomdokumenten (mätningarna, appen, systembilden, bedömningen, integrationskartan, kuvösen, favoriterna) och projektkartan stäms av vid varje ändring och bär rättelserna löpande | ✅ **genomgångna 7/10 mot läget** (granskning av alla sju och KALENDERN, PR #799) · ✅ genomlysta 1/10: *Halkvaktens mätningar* (artefakt + `docs/MATNINGAR.html`), *Halkvaktens app* (`docs/APPEN.html`), *Halkvaktens systembild* (`docs/SYSTEMBILDEN.html`), kartan R21–R26 (#416), bedömningen — stående plikt varje varv | #273 | #415 | repokopia = artefakt; `git log -1` på de fem inte äldre än senaste beslut som rör dem |
 | ~~**Segmentprognosen i drift (kort #38b steg 4, DECISIONS #325)**~~ | ✅ **23/9:** migration (744 ankare), deploy 20:51Z, första raden MED innehåll: 2 rader med innehåll i `shadow_log.prognos` efter varvet 2026-09-23T21:00:02Z; t.ex. E14 Sundsvall→Åre: 130 provpunkter, 7 uppmätta, 123 modellerade, 0 okända, 0 frysflaggade, 1465 byte; skuggmotorns svar: ankare 5 bidragande per provpunkt (744 i funktionen); E4 Linköping→Södertälje 77 punkter, 970 byte, ankareSkal det svenska svaret hann rulla ur net._http_response före läsningen; det norska varvet svarade ankare 0, "bara Sverige", som avsett. Kvar som egen rad: radstorleken efter första dygnet | #38b | #325 | en rad med `p.length > 0` — inte att kolumnen finns (läxan #127/#193) |
 | ~~**Vägpunktsgrinden (kort #38b 4b): första körningen 23/9 på knapp; svaret på 4a in i TROSKLAR-SKUGGAN §3**~~ | ✅ **23/9 ÖPPEN (DECISIONS #324):** RÅ klarar A1–A3 med vakterna (0,71 °C · 3,8 % ± 0,4 · 0,0 %, 8 132 p / 712 stationer), lika bra som offseten; §3-texten inskriven under #323:s mandat; första körningen utan vakterna föll och räknas inte (fel population, PR #511). Måndagar 07:00 framåt är bevakning. Holdout-urvalet (4c) skrivs in i bygget | #38b | #323 | grinden öppen med en namngiven kandidat (KLARAR A1–A3 utan målets historik), annars inget bygge i oktober |
@@ -390,7 +394,7 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 <!-- LÄGESRADER §2.1: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 *Läget i projektkartan:*
 
-- [App Store](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-u-app-store): väntar, 50 % · Axels nya inlämning: (20) avvisad av App Review 5/10 på 5.1.1(iv) och 2.5.4 (App Store Connect 09:23, DECISIONS #460), rättelsen ligger i main (#758, effd2d1); därefter Apples svar och Axels Release.
+- [App Store](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-u-app-store): väntar, 100 % · Appen synlig i App Store: App Store Connect visar 0.3.9 i READY_FOR_DISTRIBUTION sedan 12/10 07:23 UTC, men Apples publika katalog (lookup för Sverige, USA och Norge, och sökningen) gav 0 träffar 12:30 UTC; Axel bekräftar att appen går att hämta och vilket bygge versionen bär (bedömningen §4.2).
 - [Google Play](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-u-play): delvis, 10 % · kvar: Googles identitetsgranskning (inskickad 4/10), sedan enhetsverifieringen på en lånad Android och telefonnumret (Axel)
 
 <!-- /LÄGESRADER -->
@@ -513,6 +517,9 @@ Fem rader. Inget annat är "nu". **17/9: fyra klara — kvar är N3, nycklarna (
 
 | Beslut | Vem | Rekommendation | Kort |
 | :-- | :-- | :-- | :-- |
+| **App Store-versionen 0.3.9 godkänd 12/10 — vilket bygge, och syns den? (dokumentsynken 12/10).** App Store Connect: *IN_REVIEW* 06:23 och *READY_FOR_DISTRIBUTION* 07:23 UTC (byggsignalerna, ärende #706). Inlämningen gick under versionen 0.3.9, inte 0.3.11 som kortet räknade med. Signalerna säger inte vilket bygge versionen bär; 0.3.9-byggena är (12)–(14) och (18)–(21), och rättelsen efter avvisningen 5/10 (#758: *Fortsätt* före platsfrågan, *Testa i bakgrunden*) kom först i 0.3.11 (23). Apples publika katalog (lookup för Sverige, USA och Norge, och sökningen) gav 0 träffar 12:30 UTC. Kvar sedan förut: svaret till Apple med skärminspelningen (#460) och *Copyright:* ur copyright-fältet vid nästa redigering (#433). | Axel | Bekräfta att appen går att hämta i App Store och vilket bygge versionen bär; bär den inte #758, är nästa inlämning 0.3.11 (23) eller 0.3.12 (24). | #280 |
+| **Ska skuggan byta förfilter till urvalet längs linjen? (DECISIONS #528, STATUS 11/10: *till §4.2 i synken*).** Mätt lokalt mot lägesfilen 11/10 10:30 UTC på 30 rutter med marginalen 15 km: rektangeln gav 3 696 faror och linjen 2 031 (55 %); motorns tid 7 558 → 3 861 ms; varningarna och de undanträngda exakt desamma på alla 30 (test/rutfilter.test.ts prövar samma sak). Störst vinst på E14 Sundsvall→Åre, 2 051 → 608 ms. Skuggan använder inte urvalet i dag. | Bengt | Ja, om skuggans tid behövs: samma varningar är bevisade, och en ändring i skuggan buntas och deployas i samma varv som proven. | #335 |
+| **Räknas en dokumentsynk för hand i serien om sju morgnar? (kort #304).** Morgonrutinen föll 12/10 03:36:58 UTC på kontots användningstak (`USAGE_LIMIT_REACHED` efter sex sekunder; ingen gren, ingen PR); en session gjorde synken för hand samma dag. Verify säger att *morgonrutinen* ska ha gått sju morgnar i rad. | Bengt | Nej: serien prövar att rutinen går av sig själv, så den börjar om 13/10; synken för hand höll dokumenten i fas. | #304 |
 | ✅ **AVGJORT 11/10 (Bengt: *"1, ja, 2 ja"*, DECISIONS #523, #524): S1 loggas för alla stationer, och S3 byggs av Claude.** **S1-grinden läst 11/10 i Axels ställe (DECISIONS #521) — räcker det för att bygga S3?** Skuggloggen och arkivet är ense på alla 1 349 ögonblick på sju dygn, och på det första fallet där regeln är uppfylld. Ett positivt fall är tunt, men S3:s dom läses i januari på förarfacit, inte här; S1 visar bara att arkivet räknar som telefonen. Om ja bygger Claude S3 i motorn — `icing_point` med `regn_h` och lutningen, startvärdena (#222) i kontraktsgrinden, vektorer i tre språk och texten *Halkvakt tror: frysrisk framöver* — och Axel granskar och arkiverar. 🔑 Bengt (och Axel, vars bygge S3 var). | Bengt, Axel | ja | #89 |
 | ✅ **AVGJORT 11/10 (Bengt: *"2 ja"*, DECISIONS #520): (1) A2 per ytband i varje läsning, utan att någon grind ändras (kort #329); (2) kvantil som låst kort (#330); (3) fysiken som vittne som låst kort (#331).** **Listan från ett annat håll (inklistrad av Bengt 11/10) — tre outforskade punkter, hur de tas om hand.** **(1) A2 per ytband:** hur stor del av de grova felen ligger där appen ändå inte kan varna (yta +3…+5 °C)? Förslag: redovisningen per ytband (≤ −3 · −3…+1 · +1…+3 · +3…+5 °C) byggs in i läsningarnas gemensamma redovisning, som norr och söder (#502), och går med gratis i prognosläsningens körning (#519). Den förregistreras före den knappen, med granskarens förväntan (25–45 % av felen över +3 °C) som hans, och med raden att **ingen grind ändras av den** — nivå 2 med blandningen står på 5,02 % mot grind A:s 5 %, och att flytta populationen nu vore att flytta målet efter utfallet (regel L, kort #282). **(2) Kvantil i stället för medelvärde:** rättelsen förutsäger ett band per rad i stället för ett tal, och grinden kan läsa bandet. Ny i repot. Förslag: ett låst kort, med nyckeln att kandidaten för vintern 2026/27 är vald, eftersom hur grinden läser bandet är en tröskelfråga. **(3) Fysiken som vittne:** de grova fel fysiken hittar tar #75 redan; det nya är den 1,3 % av raderna som vakterna behåller men fysiken flaggar (#493). Förslag: ett låst kort, läst på nivå 2:s skattning (halva felen, ett skarpare vittne) i en senare kuvöskörning. 🔑 Bengt. | Bengt | ja till alla tre som kort; (1) i prognosläsningens körning | #328 |
 | **Prognosläget på MET Nordics egna prognoser (DECISIONS #518).** Arkivet har fyra körningar per dygn med 59 timsteg, samma sju fält och rutnät som analysen. Före knappen: **(a) fysikens tillstånd** — kolumnen hela vintern på prognosvädret vid fast ledtid (enkelt, strängare än driften) eller omstart från analysens tillstånd vid varje körning (som driften, kräver att fysiken kan starta från ett sparat tillstånd, och varje timsteg från körningen till ledtiden: för +24 h ungefär 475 GB i stället för 95); ~~**(b) ledtiderna**~~ ✅ avgjord 11/10 (Bengt): +6 och +24 h först — uppmätt 11/10 ungefär 189 GB och 4–5 timmar med fast ledtid, ungefär 473 GB och 10–11 timmar med omstart (#518); **(c) Axels förväntan**. 🔑 Axel (a, c), Bengt (b). | Axel, Bengt | (a) omstart från analysens tillstånd, eftersom ett strängare prov som faller inte avgör driften; (b) +6 och +24 h först. | #308 |
@@ -683,11 +690,11 @@ bevisbart säker (vid 0 km/h går det inte att nå faran) och är rimligen stör
 <!-- LÄGESRADER §5: skrivs av scripts/projektkartan.ts ur docs/projektkartan.json, ändra inte för hand -->
 *Läget i projektkartan:*
 
-- [Arkivexporten och säkerhetskopian](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-i-export): delvis, 92 % · kvar: Måndagens körningar 12/10 via pulsklockan: grind A, höjdprovet, V-A och V-B mot den tillfälliga databasen (kort #323)
+- [Arkivexporten och säkerhetskopian](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-i-export): klar
 - [Datavakterna (givarvakten, radvakten, karantänen)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-i-vakterna): klar
 - [Lägesfilens fält för skuggdelarna](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-l-falten): delvis, 57 % · kvar: Motorn läser inte regn, rain_segments, regn_h, lutning, bevis eller smhi (fogarna F2–F4)
 - [L2 tillståndet (skattaren S1–S3)](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-tillstand): delvis, 93 % · kvar: S1-grinden på frostnätter (Axel, DECISIONS #196)
-- [Efterhalkan som märkt beta](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-efterhalkan): väntar, 81 % · Första frostnätterna för S1-grinden (Axel, DECISIONS #196) och Axels granskning och bygge till testarna av S3 (DECISIONS #524); sedan betan i november (#186).
+- [Efterhalkan som märkt beta](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-efterhalkan): väntar, 81 % · Första frostnätterna för S1-grinden (Axel, DECISIONS #196) och S3-bygget (24) till Kompisarna (Axel; Bengt granskade och godkände S3 i Axels ställe, DECISIONS #525, #526); sedan betan i november (#186).
 - [L3 trenden](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-trenden): delvis, 44 % · kvar: T-B (B3-paret och tystnadsfelet för trenden) har inget instrument
 - [Rimfrosten](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-rimfrost): väntar, 44 % · En frostmånad för R-B; uppspelningen ur arkivet byggs efter R-A (#363, #491).
 - [Vattenplaningen](https://claude.ai/artifact/Bvo6pfdfhwEGjMxsR7xNc8#del-m-vattenplaning): väntar, 56 % · V-C:s underlag (≥200 varningar, ≥15 facit) för V-B-domen i nov–dec; sedan Axels beslut om steg D.
@@ -912,7 +919,7 @@ mätningar — R1–R16 nedan är strukna och står kvar bara som historik.**
 <!-- ÖPPNA KORT: genereras av scripts/kortkartan.ts ur TAVLA.md och docs/kortkartan.json, ändra inte för hand -->
 ## Öppna kort
 
-Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 32 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
+Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 30 kort. Ägaren står efter strecket. Listan skrivs av `scripts/kortkartan.ts` ur `TAVLA.md` och `docs/kortkartan.json`.
 
 **§1 NU — före första frosten**
 
@@ -923,7 +930,6 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 32 kort
 **§2.1 Vägen till förare: efterhalkan som märkt beta**
 
 - #262 BATTERIPAKETET — SJU ÅTGÄRDER EFTER FÄLTRAPPORTEN 27/9 — Axels nästa steg
-- #280 HALKVAKT TILL APP STORE — PÅ RIKTIGT, DIREKT EFTER #262 — Axels nästa steg
 - #219 ANDROIDS VÄG TILL PLAY — enhetsverifiering, första uppladdning, slutet test — Axel
 
 **§4.2 Öppna**
@@ -955,7 +961,6 @@ Korten på tavlan som rör den här sidan, ordnade efter sidans avsnitt: 32 kort
 **§5 Integrationsläget — mätt mot kartan (24/9, Bengts fråga "hur långt i integrationen har vi kommit")**
 
 - #311 🔓 #311 PUBLIKT REPO — ACTIONS GRATIS, ELLER TAKET 35 USD SLÅS I (BESLUTSUNDERLAG 9/10 — Axel, exklusivt hans … — Axel, beslut
-- #323 GRINDARNA LÄSER DYGNEN ÄLDRE ÄN 14 UR HINKEN (BESTÄLLT 10/10 — Claude, DECISIONS #511, del av Bengts … — Claude
 - #288 🔨 #288 KARTSYNKEN — PROJEKTKARTAN UPPDATERAR SIG SJÄLV (I DRIFT, VÄNTAR PÅ AXELS NYCKEL — Claude, Bengts ja … — pågår
 
 **§6.1 Kuvösen är den enda kända vägen runt vintern — och väntar på Trafikverkets beslut**
