@@ -11643,6 +11643,19 @@ release är publik med repot. Parametrarna och paret är aggregat och får stå 
 
 **Stomdokument:** KUV §5, BED §4.2
 
+**Utfall (13/10 12:48–13:10 UTC, körning 38400052837 på f4d209b; tryckt på Bengts ord; 22 minuter).**
+- Valet lästes ur valfilen: fysiken `lw`, paret W 0,25 · L 160 km, ur körning 38368369876 (#552).
+- Kalibreringen gick 120 steg på alla 754 stationer, i 4 152 timmar.
+- `modell.pkl` (9 757 699 byte, sha256 `c96c4072f4ecc6a9…`) laddades upp till hinken, hämtades tillbaka med summan lika och lästes om i
+  jobbet med samma rättelse som modellen i minnet.
+- Versionerna är de låsta i `fysik/requirements.txt`: Python 3.13.16, numpy 2.5.3, pandas 3.0.5, scipy 1.18.1, scikit-learn 1.9.1.
+- Manifestet står i `kuvos/kandidat-2026-27.json`, med de 70 särdragen ur fysikstegets rad. Det stämmer fält för fält med kvittot.
+- Loggen bär ingen signerad adress och ingen nyckel; det är kontrollerat.
+- På stationerna som proceduren tränade på gav fysiken 14,78 % grova fel och fysiken med rättelsen 1,44 % (timvis, kedjans
+  population). Det är **inte** det väntade felet. Det väntade felet vid +6 h är det ärliga talet 5,12 % (#544, #552).
+- `r_snow` (snöns isolering) blev 0, vid sin undre gräns. Det blev den också i alla fem ärliga vecken i varv 2, så det ärliga talet
+  räknar redan med det.
+
 ## #551 (13/10 2026) Fysiken som vittne läses i kategorier med antal, aldrig rad för rad (kort #331)
 
 **Beslut.** Bengt 13/10: *"a på 331"*, på frågan i bedömningen §4.2.
