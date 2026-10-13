@@ -11146,3 +11146,35 @@ testmiljön var 30:e minut. Publiceringen (`publicera`, lägesfilen till alla te
 **Vad det inte gör.** Inget når appen, och inget ändras i publiceringen eller i det appen skickar. Inga trösklar rörs.
 
 **Stomdokument:** FAV, SYS, BED §4.2
+
+## #542 (13/10 2026) Favoritprovets misslyckade anrop sparas med svaret (sql/051)
+
+**Beslut.** Bengt 13/10: *"spara svaren på misslyckade anrop också"*, efter #541: körningen 12/10 07:38 skrev ingen historik, och svaret
+gick inte att läsa när det upptäcktes.
+
+**Varför det behövs.** pg_net lägger varje svar i `net._http_response`, men bara i sex timmar (`pg_net.ttl`) och utan adress, så ett
+svar går inte att knyta till en funktion. Läst 13/10 med DB-knappen (38349195262): 544 svar på sex timmar; 479 med kod 200, 28 med
+kod 204 (pulsklockans GitHub-anrop), 35 tidsgränser och 2 med kod 500 (00:00 och 00:50 UTC) som inte går att knyta till något jobb.
+
+**Hur.**
+- Favoritprovets jobb skriver anropets id i `public.anrop`, i samma sats som det skickar anropet. Kommandot ändras inne i databasen
+  med `regexp_replace()`, så nyckeln aldrig står i en fil. Formen prövas först, och bara det jobbet ändras.
+- Jobbet `halkvakt-anropsfel` (:27/:57, bara SQL) läser svaren. Ett lyckat svar tas bort. Ett misslyckat sparas med koden, felet
+  och de första 4 000 tecknen: en annan kod än 2xx, en tidsgräns eller ett fel från pg_net. Ett anrop utan svar efter sju timmar
+  sparas också. Allt äldre än 30 dygn tas bort.
+- Tabellen är låst dubbelt (RLS utan policy och REVOKE), och sopningen får inte anropas utifrån.
+- Migrationen provar sig själv på ett riktigt misslyckat och ett riktigt lyckat svar innan jobbet ändras. Faller provet rullas allt
+  tillbaka.
+- Integrationsprovet i CI kör filen två gånger och provar sopningen mot en låtsad `net._http_response`.
+
+**Alternativ som valdes bort.**
+- (a) Spara alla misslyckade svar utan id och gissa jobbet ur klockslaget. Ingest-live körs varje minut och delar minut med alla
+  andra jobb, så gissningen hade varit tvetydig just där det behövs.
+- (b) Logga id:t för alla jobb. Det ändrar 28 jobbkommandon, bland dem det som hämtar läget varje minut. Görs när favoritprovets jobb
+  har gått en tid utan problem, på eget ord.
+- (c) En utlösare på `net.http_request_queue`. Tabellen ägs av tillägget och kan skrivas över vid en uppgradering.
+
+**Vad det inte gör.** Inget når appen, och inget som telefonerna läser ändras. Tidsgränsen hos pg_net (55 s) är inte funktionens:
+funktionen kan köra klart efter den, och då är raden en tidsgräns och inte ett fel i funktionen.
+
+**Stomdokument:** SYS, FAV
