@@ -11915,3 +11915,11 @@ provet"*; paketet hämtat av Bengt 13/10).
     - råvärdena skrivs ut;
     - road_all.csv läses som riktig CSV. Fyra av 753 rader har kommatecken i ett namn och hamnade fel med den naiva uppdelningen.
   - Provet körs om innan något hämtas.
+
+**Tillägg 13/10: Europaväg är −1 för Ja** (Bengt: *"slå ihop 931 och tryck provet"*).
+- Det rättade provet (körning 38473909973 på 8206261) föll, som det skulle: 47 av 65 lika, alltså 72,3 % mot kravet 95 %.
+- Råvärdena vid 72 stationer var `Europaväg` 0 (50), **−1 (21)** och ett element utan Vägnummer (1).
+- **−1 är Esris och Access sanningsvärde för Ja.** Talet är inte E-vägens nummer; den gissningen i förra tillägget var fel.
+- De 18 som räknades som fel är troligen de med −1.
+- Tolkningen är nu −1 → 1 och 0 → 0, och allt annat ger null, som räknas som fel. Provet körs om, och vid minst 95 % följer läget alla.
+- Läxan (VÄRDEVAKTEN): ett fält som heter som en flagga kan bära ett tal med en egen kodning, och bara råvärdena visar vilken.

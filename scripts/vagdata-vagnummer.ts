@@ -7,7 +7,8 @@
 //           vaglagspunkter-sardrag.json) och per station, skrivna till --ut.
 // Varje plats frågas där vägdatalagret valde vägen: samma radie som bar (radie_m) och objektet på samma NVDB-element (element_id).
 // Saknas Vägnummer på elementet är vägen onumrerad och värdet 0, räknat; null bara vid fallerat anrop eller oläsbart värde. API:ets
-// Europaväg är ett tal, 0 eller E-vägens nummer (provet 13/10). Vid stationerna jämförs med Axels road_all.csv (--road-all), bara som
+// Europaväg är ett tal: −1 = Ja och 0 = Nej (Esris och Access sanningsvärde; råvärdena i provet 38473909973). Vid stationerna jämförs
+// med Axels road_all.csv (--road-all), bara som
 // aggregat: överensstämmelsen ska vara minst 95 %, annars används filen inte förrän skälet är läst.
 // Rotelementet räknas, aldrig statuskoden; felkroppen skrivs ut. Nyckeln delas med driftens ingest: ~2 förfrågningar/s.
 // Run: TRAFIKVERKET_API_KEY=... node --experimental-strip-types scripts/vagdata-vagnummer.ts [--prov] [--road-all <csv>] [--ut <dir>]
@@ -27,10 +28,11 @@ export function jaNej(v: unknown): 0 | 1 | null {
   if (v === false || v === 0 || (typeof v === "string" && /^(nej|false|0)$/i.test(v.trim()))) return 0;
   return null;
 }
-/** API:ets Europaväg är ett TAL (provet 13/10, körning 38472503088): 0 = ingen Europaväg, annars troligen E-vägens nummer (4 för E4).
- *  0 → 0, ett positivt heltal → 1, Ja/Nej som jaNej, annat → null. Jämförelsen med Axels Ja/Nej vid stationerna avgör tolkningen. */
+/** API:ets Europaväg är ett TAL med Esris och Access sanningsvärde: −1 = Ja, 0 = Nej. Råvärdena vid 72 stationer (körning 38473909973)
+ *  var 0 (50) och −1 (21) och inget annat; gissningen före det, att talet var E-vägens nummer, var fel. Ja/Nej läses som jaNej; allt
+ *  annat ger null, och jämförelsen med Axels Ja/Nej vid stationerna räknar det som fel. */
 export function europa(v: unknown): 0 | 1 | null {
-  if (typeof v === "number") return v === 0 ? 0 : Number.isInteger(v) && v > 0 ? 1 : null;
+  if (typeof v === "number") return v === -1 ? 1 : v === 0 ? 0 : null;
   return jaNej(v);
 }
 /** En CSV-rad med citattecken: ett namn med kommatecken (stationens eller driftområdets) får inte flytta kolumnerna. */
@@ -70,12 +72,12 @@ if (process.argv.includes("--sjalvtest")) {
   let kastat = false; try { europafalt(["Huvudnummer"]); } catch { kastat = true; } if (!kastat) fel.push("inget europafält fäller");
   const j = jamfor(new Map([["a", 1], ["b", 0], ["c", null], ["d", 1]]), new Map([["a", 1], ["b", 1], ["c", 0], ["e", 0]]));
   if (j.n !== 3 || j.lika !== 1 || j.saknas !== 1) fel.push(`jämförelsen räknar ett saknat värde som fel: ${JSON.stringify(j)}`);
-  if (!(europa(0) === 0 && europa(4) === 1 && europa(45) === 1 && europa(-1) === null && europa(2.5) === null && europa("Ja") === 1 && europa(null) === null))
-    fel.push("europa: 0 → 0, E-vägens nummer → 1, Ja/Nej, annat → null");
+  if (!(europa(-1) === 1 && europa(0) === 0 && europa(1) === null && europa(4) === null && europa("Ja") === 1 && europa(null) === null))
+    fel.push("europa: −1 → 1, 0 → 0, Ja/Nej, annat (också 1 och 4) → null");
   if (JSON.stringify(csvRad('1001,"Ödeshög, E4",Ja\r')) !== JSON.stringify(["1001", "Ödeshög, E4", "Ja"])) fel.push("csvRad: kommatecken inom citattecken");
   for (const f of fel) console.log("✗", f);
   if (fel.length) process.exit(1);
-  console.log("✓ självtest: Ja/Nej och API:ets tal (0 eller E-vägens nummer) läses, objektet tas på platsens element och raderade hoppas över, europafältet måste vara entydigt, och jämförelsen räknar ett saknat värde som fel");
+  console.log("✓ självtest: Ja/Nej och API:ets tal (−1 = Ja, 0 = Nej) läses, objektet tas på platsens element och raderade hoppas över, europafältet måste vara entydigt, och jämförelsen räknar ett saknat värde som fel");
   process.exit(0);
 }
 
