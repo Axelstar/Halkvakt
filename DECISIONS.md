@@ -10782,6 +10782,21 @@ skuggmotor/index.ts är buntad om; skuggan använder inte urvalet.
 
 **Stomdokument:** FAV, BED §4.2
 
+**Utfall 4, kömeddelandena en vardag** (tisdag 13/10, körning 38351692114 05:30 UTC och 38413882055 14:30 UTC, alltså 07:30 och 16:30 svensk
+tid). Claude tryckte på Bengts ord *"tryck 336"*. Kortet sa måndag 12/10, men ingen körning blev av då.
+- **Kömeddelandena (AbnormalTraffic):** 1 i hela landet vid båda tillfällena, *Långsam kö*, 0,2 kB rå och packad.
+- **Samtidigt:**
+  - hastigheterna 886 och 886;
+  - omledningarna 81 och 82;
+  - färjornas avgångar de närmaste 24 timmarna 2 606 och 2 608, på 39 leder;
+  - aktiva avvikelser 3 190 och 3 208.
+- **En gemensam fil för hela landet, packad:** 22,9 kB båda gångerna. Färjorna tar 9,4 kB, hastigheterna 11,9 och 11,8 kB,
+  omledningarna 1,4 kB och köerna 0,2 kB.
+- **Läsningen.** Ingen dom.
+  - Köerna är sällsynta också i rusning, med ett meddelande i hela landet.
+  - Filens storlek bärs av färjorna och hastigheterna, inte av köerna.
+  - Underlaget saknar inget mer av det #528 räknade upp.
+
 ## #529 (11/10 2026) Favoritprovet: favoriternas testmiljö under verkliga förhållanden, som aldrig når telefonerna (kort #337)
 
 **Beslut.** Bengt 11/10: *"vi bygger det nu. jag skulle vilja bygga så mycket så att det kan vara i en testmiljö så man ser hur den
