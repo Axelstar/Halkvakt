@@ -8,12 +8,16 @@ first on the stations (to show that they reproduce the release) and then on the 
 does only what the frozen scripts do not:
   python3 fysik/vagpunkter/vagpunkter.py stationer --ut <stations.csv> [--del i --delar n]   the points as stations.csv (sid, lon, lat)
   python3 fysik/vagpunkter/vagpunkter.py elev-ifs --stationer <stations.csv> --ut <csv>     the ECMWF cell height Open-Meteo reports
+  python3 fysik/vagpunkter/vagpunkter.py elev-ifs-ur-hojd --elev <elev.csv> --ut <csv>     the road points' ECMWF height = their height
   python3 fysik/vagpunkter/vagpunkter.py jamfor --ny <dir> --frusen <dir>                   the reproduction, aggregates only
   python3 fysik/vagpunkter/vagpunkter.py sammanstall --delar <dir> --ut <csv>              the parts joined, missing values counted
   python3 fysik/vagpunkter/vagpunkter.py --sjalvtest                                        synthetic data only; runs in ci.yml
 elev-ifs asks the archive endpoint fetch_ifs.py uses, with its models, coordinate rounding and ten places per call, for one day and
 one variable: fetch_ifs.py fetches the whole winter in seven variables, which for 12 960 points would exceed Open-Meteo's free limit,
 and only the reported height is needed here. The reproduction compares it with the release's ifs/<sid>.csv.
+At the road points the height comes from the Copernicus DEM (hojd.py, the height test's winner glo90-bilinjar), and elev_ifs is set to
+that height (Bengt 13/10: "i"): at the stations elev and elev_ifs are both Open-Meteo's height at the same place, so elev − elev_ifs is
+exactly 0 at 95.9 % of them; Open-Meteo's elev_ifs beside a Copernicus height would give 1–13 m of noise the correction has hardly seen.
 """
 import argparse, glob, hashlib, json, os, sys, tempfile, time, urllib.error, urllib.request
 import numpy as np
@@ -72,6 +76,14 @@ def elev_ifs(stations, ut, hamta=None):
     return len(rad)
 
 
+def elev_ifs_ur_hojd(elev, ut):
+    """elev_ifs = elev, place by place (DECISIONS #553, choice (i)), so that elev − elev_ifs is 0 as at the stations."""
+    e = pd.read_csv(elev, dtype={'sid': str})
+    if e.elev.isna().any(): raise ValueError(f'{int(e.elev.isna().sum())} platser utan höjd')
+    e[['sid', 'elev']].rename(columns={'elev': 'elev_ifs'}).to_csv(ut, index=False)
+    return len(e)
+
+
 def jamfor(ny, frusen):
     """Column by column: n, share equal within TOL, max |difference|. Returns the lines and whether every correction column reproduced."""
     rader, ok = [], True
@@ -125,6 +137,12 @@ def sjalvtest():
         if '&models=ecmwf_ifs' not in u or 'latitude=60.0000,60.0100' not in u or 'start_date=2024-10-10&end_date=2024-10-10' not in u: fel.append(f'adressen: {u}')
         svar = lambda url: [{'elevation': 100.0 + k} for k in range(url.split('latitude=')[1].split('&')[0].count(',') + 1)]
         if elev_ifs(f'{d}/s0.csv', f'{d}/e.csv', svar) != n[0] or pd.read_csv(f'{d}/e.csv').elev_ifs.iloc[1] != 101.0: fel.append('elev-ifs läser höjden')
+        pd.DataFrame({'sid': ['00001', '00002'], 'elev': [12.5, 300.0], 'tpi1': 0.0, 'tpi3': 0.0}).to_csv(f'{d}/h.csv', index=False)
+        elev_ifs_ur_hojd(f'{d}/h.csv', f'{d}/hi.csv'); hi = pd.read_csv(f'{d}/hi.csv', dtype={'sid': str})
+        if list(hi.columns) != ['sid', 'elev_ifs'] or hi.elev_ifs.tolist() != [12.5, 300.0] or hi.sid.iloc[0] != '00001': fel.append(f'elev_ifs ur höjden: {hi}')
+        pd.DataFrame({'sid': ['00001'], 'elev': [np.nan], 'tpi1': 0.0, 'tpi3': 0.0}).to_csv(f'{d}/h2.csv', index=False)
+        try: elev_ifs_ur_hojd(f'{d}/h2.csv', f'{d}/hi2.csv'); fel.append('en plats utan höjd fälls')
+        except ValueError: pass
         for x in ('ny', 'fr', 'delar/0', 'delar/1'): os.makedirs(f'{d}/{x}')
         sids = [f'{i:05d}' for i in range(6)]
         def skriv(rot, ix, forskj=0.0):
@@ -163,6 +181,7 @@ if __name__ == '__main__':
     sp = ap.add_subparsers(dest='cmd', required=True)
     a1 = sp.add_parser('stationer'); a1.add_argument('--ut', required=True); a1.add_argument('--del', type=int, default=0); a1.add_argument('--delar', type=int, default=1)
     a2 = sp.add_parser('elev-ifs'); a2.add_argument('--stationer', required=True); a2.add_argument('--ut', required=True)
+    a5 = sp.add_parser('elev-ifs-ur-hojd'); a5.add_argument('--elev', required=True); a5.add_argument('--ut', required=True)
     a3 = sp.add_parser('jamfor'); a3.add_argument('--ny', required=True); a3.add_argument('--frusen', required=True)
     a4 = sp.add_parser('sammanstall'); a4.add_argument('--delar', required=True); a4.add_argument('--ut', required=True)
     a = ap.parse_args()
@@ -171,6 +190,8 @@ if __name__ == '__main__':
         print(f'stations.csv: {stationer(PUNKTER, a.ut, d, a.delar)} punkter (del {d} av {a.delar})')
     elif a.cmd == 'elev-ifs':
         print(f'elev_ifs.csv: {elev_ifs(a.stationer, a.ut)} punkter')
+    elif a.cmd == 'elev-ifs-ur-hojd':
+        print(f'elev_ifs.csv: {elev_ifs_ur_hojd(a.elev, a.ut)} platser, elev_ifs = höjden ur Copernicus (DECISIONS #553, val (i))')
     elif a.cmd == 'jamfor':
         rader, ok = jamfor(a.ny, a.frusen)
         print('REPRODUKTIONEN (DECISIONS #553): Axels frysta skript på stationerna mot indata-releasen; * = kolumner rättelsen läser')
