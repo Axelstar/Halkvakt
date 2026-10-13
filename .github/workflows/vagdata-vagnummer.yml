@@ -1,0 +1,43 @@
+# Vägnummer och Europaväg ur Trafikverkets öppna API (DECISIONS #553, kort #303): scripts/vagdata-vagnummer.ts vid stationerna och
+# väglagspunkterna, med vägdatalagrets val av väg. Vid stationerna jämförs med Axels road_all.csv ur indata-releasen (bara aggregat).
+# Läget prov läser fälten och var tolfte station; läget alla skriver vaglagspunkter-europavag.json som artefakt, som checkas in i en PR.
+# Knapp, inte cron. Nyckeln delas med driftens ingest; skriptet håller ~2 förfrågningar/s.
+name: vagdata-vagnummer
+on:
+  workflow_dispatch:
+    inputs:
+      lage:
+        description: "prov (fälten och var tolfte station) eller alla (alla väglagspunkter och stationer, ~2 h)"
+        type: choice
+        options: [prov, alla]
+        default: prov
+permissions:
+  contents: read
+concurrency: vagdata-vagnummer
+jobs:
+  vagnummer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Axels road_all.csv ur indata-releasen, för jämförelsen vid stationerna
+        shell: bash
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          set -euo pipefail
+          gh release download kuvos-fysik-indata-2024-25 --dir indata
+          tar -xzf indata/*.tar.gz -C indata --wildcards '*road_all.csv'
+          cp "$(find indata -name road_all.csv | head -1)" road_all.csv
+      - name: Vägnummer (${{ inputs.lage }})
+        shell: bash
+        env: { TRAFIKVERKET_API_KEY: "${{ secrets.TRAFIKVERKET_API_KEY }}", LAGE: "${{ inputs.lage }}" }
+        run: |
+          set -o pipefail
+          node --experimental-strip-types scripts/vagdata-vagnummer.ts --sjalvtest
+          { echo '```'; node --experimental-strip-types scripts/vagdata-vagnummer.ts --road-all road_all.csv --ut vagnummer-ut $([ "$LAGE" = prov ] && echo --prov); echo '```'; } 2>&1 | grep -v ExperimentalWarning | tee -a "$GITHUB_STEP_SUMMARY"
+      - if: ${{ inputs.lage == 'alla' }}
+        uses: actions/upload-artifact@v4
+        with: { name: vagnummer, path: vagnummer-ut/*.json, retention-days: 30, if-no-files-found: error }

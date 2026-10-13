@@ -96,6 +96,7 @@ jobs:
           node --experimental-strip-types scripts/matningar/kuvos-blandning-vagb2-rutnat-2026-10-13.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-blandning-vagb2-terrang-2026-10-13.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-blandning-frysta-2026-10-13.ts --sjalvtest
+          node --experimental-strip-types scripts/vagdata-vagnummer.ts --sjalvtest   # DECISIONS #553, Europaväg
           node --experimental-strip-types kuvos/metnordic-prognos.ts --sjalvtest   # DECISIONS #519
           node --experimental-strip-types scripts/matningar/kuvos-trafik-per-band-2026-10-08.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-fysik-givarvakt-2026-10-08.ts --sjalvtest
@@ -125,6 +126,7 @@ jobs:
           python3 fysik/blandning/vagb_blandning.py --sjalvtest      # DECISIONS #544
           python3 fysik/vagpunkter/vagpunkter.py --sjalvtest          # DECISIONS #553
           python3 fysik/vagpunkter/hojd.py --sjalvtest                # DECISIONS #553, tillägg 13/10
+          python3 fysik/vagpunkter/uh_klass.py --sjalvtest            # DECISIONS #553, val (b)
           python3 fysik/vagpunkter/vagpunkter.py prova --fil data/vagdata/vaglagspunkter-sardrag.json   # värdevaktens spann
       # Generatorn gled isär från vektorfilerna tre gånger (31/8, 2/9, 13/9) utan att någon vakt såg det (#195).
       # Den skriver bara filer vars innehåll ändrats och fäller själv på en vektorfil utan scenario.
