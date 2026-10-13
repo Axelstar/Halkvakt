@@ -238,7 +238,9 @@ sessioner på alla enheter:
 3. Kortgenomgången (TAVELREGELN 5): `kortkartan.ts --genomgang`; stäng varje kort vars Verify är uppfylld, med beviset.
 4. Stomgenomgången: `stomvakten.ts --lage`. Läs allt som hänt sedan förra dokumentsynken — commits på main från alla författare,
    nya beslut, nya STATUS-rader, sammanslagna och öppna PR:er — och rätta handtexten i de sju, `docs/KALENDERN.md` och TAVLA.md
-   där den inte längre stämmer. Integrationskartans innehåll är fryst: bara dess läge-rader; en innehållsrättelse blir en fråga i
+   där den inte längre stämmer. **En rad i ett skriptskrivet block (LÄGESRADER, Öppna kort) räknas inte som att handtexten
+   stämmer** (Bengts ja 13/10, DECISIONS #546). Varje ⚠ i `--lage` blir antingen text i dokumentets handtext, i det avsnitt
+   beslutets rad `**Stomdokument:**` namnger, eller en post i synkens STATUS-rad med skälet: *#NN: ingen handtext, skälet*. Integrationskartans innehåll är fryst: bara dess läge-rader; en innehållsrättelse blir en fråga i
    bedömningens §4.2. Ett tal förs bara in om det står i källan (DECISIONS, STATUS, koden, en körning) — aldrig ur minnet.
    **Kuvösen** (eget block i projektkartan sedan 8/10, DECISIONS #489): en ny läsning är ett byggsteg på sin del i blocket — testbädden,
    systemets delar, prognoslagrets kandidater, före resan eller facit — med körning, beslut och utfall som bevis, och en kandidat för
