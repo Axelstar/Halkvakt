@@ -11805,3 +11805,23 @@ mot `SHA256SUMS`.
   går att läsa stoppar körningen, så att ett nätfel aldrig blir en höjd. Läxan är fetch_elev.py:s tysta återanvändning.
 - Läget `hojdprov` i `vagpunkter-sardrag.yml` gör jämförelsen och releasekontrollen i Actions. Läget `vagpunkter` använder `hojd.py`
   med den valda metoden i stället för fetch_elev.py. geofeat.py och geofeat2.py körs fortfarande oförändrade.
+
+**Utfall, hojdprovet (13/10 18:13–18:20 UTC, körning 38444962715 på 290dccd; tryckt på Bengts ord).**
+- Releasekontrollen gav samma svar i Actions som lokalt: releasen är frisk.
+- Inga punkter föll på rutor som saknas i listan, alltså på öppet hav.
+
+| sätt (754 stationer, mot releasen) | p99 \|Δelev\| | p99 \|Δtpi1\| | p99 \|Δtpi3\| | elev − elev_ifs exakt 0 | tid |
+| :-- | --: | --: | --: | --: | --: |
+| **glo90-bilinjar** (vinnaren) | **12,7 m** | 13,2 m | 13,3 m | 0,7 % | 65 s |
+| glo90-narmast | 15,7 m | 15,2 m | 16,9 m | 0,8 % | 63 s |
+| glo30-bilinjar | 14,7 m | 15,2 m | 16,0 m | 0,7 % | 135 s |
+| glo30-3x3 | 13,9 m | 15,0 m | 15,1 m | 0,7 % | 133 s |
+| releasen (referens) | — | — | — | 95,9 % | — |
+
+**Läsningen.**
+- Vinnaren enligt regeln är **glo90-bilinjar**: median 1,3 och högst 20,7 m från releasens höjd.
+- Inget sätt når Open-Meteos värden exakt. Open-Meteo har en egen omsampling av sitt DEM.
+- **elev_diff flyttar sig.** I releasen är elev − elev_ifs exakt 0 vid 95,9 % av stationerna, eftersom båda är Open-Meteos höjd i
+  samma punkt. Med höjden ur Copernicus och elev_ifs ur Open-Meteo blir den det vid 0,7 % (median 1,4, p99 13,4 m). Det är ett läge
+  rättelsen nästan aldrig har sett.
+- Hur elev_ifs ska räknas vid vägpunkterna är därför en fråga i bedömningen §4.2, och vägpunkternas knapp väntar på svaret.
