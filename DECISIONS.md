@@ -11177,4 +11177,37 @@ kod 204 (pulsklockans GitHub-anrop), 35 tidsgränser och 2 med kod 500 (00:00 oc
 **Vad det inte gör.** Inget når appen, och inget som telefonerna läser ändras. Tidsgränsen hos pg_net (55 s) är inte funktionens:
 funktionen kan köra klart efter den, och då är raden en tidsgräns och inte ett fel i funktionen.
 
+**Ändrad före första körningen (13/10, DECISIONS #543).** Migrationen stoppades av behörighetsgranskningen innan den kördes i drift. Samma dag beslöt Bengt att alla jobb ska loggas. Därför skrevs sql/051 om: alla jobb loggas, och jobbet läses ur processnumret i stället för ett inskrivet namn.
+
 **Stomdokument:** SYS, FAV
+
+## #543 (13/10 2026) Alla schemalagda jobbs misslyckade anrop sparas, och jobbet läses ur processnumret
+
+**Beslut.** Bengt 13/10: *"logga alla jobb på samma sätt"*, efter #542. Det skälet han fick var att de två svaren med kod 500 i natten
+mot 13/10 (00:00 och 00:50 UTC) inte går att knyta till något jobb.
+
+**Hur.** `sql/051_anropsfel.sql` är omskriven innan den körts i drift:
+- Varje jobb som anropar en funktion skriver anropets id och sitt processnummer (`pg_backend_pid()`) i `public.anrop`.
+- Sopningen läser jobbets namn ur `cron.job_run_details`: samma `job_pid`, och den senaste körningen som startade före anropet.
+- Namnet står alltså inte i kommandot. Ett kommando som kopieras till ett nytt jobb (pulsklockan, `replace()` i sql/047) loggar därför
+  under rätt namn.
+- Varje ny form planeras med EXPLAIN innan något jobb ändras. Faller ett enda jobb, eller har något jobb en annan form, rullas allt
+  tillbaka, och felet namnger bara jobben.
+
+**Läst före bygget (DB-knappen, READ ONLY, 13/10).**
+- Alla 26 jobb som anropar en funktion har formen `SELECT net.http_post(...)` med ett anrop. De två andra är rena SQL-jobb.
+- Alla körs som `postgres`.
+- Den senaste timmen hade alla 92 körningar ett `job_pid`, och alla var olika.
+- Omskrivningen provkörd på alla jobb: 26 av 26 med rätt början och slut och resten orört (utom ett inledande blanksteg).
+
+**Vad som ändras i driften.**
+- Schemaläggarens kvitto för de 26 jobben blir `INSERT 0 1` i stället för `1 row`. Ingen kod läser kvittot; vakthunden läser
+  `status` (9d).
+- Faller en inskrivning faller hela satsen, och anropet skickas då inte. Vakthunden larmar om ingest-lives körning har status `failed`,
+  och de andra jobbens effekter vaktas som förut.
+- Tabellen får omkring 2 000 rader per dygn. De lyckade raderna tas bort var 30:e minut.
+
+**Alternativ som valdes bort.** (a) Jobbets namn i kommandot, som #542 först byggdes: ett kopierat kommando hade loggat under fel
+namn. (b) Jobbet gissat ur klockslaget: ingest-live går varje minut. (c) En utlösare på pg_net:s kö: tabellen ägs av tillägget.
+
+**Stomdokument:** SYS
