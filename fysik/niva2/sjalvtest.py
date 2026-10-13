@@ -9,7 +9,7 @@ import pandas as pd
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path[:0] = [HERE, os.path.dirname(HERE)]
 import common
-from physics import run, SIGMA
+from physics import run, SIGMA, DEFAULT
 from fysik_lw import run_lw
 from metnordic import load_mn, magnus_td, CM_PER_MM, FALT
 from kedja import veck, kalibrera, base_features_mn, state_features_mn, fit_oof, utdata
@@ -162,4 +162,23 @@ with tempfile.TemporaryDirectory() as d:
     h10 = karta[kor_[10]]
     k(np.nanmean(TS2[6][h10 + 6:h10 + 12] - TS[6][h10 + 6:h10 + 12]) > 0.5 and np.allclose(P2[6][h10 + 12:h10 + 18], P[6][h10 + 12:h10 + 18]),
       'prognosens luft 3 °C varmare i en körning höjer just den körningens yta, och nästa körning rörs inte')
-print('✓ självtest nivå 2: MET Nordic-läsaren (Magnus, snöfall, W/m², uppvärmning ur ECMWF), run_lw = physics.run utan långvåg, 70 särdrag med tre ersatta, kalibrering, rättelse, utdatafil; prognosläget: omstart ur sparat tillstånd, prognosfilen, bruset, skarven och rättelsen på prognosens särdrag')
+    # Väg B (DECISIONS #544): varje veck räknas bara med de andra fyra. Kalibreringen får indikatorn (veck == f) och läser då veck f;
+    # ändras veck 0:s mätningar ska veck 0:s skattningar stå helt still, i analysen och vid +6 h, medan de andra vecken rör sig.
+    import vagb
+    liten = dict(max_rows=4000, iters=15, lr=0.1, leaves=7, msl=20)
+    k(np.array_equal(vagb.kolumner({'a': np.ones((3, 4)), 'b': np.arange(4.0), 'c': 7}, np.array([1, 3]))['b'], np.array([1.0, 3.0])),
+      'väg B: kolumner kapar det som är per station och låter resten stå')
+    te0 = np.where(fold == 0)[0]
+    p0, kal0 = kalibrera(G, obs, (fold == 0).astype(int), dict(DEFAULT), maxfev=6)
+    k(kal0['test'] == common.gates(obs[:, te0], run_lw(vagb.kolumner(G, te0), p0)[0]), 'väg B: kalibreringen med indikatorn läser just veck 0')
+    P_an, P_6, TS_an, fold_v, par = vagb.arlig(meta, idx, G, obs, kor_, V, maxfev=25, konfig=liten)
+    k(np.array_equal(fold_v, fold) and np.all(np.isfinite(P_an[i0:])) and np.isfinite(P_6).any(axis=1).sum() >= 200, 'väg B: samma veck, analysen och +6 h har värden')
+    m6 = np.isfinite(P_6); dp6 = np.abs(P_6[m6] - P_an[m6])
+    k(np.mean(dp6 < 1e-3) > 0.99, f'väg B: omstarten för veckets stationer på "prognosen" = analysens skattning ({100 * np.mean(dp6 < 1e-3):.1f} % lika)')
+    obs_b = obs.copy(); f0 = fold == 0; obs_b[:, f0] = obs_b[:, f0] + 4.0 + rng.normal(0, 1, obs_b[:, f0].shape)   # veck 0 4 °C varmare
+    P_an_b, P_6_b, _, _, par_b = vagb.arlig(meta, idx, G, obs_b, kor_, V, maxfev=25, konfig=liten)
+    k(par[0] == par_b[0] and par[1] != par_b[1], 'väg B: veck 0:s parametrar står still när veck 0:s mätningar ändras, veck 1:s rör sig')
+    k(np.array_equal(P_an[:, f0], P_an_b[:, f0], equal_nan=True) and np.array_equal(P_6[:, f0], P_6_b[:, f0], equal_nan=True),
+      'väg B: veck 0:s skattningar står still när veck 0:s mätningar ändras (analysen och +6 h)')
+    k(not np.allclose(P_an[:, ~f0], P_an_b[:, ~f0], equal_nan=True), 'väg B: motprovet — de andra vecken rör sig, där är veck 0 träningsdata')
+print('✓ självtest nivå 2: MET Nordic-läsaren (Magnus, snöfall, W/m², uppvärmning ur ECMWF), run_lw = physics.run utan långvåg, 70 särdrag med tre ersatta, kalibrering, rättelse, utdatafil; prognosläget: omstart ur sparat tillstånd, prognosfilen, bruset, skarven och rättelsen på prognosens särdrag; väg B: varje veck bara med de andra fyra (veck 0 står still när dess mätningar ändras)')

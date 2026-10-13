@@ -11330,6 +11330,26 @@ vid +6 h hamnar under grind A:s 5 % bedöms som osannolikt.
 
 **Stomdokument:** KUV §5, BED §4.2
 
+**Axels godkännande och byggets detaljer (13/10, före knappen).**
+- Axel godkänner förväntan, via Bengt 13/10 (*"slå ihop 912 och Axel godkänner"*).
+- Alla fysikens parametrar tas ur litteraturvärdena (`physics.DEFAULT`), också de som inte kalibreras. Bland dem är `cloud_p` 2,0 i
+  stället för `params_v2`:s 0,3; den verkar bara när den uppmätta långvågen saknas (uppvärmningen på ECMWF).
+- Rättelsens urval dras med frö 0 för varje veck.
+- Omstarterna körs bara för veckets egna stationer, med veckets parametrar och modell, eftersom fysiken och särdragen räknas per
+  station.
+- Bara +6 h räknas, förregistreringens ledtid; +24 h räknas inte.
+- Den frysta kandidaten räknas inte om i samma jobb. Dess tal på samma population står i #490 (läsning 2, körning 38351107743), och
+  RÅ (7,51 %) är kontrollen att populationen är densamma. Det håller jobbet inom taket.
+- **Byggt:** `fysik/niva2/vagb.py` och `fysik/blandning/vagb_blandning.py` (nya filer; de frysta är orörda), flödets gren
+  `kuvos-blandning-vagb` och läsningen `scripts/matningar/kuvos-blandning-vagb-2026-10-13.ts`.
+- **Prövat:**
+  - `sjalvtest.py`: veck 0:s parametrar och skattningar står helt still, i analysen och vid +6 h, när veck 0:s mätningar höjs
+    4 °C. Veck 1:s parametrar och de andra veckens skattningar rör sig.
+  - Omstarterna för veckets stationer ger analysens skattning när prognosen är analysen själv.
+  - Motproven fälldes alla tre: kalibreringen på veck 0/2/4, rättelsen tränad på alla veck och blandningens val på alla veck.
+  - `vagb_blandning.py --sjalvtest` prövar blandningen och valet per veck.
+  - I jobbet skrivs ingenting om Axels par (0,5 och 80 km) inte ger replikans tal byte för byte.
+
 ## #545 (13/10 2026) Dokumentsynken för hand 12/10 räknas i serien om sju morgnar (kort #304)
 
 **Beslut.** Bengt 13/10: *"slå ihop 903 och 12/10 räknas"*. Frågan stod i bedömningen §4.2.

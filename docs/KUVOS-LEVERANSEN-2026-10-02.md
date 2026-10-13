@@ -301,6 +301,16 @@ sammanställning (`241101-250331.xlsx`, 9,8 kB):
 
 **Löftet:** resultatet delas med Trafikverket när kuvösens facit är läst.
 
+### 5g. Svaret på följdfrågan 13/10: åtgärderna går inte att få på finare nivå
+
+Mottagaren svarade 13/10: inrapporteringen av åtgärderna ger stora mängder data, och Trafikverket har jobb som sammanställer
+dem för internt bruk. Det vi bad om har de inget jobb för, och det går inte att ta fram i något rimligt format.
+- **Åtgärderna är därmed ingen facitkälla för kuvösen.** Kvar finns ytstatus och friktion ur leveransen (DECISIONS #540) och
+  väglaget och händelserna, som skickades vidare 12/10 (§5f).
+- **Frågan om vilka som fick punkterna om väglaget och händelserna besvarades inte.** Enligt KONTAKTREGELN (DECISIONS #538)
+  ställs den inte igen; svaret väntas i tråden.
+- Ett nej upprepas inte (#538). Ingen ny fråga om åtgärderna.
+
 ## 6. Vad det här inte är
 
 Ingen regel är körd och inget utfall är läst. Förregistreringen (DECISIONS #424, tilläggen #426 och #437) skrevs innan filen öppnades;
