@@ -11463,3 +11463,50 @@ en interpolation av felen mellan stationerna, och det är vad kriging hade gett.
 **Följd.** Prognoslagrets steg *Kriging* blir *ej*, och raden i kuvössidans kö (§9) stryks i dygnets synk.
 
 **Stomdokument:** KUV §9, BED §4.2
+
+## #549 (13/10 2026) Väg B varv 2 förregistrerat: blandningens rutnät utvidgat, och terrängen och trafiken i energibalansen (kort #321, #342)
+
+**Beslut.** Bengt 13/10: *"slå ihop 916 och kör c"*. Frågan stod i bedömningen §4.2. Väg B gav ärligt 5,12 % vid +6 h (#544), och
+blandningens L = 160 km låg vid rutnätets kant. Varv 2 görs före frysningen 31/10.
+
+**Två körningar i kuvösen**, båda med väg B:s ärliga procedur (#544: varje veck räknas bara med de andra fyra), i analysläget och vid
++6 h.
+1. **Bara rutnätet.** Fysiken som i varv 1. Blandningens vikt väljs ur W ∈ {0,1; 0,15; 0,2; 0,25; 0,3; 0,35; 0,5} × L ∈ {80; 120;
+   160; 240; 320; 480} km. Det är 42 par, och varv 1:s 0,25 · 160 och Axels 0,5 · 80 ingår.
+2. **Terrängen och trafiken i energibalansen** (kort #321), med samma rutnät:
+   - **Långvågen in:** L_in = svf · L_himmel + (1 − svf) · σ · T_luft⁴. Terrängen och träden runt vägen strålar med luftens
+     temperatur. svf är stationens himmelsfaktor ur `geofeat.csv` (16 riktningar ut till 1,5 km, Copernicus DEM, `fysik/geofeat.py`).
+   - **Kortvågen in:** SW_in = SW · (k_d · svf + (1 − k_d) · s). k_d är den diffusa andelen enligt Erbs ur klarhetsindex, alltså
+     strålningen mot solens strålning vid atmosfärens topp. s = 0 när solens höjd mitt i timmen ligger under `horizon_south`,
+     annars 1.
+   - **Trafiken:** q_trafik = q_traffic + q_trafik_ådt · log10(ÅDT / 1 000). ÅDT är stationens fordon per dygn ur vägdatalagret
+     (NVDB, `data/vagdata/stationer.json`, #301). q_trafik_ådt kalibreras med de tio, alltså elva parametrar, och startar i 0.
+   - **Broar** är inte med. Ingen station är kopplad till en bro i underlaget; de tas med väglagspunkterna (kort #321).
+   - Saknar en station ett värde blir svf 1 och horisonten 0, och utan ÅDT faller trafiktermen bort. Antalet redovisas.
+   - Byggs som nya filer, och de frysta rörs inte. Ett självtest visar att den nya energibalansen ger dagens yta exakt när svf är 1,
+     horisonten 0 och q_trafik_ådt 0.
+
+**Hur kandidaten väljs, bestämt före körningarna.** Den kandidat som fryses är körning 2 om dess ärliga tal vid +6 h ligger minst 0,05
+enheter under körning 1:s, annars körning 1. Varv 1 (5,12 %) är golvet: ligger båda över det fryses varv 1. Sedan räknas den valda
+proceduren om på alla stationer (#544 punkt 6) och förregistreras för vintern 2026/27 senast 31/10.
+
+**Förväntan.** Claudes utkast, som Axel godkänner eller ändrar före knappen. Måttet är grova fel > 2 °C på RÅ:s punkter.
+
+| | analys | +6 h |
+| :-- | --: | --: |
+| varv 1 (utfallet, #544) | 4,84 % | 5,12 % |
+| körning 1, rutnätet | 4,75–4,84 % | 5,02–5,12 % |
+| körning 2, terrängen och trafiken | 4,65–4,90 % | 4,90–5,15 % |
+
+Skälet till körning 1:s spann är att vikten låg vid kanten och att varv 1:s par var 0,1–0,2 enheter bättre än Axels; en längre L kan
+ge några hundradelar till. Körning 2 har ett bredare spann. Stationerna står där terrängen varierar lite (kort #321), så verkan vid
+stationerna blir liten. Trafiken förklarar däremot 23 % av stationernas särart (kuvössidan §5), och den finns i rättelsen redan som
+särdrag.
+
+**Hur det läses.** Ingen dom. RÅ ska ligga i 7,4–7,6 %, annars läses inget annat. Utfall utanför spannen läses med skälet först.
+Valregeln ovan gäller utan undantag.
+
+**Vad som inte görs nu.** Kort #321:s Verify kräver också att terrängen och trafiken räknas för alla 12 960 väglagspunkter och att
+mönstret prövas mot kallkartan (MODIS). Det är ett eget steg efter frysningen och hindrar inte den.
+
+**Stomdokument:** KUV §5, BED §4.2
