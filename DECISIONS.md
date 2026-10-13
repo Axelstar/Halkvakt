@@ -11367,3 +11367,28 @@ de två rekommendationerna motsade varandra.
 **Vad det inte gör.** Kortets Verify ändras inte, utom att 12/10 räknas. Republiceringen ur rutinen är fortfarande oprövad.
 
 **Stomdokument:** BED §4.2
+
+## #546 (13/10 2026) Dokumentsynkens steg 4 skärps: en lägesrad räknas inte som att handtexten stämmer
+
+**Beslut.** Bengt 13/10: *"ja skärp steg 4 och rätta systembilden nu"*, efter hans fråga *"uppdateras verkligen alla stomdokument
+med vad som görs varje dag"*.
+
+**Varför.** `stomvakten.ts --lage` 13/10 visade varningar som inte blivit text:
+- I Mätningarna stod #535, #537, #539 och #540 bara i skriptskrivna lägesrader.
+- I Systembilden nämndes #541–#543 inte alls.
+Morgonens synk samma dag skrev ändå *inget att rätta*, med skälet att dokumenten *"redan bär"* besluten i sina rader. De raderna
+skrivs av projektkartan.ts ur stegens bevis och säger inte att dokumentets text stämmer.
+
+**Ändringen.** CLAUDE.md, DOKUMENTSYNKEN steg 4:
+- En rad i ett skriptskrivet block (LÄGESRADER, Öppna kort) räknas inte som att handtexten stämmer.
+- Varje ⚠ blir antingen text i det avsnitt beslutets rad `**Stomdokument:**` namnger, eller en post i synkens STATUS-rad med
+  skälet: *#NN: ingen handtext, skälet*.
+- Rutinen (`trig_015zMNvnicaHT1wFNk4ZWdaH`) läser stegen ur CLAUDE.md på main, så dess instruktion ändras inte.
+
+**Samma varv.** Systembilden rättades för hand på Bengts ord: #535, #541–#543, prognosläget och väg B (#490, #544), och
+Trafikverkets svar 13/10. Resten tar morgondagens synk med den skärpta regeln.
+
+**Alternativ som valdes bort.** Att låta stomvakten läsa STATUS-posterna och tysta sina varningar: ett eget bygge, och ⚠ visar
+redan vad som ska läsas.
+
+**Stomdokument:** SYS
