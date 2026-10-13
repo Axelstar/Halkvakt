@@ -11392,3 +11392,45 @@ Trafikverkets svar 13/10. Resten tar morgondagens synk med den skärpta regeln.
 redan vad som ska läsas.
 
 **Stomdokument:** SYS
+
+## #547 (13/10 2026) Domen i mars för segmentprognosen gäller NIVÅ 2+BLANDNING som en ny fråga; RÅ blir kontroll och reserv
+
+**Beslut.** Bengt 13/10: *"1 ja"*. Frågan var: ska domen i mars för L4 gälla NIVÅ 2+BLANDNING, med RÅ som kontroll och reserv? Två
+spår ledde mot samma dom. Skuggan kör RÅ med spridningsgrinden (TROSKLAR-SKUGGAN §3, #324, #328), och förregistreringen #544 gäller
+kandidaten.
+
+**Hur, inom tröskeldokumentets §5** (dokumentet ändras bara genom en post från Bengt, och lättnad är utesluten när utfallet är sett):
+- Kandidaten döms som en **ny fråga**, i den form väg B fryser den och förregistreras senast 31/10 (#544).
+- Den döms mot samma trösklar i grind A–C, med samma spridningsgrind (X = 2,25 °C) och samma regel att tystnad på ett täckt segment
+  är en miss (#475, #477). Inget krav sänks.
+- Domfönstret börjar på förregistreringens dag, så bara data som ingen sett räknas. Det är så förslaget till regel L (#282, L2 och
+  L3) behandlar ett kandidatbyte.
+- RÅ:s dom fälls som förut och redovisas bredvid, som kontroll. Domslutet (a)–(c) gäller kandidaten. **Reserv** betyder: kan
+  kandidaten inte räknas för vintern (data saknas, eller frågan (a)/(b) i §4.2 ger ingen väg), fälls domslutet på RÅ som förut.
+  Det blir inte två chanser att klara grinden.
+- Texten står i TROSKLAR-SKUGGAN §3, efter spridningsgrinden.
+
+**Följder.**
+- **Höjden i terrängen (#96):** höjden förs inte in i `segment.ts`. Höjd och terräng är redan särdrag i kandidatens rättelse.
+  Måndagsserien och läsningarna 23/10 (#357) och 24/11 (#435) står kvar som kunskap om RÅ, kontrollen och reserven.
+- **Kort #270, val (b)** (grinden preciserad med RÅ+HÖJD) stryks: RÅ+HÖJD är inte längre kandidaten.
+- **Spridningsgrinden** gäller kandidaten oförändrad. En annan gräns för kandidaten vore en ny fråga och måste skrivas före 31/10.
+
+**Alternativ som valdes bort.** (a) Döma RÅ i mars och kandidaten först vintern 2027/28: ett år senare. (b) Döma båda och välja den
+som klarar: två chanser, alltså en lättnad.
+
+**Stomdokument:** SYS, KUV §5, BED §4.2
+
+## #548 (13/10 2026) Kriging läggs ned
+
+**Beslut.** Bengt 13/10: *"lägg ned kriging"*. Frågan stod sedan 9/10 i bedömningen §4.2 (rutnätsraden): ska kriging prövas ensam
+eller läggas ned, efter att kallkartan lagts åt sidan (#481, #496, #497)? Raden namngav Bengt och Axel. Bengt beslutade, och Axel
+får beskedet.
+
+**Varför.** NIVÅ 2+BLANDNING slår allt kuvösen kört: 5,02 % i analysläget och 5,24 % med en sex timmar gammal prognos, mot RÅ:s
+7,51 % och OFFSET:s 5,52 % (#490, läsning 2). Grannarnas fel i kandidaten, exp(−d/100 km) över åtta grannar med krympning, är redan
+en interpolation av felen mellan stationerna, och det är vad kriging hade gett.
+
+**Följd.** Prognoslagrets steg *Kriging* blir *ej*, och raden i kuvössidans kö (§9) stryks i dygnets synk.
+
+**Stomdokument:** KUV §9, BED §4.2

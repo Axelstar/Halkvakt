@@ -350,7 +350,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   DECISIONS-post före körning; läsdatum i posten; inga trösklar rörda.
   ✅ **VALT 2/10 (Bengt: *"ok vi kör ja på a, f och g"*):** **(a)** premissmätningen går varje måndag efter höjdprovet och läses en gång, **tisdag 24/11**, på en egen körning; måndagarnas utskrift är driftbevis, inget utfall; skriptet fryst som det står (DECISIONS #435) · **(f)** det finska utfallet är stöd för närbandet, inte dom; den finska mätningen körs samma dag som läsningen (#436) · **(g)** flaggmarginalen mäts i kuvösen på vintern 2024/25 med frysklassningens måttstock — K1 +1,0 °C, K2 0 · 0,5 · 1,0 °C, RÅ och RÅ+HÖJD, alla tre redovisas och ingen väljs; inskrivet i kuvösens förregistrering före filen (#437).
   📏 **Bevis för (a), 2/10:** `ci` grön på grenen (36968020846) och driftprov av måndagskörningen utan inputs, som pulsklockan startar den (36968196427): höjdprovet 56 s, premissmätningen 41 s, populationsläsningen 18 s, alla gröna. Bara stegen lästes, inte talen. Stomdokumenten republicerade samma varv: kuvösen v6, systembilden v15, mätningarna v15 (omnumrerade till #435–#437 samma dag).
-  ⏳ **Öppna val:** (b), (c), (d), (e) och (h). Claudes läsning 2/10, inte beslut: (b) tidigast efter 24/11 och då som ny fråga, eftersom kandidatbytet flyttar ett sett tal mot godkänt (kort #282) · (d) inte som ändrad spärr · (h) hämtas en gång i kuvösen (DECISIONS #424 steg 4) innan en löpande hämtning byggs. 🔑 Nästa datum: **24/11**, läsningen.
+  ⏳ **Öppna val:** ~~(b)~~ struket 13/10 (DECISIONS #547: kandidaten i mars är NIVÅ 2+BLANDNING, inte RÅ+HÖJD), (c), (d), (e) och (h). Claudes läsning 2/10, inte beslut: (b) tidigast efter 24/11 och då som ny fråga, eftersom kandidatbytet flyttar ett sett tal mot godkänt (kort #282) · (d) inte som ändrad spärr · (h) hämtas en gång i kuvösen (DECISIONS #424 steg 4) innan en löpande hämtning byggs. 🔑 Nästa datum: **24/11**, läsningen.
 - [ ] 🧫 **#232 KUVÖSEN — HELA SYSTEMET BAKÅTPRÖVAT PÅ VINTERN 2024/25** (Bengts idé 21/9, DECISIONS #292). Motorn och ALLA
   skuggregler i en gemensam testbädd, långt från appar och förare, körd mot en hel gången vinter — ett RIKTNINGSPROV: är vi på
   rätt väg, och vad tillför varje del ovanpå de andra? Svarar på kartans §7.3: *"Varje grind dömer sin del ENSAM"*.
@@ -1422,6 +1422,7 @@ står här finns inte. Kortregeln ersätter möten: allt som bestäms blir ett k
   Den hjälper bara nära ankaret (0–7 km: 2,58 → 2,31) och i 15–20 km (1,52 → 1,38). Offsetmodellen
   slår båda överallt (1,06 °C). **Rangordningen står — men "felkartan dömer" dömer nu emot sig själv,
   se grind A i #38b.** 751 av 761 stationer fick EU-DEM-höjd.
+  🛑 **13/10 (Bengt, DECISIONS #547):** domen i mars gäller kandidaten NIVÅ 2+BLANDNING, där höjd och terräng redan är särdrag i rättelsen; höjden förs inte in i `segment.ts`. Måndagsserien och läsningarna 23/10 (#357) och 24/11 (#435) står kvar som kunskap om RÅ, kontrollen och reserven.
 - [ ] 🌧️ **#42 Vattenplaningsvarningen** — ÄGARE: BENGT (issue #15, 1/9) — regnintensitet (VViS RainSum,
   ny ingestkolumn — vi lagrar idag bara regn ja/nej) × spårdjupslager (Trafikverkets
   vägytemätning via Lastkajen; licens/färskhet kollas först) × fartgrind ≥ ~70 km/h
