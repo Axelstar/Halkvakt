@@ -11705,3 +11705,54 @@ Kategorierna räcker för att se vad raderna är, och inget behöver läsas utan
 - (c) Körning 2: under marginalen mot båda.
 
 **Stomdokument:** KUV §5, BED §4.2
+
+## #553 (13/10 2026) Vägpunkternas fasta särdrag räknas med Axels frysta skript, först som reproduktion på stationerna (kort #303, #342)
+
+**Beslut.** Bengt 13/10: *"slå ihop 921 och 922 och börja med 1"*. Punkt 1 är det Claude föreslog efter Bengts fråga om kandidaten
+borde köras redan nu: rättelsens fasta särdrag för vägpunkterna. De behövs vare sig kandidaten räknas som uppspelning eller i drift.
+
+**Varför.**
+- Rättelsen i den frysta kandidaten läser ett 25-tal fasta särdrag per plats (`kedja.base_features_mn`):
+  - höjd och terräng: elev, tpi1/3, tpi2–20 km, dalens djup, svf, södra horisonten;
+  - skog, vatten och bebyggelse;
+  - ECMWF-cellens höjd;
+  - vägdata: ÅDT, andelen tunga fordon, funktionell klass, vinterväghållningsklass och Europaväg.
+- De finns bara för stationerna, i Axels indata-release. Kandidaten har därför aldrig räknats på en vägpunkt, och grind B och C döms på
+  vägsegment.
+- Kort #303 väntade på *"Axels underlag för kolumnerna (källa och proveniens)"*. Det är hans frysta skript i `fysik/` (#508).
+
+**Hur (bestämt före knappen).**
+1. **Reproduktion först.**
+   - Axels `fetch_elev.py`, `geofeat.py` och `geofeat2.py` körs oförändrade, med sha256 prövad mot `fysik/SHA256SUMS`, på
+     stationerna i indata-releasen.
+   - Resultatet jämförs kolumn för kolumn med releasens `elev.csv`, `geofeat.csv` och `geofeat2.csv`. Loggen visar andelen lika
+     (inom 1e-6), största skillnaden och om det saknade är lika. Den visar bara aggregat.
+   - Tiden per skript mäts, så att vägpunkternas körning kan delas rätt.
+   - Reproducerar en kolumn som rättelsen läser inte, körs inga vägpunkter förrän skälet är läst.
+2. **Sedan vägpunkterna.**
+   - Samma skript, oförändrade, på de 12 960 väglagspunkterna i `data/vagdata/vaglagspunkter.json`, i parallella delar.
+   - Resultatet blir en fil i `data/vagdata/` med källa och licens i `data/KALLOR.json` och spann i värdevakten för varje kolumn som
+     rättelsen läser. Det är öppna data: Copernicus DEM, ESA WorldCover, Meta/WRI:s trädhöjd, Open-Meteo och OSM:s broar.
+3. **ECMWF-cellens höjd** hämtas ur Open-Meteos arkiv med samma anrop som `fetch_ifs.py` (modell, avrundning, tio platser per
+   anrop), men för ett dygn och en variabel. `fetch_ifs.py` själv hämtar hela vintern i sju variabler, och för 12 960 punkter går det
+   över Open-Meteos fria tak. Reproduktionen jämför höjden med releasens `ifs/<sid>.csv`.
+4. **Vägdatan.**
+   - ÅDT, tunga fordon och funktionell klass finns redan per vägpunkt i vägdatalagret (#473).
+   - Vinterväghållningsklassen och Europaväg finns inte i det öppna API:et. De tas ur Lastkajen enligt kort #303 (3), eftersom en
+     förregistrerad mätning nu behöver dem, eller också redovisas luckan.
+   - Vid stationerna kommer vägdatan ur Axels `roadjoin.py` mot NVDB:s geopaket. Vägdatalagrets ÅDT korrelerar 0,861 med den där
+     (utfallet under #549). Skillnaden mellan källorna redovisas innan vägpunkternas fil används.
+- Byggt i `fysik/vagpunkter/vagpunkter.py` (punkterna som `stations.csv`, ECMWF-höjden, reproduktionens jämförelse och
+  sammanställningen, med självtest i ci) och `.github/workflows/vagpunkter-sardrag.yml` (knapp, läge `reproduktion` eller
+  `vagpunkter`).
+
+**Fynd i bygget.**
+- **21 id i väglagspunkterna förekommer två gånger**, på olika platser 1–46 m isär (median 21 m), till exempel `122005@30`. Det är
+  42 rader av 12 960.
+- Axels skript nycklar på `sid`, så nyckeln här är radnumret, och id, lon och lat följer med i filen.
+- Om skuggan eller lägesfilen nycklar på samma id är en egen fråga. Den läses innan vägpunkternas fil används.
+
+**Inte avgjort här.** Om kandidaten räknas som uppspelning eller i drift är fortfarande Axels fråga i §4.2. Claudes rekommendation är
+ändrad till (b), levande i skuggan; skälen står där.
+
+**Stomdokument:** KUV §5, BED §4.2, KAR §13.6
