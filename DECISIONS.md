@@ -11329,3 +11329,21 @@ vid +6 h hamnar under grind A:s 5 % bedöms som osannolikt.
 - (c) Frysa i dag som den är (väg A).
 
 **Stomdokument:** KUV §5, BED §4.2
+
+## #545 (13/10 2026) Dokumentsynken för hand 12/10 räknas i serien om sju morgnar (kort #304)
+
+**Beslut.** Bengt 13/10: *"slå ihop 903 och 12/10 räknas"*. Frågan stod i bedömningen §4.2.
+- Morgonrutinen föll 12/10 03:36:58 UTC på kontots användningstak (`USAGE_LIMIT_REACHED`; ingen gren, ingen PR).
+- En session gjorde synken för hand samma dag med samma steg (PR #893).
+- Den räknas som morgon 5 av 7.
+- 13/10 körde rutinen igen (PR #903), och det är morgon 6. Den sjunde är 14/10.
+
+**Varför.** Felet var kontots tak, inte rutinens steg, och dokumenten hölls i fas samma dag.
+
+**Alternativ som valdes bort.** Att serien börjar om 13/10, så som bedömningen rekommenderade 12/10: den prövar strängare att
+rutinen går av sig själv, men då blir serien klar tidigast 19/10. Claudes svar 13/10 rekommenderade i stället att räkna den;
+de två rekommendationerna motsade varandra.
+
+**Vad det inte gör.** Kortets Verify ändras inte, utom att 12/10 räknas. Republiceringen ur rutinen är fortfarande oprövad.
+
+**Stomdokument:** BED §4.2
