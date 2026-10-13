@@ -136,6 +136,16 @@ B-måtten. **Domen räknas med grinden, och tystnaden är en miss** (DECISIONS #
 signatur 7/10, DECISIONS #478): B1, B3 och C2 räknas på det grinden släpper fram; B2:s täckning är oförändrad (status ≥ 1 utan grinden), så halka där
 grinden tystade prognosen är en MISS. C1 och C3 som förut. Bara varv med loggad spridning räknas.
 
+**Kandidaten NIVÅ 2+BLANDNING** (13/10 2026, DECISIONS #547, Bengts rad enligt §5). Domen i mars gäller också fysikspårets kandidat:
+nivå 2 på MET Nordic, rättad, med grannarnas fel och blandad med RÅ, i den form väg B fryser den och förregistreras för vintern
+2026/27 senast 31/10 (DECISIONS #544).
+- Den döms som en **ny fråga** mot samma trösklar i grind A–C, med samma spridningsgrind (X = 2,25 °C) och samma regel att tystnad
+  på ett täckt segment är en miss (#475, #477). Inget krav sänks.
+- Domfönstret börjar på förregistreringens dag, så bara data som ingen sett räknas.
+- RÅ:s dom ovan fälls som förut och redovisas bredvid, som kontroll. Domslutet i §4 gäller kandidaten.
+- Kan kandidaten inte räknas för vintern fälls domslutet på RÅ som förut (reserven). Det blir inte två chanser att klara grinden.
+- Hur kandidaten räknas under vintern (uppspelning efter vintern eller i drift) är Axels fråga i bedömningen §4.2.
+
 ### Grind B — skuggdriften (hela vintern, dom i mars)
 
 | # | Mått | Tröskel |
