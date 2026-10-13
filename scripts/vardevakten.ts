@@ -75,6 +75,16 @@ export const SPANN: Record<string, [number, number, string]> = {
   // Horisontvinkeln börjar på 0 i geofeat.py (en lägre terräng räknas som ingen skymning), så golvet är 0 och inte negativt.
   svf: [0, 1, "himmelsfaktor, medel av cos² av horisontvinkeln i 16 riktningar"],
   horizon_south: [0, 90, "° högsta horisontvinkel mot sydost–sydväst (riktning 6–10 av 16)"],
+  // Rättelsens övriga fasta särdrag vid väglagspunkterna (DECISIONS #553, data/vagdata/vaglagspunkter-sardrag.json): höjd och
+  // terräng ur Copernicus DEM (fysik/vagpunkter/hojd.py, geofeat2.py), skog, trädhöjd, vatten och bebyggelse ur ESA WorldCover och
+  // Meta/WRI (geofeat.py). Fysikens gränser, inte vinterns; vdepth är högsta punkten inom radien minus platsen och kan inte bli negativ.
+  elev: [-50, 2200, "m ö.h., höjden i platsen"], elev_ifs: [-50, 2200, "m ö.h., ECMWF-cellens höjd (= elev vid väglagspunkterna, #553)"],
+  tpi1: [-1500, 1500, "m, platsen minus ringen på 1 km"], tpi3: [-1500, 1500, "m, platsen minus ringen på 3 km"],
+  tpi2km: [-1500, 1500, "m, platsen minus medlet inom 2 km"], tpi5km: [-1500, 1500, "m, platsen minus medlet inom 5 km"],
+  tpi10km: [-1500, 1500, "m, platsen minus medlet inom 10 km"], tpi20km: [-1500, 1500, "m, platsen minus medlet inom 20 km"],
+  vdepth5km: [0, 2200, "m, högsta inom 5 km minus platsen"], vdepth10km: [0, 2200, "m, högsta inom 10 km minus platsen"],
+  tree100: [0, 1, "andel träd inom 100 m (WorldCover)"], water1000: [0, 1, "andel vatten inom 1 km (WorldCover)"],
+  built300: [0, 1, "andel bebyggelse inom 300 m (WorldCover)"], chm30: [0, 60, "m, trädens medelhöjd inom 30 m (Meta/WRI)"],
   // MET Nordic Analysis (MET Norway, 1 km, timvis; releasen kuvos-metnordic-2024-25, DECISIONS #480). Läst 7/10 över hela
   // vintern: luft −36,0…+18,1 °C, fukt 0,28–1, vind 0,01–21,5 m/s, moln 0–1, nederbörd 0–13,7 mm/h, långvåg 525 000–1 346 000
   // J/m² per timme, kortvåg −222…2 257 000 J/m² per timme. Kortvågens små negativa värden (30 541 timmar) är beräkningsbrus.

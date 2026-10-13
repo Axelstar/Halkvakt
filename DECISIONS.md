@@ -11838,3 +11838,17 @@ mot `SHA256SUMS`.
 - Reproduktionen behåller Open-Meteos elev_ifs, som är det den jämför.
 - Knappen: `lage` = vagpunkter, `delar` = 12, `hojdmetod` = glo90-bilinjar, på Bengts ord. Därefter checkas filen in i
   `data/vagdata/` med källa och licens och med spann i värdevakten.
+
+**Utfall, vägpunkterna (13/10 18:37–18:43 UTC, körning 38448230889 på 0352a75; tryckt på Bengts ord).**
+- Alla tolv delar och sammanställningen var gröna. Varje del tog 4–5 minuter: höjden 19–32 s, geofeat.py 135–219 s och geofeat2.py
+  40–60 s för 1 080 punkter.
+- **12 960 platser och inget saknas i någon av de 16 kolumnerna.** Inga punkter föll på öppet hav, och 42 rader bär de 21 id som
+  förekommer två gånger.
+- Filen är `data/vagdata/vaglagspunkter-sardrag.json`, med proveniens i huvudet, källa och licens i `data/KALLOR.json` och varje
+  kolumn inom värdevaktens nya spann. ci prövar spannen.
+- Artefaktens CSV har sha256 `a9673b5e57deef5fd91b16c4492a8d6fdece10208da947d407958c830c34a814` och står i huvudet.
+- **Vägpunkterna sträcker sig utanför stationernas spann.** Det gäller 692 av 12 960 platser
+  (5.3 %) i minst en kolumn: chm30 599, tpi3 40, vdepth10km 25, svf 22, tpi5km 20, tpi1 13, tpi10km 8, vdepth5km 8, water1000 5, horizon_south 4, elev 1, tpi2km 1, elev_ifs 1.
+  - Nästan allt är trädhöjden: vägar genom skog har högre träd intill sig (median 1,2 m, högst 21 m) än någon station (högst 10,5 m).
+  - En trädmodell sträcker sig inte ut över det den sett. Där håller rättelsen värdet vid kanten, och det redovisas när kandidaten
+    räknas på vägpunkterna.

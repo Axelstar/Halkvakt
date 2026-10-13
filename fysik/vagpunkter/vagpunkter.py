@@ -126,6 +126,42 @@ def sammanstall(delar, ut, punkter=PUNKTER):
     return len(tab), hashlib.sha256(open(ut, 'rb').read()).hexdigest(), saknas, int(p.id.duplicated(keep=False).sum())
 
 
+KOLUMNER = [k for f in FILER for k in RATTELSEN[f]]
+
+
+def spann(namn, fil=f'{ROT}/scripts/vardevakten.ts'):
+    """The declared span of a field in scripts/vardevakten.ts (terrang.spann's rule): a field without one may not carry a measurement."""
+    import re
+    m = re.search(rf'\b{namn}: \[(-?[\d.e]+), (-?[\d.e]+),', open(fil, encoding='utf-8').read())
+    if not m: raise ValueError(f'{namn}: OBESIKTIGAT — inget spann i scripts/vardevakten.ts (VÄRDEVAKTEN)')
+    return float(m.group(1)), float(m.group(2))
+
+
+def prova(rader):
+    """Every correction column of every row inside its span in the value guard, nothing missing. Returns the errors."""
+    df = pd.DataFrame(rader); fel = []
+    for k in KOLUMNER:
+        lo, hi = spann(k); v = pd.to_numeric(df[k], errors='coerce')
+        if v.isna().any(): fel.append(f'{k}: {int(v.isna().sum())} saknas')
+        if ((v < lo) | (v > hi)).any(): fel.append(f'{k}: {int(((v < lo) | (v > hi)).sum())} utanför [{lo:g}, {hi:g}]')
+    return fel
+
+
+def paketera(csv, ut, huvud):
+    """The joined table as the road data layer's other files are written: {"huvud": provenance, "rader": [...]}, checked against the spans."""
+    tab = pd.read_csv(csv, dtype={'sid': str, 'id': str})
+    rader = [{k: (r[k] if k in ('sid', 'id') else float(r[k])) for k in ['sid', 'id', 'lon', 'lat'] + KOLUMNER} for _, r in tab.iterrows()]
+    fel = prova(rader)
+    if fel: raise ValueError('utanför värdevaktens spann: ' + '; '.join(fel))
+    huvud = dict(huvud, platser=len(rader), kolumner=KOLUMNER, csv_sha256=hashlib.sha256(open(csv, 'rb').read()).hexdigest())
+    tmp = f'{ut}.tmp'
+    with open(tmp, 'w', encoding='utf-8', newline='\n') as fh:
+        fh.write('{"huvud": ' + json.dumps(huvud, ensure_ascii=False) + ',\n "rader": [\n')
+        fh.write(',\n'.join(json.dumps(r, ensure_ascii=False) for r in rader) + '\n]}\n')
+    os.replace(tmp, ut)
+    return len(rader)
+
+
 def sjalvtest():
     fel = []
     with tempfile.TemporaryDirectory() as d:
@@ -168,10 +204,22 @@ def sjalvtest():
         skriv(f'{d}/delar/1', range(2, 6))
         try: sammanstall(f'{d}/delar', f'{d}/ut2.csv', f'{d}/p.json'); fel.append('samma punkt i två delar fälls')
         except ValueError: pass
+        skriv(f'{d}/delar/1', range(3, 6))
+        sammanstall(f'{d}/delar', f'{d}/ut3.csv', f'{d}/p.json')
+        n_p = paketera(f'{d}/ut3.csv', f'{d}/ut3.json', {'kalla': 'prov'})
+        j = json.load(open(f'{d}/ut3.json', encoding='utf-8'))
+        if n_p != 6 or j['huvud']['platser'] != 6 or j['huvud']['kolumner'] != KOLUMNER or len(j['huvud']['csv_sha256']) != 64 \
+                or j['rader'][2]['id'] != '2@0' or prova(j['rader']): fel.append(f'paketeringen: {j["huvud"]}')
+        t3 = pd.read_csv(f'{d}/ut3.csv', dtype={'sid': str, 'id': str}); t3.loc[1, 'svf'] = 1.2; t3.to_csv(f'{d}/ut4.csv', index=False)
+        try: paketera(f'{d}/ut4.csv', f'{d}/ut4.json', {}); fel.append('svf 1,2 utanför värdevaktens spann fälls')
+        except ValueError as e:
+            if 'svf: 1 utanför' not in str(e): fel.append(f'felet nämner kolumnen: {e}')
+        if os.path.exists(f'{d}/ut4.json'): fel.append('en fälld paketering skriver ingen fil')
     for f in fel: print('✗', f)
     if fel: sys.exit(1)
     print('✓ självtest: delarna täcker varje punkt en gång (nyckeln är radnumret, och dubbletter av id räknas), elev-ifs frågar som fetch_ifs.py och läser höjden, reproduktionen fäller en '
-          'ändrad kolumn som rättelsen läser, sammanställningen tar rättelsens kolumner och räknar det som saknas, och dubbletter fälls')
+          'ändrad kolumn som rättelsen läser, sammanställningen tar rättelsens kolumner och räknar det som saknas, dubbletter fälls, '
+          'och paketeringen skriver huvud och rader och fäller ett värde utanför värdevaktens spann utan att skriva')
 
 
 if __name__ == '__main__':
@@ -184,7 +232,16 @@ if __name__ == '__main__':
     a5 = sp.add_parser('elev-ifs-ur-hojd'); a5.add_argument('--elev', required=True); a5.add_argument('--ut', required=True)
     a3 = sp.add_parser('jamfor'); a3.add_argument('--ny', required=True); a3.add_argument('--frusen', required=True)
     a4 = sp.add_parser('sammanstall'); a4.add_argument('--delar', required=True); a4.add_argument('--ut', required=True)
+    a6 = sp.add_parser('paketera'); a6.add_argument('--csv', required=True); a6.add_argument('--ut', required=True); a6.add_argument('--huvud', required=True)
+    a7 = sp.add_parser('prova'); a7.add_argument('--fil', required=True)
     a = ap.parse_args()
+    if a.cmd == 'paketera':
+        print(f'{a.ut}: {paketera(a.csv, a.ut, json.load(open(a.huvud, encoding="utf-8")))} platser, alla inom värdevaktens spann'); sys.exit(0)
+    if a.cmd == 'prova':
+        fel = prova(json.load(open(a.fil, encoding='utf-8'))['rader'])
+        for f in fel: print('✗', f)
+        if fel: sys.exit(1)
+        print(f'✓ {a.fil}: varje kolumn som rättelsen läser inom värdevaktens spann, inget saknas'); sys.exit(0)
     if a.cmd == 'stationer':
         d = getattr(a, 'del')
         print(f'stations.csv: {stationer(PUNKTER, a.ut, d, a.delar)} punkter (del {d} av {a.delar})')
