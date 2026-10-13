@@ -230,6 +230,28 @@ with tempfile.TemporaryDirectory() as d:
     k(d_hor < -0.01, f'horisonten 90°: bara den diffusa delen når vägen och ytan blir kallare om dagen ({d_hor:.3f} °C)')
     k(all(d_q[j] > 0 for j in range(NS) if Gn['adt'][j] > 0.3) and all(d_q[j] < 0 for j in range(NS) if Gn['adt'][j] < -0.3)
       and np.array_equal(Ts_q[:, [3, 10]], Ts_l[:, [3, 10]]), 'trafiken: mer än 1 000 fordon värmer, färre kyler, 1 000 och okänd ÅDT rör inte ytan')
+    # Den frysta kandidaten (#544 punkt 6): proceduren på alla stationer, modellen sparad och omläst, manifestet. Fysiken 'lw' här,
+    # innan kopplingen nedan binder om kedjans fysik i processen; 'terrang' efter den.
+    import frysta, pickle, hashlib
+    vf = f'{d}/val.json'
+    json.dump({'fysik': 'lw', 'W': 0.25, 'L_km': 160, 'korning': 1, 'beslut': '#999'}, open(vf, 'w'))
+    for fel_val in [{'fysik': 'annan'}, {'fysik': 'lw', 'W': 0.4, 'L_km': 160}, {'fysik': 'lw', 'W': 0.25, 'L_km': 160}]:
+        json.dump(fel_val, open(f'{d}/fel.json', 'w')); fel = ''
+        try: frysta.las_val(f'{d}/fel.json')
+        except ValueError as e: fel = str(e)
+        k(fel.startswith('valfilen'), f'valfilen fäller {fel_val}: {fel}')
+    kand = frysta.frys(meta, idx, G, obs, frysta.las_val(vf), 12, f'{d}/fr', konfig=liten)
+    m_fr = pickle.load(open(f'{d}/fr/frysta/modell.pkl', 'rb'))
+    k(kand['filer'][0]['sha256'] == hashlib.sha256(open(f'{d}/fr/frysta/modell.pkl', 'rb').read()).hexdigest()
+      and json.load(open(f'{d}/fr/frysta/kandidat.json', encoding='utf-8')) == json.loads(json.dumps(kand)), 'frysta: manifestet bär modellens sha256 och skrivs som det returneras')
+    k(set(kand['parametrar']) == set(DEFAULT) and kand['kalibrering']['utvarderingar'] >= 12 and kand['sardrag'] == names
+      and kand['stationer'] == NS and kand['par'] == {'W': 0.25, 'L_km': 160}, 'frysta: tio parametrar kalibrerade på alla, samma 70 särdrag, paret ur valfilen')
+    p_fr = {kk: kand['parametrar'][kk] for kk in kand['parametrar']}
+    Ts_fr = run_lw(G, p_fr)[0]
+    k(kand['i_urvalet']['fysik'] == {kk: common.gates(obs, Ts_fr)[kk] for kk in ('n', 'A1', 'A2')}, 'frysta: parametrarna i manifestet ger fysikens tal i manifestet')
+    k(kand['kalibrering']['n'] == common.gates(obs, Ts_fr)['n'], f"frysta: kalibrerat på alla stationers punkter ({kand['kalibrering']['n']})")
+    k(m_fr.n_features_in_ == len(names) and kand['i_urvalet']['fysik_rattelse']['A2'] < kand['i_urvalet']['fysik']['A2'],
+      'frysta: rättelsen läser 70 särdrag och minskar felet där den tränades')
     # Kopplingen: körning 2 är vagb.arlig med run_terrang i kalibreringen, analysen och omstarten, och elva parametrar.
     import kedja, vagb_terrang as vt
     vt.koppla()
@@ -246,4 +268,13 @@ with tempfile.TemporaryDirectory() as d:
     P_an_tb, P_6_tb, _, _, _ = vagb.arlig(meta, idx, Gs, obs_b, kor_, V, maxfev=14, konfig=liten)
     k(np.array_equal(P_an_t[:, f0], P_an_tb[:, f0], equal_nan=True) and np.array_equal(P_6_t[:, f0], P_6_tb[:, f0], equal_nan=True)
       and not np.allclose(P_an_t[:, ~f0], P_an_tb[:, ~f0], equal_nan=True), 'körning 2: veck 0 står still när veck 0:s mätningar ändras, de andra rör sig')
-print('✓ självtest nivå 2: MET Nordic-läsaren (Magnus, snöfall, W/m², uppvärmning ur ECMWF), run_lw = physics.run utan långvåg, 70 särdrag med tre ersatta, kalibrering, rättelse, utdatafil; prognosläget: omstart ur sparat tillstånd, prognosfilen, bruset, skarven och rättelsen på prognosens särdrag; väg B: varje veck bara med de andra fyra (veck 0 står still när dess mätningar ändras); körning 2 (#549): neutral terräng = run_lw byte för byte, terrängen och trafiken åt rätt håll, solen, Erbs, tidsprovet, värdevaktens spann, kopplingen och veckärligheten')
+    json.dump({'fysik': 'terrang', 'W': 0.15, 'L_km': 480, 'korning': 2, 'beslut': '#999'}, open(vf, 'w'))
+    kand_t = frysta.frys(meta, idx, Gs, obs, frysta.las_val(vf), 14, f'{d}/frt', konfig=liten)
+    k('q_trafik_adt' in kand_t['parametrar'] and kand_t['fysik'] == 'terrang' and kand_t['par'] == {'W': 0.15, 'L_km': 480}
+      and kand_t['i_urvalet']['fysik'] == {kk: common.gates(obs, tr.run_terrang(Gs, kand_t['parametrar'])[0])[kk] for kk in ('n', 'A1', 'A2')},
+      'frysta med terrängen: elva parametrar, och de ger fysikens tal i manifestet med run_terrang')
+    fel = ''
+    try: frysta.frys(meta, idx, G, obs, dict(frysta.las_val(vf), fysik='lw'), 12, f'{d}/frx', konfig=liten)
+    except RuntimeError as e: fel = str(e)
+    k('kopplad till en annan fysik' in fel, "frysta: fysiken 'lw' vägrar i en process där kedjan kopplats till terrängen")
+print('✓ självtest nivå 2: MET Nordic-läsaren (Magnus, snöfall, W/m², uppvärmning ur ECMWF), run_lw = physics.run utan långvåg, 70 särdrag med tre ersatta, kalibrering, rättelse, utdatafil; prognosläget: omstart ur sparat tillstånd, prognosfilen, bruset, skarven och rättelsen på prognosens särdrag; väg B: varje veck bara med de andra fyra (veck 0 står still när dess mätningar ändras); körning 2 (#549): neutral terräng = run_lw byte för byte, terrängen och trafiken åt rätt håll, solen, Erbs, tidsprovet, värdevaktens spann, kopplingen och veckärligheten; den frysta kandidaten (alla stationer, modellen omläst, manifestet, valfilen)')
