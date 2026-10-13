@@ -11350,6 +11350,35 @@ vid +6 h hamnar under grind A:s 5 % bedöms som osannolikt.
   - `vagb_blandning.py --sjalvtest` prövar blandningen och valet per veck.
   - I jobbet skrivs ingenting om Axels par (0,5 och 80 km) inte ger replikans tal byte för byte.
 
+**Utfall (13/10 08:18–09:48 UTC, körning 38368369876 på a6245a3; tryckt på Bengts ord; jobbet 90 min).**
+- Kalibreringen gick sina 120 steg i varje veck, med fysiken ensam 12,8–21,4 % grova fel i vecket.
+- Axels par gav replikans tal byte för byte i båda lägena.
+- Paret som valdes på de andra fyra vecken blev W 0,25 · L 160 km i nio av tio fall och W 0,25 · L 80 km i ett (veck 4, analysen).
+  Valt på alla veck blev det W 0,25 · L 160 km.
+- 4 352 575 gemensamma punkter.
+
+| grova fel > 2 °C på RÅ:s punkter | ärlig | fryst (#490, läsning 2) | förväntan |
+| :-- | --: | --: | :-- |
+| RÅ (kontroll) | 7,51 % | 7,51 % | 7,4–7,6 ✓ |
+| NIVÅ 2 utan grannar, analys | 6,06 % | 6,09 % | — |
+| NIVÅ 2+BLANDNING, analys | 4,84 % | 5,02 % | 5,05–5,45 (bättre än spannet) |
+| NIVÅ 2+BLANDNING, +6 h | 5,12 % | 5,24 % | 5,25–5,70 (bättre än spannet) |
+| — banden 0–7 · 7–15 · 15–20 · > 20 km, +6 h | 3,62 · 3,59 · 4,62 · 9,48 | 3,82 · 3,67 · 4,83 · 9,55 | — |
+| — norr · söder · vägt med trafik, +6 h | 10,29 · 3,03 · 3,5 | 10,31 · 3,19 · 3,6 | — |
+| frysflaggan K2 = 1 °C, +6 h | 0,8 % farliga fel, 99,0 % rätt klass, 81,7 % täckning | 0,8 %, 99,0 %, 81,7 % | K-A:s måttstock ✓ |
+
+**Läsningen.** Ingen dom.
+- Kontrollen höll (RÅ 7,51 %), så resten läses.
+- **Talen hamnade utanför förväntan, åt det bättre hållet, och skälet läses först.** Läckan från kalibreringen var försumbar: nivå
+  2 utan grannar ger 6,06 % ärligt mot 6,09 % fryst. Förbättringen kommer från blandningens vikt. W 0,25 valdes i alla fem vecken i
+  stället för Axels 0,5, och på träningsvecken var paret 0,1–0,2 enheter bättre än Axels. Förväntan byggde på att läckan skulle dra
+  uppåt, och det gjorde den inte.
+- **L = 160 km är rutnätets ytterkant** och valdes i nio av tio fall. Det bästa värdet kan ligga längre bort.
+- **+6 h på 5,12 % ligger i förregistreringens mellanband (5,0–5,7 %).** Bengt väljer med talen i hand mellan att förregistrera och
+  ett varv till (bedömningen §4.2).
+- Den frysta kandidaten för 2026/27 är proceduren räknad om på alla stationer (punkt 6): vikten W 0,25 · L 160 km och fysiken
+  kalibrerad på alla veck. Det kräver en körning till före 31/10.
+
 ## #545 (13/10 2026) Dokumentsynken för hand 12/10 räknas i serien om sju morgnar (kort #304)
 
 **Beslut.** Bengt 13/10: *"slå ihop 903 och 12/10 räknas"*. Frågan stod i bedömningen §4.2.
