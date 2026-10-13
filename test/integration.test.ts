@@ -1328,3 +1328,41 @@ test("kuvösens översättning: lokaltid till UTC, platshållare till NULL, kode
     await pool.end();
   }
 });
+
+// DECISIONS #542 (sql/051): favoritprovets misslyckade anrop sparas. CI:s PostGIS saknar pg_cron och pg_net, så filen skapar bara
+// tabellen och sopningen; net._http_response spelas här av en egen tabell med pg_net:s kolumner. Lyckat svar bort, fel 500 och
+// tidsgräns sparade med svaret, ett anrop utan svar efter sju timmar sparat som det, ett färskt utan svar orört, äldre än 30 dygn bort.
+test("#542 anropsfelen: lyckade bort, misslyckade sparade med svaret, omkörningen ändrar inget", { skip: !url }, async () => {
+  const { default: pg } = await import("pg");
+  const { readFileSync } = await import("node:fs");
+  const pool = new pg.Pool({ connectionString: url, max: 1 });
+  const harPgNet = (await pool.query("SELECT 1 FROM pg_extension WHERE extname = 'pg_net'")).rowCount;
+  try {
+    if (harPgNet) return;   // en riktig pg_net rörs inte
+    const sql = readFileSync(new URL("../sql/051_anropsfel.sql", import.meta.url), "utf8");
+    await pool.query(sql);
+    await pool.query(sql);   // idempotent
+    await pool.query(`CREATE SCHEMA IF NOT EXISTS net; CREATE TABLE net._http_response (id bigint, status_code integer, content_type text,
+      headers jsonb, content text, timed_out boolean, error_msg text, created timestamptz NOT NULL DEFAULT now())`);
+    await pool.query(`INSERT INTO net._http_response (id, status_code, content, timed_out, error_msg) VALUES
+      (9001, 200, '{"ok":true}', false, null), (9002, 500, '{"ok":false,"error":"TypeError: x","ms":{"hamtning":812}}', false, null),
+      (9003, null, null, true, 'Timeout of 55000 ms reached.')`);
+    await pool.query(`INSERT INTO public.anrop (id, jobb, t) VALUES (9001, 'prov', now()), (9002, 'prov', now()), (9003, 'prov', now()),
+      (9004, 'prov', now() - interval '8 hours'), (9005, 'prov', now() - interval '1 hour')`);
+    await pool.query(`INSERT INTO public.anrop (id, jobb, t, klar) VALUES (9006, 'prov', now() - interval '31 days', true)`);
+    const sopa = async () => (await pool.query("SELECT public.anropsfel_sopa() AS n")).rows[0].n;
+    assert.equal(await sopa(), 3, "tre sparade: fel 500, tidsgränsen och anropet utan svar");
+    const rader = async () => (await pool.query(`SELECT id::int, klar, status_code, timed_out, fel, svar FROM public.anrop WHERE jobb = 'prov' ORDER BY id`)).rows;
+    const r = await rader();
+    assert.deepEqual(r.map((x) => x.id), [9002, 9003, 9004, 9005], "det lyckade och det 31 dygn gamla är borta");
+    assert.equal(r[0].status_code, 500); assert.match(r[0].svar, /TypeError: x/, "svaret sparat");
+    assert.equal(r[1].timed_out, true); assert.match(r[1].fel, /Timeout of 55000/, "tidsgränsen sparad");
+    assert.equal(r[2].klar, true); assert.match(r[2].fel, /inget svar/, "utan svar efter sju timmar");
+    assert.equal(r[3].klar, false, "ett färskt anrop utan svar väntar");
+    assert.equal(await sopa(), 3, "omkörningen ändrar inget");
+    assert.deepEqual(await rader(), r, "samma rader efter omkörningen");
+  } finally {
+    if (!harPgNet) { await pool.query("DROP SCHEMA IF EXISTS net CASCADE"); await pool.query("DELETE FROM public.anrop WHERE jobb = 'prov'").catch(() => {}); }
+    await pool.end();
+  }
+});
