@@ -70,6 +70,11 @@ export const SPANN: Record<string, [number, number, string]> = {
   adt_lastbilar: [0, 50000, "tunga fordon per årsmedeldygn"],
   adt_latta_22_06: [0, 50000, "lätta fordon per årsmedeldygn kl. 22–06"],
   adt_matar: [1990, 2030, "mätår för ÅDT (ur Mätårsperiod ÅÅÅÅMM)"],
+  // Terrängen vid stationen (Axels fysik/geofeat.py: 16 riktningar ut till 1,5 km i Copernicus DEM; geofeat.csv i indata-releasen).
+  // Deklarerade 13/10 innan körning 2 (DECISIONS #549) låter dem bära energibalansen; terrang.py läser spannen härifrån och fäller.
+  // Horisontvinkeln börjar på 0 i geofeat.py (en lägre terräng räknas som ingen skymning), så golvet är 0 och inte negativt.
+  svf: [0, 1, "himmelsfaktor, medel av cos² av horisontvinkeln i 16 riktningar"],
+  horizon_south: [0, 90, "° högsta horisontvinkel mot sydost–sydväst (riktning 6–10 av 16)"],
   // MET Nordic Analysis (MET Norway, 1 km, timvis; releasen kuvos-metnordic-2024-25, DECISIONS #480). Läst 7/10 över hela
   // vintern: luft −36,0…+18,1 °C, fukt 0,28–1, vind 0,01–21,5 m/s, moln 0–1, nederbörd 0–13,7 mm/h, långvåg 525 000–1 346 000
   // J/m² per timme, kortvåg −222…2 257 000 J/m² per timme. Kortvågens små negativa värden (30 541 timmar) är beräkningsbrus.

@@ -8,7 +8,9 @@ stations get that pair's blend. Before anything is written, Axel's pair (0.5, 80
 Out as grannar_blandning.py writes it: NIVÅ 2 ÄRLIG, +GRANNAR, +BLANDNING in the FYSIK file's form and manifest.json. The files carry
 the neighbours' measured surface and never leave the job (DECISIONS #506, #516); the log carries aggregates only.
   cd /home/claude/fys && python3 blandning/vagb_blandning.py --oof <oof_vagb_analys.npy> --veck <veck_vagb.json> --ut <dir>
-         [--lage 'prognos +6 h' --kod prognos6 --lagg-till]
+         [--lage 'prognos +6 h' --kod prognos6 --lagg-till] [--rutnat varv2 --namn 'NIVÅ 2 TERRÄNG ÄRLIG' --fil niva2-terrang]
+Varv 2 (DECISIONS #549): --rutnat varv2 chooses from W ∈ {0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.5} × L ∈ {80, 120, 160, 240, 320, 480} km
+(42 pairs, Axel's and varv 1's among them) and prints the share on all folds for every pair; without it the grid is varv 1's 15.
   python3 fysik/blandning/vagb_blandning.py --sjalvtest          synthetic data only; runs in ci.yml
 """
 import argparse, hashlib, json, os, runpy, shutil, sys, tempfile
@@ -20,6 +22,8 @@ from grannar_blandning import manifest, D
 
 GRID = [(w, l) for w in (0.0, 0.25, 0.5, 0.75, 1.0) for l in (40.0, 80.0, 160.0)]
 AXEL = (0.5, 80.0)
+GRID2 = [(w, l) for w in (0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.5) for l in (80.0, 120.0, 160.0, 240.0, 320.0, 480.0)]
+VARV1 = (0.25, 160.0)                  # the pair varv 1 chose on all folds (#544)
 
 
 def blanda(RA, PG, ANK, w, l):
@@ -35,18 +39,27 @@ def grova(M, P, ANK, cols):
     return float((np.abs(p[ok] - m[ok]) > 2).mean()) if ok.any() else float('nan')
 
 
-def valj(M, RA, PG, ANK, kolveck):
+def valj(M, RA, PG, ANK, kolveck, grid=GRID):
     """For each fold f the grid pair with the fewest gross errors on the other folds' stations. Returns {f: pair}, {f: {pair: share}}
     and the pair chosen on all folds (the frozen candidate's weight, #544 point 6)."""
-    kand = {par: blanda(RA, PG, ANK, *par) for par in GRID}
+    kand = {par: blanda(RA, PG, ANK, *par) for par in grid}
     val, tab = {}, {}
     for f in range(5):
         tr = np.where((kolveck >= 0) & (kolveck != f))[0]
         tab[f] = {par: grova(M, P, ANK, tr) for par, P in kand.items()}
-        val[f] = min(GRID, key=lambda par: tab[f][par])
+        val[f] = min(grid, key=lambda par: tab[f][par])
     alla = np.where(kolveck >= 0)[0]
     tot = {par: grova(M, P, ANK, alla) for par, P in kand.items()}
-    return val, tab, min(GRID, key=lambda par: tot[par]), kand
+    return val, tab, min(grid, key=lambda par: tot[par]), kand
+
+
+def tabell(M, ANK, kolveck, kand, lage):
+    """Varv 2: the share of gross errors on all folds for every pair, W down and L across — whether the best pair lies at an edge."""
+    alla = np.where(kolveck >= 0)[0]
+    tot = {par: grova(M, P, ANK, alla) for par, P in kand.items()}
+    L = sorted({l for _, l in kand})
+    return ([f"rutnätet, grova fel på alla veck ({lage}) i %, W nedåt och L åt höger: L " + " · ".join(f"{l:g}" for l in L)]
+            + [f"  W {w:<4g} " + " · ".join(f"{100 * tot[(w, l)]:.3f}" for l in L) for w in sorted({w for w, _ in kand})])
 
 
 def arlig_blandning(RA, PG, ANK, kolveck, val, kand):
@@ -95,10 +108,18 @@ def sjalvtest():
         if [f['namn'] for f in m] != ['NIVÅ 2 ÄRLIG', 'NIVÅ 2 ÄRLIG+GRANNAR', 'NIVÅ 2 ÄRLIG+BLANDNING'] or \
                 m[2]['fil'] != 'niva2-arlig-blandning-prognos6-2024-25.csv.gz': fel.append(f'manifestet: {m}')
     if len(GRID) != 15 or AXEL not in GRID: fel.append('rutnätet: 15 par med Axels')
+    if len(GRID2) != 42 or AXEL not in GRID2 or VARV1 not in GRID2 or min(w for w, _ in GRID2) != 0.1 or max(l for _, l in GRID2) != 480:
+        fel.append('varv 2:s rutnät: 42 par, 0,1–0,5 × 80–480 km, med Axels och varv 1:s')
+    val2, tab2, alla2, kand2 = valj(M, RA, PG, ANK, kolveck, GRID2)
+    if set(kand2) != set(GRID2) or any(val2[f] not in GRID2 for f in range(5)) or alla2 not in GRID2: fel.append('valet ur varv 2:s rutnät')
+    if not all(np.array_equal(kand2[par], kand[par], equal_nan=True) for par in set(GRID) & set(GRID2)): fel.append('samma par ger samma blandning i båda rutnäten')
+    tb = tabell(M, ANK, kolveck, kand2, 'analys')
+    if len(tb) != 8 or not tb[0].endswith('L 80 · 120 · 160 · 240 · 320 · 480') or len(tb[1].split(' · ')) != 6: fel.append(f'tabellen: {tb[:2]}')
+    for r in tb: print(r)
     for f in fel: print('✗', f)
     if fel: sys.exit(1)
     print("✓ självtest: blandningen som replikans (W = 0 grannarna, W = 1 vid 0 km RÅ, utan RÅ grannarna, Axels par för hand), valet per "
-          "veck på de andra vecken (veck 2:s val står still när veck 2:s mätningar ändras), varje veck sitt par, filerna som grannar_blandning skriver")
+          "veck på de andra vecken (veck 2:s val står still när veck 2:s mätningar ändras), varje veck sitt par, filerna som grannar_blandning skriver; varv 2:s rutnät (42 par, samma blandning för samma par)")
 
 
 if __name__ == '__main__':
@@ -111,6 +132,9 @@ if __name__ == '__main__':
     ap.add_argument('--lage', default='analys')
     ap.add_argument('--kod', default='analys')
     ap.add_argument('--lagg-till', action='store_true')
+    ap.add_argument('--rutnat', choices=['varv1', 'varv2'], default='varv1')
+    ap.add_argument('--namn', default='NIVÅ 2 ÄRLIG')
+    ap.add_argument('--fil', default='niva2-arlig')
     a = ap.parse_args()
     os.makedirs(a.ut, exist_ok=True)
     shutil.copyfile(a.oof, f'{D}/oof_A2.npy')
@@ -121,10 +145,13 @@ if __name__ == '__main__':
     print('självprovet mot replikan: Axels par (0,5 · 80 km) ger replikans PB byte för byte', flush=True)
     veck = json.load(open(a.veck))
     kolveck = np.array([veck.get(s, -1) for s in g['sids']])
-    val, tab, alla, kand = valj(g['M'], g['RA'], g['PG'], g['ANK'], kolveck)
+    grid = GRID2 if a.rutnat == 'varv2' else GRID
+    val, tab, alla, kand = valj(g['M'], g['RA'], g['PG'], g['ANK'], kolveck, grid)
     for f in range(5):
         print(f"veck {f} ({int((kolveck == f).sum())} stationer): paret W {val[f][0]} · L {val[f][1]:g} km, valt på de andra fyra "
               f"(grova {100 * tab[f][val[f]]:.2f} % där; Axels par {100 * tab[f][AXEL]:.2f} %)", flush=True)
     print(f"paret valt på alla veck (den frysta kandidatens vikt, #544 punkt 6): W {alla[0]} · L {alla[1]:g} km", flush=True)
+    if a.rutnat == 'varv2':
+        for r in tabell(g['M'], g['ANK'], kolveck, kand, a.lage): print(r, flush=True)
     g2 = dict(g); g2['PB'] = arlig_blandning(g['RA'], g['PG'], g['ANK'], kolveck, val, kand)
-    manifest(g2, a.ut, 'NIVÅ 2 ÄRLIG', 'niva2-arlig', a.lage, a.kod, a.lagg_till)
+    manifest(g2, a.ut, a.namn, a.fil, a.lage, a.kod, a.lagg_till)

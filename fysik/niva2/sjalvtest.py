@@ -181,4 +181,69 @@ with tempfile.TemporaryDirectory() as d:
     k(np.array_equal(P_an[:, f0], P_an_b[:, f0], equal_nan=True) and np.array_equal(P_6[:, f0], P_6_b[:, f0], equal_nan=True),
       'väg B: veck 0:s skattningar står still när veck 0:s mätningar ändras (analysen och +6 h)')
     k(not np.allclose(P_an[:, ~f0], P_an_b[:, ~f0], equal_nan=True), 'väg B: motprovet — de andra vecken rör sig, där är veck 0 träningsdata')
-print('✓ självtest nivå 2: MET Nordic-läsaren (Magnus, snöfall, W/m², uppvärmning ur ECMWF), run_lw = physics.run utan långvåg, 70 särdrag med tre ersatta, kalibrering, rättelse, utdatafil; prognosläget: omstart ur sparat tillstånd, prognosfilen, bruset, skarven och rättelsen på prognosens särdrag; väg B: varje veck bara med de andra fyra (veck 0 står still när dess mätningar ändras)')
+    # Väg B varv 2, körning 2 (DECISIONS #549): terrängen och trafiken i energibalansen. Neutral terräng (svf 1, horisont 0,
+    # q_trafik_adt 0) ger run_lw:s yta byte för byte; varje ändring verkar åt rätt håll; det som saknas blir neutralt och räknas.
+    import json
+    import terrang as tr
+    vd = f'{d}/stationer.json'
+    json.dump({'rader': [{'id': s, 'adt_fordon': None if i == 3 else float(10 ** (2 + 3 * i / NS))} for i, s in enumerate(meta.sid)]}, open(vd, 'w'))
+    geo = pd.read_csv(f'{d}/geofeat.csv', dtype={'sid': str}); geo.loc[5, 'svf'] = np.nan; geo.to_csv(f'{d}/geofeat_t.csv', index=False)
+    Gt, n = tr.terrang(G, idx, meta, f'{d}/geofeat_t.csv', vagdata=vd)
+    k(n['utan_svf'] == 1 and n['utan_horisont'] == 0 and n['utan_adt'] == 1 and Gt['svf'][5] == 1.0 and Gt['adt'][3] == 0.0,
+      f'terrängen: det som saknas blir neutralt (svf 1, ingen trafikterm) och räknas ({n})')
+    k(abs(Gt['adt'][NS - 1] - (-1 + 3 * (NS - 1) / NS)) < 1e-9 and Gt['adt'][10] == 0.0, 'trafiktermens tal är log10(ÅDT / 1 000)')
+    k(all(tr.spann(x)[0] == 0 for x in ['svf', 'horizon_south', 'adt_fordon']), 'svf, horizon_south och adt_fordon har spann i värdevakten')
+    fel = ''
+    try: tr.spann('finns_inte')
+    except ValueError as e: fel = str(e)
+    k('OBESIKTIGAT' in fel, 'ett fält utan spann i värdevakten fäller')
+    geo.loc[7, 'svf'] = 1.2; geo.to_csv(f'{d}/geofeat_f.csv', index=False)
+    fel = ''
+    try: tr.terrang(G, idx, meta, f'{d}/geofeat_f.csv', vagdata=vd)
+    except ValueError as e: fel = str(e)
+    k('utanför spannet' in fel, 'svf 1,2 ligger utanför värdevaktens spann och fäller')
+    t = pd.date_range('2024-12-21 09:00', '2024-12-21 12:30', freq='1min')
+    hs = tr.solhojd(t, [59.33], [18.07])[0][:, 0]; i = int(np.argmax(hs))
+    hm = tr.solhojd(pd.date_range('2025-06-21 09:00', '2025-06-21 12:30', freq='1min'), [59.33], [18.07])[0].max()
+    k(7.0 < hs[i] < 7.45 and pd.Timestamp('2024-12-21 10:42') <= t[i] <= pd.Timestamp('2024-12-21 10:52') and 53.8 < hm < 54.4,
+      f'solen i Stockholm: vintersolståndet {hs[i]:.2f}° kl. {t[i]:%H:%M} UTC (väntat 7,2° omkring 10:46), midsommar {hm:.2f}° (54,1°)')
+    e = tr.erbs(np.array([0.1, 0.2199, 0.2201, 0.8, 0.9]))
+    k(abs(e[0] - 0.991) < 1e-12 and abs(e[1] - e[2]) < 0.002 and abs(e[3] - 0.165) < 1e-3 and e[4] == 0.165, f'Erbs: k_t 0,1 ⇒ 0,991, sammanhängande vid 0,22 och 0,8, 0,165 över 0,8 ({e})')
+    cz = lambda m: 500 * np.maximum(tr.solhojd(pd.DatetimeIndex(idx) + pd.Timedelta(minutes=m), meta.lat, meta.lon)[1], 0)
+    fore, efter = tr.tidsprov({'sw': cz(-30)}, idx, meta); fore2, efter2 = tr.tidsprov({'sw': cz(30)}, idx, meta)
+    k(fore > efter and fore2 < efter2, f'tidsprovet: strålning ur timmen före ger {fore:.3f} > {efter:.3f}, en förskjuten timme vänder det ({fore2:.3f} < {efter2:.3f})')
+    k(np.array_equal(Gt['solhojd'], tr.solhojd(pd.DatetimeIndex(idx) - pd.Timedelta(minutes=30), meta.lat, meta.lon)[0]),
+      'terrängens sol står mitt i timmen som slutar vid tidsstämpeln')
+    Gn = dict(Gt, svf=np.ones(NS), horisont=np.zeros(NS))
+    Ts_l, T5_l, till_l = run_lw(G, p, spara=[i0 + 23])
+    Ts_t, T5_t, till_t = tr.run_terrang(Gn, p, spara=[i0 + 23])
+    k(np.array_equal(Ts_t, Ts_l) and np.array_equal(T5_t, T5_l) and np.array_equal(till_t[i0 + 23], till_l[i0 + 23]),
+      'neutral terräng (svf 1, horisont 0, q_trafik_adt 0) ger run_lw:s yta, 5 cm-lager och tillstånd byte för byte')
+    efter_ = lambda X: {kk: (v[i0 + 24:] if isinstance(v, np.ndarray) and v.ndim == 2 else v) for kk, v in X.items()}
+    k(np.array_equal(tr.run_terrang(efter_(Gn), p, T_init=till_t[i0 + 23])[0], run_lw(efter_(G), p, T_init=till_l[i0 + 23])[0]),
+      'neutral terräng: omstarten ur sparat tillstånd ger run_lw:s byte för byte')
+    natt, dag = G['sw'] == 0, G['sw'] > 50
+    d_svf = np.mean((tr.run_terrang(dict(Gn, svf=np.full(NS, 0.6)), p)[0] - Ts_l)[natt])
+    d_hor = np.mean((tr.run_terrang(dict(Gn, horisont=np.full(NS, 90.0)), p)[0] - Ts_l)[dag])
+    Ts_q = tr.run_terrang(Gn, dict(p, q_trafik_adt=3.0))[0]; d_q = (Ts_q - Ts_l).mean(axis=0)
+    k(d_svf > 0.1, f'svf 0,6: terrängens långvåg värmer ytan om natten (+{d_svf:.2f} °C), himlen är kallare än luften')
+    k(d_hor < -0.01, f'horisonten 90°: bara den diffusa delen når vägen och ytan blir kallare om dagen ({d_hor:.3f} °C)')
+    k(all(d_q[j] > 0 for j in range(NS) if Gn['adt'][j] > 0.3) and all(d_q[j] < 0 for j in range(NS) if Gn['adt'][j] < -0.3)
+      and np.array_equal(Ts_q[:, [3, 10]], Ts_l[:, [3, 10]]), 'trafiken: mer än 1 000 fordon värmer, färre kyler, 1 000 och okänd ÅDT rör inte ytan')
+    # Kopplingen: körning 2 är vagb.arlig med run_terrang i kalibreringen, analysen och omstarten, och elva parametrar.
+    import kedja, vagb_terrang as vt
+    vt.koppla()
+    k(kedja.run_lw is tr.run_terrang and vagb.run_lw is tr.run_terrang and kedja.KAL_NAMN == vt.KAL_NAMN and len(kedja.KAL_SKALA) == 11
+      and vagb.DEFAULT['q_trafik_adt'] == 0.0, 'körning 2: kedjans fysik, namn, skalor och startvärden är kopplade')
+    Gs = dict(Gt, svf=np.full(NS, 0.7))
+    pk, kalk = kedja.kalibrera(Gs, obs, (fold == 0).astype(int), dict(vagb.DEFAULT), maxfev=14)
+    k('q_trafik_adt' in pk and kalk['test'] == common.gates(obs[:, te0], tr.run_terrang(vagb.kolumner(Gs, te0), pk)[0]),
+      'körning 2: kalibreringen räknar med run_terrang och elva parametrar')
+    P_an_t, P_6_t, _, _, par_t = vagb.arlig(meta, idx, Gs, obs, kor_, V, maxfev=14, konfig=liten)
+    m6 = np.isfinite(P_6_t)
+    k(m6.any(axis=1).sum() >= 200 and np.mean(np.abs(P_6_t[m6] - P_an_t[m6]) < 1e-3) > 0.99 and all('q_trafik_adt' in x for x in par_t),
+      'körning 2: omstarten räknar också med terrängen ("prognosen" = analysen ger analysens skattning)')
+    P_an_tb, P_6_tb, _, _, _ = vagb.arlig(meta, idx, Gs, obs_b, kor_, V, maxfev=14, konfig=liten)
+    k(np.array_equal(P_an_t[:, f0], P_an_tb[:, f0], equal_nan=True) and np.array_equal(P_6_t[:, f0], P_6_tb[:, f0], equal_nan=True)
+      and not np.allclose(P_an_t[:, ~f0], P_an_tb[:, ~f0], equal_nan=True), 'körning 2: veck 0 står still när veck 0:s mätningar ändras, de andra rör sig')
+print('✓ självtest nivå 2: MET Nordic-läsaren (Magnus, snöfall, W/m², uppvärmning ur ECMWF), run_lw = physics.run utan långvåg, 70 särdrag med tre ersatta, kalibrering, rättelse, utdatafil; prognosläget: omstart ur sparat tillstånd, prognosfilen, bruset, skarven och rättelsen på prognosens särdrag; väg B: varje veck bara med de andra fyra (veck 0 står still när dess mätningar ändras); körning 2 (#549): neutral terräng = run_lw byte för byte, terrängen och trafiken åt rätt håll, solen, Erbs, tidsprovet, värdevaktens spann, kopplingen och veckärligheten')
