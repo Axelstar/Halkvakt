@@ -6,7 +6,8 @@
 //   (utan): alla 12 960 väglagspunkter och alla stationer; rader i väglagspunkternas ordning (sid = radnumret, som
 //           vaglagspunkter-sardrag.json) och per station, skrivna till --ut.
 // Varje plats frågas där vägdatalagret valde vägen: samma radie som bar (radie_m) och objektet på samma NVDB-element (element_id).
-// Saknas Vägnummer på elementet blir värdet null och räknas. Vid stationerna jämförs med Axels road_all.csv (--road-all), bara som
+// Saknas Vägnummer på elementet är vägen onumrerad och värdet 0, räknat; null bara vid fallerat anrop eller oläsbart värde. API:ets
+// Europaväg är ett tal, 0 eller E-vägens nummer (provet 13/10). Vid stationerna jämförs med Axels road_all.csv (--road-all), bara som
 // aggregat: överensstämmelsen ska vara minst 95 %, annars används filen inte förrän skälet är läst.
 // Rotelementet räknas, aldrig statuskoden; felkroppen skrivs ut. Nyckeln delas med driftens ingest: ~2 förfrågningar/s.
 // Run: TRAFIKVERKET_API_KEY=... node --experimental-strip-types scripts/vagdata-vagnummer.ts [--prov] [--road-all <csv>] [--ut <dir>]
@@ -26,6 +27,22 @@ export function jaNej(v: unknown): 0 | 1 | null {
   if (v === false || v === 0 || (typeof v === "string" && /^(nej|false|0)$/i.test(v.trim()))) return 0;
   return null;
 }
+/** API:ets Europaväg är ett TAL (provet 13/10, körning 38472503088): 0 = ingen Europaväg, annars troligen E-vägens nummer (4 för E4).
+ *  0 → 0, ett positivt heltal → 1, Ja/Nej som jaNej, annat → null. Jämförelsen med Axels Ja/Nej vid stationerna avgör tolkningen. */
+export function europa(v: unknown): 0 | 1 | null {
+  if (typeof v === "number") return v === 0 ? 0 : Number.isInteger(v) && v > 0 ? 1 : null;
+  return jaNej(v);
+}
+/** En CSV-rad med citattecken: ett namn med kommatecken (stationens eller driftområdets) får inte flytta kolumnerna. */
+export function csvRad(r: string): string[] {
+  const ut: string[] = []; let f = "", i = 0, cit = false;
+  for (; i < r.length; i++) {
+    const c = r[i];
+    if (cit) { if (c === '"' && r[i + 1] === '"') { f += '"'; i++; } else if (c === '"') cit = false; else f += c; }
+    else if (c === '"') cit = true; else if (c === ",") { ut.push(f); f = ""; } else f += c;
+  }
+  ut.push(f.replace(/\r$/, "")); return ut;
+}
 /** Det levande objektet på platsens element, annars null. */
 export function pa(objekt: any[], element: string, nu = Date.now()): any | null {
   return objekt.find((o) => String(o?.Element_Id) === element && o?.Deleted !== true && (!o?.Valid_To || Date.parse(o.Valid_To) > nu)) ?? null;
@@ -36,10 +53,11 @@ export function europafalt(nycklar: string[]): string {
   if (f.length !== 1) throw new Error(`fältet för Europaväg är inte entydigt bland ${JSON.stringify(nycklar)}: ${JSON.stringify(f)}`);
   return f[0];
 }
-/** Överensstämmelsen mot road_all.csv vid stationerna: {n, lika, saknas}. */
+/** Överensstämmelsen mot road_all.csv vid de frågade stationerna där Axel har ett värde: {n, lika, saknas}. Ett saknat värde ur API:et
+ *  räknas som FEL och ingår i n — det första provet räknade bort dem och såg 47 av 47 lika, fast Europavägarna var just de saknade. */
 export function jamfor(api: Map<string, 0 | 1 | null>, axel: Map<string, 0 | 1>) {
   let n = 0, lika = 0, saknas = 0;
-  for (const [id, a] of axel) { const v = api.get(id); if (v === undefined) continue; if (v === null) { saknas++; continue; } n++; if (v === a) lika++; }
+  for (const [id, a] of axel) { const v = api.get(id); if (v === undefined) continue; n++; if (v === null) saknas++; else if (v === a) lika++; }
   return { n, lika, saknas };
 }
 
@@ -51,10 +69,13 @@ if (process.argv.includes("--sjalvtest")) {
   if (europafalt(["Huvudnummer", "Europaväg", "Element_Id"]) !== "Europaväg") fel.push("europafältet");
   let kastat = false; try { europafalt(["Huvudnummer"]); } catch { kastat = true; } if (!kastat) fel.push("inget europafält fäller");
   const j = jamfor(new Map([["a", 1], ["b", 0], ["c", null], ["d", 1]]), new Map([["a", 1], ["b", 1], ["c", 0], ["e", 0]]));
-  if (j.n !== 2 || j.lika !== 1 || j.saknas !== 1) fel.push(`jämförelsen ${JSON.stringify(j)}`);
+  if (j.n !== 3 || j.lika !== 1 || j.saknas !== 1) fel.push(`jämförelsen räknar ett saknat värde som fel: ${JSON.stringify(j)}`);
+  if (!(europa(0) === 0 && europa(4) === 1 && europa(45) === 1 && europa(-1) === null && europa(2.5) === null && europa("Ja") === 1 && europa(null) === null))
+    fel.push("europa: 0 → 0, E-vägens nummer → 1, Ja/Nej, annat → null");
+  if (JSON.stringify(csvRad('1001,"Ödeshög, E4",Ja\r')) !== JSON.stringify(["1001", "Ödeshög, E4", "Ja"])) fel.push("csvRad: kommatecken inom citattecken");
   for (const f of fel) console.log("✗", f);
   if (fel.length) process.exit(1);
-  console.log("✓ självtest: Ja/Nej läses, objektet tas på platsens element och raderade hoppas över, europafältet måste vara entydigt, och jämförelsen räknar lika och saknade");
+  console.log("✓ självtest: Ja/Nej och API:ets tal (0 eller E-vägens nummer) läses, objektet tas på platsens element och raderade hoppas över, europafältet måste vara entydigt, och jämförelsen räknar ett saknat värde som fel");
   process.exit(0);
 }
 
@@ -93,18 +114,25 @@ type Plats = { id: string; lon: number; lat: number; element_id: string; radie_m
 const las = (f: string): Plats[] => JSON.parse(readFileSync(`data/vagdata/${f}`, "utf8")).rader;
 const stationer = las("stationer.json"), punkter = las("vaglagspunkter.json");
 const urval = prov ? { stationer: stationer.filter((_, i) => i % 12 === 0), punkter: [] as Plats[] } : { stationer, punkter };
+// Ett element utan Vägnummer är en väg utan vägnummer och därmed ingen Europaväg: 0, som Axels koppling ger när inget vägnummer finns
+// inom 150 m (road_all.csv saknar då värdet, och kedjan läser e_road som "Ja" eller inte). Bara ett fallerat anrop eller ett oläsbart
+// värde ger null. Råvärdena räknas och skrivs ut.
+const raa = new Map<string, number>();
 const ur = async (p: Plats) => {
-  if (!p.element_id) return { varde: null as 0 | 1 | null, huvud: null as unknown, fel: false };
+  if (!p.element_id) { raa.set("(inget element)", (raa.get("(inget element)") ?? 0) + 1); return { varde: 0 as 0 | 1 | null, huvud: null as unknown, fel: false }; }
   const s = await fraga(vid(p.lon, p.lat, p.radie_m ?? 150), 40);
   await new Promise((ok) => setTimeout(ok, PAUS_MS));
   if (!s.ok) return { varde: null, huvud: null, fel: true };
   const o = pa(s.objekt, String(p.element_id));
-  return { varde: o ? jaNej(o[FALT]) : null, huvud: o?.Huvudnummer ?? null, fel: false };
+  const nyckel = o ? `${FALT}=${JSON.stringify(o[FALT])}` : "(inget Vägnummer på elementet)";
+  raa.set(nyckel, (raa.get(nyckel) ?? 0) + 1);
+  return { varde: o ? europa(o[FALT]) : 0, huvud: o?.Huvudnummer ?? null, fel: false };
 };
 const varden = new Map<string, 0 | 1 | null>(); let felanrop = 0; const vardeTyper = new Map<string, number>();
 for (const p of urval.stationer) {
   const r = await ur(p); varden.set(String(p.id), r.varde); if (r.fel) felanrop++;
 }
+console.log(`råvärdena vid stationerna: ${JSON.stringify(Object.fromEntries([...raa].sort((a, b) => b[1] - a[1]).slice(0, 25)))}`);
 const rader: any[] = [];
 for (let i = 0; i < urval.punkter.length; i++) {
   const p = urval.punkter[i]; const r = await ur(p); if (r.fel) felanrop++;
@@ -115,10 +143,10 @@ for (const v of varden.values()) vardeTyper.set(String(v), (vardeTyper.get(Strin
 console.log(`stationer: ${urval.stationer.length} frågade, värden ${JSON.stringify(Object.fromEntries(vardeTyper))}, ${felanrop} anrop som föll`);
 const ra = arg("--road-all");
 if (ra) {
-  const [h, ...rr] = readFileSync(ra, "utf8").trim().split("\n"); const k = h.split(","), iS = k.indexOf("sid"), iE = k.indexOf("Vagnummer_Europavag");
-  const axel = new Map<string, 0 | 1>(rr.map((x) => x.split(",")).filter((c) => jaNej(c[iE]) !== null).map((c) => [c[iS], jaNej(c[iE]) as 0 | 1]));
+  const [h, ...rr] = readFileSync(ra, "utf8").trim().split("\n"); const k = csvRad(h), iS = k.indexOf("sid"), iE = k.indexOf("Vagnummer_Europavag");
+  const axel = new Map<string, 0 | 1>(rr.map(csvRad).filter((c) => jaNej(c[iE]) !== null).map((c) => [c[iS], jaNej(c[iE]) as 0 | 1]));
   const j = jamfor(varden, axel);
-  console.log(`mot Axels road_all.csv: ${j.lika} av ${j.n} lika (${(100 * j.lika / Math.max(j.n, 1)).toFixed(1)} %, kravet ${100 * KRAV} %), ${j.saknas} utan Vägnummer på elementet`);
+  console.log(`mot Axels road_all.csv: ${j.lika} av ${j.n} lika (${(100 * j.lika / Math.max(j.n, 1)).toFixed(1)} %, kravet ${100 * KRAV} %), ${j.saknas} utan läsbart värde (räknas som fel)`);
   if (j.n && j.lika / j.n < KRAV) { console.log("ÖVERENSSTÄMMELSEN RÄCKER INTE: filen används inte förrän skälet är läst"); process.exitCode = 1; }
 }
 if (!prov) {
