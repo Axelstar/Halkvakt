@@ -92,6 +92,7 @@ jobs:
           node --experimental-strip-types scripts/matningar/kuvos-blandning-2026-10-08.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-blandning-niva2-2026-10-11.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-blandning-prognos-2026-10-11.ts --sjalvtest
+          node --experimental-strip-types scripts/matningar/kuvos-blandning-vagb-2026-10-13.ts --sjalvtest
           node --experimental-strip-types kuvos/metnordic-prognos.ts --sjalvtest   # DECISIONS #519
           node --experimental-strip-types scripts/matningar/kuvos-trafik-per-band-2026-10-08.ts --sjalvtest
           node --experimental-strip-types scripts/matningar/kuvos-fysik-givarvakt-2026-10-08.ts --sjalvtest
@@ -115,6 +116,8 @@ jobs:
           python3 fysik/niva2/prognos.py --help > /dev/null
           python3 fysik/niva2/kedja.py --help > /dev/null   # skriptets egen start: självtestet sätter sökvägen själv och såg inte att common saknades 11/10
           python3 fysik/blandning/grannar_blandning.py --sjalvtest   # DECISIONS #516
+          python3 fysik/niva2/vagb.py --help > /dev/null
+          python3 fysik/blandning/vagb_blandning.py --sjalvtest      # DECISIONS #544
       # Generatorn gled isär från vektorfilerna tre gånger (31/8, 2/9, 13/9) utan att någon vakt såg det (#195).
       # Den skriver bara filer vars innehåll ändrats och fäller själv på en vektorfil utan scenario.
       - name: Vektorgeneratorn återskapar engine/vectors/ (#202)

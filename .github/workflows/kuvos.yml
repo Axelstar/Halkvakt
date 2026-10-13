@@ -20,7 +20,7 @@ permissions:
 jobs:
   inlasning:
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ (contains(inputs.matning, 'niva2') || contains(inputs.matning, 'kuvos-blandning-prognos')) && 360 || ((inputs.korflode == 'riktningsprov' || inputs.korflode == 'kalibrering' || inputs.matning != '') && 300 || 60) }}   # 6/10: 82 min till höjdprovet, NT och efterhalkan därefter; en mätning kan köra grind A flera gånger (#469). Nivå 2 (#509) kör fysikkedjan två gånger, ~3 h: GitHubs tak 360.
+    timeout-minutes: ${{ (contains(inputs.matning, 'niva2') || contains(inputs.matning, 'kuvos-blandning-prognos') || contains(inputs.matning, 'kuvos-blandning-vagb')) && 360 || ((inputs.korflode == 'riktningsprov' || inputs.korflode == 'kalibrering' || inputs.matning != '') && 300 || 60) }}   # 6/10: 82 min till höjdprovet, NT och efterhalkan därefter; en mätning kan köra grind A flera gånger (#469). Nivå 2 (#509) kör fysikkedjan två gånger, ~3 h: GitHubs tak 360.
     services:
       postgis:
         image: postgis/postgis:16-3.4
@@ -101,7 +101,7 @@ jobs:
       # MET Nordics prognoser (DECISIONS #518, #519, kort #308) bara för prognosläget: åtta delar ur den öppna releasen, summorna mot
       # kuvos/metnordic-prognos-leverans.json (skriven när hämtningen är klar; utan den, eller med en del som saknas, fälls jobbet).
       - name: MET Nordics prognoser ur releasen, kontrollsummorna mot manifestet
-        if: ${{ contains(inputs.matning, 'kuvos-blandning-prognos') }}
+        if: ${{ contains(inputs.matning, 'kuvos-blandning-prognos') || contains(inputs.matning, 'kuvos-blandning-vagb') }}
         shell: bash
         env: { GH_TOKEN: "${{ github.token }}" }
         run: |
@@ -198,7 +198,13 @@ jobs:
           UT="$PWD/niva2-ut"; MN="$PWD/metnordic/metnordic_2024-25.csv.gz"; BL="$PWD/blandning"; MNP="$PWD/mnp"
           {
             echo '```'
-            if [[ "$MATNING" == *kuvos-blandning-prognos* ]]; then
+            if [[ "$MATNING" == *kuvos-blandning-vagb* ]]; then
+              # Väg B (#544, kort #342): varje veck räknas bara med de andra fyra (vagb.py), och blandningens vikt väljs per veck på de
+              # andra fyra (vagb_blandning.py, som först visar att Axels par ger replikans tal byte för byte). Analysläget och +6 h.
+              (cd /home/claude/fys && python3 prep.py && python3 prep_raw.py && python3 niva2/vagb.py --metnordic "$MN" --prognos "$MNP/metnordic_prognos_*.csv.gz" --ut "$UT" --maxfev 120 \
+                && python3 blandning/vagb_blandning.py --oof "$UT/oof_vagb_analys.npy" --veck "$UT/veck_vagb.json" --ut "$BL" \
+                && python3 blandning/vagb_blandning.py --oof "$UT/oof_vagb_prognos6.npy" --veck "$UT/veck_vagb.json" --lage "prognos +6 h" --kod prognos6 --lagg-till --ut "$BL")
+            elif [[ "$MATNING" == *kuvos-blandning-prognos* ]]; then
               # #519: nivå 2 på analysen och i prognosläget (omstart vid varje körning), och replikan på var och en av de tre skattningarna.
               (cd /home/claude/fys && python3 prep.py && python3 prep_raw.py && python3 niva2/prognos.py --metnordic "$MN" --prognos "$MNP/metnordic_prognos_*.csv.gz" --ut "$UT" --maxfev 120 \
                 && python3 blandning/grannar_blandning.py --oof "$UT/oof_niva2.npy" --namn "NIVÅ 2" --fil niva2 --ut "$BL" \
