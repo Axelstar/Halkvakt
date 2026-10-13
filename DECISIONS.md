@@ -11510,3 +11510,47 @@ Valregeln ovan gäller utan undantag.
 mönstret prövas mot kallkartan (MODIS). Det är ett eget steg efter frysningen och hindrar inte den.
 
 **Stomdokument:** KUV §5, BED §4.2
+
+**Tillägg 13/10: Axels godkännande och bygget.**
+- **Axel godkänner förväntan**, via Bengt 13/10 (*"slå ihop 917 och Axel godkänner"*). Spannen i tabellen ovan gäller oförändrade.
+- **Körning 1** kör `fysik/niva2/vagb.py` oförändrad och `fysik/blandning/vagb_blandning.py --rutnat varv2`, med de 42 paren.
+  - Jobbets logg skriver andelen grova fel för alla 42 par på alla veck, så att det syns om bästa paret ligger vid en ny kant.
+  - Utan flaggan är rutnätet varv 1:s 15 par; självtestet prövar båda.
+- **Körning 2** kör `fysik/niva2/terrang.py`, en kopia av `run_lw` med de tre ändringarna markerade.
+  - `fysik/niva2/vagb_terrang.py` kopplar `vagb.arlig` till den nya fysiken och de elva parametrarna; `vagb.py` och `kedja.py` ändras inte.
+  - Blandningen är samma som i körning 1, och kandidaten heter NIVÅ 2 TERRÄNG ÄRLIG.
+- **Bestämt i bygget, inte i förregistreringen:**
+  - **Timmen är den som slutar vid tidsstämpeln.** MET Nordic summerar strålningen över timmen före; prognoshämtaren tar steg t minus
+    steg t − 1. Open-Meteos kortvåg i uppvärmningen är medlet för föregående timme. *Mitt i timmen* är alltså tidsstämpeln minus 30
+    minuter. Ett tidsprov i jobbet jämför kortvågen med solen i timmen före och i timmen efter, och fäller körningen om timmen efter
+    stämmer bättre.
+  - **Erbs med pvlib:s konventioner** (`irradiance.erbs`): cos z minst 0,065 i nämnaren, k_t högst 1, och k_d = 1 när zenit ligger
+    bortom 87°. Solens läge räknas med NOAA:s formler, solkonstanten är 1 366,1 W/m² och avståndet till solen ges av Spencer.
+  - **Kortvågens faktor skrivs s + k_d · (svf − s).** Det är samma uttryck som i förregistreringen, men så ger svf 1 och horisonten 0
+    exakt dagens strålning.
+  - **q_trafik_ådt** startar i 0 med steget 5 W/m² per tiopotens i simplexen. maxfev är 120 som i varv 1, nu för elva parametrar.
+  - **ÅDT under 10 fordon sätts till 10**, som särdraget `adt_log`. Ingen station i vägdatalagret ligger under: den lägsta har 13.
+    Tio av 854 saknar ÅDT.
+  - **svf och horizon_south har fått spann i värdevakten**, 0–1 respektive 0–90°. `terrang.py` läser spannen därifrån och fäller vid
+    brott; ÅDT har sitt spann sedan #473.
+  - **Loggen jämför ÅDT ur vägdatalagret med kedjans `road_all.csv`** (korrelationen och medianskillnaden i log10), så att en
+    felkoppling av stations-id syns.
+- **Självtestet** (`fysik/niva2/sjalvtest.py`, i ci) prövar följande:
+  - Neutral terräng (svf 1, horisonten 0, q_trafik_ådt 0) ger `run_lw`:s yta, 5 cm-lager och tillstånd byte för byte, också vid
+    omstart.
+  - svf 0,6 värmer ytan om natten, horisonten 90° kyler den om dagen, och mer trafik än 1 000 fordon värmer. 1 000 fordon och okänd
+    ÅDT rör inte ytan.
+  - Solen i Stockholm vid solstånden stämmer, Erbs stämmer, och tidsprovet vänder när timmen förskjuts.
+  - Ett fält utan spann fäller, och svf 1,2 fäller.
+  - Kopplingen når kalibreringen, analysen och omstarten.
+  - Veck 0 står still när veck 0:s mätningar ändras.
+- **Motproven** gjordes med en mutation per vakt i en egen kopia, med självtestet kört och raden som föll avläst:
+- Nio mutationer, alla fällda. Sex fälldes av sin närmaste vakt: långvågen inte neutral vid svf 1 och det vända horisontvillkoret
+    av neutralprovet, solen i timmen efter av tidsprovet för terrängens sol, en trafikterm för okänd ÅDT av provet för det saknade,
+    och kopplingen utan omstart eller med tio namn av kopplingsprovet.
+  - Tre ser neutralprovet inte, eftersom svf 1, horisonten 0 och q_trafik_ådt 0 ger samma yta. Var och en fälldes av sitt
+    riktningsprov: horisonten som aldrig skymmer (0,000 °C om dagen), terrängen som strålar som himlen (−0,02 °C om natten) och
+    trafiktermens tecken vänt.
+- **Knapparna**, på Bengts ord, `korflode` ingen; de två kan köras samtidigt:
+  - körning 1: `matning` = `scripts/matningar/kuvos-blandning-vagb2-rutnat-2026-10-13.ts`;
+  - körning 2: `matning` = `scripts/matningar/kuvos-blandning-vagb2-terrang-2026-10-13.ts`.
