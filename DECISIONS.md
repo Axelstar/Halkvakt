@@ -11889,3 +11889,29 @@ mot `SHA256SUMS`.
   - Vid stationerna jämförs med Axels road_all.csv. Överensstämmelsen ska vara minst 95 %, annars används filen inte förrän skälet är
     läst.
   - Rotelementet räknas och felkroppen skrivs ut.
+
+**Tillägg 13/10: vinterväghållningsklassen ur Lastkajen, och Europavägsprovets första utfall** (Bengt: *"slå ihop 930 och tryck
+provet"*; paketet hämtat av Bengt 13/10).
+- **Paketet.** *Sverigepaket Drift och underhåll* (GeoPackage, 2,0 GB, daterat 3/10 2026), uppackat utanför repot.
+  - Lagret `SverigePaket_DoU` har 4,3 miljoner vägsegment i SWEREF99 TM.
+  - `Vagkl_564` är *Vägunderhållsklass/Vägklass*, 1–5, på 679 238 statliga segment.
+  - `Europ_16` (*Vägnummer/Europaväg*) är tom på varje rad.
+- **Kopplingen.** `fysik/vagpunkter/vinterklass.py` följer regeln i roadjoin.py: närmaste segment med klass, inom 150 m. Regeln
+  pushades före körningen (d7f8bf4, grenen claude/vinterklass-lastkajen).
+- **Reproduktionen.** 743 stationer har klass både i paketet och i Axels road_all.csv, och **99,3 % får samma klass** mot kravet 95 %.
+  Bara 5 skiljer sig.
+- **Vägpunkterna.**
+  - 12 847 av 12 960 har en klass inom 150 m, och 113 saknar.
+  - Avståndet har medianen 11,5 m och p90 46 m (vid stationerna median 8,6 m).
+  - Klasserna fördelar sig 1: 9,7 · 2: 13,2 · 3: 53,5 · 4: 22,0 · 5: 1,6 %, mot stationernas 16,4 · 18,1 · 44,5 · 15,7 · 5,2 %.
+  - Filen ligger utanför repot tills paketets licens är läst (fråga i §4.2).
+- **Europavägsprovet** (körning 38472503088 på 0cb7b68): Vägnummer har fältet `Europaväg`, men det är ett **tal**, inte Ja/Nej.
+  - Av 72 stationer fick 50 värdet 0 och 22 inget läsbart värde. Tolkningen kände bara igen 0 och 1, så E-vägens nummer föll bort.
+  - Jämförelsen *"47 av 47 lika"* var ett falskt grönt. Den räknade bort de saknade värdena, och Europavägarna var just de saknade.
+  - **Rättat i provet:**
+    - ett positivt heltal är Europaväg;
+    - ett element utan Vägnummer är en onumrerad väg och ger 0;
+    - ett saknat värde räknas som fel i jämförelsen;
+    - råvärdena skrivs ut;
+    - road_all.csv läses som riktig CSV. Fyra av 753 rader har kommatecken i ett namn och hamnade fel med den naiva uppdelningen.
+  - Provet körs om innan något hämtas.
