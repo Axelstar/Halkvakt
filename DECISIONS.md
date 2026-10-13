@@ -11923,3 +11923,16 @@ provet"*; paketet hämtat av Bengt 13/10).
 - De 18 som räknades som fel är troligen de med −1.
 - Tolkningen är nu −1 → 1 och 0 → 0, och allt annat ger null, som räknas som fel. Provet körs om, och vid minst 95 % följer läget alla.
 - Läxan (VÄRDEVAKTEN): ett fält som heter som en flagga kan bära ett tal med en egen kodning, och bara råvärdena visar vilken.
+
+**Tillägg 14/10: licensen är CC0, och vinterklassen ligger i repot** (Bengt: *"vad menar du med licensen för sverigepaketet"*).
+- **Licensen lästes på Lastkajens användarvillkor,** som visas vid registreringen. Claude registrerade inget.
+  - Villkoren säger att den som öppnar och använder datat godkänner licensen i helhet.
+  - Licenslänken går till **CC0 1.0** (creativecommons.org/publicdomain/zero/1.0), samma som Trafikverkets öppna API.
+- Villkoren gäller i enlighet med PUBLIKT REPO, så klassen läggs i repot:
+  - filen `data/vagdata/vaglagspunkter-vinterklass.json`;
+  - 12847 platser med klass och 113 utan;
+  - källa och licens i huvudet och i `data/KALLOR.json`;
+  - spannet `uh_klass` 1–5 i värdevakten.
+- Paketet själv ligger kvar utanför repot. Det är 2,0 GB och behövs inte där.
+- **Europavägsprovet igen** (körning 38474910120 på 86586cf): 65 av 65 stationer lika med Axel (100 %), och inga saknade värden.
+  Läget `alla` väntar på Bengts ord.
